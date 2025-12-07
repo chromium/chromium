@@ -29,8 +29,8 @@
         this._options = options;
         this._results = null;
         this._version = version;
-        this._targetFrameRate = options["frame-rate"] || 60;
-        this._systemFrameRate = options["system-frame-rate"] || 60;
+        this._targetFrameRate = options["frame-rate"];
+        this._systemFrameRate = options["system-frame-rate"];
         if (testData) {
             this._iterationsSamplers = testData;
             this._processData();
@@ -96,6 +96,7 @@
         var result = {};
         data[Strings.json.result] = result;
         var samples = data[Strings.json.samples];
+        const desiredFrameLength = 1000 / this._targetFrameRate;
 
         function findRegression(series, profile) {
             var minIndex = Math.round(.025 * series.length);
@@ -110,20 +111,23 @@
                 maxComplexity = series.getFieldInDatum(maxIndex, Strings.json.complexity);
             }
 
+            var frameTypeIndex = series.fieldMap[Strings.json.frameType];
             var complexityIndex = series.fieldMap[Strings.json.complexity];
             var frameLengthIndex = series.fieldMap[Strings.json.frameLength];
-            var regressionOptions = { desiredFrameLength: 1000/this._targetFrameRate };
+            var regressionOptions = { desiredFrameLength: desiredFrameLength };
             if (profile)
                 regressionOptions.preferredProfile = profile;
+
+            var regressionSamples = series.slice(minIndex, maxIndex + 1);
+            var animationSamples = regressionSamples.data.filter((sample) => sample[frameTypeIndex] == Strings.json.animationFrameType);
+            var regressionData = animationSamples.map((sample) => [ sample[complexityIndex], sample[frameLengthIndex] ]);
+
+            var regression = new Regression(regressionData, minIndex, maxIndex, regressionOptions);
             return {
                 minComplexity: minComplexity,
                 maxComplexity: maxComplexity,
-                samples: series.slice(minIndex, maxIndex + 1),
-                regression: new Regression(
-                    series.data,
-                    function (data, i) { return data[i][complexityIndex]; },
-                    function (data, i) { return data[i][frameLengthIndex]; },
-                    minIndex, maxIndex, regressionOptions)
+                samples: regressionSamples,
+                regression: regression,
             };
         }
 
@@ -168,7 +172,7 @@
         result[Strings.json.complexity][Strings.json.complexity] = calculation.complexity;
         result[Strings.json.complexity][Strings.json.measurements.stdev] = Math.sqrt(calculation.error / samples[Strings.json.complexity].length);
 
-        result[Strings.json.fps] = data.targetFPS || 60;
+        result[Strings.json.fps] = data.targetFPS;
 
         if (isRampController) {
             var timeComplexity = new Experiment;
@@ -192,6 +196,15 @@
 
                 var resample = new SampleData(regressionResult.samples.fieldMap, resampleData);
                 var bootstrapRegressionResult = findRegression(resample, predominantProfile);
+                if (bootstrapRegressionResult.regression.t2 < 0) {
+                  // A positive slope means the frame rate decreased with increased complexity (which is the expected
+                  // benavior). OTOH, a negative slope means the framerate increased as the complexity increased. This
+                  // likely means the max complexity needs to be increased. None-the-less, if the slope is negative use
+                  // the max-complexity as the computed complexity (intersection of the two lines) does not tell us
+                  // the point when the browser could not handle the complexity, rather it tells us when the framerate
+                  // increased.
+                  return bootstrapRegressionResult.maxComplexity;
+                }
                 return bootstrapRegressionResult.regression.complexity;
             }, .8);
 
@@ -419,8 +432,7 @@ window.benchmarkRunnerClient = {
     }
 };
 
-window.sectionsManager =
-{
+window.sectionsManager = {
     showSection: function(sectionIdentifier, pushState)
     {
         var sections = document.querySelectorAll("main > section");
@@ -473,19 +485,55 @@ window.benchmarkController = {
         "time-measurement": "performance",
         "warmup-length": 2000,
         "warmup-frame-count": 30,
-        "first-frame-minimum-length": 0
+        "first-frame-minimum-length": 0,
+        "system-frame-rate": 60,
+        "frame-rate": 60,
     },
 
-    initialize: function()
+    initialize: async function()
     {
         document.title = Strings.text.title.replace("%s", Strings.version);
         document.querySelectorAll(".version").forEach(function(e) {
             e.textContent = Strings.version;
         });
         benchmarkController.addOrientationListenerIfNecessary();
+
+        this._startButton = document.getElementById("start-button");
+        this._startButton.disabled = true;
+        this._startButton.textContent = Strings.text.determininingFrameRate;
+
+        let targetFrameRate;
+        try {
+            targetFrameRate = await benchmarkController.determineFrameRate();
+        } catch (e) {
+        }
+        this.frameRateDeterminationComplete(targetFrameRate);
+    },
+    
+    frameRateDeterminationComplete: function(frameRate)
+    {
+        const frameRateLabel = document.getElementById("frame-rate-label");
+
+        let labelContent = "";
+        if (!frameRate) {
+            labelContent = Strings.text.frameRateDetectionFailure;
+            frameRate = 60;
+        } else if (frameRate != 60)
+            labelContent = Strings.text.non60FrameRate.replace("%s", frameRate);
+        else 
+            labelContent = Strings.text.usingFrameRate.replace("%s", frameRate);
+
+        frameRateLabel.innerHTML = labelContent;
+
+        this.benchmarkDefaultParameters["system-frame-rate"] = frameRate;
+        this.benchmarkDefaultParameters["frame-rate"] = frameRate;
+
+        this._startButton.textContent = Strings.text.runBenchmark;
+        this._startButton.disabled = false;
     },
 
-    determineCanvasSize: function() {
+    determineCanvasSize: function()
+    {
         var match = window.matchMedia("(max-device-width: 760px)");
         if (match.matches) {
             document.body.classList.add("small");
@@ -507,7 +555,59 @@ window.benchmarkController = {
         document.body.classList.add("large");
     },
 
-    addOrientationListenerIfNecessary: function() {
+    determineFrameRate: function(detectionProgressElement)
+    {
+        return new Promise((resolve, reject) => {
+            let firstTimestamp;
+            let count = 0;
+
+            const averageFrameRate = function(timestamp)
+            {
+                return 1000. / ((timestamp - firstTimestamp) / count);
+            }
+
+            const finish = function(average)
+            {
+                const commonFrameRates = [15, 30, 45, 60, 90, 120, 144];
+                const distanceFromFrameRates = commonFrameRates.map(rate => {
+                    return Math.abs(Math.round(rate - average));
+                });
+
+                let shortestDistance = Number.MAX_VALUE;
+                let targetFrameRate = undefined;
+                for (let i = 0; i < commonFrameRates.length; i++) {
+                    if (distanceFromFrameRates[i] < shortestDistance) {
+                        targetFrameRate = commonFrameRates[i];
+                        shortestDistance = distanceFromFrameRates[i];
+                    }
+                }
+                if (!targetFrameRate)
+                    reject("Failed to map frame rate to a common frame rate");
+
+                resolve(targetFrameRate);
+            }
+
+            const tick = function(timestamp)
+            {
+                if (!firstTimestamp)
+                    firstTimestamp = timestamp;
+                else if (detectionProgressElement)
+                    detectionProgressElement.textContent = Math.round(averageFrameRate(timestamp));
+
+                count++;
+
+                if (count < 300)
+                    requestAnimationFrame(tick);
+                else
+                    finish(averageFrameRate(timestamp));
+            }
+
+            requestAnimationFrame(tick);
+        })
+    },
+
+    addOrientationListenerIfNecessary: function()
+    {
         if (!("orientation" in window))
             return;
 
@@ -520,21 +620,20 @@ window.benchmarkController = {
     {
         benchmarkController.isInLandscapeOrientation = match.matches;
         if (match.matches)
-            document.querySelector(".start-benchmark p").classList.add("hidden");
+            document.querySelector(".portrait-orientation-check").classList.add("hidden");
         else
-            document.querySelector(".start-benchmark p").classList.remove("hidden");
+            document.querySelector(".portrait-orientation-check").classList.remove("hidden");
+
         benchmarkController.updateStartButtonState();
     },
 
     updateStartButtonState: function()
     {
-        document.getElementById("run-benchmark").disabled = !this.isInLandscapeOrientation;
+        document.getElementById("start-button").disabled = !this.isInLandscapeOrientation;
     },
 
     _startBenchmark: function(suites, options, frameContainerID)
     {
-        benchmarkController.determineCanvasSize();
-
         var configuration = document.body.className.match(/small|medium|large/);
         if (configuration)
             options[Strings.json.configuration] = configuration[0];
@@ -547,9 +646,11 @@ window.benchmarkController = {
         sectionsManager.showSection("test-container");
     },
 
-    startBenchmark: function()
+    startBenchmark: async function()
     {
-        var options = this.benchmarkDefaultParameters;
+        benchmarkController.determineCanvasSize();
+
+        let options = this.benchmarkDefaultParameters;
         this._startBenchmark(Suites, options, "test-container");
     },
 
@@ -560,10 +661,10 @@ window.benchmarkController = {
             this.addedKeyEvent = true;
         }
 
-        var dashboard = benchmarkRunnerClient.results;
-        var score = dashboard.score;
-        var confidence = "±" + (Statistics.largestDeviationPercentage(dashboard.scoreLowerBound, score, dashboard.scoreUpperBound) * 100).toFixed(2) + "%";
-        var fps = dashboard._systemFrameRate;
+        const dashboard = benchmarkRunnerClient.results;
+        const score = dashboard.score;
+        const confidence = "±" + (Statistics.largestDeviationPercentage(dashboard.scoreLowerBound, score, dashboard.scoreUpperBound) * 100).toFixed(2) + "%";
+        const fps = dashboard._targetFrameRate;
         sectionsManager.setSectionVersion("results", dashboard.version);
         sectionsManager.setSectionScore("results", score.toFixed(2), confidence, fps);
         sectionsManager.populateTable("results-header", Headers.testName, dashboard);

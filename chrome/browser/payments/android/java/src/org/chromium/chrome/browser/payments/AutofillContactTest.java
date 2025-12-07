@@ -25,7 +25,7 @@ import org.chromium.components.autofill.AutofillProfile;
 import java.util.Arrays;
 import java.util.Collection;
 
-/** Parametrized unit tests for the AutofillContact class. */
+/** Parameterized unit tests for the AutofillContact class. */
 @RunWith(ParameterizedRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class AutofillContactTest {

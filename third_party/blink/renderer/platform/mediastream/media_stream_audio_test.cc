@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stdint.h>
 
+#include <ranges>
+
+#include "base/atomicops.h"
+#include "base/compiler_specific.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
@@ -115,9 +114,8 @@ class FakeMediaStreamAudioSource final : public MediaStreamAudioSource,
 
       // Deliver the next chunk of audio data. Each sample value is its offset
       // from the very first sample.
-      float* const data = audio_bus_->channel(0);
-      for (int i = 0; i < buffer_size; ++i)
-        data[i] = ++sample_count_;
+      std::ranges::generate(audio_bus_->channel_span(0),
+                            [this]() { return ++sample_count_; });
       CHECK_LT(sample_count_, kMaxValueSafelyConvertableToFloat);
       MediaStreamAudioSource::DeliverDataToTracks(*audio_bus_,
                                                   base::TimeTicks::Now(), {});
@@ -206,15 +204,14 @@ class FakeMediaStreamAudioSink final : public WebMediaStreamAudioSink {
       expected_sample_count_ = -1;  // Reset for when audio comes back.
     } else {
       base::subtle::NoBarrier_Store(&audio_is_silent_, 0);
-      const float* const data = audio_bus.channel(0);
-      if (expected_sample_count_ == -1)
+      base::span<const float> data = audio_bus.channel_span(0);
+      if (expected_sample_count_ == -1) {
         expected_sample_count_ = static_cast<int64_t>(data[0]);
+      }
       CHECK_LE(expected_sample_count_ + audio_bus.frames(),
                kMaxValueSafelyConvertableToFloat);
-      for (int i = 0; i < audio_bus.frames(); ++i) {
-        const float expected_sample_value = expected_sample_count_;
-        ASSERT_EQ(expected_sample_value, data[i]);
-        ++expected_sample_count_;
+      for (float sample : data) {
+        ASSERT_EQ(static_cast<float>(expected_sample_count_++), sample);
       }
     }
 

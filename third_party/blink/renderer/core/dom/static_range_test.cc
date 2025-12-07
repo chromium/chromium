@@ -49,7 +49,7 @@ HTMLDocument& StaticRangeTest::GetDocument() const {
 
 TEST_F(StaticRangeTest, SplitTextNodeRangeWithinText) {
   V8TestingScope scope;
-  GetDocument().body()->setInnerHTML("1234");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
   auto* old_text = To<Text>(GetDocument().body()->firstChild());
 
   auto* static_range04 = MakeGarbageCollected<StaticRange>(
@@ -120,7 +120,7 @@ TEST_F(StaticRangeTest, SplitTextNodeRangeWithinText) {
 
 TEST_F(StaticRangeTest, SplitTextNodeRangeOutsideText) {
   V8TestingScope scope;
-  GetDocument().body()->setInnerHTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<span id=\"outer\">0<span id=\"inner-left\">1</span>SPLITME<span "
       "id=\"inner-right\">2</span>3</span>");
 
@@ -235,7 +235,7 @@ TEST_F(StaticRangeTest, SplitTextNodeRangeOutsideText) {
 
 TEST_F(StaticRangeTest, InvalidToRange) {
   V8TestingScope scope;
-  GetDocument().body()->setInnerHTML("1234");
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("1234");
   auto* old_text = To<Text>(GetDocument().body()->firstChild());
 
   auto* static_range04 = MakeGarbageCollected<StaticRange>(

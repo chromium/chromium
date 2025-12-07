@@ -13,6 +13,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/warning_badge_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
@@ -55,8 +56,7 @@ ErrorBadge::ErrorBadge(WarningBadgeService* badge_service)
     : badge_service_(badge_service) {
 }
 
-ErrorBadge::~ErrorBadge() {
-}
+ErrorBadge::~ErrorBadge() = default;
 
 bool ErrorBadge::HasMenuItem() {
   return true;
@@ -87,7 +87,7 @@ bool ErrorBadge::HasShownBubbleView() {
 }
 
 void ErrorBadge::ShowBubbleView(Browser* browser) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 GlobalErrorBubbleViewBase* ErrorBadge::GetBubbleView() {

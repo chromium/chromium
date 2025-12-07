@@ -9,11 +9,10 @@
 #import "components/visited_url_ranking/public/fetcher_config.h"
 #import "components/visited_url_ranking/public/url_visit.h"
 #import "components/visited_url_ranking/public/url_visit_util.h"
-#import "ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -48,8 +47,7 @@ URLVisitAggregate::Tab MakeAggregateTabFromWebState(
   visited_url_ranking::URLVisit visit(
       url, web_state->GetTitle(), last_modification, form_factor,
       visited_url_ranking::URLVisit::Source::kLocal);
-  int32_t tab_id =
-      IOSChromeSessionTabHelper::FromWebState(web_state)->session_id().id();
+  const int32_t tab_id = web_state->GetUniqueIdentifier().identifier();
 
   URLVisitAggregate::Tab tab(tab_id, visit);
   return tab;
@@ -58,8 +56,8 @@ URLVisitAggregate::Tab MakeAggregateTabFromWebState(
 }  // namespace
 
 IOSTabModelURLVisitDataFetcher::IOSTabModelURLVisitDataFetcher(
-    ChromeBrowserState* browser_state)
-    : browser_state_(browser_state) {}
+    ProfileIOS* profile)
+    : profile_(profile) {}
 
 IOSTabModelURLVisitDataFetcher::~IOSTabModelURLVisitDataFetcher() {}
 
@@ -68,11 +66,10 @@ void IOSTabModelURLVisitDataFetcher::FetchURLVisitData(
     const FetcherConfig& config,
     FetchResultCallback callback) {
   // OTR URL should never be processed.
-  CHECK(!browser_state_->IsOffTheRecord());
+  CHECK(!profile_->IsOffTheRecord());
 
   std::map<URLMergeKey, URLVisitAggregate::TabData> url_visit_tab_data_map;
-  const BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(browser_state_);
+  const BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_);
   for (Browser* browser : browser_list->BrowsersOfType(
            BrowserList::BrowserType::kRegularAndInactive)) {
     WebStateList* web_state_list = browser->GetWebStateList();
@@ -87,7 +84,8 @@ void IOSTabModelURLVisitDataFetcher::FetchURLVisitData(
         continue;
       }
 
-      auto url_key = ComputeURLMergeKey(url, config.deduplication_helper);
+      auto url_key = ComputeURLMergeKey(url, web_state->GetTitle(),
+                                        config.deduplication_helper);
       auto it = url_visit_tab_data_map.find(url_key);
       bool tab_data_map_already_has_url_entry =
           (it != url_visit_tab_data_map.end());

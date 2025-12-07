@@ -16,14 +16,19 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/callback_helpers.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "components/input/render_input_router.mojom.h"
 #include "components/viz/common/hit_test/hit_test_data_provider.h"
 #include "components/viz/common/hit_test/hit_test_query.h"
 #include "components/viz/common/hit_test/hit_test_region_observer.h"
+#include "components/viz/common/input/viz_touch_state.h"
 #include "components/viz/common/surfaces/frame_sink_bundle_id.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/host/client_frame_sink_video_capturer.h"
@@ -34,6 +39,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
+#include "services/viz/privileged/mojom/compositing/frame_sink_manager_test_api.mojom.h"
 #include "services/viz/privileged/mojom/compositing/frame_sinks_metrics_recorder.mojom.h"
 #include "services/viz/public/mojom/compositing/frame_sink_bundle.mojom.h"
 
@@ -43,7 +49,9 @@ class SingleThreadTaskRunner;
 
 namespace viz {
 
+class CopyOutputResult;
 class SurfaceInfo;
+struct VizTouchState;
 
 enum class ReportFirstSurfaceActivation { kYes, kNo };
 
@@ -77,6 +85,10 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   // on |frame_sink_manager_remote_| is lost.
   void SetConnectionLostCallback(base::RepeatingClosure callback);
 
+  void SetViewTransitionResourcesCapturedCallback(
+      const blink::ViewTransitionToken& token,
+      base::OnceClosure callback);
+
   // Registers `frame_sink_id` so that a client can submit CompositorFrames
   // using it. This must be called before creating a CompositorFrameSink or
   // registering FrameSinkId hierarchy.
@@ -100,9 +112,12 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   // Invalidates `frame_sink_id` when the client is done submitting
   // CompositorFrames. If there is a CompositorFrameSink for `frame_sink_id`
   // then it will be destroyed and the message pipe to the client will be
-  // closed.
+  // closed. `callback` if non-null is called after invalidation is done on
+  // service side, or if there are errors before service side is able to
+  // complete the invalidation. Thus it is safe use `callback` for clean up.
   void InvalidateFrameSinkId(const FrameSinkId& frame_sink_id,
-                             HostFrameSinkClient* client);
+                             HostFrameSinkClient* client,
+                             base::OnceClosure callback);
 
   // |debug_label| is used when printing out the surface hierarchy so we know
   // which clients are contributing which surfaces.
@@ -134,8 +149,8 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
       const FrameSinkId& frame_sink_id,
       mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
       mojo::PendingRemote<mojom::CompositorFrameSinkClient> client,
-      std::optional<mojo::PendingRemote<blink::mojom::RenderInputRouterClient>>
-          viz_rir_client_remote = std::nullopt);
+      input::mojom::RenderInputRouterConfigPtr render_input_router_config =
+          nullptr);
 
   // Creates a connection to control a set of related frame sinks through
   // batched IPCs on the FrameSinkBundle and FrameSinkBundleClient interfaces.
@@ -181,13 +196,15 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
 
   // Creates a FrameSinkVideoCapturer instance in viz.
   void CreateVideoCapturer(
-      mojo::PendingReceiver<mojom::FrameSinkVideoCapturer> receiver);
+      mojo::PendingReceiver<mojom::FrameSinkVideoCapturer> receiver,
+      uint32_t capture_version_source = 0);
 
   // Creates a FrameSinkVideoCapturer instance in viz and returns a
   // ClientFrameSinkVideoCapturer that's connected to it. Clients should prefer
   // this version because ClientFrameSinkVideoCapturer is resilient to viz
   // crashes.
-  std::unique_ptr<ClientFrameSinkVideoCapturer> CreateVideoCapturer();
+  std::unique_ptr<ClientFrameSinkVideoCapturer> CreateVideoCapturer(
+      uint32_t capture_version_source = 0);
 
   // Marks the given SurfaceIds for destruction.
   void EvictSurfaces(const std::vector<SurfaceId>& surface_ids);
@@ -206,8 +223,37 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
                            std::unique_ptr<CopyOutputRequest> request,
                            bool capture_exact_surface_id = false);
 
+  // Setup the connection between the Browser (at RenderWidgetHost level) and
+  // the VizCompositor thread (at InputManager level) to allow transferring
+  // information from Viz to the Browser and vice versa. Viz can inform Browser
+  // about inputs that it process on VizCompositor thread, and Browser can
+  // inform Viz about |TouchTransferState| to start processing input events for
+  // a sequence.
+  void SetupRenderInputRouterDelegateConnection(
+      const FrameSinkId& frame_sink_id,
+      mojo::PendingAssociatedRemote<
+          input::mojom::RenderInputRouterDelegateClient>
+          rir_delegate_client_remote,
+      mojo::PendingAssociatedReceiver<input::mojom::RenderInputRouterDelegate>
+          rir_delegate_receiver);
+
+  // Notifies the VizCompositor thread (at InputManager level) about block state
+  // changes of |render_input_routers|, for input event handling with
+  // InputVizard.
+  void NotifyRendererBlockStateChanged(
+      bool blocked,
+      const std::vector<FrameSinkId>& render_input_routers);
+
+  // Requests input handling to be transferred back to BrowserMain thread from
+  // VizCompositor thread for cases like touch selection, overscrolls. See
+  // crbug.com/392044047 for more details.
+  void RequestInputBack();
+
+  const VizTouchState* GetVizTouchStatePtr() const;
+
   using ScreenshotDestinationReadyCallback =
-      base::OnceCallback<void(const SkBitmap& copy_output)>;
+      base::OnceCallback<void(std::unique_ptr<CopyOutputResult>)>;
+
   // Sets the callback which is invoked when a `CopyOutputResult` associated
   // with `destination_token` is received by the host/browser process from the
   // Viz process. Must be called once per `destination_token`.
@@ -255,13 +301,10 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   void UpdateDebugRendererSettings(const DebugRendererSettings& debug_settings);
 
   mojom::FrameSinksMetricsRecorder& GetFrameSinksMetricsRecorderForTest();
+  mojom::FrameSinkManagerTestApi& GetFrameSinkManagerTestApi();
 
   void ClearUnclaimedViewTransitionResources(
       const blink::ViewTransitionToken& transition_token);
-  bool HasUnclaimedViewTransitionResourcesForTest();
-
-  void SetSameDocNavigationScreenshotSizeForTesting(
-      const gfx::Size& result_size);
 
   const DebugRendererSettings& debug_renderer_settings() const {
     return debug_renderer_settings_;
@@ -270,6 +313,8 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
  private:
   friend class HostFrameSinkManagerTest;
   friend class HostFrameSinkManagerTestApi;
+  FRIEND_TEST_ALL_PREFIXES(HostFrameSinkManagerTest,
+                           InvalidateFrameSinkIdCallbackOnConnectionError);
 
   struct FrameSinkData {
     FrameSinkData();
@@ -320,8 +365,7 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
       std::optional<FrameSinkBundleId> bundle_id,
       mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
       mojo::PendingRemote<mojom::CompositorFrameSinkClient> client,
-      std::optional<mojo::PendingRemote<blink::mojom::RenderInputRouterClient>>
-          viz_rir_client_remote);
+      input::mojom::RenderInputRouterConfigPtr render_input_router_config);
 
   // Handles connection loss to |frame_sink_manager_remote_|. This should only
   // happen when the GPU process crashes.
@@ -329,6 +373,8 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
 
   // Registers FrameSinkId and FrameSink hierarchy again after connection loss.
   void RegisterAfterConnectionLoss();
+
+  void InvalidateFrameSinkCallback(const FrameSinkId& frame_sink_id);
 
   // mojom::FrameSinkManagerClient:
   void OnFrameTokenChanged(const FrameSinkId& frame_sink_id,
@@ -347,7 +393,13 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
       const blink::SameDocNavigationScreenshotDestinationToken&
           destination_token,
       std::unique_ptr<CopyOutputResult> copy_output_result) override;
+  void OnVizTouchStateAvailable(
+      base::ReadOnlySharedMemoryRegion region) override;
+  void OnViewTransitionResourcesCaptured(
+      const blink::ViewTransitionToken& transition_token) override;
 
+  mojo::Remote<mojom::RendererInputRouterDelegateRegistry>
+      rir_delegate_registry_;
   // Connections to/from FrameSinkManagerImpl.
   mojo::Remote<mojom::FrameSinkManager> frame_sink_manager_remote_;
   // This will point to |frame_sink_manager_remote_| if using mojo or it may
@@ -357,21 +409,31 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   mojo::Receiver<mojom::FrameSinkManagerClient>
       frame_sink_manager_client_receiver_{this};
   mojo::Remote<mojom::FrameSinksMetricsRecorder> metrics_recorder_remote_;
+  mojo::Remote<mojom::FrameSinkManagerTestApi> test_api_remote_;
+
+  // Shared memory for VizTouchState (Browser's read-only view).
+  base::ReadOnlySharedMemoryMapping viz_touch_state_ro_mapping_;
 
   // Per CompositorFrameSink data.
   std::unordered_map<FrameSinkId, FrameSinkData, FrameSinkIdHash>
       frame_sink_data_map_;
+
+  base::flat_map<FrameSinkId, base::ScopedClosureRunner>
+      frame_sink_invalidate_callbacks_;
 
   // If |frame_sink_manager_remote_| connection was lost.
   bool connection_was_lost_ = false;
 
   base::RepeatingClosure connection_lost_callback_;
 
+  base::flat_map<blink::ViewTransitionToken, base::OnceClosure>
+      view_transition_callbacks_;
+
   DisplayHitTestQueryMap display_hit_test_query_;
 
   // TODO(jonross): Separate out all hit testing work into its own separate
   // class.
-  base::ObserverList<HitTestRegionObserver>::Unchecked observers_;
+  base::ObserverList<HitTestRegionObserver> observers_;
 
 #if BUILDFLAG(IS_ANDROID)
   uint32_t next_cache_back_buffer_id_ = 1;

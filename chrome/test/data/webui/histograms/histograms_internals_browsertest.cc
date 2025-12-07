@@ -43,7 +43,14 @@ IN_PROC_BROWSER_TEST_F(HistogramsInternalsUIBrowserTest, NoDummyHistograms) {
   RunTestCase("NoDummyHistograms");
 }
 
-IN_PROC_BROWSER_TEST_F(HistogramsInternalsUIBrowserTest, DownloadHistograms) {
+// TODO(https://crbug.com/448051850): Flaky on Linux
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_DownloadHistograms DISABLED_DownloadHistograms
+#else
+#define MAYBE_DownloadHistograms DownloadHistograms
+#endif
+IN_PROC_BROWSER_TEST_F(HistogramsInternalsUIBrowserTest,
+                       MAYBE_DownloadHistograms) {
   PopulateHistograms();
   RunTestCase("DownloadHistograms");
 }
@@ -56,7 +63,15 @@ IN_PROC_BROWSER_TEST_F(HistogramsInternalsUIBrowserTest, SubprocessCheckbox) {
   RunTestCase("SubprocessCheckbox");
 }
 
+// TODO(crbug.com/394731765): Re-enable this test
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_SubprocessCheckboxInMonitoringMode \
+  DISABLED_SubprocessCheckboxInMonitoringMode
+#else
+#define MAYBE_SubprocessCheckboxInMonitoringMode \
+  SubprocessCheckboxInMonitoringMode
+#endif
 IN_PROC_BROWSER_TEST_F(HistogramsInternalsUIBrowserTest,
-                       SubprocessCheckboxInMonitoringMode) {
+                       MAYBE_SubprocessCheckboxInMonitoringMode) {
   RunTestCase("SubprocessCheckboxInMonitoringMode");
 }

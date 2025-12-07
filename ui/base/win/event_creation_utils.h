@@ -15,6 +15,8 @@ namespace ui {
 
 // Send a mouse event to Windows input queue using ::SendInput, to screen
 // point |point|. Returns true if the mouse event was sent, false if not.
+// The coordinates will be translated to absolute screen coordinates and the
+// MOUSEEVENTF_ABSOLUTE flag will be set on the events.
 COMPONENT_EXPORT(UI_BASE)
 bool SendMouseEvent(const gfx::Point& point, int flags);
 

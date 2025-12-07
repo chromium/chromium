@@ -6,10 +6,14 @@
 
 #include "base/values.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
-using CookieControlsMode = content_settings::CookieControlsMode;
+using enum content_settings::CookieControlsMode;
 
 CookieControlsModeTransformer::CookieControlsModeTransformer() = default;
 CookieControlsModeTransformer::~CookieControlsModeTransformer() = default;
@@ -20,9 +24,8 @@ CookieControlsModeTransformer::ExtensionToBrowserPref(
     std::string& error,
     bool& bad_message) {
   bool third_party_cookies_allowed = extension_pref.GetBool();
-  return base::Value(static_cast<int>(
-      third_party_cookies_allowed ? CookieControlsMode::kOff
-                                  : CookieControlsMode::kBlockThirdParty));
+  return base::Value(
+      static_cast<int>(third_party_cookies_allowed ? kOff : kBlockThirdParty));
 }
 
 std::optional<base::Value>
@@ -30,14 +33,11 @@ CookieControlsModeTransformer::BrowserToExtensionPref(
     const base::Value& browser_pref,
     bool is_incognito_profile) {
   auto cookie_control_mode =
-      static_cast<CookieControlsMode>(browser_pref.GetInt());
-
-  bool third_party_cookies_allowed =
-      cookie_control_mode == content_settings::CookieControlsMode::kOff ||
-      (!is_incognito_profile &&
-       cookie_control_mode == CookieControlsMode::kIncognitoOnly);
-
-  return base::Value(third_party_cookies_allowed);
+      static_cast<content_settings::CookieControlsMode>(browser_pref.GetInt());
+  // 3PCs are allowed iff: CookieControlsMode is not `kBlockThirdParty` and the
+  // user is not in Incognito (as 3PCs are always blocked in Incognito).
+  return base::Value(cookie_control_mode != kBlockThirdParty &&
+                     !is_incognito_profile);
 }
 
 }  // namespace extensions

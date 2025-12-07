@@ -14,11 +14,12 @@ namespace ui {
 COMPONENT_EXPORT(AX_PLATFORM)
 extern const char kAXAutoCompleteTextViewClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXAbsListViewClassname[];
+COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXAlertDialogClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXButtonClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXCheckBoxClassname[];
-COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXCompoundButtonClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXCheckedTextViewClassname[];
-COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXDialogClassname[];
+COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXCompoundButtonClassname[];
+COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXDatePickerClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXEditTextClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXGridViewClassname[];
 COMPONENT_EXPORT(AX_PLATFORM)
@@ -30,16 +31,19 @@ COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXListViewClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXMenuItemClassname[];
 COMPONENT_EXPORT(AX_PLATFORM)
 extern const char kAXMultiAutoCompleteTextViewClassname[];
+COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXNavigationViewClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXPagerClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXProgressBarClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXRadioButtonClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXRadioGroupClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXScrollViewClassname[];
+COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXSearchViewClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXSeekBarClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXSwitchClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXSpinnerClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXTabWidgetClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXTextViewClassname[];
+COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXTimePickerClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXToggleButtonClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXViewClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXViewGroupClassname[];

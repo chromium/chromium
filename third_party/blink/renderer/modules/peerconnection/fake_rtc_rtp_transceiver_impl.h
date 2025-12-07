@@ -29,7 +29,7 @@ MediaStreamComponent* CreateMediaStreamComponent(
 
 class FakeRTCRtpSenderImpl : public blink::RTCRtpSenderPlatform {
  public:
-  FakeRTCRtpSenderImpl(std::optional<String> track_id,
+  FakeRTCRtpSenderImpl(String track_id,
                        Vector<String> stream_ids,
                        scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   FakeRTCRtpSenderImpl(const FakeRTCRtpSenderImpl&);
@@ -38,7 +38,8 @@ class FakeRTCRtpSenderImpl : public blink::RTCRtpSenderPlatform {
 
   std::unique_ptr<blink::RTCRtpSenderPlatform> ShallowCopy() const override;
   uintptr_t Id() const override;
-  rtc::scoped_refptr<webrtc::DtlsTransportInterface> DtlsTransport() override;
+  webrtc::scoped_refptr<webrtc::DtlsTransportInterface> DtlsTransport()
+      override;
   webrtc::DtlsTransportInformation DtlsTransportInformation() override;
   MediaStreamComponent* Track() const override;
   Vector<String> StreamIds() const override;
@@ -53,7 +54,7 @@ class FakeRTCRtpSenderImpl : public blink::RTCRtpSenderPlatform {
   void SetStreams(const Vector<String>& stream_ids) override;
 
  private:
-  std::optional<String> track_id_;
+  String track_id_;
   Vector<String> stream_ids_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
@@ -70,7 +71,8 @@ class FakeRTCRtpReceiverImpl : public RTCRtpReceiverPlatform {
 
   std::unique_ptr<RTCRtpReceiverPlatform> ShallowCopy() const override;
   uintptr_t Id() const override;
-  rtc::scoped_refptr<webrtc::DtlsTransportInterface> DtlsTransport() override;
+  webrtc::scoped_refptr<webrtc::DtlsTransportInterface> DtlsTransport()
+      override;
   webrtc::DtlsTransportInformation DtlsTransportInformation() override;
   MediaStreamComponent* Track() const override;
   Vector<String> StreamIds() const override;

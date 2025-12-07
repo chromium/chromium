@@ -150,11 +150,11 @@ ModuleSystemTestEnvironment::ModuleSystemTestEnvironment(
     ScriptContextSet* context_set,
     scoped_refptr<const Extension> extension)
     : isolate_(isolate),
-      context_holder_(new gin::ContextHolder(isolate_)),
       handle_scope_(isolate_),
+      context_holder_(std::make_unique<gin::ContextHolder>(isolate_)),
       extension_(extension),
       context_set_(context_set),
-      source_map_(new StringSourceMap()) {
+      source_map_(std::make_unique<StringSourceMap>()) {
   context_holder_->SetContext(v8::Context::New(
       isolate, TestV8ExtensionConfiguration::GetConfiguration()));
 

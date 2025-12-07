@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/quic/quic_http_stream.h"
 
 #include <stdint.h>
@@ -60,6 +55,7 @@
 #include "net/quic/quic_crypto_client_config_handle.h"
 #include "net/quic/quic_http_utils.h"
 #include "net/quic/quic_server_info.h"
+#include "net/quic/quic_session_alias_key.h"
 #include "net/quic/quic_session_key.h"
 #include "net/quic/quic_session_pool.h"
 #include "net/quic/quic_test_packet_maker.h"
@@ -76,6 +72,9 @@
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
+#include "net/third_party/quiche/src/quiche/http2/core/spdy_frame_builder.h"
+#include "net/third_party/quiche/src/quiche/http2/core/spdy_framer.h"
+#include "net/third_party/quiche/src/quiche/http2/core/spdy_protocol.h"
 #include "net/third_party/quiche/src/quiche/quic/core/congestion_control/send_algorithm_interface.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/crypto_protocol.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_decrypter.h"
@@ -93,9 +92,6 @@
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_connection_peer.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_spdy_session_peer.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_test_utils.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/spdy_frame_builder.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/spdy_framer.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -116,14 +112,11 @@ const uint16_t kDefaultServerPort = 443;
 
 struct TestParams {
   quic::ParsedQuicVersion version;
-  bool priority_header_enabled;
 };
 
 // Used by ::testing::PrintToStringParamName().
 std::string PrintToString(const TestParams& p) {
-  return base::StrCat({ParsedQuicVersionToString(p.version), "_",
-                       p.priority_header_enabled ? "PriorityHeaderEnabled"
-                                                 : "PriorityHeaderDisabled"});
+  return ParsedQuicVersionToString(p.version);
 }
 
 std::vector<TestParams> GetTestParams() {
@@ -131,8 +124,7 @@ std::vector<TestParams> GetTestParams() {
   quic::ParsedQuicVersionVector all_supported_versions =
       AllSupportedQuicVersions();
   for (const auto& version : all_supported_versions) {
-    params.push_back(TestParams{version, true});
-    params.push_back(TestParams{version, false});
+    params.push_back(TestParams{version});
   }
   return params;
 }
@@ -305,11 +297,6 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
                       /*client_priority_uses_incremental=*/false,
                       /*use_priority_header=*/false),
         printer_(version_) {
-    if (GetParam().priority_header_enabled) {
-      feature_list_.InitAndEnableFeature(net::features::kPriorityHeader);
-    } else {
-      feature_list_.InitAndDisableFeature(net::features::kPriorityHeader);
-    }
     FLAGS_quic_enable_http3_grease_randomness = false;
     quic::QuicEnableVersion(version_);
     IPAddress ip(192, 0, 2, 33);
@@ -349,19 +336,18 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
 
   // Configures the test fixture to use the list of expected writes.
   void Initialize() {
-    mock_writes_ = std::make_unique<MockWrite[]>(writes_.size());
+    mock_writes_.resize(writes_.size());
     for (size_t i = 0; i < writes_.size(); i++) {
       if (writes_[i].packet == nullptr) {
         mock_writes_[i] = MockWrite(writes_[i].mode, writes_[i].rv, i);
       } else {
-        mock_writes_[i] = MockWrite(writes_[i].mode, writes_[i].packet->data(),
-                                    writes_[i].packet->length());
+        mock_writes_[i] =
+            MockWrite(writes_[i].mode, writes_[i].packet->AsStringPiece());
       }
     }
 
     socket_data_ = std::make_unique<StaticSocketDataProvider>(
-        base::span<MockRead>(),
-        base::make_span(mock_writes_.get(), writes_.size()));
+        base::span<MockRead>(), mock_writes_);
     socket_data_->set_printer(&printer_);
 
     auto socket = std::make_unique<MockUDPClientSocket>(socket_data_.get(),
@@ -417,11 +403,15 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
         /*stream_factory=*/nullptr, &crypto_client_stream_factory_, &clock_,
         &transport_security_state_, &ssl_config_service_,
         base::WrapUnique(static_cast<QuicServerInfo*>(nullptr)),
-        QuicSessionKey(kDefaultServerHostName, kDefaultServerPort,
-                       PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
-                       SessionUsage::kDestination, SocketTag(),
-                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                       /*require_dns_https_alpn=*/false),
+        QuicSessionAliasKey(
+            url::SchemeHostPort(),
+            QuicSessionKey(
+                kDefaultServerHostName, kDefaultServerPort,
+                PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                SessionUsage::kDestination, SocketTag(),
+                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*require_dns_https_alpn=*/false,
+                /*disable_cert_verification_network_fetches=*/false)),
         /*require_confirmation=*/false,
         /*migrate_session_early_v2=*/false,
         /*migrate_session_on_network_change_v2=*/false,
@@ -442,7 +432,9 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
         base::DefaultTickClock::GetInstance(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         /*socket_performance_watcher=*/nullptr, ConnectionEndpointMetadata(),
-        /*report_ecn=*/true, NetLogWithSource::Make(NetLogSourceType::NONE));
+        /*enable_origin_frame=*/true, /*allow_server_preferred_address=*/true,
+        MultiplexedSessionCreationInitiator::kUnknown,
+        NetLogWithSource::Make(NetLogSourceType::NONE));
     session_->Initialize();
 
     // Blackhole QPACK decoder stream instead of constructing mock writes.
@@ -611,6 +603,7 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
   void ExpectLoadTimingValid(const LoadTimingInfo& load_timing_info,
                              bool session_reused) {
     EXPECT_EQ(session_reused, load_timing_info.socket_reused);
+    EXPECT_TRUE(load_timing_info.socket_log_id != 0);
     if (session_reused) {
       ExpectConnectTimingHasNoTimes(load_timing_info.connect_timing);
     } else {
@@ -639,7 +632,7 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
       NetLogWithSource::Make(NetLog::Get(), NetLogSourceType::NONE)};
   RecordingNetLogObserver net_log_observer_;
   scoped_refptr<TestTaskRunner> runner_;
-  std::unique_ptr<MockWrite[]> mock_writes_;
+  std::vector<MockWrite> mock_writes_;
   quic::MockClock clock_;
   std::unique_ptr<QuicChromiumConnectionHelper> helper_;
   std::unique_ptr<QuicChromiumAlarmFactory> alarm_factory_;
@@ -680,7 +673,6 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
   std::vector<PacketToWrite> writes_;
   quic::test::MockConnectionIdGenerator connection_id_generator_;
   quic::test::NoopQpackStreamSenderDelegate noop_qpack_stream_sender_delegate_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,
@@ -1173,7 +1165,7 @@ TEST_P(QuicHttpStreamTest, GetAlternativeService) {
 
   AlternativeService alternative_service;
   EXPECT_TRUE(stream_->GetAlternativeService(&alternative_service));
-  EXPECT_EQ(AlternativeService(kProtoQUIC, "www.example.org", 443),
+  EXPECT_EQ(AlternativeService(NextProto::kProtoQUIC, "www.example.org", 443),
             alternative_service);
 
   session_->connection()->CloseConnection(
@@ -1181,7 +1173,7 @@ TEST_P(QuicHttpStreamTest, GetAlternativeService) {
 
   AlternativeService alternative_service2;
   EXPECT_TRUE(stream_->GetAlternativeService(&alternative_service2));
-  EXPECT_EQ(AlternativeService(kProtoQUIC, "www.example.org", 443),
+  EXPECT_EQ(AlternativeService(NextProto::kProtoQUIC, "www.example.org", 443),
             alternative_service2);
 }
 
@@ -1314,7 +1306,7 @@ TEST_P(QuicHttpStreamTest, SendPostRequest) {
 
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
   element_readers.push_back(std::make_unique<UploadBytesElementReader>(
-      kUploadData, strlen(kUploadData)));
+      base::byte_span_from_cstring(kUploadData)));
   upload_data_stream_ =
       std::make_unique<ElementsUploadDataStream>(std::move(element_readers), 0);
   request_.method = "POST";
@@ -1388,7 +1380,7 @@ TEST_P(QuicHttpStreamTest, SendPostRequestAndReceiveSoloFin) {
 
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
   element_readers.push_back(std::make_unique<UploadBytesElementReader>(
-      kUploadData, strlen(kUploadData)));
+      base::byte_span_from_cstring(kUploadData)));
   upload_data_stream_ =
       std::make_unique<ElementsUploadDataStream>(std::move(element_readers), 0);
   request_.method = "POST";
@@ -2150,6 +2142,26 @@ TEST_P(QuicHttpStreamTest, GetAcceptChViaAlps) {
       "Net.QuicSession.AcceptChFrameReceivedViaAlps", 1);
   histogram_tester.ExpectBucketCount("Net.QuicSession.AcceptChForOrigin", 1, 1);
   histogram_tester.ExpectTotalCount("Net.QuicSession.AcceptChForOrigin", 1);
+}
+
+TEST_P(QuicHttpStreamTest, GetQuicConnectionDetails) {
+  Initialize();
+  auto migration_info = ConnectionMigrationInformation(
+      ConnectionMigrationInformation::NetworkEventCount(
+          /*default_network_change=*/0, /*network_disconnected=*/0,
+          /*network_connected=*/0, /*path_degrading=*/0));
+
+  auto quic_connection_details = stream_->GetQuicConnectionDetails();
+  EXPECT_TRUE(quic_connection_details.has_value());
+  EXPECT_EQ(quic_connection_details->connection_migration_info, migration_info);
+
+  session_->OnNetworkConnected(kDefaultNetworkForTests);
+  migration_info.event_count.network_connected_num++;
+
+  // Check if the information is updated
+  quic_connection_details = stream_->GetQuicConnectionDetails();
+  EXPECT_TRUE(quic_connection_details.has_value());
+  EXPECT_EQ(quic_connection_details->connection_migration_info, migration_info);
 }
 
 }  // namespace net::test

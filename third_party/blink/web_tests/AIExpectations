@@ -1,0 +1,37 @@
+# results: [ Timeout Crash Pass Failure Skip ]
+
+# An Optimization Guide internal script (run_chrome_ai_wpt_tests.py) uses these
+# expectations instead of the typical TestExpectations file, in order to test
+# Built-In AI APIs in Branded Chrome builds with side-loaded models & configs.
+
+# Temporarily disable flaky Language Detector tests to unblock model validation testing.
+# Disables tests on all platforms, since disabling these tests on Mac only is not supported.
+crbug.com/414403946 external/wpt/ai/language_detection/detector-iframe.https.html [ Skip ]
+crbug.com/414403946 external/wpt/ai/language_detection/detector-locale.https.window.html [ Skip ]
+
+# These tests fail a 'downloadable' availability precondition, per sideloading.
+crbug.com/390246212 external/wpt/ai/rewriter/rewriter-create-user-activation.tentative.https.window.html [ Failure Pass ]
+crbug.com/390246212 external/wpt/ai/summarizer/summarizer-create-user-activation.tentative.https.window.html [ Failure Pass ]
+crbug.com/390246212 external/wpt/ai/writer/writer-create-user-activation.tentative.https.window.html [ Failure Pass ]
+crbug.com/390246212 wpt_internal/ai/language-model-api-create-user-activation.https.window.html [ Failure Pass ]
+
+# These tests fail flakily with `Unhandled rejection with value: object "Error: element click intercepted error"`
+crbug.com/407988949 external/wpt/ai/rewriter/rewriter-iframe.tentative.https.html [ Failure Pass ]
+crbug.com/407988949 external/wpt/ai/summarizer/summarizer-iframe.tentative.https.html [ Failure Pass ]
+crbug.com/407988949 external/wpt/ai/writer/writer-iframe.tentative.https.html [ Failure Pass ]
+crbug.com/407988949 wpt_internal/ai/language-model-api-iframe.tentative.https.html [ Failure Pass ]
+
+# Temporarily disable this test that are failing with ChromeML GPU Validation error.
+crbug.com/446717936 external/wpt/ai/proofreader/proofreader-proofread.tentative.https.window.html [ Failure Pass ]
+
+# These tests fail audio input availability preconditions on Mac x64 bots.
+# Disables tests on all platforms, since disabling these tests on Mac x64 only is not supported.
+crbug.com/460555196 external/wpt/ai/language-model/language-model-availability-available-multimodal.tentative.https.window.html [ Failure Pass ]
+crbug.com/460555196 external/wpt/ai/language-model/language-model-create-multimodal.tentative.https.window.html [ Failure Pass ]
+
+# These tests frequently time out on Mac platforms.
+# Disables tests on all platforms, since disabling these tests on Mac only is not supported.
+crbug.com/460555196 external/wpt/ai/language-model/language-model-prompt-multimodal.tentative.https.window.html [ Timeout Failure Pass ]
+crbug.com/460799715 external/wpt/ai/language-model/language-model-prompt.tentative.https.window.html [ Timeout ]
+
+

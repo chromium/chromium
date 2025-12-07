@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -17,6 +18,7 @@
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace gfx {
 class FontList;
@@ -84,7 +86,6 @@ class MESSAGE_CENTER_EXPORT NotificationHeaderView : public views::Button {
   void SetIsInGroupChildNotification(bool is_in_group_child_notification);
 
   // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnThemeChanged() override;
 
   views::ImageView* expand_button() { return expand_button_; }
@@ -103,7 +104,7 @@ class MESSAGE_CENTER_EXPORT NotificationHeaderView : public views::Button {
     return timestamp_view_;
   }
 
-  const std::u16string& app_name_for_testing() const;
+  std::u16string_view app_name_for_testing() const;
 
   gfx::ImageSkia app_icon_for_testing() const;
 
@@ -118,6 +119,8 @@ class MESSAGE_CENTER_EXPORT NotificationHeaderView : public views::Button {
   void UpdateColors();
 
   void UpdateExpandedCollapsedAccessibleState() const;
+
+  void OnTextChanged();
 
   // Color used for labels and buttons in this view.
   std::optional<SkColor> color_;
@@ -145,6 +148,9 @@ class MESSAGE_CENTER_EXPORT NotificationHeaderView : public views::Button {
 
   // Whether this view is used for a group child notification.
   bool is_in_group_child_notification_ = false;
+
+  base::CallbackListSubscription summary_text_changed_callback_;
+  base::CallbackListSubscription timestamp_changed_callback_;
 };
 
 BEGIN_VIEW_BUILDER(MESSAGE_CENTER_EXPORT, NotificationHeaderView, views::Button)

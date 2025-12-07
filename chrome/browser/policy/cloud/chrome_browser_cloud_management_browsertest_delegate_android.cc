@@ -99,7 +99,7 @@ void ChromeBrowserCloudManagementBrowserTestDelegateAndroid::
       ->GetPolicyConverterForTesting()  // IN-TEST
       ->SetPolicyValueForTesting(       // IN-TEST
           key::kCloudManagementEnrollmentToken, base::Value(enrollment_token));
-  platform_provider->FlushPolicies(nullptr, nullptr);
+  platform_provider->FlushPolicies(nullptr);
 
   enrollment_observer.WaitForEnrollmentConfirmation();
 }

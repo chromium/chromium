@@ -7,7 +7,6 @@
 
 #include "ui/ozone/platform/drm/gpu/drm_gpu_util.h"
 
-#include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/ozone/platform/drm/gpu/fake_drm_device.h"
@@ -64,14 +63,7 @@ class DrmGpuUtilTest : public testing::Test {
   raw_ptr<FakeDrmDevice> fake_drm_;
 };
 
-// TODO(b/322831691): Deterministic failure.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_EmptyPossibleCrtcsForConnector \
-  DISABLED_EmptyPossibleCrtcsForConnector
-#else
-#define MAYBE_EmptyPossibleCrtcsForConnector EmptyPossibleCrtcsForConnector
-#endif
-TEST_F(DrmGpuUtilTest, MAYBE_EmptyPossibleCrtcsForConnector) {
+TEST_F(DrmGpuUtilTest, DISABLED_EmptyPossibleCrtcsForConnector) {
   EXPECT_DEATH_IF_SUPPORTED(GetAllCrtcConnectorPermutations(*fake_drm_, {}),
                             "No connectors specified");
 }

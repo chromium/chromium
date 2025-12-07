@@ -98,7 +98,7 @@ class RcHeaderFormatterUnittest(unittest.TestCase):
             <emit emit_type="prepend">Bingo</emit>
           </output>
         </outputs>''')
-    output = ''.join(rc_header.Format(grd, 'en', '.'))
+    output = ''.join(rc_header.Format(grd, 'en', None, '.'))
     output = util.StripBlankLinesAndComments(output)
     self.assertEqual('#pragma once\nBingo', output)
 

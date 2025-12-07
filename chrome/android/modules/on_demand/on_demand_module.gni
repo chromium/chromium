@@ -1,0 +1,13 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# For features that are large and not frequently used. This module should not
+# be loaded during start-up, and ideally only due to user actions.
+on_demand_module_desc = {
+  name = "on_demand"
+  uses_split = "chrome"
+  android_manifest =
+      "//chrome/android/modules/on_demand/java/AndroidManifest.xml"
+  java_deps = [ "//chrome/android/modules/on_demand:impl_java" ]
+}

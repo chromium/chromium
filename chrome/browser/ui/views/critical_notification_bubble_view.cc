@@ -23,7 +23,9 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
@@ -45,9 +47,9 @@ CriticalNotificationBubbleView::ScopedSetTimeFormatterForTesting::
 CriticalNotificationBubbleView::CriticalNotificationBubbleView(
     views::View* anchor_view)
     : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::TOP_RIGHT) {
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(IDS_CRITICAL_NOTIFICATION_RESTART));
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  l10n_util::GetStringUTF16(IDS_CANCEL));
   SetAcceptCallback(
       base::BindOnce(&CriticalNotificationBubbleView::OnDialogAccepted,
@@ -56,10 +58,11 @@ CriticalNotificationBubbleView::CriticalNotificationBubbleView(
       base::BindOnce(&CriticalNotificationBubbleView::OnDialogCancelled,
                      base::Unretained(this)));
   set_close_on_deactivate(false);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kAlertDialog);
 }
 
-CriticalNotificationBubbleView::~CriticalNotificationBubbleView() {
-}
+CriticalNotificationBubbleView::~CriticalNotificationBubbleView() = default;
 
 base::TimeDelta CriticalNotificationBubbleView::GetRemainingTime() const {
   // How long to give the user until auto-restart if no action is taken.
@@ -114,8 +117,9 @@ void CriticalNotificationBubbleView::OnDialogCancelled() {
   // the user selects, for example, "Stay on this page" during an
   // onbeforeunload handler.
   PrefService* prefs = g_browser_process->local_state();
-  if (prefs->HasPrefPath(prefs::kRestartLastSessionOnShutdown))
+  if (prefs->HasPrefPath(prefs::kRestartLastSessionOnShutdown)) {
     prefs->ClearPref(prefs::kRestartLastSessionOnShutdown);
+  }
 }
 
 void CriticalNotificationBubbleView::OnDialogAccepted() {
@@ -145,15 +149,11 @@ void CriticalNotificationBubbleView::Init() {
   base::RecordAction(UserMetricsAction("CriticalNotificationShown"));
 }
 
-void CriticalNotificationBubbleView::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kAlertDialog;
-}
-
 void CriticalNotificationBubbleView::ViewHierarchyChanged(
     const views::ViewHierarchyChangedDetails& details) {
-  if (details.is_add && details.child == this)
-    NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+  if (details.is_add && details.child == this) {
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert, true);
+  }
 }
 
 BEGIN_METADATA(CriticalNotificationBubbleView)

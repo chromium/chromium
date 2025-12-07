@@ -78,7 +78,7 @@ const char ScopedTestNativeMessagingHost::kHostExeName[] =
     "com.google.chrome.test.exe.echo";
 #endif
 
-ScopedTestNativeMessagingHost::ScopedTestNativeMessagingHost() {}
+ScopedTestNativeMessagingHost::ScopedTestNativeMessagingHost() = default;
 
 void ScopedTestNativeMessagingHost::RegisterTestHost(bool user_level) {
   base::ScopedAllowBlockingForTesting allow_blocking;

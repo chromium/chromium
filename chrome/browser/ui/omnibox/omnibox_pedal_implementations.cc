@@ -9,7 +9,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
@@ -24,15 +23,17 @@
 #include "components/prefs/pref_service.h"
 #include "components/search/search.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "components/vector_icons/vector_icons.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/app/vector_icons/vector_icons.h"
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
-#endif
 
 // =============================================================================
 
@@ -385,33 +386,9 @@ class OmniboxPedalUpdateChrome : public OmniboxPedal {
 class OmniboxPedalRunChromeSafetyCheck : public OmniboxPedal {
  public:
   OmniboxPedalRunChromeSafetyCheck()
-      : OmniboxPedal(
-            OmniboxPedalId::RUN_CHROME_SAFETY_CHECK,
-#if BUILDFLAG(IS_ANDROID)
-            LabelStrings(
-                IDS_ANDROID_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_HINT,
-                IDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_SUGGESTION_CONTENTS,
-                IDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_SUFFIX,
-                IDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK),
-#else
-            LabelStrings(
-                IDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_HINT,
-                IDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_SUGGESTION_CONTENTS,
-                IDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_SUFFIX,
-                IDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK),
-#endif  // BUILDFLAG(IS_ANDROID)
-            GURL("chrome://settings/safetyCheck?activateSafetyCheck")) {
-    // If SafetyHub flag is enabled, the label strings and url should be
-    // updated.
-    if (base::FeatureList::IsEnabled(features::kSafetyHub)) {
-      strings_ = LabelStrings(
-          IDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_V2_HINT,
-          IDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_V2_SUGGESTION_CONTENTS,
-          IDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_V2_SUFFIX,
-          IDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_V2);
-      url_ = GURL("chrome://settings/safetyCheck");
-    }
-  }
+      : OmniboxPedal(OmniboxPedalId::RUN_CHROME_SAFETY_CHECK,
+                     GetLabelStrings(),
+                     GetUrl()) {}
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups(
       bool locale_is_english) const override {
@@ -451,6 +428,18 @@ class OmniboxPedalRunChromeSafetyCheck : public OmniboxPedal {
 
  protected:
   ~OmniboxPedalRunChromeSafetyCheck() override = default;
+
+  LabelStrings GetLabelStrings() {
+      return LabelStrings(
+          IDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_V2_HINT,
+          IDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_V2_SUGGESTION_CONTENTS,
+          IDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_V2_SUFFIX,
+          IDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_V2);
+  }
+
+  GURL GetUrl() {
+    return GURL("chrome://settings/safetyCheck");
+  }
 };
 
 // =============================================================================
@@ -610,16 +599,54 @@ class OmniboxPedalManageAddresses : public OmniboxPedal {
 class OmniboxPedalManageSync : public OmniboxPedal {
  public:
   OmniboxPedalManageSync()
-      : OmniboxPedal(
-            OmniboxPedalId::MANAGE_SYNC,
-            LabelStrings(IDS_OMNIBOX_PEDAL_MANAGE_SYNC_HINT,
-                         IDS_OMNIBOX_PEDAL_MANAGE_SYNC_SUGGESTION_CONTENTS,
-                         IDS_ACC_OMNIBOX_PEDAL_MANAGE_SYNC_SUFFIX,
-                         IDS_ACC_OMNIBOX_PEDAL_MANAGE_SYNC),
-            GURL("chrome://settings/syncSetup/advanced")) {}
+      : OmniboxPedal(OmniboxPedalId::MANAGE_SYNC,
+                     GetLabelStrings(),
+                     GURL("chrome://settings/syncSetup/advanced")) {}
+
+  static LabelStrings GetLabelStrings() {
+#if !BUILDFLAG(IS_CHROMEOS)
+    if (base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp)) {
+      return LabelStrings(
+          IDS_OMNIBOX_PEDAL_MANAGE_SYNC_HINT_UPDATED,
+          IDS_OMNIBOX_PEDAL_MANAGE_SYNC_SUGGESTION_CONTENTS_UPDATED,
+          IDS_ACC_OMNIBOX_PEDAL_MANAGE_SYNC_SUFFIX_UPDATED,
+          IDS_ACC_OMNIBOX_PEDAL_MANAGE_SYNC_UPDATED);
+    }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+    return LabelStrings(IDS_OMNIBOX_PEDAL_MANAGE_SYNC_HINT,
+                        IDS_OMNIBOX_PEDAL_MANAGE_SYNC_SUGGESTION_CONTENTS,
+                        IDS_ACC_OMNIBOX_PEDAL_MANAGE_SYNC_SUFFIX,
+                        IDS_ACC_OMNIBOX_PEDAL_MANAGE_SYNC);
+  }
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups(
       bool locale_is_english) const override {
+#if !BUILDFLAG(IS_CHROMEOS)
+    if (base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp)) {
+      if (locale_is_english) {
+        return {
+            {
+                true,
+                true,
+                IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_SYNC_ONE_REQUIRED_SYNC_SETTINGS_UPDATED,
+            },
+            {
+                true,
+                false,
+                IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_SYNC_ANY_REQUIRED_GOOGLE_CHROME,
+            },
+        };
+      } else {
+        return {
+            {
+                true,
+                true,
+                IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_SYNC_UPDATED,
+            },
+        };
+      }
+    }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
     if (locale_is_english) {
       return {
           {
@@ -2005,7 +2032,7 @@ GetPedalImplementations(bool incognito, bool guest, bool testing) {
   add(new OmniboxPedalManagePasswords());
   add(new OmniboxPedalUpdateCreditCard());
   add(new OmniboxPedalLaunchIncognito());
-  if (!base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (!base::android::device_info::is_automotive()) {
     add(new OmniboxPedalRunChromeSafetyCheck());
   }
   add(new OmniboxPedalPlayChromeDinoGame());

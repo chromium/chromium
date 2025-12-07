@@ -9,6 +9,7 @@
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -40,7 +41,7 @@ class PendingPacket {
 
   int Read(char* buffer, size_t size) {
     size = std::min(size, packet->data().size() - pos);
-    memcpy(buffer, packet->data().data() + pos, size);
+    UNSAFE_TODO(memcpy(buffer, packet->data().data() + pos, size));
     pos += size;
     return size;
   }
@@ -205,8 +206,8 @@ int ChannelMultiplexer::MuxChannel::DoRead(
   int pos = 0;
   while (buffer_len > 0 && !pending_packets_.empty()) {
     DCHECK(!pending_packets_.front()->is_empty());
-    int result =
-        pending_packets_.front()->Read(buffer->data() + pos, buffer_len);
+    int result = pending_packets_.front()->Read(
+        UNSAFE_TODO(buffer->data() + pos), buffer_len);
     DCHECK_LE(result, buffer_len);
     pos += result;
     buffer_len -= pos;

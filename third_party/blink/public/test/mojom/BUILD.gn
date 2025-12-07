@@ -1,0 +1,68 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//printing/buildflags/buildflags.gni")
+import("//third_party/blink/public/public_features.gni")
+import("//third_party/blink/renderer/config.gni")
+
+if (is_android) {
+  import("//build/config/android/config.gni")
+}
+
+# These two targets include all mojom interfaces which are used for test
+# automation in content_shell, as a separate ChromeDriver-based code path uses
+# CDP to achieve the same results.
+
+mojom("core_test_automation") {
+  generate_java = false
+  testonly = true
+  sources = [
+    "cookie_manager/cookie_manager_automation.test-mojom",
+    "storage_access/storage_access_automation.test-mojom",
+  ]
+
+  public_deps = [ "//services/network/public/mojom:cookies_mojom" ]
+
+  overridden_deps = [ "//services/network/public/mojom:cookies_mojom" ]
+  component_deps = [ "//third_party/blink/public/common" ]
+
+  overridden_deps_blink = [ "//services/network/public/mojom:cookies_mojom" ]
+  component_deps_blink = [ "//third_party/blink/renderer/platform" ]
+}
+
+mojom("modules_test_automation") {
+  generate_java = false
+  testonly = true
+  sources = [
+    "compute_pressure/web_pressure_manager_automation.test-mojom",
+    "device_posture/device_posture_provider_automation.test-mojom",
+    "permissions/permission_automation.test-mojom",
+    "privacy_sandbox/web_privacy_sandbox_automation.test-mojom",
+    "sensor/web_sensor_provider_automation.test-mojom",
+    "webid/federated_auth_request_automation.test-mojom",
+  ]
+
+  public_deps = [
+    "//services/device/public/mojom",
+    "//services/device/public/mojom:generic_sensor",
+    "//third_party/blink/public/mojom:mojom_platform",
+    "//url/mojom:url_mojom_gurl",
+  ]
+
+  overridden_deps = [
+    "//services/device/public/mojom",
+    "//services/device/public/mojom:generic_sensor",
+    "//third_party/blink/public/mojom:mojom_platform",
+  ]
+  component_deps = [ "//third_party/blink/public/common" ]
+
+  overridden_deps_blink = [
+    "//services/device/public/mojom",
+    "//services/device/public/mojom:generic_sensor",
+    "//third_party/blink/public/mojom:mojom_platform",
+  ]
+  component_deps_blink = [ "//third_party/blink/renderer/platform" ]
+}

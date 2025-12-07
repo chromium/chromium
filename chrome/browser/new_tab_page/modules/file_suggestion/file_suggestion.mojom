@@ -6,26 +6,27 @@ module file_suggestion.mojom;
 
 import "url/mojom/url.mojom";
 
+// Used to record file types shown and clicks.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum RecommendationType {
+  kUsed = 0,
+  kShared = 1,
+  kTrending = 2,
+};
+
 // A Google Drive or Microsoft Sharepoint File.
 struct File {
   // The ID of the File Item.
   string id;
   // Information on why the File Item was returned.
   string justification_text;
-  // The mime type of the File Item.
-  string mime_type;
+  // The URL to the file icon.
+  url.mojom.Url icon_url;
   // The name of the File Item.
   string title;
   // The URL to navigate to the File Item.
   url.mojom.Url item_url;
-};
-
-// Browser-side handler for requests from NTP Module UI.
-interface FileSuggestionHandler {
-  // Fetches document suggestions from ItemSuggest API.
-  GetFiles() => (array<File> files);
-  // Dismissed module for fixed amount of time.
-  DismissModule();
-  // Restores the module immediately.
-  RestoreModule();
+  // The type of recommendation the file is, if known.
+  RecommendationType? recommendation_type;
 };

@@ -24,12 +24,14 @@ downloadProgress has expected guid: true
 {
     method : Browser.downloadProgress
     params : {
+        filePath : <string>
         guid : <string>
         receivedBytes : <number>
         state : completed
         totalBytes : 11
     }
 }
+file path: <some file path>/hello.txt
 Downloading via a navigation of subframe: 
 downloadWillBegin from child frame: {
     method : Browser.downloadWillBegin
@@ -54,12 +56,14 @@ downloadProgress has expected guid: true
 {
     method : Browser.downloadProgress
     params : {
+        filePath : <string>
         guid : <string>
         receivedBytes : <number>
         state : completed
         totalBytes : 11
     }
 }
+file path: <some file path>/hello.txt
 Downloading by clicking a link: 
 downloadWillBegin from top frame: {
     method : Browser.downloadWillBegin
@@ -84,12 +88,14 @@ downloadProgress has expected guid: true
 {
     method : Browser.downloadProgress
     params : {
+        filePath : <string>
         guid : <string>
         receivedBytes : <number>
         state : completed
         totalBytes : 11
     }
 }
+file path: <some file path>/hello.text
 Downloading by clicking a link in subframe: 
 downloadWillBegin from child frame: {
     method : Browser.downloadWillBegin
@@ -114,12 +120,14 @@ downloadProgress has expected guid: true
 {
     method : Browser.downloadProgress
     params : {
+        filePath : <string>
         guid : <string>
         receivedBytes : <number>
         state : completed
         totalBytes : 11
     }
 }
+file path: <some file path>/hello.text
 Downloading by clicking a link (no HTTP Content-Disposition header, a[download=""]): 
 downloadWillBegin from top frame: {
     method : Browser.downloadWillBegin
@@ -207,6 +215,7 @@ downloadProgress has expected guid: true
 {
     method : Browser.downloadProgress
     params : {
+        filePath : <string>
         guid : <string>
         receivedBytes : <number>
         state : completed
@@ -214,6 +223,7 @@ downloadProgress has expected guid: true
     }
     sessionId : <string>
 }
+file path: <some file path>/hello.txt
 Downloading via a navigation of subframe: 
 downloadWillBegin from child frame: {
     method : Browser.downloadWillBegin
@@ -240,6 +250,7 @@ downloadProgress has expected guid: true
 {
     method : Browser.downloadProgress
     params : {
+        filePath : <string>
         guid : <string>
         receivedBytes : <number>
         state : completed
@@ -247,6 +258,7 @@ downloadProgress has expected guid: true
     }
     sessionId : <string>
 }
+file path: <some file path>/hello.txt
 Downloading by clicking a link: 
 downloadWillBegin from top frame: {
     method : Browser.downloadWillBegin
@@ -273,6 +285,7 @@ downloadProgress has expected guid: true
 {
     method : Browser.downloadProgress
     params : {
+        filePath : <string>
         guid : <string>
         receivedBytes : <number>
         state : completed
@@ -280,6 +293,7 @@ downloadProgress has expected guid: true
     }
     sessionId : <string>
 }
+file path: <some file path>/hello.text
 Downloading by clicking a link in subframe: 
 downloadWillBegin from child frame: {
     method : Browser.downloadWillBegin
@@ -306,6 +320,7 @@ downloadProgress has expected guid: true
 {
     method : Browser.downloadProgress
     params : {
+        filePath : <string>
         guid : <string>
         receivedBytes : <number>
         state : completed
@@ -313,6 +328,7 @@ downloadProgress has expected guid: true
     }
     sessionId : <string>
 }
+file path: <some file path>/hello.text
 Downloading by clicking a link (no HTTP Content-Disposition header, a[download=""]): 
 downloadWillBegin from top frame: {
     method : Browser.downloadWillBegin

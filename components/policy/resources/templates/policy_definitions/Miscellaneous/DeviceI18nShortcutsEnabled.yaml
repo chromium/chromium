@@ -23,7 +23,6 @@ items:
   value: false
 owners:
 - jimmyxgong@chromium.org
-- zentaro@chromium.org
 - cros-peripheral@google.com
 schema:
   type: boolean

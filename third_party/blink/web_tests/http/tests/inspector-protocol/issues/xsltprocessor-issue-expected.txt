@@ -1,0 +1,6 @@
+Verifies that XSLT Processing Instruction deprecation issue is created
+Got XSLT deprecation issue: {
+    result : true
+    source : http://127.0.0.1:8000/inspector-protocol/resources/xsltprocessor.html
+}
+

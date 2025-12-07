@@ -11,7 +11,8 @@
 
 // Implement CommandDispatcherDelegate by intercepting browser window keyboard
 // shortcuts and executing them with chrome::ExecuteCommand.
-@interface ChromeCommandDispatcherDelegate : NSObject<CommandDispatcherDelegate>
+@interface ChromeCommandDispatcherDelegate
+    : NSObject <CommandDispatcherDelegate>
 
 @end
 

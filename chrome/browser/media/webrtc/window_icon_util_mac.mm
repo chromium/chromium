@@ -52,9 +52,10 @@ gfx::ImageSkia GetWindowIcon(content::DesktopMediaID id) {
   }
 
   // Ensure BGR like.
-  int byte_order = CGImageGetBitmapInfo(cg_icon_image) & kCGBitmapByteOrderMask;
-  if (byte_order != kCGBitmapByteOrderDefault &&
-      byte_order != kCGBitmapByteOrder32Big) {
+  CGBitmapInfo byte_order =
+      CGImageGetBitmapInfo(cg_icon_image) & kCGBitmapByteOrderInfoMask;
+  if (byte_order != kCGImageByteOrderDefault &&
+      byte_order != kCGImageByteOrder32Big) {
     return gfx::ImageSkia();
   }
 

@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "chrome/browser/ui/certificate_dialogs.h"
 
@@ -35,11 +31,6 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(USE_NSS_CERTS)
-#include "chrome/common/net/x509_certificate_model_nss.h"
-#include "net/cert/x509_util_nss.h"
-#endif
 
 namespace {
 
@@ -159,8 +150,9 @@ Exporter::Exporter(content::WebContents* web_contents,
 Exporter::~Exporter() {
   // There may be pending file dialogs, we need to tell them that we've gone
   // away so they don't try and call back to us.
-  if (select_file_dialog_)
+  if (select_file_dialog_) {
     select_file_dialog_->ListenerDestroyed();
+  }
 }
 
 void Exporter::FileSelected(const ui::SelectedFileInfo& file, int index) {
@@ -174,8 +166,9 @@ void Exporter::FileSelected(const ui::SelectedFileInfo& file, int index) {
 
   switch (index - 1) {
     case kBase64Chain:
-      for (const auto& cert : cert_chain_list_)
+      for (const auto& cert : cert_chain_list_) {
         data += GetBase64String(cert.get());
+      }
       break;
     case kDer:
       data = std::string(
@@ -210,8 +203,9 @@ std::string Exporter::GetCMSString(size_t start, size_t end) const {
   size_t size_hint = 64;
   bssl::UniquePtr<STACK_OF(CRYPTO_BUFFER)> stack(sk_CRYPTO_BUFFER_new_null());
   for (size_t i = start; i < end; ++i) {
-    if (!bssl::PushToStack(stack.get(), bssl::UpRef(cert_chain_list_[i])))
+    if (!bssl::PushToStack(stack.get(), bssl::UpRef(cert_chain_list_[i]))) {
       return std::string();
+    }
     size_hint += CRYPTO_BUFFER_len(cert_chain_list_[i].get());
   }
   bssl::ScopedCBB cbb;
@@ -264,25 +258,6 @@ void ShowCertExportDialog(content::WebContents* web_contents,
   new Exporter(web_contents, parent, std::move(certs), cert_title,
                /*full_export=*/false);
 }
-
-#if BUILDFLAG(USE_NSS_CERTS)
-void ShowCertExportDialog(content::WebContents* web_contents,
-                          gfx::NativeWindow parent,
-                          net::ScopedCERTCertificateList::iterator certs_begin,
-                          net::ScopedCERTCertificateList::iterator certs_end) {
-  DCHECK(certs_begin != certs_end);
-  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> cert_chain;
-  for (auto it = certs_begin; it != certs_end; ++it) {
-    cert_chain.push_back(net::x509_util::CreateCryptoBuffer(
-        base::make_span((*it)->derCert.data, (*it)->derCert.len)));
-  }
-
-  // Exporter is self-deleting.
-  new Exporter(web_contents, parent, std::move(cert_chain),
-               x509_certificate_model::GetTitle(certs_begin->get()),
-               /*full_export=*/false);
-}
-#endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 void ShowCertExportDialogSaveAll(

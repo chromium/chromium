@@ -14,6 +14,10 @@
 class ChromeAccountManagerService;
 @protocol SystemIdentity;
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 // Mediator for AccountPickerSelectionScreenCoordinator.
 @interface AccountPickerSelectionScreenMediator
     : NSObject <AccountPickerSelectionScreenTableViewControllerModelDelegate>
@@ -21,12 +25,13 @@ class ChromeAccountManagerService;
 @property(nonatomic, strong) id<AccountPickerSelectionScreenConsumer> consumer;
 @property(nonatomic, strong) id<SystemIdentity> selectedIdentity;
 
-// See -[SigninPromoViewMediator initWithBrowserState:].
+// See -[SigninPromoViewMediator initWithProfile:].
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithSelectedIdentity:(id<SystemIdentity>)selectedIdentity
-                   accountManagerService:
-                       (ChromeAccountManagerService*)accountManagerService
+- (instancetype)
+    initWithSelectedIdentity:(id<SystemIdentity>)selectedIdentity
+             identityManager:(signin::IdentityManager*)identityManager
+       accountManagerService:(ChromeAccountManagerService*)accountManagerService
     NS_DESIGNATED_INITIALIZER;
 
 // Disconnect the mediator.

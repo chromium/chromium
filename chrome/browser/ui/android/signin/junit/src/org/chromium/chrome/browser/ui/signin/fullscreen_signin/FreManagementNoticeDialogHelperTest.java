@@ -31,10 +31,12 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.google_apis.gaia.GaiaId;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -49,11 +51,12 @@ public class FreManagementNoticeDialogHelperTest {
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
     @Mock private SigninManager mSigninManager;
+    @Mock private SigninFlowTimestampsLogger mTimestampLogger;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private Context mContext;
 
-    private CoreAccountInfo mCoreAccountInfo =
-            CoreAccountInfo.createFromEmailAndGaiaId("email@domain.com", "gaia-id");
+    private final CoreAccountInfo mCoreAccountInfo =
+            CoreAccountInfo.createFromEmailAndGaiaId("email@domain.com", new GaiaId("gaia-id"));
     private SignInCallback mCallback;
     private boolean mSignInCompleted;
     private boolean mSignInAborted;
@@ -114,6 +117,7 @@ public class FreManagementNoticeDialogHelperTest {
         FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
                 mCoreAccountInfo,
                 mSigninManager,
+                mTimestampLogger,
                 accessPoint,
                 mCallback,
                 mContext,
@@ -152,6 +156,7 @@ public class FreManagementNoticeDialogHelperTest {
         FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
                 mCoreAccountInfo,
                 mSigninManager,
+                mTimestampLogger,
                 accessPoint,
                 mCallback,
                 mContext,
@@ -181,6 +186,7 @@ public class FreManagementNoticeDialogHelperTest {
         FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
                 mCoreAccountInfo,
                 mSigninManager,
+                mTimestampLogger,
                 accessPoint,
                 mCallback,
                 mContext,
@@ -199,6 +205,7 @@ public class FreManagementNoticeDialogHelperTest {
         FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
                 mCoreAccountInfo,
                 mSigninManager,
+                mTimestampLogger,
                 accessPoint,
                 mCallback,
                 mContext,

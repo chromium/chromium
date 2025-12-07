@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "net/spdy/spdy_write_queue.h"
 
@@ -75,9 +71,9 @@ void SpdyWriteQueue::Enqueue(
   CHECK_LE(priority, MAXIMUM_PRIORITY);
   if (stream.get())
     DCHECK_EQ(stream->priority(), priority);
-  queue_[priority].push_back(
-      {frame_type, std::move(frame_producer), stream,
-       MutableNetworkTrafficAnnotationTag(traffic_annotation)});
+  queue_[priority].emplace_back(
+      frame_type, std::move(frame_producer), stream,
+      MutableNetworkTrafficAnnotationTag(traffic_annotation));
   if (IsSpdyFrameTypeWriteCapped(frame_type)) {
     DCHECK_GE(num_queued_capped_frames_, 0);
     num_queued_capped_frames_++;

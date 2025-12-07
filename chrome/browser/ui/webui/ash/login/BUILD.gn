@@ -2,15 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 # NOTE: This file is read by tools/oobe/generate_screen_template.py, which
 # is used to generate some of the "sources" entries.
 
 static_library("login") {
   sources = [
+    "account_selection_screen_handler.cc",
+    "account_selection_screen_handler.h",
     "add_child_screen_handler.cc",
     "add_child_screen_handler.h",
     "ai_intro_screen_handler.cc",
@@ -21,8 +21,6 @@ static_library("login") {
     "app_launch_splash_screen_handler.h",
     "arc_vm_data_migration_screen_handler.cc",
     "arc_vm_data_migration_screen_handler.h",
-    "assistant_optin_flow_screen_handler.cc",
-    "assistant_optin_flow_screen_handler.h",
     "auto_enrollment_check_screen_handler.cc",
     "auto_enrollment_check_screen_handler.h",
     "base_screen_handler.cc",
@@ -73,6 +71,12 @@ static_library("login") {
     "family_link_notice_screen_handler.h",
     "fingerprint_setup_screen_handler.cc",
     "fingerprint_setup_screen_handler.h",
+    "fjord_oobe_util.cc",
+    "fjord_oobe_util.h",
+    "fjord_station_setup_screen_handler.cc",
+    "fjord_station_setup_screen_handler.h",
+    "fjord_touch_controller_screen_handler.cc",
+    "fjord_touch_controller_screen_handler.h",
     "gaia_info_screen_handler.cc",
     "gaia_info_screen_handler.h",
     "gaia_screen_handler.cc",
@@ -91,10 +95,6 @@ static_library("login") {
     "install_attributes_error_screen_handler.h",
     "l10n_util.cc",
     "l10n_util.h",
-    "lacros_data_backward_migration_screen_handler.cc",
-    "lacros_data_backward_migration_screen_handler.h",
-    "lacros_data_migration_screen_handler.cc",
-    "lacros_data_migration_screen_handler.h",
     "local_password_setup_handler.cc",
     "local_password_setup_handler.h",
     "local_state_error_screen_handler.cc",
@@ -160,6 +160,8 @@ static_library("login") {
     "signin_fatal_error_screen_handler.h",
     "smart_privacy_protection_screen_handler.cc",
     "smart_privacy_protection_screen_handler.h",
+    "split_modifier_keyboard_info_screen_handler.cc",
+    "split_modifier_keyboard_info_screen_handler.h",
     "ssh_configured_handler.cc",
     "ssh_configured_handler.h",
     "sync_consent_screen_handler.cc",
@@ -187,9 +189,10 @@ static_library("login") {
   ]
 
   public_deps = [
-    "//ash/components/arc/session:arc_base_enums",
     "//ash/public/cpp",
     "//ash/webui/common:chrome_os_webui_config",
+    "//ash/webui/common/backend",
+    "//ash/webui/common/mojom:webui_syslog_emitter",
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/accessibility",
@@ -197,13 +200,16 @@ static_library("login") {
     "//chrome/browser/ash/base",
     "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/policy/enrollment",
+    "//chrome/browser/ash/tpm",
     "//chrome/browser/ui/webui/ash/login/mojom",
     "//chrome/common",
     "//chromeos/ash/components/dbus/os_install",
+    "//chromeos/ash/components/http_auth_dialog",
     "//chromeos/ash/components/login/auth",
     "//chromeos/ash/components/login/auth/public:authpublic",
     "//chromeos/ash/components/login/auth/public:challenge_response_key",
     "//chromeos/ash/components/network",
+    "//chromeos/ash/experiences/arc/session:arc_base_enums",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/ash/services/auth_factor_config/public/mojom",
     "//chromeos/ash/services/cellular_setup/public/mojom",
@@ -234,7 +240,6 @@ static_library("login") {
 
   deps = [
     "//ash",
-    "//ash/components/arc",
     "//ash/constants",
     "//ash/public/cpp/resources:ash_public_unscaled_resources",
     "//ash/webui/common:trusted_types_util",
@@ -246,22 +251,42 @@ static_library("login") {
     "//chrome/app/theme:chrome_unscaled_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser:resources",
-    "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/app_mode",
+    "//chrome/browser/ash/arc/optin",
+    "//chrome/browser/ash/certificate_provider",
+    "//chrome/browser/ash/customization",
     "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login/app_mode",
+    "//chrome/browser/ash/login/enrollment",
     "//chrome/browser/ash/login/quick_unlock",
     "//chrome/browser/ash/login/saml",
+    "//chrome/browser/ash/login/screens",
+    "//chrome/browser/ash/login/screens/osauth",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/login/signin",
+    "//chrome/browser/ash/login/users",
+    "//chrome/browser/ash/multidevice_setup",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/profiles:signin_profile_handler",
     "//chrome/browser/ash/system",
+    "//chrome/browser/extensions",
+    "//chrome/browser/policy:onc",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources:component_extension_resources",
-    "//chrome/browser/resources/chromeos/assistant_optin:resources",
     "//chrome/browser/resources/chromeos/login:resources",
     "//chrome/browser/resources/gaia_auth_host:resources",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/browser/ui/webui/about",
     "//chrome/browser/ui/webui/ash/cellular_setup",
+    "//chrome/browser/ui/webui/ash/internet",
     "//chrome/browser/ui/webui/ash/login/debug",
     "//chrome/browser/ui/webui/ash/login/osauth",
     "//chrome/browser/ui/webui/ash/login/testapi",
+    "//chrome/browser/ui/webui/signin",
+    "//chrome/browser/ui/webui/signin:signin_utils",
     "//chrome/common:channel_info",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
@@ -275,7 +300,7 @@ static_library("login") {
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/settings",
-    "//chromeos/ash/services/assistant/public/proto",
+    "//chromeos/ash/experiences/arc",
     "//chromeos/ash/services/auth_factor_config",
     "//chromeos/ash/services/multidevice_setup",
     "//chromeos/components/onc",
@@ -285,7 +310,7 @@ static_library("login") {
     "//chromeos/strings",
     "//chromeos/version",
     "//components/content_settings/core/common",
-    "//components/enterprise/connectors",
+    "//components/enterprise/device_trust",
     "//components/onc",
     "//components/policy/core/browser",
     "//components/policy/core/common:common_constants",
@@ -311,12 +336,22 @@ static_library("login") {
     "//ui/chromeos/strings:strings_provider",
     "//ui/display",
     "//ui/display/manager",
-    "//ui/resources:webui_resources_grd",
     "//ui/strings:ui_strings",
+    "//ui/webui/resources:resources_grit",
   ]
 
   allow_circular_includes_from = [
+    "//chrome/browser/ash/arc/optin",
+    "//chrome/browser/ash/customization",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login/app_mode",
+    "//chrome/browser/ash/login/enrollment",
+    "//chrome/browser/ash/login/screens",
+    "//chrome/browser/ash/login/screens/osauth",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/ash/system",
+    "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/login/debug",
     "//chrome/browser/ui/webui/ash/login/osauth",
     "//chrome/browser/ui/webui/ash/login/testapi",
@@ -327,8 +362,6 @@ static_library("test_support") {
   testonly = true
 
   sources = [
-    "fake_app_launch_splash_screen_handler.cc",
-    "fake_app_launch_splash_screen_handler.h",
     "fake_update_required_screen_handler.cc",
     "fake_update_required_screen_handler.h",
   ]
@@ -346,7 +379,10 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [ "oobe_display_chooser_browsertest.cc" ]
+  sources = [
+    "network_state_informer_browsertest.cc",
+    "oobe_display_chooser_browsertest.cc",
+  ]
 
   deps = [
     ":login",
@@ -354,7 +390,11 @@ source_set("browser_tests") {
     "//ash/constants",
     "//base",
     "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_mode/test:test_support",
     "//chrome/browser/ash/login/test:test_support",
+    "//chromeos/ash/components/network:test_support",
+    "//components/proxy_config",
     "//content/test:test_support",
     "//ui/display",
     "//ui/display:display_manager_test_api",
@@ -378,7 +418,6 @@ source_set("unit_tests") {
     "//ash",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/customization",
     "//chrome/browser/ash/input_method",
     "//chrome/browser/ash/login/screens",

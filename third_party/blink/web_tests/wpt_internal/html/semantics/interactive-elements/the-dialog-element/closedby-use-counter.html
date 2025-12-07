@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<!-- Check that the counter isn't already triggered by something internal, and
+that the presence of the attribute in markup is enough to trigger it. -->
+
+<body>
+  <script>
+    setup({ single_test: true });
+    // The enum value is inlined here instead of importing it from
+    // webdx_feature.mojom.m.js, since that would require a module script which
+    // does not run synchronously when parsed, and the first assert must run
+    // before the closedby attribute is parsed.
+    const kDialogClosedby = 350;
+    assert_false(internals.isWebDXFeatureUseCounted(document, kDialogClosedby));
+  </script>
+  <dialog closedby="any"></dialog>
+  <script>
+    assert_true(internals.isWebDXFeatureUseCounted(document, kDialogClosedby));
+    done();
+  </script>
+</body>

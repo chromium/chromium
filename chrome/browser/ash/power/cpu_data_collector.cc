@@ -9,6 +9,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -434,8 +435,7 @@ bool CpuDataCollector::ReadCpuFreqAllTimeInState(
 // correct number of CPUs.
 CpuDataCollector::CpuDataCollector() : cpu_count_(-1) {}
 
-CpuDataCollector::~CpuDataCollector() {
-}
+CpuDataCollector::~CpuDataCollector() = default;
 
 void CpuDataCollector::Start() {
   timer_.Start(FROM_HERE, base::Seconds(kCpuDataSamplePeriodSec), this,
@@ -518,7 +518,6 @@ CpuDataCollector::StateOccupancySample::StateOccupancySample()
 CpuDataCollector::StateOccupancySample::StateOccupancySample(
     const StateOccupancySample& other) = default;
 
-CpuDataCollector::StateOccupancySample::~StateOccupancySample() {
-}
+CpuDataCollector::StateOccupancySample::~StateOccupancySample() = default;
 
 }  // namespace ash

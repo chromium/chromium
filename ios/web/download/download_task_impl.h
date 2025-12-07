@@ -10,7 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #import "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -40,6 +40,7 @@ class DownloadTaskImpl : public DownloadTask {
   // must be valid.
   DownloadTaskImpl(WebState* web_state,
                    const GURL& original_url,
+                   NSString* originating_host,
                    NSString* http_method,
                    const std::string& content_disposition,
                    int64_t total_bytes,
@@ -56,6 +57,8 @@ class DownloadTaskImpl : public DownloadTask {
   void Cancel() final;
   NSString* GetIdentifier() const final;
   const GURL& GetOriginalUrl() const final;
+  const GURL& GetRedirectedUrl() const final;
+  NSString* GetOriginatingHost() const final;
   NSString* GetHttpMethod() const final;
   bool IsDone() const final;
   int GetErrorCode() const final;
@@ -101,6 +104,9 @@ class DownloadTaskImpl : public DownloadTask {
   // Called when download task was updated.
   void OnDownloadUpdated();
 
+  // Called when download task was updated.
+  void OnRedirected(const GURL& redirected_url);
+
   // Used to check that the methods are called on the correct sequence.
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -110,6 +116,8 @@ class DownloadTaskImpl : public DownloadTask {
   // Back up corresponding public methods of DownloadTask interface.
   State state_ = State::kNotStarted;
   GURL original_url_;
+  GURL redirected_url_;
+  NSString* originating_host_;
   NSString* http_method_ = nil;
   int http_code_ = -1;
   int64_t total_bytes_ = -1;
@@ -121,7 +129,7 @@ class DownloadTaskImpl : public DownloadTask {
   NSString* identifier_ = nil;
   bool has_performed_background_download_ = false;
   DownloadResult download_result_;
-  raw_ptr<WebState> web_state_ = nullptr;
+  raw_ptr<WebState, DanglingUntriaged> web_state_ = nullptr;
 
   base::FilePath path_;
   bool owns_file_ = false;

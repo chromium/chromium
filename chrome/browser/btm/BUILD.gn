@@ -1,0 +1,73 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("btm") {
+  sources = [
+    "btm_browser_signin_detector.h",
+    "btm_browser_signin_detector_factory.h",
+    "stateful_bounce_counter.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
+    "//components/signin/public/identity_manager",
+    "//content/public/browser",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "btm_browser_signin_detector.cc",
+    "btm_browser_signin_detector_factory.cc",
+    "stateful_bounce_counter.cc",
+  ]
+  deps = [
+    ":btm",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//components/content_settings/browser",
+    "//content/public/common",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "btm_browser_signin_detector_unittest.cc",
+    "btm_service_unittest.cc",
+  ]
+
+  deps = [
+    ":btm",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/test:test_support",
+    "//components/privacy_sandbox:tracking_protection_prefs",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "btm_devtools_browsertest.cc" ]
+    deps = [
+      "//base",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+}

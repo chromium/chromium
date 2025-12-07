@@ -8,16 +8,17 @@
 
 #include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
-#include "base/files/file_util.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -114,7 +115,7 @@ OnDeviceHeadProvider::OnDeviceHeadProvider(
   AddListener(listener);
 }
 
-OnDeviceHeadProvider::~OnDeviceHeadProvider() {}
+OnDeviceHeadProvider::~OnDeviceHeadProvider() = default;
 
 bool OnDeviceHeadProvider::IsOnDeviceHeadProviderAllowed(
     const AutocompleteInput& input) {
@@ -152,7 +153,8 @@ void OnDeviceHeadProvider::Start(const AutocompleteInput& input,
   TRACE_EVENT0("omnibox", "OnDeviceHeadProvider::Start");
 
   // Cancel any in-progress request.
-  Stop(!minimal_changes, false);
+  Stop(minimal_changes ? AutocompleteStopReason::kInteraction
+                       : AutocompleteStopReason::kClobbered);
 
   if (!IsOnDeviceHeadProviderAllowed(input)) {
     matches_.clear();
@@ -180,10 +182,8 @@ void OnDeviceHeadProvider::Start(const AutocompleteInput& input,
                      weak_ptr_factory_.GetWeakPtr(), std::move(params)));
 }
 
-void OnDeviceHeadProvider::Stop(bool clear_cached_results,
-                                bool due_to_user_inactivity) {
-  AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
-
+void OnDeviceHeadProvider::Stop(AutocompleteStopReason stop_reason) {
+  AutocompleteProvider::Stop(stop_reason);
   // Increase the request_id so that any in-progress requests will become
   // obsolete.
   on_device_search_request_id_ =
@@ -246,13 +246,8 @@ void OnDeviceHeadProvider::HeadModelSearchDone(
     std::unique_ptr<OnDeviceHeadProviderParams> params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  if (!OmniboxFieldTrial::IsOnDeviceTailSuggestEnabled() ||
+  if (!ShouldFetchTailSuggestions(*params, client()->GetApplicationLocale()) ||
       client()->GetOnDeviceTailModelService() == nullptr) {
-    AllSearchDone(std::move(params));
-    return;
-  }
-
-  if (!ShouldFetchTailSuggestions(*params)) {
     AllSearchDone(std::move(params));
     return;
   }
@@ -260,7 +255,7 @@ void OnDeviceHeadProvider::HeadModelSearchDone(
   // Extract search query from current URL.
   std::string previous_query, query_str;
   const GURL& current_url = params->input.current_url();
-  if (current_url.path() == "/search" &&
+  if (current_url.GetPath() == "/search" &&
       net::GetValueForKeyInQuery(current_url, "q", &query_str)) {
     previous_query = query_str;
   }
@@ -362,7 +357,12 @@ std::string OnDeviceHeadProvider::GetOnDeviceHeadModelFilename() const {
 
 // static
 bool OnDeviceHeadProvider::ShouldFetchTailSuggestions(
-    const OnDeviceHeadProviderParams& params) {
+    const OnDeviceHeadProviderParams& params,
+    const std::string& locale) {
+  if (!OmniboxFieldTrial::IsOnDeviceTailSuggestEnabled(locale)) {
+    return false;
+  }
+
   if (!base::GetFieldTrialParamByFeatureAsBool(
           omnibox::kOnDeviceTailModel, "EnableForSingleWordPrefix", false)) {
     std::string sanitized_input = SanitizeInput(params.input.text());

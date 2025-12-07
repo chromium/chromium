@@ -45,14 +45,11 @@ EnumTraits<content_settings::mojom::ContentSetting, ContentSetting>::ToMojom(
       return content_settings::mojom::ContentSetting::ASK;
     case CONTENT_SETTING_SESSION_ONLY:
       return content_settings::mojom::ContentSetting::SESSION_ONLY;
-    case CONTENT_SETTING_DETECT_IMPORTANT_CONTENT:
-      return content_settings::mojom::ContentSetting::DETECT_IMPORTANT_CONTENT;
     case CONTENT_SETTING_NUM_SETTINGS:
       // CONTENT_SETTING_NUM_SETTINGS is a dummy enum value.
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return content_settings::mojom::ContentSetting::DEFAULT;
+  NOTREACHED();
 }
 
 // static
@@ -75,9 +72,6 @@ bool EnumTraits<content_settings::mojom::ContentSetting, ContentSetting>::
     case content_settings::mojom::ContentSetting::SESSION_ONLY:
       *out = CONTENT_SETTING_SESSION_ONLY;
       return true;
-    case content_settings::mojom::ContentSetting::DETECT_IMPORTANT_CONTENT:
-      *out = CONTENT_SETTING_DETECT_IMPORTANT_CONTENT;
-      return true;
   }
   return false;
 }
@@ -97,13 +91,16 @@ bool StructTraits<content_settings::mojom::RuleMetaDataDataView,
     return false;
   }
   out->SetExpirationAndLifetime(expiration, lifetime);
+  out->set_decided_by_related_website_sets(
+      data.decided_by_related_website_sets());
 
   return data.ReadLastModified(&out->last_modified_) &&
          data.ReadLastUsed(&out->last_used_) &&
          data.ReadLastVisited(&out->last_visited_) &&
          data.ReadSessionModel(&out->session_model_) &&
          data.ReadTpcdMetadataRuleSource(&out->tpcd_metadata_rule_source_) &&
-         data.ReadTpcdMetadataCohort(&out->tpcd_metadata_cohort_);
+         data.ReadTpcdMetadataCohort(&out->tpcd_metadata_cohort_) &&
+         data.ReadRuleOptions(&out->rule_options_);
 }
 
 // static

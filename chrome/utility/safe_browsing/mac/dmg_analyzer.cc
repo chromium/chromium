@@ -10,9 +10,11 @@
 #include <memory>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
@@ -22,8 +24,7 @@
 #include "chrome/utility/safe_browsing/mac/read_stream.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
-#include "crypto/secure_hash.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 
 namespace safe_browsing {
 namespace dmg {
@@ -55,7 +56,7 @@ class MachOFeatureExtractor {
  private:
   // Reads the entire stream and updates the hash.
   bool HashAndCopyStream(ReadStream* stream,
-                         uint8_t digest[crypto::kSHA256Length]);
+                         base::span<uint8_t, crypto::hash::kSha256Size> digest);
 
   scoped_refptr<BinaryFeatureExtractor> bfe_;
   std::vector<uint8_t> buffer_;  // Buffer that contains read stream data.
@@ -67,7 +68,7 @@ MachOFeatureExtractor::MachOFeatureExtractor()
   buffer_.reserve(1024 * 1024);
 }
 
-MachOFeatureExtractor::~MachOFeatureExtractor() {}
+MachOFeatureExtractor::~MachOFeatureExtractor() = default;
 
 bool MachOFeatureExtractor::IsMachO(ReadStream* stream) {
   uint32_t magic = 0;
@@ -78,31 +79,31 @@ bool MachOFeatureExtractor::IsMachO(ReadStream* stream) {
 bool MachOFeatureExtractor::ExtractFeatures(
     ReadStream* stream,
     ClientDownloadRequest_ArchivedBinary* result) {
-  uint8_t digest[crypto::kSHA256Length];
-  if (!HashAndCopyStream(stream, digest))
+  std::array<uint8_t, crypto::hash::kSha256Size> hash;
+  if (!HashAndCopyStream(stream, hash)) {
     return false;
+  }
 
   if (!bfe_->ExtractImageFeaturesFromData(
-          buffer_.data(), buffer_.size(), 0, result->mutable_image_headers(),
+          buffer_, 0, result->mutable_image_headers(),
           result->mutable_signature()->mutable_signed_data())) {
     return false;
   }
 
   result->set_length(buffer_.size());
-  result->mutable_digests()->set_sha256(digest, sizeof(digest));
+  result->mutable_digests()->set_sha256(base::as_string_view(hash));
 
   return true;
 }
 
 bool MachOFeatureExtractor::HashAndCopyStream(
     ReadStream* stream,
-    uint8_t digest[crypto::kSHA256Length]) {
+    base::span<uint8_t, crypto::hash::kSha256Size> hash) {
   if (stream->Seek(0, SEEK_SET) != 0)
     return false;
 
   buffer_.clear();
-  std::unique_ptr<crypto::SecureHash> sha256(
-      crypto::SecureHash::Create(crypto::SecureHash::SHA256));
+  crypto::hash::Hasher hasher(crypto::hash::HashKind::kSha256);
 
   size_t bytes_read;
   const size_t kBufferSize = 2048;
@@ -118,12 +119,11 @@ bool MachOFeatureExtractor::HashAndCopyStream(
     buffer_.resize(buffer_offset + bytes_read);
     read_buf = read_buf.first(bytes_read);
     if (bytes_read) {
-      sha256->Update(read_buf.data(), read_buf.size());
+      hasher.Update(read_buf);
     }
   } while (bytes_read > 0);
 
-  sha256->Finish(digest, crypto::kSHA256Length);
-
+  hasher.Finish(hash);
   return true;
 }
 
@@ -174,8 +174,8 @@ bool DMGAnalyzer::ResumeExtraction() {
         continue;
       }
 
-      if (memcmp(kDERPKCS7SignedData, signature_contents.data(),
-                 std::size(kDERPKCS7SignedData)) != 0) {
+      if (base::span(signature_contents)
+              .first(std::size(kDERPKCS7SignedData)) != kDERPKCS7SignedData) {
         continue;
       }
 
@@ -197,7 +197,7 @@ bool DMGAnalyzer::ResumeExtraction() {
       } else {
         results()->archived_binary.RemoveLast();
       }
-    } else if (base::FeatureList::IsEnabled(kNestedArchives)) {
+    } else {
       DownloadFileType_InspectionType file_type =
           GetFileType(base::FilePath(path));
       if (file_type == DownloadFileType::ZIP ||

@@ -8,8 +8,8 @@
 #include "media/cast/logging/stats_event_subscriber.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/openscreen/src/cast/streaming/sender_session.h"
-#include "third_party/openscreen/src/cast/streaming/statistics.h"
+#include "third_party/openscreen/src/cast/streaming/public/sender_session.h"
+#include "third_party/openscreen/src/cast/streaming/public/statistics.h"
 
 namespace mirroring {
 

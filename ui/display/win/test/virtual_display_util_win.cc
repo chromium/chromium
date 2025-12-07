@@ -5,20 +5,34 @@
 #include "ui/display/win/test/virtual_display_util_win.h"
 
 #include <algorithm>
+#include <functional>
 #include <iterator>
+#include <limits>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_tree.h"
 #include "base/logging.h"
+#include "base/strings/string_util.h"
 #include "third_party/win_virtual_display/driver/public/properties.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/display/test/virtual_display_util.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/win/display_config_helper.h"
 #include "ui/display/win/screen_win.h"
 
 namespace display::test {
-
 namespace {
+
+// Map of `VirtualDisplayUtil` configs to `MonitorConfig` defined in Windows
+// driver controller code.
+static const auto kConfigMap = base::MakeFixedFlatMap<
+    display::test::DisplayParams,
+    std::reference_wrapper<const display::test::MonitorConfig>>(
+    {{display::test::VirtualDisplayUtil::k1024x768,
+      display::test::MonitorConfig::k1024x768},
+     {display::test::VirtualDisplayUtil::k1920x1080,
+      display::test::MonitorConfig::k1920x1080}});
 
 // Comparer for gfx:Size for use in sorting algorithms.
 struct SizeCompare {
@@ -70,11 +84,6 @@ std::string JoinDisplayStrings(const std::vector<display::Display>& displays) {
 }
 
 }  // namespace
-
-struct DisplayParams {
-  explicit DisplayParams(MonitorConfig config) : monitor_config(config) {}
-  MonitorConfig monitor_config;
-};
 
 VirtualDisplayUtilWin::VirtualDisplayUtilWin(Screen* screen)
     : screen_(screen), is_headless_(IsHeadless()) {
@@ -136,15 +145,16 @@ bool VirtualDisplayUtilWin::IsAPIAvailable() {
   return DisplayDriverController::IsDriverInstalled();
 }
 
-int64_t VirtualDisplayUtilWin::AddDisplay(uint8_t id,
-                                          const DisplayParams& display_params) {
+int64_t VirtualDisplayUtilWin::AddDisplay(const DisplayParams& display_params) {
+  uint8_t id = SynthesizeInternalDisplayId();
   if (virtual_displays_.find(id) != virtual_displays_.end()) {
     LOG(ERROR) << "Duplicate virtual display ID added: " << id;
     return kInvalidDisplayId;
   }
-  std::vector<MonitorConfig> monitors;
-  monitors = current_config_.requested_configs();
-  MonitorConfig new_config = display_params.monitor_config;
+  std::vector<MonitorConfig> monitors = current_config_.requested_configs();
+  auto it = kConfigMap.find(display_params);
+  CHECK(it != kConfigMap.end()) << "DisplayParams not mapped to MonitorConfig.";
+  MonitorConfig new_config = it->second;
   new_config.set_product_code(id);
   monitors.push_back(new_config);
   if (!SetDriverProperties(DriverProperties(monitors))) {
@@ -190,7 +200,7 @@ void VirtualDisplayUtilWin::ResetDisplays() {
     // virtualized adapter. Therefore, we replace the default stub display with
     // our own virtual one. See:
     // https://learn.microsoft.com/en-us/windows-hardware/drivers/display/support-for-headless-systems
-    std::vector<MonitorConfig> configs{k1024x768.monitor_config};
+    std::vector<MonitorConfig> configs{MonitorConfig::k1024x768};
     configs[0].set_product_code(kHeadlessDisplayId);
     new_config = DriverProperties(configs);
   }
@@ -205,7 +215,8 @@ void VirtualDisplayUtilWin::OnDisplayAdded(
     const display::Display& new_display) {
   std::vector<MonitorConfig> requested = current_config_.requested_configs();
   HMONITOR monitor = ::MonitorFromPoint(
-      win::ScreenWin::DIPToScreenPoint(new_display.work_area().CenterPoint())
+      win::GetScreenWin()
+          ->DIPToScreenPoint(new_display.work_area().CenterPoint())
           .ToPOINT(),
       MONITOR_DEFAULTTONEAREST);
   std::optional<DISPLAYCONFIG_PATH_INFO> path_info =
@@ -253,6 +264,10 @@ void VirtualDisplayUtilWin::StartWaiting() {
   CHECK(!run_loop_);
   run_loop_ = std::make_unique<base::RunLoop>();
   if (virtual_displays_.size() != current_config_.requested_configs().size()) {
+    // While waiting for displays, also periodically ensure they are in extended
+    // mode, so they they will become detected as new displays.
+    ensure_extended_timer_.Start(FROM_HERE, base::Seconds(1), this,
+                                 &VirtualDisplayUtilWin::EnsureExtendMode);
     run_loop_->Run();
   }
   run_loop_.reset();
@@ -260,19 +275,48 @@ void VirtualDisplayUtilWin::StartWaiting() {
 
 void VirtualDisplayUtilWin::StopWaiting() {
   CHECK(run_loop_);
+  ensure_extended_timer_.Stop();
   run_loop_->Quit();
 }
 
-const DisplayParams VirtualDisplayUtilWin::k1920x1080 =
-    DisplayParams(MonitorConfig::k1920x1080);
-const DisplayParams VirtualDisplayUtilWin::k1024x768 =
-    DisplayParams(MonitorConfig::k1024x768);
+void VirtualDisplayUtilWin::EnsureExtendMode() {
+  if (current_config_.requested_configs().size() < 1) {
+    // Don't set the topology if no displays were requested.
+    return;
+  }
+  UINT32 path_array_size, mode_array_size = 0;
+  GetDisplayConfigBufferSizes(QDC_ALL_PATHS, &path_array_size,
+                              &mode_array_size);
+  std::vector<DISPLAYCONFIG_PATH_INFO> paths(path_array_size);
+  std::vector<DISPLAYCONFIG_MODE_INFO> modes(mode_array_size);
+  DISPLAYCONFIG_TOPOLOGY_ID topology;
+  LONG ret =
+      QueryDisplayConfig(QDC_DATABASE_CURRENT, &path_array_size, paths.data(),
+                         &mode_array_size, modes.data(), &topology);
+  if (ret != ERROR_SUCCESS) {
+    LOG(ERROR) << "QueryDisplayConfig failed: " << ret;
+    return;
+  }
+  if (topology == DISPLAYCONFIG_TOPOLOGY_EXTEND) {
+    ensure_extended_timer_.Stop();
+    return;
+  }
+  ret =
+      SetDisplayConfig(0, nullptr, 0, nullptr, SDC_TOPOLOGY_EXTEND | SDC_APPLY);
+  if (ret == ERROR_SUCCESS) {
+    ensure_extended_timer_.Stop();
+    return;
+  }
+  LOG(ERROR) << "SetDisplayConfig failed: " << ret;
+}
 
-// VirtualDisplayUtil definitions:
-const DisplayParams VirtualDisplayUtil::k1920x1080 =
-    VirtualDisplayUtilWin::k1920x1080;
-const DisplayParams VirtualDisplayUtil::k1024x768 =
-    VirtualDisplayUtilWin::k1024x768;
+// static
+uint8_t VirtualDisplayUtilWin::SynthesizeInternalDisplayId() {
+  static uint8_t synthesized_display_id = 0;
+  CHECK_LT(synthesized_display_id, std::numeric_limits<uint8_t>::max())
+      << "All synthesized display IDs in use.";
+  return synthesized_display_id++;
+}
 
 // static
 std::unique_ptr<VirtualDisplayUtil> VirtualDisplayUtil::TryCreate(

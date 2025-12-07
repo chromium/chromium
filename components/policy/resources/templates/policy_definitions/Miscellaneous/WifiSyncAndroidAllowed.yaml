@@ -9,6 +9,7 @@ desc: |-
         This feature depends on the <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME">wifiConfigurations</ph> datatype in <ph name="CHROME_SYNC_NAME">Chrome Sync</ph> being enabled. If <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME">wifiConfigurations</ph> is disabled in the <ph name="SYNC_TYPES_LIST_DISABLED_POLICY_NAME">SyncTypesListDisabled</ph> policy, or <ph name="CHROME_SYNC_NAME">Chrome Sync</ph> is disabled in the <ph name="SYNC_DISABLED_POLICY_NAME">SyncDisabled</ph> policy this feature will not be enabled.
 
         If this policy is left not set, the default is not allowed for managed users.
+default: false
 example_value: true
 features:
   dynamic_refresh: true

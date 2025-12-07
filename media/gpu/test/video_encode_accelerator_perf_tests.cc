@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <algorithm>
 #include <iomanip>
 #include <iostream>
@@ -10,13 +15,16 @@
 #include <optional>
 #include <vector>
 
+#include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/allow_check_is_test_for_testing.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
@@ -49,6 +57,7 @@ constexpr const char* usage_msg =
            [--bitrate_mode=(cbr|vbr)] [--reverse] [--bitrate=<bitrate>]
            [-v=<level>] [--vmodule=<config>] [--output_folder]
            [--output_bitstream]
+           [--enable-features=<features>] [--disable-features=<features>]
            [--gtest_help] [--help]
            [<video path>] [<video metadata path>]
 )";
@@ -95,6 +104,12 @@ The following arguments are supported:
   --output_bitstream    save the output bitstream in either H264 AnnexB
                         format (for H264) or IVF format (for vp8 and
                         vp9) to <output_folder>/<testname>.
+  --enable-features     Comma-separated feature names to be enabled. These
+                        features will be enabled for the entire test run.
+                        Applies to Windows only.
+  --disable-features    Comma-separated feature names to be disabled. These
+                        features will be disabled for the entire test run.
+                        Applies to Windows only.
 
   --gtest_help          display the gtest help and exit.
   --help                display this help and exit.
@@ -599,10 +614,10 @@ void BitstreamQualityMetrics::WriteToFile(
   constexpr const base::FilePath::CharType* kMetrixFileSuffix =
       FILE_PATH_LITERAL(".json");
   const std::string svc_text_ext = svc_text.empty() ? "" : "." + svc_text;
-  base::FilePath metrics_file_path = output_folder_path.Append(
-      g_env->GetTestOutputFilePath()
-          .Append(base::FilePath::FromASCII(svc_text_ext))
-          .AddExtension(kMetrixFileSuffix));
+  base::FilePath metrics_file_path =
+      output_folder_path.Append(g_env->GetTestOutputFilePath()
+                                    .AddExtensionASCII(svc_text_ext)
+                                    .AddExtension(kMetrixFileSuffix));
   // Make sure that the directory into which json is saved is created.
   LOG_ASSERT(base::CreateDirectory(metrics_file_path.DirName()));
   base::File metrics_output_file(
@@ -801,7 +816,8 @@ class VideoEncoderTest : public ::testing::Test {
         }
       }
     }
-    LOG_ASSERT(!base::Contains(bitstream_processors, nullptr));
+    LOG_ASSERT(!base::Contains(bitstream_processors, nullptr,
+                               &std::unique_ptr<BitstreamProcessor>::get));
     return bitstream_processors;
   }
 
@@ -993,7 +1009,11 @@ int main(int argc, char** argv) {
   bool output_bitstream = false;
   std::optional<uint32_t> encode_bitrate;
   std::vector<base::test::FeatureRef> disabled_features;
+  std::vector<base::test::FeatureRef> enabled_features;
+
   std::string svc_mode = "L1T1";
+  std::string enable_feature_str = "";
+  std::string disable_feature_str = "";
 
   // Parse command line arguments.
   base::FilePath::StringType output_folder = media::test::kDefaultOutputFolder;
@@ -1055,6 +1075,12 @@ int main(int argc, char** argv) {
     } else if (it->first == "quality") {
       test_type = media::test::VideoEncoderTestEnvironment::TestType::
           kQualityPerformance;
+    } else if (it->first == switches::kEnableFeatures) {
+      enable_feature_str =
+          cmd_line->GetSwitchValueASCII(switches::kEnableFeatures);
+    } else if (it->first == switches::kDisableFeatures) {
+      disable_feature_str =
+          cmd_line->GetSwitchValueASCII(switches::kDisableFeatures);
     } else {
       std::cout << "unknown option: --" << it->first << "\n"
                 << media::test::usage_msg;
@@ -1062,6 +1088,15 @@ int main(int argc, char** argv) {
     }
   }
 
+#if BUILDFLAG(IS_WIN)
+  std::unique_ptr<base::test::ScopedFeatureList> feature_list =
+      std::make_unique<base::test::ScopedFeatureList>();
+  feature_list->InitFromCommandLine(enable_feature_str, disable_feature_str);
+#endif  // BUILDFLAG(IS_WIN)
+
+#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
+  enabled_features.push_back(media::kVaapiH264SWBitrateController);
+#endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
   disabled_features.push_back(media::kGlobalVaapiLock);
 
   if (test_type ==
@@ -1079,13 +1114,14 @@ int main(int argc, char** argv) {
           test_type, video_path, video_metadata_path,
           base::FilePath(output_folder), codec, svc_mode, content_type,
           output_bitstream, encode_bitrate, bitrate_mode, reverse,
-          media::test::FrameOutputConfig(),
-          /*enabled_features=*/{}, disabled_features);
+          media::test::FrameOutputConfig(), enabled_features,
+          disabled_features);
   if (!test_environment)
     return EXIT_FAILURE;
 
   media::test::g_env = static_cast<media::test::VideoEncoderTestEnvironment*>(
       testing::AddGlobalTestEnvironment(test_environment));
+  base::test::AllowCheckIsTestForTesting();
 
   return RUN_ALL_TESTS();
 }

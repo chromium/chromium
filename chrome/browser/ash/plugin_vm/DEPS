@@ -23,7 +23,6 @@ include_rules = [
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/settings",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/download",
   "+chrome/browser/notifications",
   "+chrome/browser/prefs",
@@ -35,3 +34,14 @@ include_rules = [
   "+chrome/grit",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  # Allow ProfileKeyedServiceFactory to depend on browser_process for now.
+  "plugin_vm_manager_factory\\.cc": [
+    "+chrome/browser/browser_process.h",
+    "+chrome/browser/global_features.h",
+  ],
+  ".*_unittest\\.cc": [
+    "+chrome/browser/ash/browser_delegate/browser_controller_impl.h",
+  ],
+}

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 
 #include "base/apple/foundation_util.h"
@@ -26,8 +21,10 @@
 #import "components/remote_cocoa/app_shim/views_nswindow_delegate.h"
 #import "components/remote_cocoa/app_shim/window_touch_bar_delegate.h"
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
 #import "ui/base/cocoa/user_interface_item_command_handler.h"
 #import "ui/base/cocoa/window_size_constants.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace {
 
@@ -124,6 +121,17 @@ void OrderChildWindow(NSWindow* child_window,
 - (BOOL)_isConsideredOpenForPersistentState;
 - (void)_zoomToScreenEdge:(NSUInteger)edge;
 - (void)_removeFromGroups:(NSWindow*)window;
+- (BOOL)_isNonactivatingPanel;
+@end
+
+struct NSEdgeAndCornerThicknesses {
+  double top, topLeft, left, bottomLeft, bottom, bottomRight, right, topRight;
+};
+
+@interface NSWindow (NSWindowResizing)
++ (void)_getExteriorResizeEdgeThicknesses:
+            (NSEdgeAndCornerThicknesses*)outThicknesses
+                             forStyleMask:(NSWindowStyleMask)styleMask;
 @end
 
 // Private API as of at least macOS 13.
@@ -196,7 +204,7 @@ void OrderChildWindow(NSWindow* child_window,
   BOOL _willUpdateRestorableState;
   BOOL _willSaveRestorableStateAfterDelay;
   BOOL _isEnforcingNeverMadeVisible;
-  BOOL _preventKeyWindow;
+  BOOL _activationIndependence;
   BOOL _isTooltip;
   BOOL _isHeadless;
   BOOL _isShufflingForOrdering;
@@ -207,6 +215,7 @@ void OrderChildWindow(NSWindow* child_window,
 @synthesize isTooltip = _isTooltip;
 @synthesize isHeadless = _isHeadless;
 @synthesize isShufflingForOrdering = _isShufflingForOrdering;
+@synthesize preventKeyWindow = _preventKeyWindow;
 @synthesize childWindowAddedHandler = _childWindowAddedHandler;
 @synthesize childWindowRemovedHandler = _childWindowRemovedHandler;
 @synthesize commandDispatchParentOverride = _commandDispatchParentOverride;
@@ -265,6 +274,12 @@ void OrderChildWindow(NSWindow* child_window,
 - (void)removeChildWindow:(NSWindow*)childWin {
   if (self != childWin.parentWindow) {
     return;
+  }
+  // Handle ordering groups for AppKit native windows. For instance, the
+  // `TUINSWindow` is added and removed by AppKit when caps lock is active.
+  // See https://crbug.com/369970893 for more details.
+  if (![childWin isKindOfClass:[NativeWidgetMacNSWindow class]]) {
+    [self maybeRemoveTreeFromOrderingGroups];
   }
   [super removeChildWindow:childWin];
   if (self.childWindowRemovedHandler) {
@@ -337,8 +352,12 @@ void OrderChildWindow(NSWindow* child_window,
 }
 
 - (NSRect)constrainFrameRect:(NSRect)frameRect toScreen:(NSScreen*)screen {
-  // Headless windows should not be constrained within the physical screen.
-  if (_isHeadless) {
+  if (_isHeadless || self.parentWindow) {
+    // AppKit's default implementation moves child windows down to avoid
+    // the menu bar. We don't want that behavior, because widgets like the
+    // Omnibox may have a big shadow that could cause invisible menu bar
+    // collision in fullscreen/maximized state. We override it here to
+    // return the original frameRect before the adjustment.
     return frameRect;
   }
 
@@ -397,6 +416,39 @@ void OrderChildWindow(NSWindow* child_window,
 // subclasses are known to override it and return NO.
 - (BOOL)_usesCustomDrawing {
   return NO;
+}
+
+// This override, if it returns YES, allows the window to take input events
+// without activating the owning app. This is functionally equivalent to having
+// the window style NSWindowStyleMaskNonactivatingPanel set; see the
+// documentation for that constant for more details.
+//
+// The NSWindowStyleMaskNonactivatingPanel constant is only valid for NSPanels,
+// not NSWindows, so the window style cannot be directly set. In addition, even
+// if it were valid to set that style for windows, setting the window style
+// recalculates and re-caches a bunch of stuff, so a surgical override is the
+// cleanest approach.
+- (BOOL)_isNonactivatingPanel {
+  if (_activationIndependence) {
+    return YES;
+  }
+  return [super _isNonactivatingPanel];
+}
+
++ (void)_getExteriorResizeEdgeThicknesses:
+            (NSEdgeAndCornerThicknesses*)outThicknesses
+                             forStyleMask:(NSWindowStyleMask)styleMask {
+  // Ensure non-titled resizable windows have a reasonable exterior resize area.
+  // By default, they might have none, making resizing difficult.
+  // Override to titled window's resize edge thickness (4px on macOS 15).
+  if (styleMask & NSWindowStyleMaskResizable) {
+    return [super
+        _getExteriorResizeEdgeThicknesses:outThicknesses
+                             forStyleMask:styleMask | NSWindowStyleMaskTitled];
+  }
+
+  return [super _getExteriorResizeEdgeThicknesses:outThicknesses
+                                     forStyleMask:styleMask];
 }
 
 // Ignore [super canBecome{Key,Main}Window]. The default is NO for windows with
@@ -512,6 +564,15 @@ void OrderChildWindow(NSWindow* child_window,
   }
 
   [[self viewsNSWindowDelegate] onWindowOrderChanged:nil];
+}
+
+- (void)setActivationIndependence:(BOOL)independence {
+  self.canHide = !independence;
+  _activationIndependence = independence;
+}
+
+- (bool)activationIndependence {
+  return _activationIndependence;
 }
 
 // Override window order functions to intercept other visibility changes. This
@@ -668,12 +729,11 @@ void OrderChildWindow(NSWindow* child_window,
 
   _willUpdateRestorableState = NO;
 
-  // On macOS 12+, create restorable state archives with secure encoding. See
-  // the article at
+  // Create restorable state archives with secure encoding. See the article at
   // https://sector7.computest.nl/post/2022-08-process-injection-breaking-all-macos-security-layers-with-a-single-vulnerability/
   // for more details.
-  NSKeyedArchiver* encoder = [[NSKeyedArchiver alloc]
-      initRequiringSecureCoding:base::mac::MacOSMajorVersion() >= 12];
+  NSKeyedArchiver* encoder =
+      [[NSKeyedArchiver alloc] initRequiringSecureCoding:YES];
   encoder.delegate = self;
   [self encodeRestorableStateWithCoder:encoder];
   [encoder finishEncoding];
@@ -686,9 +746,10 @@ void OrderChildWindow(NSWindow* child_window,
   }
   _lastSavedRestorableState = restorableState;
 
-  auto* bytes = static_cast<uint8_t const*>(restorableState.bytes);
-  _bridge->host()->OnWindowStateRestorationDataChanged(
-      std::vector<uint8_t>(bytes, bytes + restorableState.length));
+  auto data_span = base::apple::NSDataToSpan(restorableState);
+  std::vector<uint8_t> data(data_span.size());
+  base::span<uint8_t>(data).copy_from(data_span);
+  _bridge->host()->OnWindowStateRestorationDataChanged(std::move(data));
 }
 
 // AppKit calls -invalidateRestorableState when a property of the window which
@@ -713,7 +774,7 @@ void OrderChildWindow(NSWindow* child_window,
 // the window's styleMask. Views assumes that Widgets can always be minimized,
 // regardless of their window style, so override that behavior here.
 - (BOOL)_canMiniaturize {
-  return YES;
+  return ![self immersiveFullscreen];
 }
 
 - (BOOL)respondsToSelector:(SEL)aSelector {
@@ -769,6 +830,16 @@ void OrderChildWindow(NSWindow* child_window,
 }
 
 // NSWindow overrides (NSAccessibility informal protocol implementation).
+
+- (NSString*)accessibilityDocument {
+  if (id<NSAccessibility> root = [self rootAccessibilityObject]) {
+    if (auto* cocoaNode = ui::AXPlatformNode::FromNativeViewAccessible(
+            gfx::NativeViewAccessible(root))) {
+      return [NSString stringWithUTF8String:cocoaNode->GetRootURL().c_str()];
+    }
+  }
+  return nil;
+}
 
 - (id)accessibilityFocusedUIElement {
   if (![self delegate])

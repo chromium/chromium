@@ -19,13 +19,15 @@ import android.content.Context;
 import android.os.PersistableBundle;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ActivityState;
@@ -37,7 +39,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.device.DeviceConditions;
-import org.chromium.chrome.browser.device.ShadowDeviceConditions;
 import org.chromium.components.background_task_scheduler.BackgroundTask;
 import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
@@ -49,9 +50,7 @@ import org.chromium.net.ConnectionType;
 
 /** Unit tests for OfflineBackgroundTask. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowDeviceConditions.class})
+@Config(manifest = Config.NONE)
 @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
 public class OfflineBackgroundTaskTest {
     private static final boolean REQUIRE_POWER = true;
@@ -62,11 +61,12 @@ public class OfflineBackgroundTaskTest {
     private static final boolean SCREEN_ON_AND_UNLOCKED = true;
     private static final int MINIMUM_BATTERY_LEVEL = 33;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private PersistableBundle mTaskExtras;
     private long mTestTime;
-    private TriggerConditions mTriggerConditions =
+    private final TriggerConditions mTriggerConditions =
             new TriggerConditions(!REQUIRE_POWER, MINIMUM_BATTERY_LEVEL, REQUIRE_UNMETERED);
-    private DeviceConditions mDeviceConditions =
+    private final DeviceConditions mDeviceConditions =
             new DeviceConditions(
                     !POWER_CONNECTED,
                     MINIMUM_BATTERY_LEVEL + 5,
@@ -85,13 +85,12 @@ public class OfflineBackgroundTaskTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         BackgroundTaskSchedulerFactory.setSchedulerForTesting(mTaskScheduler);
         doReturn(true)
                 .when(mTaskScheduler)
                 .schedule(eq(ContextUtils.getApplicationContext()), mTaskInfo.capture());
 
-        ShadowDeviceConditions.setCurrentConditions(mDeviceConditions);
+        DeviceConditions.setForTesting(mDeviceConditions);
 
         // Set up background scheduler processor mock.
         BackgroundSchedulerProcessor.setInstanceForTesting(mBackgroundSchedulerProcessor);
@@ -126,7 +125,7 @@ public class OfflineBackgroundTaskTest {
                         !POWER_SAVE_MODE_ON,
                         !METERED,
                         SCREEN_ON_AND_UNLOCKED);
-        ShadowDeviceConditions.setCurrentConditions(deviceConditionsLowBattery);
+        DeviceConditions.setForTesting(deviceConditionsLowBattery);
 
         // Verify that conditions for processing are not met.
         assertFalse(
@@ -162,7 +161,7 @@ public class OfflineBackgroundTaskTest {
                         !POWER_SAVE_MODE_ON,
                         !METERED,
                         SCREEN_ON_AND_UNLOCKED);
-        ShadowDeviceConditions.setCurrentConditions(deviceConditionsPowerConnected);
+        DeviceConditions.setForTesting(deviceConditionsPowerConnected);
 
         // Now verify that same battery level, with power connected, will pass the conditions.
         assertTrue(

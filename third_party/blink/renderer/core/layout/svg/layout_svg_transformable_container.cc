@@ -98,14 +98,16 @@ SVGTransformChange LayoutSVGTransformableContainer::UpdateLocalTransform(
 
 void LayoutSVGTransformableContainer::StyleDidChange(
     StyleDifference diff,
-    const ComputedStyle* old_style) {
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutSVGContainer::StyleDidChange(diff, old_style);
+  LayoutSVGContainer::StyleDidChange(diff, old_style, style_change_context);
+
+  const ComputedStyle& style = StyleRef();
 
   // Check for changes to the 'x' or 'y' properties if this is a <use> element.
   SVGElement& element = *GetElement();
   if (old_style && IsA<SVGUseElement>(element)) {
-    const ComputedStyle& style = StyleRef();
     if (old_style->X() != style.X() || old_style->Y() != style.Y()) {
       SetNeedsTransformUpdate();
     }
@@ -120,12 +122,11 @@ void LayoutSVGTransformableContainer::StyleDidChange(
 
   // To support context-fill and context-stroke
   if (IsA<SVGUseElement>(element)) {
-    SVGResources::UpdatePaints(*this, old_style, StyleRef());
+    SVGResources::UpdatePaints(*this, old_style, style);
   }
 
   TransformHelper::UpdateOffsetPath(element, old_style);
-  SetTransformUsesReferenceBox(
-      TransformHelper::UpdateReferenceBoxDependency(*this));
+  SetTransformUsesReferenceBox(TransformHelper::DependsOnReferenceBox(style));
 }
 
 void LayoutSVGTransformableContainer::WillBeDestroyed() {

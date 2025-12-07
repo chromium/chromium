@@ -2,10 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //chromeos")
+assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
 
 component("oobe_config") {
   output_name = "ash_oobe_config"
@@ -40,6 +39,10 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
   sources = [ "oobe_configuration_client_unittest.cc" ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 proto_library("proto") {

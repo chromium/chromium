@@ -8,7 +8,6 @@
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "mojo/public/cpp/system/buffer.h"
-#include "ui/gfx/geometry/size.h"
 
 namespace media {
 class VideoFrame;
@@ -67,11 +66,10 @@ class VideoCaptureControllerEventHandler {
   virtual void OnFrameDropped(const VideoCaptureControllerID& id,
                               media::VideoCaptureFrameDropReason reason) = 0;
 
-  // All subsequent buffers are guaranteed to have a sub-capture-target version
-  // whose value is at least |sub_capture_target_version|.
-  virtual void OnNewSubCaptureTargetVersion(
-      const VideoCaptureControllerID& id,
-      uint32_t sub_capture_target_version) = 0;
+  // All subsequent buffers are guaranteed to have a capture version
+  // whose value is at least |capture_version|.
+  virtual void OnNewCaptureVersion(const VideoCaptureControllerID& id,
+                                   media::CaptureVersion capture_version) = 0;
 
   virtual void OnFrameWithEmptyRegionCapture(
       const VideoCaptureControllerID& id) = 0;

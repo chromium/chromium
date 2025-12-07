@@ -5,20 +5,15 @@
 #ifndef UI_COLOR_COLOR_PROVIDER_MANAGER_H_
 #define UI_COLOR_COLOR_PROVIDER_MANAGER_H_
 
+#include <cstddef>
 #include <memory>
-#include <optional>
-#include <tuple>
 #include <vector>
 
 #include "base/callback_list.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
-#include "base/memory/weak_ptr.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_provider_key.h"
-#include "ui/color/system_theme.h"
-#include "ui/gfx/color_utils.h"
 
 namespace ui {
 

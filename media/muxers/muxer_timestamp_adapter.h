@@ -36,14 +36,12 @@ class MEDIA_EXPORT MuxerTimestampAdapter {
   // Returns true if the data is accepted by the muxer, false otherwise.
   bool OnEncodedVideo(
       const Muxer::VideoParameters& params,
-      std::string encoded_data,
-      std::string encoded_alpha,
+      scoped_refptr<DecoderBuffer> encoded_data,
       std::optional<media::VideoEncoder::CodecDescription> codec_description,
-      base::TimeTicks timestamp,
-      bool is_key_frame);
+      base::TimeTicks timestamp);
   bool OnEncodedAudio(
       const AudioParameters& params,
-      std::string encoded_data,
+      scoped_refptr<DecoderBuffer> encoded_data,
       std::optional<media::AudioEncoder::CodecDescription> codec_description,
       base::TimeTicks timestamp);
 
@@ -51,6 +49,10 @@ class MEDIA_EXPORT MuxerTimestampAdapter {
   // and enabled, input data will be ignored and black frames or silence will
   // be output instead.
   void SetLiveAndEnabled(bool track_live_and_enabled, bool is_video);
+
+  // Call to handle video ending. This enables the muxer to emit data callbacks
+  // not waiting for more of the relevant data.
+  void OnVideoEnded();
 
   // Calling `Pause()` will cause the muxer to modify the timestamps of inputs,
   // setting them to the last received value before the pause. This effectively

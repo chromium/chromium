@@ -32,7 +32,7 @@ class MODULES_EXPORT IdentityProvider : public ScriptWrappable {
                                                                 const String&);
   static ScriptPromise<IDLUndefined> resolve(
       ScriptState*,
-      const String&,
+      const ScriptValue& token,
       const IdentityResolveOptions* options = nullptr);
 };
 

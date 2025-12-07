@@ -1,0 +1,111 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+source_set("tab_strip_api") {
+  sources = [
+    "tab_strip_service.h",
+    "tab_strip_service_feature.h",
+  ]
+
+  public_deps = [
+    "adapters",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    "//components/browser_apis/tab_strip:mojom",
+  ]
+
+  deps = [ "//components/browser_apis/tab_strip:mojom_experiment" ]
+}
+
+# This target is needed to prevent circular dependency.
+source_set("impl_header") {
+  sources = [ "tab_strip_service_mojo_handler.h" ]
+
+  deps = [
+    ":tab_strip_api",
+    "adapters",
+    "observation",
+    "//chrome/browser/ui/tabs/tab_strip_api/events",
+    "//components/browser_apis/tab_strip:mojom",
+    "//components/browser_apis/tab_strip:mojom_experiment",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "event_broadcaster.cc",
+    "event_broadcaster.h",
+    "tab_strip_service_impl.cc",
+    "tab_strip_service_mojo_handler.cc",
+    "tab_strip_service_mojo_handler.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":impl_header",
+    ":tab_strip_api",
+    "adapters:impl",
+    "converters",
+    "events",
+    "observation",
+    "utilities",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//components/browser_apis/tab_strip:mojom_experiment",
+    "//components/browser_apis/tab_strip/types",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "tab_strip_experiment_service_unittest.cc",
+    "tab_strip_service_impl_unittest.cc",
+  ]
+
+  deps = [
+    ":impl",
+    ":tab_strip_api",
+    "converters:unit_tests",
+    "events:unit_tests",
+    "observation:unit_tests",
+    "testing",
+    "utilities:unit_tests",
+    "//base/test:test_support",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/tabs:test_support",
+    "//chrome/test:test_support",
+    "//components/browser_apis/tab_strip:mojom_experiment",
+    "//components/tabs:public",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "tab_strip_service_impl_browsertest.cc" ]
+
+  deps = [
+    ":impl",
+    ":tab_strip_api",
+    "adapters/tree_builder:browser_tests",
+    "observation",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/test:test_support",
+    "//components/browser_apis/tab_strip:mojom_experiment",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

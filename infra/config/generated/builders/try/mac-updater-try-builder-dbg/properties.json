@@ -9,7 +9,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "mac-updater-builder-dbg",
+              "builder": "mac-updater-builder-arm64-dbg",
               "project": "chromium"
             },
             "builder_spec": {
@@ -32,7 +32,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "mac11-x64-updater-tester-dbg",
+              "builder": "mac13-arm64-updater-tester-dbg",
               "project": "chromium"
             },
             "builder_spec": {
@@ -52,7 +52,7 @@
               },
               "parent": {
                 "bucket": "ci",
-                "builder": "mac-updater-builder-dbg",
+                "builder": "mac-updater-builder-arm64-dbg",
                 "project": "chromium"
               }
             }
@@ -62,35 +62,33 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "mac-updater-builder-dbg",
+          "builder": "mac-updater-builder-arm64-dbg",
           "project": "chromium"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
-          "builder": "mac11-x64-updater-tester-dbg",
+          "builder": "mac13-arm64-updater-tester-dbg",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/mac-updater-try-builder-dbg/targets"
     }
   },
   "$build/flakiness": {
     "check_for_flakiness": true,
     "check_for_flakiness_with_resultdb": true
   },
-  "$build/reclient": {
-    "instance": "rbe-chromium-untrusted",
-    "metrics_project": "chromium-reclient-metrics",
-    "scandeps_server": true
-  },
   "$build/siso": {
     "configs": [
       "builder"
     ],
+    "enable_cloud_monitoring": true,
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
+    "metrics_project": "chromium-reclient-metrics",
     "project": "rbe-chromium-untrusted",
     "remote_jobs": 150
   },

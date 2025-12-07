@@ -163,7 +163,6 @@ static opus_val32 silk_resampler_down2_hp(
 static opus_val32 downmix_and_resample(downmix_func downmix, const void *_x, opus_val32 *y, opus_val32 S[3], int subframe, int offset, int c1, int c2, int C, int Fs)
 {
    VARDECL(opus_val32, tmp);
-   opus_val32 scale;
    int j;
    opus_val32 ret = 0;
    SAVE_STACK;
@@ -180,17 +179,11 @@ static opus_val32 downmix_and_resample(downmix_func downmix, const void *_x, opu
    ALLOC(tmp, subframe, opus_val32);
 
    downmix(_x, tmp, subframe, offset, c1, c2, C);
-#ifdef FIXED_POINT
-   scale = (1<<SIG_SHIFT);
-#else
-   scale = 1.f/32768;
-#endif
-   if (c2==-2)
-      scale /= C;
-   else if (c2>-1)
-      scale /= 2;
-   for (j=0;j<subframe;j++)
-      tmp[j] *= scale;
+   if ((c2==-2 && C==2) || c2>-1) {
+      for (j=0;j<subframe;j++) {
+         tmp[j] = HALF32(tmp[j]);
+      }
+   }
    if (Fs == 48000)
    {
       ret = silk_resampler_down2_hp(S, y, tmp, subframe);
@@ -211,6 +204,9 @@ static opus_val32 downmix_and_resample(downmix_func downmix, const void *_x, opu
       silk_resampler_down2_hp(S, y, tmp3x, 3*subframe);
    }
    RESTORE_STACK;
+#ifndef FIXED_POINT
+   ret *= 1.f/32768/32768;
+#endif
    return ret;
 }
 
@@ -422,7 +418,7 @@ static const float std_feature_bias[9] = {
 #define SCALE_COMPENS (1.f/((opus_int32)1<<(15+SIG_SHIFT)))
 #define SCALE_ENER(e) ((SCALE_COMPENS*SCALE_COMPENS)*(e))
 #else
-#define SCALE_ENER(e) (e)
+#define SCALE_ENER(e) ((1.f/32768/32768)*e)
 #endif
 
 #ifdef FIXED_POINT
@@ -929,9 +925,9 @@ static void tonality_analysis(TonalityAnalysisState *tonal, const CELTMode *celt
     features[23] = info->tonality_slope + 0.069216f;
     features[24] = tonal->lowECount - 0.067930f;
 
-    compute_dense(&layer0, layer_out, features);
-    compute_gru(&layer1, tonal->rnn_state, layer_out);
-    compute_dense(&layer2, frame_probs, tonal->rnn_state);
+    analysis_compute_dense(&layer0, layer_out, features);
+    analysis_compute_gru(&layer1, tonal->rnn_state, layer_out);
+    analysis_compute_dense(&layer2, frame_probs, tonal->rnn_state);
 
     /* Probability of speech or music vs noise */
     info->activity_probability = frame_probs[1];

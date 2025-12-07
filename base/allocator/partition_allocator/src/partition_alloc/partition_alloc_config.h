@@ -54,12 +54,6 @@ static_assert(sizeof(void*) != 8, "");
   (PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS) || \
    PA_BUILDFLAG(IS_ANDROID))
 
-// If defined, enables zeroing memory on Free() with roughly 1% probability.
-// This applies only to normal buckets, as direct-map allocations are always
-// decommitted.
-// TODO(bartekn): Re-enable once PartitionAlloc-Everywhere evaluation is done.
-#define PA_CONFIG_ZERO_RANDOMLY_ON_FREE() 0
-
 // Need TLS support.
 #define PA_CONFIG_THREAD_CACHE_SUPPORTED() \
   (PA_BUILDFLAG(IS_POSIX) || PA_BUILDFLAG(IS_WIN) || PA_BUILDFLAG(IS_FUCHSIA))
@@ -95,7 +89,9 @@ static_assert(sizeof(void*) == 8);
 #endif
 
 // Specifies whether allocation extras need to be added.
-#if PA_BUILDFLAG(DCHECKS_ARE_ON) || PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON) ||                \
+    PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
+    PA_BUILDFLAG(USE_PARTITION_COOKIE)
 #define PA_CONFIG_EXTRAS_REQUIRED() 1
 #else
 #define PA_CONFIG_EXTRAS_REQUIRED() 0
@@ -164,15 +160,36 @@ constexpr bool kUseLazyCommit = true;
 constexpr bool kUseLazyCommit = false;
 #endif
 
+// See the comment in PartitionBucket::SlotSpanCommittedSize(). This should not
+// be enabled on Windows (because it increases committed memory, which is a
+// limited system-wide resource on this platform). It has been evaluated on
+// macOS, where it yielded no beenefit (nor any real downside).
+constexpr bool kUseFewerMemoryRegions =
+#if PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_ANDROID) || \
+    PA_BUILDFLAG(IS_CHROMEOS)
+    true;
+#else
+    false;
+#endif
+
 // On these platforms, lock all the partitions before fork(), and unlock after.
 // This may be required on more platforms in the future.
 #define PA_CONFIG_HAS_ATFORK_HANDLER()                 \
   (PA_BUILDFLAG(IS_APPLE) || PA_BUILDFLAG(IS_LINUX) || \
    PA_BUILDFLAG(IS_CHROMEOS))
 
+#if PA_BUILDFLAG(MOVE_METADATA_OUT_OF_GIGACAGE_FOR_64_BITS_POINTERS) && \
+    PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+#define PA_CONFIG_MOVE_METADATA_OUT_OF_GIGACAGE() 1
+#else
+#define PA_CONFIG_MOVE_METADATA_OUT_OF_GIGACAGE() 0
+#endif
+
 // PartitionAlloc uses PartitionRootEnumerator to acquire all
 // PartitionRoots at BeforeFork and to release at AfterFork.
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_CONFIG(HAS_ATFORK_HANDLER)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+        PA_CONFIG(HAS_ATFORK_HANDLER) ||           \
+    PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
 #define PA_CONFIG_USE_PARTITION_ROOT_ENUMERATOR() 1
 #else
 #define PA_CONFIG_USE_PARTITION_ROOT_ENUMERATOR() 0
@@ -222,36 +239,6 @@ constexpr bool kUseLazyCommit = false;
 #define PA_CONFIG_PREFER_SMALLER_SLOT_SPANS() 0
 #endif
 
-// Enable shadow metadata.
-//
-// With this flag, shadow pools will be mapped, on which writable shadow
-// metadatas are placed, and the real metadatas are set to read-only instead.
-// This feature is only enabled with 64-bit environment because pools work
-// differently with 32-bits pointers (see glossary).
-#if PA_BUILDFLAG(ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS) && \
-    PA_BUILDFLAG(HAS_64_BIT_POINTERS)
-#define PA_CONFIG_ENABLE_SHADOW_METADATA() 1
-#else
-#define PA_CONFIG_ENABLE_SHADOW_METADATA() 0
-#endif
-
-// According to crbug.com/1349955#c24, macOS 11 has a bug where they assert that
-// malloc_size() of an allocation is equal to the requested size. This is
-// generally not true. The assert passed only because it happened to be true for
-// the sizes they requested. BRP changes that, hence can't be deployed without a
-// workaround.
-//
-// The bug has been fixed in macOS 12. Here we can only check the platform, and
-// the version is checked dynamically later.
-//
-// The settings has MAYBE_ in the name, because the final decision to enable is
-// based on the operarting system version check done at run-time.
-#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && PA_BUILDFLAG(IS_MAC)
-#define PA_CONFIG_MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK() 1
-#else
-#define PA_CONFIG_MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK() 0
-#endif
-
 #if PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
@@ -273,14 +260,7 @@ constexpr bool kUseLazyCommit = false;
 #define PA_CONFIG_IS_NONCLANG_MSVC() 0
 #endif
 
-// Set GN build override 'assert_cpp_20' to false to disable assertion.
-#if PA_BUILDFLAG(ASSERT_CPP_20)
 static_assert(__cplusplus >= 202002L,
               "PartitionAlloc targets C++20 or higher.");
-#endif  // PA_BUILDFLAG(ASSERT_CPP_20)
-
-// Named pass-through that determines whether or not PA should generally
-// enforce that `SlotStart` instances are in fact slot starts.
-#define PA_CONFIG_ENFORCE_SLOT_STARTS() PA_BUILDFLAG(DCHECKS_ARE_ON)
 
 #endif  // PARTITION_ALLOC_PARTITION_ALLOC_CONFIG_H_

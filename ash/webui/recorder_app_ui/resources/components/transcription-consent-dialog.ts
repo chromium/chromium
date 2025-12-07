@@ -4,6 +4,7 @@
 
 import './cra/cra-button.js';
 import './cra/cra-feature-tour-dialog.js';
+import './language-selection-dialog.js';
 import './speaker-label-consent-dialog.js';
 
 import {createRef, css, html, ref} from 'chrome://resources/mwc/lit/index.js';
@@ -11,9 +12,13 @@ import {createRef, css, html, ref} from 'chrome://resources/mwc/lit/index.js';
 import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
-import {settings, TranscriptionEnableState} from '../core/state/settings.js';
+import {
+  disableTranscription,
+  enableTranscriptionSkipConsentCheck,
+} from '../core/state/transcription.js';
 
 import {CraFeatureTourDialog} from './cra/cra-feature-tour-dialog.js';
+import {LanguageSelectionDialog} from './language-selection-dialog.js';
 import {SpeakerLabelConsentDialog} from './speaker-label-consent-dialog.js';
 
 /**
@@ -47,10 +52,16 @@ export class TranscriptionConsentDialog extends ReactiveLitElement {
 
   private readonly dialog = createRef<CraFeatureTourDialog>();
 
+  private readonly languageSelectionDialog =
+    createRef<LanguageSelectionDialog>();
+
   private readonly speakerLabelConsentDialog =
     createRef<SpeakerLabelConsentDialog>();
 
   private readonly platformHandler = usePlatformHandler();
+
+  private readonly shouldShowSelector =
+    this.platformHandler.isMultipleLanguageAvailable();
 
   async show(): Promise<void> {
     await this.dialog.value?.show();
@@ -61,18 +72,19 @@ export class TranscriptionConsentDialog extends ReactiveLitElement {
   }
 
   private disableTranscription() {
-    settings.mutate((s) => {
-      s.transcriptionEnabled = TranscriptionEnableState.DISABLED_FIRST;
-    });
+    disableTranscription(/* firstTime= */ true);
     this.hide();
   }
 
   private enableTranscription() {
-    settings.mutate((s) => {
-      s.transcriptionEnabled = TranscriptionEnableState.ENABLED;
-    });
-    this.platformHandler.installSoda();
-    this.speakerLabelConsentDialog.value?.show();
+    enableTranscriptionSkipConsentCheck();
+    if (!this.shouldShowSelector) {
+      if (this.platformHandler.canUseSpeakerLabel.value) {
+        this.speakerLabelConsentDialog.value?.show();
+      }
+    } else {
+      this.languageSelectionDialog.value?.show();
+    }
     this.hide();
   }
 
@@ -80,32 +92,40 @@ export class TranscriptionConsentDialog extends ReactiveLitElement {
     // TODO(pihsun): The dialogs (like speaker-label-consent-dialog) are
     // currently initialized at multiple places when it needs to be used,
     // consider making it "global" so it'll only be rendered once?
+    const header = this.shouldShowSelector ?
+      i18n.onboardingDialogTranscriptionTurnOnHeader :
+      i18n.onboardingDialogTranscriptionHeader;
+    const description = this.shouldShowSelector ?
+      i18n.onboardingDialogTranscriptionTurnOnDescription :
+      i18n.onboardingDialogTranscriptionDescription;
+    const turnOnButtonLabel = this.shouldShowSelector ?
+      i18n.onboardingDialogTranscriptionTurnOnButton :
+      i18n.onboardingDialogTranscriptionDownloadButton;
+
     return html`<cra-feature-tour-dialog
         ${ref(this.dialog)}
         illustrationName="onboarding_transcription"
-        header=${i18n.onboardingDialogTranscriptionHeader}
+        header=${header}
       >
-        <div slot="content">
-          ${i18n.onboardingDialogTranscriptionDescription}
-        </div>
+        <div slot="content">${description}</div>
         <div slot="actions">
           <cra-button
             .label=${i18n.onboardingDialogTranscriptionDeferButton}
             class="left"
-            button-style="secondary"
             @click=${this.hide}
           ></cra-button>
           <cra-button
             .label=${i18n.onboardingDialogTranscriptionCancelButton}
-            button-style="secondary"
             @click=${this.disableTranscription}
           ></cra-button>
           <cra-button
-            .label=${i18n.onboardingDialogTranscriptionTurnOnButton}
+            .label=${turnOnButtonLabel}
             @click=${this.enableTranscription}
           ></cra-button>
         </div>
       </cra-feature-tour-dialog>
+      <language-selection-dialog ${ref(this.languageSelectionDialog)}>
+      </language-selection-dialog>
       <speaker-label-consent-dialog ${ref(this.speakerLabelConsentDialog)}>
       </speaker-label-consent-dialog>`;
   }

@@ -38,7 +38,7 @@ class PassageEmbeddingsServiceTest : public testing::Test {
     sp_path_ = test_data_dir.AppendASCII("sentencepiece.model");
   }
 
-  mojom::PassageEmbeddingsLoadModelsParamsPtr MakeParams(
+  mojom::PassageEmbeddingsLoadModelsParamsPtr MakeModelParams(
       base::FilePath embeddings_path,
       base::FilePath sp_path,
       uint32_t input_window_size) {
@@ -48,6 +48,14 @@ class PassageEmbeddingsServiceTest : public testing::Test {
     params->sp_model =
         base::File(sp_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
     params->input_window_size = input_window_size;
+    return params;
+  }
+
+  mojom::PassageEmbedderParamsPtr MakeEmbedderParams() {
+    auto params = mojom::PassageEmbedderParams::New();
+    params->user_initiated_priority_num_threads = 4;
+    params->passive_priority_num_threads = 1;
+    params->embedder_cache_size = 1000;
     return params;
   }
 
@@ -63,24 +71,21 @@ class PassageEmbeddingsServiceTest : public testing::Test {
 };
 
 TEST_F(PassageEmbeddingsServiceTest, LoadValidModels) {
-  mojom::PassageEmbeddingsLoadModelsParamsPtr params =
-      MakeParams(embeddings_path_, sp_path_, kInputWindowSize);
   mojo::Remote<mojom::PassageEmbedder> embedder_remote;
   base::test::TestFuture<bool> future;
-  service()->LoadModels(std::move(params),
-                        embedder_remote.BindNewPipeAndPassReceiver(),
-                        future.GetCallback());
+  service()->LoadModels(
+      MakeModelParams(embeddings_path_, sp_path_, kInputWindowSize),
+      MakeEmbedderParams(), embedder_remote.BindNewPipeAndPassReceiver(),
+      future.GetCallback());
   bool load_models_success = future.Get();
   EXPECT_TRUE(load_models_success);
 }
 
 TEST_F(PassageEmbeddingsServiceTest, LoadModelsWithInvalidEmbeddingsModel) {
-  mojom::PassageEmbeddingsLoadModelsParamsPtr params =
-      MakeParams(sp_path_, sp_path_, kInputWindowSize);
   mojo::Remote<mojom::PassageEmbedder> embedder_remote;
-
   base::test::TestFuture<bool> load_models_future;
-  service()->LoadModels(std::move(params),
+  service()->LoadModels(MakeModelParams(sp_path_, sp_path_, kInputWindowSize),
+                        MakeEmbedderParams(),
                         embedder_remote.BindNewPipeAndPassReceiver(),
                         load_models_future.GetCallback());
   bool load_models_success = load_models_future.Get();
@@ -99,81 +104,68 @@ TEST_F(PassageEmbeddingsServiceTest, LoadModelsWithInvalidEmbeddingsModel) {
 }
 
 TEST_F(PassageEmbeddingsServiceTest, LoadModelsWithInvalidSpModel) {
-  mojom::PassageEmbeddingsLoadModelsParamsPtr params =
-      MakeParams(embeddings_path_, embeddings_path_, kInputWindowSize);
   mojo::Remote<mojom::PassageEmbedder> embedder_remote;
   base::test::TestFuture<bool> future;
-  service()->LoadModels(std::move(params),
-                        embedder_remote.BindNewPipeAndPassReceiver(),
-                        future.GetCallback());
+  service()->LoadModels(
+      MakeModelParams(embeddings_path_, embeddings_path_, kInputWindowSize),
+      MakeEmbedderParams(), embedder_remote.BindNewPipeAndPassReceiver(),
+      future.GetCallback());
   bool load_models_success = future.Get();
   EXPECT_FALSE(load_models_success);
 }
 
 TEST_F(PassageEmbeddingsServiceTest, LoadModelsWithInvalidInputWindowSize) {
-  mojom::PassageEmbeddingsLoadModelsParamsPtr params =
-      MakeParams(embeddings_path_, sp_path_, 0u);
   mojo::Remote<mojom::PassageEmbedder> embedder_remote;
   base::test::TestFuture<bool> future;
-  service()->LoadModels(std::move(params),
-                        embedder_remote.BindNewPipeAndPassReceiver(),
-                        future.GetCallback());
+  service()->LoadModels(
+      MakeModelParams(embeddings_path_, sp_path_, 0u), MakeEmbedderParams(),
+      embedder_remote.BindNewPipeAndPassReceiver(), future.GetCallback());
   bool load_models_success = future.Get();
   EXPECT_FALSE(load_models_success);
 }
 
 TEST_F(PassageEmbeddingsServiceTest, RespondsWithEmbeddings) {
-  mojom::PassageEmbeddingsLoadModelsParamsPtr params =
-      MakeParams(embeddings_path_, sp_path_, kInputWindowSize);
   mojo::Remote<mojom::PassageEmbedder> embedder_remote;
-
   base::test::TestFuture<bool> load_models_future;
-  service()->LoadModels(std::move(params),
-                        embedder_remote.BindNewPipeAndPassReceiver(),
-                        load_models_future.GetCallback());
+  service()->LoadModels(
+      MakeModelParams(embeddings_path_, sp_path_, kInputWindowSize),
+      MakeEmbedderParams(), embedder_remote.BindNewPipeAndPassReceiver(),
+      load_models_future.GetCallback());
   bool load_models_success = load_models_future.Get();
   EXPECT_TRUE(load_models_success);
 
   base::test::TestFuture<std::vector<mojom::PassageEmbeddingsResultPtr>>
       execute_future;
-  embedder_remote->GenerateEmbeddings({"hello", "world"},
+  embedder_remote->GenerateEmbeddings({"hello", "world", ""},
                                       mojom::PassagePriority::kUserInitiated,
                                       execute_future.GetCallback());
   auto results = execute_future.Take();
-  EXPECT_EQ(results.size(), 2u);
-  EXPECT_EQ(results[0]->passage, "hello");
-  EXPECT_EQ(results[1]->passage, "world");
+  EXPECT_EQ(results.size(), 3u);
   for (const auto& result : results) {
     EXPECT_EQ(result->embeddings.size(), kEmbeddingsOutputSize);
   }
 
-  histogram_tester_.ExpectUniqueSample(kCacheHitMetricName, false, 2);
+  histogram_tester_.ExpectUniqueSample(kCacheHitMetricName, false, 3);
 }
 
 TEST_F(PassageEmbeddingsServiceTest, CacheHits) {
-  mojom::PassageEmbeddingsLoadModelsParamsPtr params =
-      MakeParams(embeddings_path_, sp_path_, kInputWindowSize);
   mojo::Remote<mojom::PassageEmbedder> embedder_remote;
-
   base::test::TestFuture<bool> load_models_future;
-  service()->LoadModels(std::move(params),
-                        embedder_remote.BindNewPipeAndPassReceiver(),
-                        load_models_future.GetCallback());
+  service()->LoadModels(
+      MakeModelParams(embeddings_path_, sp_path_, kInputWindowSize),
+      MakeEmbedderParams(), embedder_remote.BindNewPipeAndPassReceiver(),
+      load_models_future.GetCallback());
   bool load_models_success = load_models_future.Get();
   EXPECT_TRUE(load_models_success);
 
   base::test::TestFuture<std::vector<mojom::PassageEmbeddingsResultPtr>>
       execute_future;
   embedder_remote->GenerateEmbeddings(
-      {"hello", "world", "hello", "world", "foo"},
+      {"hello", "world", "hello", "world", "foo", ""},
       mojom::PassagePriority::kUserInitiated, execute_future.GetCallback());
   auto results = execute_future.Take();
 
-  EXPECT_EQ(results.size(), 5u);
-  EXPECT_EQ(results[0]->passage, "hello");
-  EXPECT_EQ(results[1]->passage, "world");
-  EXPECT_EQ(results[2]->passage, "hello");
-  EXPECT_EQ(results[3]->passage, "world");
+  EXPECT_EQ(results.size(), 6u);
 
   EXPECT_EQ(results[0]->embeddings, results[2]->embeddings);
   EXPECT_EQ(results[1]->embeddings, results[3]->embeddings);
@@ -182,20 +174,18 @@ TEST_F(PassageEmbeddingsServiceTest, CacheHits) {
     EXPECT_EQ(result->embeddings.size(), kEmbeddingsOutputSize);
   }
 
-  histogram_tester_.ExpectTotalCount(kCacheHitMetricName, 5);
+  histogram_tester_.ExpectTotalCount(kCacheHitMetricName, 6);
   histogram_tester_.ExpectBucketCount(kCacheHitMetricName, true, 2);
-  histogram_tester_.ExpectBucketCount(kCacheHitMetricName, false, 3);
+  histogram_tester_.ExpectBucketCount(kCacheHitMetricName, false, 4);
 }
 
 TEST_F(PassageEmbeddingsServiceTest, RecordsDurationHistogramsWithPriority) {
-  mojom::PassageEmbeddingsLoadModelsParamsPtr params =
-      MakeParams(embeddings_path_, sp_path_, kInputWindowSize);
   mojo::Remote<mojom::PassageEmbedder> embedder_remote;
-
   base::test::TestFuture<bool> load_models_future;
-  service()->LoadModels(std::move(params),
-                        embedder_remote.BindNewPipeAndPassReceiver(),
-                        load_models_future.GetCallback());
+  service()->LoadModels(
+      MakeModelParams(embeddings_path_, sp_path_, kInputWindowSize),
+      MakeEmbedderParams(), embedder_remote.BindNewPipeAndPassReceiver(),
+      load_models_future.GetCallback());
   std::ignore = load_models_future.Take();
 
   base::test::TestFuture<std::vector<mojom::PassageEmbeddingsResultPtr>>

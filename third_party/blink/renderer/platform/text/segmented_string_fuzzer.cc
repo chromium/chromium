@@ -2,19 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/platform/text/segmented_string.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
 #include <tuple>
 
-#include "third_party/blink/renderer/platform/text/segmented_string.h"
-
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
 #include "third_party/blink/renderer/platform/testing/fuzzed_data_provider.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static blink::BlinkFuzzerTestSupport test_support;
+  blink::test::TaskEnvironment task_environment;
 
   enum operation : int {
     kOpFinish,
@@ -40,7 +42,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       if (!offset) {
         break;
       }
-      str.replace(offset, 0, String("\n"));
+      str.replace(offset, 0, blink::String("\n"));
     }
     return str;
   };
@@ -57,7 +59,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     operation op =
         static_cast<operation>(fuzzed_data.ConsumeIntegralInRange<int>(
             operation::kOpFinish, operation::kOpLast - 1));
-    String character;
+    blink::String character;
     switch (op) {
       case kOpFinish:
         finished = true;
@@ -73,13 +75,16 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         if (character.empty()) {
           break;
         }
-        seg_string.Push(character[0]);
+        // SegmentedString::Push() CHECKs if the input is non-NUL.
+        if (character[0]) {
+          seg_string.Push(character[0]);
+        }
         break;
       case kOpLookahead:
         seg_string.LookAhead(gen_str(10u));
         break;
       case kOpLast:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
 
     seg_string.UpdateLineNumber();

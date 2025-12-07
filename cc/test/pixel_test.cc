@@ -23,8 +23,6 @@
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
-#include "components/viz/common/resources/bitmap_allocation.h"
-#include "components/viz/common/resources/shared_bitmap.h"
 #include "components/viz/service/display/display_resource_provider_skia.h"
 #include "components/viz/service/display/display_resource_provider_software.h"
 #include "components/viz/service/display/software_output_device.h"
@@ -34,7 +32,6 @@
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "components/viz/test/paths.h"
 #include "components/viz/test/test_in_process_context_provider.h"
-#include "components/viz/test/test_shared_bitmap_manager.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "skia/buildflags.h"
@@ -46,6 +43,13 @@
 #endif
 
 namespace cc {
+namespace {
+void DeleteSharedImage(scoped_refptr<gpu::ClientSharedImage> shared_image,
+                       const gpu::SyncToken& sync_token,
+                       bool is_lost) {
+  shared_image->UpdateDestructionSyncToken(sync_token);
+}
+}  // namespace
 
 PixelTest::PixelTest(GraphicsBackend backend)
     : device_viewport_size_(gfx::Size(200, 200)),
@@ -54,6 +58,10 @@ PixelTest::PixelTest(GraphicsBackend backend)
   // Keep texture sizes exactly matching the bounds of the RenderPass to avoid
   // floating point badness in texcoords.
   renderer_settings_.dont_round_texture_sizes_for_pixel_tests = true;
+
+  // Copy requests force full damage, but OutputSurface-based readback can test
+  // incremental damage cases.
+  renderer_settings_.partial_swap_enabled = true;
 
   // Check if the graphics backend needs to initialize Vulkan, Dawn.
   bool init_vulkan = false;
@@ -115,25 +123,35 @@ void PixelTest::RenderReadbackTargetAndAreaToResultBitmap(
     const gfx::Rect* copy_rect) {
   base::RunLoop run_loop;
 
-  std::unique_ptr<viz::CopyOutputRequest> request =
-      std::make_unique<viz::CopyOutputRequest>(
-          viz::CopyOutputRequest::ResultFormat::RGBA,
-          viz::CopyOutputRequest::ResultDestination::kSystemMemory,
-          base::BindOnce(&PixelTest::ReadbackResult, base::Unretained(this),
-                         run_loop.QuitClosure()));
-  if (copy_rect) {
-    request->set_area(*copy_rect);
+  const bool use_copy_request = target != pass_list->back().get();
+  if (use_copy_request) {
+    std::unique_ptr<viz::CopyOutputRequest> request =
+        std::make_unique<viz::CopyOutputRequest>(
+            viz::CopyOutputRequest::ResultFormat::RGBA,
+            viz::CopyOutputRequest::ResultDestination::kSystemMemory,
+            base::BindOnce(&PixelTest::ReadbackResult, base::Unretained(this),
+                           run_loop.QuitClosure()));
+    if (copy_rect) {
+      request->set_area(*copy_rect);
+    }
+    target->copy_requests.push_back(std::move(request));
   }
-  target->copy_requests.push_back(std::move(request));
 
   float device_scale_factor = 1.f;
   renderer_->DrawFrame(pass_list, device_scale_factor, device_viewport_size_,
                        display_color_spaces_,
                        std::move(surface_damage_rect_list_));
 
-  // Call SwapBuffersSkipped(), so the renderer can have a chance to release
-  // resources.
-  renderer_->SwapBuffersSkipped();
+  if (use_copy_request) {
+    // Call SwapBuffersSkipped(), so the renderer can have a chance to release
+    // resources.
+    renderer_->SwapBuffersSkipped();
+  } else {
+    renderer_->SwapBuffers(viz::DirectRenderer::SwapFrameData());
+    output_surface_->ReadbackForTesting(
+        base::BindOnce(&PixelTest::ReadbackResult, base::Unretained(this),
+                       run_loop.QuitClosure()));
+  }
 
   // Wait for the readback to complete.
   run_loop.Run();
@@ -142,20 +160,20 @@ void PixelTest::RenderReadbackTargetAndAreaToResultBitmap(
 bool PixelTest::RunPixelTest(viz::AggregatedRenderPassList* pass_list,
                              const base::FilePath& ref_file,
                              const PixelComparator& comparator) {
-  return RunPixelTestWithReadbackTarget(pass_list, pass_list->back().get(),
-                                        ref_file, comparator);
+  return RunPixelTestWithCopyOutputRequest(pass_list, pass_list->back().get(),
+                                           ref_file, comparator);
 }
 
-bool PixelTest::RunPixelTestWithReadbackTarget(
+bool PixelTest::RunPixelTestWithCopyOutputRequest(
     viz::AggregatedRenderPassList* pass_list,
     viz::AggregatedRenderPass* target,
     const base::FilePath& ref_file,
     const PixelComparator& comparator) {
-  return RunPixelTestWithReadbackTargetAndArea(pass_list, target, ref_file,
-                                               comparator, nullptr);
+  return RunPixelTestWithCopyOutputRequestAndArea(pass_list, target, ref_file,
+                                                  comparator, nullptr);
 }
 
-bool PixelTest::RunPixelTestWithReadbackTargetAndArea(
+bool PixelTest::RunPixelTestWithCopyOutputRequestAndArea(
     viz::AggregatedRenderPassList* pass_list,
     viz::AggregatedRenderPass* target,
     const base::FilePath& ref_file,
@@ -224,6 +242,15 @@ bool PixelTest::RunPixelTest(viz::AggregatedRenderPassList* pass_list,
   return result;
 }
 
+bool PixelTest::RunPixelTest(viz::AggregatedRenderPassList* pass_list,
+                             viz::AggregatedRenderPassList* ref_pass_list,
+                             const PixelComparator& comparator) {
+  RenderReadbackTargetAndAreaToResultBitmap(
+      ref_pass_list, ref_pass_list->back().get(), nullptr);
+  std::unique_ptr<SkBitmap> output = std::move(result_bitmap_);
+  return RunPixelTest(pass_list, *output, comparator);
+}
+
 void PixelTest::ReadbackResult(base::OnceClosure quit_run_loop,
                                std::unique_ptr<viz::CopyOutputResult> result) {
   ASSERT_FALSE(result->IsEmpty());
@@ -237,34 +264,34 @@ void PixelTest::ReadbackResult(base::OnceClosure quit_run_loop,
   std::move(quit_run_loop).Run();
 }
 
-base::WritableSharedMemoryMapping PixelTest::AllocateSharedBitmapMemory(
-    const viz::SharedBitmapId& id,
-    const gfx::Size& size) {
-  base::MappedReadOnlyRegion shm = viz::bitmap_allocation::AllocateSharedBitmap(
-      size, viz::SinglePlaneFormat::kRGBA_8888);
-  this->shared_bitmap_manager_->ChildAllocatedSharedBitmap(shm.region.Map(),
-                                                           id);
-  return std::move(shm.mapping);
-}
-
 viz::ResourceId PixelTest::AllocateAndFillSoftwareResource(
+    scoped_refptr<viz::RasterContextProvider> context_provider,
     const gfx::Size& size,
     const SkBitmap& source) {
-  viz::SharedBitmapId shared_bitmap_id = viz::SharedBitmap::GenerateId();
-  base::WritableSharedMemoryMapping mapping =
-      AllocateSharedBitmapMemory(shared_bitmap_id, size);
+  auto* shared_image_interface = context_provider->SharedImageInterface();
+  DCHECK(shared_image_interface);
+
+  scoped_refptr<gpu::ClientSharedImage> shared_image =
+      shared_image_interface->CreateSharedImageForSoftwareCompositor(
+          {viz::SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
+           gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "PixelTestSharedBitmap"});
+  auto mapping = shared_image->Map();
+  gpu::SyncToken sync_token = shared_image_interface->GenUnverifiedSyncToken();
 
   SkImageInfo info = SkImageInfo::MakeN32Premul(size.width(), size.height());
   const size_t row_bytes = info.minRowBytes();
-  base::span<uint8_t> mem(mapping);
+  base::span<uint8_t> mem = mapping->GetMemoryForPlane(0);
   CHECK_GE(mem.size(), info.computeByteSize(row_bytes));
   source.readPixels(info, mem.data(), row_bytes, 0, 0);
 
+  auto transferable_resource = viz::TransferableResource::Make(
+      shared_image, viz::TransferableResource::ResourceSource::kTileRasterTask,
+      sync_token);
+  auto release_callback =
+      base::BindOnce(&DeleteSharedImage, std::move(shared_image));
+
   return child_resource_provider_->ImportResource(
-      viz::TransferableResource::MakeSoftwareSharedBitmap(
-          shared_bitmap_id, gpu::SyncToken(), size,
-          viz::SinglePlaneFormat::kRGBA_8888),
-      base::DoNothing());
+      std::move(transferable_resource), std::move(release_callback));
 }
 
 void PixelTest::SetUpSkiaRenderer(gfx::SurfaceOrigin output_surface_origin) {
@@ -313,13 +340,11 @@ void PixelTest::SetUpSoftwareRenderer() {
   output_surface_ = std::make_unique<PixelTestOutputSurface>(
       std::make_unique<viz::SoftwareOutputDevice>());
   output_surface_->BindToClient(output_surface_client_.get());
-  shared_bitmap_manager_ = std::make_unique<viz::TestSharedBitmapManager>();
 
   auto* gpu_service = gpu_service_holder_->gpu_service();
   auto resource_provider =
       std::make_unique<viz::DisplayResourceProviderSoftware>(
-          shared_bitmap_manager_.get(), gpu_service->shared_image_manager(),
-          gpu_service->sync_point_manager(), gpu_service->gpu_scheduler());
+          gpu_service->shared_image_manager(), gpu_service->gpu_scheduler());
 
   auto renderer = std::make_unique<viz::SoftwareRenderer>(
       &renderer_settings_, &debug_settings_, output_surface_.get(),

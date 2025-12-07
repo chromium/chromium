@@ -37,6 +37,8 @@ class TestLocalSessionEventHandler
     }
   }
 
+  void OnLocalTabClosed() override { OnLocalTabModified(nullptr); }
+
   bool local_tab_updated() { return local_tab_updated_; }
   void reset_local_tab_updated() { local_tab_updated_ = false; }
 
@@ -163,7 +165,8 @@ IN_PROC_BROWSER_TEST_F(SyncSessionsRouterTabHelperBrowserTest,
   // it, SyncSessionsRouterTabHelper doesn't trigger OnLocalTabModified() on
   // prerendering.
   GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
-  int prerender_id = prerender_helper()->AddPrerender(prerender_url);
+  content::FrameTreeNodeId prerender_id =
+      prerender_helper()->AddPrerender(prerender_url);
   content::test::PrerenderHostObserver host_observer(*web_contents(),
                                                      prerender_id);
   // Make sure that OnLocalTabModified() is not called.

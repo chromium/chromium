@@ -11,7 +11,6 @@
 
 #include "base/logging.h"
 #include "components/prefs/pref_notifier.h"
-#include "components/prefs/pref_observer.h"
 
 PrefValueStore::PrefStoreKeeper::PrefStoreKeeper()
     : pref_value_store_(nullptr), type_(PrefValueStore::INVALID_STORE) {}
@@ -51,7 +50,6 @@ void PrefValueStore::PrefStoreKeeper::OnInitializationCompleted(
 PrefValueStore::PrefValueStore(PrefStore* managed_prefs,
                                PrefStore* supervised_user_prefs,
                                PrefStore* extension_prefs,
-                               PrefStore* standalone_browser_prefs,
                                PrefStore* command_line_prefs,
                                PrefStore* user_prefs,
                                PrefStore* recommended_prefs,
@@ -61,7 +59,6 @@ PrefValueStore::PrefValueStore(PrefStore* managed_prefs,
   InitPrefStore(MANAGED_STORE, managed_prefs);
   InitPrefStore(SUPERVISED_USER_STORE, supervised_user_prefs);
   InitPrefStore(EXTENSION_STORE, extension_prefs);
-  InitPrefStore(STANDALONE_BROWSER_STORE, standalone_browser_prefs);
   InitPrefStore(COMMAND_LINE_STORE, command_line_prefs);
   InitPrefStore(USER_STORE, user_prefs);
   InitPrefStore(RECOMMENDED_STORE, recommended_prefs);
@@ -70,13 +67,12 @@ PrefValueStore::PrefValueStore(PrefStore* managed_prefs,
   CheckInitializationCompleted();
 }
 
-PrefValueStore::~PrefValueStore() {}
+PrefValueStore::~PrefValueStore() = default;
 
 std::unique_ptr<PrefValueStore> PrefValueStore::CloneAndSpecialize(
     PrefStore* managed_prefs,
     PrefStore* supervised_user_prefs,
     PrefStore* extension_prefs,
-    PrefStore* standalone_browser_prefs,
     PrefStore* command_line_prefs,
     PrefStore* user_prefs,
     PrefStore* recommended_prefs,
@@ -89,8 +85,6 @@ std::unique_ptr<PrefValueStore> PrefValueStore::CloneAndSpecialize(
     supervised_user_prefs = GetPrefStore(SUPERVISED_USER_STORE);
   if (!extension_prefs)
     extension_prefs = GetPrefStore(EXTENSION_STORE);
-  if (!standalone_browser_prefs)
-    standalone_browser_prefs = GetPrefStore(STANDALONE_BROWSER_STORE);
   if (!command_line_prefs)
     command_line_prefs = GetPrefStore(COMMAND_LINE_STORE);
   if (!user_prefs)
@@ -101,9 +95,8 @@ std::unique_ptr<PrefValueStore> PrefValueStore::CloneAndSpecialize(
     default_prefs = GetPrefStore(DEFAULT_STORE);
 
   return std::make_unique<PrefValueStore>(
-      managed_prefs, supervised_user_prefs, extension_prefs,
-      standalone_browser_prefs, command_line_prefs, user_prefs,
-      recommended_prefs, default_prefs, pref_notifier);
+      managed_prefs, supervised_user_prefs, extension_prefs, command_line_prefs,
+      user_prefs, recommended_prefs, default_prefs, pref_notifier);
 }
 
 PrefValueStore::PrefStoreType PrefValueStore::ControllingPrefStoreForPref(
@@ -175,11 +168,6 @@ bool PrefValueStore::PrefValueFromRecommendedStore(
   return ControllingPrefStoreForPref(name) == RECOMMENDED_STORE;
 }
 
-bool PrefValueStore::PrefValueFromStandaloneBrowserStore(
-    const std::string& name) const {
-  return ControllingPrefStoreForPref(name) == STANDALONE_BROWSER_STORE;
-}
-
 bool PrefValueStore::PrefValueFromDefaultStore(const std::string& name) const {
   return ControllingPrefStoreForPref(name) == DEFAULT_STORE;
 }
@@ -197,15 +185,12 @@ bool PrefValueStore::PrefValueExtensionModifiable(
          effective_store == INVALID_STORE;
 }
 
-bool PrefValueStore::PrefValueStandaloneBrowserModifiable(
-    const std::string& name) const {
-  PrefStoreType effective_store = ControllingPrefStoreForPref(name);
-  return effective_store >= STANDALONE_BROWSER_STORE ||
-         effective_store == INVALID_STORE;
-}
-
 void PrefValueStore::UpdateCommandLinePrefStore(PrefStore* command_line_prefs) {
   InitPrefStore(COMMAND_LINE_STORE, command_line_prefs);
+}
+
+void PrefValueStore::UpdateExtensionPrefStore(PrefStore* extension_prefs) {
+  InitPrefStore(EXTENSION_STORE, extension_prefs);
 }
 
 bool PrefValueStore::IsInitializationComplete() const {
@@ -232,8 +217,7 @@ bool PrefValueStore::PrefValueInStoreRange(
     PrefValueStore::PrefStoreType first_checked_store,
     PrefValueStore::PrefStoreType last_checked_store) const {
   if (first_checked_store > last_checked_store) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   for (size_t i = first_checked_store;

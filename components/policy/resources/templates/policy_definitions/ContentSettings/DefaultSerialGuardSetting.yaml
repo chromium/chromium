@@ -28,6 +28,7 @@ schema:
 supported_on:
 - chrome_os:86-
 - chrome.*:86-
+- android:140-
 tags:
 - website-sharing
 type: int-enum

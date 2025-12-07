@@ -9,15 +9,18 @@ import android.content.ComponentName;
 import androidx.browser.customtabs.CustomTabsClient;
 import androidx.browser.customtabs.CustomTabsServiceConnection;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.ref.WeakReference;
 
 /**
  * Implementation for the CustomTabsServiceConnection that avoids leaking the
  * ServiceConnectionCallback
  */
+@NullMarked
 public class ServiceConnection extends CustomTabsServiceConnection {
     // A weak reference to the ServiceConnectionCallback to avoid leaking it.
-    private WeakReference<ServiceConnectionCallback> mConnectionCallback;
+    private final WeakReference<ServiceConnectionCallback> mConnectionCallback;
 
     public ServiceConnection(ServiceConnectionCallback connectionCallback) {
         mConnectionCallback = new WeakReference<>(connectionCallback);

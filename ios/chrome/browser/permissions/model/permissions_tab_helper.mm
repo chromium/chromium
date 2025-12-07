@@ -126,7 +126,7 @@ void PermissionsTabHelper::OnInfoBarRemoved(infobars::InfoBar* infobar,
   }
 }
 
-void PermissionsTabHelper::OnManagerShuttingDown(
+void PermissionsTabHelper::OnManagerWillBeDestroyed(
     infobars::InfoBarManager* manager) {
   DCHECK(infobar_manager_scoped_observation_.IsObservingSource(manager));
   infobar_manager_scoped_observation_.Reset();
@@ -180,5 +180,3 @@ void PermissionsTabHelper::UpdateIsInfoBarAccepted() {
   }
   static_cast<InfoBarIOS*>(infobar_)->set_accepted(accepted);
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(PermissionsTabHelper)

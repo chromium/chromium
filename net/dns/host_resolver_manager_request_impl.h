@@ -63,13 +63,12 @@ class HostResolverManager::RequestImpl
 
   // HostResolver::ResolveHostRequest implementations:
   int Start(CompletionOnceCallback callback) override;
-  const AddressList* GetAddressResults() const override;
-  const std::vector<HostResolverEndpointResult>* GetEndpointResults()
+  const AddressList& GetAddressResults() const override;
+  base::span<const HostResolverEndpointResult> GetEndpointResults()
       const override;
-  const std::vector<std::string>* GetTextResults() const override;
-  const std::vector<HostPortPair>* GetHostnameResults() const override;
-  const std::set<std::string>* GetDnsAliasResults() const override;
-  const std::vector<bool>* GetExperimentalResultsForTesting() const override;
+  base::span<const std::string> GetTextResults() const override;
+  base::span<const HostPortPair> GetHostnameResults() const override;
+  const std::set<std::string>& GetDnsAliasResults() const override;
   net::ResolveErrorInfo GetResolveErrorInfo() const override;
   const std::optional<HostCache::EntryStaleness>& GetStaleInfo() const override;
   void ChangeRequestPriority(RequestPriority priority) override;
@@ -174,9 +173,9 @@ class HostResolverManager::RequestImpl
   bool only_ipv6_reachable_ = false;
   std::optional<HostCache::Entry> results_;
   std::optional<HostCache::EntryStaleness> stale_info_;
-  std::optional<AddressList> legacy_address_results_;
-  std::optional<std::vector<HostResolverEndpointResult>> endpoint_results_;
-  std::optional<std::set<std::string>> fixed_up_dns_alias_results_;
+  AddressList legacy_address_results_;
+  std::vector<HostResolverEndpointResult> endpoint_results_;
+  std::set<std::string> fixed_up_dns_alias_results_;
   ResolveErrorInfo error_info_;
 
   const raw_ptr<const base::TickClock> tick_clock_;

@@ -33,16 +33,16 @@
 #include "base/dcheck_is_on.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
+#include "third_party/blink/renderer/platform/geometry/dash_array.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_filter.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings.h"
-#include "third_party/blink/renderer/platform/graphics/dash_array.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state.h"
+#include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"
-#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -65,13 +65,12 @@ class PaintPreviewTracker;
 
 namespace blink {
 
+class ContouredRect;
 class FloatRoundedRect;
 class KURL;
 class PaintController;
 class Path;
 class StrokeData;
-class StyledStrokeData;
-struct TextRunPaintInfo;
 
 // Tiling parameters for the DrawImageTiled() method.
 struct ImageTilingInfo {
@@ -253,9 +252,6 @@ class PLATFORM_EXPORT GraphicsContext {
   void SetTextPaintOrder(const TextPaintOrder& order) {
     MutableState()->SetTextPaintOrder(order);
   }
-  TextPaintOrder GetTextPaintOrder() const {
-    return ImmutableState()->GetTextPaintOrder();
-  }
 
   void SetImageInterpolationQuality(InterpolationQuality quality) {
     MutableState()->SetInterpolationQuality(quality);
@@ -280,19 +276,12 @@ class PLATFORM_EXPORT GraphicsContext {
   // Set to true if context is for printing. Bitmaps won't be resampled when
   // printing to keep the best possible quality. When printing text will be
   // provided along with glyphs.
-  void SetPrinting(bool printing) { printing_ = printing; }
+  void SetPrinting(bool);
+  // Set to true if the content painted into this context is internally-
+  // generated browser content for page headers and footers.
+  void SetPrintingInternalHeadersAndFooters(bool);
 
   // ---------- End state management methods -----------------
-
-  // DrawLine() only operates on horizontal or vertical lines and uses the
-  // current stroke settings. For dotted or dashed stroke, the line need to be
-  // top-to-down or left-to-right to get correct interval of dots/dashes.
-  void DrawLine(const gfx::Point&,
-                const gfx::Point&,
-                const StyledStrokeData&,
-                const AutoDarkMode& auto_dark_mode,
-                bool is_text_line = false,
-                const cc::PaintFlags* flags = nullptr);
 
   void FillPath(const Path&, const AutoDarkMode& auto_dark_mode);
   void StrokePath(const Path&, const AutoDarkMode& auto_dark_mode);
@@ -313,23 +302,22 @@ class PLATFORM_EXPORT GraphicsContext {
   void FillRoundedRect(const FloatRoundedRect&,
                        const Color&,
                        const AutoDarkMode& auto_dark_mode);
+  void FillContouredRect(const ContouredRect&,
+                         const Color&,
+                         const AutoDarkMode& auto_dark_mode);
   void FillDRRect(const FloatRoundedRect&,
                   const FloatRoundedRect&,
                   const Color&,
                   const AutoDarkMode& auto_dark_mode);
-  void FillRectWithRoundedHole(const gfx::RectF&,
-                               const FloatRoundedRect& rounded_hole_rect,
-                               const Color&,
-                               const AutoDarkMode& auto_dark_mode);
+  void FillRectWithContouredHole(const gfx::RectF&,
+                                 const ContouredRect& contoured_hole_rect,
+                                 const Color&,
+                                 const AutoDarkMode& auto_dark_mode);
 
   void StrokeRect(const gfx::RectF&,
                   const AutoDarkMode& auto_dark_mode);
 
   void DrawRecord(PaintRecord);
-  void CompositeRecord(PaintRecord,
-                       const gfx::RectF& dest,
-                       const gfx::RectF& src,
-                       SkBlendMode);
   void DrawImage(Image&,
                  Image::ImageDecodingMode,
                  const ImageAutoDarkMode& auto_dark_mode,
@@ -380,17 +368,16 @@ class PLATFORM_EXPORT GraphicsContext {
 
   void Clip(const gfx::Rect& rect) { ClipRect(gfx::RectToSkRect(rect)); }
   void Clip(const gfx::RectF& rect) { ClipRect(gfx::RectFToSkRect(rect)); }
-  void ClipRoundedRect(const FloatRoundedRect&,
-                       SkClipOp = SkClipOp::kIntersect,
-                       AntiAliasingMode = kAntiAliased);
+  void ClipContouredRect(const ContouredRect&,
+                         SkClipOp = SkClipOp::kIntersect,
+                         AntiAliasingMode = kAntiAliased);
   void ClipOut(const gfx::Rect& rect) {
     ClipRect(gfx::RectToSkRect(rect), kNotAntiAliased, SkClipOp::kDifference);
   }
   void ClipOut(const gfx::RectF& rect) {
     ClipRect(gfx::RectFToSkRect(rect), kNotAntiAliased, SkClipOp::kDifference);
   }
-  void ClipOut(const Path&);
-  void ClipOutRoundedRect(const FloatRoundedRect&);
+  void ClipOutContouredRect(const ContouredRect&);
   void ClipPath(const SkPath&,
                 AntiAliasingMode = kNotAntiAliased,
                 SkClipOp = SkClipOp::kIntersect);
@@ -411,22 +398,15 @@ class PLATFORM_EXPORT GraphicsContext {
                 const AutoDarkMode& auto_dark_mode);
 
   void DrawEmphasisMarks(const Font&,
-                         const TextRunPaintInfo&,
-                         const AtomicString& mark,
-                         const gfx::PointF&,
-                         const AutoDarkMode& auto_dark_mode);
-  void DrawEmphasisMarks(const Font&,
                          const TextFragmentPaintInfo&,
                          const AtomicString& mark,
                          const gfx::PointF&,
                          const AutoDarkMode& auto_dark_mode);
 
-  void DrawBidiText(
-      const Font&,
-      const TextRunPaintInfo&,
-      const gfx::PointF&,
-      const AutoDarkMode& auto_dark_mode,
-      Font::CustomFontNotReadyAction = Font::kDoNotPaintIfFontNotReady);
+  void DrawBidiText(const Font&,
+                    const TextRun&,
+                    const gfx::PointF&,
+                    const AutoDarkMode& auto_dark_mode);
 
   // BeginLayer()/EndLayer() behave like Save()/Restore() for CTM and clip
   // states. Apply opacity, blend mode, filter when the layer is composited on
@@ -470,7 +450,6 @@ class PLATFORM_EXPORT GraphicsContext {
   void ConcatCTM(const AffineTransform&);
 
   void Scale(float x, float y);
-  void Rotate(float angle_in_radians);
   void Translate(float x, float y);
   // ---------- End transformation methods -----------------
 
@@ -482,8 +461,12 @@ class PLATFORM_EXPORT GraphicsContext {
   SkSamplingOptions ComputeSamplingOptions(Image& image,
                                            const gfx::RectF& dest,
                                            const gfx::RectF& src) const {
+    cc::PaintFlags::ScalingOperation scale =
+        (dest.width() > src.width() && dest.height() > src.height())
+            ? cc::PaintFlags::ScalingOperation::kUpscale
+            : cc::PaintFlags::ScalingOperation::kUnknown;
     return cc::PaintFlags::FilterQualityToSkSamplingOptions(
-        ComputeFilterQuality(image, dest, src));
+        ComputeFilterQuality(image, dest, src), scale);
   }
 
   // Sets target URL of a clickable area.
@@ -498,10 +481,6 @@ class PLATFORM_EXPORT GraphicsContext {
   // Sets location of a URL destination (a.k.a. anchor) in the page.
   void SetURLDestinationLocation(const String& name, const gfx::Point&);
 
-  static void AdjustLineToPixelBoundaries(gfx::PointF& p1,
-                                          gfx::PointF& p2,
-                                          float stroke_width);
-
   void SetInDrawingRecorder(bool);
   bool InDrawingRecorder() const { return in_drawing_recorder_; }
 
@@ -512,6 +491,10 @@ class PLATFORM_EXPORT GraphicsContext {
   DOMNodeId GetDOMNodeId() const;
   bool NeedsDOMNodeId() const { return printing_; }
 
+  bool PrintingInternalHeadersAndFooters() const {
+    return printing_internal_headers_and_footers_;
+  }
+
  private:
   const GraphicsContextState* ImmutableState() const { return paint_state_; }
 
@@ -519,13 +502,6 @@ class PLATFORM_EXPORT GraphicsContext {
     RealizePaintSave();
     return paint_state_;
   }
-
-  template <typename TextPaintInfo>
-  void DrawEmphasisMarksInternal(const Font&,
-                                 const TextPaintInfo&,
-                                 const AtomicString& mark,
-                                 const gfx::PointF&,
-                                 const AutoDarkMode& auto_dark_mode);
 
   template <typename DrawTextFunc>
   void DrawTextPasses(const DrawTextFunc&);
@@ -588,6 +564,7 @@ class PLATFORM_EXPORT GraphicsContext {
   std::unique_ptr<DarkModeFilter> dark_mode_filter_;
 
   bool printing_ = false;
+  bool printing_internal_headers_and_footers_ = false;
   bool in_drawing_recorder_ = false;
 
   // The current node ID, which is used for marked content in a tagged PDF.

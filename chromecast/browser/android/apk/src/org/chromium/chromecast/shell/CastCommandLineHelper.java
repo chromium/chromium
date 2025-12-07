@@ -10,9 +10,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.CommandLineInitUtil;
 import org.chromium.base.Log;
 
-/**
- * Helper class that serializes the command line arguments from Intent extra data.
- */
+/** Helper class that serializes the command line arguments from Intent extra data. */
 public class CastCommandLineHelper {
     private static final String TAG = "CastCommandLineHelper";
     // Default command line flags for `cast_browser` process.
@@ -39,6 +37,7 @@ public class CastCommandLineHelper {
 
     /**
      * Store command line arguments to Intent's extra data.
+     *
      * @param intent Intent to store the command line arguments to.
      * @param commandLineArgs Command line arguments to store.
      */

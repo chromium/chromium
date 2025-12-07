@@ -8,8 +8,13 @@
 
 #include <string>
 
+#include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
+
+namespace content {
+class NavigationHandle;
+}  // namespace content
 
 class ProfileSelections;
 class Profile;
@@ -46,6 +51,17 @@ std::string GetAccountGivenName(Profile& profile);
 // supervision incidents. Relevant on Chrome OS platform that has the concept
 // of the user.
 void AssertChildStatusOfTheUser(Profile* profile, bool is_child);
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// Returns the html content of the reauthentication interstitial for blocked
+// sites. This interstitial is associated with the given NavigationHandle.
+std::string CreateReauthenticationInterstitialForBlockedSites(
+    content::NavigationHandle& navigation_handle,
+    FilteringBehaviorReason block_reason);
+
+std::string CreateReauthenticationInterstitialForYouTube(
+    content::NavigationHandle& navigation_handle);
+#endif
 
 }  // namespace supervised_user
 

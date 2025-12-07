@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 
 class AccountId;
@@ -52,7 +53,8 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCacheWrapper {
   void RemoveObserver(Observer* observer);
 
  private:
-  std::map<AccountId, AppRegistryCache*> app_registry_caches_;
+  std::map<AccountId, raw_ptr<AppRegistryCache, CtnExperimental>>
+      app_registry_caches_;
 
   base::ObserverList<Observer> observers_;
 };

@@ -14,6 +14,8 @@
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -41,8 +43,9 @@ ChooserDialogView::ChooserDialogView(
   DCHECK(chooser_controller);
 
   SetUseDefaultFillLayout(true);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, chooser_controller->GetOkButtonLabel());
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
+                 chooser_controller->GetOkButtonLabel());
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  chooser_controller->GetCancelButtonLabel());
 
   device_chooser_content_view_ =
@@ -54,7 +57,7 @@ ChooserDialogView::ChooserDialogView(
           views::DialogContentType::kControl)));
 
   SetExtraView(device_chooser_content_view_->CreateExtraView());
-  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetModalType(ui::mojom::ModalType::kChild);
   SetShowCloseButton(false);
   SetTitle(device_chooser_content_view_->GetWindowTitle());
 
@@ -75,7 +78,8 @@ ChooserDialogView::~ChooserDialogView() {
   device_chooser_content_view_.ClearAndDelete();
 }
 
-bool ChooserDialogView::IsDialogButtonEnabled(ui::DialogButton button) const {
+bool ChooserDialogView::IsDialogButtonEnabled(
+    ui::mojom::DialogButton button) const {
   return device_chooser_content_view_->IsDialogButtonEnabled(button);
 }
 
@@ -85,6 +89,11 @@ views::View* ChooserDialogView::GetInitiallyFocusedView() {
 
 void ChooserDialogView::OnSelectionChanged() {
   DialogModelChanged();
+}
+
+DeviceChooserContentView*
+ChooserDialogView::device_chooser_content_view_for_test() const {
+  return device_chooser_content_view_;
 }
 
 BEGIN_METADATA(ChooserDialogView)

@@ -10,7 +10,6 @@
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence_credential_storage.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace ash::nearby::presence {
 

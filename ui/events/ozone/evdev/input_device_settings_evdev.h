@@ -5,6 +5,8 @@
 #ifndef UI_EVENTS_OZONE_EVDEV_INPUT_DEVICE_SETTINGS_EVDEV_H_
 #define UI_EVENTS_OZONE_EVDEV_INPUT_DEVICE_SETTINGS_EVDEV_H_
 
+#include <stdint.h>
+
 #include <vector>
 
 #include "base/component_export.h"

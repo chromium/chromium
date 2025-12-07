@@ -53,15 +53,17 @@ void MediaToolbarButtonController::UpdateToolbarButtonState() {
   }
 
   if (!item_manager_->HasFrozenItems()) {
-    if (delegate_display_state_ != DisplayState::kHidden)
+    if (delegate_display_state_ != DisplayState::kHidden) {
       delegate_->Hide();
+    }
     delegate_display_state_ = DisplayState::kHidden;
     return;
   }
 
   if (!item_manager_->HasOpenDialog()) {
-    if (delegate_display_state_ != DisplayState::kDisabled)
+    if (delegate_display_state_ != DisplayState::kDisabled) {
       delegate_->Disable();
+    }
     delegate_display_state_ = DisplayState::kDisabled;
   }
 }

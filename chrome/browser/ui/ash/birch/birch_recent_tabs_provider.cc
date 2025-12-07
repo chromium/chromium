@@ -11,20 +11,14 @@
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/suggestion_service_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/grit/chrome_unscaled_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
-#include "ui/base/resource/resource_bundle.h"
 
 namespace ash {
 
@@ -36,23 +30,14 @@ BirchTabItem::DeviceFormFactor GetTabItemFormFactor(
   // to DeviceInfo::FormFactor won't break the BirchTabItem's form factor.
   switch (form_factor) {
     case syncer::DeviceInfo::FormFactor::kUnknown:
+    case syncer::DeviceInfo::FormFactor::kAutomotive:
+    case syncer::DeviceInfo::FormFactor::kWearable:
+    case syncer::DeviceInfo::FormFactor::kTv:
     case syncer::DeviceInfo::FormFactor::kDesktop:
       return BirchTabItem::DeviceFormFactor::kDesktop;
     case syncer::DeviceInfo::FormFactor::kPhone:
       return BirchTabItem::DeviceFormFactor::kPhone;
     case syncer::DeviceInfo::FormFactor::kTablet:
-      return BirchTabItem::DeviceFormFactor::kTablet;
-  }
-}
-
-BirchTabItem::DeviceFormFactor FromMojomFormFactor(
-    crosapi::mojom::SuggestionDeviceFormFactor form_factor) {
-  switch (form_factor) {
-    case crosapi::mojom::SuggestionDeviceFormFactor::kDesktop:
-      return BirchTabItem::DeviceFormFactor::kDesktop;
-    case crosapi::mojom::SuggestionDeviceFormFactor::kPhone:
-      return BirchTabItem::DeviceFormFactor::kPhone;
-    case crosapi::mojom::SuggestionDeviceFormFactor::kTablet:
       return BirchTabItem::DeviceFormFactor::kTablet;
   }
 }
@@ -65,18 +50,6 @@ BirchRecentTabsProvider::BirchRecentTabsProvider(Profile* profile)
 BirchRecentTabsProvider::~BirchRecentTabsProvider() = default;
 
 void BirchRecentTabsProvider::RequestBirchDataFetch() {
-  // TODO(b/338286403): Check if ChromeSync integration is disabled on lacros
-  // side.
-  if (crosapi::browser_util::IsLacrosEnabled()) {
-    crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->suggestion_service_ash()
-        ->GetTabSuggestionItems(
-            base::BindOnce(&BirchRecentTabsProvider::OnTabsRetrieved,
-                           weak_factory_.GetWeakPtr()));
-    return;
-  }
-
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_);
   // `sync_service_` can be null in some tests, so check that here.
@@ -125,10 +98,6 @@ void BirchRecentTabsProvider::RequestBirchDataFetch() {
 
   std::vector<BirchTabItem> items;
 
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  const ui::ImageModel backup_icon = ui::ImageModel::FromImageSkia(
-      *rb.GetImageSkiaNamed(IDR_CHROME_APP_ICON_192));
-
   for (auto& session : remote_sessions) {
     const std::string& session_tag = session->GetSessionTag();
     std::vector<const sessions::SessionTab*> tabs_in_session;
@@ -141,7 +110,7 @@ void BirchRecentTabsProvider::RequestBirchDataFetch() {
             current_navigation.title(), current_navigation.virtual_url(),
             current_navigation.timestamp(), current_navigation.favicon_url(),
             session->GetSessionName(),
-            GetTabItemFormFactor(session->GetDeviceFormFactor()), backup_icon);
+            GetTabItemFormFactor(session->GetDeviceFormFactor()));
       }
     }
   }
@@ -152,23 +121,6 @@ void BirchRecentTabsProvider::RequestBirchDataFetch() {
 void BirchRecentTabsProvider::OnForeignSessionsChanged() {
   foreign_sessions_subscription_ = base::CallbackListSubscription();
   RequestBirchDataFetch();
-}
-
-void BirchRecentTabsProvider::OnTabsRetrieved(
-    std::vector<crosapi::mojom::TabSuggestionItemPtr> items) {
-  std::vector<BirchTabItem> tab_items;
-
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  const ui::ImageModel backup_icon = ui::ImageModel::FromImageSkia(
-      *rb.GetImageSkiaNamed(IDR_CHROME_APP_ICON_192));
-
-  for (auto& item : items) {
-    tab_items.emplace_back(base::UTF8ToUTF16(item->title), item->url,
-                           item->timestamp, item->favicon_url,
-                           item->session_name,
-                           FromMojomFormFactor(item->form_factor), backup_icon);
-  }
-  Shell::Get()->birch_model()->SetRecentTabItems(std::move(tab_items));
 }
 
 }  // namespace ash

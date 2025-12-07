@@ -5,9 +5,9 @@
 #include "chrome/browser/ash/login/test/oobe_window_visibility_waiter.h"
 
 #include "base/run_loop.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ash {
 

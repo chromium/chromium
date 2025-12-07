@@ -38,8 +38,6 @@ PointerEvent::PointerEvent(const AtomicString& type,
       tangential_pressure_(0),
       twist_(0),
       is_primary_(false),
-      coalesced_events_targets_dirty_(false),
-      predicted_events_targets_dirty_(false),
       persistent_device_id_(0),
       prevent_counting_as_interaction_(prevent_counting_as_interaction) {
   if (initializer->hasPointerId())
@@ -63,12 +61,14 @@ PointerEvent::PointerEvent(const AtomicString& type,
   if (initializer->hasIsPrimary())
     is_primary_ = initializer->isPrimary();
   if (initializer->hasCoalescedEvents()) {
-    for (auto coalesced_event : initializer->coalescedEvents())
+    for (const auto& coalesced_event : initializer->coalescedEvents()) {
       coalesced_events_.push_back(coalesced_event);
+    }
   }
   if (initializer->hasPredictedEvents()) {
-    for (auto predicted_event : initializer->predictedEvents())
+    for (const auto& predicted_event : initializer->predictedEvents()) {
       predicted_events_.push_back(predicted_event);
+    }
   }
   if (initializer->hasAzimuthAngle())
     azimuth_angle_ = initializer->azimuthAngle();
@@ -141,8 +141,6 @@ double PointerEvent::offsetY() const {
 }
 
 void PointerEvent::ReceivedTarget() {
-  coalesced_events_targets_dirty_ = true;
-  predicted_events_targets_dirty_ = true;
   MouseEvent::ReceivedTarget();
 }
 
@@ -155,30 +153,10 @@ Node* PointerEvent::fromElement() const {
 }
 
 HeapVector<Member<PointerEvent>> PointerEvent::getCoalescedEvents() {
-  if (auto* local_dom_window = DynamicTo<LocalDOMWindow>(view())) {
-    auto* document = local_dom_window->document();
-    if (document && !local_dom_window->isSecureContext()) {
-      UseCounter::Count(document,
-                        WebFeature::kGetCoalescedEventsInInsecureContext);
-    }
-  }
-
-  if (coalesced_events_targets_dirty_ &&
-      !RuntimeEnabledFeatures::PointerEventTargetsInEventListsEnabled()) {
-    for (auto coalesced_event : coalesced_events_)
-      coalesced_event->SetTarget(target());
-    coalesced_events_targets_dirty_ = false;
-  }
   return coalesced_events_;
 }
 
 HeapVector<Member<PointerEvent>> PointerEvent::getPredictedEvents() {
-  if (predicted_events_targets_dirty_ &&
-      !RuntimeEnabledFeatures::PointerEventTargetsInEventListsEnabled()) {
-    for (auto predicted_event : predicted_events_)
-      predicted_event->SetTarget(target());
-    predicted_events_targets_dirty_ = false;
-  }
   return predicted_events_;
 }
 
@@ -200,16 +178,12 @@ DispatchEventResult PointerEvent::DispatchEvent(EventDispatcher& dispatcher) {
   if (type().empty())
     return DispatchEventResult::kNotCanceled;  // Shouldn't happen.
 
-  if (isTrusted() &&
-      RuntimeEnabledFeatures::PointerEventTargetsInEventListsEnabled()) {
-    // TODO(mustaq@chromium.org): When the RTE flag is removed, get rid of
-    // `coalesced_events_targets_dirty_` and `predicted_events_targets_dirty_`.
-
-    for (auto coalesced_event : coalesced_events_) {
-      coalesced_event->SetTarget(target());
+  if (isTrusted()) {
+    for (const auto& coalesced_event : coalesced_events_) {
+      coalesced_event->SetTarget(&dispatcher.GetNode());
     }
-    for (auto predicted_event : predicted_events_) {
-      predicted_event->SetTarget(target());
+    for (const auto& predicted_event : predicted_events_) {
+      predicted_event->SetTarget(&dispatcher.GetNode());
     }
   }
 
@@ -217,7 +191,7 @@ DispatchEventResult PointerEvent::DispatchEvent(EventDispatcher& dispatcher) {
     return MouseEvent::DispatchEvent(dispatcher);
   }
 
-  DCHECK(!target() || target() != relatedTarget());
+  DCHECK(!RawTarget() || RawTarget() != relatedTarget());
 
   GetEventPath().AdjustForRelatedTarget(dispatcher.GetNode(), relatedTarget());
 

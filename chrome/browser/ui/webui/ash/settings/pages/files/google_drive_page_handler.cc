@@ -6,10 +6,12 @@
 
 #include <optional>
 
+#include "base/byte_count.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/files/mojom/google_drive_handler.mojom.h"
 #include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
@@ -27,14 +29,14 @@ using google_drive::mojom::StatusPtr;
 
 StatusPtr CreateStatusPtr(const Progress& progress) {
   StatusPtr status = Status::New();
-  status->required_space =
-      (progress.required_space >= 0)
-          ? base::UTF16ToUTF8(ui::FormatBytes(progress.required_space))
-          : "";
-  status->free_space =
-      (progress.free_space >= 0)
-          ? base::UTF16ToUTF8(ui::FormatBytes(progress.free_space))
-          : "";
+  status->required_space = (progress.required_space >= 0)
+                               ? base::UTF16ToUTF8(ui::FormatBytes(
+                                     base::ByteCount(progress.required_space)))
+                               : "";
+  status->free_space = (progress.free_space >= 0)
+                           ? base::UTF16ToUTF8(ui::FormatBytes(
+                                 base::ByteCount(progress.free_space)))
+                           : "";
   status->stage = progress.stage;
   status->listed_files = progress.listed_files;
   status->is_error = progress.IsError();
@@ -121,7 +123,8 @@ void GoogleDrivePageHandler::OnGetContentCacheSize(
     std::move(callback).Run(std::nullopt);
     return;
   }
-  std::move(callback).Run(base::UTF16ToUTF8(ui::FormatBytes(size)));
+  std::move(callback).Run(
+      base::UTF16ToUTF8(ui::FormatBytes(base::ByteCount(size))));
 }
 
 void GoogleDrivePageHandler::ClearPinnedFiles(

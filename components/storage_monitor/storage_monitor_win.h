@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/component_export.h"
 #include "components/storage_monitor/storage_monitor.h"
 
 namespace base {
@@ -21,7 +22,8 @@ class PortableDeviceWatcherWin;
 class TestStorageMonitorWin;
 class VolumeMountWatcherWin;
 
-class StorageMonitorWin : public StorageMonitor {
+class COMPONENT_EXPORT(STORAGE_MONITOR) StorageMonitorWin
+    : public StorageMonitor {
  public:
   // Should only be called by browser start up code.
   // Use StorageMonitor::GetInstance() instead.

@@ -17,7 +17,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_occlusion_tracker.h"
@@ -54,15 +53,6 @@ class ASH_EXPORT WindowTreeHostManager
       public ui::ImeKeyEventDispatcher,
       public AshWindowTreeHostDelegate {
  public:
-  // TODO(oshima): Remove this observer.
-  class ASH_EXPORT Observer {
-   public:
-    virtual ~Observer() {}
-
-    // Invoked in WindowTreeHostManager::Shutdown().
-    virtual void OnWindowTreeHostManagerShutdown() {}
-  };
-
   WindowTreeHostManager();
 
   WindowTreeHostManager(const WindowTreeHostManager&) = delete;
@@ -95,10 +85,6 @@ class ASH_EXPORT WindowTreeHostManager
   // Initializes all WindowTreeHosts.
   void InitHosts();
 
-  // Add/Remove observers.
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
-
   // Returns the root window for primary display.
   aura::Window* GetPrimaryRootWindow();
 
@@ -116,11 +102,6 @@ class ASH_EXPORT WindowTreeHostManager
   // Returns all root window controllers. In non extended desktop
   // mode, this return a RootWindowController for the primary root window only.
   std::vector<RootWindowController*> GetAllRootWindowControllers();
-
-  // Gets/Sets/Clears the overscan insets for the specified |display_id|. See
-  // display_manager.h for the details.
-  gfx::Insets GetOverscanInsets(int64_t display_id) const;
-  void SetOverscanInsets(int64_t display_id, const gfx::Insets& insets_in_dip);
 
   // Checks if the mouse pointer is on one of displays, and moves to
   // the center of the nearest display if it's outside of all displays.
@@ -143,9 +124,11 @@ class ASH_EXPORT WindowTreeHostManager
 
   // aura::WindowTreeHostObserver overrides:
   void OnHostResized(aura::WindowTreeHost* host) override;
+  void OnLocalSurfaceIdChanged(aura::WindowTreeHost* host,
+                               const viz::LocalSurfaceId& id) override;
 
   // display::ContentProtectionManager::Observer overrides:
-  void OnDisplaySecurityChanged(int64_t display_id, bool secure) override;
+  void OnDisplaySecurityMaybeChanged(int64_t display_id, bool secure) override;
 
   // display::DisplayManager::Delegate overrides:
   void CreateDisplay(const display::Display& display) override;
@@ -200,15 +183,14 @@ class ASH_EXPORT WindowTreeHostManager
   // are rendered on the correct display.
   void UpdateHostOfDisplayProviders();
 
-  typedef std::map<int64_t, AshWindowTreeHost*> WindowTreeHostMap;
+  typedef std::map<int64_t, raw_ptr<AshWindowTreeHost, CtnExperimental>>
+      WindowTreeHostMap;
   // The mapping from display ID to its window tree host.
   WindowTreeHostMap window_tree_hosts_;
 
   // The mapping from display ID to its rounded display provider.
   base::flat_map<int64_t, std::unique_ptr<RoundedDisplayProvider>>
       rounded_display_providers_map_;
-
-  base::ObserverList<Observer, true>::Unchecked observers_;
 
   // Store the primary window tree host temporarily while replacing
   // display.

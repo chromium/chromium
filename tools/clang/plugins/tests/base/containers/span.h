@@ -18,10 +18,23 @@ class span {
   span(T (&arr)[N]) {}
 
   InternalPtrType data_;
+  unsigned size_;
+};
+
+// raw_span is a span with a pointer type that has a non-trivial dtor. We make a
+// similar type here. We don't use raw_ptr directly because without BRP enabled,
+// it also has a trivial dtor.
+
+template <class T>
+struct NonTrivialRawPtr {
+  NonTrivialRawPtr() {}
+  constexpr ~NonTrivialRawPtr() {}
+  raw_ptr<T> ptr;
 };
 
 template <typename T>
-using raw_span = span<T, 0, raw_ptr<T>>;
+using raw_span = span<T, 0, NonTrivialRawPtr<T>>;
+
 }  // namespace base
 
 #endif  // TOOLS_CLANG_PLUGINS_TESTS_BASE_CONTAINERS_SPAN_H_

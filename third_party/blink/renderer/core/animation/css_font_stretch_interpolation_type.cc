@@ -9,7 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
-#include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
+#include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -40,7 +40,8 @@ InterpolationValue CSSFontStretchInterpolationType::CreateFontStretchValue(
 InterpolationValue CSSFontStretchInterpolationType::MaybeConvertNeutral(
     const InterpolationValue&,
     ConversionCheckers&) const {
-  return InterpolationValue(MakeGarbageCollected<InterpolableNumber>(0));
+  return InterpolationValue(MakeGarbageCollected<InterpolableNumber>(
+      0, CSSPrimitiveValue::UnitType::kPercentage));
 }
 
 InterpolationValue CSSFontStretchInterpolationType::MaybeConvertInitial(
@@ -64,7 +65,7 @@ InterpolationValue CSSFontStretchInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSFontStretchInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
   if (const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value)) {
     if (primitive_value->IsPercentage()) {

@@ -5,10 +5,11 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 
 #import "base/test/scoped_feature_list.h"
-#import "base/test/task_environment.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -16,70 +17,55 @@ namespace {
 
 class OptimizationGuideServiceFactoryTest : public PlatformTest {
  public:
-  OptimizationGuideServiceFactoryTest() = default;
-  ~OptimizationGuideServiceFactoryTest() override = default;
-
-  void SetUp() override {
-    PlatformTest::SetUp();
+  OptimizationGuideServiceFactoryTest() {
     scoped_feature_list_.InitWithFeatures(
         {optimization_guide::features::kOptimizationHints}, {});
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
-    browser_state_ = std::move(builder).Build();
-    OptimizationGuideServiceFactory::GetForBrowserState(browser_state_.get())
-        ->DoFinalInit(BackgroundDownloadServiceFactory::GetForBrowserState(
-            browser_state_.get()));
-
-    ChromeBrowserState* otr_browser_state =
-        browser_state_->CreateOffTheRecordBrowserStateWithTestingFactories(
-            {TestChromeBrowserState::TestingFactory{
-                OptimizationGuideServiceFactory::GetInstance(),
-                OptimizationGuideServiceFactory::GetDefaultFactory()}});
-    OptimizationGuideServiceFactory::GetForBrowserState(otr_browser_state)
-        ->DoFinalInit();
+    profile_ = std::move(builder).Build();
+    profile_->CreateOffTheRecordProfileWithTestingFactories(
+        {TestProfileIOS::TestingFactory{
+            OptimizationGuideServiceFactory::GetInstance(),
+            OptimizationGuideServiceFactory::GetDefaultFactory()}});
   }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestProfileIOS> profile_;
 };
 
 TEST_F(OptimizationGuideServiceFactoryTest, CheckNormalServiceNotNull) {
-  EXPECT_NE(nullptr, OptimizationGuideServiceFactory::GetForBrowserState(
-                         browser_state_.get()));
+  EXPECT_NE(nullptr,
+            OptimizationGuideServiceFactory::GetForProfile(profile_.get()));
 }
 
 TEST_F(OptimizationGuideServiceFactoryTest, CheckIncognitoServiceNotNull) {
-  EXPECT_NE(nullptr, OptimizationGuideServiceFactory::GetForBrowserState(
-                         browser_state_->GetOffTheRecordChromeBrowserState()));
+  EXPECT_NE(nullptr, OptimizationGuideServiceFactory::GetForProfile(
+                         profile_->GetOffTheRecordProfile()));
 }
 
 class OptimizationGuideServiceFactoryFeatureDisabledTest : public PlatformTest {
  public:
-  OptimizationGuideServiceFactoryFeatureDisabledTest() = default;
-  ~OptimizationGuideServiceFactoryFeatureDisabledTest() override = default;
-
-  void SetUp() override {
-    PlatformTest::SetUp();
+  OptimizationGuideServiceFactoryFeatureDisabledTest() {
     scoped_feature_list_.InitAndDisableFeature(
         {optimization_guide::features::kOptimizationHints});
-    TestChromeBrowserState::Builder builder;
-    browser_state_ = std::move(builder).Build();
+    profile_ = TestProfileIOS::Builder().Build();
   }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<ProfileIOS> profile_;
 };
 
 TEST_F(OptimizationGuideServiceFactoryFeatureDisabledTest,
        CheckServiceNullWithoutOptimizationGuideHintsFeature) {
-  EXPECT_EQ(nullptr, OptimizationGuideServiceFactory::GetForBrowserState(
-                         browser_state_.get()));
+  EXPECT_EQ(nullptr,
+            OptimizationGuideServiceFactory::GetForProfile(profile_.get()));
 }
 
 }  // namespace

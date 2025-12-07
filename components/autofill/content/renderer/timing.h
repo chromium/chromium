@@ -17,24 +17,27 @@ namespace autofill {
 struct CallTimerState {
   enum class CallSite {
     kApplyFieldsAction,
-    kBatchSelectOrSelectListOptionChange,
+    kBatchSelectOptionChange,
     kDidChangeScrollOffsetImpl,
     kExtractForm,
     kFocusedElementChanged,
-    kFocusedElementChangedDeprecated,
     kGetFormDataFromUnownedInputElements,
     kGetFormDataFromWebForm,
     kGetSubmittedForm,
     kHandleCaretMovedInFormField,
     kJavaScriptChangedValue,
     kNotifyPasswordManagerAboutClearedForm,
-    kOnFormSubmitted,
     kOnProvisionallySaveForm,
-    kOnTextFieldDidChange,
+    kOnTextFieldValueChanged,
     kQueryAutofillSuggestions,
     kShowSuggestionPopup,
     kUpdateFormCache,
     kUpdateLastInteractedElement,
+    kDidDispatchDomContentLoadedEvent,
+    kEmitFormIssuesToDevtools,
+    kExtractForms,
+    kExtractFormsAndNotifyPasswordAutofillAgent,
+    kOnDevToolsSessionConnectionChanged,
   };
   CallSite call_site = internal::IsRequired();
   base::TimeTicks last_autofill_agent_reset = internal::IsRequired();

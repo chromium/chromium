@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/single_thread_task_runner.h"
@@ -25,7 +26,7 @@ namespace content {
 
 // Common task queues for browser threads. This class holds all the queues
 // needed by browser threads. This makes it easy for all browser threads to have
-// the same queues. Thic class also provides a Handler to act on the queues from
+// the same queues. This class also provides a Handler to act on the queues from
 // any thread.
 //
 // Instances must be created and destroyed on the same thread as the
@@ -48,11 +49,6 @@ class CONTENT_EXPORT BrowserTaskQueues {
     // do. Can theoretically be starved indefinitely although that's unlikely in
     // practice.
     kBestEffort,
-
-    // Those are tasks that affect the UI, but not urgent enough to run
-    // immediately, those tasks are either deferred or run based on the
-    // scheduling policy.
-    kDeferrableUserBlocking,
 
     // base::TaskPriority::kUserBlocking maps to this task queue. It's for tasks
     // that affect the UI immediately after a user interaction. Has the same
@@ -81,7 +77,11 @@ class CONTENT_EXPORT BrowserTaskQueues {
     // For before unload navigation continuation tasks.
     kBeforeUnloadBrowserResponse,
 
-    kMaxValue = kBeforeUnloadBrowserResponse
+    // Tasks that are critical for startup performance. Note that tasks in other
+    // queues may run during startup too.
+    kStartup,
+
+    kMaxValue = kStartup
   };
 
   static constexpr size_t kNumQueueTypes =
@@ -114,11 +114,13 @@ class CONTENT_EXPORT BrowserTaskQueues {
 
     // Called quite early in startup after initialising the owning thread's
     // scheduler, before we call RunLoop::Run on the thread.
-    // Note: default_task_queue_ doesn't need to be enabled as it is not
-    // disabled during startup.
     // Enables all task queues except the effort ones. Can be called multiple
     // times.
     void EnableAllExceptBestEffortQueues();
+
+    // Enables the specified task queue. Called early in startup when
+    // BrowserTaskExecutor is created to enabled the default IO task queue.
+    void EnableTaskQueue(QueueType type);
 
     // Schedules |on_pending_task_ran| to run when all pending tasks (at the
     // time this method was invoked) have run. Only "runnable" tasks are taken
@@ -159,24 +161,20 @@ class CONTENT_EXPORT BrowserTaskQueues {
         browser_task_runners_;
   };
 
-  // Creates queue voters for all task queues created within this
-  // BrowserTaskQueues object.
-  // NOTE: You can only call this function from the thread that owns the
-  // task queues, and you can only use the voters on the same thread.
-  std::array<
-      std::unique_ptr<base::sequence_manager::TaskQueue::QueueEnabledVoter>,
-      kNumQueueTypes>
-  CreateQueueEnabledVoters() const;
-
   // |sequence_manager| must outlive this instance.
   explicit BrowserTaskQueues(
       BrowserThread::ID thread_id,
       base::sequence_manager::SequenceManager* sequence_manager);
 
+  void SetOnTaskCompletedHandler(
+      base::sequence_manager::TaskQueue::OnTaskCompletedHandler handler);
+
   // Destroys all queues.
   ~BrowserTaskQueues();
 
   scoped_refptr<Handle> GetHandle() { return handle_; }
+
+  void AddTaskObserver(base::TaskObserver* task_observer);
 
  private:
   struct QueueData {
@@ -198,6 +196,7 @@ class CONTENT_EXPORT BrowserTaskQueues {
       base::ScopedClosureRunner on_pending_task_ran);
   void OnStartupComplete();
   void EnableAllExceptBestEffortQueues();
+  void EnableTaskQueue(QueueType type);
 
   base::sequence_manager::TaskQueue* GetBrowserTaskQueue(QueueType type) const {
     return queue_data_[static_cast<size_t>(type)].task_queue.get();

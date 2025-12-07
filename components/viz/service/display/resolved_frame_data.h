@@ -7,10 +7,11 @@
 
 #include <memory>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/functional/bind_internal.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
@@ -36,8 +37,8 @@ const std::optional<gfx::Rect>& GetOptionalDamageRectFromQuad(
 struct VIZ_SERVICE_EXPORT ResolvedQuadData {
   explicit ResolvedQuadData(const DrawQuad& quad);
 
-  // Remapped display ResourceIds.
-  DrawQuad::Resources remapped_resources;
+  // Remapped display ResourceId.
+  ResourceId remapped_resource_id;
 };
 
 // Render pass data that is fixed for the lifetime of ResolvedPassData.
@@ -240,7 +241,7 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
 
   ResolvedFrameData(DisplayResourceProvider* resource_provider,
                     Surface* surface,
-                    uint64_t prev_frame_index,
+                    uint32_t prev_frame_index,
                     AggregatedRenderPassId prev_root_pass_id);
   ~ResolvedFrameData();
   ResolvedFrameData(ResolvedFrameData&& other) = delete;
@@ -249,14 +250,14 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
   const SurfaceId& surface_id() const { return surface_id_; }
   Surface* surface() const { return surface_; }
   bool is_valid() const { return valid_; }
-  uint64_t previous_frame_index() const { return previous_frame_index_; }
+  uint32_t previous_frame_index() const { return previous_frame_index_; }
 
   gfx::Size size_in_pixels() const;
   float device_scale_factor() const;
 
   // Returns namespace ID for the client that submitted this frame. This is used
   // to deduplicate layer IDs from different clients.
-  uint32_t GetClientNamespaceId() const;
+  std::pair<uint32_t, uint32_t> GetClientNamespaceId() const;
 
   void SetFullDamageForNextAggregation();
 
@@ -374,8 +375,8 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
 
   // Data associated with CompositorFrame with |frame_index_|.
   bool valid_ = false;
-  uint64_t frame_index_ = kInvalidFrameIndex;
-  uint64_t previous_frame_index_ = kInvalidFrameIndex;
+  uint32_t frame_index_ = kInvalidFrameIndex;
+  uint32_t previous_frame_index_ = kInvalidFrameIndex;
 
   base::flat_map<OffsetTag, OffsetTagData> offset_tag_data_;
   // Additional damage that is due to OffsetTag changes between aggregations
@@ -387,7 +388,9 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
   std::vector<std::unique_ptr<CompositorRenderPass>> offset_tag_render_passes_;
 
   std::vector<ResolvedPassData> resolved_passes_;
-  base::flat_map<CompositorRenderPassId, ResolvedPassData*> render_pass_id_map_;
+  base::flat_map<CompositorRenderPassId,
+                 raw_ptr<ResolvedPassData, CtnExperimental>>
+      render_pass_id_map_;
   base::flat_map<CompositorRenderPassId, AggregatedRenderPassId>
       aggregated_id_map_;
 

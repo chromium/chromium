@@ -5,7 +5,6 @@
 <translation id="1140871961407805696">Arxa kamera</translation>
 <translation id="1196338895211115272">Şəxsi açarı eksport etmək alınmadı.</translation>
 <translation id="132960226125594336">Məzmun skripti üçün '<ph name="RELATIVE_PATH" />' faylını yükləmək mümkün olmadı, çünki o, maksimum skript ölçüsünü və ya artırmanın maksimum ümumi məzmun skript ölçüsünü keçə bilərdi.</translation>
-<translation id="1420684932347524586">Təsadüfi RSA şəxsi kilidini yaratmaq alınmadı.</translation>
 <translation id="1445572445564823378">Bu artırma yavaşlaşır <ph name="PRODUCT_NAME" />. <ph name="PRODUCT_NAME" /> məhsulunun performansını bərpa etmək üçün onu deaktiv etməlisiniz.</translation>
 <translation id="1468038450257740950">WebGL dəstəklənmir.</translation>
 <translation id="1610570795592207282">Skript üçün css "<ph name="RELATIVE_PATH" />" yüklənmədi.</translation>
@@ -19,13 +18,11 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> vendorundan naməlum <ph name="PRODUCT_ID" /> məhsulu  (seriya nömrəsi <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Crx faylını əvəz etmək alınmadı. Faylın istifadədə olduğunu yoxlayın.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> vendorundan naməlum <ph name="PRODUCT_ID" /> məhsulu</translation>
-<translation id="3369521687965833290">Artırmanı paketdən çıxarmaq olmur.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (seriya nömrəsi <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> <ph name="PRODUCT_NAME" /> vendordan (seriya nömrəsi <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Şəxsi açar üçün giriş dəyəri düzgün yol olmalıdır.</translation>
 <translation id="388442998277590542">'<ph name="OPTIONS_PAGE" />' variantlar səhifəsini yükləmək olmadı.</translation>
 <translation id="3984413272403535372">Artırmaya daxil olarkən xəta baş verdi.</translation>
-<translation id="4115165561519362854">Bu cihazın administratoru <ph name="EXTENSION_NAME" /> artırmasının minimum <ph name="EXTENSION_VERSION" /> versiyasına malik olmasını tələb edir.</translation>
 <translation id="4233778200880751280">'<ph name="ABOUT_PAGE" />' səhifəsi haqqında endirmək alınmadı.</translation>
 <translation id="471800408830181311">Gizli açar çıxışı uğursuz oldu.</translation>
 <translation id="4811956658694082538">Utilit prosesi qəzaya uğradığı üçün paketi quraşdırmaq olmur.</translation>
@@ -39,7 +36,6 @@
 <translation id="5972529113578162692">Bu maşın administratoru <ph name="EXTENSION_NAME" /> artırmasının quraşdırılmasını tələb edir. Sistemdən silinə bilməyəcək.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> vendorundan naməlum <ph name="PRODUCT_ID" /> məhsulu  (seriya nömrəsi <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> vendorundan <ph name="PRODUCT_NAME" /></translation>
-<translation id="6143635259298204954">Artırmanı paketdən çıxrmaq olmur. Simlink olmayan profil direktoriyanıza yol olmalıdır. Elə bir yol yoxdur.</translation>
 <translation id="6322279351188361895">Gizli açarı oxumaq uğursuz oldu.</translation>
 <translation id="6391538222494443604">Giriş direktoriyası olmalıdır.</translation>
 <translation id="641087317769093025">Artırmanı arxivdən çıxarmaq alınmadı</translation>
@@ -53,12 +49,14 @@
 <translation id="7217838517480956708">Bu cihazın administratoru <ph name="EXTENSION_NAME" /> artırmasının quraşdırılmasını tələb edir.</translation>
 <translation id="7612608473764576263">Şəxsi açar üçün giriş dəyəri düzgün format olmalıdır.
 (PKCS#8-format PEM-encoded RSA key).</translation>
+<translation id="7876803335449432072">Kontent skripti üçün "<ph name="RELATIVE_PATH" />" faylını yükləmək mümkün olmadı. Kontent skripti üzrə üslub cədvəlləri yalnız .css faylları kimi dəstəklənən üslüb cədvəllərindən yüklənə bilər.</translation>
 <translation id="7939686037314084444">Bu artırma düzgün yüklənmədi. Şəbəkə sorğusuna cavab verə bilmədi.</translation>
 <translation id="7972881773422714442">Variantlar: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Ön kamera</translation>
 <translation id="8047248493720652249">Bu artırma "<ph name="ATTEMPTED_FILENAME" />" endirə bilmədi, çünki digər artırma (<ph name="EXTENSION_NAME" />) fərqli fayl adı "<ph name="ACTUAL_FILENAME" />" bəlirlədi.</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" /> vendorundan <ph name="PRODUCT_NAME" /> məhsulu</translation>
 <translation id="8517576857589387417">Manifest faylı yoxdur və ya oxunmur</translation>
+<translation id="8621383749470166852">Kontent skripti üçün "<ph name="RELATIVE_PATH" />" faylını yükləmək mümkün olmadı, kontent skriptlərini yalnız .js faylları kimi dəstəklənən JavaScript fayllarından yükləmək mümkündür.</translation>
 <translation id="8636666366616799973">Paket yanlışdır. Detallar: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" cihazdan birinə giriş tələb edir:</translation>
 <translation id="8885905466771744233">Göstərilən artırma üçün şəxsi açar artıq mövcuddur. Ya o açarı yenidən işlədin, ya da ilk olaraq onu silin.</translation>

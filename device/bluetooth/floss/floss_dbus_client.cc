@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 #include "device/bluetooth/floss/floss_dbus_client.h"
 
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "dbus/message.h"
@@ -204,7 +201,7 @@ FlossDBusClient::BtifStatusToConnectErrorCode(
     FlossDBusClient::BtifStatus status) {
   switch (status) {
     case BtifStatus::kSuccess:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case BtifStatus::kFail:
       return device::BluetoothDevice::ConnectErrorCode::ERROR_FAILED;
     case BtifStatus::kNotReady:
@@ -236,8 +233,11 @@ FlossDBusClient::BtifStatusToConnectErrorCode(
     case BtifStatus::kTimeout:
       return device::BluetoothDevice::ConnectErrorCode::ERROR_NON_AUTH_TIMEOUT;
     case BtifStatus::kDeviceNotFound:
+      return device::BluetoothDevice::ConnectErrorCode::ERROR_DOES_NOT_EXIST;
     case BtifStatus::kUnexpectedState:
+      return device::BluetoothDevice::ConnectErrorCode::ERROR_UNEXPECTED_STATE;
     case BtifStatus::kSocketError:
+      return device::BluetoothDevice::ConnectErrorCode::ERROR_SOCKET;
     default:
       return device::BluetoothDevice::ConnectErrorCode::ERROR_FAILED;
   }
@@ -371,24 +371,18 @@ bool FlossDBusClient::ReadDBusParam(
 template <>
 bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
                                     device::BluetoothUUID* uuid) {
-  const uint8_t* bytes = nullptr;
-  size_t length = 0;
-
-  if (reader->PopArrayOfBytes(&bytes, &length)) {
-    if (length == 16U) {
-      device::BluetoothUUID found_uuid(base::StringPrintf(
-          "%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%"
-          "02x",
-          bytes[0], bytes[1], bytes[2], bytes[3], bytes[4], bytes[5], bytes[6],
-          bytes[7], bytes[8], bytes[9], bytes[10], bytes[11], bytes[12],
-          bytes[13], bytes[14], bytes[15]));
-      DCHECK(found_uuid.IsValid());
-      *uuid = found_uuid;
-      return true;
-    }
+  base::span<const uint8_t> bytes;
+  if (!reader->PopArrayOfBytes(&bytes)) {
+    return false;
   }
 
-  return false;
+  if (bytes.size() != 16U) {
+    return false;
+  }
+
+  *uuid = device::BluetoothUUID(bytes);
+  DCHECK(uuid->IsValid());
+  return true;
 }
 
 // static

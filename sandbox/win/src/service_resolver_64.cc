@@ -5,13 +5,14 @@
 #include "sandbox/win/src/service_resolver.h"
 
 #include <windows.h>
+#include <winternl.h>
 
 #include <ntstatus.h>
 #include <stddef.h>
-#include <winternl.h>
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 
 namespace {
@@ -247,7 +248,7 @@ bool ServiceResolverThunk::IsFunctionAService(void* local_thunk) const {
     return false;
 
   // Save the verified code.
-  memcpy(local_thunk, &function_code, sizeof(function_code));
+  UNSAFE_TODO(memcpy(local_thunk, &function_code, sizeof(function_code)));
 
   return true;
 }

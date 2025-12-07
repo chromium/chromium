@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "base/component_export.h"
+#include "base/containers/span.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -15,7 +17,7 @@
 
 namespace gfx {
 
-class GEOMETRY_SKIA_EXPORT RRectF {
+class COMPONENT_EXPORT(GEOMETRY_SKIA) RRectF {
  public:
   RRectF() = default;
   ~RRectF() = default;
@@ -111,6 +113,9 @@ class GEOMETRY_SKIA_EXPORT RRectF {
   Type GetType() const;
 
   bool IsEmpty() const { return GetType() == Type::kEmpty; }
+  bool HasRoundedCorners() const {
+    return !IsEmpty() && GetType() != Type::kRect;
+  }
 
   // Enumeration of the corners of a rectangle in clockwise order. Values match
   // SkRRect::Corner.
@@ -174,7 +179,7 @@ class GEOMETRY_SKIA_EXPORT RRectF {
                                                float error = 0.001f);
 
  private:
-  void GetAllRadii(SkVector radii[4]) const;
+  void GetAllRadii(base::span<SkVector, 4> radii) const;
 
   gfx::RoundedCornersF GetRoundedCorners() const;
 
@@ -187,10 +192,6 @@ inline std::ostream& operator<<(std::ostream& os, const RRectF& rect) {
 
 inline bool operator==(const RRectF& a, const RRectF& b) {
   return a.Equals(b);
-}
-
-inline bool operator!=(const RRectF& a, const RRectF& b) {
-  return !(a == b);
 }
 
 inline RRectF operator+(const RRectF& a, const gfx::Vector2dF& b) {

@@ -44,7 +44,7 @@ class DeviceMetadataFetcher {
 
  private:
   void OnFetchComplete(GetObservedDeviceCallback callback,
-                       std::unique_ptr<std::string> response_body,
+                       std::optional<std::string> response_body,
                        std::unique_ptr<FastPairHttpResult> http_result);
   void OnJsonParsed(GetObservedDeviceCallback callback,
                     data_decoder::DataDecoder::ValueOrError result);

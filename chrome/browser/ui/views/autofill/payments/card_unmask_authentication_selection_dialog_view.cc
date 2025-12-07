@@ -4,14 +4,19 @@
 
 #include "chrome/browser/ui/views/autofill/payments/card_unmask_authentication_selection_dialog_view.h"
 
-#include "chrome/browser/ui/autofill/payments/view_factory.h"
+#include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
+#include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
@@ -21,6 +26,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/table_layout.h"
 #include "ui/views/style/typography.h"
 
 namespace autofill {
@@ -35,13 +41,15 @@ ui::ImageModel GetAuthenticationModeIcon(
     case CardUnmaskChallengeOptionType::kEmailOtp:
       return ui::ImageModel::FromVectorIcon(vector_icons::kEmailOutlineIcon);
     case CardUnmaskChallengeOptionType::kCvc:
-      return ui::ImageModel();
+      // CVC auth has its own authentication dialog in the single challenge
+      // option case.
     case CardUnmaskChallengeOptionType::kThreeDomainSecure:
-      // TODO(crbug.com/41494927): Add kThreeDomainSecure logic.
+      // 3DS auth has its own authentication dialog in the single challenge
+      // option case.
     case CardUnmaskChallengeOptionType::kUnknownType:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -56,10 +64,10 @@ CardUnmaskAuthenticationSelectionDialogView::
   // view's lifecycle. The ok button label will be set later once we have more
   // details on the challenge options that will be displayed in the dialog,
   // since the label can change based on the challenge options.
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
-                 GetDialogButtonLabel(ui::DIALOG_BUTTON_CANCEL));
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
+                 GetDialogButtonLabel(ui::mojom::DialogButton::kCancel));
 
-  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetModalType(ui::mojom::ModalType::kChild);
   SetShowCloseButton(false);
   set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
@@ -92,7 +100,7 @@ void CardUnmaskAuthenticationSelectionDialogView::Dismiss(
 
 void CardUnmaskAuthenticationSelectionDialogView::UpdateContent() {
   ReplaceContentWithProgressThrobber();
-  SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
+  SetButtonEnabled(ui::mojom::DialogButton::kOk, false);
 }
 
 bool CardUnmaskAuthenticationSelectionDialogView::Accept() {
@@ -107,8 +115,9 @@ std::u16string CardUnmaskAuthenticationSelectionDialogView::GetWindowTitle()
 }
 
 void CardUnmaskAuthenticationSelectionDialogView::AddedToWidget() {
-  GetBubbleFrameView()->SetTitleView(CreateTitleView(
-      GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
+  GetBubbleFrameView()->SetTitleView(
+      std::make_unique<TitleWithIconAfterLabelView>(
+          GetWindowTitle(), TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
 }
 
 void CardUnmaskAuthenticationSelectionDialogView::InitViews() {
@@ -238,15 +247,14 @@ void CardUnmaskAuthenticationSelectionDialogView::AddFooterText() {
 void CardUnmaskAuthenticationSelectionDialogView::
     ReplaceContentWithProgressThrobber() {
   RemoveAllChildViews();
-  AddChildView(std::make_unique<ProgressBarWithTextView>(
-      controller_->GetProgressLabel()));
+  AddChildView(CreateProgressBarWithTextView(controller_->GetProgressLabel()));
 }
 
 void CardUnmaskAuthenticationSelectionDialogView::OnChallengeOptionSelected(
     const CardUnmaskChallengeOption::ChallengeOptionId&
         selected_challenge_option_id) {
   controller_->SetSelectedChallengeOptionId(selected_challenge_option_id);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, controller_->GetOkButtonLabel());
+  SetButtonLabel(ui::mojom::DialogButton::kOk, controller_->GetOkButtonLabel());
 }
 
 std::unique_ptr<views::RadioButton>
@@ -270,7 +278,12 @@ CreateAndShowCardUnmaskAuthenticationSelectionDialog(
     CardUnmaskAuthenticationSelectionDialogController* controller) {
   CardUnmaskAuthenticationSelectionDialogView* dialog_view =
       new CardUnmaskAuthenticationSelectionDialogView(controller);
-  constrained_window::ShowWebModalDialogViews(dialog_view, web_contents);
+  auto* tab_interface = tabs::TabInterface::GetFromContents(web_contents);
+  tab_interface->GetTabFeatures()
+      ->tab_dialog_manager()
+      ->CreateAndShowDialog(dialog_view,
+                            std::make_unique<tabs::TabDialogManager::Params>())
+      .release();
   return dialog_view;
 }
 

@@ -12,20 +12,18 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/sync/protocol/cookie_specifics.pb.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_partition_key.h"
+#include "net/cookies/unique_cookie_key.h"
 
 namespace ash::floating_sso {
 
 namespace {
-
-int64_t SerializeTime(const base::Time& t) {
-  return t.ToDeltaSinceWindowsEpoch().InMicroseconds();
-}
 
 base::Time DeserializeTime(int64_t proto_time) {
   return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(proto_time));
@@ -139,6 +137,10 @@ sync_pb::CookieSpecifics_CookieSourceType ProtoEnumFromCookieSourceType(
 
 }  // namespace
 
+int64_t ToMicrosSinceWindowsEpoch(const base::Time& t) {
+  return t.ToDeltaSinceWindowsEpoch().InMicroseconds();
+}
+
 std::unique_ptr<net::CanonicalCookie> FromSyncProto(
     const sync_pb::CookieSpecifics& proto) {
   base::expected<std::optional<net::CookiePartitionKey>, std::string>
@@ -171,9 +173,40 @@ std::unique_ptr<net::CanonicalCookie> FromSyncProto(
           std::move(partition_key.value()),                                //
           CookieSourceSchemeFromProtoEnum(proto.source_scheme()),          //
           proto.source_port(),                                             //
-          CookieSourceTypeFromProtoEnum(proto.source_type()));             //
+          CookieSourceTypeFromProtoEnum(proto.source_type()),              //
+          net::CanonicalCookieFromStorageCallSite::
+              kChromeOsCookieSyncConversions);
 
   return cookie;
+}
+
+std::optional<std::string> SerializedKey(const net::CanonicalCookie& cookie) {
+  base::expected<net::CookiePartitionKey::SerializedCookiePartitionKey,
+                 std::string>
+      serialized_partition_key =
+          net::CookiePartitionKey::Serialize(cookie.PartitionKey());
+  if (!serialized_partition_key.has_value()) {
+    return std::nullopt;
+  }
+
+  const net::UniqueCookieKey strict_unique_key = cookie.StrictlyUniqueKey();
+  const std::string& name = strict_unique_key.name();
+  const std::string& domain = strict_unique_key.domain();
+  const std::string& path = strict_unique_key.path();
+  // `source_scheme()` and `port()` are guaranteed to return non-nullopt values,
+  // since we created the key via StrictlyUniqueKey.
+  const net::CookieSourceScheme source_scheme =
+      strict_unique_key.source_scheme().value();
+  const int source_port = strict_unique_key.port().value();
+
+  // We just concatenate all involved strings.
+  std::string serialized_key = base::StrCat(
+      {serialized_partition_key->TopLevelSite(),
+       base::ToString(serialized_partition_key->has_cross_site_ancestor()),
+       name, domain, path,
+       base::NumberToString(static_cast<int>(source_scheme)),
+       base::NumberToString(source_port)});
+  return serialized_key;
 }
 
 std::optional<sync_pb::CookieSpecifics> ToSyncProto(
@@ -186,35 +219,25 @@ std::optional<sync_pb::CookieSpecifics> ToSyncProto(
     return std::nullopt;
   }
 
-  // Serialize StrictlyUniqueKey: it will be written to specifics proto
-  // and used as a client tag.
-  // TODO(b/318391357): move serialization of the key elsewhere when
-  // implementing CookieSyncBridge. We should guarantee that we don't update it
-  // for existing entities.
-  net::CookieBase::StrictlyUniqueCookieKey key = cookie.StrictlyUniqueKey();
-  const auto& [partition_key, name, domain, path, source_scheme, source_port] =
-      key;
-  std::string serialized_key = base::StrCat(
-      {serialized_partition_key->TopLevelSite(),
-       (serialized_partition_key->has_cross_site_ancestor() ? "true" : "false"),
-       name, domain, path,
-       base::NumberToString(static_cast<int>(source_scheme)),
-       base::NumberToString(source_port)});
+  std::optional<std::string> serialized_key = SerializedKey(cookie);
+  // The only way for this to not have value is when partition key can't
+  // be serialized, but we already handled it above.
+  CHECK(serialized_key.has_value());
 
   sync_pb::CookieSpecifics proto;
-  proto.set_unique_key(serialized_key);
+  proto.set_unique_key(serialized_key.value());
   proto.set_name(cookie.Name());
   proto.set_value(cookie.Value());
   proto.set_domain(cookie.Domain());
   proto.set_path(cookie.Path());
   proto.set_creation_time_windows_epoch_micros(
-      SerializeTime(cookie.CreationDate()));
+      ToMicrosSinceWindowsEpoch(cookie.CreationDate()));
   proto.set_expiry_time_windows_epoch_micros(
-      SerializeTime(cookie.ExpiryDate()));
+      ToMicrosSinceWindowsEpoch(cookie.ExpiryDate()));
   proto.set_last_access_time_windows_epoch_micros(
-      SerializeTime(cookie.LastAccessDate()));
+      ToMicrosSinceWindowsEpoch(cookie.LastAccessDate()));
   proto.set_last_update_time_windows_epoch_micros(
-      SerializeTime(cookie.LastUpdateDate()));
+      ToMicrosSinceWindowsEpoch(cookie.LastUpdateDate()));
   proto.set_secure(cookie.IsSecure());
   proto.set_httponly(cookie.IsHttpOnly());
   proto.set_site_restrictions(ProtoEnumFromCookieSameSite(cookie.SameSite()));

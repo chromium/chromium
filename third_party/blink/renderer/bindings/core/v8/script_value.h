@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_VALUE_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/world_safe_v8_reference.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -68,9 +67,7 @@ class CORE_EXPORT ScriptValue final {
   ScriptValue() = default;
 
   ScriptValue(v8::Isolate* isolate, v8::Local<v8::Value> value)
-      : isolate_(isolate), value_(isolate, value) {
-    DCHECK(isolate_);
-  }
+      : value_(isolate, value) {}
 
   ~ScriptValue() {
     // Reset() below eagerly cleans up Oilpan-internal book-keeping data
@@ -95,11 +92,10 @@ class CORE_EXPORT ScriptValue final {
 
   ScriptValue(const ScriptValue& value) = default;
 
-  // TODO(riakf): Use this GetIsolate() only when doing DCHECK inside
-  // ScriptValue.
+  // Prefer getting the Isolate from ScriptState or similar.
   v8::Isolate* GetIsolate() const {
-    DCHECK(isolate_);
-    return isolate_;
+    DCHECK(!IsEmpty());
+    return value_.GetIsolate();
   }
 
   ScriptValue& operator=(const ScriptValue& value) = default;
@@ -111,8 +107,6 @@ class CORE_EXPORT ScriptValue final {
       return false;
     return value_ == value.value_;
   }
-
-  bool operator!=(const ScriptValue& value) const { return !operator==(value); }
 
   // This creates a new local Handle; Don't use this in performance-sensitive
   // places.
@@ -149,7 +143,6 @@ class CORE_EXPORT ScriptValue final {
   bool IsEmpty() const { return value_.IsEmpty(); }
 
   void Clear() {
-    isolate_ = nullptr;
     value_.Reset();
   }
 
@@ -159,6 +152,7 @@ class CORE_EXPORT ScriptValue final {
   // this "clones" the v8 value and returns it.
   v8::Local<v8::Value> V8ValueFor(ScriptState*) const;
 
+  // Coereces the underlying v8::Value to a string.
   bool ToString(String&) const;
 
   static ScriptValue CreateNull(v8::Isolate*);
@@ -166,20 +160,73 @@ class CORE_EXPORT ScriptValue final {
   void Trace(Visitor* visitor) const { visitor->Trace(value_); }
 
  private:
-  v8::Isolate* isolate_ = nullptr;
   WorldSafeV8Reference<v8::Value> value_;
 };
 
-}  // namespace blink
+// ScriptObject is used when an idl specifies the type as 'object'
+class CORE_EXPORT ScriptObject final {
+  DISALLOW_NEW();
 
-namespace WTF {
+ public:
+  // ScriptObject::From() is restricted to certain types that are unambiguous in
+  // how they are exposed to V8 and that are known to be objects.
+  template <typename T>
+    requires std::derived_from<T, bindings::DictionaryBase> ||
+             std::derived_from<T, ScriptWrappable>
+  static ScriptObject From(ScriptState* script_state, T* value) {
+    return ScriptObject(script_state->GetIsolate(), value->ToV8(script_state));
+  }
+
+  ScriptObject() = default;
+  ScriptObject(v8::Isolate* isolate, v8::Local<v8::Value> value)
+      : object_(isolate, value) {
+    CHECK(!value.IsEmpty());
+    CHECK(value->IsObject() || value->IsNull());
+  }
+
+  static ScriptObject CreateNull(v8::Isolate* isolate) {
+    return ScriptObject(isolate, v8::Null(isolate));
+  }
+
+  v8::Local<v8::Object> V8Object() const {
+    CHECK(object_.IsObject());
+    return object_.V8Value().As<v8::Object>();
+  }
+
+  v8::Local<v8::Object> V8ObjectFor(ScriptState* script_state) const {
+    CHECK(object_.IsObject());
+    return object_.V8ValueFor(script_state).As<v8::Object>();
+  }
+
+  bool IsNull() const { return object_.IsNull(); }
+
+  void Clear() { object_.Clear(); }
+
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  operator const ScriptValue&() const { return object_; }
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  operator ScriptValue&() { return object_; }
+
+  bool operator==(const ScriptObject& object) const {
+    return object_ == object.object_;
+  }
+
+  void Trace(Visitor* visitor) const { visitor->Trace(object_); }
+
+ private:
+  ScriptValue object_;
+};
 
 // VectorTraits for ScriptValue depend entirely on
 // WorldSafeV8Reference<v8::Value>.
 template <>
-struct VectorTraits<blink::ScriptValue>
-    : VectorTraits<blink::WorldSafeV8Reference<v8::Value>> {};
+struct VectorTraits<ScriptValue>
+    : VectorTraits<WorldSafeV8Reference<v8::Value>> {};
 
-}  // namespace WTF
+template <>
+struct VectorTraits<ScriptObject>
+    : VectorTraits<WorldSafeV8Reference<v8::Value>> {};
+
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_VALUE_H_

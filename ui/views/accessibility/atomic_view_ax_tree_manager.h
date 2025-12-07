@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+
 #include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_manager.h"
@@ -16,39 +17,40 @@
 namespace views {
 
 // This class manages a "tree" which consists of a single node. This is intended
-// for use with Views, enabling the UIA ITextProvider and ITextRangeProvider
-// functionalities. This class is TEMPORARY and not a long term solution.
+// for use with Views, enabling the UIA ITextProvider and ITextRangeProvider,
+// and creating AXPosition objects. This class is TEMPORARY and not a long term
+// solution.
 // TODO(crbug.com/40924888): Remove this temporary class once the ViewsAX
 // project is completed.
 class VIEWS_EXPORT AtomicViewAXTreeManager : public ui::AXPlatformTreeManager {
  public:
   static std::unique_ptr<AtomicViewAXTreeManager> Create(
       ViewAXPlatformNodeDelegate* delegate,
-      ui::AXNodeData node_data);
+      const ui::AXNodeData& node_data);
   friend std::unique_ptr<AtomicViewAXTreeManager> Create(
       ViewAXPlatformNodeDelegate* delegate,
-      ui::AXNodeData node_data);
+      const ui::AXNodeData& node_data);
 
   ~AtomicViewAXTreeManager() override;
 
   // AXTreeManager overrides.
   bool IsView() const override;
-  ui::AXNode* GetNodeFromTree(const ui::AXTreeID& tree_id,
-                              const ui::AXNodeID node_id) const override;
-  ui::AXNode* GetNode(const ui::AXNodeID node_id) const override;
-  ui::AXPlatformNode* GetPlatformNodeFromTree(
-      const ui::AXNodeID node_id) const override;
-  ui::AXPlatformNode* GetPlatformNodeFromTree(const ui::AXNode&) const override;
-  ui::AXPlatformNodeDelegate* RootDelegate() const override;
+  ui::AXNode* GetNode(ui::AXNodeID node_id) const override;
   ui::AXTreeID GetParentTreeID() const override;
   ui::AXNode* GetRoot() const override;
   ui::AXNode* GetParentNodeFromParentTree() const override;
+
+  // AXPlatformTreeManager overrides.
+  ui::AXPlatformNode* GetPlatformNodeFromTree(
+      ui::AXNodeID node_id) const override;
+  ui::AXPlatformNode* GetPlatformNodeFromTree(const ui::AXNode&) const override;
+  ui::AXPlatformNodeDelegate* RootDelegate() const override;
 
   void ClearComputedRootData();
 
  private:
   explicit AtomicViewAXTreeManager(ViewAXPlatformNodeDelegate* delegate,
-                                   ui::AXNodeData node_data);
+                                   const ui::AXNodeData& node_data);
 
   raw_ptr<ViewAXPlatformNodeDelegate> delegate_;
 };

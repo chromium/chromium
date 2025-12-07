@@ -8,15 +8,20 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/autofill/address_bubble_controller_delegate.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/autofill/core/browser/autofill_address_util.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
+#include "components/application_locale_storage/application_locale_storage.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/test_profiles.h"
+#include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -27,7 +32,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
-
 namespace {
 
 class MockDelegate : public AddressBubbleControllerDelegate {
@@ -58,7 +62,6 @@ class MockDelegate : public AddressBubbleControllerDelegate {
  private:
   base::WeakPtrFactory<MockDelegate> weak_ptr_factory_{this};
 };
-}  // namespace
 
 class SaveAddressBubbleControllerTest : public ::testing::Test {
  public:
@@ -74,17 +77,19 @@ class SaveAddressBubbleControllerTest : public ::testing::Test {
 
   std::unique_ptr<SaveAddressBubbleController> CreateController(
       const AutofillProfile& profile,
-      bool is_migration_to_account) {
+      AutofillClient::SaveAddressBubbleType save_address_bubble_type) {
     return std::make_unique<SaveAddressBubbleController>(
         delegate_.GetWeakPtr(), web_contents(), profile,
-        is_migration_to_account);
+        save_address_bubble_type);
   }
 
  protected:
   content::WebContents* web_contents() { return web_contents_.get(); }
 
   const std::string& app_locale() const {
-    return g_browser_process->GetApplicationLocale();
+    return g_browser_process->GetFeatures()
+        ->application_locale_storage()
+        ->Get();
   }
 
  private:
@@ -99,7 +104,7 @@ class SaveAddressBubbleControllerTest : public ::testing::Test {
 TEST_F(SaveAddressBubbleControllerTest, SavingNonAccountAddress) {
   AutofillProfile profile = test::GetFullProfile();
   auto controller =
-      CreateController(profile, /*is_migration_to_account=*/false);
+      CreateController(profile, AutofillClient::SaveAddressBubbleType::kSave);
 
   EXPECT_EQ(controller->GetWindowTitle(),
             l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE));
@@ -111,8 +116,9 @@ TEST_F(SaveAddressBubbleControllerTest, SavingNonAccountAddress) {
                               /*include_country=*/true));
   EXPECT_EQ(controller->GetProfileEmail(),
             profile.GetInfo(EMAIL_ADDRESS, app_locale()));
-  EXPECT_EQ(controller->GetProfilePhone(),
-            profile.GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale()));
+  EXPECT_EQ(
+      controller->GetProfilePhone(),
+      autofill::i18n::GetFormattedPhoneNumberForDisplay(profile, app_locale()));
   EXPECT_EQ(controller->GetOkButtonLabel(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE));
@@ -123,9 +129,9 @@ TEST_F(SaveAddressBubbleControllerTest, SavingNonAccountAddress) {
 
 TEST_F(SaveAddressBubbleControllerTest, SavingAccountAddress) {
   AutofillProfile profile = test::GetFullProfile();
-  test_api(profile).set_source(AutofillProfile::Source::kAccount);
+  test_api(profile).set_record_type(AutofillProfile::RecordType::kAccount);
   auto controller =
-      CreateController(profile, /*is_migration_to_account=*/false);
+      CreateController(profile, AutofillClient::SaveAddressBubbleType::kSave);
   std::u16string email =
       base::UTF8ToUTF16(GetPrimaryAccountInfoFromBrowserContext(
                             web_contents()->GetBrowserContext())
@@ -141,8 +147,9 @@ TEST_F(SaveAddressBubbleControllerTest, SavingAccountAddress) {
                               /*include_country=*/true));
   EXPECT_EQ(controller->GetProfileEmail(),
             profile.GetInfo(EMAIL_ADDRESS, app_locale()));
-  EXPECT_EQ(controller->GetProfilePhone(),
-            profile.GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale()));
+  EXPECT_EQ(
+      controller->GetProfilePhone(),
+      autofill::i18n::GetFormattedPhoneNumberForDisplay(profile, app_locale()));
   EXPECT_EQ(controller->GetOkButtonLabel(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE));
@@ -156,7 +163,8 @@ TEST_F(SaveAddressBubbleControllerTest, SavingAccountAddress) {
 
 TEST_F(SaveAddressBubbleControllerTest, MigrateIntoAccountAddress) {
   AutofillProfile profile = test::GetFullProfile();
-  auto controller = CreateController(profile, /*is_migration_to_account=*/true);
+  auto controller = CreateController(
+      profile, AutofillClient::SaveAddressBubbleType::kMigrateToAccount);
   std::u16string email =
       base::UTF8ToUTF16(GetPrimaryAccountInfoFromBrowserContext(
                             web_contents()->GetBrowserContext())
@@ -180,4 +188,46 @@ TEST_F(SaveAddressBubbleControllerTest, MigrateIntoAccountAddress) {
   EXPECT_TRUE(controller->GetFooterMessage().empty());
 }
 
+TEST_F(SaveAddressBubbleControllerTest, CombiningAccountsTypes) {
+  const AutofillProfile merged_profile = test::SupersetProfileOf(
+      {test::AccountNameEmailProfile(),
+       test::OnlyAddressProfile(AutofillProfile::RecordType::kAccountHome)},
+      app_locale(), AutofillProfile::RecordType::kAccount);
+  std::unique_ptr<SaveAddressBubbleController> controller = CreateController(
+      merged_profile,
+      AutofillClient::SaveAddressBubbleType::kHomeWorkNameEmailMerge);
+
+  EXPECT_EQ(
+      controller->GetWindowTitle(),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_NAME_EMAIL_HOME_WORK_MERGE_PROMPT_TITLE));
+  EXPECT_EQ(
+      controller->GetOkButtonLabel(),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_NAME_EMAIL_HOME_WORK_MERGE_OK_BUTTON_LABEL));
+  EXPECT_EQ(
+      controller->GetNegativeButtonLabel(),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_NAME_EMAIL_HOME_WORK_MERGE_CANCEL_BUTTON_LABEL));
+  EXPECT_EQ(controller->GetFooterMessage(),
+            l10n_util::GetStringFUTF16(
+                IDS_AUTOFILL_SAVE_IN_ACCOUNT_PROMPT_ADDRESS_SOURCE_NOTICE,
+                base::UTF8ToUTF16(GetPrimaryAccountInfoFromBrowserContext(
+                                      web_contents()->GetBrowserContext())
+                                      ->email)));
+  EXPECT_NE(controller->GetHeaderImages(), std::nullopt);
+  EXPECT_TRUE(controller->GetBodyText().empty());
+
+  EXPECT_EQ(controller->GetAddressSummary(),
+            GetEnvelopeStyleAddress(merged_profile, app_locale(),
+                                    /*include_recipient=*/true,
+                                    /*include_country=*/true));
+  EXPECT_EQ(controller->GetProfileEmail(),
+            merged_profile.GetInfo(EMAIL_ADDRESS, app_locale()));
+
+  EXPECT_EQ(controller->GetCancelCallbackValue(),
+            AutofillClient::AddressPromptUserDecision::kDeclined);
+}
+
+}  // namespace
 }  // namespace autofill

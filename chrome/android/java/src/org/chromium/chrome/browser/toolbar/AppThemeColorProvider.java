@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.toolbar;
 import android.content.Context;
 import android.content.res.ColorStateList;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -18,11 +18,12 @@ import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStat
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
-import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 
 /** A ThemeColorProvider for the app theme (incognito or standard theming). */
+@NullMarked
 public class AppThemeColorProvider extends ThemeColorProvider
         implements IncognitoStateObserver, TopResumedActivityChangedObserver {
     /** Primary color for standard mode. */
@@ -32,10 +33,10 @@ public class AppThemeColorProvider extends ThemeColorProvider
     private final int mIncognitoPrimaryColor;
 
     /** Used to know when incognito mode is entered or exited. */
-    private IncognitoStateProvider mIncognitoStateProvider;
+    private @Nullable IncognitoStateProvider mIncognitoStateProvider;
 
     /** Used to know the Layout state. */
-    private LayoutStateProvider mLayoutStateProvider;
+    private @Nullable LayoutStateProvider mLayoutStateProvider;
 
     /** Observer to know when Layout state is changed, e.g show/hide. */
     private final LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
@@ -50,7 +51,7 @@ public class AppThemeColorProvider extends ThemeColorProvider
      * The {@link ActivityLifecycleDispatcher} instance associated with the current activity, if
      * available.
      */
-    @Nullable private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    private @Nullable ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     /**
      * Whether the current activity is the top resumed activity. This is only relevant for use in
@@ -59,25 +60,27 @@ public class AppThemeColorProvider extends ThemeColorProvider
     private boolean mIsTopResumedActivity;
 
     /** Provider for desktop windowing mode state. */
-    @Nullable private final DesktopWindowStateProvider mDesktopWindowStateProvider;
+    private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
 
     /**
      * @param context The {@link Context} that is used to retrieve color related resources.
      * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} instance
      *     associated with the current activity. {@code null} if activity lifecycle observation is
      *     not required.
-     * @param desktopWindowStateProvider The {@link DesktopWindowStateProvider} for the current
+     * @param desktopWindowStateManager The {@link DesktopWindowStateManager} for the current
      *     activity. {@code null} if desktop window state observation is not required.
      */
     AppThemeColorProvider(
             Context context,
             @Nullable ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         super(context);
 
         mActivityContext = context;
-        mStandardPrimaryColor = ChromeColors.getDefaultThemeColor(context, false);
-        mIncognitoPrimaryColor = ChromeColors.getDefaultThemeColor(context, true);
+        mStandardPrimaryColor =
+                ChromeColors.getDefaultThemeColor(context, /* isIncognito= */ false);
+        mIncognitoPrimaryColor =
+                ChromeColors.getDefaultThemeColor(context, /* isIncognito= */ true);
 
         mLayoutStateObserver =
                 new LayoutStateProvider.LayoutStateObserver() {
@@ -96,10 +99,10 @@ public class AppThemeColorProvider extends ThemeColorProvider
                     }
                 };
 
-        mDesktopWindowStateProvider = desktopWindowStateProvider;
+        mDesktopWindowStateManager = desktopWindowStateManager;
         mIsTopResumedActivity =
-                mDesktopWindowStateProvider == null
-                        || !mDesktopWindowStateProvider.isInUnfocusedDesktopWindow();
+                mDesktopWindowStateManager == null
+                        || !mDesktopWindowStateManager.isInUnfocusedDesktopWindow();
 
         // Activity lifecycle observation for activity focus change.
         if (activityLifecycleDispatcher != null) {
@@ -132,7 +135,11 @@ public class AppThemeColorProvider extends ThemeColorProvider
                 ThemeUtils.getThemedToolbarIconTint(mActivityContext, brandedColorScheme);
 
         final ColorStateList activityFocusTint =
-                calculateActivityFocusTint(mActivityContext, brandedColorScheme);
+                mActivityLifecycleDispatcher == null
+                                || !AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager)
+                        ? iconTint
+                        : ThemeColorProvider.calculateActivityFocusTint(
+                                mActivityContext, brandedColorScheme, mIsTopResumedActivity);
         updateTint(iconTint, activityFocusTint, brandedColorScheme);
     }
 
@@ -157,15 +164,5 @@ public class AppThemeColorProvider extends ThemeColorProvider
         // TODO (crbug/328055199): Check if losing focus to a non-Chrome task.
         mIsTopResumedActivity = isTopResumedActivity;
         updateTheme();
-    }
-
-    private ColorStateList calculateActivityFocusTint(
-            Context context, @BrandedColorScheme int brandedColorScheme) {
-        var iconTint = ThemeUtils.getThemedToolbarIconTint(context, brandedColorScheme);
-        return mActivityLifecycleDispatcher == null
-                        || !AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProvider)
-                ? iconTint
-                : ThemeUtils.getThemedToolbarIconTintForActivityState(
-                        context, brandedColorScheme, mIsTopResumedActivity);
     }
 }

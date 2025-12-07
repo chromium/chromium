@@ -15,36 +15,12 @@
 # allocator functions to PartitionAlloc when `use_partition_alloc_as_malloc` is
 # true, so that Rust and C++ use the same allocator backend.
 
-import("//base/allocator/partition_allocator/partition_alloc.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/coverage/coverage.gni")
 import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 
 if (toolchain_has_rust) {
-  # If clang performs the link step, we need to provide the allocator symbols
-  # that are normally injected by rustc during linking.
-  #
-  # We also "happen to" use this to redirect allocations to PartitionAlloc,
-  # though that would be better done through a #[global_allocator] crate (see
-  # above).
-  source_set("remap_alloc") {
-    public_deps = [ "//base/allocator/partition_allocator:buildflags" ]
-    if (use_partition_alloc_as_malloc) {
-      public_deps += [ "//base/allocator/partition_allocator:partition_alloc" ]
-    }
-    sources = [
-      # `alias.*`, `compiler_specific.h`, and `immediate_crash.*` have been
-      # copied from `//base`.
-      # TODO(crbug.com/40279749): Avoid duplication / reuse code.
-      "alias.cc",
-      "alias.h",
-      "compiler_specific.h",
-      "immediate_crash.h",
-      "remap_alloc.cc",
-    ]
-  }
-
   # List of Rust stdlib rlibs which are present in the official Rust toolchain
   # we are using from the Android team. This is usually a version or two behind
   # nightly. Generally this matches the toolchain we build ourselves, but if
@@ -66,7 +42,6 @@ if (toolchain_has_rust) {
     "rustc_demangle",
     "std_detect",
     "test",
-    "unicode_width",
     "unwind",
   ]
 
@@ -74,13 +49,17 @@ if (toolchain_has_rust) {
     # These are no longer present in the Windows toolchain.
     stdlib_files += [
       "addr2line",
-      "adler",
       "gimli",
       "libc",
       "memchr",
       "miniz_oxide",
       "object",
     ]
+    if (rustc_nightly_capability) {
+      stdlib_files += [ "adler2" ]
+    } else {
+      stdlib_files += [ "adler" ]
+    }
   }
 
   if (toolchain_for_rust_host_build_tools) {
@@ -151,8 +130,16 @@ if (toolchain_has_rust) {
     }
 
     # From rust/library/std/src/sys/unix/mod.rs.
-    # TODO(danakj): We should generate this list somehow when building or rolling
-    # the Rust toolchain?
+    #
+    # libs = [ "System" ] (meaning /usr/lib/libSystem.B.dylib) is intentionally
+    # omitted here on Apple platforms, because the linker driver is responsible
+    # for adding it, much like libc on most other POSIX platforms. It can be
+    # ordering-sensitive, and including it here can alter its order relative to
+    # other libraries. https://crbug.com/367764848 is an example of a bug caused
+    # by specifying libSystem too early.
+    #
+    # TODO(danakj): We should generate this list somehow when building or
+    # rolling the Rust toolchain?
     if (is_android) {
       libs = [ "dl" ]
     } else if (target_os == "freebsd") {
@@ -165,13 +152,8 @@ if (toolchain_has_rust) {
         "rt",
         "pthread",
       ]
-    } else if (is_mac) {
-      libs = [ "System" ]
     } else if (is_ios) {
-      libs = [
-        "System",
-        "objc",
-      ]
+      libs = [ "objc" ]
       frameworks = [
         "Security.framework",
         "Foundation.framework",
@@ -233,51 +215,6 @@ if (toolchain_has_rust) {
       visibility = [ ":*" ]
     }
 
-    # When given -Zsanitize=..., rustc insists on passing a sanitizer runtime to
-    # the linker it invokes. Unfortunately, our C++ ldflags already tell the
-    # linker to link against a C++ sanitizer runtime - which contains the same
-    # symbols. So, make a blank library.
-    # The list of relevant sanitizers here is taken from
-    # https://github.com/rust-lang/rust/blob/7e7483d26e3cec7a44ef00cf7ae6c9c8c918bec6/compiler/rustc_codegen_ssa/src/back/link.rs#L1148
-    template("rustc_sanitizer_runtime") {
-      rt_name = target_name
-      not_needed([ "invoker" ])
-      static_library("sanitizer_rt_$rt_name") {
-        sources = []
-        output_name = "librustc-${rust_channel}_rt.$rt_name"
-        output_dir = "$local_rustc_sysroot/$sysroot_lib_subdir"
-        if (is_win) {
-          arflags = [ "/llvmlibempty" ]
-        }
-      }
-    }
-    rustc_sanitizer_runtimes = []
-    if (is_asan) {
-      rustc_sanitizer_runtime("asan") {
-      }
-      rustc_sanitizer_runtimes += [ ":sanitizer_rt_asan" ]
-    }
-    if (is_lsan) {
-      rustc_sanitizer_runtime("lsan") {
-      }
-      rustc_sanitizer_runtimes += [ ":sanitizer_rt_lsan" ]
-    }
-    if (is_msan) {
-      rustc_sanitizer_runtime("msan") {
-      }
-      rustc_sanitizer_runtimes += [ ":sanitizer_rt_msan" ]
-    }
-    if (is_tsan) {
-      rustc_sanitizer_runtime("tsan") {
-      }
-      rustc_sanitizer_runtimes += [ ":sanitizer_rt_tsan" ]
-    }
-    if (is_hwasan) {
-      rustc_sanitizer_runtime("hwasan") {
-      }
-      rustc_sanitizer_runtimes += [ ":sanitizer_rt_hwasan" ]
-    }
-
     # Builds and links against the Rust stdlib. Both Rust and C++ targets should
     # depend on this, as it provides the path to the library and includes the
     # allocator hooks.
@@ -296,9 +233,6 @@ if (toolchain_has_rust) {
       foreach(libname, stdlib_files + skip_stdlib_files) {
         deps += [ "rules:$libname" ]
       }
-      deps += rustc_sanitizer_runtimes
-
-      public_deps = [ ":remap_alloc" ]
     }
   } else {
     action("find_stdlib") {
@@ -424,12 +358,6 @@ if (toolchain_has_rust) {
         ":stdlib_public_dependent_libs",
       ]
       deps = [ ":prebuilt_rustc_copy_to_sysroot" ]
-
-      # The host builds tools toolchain supports Rust only and does not use
-      # the allocator remapping to point it to PartitionAlloc.
-      if (!toolchain_for_rust_host_build_tools) {
-        deps += [ ":remap_alloc" ]
-      }
     }
   }
 }

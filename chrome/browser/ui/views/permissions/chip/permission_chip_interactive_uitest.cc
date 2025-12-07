@@ -2,20 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+#include <memory>
+
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_state.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
@@ -30,22 +36,25 @@
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/permissions/features.h"
 #include "components/permissions/origin_keyed_permission_action_service.h"
-#include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
+#include "components/permissions/prediction_service/permission_ui_selector.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
+#include "components/permissions/test/mock_permission_ui_selector.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/permissions_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
+#include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/test_event.h"
@@ -83,32 +92,6 @@ constexpr char kRequestNotifications[] = R"(
       })
       )";
 
-// Test implementation of PermissionUiSelector that always returns a canned
-// decision.
-class TestQuietNotificationPermissionUiSelector
-    : public permissions::PermissionUiSelector {
- public:
-  explicit TestQuietNotificationPermissionUiSelector(
-      const Decision& canned_decision)
-      : canned_decision_(canned_decision) {}
-  ~TestQuietNotificationPermissionUiSelector() override = default;
-
- protected:
-  // permissions::PermissionUiSelector:
-  void SelectUiToUse(permissions::PermissionRequest* request,
-                     DecisionMadeCallback callback) override {
-    std::move(callback).Run(canned_decision_);
-  }
-
-  bool IsPermissionRequestSupported(
-      permissions::RequestType request_type) override {
-    return request_type == permissions::RequestType::kNotifications;
-  }
-
- private:
-  Decision canned_decision_;
-};
-
 class ChipExpansionObserver : PermissionChipView::Observer {
  public:
   explicit ChipExpansionObserver(PermissionChipView* chip) {
@@ -124,13 +107,40 @@ class ChipExpansionObserver : PermissionChipView::Observer {
   base::RunLoop loop_;
 };
 
+class ChipPromptWaiter : public ChipController::Observer {
+ public:
+  explicit ChipPromptWaiter(ChipController* chip_controller)
+      : chip_controller_(chip_controller) {
+    show_run_loop_ = std::make_unique<base::RunLoop>(
+        base::RunLoop::Type::kNestableTasksAllowed);
+    hide_run_loop_ = std::make_unique<base::RunLoop>(
+        base::RunLoop::Type::kNestableTasksAllowed);
+    chip_controller_->AddObserver(this);
+  }
+
+  ~ChipPromptWaiter() override { chip_controller_->RemoveObserver(this); }
+
+  void OnPermissionPromptShown() override { show_run_loop_->Quit(); }
+
+  void WaitForShow() { show_run_loop_->Run(); }
+
+  // Triggered when the permission prompt hides.
+  void OnPermissionPromptHidden() override { hide_run_loop_->Quit(); }
+
+  void WaitForHide() { hide_run_loop_->Run(); }
+
+ private:
+  raw_ptr<ChipController> chip_controller_ = nullptr;
+  std::unique_ptr<base::RunLoop> show_run_loop_;
+  std::unique_ptr<base::RunLoop> hide_run_loop_;
+};
 }  // namespace
 
 class PermissionChipInteractiveUITest : public InProcessBrowserTest {
  public:
   PermissionChipInteractiveUITest() = default;
-  PermissionChipInteractiveUITest(
-      const PermissionChipInteractiveUITest&) = delete;
+  PermissionChipInteractiveUITest(const PermissionChipInteractiveUITest&) =
+      delete;
   PermissionChipInteractiveUITest& operator=(
       const PermissionChipInteractiveUITest&) = delete;
 
@@ -173,7 +183,6 @@ class PermissionChipInteractiveUITest : public InProcessBrowserTest {
     return lbv->GetChipController();
   }
 
-
   void ClickOnChip(PermissionChipView* chip) {
     ASSERT_TRUE(chip != nullptr);
     ASSERT_TRUE(chip->GetVisible());
@@ -182,14 +191,6 @@ class PermissionChipInteractiveUITest : public InProcessBrowserTest {
     views::test::ButtonTestApi(chip).NotifyClick(
         ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
-    base::RunLoop().RunUntilIdle();
-  }
-
-  void ClickOnLock() {
-    views::test::ButtonTestApi(GetLocationBarView()->location_icon_view())
-        .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
-                                    gfx::Point(), ui::EventTimeForNow(),
-                                    ui::EF_LEFT_MOUSE_BUTTON, 0));
     base::RunLoop().RunUntilIdle();
   }
 
@@ -277,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(LocationBarIconOverrideTest,
               l10n_util::GetStringUTF16(
                   IDS_PERMISSIONS_PERMISSION_ALLOWED_CONFIRMATION));
 
-    EXPECT_FALSE(IsLocationIconVisible());
+  EXPECT_FALSE(IsLocationIconVisible());
 
   // Check collapse timer is running and fast forward fire callback. Then,
   // fast forward animation to trigger callback and wait until it completes.
@@ -322,8 +323,7 @@ IN_PROC_BROWSER_TEST_F(ConfirmationChipEnabledInteractiveTest,
   EXPECT_TRUE(GetChip()->GetText() ==
               l10n_util::GetStringUTF16(
                   IDS_PERMISSIONS_PERMISSION_ALLOWED_CONFIRMATION));
-  EXPECT_EQ(GetChip()->get_theme_for_testing(),
-            PermissionChipTheme::kNormalVisibility);
+  EXPECT_EQ(GetChip()->theme(), PermissionChipTheme::kNormalVisibility);
 
   // Check collapse timer is running and fast forward fire callback. Then,
   // fast forward animation to trigger callback and wait until it completes.
@@ -350,8 +350,7 @@ IN_PROC_BROWSER_TEST_F(ConfirmationChipEnabledInteractiveTest,
   EXPECT_EQ(GetChip()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_PERMISSIONS_PERMISSION_NOT_ALLOWED_CONFIRMATION));
-  EXPECT_EQ(GetChip()->get_theme_for_testing(),
-            PermissionChipTheme::kLowVisibility);
+  EXPECT_EQ(GetChip()->theme(), PermissionChipTheme::kLowVisibility);
 }
 
 IN_PROC_BROWSER_TEST_F(ConfirmationChipEnabledInteractiveTest,
@@ -405,70 +404,30 @@ IN_PROC_BROWSER_TEST_F(ConfirmationChipEnabledInteractiveTest,
   ASSERT_FALSE(GetChip()->GetVisible());
 }
 
-class ConfirmationChipUmaInteractiveTest
-    : public PermissionChipInteractiveUITest {
- public:
-  ConfirmationChipUmaInteractiveTest() = default;
-};
-
-IN_PROC_BROWSER_TEST_F(ConfirmationChipUmaInteractiveTest, VerifyUmaMetrics) {
-  base::HistogramTester histograms;
-
-  ClickOnLock();
-
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  histograms.ExpectBucketCount(
-      "Permissions.ConfirmationChip.PageInfoDialogAccessType",
-      static_cast<int>(permissions::PageInfoDialogAccessType::LOCK_CLICK), 1);
-
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_ESCAPE, false,
-                                              false, false, false));
-  base::RunLoop().RunUntilIdle();
-
+IN_PROC_BROWSER_TEST_F(ConfirmationChipEnabledInteractiveTest,
+                       HideChipWhenOmniboxIsEdited) {
   RequestPermission(permissions::RequestType::kGeolocation);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(GetChip()->GetVisible());
+  EXPECT_TRUE(GetChip()->GetText() ==
+              l10n_util::GetStringUTF16(IDS_GEOLOCATION_PERMISSION_CHIP));
+
   test_api_->manager()->Accept();
+  EXPECT_TRUE(GetChip()->GetVisible());
+  EXPECT_TRUE(GetChip()->GetText() ==
+              l10n_util::GetStringUTF16(
+                  IDS_PERMISSIONS_PERMISSION_ALLOWED_CONFIRMATION));
+  EXPECT_EQ(GetChip()->theme(), PermissionChipTheme::kNormalVisibility);
 
-  ClickOnChip(GetChip());
-
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  histograms.ExpectBucketCount(
-      "Permissions.ConfirmationChip.PageInfoDialogAccessType",
-      static_cast<int>(
-          permissions::PageInfoDialogAccessType::CONFIRMATION_CHIP_CLICK),
-      1);
-
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_ESCAPE, false,
-                                              false, false, false));
-
-  base::RunLoop().RunUntilIdle();
-
-  GetLocationBarView()->SetConfirmationChipShownTimeForTesting(
-      base::TimeTicks::Now() - base::Seconds(10));
-
-  ClickOnLock();
-
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  histograms.ExpectBucketCount(
-      "Permissions.ConfirmationChip.PageInfoDialogAccessType",
-      static_cast<int>(permissions::PageInfoDialogAccessType::
-                           LOCK_CLICK_SHORTLY_AFTER_CONFIRMATION_CHIP),
-      1);
-
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_ESCAPE, false,
-                                              false, false, false));
-
-  base::RunLoop().RunUntilIdle();
-
-  GetLocationBarView()->SetConfirmationChipShownTimeForTesting(
-      base::TimeTicks::Now() - base::Seconds(21));
-
-  ClickOnLock();
-
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  histograms.ExpectBucketCount(
-      "Permissions.ConfirmationChip.PageInfoDialogAccessType",
-      static_cast<int>(permissions::PageInfoDialogAccessType::LOCK_CLICK), 2);
+  // Simulate the user editing the omnibox.
+  OmniboxView* omnibox_view = GetLocationBarView()->GetOmniboxView();
+  omnibox_view->SetFocus(/*is_user_initiated=*/true);
+  omnibox_view->SetUserText(u"Typing in the Omnibox...");
+  views::test::RunScheduledLayout(GetLocationBarView());
+  EXPECT_TRUE(GetLocationBarView()->IsEditingOrEmpty());
+  EXPECT_FALSE(GetChip()->GetVisible());
 }
+
 
 class PageInfoChangedWithin1mUmaTest : public PermissionChipInteractiveUITest {
  public:
@@ -655,7 +614,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoChangedWithin1mUmaTest,
 class ChipGestureSensitiveEnabledInteractiveTest
     : public PermissionChipInteractiveUITest {
  public:
-  ChipGestureSensitiveEnabledInteractiveTest() {}
+  ChipGestureSensitiveEnabledInteractiveTest() = default;
 };
 IN_PROC_BROWSER_TEST_F(ChipGestureSensitiveEnabledInteractiveTest,
                        ChipAutoPopupBubbleEnabled) {
@@ -697,14 +656,11 @@ class QuietChipAutoPopupBubbleInteractiveTest
 
  protected:
   using QuietUiReason = permissions::PermissionUiSelector::QuietUiReason;
-  using WarningReason = permissions::PermissionUiSelector::WarningReason;
+  using Decision = permissions::PermissionUiSelector::Decision;
 
-  void SetCannedUiDecision(std::optional<QuietUiReason> quiet_ui_reason,
-                           std::optional<WarningReason> warning_reason) {
+  void SetCannedUiDecision(const Decision& decision) {
     test_api_->manager()->set_permission_ui_selector_for_testing(
-        std::make_unique<TestQuietNotificationPermissionUiSelector>(
-            permissions::PermissionUiSelector::Decision(quiet_ui_reason,
-                                                        warning_reason)));
+        std::make_unique<MockPermissionUiSelector>(decision));
   }
 
  private:
@@ -801,7 +757,8 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
   for (QuietUiReason reason :
        {QuietUiReason::kEnabledInPrefs,
         QuietUiReason::kServicePredictedVeryUnlikelyGrant}) {
-    SetCannedUiDecision(reason, std::nullopt);
+    SetCannedUiDecision(
+        Decision::UseQuietUi(reason, Decision::ShowNoWarning()));
 
     RequestPermission(permissions::RequestType::kNotifications);
 
@@ -834,7 +791,8 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
   for (QuietUiReason reason :
        {QuietUiReason::kEnabledInPrefs,
         QuietUiReason::kServicePredictedVeryUnlikelyGrant}) {
-    SetCannedUiDecision(reason, std::nullopt);
+    SetCannedUiDecision(
+        Decision::UseQuietUi(reason, Decision::ShowNoWarning()));
 
     RequestPermission(permissions::RequestType::kNotifications);
 
@@ -876,7 +834,8 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
   for (QuietUiReason reason : {QuietUiReason::kTriggeredByCrowdDeny,
                                QuietUiReason::kTriggeredDueToAbusiveRequests,
                                QuietUiReason::kTriggeredDueToAbusiveContent}) {
-    SetCannedUiDecision(reason, std::nullopt);
+    SetCannedUiDecision(
+        Decision::UseQuietUi(reason, Decision::ShowNoWarning()));
 
     RequestPermission(permissions::RequestType::kNotifications);
 
@@ -911,7 +870,8 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
   for (QuietUiReason reason : {QuietUiReason::kTriggeredByCrowdDeny,
                                QuietUiReason::kTriggeredDueToAbusiveRequests,
                                QuietUiReason::kTriggeredDueToAbusiveContent}) {
-    SetCannedUiDecision(reason, std::nullopt);
+    SetCannedUiDecision(
+        Decision::UseQuietUi(reason, Decision::ShowNoWarning()));
 
     RequestPermission(permissions::RequestType::kNotifications);
 
@@ -940,7 +900,8 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
   for (QuietUiReason reason : {QuietUiReason::kTriggeredByCrowdDeny,
                                QuietUiReason::kTriggeredDueToAbusiveRequests,
                                QuietUiReason::kTriggeredDueToAbusiveContent}) {
-    SetCannedUiDecision(reason, std::nullopt);
+    SetCannedUiDecision(
+        Decision::UseQuietUi(reason, Decision::ShowNoWarning()));
 
     RequestPermission(permissions::RequestType::kNotifications);
 
@@ -969,7 +930,8 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
   for (QuietUiReason reason : {QuietUiReason::kTriggeredByCrowdDeny,
                                QuietUiReason::kTriggeredDueToAbusiveRequests,
                                QuietUiReason::kTriggeredDueToAbusiveContent}) {
-    SetCannedUiDecision(reason, std::nullopt);
+    SetCannedUiDecision(
+        Decision::UseQuietUi(reason, Decision::ShowNoWarning()));
 
     RequestPermission(permissions::RequestType::kNotifications);
 
@@ -998,7 +960,8 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
   for (QuietUiReason reason : {QuietUiReason::kTriggeredByCrowdDeny,
                                QuietUiReason::kTriggeredDueToAbusiveRequests,
                                QuietUiReason::kTriggeredDueToAbusiveContent}) {
-    SetCannedUiDecision(reason, std::nullopt);
+    SetCannedUiDecision(
+        Decision::UseQuietUi(reason, Decision::ShowNoWarning()));
 
     RequestPermission(permissions::RequestType::kNotifications);
 
@@ -1027,7 +990,8 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
   for (QuietUiReason reason : {QuietUiReason::kTriggeredByCrowdDeny,
                                QuietUiReason::kTriggeredDueToAbusiveRequests,
                                QuietUiReason::kTriggeredDueToAbusiveContent}) {
-    SetCannedUiDecision(reason, std::nullopt);
+    SetCannedUiDecision(
+        Decision::UseQuietUi(reason, Decision::ShowNoWarning()));
 
     RequestPermission(permissions::RequestType::kNotifications);
 
@@ -1069,15 +1033,22 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
   ASSERT_TRUE(
       base::FeatureList::IsEnabled(features::kQuietNotificationPrompts));
 
-  SetCannedUiDecision(QuietUiReason::kTriggeredDueToAbusiveContent,
-                      std::nullopt);
+  SetCannedUiDecision(Decision::UseQuietUi(
+      QuietUiReason::kTriggeredDueToAbusiveContent, Decision::ShowNoWarning()));
+
+  RequestPermission(permissions::RequestType::kCameraStream);
+
+  EXPECT_EQ(
+      test_api_->manager()->current_request_prompt_disposition_for_testing(),
+      permissions::PermissionPromptDisposition::
+          LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
 
   RequestPermission(permissions::RequestType::kGeolocation);
 
   EXPECT_EQ(
       test_api_->manager()->current_request_prompt_disposition_for_testing(),
       permissions::PermissionPromptDisposition::
-          LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
+          LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP);
 
   test_api_->manager()->Accept();
   base::RunLoop().RunUntilIdle();
@@ -1100,26 +1071,22 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
           LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
 }
 
-class QuietChipFailFastInteractiveTest : public
-                                    PermissionChipInteractiveUITest {
+class QuietChipFailFastInteractiveTest
+    : public PermissionChipInteractiveUITest {
  public:
   QuietChipFailFastInteractiveTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kQuietNotificationPrompts,
-         permissions::features::kFailFastQuietChip},
-        {});
+    scoped_feature_list_.InitWithFeatures({features::kQuietNotificationPrompts},
+                                          {});
   }
 
  protected:
   using QuietUiReason = permissions::PermissionUiSelector::QuietUiReason;
   using WarningReason = permissions::PermissionUiSelector::WarningReason;
+  using Decision = permissions::PermissionUiSelector::Decision;
 
-  void SetCannedUiDecision(std::optional<QuietUiReason> quiet_ui_reason,
-                           std::optional<WarningReason> warning_reason) {
+  void SetCannedUiDecision(const Decision& decision) {
     test_api_->manager()->set_permission_ui_selector_for_testing(
-        std::make_unique<TestQuietNotificationPermissionUiSelector>(
-            permissions::PermissionUiSelector::Decision(quiet_ui_reason,
-                                                        warning_reason)));
+        std::make_unique<MockPermissionUiSelector>(decision));
   }
 
  private:
@@ -1141,7 +1108,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
 
   // Keep it above `IsSubscribedToPermissionChangeEvent` to make sure it does
   // not influence it.
-  EXPECT_FALSE(content::EvalJs(main_rfh, kCheckNotifications).value.GetBool());
+  EXPECT_EQ(false, content::EvalJs(main_rfh, kCheckNotifications));
 
   bool IsPermissionStatusSubscribed =
       web_contents->GetBrowserContext()
@@ -1157,8 +1124,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
       main_rfh->GetBrowserContext()->GetPermissionController(),
       run_loop.QuitClosure());
 
-  EXPECT_TRUE(content::EvalJs(main_rfh, kAddNotificationsEventListener)
-                  .value.GetBool());
+  EXPECT_EQ(true, content::EvalJs(main_rfh, kAddNotificationsEventListener));
 
   // `kAddNotificationsEventListener` execution is async. To informing that an
   // event listener has been added for a permission we should wait otherwise
@@ -1194,7 +1160,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
 
   manager->Accept();
 
-  EXPECT_TRUE(content::EvalJs(main_rfh, kCheckNotifications).value.GetBool());
+  EXPECT_EQ(true, content::EvalJs(main_rfh, kCheckNotifications));
   EXPECT_FALSE(manager->IsRequestInProgress());
 
   IsPermissionStatusSubscribed =
@@ -1215,8 +1181,9 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
                        EventListenerAddedTest) {
   base::HistogramTester histograms;
 
-  SetCannedUiDecision(QuietUiReason::kTriggeredDueToAbusiveRequests,
-                      WarningReason::kAbusiveRequests);
+  SetCannedUiDecision(
+      Decision::UseQuietUi(QuietUiReason::kTriggeredDueToAbusiveRequests,
+                           WarningReason::kAbusiveRequests));
 
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/title1.html"));
@@ -1229,7 +1196,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
 
   // Keep it above `IsSubscribedToPermissionChangeEvent` to make sure it does
   // not influence it.
-  EXPECT_FALSE(content::EvalJs(main_rfh, kCheckNotifications).value.GetBool());
+  EXPECT_EQ(false, content::EvalJs(main_rfh, kCheckNotifications));
 
   bool IsPermissionStatusSubscribed =
       web_contents->GetBrowserContext()
@@ -1245,8 +1212,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
       main_rfh->GetBrowserContext()->GetPermissionController(),
       run_loop.QuitClosure());
 
-  EXPECT_TRUE(content::EvalJs(main_rfh, kAddNotificationsEventListener)
-                  .value.GetBool());
+  EXPECT_EQ(true, content::EvalJs(main_rfh, kAddNotificationsEventListener));
 
   // `kAddNotificationsEventListener` execution is async. To informing that an
   // event listener has been added for a permission we should wait otherwise
@@ -1271,7 +1237,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
   EXPECT_TRUE(manager->IsRequestInProgress());
   manager->Accept();
 
-  EXPECT_TRUE(content::EvalJs(main_rfh, kCheckNotifications).value.GetBool());
+  EXPECT_EQ(true, content::EvalJs(main_rfh, kCheckNotifications));
   EXPECT_FALSE(manager->IsRequestInProgress());
 
   IsPermissionStatusSubscribed =
@@ -1307,7 +1273,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
 
   // Init global `PermissionStatus` variable and add API for assigning and
   // removing event listeners.
-  ASSERT_EQ("", content::EvalJs(main_rfh, R"(
+  ASSERT_TRUE(content::EvalJs(main_rfh, R"(
     var PermissionStatus;
 
     function onChangeListener(event) {}
@@ -1328,17 +1294,16 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
       PermissionStatus.removeEventListener("change", onChangeListener);
     }
     )")
-                    .error);
+                  .is_ok());
 
   // Initialize global JS variable `PermissionStatus`.
-  EXPECT_TRUE(content::EvalJs(main_rfh, R"(
+  EXPECT_EQ(true, content::EvalJs(main_rfh, R"(
     new Promise(async resolve => {
       PermissionStatus =
         await navigator.permissions.query({name: 'notifications'});
       resolve(true);
     })
-    )")
-                  .value.GetBool());
+    )"));
 
   bool IsPermissionStatusSubscribed =
       web_contents->GetBrowserContext()
@@ -1357,7 +1322,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
         run_loop.QuitClosure());
 
     // Set PermissionState.onchange listener.
-    ASSERT_EQ("", content::EvalJs(main_rfh, "addOnChange()").error);
+    ASSERT_TRUE(content::EvalJs(main_rfh, "addOnChange()").is_ok());
 
     // `kAddNotificationsEventListener` execution is async. To informing that an
     // event listener has been added for a permission we should wait otherwise
@@ -1379,7 +1344,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
         main_rfh->GetBrowserContext()->GetPermissionController(),
         run_loop.QuitClosure());
 
-    ASSERT_EQ("", content::EvalJs(main_rfh, "removeOnchange()").error);
+    ASSERT_TRUE(content::EvalJs(main_rfh, "removeOnchange()").is_ok());
 
     run_loop.Run();
 
@@ -1399,7 +1364,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
         run_loop.QuitClosure());
 
     // Add `change` event listener.
-    ASSERT_EQ("", content::EvalJs(main_rfh, "addEventListener()").error);
+    ASSERT_TRUE(content::EvalJs(main_rfh, "addEventListener()").is_ok());
 
     run_loop.Run();
 
@@ -1418,7 +1383,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
         main_rfh->GetBrowserContext()->GetPermissionController(),
         run_loop.QuitClosure());
     // Add the second lisener.
-    ASSERT_EQ("", content::EvalJs(main_rfh, "addOnChange()").error);
+    ASSERT_TRUE(content::EvalJs(main_rfh, "addOnChange()").is_ok());
     run_loop.Run();
   }
 
@@ -1426,7 +1391,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
     // Removing the first listener should not endup in disablign
     // `IsPermissionStatusSubscribed`. Do not need to call `run_loop.Run()` as
     // that event will not be processed.
-    ASSERT_EQ("", content::EvalJs(main_rfh, "removeEventListener()").error);
+    ASSERT_TRUE(content::EvalJs(main_rfh, "removeEventListener()").is_ok());
     // run_loop.Run();
 
     IsPermissionStatusSubscribed =
@@ -1442,7 +1407,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
         main_rfh->GetBrowserContext()->GetPermissionController(),
         run_loop.QuitClosure());
     // This will remove the internal listener.
-    ASSERT_EQ("", content::EvalJs(main_rfh, "removeOnchange()").error);
+    ASSERT_TRUE(content::EvalJs(main_rfh, "removeOnchange()").is_ok());
     run_loop.Run();
 
     IsPermissionStatusSubscribed =
@@ -1531,7 +1496,7 @@ IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveUITest,
   content::RenderFrameHost* subframe = CreateIframe(main_rfh, embedded_url);
   ASSERT_TRUE(subframe);
 
-  EXPECT_FALSE(content::EvalJs(main_rfh, kCheckNotifications).value.GetBool());
+  EXPECT_EQ(false, content::EvalJs(main_rfh, kCheckNotifications));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -1561,7 +1526,7 @@ IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveUITest,
 
   EXPECT_TRUE(manager->IsRequestInProgress());
   EXPECT_TRUE(observer.request_shown());
-  EXPECT_TRUE(manager->view_for_testing());
+  EXPECT_TRUE(manager->GetCurrentPrompt());
   EXPECT_TRUE(chip_controller->IsPermissionPromptChipVisible());
 
   // At first, we verify that the same document navigation on both, top level
@@ -1595,5 +1560,273 @@ IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveUITest,
 
   manager->Accept();
 
-  EXPECT_TRUE(content::EvalJs(main_rfh, kCheckNotifications).value.GetBool());
+  EXPECT_EQ(true, content::EvalJs(main_rfh, kCheckNotifications));
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveUITest,
+                       ObserverListensToPromptBubbleEvents) {
+  auto permission_prompt_waiter =
+      std::make_unique<ChipPromptWaiter>(GetChipController());
+  RequestPermission(permissions::RequestType::kGeolocation);
+  permission_prompt_waiter->WaitForShow();
+
+  GetChipController()->GetBubbleWidget()->Close();
+  permission_prompt_waiter->WaitForHide();
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveUITest,
+                       IgnoreRequestWhenOmniboxIsEdited) {
+  RequestPermission(permissions::RequestType::kGeolocation);
+  EXPECT_TRUE(GetChip()->GetVisible());
+  EXPECT_TRUE(test_api_->manager()->IsRequestInProgress());
+
+  // Simulate the user editing the omnibox.
+  OmniboxView* omnibox_view = GetLocationBarView()->GetOmniboxView();
+  omnibox_view->SetFocus(/*is_user_initiated=*/true);
+  omnibox_view->SetUserText(u"Typing in the Omnibox...");
+  views::test::RunScheduledLayout(GetLocationBarView());
+  ASSERT_TRUE(GetLocationBarView()->IsEditingOrEmpty());
+
+  EXPECT_FALSE(test_api_->manager()->IsRequestInProgress());
+  EXPECT_FALSE(GetChip()->GetVisible());
+}
+
+class TestWebContentsObserver : content::WebContentsObserver {
+ public:
+  explicit TestWebContentsObserver(content::WebContents* web_contents)
+      : content::WebContentsObserver(web_contents) {}
+
+  void Wait() { loop_.Run(); }
+
+  void OnCapabilityTypesChanged(
+      content::WebContentsCapabilityType capability_type,
+      bool used) override {
+    if (capability_type == content::WebContentsCapabilityType::kGeolocation) {
+      loop_.Quit();
+    }
+  }
+  base::RunLoop loop_;
+};
+
+class GeolocationUsageObserverBrowsertest : public InProcessBrowserTest {
+ public:
+  GeolocationUsageObserverBrowsertest() {
+    geolocation_overrider_ =
+        std::make_unique<device::ScopedGeolocationOverrider>(0, 0);
+  }
+
+  void SetPermission(ContentSettingsType type,
+                     ContentSetting setting,
+                     const GURL url) {
+    HostContentSettingsMap* map =
+        HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+
+    map->SetContentSettingDefaultScope(url, url, type, setting);
+  }
+
+ private:
+  std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
+};
+
+IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
+                       GetCurrentPosition) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* embedder_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(embedder_contents);
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  content::RenderFrameHost* main_rfh =
+      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url,
+                                                                1);
+  content::WebContents::FromRenderFrameHost(main_rfh)->Focus();
+  ASSERT_TRUE(main_rfh);
+  ASSERT_FALSE(embedder_contents->IsCapabilityActive(
+      content::WebContentsCapabilityType::kGeolocation));
+
+  // Set geolocation permission to allow.
+  SetPermission(ContentSettingsType::GEOLOCATION,
+                ContentSetting::CONTENT_SETTING_ALLOW, url);
+
+  constexpr char kGetCurrentPosition[] = R"(
+     navigator.geolocation.getCurrentPosition(_=>_);
+    )";
+
+  // The Geolocation service should stop automatically after one call.
+  TestWebContentsObserver observer_1(embedder_contents);
+  ASSERT_TRUE(content::ExecJs(main_rfh, kGetCurrentPosition));
+  observer_1.Wait();
+  EXPECT_TRUE(embedder_contents->IsCapabilityActive(
+      content::WebContentsCapabilityType::kGeolocation));
+  TestWebContentsObserver observer_2(embedder_contents);
+  observer_2.Wait();
+  EXPECT_FALSE(embedder_contents->IsCapabilityActive(
+      content::WebContentsCapabilityType::kGeolocation));
+}
+
+IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
+                       WatchPositionAndClearWatch) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* embedder_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(embedder_contents);
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  content::RenderFrameHost* main_rfh =
+      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url,
+                                                                1);
+  content::WebContents::FromRenderFrameHost(main_rfh)->Focus();
+  ASSERT_TRUE(main_rfh);
+
+  ASSERT_FALSE(embedder_contents->IsCapabilityActive(
+      content::WebContentsCapabilityType::kGeolocation));
+
+  // Set geolocation permission to allow.
+  SetPermission(ContentSettingsType::GEOLOCATION,
+                ContentSetting::CONTENT_SETTING_ALLOW, url);
+
+  constexpr char kWatchPosition[] = R"(
+     navigator.geolocation.watchPosition(_=>_);
+    )";
+
+  constexpr char kClearWatch[] = R"(
+     navigator.geolocation.clearWatch(1);
+    )";
+
+  // javascript watchPosition() should start geolocation service.
+  TestWebContentsObserver observer_1(embedder_contents);
+  ASSERT_TRUE(content::ExecJs(main_rfh, kWatchPosition));
+  observer_1.Wait();
+  EXPECT_TRUE(embedder_contents->IsCapabilityActive(
+      content::WebContentsCapabilityType::kGeolocation));
+  // javascript clearWatch() should stop geolocation service.
+  TestWebContentsObserver observer_2(embedder_contents);
+  ASSERT_TRUE(content::ExecJs(main_rfh, kClearWatch));
+  observer_2.Wait();
+  EXPECT_FALSE(embedder_contents->IsCapabilityActive(
+      content::WebContentsCapabilityType::kGeolocation));
+}
+
+IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
+                       GetCurrentPositionWhileWatchingPosition) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* embedder_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(embedder_contents);
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  content::RenderFrameHost* main_rfh =
+      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url,
+                                                                1);
+  content::WebContents::FromRenderFrameHost(main_rfh)->Focus();
+  ASSERT_TRUE(main_rfh);
+
+  ASSERT_FALSE(embedder_contents->IsCapabilityActive(
+      content::WebContentsCapabilityType::kGeolocation));
+
+  // Set geolocation permission to allow.
+  SetPermission(ContentSettingsType::GEOLOCATION,
+                ContentSetting::CONTENT_SETTING_ALLOW, url);
+
+  constexpr char kGetCurrentPosition[] = R"(
+     navigator.geolocation.getCurrentPosition(_=>_);
+    )";
+
+  constexpr char kWatchPosition[] = R"(
+     navigator.geolocation.watchPosition(_=>_);
+    )";
+
+  constexpr char kClearWatch[] = R"(
+     navigator.geolocation.clearWatch(1);
+    )";
+
+  TestWebContentsObserver observer_1(embedder_contents);
+  ASSERT_TRUE(content::ExecJs(main_rfh, kWatchPosition));
+  observer_1.Wait();
+  EXPECT_TRUE(embedder_contents->IsCapabilityActive(
+      content::WebContentsCapabilityType::kGeolocation));
+  ASSERT_TRUE(content::ExecJs(main_rfh, kGetCurrentPosition));
+  EXPECT_TRUE(embedder_contents->IsCapabilityActive(
+      content::WebContentsCapabilityType::kGeolocation));
+  TestWebContentsObserver observer_2(embedder_contents);
+  ASSERT_TRUE(content::ExecJs(main_rfh, kClearWatch));
+  observer_2.Wait();
+  EXPECT_FALSE(embedder_contents->IsCapabilityActive(
+      content::WebContentsCapabilityType::kGeolocation));
+}
+
+IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
+                       StartGeolocationInDifferentTab) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* embedder_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(embedder_contents);
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  content::RenderFrameHost* main_rfh =
+      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url,
+                                                                1);
+  content::WebContents::FromRenderFrameHost(main_rfh)->Focus();
+  ASSERT_TRUE(main_rfh);
+
+  ASSERT_FALSE(embedder_contents->IsCapabilityActive(
+      content::WebContentsCapabilityType::kGeolocation));
+
+  // Set geolocation permission to allow.
+  SetPermission(ContentSettingsType::GEOLOCATION,
+                ContentSetting::CONTENT_SETTING_ALLOW, url);
+
+  constexpr char kWatchPosition[] = R"(
+     navigator.geolocation.watchPosition(_=>_);
+    )";
+
+  // Watch geolocation on different tab.
+  // The usage will not record on main tab even they have the same origin.
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  chrome::NewTabToRight(browser());
+  EXPECT_EQ(2, tab_strip->count());
+  tab_strip->ActivateTabAt(1);
+  content::RenderFrameHost* rfh_tab_1 =
+      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url,
+                                                                1);
+  content::WebContents* web_contents_2 =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  TestWebContentsObserver observer_2(web_contents_2);
+  ASSERT_TRUE(content::ExecJs(rfh_tab_1, kWatchPosition));
+  observer_2.Wait();
+  tab_strip->ActivateTabAt(0);
+  EXPECT_FALSE(embedder_contents->IsCapabilityActive(
+      content::WebContentsCapabilityType::kGeolocation));
+}
+
+IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest, ReloadPage) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* embedder_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(embedder_contents);
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  content::RenderFrameHost* main_rfh =
+      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url,
+                                                                1);
+  content::WebContents::FromRenderFrameHost(main_rfh)->Focus();
+  ASSERT_TRUE(main_rfh);
+
+  ASSERT_FALSE(embedder_contents->IsCapabilityActive(
+      content::WebContentsCapabilityType::kGeolocation));
+
+  // Set geolocation permission to allow.
+  SetPermission(ContentSettingsType::GEOLOCATION,
+                ContentSetting::CONTENT_SETTING_ALLOW, url);
+
+  constexpr char kWatchPosition[] = R"(
+     navigator.geolocation.watchPosition(_=>_);
+    )";
+
+  // watchPosition then reload page, the geolocation service should remain.
+  TestWebContentsObserver observer_1(embedder_contents);
+  ASSERT_TRUE(content::ExecJs(main_rfh, kWatchPosition));
+  observer_1.Wait();
+  EXPECT_TRUE(embedder_contents->IsCapabilityActive(
+      content::WebContentsCapabilityType::kGeolocation));
+  content::TestNavigationObserver reload_observer(embedder_contents);
+  main_rfh->Reload();
+  reload_observer.Wait();
+  EXPECT_FALSE(embedder_contents->IsCapabilityActive(
+      content::WebContentsCapabilityType::kGeolocation));
 }

@@ -31,7 +31,7 @@ class DocumentLoaderImpl : public DocumentLoader {
   // DocumentLoader:
   bool Init(std::unique_ptr<URLLoaderWrapper> loader,
             const std::string& url) override;
-  bool GetBlock(uint32_t position, uint32_t size, void* buf) const override;
+  bool GetBlock(uint32_t position, base::span<uint8_t> buf) const override;
   bool IsDataAvailable(uint32_t position, uint32_t size) const override;
   void RequestData(uint32_t position, uint32_t size) override;
   bool IsDocumentComplete() const override;
@@ -57,7 +57,7 @@ class DocumentLoaderImpl : public DocumentLoader {
   };
 
   // Called by the completion callback of the document's URLLoader.
-  void DidOpenPartial(int32_t result);
+  void DidOpenPartial(bool success);
 
   // Call to read data from the document's URLLoader.
   void ReadMore();
@@ -84,7 +84,7 @@ class DocumentLoaderImpl : public DocumentLoader {
   bool partial_loading_enabled_;  // Default determined by `kPdfPartialLoading`.
   bool is_partial_loader_active_ = false;
 
-  std::vector<char> buffer_;
+  std::vector<uint8_t> buffer_;
 
   // The current chunk DocumentLoader is working with.
   Chunk chunk_;

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/permissions/permissions_client.h"
 #include "content/public/browser/android/browser_context_handle.h"
 #include "content/public/browser/browser_context.h"
@@ -17,23 +18,25 @@
 
 namespace content_settings {
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 CookieControlsBridge::CookieControlsBridge(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jweb_contents_android,
-    const JavaParamRef<jobject>& joriginal_browser_context_handle)
+    const JavaRef<jobject>& obj,
+    const JavaRef<jobject>& jweb_contents_android,
+    const JavaRef<jobject>& joriginal_browser_context_handle,
+    bool is_incognito_branded)
     : jobject_(obj) {
   UpdateWebContents(env, jweb_contents_android,
-                    joriginal_browser_context_handle);
+                    joriginal_browser_context_handle, is_incognito_branded);
 }
 
 void CookieControlsBridge::UpdateWebContents(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents_android,
-    const JavaParamRef<jobject>& joriginal_browser_context_handle) {
+    const JavaRef<jobject>& jweb_contents_android,
+    const JavaRef<jobject>& joriginal_browser_context_handle,
+    bool is_incognito_branded) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents_android);
 
@@ -50,46 +53,37 @@ void CookieControlsBridge::UpdateWebContents(
       original_context ? permissions_client->GetCookieSettings(original_context)
                        : nullptr,
       permissions_client->GetSettingsMap(context),
-      permissions_client->GetTrackingProtectionSettings(context));
+      permissions_client->GetTrackingProtectionSettings(context),
+      is_incognito_branded);
 
   observation_.Observe(controller_.get());
   controller_->Update(web_contents);
 }
 
 void CookieControlsBridge::OnStatusChanged(
-    bool controls_visible,
-    bool protections_on,
+    CookieControlsState controls_state,
     CookieControlsEnforcement enforcement,
     CookieBlocking3pcdStatus blocking_status,
-    base::Time expiration,
-    std::vector<TrackingProtectionFeature> features) {
+    base::Time expiration) {
   // Only invoke the callback when there is a change.
-  if (controls_visible_ == controls_visible &&
-      protections_on_ == protections_on && enforcement_ == enforcement &&
+  if (controls_state_ == controls_state && enforcement_ == enforcement &&
       expiration_ == expiration) {
     return;
   }
-  controls_visible_ = controls_visible;
-  protections_on_ = protections_on;
+  controls_state_ = controls_state;
   enforcement_ = enforcement;
   expiration_ = expiration;
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  ScopedJavaLocalRef<jobject> jfeatures = CreateTpFeaturesList(env);
-  for (auto& feature : features) {
-    CreateTpFeatureAndAddToList(env, jfeatures, feature);
-  }
-
   Java_CookieControlsBridge_onStatusChanged(
-      env, jobject_, static_cast<bool>(controls_visible),
-      static_cast<bool>(protections_on), static_cast<int>(enforcement_),
-      static_cast<int>(blocking_status),
-      expiration.InMillisecondsSinceUnixEpoch(), jfeatures);
+      env, jobject_, static_cast<int>(controls_state_),
+      static_cast<int>(enforcement_), static_cast<int>(blocking_status),
+      expiration.InMillisecondsSinceUnixEpoch());
 }
 
 void CookieControlsBridge::OnCookieControlsIconStatusChanged(
     bool icon_visible,
-    bool protections_on,
+    CookieControlsState controls_state,
     CookieBlocking3pcdStatus blocking_status,
     bool should_highlight) {
   // This function's main use is for web's User Bypass icon, which
@@ -120,32 +114,15 @@ void CookieControlsBridge::OnEntryPointAnimated(JNIEnv* env) {
   controller_->OnEntryPointAnimated();
 }
 
-// static
-ScopedJavaLocalRef<jobject> CookieControlsBridge::CreateTpFeaturesList(
-    JNIEnv* env) {
-  return Java_CookieControlsBridge_createTpFeatureList(env);
-}
-
-// static
-void CookieControlsBridge::CreateTpFeatureAndAddToList(
-    JNIEnv* env,
-    base::android::ScopedJavaLocalRef<jobject> jfeatures,
-    TrackingProtectionFeature feature) {
-  Java_CookieControlsBridge_createTpFeatureAndAddToList(
-      env, jfeatures, static_cast<int>(feature.feature_type),
-      static_cast<int>(feature.enforcement), static_cast<int>(feature.status));
-}
-
 CookieControlsBridge::~CookieControlsBridge() = default;
 
-void CookieControlsBridge::Destroy(JNIEnv* env,
-                                   const JavaParamRef<jobject>& obj) {
+void CookieControlsBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
-jboolean JNI_CookieControlsBridge_IsCookieControlsEnabled(
+static jboolean JNI_CookieControlsBridge_IsCookieControlsEnabled(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jbrowser_context_handle) {
+    const JavaRef<jobject>& jbrowser_context_handle) {
   content::BrowserContext* context =
       content::BrowserContextFromJavaHandle(jbrowser_context_handle);
   return permissions::PermissionsClient::Get()
@@ -155,11 +132,15 @@ jboolean JNI_CookieControlsBridge_IsCookieControlsEnabled(
 
 static jlong JNI_CookieControlsBridge_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jweb_contents_android,
-    const JavaParamRef<jobject>& joriginal_browser_context_handle) {
+    const JavaRef<jobject>& obj,
+    const JavaRef<jobject>& jweb_contents_android,
+    const JavaRef<jobject>& joriginal_browser_context_handle,
+    jboolean is_incognito_branded) {
   return reinterpret_cast<intptr_t>(new CookieControlsBridge(
-      env, obj, jweb_contents_android, joriginal_browser_context_handle));
+      env, obj, jweb_contents_android, joriginal_browser_context_handle,
+      is_incognito_branded));
 }
 
 }  // namespace content_settings
+
+DEFINE_JNI(CookieControlsBridge)

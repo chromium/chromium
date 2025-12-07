@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/browsing_data/core/pref_names.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_store/password_store_change.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
@@ -24,10 +25,6 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
-#endif  // BUILDFLAG(IS_ANDROID)
-
 namespace browsing_data {
 namespace {
 
@@ -35,21 +32,9 @@ namespace {
 bool IsProfilePasswordSyncEnabled(PrefService* pref_service,
                                   const syncer::SyncService* sync_service) {
 #if BUILDFLAG(IS_ANDROID)
-  // If UsesSplitStoresAndUPMForLocal() is true, the profile store is never
-  // synced, only the account store is.
-  if (password_manager::UsesSplitStoresAndUPMForLocal(pref_service)) {
-    return false;
-  }
-
-  // TODO(crbug.com/344640768): The IsGmsCoreUpdateRequired() check isn't
-  // perfect, it causes the string to say "synced" in cases when it shouldn't.
-  if (password_manager::IsGmsCoreUpdateRequired(pref_service, sync_service)) {
-    return false;
-  }
-
-  return sync_service &&
-         sync_service->GetUserSettings()->GetSelectedTypes().Has(
-             syncer::UserSelectableType::kPasswords);
+  // After login db deprecation there won't be any more users syncing passwords
+  // from the profile store. All users will have split stores.
+  return false;
 #else
   // TODO(crbug.com/40067058): Clean this up once Sync-the-feature is gone on
   // all platforms.
@@ -170,7 +155,7 @@ void PasswordStoreFetcher::OnGetPasswordStoreResults(
         result->url,
         net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
     if (domain.empty())
-      domain = result->url.host();
+      domain = result->url.GetHost();
     sorted_domains.emplace_back(domain);
   }
   // Only consecutive duplicates are removed below. Since we're only listing two
@@ -222,8 +207,7 @@ PasswordsCounter::PasswordsCounter(
   account_store_fetcher_ = std::make_unique<PasswordStoreFetcher>(
       account_store,
       base::BindRepeating(&PasswordsCounter::Restart, base::Unretained(this)));
-  DCHECK(profile_store);
-  // |account_store| may be null.
+  // |profile_store| and |account_store| may be null.
 }
 
 PasswordsCounter::~PasswordsCounter() = default;

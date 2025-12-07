@@ -54,7 +54,7 @@ public class PlayerFrameBitmapPainterTest {
 
     static byte[] toByteArray(int value) {
         return new byte[] {
-            (byte) (value >> 24), (byte) (value >> 16), (byte) (value >> 8), (byte) (value)
+            (byte) (value >> 24), (byte) (value >> 16), (byte) (value >> 8), (byte) value
         };
     }
 
@@ -62,7 +62,7 @@ public class PlayerFrameBitmapPainterTest {
         return ((bytes[0] & 0xFF) << 24)
                 | ((bytes[1] & 0xFF) << 16)
                 | ((bytes[2] & 0xFF) << 8)
-                | ((bytes[3] & 0xFF));
+                | (bytes[3] & 0xFF);
     }
 
     /**
@@ -70,9 +70,9 @@ public class PlayerFrameBitmapPainterTest {
      * Paint)}.
      */
     private class MockCanvas extends Canvas {
-        private List<DrawnBitmap> mDrawnBitmaps = new ArrayList<>();
+        private final List<DrawnBitmap> mDrawnBitmaps = new ArrayList<>();
 
-        private class DrawnBitmap {
+        private static class DrawnBitmap {
             private final Bitmap mBitmap;
             private final Rect mSrc;
             private final Rect mDst;
@@ -85,11 +85,8 @@ public class PlayerFrameBitmapPainterTest {
 
             @Override
             public boolean equals(Object o) {
-                if (o == null) return false;
-
                 if (this == o) return true;
-
-                if (getClass() != o.getClass()) return false;
+                if (!(o instanceof DrawnBitmap)) return false;
 
                 DrawnBitmap od = (DrawnBitmap) o;
                 return mBitmap.equals(od.mBitmap) && mSrc.equals(od.mSrc) && mDst.equals(od.mDst);
@@ -109,7 +106,7 @@ public class PlayerFrameBitmapPainterTest {
         private void assertDrawBitmap(
                 @NonNull Bitmap bitmap, @Nullable Rect src, @NonNull Rect dst) {
             Assert.assertTrue(
-                    bitmap + " has not been drawn from " + src + " to " + dst,
+                    "Bitmap has not been drawn from " + src + " to " + dst,
                     mDrawnBitmaps.contains(new DrawnBitmap(bitmap, src, dst)));
         }
 

@@ -232,6 +232,8 @@ chromium-metrics-reviews@google.com.
   <int value="44" label="REQUEST"/>
   <int value="45" label="FEATURE_BLOCKED_BY_UNSUPPORTED_CAPABILITY"/>
   <int value="46" label="FEATURE_BLOCKED_BY_UNKNOWN_CAPABILITY"/>
+  <int value="47" label="FEATURE_BLOCKED_BY_POLICY"/>
+  <int value="48" label="FEATURE_BLOCKED_BY_INVALID_SELECTION"/>
 </enum>
 
 <enum name="IMEGrammarActions">
@@ -693,6 +695,11 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="2" label="Indirect pen digitizer (not integrated into display)"/>
   <int value="3" label="Touch digitizer"/>
   <int value="4" label="Touchpad digitizer"/>
+</enum>
+
+<enum name="PostureMode">
+  <int value="0" label="Tablet"/>
+  <int value="1" label="Desktop"/>
 </enum>
 
 <enum name="PrimaryPointerType">

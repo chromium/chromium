@@ -18,32 +18,32 @@ import "services/network/public/mojom/url_request.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "services/network/public/mojom/web_client_hints_types.mojom";
 import "services/network/public/mojom/web_sandbox_flags.mojom";
+import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 import "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom";
-import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
-import "third_party/blink/public/mojom/navigation/navigation_initiator_activation_and_ad_status.mojom";
-import "third_party/blink/public/mojom/frame/view_transition_state.mojom";
+import "third_party/blink/public/mojom/conversions/conversions.mojom";
 import "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom";
+import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
 import "third_party/blink/public/mojom/frame/frame_policy.mojom";
+import "third_party/blink/public/mojom/frame/view_transition_state.mojom";
 import "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom";
 import "third_party/blink/public/mojom/loader/mixed_content.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
 import "third_party/blink/public/mojom/messaging/task_attribution_id.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_api_history_entry_arrays.mojom";
+import "third_party/blink/public/mojom/navigation/navigation_initiator_activation_and_ad_status.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_policy.mojom";
 import "third_party/blink/public/mojom/navigation/prefetched_signed_exchange_info.mojom";
 import "third_party/blink/public/mojom/navigation/renderer_content_settings.mojom";
-import "third_party/blink/public/mojom/navigation/system_entropy.mojom";
 import "third_party/blink/public/mojom/navigation/was_activated_option.mojom";
-import "third_party/blink/public/mojom/page/browsing_context_group_info.mojom";
 import "third_party/blink/public/mojom/page/page.mojom";
-import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
+import "third_party/blink/public/mojom/permissions/permission.mojom";
+import "third_party/blink/public/mojom/permissions/permission_status.mojom";
+import "services/network/public/mojom/permissions_policy/permissions_policy.mojom";
 import "third_party/blink/public/mojom/runtime_feature_state/runtime_feature.mojom";
 import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
-import "third_party/blink/public/mojom/conversions/conversions.mojom";
-import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 
 enum NavigationType {
   // Reload the page, validating only cache entry for the main resource.
@@ -84,12 +84,13 @@ enum NavigationType {
   DIFFERENT_DOCUMENT,
 };
 
-// Maps to https://html.spec.whatwg.org/multipage/nav-history-apis.html#dom-navigateevent-navigationtype-dev.
+// Maps to
+// https://html.spec.whatwg.org/multipage/nav-history-apis.html#dom-navigateevent-navigationtype-dev.
 enum NavigationTypeForNavigationApi {
   kPush,
   kTraverse,
   kReplace,
-  kReload
+  kReload,
 };
 
 // Used by the renderer to indicate a case where a standard navigation that
@@ -237,6 +238,18 @@ struct CommonNavigationParams {
   // Is only used with data: URLs.
   url.mojom.Url base_url_for_data_url;
 
+  // An earlier and more accurate representation of the starting time of the
+  // navigation (based on the creation of the FrameLoadRequest), compared to the
+  // `navigation_start` that is passed through many of the navigation APIs
+  // (which is delayed until after the renderer process runs beforeunload
+  // handlers). The goal is to later use this in many navigation metrics to
+  // better identify performance improvements and regressions, while excluding
+  // just the time spent in beforeunload handlers. This value is currently only
+  // used in trace events and limited metrics to gauge the impact the change.
+  // TODO(crbug.com/385170155): Use this for most navigation metrics, with
+  // better ways to exclude beforeunload time.
+  mojo_base.mojom.TimeTicks actual_navigation_start;
+
   // The navigationStart time exposed through the Navigation Timing API to JS.
   mojo_base.mojom.TimeTicks navigation_start;
 
@@ -300,7 +313,6 @@ struct CommonNavigationParams {
   // Indicates the request destination.
   network.mojom.RequestDestination request_destination =
       network.mojom.RequestDestination.kEmpty;
-
 };
 
 // Provided by the browser -----------------------------------------------------
@@ -317,7 +329,7 @@ enum ParentResourceTimingAccess {
   // TODO(https://github.com/whatwg/fetch/issues/1602) clarify the spec around
   // this.
   kReportWithoutResponseDetails,
-  kReportWithResponseDetails
+  kReportWithResponseDetails,
 };
 
 // Timings collected in the browser during navigation for the
@@ -328,11 +340,8 @@ struct NavigationTiming {
   mojo_base.mojom.TimeTicks redirect_end;
   mojo_base.mojom.TimeTicks fetch_start;
 
-  // Indicates the entropy state of the user agent at the time the navigation
-  // begins.
-  SystemEntropy system_entropy_at_navigation_start = kEmpty;
-
-  ParentResourceTimingAccess parent_resource_timing_access = ParentResourceTimingAccess.kDoNotReport;
+  ParentResourceTimingAccess parent_resource_timing_access =
+      ParentResourceTimingAccess.kDoNotReport;
 };
 
 // Sent with CommitNavigationParams and should only be set for main-frame
@@ -355,11 +364,8 @@ struct OldPageInfo {
 // Used by commit IPC messages. Holds the parameters needed by the renderer to
 // commit a navigation besides those in CommonNavigationParams.
 struct CommitNavigationParams {
-  // The origin to be used for committing the navigation, if specified.
-  // It is currently only specified on error document navigations, where the
-  // origin should be an opaque origin based on the URL that failed to load.
-  // TODO(https://crbug.com/888079): Always provide origin_to_commit.
-  url.mojom.Origin? origin_to_commit;
+  // The origin to be used for committing the navigation, always specified.
+  url.mojom.Origin origin_to_commit;
 
   // The storage key of the document that will be created by the navigation.
   // This is compatible with the origin that the browser calculates for this
@@ -420,13 +426,13 @@ struct CommitNavigationParams {
   // long enough to match them via nav_entry_id, above.
   bool intended_as_new_entry = false;
 
-  // For history navigations, this is the offset in the history list of the
+  // For history navigations, this is the index in the history list of the
   // pending load. For non-history navigations, this will be ignored.
-  int32 pending_history_list_offset = -1;
+  int32 pending_history_list_index = -1;
 
   // Where its current page contents reside in session history and the total
   // size of the session history list.
-  int32 current_history_list_offset = -1;
+  int32 current_history_list_index = -1;
   int32 current_history_list_length = 0;
 
   // Indicates that the tab was previously discarded.
@@ -476,6 +482,10 @@ struct CommitNavigationParams {
 
   // Whether this navigation was browser initiated.
   bool is_browser_initiated = false;
+
+  // Whether a visual transition was done by the browser before committing this
+  // navigation.
+  bool has_ua_visual_transition = false;
 
   // UKM source id to be associated with the Document that will be installed
   // in the current frame. This could be an invalid id for empty Document. Only
@@ -617,7 +627,7 @@ struct CommitNavigationParams {
   // context group. Same browsing context group navigations never set this
   // because no update is required. Subframes navigations never set this,
   // because they cannot change browsing context group.
-  blink.mojom.BrowsingContextGroupInfo? browsing_context_group_info;
+  mojo_base.mojom.UnguessableToken? browsing_context_group_token;
 
   // LCP Critical Path Predictor hint data available at navigation timing.
   blink.mojom.LCPCriticalPathPredictorNavigationTimeHint? lcpp_hint;
@@ -625,9 +635,6 @@ struct CommitNavigationParams {
   // Some content settings must be enforced by the renderer. See
   // ContentSettingsType for more details.
   RendererContentSettings content_settings;
-
-  // The cookie deprecation label for cookie deprecation facilitated testing.
-  string? cookie_deprecation_label;
 
   // The :visited link hashtable is stored in shared memory and contains salted
   // hashes for all visits. Each salt corresponds to a unique origin, and
@@ -653,6 +660,35 @@ struct CommitNavigationParams {
   // earlier to ensure the new Document doesn't render frames using the same ID
   // as the old Document when it is committed in the renderer.
   viz.mojom.LocalSurfaceId? local_surface_id;
+
+  // Map of permission statuses at commit time.
+  // Note: the permission statues will be only used as initial states of
+  // `CachedPermissionStatus` in renderer side.
+  //  Could be null for synchronous commit, same document navigations.
+  map<PermissionName, PermissionStatus>? initial_permission_statuses;
+
+  // Whether to skip taking a screenshot of the contents when doing a
+  // navigation. The screenshot is used for back/forward transition animations.
+  bool should_skip_screenshot;
+
+  // When this is set to true, the renderer process should require this
+  // navigation to create a new document sequence number to avoid appearing
+  // as a same-document navigation, even if the URL seems like a match. This
+  // matters for cross-origin navigations (apart from error pages with the same
+  // precursor origin).
+  bool force_new_document_sequence_number = false;
+
+  // A token used for associated various events/IPCs together to a particular
+  // navigation, for the purposes of tracing and metrics collection.
+  mojo_base.mojom.UnguessableToken navigation_metrics_token;
+
+  // Only set when reusing a request NavigationClient to commit a navigation
+  // that does a local RenderFrame swap. The reused NavigationClient is owned
+  // by the old RenderFrame, and this token points to the new RenderFrame,
+  // where the NavigationClient ownership will be transferred to, and where
+  // the navigation commit will actually occur. For more details, see
+  // `NavigationRequest::ReuseRequestNavigationClientForCommitIfNeeded()`.
+  blink.mojom.LocalFrameToken? commit_target_frame_token;
 };
 
 // Parameters used to dispatch the `pageswap` event on the old Document for

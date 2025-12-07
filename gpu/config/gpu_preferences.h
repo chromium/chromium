@@ -6,13 +6,12 @@
 #define GPU_CONFIG_GPU_PREFERENCES_H_
 
 #include <stddef.h>
+
 #include <string>
 #include <vector>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-#include "gpu/gpu_export.h"
-#include "media/media_buildflags.h"
+#include "gpu/config/gpu_config_export.h"
 #include "ui/gfx/buffer_types.h"
 
 #if BUILDFLAG(IS_OZONE)
@@ -29,7 +28,7 @@ const size_t kDefaultMaxProgramCacheMemoryBytes = 2 * 1024 * 1024;
 const size_t kLowEndMaxProgramCacheMemoryBytes = 128 * 1024;
 #endif
 
-GPU_EXPORT size_t GetDefaultGpuDiskCacheSize();
+GPU_CONFIG_EXPORT size_t GetDefaultGpuDiskCacheSize();
 
 enum class VulkanImplementationName : uint32_t {
   kNone = 0,
@@ -69,7 +68,27 @@ enum class GrContextType : uint32_t {
   kGraphiteMetal,
 };
 
-GPU_EXPORT std::string GrContextTypeToString(GrContextType type);
+GPU_CONFIG_EXPORT std::string GrContextTypeToString(GrContextType type);
+
+// Used to represent the Skia backend that the GPU process has initialized.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SkiaBackendType {
+  kUnknown = 0,
+  kNone = 1,
+  kGaneshGL = 2,
+  kGaneshVulkan = 3,
+  kGraphiteDawnVulkan = 4,
+  kGraphiteDawnMetal = 5,
+  kGraphiteDawnD3D11 = 6,
+  kGraphiteDawnD3D12 = 7,
+  kGraphiteMetal = 8,
+  // It's not clear what granularity of kGraphiteDawnGL* backend dawn will
+  // provided yet so those values are to be added later.
+  kMaxValue = kGraphiteMetal
+};
+
+GPU_CONFIG_EXPORT std::string SkiaBackendTypeToString(SkiaBackendType type);
 
 enum class DawnBackendValidationLevel : uint32_t {
   kDisabled = 0,
@@ -81,7 +100,7 @@ enum class DawnBackendValidationLevel : uint32_t {
 // following two files to keep them in sync:
 //   src/gpu/ipc/common/gpu_preferences.mojom
 //   src/gpu/ipc/common/gpu_preferences_mojom_traits.h
-struct GPU_EXPORT GpuPreferences {
+struct GPU_CONFIG_EXPORT GpuPreferences {
  public:
   GpuPreferences();
 
@@ -162,9 +181,6 @@ struct GPU_EXPORT GpuPreferences {
   // Enforce GL minimums.
   bool enforce_gl_minimums = false;
 
-  // Sets the total amount of memory that may be allocated for GPU resources.
-  uint32_t force_gpu_mem_available_bytes = 0u;
-
   // Sets the maximum discardable cache size limit for GPU resources.
   uint32_t force_gpu_mem_discardable_limit_bytes = 0u;
 
@@ -188,8 +204,9 @@ struct GPU_EXPORT GpuPreferences {
   // ===================================
   // Settings from //gpu/config/gpu_switches.h
 
-  // Enables the use of SurfaceControl for overlays on Android.
-  bool enable_android_surface_control = false;
+  // An additional Graphite Precompilation control that only enables
+  // precompilation when not testing.
+  bool perform_graphite_precompilation = false;
 
   // ===================================
   // Settings from //ui/gl/gl_switches.h
@@ -203,10 +220,6 @@ struct GPU_EXPORT GpuPreferences {
   // Use the Pass-through command decoder, skipping all validation and state
   // tracking.
   bool use_passthrough_cmd_decoder = false;
-
-  // Disable using a single multiplanar GpuMemoryBuffer to store biplanar
-  // VideoFrames (e.g. NV12), see https://crbug.com/791676.
-  bool disable_biplanar_gpu_memory_buffers_for_video_frames = false;
 
   // ===================================
   // Settings from //gpu/config/gpu_switches.h
@@ -225,6 +238,10 @@ struct GPU_EXPORT GpuPreferences {
 
   // Use Vulkan for rasterization and display compositing.
   VulkanImplementationName use_vulkan = VulkanImplementationName::kNone;
+
+  // Enable WebGpu on vulkan via gl interop. Not serialized it is accessed only
+  // in the GPU process.
+  bool enable_webgpu_on_vk_via_gl_interop = false;
 
   // Enable using vulkan protected memory.
   bool enable_vulkan_protected_memory = false;

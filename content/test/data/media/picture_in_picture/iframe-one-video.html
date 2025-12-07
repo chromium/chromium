@@ -1,0 +1,33 @@
+<html>
+
+<head>
+    <title>Iframe - One Video</title>
+</head>
+
+<body>
+    <iframe width="100%" height="100%"
+        src="/cross-site/b.com/media/picture_in_picture/one-video.html"
+        id="iframe" onload="document.title='iframe loaded'"></iframe>
+
+    <script>
+        const iframe = document.getElementById('iframe');
+
+        async function enterPictureInPicture() {
+            const promise = new Promise(resolve => {
+                const listener = (event) => {
+                    if (event.source === iframe.contentWindow && event.data.event === 'enterpictureinpicture') {
+                        window.removeEventListener('message', listener);
+                        resolve(true);
+                    }
+                };
+                window.addEventListener('message', listener);
+            });
+            // Send a `postMessage` to b.com to enter picture in picture.
+            iframe.contentWindow.postMessage({ action: 'enterpictureinpicture' }, '*');
+            return promise;
+        }
+
+    </script>
+</body>
+
+</html>

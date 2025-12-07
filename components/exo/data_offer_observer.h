@@ -17,7 +17,7 @@ class DataOfferObserver {
   virtual void OnDataOfferDestroying(DataOffer* offer) = 0;
 
  protected:
-  virtual ~DataOfferObserver() {}
+  virtual ~DataOfferObserver() = default;
 };
 
 }  // namespace exo

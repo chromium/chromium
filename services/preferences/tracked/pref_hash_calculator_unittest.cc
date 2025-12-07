@@ -8,9 +8,34 @@
 #include <string>
 #include <utility>
 
+#include "base/base64.h"
+#include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
+#include "build/build_config.h"
+#include "components/os_crypt/async/browser/test_utils.h"
+#include "crypto/sha2.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/enterprise_util.h"
+#endif
+
+namespace {
+class PrefHashCalculatorEncryptedTest : public testing::Test {
+ protected:
+  const std::string kSeed = "test_seed_for_calculator";
+  const std::string kDeviceId = "test_device_id_calc";
+
+  PrefHashCalculatorEncryptedTest()
+      : calculator_(kSeed, kDeviceId),
+        test_encryptor_(os_crypt_async::GetTestEncryptorForTesting()) {}
+
+  PrefHashCalculator calculator_;
+  const os_crypt_async::TestEncryptor test_encryptor_;
+};
+}  // namespace
 
 TEST(PrefHashCalculatorTest, TestCurrentAlgorithm) {
   base::Value string_value_1("string value 1");
@@ -23,10 +48,10 @@ TEST(PrefHashCalculatorTest, TestCurrentAlgorithm) {
   base::Value::Dict dictionary_value_2;
   dictionary_value_2.Set("int value", 2);
 
-  PrefHashCalculator calc1("seed1", "deviceid", "legacydeviceid");
-  PrefHashCalculator calc1_dup("seed1", "deviceid", "legacydeviceid");
-  PrefHashCalculator calc2("seed2", "deviceid", "legacydeviceid");
-  PrefHashCalculator calc3("seed1", "deviceid2", "legacydeviceid");
+  PrefHashCalculator calc1("seed1", "deviceid");
+  PrefHashCalculator calc1_dup("seed1", "deviceid");
+  PrefHashCalculator calc2("seed2", "deviceid");
+  PrefHashCalculator calc3("seed1", "deviceid2");
 
   // Two calculators with same seed produce same hash.
   ASSERT_EQ(calc1.Calculate("pref_path", &string_value_1),
@@ -69,6 +94,29 @@ TEST(PrefHashCalculatorTest, TestCurrentAlgorithm) {
       calc1.Calculate("pref_path", static_cast<const base::Value*>(nullptr))
           .empty());
 }
+
+#if BUILDFLAG(IS_WIN)
+class PrefHashCalculatorEnterpriseTest : public testing::Test {
+ protected:
+  PrefHashCalculatorEnterpriseTest() : calculator_("seed", "deviceid") {}
+
+  PrefHashCalculator calculator_;
+  std::optional<base::AutoReset<bool>> is_enterprise_device_for_testing_;
+};
+
+TEST_F(PrefHashCalculatorEnterpriseTest, EnterpriseDevice) {
+  base::Value string_value_1("string value 1");
+  base::Value string_value_2("string value 2");
+
+  is_enterprise_device_for_testing_ =
+      base::SetIsEnterpriseDeviceForTesting(true);
+  ASSERT_EQ(PrefHashCalculator::VALID,
+            calculator_.Validate(
+                "pref_path", &string_value_1,
+                calculator_.Calculate("pref_path", &string_value_2)));
+  is_enterprise_device_for_testing_.reset();
+}
+#endif
 
 // Tests the output against a known value to catch unexpected algorithm changes.
 // The test hashes below must NEVER be updated, the serialization algorithm used
@@ -121,43 +169,43 @@ TEST(PrefHashCalculatorTest, CatchHashChanges) {
   static const char kExpectedNullValue[] =
       "82A9F3BBC7F9FF84C76B033C854E79EEB162783FA7B3E99FF9372FA8E12C44F7";
   EXPECT_EQ(PrefHashCalculator::VALID,
-            PrefHashCalculator(kSeed, kDeviceId, "legacydeviceid")
+            PrefHashCalculator(kSeed, kDeviceId)
                 .Validate("pref.path", &null_value, kExpectedNullValue));
 
   static const char kExpectedBooleanValue[] =
       "A520D8F43EA307B0063736DC9358C330539D0A29417580514C8B9862632C4CCC";
   EXPECT_EQ(PrefHashCalculator::VALID,
-            PrefHashCalculator(kSeed, kDeviceId, "legacydeviceid")
+            PrefHashCalculator(kSeed, kDeviceId)
                 .Validate("pref.path", &bool_value, kExpectedBooleanValue));
 
   static const char kExpectedIntegerValue[] =
       "8D60DA1F10BF5AA29819D2D66D7CCEF9AABC5DA93C11A0D2BD21078D63D83682";
   EXPECT_EQ(PrefHashCalculator::VALID,
-            PrefHashCalculator(kSeed, kDeviceId, "legacydeviceid")
+            PrefHashCalculator(kSeed, kDeviceId)
                 .Validate("pref.path", &int_value, kExpectedIntegerValue));
 
   static const char kExpectedDoubleValue[] =
       "C9D94772516125BEEDAE68C109D44BC529E719EE020614E894CC7FB4098C545D";
   EXPECT_EQ(PrefHashCalculator::VALID,
-            PrefHashCalculator(kSeed, kDeviceId, "legacydeviceid")
+            PrefHashCalculator(kSeed, kDeviceId)
                 .Validate("pref.path", &double_value, kExpectedDoubleValue));
 
   static const char kExpectedStringValue[] =
       "05ACCBD3B05C45C36CD06190F63EC577112311929D8380E26E5F13182EB68318";
   EXPECT_EQ(PrefHashCalculator::VALID,
-            PrefHashCalculator(kSeed, kDeviceId, "legacydeviceid")
+            PrefHashCalculator(kSeed, kDeviceId)
                 .Validate("pref.path", &string_value, kExpectedStringValue));
 
   static const char kExpectedDictValue[] =
       "7A84DCC710D796C771F789A4DA82C952095AA956B6F1667EE42D0A19ECAA3C4A";
   EXPECT_EQ(PrefHashCalculator::VALID,
-            PrefHashCalculator(kSeed, kDeviceId, "legacydeviceid")
+            PrefHashCalculator(kSeed, kDeviceId)
                 .Validate("pref.path", &dict_value, kExpectedDictValue));
 
   static const char kExpectedListValue[] =
       "8D5A25972DF5AE20D041C780E7CA54E40F614AD53513A0724EE8D62D4F992740";
   EXPECT_EQ(PrefHashCalculator::VALID,
-            PrefHashCalculator(kSeed, kDeviceId, "legacydeviceid")
+            PrefHashCalculator(kSeed, kDeviceId)
                 .Validate("pref.path", &list_value, kExpectedListValue));
 
   // Also test every value type together in the same dictionary.
@@ -172,35 +220,127 @@ TEST(PrefHashCalculatorTest, CatchHashChanges) {
   static const char kExpectedEverythingValue[] =
       "B97D09BE7005693574DCBDD03D8D9E44FB51F4008B73FB56A49A9FA671A1999B";
   EXPECT_EQ(PrefHashCalculator::VALID,
-            PrefHashCalculator(kSeed, kDeviceId, "legacydeviceid")
+            PrefHashCalculator(kSeed, kDeviceId)
                 .Validate("pref.path", &everything, kExpectedEverythingValue));
 }
 
-TEST(PrefHashCalculatorTest, TestCompatibilityWithLegacyDeviceId) {
-  static const char kSeed[] = "0123456789ABCDEF0123456789ABCDEF";
-  static const char kNewDeviceId[] = "new_test_device_id1";
-  static const char kLegacyDeviceId[] = "test_device_id1";
+TEST_F(PrefHashCalculatorEncryptedTest, CalculateEncryptedHash) {
+  base::Value value_int(987);
+  base::Value value_str("encrypt me");
+  base::Value::Dict value_dict;
+  value_dict.Set("key", "value");
+  const base::Value value_dict_val(value_dict.Clone());
+  const base::Value* null_ptr = static_cast<const base::Value*>(nullptr);
 
-  // As in PrefHashCalculatorTest.CatchHashChanges.
-  const base::Value string_value("testing with special chars:\n<>{}:^^@#$\\/");
-  static const char kExpectedValue[] =
-      "05ACCBD3B05C45C36CD06190F63EC577112311929D8380E26E5F13182EB68318";
+  std::optional<std::string> hash1_opt =
+      calculator_.CalculateEncryptedHash("p.int", &value_int, &test_encryptor_);
+  std::optional<std::string> hash2_opt =
+      calculator_.CalculateEncryptedHash("p.str", &value_str, &test_encryptor_);
+  std::optional<std::string> hash1_again_opt =
+      calculator_.CalculateEncryptedHash("p.int", &value_int, &test_encryptor_);
+  std::optional<std::string> hash_dict_opt = calculator_.CalculateEncryptedHash(
+      "p.dict", &value_dict_val, &test_encryptor_);
+  std::optional<std::string> hash_dict_ptr_opt =
+      calculator_.CalculateEncryptedHash("p.dict", &value_dict,
+                                         &test_encryptor_);
+  std::optional<std::string> hash_null_opt =
+      calculator_.CalculateEncryptedHash("p.null", null_ptr, &test_encryptor_);
 
-  EXPECT_EQ(PrefHashCalculator::VALID_SECURE_LEGACY,
-            PrefHashCalculator(kSeed, kNewDeviceId, kLegacyDeviceId)
-                .Validate("pref.path", &string_value, kExpectedValue));
+  // Verify the values.
+  ASSERT_TRUE(hash1_opt.has_value());
+  ASSERT_TRUE(hash2_opt.has_value());
+  ASSERT_TRUE(hash1_again_opt.has_value());
+  ASSERT_TRUE(hash_dict_opt.has_value());
+  ASSERT_TRUE(hash_dict_ptr_opt.has_value());
+  ASSERT_TRUE(hash_null_opt.has_value());
+
+  EXPECT_FALSE(hash1_opt->empty());
+  EXPECT_TRUE(base::IsStringUTF8(*hash1_opt) &&
+              base::Base64Decode(*hash1_opt).has_value());
+  EXPECT_FALSE(hash2_opt->empty());
+  EXPECT_FALSE(hash_dict_opt->empty());
+  EXPECT_FALSE(hash_null_opt->empty());
+
+  // Check different inputs produce different hashes
+  EXPECT_NE(hash1_opt.value(), hash2_opt.value());
+  EXPECT_NE(hash1_opt.value(), hash1_again_opt.value());
+  EXPECT_NE(hash_dict_opt.value(), hash_dict_ptr_opt.value());
 }
 
-TEST(PrefHashCalculatorTest, TestNotCompatibleWithEmptyLegacyDeviceId) {
-  static const char kSeed[] = "0123456789ABCDEF0123456789ABCDEF";
-  static const char kNewDeviceId[] = "unused";
-  static const char kLegacyDeviceId[] = "";
+TEST_F(PrefHashCalculatorEncryptedTest, ValidateEncryptedHash) {
+  base::Value value_int(555);
+  base::Value value_other_int(999);
+  const base::Value* null_value_ptr = static_cast<const base::Value*>(nullptr);
+  std::string path = "p.validate";
 
-  const base::Value string_value("testing with special chars:\n<>{}:^^@#$\\/");
-  static const char kExpectedValue[] =
-      "F14F989B7CAABF3B36ECAE34492C4D8094D2500E7A86D9A3203E54B274C27CB5";
+  // Generate a VALID hash using the calculator and test encryptor instance
+  std::optional<std::string> valid_hash_opt =
+      calculator_.CalculateEncryptedHash(path, &value_int, &test_encryptor_);
+  ASSERT_TRUE(valid_hash_opt.has_value());
+  const std::string& valid_hash_base64 = *valid_hash_opt;
 
-  EXPECT_EQ(PrefHashCalculator::INVALID,
-            PrefHashCalculator(kSeed, kNewDeviceId, kLegacyDeviceId)
-                .Validate("pref.path", &string_value, kExpectedValue));
+  // Generate hash for null value
+  std::optional<std::string> null_hash_opt = calculator_.CalculateEncryptedHash(
+      "p.null", null_value_ptr, &test_encryptor_);
+  ASSERT_TRUE(null_hash_opt.has_value());
+  const std::string& null_hash_base64 = *null_hash_opt;
+
+  // Valid case: Correct value, path, and generated hash
+  EXPECT_EQ(PrefHashCalculator::VALID_ENCRYPTED,
+            calculator_.ValidateEncrypted(path, &value_int, valid_hash_base64,
+                                          &test_encryptor_));
+
+  // Wrong value: Correct path and hash, but different value being checked
+  EXPECT_EQ(PrefHashCalculator::INVALID_ENCRYPTED,
+            calculator_.ValidateEncrypted(path, &value_other_int,
+                                          valid_hash_base64, &test_encryptor_));
+
+  // Wrong path: Correct value and hash, but different path being checked
+  EXPECT_EQ(PrefHashCalculator::INVALID_ENCRYPTED,
+            calculator_.ValidateEncrypted("p.wrong", &value_int,
+                                          valid_hash_base64, &test_encryptor_));
+
+  // Non-Base64 stored hash: Validation should fail (Base64Decode returns false)
+  EXPECT_EQ(PrefHashCalculator::INVALID_ENCRYPTED,
+            calculator_.ValidateEncrypted(
+                path, &value_int, "this is not base64!", &test_encryptor_));
+
+  // Test validation of null value
+  EXPECT_EQ(PrefHashCalculator::VALID_ENCRYPTED,
+            calculator_.ValidateEncrypted("p.null", null_value_ptr,
+                                          null_hash_base64, &test_encryptor_));
+  // Null expected, int provided -> Invalid
+  EXPECT_EQ(PrefHashCalculator::INVALID_ENCRYPTED,
+            calculator_.ValidateEncrypted("p.null", &value_int,
+                                          null_hash_base64, &test_encryptor_));
+  // Int expected, null provided -> Invalid
+  EXPECT_EQ(PrefHashCalculator::INVALID_ENCRYPTED,
+            calculator_.ValidateEncrypted(path, null_value_ptr,
+                                          valid_hash_base64, &test_encryptor_));
+}
+
+TEST_F(PrefHashCalculatorEncryptedTest, EncryptedHashValuesAreStable) {
+  base::Value::Dict dict;
+  dict.Set("key", "value");
+  std::optional<std::string> encrypted_hash =
+      calculator_.CalculateEncryptedHash("p.dict", &dict, &test_encryptor_);
+
+  // The hash was encrypted with test_encryptor_, then base64-encoded. Since
+  // TestEncryptor uses a random key, and Encryptors always use a random nonce,
+  // the actual ciphertext isn't stable between runs. We decode the base64 here
+  // then decrypt the hash to get the raw hash value, and compare it against a
+  // known hash.
+  std::optional<std::string> decrypted_hash =
+      test_encryptor_.DecryptData(*base::Base64Decode(*encrypted_hash));
+  ASSERT_TRUE(decrypted_hash.has_value());
+
+  // Despite using a std::string to represent it, the decrypted hash is actually
+  // a byte string, so we compare it against raw bytes below.
+  constexpr auto kExpectedHash = std::to_array<uint8_t>({
+      0xd9, 0x01, 0x6e, 0x93, 0x04, 0x0a, 0xfc, 0xcb, 0x86, 0x87, 0x90,
+      0x31, 0x93, 0xc5, 0x67, 0xdc, 0xdf, 0xad, 0x49, 0x36, 0x14, 0xee,
+      0xad, 0xd0, 0x48, 0x34, 0x81, 0x52, 0x8c, 0xfc, 0x1b, 0x0e,
+  });
+
+  EXPECT_EQ(base::as_byte_span(*decrypted_hash), kExpectedHash);
 }

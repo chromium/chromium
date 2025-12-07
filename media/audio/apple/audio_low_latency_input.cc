@@ -10,6 +10,7 @@
 
 #include <CoreServices/CoreServices.h>
 #include <dlfcn.h>
+
 #include <memory>
 #include <string>
 
@@ -33,6 +34,8 @@
 #include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/data_buffer.h"
+#include "media/base/media_switches.h"
+#include "media/base/sample_format.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "media/audio/mac/core_audio_util_mac.h"
@@ -70,6 +73,11 @@ constexpr base::TimeDelta kMaxErrorTimeout = base::Seconds(1);
 // Media.Audio.InputStartupSuccessMac is then updated where true is added
 // if input callbacks have started, and false otherwise.
 constexpr base::TimeDelta kInputCallbackStartTimeout = base::Seconds(5);
+
+// TODO(crbug.com/354625679): For now, our pipeline is set for only
+// kSampleFormatS16 only. We plan to implement changes to take higher bit depths
+// such as 24bit or 32bit float.
+constexpr SampleFormat kSampleFormat = kSampleFormatS16;
 
 // Returns true if the format flags in |format_flags| has the "non-interleaved"
 // flag (kAudioFormatFlagIsNonInterleaved) cleared (set to 0).
@@ -124,27 +132,15 @@ AUAudioInputStream::AUAudioInputStream(
     AudioManagerApple* manager,
     const AudioParameters& input_params,
     AudioDeviceID audio_device_id,
-    const AudioManager::LogCallback& log_callback,
-    AudioManagerBase::VoiceProcessingMode voice_processing_mode)
+    const AudioManager::LogCallback& log_callback)
     : manager_(manager),
       input_params_(input_params),
-      number_of_frames_provided_(0),
-      sink_(nullptr),
-      audio_unit_(0),
       input_device_id_(audio_device_id),
-      hardware_latency_(base::Seconds(0)),
       fifo_(input_params.channels(),
             input_params.frames_per_buffer(),
             kNumberOfBlocksBufferInFifo),
-      got_input_callback_(false),
-      input_callback_is_active_(false),
-      noise_reduction_suppressed_(false),
-      use_voice_processing_(voice_processing_mode ==
-                            AudioManagerBase::VoiceProcessingMode::kEnabled),
-      output_device_id_for_aec_(kAudioObjectUnknown),
-      last_sample_time_(0.0),
-      last_number_of_frames_(0),
-      glitch_reporter_(SystemGlitchReporter::StreamType::kCapture),
+      glitch_helper_(input_params.sample_rate(),
+                     AudioGlitchInfo::Direction::kCapture),
       peak_detector_(base::BindRepeating(&AudioManager::TraceAmplitudePeak,
                                          base::Unretained(manager_),
                                          /*trace_start=*/true)),
@@ -152,18 +148,32 @@ AUAudioInputStream::AUAudioInputStream(
   DCHECK(manager_);
   CHECK(log_callback_ != AudioManager::LogCallback());
   DVLOG(1) << __FUNCTION__ << " this " << this << " params "
-           << input_params.AsHumanReadableString()
-           << " use_voice_processing_: " << use_voice_processing_;
+           << input_params.AsHumanReadableString();
 
 #if BUILDFLAG(IS_MAC)
-  if (use_voice_processing_) {
-    DCHECK(input_params.channels() == 1 || input_params.channels() == 2);
+  if (!(input_params.effects() & AudioParameters::ECHO_CANCELLER)) {
+    LogMessageEverywhere(__FUNCTION__, "No voice processing requested");
+  } else if (!IsEchoCancellationSupported(audio_device_id, input_params)) {
+    LogMessageEverywhere(
+        __FUNCTION__,
+        "Can't apply voice processing, echo cancellation not supported");
+  } else {
     const bool got_default_device =
         AudioManagerMac::GetDefaultOutputDevice(&output_device_id_for_aec_);
-    DCHECK(got_default_device);
+    if (got_default_device) {
+      use_voice_processing_ = true;
+      LogMessageEverywhere(
+          __FUNCTION__,
+          base::StringPrintf(
+              "Voice processing: on, output_device_id_for_aec_: 0x%x",
+              output_device_id_for_aec_));
+    } else {
+      LogMessageEverywhere(
+          __FUNCTION__,
+          "Can't apply voice processing, default output device not found");
+    }
   }
 #endif
-  const SampleFormat kSampleFormat = kSampleFormatS16;
 
   // Set up the desired (output) format specified by the client.
   format_.mSampleRate = input_params.sample_rate();
@@ -378,7 +388,7 @@ bool AUAudioInputStream::OpenAUHAL() {
     return false;
   }
 
-  DVLOG(1) << "Input device stream format: " << input_device_format;
+  DVLOG(1) << "Input device stream format:\n" << input_device_format;
   if (input_device_format.mSampleRate != format_.mSampleRate) {
     LOG(ERROR) << "Input device's sample rate does not match the client's "
                   "sample rate; input_device_format="
@@ -604,6 +614,43 @@ bool AUAudioInputStream::OpenVoiceProcessingAU() {
   return true;
 }
 
+void AUAudioInputStream::SetSystemAGC(bool enable) {
+  DVLOG(1) << __FUNCTION__ << " this " << this << " enable=" << enable;
+  UInt32 current_agc_setting;
+  UInt32 property_size = sizeof(current_agc_setting);
+  OSStatus result = AudioUnitGetProperty(
+      audio_unit_, kAUVoiceIOProperty_VoiceProcessingEnableAGC,
+      kAudioUnitScope_Global, AUElement::INPUT, &current_agc_setting,
+      &property_size);
+  if (result != noErr) {
+    HandleError(result);
+    LogMessageEverywhere(__FUNCTION__, "Error reading System AGC property");
+    return;
+  }
+
+  LogMessageEverywhere(__FUNCTION__,
+                       base::StringPrintf("Default System AGC property: %s",
+                                          current_agc_setting ? "On" : "Off"));
+
+  if (current_agc_setting != enable) {
+    UInt32 new_agc_setting = enable;
+    result = AudioUnitSetProperty(audio_unit_,
+                                  kAUVoiceIOProperty_VoiceProcessingEnableAGC,
+                                  kAudioUnitScope_Global, AUElement::INPUT,
+                                  &new_agc_setting, sizeof(new_agc_setting));
+
+    if (result != noErr) {
+      HandleError(result);
+      LogMessageEverywhere(__FUNCTION__, "Error setting System AGC property");
+      return;
+    }
+
+    LogMessageEverywhere(
+        __FUNCTION__, base::StringPrintf("Changed System AGC property to: %s",
+                                         new_agc_setting ? "On" : "Off"));
+  }
+}
+
 void AUAudioInputStream::Start(AudioInputCallback* callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DVLOG(1) << __FUNCTION__ << " this " << this;
@@ -647,6 +694,12 @@ void AUAudioInputStream::Start(AudioInputCallback* callback) {
     return;
   }
   DCHECK(IsRunning()) << "Audio unit started OK but is not yet running";
+
+  // System AGC control only works with VoiceProcessingIO
+  if (use_voice_processing_) {
+    SetSystemAGC(input_params_.effects() &
+                 AudioParameters::AUTOMATIC_GAIN_CONTROL);
+  }
 
   // For UMA stat purposes, start a one-shot timer which detects when input
   // callbacks starts indicating if input audio recording starts as intended.
@@ -743,46 +796,104 @@ bool AUAudioInputStream::IsMuted() {
 void AUAudioInputStream::SetOutputDeviceForAec(
     const std::string& output_device_id) {
 #if BUILDFLAG(IS_MAC)
-  if (!use_voice_processing_)
+  if (!use_voice_processing_) {
+    DVLOG(1) << __FUNCTION__ << " this " << this
+             << ": voice processing disabled";
     return;
+  }
 
   AudioDeviceID audio_device_id =
       AudioManagerMac::GetAudioDeviceIdByUId(false, output_device_id);
-  if (audio_device_id == output_device_id_for_aec_)
+  if (audio_device_id == output_device_id_for_aec_) {
+    DVLOG(1) << __FUNCTION__ << " this " << this
+             << ": same device : " << output_device_id << " (0x" << std::hex
+             << output_device_id_for_aec_ << ")";
     return;
+  }
 
   if (audio_device_id == kAudioObjectUnknown) {
-    log_callback_.Run(
-        base::StringPrintf("AU in: Unable to resolve output device id '%s'",
-                           output_device_id.c_str()));
+    LogMessageEverywhere(
+        __FUNCTION__,
+        base::StringPrintf("Unable to resolve output device id for AEC: %s",
+                           output_device_id));
     return;
   }
 
-  // If the selected device is an aggregate device, try to use the first output
-  // device of the aggregate device instead.
-  if (core_audio_mac::GetDeviceTransportType(audio_device_id) ==
+  if (core_audio_mac::GetDeviceTransportType(audio_device_id) !=
       kAudioDeviceTransportTypeAggregate) {
-    const AudioDeviceID output_subdevice_id =
+    output_device_id_for_aec_ = audio_device_id;
+  } else {
+    // If the selected device is an aggregate device, try to use the first
+    // output device of the aggregate device instead.
+    const AudioDeviceID audio_subdevice_id =
         AudioManagerMac::FindFirstOutputSubdevice(audio_device_id);
 
-    if (output_subdevice_id == kAudioObjectUnknown) {
-      log_callback_.Run(base::StringPrintf(
-          "AU in: Unable to find an output subdevice in aggregate device '%s'",
-          output_device_id.c_str()));
+    if (audio_subdevice_id == kAudioObjectUnknown) {
+      LogMessageEverywhere(
+          __FUNCTION__, base::StringPrintf("AU in: Unable to find an output "
+                                           "subdevice in aggregate device '%s'",
+                                           output_device_id));
       return;
     }
-    audio_device_id = output_subdevice_id;
+    if (audio_subdevice_id == output_device_id_for_aec_) {
+      DVLOG(1) << __FUNCTION__ << " this " << this
+               << ": same subdevice in aggregare:" << output_device_id << " (0x"
+               << std::hex << output_device_id_for_aec_ << ")";
+      return;
+    }
+    output_device_id_for_aec_ = audio_subdevice_id;
   }
 
-  if (audio_device_id != output_device_id_for_aec_) {
-    output_device_id_for_aec_ = audio_device_id;
-    log_callback_.Run(base::StringPrintf(
-        "AU in: Output device for AEC changed to '%s' (%d)",
-        output_device_id.c_str(), output_device_id_for_aec_));
-    // Only restart the stream if it has previously been started.
-    if (audio_unit_)
-      ReinitializeVoiceProcessingAudioUnit();
+  LogMessageEverywhere(
+      __FUNCTION__,
+      base::StringPrintf("AU in: Output device for AEC changed to '%s' (0x%x)",
+                         output_device_id.c_str(), output_device_id_for_aec_));
+
+  // Only restart the stream if it has previously been started.
+  if (audio_unit_) {
+    ReinitializeVoiceProcessingAudioUnit();
   }
+#endif
+}
+
+// static
+bool AUAudioInputStream::IsEchoCancellationSupported(
+    AudioDeviceID audio_device_id,
+    const AudioParameters& params) {
+#if BUILDFLAG(IS_MAC)
+  if (!media::IsSystemEchoCancellationEnforced()) {
+    return false;
+  }
+
+  // VoiceProcessingIO cannot be used on aggregate devices, since it creates
+  // an aggregate device itself.  It also only runs in mono, but we allow
+  // upmixing to stereo since we can't claim a device works either in stereo
+  // without echo cancellation or mono with echo cancellation.
+
+  if (!(params.channel_layout() == CHANNEL_LAYOUT_MONO ||
+        params.channel_layout() == CHANNEL_LAYOUT_STEREO)) {
+    VLOG(1) << "Can't appply echo cancellation to channel layout "
+            << params.channel_layout();
+    return false;
+  }
+
+  std::optional<uint32_t> device_transport_type =
+      core_audio_mac::GetDeviceTransportType(audio_device_id);
+  if (!device_transport_type) {
+    VLOG(1) << "Failed to get device transport type for device 0x" << std::hex
+            << audio_device_id;
+    return false;
+  }
+
+  if (*device_transport_type == kAudioDeviceTransportTypeAggregate) {
+    VLOG(1) << "Can't appply echo cancellation to an aggregare device 0x"
+            << std::hex << audio_device_id;
+    return false;
+  }
+
+  return true;
+#else
+  return false;
 #endif
 }
 
@@ -818,7 +929,7 @@ void AUAudioInputStream::ReinitializeVoiceProcessingAudioUnit() {
   }
 
   log_callback_.Run(base::StringPrintf(
-      "AU in: Successfully reinitialized AEC for output device id=%d.",
+      "AU in: Successfully reinitialized AEC for output device id=0x%x.",
       output_device_id_for_aec_));
 }
 
@@ -956,8 +1067,7 @@ OSStatus AUAudioInputStream::Provide(UInt32 number_of_frames,
                                      const AudioTimeStamp* time_stamp) {
   TRACE_EVENT1("audio", "AUAudioInputStream::Provide", "number_of_frames",
                number_of_frames);
-  UpdateCaptureTimestamp(time_stamp);
-  last_number_of_frames_ = number_of_frames;
+  glitch_helper_.OnFramesReceived(*time_stamp, number_of_frames);
 
   // TODO(grunell): We'll only care about the first buffer size change, any
   // further changes will be ignored. This is in line with output side stats.
@@ -976,10 +1086,17 @@ OSStatus AUAudioInputStream::Provide(UInt32 number_of_frames,
   GetAgcVolume(&normalized_volume);
 
   AudioBuffer& buffer = io_data->mBuffers[0];
-  uint8_t* audio_data = reinterpret_cast<uint8_t*>(buffer.mData);
+  const uint8_t* audio_data = reinterpret_cast<const uint8_t*>(buffer.mData);
   DCHECK(audio_data);
   if (!audio_data)
     return kAudioUnitErr_InvalidElement;
+
+  // SAFETY:
+  // https://developer.apple.com/documentation/coreaudiotypes/audiobuffer
+  // mData: A pointer to a buffer of audio data.
+  // mDataByteSize: The number of bytes in the buffer.
+  UNSAFE_BUFFERS(base::span<const uint8_t> audio_data_span(
+      audio_data, buffer.mDataByteSize));
 
   // Dynamically increase capacity of the FIFO to handle larger buffers from
   // CoreAudio. This can happen in combination with Apple Thunderbolt Displays
@@ -1003,12 +1120,10 @@ OSStatus AUAudioInputStream::Provide(UInt32 number_of_frames,
   capture_time -= AudioTimestampHelper::FramesToTime(fifo_.GetAvailableFrames(),
                                                      format_.mSampleRate);
 
-  const int bytes_per_sample = format_.mBitsPerChannel / 8;
-
-  peak_detector_.FindPeak(audio_data, number_of_frames, bytes_per_sample);
+  peak_detector_.FindPeak(audio_data_span, kSampleFormat);
 
   // Copy captured (and interleaved) data into FIFO.
-  fifo_.Push(audio_data, number_of_frames, bytes_per_sample);
+  fifo_.Push(audio_data_span, number_of_frames, kSampleFormat);
 
   // Consume and deliver the data when the FIFO has a block of available data.
   while (fifo_.available_blocks()) {
@@ -1017,7 +1132,7 @@ OSStatus AUAudioInputStream::Provide(UInt32 number_of_frames,
               static_cast<int>(input_params_.frames_per_buffer()));
 
     sink_->OnData(audio_bus, capture_time, normalized_volume,
-                  glitch_accumulator_.GetAndReset());
+                  glitch_helper_.ConsumeGlitchInfo());
 
     // Move the capture time forward for each vended block.
     capture_time += AudioTimestampHelper::FramesToTime(audio_bus->frames(),
@@ -1067,11 +1182,11 @@ void AUAudioInputStream::HandleError(OSStatus err,
 }
 
 void AUAudioInputStream::SetInputCallbackIsActive(bool enabled) {
-  base::subtle::Release_Store(&input_callback_is_active_, enabled);
+  input_callback_is_active_.store(enabled, std::memory_order_release);
 }
 
 bool AUAudioInputStream::GetInputCallbackIsActive() {
-  return (base::subtle::Acquire_Load(&input_callback_is_active_) != false);
+  return input_callback_is_active_.load(std::memory_order_acquire);
 }
 
 void AUAudioInputStream::CheckInputStartupSuccess() {
@@ -1105,55 +1220,18 @@ void AUAudioInputStream::CloseAudioUnit() {
   audio_unit_ = 0;
 }
 
-void AUAudioInputStream::UpdateCaptureTimestamp(
-    const AudioTimeStamp* timestamp) {
-  if ((timestamp->mFlags & kAudioTimeStampSampleTimeValid) == 0)
-    return;
-
-  if (last_sample_time_) {
-    DCHECK_NE(0U, last_number_of_frames_);
-    UInt32 sample_time_diff =
-        static_cast<UInt32>(timestamp->mSampleTime - last_sample_time_);
-    DCHECK_GE(sample_time_diff, last_number_of_frames_);
-    UInt32 lost_frames = sample_time_diff - last_number_of_frames_;
-    base::TimeDelta lost_audio_duration = AudioTimestampHelper::FramesToTime(
-        lost_frames, input_params_.sample_rate());
-    glitch_reporter_.UpdateStats(lost_audio_duration);
-    if (lost_audio_duration.is_positive()) {
-      glitch_accumulator_.Add(AudioGlitchInfo::SingleBoundedSystemGlitch(
-          lost_audio_duration, AudioGlitchInfo::Direction::kCapture));
-    }
-  }
-
-  // Store the last sample time for use next time we get called back.
-  last_sample_time_ = timestamp->mSampleTime;
-}
-
 void AUAudioInputStream::ReportAndResetStats() {
-  if (last_sample_time_ == 0)
-    return;  // No stats gathered to report.
-
-  // A value of 0 indicates that we got the buffer size we asked for.
-  base::UmaHistogramCounts10000("Media.Audio.Capture.FramesProvided",
-                                number_of_frames_provided_);
-
-  SystemGlitchReporter::Stats stats =
-      glitch_reporter_.GetLongTermStatsAndReset();
-
-  std::string log_message = base::StringPrintf(
-      "AU in: (num_glitches_detected=[%d], cumulative_audio_lost=[%llu ms], "
-      "largest_glitch=[%llu ms])",
-      stats.glitches_detected, stats.total_glitch_duration.InMilliseconds(),
-      stats.largest_glitch_duration.InMilliseconds());
-
-  log_callback_.Run(log_message);
-  if (stats.glitches_detected != 0) {
-    DLOG(WARNING) << log_message;
+  std::optional<std::string> log_message = glitch_helper_.LogAndReset("AU in");
+  if (log_message) {
+    log_callback_.Run(*log_message);
   }
 
+  if (number_of_frames_provided_) {
+    // A value of 0 indicates that we got the buffer size we asked for.
+    base::UmaHistogramCounts10000("Media.Audio.Capture.FramesProvided",
+                                  number_of_frames_provided_);
+  }
   number_of_frames_provided_ = 0;
-  last_sample_time_ = 0;
-  last_number_of_frames_ = 0;
 }
 
 // TODO(ossu): Ideally, we'd just use the mono stream directly. However, since
@@ -1191,6 +1269,13 @@ void AUAudioInputStream::UpmixMonoToStereoInPlace(AudioBuffer* audio_buffer,
       byte_ptr[out_offset + bytes_per_sample + b] = byte;
     }
   }
+}
+
+void AUAudioInputStream::LogMessageEverywhere(const char* function_name,
+                                              const std::string& message) {
+  log_callback_.Run("AU in" + base::StringPrintf(" [this=%p] ", this) +
+                    message);
+  VLOG(1) << function_name << " [this=" << this << "] " << message;
 }
 
 }  // namespace media

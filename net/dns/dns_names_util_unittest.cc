@@ -12,8 +12,11 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/containers/span_reader.h"
+#include "base/containers/to_vector.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/cstring_view.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/public/dns_protocol.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -25,13 +28,10 @@ namespace {
 using ::testing::Eq;
 using ::testing::Optional;
 
-// ToBytes converts a char* to a std::vector<uint8_t> and includes the
+// ToBytes converts a string literal to a std::vector<uint8_t> and includes the
 // terminating NUL in the result.
-std::vector<uint8_t> ToBytes(const char* in) {
-  size_t size = strlen(in) + 1;
-  std::vector<uint8_t> out(size, 0);
-  memcpy(out.data(), in, size);
-  return out;
+std::vector<uint8_t> ToBytes(base::cstring_view in) {
+  return base::ToVector(base::byte_span_with_nul_from_cstring_view(in));
 }
 
 TEST(DnsNamesUtilTest, DottedNameToNetworkWithValidation) {
@@ -441,12 +441,11 @@ TEST(DnsNamesUtilTest,
 }
 
 TEST(DnsNamesUtilTest, NetworkToDottedNameShouldRejectCompression) {
-  std::string dns_name = CreateNamePointer(152);
+  std::vector<uint8_t> dns_name = base::ToVector(CreateNamePointer(152));
 
   EXPECT_EQ(NetworkToDottedName(base::as_byte_span(dns_name)), std::nullopt);
 
-  dns_name = "\005hello";
-  dns_name += CreateNamePointer(152);
+  dns_name.insert(dns_name.begin(), {'\005', 'h', 'e', 'l', 'l', 'o'});
 
   EXPECT_EQ(NetworkToDottedName(base::as_byte_span(dns_name)), std::nullopt);
 }

@@ -10,9 +10,10 @@ function createAdIframe() {
   return frame;
 }
 
-function createAdIframeWithSrc(src) {
+function createAdIframeWithSrc(src, id) {
   const frame = document.createElement('iframe');
   frame.src = src;
+  frame.id = id;
   document.body.appendChild(frame);
   return frame;
 }

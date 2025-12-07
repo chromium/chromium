@@ -6,11 +6,10 @@
 #define UI_ACCESSIBILITY_PLATFORM_AUTOMATION_AUTOMATION_TREE_MANAGER_OWNER_H_
 
 #include <vector>
+
 #include "base/component_export.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/accessibility/public/mojom/automation.mojom.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_event.h"
@@ -145,22 +144,18 @@ class COMPONENT_EXPORT(AX_PLATFORM) AutomationTreeManagerOwner
   // accessibility focus, or returns false if it cannot find the focus.
   bool GetAccessibilityFocus(AXTreeID* tree_id, int* node_id) const;
 
-  // Find the node with the given ID in the tree with the given ID, or
-  // returns nullptr if not found.
-  AXNode* GetNodeFromTree(const AXTreeID& tree_id, int node_id) const;
-
   void AddTreeChangeObserver(int observer_id, TreeChangeObserverFilter filter);
   void RemoveTreeChangeObserver(int observer_id);
   void TreeEventListenersChanged(AutomationAXTreeWrapper* tree_wrapper);
   bool ShouldSendTreeChangeEvent(ax::mojom::Mutation change_type,
-                                 ui::AXTree* tree,
-                                 ui::AXNode* node) const;
-  void DestroyAccessibilityTree(const ui::AXTreeID& tree_id);
+                                 AXTree* tree,
+                                 AXNode* node) const;
+  void DestroyAccessibilityTree(const AXTreeID& tree_id);
   void ClearCachedAccessibilityTrees();
 
   // Calculate the state of the node with ID |node_id|, or returns false if the
   // node cannot be found in the tree with ID |tree_id|.
-  bool CalculateNodeState(const ui::AXTreeID& tree_id,
+  bool CalculateNodeState(const AXTreeID& tree_id,
                           int node_id,
                           uint32_t* node_state,
                           bool* offscreen,
@@ -181,23 +176,26 @@ class COMPONENT_EXPORT(AX_PLATFORM) AutomationTreeManagerOwner
   void MaybeSendOnAllAutomationEventListenersRemoved();
 
   // ax::mojom::Automation:
-  void DispatchTreeDestroyedEvent(const ui::AXTreeID& tree_id) override;
-  void DispatchAccessibilityEvents(
-      const ui::AXTreeID& tree_id,
-      const std::vector<ui::AXTreeUpdate>& updates,
-      const gfx::Point& mouse_location,
-      const std::vector<ui::AXEvent>& events) override;
+  void DispatchTreeDestroyedEvent(const AXTreeID& tree_id) override;
+  void DispatchAccessibilityEvents(const AXTreeID& tree_id,
+                                   const std::vector<AXTreeUpdate>& updates,
+                                   const gfx::Point& mouse_location,
+                                   const std::vector<AXEvent>& events) override;
   void DispatchAccessibilityLocationChange(
-      const ui::AXTreeID& tree_id,
+      const AXTreeID& tree_id,
       int32_t node_id,
-      const ui::AXRelativeBounds& bounds) override;
-  void DispatchActionResult(const ui::AXActionData& data, bool result) override;
+      const AXRelativeBounds& bounds) override;
+  void DispatchAccessibilityScrollChange(const AXTreeID& tree_id,
+                                         int32_t node_id,
+                                         int32_t scroll_x,
+                                         int32_t scroll_y) override;
+  void DispatchActionResult(const AXActionData& data, bool result) override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void DispatchGetTextLocationResult(
-      const ui::AXActionData& data,
+      const AXActionData& data,
       const std::optional<gfx::Rect>& rect) override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Mojo receiver to the Automation interface, implemented by this class.
   // Listed as a protected member so that derived classes can reset its status
@@ -238,7 +236,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AutomationTreeManagerOwner
       tree_id_to_tree_wrapper_map_;
 
   // Keeps track of all trees with event listeners.
-  std::set<ui::AXTreeID> trees_with_event_listeners_;
+  std::set<AXTreeID> trees_with_event_listeners_;
 
   std::vector<TreeChangeObserver> tree_change_observers_;
 

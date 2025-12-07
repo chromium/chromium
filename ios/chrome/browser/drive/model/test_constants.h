@@ -12,6 +12,7 @@ extern const char kTestDriveFileUploaderCommandLineSwitch[];
 // `kTestDriveFileUploaderCommandLineSwitch`.
 extern const char kTestDriveFileUploaderCommandLineSwitchSucceed[];
 extern const char kTestDriveFileUploaderCommandLineSwitchFailAndThenSucceed[];
+extern const char kTestDriveFileUploaderCommandLineSwitchFullStorage[];
 
 // Possible behaviors of `TestDriveFileUploader`.
 enum class TestDriveFileUploaderBehavior {

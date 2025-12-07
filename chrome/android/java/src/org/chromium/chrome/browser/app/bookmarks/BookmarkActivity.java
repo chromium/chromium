@@ -4,23 +4,36 @@
 
 package org.chromium.chrome.browser.app.bookmarks;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import android.content.ComponentName;
 import android.content.Intent;
-import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
-import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
+import org.chromium.chrome.browser.back_press.BackPressHelper.OnKeyDownHandler;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerCoordinator;
+import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
+import org.chromium.chrome.browser.bookmarks.BookmarkOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkPage;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
 /**
  * The activity that displays the bookmark UI on the phone. It keeps a {@link
@@ -28,59 +41,92 @@ import org.chromium.components.embedder_support.util.UrlConstants;
  * only be shown on phones; on tablet the bookmark UI is shown inside of a tab (see {@link
  * BookmarkPage}).
  */
+@NullMarked
 public class BookmarkActivity extends SnackbarActivity {
-    private BookmarkManagerCoordinator mBookmarkManagerCoordinator;
     public static final int EDIT_BOOKMARK_REQUEST_CODE = 14;
     public static final String INTENT_VISIT_BOOKMARK_ID = "BookmarkEditActivity.VisitBookmarkId";
 
+    private @Nullable BookmarkManagerCoordinator mBookmarkManagerCoordinator;
+    private @Nullable BookmarkOpener mBookmarkOpener;
+    private @Nullable OnKeyDownHandler mOnKeyDownHandler;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        boolean isIncognito =
-                IntentUtils.safeGetBooleanExtra(
-                        getIntent(), IntentHandler.EXTRA_INCOGNITO_MODE, false);
-        Profile profile = ProfileProvider.getOrCreateProfile(getProfileProvider(), isIncognito);
+    protected void onProfileAvailable(Profile profile) {
+        super.onProfileAvailable(profile);
+        @Nullable ComponentName parentComponent =
+                IntentUtils.safeGetParcelableExtra(
+                        getIntent(), IntentHandler.EXTRA_PARENT_COMPONENT);
+        mBookmarkOpener =
+                new BookmarkOpenerImpl(
+                        () -> BookmarkModel.getForProfile(profile),
+                        /* context= */ this,
+                        /* componentName= */ parentComponent);
         mBookmarkManagerCoordinator =
                 new BookmarkManagerCoordinator(
                         this,
-                        IntentUtils.safeGetParcelableExtra(
-                                getIntent(), IntentHandler.EXTRA_PARENT_COMPONENT),
                         true,
                         getSnackbarManager(),
                         profile,
-                        new BookmarkUiPrefs(ChromeSharedPreferences.getInstance()));
+                        new BookmarkUiPrefs(ChromeSharedPreferences.getInstance()),
+                        mBookmarkOpener,
+                        new BookmarkManagerOpenerImpl(),
+                        PriceDropNotificationManagerFactory.create(profile),
+                        /* edgeToEdgePadAdjusterGenerator= */ view ->
+                                EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
+                                        view, getEdgeToEdgeSupplier()),
+                        /* backPressManager= */ null);
         String url = getIntent().getDataString();
-        if (TextUtils.isEmpty(url)) url = UrlConstants.BOOKMARKS_URL;
+        if (TextUtils.isEmpty(url)) url = UrlConstants.BOOKMARKS_NATIVE_URL;
         mBookmarkManagerCoordinator.updateForUrl(url);
         setContentView(mBookmarkManagerCoordinator.getView());
-        BackPressHelper.create(
-                this,
-                getOnBackPressedDispatcher(),
-                mBookmarkManagerCoordinator,
-                SecondaryActivity.BOOKMARK);
+        mOnKeyDownHandler =
+                BackPressHelper.create(
+                        this, getOnBackPressedDispatcher(), mBookmarkManagerCoordinator);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (mOnKeyDownHandler != null && mOnKeyDownHandler.onKeyDown(keyCode, event)) {
+            return true;
+        }
+
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mBookmarkManagerCoordinator.onDestroyed();
+
+        if (mBookmarkManagerCoordinator != null) {
+            mBookmarkManagerCoordinator.onDestroyed();
+        }
+
+        if (mBookmarkOpener != null) {
+            mBookmarkOpener = null;
+        }
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == EDIT_BOOKMARK_REQUEST_CODE && resultCode == RESULT_OK) {
+            assumeNonNull(data);
             BookmarkId bookmarkId =
                     BookmarkId.getBookmarkIdFromString(
                             data.getStringExtra(INTENT_VISIT_BOOKMARK_ID));
-            mBookmarkManagerCoordinator.openBookmark(bookmarkId);
+            assumeNonNull(mBookmarkManagerCoordinator).openBookmark(bookmarkId);
         }
+    }
+
+    @Override
+    protected ModalDialogManager createModalDialogManager() {
+        return new ModalDialogManager(new AppModalPresenter(this), ModalDialogType.APP);
     }
 
     /**
      * @return The {@link BookmarkManagerCoordinator} for testing purposes.
      */
-    public BookmarkManagerCoordinator getManagerForTesting() {
+    public @Nullable BookmarkManagerCoordinator getManagerForTesting() {
         return mBookmarkManagerCoordinator;
     }
 }

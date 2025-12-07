@@ -4,19 +4,52 @@
 
 #include "base/synchronization/lock_impl.h"
 
+#include <pthread.h>
+
+#include <atomic>
+#include <cstdint>
 #include <ostream>
 #include <string>
 
 #include "base/check_op.h"
 #include "base/posix/safe_strerror.h"
 #include "base/synchronization/lock.h"
+#include "base/synchronization/lock_metrics_recorder.h"
 #include "base/synchronization/synchronization_buildflags.h"
+#include "base/system/sys_info.h"
 #include "build/build_config.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/background_thread_pool_field_trial.h"
+#endif
+
+
+#if BUILDFLAG(IS_ANDROID)
+// On Android, `pthread_mutexattr_setprotocol()` is only defined in bionic
+// starting with API level 28. Make it a weak import, so that we can compile.
+extern "C" {
+int __attribute__((weak)) pthread_mutexattr_setprotocol(
+    pthread_mutexattr_t* _Nonnull __attr,
+    int __protocol);
+}
+#endif
 
 namespace base {
-namespace internal {
 
+namespace internal {
 namespace {
+
+#if BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE) && BUILDFLAG(IS_ANDROID)
+bool IsMutexPriorityInheritanceEnabled() {
+  return
+#pragma clang diagnostic push  // Can be removed once our min-sdk is >= 28.
+#pragma clang diagnostic ignored "-Wunguarded-availability"
+      (pthread_mutexattr_setprotocol != nullptr) &&
+#pragma clang diagnostic pop
+      base::android::BackgroundThreadPoolFieldTrial::
+          ShouldUsePriorityInheritanceLocks();
+}
+#endif  //  BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE) &&
+        //  BUILDFLAG(IS_ANDROID)
 
 #if DCHECK_IS_ON()
 const char* AdditionalHintForSystemErrorCode(int error_code) {
@@ -59,7 +92,7 @@ void dcheck_unlock_result(int rv) {
 // Lock::PriorityInheritanceAvailable still must be checked as the code may
 // compile but the underlying platform still may not correctly support priority
 // inheritance locks.
-#if BUILDFLAG(IS_NACL) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #define PRIORITY_INHERITANCE_LOCKS_POSSIBLE() 0
 #else
 #define PRIORITY_INHERITANCE_LOCKS_POSSIBLE() 1
@@ -71,7 +104,10 @@ LockImpl::LockImpl() {
   DCHECK_EQ(rv, 0) << ". " << SystemErrorCodeToString(rv);
 #if PRIORITY_INHERITANCE_LOCKS_POSSIBLE()
   if (PriorityInheritanceAvailable()) {
+#pragma clang diagnostic push  // Can be removed once our min-sdk is >= 28.
+#pragma clang diagnostic ignored "-Wunguarded-availability"
     rv = pthread_mutexattr_setprotocol(&mta, PTHREAD_PRIO_INHERIT);
+#pragma clang diagnostic pop
     DCHECK_EQ(rv, 0) << ". " << SystemErrorCodeToString(rv);
   }
 #endif
@@ -92,14 +128,15 @@ LockImpl::~LockImpl() {
 }
 
 void LockImpl::LockInternal() {
+  LockMetricsRecorder::ScopedLockAcquisitionTimer timer;
   int rv = pthread_mutex_lock(&native_handle_);
   DCHECK_EQ(rv, 0) << ". " << SystemErrorCodeToString(rv);
 }
 
 // static
 bool LockImpl::PriorityInheritanceAvailable() {
-#if BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE)
-  return true;
+#if BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE) && BUILDFLAG(IS_ANDROID)
+  return IsMutexPriorityInheritanceEnabled();
 #elif PRIORITY_INHERITANCE_LOCKS_POSSIBLE() && BUILDFLAG(IS_APPLE)
   return true;
 #else
@@ -123,4 +160,25 @@ bool LockImpl::PriorityInheritanceAvailable() {
 }
 
 }  // namespace internal
+
+bool KernelSupportsPriorityInheritanceFutex() {
+  // https://android-review.googlesource.com/c/3481472 which fixes priority
+  // inheritance using rt-mutexes in the kernel landed in the 6.12.13 android
+  // kernel and was backported to the 6.1.75 and 6.6.29 kernels. This change
+  // hasn't been upstreamed yet.
+#if BUILDFLAG(IS_ANDROID)
+  static bool supports_pi_futex = [] {
+    auto kernel_version = SysInfo::KernelVersionNumber::Current();
+    return (kernel_version > SysInfo::KernelVersionNumber(6, 12, 13)) ||
+           ((kernel_version > SysInfo::KernelVersionNumber(6, 6, 29)) &&
+            (kernel_version < SysInfo::KernelVersionNumber(6, 6, INT32_MAX))) ||
+           ((kernel_version > SysInfo::KernelVersionNumber(6, 1, 75)) &&
+            (kernel_version < SysInfo::KernelVersionNumber(6, 1, INT32_MAX)));
+  }();
+  return supports_pi_futex;
+#else   // BUILDFLAG(IS_ANDROID)
+  return false;
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
 }  // namespace base

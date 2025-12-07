@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_credential_instrument.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_network_or_issuer_information.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_entity_logo.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_type_converters.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -24,8 +24,10 @@ TypeConverter<payments::mojom::blink::SecurePaymentConfirmationRequestPtr,
     Convert(const blink::SecurePaymentConfirmationRequest* input) {
   auto output = payments::mojom::blink::SecurePaymentConfirmationRequest::New();
   output->credential_ids =
-      mojo::ConvertTo<Vector<Vector<uint8_t>>>(input->credentialIds());
-  output->challenge = mojo::ConvertTo<Vector<uint8_t>>(input->challenge());
+      mojo::ConvertTo<blink::Vector<blink::Vector<uint8_t>>>(
+          input->credentialIds());
+  output->challenge =
+      mojo::ConvertTo<blink::Vector<uint8_t>>(input->challenge());
 
   // If a timeout was not specified in JavaScript, then pass a null `timeout`
   // through mojo IPC, so the browser can set a default (e.g., 3 minutes).
@@ -35,7 +37,10 @@ TypeConverter<payments::mojom::blink::SecurePaymentConfirmationRequestPtr,
   output->instrument = blink::mojom::blink::PaymentCredentialInstrument::New(
       input->instrument()->displayName(),
       blink::KURL(input->instrument()->icon()),
-      input->instrument()->iconMustBeShown());
+      input->instrument()->iconMustBeShown(),
+      // blink::String()'s empty constructor constructs a 'null' string.
+      input->instrument()->hasDetails() ? input->instrument()->details()
+                                        : blink::String());
 
   if (input->hasPayeeOrigin()) {
     output->payee_origin =
@@ -52,23 +57,28 @@ TypeConverter<payments::mojom::blink::SecurePaymentConfirmationRequestPtr,
             *input->extensions());
   }
 
-  if (input->hasNetworkInfo()) {
-    output->network_info =
-        payments::mojom::blink::NetworkOrIssuerInformation::New(
-            input->networkInfo()->name(),
-            blink::KURL(input->networkInfo()->icon()));
+  if (input->hasPaymentEntitiesLogos()) {
+    output->payment_entities_logos =
+        ConvertTo<blink::Vector<payments::mojom::blink::PaymentEntityLogoPtr>>(
+            input->paymentEntitiesLogos());
   }
 
-  if (input->hasIssuerInfo()) {
-    output->issuer_info =
-        payments::mojom::blink::NetworkOrIssuerInformation::New(
-            input->issuerInfo()->name(),
-            blink::KURL(input->issuerInfo()->icon()));
+  if (input->hasBrowserBoundPubKeyCredParams()) {
+    output->browser_bound_pub_key_cred_params = ConvertTo<
+        blink::Vector<blink::mojom::blink::PublicKeyCredentialParametersPtr>>(
+        input->browserBoundPubKeyCredParams());
   }
 
   output->show_opt_out = input->getShowOptOutOr(false);
 
   return output;
+}
+
+payments::mojom::blink::PaymentEntityLogoPtr TypeConverter<
+    payments::mojom::blink::PaymentEntityLogoPtr,
+    blink::PaymentEntityLogo*>::Convert(const blink::PaymentEntityLogo* input) {
+  return payments::mojom::blink::PaymentEntityLogo::New(
+      blink::KURL(input->url()), input->label());
 }
 
 }  // namespace mojo

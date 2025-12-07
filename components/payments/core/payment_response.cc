@@ -8,7 +8,7 @@
 
 namespace payments {
 
-PaymentResponse::PaymentResponse() {}
+PaymentResponse::PaymentResponse() = default;
 PaymentResponse::~PaymentResponse() = default;
 
 bool PaymentResponse::operator==(const PaymentResponse& other) const {
@@ -18,10 +18,6 @@ bool PaymentResponse::operator==(const PaymentResponse& other) const {
          shipping_option == other.shipping_option &&
          payer_name == other.payer_name && payer_email == other.payer_email &&
          payer_phone == other.payer_phone;
-}
-
-bool PaymentResponse::operator!=(const PaymentResponse& other) const {
-  return !(*this == other);
 }
 
 }  // namespace payments

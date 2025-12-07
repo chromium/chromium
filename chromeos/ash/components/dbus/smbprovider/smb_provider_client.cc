@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -18,6 +17,10 @@
 #include "dbus/object_proxy.h"
 
 namespace ash {
+
+// Extend the timeout for the `GetShares` D-Bus method as share discovery
+// has been observed to take longer than 25s (the default D-Bus timeout).
+constexpr base::TimeDelta kGetSharesTimeout = base::Minutes(1);
 
 namespace {
 
@@ -67,6 +70,7 @@ class SmbProviderClientImpl final : public SmbProviderClient {
     smbprovider::GetSharesOptionsProto options;
     options.set_server_url(server_url.value());
     CallMethod(smbprovider::kGetSharesMethod, options,
+               kGetSharesTimeout.InMilliseconds(),
                &SmbProviderClientImpl::HandleProtoCallback<
                    smbprovider::DirectoryEntryListProto>,
                &callback);
@@ -114,12 +118,15 @@ class SmbProviderClientImpl final : public SmbProviderClient {
   template <typename CallbackHandler, typename Callback>
   void CallMethod(const char* name,
                   const google::protobuf::MessageLite& protobuf,
+                  int timeout_ms,
                   CallbackHandler handler,
                   Callback callback) {
     dbus::MethodCall method_call(smbprovider::kSmbProviderInterface, name);
     dbus::MessageWriter writer(&method_call);
     writer.AppendProtoAsArrayOfBytes(protobuf);
-    CallMethod(&method_call, handler, callback);
+    proxy_->CallMethod(&method_call, timeout_ms,
+                       base::BindOnce(handler, weak_ptr_factory_.GetWeakPtr(),
+                                      std::move(*callback)));
   }
 
   // Calls the method specified in |method_call|. |handler| is the member

@@ -1,0 +1,10 @@
+<template is="dom-if" if="[[!isUndefined(screenshotUrl)]]">
+  <mako-orca-feedback
+    string-source="[[stringSource]]"
+    open-url="[[openUrl]]"
+    extra-info-callback="[[extraInfoCallback]]"
+    extra-image="[[screenshotUrl]]"
+    revert-to-previous-screen="[[revertToPreviousScreen]]"
+    submit-feedback="[[submitFeedback]]"
+    ></mako-orca-feedback>
+</template>

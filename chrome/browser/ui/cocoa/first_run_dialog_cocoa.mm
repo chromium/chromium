@@ -69,7 +69,8 @@ void ShowFirstRunModal() {
   // If the dialog asked the user to opt-in for stats and crash reporting,
   // record the decision and enable the crash reporter if appropriate.
   bool consent_given = [dialog isStatsReportingEnabled];
-  ChangeMetricsReportingState(consent_given);
+  ChangeMetricsReportingState(
+      consent_given, ChangeMetricsReportingStateCalledFrom::kUiFirstRun);
 
   // If selected, set as default browser. Skip in automated tests so that an OS
   // dialog confirming the default browser choice isn't left on screen.

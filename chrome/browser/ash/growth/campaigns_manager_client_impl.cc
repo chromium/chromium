@@ -8,14 +8,24 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <variant>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/shelf_types.h"
+#include "ash/root_window_controller.h"
+#include "ash/shelf/hotseat_widget.h"
+#include "ash/shelf/shelf_app_button.h"
+#include "ash/shelf/shelf_view.h"
+#include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/version.h"
+#include "chrome/browser/ash/growth/campaigns_manager_session.h"
 #include "chrome/browser/ash/growth/install_web_app_action_performer.h"
 #include "chrome/browser/ash/growth/metrics.h"
 #include "chrome/browser/ash/growth/open_url_action_performer.h"
@@ -31,9 +41,12 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chromeos/ash/components/growth/campaigns_constants.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
+#include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
+#include "chromeos/ash/components/growth/campaigns_utils.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/component_updater/ash/component_manager_ash.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -41,10 +54,16 @@
 #include "components/prefs/pref_service.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/synthetic_trials.h"
+#include "ui/display/screen.h"
 
 namespace {
 
 inline constexpr char kCampaignComponentName[] = "growth-campaigns";
+
+// A util function to add the `kGrowthCampaignsEventNamePrefix`.
+std::string AddEventPrefix(std::string_view event) {
+  return base::StrCat({growth::GetGrowthCampaignsEventNamePrefix(), event});
+}
 
 Profile* GetProfile() {
   return ProfileManager::GetActiveUserProfile();
@@ -65,8 +84,12 @@ void CampaignsManagerClientImpl::LoadCampaignsComponent(
     growth::CampaignComponentLoadedCallback callback) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(ash::switches::kGrowthCampaignsPath)) {
-    std::move(callback).Run(base::FilePath(command_line->GetSwitchValueASCII(
-        ash::switches::kGrowthCampaignsPath)));
+    const auto path =
+        command_line->GetSwitchValuePath(ash::switches::kGrowthCampaignsPath);
+    CAMPAIGNS_LOG(DEBUG) << "Switch `kGrowthCampaignsPath` is set. Load "
+                            "campaigns component from file "
+                         << path;
+    std::move(callback).Run(base::FilePath(path));
     return;
   }
 
@@ -88,7 +111,7 @@ void CampaignsManagerClientImpl::AddOnTrackerInitializedCallback(
   auto* tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile());
   if (!tracker) {
-    LOG(ERROR) << "Feature Engagement tracer is not available";
+    CAMPAIGNS_LOG(ERROR) << "Feature Engagement tracer is not available";
     std::move(callback).Run(false);
   }
 
@@ -98,7 +121,7 @@ void CampaignsManagerClientImpl::AddOnTrackerInitializedCallback(
 }
 
 bool CampaignsManagerClientImpl::IsDeviceInDemoMode() const {
-  return ash::DemoSession::IsDeviceInDemoMode();
+  return ash::demo_mode::IsDeviceInDemoMode();
 }
 
 bool CampaignsManagerClientImpl::IsCloudGamingDevice() const {
@@ -107,6 +130,58 @@ bool CampaignsManagerClientImpl::IsCloudGamingDevice() const {
 
 bool CampaignsManagerClientImpl::IsFeatureAwareDevice() const {
   return ash::demo_mode::IsFeatureAwareDevice();
+}
+
+bool CampaignsManagerClientImpl::IsAppIconOnShelf(
+    const std::string& app_id) const {
+  auto* shelf = ash::Shell::GetPrimaryRootWindowController()->shelf();
+  const bool is_shelf_visible =
+      shelf && (shelf->GetVisibilityState() ==
+                    ash::ShelfVisibilityState::SHELF_VISIBLE ||
+                (shelf->GetVisibilityState() ==
+                     ash::ShelfVisibilityState::SHELF_AUTO_HIDE &&
+                 shelf->GetAutoHideState() ==
+                     ash::ShelfAutoHideState::SHELF_AUTO_HIDE_SHOWN));
+
+  // Shelf is always considered hidden when in tablet mode, but the Hotseat can
+  // still be expanded.
+  const bool is_tablet_mode = display::Screen::Get()->InTabletMode();
+
+  if (!is_shelf_visible && !is_tablet_mode) {
+    growth::RecordCampaignsManagerError(
+        growth::CampaignsManagerError::kShelfInvisibleAtMatching);
+    CAMPAIGNS_LOG(ERROR) << "Matching hotseat state when shelf is not visible.";
+    return false;
+  }
+
+  auto* hotseat_widget = shelf->hotseat_widget();
+  const bool is_hotseat_visible =
+      hotseat_widget && hotseat_widget->state() != ash::HotseatState::kNone &&
+      hotseat_widget->state() != ash::HotseatState::kHidden;
+  if (!is_hotseat_visible) {
+    growth::RecordCampaignsManagerError(
+        growth::CampaignsManagerError::kHotseatInvisibleAtMatching);
+    CAMPAIGNS_LOG(ERROR)
+        << "Matching hotseat state when hotseat is not visible.";
+    return false;
+  }
+
+  auto* shelf_view = hotseat_widget->GetShelfView();
+  if (!shelf_view) {
+    growth::RecordCampaignsManagerError(
+        growth::CampaignsManagerError::kShelfViewNotAvailableAtMatching);
+    CAMPAIGNS_LOG(ERROR) << "Matching hotseat state when hotseat is available "
+                            "but shelf_view is not available.";
+    return false;
+  }
+
+  if (!shelf_view->GetShelfAppButton(ash::ShelfID(app_id))) {
+    growth::RecordCampaignsManagerError(
+        growth::CampaignsManagerError::kHotseatAppIconNotPresent);
+    CAMPAIGNS_LOG(ERROR) << "App icon is not on shelf.";
+    return false;
+  }
+  return true;
 }
 
 const std::string& CampaignsManagerClientImpl::GetApplicationLocale() const {
@@ -130,7 +205,14 @@ const std::string CampaignsManagerClientImpl::GetCountryCode() const {
 
 const base::Version& CampaignsManagerClientImpl::GetDemoModeAppVersion() const {
   auto* demo_session = ash::DemoSession::Get();
-  CHECK(demo_session);
+  if (!demo_session) {
+    // When campaigns are loaded and fetched in `DemoLoginController`,
+    // `DemoSession` is not available yet. In this case, we will return empty
+    // version so campaigns that are targeting a specific app version won't be
+    // matched.
+    static const base::NoDestructor<base::Version> empty_version;
+    return *empty_version;
+  }
 
   const auto& version = demo_session->components()->app_component_version();
   if (!version.has_value()) {
@@ -171,21 +253,36 @@ growth::ActionMap CampaignsManagerClientImpl::GetCampaignsActions() {
 void CampaignsManagerClientImpl::RegisterSyntheticFieldTrial(
     const std::string& trial_name,
     const std::string& group_name) const {
-  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(trial_name,
-                                                            group_name);
+  CAMPAIGNS_LOG(DEBUG) << "Register synthetic field trial: trial_name: "
+                       << trial_name << " group_name: " << group_name;
+  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      trial_name, group_name,
+      variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }
 
-void CampaignsManagerClientImpl::RecordEvent(const std::string& event_name) {
+void CampaignsManagerClientImpl::RecordEvent(const std::string& event_name,
+                                             bool trigger_campaigns) {
   auto* tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile());
   if (!tracker || !tracker->IsInitialized()) {
-    LOG(ERROR) << "Feature Engagement tracer is not available";
+    CAMPAIGNS_LOG(ERROR) << "Feature Engagement tracer is not available";
     growth::RecordCampaignsManagerError(
         growth::CampaignsManagerError::kTrackerNotAvailableInSession);
     return;
   }
 
-  tracker->NotifyEvent(event_name);
+  CAMPAIGNS_LOG(DEBUG) << "Record event: " << event_name
+                       << " Trigger Campaigns: "
+                       << growth::ToString(trigger_campaigns);
+  tracker->NotifyEvent(AddEventPrefix(event_name));
+
+  if (!trigger_campaigns) {
+    return;
+  }
+
+  if (auto* session = CampaignsManagerSession::Get()) {
+    session->MaybeTriggerCampaignsOnEvent(event_name);
+  }
 }
 
 void CampaignsManagerClientImpl::ClearConfig(
@@ -193,12 +290,15 @@ void CampaignsManagerClientImpl::ClearConfig(
   auto* tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile());
   if (!tracker || !tracker->IsInitialized()) {
-    LOG(ERROR) << "Feature Engagement tracer is not available";
+    CAMPAIGNS_LOG(ERROR) << "Feature Engagement tracer is not available";
     growth::RecordCampaignsManagerError(
         growth::CampaignsManagerError::kTrackerNotAvailableInSession);
     return;
   }
 
+  for (const auto& param : params) {
+    CAMPAIGNS_LOG(DEBUG) << "Clear config: " << param.second;
+  }
   UpdateConfig(params);
   tracker->ClearEventData(feature_engagement::kIPHGrowthFramework);
 }
@@ -208,7 +308,7 @@ bool CampaignsManagerClientImpl::WouldTriggerHelpUI(
   auto* tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile());
   if (!tracker || !tracker->IsInitialized()) {
-    LOG(ERROR) << "Feature Engagement tracer is not available";
+    CAMPAIGNS_LOG(ERROR) << "Feature Engagement tracer is not available";
     growth::RecordCampaignsManagerError(
         growth::CampaignsManagerError::kTrackerNotAvailableInSession);
     return false;
@@ -231,6 +331,19 @@ void CampaignsManagerClientImpl::OnReadyToLogImpression(
   // TODO: b/348495965 - Verify group metrics when ready.
   RecordImpression(campaign_id, should_log_cros_events);
   RecordImpressionEvents(campaign_id, group_id);
+}
+
+void CampaignsManagerClientImpl::RecordImpressionEvents(
+    int campaign_id,
+    std::optional<int> group_id) {
+  campaigns_manager_->RecordEvent(GetEventName(
+      growth::CampaignEvent::kImpression, base::NumberToString(campaign_id)));
+
+  if (group_id) {
+    campaigns_manager_->RecordEvent(
+        GetEventName(growth::CampaignEvent::kGroupImpression,
+                     base::NumberToString(group_id.value())));
+  }
 }
 
 void CampaignsManagerClientImpl::OnDismissed(int campaign_id,
@@ -280,6 +393,9 @@ void CampaignsManagerClientImpl::OnComponentDownloaded(
     component_updater::ComponentManagerAsh::Error error,
     const base::FilePath& path) {
   if (error != component_updater::ComponentManagerAsh::Error::NONE) {
+    // TODO - b/365582608: Add error metrics.
+    CAMPAIGNS_LOG(ERROR) << "Failed to download campaigns component. Error: "
+                         << static_cast<int>(error);
     std::move(loaded_callback).Run(std::nullopt);
     return;
   }
@@ -298,7 +414,7 @@ void CampaignsManagerClientImpl::UpdateConfig(
   auto* tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile());
   if (!tracker || !tracker->IsInitialized()) {
-    LOG(ERROR) << "Feature Engagement tracer is not available";
+    CAMPAIGNS_LOG(ERROR) << "Feature Engagement tracer is not available";
     growth::RecordCampaignsManagerError(
         growth::CampaignsManagerError::kTrackerNotAvailableInSession);
     return;
@@ -309,28 +425,15 @@ void CampaignsManagerClientImpl::UpdateConfig(
                         &config_provider_);
 }
 
-void CampaignsManagerClientImpl::RecordImpressionEvents(
-    int campaign_id,
-    std::optional<int> group_id) {
-  campaigns_manager_->RecordEventForTargeting(
-      growth::CampaignEvent::kImpression, base::NumberToString(campaign_id));
-
-  if (group_id) {
-    campaigns_manager_->RecordEventForTargeting(
-        growth::CampaignEvent::kGroupImpression,
-        base::NumberToString(group_id.value()));
-  }
-}
-
 void CampaignsManagerClientImpl::RecordDismissalEvents(
     int campaign_id,
     std::optional<int> group_id) {
-  campaigns_manager_->RecordEventForTargeting(
-      growth::CampaignEvent::kDismissed, base::NumberToString(campaign_id));
+  campaigns_manager_->RecordEvent(GetEventName(
+      growth::CampaignEvent::kDismissed, base::NumberToString(campaign_id)));
 
   if (group_id) {
-    campaigns_manager_->RecordEventForTargeting(
-        growth::CampaignEvent::kGroupDismissed,
-        base::NumberToString(group_id.value()));
+    campaigns_manager_->RecordEvent(
+        GetEventName(growth::CampaignEvent::kGroupDismissed,
+                     base::NumberToString(group_id.value())));
   }
 }

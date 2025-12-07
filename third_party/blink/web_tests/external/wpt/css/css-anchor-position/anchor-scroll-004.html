@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>Tests anchor positioned scrolling with relatively positioned inline containers</title>
-<link rel="help" href="https://drafts4.csswg.org/css-anchor-position-1/#scroll">
+<link rel="help" href="https://drafts.csswg.org/css-anchor-position-1/#scroll">
 <link rel="author" href="mailto:xiaochengh@chromium.org">
 <link rel="stylesheet" href="/fonts/ahem.css">
 <script src="/resources/testharness.js"></script>
@@ -15,7 +15,7 @@ body {
 
 .cb {
   position: relative;
-  font: 20px/1 Ahem, monospace;
+  font: 20px/1 Ahem;
 }
 
 .scroller {
@@ -64,6 +64,8 @@ body {
 
 <script>
 promise_test(async () => {
+  await document.fonts.load('20px/1 Ahem');
+
   await waitUntilNextAnimationFrame();
   await waitUntilNextAnimationFrame();
 

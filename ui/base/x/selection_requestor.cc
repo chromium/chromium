@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/base/x/selection_requestor.h"
 
+#include <algorithm>
+
+#include "base/compiler_specific.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/ranges/algorithm.h"
 #include "ui/base/x/selection_owner.h"
 #include "ui/base/x/selection_utils.h"
 #include "ui/base/x/x11_clipboard_helper.h"
@@ -37,7 +34,7 @@ std::vector<uint8_t> CombineData(
   std::vector<uint8_t> combined;
   combined.reserve(bytes);
   for (const auto& datum : data) {
-    std::copy(datum->data(), datum->data() + datum->size(),
+    std::copy(datum->data(), UNSAFE_TODO(datum->data() + datum->size()),
               std::back_inserter(combined));
   }
   return combined;
@@ -67,7 +64,7 @@ bool SelectionRequestor::PerformBlockingConvertSelection(
   }
   BlockTillSelectionNotifyForRequest(&request);
 
-  auto request_it = base::ranges::find(requests_, &request);
+  auto request_it = std::ranges::find(requests_, &request);
   CHECK(request_it != requests_.end());
   if (static_cast<int>(current_request_index_) >
       request_it - requests_.begin()) {
@@ -103,7 +100,8 @@ SelectionData SelectionRequestor::RequestAndWaitForTypes(
     x11::Atom type = x11::Atom::None;
     if (PerformBlockingConvertSelection(selection, item, &data, &type) &&
         type == item) {
-      return SelectionData(type, base::RefCountedBytes::TakeVector(&data));
+      return SelectionData(
+          type, base::MakeRefCounted<base::RefCountedBytes>(std::move(data)));
     }
   }
 

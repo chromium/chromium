@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] CSSSupportsConditionRule interface: existence and properties of interface object
+  assert_own_property: self does not have own property "CSSSupportsConditionRule" expected property "CSSSupportsConditionRule" missing
+[FAIL] CSSSupportsConditionRule interface object length
+  assert_own_property: self does not have own property "CSSSupportsConditionRule" expected property "CSSSupportsConditionRule" missing
+[FAIL] CSSSupportsConditionRule interface object name
+  assert_own_property: self does not have own property "CSSSupportsConditionRule" expected property "CSSSupportsConditionRule" missing
+[FAIL] CSSSupportsConditionRule interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "CSSSupportsConditionRule" expected property "CSSSupportsConditionRule" missing
+[FAIL] CSSSupportsConditionRule interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "CSSSupportsConditionRule" expected property "CSSSupportsConditionRule" missing
+[FAIL] CSSSupportsConditionRule interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "CSSSupportsConditionRule" expected property "CSSSupportsConditionRule" missing
+[FAIL] CSSSupportsConditionRule interface: attribute name
+  assert_own_property: self does not have own property "CSSSupportsConditionRule" expected property "CSSSupportsConditionRule" missing
+Harness: the test ran to completion.
+

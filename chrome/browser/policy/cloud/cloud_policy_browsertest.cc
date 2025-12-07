@@ -2,36 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <stdint.h>
+
 #include <memory>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/overloaded.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/cloud/cloud_policy_test_utils.h"
+#include "chrome/browser/policy/policy_util.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/chrome_test_utils.h"
-#include "components/invalidation/impl/fake_invalidation_service.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/invalidation/impl/profile_identity_provider.h"
-#include "components/invalidation/invalidation_factory.h"
 #include "components/invalidation/profile_invalidation_provider.h"
-#include "components/invalidation/public/invalidation.h"
-#include "components/invalidation/public/invalidation_service.h"
-#include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/test_support/fake_invalidation_listener.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -55,14 +53,16 @@
 #include "components/policy/test_support/policy_storage.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
@@ -96,7 +96,6 @@ namespace policy {
 
 namespace {
 
-constexpr char kPolicyInvalidationTopic[] = "test_policy_topic";
 constexpr char kPolicyInvalidationType[] = "USER_POLICY_FETCH";
 
 struct FeaturesTestParam {
@@ -104,29 +103,27 @@ struct FeaturesTestParam {
   std::vector<base::test::FeatureRef> disabled_features;
 };
 
-std::variant<std::unique_ptr<invalidation::InvalidationService>,
-             std::unique_ptr<invalidation::InvalidationListener>>
-CreateInvalidationServiceForSenderId(std::string fcm_sender_id,
-                                     std::string /*project_id*/,
-                                     std::string /*log_prefix*/) {
-  if (base::FeatureList::IsEnabled(
-          invalidation::kInvalidationsWithDirectMessages)) {
-    return std::make_unique<invalidation::FakeInvalidationListener>();
-  }
-  return std::make_unique<invalidation::FakeInvalidationService>();
+std::unique_ptr<invalidation::InvalidationListener>
+CreateInvalidationListenerForProjectNumber(int64_t project_number,
+                                           std::string /*log_prefix*/) {
+  return std::make_unique<invalidation::FakeInvalidationListener>(
+      std::move(project_number));
 }
 
 std::unique_ptr<KeyedService> BuildFakeProfileInvalidationProvider(
     content::BrowserContext* context) {
   Profile* profile = static_cast<Profile*>(context);
   return std::make_unique<invalidation::ProfileInvalidationProvider>(
+      profile->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess(),
       std::make_unique<invalidation::ProfileIdentityProvider>(
           IdentityManagerFactory::GetForProfile(profile)),
-      base::BindRepeating(&CreateInvalidationServiceForSenderId));
+      profile->GetPrefs(),
+      base::BindRepeating(&CreateInvalidationListenerForProjectNumber));
 }
 
 const char* GetTestUser() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return user_manager::kStubUserEmail;
 #else
   return "user@example.com";
@@ -202,7 +199,7 @@ class CloudPolicyTest : public PlatformBrowserTest,
     scoped_feature_list_.InitWithFeatures(GetParam().enabled_features,
                                           GetParam().disabled_features);
   }
-  ~CloudPolicyTest() override {}
+  ~CloudPolicyTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     PlatformBrowserTest::SetUpOnMainThread();
@@ -210,8 +207,7 @@ class CloudPolicyTest : public PlatformBrowserTest,
     test_server_ = std::make_unique<EmbeddedPolicyTestServer>();
     ASSERT_TRUE(test_server_->Start());
 
-    ASSERT_NO_FATAL_FAILURE(
-        SetServerPolicy(em::CloudPolicySettings(), 1, std::string()));
+    ASSERT_NO_FATAL_FAILURE(SetServerPolicy(em::CloudPolicySettings(), 1));
 
     std::string url = test_server_->GetServiceURL().spec();
 
@@ -236,27 +232,18 @@ class CloudPolicyTest : public PlatformBrowserTest,
         g_browser_process->browser_policy_connector();
     connector->ScheduleServiceInitialization(0);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     UserCloudPolicyManagerAsh* policy_manager =
         chrome_test_utils::GetProfile(this)->GetUserCloudPolicyManagerAsh();
     ASSERT_TRUE(policy_manager);
 #else
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    base::FilePath dest_path =
-        g_browser_process->profile_manager()->user_data_dir();
-    profile_ = Profile::CreateProfile(
-        dest_path.Append(FILE_PATH_LITERAL("New Profile 1")), nullptr,
-        Profile::CreateMode::CREATE_MODE_SYNCHRONOUS);
-    Profile* profile = profile_.get();
-#else
     Profile* profile = chrome_test_utils::GetProfile(this);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
     // Mock a signed-in user. This is used by the UserCloudPolicyStore to pass
     // the username to the UserCloudPolicyValidator.
     identity_test_env_ = std::make_unique<signin::IdentityTestEnvironment>();
     identity_test_env_->MakePrimaryAccountAvailable(
-        GetTestUser(), signin::ConsentLevel::kSync);
+        GetTestUser(), signin::ConsentLevel::kSignin);
 
     UserCloudPolicyManager* policy_manager =
         profile->GetUserCloudPolicyManager();
@@ -266,7 +253,7 @@ class CloudPolicyTest : public PlatformBrowserTest,
         std::make_unique<CloudPolicyClient>(
             connector->device_management_service(),
             g_browser_process->shared_url_loader_factory()));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     ASSERT_TRUE(policy_manager->core()->client());
 
@@ -292,7 +279,7 @@ class CloudPolicyTest : public PlatformBrowserTest,
     // CloudPolicyClient fetch the DMToken.
     ASSERT_FALSE(policy_manager->core()->client()->is_registered());
     CloudPolicyClient::RegistrationParameters parameters(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         em::DeviceRegisterRequest::USER,
 #else
         em::DeviceRegisterRequest::BROWSER,
@@ -311,7 +298,7 @@ class CloudPolicyTest : public PlatformBrowserTest,
     policy_manager->core()->client()->AddObserver(
         policy_manager->core()->refresh_scheduler());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Get the path to the user policy key file.
     base::FilePath user_policy_key_dir;
     ASSERT_TRUE(base::PathService::Get(
@@ -325,22 +312,15 @@ class CloudPolicyTest : public PlatformBrowserTest,
 #else
     user_policy_key_file_ =
         profile->GetPath().AppendASCII("Policy").AppendASCII("Signing Key");
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   void TearDownOnMainThread() override {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    profile_.reset();
-#endif
     identity_test_env_.reset();
   }
 
   Profile* profile() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    return profile_.get();
-#else
     return chrome_test_utils::GetProfile(this);
-#endif
   }
 
   PolicyService* GetPolicyService() {
@@ -351,43 +331,29 @@ class CloudPolicyTest : public PlatformBrowserTest,
     const base::TimeDelta now =
         base::Time::NowFromSystemTime() - base::Time::UnixEpoch();
 
-    std::visit(
-        base::Overloaded{
-            [now](invalidation::InvalidationService* service) {
-              static_cast<invalidation::FakeInvalidationService*>(service)
-                  ->EmitInvalidationForTest(invalidation::Invalidation(
-                      kPolicyInvalidationTopic, now.InMicroseconds(),
-                      "payload"));
-            },
-            [now](invalidation::InvalidationListener* listener) {
-              static_cast<invalidation::FakeInvalidationListener*>(listener)
-                  ->FireInvalidation(invalidation::DirectInvalidation(
-                      kPolicyInvalidationType, now.InMicroseconds(),
-                      "payload"));
-            }},
-        // Provider caches invalidation service and listener for sender id and
-        // project id. To send an invalidation to the policy invalidator, it
-        // must be sent to the correct project id.
-        invalidation::ProfileInvalidationProviderFactory::GetInstance()
-            ->GetForProfile(profile())
-            ->GetInvalidationServiceOrListener(
-                kPolicyFCMInvalidationSenderID,
-                invalidation::InvalidationListener::kProjectNumberEnterprise));
+    // Provider caches invalidation service and listener for sender id and
+    // project id. To send an invalidation to the policy invalidator, it
+    // must be sent to the correct project id.
+    auto* invalidation_listener =
+        static_cast<invalidation::FakeInvalidationListener*>(
+            invalidation::ProfileInvalidationProviderFactory::GetInstance()
+                ->GetForProfile(profile())
+                ->GetInvalidationListener(
+                    policy::kPolicyInvalidationProjectNumber));
+    invalidation_listener->FireInvalidation(invalidation::DirectInvalidation(
+        kPolicyInvalidationType, now.InMicroseconds(), "payload"));
   }
 
   void SetServerPolicy(const em::CloudPolicySettings& settings,
-                       int key_version,
-                       const std::string& policy_invalidation_topic) {
+                       int key_version) {
     test_server_->policy_storage()->SetPolicyPayload(
-        dm_protocol::kChromeUserPolicyType, settings.SerializeAsString());
+        dm_protocol::GetChromeUserPolicyType(), settings.SerializeAsString());
 
     test_server_->policy_storage()->add_managed_user("*");
     test_server_->policy_storage()->set_policy_user(GetTestUser());
     test_server_->policy_storage()
         ->signature_provider()
         ->set_current_key_version(key_version);
-    test_server_->policy_storage()->set_policy_invalidation_topic(
-        policy_invalidation_topic);
   }
 
   void OnPolicyUpdated(const PolicyNamespace& ns,
@@ -401,7 +367,7 @@ class CloudPolicyTest : public PlatformBrowserTest,
   void OnPolicyServiceInitialized(PolicyDomain domain) override {}
 
   void FlushNonChromeOSStoreIOTasks() {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     base::RunLoop run_loop;
     profile()
         ->GetUserCloudPolicyManager()
@@ -410,16 +376,12 @@ class CloudPolicyTest : public PlatformBrowserTest,
         ->PostDelayedTask(FROM_HERE, run_loop.QuitClosure(),
                           base::Milliseconds(0));
     run_loop.Run();
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   }
 
   std::unique_ptr<EmbeddedPolicyTestServer> test_server_;
   base::FilePath user_policy_key_file_;
   base::OnceClosure on_policy_updated_;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // For Lacros use non-main profile in these tests.
-  std::unique_ptr<Profile> profile_;
-#endif
 
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
 
@@ -441,8 +403,7 @@ IN_PROC_BROWSER_TEST_P(CloudPolicyTest, FetchPolicy) {
   EXPECT_TRUE(default_policy.Equals(policy_service->GetPolicies(
       PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))));
 
-  ASSERT_NO_FATAL_FAILURE(SetServerPolicy(GetTestPolicy("google.com"), 1,
-                                          kPolicyInvalidationTopic));
+  ASSERT_NO_FATAL_FAILURE(SetServerPolicy(GetTestPolicy("google.com"), 1));
   PolicyMap expected;
   GetExpectedTestPolicy(&expected, "google.com");
   {
@@ -456,7 +417,7 @@ IN_PROC_BROWSER_TEST_P(CloudPolicyTest, FetchPolicy) {
       PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // ENTERPRISE_DEFAULT policies only are supported on Chrome OS currently.
 IN_PROC_BROWSER_TEST_P(CloudPolicyTest, EnsureDefaultPoliciesSet) {
   PolicyService* policy_service = GetPolicyService();
@@ -481,19 +442,12 @@ IN_PROC_BROWSER_TEST_P(CloudPolicyTest, EnsureDefaultPoliciesSet) {
 }
 #endif
 
-// crbug.com/1230268 not working on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_InvalidatePolicy DISABLED_InvalidatePolicy
-#else
-#define MAYBE_InvalidatePolicy InvalidatePolicy
-#endif
-IN_PROC_BROWSER_TEST_P(CloudPolicyTest, MAYBE_InvalidatePolicy) {
+IN_PROC_BROWSER_TEST_P(CloudPolicyTest, InvalidatePolicy) {
   PolicyService* policy_service = GetPolicyService();
   policy_service->AddObserver(POLICY_DOMAIN_CHROME, this);
 
   // Perform the initial fetch.
-  ASSERT_NO_FATAL_FAILURE(SetServerPolicy(GetTestPolicy("google.com"), 1,
-                                          kPolicyInvalidationTopic));
+  ASSERT_NO_FATAL_FAILURE(SetServerPolicy(GetTestPolicy("google.com"), 1));
   {
     base::RunLoop run_loop;
     policy_service->RefreshPolicies(run_loop.QuitClosure(),
@@ -502,8 +456,7 @@ IN_PROC_BROWSER_TEST_P(CloudPolicyTest, MAYBE_InvalidatePolicy) {
   }
 
   // Update the homepage in the policy and trigger an invalidation.
-  ASSERT_NO_FATAL_FAILURE(SetServerPolicy(GetTestPolicy("youtube.com"), 1,
-                                          kPolicyInvalidationTopic));
+  ASSERT_NO_FATAL_FAILURE(SetServerPolicy(GetTestPolicy("youtube.com"), 1));
 
   FirePolicyInvalidation();
 
@@ -550,8 +503,7 @@ IN_PROC_BROWSER_TEST_P(CloudPolicyTest, FetchPolicyWithRotatedKey) {
       PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))));
 
   // Set the new policies and a new key at the server.
-  ASSERT_NO_FATAL_FAILURE(SetServerPolicy(GetTestPolicy("google.com"), 2,
-                                          kPolicyInvalidationTopic));
+  ASSERT_NO_FATAL_FAILURE(SetServerPolicy(GetTestPolicy("google.com"), 2));
   PolicyMap expected;
   GetExpectedTestPolicy(&expected, "google.com");
   {
@@ -595,13 +547,11 @@ IN_PROC_BROWSER_TEST_P(CloudPolicyTest, FetchPolicyWithRotatedKey) {
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     CloudPolicyTest,
-    testing::Values(
-        FeaturesTestParam{},
-        FeaturesTestParam{.enabled_features =
-                              {invalidation::kInvalidationsWithDirectMessages}},
-        FeaturesTestParam{.enabled_features = {policy::kPolicyFetchWithSha256}},
-        FeaturesTestParam{
-            .disabled_features = {policy::kPolicyFetchWithSha256}}));
+    testing::Values(FeaturesTestParam{},
+                    FeaturesTestParam{
+                        .enabled_features = {policy::kPolicyFetchWithSha256}},
+                    FeaturesTestParam{.disabled_features = {
+                                          policy::kPolicyFetchWithSha256}}));
 
 TEST(CloudPolicyProtoTest, VerifyProtobufEquivalence) {
   // There are 2 protobufs that can be used for user cloud policy:

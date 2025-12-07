@@ -1,0 +1,49 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("managed_profile_creation") {
+  sources = [
+    "browsing_data_migration_view_controller.h",
+    "browsing_data_migration_view_controller.mm",
+    "managed_profile_creation_consumer.h",
+    "managed_profile_creation_coordinator.h",
+    "managed_profile_creation_coordinator.mm",
+    "managed_profile_creation_mediator.h",
+    "managed_profile_creation_mediator.mm",
+    "managed_profile_creation_view_controller.h",
+    "managed_profile_creation_view_controller.mm",
+    "managed_profile_learn_more_coordinator.h",
+    "managed_profile_learn_more_coordinator.mm",
+    "managed_profile_learn_more_view_controller.h",
+    "managed_profile_learn_more_view_controller.mm",
+  ]
+  deps = [
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager/objc",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/keyboard/ui_bundled",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:features",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/elements:elements_internal",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/content_configuration",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:system_identity",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/button_stack",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/promo_style",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+}

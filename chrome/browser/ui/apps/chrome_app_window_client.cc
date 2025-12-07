@@ -10,7 +10,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -18,10 +17,6 @@
 #include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature_channel.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/lock_screen_apps/state_controller.h"
-#endif
 
 // TODO(jamescook): We probably shouldn't compile this class at all on Android.
 // See http://crbug.com/343612
@@ -53,24 +48,6 @@ extensions::AppWindow* ChromeAppWindowClient::CreateAppWindow(
 #endif
 }
 
-extensions::AppWindow*
-ChromeAppWindowClient::CreateAppWindowForLockScreenAction(
-    content::BrowserContext* context,
-    const extensions::Extension* extension,
-    extensions::api::app_runtime::ActionType action) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto app_delegate = std::make_unique<ChromeAppDelegate>(
-      Profile::FromBrowserContext(context), true /*keep_alive*/);
-  app_delegate->set_for_lock_screen_app(true);
-
-  return lock_screen_apps::StateController::Get()
-      ->CreateAppWindowForLockScreenAction(context, extension, action,
-                                           std::move(app_delegate));
-#else
-  return nullptr;
-#endif
-}
-
 std::unique_ptr<extensions::NativeAppWindow>
 ChromeAppWindowClient::CreateNativeAppWindow(
     extensions::AppWindow* window,
@@ -92,10 +69,11 @@ void ChromeAppWindowClient::OpenDevToolsWindow(
 
   DevToolsWindow* devtools_window =
       DevToolsWindow::FindDevToolsWindow(agent.get());
-  if (devtools_window)
+  if (devtools_window) {
     devtools_window->SetLoadCompletedCallback(std::move(callback));
-  else
+  } else {
     std::move(callback).Run();
+  }
 }
 
 bool ChromeAppWindowClient::IsCurrentChannelOlderThanDev() {

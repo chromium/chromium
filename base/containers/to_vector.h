@@ -5,14 +5,14 @@
 #ifndef BASE_CONTAINERS_TO_VECTOR_H_
 #define BASE_CONTAINERS_TO_VECTOR_H_
 
+#include <algorithm>
+#include <concepts>
 #include <functional>
 #include <iterator>
+#include <ranges>
 #include <type_traits>
 #include <utility>
 #include <vector>
-
-#include "base/ranges/algorithm.h"
-#include "base/ranges/ranges.h"
 
 namespace base {
 
@@ -26,16 +26,46 @@ namespace base {
 //
 // Complexity: Exactly `size(range)` applications of `proj`.
 template <typename Range, typename Proj = std::identity>
-  requires requires { typename internal::range_category_t<Range>; } &&
-           std::indirectly_unary_invocable<Proj, ranges::iterator_t<Range>>
+  requires std::ranges::sized_range<Range> && std::ranges::input_range<Range> &&
+           std::indirectly_unary_invocable<Proj, std::ranges::iterator_t<Range>>
 auto ToVector(Range&& range, Proj proj = {}) {
   using ProjectedType =
-      std::projected<ranges::iterator_t<Range>, Proj>::value_type;
+      std::indirectly_readable_traits<std::projected<std::ranges::iterator_t<Range>, Proj> >::value_type;
   std::vector<ProjectedType> container;
-  container.reserve(std::size(range));
-  ranges::transform(std::forward<Range>(range), std::back_inserter(container),
-                    std::move(proj));
+  container.reserve(std::ranges::size(range));
+  std::ranges::transform(std::forward<Range>(range),
+                         std::back_inserter(container), std::move(proj));
   return container;
+}
+
+// Maps an rvalue array to a std::vector<>.
+//
+// This allows creating a std::vector<T> in a single expression, even when T is
+// not copyable. For example, this doesn't work (because std::initializer_list
+// provides only const access to the underlying array):
+//
+//     std::vector<std::unique_ptr<int>>{
+//       std::make_unique<int>(17),
+//       std::make_unique<int>(19),
+//     }
+//
+// but this does:
+//
+//     base::ToVector({
+//       std::make_unique<int>(17),
+//       std::make_unique<int>(19),
+//     })
+//
+// Similar API to C++20's std::to_array.
+//
+// Complexity: `N` move operations.
+template <typename T, size_t N>
+  requires(std::move_constructible<T>)
+std::vector<T> ToVector(T (&&array)[N]) {
+  return {
+      std::make_move_iterator(std::begin(array)),
+      std::make_move_iterator(std::end(array)),
+  };
 }
 
 }  // namespace base

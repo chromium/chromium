@@ -17,9 +17,9 @@
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/device_operation.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_task.h"
 #include "device/fido/pin.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace cbor {
 class Value;

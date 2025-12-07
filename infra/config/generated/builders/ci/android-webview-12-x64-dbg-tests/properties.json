@@ -10,15 +10,18 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-android-archive",
               "builder_group": "chromium.android",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
-                "config": "x64_builder_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
                 "build_config": "Debug",
-                "config": "android",
+                "config": "main_builder",
+                "target_arch": "intel",
                 "target_bits": 64,
                 "target_platform": "android"
               },
@@ -37,15 +40,18 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-android-archive",
               "builder_group": "chromium.android.fyi",
               "execution_mode": "TEST",
               "legacy_android_config": {
-                "config": "x64_builder_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
                 "build_config": "Debug",
-                "config": "android",
+                "config": "main_builder",
+                "target_arch": "intel",
                 "target_bits": 64,
                 "target_platform": "android"
               },
@@ -76,7 +82,8 @@
           "builder": "android-webview-12-x64-dbg",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-webview-12-x64-dbg-tests/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

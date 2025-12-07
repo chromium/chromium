@@ -12,10 +12,11 @@
 
 #include "base/base64url.h"
 #include "base/containers/span.h"
+#include "base/strings/string_view_util.h"
 #include "components/gcm_driver/common/gcm_message.h"
 #include "components/gcm_driver/crypto/gcm_message_cryptographer.h"
 #include "components/gcm_driver/crypto/p256_key_util.h"
-#include "crypto/ec_private_key.h"
+#include "crypto/keypair.h"
 #include "crypto/random.h"
 
 namespace gcm {
@@ -27,13 +28,11 @@ bool CreateEncryptedPayloadForTesting(std::string_view payload,
   DCHECK(message);
 
   // Create an ephemeral key for the sender.
-  std::unique_ptr<crypto::ECPrivateKey> key = crypto::ECPrivateKey::Create();
-  if (!key)
-    return false;
+  auto key = crypto::keypair::PrivateKey::GenerateEcP256();
 
   std::string shared_secret;
   // Calculate the shared secret between the sender and its peer.
-  if (!ComputeSharedP256Secret(*key, peer_public_key, &shared_secret)) {
+  if (!ComputeSharedP256Secret(key, peer_public_key, &shared_secret)) {
     return false;
   }
 
@@ -47,12 +46,10 @@ bool CreateEncryptedPayloadForTesting(std::string_view payload,
   size_t record_size;
   std::string ciphertext;
 
-  std::string public_key;
-  if (!GetRawPublicKey(*key, &public_key))
-    return false;
-  if (!cryptographer.Encrypt(peer_public_key, public_key, shared_secret,
-                             auth_secret, salt, payload, &record_size,
-                             &ciphertext)) {
+  std::vector<uint8_t> public_key = key.ToUncompressedX962Point();
+  if (!cryptographer.Encrypt(peer_public_key, base::as_string_view(public_key),
+                             shared_secret, auth_secret, salt, payload,
+                             &record_size, &ciphertext)) {
     return false;
   }
 

@@ -19,7 +19,7 @@
 #include "gpu/vulkan/vulkan_util.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/gpu_fence.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/ozone/platform/x11/vulkan_surface_x11.h"
 
@@ -114,15 +114,13 @@ VulkanImplementationX11::GetOptionalDeviceExtensions() {
 }
 
 VkFence VulkanImplementationX11::CreateVkFenceForGpuFence(VkDevice vk_device) {
-  NOTREACHED_IN_MIGRATION();
-  return VK_NULL_HANDLE;
+  NOTREACHED();
 }
 
 std::unique_ptr<gfx::GpuFence> VulkanImplementationX11::ExportVkFenceToGpuFence(
     VkDevice vk_device,
     VkFence vk_fence) {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 VkExternalSemaphoreHandleTypeFlagBits
@@ -151,7 +149,7 @@ VulkanImplementationX11::CreateImageFromGpuMemoryHandle(
   constexpr auto kUsage =
       VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT |
       VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
-  auto tiling = gmb_handle.native_pixmap_handle.modifier ==
+  auto tiling = gmb_handle.native_pixmap_handle().modifier ==
                         gfx::NativePixmapHandle::kNoModifier
                     ? VK_IMAGE_TILING_OPTIMAL
                     : VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT;

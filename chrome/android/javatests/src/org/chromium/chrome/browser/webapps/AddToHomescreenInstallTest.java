@@ -27,16 +27,17 @@ import org.chromium.chrome.browser.banners.AppMenuVerbiage;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.TabLoadObserver;
 import org.chromium.components.webapps.AddToHomescreenCoordinator;
 import org.chromium.components.webapps.AddToHomescreenDialogView;
 import org.chromium.components.webapps.AddToHomescreenProperties;
 import org.chromium.components.webapps.AddToHomescreenViewDelegate;
-import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.AppType;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.net.test.EmbeddedTestServerRule;
+import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.DeviceRestriction;
@@ -51,15 +52,17 @@ import org.chromium.ui.test.util.DeviceRestriction;
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 public class AddToHomescreenInstallTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-
-    @Rule public EmbeddedTestServerRule mTestServerRule = new EmbeddedTestServerRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final String MANIFEST_TEST_PAGE_PATH =
             "/chrome/test/data/banners/manifest_test_page.html";
     private static final String MANIFEST_TEST_PAGE_TITLE = "Web app banner test page";
 
     private static final String INSTALL_PATH_HISTOGRAM_NAME = "WebApk.Install.PathToInstall";
+
+    private EmbeddedTestServer mServer;
+    private WebPageStation mPage;
 
     /**
      * Test TestAddToHomescreenCoordinator subclass which mocks showing the add-to-homescreen view
@@ -69,7 +72,7 @@ public class AddToHomescreenInstallTest {
         private String mTitle;
 
         // The type of of dialog expected to show (at the time of submission).
-        private @AppType int mExpectedDialogType;
+        private final @AppType int mExpectedDialogType;
 
         TestAddToHomescreenCoordinator(
                 WebContents webContents,
@@ -84,14 +87,9 @@ public class AddToHomescreenInstallTest {
         }
 
         @Override
-        protected AddToHomescreenDialogView initView(
-                AppBannerManager.InstallStringPair installStrings,
-                AddToHomescreenViewDelegate delegate) {
+        protected AddToHomescreenDialogView initView(AddToHomescreenViewDelegate delegate) {
             return new AddToHomescreenDialogView(
-                    getContextForTests(),
-                    getModalDialogManagerForTests(),
-                    installStrings,
-                    delegate) {
+                    getContextForTests(), getModalDialogManagerForTests(), delegate) {
                 @Override
                 protected void setTitle(String title) {
                     if (TextUtils.isEmpty(mTitle)) {
@@ -106,7 +104,7 @@ public class AddToHomescreenInstallTest {
                             getPropertyModelForTesting().get(AddToHomescreenProperties.TYPE));
 
                     // Submit the dialog.
-                    new Handler().post(() -> mDelegate.onAddToHomescreen(mTitle, AppType.WEBAPK));
+                    new Handler().post(() -> mDelegate.onAddToHomescreen(mTitle));
                 }
             };
         }
@@ -118,9 +116,10 @@ public class AddToHomescreenInstallTest {
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mServer = mActivityTestRule.getTestServer();
+        mPage = mActivityTestRule.startOnBlankPage();
         mActivity = mActivityTestRule.getActivity();
-        mTab = mActivity.getActivityTab();
+        mTab = mActivityTestRule.getActivityTab();
         mInstallHistogramsWatcher =
                 HistogramWatcher.newSingleRecordWatcher("Webapp.Install.InstallEvent", 0);
     }
@@ -142,9 +141,7 @@ public class AddToHomescreenInstallTest {
                                             mActivity.getModalDialogManager(),
                                             title,
                                             expectedDialogType)
-                                    .showForAppMenu(
-                                            AppMenuVerbiage.APP_MENU_OPTION_INSTALL,
-                                            /* universalInstall= */ false);
+                                    .showForAppMenu(AppMenuVerbiage.APP_MENU_OPTION_INSTALL);
                     Assert.assertEquals(expectAdded, started);
                 });
 
@@ -162,9 +159,7 @@ public class AddToHomescreenInstallTest {
                 HistogramWatcher.newSingleRecordWatcher(INSTALL_PATH_HISTOGRAM_NAME, 2);
 
         // Test the baseline of no adaptive icon.
-        loadUrl(
-                mTestServerRule.getServer().getURL(MANIFEST_TEST_PAGE_PATH),
-                MANIFEST_TEST_PAGE_TITLE);
+        loadUrl(mServer.getURL(MANIFEST_TEST_PAGE_PATH), MANIFEST_TEST_PAGE_TITLE);
         installApp(mTab, "", /* expectAdded= */ true, /* expectedDialogType= */ AppType.WEBAPK);
 
         histogram.assertExpected();

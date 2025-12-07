@@ -6,15 +6,22 @@
 
 #include <cstdint>
 #include <memory>
+#include <utility>
 
+#include "ash/frame/frame_view_ash.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/mahi_panel_view.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
 #include "ash/system/mahi/refresh_banner_view.h"
+#include "ash/wm/window_properties.h"
 #include "ash/wm/work_area_insets.h"
+#include "base/feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/window.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/insets.h"
@@ -23,10 +30,14 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
+#include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
+#include "ui/views/window/frame_view.h"
 
 namespace ash {
 
@@ -53,9 +64,8 @@ int CalculateAvailableSpaceOnBottom(const gfx::Rect& screen_work_area,
 }
 
 gfx::Rect CalculateAnimationStartBounds(const gfx::Rect& mahi_menu_bounds) {
-  const gfx::Rect screen_work_area = display::Screen::GetScreen()
-                                         ->GetDisplayMatching(mahi_menu_bounds)
-                                         .work_area();
+  const gfx::Rect screen_work_area =
+      display::Screen::Get()->GetDisplayMatching(mahi_menu_bounds).work_area();
 
   return gfx::Rect(
       IsSpaceAvailableOnRight(screen_work_area, mahi_menu_bounds)
@@ -68,9 +78,8 @@ gfx::Rect CalculateAnimationStartBounds(const gfx::Rect& mahi_menu_bounds) {
 }
 
 gfx::Rect CalculateInitialWidgetBounds(const gfx::Rect& mahi_menu_bounds) {
-  const gfx::Rect screen_work_area = display::Screen::GetScreen()
-                                         ->GetDisplayMatching(mahi_menu_bounds)
-                                         .work_area();
+  const gfx::Rect screen_work_area =
+      display::Screen::Get()->GetDisplayMatching(mahi_menu_bounds).work_area();
 
   int available_space_on_bottom =
       CalculateAvailableSpaceOnBottom(screen_work_area, mahi_menu_bounds);
@@ -90,29 +99,24 @@ gfx::Rect CalculateInitialWidgetBounds(const gfx::Rect& mahi_menu_bounds) {
       mahi_constants::kPanelDefaultWidth, mahi_constants::kPanelDefaultHeight);
 }
 
+std::unique_ptr<views::BoxLayoutView> CreateMahiPanelContentsView() {
+  return views::Builder<views::BoxLayoutView>()
+      // We need to set a negative value for between child spacing here
+      // because we need the `RefreshBannerView` to overlap with the
+      // `MahiPanelView`.
+      .SetBetweenChildSpacing(-mahi_constants::kRefreshBannerStackDepth)
+      .SetOrientation(views::BoxLayout::Orientation::kVertical)
+      .Build();
+}
+
 }  // namespace
 
 MahiPanelWidget::MahiPanelWidget(InitParams params,
+                                 RefreshBannerView* refresh_view,
                                  MahiUiController* ui_controller)
-    : views::Widget(std::move(params)) {
-  auto* contents_view = SetContentsView(
-      views::Builder<views::BoxLayoutView>()
-          // We need to set a negative value for between child spacing here
-          // because we need the `RefreshBannerView` to overlap with the
-          // `MahiPanelView`.
-          .SetBetweenChildSpacing(-mahi_constants::kRefreshBannerStackDepth)
-          .SetOrientation(views::BoxLayout::Orientation::kVertical)
-          .Build());
-
-  refresh_view_ = contents_view->AddChildView(
-      std::make_unique<RefreshBannerView>(ui_controller));
+    : views::Widget(std::move(params)), refresh_view_(refresh_view) {
+  CHECK(refresh_view_);
   refresh_view_observation_.Observe(refresh_view_);
-
-  auto* panel_view = contents_view->AddChildView(
-      std::make_unique<MahiPanelView>(ui_controller));
-
-  // Make sure the `MahiPanelView` is sized to fill up the available space.
-  contents_view->SetFlexForView(panel_view, 1.0);
   shelf_observation_.Observe(Shelf::ForWindow(Shell::GetPrimaryRootWindow()));
 }
 
@@ -127,8 +131,51 @@ views::UniqueWidgetPtr MahiPanelWidget::CreateAndShowPanelWidget(
 
   views::Widget::InitParams params(
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
-      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+      base::FeatureList::IsEnabled(chromeos::features::kMahiPanelResizable)
+          ? views::Widget::InitParams::TYPE_WINDOW
+          : views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.name = GetName();
+
+  std::unique_ptr<views::BoxLayoutView> contents_view =
+      CreateMahiPanelContentsView();
+
+  auto* refresh_view = contents_view->AddChildView(
+      std::make_unique<RefreshBannerView>(ui_controller));
+
+  auto* panel_view = contents_view->AddChildView(
+      std::make_unique<MahiPanelView>(ui_controller));
+  // Make sure the `MahiPanelView` is sized to fill up the available space.
+  contents_view->SetFlexForView(panel_view, 1.0);
+
+  // If resizing is enabled, create a custom delegate and set the contents view
+  // so that it can be set on the client view. Else the contents view will be
+  // set on the widget directly as there will be no client view.
+  if (base::FeatureList::IsEnabled(chromeos::features::kMahiPanelResizable)) {
+    auto delegate = std::make_unique<views::WidgetDelegate>();
+
+    // Set to true so that the delegate deletes itself.
+    delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
+    delegate->SetCanResize(true);
+    delegate->SetContentsView(std::move(contents_view));
+    delegate->SetFrameViewFactory(base::BindRepeating(
+        [](views::Widget* widget) -> std::unique_ptr<views::FrameView> {
+          return std::make_unique<FrameViewAsh>(widget);
+        }));
+
+    params.delegate = delegate.release();
+    params.remove_standard_frame = true;
+
+    // If resizable, disable the resize shadow on the window border.
+    params.init_properties_container.SetProperty(kDisableResizeShadow, true);
+
+    params.init_properties_container.SetProperty(
+        kWindowResizeHistogramName,
+        new std::string(mahi_constants::kMahiPanelResizingHistogram));
+    params.init_properties_container.SetProperty(
+        kWindowResizeMaxLatencyHistogramName,
+        new std::string(mahi_constants::kMahiPanelResizingMaxLatencyHistogram));
+  }
+
   // `SystemModalContainer` can travel across displays, is not automatically
   // resizable on limited screen size and stays on top on full-screen.
   params.parent =
@@ -138,9 +185,16 @@ views::UniqueWidgetPtr MahiPanelWidget::CreateAndShowPanelWidget(
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.layer_type = ui::LAYER_NOT_DRAWN;
 
-  views::UniqueWidgetPtr widget =
-      std::make_unique<MahiPanelWidget>(std::move(params), ui_controller);
+  views::UniqueWidgetPtr widget = std::make_unique<MahiPanelWidget>(
+      std::move(params), refresh_view, ui_controller);
+
+  // Set the contents view of the widget directly if non-resizable.
+  if (!base::FeatureList::IsEnabled(chromeos::features::kMahiPanelResizable)) {
+    widget->SetContentsView(std::move(contents_view));
+  }
   widget->SetBounds(CalculateInitialWidgetBounds(mahi_menu_bounds));
+  widget->widget_delegate()->SetAccessibleTitle(
+      l10n_util::GetStringUTF16(IDS_ASH_MAHI_PANEL_TITLE));
 
   widget->Show();
 
@@ -154,6 +208,16 @@ views::UniqueWidgetPtr MahiPanelWidget::CreateAndShowPanelWidget(
 // static
 const char* MahiPanelWidget::GetName() {
   return kWidgetName;
+}
+
+gfx::Size MahiPanelWidget::GetMinimumSize() const {
+  return gfx::Size(mahi_constants::kPanelDefaultWidth,
+                   mahi_constants::kPanelDefaultHeight);
+}
+
+gfx::Size MahiPanelWidget::GetMaximumSize() const {
+  return gfx::Size(mahi_constants::kPanelMaximumWidth,
+                   mahi_constants::kPanelMaximumHeight);
 }
 
 void MahiPanelWidget::OnShelfWorkAreaInsetsChanged() {
@@ -174,7 +238,8 @@ void MahiPanelWidget::OnShelfWorkAreaInsetsChanged() {
 }
 
 void MahiPanelWidget::OnViewVisibilityChanged(views::View* observed_view,
-                                              views::View* starting_view) {
+                                              views::View* starting_view,
+                                              bool visible) {
   CHECK_EQ(observed_view, refresh_view_);
 
   if (is_refresh_view_visible_ == observed_view->GetVisible()) {

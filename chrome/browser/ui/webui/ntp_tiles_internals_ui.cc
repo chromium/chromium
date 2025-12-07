@@ -17,7 +17,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/url_constants.h"
-#include "components/grit/dev_ui_components_resources.h"
+#include "components/grit/ntp_tiles_internals_resources.h"
+#include "components/grit/ntp_tiles_internals_resources_map.h"
 #include "components/history/core/browser/top_sites.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "components/ntp_tiles/features.h"
@@ -30,8 +31,15 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "ui/webui/webui_util.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/feature_list.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "components/prefs/pref_service.h"
 #endif
@@ -83,12 +91,28 @@ bool ChromeNTPTilesInternalsMessageHandlerClient::SupportsNTPTiles() {
 
 std::unique_ptr<ntp_tiles::MostVisitedSites>
 ChromeNTPTilesInternalsMessageHandlerClient::MakeMostVisitedSites() {
-  auto most_visited_sites = ChromeMostVisitedSitesFactory::NewForProfile(
-      Profile::FromWebUI(web_ui()));
-  // Custom links only exist on Desktop.
-#if !BUILDFLAG(IS_ANDROID)
-  most_visited_sites->EnableCustomLinks(
-      !GetPrefs()->GetBoolean(ntp_prefs::kNtpUseMostVisitedTiles));
+  Profile* profile = Profile::FromWebUI(web_ui());
+  auto most_visited_sites =
+      ChromeMostVisitedSitesFactory::NewForProfile(profile);
+#if BUILDFLAG(IS_ANDROID)
+  // Custom links on Android: ntp_prefs::kNtpCustomLinksVisible is
+  // unavailable. Use feature list instead.
+  most_visited_sites->EnableTileTypes(
+      ntp_tiles::MostVisitedSites::EnableTileTypesOptions()
+          .with_top_sites(true)
+          .with_custom_links(base::FeatureList::IsEnabled(
+              chrome::android::kMostVisitedTilesCustomization)));
+#else
+  // Custom links on Desktop.
+  auto enabled_types = GetEnabledTileTypes(profile);
+  most_visited_sites->EnableTileTypes(
+      ntp_tiles::MostVisitedSites::EnableTileTypesOptions()
+          .with_top_sites(
+              base::Contains(enabled_types, ntp_tiles::TileType::kTopSites))
+          .with_custom_links(
+              base::Contains(enabled_types, ntp_tiles::TileType::kCustomLinks))
+          .with_enterprise_shortcuts(base::Contains(
+              enabled_types, ntp_tiles::TileType::kEnterpriseShortcuts)));
 #endif
   return most_visited_sites;
 }
@@ -112,17 +136,17 @@ void ChromeNTPTilesInternalsMessageHandlerClient::CallJavascriptFunctionSpan(
 void CreateAndAddNTPTilesInternalsHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUINTPTilesInternalsHost);
+  webui::SetupWebUIDataSource(
+      source,
+      base::span<const webui::ResourcePath>(kNtpTilesInternalsResources),
+      IDR_NTP_TILES_INTERNALS_NTP_TILES_INTERNALS_HTML);
+
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources 'self' 'unsafe-eval';");
+      "script-src chrome://resources 'self';");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types jstemplate;");
-
-  source->AddResourcePath("ntp_tiles_internals.js", IDR_NTP_TILES_INTERNALS_JS);
-  source->AddResourcePath("ntp_tiles_internals.css",
-                          IDR_NTP_TILES_INTERNALS_CSS);
-  source->SetDefaultResource(IDR_NTP_TILES_INTERNALS_HTML);
+      "trusted-types lit-html-desktop;");
 }
 
 }  // namespace
@@ -137,4 +161,4 @@ NTPTilesInternalsUI::NTPTilesInternalsUI(content::WebUI* web_ui)
               profile, ServiceAccessType::EXPLICIT_ACCESS)));
 }
 
-NTPTilesInternalsUI::~NTPTilesInternalsUI() {}
+NTPTilesInternalsUI::~NTPTilesInternalsUI() = default;

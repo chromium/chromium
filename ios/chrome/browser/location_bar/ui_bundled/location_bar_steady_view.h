@@ -7,7 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/elements/custom_highlight_button.h"
+#include "ios/chrome/browser/location_bar/ui_bundled/location_bar_placeholder_type.h"
+
+@protocol BadgeViewVisibilityDelegate;
+@protocol IncognitoBadgeViewVisibilityDelegate;
+@protocol PageActionMenuCommands;
+@protocol ReaderModeChipVisibilityDelegate;
+@protocol ContextualPanelEntrypointVisibilityDelegate;
+@class LocationBarBadgesContainerView;
 
 // A color scheme used for the steady view elements.
 @interface LocationBarSteadyViewColorScheme : NSObject
@@ -39,10 +46,6 @@
 // Sets the location label's text and styles it as if it were placeholder text.
 - (void)setLocationLabelPlaceholderText:(NSString*)string;
 
-// Displays the location badge view if `display` is YES, hides it if
-// `display` is NO. Will animate change if `animated` is YES.
-- (void)displayBadgeView:(BOOL)display animated:(BOOL)animated;
-
 // Reorients the badgeView's position depending on FullScreen mode.
 - (void)setFullScreenCollapsedMode:(BOOL)isFullScreenCollapsed;
 
@@ -61,21 +64,53 @@
 // display a label, momentarily using significant portion of the location bar.
 - (void)setLocationBarLabelCenteredBetweenContent:(BOOL)centered;
 
+// Sets the view displaying incognito badge in the leading corner of the view.
+- (void)setIncognitoBadgeView:(UIView*)incognitoBadgeView;
+
+// Sets the view displaying badges.
+- (void)setBadgeView:(UIView*)badgeView;
+
+// Sets the view displaying the Contextual Panel's entrypoint.
+- (void)setContextualPanelEntrypointView:(UIView*)contextualPanelEntrypointView;
+
+// Sets the view displaying the Reader Mode chip.
+- (void)setReaderModeChipView:(UIView*)readerModeChipView;
+
+// Returns the contextual panel entrypoint visibility delegate;
+- (id<ContextualPanelEntrypointVisibilityDelegate>)
+    contextualEntrypointVisibilityDelegate;
+
+// Returns the reader mode chip visibility delegate;
+- (id<ReaderModeChipVisibilityDelegate>)readerModeChipVisibilityDelegate;
+
+// Returns the badge view visibility delegate.
+- (id<BadgeViewVisibilityDelegate>)badgeViewVisibilityDelegate;
+
+// Returns the incognito badge view visibility delegate.
+- (id<IncognitoBadgeViewVisibilityDelegate>)
+    incognitoBadgeViewVisibilityDelegate;
+
+// Set the placeholder view when there is no badge to display.
+- (void)setPlaceholderView:(UIView*)placeholderView
+                      type:(LocationBarPlaceholderType)placeholderType;
+
 // The tappable button representing the location bar.
 @property(nonatomic, strong) UIButton* locationButton;
 // The label displaying the current location URL.
 @property(nonatomic, strong) UILabel* locationLabel;
-// The view displaying badges in the leading corner of the view.
-// TODO(crbug.com/40639170): Pass into init as parameter.
-@property(nonatomic, strong) UIView* badgeView;
-// The view displaying the Contextual Panel's entrypoint.
-@property(nonatomic, strong) UIView* contextualPanelEntrypointView;
 // The button displayed in the trailing corner of the view, i.e. share button.
-@property(nonatomic, strong) CustomHighlightableButton* trailingButton;
+@property(nonatomic, strong) UIButton* trailingButton;
 // The string that describes the current security level. Used for a11y.
 @property(nonatomic, copy) NSString* securityLevelAccessibilityString;
 // Current in-use color scheme.
 @property(nonatomic, strong) LocationBarSteadyViewColorScheme* colorScheme;
+// The view containing the infobar badge and contextual panel entrypoint.
+@property(nonatomic, strong)
+    LocationBarBadgesContainerView* badgesContainerView;
+// The page action menu handler.
+@property(nonatomic, weak) id<PageActionMenuCommands> pageActionMenuHandler;
+// Whether the browser is in incognito mode.
+@property(nonatomic, assign, getter=isIncognito) BOOL incognito;
 
 @end
 

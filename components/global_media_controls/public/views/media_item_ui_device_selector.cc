@@ -4,6 +4,7 @@
 
 #include "components/global_media_controls/public/views/media_item_ui_device_selector.h"
 
+#include "base/notimplemented.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace global_media_controls {

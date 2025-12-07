@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gl/hdr_metadata_helper_win.h"
 
+#include "base/compiler_specific.h"
 #include "ui/gl/gpu_switching_manager.h"
 
 namespace {
@@ -120,13 +116,16 @@ DXGI_HDR_METADATA_HDR10 HDRMetadataHelperWin::HDRMetadataToDXGI(
       hdr_metadata.smpte_st_2086.value_or(gfx::HdrMetadataSmpteSt2086());
   const auto& primaries = smpte_st_2086.primaries;
   metadata.RedPrimary[0] = primaries.fRX * kPrimariesFixedPoint;
-  metadata.RedPrimary[1] = primaries.fRY * kPrimariesFixedPoint;
+  // SAFETY: required from Windows API.
+  UNSAFE_BUFFERS(metadata.RedPrimary[1]) = primaries.fRY * kPrimariesFixedPoint;
   metadata.GreenPrimary[0] = primaries.fGX * kPrimariesFixedPoint;
-  metadata.GreenPrimary[1] = primaries.fGY * kPrimariesFixedPoint;
+  UNSAFE_BUFFERS(metadata.GreenPrimary[1]) =
+      primaries.fGY * kPrimariesFixedPoint;
   metadata.BluePrimary[0] = primaries.fBX * kPrimariesFixedPoint;
-  metadata.BluePrimary[1] = primaries.fBY * kPrimariesFixedPoint;
+  UNSAFE_BUFFERS(metadata.BluePrimary[1]) =
+      primaries.fBY * kPrimariesFixedPoint;
   metadata.WhitePoint[0] = primaries.fWX * kPrimariesFixedPoint;
-  metadata.WhitePoint[1] = primaries.fWY * kPrimariesFixedPoint;
+  UNSAFE_BUFFERS(metadata.WhitePoint[1]) = primaries.fWY * kPrimariesFixedPoint;
   metadata.MaxMasteringLuminance = smpte_st_2086.luminance_max;
   metadata.MinMasteringLuminance =
       smpte_st_2086.luminance_min * kMinLuminanceFixedPoint;
@@ -145,16 +144,21 @@ DXGI_HDR_METADATA_HDR10 HDRMetadataHelperWin::OutputDESC1ToDXGI(
 
   auto& primary_r = desc1.RedPrimary;
   metadata.RedPrimary[0] = primary_r[0] * kPrimariesFixedPoint;
-  metadata.RedPrimary[1] = primary_r[1] * kPrimariesFixedPoint;
+  // SAFETY: required from Windows API.
+  UNSAFE_BUFFERS(metadata.RedPrimary[1]) =
+      UNSAFE_BUFFERS(primary_r[1]) * kPrimariesFixedPoint;
   auto& primary_g = desc1.GreenPrimary;
   metadata.GreenPrimary[0] = primary_g[0] * kPrimariesFixedPoint;
-  metadata.GreenPrimary[1] = primary_g[1] * kPrimariesFixedPoint;
+  UNSAFE_BUFFERS(metadata.GreenPrimary[1]) =
+      UNSAFE_BUFFERS(primary_g[1]) * kPrimariesFixedPoint;
   auto& primary_b = desc1.BluePrimary;
   metadata.BluePrimary[0] = primary_b[0] * kPrimariesFixedPoint;
-  metadata.BluePrimary[1] = primary_b[1] * kPrimariesFixedPoint;
+  UNSAFE_BUFFERS(metadata.BluePrimary[1]) =
+      UNSAFE_BUFFERS(primary_b[1]) * kPrimariesFixedPoint;
   auto& white_point = desc1.WhitePoint;
   metadata.WhitePoint[0] = white_point[0] * kPrimariesFixedPoint;
-  metadata.WhitePoint[1] = white_point[1] * kPrimariesFixedPoint;
+  UNSAFE_BUFFERS(metadata.WhitePoint[1]) =
+      UNSAFE_BUFFERS(white_point[1]) * kPrimariesFixedPoint;
   metadata.MaxMasteringLuminance = desc1.MaxLuminance;
   metadata.MinMasteringLuminance = desc1.MinLuminance * kMinLuminanceFixedPoint;
   // It's unclear how to set these properly, so this is a guess.

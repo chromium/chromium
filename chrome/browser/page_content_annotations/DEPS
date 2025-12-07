@@ -1,0 +1,10 @@
+specific_include_rules = {
+  "multi_source_page_context_fetcher\.*": [
+    "+components/paint_preview/common",
+    "+pdf/mojom",
+  ],
+  "page_content_screenshot_service\.*": [
+    "+components/paint_preview/common",
+    "+components/paint_preview/public",
+  ],
+}

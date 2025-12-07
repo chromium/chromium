@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "printing/printing_context_system_dialog_win.h"
 
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/compiler_specific.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "printing/backend/win_helper.h"
@@ -24,7 +20,8 @@ namespace printing {
 
 HWND PrintingContextSystemDialogWin::GetWindow() {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  if (process_behavior() == ProcessBehavior::kOopEnabledPerformSystemCalls) {
+  if (out_of_process_behavior() ==
+      OutOfProcessBehavior::kEnabledPerformSystemCalls) {
     // Delving through the view tree to get to root window happens separately
     // in the browser process (i.e., not in `PrintingContextSystemDialogWin`)
     // before sending the identified window owner to the Print Backend service.
@@ -41,8 +38,8 @@ HWND PrintingContextSystemDialogWin::GetWindow() {
 
 PrintingContextSystemDialogWin::PrintingContextSystemDialogWin(
     Delegate* delegate,
-    ProcessBehavior process_behavior)
-    : PrintingContextWin(delegate, process_behavior) {}
+    OutOfProcessBehavior out_of_process_behavior)
+    : PrintingContextWin(delegate, out_of_process_behavior) {}
 
 PrintingContextSystemDialogWin::~PrintingContextSystemDialogWin() {}
 
@@ -74,11 +71,10 @@ void PrintingContextSystemDialogWin::AskUserForSettings(
   if (!has_selection)
     dialog_options.Flags |= PD_NOSELECTION;
 
-  PRINTPAGERANGE ranges[32];
+  PRINTPAGERANGE ranges[32] = {};
   dialog_options.nStartPage = START_PAGE_GENERAL;
   if (max_pages) {
     // Default initialize to print all the pages.
-    memset(ranges, 0, sizeof(ranges));
     ranges[0].nFromPage = 1;
     ranges[0].nToPage = max_pages;
     dialog_options.nPageRanges = 1;
@@ -147,13 +143,15 @@ bool PrintingContextSystemDialogWin::InitializeSettingsWithRanges(
   if (!selection_only) {
     // Convert the PRINTPAGERANGE array to a PrintSettings::PageRanges vector.
     ranges_vector.reserve(number_ranges);
-    for (int i = 0; i < number_ranges; ++i) {
-      PageRange range;
-      // Transfer from 1-based to 0-based.
-      range.from = ranges[i].nFromPage - 1;
-      range.to = ranges[i].nToPage - 1;
-      ranges_vector.push_back(range);
-    }
+    UNSAFE_TODO({
+      for (int i = 0; i < number_ranges; ++i) {
+        PageRange range;
+        // Transfer from 1-based to 0-based.
+        range.from = ranges[i].nFromPage - 1;
+        range.to = ranges[i].nToPage - 1;
+        ranges_vector.push_back(range);
+      }
+    });
   }
 
   settings_->set_ranges(ranges_vector);
@@ -187,8 +185,10 @@ mojom::ResultCode PrintingContextSystemDialogWin::ParseDialogResultEx(
           reinterpret_cast<DEVNAMES*>(GlobalLock(dialog_options.hDevNames));
       DCHECK(dev_names);
       if (dev_names) {
-        device_name = reinterpret_cast<const wchar_t*>(dev_names) +
-                      dev_names->wDeviceOffset;
+        UNSAFE_TODO({
+          device_name = reinterpret_cast<const wchar_t*>(dev_names) +
+                        dev_names->wDeviceOffset;
+        });
         GlobalUnlock(dialog_options.hDevNames);
       }
     }

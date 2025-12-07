@@ -2,26 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/vr/openxr/android/openxr_depth_sensor_android.h"
 
 #include <array>
+#include <concepts>
 #include <memory>
 #include <set>
 
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
+#include "device/vr/public/cpp/features.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
 #include "third_party/openxr/dev/xr_android.h"
@@ -147,7 +146,15 @@ inline size_t buffer_location(size_t col, size_t row, size_t row_size) {
 
 template <typename T>
 inline void WriteToSpanStart(base::span<uint8_t> output, T val) {
-  output.first<sizeof(T)>().copy_from(base::byte_span_from_ref(val));
+  base::span<const uint8_t> val_span;
+  if constexpr (std::floating_point<T>) {
+    // Floating point types do not have unique object representations, but this
+    // code is just serializing them, so allow it.
+    val_span = base::byte_span_from_ref(base::allow_nonunique_obj, val);
+  } else {
+    val_span = base::byte_span_from_ref(val);
+  }
+  output.first<sizeof(T)>().copy_from(val_span);
 }
 
 // Helper function to copy depth data on the CPU. This expects to receive the
@@ -163,18 +170,31 @@ void CopyDepthData(base::span<const float> input,
                    gfx::Size image_size,
                    XrDepthViewANDROID depth_view,
                    const mojom::XRViewPtr& view,
+                   bool reproject_depth_view,
                    FunctionType&& conversion_fn) {
+  TRACE_EVENT0("xr", "CopyDepthData");
   // We should've handled an invalid image_size before getting to this point.
   size_t num_pixels;
   CHECK(image_size.GetCheckedArea().AssignIfValid(&num_pixels));
   CHECK_EQ(input.size(), num_pixels);
   CHECK_EQ(output.size_bytes(), num_pixels * sizeof(T));
 
+  // If we don't need to reproject, we just need to copy and convert each
+  // element in the order their currently in.
+  if (!reproject_depth_view) {
+    for (const auto& val : input) {
+      WriteToSpanStart(output, conversion_fn(val));
+      output = output.subspan(sizeof(T));
+    }
+    return;
+  }
+
+  // Otherwise, we need to reproject the depth data to align with the XRView.
   // Extract width/height for readability (and to use size_t).
   const size_t width = image_size.width();
   const size_t height = image_size.height();
   const gfx::Transform view_from_eye_screen =
-      GetScreenFromCamera(view->field_of_view).GetCheckedInverse();
+      GetScreenFromCamera(view->geometry->field_of_view).GetCheckedInverse();
   const gfx::Transform depth_screen_from_depth =
       GetScreenFromCamera(XrFovToMojomFov(depth_view.fov));
 
@@ -185,7 +205,7 @@ void CopyDepthData(base::span<const float> input,
   const auto depth_from_mojom =
       XrPoseToGfxTransform(depth_view.pose).GetCheckedInverse() *
       local_from_mojom;
-  const auto& mojom_from_view = view->mojo_from_view;
+  const auto& mojom_from_view = view->geometry->mojo_from_view;
   const gfx::Transform depth_screen_from_eye_screen =
       depth_screen_from_depth * depth_from_mojom * mojom_from_view *
       view_from_eye_screen;
@@ -193,15 +213,18 @@ void CopyDepthData(base::span<const float> input,
     for (size_t x = 0; x < width; x++) {
       // Assign a z value of 1 to convert from cartesian (screen) coordinates to
       // a homogeneous Euclidean (2D) coordinate space.
+      // Add a negative to the y coordinate because y=0 corresponds to the top
+      // of the image, i.e. 1 in clip space.
       const gfx::Point3F eye_screen_clip_coord{
-          ToClipSpace(ToTexCoord(x, width)), ToClipSpace(ToTexCoord(y, height)),
-          1};
+          ToClipSpace(ToTexCoord(x, width)),
+          -ToClipSpace(ToTexCoord(y, height)), 1};
       const gfx::Point3F depth_screen_clip_coord =
           depth_screen_from_eye_screen.MapPoint(eye_screen_clip_coord);
 
+      // Revert the -y to sample into the OpenXR depth texture.
       const gfx::PointF depth_screen_texture_coord(
           FromClipSpace(depth_screen_clip_coord.x()),
-          FromClipSpace(depth_screen_clip_coord.y()));
+          FromClipSpace(-depth_screen_clip_coord.y()));
 
       // If x or y is less than 0 it's out of bounds and we should ignore it.
       // We'll convert back to whole buffer coordinates before checking the
@@ -291,6 +314,22 @@ OpenXrDepthSensorAndroid::OpenXrDepthSensorAndroid(
     } else {
       depth_config_->depth_data_format = mojom::XRDepthDataFormat::kFloat32;
     }
+
+    // We can support all of the current depth types, so just grab the first if
+    // they were specified. If none were, use `raw` unless overridden by the
+    // feature flag. Note that this also allows us to simply use if/else when
+    // parsing the depth_type in this file.
+    static_assert(static_cast<int>(mojom::XRDepthType::kMaxValue) == 2);
+    if (!depth_options.depth_type_request.empty()) {
+      depth_config_->depth_type = depth_options.depth_type_request[0];
+    } else {
+      depth_config_->depth_type =
+          base::FeatureList::IsEnabled(features::kOpenXrAndroidSmoothDepth)
+              ? mojom::XRDepthType::kSmooth
+              : mojom::XRDepthType::kRaw;
+    }
+
+    match_depth_view_ = depth_options.match_depth_view;
   } else {
     DVLOG(1) << __func__ << " Cannot support depth";
   }
@@ -298,15 +337,96 @@ OpenXrDepthSensorAndroid::OpenXrDepthSensorAndroid(
 
 OpenXrDepthSensorAndroid::~OpenXrDepthSensorAndroid() {
   DVLOG(1) << __func__;
-  if (swapchain_ != XR_NULL_HANDLE) {
+  if (HasSwapchain()) {
     // In the (likely) event that the session has been destroyed before us, this
     // will fail. So just ignore the result returned here.
-    extension_helper_->ExtensionMethods().xrDestroyDepthSwapchainANDROID(
-        swapchain_);
+    DestroySwapchain();
+  }
+}
 
-    swapchain_ = XR_NULL_HANDLE;
+bool OpenXrDepthSensorAndroid::HasSwapchain() const {
+  return swapchain_ != XR_NULL_HANDLE;
+}
+
+void OpenXrDepthSensorAndroid::SetDepthActive(bool depth_active) {
+  DVLOG(1) << __func__ << "depth_should_be_active_=" << depth_should_be_active_
+           << " depth_active=" << depth_active
+           << " HasSwapchain()=" << HasSwapchain();
+  depth_should_be_active_ = depth_active;
+
+  // Whether or not we have a swapchain is the actual measure of if we are
+  // active or not.
+  if (depth_should_be_active_ == HasSwapchain()) {
+    return;
   }
 
+  if (depth_should_be_active_) {
+    CreateSwapchain();
+  } else {
+    DestroySwapchain();
+  }
+
+  if (depth_should_be_active_ != HasSwapchain()) {
+    DLOG(WARNING) << __func__ << " failed.";
+  }
+}
+
+XrResult OpenXrDepthSensorAndroid::CreateSwapchain() {
+  DVLOG(1) << __func__;
+  CHECK(!HasSwapchain());
+  TRACE_EVENT0("xr", "CreateSwapchain");
+
+  if (!initialized_) {
+    return XR_ERROR_FEATURE_UNSUPPORTED;
+  }
+
+  XrDepthSwapchainCreateInfoANDROID swapchain_create_info{
+      XR_TYPE_DEPTH_SWAPCHAIN_CREATE_INFO_ANDROID};
+  swapchain_create_info.resolution = depth_camera_resolution_;
+  if (depth_config_->depth_type == mojom::XRDepthType::kSmooth) {
+    swapchain_create_info.createFlags =
+        XR_DEPTH_SWAPCHAIN_CREATE_SMOOTH_DEPTH_IMAGE_BIT_ANDROID;
+  } else {
+    swapchain_create_info.createFlags =
+        XR_DEPTH_SWAPCHAIN_CREATE_RAW_DEPTH_IMAGE_BIT_ANDROID;
+  }
+  RETURN_IF_XR_FAILED(
+      extension_helper_->ExtensionMethods().xrCreateDepthSwapchainANDROID(
+          session_, &swapchain_create_info, &swapchain_));
+
+  uint32_t image_count_output = 0;
+  RETURN_IF_XR_FAILED(extension_helper_->ExtensionMethods()
+                          .xrEnumerateDepthSwapchainImagesANDROID(
+                              swapchain_, 0, &image_count_output, nullptr));
+
+  depth_images_.resize(image_count_output);
+  for (auto& image : depth_images_) {
+    image.type = XR_TYPE_DEPTH_SWAPCHAIN_IMAGE_ANDROID;
+  }
+
+  RETURN_IF_XR_FAILED(extension_helper_->ExtensionMethods()
+                          .xrEnumerateDepthSwapchainImagesANDROID(
+                              swapchain_, depth_images_.size(),
+                              &image_count_output, depth_images_.data()));
+
+  // Realistically this should never happen, but since it theoretically can,
+  // it shouldn't be a CHECK.
+  if (image_count_output != depth_images_.size()) {
+    LOG(ERROR) << __func__ << " Swapchain size changed during creation";
+    return XR_ERROR_INITIALIZATION_FAILED;
+  }
+
+  return XR_SUCCESS;
+}
+
+void OpenXrDepthSensorAndroid::DestroySwapchain() {
+  DVLOG(1) << __func__;
+  CHECK(HasSwapchain());
+  TRACE_EVENT0("xr", "DestroySwapchain");
+  extension_helper_->ExtensionMethods().xrDestroyDepthSwapchainANDROID(
+      swapchain_);
+
+  swapchain_ = XR_NULL_HANDLE;
   depth_images_.clear();
 }
 
@@ -340,7 +460,7 @@ XrResult OpenXrDepthSensorAndroid::Initialize() {
     return XR_ERROR_INITIALIZATION_FAILED;
   }
 
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       kResolutionPreferences.begin(), kResolutionPreferences.end(),
       [&supported_resolutions](
           const XrDepthCameraResolutionANDROID& resolution) {
@@ -354,39 +474,11 @@ XrResult OpenXrDepthSensorAndroid::Initialize() {
 
   depth_camera_resolution_ = *it;
 
-  XrDepthSwapchainCreateInfoANDROID swapchain_create_info{
-      XR_TYPE_DEPTH_SWAPCHAIN_CREATE_INFO_ANDROID};
-  swapchain_create_info.resolution = depth_camera_resolution_;
-  swapchain_create_info.createFlags =
-      XR_DEPTH_SWAPCHAIN_CREATE_RAW_DEPTH_IMAGE_BIT_ANDROID;
-  RETURN_IF_XR_FAILED(
-      extension_helper_->ExtensionMethods().xrCreateDepthSwapchainANDROID(
-          session_, &swapchain_create_info, &swapchain_));
-
-  uint32_t image_count_output = 0;
-  RETURN_IF_XR_FAILED(extension_helper_->ExtensionMethods()
-                          .xrEnumerateDepthSwapchainImagesANDROID(
-                              swapchain_, 0, &image_count_output, nullptr));
-
-  depth_images_.resize(image_count_output);
-  for (auto& image : depth_images_) {
-    image.type = XR_TYPE_DEPTH_SWAPCHAIN_IMAGE_ANDROID;
-  }
-
-  RETURN_IF_XR_FAILED(extension_helper_->ExtensionMethods()
-                          .xrEnumerateDepthSwapchainImagesANDROID(
-                              swapchain_, depth_images_.size(),
-                              &image_count_output, depth_images_.data()));
-
-  // Realistically this should never happen, but since it theoretically can,
-  // it shouldn't be a CHECK.
-  if (image_count_output != depth_images_.size()) {
-    LOG(ERROR) << __func__ << " Swapchain size changed during creation";
-    return XR_ERROR_INITIALIZATION_FAILED;
-  }
-
+  // We will try to create the swapchain as needed when querying depth data,
+  // so call ourselves initialized regardless of the success or failure of
+  // creating it.
   initialized_ = true;
-  return XR_SUCCESS;
+  return CreateSwapchain();
 }
 
 mojom::XRDepthConfigPtr OpenXrDepthSensorAndroid::GetDepthConfig() {
@@ -399,9 +491,28 @@ void OpenXrDepthSensorAndroid::PopulateDepthData(
   DVLOG(3) << __func__;
   // We could fail to be initialized if depth isn't actually supported.
   if (!initialized_) {
-    DVLOG(3) << __func__ << " Not initialized";
+    DVLOG(3) << __func__ << " Not initialized.";
     return;
   }
+
+  if (!HasSwapchain()) {
+    // If we don't have a swapchain, and we shouldn't, then just no-op. We're
+    // inactive.
+    if (!depth_should_be_active_) {
+      return;
+    }
+
+    // We should be active, but for some reason aren't. Maybe creating the
+    // swapchain failed, try to create it again. This should be rare.
+    DLOG(WARNING) << __func__ << " did not have swapchain, when expected to.";
+    if (XR_FAILED(CreateSwapchain())) {
+      DLOG(WARNING) << __func__ << " failed to create swapchain";
+      return;
+    }
+  }
+
+  // By this time, we should've already exited if we don't have a swapchain.
+  CHECK(HasSwapchain());
 
   if (views.size() < kNumPrimaryViews ||
       views[kLeftView]->eye != mojom::XREye::kLeft ||
@@ -409,6 +520,7 @@ void OpenXrDepthSensorAndroid::PopulateDepthData(
     DLOG(ERROR) << __func__ << " Incorrect eye configuration";
     return;
   }
+  TRACE_EVENT0("xr", "PopulateDepthData");
 
   XrDepthAcquireInfoANDROID acquire_info = {XR_TYPE_DEPTH_ACQUIRE_INFO_ANDROID};
   acquire_info.space = mojo_space_;
@@ -460,37 +572,80 @@ mojom::XRDepthDataPtr OpenXrDepthSensorAndroid::GetDepthDataForEye(
     return nullptr;
   }
 
-  XrDepthViewANDROID depth_view = acquire_result.views[GetDepthViewIndex(eye)];
-  size_t pixel_offset = GetDepthImageOffset(eye, num_pixels);
-  base::span<const float> raw_depth_image =
-      base::span(depth_image.rawDepthImage + pixel_offset, num_pixels);
+  auto depth_views = base::span(acquire_result.views);
+  XrDepthViewANDROID depth_view = depth_views[GetDepthViewIndex(eye)];
 
+  size_t pixel_offset = GetDepthImageOffset(eye, num_pixels);
+  auto* depth_image_ptr =
+      depth_config_->depth_type == mojom::XRDepthType::kSmooth
+          ? depth_image.smoothDepthImage
+          : depth_image.rawDepthImage;
+
+  // SAFETY: `num_pixels` is calculated above using checked multiplication
+  // based on the resolution that the Depth API was created with
+  // (`depth_camera_resolution_`). Per specification, the depth API returns a
+  // single array of two images (one for each eye), starting at the pointer for
+  // that data.
+  UNSAFE_BUFFERS(base::span<const float> full_depth_image_span =
+                     base::span(depth_image_ptr, 2 * num_pixels));
+
+  base::span<const float> depth_image_span =
+      full_depth_image_span.subspan(pixel_offset, num_pixels);
   mojom::XRDepthDataUpdatedPtr result = mojom::XRDepthDataUpdated::New();
-  mojo_base::BigBuffer pixels(buffer_size);
+  result->size = image_size;
+
+  // If we don't have to match our depth view, then we need to send up the
+  // information about the depth camera's geometry.
+  if (!match_depth_view_) {
+    result->view_geometry = mojom::XRViewGeometry::New();
+    auto& geometry = result->view_geometry;
+    geometry->field_of_view = XrFovToMojomFov(depth_view.fov);
+
+    // TOOD(crbug.com/40684534): Define mojo space.
+    gfx::Transform mojo_from_local;
+    // |depth_view.pose| is local_from_view
+    geometry->mojo_from_view =
+        mojo_from_local * XrPoseToGfxTransform(depth_view.pose);
+  }
+
   switch (depth_config_->depth_data_format) {
     case mojom::XRDepthDataFormat::kFloat32:
-      // Results are already in meters.
       CHECK(GetByteSize(data_format) == sizeof(float));
-      CopyDepthData<float>(raw_depth_image, pixels, image_size, depth_view,
-                           view, [](float val) { return val; });
+      // Results are already in meters.
+      result->raw_value_to_meters = 1;
+
+      // SPECIAL CASE: If we don't need to reproject use big_buffer's "copy"
+      // constructor, since we already have the data in the format we need.
+      // Otherwise, allocate a BigBuffer of the appropriate size and perform the
+      // reprojection and copy.
+      if (!match_depth_view_) {
+        // Floating point types do not have unique object representations, but
+        // we're using the byte span for serialization, which is allowed.
+        result->pixel_data = mojo_base::BigBuffer(
+            base::as_byte_span(base::allow_nonunique_obj, depth_image_span));
+      } else {
+        result->pixel_data = mojo_base::BigBuffer(buffer_size);
+        CopyDepthData<float>(depth_image_span, result->pixel_data, image_size,
+                             depth_view, view, match_depth_view_,
+                             [](float val) { return val; });
+      }
       break;
-    // Luminance alpha needs to be converted
     case mojom::XRDepthDataFormat::kLuminanceAlpha:
     case mojom::XRDepthDataFormat::kUnsignedShort:
+      CHECK(GetByteSize(data_format) == sizeof(uint16_t));
       // We'll be converting to millimeters.
       result->raw_value_to_meters = 1 / 1000.0f;
+      result->pixel_data = mojo_base::BigBuffer(buffer_size);
 
-      CHECK(GetByteSize(data_format) == sizeof(uint16_t));
       CopyDepthData<uint16_t>(
-          raw_depth_image, pixels, image_size, depth_view, view, [](float val) {
+          depth_image_span, result->pixel_data, image_size, depth_view, view,
+          match_depth_view_, [](float val) {
             // val is in meters, so convert to mm to avoid losing precision.
             return base::saturated_cast<uint16_t>(std::nearbyint(val * 1000));
           });
       break;
   }
 
-  result->pixel_data = std::move(pixels);
-  result->size = image_size;
   return mojom::XRDepthData::NewUpdatedDepthData(std::move(result));
 }
 
@@ -505,19 +660,23 @@ OpenXrDepthSensorAndroidFactory::GetRequestedExtensions() const {
 }
 
 std::set<device::mojom::XRSessionFeature>
-OpenXrDepthSensorAndroidFactory::GetSupportedFeatures(
-    const OpenXrExtensionEnumeration* extension_enum) const {
-  if (!IsEnabled(extension_enum)) {
+OpenXrDepthSensorAndroidFactory::GetSupportedFeatures() const {
+  if (!IsEnabled()) {
     return {};
   }
 
   return {device::mojom::XRSessionFeature::DEPTH};
 }
 
-void OpenXrDepthSensorAndroidFactory::ProcessSystemProperties(
+void OpenXrDepthSensorAndroidFactory::CheckAndUpdateEnabledState(
     const OpenXrExtensionEnumeration* extension_enum,
     XrInstance instance,
     XrSystemId system) {
+  if (!AreAllRequestedExtensionsSupported(extension_enum)) {
+    SetEnabled(false);
+    return;
+  }
+
   XrSystemDepthTrackingPropertiesANDROID depth_properties{
       XR_TYPE_SYSTEM_DEPTH_TRACKING_PROPERTIES_ANDROID};
 
@@ -530,7 +689,7 @@ void OpenXrDepthSensorAndroidFactory::ProcessSystemProperties(
     depth_supported = depth_properties.supportsDepthTracking;
   }
 
-  SetSystemPropertiesSupport(depth_supported);
+  SetEnabled(depth_supported);
 }
 
 std::unique_ptr<OpenXrDepthSensor>
@@ -539,7 +698,7 @@ OpenXrDepthSensorAndroidFactory::CreateDepthSensor(
     XrSession session,
     XrSpace mojo_space,
     const mojom::XRDepthOptions& depth_options) const {
-  bool is_supported = IsEnabled(extension_helper.ExtensionEnumeration());
+  bool is_supported = IsEnabled();
   DVLOG(2) << __func__ << " is_supported=" << is_supported;
   if (is_supported) {
     return std::make_unique<OpenXrDepthSensorAndroid>(

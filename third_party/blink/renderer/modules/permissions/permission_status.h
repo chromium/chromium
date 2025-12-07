@@ -18,6 +18,7 @@ namespace blink {
 
 class ExecutionContext;
 class ScriptPromiseResolverBase;
+class V8PermissionState;
 
 // Expose the status of a given permission type for the current
 // ExecutionContext.
@@ -58,7 +59,7 @@ class PermissionStatus final : public EventTarget,
   // PermissionStatusListener::Observer
   void OnPermissionStatusChange(MojoPermissionStatus) override;
 
-  String state() const;
+  V8PermissionState state() const;
 
   String name() const;
 

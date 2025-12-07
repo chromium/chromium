@@ -36,6 +36,11 @@ inline constexpr char kLensOverlaySettings[] =
 inline constexpr char kLensSharingPageScreenshotEnabled[] =
     "lens.sharing_page_screenshot.enabled";
 
+// A boolean indicating whether the whether the user has permitted sharing page
+// content with the Lens Overlay server. Used for the contextual searchbox.
+inline constexpr char kLensSharingPageContentEnabled[] =
+    "lens.sharing_page_content.enabled";
+
 // Registers the prefs used by the Lens Overlay.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
@@ -46,12 +51,21 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 bool CanSharePageScreenshotWithLensOverlay(PrefService* pref_service);
 
 // Returns true if the user, i.e., the local, current profile, is permitted to
-// share the the page URL with the the Lens Overlay server.
+// share the the page context with the Lens Overlay server.
+bool CanSharePageContentWithLensOverlay(PrefService* pref_service);
+
+// Returns true if the user, i.e., the local, current profile, is permitted to
+// share the the page URL with the the Lens Overlay server. This can be through
+// MSBB or accepting the CSB permission bubble, which informs the user about
+// sharing the page URL.
 bool CanSharePageURLWithLensOverlay(PrefService* pref_service);
 
 // Returns true if the user, i.e., the local, current profile, is permitted to
 // share the information about the page title with the the Lens Overlay server.
-bool CanSharePageTitleWithLensOverlay(syncer::SyncService* sync_service);
+// This can be through history sync or accepting the CSB permission bubble,
+// which informs the user about sharing the page title.
+bool CanSharePageTitleWithLensOverlay(syncer::SyncService* sync_service,
+                                      PrefService* pref_service);
 
 }  // namespace lens
 

@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/base/multi_channel_resampler.h"
 
+#include <algorithm>
 #include <cmath>
 #include <memory>
 
@@ -42,9 +39,7 @@ static const double kHighLatencyMaxError = 0.04;
 class MultiChannelResamplerTest
     : public testing::TestWithParam<int> {
  public:
-  MultiChannelResamplerTest()
-      : last_frame_delay_(-1) {
-  }
+  MultiChannelResamplerTest() = default;
 
   MultiChannelResamplerTest(const MultiChannelResamplerTest&) = delete;
   MultiChannelResamplerTest& operator=(const MultiChannelResamplerTest&) =
@@ -65,9 +60,9 @@ class MultiChannelResamplerTest
 
     float fill_value = fill_junk_values_ ? (1 / kFillValue) : kFillValue;
     EXPECT_EQ(audio_bus->channels(), audio_bus_->channels());
-    for (int i = 0; i < audio_bus->channels(); ++i)
-      for (int j = 0; j < audio_bus->frames(); ++j)
-        audio_bus->channel(i)[j] = fill_value;
+    for (auto channel : audio_bus->AllChannels()) {
+      std::ranges::fill(channel, fill_value);
+    }
   }
 
   void MultiChannelTest(int channels, int frames, double expected_max_rms_error,
@@ -107,12 +102,12 @@ class MultiChannelResamplerTest
     // Calculate Root-Mean-Square-Error for the resampling.
     double max_error = 0.0;
     double sum_of_squares = 0.0;
-    for (int i = 0; i < audio_bus_->channels(); ++i) {
-      for (int j = 0; j < frames_; ++j) {
+    for (auto channel : audio_bus_->AllChannels()) {
+      for (auto sample : channel) {
         // Ensure all values are accounted for.
-        ASSERT_NE(audio_bus_->channel(i)[j], 0);
+        ASSERT_NE(sample, 0);
 
-        double error = fabs(audio_bus_->channel(i)[j] - kFillValue);
+        double error = fabs(sample - kFillValue);
         max_error = std::max(max_error, error);
         sum_of_squares += error * error;
       }
@@ -129,7 +124,7 @@ class MultiChannelResamplerTest
   int frames_;
   bool fill_junk_values_;
   std::unique_ptr<AudioBus> audio_bus_;
-  int last_frame_delay_;
+  int last_frame_delay_ = -1;
 };
 
 TEST_P(MultiChannelResamplerTest, HighLatency) {

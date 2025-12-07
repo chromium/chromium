@@ -73,7 +73,7 @@ public class WebApkVerifySignatureTest {
                         "prefixed: chrome-webapk:000:decafbad :suffixed"));
     }
 
-    class FileResult {
+    static class FileResult {
         FileResult(String filename, int expect) {
             this.filename = filename;
             this.want = expect;

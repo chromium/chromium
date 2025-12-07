@@ -20,6 +20,8 @@ bool StructTraits<viz::mojom::OcclusionCullerSettingsDataView,
   out->quad_split_limit = data.quad_split_limit();
   out->maximum_occluder_complexity = data.maximum_occluder_complexity();
   out->minimum_fragments_reduced = data.minimum_fragments_reduced();
+  out->generate_complex_occluder_for_rounded_corners =
+      data.generate_complex_occluder_for_rounded_corners();
   return true;
 }
 
@@ -57,14 +59,6 @@ bool StructTraits<viz::mojom::RendererSettingsDataView, viz::RendererSettings>::
   if (!data.ReadOcclusionCullerSettings(&out->occlusion_culler_settings)) {
     return false;
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  if (!data.ReadInitialScreenSize(&out->initial_screen_size))
-    return false;
-
-  if (!data.ReadColorSpace(&out->color_space))
-    return false;
-#endif
 
 #if BUILDFLAG(IS_OZONE)
   if (!data.ReadOverlayStrategies(&out->overlay_strategies))

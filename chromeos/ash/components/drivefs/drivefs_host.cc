@@ -10,7 +10,6 @@
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/timer/timer.h"
@@ -18,6 +17,7 @@
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "chromeos/ash/components/drivefs/drivefs_http_client.h"
 #include "chromeos/ash/components/drivefs/drivefs_search.h"
+#include "chromeos/ash/components/drivefs/drivefs_search_query.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/ash/components/drivefs/mojom/notifications.mojom.h"
 #include "chromeos/components/drivefs/mojom/drivefs_native_messaging.mojom.h"
@@ -73,10 +73,8 @@ class DriveFsHost::MountState : public DriveFsSession {
         bool{host->account_token_delegate_->GetCachedAccessToken()};
     search_ = std::make_unique<DriveFsSearch>(
         drivefs_interface(), host_->network_connection_tracker_, host_->clock_);
-    if (base::FeatureList::IsEnabled(ash::features::kDriveFsChromeNetworking)) {
-      http_client_ = std::make_unique<DriveFsHttpClient>(
-          host_->delegate_->GetURLLoaderFactory());
-    }
+    http_client_ = std::make_unique<DriveFsHttpClient>(
+        host_->delegate_->GetURLLoaderFactory());
   }
 
   MountState(const MountState&) = delete;
@@ -104,15 +102,17 @@ class DriveFsHost::MountState : public DriveFsSession {
         delegate->GetLostAndFoundDirectoryName(),
         base::FeatureList::IsEnabled(ash::features::kDriveFsMirroring),
         delegate->IsVerboseLoggingEnabled(),
-        base::FeatureList::IsEnabled(ash::features::kDriveFsChromeNetworking),
-        base::FeatureList::IsEnabled(ash::features::kDriveFsShowCSEFiles)
-            ? mojom::CSESupport::kListing
-            : mojom::CSESupport::kNone,
+        mojom::CSESupport::kListing,
         ash::features::IsLauncherContinueSectionWithRecentsEnabled(),
         ash::features::IsShowSharingUserInLauncherContinueSectionEnabled(),
     };
     return DriveFsConnection::Create(delegate->CreateMojoListener(),
                                      std::move(config));
+  }
+
+  std::unique_ptr<DriveFsSearchQuery> CreateSearchQuery(
+      mojom::QueryParametersPtr query) {
+    return search_->CreateQuery(std::move(query));
   }
 
   mojom::QueryParameters::QuerySource SearchDriveFs(
@@ -358,6 +358,14 @@ mojom::DriveFs* DriveFsHost::GetDriveFsInterface() const {
     return nullptr;
   }
   return mount_state_->drivefs_interface();
+}
+
+std::unique_ptr<DriveFsSearchQuery> DriveFsHost::CreateSearchQuery(
+    mojom::QueryParametersPtr query) {
+  if (!mount_state_ || !mount_state_->is_mounted()) {
+    return nullptr;
+  }
+  return mount_state_->CreateSearchQuery(std::move(query));
 }
 
 mojom::QueryParameters::QuerySource DriveFsHost::PerformSearch(

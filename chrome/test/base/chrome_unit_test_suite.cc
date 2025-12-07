@@ -5,13 +5,13 @@
 #include "chrome/test/base/chrome_unit_test_suite.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/environment.h"
 #include "base/path_service.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/process/process_handle.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
@@ -38,22 +38,25 @@
 #include "ui/gl/test/gl_surface_test_support.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/dbus/constants/dbus_paths.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_paths.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chromeos/dbus/constants/dbus_paths.h"
 #include "crypto/nss_util_internal.h"
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "base/auto_reset.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/publishers/publisher_host_factory_impl.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/common/initialize_extensions_client.h"
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/extension_paths.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -73,8 +76,15 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
 
   void OnTestStart(const testing::TestInfo& test_info) override {
     TestingBrowserProcess::CreateInstance();
+#if !BUILDFLAG(IS_ANDROID)
+    // Injects global publisher factory for unit_tests.
+    // TODO(crbug.com/441649482): Consider better testing approach.
+    publisher_host_factory_resetter_ =
+        apps::AppServiceProxyFactory::GetInstance()->SetPublisherHostFactory(
+            std::make_unique<apps::PublisherHostFactoryImpl>());
+#endif
     // Make sure the loaded locale is "en-US".
-    if (ui::ResourceBundle::GetSharedInstance().GetLoadedLocaleForTesting() !=
+    if (ui::ResourceBundle::GetSharedInstance().GetLoadedLocale() !=
         kDefaultLocale) {
       // Linux uses environment to determine locale.
       std::unique_ptr<base::Environment> env(base::Environment::Create());
@@ -87,7 +97,7 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
   void OnTestEnd(const testing::TestInfo& test_info) override {
     TestingBrowserProcess::TearDownAndDeleteInstance();
     // Some tests cause ChildThreadImpl to initialize a PowerMonitor.
-    base::PowerMonitor::ShutdownForTesting();
+    base::PowerMonitor::GetInstance()->ShutdownForTesting();
 #if BUILDFLAG(IS_WIN)
     // Running tests locally on Windows machines with some degree of
     // accessibility enabled can cause this flag to become implicitly set.
@@ -104,15 +114,23 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
           << "Use content::ScopedAccessibilityModeOverride or otherwise ensure "
              "that accessibility is disabled at the end of your test.";
     }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     arc::ClearArcAllowedCheckForTesting();
     crypto::ResetTokenManagerForTesting();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #if !BUILDFLAG(IS_ANDROID)
     web_app::SetTrustedWebBundleIdsForTesting({});
 #endif  // !BUILDFLAG(IS_ANDROID)
     browser_shutdown::ResetShutdownGlobalsForTesting();
+#if !BUILDFLAG(IS_ANDROID)
+    publisher_host_factory_resetter_.reset();
+#endif
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  std::optional<base::AutoReset<std::unique_ptr<apps::PublisherHostFactory>>>
+      publisher_host_factory_resetter_;
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace
@@ -163,24 +181,22 @@ void ChromeUnitTestSuite::InitializeProviders() {
   content::RegisterPathProvider();
   ui::RegisterPathProvider();
   component_updater::RegisterPathProvider(chrome::DIR_COMPONENTS,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-                                          ash::DIR_PREINSTALLED_COMPONENTS,
-#else
                                           chrome::DIR_INTERNAL_PLUGINS,
-#endif
                                           chrome::DIR_USER_DATA);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::RegisterPathProvider();
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
+  ash::RegisterPathProvider();
+  CHECK(base::PathService::OverrideWithoutCheckForTesting(
+      ash::DIR_USER_DATA,
+      base::PathService::CheckedGet(chrome::DIR_USER_DATA)));
   chromeos::dbus_paths::RegisterPathProvider();
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::RegisterPathProvider();
+#endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   EnsureExtensionsClientInitialized();
 #endif
 

@@ -27,3 +27,5 @@ SimpleFactoryKey* SimpleFactoryKeyFromJavaHandle(
 }
 
 }  // namespace simple_factory_key
+
+DEFINE_JNI(SimpleFactoryKeyHandle)

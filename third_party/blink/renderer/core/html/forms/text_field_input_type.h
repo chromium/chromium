@@ -71,7 +71,7 @@ class TextFieldInputType : public InputType,
   void UpdateView() override;
   void AdjustStyle(ComputedStyleBuilder&) override;
   LayoutObject* CreateLayoutObject(const ComputedStyle&) const override;
-  ControlPart AutoAppearance() const override;
+  AppearanceValue AutoAppearance() const override;
 
   virtual bool NeedsContainer() const { return false; }
   virtual String ConvertFromVisibleValue(const String&) const;
@@ -84,7 +84,6 @@ class TextFieldInputType : public InputType,
   InputTypeView* CreateView() override;
   ValueMode GetValueMode() const override;
   bool MayTriggerVirtualKeyboard() const final;
-  bool IsTextField() const final;
   bool ShouldSubmitImplicitly(const Event&) final;
   bool ShouldRespectListAttribute() override;
   void ListAttributeTargetChanged() override;

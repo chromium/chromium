@@ -30,18 +30,17 @@
 #include "components/tab_groups/tab_group_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 
 namespace desks_storage {
 
 namespace {
 
 constexpr char kTestUuidBrowser[] = "040b6112-67f2-4d3c-8ba8-53a117272eba";
-constexpr int kBrowserWindowId = 1555;
 constexpr char kBrowserUrl1[] = "https://example.com/";
 constexpr char kBrowserUrl2[] = "https://example.com/2";
 constexpr char kBrowserTemplateName[] = "BrowserTest";
 constexpr char kOverrideUrl[] = "https://example.com/";
-constexpr uint64_t kTestLacrosProfileId = 12345;
 
 tab_groups::TabGroupInfo MakeSampleTabGroup() {
   return tab_groups::TabGroupInfo(
@@ -78,7 +77,8 @@ class DeskTemplateConversionTest : public testing::Test {
 
 TEST_F(DeskTemplateConversionTest, ParseAdminTemplatePolicy) {
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
-      std::string_view(desk_test_util::kAdminTemplatePolicy));
+      std::string_view(desk_test_util::kAdminTemplatePolicy),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_list());
@@ -178,7 +178,8 @@ TEST_F(DeskTemplateConversionTest, ParseAdminTemplatePolicy) {
 
 TEST_F(DeskTemplateConversionTest, AdminTemplateConvertsCorrectly) {
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
-      std::string_view(desk_test_util::kAdminTemplatePolicyWithOneTemplate));
+      std::string_view(desk_test_util::kAdminTemplatePolicyWithOneTemplate),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_list());
@@ -243,7 +244,8 @@ TEST_F(DeskTemplateConversionTest, AdminTemplateConvertsCorrectly) {
 
 TEST_F(DeskTemplateConversionTest, ParseBrowserTemplate) {
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
-      std::string_view(desk_test_util::kValidPolicyTemplateBrowser));
+      std::string_view(desk_test_util::kValidPolicyTemplateBrowser),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_dict());
@@ -297,7 +299,8 @@ TEST_F(DeskTemplateConversionTest, ParseBrowserTemplate) {
 
 TEST_F(DeskTemplateConversionTest, ParseBrowserTemplateMinimized) {
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
-      std::string_view(desk_test_util::kValidPolicyTemplateBrowserMinimized));
+      std::string_view(desk_test_util::kValidPolicyTemplateBrowserMinimized),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   ASSERT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_dict());
@@ -344,14 +347,15 @@ TEST_F(DeskTemplateConversionTest, ParseBrowserTemplateMinimized) {
   EXPECT_THAT(wi->window_state_type,
               testing::Optional(chromeos::WindowStateType::kMinimized));
   EXPECT_THAT(wi->pre_minimized_show_state_type,
-              testing::Optional(ui::WindowShowState::SHOW_STATE_NORMAL));
+              testing::Optional(ui::mojom::WindowShowState::kNormal));
   EXPECT_THAT(wi->current_bounds, testing::Optional(gfx::Rect(0, 1, 120, 121)));
 }
 
 TEST_F(DeskTemplateConversionTest, ParseChromePwaTemplate) {
-  auto parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(std::string_view(
-          desk_test_util::kValidPolicyTemplateChromeAndProgressive));
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      std::string_view(
+          desk_test_util::kValidPolicyTemplateChromeAndProgressive),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_dict());
@@ -431,8 +435,8 @@ TEST_F(DeskTemplateConversionTest, ParseChromePwaTemplate) {
 }
 
 TEST_F(DeskTemplateConversionTest, EmptyJsonTest) {
-  auto parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(std::string_view("{}"));
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      std::string_view("{}"), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_dict());
@@ -447,7 +451,8 @@ TEST_F(DeskTemplateConversionTest, EmptyJsonTest) {
 
 TEST_F(DeskTemplateConversionTest, ParsesWithDefaultValueSetToTemplates) {
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
-      std::string_view(desk_test_util::kPolicyTemplateWithoutType));
+      std::string_view(desk_test_util::kPolicyTemplateWithoutType),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_dict());
@@ -460,7 +465,8 @@ TEST_F(DeskTemplateConversionTest, ParsesWithDefaultValueSetToTemplates) {
 
 TEST_F(DeskTemplateConversionTest, DeskTemplateFromJsonBrowserTest) {
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
-      std::string_view(desk_test_util::kValidPolicyTemplateBrowser));
+      std::string_view(desk_test_util::kValidPolicyTemplateBrowser),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_dict());
@@ -479,7 +485,8 @@ TEST_F(DeskTemplateConversionTest, DeskTemplateFromJsonBrowserTest) {
 TEST_F(DeskTemplateConversionTest, ToJsonIgnoreUnsupportedApp) {
   constexpr int32_t kTestWindowId = 1234567;
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
-      std::string_view(desk_test_util::kValidPolicyTemplateBrowser));
+      std::string_view(desk_test_util::kValidPolicyTemplateBrowser),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_dict());
@@ -500,9 +507,10 @@ TEST_F(DeskTemplateConversionTest, ToJsonIgnoreUnsupportedApp) {
 }
 
 TEST_F(DeskTemplateConversionTest, DeskTemplateFromJsonAppTest) {
-  auto parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(std::string_view(
-          desk_test_util::kValidPolicyTemplateChromeAndProgressive));
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      std::string_view(
+          desk_test_util::kValidPolicyTemplateChromeAndProgressive),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_dict());
@@ -519,72 +527,13 @@ TEST_F(DeskTemplateConversionTest, DeskTemplateFromJsonAppTest) {
   EXPECT_EQ(*parsed_json, desk_template_value);
 }
 
-TEST_F(DeskTemplateConversionTest, EnsureLacrosBrowserWindowsSavedProperly) {
-  base::Time created_time = base::Time::Now();
-  std::unique_ptr<ash::DeskTemplate> desk_template =
-      SavedDeskBuilder()
-          .SetUuid(kTestUuidBrowser)
-          .SetName(kBrowserTemplateName)
-          .SetType(ash::DeskTemplateType::kSaveAndRecall)
-          .SetCreatedTime(created_time)
-          .SetLacrosProfileId(kTestLacrosProfileId)
-          .AddAppWindow(
-              SavedDeskBrowserBuilder()
-                  .SetGenericBuilder(SavedDeskGenericAppBuilder().SetWindowId(
-                      kBrowserWindowId))
-                  .SetLacrosProfileId(kTestLacrosProfileId)
-                  .SetUrls({GURL(kBrowserUrl1), GURL(kBrowserUrl2)})
-                  .Build())
-          .Build();
-
-  base::Value desk_template_value =
-      desk_template_conversion::SerializeDeskTemplateAsBaseValue(
-          desk_template.get(), GetAppsCache(account_id_));
-
-  base::Value::Dict expected_browser_tab1;
-  expected_browser_tab1.Set("url", base::Value(kBrowserUrl1));
-  base::Value::Dict expected_browser_tab2;
-  expected_browser_tab2.Set("url", base::Value(kBrowserUrl2));
-  base::Value::List expected_tab_list;
-  expected_tab_list.Append(std::move(expected_browser_tab1));
-  expected_tab_list.Append(std::move(expected_browser_tab2));
-
-  base::Value::Dict expected_browser_app_value;
-  expected_browser_app_value.Set("app_type", base::Value("BROWSER"));
-  expected_browser_app_value.Set("event_flag", base::Value(0));
-  expected_browser_app_value.Set("window_id", base::Value(kBrowserWindowId));
-  expected_browser_app_value.Set("tabs", std::move(expected_tab_list));
-  expected_browser_app_value.Set("lacros_profile_id",
-                                 base::NumberToString(kTestLacrosProfileId));
-  expected_browser_app_value.Set("app_id", app_constants::kChromeAppId);
-
-  base::Value::List expected_app_list;
-  expected_app_list.Append(std::move(expected_browser_app_value));
-
-  base::Value::Dict expected_desk_value;
-  expected_desk_value.Set("apps", std::move(expected_app_list));
-
-  base::Value::Dict expected_value;
-  expected_value.Set("auto_launch_on_startup", false);
-  expected_value.Set("version", base::Value(1));
-  expected_value.Set("uuid", base::Value(kTestUuidBrowser));
-  expected_value.Set("name", base::Value(kBrowserTemplateName));
-  expected_value.Set("created_time_usec", base::TimeToValue(created_time));
-  expected_value.Set("updated_time_usec",
-                     base::TimeToValue(desk_template->GetLastUpdatedTime()));
-  expected_value.Set("desk_type", base::Value("SAVE_AND_RECALL"));
-  expected_value.Set("desk", std::move(expected_desk_value));
-  expected_value.Set("lacros_profile_id",
-                     base::NumberToString(kTestLacrosProfileId));
-
-  EXPECT_EQ(expected_value, desk_template_value);
-}
-
 TEST_F(DeskTemplateConversionTest,
        DeskTemplateFromFloatingWorkspaceJsonAppTest) {
   base::expected<base::Value, base::JSONReader::Error> parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(std::string_view(
-          desk_test_util::kValidPolicyTemplateChromeForFloatingWorkspace));
+      base::JSONReader::ReadAndReturnValueWithError(
+          std::string_view(
+              desk_test_util::kValidPolicyTemplateChromeForFloatingWorkspace),
+          base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   ASSERT_TRUE(parsed_json.has_value());
   ASSERT_TRUE(parsed_json->is_dict());

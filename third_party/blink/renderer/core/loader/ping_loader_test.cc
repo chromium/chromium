@@ -51,7 +51,7 @@ class PingLocalFrameClient : public EmptyLocalFrameClient {
     return URLLoaderMockFactory::GetSingletonInstance()->CreateURLLoader();
   }
 
-  void DispatchWillSendRequest(ResourceRequest& request) override {
+  void DispatchFinalizeRequest(ResourceRequest& request) override {
     if (request.GetKeepalive())
       ping_request_ = PartialResourceRequest(request);
   }

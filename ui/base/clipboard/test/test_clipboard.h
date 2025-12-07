@@ -17,7 +17,6 @@
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -98,6 +97,7 @@ class TestClipboard : public Clipboard {
   void WritePortableAndPlatformRepresentations(
       ClipboardBuffer buffer,
       const ObjectMap& objects,
+      const std::vector<RawData>& raw_objects,
       std::vector<Clipboard::PlatformRepresentation> platform_representations,
       std::unique_ptr<DataTransferEndpoint> data_src,
       uint32_t privacy_types) override;
@@ -112,9 +112,9 @@ class TestClipboard : public Clipboard {
   void WriteBitmap(const SkBitmap& bitmap) override;
   void WriteData(const ClipboardFormatType& format,
                  base::span<const uint8_t> data) override;
-  void WriteClipboardHistory() override;
-  void WriteUploadCloudClipboard() override;
-  void WriteConfidentialDataForPassword() override;
+
+  void StopUpdatingSequenceNumberForTesting();
+  void UpdateSequenceManuallyForTesting(ClipboardBuffer buffer);
 
  private:
   struct DataStore {
@@ -134,25 +134,13 @@ class TestClipboard : public Clipboard {
     std::optional<DataTransferEndpoint> data_src;
   };
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Used for syncing clipboard sources between Lacros and Ash in ChromeOS.
-  void AddClipboardSourceToDataOffer(const ClipboardBuffer buffer);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-  // In Lacros, retrieves and parses the clipboard source DataTransferEndpoint
-  // from the DTE MIME type if no source is provided. In all cases,
-  // IsReadAllowed() is called and returned.
-  bool MaybeRetrieveSyncedSourceAndCheckIfReadIsAllowed(
-      ClipboardBuffer buffer,
-      base::optional_ref<const DataTransferEndpoint> data_src,
-      const DataTransferEndpoint* data_dst) const;
-
   // The non-const versions update the sequence number as a side effect.
   const DataStore& GetStore(ClipboardBuffer buffer) const;
   const DataStore& GetDefaultStore() const;
   DataStore& GetStore(ClipboardBuffer buffer);
   DataStore& GetDefaultStore();
 
+  bool should_update_sequence_number_ = true;
   ClipboardBuffer default_store_buffer_;
   mutable base::flat_map<ClipboardBuffer, DataStore> stores_;
   base::Time last_modified_time_;

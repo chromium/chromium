@@ -18,7 +18,7 @@
 #include "third_party/leveldatabase/src/include/leveldb/slice.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
-namespace content {
+namespace content::indexed_db {
 
 class LevelDBScopesTestBase : public testing::Test {
  public:
@@ -123,6 +123,6 @@ class LevelDBScopesTestBase : public testing::Test {
   std::string value_buffer_;
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // COMPONENTS_SERVICES_STORAGE_INDEXED_DB_SCOPES_LEVELDB_SCOPES_TEST_UTILS_H_

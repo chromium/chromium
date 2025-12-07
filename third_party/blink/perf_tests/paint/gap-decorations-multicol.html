@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<script src="../resources/runner.js"></script>
+<script src="resources/paint.js"></script>
+<div id="container" style="columns:10000; column-gap:3px; column-rule: 1px solid red; column-fill:auto; height:100px;">
+    <div style="height:250000px;"></div>
+    <div style="height: 10px; column-span: all;"></div>
+    <div style="height:250000px;"></div>
+    <div style="height: 10px; column-span: all;"></div>
+    <div style="height: 250000px;"></div>
+</div>
+<script>
+  // Measure paint / pre-paint performance of a multicol container with many
+  // columns and gap decorations.
+
+  var wide = false;
+
+measurePaint({
+  run: function() {
+    container.style.width = wide ? "600px" : "700px";
+    wide = !wide;
+  },
+});
+</script>

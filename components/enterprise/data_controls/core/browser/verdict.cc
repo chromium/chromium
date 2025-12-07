@@ -8,6 +8,13 @@
 
 namespace data_controls {
 
+bool Verdict::TriggeredRuleKey::operator<(const TriggeredRuleKey& other) const {
+  if (machine_scope == other.machine_scope) {
+    return index < other.index;
+  }
+  return machine_scope;
+}
+
 // static
 Verdict Verdict::NotSet() {
   return Verdict(Rule::Level::kNotSet, {});
@@ -38,6 +45,15 @@ Verdict Verdict::MergePasteVerdicts(Verdict source_verdict,
                                     Verdict destination_verdict) {
   if (source_verdict.level() > destination_verdict.level()) {
     destination_verdict.level_ = source_verdict.level();
+  }
+
+  for (const auto& rule : source_verdict.triggered_rules()) {
+    if (rule.first.machine_scope) {
+      // Since `rule`'s key contains a boolean indicating its scope, it's safe
+      // to merge when it's a machine scope as any conflict it would have with
+      // `destination_verdict` will be for the same rule.
+      destination_verdict.triggered_rules_.insert(rule);
+    }
   }
 
   return destination_verdict;

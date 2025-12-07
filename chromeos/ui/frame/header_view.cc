@@ -24,7 +24,7 @@
 #include "ui/display/tablet_state.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/window/non_client_view.h"
+#include "ui/views/window/frame_view.h"
 
 namespace chromeos {
 
@@ -70,7 +70,7 @@ BEGIN_METADATA(HeaderView, HeaderContentView)
 END_METADATA
 
 HeaderView::HeaderView(views::Widget* target_widget,
-                       views::NonClientFrameView* frame_view)
+                       views::FrameView* frame_view)
     : target_widget_(target_widget) {
   header_content_view_ =
       AddChildView(std::make_unique<HeaderContentView>(this));
@@ -138,9 +138,9 @@ void HeaderView::SetAvatarIcon(const gfx::ImageSkia& avatar) {
     DCHECK_EQ(avatar.width(), avatar.height());
     if (!avatar_icon_) {
       avatar_icon_ = new views::ImageView();
-      AddChildView(avatar_icon_.get());
+      AddChildViewRaw(avatar_icon_.get());
     }
-    avatar_icon_->SetImage(avatar);
+    avatar_icon_->SetImage(ui::ImageModel::FromImageSkia(avatar));
   }
   frame_header_->SetLeftHeaderView(avatar_icon_);
   DeprecatedLayoutImmediately();
@@ -359,7 +359,7 @@ void HeaderView::UpdateBackButton() {
   if (has_back_button) {
     if (!back_button) {
       back_button = new chromeos::FrameBackButton();
-      AddChildView(back_button);
+      AddChildViewRaw(back_button);
       frame_header_->SetBackButton(back_button);
     }
     back_button->SetEnabled(caption_button_container_->model()->IsEnabled(
@@ -378,7 +378,7 @@ void HeaderView::UpdateCenterButton() {
     return;
   if (is_center_button_visible) {
     if (!center_button->parent())
-      AddChildView(center_button);
+      AddChildViewRaw(center_button);
     center_button->SetVisible(true);
   } else {
     center_button->SetVisible(false);

@@ -6,17 +6,18 @@
 #define UI_ANDROID_OVERSCROLL_REFRESH_H_
 
 #include "base/memory/raw_ptr.h"
+#include "third_party/blink/public/common/input/web_gesture_device.h"
 #include "ui/android/ui_android_export.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.ui
-enum OverscrollAction {
-  NONE = 0,
-  PULL_TO_REFRESH = 1,
-  HISTORY_NAVIGATION = 2,
-  PULL_FROM_BOTTOM_EDGE = 3
+enum class OverscrollAction {
+  kNone = 0,
+  kPullToRefresh = 1,
+  kHistoryNavigation = 2,
+  kPullFromBottomEdge = 3
 };
 
 namespace cc {
@@ -43,7 +44,9 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
  public:
   // The default distance in dp from a side of the device to start a navigation
   // from.
+  // LINT.IfChange
   static constexpr int kDefaultNavigationEdgeWidth = 24;
+  // LINT.ThenChange(//ui/android/java/src/org/chromium/ui/OverscrollRefreshHandler.java:kDefaultNavigationEdgeWidth)
 
   OverscrollRefresh(OverscrollRefreshHandler* handler, float edge_width);
 
@@ -61,8 +64,12 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
   // is true which happens when the scroll update is not consumed and the
   // overscroll_behavior on y axis is 'auto'.
   // This method is made virtual for mocking.
-  virtual void OnOverscrolled(
-      const cc::OverscrollBehavior& overscroll_behavior);
+  virtual void OnOverscrolled(const cc::OverscrollBehavior& behavior,
+                              gfx::Vector2dF accumulated_overscroll,
+                              blink::WebGestureDevice source_device);
+
+  // Disables scroll consumption if the activation shouldn't have happened.
+  void MaybeDisableScrollConsumption(const gfx::Vector2dF& scroll_delta);
 
   // Returns true if the effect has consumed the |scroll_delta|.
   bool WillHandleScrollUpdate(const gfx::Vector2dF& scroll_delta);
@@ -91,6 +98,8 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
   // This method is made virtual for mocking.
   virtual bool IsAwaitingScrollUpdateAck() const;
 
+  void SetTouchpadOverscrollHistoryNavigation(bool enabled);
+
  protected:
   // This constructor is for mocking only.
   OverscrollRefresh();
@@ -109,18 +118,18 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
   bool bottom_at_scroll_start_;
   bool overflow_y_hidden_;
 
-  enum ScrollConsumptionState {
-    DISABLED,
-    AWAITING_SCROLL_UPDATE_ACK,
-    ENABLED,
+  enum class ScrollConsumptionState {
+    kDisabled,
+    kAwaitingScrollUpdateAck,
+    kEnabled,
   } scroll_consumption_state_;
 
   float viewport_width_;
   float scroll_begin_x_;
   float scroll_begin_y_;
   const float edge_width_;  // in px
-  gfx::Vector2dF cumulative_scroll_;
   const raw_ptr<OverscrollRefreshHandler, DanglingUntriaged> handler_;
+  bool touchpad_overscroll_history_navigation_enabled_ = false;
 };
 
 }  // namespace ui

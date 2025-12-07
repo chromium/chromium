@@ -8,6 +8,8 @@
 #include <vector>
 
 #include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom.h"
+#include "base/memory/weak_ptr.h"
+#include "base/system/sys_info.h"
 #include "ui/events/ash/event_rewriter_ash.h"
 #include "ui/events/ash/keyboard_capability.h"
 
@@ -58,6 +60,11 @@ class InputDataProviderKeyboard {
       const std::vector<uint32_t>& scan_code_map,
       std::vector<mojom::TopRowKey>* out_top_row_keys,
       AuxData* out_aux_data);
+
+  void OnGetHardwareInfo(base::SysInfo::HardwareInfo info);
+
+  base::SysInfo::HardwareInfo hardware_info_;
+  base::WeakPtrFactory<InputDataProviderKeyboard> weak_ptr_factory_{this};
 };
 
 }  // namespace diagnostics

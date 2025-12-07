@@ -10,7 +10,9 @@
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "cc/paint/paint_flags.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_variant.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/dip_util.h"
@@ -27,7 +29,7 @@ namespace {
 // A simple border with different thicknesses on each side and single color.
 class SolidSidedBorder : public Border {
  public:
-  SolidSidedBorder(const gfx::Insets& insets, SkColor color);
+  SolidSidedBorder(const gfx::Insets& insets, ui::ColorVariant color);
 
   SolidSidedBorder(const SolidSidedBorder&) = delete;
   SolidSidedBorder& operator=(const SolidSidedBorder&) = delete;
@@ -36,36 +38,48 @@ class SolidSidedBorder : public Border {
   void Paint(const View& view, gfx::Canvas* canvas) override;
   gfx::Insets GetInsets() const override;
   gfx::Size GetMinimumSize() const override;
+  void OnViewThemeChanged(View* view) override;
 
  private:
   const gfx::Insets insets_;
 };
 
-SolidSidedBorder::SolidSidedBorder(const gfx::Insets& insets, SkColor color)
-    : Border(color), insets_(insets) {}
+SolidSidedBorder::SolidSidedBorder(const gfx::Insets& insets,
+                                   ui::ColorVariant color)
+    : insets_(insets) {
+  SetColor(color);
+}
 
 void SolidSidedBorder::Paint(const View& view, gfx::Canvas* canvas) {
-  // Undo DSF so that we can be sure to draw an integral number of pixels for
-  // the border. Integral scale factors should be unaffected by this, but for
-  // fractional scale factors this ensures sharp lines.
   gfx::ScopedCanvas scoped(canvas);
-  float dsf = canvas->UndoDeviceScaleFactor();
-
   gfx::RectF scaled_bounds;
-  if (view.layer()) {
-    scaled_bounds = gfx::ConvertRectToPixels(
-        view.GetLocalBounds(), view.layer()->device_scale_factor());
+  gfx::InsetsF insets_in_pixels;
+
+  if (view.GetPaintScaleType() == PaintInfo::ScaleType::kUniformScaling) {
+    // Undo DSF so that we can be sure to draw an integral number of pixels for
+    // the border. Integral scale factors should be unaffected by this, but for
+    // fractional scale factors this ensures sharp lines.
+    const float dsf = canvas->UndoDeviceScaleFactor();
+
+    // Use the layer's specific DSF if available, otherwise fallback to the
+    // canvas DSF we just undid.
+    const float bounds_dsf =
+        view.layer() ? view.layer()->device_scale_factor() : dsf;
+
+    scaled_bounds = gfx::ConvertRectToPixels(view.GetLocalBounds(), bounds_dsf);
+    insets_in_pixels = gfx::ConvertInsetsToPixels(insets_, dsf);
   } else {
+    // PixelCanvasRecording handles scaling, so we use the logical coordinates
+    // directly.
     scaled_bounds = gfx::RectF(view.GetLocalBounds());
-    scaled_bounds.Scale(dsf);
+    insets_in_pixels = gfx::InsetsF(insets_);
   }
 
-  gfx::InsetsF insets_in_pixels(
-      gfx::ToFlooredInsets(gfx::ConvertInsetsToPixels(insets_, dsf)));
   scaled_bounds.Inset(insets_in_pixels);
-  canvas->sk_canvas()->clipRect(gfx::RectFToSkRect(scaled_bounds),
+  gfx::Rect clip_bounds = ToEnclosedRect(scaled_bounds);
+  canvas->sk_canvas()->clipRect(gfx::RectToSkRect(clip_bounds),
                                 SkClipOp::kDifference, true);
-  canvas->DrawColor(color());
+  canvas->DrawColor(color().ResolveToSkColor(view.GetColorProvider()));
 }
 
 gfx::Insets SolidSidedBorder::GetInsets() const {
@@ -76,29 +90,10 @@ gfx::Size SolidSidedBorder::GetMinimumSize() const {
   return gfx::Size(insets_.width(), insets_.height());
 }
 
-class ThemedSolidSidedBorder : public SolidSidedBorder {
- public:
-  ThemedSolidSidedBorder(const gfx::Insets& insets, ui::ColorId color_id);
-
-  // SolidSidedBorder:
-  void Paint(const View& view, gfx::Canvas* canvas) override;
-  void OnViewThemeChanged(View* view) override;
-
- private:
-  ui::ColorId color_id_;
-};
-
-ThemedSolidSidedBorder::ThemedSolidSidedBorder(const gfx::Insets& insets,
-                                               ui::ColorId color_id)
-    : SolidSidedBorder(insets, gfx::kPlaceholderColor), color_id_(color_id) {}
-
-void ThemedSolidSidedBorder::Paint(const View& view, gfx::Canvas* canvas) {
-  set_color(view.GetColorProvider()->GetColor(color_id_));
-  SolidSidedBorder::Paint(view, canvas);
-}
-
-void ThemedSolidSidedBorder::OnViewThemeChanged(View* view) {
-  view->SchedulePaint();
+void SolidSidedBorder::OnViewThemeChanged(View* view) {
+  if (color().IsSemantic()) {
+    view->SchedulePaint();
+  }
 }
 
 // A border with a rounded rectangle and single color.
@@ -107,7 +102,7 @@ class RoundedRectBorder : public Border {
   RoundedRectBorder(int thickness,
                     float corner_radius,
                     const gfx::Insets& paint_insets,
-                    SkColor color);
+                    ui::ColorVariant color);
 
   RoundedRectBorder(const RoundedRectBorder&) = delete;
   RoundedRectBorder& operator=(const RoundedRectBorder&) = delete;
@@ -116,6 +111,7 @@ class RoundedRectBorder : public Border {
   void Paint(const View& view, gfx::Canvas* canvas) override;
   gfx::Insets GetInsets() const override;
   gfx::Size GetMinimumSize() const override;
+  void OnViewThemeChanged(View* view) override;
 
  private:
   const int thickness_;
@@ -126,16 +122,17 @@ class RoundedRectBorder : public Border {
 RoundedRectBorder::RoundedRectBorder(int thickness,
                                      float corner_radius,
                                      const gfx::Insets& paint_insets,
-                                     SkColor color)
-    : Border(color),
-      thickness_(thickness),
+                                     ui::ColorVariant color)
+    : thickness_(thickness),
       corner_radius_(corner_radius),
-      paint_insets_(paint_insets) {}
+      paint_insets_(paint_insets) {
+  SetColor(color);
+}
 
 void RoundedRectBorder::Paint(const View& view, gfx::Canvas* canvas) {
   cc::PaintFlags flags;
   flags.setStrokeWidth(thickness_);
-  flags.setColor(color());
+  flags.setColor(color().ResolveToSkColor(view.GetColorProvider()));
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setAntiAlias(true);
 
@@ -152,6 +149,12 @@ gfx::Insets RoundedRectBorder::GetInsets() const {
 
 gfx::Size RoundedRectBorder::GetMinimumSize() const {
   return gfx::Size(thickness_ * 2, thickness_ * 2);
+}
+
+void RoundedRectBorder::OnViewThemeChanged(View* view) {
+  if (color().IsSemantic()) {
+    view->SchedulePaint();
+  }
 }
 
 class EmptyBorder : public Border {
@@ -201,9 +204,9 @@ class ExtraInsetsBorder : public Border {
 
 ExtraInsetsBorder::ExtraInsetsBorder(std::unique_ptr<Border> border,
                                      const gfx::Insets& insets)
-    : Border(border->color()),
-      border_(std::move(border)),
-      extra_insets_(insets) {}
+    : border_(std::move(border)), extra_insets_(insets) {
+  SetColor(border_->color());
+}
 
 void ExtraInsetsBorder::Paint(const View& view, gfx::Canvas* canvas) {
   border_->Paint(view, canvas);
@@ -230,6 +233,7 @@ class BorderPainter : public Border {
   void Paint(const View& view, gfx::Canvas* canvas) override;
   gfx::Insets GetInsets() const override;
   gfx::Size GetMinimumSize() const override;
+  void SetColor(ui::ColorVariant color) override;
 
  private:
   std::unique_ptr<Painter> painter_;
@@ -254,54 +258,30 @@ gfx::Size BorderPainter::GetMinimumSize() const {
   return painter_->GetMinimumSize();
 }
 
-class ThemedRoundedRectBorder : public RoundedRectBorder {
- public:
-  ThemedRoundedRectBorder(int thickness,
-                          float corner_radius,
-                          const gfx::Insets& paint_insets,
-                          ui::ColorId color_id)
-      : RoundedRectBorder(thickness,
-                          corner_radius,
-                          paint_insets,
-                          gfx::kPlaceholderColor),
-        color_id_(color_id) {}
-
-  ThemedRoundedRectBorder(const ThemedRoundedRectBorder&) = delete;
-  ThemedRoundedRectBorder& operator=(const ThemedRoundedRectBorder&) = delete;
-
-  void Paint(const View& view, gfx::Canvas* canvas) override {
-    set_color(view.GetColorProvider()->GetColor(color_id_));
-    RoundedRectBorder::Paint(view, canvas);
-  }
-
-  void OnViewThemeChanged(View* view) override { view->SchedulePaint(); }
-
- private:
-  const ui::ColorId color_id_;
-};
+void BorderPainter::SetColor(ui::ColorVariant color) {
+  NOTREACHED() << "It does not make sense to `SetColor()` for a painter "
+                  "based border.";
+}
 
 }  // namespace
 
 Border::Border() = default;
 
-Border::Border(SkColor color) : color_(color) {}
-
 Border::~Border() = default;
 
 void Border::OnViewThemeChanged(View* view) {}
+
+void Border::SetColor(ui::ColorVariant color) {
+  color_ = color;
+}
 
 std::unique_ptr<Border> NullBorder() {
   return nullptr;
 }
 
-std::unique_ptr<Border> CreateSolidBorder(int thickness, SkColor color) {
+std::unique_ptr<Border> CreateSolidBorder(int thickness,
+                                          ui::ColorVariant color) {
   return std::make_unique<SolidSidedBorder>(gfx::Insets(thickness), color);
-}
-
-std::unique_ptr<Border> CreateThemedSolidBorder(int thickness,
-                                                ui::ColorId color) {
-  return std::make_unique<ThemedSolidSidedBorder>(gfx::Insets(thickness),
-                                                  color);
 }
 
 std::unique_ptr<Border> CreateEmptyBorder(const gfx::Insets& insets) {
@@ -314,7 +294,7 @@ std::unique_ptr<Border> CreateEmptyBorder(int thickness) {
 
 std::unique_ptr<Border> CreateRoundedRectBorder(int thickness,
                                                 float corner_radius,
-                                                SkColor color) {
+                                                ui::ColorVariant color) {
   return CreateRoundedRectBorder(thickness, corner_radius, gfx::Insets(),
                                  color);
 }
@@ -322,35 +302,14 @@ std::unique_ptr<Border> CreateRoundedRectBorder(int thickness,
 std::unique_ptr<Border> CreateRoundedRectBorder(int thickness,
                                                 float corner_radius,
                                                 const gfx::Insets& paint_insets,
-                                                SkColor color) {
+                                                ui::ColorVariant color) {
   return std::make_unique<RoundedRectBorder>(thickness, corner_radius,
                                              paint_insets, color);
 }
 
-std::unique_ptr<Border> CreateThemedRoundedRectBorder(int thickness,
-                                                      float corner_radius,
-                                                      ui::ColorId color_id) {
-  return CreateThemedRoundedRectBorder(thickness, corner_radius, gfx::Insets(),
-                                       color_id);
-}
-
-std::unique_ptr<Border> CreateThemedRoundedRectBorder(
-    int thickness,
-    float corner_radius,
-    const gfx::Insets& paint_insets,
-    ui::ColorId color_id) {
-  return std::make_unique<ThemedRoundedRectBorder>(thickness, corner_radius,
-                                                   paint_insets, color_id);
-}
-
 std::unique_ptr<Border> CreateSolidSidedBorder(const gfx::Insets& insets,
-                                               SkColor color) {
+                                               ui::ColorVariant color) {
   return std::make_unique<SolidSidedBorder>(insets, color);
-}
-
-std::unique_ptr<Border> CreateThemedSolidSidedBorder(const gfx::Insets& insets,
-                                                     ui::ColorId color_id) {
-  return std::make_unique<ThemedSolidSidedBorder>(insets, color_id);
 }
 
 std::unique_ptr<Border> CreatePaddedBorder(std::unique_ptr<Border> border,
@@ -360,7 +319,7 @@ std::unique_ptr<Border> CreatePaddedBorder(std::unique_ptr<Border> border,
 
 std::unique_ptr<Border> CreateBorderPainter(std::unique_ptr<Painter> painter,
                                             const gfx::Insets& insets) {
-  return base::WrapUnique(new BorderPainter(std::move(painter), insets));
+  return std::make_unique<BorderPainter>(std::move(painter), insets);
 }
 
 }  // namespace views

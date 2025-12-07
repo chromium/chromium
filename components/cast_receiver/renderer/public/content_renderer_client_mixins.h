@@ -9,10 +9,7 @@
 #include <string_view>
 
 #include "base/functional/callback_forward.h"
-
-namespace blink {
-class URLLoaderThrottleProvider;
-}  // namespace blink
+#include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 
 namespace content {
 class RenderFrame;

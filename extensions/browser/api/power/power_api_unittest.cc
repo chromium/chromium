@@ -92,8 +92,7 @@ class FakeWakeLockManager {
           requests_.push_back(UNBLOCK_APP_SUSPENSION);
           break;
         case device::mojom::WakeLockType::kPreventDisplaySleepAllowDimming:
-          NOTREACHED_IN_MIGRATION() << "Unexpected wake lock type " << type;
-          break;
+          NOTREACHED() << "Unexpected wake lock type " << type;
       }
 
       type_ = type;
@@ -110,8 +109,7 @@ class FakeWakeLockManager {
           requests_.push_back(BLOCK_DISPLAY_SLEEP);
           break;
         case device::mojom::WakeLockType::kPreventDisplaySleepAllowDimming:
-          NOTREACHED_IN_MIGRATION() << "Unexpected wake lock type " << type;
-          break;
+          NOTREACHED() << "Unexpected wake lock type " << type;
       }
 
       type_ = type;
@@ -130,8 +128,7 @@ class FakeWakeLockManager {
         requests_.push_back(UNBLOCK_DISPLAY_SLEEP);
         break;
       case device::mojom::WakeLockType::kPreventDisplaySleepAllowDimming:
-        NOTREACHED_IN_MIGRATION() << "Unexpected wake lock type " << type_;
-        break;
+        NOTREACHED() << "Unexpected wake lock type " << type_;
     }
     is_active_ = false;
   }

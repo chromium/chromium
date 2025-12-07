@@ -6,15 +6,13 @@
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_STATE_LOGIN_STATE_API_H_
 
 #include "chrome/common/extensions/api/login_state.h"
-#include "chromeos/crosapi/mojom/login_state.mojom.h"
+#include "components/session_manager/session_manager_types.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 
 namespace extensions {
 
-api::login_state::SessionState ToApiEnum(crosapi::mojom::SessionState state);
-
-crosapi::mojom::LoginState* GetLoginStateApi();
+api::login_state::SessionState ToApiEnum(session_manager::SessionState state);
 
 class LoginStateGetProfileTypeFunction : public ExtensionFunction {
  public:
@@ -22,7 +20,7 @@ class LoginStateGetProfileTypeFunction : public ExtensionFunction {
                              LOGINSTATE_GETPROFILETYPE)
 
  protected:
-  ~LoginStateGetProfileTypeFunction() override {}
+  ~LoginStateGetProfileTypeFunction() override = default;
   ResponseAction Run() override;
 };
 
@@ -32,11 +30,8 @@ class LoginStateGetSessionStateFunction : public ExtensionFunction {
                              LOGINSTATE_GETSESSIONSTATE)
 
  protected:
-  ~LoginStateGetSessionStateFunction() override {}
+  ~LoginStateGetSessionStateFunction() override = default;
   ResponseAction Run() override;
-
- private:
-  void OnResult(crosapi::mojom::GetSessionStateResultPtr result);
 };
 
 }  // namespace extensions

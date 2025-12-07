@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/services/nearby/public/cpp/fake_tcp_connected_socket.h"
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 
 namespace ash {
 namespace nearby {

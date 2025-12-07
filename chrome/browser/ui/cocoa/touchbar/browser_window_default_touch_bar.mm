@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-
 #import "chrome/browser/ui/cocoa/touchbar/browser_window_default_touch_bar.h"
 
 #include <memory>
 
 #include "base/functional/bind.h"
 #include "base/mac/mac_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -43,6 +42,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_util_mac.h"
 #include "ui/gfx/paint_vector_icon.h"
 
@@ -74,17 +74,20 @@ const SkColor kTouchBarStarActiveColor = gfx::kGoogleBlue500;
 
 const SkColor kTouchBarUrlPathColor = SkColorSetA(SK_ColorWHITE, 0x7F);
 
+// The size of the touch bar icons before the refresh.
+const int kOldTouchBarIconSize = 16;
+
 // The size of the touch bar icons.
-const int kTouchBarIconSize = 16;
+const int kTouchBarIconSize = 20;
 
 // The min width of the search button in the touch bar.
 const int kSearchBtnMinWidth = 205;
 
 // Creates an NSImage from the given VectorIcon.
 NSImage* CreateNSImageFromIcon(const gfx::VectorIcon& icon,
-                               SkColor color = kTouchBarDefaultIconColor) {
-  return NSImageFromImageSkia(
-      gfx::CreateVectorIcon(icon, kTouchBarIconSize, color));
+                               SkColor color = kTouchBarDefaultIconColor,
+                               int size = kTouchBarIconSize) {
+  return NSImageFromImageSkia(gfx::CreateVectorIcon(icon, size, color));
 }
 
 // Creates an NSButton for the touch bar using an existing NSImage.
@@ -105,8 +108,9 @@ NSButton* CreateTouchBarButton(const gfx::VectorIcon& icon,
                                BrowserWindowDefaultTouchBar* owner,
                                int command,
                                int tooltip_id,
-                               SkColor color = kTouchBarDefaultIconColor) {
-  return CreateTouchBarButtonWithImage(CreateNSImageFromIcon(icon, color),
+                               SkColor color = kTouchBarDefaultIconColor,
+                               int size = kTouchBarIconSize) {
+  return CreateTouchBarButtonWithImage(CreateNSImageFromIcon(icon, color, size),
                                        owner, command, tooltip_id);
 }
 
@@ -163,10 +167,12 @@ class TouchBarNotificationBridge : public CommandObserver,
   void UpdateTouchBar() { [[owner_ controller] invalidateTouchBar]; }
 
   void UpdateWebContents(content::WebContents* new_contents) {
-    if (contents_ == new_contents)
+    if (contents_ == new_contents) {
       return;
-    if (contents_)
+    }
+    if (contents_) {
       BookmarkTabHelper::FromWebContents(contents_)->RemoveObserver(this);
+    }
 
     contents_ = new_contents;
 
@@ -176,8 +182,9 @@ class TouchBarNotificationBridge : public CommandObserver,
 
     BookmarkTabHelper* bookmark_helper =
         contents_ ? BookmarkTabHelper::FromWebContents(contents_) : nullptr;
-    if (bookmark_helper)
+    if (bookmark_helper) {
       bookmark_helper->AddObserver(this);
+    }
 
     owner_.isPageLoading = contents_ && contents_->IsLoading();
     owner_.isStarred = bookmark_helper && bookmark_helper->is_starred();
@@ -195,10 +202,11 @@ class TouchBarNotificationBridge : public CommandObserver,
   // CommandObserver:
   void EnabledStateChangedForCommand(int command, bool enabled) override {
     DCHECK(command == IDC_BACK || command == IDC_FORWARD);
-    if (command == IDC_BACK)
+    if (command == IDC_BACK) {
       owner_.canGoBack = enabled;
-    else if (command == IDC_FORWARD)
+    } else if (command == IDC_FORWARD) {
       owner_.canGoForward = enabled;
+    }
   }
 
   // TabStripModelObserver:
@@ -210,8 +218,9 @@ class TouchBarNotificationBridge : public CommandObserver,
   }
 
   void OnBrowserRemoved(Browser* browser) override {
-    if (browser == owner_.browser)
+    if (browser == owner_.browser) {
       owner_.browser = nullptr;
+    }
   }
 
   // WebContentsObserver:
@@ -234,7 +243,7 @@ class TouchBarNotificationBridge : public CommandObserver,
 
  private:
   BrowserWindowDefaultTouchBar* __weak owner_;
-  raw_ptr<Browser> browser_;             // Weak.
+  raw_ptr<Browser> browser_;                // Weak.
   raw_ptr<content::WebContents> contents_;  // Weak.
 
   // Used to monitor the optional home button pref.
@@ -305,8 +314,9 @@ class TouchBarNotificationBridge : public CommandObserver,
 
 - (NSTouchBarItem*)touchBar:(NSTouchBar*)touchBar
       makeItemForIdentifier:(NSTouchBarItemIdentifier)identifier {
-  if (!touchBar)
+  if (!touchBar) {
     return nil;
+  }
 
   if ([identifier hasSuffix:kBackForwardTouchId]) {
     auto* items = @[
@@ -327,15 +337,17 @@ class TouchBarNotificationBridge : public CommandObserver,
   NSCustomTouchBarItem* touchBarItem =
       [[NSCustomTouchBarItem alloc] initWithIdentifier:identifier];
   if ([identifier hasSuffix:kBackTouchId]) {
-    auto* button = CreateTouchBarButton(vector_icons::kBackArrowIcon, self,
-                                        IDC_BACK, IDS_ACCNAME_BACK);
+    auto* button =
+        CreateTouchBarButton(vector_icons::kBackArrowChromeRefreshIcon, self,
+                             IDC_BACK, IDS_ACCNAME_BACK);
     [button bind:@"enabled" toObject:self withKeyPath:@"canGoBack" options:nil];
     [touchBarItem setView:button];
     [touchBarItem
         setCustomizationLabel:l10n_util::GetNSString(IDS_ACCNAME_BACK)];
   } else if ([identifier hasSuffix:kForwardTouchId]) {
-    auto* button = CreateTouchBarButton(vector_icons::kForwardArrowIcon, self,
-                                        IDC_FORWARD, IDS_ACCNAME_FORWARD);
+    auto* button =
+        CreateTouchBarButton(vector_icons::kForwardArrowChromeRefreshIcon, self,
+                             IDC_FORWARD, IDS_ACCNAME_FORWARD);
     [button bind:@"enabled"
            toObject:self
         withKeyPath:@"canGoForward"
@@ -350,15 +362,17 @@ class TouchBarNotificationBridge : public CommandObserver,
                       l10n_util::GetNSString(
                           IDS_TOUCH_BAR_STOP_RELOAD_CUSTOMIZATION_LABEL)];
   } else if ([identifier hasSuffix:kHomeTouchId]) {
-    [touchBarItem setView:CreateTouchBarButton(kNavigateHomeIcon, self,
-                                               IDC_HOME, IDS_ACCNAME_HOME)];
+    [touchBarItem
+        setView:CreateTouchBarButton(kNavigateHomeChromeRefreshIcon, self,
+                                     IDC_HOME, IDS_ACCNAME_HOME)];
     [touchBarItem
         setCustomizationLabel:l10n_util::GetNSString(
                                   IDS_TOUCH_BAR_HOME_CUSTOMIZATION_LABEL)];
   } else if ([identifier hasSuffix:kNewTabTouchId]) {
-    [touchBarItem
-        setView:CreateTouchBarButton(kNewTabMacTouchbarIcon, self, IDC_NEW_TAB,
-                                     IDS_TOOLTIP_NEW_TAB)];
+    [touchBarItem setView:CreateTouchBarButton(kNewTabMacTouchbarIcon, self,
+                                               IDC_NEW_TAB, IDS_TOOLTIP_NEW_TAB,
+                                               kTouchBarDefaultIconColor,
+                                               kOldTouchBarIconSize)];
     [touchBarItem
         setCustomizationLabel:l10n_util::GetNSString(
                                   IDS_TOUCH_BAR_NEW_TAB_CUSTOMIZATION_LABEL)];
@@ -377,8 +391,9 @@ class TouchBarNotificationBridge : public CommandObserver,
     content::WebContents* contents =
         _browser->tab_strip_model()->GetActiveWebContents();
 
-    if (!contents)
+    if (!contents) {
       return nil;
+    }
 
     // Strip the trailing slash.
     url::Parsed parsed;
@@ -471,8 +486,9 @@ class TouchBarNotificationBridge : public CommandObserver,
 }
 
 - (void)setBrowser:(Browser*)browser {
-  if (_browser == browser)
+  if (_browser == browser) {
     return;
+  }
   _browser = browser;
   _notificationBridge.reset(
       _browser ? new TouchBarNotificationBridge(self, _browser) : nullptr);
@@ -548,14 +564,15 @@ class TouchBarNotificationBridge : public CommandObserver,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (isGoogle) {
     image = NSImageFromImageSkia(
-        gfx::CreateVectorIcon(vector_icons::kGoogleGLogoIcon, kTouchBarIconSize,
-                              gfx::kPlaceholderColor));
+        gfx::CreateVectorIcon(vector_icons::kGoogleGLogoIcon,
+                              kOldTouchBarIconSize, gfx::kPlaceholderColor));
   } else {
-    image = CreateNSImageFromIcon(vector_icons::kSearchIcon);
+    image = CreateNSImageFromIcon(vector_icons::kSearchChromeRefreshIcon);
   }
 #endif
-  if (!image)
-    image = CreateNSImageFromIcon(vector_icons::kSearchIcon);
+  if (!image) {
+    image = CreateNSImageFromIcon(vector_icons::kSearchChromeRefreshIcon);
+  }
 
   if (!_searchButton) {
     _searchButton = [NSButton buttonWithTitle:buttonTitle
@@ -618,8 +635,8 @@ class TouchBarNotificationBridge : public CommandObserver,
 }
 
 + (NSImage*)starDefaultIcon {
-  static __strong NSImage* starDefaultIcon =
-      CreateNSImageFromIcon(omnibox::kStarIcon, kTouchBarDefaultIconColor);
+  static __strong NSImage* starDefaultIcon = CreateNSImageFromIcon(
+      omnibox::kStarChromeRefreshIcon, kTouchBarDefaultIconColor);
   return starDefaultIcon;
 }
 
@@ -629,7 +646,7 @@ class TouchBarNotificationBridge : public CommandObserver,
 
 + (NSImage*)starActiveIcon {
   static __strong NSImage* starActiveIcon = []() {
-    return CreateNSImageFromIcon(omnibox::kStarActiveIcon,
+    return CreateNSImageFromIcon(omnibox::kStarActiveChromeRefreshIcon,
                                  kTouchBarStarActiveColor);
   }();
   return starActiveIcon;
@@ -637,13 +654,13 @@ class TouchBarNotificationBridge : public CommandObserver,
 
 + (NSImage*)navigateStopIcon {
   static __strong NSImage* navigateStopIcon =
-      CreateNSImageFromIcon(kNavigateStopIcon);
+      CreateNSImageFromIcon(kNavigateStopChromeRefreshIcon);
   return navigateStopIcon;
 }
 
 + (NSImage*)reloadIcon {
   static __strong NSImage* reloadIcon =
-      CreateNSImageFromIcon(vector_icons::kReloadIcon);
+      CreateNSImageFromIcon(vector_icons::kReloadChromeRefreshIcon);
   return reloadIcon;
 }
 

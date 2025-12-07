@@ -4,6 +4,7 @@
 
 #include "ui/base/l10n/time_format.h"
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -484,30 +485,32 @@ TEST_F(TimeFormatTest, SimpleAndDetailedStrings) {
 
 // Test strings in fallback path in case of translator error.
 TEST_F(TimeFormatTest, SimpleAndDetailedStringFallback) {
-  formatter_force_fallback = true;
-  g_container.Get().ResetForTesting();
+  SetFormatterForceFallbackForTesting(true);
+  ResetFormatterForTesting();
   TestStrings();
-  formatter_force_fallback = false;
-  g_container.Get().ResetForTesting();
+  SetFormatterForceFallbackForTesting(false);
+  ResetFormatterForTesting();
 }
 
 // crbug.com/159388: This test fails when daylight savings time ends.
 TEST_F(TimeFormatTest, RelativeDate) {
   base::Time now = base::Time::Now();
-  std::u16string today_str = TimeFormat::RelativeDate(now, NULL);
+  std::u16string today_str = TimeFormat::RelativeDate(now, std::nullopt);
   EXPECT_EQ(u"Today", today_str);
 
   base::Time yesterday = now - base::Days(1);
-  std::u16string yesterday_str = TimeFormat::RelativeDate(yesterday, NULL);
+  std::u16string yesterday_str =
+      TimeFormat::RelativeDate(yesterday, std::nullopt);
   EXPECT_EQ(u"Yesterday", yesterday_str);
 
   base::Time two_days_ago = now - base::Days(2);
   std::u16string two_days_ago_str =
-      TimeFormat::RelativeDate(two_days_ago, NULL);
+      TimeFormat::RelativeDate(two_days_ago, std::nullopt);
   EXPECT_TRUE(two_days_ago_str.empty());
 
   base::Time a_week_ago = now - base::Days(7);
-  std::u16string a_week_ago_str = TimeFormat::RelativeDate(a_week_ago, NULL);
+  std::u16string a_week_ago_str =
+      TimeFormat::RelativeDate(a_week_ago, std::nullopt);
   EXPECT_TRUE(a_week_ago_str.empty());
 }
 

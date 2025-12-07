@@ -6,12 +6,12 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "ui/base/cocoa/text_services_context_menu.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/decorated_text.h"
 #import "ui/gfx/decorated_text_mac.h"
+#include "ui/menus/cocoa/text_services_context_menu.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -43,7 +43,7 @@ class ViewsTextServicesContextMenuMac
   bool SupportsCommand(int command_id) const override;
 
   // TextServicesContextMenu::Delegate:
-  std::u16string GetSelectedText() const override;
+  std::u16string_view GetSelectedText() const override;
   bool IsTextDirectionEnabled(
       base::i18n::TextDirection direction) const override;
   bool IsTextDirectionChecked(
@@ -62,12 +62,12 @@ ViewsTextServicesContextMenuMac::ViewsTextServicesContextMenuMac(
     Textfield* client)
     : ViewsTextServicesContextMenuBase(menu, client) {
   // Insert the "Look up" item in the first position.
-  const std::u16string text = GetSelectedText();
+  const std::u16string_view text = GetSelectedText();
   if (!text.empty()) {
     menu->InsertSeparatorAt(0, ui::NORMAL_SEPARATOR);
-    menu->InsertItemAt(
-        0, IDS_CONTENT_CONTEXT_LOOK_UP,
-        l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_LOOK_UP, text));
+    menu->InsertItemAt(0, IDS_CONTENT_CONTEXT_LOOK_UP,
+                       l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_LOOK_UP,
+                                                  std::u16string(text)));
 
     text_services_menu_.AppendToContextMenu(menu);
   }
@@ -82,20 +82,22 @@ bool ViewsTextServicesContextMenuMac::IsCommandIdChecked(int command_id) const {
 }
 
 bool ViewsTextServicesContextMenuMac::IsCommandIdEnabled(int command_id) const {
-  if (text_services_menu_.SupportsCommand(command_id))
+  if (text_services_menu_.SupportsCommand(command_id)) {
     return text_services_menu_.IsCommandIdEnabled(command_id);
+  }
   return (command_id == IDS_CONTENT_CONTEXT_LOOK_UP) ||
          ViewsTextServicesContextMenuBase::IsCommandIdEnabled(command_id);
 }
 
 void ViewsTextServicesContextMenuMac::ExecuteCommand(int command_id,
                                                      int event_flags) {
-  if (text_services_menu_.SupportsCommand(command_id))
+  if (text_services_menu_.SupportsCommand(command_id)) {
     text_services_menu_.ExecuteCommand(command_id, event_flags);
-  else if (command_id == IDS_CONTENT_CONTEXT_LOOK_UP)
+  } else if (command_id == IDS_CONTENT_CONTEXT_LOOK_UP) {
     LookUpInDictionary();
-  else
+  } else {
     ViewsTextServicesContextMenuBase::ExecuteCommand(command_id, event_flags);
+  }
 }
 
 bool ViewsTextServicesContextMenuMac::SupportsCommand(int command_id) const {
@@ -104,23 +106,25 @@ bool ViewsTextServicesContextMenuMac::SupportsCommand(int command_id) const {
          ViewsTextServicesContextMenuBase::SupportsCommand(command_id);
 }
 
-std::u16string ViewsTextServicesContextMenuMac::GetSelectedText() const {
+std::u16string_view ViewsTextServicesContextMenuMac::GetSelectedText() const {
   return (client()->GetTextInputType() == ui::TEXT_INPUT_TYPE_PASSWORD)
-             ? std::u16string()
+             ? std::u16string_view()
              : client()->GetSelectedText();
 }
 
 bool ViewsTextServicesContextMenuMac::IsTextDirectionEnabled(
     base::i18n::TextDirection direction) const {
-  if (client()->force_text_directionality())
+  if (client()->force_text_directionality()) {
     return false;
+  }
   return direction != base::i18n::UNKNOWN_DIRECTION;
 }
 
 bool ViewsTextServicesContextMenuMac::IsTextDirectionChecked(
     base::i18n::TextDirection direction) const {
-  if (client()->force_text_directionality())
+  if (client()->force_text_directionality()) {
     return direction == base::i18n::UNKNOWN_DIRECTION;
+  }
   return IsTextDirectionEnabled(direction) &&
          client()->GetTextDirection() == direction;
 }

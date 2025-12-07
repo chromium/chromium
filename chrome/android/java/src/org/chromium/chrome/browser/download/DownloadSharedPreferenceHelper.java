@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.download;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.offline_items_collection.ContentId;
@@ -17,6 +19,7 @@ import java.util.List;
 import java.util.Set;
 
 /** Class for maintaining all entries of DownloadSharedPreferenceEntry. */
+@NullMarked
 public class DownloadSharedPreferenceHelper {
     /** Observes modifications to the SharedPreferences for {@link DownloadItem}s. */
     public interface Observer {
@@ -25,10 +28,10 @@ public class DownloadSharedPreferenceHelper {
     }
 
     private final List<DownloadSharedPreferenceEntry> mDownloadSharedPreferenceEntries =
-            new ArrayList<DownloadSharedPreferenceEntry>();
+            new ArrayList<>();
     private final ObserverList<Observer> mObservers = new ObserverList<>();
 
-    private SharedPreferencesManager mSharedPrefs;
+    private final SharedPreferencesManager mSharedPrefs;
 
     // "Initialization on demand holder idiom"
     private static class LazyHolder {
@@ -144,7 +147,8 @@ public class DownloadSharedPreferenceHelper {
      * @param id The {@link ContentId} to query for.
      * @return a DownloadSharedPreferenceEntry that has the specified {@link ContentId}.
      */
-    public DownloadSharedPreferenceEntry getDownloadSharedPreferenceEntry(ContentId id) {
+    public @Nullable DownloadSharedPreferenceEntry getDownloadSharedPreferenceEntry(
+            @Nullable ContentId id) {
         for (int i = 0; i < mDownloadSharedPreferenceEntries.size(); ++i) {
             if (mDownloadSharedPreferenceEntries.get(i).id.equals(id)) {
                 return mDownloadSharedPreferenceEntries.get(i);
@@ -171,10 +175,11 @@ public class DownloadSharedPreferenceHelper {
 
     /**
      * Helper method to store all the SharedPreferences entries.
-     * @param forceCommit   Whether SharedPreferences should be updated synchronously.
+     *
+     * @param forceCommit Whether SharedPreferences should be updated synchronously.
      */
     private void storeDownloadSharedPreferenceEntries(boolean forceCommit) {
-        Set<String> entries = new HashSet<String>();
+        Set<String> entries = new HashSet<>();
         for (int i = 0; i < mDownloadSharedPreferenceEntries.size(); ++i) {
             entries.add(mDownloadSharedPreferenceEntries.get(i).getSharedPreferenceString());
         }

@@ -35,9 +35,7 @@ std::string CreatePayload(
   auto root_dict =
       base::Value::Dict().Set(kRoutinesFieldName, std::move(routine_list));
 
-  std::string payload;
-  base::JSONWriter::Write(root_dict, &payload);
-  return payload;
+  return base::WriteJson(root_dict).value_or("");
 }
 
 }  // namespace

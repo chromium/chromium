@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_UNDERLYING_SOURCE_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_UNDERLYING_SOURCE_BASE_H_
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -26,19 +27,18 @@ class CORE_EXPORT UnderlyingSourceBase
   void Trace(Visitor*) const override;
   ~UnderlyingSourceBase() override = default;
 
-  ScriptPromiseUntyped StartWrapper(ScriptState*,
-                                    ReadableStreamDefaultController*,
-                                    ExceptionState&);
-  virtual ScriptPromiseUntyped Start(ScriptState*, ExceptionState&);
+  ScriptPromise<IDLUndefined> StartWrapper(ScriptState*,
+                                           ReadableStreamDefaultController*);
+  virtual ScriptPromise<IDLUndefined> Start(ScriptState*);
 
-  virtual ScriptPromiseUntyped Pull(ScriptState*, ExceptionState&);
+  virtual ScriptPromise<IDLUndefined> Pull(ScriptState*, ExceptionState&);
 
-  ScriptPromiseUntyped CancelWrapper(ScriptState*,
-                                     ScriptValue reason,
-                                     ExceptionState&);
-  virtual ScriptPromiseUntyped Cancel(ScriptState*,
-                                      ScriptValue reason,
-                                      ExceptionState&);
+  ScriptPromise<IDLUndefined> CancelWrapper(ScriptState*,
+                                            ScriptValue reason,
+                                            ExceptionState&);
+  virtual ScriptPromise<IDLUndefined> Cancel(ScriptState*,
+                                             ScriptValue reason,
+                                             ExceptionState&);
 
   // ExecutionContextLifecycleObserver implementation:
 
@@ -65,8 +65,7 @@ class UnderlyingStartAlgorithm final : public StreamStartAlgorithm {
                            ReadableStreamDefaultController* controller)
       : source_(source), controller_(controller) {}
 
-  v8::MaybeLocal<v8::Promise> Run(ScriptState* script_state,
-                                  ExceptionState&) final;
+  ScriptPromise<IDLUndefined> Run(ScriptState* script_state) final;
   void Trace(Visitor* visitor) const final;
 
  private:
@@ -79,9 +78,8 @@ class UnderlyingPullAlgorithm final : public StreamAlgorithm {
   explicit UnderlyingPullAlgorithm(UnderlyingSourceBase* source)
       : source_(source) {}
 
-  v8::Local<v8::Promise> Run(ScriptState* script_state,
-                             int argc,
-                             v8::Local<v8::Value> argv[]) final;
+  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
+                                  base::span<v8::Local<v8::Value>> argv) final;
   void Trace(Visitor* visitor) const final;
 
  private:
@@ -93,9 +91,8 @@ class UnderlyingCancelAlgorithm final : public StreamAlgorithm {
   explicit UnderlyingCancelAlgorithm(UnderlyingSourceBase* source)
       : source_(source) {}
 
-  v8::Local<v8::Promise> Run(ScriptState* script_state,
-                             int argc,
-                             v8::Local<v8::Value> argv[]) final;
+  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
+                                  base::span<v8::Local<v8::Value>> argv) final;
   void Trace(Visitor* visitor) const final;
 
  private:

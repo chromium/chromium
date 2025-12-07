@@ -24,23 +24,37 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 
 #include <cstring>
+#include <limits>
 
 #include "base/bits.h"
+#include "base/feature_list.h"
+#include "base/memory/platform_shared_memory_region.h"
 #include "base/system/sys_info.h"
 #include "gin/array_buffer.h"
+#include "partition_alloc/oom.h"
 #include "partition_alloc/partition_alloc.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+
+namespace {
+
+// On ArrayBufferContents allocation failure, this feature enables simulating V8
+// memory pressure to trigger garbage collection and retrying the allocation up
+// to two times. This is expected to reduce OOM crashes. The feature exists to
+// allow quantifying the impact on OOM crashes, CPU usage and user engagement.
+//
+// TODO(crbug.com/371904440): Clean up the feature after running the experiment,
+// no later than in M136.
+BASE_FEATURE(kGCOnArrayBufferAllocationFailure,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+}  // namespace
 
 ArrayBufferContents::ArrayBufferContents(
     const base::subtle::PlatformSharedMemoryRegion& region,
@@ -62,12 +76,14 @@ ArrayBufferContents::ArrayBufferContents(
   auto deleter = [](void* buffer, size_t length, void* data) {
     size_t offset = reinterpret_cast<uintptr_t>(buffer) %
                     base::SysInfo::VMAllocationGranularity();
-    uint8_t* base = static_cast<uint8_t*>(buffer) - offset;
-    base::span<uint8_t> mapping = base::make_span(base, length + offset);
+    // SAFETY: Memory that was allocated is VMAllocationGranularity() aligned.
+    // the overallocated bytes are at the beginning of the buffer.
+    uint8_t* base = UNSAFE_BUFFERS(static_cast<uint8_t*>(buffer) - offset);
+    auto mapping = UNSAFE_BUFFERS(base::span(base, length + offset));
     auto* mapper = gin::GetSharedMemoryMapperForArrayBuffers();
     base::subtle::PlatformSharedMemoryRegion::Unmap(mapping, mapper);
   };
-  void* base = result.value().data() + offset_rounding;
+  uint8_t* base = &result.value()[offset_rounding];
   backing_store_ =
       v8::ArrayBuffer::NewBackingStore(base, length, deleter, nullptr);
 }
@@ -77,19 +93,42 @@ ArrayBufferContents::ArrayBufferContents(
     std::optional<size_t> max_num_elements,
     size_t element_byte_size,
     SharingType is_shared,
-    ArrayBufferContents::InitializationPolicy policy) {
+    ArrayBufferContents::InitializationPolicy policy,
+    AllocationFailureBehavior allocation_failure_behavior) {
   auto checked_length =
       base::CheckedNumeric<size_t>(num_elements) * element_byte_size;
   if (!checked_length.IsValid()) {
-    // The requested size is too big, we cannot allocate the memory and
-    // therefore just return.
+    // The requested size is too big.
+    if (allocation_failure_behavior == AllocationFailureBehavior::kCrash) {
+      OOM_CRASH(std::numeric_limits<size_t>::max());
+    }
     return;
   }
   size_t length = checked_length.ValueOrDie();
 
   if (!max_num_elements) {
     // Create a fixed-length ArrayBuffer.
-    void* data = AllocateMemoryOrNull(length, policy);
+    void* data = nullptr;
+
+    if (base::FeatureList::IsEnabled(kGCOnArrayBufferAllocationFailure)) {
+      data = AllocateMemoryOrNull(length, policy);
+      if (!data && v8::Isolate::TryGetCurrent() != nullptr) {
+        v8::Isolate::GetCurrent()->RetryCustomAllocate([&]() {
+          return (data = AllocateMemoryOrNull(length, policy)) != nullptr;
+        });
+      }
+      if (!data &&
+          allocation_failure_behavior == AllocationFailureBehavior::kCrash) {
+        data =
+            AllocateMemory<partition_alloc::AllocFlags::kNone>(length, policy);
+      }
+    } else {
+      data = (allocation_failure_behavior == AllocationFailureBehavior::kCrash)
+                 ? AllocateMemory<partition_alloc::AllocFlags::kNone>(length,
+                                                                      policy)
+                 : AllocateMemoryOrNull(length, policy);
+    }
+
     if (!data) {
       return;
     }
@@ -116,6 +155,14 @@ ArrayBufferContents::ArrayBufferContents(
     size_t max_length = max_checked_length.ValueOrDie();
     backing_store_ =
         v8::ArrayBuffer::NewResizableBackingStore(length, max_length);
+  }
+
+  if (allocation_failure_behavior == AllocationFailureBehavior::kCrash &&
+      !IsValid()) {
+    // All code paths that fail to allocate memory should crash. This is added
+    // as an extra precaution.
+    // TODO(crbug.com/369653504): Remove in March 2025 if there are no crashes.
+    OOM_CRASH(length);
   }
 }
 
@@ -154,7 +201,7 @@ void ArrayBufferContents::CopyTo(ArrayBufferContents& other) {
       DataLength(), 1, IsShared() ? kShared : kNotShared, kDontInitialize);
   if (!IsValid() || !other.IsValid())
     return;
-  std::memcpy(other.Data(), Data(), DataLength());
+  other.ByteSpan().copy_from(ByteSpan());
 }
 
 template <partition_alloc::AllocFlags flags>
@@ -194,11 +241,11 @@ void* ArrayBufferContents::AllocateMemory(size_t size,
 #endif
   void* data;
   if (policy == kZeroInitialize) {
-    data = WTF::Partitions::ArrayBufferPartition()
+    data = Partitions::ArrayBufferPartition()
                ->Alloc<new_flags | partition_alloc::AllocFlags::kZeroFill>(
                    size, WTF_HEAP_PROFILER_TYPE_NAME(ArrayBufferContents));
   } else {
-    data = WTF::Partitions::ArrayBufferPartition()->Alloc<new_flags>(
+    data = Partitions::ArrayBufferPartition()->Alloc<new_flags>(
         size, WTF_HEAP_PROFILER_TYPE_NAME(ArrayBufferContents));
   }
 
@@ -222,10 +269,10 @@ void ArrayBufferContents::FreeMemory(void* data) {
       InstanceCounters::kArrayBufferContentsCounter);
 #ifdef V8_ENABLE_SANDBOX
   // See |AllocateMemory|.
-  WTF::Partitions::ArrayBufferPartition()
+  Partitions::ArrayBufferPartition()
       ->Free<partition_alloc::FreeFlags::kNoMemoryToolOverride>(data);
 #else
-  WTF::Partitions::ArrayBufferPartition()->Free(data);
+  Partitions::ArrayBufferPartition()->Free(data);
 #endif
 }
 

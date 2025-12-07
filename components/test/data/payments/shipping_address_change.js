@@ -10,7 +10,7 @@
  */
 function buy() {
   try {
-    var details = {
+    const details = {
       total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}},
       displayItems: [
         {
@@ -22,7 +22,7 @@ function buy() {
       ],
     };
 
-    var request = new PaymentRequest(
+    const request = new PaymentRequest(
         [{supportedMethods: 'basic-card', data: {supportedNetworks: ['visa']}}],
         details, {requestShipping: true});
 

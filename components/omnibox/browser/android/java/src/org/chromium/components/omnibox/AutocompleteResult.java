@@ -5,8 +5,6 @@
 package org.chromium.components.omnibox;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -14,7 +12,8 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.build.annotations.MockedInTests;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.omnibox.GroupsProto.GroupsInfo;
 
 import java.lang.annotation.Retention;
@@ -24,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 /** AutocompleteResult encompasses and manages autocomplete results. */
-@MockedInTests
+@NullMarked
 public class AutocompleteResult {
     @IntDef({
         VerificationPoint.INVALID,
@@ -52,8 +51,8 @@ public class AutocompleteResult {
     /** A special value indicating that action has no particular index associated. */
     public static final int NO_SUGGESTION_INDEX = -1;
 
-    private final @NonNull GroupsInfo mGroupsInfo;
-    private final @NonNull List<AutocompleteMatch> mSuggestions;
+    private final GroupsInfo mGroupsInfo;
+    private final List<AutocompleteMatch> mSuggestions;
     private final boolean mIsFromCachedResult;
     private long mNativeAutocompleteResult;
 
@@ -66,7 +65,7 @@ public class AutocompleteResult {
      * @param suggestions List of AutocompleteMatch objects.
      * @param groupsInfo Additional information about the AutocompleteMatch groups.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public AutocompleteResult(
             long nativeResult,
             @Nullable List<AutocompleteMatch> suggestions,
@@ -114,12 +113,12 @@ public class AutocompleteResult {
      *     content of this array must match the length and IDs of the |groupIds|.
      * @return AutocompleteResult object encompassing supplied information.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     @CalledByNative
     static AutocompleteResult fromNative(
             long nativeAutocompleteResult,
-            @NonNull AutocompleteMatch[] suggestions,
-            @NonNull byte[] groupDefinitions) {
+            AutocompleteMatch[] suggestions,
+            byte[] groupDefinitions) {
         GroupsInfo groupsInfo = null;
 
         try {
@@ -133,25 +132,23 @@ public class AutocompleteResult {
         return result;
     }
 
-    private void updateMatches(@NonNull AutocompleteMatch[] suggestions) {
+    private void updateMatches(AutocompleteMatch[] suggestions) {
         mSuggestions.clear();
         Collections.addAll(mSuggestions, suggestions);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     @CalledByNative
     void notifyNativeDestroyed() {
         mNativeAutocompleteResult = 0;
     }
 
-    /** @return List of Omnibox Suggestions. */
-    @NonNull
+    /** Returns the list of Omnibox Suggestions. */
     public List<AutocompleteMatch> getSuggestionsList() {
         return mSuggestions;
     }
 
-    /** @return GroupsInfo structure, describing everything that's known about Suggestion Groups. */
-    @NonNull
+    /** Returns the GroupsInfo structure, describing what's known about Suggestion Groups. */
     public GroupsInfo getGroupsInfo() {
         return mGroupsInfo;
     }
@@ -173,7 +170,7 @@ public class AutocompleteResult {
         // May happen with either test data, or AutocompleteResult built from the ZeroSuggestCache.
         // This is a valid case, despite not meeting coherency criteria. Do not record.
         if (mNativeAutocompleteResult == 0) return false;
-        long nativeMatches[] = new long[mSuggestions.size()];
+        long[] nativeMatches = new long[mSuggestions.size()];
         for (int index = 0; index < mSuggestions.size(); index++) {
             nativeMatches[index] = mSuggestions.get(index).getNativeObjectRef();
         }
@@ -193,7 +190,7 @@ public class AutocompleteResult {
 
         AutocompleteResult other = (AutocompleteResult) otherObj;
         if (!mSuggestions.equals(other.mSuggestions)) return false;
-        return (mGroupsInfo.equals(other.mGroupsInfo));
+        return mGroupsInfo.equals(other.mGroupsInfo);
     }
 
     @Override
@@ -213,6 +210,34 @@ public class AutocompleteResult {
         }
 
         return null;
+    }
+
+    /** Serialize AutocompleteResult to a protocol buffer message. */
+    public AutocompleteProto.AutocompleteResultProto serialize() {
+        var builder = AutocompleteProto.AutocompleteResultProto.newBuilder();
+        builder.setGroups(mGroupsInfo);
+        for (var match : mSuggestions) {
+            // Note: intentionally skip clipboard suggestions from being preserved.
+            int type = match.getType();
+            if (type == OmniboxSuggestionType.CLIPBOARD_URL
+                    || type == OmniboxSuggestionType.CLIPBOARD_TEXT
+                    || type == OmniboxSuggestionType.CLIPBOARD_IMAGE) {
+                continue;
+            }
+
+            builder.addMatch(match.serialize());
+        }
+        return builder.build();
+    }
+
+    /** Deserialize AutocompleteResult from a protocol buffer message. */
+    public static AutocompleteResult deserialize(AutocompleteProto.AutocompleteResultProto input) {
+        List<AutocompleteMatch> matches = new ArrayList<>(input.getMatchList().size());
+        for (var match : input.getMatchList()) {
+            matches.add(AutocompleteMatch.deserialize(match));
+        }
+
+        return AutocompleteResult.fromCache(matches, input.getGroups());
     }
 
     @NativeMethods

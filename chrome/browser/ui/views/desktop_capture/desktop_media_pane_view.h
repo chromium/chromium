@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PANE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PANE_VIEW_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_content_pane_view.h"
@@ -33,9 +35,14 @@ class DesktopMediaPaneView : public views::View {
   // was created with share_audio_view == nullptr.
   void SetAudioSharingApprovedByUser(bool is_on);
 
+  bool IsAudioSharingControlEnabled() const;
+  // Enables or disables the ShareAudioView audio control, meaning that while
+  // the control is disabled the user cannot interact with it. This method must
+  // only be called if the class was created with a non-null share_audio_view.
+  void SetAudioSharingControlEnabled(bool enabled);
   // Returns the text in the audio label if an audio label exists;
   // returns the empty string otherwise.
-  std::u16string GetAudioLabelText() const;
+  std::u16string_view GetAudioLabelText() const;
 
   bool IsPermissionPaneVisible() const;
   bool IsContentPaneVisible() const;
@@ -43,15 +50,18 @@ class DesktopMediaPaneView : public views::View {
 #if BUILDFLAG(IS_MAC)
   void OnScreenCapturePermissionUpdate(bool has_permission);
   bool WasPermissionButtonClicked() const;
+  void SetAudioWarningVisible(bool visible);
+  bool IsAudioWarningVisible() const;
 #endif
 
  private:
 #if BUILDFLAG(IS_MAC)
   bool PermissionRequired() const;
   void MakePermissionPaneView();
-#endif
 
   const DesktopMediaList::Type type_;
+#endif
+
   raw_ptr<views::BoxLayout> layout_ = nullptr;
   raw_ptr<DesktopMediaContentPaneView> content_pane_view_ = nullptr;
   raw_ptr<DesktopMediaPermissionPaneViewMac> permission_pane_view_ = nullptr;

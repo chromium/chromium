@@ -222,11 +222,10 @@ std::unique_ptr<SavePageRequest> MakeSavePageRequest(
   const int64_t completed_attempt_count = statement.ColumnInt64(5);
   const SavePageRequest::RequestState state =
       ToRequestState(statement.ColumnInt64(6));
-  const GURL url(statement.ColumnString(7));
-  const ClientId client_id(statement.ColumnString(8),
-                           statement.ColumnString(9));
-  const GURL original_url(statement.ColumnString(10));
-  const std::string request_origin(statement.ColumnString(11));
+  const GURL url(statement.ColumnStringView(7));
+  ClientId client_id(statement.ColumnString(8), statement.ColumnString(9));
+  GURL original_url(statement.ColumnStringView(10));
+  std::string request_origin(statement.ColumnString(11));
 
   DVLOG(2) << "making save page request - id " << id << " url " << url
            << " client_id " << client_id.name_space << "-" << client_id.id
@@ -365,8 +364,6 @@ UpdateRequestsResult StoreErrorForAllIds(const std::vector<int64_t>& item_ids) {
 }
 
 bool InitDatabaseSync(sql::Database* db, const base::FilePath& path) {
-  db->set_histogram_tag("BackgroundRequestQueue");
-
   if (path.empty()) {
     if (!db->OpenInMemory())
       return false;
@@ -377,7 +374,6 @@ bool InitDatabaseSync(sql::Database* db, const base::FilePath& path) {
     if (!db->Open(path))
       return false;
   }
-  db->Preload();
 
   return CreateSchemaSync(db);
 }
@@ -588,7 +584,8 @@ RequestQueueStore::~RequestQueueStore() {
 void RequestQueueStore::Initialize(InitializeCallback callback) {
   DCHECK(!db_);
   db_ = std::make_unique<sql::Database>(
-      sql::DatabaseOptions{.page_size = 4096, .cache_size = 500});
+      sql::DatabaseOptions().set_preload(true),
+      sql::Database::Tag("BackgroundRequestQueue"));
 
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&InitDatabaseSync, db_.get(), db_file_path_),

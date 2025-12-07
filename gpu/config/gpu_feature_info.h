@@ -11,8 +11,10 @@
 #include <string>
 #include <vector>
 
+#include "build/build_config.h"
+#include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/config/gpu_config_export.h"
 #include "gpu/config/gpu_feature_type.h"
-#include "gpu/gpu_export.h"
 
 namespace gfx {
 enum class BufferFormat : uint8_t;
@@ -34,7 +36,7 @@ enum GpuFeatureStatus {
   kGpuFeatureStatusMax
 };
 
-struct GPU_EXPORT GpuFeatureInfo {
+struct GPU_CONFIG_EXPORT GpuFeatureInfo {
   GpuFeatureInfo();
   GpuFeatureInfo(const GpuFeatureInfo&);
   GpuFeatureInfo(GpuFeatureInfo&&);
@@ -70,6 +72,11 @@ struct GPU_EXPORT GpuFeatureInfo {
   // by the platform.
   std::vector<gfx::BufferFormat>
       supported_buffer_formats_for_allocation_and_texturing;
+#if BUILDFLAG(IS_OZONE)
+  // SharedImageFormats of native pixmaps that can be imported in GL context.
+  std::vector<viz::SharedImageFormat>
+      supported_formats_for_gl_native_pixmap_import;
+#endif  // BUILDFLAG(IS_OZONE)
 };
 
 }  // namespace gpu

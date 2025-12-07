@@ -4,10 +4,9 @@
 
 #include "chrome/browser/ui/views/incognito_clear_browsing_data_dialog_coordinator.h"
 
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include <memory>
+
 #include "chrome/browser/ui/views/incognito_clear_browsing_data_dialog.h"
-#include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view_utils.h"
 
@@ -15,19 +14,16 @@ IncognitoClearBrowsingDataDialogCoordinator::
     ~IncognitoClearBrowsingDataDialogCoordinator() {
   // Forcefully close the Widget if it hasn't been closed by the time the
   // browser is torn down to avoid dangling references.
-  if (IsShowing())
+  if (IsShowing()) {
     bubble_tracker_.view()->GetWidget()->CloseNow();
+  }
 }
 
 void IncognitoClearBrowsingDataDialogCoordinator::Show(
-    IncognitoClearBrowsingDataDialogInterface::Type type) {
-  auto* avatar_toolbar_button =
-      BrowserView::GetBrowserViewForBrowser(&GetBrowser())
-          ->toolbar_button_provider()
-          ->GetAvatarToolbarButton();
-
+    IncognitoClearBrowsingDataDialogInterface::Type type,
+    views::View* anchor_view) {
   auto bubble = std::make_unique<IncognitoClearBrowsingDataDialog>(
-      avatar_toolbar_button, GetBrowser().profile(), type);
+      anchor_view, profile_, type);
   DCHECK_EQ(nullptr, bubble_tracker_.view());
   bubble_tracker_.SetView(bubble.get());
 
@@ -48,7 +44,5 @@ IncognitoClearBrowsingDataDialog* IncognitoClearBrowsingDataDialogCoordinator::
 }
 
 IncognitoClearBrowsingDataDialogCoordinator::
-    IncognitoClearBrowsingDataDialogCoordinator(Browser* browser)
-    : BrowserUserData<IncognitoClearBrowsingDataDialogCoordinator>(*browser) {}
-
-BROWSER_USER_DATA_KEY_IMPL(IncognitoClearBrowsingDataDialogCoordinator);
+    IncognitoClearBrowsingDataDialogCoordinator(Profile* profile)
+    : profile_(profile) {}

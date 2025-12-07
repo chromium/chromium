@@ -41,7 +41,7 @@ NSArray<NSNumber*>* GetPermissionsFromWKMediaCaptureType(
                            onTaskRunner:
                                (const scoped_refptr<base::SequencedTaskRunner>&)
                                    taskRunner {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _taskRunner = taskRunner;
     _decisionHandler = decisionHandler;
     _decisionHandlerInvoked = NO;

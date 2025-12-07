@@ -10,6 +10,7 @@
 
 #include "ash/strings/grit/ash_strings.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/components/system_info/cpu_usage_data.h"
 #include "chromeos/ash/components/system_info/system_info_util.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"

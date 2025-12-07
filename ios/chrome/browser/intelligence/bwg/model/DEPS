@@ -1,0 +1,16 @@
+include_rules = [
+  "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
+  "+ios/chrome/browser/location_bar/badge/model",
+  "+ios/chrome/browser/location_bar/badge/ui",
+  "+ios/chrome/browser/optimization_guide/model/optimization_guide_service.h",
+  "+ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h",
+  "+ios/chrome/browser/optimization_guide/mojom/zero_state_suggestions_service.mojom.h",
+  "+ios/chrome/browser/signin/model/authentication_service.h",
+  "+ios/chrome/browser/signin/model/authentication_service_factory.h",
+  "+ios/chrome/browser/signin/model/identity_manager_factory.h",
+  "+ios/chrome/browser/snapshots/model/snapshot_tab_helper.h",
+  "+ios/chrome/browser/url_loading/model/url_loading_browser_agent.h",
+  "+ios/chrome/browser/url_loading/model/url_loading_params.h",
+  "+ios/chrome/browser/web/model/image_fetch/image_fetch_tab_helper.h",
+  "+ios/web/util/content_type_util.h",
+]

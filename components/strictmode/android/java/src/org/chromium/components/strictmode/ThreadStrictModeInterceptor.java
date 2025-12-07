@@ -8,7 +8,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.StrictMode.ThreadPolicy;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /** Installs a whitelist configuration for StrictMode's ThreadPolicy feature. */
+@NullMarked
 public interface ThreadStrictModeInterceptor {
     /**
      * Install this interceptor and it's whitelists.
@@ -25,10 +27,10 @@ public interface ThreadStrictModeInterceptor {
     void install(ThreadPolicy detectors);
 
     /**
-     * Builds ThreadStrictModeInterceptor with the death penalty and with
-     * {@link KnownViolations} exempted.
+     * Builds ThreadStrictModeInterceptor with the death penalty and with {@link KnownViolations}
+     * exempted.
      */
-    public static ThreadStrictModeInterceptor buildWithDeathPenaltyAndKnownViolationExemptions() {
+    static ThreadStrictModeInterceptor buildWithDeathPenaltyAndKnownViolationExemptions() {
         ThreadStrictModeInterceptor.Builder threadInterceptor =
                 new ThreadStrictModeInterceptor.Builder();
         threadInterceptor.replaceAllPenaltiesWithDeathPenalty();

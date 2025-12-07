@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/audio_buffer.h"
 
 #include <cmath>
 
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/types/pass_key.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_sample_types.h"
 #include "media/base/limits.h"
 #include "media/base/timestamp_constants.h"
 
@@ -31,37 +31,25 @@ AudioBuffer::ExternalMemory::ExternalMemory(ExternalMemory&&) = default;
 
 namespace {
 
-// TODO(crbug.com/41258600): Use vector instructions to speed this up.
-template <class SourceSampleTypeTraits>
-void CopyConvertFromInterleaved(
-    const typename SourceSampleTypeTraits::ValueType* source_buffer,
-    int num_frames_to_write,
-    const std::vector<float*> dest) {
-  const int channels = dest.size();
-  for (int ch = 0; ch < channels; ++ch) {
-    float* dest_data = dest[ch];
-    for (int target_frame_index = 0, read_pos_in_source = ch;
-         target_frame_index < num_frames_to_write;
-         ++target_frame_index, read_pos_in_source += channels) {
-      auto source_value = source_buffer[read_pos_in_source];
-      dest_data[target_frame_index] =
-          SourceSampleTypeTraits::ToFloat(source_value);
-    }
-  }
-}
-
 class SelfOwnedMemory : public AudioBuffer::ExternalMemory {
  public:
   explicit SelfOwnedMemory(size_t size)
-      : heap_array_(base::HeapArray<uint8_t>::Uninit(size)) {
+      : heap_array_(UNSAFE_TODO(
+            base::HeapArray<uint8_t, base::AlignedFreeDeleter>::
+                FromOwningPointer(
+                    static_cast<uint8_t*>(
+                        base::AlignedAlloc(size, AudioBus::kChannelAlignment)),
+                    size))) {
     span_ = heap_array_.as_span();
   }
-  SelfOwnedMemory(SelfOwnedMemory&&) = default;
-  ~SelfOwnedMemory() override = default;
 
  private:
-  base::HeapArray<uint8_t> heap_array_;
+  base::HeapArray<uint8_t, base::AlignedFreeDeleter> heap_array_;
 };
+
+std::unique_ptr<AudioBuffer::ExternalMemory> AllocateMemory(size_t size) {
+  return std::make_unique<SelfOwnedMemory>(size);
+}
 
 }  // namespace
 
@@ -71,6 +59,8 @@ static base::TimeDelta CalculateDuration(int frames, double sample_rate) {
                             sample_rate);
 }
 
+AudioBufferMemoryPool::AudioBufferMemoryPool()
+    : AudioBufferMemoryPool(AudioBus::kChannelAlignment) {}
 AudioBufferMemoryPool::AudioBufferMemoryPool(int alignment)
     : alignment_(alignment) {}
 AudioBufferMemoryPool::~AudioBufferMemoryPool() = default;
@@ -82,7 +72,7 @@ AudioBufferMemoryPool::ExternalMemoryFromPool::ExternalMemoryFromPool(
     std::unique_ptr<uint8_t, base::AlignedFreeDeleter> memory,
     size_t size)
     : memory_(std::move(memory)), pool_(pool) {
-  span_ = {memory_.get(), size};
+  span_ = UNSAFE_TODO({memory_.get(), size});
 }
 
 AudioBufferMemoryPool::ExternalMemoryFromPool::~ExternalMemoryFromPool() {
@@ -117,7 +107,7 @@ AudioBufferMemoryPool::CreateBuffer(size_t size) {
   // for VideoFrames we need to zero out the memory. https://crbug.com/1144070.
   auto memory = std::unique_ptr<uint8_t, base::AlignedFreeDeleter>(
       static_cast<uint8_t*>(base::AlignedAlloc(size, GetChannelAlignment())));
-  memset(memory.get(), 0, size);
+  UNSAFE_TODO(memset(memory.get(), 0, size));
   return std::make_unique<ExternalMemoryFromPool>(
       ExternalMemoryFromPool(this, std::move(memory), size));
 }
@@ -127,7 +117,8 @@ void AudioBufferMemoryPool::ReturnBuffer(ExternalMemoryFromPool memory) {
   entries_.emplace_back(std::move(memory));
 }
 
-AudioBuffer::AudioBuffer(SampleFormat sample_format,
+AudioBuffer::AudioBuffer(base::PassKey<AudioBuffer>,
+                         SampleFormat sample_format,
                          ChannelLayout channel_layout,
                          int channel_count,
                          int sample_rate,
@@ -158,7 +149,7 @@ AudioBuffer::AudioBuffer(SampleFormat sample_format,
 
   const int bytes_per_channel = SampleFormatToBytesPerChannel(sample_format);
   const int channel_alignment =
-      pool_ ? pool_->GetChannelAlignment() : bytes_per_channel;
+      pool_ ? pool_->GetChannelAlignment() : AudioBus::kChannelAlignment;
   CHECK_LE(bytes_per_channel, channel_alignment);
 
   // Empty buffer?
@@ -170,15 +161,27 @@ AudioBuffer::AudioBuffer(SampleFormat sample_format,
 
   if (sample_format == kSampleFormatIECDts) {
     // Allocate a contiguous buffer for IEC61937 encapsulated Bitstream.
-    data_size_ = frame_count * bytes_per_channel * channel_count_;
+    const size_t forced_data_size =
+        frame_count * bytes_per_channel * channel_count_;
+    CHECK_LE(data_size, forced_data_size);
+    data_size_ = forced_data_size;
     data_ =
         pool_ ? pool_->CreateBuffer(data_size_) : AllocateMemory(data_size_);
     channel_data_.push_back(data_->span().data());
 
+    auto needs_zeroing = data_->span();
+
     // Copy data
     if (data) {
-      memcpy(channel_data_[0], data[0], data_size);
+      // Note: `data_size` is the external data size, not `data_size_`.
+      auto [data_portion, zero_portion] = data_->span().split_at(data_size);
+
+      data_portion.copy_from_nonoverlapping(
+          UNSAFE_TODO(base::span(data[0], data_size)));
+      needs_zeroing = zero_portion;
     }
+
+    std::ranges::fill(needs_zeroing, 0u);
     return;
   }
   int data_size_per_channel = frame_count * bytes_per_channel;
@@ -198,10 +201,10 @@ AudioBuffer::AudioBuffer(SampleFormat sample_format,
 
     // Copy each channel's data into the appropriate spot.
     for (int i = 0; i < channel_count_; ++i) {
-      channel_data_.push_back(data_->span().data() +
-                              i * block_size_per_channel);
+      channel_data_.push_back(
+          UNSAFE_TODO(data_->span().data() + i * block_size_per_channel));
       if (data) {
-        memcpy(channel_data_[i], data[i], data_size_per_channel);
+        UNSAFE_TODO(memcpy(channel_data_[i], data[i], data_size_per_channel));
       }
     }
     return;
@@ -220,11 +223,12 @@ AudioBuffer::AudioBuffer(SampleFormat sample_format,
   data_ = pool_ ? pool_->CreateBuffer(data_size_) : AllocateMemory(data_size_);
   channel_data_.push_back(data_->span().data());
   if (data) {
-    memcpy(data_->span().data(), data[0], data_size_);
+    UNSAFE_TODO(memcpy(data_->span().data(), data[0], data_size_));
   }
 }
 
-AudioBuffer::AudioBuffer(SampleFormat sample_format,
+AudioBuffer::AudioBuffer(base::PassKey<AudioBuffer>,
+                         SampleFormat sample_format,
                          ChannelLayout channel_layout,
                          int channel_count,
                          int sample_rate,
@@ -270,22 +274,18 @@ AudioBuffer::AudioBuffer(SampleFormat sample_format,
     channel_data_.reserve(channel_count_);
     // Set each channel's data pointer into the appropriate spot.
     for (int i = 0; i < channel_count_; ++i) {
-      channel_data_.push_back(data_->span().data() + i * data_size_per_channel);
+      channel_data_.push_back(
+          UNSAFE_TODO(data_->span().data() + i * data_size_per_channel));
       CHECK_LE(data_->span().data(), channel_data_.back());
-      CHECK_GE(data_->span().data() + data_->span().size(),
-               channel_data_.back() + data_size_per_channel);
+      UNSAFE_TODO(CHECK_GE(data_->span().data() + data_->span().size(),
+                           channel_data_.back() + data_size_per_channel));
     }
   } else {
-    NOTREACHED_NORETURN() << sample_format;
+    NOTREACHED() << sample_format;
   }
 }
 
 AudioBuffer::~AudioBuffer() = default;
-
-std::unique_ptr<AudioBuffer::ExternalMemory> AudioBuffer::AllocateMemory(
-    size_t size) {
-  return std::make_unique<SelfOwnedMemory>(size);
-}
 
 // static
 scoped_refptr<AudioBuffer> AudioBuffer::CopyFrom(
@@ -300,9 +300,10 @@ scoped_refptr<AudioBuffer> AudioBuffer::CopyFrom(
   // If you hit this CHECK you likely have a bug in a demuxer. Go fix it.
   CHECK_GT(frame_count, 0);  // Otherwise looks like an EOF buffer.
   CHECK(data[0]);
-  return base::WrapRefCounted(
-      new AudioBuffer(sample_format, channel_layout, channel_count, sample_rate,
-                      frame_count, true, data, 0, timestamp, std::move(pool)));
+  return base::MakeRefCounted<AudioBuffer>(
+      base::PassKey<AudioBuffer>(), sample_format, channel_layout,
+      channel_count, sample_rate, frame_count, true, data, 0, timestamp,
+      std::move(pool));
 }
 
 // static
@@ -318,8 +319,10 @@ scoped_refptr<AudioBuffer> AudioBuffer::CopyFrom(
   DCHECK(channel_count);
 
   std::vector<const uint8_t*> data(channel_count);
-  for (int ch = 0; ch < channel_count; ch++)
-    data[ch] = reinterpret_cast<const uint8_t*>(audio_bus->channel(ch));
+  for (int ch = 0; ch < channel_count; ch++) {
+    data[ch] =
+        reinterpret_cast<const uint8_t*>(audio_bus->channel_span(ch).data());
+  }
 
   return CopyFrom(kSampleFormatPlanarF32, channel_layout, channel_count,
                   sample_rate, audio_bus->frames(), data.data(), timestamp,
@@ -353,9 +356,10 @@ scoped_refptr<AudioBuffer> AudioBuffer::CopyBitstreamFrom(
   // If you hit this CHECK you likely have a bug in a demuxer. Go fix it.
   CHECK_GT(frame_count, 0);  // Otherwise looks like an EOF buffer.
   CHECK(data[0]);
-  return base::WrapRefCounted(new AudioBuffer(
-      sample_format, channel_layout, channel_count, sample_rate, frame_count,
-      true, data, data_size, timestamp, std::move(pool)));
+  return base::MakeRefCounted<AudioBuffer>(
+      base::PassKey<AudioBuffer>(), sample_format, channel_layout,
+      channel_count, sample_rate, frame_count, true, data, data_size, timestamp,
+      std::move(pool));
 }
 
 // static
@@ -367,9 +371,10 @@ scoped_refptr<AudioBuffer> AudioBuffer::CreateBuffer(
     int frame_count,
     scoped_refptr<AudioBufferMemoryPool> pool) {
   CHECK_GT(frame_count, 0);  // Otherwise looks like an EOF buffer.
-  return base::WrapRefCounted(new AudioBuffer(
-      sample_format, channel_layout, channel_count, sample_rate, frame_count,
-      true, nullptr, 0, kNoTimestamp, std::move(pool)));
+  return base::MakeRefCounted<AudioBuffer>(
+      base::PassKey<AudioBuffer>(), sample_format, channel_layout,
+      channel_count, sample_rate, frame_count, true, nullptr, 0, kNoTimestamp,
+      std::move(pool));
 }
 
 // static
@@ -382,9 +387,10 @@ scoped_refptr<AudioBuffer> AudioBuffer::CreateBitstreamBuffer(
     size_t data_size,
     scoped_refptr<AudioBufferMemoryPool> pool) {
   CHECK_GT(frame_count, 0);  // Otherwise looks like an EOF buffer.
-  return base::WrapRefCounted(new AudioBuffer(
-      sample_format, channel_layout, channel_count, sample_rate, frame_count,
-      true, nullptr, data_size, kNoTimestamp, std::move(pool)));
+  return base::MakeRefCounted<AudioBuffer>(
+      base::PassKey<AudioBuffer>(), sample_format, channel_layout,
+      channel_count, sample_rate, frame_count, true, nullptr, data_size,
+      kNoTimestamp, std::move(pool));
 }
 
 // static
@@ -396,9 +402,10 @@ scoped_refptr<AudioBuffer> AudioBuffer::CreateEmptyBuffer(
     const base::TimeDelta timestamp) {
   CHECK_GT(frame_count, 0);  // Otherwise looks like an EOF buffer.
   // Since data == nullptr, format doesn't matter.
-  return base::WrapRefCounted(new AudioBuffer(
-      kSampleFormatF32, channel_layout, channel_count, sample_rate, frame_count,
-      false, nullptr, 0, timestamp, nullptr));
+  return base::MakeRefCounted<AudioBuffer>(
+      base::PassKey<AudioBuffer>(), kSampleFormatF32, channel_layout,
+      channel_count, sample_rate, frame_count, false, nullptr, 0, timestamp,
+      nullptr);
 }
 
 // static
@@ -411,16 +418,17 @@ scoped_refptr<AudioBuffer> AudioBuffer::CreateFromExternalMemory(
     const base::TimeDelta timestamp,
     std::unique_ptr<AudioBuffer::ExternalMemory> external_memory) {
   CHECK_GT(frame_count, 0);
-  return base::WrapRefCounted(
-      new AudioBuffer(sample_format, channel_layout, channel_count, sample_rate,
-                      frame_count, timestamp, std::move(external_memory)));
+  return base::MakeRefCounted<AudioBuffer>(
+      base::PassKey<AudioBuffer>(), sample_format, channel_layout,
+      channel_count, sample_rate, frame_count, timestamp,
+      std::move(external_memory));
 }
 
 // static
 scoped_refptr<AudioBuffer> AudioBuffer::CreateEOSBuffer() {
-  return base::WrapRefCounted(
-      new AudioBuffer(kUnknownSampleFormat, CHANNEL_LAYOUT_NONE, 0, 0, 0, false,
-                      nullptr, 0, kNoTimestamp, nullptr));
+  return base::MakeRefCounted<AudioBuffer>(
+      base::PassKey<AudioBuffer>(), kUnknownSampleFormat, CHANNEL_LAYOUT_NONE,
+      0, 0, 0, false, nullptr, 0, kNoTimestamp, nullptr);
 }
 
 // static
@@ -445,12 +453,14 @@ std::unique_ptr<AudioBus> AudioBuffer::WrapOrCopyToAudioBus(
   if (audiobus_compatible) {
     auto audio_bus = AudioBus::CreateWrapper(channels);
 
+    audio_bus->set_frames(frames);
+
     for (int ch = 0; ch < channels; ++ch) {
       audio_bus->SetChannelData(
-          ch, reinterpret_cast<float*>(buffer->channel_data()[ch]));
+          ch, UNSAFE_TODO(base::span(
+                  reinterpret_cast<float*>(buffer->channel_data()[ch]),
+                  base::checked_cast<size_t>(buffer->frame_count()))));
     }
-
-    audio_bus->set_frames(frames);
 
     // Keep |buffer| alive as long as |audio_bus|.
     audio_bus->SetWrappedDataDeleter(
@@ -492,17 +502,20 @@ void AudioBuffer::ReadFrames(int frames_to_copy,
     // For bitstream formats, we only support 2 modes: 1) Overwrite the data to
     // the beginning of the destination buffer. 2) Append new data to the end of
     // the existing data.
-    DCHECK(!source_frame_offset);
-    DCHECK(!dest_frame_offset ||
-           dest_frame_offset == dest->GetBitstreamFrames());
+    CHECK(!source_frame_offset);
+    CHECK(!dest_frame_offset ||
+          dest_frame_offset == dest->GetBitstreamFrames());
 
-    size_t bitstream_size =
-        dest_frame_offset ? dest->GetBitstreamDataSize() : 0;
-    uint8_t* dest_data =
-        reinterpret_cast<uint8_t*>(dest->channel(0)) + bitstream_size;
+    const bool append_data = dest_frame_offset == dest->GetBitstreamFrames();
+    const size_t dest_size = append_data ? dest->bitstream_data().size() : 0u;
+    const size_t new_dest_size = dest_size + data_size();
 
-    memcpy(dest_data, channel_data_[0], data_size());
-    dest->SetBitstreamDataSize(bitstream_size + data_size());
+    dest->SetBitstreamSize(new_dest_size);
+
+    auto dest_span = dest->bitstream_data().subspan(dest_size, data_size());
+    dest_span.copy_from_nonoverlapping(
+        UNSAFE_TODO(base::span(channel_data_[0], data_size())));
+
     dest->SetBitstreamFrames(dest_frame_offset + frame_count());
     return;
   }
@@ -513,16 +526,19 @@ void AudioBuffer::ReadFrames(int frames_to_copy,
     return;
   }
 
+  const size_t dest_offset = base::checked_cast<size_t>(dest_frame_offset);
+
   // Note: The conversion steps below will clip values to [1.0, -1.0f].
 
   if (sample_format_ == kSampleFormatPlanarF32) {
     for (int ch = 0; ch < channel_count_; ++ch) {
-      float* dest_data = dest->channel(ch) + dest_frame_offset;
+      auto dest_data = dest->channel_span(ch).subspan(dest_offset);
       const float* source_data =
-          reinterpret_cast<const float*>(channel_data_[ch]) +
-          source_frame_offset;
+          UNSAFE_TODO(reinterpret_cast<const float*>(channel_data_[ch]) +
+                      source_frame_offset);
       for (int i = 0; i < frames_to_copy; ++i)
-        dest_data[i] = Float32SampleTypeTraits::FromFloat(source_data[i]);
+        dest_data[i] =
+            Float32SampleTypeTraits::FromFloat(UNSAFE_TODO(source_data[i]));
     }
     return;
   }
@@ -530,10 +546,12 @@ void AudioBuffer::ReadFrames(int frames_to_copy,
     // Format is planar unsigned 8. Convert each value into float and insert
     // into output channel data.
     for (int ch = 0; ch < channel_count_; ++ch) {
-      const uint8_t* source_data = channel_data_[ch] + source_frame_offset;
-      float* dest_data = dest->channel(ch) + dest_frame_offset;
+      const uint8_t* source_data =
+          UNSAFE_TODO(channel_data_[ch] + source_frame_offset);
+      auto dest_data = dest->channel_span(ch).subspan(dest_offset);
       for (int i = 0; i < frames_to_copy; ++i)
-        dest_data[i] = UnsignedInt8SampleTypeTraits::ToFloat(source_data[i]);
+        dest_data[i] =
+            UnsignedInt8SampleTypeTraits::ToFloat(UNSAFE_TODO(source_data[i]));
     }
     return;
   }
@@ -543,11 +561,12 @@ void AudioBuffer::ReadFrames(int frames_to_copy,
     // output channel data.
     for (int ch = 0; ch < channel_count_; ++ch) {
       const int16_t* source_data =
-          reinterpret_cast<const int16_t*>(channel_data_[ch]) +
-          source_frame_offset;
-      float* dest_data = dest->channel(ch) + dest_frame_offset;
+          UNSAFE_TODO(reinterpret_cast<const int16_t*>(channel_data_[ch]) +
+                      source_frame_offset);
+      auto dest_data = dest->channel_span(ch).subspan(dest_offset);
       for (int i = 0; i < frames_to_copy; ++i)
-        dest_data[i] = SignedInt16SampleTypeTraits::ToFloat(source_data[i]);
+        dest_data[i] =
+            SignedInt16SampleTypeTraits::ToFloat(UNSAFE_TODO(source_data[i]));
     }
     return;
   }
@@ -557,11 +576,12 @@ void AudioBuffer::ReadFrames(int frames_to_copy,
     // output channel data.
     for (int ch = 0; ch < channel_count_; ++ch) {
       const int32_t* source_data =
-          reinterpret_cast<const int32_t*>(channel_data_[ch]) +
-          source_frame_offset;
-      float* dest_data = dest->channel(ch) + dest_frame_offset;
+          UNSAFE_TODO(reinterpret_cast<const int32_t*>(channel_data_[ch]) +
+                      source_frame_offset);
+      auto dest_data = dest->channel_span(ch).subspan(dest_offset);
       for (int i = 0; i < frames_to_copy; ++i)
-        dest_data[i] = SignedInt32SampleTypeTraits::ToFloat(source_data[i]);
+        dest_data[i] =
+            SignedInt32SampleTypeTraits::ToFloat(UNSAFE_TODO(source_data[i]));
     }
     return;
   }
@@ -569,7 +589,7 @@ void AudioBuffer::ReadFrames(int frames_to_copy,
   const int bytes_per_channel = SampleFormatToBytesPerChannel(sample_format_);
   const int frame_size = channel_count_ * bytes_per_channel;
   const uint8_t* source_data =
-      data_->span().data() + source_frame_offset * frame_size;
+      UNSAFE_TODO(data_->span().data() + source_frame_offset * frame_size);
 
   if (sample_format_ == kSampleFormatF32) {
     dest->FromInterleavedPartial<Float32SampleTypeTraits>(
@@ -588,8 +608,7 @@ void AudioBuffer::ReadFrames(int frames_to_copy,
         reinterpret_cast<const int32_t*>(source_data), dest_frame_offset,
         frames_to_copy);
   } else {
-    NOTREACHED_IN_MIGRATION()
-        << "Unsupported audio sample type: " << sample_format_;
+    NOTREACHED() << "Unsupported audio sample type: " << sample_format_;
   }
 }
 
@@ -643,9 +662,9 @@ void AudioBuffer::TrimRange(int start, int end) {
       case kSampleFormatPlanarS32:
         // Planar data must be shifted per channel.
         for (int ch = 0; ch < channel_count_; ++ch) {
-          memmove(channel_data_[ch] + start * bytes_per_channel,
-                  channel_data_[ch] + end * bytes_per_channel,
-                  bytes_per_channel * frames_to_copy);
+          UNSAFE_TODO(memmove(channel_data_[ch] + start * bytes_per_channel,
+                              channel_data_[ch] + end * bytes_per_channel,
+                              bytes_per_channel * frames_to_copy));
         }
         break;
       case kSampleFormatU8:
@@ -655,9 +674,9 @@ void AudioBuffer::TrimRange(int start, int end) {
       case kSampleFormatF32: {
         // Interleaved data can be shifted all at once.
         const int frame_size = channel_count_ * bytes_per_channel;
-        memmove(channel_data_[0] + start * frame_size,
-                channel_data_[0] + end * frame_size,
-                frame_size * frames_to_copy);
+        UNSAFE_TODO(memmove(channel_data_[0] + start * frame_size,
+                            channel_data_[0] + end * frame_size,
+                            frame_size * frames_to_copy));
         break;
       }
       case kUnknownSampleFormat:
@@ -668,7 +687,7 @@ void AudioBuffer::TrimRange(int start, int end) {
       case kSampleFormatDtsxP2:
       case kSampleFormatIECDts:
       case kSampleFormatDtse:
-        NOTREACHED_IN_MIGRATION() << "Invalid sample format!";
+        NOTREACHED() << "Invalid sample format!";
     }
   } else {
     CHECK_EQ(frames_to_copy, 0);

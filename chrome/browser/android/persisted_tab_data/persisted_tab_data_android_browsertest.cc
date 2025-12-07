@@ -88,7 +88,7 @@ class PersistedTabDataAndroidBrowserTest : public AndroidBrowserTest {
 
   void OnDeferredStartup() { PersistedTabDataAndroid::OnDeferredStartup(); }
 
-  std::deque<std::unique_ptr<PersistedTabDataAndroid::DeferredRequest>>*
+  const base::circular_deque<PersistedTabDataAndroidDeferredRequest>&
   GetDeferredRequests() {
     return PersistedTabDataAndroid::GetDeferredRequests();
   }
@@ -229,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(PersistedTabDataAndroidBrowserTest,
   another_tab_bar_persisted_tab_data_android.SetValue(false);
 
   base::RunLoop run_loop[4];
-  int beginning_deferred_request_size = GetDeferredRequests()->size();
+  int beginning_deferred_request_size = GetDeferredRequests().size();
   FooPersistedTabDataAndroid::From(
       tab_android(), base::BindOnce(
                          [](base::OnceClosure done,
@@ -245,13 +245,12 @@ IN_PROC_BROWSER_TEST_F(PersistedTabDataAndroidBrowserTest,
                          },
                          run_loop[1].QuitClosure()));
   // Requests should be stored for deferred startup.
-  EXPECT_EQ(beginning_deferred_request_size + 2u,
-            GetDeferredRequests()->size());
+  EXPECT_EQ(beginning_deferred_request_size + 2u, GetDeferredRequests().size());
   OnDeferredStartup();
   run_loop[0].Run();
   run_loop[1].Run();
   // Deferred requests should have been executed.
-  EXPECT_EQ(0u, GetDeferredRequests()->size());
+  EXPECT_EQ(0u, GetDeferredRequests().size());
   FooPersistedTabDataAndroid::From(
       another_tab(), base::BindOnce(
                          [](base::OnceClosure done,
@@ -268,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(PersistedTabDataAndroidBrowserTest,
                          run_loop[3].QuitClosure()));
   // Should no longer be added to deferred startup queue because
   // deferred startup has happened.
-  EXPECT_EQ(0u, GetDeferredRequests()->size());
+  EXPECT_EQ(0u, GetDeferredRequests().size());
   run_loop[2].Run();
   run_loop[3].Run();
 }

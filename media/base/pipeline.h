@@ -138,9 +138,10 @@ class MEDIA_EXPORT Pipeline {
   //     <--------------------------------------     |
   //           |         |                |          |
   //           |         |                |          |
-  // |enabled_track_ids| contains track ids of enabled audio tracks.
+  // |enabled_track_id| is either empty, which means no audio track is
+  // enabled, or contains the selected audio track id.
   virtual void OnEnabledAudioTracksChanged(
-      const std::vector<MediaTrack::Id>& enabled_track_ids,
+      std::optional<MediaTrack::Id> enabled_track_id,
       base::OnceClosure change_completed_cb) = 0;
 
   // |selected_track_id| is either empty, which means no video track is
@@ -231,10 +232,14 @@ class MEDIA_EXPORT Pipeline {
   // different than 1.0.
   virtual void SetPreservesPitch(bool preserves_pitch) = 0;
 
+  // Sets a flag indicating whether to render muted audio to the active sink or
+  // switch to a null sink.
+  virtual void SetRenderMutedAudio(bool render_muted_audio) {}
+
   // Sets a flag indicating whether the audio stream was played with user
   // activation.
-  virtual void SetWasPlayedWithUserActivation(
-      bool was_played_with_user_activation) = 0;
+  virtual void SetWasPlayedWithUserActivationAndHighMediaEngagement(
+      bool was_played_with_user_activation_and_high_media_engagement) = 0;
 
   // Returns the current media playback time, which progresses from 0 until
   // GetMediaDuration().

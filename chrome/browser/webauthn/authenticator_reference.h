@@ -8,7 +8,7 @@
 #include <string>
 #include <string_view>
 
-#include "device/fido/fido_transport_protocol.h"
+#include "device/fido/public/fido_transport_protocol.h"
 
 // Encapsulates information about authenticators that have been found but to
 // which the CTAP request is not dispatched until after receiving confirmation

@@ -195,8 +195,8 @@ void VideoWakeLock::EnsureWakeLockService() {
       device::mojom::WakeLockType::kPreventDisplaySleep,
       device::mojom::blink::WakeLockReason::kVideoPlayback, "Video Wake Lock",
       wake_lock_service_.BindNewPipeAndPassReceiver(task_runner));
-  wake_lock_service_.set_disconnect_handler(WTF::BindOnce(
-      &VideoWakeLock::OnConnectionError, WrapWeakPersistent(this)));
+  wake_lock_service_.set_disconnect_handler(
+      BindOnce(&VideoWakeLock::OnConnectionError, WrapWeakPersistent(this)));
 }
 
 void VideoWakeLock::OnConnectionError() {
@@ -217,22 +217,14 @@ void VideoWakeLock::UpdateWakeLockService() {
 }
 
 void VideoWakeLock::StartIntersectionObserver() {
-  // Most screen timeouts are at least 5s, so we don't need high frequency
-  // intersection updates. Choose a value such that we're never more than 5s
-  // apart w/ a 100ms of delivery leeway.
-  //
-  // TODO(crbug.com/1376286): Delay values appear to be broken. If a change
-  // occurs during the delay window, the update is dropped entirely...
-  constexpr base::TimeDelta kDelay;
-
   visibility_observer_ = IntersectionObserver::Create(
       VideoElement().GetDocument(),
-      WTF::BindRepeating(&VideoWakeLock::OnVisibilityChanged,
-                         WrapWeakPersistent(this)),
+      BindRepeating(&VideoWakeLock::OnVisibilityChanged,
+                    WrapWeakPersistent(this)),
       LocalFrameUkmAggregator::kMediaIntersectionObserver,
       IntersectionObserver::Params{
           .thresholds = {visibility_threshold_},
-          .delay = kDelay,
+          .delay = kIntersectionObserverDelay,
       });
   visibility_observer_->observe(&VideoElement());
 
@@ -244,13 +236,12 @@ void VideoWakeLock::StartIntersectionObserver() {
   // running from within an iframe.
   size_observer_ = IntersectionObserver::Create(
       VideoElement().GetDocument().TopDocument(),
-      WTF::BindRepeating(&VideoWakeLock::OnSizeChanged,
-                         WrapWeakPersistent(this)),
+      BindRepeating(&VideoWakeLock::OnSizeChanged, WrapWeakPersistent(this)),
       LocalFrameUkmAggregator::kMediaIntersectionObserver,
       IntersectionObserver::Params{
           .thresholds = {kSizeThreshold},
           .semantics = IntersectionObserver::kFractionOfRoot,
-          .delay = kDelay,
+          .delay = kIntersectionObserverDelay,
       });
   size_observer_->observe(&VideoElement());
 }

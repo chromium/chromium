@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stdint.h>
 
 #include <algorithm>
@@ -27,7 +22,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 // TODO: Remove this definition by targeting version 22+ NDK at build time.
 // This was copied from <malloc.h> in Bionic master.
 extern "C" int mallopt(int __option, int __value) __attribute__((weak));
@@ -56,10 +51,13 @@ uint64_t GetPrivateFootprintKb() {
           base::GetCurrentProcId(),
           base::BindOnce(
               [](base::OnceClosure quit_closure, uint64_t* private_footprint_kb,
-                 bool success, std::unique_ptr<GlobalMemoryDump> result) {
+                 memory_instrumentation::mojom::RequestOutcome outcome,
+                 std::unique_ptr<GlobalMemoryDump> result) {
                 // The global dump should only contain the current process
                 // (browser).
-                EXPECT_TRUE(success);
+                EXPECT_EQ(
+                    memory_instrumentation::mojom::RequestOutcome::kSuccess,
+                    outcome);
                 ASSERT_EQ(std::distance(result->process_dumps().begin(),
                                         result->process_dumps().end()),
                           1);
@@ -93,8 +91,8 @@ IN_PROC_BROWSER_TEST_F(MemoryInstrumentationTest,
   // until the purge interval, which is set at 1 second. If we are on N or
   // above, check whether we can use mallopt(M_PURGE) to trigger an immediate
   // purge. If we can't, skip the test.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SDK_VERSION_NOUGAT) {
+  if (base::android::android_info::sdk_int() >=
+      base::android::android_info::SDK_VERSION_NOUGAT) {
     // M_PURGE is supported on most devices running P, but not all of them. So
     // we can't check the API level but must instead attempt to trigger a purge
     // and check whether or not it succeeded.
@@ -115,14 +113,16 @@ IN_PROC_BROWSER_TEST_F(MemoryInstrumentationTest,
 
   int64_t before_kb = GetPrivateFootprintKb();
 
-  std::unique_ptr<char[]> buffer = std::make_unique<char[]>(kAllocSize);
-  memset(buffer.get(), 1, kAllocSize);
-  volatile char* x = static_cast<volatile char*>(buffer.get());
-  EXPECT_EQ(x[0] + x[kAllocSize - 1], 2);
+  std::vector<char> buffer(kAllocSize, 1);
+  // Read from the buffer to ensure it's committed.
+  volatile char first = buffer.front();
+  volatile char last = buffer.back();
+  EXPECT_EQ(first + last, 2);
 
   int64_t during_kb = GetPrivateFootprintKb();
 
-  buffer.reset();
+  buffer.clear();
+  buffer.shrink_to_fit();
 
 #if BUILDFLAG(IS_ANDROID)
   if (mallopt)

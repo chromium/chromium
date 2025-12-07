@@ -201,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest,
   GURL url2b =
       embedded_test_server()->GetURL("B.com", "/site_isolation/blank.html?2");
   GURL url2a = embedded_test_server()->GetURL(
-      "A.com", "/cross-site/" + url2b.host() + url2b.PathForRequest());
+      "A.com", "/cross-site/" + url2b.GetHost() + url2b.PathForRequest());
   NavigateToURLContentInitiated(shell(), url2a, true, true);
 
   // There should be one history entry. url2b should have replaced url1.
@@ -214,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest,
   GURL url3b =
       embedded_test_server()->GetURL("B.com", "/site_isolation/blank.html?3");
   GURL url3a = embedded_test_server()->GetURL(
-      "A.com", "/cross-site/" + url3b.host() + url3b.PathForRequest());
+      "A.com", "/cross-site/" + url3b.GetHost() + url3b.PathForRequest());
   NavigateToURLContentInitiated(shell(), url3a, false, true);
 
   // There should be two history entries. url2b should have replaced url1. url3b
@@ -296,8 +296,11 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, PostWithFileData) {
   run_loop.Run();
 
   // Remember the old process id for a sanity check below.
-  int old_process_id =
-      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
+  int old_process_id = shell()
+                           ->web_contents()
+                           ->GetPrimaryMainFrame()
+                           ->GetProcess()
+                           ->GetDeprecatedID();
 
   // Submit the form.
   TestNavigationObserver form_post_observer(shell()->web_contents(), 1);
@@ -310,8 +313,11 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, PostWithFileData) {
             shell()->web_contents()->GetLastCommittedURL());
 
   // Verify that the test really verifies access of a *new* renderer process.
-  int new_process_id =
-      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
+  int new_process_id = shell()
+                           ->web_contents()
+                           ->GetPrimaryMainFrame()
+                           ->GetProcess()
+                           ->GetDeprecatedID();
   ASSERT_NE(new_process_id, old_process_id);
 
   // MAIN VERIFICATION: Check if the new renderer process is able to read the
@@ -365,8 +371,9 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, MaliciousPostWithFileData) {
   // and |form_contents|.
   EXPECT_EQ(initial_target_url, target_contents->GetLastCommittedURL());
   EXPECT_EQ(form_url, form_contents->GetLastCommittedURL());
-  EXPECT_NE(target_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
-            form_contents->GetPrimaryMainFrame()->GetProcess()->GetID());
+  EXPECT_NE(
+      target_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
+      form_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID());
 
   // Prepare a file to upload.
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -389,16 +396,19 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, MaliciousPostWithFileData) {
   ChildProcessSecurityPolicyImpl* security_policy =
       ChildProcessSecurityPolicyImpl::GetInstance();
   EXPECT_TRUE(security_policy->CanReadFile(
-      form_contents->GetPrimaryMainFrame()->GetProcess()->GetID(), file_path));
+      form_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
+      file_path));
 
   // Simulate a malicious situation, where the renderer doesn't really have
   // access to the file.
   security_policy->RevokeAllPermissionsForFile(
-      form_contents->GetPrimaryMainFrame()->GetProcess()->GetID(), file_path);
+      form_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
+      file_path);
   EXPECT_FALSE(security_policy->CanReadFile(
-      form_contents->GetPrimaryMainFrame()->GetProcess()->GetID(), file_path));
+      form_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
+      file_path));
   EXPECT_FALSE(security_policy->CanReadFile(
-      target_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      target_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
       file_path));
 
   // Submit the form and wait until the malicious renderer gets killed.
@@ -417,9 +427,10 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, MaliciousPostWithFileData) {
 
   // Both processes still shouldn't have access.
   EXPECT_FALSE(security_policy->CanReadFile(
-      form_contents->GetPrimaryMainFrame()->GetProcess()->GetID(), file_path));
+      form_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
+      file_path));
   EXPECT_FALSE(security_policy->CanReadFile(
-      target_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      target_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
       file_path));
 }
 

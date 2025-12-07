@@ -30,17 +30,16 @@ class AwHttpAuthHandler : public content::LoginDelegate {
   AwHttpAuthHandler(const net::AuthChallengeInfo& auth_info,
                     content::WebContents* web_contents,
                     bool first_auth_attempt,
-                    LoginAuthRequiredCallback callback);
+                    content::LoginDelegate::LoginAuthRequiredCallback callback);
   ~AwHttpAuthHandler() override;
 
   // from AwHttpAuthHandler
   bool HandleOnUIThread(content::WebContents* web_contents);
 
   void Proceed(JNIEnv* env,
-               const base::android::JavaParamRef<jobject>& obj,
-               const base::android::JavaParamRef<jstring>& username,
-               const base::android::JavaParamRef<jstring>& password);
-  void Cancel(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+               const base::android::JavaRef<jstring>& username,
+               const base::android::JavaRef<jstring>& password);
+  void Cancel(JNIEnv* env);
 
  private:
   void Start();
@@ -49,7 +48,7 @@ class AwHttpAuthHandler : public content::LoginDelegate {
   base::android::ScopedJavaGlobalRef<jobject> http_auth_handler_;
   std::string host_;
   std::string realm_;
-  LoginAuthRequiredCallback callback_;
+  content::LoginDelegate::LoginAuthRequiredCallback callback_;
   base::WeakPtrFactory<AwHttpAuthHandler> weak_factory_{this};
 };
 

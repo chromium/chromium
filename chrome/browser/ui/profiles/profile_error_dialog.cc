@@ -8,7 +8,8 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/notimplemented.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
@@ -49,6 +50,7 @@ void ShowProfileErrorDialog(ProfileErrorType type,
 #if BUILDFLAG(IS_ANDROID)
   NOTIMPLEMENTED();
 #else  // BUILDFLAG(IS_ANDROID)
+  base::UmaHistogramEnumeration("Profile.ProfileError2", type);
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kNoErrorDialogs)) {
     return;
@@ -60,14 +62,16 @@ void ShowProfileErrorDialog(ProfileErrorType type,
   }
 
   g_is_showing_profile_error_dialog = true;
-  chrome::ShowWarningMessageBoxWithCheckbox(
-      nullptr, l10n_util::GetStringUTF16(IDS_PROFILE_ERROR_DIALOG_TITLE),
+  chrome::ShowWarningMessageBoxWithCheckboxAsync(
+      gfx::NativeWindow(),
+      l10n_util::GetStringUTF16(IDS_PROFILE_ERROR_DIALOG_TITLE),
       l10n_util::GetStringUTF16(message_id),
       l10n_util::GetStringUTF16(IDS_PROFILE_ERROR_DIALOG_CHECKBOX),
       base::BindOnce(&OnProfileErrorDialogDismissed, diagnostics));
 #else   // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  chrome::ShowWarningMessageBox(
-      nullptr, l10n_util::GetStringUTF16(IDS_PROFILE_ERROR_DIALOG_TITLE),
+  chrome::ShowWarningMessageBoxAsync(
+      gfx::NativeWindow(),
+      l10n_util::GetStringUTF16(IDS_PROFILE_ERROR_DIALOG_TITLE),
       l10n_util::GetStringUTF16(message_id));
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 

@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_remote_playback_availability_callback.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_remote_playback_state.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -34,29 +35,24 @@
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
 namespace {
 
-const AtomicString& RemotePlaybackStateToString(
+V8RemotePlaybackState::Enum RemotePlaybackStateToEnum(
     mojom::blink::PresentationConnectionState state) {
-  DEFINE_STATIC_LOCAL(const AtomicString, connecting_value, ("connecting"));
-  DEFINE_STATIC_LOCAL(const AtomicString, connected_value, ("connected"));
-  DEFINE_STATIC_LOCAL(const AtomicString, disconnected_value, ("disconnected"));
-
   switch (state) {
     case mojom::blink::PresentationConnectionState::CONNECTING:
-      return connecting_value;
+      return V8RemotePlaybackState::Enum::kConnecting;
     case mojom::blink::PresentationConnectionState::CONNECTED:
-      return connected_value;
+      return V8RemotePlaybackState::Enum::kConnected;
     case mojom::blink::PresentationConnectionState::CLOSED:
     case mojom::blink::PresentationConnectionState::TERMINATED:
-      return disconnected_value;
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return disconnected_value;
+      return V8RemotePlaybackState::Enum::kDisconnected;
   }
+  NOTREACHED();
 }
 
 void RunRemotePlaybackTask(
@@ -67,7 +63,7 @@ void RunRemotePlaybackTask(
   std::move(task).Run();
 }
 
-KURL GetAvailabilityUrl(const WebURL& source,
+KURL GetAvailabilityUrl(const KURL& source,
                         bool is_source_supported,
                         std::optional<media::VideoCodec> video_codec,
                         std::optional<media::AudioCodec> audio_codec) {
@@ -82,9 +78,7 @@ KURL GetAvailabilityUrl(const WebURL& source,
   // filter for Media Remoting based Remote Playback on Desktop. The codec
   // fields are optional.
   std::string source_string = source.GetString().Utf8();
-  String encoded_source = WTF::Base64URLEncode(
-      source_string.data(),
-      base::checked_cast<unsigned>(source_string.length()));
+  String encoded_source = Base64URLEncode(base::as_byte_span(source_string));
 
   std::string video_codec_str =
       video_codec.has_value()
@@ -94,9 +88,9 @@ KURL GetAvailabilityUrl(const WebURL& source,
       audio_codec.has_value()
           ? ("&audio_codec=" + media::GetCodecName(audio_codec.value()))
           : "";
-  return KURL(StringView(kRemotePlaybackPresentationUrlPath) +
-              "?source=" + encoded_source + video_codec_str.c_str() +
-              audio_codec_str.c_str());
+  return KURL(
+      StrCat({kRemotePlaybackPresentationUrlPath, "?source=", encoded_source,
+              video_codec_str.c_str(), audio_codec_str.c_str()}));
 }
 
 bool IsBackgroundAvailabilityMonitoringDisabled() {
@@ -127,7 +121,6 @@ RemotePlayback& RemotePlayback::From(HTMLMediaElement& element) {
 RemotePlayback::RemotePlayback(HTMLMediaElement& element)
     : ExecutionContextLifecycleObserver(element.GetExecutionContext()),
       ActiveScriptWrappable<RemotePlayback>({}),
-      RemotePlaybackController(element),
       state_(mojom::blink::PresentationConnectionState::CLOSED),
       availability_(mojom::ScreenAvailability::UNKNOWN),
       media_element_(&element),
@@ -278,8 +271,8 @@ ScriptPromise<IDLUndefined> RemotePlayback::prompt(
   return promise;
 }
 
-String RemotePlayback::state() const {
-  return RemotePlaybackStateToString(state_);
+V8RemotePlaybackState RemotePlayback::state() const {
+  return V8RemotePlaybackState(RemotePlaybackStateToEnum(state_));
 }
 
 bool RemotePlayback::HasPendingActivity() const {
@@ -296,15 +289,15 @@ void RemotePlayback::PromptInternal() {
   if (controller && !availability_urls_.empty()) {
     controller->GetPresentationService()->StartPresentation(
         availability_urls_,
-        WTF::BindOnce(&RemotePlayback::HandlePresentationResponse,
-                      WrapPersistent(this)));
+        BindOnce(&RemotePlayback::HandlePresentationResponse,
+                 WrapPersistent(this)));
   } else {
     // TODO(yuryu): Wrapping PromptCancelled with base::OnceClosure as
     // InspectorInstrumentation requires a globally unique pointer to track
     // tasks. We can remove the wrapper if InspectorInstrumentation returns a
     // task id.
     base::OnceClosure task =
-        WTF::BindOnce(&RemotePlayback::PromptCancelled, WrapPersistent(this));
+        BindOnce(&RemotePlayback::PromptCancelled, WrapPersistent(this));
 
     std::unique_ptr<probe::AsyncTaskContext> task_context =
         std::make_unique<probe::AsyncTaskContext>();
@@ -312,9 +305,9 @@ void RemotePlayback::PromptInternal() {
     GetExecutionContext()
         ->GetTaskRunner(TaskType::kMediaElementEvent)
         ->PostTask(FROM_HERE,
-                   WTF::BindOnce(RunRemotePlaybackTask,
-                                 WrapPersistent(GetExecutionContext()),
-                                 std::move(task), std::move(task_context)));
+                   blink::BindOnce(RunRemotePlaybackTask,
+                                   WrapPersistent(GetExecutionContext()),
+                                   std::move(task), std::move(task_context)));
   }
 }
 
@@ -337,17 +330,17 @@ int RemotePlayback::WatchAvailabilityInternal(
   // TODO(yuryu): Wrapping notifyInitialAvailability with base::OnceClosure as
   // InspectorInstrumentation requires a globally unique pointer to track tasks.
   // We can remove the wrapper if InspectorInstrumentation returns a task id.
-  base::OnceClosure task = WTF::BindOnce(
-      &RemotePlayback::NotifyInitialAvailability, WrapPersistent(this), id);
+  base::OnceClosure task = BindOnce(&RemotePlayback::NotifyInitialAvailability,
+                                    WrapPersistent(this), id);
   std::unique_ptr<probe::AsyncTaskContext> task_context =
       std::make_unique<probe::AsyncTaskContext>();
   task_context->Schedule(GetExecutionContext(), "watchAvailabilityCallback");
   GetExecutionContext()
       ->GetTaskRunner(TaskType::kMediaElementEvent)
       ->PostTask(FROM_HERE,
-                 WTF::BindOnce(RunRemotePlaybackTask,
-                               WrapPersistent(GetExecutionContext()),
-                               std::move(task), std::move(task_context)));
+                 blink::BindOnce(RunRemotePlaybackTask,
+                                 WrapPersistent(GetExecutionContext()),
+                                 std::move(task), std::move(task_context)));
 
   MaybeStartListeningForAvailability();
   return id;
@@ -415,7 +408,7 @@ void RemotePlayback::StateChanged(
     if (auto* video_element =
             DynamicTo<HTMLVideoElement>(media_element_.Get())) {
       video_element->MediaRemotingStopped(
-          WebMediaPlayerClient::kMediaRemotingStopNoText);
+          MediaPlayerClient::kMediaRemotingStopNoText);
     }
     CleanupConnections();
     presentation_id_ = "";
@@ -445,7 +438,7 @@ void RemotePlayback::PromptCancelled() {
   prompt_promise_resolver_ = nullptr;
 }
 
-void RemotePlayback::SourceChanged(const WebURL& source,
+void RemotePlayback::SourceChanged(const KURL& source,
                                    bool is_source_supported) {
   source_ = source;
   is_source_supported_ = is_source_supported;
@@ -495,7 +488,7 @@ void RemotePlayback::UpdateAvailabilityUrlsAndStartListening() {
   MaybeStartListeningForAvailability();
 }
 
-WebString RemotePlayback::GetPresentationId() {
+String RemotePlayback::GetPresentationId() {
   return presentation_id_;
 }
 
@@ -590,9 +583,8 @@ void RemotePlayback::AvailabilityChanged(
 
   // Copy the callbacks to a temporary vector to prevent iterator invalidations,
   // in case the JS callbacks invoke watchAvailability().
-  HeapVector<Member<AvailabilityCallbackWrapper>> callbacks;
-  CopyValuesToVector(availability_callbacks_, callbacks);
-
+  HeapVector<Member<AvailabilityCallbackWrapper>> callbacks(
+      availability_callbacks_.Values());
   for (auto& callback : callbacks)
     callback->Run(this, new_availability);
 }

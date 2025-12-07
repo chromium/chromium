@@ -8,12 +8,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_header_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_row_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
-#include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -75,7 +75,7 @@ class OmniboxResultViewTest : public ChromeViewsTestBase {
         CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
     omnibox_controller_ = std::make_unique<OmniboxController>(
-        /*view=*/nullptr, std::make_unique<TestOmniboxClient>());
+        std::make_unique<TestOmniboxClient>());
     popup_view_ =
         std::make_unique<TestOmniboxPopupViewViews>(omnibox_controller_.get());
     result_view_ =
@@ -84,7 +84,7 @@ class OmniboxResultViewTest : public ChromeViewsTestBase {
     views::View* root_view = widget_->GetRootView();
     root_view->SetBoundsRect(gfx::Rect(0, 0, 500, 500));
     result_view_->SetBoundsRect(gfx::Rect(0, 0, 100, 100));
-    root_view->AddChildView(result_view_.get());
+    root_view->AddChildViewRaw(result_view_.get());
 
     // Start by not hovering over the result view.
     FakeMouseEvent(ui::EventType::kMouseMoved, 0, 200, 200);
@@ -116,6 +116,7 @@ class OmniboxResultViewTest : public ChromeViewsTestBase {
                           ui::EventTimeForNow(), flags, 0);
   }
 
+  OmniboxController* omnibox_controller() { return omnibox_controller_.get(); }
   OmniboxEditModel* edit_model() { return omnibox_controller_->edit_model(); }
   OmniboxPopupViewViews* popup_view() { return popup_view_.get(); }
   OmniboxResultView* result_view() { return result_view_; }
@@ -267,31 +268,29 @@ TEST_F(OmniboxResultViewTest, MouseEnterAndExitSetsHoveredAccessibleState) {
   EXPECT_FALSE(node_data.HasState(ax::mojom::State::kHovered));
 }
 
-TEST_F(OmniboxResultViewTest, AccessibleNodeData) {
+TEST_F(OmniboxResultViewTest, AccessibleProperties) {
   // Check accessibility of result.
   std::u16string match_url = u"https://google.com";
   AutocompleteMatch match(nullptr, 500, false,
                           AutocompleteMatchType::HISTORY_TITLE);
   match.contents = match_url;
-  match.contents_class.push_back(
-      ACMatchClassification(0, ACMatchClassification::URL));
+  match.contents_class.emplace_back(0, ACMatchClassification::URL);
   match.destination_url = GURL(match_url);
   match.description = u"Google";
   match.allowed_to_be_default_match = true;
   result_view()->SetMatch(match);
   ui::AXNodeData result_node_data;
-  result_view()->GetAccessibleNodeData(&result_node_data);
+  result_view()->GetViewAccessibility().GetAccessibleNodeData(
+      &result_node_data);
   EXPECT_EQ(result_node_data.role, ax::mojom::Role::kListBoxOption);
-  // TODO(tommycli) Find a way to test this.
-  // EXPECT_EQ(
-  //   result_node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-  //   u"Google https://google.com location from history");
   EXPECT_EQ(
       result_node_data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet),
       int{kTestResultViewIndex} + 1);
-  // TODO(accessibility) Find a way to test this.
-  // EXPECT_EQ(result_node_data.GetIntAttribute(
-  //   ax::mojom::IntAttribute::kSetSize), 1);
+
+  int result_size = static_cast<int>(
+      omnibox_controller()->autocomplete_controller()->result().size());
+  EXPECT_EQ(result_size, result_node_data.GetIntAttribute(
+                             ax::mojom::IntAttribute::kSetSize));
 
   // Check accessibility of list box.
   ui::AXNodeData popup_node_data;
@@ -302,39 +301,6 @@ TEST_F(OmniboxResultViewTest, AccessibleNodeData) {
   EXPECT_TRUE(popup_node_data.HasState(ax::mojom::State::kInvisible));
   EXPECT_FALSE(
       popup_node_data.HasIntAttribute(ax::mojom::IntAttribute::kPopupForId));
-}
-
-TEST_F(OmniboxResultViewTest, ExpandedCollapsedAccessibilityState) {
-  std::unique_ptr<OmniboxRowView> row =
-      std::make_unique<OmniboxRowView>(0, popup_view());
-  row->ShowHeader(u"Omnibox Header", false);
-  OmniboxHeaderView* header = row->header_view();
-
-  ui::AXNodeData node_data;
-  // Initially, it shouldn't be set.
-  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kExpanded));
-  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kCollapsed));
-  header->GetViewAccessibility().GetAccessibleNodeData(&node_data);
-  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kExpanded));
-  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kCollapsed));
-
-  header->SetSuggestionGroupVisibility(true);
-  node_data = ui::AXNodeData();
-  // Initially, it shouldn't be set.
-  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kExpanded));
-  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kCollapsed));
-  header->GetViewAccessibility().GetAccessibleNodeData(&node_data);
-  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kExpanded));
-  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kCollapsed));
-
-  header->SetSuggestionGroupVisibility(false);
-  node_data = ui::AXNodeData();
-  // Initially, it shouldn't be set.
-  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kExpanded));
-  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kCollapsed));
-  header->GetViewAccessibility().GetAccessibleNodeData(&node_data);
-  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kExpanded));
-  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kCollapsed));
 }
 
 TEST_F(OmniboxResultViewTest, StarterPackMatch) {

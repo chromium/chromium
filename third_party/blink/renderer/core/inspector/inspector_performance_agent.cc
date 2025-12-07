@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/inspector/inspector_performance_agent.h"
 
 #include <utility>
@@ -32,16 +27,15 @@ namespace blink {
 namespace TimeDomain = protocol::Performance::SetTimeDomain::TimeDomainEnum;
 
 namespace {
-constexpr bool isPlural(const char* str, int len) {
-  return len > 1 && str[len - 2] == 's';
+constexpr bool IsPlural(std::string_view str) {
+  return !str.empty() && str.back() == 's';
 }
 
-static constexpr const char* kInstanceCounterNames[] = {
-#define INSTANCE_COUNTER_NAME(name) \
-  (isPlural(#name, sizeof(#name)) ? #name : #name "s"),
+static constexpr auto kInstanceCounterNames = std::to_array<const char*>({
+#define INSTANCE_COUNTER_NAME(name) (IsPlural(#name) ? #name : #name "s"),
     INSTANCE_COUNTERS_LIST(INSTANCE_COUNTER_NAME)
 #undef INSTANCE_COUNTER_NAME
-};
+});
 
 std::unique_ptr<base::ProcessMetrics> GetCurrentProcessMetrics() {
   base::ProcessHandle handle = base::Process::Current().Handle();
@@ -87,7 +81,7 @@ void InspectorPerformanceAgent::InnerEnable() {
 }
 
 protocol::Response InspectorPerformanceAgent::enable(
-    Maybe<String> optional_time_domain) {
+    std::optional<String> optional_time_domain) {
   String time_domain = optional_time_domain.value_or(TimeDomain::TimeTicks);
   if (enabled_.Get()) {
     if (!HasTimeDomain(time_domain)) {
@@ -268,12 +262,13 @@ protocol::Response InspectorPerformanceAgent::getMetrics(
                      .DomContentLoadedEventStart()
                      .since_origin()
                      .InSecondsF());
-    AppendMetric(result.get(), "NavigationStart",
-                 document->Loader()
-                     ->GetTiming()
-                     .NavigationStart()
-                     .since_origin()
-                     .InSecondsF());
+    // Loader() can be null if the document is not associated with a frame at
+    // this point in time.
+    if (DocumentLoader* loader = document->Loader()) {
+      AppendMetric(
+          result.get(), "NavigationStart",
+          loader->GetTiming().NavigationStart().since_origin().InSecondsF());
+    }
   }
 
   *out_result = std::move(result);

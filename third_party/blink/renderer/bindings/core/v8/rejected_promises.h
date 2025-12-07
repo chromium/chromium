@@ -34,7 +34,7 @@ class RejectedPromises final : public RefCounted<RejectedPromises> {
   void RejectedWithNoHandler(ScriptState*,
                              v8::PromiseRejectMessage,
                              const String& error_message,
-                             std::unique_ptr<SourceLocation>,
+                             SourceLocation*,
                              SanitizeScriptErrors);
   void HandlerAdded(v8::PromiseRejectMessage);
 

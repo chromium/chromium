@@ -28,18 +28,22 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_TABLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_TABLE_H_
 
+#include <array>
 #include <memory>
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
+#include "base/memory/stack_allocated.h"
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/atomic_operations.h"
 #include "third_party/blink/renderer/platform/wtf/construct_traits.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 #if !defined(DUMP_HASHTABLE_STATS)
 #define DUMP_HASHTABLE_STATS 0
@@ -53,42 +57,37 @@
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 #endif
 
-#if DUMP_HASHTABLE_STATS_PER_TABLE
-#include <type_traits>
-#include "third_party/blink/renderer/platform/wtf/DataLog.h"
-#endif
-
 #if DUMP_HASHTABLE_STATS
 #if DUMP_HASHTABLE_STATS_PER_TABLE
 
-#define UPDATE_PROBE_COUNTS()                                    \
-  ++probeCount;                                                  \
-  HashTableStats::instance().recordCollisionAtCount(probeCount); \
-  ++perTableProbeCount;                                          \
-  stats_->recordCollisionAtCount(perTableProbeCount)
-#define UPDATE_ACCESS_COUNTS()                                                 \
-  HashTableStats::instance().numAccesses.fetch_add(1,                          \
-                                                   std::memory_order_relaxed); \
-  int probeCount = 0;                                                          \
-  stats_->numAccesses.fetch_add(1, std::memory_order_relaxed);                 \
-  int perTableProbeCount = 0
+#define UPDATE_PROBE_COUNTS()                                          \
+  ++stat_probe_count;                                                  \
+  HashTableStats::Instance().RecordCollisionAtCount(stat_probe_count); \
+  ++per_table_probe_count;                                             \
+  stats_->RecordCollisionAtCount(per_table_probe_count)
+#define UPDATE_ACCESS_COUNTS()                                  \
+  HashTableStats::Instance().num_accesses.fetch_add(            \
+      1, std::memory_order_relaxed);                            \
+  int stat_probe_count = 0;                                     \
+  stats_->num_accesses.fetch_add(1, std::memory_order_relaxed); \
+  int per_table_probe_count = 0
 #else
 #define UPDATE_PROBE_COUNTS() \
-  ++probeCount;               \
-  HashTableStats::instance().recordCollisionAtCount(probeCount)
-#define UPDATE_ACCESS_COUNTS()                                                 \
-  HashTableStats::instance().numAccesses.fetch_add(1,                          \
-                                                   std::memory_order_relaxed); \
-  int probeCount = 0
+  ++stat_probe_count;         \
+  HashTableStats::Instance().RecordCollisionAtCount(stat_probe_count)
+#define UPDATE_ACCESS_COUNTS()                       \
+  HashTableStats::Instance().num_accesses.fetch_add( \
+      1, std::memory_order_relaxed);                 \
+  int stat_probe_count = 0
 #endif
 #else
 #if DUMP_HASHTABLE_STATS_PER_TABLE
 #define UPDATE_PROBE_COUNTS() \
-  ++perTableProbeCount;       \
-  stats_->recordCollisionAtCount(perTableProbeCount)
-#define UPDATE_ACCESS_COUNTS()                                 \
-  stats_->numAccesses.fetch_add(1, std::memory_order_relaxed); \
-  int perTableProbeCount = 0
+  ++per_table_probe_count;    \
+  stats_->RecordCollisionAtCount(per_table_probe_count)
+#define UPDATE_ACCESS_COUNTS()                                  \
+  stats_->num_accesses.fetch_add(1, std::memory_order_relaxed); \
+  int per_able_probe_count = 0
 #else
 #define UPDATE_PROBE_COUNTS() \
   do {                        \
@@ -99,39 +98,29 @@
 #endif
 #endif
 
-namespace WTF {
+namespace blink {
 
 #if DUMP_HASHTABLE_STATS || DUMP_HASHTABLE_STATS_PER_TABLE
 struct WTF_EXPORT HashTableStats {
-  HashTableStats()
-      : numAccesses(0),
-        numRehashes(0),
-        numRemoves(0),
-        numReinserts(0),
-        maxCollisions(0),
-        numCollisions(0),
-        collisionGraph() {}
+  HashTableStats() = default;
 
   // The following variables are all atomically incremented when modified.
-  std::atomic_int numAccesses;
-  std::atomic_int numRehashes;
-  std::atomic_int numRemoves;
-  std::atomic_int numReinserts;
+  std::atomic_int num_accesses{0};
+  std::atomic_int num_rehashes{0};
+  std::atomic_int num_removes{0};
+  std::atomic_int num_reinserts{0};
 
   // The following variables are only modified in the recordCollisionAtCount
   // method within a mutex.
-  int maxCollisions;
-  int numCollisions;
-  int collisionGraph[4096];
+  int max_collisions = 0;
+  int num_collisions = 0;
+  std::array<int, 4096> collision_graph{};
 
-  void copy(const HashTableStats* other);
-  void recordCollisionAtCount(int count);
+  void Copy(const HashTableStats& other);
+  void RecordCollisionAtCount(int count);
   void DumpStats();
 
-  static HashTableStats& instance();
-
-  template <typename VisitorDispatcher>
-  void trace(VisitorDispatcher) const {}
+  static HashTableStats& Instance();
 
  private:
   void RecordCollisionAtCountWithoutLock(int count);
@@ -151,11 +140,13 @@ class HashTableStatsPtr<Allocator, false> final {
     return std::make_unique<HashTableStats>();
   }
 
-  static std::unique_ptr<HashTableStats> copy(
+  static std::unique_ptr<HashTableStats> Copy(
       const std::unique_ptr<HashTableStats>& other) {
     if (!other)
       return nullptr;
-    return std::make_unique<HashTableStats>(*other);
+    std::unique_ptr<HashTableStats> obj = Create();
+    obj->Copy(*other);
+    return obj;
   }
 
   static void swap(std::unique_ptr<HashTableStats>& stats,
@@ -174,11 +165,11 @@ class HashTableStatsPtr<Allocator, true> final {
     return new HashTableStats;
   }
 
-  static HashTableStats* copy(const HashTableStats* other) {
+  static HashTableStats* Copy(const HashTableStats* other) {
     if (!other)
       return nullptr;
     HashTableStats* obj = Create();
-    obj->copy(other);
+    obj->Copy(*other);
     return obj;
   }
 
@@ -221,16 +212,30 @@ struct WeakProcessingHashTableHelper;
 
 typedef enum { kHashItemKnownGood } HashItemKnownGoodTag;
 
+// Base class that is marked as stack allocated if Allocator is a garbage
+// collected allocator. Used as a base for hash table iterators to mark
+// iterators to garbage collected hash table as stack allocated.
+template <typename Allocator>
+class ConditionallyStackAllocatedHashTableIteratorBase;
+
+template <typename Allocator>
+  requires(Allocator::kIsGarbageCollected)
+class ConditionallyStackAllocatedHashTableIteratorBase<Allocator> {
+  STACK_ALLOCATED();
+};
+
+template <typename Allocator>
+  requires(!Allocator::kIsGarbageCollected)
+class ConditionallyStackAllocatedHashTableIteratorBase<Allocator> {};
+
 template <typename Key,
           typename Value,
           typename Extractor,
           typename Traits,
           typename KeyTraits,
           typename Allocator>
-class HashTableConstIterator final {
-  DISALLOW_NEW();
-
- private:
+class HashTableConstIterator final
+    : public ConditionallyStackAllocatedHashTableIteratorBase<Allocator> {
   typedef HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>
       HashTableType;
   typedef HashTableIterator<Key, Value, Extractor, Traits, KeyTraits, Allocator>
@@ -364,14 +369,8 @@ class HashTableConstIterator final {
   bool operator==(const const_iterator& other) const {
     return position_ == other.position_;
   }
-  bool operator!=(const const_iterator& other) const {
-    return position_ != other.position_;
-  }
   bool operator==(const iterator& other) const {
     return *this == static_cast<const_iterator>(other);
-  }
-  bool operator!=(const iterator& other) const {
-    return *this != static_cast<const_iterator>(other);
   }
 
   std::ostream& PrintTo(std::ostream& stream) const {
@@ -414,10 +413,8 @@ template <typename Key,
           typename Traits,
           typename KeyTraits,
           typename Allocator>
-class HashTableIterator final {
-  DISALLOW_NEW();
-
- private:
+class HashTableIterator final
+    : public ConditionallyStackAllocatedHashTableIteratorBase<Allocator> {
   typedef HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>
       HashTableType;
   typedef HashTableIterator<Key, Value, Extractor, Traits, KeyTraits, Allocator>
@@ -482,14 +479,8 @@ class HashTableIterator final {
   bool operator==(const iterator& other) const {
     return iterator_ == other.iterator_;
   }
-  bool operator!=(const iterator& other) const {
-    return iterator_ != other.iterator_;
-  }
   bool operator==(const const_iterator& other) const {
     return iterator_ == other;
-  }
-  bool operator!=(const const_iterator& other) const {
-    return iterator_ != other;
   }
 
   operator const_iterator() const { return iterator_; }
@@ -517,8 +508,6 @@ std::ostream& operator<<(std::ostream& stream,
   return iterator.PrintTo(stream);
 }
 
-using std::swap;
-
 template <typename T,
           typename Allocator,
           typename Traits,
@@ -527,7 +516,7 @@ struct Mover {
   STATIC_ONLY(Mover);
   static void Move(T&& from, T& to) {
     to.~T();
-    new (NotNullTag::kNotNull, &to) T(std::move(from));
+    new (base::NotNullTag::kNotNull, &to) T(std::move(from));
   }
 };
 
@@ -537,7 +526,7 @@ struct Mover<T, Allocator, Traits, true> {
   static void Move(T&& from, T& to) {
     Allocator::EnterGCForbiddenScope();
     to.~T();
-    new (NotNullTag::kNotNull, &to) T(std::move(from));
+    new (base::NotNullTag::kNotNull, &to) T(std::move(from));
     Allocator::LeaveGCForbiddenScope();
   }
 };
@@ -633,7 +622,7 @@ template <typename Key,
           typename Traits,
           typename KeyTraits,
           typename Allocator>
-class HashTable final {
+class GC_PLUGIN_IGNORE("crbug.com/428987863") HashTable final {
   DISALLOW_NEW();
 
  public:
@@ -692,11 +681,11 @@ class HashTable final {
     return MakeKnownGoodConstIterator(table_ + table_size_);
   }
 
-  unsigned size() const {
+  wtf_size_t size() const {
     DCHECK(!AccessForbidden());
     return key_count_;
   }
-  unsigned Capacity() const {
+  wtf_size_t Capacity() const {
     DCHECK(!AccessForbidden());
     return table_size_;
   }
@@ -705,7 +694,7 @@ class HashTable final {
     return !key_count_;
   }
 
-  void ReserveCapacityForSize(unsigned size);
+  void ReserveCapacityForSize(wtf_size_t size);
 
   template <typename IncomingValueType>
   AddResult insert(IncomingValueType&& value) {
@@ -752,6 +741,9 @@ class HashTable final {
   void erase(KeyPeekInType);
   void erase(iterator);
   void erase(const_iterator);
+  template <typename Pred>
+  void erase_if(Pred pred);
+
   void clear();
 
   static bool IsEmptyBucket(const ValueType& value) {
@@ -811,8 +803,8 @@ class HashTable final {
     requires Allocator::kIsGarbageCollected;
 
  private:
-  static ValueType* AllocateTable(unsigned size);
-  static void DeleteAllBucketsAndDeallocate(ValueType* table, unsigned size);
+  static ValueType* AllocateTable(wtf_size_t size);
+  static void DeleteAllBucketsAndDeallocate(ValueType* table, wtf_size_t size);
 
   struct LookupResult {
     ValueType* entry;
@@ -840,11 +832,11 @@ class HashTable final {
   ValueType* Expand(ValueType* entry = nullptr);
   void Shrink() { Rehash(table_size_ / 2, nullptr); }
 
-  ValueType* ExpandBuffer(unsigned new_table_size, ValueType* entry, bool&);
+  ValueType* ExpandBuffer(wtf_size_t new_table_size, ValueType* entry, bool&);
   ValueType* RehashTo(ValueType* new_table,
-                      unsigned new_table_size,
+                      wtf_size_t new_table_size,
                       ValueType* entry);
-  ValueType* Rehash(unsigned new_table_size, ValueType* entry);
+  ValueType* Rehash(wtf_size_t new_table_size, ValueType* entry);
   ValueType* Reinsert(ValueType&&);
 
   static void ReinitializeBucket(ValueType& bucket);
@@ -889,28 +881,18 @@ class HashTable final {
 
   // Constructor for hash tables with raw storage.
   struct RawStorageTag {};
-  HashTable(RawStorageTag, ValueType* table, unsigned size)
-      : table_(table),
-        table_size_(size),
-        key_count_(0),
-        deleted_count_(0)
-#if DCHECK_IS_ON()
-        ,
-        access_forbidden_(0),
-        modifications_(0)
-#endif
-  {
-  }
+  HashTable(RawStorageTag, ValueType* table, wtf_size_t size)
+      : table_(table), table_size_(size) {}
 
   ValueType* table_;
-  unsigned table_size_;
-  unsigned key_count_;
+  wtf_size_t table_size_;
+  wtf_size_t key_count_ = 0;
 #if DCHECK_IS_ON()
-  unsigned deleted_count_ : 30;
-  unsigned access_forbidden_ : 1;
-  unsigned modifications_;
+  wtf_size_t deleted_count_ : 30 = 0;
+  wtf_size_t access_forbidden_ : 1 = 0;
+  wtf_size_t modifications_ = 0;
 #else
-  unsigned deleted_count_ : 31;
+  wtf_size_t deleted_count_ : 31 = 0;
 #endif
 
 #if DUMP_HASHTABLE_STATS_PER_TABLE
@@ -918,7 +900,8 @@ class HashTable final {
   mutable
       typename std::conditional<Allocator::kIsGarbageCollected,
                                 HashTableStats*,
-                                std::unique_ptr<HashTableStats>>::type stats_;
+                                std::unique_ptr<HashTableStats>>::type stats_ =
+          nullptr;
   void DumpStats() {
     if (stats_) {
       stats_->DumpStats();
@@ -937,12 +920,12 @@ class HashTable final {
 
   struct TypeConstraints {
     constexpr TypeConstraints() {
-      static_assert(!IsStackAllocatedType<Key>);
-      static_assert(!IsStackAllocatedType<Value>);
+      static_assert(!IsStackAllocatedTypeV<Key>);
+      static_assert(!IsStackAllocatedTypeV<Value>);
       static_assert(
           Allocator::kIsGarbageCollected ||
-              (!IsPointerToGarbageCollectedType<Key>::value &&
-               !IsPointerToGarbageCollectedType<Value>::value),
+              (!IsPointerToGarbageCollectedType<Key> &&
+               !IsPointerToGarbageCollectedType<Value>),
           "Cannot put raw pointers to garbage-collected classes into an "
           "off-heap collection.");
     }
@@ -979,9 +962,10 @@ inline HashTable<Key,
 {
 }
 
-inline unsigned CalculateCapacity(unsigned size) {
-  for (unsigned mask = size; mask; mask >>= 1)
+inline wtf_size_t CalculateCapacity(wtf_size_t size) {
+  for (wtf_size_t mask = size; mask; mask >>= 1) {
     size |= mask;         // 00110101010 -> 00111111111
+  }
   return (size + 1) * 2;  // 00111111111 -> 10000000000
 }
 
@@ -991,14 +975,9 @@ template <typename Key,
           typename Traits,
           typename KeyTraits,
           typename Allocator>
-void HashTable<Key,
-               Value,
-               Extractor,
-
-               Traits,
-               KeyTraits,
-               Allocator>::ReserveCapacityForSize(unsigned new_size) {
-  unsigned new_capacity = CalculateCapacity(new_size);
+void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::
+    ReserveCapacityForSize(wtf_size_t new_size) {
+  wtf_size_t new_capacity = CalculateCapacity(new_size);
   if (new_capacity < KeyTraits::kMinimumTableSize)
     new_capacity = KeyTraits::kMinimumTableSize;
 
@@ -1147,7 +1126,7 @@ struct HashTableBucketInitializer {
   }
 
   template <typename HashTable>
-  static Value* AllocateTable(unsigned size, size_t alloc_size) {
+  static Value* AllocateTable(wtf_size_t size, size_t alloc_size) {
     Value* result =
         Allocator::template AllocateHashTableBacking<Value, HashTable>(
             alloc_size);
@@ -1155,8 +1134,8 @@ struct HashTableBucketInitializer {
     return result;
   }
 
-  static void InitializeTable(Value* table, unsigned size) {
-    for (unsigned i = 0; i < size; i++) {
+  static void InitializeTable(Value* table, wtf_size_t size) {
+    for (wtf_size_t i = 0; i < size; i++) {
       Reinitialize(table[i]);
     }
   }
@@ -1180,7 +1159,7 @@ struct HashTableBucketInitializer<Traits, Allocator, Value, true> {
   }
 
   template <typename HashTable>
-  static Value* AllocateTable(unsigned size, size_t alloc_size) {
+  static Value* AllocateTable(wtf_size_t size, size_t alloc_size) {
     Value* result =
         Allocator::template AllocateZeroedHashTableBacking<Value, HashTable>(
             alloc_size);
@@ -1188,15 +1167,15 @@ struct HashTableBucketInitializer<Traits, Allocator, Value, true> {
     return result;
   }
 
-  static void InitializeTable(Value* table, unsigned size) {
+  static void InitializeTable(Value* table, wtf_size_t size) {
     AtomicMemzero(table, size * sizeof(Value));
     CheckEmptyValues(table, size);
   }
 
  private:
-  static void CheckEmptyValues(Value* values, unsigned size) {
+  static void CheckEmptyValues(Value* values, wtf_size_t size) {
 #if EXPENSIVE_DCHECKS_ARE_ON()
-    for (unsigned i = 0; i < size; i++) {
+    for (wtf_size_t i = 0; i < size; i++) {
       DCHECK(IsHashTraitsEmptyValue<Traits>(values[i]));
     }
 #endif
@@ -1299,7 +1278,7 @@ typename HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::
 
   if (ShouldExpand()) {
     entry = Expand(entry);
-  } else if (WTF::IsWeak<ValueType>::value && ShouldShrink()) {
+  } else if (IsWeakV<ValueType> && ShouldShrink()) {
     // When weak hash tables are processed by the garbage collector,
     // elements with no other strong references to them will have their
     // table entries cleared. But no shrinking of the backing store is
@@ -1373,11 +1352,11 @@ Value* HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::Reinsert(
   DCHECK(!AccessForbidden());
   RegisterModification();
 #if DUMP_HASHTABLE_STATS
-  HashTableStats::instance().numReinserts.fetch_add(1,
-                                                    std::memory_order_relaxed);
+  HashTableStats::Instance().num_reinserts.fetch_add(1,
+                                                     std::memory_order_relaxed);
 #endif
 #if DUMP_HASHTABLE_STATS_PER_TABLE
-  stats_->numReinserts.fetch_add(1, std::memory_order_relaxed);
+  stats_->num_reinserts.fetch_add(1, std::memory_order_relaxed);
 #endif
 
   ValueType* table = table_;
@@ -1465,10 +1444,11 @@ void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::erase(
     const ValueType* pos) {
   RegisterModification();
 #if DUMP_HASHTABLE_STATS
-  HashTableStats::instance().numRemoves.fetch_add(1, std::memory_order_relaxed);
+  HashTableStats::Instance().num_removes.fetch_add(1,
+                                                   std::memory_order_relaxed);
 #endif
 #if DUMP_HASHTABLE_STATS_PER_TABLE
-  stats_->numRemoves.fetch_add(1, std::memory_order_relaxed);
+  stats_->num_removes.fetch_add(1, std::memory_order_relaxed);
 #endif
 
   EnterAccessForbiddenScope();
@@ -1479,6 +1459,40 @@ void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::erase(
 
   if (ShouldShrink())
     Shrink();
+}
+
+template <typename Key,
+          typename Value,
+          typename Extractor,
+          typename Traits,
+          typename KeyTraits,
+          typename Allocator>
+template <typename Pred>
+void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::erase_if(
+    Pred pred) {
+  RegisterModification();
+  EnterAccessForbiddenScope();
+
+  for (wtf_size_t i = 0; i < table_size_; ++i) {
+    if (!IsEmptyOrDeletedBucket(table_[i]) && pred(table_[i])) {
+      DeleteBucket(table_[i]);
+#if DUMP_HASHTABLE_STATS
+      HashTableStats::Instance().num_removes.fetch_add(
+          1, std::memory_order_relaxed);
+#endif
+#if DUMP_HASHTABLE_STATS_PER_TABLE
+      stats_->num_removes.fetch_add(1, std::memory_order_relaxed);
+#endif
+      ++deleted_count_;
+      --key_count_;
+    }
+  }
+
+  LeaveAccessForbiddenScope();
+
+  if (ShouldShrink()) {
+    Shrink();
+  }
 }
 
 template <typename Key,
@@ -1529,7 +1543,7 @@ template <typename Key,
           typename Allocator>
 Value*
 HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::AllocateTable(
-    unsigned size) {
+    wtf_size_t size) {
   // Assert that we will not use memset on things with a vtable entry.  The
   // compiler will also check this on some platforms. We would like to check
   // this on the whole value (key-value pair), but std::is_polymorphic will
@@ -1558,7 +1572,7 @@ template <typename Key,
           typename KeyTraits,
           typename Allocator>
 void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::
-    DeleteAllBucketsAndDeallocate(ValueType* table, unsigned size) {
+    DeleteAllBucketsAndDeallocate(ValueType* table, wtf_size_t size) {
   // We delete a bucket in the following cases:
   // - It is not trivially destructible.
   // - The table is weak (thus garbage collected) and we are currently marking.
@@ -1568,9 +1582,9 @@ void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::
   // verifier that checks that all backings are in consistent state.
   const bool needs_bucket_deletion =
       !std::is_trivially_destructible<ValueType>::value ||
-      (WTF::IsWeak<ValueType>::value && Allocator::IsIncrementalMarking());
+      (IsWeakV<ValueType> && Allocator::IsIncrementalMarking());
   if (needs_bucket_deletion) {
-    for (unsigned i = 0; i < size; ++i) {
+    for (wtf_size_t i = 0; i < size; ++i) {
       // This code is called when the hash table is cleared or resized. We
       // have allocated a new backing store and we need to run the
       // destructors on the old backing store, as it is being freed. If we
@@ -1599,7 +1613,7 @@ template <typename Key,
           typename Allocator>
 Value* HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::Expand(
     Value* entry) {
-  unsigned new_size;
+  wtf_size_t new_size;
   if (!table_size_) {
     new_size = KeyTraits::kMinimumTableSize;
   } else if (MustRehashInPlace()) {
@@ -1620,7 +1634,7 @@ template <typename Key,
           typename Allocator>
 Value*
 HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::ExpandBuffer(
-    unsigned new_table_size,
+    wtf_size_t new_table_size,
     Value* entry,
     bool& success) {
   success = false;
@@ -1634,11 +1648,11 @@ HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::ExpandBuffer(
   success = true;
 
   Value* new_entry = nullptr;
-  unsigned old_table_size = table_size_;
+  wtf_size_t old_table_size = table_size_;
   ValueType* original_table = table_;
 
   ValueType* temporary_table = AllocateTable(old_table_size);
-  for (unsigned i = 0; i < old_table_size; i++) {
+  for (wtf_size_t i = 0; i < old_table_size; i++) {
     if (&table_[i] == entry)
       new_entry = &temporary_table[i];
     if (IsEmptyOrDeletedBucket(table_[i])) {
@@ -1670,24 +1684,28 @@ template <typename Key,
           typename Allocator>
 Value* HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::RehashTo(
     ValueType* new_table,
-    unsigned new_table_size,
+    wtf_size_t new_table_size,
     Value* entry) {
 #if DUMP_HASHTABLE_STATS
   if (table_size_ != 0) {
-    HashTableStats::instance().numRehashes.fetch_add(1,
-                                                     std::memory_order_relaxed);
+    HashTableStats::Instance().num_rehashes.fetch_add(
+        1, std::memory_order_relaxed);
   }
 #endif
 
 #if DUMP_HASHTABLE_STATS_PER_TABLE
   if (table_size_ != 0)
-    stats_->numRehashes.fetch_add(1, std::memory_order_relaxed);
+    stats_->num_rehashes.fetch_add(1, std::memory_order_relaxed);
 #endif
 
   HashTable new_hash_table(RawStorageTag{}, new_table, new_table_size);
 
+#if DUMP_HASHTABLE_STATS_PER_TABLE
+  HashTableStatsPtr<Allocator>::swap(stats_, new_hash_table.stats_);
+#endif
+
   Value* new_entry = nullptr;
-  for (unsigned i = 0; i != table_size_; ++i) {
+  for (wtf_size_t i = 0; i != table_size_; ++i) {
     if (IsEmptyOrDeletedBucket(table_[i])) {
       DCHECK_NE(&table_[i], entry);
       continue;
@@ -1702,7 +1720,7 @@ Value* HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::RehashTo(
   Allocator::TraceBackingStoreIfMarked(new_hash_table.table_);
 
   ValueType* old_table = table_;
-  unsigned old_table_size = table_size_;
+  wtf_size_t old_table_size = table_size_;
 
   // This swaps the newly allocated buffer with the current one. The store to
   // the current table has to be atomic to prevent races with concurrent marker.
@@ -1720,8 +1738,10 @@ Value* HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::RehashTo(
   deleted_count_ = 0;
 
 #if DUMP_HASHTABLE_STATS_PER_TABLE
-  if (!stats_)
+  HashTableStatsPtr<Allocator>::swap(stats_, new_hash_table.stats_);
+  if (!stats_) {
     stats_ = HashTableStatsPtr<Allocator>::Create();
+  }
 #endif
 
   return new_entry;
@@ -1734,20 +1754,20 @@ template <typename Key,
           typename KeyTraits,
           typename Allocator>
 Value* HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::Rehash(
-    unsigned new_table_size,
+    wtf_size_t new_table_size,
     Value* entry) {
-  unsigned old_table_size = table_size_;
+  wtf_size_t old_table_size = table_size_;
 
 #if DUMP_HASHTABLE_STATS
   if (old_table_size != 0) {
-    HashTableStats::instance().numRehashes.fetch_add(1,
-                                                     std::memory_order_relaxed);
+    HashTableStats::Instance().num_rehashes.fetch_add(
+        1, std::memory_order_relaxed);
   }
 #endif
 
 #if DUMP_HASHTABLE_STATS_PER_TABLE
   if (old_table_size != 0)
-    stats_->numRehashes.fetch_add(1, std::memory_order_relaxed);
+    stats_->num_rehashes.fetch_add(1, std::memory_order_relaxed);
 #endif
 
   // The Allocator::kIsGarbageCollected check is not needed.  The check is just
@@ -1804,7 +1824,7 @@ HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::HashTable(
 #endif
 #if DUMP_HASHTABLE_STATS_PER_TABLE
       ,
-      stats_(HashTableStatsPtr<Allocator>::copy(other.stats_))
+      stats_(HashTableStatsPtr<Allocator>::Copy(other.stats_))
 #endif
 {
   DCHECK(!other.AccessForbidden());
@@ -1816,7 +1836,7 @@ HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::HashTable(
   key_count_ = other.key_count_;
   deleted_count_ = other.deleted_count_;
 
-  for (unsigned i = 0; i < table_size_; i++) {
+  for (wtf_size_t i = 0; i < table_size_; i++) {
     if (other.IsEmptyBucket(other.table_[i])) {
       // Do nothing. All entries are initially empty by AllocateTable().
     } else if (other.IsDeletedBucket(other.table_[i])) {
@@ -1849,7 +1869,7 @@ HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::HashTable(
 #endif
 #if DUMP_HASHTABLE_STATS_PER_TABLE
       ,
-      stats_(HashTableStatsPtr<Allocator>::copy(other.stats_))
+      stats_(HashTableStatsPtr<Allocator>::Copy(other.stats_))
 #endif
 {
   swap(other);
@@ -1873,7 +1893,7 @@ void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::swap(
   AtomicWriteSwap(table_, other.table_);
   Allocator::BackingWriteBarrier(&table_);
   Allocator::BackingWriteBarrier(&other.table_);
-  if (IsWeak<ValueType>::value) {
+  if (IsWeakV<ValueType>) {
     // Weak processing is omitted when no backing store is present. In case such
     // an empty table is later on used it needs to be strongified.
     if (table_)
@@ -1884,7 +1904,7 @@ void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::swap(
   std::swap(table_size_, other.table_size_);
   std::swap(key_count_, other.key_count_);
   // std::swap does not work for bit fields.
-  unsigned deleted = deleted_count_;
+  wtf_size_t deleted = deleted_count_;
   deleted_count_ = other.deleted_count_;
   other.deleted_count_ = deleted;
 
@@ -1942,7 +1962,7 @@ template <typename Key,
           typename Traits,
           typename KeyTraits,
           typename Allocator>
-struct WeakProcessingHashTableHelper<kWeakHandling,
+struct WeakProcessingHashTableHelper<WeakHandlingFlag::kWeakHandling,
                                      Key,
                                      Value,
                                      Extractor,
@@ -1970,8 +1990,8 @@ struct WeakProcessingHashTableHelper<kWeakHandling,
     for (ValueType* element = table->table_ + table->table_size_ - 1;
          element >= table->table_; element--) {
       if (!HashTableType::IsEmptyOrDeletedBucket(*element)) {
-        if (!TraceInCollectionTrait<kWeakHandling, ValueType, Traits>::IsAlive(
-                info, *element)) {
+        if (!TraceInCollectionTrait<WeakHandlingFlag::kWeakHandling, ValueType,
+                                    Traits>::IsAlive(info, *element)) {
           table->RegisterModification();
           HashTableType::DeleteBucket(*element);  // Also calls the destructor.
           table->deleted_count_++;
@@ -1994,7 +2014,7 @@ void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::Trace(
     auto visitor) const
   requires Allocator::kIsGarbageCollected
 {
-  static_assert(WTF::IsWeak<ValueType>::value || IsTraceable<ValueType>::value,
+  static_assert(IsWeakV<ValueType> || IsTraceableV<ValueType>,
                 "Value should not be traced");
   TraceTable(visitor, AsAtomicPtr(&table_)->load(std::memory_order_relaxed));
 }
@@ -2010,7 +2030,7 @@ void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::TraceTable(
     const ValueType* table) const
   requires Allocator::kIsGarbageCollected
 {
-  if (!WTF::IsWeak<ValueType>::value) {
+  if (!IsWeakV<ValueType>) {
     // Strong HashTable.
     Allocator::template TraceHashTableBackingStrongly<ValueType, HashTable>(
         visitor, table, &table_);
@@ -2032,7 +2052,7 @@ void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::TraceTable(
 
 // iterator adapters
 
-template <typename HashTableType, typename Traits, typename Enable = void>
+template <typename HashTableType, typename Traits>
 struct HashTableConstIteratorAdapter {
   static_assert(!IsTraceable<typename Traits::TraitType>::value);
 
@@ -2080,11 +2100,8 @@ struct HashTableConstIteratorAdapter {
 };
 
 template <typename HashTableType, typename Traits>
-struct HashTableConstIteratorAdapter<
-    HashTableType,
-    Traits,
-    typename std::enable_if_t<IsTraceable<typename Traits::TraitType>::value>> {
-  static_assert(IsTraceable<typename Traits::TraitType>::value);
+  requires(IsTraceable<typename Traits::TraitType>::value)
+struct HashTableConstIteratorAdapter<HashTableType, Traits> {
   STACK_ALLOCATED();
 
  public:
@@ -2131,14 +2148,14 @@ struct HashTableConstIteratorAdapter<
   typename HashTableType::const_iterator impl_;
 };
 
-template <typename HashTable, typename Traits, typename Enable>
+template <typename HashTable, typename Traits>
 std::ostream& operator<<(
     std::ostream& stream,
-    const HashTableConstIteratorAdapter<HashTable, Traits, Enable>& iterator) {
+    const HashTableConstIteratorAdapter<HashTable, Traits>& iterator) {
   return stream << iterator.impl_;
 }
 
-template <typename HashTableType, typename Traits, typename Enable = void>
+template <typename HashTableType, typename Traits>
 struct HashTableIteratorAdapter {
   static_assert(!IsTraceable<typename Traits::TraitType>::value);
 
@@ -2181,7 +2198,7 @@ struct HashTableIteratorAdapter {
     return copy;
   }
 
-  operator HashTableConstIteratorAdapter<HashTableType, Traits, Enable>() {
+  operator HashTableConstIteratorAdapter<HashTableType, Traits>() {
     typename HashTableType::const_iterator i = impl_;
     return i;
   }
@@ -2190,11 +2207,8 @@ struct HashTableIteratorAdapter {
 };
 
 template <typename HashTableType, typename Traits>
-struct HashTableIteratorAdapter<
-    HashTableType,
-    Traits,
-    typename std::enable_if_t<IsTraceable<typename Traits::TraitType>::value>> {
-  static_assert(IsTraceable<typename Traits::TraitType>::value);
+  requires(IsTraceable<typename Traits::TraitType>::value)
+struct HashTableIteratorAdapter<HashTableType, Traits> {
   STACK_ALLOCATED();
 
  public:
@@ -2237,7 +2251,7 @@ struct HashTableIteratorAdapter<
     return copy;
   }
 
-  operator HashTableConstIteratorAdapter<HashTableType, Traits, void>() {
+  operator HashTableConstIteratorAdapter<HashTableType, Traits>() {
     typename HashTableType::const_iterator i = impl_;
     return i;
   }
@@ -2245,10 +2259,10 @@ struct HashTableIteratorAdapter<
   typename HashTableType::iterator impl_;
 };
 
-template <typename HashTable, typename Traits, typename Enable>
+template <typename HashTable, typename Traits>
 std::ostream& operator<<(
     std::ostream& stream,
-    const HashTableIteratorAdapter<HashTable, Traits, Enable>& iterator) {
+    const HashTableIteratorAdapter<HashTable, Traits>& iterator) {
   return stream << iterator.impl_;
 }
 
@@ -2259,24 +2273,12 @@ inline bool operator==(const HashTableConstIteratorAdapter<T, U>& a,
 }
 
 template <typename T, typename U>
-inline bool operator!=(const HashTableConstIteratorAdapter<T, U>& a,
-                       const HashTableConstIteratorAdapter<T, U>& b) {
-  return a.impl_ != b.impl_;
-}
-
-template <typename T, typename U>
 inline bool operator==(const HashTableIteratorAdapter<T, U>& a,
                        const HashTableIteratorAdapter<T, U>& b) {
   return a.impl_ == b.impl_;
 }
 
-template <typename T, typename U>
-inline bool operator!=(const HashTableIteratorAdapter<T, U>& a,
-                       const HashTableIteratorAdapter<T, U>& b) {
-  return a.impl_ != b.impl_;
-}
-
-// All 4 combinations of ==, != and Const,non const.
+// Both combinations of Const, non const.
 template <typename T, typename U>
 inline bool operator==(const HashTableConstIteratorAdapter<T, U>& a,
                        const HashTableIteratorAdapter<T, U>& b) {
@@ -2284,21 +2286,9 @@ inline bool operator==(const HashTableConstIteratorAdapter<T, U>& a,
 }
 
 template <typename T, typename U>
-inline bool operator!=(const HashTableConstIteratorAdapter<T, U>& a,
-                       const HashTableIteratorAdapter<T, U>& b) {
-  return a.impl_ != b.impl_;
-}
-
-template <typename T, typename U>
 inline bool operator==(const HashTableIteratorAdapter<T, U>& a,
                        const HashTableConstIteratorAdapter<T, U>& b) {
   return a.impl_ == b.impl_;
-}
-
-template <typename T, typename U>
-inline bool operator!=(const HashTableIteratorAdapter<T, U>& a,
-                       const HashTableConstIteratorAdapter<T, U>& b) {
-  return a.impl_ != b.impl_;
 }
 
 template <typename Collection1, typename Collection2>
@@ -2312,6 +2302,6 @@ inline void RemoveAll(Collection1& collection,
     collection.erase(*it);
 }
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_TABLE_H_

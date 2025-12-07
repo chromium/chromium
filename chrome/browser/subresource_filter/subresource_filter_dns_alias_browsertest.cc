@@ -63,8 +63,7 @@ std::string PrintToString(Level level) {
     case ActivationLevel::kDisabled:
       return "ActivationDisabled";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 namespace {
@@ -201,7 +200,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceFilterDnsAliasFilteringThrottleBrowserTest,
   } else {
     GURL main_url = main_rfh->GetLastCommittedURL();
     GURL expected_child_url(
-        base::StrCat({"http://cname-to-bad.com:", main_url.port(),
+        base::StrCat({"http://cname-to-bad.com:", main_url.GetPort(),
                       "/cross_site_iframe_factory.html?cname-to-bad()"}));
 
     EXPECT_EQ(expected_child_url, child_rfh->GetLastCommittedURL());

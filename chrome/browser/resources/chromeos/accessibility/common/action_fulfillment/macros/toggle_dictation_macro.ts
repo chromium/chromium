@@ -4,7 +4,8 @@
 
 import {TestImportManager} from '../../testing/test_import_manager.js';
 
-import {Macro, RunMacroResult} from './macro.js';
+import type {RunMacroResult} from './macro.js';
+import {Macro, ToggleDirection} from './macro.js';
 import {MacroName} from './macro_names.js';
 
 /**
@@ -12,8 +13,20 @@ import {MacroName} from './macro_names.js';
  * this will stop listening (since it had to be listening to execute the macro).
  */
 export class ToggleDictationMacro extends Macro {
-  constructor() {
+  private toggleDirection_: ToggleDirection;
+
+  constructor(dictationActive: boolean) {
     super(MacroName.TOGGLE_DICTATION);
+    this.toggleDirection_ =
+        dictationActive ? ToggleDirection.OFF : ToggleDirection.ON;
+  }
+
+  override isToggle(): boolean {
+    return true;
+  }
+
+  override getToggleDirection(): ToggleDirection {
+    return this.toggleDirection_;
   }
 
   override run(): RunMacroResult {

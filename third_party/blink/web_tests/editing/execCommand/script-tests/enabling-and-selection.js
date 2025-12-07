@@ -82,7 +82,7 @@ shouldBe("whenEnabled('Transpose')", "'caret'");
 shouldBe("whenEnabled('Copy')", "'range'");
 
 shouldBe("whenEnabled('Cut')", "'editable range'");
-shouldBe("whenEnabled('RemoveFormat')", "'editable range'");
+shouldBe("whenEnabled('RemoveFormat')", "'richly editable range'");
 
 shouldBe("whenEnabled('Delete')", "'editable'");
 shouldBe("whenEnabled('FontName')", "'richly editable'");

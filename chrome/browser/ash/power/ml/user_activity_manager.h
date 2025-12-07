@@ -10,15 +10,14 @@
 #include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/crosapi/web_page_info_ash.h"
 #include "chrome/browser/ash/power/ml/boot_clock.h"
 #include "chrome/browser/ash/power/ml/idle_event_notifier.h"
 #include "chrome/browser/ash/power/ml/smart_dim/ml_agent.h"
 #include "chrome/browser/ash/power/ml/user_activity_event.pb.h"
 #include "chrome/browser/ash/power/ml/user_activity_ukm_logger.h"
-#include "chromeos/crosapi/mojom/web_page_info.mojom.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "chromeos/dbus/power_manager/policy.pb.h"
@@ -75,16 +74,12 @@ enum class DimImminentAction {
 // numeric values should never be reused.
 enum class FinalResult { kReactivation = 0, kOff = 1, kMaxValue = kOff };
 
-// The source of web page info in smart dim features.
-enum class WebPageInfoSource { kAsh = 0, kLacros = 1, kMaxValue = kLacros };
-
 // Logs user activity after an idle event is observed.
 // TODO(renjieliu): Add power-related activity as well.
 class UserActivityManager : public ui::UserActivityObserver,
                             public chromeos::PowerManagerClient::Observer,
                             public viz::mojom::VideoDetectorObserver,
-                            public session_manager::SessionManagerObserver,
-                            public crosapi::WebPageInfoFactoryAsh::Observer {
+                            public session_manager::SessionManagerObserver {
  public:
   UserActivityManager(
       UserActivityUkmLogger* ukm_logger,
@@ -122,31 +117,17 @@ class UserActivityManager : public ui::UserActivityObserver,
   void UpdateAndGetSmartDimDecision(const IdleEventNotifier::ActivityData& data,
                                     base::OnceCallback<void(bool)> callback);
 
-  // Extracts `features_` with `activity_data` and `lacros_web_page_info` if
-  // it's not nullptr, otherwise with ash tab property, then makes call to
-  // ml-service with updated `features_` if smart dim is enabled.
-  void UpdateFeaturesWithLacrosIfApplicableAndDoRequest(
-      const IdleEventNotifier::ActivityData& activity_data,
-      base::OnceCallback<void(bool)> callback,
-      crosapi::mojom::WebPageInfoPtr lacros_web_page_info);
-
   // Converts a Smart Dim model |prediction| into a yes/no decision about
   // whether to defer the screen dim and provides the result via |callback|.
-  void HandleSmartDimDecision(base::OnceCallback<void(bool)> callback,
-                              UserActivityEvent::ModelPrediction prediction);
+  // |prediction| should be empty if Smart Dim made no decision (e.g. call was
+  // canceled). In this case, |callback| is invoked with default decision of
+  // |false| (i.e. allow screen dim).
+  void HandleSmartDimDecision(
+      base::OnceCallback<void(bool)> callback,
+      std::optional<UserActivityEvent::ModelPrediction> prediction);
 
   // session_manager::SessionManagerObserver overrides:
   void OnSessionStateChanged() override;
-
-  // crosapi::WebPageInfoFactoryAsh::Observer overrides:
-  // Called when a new lacros connection is registered, updates the
-  // `lacros_remote_id_`.
-  void OnLacrosInstanceRegistered(
-      const mojo::RemoteSetElementId& remote_id) override;
-  // Called when a lacros connection is disconnected, cleans the value of
-  // `lacros_remote_id_` if it's the one.
-  void OnLacrosInstanceDisconnected(
-      const mojo::RemoteSetElementId& remote_id) override;
 
  private:
   friend class UserActivityManagerTest;
@@ -167,8 +148,7 @@ class UserActivityManager : public ui::UserActivityObserver,
 
   // Extracts features from last known activity data, device states and topmost
   // browser window.
-  void ExtractFeatures(const IdleEventNotifier::ActivityData& activity_data,
-                       crosapi::mojom::WebPageInfoPtr lacros_web_page_info);
+  void ExtractFeatures(const IdleEventNotifier::ActivityData& activity_data);
 
   // Log event only when an idle event is observed.
   void MaybeLogEvent(UserActivityEvent::Event::Type type,
@@ -183,9 +163,6 @@ class UserActivityManager : public ui::UserActivityObserver,
   void PopulatePreviousEventData(const base::TimeDelta& now);
 
   void ResetAfterLogging();
-
-  // Cancel any pending request for lacros web page info.
-  void CancelLacrosWebPageInfoRequest();
 
   // Cancel any pending request to `SmartDimMlAgent` to get a dim decision.
   void CancelDimDecisionRequest();
@@ -260,9 +237,6 @@ class UserActivityManager : public ui::UserActivityObserver,
   // set to true after we've received an idle event, but haven't received final
   // action to log the event.
   bool waiting_for_final_action_ = false;
-  // Whether we are waiting for features from lacros. Request to lacros for
-  // WebPageInfo is async.
-  bool waiting_for_lacros_features_ = false;
   // Whether we are waiting for a decision from the `SmartDimMlAgent`
   // regarding whether to proceed with a dim or not. It is only set
   // to true in OnIdleEventObserved() when we request a dim decision.
@@ -277,15 +251,6 @@ class UserActivityManager : public ui::UserActivityObserver,
   std::optional<UserActivityEvent::ModelPrediction> model_prediction_;
 
   std::unique_ptr<PreviousIdleEventData> previous_idle_event_data_;
-
-  base::CancelableOnceCallback<void(crosapi::mojom::WebPageInfoPtr)>
-      lacros_web_page_info_callback_;
-  // Latest registered lacros remote id list.
-  // We just use the latest registered lacros connection when we meet a lacros
-  // window in mru window list first, with the assumption there's only one
-  // lacros instance at most. Although multiple lacros instances are possible
-  // for developers' convenience, we don't expect it to reach the end users.
-  std::optional<mojo::RemoteSetElementId> lacros_remote_id_ = std::nullopt;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

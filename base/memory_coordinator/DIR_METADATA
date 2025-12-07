@@ -1,0 +1,6 @@
+monorail: {
+  component: "Internals>MemoryCoordinator"
+}
+buganizer_public: {
+  component_id: 1840922
+}

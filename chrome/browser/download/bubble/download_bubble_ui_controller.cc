@@ -31,24 +31,29 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
 #include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
+#include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_stats.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_manager.h"
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
+#endif
 
 namespace {
 
@@ -60,23 +65,25 @@ using DownloadUIModelPtr = DownloadUIModel::DownloadUIModelPtr;
 // user clicks on the button to open the main view.
 constexpr base::TimeDelta kShowPartialViewMinInterval = base::Seconds(15);
 
-bool IsForDownload(Browser* browser, download::DownloadItem* item) {
+bool IsForDownload(BrowserWindowInterface* browser,
+                   download::DownloadItem* item) {
   Profile* profile = Profile::FromBrowserContext(
       content::DownloadItemUtils::GetBrowserContext(item));
   // An off-the-record `profile` should match only the off-the-record browsers,
   // but a regular `profile` should match both the regular and off-the-record
   // browsers.
-  if (browser->profile() != profile &&
-      browser->profile()->GetOriginalProfile() != profile) {
+  if (browser->GetProfile() != profile &&
+      browser->GetProfile()->GetOriginalProfile() != profile) {
     return false;
   }
 
   if (DownloadItemWebAppData* web_app_data = DownloadItemWebAppData::Get(item);
       web_app_data) {
-    return web_app::AppBrowserController::IsForWebApp(browser,
-                                                      web_app_data->id());
+    return web_app::AppBrowserController::IsForWebApp(
+        browser->GetBrowserForMigrationOnly(), web_app_data->id());
   } else {
-    return !web_app::AppBrowserController::IsWebApp(browser);
+    return !web_app::AppBrowserController::IsWebApp(
+        browser->GetBrowserForMigrationOnly());
   }
 }
 
@@ -85,13 +92,22 @@ bool IsForDownload(Browser* browser, download::DownloadItem* item) {
 // static
 DownloadBubbleUIController* DownloadBubbleUIController::GetForDownload(
     download::DownloadItem* item) {
-  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    if (IsForDownload(browser, item) && browser->window() &&
-        browser->window()->GetDownloadBubbleUIController()) {
-      return browser->window()->GetDownloadBubbleUIController();
-    }
-  }
-  return nullptr;
+  DownloadBubbleUIController* controller = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (IsForDownload(browser, item) &&
+            browser->GetFeatures().download_toolbar_ui_controller() &&
+            browser->GetFeatures()
+                .download_toolbar_ui_controller()
+                ->bubble_controller()) {
+          controller = browser->GetFeatures()
+                           .download_toolbar_ui_controller()
+                           ->bubble_controller();
+          return false;  // stop iterating
+        }
+        return true;  // continue iterating
+      });
+  return controller;
 }
 
 DownloadBubbleUIController::DownloadBubbleUIController(Browser* browser)
@@ -129,11 +145,6 @@ void DownloadBubbleUIController::HideDownloadUi() {
 
 void DownloadBubbleUIController::HandleButtonPressed() {
   display_controller_->HandleButtonPressed();
-}
-
-bool DownloadBubbleUIController::OpenMostSpecificDialog(
-    const offline_items_collection::ContentId& content_id) {
-  return display_controller_->OpenMostSpecificDialog(content_id);
 }
 
 void DownloadBubbleUIController::OnOfflineItemsAdded(
@@ -293,8 +304,10 @@ void DownloadBubbleUIController::ProcessDownloadButtonPress(
       break;
     }
     case DownloadCommands::REVIEW:
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
       model->ReviewScanningVerdict(
           browser_->tab_strip_model()->GetActiveWebContents());
+#endif
       break;
     case DownloadCommands::RETRY:
       RetryDownload(model.get(), command);
@@ -336,8 +349,8 @@ void DownloadBubbleUIController::ProcessDownloadButtonPress(
       commands.ExecuteCommand(command);
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected button pressed on download bubble: " << command;
+      NOTREACHED() << "Unexpected button pressed on download bubble: "
+                   << command;
   }
 }
 
@@ -350,9 +363,6 @@ void DownloadBubbleUIController::RetryDownload(
   if (!download_manager) {
     return;
   }
-  RecordDownloadRetry(
-      OfflineItemUtils::ConvertFailStateToDownloadInterruptReason(
-          model->GetLastFailState()));
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("download_bubble_retry_download", R"(
@@ -436,9 +446,4 @@ void DownloadBubbleUIController::RecordDangerousDownloadShownToUser(
 base::WeakPtr<DownloadBubbleUIController>
 DownloadBubbleUIController::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
-}
-
-void DownloadBubbleUIController::SetDeepScanNoticeSeen() {
-  profile_->GetPrefs()->SetBoolean(
-      prefs::kSafeBrowsingAutomaticDeepScanningIPHSeen, true);
 }

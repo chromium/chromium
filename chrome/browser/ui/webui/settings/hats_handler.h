@@ -32,30 +32,22 @@ class HatsHandler : public SettingsPageUIHandler {
 
  private:
   friend class HatsHandlerTest;
-  friend class HatsHandlerParamTest;
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerTest, PrivacySettingsHats);
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerTest, PrivacyGuideHats);
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerTest, PrivacySandboxHats);
   FRIEND_TEST_ALL_PREFIXES(
       HatsHandlerTest,
-      HandleSecurityPageHatsRequestPassesArgumentsToHatsService);
+      HandleSecurityPageHatsRequest_PassesArgumentsToHatsService);
   FRIEND_TEST_ALL_PREFIXES(
       HatsHandlerTest,
-      HandleSecurityPageHatsRequestPassesArgumentsToHatsServiceNotLaunchSurveyNotEnoughTime);
+      HandleSecurityPageHatsRequest_NoSurveyIfSurveysDisabled);
   FRIEND_TEST_ALL_PREFIXES(
       HatsHandlerTest,
-      HandleSecurityPageHatsRequestPassesArgumentsToHatsServiceNotLaunchSurveyNoInteraction);
-  FRIEND_TEST_ALL_PREFIXES(
-      HatsHandlerTest,
-      HandleSecurityPageHatsRequestPassesFriendlierSafeBrowsingSettingsStateToHatsService);
+      HandleSecurityPageHatsRequest_NoSurveyIfInsufficientTimeOnPage);
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerTest, TrustSafetySentimentInteractions);
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerNoSandboxTest, PrivacySettings);
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerNoSandboxTest,
                            TrustSafetySentimentInteractions);
-  FRIEND_TEST_ALL_PREFIXES(HatsHandlerParamTest, AdPrivacyHats);
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  FRIEND_TEST_ALL_PREFIXES(HatsHandlerTest, GetMostChromeHats);
-#endif
 
   // All Trust & Safety based interactions which may result in a HaTS survey.
   // Must be kept in sync with the enum of the same name in
@@ -67,38 +59,33 @@ class HatsHandler : public SettingsPageUIHandler {
     OPENED_PASSWORD_MANAGER = 3,
     COMPLETED_PRIVACY_GUIDE = 4,
     RAN_PASSWORD_CHECK = 5,
-    OPENED_AD_PRIVACY = 6,
-    OPENED_TOPICS_SUBPAGE = 7,
-    OPENED_FLEDGE_SUBPAGE = 8,
-    OPENED_AD_MEASUREMENT_SUBPAGE = 9,
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    OPENED_GET_MOST_CHROME = 10,
-#endif
+    // OPENED_AD_PRIVACY = 6, // DEPRECATED
+    // OPENED_TOPICS_SUBPAGE = 7, // DEPRECATED
+    // OPENED_FLEDGE_SUBPAGE = 8, // DEPRECATED
+    // OPENED_AD_MEASUREMENT_SUBPAGE = 9, // DEPRECATED
+    // OPENED_GET_MOST_CHROME = 10, // DEPRECATED
   };
 
   /**
    * All interactions from the security settings page which may result in a HaTS
-   * survey. Must be kept in sync with the enum of the same name in
-   * hats_browser_proxy.js
+   * survey. Must be kept in sync with the enum of the same name located in:
+   * chrome/browser/resources/settings/hats_browser_proxy.ts
    */
-  enum class SecurityPageInteraction {
-    RADIO_BUTTON_ENHANCED_CLICK = 0,
-    RADIO_BUTTON_STANDARD_CLICK = 1,
-    RADIO_BUTTON_DISABLE_CLICK = 2,
-    EXPAND_BUTTON_ENHANCED_CLICK = 3,
-    EXPAND_BUTTON_STANDARD_CLICK = 4,
-    NO_INTERACTION = 5,
+  enum class SecurityPageV2Interaction {
+    STANDARD_BUNDLE_RADIO_BUTTON_CLICK = 0,
+    ENHANCED_BUNDLE_RADIO_BUTTON_CLICK = 1,
+    SAFE_BROWSING_ROW_EXPANDED = 2,
+    STANDARD_SAFE_BROWSING_RADIO_BUTTON_CLICK = 3,
+    ENHANCED_SAFE_BROWSING_RADIO_BUTTON_CLICK = 4,
   };
-
   /**
-   * Enumeration of all safe browsing modes. Must be kept in sync with the enum
-   * of the same name located in:
-   * chrome/browser/safe_browsing/generated_safe_browsing_pref.h
+   * Enumeration of all security settings bundle modes. Must be kept in sync
+   * with the enum of the same name located in:
+   * chrome/browser/safe_browsing/generated_security_settings_bundle_pref.h
    */
-  enum class SafeBrowsingSetting {
-    ENHANCED = 0,
-    STANDARD = 1,
-    DISABLED = 2,
+  enum class SecuritySettingsBundleSetting {
+    STANDARD = 0,
+    ENHANCED = 1,
   };
 
   // Requests the appropriate HaTS survey, which may be none, for |interaction|.
@@ -114,8 +101,9 @@ class HatsHandler : public SettingsPageUIHandler {
   /**
    * Generate the Product Specific string data from |profile| and |args| for
    * chrome://settings/security page HaTS.
-   * - First arg in the list indicates the SecurityPageInteraction.
-   * - Second arg in the list indicates the SafeBrowsingSetting.
+   * - First arg in the list is a set of SecurityPageV2Interactions.
+   * - Second arg in the list indicates the SafeBrowsingState.
+   * - Third arg in the list indicates the SecuritySettingsBundleSetting.
    */
   SurveyStringData GetSecurityPageProductSpecificStringData(
       Profile* profile,

@@ -2,10 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chrome_build.gni")
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash, "Shortcut Customization App is ash-chrome only")
+assert(is_chromeos, "Shortcut Customization App is ChromeOS only")
 
 static_library("shortcut_customization_ui") {
   sources = [
@@ -28,21 +25,16 @@ static_library("shortcut_customization_ui") {
     "//ash/webui/shortcut_customization_ui/backend",
     "//ash/webui/shortcut_customization_ui/backend/search:mojo_bindings",
     "//ash/webui/shortcut_customization_ui/mojom",
-    "//ash/webui/shortcut_customization_ui/resources:resources",
+    "//ash/webui/shortcut_customization_ui/resources",
     "//ash/webui/system_apps/public:system_web_app_config",
-    "//build:branding_buildflags",
     "//chromeos/ash/components/local_search_service/public/cpp",
     "//chromeos/strings",
-    "//components/keyed_service/content:content",
+    "//components/keyed_service/content",
     "//components/user_prefs",
     "//content/public/browser",
-    "//ui/resources:webui_resources_grd_grit",
     "//ui/webui",
+    "//ui/webui/resources:resources_grit",
   ]
-
-  if (is_chrome_branded) {
-    deps += [ "//chromeos/ash/resources/internal/strings" ]
-  }
 }
 
 # Url constants pulled out to enable depending on production url constants in
@@ -76,12 +68,12 @@ source_set("unit_tests") {
     "//ash/webui/shortcut_customization_ui/mojom",
     "//base/test:test_support",
     "//chromeos/ash/components:test_support",
-    "//chromeos/ash/components/local_search_service/public/cpp:cpp",
+    "//chromeos/ash/components/local_search_service/public/cpp",
     "//chromeos/ash/components/local_search_service/public/mojom",
-    "//chromeos/ash/components/local_search_service/public/mojom:mojom",
+    "//chromeos/ash/services/assistant/public/cpp",
     "//content/test:test_support",
     "//device/udev_linux:test_support",
-    "//mojo/public/cpp/bindings:bindings",
+    "//mojo/public/cpp/bindings",
     "//testing/gtest",
     "//ui/base:test_support",
     "//ui/base/ime/ash",

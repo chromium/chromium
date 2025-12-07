@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionWindow;
 import org.chromium.chrome.browser.recent_tabs.R;
@@ -23,6 +24,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** A binder class for device items on the detail sheet. */
+@NullMarked
 public class ForeignSessionItemViewBinder {
     static View create(ViewGroup parent) {
         return LayoutInflater.from(parent.getContext())
@@ -68,7 +70,6 @@ public class ForeignSessionItemViewBinder {
         builder.append(sessionInfo);
         builder.append(
                 view.getContext()
-                        .getResources()
                         .getString(
                                 isSelected
                                         ? R.string.restore_tabs_device_screen_selected_description

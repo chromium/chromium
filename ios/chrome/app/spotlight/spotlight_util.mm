@@ -85,10 +85,10 @@ const char kSpotlightLastIndexingDateKey[] = "SpotlightLastIndexingDate";
 const char kSpotlightLastIndexingVersionKey[] = "SpotlightLastIndexingVersion";
 
 // The current version of the Spotlight index format.
-// Change this value if there are change int the information indexed in
+// Change this value if there are change in the information indexed in
 // Spotlight. This will force reindexation on next startup.
 // Value is stored in `kSpotlightLastIndexingVersionKey`.
-const int kCurrentSpotlightIndexVersion = 4;
+const int kCurrentSpotlightIndexVersion = 5;
 
 Domain SpotlightDomainFromString(NSString* domain) {
   if ([domain hasPrefix:kSpotlightBookmarkPrefix]) {
@@ -121,8 +121,7 @@ NSString* StringFromSpotlightDomain(Domain domain) {
     default:
       // On normal flow, it is not possible to reach this point. When testing
       // the app, it may be possible though if the app is downgraded.
-      NOTREACHED_IN_MIGRATION();
-      return nil;
+      NOTREACHED();
   }
 }
 
@@ -143,8 +142,7 @@ NSString* SpotlightItemSourceLabelFromDomain(Domain domain) {
     default:
       // On normal flow, it is not possible to reach this point. When testing
       // the app, it may be possible though if the app is downgraded.
-      NOTREACHED_IN_MIGRATION();
-      return nil;
+      NOTREACHED();
   }
 }
 
@@ -193,7 +191,6 @@ void GetURLForSpotlightItemID(NSString* itemID, BlockWithNSURL completion) {
       }
     }
     completion(nil);
-
   }];
 
   [query start];

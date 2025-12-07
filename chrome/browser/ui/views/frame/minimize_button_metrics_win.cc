@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "chrome/browser/ui/views/frame/minimize_button_metrics_win.h"
 
@@ -123,8 +119,9 @@ int MinimizeButtonMetrics::GetMinimizeButtonOffsetForWindow() const {
     if (titlebar_info.rgrect[2].left == titlebar_info.rgrect[2].right ||
         (titlebar_info.rgstate[2] &
          (STATE_SYSTEM_INVISIBLE | STATE_SYSTEM_OFFSCREEN |
-          STATE_SYSTEM_UNAVAILABLE)))
+          STATE_SYSTEM_UNAVAILABLE))) {
       return 0;
+    }
     minimize_button_corner = {titlebar_info.rgrect[2].left, 0};
   }
 
@@ -134,7 +131,8 @@ int MinimizeButtonMetrics::GetMinimizeButtonOffsetForWindow() const {
   // convert the minimize button corner offset to DIP before returning it.
   MapWindowPoints(HWND_DESKTOP, hwnd_, &minimize_button_corner, 1);
   gfx::Point pixel_point = {minimize_button_corner.x, 0};
-  gfx::Point dip_point = ScreenWin::ClientToDIPPoint(hwnd_, pixel_point);
+  gfx::Point dip_point =
+      display::win::GetScreenWin()->ClientToDIPPoint(hwnd_, pixel_point);
   return dip_point.x();
 }
 
@@ -144,10 +142,7 @@ int MinimizeButtonMetrics::GetMinimizeButtonOffsetX() const {
   // consistant value we cache the last value across instances and use it until
   // we get the activate.
   if (was_activated_ || cached_minimize_button_x_delta_ == 0) {
-    const int minimize_button_offset = GetAndCacheMinimizeButtonOffsetX();
-    if (minimize_button_offset > 0) {
-      return minimize_button_offset;
-    }
+    CalculateAndCacheMinimizeButtonOffsetX();
   }
 
   // If we fail to get the minimize button offset via the WM_GETTITLEBARINFOEX
@@ -156,27 +151,22 @@ int MinimizeButtonMetrics::GetMinimizeButtonOffsetX() const {
   // CacheMinimizeButtonDelta() for more details.
   DCHECK(cached_minimize_button_x_delta_);
 
-  if (base::i18n::IsRTL())
-    return cached_minimize_button_x_delta_;
-
-  RECT client_rect = {0};
-  GetClientRect(hwnd_, &client_rect);
-  return client_rect.right - cached_minimize_button_x_delta_;
-}
-
-int MinimizeButtonMetrics::GetAndCacheMinimizeButtonOffsetX() const {
-  const int minimize_button_offset = GetMinimizeButtonOffsetForWindow();
-  if (minimize_button_offset <= 0)
-    return 0;
-
+  // In RTL the origin (for Views purposes) is the upper-right corner, and the
+  // X axis is reversed.
   if (base::i18n::IsRTL()) {
-    cached_minimize_button_x_delta_ = minimize_button_offset;
-  } else {
     RECT client_rect = {0};
     GetClientRect(hwnd_, &client_rect);
-    cached_minimize_button_x_delta_ =
-        client_rect.right - minimize_button_offset;
+    return client_rect.right - cached_minimize_button_x_delta_;
   }
+
+  return cached_minimize_button_x_delta_;
+}
+
+void MinimizeButtonMetrics::CalculateAndCacheMinimizeButtonOffsetX() const {
+  const int minimize_button_offset = GetMinimizeButtonOffsetForWindow();
+  if (minimize_button_offset <= 0) {
+    return;
+  }
+  cached_minimize_button_x_delta_ = minimize_button_offset;
   last_cached_minimize_button_x_delta_ = cached_minimize_button_x_delta_;
-  return minimize_button_offset;
 }

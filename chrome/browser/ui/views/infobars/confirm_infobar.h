@@ -13,7 +13,7 @@
 namespace views {
 class Label;
 class MdTextButton;
-}
+}  // namespace views
 
 // An infobar that shows a message, up to two optional buttons, and an optional,
 // right-aligned link.  This is commonly used to do things like:
@@ -36,6 +36,7 @@ class ConfirmInfoBar : public InfoBarView {
   void Layout(PassKey) override;
 
   ConfirmInfoBarDelegate* GetDelegate();
+  const ConfirmInfoBarDelegate* GetDelegate() const;
 
   views::MdTextButton* ok_button_for_testing() { return ok_button_; }
 
@@ -44,6 +45,7 @@ class ConfirmInfoBar : public InfoBarView {
  protected:
   // InfoBarView:
   int GetContentMinimumWidth() const override;
+  int GetContentPreferredWidth() const override;
 
  private:
   void OkButtonPressed();

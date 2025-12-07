@@ -5,12 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_IOS_FORM_UTIL_FORM_UTIL_JAVA_SCRIPT_FEATURE_H_
 #define COMPONENTS_AUTOFILL_IOS_FORM_UTIL_FORM_UTIL_JAVA_SCRIPT_FEATURE_H_
 
-#include "base/no_destructor.h"
+#import "base/no_destructor.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
-
-namespace web {
-class WebFrame;
-}  // namespace web
 
 namespace autofill {
 
@@ -21,12 +17,6 @@ class FormUtilJavaScriptFeature : public web::JavaScriptFeature {
   // This feature holds no state, so only a single static instance is ever
   // needed.
   static FormUtilJavaScriptFeature* GetInstance();
-
-  // Enables/disables the AutofillAcrossIframes feature in `frame`.
-  void SetAutofillAcrossIframes(web::WebFrame* frame, bool enabled);
-
-  // Enables/disables XHR form submission detection in `frame`.
-  void SetAutofillXHRSubmissionDetection(web::WebFrame* frame, bool enabled);
 
  private:
   friend class base::NoDestructor<FormUtilJavaScriptFeature>;

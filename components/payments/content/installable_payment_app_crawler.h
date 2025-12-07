@@ -16,9 +16,9 @@
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/developer_console_logger.h"
 #include "components/payments/content/manifest_verifier.h"
-#include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/utility/payment_manifest_parser.h"
 #include "components/payments/content/web_app_manifest.h"
+#include "components/payments/content/web_payments_web_data_service.h"
 #include "components/payments/core/payment_manifest_downloader.h"
 #include "content/public/browser/global_routing_id.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
@@ -32,11 +32,13 @@ class RenderFrameHost;
 
 namespace payments {
 
-struct RefetchedIcon {
-  RefetchedIcon();
-  ~RefetchedIcon();
+struct RefetchedMetadata {
+  RefetchedMetadata();
+  ~RefetchedMetadata();
+
   std::string method_name;
   std::unique_ptr<SkBitmap> icon;
+  content::SupportedDelegations supported_delegations;
 };
 
 // Crawls installable web payment apps. First, fetches and parses the payment
@@ -46,16 +48,16 @@ class InstallablePaymentAppCrawler {
  public:
   using FinishedCrawlingCallback = base::OnceCallback<void(
       std::map<GURL, std::unique_ptr<WebAppInstallationInfo>>,
-      std::map<GURL, std::unique_ptr<RefetchedIcon>>,
+      std::map<GURL, std::unique_ptr<RefetchedMetadata>>,
       const std::string& error_message)>;
 
   enum class CrawlingMode {
     // In this mode the crawler will crawl for finding JIT installable payment
     // apps.
     kJustInTimeInstallation,
-    // In this mode the crawler will crawl for downloading missing icons for
-    // already installed payment apps.
-    kMissingIconRefetch,
+    // In this mode the crawler will crawl for refreshing metadata such as the
+    // icon and supported delegations for already installed payment apps.
+    kInstalledAppMetadataRefresh,
   };
 
   // |merchant_origin| is the origin of the iframe that created the
@@ -71,7 +73,7 @@ class InstallablePaymentAppCrawler {
       content::RenderFrameHost* initiator_render_frame_host,
       PaymentManifestDownloader* downloader,
       PaymentManifestParser* parser,
-      PaymentManifestWebDataService* cache);
+      WebPaymentsWebDataService* cache);
 
   InstallablePaymentAppCrawler(const InstallablePaymentAppCrawler&) = delete;
   InstallablePaymentAppCrawler& operator=(const InstallablePaymentAppCrawler&) =
@@ -86,7 +88,7 @@ class InstallablePaymentAppCrawler {
   // then this object is safe to be deleted.
   void Start(
       const std::vector<mojom::PaymentMethodDataPtr>& requested_method_data,
-      std::set<GURL> method_manifest_urls_for_icon_refetch,
+      std::set<GURL> method_manifest_urls_for_metadata_refresh,
       FinishedCrawlingCallback callback,
       base::OnceClosure finished_using_resources);
 
@@ -149,8 +151,8 @@ class InstallablePaymentAppCrawler {
   size_t number_of_web_app_icons_to_download_and_decode_;
   std::set<GURL> downloaded_web_app_manifests_;
   std::map<GURL, std::unique_ptr<WebAppInstallationInfo>> installable_apps_;
-  std::map<GURL, std::unique_ptr<RefetchedIcon>> refetched_icons_;
-  std::set<GURL> method_manifest_urls_for_icon_refetch_;
+  std::map<GURL, std::unique_ptr<RefetchedMetadata>> refetched_app_metadata_;
+  std::set<GURL> method_manifest_urls_for_metadata_refresh_;
 
   // The first error message (if any) to be forwarded to the merchant when
   // rejecting the promise returned from PaymentRequest.show().

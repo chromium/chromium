@@ -14,14 +14,14 @@ namespace updater {
 
 mojo::NamedPlatformChannel::ServerName GetUpdateServiceInternalServerName(
     UpdaterScope scope) {
-  return GetActiveDutyInternalSocketPath(scope).MaybeAsASCII();
+  return GetActiveDutyInternalSocketPath(scope).AsUTF8Unsafe();
 }
 
 mojo::NamedPlatformChannel::ServerName GetUpdateServiceServerName(
     UpdaterScope scope) {
   std::optional<base::FilePath> socket = GetActiveDutySocketPath(scope);
   CHECK(socket);
-  return socket->MaybeAsASCII();
+  return socket->AsUTF8Unsafe();
 }
 
 }  // namespace updater

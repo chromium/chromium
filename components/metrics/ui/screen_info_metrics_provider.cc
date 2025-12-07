@@ -88,20 +88,18 @@ void ScreenInfoMetricsProvider::ProvideSystemProfileMetrics(
 }
 
 std::optional<gfx::Size> ScreenInfoMetricsProvider::GetScreenSize() const {
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   if (!screen)
     return std::nullopt;
   return std::make_optional(screen->GetPrimaryDisplay().GetSizeInPixel());
 }
 
 float ScreenInfoMetricsProvider::GetScreenDeviceScaleFactor() const {
-  return display::Screen::GetScreen()
-      ->GetPrimaryDisplay()
-      .device_scale_factor();
+  return display::Screen::Get()->GetPrimaryDisplay().device_scale_factor();
 }
 
 int ScreenInfoMetricsProvider::GetScreenCount() const {
-  return display::Screen::GetScreen()->GetNumDisplays();
+  return display::Screen::Get()->GetNumDisplays();
 }
 
 }  // namespace metrics

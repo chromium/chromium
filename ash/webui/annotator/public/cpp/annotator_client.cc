@@ -14,17 +14,22 @@ AnnotatorClient* g_instance = nullptr;
 
 // static
 AnnotatorClient* AnnotatorClient::Get() {
-  DCHECK(g_instance);
+  CHECK(g_instance);
   return g_instance;
 }
 
+// static
+bool AnnotatorClient::HasInstance() {
+  return g_instance != nullptr;
+}
+
 AnnotatorClient::AnnotatorClient() {
-  DCHECK_EQ(g_instance, nullptr);
+  CHECK_EQ(g_instance, nullptr);
   g_instance = this;
 }
 
 AnnotatorClient::~AnnotatorClient() {
-  DCHECK_EQ(g_instance, this);
+  CHECK_EQ(g_instance, this);
   g_instance = nullptr;
 }
 

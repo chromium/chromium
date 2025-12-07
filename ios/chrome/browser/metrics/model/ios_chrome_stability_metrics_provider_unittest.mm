@@ -55,7 +55,7 @@ TEST_F(IOSChromeStabilityMetricsProviderTest,
       "Stability.Counts2", metrics::StabilityEventType::kPageLoad, 1);
   histogram_tester_.ExpectUniqueSample(
       IOSChromeStabilityMetricsProvider::kPageLoadCountMetric,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSChromeStabilityMetricsProvider::PageLoadCountNavigationType::
               PAGE_LOAD_NAVIGATION),
       1);
@@ -72,7 +72,7 @@ TEST_F(IOSChromeStabilityMetricsProviderTest,
 
   histogram_tester_.ExpectUniqueSample(
       IOSChromeStabilityMetricsProvider::kPageLoadCountMetric,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSChromeStabilityMetricsProvider::PageLoadCountNavigationType::
               SAME_DOCUMENT_WEB_NAVIGATION),
       1);
@@ -93,7 +93,7 @@ TEST_F(IOSChromeStabilityMetricsProviderTest,
 
   histogram_tester_.ExpectUniqueSample(
       IOSChromeStabilityMetricsProvider::kPageLoadCountMetric,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSChromeStabilityMetricsProvider::PageLoadCountNavigationType::
               CHROME_URL_NAVIGATION),
       1);
@@ -113,7 +113,7 @@ TEST_F(IOSChromeStabilityMetricsProviderTest,
 
   histogram_tester_.ExpectUniqueSample(
       IOSChromeStabilityMetricsProvider::kPageLoadCountMetric,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSChromeStabilityMetricsProvider::PageLoadCountNavigationType::
               CHROME_URL_NAVIGATION),
       1);
@@ -129,7 +129,7 @@ TEST_F(IOSChromeStabilityMetricsProviderTest, WebNavigationShouldLogPageLoad) {
 
   histogram_tester_.ExpectUniqueSample(
       IOSChromeStabilityMetricsProvider::kPageLoadCountMetric,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           IOSChromeStabilityMetricsProvider::PageLoadCountNavigationType::
               PAGE_LOAD_NAVIGATION),
       1);

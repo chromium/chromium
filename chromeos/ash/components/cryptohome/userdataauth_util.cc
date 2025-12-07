@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "components/device_event_log/device_event_log.h"
 
 namespace user_data_auth {
@@ -115,6 +116,9 @@ template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
 template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
     cryptohome::ErrorWrapper
     ReplyToCryptohomeError(const std::optional<StartMigrateToDircryptoReply>&);
+template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
+    cryptohome::ErrorWrapper
+    ReplyToCryptohomeError(const std::optional<LockFactorUntilRebootReply>&);
 
 int64_t AccountDiskUsageReplyToUsageSize(
     const std::optional<GetAccountDiskUsageReply>& reply) {
@@ -195,14 +199,12 @@ cryptohome::MountError CryptohomeErrorToMountError(CryptohomeErrorCode code) {
     case CRYPTOHOME_ERROR_FAILED_TO_EXTEND_PCR:
     case CRYPTOHOME_ERROR_FAILED_TO_READ_PCR:
     case CRYPTOHOME_ERROR_PCR_ALREADY_EXTENDED:
-      NOTREACHED_IN_MIGRATION();
-      return cryptohome::MOUNT_ERROR_FATAL;
+      NOTREACHED();
     // TODO(dlunev): remove this temporary case after rolling up system api
     // change and adding proper handling for the new enum value in
     // https://chromium-review.googlesource.com/c/chromium/src/+/2518524
     default:
-      NOTREACHED_IN_MIGRATION();
-      return cryptohome::MOUNT_ERROR_FATAL;
+      NOTREACHED();
   }
 }
 

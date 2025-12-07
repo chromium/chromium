@@ -15,8 +15,8 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "base/functional/callback.h"
-#include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/api_permission_set.h"
@@ -34,26 +34,26 @@ class PermissionsInfo {
 
   static PermissionsInfo* GetInstance();
 
-  // Registers the permissions specified by |infos| along with the
-  // |aliases|.
+  // Registers the permissions specified by `infos` along with the
+  // `aliases`.
   void RegisterPermissions(base::span<const APIPermissionInfo::InitInfo> infos,
                            base::span<const Alias> aliases);
 
-  // Returns the permission with the given |id|, and NULL if it doesn't exist.
+  // Returns the permission with the given `id`, and NULL if it doesn't exist.
   const APIPermissionInfo* GetByID(mojom::APIPermissionID id) const;
 
-  // Returns the permission with the given |name|, and NULL if none
+  // Returns the permission with the given `name`, and NULL if none
   // exists.
   const APIPermissionInfo* GetByName(const std::string& name) const;
 
   // Returns a set containing all valid api permission ids.
   APIPermissionSet GetAllForTest() const;
 
-  // Converts all the permission names in |permission_names| to permission ids.
+  // Converts all the permission names in `permission_names` to permission ids.
   APIPermissionSet GetAllByNameForTest(
       const std::set<std::string>& permission_names) const;
 
-  // Checks if any permissions have names that start with |name| followed by a
+  // Checks if any permissions have names that start with `name` followed by a
   // period.
   bool HasChildPermissions(const std::string& name) const;
 
@@ -61,13 +61,13 @@ class PermissionsInfo {
   size_t get_permission_count() const { return permission_count_; }
 
  private:
-  friend struct base::LazyInstanceTraitsBase<PermissionsInfo>;
+  friend class base::NoDestructor<PermissionsInfo>;
 
   PermissionsInfo();
 
   virtual ~PermissionsInfo();
 
-  // Registers an |alias| for a given permission |name|.
+  // Registers an `alias` for a given permission `name`.
   void RegisterAlias(const Alias& alias);
 
   // Registers a permission with the specified attributes and flags.

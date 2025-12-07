@@ -30,6 +30,21 @@ void PropertyRegistry::RemoveDeclaredProperties() {
   version_++;
 }
 
+void PropertyRegistry::AddRegistrationForInspector(
+    const AtomicString& name,
+    PropertyRegistration& registration) {
+  DCHECK(!IsInRegisteredPropertySet(name));
+  registered_properties_.Set(name, &registration);
+}
+
+void PropertyRegistry::RemoveRegistrationForInspector(
+    const AtomicString& name) {
+  if (!IsInRegisteredPropertySet(name)) {
+    return;
+  }
+  declared_properties_.erase(name);
+}
+
 const PropertyRegistration* PropertyRegistry::Registration(
     const AtomicString& name) const {
   // If a property is registered with both CSS.registerProperty and @property,

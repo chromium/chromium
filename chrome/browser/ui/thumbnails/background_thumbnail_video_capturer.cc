@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/thumbnails/background_thumbnail_video_capturer.h"
 
 #include <stdint.h>
+
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
@@ -16,6 +17,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
@@ -28,24 +30,27 @@ BackgroundThumbnailVideoCapturer::BackgroundThumbnailVideoCapturer(
 }
 
 BackgroundThumbnailVideoCapturer::~BackgroundThumbnailVideoCapturer() {
-  if (video_capturer_)
+  if (video_capturer_) {
     Stop();
+  }
 }
 
 void BackgroundThumbnailVideoCapturer::Start(
     const ThumbnailCaptureInfo& capture_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (video_capturer_)
+  if (video_capturer_) {
     return;
+  }
 
   content::RenderWidgetHostView* const source_view =
       contents_->GetPrimaryMainFrame()
           ->GetRenderViewHost()
           ->GetWidget()
           ->GetView();
-  if (!source_view)
+  if (!source_view) {
     return;
+  }
 
   capture_info_ = capture_info;
 
@@ -55,8 +60,8 @@ void BackgroundThumbnailVideoCapturer::Start(
     // safe since this is only invoked from the UI thread.
     static uint64_t capture_num GUARDED_BY_CONTEXT(sequence_checker_) = 0;
     cur_capture_num_ = ++capture_num;
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("ui", "Tab.Preview.VideoCapture",
-                                      TRACE_ID_LOCAL(cur_capture_num_));
+    TRACE_EVENT_BEGIN("ui", "Tab.Preview.VideoCapture",
+                      perfetto::Track(cur_capture_num_));
   }
 
   start_time_ = base::TimeTicks::Now();
@@ -76,14 +81,14 @@ void BackgroundThumbnailVideoCapturer::Start(
 void BackgroundThumbnailVideoCapturer::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!video_capturer_)
+  if (!video_capturer_) {
     return;
+  }
 
   video_capturer_->Stop();
   video_capturer_.reset();
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("ui", "Tab.Preview.VideoCapture",
-                                  TRACE_ID_LOCAL(cur_capture_num_));
+  TRACE_EVENT_END("ui", perfetto::Track(cur_capture_num_));
   start_time_ = base::TimeTicks();
   cur_capture_num_ = 0;
 }
@@ -185,8 +190,8 @@ void BackgroundThumbnailVideoCapturer::OnFrameCaptured(
   got_frame_callback_.Run(cropped_frame, frame_id);
 }
 
-void BackgroundThumbnailVideoCapturer::OnNewSubCaptureTargetVersion(
-    uint32_t sub_capture_target_version) {}
+void BackgroundThumbnailVideoCapturer::OnNewCaptureVersion(
+    const media::CaptureVersion& capture_version) {}
 
 void BackgroundThumbnailVideoCapturer::OnFrameWithEmptyRegionCapture() {}
 

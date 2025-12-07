@@ -13,8 +13,11 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/system_display.h"
 #include "ui/display/display_observer.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace display {
 class Display;
@@ -47,16 +50,16 @@ class DisplayInfoProvider : public display::DisplayObserver {
   // Called by tests to reset the global instance.
   static void ResetForTesting();
 
-  // Updates display |display_id| with |properties|. If the operation fails,
-  // |callback| will be called with a non empty error string and no display
+  // Updates display `display_id` with `properties`. If the operation fails,
+  // `callback` will be called with a non empty error string and no display
   // properties will be changed.
   virtual void SetDisplayProperties(
       const std::string& display_id,
       const api::system_display::DisplayProperties& properties,
       ErrorCallback callback);
 
-  // Updates the display layout with |layouts|. If the operation fails,
-  // |callback| will be called with a non empty error string and the layout will
+  // Updates the display layout with `layouts`. If the operation fails,
+  // `callback` will be called with a non empty error string and the layout will
   // not be changed.
   virtual void SetDisplayLayout(const DisplayLayoutList& layouts,
                                 ErrorCallback callback);
@@ -64,7 +67,7 @@ class DisplayInfoProvider : public display::DisplayObserver {
   // Enables the unified desktop feature.
   virtual void EnableUnifiedDesktop(bool enable);
 
-  // Requests a list of information for all displays. If |single_unified| is
+  // Requests a list of information for all displays. If `single_unified` is
   // true, when in unified mode a single display will be returned representing
   // the single unified desktop.
   virtual void GetAllDisplaysInfo(
@@ -80,7 +83,7 @@ class DisplayInfoProvider : public display::DisplayObserver {
   virtual void StopObserving();
 
   // Implements overscan calibration methods. See system_display.idl. These
-  // return false if |id| is invalid.
+  // return false if `id` is invalid.
   virtual bool OverscanCalibrationStart(const std::string& id);
   virtual bool OverscanCalibrationAdjust(
       const std::string& id,
@@ -89,13 +92,13 @@ class DisplayInfoProvider : public display::DisplayObserver {
   virtual bool OverscanCalibrationComplete(const std::string& id);
 
   // Shows the native touch calibration UI. Returns false if native touch
-  // calibration cannot be started. Otherwise |callback| will be run when the
+  // calibration cannot be started. Otherwise `callback` will be run when the
   // calibration has completed.
   virtual void ShowNativeTouchCalibration(const std::string& id,
                                           ErrorCallback callback);
 
   // These methods implement custom touch calibration. They will return false
-  // if |id| is invalid or if the operation is invalid.
+  // if `id` is invalid or if the operation is invalid.
   virtual bool StartCustomTouchCalibration(const std::string& id);
   virtual bool CompleteCustomTouchCalibration(
       const api::system_display::TouchCalibrationPairQuad& pairs,
@@ -103,15 +106,15 @@ class DisplayInfoProvider : public display::DisplayObserver {
   virtual bool ClearTouchCalibration(const std::string& id);
 
   // Sets the display mode to the specified mirror mode. See system_display.idl.
-  // |info|: Mirror mode properties to apply.
+  // `info`: Mirror mode properties to apply.
   virtual void SetMirrorMode(const api::system_display::MirrorModeInfo& info,
                              ErrorCallback callback);
 
  protected:
-  explicit DisplayInfoProvider(display::Screen* screen = nullptr);
+  explicit DisplayInfoProvider(display::Screen* screen);
 
   // Trigger OnDisplayChangedEvent
-  void DispatchOnDisplayChangedEvent();
+  virtual void DispatchOnDisplayChangedEvent() = 0;
 
   // Convert a vector of Displays into a DisplayUnitInfoList. This function
   // needs to be thread-safe since it is called via PostTask.
@@ -142,6 +145,9 @@ class DisplayInfoProvider : public display::DisplayObserver {
   raw_ptr<display::Screen> provided_screen_ = nullptr;
 
   std::optional<display::ScopedDisplayObserver> display_observer_;
+
+  // Created on demand and will leak when the process exits.
+  static DisplayInfoProvider* g_display_info_provider;
 };
 
 }  // namespace extensions

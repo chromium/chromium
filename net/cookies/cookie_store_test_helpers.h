@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "net/cookies/cookie_change_dispatcher.h"
 #include "net/cookies/cookie_monster.h"
@@ -67,6 +68,14 @@ class DelayedCookieMonster : public CookieStore {
       const std::optional<CookieAccessResult> cookie_access_result =
           std::nullopt) override;
 
+  // This function is for test purposes only.
+  // Call the asynchronous CookieMonster function, expect it to immediately
+  // invoke the internal callback.
+  // Post a delayed task to invoke the original callback with the results.
+  void SetUnsafeCanonicalCookieForTestAsync(
+      std::unique_ptr<CanonicalCookie> cookie,
+      SetCookiesCallback callback) override;
+
   void GetCookieListWithOptionsAsync(
       const GURL& url,
       const CookieOptions& options,
@@ -93,7 +102,7 @@ class DelayedCookieMonster : public CookieStore {
 
   CookieChangeDispatcher& GetChangeDispatcher() override;
 
-  void SetCookieableSchemes(const std::vector<std::string>& schemes,
+  void SetCookieableSchemes(std::vector<std::string> schemes,
                             SetCookieableSchemesCallback callback) override;
 
  private:
@@ -131,7 +140,7 @@ class CookieURLHelper {
   explicit CookieURLHelper(const std::string& url_string);
 
   const std::string& domain() const { return domain_and_registry_; }
-  std::string host() const { return url_.host(); }
+  std::string host() const { return url_.GetHost(); }
   const GURL& url() const { return url_; }
   const GURL AppendPath(const std::string& path) const;
 

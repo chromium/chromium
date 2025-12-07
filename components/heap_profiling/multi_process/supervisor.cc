@@ -22,21 +22,18 @@
 #include "content/public/browser/resource_coordinator_service.h"
 #include "content/public/browser/tracing_controller.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
+#include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom-data-view.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 
 namespace heap_profiling {
 
 namespace {
 
-base::trace_event::TraceConfig GetBackgroundTracingConfig(bool anonymize) {
+base::trace_event::TraceConfig GetBackgroundTracingConfig() {
   // Disable all categories other than memory-infra.
   base::trace_event::TraceConfig trace_config(
       "-*,disabled-by-default-memory-infra",
       base::trace_event::RECORD_UNTIL_FULL);
-
-  // This flag is set by background tracing to filter out undesired events.
-  if (anonymize)
-    trace_config.EnableArgumentFilter();
 
   return trace_config;
 }
@@ -51,7 +48,7 @@ Supervisor* Supervisor::GetInstance() {
 
 Supervisor::Supervisor() = default;
 Supervisor::~Supervisor() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool Supervisor::HasStarted() {
@@ -144,7 +141,8 @@ void Supervisor::RequestTraceWithHeapDump(TraceFinishedCallback callback,
   }
 
   auto finished_dump_callback = base::BindOnce(
-      [](TraceFinishedCallback callback, bool anonymize, bool success,
+      [](TraceFinishedCallback callback, bool anonymize,
+         memory_instrumentation::mojom::RequestOutcome outcome,
          uint64_t dump_guid) {
         // Once the trace has stopped, run |callback| on the UI thread.
         auto finish_sink_callback = base::BindOnce(
@@ -167,8 +165,9 @@ void Supervisor::RequestTraceWithHeapDump(TraceFinishedCallback callback,
       std::move(callback), anonymize);
 
   auto trigger_memory_dump_callback = base::BindOnce(
-      [](base::OnceCallback<void(bool success, uint64_t dump_guid)>
-             finished_dump_callback) {
+      [](base::OnceCallback<void(
+             memory_instrumentation::mojom::RequestOutcome outcome,
+             uint64_t dump_guid)> finished_dump_callback) {
         memory_instrumentation::MemoryInstrumentation::GetInstance()
             ->RequestGlobalDumpAndAppendToTrace(
                 base::trace_event::MemoryDumpType::kExplicitlyTriggered,
@@ -181,8 +180,7 @@ void Supervisor::RequestTraceWithHeapDump(TraceFinishedCallback callback,
   // The only reason this should return false is if tracing is already enabled,
   // which we've already checked.
   bool result = content::TracingController::GetInstance()->StartTracing(
-      GetBackgroundTracingConfig(anonymize),
-      std::move(trigger_memory_dump_callback));
+      GetBackgroundTracingConfig(), std::move(trigger_memory_dump_callback));
   DCHECK(result);
 }
 

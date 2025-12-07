@@ -35,155 +35,174 @@
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/wtf/decimal.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
 namespace {
 
-String optionalNameProperty(const String& property) {
-  if (!property) {
+String OptionalNameProperty(const String& property) {
+  if (property.empty()) {
     return String();
   }
-  return " '" + property + "'";
+  return StrCat({" '", property, "'"});
 }
 
-String optionalIndexProperty(const String& property) {
+String OptionalIndexProperty(const String& property) {
   if (!property) {
     return String();
   }
-  return " [" + property + "]";
+  return StrCat({" [", property, "]"});
 }
 
 }  //  namespace
 
-String ExceptionMessages::AddContextToMessage(const ExceptionContext& context,
+String ExceptionMessages::AddContextToMessage(v8::ExceptionContext type,
+                                              const char* class_name,
+                                              const String& property_name,
                                               const String& message) {
-  const char* c = context.GetClassName();
-  const String& p = context.GetPropertyName();
-  const String& m = message;
-
-  switch (context.GetType()) {
+  switch (type) {
     case v8::ExceptionContext::kConstructor:
-      return ExceptionMessages::FailedToConstruct(c, m);
+      return ExceptionMessages::FailedToConstruct(class_name, message);
     case v8::ExceptionContext::kOperation:
-      return ExceptionMessages::FailedToExecute(p, c, m);
+      return ExceptionMessages::FailedToExecute(property_name, class_name,
+                                                message);
     case v8::ExceptionContext::kAttributeGet:
-      return ExceptionMessages::FailedToGet(p, c, m);
+      return ExceptionMessages::FailedToGet(property_name, class_name, message);
     case v8::ExceptionContext::kAttributeSet:
-      return ExceptionMessages::FailedToSet(p, c, m);
+      return ExceptionMessages::FailedToSet(property_name, class_name, message);
     case v8::ExceptionContext::kNamedEnumerator:
-      return ExceptionMessages::FailedToEnumerate(c, m);
+      return ExceptionMessages::FailedToEnumerate(class_name, message);
     case v8::ExceptionContext::kIndexedGetter:
     case v8::ExceptionContext::kIndexedDescriptor:
     case v8::ExceptionContext::kIndexedQuery:
-      return ExceptionMessages::FailedToGetIndexed(p, c, m);
+      return ExceptionMessages::FailedToGetIndexed(property_name, class_name,
+                                                   message);
     case v8::ExceptionContext::kIndexedSetter:
     case v8::ExceptionContext::kIndexedDefiner:
-      return ExceptionMessages::FailedToSetIndexed(p, c, m);
+      return ExceptionMessages::FailedToSetIndexed(property_name, class_name,
+                                                   message);
     case v8::ExceptionContext::kIndexedDeleter:
-      return ExceptionMessages::FailedToDeleteIndexed(p, c, m);
+      return ExceptionMessages::FailedToDeleteIndexed(property_name, class_name,
+                                                      message);
     case v8::ExceptionContext::kNamedGetter:
     case v8::ExceptionContext::kNamedDescriptor:
     case v8::ExceptionContext::kNamedQuery:
-      return ExceptionMessages::FailedToGetNamed(p, c, m);
+      return ExceptionMessages::FailedToGetNamed(property_name, class_name,
+                                                 message);
     case v8::ExceptionContext::kNamedSetter:
     case v8::ExceptionContext::kNamedDefiner:
-      return ExceptionMessages::FailedToSetNamed(p, c, m);
+      return ExceptionMessages::FailedToSetNamed(property_name, class_name,
+                                                 message);
     case v8::ExceptionContext::kNamedDeleter:
-      return ExceptionMessages::FailedToDeleteNamed(p, c, m);
+      return ExceptionMessages::FailedToDeleteNamed(property_name, class_name,
+                                                    message);
     case v8::ExceptionContext::kUnknown:
-      return m;
+      return message;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 String ExceptionMessages::FailedToConvertJSValue(const char* type) {
-  return String::Format("Failed to convert value to '%s'.", type);
+  return StrCat({"Failed to convert value to '", type, "'."});
 }
 
 String ExceptionMessages::FailedToConstruct(const char* type,
                                             const String& detail) {
-  return "Failed to construct '" + String(type) +
-         (!detail.empty() ? String("': " + detail) : String("'"));
+  String type_string = String(type);
+  if (type_string.empty()) {
+    return detail;
+  }
+  if (detail.empty()) {
+    return StrCat({"Failed to construct '", type_string, "'"});
+  }
+  return StrCat({"Failed to construct '", type_string, "': ", detail});
 }
 
 String ExceptionMessages::FailedToEnumerate(const char* type,
                                             const String& detail) {
-  return "Failed to enumerate the properties of '" + String(type) +
-         (!detail.empty() ? String("': " + detail) : String("'"));
+  if (detail.empty()) {
+    return StrCat({"Failed to enumerate the properties of '", type, "'"});
+  }
+  return StrCat(
+      {"Failed to enumerate the properties of '", type, "': ", detail});
 }
 
 String ExceptionMessages::FailedToExecute(const String& method,
                                           const char* type,
                                           const String& detail) {
-  return "Failed to execute '" + method + "' on '" + String(type) +
-         (!detail.empty() ? String("': " + detail) : String("'"));
+  if (detail.empty()) {
+    return StrCat({"Failed to execute '", method, "' on '", type, "'"});
+  }
+  return StrCat({"Failed to execute '", method, "' on '", type, "': ", detail});
 }
 
 String ExceptionMessages::FailedToGet(const String& property,
                                       const char* type,
                                       const String& detail) {
-  return "Failed to read the '" + property + "' property from '" +
-         String(type) + "': " + detail;
+  return StrCat({"Failed to read the '", property, "' property from '", type,
+                 "': ", detail});
 }
 
 String ExceptionMessages::FailedToSet(const String& property,
                                       const char* type,
                                       const String& detail) {
-  return "Failed to set the '" + property + "' property on '" + String(type) +
-         "': " + detail;
+  return StrCat({"Failed to set the '", property, "' property on '", type,
+                 "': ", detail});
 }
 
 String ExceptionMessages::FailedToDelete(const String& property,
                                          const char* type,
                                          const String& detail) {
-  return "Failed to delete the '" + property + "' property from '" +
-         String(type) + "': " + detail;
+  return StrCat({"Failed to delete the '", property, "' property from '", type,
+                 "': ", detail});
 }
 
 String ExceptionMessages::FailedToGetIndexed(const String& property,
                                              const char* type,
                                              const String& detail) {
-  return "Failed to read an indexed property" +
-         optionalIndexProperty(property) + " from '" + String(type) +
-         "': " + detail;
+  return StrCat({"Failed to read an indexed property",
+                 OptionalIndexProperty(property), " from '", type,
+                 "': ", detail});
 }
 
 String ExceptionMessages::FailedToSetIndexed(const String& property,
                                              const char* type,
                                              const String& detail) {
-  return "Failed to set an indexed property" + optionalIndexProperty(property) +
-         " on '" + String(type) + "': " + detail;
+  return StrCat({"Failed to set an indexed property",
+                 OptionalIndexProperty(property), " on '", type,
+                 "': ", detail});
 }
 
 String ExceptionMessages::FailedToDeleteIndexed(const String& property,
                                                 const char* type,
                                                 const String& detail) {
-  return "Failed to delete an indexed property" +
-         optionalIndexProperty(property) + " from '" + String(type) +
-         "': " + detail;
+  return StrCat({"Failed to delete an indexed property",
+                 OptionalIndexProperty(property), " from '", type,
+                 "': ", detail});
 }
 
 String ExceptionMessages::FailedToGetNamed(const String& property,
                                            const char* type,
                                            const String& detail) {
-  return "Failed to read a named property" + optionalNameProperty(property) +
-         " from '" + String(type) + "': " + detail;
+  return StrCat({"Failed to read a named property",
+                 OptionalNameProperty(property), " from '", type,
+                 "': ", detail});
 }
 
 String ExceptionMessages::FailedToSetNamed(const String& property,
                                            const char* type,
                                            const String& detail) {
-  return "Failed to set a named property" + optionalNameProperty(property) +
-         " on '" + String(type) + "': " + detail;
+  return StrCat({"Failed to set a named property",
+                 OptionalNameProperty(property), " on '", type, "': ", detail});
 }
 
 String ExceptionMessages::FailedToDeleteNamed(const String& property,
                                               const char* type,
                                               const String& detail) {
-  return "Failed to delete a named property" + optionalNameProperty(property) +
-         " from '" + String(type) + "': " + detail;
+  return StrCat({"Failed to delete a named property",
+                 OptionalNameProperty(property), " from '", type,
+                 "': ", detail});
 }
 
 String ExceptionMessages::ConstructorNotCallableAsFunction(const char* type) {
@@ -200,21 +219,21 @@ String ExceptionMessages::ConstructorCalledAsFunction() {
 
 String ExceptionMessages::IncorrectPropertyType(const String& property,
                                                 const String& detail) {
-  return "The '" + property + "' property " + detail;
+  return StrCat({"The '", property, "' property ", detail});
 }
 
 String ExceptionMessages::InvalidArity(const char* expected,
                                        unsigned provided) {
-  return "Valid arities are: " + String(expected) + ", but " +
-         String::Number(provided) + " arguments provided.";
+  return StrCat({"Valid arities are: ", expected, ", but ",
+                 String::Number(provided), " arguments provided."});
 }
 
 String ExceptionMessages::ArgumentNullOrIncorrectType(
     int argument_index,
     const String& expected_type) {
-  return "The " + OrdinalNumber(argument_index) +
-         " argument provided is either null, or an invalid " + expected_type +
-         " object.";
+  return StrCat({"The ", OrdinalNumber(argument_index),
+                 " argument provided is either null, or an invalid ",
+                 expected_type, " object."});
 }
 
 String ExceptionMessages::ArgumentNotOfType(int argument_index,
@@ -225,27 +244,29 @@ String ExceptionMessages::ArgumentNotOfType(int argument_index,
 
 String ExceptionMessages::NotASequenceTypeProperty(
     const String& property_name) {
-  return "'" + property_name +
-         "' property is neither an array, nor does it have indexed properties.";
+  return StrCat(
+      {"'", property_name,
+       "' property is neither an array, nor does it have indexed properties."});
 }
 
 String ExceptionMessages::NotEnoughArguments(unsigned expected,
                                              unsigned provided) {
-  return String::Number(expected) + " argument" + (expected > 1 ? "s" : "") +
-         " required, but only " + String::Number(provided) + " present.";
+  return StrCat({String::Number(expected), " argument", expected > 1 ? "s" : "",
+                 " required, but only ", String::Number(provided),
+                 " present."});
 }
 
 String ExceptionMessages::NotAFiniteNumber(double value, const char* name) {
   DCHECK(!std::isfinite(value));
-  return String::Format("The %s is %s.", name,
-                        std::isinf(value) ? "infinite" : "not a number");
+  return StrCat({"The ", name, " is ",
+                 std::isinf(value) ? "infinite." : "not a number."});
 }
 
 String ExceptionMessages::NotAFiniteNumber(const Decimal& value,
                                            const char* name) {
   DCHECK(!value.IsFinite());
-  return String::Format("The %s is %s.", name,
-                        value.IsInfinity() ? "infinite" : "not a number");
+  return StrCat({"The ", name, " is ",
+                 value.IsInfinity() ? "infinite." : "not a number."});
 }
 
 String ExceptionMessages::OrdinalNumber(int number) {
@@ -264,41 +285,23 @@ String ExceptionMessages::OrdinalNumber(int number) {
         suffix = "rd";
       break;
   }
-  return String::Number(number) + suffix;
+  return StrCat({String::Number(number), suffix});
 }
 
 String ExceptionMessages::IndexExceedsMaximumBound(const char* name,
                                                    bool eq,
                                                    const String& given,
                                                    const String& bound) {
-  StringBuilder result;
-  result.Append("The ");
-  result.Append(name);
-  result.Append(" provided (");
-  result.Append(given);
-  result.Append(") is greater than ");
-  result.Append(eq ? "or equal to " : "");
-  result.Append("the maximum bound (");
-  result.Append(bound);
-  result.Append(").");
-  return result.ToString();
+  return StrCat({"The ", name, " provided (", given, ") is greater than ",
+                 eq ? "or equal to " : "", "the maximum bound (", bound, ")."});
 }
 
 String ExceptionMessages::IndexExceedsMinimumBound(const char* name,
                                                    bool eq,
                                                    const String& given,
                                                    const String& bound) {
-  StringBuilder result;
-  result.Append("The ");
-  result.Append(name);
-  result.Append(" provided (");
-  result.Append(given);
-  result.Append(") is less than ");
-  result.Append(eq ? "or equal to " : "");
-  result.Append("the minimum bound (");
-  result.Append(bound);
-  result.Append(").");
-  return result.ToString();
+  return StrCat({"The ", name, " provided (", given, ") is less than ",
+                 eq ? "or equal to " : "", "the minimum bound (", bound, ")."});
 }
 
 String ExceptionMessages::IndexOutsideRange(const char* name,
@@ -307,43 +310,30 @@ String ExceptionMessages::IndexOutsideRange(const char* name,
                                             BoundType lower_type,
                                             const String& upper_bound,
                                             BoundType upper_type) {
-  StringBuilder result;
-  result.Append("The ");
-  result.Append(name);
-  result.Append(" provided (");
-  result.Append(given);
-  result.Append(") is outside the range ");
-  result.Append(lower_type == kExclusiveBound ? '(' : '[');
-  result.Append(lower_bound);
-  result.Append(", ");
-  result.Append(upper_bound);
-  result.Append(upper_type == kExclusiveBound ? ')' : ']');
-  result.Append('.');
-  return result.ToString();
+  return StrCat({"The ", name, " provided (", given, ") is outside the range ",
+                 lower_type == kExclusiveBound ? "(" : "[", lower_bound, ", ",
+                 upper_bound, upper_type == kExclusiveBound ? ")." : "]."});
 }
 
 String ExceptionMessages::ReadOnly(const char* detail) {
   DEFINE_STATIC_LOCAL(String, read_only, ("This object is read-only."));
-  return detail
-             ? String::Format("This object is read-only, because %s.", detail)
-             : read_only;
+  return detail ? StrCat({"This object is read-only, because ", detail, "."})
+                : read_only;
 }
 
 String ExceptionMessages::SharedArrayBufferNotAllowed(
     const char* expected_type) {
-  return String::Format("The provided %s value must not be shared.",
-                        expected_type);
+  return StrCat({"The provided ", expected_type, " value must not be shared."});
 }
 
 String ExceptionMessages::ResizableArrayBufferNotAllowed(
     const char* expected_type) {
-  return String::Format("The provided %s value must not be resizable.",
-                        expected_type);
+  return StrCat(
+      {"The provided ", expected_type, " value must not be resizable."});
 }
 
 String ExceptionMessages::ValueNotOfType(const char* expected_type) {
-  return String::Format("The provided value is not of type '%s'.",
-                        expected_type);
+  return StrCat({"The provided value is not of type '", expected_type, "'."});
 }
 
 template <>

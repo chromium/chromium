@@ -2,19 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_BOCA_BOCA_ROLE_UTIL_H_
-#define CHROMEOS_ASH_COMPONENTS_BOCA_BOCA_ROLE_UTIL_H_
+#ifndef CHROME_BROWSER_ASH_BOCA_BOCA_ROLE_UTIL_H_
+#define CHROME_BROWSER_ASH_BOCA_BOCA_ROLE_UTIL_H_
 
-#include "ash/ash_export.h"
+#include "components/prefs/pref_registry_simple.h"
+
+namespace user_manager {
+class User;
+}  // namespace user_manager
 
 namespace ash::boca_util {
+// Register prefs.
+void RegisterPrefs(PrefRegistrySimple* registry);
 
-ASH_EXPORT bool IsProducer();
+// If boca role is producer.
+bool IsProducer(const user_manager::User* user);
 
-ASH_EXPORT bool IsConsumer();
+// If boca role is consumer.
+bool IsConsumer(const user_manager::User* user);
 
-ASH_EXPORT bool IsEnabled();
-
+// If boca is enabled.
+bool IsEnabled(const user_manager::User* user);
 }  // namespace ash::boca_util
 
-#endif  // CHROMEOS_ASH_COMPONENTS_BOCA_BOCA_ROLE_UTIL_H_
+#endif  // CHROME_BROWSER_ASH_BOCA_BOCA_ROLE_UTIL_H_

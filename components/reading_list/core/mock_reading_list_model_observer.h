@@ -42,14 +42,6 @@ class MockReadingListModelObserver : public ReadingListModelObserver {
               (const ReadingListModel*, const GURL&),
               (override));
   MOCK_METHOD(void,
-              ReadingListWillMoveEntry,
-              (const ReadingListModel*, const GURL&),
-              (override));
-  MOCK_METHOD(void,
-              ReadingListDidMoveEntry,
-              (const ReadingListModel*, const GURL&),
-              (override));
-  MOCK_METHOD(void,
               ReadingListWillAddEntry,
               (const ReadingListModel*, const ReadingListEntry& entry),
               (override));

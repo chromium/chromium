@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import './mojo_timestamp.js';
+import './expandable_json_viewer.js';
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import type {Value} from 'chrome://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
@@ -22,12 +23,30 @@ export function timestampLogicalFn(v: Value) {
   return tsElement;
 }
 
+// TODO(crbug.com/427549893): Don't use expandable-json-viewer if JSON content
+// is {} or [].
 export class ValueDisplayElement extends CustomElement {
   static override get template() {
     return getTemplate();
   }
 
-  configure(value: Value, logicalFn: LogicalFn = defaultLogicalFn) {
+  flattenValue(value: Value): any {
+    if (value.listValue != null) {
+      return value.listValue.storage.map(v => this.flattenValue(v));
+    } else if (value.dictionaryValue != null) {
+      const flattenedDictionary: {[key: string]: any} = {};
+      for (const [k, v] of Object.entries(value.dictionaryValue.storage)) {
+        flattenedDictionary[k] = this.flattenValue(v);
+      }
+      return flattenedDictionary;
+    } else {
+      return value;
+    }
+  }
+
+  configure(
+      value: Value, logicalFn: LogicalFn = defaultLogicalFn,
+      title: string = '') {
     const tElem = this.shadowRoot!.querySelector<HTMLElement>(`#type`)!;
     const vElem = this.shadowRoot!.querySelector<HTMLElement>(`#value`)!;
     const lElem =
@@ -60,13 +79,18 @@ export class ValueDisplayElement extends CustomElement {
       vElem.textContent = 'null';
       vElem.classList.add('none');
 
-    } else if (value.listValue != null) {
-      tElem.textContent = '(list)';
-      vElem.textContent = JSON.stringify(value.listValue.storage);
+    } else if (value.listValue != null || value.dictionaryValue != null) {
+      // The pre element is used to preserve line breaks and spaces
+      const jsonValueElement = document.createElement('pre');
+      jsonValueElement.id = 'json-value';
+      jsonValueElement.textContent =
+          JSON.stringify(this.flattenValue(value), null, 2);
 
-    } else if (value.dictionaryValue != null) {
-      tElem.textContent = '(dictionary)';
-      vElem.textContent = JSON.stringify(value.dictionaryValue.storage);
+      const jsonViewerElement =
+          document.createElement('expandable-json-viewer');
+
+      vElem.appendChild(jsonViewerElement);
+      jsonViewerElement.configure(jsonValueElement, title);
 
     } else if (value.binaryValue != null) {
       tElem.textContent = '(binary)';

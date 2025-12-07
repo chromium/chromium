@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/webui/help_app_ui/search/search_handler.h"
 #include "ash/webui/help_app_ui/search/search_tag_registry.h"
 #include "ash/webui/help_app_ui/url_constants.h"
@@ -16,8 +17,8 @@
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "components/services/app_service/public/cpp/stub_icon_loader.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -93,7 +94,7 @@ class HelpAppProviderTest : public AppListTestBase {
     proxy_->OverrideInnerIconLoaderForTesting(&stub_icon_loader);
 
     // Insert dummy map values so that the stub_icon_loader knows of the app.
-    stub_icon_loader.update_version_by_app_id_[web_app::kHelpAppId] = 1;
+    stub_icon_loader.update_version_by_app_id_[ash::kHelpAppId] = 1;
 
     auto provider = std::make_unique<HelpAppProvider>(profile());
     provider->MaybeInitialize(&mock_handler_);
@@ -114,7 +115,8 @@ class HelpAppProviderTest : public AppListTestBase {
   MockSearchHandler* mock_handler() { return &mock_handler_; }
 
  private:
-  session_manager::SessionManager session_manager_;
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
   TestSearchController search_controller_;
   std::unique_ptr<ash::local_search_service::LocalSearchServiceProxy>
       local_search_service_proxy_;

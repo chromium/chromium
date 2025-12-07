@@ -15,7 +15,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/test_mock_time_task_runner.h"
+#include "base/test/task_environment.h"
 #include "chrome/browser/page_load_metrics/observers/page_anchors_metrics_observer.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -24,13 +24,13 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "navigation_predictor_metrics_document_data.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/loader/navigation_predictor.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom.h"
 #include "url/gurl.h"
 
@@ -39,7 +39,8 @@ namespace {
 class NavigationPredictorTest : public ChromeRenderViewHostTestHarness {
  public:
   NavigationPredictorTest()
-      : task_runner_(base::MakeRefCounted<base::TestMockTimeTaskRunner>()) {}
+      : ChromeRenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~NavigationPredictorTest() override = default;
 
   // Helper function to generate mojom metrics.
@@ -96,12 +97,7 @@ class NavigationPredictorTest : public ChromeRenderViewHostTestHarness {
     params["random_anchor_sampling_period"] = "1";
     params["traffic_client_enabled_percent"] = "100";
 
-    // TODO(crbug.com/40278151): Repeated executions of the model may be
-    // undesirable for performance, but that behaviour is what's tested in
-    // ProcessPointerEventUsingMLModel. Determine what the final behaviour
-    // should be and then update the test accordingly.
     std::map<std::string, std::string> ml_model_params;
-    ml_model_params["one_execution_per_hover"] = "false";
     ml_model_params["max_hover_time"] = "10s";
 
     scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -110,11 +106,7 @@ class NavigationPredictorTest : public ChromeRenderViewHostTestHarness {
         {});
   }
 
-  base::TestMockTimeTaskRunner* task_runner() { return task_runner_.get(); }
-
  private:
-  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
-
   base::test::ScopedFeatureList scoped_feature_list_;
   mojo::Remote<blink::mojom::AnchorElementMetricsHost> predictor_service_;
 
@@ -1305,10 +1297,8 @@ TEST_F(NavigationPredictorUserInteractionsTest,
   mojo::Remote<blink::mojom::AnchorElementMetricsHost> predictor_service;
   auto* predictor_service_host = MockNavigationPredictorForTesting::Create(
       main_rfh(), predictor_service.BindNewPipeAndPassReceiver());
-  predictor_service_host->SetTaskRunnerForTesting(
-      task_runner(), task_runner()->GetMockTickClock());
 
-  task_runner()->AdvanceMockTickClock(base::Milliseconds(150));
+  task_environment()->AdvanceClock(base::Milliseconds(150));
   auto anchor_id = ReportNewAnchorElementWithDetails(
       predictor_service.get(),
       /*ratio_area=*/0.1,
@@ -1352,9 +1342,8 @@ TEST_F(NavigationPredictorUserInteractionsTest,
           blink::mojom::AnchorElementUserInteractionEventForMLModelType::
               kPointerOver);
     }
-    task_runner()->RunUntilIdle();
     run_loop.Run();
-    task_runner()->AdvanceMockTickClock(base::Milliseconds(100));
+    task_environment()->AdvanceClock(base::Milliseconds(100));
   }
 
   // Make sure the model is not called after the mouse pointer out event.
@@ -1372,8 +1361,7 @@ TEST_F(NavigationPredictorUserInteractionsTest,
       /*user_interaction_event_type=*/
       blink::mojom::AnchorElementUserInteractionEventForMLModelType::
           kPointerOut);
-  task_runner()->AdvanceMockTickClock(base::Milliseconds(200));
-  task_runner()->RunUntilIdle();
+  task_environment()->FastForwardBy(base::Milliseconds(200));
   EXPECT_FALSE(did_ml_score_called);
 
   // Navigate to trigger metrics recording.
@@ -1403,10 +1391,8 @@ TEST_F(NavigationPredictorUserInteractionsTest, MLModelMaxHoverTime) {
   mojo::Remote<blink::mojom::AnchorElementMetricsHost> predictor_service;
   auto* predictor_service_host = MockNavigationPredictorForTesting::Create(
       main_rfh(), predictor_service.BindNewPipeAndPassReceiver());
-  predictor_service_host->SetTaskRunnerForTesting(
-      task_runner(), task_runner()->GetMockTickClock());
 
-  task_runner()->AdvanceMockTickClock(base::Milliseconds(150));
+  task_environment()->AdvanceClock(base::Milliseconds(150));
   auto anchor_id = ReportNewAnchorElementWithDetails(
       predictor_service.get(),
       /*ratio_area=*/0.1,
@@ -1432,23 +1418,21 @@ TEST_F(NavigationPredictorUserInteractionsTest, MLModelMaxHoverTime) {
         /*user_interaction_event_type=*/
         blink::mojom::AnchorElementUserInteractionEventForMLModelType::
             kPointerOver);
-    task_runner()->RunUntilIdle();
     run_loop.Run();
   }
 
   // Stay within the hover time limit.
-  task_runner()->AdvanceMockTickClock(base::Seconds(1));
+  task_environment()->AdvanceClock(base::Seconds(1));
   {
     base::RunLoop run_loop;
     predictor_service_host->SetModelScoreCallbackForTesting(
         base::IgnoreArgs<const PreloadingModelKeyedService::Inputs&>(
             run_loop.QuitClosure()));
-    task_runner()->RunUntilIdle();
     run_loop.Run();
   }
 
   // Exceed the hover time limit.
-  task_runner()->AdvanceMockTickClock(base::Days(1));
+  task_environment()->AdvanceClock(base::Days(1));
   {
     // The previously scheduled task will still run, but no further tasks will
     // be scheduled.
@@ -1456,7 +1440,6 @@ TEST_F(NavigationPredictorUserInteractionsTest, MLModelMaxHoverTime) {
     predictor_service_host->SetModelScoreCallbackForTesting(
         base::IgnoreArgs<const PreloadingModelKeyedService::Inputs&>(
             run_loop.QuitClosure()));
-    task_runner()->RunUntilIdle();
     run_loop.Run();
   }
 
@@ -1466,8 +1449,7 @@ TEST_F(NavigationPredictorUserInteractionsTest, MLModelMaxHoverTime) {
           [&](const PreloadingModelKeyedService::Inputs& inputs) {
             did_run_model = true;
           }));
-  task_runner()->AdvanceMockTickClock(base::Milliseconds(200));
-  task_runner()->RunUntilIdle();
+  task_environment()->FastForwardBy(base::Milliseconds(200));
   ProcessPointerEventUsingMLModel(
       /*predictor_service=*/predictor_service.get(),
       /*anchor_id=*/anchor_id,
@@ -1475,8 +1457,7 @@ TEST_F(NavigationPredictorUserInteractionsTest, MLModelMaxHoverTime) {
       /*user_interaction_event_type=*/
       blink::mojom::AnchorElementUserInteractionEventForMLModelType::
           kPointerOut);
-  task_runner()->AdvanceMockTickClock(base::Milliseconds(200));
-  task_runner()->RunUntilIdle();
+  task_environment()->FastForwardBy(base::Milliseconds(200));
 
   EXPECT_FALSE(did_run_model);
 }
@@ -1524,6 +1505,28 @@ TEST_F(NavigationPredictorTest, RemoveAnchorElement) {
   // We've seen the same element previously, so we don't consider this an
   // additional anchor.
   EXPECT_EQ(2u, data.number_of_anchors_);
+}
+
+TEST_F(NavigationPredictorUserInteractionsTest,
+       ReportAnchorElementsPositionUpdate_BadMessage) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      blink::features::kNavigationPredictorNewViewportFeatures);
+  mojo::test::BadMessageObserver bad_message_observer;
+  mojo::Remote<blink::mojom::AnchorElementMetricsHost> predictor_service;
+  MockNavigationPredictorForTesting::Create(
+      main_rfh(), predictor_service.BindNewPipeAndPassReceiver());
+
+  auto anchor_id_1 = ReportNewAnchorElement(predictor_service.get());
+  ReportAnchorElementEnteredViewport(predictor_service.get(), anchor_id_1,
+                                     base::Milliseconds(200));
+
+  ReportAnchorElementPositionUpdate(predictor_service.get(), anchor_id_1,
+                                    0.456f, 0.123f);
+  EXPECT_EQ(
+      "ReportAnchorElementsPositionUpdate should only be called with "
+      "kNavigationPredictorNewViewportFeatures enabled.",
+      bad_message_observer.WaitForBadMessage());
 }
 
 class NavigationPredictorNewViewportFeaturesTest
@@ -1580,7 +1583,7 @@ TEST_F(NavigationPredictorNewViewportFeaturesTest, RecordPositionMetrics) {
   auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
   ASSERT_EQ(2u, entries.size());
   std::vector<std::tuple<int, int, int>> recorded_metrics(entries.size());
-  base::ranges::transform(
+  std::ranges::transform(
       entries, recorded_metrics.begin(), [&ukm_recorder](const auto& entry) {
         auto anchor_id = static_cast<int>(
             *ukm_recorder.GetEntryMetric(entry, UkmEntry::kAnchorIndexName));

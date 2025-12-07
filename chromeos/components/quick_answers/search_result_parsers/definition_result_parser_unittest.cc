@@ -179,7 +179,6 @@ TEST_F(DefinitionResultParserTest, Success) {
   EXPECT_EQ(definition_result->phonetics_info.locale, "en");
   EXPECT_EQ(definition_result->phonetics_info.phonetics_audio,
             GURL(kPhoneticsAudioUrlWithProtocol));
-  EXPECT_FALSE(definition_result->phonetics_info.tts_audio_enabled);
 
   EXPECT_EQ(definition_result->sense.definition, expected_answer);
 }
@@ -224,7 +223,6 @@ TEST_F(DefinitionResultParserTest, SuccessWithRichCardInfo) {
   EXPECT_EQ(definition_result->phonetics_info.locale, "en");
   EXPECT_EQ(definition_result->phonetics_info.phonetics_audio,
             GURL(kPhoneticsAudioUrlWithProtocol));
-  EXPECT_FALSE(definition_result->phonetics_info.tts_audio_enabled);
 
   EXPECT_EQ(
       definition_result->sense.definition,

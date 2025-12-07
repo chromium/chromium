@@ -6,16 +6,21 @@
 
 #include <memory>
 
-#include "base/check_is_test.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/views/native_window_tracker.h"
+#include "extensions/buildflags/buildflags.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "ui/native_window_tracker/native_window_tracker.h"
+#endif
 
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace {
 
@@ -43,12 +48,11 @@ ExtensionInstallPromptShowParams::ExtensionInstallPromptShowParams(
   DCHECK(parent_web_contents_);
 
   if (!parent_web_contents_->GetTopLevelNativeWindow()) {
-    // Some tests construct this with a WebContents that has no window. If we
-    // keep web contents in this case, WasParentDestroyed() will always return
-    // true, even though there is no real window to check. Thus, there is no
-    // window to track here. Reset the web contents in this case, and just keep
-    // the profile.
-    CHECK_IS_TEST();
+    // WebContents were created without a top-level window. This can happen when
+    // the callers pass a dummy WebContents, or in some tests. There is no
+    // window to track in this case. Reset the WebContents pointer and just keep
+    // the profile. If we keep web contents in this case, WasParentDestroyed()
+    // will always return true, even though there is no real window to check.
     parent_web_contents_.reset();
   }
 }
@@ -60,9 +64,13 @@ ExtensionInstallPromptShowParams::ExtensionInstallPromptShowParams(
       parent_web_contents_(nullptr),
       parent_window_(parent_window) {
   DCHECK(profile);
+#if BUILDFLAG(IS_ANDROID)
+  DCHECK(!parent_window) << "Android does not support a parent window.";
+#else
   if (parent_window_) {
-    native_window_tracker_ = views::NativeWindowTracker::Create(parent_window_);
+    native_window_tracker_ = ui::NativeWindowTracker::Create(parent_window_);
   }
+#endif
 }
 
 ExtensionInstallPromptShowParams::~ExtensionInstallPromptShowParams() = default;
@@ -73,7 +81,7 @@ content::WebContents* ExtensionInstallPromptShowParams::GetParentWebContents() {
 
 gfx::NativeWindow ExtensionInstallPromptShowParams::GetParentWindow() {
   if (WasParentDestroyed()) {
-    return nullptr;
+    return gfx::NativeWindow();
   }
 
   if (WasConfiguredForWebContents()) {
@@ -94,10 +102,12 @@ bool ExtensionInstallPromptShowParams::WasParentDestroyed() {
            !RootCheck(parent_web_contents_->GetTopLevelNativeWindow());
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   if (native_window_tracker_) {
     return native_window_tracker_->WasNativeWindowDestroyed() ||
            !RootCheck(parent_window_);
   }
+#endif
 
   return false;
 }

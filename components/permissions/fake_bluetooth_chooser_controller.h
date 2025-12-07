@@ -6,6 +6,7 @@
 #define COMPONENTS_PERMISSIONS_FAKE_BLUETOOTH_CHOOSER_CONTROLLER_H_
 
 #include <string>
+#include <vector>
 
 #include "components/permissions/chooser_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"

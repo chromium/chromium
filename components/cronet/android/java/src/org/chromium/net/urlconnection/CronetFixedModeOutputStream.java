@@ -6,6 +6,7 @@ package org.chromium.net.urlconnection;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.net.UploadDataProvider;
 import org.chromium.net.UploadDataSink;
 
@@ -27,7 +28,6 @@ final class CronetFixedModeOutputStream extends CronetOutputStream {
     // Using 16384 bytes is because the internal read buffer is 14520 for QUIC,
     // 16384 for SPDY, and 16384 for normal HTTP/1.1 stream.
     @VisibleForTesting private static int sDefaultBufferLength = 16384;
-    private final CronetHttpURLConnection mConnection;
     private final MessageLoop mMessageLoop;
     private final long mContentLength;
     // Internal buffer for holding bytes from the client until the bytes are
@@ -65,7 +65,6 @@ final class CronetFixedModeOutputStream extends CronetOutputStream {
         mContentLength = contentLength;
         int bufferSize = (int) Math.min(mContentLength, sDefaultBufferLength);
         mBuffer = ByteBuffer.allocate(bufferSize);
-        mConnection = connection;
         mMessageLoop = messageLoop;
         mBytesWritten = 0;
     }
@@ -122,20 +121,22 @@ final class CronetFixedModeOutputStream extends CronetOutputStream {
     }
 
     /**
-     * Helper function to upload {@code mBuffer} to the native stack. This
-     * function blocks until {@code mBuffer} is consumed and there is space to
-     * write more data.
+     * Helper function to upload {@code mBuffer} to the native stack. This function blocks until
+     * {@code mBuffer} is consumed and there is space to write more data.
      */
     private void uploadBufferInternal() throws IOException {
-        checkNotClosed();
-        mBuffer.flip();
-        mMessageLoop.loop();
-        checkNoException();
+        try (var traceEvent =
+                ScopedSysTraceEvent.scoped("CronetFixedModeOutputStream#uploadBufferInternal")) {
+            checkNotClosed();
+            mBuffer.flip();
+            mMessageLoop.loop();
+            checkNoException();
+        }
     }
 
     /**
-     * Throws {@link java.net.ProtocolException} if adding {@code numBytes} will
-     * exceed content length.
+     * Throws {@link java.net.ProtocolException} if adding {@code numBytes} will exceed content
+     * length.
      */
     private void checkNotExceedContentLength(int numBytes) throws ProtocolException {
         if (mBytesWritten + numBytes > mContentLength) {
@@ -174,19 +175,23 @@ final class CronetFixedModeOutputStream extends CronetOutputStream {
 
         @Override
         public void read(final UploadDataSink uploadDataSink, final ByteBuffer byteBuffer) {
-            if (byteBuffer.remaining() >= mBuffer.remaining()) {
-                byteBuffer.put(mBuffer);
-                // Reuse this buffer.
-                mBuffer.clear();
-                uploadDataSink.onReadSucceeded(false);
-                // Quit message loop so embedder can write more data.
-                mMessageLoop.quit();
-            } else {
-                int oldLimit = mBuffer.limit();
-                mBuffer.limit(mBuffer.position() + byteBuffer.remaining());
-                byteBuffer.put(mBuffer);
-                mBuffer.limit(oldLimit);
-                uploadDataSink.onReadSucceeded(false);
+            try (var traceEvent =
+                    ScopedSysTraceEvent.scoped(
+                            "CronetFixedModeOutputStream.UploadDataProviderImpl#read")) {
+                if (byteBuffer.remaining() >= mBuffer.remaining()) {
+                    byteBuffer.put(mBuffer);
+                    // Reuse this buffer.
+                    mBuffer.clear();
+                    uploadDataSink.onReadSucceeded(false);
+                    // Quit message loop so embedder can write more data.
+                    mMessageLoop.quit();
+                } else {
+                    int oldLimit = mBuffer.limit();
+                    mBuffer.limit(mBuffer.position() + byteBuffer.remaining());
+                    byteBuffer.put(mBuffer);
+                    mBuffer.limit(oldLimit);
+                    uploadDataSink.onReadSucceeded(false);
+                }
             }
         }
 

@@ -1,0 +1,17 @@
+{
+  "extends": "../../../../../../tools/typescript/tsconfig_base.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "tsc"
+  },
+  "files": [
+    "lazy_load.ts",
+    "no_violations.ts",
+    "with_violations.ts",
+    "with_webui_plugin_lit_violations.ts",
+    "with_webui_plugin_polymer_violations.ts",
+    "with_webui_plugin_polymer_property_class_member_violations.ts",
+    "with_webui_plugin_web_component_missing_deps_violations.html.ts",
+    "with_webui_plugin_web_component_missing_deps_violations.ts"
+  ]
+}

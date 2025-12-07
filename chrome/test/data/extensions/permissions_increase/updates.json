@@ -1,30 +1,24 @@
 )]}'
 {
   "response": {
-    "protocol": "3.1",
-    "app": [
+    "protocol": "4.0",
+    "apps": [
       {
         "appid": "pgdpcfcocojkjfbgpiianjngphoopgmo",
+        "status": "ok",
         "updatecheck": {
           "status": "ok",
-          "manifest": {
-            "version": "2",
-            "packages": {
-              "package": [
-                {
-                  "size": 1103,
-                  "hash_sha256": "dc0b73d9daa1236d0ecd7a0370729e99fb9dbfccf97cea2d2bbf02fb584b2853",
-                  "name": "v2.crx",
-                  "fp": "1.dc0b73d9daa1236d0ecd7a0370729e99fb9dbfccf97cea2d2bbf02fb584b2853"
-                }
-              ]
-            }
-          },
-          "urls": {
-            "url": [
-              {"codebase": "http://localhost/autoupdate/"}
-            ]
-          }
+          "nextversion": "2",
+          "pipelines": [
+            {"operations": [
+              {"type": "download",
+               "urls": [{"url": "http://localhost/autoupdate/v2.crx"}],
+               "out": {"sha256": "dc0b73d9daa1236d0ecd7a0370729e99fb9dbfccf97cea2d2bbf02fb584b2853"},
+               "size": 1103},
+              {"type": "crx3",
+               "in": {"sha256": "dc0b73d9daa1236d0ecd7a0370729e99fb9dbfccf97cea2d2bbf02fb584b2853"}}
+            ]}
+          ]
         }
       }
     ]

@@ -1,0 +1,20 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos",
+      "android"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "profile.managed_idle_detection_blocked_for_urls",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "[*.]google.com"
+        ]
+      ]
+    }
+  }
+]

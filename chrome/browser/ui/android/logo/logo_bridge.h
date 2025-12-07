@@ -26,7 +26,7 @@ class LogoBridge {
   LogoBridge(const LogoBridge&) = delete;
   LogoBridge& operator=(const LogoBridge&) = delete;
 
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
 
   // Gets the current non-animated logo (downloading it if necessary) and passes
   // it to the observer.
@@ -34,10 +34,8 @@ class LogoBridge {
   // a) A cached doodle is available.
   // b) A new doodle is available.
   // c) Not having a doodle was revalidated.
-  void GetCurrentLogo(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jobject>& j_logo_observer);
+  void GetCurrentLogo(JNIEnv* env,
+                      const base::android::JavaRef<jobject>& j_logo_observer);
 
  private:
   virtual ~LogoBridge();

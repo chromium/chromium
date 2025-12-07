@@ -13,13 +13,20 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModel;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tabmodel.TabRemover;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /** Simple mock of TabModel used for tests. */
 public class TestTabModel extends EmptyTabModel {
     private final List<Tab> mMockTabs = new ArrayList<>();
+    private final Set<Integer> mMultiSelectedTabs = new HashSet<>();
+    private @Nullable TabRemover mTabRemover;
     private int mMaxId = -1;
     private int mIndex;
 
@@ -30,6 +37,12 @@ public class TestTabModel extends EmptyTabModel {
         when(mockTab.getId()).thenReturn(tabId);
         when(mockTab.getTitle()).thenReturn(title);
         mMockTabs.add(mockTab);
+    }
+
+    @Override
+    public TabRemover getTabRemover() {
+        assert mTabRemover != null;
+        return mTabRemover;
     }
 
     @Override
@@ -46,6 +59,11 @@ public class TestTabModel extends EmptyTabModel {
     @Override
     public int getCount() {
         return mMockTabs.size();
+    }
+
+    @Override
+    public Iterator<Tab> iterator() {
+        return mMockTabs.iterator();
     }
 
     @Override
@@ -94,5 +112,42 @@ public class TestTabModel extends EmptyTabModel {
             return mMockTabs.get(1);
         }
         return null;
+    }
+
+    @Override
+    public int indexOf(@Nullable Tab tab) {
+        return mMockTabs.indexOf(tab);
+    }
+
+    public void setTabRemover(TabRemover tabRemover) {
+        mTabRemover = tabRemover;
+    }
+
+    @Override
+    public void setTabsMultiSelected(Set<Integer> tabIds, boolean isSelected) {
+        if (isSelected) {
+            mMultiSelectedTabs.addAll(tabIds);
+        } else {
+            mMultiSelectedTabs.removeAll(tabIds);
+        }
+    }
+
+    @Override
+    public void clearMultiSelection(boolean notifyObservers) {
+        if (mMultiSelectedTabs.isEmpty()) return;
+        mMultiSelectedTabs.clear();
+    }
+
+    @Override
+    public boolean isTabMultiSelected(int tabId) {
+        return mMultiSelectedTabs.contains(tabId) || tabId == TabModelUtils.getCurrentTabId(this);
+    }
+
+    @Override
+    public int getMultiSelectedTabsCount() {
+        if (mMockTabs.isEmpty()) return 0;
+        // If no other tabs are in multi-selection, this returns 1, as the active tab is always
+        // considered selected.
+        return mMultiSelectedTabs.isEmpty() ? 1 : mMultiSelectedTabs.size();
     }
 }

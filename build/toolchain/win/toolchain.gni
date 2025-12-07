@@ -204,11 +204,15 @@ template("msvc_toolchain") {
 
     # Disabled with cc_wrapper because of
     # https://github.com/mozilla/sccache/issues/1013
-    if (toolchain_is_clang && toolchain_cc_wrapper == "") {
+    if (!system_headers_in_deps &&
+        (toolchain_is_clang && toolchain_cc_wrapper == "")) {
       # This flag omits system includes from /showIncludes output, to reduce
       # the amount of data to parse and store in .ninja_deps. We do this on
       # non-Windows too, and already make sure rebuilds after winsdk/libc++/
       # clang header updates happen via changing command line flags.
+
+      # A universal flag system_headers_in_deps for all OSes can override,
+      # to enable verbose dependency information.
       show_includes = "/showIncludes:user"
     } else {
       show_includes = "/showIncludes"
@@ -230,6 +234,14 @@ template("msvc_toolchain") {
       command = "$coverage_wrapper$env_wrapper$cl /c {{source}} /nologo $show_includes $sys_include_flags{{defines}} {{include_dirs}} {{cflags}} {{cflags_c}} /Fo{{output}} /Fd\"$pdbname\""
     }
 
+    tool("cxx_module") {
+      pdbname = "{{target_out_dir}}/{{label_name}}_c.pdb"
+      depsformat = "msvc"
+      description = "CXX_MODULE {{output}}"
+      outputs = [ "$object_subdir/{{source_name_part}}.pcm" ]
+      command = "$env_wrapper$cl /Fo{{output}} /nologo $show_includes $sys_include_flags{{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}} {{module_deps_no_self}} /Fd\"$pdbname\" -fmodule-name={{label_name}} /c -x c++ -Xclang -emit-module {{source}}"
+    }
+
     tool("cxx") {
       precompiled_header_type = "msvc"
 
@@ -243,11 +255,16 @@ template("msvc_toolchain") {
 
       # Note that the code coverage wrapper scripts assumes that {{source}}
       # comes immediately after /c.
-      command = "$coverage_wrapper$env_wrapper$cl /c {{source}} /Fo{{output}} /nologo $show_includes $sys_include_flags{{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}} /Fd\"$pdbname\""
+      command = "$coverage_wrapper$env_wrapper$cl /c {{source}} /Fo{{output}} /nologo $show_includes $sys_include_flags{{defines}} {{include_dirs}} {{cflags}} /TP {{cflags_cc}} {{module_deps_no_self}} /Fd\"$pdbname\""
     }
 
     tool("rc") {
-      command = "\"$python_path\" $_tool_wrapper_path rc-wrapper $env rc.exe /nologo $sys_include_flags{{defines}} {{include_dirs}} /fo{{output}} {{source}}"
+      if (treat_warnings_as_errors) {
+        werror = "-Werror "
+      } else {
+        werror = ""
+      }
+      command = "\"$python_path\" $_tool_wrapper_path rc-wrapper $env rc.exe /nologo $werror$sys_include_flags{{defines}} {{include_dirs}} /fo{{output}} {{source}}"
       depsformat = "msvc"
       outputs = [ "$object_subdir/{{source_name_part}}.res" ]
       description = "RC {{output}}"
@@ -263,8 +280,9 @@ template("msvc_toolchain") {
             # Flip the slashes so that copy/paste of the command works.
             ml = string_replace(ml, "/", "\\")
           }
-          ml += " -c -o{{output}}"
+          ml += " -c -o{{output}} $show_includes"
           is_msvc_assembler = false
+          depsformat = "msvc"
         } else {
           # Only affects Arm builds with is_clang = false, implemented for
           # building V8 for Windows on Arm systems with the MSVC toolchain.
@@ -324,7 +342,7 @@ template("msvc_toolchain") {
       rust_sysroot_relative = rebase_path(rust_sysroot, root_build_dir)
       rustc = "$rust_sysroot_relative/bin/rustc"
       rustc_wrapper =
-          rebase_path("//build/rust/rustc_wrapper.py", root_build_dir)
+          rebase_path("//build/rust/gni_impl/rustc_wrapper.py", root_build_dir)
       rustc_windows_args = " -Clinker=$link$rust_linkflags $rustc_common_args"
 
       tool("rust_staticlib") {
@@ -775,12 +793,10 @@ template("win_toolchains") {
     clang_toolchain_prefix = "win_clang_"
   }
 
-  _clang_lib_dir =
-      rebase_path("$clang_base_path/lib/clang/$clang_version/lib/windows",
-                  root_build_dir)
-  if (host_os == "win") {
-    # And to match the other -libpath flags.
-    _clang_lib_dir = string_replace(_clang_lib_dir, "/", "\\")
+  if (use_lld) {
+    _clang_lib_dir =
+        rebase_path("$clang_base_path/lib/clang/$clang_version/lib/windows",
+                    root_build_dir)
   }
 
   msvc_toolchain(clang_toolchain_prefix + target_name) {

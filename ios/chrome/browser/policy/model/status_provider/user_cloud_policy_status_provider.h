@@ -5,9 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_POLICY_MODEL_STATUS_PROVIDER_USER_CLOUD_POLICY_STATUS_PROVIDER_H_
 #define IOS_CHROME_BROWSER_POLICY_MODEL_STATUS_PROVIDER_USER_CLOUD_POLICY_STATUS_PROVIDER_H_
 
+#import <optional>
+#import <string>
+
 #import "base/containers/flat_set.h"
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
+#import "base/values.h"
 #import "components/policy/core/browser/webui/policy_status_provider.h"
 #import "components/policy/core/common/cloud/cloud_policy_client.h"
 #import "components/policy/core/common/cloud/cloud_policy_core.h"
@@ -31,6 +35,9 @@ class UserCloudPolicyStatusProvider
 
     // Gets the affiliation IDs for the device.
     virtual base::flat_set<std::string> GetDeviceAffiliationIds() = 0;
+
+    // Gets the profile ID for the current profile.
+    virtual std::optional<std::string> GetProfileId() = 0;
   };
 
   UserCloudPolicyStatusProvider(Delegate* delegate,

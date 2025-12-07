@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/payments/content/utility/fingerprint_parser.h"
 #include "components/payments/core/error_logger.h"
@@ -25,42 +26,44 @@
 namespace payments {
 namespace {
 
-const size_t kMaximumNumberOfItems = 100U;
-const size_t kMaximumNumberOfSupportedOrigins = 100000;
-const size_t kMaximumNumberOfSupportedDelegations = 4U;
-const size_t kMaximumPrintedStringLength = 100U;
+constexpr size_t kMaximumNumberOfItems = 100U;
+constexpr size_t kMaximumNumberOfSupportedOrigins = 100000;
+constexpr size_t kMaximumNumberOfSupportedDelegations = 4U;
+constexpr size_t kMaximumPrintedStringLength = 100U;
 
-const char* const kDefaultApplications = "default_applications";
-const char* const kFingerprints = "fingerprints";
-const char* const kHttpPrefix = "http://";
-const char* const kHttpsPrefix = "https://";
-const char* const kId = "id";
-const char* const kMinVersion = "min_version";
-const char* const kPayment = "payment";
-const char* const kPlatform = "platform";
-const char* const kPlay = "play";
-const char* const kPreferRelatedApplications = "prefer_related_applications";
-const char* const kRelatedApplications = "related_applications";
-const char* const kServiceWorkerScope = "scope";
-const char* const kServiceWorker = "serviceworker";
-const char* const kServiceWorkerSrc = "src";
-const char* const kServiceWorkerUseCache = "use_cache";
-const char* const kSupportedDelegations = "supported_delegations";
-const char* const kSupportedOrigins = "supported_origins";
-const char* const kWebAppIcons = "icons";
-const char* const kWebAppIconSizes = "sizes";
-const char* const kWebAppIconSrc = "src";
-const char* const kWebAppIconType = "type";
-const char* const kWebAppName = "name";
+constexpr char kDefaultApplications[] = "default_applications";
+constexpr char kFingerprints[] = "fingerprints";
+constexpr char kHttpPrefix[] = "http://";
+constexpr char kHttpsPrefix[] = "https://";
+constexpr char kId[] = "id";
+constexpr char kMinVersion[] = "min_version";
+constexpr char kPayment[] = "payment";
+constexpr char kPlatform[] = "platform";
+constexpr char kPlay[] = "play";
+constexpr char kPreferRelatedApplications[] = "prefer_related_applications";
+constexpr char kRelatedApplications[] = "related_applications";
+constexpr char kServiceWorkerScope[] = "scope";
+constexpr char kServiceWorker[] = "serviceworker";
+constexpr char kServiceWorkerSrc[] = "src";
+constexpr char kServiceWorkerUseCache[] = "use_cache";
+constexpr char kSupportedDelegations[] = "supported_delegations";
+constexpr char kSupportedOrigins[] = "supported_origins";
+constexpr char kWebAppIcons[] = "icons";
+constexpr char kWebAppIconSizes[] = "sizes";
+constexpr char kWebAppIconSrc[] = "src";
+constexpr char kWebAppIconType[] = "type";
+constexpr char kWebAppName[] = "name";
 
 // Truncates a std::string to 100 chars. This returns an empty string when the
-// input should be ASCII but it's not.
+// input should be printalbe ASCII but it's not.
 const std::string ValidateAndTruncateIfNeeded(const std::string& input,
-                                              bool* out_is_ASCII) {
-  if (out_is_ASCII) {
-    *out_is_ASCII = base::IsStringASCII(input);
-    if (!*out_is_ASCII)
+                                              bool* out_is_ascii_printable) {
+  if (out_is_ascii_printable) {
+    *out_is_ascii_printable = std::ranges::all_of(
+        input, [](char c) { return base::IsAsciiPrintable(c); });
+    if (!*out_is_ascii_printable) {
       return "";
+    }
   }
 
   return input.size() > kMaximumPrintedStringLength
@@ -212,24 +215,25 @@ void ParseIcons(const base::Value::Dict& dict,
     web_app_icon.src = *icon_src;
 
     const std::string* icon_sizes = icon.GetDict().FindString(kWebAppIconSizes);
-    if (!icon_sizes || icon_sizes->empty() ||
-        !base::IsStringUTF8(*icon_sizes)) {
-      log.Warn(
-          base::StringPrintf("Each dictionary in the list \"%s\" should "
-                             "contain a non-empty UTF8 string field \"%s\".",
-                             kWebAppIcons, kWebAppIconSizes));
-    } else {
-      web_app_icon.sizes = *icon_sizes;
+    if (icon_sizes) {
+      if (icon_sizes->empty() || !base::IsStringUTF8(*icon_sizes)) {
+        log.Warn(base::StringPrintf(
+            "Each \"%s\" in \"%s\" should be a non-empty UTF8 string.",
+            kWebAppIconSizes, kWebAppIcons));
+      } else {
+        web_app_icon.sizes = *icon_sizes;
+      }
     }
 
     const std::string* icon_type = icon.GetDict().FindString(kWebAppIconType);
-    if (!icon_type || icon_type->empty() || !base::IsStringUTF8(*icon_type)) {
-      log.Warn(
-          base::StringPrintf("Each dictionary in the list \"%s\" should "
-                             "contain a non-empty UTF8 string field \"%s\".",
-                             kWebAppIcons, kWebAppIconType));
-    } else {
-      web_app_icon.type = *icon_type;
+    if (icon_type) {
+      if (icon_type->empty() || !base::IsStringUTF8(*icon_type)) {
+        log.Warn(base::StringPrintf(
+            "Each \"%s\" in \"%s\" should be a non-empty UTF8 string.",
+            kWebAppIconType, kWebAppIcons));
+      } else {
+        web_app_icon.type = *icon_type;
+      }
     }
 
     icons->emplace_back(web_app_icon);
@@ -607,12 +611,13 @@ bool PaymentManifestParser::ParseWebAppInstallationInfoIntoStructs(
         } else if (delegation_name == "payerPhone") {
           installation_info->supported_delegations.payer_phone = true;
         } else {  // delegation_name is not valid
-          bool is_ASCII;
+          bool is_ascii_printable;
           const std::string delegation_name_to_print =
-              ValidateAndTruncateIfNeeded(delegation_name, &is_ASCII);
-          if (!is_ASCII) {
-            log.Error("Entries in delegation list must be ASCII strings.");
-          } else {  // ASCII string.
+              ValidateAndTruncateIfNeeded(delegation_name, &is_ascii_printable);
+          if (!is_ascii_printable) {
+            log.Error(
+                "Entries in delegation list must be printable ASCII strings.");
+          } else {  // Printable ASCII string.
             log.Error(base::StringPrintf(
                 "\"%s\" is not a valid value in \"%s\" array.",
                 delegation_name_to_print.c_str(), kSupportedDelegations));

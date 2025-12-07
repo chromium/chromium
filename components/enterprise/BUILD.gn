@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
 
 static_library("enterprise") {
@@ -11,6 +10,8 @@ static_library("enterprise") {
     "browser/reporting/browser_report_generator.h",
     "browser/reporting/chrome_profile_request_generator.cc",
     "browser/reporting/chrome_profile_request_generator.h",
+    "browser/reporting/cloud_profile_reporting_policy_handler.cc",
+    "browser/reporting/cloud_profile_reporting_policy_handler.h",
     "browser/reporting/cloud_reporting_frequency_policy_handler.cc",
     "browser/reporting/cloud_reporting_frequency_policy_handler.h",
     "browser/reporting/cloud_reporting_policy_handler.cc",
@@ -30,6 +31,8 @@ static_library("enterprise") {
     "browser/reporting/real_time_report_type.h",
     "browser/reporting/real_time_uploader.cc",
     "browser/reporting/real_time_uploader.h",
+    "browser/reporting/report_generation_config.cc",
+    "browser/reporting/report_generation_config.h",
     "browser/reporting/report_generator.cc",
     "browser/reporting/report_generator.h",
     "browser/reporting/report_request.cc",
@@ -44,9 +47,12 @@ static_library("enterprise") {
     "browser/reporting/report_util.cc",
     "browser/reporting/report_util.h",
     "browser/reporting/reporting_delegate_factory.h",
+    "browser/reporting/security_signals_service.h",
+    "browser/reporting/user_security_signals_service.cc",
+    "browser/reporting/user_security_signals_service.h",
   ]
 
-  if (!is_chromeos_ash) {
+  if (!is_chromeos) {
     sources += [
       "browser/controller/browser_dm_token_storage.cc",
       "browser/controller/browser_dm_token_storage.h",
@@ -57,16 +63,25 @@ static_library("enterprise") {
     ]
   }
 
-  if (!is_ios) {
+  if (!is_ios && !is_android) {
     sources += [
-      "browser/reporting/cloud_profile_reporting_policy_handler.cc",
-      "browser/reporting/cloud_profile_reporting_policy_handler.h",
+      "browser/promotion/promotion_eligibility_checker.cc",
+      "browser/promotion/promotion_eligibility_checker.h",
     ]
   }
 
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
+
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
+    "//components/device_signals/core/browser",
+    "//components/device_signals/core/common:features",
+    "//components/enterprise/connectors/core:constants",
+    "//components/enterprise/device_attestation",
+    "//components/enterprise/device_attestation:common",
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/policy/proto",
@@ -75,6 +90,7 @@ static_library("enterprise") {
     "//components/strings",
     "//components/version_info",
     "//crypto",
+    "//google_apis",
     "//net",
     "//services/network/public/cpp",
   ]
@@ -86,7 +102,7 @@ static_library("enterprise") {
     "//components/reporting/util:status",
   ]
 
-  if (!is_chromeos_ash) {
+  if (!is_chromeos) {
     sources += [
       "browser/controller/chrome_browser_cloud_management_controller.cc",
       "browser/controller/chrome_browser_cloud_management_controller.h",
@@ -95,12 +111,27 @@ static_library("enterprise") {
 
     deps += [ "//third_party/abseil-cpp:absl" ]
   }
+
+  if (enterprise_client_certificates) {
+    public_deps += [ "//components/enterprise/client_certificates/core" ]
+  }
+
+  if (!is_ios && !is_android) {
+    deps += [ "//components/signin/public/identity_manager" ]
+  }
+
+  if (is_android) {
+    deps += [
+      "//components/enterprise/device_attestation/android",
+      "//components/enterprise/device_attestation/android:jni_headers",
+    ]
+  }
 }
 
 static_library("test_support") {
   testonly = true
 
-  if (!is_chromeos_ash) {
+  if (!is_chromeos) {
     sources = [
       "browser/controller/fake_browser_dm_token_storage.cc",
       "browser/controller/fake_browser_dm_token_storage.h",
@@ -136,26 +167,36 @@ source_set("unit_tests") {
     "browser/identifiers/profile_id_service_unittest.cc",
     "browser/reporting/chrome_profile_request_generator_unittest.cc",
     "browser/reporting/report_uploader_unittest.cc",
+    "browser/reporting/user_security_signals_service_unittest.cc",
     "common/proto/connectors_unittest.cc",
   ]
+
+  if (!is_ios && !is_android) {
+    sources += [ "browser/promotion/promotion_eligibility_checker_unittest.cc" ]
+  }
 
   deps = [
     ":enterprise",
     ":reporting_test_support",
     "common/proto:connectors_proto",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
+    "//components/device_signals/core/browser:test_support",
+    "//components/device_signals/core/common:features",
     "//components/enterprise/browser/identifiers",
     "//components/enterprise/browser/identifiers:test_support",
+    "//components/enterprise/connectors/core:constants",
+    "//components/enterprise/device_attestation:test_support",
+    "//components/enterprise/signin:unit_tests",
     "//components/policy/core/common:test_support",
     "//components/prefs:test_support",
     "//components/version_info",
+    "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/content_analysis_sdk:liblcasdk",
   ]
 
-  if (!is_chromeos_ash) {
+  if (!is_chromeos) {
     sources += [
       "browser/controller/browser_dm_token_storage_unittest.cc",
       "browser/reporting/cloud_reporting_policy_handler_unittest.cc",
@@ -175,6 +216,8 @@ source_set("unit_tests") {
       "//components/enterprise/common/proto:extensions_workflow_events_proto",
       "//components/reporting/client:mock_report_queue_provider",
       "//components/reporting/client:test_support",
+      "//components/signin/public/identity_manager",
+      "//components/signin/public/identity_manager:test_support",
     ]
   }
 

@@ -9,11 +9,11 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/crostini/crostini_update_filesystem_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
@@ -99,10 +99,10 @@ CrostiniUpdateFilesystemView::CrostiniUpdateFilesystemView() {
 
   SetShowCloseButton(false);
   SetTitle(IDS_CROSTINI_UPGRADING_LABEL);
-  SetButtons(ui::DIALOG_BUTTON_OK);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
 
-  set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_STANDALONE_BUBBLE_PREFERRED_WIDTH));
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   views::LayoutProvider* provider = views::LayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -115,7 +115,7 @@ CrostiniUpdateFilesystemView::CrostiniUpdateFilesystemView() {
   views::Label* message_label = new views::Label(message);
   message_label->SetMultiLine(true);
   message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  AddChildView(message_label);
+  AddChildViewRaw(message_label);
 }
 
 CrostiniUpdateFilesystemView::~CrostiniUpdateFilesystemView() {

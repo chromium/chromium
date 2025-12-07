@@ -4,9 +4,9 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_data_transfer_notifier.h"
 
+#include "ash/public/cpp/window_tree_host_lookup.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/policy/dlp/clipboard_bubble.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_clipboard_bubble_constants.h"
 #include "ui/aura/window_tree_host.h"
@@ -17,14 +17,6 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/widget/widget.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/window_tree_host_lookup.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/chromeos/policy/dlp/dlp_browser_helper_lacros.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace policy {
 
@@ -37,7 +29,7 @@ constexpr base::TimeDelta kBubbleBoundsAnimationTime = base::Milliseconds(250);
 
 bool IsRectContainedByAnyDisplay(const gfx::Rect& rect) {
   const std::vector<display::Display>& displays =
-      display::Screen::GetScreen()->GetAllDisplays();
+      display::Screen::Get()->GetAllDisplays();
   for (const auto& display : displays) {
     if (display.bounds().Contains(rect))
       return true;
@@ -47,21 +39,15 @@ bool IsRectContainedByAnyDisplay(const gfx::Rect& rect) {
 
 void CalculateAndSetWidgetBounds(views::Widget* widget,
                                  const gfx::Size& bubble_size) {
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   display::Display display = screen->GetPrimaryDisplay();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* host = ash::GetWindowTreeHostForDisplay(display.id());
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* host = dlp::GetActiveWindowTreeHost();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   DCHECK(host);
   ui::TextInputClient* text_input_client =
       host->GetInputMethod()->GetTextInputClient();
 
-  gfx::Point widget_origin =
-      display::Screen::GetScreen()->GetCursorScreenPoint();
+  gfx::Point widget_origin = display::Screen::Get()->GetCursorScreenPoint();
 
   // `text_input_client` may be null. For example, in clamshell mode and without
   // any window open.
@@ -108,16 +94,7 @@ views::Widget::InitParams GetWidgetInitParams(views::WidgetDelegate* delegate) {
   params.layer_type = ui::LAYER_NOT_DRAWN;
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
   params.delegate = delegate;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Explicitly setting the parent window is required in Lacros for popup
-  // dismissal to work correctly.
-  params.parent = dlp::GetActiveAuraWindow();
-  // WaylandPopups in Lacros need a context window to allow custom positioning.
-  // Here, we pass the active Lacros window as context for the bubble widget.
-  params.context = params.parent;
-#else
   params.parent = nullptr;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   return params;
 }
 
@@ -128,7 +105,6 @@ class DlpWidgetDelegate : public views::WidgetDelegate {
  public:
   explicit DlpWidgetDelegate(DlpDataTransferNotifier* notifier)
       : notifier_(notifier) {
-    SetOwnedByWidget(false);
     SetFocusTraversesOut(true);
   }
 

@@ -7,16 +7,17 @@ package org.chromium.chrome.browser.omnibox;
 import android.app.Activity;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsAnimationCompat;
 import androidx.core.view.WindowInsetsAnimationCompat.BoundsCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import org.chromium.ui.InsetObserver;
-import org.chromium.ui.InsetObserver.WindowInsetsAnimationListener;
-import org.chromium.ui.InsetObserver.WindowInsetsConsumer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.insets.InsetObserver;
+import org.chromium.ui.insets.InsetObserver.WindowInsetsAnimationListener;
+import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer;
 
 import java.util.List;
 
@@ -27,14 +28,15 @@ import java.util.List;
  * isn't guaranteed to occur in practice, deferred application is only practiced when an animation
  * is known to be running.
  */
+@NullMarked
 public class DeferredIMEWindowInsetApplicationCallback
         implements WindowInsetsConsumer, WindowInsetsAnimationListener {
     private static final int NO_DEFERRED_KEYBOARD_HEIGHT = -1;
     private int mDeferredKeyboardHeight = NO_DEFERRED_KEYBOARD_HEIGHT;
     private int mKeyboardHeight;
     private boolean mAnimationInProgress;
-    private WindowInsetsAnimationCompat mCurrentAnimation;
-    private InsetObserver mInsetObserver;
+    private @Nullable WindowInsetsAnimationCompat mCurrentAnimation;
+    private @Nullable InsetObserver mInsetObserver;
     private final Runnable mOnUpdateCallback;
 
     /**
@@ -42,7 +44,7 @@ public class DeferredIMEWindowInsetApplicationCallback
      *
      * @param onUpdateCallback Callback to be invoked when the keyboard height changes.
      */
-    public DeferredIMEWindowInsetApplicationCallback(@NonNull Runnable onUpdateCallback) {
+    public DeferredIMEWindowInsetApplicationCallback(Runnable onUpdateCallback) {
         mOnUpdateCallback = onUpdateCallback;
     }
 
@@ -63,8 +65,10 @@ public class DeferredIMEWindowInsetApplicationCallback
                 : "DeferredIMEWindowInsetApplicationCallback can only be used in activities with an"
                         + " InsetObserverView";
         mInsetObserver = insetObserver;
-        insetObserver.addInsetsConsumer(this);
         insetObserver.addWindowInsetsAnimationListener(this);
+        insetObserver.addInsetsConsumer(
+                this, InsetConsumerSource.DEFERRED_IME_WINDOW_INSET_APPLICATION_CALLBACK);
+        insetObserver.retriggerOnApplyWindowInsets();
     }
 
     /** Detaches this callback from the root of the given window. */
@@ -72,6 +76,7 @@ public class DeferredIMEWindowInsetApplicationCallback
         // Allow for a null inset observer here if the attach was a no-op.
         if (mInsetObserver != null) {
             mInsetObserver.removeInsetsConsumer(this);
+            mInsetObserver.setKeyboardInOverlayMode(false);
             mInsetObserver.removeWindowInsetsAnimationListener(this);
         }
         mAnimationInProgress = false;
@@ -85,26 +90,22 @@ public class DeferredIMEWindowInsetApplicationCallback
     }
 
     @Override
-    public void onPrepare(@NonNull WindowInsetsAnimationCompat animation) {
+    public void onPrepare(WindowInsetsAnimationCompat animation) {
         if ((animation.getTypeMask() & WindowInsetsCompat.Type.ime()) == 0) return;
         mAnimationInProgress = true;
         mCurrentAnimation = animation;
         mDeferredKeyboardHeight = NO_DEFERRED_KEYBOARD_HEIGHT;
     }
 
-    @NonNull
     @Override
-    public void onStart(
-            @NonNull WindowInsetsAnimationCompat animation, @NonNull BoundsCompat bounds) {}
+    public void onStart(WindowInsetsAnimationCompat animation, BoundsCompat bounds) {}
 
-    @NonNull
     @Override
     public void onProgress(
-            @NonNull WindowInsetsCompat windowInsetsCompat,
-            @NonNull List<WindowInsetsAnimationCompat> list) {}
+            WindowInsetsCompat windowInsetsCompat, List<WindowInsetsAnimationCompat> list) {}
 
     @Override
-    public void onEnd(@NonNull WindowInsetsAnimationCompat animation) {
+    public void onEnd(WindowInsetsAnimationCompat animation) {
         if ((animation.getTypeMask() & WindowInsetsCompat.Type.ime()) == 0
                 || animation != mCurrentAnimation) {
             return;
@@ -116,16 +117,30 @@ public class DeferredIMEWindowInsetApplicationCallback
         }
     }
 
-    @NonNull
     @Override
     public WindowInsetsCompat onApplyWindowInsets(
-            @NonNull View view, @NonNull WindowInsetsCompat windowInsetsCompat) {
+            View view, WindowInsetsCompat windowInsetsCompat) {
         int newKeyboardHeight = 0;
         Insets imeInsets = windowInsetsCompat.getInsets(WindowInsetsCompat.Type.ime());
         if (imeInsets.bottom > 0) {
             Insets systemBarInsets =
                     windowInsetsCompat.getInsets(WindowInsetsCompat.Type.systemBars());
             newKeyboardHeight = imeInsets.bottom - systemBarInsets.bottom;
+
+            // Since the ime insets are greater than 0, the keyboard is showing, but its height is
+            // being suppressed in that this class deliberately wants to avoid application resizing.
+            // This informs the InsetObserver to treat the keyboard as if it is in "overlay mode",
+            // to signal to other observers to treat the keyboard as an overlay and consistently
+            // avoid any resizing.
+            if (mInsetObserver != null) {
+                mInsetObserver.setKeyboardInOverlayMode(true);
+            }
+        } else {
+            // The ime insets are not greater than 0, and thus the keyboard shouldn't be considered
+            // in overlay mode.
+            if (mInsetObserver != null) {
+                mInsetObserver.setKeyboardInOverlayMode(false);
+            }
         }
         // Keyboard going away or the change is not animated; apply immediately.
         if (newKeyboardHeight < mKeyboardHeight || !mAnimationInProgress) {
@@ -136,10 +151,26 @@ public class DeferredIMEWindowInsetApplicationCallback
         }
 
         // Zero out (consume) the ime insets; we're applying them ourselves so no one else needs
-        // to consume them.
-        return new WindowInsetsCompat.Builder(windowInsetsCompat)
-                .setInsets(WindowInsetsCompat.Type.ime(), Insets.NONE)
-                .build();
+        // to consume them. Additionally, we will also consume nav bar insets because we have at
+        // least one other inset consumer that might otherwise use the nav bar inset incorrectly
+        // when the ime is visible and only the ime insets are consumed here. This is based on the
+        // assumption that both the ime and nav bar are present at the bottom of the app window.
+        // TODO (crbug.com/388037271): Remove nav bar inset consumption.
+        var builder =
+                new WindowInsetsCompat.Builder(windowInsetsCompat)
+                        .setInsets(WindowInsetsCompat.Type.ime(), Insets.NONE);
+        if (imeInsets.bottom > 0) {
+            Insets navigationInsets =
+                    windowInsetsCompat.getInsets(WindowInsetsCompat.Type.navigationBars());
+            builder.setInsets(
+                    WindowInsetsCompat.Type.navigationBars(),
+                    Insets.of(
+                            navigationInsets.left,
+                            navigationInsets.top,
+                            navigationInsets.right,
+                            /* bottom= */ 0));
+        }
+        return builder.build();
     }
 
     private void commitKeyboardHeight(int newKeyboardHeight) {

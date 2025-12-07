@@ -136,8 +136,74 @@ chrome.inputMethodPrivate.LanguagePackStatusChange;
 chrome.inputMethodPrivate.InputContext;
 
 /**
- * User preference settings for a specific input method. Japanese input methods
- * are not included because they are managed separately by Mozc module.
+ * @enum {string}
+ */
+chrome.inputMethodPrivate.JapaneseInputMode = {
+  KANA: 'Kana',
+  ROMAJI: 'Romaji',
+};
+
+/**
+ * @enum {string}
+ */
+chrome.inputMethodPrivate.JapanesePunctuationStyle = {
+  KUTEN_TOUTEN: 'KutenTouten',
+  COMMA_PERIOD: 'CommaPeriod',
+  KUTEN_PERIOD: 'KutenPeriod',
+  COMMA_TOUTEN: 'CommaTouten',
+};
+
+/**
+ * @enum {string}
+ */
+chrome.inputMethodPrivate.JapaneseSymbolStyle = {
+  CORNER_BRACKET_MIDDLE_DOT: 'CornerBracketMiddleDot',
+  SQUARE_BRACKET_SLASH: 'SquareBracketSlash',
+  CORNER_BRACKET_SLASH: 'CornerBracketSlash',
+  SQUARE_BRACKET_MIDDLE_DOT: 'SquareBracketMiddleDot',
+};
+
+/**
+ * @enum {string}
+ */
+chrome.inputMethodPrivate.JapaneseSpaceInputStyle = {
+  INPUT_MODE: 'InputMode',
+  FULLWIDTH: 'Fullwidth',
+  HALFWIDTH: 'Halfwidth',
+};
+
+/**
+ * @enum {string}
+ */
+chrome.inputMethodPrivate.JapaneseSelectionShortcut = {
+  NO_SHORTCUT: 'NoShortcut',
+  DIGITS123456789: 'Digits123456789',
+  ASDFGHJKL: 'ASDFGHJKL',
+};
+
+/**
+ * @enum {string}
+ */
+chrome.inputMethodPrivate.JapaneseKeymapStyle = {
+  ATOK: 'Atok',
+  MS_IME: 'MsIme',
+  KOTOERI: 'Kotoeri',
+  CHROME_OS: 'ChromeOs',
+};
+
+/**
+ * @enum {string}
+ */
+chrome.inputMethodPrivate.ShiftKeyModeStyle = {
+  OFF: 'Off',
+  ALPHANUMERIC: 'Alphanumeric',
+  KATAKANA: 'Katakana',
+};
+
+/**
+ * User preference settings for a specific input method. Entry names MUST match
+ * CrOS Settings @
+ * https://crsrc.org/c/chrome/browser/resources/ash/settings/os_languages_page/input_method_util.ts
  * @typedef {{
  *   enableCompletion: (boolean|undefined),
  *   enableDoubleSpacePeriod: (boolean|undefined),
@@ -152,29 +218,26 @@ chrome.inputMethodPrivate.InputContext;
  *   virtualKeyboardAutoCorrectionLevel: (number|undefined),
  *   virtualKeyboardEnableCapitalization: (boolean|undefined),
  *   xkbLayout: (string|undefined),
+ *   JapaneseInputMode: (!chrome.inputMethodPrivate.JapaneseInputMode|undefined),
+ *   JapanesePunctuationStyle: (!chrome.inputMethodPrivate.JapanesePunctuationStyle|undefined),
+ *   JapaneseSymbolStyle: (!chrome.inputMethodPrivate.JapaneseSymbolStyle|undefined),
+ *   JapaneseSpaceInputStyle: (!chrome.inputMethodPrivate.JapaneseSpaceInputStyle|undefined),
+ *   JapaneseSectionShortcut: (!chrome.inputMethodPrivate.JapaneseSelectionShortcut|undefined),
+ *   JapaneseKeymapStyle: (!chrome.inputMethodPrivate.JapaneseKeymapStyle|undefined),
+ *   AutomaticallySwitchToHalfwidth: (boolean|undefined),
+ *   ShiftKeyModeStyle: (!chrome.inputMethodPrivate.ShiftKeyModeStyle|undefined),
+ *   UseInputHistory: (boolean|undefined),
+ *   UseSystemDictionary: (boolean|undefined),
+ *   numberOfSuggestions: (number|undefined),
+ *   JapaneseDisableSuggestions: (boolean|undefined),
  *   koreanEnableSyllableInput: (boolean|undefined),
  *   koreanKeyboardLayout: (string|undefined),
  *   koreanShowHangulCandidate: (boolean|undefined),
  *   pinyinChinesePunctuation: (boolean|undefined),
  *   pinyinDefaultChinese: (boolean|undefined),
- *   pinyinEnableFuzzy: (boolean|undefined),
  *   pinyinEnableLowerPaging: (boolean|undefined),
  *   pinyinEnableUpperPaging: (boolean|undefined),
  *   pinyinFullWidthCharacter: (boolean|undefined),
- *   pinyinFuzzyConfig: ({
- *     an_ang: (boolean|undefined),
- *     c_ch: (boolean|undefined),
- *     en_eng: (boolean|undefined),
- *     f_h: (boolean|undefined),
- *     ian_iang: (boolean|undefined),
- *     in_ing: (boolean|undefined),
- *     k_g: (boolean|undefined),
- *     l_n: (boolean|undefined),
- *     r_l: (boolean|undefined),
- *     s_sh: (boolean|undefined),
- *     uan_uang: (boolean|undefined),
- *     z_zh: (boolean|undefined)
- *   }|undefined),
  *   zhuyinKeyboardLayout: (string|undefined),
  *   zhuyinPageSize: (number|undefined),
  *   zhuyinSelectKeys: (string|undefined),
@@ -426,13 +489,6 @@ chrome.inputMethodPrivate.onImeMenuItemsChanged;
  * @type {!ChromeEvent}
  */
 chrome.inputMethodPrivate.onFocus;
-
-/**
- * This event is sent when the settings for any input method changed. It is sent
- * to all extensions that are listening to this event, and enabled by the user.
- * @type {!ChromeEvent}
- */
-chrome.inputMethodPrivate.onSettingsChanged;
 
 /**
  * This event is sent when the screen is being mirrored or the desktop is being

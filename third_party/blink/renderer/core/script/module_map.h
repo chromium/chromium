@@ -37,7 +37,7 @@ class CORE_EXPORT ModuleMap final : public GarbageCollected<ModuleMap>,
   ~ModuleMap() override = default;
 
   void Trace(Visitor*) const;
-  const char* NameInHeapSnapshot() const override { return "ModuleMap"; }
+  const char* GetHumanReadableName() const override { return "ModuleMap"; }
 
   // https://html.spec.whatwg.org/C/#fetch-a-single-module-script
   void FetchSingleModuleScript(
@@ -51,6 +51,8 @@ class CORE_EXPORT ModuleMap final : public GarbageCollected<ModuleMap>,
   // If the URL wasn't fetched, or is currently being fetched, this returns a
   // nullptr.
   ModuleScript* GetFetchedModuleScript(const KURL&, ModuleType) const;
+
+  void AddEntry(const KURL& url, ModuleType type, ModuleScript* script);
 
   Modulator* GetModulator() { return modulator_.Get(); }
 

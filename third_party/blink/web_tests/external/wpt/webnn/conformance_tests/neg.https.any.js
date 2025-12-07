@@ -1,5 +1,5 @@
 // META: title=test WebNN API element-wise neg operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -14,11 +14,8 @@
 // MLOperand neg(MLOperand input);
 
 
-const getNegPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 0, float16: 0};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
+const getNegPrecisionTolerance = () => {
+  return {metricType: 'ULP', value: 0};
 };
 
 const negTests = [
@@ -28,7 +25,7 @@ const negTests = [
       'inputs': {
         'negInput': {
           'data': [94.23045349121094],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -39,7 +36,7 @@ const negTests = [
       'expectedOutputs': {
         'negOutput': {
           'data': [-94.23045349121094],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       }
     }
@@ -50,7 +47,7 @@ const negTests = [
       'inputs': {
         'negInput': {
           'data': [-58.334503173828125],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -61,7 +58,7 @@ const negTests = [
       'expectedOutputs': {
         'negOutput': {
           'data': [58.334503173828125],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       }
     }
@@ -81,7 +78,7 @@ const negTests = [
             -66.4577865600586,   -11.172324180603027, -25.024961471557617,
             22.26478385925293,   35.29130172729492,   -86.18817138671875
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'},
+          'descriptor': {shape: [24], dataType: 'float32'},
           'constant': true
         }
       },
@@ -102,7 +99,7 @@ const negTests = [
             66.4577865600586,   11.172324180603027,  25.024961471557617,
             -22.26478385925293, -35.29130172729492,  86.18817138671875
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -122,7 +119,7 @@ const negTests = [
             -66.4577865600586,   -11.172324180603027, -25.024961471557617,
             22.26478385925293,   35.29130172729492,   -86.18817138671875
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -142,7 +139,7 @@ const negTests = [
             66.4577865600586,   11.172324180603027,  25.024961471557617,
             -22.26478385925293, -35.29130172729492,  86.18817138671875
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -162,7 +159,7 @@ const negTests = [
             -66.4577865600586,   -11.172324180603027, -25.024961471557617,
             22.26478385925293,   35.29130172729492,   -86.18817138671875
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -182,7 +179,7 @@ const negTests = [
             66.4577865600586,   11.172324180603027,  25.024961471557617,
             -22.26478385925293, -35.29130172729492,  86.18817138671875
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       }
     }
@@ -202,7 +199,7 @@ const negTests = [
             -66.4577865600586,   -11.172324180603027, -25.024961471557617,
             22.26478385925293,   35.29130172729492,   -86.18817138671875
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -222,7 +219,7 @@ const negTests = [
             66.4577865600586,   11.172324180603027,  25.024961471557617,
             -22.26478385925293, -35.29130172729492,  86.18817138671875
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -242,7 +239,7 @@ const negTests = [
             -66.4577865600586,   -11.172324180603027, -25.024961471557617,
             22.26478385925293,   35.29130172729492,   -86.18817138671875
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -262,7 +259,7 @@ const negTests = [
             66.4577865600586,   11.172324180603027,  25.024961471557617,
             -22.26478385925293, -35.29130172729492,  86.18817138671875
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -282,7 +279,7 @@ const negTests = [
             -66.4577865600586,   -11.172324180603027, -25.024961471557617,
             22.26478385925293,   35.29130172729492,   -86.18817138671875
           ],
-          'descriptor': {'dimensions': [2, 1, 4, 1, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 1, 4, 1, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -302,18 +299,341 @@ const negTests = [
             66.4577865600586,   11.172324180603027,  25.024961471557617,
             -22.26478385925293, -35.29130172729492,  86.18817138671875
           ],
-          'descriptor': {'dimensions': [2, 1, 4, 1, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 1, 4, 1, 3], dataType: 'float32'}
+        }
+      }
+    }
+  },
+
+  // float16 tests
+  {
+    'name': 'neg float16 positive 0D scalar',
+    'graph': {
+      'inputs': {
+        'negInput':
+            {'data': [94.25], 'descriptor': {shape: [], dataType: 'float16'}}
+      },
+      'operators': [{
+        'name': 'neg',
+        'arguments': [{'input': 'negInput'}],
+        'outputs': 'negOutput'
+      }],
+      'expectedOutputs': {
+        'negOutput':
+            {'data': [-94.25], 'descriptor': {shape: [], dataType: 'float16'}}
+      }
+    }
+  },
+  {
+    'name': 'neg float16 negative 0D scalar',
+    'graph': {
+      'inputs': {
+        'negInput': {
+          'data': [-58.34375],
+          'descriptor': {shape: [], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'neg',
+        'arguments': [{'input': 'negInput'}],
+        'outputs': 'negOutput'
+      }],
+      'expectedOutputs': {
+        'negOutput':
+            {'data': [58.34375], 'descriptor': {shape: [], dataType: 'float16'}}
+      }
+    }
+  },
+  {
+    'name': 'neg float16 1D constant tensor',
+    'graph': {
+      'inputs': {
+        'negInput': {
+          'data': [
+            -58.34375,  94.25,     -67.6875,    -36.0625,  17.109375,
+            59.25,      -43.78125, -14.875,     22.515625, 98.6875,
+            2.31640625, -89.875,   -14.2890625, 16.21875,  -4.6875,
+            -44.46875,  -52.125,   24.171875,   -66.4375,  -11.171875,
+            -25.03125,  22.265625, 35.28125,    -86.1875
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'neg',
+        'arguments': [{'input': 'negInput'}],
+        'outputs': 'negOutput'
+      }],
+      'expectedOutputs': {
+        'negOutput': {
+          'data': [
+            58.34375,    -94.25,     67.6875,    36.0625,    -17.109375,
+            -59.25,      43.78125,   14.875,     -22.515625, -98.6875,
+            -2.31640625, 89.875,     14.2890625, -16.21875,  4.6875,
+            44.46875,    52.125,     -24.171875, 66.4375,    11.171875,
+            25.03125,    -22.265625, -35.28125,  86.1875
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'neg float16 1D tensor',
+    'graph': {
+      'inputs': {
+        'negInput': {
+          'data': [
+            -58.34375,  94.25,     -67.6875,    -36.0625,  17.109375,
+            59.25,      -43.78125, -14.875,     22.515625, 98.6875,
+            2.31640625, -89.875,   -14.2890625, 16.21875,  -4.6875,
+            -44.46875,  -52.125,   24.171875,   -66.4375,  -11.171875,
+            -25.03125,  22.265625, 35.28125,    -86.1875
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'neg',
+        'arguments': [{'input': 'negInput'}],
+        'outputs': 'negOutput'
+      }],
+      'expectedOutputs': {
+        'negOutput': {
+          'data': [
+            58.34375,    -94.25,     67.6875,    36.0625,    -17.109375,
+            -59.25,      43.78125,   14.875,     -22.515625, -98.6875,
+            -2.31640625, 89.875,     14.2890625, -16.21875,  4.6875,
+            44.46875,    52.125,     -24.171875, 66.4375,    11.171875,
+            25.03125,    -22.265625, -35.28125,  86.1875
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'neg float16 2D tensor',
+    'graph': {
+      'inputs': {
+        'negInput': {
+          'data': [
+            -58.34375,  94.25,     -67.6875,    -36.0625,  17.109375,
+            59.25,      -43.78125, -14.875,     22.515625, 98.6875,
+            2.31640625, -89.875,   -14.2890625, 16.21875,  -4.6875,
+            -44.46875,  -52.125,   24.171875,   -66.4375,  -11.171875,
+            -25.03125,  22.265625, 35.28125,    -86.1875
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'neg',
+        'arguments': [{'input': 'negInput'}],
+        'outputs': 'negOutput'
+      }],
+      'expectedOutputs': {
+        'negOutput': {
+          'data': [
+            58.34375,    -94.25,     67.6875,    36.0625,    -17.109375,
+            -59.25,      43.78125,   14.875,     -22.515625, -98.6875,
+            -2.31640625, 89.875,     14.2890625, -16.21875,  4.6875,
+            44.46875,    52.125,     -24.171875, 66.4375,    11.171875,
+            25.03125,    -22.265625, -35.28125,  86.1875
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'neg float16 3D tensor',
+    'graph': {
+      'inputs': {
+        'negInput': {
+          'data': [
+            -58.34375,  94.25,     -67.6875,    -36.0625,  17.109375,
+            59.25,      -43.78125, -14.875,     22.515625, 98.6875,
+            2.31640625, -89.875,   -14.2890625, 16.21875,  -4.6875,
+            -44.46875,  -52.125,   24.171875,   -66.4375,  -11.171875,
+            -25.03125,  22.265625, 35.28125,    -86.1875
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'neg',
+        'arguments': [{'input': 'negInput'}],
+        'outputs': 'negOutput'
+      }],
+      'expectedOutputs': {
+        'negOutput': {
+          'data': [
+            58.34375,    -94.25,     67.6875,    36.0625,    -17.109375,
+            -59.25,      43.78125,   14.875,     -22.515625, -98.6875,
+            -2.31640625, 89.875,     14.2890625, -16.21875,  4.6875,
+            44.46875,    52.125,     -24.171875, 66.4375,    11.171875,
+            25.03125,    -22.265625, -35.28125,  86.1875
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'neg float16 4D tensor',
+    'graph': {
+      'inputs': {
+        'negInput': {
+          'data': [
+            -58.34375,  94.25,     -67.6875,    -36.0625,  17.109375,
+            59.25,      -43.78125, -14.875,     22.515625, 98.6875,
+            2.31640625, -89.875,   -14.2890625, 16.21875,  -4.6875,
+            -44.46875,  -52.125,   24.171875,   -66.4375,  -11.171875,
+            -25.03125,  22.265625, 35.28125,    -86.1875
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'neg',
+        'arguments': [{'input': 'negInput'}],
+        'outputs': 'negOutput'
+      }],
+      'expectedOutputs': {
+        'negOutput': {
+          'data': [
+            58.34375,    -94.25,     67.6875,    36.0625,    -17.109375,
+            -59.25,      43.78125,   14.875,     -22.515625, -98.6875,
+            -2.31640625, 89.875,     14.2890625, -16.21875,  4.6875,
+            44.46875,    52.125,     -24.171875, 66.4375,    11.171875,
+            25.03125,    -22.265625, -35.28125,  86.1875
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'neg float16 5D tensor',
+    'graph': {
+      'inputs': {
+        'negInput': {
+          'data': [
+            -58.34375,  94.25,     -67.6875,    -36.0625,  17.109375,
+            59.25,      -43.78125, -14.875,     22.515625, 98.6875,
+            2.31640625, -89.875,   -14.2890625, 16.21875,  -4.6875,
+            -44.46875,  -52.125,   24.171875,   -66.4375,  -11.171875,
+            -25.03125,  22.265625, 35.28125,    -86.1875
+          ],
+          'descriptor': {shape: [2, 1, 4, 1, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'neg',
+        'arguments': [{'input': 'negInput'}],
+        'outputs': 'negOutput'
+      }],
+      'expectedOutputs': {
+        'negOutput': {
+          'data': [
+            58.34375,    -94.25,     67.6875,    36.0625,    -17.109375,
+            -59.25,      43.78125,   14.875,     -22.515625, -98.6875,
+            -2.31640625, 89.875,     14.2890625, -16.21875,  4.6875,
+            44.46875,    52.125,     -24.171875, 66.4375,    11.171875,
+            25.03125,    -22.265625, -35.28125,  86.1875
+          ],
+          'descriptor': {shape: [2, 1, 4, 1, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+
+  // int8 tests
+  {
+    'name': 'neg int8 4D tensor',
+    'graph': {
+      'inputs': {
+        'negInput': {
+          'data': [
+            // int8 range: [/* -(2**7) */ -128, /* 2**7 - 1 */ 127]
+            // neg(-128) would overflow when data type is int8
+            -127, 0, 126, 127
+          ],
+          'descriptor': {shape: [1, 2, 2, 1], dataType: 'int8'}
+        }
+      },
+      'operators': [{
+        'name': 'neg',
+        'arguments': [{'input': 'negInput'}],
+        'outputs': 'negOutput'
+      }],
+      'expectedOutputs': {
+        'negOutput': {
+          'data': [127, 0, -126, -127],
+          'descriptor': {shape: [1, 2, 2, 1], dataType: 'int8'}
+        }
+      }
+    }
+  },
+
+  // int32 tests
+  {
+    'name': 'neg int32 4D tensor',
+    'graph': {
+      'inputs': {
+        'negInput': {
+          'data': [
+            // int32 range: [/* -(2**31) */ -2147483648, /* 2**31 - 1 */ 2147483647]
+            // neg(-2147483648) would overflow when data type is int32
+            -2147483647, 0, 2147483646, 2147483647
+          ],
+          'descriptor': {shape: [1, 2, 2, 1], dataType: 'int32'}
+        }
+      },
+      'operators': [{
+        'name': 'neg',
+        'arguments': [{'input': 'negInput'}],
+        'outputs': 'negOutput'
+      }],
+      'expectedOutputs': {
+        'negOutput': {
+          'data': [2147483647, 0, -2147483646, -2147483647],
+          'descriptor': {shape: [1, 2, 2, 1], dataType: 'int32'}
+        }
+      }
+    }
+  },
+
+  // int64 tests
+  {
+    'name': 'neg int64 4D tensor',
+    'graph': {
+      'inputs': {
+        'negInput': {
+          'data': [
+            // int64 range: [/* -(2**63) */ –9223372036854775808,
+            //               /* 2**63 - 1 */ 92233720368547758087]
+            BigInt(-(2**63)) + 1n, -100n, 0n, 100n, BigInt(2**63) - 1n
+          ],
+          'descriptor': {shape: [1, 1, 1, 5], dataType: 'int64'}
+        }
+      },
+      'operators': [{
+        'name': 'neg',
+        'arguments': [{'input': 'negInput'}],
+        'outputs': 'negOutput'
+      }],
+      'expectedOutputs': {
+        'negOutput': {
+          'data': [BigInt(2**63) - 1n, 100n, 0, -100n, BigInt(-(2**63)) + 1n],
+          'descriptor': {shape: [1, 1, 1, 5], dataType: 'int64'}
         }
       }
     }
   }
 ];
 
-if (navigator.ml) {
-  negTests.forEach((test) => {
-    webnn_conformance_test(
-        buildGraphAndCompute, getNegPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    negTests, buildAndExecuteGraph, getNegPrecisionTolerance, test);

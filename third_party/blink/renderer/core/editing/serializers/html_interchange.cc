@@ -41,7 +41,7 @@ String ConvertHTMLTextToInterchangeFormat(const String& in, const Text& node) {
   }
 
   const char kConvertedSpaceString[] = "<span>\xA0</span>";
-  static_assert((static_cast<unsigned char>('\xA0') == kNoBreakSpaceCharacter),
+  static_assert((static_cast<unsigned char>('\xA0') == uchar::kNoBreakSpace),
                 "\\xA0 should be non-breaking space");
 
   StringBuilder s;

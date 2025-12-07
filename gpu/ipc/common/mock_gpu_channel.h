@@ -49,8 +49,6 @@ class MockGpuChannel : public mojom::GpuChannel {
   MOCK_METHOD1(DestroyCommandBuffer, bool(int32_t));
   MOCK_METHOD2(DestroyCommandBuffer,
                void(int32_t, DestroyCommandBufferCallback));
-  MOCK_METHOD2(ScheduleImageDecode,
-               void(mojom::ScheduleImageDecodeParamsPtr, uint64_t));
   MOCK_METHOD2(FlushDeferredRequests,
                void(std::vector<mojom::DeferredRequestPtr>, uint32_t));
   MOCK_METHOD4(CreateGpuMemoryBuffer,
@@ -58,14 +56,6 @@ class MockGpuChannel : public mojom::GpuChannel {
                     const viz::SharedImageFormat&,
                     gfx::BufferUsage,
                     CreateGpuMemoryBufferCallback));
-  MOCK_METHOD2(GetGpuMemoryBufferHandleInfo,
-               void(const gpu::Mailbox&, GetGpuMemoryBufferHandleInfoCallback));
-#if BUILDFLAG(IS_ANDROID)
-  MOCK_METHOD3(CreateStreamTexture,
-               void(int32_t,
-                    mojo::PendingAssociatedReceiver<mojom::StreamTexture>,
-                    CreateStreamTextureCallback));
-#endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_WIN)
   MOCK_METHOD3(CreateDCOMPTexture,
                void(int32_t,
@@ -81,6 +71,12 @@ class MockGpuChannel : public mojom::GpuChannel {
                     uint64_t,
                     CopyToGpuMemoryBufferAsyncCallback));
 #endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD3(CopyNativeGmbToSharedMemoryAsync,
+               void(gfx::GpuMemoryBufferHandle,
+                    base::UnsafeSharedMemoryRegion,
+                    CopyNativeGmbToSharedMemoryAsyncCallback));
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   MOCK_METHOD4(WaitForTokenInRange,
                void(int32_t, int32_t, int32_t, WaitForTokenInRangeCallback));
   MOCK_METHOD5(WaitForGetOffsetInRange,
@@ -96,7 +92,7 @@ class MockGpuChannel : public mojom::GpuChannel {
   MOCK_METHOD5(RegisterSysmemBufferCollection,
                void(mojo::PlatformHandle,
                     mojo::PlatformHandle,
-                    gfx::BufferFormat,
+                    const viz::SharedImageFormat&,
                     gfx::BufferUsage,
                     bool));
 #endif  // BUILDFLAG(IS_FUCHSIA)

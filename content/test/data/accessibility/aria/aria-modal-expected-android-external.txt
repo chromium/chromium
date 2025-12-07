@@ -1,0 +1,5 @@
+WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++AlertDialog text:"Nonmodal" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="dialog"]
+++AlertDialog text:"modal dialog" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="dialog"]
+++++TextView text:"Modal" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
+++++Button text:"Focus Me" viewIdResName:"focusMe" clickable focusable focused actions:[CLEAR_FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300"]

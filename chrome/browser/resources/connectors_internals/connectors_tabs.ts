@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './strings.m.js';
+import '/strings.m.js';
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {getTemplate} from './connectors_tabs.html.js';
+// <if expr="not is_android">
 import {DeviceTrustConnectorElement} from './device_trust_connector.js';
+// </if>
 import {ManagedClientCertificateElement} from './managed_client_certificate.js';
+import {SignalsReportingElement} from './signals_reporting.js';
 
 interface ConnectorTab {
   // Title used as the tab button's text.
@@ -26,16 +29,26 @@ interface ConnectorTab {
 // Set of all connector tabs. Adding a new entry here will make it automatically
 // show in the UI.
 const connectorTabs: ConnectorTab[] = [
+  // Device Trust Connector is not supported on Android
+  // <if expr="not is_android">
   {
     title: 'Device Trust',
     directive: DeviceTrustConnectorElement.is,
     isEnabled: true,
   },
+
+  // </if>
   {
     title: 'Managed Client Certificate',
     directive: ManagedClientCertificateElement.is,
     isEnabled: true,
   },
+  {
+    title: 'Signals Reporting',
+    directive: SignalsReportingElement.is,
+    isEnabled: true,
+  },
+
 ];
 
 class ConnectorsTabsElement extends CustomElement {

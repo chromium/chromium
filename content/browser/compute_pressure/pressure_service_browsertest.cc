@@ -5,10 +5,12 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/video_picture_in_picture_window_controller.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -21,11 +23,12 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/device/public/cpp/test/scoped_pressure_manager_overrider.h"
 #include "services/device/public/mojom/pressure_update.mojom.h"
-#include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace content {
 
+using device::mojom::PressureData;
 using device::mojom::PressureSource;
 using device::mojom::PressureState;
 using device::mojom::PressureUpdate;
@@ -33,12 +36,7 @@ using device::mojom::PressureUpdate;
 namespace {
 
 bool SupportsSharedWorker() {
-#if BUILDFLAG(IS_ANDROID)
-  // SharedWorkers are not enabled on Android. https://crbug.com/154571
-  return false;
-#else
-  return true;
-#endif
+  return base::FeatureList::IsEnabled(blink::features::kSharedWorker);
 }
 
 class TestVideoOverlayWindow : public VideoOverlayWindow {
@@ -63,6 +61,7 @@ class TestVideoOverlayWindow : public VideoOverlayWindow {
   void SetSkipAdButtonVisibility(bool is_visible) override {}
   void SetNextTrackButtonVisibility(bool is_visible) override {}
   void SetPreviousTrackButtonVisibility(bool is_visible) override {}
+  void SetHidePictureInPictureButtonVisibility(bool is_visible) override {}
   void SetMicrophoneMuted(bool muted) override {}
   void SetCameraState(bool turned_on) override {}
   void SetToggleMicrophoneButtonVisibility(bool is_visible) override {}
@@ -70,6 +69,10 @@ class TestVideoOverlayWindow : public VideoOverlayWindow {
   void SetHangUpButtonVisibility(bool is_visible) override {}
   void SetNextSlideButtonVisibility(bool is_visible) override {}
   void SetPreviousSlideButtonVisibility(bool is_visible) override {}
+  void SetMediaPosition(const media_session::MediaPosition&) override {}
+  void SetSourceTitle(const std::u16string& source_title) override {}
+  void SetFaviconImages(
+      const std::vector<media_session::MediaImage>& images) override {}
   void SetSurfaceId(const viz::SurfaceId& surface_id) override {}
 
  private:
@@ -145,7 +148,9 @@ IN_PROC_BROWSER_TEST_F(ComputePressureBrowserTest, DeliverUpdate) {
 
   // Deliver update.
   const base::TimeTicks time = base::TimeTicks::Now();
-  PressureUpdate update(PressureSource::kCpu, PressureState::kNominal, time);
+  auto data = PressureData::New(/*cpu_utilization=*/0.30,
+                                device::mojom::kDefaultOwnContributionEstimate);
+  PressureUpdate update(PressureSource::kCpu, std::move(data), time);
   pressure_manager_overrider_.UpdateClients(std::move(update));
 
   ASSERT_TRUE(ExecJs(shell(), "datasets.frame.waitForUpdates(1);"));
@@ -176,7 +181,9 @@ IN_PROC_BROWSER_TEST_F(ComputePressureBrowserTest, DeliverUpdateForSameOrigin) {
 
   // Deliver update.
   const base::TimeTicks time = base::TimeTicks::Now();
-  PressureUpdate update(PressureSource::kCpu, PressureState::kNominal, time);
+  auto data = PressureData::New(/*cpu_utilization=*/0.30,
+                                device::mojom::kDefaultOwnContributionEstimate);
+  PressureUpdate update(PressureSource::kCpu, std::move(data), time);
   pressure_manager_overrider_.UpdateClients(std::move(update));
 
   ASSERT_TRUE(ExecJs(shell(), "datasets.frame.waitForUpdates(1);"));
@@ -207,7 +214,9 @@ IN_PROC_BROWSER_TEST_F(ComputePressureBrowserTest, NoUpdateForCrossOrigin) {
 
   // Deliver update.
   const base::TimeTicks time1 = base::TimeTicks::Now();
-  PressureUpdate update1(PressureSource::kCpu, PressureState::kNominal, time1);
+  auto data1 = PressureData::New(
+      /*cpu_utilization=*/0.30, device::mojom::kDefaultOwnContributionEstimate);
+  PressureUpdate update1(PressureSource::kCpu, std::move(data1), time1);
   pressure_manager_overrider_.UpdateClients(std::move(update1));
 
   // Focus on main frame, observers can receive updates again.
@@ -215,7 +224,9 @@ IN_PROC_BROWSER_TEST_F(ComputePressureBrowserTest, NoUpdateForCrossOrigin) {
 
   // Deliver update.
   const base::TimeTicks time2 = time1 + base::Seconds(2);
-  PressureUpdate update2(PressureSource::kCpu, PressureState::kFair, time2);
+  auto data2 = PressureData::New(
+      /*cpu_utilization=*/0.70, device::mojom::kDefaultOwnContributionEstimate);
+  PressureUpdate update2(PressureSource::kCpu, std::move(data2), time2);
   pressure_manager_overrider_.UpdateClients(std::move(update2));
 
   ASSERT_TRUE(ExecJs(shell(), "datasets.frame.waitForUpdates(1);"));
@@ -254,7 +265,9 @@ IN_PROC_BROWSER_TEST_F(ComputePressureBrowserTest, DeliverDataForPiP) {
 
   // Deliver update.
   const base::TimeTicks time1 = base::TimeTicks::Now();
-  PressureUpdate update1(PressureSource::kCpu, PressureState::kNominal, time1);
+  auto data1 = PressureData::New(
+      /*cpu_utilization=*/0.30, device::mojom::kDefaultOwnContributionEstimate);
+  PressureUpdate update1(PressureSource::kCpu, std::move(data1), time1);
   pressure_manager_overrider_.UpdateClients(std::move(update1));
 
   ASSERT_TRUE(ExecJs(shell(), "datasets.frame.waitForUpdates(1);"));
@@ -277,7 +290,9 @@ IN_PROC_BROWSER_TEST_F(ComputePressureBrowserTest, DeliverDataForPiP) {
 
   // Deliver update.
   const base::TimeTicks time2 = time1 + base::Seconds(2);
-  PressureUpdate update2(PressureSource::kCpu, PressureState::kFair, time2);
+  auto data2 = PressureData::New(
+      /*cpu_utilization=*/0.85, device::mojom::kDefaultOwnContributionEstimate);
+  PressureUpdate update2(PressureSource::kCpu, std::move(data2), time2);
   pressure_manager_overrider_.UpdateClients(std::move(update2));
 
   // Focus on main frame, observers can receive updates again.
@@ -285,7 +300,9 @@ IN_PROC_BROWSER_TEST_F(ComputePressureBrowserTest, DeliverDataForPiP) {
 
   // Deliver update.
   const base::TimeTicks time3 = time2 + base::Seconds(2);
-  PressureUpdate update3(PressureSource::kCpu, PressureState::kSerious, time3);
+  auto data3 = PressureData::New(
+      /*cpu_utilization=*/0.85, device::mojom::kDefaultOwnContributionEstimate);
+  PressureUpdate update3(PressureSource::kCpu, std::move(data3), time3);
   pressure_manager_overrider_.UpdateClients(std::move(update3));
 
   ASSERT_TRUE(ExecJs(shell(), "datasets.frame.waitForUpdates(2);"));
@@ -320,7 +337,9 @@ IN_PROC_BROWSER_TEST_F(ComputePressureBrowserTest, DeliverDataForCapturing) {
 
   // Deliver update.
   const base::TimeTicks time1 = base::TimeTicks::Now();
-  PressureUpdate update1(PressureSource::kCpu, PressureState::kNominal, time1);
+  auto data1 = PressureData::New(
+      /*cpu_utilization=*/0.30, device::mojom::kDefaultOwnContributionEstimate);
+  PressureUpdate update1(PressureSource::kCpu, std::move(data1), time1);
   pressure_manager_overrider_.UpdateClients(std::move(update1));
 
   ASSERT_TRUE(ExecJs(shell(), "datasets.frame.waitForUpdates(1);"));
@@ -342,7 +361,9 @@ IN_PROC_BROWSER_TEST_F(ComputePressureBrowserTest, DeliverDataForCapturing) {
 
   // Deliver update.
   const base::TimeTicks time2 = time1 + base::Seconds(2);
-  PressureUpdate update2(PressureSource::kCpu, PressureState::kFair, time2);
+  auto data2 = PressureData::New(
+      /*cpu_utilization=*/0.70, device::mojom::kDefaultOwnContributionEstimate);
+  PressureUpdate update2(PressureSource::kCpu, std::move(data2), time2);
   pressure_manager_overrider_.UpdateClients(std::move(update2));
 
   // Focus on main frame, observers can receive updates again.
@@ -350,7 +371,9 @@ IN_PROC_BROWSER_TEST_F(ComputePressureBrowserTest, DeliverDataForCapturing) {
 
   // Deliver update.
   const base::TimeTicks time3 = time2 + base::Seconds(2);
-  PressureUpdate update3(PressureSource::kCpu, PressureState::kSerious, time3);
+  auto data3 = PressureData::New(
+      /*cpu_utilization=*/0.85, device::mojom::kDefaultOwnContributionEstimate);
+  PressureUpdate update3(PressureSource::kCpu, std::move(data3), time3);
   pressure_manager_overrider_.UpdateClients(std::move(update3));
 
   ASSERT_TRUE(ExecJs(shell(), "datasets.frame.waitForUpdates(2);"));

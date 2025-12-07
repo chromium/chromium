@@ -4,6 +4,7 @@
 
 package org.chromium.android_webview.test;
 
+import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -22,21 +23,19 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
-import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.permission.AwPermissionRequest;
 import org.chromium.android_webview.test.util.CommonResources;
-import org.chromium.base.BuildInfo;
+import org.chromium.base.ContextUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.content_public.browser.test.util.DomAutomationController;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.util.TestWebServer;
 
 /** Test AwPermissionManager. */
+@Batch(Batch.PER_CLASS)
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class AwPermissionManagerTest extends AwParameterizedTest {
@@ -57,18 +56,6 @@ public class AwPermissionManagerTest extends AwParameterizedTest {
 
     private static final String IFRAME_PARENT_PAGE = "<html><iframe></iframe><body></body></html>";
 
-    private static final String REQUEST_STORAGE_ACCESS_PAGE =
-            """
-            <html>
-            <body>
-            <script>
-            document.requestStorageAccess()
-                .then(() => window.parent.postMessage('granted', '*'))
-                .catch((e) => window.parent.postMessage('not granted', '*'));
-            </script>
-            </body>
-            </html>""";
-
     private static final String GUM_JS =
             "navigator.mediaDevices.getUserMedia({video: true, audio: true})"
                     + ".then((_) => domAutomationController.send('success'))"
@@ -78,22 +65,6 @@ public class AwPermissionManagerTest extends AwParameterizedTest {
             "navigator.mediaDevices.enumerateDevices().then("
                     + "(devices) => domAutomationController.send(devices.map("
                     + "  (d) => `${d['label']}`)));";
-
-    private static final String ASSET_STATEMENT_TEMPLATE =
-            """
-                [{
-                        "relation": ["delegate_permission/common.handle_all_urls"],
-                        "target": {
-                                "namespace": "android_app",
-                                "package_name": "%s",
-                                "sha256_cert_fingerprints": ["%s"]
-                        }
-                }]
-        """;
-
-    private static final String ASSET_STATEMENT_PATH = "/.well-known/assetlinks.json";
-    private static final String SAA_GRANT_TIME_HISTOGRAM =
-            "Android.WebView.StorageAccessAutoGrantTime";
 
     private final DomAutomationController mDomAutomationController = new DomAutomationController();
     private TestWebServer mTestWebServer;
@@ -119,6 +90,11 @@ public class AwPermissionManagerTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     @SmallTest
     public void testRequestMultiple() {
+        if (!ContextUtils.getApplicationContext()
+                .getPackageManager()
+                .hasSystemFeature(PackageManager.FEATURE_MIDI)) {
+            return;
+        }
         mPage =
                 mTestWebServer.setResponse(
                         "/permissions",
@@ -203,7 +179,7 @@ public class AwPermissionManagerTest extends AwParameterizedTest {
     @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
     public void testEnumerateDevicesWithAllowFileAccessFromFileURLsFalse() throws Throwable {
         AwContents awContents = setUpEnumerateDevicesTest(null);
-        awContents.getSettings().setAllowFileAccessFromFileURLs(false);
+        awContents.getSettings().setAllowFileAccessFromFileUrls(false);
         mActivityTestRule.loadDataWithBaseUrlSync(
                 awContents,
                 mContentsClient.getOnPageFinishedHelper(),
@@ -228,7 +204,7 @@ public class AwPermissionManagerTest extends AwParameterizedTest {
     @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
     public void testEnumerateDevicesWithAllowFileAccessFromFileURLsTrue() throws Throwable {
         AwContents awContents = setUpEnumerateDevicesTest(null);
-        awContents.getSettings().setAllowFileAccessFromFileURLs(true);
+        awContents.getSettings().setAllowFileAccessFromFileUrls(true);
         mActivityTestRule.loadDataWithBaseUrlSync(
                 awContents,
                 mContentsClient.getOnPageFinishedHelper(),
@@ -255,7 +231,7 @@ public class AwPermissionManagerTest extends AwParameterizedTest {
     @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
     public void testPermissionIsCachedAfterFileNavigation() throws Throwable {
         AwContents awContents = setUpEnumerateDevicesTest(null);
-        awContents.getSettings().setAllowFileAccessFromFileURLs(true);
+        awContents.getSettings().setAllowFileAccessFromFileUrls(true);
         mActivityTestRule.loadDataWithBaseUrlSync(
                 awContents,
                 mContentsClient.getOnPageFinishedHelper(),
@@ -332,135 +308,6 @@ public class AwPermissionManagerTest extends AwParameterizedTest {
                 JavaScriptUtils.runJavascriptWithUserGestureAndAsyncResult(
                         awContents.getWebContents(), ENUMERATE_DEVICES_JS);
         assertDeviceLabels(devices, true);
-    }
-
-    @Test
-    @Feature({"AndroidWebView"})
-    @SmallTest
-    public void testStorageAccessMetricLogged() throws Exception {
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectAnyRecord("Android.WebView.StorageAccessRelation2")
-                        .build();
-
-        String result = requestEmbeddedStorageAccess(/* isInAppStatement= */ true);
-
-        // The storage access API doesn't work by default on WebView.
-        Assert.assertEquals("\"not granted\"", result);
-        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
-    }
-
-    @Test
-    @Feature({"AndroidWebView"})
-    @SmallTest
-    @Features.EnableFeatures({AwFeatures.WEBVIEW_AUTO_SAA})
-    @DisabledTest(message = "crbug.com/358119171")
-    public void testAutoGrantSAA_trusted() throws Exception {
-        var histogramWatcher =
-                HistogramWatcher.newBuilder().expectAnyRecord(SAA_GRANT_TIME_HISTOGRAM).build();
-        var buildInfo = BuildInfo.getInstance();
-
-        // We add an asset statement to always trust the test app for auto granting.
-        mTestWebServer.setResponse(
-                ASSET_STATEMENT_PATH,
-                String.format(
-                        ASSET_STATEMENT_TEMPLATE,
-                        buildInfo.hostPackageName,
-                        buildInfo.getHostSigningCertSha256()),
-                null);
-
-        String result = requestEmbeddedStorageAccess(/* isInAppStatement= */ true);
-        Assert.assertEquals("\"granted\"", result);
-        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
-        // Confirm this is resolved against the test server the first time
-        Assert.assertEquals(1, mTestWebServer.getRequestCount(ASSET_STATEMENT_PATH));
-
-        result = requestEmbeddedStorageAccess(/* isInAppStatement= */ true);
-        Assert.assertEquals("\"granted\"", result);
-        // Confirm that subsequent calls are from cached results
-        Assert.assertEquals(1, mTestWebServer.getRequestCount(ASSET_STATEMENT_PATH));
-    }
-
-    @Test
-    @Feature({"AndroidWebView"})
-    @SmallTest
-    @Features.EnableFeatures({AwFeatures.WEBVIEW_AUTO_SAA})
-    public void testAutoGrantSAA_untrustedDomain() throws Exception {
-        var histogramWatcher =
-                HistogramWatcher.newBuilder().expectNoRecords(SAA_GRANT_TIME_HISTOGRAM).build();
-        var buildInfo = BuildInfo.getInstance();
-
-        // We add an asset statement to always trust the test app for auto granting.
-        mTestWebServer.setResponse(
-                ASSET_STATEMENT_PATH,
-                String.format(
-                        ASSET_STATEMENT_TEMPLATE,
-                        buildInfo.hostPackageName,
-                        buildInfo.getHostSigningCertSha256()),
-                null);
-
-        String result = requestEmbeddedStorageAccess(/* isInAppStatement= */ false);
-        Assert.assertEquals("\"not granted\"", result);
-        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
-    }
-
-    @Test
-    @Feature({"AndroidWebView"})
-    @SmallTest
-    @Features.EnableFeatures({AwFeatures.WEBVIEW_AUTO_SAA})
-    @DisabledTest(message = "crbug.com/358119171")
-    public void testAutoGrantSAA_untrustedApp() throws Exception {
-        var histogramWatcher =
-                HistogramWatcher.newBuilder().expectAnyRecord(SAA_GRANT_TIME_HISTOGRAM).build();
-
-        // In this test's case, we make the site only trust an app we are not.
-        mTestWebServer.setResponse(
-                ASSET_STATEMENT_PATH,
-                String.format(ASSET_STATEMENT_TEMPLATE, "some other app", "some hash"),
-                null);
-
-        String result = requestEmbeddedStorageAccess(/* isInAppStatement= */ true);
-        Assert.assertEquals("\"not granted\"", result);
-        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
-    }
-
-    private String requestEmbeddedStorageAccess(boolean isInAppStatement) throws Exception {
-        var contentsClient = new TestAwContentsClient();
-        final AwContents awContents =
-                mActivityTestRule
-                        .createAwTestContainerViewOnMainSync(contentsClient)
-                        .getAwContents();
-
-        AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
-
-        // We need to request storage access from within an iframe, otherwise it will
-        // just auto resolve to granted.
-        // The iframe will load, request storage access, and post the result back.
-        var storagePage = mTestWebServer.setResponse("/storage", REQUEST_STORAGE_ACCESS_PAGE, null);
-        var parentPage = mTestWebServer.setResponse("/", IFRAME_PARENT_PAGE, null);
-
-        // The test app trusts localhost. To test a flow where we don't have
-        // the website in our apps asset statement, we can just use a IP address
-        // that the app hasn't declared but still resolves.
-        if (!isInAppStatement) {
-            storagePage = storagePage.replace("localhost", "127.0.0.1");
-            parentPage = parentPage.replace("localhost", "127.0.0.1");
-        }
-
-        mActivityTestRule.loadUrlSync(
-                awContents, contentsClient.getOnPageFinishedHelper(), parentPage);
-
-        // We add an event listener for the result from the iframe and then initiate the page
-        // load.
-        return JavaScriptUtils.runJavascriptWithUserGestureAndAsyncResult(
-                awContents.getWebContents(),
-                String.format(
-                        """
-                                window.addEventListener('message', (e) => {
-                                        domAutomationController.send(e.data)
-                                });
-                                document.querySelector('iframe').src = "%s";""",
-                        storagePage));
     }
 
     private void pollTitleAs(final String title, final AwContents awContents) {

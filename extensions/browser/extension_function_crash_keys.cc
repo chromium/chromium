@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/extension_function_crash_keys.h"
 
+#include <array>
 #include <utility>
 #include <vector>
 
@@ -37,7 +33,7 @@ struct CallInfo {
 // - API A start (2)
 // - API A end (2)
 // This will report crash keys in the order (API A, API B) even though the most
-// recent API A call has completed. This seemms OK because it's true that API A
+// recent API A call has completed. This seems OK because it's true that API A
 // was the most recently called. It also avoids storing a stack of all in-flight
 // API calls with per-call IDs to match them up. During startup when extensions
 // are initializing there can be hundreds of in-flight calls.
@@ -60,19 +56,21 @@ void UpdateCrashKeys() {
   std::sort(calls.begin(), calls.end(), std::greater<>());
   // Set up crash keys.
   using ArrayItemKey = crash_reporter::CrashKeyString<64>;
-  static ArrayItemKey crash_keys[] = {
-      {"extension-function-caller-1", ArrayItemKey::Tag::kArray},
-      {"extension-function-caller-2", ArrayItemKey::Tag::kArray},
-      {"extension-function-caller-3", ArrayItemKey::Tag::kArray},
+  static constexpr int kMaxCrashKeys = 3;
+  static std::array<ArrayItemKey, kMaxCrashKeys> crash_keys = {
+      ArrayItemKey{"extension-function-caller-1", ArrayItemKey::Tag::kArray},
+      ArrayItemKey{"extension-function-caller-2", ArrayItemKey::Tag::kArray},
+      ArrayItemKey{"extension-function-caller-3", ArrayItemKey::Tag::kArray},
   };
   // Store up to 3 crash keys with extension IDs.
   int index = 0;
-  for (auto it = calls.begin(); it != calls.end() && index < 3; ++it, ++index) {
+  for (auto it = calls.begin(); it != calls.end() && index < kMaxCrashKeys;
+       ++it, ++index) {
     const ExtensionId* extension_id = it->second;
     crash_keys[index].Set(*extension_id);
   }
   // Clear the remaining crash keys.
-  for (; index < 3; ++index) {
+  for (; index < kMaxCrashKeys; ++index) {
     crash_keys[index].Clear();
   }
 }

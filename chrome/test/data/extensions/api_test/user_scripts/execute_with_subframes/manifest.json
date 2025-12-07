@@ -1,0 +1,19 @@
+{
+  "name": "User script test extension",
+  "version": "0.1",
+  "manifest_version": 3,
+  "description": "Tests a variety of user scripts API calls for registering an user script when the tab has subframes.",
+  "background": {
+    "service_worker": "worker.js",
+    "type": "module"
+  },
+  "permissions": [
+    "tabs",
+    "userScripts",
+    "webNavigation"
+  ],
+  "host_permissions": [
+    "*://*.a.com/*",
+    "*://*.b.com/*"
+  ]
+}

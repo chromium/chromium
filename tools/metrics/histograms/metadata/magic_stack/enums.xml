@@ -25,45 +25,13 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="MagicStack.Clank.TabResumption.ClickInfo">
-  <int value="0"
-      label="Clicked on foreign first tile of config foreign (single tile)"/>
-  <int value="1"
-      label="Clicked on foreign first tile of config foreign+foreign (double
-             tiles)"/>
-  <int value="2"
-      label="Clicked on foreign second tile of config foreign+foreign (double
-             tiles)"/>
-  <int value="3"
-      label="Clicked on local first tile of config local (single tile)"/>
-  <int value="4"
-      label="Clicked on local first tile of config local+foreign (double
-             tiles)"/>
-  <int value="5"
-      label="Clicked on foreign second tile of config local+foreign (double
-             tiles)"/>
-</enum>
-
-<enum name="MagicStack.Clank.TabResumption.ModuleNotShownReason">
-  <int value="0" label="No suggestions"/>
-  <int value="1" label="Feature flag disabled"/>
-  <int value="2" label="User not sign in"/>
-  <int value="3" label="User disabled sync"/>
-</enum>
-
-<enum name="MagicStack.Clank.TabResumption.ModuleShowConfig">
-  <int value="0" label="Showing config foreign (single tile)"/>
-  <int value="1" label="Showing config foreign+foreign (double tiles)"/>
-  <int value="2" label="Showing config local (single tile)"/>
-  <int value="3" label="Showing config local+foreign (double tiles)"/>
-</enum>
-
 <enum name="ModulePosition">
   <int value="0" label="1st module"/>
   <int value="1" label="2nd module"/>
   <int value="2" label="3rd module"/>
   <int value="3" label="4th module"/>
   <int value="4" label="5th module"/>
+  <int value="5" label="6th module"/>
 </enum>
 
 <enum name="ModuleType">
@@ -71,6 +39,14 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Price change module"/>
   <int value="2" label="Tab resumption module"/>
   <int value="3" label="Safety hub module"/>
+  <int value="4" label="Educational tip module"/>
+  <int value="5" label="Auxiliary search module"/>
+  <int value="6" label="Default Browser Promo Card"/>
+  <int value="7" label="Tab Group Promo Card"/>
+  <int value="8" label="Tab Group Sync Promo Card"/>
+  <int value="9" label="Quick Delete Promo Card"/>
+  <int value="10" label="History Sync Promo Card"/>
+  <int value="11" label="Tips Notifications Promo Card"/>
 </enum>
 
 </enums>

@@ -4,6 +4,7 @@
 
 #include "ui/display/display_layout.h"
 
+#include <algorithm>
 #include <map>
 #include <set>
 #include <sstream>
@@ -15,8 +16,6 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/device_event_log/device_event_log.h"
@@ -55,7 +54,7 @@ DisplayIdList DisplayListToDisplayIdList(const Displays& displays) {
 
 // Returns nullptr if display with |id| is not found.
 Display* FindDisplayById(Displays* display_list, int64_t id) {
-  auto iter = base::ranges::find(*display_list, id, &Display::id);
+  auto iter = std::ranges::find(*display_list, id, &Display::id);
   return iter == display_list->end() ? nullptr : &(*iter);
 }
 
@@ -158,10 +157,9 @@ void MaybeReparentTargetDisplay(
     Display* parent_display = FindDisplayById(display_list, parent_display_id);
     DCHECK(parent_display);
 
-    auto target_display_placement_itr = base::ranges::find(
+    auto target_display_placement_itr = std::ranges::find(
         *placement_list, target_display->id(), &DisplayPlacement::display_id);
-    CHECK(target_display_placement_itr != placement_list->end(),
-          base::NotFatalUntil::M130);
+    CHECK(target_display_placement_itr != placement_list->end());
     target_display_placement = &(*target_display_placement_itr);
     if (AreDisplaysTouching(*target_display, *parent_display,
                             target_display_placement->position)) {
@@ -397,18 +395,6 @@ DisplayPlacement::DisplayPlacement(const DisplayPlacement&) = default;
 DisplayPlacement& DisplayPlacement::operator=(const DisplayPlacement&) =
     default;
 
-bool DisplayPlacement::operator==(const DisplayPlacement& other) const {
-  return display_id == other.display_id &&
-         parent_display_id == other.parent_display_id &&
-         position == other.position &&
-         offset == other.offset &&
-         offset_reference == other.offset_reference;
-}
-
-bool DisplayPlacement::operator!=(const DisplayPlacement& other) const {
-  return !operator==(other);
-}
-
 DisplayPlacement& DisplayPlacement::Swap() {
   switch (position) {
     case TOP:
@@ -500,6 +486,7 @@ void DisplayLayout::ApplyToDisplayList(Displays* display_list,
   if (!DisplayLayout::Validate(DisplayListToDisplayIdList(*display_list),
                                *this)) {
     // Prevent invalid and non-relevant display layouts.
+    LOG(ERROR) << "Invalid Display Layout";
     return;
   }
 
@@ -549,15 +536,19 @@ bool DisplayLayout::Validate(const DisplayIdList& list,
 
   bool has_primary_as_parent = false;
   // The placement list must be sorted by the first 8 bits of the display IDs.
+#if BUILDFLAG(IS_CHROMEOS)
   int64_t prev_id = std::numeric_limits<int8_t>::min();
+#endif  // BUILDFLAG(IS_CHROMEOS)
   for (const auto& placement : layout.placement_list) {
-    // Placements are sorted by display_id.
+#if BUILDFLAG(IS_CHROMEOS)
+    // Placements are sorted by display_id on ChromeOS.
     if (prev_id >= (placement.display_id & 0xFF)) {
       DISPLAY_LOG(ERROR) << "PlacementList must be sorted by first 8 bits of"
                          << " display_id ";
       return false;
     }
     prev_id = (placement.display_id & 0xFF);
+#endif  // BUILDFLAG(IS_CHROMEOS)
     if (placement.display_id == kInvalidDisplayId) {
       DISPLAY_LOG(ERROR) << "display_id is not initialized";
       return false;
@@ -650,8 +641,8 @@ std::string DisplayLayout::ToString() const {
 }
 
 DisplayPlacement DisplayLayout::FindPlacementById(int64_t display_id) const {
-  const auto iter = base::ranges::find(placement_list, display_id,
-                                       &DisplayPlacement::display_id);
+  const auto iter = std::ranges::find(placement_list, display_id,
+                                      &DisplayPlacement::display_id);
   return (iter == placement_list.end()) ? DisplayPlacement()
                                         : DisplayPlacement(*iter);
 }

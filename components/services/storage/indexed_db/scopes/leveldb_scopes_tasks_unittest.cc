@@ -13,7 +13,7 @@
 #include "components/services/storage/indexed_db/scopes/scopes_metadata.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace content {
+namespace content::indexed_db {
 namespace {
 
 class LevelDBScopesTasksTest : public LevelDBScopesTestBase {
@@ -35,9 +35,10 @@ class LevelDBScopesTasksTest : public LevelDBScopesTestBase {
                                 bool ignore_cleanup_tasks) {
     WriteScopesMetadata(scope_number, ignore_cleanup_tasks);
 
-    cleanup_task_buffer_.mutable_delete_range()->set_begin(
+    cleanup_task_buffer_.mutable_delete_range_and_compact()->set_begin(
         delete_range_start_key_);
-    cleanup_task_buffer_.mutable_delete_range()->set_end(delete_range_end_key_);
+    cleanup_task_buffer_.mutable_delete_range_and_compact()->set_end(
+        delete_range_end_key_);
     WriteCleanupTask(scope_number, /*sequence_number=*/0);
 
     int64_t undo_sequence_number = leveldb_scopes::kFirstSequenceNumberToWrite;
@@ -329,4 +330,4 @@ TEST_F(LevelDBScopesTasksTest, ErrorsDuringRevertArePropagated) {
 }
 
 }  // namespace
-}  // namespace content
+}  // namespace content::indexed_db

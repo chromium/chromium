@@ -14,12 +14,10 @@ namespace media {
 VideoDecodeStatsRecorder::VideoDecodeStatsRecorder(
     VideoDecodePerfHistory::SaveCallback save_cb,
     ukm::SourceId source_id,
-    learning::FeatureValue origin,
     bool is_top_frame,
-    uint64_t player_id)
+    MediaPlayerUkmId player_id)
     : save_cb_(std::move(save_cb)),
       source_id_(source_id),
-      origin_(origin),
       is_top_frame_(is_top_frame),
       player_id_(player_id) {
   DCHECK(save_cb_);
@@ -83,8 +81,8 @@ void VideoDecodeStatsRecorder::FinalizeRecord() {
 
   // Final argument is an empty save-done-callback. No action to take if save
   // fails (DB already records UMAs on failure). Callback mainly used by tests.
-  save_cb_.Run(source_id_, origin_, is_top_frame_, features_, targets_,
-               player_id_, base::OnceClosure());
+  save_cb_.Run(source_id_, is_top_frame_, features_, targets_,
+               player_id_.value(), base::OnceClosure());
 }
 
 }  // namespace media

@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "chrome/browser/enterprise/signals/signals_aggregator_factory.h"
 
 namespace enterprise_reporting {
 
@@ -33,6 +34,7 @@ CloudProfileReportingServiceFactory::BuildServiceInstanceForBrowserContext(
 
   return std::make_unique<CloudProfileReportingService>(profile);
 }
+
 bool CloudProfileReportingServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
   return true;
@@ -42,6 +44,10 @@ CloudProfileReportingServiceFactory::CloudProfileReportingServiceFactory()
     : ProfileKeyedServiceFactory("CloudProfileReporting",
                                  ProfileSelections::BuildForRegularProfile()) {
   DependsOn(enterprise::ProfileIdServiceFactory::GetInstance());
+  // Depends on this service because
+  // `CloudProfileReportingService.profile_request_generator_` has a dependency
+  // on it.
+  DependsOn(enterprise_signals::SignalsAggregatorFactory::GetInstance());
 }
 
 CloudProfileReportingServiceFactory::~CloudProfileReportingServiceFactory() =

@@ -102,16 +102,16 @@ struct RawPtrCountingImplForTest : public base::internal::RawPtrNoOpImpl {
     get_for_duplication_cnt = 0;
   }
 
-  static inline int wrap_raw_ptr_cnt = INT_MIN;
-  static inline int release_wrapped_ptr_cnt = INT_MIN;
-  static inline int get_for_dereference_cnt = INT_MIN;
-  static inline int get_for_extraction_cnt = INT_MIN;
-  static inline int get_for_comparison_cnt = INT_MIN;
-  static inline int wrapped_ptr_swap_cnt = INT_MIN;
-  static inline int wrapped_ptr_less_cnt = INT_MIN;
-  static inline int pointer_to_member_operator_cnt = INT_MIN;
-  static inline int wrap_raw_ptr_for_dup_cnt = INT_MIN;
-  static inline int get_for_duplication_cnt = INT_MIN;
+  static int wrap_raw_ptr_cnt;
+  static int release_wrapped_ptr_cnt;
+  static int get_for_dereference_cnt;
+  static int get_for_extraction_cnt;
+  static int get_for_comparison_cnt;
+  static int wrapped_ptr_swap_cnt;
+  static int wrapped_ptr_less_cnt;
+  static int pointer_to_member_operator_cnt;
+  static int wrap_raw_ptr_for_dup_cnt;
+  static int get_for_duplication_cnt;
 };
 
 }  // namespace base::test

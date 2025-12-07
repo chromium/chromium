@@ -17,7 +17,7 @@ def CheckNoBadDeps(input_api, output_api):
       r'build/rust/tests',
   ]
   blocklist_pattern = input_api.re.compile(r'^[^#]*"//(?!build).+?/.*"')
-  allowlist_pattern = input_api.re.compile(r'^[^#]*"//third_party/junit')
+  allowlist_pattern = input_api.re.compile(r'^[^#]*"//(third_party/junit|out)')
 
   warning_message = textwrap.dedent("""
       The //build directory is meant to be as hermetic as possible so that

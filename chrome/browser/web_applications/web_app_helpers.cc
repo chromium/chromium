@@ -9,10 +9,10 @@
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/common/chrome_features.h"
 #include "components/crx_file/id_util.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/webapps/common/web_app_id.h"
@@ -56,7 +56,7 @@ std::string MaybeConcatenateParentAppManifestId(
 const char kCrxAppPrefix[] = "_crx_";
 
 std::string GenerateApplicationNameFromURL(const GURL& url) {
-  return base::StrCat({url.host_piece(), "_", url.path_piece()});
+  return base::StrCat({url.host(), "_", url.path()});
 }
 
 std::string GenerateApplicationNameFromAppId(const webapps::AppId& app_id) {
@@ -148,8 +148,7 @@ bool IsValidWebAppUrl(const GURL& app_url) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   // Stop allowing apps to be extension urls when the shortcuts are separated -
   // they can be extension urls instead.
-  allow_extension_apps =
-      !base::FeatureList::IsEnabled(features::kShortcutsNotApps);
+  allow_extension_apps = false;
 #endif
 
   // TODO(crbug.com/40793595): Remove chrome-extension scheme.
@@ -157,8 +156,9 @@ bool IsValidWebAppUrl(const GURL& app_url) {
          app_url.SchemeIs(url::kHttpsScheme) ||
          (allow_extension_apps && app_url.SchemeIs("chrome-extension")) ||
          (app_url.SchemeIs(content::kChromeUIScheme) &&
-          ((app_url.host() == password_manager::kChromeUIPasswordManagerHost) ||
-           ValidChromeUrlHosts().contains(app_url.host())));
+          ((app_url.GetHost() ==
+            password_manager::kChromeUIPasswordManagerHost) ||
+           ValidChromeUrlHosts().contains(app_url.GetHost())));
 }
 
 base::ScopedClosureRunner AddValidWebAppChromeUrlHostForTesting(  // IN-TEST
@@ -176,15 +176,20 @@ std::optional<webapps::AppId> FindInstalledAppWithUrlInScope(Profile* profile,
                                                              const GURL& url,
                                                              bool window_only) {
   auto* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
-  return provider ? provider->registrar_unsafe().FindInstalledAppWithUrlInScope(
-                        url, window_only)
-                  : std::nullopt;
+  return provider
+             ? provider->registrar_unsafe().FindBestAppWithUrlInScope(
+                   url, window_only
+                            ? web_app::WebAppFilter::OpensInDedicatedWindow()
+                            : web_app::WebAppFilter::InstalledInChrome())
+             : std::nullopt;
 }
 
 bool IsNonLocallyInstalledAppWithUrlInScope(Profile* profile, const GURL& url) {
   auto* provider = WebAppProvider::GetForWebApps(profile);
   return provider ? provider->registrar_unsafe()
-                        .IsNonLocallyInstalledAppWithUrlInScope(url)
+                        .FindBestAppWithUrlInScope(
+                            url, web_app::WebAppFilter::IsSuggestedApp())
+                        .has_value()
                   : false;
 }
 

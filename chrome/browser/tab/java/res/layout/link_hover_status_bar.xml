@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/status_bar_text"
+  android:layout_width="wrap_content"
+  android:layout_height="wrap_content"
+  android:layout_gravity="bottom|start"
+  android:layout_marginStart="@dimen/link_hover_status_bar_margin"
+  android:layout_marginEnd="@dimen/link_hover_status_bar_margin"
+  android:layout_marginBottom="@dimen/link_hover_status_bar_margin"
+  android:background="@drawable/link_status_bar_background"
+  android:padding="8dp"
+  android:textAppearance="@style/TextAppearance.TextMedium.Primary.OnAccent1"
+  android:visibility="gone"
+  android:maxLines="1"
+  android:maxWidth="@dimen/link_hover_status_bar_max_width"
+  android:ellipsize="end"
+  android:elevation="8dp" />

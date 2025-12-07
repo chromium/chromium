@@ -33,7 +33,7 @@ void InspectorContrastTest::SetUp() {
 }
 
 TEST_F(InspectorContrastTest, GetBackgroundColors) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id="target" style="color: white; background-color: red;">
       test
     </div>
@@ -49,7 +49,7 @@ TEST_F(InspectorContrastTest, GetBackgroundColors) {
 }
 
 TEST_F(InspectorContrastTest, GetBackgroundColorsNoText) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <!-- No text -->
     <div class="testCase noText">
       <div class="layer">
@@ -67,7 +67,7 @@ TEST_F(InspectorContrastTest, GetBackgroundColorsNoText) {
 }
 
 TEST_F(InspectorContrastTest, GetBackgroundColorsBgOpacity) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div style="position: relative">
       <div style="position: absolute; width: 100px; height: 100px; background-color: black; opacity: 0.1;"></div>
       <div id="target" style="position: absolute; width: 100px; height: 100px; color: black;">test</div>
@@ -79,12 +79,13 @@ TEST_F(InspectorContrastTest, GetBackgroundColorsBgOpacity) {
   float fg_opacity = 1.0f;
   Vector<Color> colors = contrast.GetBackgroundColors(target, &fg_opacity);
   EXPECT_EQ(1u, colors.size());
-  EXPECT_EQ("rgb(229, 229, 229)", colors.at(0).SerializeAsCSSColor());
+  EXPECT_EQ(Color::FromRGBAFloat(1.0f - 0.1f, 1.0f - 0.1f, 1.0f - 0.1f, 1.0f),
+            colors.at(0));
   EXPECT_EQ(1.0f, fg_opacity);
 }
 
 TEST_F(InspectorContrastTest, GetBackgroundColorsBgOpacityParent) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div style="background-color: black; opacity: 0.1;">
       <div id="target" style="color: black;">test</div>
     </div>
@@ -95,12 +96,13 @@ TEST_F(InspectorContrastTest, GetBackgroundColorsBgOpacityParent) {
   float fg_opacity = 1.0f;
   Vector<Color> colors = contrast.GetBackgroundColors(target, &fg_opacity);
   EXPECT_EQ(1u, colors.size());
-  EXPECT_EQ("rgb(229, 229, 229)", colors.at(0).SerializeAsCSSColor());
+  EXPECT_EQ(Color::FromRGBAFloat(1.0f - 0.1f, 1.0f - 0.1f, 1.0f - 0.1f, 1.0f),
+            colors.at(0));
   EXPECT_EQ(0.1f, fg_opacity);
 }
 
 TEST_F(InspectorContrastTest, GetBackgroundColorsElementWithOpacity) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id="target" style="opacity: 0.1; color: black;">test</div>
   )HTML");
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
@@ -114,7 +116,7 @@ TEST_F(InspectorContrastTest, GetBackgroundColorsElementWithOpacity) {
 }
 
 TEST_F(InspectorContrastTest, GetBackgroundColorsBgHidden) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div style="position: relative">
       <div style="position: absolute; width: 100px; height: 100px; background-color: black; visibility: hidden;"></div>
       <div id="target" style="position: absolute; width: 100px; height: 100px; color: black;">test</div>
@@ -131,7 +133,7 @@ TEST_F(InspectorContrastTest, GetBackgroundColorsBgHidden) {
 }
 
 TEST_F(InspectorContrastTest, GetBackgroundColorsWithOpacity) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div style="background-color: rgba(0,0,0,0.75);">
       <div style="background-color: rgba(0,0,0,0.75);">
         <div id="target" style="color: white; background-color: rgba(0,0,0,0.75);">
@@ -151,7 +153,7 @@ TEST_F(InspectorContrastTest, GetBackgroundColorsWithOpacity) {
 }
 
 TEST_F(InspectorContrastTest, GetContrast) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id="target1" style="color: red; background-color: red;">
       test
     </div>
@@ -179,7 +181,7 @@ TEST_F(InspectorContrastTest, GetContrast) {
 }
 
 TEST_F(InspectorContrastTest, GetContrastEmptyNodes) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id="target1" style="color: red; background-color: red;">	 </div>
     <div id="target2" style="color: red; background-color: red;"></div>
     <div id="target3" style="color: red; background-color: red;">
@@ -200,7 +202,7 @@ TEST_F(InspectorContrastTest, GetContrastEmptyNodes) {
 }
 
 TEST_F(InspectorContrastTest, GetContrastMultipleNodes) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id="target1" style="color: red; background-color: red;">
       A <i>B</i>
     </div>

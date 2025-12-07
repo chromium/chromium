@@ -13,7 +13,7 @@
 namespace nearby::share::metrics {
 
 DiscoveryMetricLogger::DiscoveryMetricLogger() = default;
-DiscoveryMetricLogger::~DiscoveryMetricLogger() {}
+DiscoveryMetricLogger::~DiscoveryMetricLogger() = default;
 
 void DiscoveryMetricLogger::OnShareTargetDiscoveryStarted() {
   discovery_start_ = base::TimeTicks::Now();
@@ -23,8 +23,6 @@ void DiscoveryMetricLogger::OnShareTargetDiscoveryStopped() {
   discovery_start_ = std::nullopt;
 }
 
-// TODO(b/266739400): Test this once there is Structured Metrics unittesting
-// infrastructure available.
 void DiscoveryMetricLogger::OnShareTargetAdded(
     const ShareTarget& share_target) {
   // Only log metrics when there is an active discovery session.

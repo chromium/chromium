@@ -118,13 +118,14 @@ public class PartialCustomTabFullSizeStrategyTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void create_fullSizeStrategyInPortrait_HeightNotSet_WidthSet() {
         when(mPCCTTestRule.mIntentData.getInitialActivityWidth()).thenReturn(300);
         mPCCTTestRule.configPortraitMode();
 
         PartialCustomTabFullSizeStrategy strategy = createPcctFullSizeStrategy();
 
-        assertEquals(Math.round(mPCCTTestRule.mCoordinatorLayout.getElevation()), 0);
+        assertEquals(0, Math.round(mPCCTTestRule.mCoordinatorLayout.getElevation()));
         assertEquals(
                 "Full-Size PCCT should be created",
                 PartialCustomTabBaseStrategy.PartialCustomTabType.FULL_SIZE,

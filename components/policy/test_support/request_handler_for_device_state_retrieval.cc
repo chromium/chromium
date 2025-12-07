@@ -4,6 +4,7 @@
 
 #include "components/policy/test_support/request_handler_for_device_state_retrieval.h"
 
+#include "base/strings/strcat.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/policy/test_support/client_storage.h"
@@ -37,10 +38,29 @@ RequestHandlerForDeviceStateRetrieval::HandleRequest(
     const HttpRequest& request) {
   em::DeviceManagementRequest device_management_request;
   device_management_request.ParseFromString(request.content);
-  const std::string& server_backed_state_key =
-      device_management_request.device_state_retrieval_request()
-          .server_backed_state_key();
 
+  const em::DeviceStateRetrievalRequest& state_request =
+      device_management_request.device_state_retrieval_request();
+
+  // Look for a match for ZTE first.
+  const PolicyStorage::InitialEnrollmentState* state =
+      policy_storage()->GetInitialEnrollmentState(base::StrCat(
+          {state_request.brand_code(), "_", state_request.serial_number()}));
+  if (state && state->initial_enrollment_mode !=
+                   em::DeviceInitialEnrollmentStateResponse::
+                       INITIAL_ENROLLMENT_MODE_NONE) {
+    em::DeviceManagementResponse device_management_response;
+    em::DeviceInitialEnrollmentStateResponse* state_response =
+        device_management_response.mutable_device_state_retrieval_response()
+            ->mutable_initial_state_response();
+    state_response->set_initial_enrollment_mode(state->initial_enrollment_mode);
+    state_response->set_management_domain(state->management_domain);
+    return CreateHttpResponse(net::HTTP_OK, device_management_response);
+  }
+
+  // Alternatively, look for a match for FRE.
+  const std::string& server_backed_state_key =
+      state_request.server_backed_state_key();
   em::DeviceManagementResponse device_management_response;
   if (client_storage()->LookupByStateKey(server_backed_state_key)) {
     em::DeviceStateRetrievalResponse* device_state_retrieval_response =
@@ -52,9 +72,13 @@ RequestHandlerForDeviceStateRetrieval::HandleRequest(
     }
     device_state_retrieval_response->set_restore_mode(
         device_state.restore_mode);
+  } else {
+    em::DeviceStateRetrievalResponse* device_state_retrieval_response =
+        device_management_response.mutable_device_state_retrieval_response();
+    device_state_retrieval_response->set_restore_mode(
+        em::DeviceStateRetrievalResponse::RESTORE_MODE_NONE);
   }
-  return CreateHttpResponse(net::HTTP_OK,
-                            device_management_response.SerializeAsString());
+  return CreateHttpResponse(net::HTTP_OK, device_management_response);
 }
 
 }  // namespace policy

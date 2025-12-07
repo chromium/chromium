@@ -39,16 +39,12 @@ class PageActionIconController : public PageActionIconViewObserver,
             PageActionIconContainer* icon_container);
 
   PageActionIconView* GetIconView(PageActionIconType type);
-  PageActionIconType GetIconType(PageActionIconView* view);
+  PageActionIconType GetIconType(const PageActionIconView* view) const;
 
   // Updates the visual state of all enabled page action icons.
   void UpdateAll();
 
   bool IsAnyIconVisible() const;
-
-  // Activates the first visible but inactive icon for accessibility. Returns
-  // whether any icons were activated.
-  bool ActivateFirstInactiveBubbleForAccessibility();
 
   // Update the icons' color.
   void SetIconColor(SkColor icon_color);
@@ -71,7 +67,9 @@ class PageActionIconController : public PageActionIconViewObserver,
       const;
 
  private:
-  using IconViews = base::flat_map<PageActionIconType, PageActionIconView*>;
+  using IconViews =
+      base::flat_map<PageActionIconType,
+                     raw_ptr<PageActionIconView, CtnExperimental>>;
 
   // PageActionIconViewObserver:
   void OnPageActionIconViewShown(PageActionIconView* view) override;

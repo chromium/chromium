@@ -15,12 +15,12 @@ UNKNOWN focusable
 ++++++++++++++++++UNKNOWN label='50'
 ++++++++++++++STATIC_TEXT label=':'
 ++++++++++++++++UNKNOWN label=':'
-++++++++++++++UNKNOWN label='Seconds' value='02'
+++++++++++++++UNKNOWN focusable label='Seconds' actions='{SET_VALUE}' value='02'
 ++++++++++++++++STATIC_TEXT label='02'
 ++++++++++++++++++UNKNOWN label='02'
 ++++++++++++++STATIC_TEXT label='.'
 ++++++++++++++++UNKNOWN label='.'
-++++++++++++++UNKNOWN label='Milliseconds' value='922'
+++++++++++++++UNKNOWN focusable label='Milliseconds' actions='{SET_VALUE}' value='922'
 ++++++++++++++++STATIC_TEXT label='922'
 ++++++++++++++++++UNKNOWN label='922'
 ++++++++++++++STATIC_TEXT label=' '
@@ -34,7 +34,7 @@ UNKNOWN focusable
 ++++++++++++UNKNOWN hidden
 ++++++++++++++UNKNOWN
 ++++++++++++++++UNKNOWN actions='{DEFAULT}'
-++++++++++++++++++UNKNOWN hidden
+++++++++++++++++++UNKNOWN
 ++++++++++++++++++++UNKNOWN focusable label='Hours' actions='{DEFAULT}'
 ++++++++++++++++++++++UNKNOWN focusable has_input_focus selected label='01' actions='{DEFAULT}'
 ++++++++++++++++++++++++STATIC_TEXT label='01'

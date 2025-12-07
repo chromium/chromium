@@ -6,7 +6,6 @@
 
 #include "base/functional/callback.h"
 #include "chrome/browser/apps/almanac_api_client/almanac_api_util.h"
-#include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 #include "chrome/browser/apps/app_discovery_service/almanac_api/launcher_app.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -53,15 +52,6 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       }
     )");
 
-// Builds the Launcher App request from the given device info.
-std::string BuildRequestBody(const DeviceInfo& info) {
-  proto::LauncherAppRequest request_proto;
-  *request_proto.mutable_device_context() = info.ToDeviceContext();
-  *request_proto.mutable_user_context() = info.ToUserContext();
-
-  return request_proto.SerializeAsString();
-}
-
 std::optional<proto::LauncherAppResponse> MakeResponseOptional(
     base::expected<proto::LauncherAppResponse, QueryError> query_response) {
   if (query_response.has_value()) {
@@ -72,13 +62,13 @@ std::optional<proto::LauncherAppResponse> MakeResponseOptional(
 
 }  // namespace
 
-void GetApps(
-    const DeviceInfo& device_info,
-    network::mojom::URLLoaderFactory& url_loader_factory,
-    GetAppsCallback callback) {
-  QueryAlmanacApi<proto::LauncherAppResponse>(
-      url_loader_factory, kTrafficAnnotation, BuildRequestBody(device_info),
-      kAlmanacLauncherAppEndpoint, kMaxResponseSizeInBytes,
+void GetApps(Profile* profile, GetAppsCallback callback) {
+  proto::LauncherAppRequest request_proto;
+
+  QueryAlmanacApiWithContext<proto::LauncherAppRequest,
+                             proto::LauncherAppResponse>(
+      profile, kAlmanacLauncherAppEndpoint, request_proto, kTrafficAnnotation,
+      kMaxResponseSizeInBytes,
       /*error_histogram_name=*/std::nullopt,
       base::BindOnce(&MakeResponseOptional).Then(std::move(callback)));
 }

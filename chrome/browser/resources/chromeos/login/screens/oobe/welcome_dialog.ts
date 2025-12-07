@@ -14,7 +14,7 @@ import '../../components/quick_start_entry_point.js';
 
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {assert} from '//resources/js/assert.js';
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeIconButton} from '../../components/buttons/oobe_icon_button.js';
@@ -81,6 +81,16 @@ export class OobeWelcomeDialog extends OobeWelcomeDialogBase {
         readOnly: true,
       },
 
+      isFjord: {
+        type: Boolean,
+        value: function() {
+          return (
+              loadTimeData.valueExists('deviceFlowType') &&
+              loadTimeData.getString('deviceFlowType') === 'fjord');
+        },
+        readOnly: true,
+      },
+
       isBootAnimation: {
         type: Boolean,
         value: function() {
@@ -113,7 +123,9 @@ export class OobeWelcomeDialog extends OobeWelcomeDialogBase {
   private currentLanguage: string;
   private timezoneButtonVisible: boolean;
   private debuggingLinkVisible: boolean;
+  override hidden: boolean;
   private isMeet: boolean;
+  private isFjord: boolean;
   private isBootAnimation: boolean;
   private isDeviceRequisitionConfigurable: boolean;
   private isOobeLoaded: boolean;
@@ -152,14 +164,12 @@ export class OobeWelcomeDialog extends OobeWelcomeDialogBase {
 
   override ready() {
     super.ready();
-    if (loadTimeData.getBoolean('isOobeLazyLoadingEnabled')) {
-      // Disable the 'Get Started' & 'Enable Debugging' button until OOBE is
-      // fully initialized.
-      this.getGetStartedButton().disabled = true;
-      this.getEnableDebuggingButton().disabled = true;
-      document.addEventListener(
-        'oobe-screens-loaded', this.enableButtonsWhenLoaded.bind(this));
-    }
+    // Disable the 'Get Started' & 'Enable Debugging' button until OOBE is
+    // fully initialized.
+    this.getGetStartedButton().disabled = true;
+    this.getEnableDebuggingButton().disabled = true;
+    document.addEventListener(
+      'oobe-screens-loaded', this.enableButtonsWhenLoaded.bind(this));
   }
 
   override onBeforeShow() {

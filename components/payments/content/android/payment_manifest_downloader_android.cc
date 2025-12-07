@@ -27,14 +27,13 @@ namespace {
 
 class DownloadCallback {
  public:
-  explicit DownloadCallback(
-      const base::android::JavaParamRef<jobject>& jcallback)
+  explicit DownloadCallback(const base::android::JavaRef<jobject>& jcallback)
       : jcallback_(jcallback) {}
 
   DownloadCallback(const DownloadCallback&) = delete;
   DownloadCallback& operator=(const DownloadCallback&) = delete;
 
-  ~DownloadCallback() {}
+  ~DownloadCallback() = default;
 
   void OnPaymentMethodManifestDownload(const GURL& url_after_redirects,
                                        const std::string& content,
@@ -49,7 +48,7 @@ class DownloadCallback {
       Java_ManifestDownloadCallback_onPaymentMethodManifestDownloadSuccess(
           env, jcallback_,
           url::GURLAndroid::FromNativeGURL(env, url_after_redirects),
-          url::Origin::Create(url_after_redirects).ToJavaObject(),
+          url::Origin::Create(url_after_redirects).ToJavaObject(env),
           base::android::ConvertUTF8ToJavaString(env, content));
     }
   }
@@ -82,16 +81,15 @@ PaymentManifestDownloaderAndroid::PaymentManifestDownloaderAndroid(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : downloader_(std::move(log), csp_checker, std::move(url_loader_factory)) {}
 
-PaymentManifestDownloaderAndroid::~PaymentManifestDownloaderAndroid() {}
+PaymentManifestDownloaderAndroid::~PaymentManifestDownloaderAndroid() = default;
 
 void PaymentManifestDownloaderAndroid::DownloadPaymentMethodManifest(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
-    const base::android::JavaParamRef<jobject>& jmerchant_origin,
-    const base::android::JavaParamRef<jobject>& jurl,
-    const base::android::JavaParamRef<jobject>& jcallback) {
+    const base::android::JavaRef<jobject>& jmerchant_origin,
+    const base::android::JavaRef<jobject>& jurl,
+    const base::android::JavaRef<jobject>& jcallback) {
   downloader_.DownloadPaymentMethodManifest(
-      url::Origin::FromJavaObject(jmerchant_origin),
+      url::Origin::FromJavaObject(env, jmerchant_origin),
       url::GURLAndroid::ToNativeGURL(env, jurl),
       base::BindOnce(&DownloadCallback::OnPaymentMethodManifestDownload,
                      std::make_unique<DownloadCallback>(jcallback)));
@@ -99,20 +97,17 @@ void PaymentManifestDownloaderAndroid::DownloadPaymentMethodManifest(
 
 void PaymentManifestDownloaderAndroid::DownloadWebAppManifest(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
-    const base::android::JavaParamRef<jobject>& jpayment_method_manifest_origin,
-    const base::android::JavaParamRef<jobject>& jurl,
-    const base::android::JavaParamRef<jobject>& jcallback) {
+    const base::android::JavaRef<jobject>& jpayment_method_manifest_origin,
+    const base::android::JavaRef<jobject>& jurl,
+    const base::android::JavaRef<jobject>& jcallback) {
   downloader_.DownloadWebAppManifest(
-      url::Origin::FromJavaObject(jpayment_method_manifest_origin),
+      url::Origin::FromJavaObject(env, jpayment_method_manifest_origin),
       url::GURLAndroid::ToNativeGURL(env, jurl),
       base::BindOnce(&DownloadCallback::OnWebAppManifestDownload,
                      std::make_unique<DownloadCallback>(jcallback)));
 }
 
-void PaymentManifestDownloaderAndroid::Destroy(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller) {
+void PaymentManifestDownloaderAndroid::Destroy(JNIEnv* env) {
   delete this;
 }
 
@@ -120,7 +115,7 @@ void PaymentManifestDownloaderAndroid::Destroy(
 // Caller owns the result. Returns 0 on error.
 static jlong JNI_PaymentManifestDownloader_Init(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jweb_contents,
+    const base::android::JavaRef<jobject>& jweb_contents,
     jlong native_csp_checker_android) {
   if (!jweb_contents || !native_csp_checker_android)
     return 0;
@@ -140,8 +135,10 @@ static jlong JNI_PaymentManifestDownloader_Init(
 
 // Static free function declared and called directly from java.
 static base::android::ScopedJavaLocalRef<jobject>
-JNI_PaymentManifestDownloader_CreateOpaqueOriginForTest(JNIEnv* unused_env) {
-  return url::Origin().ToJavaObject();
+JNI_PaymentManifestDownloader_CreateOpaqueOriginForTest(JNIEnv* env) {
+  return url::Origin().ToJavaObject(env);
 }
 
 }  // namespace payments
+
+DEFINE_JNI(PaymentManifestDownloader)

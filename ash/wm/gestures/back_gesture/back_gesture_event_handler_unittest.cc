@@ -26,6 +26,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "ash/wm/window_pin_util.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
@@ -71,7 +72,8 @@ class BackGestureEventHandlerTest : public AshTestBase {
       delegate = std::make_unique<TestShellDelegate>();
       delegate->SetCanGoBack(false);
     }
-    AshTestBase::SetUp(std::move(delegate));
+    set_shell_delegate(std::move(delegate));
+    AshTestBase::SetUp();
 
     RecreateTopWindow(chromeos::AppType::BROWSER);
     TabletModeControllerTestApi().EnterTabletMode();
@@ -285,7 +287,7 @@ TEST_F(BackGestureEventHandlerTest, GoBackInHomeScreenPage) {
 
 TEST_F(BackGestureEventHandlerTest, CancelOnScreenRotation) {
   UpdateDisplay("807x407");
-  int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
   display::test::ScopedSetInternalDisplayId set_internal(display_manager,
                                                          display_id);
@@ -393,7 +395,7 @@ TEST_F(BackGestureEventHandlerTest, DragFromSplitViewDivider) {
 // view that is underneath the finger in different screen orientations. And that
 // the snapped window that is underneath should go back to the previous page.
 TEST_F(BackGestureEventHandlerTest, BackGestureInSplitViewMode) {
-  int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
   display::test::ScopedSetInternalDisplayId set_internal(display_manager,
                                                          display_id);
@@ -967,6 +969,25 @@ TEST_F(BackGestureEventHandlerTestCantGoBack, NonMinimizeableApp) {
   // Make the top window non minimizeable.
   top_window()->SetProperty(aura::client::kResizeBehaviorKey,
                             aura::client::kResizeBehaviorNone);
+  GenerateBackSequence();
+  EXPECT_TRUE(WindowState::Get(top_window())->IsMinimized());
+}
+
+TEST_F(BackGestureEventHandlerTestCantGoBack, LockedFullscreen) {
+  RecreateTopWindow(chromeos::AppType::SYSTEM_APP);
+  PinWindow(top_window(), /*trusted=*/true);
+  GenerateBackSequence();
+  ASSERT_FALSE(WindowState::Get(top_window())->IsMinimized());
+
+  // Verify that the back gesture will minimize the window once it is unpinned.
+  UnpinWindow(top_window());
+  GenerateBackSequence();
+  EXPECT_TRUE(WindowState::Get(top_window())->IsMinimized());
+}
+
+TEST_F(BackGestureEventHandlerTestCantGoBack, PinnedWindow) {
+  RecreateTopWindow(chromeos::AppType::SYSTEM_APP);
+  PinWindow(top_window(), /*trusted=*/false);
   GenerateBackSequence();
   EXPECT_TRUE(WindowState::Get(top_window())->IsMinimized());
 }

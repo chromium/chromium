@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.search_resumption;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
+@NullMarked
 interface SearchResumptionModuleProperties {
     WritableBooleanPropertyKey IS_VISIBLE = new WritableBooleanPropertyKey();
     WritableObjectPropertyKey<Callback<Boolean>> EXPAND_COLLAPSE_CLICK_CALLBACK =

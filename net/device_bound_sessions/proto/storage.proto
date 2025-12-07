@@ -1,0 +1,112 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package net.device_bound_sessions.proto;
+
+option optimize_for = LITE_RUNTIME;
+
+// Protobuf messages that represent a Device Bound Session Credentials
+// (DBSC) session's state that can be saved to disk.
+
+// Specifies whether a URL request should be deferred or not based
+// on matching a specific rule.
+// The numbering is different compared to the
+// `net::device_bound_sessions::SessionInclusionRules::InclusionResult`
+// enum since the style guide asks to use UNSPECIFIED for the zero value
+// enum (https://protobuf.dev/programming-guides/style/#enums).
+enum RuleType {
+  RULE_TYPE_UNSPECIFIED = 0;
+  EXCLUDE = 1;
+  INCLUDE = 2;
+}
+
+// A rule that determines whether a URL request should be deferred.
+// See declaration of `SessionInclusionRules::UrlRule` in
+// //net/device_bound_sessions/session_inclusion_rules.cc for more details.
+message UrlRule {
+  // Whether the request should be included/excluded if there is a match.
+  optional RuleType rule_type = 1;
+  // Domain or pattern the URL must match.
+  optional string host_pattern = 2;
+  // Prefix consisting of path components that the URL must match.
+  optional string path_prefix = 3;
+}
+
+// Represents a set of rules that defines which URL requests may
+// potentially be deferred on account of an active DBSC session.
+// See //net/device_bound_sessions/session_inclusion_rules.h for
+// more details.
+message SessionInclusionRules {
+  // The origin that created/set the DBSC session.
+  optional string origin = 1;
+  // Whether the rules should apply to the whole site.
+  optional bool do_include_site = 2;
+  // A list of rules that add to the basic include rule
+  // (specified by the origin or site). These rules may specify
+  // inclusion or exclusion for URLs that match.
+  repeated UrlRule url_rules = 3;
+}
+
+// The numbering is different compared to the `net::CookieSameSite` enum since
+// the style guide asks to use UNSPECIFIED for the zero value enum
+// (https://protobuf.dev/programming-guides/style/#enums).
+enum CookieSameSite {
+  COOKIE_SAME_SITE_UNSPECIFIED = 0;
+  NO_RESTRICTION = 1;
+  LAX_MODE = 2;
+  STRICT_MODE = 3;
+}
+
+enum CookieSourceScheme {
+  UNSET = 0;
+  NON_SECURE = 1;
+  SECURE = 2;
+}
+
+// Represents the need for a certain cookie to be present.
+// See //net/device_bound_sessions/cookie_craving.h for details.
+message CookieCraving {
+  optional string name = 1;
+  optional string domain = 2;
+  optional string path = 3;
+  optional bool secure = 4;
+  optional bool httponly = 5;
+  optional int32 source_port = 6;
+  optional int64 creation_time = 7;
+  optional CookieSameSite same_site = 8;
+  optional CookieSourceScheme source_scheme = 9;
+  reserved 10;
+}
+
+// A Session represents persistent state scoped to a single DBSC session.
+// See //net/device_bound_sessions/session.h for details.
+message Session {
+  // The unique server-issued session identifier.
+  optional string id = 1;
+  // The URL to use for refresh requests on behalf of this session.
+  optional string refresh_url = 2;
+  // If this session should defer requests when cookies are not present.
+  optional bool should_defer_when_expired = 3;
+  // Expiry date for session (encoded as microseconds since the Windows epoch).
+  optional int64 expiry_time = 4;
+  // Wrapped binding key used for this session.
+  optional bytes wrapped_key = 5;
+  // Session inclusion rules.
+  optional SessionInclusionRules session_inclusion_rules = 6;
+  // Set of credentials required by this session.
+  repeated CookieCraving cookie_cravings = 7;
+  // Creation date for session (encoded as microseconds since the Windows
+  // epoch).
+  optional int64 creation_time = 8;
+  // Initiator sites allowed to trigger refresh from third-party contexts
+  repeated string allowed_refresh_initiators = 9;
+}
+
+// All the sessions associated with a site (eTLD+1) and it's subdomains.
+message SiteSessions {
+  // The key is a session id string.
+  map<string, Session> sessions = 1;
+}

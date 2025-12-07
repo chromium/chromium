@@ -6,7 +6,7 @@
 #import <XCTest/XCTest.h>
 
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/ntp_home_constant.h"
 #import "ios/testing/system_alert_handler.h"
 
 using base::test::ios::kWaitForPageLoadTimeout;
@@ -45,7 +45,7 @@ using base::test::ios::kWaitForUIElementTimeout;
   XCTAssert(
       // verify chrome is not showing offline dino page
       ![[[app.webViews.firstMatch descendantsMatchingType:XCUIElementTypeAny]
-            matchingIdentifier:@"Dino game, play"]
+            matchingIdentifier:@"Dino game, tap to play"]
               .firstMatch
           waitForExistenceWithTimeout:kWaitForPageLoadTimeout.InSecondsF()],
       @"Showing chrome dino page!");

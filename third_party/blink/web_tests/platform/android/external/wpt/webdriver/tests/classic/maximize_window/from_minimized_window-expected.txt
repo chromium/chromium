@@ -1,0 +1,5 @@
+This is a wdspec test.
+[FAIL] test_restore_from_minimized
+  webdriver.error.UnsupportedOperationException: unsupported operation (500): unsupported operation: Unable to minimize window on Android platform
+Harness: the test ran to completion.
+

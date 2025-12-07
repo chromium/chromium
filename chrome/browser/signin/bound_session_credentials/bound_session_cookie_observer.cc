@@ -11,7 +11,7 @@ namespace {
 std::optional<const net::CanonicalCookie> GetCookie(
     const net::CookieAccessResultList& cookie_list,
     const std::string& cookie_name) {
-  auto it = base::ranges::find_if(
+  auto it = std::ranges::find_if(
       cookie_list,
       [&cookie_name](
           const net::CookieWithAccessResult& cookie_with_access_result) {
@@ -68,10 +68,11 @@ void BoundSessionCookieObserver::OnGetCookieList(
 void BoundSessionCookieObserver::OnCookieChange(
     const net::CookieChangeInfo& change) {
   DCHECK_EQ(change.cookie.Name(), cookie_name_);
-  DCHECK(change.cookie.IsDomainMatch(url_.host()));
+  DCHECK(change.cookie.IsDomainMatch(url_.GetHost()));
   switch (change.cause) {
     // The cookie was inserted.
     case net::CookieChangeCause::INSERTED:
+    case net::CookieChangeCause::INSERTED_NO_VALUE_CHANGE_OVERWRITE:
       callback_.Run(cookie_name_, change.cookie.ExpiryDate());
       break;
 
@@ -80,6 +81,11 @@ void BoundSessionCookieObserver::OnCookieChange(
     // delete + set operation, so we get an extra notification.
     case net::CookieChangeCause::OVERWRITE:
       // Skip the notification as `change.value` contains the old cookie value.
+      break;
+
+    // This can only happen if the expiration of the cookie was not updated in
+    // the change.
+    case net::CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE:
       break;
 
     // Cookie removed/expired.

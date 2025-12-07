@@ -6,7 +6,7 @@
 
 // https://streams.spec.whatwg.org/#default-writer-class-definition
 [
-    Exposed=(Window,Worker,Worklet)
+    Exposed=*
 ] interface WritableStreamDefaultWriter {
     [CallWith=ScriptState, RaisesException] constructor(WritableStream stream);
     [CallWith=ScriptState] readonly attribute Promise<undefined>

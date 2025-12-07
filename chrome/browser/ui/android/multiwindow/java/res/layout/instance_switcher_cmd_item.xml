@@ -43,7 +43,6 @@ found in the LICENSE file.
 
     <TextView
         android:id="@+id/max_info"
-        android:text="@string/max_number_of_windows"
         android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

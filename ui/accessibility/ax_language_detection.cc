@@ -285,7 +285,8 @@ void AXLanguageDetectionManager::DetectLanguagesForNode(AXNode* node) {
   // TODO(chrishall): implement strategy for nodes which are too small to get
   // reliable language detection results. Consider combination of
   // concatenation and bubbling up results.
-  auto text = node->GetStringAttribute(ax::mojom::StringAttribute::kName);
+  const auto& text =
+      node->GetStringAttribute(ax::mojom::StringAttribute::kName);
 
   // FindTopNMostFreqLangs() will pad the results with
   // |NNetLanguageIdentifier::kUnknown| in order to reach the requested number
@@ -418,7 +419,7 @@ AXLanguageDetectionManager::GetLanguageAnnotationForStringAttribute(
   if (!node.HasStringAttribute(attr))
     return language_annotation;
 
-  std::string attr_value = node.GetStringAttribute(attr);
+  const std::string& attr_value = node.GetStringAttribute(attr);
 
   // Use author-provided language if present.
   if (node.HasStringAttribute(ax::mojom::StringAttribute::kLanguage)) {
@@ -463,22 +464,19 @@ AXLanguageDetectionManager::GetLanguageAnnotationForStringAttribute(
   return language_annotation;
 }
 
-AXLanguageDetectionObserver::AXLanguageDetectionObserver(AXTree* tree)
-    : tree_(tree) {
+AXLanguageDetectionObserver::AXLanguageDetectionObserver(AXTree* tree) {
   // We expect the feature flag to have be checked before this Observer is
   // constructed, this should have been checked by
   // RegisterLanguageDetectionObserver.
   DCHECK(AXLanguageDetectionManager::IsDynamicLanguageDetectionEnabled());
 
-  tree_->AddObserver(this);
+  observation_.Observe(tree);
 }
 
-AXLanguageDetectionObserver::~AXLanguageDetectionObserver() {
-  tree_->RemoveObserver(this);
-}
+AXLanguageDetectionObserver::~AXLanguageDetectionObserver() = default;
 
 void AXLanguageDetectionObserver::OnAtomicUpdateFinished(
-    ui::AXTree* tree,
+    AXTree* tree,
     bool root_changed,
     const std::vector<Change>& changes) {
   // TODO(chrishall): We likely want to re-consider updating or resetting

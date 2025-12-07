@@ -51,9 +51,10 @@ TransceiverStateSurfacer::~TransceiverStateSurfacer() {
 }
 
 void TransceiverStateSurfacer::Initialize(
-    rtc::scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection,
+    webrtc::scoped_refptr<webrtc::PeerConnectionInterface>
+        native_peer_connection,
     scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_adapter_map,
-    std::vector<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>>
+    std::vector<webrtc::scoped_refptr<webrtc::RtpTransceiverInterface>>
         webrtc_transceivers) {
   DCHECK(signaling_task_runner_->BelongsToCurrentThread());
   DCHECK(!is_initialized_);

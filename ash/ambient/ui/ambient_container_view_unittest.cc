@@ -22,7 +22,7 @@ TEST_F(AmbientContainerViewTest, WindowFullscreenSize) {
     const views::Widget* widget = container->GetWidget();
 
     gfx::Rect root_window_bounds =
-        display::Screen::GetScreen()
+        display::Screen::Get()
             ->GetDisplayNearestWindow(
                 widget->GetNativeWindow()->GetRootWindow())
             .bounds();

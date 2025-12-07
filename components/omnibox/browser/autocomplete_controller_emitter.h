@@ -10,10 +10,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 
-#if !BUILDFLAG(IS_IOS)
-#include "content/public/browser/browser_context.h"
-#endif  // !BUILDFLAG(IS_IOS)
-
 class AutocompleteInput;
 class AutocompleteResult;
 
@@ -24,11 +20,6 @@ class AutocompleteResult;
 class AutocompleteControllerEmitter : public KeyedService,
                                       public AutocompleteController::Observer {
  public:
-#if !BUILDFLAG(IS_IOS)
-  static AutocompleteControllerEmitter* GetForBrowserContext(
-      content::BrowserContext* browser_context);
-#endif  // !BUILDFLAG(IS_IOS)
-
   AutocompleteControllerEmitter();
   ~AutocompleteControllerEmitter() override;
   AutocompleteControllerEmitter(const AutocompleteControllerEmitter&) = delete;
@@ -46,10 +37,6 @@ class AutocompleteControllerEmitter : public KeyedService,
                        bool default_match_changed) override;
   void OnMlScored(AutocompleteController* controller,
                   const AutocompleteResult& result) override;
-
-#if !BUILDFLAG(IS_IOS)
-  static void EnsureFactoryBuilt();
-#endif  // !BUILDFLAG(IS_IOS)
 
  private:
   base::ObserverList<AutocompleteController::Observer> observers_;

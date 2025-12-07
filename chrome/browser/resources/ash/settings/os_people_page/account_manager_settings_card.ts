@@ -24,7 +24,7 @@ import {assertExists} from '../assert_extras.js';
 import {isChild} from '../common/load_time_booleans.js';
 import {ParentalControlsBrowserProxyImpl} from '../parental_controls_page/parental_controls_browser_proxy.js';
 
-import {Account} from './account_manager_browser_proxy.js';
+import type {Account} from './account_manager_browser_proxy.js';
 import {getTemplate} from './account_manager_settings_card.html.js';
 
 const AccountManagerSettingsCardElementBase =
@@ -91,6 +91,7 @@ export class AccountManagerSettingsCardElement extends
   private isChildUser_: boolean;
   private isDeviceAccountManaged_: boolean;
   private isSecondaryGoogleAccountSigninAllowed_: boolean;
+  private managedByIcon_: string;
 
   private onManagedIconClick_(): void {
     if (this.isChildUser_) {

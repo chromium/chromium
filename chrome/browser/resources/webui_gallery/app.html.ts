@@ -21,7 +21,7 @@ export function getHtml(this: WebuiGalleryAppElement) {
 
   <div class="cr-row">
     <span id="toggleDescription">Follow color pipeline</span>
-    <cr-toggle aria-labeledby="toggleDescription"
+    <cr-toggle aria-labelledby="toggleDescription"
         @change="${this.onFollowColorPipelineChange_}">
     </cr-toggle>
   </div>

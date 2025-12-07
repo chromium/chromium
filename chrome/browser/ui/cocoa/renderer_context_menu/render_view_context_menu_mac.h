@@ -8,7 +8,7 @@
 #import <Cocoa/Cocoa.h>
 
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
-#include "ui/base/cocoa/text_services_context_menu.h"
+#include "ui/menus/cocoa/text_services_context_menu.h"
 
 // Mac implementation of the context menu display code. Uses a Cocoa NSMenu
 // to display the context menu. Internally uses an obj-c object as the
@@ -32,7 +32,7 @@ class RenderViewContextMenuMac : public RenderViewContextMenu,
   bool IsCommandIdEnabled(int command_id) const override;
 
   // TextServicesContextMenu::Delegate:
-  std::u16string GetSelectedText() const override;
+  std::u16string_view GetSelectedText() const override;
   bool IsTextDirectionEnabled(
       base::i18n::TextDirection direction) const override;
   bool IsTextDirectionChecked(

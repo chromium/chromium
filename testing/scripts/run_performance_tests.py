@@ -31,7 +31,7 @@ could be histogram or graph json), and test_results.json.
 TESTING:
 To test changes to this script, please run unit tests:
 $ cd testing/scripts
-$ python3 -m unittest run_performance_tests_unittest.py
+$ vpython3 run_performance_tests_unittest.py
 
 Run end-to-end tests:
 $ cd tools/perf
@@ -39,19 +39,28 @@ $ ./run_tests ScriptsSmokeTest.testRunPerformanceTests
 """
 
 import argparse
-from collections import OrderedDict
+from collections import deque, OrderedDict
+import datetime
 import json
+import logging
 import os
 import pathlib
+import shlex
 import shutil
+import subprocess
 import sys
 import time
 import tempfile
 import traceback
 
-import six
+if sys.platform == 'darwin':
+  import plistlib
 
+# vpython-provided modules.
+# pylint: disable=import-error
+import six
 import requests
+# pylint: enable=import-error
 
 import common
 
@@ -68,11 +77,7 @@ else:
   print('Optional crossbench_result_converter not available.')
 import generate_legacy_perf_dashboard_json
 from core import path_util
-
-PERF_CORE_DIR = PERF_DIR / 'core'
-sys.path.append(str(PERF_CORE_DIR))
-# //tools/perf/core imports.
-import results_merger
+from core import results_merger
 
 sys.path.append(str(CHROMIUM_SRC_DIR / 'testing'))
 # //testing imports.
@@ -88,6 +93,7 @@ if TELEMETRY_DIR.exists() and (CATAPULT_DIR / 'common').exists():
   sys.path.append(str(TELEMETRY_DIR))
   from telemetry.internal.browser import browser_finder
   from telemetry.internal.browser import browser_options
+  from telemetry.core import util
   from telemetry.internal.util import binary_manager
 else:
   print('Optional telemetry library not available.')
@@ -95,8 +101,16 @@ else:
 SHARD_MAPS_DIR = CHROMIUM_SRC_DIR / 'tools/perf/core/shard_maps'
 CROSSBENCH_TOOL = CHROMIUM_SRC_DIR / 'third_party/crossbench/cb.py'
 ADB_TOOL = THIRD_PARTY_DIR / 'android_sdk/public/platform-tools/adb'
+BUNDLETOOL = THIRD_PARTY_DIR / 'android_build_tools/bundletool/cipd/bundletool.jar'  # pylint: disable=line-too-long
+GSUTIL_DIR = THIRD_PARTY_DIR / 'catapult/third_party/gsutil'
 PAGE_SETS_DATA = CHROMIUM_SRC_DIR / 'tools/perf/page_sets/data'
 PERF_TOOLS = ['benchmarks', 'executables', 'crossbench']
+
+# Constants for CBB support.
+# CBB uses a pseudo benchmark that retrieves the versions of alternative
+# browsers (Edge on Windows, or Safari on Mac) installed on the device.
+CBB_BROWSER_VERSIONS_BENCHMARK = 'browser_versions'
+CBB_BROWSER_VERSIONS_FILENAME = 'browser_versions.json'
 
 # See https://crbug.com/923564.
 # We want to switch over to using histograms for everything, but converting from
@@ -145,6 +159,8 @@ class OutputFilePaths(object):
     self.benchmark_path = os.path.join(isolated_out_dir, perf_test_name)
 
   def SetUp(self):
+    if os.path.exists(self.benchmark_path):
+      shutil.rmtree(self.benchmark_path)
     os.makedirs(self.benchmark_path)
     return self
 
@@ -171,12 +187,26 @@ class OutputFilePaths(object):
     return os.path.join(self.benchmark_path, 'perf_results.csv')
 
 
+def print_start(step, attempt=None):
+  if attempt is None:
+    attempt_str = ''
+  else:
+    attempt_str = f' (attempt #{attempt})'
+  print(f'\n### {step}{attempt_str} {datetime.datetime.now()} ###')
+
+
 def print_duration(step, start):
   print('Duration of %s: %d seconds' % (step, time.time() - start))
 
 
 def IsWindows():
   return sys.platform == 'cygwin' or sys.platform.startswith('win')
+
+
+def get_abs_user_path(user_path):
+  if user_path is None:
+    return None
+  return os.path.abspath(os.path.expanduser(user_path))
 
 
 class GtestCommandGenerator(object):
@@ -202,6 +232,10 @@ class GtestCommandGenerator(object):
             self._generate_also_run_disabled_tests_args() +
             self._generate_output_args(output_dir) +
             self._generate_shard_args() + self._get_additional_flags())
+
+  @property
+  def ignore_shard_env_vars(self):
+    return self._ignore_shard_env_vars
 
   @property
   def executable_name(self):
@@ -235,24 +269,28 @@ class GtestCommandGenerator(object):
       return ['--gtest_filter=' + ':'.join(filter_list)]
     return []
 
+  # pylint: disable=no-self-use
   def _generate_repeat_args(self):
     # TODO(crbug.com/40608634): Support --isolated-script-test-repeat.
     return []
+  # pylint: enable=no-self-use
 
+  # pylint: disable=no-self-use
   def _generate_also_run_disabled_tests_args(self):
     # TODO(crbug.com/40608634): Support
     # --isolated-script-test-also-run-disabled-tests.
     return []
+  # pylint: enable=no-self-use
 
   def _generate_output_args(self, output_dir):
     output_args = []
     if self._options.use_gtest_benchmark_script:
       output_args.append('--output-dir=' + output_dir)
     # These flags are to make sure that test output perf metrics in the log.
-    if not '--verbose' in self._get_additional_flags():
+    if '--verbose' not in self._get_additional_flags():
       output_args.append('--verbose')
-    if (not '--test-launcher-print-test-stdio=always'
-        in self._get_additional_flags()):
+    if ('--test-launcher-print-test-stdio=always'
+        not in self._get_additional_flags()):
       output_args.append('--test-launcher-print-test-stdio=always')
     return output_args
 
@@ -299,6 +337,12 @@ def upload_simple_test_results(return_code, benchmark_name):
   else:
     summary = '<p>Benchmark passed</p>'
 
+  struct_test_dict = {
+      'coarseName': None,
+      'fineName': None,
+      'caseNameComponents': [benchmark_name],
+  }
+
   result_json = {
       'testResults': [{
           'testId': benchmark_name,
@@ -309,6 +353,7 @@ def upload_simple_test_results(return_code, benchmark_name):
               'key': 'exit_code',
               'value': str(return_code)
           }],
+          'testIdStructured': struct_test_dict,
       }]
   }
 
@@ -338,7 +383,7 @@ def execute_gtest_perf_test(command_generator,
   # added by _generate_shard_args() and will still use the values of
   # GTEST_SHARD_INDEX and GTEST_TOTAL_SHARDS to run part of the tests.
   # Removing those environment variables as a workaround.
-  if command_generator._ignore_shard_env_vars:
+  if command_generator.ignore_shard_env_vars:
     if 'GTEST_TOTAL_SHARDS' in env:
       env.pop('GTEST_TOTAL_SHARDS')
     if 'GTEST_SHARD_INDEX' in env:
@@ -374,7 +419,7 @@ def execute_gtest_perf_test(command_generator,
           output_paths.logs)
       with open(output_paths.perf_results, 'w') as fh:
         fh.write(graph_json_string)
-  except Exception:
+  except Exception:  # pylint: disable=broad-except
     traceback.print_exc()
     return_code = 1
   if os.path.exists(output_paths.perf_results):
@@ -384,6 +429,7 @@ def execute_gtest_perf_test(command_generator,
       # the actual executable name.
       executable_name = executable_name[8:]
     if executable_name in GTEST_CONVERSION_WHITELIST:
+      # //third_party/catapult/tracing imports.
       with path_util.SysPath(path_util.GetTracingDir()):
         # pylint: disable=no-name-in-module,import-outside-toplevel
         from tracing.value import gtest_json_converter
@@ -498,7 +544,7 @@ class TelemetryCommandGenerator(object):
         selection_args.append('--story-shard-end-index=%d' %
                               (self._story_selection_config['end']))
       if 'sections' in self._story_selection_config:
-        range_string = self._generate_story_index_ranges(
+        range_string = _generate_story_index_ranges(
             self._story_selection_config['sections'])
         if range_string:
           selection_args.append('--story-shard-indexes=%s' % range_string)
@@ -512,26 +558,6 @@ class TelemetryCommandGenerator(object):
           self._options.isolated_script_test_output)
       return ['--logs-dir', os.path.join(isolated_out_dir, self.benchmark)]
     return []
-
-  def _generate_story_index_ranges(self, sections):
-    range_string = ''
-    for section in sections:
-      begin = section.get('begin', '')
-      end = section.get('end', '')
-      # If there only one story in the range, we only keep its index.
-      # In general, we expect either begin or end, or both.
-      if begin != '' and end != '' and end - begin == 1:
-        new_range = str(begin)
-      elif begin != '' or end != '':
-        new_range = '%s-%s' % (str(begin), str(end))
-      else:
-        raise ValueError('Index ranges in "sections" in shard map should have'
-                         'at least one of "begin" and "end": %s' % str(section))
-      if range_string:
-        range_string += ',%s' % new_range
-      else:
-        range_string = new_range
-    return range_string
 
   def _generate_reference_build_args(self):
     if self._is_reference:
@@ -547,6 +573,27 @@ class TelemetryCommandGenerator(object):
     if self._options.results_label:
       return ['--results-label=' + self._options.results_label]
     return []
+
+
+def _generate_story_index_ranges(sections):
+  range_string = ''
+  for section in sections:
+    begin = section.get('begin', '')
+    end = section.get('end', '')
+    # If there only one story in the range, we only keep its index.
+    # In general, we expect either begin or end, or both.
+    if begin != '' and end != '' and end - begin == 1:
+      new_range = str(begin)
+    elif begin != '' or end != '':
+      new_range = '%s-%s' % (str(begin), str(end))
+    else:
+      raise ValueError('Index ranges in "sections" in shard map should have'
+                       'at least one of "begin" and "end": %s' % str(section))
+    if range_string:
+      range_string += ',%s' % new_range
+    else:
+      range_string = new_range
+  return range_string
 
 
 def execute_telemetry_benchmark(command_generator,
@@ -584,12 +631,20 @@ def execute_telemetry_benchmark(command_generator,
 
     if not no_output_conversion:
       expected_perf_filename = os.path.join(temp_dir, 'histograms.json')
-      shutil.move(expected_perf_filename, output_paths.perf_results)
+      if os.path.exists(expected_perf_filename):
+        shutil.move(expected_perf_filename, output_paths.perf_results)
+      elif return_code:
+        print(f'The benchmark failed with status code {return_code}, '
+              'and did not produce perf results output. '
+              'Check benchmark output for more details.')
+      else:
+        print('The benchmark returned a success status code, '
+              'but did not product perf results output.')
 
     csv_file_path = os.path.join(temp_dir, 'results.csv')
     if os.path.isfile(csv_file_path):
       shutil.move(csv_file_path, output_paths.csv_perf_results)
-  except Exception:
+  except Exception:  # pylint: disable=broad-except
     print('The following exception may have prevented the code from '
           'outputing structured test results and perf results output:')
     print(traceback.format_exc())
@@ -662,6 +717,12 @@ def copy_map_file_to_out_dir(map_file, isolated_out_dir):
                   os.path.join(isolated_out_dir, 'benchmarks_shard_map.json'))
 
 
+def fetch_binary_path(dependency_name, os_name='linux', arch='x86_64'):
+  if binary_manager.NeedsInit():
+    binary_manager.InitDependencyManager(None)
+  return binary_manager.FetchPath(dependency_name, os_name=os_name, arch=arch)
+
+
 class CrossbenchTest(object):
   """This class is for running Crossbench tests.
 
@@ -685,32 +746,157 @@ class CrossbenchTest(object):
   EXECUTABLE = 'cb.py'
   OUTDIR = '--out-dir=%s/output'
   CHROME_BROWSER = '--browser=%s'
-  ANDROID_HJSON = '{browser:"%s", driver:{type:"Android", adb_bin:"%s"}}'
+  ANDROID_HJSON = ('{browser:"%s", driver:{type:"Android", '
+                   f'adb_bin:"{ADB_TOOL}", '
+                   f'bundletool:"{BUNDLETOOL}'
+                   '"}}')
   STORY_LABEL = 'default'
+  BENCHMARK_FILESERVERS = {
+      'speedometer_3.1': 'third_party/speedometer/v3.1',
+      'speedometer_3.0': 'third_party/speedometer/v3.0',
+      'speedometer_3': 'third_party/speedometer/v3.1',
+      'sp3': 'third_party/speedometer/v3.1',
+      'speedometer_2.1': 'third_party/speedometer/v2.1',
+      'speedometer_2.0': 'third_party/speedometer/v2.0',
+      'speedometer_2': 'third_party/speedometer/v2.1',
+      'jetstream_2.2': 'third_party/jetstream/v2.2',
+      'jetstream_2': 'third_party/jetstream/v2.2',
+      'jetstream_main': 'third_party/jetstream/main',
+      'motionmark_1.3': 'third_party/blink/perf_tests/MotionMark'
+  }
 
   def __init__(self, options, isolated_out_dir):
     self.options = options
+    self._parse_arguments()
     self.isolated_out_dir = isolated_out_dir
-    self.network = []
-    browser_arg = self._get_browser_arg(options.passthrough_args)
-    self.is_android = self._is_android(browser_arg)
-    self._find_browser(browser_arg)
-    self.driver_path_arg = self._find_chromedriver(browser_arg)
+    self.is_chrome = (not self.cb_options.official_browser
+                      or self.cb_options.official_browser.startswith('chrome'))
+    self.env = self._create_env_arg()
+    if self.options.luci_chromium:
+      # In luci.chromium the Chrome and driver are in the user path.
+      self.browser = '--browser=%s' % get_abs_user_path('chrome')
+      driver_path = get_abs_user_path('chromedriver')
+      self.driver_path_arg = [f'--driver-path={driver_path}']
+      self.is_android = False
+    else:
+      browser_arg = _get_browser_arg(options.passthrough_args)
+      self.is_android = _is_android(browser_arg)
+      self._find_browser(browser_arg)
+    self.network = self._get_network_arg(options.passthrough_args)
 
-  def _get_browser_arg(self, args):
-    browser_args = [arg for arg in args if arg.startswith('--browser=')]
-    if len(browser_args) != 1:
-      raise ValueError('Expects exactly one --browser=... arg on command line')
-    return browser_args[0].split('=', 1)[1]
+  def _parse_arguments(self):
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--official-browser',
+                        type=str,
+                        required=False,
+                        help='Use official build of the browser')
+    parser.add_argument(
+        '--connect-to-device-over-network',
+        action='store_true',
+        default=False,
+        help='Connect to test device over TCP (used on Android desktop)')
+    parser.add_argument('--device', help='The device to connect to')
+    parser.add_argument(
+        '--disable-field-trial-config',
+        action='store_true',
+        help='Start Chrome with --disable-field-trial-config option')
+    parser.add_argument(
+        '--extra-browser-args',
+        dest='extra_browser_args_as_string',
+        help='Additional arguments to pass to the browser when it starts')
+    self.cb_options, self.options.passthrough_args = parser.parse_known_args(
+        self.options.passthrough_args)
 
-  def _is_android(self, browser_arg):
-    """Is the test running on an Android device.
+  def _get_network_arg(self, args):
+    if _arg := _get_arg(args, '--network='):
+      return [_arg]
+    if _arg := _get_arg(args, '--fileserver'):
+      return self._create_fileserver_network(_arg)
+    if _get_arg(args, '--wpr'):
+      return self._create_wpr_network(args)
+    if self.options.benchmarks.startswith('motionmark') and not self.is_android:
+      # TODO(crbug.com/413452730): Enable local file server in all platforms.
+      return []
+    if ((self.options.benchmarks in self.BENCHMARK_FILESERVERS)
+        and not (self.options.benchmarks.startswith('speedometer')
+                 and sys.platform == 'darwin')):
+      # Use file server when it is available.
+      arg = '--fileserver'
+      args.append(arg)
+      return self._create_fileserver_network(arg)
+    return []
 
-    See third_party/catapult/telemetry/telemetry/internal/backends/android_browser_backend_settings.py  # pylint: disable=line-too-long
-    """
-    return browser_arg.lower().startswith('android')
+  def _create_env_arg(self):
+    if (self.options.benchmarks.startswith('motionmark')
+        and sys.platform == 'darwin'):
+      # Set screen refresh rate to 60Hz on Mac due to crbug.com/415318275.
+      return ['--env={screen_refresh_rate:60}']
+    return []
+
+  def _create_fileserver_network(self, arg):
+    if '=' in arg:
+      fileserver_path = arg.split('=', 1)[1]
+    else:
+      benchmark = self.options.benchmarks
+      if benchmark not in self.BENCHMARK_FILESERVERS:
+        raise ValueError(f'fileserver does not support {benchmark}')
+      fileserver_path = self.BENCHMARK_FILESERVERS.get(benchmark)
+    fileserver_relative_path = str(CHROMIUM_SRC_DIR / fileserver_path)
+    # Replacing --fileserver with --network.
+    self.options.passthrough_args.remove(arg)
+    return [
+        _create_network_json('local',
+                             path=fileserver_relative_path,
+                             url='http://localhost:0')
+    ]
+
+  def _create_wpr_network(self, args):
+    wpr_arg = _get_arg(args, '--wpr')
+    if wpr_arg and '=' in wpr_arg:
+      wpr_name = wpr_arg.split('=', 1)[1]
+    else:
+      raise ValueError('The archive file path is missing!')
+    archive = str(PAGE_SETS_DATA / wpr_name)
+    if (wpr_go := fetch_binary_path('wpr_go')) is None:
+      raise ValueError(f'wpr_go not found: {wpr_go}')
+    if wpr_arg:
+      # Replacing --wpr with --network.
+      self.options.passthrough_args.remove(wpr_arg)
+    skip_injection_arg = '--skip-wpr-script-injection'
+    skip_injection = _get_arg(args, skip_injection_arg)
+    if skip_injection:
+      self.options.passthrough_args.remove(skip_injection_arg)
+    return [
+        _create_network_json('wpr',
+                             path=archive,
+                             wpr_go_bin=wpr_go,
+                             skip_injection=bool(skip_injection))
+    ]
+
+  def _check_for_embedder_arg(self):
+    embedder_arg = _get_arg(self.options.passthrough_args, '--embedder=')
+    if embedder_arg:
+      embedder_package_name = embedder_arg.split('=', 1)[1]
+      # This will affect browser arg, but is not to be passed by itself
+      self.options.passthrough_args.remove(embedder_arg)
+      return embedder_package_name
+    return None
 
   def _find_browser(self, browser_arg):
+    # Replacing --browser with the generated self.browser.
+    self.options.passthrough_args = [
+        arg for arg in self.options.passthrough_args
+        if not arg.startswith('--browser=')
+    ]
+    if self.cb_options.official_browser:
+      if self.is_android:
+        android_json = self.ANDROID_HJSON % self.cb_options.official_browser
+        self.browser = self.CHROME_BROWSER % android_json
+      else:
+        self.browser = self.CHROME_BROWSER % self.cb_options.official_browser
+      self.driver_path_arg = []
+      return
+    self.driver_path_arg = self._find_chromedriver()
     if '/' in browser_arg or '\\' in browser_arg:
       # The --browser arg looks like a path. Use it as-is.
       self.browser = self.CHROME_BROWSER % browser_arg
@@ -718,36 +904,28 @@ class CrossbenchTest(object):
     options = browser_options.BrowserFinderOptions()
     options.chrome_root = CHROMIUM_SRC_DIR
     parser = options.CreateParser()
-    binary_manager.InitDependencyManager(None)
-    parser.parse_args([self.CHROME_BROWSER % browser_arg])
+    browser_finder_args = [self.CHROME_BROWSER % browser_arg]
+    if self.cb_options.connect_to_device_over_network:
+      browser_finder_args.append('--connect-to-device-over-network')
+      logging.getLogger().setLevel(logging.DEBUG)
+    if self.cb_options.device:
+      browser_finder_args.extend(['--device', self.cb_options.device])
+    parser.parse_args(browser_finder_args)
     possible_browser = browser_finder.FindBrowser(options)
     if not possible_browser:
       raise ValueError(f'Unable to find Chrome browser of type: {browser_arg}')
     if self.is_android:
-      browser_app = possible_browser.settings.package
-      android_json = self.ANDROID_HJSON % (browser_app, ADB_TOOL)
+      # Check for an arg with embedder package name to override browser (WV)
+      browser_app = (self._check_for_embedder_arg()
+                     or possible_browser.settings.package)
+      android_json = self.ANDROID_HJSON % browser_app
       self.browser = self.CHROME_BROWSER % android_json
-
-      # Using WPR because of lack of network access on lab Android phones.
-      # TODO: Use update_wpr library when it supports Crossbench archive files.
-      archive = PAGE_SETS_DATA / 'crossbench_android_speedometer_3.0_000.wprgo'
-      if not (wpr_go := binary_manager.FetchPath(
-          'wpr_go', os_name='linux', arch='x86_64')):
-        raise ValueError(f'wpr_go not found: {wpr_go}')
-      wpr_config = f'{{type:"wpr", path:"{archive}", wpr_go_bin:"{wpr_go}"}}'
-      self.network = [f'--network={wpr_config}']
     else:
-      self.browser = self.CHROME_BROWSER % possible_browser._local_executable
+      assert hasattr(possible_browser, 'local_executable')
+      self.browser = self.CHROME_BROWSER % possible_browser.local_executable
 
-  def _find_chromedriver(self, browser_arg):
-    browser_arg = browser_arg.lower()
-    if browser_arg == 'release_x64':
-      path = '../Release_x64'
-    elif self.is_android:
-      path = 'clang_x64'
-    else:
-      path = '.'
-
+  def _find_chromedriver(self):
+    path = 'clang_x64' if self.is_android else '.'
     abspath = pathlib.Path(path).absolute()
     if ((driver_path := (abspath / 'chromedriver')).exists()
         or (driver_path := (abspath / 'chromedriver.exe')).exists()):
@@ -756,20 +934,26 @@ class CrossbenchTest(object):
     return []
 
   def _get_default_args(self):
-    default_args = [
-        '--no-symlinks',
-        # Required until crbug/41491492 and crbug/346323630 are fixed.
-        '--enable-features=DisablePrivacySandboxPrompts',
-    ]
-    if not self.is_android:
-      # See http://shortn/_xGSaVM9P5g
-      default_args.append('--enable-field-trial-config')
+    default_args = ['--no-symlinks']
+    if self.is_chrome and not self.is_android:
+      if self.cb_options.disable_field_trial_config:
+        default_args.append('--disable-field-trial-config')
+      else:
+        # See http://shortn/_xGSaVM9P5g
+        default_args.append('--enable-field-trial-config')
+    if self.options.luci_chromium:
+      default_args.append('--headless')
     return default_args
 
   def _generate_command_list(self, benchmark, benchmark_args, working_dir):
-    return ([sys.executable] + [self.options.executable] + [benchmark] +
-            [self.OUTDIR % working_dir] + [self.browser] + benchmark_args +
-            self.driver_path_arg + self.network + self._get_default_args())
+    extra_browser_args = []
+    if self.cb_options.extra_browser_args_as_string:
+      extra_browser_args = ['--'] + shlex.split(
+          self.cb_options.extra_browser_args_as_string, posix=(not IsWindows()))
+    return (['vpython3', '-Xutf8'] + [self.options.executable] + [benchmark] +
+            ['--env-validation=throw'] + [self.OUTDIR % working_dir] +
+            [self.browser] + self.driver_path_arg + self.network + self.env +
+            self._get_default_args() + benchmark_args + extra_browser_args)
 
   def execute_benchmark(self,
                         benchmark,
@@ -780,6 +964,7 @@ class CrossbenchTest(object):
 
     env = os.environ.copy()
     env['CHROME_HEADLESS'] = '1'
+    env['PATH'] = f"{GSUTIL_DIR}{';' if IsWindows() else ':'}{env['PATH']}"
 
     return_code = 1
     output_paths = OutputFilePaths(self.isolated_out_dir, display_name).SetUp()
@@ -800,21 +985,37 @@ class CrossbenchTest(object):
                                                               handle,
                                                               env=env)
 
-      if return_code == 0:
+      if return_code == 0 or self.options.ignore_benchmark_exit_code:
         crossbench_result_converter.convert(
             pathlib.Path(output_paths.benchmark_path) / 'output',
             pathlib.Path(output_paths.perf_results), display_name,
             self.STORY_LABEL, self.options.results_label)
-    except Exception:
+      if return_code and os.path.exists(output_paths.logs):
+        # To avoid printing too large log file, we print the last 100 lines.
+        bottom_of_log = deque(maxlen=100)
+        with open(output_paths.logs, 'r') as handle:
+          for line in handle:
+            if line.strip():
+              bottom_of_log.append(line.replace('\n', ''))
+        print(f'The last 100 lines of {output_paths.logs}:')
+        while bottom_of_log:
+          print(f'    {bottom_of_log.popleft()}')
+        print('See the complete logs in the CAS Outputs')
+    except Exception:  # pylint: disable=broad-except
       print('The following exception may have prevented the code from '
             'outputing structured test results and perf results output:')
       print(traceback.format_exc())
       infra_failure = True
 
-    write_simple_test_results(return_code, output_paths.test_results,
-                              display_name)
-    if not is_unittest:
-      upload_simple_test_results(return_code, display_name)
+    if self.options.luci_chromium:
+      write_simple_test_results(return_code,
+                                self.options.isolated_script_test_output,
+                                display_name)
+    else:
+      write_simple_test_results(return_code, output_paths.test_results,
+                                display_name)
+      if not is_unittest:
+        upload_simple_test_results(return_code, display_name)
 
     print_duration(f'Executing benchmark: {benchmark}', start)
 
@@ -836,10 +1037,48 @@ class CrossbenchTest(object):
       raise Exception('No support to run multiple benchmarks at this time.')
     return self.execute_benchmark(
         self.options.benchmarks,
-        (self.options.benchmark_display_name or self.options.benchmarks), [
-            arg for arg in self.options.passthrough_args
-            if not arg.startswith('--browser=')
-        ])
+        (self.options.benchmark_display_name or self.options.benchmarks),
+        self.options.passthrough_args)
+
+
+def _create_network_json(config_type,
+                         path,
+                         url=None,
+                         wpr_go_bin=None,
+                         skip_injection=False):
+  network_dict = {'type': config_type}
+  network_dict['path'] = path
+  if url:
+    network_dict['url'] = url
+  if wpr_go_bin:
+    network_dict['wpr_go_bin'] = wpr_go_bin
+  if skip_injection:
+    network_dict['skip_deterministic_script_injection'] = True
+  network_json = json.dumps(network_dict)
+  return f'--network={network_json}'
+
+
+def _get_browser_arg(args):
+  browser_arg = _get_arg(args, '--browser=', must_exists=True)
+  return browser_arg.split('=', 1)[1]
+
+
+def _get_arg(args, arg, must_exists=False):
+  if _args := [a for a in args if a.startswith(arg)]:
+    if len(_args) != 1:
+      raise ValueError(f'Expects exactly one {arg} on command line')
+    return _args[0]
+  if must_exists:
+    raise ValueError(f'{arg} argument is missing!')
+  return []
+
+
+def _is_android(browser_arg):
+  """Is the test running on an Android device.
+
+  See third_party/catapult/telemetry/telemetry/internal/backends/android_browser_backend_settings.py  # pylint: disable=line-too-long
+  """
+  return browser_arg.lower().startswith('android')
 
 
 def parse_arguments(args):
@@ -887,6 +1126,12 @@ def parse_arguments(args):
                       help='Benchmark name displayed to the user,'
                       ' supported with crossbench only',
                       required=False)
+  # Added to address android flakiness.
+  parser.add_argument('--benchmark-max-runs',
+                      help='Max number of benchmark runs until it succeeds.',
+                      type=int,
+                      required=False,
+                      default=1)
   # crbug.com/1236245: This allows for per-benchmark device logs.
   parser.add_argument('--per-test-logs-dir',
                       help='Require --logs-dir args for test',
@@ -929,12 +1174,134 @@ def parse_arguments(args):
                       action='store_true',
                       required=False,
                       default=False)
+  parser.add_argument('--luci-chromium',
+                      help='Whether the test runs in `luci.chromium` (CQ/CI).',
+                      action='store_true',
+                      required=False,
+                      default=False)
   options, leftover_args = parser.parse_known_args(args)
   options.passthrough_args.extend(leftover_args)
   return options
 
 
+def _set_cwd():
+  """Change current working directory to build output directory.
+
+  On perf waterfall, the recipe sets the current working directory to the chrome
+  build output directory. Pinpoint, on the other hand, does not know where the
+  build output directory is, so it is hardcoded to set current working directory
+  to out/Release. This used to be correct most of the time, but this has been
+  changed by https://crbug.com/355218109, causing various problems (e.g.,
+  https://crbug.com/377748127). This function attempts to detect such cases and
+  change the current working directory to chrome output directory.
+  """
+
+  # If the current directory is named out/Release and is empty, we are likely
+  # running on Pinpoint with a wrong working directory.
+  cwd = pathlib.Path.cwd()
+  if list(cwd.iterdir()):
+    return
+  if cwd.name != 'Release' or cwd.parent.name != 'out':
+    return
+
+  print(f'Current directory {cwd} is empty, attempting to find build output')
+  candidates = []
+  for build_dir in util.GetBuildDirectories():
+    path = pathlib.Path(build_dir).resolve()
+    if path.exists() and list(path.iterdir()):
+      candidates.append(path)
+
+  if len(candidates) != 1:
+    if not candidates:
+      print('No build output directory found')
+    else:
+      print(f'Multiple build output directories found: {candidates}')
+    raise RuntimeError(
+        'Unable to find build output. Please change to the build output '
+        'directory before running this script.')
+
+  print(f'Changing current directory to {candidates[0]}')
+  os.chdir(candidates[0])
+
+
+def get_browser_versions(isolated_out_dir):
+  """Detect versions of alternative browsers installed on the device.
+
+  Detect which version of Edge (and Safari in the future) is currently
+  installed. The result is saved in a file named CBB_BROWSER_VERSIONS_FILENAME
+  in the isolated output directory.
+  """
+  results = {}
+  if IsWindows():
+    channels = {
+        'stable':
+        'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',
+        'dev':
+        'C:/Program Files (x86)/Microsoft/Edge Dev/Application/msedge.exe',
+    }
+    for channel, path in channels.items():
+      cmd = [
+          'powershell', '-command',
+          f"(Get-Item '{path}').VersionInfo.ProductVersion"
+      ]
+      results[channel] = subprocess.run(cmd,
+                                        capture_output=True,
+                                        encoding='utf8',
+                                        check=True).stdout.strip()
+  elif sys.platform == 'darwin':
+    channels = {
+        'stable': {
+            'driver': '/usr/bin/safaridriver',
+            'prefix': 'Included with Safari ',
+        },
+        # pylint: disable=line-too-long
+        'technology-preview': {
+            'plist': '/Applications/Safari Technology Preview.app/Contents/Info.plist',
+            'driver': '/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver',
+            'prefix': 'Included with Safari Technology Preview ',
+        },
+        # pylint: enable=line-too-long
+    }
+    for channel, info in channels.items():
+      driver_version = subprocess.run([info['driver'], '--version'],
+                                      capture_output=True,
+                                      encoding='utf8',
+                                      check=True).stdout.strip()
+      prefix = info['prefix']
+      if not driver_version.startswith(prefix):
+        # pylint: disable=line-too-long
+        print(f'Missing expected prefix from Safari {channel} output: {driver_version}')
+        # pylint: enable=line-too-long
+        return 1
+      driver_version = driver_version[len(prefix):]
+      # For Safari stable, the version reported by safaridriver is complete and
+      # can be used as is. For Safari Technology Preview, however, the version
+      # reported by safaridriver is missing the main version (such as '26.0'),
+      # and we need to retrieve it from the app's plist file.
+      if plist_path := info.get('plist'):
+        plist = plistlib.loads(pathlib.Path(plist_path).read_bytes())
+        version = plist.get('CFBundleShortVersionString')
+        if not version:
+          print(f'Missing version info for Safari {channel}')
+          return 1
+        results[channel] = f'{version} {driver_version}'
+      else:
+        results[channel] = driver_version
+  else:
+    print('Only Windows OS and MacOS are supported')
+    return 1
+
+  with open(os.path.join(isolated_out_dir, CBB_BROWSER_VERSIONS_FILENAME),
+            'w') as f:
+    json.dump(results, f)
+    f.write('\n')
+
+  return 0
+
+
 def main(sys_args):
+  sys.stdout.reconfigure(line_buffering=True)
+  _set_cwd()
   args = sys_args[1:]  # Skip program name.
   options = parse_arguments(args)
   isolated_out_dir = os.path.dirname(options.isolated_script_test_output)
@@ -962,8 +1329,12 @@ def main(sys_args):
                                                       isolated_out_dir,
                                                       test_results_files)
   elif options.executable.endswith(CrossbenchTest.EXECUTABLE):
+    assert options.benchmark_max_runs == 1, (
+        'Benchmark rerun is not supported with CrossbenchTest.')
     overall_return_code = CrossbenchTest(options, isolated_out_dir).execute()
   elif options.non_telemetry:
+    assert options.benchmark_max_runs == 1, (
+        'Benchmark rerun is not supported in non telemetry tests.')
     benchmark_name = options.gtest_benchmark_name
     passthrough_args = options.passthrough_args
     # crbug/1146949#c15
@@ -984,25 +1355,30 @@ def main(sys_args):
     if not benchmark_name:
       benchmark_name = options.executable
     output_paths = OutputFilePaths(isolated_out_dir, benchmark_name).SetUp()
-    print('\n### {folder} ###'.format(folder=benchmark_name))
+    print_start(benchmark_name)
     overall_return_code = execute_gtest_perf_test(
         command_generator,
         output_paths,
         options.xvfb,
         results_label=options.results_label)
     test_results_files.append(output_paths.test_results)
+  elif options.benchmarks == CBB_BROWSER_VERSIONS_BENCHMARK:
+    overall_return_code = get_browser_versions(isolated_out_dir)
   elif options.benchmarks:
     benchmarks = options.benchmarks.split(',')
     for benchmark in benchmarks:
-      output_paths = OutputFilePaths(isolated_out_dir, benchmark).SetUp()
       command_generator = TelemetryCommandGenerator(benchmark, options)
-      print('\n### {folder} ###'.format(folder=benchmark))
-      return_code = execute_telemetry_benchmark(
-          command_generator,
-          output_paths,
-          options.xvfb,
-          options.ignore_benchmark_exit_code,
-          no_output_conversion=options.no_output_conversion)
+      for run_num in range(options.benchmark_max_runs):
+        print_start(benchmark, run_num)
+        output_paths = OutputFilePaths(isolated_out_dir, benchmark).SetUp()
+        return_code = execute_telemetry_benchmark(
+            command_generator,
+            output_paths,
+            options.xvfb,
+            options.ignore_benchmark_exit_code,
+            no_output_conversion=options.no_output_conversion)
+        if return_code == 0:
+          break
       overall_return_code = return_code or overall_return_code
       test_results_files.append(output_paths.test_results)
     if options.run_ref_build:
@@ -1046,16 +1422,19 @@ def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
     for (benchmark, story_selection_config) in benchmarks_and_configs.items():
       # Need to run the benchmark on both latest browser and reference
       # build.
-      output_paths = OutputFilePaths(isolated_out_dir, benchmark).SetUp()
       command_generator = TelemetryCommandGenerator(
           benchmark, options, story_selection_config=story_selection_config)
-      print('\n### {folder} ###'.format(folder=benchmark))
-      return_code = execute_telemetry_benchmark(
-          command_generator,
-          output_paths,
-          options.xvfb,
-          options.ignore_benchmark_exit_code,
-          no_output_conversion=options.no_output_conversion)
+      for run_num in range(options.benchmark_max_runs):
+        output_paths = OutputFilePaths(isolated_out_dir, benchmark).SetUp()
+        print_start(benchmark, run_num)
+        return_code = execute_telemetry_benchmark(
+            command_generator,
+            output_paths,
+            options.xvfb,
+            options.ignore_benchmark_exit_code,
+            no_output_conversion=options.no_output_conversion)
+        if return_code == 0:
+          break
       overall_return_code = return_code or overall_return_code
       test_results_files.append(output_paths.test_results)
       if options.run_ref_build:
@@ -1067,15 +1446,15 @@ def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
             options,
             story_selection_config=story_selection_config,
             is_reference=True)
-        print(
-            '\n### {folder} ###'.format(folder=reference_benchmark_foldername))
+        print_start(reference_benchmark_foldername)
         # We intentionally ignore the return code and test results of the
         # reference build.
-        execute_telemetry_benchmark(reference_command_generator,
-                                    reference_output_paths,
-                                    options.xvfb,
-                                    options.ignore_benchmark_exit_code,
-                                    no_output_conversion=no_output_conversion)
+        execute_telemetry_benchmark(
+            reference_command_generator,
+            reference_output_paths,
+            options.xvfb,
+            options.ignore_benchmark_exit_code,
+            no_output_conversion=options.no_output_conversion)
   if 'executables' in shard_configuration:
     names_and_configs = shard_configuration['executables']
     for (name, configuration) in names_and_configs.items():
@@ -1087,26 +1466,40 @@ def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
           override_executable=configuration['path'],
           additional_flags=additional_flags,
           ignore_shard_env_vars=True)
-      output_paths = OutputFilePaths(isolated_out_dir, name).SetUp()
-      print('\n### {folder} ###'.format(folder=name))
-      return_code = execute_gtest_perf_test(command_generator, output_paths,
-                                            options.xvfb)
+      for run_num in range(options.benchmark_max_runs):
+        output_paths = OutputFilePaths(isolated_out_dir, name).SetUp()
+        print_start(name, run_num)
+        return_code = execute_gtest_perf_test(command_generator, output_paths,
+                                              options.xvfb)
+        if return_code == 0:
+          break
       overall_return_code = return_code or overall_return_code
       test_results_files.append(output_paths.test_results)
   if 'crossbench' in shard_configuration:
     benchmarks = shard_configuration['crossbench']
-    crossbench_test = CrossbenchTest(options, isolated_out_dir)
     # Overwriting the "run_benchmark" with the Crossbench tool.
     options.executable = str(CROSSBENCH_TOOL)
+    original_passthrough_args = options.passthrough_args.copy()
     for benchmark, benchmark_config in benchmarks.items():
       display_name = benchmark_config.get('display_name', benchmark)
-      print(f'\n### {display_name} ###')
-      benchmark_args = benchmark_config.get('arguments', [])
-      return_code = crossbench_test.execute_benchmark(benchmark, display_name,
-                                                      benchmark_args)
+      if benchmark_args := benchmark_config.get('arguments', []):
+        options.passthrough_args.extend(benchmark_args)
+      options.benchmarks = benchmark
+      crossbench_test = CrossbenchTest(options, isolated_out_dir)
+      # CrossbenchTest may filter some arguments.
+      benchmark_args = [
+          x for x in benchmark_args if x in options.passthrough_args
+      ]
+      for run_num in range(options.benchmark_max_runs):
+        print_start(display_name, run_num)
+        return_code = crossbench_test.execute_benchmark(benchmark, display_name,
+                                                        benchmark_args)
+        if return_code == 0:
+          break
       overall_return_code = return_code or overall_return_code
       test_results_files.append(
           OutputFilePaths(isolated_out_dir, display_name).test_results)
+      options.passthrough_args = original_passthrough_args.copy()
 
   return overall_return_code
 

@@ -67,7 +67,7 @@ void SharedImageInterfaceProvider::CreateSharedImageInterface() {
       base::BindOnce(
           &SharedImageInterfaceProvider::CreateSharedImageInterfaceOnGpu,
           base::Unretained(this), &event),
-      {});
+      /*sync_token_fences=*/{}, gpu::SyncToken());
   event.Wait();
 }
 
@@ -81,15 +81,12 @@ void SharedImageInterfaceProvider::CreateSharedImageInterfaceOnGpu(
           : nullptr;
   context_lost_ = false;
 
-  shared_image_interface_ =
-      base::MakeRefCounted<gpu::SharedImageInterfaceInProcess>(
-          scheduler_sequence_.get(), gpu_service_->sync_point_manager(),
-          gpu_service_->gpu_preferences(),
-          gpu_service_->gpu_driver_bug_workarounds(),
-          gpu_service_->gpu_feature_info(), shared_context_state_.get(),
-          gpu_service_->shared_image_manager(),
-          /*is_for_diplay_compositor=*/false,
-          gpu::SharedImageInterfaceInProcess::OwnerThread::kGpu);
+  shared_image_interface_ = gpu::SharedImageInterfaceInProcess::Create(
+      scheduler_sequence_.get(), gpu_service_->gpu_preferences(),
+      gpu_service_->gpu_driver_bug_workarounds(),
+      gpu_service_->gpu_feature_info(), shared_context_state_.get(),
+      gpu_service_->shared_image_manager(),
+      /*is_for_display_compositor=*/false, gpu_service_->main_runner());
 
   if (shared_context_state_) {
     shared_context_state_->AddContextLostObserver(this);

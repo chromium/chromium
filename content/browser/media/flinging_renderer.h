@@ -16,7 +16,6 @@
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "url/gurl.h"
 
 namespace content {
 

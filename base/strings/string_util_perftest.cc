@@ -15,12 +15,14 @@ namespace base {
 template <typename String>
 void MeasureIsStringASCII(size_t str_length, size_t non_ascii_pos) {
   String str(str_length, 'A');
-  if (non_ascii_pos < str_length)
+  if (non_ascii_pos < str_length) {
     str[non_ascii_pos] = '\xAF';
+  }
 
   TimeTicks t0 = TimeTicks::Now();
-  for (size_t i = 0; i < 10000000; ++i)
+  for (size_t i = 0; i < 10000000; ++i) {
     IsStringASCII(str);
+  }
   TimeDelta time = TimeTicks::Now() - t0;
   printf(
       "char-size:\t%zu\tlength:\t%zu\tnon-ascii-pos:\t%zu\ttime-ms:\t%" PRIu64

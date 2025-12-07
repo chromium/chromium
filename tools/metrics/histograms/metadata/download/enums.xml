@@ -26,6 +26,13 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="AndroidDownloadWarningBypassDialogEvent">
+  <int value="0" label="Dialog shown"/>
+  <int value="1" label="User validated download"/>
+  <int value="2" label="User tapped Learn More"/>
+  <int value="3" label="Dialog dismissed"/>
+</enum>
+
 <enum name="BooleanOpenFromDuplicates">
   <int value="0" label="Created New file"/>
   <int value="1" label="Opened existing duplicate"/>
@@ -57,28 +64,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Dialog canceled"/>
   <int value="3" label="Dialog dismissed"/>
 </enum>
-
-<!-- LINT.IfChange(DangerousDownloadInterstitialAction) -->
-
-<enum name="DangerousDownloadInterstitialAction">
-  <int value="0" label="OpenInterstitial"/>
-  <int value="1" label="CancelInterstitial"/>
-  <int value="2" label="OpenSurvey"/>
-  <int value="3" label="SaveDangerous"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/ui/webui/downloads/downloads_dom_handler.h:DangerousDownloadInterstitialAction)-->
-
-<!-- LINT.IfChange(DangerousDownloadInterstitialSurveyOptions) -->
-
-<enum name="DangerousDownloadInterstitialSurveyOptions">
-  <int value="0" label="User did not respond to survey"/>
-  <int value="1" label="User created file"/>
-  <int value="2" label="User trust site"/>
-  <int value="3" label="User accepts risk"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/ui/webui/downloads/downloads.mojom:DangerousDownloadInterstitialSurveyOptions)-->
 
 <enum name="Download.DragInfo">
   <int value="0" label="DRAG_STARTED"/>
@@ -148,6 +133,15 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="NOT_ADDED_EXCEED_MAX_LENGTH"/>
   <int value="4" label="ADDED_WARNING_FIRST_SHOWN"/>
   <int value="5" label="ADDED_WARNING_ACTION"/>
+  <int value="6" label="NOT_ADDED_DOWNLOAD_NOT_DANGEROUS"/>
+</enum>
+
+<enum name="DownloadAppleWalletOrderFileUI">
+  <int value="0" label="Warning alert is presented"/>
+  <int value="1"
+      label="Warning alert is dismissed without presenting a SFSafariView"/>
+  <int value="2"
+      label="Warning alert is dismissed with presenting a SFSafariView"/>
 </enum>
 
 <enum name="DownloadARModelState">
@@ -419,6 +413,8 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Multiple downloads pending"/>
   <int value="10" label="Scheduled"/>
   <int value="11" label="Multiple downloads scheduled"/>
+  <int value="12" label="Dangerous"/>
+  <int value="13" label="Multiple downloads dangerous"/>
 </enum>
 
 <enum name="DownloadInputStreamReadErrorType">
@@ -533,7 +529,16 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Success after resolving conflict"/>
 </enum>
 
-<enum name="DownloadShelfContextMenuAction">
+<enum name="DownloadTextType">
+  <int value="0" label="UNRECOGNIZED"/>
+  <int value="1" label="PLAIN"/>
+  <int value="2" label="CSS"/>
+  <int value="3" label="CSV"/>
+  <int value="4" label="HTML"/>
+  <int value="5" label="CALENDAR"/>
+</enum>
+
+<enum name="DownloadUiContextMenuAction">
   <int value="0" label="Drop down shown"/>
   <int value="1" label="Drop down enabled"/>
   <int value="2" label="Show in folder enabled"/>
@@ -571,15 +576,6 @@ chromium-metrics-reviews@google.com.
   <int value="34" label="Review enabled (obsolete)"/>
   <int value="35" label="Review clicked (obsolete)"/>
   <int value="36" label="Should never be logged"/>
-</enum>
-
-<enum name="DownloadTextType">
-  <int value="0" label="UNRECOGNIZED"/>
-  <int value="1" label="PLAIN"/>
-  <int value="2" label="CSS"/>
-  <int value="3" label="CSV"/>
-  <int value="4" label="HTML"/>
-  <int value="5" label="CALENDAR"/>
 </enum>
 
 <enum name="DownloadVideoType">
@@ -670,40 +666,6 @@ chromium-metrics-reviews@google.com.
       label="Secure download initiated by insecure non-unique source"/>
 </enum>
 
-<enum name="InterruptReason">
-  <int value="0" label="NONE"/>
-  <int value="1" label="FILE_FAILED"/>
-  <int value="2" label="FILE_ACCESS_DENIED"/>
-  <int value="3" label="FILE_NO_SPACE"/>
-  <int value="5" label="FILE_NAME_TOO_LONG"/>
-  <int value="6" label="FILE_TOO_LARGE"/>
-  <int value="7" label="FILE_VIRUS_INFECTED"/>
-  <int value="10" label="FILE_TRANSIENT_ERROR"/>
-  <int value="11" label="FILE_BLOCKED"/>
-  <int value="12" label="FILE_SECURITY_CHECK_FAILED"/>
-  <int value="13" label="FILE_TOO_SHORT"/>
-  <int value="14" label="FILE_HASH_MISMATCH"/>
-  <int value="15" label="FILE_SAME_AS_SOURCE"/>
-  <int value="20" label="NETWORK_FAILED"/>
-  <int value="21" label="NETWORK_TIMEOUT"/>
-  <int value="22" label="NETWORK_DISCONNECTED"/>
-  <int value="23" label="NETWORK_SERVER_DOWN"/>
-  <int value="24" label="NETWORK_INVALID_REQUEST"/>
-  <int value="30" label="SERVER_FAILED"/>
-  <int value="31" label="SERVER_NO_RANGE"/>
-  <int value="32" label="SERVER_PRECONDITION (Deprecated)"/>
-  <int value="33" label="SERVER_BAD_CONTENT"/>
-  <int value="34" label="SERVER_UNAUTHORIZED"/>
-  <int value="35" label="SERVER_CERT_PROBLEM"/>
-  <int value="36" label="SERVER_FORBIDDEN"/>
-  <int value="37" label="SERVER_UNREACHABLE"/>
-  <int value="38" label="SERVER_CONTENT_LENGTH_MISMATCH"/>
-  <int value="39" label="SERVER_CROSS_ORIGIN_REDIRECT"/>
-  <int value="40" label="USER_CANCELED"/>
-  <int value="41" label="USER_SHUTDOWN"/>
-  <int value="50" label="CRASH"/>
-</enum>
-
 <enum name="MediaMetadataEvent">
   <int value="0" label="Metadata request started"/>
   <int value="1" label="Metadata request failed"/>
@@ -721,6 +683,26 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Failed to parse media file"/>
   <int value="8" label="Successfully parsed media file"/>
   <int value="9" label="Timeout and failed"/>
+</enum>
+
+<enum name="NotificationAttachEvent">
+  <int value="0" label="Attached on job start"/>
+  <int value="1" label="Attached after job start"/>
+  <int value="2" label="Never attached before job complete"/>
+  <int value="3" label="Resumption job started"/>
+</enum>
+
+<enum name="OpenDownloadWithExternalAppsSource">
+  <int value="0" label="Open file"/>
+  <int value="1" label="Download progress message"/>
+  <int value="2" label="App menu"/>
+</enum>
+
+<enum name="PolicyWarningDialogEvent">
+  <int value="0" label="dialog shown"/>
+  <int value="1" label="Dialog confirmed"/>
+  <int value="2" label="Dialog canceled"/>
+  <int value="3" label="Dialog dismissed"/>
 </enum>
 
 <enum name="PresentAddPassesDialogResult">

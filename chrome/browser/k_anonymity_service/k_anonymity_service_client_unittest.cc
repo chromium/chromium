@@ -6,8 +6,10 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/notimplemented.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_metrics.h"
@@ -49,7 +51,7 @@ class KAnonymityServiceClientTest : public testing::Test {
  protected:
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{network::features::kPrivateStateTokens},
+        {},
         /*disabled_features=*/{features::kKAnonymityServiceOHTTPRequests});
     TestingProfile::Builder builder;
     builder.SetSharedURLLoaderFactory(
@@ -305,7 +307,7 @@ TEST_F(KAnonymityServiceClientTest, TryJoinSetOverflowQueue) {
   base::HistogramTester hist;
   base::RunLoop run_loop;
   int callback_count = 0;
-  for (int i = 0; i < 100; i++) {
+  for (int i = 0; i < 400; i++) {
     k_service.JoinSet(kId1ToJoinAndQuery,
                       base::BindLambdaForTesting(
                           [&callback_count, &run_loop, i](bool result) {
@@ -329,15 +331,15 @@ TEST_F(KAnonymityServiceClientTest, TryJoinSetOverflowQueue) {
   RespondWithTrustTokenKeys(2);
   // The network layer doesn't actually get a token, so the fetcher requests one
   // every time.
-  for (int i = 0; i < 100; i++) {
+  for (int i = 0; i < 400; i++) {
     RespondWithTrustTokenIssued(2);
   }
   run_loop.Run();
   EXPECT_EQ(0, GetNumPendingURLRequests());
-  EXPECT_EQ(101, callback_count);
+  EXPECT_EQ(401, callback_count);
   CheckJoinSetHistogramActions(
-      hist, {{KAnonymityServiceJoinSetAction::kJoinSet, 101},
-             {KAnonymityServiceJoinSetAction::kJoinSetSuccess, 100},
+      hist, {{KAnonymityServiceJoinSetAction::kJoinSet, 401},
+             {KAnonymityServiceJoinSetAction::kJoinSetSuccess, 400},
              {KAnonymityServiceJoinSetAction::kJoinSetQueueFull, 1}});
 }
 
@@ -521,8 +523,7 @@ class KAnonymityServiceClientJoinQueryTest
  protected:
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(
-        {{network::features::kPrivateStateTokens, {}},
-         {features::kKAnonymityService,
+        {{features::kKAnonymityService,
           {
               {"KAnonymityServiceJoinRelayServer", kJoinRelayURL},
               {"KAnonymityServiceQueryRelayServer", kQueryRelayURL},

@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "widget_hwnd_utils\.cc": [
+    "+components/viz/common"
+  ]
+}

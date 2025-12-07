@@ -16,7 +16,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/device/public/mojom/usb_device.mojom-forward.h"
+#include "services/device/public/mojom/usb_device.mojom.h"
 #include "services/device/public/mojom/usb_enumeration_options.mojom-forward.h"
 #include "services/device/public/mojom/usb_manager.mojom-forward.h"
 #include "services/device/public/mojom/usb_manager_client.mojom.h"

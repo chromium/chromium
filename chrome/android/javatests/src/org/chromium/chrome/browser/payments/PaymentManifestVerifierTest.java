@@ -18,7 +18,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -29,9 +30,9 @@ import org.chromium.components.payments.PaymentManifestDownloader;
 import org.chromium.components.payments.PaymentManifestParser;
 import org.chromium.components.payments.PaymentManifestVerifier;
 import org.chromium.components.payments.PaymentManifestVerifier.ManifestVerifyCallback;
-import org.chromium.components.payments.PaymentManifestWebDataService;
-import org.chromium.components.payments.PaymentManifestWebDataService.PaymentManifestWebDataServiceCallback;
 import org.chromium.components.payments.WebAppManifestSection;
+import org.chromium.components.payments.WebPaymentsWebDataService;
+import org.chromium.components.payments.WebPaymentsWebDataService.WebPaymentsWebDataServiceCallback;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.url.GURL;
@@ -93,16 +94,15 @@ public class PaymentManifestVerifierTest {
     };
     public static final Signature BOB_PAY_SIGNATURE = new Signature("01020304050607080900");
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public ChromeBrowserTestRule mTestRule = new ChromeBrowserTestRule();
 
-    @Mock private PaymentManifestWebDataService mWebDataService;
+    @Mock private WebPaymentsWebDataService mWebDataService;
     @Mock private PackageManagerDelegate mPackageManagerDelegate;
     @Mock private ManifestVerifyCallback mCallback;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
 
         mTestOrigin = PaymentManifestDownloader.createOpaqueOriginForTest();
@@ -147,7 +147,7 @@ public class PaymentManifestVerifierTest {
         Mockito.when(
                         mWebDataService.getPaymentMethodManifest(
                                 Mockito.any(String.class),
-                                Mockito.any(PaymentManifestWebDataServiceCallback.class)))
+                                Mockito.any(WebPaymentsWebDataServiceCallback.class)))
                 .thenReturn(false);
 
         mParser =
@@ -366,11 +366,11 @@ public class PaymentManifestVerifierTest {
         Mockito.verify(mCallback).onFinishedUsingResources();
     }
 
-    private class CountingParser extends PaymentManifestParser {
+    private static class CountingParser extends PaymentManifestParser {
         public int mParseWebAppManifestCounter;
     }
 
-    private class CountingDownloader extends PaymentManifestDownloader {
+    private static class CountingDownloader extends PaymentManifestDownloader {
         public int mDownloadWebAppManifestCounter;
     }
 

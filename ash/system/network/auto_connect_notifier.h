@@ -34,7 +34,8 @@ class ASH_EXPORT AutoConnectNotifier : public NetworkConnectionObserver,
   ~AutoConnectNotifier() override;
 
   // NetworkConnectionObserver:
-  void ConnectToNetworkRequested(const std::string& service_path) override;
+  ConnectToNetworkRequestVerdict ConnectToNetworkRequested(
+      const std::string& service_path) override;
 
   // NetworkStateHandlerObserver:
   void NetworkConnectionStateChanged(const NetworkState* network) override;
@@ -42,9 +43,7 @@ class ASH_EXPORT AutoConnectNotifier : public NetworkConnectionObserver,
   // AutoConnectHandler::Observer:
   void OnAutoConnectedInitiated(int auto_connect_reasons) override;
 
-  void set_timer_for_testing(std::unique_ptr<base::OneShotTimer> test_timer) {
-    timer_ = std::move(test_timer);
-  }
+  void set_timer_for_testing(std::unique_ptr<base::OneShotTimer> test_timer);
 
   static const char kAutoConnectToastId[];
 

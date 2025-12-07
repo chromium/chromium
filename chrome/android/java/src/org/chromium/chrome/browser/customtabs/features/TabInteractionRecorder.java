@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.customtabs.features;
 
 import android.os.SystemClock;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -17,6 +16,8 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
@@ -28,14 +29,15 @@ import java.util.Locale;
  * and owned by C++ object. This class has the ability to record whether the current web content has
  * seen interaction when the tab is closing, as well as the timestamp when this happens.
  *
- * Note that this object's lifecycle is bounded to a {@link WebContents} but not a {@link Tab}. To
- * observe the first frame of tab load, this recorder has to attach to the web content before the
+ * <p>Note that this object's lifecycle is bounded to a {@link WebContents} but not a {@link Tab}.
+ * To observe the first frame of tab load, this recorder has to attach to the web content before the
  * first navigation for the visible frame finishes, or a pre-rendered frame become active.
- * */
+ */
 @JNINamespace("customtabs")
+@NullMarked
 public class TabInteractionRecorder {
     private static final String TAG = "CctInteraction";
-    private static TabInteractionRecorder sInstanceForTesting;
+    private static @Nullable TabInteractionRecorder sInstanceForTesting;
     private final long mNativeTabInteractionRecorder;
 
     // Do not instantiate in Java.
@@ -55,10 +57,10 @@ public class TabInteractionRecorder {
     }
 
     /**
-     * Get the TabInteractionRecorder that lives in the main web contents of the given tab.
-     * Note that the object might be come stale if the web contents of the given tab is swapped
-     * after this function is called.
-     * */
+     * Get the TabInteractionRecorder that lives in the main web contents of the given tab. Note
+     * that the object might be come stale if the web contents of the given tab is swapped after
+     * this function is called.
+     */
     public static @Nullable TabInteractionRecorder getFromTab(Tab tab) {
         if (sInstanceForTesting != null) {
             return sInstanceForTesting;

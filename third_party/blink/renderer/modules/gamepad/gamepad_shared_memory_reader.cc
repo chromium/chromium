@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/gamepad/gamepad_shared_memory_reader.h"
 
+#include "base/compiler_specific.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -101,7 +102,8 @@ void GamepadSharedMemoryReader::SampleGamepads(device::Gamepads* gamepads) {
   base::subtle::Atomic32 version;
   do {
     version = gamepad_hardware_buffer_->seqlock.ReadBegin();
-    memcpy(&read_into, &gamepad_hardware_buffer_->data, sizeof(read_into));
+    UNSAFE_TODO(
+        memcpy(&read_into, &gamepad_hardware_buffer_->data, sizeof(read_into)));
     ++contention_count;
     if (contention_count == kMaximumContentionCount)
       break;
@@ -116,7 +118,7 @@ void GamepadSharedMemoryReader::SampleGamepads(device::Gamepads* gamepads) {
   }
 
   // New data was read successfully, copy it into the output buffer.
-  memcpy(gamepads, &read_into, sizeof(*gamepads));
+  UNSAFE_TODO(memcpy(gamepads, &read_into, sizeof(*gamepads)));
 
   if (!ever_interacted_with_) {
     // Clear the connected flag if the user hasn't interacted with any of the
@@ -151,9 +153,12 @@ void GamepadSharedMemoryReader::GamepadDisconnected(
     listener_->DidDisconnectGamepad(index, gamepad);
 }
 
-void GamepadSharedMemoryReader::GamepadChanged(
-    device::mojom::blink::GamepadChangesPtr change) {
-  // TODO(crbug.com/856290): use these calls to Generate Button Event.
+void GamepadSharedMemoryReader::GamepadRawInputChanged(
+    uint32_t index,
+    const device::Gamepad& gamepad) {
+  if (listener_) {
+    listener_->DidChangeGamepadRawInput(index, gamepad);
+  }
 }
 
 }  // namespace blink

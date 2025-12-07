@@ -14,7 +14,7 @@
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -94,9 +94,19 @@ struct CONTENT_EXPORT MediaStreamRequest {
   // whereas this flag hooks into a standardized option.
   bool suppress_local_audio_playback = false;
 
+  // Flag for window or screen share to indicate if audio originating from the
+  // document that called getDisplayMedia should be removed from the
+  // captured system audio.
+  bool restrict_own_audio = false;
+
   // If audio is requested, |exclude_system_audio| can indicate that
   // system-audio should nevertheless not be offered to the user.
   bool exclude_system_audio = false;
+
+  // If audio is requested, |window_audio_preference| can indicate that
+  // audio should be offered to the user when sharing a window surface.
+  blink::mojom::WindowAudioPreference window_audio_preference =
+      blink::mojom::WindowAudioPreference::kExclude;
 
   // Flag to indicate that the current tab should be excluded from the list of
   // tabs offered to the user.
@@ -172,7 +182,6 @@ class MediaStreamUI {
   virtual void OnRegionCaptureRectChanged(
       const std::optional<gfx::Rect>& region_capture_rect) {}
 
-#if !BUILDFLAG(IS_ANDROID)
   // Focuses the display surface represented by |media_id|.
   //
   // |is_from_microtask| and |is_from_timer| are used to distinguish:
@@ -184,7 +193,6 @@ class MediaStreamUI {
                         bool focus,
                         bool is_from_microtask,
                         bool is_from_timer) {}
-#endif
 };
 
 // Callback used return results of media access requests.

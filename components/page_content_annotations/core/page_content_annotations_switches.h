@@ -27,6 +27,8 @@ COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 extern const char kPageContentAnnotationsValidationTextEmbedding[];
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 extern const char kPageContentAnnotationsValidationWriteToFile[];
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+extern const char kPageContentAnnotationsSkipFCPWaitForTesting[];
 
 // Returns true if page content annotations input should be logged.
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)

@@ -21,6 +21,7 @@ class WebStateListBuilderFromDescriptionTest : public PlatformTest,
   // WebStateListDelegate implementation
   void WillAddWebState(web::WebState* web_state) final {}
   void WillActivateWebState(web::WebState* web_state) final {}
+  void WillRemoveWebState(web::WebState* web_state) final {}
 
  protected:
   // Shorthand for `builder_.BuildWebStateListFromDescription(...)`.
@@ -43,7 +44,7 @@ class WebStateListBuilderFromDescriptionTest : public PlatformTest,
 
   // Resets `web_state_list_`.
   void Reset() {
-    CloseAllWebStates(web_state_list_, WebStateList::CLOSE_NO_FLAGS);
+    CloseAllWebStates(web_state_list_, WebStateList::ClosingReason::kDefault);
   }
 
   WebStateList web_state_list_{this};
@@ -268,7 +269,8 @@ TEST_F(WebStateListBuilderFromDescriptionTest,
     // WebStates have no identifiers that could have leaked from the initial
     // builder.
     EXPECT_EQ("| _ _ _", other_builder.GetWebStateListDescription());
-    CloseAllWebStates(other_web_state_list, WebStateList::CLOSE_NO_FLAGS);
+    CloseAllWebStates(other_web_state_list,
+                      WebStateList::ClosingReason::kDefault);
     EXPECT_EQ("|", other_builder.GetWebStateListDescription());
   }
 
@@ -305,12 +307,13 @@ TEST_F(WebStateListBuilderFromDescriptionTest,
   builder_.GenerateIdentifiersForWebStateList();
   EXPECT_EQ("a b | [ 0 c ] [ 1 d ] [ 2 e* ]", GetDescription());
 
-  web_state_list_.CloseWebStatesAtIndices(WebStateList::CLOSE_NO_FLAGS,
+  web_state_list_.CloseWebStatesAtIndices(WebStateList::ClosingReason::kDefault,
                                           {0, 2, 4});
   EXPECT_EQ("b | [ 1 d* ]", GetDescription());
-  CloseAllNonPinnedWebStates(web_state_list_, WebStateList::CLOSE_NO_FLAGS);
+  CloseAllNonPinnedWebStates(web_state_list_,
+                             WebStateList::ClosingReason::kDefault);
   EXPECT_EQ("b* |", GetDescription());
-  CloseAllWebStates(web_state_list_, WebStateList::CLOSE_NO_FLAGS);
+  CloseAllWebStates(web_state_list_, WebStateList::ClosingReason::kDefault);
   EXPECT_EQ("|", GetDescription());
 }
 

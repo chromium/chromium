@@ -296,6 +296,48 @@ test(() => {
 }, "Test conversion of [EnforceRange] long long types");
 
 test(() => {
+  type = "testClampLongLong";
+  verifyAttribute(type);
+  convert(type, 0);
+  convert(type, -0, 0);
+  convert(type, -1);
+  convert(type, 1);
+  convert(type, 0x7FFFFFFF);
+  convert(type, 0x80000000);
+  convert(type, 0xFFFFFFFF);
+  convert(type, -0x80000000);
+
+  const MAX = Math.pow(2, 53) - 1;
+  const MIN = -MAX;
+  convert(type, -MAX + 1);
+  convert(type, -MAX);
+  convert(type, -MAX - 1, MIN);
+  convert(type, MAX - 1);
+  convert(type, MAX);
+  convert(type, MAX + 1, MAX);
+  convert(type, 0xDCBA9876543210, MAX);
+  convert(type, Number.MIN_VALUE, 0);
+  convert(type, -Number.MIN_VALUE, 0);
+  convert(type, Number.MAX_VALUE, MAX);
+  convert(type, -Number.MAX_VALUE, MIN);
+  convert(type, Infinity, MAX);
+  convert(type, -Infinity, MIN);
+  convert(type, NaN, 0);
+  convert(type, 1.99, 2);
+  convert(type, -1.99, -2);
+  convert(type, 1.5, 2);
+  convert(type, -1.5, -2);
+  convert(type, 0.5, 0);
+  convert(type, -0.5, 0);
+  testNonNumericToNumeric(type);
+  assert_throws_js(Error, () => {
+    converter[type] = {
+      valueOf: () => { throw new Error('custom') }
+    }
+  });
+}, "Test conversion of [Clamp] long long types");
+
+test(() => {
   type = "testUnsignedLongLong";
   verifyAttribute(type);
   convert(type, 0);
@@ -382,6 +424,42 @@ test(() => {
     }
   });
 }, "Test conversion of [EnforceRange] unsigned long long types");
+
+test(() => {
+  type = "testClampUnsignedLongLong";
+  verifyAttribute(type);
+  convert(type, 0);
+  convert(type, -0, 0);
+  convert(type, 1);
+  convert(type, 0x7FFFFFFF);
+  convert(type, 0x80000000);
+  convert(type, 0xFFFFFFFF);
+
+  const UMAX = Math.pow(2, 53) - 1;
+  convert(type, UMAX - 1);
+  convert(type, UMAX);
+  convert(type, UMAX + 1, UMAX);
+  convert(type, -1, 0);
+  convert(type, -0x80000000, 0);
+  convert(type, -0x80000001, 0);
+  convert(type, 0xDCBA9876543210, UMAX);
+  convert(type, Number.MIN_VALUE, 0);
+  convert(type, -Number.MIN_VALUE, 0);
+  convert(type, Number.MAX_VALUE, UMAX);
+  convert(type, -Number.MAX_VALUE, 0);
+  convert(type, Infinity, UMAX);
+  convert(type, -Infinity, 0);
+  convert(type, NaN, 0);
+  convert(type, 1.99, 2);
+  convert(type, 1.5, 2);
+  convert(type, 0.5, 0);
+  testNonNumericToNumeric(type);
+  assert_throws_js(Error, () => {
+    converter[type] = {
+      valueOf: () => { throw new Error('custom') }
+    }
+  });
+}, "Test conversion of [Clamp] unsigned long long types");
 
 test(() => {
   type = "testByte";

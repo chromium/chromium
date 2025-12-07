@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "services/device/generic_sensor/platform_sensor_android.h"
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -88,9 +85,16 @@ bool PlatformSensorAndroid::StartSensor(
   return true;
 }
 
+// TODO(crbug.com/444059028): Basically j_object_ must not be nullptr.
+// However, there are reports that a crash occurred because j_object_
+// was nullptr. Add a TODO to track the issue.
 void PlatformSensorAndroid::StopSensor() {
-  sequenced_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&StopSensorBlocking, j_object_));
+  if (j_object_) {
+    sequenced_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&StopSensorBlocking, j_object_));
+  } else {
+    base::debug::DumpWithoutCrashing();
+  }
 }
 
 bool PlatformSensorAndroid::CheckSensorConfiguration(
@@ -100,9 +104,7 @@ bool PlatformSensorAndroid::CheckSensorConfiguration(
       env, j_object_, configuration.frequency());
 }
 
-void PlatformSensorAndroid::NotifyPlatformSensorError(
-    JNIEnv*,
-    const JavaRef<jobject>& caller) {
+void PlatformSensorAndroid::NotifyPlatformSensorError(JNIEnv*) {
   // This function may be called from Java while this object's destructor is
   // being invoked, however we know that to reach this point we must be before
   // the completion of the call to Java_PlatformSensor_sensorDestroyed(). This
@@ -113,14 +115,12 @@ void PlatformSensorAndroid::NotifyPlatformSensorError(
       base::BindOnce(&PlatformSensorAndroid::NotifySensorError, AsWeakPtr()));
 }
 
-void PlatformSensorAndroid::UpdatePlatformSensorReading(
-    JNIEnv*,
-    const base::android::JavaRef<jobject>& caller,
-    jdouble timestamp,
-    jdouble value1,
-    jdouble value2,
-    jdouble value3,
-    jdouble value4) {
+void PlatformSensorAndroid::UpdatePlatformSensorReading(JNIEnv*,
+                                                        jdouble timestamp,
+                                                        jdouble value1,
+                                                        jdouble value2,
+                                                        jdouble value3,
+                                                        jdouble value4) {
   SensorReading reading;
   reading.raw.timestamp = timestamp;
   reading.raw.values[0] = value1;
@@ -139,3 +139,5 @@ void PlatformSensorAndroid::SimulateSensorEventFromJavaForTesting(
 }
 
 }  // namespace device
+
+DEFINE_JNI(PlatformSensor)

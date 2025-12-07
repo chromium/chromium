@@ -7,8 +7,8 @@
 const DEFAULT_METHOD_NAME = window.location.origin;
 const SW_SRC_URL = 'payment_handler_sw.js';
 
-let methodName = DEFAULT_METHOD_NAME;
-var request;
+const methodName = DEFAULT_METHOD_NAME;
+let request;
 
 /**
  * Uninstalls the payment handler.
@@ -17,10 +17,11 @@ var request;
  * @return {Promise<string>} - 'success' or error message on failure.
  */
 async function uninstall(swSrcUrlOverride) {
-  let swSrcUrl =
+  const swSrcUrl =
       (swSrcUrlOverride !== undefined) ? swSrcUrlOverride : SW_SRC_URL;
   try {
-    let registration = await navigator.serviceWorker.getRegistration(swSrcUrl);
+    const registration =
+        await navigator.serviceWorker.getRegistration(swSrcUrl);
     if (!registration) {
       return 'The Payment handler has not been installed yet.';
     }
@@ -39,7 +40,7 @@ async function uninstall(swSrcUrlOverride) {
 async function enableDelegations(delegations) {
   try {
     await navigator.serviceWorker.ready;
-    let registration =
+    const registration =
         await navigator.serviceWorker.getRegistration(SW_SRC_URL);
     if (!registration) {
       return 'The payment handler is not installed.';
@@ -64,7 +65,7 @@ async function enableDelegations(delegations) {
  * @return {Promise<string>} - 'success' or error message on failure.
  */
 async function launch(methodNameOverride) {
-  let method =
+  const method =
       (methodNameOverride !== undefined) ? methodNameOverride : methodName;
   try {
     const request = new PaymentRequest([{supportedMethods: method}], {
@@ -86,7 +87,7 @@ async function launch(methodNameOverride) {
  * @return {string} The 'success' or error message.
  */
 function launchWithoutWaitForResponse(methodNameOverride, windowPage) {
-  let method =
+  const method =
       (methodNameOverride !== undefined) ? methodNameOverride : methodName;
   return launchWithoutWaitForResponseWithMethods(
       [{supportedMethods: method, data: {'windowPage': windowPage}}]);
@@ -123,7 +124,7 @@ async function abort() {
   }
 }
 
-var paymentOptions = null;
+let paymentOptions = null;
 
 /**
  * Creates a payment request with required information and calls request.show()
@@ -174,7 +175,7 @@ async function paymentRequestWithOptions(options, paymentMethod) {
  */
 async function validatePaymentResponse(response) {
   try {
-    var isValid = true;
+    let isValid = true;
     if (paymentOptions.requestShipping) {
       isValid = ('freeShippingOption' === response.shippingOption) &&
           ('Reston' === response.shippingAddress.city) &&

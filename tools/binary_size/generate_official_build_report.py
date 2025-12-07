@@ -10,6 +10,7 @@ import json
 import logging
 import os
 import re
+import shlex
 import subprocess
 import tempfile
 
@@ -23,9 +24,18 @@ _GSUTIL = os.path.join(_DIR_SOURCE_ROOT, 'third_party', 'depot_tools',
                        'gsutil.py')
 
 
-def _WriteReportsJson(out):
-  output = subprocess.check_output([_GSUTIL, 'ls', '-R', _REPORTS_GS_URL],
-                                   encoding='utf8')
+def _GenerateCanaryReportsJson(out, canary_milestone):
+  # The runtime of "gsutil ls" is proporational to how many results it has,
+  # so restrict to only recent canaries (plus really old canaries are unlikely
+  # to be useful).
+  path_globs = [
+      f'{_REPORTS_GS_URL}/{m}.*.*.?/*/*.size'
+      for m in range(canary_milestone - 2, canary_milestone + 1)
+  ]
+
+  cmd = [_GSUTIL, 'ls'] + path_globs
+  logging.info('Listing reports with: %s', shlex.join(cmd))
+  output = subprocess.check_output(cmd, encoding='utf8')
 
   reports = []
   report_re = re.compile(
@@ -40,18 +50,19 @@ def _WriteReportsJson(out):
           'apk': m.group('apk'),
       })
 
+  logging.info('Writing json with %d entries', len(reports))
   json.dump({'pushed': reports}, out)
 
 
-def _UploadReportsJson():
+def _UploadCanaryReportsJson(canary_milestone):
   with tempfile.NamedTemporaryFile(mode='wt') as f:
-    _WriteReportsJson(f)
+    _GenerateCanaryReportsJson(f, canary_milestone)
     f.flush()
     cmd = [
         _GSUTIL, '--', '-h', 'Cache-Control:no-cache', 'cp', '-a',
         'public-read', f.name, _REPORTS_JSON_GS_URL
     ]
-    logging.warning(' '.join(cmd))
+    logging.info(' '.join(cmd))
     subprocess.check_call(cmd)
 
 
@@ -63,7 +74,7 @@ def _UploadSizeFile(size_path, version, arch):
                          report_basename + '.size')
 
   cmd = [_GSUTIL, 'cp', size_path, dst_url]
-  logging.warning(' '.join(cmd))
+  logging.info(' '.join(cmd))
   subprocess.check_call(cmd)
 
 
@@ -81,10 +92,21 @@ def main():
       '--arch', required=True, help='Compiler architecture of build.')
 
   args = parser.parse_args()
+  logging.basicConfig(level=logging.DEBUG,
+                      format='%(levelname).1s %(relativeCreated)6d %(message)s')
 
   for size_path in args.size_path:
     _UploadSizeFile(size_path, args.version, args.arch)
-  _UploadReportsJson()
+
+  # Heuristic for knowing if this is a canary.
+  version_parts = [int(x) for x in args.version.split('.')]
+  if version_parts[-1] < 3:
+    logging.info('Regenerating canary_reports.json. Version=%s', args.version)
+    _UploadCanaryReportsJson(version_parts[0])
+    logging.info('Job\'s done.')
+  else:
+    logging.info('Not regenerating canary_reports.json. Version=%s',
+                 args.version)
 
 
 if __name__ == '__main__':

@@ -16,9 +16,9 @@ import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 
 import {getTemplate} from './add_input_methods_dialog.html.js';
-import {Item} from './add_items_dialog.js';
+import type {Item} from './add_items_dialog.js';
 import {ACCESSIBILITY_COMMON_IME_ID} from './languages.js';
-import {LanguageHelper, LanguagesModel} from './languages_types.js';
+import type {LanguageHelper, LanguagesModel} from './languages_types.js';
 
 class OsSettingsAddInputMethodsDialogElement extends PolymerElement {
   static get is() {
@@ -33,12 +33,17 @@ class OsSettingsAddInputMethodsDialogElement extends PolymerElement {
     return {
       languages: Object,
       languageHelper: Object,
+      limitedByPolicy: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   // Public API: Downwards data flow.
   languages: LanguagesModel|undefined;
   languageHelper: LanguageHelper;
+  limitedByPolicy: boolean;
 
   // Internal state.
   private readonly shouldPrioritiseVietnameseExtensions_ =
@@ -100,7 +105,15 @@ class OsSettingsAddInputMethodsDialogElement extends PolymerElement {
                name: inputMethod.displayName,
                searchTerms: inputMethod.tags,
                disabledByPolicy: !!inputMethod.isProhibitedByPolicy,
-             }));
+             }))
+        .sort((a, b) => {
+          if (a.disabledByPolicy === b.disabledByPolicy) {
+            return 0;
+          }
+          return a.disabledByPolicy ?
+              1 :
+              -1;  // Sort: enabled comes before disabled
+        });
   }
 
   /**

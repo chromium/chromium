@@ -1,7 +1,14 @@
 features:
+- name: scrollbar-buttons
+  files:
+  - root-scroll-button*
+  - scroll-button*
 - name: scrollbar-gutter
   files:
   - scrollbar-gutter-*
+- name: overflow-overlay
+  files:
+  - overflow-overlay.html
 - name: overflow-shorthand
   files:
   - overflow-*

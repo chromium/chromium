@@ -63,23 +63,35 @@ class CONTENT_EXPORT BluetoothAdapterFactoryWrapper {
       scoped_refptr<device::BluetoothAdapter> test_adapter);
 
  private:
+  friend class WebBluetoothServiceImplTestWithBaseAdapter;
+
   void OnGetAdapter(AcquireAdapterCallback continuation,
                     scoped_refptr<device::BluetoothAdapter> adapter);
+  void OnGetOverrideAdapter(
+      AcquireAdapterCallback continuation,
+      scoped_refptr<device::BluetoothAdapter> override_adapter);
 
   bool HasAdapter(WebBluetoothServiceImpl* service);
   void MaybeAddAdapterObserver(WebBluetoothServiceImpl* service);
   void RemoveAdapterObserver(WebBluetoothServiceImpl* service);
+  scoped_refptr<device::BluetoothAdapter> GetActiveAdapter();
 
   // Sets |adapter_| to a BluetoothAdapter instance and register observers,
   // releasing references to previous |adapter_|.
-  void set_adapter(scoped_refptr<device::BluetoothAdapter> adapter);
+  void SetAdapterInternal(scoped_refptr<device::BluetoothAdapter> adapter,
+                          bool is_override_adapter);
 
   // A BluetoothAdapter instance representing an adapter of the system.
   scoped_refptr<device::BluetoothAdapter> adapter_;
 
+  // A BluetoothAdapter override instance configured for testing purposes.
+  scoped_refptr<device::BluetoothAdapter> override_adapter_;
+
   // A BluetoothAdapter instance configured for testing purposes which will be
-  // activated by the first call to AcquireAdapter().
-  scoped_refptr<device::BluetoothAdapter> test_adapter_;
+  // activated by the first call to AcquireAdapter(). A pending override adapter
+  // is required to support graceful removal of an already supplied override
+  // adapter.
+  scoped_refptr<device::BluetoothAdapter> pending_override_adapter_;
 
   // We keep a list of all observers so that when the adapter gets swapped,
   // we can remove all observers from the old adapter and add them to the

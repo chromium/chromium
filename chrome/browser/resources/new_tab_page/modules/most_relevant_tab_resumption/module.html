@@ -1,0 +1,62 @@
+<ntp-module-header
+    id="moduleHeaderElementV2"
+    header-text="${this.i18n('modulesMostRelevantTabResumptionTitle')}"
+    .menuItems="${this.getMenuItems_()}"
+    more-actions-text="${this.i18nRecursive('',
+                                  'modulesMoreActions',
+                                  'modulesTabResumptionTitle')}"
+    @disable-button-click="${this.onDisableButtonClick_}"
+    @dismiss-button-click="${this.onDismissAllButtonClick_}"
+    @info-button-click="${this.onInfoButtonClick_}">
+</ntp-module-header>
+<div id="urlVisits">
+  ${this.getVisibleUrlVisits_().map((item, index) => html`
+    <a class="url-visit" href="${item.url.url}"
+        @click="${this.onUrlVisitClick_}" data-index="${index}"
+        title="${item.title}">
+      <div id="hoverLayer"></div>
+      <page-favicon class="icon" .fallbackToHost="${this.fallbackToHost_}"
+                    .url="${item.url}" size="24"
+                    .isKnownToSync="${item.isKnownToSync ||
+                    this.allowFaviconServerFallback_}">
+      </page-favicon>
+      <div class="url-visit-info">
+        <div class="url-visit-title">${item.title}</div>
+        <div class="url-visit-description">
+          <div class="url-visit-domain">${this.computeDomain_(item)}</div>
+          <span class="dot"
+              ?hidden="${!this.computeShouldShowDeviceName_(item)}">
+            &nbsp;&#8226;&nbsp;
+          </span>
+          <div class="url-visit-device"
+              ?hidden="${!this.computeShouldShowDeviceName_(item)}">
+            ${this.computeDeviceName_(item)}
+          </div>
+          <span class="dot">
+            &nbsp;&#8226;&nbsp;
+          </span>
+          <span class="url-visit-reason">
+            ${item.decoration.displayString}
+          </span>
+        </div>
+      </div>
+      <cr-icon-button iron-icon="modules:done"
+          @click="${this.onDismissButtonClick_}"
+          title="$i18n{modulesHistoryDoneButton}">
+      </cr-icon-button>
+    </a>
+  `)}
+  <div id="seeMoreButtonContainer">
+    <a href="chrome://history/syncedTabs"
+        @click="${this.onSeeMoreButtonClick_}">
+      $i18n{modulesMostRelevantTabResumptionSeeMore}
+      <div id="hoverContainer"></div>
+    </a>
+  </div>
+</div>
+${this.showInfoDialog_ ? html`
+    <ntp-info-dialog show-on-attach
+        .innerHTML="${this.i18nAdvanced('modulesTabResumptionInfo')}"
+        @close="${this.onInfoDialogClose_}">>
+    </ntp-info-dialog>
+` : ''}

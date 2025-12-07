@@ -4,6 +4,7 @@
 
 #include "content/browser/media/media_web_contents_observer.h"
 
+#include <algorithm>
 #include <memory>
 #include <tuple>
 
@@ -13,9 +14,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
+#include "content/browser/browser_main_loop.h"
 #include "content/browser/media/audible_metrics.h"
 #include "content/browser/media/media_devices_util.h"
+#include "content/browser/media/media_web_contents_observer.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
+#include "content/browser/renderer_host/media/preferred_audio_output_device_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/render_frame_host.h"
@@ -35,6 +39,20 @@ namespace {
 AudibleMetrics* GetAudibleMetrics() {
   static AudibleMetrics* metrics = new AudibleMetrics();
   return metrics;
+}
+
+PreferredAudioOutputDeviceManager* GetPreferredAudioOutputDeviceManager() {
+  if (!content::BrowserMainLoop::GetInstance()) {
+    return nullptr;
+  }
+
+  if (!content::BrowserMainLoop::GetInstance()->media_stream_manager()) {
+    return nullptr;
+  }
+
+  return content::BrowserMainLoop::GetInstance()
+      ->media_stream_manager()
+      ->preferred_audio_output_device_manager();
 }
 
 }  // anonymous namespace
@@ -138,6 +156,7 @@ MediaWebContentsObserver::MediaWebContentsObserver(
 MediaWebContentsObserver::~MediaWebContentsObserver() = default;
 
 void MediaWebContentsObserver::WebContentsDestroyed() {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
   use_after_free_checker_.check();
   AudioStreamMonitor* audio_stream_monitor =
       web_contents_impl()->audio_stream_monitor();
@@ -162,6 +181,7 @@ void MediaWebContentsObserver::WebContentsDestroyed() {
 
 void MediaWebContentsObserver::RenderFrameDeleted(
     RenderFrameHost* render_frame_host) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
   use_after_free_checker_.check();
 
   GlobalRenderFrameHostId frame_routing_id = render_frame_host->GetGlobalId();
@@ -229,9 +249,44 @@ void MediaWebContentsObserver::RenderFrameDeleted(
     fullscreen_player_.reset();
   }
 
+  PreferredAudioOutputDeviceManager* preferred_audio_output_device_manager =
+      GetPreferredAudioOutputDeviceManager();
+  if (preferred_audio_output_device_manager) {
+    preferred_audio_output_device_manager->UnregisterMainFrameOnUIThread(
+        render_frame_host);
+  }
+
   // Cancel any pending callbacks for players from this frame.
   use_after_free_checker_.check();
   per_frame_factory_.erase(render_frame_host);
+}
+
+void MediaWebContentsObserver::DidStartNavigation(
+    NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
+    return;
+  }
+
+  PreferredAudioOutputDeviceManager* preferred_audio_output_device_manager =
+      GetPreferredAudioOutputDeviceManager();
+
+  // Invalidates the render frame host by refresh.
+  if (preferred_audio_output_device_manager) {
+    preferred_audio_output_device_manager->UnregisterMainFrameOnUIThread(
+        RenderFrameHost::FromID(
+            navigation_handle->GetPreviousRenderFrameHostId()));
+  }
+}
+
+void MediaWebContentsObserver::RenderFrameHostChanged(
+    RenderFrameHost* old_host,
+    RenderFrameHost* new_host) {
+  PreferredAudioOutputDeviceManager* preferred_audio_output_device_manager =
+      GetPreferredAudioOutputDeviceManager();
+  if (old_host && preferred_audio_output_device_manager) {
+    preferred_audio_output_device_manager->UnregisterMainFrameOnUIThread(
+        old_host);
+  }
 }
 
 void MediaWebContentsObserver::MaybeUpdateAudibleState() {
@@ -249,6 +304,10 @@ void MediaWebContentsObserver::MaybeUpdateAudibleState() {
 }
 
 bool MediaWebContentsObserver::HasActiveEffectivelyFullscreenVideo() const {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+  use_after_free_checker_.check();
+  CHECK(!fullscreen_player_.has_value() ||
+        picture_in_picture_allowed_in_fullscreen_.has_value());
   if (!web_contents()->IsFullscreen() || !fullscreen_player_)
     return false;
 
@@ -261,7 +320,10 @@ bool MediaWebContentsObserver::HasActiveEffectivelyFullscreenVideo() const {
 
 bool MediaWebContentsObserver::IsPictureInPictureAllowedForFullscreenVideo()
     const {
-  DCHECK(picture_in_picture_allowed_in_fullscreen_.has_value());
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+  use_after_free_checker_.check();
+  CHECK(fullscreen_player_.has_value());
+  CHECK(picture_in_picture_allowed_in_fullscreen_.has_value());
 
   return *picture_in_picture_allowed_in_fullscreen_;
 }
@@ -299,6 +361,14 @@ void MediaWebContentsObserver::RequestPersistentVideo(bool value) {
   // The message is sent to the renderer even though the video is already the
   // fullscreen element itself. It will eventually be handled by Blink.
   GetMediaPlayerRemote(*fullscreen_player_)->SetPersistentState(value);
+}
+
+int MediaWebContentsObserver::GetCurrentlyPlayingVideoCount() const {
+  return std::ranges::count_if(
+      player_info_map_, [](const PlayerInfoMap::value_type& id_and_info) {
+        const PlayerInfo& info = *id_and_info.second;
+        return info.is_playing() && info.has_video();
+      });
 }
 
 bool MediaWebContentsObserver::IsPlayerActive(
@@ -379,6 +449,9 @@ void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
     OnMediaMetadataChanged(bool has_audio,
                            bool has_video,
                            media::MediaContentType media_content_type) {
+  media_web_contents_observer_->web_contents_impl()->MediaMetadataChanged(
+      WebContentsObserver::MediaPlayerInfo(has_video, has_audio),
+      media_player_id_);
   media_web_contents_observer_->OnMediaMetadataChanged(
       media_player_id_, has_audio, has_video, media_content_type);
 
@@ -419,7 +492,7 @@ void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
 
   content::GetRawDeviceIdFromHMAC(
       render_frame_host->GetGlobalId(), hashed_device_id,
-      blink::mojom::MediaDeviceType::kMediaAudioOuput,
+      blink::mojom::MediaDeviceType::kMediaAudioOutput,
       base::BindOnce(&MediaPlayerObserverHostImpl::OnReceivedTranslatedDeviceId,
                      weak_factory_.GetWeakPtr()));
 }
@@ -542,6 +615,10 @@ void MediaWebContentsObserver::OnMediaMetadataChanged(
 void MediaWebContentsObserver::OnMediaEffectivelyFullscreenChanged(
     const MediaPlayerId& player_id,
     blink::WebFullscreenVideoStatus fullscreen_status) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+  use_after_free_checker_.check();
+  CHECK(!fullscreen_player_.has_value() ||
+        picture_in_picture_allowed_in_fullscreen_.has_value());
   switch (fullscreen_status) {
     case blink::WebFullscreenVideoStatus::kFullscreenAndPictureInPictureEnabled:
       fullscreen_player_ = player_id;

@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <algorithm>
+#include <array>
 #include <memory>
 #include <unordered_set>
 #include <utility>
@@ -18,23 +20,20 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/scoped_group_bookmark_actions.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/query_parser/query_parser.h"
 #include "components/url_formatter/url_formatter.h"
-#include "ui/base/clipboard/clipboard.h"
-#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/models/tree_node_iterator.h"
 #include "url/gurl.h"
 
@@ -43,10 +42,6 @@ using base::Time;
 namespace bookmarks {
 
 namespace {
-
-// The maximum length of URL or title returned by the Cleanup functions.
-const size_t kCleanedUpUrlMaxLength = 1024u;
-const size_t kCleanedUpTitleMaxLength = 1024u;
 
 void CloneBookmarkNodeImpl(BookmarkModel* model,
                            const BookmarkNodeData::Element& element,
@@ -70,18 +65,14 @@ void CloneBookmarkNodeImpl(BookmarkModel* model,
       DCHECK(!element.date_folder_modified.is_null());
       model->SetDateFolderModified(cloned_node, element.date_folder_modified);
     }
-    for (int i = 0; i < static_cast<int>(element.children.size()); ++i)
+    for (int i = 0; i < static_cast<int>(element.children.size()); ++i) {
       CloneBookmarkNodeImpl(model, element.children[i], cloned_node, i,
                             reset_node_times);
+    }
   }
 }
 
-// Comparison function that compares based on date modified of the two nodes.
-bool MoreRecentlyModified(const BookmarkNode* n1, const BookmarkNode* n2) {
-  return n1->date_folder_modified() > n2->date_folder_modified();
-}
-
-// Returns true if |text| contains each string in |words|. This is used when
+// Returns true if `text` contains each string in `words`. This is used when
 // searching for bookmarks.
 bool DoesBookmarkTextContainWords(const std::u16string& text,
                                   const std::vector<std::u16string>& words) {
@@ -94,71 +85,21 @@ bool DoesBookmarkTextContainWords(const std::u16string& text,
   return true;
 }
 
-// This is used with a tree iterator to skip subtrees which are not visible.
-bool PruneInvisibleFolders(const BookmarkNode* node) {
-  return !node->IsVisible();
-}
-
-// This traces parents up to root, determines if node is contained in a
-// selected folder.
-bool HasSelectedAncestor(
-    BookmarkModel* model,
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
-        selected_nodes,
-    const BookmarkNode* node) {
-  if (!node || model->is_permanent_node(node))
-    return false;
-
-  for (size_t i = 0; i < selected_nodes.size(); ++i)
-    if (node->id() == selected_nodes[i]->id())
-      return true;
-
-  return HasSelectedAncestor(model, selected_nodes, node->parent());
-}
-
-// Recursively searches for a node satisfying the functor |pred| . Returns
+// Recursively searches for a node satisfying the functor `pred` . Returns
 // nullptr if not found.
 template <typename Predicate>
 const BookmarkNode* FindNode(const BookmarkNode* node, Predicate pred) {
-  if (pred(node))
+  if (pred(node)) {
     return node;
+  }
 
   for (const auto& child : node->children()) {
     const BookmarkNode* result = FindNode(child.get(), pred);
-    if (result)
+    if (result) {
       return result;
+    }
   }
   return nullptr;
-}
-
-// Attempts to shorten a URL safely (i.e., by preventing the end of the URL
-// from being in the middle of an escape sequence) to no more than
-// kCleanedUpUrlMaxLength characters, returning the result.
-std::string TruncateUrl(const std::string& url) {
-  if (url.length() <= kCleanedUpUrlMaxLength)
-    return url;
-
-  // If we're in the middle of an escape sequence, truncate just before it.
-  if (url[kCleanedUpUrlMaxLength - 1] == '%')
-    return url.substr(0, kCleanedUpUrlMaxLength - 1);
-  if (url[kCleanedUpUrlMaxLength - 2] == '%')
-    return url.substr(0, kCleanedUpUrlMaxLength - 2);
-
-  return url.substr(0, kCleanedUpUrlMaxLength);
-}
-
-// Returns the URL from the clipboard. If there is no URL an empty URL is
-// returned.
-GURL GetUrlFromClipboard(bool notify_if_restricted) {
-  std::u16string url_text;
-#if !BUILDFLAG(IS_IOS)
-  ui::DataTransferEndpoint data_dst =
-      ui::DataTransferEndpoint(ui::EndpointType::kDefault,
-                               {.notify_if_restricted = notify_if_restricted});
-  ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, &data_dst, &url_text);
-#endif
-  return GURL(url_text);
 }
 
 template <class type>
@@ -177,8 +118,9 @@ std::vector<const BookmarkNode*> GetBookmarksMatchingPropertiesImpl(
         model->is_permanent_node(node)) {
       continue;
     }
-    if (query.title && node->GetTitle() != *query.title)
+    if (query.title && node->GetTitle() != *query.title) {
       continue;
+    }
 
     nodes.push_back(node);
     if (nodes.size() == max_count) {
@@ -206,22 +148,10 @@ void GetMostRecentEntries(
   }
 }
 
-#if BUILDFLAG(IS_ANDROID)
-// Returns whether or not a bookmark model contains any bookmarks aside of the
-// permanent nodes.
-bool HasUserCreatedBookmarks(BookmarkModel* model) {
-  const BookmarkNode* root_node = model->root_node();
-
-  return base::ranges::any_of(root_node->children(), [](const auto& node) {
-    return !node->children().empty();
-  });
-}
-#endif
-
 }  // namespace
 
-QueryFields::QueryFields() {}
-QueryFields::~QueryFields() {}
+QueryFields::QueryFields() = default;
+QueryFields::~QueryFields() = default;
 
 VectorIterator::VectorIterator(
     std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>* nodes)
@@ -245,8 +175,7 @@ void CloneBookmarkNode(BookmarkModel* model,
                        size_t index_to_add_at,
                        bool reset_node_times) {
   if (!parent->is_folder() || !model) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   for (size_t i = 0; i < elements.size(); ++i) {
     CloneBookmarkNodeImpl(model, elements[i], parent, index_to_add_at + i,
@@ -256,145 +185,173 @@ void CloneBookmarkNode(BookmarkModel* model,
   metrics::RecordCloneBookmarkNode(elements.size());
 }
 
-void CopyToClipboard(
-    BookmarkModel* model,
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& nodes,
-    bool remove_nodes,
-    metrics::BookmarkEditSource source,
-    bool is_off_the_record) {
-  if (nodes.empty())
-    return;
-
-  // Create array of selected nodes with descendants filtered out.
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> filtered_nodes;
-  for (const bookmarks::BookmarkNode* node : nodes) {
-    if (!HasSelectedAncestor(model, nodes, node->parent()))
-      filtered_nodes.push_back(node);
-  }
-
-  BookmarkNodeData(filtered_nodes).WriteToClipboard(is_off_the_record);
-
-  if (remove_nodes) {
-    ScopedGroupBookmarkActions group_cut(model);
-    for (const bookmarks::BookmarkNode* node : filtered_nodes) {
-      model->Remove(node, source, FROM_HERE);
-    }
-  }
-}
-
-// Updates |title| such that |url| and |title| pair are unique among the
-// children of |parent|.
-void MakeTitleUnique(const BookmarkModel* model,
-                     const BookmarkNode* parent,
-                     const GURL& url,
-                     std::u16string* title) {
-  std::unordered_set<std::u16string> titles;
-  std::u16string original_title_lower = base::i18n::ToLower(*title);
-  for (const auto& node : parent->children()) {
-    if (node->is_url() && (url == node->url()) &&
-        base::StartsWith(base::i18n::ToLower(node->GetTitle()),
-                         original_title_lower,
-                         base::CompareCase::SENSITIVE)) {
-      titles.insert(node->GetTitle());
-    }
-  }
-
-  if (titles.find(*title) == titles.end())
-    return;
-
-  for (size_t i = 0; i < titles.size(); i++) {
-    const std::u16string new_title(*title +
-                                   base::ASCIIToUTF16(base::StringPrintf(
-                                       " (%lu)", (unsigned long)(i + 1))));
-    if (titles.find(new_title) == titles.end()) {
-      *title = new_title;
-      return;
-    }
-  }
-  NOTREACHED_IN_MIGRATION();
-}
-
-void PasteFromClipboard(BookmarkModel* model,
-                        const BookmarkNode* parent,
-                        size_t index) {
-  if (!parent)
-    return;
-
-  BookmarkNodeData bookmark_data;
-  if (!bookmark_data.ReadFromClipboard(ui::ClipboardBuffer::kCopyPaste)) {
-    GURL url = GetUrlFromClipboard(/*notify_if_restricted=*/true);
-    if (!url.is_valid())
-      return;
-    BookmarkNode node(/*id=*/0, base::Uuid::GenerateRandomV4(), url);
-    node.SetTitle(base::ASCIIToUTF16(url.spec()));
-    bookmark_data = BookmarkNodeData(&node);
-  }
-  DCHECK_LE(index, parent->children().size());
-  ScopedGroupBookmarkActions group_paste(model);
-
-  if (bookmark_data.size() == 1 &&
-      model->IsBookmarked(bookmark_data.elements[0].url)) {
-    MakeTitleUnique(model,
-                    parent,
-                    bookmark_data.elements[0].url,
-                    &bookmark_data.elements[0].title);
-  }
-
-  CloneBookmarkNode(model, bookmark_data.elements, parent, index, true);
-}
-
-bool CanPasteFromClipboard(BookmarkModel* model, const BookmarkNode* node) {
-  if (!node || model->client()->IsNodeManaged(node)) {
-    return false;
-  }
-  return (BookmarkNodeData::ClipboardContainsBookmarks() ||
-          GetUrlFromClipboard(/*notify_if_restricted=*/false).is_valid());
-}
-
 std::vector<const BookmarkNode*> GetMostRecentlyModifiedUserFolders(
-    BookmarkModel* model,
-    size_t max_count) {
+    BookmarkModel* model) {
   std::vector<const BookmarkNode*> nodes;
   ui::TreeNodeIterator<const BookmarkNode> iterator(
-      model->root_node(), base::BindRepeating(&PruneInvisibleFolders));
+      model->root_node(), base::BindRepeating(&PruneFoldersForDisplay, model));
 
   while (iterator.has_next()) {
-    const BookmarkNode* parent = iterator.Next();
-    if (model->client()->IsNodeManaged(parent)) {
+    nodes.push_back(iterator.Next());
+  }
+
+  const std::array<const BookmarkNode*, 3>
+      account_permanent_nodes_possibly_null = {
+          model->account_mobile_node(), model->account_bookmark_bar_node(),
+          model->account_other_node()};
+
+  const BookmarkNode* default_node =
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+      model->account_mobile_node() ? model->account_mobile_node()
+                                   : model->mobile_node();
+#else   // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS).
+      model->account_other_node() ? model->account_other_node()
+                                  : model->other_node();
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
+  auto more_recently_modified = [account_permanent_nodes_possibly_null,
+                                 default_node](const BookmarkNode* n1,
+                                               const BookmarkNode* n2) {
+    base::Time t1 = base::Contains(account_permanent_nodes_possibly_null, n1)
+                        ? std::max(n1->date_folder_modified(), n1->date_added())
+                        : n1->date_folder_modified();
+
+    base::Time t2 = base::Contains(account_permanent_nodes_possibly_null, n2)
+                        ? std::max(n2->date_folder_modified(), n2->date_added())
+                        : n2->date_folder_modified();
+
+    // If no node has been modified more recently, choose a default folder.
+    return t1 == t2 ? (n1 == default_node || n2 != default_node) : (t1 > t2);
+  };
+
+  std::ranges::stable_sort(nodes, more_recently_modified);
+  return nodes;
+}
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+BookmarkNodesSplitByAccountAndLocal::BookmarkNodesSplitByAccountAndLocal() =
+    default;
+BookmarkNodesSplitByAccountAndLocal::BookmarkNodesSplitByAccountAndLocal(
+    const BookmarkNodesSplitByAccountAndLocal&) = default;
+BookmarkNodesSplitByAccountAndLocal&
+BookmarkNodesSplitByAccountAndLocal::operator=(
+    const BookmarkNodesSplitByAccountAndLocal&) = default;
+BookmarkNodesSplitByAccountAndLocal::~BookmarkNodesSplitByAccountAndLocal() =
+    default;
+
+BookmarkNodesSplitByAccountAndLocal GetMostRecentlyUsedFoldersForDisplay(
+    BookmarkModel* model,
+    const BookmarkNode* displayed_node) {
+  // `displayed_node` is meant to be a bookmark. Code below is not tested for
+  // folders.
+  CHECK(!displayed_node->is_folder());
+
+  // Max number of most recently used non-permanent-node folders.
+  static constexpr size_t kMaxMRUFolders = 5;
+
+  std::vector<const BookmarkNode*> mru_nodes =
+      bookmarks::GetMostRecentlyModifiedUserFolders(model);
+  const BookmarkNode* const most_recent_node =
+      mru_nodes.empty() ? nullptr : mru_nodes[0];
+
+  // Special case the parent item, it'll either remain first or filtered out as
+  // a permanent node and added back later.
+  std::erase(mru_nodes, displayed_node->parent());  // No-op if not present.
+  mru_nodes.insert(mru_nodes.begin(), displayed_node->parent());
+
+  // Remove permanent nodes, they'll be re-added at the end if used later.
+  std::erase_if(mru_nodes, [](const BookmarkNode* mru_node) {
+    return mru_node->is_permanent_node();
+  });
+
+  // Figure out which permanent nodes to add.
+  const bool account_nodes_exist =
+      model->account_bookmark_bar_node() != nullptr;
+  const std::vector<const BookmarkNode*> account_permanent_nodes(
+      {model->account_bookmark_bar_node(), model->account_other_node(),
+       model->account_mobile_node()});
+  const std::vector<const BookmarkNode*> local_permanent_nodes(
+      {model->bookmark_bar_node(), model->other_node(), model->mobile_node()});
+
+  std::vector<const BookmarkNode*> permanent_nodes_included;
+  for (const BookmarkNode* permanent_node :
+       account_nodes_exist ? account_permanent_nodes : local_permanent_nodes) {
+    if (!permanent_node->IsVisible()) {
       continue;
     }
-    if (parent->is_folder() && parent->date_folder_modified() > Time()) {
-      if (max_count == 0) {
-        nodes.push_back(parent);
-      } else {
-        auto i = std::upper_bound(nodes.begin(), nodes.end(), parent,
-                                  &MoreRecentlyModified);
-        if (nodes.size() < max_count || i != nodes.end()) {
-          nodes.insert(i, parent);
-          while (nodes.size() > max_count)
-            nodes.pop_back();
-        }
-      }
-    }  // else case, the root node, which we don't care about or imported nodes
-       // (which have a time of 0).
+    permanent_nodes_included.push_back(permanent_node);
   }
 
-  if (nodes.size() < max_count) {
-    // Add the permanent nodes if there is space. The permanent nodes are the
-    // only children of the root_node.
-    const BookmarkNode* root_node = model->root_node();
-
-    for (const auto& node : root_node->children()) {
-      if (node->IsVisible() && !model->client()->IsNodeManaged(node.get()) &&
-          !base::Contains(nodes, node.get())) {
-        nodes.push_back(node.get());
-
-        if (nodes.size() == max_count)
-          break;
+  if (account_nodes_exist) {
+    // Add back the most recent node and the parent node if either of them are
+    // local permanent nodes. Permanent account nodes are preferred.
+    auto append_if_permanent_local_node = [model, &permanent_nodes_included](
+                                              const BookmarkNode* mru_node) {
+      if (mru_node->is_permanent_node() && model->IsLocalOnlyNode(*mru_node)) {
+        permanent_nodes_included.push_back(mru_node);
       }
+    };
+    if (most_recent_node) {
+      append_if_permanent_local_node(most_recent_node);
+    }
+    if (displayed_node->parent() != most_recent_node) {
+      append_if_permanent_local_node(displayed_node->parent());
     }
   }
-  return nodes;
+
+  // Cap total number of non-permanent nodes to kMaxMRUFolders.
+  mru_nodes.resize(std::min(mru_nodes.size(), kMaxMRUFolders));
+
+  // Add permanent nodes at the end (note that these lists are both sorted and
+  // will remain sorted (permanent last) when split them up below.
+  mru_nodes.insert(mru_nodes.end(), permanent_nodes_included.begin(),
+                   permanent_nodes_included.end());
+
+  // Split between account and local nodes if there are account nodes.
+  BookmarkNodesSplitByAccountAndLocal result;
+  if (account_nodes_exist) {
+    std::vector<const BookmarkNode*> account_nodes;
+    std::vector<const BookmarkNode*> local_nodes;
+    for (const BookmarkNode* mru_node : mru_nodes) {
+      (model->IsLocalOnlyNode(*mru_node) ? result.local_nodes
+                                         : result.account_nodes)
+          .push_back(mru_node);
+    }
+  } else {
+    result.local_nodes = std::move(mru_nodes);
+  }
+  return result;
+}
+
+BookmarkNodesSplitByAccountAndLocal GetPermanentNodesForDisplay(
+    const BookmarkModel* model) {
+  BookmarkNodesSplitByAccountAndLocal permanent_nodes;
+
+  for (const auto& permanent_node : model->root_node()->children()) {
+    BookmarkNode* node = permanent_node.get();
+
+    // Do not include permanent nodes if they should not be visible.
+    if (PruneFoldersForDisplay(model, node)) {
+      continue;
+    }
+
+    if (model->IsLocalOnlyNode(*node) ||
+        model->client()->IsSyncFeatureEnabledIncludingBookmarks()) {
+      permanent_nodes.local_nodes.push_back(node);
+    } else {
+      permanent_nodes.account_nodes.push_back(node);
+    }
+  }
+
+  return permanent_nodes;
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+bool HasLocalOrSyncableBookmarks(const BookmarkModel* model) {
+  return std::ranges::any_of(
+      std::array{model->bookmark_bar_node(), model->other_node(),
+                 model->mobile_node()},
+      [](const BookmarkNode* node) { return !node->children().empty(); });
 }
 
 void GetMostRecentlyAddedEntries(BookmarkModel* model,
@@ -477,7 +434,7 @@ std::vector<std::u16string> ParseBookmarkQuery(
   return query_words;
 }
 
-// Returns true if |node|s title or url contains the strings in |words|.
+// Returns true if `node`s title or url contains the strings in `words`.
 bool DoesBookmarkContainWords(const std::u16string& title,
                               const GURL& url,
                               const std::vector<std::u16string>& words) {
@@ -504,39 +461,15 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kShowManagedBookmarksInBookmarkBar, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterBooleanPref(prefs::kAddedBookmarkSincePowerBookmarksLaunch,
-                                false);
+  registry->RegisterTimePref(prefs::kBookmarkStorageComputationLastUpdatePref,
+                             base::Time());
   RegisterManagedBookmarksPrefs(registry);
 }
 
 void RegisterManagedBookmarksPrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kManagedBookmarks);
-  registry->RegisterStringPref(
-      prefs::kManagedBookmarksFolderName, std::string());
-}
-
-const BookmarkNode* GetParentForNewNodes(
-    const BookmarkNode* parent,
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
-        selection,
-    size_t* index) {
-  const BookmarkNode* real_parent = parent;
-
-  if (selection.size() == 1 && selection[0]->is_folder())
-    real_parent = selection[0];
-
-  if (index) {
-    if (selection.size() == 1 && selection[0]->is_url()) {
-      std::optional<size_t> selection_index =
-          real_parent->GetIndexOf(selection[0]);
-      DCHECK(selection_index.has_value());
-      *index = selection_index.value() + 1;
-    } else {
-      *index = real_parent->children().size();
-    }
-  }
-
-  return real_parent;
+  registry->RegisterStringPref(prefs::kManagedBookmarksFolderName,
+                               std::string());
 }
 
 void DeleteBookmarkFolders(BookmarkModel* model,
@@ -546,24 +479,24 @@ void DeleteBookmarkFolders(BookmarkModel* model,
   // other changes have been committed.
   for (auto iter = ids.begin(); iter != ids.end(); ++iter) {
     const BookmarkNode* node = GetBookmarkNodeByID(model, *iter);
-    if (!node)
+    if (!node) {
       continue;
+    }
     model->Remove(node, metrics::BookmarkEditSource::kUser, location);
   }
 }
 
 const BookmarkNode* AddIfNotBookmarked(BookmarkModel* model,
                                        const GURL& url,
-                                       const std::u16string& title,
-                                       const BookmarkNode* parent) {
+                                       const std::u16string& title) {
   // Nothing to do, a user bookmark with that url already exists.
-  if (IsBookmarkedByUser(model, url))
+  if (IsBookmarkedByUser(model, url)) {
     return nullptr;
+  }
 
   base::RecordAction(base::UserMetricsAction("BookmarkAdded"));
 
-  const auto* parent_to_use =
-      parent ? parent : GetParentForNewNodes(model, url);
+  const BookmarkNode* parent_to_use = GetParentForNewNodes(model, url);
   return model->AddNewURL(parent_to_use, parent_to_use->children().size(),
                           title, url);
 }
@@ -577,35 +510,6 @@ void RemoveAllBookmarks(BookmarkModel* model,
       model->Remove(node, metrics::BookmarkEditSource::kUser, location);
     }
   }
-}
-
-std::u16string CleanUpUrlForMatching(
-    const GURL& gurl,
-    base::OffsetAdjuster::Adjustments* adjustments) {
-  DCHECK(gurl.is_valid());
-
-  base::OffsetAdjuster::Adjustments tmp_adjustments;
-  return base::i18n::ToLower(url_formatter::FormatUrlWithAdjustments(
-      GURL(TruncateUrl(gurl.spec())),
-      url_formatter::kFormatUrlOmitUsernamePassword,
-      base::UnescapeRule::SPACES | base::UnescapeRule::PATH_SEPARATORS |
-          base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS,
-      nullptr, nullptr, adjustments ? adjustments : &tmp_adjustments));
-}
-
-std::u16string CleanUpTitleForMatching(const std::u16string& title) {
-  return base::i18n::ToLower(title.substr(0u, kCleanedUpTitleMaxLength));
-}
-
-bool CanAllBeEditedByUser(
-    BookmarkClient* client,
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& nodes) {
-  for (size_t i = 0; i < nodes.size(); ++i) {
-    if (client->IsNodeManaged(nodes[i])) {
-      return false;
-    }
-  }
-  return true;
 }
 
 bool IsBookmarkedByUser(BookmarkModel* model, const GURL& url) {
@@ -631,27 +535,31 @@ bool HasDescendantsOf(
     const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& list,
     const BookmarkNode* root) {
   for (const BookmarkNode* node : list) {
-    if (IsDescendantOf(node, root))
+    if (IsDescendantOf(node, root)) {
       return true;
+    }
   }
   return false;
 }
 
 const BookmarkNode* GetParentForNewNodes(BookmarkModel* model,
                                          const GURL& url) {
-#if BUILDFLAG(IS_ANDROID)
-  if (!HasUserCreatedBookmarks(model))
-    return model->mobile_node();
-#endif
   const BookmarkNode* parent = model->client()->GetSuggestedSaveLocation(url);
   if (parent) {
     return parent;
   }
 
+  // Return the last modified folder if there is no save location suggestion.
   std::vector<const BookmarkNode*> nodes =
-      GetMostRecentlyModifiedUserFolders(model, 1);
-  DCHECK(!nodes.empty());  // This list is always padded with default folders.
+      GetMostRecentlyModifiedUserFolders(model);
+  CHECK(!nodes.empty());
   return nodes[0];
+}
+
+bool PruneFoldersForDisplay(const BookmarkModel* model,
+                            const BookmarkNode* node) {
+  return !node->IsVisible() || !node->is_folder() ||
+         model->client()->IsNodeManaged(node);
 }
 
 }  // namespace bookmarks

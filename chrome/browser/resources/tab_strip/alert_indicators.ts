@@ -34,6 +34,7 @@ export class AlertIndicatorsElement extends CustomElement {
       [TabAlertState.kAudioPlaying, audioIndicator],
       [TabAlertState.kAudioMuting, audioIndicator],
       [TabAlertState.kBluetoothConnected, new AlertIndicatorElement()],
+      [TabAlertState.kBluetoothScanActive, new AlertIndicatorElement()],
       [TabAlertState.kUsbConnected, new AlertIndicatorElement()],
       [TabAlertState.kHidConnected, new AlertIndicatorElement()],
       [TabAlertState.kSerialConnected, new AlertIndicatorElement()],

@@ -10,8 +10,8 @@ build_webui("build") {
   grd_prefix = "webxr_internals"
 
   static_files = [
-    "webxr_internals.html",
     "webxr_internals.css",
+    "webxr_internals.html",
   ]
 
   web_component_files = [
@@ -22,7 +22,7 @@ build_webui("build") {
     "session_statistics_table.ts",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "browser_proxy.ts",
     "time_util.ts",
     "webxr_internals.ts",
@@ -40,8 +40,6 @@ build_webui("build") {
     "//content/browser/xr/webxr_internals/mojom:mojo_bindings_ts__generator",
     "//device/vr/public/mojom:xr_common_ts__generator",
   ]
-
-  html_to_wrapper_template = "native"
 
   ts_deps = [
     "//ui/webui/resources/js:build_ts",

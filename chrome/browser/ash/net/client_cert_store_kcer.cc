@@ -16,10 +16,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "chrome/browser/ash/net/client_cert_filter.h"
-#include "chrome/browser/certificate_provider/certificate_provider.h"
-#include "chromeos/components/kcer/client_cert_identity_kcer.h"
-#include "chromeos/components/kcer/kcer.h"
+#include "chromeos/ash/components/kcer/client_cert_identity_kcer.h"
+#include "chromeos/ash/components/kcer/kcer.h"
+#include "chromeos/components/certificate_provider/certificate_provider.h"
+#include "net/ssl/client_cert_matcher.h"
 #include "net/ssl/client_cert_store_nss.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_private_key.h"
@@ -28,8 +28,10 @@ namespace ash {
 namespace {
 net::ClientCertIdentityList FilterCertsOnWorkerThread(
     scoped_refptr<const net::SSLCertRequestInfo> request,
-    net::ClientCertIdentityList client_certs) {
-  net::ClientCertStoreNSS::FilterCertsOnWorkerThread(&client_certs, *request);
+    net::ClientCertIdentityList client_certs,
+    net::ClientCertIssuerSourceCollection issuer_sources) {
+  net::FilterMatchingClientCertIdentities(&client_certs, *request,
+                                          issuer_sources);
   return client_certs;
 }
 }  // namespace
@@ -37,11 +39,15 @@ net::ClientCertIdentityList FilterCertsOnWorkerThread(
 //==============================================================================
 
 ClientCertStoreKcer::ClientCertStoreKcer(
-    std::unique_ptr<chromeos::CertificateProvider> cert_provider,
-    base::WeakPtr<kcer::Kcer> kcer)
-    : cert_provider_(std::move(cert_provider)), kcer_(std::move(kcer)) {}
+    std::unique_ptr<chromeos::certificate_provider::CertificateProvider>
+        cert_provider,
+    base::WeakPtr<kcer::Kcer> kcer,
+    net::ClientCertIssuerSourceGetter issuer_source_getter)
+    : cert_provider_(std::move(cert_provider)),
+      kcer_(std::move(kcer)),
+      issuer_source_getter_(std::move(issuer_source_getter)) {}
 
-ClientCertStoreKcer::~ClientCertStoreKcer() {}
+ClientCertStoreKcer::~ClientCertStoreKcer() = default;
 
 void ClientCertStoreKcer::GetClientCerts(
     scoped_refptr<const net::SSLCertRequestInfo> cert_request_info,
@@ -62,8 +68,8 @@ void ClientCertStoreKcer::GetKcerCerts(
     ClientCertListCallback callback,
     net::ClientCertIdentityList additional_certs) {
   if (!kcer_) {
-    return GotAllCerts(std::move(request), std::move(callback),
-                       std::move(additional_certs));
+    return GotAllClientCerts(std::move(request), std::move(callback),
+                             std::move(additional_certs));
   }
 
   // Fetch all tokens that are available in the current context.
@@ -78,8 +84,8 @@ void ClientCertStoreKcer::GotKcerTokens(
     net::ClientCertIdentityList additional_certs,
     base::flat_set<kcer::Token> tokens) {
   if (!kcer_) {
-    return GotAllCerts(std::move(request), std::move(callback),
-                       std::move(additional_certs));
+    return GotAllClientCerts(std::move(request), std::move(callback),
+                             std::move(additional_certs));
   }
 
   kcer_->ListCerts(
@@ -96,8 +102,8 @@ void ClientCertStoreKcer::GotKcerCerts(
     std::vector<scoped_refptr<const kcer::Cert>> kcer_certs,
     base::flat_map<kcer::Token, kcer::Error> kcer_errors) {
   if (!kcer_) {
-    return GotAllCerts(std::move(request), std::move(callback),
-                       std::move(additional_certs));
+    return GotAllClientCerts(std::move(request), std::move(callback),
+                             std::move(additional_certs));
   }
 
   for (auto& [k, v] : kcer_errors) {
@@ -118,19 +124,31 @@ void ClientCertStoreKcer::GotKcerCerts(
         std::make_unique<kcer::ClientCertIdentityKcer>(kcer_, std::move(cert)));
   }
 
-  return GotAllCerts(std::move(request), std::move(callback),
-                     std::move(additional_certs));
+  return GotAllClientCerts(std::move(request), std::move(callback),
+                           std::move(additional_certs));
 }
 
-void ClientCertStoreKcer::GotAllCerts(
+void ClientCertStoreKcer::GotAllClientCerts(
     scoped_refptr<const net::SSLCertRequestInfo> request,
     ClientCertListCallback callback,
     net::ClientCertIdentityList certs) {
+  // `GotAllCertsAndIssuers` may be called synchronously or asynchronously.
+  std::move(issuer_source_getter_)
+      .Run(base::BindOnce(&ClientCertStoreKcer::GotAllCertsAndIssuers,
+                          weak_factory_.GetWeakPtr(), std::move(request),
+                          std::move(callback), std::move(certs)));
+}
+
+void ClientCertStoreKcer::GotAllCertsAndIssuers(
+    scoped_refptr<const net::SSLCertRequestInfo> request,
+    ClientCertListCallback callback,
+    net::ClientCertIdentityList certs,
+    net::ClientCertIssuerSourceCollection issuer_sources) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&FilterCertsOnWorkerThread, std::move(request),
-                     std::move(certs)),
+                     std::move(certs), std::move(issuer_sources)),
       base::BindOnce(&ClientCertStoreKcer::ReturnClientCerts,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }

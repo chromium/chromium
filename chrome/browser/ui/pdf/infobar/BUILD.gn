@@ -1,0 +1,71 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_mac || is_win)
+
+source_set("infobar") {
+  sources = [
+    "pdf_infobar_controller.cc",
+    "pdf_infobar_controller.h",
+    "pdf_infobar_delegate.cc",
+    "pdf_infobar_delegate.h",
+    "pdf_infobar_prefs.cc",
+    "pdf_infobar_prefs.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser:shell_integration",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:buildflags",
+    "//components/infobars/content",
+    "//content/public/browser",
+  ]
+  deps = [
+    "//chrome/app:branded_strings",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/infobars",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/common:constants",
+    "//chrome/installer/util:with_no_strings",
+    "//components/infobars/core",
+    "//components/omnibox/browser:vector_icons",
+    "//components/pdf/common:constants",
+    "//components/prefs",
+    "//components/tabs:public",
+    "//components/vector_icons",
+    "//ui/gfx:native_widget_types",
+  ]
+  if (is_win) {
+    deps += [ "//chrome/install_static:install_static_util" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "pdf_infobar_controller_unittest.cc",
+    "pdf_infobar_delegate_unittest.cc",
+    "pdf_infobar_prefs_unittest.cc",
+  ]
+  deps = [
+    ":infobar",
+    "//base/test:test_support",
+    "//chrome/browser:shell_integration",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:test_support",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:test_support",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//components/infobars/content",
+    "//components/sync_preferences:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

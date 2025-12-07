@@ -17,12 +17,12 @@ using ::testing::_;
 
 class WindowElementTest : public views::ViewsTestBase {
  public:
-  WindowElementTest() {}
+  WindowElementTest() = default;
 
   WindowElementTest(const WindowElementTest&) = delete;
   WindowElementTest& operator=(const WindowElementTest&) = delete;
 
-  ~WindowElementTest() override {}
+  ~WindowElementTest() override = default;
 
   void SetUp() override {
     views::ViewsTestBase::SetUp();
@@ -120,4 +120,18 @@ TEST_F(WindowElementTest, GetAttributes) {
   EXPECT_THAT(attrs,
               testing::ElementsAre("name", window_name, "active", "true"));
 }
+
+TEST_F(WindowElementTest, GetNodeBoundsInScreen) {
+  gfx::Rect test_bounds(10, 20, 300, 400);
+  window()->SetBounds(test_bounds);
+  EXPECT_EQ(window()->GetBoundsInScreen(), element()->GetNodeBoundsInScreen());
+}
+
+TEST_F(WindowElementTest, GetDeviceScaleFactor) {
+  ui::Layer* layer = window()->layer();
+  ASSERT_TRUE(layer);
+  layer->OnDeviceScaleFactorChanged(2.0f);
+  EXPECT_EQ(2.0f, element()->GetDeviceScaleFactor());
+}
+
 }  // namespace ui_devtools

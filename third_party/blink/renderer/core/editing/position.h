@@ -262,12 +262,6 @@ bool operator==(const PositionTemplate<Strategy>& a,
   return a.OffsetInContainerNode() == b.OffsetInContainerNode();
 }
 
-template <typename Strategy>
-bool operator!=(const PositionTemplate<Strategy>& a,
-                const PositionTemplate<Strategy>& b) {
-  return !(a == b);
-}
-
 CORE_EXPORT PositionInFlatTree ToPositionInFlatTree(const Position&);
 CORE_EXPORT PositionInFlatTree ToPositionInFlatTree(const PositionInFlatTree&);
 CORE_EXPORT Position ToPositionInDOMTree(const Position&);

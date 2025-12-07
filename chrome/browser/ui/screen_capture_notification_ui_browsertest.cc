@@ -12,7 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "content/public/test/browser_test.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class ScreenCaptureNotificationUiBrowserTest : public DialogBrowserTest {
  public:
@@ -32,8 +32,9 @@ class ScreenCaptureNotificationUiBrowserTest : public DialogBrowserTest {
     on_started_result_ = screen_capture_notification_ui_->OnStarted(
         base::BindOnce(
             [](ScreenCaptureNotificationUiBrowserTest* test) {
-              if (test->run_loop_)
+              if (test->run_loop_) {
                 test->run_loop_->QuitWhenIdle();
+              }
             },
             base::Unretained(this)),
         content::MediaStreamUI::SourceCallback(),

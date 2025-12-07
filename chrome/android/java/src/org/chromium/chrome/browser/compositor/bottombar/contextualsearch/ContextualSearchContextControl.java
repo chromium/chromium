@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.bottombar.contextualsearch;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +13,8 @@ import android.widget.TextView;
 
 import androidx.annotation.Px;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelRepaddingTextView;
@@ -22,12 +26,13 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
  * context in grey text.
  * This is used as a dynamic resource within the {@link ContextualSearchBarControl}.
  */
+@NullMarked
 public class ContextualSearchContextControl extends OverlayPanelRepaddingTextView {
     /** The selected text View. */
-    private TextView mSelectedText;
+    private @Nullable TextView mSelectedText;
 
     /** The end of the surrounding text View. */
-    private TextView mEndText;
+    private @Nullable TextView mEndText;
 
     /**
      * @param panel             The panel.
@@ -38,8 +43,8 @@ public class ContextualSearchContextControl extends OverlayPanelRepaddingTextVie
     public ContextualSearchContextControl(
             OverlayPanel panel,
             Context context,
-            ViewGroup container,
-            DynamicResourceLoader resourceLoader) {
+            @Nullable ViewGroup container,
+            @Nullable DynamicResourceLoader resourceLoader) {
         super(
                 panel,
                 R.layout.contextual_search_context_view,
@@ -59,8 +64,8 @@ public class ContextualSearchContextControl extends OverlayPanelRepaddingTextVie
     public void setContextDetails(String selection, String end) {
         inflate();
 
-        mSelectedText.setText(sanitizeText(selection));
-        mEndText.setText(sanitizeText(end));
+        assumeNonNull(mSelectedText).setText(sanitizeText(selection));
+        assumeNonNull(mEndText).setText(sanitizeText(end));
 
         invalidate();
     }
@@ -69,7 +74,7 @@ public class ContextualSearchContextControl extends OverlayPanelRepaddingTextVie
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        View view = getView();
+        View view = assumeNonNull(getView());
         mSelectedText = view.findViewById(R.id.selected_text);
         mEndText = view.findViewById(R.id.surrounding_text_end);
     }

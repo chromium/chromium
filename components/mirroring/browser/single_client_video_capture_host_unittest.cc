@@ -5,7 +5,6 @@
 #include "components/mirroring/browser/single_client_video_capture_host.h"
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
@@ -18,12 +17,11 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ::testing::InvokeWithoutArgs;
 using media::VideoFrameReceiver;
+using ::testing::InvokeWithoutArgs;
 
 namespace mirroring {
 
@@ -34,12 +32,12 @@ constexpr bool kNotPremapped = false;
 class MockVideoCaptureDevice final
     : public content::LaunchedVideoCaptureDevice {
  public:
-  MockVideoCaptureDevice() {}
+  MockVideoCaptureDevice() = default;
 
   MockVideoCaptureDevice(const MockVideoCaptureDevice&) = delete;
   MockVideoCaptureDevice& operator=(const MockVideoCaptureDevice&) = delete;
 
-  ~MockVideoCaptureDevice() override {}
+  ~MockVideoCaptureDevice() override = default;
   void GetPhotoState(
       VideoCaptureDevice::GetPhotoStateCallback callback) override {}
   void SetPhotoOptions(
@@ -76,16 +74,13 @@ class FakeDeviceLauncher final : public content::VideoCaptureDeviceLauncher {
   ~FakeDeviceLauncher() override = default;
 
   // content::VideoCaptureDeviceLauncher implementation.
-  void LaunchDeviceAsync(
-      const std::string& device_id,
-      blink::mojom::MediaStreamType stream_type,
-      const VideoCaptureParams& params,
-      base::WeakPtr<VideoFrameReceiver> receiver,
-      base::OnceClosure connection_lost_cb,
-      Callbacks* callbacks,
-      base::OnceClosure done_cb,
-      mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
-          video_effects_processor) override {
+  void LaunchDeviceAsync(const std::string& device_id,
+                         blink::mojom::MediaStreamType stream_type,
+                         const VideoCaptureParams& params,
+                         base::WeakPtr<VideoFrameReceiver> receiver,
+                         base::OnceClosure connection_lost_cb,
+                         Callbacks* callbacks,
+                         base::OnceClosure done_cb) override {
     if (!params.IsValid()) {
       callbacks->OnDeviceLaunchFailed(
           media::VideoCaptureError::
@@ -118,12 +113,12 @@ class FakeDeviceLauncher final : public content::VideoCaptureDeviceLauncher {
 class StubReadWritePermission final
     : public VideoCaptureDevice::Client::Buffer::ScopedAccessPermission {
  public:
-  StubReadWritePermission() {}
+  StubReadWritePermission() = default;
 
   StubReadWritePermission(const StubReadWritePermission&) = delete;
   StubReadWritePermission& operator=(const StubReadWritePermission&) = delete;
 
-  ~StubReadWritePermission() override {}
+  ~StubReadWritePermission() override = default;
 };
 
 class MockVideoCaptureObserver final
@@ -164,22 +159,24 @@ class MockVideoCaptureObserver final
   }
   MOCK_METHOD1(OnFrameDropped, void(media::VideoCaptureFrameDropReason reason));
 
-  MOCK_METHOD1(OnNewSubCaptureTargetVersion,
-               void(uint32_t sub_capture_target_version));
+  MOCK_METHOD1(OnNewCaptureVersion,
+               void(const media::CaptureVersion& capture_version));
 
   MOCK_METHOD1(OnStateChangedCall, void(media::mojom::VideoCaptureState state));
   MOCK_METHOD1(OnVideoCaptureErrorCall, void(media::VideoCaptureError error));
   void OnStateChanged(media::mojom::VideoCaptureResultPtr result) override {
-    if (result->which() == media::mojom::VideoCaptureResult::Tag::kState)
+    if (result->which() == media::mojom::VideoCaptureResult::Tag::kState) {
       OnStateChangedCall(result->get_state());
-    else
+    } else {
       OnVideoCaptureErrorCall(result->get_error_code());
+    }
   }
 
   void Start(bool valid_params) {
     VideoCaptureParams params = VideoCaptureParams();
-    if (!valid_params)
+    if (!valid_params) {
       params.requested_format.frame_rate = std::numeric_limits<float>::max();
+    }
 
     host_->Start(device_id_, session_id_, params,
                  receiver_.BindNewPipeAndPassRemote());

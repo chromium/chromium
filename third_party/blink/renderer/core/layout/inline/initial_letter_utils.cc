@@ -35,8 +35,7 @@ LayoutUnit ComputeInitialLetterBoxBlockOffset(
   // English font.
   const LayoutUnit line_height = paragraph_style.ComputedLineHeightAsFixed();
 
-  const int size = std::ceil(block_size / line_height.ToFloat());
-
+  const int size = std::ceil(initial_letter.Size());
   const int sink = initial_letter.IsRaise() || initial_letter.IsIntegerSink()
                        ? initial_letter.Sink()
                        : size;
@@ -79,7 +78,7 @@ LayoutUnit ComputeInitialLetterBoxBlockOffset(
   //    line 7                      line 5
   *initial_letter_block_start_adjust = line_height * (size - sink);
 
-  if (paragraph_style.IsHorizontalWritingMode() ||
+  if (paragraph_style.IsHorizontalTypographicMode() ||
       initial_letter_box_style.GetTextOrientation() ==
           ETextOrientation::kSideways) {
     // `writing-mode: horizontal-tb` or `text-orientation: sideways`
@@ -119,7 +118,7 @@ LogicalRect ComputeTextInkBounds(const ShapeResultView& shape_result,
   // Calculation of `ascent` should be as same as
   // `NGTextFragmentPainter::Paint()`
   const FontMetrics& font_metrics =
-      style.GetFont().PrimaryFont()->GetFontMetrics();
+      style.GetFont()->PrimaryFont()->GetFontMetrics();
   const int ascent = font_metrics.Ascent();
   if (out_baseline)
     *out_baseline = LayoutUnit(ascent);
@@ -205,7 +204,7 @@ FontHeight AdjustInitialLetterInTextPosition(const FontHeight& line_box_metrics,
     line_item.rect.offset.block_offset = -style.GetFontHeight().ascent;
     line_item.inline_size = text_ink_bounds.size.inline_size;
 
-    if (style.IsHorizontalWritingMode() ||
+    if (style.IsHorizontalTypographicMode() ||
         style.GetTextOrientation() == ETextOrientation::kSideways) {
       const LayoutUnit line_height = text_ink_bounds.size.block_size;
       const LayoutUnit ascent = baseline - text_ink_bounds.offset.block_offset;

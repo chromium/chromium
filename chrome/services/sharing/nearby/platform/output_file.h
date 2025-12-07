@@ -6,10 +6,10 @@
 #define CHROME_SERVICES_SHARING_NEARBY_PLATFORM_OUTPUT_FILE_H_
 
 #include "base/files/file.h"
+#include "third_party/abseil-cpp/absl/time/time.h"
 #include "third_party/nearby/src/internal/platform/implementation/output_file.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 // Concrete OutputFile implementation.
 class OutputFile : public api::OutputFile {
@@ -22,6 +22,7 @@ class OutputFile : public api::OutputFile {
 
   // api::OutputFile:
   Exception Write(const ByteArray& data) override;
+  void SetLastModifiedTime(absl::Time last_modified_time) override;
   Exception Flush() override;
   Exception Close() override;
 
@@ -29,7 +30,6 @@ class OutputFile : public api::OutputFile {
   base::File file_;
 };
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_OUTPUT_FILE_H_

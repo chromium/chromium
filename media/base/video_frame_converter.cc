@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/base/video_frame_converter.h"
 
@@ -38,9 +34,7 @@ scoped_refptr<VideoFrame> WrapTempFrameForABGRToARGB(
     scoped_refptr<VideoFrame> tmp_frame) {
   return VideoFrame::WrapExternalData(
       override_format, tmp_frame->coded_size(), tmp_frame->visible_rect(),
-      tmp_frame->natural_size(),
-      tmp_frame->writable_data(VideoFrame::Plane::kARGB),
-      VideoFrame::AllocationSize(override_format, tmp_frame->coded_size()),
+      tmp_frame->natural_size(), tmp_frame->data_span(VideoFrame::Plane::kARGB),
       tmp_frame->timestamp());
 }
 
@@ -97,14 +91,14 @@ scoped_refptr<VideoFrame> VideoFrameConverter::CreateTempFrame(
     const gfx::Size& natural_size) {
   const auto tmp_size = VideoFrame::AllocationSize(format, coded_size);
 
-  void* fb_id;
-  auto* scratch_space = frame_pool_->GetFrameBuffer(tmp_size, &fb_id);
-  if (!scratch_space) {
+  void* fb_id = nullptr;
+  auto scratch_space = frame_pool_->GetFrameBuffer(tmp_size, &fb_id);
+  if (scratch_space.empty()) {
     return nullptr;
   }
 
   auto tmp_frame = VideoFrame::WrapExternalData(
-      format, coded_size, visible_rect, natural_size, scratch_space, tmp_size,
+      format, coded_size, visible_rect, natural_size, scratch_space,
       base::TimeDelta());
   if (tmp_frame) {
     tmp_frame->AddDestructionObserver(frame_pool_->CreateFrameCallback(fb_id));
@@ -130,9 +124,11 @@ scoped_refptr<VideoFrame> VideoFrameConverter::WrapNV12xFrameInI420xFrame(
       PIXEL_FORMAT_I420, VideoFrame::Plane::kV, frame.coded_size());
 
   void* fb_id;
-  auto* scratch_space = frame_pool_->GetFrameBuffer(
-      u_plane_size.GetArea() + v_plane_size.GetArea(), &fb_id);
-  if (!scratch_space) {
+  size_t u_size_bytes = u_plane_size.GetArea();
+  size_t v_size_bytes = v_plane_size.GetArea();
+  auto scratch_space =
+      frame_pool_->GetFrameBuffer(u_size_bytes + v_size_bytes, &fb_id);
+  if (scratch_space.empty()) {
     return nullptr;
   }
 
@@ -143,17 +139,19 @@ scoped_refptr<VideoFrame> VideoFrameConverter::WrapNV12xFrameInI420xFrame(
         PIXEL_FORMAT_I420, frame.coded_size(), frame.visible_rect(),
         frame.natural_size(), frame.stride(VideoFrame::Plane::kY),
         u_plane_size.width(), v_plane_size.width(),
-        frame.data(VideoFrame::Plane::kY), scratch_space,
-        scratch_space + u_plane_size.GetArea(), frame.timestamp());
+        frame.data_span(VideoFrame::Plane::kY),
+        scratch_space.first(u_size_bytes),
+        scratch_space.subspan(u_size_bytes, v_size_bytes), frame.timestamp());
   } else {
     wrapped_frame = VideoFrame::WrapExternalYuvaData(
         PIXEL_FORMAT_I420A, frame.coded_size(), frame.visible_rect(),
         frame.natural_size(), frame.stride(VideoFrame::Plane::kY),
         u_plane_size.width(), v_plane_size.width(),
         frame.stride(VideoFrame::Plane::kATriPlanar),
-        frame.data(VideoFrame::Plane::kY), scratch_space,
-        scratch_space + u_plane_size.GetArea(),
-        frame.data(VideoFrame::Plane::kATriPlanar), frame.timestamp());
+        frame.data_span(VideoFrame::Plane::kY),
+        scratch_space.first(u_size_bytes),
+        scratch_space.subspan(u_size_bytes, v_size_bytes),
+        frame.data_span(VideoFrame::Plane::kATriPlanar), frame.timestamp());
   }
 
   if (wrapped_frame) {

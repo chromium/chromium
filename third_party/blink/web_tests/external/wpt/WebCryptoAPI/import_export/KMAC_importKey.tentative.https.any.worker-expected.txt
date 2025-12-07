@@ -1,0 +1,244 @@
+This is a testharness.js-based test.
+Found 120 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Good parameters: 128 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC128}, true, [sign])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 128 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC128}, true, [verify, sign])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 128 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC128}, true, [verify])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 128 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC128}, true, [sign, verify, sign, verify])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Empty Usages: 128 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC128}, true, [])
+  assert_equals: Should throw correct error, not TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument expected "SyntaxError" but got "TypeError"
+[FAIL] Good parameters: 128 bits (jwk, {alg: K128, k: AQIDBAUGBwgJCgsMDQ4PEA, kty: oct}, {name: KMAC128}, true, [sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 128 bits (jwk, {alg: K128, k: AQIDBAUGBwgJCgsMDQ4PEA, kty: oct}, {name: KMAC128}, true, [verify, sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 128 bits (jwk, {alg: K128, k: AQIDBAUGBwgJCgsMDQ4PEA, kty: oct}, {name: KMAC128}, true, [verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 128 bits (jwk, {alg: K128, k: AQIDBAUGBwgJCgsMDQ4PEA, kty: oct}, {name: KMAC128}, true, [sign, verify, sign, verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Empty Usages: 128 bits (jwk, {alg: K128, k: AQIDBAUGBwgJCgsMDQ4PEA, kty: oct}, {name: KMAC128}, true, [])
+  assert_equals: Should throw correct error, not NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Good parameters: 128 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC128}, false, [sign])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 128 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC128}, false, [verify, sign])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 128 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC128}, false, [verify])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 128 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC128}, false, [sign, verify, sign, verify])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Empty Usages: 128 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC128}, false, [])
+  assert_equals: Should throw correct error, not TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument expected "SyntaxError" but got "TypeError"
+[FAIL] Good parameters: 128 bits (jwk, {alg: K128, k: AQIDBAUGBwgJCgsMDQ4PEA, kty: oct}, {name: KMAC128}, false, [sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 128 bits (jwk, {alg: K128, k: AQIDBAUGBwgJCgsMDQ4PEA, kty: oct}, {name: KMAC128}, false, [verify, sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 128 bits (jwk, {alg: K128, k: AQIDBAUGBwgJCgsMDQ4PEA, kty: oct}, {name: KMAC128}, false, [verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 128 bits (jwk, {alg: K128, k: AQIDBAUGBwgJCgsMDQ4PEA, kty: oct}, {name: KMAC128}, false, [sign, verify, sign, verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Empty Usages: 128 bits (jwk, {alg: K128, k: AQIDBAUGBwgJCgsMDQ4PEA, kty: oct}, {name: KMAC128}, false, [])
+  assert_equals: Should throw correct error, not NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Good parameters: 192 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC128}, true, [sign])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 192 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC128}, true, [verify, sign])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 192 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC128}, true, [verify])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 192 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC128}, true, [sign, verify, sign, verify])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Empty Usages: 192 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC128}, true, [])
+  assert_equals: Should throw correct error, not TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument expected "SyntaxError" but got "TypeError"
+[FAIL] Good parameters: 192 bits (jwk, {alg: K128, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcY, kty: oct}, {name: KMAC128}, true, [sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 192 bits (jwk, {alg: K128, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcY, kty: oct}, {name: KMAC128}, true, [verify, sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 192 bits (jwk, {alg: K128, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcY, kty: oct}, {name: KMAC128}, true, [verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 192 bits (jwk, {alg: K128, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcY, kty: oct}, {name: KMAC128}, true, [sign, verify, sign, verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Empty Usages: 192 bits (jwk, {alg: K128, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcY, kty: oct}, {name: KMAC128}, true, [])
+  assert_equals: Should throw correct error, not NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Good parameters: 192 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC128}, false, [sign])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 192 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC128}, false, [verify, sign])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 192 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC128}, false, [verify])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 192 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC128}, false, [sign, verify, sign, verify])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Empty Usages: 192 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC128}, false, [])
+  assert_equals: Should throw correct error, not TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument expected "SyntaxError" but got "TypeError"
+[FAIL] Good parameters: 192 bits (jwk, {alg: K128, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcY, kty: oct}, {name: KMAC128}, false, [sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 192 bits (jwk, {alg: K128, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcY, kty: oct}, {name: KMAC128}, false, [verify, sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 192 bits (jwk, {alg: K128, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcY, kty: oct}, {name: KMAC128}, false, [verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 192 bits (jwk, {alg: K128, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcY, kty: oct}, {name: KMAC128}, false, [sign, verify, sign, verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Empty Usages: 192 bits (jwk, {alg: K128, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcY, kty: oct}, {name: KMAC128}, false, [])
+  assert_equals: Should throw correct error, not NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Good parameters: 256 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 24: 25, 25: 26, 26: 27, 27: 28, 28: 29, 29: 30, 3: 4, 30: 31, 31: 32, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC128}, true, [sign])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 256 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 24: 25, 25: 26, 26: 27, 27: 28, 28: 29, 29: 30, 3: 4, 30: 31, 31: 32, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC128}, true, [verify, sign])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 256 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 24: 25, 25: 26, 26: 27, 27: 28, 28: 29, 29: 30, 3: 4, 30: 31, 31: 32, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC128}, true, [verify])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 256 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 24: 25, 25: 26, 26: 27, 27: 28, 28: 29, 29: 30, 3: 4, 30: 31, 31: 32, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC128}, true, [sign, verify, sign, verify])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Empty Usages: 256 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 24: 25, 25: 26, 26: 27, 27: 28, 28: 29, 29: 30, 3: 4, 30: 31, 31: 32, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC128}, true, [])
+  assert_equals: Should throw correct error, not TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument expected "SyntaxError" but got "TypeError"
+[FAIL] Good parameters: 256 bits (jwk, {alg: K128, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA, kty: oct}, {name: KMAC128}, true, [sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 256 bits (jwk, {alg: K128, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA, kty: oct}, {name: KMAC128}, true, [verify, sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 256 bits (jwk, {alg: K128, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA, kty: oct}, {name: KMAC128}, true, [verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 256 bits (jwk, {alg: K128, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA, kty: oct}, {name: KMAC128}, true, [sign, verify, sign, verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Empty Usages: 256 bits (jwk, {alg: K128, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA, kty: oct}, {name: KMAC128}, true, [])
+  assert_equals: Should throw correct error, not NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Good parameters: 256 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 24: 25, 25: 26, 26: 27, 27: 28, 28: 29, 29: 30, 3: 4, 30: 31, 31: 32, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC128}, false, [sign])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 256 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 24: 25, 25: 26, 26: 27, 27: 28, 28: 29, 29: 30, 3: 4, 30: 31, 31: 32, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC128}, false, [verify, sign])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 256 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 24: 25, 25: 26, 26: 27, 27: 28, 28: 29, 29: 30, 3: 4, 30: 31, 31: 32, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC128}, false, [verify])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 256 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 24: 25, 25: 26, 26: 27, 27: 28, 28: 29, 29: 30, 3: 4, 30: 31, 31: 32, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC128}, false, [sign, verify, sign, verify])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Empty Usages: 256 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 24: 25, 25: 26, 26: 27, 27: 28, 28: 29, 29: 30, 3: 4, 30: 31, 31: 32, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC128}, false, [])
+  assert_equals: Should throw correct error, not TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument expected "SyntaxError" but got "TypeError"
+[FAIL] Good parameters: 256 bits (jwk, {alg: K128, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA, kty: oct}, {name: KMAC128}, false, [sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 256 bits (jwk, {alg: K128, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA, kty: oct}, {name: KMAC128}, false, [verify, sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 256 bits (jwk, {alg: K128, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA, kty: oct}, {name: KMAC128}, false, [verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 256 bits (jwk, {alg: K128, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA, kty: oct}, {name: KMAC128}, false, [sign, verify, sign, verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Empty Usages: 256 bits (jwk, {alg: K128, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA, kty: oct}, {name: KMAC128}, false, [])
+  assert_equals: Should throw correct error, not NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Good parameters: 128 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC256}, true, [sign])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 128 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC256}, true, [verify, sign])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 128 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC256}, true, [verify])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 128 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC256}, true, [sign, verify, sign, verify])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Empty Usages: 128 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC256}, true, [])
+  assert_equals: Should throw correct error, not TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument expected "SyntaxError" but got "TypeError"
+[FAIL] Good parameters: 128 bits (jwk, {alg: K256, k: AQIDBAUGBwgJCgsMDQ4PEA, kty: oct}, {name: KMAC256}, true, [sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 128 bits (jwk, {alg: K256, k: AQIDBAUGBwgJCgsMDQ4PEA, kty: oct}, {name: KMAC256}, true, [verify, sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 128 bits (jwk, {alg: K256, k: AQIDBAUGBwgJCgsMDQ4PEA, kty: oct}, {name: KMAC256}, true, [verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 128 bits (jwk, {alg: K256, k: AQIDBAUGBwgJCgsMDQ4PEA, kty: oct}, {name: KMAC256}, true, [sign, verify, sign, verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Empty Usages: 128 bits (jwk, {alg: K256, k: AQIDBAUGBwgJCgsMDQ4PEA, kty: oct}, {name: KMAC256}, true, [])
+  assert_equals: Should throw correct error, not NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Good parameters: 128 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC256}, false, [sign])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 128 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC256}, false, [verify, sign])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 128 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC256}, false, [verify])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 128 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC256}, false, [sign, verify, sign, verify])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Empty Usages: 128 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC256}, false, [])
+  assert_equals: Should throw correct error, not TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument expected "SyntaxError" but got "TypeError"
+[FAIL] Good parameters: 128 bits (jwk, {alg: K256, k: AQIDBAUGBwgJCgsMDQ4PEA, kty: oct}, {name: KMAC256}, false, [sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 128 bits (jwk, {alg: K256, k: AQIDBAUGBwgJCgsMDQ4PEA, kty: oct}, {name: KMAC256}, false, [verify, sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 128 bits (jwk, {alg: K256, k: AQIDBAUGBwgJCgsMDQ4PEA, kty: oct}, {name: KMAC256}, false, [verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 128 bits (jwk, {alg: K256, k: AQIDBAUGBwgJCgsMDQ4PEA, kty: oct}, {name: KMAC256}, false, [sign, verify, sign, verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Empty Usages: 128 bits (jwk, {alg: K256, k: AQIDBAUGBwgJCgsMDQ4PEA, kty: oct}, {name: KMAC256}, false, [])
+  assert_equals: Should throw correct error, not NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Good parameters: 192 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC256}, true, [sign])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 192 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC256}, true, [verify, sign])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 192 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC256}, true, [verify])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 192 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC256}, true, [sign, verify, sign, verify])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Empty Usages: 192 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC256}, true, [])
+  assert_equals: Should throw correct error, not TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument expected "SyntaxError" but got "TypeError"
+[FAIL] Good parameters: 192 bits (jwk, {alg: K256, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcY, kty: oct}, {name: KMAC256}, true, [sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 192 bits (jwk, {alg: K256, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcY, kty: oct}, {name: KMAC256}, true, [verify, sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 192 bits (jwk, {alg: K256, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcY, kty: oct}, {name: KMAC256}, true, [verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 192 bits (jwk, {alg: K256, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcY, kty: oct}, {name: KMAC256}, true, [sign, verify, sign, verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Empty Usages: 192 bits (jwk, {alg: K256, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcY, kty: oct}, {name: KMAC256}, true, [])
+  assert_equals: Should throw correct error, not NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Good parameters: 192 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC256}, false, [sign])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 192 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC256}, false, [verify, sign])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 192 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC256}, false, [verify])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 192 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC256}, false, [sign, verify, sign, verify])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Empty Usages: 192 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC256}, false, [])
+  assert_equals: Should throw correct error, not TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument expected "SyntaxError" but got "TypeError"
+[FAIL] Good parameters: 192 bits (jwk, {alg: K256, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcY, kty: oct}, {name: KMAC256}, false, [sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 192 bits (jwk, {alg: K256, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcY, kty: oct}, {name: KMAC256}, false, [verify, sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 192 bits (jwk, {alg: K256, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcY, kty: oct}, {name: KMAC256}, false, [verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 192 bits (jwk, {alg: K256, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcY, kty: oct}, {name: KMAC256}, false, [sign, verify, sign, verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Empty Usages: 192 bits (jwk, {alg: K256, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcY, kty: oct}, {name: KMAC256}, false, [])
+  assert_equals: Should throw correct error, not NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Good parameters: 256 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 24: 25, 25: 26, 26: 27, 27: 28, 28: 29, 29: 30, 3: 4, 30: 31, 31: 32, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC256}, true, [sign])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 256 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 24: 25, 25: 26, 26: 27, 27: 28, 28: 29, 29: 30, 3: 4, 30: 31, 31: 32, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC256}, true, [verify, sign])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 256 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 24: 25, 25: 26, 26: 27, 27: 28, 28: 29, 29: 30, 3: 4, 30: 31, 31: 32, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC256}, true, [verify])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 256 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 24: 25, 25: 26, 26: 27, 27: 28, 28: 29, 29: 30, 3: 4, 30: 31, 31: 32, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC256}, true, [sign, verify, sign, verify])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Empty Usages: 256 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 24: 25, 25: 26, 26: 27, 27: 28, 28: 29, 29: 30, 3: 4, 30: 31, 31: 32, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC256}, true, [])
+  assert_equals: Should throw correct error, not TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument expected "SyntaxError" but got "TypeError"
+[FAIL] Good parameters: 256 bits (jwk, {alg: K256, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA, kty: oct}, {name: KMAC256}, true, [sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 256 bits (jwk, {alg: K256, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA, kty: oct}, {name: KMAC256}, true, [verify, sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 256 bits (jwk, {alg: K256, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA, kty: oct}, {name: KMAC256}, true, [verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 256 bits (jwk, {alg: K256, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA, kty: oct}, {name: KMAC256}, true, [sign, verify, sign, verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Empty Usages: 256 bits (jwk, {alg: K256, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA, kty: oct}, {name: KMAC256}, true, [])
+  assert_equals: Should throw correct error, not NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name expected "SyntaxError" but got "NotSupportedError"
+[FAIL] Good parameters: 256 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 24: 25, 25: 26, 26: 27, 27: 28, 28: 29, 29: 30, 3: 4, 30: 31, 31: 32, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC256}, false, [sign])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 256 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 24: 25, 25: 26, 26: 27, 27: 28, 28: 29, 29: 30, 3: 4, 30: 31, 31: 32, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC256}, false, [verify, sign])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 256 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 24: 25, 25: 26, 26: 27, 27: 28, 28: 29, 29: 30, 3: 4, 30: 31, 31: 32, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC256}, false, [verify])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Good parameters: 256 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 24: 25, 25: 26, 26: 27, 27: 28, 28: 29, 29: 30, 3: 4, 30: 31, 31: 32, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC256}, false, [sign, verify, sign, verify])
+  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+[FAIL] Empty Usages: 256 bits (raw-secret, {0: 1, 1: 2, 10: 11, 11: 12, 12: 13, 13: 14, 14: 15, 15: 16, 16: 17, 17: 18, 18: 19, 19: 20, 2: 3, 20: 21, 21: 22, 22: 23, 23: 24, 24: 25, 25: 26, 26: 27, 27: 28, 28: 29, 29: 30, 3: 4, 30: 31, 31: 32, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10}, {name: KMAC256}, false, [])
+  assert_equals: Should throw correct error, not TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument expected "SyntaxError" but got "TypeError"
+[FAIL] Good parameters: 256 bits (jwk, {alg: K256, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA, kty: oct}, {name: KMAC256}, false, [sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 256 bits (jwk, {alg: K256, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA, kty: oct}, {name: KMAC256}, false, [verify, sign])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 256 bits (jwk, {alg: K256, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA, kty: oct}, {name: KMAC256}, false, [verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Good parameters: 256 bits (jwk, {alg: K256, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA, kty: oct}, {name: KMAC256}, false, [sign, verify, sign, verify])
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
+[FAIL] Empty Usages: 256 bits (jwk, {alg: K256, k: AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyA, kty: oct}, {name: KMAC256}, false, [])
+  assert_equals: Should throw correct error, not NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name expected "SyntaxError" but got "NotSupportedError"
+Harness: the test ran to completion.
+

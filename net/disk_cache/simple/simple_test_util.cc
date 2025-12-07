@@ -4,6 +4,7 @@
 
 #include "net/disk_cache/simple/simple_test_util.h"
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "net/base/hash_value.h"
@@ -25,7 +26,7 @@ bool CreateCorruptFileForTests(const std::string& key,
   if (!entry_file.IsValid())
     return false;
 
-  return entry_file.Write(0, "dummy", 1) == 1;
+  return entry_file.WriteAndCheck(0, base::byte_span_from_cstring("d"));
 }
 
 bool RemoveKeySHA256FromEntry(const std::string& key,
@@ -40,9 +41,8 @@ bool RemoveKeySHA256FromEntry(const std::string& key,
   SimpleFileEOF eof_record;
   if (file_length < static_cast<int64_t>(sizeof(eof_record)))
     return false;
-  if (entry_file.Read(file_length - sizeof(eof_record),
-                      reinterpret_cast<char*>(&eof_record),
-                      sizeof(eof_record)) != sizeof(eof_record)) {
+  if (!entry_file.ReadAndCheck(file_length - sizeof(eof_record),
+                               base::byte_span_from_ref(eof_record))) {
     return false;
   }
   if (eof_record.final_magic_number != disk_cache::kSimpleFinalMagicNumber ||
@@ -54,10 +54,9 @@ bool RemoveKeySHA256FromEntry(const std::string& key,
   // SHA256. Truncate the file afterwards, and we have an identical entry
   // lacking a key SHA256.
   eof_record.flags &= ~SimpleFileEOF::FLAG_HAS_KEY_SHA256;
-  if (entry_file.Write(
+  if (!entry_file.WriteAndCheck(
           file_length - sizeof(eof_record) - sizeof(net::SHA256HashValue),
-          reinterpret_cast<char*>(&eof_record),
-          sizeof(eof_record)) != sizeof(eof_record)) {
+          base::byte_span_from_ref(eof_record))) {
     return false;
   }
   if (!entry_file.SetLength(file_length - sizeof(net::SHA256HashValue))) {
@@ -78,9 +77,8 @@ bool CorruptKeySHA256FromEntry(const std::string& key,
   SimpleFileEOF eof_record;
   if (file_length < static_cast<int64_t>(sizeof(eof_record)))
     return false;
-  if (entry_file.Read(file_length - sizeof(eof_record),
-                      reinterpret_cast<char*>(&eof_record),
-                      sizeof(eof_record)) != sizeof(eof_record)) {
+  if (!entry_file.ReadAndCheck(file_length - sizeof(eof_record),
+                               base::byte_span_from_ref(eof_record))) {
     return false;
   }
   if (eof_record.final_magic_number != disk_cache::kSimpleFinalMagicNumber ||
@@ -92,9 +90,9 @@ bool CorruptKeySHA256FromEntry(const std::string& key,
   const char corrupt_data[] = "corrupt data";
   static_assert(sizeof(corrupt_data) <= sizeof(net::SHA256HashValue),
                 "corrupt data should not be larger than a SHA-256");
-  if (entry_file.Write(
+  if (!entry_file.WriteAndCheck(
           file_length - sizeof(eof_record) - sizeof(net::SHA256HashValue),
-          corrupt_data, sizeof(corrupt_data)) != sizeof(corrupt_data)) {
+          base::byte_span_with_nul_from_cstring(corrupt_data))) {
     return false;
   }
   return true;
@@ -112,9 +110,8 @@ bool CorruptStream0LengthFromEntry(const std::string& key,
   SimpleFileEOF eof_record;
   if (file_length < static_cast<int64_t>(sizeof(eof_record)))
     return false;
-  if (entry_file.Read(file_length - sizeof(eof_record),
-                      reinterpret_cast<char*>(&eof_record),
-                      sizeof(eof_record)) != sizeof(eof_record)) {
+  if (!entry_file.ReadAndCheck(file_length - sizeof(eof_record),
+                               base::byte_span_from_ref(eof_record))) {
     return false;
   }
   if (eof_record.final_magic_number != disk_cache::kSimpleFinalMagicNumber)
@@ -122,9 +119,8 @@ bool CorruptStream0LengthFromEntry(const std::string& key,
 
   // Set the stream size to a clearly invalidly large value.
   eof_record.stream_size = std::numeric_limits<uint32_t>::max() - 50;
-  if (entry_file.Write(file_length - sizeof(eof_record),
-                       reinterpret_cast<char*>(&eof_record),
-                       sizeof(eof_record)) != sizeof(eof_record)) {
+  if (!entry_file.WriteAndCheck(file_length - sizeof(eof_record),
+                                base::byte_span_from_ref(eof_record))) {
     return false;
   }
   return true;

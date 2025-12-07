@@ -1,0 +1,4 @@
+=== Start Continuation ===
+EVENT_OBJECT_VALUECHANGE on <div.progress > role=ROLE_SYSTEM_PROGRESSBAR name="Test Progress" value="0.7"
+=== Start Continuation ===
+EVENT_OBJECT_VALUECHANGE on <div.progress > role=ROLE_SYSTEM_PROGRESSBAR name="Test Progress" value="1"

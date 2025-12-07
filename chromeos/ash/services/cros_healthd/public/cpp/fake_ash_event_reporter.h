@@ -11,7 +11,6 @@
 #include "base/run_loop.h"
 #include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_event_reporters.mojom.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace ash::cros_healthd {

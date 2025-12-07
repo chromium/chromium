@@ -35,6 +35,13 @@ namespace {
 
 using ::google_apis::calendar::CalendarEvent;
 
+struct CmpEvent {
+  bool operator()(const CalendarEvent& event1,
+                  const CalendarEvent& event2) const {
+    return event1.start_time().date_time() < event2.start_time().date_time();
+  }
+};
+
 constexpr auto kAllowedEventStatuses =
     base::MakeFixedFlatSet<CalendarEvent::EventStatus>(
         {CalendarEvent::EventStatus::kConfirmed,

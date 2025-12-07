@@ -2,26 +2,62 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("focus_mode") {
   sources = [
+    "certificate_manager.cc",
+    "certificate_manager.h",
     "chrome_focus_mode_delegate.cc",
     "chrome_focus_mode_delegate.h",
+    "signature_builder.cc",
+    "signature_builder.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chromeos/ash/components/dbus/constants",
+  ]
 
   deps = [
     "//ash",
     "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/attestation",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles",
-    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//chromeos/ash/components/attestation",
+    "//chromeos/ash/components/cryptohome:public",
+    "//chromeos/ash/components/dbus/attestation",
+    "//chromeos/ash/components/dbus/attestation:attestation_proto",
+    "//chromeos/ash/components/dbus/cryptohome:attestation_proto",
+    "//chromeos/ash/components/settings",
     "//google_apis/common",
     "//net/traffic_annotation",
   ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "certificate_manager_unittest.cc" ]
+
+  deps = [
+    ":focus_mode",
+    "//base/test:test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/ui/ash/focus_mode/test:test_support",
+    "//chromeos/ash/components/attestation",
+    "//chromeos/ash/components/attestation:test_support",
+    "//chromeos/ash/components/dbus/attestation",
+    "//chromeos/ash/components/settings",
+  ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("browser_tests") {
@@ -40,9 +76,11 @@ source_set("browser_tests") {
     "//ash/constants",
     "//ash/public/cpp",
     "//base/test:test_support",
+    "//chrome/browser/ash/accessibility:browser_tests",
     "//chrome/browser/policy:test_support",
-    "//chrome/browser/ui/ash",
+    "//chrome/browser/ui/ash/web_view",
     "//chrome/test:test_support",
+    "//chrome/test/base/ash/util:test_support",
     "//content/test:test_support",
     "//ui/views",
   ]

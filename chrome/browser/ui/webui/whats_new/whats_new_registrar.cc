@@ -4,33 +4,103 @@
 
 #include "chrome/browser/ui/webui/whats_new/whats_new_registrar.h"
 
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_storage_service_impl.h"
+#include "chrome/common/buildflags.h"
+#include "chrome/common/chrome_features.h"
+#include "components/lens/lens_features.h"
+#include "components/performance_manager/public/features.h"
+#include "components/sync/base/features.h"
+#include "components/user_education/webui/whats_new_registry.h"
+#include "pdf/buildflags.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "pdf/pdf_features.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace whats_new {
 using BrowserCommand = browser_command::mojom::Command;
+
+namespace features {
+// Define local features here.
+}  // namespace features
+
 void RegisterWhatsNewModules(whats_new::WhatsNewRegistry* registry) {
   // Register modules here.
+  // M142
+#if BUILDFLAG(ENABLE_GLIC)
+  registry->RegisterModule(WhatsNewModule(::features::kGlicIntro,
+                                          "birnie@google.com",
+                                          BrowserCommand::kOpenGlic));
+  // M142
+  registry->RegisterModule(WhatsNewModule(::features::kGlicLearnMore,
+                                          "birnie@google.com",
+                                          BrowserCommand::kOpenGlicSettings));
+#endif  // BUILDFLAG(ENABLE_GLIC)
   // 129
-  registry->RegisterModule(WhatsNewModule(
-      "vinnypersky@google.com", BrowserCommand::kOpenPaymentsSettings));
+  registry->RegisterModule(
+      WhatsNewModule("Googlepayreauth", "vinnypersky@google.com",
+                     BrowserCommand::kOpenPaymentsSettings));
+
+  registry->RegisterModule(
+      WhatsNewModule(::features::kReadAnythingReadAloud, "trewin@google.com"));
+
+  // M138
+  registry->RegisterModule(
+      WhatsNewModule("TabGroupsSync", "dpenning@google.com"));
+
+  // M142
+  registry->RegisterModule(WhatsNewModule(::features::kSideBySide,
+                                          "agale@google.com",
+                                          BrowserCommand::kOpenSplitView));
+  // M143
+  registry->RegisterModule(
+      WhatsNewModule(::syncer::kSyncAccountSettings, "vizcay@google.com",
+                     BrowserCommand::kOpenAutofillSettings));
+
+  // M144
+#if BUILDFLAG(ENABLE_PDF)
+  registry->RegisterModule(
+      WhatsNewModule(chrome_pdf::features::kPdfInk2, "andyphan@chromium.org"));
+#endif  // BUILDFLAG(ENABLE_PDF)
+
+  // M144
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+  registry->RegisterModule(WhatsNewModule(chrome_pdf::features::kPdfSaveToDrive,
+                                          "faizur@google.com"));
+#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 }
 
 void RegisterWhatsNewEditions(whats_new::WhatsNewRegistry* registry) {
   // Register editions here.
+#if BUILDFLAG(ENABLE_GLIC)
+  registry->RegisterEdition(WhatsNewEdition(
+      ::features::kGlicRollout, "tommasin@chromium.org",
+      std::vector<BrowserCommand>{BrowserCommand::kOpenGlic,
+                                  BrowserCommand::kOpenGlicSettings,
+                                  BrowserCommand::kPrewarmGlicFre}));
+#endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
 std::unique_ptr<WhatsNewRegistry> CreateWhatsNewRegistry() {
   auto registry = std::make_unique<WhatsNewRegistry>(
       std::make_unique<WhatsNewStorageServiceImpl>());
 
-  RegisterWhatsNewModules(registry.get());
-  // Perform module pref cleanup.
-  registry->ClearUnregisteredModules();
-
   RegisterWhatsNewEditions(registry.get());
-  // Perform edition pref cleanup.
-  registry->ClearUnregisteredEditions();
+
+  // In some tests, the pref service may not be initialized. Make sure
+  // this has been created before performing operations that rely on local
+  // state.
+  if (g_browser_process->local_state()) {
+    RegisterWhatsNewModules(registry.get());
+
+    // Perform module and edition pref cleanup.
+    registry->ClearUnregisteredModules();
+    registry->ClearUnregisteredEditions();
+  }
 
   return registry;
 }

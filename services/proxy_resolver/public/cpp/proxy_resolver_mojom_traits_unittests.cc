@@ -15,6 +15,8 @@
 
 namespace network {
 
+// TODO(crbug.com/365771838): Add tests for non-ip protection nested proxy
+// chains if support is enabled for all builds.
 TEST(ProxyInfo, SerializeAndDeserialize) {
   std::vector<net::ProxyInfo> infos;
 
@@ -28,7 +30,7 @@ TEST(ProxyInfo, SerializeAndDeserialize) {
   infos.push_back(std::move(single_proxy_chain));
 
   net::ProxyInfo multi_proxy_chain;
-  multi_proxy_chain.UseProxyChain(net::ProxyChain({
+  multi_proxy_chain.UseProxyChain(net::ProxyChain::ForIpProtection({
       net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
                                               "foo1", 443),
       net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,

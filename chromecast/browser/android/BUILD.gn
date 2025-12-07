@@ -32,42 +32,32 @@ foreach(device_type, android_device_types) {
   }
 }
 
-common_resources = [
-  "apk/res-values/values-v17/styles.xml",
-  "apk/res-values/values/colors.xml",
-  "apk/res-values/values/strings.xml",
-]
-
-extra_resources = [
-  "apk/res/drawable-anydpi-v26/ic_settings_cast.xml",
-  "apk/res/drawable-hdpi/ic_notification_cast.png",
-  "apk/res/drawable-hdpi/ic_settings_cast.png",
-  "apk/res/drawable-mdpi/ic_notification_cast.png",
-  "apk/res/drawable-mdpi/ic_settings_cast.png",
-  "apk/res/drawable-nodpi/ic_cast_vector.xml",
-  "apk/res/drawable-xhdpi/ic_notification_cast.png",
-  "apk/res/drawable-xhdpi/ic_settings_cast.png",
-  "apk/res/drawable-xxhdpi/ic_notification_cast.png",
-  "apk/res/drawable-xxhdpi/ic_settings_cast.png",
-  "apk/res/drawable-xxxhdpi/ic_notification_cast.png",
-  "apk/res/drawable-xxxhdpi/ic_settings_cast.png",
-  "apk/res/layout/cast_web_contents_activity.xml",
-]
-
-android_resources("cast_shell_android_resources") {
-  android_manifest = cast_shell_android_manifest
-  android_manifest_dep = ":cast_shell_manifest"
-  sources = common_resources + extra_resources
+java_group("cast_shell_android_resources") {
+  deps = [
+    ":cast_browser_android_resources",
+    ":cast_shell_android_stub_resources",
+  ]
 }
 
 android_resources("cast_browser_android_resources") {
-  sources = extra_resources
+  sources = [
+    "apk/res/drawable-anydpi-v26/ic_settings_cast.xml",
+    "apk/res/drawable-hdpi/ic_settings_cast.png",
+    "apk/res/drawable-mdpi/ic_settings_cast.png",
+    "apk/res/drawable-nodpi/ic_cast_vector.xml",
+    "apk/res/drawable-xhdpi/ic_settings_cast.png",
+    "apk/res/drawable-xxhdpi/ic_settings_cast.png",
+    "apk/res/drawable-xxxhdpi/ic_settings_cast.png",
+    "apk/res/layout/cast_web_contents_activity.xml",
+    "apk/res/raw/back_pressed.js",
+  ]
 }
 
 android_resources("cast_shell_android_stub_resources") {
-  android_manifest = cast_shell_android_manifest
-  android_manifest_dep = ":cast_shell_manifest"
-  sources = common_resources
+  sources = [
+    "apk/res-values/values-v17/styles.xml",
+    "apk/res-values/values/colors.xml",
+  ]
 }
 
 android_library("cast_command_line_helper_java") {
@@ -150,6 +140,7 @@ common_android_library_deps = [
   "//components/embedder_support/android:view_java",
   "//components/module_installer/android:module_installer_java",
   "//components/module_installer/android:module_interface_java",
+  "//components/viz/service:service_java",
   "//content/public/android:content_java",
   "//media/base/android:media_java",
   "//net/android:net_java",
@@ -159,18 +150,13 @@ common_android_library_deps = [
 
   # TODO(slan): We may need to pass this in as a parameter.
   "//third_party/androidx:androidx_localbroadcastmanager_localbroadcastmanager_java",
-  "//third_party/androidx:androidx_slice_slice_builders_java",
-
-  # Used internally for Settings UI.
-  "//third_party/androidx:androidx_slice_slice_core_java",
   "//ui/android:ui_java",
 ]
 
 common_java_src_dir = "//chromecast/browser/android/apk/src"
 common_java_sources = [
-  "$common_java_src_dir/org/chromium/chromecast/shell/CastAccessibilityHelper.java",
-  "$common_java_src_dir/org/chromium/chromecast/shell/CastApplication.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastBrowser.java",
+  "$common_java_src_dir/org/chromium/chromecast/shell/CastBrowserApplication.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastBrowserHelper.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastBrowserImpl.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastBrowserService.java",
@@ -180,7 +166,6 @@ common_java_sources = [
   "$common_java_src_dir/org/chromium/chromecast/shell/CastWebContentsComponent.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastWebContentsIntentUtils.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastWebContentsScopes.java",
-  "$common_java_src_dir/org/chromium/chromecast/shell/CastWebContentsService.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastWebContentsSurfaceHelper.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/TaskRemovedMonitorService.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/WebContentsRegistry.java",
@@ -188,15 +173,15 @@ common_java_sources = [
 
 generate_product_config_srcjar("product_config_for_browser") {
   java_package = "org.chromium.chromecast.shell"
-  is_bundle_module = false
 }
 
 generate_jni("jni_headers") {
   sources = [
-    "apk/src/org/chromium/chromecast/shell/CastAccessibilityHelper.java",
     "apk/src/org/chromium/chromecast/shell/CastContentWindowAndroid.java",
     "apk/src/org/chromium/chromecast/shell/CastMetricsHelper.java",
   ]
+
+  deps = [ "//components/android_autofill/browser:jni_headers_features" ]
 }
 
 android_library("cast_shell_java") {
@@ -211,6 +196,7 @@ android_library("cast_shell_java") {
 
   jar_excluded_patterns = [ "*/ProductConfig.class" ]
 
+  mergeable_android_manifests = [ cast_shell_android_manifest ]
   deps = common_android_library_deps + [
            ":cast_shell_android_resources",
            ":cast_shell_manifest",
@@ -242,7 +228,6 @@ robolectric_binary("cast_shell_junit_tests") {
     "junit/src/org/chromium/chromecast/shell/CastWebContentsActivityTest.java",
     "junit/src/org/chromium/chromecast/shell/CastWebContentsComponentTest.java",
     "junit/src/org/chromium/chromecast/shell/CastWebContentsIntentUtilsTest.java",
-    "junit/src/org/chromium/chromecast/shell/CastWebContentsServiceTest.java",
     "junit/src/org/chromium/chromecast/shell/CastWebContentsSurfaceHelperTest.java",
     "junit/src/org/chromium/chromecast/shell/ElidedLogcatProviderUnitTest.java",
     "junit/src/org/chromium/chromecast/shell/HandlerSchedulerTest.java",

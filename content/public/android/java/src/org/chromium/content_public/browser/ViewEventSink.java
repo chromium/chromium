@@ -8,20 +8,21 @@ import android.content.res.Configuration;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content.browser.ViewEventSinkImpl;
 
 /** Interface for updating content with view events. */
+@NullMarked
 public interface ViewEventSink {
     /**
-     * Interface that consumers of WebContents must implement to allow the proper
-     * dispatching of view methods through the containing view.
+     * Interface that consumers of WebContents must implement to allow the proper dispatching of
+     * view methods through the containing view.
      *
-     * <p>
-     * All methods with the "super_" prefix should be routed to the parent of the
-     * implementing container view.
+     * <p>All methods with the "super_" prefix should be routed to the parent of the implementing
+     * container view.
      */
     @SuppressWarnings("javadoc")
-    public interface InternalAccessDelegate {
+    interface InternalAccessDelegate {
         /**
          * @see View#onKeyUp(keyCode, KeyEvent)
          */
@@ -46,7 +47,7 @@ public interface ViewEventSink {
     /**
      * @return {@link ViewEventSink} instance for a given {@link WebContents}.
      */
-    public static ViewEventSink from(WebContents webContents) {
+    static ViewEventSink from(WebContents webContents) {
         return ViewEventSinkImpl.from(webContents);
     }
 
@@ -84,12 +85,11 @@ public interface ViewEventSink {
 
     /**
      * Set the Container view Internals.
+     *
      * @param internalDispatcher Handles dispatching all hidden or super methods to the
-     *                           containerView.
+     *     containerView.
      */
     void setAccessDelegate(InternalAccessDelegate internalDispatcher);
 
-    void onPauseForTesting();
-
-    void onResumeForTesting();
+    void onActivityTopResumedChangedForTesting(boolean isTopResumedActivity);
 }

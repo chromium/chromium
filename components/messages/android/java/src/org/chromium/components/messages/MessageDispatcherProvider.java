@@ -4,22 +4,22 @@
 
 package org.chromium.components.messages;
 
-import androidx.annotation.Nullable;
-
-import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataKey;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
  * The class that handles association of MessageDispatcher with WindowAndroid and retrieval of the
  * associated MessageDispatcher.
  */
+@NullMarked
 public class MessageDispatcherProvider {
     /** An interface that allows a MessageDispatcher to be associated with an unowned data host. */
-    interface Unowned extends MessageDispatcher, UnownedUserData {}
+    interface Unowned extends MessageDispatcher {}
 
     /** The key used to bind the MessageDispatcher to the unowned data host. */
-    private static final UnownedUserDataKey<Unowned> KEY = new UnownedUserDataKey<>(Unowned.class);
+    private static final UnownedUserDataKey<Unowned> KEY = new UnownedUserDataKey<>();
 
     /**
      * Retrieves the shared MessageDispatcher from the provided WindowAndroid. Returns null if
@@ -31,8 +31,7 @@ public class MessageDispatcherProvider {
      * @param windowAndroid The window to retrieve MessageDispatcher from.
      * @return An instance of MessageDispatcher associated with the window.
      */
-    @Nullable
-    public static MessageDispatcher from(WindowAndroid windowAndroid) {
+    public static @Nullable MessageDispatcher from(@Nullable WindowAndroid windowAndroid) {
         if (windowAndroid == null) return null;
         return KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
     }

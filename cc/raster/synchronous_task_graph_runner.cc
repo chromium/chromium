@@ -6,9 +6,9 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <utility>
 
-#include "base/ranges/algorithm.h"
 #include "base/threading/simple_thread.h"
 #include "base/trace_event/heap_profiler.h"
 #include "base/trace_event/trace_event.h"
@@ -34,6 +34,12 @@ void SynchronousTaskGraphRunner::ScheduleTasks(NamespaceToken token,
   DCHECK(!TaskGraphWorkQueue::DependencyMismatch(graph));
 
   work_queue_.ScheduleTasks(token, graph);
+}
+
+void SynchronousTaskGraphRunner::ExternalDependencyCompletedForTask(
+    NamespaceToken token,
+    scoped_refptr<Task> task) {
+  work_queue_.ExternalDependencyCompletedForTask(token, std::move(task));
 }
 
 void SynchronousTaskGraphRunner::WaitForTasksToFinishRunning(
@@ -66,6 +72,10 @@ void SynchronousTaskGraphRunner::RunUntilIdle() {
   }
 }
 
+void SynchronousTaskGraphRunner::RunTasksUntilIdleForTest() {
+  RunUntilIdle();
+}
+
 bool SynchronousTaskGraphRunner::RunTask() {
   // Since we do not have posted from location for tasks, record the context for
   // tasks as "cc" in heap profiler.
@@ -75,7 +85,7 @@ bool SynchronousTaskGraphRunner::RunTask() {
   // Find the first category with any tasks to run. This task graph runner
   // treats categories as an additional priority.
   const auto& ready_to_run_namespaces = work_queue_.ready_to_run_namespaces();
-  auto found = base::ranges::find_if_not(
+  auto found = std::ranges::find_if_not(
       ready_to_run_namespaces,
       &TaskGraphWorkQueue::TaskNamespace::Vector::empty,
       &TaskGraphWorkQueue::ReadyNamespaces::value_type::second);

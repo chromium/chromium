@@ -8,8 +8,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -17,40 +20,78 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModel;
-import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tabmodel.TabRemover;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /** Almost empty implementation to mock a TabModel. It only handles tab creation and queries. */
-public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
+public class MockTabModel extends EmptyTabModel {
     /**
-     * Used to create different kinds of Tabs.  If a MockTabModelDelegate is not provided, regular
+     * Used to create different kinds of Tabs. If a MockTabModelDelegate is not provided, regular
      * Tabs are produced.
      */
     public interface MockTabModelDelegate {
         /**
          * Creates a Tab.
+         *
          * @param id ID of the Tab.
          * @param incognito Whether the Tab is incognito.
          * @return Tab that is created.
          */
-        public MockTab createTab(int id, boolean incognito);
+        MockTab createTab(int id, boolean incognito);
+    }
+
+    /**
+     * Used to simulate the comprehensive tab model that contains tabs pending closure. By default
+     * exactly mirrors {@code mTabs} as tabs are added. It does not handle removal automatically as
+     * this is either irrelevant to the test or requires customization for different states.
+     */
+    public static class ComprehensiveTabList extends EmptyTabModel {
+        private final List<Tab> mAllTabs = new ArrayList<>();
+
+        /** Returns the list of tabs backing the comprehensive model. */
+        public List<Tab> getTabList() {
+            return mAllTabs;
+        }
+
+        @Override
+        public int getCount() {
+            return mAllTabs.size();
+        }
+
+        @Override
+        public Tab getTabAt(int index) {
+            return mAllTabs.get(index);
+        }
+
+        @Override
+        public Iterator<Tab> iterator() {
+            return mAllTabs.iterator();
+        }
     }
 
     private int mIndex = TabModel.INVALID_TAB_INDEX;
 
-    private final ObservableSupplierImpl<Tab> mCurrentTabSupplier = new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<Integer> mTabCountSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
+            ObservableSuppliers.createNullable();
+    private final SettableNonNullObservableSupplier<Integer> mTabCountSupplier =
+            ObservableSuppliers.createNonNull(0);
     private final ObserverList<TabModelObserver> mObservers = new ObserverList<>();
-    private final ArrayList<Tab> mTabs = new ArrayList<Tab>();
+    private final ArrayList<Tab> mTabs = new ArrayList<>();
+    private final ComprehensiveTabList mComprehensiveModel = new ComprehensiveTabList();
     private final Profile mProfile;
     private final MockTabModelDelegate mDelegate;
     private boolean mIsActiveModel;
+    private @Nullable TabCreator mTabCreator;
+    private @Nullable TabRemover mTabRemover;
 
     public MockTabModel(Profile profile, MockTabModelDelegate delegate) {
         mProfile = profile;
@@ -73,8 +114,24 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
     }
 
     @Override
-    public @NonNull ObservableSupplier<Integer> getTabCountSupplier() {
+    public @NonNull NonNullObservableSupplier<Integer> getTabCountSupplier() {
         return mTabCountSupplier;
+    }
+
+    @Override
+    public @NonNull TabCreator getTabCreator() {
+        if (mTabCreator == null) {
+            return super.getTabCreator();
+        }
+        return mTabCreator;
+    }
+
+    @Override
+    public @NonNull TabRemover getTabRemover() {
+        if (mTabRemover == null) {
+            return super.getTabRemover();
+        }
+        return mTabRemover;
     }
 
     @Override
@@ -84,8 +141,10 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
 
         if (index == TabModel.INVALID_TAB_INDEX) {
             mTabs.add(tab);
+            mComprehensiveModel.getTabList().add(tab);
         } else {
             mTabs.add(index, tab);
+            mComprehensiveModel.getTabList().add(index, tab);
             if (index <= mIndex) {
                 mIndex++;
             }
@@ -116,13 +175,31 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
     }
 
     @Override
+    public boolean isIncognitoBranded() {
+        return mProfile.isOffTheRecord();
+    }
+
+    @Override
+    public boolean isOffTheRecord() {
+        return mProfile.isOffTheRecord();
+    }
+
+    @Override
     public int getCount() {
         return mTabs.size();
     }
 
     @Override
     public Tab getTabAt(int position) {
+        // Mimic the index safety of TabModelImpl.
+        if (position < 0 || position >= mTabs.size()) return null;
+
         return mTabs.get(position);
+    }
+
+    @Override
+    public Iterator<Tab> iterator() {
+        return mTabs.iterator();
     }
 
     @Override
@@ -136,7 +213,7 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
     }
 
     @Override
-    public @NonNull ObservableSupplier<Tab> getCurrentTabSupplier() {
+    public NullableObservableSupplier<Tab> getCurrentTabSupplier() {
         return mCurrentTabSupplier;
     }
 
@@ -187,5 +264,22 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
     @Override
     public boolean isActiveModel() {
         return mIsActiveModel;
+    }
+
+    @Override
+    public TabList getComprehensiveModel() {
+        return mComprehensiveModel;
+    }
+
+    public ComprehensiveTabList getComprehensiveTabList() {
+        return mComprehensiveModel;
+    }
+
+    public void setTabCreatorForTesting(TabCreator tabCreator) {
+        mTabCreator = tabCreator;
+    }
+
+    public void setTabRemoverForTesting(TabRemover tabRemover) {
+        mTabRemover = tabRemover;
     }
 }

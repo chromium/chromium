@@ -28,30 +28,27 @@
 
 namespace blink {
 
-// static
-const char PushMessagingClient::kSupplementName[] = "PushMessagingClient";
-
 PushMessagingClient::PushMessagingClient(LocalDOMWindow& window)
-    : Supplement<LocalDOMWindow>(window), push_messaging_manager_(&window) {
+    : local_dom_window_(window), push_messaging_manager_(&window) {
   // This class will be instantiated for every page load (rather than on push
   // messaging use), so there's nothing to be done in this constructor.
 }
 
 // static
 PushMessagingClient* PushMessagingClient::From(LocalDOMWindow& window) {
-  auto* client = Supplement<LocalDOMWindow>::From<PushMessagingClient>(window);
+  PushMessagingClient* client = window.GetPushMessagingClient();
   if (!client) {
     client = MakeGarbageCollected<PushMessagingClient>(window);
-    Supplement<LocalDOMWindow>::ProvideTo(window, client);
+    window.SetPushMessagingClient(client);
   }
   return client;
 }
 
 mojom::blink::PushMessaging* PushMessagingClient::GetPushMessagingRemote() {
   if (!push_messaging_manager_.is_bound()) {
-    GetSupplementable()->GetBrowserInterfaceBroker().GetInterface(
+    local_dom_window_->GetBrowserInterfaceBroker().GetInterface(
         push_messaging_manager_.BindNewPipeAndPassReceiver(
-            GetSupplementable()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+            local_dom_window_->GetTaskRunner(TaskType::kMiscPlatformAPI)));
   }
 
   return push_messaging_manager_.get();
@@ -61,8 +58,8 @@ void PushMessagingClient::Subscribe(
     ServiceWorkerRegistration* service_worker_registration,
     PushSubscriptionOptions* options,
     bool user_gesture,
-    std::unique_ptr<PushSubscriptionCallbacks> callbacks) {
-  DCHECK(callbacks);
+    ScriptPromiseResolver<PushSubscription>* resolver) {
+  DCHECK(resolver);
 
   mojom::blink::PushSubscriptionOptionsPtr options_ptr =
       mojo::ConvertTo<mojom::blink::PushSubscriptionOptionsPtr>(options);
@@ -71,19 +68,19 @@ void PushMessagingClient::Subscribe(
   // fetching the manifest.
   if (!options->applicationServerKey()->ByteLength()) {
     ManifestManager* manifest_manager =
-        ManifestManager::From(*GetSupplementable());
-    manifest_manager->RequestManifest(WTF::BindOnce(
+        ManifestManager::From(*local_dom_window_);
+    manifest_manager->RequestManifest(BindOnce(
         &PushMessagingClient::DidGetManifest, WrapPersistent(this),
         WrapPersistent(service_worker_registration), std::move(options_ptr),
-        user_gesture, std::move(callbacks)));
+        user_gesture, WrapPersistent(resolver)));
   } else {
     DoSubscribe(service_worker_registration, std::move(options_ptr),
-                user_gesture, std::move(callbacks));
+                user_gesture, WrapPersistent(resolver));
   }
 }
 
 void PushMessagingClient::Trace(Visitor* visitor) const {
-  Supplement<LocalDOMWindow>::Trace(visitor);
+  visitor->Trace(local_dom_window_);
   visitor->Trace(push_messaging_manager_);
 }
 
@@ -91,7 +88,7 @@ void PushMessagingClient::DidGetManifest(
     ServiceWorkerRegistration* service_worker_registration,
     mojom::blink::PushSubscriptionOptionsPtr options,
     bool user_gesture,
-    std::unique_ptr<PushSubscriptionCallbacks> callbacks,
+    ScriptPromiseResolver<PushSubscription>* resolver,
     mojom::blink::ManifestRequestResult result,
     const KURL& manifest_url,
     mojom::blink::ManifestPtr manifest) {
@@ -100,32 +97,32 @@ void PushMessagingClient::DidGetManifest(
   if (manifest_url.IsEmpty() || manifest == mojom::blink::Manifest::New() ||
       result != mojom::blink::ManifestRequestResult::kSuccess) {
     DidSubscribe(
-        service_worker_registration, std::move(callbacks),
+        service_worker_registration, resolver,
         mojom::blink::PushRegistrationStatus::MANIFEST_EMPTY_OR_MISSING,
         nullptr /* subscription */);
     return;
   }
 
   if (!manifest->gcm_sender_id.IsNull()) {
-    StringUTF8Adaptor gcm_sender_id_as_utf8_string(manifest->gcm_sender_id);
+    StringUtf8Adaptor gcm_sender_id_as_utf8_string(manifest->gcm_sender_id);
     Vector<uint8_t> application_server_key;
     application_server_key.AppendSpan(base::span(gcm_sender_id_as_utf8_string));
     options->application_server_key = std::move(application_server_key);
   }
 
   DoSubscribe(service_worker_registration, std::move(options), user_gesture,
-              std::move(callbacks));
+              resolver);
 }
 
 void PushMessagingClient::DoSubscribe(
     ServiceWorkerRegistration* service_worker_registration,
     mojom::blink::PushSubscriptionOptionsPtr options,
     bool user_gesture,
-    std::unique_ptr<PushSubscriptionCallbacks> callbacks) {
-  DCHECK(callbacks);
+    ScriptPromiseResolver<PushSubscription>* resolver) {
+  DCHECK(resolver);
 
   if (options->application_server_key.empty()) {
-    DidSubscribe(service_worker_registration, std::move(callbacks),
+    DidSubscribe(service_worker_registration, resolver,
                  mojom::blink::PushRegistrationStatus::NO_SENDER_ID,
                  nullptr /* subscription */);
     return;
@@ -134,17 +131,17 @@ void PushMessagingClient::DoSubscribe(
   GetPushMessagingRemote()->Subscribe(
       service_worker_registration->RegistrationId(), std::move(options),
       user_gesture,
-      WTF::BindOnce(&PushMessagingClient::DidSubscribe, WrapPersistent(this),
-                    WrapPersistent(service_worker_registration),
-                    std::move(callbacks)));
+      BindOnce(&PushMessagingClient::DidSubscribe, WrapPersistent(this),
+               WrapPersistent(service_worker_registration),
+               WrapPersistent(resolver)));
 }
 
 void PushMessagingClient::DidSubscribe(
     ServiceWorkerRegistration* service_worker_registration,
-    std::unique_ptr<PushSubscriptionCallbacks> callbacks,
+    ScriptPromiseResolver<PushSubscription>* resolver,
     mojom::blink::PushRegistrationStatus status,
     mojom::blink::PushSubscriptionPtr subscription) {
-  DCHECK(callbacks);
+  DCHECK(resolver);
 
   if (status ==
           mojom::blink::PushRegistrationStatus::SUCCESS_FROM_PUSH_SERVICE ||
@@ -153,10 +150,10 @@ void PushMessagingClient::DidSubscribe(
       status == mojom::blink::PushRegistrationStatus::SUCCESS_FROM_CACHE) {
     DCHECK(subscription);
 
-    callbacks->OnSuccess(PushSubscription::Create(std::move(subscription),
-                                                  service_worker_registration));
+    resolver->Resolve(PushSubscription::Create(std::move(subscription),
+                                               service_worker_registration));
   } else {
-    callbacks->OnError(PushError::CreateException(
+    resolver->Reject(PushError::CreateException(
         PushRegistrationStatusToPushErrorType(status),
         PushRegistrationStatusToString(status)));
   }

@@ -43,7 +43,7 @@ gfx::Size TestWindowDelegate::GetMinimumSize() const {
   return minimum_size_;
 }
 
-gfx::Size TestWindowDelegate::GetMaximumSize() const {
+std::optional<gfx::Size> TestWindowDelegate::GetMaximumSize() const {
   return maximum_size_;
 }
 
@@ -146,7 +146,7 @@ bool MaskedWindowDelegate::HasHitTestMask() const {
 }
 
 void MaskedWindowDelegate::GetHitTestMask(SkPath* mask) const {
-  mask->addRect(RectToSkRect(mask_rect_));
+  *mask = SkPath::Rect(RectToSkRect(mask_rect_));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

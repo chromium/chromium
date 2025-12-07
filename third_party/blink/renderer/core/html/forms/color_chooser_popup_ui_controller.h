@@ -56,11 +56,12 @@ class CORE_EXPORT ColorChooserPopupUIController final
   // ColorChooser functions
   void EndChooser() override;
   AXObject* RootAXObject(Element* popup_owner) override;
+  bool IsPickerVisible() const override;
 
   // PagePopupClient functions:
   void WriteDocument(SegmentedBuffer&) override;
   Locale& GetLocale() override;
-  void SetValueAndClosePopup(int, const String&) override;
+  void SetValueAndClosePopup(int, const String&, bool) override;
   void SetValue(const String&) override;
   void CancelPopup() override;
   Element& OwnerElement() override;

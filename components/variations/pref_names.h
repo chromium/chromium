@@ -44,6 +44,8 @@ extern const char kVariationsSafeSeedSessionConsistencyCountry[];
 COMPONENT_EXPORT(VARIATIONS) extern const char kVariationsSafeSeedSignature[];
 COMPONENT_EXPORT(VARIATIONS) extern const char kVariationsSeedDate[];
 COMPONENT_EXPORT(VARIATIONS) extern const char kVariationsSeedSignature[];
+COMPONENT_EXPORT(VARIATIONS) extern const char kVariationsSeedSerialNumber[];
+COMPONENT_EXPORT(VARIATIONS) extern const char kVariationsStickyStudies[];
 
 // For chrome://field-trial-internals.
 COMPONENT_EXPORT(VARIATIONS) extern const char kVariationsForcedFieldTrials[];

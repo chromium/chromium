@@ -15,21 +15,21 @@ Tests that screenshot works with clip and emulation
 {
     id : <number>
     result : {
-        data : iVBORw0KGgoAAAANSUhEUgAAADUAAAA1CAIAAABuhDQnAAAAZUlEQVRoge3ZIQ6AQBAEwTvCw+/nYJAkiBZAUmXWdsbuHOMYH7a9HfBgv+6a73bcWMcP9tPX6Gv0NfoafY2+Rl+jr9HX6Gv0NfoafY2+Rl+jr9HX6Gv0NfoafY2+Rl/z9b7pv5+cTBEEae5WMR0AAAAASUVORK5CYII=
+        data : iVBORw0KGgoAAAANSUhEUgAAADUAAAA1CAIAAABuhDQnAAAAYklEQVR4nOzZsQ2AMBAEwUdy4e4cREAFmxhppoLVf3hr5p6DrTnb17evOc1+H/uX+51KX6Ov0dfoa/Q1+hp9jb5GX6Ov0dfoa/Q1+hp9jb5GX6Ov0dfoa/Q1+hp9zWXfTx4AAAD///+1WosAAAAGSURBVAMAKBoE0CDq3ckAAAAASUVORK5CYII=
     }
     sessionId : <string>
 }
 {
     id : <number>
     result : {
-        data : iVBORw0KGgoAAAANSUhEUgAAAJ8AAACfCAIAAABoeZy3AAABmklEQVR4nO3XMQrDMBBFwZXJwXVzuzcp4xgeM6WqD48ttGbOIep4ewAPUrdM3TJ1y9Qt+3x52+v/O/iBff/+uN0ydcvULVO3TN0ydcvULVO3TN0ydcvULVO3TN0ydcvULVO3TN0ydcvULVO3TN0ydcvULVO3TN0ydcvULVO3TN0ydcvULVO3TN0ydcvULVO3TN0ydcvULVO3TN0ydcvULVO3TN0ydcvULVO3TN0ydcvULVO3TN0ydcvULVO3TN0ydcvULVO3TN0ydcvULVO3TN0ydcvULVO3TN0ydcvULVO3TN0ydcvULVO3TN0ydcvULVO3TN0ydcvULVO3TN0ydcvULVO3TN0ydcvULVO3TN0ydcvULVO3TN0ydcvULVO3TN0ydcvULVO3TN0ydcvULVO3TN0ydcvULVO3TN0ydcvULVO3TN0ydcvULVO3TN0ydcvULVO3TN0ydcvULVO3TN0ydcvULVO3TN0ydcvULVO3TN0ydcvULVO3TN0ydcvULVO3TN0ydcvWzPn2Bp7idsvULVO3TN0ydcsudtoFPYYGw+kAAAAASUVORK5CYII=
+        data : iVBORw0KGgoAAAANSUhEUgAAAJ8AAACfCAIAAABoeZy3AAABj0lEQVR4nOzXsQnAMBAEwReocHUu58YNeJlpYbng9swdovbQpW6ZumXqlqlb9lX3rOGPzvv+2G6ZumXqlqlbpm6ZumXqlqlbpm6ZumXqlqlbpm6ZumXqlqlbpm6ZumXqlqlbpm6ZumXqlqlbpm6ZumXqlqlbpm6ZumXqlqlbpm6ZumXqlqlbpm6ZumXqlqlbpm6ZumXqlqlbpm6ZumXqlqlbpm6ZumXqlqlbpm6ZumXqlqlbpm6ZumXqlqlbpm6ZumXqlqlbpm6ZumXqlqlbpm6ZumXqlqlbpm6ZumXqlqlbpm6ZumXqlqlbpm6ZumXqlqlbpm6ZumXqlqlbpm6ZumXqlqlbpm6ZumXqlqlbpm6ZumXqlqlbpm6ZumXqlqlbpm6ZumXqlqlbpm6ZumXqlqlbpm6ZumXqlqlbpm6ZumXqlqlbpm6ZumXqlqlbpm6ZumXqlqlbpm6ZumXqlqlbpm6ZumXqlqlbpm6ZumXqlqlbpm6ZumXqlqlbpm6ZumVr5g5Rtlumbpm6ZeqWqVv2AAAA///UlaKIAAAABklEQVQDAOYABnhN8isCAAAAAElFTkSuQmCC
     }
     sessionId : <string>
 }
 {
     id : <number>
     result : {
-        data : iVBORw0KGgoAAAANSUhEUgAAABsAAAAbCAIAAAACtmMCAAAAQElEQVRIie3WMRUAIAzE0JSHMJy10sAJTmBFwG1cBPw5AQdpHaBCg81kVtNYTxYtWrRo0eLvYgdYqcH2AEL+FBdLSgeXiyZ/3gAAAABJRU5ErkJggg==
+        data : iVBORw0KGgoAAAANSUhEUgAAABsAAAAbCAIAAAACtmMCAAAAPklEQVR4nOzWOxEAMAgE0WMGYXEWpCElTvLTcOVuceVrIaUta/mmQpZ6qivlDhEREREREVH/zlpa407Yf4oDAAD//wbnJvUAAAAGSURBVAMAMvQHxxTMQZwAAAAASUVORK5CYII=
     }
     sessionId : <string>
 }

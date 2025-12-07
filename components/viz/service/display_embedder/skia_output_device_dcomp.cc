@@ -7,10 +7,15 @@
 #include <memory>
 #include <tuple>
 #include <utility>
+#include <variant>
+#include <vector>
 
 #include "base/debug/alias.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/common/switches.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/feature_info.h"
@@ -23,7 +28,7 @@
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gl/dc_layer_overlay_image.h"
 #include "ui/gl/dc_layer_overlay_params.h"
@@ -34,6 +39,9 @@
 namespace viz {
 
 namespace {
+// Apply fixes for crbug.com/457463689.
+BASE_FEATURE(kDirectCompositionResizeFixes, base::FEATURE_ENABLED_BY_DEFAULT);
+
 base::TimeTicks g_last_reshape_failure = base::TimeTicks();
 
 NOINLINE void CheckForLoopFailures() {
@@ -41,9 +49,25 @@ NOINLINE void CheckForLoopFailures() {
   auto now = base::TimeTicks::Now();
   if (!g_last_reshape_failure.is_null() &&
       now - g_last_reshape_failure < threshold) {
-    CHECK(false);
+    NOTREACHED();
   }
   g_last_reshape_failure = now;
+}
+
+OutputSurface::DCSupportLevel GetDcSupportLevel() {
+  if (gl::DirectCompositionTextureSupported()) {
+    Microsoft::WRL::ComPtr<IDCompositionDevice3> dcomp_device =
+        gl::GetDirectCompositionDevice();
+
+    if (Microsoft::WRL::ComPtr<IDCompositionDevice5> dcomp_device5;
+        SUCCEEDED(dcomp_device.As(&dcomp_device5))) {
+      return OutputSurface::DCSupportLevel::kDCompDynamicTexture;
+    }
+
+    return OutputSurface::DCSupportLevel::kDCompTexture;
+  }
+
+  return OutputSurface::DCSupportLevel::kDCLayers;
 }
 
 }  // namespace
@@ -101,7 +125,7 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
     gpu::MemoryTracker* memory_tracker,
     DidSwapBufferCompleteCallback did_swap_buffer_complete_callback)
     : SkiaOutputDevice(context_state->gr_context(),
-                       context_state->graphite_context(),
+                       context_state->graphite_shared_context(),
                        memory_tracker,
                        std::move(did_swap_buffer_complete_callback)),
       shared_image_representation_factory_(shared_image_representation_factory),
@@ -113,6 +137,12 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
   capabilities_.output_surface_origin = gfx::SurfaceOrigin::kTopLeft;
   capabilities_.number_of_buffers =
       gl::DirectCompositionRootSurfaceBufferCount();
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDoubleBufferCompositing)) {
+    // Use switch "double-buffer-compositing" to force 1 |max_pending_swaps|
+    // when the feature |DCompTripleBufferRootSwapChain| is enabled.
+    capabilities_.number_of_buffers = 2;
+  }
   if (feature_info->workarounds().supports_two_yuv_hardware_overlays) {
     capabilities_.allowed_yuv_overlay_count = 2;
   }
@@ -120,19 +150,27 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
           features::kDirectCompositionUnlimitedOverlays)) {
     capabilities_.allowed_yuv_overlay_count = INT_MAX;
   }
-  capabilities_.dc_support_level =
-      gl::DirectCompositionTextureSupported()
-          ? OutputSurface::DCSupportLevel::kDCompTexture
-          : OutputSurface::DCSupportLevel::kDCLayers;
+  capabilities_.dc_support_level = GetDcSupportLevel();
   capabilities_.supports_post_sub_buffer = true;
   capabilities_.supports_delegated_ink = presenter_->SupportsDelegatedInk();
-  capabilities_.pending_swap_params.max_pending_swaps = 1;
+  capabilities_.pending_swap_params.max_pending_swaps =
+      capabilities_.number_of_buffers - 1;
   capabilities_.renderer_allocates_images = true;
   capabilities_.supports_viewporter = presenter_->SupportsViewporter();
   capabilities_.supports_non_backed_solid_color_overlays = true;
+  capabilities_.resize_based_on_root_surface =
+      base::FeatureList::IsEnabled(kDirectCompositionResizeFixes);
+  // With delegated compositing or a buffer queue, |Present| and |Commit| are
+  // synchronized and the clear is not needed.
+  capabilities_.clear_drawn_areas_outside_viewport =
+      base::FeatureList::IsEnabled(kDirectCompositionResizeFixes) &&
+      !IsDelegatedCompositingSupportedAndEnabled(
+          capabilities_.dc_support_level) &&
+      !IsBufferQueueSupportedAndEnabled(capabilities_.dc_support_level);
 
   DCHECK(context_state_);
-  DCHECK(context_state_->gr_context() || context_state_->graphite_context());
+  DCHECK(context_state_->gr_context() ||
+         context_state_->graphite_shared_context());
   DCHECK(context_state_->context());
   DCHECK(presenter_);
 
@@ -154,7 +192,24 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
 }
 
 SkiaOutputDeviceDComp::~SkiaOutputDeviceDComp() {
-  DCHECK(presenter_->HasOneRef());
+  // `SkiaOutputDeviceDComp` is non-copyable and non-movable, so dtor will only
+  // happen once.
+  CHECK(presenter_);
+
+  // We expect `SkiaOutputDeviceDComp::presenter_` to act like a unique pointer,
+  // only owned by `SkiaOutputDeviceDComp`.
+  CHECK(presenter_->HasOneRef());
+
+  if (!presenter_->DestroyDCLayerTree()) {
+    // If the `Commit` call in `~DCompPresenter` failed with device lost, exit
+    // the process via context loss, since it would not be valid to clean up
+    // `overlays_` if it contains DComp textures since they would still be
+    // attached to the visual tree.
+    context_state_->MarkContextLost();
+
+    // We expect `MarkContextLost` to exit the GPU process synchronously.
+    NOTREACHED();
+  }
 }
 
 void SkiaOutputDeviceDComp::Present(const std::optional<gfx::Rect>& update_rect,
@@ -177,11 +232,19 @@ void SkiaOutputDeviceDComp::OnPresentFinished(
   // Remove entries from |overlays_| for textures that weren't scheduled as an
   // overlay this frame.
   if (!overlays_.empty()) {
-    base::EraseIf(overlays_, [this](auto& entry) {
-      const gpu::Mailbox& mailbox = entry.first;
-      return !scheduled_overlay_mailboxes_.contains(mailbox);
-    });
+    if (result.swap_result == gfx::SwapResult::SWAP_ACK) {
+      // If swap did not succeed, then the overlay images could still be in the
+      // visual tree. It's not safe for us to end overlay access on DComp
+      // textures since DWM could potentially still read from them. The images
+      // held back in the swap failure case will either be cleaned up on next
+      // successful swap or after GPU process restart.
+      base::EraseIf(overlays_, [this](auto& entry) {
+        const gpu::Mailbox& mailbox = entry.first;
+        return !scheduled_overlay_mailboxes_.contains(mailbox);
+      });
+    }
     scheduled_overlay_mailboxes_.clear();
+
     for (auto& [mailbox, overlay_data] : overlays_) {
       if (auto overlay_image = overlay_data.GetOverlayAccess()) {
         if (overlay_image->type() ==
@@ -210,6 +273,9 @@ void SkiaOutputDeviceDComp::OnPresentFinished(
 
 void SkiaOutputDeviceDComp::ScheduleOverlays(
     SkiaOutputSurface::OverlayList overlays) {
+  std::vector<gl::DCLayerOverlayParams> out_overlays;
+  out_overlays.reserve(overlays.size());
+
   for (auto& dc_layer : overlays) {
     // This is not necessarily an error, DCLayerTree can succeed with any
     // combination of overlay image and background color. However, it's wasteful
@@ -225,48 +291,57 @@ void SkiaOutputDeviceDComp::ScheduleOverlays(
       CHECK(dc_layer.mailbox.IsZero());
     }
 
-    auto params = std::make_unique<gl::DCLayerOverlayParams>();
+    gl::DCLayerOverlayParams& params = out_overlays.emplace_back();
+
+    params.background_color = dc_layer.color;
+    params.z_order = dc_layer.plane_z_order;
 
     const gpu::Mailbox& mailbox = dc_layer.mailbox;
     if (!mailbox.IsZero()) {
       std::optional<gl::DCLayerOverlayImage> overlay_image =
           BeginOverlayAccess(mailbox);
-      if (!overlay_image) {
+      if (overlay_image) {
+        params.overlay_image = std::move(overlay_image);
+        params.damage_rect = dc_layer.damage_rect;
+        scheduled_overlay_mailboxes_.insert(mailbox);
+      } else {
         DLOG(ERROR) << "Failed to ProduceOverlay or GetDCLayerOverlayImage";
-        continue;
+#if DCHECK_IS_ON()
+        params.background_color = SkColors::kRed;
+#else
+        params.background_color = SkColors::kWhite;
+#endif
       }
-      params->overlay_image = std::move(overlay_image);
     }
-
-    params->background_color = dc_layer.color;
-    params->z_order = dc_layer.plane_z_order;
 
     // SwapChainPresenter uses the size of the overlay's resource in pixels to
     // calculate its swap chain size. `uv_rect` maps the portion of
     // `resource_size_in_pixels` that will be displayed.
-    params->content_rect = gfx::ScaleRect(
+    params.content_rect = gfx::ScaleRect(
         dc_layer.uv_rect, dc_layer.resource_size_in_pixels.width(),
         dc_layer.resource_size_in_pixels.height());
 
-    params->quad_rect = gfx::ToRoundedRect(dc_layer.display_rect);
-    CHECK(absl::holds_alternative<gfx::Transform>(dc_layer.transform));
-    params->transform = absl::get<gfx::Transform>(dc_layer.transform);
-    params->clip_rect = dc_layer.clip_rect;
-    params->opacity = dc_layer.opacity;
-    params->rounded_corner_bounds = dc_layer.rounded_corners;
-    params->nearest_neighbor_filter = dc_layer.nearest_neighbor_filter;
-    params->aggregated_layer_id = dc_layer.aggregated_layer_id;
-
-    params->video_params.protected_video_type = dc_layer.protected_video_type;
-    params->video_params.color_space = dc_layer.color_space;
-    params->video_params.hdr_metadata = dc_layer.hdr_metadata;
-    params->video_params.possible_video_fullscreen_letterboxing =
+    params.quad_rect = gfx::ToRoundedRect(dc_layer.display_rect);
+    CHECK(std::holds_alternative<gfx::Transform>(dc_layer.transform));
+    params.transform = std::get<gfx::Transform>(dc_layer.transform);
+    params.clip_rect = dc_layer.clip_rect;
+    params.opacity = dc_layer.opacity;
+    params.rounded_corner_bounds = dc_layer.rounded_corners;
+    params.nearest_neighbor_filter = dc_layer.nearest_neighbor_filter;
+    params.layer_id = dc_layer.layer_id;
+    params.video_params.protected_video_type = dc_layer.protected_video_type;
+    params.video_params.color_space = dc_layer.color_space;
+    params.video_params.hdr_metadata = dc_layer.hdr_metadata;
+    params.video_params.is_p010_content =
+        (dc_layer.format == MultiPlaneFormat::kP010);
+    params.video_params.possible_video_fullscreen_letterboxing =
         dc_layer.possible_video_fullscreen_letterboxing;
-
-    // Schedule DC layer overlay to be presented at next SwapBuffers().
-    presenter_->ScheduleDCLayer(std::move(params));
-    scheduled_overlay_mailboxes_.insert(mailbox);
+    params.video_params.is_full_screen_video =
+        dc_layer.overlay_type == gfx::OverlayType::kFullScreen;
   }
+
+  // Schedule DC layer overlays to be presented at next SwapBuffers().
+  presenter_->ScheduleDCLayers(std::move(out_overlays));
 }
 
 std::optional<gl::DCLayerOverlayImage>

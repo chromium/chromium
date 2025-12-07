@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0">
+    <title>Page with text input</title>
+    <style>
+      div {
+        margin-top: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- method=dialog prevents the form from navigating the page -->
+    <form id="form" method="dialog">
+      <input type="text" name="input" id="input">
+      <input type="text" name="input2" id="input2" aria-label="test-input">
+      <input type="text" name="input3" id="input3" aria-label="disabled-input" disabled>
+      <input type="submit" id="submit">
+    </form>
+    <script>
+      let input_event_log = [];
+      let log_handler = e => {
+        input_event_log.push({ type: e.type, time: e.timeStamp });
+      };
+
+      document.getElementById('input').addEventListener('change', log_handler);
+      document.getElementById('input').addEventListener('input', log_handler);
+      document.getElementById('input').addEventListener('keydown', log_handler);
+      document.getElementById('input').addEventListener('keyup', log_handler);
+      document.getElementById('submit').addEventListener('click', log_handler);
+
+      // Filtering out unexpected 'change' events. Change events depend on focus
+      // which causes browser_tests to flake.
+      function getStableEvents() {
+        return input_event_log.filter((event, index, arr) => {
+          return event.type !== 'change';
+        });
+      }
+
+      function getStableEventLog() {
+        return getStableEvents().map(event => event.type).join(',');
+      }
+
+      function getStableEventLogTimes() {
+        return getStableEvents().map(event => event.time);
+      }
+    </script>
+
+    <div>
+      This input calls preventDefault on all key events.
+      <input type="text" id="keyHandlingInput" aria-label="key-handling-input">
+      <script>
+        document.getElementById('keyHandlingInput')
+            .addEventListener('keydown', e => {
+          e.target.value += e.key;
+          e.preventDefault();
+        });
+        document.getElementById('keyHandlingInput')
+            .addEventListener('keypress', e => e.preventDefault());
+        document.getElementById('keyHandlingInput')
+            .addEventListener('keyup', e => e.preventDefault());
+      </script>
+    </div>
+
+    <div>
+      This input is disabled and initially offscreen
+      <input type="text"
+             style="position: absolute; top: 200vh"
+             id="offscreen-disabled-input"
+             aria-label="offscreen_disabled_input" disabled>
+    </div>
+  </body>
+</html>

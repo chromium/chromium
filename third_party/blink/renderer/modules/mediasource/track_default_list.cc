@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 
 namespace blink {
@@ -23,20 +24,21 @@ TrackDefaultList* TrackDefaultList::Create(
   //    Note: This also applies when byteStreamTrackID contains an empty
   //    string and ensures that there is only one "byteStreamTrackID
   //    independent" default for each TrackDefaultType value.
-  using TypeAndID = std::pair<AtomicString, String>;
+  using TypeAndID = std::pair<V8TrackDefaultType::Enum, String>;
   using TypeAndIDToTrackDefaultMap =
       HeapHashMap<TypeAndID, Member<TrackDefault>>;
   TypeAndIDToTrackDefaultMap type_and_id_to_track_default_map;
 
   for (const auto& track_default : track_defaults) {
-    TypeAndID key =
-        TypeAndID(track_default->type(), track_default->byteStreamTrackID());
+    TypeAndID key = TypeAndID(track_default->type().AsEnum(),
+                              track_default->byteStreamTrackID());
     if (!type_and_id_to_track_default_map.insert(key, track_default)
              .is_new_entry) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidAccessError,
-          "Duplicate TrackDefault type (" + key.first +
-              ") and byteStreamTrackID (" + key.second + ")");
+          StrCat({"Duplicate TrackDefault type (",
+                  V8TrackDefaultType(key.first).AsStringView(),
+                  ") and byteStreamTrackID (", key.second, ")"}));
       return nullptr;
     }
   }

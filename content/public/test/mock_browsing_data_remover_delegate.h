@@ -14,8 +14,6 @@
 
 namespace content {
 
-class StoragePartition;
-
 // A BrowsingDataRemoverDelegate that only records RemoveEmbedderData() calls.
 class MockBrowsingDataRemoverDelegate : public BrowsingDataRemoverDelegate {
  public:
@@ -26,9 +24,6 @@ class MockBrowsingDataRemoverDelegate : public BrowsingDataRemoverDelegate {
   BrowsingDataRemoverDelegate::EmbedderOriginTypeMatcher GetOriginTypeMatcher()
       override;
   bool MayRemoveDownloadHistory() override;
-  std::vector<std::string> GetDomainsForDeferredCookieDeletion(
-      StoragePartition* storage_partition,
-      uint64_t remove_mask) override;
   void RemoveEmbedderData(const base::Time& delete_begin,
                           const base::Time& delete_end,
                           uint64_t remove_mask,

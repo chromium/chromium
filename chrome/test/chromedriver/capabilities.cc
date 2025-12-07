@@ -2,19 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/test/chromedriver/capabilities.h"
 
 #include <map>
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
-#include "base/containers/fixed_flat_set.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/string_escape.h"
@@ -628,8 +624,8 @@ Status ParseProxy(bool w3c_compliant,
       // Example: "http=localhost:9000;ftp=localhost:8000".
       if (!proxy_servers.empty())
         proxy_servers += ";";
-      proxy_servers +=
-          base::StringPrintf("%s=%s", proxy_servers_option[1], value.c_str());
+      proxy_servers += base::StringPrintf(
+          "%s=%s", UNSAFE_TODO(proxy_servers_option[1]), value.c_str());
     }
 
     std::string proxy_bypass_list;
@@ -846,9 +842,18 @@ Status ParseChromeOptions(
   parser_map["devToolsEventsToLog"] =
       base::BindRepeating(&ParseDevToolsEventsLoggingPrefs);
   parser_map["windowTypes"] = base::BindRepeating(&ParseWindowTypes);
+
+  // Enable Chrome extension related targets
+  parser_map["enableExtensionTargets"] = base::BindRepeating(
+      &ParseBoolean, &capabilities->enable_extension_targets);
+
   // Compliance is read when session is initialized and correct response is
   // sent if not parsed correctly.
   parser_map["w3c"] = base::BindRepeating(&IgnoreCapability);
+
+  parser_map["localState"] =
+      base::BindRepeating(&ParseDict, &capabilities->local_state);
+  parser_map["prefs"] = base::BindRepeating(&ParseDict, &capabilities->prefs);
 
   if (is_android) {
     parser_map["androidActivity"] =
@@ -882,19 +887,18 @@ Status ParseChromeOptions(
         base::BindRepeating(&ParseFilePath, &capabilities->binary);
     parser_map["detach"] =
         base::BindRepeating(&ParseBoolean, &capabilities->detach);
+    parser_map["quitGracefully"] =
+        base::BindRepeating(&ParseBoolean, &capabilities->quit_gracefully);
     parser_map["excludeSwitches"] = base::BindRepeating(&ParseExcludeSwitches);
     parser_map["extensions"] = base::BindRepeating(&ParseExtensions);
     parser_map["extensionLoadTimeout"] = base::BindRepeating(
         &ParseTimeDelta, &capabilities->extension_load_timeout);
     parser_map["loadAsync"] =
         base::BindRepeating(&IgnoreDeprecatedOption, "loadAsync");
-    parser_map["localState"] =
-        base::BindRepeating(&ParseDict, &capabilities->local_state);
     parser_map["logPath"] = base::BindRepeating(&ParseLogPath);
     parser_map["minidumpPath"] =
         base::BindRepeating(&ParseString, &capabilities->minidump_path);
     parser_map["mobileEmulation"] = base::BindRepeating(&ParseMobileEmulation);
-    parser_map["prefs"] = base::BindRepeating(&ParseDict, &capabilities->prefs);
     parser_map["useAutomationExtension"] =
         base::BindRepeating(&IgnoreDeprecatedOption, "useAutomationExtension");
     parser_map["browserStartupTimeout"] = base::BindRepeating(
@@ -975,33 +979,54 @@ void Switches::SetSwitch(const std::string& name, const base::FilePath& value) {
 }
 
 void Switches::SetMultivaluedSwitch(const std::string& name,
-                                    const std::string& value) {
+                                    const std::string& value,
+                                    const std::string_view& delimiter) {
 #if BUILDFLAG(IS_WIN)
   auto native_value = base::UTF8ToWide(value);
-  auto delimiter = L',';
+  auto native_delimiter = base::UTF8ToWide(delimiter);
 #else
   const auto& native_value = value;
-  const auto delimiter = ',';
+  const auto& native_delimiter = delimiter;
 #endif
   NativeString& switch_value = switch_map_[name];
-  if (switch_value.size() > 0 && switch_value.back() != delimiter) {
-    switch_value += delimiter;
+  if (switch_value.size() > 0 && !switch_value.ends_with(native_delimiter)) {
+    switch_value += native_delimiter;
   }
   switch_value += native_value;
 }
 
+namespace {
+
+constexpr auto kMultivaluedSwitches =
+    base::MakeFixedFlatMap<std::string_view, std::string_view>({
+        {"enable-blink-features", ","},
+        {"disable-blink-features", ","},
+        {"enable-features", ","},
+        {"disable-features", ","},
+        {"js-flags", " "},
+    });
+
+}  // namespace
+
 void Switches::SetFromSwitches(const Switches& switches) {
-  for (auto iter = switches.switch_map_.begin();
-       iter != switches.switch_map_.end(); ++iter) {
-    switch_map_[iter->first] = iter->second;
+  for (const auto& switch_iter : switches.switch_map_) {
+    // The value in `switch_iter.second` is `NativeString`.
+    // `SetSwitch` and `SetMultivaluedSwitch` expect `std::string` (UTF8).
+    // Convert `NativeString` to `std::string` before passing.
+#if BUILDFLAG(IS_WIN)
+    auto native_value = base::WideToUTF8(switch_iter.second);
+#else
+    const auto& native_value = switch_iter.second;
+#endif
+    const auto multivalued_iter = kMultivaluedSwitches.find(switch_iter.first);
+    if (multivalued_iter != kMultivaluedSwitches.end()) {
+      SetMultivaluedSwitch(switch_iter.first, native_value,
+                           multivalued_iter->second);
+    } else {
+      SetSwitch(switch_iter.first, native_value);
+    }
   }
 }
-
-namespace {
-constexpr auto kMultivaluedSwitches = base::MakeFixedFlatSet<std::string_view>(
-    {"enable-blink-features", "disable-blink-features", "enable-features",
-     "disable-features"});
-}  // namespace
 
 void Switches::SetUnparsedSwitch(const std::string& unparsed_switch) {
   std::string value;
@@ -1015,10 +1040,12 @@ void Switches::SetUnparsedSwitch(const std::string& unparsed_switch) {
     start_index = 2;
   name = unparsed_switch.substr(start_index, equals_index - start_index);
 
-  if (kMultivaluedSwitches.contains(name))
-    SetMultivaluedSwitch(name, value);
-  else
+  const auto iter = kMultivaluedSwitches.find(name);
+  if (iter != kMultivaluedSwitches.end()) {
+    SetMultivaluedSwitch(name, value, iter->second);
+  } else {
     SetSwitch(name, value);
+  }
 }
 
 void Switches::RemoveSwitch(const std::string& name) {
@@ -1101,6 +1128,19 @@ bool Capabilities::IsRemoteBrowser() const {
   return debugger_address.IsValid();
 }
 
+Status Capabilities::MigrateCapabilities() {
+  // Injecting "background_page" is deprecated. Throw a warning and migrate to
+  // the new dedicated switch for it.
+  if (window_types.contains(WebViewInfo::kBackgroundPage)) {
+    window_types.erase(WebViewInfo::kBackgroundPage);
+    enable_extension_targets = true;
+    LOG(WARNING) << "Injecting \"background_page\" windowType is deprecated. "
+                    "Use enableExtensionTargets option instead.";
+  }
+
+  return Status(kOk);
+}
+
 Status Capabilities::Parse(const base::Value::Dict& desired_caps,
                            bool w3c_compliant) {
   std::map<std::string, Parser> parser_map;
@@ -1149,6 +1189,7 @@ Status Capabilities::Parse(const base::Value::Dict& desired_caps,
     parser_map[kChromeDriverOptionsKey] =
         base::BindRepeating(&ParseChromeOptions);
   }
+
   // se:options.loggingPrefs and goog:loggingPrefs is spec-compliant name,
   // but loggingPrefs is still supported in legacy mode.
   const std::string prefixed_logging_prefs_key =
@@ -1214,5 +1255,5 @@ Status Capabilities::Parse(const base::Value::Dict& desired_caps,
                     "but devtools events logging was not enabled");
     }
   }
-  return Status(kOk);
+  return MigrateCapabilities();
 }

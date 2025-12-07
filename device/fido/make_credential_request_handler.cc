@@ -17,23 +17,22 @@
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/cbor/diagnostic_writer.h"
 #include "components/device_event_log/device_event_log.h"
-#include "device/fido/features.h"
+#include "crypto/hash.h"
 #include "device/fido/fido_authenticator.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_factory.h"
-#include "device/fido/fido_parsing_utils.h"
-#include "device/fido/fido_transport_protocol.h"
-#include "device/fido/fido_types.h"
 #include "device/fido/filter.h"
 #include "device/fido/make_credential_task.h"
+#include "device/fido/public/features.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/fido_types.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "device/fido/win/authenticator.h"
 #include "device/fido/win/type_conversions.h"
-#include "third_party/microsoft_webauthn/webauthn.h"
+#include "third_party/microsoft_webauthn/src/webauthn.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -181,7 +180,6 @@ base::flat_set<FidoTransportProtocol> GetTransportsAllowedByRP(
           FidoTransportProtocol::kBluetoothLowEnergy,
           FidoTransportProtocol::kNearFieldCommunication,
           FidoTransportProtocol::kHybrid,
-          FidoTransportProtocol::kAndroidAccessory,
       };
     case AuthenticatorAttachment::kAny:
       return {
@@ -190,12 +188,10 @@ base::flat_set<FidoTransportProtocol> GetTransportsAllowedByRP(
           FidoTransportProtocol::kUsbHumanInterfaceDevice,
           FidoTransportProtocol::kBluetoothLowEnergy,
           FidoTransportProtocol::kHybrid,
-          FidoTransportProtocol::kAndroidAccessory,
       };
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return base::flat_set<FidoTransportProtocol>();
+  NOTREACHED();
 }
 
 void ReportMakeCredentialResponseTransport(
@@ -297,8 +293,7 @@ bool ResponseValid(const FidoAuthenticator& authenticator,
                    const CtapMakeCredentialRequest& request,
                    const AuthenticatorMakeCredentialResponse& response,
                    const MakeCredentialOptions& options) {
-  if (response.GetRpIdHash() !=
-      fido_parsing_utils::CreateSHA256Hash(request.rp.id)) {
+  if (response.GetRpIdHash() != crypto::hash::Sha256(request.rp.id)) {
     FIDO_LOG(ERROR) << "Invalid RP ID hash";
     return false;
   }
@@ -363,10 +358,10 @@ MakeCredentialRequestHandler::MakeCredentialRequestHandler(
   DCHECK(!request_.cred_protect_enforce);
 
   transport_availability_info().request_type = FidoRequestType::kMakeCredential;
-  transport_availability_info().is_off_the_record_context =
-      options_.is_off_the_record_context;
   transport_availability_info().resident_key_requirement =
       options_.resident_key;
+  transport_availability_info().attestation_conveyance_preference =
+      request.attestation_preference;
   transport_availability_info().user_verification_requirement =
       request_.user_verification;
   transport_availability_info().request_is_internal_only =
@@ -389,12 +384,18 @@ MakeCredentialRequestHandler::MakeCredentialRequestHandler(
   }
 #endif
 
-  InitDiscoveries(
-      fido_discovery_factory, std::move(additional_discoveries),
+  auto available_transports =
       base::STLSetIntersection<base::flat_set<FidoTransportProtocol>>(
-          supported_transports, allowed_transports),
-      request.authenticator_attachment !=
-          AuthenticatorAttachment::kCrossPlatform);
+          supported_transports, allowed_transports);
+  bool consider_enclave = request.authenticator_attachment !=
+                          AuthenticatorAttachment::kCrossPlatform;
+  if (options_.is_passkey_upgrade_request) {
+    consider_enclave = true;
+    available_transports = {};
+  }
+
+  InitDiscoveries(fido_discovery_factory, std::move(additional_discoveries),
+                  std::move(available_transports), consider_enclave);
   std::string json_string;
   if (!options_.json ||
       !base::JSONWriter::WriteWithOptions(
@@ -530,8 +531,7 @@ void MakeCredentialRequestHandler::DispatchRequestAfterAppIdExclude(
       return;
     case PINUVDisposition::kUnsatisfiable:
       // |IsCandidateAuthenticatorPostTouch| should have handled this case.
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   auto request_copy(*request.get());  // can't copy and move in the same stmt.
@@ -551,6 +551,9 @@ void MakeCredentialRequestHandler::AuthenticatorRemoved(
 
   FidoRequestHandlerBase::AuthenticatorRemoved(discovery, authenticator);
 
+  if (bio_enroller_ && authenticator == bio_enroller_->authenticator()) {
+    bio_enroller_.reset();
+  }
   if (authenticator == selected_authenticator_for_pin_uv_auth_token_) {
     selected_authenticator_for_pin_uv_auth_token_ = nullptr;
     // Authenticator could have been removed during PIN entry, PIN fallback
@@ -559,7 +562,7 @@ void MakeCredentialRequestHandler::AuthenticatorRemoved(
       state_ = State::kFinished;
       std::move(completion_callback_)
           .Run(MakeCredentialStatus::kAuthenticatorRemovedDuringPINEntry,
-               std::nullopt, nullptr);
+               std::nullopt, authenticator);
     }
   }
 }
@@ -880,11 +883,12 @@ void MakeCredentialRequestHandler::OnEnrollmentDone(
 
 void MakeCredentialRequestHandler::OnEnrollmentError(
     CtapDeviceResponseCode status) {
+  FidoAuthenticator* authenticator = bio_enroller_->authenticator();
   bio_enroller_.reset();
   state_ = State::kFinished;
   std::move(completion_callback_)
       .Run(MakeCredentialStatus::kAuthenticatorResponseInvalid, std::nullopt,
-           nullptr);
+           authenticator);
 }
 
 void MakeCredentialRequestHandler::OnEnrollmentDismissed() {

@@ -5,6 +5,7 @@
 #ifndef FUCHSIA_WEB_RUNNERS_CAST_NAMED_MESSAGE_PORT_CONNECTOR_FUCHSIA_H_
 #define FUCHSIA_WEB_RUNNERS_CAST_NAMED_MESSAGE_PORT_CONNECTOR_FUCHSIA_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/cast/named_message_port_connector/named_message_port_connector.h"
 
 namespace fuchsia {
@@ -30,7 +31,7 @@ class NamedMessagePortConnectorFuchsia
   void DetachFromFrame();
 
  private:
-  fuchsia::web::Frame* frame_ = nullptr;
+  raw_ptr<fuchsia::web::Frame> frame_ = nullptr;
 };
 
 #endif  // FUCHSIA_WEB_RUNNERS_CAST_NAMED_MESSAGE_PORT_CONNECTOR_FUCHSIA_H_

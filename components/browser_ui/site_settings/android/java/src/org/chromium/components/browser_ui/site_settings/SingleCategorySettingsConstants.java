@@ -6,12 +6,18 @@ package org.chromium.components.browser_ui.site_settings;
 
 import android.content.SharedPreferences;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Constants used for {@link SingleCategorySettings}. */
+@NullMarked
 public class SingleCategorySettingsConstants {
     /**
      * {@link SharedPreferences} key that indicates whether the desktop site global setting was
      * enabled by the user.
+     *
+     * @deprecated Use {@link PrefNames#REQUEST_DESKTOP_SITE_GLOBAL_SETTING_USER_ENABLED} instead.
      */
+    @Deprecated
     public static final String USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY =
             "Chrome.RequestDesktopSiteGlobalSetting.UserEnabled";
 }

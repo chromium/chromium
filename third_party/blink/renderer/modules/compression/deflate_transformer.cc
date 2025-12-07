@@ -8,6 +8,7 @@
 #include <cstring>
 #include <limits>
 
+#include "base/compiler_specific.h"
 #include "base/trace_event/typed_macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
@@ -30,7 +31,7 @@ DeflateTransformer::DeflateTransformer(ScriptState* script_state,
                                        int level)
     : script_state_(script_state), out_buffer_(kBufferSize) {
   DCHECK(level >= 1 && level <= 9);
-  memset(&stream_, 0, sizeof(z_stream));
+  UNSAFE_TODO(memset(&stream_, 0, sizeof(z_stream)));
   ZlibPartitionAlloc::Configure(&stream_);
   constexpr int kWindowBits = 15;
   constexpr int kUseGzip = 16;
@@ -112,7 +113,8 @@ void DeflateTransformer::Deflate(const uint8_t* start,
 
     wtf_size_t bytes = out_buffer_.size() - stream_.avail_out;
     if (bytes) {
-      buffers.push_back(DOMUint8Array::Create(out_buffer_.data(), bytes));
+      buffers.push_back(
+          DOMUint8Array::Create(base::span(out_buffer_).first(bytes)));
     }
   } while (stream_.avail_out == 0);
 

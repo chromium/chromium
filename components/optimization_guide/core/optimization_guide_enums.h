@@ -230,34 +230,6 @@ enum class FetcherRequestStatus {
   kMaxValue = kUserNotSignedIn
 };
 
-// Status of the on-device model.
-//
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class OnDeviceModelStatus {
-  // Model is installed and ready to use.
-  kReady = 0,
-  // Criteria to install model have not been met.
-  kNotEligible = 1,
-  // Criteria to install are met, but model not installed yet.
-  kInstallNotComplete = 2,
-  // The model installer was not registered, even though the client would be
-  // eligible to install right now. This likely means the state of the system
-  // has changed recently.
-  kModelInstallerNotRegisteredForUnknownReason = 3,
-  // The model is ready, but it wasn't ready early enough for
-  // OnDeviceModelServiceController to use it.
-  kModelInstalledTooLate = 4,
-  // The model is not ready, and the reason is unknown.
-  kNotReadyForUnknownReason = 5,
-
-  // This must be kept in sync with
-  // OptimizationGuideOnDeviceModelStatus in optimization/enums.xml.
-
-  // Insert new values before this line.
-  kMaxValue = kNotReadyForUnknownReason,
-};
-
 // Status of a model quality logs upload request.
 enum class ModelQualityLogsUploadStatus {
   kUnknown = 0,
@@ -316,29 +288,6 @@ enum class OnDeviceModelPerformanceClass : int {
   kMaxValue = kFailedToLoadLibrary,
 };
 
-// The result of loading an on-device model.
-//
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class OnDeviceModelLoadResult {
-  kUnknown = 0,
-
-  // Model loaded successfully.
-  kSuccess = 1,
-
-  // GPU was blocklisted.
-  kGpuBlocked = 2,
-
-  // Native library failed to load.
-  kFailedToLoadLibrary = 3,
-
-  // This must be kept in sync with
-  // OnDeviceModelLoadResult in optimization/enums.xml.
-
-  // Insert new values before this line.
-  kMaxValue = kFailedToLoadLibrary,
-};
-
 // The validity of the model metadata packaged with the text safety model.
 //
 // These values are persisted to logs. Entries should not be renumbered and
@@ -364,64 +313,12 @@ enum class TextSafetyModelMetadataValidity {
   kMaxValue = kValid,
 };
 
-// Enumerates the different reasons for model remote disconnection.
-enum class ModelRemoteDisconnectReason {
-  kDisconncted,
-  kRemoteIdle,
-
-  kGpuBlocked,
-  kModelLoadFailed,
-};
-
-enum class OnDeviceModelAdaptationAvailability {
-  // Adaptation model was available.
-  kAvailable = 0,
-
-  // Base model was not available.
-  kBaseModelUnavailable = 1,
-
-  // Base model spec was invalid, so adaptation model cannot be fetched.
-  kBaseModelSpecInvalid = 2,
-
-  // Adaptation model was not available.
-  kAdaptationModelUnavailable = 3,
-
-  // The received adaptation model was invalid.
-  kAdaptationModelInvalid = 4,
-
-  // The received adaptation model was incompatible with the base model.
-  kAdaptationModelIncompatible = 5,
-
-  // The execution config in the adaptation model was invalid.
-  kAdaptationModelExecutionConfigInvalid = 6,
-
-  // The model execution feature was not recently used.
-  kFeatureNotRecentlyUsed = 7,
-
-  // This must be kept in sync with OnDeviceModelAdaptationAvailability in
-  // optimization/enums.xml.
-  kMaxValue = kFeatureNotRecentlyUsed,
-};
-
-// The result of running validation prompts for the on-device model.
-//
-// Keep in sync with OnDeviceModelValidationResult in enums.xml.
-enum class OnDeviceModelValidationResult {
-  kUnknown = 0,
-  // The validation is currently running or was interrupted.
-  kPending = 1,
-  // The validation test succeeded.
-  kSuccess = 2,
-  // The validation test produced non-matching output.
-  kNonMatchingOutput = 3,
-  // The service crashed while running the validation test.
-  kServiceCrash = 4,
-  // The validation test was interrupted by another session.
-  kInterrupted = 5,
-
-  // This must be kept in sync with OnDeviceModelValidationResult in
-  // optimization/enums.xml.
-  kMaxValue = kInterrupted,
+// Whether a response is complete or not.
+enum class ResponseCompleteness {
+  // This is a partial response, more output may follow.
+  kPartial,
+  // The response is complete and no more output will be produced.
+  kComplete,
 };
 
 }  // namespace optimization_guide

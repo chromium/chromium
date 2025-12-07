@@ -1,0 +1,69 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.boca_receiver.mojom;
+
+import "skia/public/mojom/bitmap.mojom";
+
+// Info for the receiver device.
+struct ReceiverInfo {
+ // ID that identifies the device allowing senders to connect to it.
+ string id;
+};
+
+// Information about the user.
+struct UserInfo {
+  // User name.
+ string name;
+};
+
+// The reason why the connection was closed.
+enum ConnectionClosedReason {
+  // The connection was closed by the initiator.
+  kInitiatorClosed = 0,
+  // The connection with the presenter has been lost.
+  kPresenterConnectionLost = 1,
+  // The connection was closed because of an error.
+  kError = 2,
+  // The connection was taken over.
+  kTakeOver = 3
+};
+
+struct DecodedAudioPacket {
+  // Sample rate (e.g., 48000).
+  int32 sample_rate;
+  // Number of channels (e.g., 2 for stereo).
+  int32 channels;
+  // The raw, interleaved 16-bit PCM audio samples.
+  array<int16> data;
+};
+
+// Implemented in TS and called from C++ side of he Boca Receiver app.
+interface UntrustedPage {
+  // Updates the renderer with the receiver info on init and on change.
+  OnInitReceiverInfo(ReceiverInfo receiver_info);
+
+  // Notifies the client that an error has occurred during initialization.
+  OnInitReceiverError();
+
+  // Updates the renderer with the newly received frame.
+  OnFrameReceived(skia.mojom.BitmapN32 frame_data);
+
+  // Updates the renderer with the newly received decoded audio packet.
+  OnAudioPacket(DecodedAudioPacket audio_packet);
+
+  // Notifies the client that the receiver is connecting to a new host.
+  OnConnecting(UserInfo initiator, UserInfo? presenter);
+
+  // Notifies the client that the current connection has been closed.
+  OnConnectionClosed(ConnectionClosedReason reason);
+};
+
+// Factory ensures that the Page and PageHandler interfaces are always created
+// together without requiring an initialization call from the WebUI to the
+// handler.
+interface UntrustedPageHandlerFactory {
+  // Create page handler and pass page remote.
+  CreateUntrustedPageHandler(pending_remote<UntrustedPage> page);
+};

@@ -16,6 +16,7 @@
     _title = [title copy];
     _handler = handler;
     _style = style;
+    _enabled = YES;
   }
   return self;
 }

@@ -1,0 +1,31 @@
+This is a testharness.js-based test.
+[FAIL] [required] gemm two float32 2D constant tensors options.c
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gemm float32 actual 11975.283203125 should be close enough to expected 11927.712890625 by ULP distance: expected a number less than or equal to 9n but got 48712n
+[FAIL] [required] gemm two float32 2D tensors options.c
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gemm float32 actual 11975.283203125 should be close enough to expected 11927.712890625 by ULP distance: expected a number less than or equal to 9n but got 48712n
+[FAIL] [required] gemm two float32 2D tensors broadcast options.c [3, 1] => [3, 5]
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gemm float32 actual 11898.712890625 should be close enough to expected 11973.9169921875 by ULP distance: expected a number less than or equal to 9n but got 77009n
+[FAIL] [required] gemm two float32 2D tensors broadcast options.c [5] => [3, 5]
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gemm float32 actual 8161.146484375 should be close enough to expected 8247.0546875 by ULP distance: expected a number less than or equal to 9n but got 119564n
+[FAIL] [required] gemm both negative options.alpha and 1st float32 input tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gemm float32 actual 228124.390625 should be close enough to expected 228076.8125 by ULP distance: expected a number less than or equal to 10n but got 3045n
+[FAIL] [required] gemm both negative options.alpha and 2nd float32 input tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gemm float32 actual 355178.5625 should be close enough to expected 355130.96875 by ULP distance: expected a number less than or equal to 10n but got 1523n
+[FAIL] [required] gemm both negative options.alpha and 3rd float32 input tensor (options.c)
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gemm float32 actual -268946 should be close enough to expected -268974.5 by ULP distance: expected a number less than or equal to 10n but got 912n
+[FAIL] [required] gemm two float16 2D constant tensors options.c
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gemm float16 actual 0.71728515625 should be close enough to expected 1.6669921875 by ULP distance: expected a number less than or equal to 9 but got 1262
+[FAIL] [required] gemm two float16 2D tensors options.c
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gemm float16 actual 1.0380859375 should be close enough to expected 0.469482421875 by ULP distance: expected a number less than or equal to 9 but got 1188
+[FAIL] [required] gemm two float16 2D tensors broadcast options.c [3, 1] => [3, 5]
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gemm float16 actual 1.76171875 should be close enough to expected 1.5361328125 by ULP distance: expected a number less than or equal to 9 but got 231
+[FAIL] [required] gemm two float16 2D tensors broadcast options.c [5] => [3, 5]
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gemm float16 actual 0.8447265625 should be close enough to expected 1.5771484375 by ULP distance: expected a number less than or equal to 9 but got 909
+[FAIL] [required] gemm both negative options.alpha and 1st float16 input tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gemm float16 actual -23.1875 should be close enough to expected -22.640625 by ULP distance: expected a number less than or equal to 10 but got 35
+[FAIL] [required] gemm both negative options.alpha and 2nd float16 input tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gemm float16 actual -4.0625 should be close enough to expected -3.9609375 by ULP distance: expected a number less than or equal to 10 but got 36
+[FAIL] [required] gemm both negative options.alpha and 3rd float16 input tensor (options.c)
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gemm float16 actual -19.71875 should be close enough to expected -19.234375 by ULP distance: expected a number less than or equal to 10 but got 31
+Harness: the test ran to completion.
+

@@ -10,8 +10,8 @@
     mocking) Android APIs.
 -   **[Instrumentation Tests]**: JUnit tests that run on devices / emulators.
     - **Unit Instrumentation Tests**: Unit tests that do not require
-      initializing the Content layer. These use [BaseActivityTestRule] or
-      [BlankUiTestActivityTestCase] based on `BaseActivityTestRule`.
+      initializing the Content layer. These use [BaseActivityTestRule] often
+      using [BlankUiTestActivity].
     - **Integration Instrumentation Tests**: Instrumentation tests that require
       initializing the Content layer to test a certain feature in the end-to-end
       flow. These typically use more specialized test rules such as
@@ -21,7 +21,7 @@
 [Robolectric]: android_robolectric_tests.md
 [Instrumentation Tests]: android_instrumentation_tests.md
 [BaseActivityTestRule]: https://source.chromium.org/chromium/chromium/src/+/main:base/test/android/javatests/src/org/chromium/base/test/BaseActivityTestRule.java
-[BlankUiTestActivityTestCase]: https://source.chromium.org/chromium/chromium/src/+/main:ui/android/javatests/src/org/chromium/ui/test/util/BlankUiTestActivityTestCase.java
+[BlankUiTestActivity]: https://source.chromium.org/chromium/chromium/src/+/main:ui/android/javatests/src/org/chromium/ui/test/util/BlankUiTestActivity.java
 [ContentShellActivityTestRule]: https://source.chromium.org/chromium/chromium/src/+/main:content/shell/android/javatests/src/org/chromium/content_shell_apk/ContentShellActivityTestRule.java
 [ChromeActivityTestRule]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/android/javatests/src/org/chromium/chrome/test/ChromeActivityTestRule.java
 

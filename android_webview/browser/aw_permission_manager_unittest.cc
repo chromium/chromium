@@ -14,6 +14,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
+#include "content/public/browser/permission_result.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/gurl.h"
@@ -25,8 +27,8 @@ namespace android_webview {
 
 namespace {
 
-int kRenderProcessIDForTesting = 8;
-int kRenderFrameIDForTesting = 19;
+constexpr int kRenderProcessIDForTesting = 8;
+constexpr int kRenderFrameIDForTesting = 19;
 const char kEmbeddingOrigin[] = "https://www.google.com/";
 const char kRequestingOrigin1[] = "https://www.google.com/";
 const char kRequestingOrigin2[] = "https://www.chromium.org/";
@@ -38,8 +40,9 @@ class AwBrowserPermissionRequestDelegateForTesting final
                        PermissionType type,
                        bool grant) {
     for (auto it = request_.begin(); it != request_.end(); ++it) {
-      if ((*it)->type != type || (*it)->origin != origin)
+      if ((*it)->type != type || (*it)->origin != origin) {
         continue;
+      }
       PermissionCallback callback = std::move((*it)->callback);
       request_.erase(it);
       std::move(callback).Run(grant);
@@ -59,11 +62,6 @@ class AwBrowserPermissionRequestDelegateForTesting final
   void RequestGeolocationPermission(const GURL& origin,
                                     PermissionCallback callback) override {
     RequestPermission(origin, PermissionType::GEOLOCATION, std::move(callback));
-  }
-
-  void RequestStorageAccess(const url::Origin& origin,
-                            PermissionCallback callback) override {
-    NOTREACHED();
   }
 
   void CancelGeolocationPermissionRequests(const GURL& origin) override {
@@ -102,7 +100,7 @@ class AwBrowserPermissionRequestDelegateForTesting final
       request_.erase(it);
       return;
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
  private:
@@ -195,19 +193,21 @@ class AwPermissionManagerTest : public testing::Test {
   AwPermissionManagerTest()
       : render_frame_host(nullptr) {}
 
-  void PermissionRequestResponse(int id,
-                                 const std::vector<PermissionStatus>& status) {
-    ASSERT_EQ(status.size(), 1u);
-    resolved_permission_status.push_back(status[0]);
+  void PermissionRequestResponse(
+      int id,
+      const std::vector<content::PermissionResult>& permission_result) {
+    ASSERT_EQ(permission_result.size(), 1u);
+    resolved_permission_status.push_back(permission_result[0].status);
     resolved_permission_request_id.push_back(id);
   }
 
-  void PermissionsRequestResponse(int id,
-                                  const std::vector<PermissionStatus>& status) {
-    resolved_permission_status.insert(resolved_permission_status.end(),
-                                      status.begin(), status.end());
-    for (size_t i = 0; i < status.size(); ++i)
+  void PermissionsRequestResponse(
+      int id,
+      const std::vector<content::PermissionResult>& permission_result) {
+    for (const auto& result : permission_result) {
+      resolved_permission_status.push_back(result.status);
       resolved_permission_request_id.push_back(id);
+    }
   }
 
  protected:
@@ -228,13 +228,15 @@ class AwPermissionManagerTest : public testing::Test {
       content::RenderFrameHost* rfh,
       const GURL& requesting_origin,
       bool user_gesture,
-      base::OnceCallback<void(const std::vector<PermissionStatus>& status)>
-          callback) {
+      base::OnceCallback<void(
+          const std::vector<content::PermissionResult>& status)> callback) {
     CHECK(manager);
     manager->RequestPermissions(
         rfh,
-        content::PermissionRequestDescription(permissions, user_gesture,
-                                              requesting_origin),
+        content::PermissionRequestDescription(
+            content::PermissionDescriptorUtil::
+                CreatePermissionDescriptorForPermissionTypes(permissions),
+            user_gesture, requesting_origin),
         std::move(callback));
   }
 
@@ -258,30 +260,25 @@ TEST_F(AwPermissionManagerTest, MIDIPermissionIsGrantedSynchronously) {
   EXPECT_EQ(PermissionStatus::GRANTED, resolved_permission_status[0]);
 }
 
-TEST_F(AwPermissionManagerTest, ClipboardPermissionIsGrantedWithUserGesture) {
-  struct {
-    PermissionType type;
-    bool user_gesture;
-    PermissionStatus expected_result;
-  } test_cases[] = {
-      {PermissionType::CLIPBOARD_SANITIZED_WRITE, true,
-       PermissionStatus::GRANTED},
-      {PermissionType::CLIPBOARD_SANITIZED_WRITE, false,
-       PermissionStatus::DENIED},
-      {PermissionType::CLIPBOARD_READ_WRITE, true, PermissionStatus::DENIED},
-      {PermissionType::CLIPBOARD_READ_WRITE, false, PermissionStatus::DENIED}};
+TEST_F(AwPermissionManagerTest, ClipboardPermissionIsGrantedSynchronously) {
+  RequestPermissions(
+      {PermissionType::CLIPBOARD_SANITIZED_WRITE}, render_frame_host,
+      GURL(kRequestingOrigin1), true,
+      base::BindOnce(&AwPermissionManagerTest::PermissionRequestResponse,
+                     base::Unretained(this), 0));
+  ASSERT_EQ(1u, resolved_permission_status.size());
+  EXPECT_EQ(PermissionStatus::GRANTED, resolved_permission_status[0]);
+}
 
-  size_t permissions_requested = 0;
-  for (auto& test_case : test_cases) {
-    RequestPermissions(
-        {test_case.type}, render_frame_host, GURL(kRequestingOrigin1),
-        test_case.user_gesture,
-        base::BindOnce(&AwPermissionManagerTest::PermissionRequestResponse,
-                       base::Unretained(this), /*id=*/permissions_requested++));
-    ASSERT_EQ(resolved_permission_status.size(), permissions_requested);
-    EXPECT_EQ(test_case.expected_result,
-              resolved_permission_status[permissions_requested - 1]);
-  }
+TEST_F(AwPermissionManagerTest,
+       LocalNetworkAccessPermissionIsGrantedSynchronously) {
+  RequestPermissions(
+      {PermissionType::LOCAL_NETWORK_ACCESS}, render_frame_host,
+      GURL(kRequestingOrigin1), true,
+      base::BindOnce(&AwPermissionManagerTest::PermissionRequestResponse,
+                     base::Unretained(this), 0));
+  ASSERT_EQ(1u, resolved_permission_status.size());
+  EXPECT_EQ(PermissionStatus::GRANTED, resolved_permission_status[0]);
 }
 
 // Test the case a delegate is called, and it resolves the permission

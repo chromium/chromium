@@ -8,13 +8,20 @@ import android.content.Context;
 import android.view.View;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils;
+import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.IssuerIcon;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.autofill.ImageSize;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinator controller for the virtual card number (VCN) enrollment bottom sheet. */
+@NullMarked
 /*package*/ class AutofillVcnEnrollBottomSheetCoordinator {
     /** Callbacks from the VCN enrollment bottom sheet. */
     interface Delegate {
@@ -43,11 +50,27 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
      */
     AutofillVcnEnrollBottomSheetCoordinator(
             Context context,
+            Profile profile,
             PropertyModel.Builder modelBuilder,
             LayoutStateProvider layoutStateProvider,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             Delegate delegate) {
-        mModel = modelBuilder.build();
+        mModel =
+                modelBuilder
+                        .with(
+                                AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON_FETCH_CALLBACK,
+                                (IssuerIcon issuerIcon) ->
+                                        issuerIcon == null
+                                                ? null
+                                                : AutofillUiUtils.getCardIcon(
+                                                        context,
+                                                        AutofillImageFetcherFactory.getForProfile(
+                                                                profile),
+                                                        issuerIcon.mIconUrl,
+                                                        issuerIcon.mIconResource,
+                                                        /* cardIconSize= */ ImageSize.LARGE,
+                                                        /* showCustomIcon= */ true))
+                        .build();
         mView = new AutofillVcnEnrollBottomSheetView(context);
         PropertyModelChangeProcessor.create(
                 mModel, mView, AutofillVcnEnrollBottomSheetViewBinder::bind);

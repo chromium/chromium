@@ -5,7 +5,7 @@
 #ifndef UI_VIEWS_CONTROLS_WEBVIEW_UNHANDLED_KEYBOARD_EVENT_HANDLER_H_
 #define UI_VIEWS_CONTROLS_WEBVIEW_UNHANDLED_KEYBOARD_EVENT_HANDLER_H_
 
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/controls/webview/webview_export.h"
 
 namespace input {

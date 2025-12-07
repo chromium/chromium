@@ -12,13 +12,8 @@ class DownloadsTest : public WebUIMochaBrowserTest {
   DownloadsTest() { set_test_loader_host(chrome::kChromeUIDownloadsHost); }
 };
 
-IN_PROC_BROWSER_TEST_F(DownloadsTest, DangerousDownloadInterstitial) {
-  RunTest("downloads/bypass_warning_confirmation_interstitial_test.js",
-          "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(DownloadsTest, Item) {
-  RunTest("downloads/item_test.js", "mocha.run()");
+  RunTest("downloads/item_test.js", "runMochaSuite('ItemTest')");
 }
 
 IN_PROC_BROWSER_TEST_F(DownloadsTest, Manager) {

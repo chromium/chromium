@@ -7,20 +7,19 @@
 #include <limits>
 
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "services/network/shared_dictionary/shared_dictionary_constants.h"
 #include "services/network/shared_dictionary/shared_dictionary_disk_cache.h"
+#include "services/network/shared_dictionary/shared_dictionary_storage_result.h"
 
 namespace network {
 
 SharedDictionaryWriterOnDisk::SharedDictionaryWriterOnDisk(
     const base::UnguessableToken& token,
     FinishCallback callback,
-    base::WeakPtr<SharedDictionaryDiskCache> disk_cahe)
-    : token_(token),
-      callback_(std::move(callback)),
-      disk_cahe_(disk_cahe),
-      secure_hash_(crypto::SecureHash::Create(crypto::SecureHash::SHA256)) {}
+    base::WeakPtr<SharedDictionaryDiskCache> disk_cache)
+    : token_(token), callback_(std::move(callback)), disk_cache_(disk_cache) {}
 
 SharedDictionaryWriterOnDisk::~SharedDictionaryWriterOnDisk() {
   if (callback_) {
@@ -31,24 +30,24 @@ SharedDictionaryWriterOnDisk::~SharedDictionaryWriterOnDisk() {
 void SharedDictionaryWriterOnDisk::Initialize() {
   DCHECK_EQ(State::kBeforeInitialize, state_);
   state_ = State::kInitializing;
-  DCHECK(disk_cahe_);
+  DCHECK(disk_cache_);
   // Binding `this` to keep `this` alive until callback will be called.
   auto split_callback = base::SplitOnceCallback(
       base::BindOnce(&SharedDictionaryWriterOnDisk::OnEntry, this));
-  disk_cache::EntryResult result = disk_cahe_->OpenOrCreateEntry(
+  disk_cache::EntryResult result = disk_cache_->OpenOrCreateEntry(
       token_.ToString(), /*create=*/true, std::move(split_callback.first));
   if (result.net_error() != net::ERR_IO_PENDING) {
     std::move(split_callback.second).Run(std::move(result));
   }
 }
 
-void SharedDictionaryWriterOnDisk::Append(const char* buf, int num_bytes) {
-  DCHECK_GT(num_bytes, 0);
+void SharedDictionaryWriterOnDisk::Append(base::span<const uint8_t> data) {
+  DCHECK_GT(data.size(), 0u);
   if (state_ == State::kFailed) {
     return;
   }
   base::CheckedNumeric<size_t> checked_total_size = total_size_;
-  checked_total_size += num_bytes;
+  checked_total_size += data.size();
   if (checked_total_size.ValueOrDefault(std::numeric_limits<size_t>::max()) >
       shared_dictionary::GetDictionarySizeLimit()) {
     OnFailed(Result::kErrorSizeExceedsLimit);
@@ -56,24 +55,20 @@ void SharedDictionaryWriterOnDisk::Append(const char* buf, int num_bytes) {
   }
 
   total_size_ = checked_total_size.ValueOrDie();
-  secure_hash_->Update(buf, num_bytes);
+  hash_.Update(data);
   switch (state_) {
     case State::kBeforeInitialize:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     case State::kInitializing:
       pending_write_buffers_.push_back(
-          base::MakeRefCounted<net::StringIOBuffer>(
-              std::string(buf, num_bytes)));
+          base::MakeRefCounted<net::VectorIOBuffer>(data));
       break;
     case State::kInitialized: {
       DCHECK(entry_);
-      WriteData(base::MakeRefCounted<net::StringIOBuffer>(
-          std::string(buf, num_bytes)));
+      WriteData(base::MakeRefCounted<net::VectorIOBuffer>(data));
     } break;
     case State::kFailed:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -104,14 +99,14 @@ void SharedDictionaryWriterOnDisk::OnEntry(disk_cache::EntryResult result) {
   }
 
   while (!pending_write_buffers_.empty()) {
-    scoped_refptr<net::StringIOBuffer> buffer = *pending_write_buffers_.begin();
+    scoped_refptr<net::IOBuffer> buffer = *pending_write_buffers_.begin();
     pending_write_buffers_.pop_front();
     WriteData(std::move(buffer));
   }
 }
 
 void SharedDictionaryWriterOnDisk::WriteData(
-    scoped_refptr<net::StringIOBuffer> buffer) {
+    scoped_refptr<net::IOBuffer> buffer) {
   DCHECK_NE(State::kBeforeInitialize, state_);
   DCHECK_NE(State::kInitializing, state_);
   if (state_ != State::kInitialized) {
@@ -154,6 +149,30 @@ void SharedDictionaryWriterOnDisk::OnWrittenData(int expected_result,
 void SharedDictionaryWriterOnDisk::OnFailed(Result result) {
   DCHECK_NE(State::kFailed, state_);
   state_ = State::kFailed;
+
+  SharedDictionaryStorageResult uma_result;
+  switch (result) {
+    case Result::kErrorCreateEntryFailed:
+      uma_result = SharedDictionaryStorageResult::kErrorCreateEntryFailed;
+      break;
+    case Result::kErrorWriteDataFailed:
+      uma_result = SharedDictionaryStorageResult::kErrorWriteDataFailed;
+      break;
+    case Result::kErrorSizeExceedsLimit:
+      uma_result = SharedDictionaryStorageResult::kErrorSizeExceedsLimit;
+      break;
+    case Result::kErrorSizeZero:
+      uma_result = SharedDictionaryStorageResult::kErrorSizeZero;
+      break;
+    case Result::kErrorAborted:
+      uma_result = SharedDictionaryStorageResult::kErrorAborted;
+      break;
+    case Result::kSuccess:
+      NOTREACHED();
+  }
+  base::UmaHistogramEnumeration("Net.SharedDictionaryOnDisk.StorageResult",
+                                uma_result);
+
   pending_write_buffers_.clear();
   if (entry_) {
     entry_->Doom();
@@ -176,7 +195,7 @@ void SharedDictionaryWriterOnDisk::MaybeFinish() {
   entry_.reset();
   DCHECK_EQ(written_size_, total_size_);
   net::SHA256HashValue sha256;
-  secure_hash_->Finish(sha256.data, sizeof(sha256.data));
+  hash_.Finish(sha256);
   std::move(callback_).Run(Result::kSuccess, total_size_, sha256);
 }
 

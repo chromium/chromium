@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/scroll/scroll_animator.h"
 
 #include "base/test/bind.h"
-#include "cc/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
@@ -32,9 +31,7 @@
 namespace blink {
 
 namespace {
-double ScrollAnimationDuration() {
-  return ::features::IsImpulseScrollAnimationEnabled() ? 1.5 : 0.5;
-}
+constexpr double kScrollAnimationDuration = 0.5;
 }  // namespace
 
 class FractionalScrollSimTest : public SimTest, public PaintTestConfigurations {
@@ -76,7 +73,7 @@ TEST_P(FractionalScrollSimTest, GetBoundingClientRectAtFractional) {
   // Scroll on the layout viewport.
   GetDocument().View()->GetScrollableArea()->SetScrollOffset(
       ScrollOffset(700.5f, 500.6f), mojom::blink::ScrollType::kProgrammatic,
-      mojom::blink::ScrollBehavior::kInstant);
+      cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kInstant);
 
   Compositor().BeginFrame();
 
@@ -134,7 +131,7 @@ TEST_P(FractionalScrollSimTest, NoRepaintOnScrollFromSubpixel) {
   // Scroll on the layout viewport.
   GetDocument().View()->GetScrollableArea()->SetScrollOffset(
       ScrollOffset(0.f, 100.5f), mojom::blink::ScrollType::kProgrammatic,
-      mojom::blink::ScrollBehavior::kInstant);
+      cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kInstant);
 
   Compositor().BeginFrame();
   EXPECT_FALSE(
@@ -186,7 +183,7 @@ TEST_P(FractionalScrollSimTest, StickyDoesntOscillate) {
   // boundary and reproduced https://crbug.com/1010961.
   GetDocument().View()->GetScrollableArea()->SetScrollOffset(
       ScrollOffset(0.f, 98.8675308f), mojom::blink::ScrollType::kProgrammatic,
-      mojom::blink::ScrollBehavior::kInstant);
+      cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kInstant);
   Compositor().BeginFrame();
   EXPECT_EQ(0, sticky->GetBoundingClientRect()->top());
 
@@ -233,6 +230,7 @@ TEST_P(ScrollAnimatorSimTest, TestRootFrameLayoutViewportUserScrollCallBack) {
   bool finished = false;
   GetDocument().View()->GetScrollableArea()->UserScroll(
       ui::ScrollGranularity::kScrollByLine, ScrollOffset(100, 300),
+      cc::ScrollSourceType::kNone,
       ScrollableArea::ScrollCallback(base::BindLambdaForTesting(
           [&](ScrollableArea::ScrollCompletionMode) { finished = true; })));
   // Sync time with ScrollAnimator.
@@ -244,7 +242,7 @@ TEST_P(ScrollAnimatorSimTest, TestRootFrameLayoutViewportUserScrollCallBack) {
   // The callback is executed when the animation finishes at
   // ScrollAnimator::TickAnimation.
   Compositor().BeginFrame();
-  Compositor().BeginFrame(ScrollAnimationDuration());
+  Compositor().BeginFrame(kScrollAnimationDuration);
   ASSERT_TRUE(finished);
 }
 
@@ -277,6 +275,7 @@ TEST_P(ScrollAnimatorSimTest, TestRootFrameVisualViewporUserScrollCallBack) {
   bool finished = false;
   GetDocument().View()->GetScrollableArea()->UserScroll(
       ui::ScrollGranularity::kScrollByLine, ScrollOffset(100, 300),
+      cc::ScrollSourceType::kNone,
       ScrollableArea::ScrollCallback(base::BindLambdaForTesting(
           [&](ScrollableArea::ScrollCompletionMode) { finished = true; })));
   // Sync time with ScrollAnimator.
@@ -288,7 +287,7 @@ TEST_P(ScrollAnimatorSimTest, TestRootFrameVisualViewporUserScrollCallBack) {
   // The callback is executed when the animation finishes at
   // ScrollAnimator::TickAnimation.
   Compositor().BeginFrame();
-  Compositor().BeginFrame(ScrollAnimationDuration());
+  Compositor().BeginFrame(kScrollAnimationDuration);
   ASSERT_TRUE(finished);
 }
 
@@ -321,6 +320,7 @@ TEST_P(ScrollAnimatorSimTest, TestRootFrameBothViewportsUserScrollCallBack) {
   bool finished = false;
   GetDocument().View()->GetScrollableArea()->UserScroll(
       ui::ScrollGranularity::kScrollByLine, ScrollOffset(0, 1000),
+      cc::ScrollSourceType::kNone,
       ScrollableArea::ScrollCallback(base::BindLambdaForTesting(
           [&](ScrollableArea::ScrollCompletionMode) { finished = true; })));
   // Sync time with ScrollAnimator.
@@ -332,7 +332,7 @@ TEST_P(ScrollAnimatorSimTest, TestRootFrameBothViewportsUserScrollCallBack) {
   // The callback is executed when the animation finishes at
   // ScrollAnimator::TickAnimation.
   Compositor().BeginFrame();
-  Compositor().BeginFrame(ScrollAnimationDuration());
+  Compositor().BeginFrame(kScrollAnimationDuration);
   ASSERT_TRUE(finished);
 }
 
@@ -372,6 +372,7 @@ TEST_P(ScrollAnimatorSimTest, TestDivUserScrollCallBack) {
       To<LayoutBox>(scroller->GetLayoutObject())->GetScrollableArea();
   scrollable_area->UserScroll(
       ui::ScrollGranularity::kScrollByLine, ScrollOffset(0, 100),
+      cc::ScrollSourceType::kNone,
       ScrollableArea::ScrollCallback(base::BindLambdaForTesting(
           [&](ScrollableArea::ScrollCompletionMode) { finished = true; })));
   // Sync time with ScrollAnimator.
@@ -382,7 +383,7 @@ TEST_P(ScrollAnimatorSimTest, TestDivUserScrollCallBack) {
 
   // The callback is executed when the animation finishes at
   // ScrollAnimator::TickAnimation.
-  Compositor().BeginFrame(ScrollAnimationDuration());
+  Compositor().BeginFrame(kScrollAnimationDuration);
   ASSERT_TRUE(finished);
 }
 
@@ -412,6 +413,7 @@ TEST_P(ScrollAnimatorSimTest, TestUserScrollCallBackAnimatorDisabled) {
   bool finished = false;
   GetDocument().View()->GetScrollableArea()->UserScroll(
       ui::ScrollGranularity::kScrollByLine, ScrollOffset(0, 300),
+      cc::ScrollSourceType::kNone,
       ScrollableArea::ScrollCallback(base::BindLambdaForTesting(
           [&](ScrollableArea::ScrollCompletionMode) { finished = true; })));
   // Sync time with ScrollAnimator.
@@ -449,6 +451,7 @@ TEST_P(ScrollAnimatorSimTest, TestRootFrameUserScrollCallBackCancelAnimation) {
   bool finished = false;
   GetDocument().View()->GetScrollableArea()->UserScroll(
       ui::ScrollGranularity::kScrollByLine, ScrollOffset(100, 300),
+      cc::ScrollSourceType::kNone,
       ScrollableArea::ScrollCallback(base::BindLambdaForTesting(
           [&](ScrollableArea::ScrollCompletionMode) { finished = true; })));
   // Sync time with ScrollAnimator.
@@ -461,7 +464,8 @@ TEST_P(ScrollAnimatorSimTest, TestRootFrameUserScrollCallBackCancelAnimation) {
   // callback will be executed.
   GetDocument().View()->GetScrollableArea()->SetScrollOffset(
       ScrollOffset(0, 300), mojom::blink::ScrollType::kProgrammatic,
-      mojom::blink::ScrollBehavior::kSmooth, ScrollableArea::ScrollCallback());
+      cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kSmooth,
+      ScrollableArea::ScrollCallback());
   Compositor().BeginFrame();
   ASSERT_TRUE(finished);
 }

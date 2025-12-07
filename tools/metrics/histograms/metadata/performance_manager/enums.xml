@@ -26,6 +26,25 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(ChildScenarioMappingResult) -->
+
+<enum name="ChildScenarioMappingResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Invalid Handle"/>
+  <int value="2" label="System Error"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/performance_manager/scenario_api/performance_scenario_memory.cc:ChildScenarioMappingResult) -->
+
+<!-- LINT.IfChange(CreateScenarioMemoryResult) -->
+
+<enum name="CreateScenarioMemoryResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="System Error"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/performance_manager/scenarios/performance_scenario_data.cc:CreateScenarioMemoryResult) -->
+
 <enum name="EfficiencyMode">
   <int value="0" label="Normal"/>
   <int value="1" label="High Efficiency"/>
@@ -34,12 +53,36 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Mixed"/>
 </enum>
 
-<enum name="LocalSiteCharacteristicsDBInitStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Corruption"/>
-  <int value="2" label="IO Error"/>
-  <int value="3" label="Unknown Error"/>
+<!-- LINT.IfChange(FrontEndHeapDebugOptionsOutcome) -->
+
+<enum name="FrontEndHeapDebugOptionsOutcome">
+  <int value="0" label="Cannot open the registry key"/>
+  <int value="1" label="Cannot read the value in the registry key"/>
+  <int value="2"
+      label="Success - value is reported to
+             PerformanceManager.RegistryStats.FrontEndHeapDebugOptionsValue"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/performance_manager/metrics/metrics_provider_desktop.cc:FrontEndHeapDebugOptionsOutcome) -->
+
+<enum name="InputScenarioUpdateReason">
+  <int value="0" label="Key Event"/>
+  <int value="1" label="Tap Event"/>
+  <int value="2" label="Scroll Start Event"/>
+  <int value="3" label="Scroll End Event"/>
+  <int value="4" label="Timeout"/>
+  <int value="5" label="Node Removed"/>
+</enum>
+
+<!-- LINT.IfChange(TransientKeepAliveResult) -->
+
+<enum name="TransientKeepAliveResult">
+  <int value="0" label="Successful Reuse"/>
+  <int value="1" label="Evicted Due To Count Limit"/>
+  <int value="2" label="Timer Expired Without Reuse"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/performance_manager/policies/transient_keep_alive_policy.h:TransientKeepAliveResult) -->
 
 </enums>
 

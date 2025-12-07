@@ -15,7 +15,6 @@ found in the LICENSE file.
 
   <org.chromium.components.browser_ui.settings.TextMessagePreference
       android:key="bullet_one"
-      android:summary="@string/website_settings_category_cookie_subpage_bullet_one"
       android:icon="@drawable/permission_cookie"
       app:iconTint="@color/default_icon_color_tint_list"
       app:allowDividerBelow="false" />
@@ -26,10 +25,16 @@ found in the LICENSE file.
       app:iconTint="@color/default_icon_color_tint_list"
       app:allowDividerBelow="false" />
 
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+      android:key="bullet_three"
+      android:icon="@drawable/incognito_24"
+      app:iconTint="@color/default_icon_color_tint_list"
+      app:allowDividerBelow="false" />
+
   <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
       android:key="allow_rws"
-      android:title="@string/website_settings_category_cookie_fps_toggle_title"
-      android:summary="@string/website_settings_category_cookie_fps_toggle_description"
+      android:title="@string/website_settings_category_cookie_rws_toggle_title"
+      android:summary="@string/website_settings_category_cookie_rws_toggle_description"
       android:persistent="false"
       app:allowDividerBelow="false" />
 

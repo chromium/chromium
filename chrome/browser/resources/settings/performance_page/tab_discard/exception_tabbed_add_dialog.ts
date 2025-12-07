@@ -74,10 +74,10 @@ export class ExceptionTabbedAddDialogElement extends
     };
   }
 
-  private selectedTab_: ExceptionAddDialogTabs;
-  private tabNames_: string[];
-  private submitDisabledList_: boolean;
-  private submitDisabledManual_: boolean;
+  declare private selectedTab_: ExceptionAddDialogTabs;
+  declare private tabNames_: string[];
+  declare private submitDisabledList_: boolean;
+  declare private submitDisabledManual_: boolean;
 
   private onSelectedTabChanged_() {
     // Asynchronously notify the list that its visibility has changed. This is

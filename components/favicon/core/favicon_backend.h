@@ -5,11 +5,13 @@
 #ifndef COMPONENTS_FAVICON_CORE_FAVICON_BACKEND_H_
 #define COMPONENTS_FAVICON_CORE_FAVICON_BACKEND_H_
 
+#include <array>
 #include <memory>
 #include <set>
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/favicon/core/favicon_types.h"
@@ -23,6 +25,18 @@ class FilePath;
 }
 
 namespace favicon {
+
+// This is only used when the only available fallback URLs during favicon lookup
+// for a page URL are for pages with redirects. If enabled, this will use the
+// icon of the most recently visited page URL for the origin instead of always
+// picking the favicon for the page URL for the origin which comes first in
+// alphabetical order.
+BASE_DECLARE_FEATURE(kUseLastVisitedFallbackURLFavicon);
+
+// The favicon sizes that will be tracked in the histograms. This should be kept
+// in sync with the variants here:
+// tools/metrics/histograms/metadata/favicons/histograms.xml.
+static const std::array<int, 3> icon_sizes = {16, 24, 48};
 
 // The maximum number of bitmaps for a single icon URL which can be stored in
 // the favicon database.
@@ -109,8 +123,8 @@ class FaviconBackend {
 
   // Causes each page in `page_urls_to_write` to be associated to the same
   // icon as the page `page_url_to_read` for icon types matching `icon_types`.
-  // No-op if `page_url_to_read` has no mappings for `icon_types`. Returns the
-  // set of page urls that were updated, which may be empty.
+  // No-op if `page_url_to_read` has no mappings for `icon_types`.
+  // Returns the set of page urls that were updated, which may be empty.
   std::set<GURL> CloneFaviconMappingsForPages(
       const GURL& page_url_to_read,
       const favicon_base::IconTypeSet& icon_types,
@@ -195,28 +209,43 @@ class FaviconBackend {
       const std::vector<int>& desired_sizes);
 
   // Maps the favicon ID `icon_id` to `page_url` (and all redirects) for
-  // `icon_type`. `icon_id` == 0 deletes previously existing mappings.
+  // `icon_type`. `icon_id` == 0 deletes previously existing mappings. The
+  // `page_url` is treated as `PageUrlType::kRegular` all redirects are treated
+  // as `PageUrlType::kRedirect`.
   // Returns true if the mappings for the page or any of its redirects were
   // changed.
   bool SetFaviconMappingsForPageAndRedirects(const GURL& page_url,
                                              favicon_base::IconType icon_type,
                                              favicon_base::FaviconID icon_id);
 
-  // Maps the favicon ID `icon_id` to URLs in `page_urls` for `icon_type`.
-  // `icon_id` == 0 deletes previously existing mappings.
-  // Returns page URLs among `page_urls` whose mappings were changed (might be
-  // empty).
-  std::vector<GURL> SetFaviconMappingsForPages(
-      const base::flat_set<GURL>& page_urls,
+  // Maps the favicon ID `icon_id` to URLs in `regular_page_urls` and
+  // `redirect_page_urls` for `icon_type` setting the correct PageUrlType.
+  // `icon_id` == 0 deletes previously existing mappings. Returns a vector with
+  // the page URLs among `regular_page_urls` and `redirect_page_urls` whose
+  // mappings were changed (might be empty).
+  std::vector<GURL> SetFaviconMappingsForPagesByPageUrlType(
+      const base::flat_set<GURL>& regular_page_urls,
+      const base::flat_set<GURL>& redirect_page_urls,
       favicon_base::IconType icon_type,
       favicon_base::FaviconID icon_id);
 
-  // Maps the favicon ID `icon_ids` to `page_url` for `icon_type`.
-  // `icon_id` == 0 deletes previously existing mappings.
+  // Maps the favicon ID `icon_id` to URLs in `page_urls` for `icon_type`
+  // with `page_url_type`. `icon_id` == 0 deletes previously existing
+  // mappings. Updates `changed_page_urls` vector with the page URLs among
+  // `page_urls` whose mappings were changed (might be empty).
+  void SetFaviconMappingsForPages(const base::flat_set<GURL>& page_urls,
+                                  favicon_base::IconType icon_type,
+                                  favicon_base::FaviconID icon_id,
+                                  PageUrlType page_url_type,
+                                  std::vector<GURL>& changed_page_urls);
+
+  // Maps the favicon ID `icon_id` to `page_url` for `icon_type` with
+  // `page_url_type`. `icon_id` == 0 deletes previously existing mappings.
   // Returns true if the function changed at least one of `page_url`'s mappings.
   bool SetFaviconMappingsForPage(const GURL& page_url,
                                  favicon_base::IconType icon_type,
-                                 favicon_base::FaviconID icon_id);
+                                 favicon_base::FaviconID icon_id,
+                                 PageUrlType page_url_type);
 
   std::unique_ptr<FaviconDatabase> db_;
   raw_ptr<FaviconBackendDelegate> delegate_;

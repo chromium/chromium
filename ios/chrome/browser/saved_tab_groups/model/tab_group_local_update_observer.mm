@@ -9,15 +9,14 @@
 
 #import "base/check.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/saved_tab_groups/tab_group_sync_service.h"
-#import "components/saved_tab_groups/types.h"
+#import "components/saved_tab_groups/public/tab_group_sync_service.h"
+#import "components/saved_tab_groups/public/types.h"
+#import "components/saved_tab_groups/public/utils.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"
-#import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/browser_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -32,10 +31,11 @@ namespace tab_groups {
 
 TabGroupLocalUpdateObserver::TabGroupLocalUpdateObserver(
     BrowserList* browser_list,
-    TabGroupSyncService* sync_service)
-    : sync_service_(sync_service),
-      browser_list_(browser_list) {
+    TabGroupSyncService* sync_service,
+    SessionRestorationService* session_restoration_service)
+    : sync_service_(sync_service), browser_list_(browser_list) {
   browser_list_observation_.Observe(browser_list);
+  session_restoration_service_observation_.Observe(session_restoration_service);
   CHECK(browser_list_->BrowsersOfType(BrowserList::BrowserType::kRegular)
             .empty());
 }
@@ -118,9 +118,9 @@ void TabGroupLocalUpdateObserver::WebStateListDidChange(
       const TabGroup* group =
           web_state_list->GetGroupOfWebStateAt(replace.index());
       if (group) {
-        RemoveLocalWebStateFromSyncedGroup(replace.replaced_web_state(), group);
         AddLocalWebStateToSyncedGroup(replace.inserted_web_state(),
                                       web_state_list);
+        RemoveLocalWebStateFromSyncedGroup(replace.replaced_web_state(), group);
       }
     } break;
     case WebStateListChange::Type::kInsert: {
@@ -172,6 +172,18 @@ void TabGroupLocalUpdateObserver::WebStateListDidChange(
     case WebStateListChange::Type::kGroupMove:
       break;
   }
+
+  web::WebState* web_state = status.new_active_web_state;
+  if (status.active_web_state_change() && web_state) {
+    const TabGroup* tab_group =
+        web_state_list->GetGroupOfWebStateAt(web_state_list->active_index());
+    std::optional<LocalTabGroupID> local_tab_group_id =
+        tab_group ? std::make_optional<>(tab_group->tab_group_id())
+                  : std::nullopt;
+    sync_service_->OnTabSelected(local_tab_group_id,
+                                 web_state->GetUniqueIdentifier().identifier(),
+                                 web_state->GetTitle());
+  }
 }
 
 void TabGroupLocalUpdateObserver::WebStateListDestroyed(
@@ -180,20 +192,6 @@ void TabGroupLocalUpdateObserver::WebStateListDestroyed(
 }
 
 #pragma mark - WebStateObserver
-
-void TabGroupLocalUpdateObserver::TitleWasSet(web::WebState* web_state) {
-  if (sync_update_paused_) {
-    return;
-  }
-
-  // Updates before the first navigation should be ignored.
-  web::WebStateID identifier = web_state->GetUniqueIdentifier();
-  if (ignored_web_state_identifiers_.contains(identifier)) {
-    return;
-  }
-
-  UpdateLocalWebStateInSyncedGroup(web_state);
-}
 
 void TabGroupLocalUpdateObserver::DidFinishNavigation(
     web::WebState* web_state,
@@ -206,6 +204,10 @@ void TabGroupLocalUpdateObserver::DidFinishNavigation(
   web::WebStateID identifier = web_state->GetUniqueIdentifier();
   if (ignored_web_state_identifiers_.contains(identifier)) {
     ignored_web_state_identifiers_.erase(identifier);
+    return;
+  }
+
+  if (!utils::IsSaveableNavigation(navigation_context)) {
     return;
   }
 
@@ -237,16 +239,6 @@ void TabGroupLocalUpdateObserver::SetSyncUpdatePaused(bool paused) {
 }
 
 void TabGroupLocalUpdateObserver::StartObservingBrowser(Browser* browser) {
-  // Observer should be set once the session restoration service has started.
-  // TODO(crbug.com/350885825): Directly inject the SessionRestorationService to
-  // this class when it's no longer necessary for MigrateSessionStorageFormat to
-  // instantiate it.
-  if (!session_restoration_service_observation_.IsObserving()) {
-    session_restoration_service_observation_.Observe(
-        SessionRestorationServiceFactory::GetForBrowserState(
-            browser->GetBrowserState()));
-  }
-
   WebStateList* web_state_list = browser->GetWebStateList();
   web_state_list_observation_.AddObservation(web_state_list);
   for (const TabGroup* group : web_state_list->GetGroups()) {
@@ -282,10 +274,16 @@ void TabGroupLocalUpdateObserver::UpdateLocalWebStateInSyncedGroup(
   LocalTabInfo tab_info =
       utils::GetLocalTabInfo(browser_list_, web_state->GetUniqueIdentifier());
 
-  sync_service_->UpdateTab(tab_info.tab_group->tab_group_id(),
-                           web_state->GetUniqueIdentifier().identifier(),
-                           web_state->GetTitle(), web_state->GetVisibleURL(),
-                           std::nullopt);
+  GURL url = web_state->GetVisibleURL();
+  std::u16string title = web_state->GetTitle();
+  if (!IsURLValidForSavedTabGroups(url)) {
+    url = GetDefaultUrlAndTitle().first;
+    title = GetDefaultUrlAndTitle().second;
+  }
+
+  sync_service_->NavigateTab(tab_info.tab_group->tab_group_id(),
+                             web_state->GetUniqueIdentifier().identifier(), url,
+                             title);
 }
 
 void TabGroupLocalUpdateObserver::AddLocalWebStateToSyncedGroup(

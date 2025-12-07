@@ -7,8 +7,6 @@
     export: "CORE_EXPORT",
   },
 
-  // If you add any tag names here, remember to update html_tree_builder_test.cc.
-
   // Note that if an element is associated with a feature flag that has an
   // origin trial, you must:
   // * set runtimeFlagHasOriginTrial to true below, which disables the checks
@@ -211,6 +209,11 @@
       interfaceName: "HTMLFrameSetElement",
     },
     {
+      name: "geolocation",
+      interfaceName: "HTMLGeolocationElement",
+      runtimeEnabled: "GeolocationElement",
+    },
+    {
       name: "h1",
       interfaceName: "HTMLHeadingElement",
     },
@@ -275,6 +278,11 @@
       interfaceName: "HTMLModElement",
     },
     {
+      name: "install",
+      interfaceName: "HTMLInstallElement",
+      runtimeEnabled: "InstallElement",
+    },
+    {
       name: "kbd",
       interfaceName: "HTMLElement",
     },
@@ -303,12 +311,6 @@
       constructorNeedsCreateElementFlags: true,
     },
     {
-      name: "listbox",
-      interfaceName: "HTMLListboxElement",
-      runtimeEnabled: "HTMLSelectListElement",
-      interfaceHeaderDir: "third_party/blink/renderer/core/html/forms",
-    },
-    {
       name: "listing",
       interfaceName: "HTMLPreElement",
     },
@@ -323,6 +325,24 @@
     },
     "marquee",
     "menu",
+    {
+      name: "menubar",
+      interfaceName: "HTMLMenuBarElement",
+      interfaceHeaderDir: "third_party/blink/renderer/core/html",
+      runtimeEnabled: "MenuElements",
+    },
+    {
+      name: "menuitem",
+      interfaceName: "HTMLMenuItemElement",
+      interfaceHeaderDir: "third_party/blink/renderer/core/html",
+      runtimeEnabled: "MenuElements",
+    },
+    {
+      name: "menulist",
+      interfaceName: "HTMLMenuListElement",
+      interfaceHeaderDir: "third_party/blink/renderer/core/html",
+      runtimeEnabled: "MenuElements",
+    },
     {
       name: "meta",
       constructorNeedsCreateElementFlags: true,
@@ -437,8 +457,7 @@
     },
     {
       name: "search",
-      interfaceName: "HTMLElement",
-      runtimeEnabled: "HTMLSearchElement",
+      interfaceName: "HTMLSearchElement",
     },
     {
       name: "section",
@@ -449,15 +468,8 @@
       interfaceHeaderDir: "third_party/blink/renderer/core/html/forms",
     },
     {
-      name: "selectedoption",
-      interfaceName: "HTMLSelectedOptionElement",
-      interfaceHeaderDir: "third_party/blink/renderer/core/html/forms",
-      runtimeEnabled: "StylableSelect",
-    },
-    {
-      name: "selectlist",
-      interfaceName: "HTMLSelectListElement",
-      runtimeEnabled: "HTMLSelectListElement",
+      name: "selectedcontent",
+      interfaceName: "HTMLSelectedContentElement",
       interfaceHeaderDir: "third_party/blink/renderer/core/html/forms",
     },
     {
@@ -546,6 +558,13 @@
     {
       name: "ul",
       interfaceName: "HTMLUListElement",
+    },
+    {
+      name: "usermedia",
+      interfaceName: "HTMLUserMediaElement",
+      runtimeEnabled: "UserMediaElement",
+      runtimeFlagHasOriginTrial: true,
+      noTypeHelpers: true,
     },
     {
       name: "var",

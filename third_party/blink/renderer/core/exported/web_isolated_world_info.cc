@@ -34,14 +34,14 @@ bool IsEqualOrExceedEmbedderWorldIdLimit(int world_id) {
 }
 
 WebString GetIsolatedWorldStableId(v8::Local<v8::Context> context) {
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   const DOMWrapperWorld& world = DOMWrapperWorld::World(isolate, context);
   DCHECK(!world.IsMainWorld());
   return world.NonMainWorldStableId();
 }
 
 WebString GetIsolatedWorldHumanReadableName(v8::Local<v8::Context> context) {
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   const DOMWrapperWorld& world = DOMWrapperWorld::World(isolate, context);
   DCHECK(!world.IsMainWorld());
   return world.NonMainWorldHumanReadableName();

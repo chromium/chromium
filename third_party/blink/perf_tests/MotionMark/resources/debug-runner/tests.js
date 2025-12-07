@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2018 Apple Inc. All rights reserved.
+ * Copyright (C) 2015-2023 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -183,7 +183,7 @@ Suites.push(new Suite("HTML suite",
             name: "CSS bouncing filter circles"
         },
         {
-            url: "bouncing-particles/bouncing-css-images.html?particleWidth=80&particleHeight=80&imageSrc=../resources/yin-yang.svg",
+            url: "bouncing-particles/bouncing-css-images.html?particleWidth=80&particleHeight=80",
             name: "CSS bouncing SVG images"
         },
         {
@@ -199,7 +199,7 @@ Suites.push(new Suite("HTML suite",
             name: "DOM particles, SVG masks"
         },
         {
-            url: "dom/compositing-transforms.html?particleWidth=50&particleHeight=50&filters=yes&imageSrc=../resources/yin-yang.svg",
+            url: "dom/compositing-transforms.html?particleWidth=50&particleHeight=50&filters=yes",
             name: "Composited Transforms"
         }
     ]
@@ -216,11 +216,11 @@ Suites.push(new Suite("Canvas suite",
             name: "canvas bouncing gradient circles"
         },
         {
-            url: "bouncing-particles/bouncing-canvas-images.html?particleWidth=80&particleHeight=80&imageSrc=../resources/yin-yang.svg",
+            url: "bouncing-particles/bouncing-canvas-images.html?particleWidth=80&particleHeight=80",
             name: "canvas bouncing SVG images"
         },
         {
-            url: "bouncing-particles/bouncing-canvas-images.html?particleWidth=80&particleHeight=80&imageSrc=../resources/yin-yang.png",
+            url: "bouncing-particles/bouncing-canvas-images.html?particleWidth=80&particleHeight=80",
             name: "canvas bouncing PNG images"
         },
         {
@@ -253,11 +253,11 @@ Suites.push(new Suite("SVG suite",
             name: "SVG bouncing gradient circles"
         },
         {
-            url: "bouncing-particles/bouncing-svg-images.html?particleWidth=80&particleHeight=80&imageSrc=../resources/yin-yang.svg",
+            url: "bouncing-particles/bouncing-svg-images.html?particleWidth=80&particleHeight=80",
             name: "SVG bouncing SVG images"
         },
         {
-            url: "bouncing-particles/bouncing-svg-images.html?particleWidth=80&particleHeight=80&imageSrc=../resources/yin-yang.png",
+            url: "bouncing-particles/bouncing-svg-images.html?particleWidth=80&particleHeight=80",
             name: "SVG bouncing PNG images"
         },
     ]
@@ -425,10 +425,6 @@ Suites.push(new Suite("Basic canvas path suite",
         {
             url: "simple/simple-canvas-paths.html?pathType=ellipse",
             name: "Canvas ellipses"
-        },
-        {
-            url: "simple/simple-canvas-paths.html?pathType=spreadSheets",
-            name: "Canvas Spreadsheets"
         },
         {
             url: "simple/simple-canvas-paths.html?pathType=lineFill",

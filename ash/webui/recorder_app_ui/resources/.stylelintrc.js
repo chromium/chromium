@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 const config = {
-  extends: 'stylelint-config-standard',
-  rules: {
+  'extends': 'stylelint-config-standard',
+  'rules': {
     'color-function-notation': ['modern', {ignore: ['with-var-inside']}],
     'custom-property-pattern': [
       '^((([a-z][a-z0-9]*)(-[a-z0-9]+)*)|(cros-[a-z0-9_-]+))$',
@@ -18,7 +18,7 @@ const config = {
     'property-no-unknown': ['error', {ignoreProperties: 'position-anchor'}],
     'property-no-vendor-prefix': 'off',
   },
-  overrides: [
+  'overrides': [
     {
       files: ['*.ts', '**/*.ts'],
       customSyntax: 'postcss-lit',
@@ -26,4 +26,5 @@ const config = {
   ],
 };
 
+/* global module */
 module.exports = config;

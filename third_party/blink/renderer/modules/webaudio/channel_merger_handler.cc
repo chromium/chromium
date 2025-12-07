@@ -20,10 +20,10 @@ constexpr unsigned kNumberOfInputChannels = 1;
 ChannelMergerHandler::ChannelMergerHandler(AudioNode& node,
                                            float sample_rate,
                                            unsigned number_of_inputs)
-    : AudioHandler(kNodeTypeChannelMerger, node, sample_rate) {
+    : AudioHandler(NodeType::kNodeTypeChannelMerger, node, sample_rate) {
   // These properties are fixed for the node and cannot be changed by user.
   channel_count_ = kNumberOfInputChannels;
-  SetInternalChannelCountMode(kExplicit);
+  SetInternalChannelCountMode(V8ChannelCountMode::Enum::kExplicit);
 
   // Create the requested number of inputs.
   for (unsigned i = 0; i < number_of_inputs; ++i) {
@@ -95,13 +95,13 @@ void ChannelMergerHandler::SetChannelCount(unsigned channel_count,
 }
 
 void ChannelMergerHandler::SetChannelCountMode(
-    const String& mode,
+    V8ChannelCountMode::Enum mode,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
   DeferredTaskHandler::GraphAutoLocker locker(Context());
 
   // channcelCountMode must be 'explicit'.
-  if (mode != "explicit") {
+  if (mode != V8ChannelCountMode::Enum::kExplicit) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "ChannelMerger: channelCountMode cannot be changed from 'explicit'");

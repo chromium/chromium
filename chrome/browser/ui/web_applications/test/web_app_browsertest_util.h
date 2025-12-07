@@ -7,7 +7,7 @@
 
 #include <string_view>
 
-#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -22,6 +22,7 @@
 #include "ui/base/window_open_disposition.h"
 
 class Browser;
+class BrowserWindowInterface;
 class GURL;
 class Profile;
 
@@ -32,6 +33,10 @@ class FilePath;
 namespace webapps {
 enum class InstallResultCode;
 }
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace web_app {
 
@@ -66,7 +71,11 @@ Browser* LaunchWebAppBrowserAndWait(
     WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB);
 
 // Launches a new tab for |app| in |profile|.
-Browser* LaunchBrowserForWebAppInTab(Profile*, const webapps::AppId&);
+Browser* LaunchBrowserForWebAppInTab(
+    Profile*,
+    const webapps::AppId&,
+    WindowOpenDisposition disposition =
+        WindowOpenDisposition::NEW_FOREGROUND_TAB);
 
 // Launches the web app to the given URL.
 Browser* LaunchWebAppToURL(Profile* profile,
@@ -115,7 +124,7 @@ AppMenuCommandState GetAppMenuCommandState(int command_id, Browser* browser);
 // be defined.
 Browser* FindWebAppBrowser(Profile* profile, const webapps::AppId& app_id);
 
-void CloseAndWait(Browser* browser);
+void CloseAndWait(BrowserWindowInterface* browser);
 
 bool IsBrowserOpen(const Browser* test_browser);
 
@@ -128,7 +137,7 @@ std::optional<webapps::AppId> ForceInstallWebApp(Profile* profile, GURL url);
 // closing the web app window that appears after installation from page.
 class BrowserWaiter : public BrowserListObserver {
  public:
-  explicit BrowserWaiter(Browser* filter = nullptr);
+  explicit BrowserWaiter(BrowserWindowInterface* filter = nullptr);
   ~BrowserWaiter() override;
 
   Browser* AwaitAdded(
@@ -141,7 +150,8 @@ class BrowserWaiter : public BrowserListObserver {
   void OnBrowserRemoved(Browser* browser) override;
 
  private:
-  const raw_ptr<Browser, AcrossTasksDanglingUntriaged> filter_ = nullptr;
+  const raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged> filter_ =
+      nullptr;
 
   base::RunLoop added_run_loop_;
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> added_browser_ = nullptr;
@@ -172,6 +182,36 @@ base::FilePath CreateTestFileWithExtension(std::string_view extension);
 // Wait for an IPH bubble to show up inside the browser, and return true or
 // false based on whether the bubble showed up.
 bool WaitForIPHToShowIfAny(Browser* browser);
+
+namespace test {
+
+// Denote ways to simulate click on an element.
+enum class ClickMethod {
+  kLeftClick,
+  kMiddleClick,
+  kShiftClick,
+  kRightClickLaunchApp
+};
+
+// This function simulates a click on the middle of an element matching
+// `element_id` based on the type of click passed to it.
+void SimulateClickOnElement(content::WebContents* contents,
+                            std::string element_id,
+                            ClickMethod click);
+
+// Runs `action` for all tabs. This method is resilient to `action` waiting on
+// async work, and considers the fresh `BrowserList` and tab model before each
+// call. This method ensures that `action` is not called for the same web
+// contents twice.
+void RunForAllTabs(base::RepeatingCallback<void(content::WebContents&)> action);
+
+// Wait for all available `WebContents` when this is called to finish loading.
+// Note: This will hang forever if any web contents purposefully never finishes
+// loading, causes reloads, or in any other way doesn't call the 'load' event in
+// the page.
+void CompletePageLoadForAllWebContents();
+
+}  // namespace test
 
 }  // namespace web_app
 

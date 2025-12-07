@@ -4,8 +4,10 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {FilesSettingsCardElement, OneDriveConnectionState, SmbBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
-import {createRouterForTesting, CrLinkRowElement, CrSettingsPrefs, OneDriveBrowserProxy, Route, Router, routes, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
+import type {FilesSettingsCardElement} from 'chrome://os-settings/lazy_load.js';
+import {OneDriveConnectionState, SmbBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
+import type {CrLinkRowElement, Route, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
+import {createRouterForTesting, CrSettingsPrefs, OneDriveBrowserProxy, Router, routes} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -14,14 +16,12 @@ import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js'
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {OneDriveTestBrowserProxy, ProxyOptions} from './one_drive_test_browser_proxy.js';
+import type {ProxyOptions} from './one_drive_test_browser_proxy.js';
+import {OneDriveTestBrowserProxy} from './one_drive_test_browser_proxy.js';
 import {TestSmbBrowserProxy} from './test_smb_browser_proxy.js';
 
 suite('<files-settings-card>', () => {
-  const isRevampWayfindingEnabled =
-      loadTimeData.getBoolean('isRevampWayfindingEnabled');
-  const route =
-      isRevampWayfindingEnabled ? routes.SYSTEM_PREFERENCES : routes.FILES;
+  const route = routes.SYSTEM_PREFERENCES;
 
   let filesSettingsCard: FilesSettingsCardElement;
   let prefElement: SettingsPrefsElement;
@@ -322,7 +322,7 @@ suite('<files-settings-card>', () => {
   });
 
   suite('with enableDriveFsBulkPinning set to true', () => {
-    setup(async () => {
+    setup(() => {
       loadTimeData.overrideValues({
         enableDriveFsBulkPinning: true,
       });
@@ -377,7 +377,7 @@ suite('<files-settings-card>', () => {
   });
 
   suite('with enableDriveFsMirrorSync set to true', () => {
-    setup(async () => {
+    setup(() => {
       loadTimeData.overrideValues({
         enableDriveFsMirrorSync: true,
       });
@@ -432,66 +432,39 @@ suite('<files-settings-card>', () => {
     });
   });
 
-  if (isRevampWayfindingEnabled) {
-    suite('when no share has been setup before', () => {
-      setup(async () => {
-        smbBrowserProxy.anySmbMounted = false;
-      });
-
-      test('File shares row is not visible', async () => {
-        await createFilesSettingsCard();
-        await smbBrowserProxy.whenCalled('hasAnySmbMountedBefore');
-
-        const smbSharesLinkRow =
-            filesSettingsCard.shadowRoot!.querySelector('#smbSharesRow');
-        assertFalse(isVisible(smbSharesLinkRow));
-      });
-
-      test('Add file shares row is visible', async () => {
-        await createFilesSettingsCard();
-        await smbBrowserProxy.whenCalled('hasAnySmbMountedBefore');
-
-        const addSmbSharesRow =
-            filesSettingsCard.shadowRoot!.querySelector('#addSmbSharesRow');
-        assertTrue(isVisible(addSmbSharesRow));
-      });
+  suite('when no share has been setup before', () => {
+    setup(() => {
+      smbBrowserProxy.anySmbMounted = false;
     });
 
-    suite('when file shares have been setup before', () => {
-      setup(async () => {
-        smbBrowserProxy.anySmbMounted = true;
-      });
+    test('File shares row is not visible', async () => {
+      await createFilesSettingsCard();
+      await smbBrowserProxy.whenCalled('hasAnySmbMountedBefore');
 
-      test('File shares row is visible', async () => {
-        await createFilesSettingsCard();
-        await smbBrowserProxy.whenCalled('hasAnySmbMountedBefore');
-
-        const smbSharesLinkRow =
-            filesSettingsCard.shadowRoot!.querySelector('#smbSharesRow');
-        assertTrue(isVisible(smbSharesLinkRow));
-      });
-
-      test('Add file shares row is not visible', async () => {
-        await createFilesSettingsCard();
-        await smbBrowserProxy.whenCalled('hasAnySmbMountedBefore');
-
-        const addSmbSharesRow =
-            filesSettingsCard.shadowRoot!.querySelector('#addSmbSharesRow');
-        assertFalse(isVisible(addSmbSharesRow));
-      });
-
-      test(
-          'File shares row is focused when returning from subpage',
-          async () => {
-            await createFilesSettingsCard();
-
-            await assertSubpageTriggerFocused(
-                '#smbSharesRow', routes.SMB_SHARES);
-          });
+      const smbSharesLinkRow =
+          filesSettingsCard.shadowRoot!.querySelector('#smbSharesRow');
+      assertFalse(isVisible(smbSharesLinkRow));
     });
-  } else {
+
+    test('Add file shares row is visible', async () => {
+      await createFilesSettingsCard();
+      await smbBrowserProxy.whenCalled('hasAnySmbMountedBefore');
+
+      const addSmbSharesRow =
+          filesSettingsCard.shadowRoot!.querySelector('#addSmbSharesRow');
+      assertTrue(isVisible(addSmbSharesRow));
+    });
+  });
+
+  suite('when file shares have been setup before', () => {
+    setup(() => {
+      smbBrowserProxy.anySmbMounted = true;
+    });
+
     test('File shares row is visible', async () => {
       await createFilesSettingsCard();
+      await smbBrowserProxy.whenCalled('hasAnySmbMountedBefore');
+
       const smbSharesLinkRow =
           filesSettingsCard.shadowRoot!.querySelector('#smbSharesRow');
       assertTrue(isVisible(smbSharesLinkRow));
@@ -499,6 +472,8 @@ suite('<files-settings-card>', () => {
 
     test('Add file shares row is not visible', async () => {
       await createFilesSettingsCard();
+      await smbBrowserProxy.whenCalled('hasAnySmbMountedBefore');
+
       const addSmbSharesRow =
           filesSettingsCard.shadowRoot!.querySelector('#addSmbSharesRow');
       assertFalse(isVisible(addSmbSharesRow));
@@ -509,5 +484,5 @@ suite('<files-settings-card>', () => {
 
       await assertSubpageTriggerFocused('#smbSharesRow', routes.SMB_SHARES);
     });
-  }
+  });
 });

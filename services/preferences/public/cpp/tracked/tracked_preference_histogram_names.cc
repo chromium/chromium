@@ -11,8 +11,6 @@ namespace tracked {
 const char kTrackedPrefHistogramUnchanged[] =
     "Settings.TrackedPreferenceUnchanged";
 const char kTrackedPrefHistogramCleared[] = "Settings.TrackedPreferenceCleared";
-const char kTrackedPrefHistogramMigratedLegacyDeviceId[] =
-    "Settings.TrackedPreferenceMigratedLegacyDeviceId";
 const char kTrackedPrefHistogramChanged[] = "Settings.TrackedPreferenceChanged";
 const char kTrackedPrefHistogramInitialized[] =
     "Settings.TrackedPreferenceInitialized";
@@ -23,7 +21,29 @@ const char kTrackedPrefHistogramNullInitialized[] =
 const char kTrackedPrefHistogramWantedReset[] =
     "Settings.TrackedPreferenceWantedReset";
 const char kTrackedPrefHistogramReset[] = "Settings.TrackedPreferenceReset";
+const char kTrackedPrefHistogramResetViaHmacFallback[] =
+    "Settings.TrackedPreferenceResetViaHmacFallback";
+const char kTrackedPrefHistogramResetEncrypted[] =
+    "Settings.TrackedPreferenceResetEncrypted";
 const char kTrackedPrefRegistryValidationSuffix[] = "FromRegistry";
 
+const char kTrackedPrefHistogramWantedResetViaHmacFallback[] =
+    "Settings.TrackedPreferenceWantedResetViaHmacFallback";
+const char kTrackedPrefHistogramWantedResetEncrypted[] =
+    "Settings.TrackedPreferenceWantedResetEncrypted";
+
+const char kTrackedPrefHistogramUnchangedEncrypted[] =
+    "Settings.TrackedPreferenceUnchangedEncrypted";
+const char kTrackedPrefHistogramClearedEncrypted[] =
+    "Settings.TrackedPreferenceClearedEncrypted";
+const char kTrackedPrefHistogramChangedEncrypted[] =
+    "Settings.TrackedPreferenceChangedEncrypted";
+
+const char kTrackedPrefHistogramUnchangedViaHmacFallback[] =
+    "Settings.TrackedPreferenceUnchangedViaHmacFallback";
+const char kTrackedPrefHistogramClearedViaHmacFallback[] =
+    "Settings.TrackedPreferenceClearedViaHmacFallback";
+const char kTrackedPrefHistogramChangedViaHmacFallback[] =
+    "Settings.TrackedPreferenceChangedViaHmacFallback";
 }  // namespace tracked
 }  // namespace user_prefs

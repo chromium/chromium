@@ -35,7 +35,7 @@ component("gl_in_process_context") {
     "//gpu/ipc/common:surface_handle_type",
     "//gpu/ipc/host",
     "//gpu/ipc/service",
-    "//gpu/skia_bindings:skia_bindings",
+    "//gpu/skia_bindings",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/gl",

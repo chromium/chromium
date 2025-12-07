@@ -17,8 +17,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
@@ -140,7 +140,8 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, InstallApp) {
 
   // Expect the app is opened.
   webapps::AppId app_id = web_app::GenerateAppIdFromManifestId(app_url);
-  Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
+  BrowserWindowInterface* const app_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
 
   // Expect the browser tab was not closed.
@@ -185,7 +186,8 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, AlreadyInstalled) {
   watcher.Wait();
 
   // Expect the app is opened.
-  Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
+  BrowserWindowInterface* const app_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
 }
 

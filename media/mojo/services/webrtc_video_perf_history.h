@@ -6,11 +6,10 @@
 #define MEDIA_MOJO_SERVICES_WEBRTC_VIDEO_PERF_HISTORY_H_
 
 #include <stdint.h>
+
 #include <memory>
-#include <queue>
 
 #include "base/functional/callback.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #include "media/base/video_codecs.h"

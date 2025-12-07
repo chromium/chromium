@@ -20,6 +20,9 @@
     (AccountPickerSelectionScreenCoordinator*)coordinator;
 
 // Invoke add account SigninCoordinator.
+// Up to iOS 18, due to crbug.com/395959814, the add account view may disappear
+// without the signinCompletion being called. So the view must not be blocked
+// when calling this.
 - (void)accountPickerSelectionScreenCoordinatorOpenAddAccount:
     (AccountPickerSelectionScreenCoordinator*)coordinator;
 

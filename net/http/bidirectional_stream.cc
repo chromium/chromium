@@ -169,8 +169,9 @@ void BidirectionalStream::SendvData(
 }
 
 NextProto BidirectionalStream::GetProtocol() const {
-  if (!stream_impl_)
-    return kProtoUnknown;
+  if (!stream_impl_) {
+    return NextProto::kProtoUnknown;
+  }
 
   return stream_impl_->GetProtocol();
 }
@@ -210,7 +211,7 @@ void BidirectionalStream::StartRequest() {
   stream_request_ =
       session_->http_stream_factory()->RequestBidirectionalStreamImpl(
           http_request_info, request_info_->priority, /*allowed_bad_certs=*/{},
-          this, /* enable_ip_based_pooling = */ true,
+          this, /* enable_ip_based_pooling_for_h2 = */ true,
           /* enable_alternative_services = */ true, net_log_);
   // Check that this call does not fail.
   DCHECK(stream_request_);
@@ -326,7 +327,7 @@ void BidirectionalStream::OnFailed(int status) {
 
 void BidirectionalStream::OnStreamReady(const ProxyInfo& used_proxy_info,
                                         std::unique_ptr<HttpStream> stream) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void BidirectionalStream::OnBidirectionalStreamImplReady(
@@ -367,7 +368,7 @@ void BidirectionalStream::OnBidirectionalStreamImplReady(
 void BidirectionalStream::OnWebSocketHandshakeStreamReady(
     const ProxyInfo& used_proxy_info,
     std::unique_ptr<WebSocketHandshakeStreamBase> stream) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void BidirectionalStream::OnStreamFailed(
@@ -412,10 +413,6 @@ void BidirectionalStream::OnNeedsClientAuth(SSLCertRequestInfo* cert_info) {
 }
 
 void BidirectionalStream::OnQuicBroken() {}
-
-void BidirectionalStream::OnSwitchesToHttpStreamPool(HttpStreamKey stream_key) {
-  NOTREACHED_NORETURN();
-}
 
 void BidirectionalStream::NotifyFailed(int error) {
   delegate_->OnFailed(error);

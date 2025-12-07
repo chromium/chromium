@@ -4,14 +4,13 @@
 
 import 'chrome://chrome-signin/inline_login_app.js';
 
-import {AccountAdditionOptions} from 'chrome://chrome-signin/arc_account_picker/arc_util.js';
-import {InlineLoginAppElement, View} from 'chrome://chrome-signin/inline_login_app.js';
+import type {InlineLoginAppElement} from 'chrome://chrome-signin/inline_login_app.js';
+import {View} from 'chrome://chrome-signin/inline_login_app.js';
 import {InlineLoginBrowserProxyImpl} from 'chrome://chrome-signin/inline_login_browser_proxy.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {fakeAuthenticationData, fakeAuthenticationDataWithEmail, TestAuthenticator, TestInlineLoginBrowserProxy} from './inline_login_test_util.js';
 
@@ -26,10 +25,9 @@ suite('InlineLoginWelcomePageTest', () => {
         .querySelector('div.active[slot="view"]')!.id;
   }
 
-  function testSetup(dialogArgs: AccountAdditionOptions|null) {
+  function testSetup() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testBrowserProxy = new TestInlineLoginBrowserProxy();
-    testBrowserProxy.setDialogArguments(dialogArgs);
     InlineLoginBrowserProxyImpl.setInstance(testBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     inlineLoginComponent = document.createElement('inline-login-app');
@@ -44,7 +42,7 @@ suite('InlineLoginWelcomePageTest', () => {
   });
 
   test('Reauthentication', () => {
-    testSetup(/*dialogArgs=*/ null);
+    testSetup();
     webUIListenerCallback(
         'load-authenticator', fakeAuthenticationDataWithEmail);
     // Welcome screen should be skipped for reauth.
@@ -53,7 +51,7 @@ suite('InlineLoginWelcomePageTest', () => {
   });
 
   test('OkButton', () => {
-    testSetup(/*dialogArgs=*/ null);
+    testSetup();
     webUIListenerCallback('load-authenticator', fakeAuthenticationData);
     const okButton =
         inlineLoginComponent.shadowRoot!.querySelector<HTMLElement>(
@@ -69,10 +67,6 @@ suite('InlineLoginWelcomePageTest', () => {
         View.ADD_ACCOUNT, getActiveViewId(),
         'Add account screen should be active');
 
-    if (loadTimeData.getBoolean('isArcAccountRestrictionsEnabled')) {
-      return;
-    }
-
     return testBrowserProxy.whenCalled('skipWelcomePage').then(skip => {
       assertEquals(
           false, skip, 'skipWelcomePage should be called with "false"');
@@ -80,7 +74,7 @@ suite('InlineLoginWelcomePageTest', () => {
   });
 
   test('Checkbox', () => {
-    testSetup(/*dialogArgs=*/ null);
+    testSetup();
 
     webUIListenerCallback('load-authenticator', fakeAuthenticationData);
     const welcomePageApp =
@@ -103,7 +97,7 @@ suite('InlineLoginWelcomePageTest', () => {
   });
 
   test('GoBack', () => {
-    testSetup(/*dialogArgs=*/ null);
+    testSetup();
     webUIListenerCallback('load-authenticator', fakeAuthenticationData);
     const backButton =
         inlineLoginComponent.shadowRoot!.querySelector<HTMLElement>(
@@ -133,50 +127,8 @@ suite('InlineLoginWelcomePageTest', () => {
         View.WELCOME, getActiveViewId(), 'Welcome screen should be active');
   });
 
-  test('IsAvailableInArc', () => {
-    const dialogArgs = {
-      isAvailableInArc: true,
-      showArcAvailabilityPicker: false,
-    };
-    testSetup(dialogArgs);
-    const welcomePageApp =
-        inlineLoginComponent.shadowRoot!.querySelector('welcome-page-app');
-    assertTrue(!!welcomePageApp);
-    const toggle = welcomePageApp.shadowRoot!.querySelector<HTMLElement>(
-        '.arc-toggle-container');
-    assertTrue(!!toggle);
-    assertFalse(toggle.hidden, 'ARC toggle should be visible');
-    const toggleButton = welcomePageApp.shadowRoot!.querySelector('cr-toggle');
-    assertTrue(!!toggleButton);
-    assertTrue(toggleButton.checked);
-    toggleButton.click();
-    flush();
-    return waitAfterNextRender(toggleButton).then(() => {
-      assertFalse(toggleButton.checked);
-    });
-  });
-
-  test('ToggleHidden', () => {
-    const dialogArgs = {
-      isAvailableInArc: true,
-      showArcAvailabilityPicker: true,
-    };
-    testSetup(dialogArgs);
-    const welcomePageApp =
-        inlineLoginComponent.shadowRoot!.querySelector('welcome-page-app');
-    assertTrue(!!welcomePageApp);
-    const toggle = welcomePageApp.shadowRoot!.querySelector<HTMLElement>(
-        '.arc-toggle-container');
-    assertTrue(!!toggle);
-    assertTrue(toggle.hidden, 'ARC toggle should be hidden');
-  });
-
   test('LinkClick', async () => {
-    const dialogArgs = {
-      isAvailableInArc: true,
-      showArcAvailabilityPicker: false,
-    };
-    testSetup(dialogArgs);
+    testSetup();
 
     const welcomePageApp =
         inlineLoginComponent.shadowRoot!.querySelector('welcome-page-app');

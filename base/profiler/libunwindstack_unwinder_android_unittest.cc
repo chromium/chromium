@@ -4,17 +4,18 @@
 
 #include "base/profiler/libunwindstack_unwinder_android.h"
 
-#include <sys/mman.h>
-
 #include <inttypes.h>
 #include <string.h>
+#include <sys/mman.h>
+
 #include <vector>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/functional/bind.h"
 #include "base/native_library.h"
 #include "base/path_service.h"
 #include "base/profiler/register_context.h"
+#include "base/profiler/register_context_registers.h"
 #include "base/profiler/stack_buffer.h"
 #include "base/profiler/stack_copier_signal.h"
 #include "base/profiler/stack_sampler.h"
@@ -97,8 +98,9 @@ TEST(LibunwindstackUnwinderAndroidTest, PlainFunction) {
       }));
 
   // Check that all the modules are valid.
-  for (const auto& frame : sample)
+  for (const auto& frame : sample) {
     EXPECT_NE(nullptr, frame.module);
+  }
 
   // The stack should contain a full unwind.
   ExpectStackContains(sample, {scenario.GetWaitForSampleAddressRange(),
@@ -128,8 +130,9 @@ TEST(LibunwindstackUnwinderAndroidTest, Alloca) {
       }));
 
   // Check that all the modules are valid.
-  for (const auto& frame : sample)
+  for (const auto& frame : sample) {
     EXPECT_NE(nullptr, frame.module);
+  }
 
   // The stack should contain a full unwind.
   ExpectStackContains(sample, {scenario.GetWaitForSampleAddressRange(),
@@ -168,13 +171,13 @@ TEST(LibunwindstackUnwinderAndroidTest, OtherLibrary) {
 
 // Checks that java frames can be unwound through and have function names.
 TEST(LibunwindstackUnwinderAndroidTest, JavaFunction) {
-  auto* build_info = base::android::BuildInfo::GetInstance();
   // Due to varying availability of compiled/JITed java unwind tables, unwinding
   // is only expected to reliably succeed on Android P+
   // https://android.googlesource.com/platform/system/unwinding/+/refs/heads/master/libunwindstack/AndroidVersions.md#android-9-pie_api-level-28
   // The libunwindstack doc mentions in Android 9 it got the support for
   // unwinding through JIT'd frames.
-  bool can_unwind = build_info->sdk_int() >= base::android::SDK_VERSION_P;
+  bool can_unwind = base::android::android_info::sdk_int() >=
+                    base::android::android_info::SDK_VERSION_P;
   if (!can_unwind) {
     GTEST_SKIP() << "Unwind info is not available on older version of Android";
   }
@@ -206,8 +209,6 @@ TEST(LibunwindstackUnwinderAndroidTest, JavaFunction) {
   ExpectStackContains(sample, {scenario.GetWaitForSampleAddressRange(),
                                scenario.GetSetupFunctionAddressRange(),
                                scenario.GetOuterFunctionAddressRange()});
-  ExpectStackContainsNames(sample, {"org.chromium.base.profiler.TestSupport."
-                                    "callWithJavaFunction"});
 }
 
 // TODO(b/269239545): Delete or re-enable (and enable updatable maps) this test.

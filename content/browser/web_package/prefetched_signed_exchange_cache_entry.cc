@@ -5,6 +5,7 @@
 #include "content/browser/web_package/prefetched_signed_exchange_cache_entry.h"
 
 #include "net/base/hash_value.h"
+#include "net/http/http_response_headers.h"
 #include "storage/browser/blob/blob_data_handle.h"
 
 namespace content {

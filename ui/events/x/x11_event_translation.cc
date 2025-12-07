@@ -10,7 +10,6 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/events/devices/x11/touch_factory_x11.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
@@ -26,10 +25,6 @@
 namespace ui {
 
 namespace {
-
-int XkbGroupForCoreState(int state) {
-  return (state >> 13) & 0x3;
-}
 
 // In X11 touch events, a new tracking_id/slot mapping is set up for each new
 // event (see |ui::GetTouchIdFromXEvent| function), which needs to be cleared
@@ -62,30 +57,44 @@ Event::Properties GetEventPropertiesFromXEvent(EventType type,
   using Values = std::vector<uint8_t>;
   Event::Properties properties;
   if (type == EventType::kKeyPressed || type == EventType::kKeyReleased) {
-    auto* key = x11_event.As<x11::KeyEvent>();
+    if (auto* key = x11_event.As<x11::KeyEvent>()) {
+      // Keyboard group
+      auto state = static_cast<uint32_t>(key->state);
+      properties.emplace(kPropertyKeyboardState,
+                         Values{
+                             static_cast<uint8_t>(state),
+                             static_cast<uint8_t>(state >> 8),
+                             static_cast<uint8_t>(state >> 16),
+                             static_cast<uint8_t>(state >> 24),
+                         });
 
-    // Keyboard group
-    auto state = static_cast<uint32_t>(key->state);
-    properties.emplace(kPropertyKeyboardState,
-                       Values{
-                           static_cast<uint8_t>(state),
-                           static_cast<uint8_t>(state >> 8),
-                           static_cast<uint8_t>(state >> 16),
-                           static_cast<uint8_t>(state >> 24),
-                       });
+      uint8_t group = XkbGroupForCoreState(state);
+      properties.emplace(kPropertyKeyboardGroup, Values{group});
 
-    uint8_t group = XkbGroupForCoreState(state);
-    properties.emplace(kPropertyKeyboardGroup, Values{group});
+      // Hardware keycode
+      uint8_t hw_keycode = static_cast<uint8_t>(key->detail);
+      properties.emplace(kPropertyKeyboardHwKeyCode, Values{hw_keycode});
 
-    // Hardware keycode
-    uint8_t hw_keycode = static_cast<uint8_t>(key->detail);
-    properties.emplace(kPropertyKeyboardHwKeyCode, Values{hw_keycode});
-
-    // IBus-/fctix-GTK specific flags
-    uint8_t ime_flags = (state >> kPropertyKeyboardImeFlagOffset) &
-                        kPropertyKeyboardImeFlagMask;
-    if (ime_flags) {
-      SetKeyboardImeFlagProperty(&properties, ime_flags);
+      // IBus-/fctix-GTK specific flags
+      uint8_t ime_flags = (state >> kPropertyKeyboardImeFlagOffset) &
+                          kPropertyKeyboardImeFlagMask;
+      if (ime_flags) {
+        SetKeyboardImeFlagProperty(&properties, ime_flags);
+      }
+    } else if (auto* xievent = x11_event.As<x11::Input::DeviceEvent>()) {
+      // Handle case where XI2 is enabled for KeyPress and KeyRelease events.
+      auto state = XkbStateFromXI2Event(*xievent);
+      properties.emplace(kPropertyKeyboardState,
+                         Values{
+                             static_cast<uint8_t>(state),
+                             static_cast<uint8_t>(state >> 8),
+                             static_cast<uint8_t>(state >> 16),
+                             static_cast<uint8_t>(state >> 24),
+                         });
+      properties.emplace(kPropertyKeyboardGroup,
+                         Values{xievent->group.effective});
+      properties.emplace(kPropertyKeyboardHwKeyCode,
+                         Values{static_cast<uint8_t>(xievent->detail)});
     }
   } else if (type == EventType::kMouseExited) {
     // NotifyVirtual events are created for intermediate windows that the
@@ -111,7 +120,7 @@ std::unique_ptr<KeyEvent> CreateKeyEvent(EventType event_type,
   // in KeyEvent::ApplyLayout() which makes it possible for CrOS/Linux, for
   // example, to support host system keyboard layouts.
   std::unique_ptr<KeyEvent> event =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       std::make_unique<KeyEvent>(event_type, key_code, event_flags,
                                  EventTimeFromXEvent(x11_event));
 #else
@@ -134,12 +143,21 @@ void SetEventSourceDeviceId(MouseEvent* event, const x11::Event& xev) {
 
 std::unique_ptr<MouseEvent> CreateMouseEvent(EventType type,
                                              const x11::Event& x11_event) {
-  // Ignore EventNotify and LeaveNotify events from children of |xwindow_|.
-  // NativeViewGLSurfaceGLX adds a child to |xwindow_|.
-  // https://crbug.com/792322
-  auto* crossing = x11_event.As<x11::CrossingEvent>();
-  if (crossing && crossing->detail == x11::NotifyDetail::Inferior)
-    return nullptr;
+  if (auto* crossing = x11_event.As<x11::CrossingEvent>()) {
+    // Ignore EventNotify and LeaveNotify events from children of the window.
+    if (crossing->detail == x11::NotifyDetail::Inferior) {
+      return nullptr;
+    }
+    // Ignore LeaveNotify grab events with a detail of Ancestor.  Some WMs
+    // will grab the container window during a click.  Don't generate a
+    // kMouseExited event in this case.
+    // https://crbug.com/41314367
+    if (crossing->detail == x11::NotifyDetail::Ancestor &&
+        crossing->mode == x11::NotifyMode::Grab &&
+        crossing->opcode == x11::CrossingEvent::LeaveNotify) {
+      return nullptr;
+    }
+  }
 
   PointerDetails details = GetStylusPointerDetailsFromXEvent(x11_event);
   auto event = std::make_unique<MouseEvent>(
@@ -272,7 +290,7 @@ std::unique_ptr<Event> TranslateFromXEvent(const x11::Event& xev) {
         // buttons.
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
   if (xev.As<x11::Input::DeviceEvent>())

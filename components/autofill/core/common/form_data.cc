@@ -5,17 +5,24 @@
 #include "components/autofill/core/common/form_data.h"
 
 #include <stddef.h>
+
 #include <string_view>
 #include <tuple>
 
 #include "base/base64.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/pickle.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
+#include "components/autofill/core/common/logging/stream_operator_util.h"
 
 namespace autofill {
 
@@ -95,43 +102,80 @@ FormData& FormData::operator=(FormData&&) = default;
 
 FormData::~FormData() = default;
 
-bool FormData::SameFormAs(const FormData& form) const {
-  if (name() != form.name() || id_attribute() != form.id_attribute() ||
-      name_attribute() != form.name_attribute() || url() != form.url() ||
-      action() != form.action() ||
-      likely_contains_captcha() != form.likely_contains_captcha() ||
-      renderer_id().is_null() != form.renderer_id().is_null() ||
-      fields_.size() != form.fields_.size()) {
-    return false;
-  }
-  for (size_t i = 0; i < fields_.size(); ++i) {
-    if (!fields_[i].SameFieldAs(form.fields_[i])) {
+// static
+bool FormData::IdenticalAndEquivalentDomElements(
+    const FormData& a,
+    const FormData& b,
+    DenseSet<FormFieldData::Exclusion> exclusions) {
+  if (!base::FeatureList::IsEnabled(features::kAutofillFixFormEquality)) {
+    // We compare all unique identifiers first, including the field renderer
+    // IDs, because we expect most inequalities to be due to them.
+    if (a.global_id() != b.global_id() ||
+        a.child_frames() != b.child_frames() ||
+        !std::ranges::equal(a.fields(), b.fields(), {},
+                            &FormFieldData::global_id,
+                            &FormFieldData::global_id)) {
       return false;
     }
+
+    if (a.name() != b.name() || a.id_attribute() != b.id_attribute() ||
+        a.name_attribute() != b.name_attribute() || a.url() != b.url() ||
+        a.action() != b.action() ||
+        a.likely_contains_captcha() != b.likely_contains_captcha() ||
+        !std::ranges::equal(
+            a.fields_, b.fields_,
+            [&](const FormFieldData& f, const FormFieldData& g) {
+              return FormFieldData::IdenticalAndEquivalentDomElements(
+                  f, g, exclusions);
+            })) {
+      return false;
+    }
+    return true;
   }
-  return true;
+
+  // LINT.IfChange(IdenticalAndEquivalentDomElements)
+  // clang-format off
+  return  // As optimization, compare the form and field IDs first.
+      a.host_frame_ == b.host_frame_ &&
+      a.renderer_id_ == b.renderer_id_ &&
+      std::ranges::equal(a.fields_, b.fields_, {}, &FormFieldData::global_id,
+                         &FormFieldData::global_id) &&
+      // Now compare the other members.
+      a.child_frames_ == b.child_frames_ &&
+      a.id_attribute_ == b.id_attribute_ &&
+      a.name_attribute_ == b.name_attribute_ &&
+      a.name_ == b.name_ &&
+      a.button_titles_ == b.button_titles_ &&
+      a.url_ == b.url_ &&
+      a.full_url_ == b.full_url_ &&
+      a.action_ == b.action_ &&
+      a.is_action_empty_ == b.is_action_empty_ &&
+      // main_frame_origin_ is not compared because by it is initialized to an
+      // opaque origin (a random number).
+      a.submission_event_ == b.submission_event_ &&
+      a.username_predictions_ == b.username_predictions_ &&
+      a.is_gaia_with_skip_save_password_form_ ==
+          b.is_gaia_with_skip_save_password_form_ &&
+      a.likely_contains_captcha_ == b.likely_contains_captcha_ &&
+      // version_ is not compared because it does not depend on the DOM.
+      std::ranges::equal(a.fields_, b.fields_,
+                         [&](const FormFieldData& f, const FormFieldData& g) {
+                           return FormFieldData::
+                               IdenticalAndEquivalentDomElements(
+                                   f, g, exclusions);
+                         });
+  // clang-format on
+  // LINT.ThenChange(form_data.h:FormDataMembers)
 }
 
-// static
-bool FormData::DeepEqual(const FormData& a, const FormData& b) {
-  // We compare all unique identifiers first, including the field renderer IDs,
-  // because we expect most inequalities to be due to them.
-  if (a.renderer_id() != b.renderer_id() ||
-      a.child_frames() != b.child_frames() ||
-      !base::ranges::equal(a.fields(), b.fields(), {},
-                           &FormFieldData::renderer_id,
-                           &FormFieldData::renderer_id)) {
-    return false;
-  }
+const FormFieldData* FormData::FindFieldByGlobalId(
+    const FieldGlobalId& global_id) const {
+  auto fields_it =
+      std::ranges::find(fields(), global_id, &FormFieldData::global_id);
 
-  if (a.name() != b.name() || a.id_attribute() != b.id_attribute() ||
-      a.name_attribute() != b.name_attribute() || a.url() != b.url() ||
-      a.action() != b.action() ||
-      a.likely_contains_captcha() != b.likely_contains_captcha() ||
-      !base::ranges::equal(a.fields(), b.fields(), &FormFieldData::DeepEqual)) {
-    return false;
-  }
-  return true;
+  // If the field is found, return a pointer to the field, otherwise return
+  // nullptr.
+  return fields_it != fields().end() ? &*fields_it : nullptr;
 }
 
 bool FormHasNonEmptyPasswordField(const FormData& form) {
@@ -146,33 +190,45 @@ bool FormHasNonEmptyPasswordField(const FormData& form) {
 }
 
 std::ostream& operator<<(std::ostream& os, const FormData& form) {
-  os << base::UTF16ToUTF8(form.name()) << " " << form.url() << " "
-     << form.action() << " " << form.main_frame_origin() << " " << "Fields:";
-  for (const FormFieldData& field : form.fields()) {
-    os << field << ",";
+  return internal::PrintWithIndentation(os, form, /*indentation=*/0);
+}
+
+namespace internal {
+
+std::ostream& PrintWithIndentation(std::ostream& os,
+                                   const FormData& form,
+                                   int indentation,
+                                   std::string_view title) {
+  std::string space = std::string(indentation, ' ');
+  os << space << "{";
+  if (!title.empty()) {
+    os << " /*" << title << "*/";
   }
+  os << '\n';
+#define PRINT_PROPERTY(property)                                            \
+  os << space << "  " << #property << ": " << PrintWrapper(form.property()) \
+     << ",\n"
+  PRINT_PROPERTY(global_id);
+  PRINT_PROPERTY(name);
+  PRINT_PROPERTY(url);
+  PRINT_PROPERTY(main_frame_origin);
+#undef PRINT_PROPERTY
+  os << space << "  fields: [ /*length " << form.fields().size() << "*/\n";
+  for (size_t i = 0; i < form.fields().size(); ++i) {
+    internal::PrintWithIndentation(
+        os, form.fields()[i], /*indentation=*/indentation + 4,
+        base::StrCat({"FormFieldData index ", base::NumberToString(i)}));
+    if (i < form.fields().size()) {
+      os << ",";
+    }
+    os << '\n';
+  }
+  os << space << "  ]\n";
+  os << space << "}";
   return os;
 }
 
-const FormFieldData* FormData::FindFieldByGlobalId(
-    const FieldGlobalId& global_id) const {
-  auto fields_it =
-      base::ranges::find(fields(), global_id, &FormFieldData::global_id);
-
-  // If the field is found, return a pointer to the field, otherwise return
-  // nullptr.
-  return fields_it != fields().end() ? &*fields_it : nullptr;
-}
-
-FormFieldData* FormData::FindFieldByNameForTest(
-    std::u16string_view name_or_id) {
-  auto fields_it =
-      base::ranges::find(fields_, name_or_id, &FormFieldData::name);
-
-  // If the field is found, return a pointer to the field, otherwise return
-  // nullptr.
-  return fields_it != fields_.end() ? &*fields_it : nullptr;
-}
+}  // namespace internal
 
 void SerializeFormData(const FormData& form_data, base::Pickle* pickle) {
   pickle->WriteInt(kFormDataPickleVersion);

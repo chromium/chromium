@@ -8,6 +8,16 @@ import "media/mojo/mojom/speech_recognition_audio_forwarder.mojom";
 import "media/mojo/mojom/speech_recognition_error.mojom";
 import "media/mojo/mojom/speech_recognition_grammar.mojom";
 import "media/mojo/mojom/speech_recognition_result.mojom";
+import "media/mojo/mojom/speech_recognition_recognition_context.mojom";
+
+// Next MinVersion: 2
+
+enum AvailabilityStatus {
+  kUnavailable,
+  kDownloadable,
+  kDownloading,
+  kAvailable,
+};
 
 // Created by the renderer and sent to the browser to start a speech recognition
 // session.
@@ -25,6 +35,9 @@ struct StartSpeechRecognitionRequestParams {
 
   // Speech grammars to use.
   array<SpeechRecognitionGrammar> grammars;
+
+  // The optional recognition context for speech recognition biasing.
+  SpeechRecognitionRecognitionContext? recognition_context;
 
   // Maximum number of hypotheses allowed for each results.
   uint32 max_hypotheses;
@@ -59,10 +72,22 @@ struct StartSpeechRecognitionRequestParams {
 interface SpeechRecognizer {
   // Requests the speech recognition service to start speech recognition.
   Start(StartSpeechRecognitionRequestParams params);
+};
 
-  // Returns whether on-device speech recognition is available for a given
-  // language.
-  OnDeviceWebSpeechAvailable(string language) => (bool available);
+// API for the renderer process to manage on-device speech recognition in the
+// browser process. The remote lives in the renderer process and the receiver
+// lives in
+// the browser process.
+interface OnDeviceSpeechRecognition {
+  // Returns the availability status for whether on-device speech recognition
+  // is available for an array of languages. Takes in BCP 47 language tags (e.g.
+  // "en-US").
+  Available(array<string> languages) => (AvailabilityStatus status);
+
+  // Returns whether on-device speech recognition installation was successfully
+  // completed for an array of languages. Takes in BCP 47 language tags (e.g.
+  // "en-US").
+  Install(array<string> languages) => (bool success);
 };
 
 // API for the renderer process to stop or abort an existing speech recognition
@@ -70,7 +95,6 @@ interface SpeechRecognizer {
 // SpeechRecognizer::Start, and is bound to an implementation there.
 // SpeechRecognitionSession and SpeechRecognitionSessionClient are 1:1 with each
 // other and with WebSpeechRecognitionHandle.
-[Stable]
 interface SpeechRecognitionSession {
   // Requests the speech recognition service to abort speech recognition for the
   // associated session.
@@ -79,6 +103,11 @@ interface SpeechRecognitionSession {
   // Requests the speech recognition service to stop audio capture for the
   // associated session.
   StopCapture@1();
+
+  // Requests the speech recognition service to update the recognition context.
+  [MinVersion=1]
+  UpdateRecognitionContext@2(
+      SpeechRecognitionRecognitionContext recognition_context);
 };
 
 // API for the browser process to communicate speech recognition related updates
@@ -87,7 +116,6 @@ interface SpeechRecognitionSession {
 // process via SpeechRecognizer::Start. SpeechRecognitionSession and
 // SpeechRecognitionSessionClient are 1:1 with each other and with
 // WebSpeechRecognitionHandle.
-[Stable]
 interface SpeechRecognitionSessionClient {
   // Called to dispatch the "result" event.
   ResultRetrieved@0(array<WebSpeechRecognitionResult> results);

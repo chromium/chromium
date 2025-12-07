@@ -8,12 +8,13 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_proto_loader.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/token.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "content/browser/tracing/background_tracing_config_impl.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/tracing_delegate.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/network_change_notifier.h"
@@ -91,34 +92,19 @@ class BackgroundTracingManagerTest : public testing::Test {
  public:
   BackgroundTracingManagerTest() {
     background_tracing_manager_ =
-        content::BackgroundTracingManager::CreateInstance();
+        std::make_unique<BackgroundTracingManagerImpl>(&tracing_delegate_);
   }
 
  protected:
   BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<content::BackgroundTracingManager>
+  content::TracingDelegate tracing_delegate_;
+  std::unique_ptr<content::BackgroundTracingManagerImpl>
       background_tracing_manager_;
 };
 
 TEST_F(BackgroundTracingManagerTest, HasTraceToUpload) {
-  std::unique_ptr<BackgroundTracingConfig> config(
-      BackgroundTracingConfigImpl::FromDict(
-          base::Value::Dict()
-              .Set("mode", "REACTIVE_TRACING_MODE")
-              .Set("category", "BENCHMARK_STARTUP")
-              .Set("configs",
-                   base::Value::List().Append(
-                       base::Value::Dict()
-                           .Set("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED")
-                           .Set("trigger_name", "reactive_test")))
-              .Set("upload_limit_kb", 2)
-              .Set("upload_limit_network_kb", 1)));
-  EXPECT_TRUE(config);
-
-  EXPECT_TRUE(background_tracing_manager_->SetActiveScenario(
-      std::move(config), BackgroundTracingManager::ANONYMIZE_DATA));
-
+  background_tracing_manager_->SetUploadLimitsForTesting(2, 1);
   {
     std::string trace_content(1500, 'a');
 
@@ -151,11 +137,13 @@ TEST_F(BackgroundTracingManagerTest, GetTraceToUpload) {
 
   std::string compressed_trace;
   base::RunLoop run_loop;
-  background_tracing_manager_->GetTraceToUpload(base::BindLambdaForTesting(
-      [&](std::optional<std::string> trace_content,
-          std::optional<std::string> system_profile) {
+  background_tracing_manager_->GetTraceToUpload(
+      base::BindLambdaForTesting([&](std::optional<std::string> trace_content,
+                                     std::optional<std::string> system_profile,
+                                     base::OnceClosure upload_complete) {
         ASSERT_TRUE(trace_content);
         compressed_trace = std::move(*trace_content);
+        std::move(upload_complete).Run();
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -176,7 +164,7 @@ TEST_F(BackgroundTracingManagerTest, SavedCountPreventsStart) {
         manual_trigger_name: "start_trigger"
       }
       trace_config: {
-        data_sources: { config: { name: "org.chromium.trace_metadata" } }
+        data_sources: { config: { name: "org.chromium.trace_metadata2" } }
       }
     }
   )pb";
@@ -194,14 +182,12 @@ TEST_F(BackgroundTracingManagerTest, SavedCountPreventsStart) {
 
   background_tracing_manager_->InitializeFieldScenarios(
       ParseFieldTracingConfigFromText(kScenarioConfig),
-      BackgroundTracingManager::NO_DATA_FILTERING);
+      BackgroundTracingManager::NO_DATA_FILTERING, false, 0);
 
   EXPECT_FALSE(base::trace_event::EmitNamedTrigger("start_trigger"));
 }
 
 TEST_F(BackgroundTracingManagerTest, SavedCountAfterClean) {
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(kBackgroundTracingDatabase);
   {
     TestBackgroundTracingHelper background_tracing_helper;
     background_tracing_manager_->SaveTraceForTesting(
@@ -220,8 +206,6 @@ TEST_F(BackgroundTracingManagerTest, SavedCountAfterClean) {
 }
 
 TEST_F(BackgroundTracingManagerTest, SavedCountAfterDelete) {
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(kBackgroundTracingDatabase);
   {
     TestBackgroundTracingHelper background_tracing_helper;
     background_tracing_manager_->SaveTraceForTesting(
@@ -251,8 +235,12 @@ TEST_F(BackgroundTracingManagerTest, UploadScenarioQuotaExceeded) {
 
   base::RunLoop run_loop;
   background_tracing_manager_->GetTraceToUpload(
-      base::IgnoreArgs<std::optional<std::string>, std::optional<std::string>>(
-          run_loop.QuitClosure()));
+      base::BindLambdaForTesting([&](std::optional<std::string> trace_content,
+                                     std::optional<std::string> system_profile,
+                                     base::OnceClosure upload_complete) {
+        std::move(upload_complete).Run();
+        run_loop.Quit();
+      }));
   run_loop.Run();
 
   {
@@ -275,8 +263,8 @@ TEST_F(BackgroundTracingManagerTest, UploadScenarioQuotaReset) {
 
   base::RunLoop run_loop;
   background_tracing_manager_->GetTraceToUpload(
-      base::IgnoreArgs<std::optional<std::string>, std::optional<std::string>>(
-          run_loop.QuitClosure()));
+      base::IgnoreArgs<std::optional<std::string>, std::optional<std::string>,
+                       base::OnceClosure>(run_loop.QuitClosure()));
   run_loop.Run();
 
   task_environment_.FastForwardBy(base::Days(8));
@@ -291,9 +279,6 @@ TEST_F(BackgroundTracingManagerTest, UploadScenarioQuotaReset) {
 }
 
 TEST(BackgroundTracingManagerPersistentTest, DeleteTracesInDateRange) {
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(kBackgroundTracingDatabase);
-
   BrowserTaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
@@ -306,9 +291,11 @@ TEST(BackgroundTracingManagerPersistentTest, DeleteTracesInDateRange) {
   content::SetBrowserClientForTesting(&browser_client);
 
   {
+    content::TracingDelegate tracing_delegate;
     std::unique_ptr<content::BackgroundTracingManager>
         background_tracing_manager =
-            content::BackgroundTracingManager::CreateInstance();
+            content::BackgroundTracingManager::CreateInstance(
+                &tracing_delegate);
     BackgroundTracingManagerImpl::GetInstance().InitializeTraceReportDatabase();
 
     TestBackgroundTracingHelper background_tracing_helper;
@@ -323,9 +310,11 @@ TEST(BackgroundTracingManagerPersistentTest, DeleteTracesInDateRange) {
   task_environment.RunUntilIdle();
 
   {
+    content::TracingDelegate tracing_delegate;
     std::unique_ptr<content::BackgroundTracingManager>
         background_tracing_manager =
-            content::BackgroundTracingManager::CreateInstance();
+            content::BackgroundTracingManager::CreateInstance(
+                &tracing_delegate);
     BackgroundTracingManagerImpl::GetInstance().InitializeTraceReportDatabase();
     task_environment.RunUntilIdle();
     EXPECT_EQ(1U,
@@ -336,9 +325,11 @@ TEST(BackgroundTracingManagerPersistentTest, DeleteTracesInDateRange) {
   task_environment.RunUntilIdle();
 
   {
+    content::TracingDelegate tracing_delegate;
     std::unique_ptr<content::BackgroundTracingManager>
         background_tracing_manager =
-            content::BackgroundTracingManager::CreateInstance();
+            content::BackgroundTracingManager::CreateInstance(
+                &tracing_delegate);
     BackgroundTracingManagerImpl::GetInstance().InitializeTraceReportDatabase();
 
     auto now = base::Time::Now();

@@ -12,8 +12,8 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/login_client_cert_usage_observer.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/ash/login/ui/signin_ui.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
+#include "chrome/browser/ui/ash/login/signin_ui.h"
 #include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
 #include "chromeos/ash/components/login/auth/public/saml_password_attributes.h"
 #include "components/account_id/account_id.h"
@@ -21,6 +21,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_ui.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -41,7 +42,7 @@ struct GaiaContext {
   std::string email;
 
   // GAIA ID of the current user.
-  std::string gaia_id;
+  GaiaId gaia_id;
 
   // GAPS cookie.
   std::string gaps_cookie;
@@ -73,7 +74,7 @@ struct OnlineSigninArtifacts {
   OnlineSigninArtifacts(OnlineSigninArtifacts&& original);
   ~OnlineSigninArtifacts();
 
-  std::string gaia_id;
+  GaiaId gaia_id;
   std::string email;
   bool using_saml;
 
@@ -94,9 +95,6 @@ using OnSetCookieForLoadGaiaWithPartition =
 
 using ChallengeResponseKeyOrError =
     base::expected<ChallengeResponseKey, SigninError>;
-
-// Return whether the InSession Password Change feature is enabled.
-bool ExtractSamlPasswordAttributesEnabled();
 
 // Return Signin Session callback
 base::OnceClosure GetStartSigninSession(::content::WebUI* web_ui,
@@ -138,7 +136,7 @@ std::unique_ptr<UserContext> BuildUserContextForGaiaSignIn(
 // Returns user canonical e-mail. Finds already used account alias, if
 // user has already signed in.
 AccountId GetAccountId(const std::string& authenticated_email,
-                       const std::string& gaia_id,
+                       const std::string& id,
                        const AccountType& account_type);
 
 // Common utility for checking whether family link is allowed.

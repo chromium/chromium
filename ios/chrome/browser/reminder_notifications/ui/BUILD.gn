@@ -1,0 +1,50 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "constants.h",
+    "constants.mm",
+    "reminder_notifications_date_picker_interaction_handler.h",
+    "reminder_notifications_date_picker_table_view.h",
+    "reminder_notifications_date_picker_table_view.mm",
+    "reminder_notifications_date_picker_table_view_cell.h",
+    "reminder_notifications_date_picker_table_view_cell.mm",
+    "reminder_notifications_view_controller.h",
+    "reminder_notifications_view_controller.mm",
+  ]
+  public_deps = [
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/common/ui/confirmation_alert",
+  ]
+  deps = [
+    "//base",
+    "//components/send_tab_to_self",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/button_stack",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "reminder_notifications_view_controller_unittest.mm" ]
+  deps = [
+    ":ui",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/common/ui/button_stack",
+    "//ios/chrome/common/ui/button_stack:constants",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/confirmation_alert:constants",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

@@ -9,6 +9,7 @@
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/ports/SkFontMgr_fuchsia.h"
+#include "third_party/skia/include/ports/SkFontScanner_Fontations.h"
 
 namespace skia {
 
@@ -16,8 +17,8 @@ namespace skia {
 class FuchsiaFontManagerTest : public testing::Test {
  public:
   FuchsiaFontManagerTest()
-      : font_manager_(
-            SkFontMgr_New_Fuchsia(GetTestFontsProvider().BindSync())) {}
+      : font_manager_(SkFontMgr_New_Fuchsia(GetTestFontsProvider().BindSync(),
+                                            SkFontScanner_Make_Fontations())) {}
 
  protected:
   sk_sp<SkFontMgr> font_manager_;

@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/file_manager/open_with_browser.h"
 
 #include <stddef.h>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -22,14 +19,13 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
 #include "chrome/browser/ash/fileapi/external_file_url_util.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/hats_office_trigger.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -42,6 +38,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/browser/api/file_handlers/mime_util.h"
 #include "net/base/filename_util.h"
 #include "pdf/buildflags.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -49,6 +46,7 @@
 using content::BrowserThread;
 
 namespace file_manager::util {
+
 namespace {
 
 // List of file extensions viewable in the browser.
@@ -69,7 +67,8 @@ constexpr const base::FilePath::CharType* kFileExtensionsViewableInBrowser[] = {
 // Returns true if |file_path| is viewable in the browser (ex. HTML file).
 bool IsViewableInBrowser(const base::FilePath& file_path) {
   for (size_t i = 0; i < std::size(kFileExtensionsViewableInBrowser); i++) {
-    if (file_path.MatchesExtension(kFileExtensionsViewableInBrowser[i])) {
+    if (file_path.MatchesExtension(
+            UNSAFE_TODO(kFileExtensionsViewableInBrowser[i]))) {
       return true;
     }
   }
@@ -79,10 +78,10 @@ bool IsViewableInBrowser(const base::FilePath& file_path) {
 bool OpenNewTab(const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!ash::NewWindowDelegate::GetPrimary()) {
+  if (!ash::NewWindowDelegate::GetInstance()) {
     return false;
   }
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
   return true;
@@ -97,13 +96,13 @@ std::optional<std::string> GetAppIdFromFilePath(
   const std::string& file_extension = file_path.FinalExtension();
   if (file_extension == ".gdoc" ||
       file_tasks::WordGroupExtensions().contains(file_extension)) {
-    return web_app::kGoogleDocsAppId;
+    return ash::kGoogleDocsAppId;
   } else if (file_extension == ".gsheet" ||
              file_tasks::ExcelGroupExtensions().contains(file_extension)) {
-    return web_app::kGoogleSheetsAppId;
+    return ash::kGoogleSheetsAppId;
   } else if (file_extension == ".gslides" ||
              file_tasks::PowerPointGroupExtensions().contains(file_extension)) {
-    return web_app::kGoogleSlidesAppId;
+    return ash::kGoogleSlidesAppId;
   }
   return std::nullopt;
 }
@@ -233,24 +232,13 @@ bool OpenFileWithAppOrBrowser(Profile* profile,
         integration_service->GetRelativeDrivePath(file_path, &path)) {
       integration_service->GetDriveFsInterface()->GetMetadata(
           path, base::BindOnce(&OpenEncryptedDriveFsFile, file_path));
+      std::move(callback).Run({apps::LaunchResult::State::kSuccess});
       return true;
     }
-    LOG(WARNING) << "Failed to open file: " << file_path.value()
+    LOG(WARNING) << "Failed to open file (extension): " << file_path.Extension()
                  << ": no connection to integration service";
+    std::move(callback).Run({apps::LaunchResult::State::kFailed});
     return false;
-  }
-
-  // For things supported natively by the browser, we should open it in a tab.
-  if (IsViewableInBrowser(file_path) || action_id == "view-pdf" ||
-      (action_id == "view-in-browser" && file_path.Extension() == "")) {
-    // Use external file URL if it is provided for the file system.
-    GURL page_url = ash::FileSystemURLToExternalFileURL(file_system_url);
-    if (page_url.is_empty()) {
-      page_url = net::FilePathToFileURL(file_path);
-    }
-
-    OpenNewTab(page_url);
-    return true;
   }
 
   if (drive::util::HasHostedDocumentExtension(file_path)) {
@@ -279,9 +267,51 @@ bool OpenFileWithAppOrBrowser(Profile* profile,
     return true;
   }
 
-  // Failed to open the file of unknown type.
-  LOG(WARNING) << "Unknown file type: " << file_path.value();
-  return false;
+  // For things supported natively by the browser, we should open it in a tab.
+  if (!(action_id == "view-pdf" || action_id == "view-in-browser")) {
+    // Failed to open the file of unknown type.
+    LOG(WARNING) << "Unknown file type (extension): " << file_path.Extension()
+                 << " action: " << action_id;
+    std::move(callback).Run({apps::LaunchResult::State::kFailed});
+    return false;
+  }
+
+  // Check the MIME type to confirm that the file is a text file.
+  auto* mime_type_collector =
+      new extensions::app_file_handler_util::MimeTypeCollector(profile);
+
+  auto process_mime = base::BindOnce(
+      [](LaunchAppCallback callback, base::FilePath file_path,
+         FileSystemURL file_system_url, std::string action_id,
+         extensions::app_file_handler_util::MimeTypeCollector* mime_collector,
+         std::unique_ptr<std::vector<std::string>> mimes) {
+        std::string text_mime = "text/";
+        std::string mime = mimes->size() > 0 ? (*mimes)[0] : "";
+        bool is_text = mimes->size() > 0 && mime.starts_with(text_mime);
+
+        if (is_text || IsViewableInBrowser(file_path) ||
+            action_id == "view-pdf" ||
+            (action_id == "view-in-browser" && file_path.Extension() == "")) {
+          // Use external file URL if it is provided for the file system.
+          GURL page_url = ash::FileSystemURLToExternalFileURL(file_system_url);
+          if (page_url.is_empty()) {
+            page_url = net::FilePathToFileURL(file_path);
+          }
+          OpenNewTab(page_url);
+          std::move(callback).Run({apps::LaunchResult::State::kSuccess});
+          return;
+        }
+        LOG(WARNING) << "Not viewable in browser: MIME: " << mime
+                     << " action: " << action_id;
+        std::move(callback).Run({apps::LaunchResult::State::kFailed});
+      },
+      std::move(callback), file_path, file_system_url, action_id,
+      base::Owned(mime_type_collector));
+
+  mime_type_collector->CollectForLocalPaths({file_path},
+                                            std::move(process_mime));
+
+  return true;
 }
 
 }  // namespace file_manager::util

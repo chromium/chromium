@@ -28,11 +28,9 @@ class SimpleURLLoaderTestHelper {
 
   ~SimpleURLLoaderTestHelper();
 
-  // Returns a BodyAsStringCallbackDeprecated for use with a SimpleURLLoader.
+  // Returns a BodyAsStringCallback for use with a SimpleURLLoader.
   // May be called only once.
   network::SimpleURLLoader::BodyAsStringCallback GetCallback();
-  network::SimpleURLLoader::BodyAsStringCallbackDeprecated
-  GetCallbackDeprecated();
 
   // Waits until the callback returned by GetCallback() is invoked.
   void WaitForCallback();
@@ -47,7 +45,6 @@ class SimpleURLLoaderTestHelper {
   // Called back GetCallback().  Stores the response body and quits the message
   // loop.
   void OnCompleteCallback(std::optional<std::string> response_body);
-  void OnCompleteCallbackDeprecated(std::unique_ptr<std::string> response_body);
 
   // Used to ensure GetCallback() is called only once.
   bool callback_created_ = false;

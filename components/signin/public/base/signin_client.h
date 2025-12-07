@@ -8,35 +8,33 @@
 #include <memory>
 #include <optional>
 
-#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/scoped_observation_traits.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/oauth_consumer.h"
+#include "components/signin/public/base/oauth_consumer_id.h"
+#include "components/signin/public/base/oauth_consumer_registry.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
-#include "google_apis/gaia/core_account_id.h"
-#include "google_apis/gaia/gaia_auth_fetcher.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
-#include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "components/account_manager_core/account.h"
-#endif
-
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 namespace signin {
 class BoundSessionOAuthMultiLoginDelegate;
+class PrimaryAccountChangeEvent;
 }
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
+class GaiaAuthConsumer;
+class GaiaAuthFetcher;
 class PrefService;
 
 namespace content_settings {
 class Observer;
+}
+
+namespace gaia {
+class GaiaSource;
 }
 
 namespace network {
@@ -44,16 +42,13 @@ class SharedURLLoaderFactory;
 
 namespace mojom {
 class CookieManager;
+class DeviceBoundSessionManager;
 class NetworkContext;
-}
+}  // namespace mojom
 }  // namespace network
 
 namespace version_info {
 enum class Channel;
-}
-
-namespace signin {
-class PrimaryAccountChangeEvent;
 }
 
 // An interface that needs to be supplied to the Signin component by its
@@ -87,12 +82,19 @@ class SigninClient : public KeyedService {
   // Returns the CookieManager for the client.
   virtual network::mojom::CookieManager* GetCookieManager() = 0;
 
+  // Returns the DeviceBoundSessionManager for the client.
+  //
+  // TODO(crbug.com/463979316): Make it pure virtual to make sure all embedders
+  // explicitly provide an implementation.
+  virtual network::mojom::DeviceBoundSessionManager*
+  GetDeviceBoundSessionManager() const;
+
   // Returns the NetworkContext for the client.
   virtual network::mojom::NetworkContext* GetNetworkContext() = 0;
 
   // Returns true if clearing the primary account is allowed regardless of the
   // consent level.
-  virtual bool IsClearPrimaryAccountAllowed(bool has_sync_account) const;
+  virtual bool IsClearPrimaryAccountAllowed() const;
   virtual bool IsRevokeSyncConsentAllowed() const;
 
   bool is_clear_primary_account_allowed_for_testing() const;
@@ -107,8 +109,7 @@ class SigninClient : public KeyedService {
   // Sign-out is always allowed by default.
   virtual void PreSignOut(
       base::OnceCallback<void(SignoutDecision)> on_signout_decision_reached,
-      signin_metrics::ProfileSignout signout_source_metric,
-      bool has_sync_account);
+      signin_metrics::ProfileSignout signout_source_metric);
 
   // Returns true if GAIA cookies are allowed in the content area.
   virtual bool AreSigninCookiesAllowed() = 0;
@@ -135,23 +136,6 @@ class SigninClient : public KeyedService {
       GaiaAuthConsumer* consumer,
       gaia::GaiaSource source) = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Returns an account used to sign into Chrome OS session if available.
-  virtual std::optional<account_manager::Account>
-  GetInitialPrimaryAccount() = 0;
-
-  // Returns whether account used to sign into Chrome OS is a child account.
-  // Returns nullopt for secondary / non-main profiles in LaCrOS.
-  virtual std::optional<bool> IsInitialPrimaryAccountChild() const = 0;
-
-  // Remove account.
-  virtual void RemoveAccount(
-      const account_manager::AccountKey& account_key) = 0;
-
-  // Removes all accounts.
-  virtual void RemoveAllAccounts() = 0;
-#endif
-
   // Returns the channel for the client installation.
   virtual version_info::Channel GetClientChannel() = 0;
 
@@ -161,10 +145,12 @@ class SigninClient : public KeyedService {
   virtual void OnPrimaryAccountChanged(
       signin::PrimaryAccountChangeEvent event_details) = 0;
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   virtual std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>
-  CreateBoundSessionOAuthMultiloginDelegate() const = 0;
-#endif
+  CreateBoundSessionOAuthMultiloginDelegate() const;
+
+  // Returns the OAuthConsumer associated with `oauth_consumer_id`.
+  virtual signin::OAuthConsumer GetOAuthConsumerFromId(
+      signin::OAuthConsumerId oauth_consumer_id) const = 0;
 
  protected:
   std::optional<SignoutDecision> is_clear_primary_account_allowed_for_testing_;

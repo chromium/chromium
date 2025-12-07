@@ -15,10 +15,12 @@
 #include <vulkan/vulkan.h>
 #include <wrl/client.h>
 
+#include <array>
+
+#include "base/compiler_specific.h"
 #include "base/file_version_info_win.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -26,6 +28,7 @@
 #include "base/path_service.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_com_initializer.h"
 #include "build/branding_buildflags.h"
@@ -73,8 +76,7 @@ inline D3D12FeatureLevel ConvertToHistogramFeatureLevel(
     case D3D_FEATURE_LEVEL_11_1:
       return D3D12FeatureLevel::kD3DFeatureLevel_11_1;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return D3D12FeatureLevel::kD3DFeatureLevelUnknown;
+      NOTREACHED();
   }
 }
 
@@ -118,8 +120,7 @@ D3D12ShaderModel ConvertToHistogramShaderVersion(uint32_t version) {
       return D3D12ShaderModel::kD3DShaderModel_6_7;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return D3D12ShaderModel::kUnknownOrNoD3D12Devices;
+      NOTREACHED();
   }
 }
 
@@ -163,7 +164,7 @@ bool GetActiveAdapterLuid(LUID* luid) {
 
 // This has to be called after a context is created, active GPU is identified,
 // and GPU driver bug workarounds are computed again. Otherwise the workaround
-// |disable_direct_composition| may not be correctly applied.
+// `disable_direct_composition_video_overlays` may not be correctly applied.
 // Also, this has to be called after falling back to SwiftShader decision is
 // finalized because this function depends on GL is ANGLE's GLES or not.
 void CollectHardwareOverlayInfo(OverlayInfo* overlay_info) {
@@ -219,56 +220,89 @@ void CollectNPUInformation(GPUInfo* gpu_info) {
   if (FAILED(hr)) {
     return;
   }
-  // First query for NPU devices that satisfy the generic machine learning
-  // property. Note this must be done as a separate query from core compute
-  // because `CreateAdapterList()` returns the logical intersection of all
-  // filter properties, not union.
-  const std::array<GUID, 1> dx_guids_generic_ml = {
-      DXCORE_ADAPTER_ATTRIBUTE_D3D12_GENERIC_ML};
-  Microsoft::WRL::ComPtr<IDXCoreAdapterList> adapter_list;
-  hr = dxcore_factory->CreateAdapterList(dx_guids_generic_ml.size(),
-                                         dx_guids_generic_ml.data(),
-                                         IID_PPV_ARGS(&adapter_list));
-  if (FAILED(hr)) {
-    return;
-  }
-  uint32_t adapter_count = adapter_list->GetAdapterCount();
 
-  // If no generic ML devices were found, then retry with the core compute
-  // filter, getting an adapter list that only contains core-compute capable
-  // devices.
-  if (adapter_count == 0) {
-    adapter_list.Reset();
+  // Query all three attribute types to find NPUs. Different NPUs may be
+  // exposed through different attributes, so we need to check all of them.
+  // Note that `CreateAdapterList()` returns the logical intersection of all
+  // filter properties, not union, so we must do separate queries.
+  //
+  // Attributes documentation link:
+  // https://learn.microsoft.com/en-us/windows/win32/dxcore/dxcore-adapter-attribute-guids
+  const auto npu_attributes = std::to_array<GUID>({
+      // Hardware type NPU attribute - runtime-agnostic, identifies NPUs with
+      // or without Direct3D user-mode drivers.
+      DXCORE_HARDWARE_TYPE_ATTRIBUTE_NPU,
+      // Generic machine learning devices.
+      DXCORE_ADAPTER_ATTRIBUTE_D3D12_GENERIC_ML,
+      // Core compute devices.
+      DXCORE_ADAPTER_ATTRIBUTE_D3D12_CORE_COMPUTE,
+  });
 
-    const std::array<GUID, 1> dx_guids_core_compute = {
-        DXCORE_ADAPTER_ATTRIBUTE_D3D12_CORE_COMPUTE};
-    hr = dxcore_factory->CreateAdapterList(dx_guids_core_compute.size(),
-                                           dx_guids_core_compute.data(),
+  std::array<Microsoft::WRL::ComPtr<IDXCoreAdapterList>,
+             std::size(npu_attributes)>
+      adapter_lists;
+  size_t adapter_list_count = 0;
+  for (const auto& attribute : npu_attributes) {
+    Microsoft::WRL::ComPtr<IDXCoreAdapterList> adapter_list;
+    hr = dxcore_factory->CreateAdapterList(1, &attribute,
                                            IID_PPV_ARGS(&adapter_list));
-    if (FAILED(hr)) {
-      return;
+    if (SUCCEEDED(hr)) {
+      adapter_lists[adapter_list_count++] = std::move(adapter_list);
     }
-    adapter_count = adapter_list->GetAdapterCount();
   }
-  for (uint32_t adapter_index = 0; adapter_index < adapter_count;
-       ++adapter_index) {
-    Microsoft::WRL::ComPtr<IDXCoreAdapter> dxcore_adapter;
-    hr = adapter_list->GetAdapter(adapter_index, IID_PPV_ARGS(&dxcore_adapter));
-    if (FAILED(hr)) {
-      return;
-    }
-    // Because GPUs usually also have the core-compute capability, then we need
-    // to filter out the GPUs with `DXCORE_ADAPTER_ATTRIBUTE_D3D12_GRAPHICS` or
-    // `DXCORE_ADAPTER_ATTRIBUTE_D3D11_GRAPHICS` attribute to
-    // get the NPUs.
-    bool is_hardware;
-    if (SUCCEEDED(dxcore_adapter->GetProperty(DXCoreAdapterProperty::IsHardware,
-                                              &is_hardware)) &&
-        is_hardware &&
-        !dxcore_adapter->IsAttributeSupported(
-            DXCORE_ADAPTER_ATTRIBUTE_D3D12_GRAPHICS) &&
-        !dxcore_adapter->IsAttributeSupported(
-            DXCORE_ADAPTER_ATTRIBUTE_D3D11_GRAPHICS)) {
+
+  // Track LUIDs to avoid duplicates across the different adapter lists.
+  std::set<uint64_t> seen_luids;
+
+  // Process all adapter lists and collect unique NPU devices.
+  for (size_t adapter_list_index = 0; adapter_list_index < adapter_list_count;
+       ++adapter_list_index) {
+    const auto& adapter_list = adapter_lists[adapter_list_index];
+    uint32_t adapter_count = adapter_list->GetAdapterCount();
+    for (uint32_t adapter_index = 0; adapter_index < adapter_count;
+         ++adapter_index) {
+      Microsoft::WRL::ComPtr<IDXCoreAdapter> dxcore_adapter;
+      hr = adapter_list->GetAdapter(adapter_index,
+                                    IID_PPV_ARGS(&dxcore_adapter));
+      if (FAILED(hr)) {
+        continue;
+      }
+
+      // Get the LUID first for deduplication.
+      LUID instance_luid;
+      if (FAILED(dxcore_adapter->GetProperty(
+              DXCoreAdapterProperty::InstanceLuid, &instance_luid))) {
+        continue;
+      }
+      uint64_t luid_value =
+          (static_cast<uint64_t>(instance_luid.HighPart) << 32) |
+          static_cast<uint64_t>(instance_luid.LowPart);
+
+      // Skip if we've already processed this adapter.
+      if (seen_luids.contains(luid_value)) {
+        continue;
+      }
+
+      // Filter out GPUs. Because GPUs usually also have the core-compute
+      // capability, we need to filter out devices with
+      // `DXCORE_ADAPTER_ATTRIBUTE_D3D12_GRAPHICS` or
+      // `DXCORE_ADAPTER_ATTRIBUTE_D3D11_GRAPHICS` attributes to get the NPUs.
+      // Note: Devices with DXCORE_HARDWARE_TYPE_ATTRIBUTE_NPU should already
+      // be NPUs, but we apply this filter consistently.
+      bool is_hardware;
+      if (FAILED(dxcore_adapter->GetProperty(DXCoreAdapterProperty::IsHardware,
+                                             &is_hardware)) ||
+          !is_hardware ||
+          dxcore_adapter->IsAttributeSupported(
+              DXCORE_ADAPTER_ATTRIBUTE_D3D12_GRAPHICS) ||
+          dxcore_adapter->IsAttributeSupported(
+              DXCORE_ADAPTER_ATTRIBUTE_D3D11_GRAPHICS)) {
+        continue;
+      }
+
+      // This is an NPU - collect its information.
+      seen_luids.insert(luid_value);
+
       GPUInfo::GPUDevice device;
       DXCoreHardwareID hardware_id;
       if (SUCCEEDED(dxcore_adapter->GetProperty(
@@ -283,11 +317,14 @@ void CollectNPUInformation(GPUInfo* gpu_info) {
         driver_version.QuadPart = static_cast<LONGLONG>(raw_driver_version);
         device.driver_version = DriverVersionToString(driver_version);
       }
-      LUID instance_luid;
+      device.system_device_id = luid_value;
+      device.luid = CHROME_LUID{instance_luid.LowPart, instance_luid.HighPart};
+
+      char* driver_description = nullptr;
       if (SUCCEEDED(dxcore_adapter->GetProperty(
-              DXCoreAdapterProperty::InstanceLuid, &instance_luid))) {
-        device.luid =
-            CHROME_LUID{instance_luid.LowPart, instance_luid.HighPart};
+              DXCoreAdapterProperty::DriverDescription, &driver_description))) {
+        CHECK(driver_description);
+        device.device_string = std::string(driver_description);
       }
       gpu_info->npus.push_back(device);
     }
@@ -313,10 +350,16 @@ bool CollectDriverInfoD3D(GPUInfo* gpu_info) {
     GPUInfo::GPUDevice device;
     device.vendor_id = desc.VendorId;
     device.device_id = desc.DeviceId;
+    device.system_device_id =
+        (static_cast<uint64_t>(desc.AdapterLuid.HighPart) << 32) |
+        static_cast<uint64_t>(desc.AdapterLuid.LowPart);
     device.sub_sys_id = desc.SubSysId;
     device.revision = desc.Revision;
     device.luid =
         CHROME_LUID{desc.AdapterLuid.LowPart, desc.AdapterLuid.HighPart};
+    device.device_string = base::WideToUTF8(std::wstring_view(
+        desc.Description,
+        UNSAFE_TODO(wcsnlen_s(desc.Description, std::size(desc.Description)))));
 
     LARGE_INTEGER umd_version;
     hr = dxgi_adapter->CheckInterfaceSupport(__uuidof(IDXGIDevice),
@@ -325,7 +368,7 @@ bool CollectDriverInfoD3D(GPUInfo* gpu_info) {
       device.driver_version = DriverVersionToString(umd_version);
     } else {
       DLOG(ERROR) << "Unable to retrieve the umd version of adapter: "
-                  << desc.Description << " HR: " << std::hex << hr;
+                  << device.device_string << " HR: " << std::hex << hr;
     }
     if (i == 0) {
       gpu_info->gpu = device;
@@ -736,9 +779,6 @@ uint32_t GetGpuSupportedVulkanVersion(
 void RecordGpuSupportedDx12VersionHistograms(
     uint32_t d3d12_feature_level,
     uint32_t highest_shader_model_version) {
-  bool supports_dx12 =
-      (d3d12_feature_level >= D3D_FEATURE_LEVEL_12_0) ? true : false;
-  UMA_HISTOGRAM_BOOLEAN("GPU.SupportsDX12", supports_dx12);
   UMA_HISTOGRAM_ENUMERATION(
       "GPU.D3D12FeatureLevel",
       ConvertToHistogramFeatureLevel(d3d12_feature_level));

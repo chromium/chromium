@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/memory_internals_ui.h"
 
 #include <iterator>
@@ -95,12 +90,23 @@ std::string GetMessageString() {
           "Each utility process has a fixed probability of being profiled at "
           "startup.");
 
+    case Mode::kUtilityAndBrowser:
+      return std::string(
+          "Memory logging is enabled for just the browser and utility "
+          "processes.");
+
+    case Mode::kAllUtilities:
+      return std::string(
+          "Memory logging is enabled for all utility processes.");
+
     case Mode::kNone:
     case Mode::kManual:
-    default:
       return std::string(
           "Memory logging must be manually enabled for each process via "
           "chrome://memory-internals.");
+    case Mode::kCount:
+    default:
+      NOTREACHED();
   }
 #elif defined(ADDRESS_SANITIZER)
   return "Memory logging is not available in this build because a memory "
@@ -132,8 +138,7 @@ std::string GetChildDescription(const content::ChildProcessData& data) {
 void CreateAndAddMemoryInternalsUIHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIMemoryInternalsHost);
-  source->AddResourcePaths(base::make_span(kMemoryInternalsResources,
-                                           kMemoryInternalsResourcesSize));
+  source->AddResourcePaths(kMemoryInternalsResources);
   source->SetDefaultResource(IDR_MEMORY_INTERNALS_MEMORY_INTERNALS_HTML);
 }
 
@@ -412,4 +417,4 @@ MemoryInternalsUI::MemoryInternalsUI(content::WebUI* web_ui)
   CreateAndAddMemoryInternalsUIHTMLSource(Profile::FromWebUI(web_ui));
 }
 
-MemoryInternalsUI::~MemoryInternalsUI() {}
+MemoryInternalsUI::~MemoryInternalsUI() = default;

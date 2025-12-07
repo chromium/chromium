@@ -1,14 +1,14 @@
 // Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limits_allowlist_policy_test_utils.h"
 
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limits_allowlist_policy_wrapper.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_policy_helpers.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 
-namespace ash {
-namespace app_time {
+namespace ash::app_time {
 
 AppTimeLimitsAllowlistPolicyBuilder::AppTimeLimitsAllowlistPolicyBuilder() =
     default;
@@ -20,6 +20,10 @@ void AppTimeLimitsAllowlistPolicyBuilder::SetUp() {
   dict_ = base::Value::Dict();
   dict_.Set(policy::kUrlList, base::Value::List());
   dict_.Set(policy::kAppList, base::Value::List());
+}
+
+void AppTimeLimitsAllowlistPolicyBuilder::Clear() {
+  dict_.clear();
 }
 
 void AppTimeLimitsAllowlistPolicyBuilder::AppendToAllowlistAppList(
@@ -39,5 +43,4 @@ void AppTimeLimitsAllowlistPolicyBuilder::AppendToList(const std::string& key,
   list->Append(std::move(dict));
 }
 
-}  // namespace app_time
-}  // namespace ash
+}  // namespace ash::app_time

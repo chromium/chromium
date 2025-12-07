@@ -16,12 +16,14 @@ include_rules = [
   "+third_party/blink/public/common/associated_interfaces/associated_interface_registry.h",
   "+third_party/blink/public/common/logging/logging_utils.h",
   "+third_party/blink/public/common/page/browsing_context_group_info.h",
+  "+third_party/blink/public/common/security/protocol_handler_security_level.h",
   "+third_party/blink/public/common/tokens/tokens.h",
   "+third_party/blink/public/mojom/devtools/console_message.mojom.h",
   "+third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h",
   "+third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h",
   "+third_party/blink/public/mojom/page/page.mojom.h",
   "+third_party/blink/public/mojom/page/prerender_page_param.mojom.h",
+  "+services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h",
   "+third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h",
   "+third_party/blink/public/platform",
   "+third_party/blink/public/web",
@@ -51,6 +53,7 @@ specific_include_rules = {
   "extension_throttle_manager.cc": [
     # For net::IsLocalhost.
     "+net/base/url_util.h",
+    "+net/http/http_response_headers.h",
   ],
   "extension_throttle_unittest.cc": [
     "+net/url_request/redirect_info.h",
@@ -64,5 +67,9 @@ specific_include_rules = {
   ],
   "localization_peer_unittest.cc": [
     "+net/url_request/redirect_info.h",
+  ],
+
+  "native_extension_bindings_system.cc": [
+    "+third_party/blink/public/common/features_generated.h",
   ]
 }

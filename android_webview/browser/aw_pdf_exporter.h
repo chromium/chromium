@@ -42,10 +42,10 @@ class AwPdfExporter {
   ~AwPdfExporter();
 
   void ExportToPdf(JNIEnv* env,
-                   const base::android::JavaParamRef<jobject>& obj,
+                   const base::android::JavaRef<jobject>& obj,
                    int fd,
-                   const base::android::JavaParamRef<jintArray>& pages,
-                   const base::android::JavaParamRef<jobject>& cancel_signal);
+                   const base::android::JavaRef<jintArray>& pages,
+                   const base::android::JavaRef<jobject>& cancel_signal);
 
  private:
   std::unique_ptr<printing::PrintSettings> CreatePdfSettings(

@@ -93,8 +93,9 @@ class SavableResourcesTest : public ContentBrowserTest {
   }
 };
 
-// Flaky on Linux MSan. See crbug.com/1423060.
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+// Flaky on Linux and Windows Asan/MSan. See crbug.com/40897271.
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)) && \
+    (defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER))
 #define MAYBE_GetSavableResourceLinksWithPageHasValidStyleLink \
   DISABLED_GetSavableResourceLinksWithPageHasValidStyleLink
 #else
@@ -117,8 +118,9 @@ IN_PROC_BROWSER_TEST_F(SavableResourcesTest,
 
 // Test function GetAllSavableResourceLinksForCurrentPage with a web page
 // which has valid savable resource links.
-// Flaky on Linux MSan. See crbug.com/1423060.
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+// Flaky on Linux and Windows ASan/MSan. See crbug.com/40897271.
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)) && \
+    (defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER))
 #define MAYBE_GetSavableResourceLinksWithPageHasValidLinks \
   DISABLED_GetSavableResourceLinksWithPageHasValidLinks
 #else
@@ -146,15 +148,10 @@ IN_PROC_BROWSER_TEST_F(SavableResourcesTest,
 // Test function GetAllSavableResourceLinksForCurrentPage with a web page
 // which does not have valid savable resource links.
 // Flaky on Linux MSan and Windows ASan. See crbug.com/1423060.
-#if (BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER))
-#define MAYBE_GetSavableResourceLinksWithPageHasInvalidLinks \
-  DISABLED_GetSavableResourceLinksWithPageHasInvalidLinks
-#else
-#define MAYBE_GetSavableResourceLinksWithPageHasInvalidLinks \
-  GetSavableResourceLinksWithPageHasInvalidLinks
-#endif
-IN_PROC_BROWSER_TEST_F(SavableResourcesTest,
-                       MAYBE_GetSavableResourceLinksWithPageHasInvalidLinks) {
+// Flaky in general. See crbug.com/361938524.
+IN_PROC_BROWSER_TEST_F(
+    SavableResourcesTest,
+    DISABLED_GetSavableResourceLinksWithPageHasInvalidLinks) {
   base::FilePath page_file_path =
       GetTestFilePath("dom_serializer", "youtube_2.htm");
 

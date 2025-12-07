@@ -38,9 +38,9 @@ class MojoUkmRecorder;
 //  A class that distills an AXTreeUpdate. The main API is
 //  AXTreeDistiller::Distill(), which kicks off the distillation. Once a
 //  distilled AXTree is ready, calls a callback.
-//  When |IsReadAnythingWithScreen2xEnabled()|, the distillation is performed
-//  by the Screen2x ML model in the utility process. Otherwise, distillation is
-//  done using rules defined in this file.
+//  If ChromeScreenAI library is available, the distillation is performed by the
+//  Screen2x ML model in the utility process. Otherwise, distillation is done
+//  using rules defined in this file.
 //
 class AXTreeDistiller : public content::RenderFrameObserver {
   using OnAXTreeDistilledCallback = base::RepeatingCallback<void(
@@ -58,7 +58,7 @@ class AXTreeDistiller : public content::RenderFrameObserver {
   // Distills the AXTree. |tree| and |snapshot| are duplicates of each other;
   // the algorithm requires the data in |tree| form while Screen2x requires it
   // in |snapshot| form.
-  // When |IsReadAnythingWithScreen2xEnabled|, this operation is done in the
+  // When ChromeScreenAI library is available, this operation is done in the
   // utility process by Screen2x. Otherwise, it is done by a rules-based
   // algorithm in this process.
   virtual void Distill(const ui::AXTree& tree,
@@ -80,27 +80,33 @@ class AXTreeDistiller : public content::RenderFrameObserver {
   void RecordRulesMetrics(const ukm::SourceId ukm_source_id,
                           base::TimeDelta elapsed_time,
                           bool success);
+  void RecordScreen2xMetrics(const ukm::SourceId ukm_source_id,
+                             base::TimeDelta elapsed_time,
+                             bool success);
 
   // Passes |snapshot| to the Screen2x ML model, which identifes the main
   // content nodes and calls |ProcessScreen2xResult()| on completion.
   // |content_node_ids_algorithm| are the content nodes identified by the
-  // algorithm. They are passed along to the screen2x callback. start_time is
-  // the time when DistillViaAlgorithm started and is used for
+  // algorithm. They are passed along to the screen2x callback.
+  // |merged_start_time| is the time when Distill started and is used for
   // RecordMergedMetrics.
   void DistillViaScreen2x(
       const ui::AXTree& tree,
       const ui::AXTreeUpdate& snapshot,
       const ukm::SourceId ukm_source_id,
-      base::TimeTicks start_time,
+      base::TimeTicks merged_start_time,
       std::vector<ui::AXNodeID>* content_node_ids_algorithm);
 
   // Called by the Screen2x service from the utility process. Merges the result
   // from the algorithm with the result from Screen2x and passes the merged
-  // vector to the callback.
+  // vector to the callback. |screen2x_start_time| is the time when
+  // DistillViaScreen2x started and |merged_start_time| is the time when
+  // Distill started and is used for RecordScreen2xMetrics.
   void ProcessScreen2xResult(
       const ui::AXTreeID& tree_id,
       const ukm::SourceId ukm_source_id,
-      base::TimeTicks start_time,
+      base::TimeTicks screen2x_start_time,
+      base::TimeTicks merged_start_time,
       std::vector<ui::AXNodeID> content_node_ids_algorithm,
       const std::vector<ui::AXNodeID>& content_node_ids_screen2x);
 

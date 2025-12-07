@@ -4,7 +4,7 @@
 
 #include "ios/chrome/browser/language/model/language_model_manager_factory.h"
 
-#include "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/platform_test.h"
@@ -19,15 +19,13 @@ using LanguageModelManagerFactoryTest = PlatformTest;
 TEST_F(LanguageModelManagerFactoryTest, SharedWithIncognito) {
   web::WebTaskEnvironment task_environment;
 
-  std::unique_ptr<TestChromeBrowserState> state(
-      TestChromeBrowserState::Builder().Build());
+  std::unique_ptr<TestProfileIOS> state(TestProfileIOS::Builder().Build());
   const language::LanguageModelManager* const manager =
-      LanguageModelManagerFactory::GetForBrowserState(state.get());
+      LanguageModelManagerFactory::GetForProfile(state.get());
   EXPECT_THAT(manager, Not(IsNull()));
 
-  ChromeBrowserState* const incognito =
-      state->GetOffTheRecordChromeBrowserState();
+  ProfileIOS* const incognito = state->GetOffTheRecordProfile();
   ASSERT_THAT(incognito, Not(IsNull()));
-  EXPECT_THAT(LanguageModelManagerFactory::GetForBrowserState(incognito),
+  EXPECT_THAT(LanguageModelManagerFactory::GetForProfile(incognito),
               Eq(manager));
 }

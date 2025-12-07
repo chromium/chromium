@@ -2,4 +2,7 @@ specific_include_rules = {
   ".*test\.cc": [
     "+base/run_loop.h",
   ],
+  "scheduler_policy_test.cc": [
+    "+components/viz/common/surfaces/parent_local_surface_id_allocator.h",
+  ],
 }

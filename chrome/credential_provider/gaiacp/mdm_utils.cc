@@ -6,14 +6,9 @@
 
 #include <windows.h>
 
-#include <lm.h>  // Needed for PNTSTATUS
-#include <winternl.h>
-
-#define _NTDEF_  // Prevent redefition errors, must come after <winternl.h>
-#include <MDMRegistration.h>  // For RegisterDeviceWithManagement()
-#include <ntsecapi.h>         // For LsaQueryInformationPolicy()
-
+#include <MDMRegistration.h>
 #include <atlconv.h>
+#include <lm.h>
 
 #include "base/base64.h"
 #include "base/files/file_path.h"
@@ -21,6 +16,7 @@
 #include "base/scoped_native_library.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/win/ntsecapi_shim.h"
 #include "base/win/win_util.h"
 #include "base/win/wmi.h"
 #include "build/branding_buildflags.h"

@@ -8,13 +8,13 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_running_on_chromeos.h"
@@ -33,8 +33,8 @@
 #include "chromeos/ash/components/system_info/cpu_data.h"
 #include "chromeos/ash/components/system_info/cpu_usage_data.h"
 #include "chromeos/ash/components/system_info/system_info_util.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
-#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom-forward.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
@@ -860,13 +860,16 @@ TEST_F(SystemInfoCardProviderTest, Storage) {
   // [android files]/Download.
   AddFile("video.ogv", kDownloadsPathBytes, downloads_path);  // ~55.4 KB
 
-  int64_t total_bytes = base::SysInfo::AmountOfTotalDiskSpace(mount_path);
-  int64_t available_bytes = base::SysInfo::AmountOfFreeDiskSpace(mount_path);
+  int64_t total_bytes =
+      base::SysInfo::AmountOfTotalDiskSpace(mount_path).value_or(-1);
+  int64_t available_bytes =
+      base::SysInfo::AmountOfFreeDiskSpace(mount_path).value_or(-1);
   int64_t rounded_total_size = ash::settings::RoundByteSize(total_bytes);
 
   int64_t in_use_bytes = rounded_total_size - available_bytes;
-  std::u16string in_use_size = ui::FormatBytes(in_use_bytes);
-  std::u16string total_size = ui::FormatBytes(rounded_total_size);
+  std::u16string in_use_size = ui::FormatBytes(base::ByteCount(in_use_bytes));
+  std::u16string total_size =
+      ui::FormatBytes(base::ByteCount(rounded_total_size));
   std::u16string result_description = base::StrCat(
       {u"Storage ", in_use_size, u" in use | ", total_size, u" total"});
 

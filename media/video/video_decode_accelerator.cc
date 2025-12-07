@@ -8,6 +8,7 @@
 #include <GLES2/gl2ext.h>
 
 #include "base/notreached.h"
+#include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/video_util.h"
 
@@ -24,40 +25,38 @@ VideoDecodeAccelerator::Config::~Config() = default;
 std::string VideoDecodeAccelerator::Config::AsHumanReadableString() const {
   std::ostringstream s;
   s << "profile: " << GetProfileName(profile) << " encrypted? "
-    << (is_encrypted() ? "true" : "false");
+    << base::ToString(is_encrypted());
   return s.str();
 }
 
 void VideoDecodeAccelerator::Client::NotifyInitializationComplete(
     DecoderStatus status) {
-  NOTREACHED_IN_MIGRATION()
-      << "By default deferred initialization is not supported.";
+  NOTREACHED() << "By default deferred initialization is not supported.";
 }
 
 VideoDecodeAccelerator::~VideoDecodeAccelerator() = default;
 
 void VideoDecodeAccelerator::Decode(scoped_refptr<DecoderBuffer> buffer,
                                     int32_t bitstream_id) {
-  NOTREACHED_IN_MIGRATION() << "By default DecoderBuffer is not supported.";
+  NOTREACHED() << "By default DecoderBuffer is not supported.";
 }
 
 bool VideoDecodeAccelerator::TryToSetupDecodeOnSeparateSequence(
     const base::WeakPtr<Client>& decode_client,
     const scoped_refptr<base::SequencedTaskRunner>& decode_task_runner) {
   // Implementations in the process that VDA runs in must override this.
-  NOTREACHED_NORETURN()
-      << "This may only be called in the same process as VDA impl.";
+  NOTREACHED() << "This may only be called in the same process as VDA impl.";
 }
 
 void VideoDecodeAccelerator::ImportBufferForPicture(
     int32_t picture_buffer_id,
     VideoPixelFormat pixel_format,
     gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle) {
-  NOTREACHED_IN_MIGRATION() << "Buffer import not supported.";
+  NOTREACHED() << "Buffer import not supported.";
 }
 
 void VideoDecodeAccelerator::SetOverlayInfo(const OverlayInfo& overlay_info) {
-  NOTREACHED_IN_MIGRATION() << "Overlays are not supported.";
+  NOTREACHED() << "Overlays are not supported.";
 }
 
 VideoDecodeAccelerator::SupportedProfile::SupportedProfile()

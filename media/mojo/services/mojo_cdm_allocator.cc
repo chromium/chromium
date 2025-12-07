@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/mojo/services/mojo_cdm_allocator.h"
 
@@ -76,7 +72,7 @@ class MojoCdmBuffer final : public cdm::Buffer {
 
   uint32_t Size() const final { return size_; }
 
-  const base::MappedReadOnlyRegion& Region() const { return *mapped_region_; }
+  base::MappedReadOnlyRegion& Region() { return *mapped_region_; }
   std::unique_ptr<base::MappedReadOnlyRegion> TakeRegion() {
     return std::move(mapped_region_);
   }
@@ -124,8 +120,7 @@ class MojoCdmVideoFrame final : public VideoFrameImpl {
     // Destroy the MojoCdmBuffer as it is no longer needed.
     buffer->Destroy();
 
-    uint8_t* data =
-        const_cast<uint8_t*>(mapped_region->mapping.GetMemoryAs<uint8_t>());
+    auto data = mapped_region->mapping.GetMemoryAsSpan<uint8_t>();
     if (PlaneOffset(cdm::kYPlane) != 0u) {
       LOG(ERROR) << "The first buffer offset is not 0";
       return nullptr;
@@ -135,8 +130,12 @@ class MojoCdmVideoFrame final : public VideoFrameImpl {
         natural_size, static_cast<int32_t>(Stride(cdm::kYPlane)),
         static_cast<int32_t>(Stride(cdm::kUPlane)),
         static_cast<int32_t>(Stride(cdm::kVPlane)),
-        data + PlaneOffset(cdm::kYPlane), data + PlaneOffset(cdm::kUPlane),
-        data + PlaneOffset(cdm::kVPlane), base::Microseconds(Timestamp()));
+        data.subspan(PlaneOffset(cdm::kYPlane),
+                     PlaneOffset(cdm::kUPlane) - PlaneOffset(cdm::kYPlane)),
+        data.subspan(PlaneOffset(cdm::kUPlane),
+                     PlaneOffset(cdm::kVPlane) - PlaneOffset(cdm::kUPlane)),
+        data.subspan(PlaneOffset(cdm::kVPlane)),
+        base::Microseconds(Timestamp()));
 
     // |frame| could fail to be created if the memory can't be mapped into
     // this address space.
@@ -236,8 +235,8 @@ void MojoCdmAllocator::AddRegionToAvailableMap(
   available_regions_.insert({capacity, std::move(mapped_region)});
 }
 
-const base::MappedReadOnlyRegion& MojoCdmAllocator::GetRegionForTesting(
-    cdm::Buffer* buffer) const {
+base::MappedReadOnlyRegion& MojoCdmAllocator::GetRegionForTesting(
+    cdm::Buffer* buffer) {
   MojoCdmBuffer* mojo_buffer = static_cast<MojoCdmBuffer*>(buffer);
   return mojo_buffer->Region();
 }

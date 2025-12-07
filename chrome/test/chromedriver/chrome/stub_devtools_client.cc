@@ -34,7 +34,7 @@ Status StubDevToolsClient::SetTunnelSessionId(std::string session_id) {
 
 Status StubDevToolsClient::StartBidiServer(
     std::string bidi_mapper_script,
-    const base::Value::Dict& mapper_options) {
+    bool enable_unsafe_extension_debugging) {
   return Status{kOk};
 }
 
@@ -44,6 +44,10 @@ bool StubDevToolsClient::IsNull() const {
 
 bool StubDevToolsClient::IsConnected() const {
   return is_connected_;
+}
+
+bool StubDevToolsClient::IsTabTarget() const {
+  return is_tab_;
 }
 
 bool StubDevToolsClient::WasCrashed() {

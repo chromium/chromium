@@ -4,6 +4,7 @@
 
 #include "services/device/generic_sensor/platform_sensor.h"
 
+#include <atomic>
 #include <list>
 #include <utility>
 
@@ -160,8 +161,8 @@ bool PlatformSensor::UpdateSharedBuffer(const SensorReading& reading) {
   // previous value.
   if (GetReportingMode() == mojom::ReportingMode::ON_CHANGE &&
       last_rounded_reading_.has_value() &&
-      base::ranges::equal(rounded_reading.raw.values,
-                          last_rounded_reading_->raw.values)) {
+      std::ranges::equal(rounded_reading.raw.values,
+                         last_rounded_reading_->raw.values)) {
     return false;
   }
   // Save rounded value for next comparison.
@@ -183,8 +184,8 @@ void PlatformSensor::ResetSharedBuffer() {
 void PlatformSensor::WriteToSharedBuffer(const SensorReading& reading) {
   CHECK(is_active_);
   reading_buffer_->seqlock.value().WriteBegin();
-  device::OneWriterSeqLock::AtomicWriterMemcpy(&reading_buffer_->reading,
-                                               &reading, sizeof(reading));
+  std::atomic_ref(reading_buffer_->reading)
+      .store(reading, std::memory_order_relaxed);
   reading_buffer_->seqlock.value().WriteEnd();
 }
 
@@ -278,12 +279,8 @@ bool PlatformSensor::IsSignificantlyDifferent(const SensorReading& lhs,
     case mojom::SensorType::ABSOLUTE_ORIENTATION_QUATERNION:
     case mojom::SensorType::RELATIVE_ORIENTATION_QUATERNION:
     case mojom::SensorType::MAGNETOMETER:
-    case mojom::SensorType::PRESSURE:
-    case mojom::SensorType::PROXIMITY:
-      return !base::ranges::equal(lhs.raw.values, rhs.raw.values);
+      return !std::ranges::equal(lhs.raw.values, rhs.raw.values);
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
 }
 
 base::WeakPtr<PlatformSensor> PlatformSensor::AsWeakPtr() {

@@ -43,7 +43,7 @@ SkPath HighlightPathGenerator::GetHighlightPath(const View* view) {
   // A rounded rectangle must be supplied if using this default implementation.
   std::optional<gfx::RRectF> round_rect = GetRoundRect(view);
   DCHECK(round_rect);
-  return SkPath().addRRect(SkRRect{*round_rect});
+  return SkPath::RRect(SkRRect{*round_rect});
 }
 
 std::optional<gfx::RRectF> HighlightPathGenerator::GetRoundRect(
@@ -56,8 +56,9 @@ std::optional<gfx::RRectF> HighlightPathGenerator::GetRoundRect(
   gfx::Rect bounds =
       use_contents_bounds_ ? view->GetContentsBounds() : view->GetLocalBounds();
   bounds.Inset(insets_);
-  if (use_mirrored_rect_)
+  if (use_mirrored_rect_) {
     bounds = view->GetMirroredRect(bounds);
+  }
   return GetRoundRect(gfx::RectF(bounds));
 }
 
@@ -154,6 +155,15 @@ void InstallRoundRectHighlightPathGenerator(View* view,
   HighlightPathGenerator::Install(
       view,
       std::make_unique<RoundRectHighlightPathGenerator>(insets, corner_radius));
+}
+
+void InstallRoundRectHighlightPathGenerator(
+    View* view,
+    const gfx::Insets& insets,
+    const gfx::RoundedCornersF& corner_radii) {
+  HighlightPathGenerator::Install(
+      view,
+      std::make_unique<RoundRectHighlightPathGenerator>(insets, corner_radii));
 }
 
 }  // namespace views

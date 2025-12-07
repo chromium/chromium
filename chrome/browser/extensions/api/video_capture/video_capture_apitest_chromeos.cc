@@ -4,9 +4,11 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
+#include "chrome/browser/ash/app_mode/consumer_kiosk_test_helper.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
@@ -31,13 +33,13 @@ namespace {
 class VideoCaptureApiTestChromeOs : public PlatformAppBrowserTest {
  public:
   VideoCaptureApiTestChromeOs() : settings_helper_(false) {}
-  ~VideoCaptureApiTestChromeOs() override {}
+  ~VideoCaptureApiTestChromeOs() override = default;
 
   void SetUpOnMainThread() override {
     PlatformAppBrowserTest::SetUpOnMainThread();
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
     owner_settings_service_ =
-        settings_helper_.CreateOwnerSettingsService(browser()->profile());
+        settings_helper_.CreateOwnerSettingsService(profile());
     // Verify fake devices are enabled. This is necessary to make sure there is
     // at least one device in the system. Otherwise, this test would fail on
     // machines without physical media devices since getUserMedia fails early in
@@ -56,12 +58,15 @@ class VideoCaptureApiTestChromeOs : public PlatformAppBrowserTest {
  protected:
   void EnterKioskSession() {
     user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
-    chromeos::SetUpFakeKioskSession();
+    chromeos::SetUpFakeChromeAppKioskSession();
   }
 
   void SetAutoLaunchApp() {
-    manager()->AddApp(kTestingAppId, owner_settings_service_.get());
-    manager()->SetAutoLaunchApp(kTestingAppId, owner_settings_service_.get());
+    AddConsumerKioskChromeAppForTesting(
+        CHECK_DEREF(owner_settings_service_.get()), kTestingAppId);
+    SetConsumerKioskAutoLaunchChromeAppForTesting(
+        CHECK_DEREF(manager()), CHECK_DEREF(owner_settings_service_.get()),
+        kTestingAppId);
     manager()->SetAppWasAutoLaunchedWithZeroDelay(kTestingAppId);
   }
 
@@ -84,8 +89,10 @@ IN_PROC_BROWSER_TEST_F(VideoCaptureApiTestChromeOs,
       << message_;
 }
 
+// TODO(crbug.com/405347945): EnterKioskSession is not actually emulating what
+// Kiosk is doing in the production. Fix the test set up.
 IN_PROC_BROWSER_TEST_F(VideoCaptureApiTestChromeOs,
-                       CameraPanTiltZoom_KioskSessionOnly) {
+                       DISABLED_CameraPanTiltZoom_KioskSessionOnly) {
   EnterKioskSession();
   ASSERT_TRUE(
       RunExtensionTest("api_test/video_capture/"
@@ -94,7 +101,10 @@ IN_PROC_BROWSER_TEST_F(VideoCaptureApiTestChromeOs,
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(VideoCaptureApiTestChromeOs, CameraPanTiltZoom) {
+// TODO(crbug.com/405347945): EnterKioskSession is not actually emulating what
+// Kiosk is doing in the production. Fix the test set up.
+IN_PROC_BROWSER_TEST_F(VideoCaptureApiTestChromeOs,
+                       DISABLED_CameraPanTiltZoom) {
   EnterKioskSession();
   SetAutoLaunchApp();
   ASSERT_TRUE(RunExtensionTest("api_test/video_capture/camera_pan_tilt_zoom",

@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/os_integration/mac/app_shim_launch.h"
 #include "chrome/common/mac/app_shim.mojom.h"
 #include "components/metrics/histogram_child_process.h"
+#include "content/public/browser/scoped_accessibility_mode.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -135,6 +136,10 @@ class AppShimHost : public chrome::mojom::AppShimHost,
   // Returns kNullProcessId if no process has connected to this host yet.
   base::ProcessId GetAppShimPid() const;
 
+  // Returns a weak pointer from a factory that is invalidated when a new launch
+  // is initiated or when the bootstrap connects.
+  base::WeakPtr<AppShimHost> GetLaunchWeakPtr();
+
  protected:
   void ChannelError(uint32_t custom_reason, const std::string& description);
 
@@ -204,6 +209,10 @@ class AppShimHost : public chrome::mojom::AppShimHost,
 
   // This class is only ever to be used on the UI thread.
   THREAD_CHECKER(thread_checker_);
+
+  // Will be created if accessibility APIs are needed, e.g. if the VoiceOver
+  // screen reader is enabled.
+  std::unique_ptr<content::ScopedAccessibilityMode> process_accessibility_mode_;
 
   // This weak factory is used for launch callbacks only.
   base::WeakPtrFactory<AppShimHost> launch_weak_factory_;

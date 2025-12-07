@@ -8,6 +8,7 @@
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/test/scoped_error_expecter.h"
+#include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace segmentation_platform {
@@ -24,8 +25,7 @@ class UkmUrlTableTest : public testing::Test {
   ~UkmUrlTableTest() override = default;
 
   void SetUp() override {
-    sql::DatabaseOptions options;
-    db_ = std::make_unique<sql::Database>(options);
+    db_ = std::make_unique<sql::Database>(sql::test::kTestTag);
     bool opened = db_->OpenInMemory();
     ASSERT_TRUE(opened);
     url_table_ = std::make_unique<UkmUrlTable>(db_.get());

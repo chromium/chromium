@@ -4,20 +4,16 @@
 
 package org.chromium.chrome.browser.ntp;
 
+
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabCreationState;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.PageTransition;
@@ -29,6 +25,7 @@ import java.lang.annotation.RetentionPolicy;
  * Records UMA stats for which actions the user takes on the NTP in the
  * "NewTabPage.ActionAndroid2" histogram.
  */
+@NullMarked
 public class NewTabPageUma {
     // Possible actions taken by the user on the NTP. These values are also defined in
     // enums.xml as NewTabPageActionAndroid2.
@@ -76,7 +73,7 @@ public class NewTabPageUma {
      */
     // public static final int ACTION_CLICKED_MANAGE_INTERESTS = 12;
 
-    /** (Obsolete) User triggered a block content action. * */
+    /** (Obsolete) User triggered a block content action. */
     // public static final int ACTION_BLOCK_CONTENT = 13;
 
     /** (Obsolete) User clicked on the "Manage activity" item in the feed header menu. */
@@ -102,17 +99,17 @@ public class NewTabPageUma {
 
     /**
      * Possible results when updating content suggestions list in the UI. Keep in sync with the
-     * ContentSuggestionsUIUpdateResult2 enum in enums.xml. Do not remove or change existing
-     * values other than NUM_UI_UPDATE_RESULTS.
+     * ContentSuggestionsUiUpdateResult2 enum in enums.xml. Do not remove or change existing values
+     * other than NUM_UI_UPDATE_RESULTS.
      */
     @IntDef({
-        ContentSuggestionsUIUpdateResult.SUCCESS_APPENDED,
-        ContentSuggestionsUIUpdateResult.SUCCESS_REPLACED,
-        ContentSuggestionsUIUpdateResult.FAIL_ALL_SEEN,
-        ContentSuggestionsUIUpdateResult.FAIL_DISABLED
+        ContentSuggestionsUiUpdateResult.SUCCESS_APPENDED,
+        ContentSuggestionsUiUpdateResult.SUCCESS_REPLACED,
+        ContentSuggestionsUiUpdateResult.FAIL_ALL_SEEN,
+        ContentSuggestionsUiUpdateResult.FAIL_DISABLED
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface ContentSuggestionsUIUpdateResult {
+    public @interface ContentSuggestionsUiUpdateResult {
         /**
          * The content suggestions are successfully appended (because they are set for the first
          * time or explicitly marked to be appended).
@@ -154,19 +151,9 @@ public class NewTabPageUma {
         int NUM_ENTRIES = 5;
     }
 
-    private final TabModelSelector mTabModelSelector;
-    private TabCreationRecorder mTabCreationRecorder;
-
-    /**
-     * Constructor.
-     * @param tabModelSelector Tab model selector to observe tab creation event.
-     */
-    public NewTabPageUma(TabModelSelector tabModelSelector) {
-        mTabModelSelector = tabModelSelector;
-    }
-
     /**
      * Records an action taken by the user on the NTP.
+     *
      * @param action One of the ACTION_* values defined in this class.
      */
     public static void recordAction(int action) {
@@ -210,17 +197,8 @@ public class NewTabPageUma {
                 "Android.NTP.Impression", impressionType, NUM_NTP_IMPRESSION);
     }
 
-    /**
-     * Records how often new tabs with a NewTabPage are created. This helps to determine how often
-     * users navigate back to already opened NTPs.
-     */
-    public void monitorNtpCreation() {
-        mTabCreationRecorder = new TabCreationRecorder();
-        mTabModelSelector.addObserver(mTabCreationRecorder);
-    }
-
     /** Records Content Suggestions Display Status when NTPs opened. */
-    public void recordContentSuggestionsDisplayStatus(Profile profile) {
+    public static void recordContentSuggestionsDisplayStatus(Profile profile) {
         @ContentSuggestionsDisplayStatus int status = ContentSuggestionsDisplayStatus.VISIBLE;
         if (!UserPrefs.get(profile).getBoolean(Pref.ENABLE_SNIPPETS)) {
             // Disabled by policy.
@@ -241,20 +219,9 @@ public class NewTabPageUma {
                 ContentSuggestionsDisplayStatus.NUM_ENTRIES);
     }
 
-    /**
-     * Records the number of new NTPs opened in a new tab. Use through {@link
-     * NewTabPageUma#monitorNtpCreation(TabModelSelector)}.
-     */
-    private static class TabCreationRecorder implements TabModelSelectorObserver {
-        @Override
-        public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
-            if (!UrlUtilities.isNtpUrl(tab.getUrl())) return;
-            RecordUserAction.record("MobileNTPOpenedInNewTab");
-        }
-    }
-
-    /** Destroy and unhook objects at destruction. */
-    public void destroy() {
-        if (mTabCreationRecorder != null) mTabModelSelector.removeObserver(mTabCreationRecorder);
+    public static void recordSimultaneousNtpCount(int count) {
+        // We don't expect more than 100 NTP at the same time. Count100Histogram is enough to track
+        // the metric.
+        RecordHistogram.recordCount100Histogram("NewTabPage.Count", count);
     }
 }

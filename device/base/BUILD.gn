@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 
 component("base") {
@@ -20,7 +19,6 @@ component("base") {
     "//base",
     "//device/vr/buildflags",
   ]
-  deps = [ "//build:chromeos_buildflags" ]
 
   if (is_win) {
     sources += [

@@ -14,6 +14,8 @@
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/state_observer.h"
+#include "ui/views/interaction/polling_view_observer.h"
 
 namespace ash {
 namespace {
@@ -37,6 +39,12 @@ IN_PROC_BROWSER_TEST_F(ToggleCellularUiTest,
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ShillDevicePowerStateObserver,
                                       kMobileDataPoweredState);
 
+  // Use a poller because the toggle gets set on a small delay, and we want to
+  // avoid race conditions when checking the state.
+  using ToggleObserver =
+      views::test::PollingViewPropertyObserver<bool, views::ToggleButton>;
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ToggleObserver, kToggleButtonState);
+
   // Run the following steps with the OS Settings context set as the default.
   RunTestSequence(
       ObserveState(
@@ -51,22 +59,24 @@ IN_PROC_BROWSER_TEST_F(ToggleCellularUiTest,
       Log("Opening the Quick Settings bubble and navigating to the network "
           "page"),
 
+      WaitForShow(ash::kNetworkDetailedViewMobileDataToggleElementId),
+      PollViewProperty(kToggleButtonState,
+                       ash::kNetworkDetailedViewMobileDataToggleElementId,
+                       &views::ToggleButton::GetIsOn),
       WaitForState(kMobileDataPoweredState, true),
-      CheckViewProperty(ash::kNetworkDetailedViewMobileDataToggleElementId,
-                        &views::ToggleButton::GetIsOn, true),
+      WaitForState(kToggleButtonState, true),
 
       Log("Disabling mobile data"),
 
       MoveMouseTo(ash::kNetworkDetailedViewMobileDataToggleElementId),
       ClickMouse(), WaitForState(kMobileDataPoweredState, false),
-      CheckViewProperty(ash::kNetworkDetailedViewMobileDataToggleElementId,
-                        &views::ToggleButton::GetIsOn, false),
+      WaitForState(kToggleButtonState, false),
 
       Log("Enabling mobile data"),
 
       MoveMouseTo(ash::kNetworkDetailedViewMobileDataToggleElementId),
-      ClickMouse(),
-      WaitForState(kMobileDataPoweredState, true),
+      ClickMouse(), WaitForState(kMobileDataPoweredState, true),
+      WaitForState(kToggleButtonState, true),
 
       Log("Test complete"));
 }

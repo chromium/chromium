@@ -8,25 +8,36 @@ found in the LICENSE file.
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/add_account"
     android:descendantFocusability="blocksDescendants"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingEnd="@dimen/account_selection_sheet_horizontal_margin"
+    android:paddingStart="@dimen/account_selection_sheet_horizontal_margin"
+    android:paddingBottom="@dimen/account_selection_sheet_item_padding"
+    android:paddingTop="@dimen/account_selection_sheet_item_padding"
     android:gravity="center_vertical"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:layoutDirection="locale"
+    android:textDirection="locale">
 
-  <ImageView
-      android:id="@+id/start_icon"
-      android:layout_width="@dimen/account_selection_button_mode_sheet_add_account_icon_size"
-      android:layout_height="@dimen/account_selection_button_mode_sheet_add_account_icon_size"
-      android:layout_marginVertical="@dimen/account_selection_button_mode_sheet_item_padding"
-      android:layout_marginHorizontal="@dimen/account_selection_button_mode_sheet_plus_icon_horizontal_margin"
-      android:importantForAccessibility="no"
-      android:layout_gravity="center"/>
+    <FrameLayout
+        android:layout_width="@dimen/account_selection_account_avatar_size"
+        android:layout_height="@dimen/account_selection_account_avatar_size"
+        android:layout_marginEnd="16dp">
+
+      <ImageView
+          android:id="@+id/start_icon"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:importantForAccessibility="no"
+          android:layout_gravity="center"/>
+
+  </FrameLayout>
 
   <LinearLayout
       android:layout_width="0dp"
       android:layout_height="wrap_content"
-      android:layout_marginEnd="@dimen/account_selection_button_mode_sheet_item_padding"
       android:layout_weight="1"
       android:orientation="vertical">
 
@@ -36,6 +47,16 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:singleLine="true"
-        android:textAppearance="@style/TextAppearance.TextMediumThick.Accent1"/>
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
   </LinearLayout>
+
+  <ImageView
+      android:id="@+id/end_icon"
+      android:layout_width="@dimen/account_selection_login_brand_icon_size"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="1dp"
+      android:importantForAccessibility="no"
+      android:layout_gravity="center"
+      android:visibility="gone"/>
+
 </LinearLayout>

@@ -25,7 +25,6 @@
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/browser/net/fake_nss_service.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
@@ -109,8 +108,7 @@ bool FindInListValue(const std::string& needle, const base::Value* haystack) {
 class OwnerSettingsServiceAshTest : public DeviceSettingsTestBase {
  public:
   OwnerSettingsServiceAshTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()),
-        user_data_dir_override_(chrome::DIR_USER_DATA) {}
+      : user_data_dir_override_(chrome::DIR_USER_DATA) {}
 
   OwnerSettingsServiceAshTest(const OwnerSettingsServiceAshTest&) = delete;
   OwnerSettingsServiceAshTest& operator=(const OwnerSettingsServiceAshTest&) =
@@ -129,7 +127,7 @@ class OwnerSettingsServiceAshTest : public DeviceSettingsTestBase {
         base::BindRepeating(&OnPrefChanged), device_settings_service_.get(),
         TestingBrowserProcess::GetGlobal()->local_state());
     owner_key_util_->ImportPrivateKeyAndSetPublicKey(
-        device_policy_->GetSigningKey());
+        *device_policy_->GetSigningKey());
     InitOwner(
         AccountId::FromUserEmail(device_policy_->policy_data().username()),
         true);
@@ -179,14 +177,17 @@ class OwnerSettingsServiceAshTest : public DeviceSettingsTestBase {
  protected:
   base::test::ScopedFeatureList feature_list_;
   raw_ptr<OwnerSettingsServiceAsh, DanglingUntriaged> service_ = nullptr;
-  ScopedTestingLocalState local_state_;
   std::unique_ptr<DeviceSettingsProvider> provider_;
   base::ScopedPathOverride user_data_dir_override_;
   bool management_settings_set_ = false;
   base::HistogramTester histogram_tester_;
 };
 
-TEST_F(OwnerSettingsServiceAshTest, SingleSetTest) {
+TEST_F(OwnerSettingsServiceAshTest, SingleSetTestSHA1) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      ownership::kOwnerSettingsWithSha256);
+
   TestSingleSet(service_, kReleaseChannel, base::Value("dev-channel"));
   TestSingleSet(service_, kReleaseChannel, base::Value("beta-channel"));
   TestSingleSet(service_, kReleaseChannel, base::Value("stable-channel"));
@@ -202,9 +203,9 @@ TEST_F(OwnerSettingsServiceAshTest, SingleSetTest) {
              kOwnerKeyHistogramName, OwnerKeyUmaEvent::kStoredPolicySuccess));
 }
 
-TEST_F(OwnerSettingsServiceAshTest, SingleSetTestSha256) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(ownership::kOwnerSettingsWithSha256);
+TEST_F(OwnerSettingsServiceAshTest, SingleSetTestSHA256) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      ownership::kOwnerSettingsWithSha256);
 
   TestSingleSet(service_, kReleaseChannel, base::Value("dev-channel"));
   TestSingleSet(service_, kReleaseChannel, base::Value("beta-channel"));
@@ -386,9 +387,13 @@ TEST_F(OwnerSettingsServiceAshTest,
       device_policy_->payload().deviceextendedautoupdateenabled().value());
 }
 
-// Test that OwnerSettingsServiceAsh can successfully sign a policy and that the
-// signature is correct.
-TEST_F(OwnerSettingsServiceAshTest, SignPolicySuccess) {
+// Test that OwnerSettingsServiceAsh can successfully sign a policy with SHA1
+// and that the signature is correct.
+TEST_F(OwnerSettingsServiceAshTest, SignPolicySuccessSHA1) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      ownership::kOwnerSettingsWithSha256);
+
   auto policy = std::make_unique<enterprise_management::PolicyData>();
   policy->set_username("username0");
 
@@ -408,16 +413,18 @@ TEST_F(OwnerSettingsServiceAshTest, SignPolicySuccess) {
   crypto::SignatureVerifier signature_verifier;
   ASSERT_TRUE(signature_verifier.VerifyInit(
       crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1,
-      base::as_bytes(base::make_span(signed_policy->policy_data_signature())),
+      base::as_byte_span(signed_policy->policy_data_signature()),
       pub_key->data()));
   signature_verifier.VerifyUpdate(
-      base::as_bytes(base::make_span(signed_policy->policy_data())));
+      base::as_byte_span(signed_policy->policy_data()));
   EXPECT_TRUE(signature_verifier.VerifyFinal());
 }
 
+// Test that OwnerSettingsServiceAsh can successfully sign a policy with SHA256
+// and that the signature is correct.
 TEST_F(OwnerSettingsServiceAshTest, SignPolicySuccessSHA256) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(ownership::kOwnerSettingsWithSha256);
+  base::test::ScopedFeatureList scoped_feature_list(
+      ownership::kOwnerSettingsWithSha256);
 
   auto policy = std::make_unique<enterprise_management::PolicyData>();
   policy->set_username("username0");
@@ -439,10 +446,10 @@ TEST_F(OwnerSettingsServiceAshTest, SignPolicySuccessSHA256) {
   crypto::SignatureVerifier signature_verifier;
   ASSERT_TRUE(signature_verifier.VerifyInit(
       crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
-      base::as_bytes(base::make_span(signed_policy->policy_data_signature())),
+      base::as_byte_span(signed_policy->policy_data_signature()),
       pub_key->data()));
   signature_verifier.VerifyUpdate(
-      base::as_bytes(base::make_span(signed_policy->policy_data())));
+      base::as_byte_span(signed_policy->policy_data()));
   EXPECT_TRUE(signature_verifier.VerifyFinal());
 }
 
@@ -563,14 +570,14 @@ TEST_F(OwnerSettingsServiceAshTest, TwoAppendAndRemoveList) {
 
 class OwnerSettingsServiceAshNoOwnerTest : public OwnerSettingsServiceAshTest {
  public:
-  OwnerSettingsServiceAshNoOwnerTest() {}
+  OwnerSettingsServiceAshNoOwnerTest() = default;
 
   OwnerSettingsServiceAshNoOwnerTest(
       const OwnerSettingsServiceAshNoOwnerTest&) = delete;
   OwnerSettingsServiceAshNoOwnerTest& operator=(
       const OwnerSettingsServiceAshNoOwnerTest&) = delete;
 
-  ~OwnerSettingsServiceAshNoOwnerTest() override {}
+  ~OwnerSettingsServiceAshNoOwnerTest() override = default;
 
   void SetUp() override {
     DeviceSettingsTestBase::SetUp();
@@ -606,7 +613,7 @@ TEST_F(OwnerSettingsServiceAshNoOwnerTest, TakeOwnershipForceAllowlist) {
   EXPECT_FALSE(FindInListValue(device_policy_->policy_data().username(),
                                provider_->Get(kAccountsPrefUsers)));
   owner_key_util_->ImportPrivateKeyAndSetPublicKey(
-      device_policy_->GetSigningKey());
+      *device_policy_->GetSigningKey());
   InitOwner(AccountId::FromUserEmail(device_policy_->policy_data().username()),
             true);
   ReloadDeviceSettings();
@@ -653,7 +660,7 @@ TEST_F(OwnerSettingsServiceAshNoOwnerTest, LoadKeysPublicKeyOnly) {
 // return correct results.
 TEST_F(OwnerSettingsServiceAshNoOwnerTest, LoadKeysBothKeys) {
   owner_key_util_->ImportPrivateKeyAndSetPublicKey(
-      device_policy_->GetSigningKey());
+      *device_policy_->GetSigningKey());
 
   EXPECT_FALSE(service_->IsReady());
   service_->OnTPMTokenReady();  // Trigger key load.
@@ -679,7 +686,7 @@ TEST_F(OwnerSettingsServiceAshNoOwnerTest, CleanUpOldOwnerKey) {
   FakeNssService* nss_service = FakeNssService::InitializeForBrowserContext(
       profile_.get(), /*enable_system_slot=*/false);
   owner_key_util_->ImportPrivateKeyInSlotAndSetPublicKey(
-      device_policy_->GetSigningKey(), nss_service->GetPublicSlot());
+      *device_policy_->GetSigningKey(), nss_service->GetPublicSlot());
 
   EXPECT_FALSE(service_->IsReady());
   service_->OnTPMTokenReady();  // Trigger key load.

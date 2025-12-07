@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INSTANCE_THROTTLE_ARC_ACTIVE_AUDIO_THROTTLE_OBSERVER_H_
 #define CHROME_BROWSER_ASH_ARC_INSTANCE_THROTTLE_ARC_ACTIVE_AUDIO_THROTTLE_OBSERVER_H_
 
-#include "chrome/browser/ash/throttle_observer.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/components/throttle/throttle_observer.h"
 
 namespace arc {
 
-constexpr char kArcActiveAudioThrottleObserverName[] = "ArcActiveAudio";
+inline constexpr char kArcActiveAudioThrottleObserverName[] = "ArcActiveAudio";
 
 // This class observes active audio streams from ARC and sets the state to
 // active if there is an active audio stream.

@@ -9,6 +9,7 @@ import android.net.Uri;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.common.Flag;
@@ -18,18 +19,23 @@ import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.ProductionSupportedFlagList;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingSafeModeAction;
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
+import org.chromium.base.SelectionActionMenuClientWrapper;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.net.TrafficStatsTag;
+import org.chromium.net.TrafficStatsUid;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Implementations of various static methods, and also a home for static
- * data structures that are meant to be shared between all webviews.
+ * Implementations of various static methods, and also a home for static data structures that are
+ * meant to be shared between all webviews.
  */
 @Lifetime.Singleton
 @JNINamespace("android_webview")
@@ -40,8 +46,10 @@ public class AwContentsStatics {
 
     private static boolean sRecordFullDocument;
 
-    private static final String sSafeBrowsingWarmUpHelper =
-            "com.android.webview.chromium.SafeBrowsingWarmUpHelper";
+    private static volatile int sDefaultTrafficStatsTag = TrafficStatsTag.UNSET_TAG;
+    private static volatile int sDefaultTrafficStatsUid = TrafficStatsUid.UNSET_UID;
+
+    private static @Nullable SelectionActionMenuClientWrapper sSelectionActionMenuClient;
 
     /** Return the client certificate lookup table. */
     public static ClientCertLookupTable getClientCertLookupTable() {
@@ -97,7 +105,7 @@ public class AwContentsStatics {
     public static void setSafeBrowsingAllowlist(List<String> urls, Callback<Boolean> callback) {
         String[] urlArray = urls.toArray(new String[urls.size()]);
         if (callback == null) {
-            callback = b -> {};
+            callback = CallbackUtils.emptyCallback();
         }
         AwContentsStaticsJni.get().setSafeBrowsingAllowlist(urlArray, callback);
     }
@@ -163,8 +171,8 @@ public class AwContentsStatics {
 
     /**
      * Return the first substring consisting of the address of a physical location.
-     * @see {@link android.webkit.WebView#findAddress(String)}
      *
+     * @see {@link android.webkit.WebView#findAddress(String)}
      * @param addr The string to search for addresses.
      * @return the address, or if no address is found, return null.
      */
@@ -188,16 +196,61 @@ public class AwContentsStatics {
         return header;
     }
 
+    // Note that this can be called before browser process initialization.
+    public static void setDefaultTrafficStatsTag(int tag) {
+        sDefaultTrafficStatsTag = tag;
+    }
+
+    // Note that this can be called before browser process initialization.
+    public static void setDefaultTrafficStatsUid(int uid) {
+        sDefaultTrafficStatsUid = uid;
+    }
+
+    public static void setRendererLibraryPrefetchMode(int mode) {
+        AwContentsStaticsJni.get().setRendererLibraryPrefetchMode(mode);
+    }
+
+    public static int getRendererLibraryPrefetchMode() {
+        return AwContentsStaticsJni.get().getRendererLibraryPrefetchMode();
+    }
+
+    public static void setSelectionActionMenuClient(
+            @Nullable SelectionActionMenuClientWrapper client) {
+        sSelectionActionMenuClient = client;
+    }
+
+    public static @Nullable SelectionActionMenuClientWrapper getSelectionActionMenuClient() {
+        return sSelectionActionMenuClient;
+    }
+
+    @CalledByNative
+    static int getDefaultTrafficStatsTag() {
+        return sDefaultTrafficStatsTag;
+    }
+
+    @CalledByNative
+    static int getDefaultTrafficStatsUid() {
+        return sDefaultTrafficStatsUid;
+    }
+
+    public static void forceVariationIdsForTesting( // IN-TEST
+            List<String> variationIds, String commandLineVariationIds) {
+        AwContentsStaticsJni.get()
+                .forceVariationIdsForTesting(variationIds, commandLineVariationIds); // IN-TEST
+    }
+
     @NativeMethods
     interface Natives {
         void logCommandLineForDebugging();
 
         void logFlagMetrics(String[] switches, String[] features);
 
+        @JniType("std::string")
         String getSafeBrowsingPrivacyPolicyUrl();
 
         void clearClientCertPreferences(Runnable callback);
 
+        @JniType("std::string")
         String getUnreachableWebDataUrl();
 
         String getProductVersion();
@@ -208,6 +261,15 @@ public class AwContentsStatics {
 
         boolean isMultiProcessEnabled();
 
+        @JniType("std::string")
         String getVariationsHeader();
+
+        void setRendererLibraryPrefetchMode(int mode);
+
+        int getRendererLibraryPrefetchMode();
+
+        void forceVariationIdsForTesting( // IN-TEST
+                @JniType("std::vector<std::string>") List<String> variationIds,
+                @JniType("std::string") String commandLineVariationIds);
     }
 }

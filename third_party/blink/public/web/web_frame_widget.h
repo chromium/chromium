@@ -33,6 +33,8 @@
 
 #include <stdint.h>
 
+#include <vector>
+
 #include "base/functional/callback_forward.h"
 #include "base/types/pass_key.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -41,7 +43,6 @@
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_touch_action.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_widget.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
@@ -63,7 +64,7 @@ class RectF;
 }  // namespace gfx
 
 namespace viz {
-struct FrameTimingDetails;
+class FrameTimingDetails;
 class LocalSurfaceId;
 }  // namespace viz
 
@@ -94,10 +95,12 @@ class WebFrameWidget : public WebWidget {
   // Returns the local root of this WebFrameWidget.
   virtual WebLocalFrame* LocalRoot() const = 0;
 
-  // Converts from Blink coordinate (ie. Viewport/Physical pixels) space to
-  // DIPs.
-  virtual gfx::RectF BlinkSpaceToDIPs(const gfx::RectF& rect) = 0;
-  virtual gfx::Rect BlinkSpaceToEnclosedDIPs(const gfx::Rect& rect) = 0;
+  // Conversions between Blink coordinate (ie. Viewport/Physical pixels) space
+  // and DIPs (Device Independent Pixels).
+  virtual gfx::RectF BlinkSpaceToDIPs(const gfx::RectF&) = 0;
+  virtual gfx::Rect BlinkSpaceToEnclosedDIPs(const gfx::Rect&) = 0;
+  virtual gfx::PointF DIPsToBlinkSpace(const gfx::PointF&) = 0;
+  virtual gfx::RectF DIPsToBlinkSpace(const gfx::RectF& rect) = 0;
 
   // Current instance of the active WebInputMethodController, that is, the
   // WebInputMethodController corresponding to (and owned by) the focused
@@ -225,7 +228,7 @@ class WebFrameWidget : public WebWidget {
   // Get the viewport segments for this widget.
   // See
   // https://github.com/WICG/visual-viewport/blob/gh-pages/segments-explainer/SEGMENTS-EXPLAINER.md
-  virtual const WebVector<gfx::Rect>& ViewportSegments() const = 0;
+  virtual const std::vector<gfx::Rect>& ViewportSegments() const = 0;
 
   // Release any mouse lock or pointer capture held. This is used to reset
   // state between WebTest runs.
@@ -252,6 +255,10 @@ class WebFrameWidget : public WebWidget {
   // Changes the zoom level to the specified level, clamping at the limits
   // defined by the associated `webView`.
   virtual void SetZoomLevel(double zoom_level) = 0;
+
+  // Returns the cumulative effect of the CSS "zoom" property on the embedding
+  // element of this widget (if any) and all of its WebFrame ancestors.
+  virtual double GetCSSZoomFactor() const = 0;
 
   // Update the LocalSurfaceId used for frames produced by this widget.
   virtual void ApplyLocalSurfaceIdUpdate(const viz::LocalSurfaceId& id) = 0;

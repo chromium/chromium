@@ -26,6 +26,8 @@ class MockAutofillKeyboardAccessoryView : public AutofillKeyboardAccessoryView {
               ConfirmDeletion,
               (const std::u16string&,
                const std::u16string&,
+               const std::u16string&,
+               const std::u16string&,
                base::OnceCallback<void(bool)>),
               (override));
 };

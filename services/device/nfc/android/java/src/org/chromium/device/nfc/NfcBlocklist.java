@@ -11,6 +11,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.variations.VariationsAssociatedData;
 
 import java.util.ArrayList;
@@ -22,6 +24,7 @@ import java.util.List;
  * blocklist was introduced to block access to YubiKeys. Without it, websites could use Web
  * NFC to read NDEF URI record in YubiKeys that includes the OTP code.
  */
+@NullMarked
 public class NfcBlocklist {
     private static final String TAG = "NfcBlocklist";
 
@@ -51,9 +54,9 @@ public class NfcBlocklist {
 
     private final List<byte[]> mServerProvidedHistoricalBytes = new ArrayList<byte[]>();
 
-    private static NfcBlocklist sInstance;
+    private static @Nullable NfcBlocklist sInstance;
 
-    private Boolean mIsTagBlockedForTesting;
+    private @Nullable Boolean mIsTagBlockedForTesting;
 
     public static NfcBlocklist getInstance() {
         if (sInstance == null) {
@@ -92,7 +95,7 @@ public class NfcBlocklist {
         }
     }
 
-    private static byte[] hexStringToByteArray(String str) {
+    private static byte @Nullable [] hexStringToByteArray(String str) {
         int len = str.length();
         if (len % 2 == 1) {
             Log.w(TAG, "Length of %s is odd", str);
@@ -115,7 +118,7 @@ public class NfcBlocklist {
      * Returns true if tag is blocked, otherwise false. A tag is blocked if it is part of
      * STATIC_HISTORICAL_BYTES or server provided historical bytes.
      *
-     * @param tag @see android.nfc.Tag
+     * @see android.nfc.Tag
      * @return true if tag is blocked, otherwise false.
      */
     public boolean isTagBlocked(Tag tag) {
@@ -138,10 +141,9 @@ public class NfcBlocklist {
     }
 
     /**
-     * Returns true if historical bytes are part of
-     * STATIC_HISTORICAL_BYTES or server provided historical bytes.
+     * Returns true if historical bytes are part of STATIC_HISTORICAL_BYTES or server provided
+     * historical bytes.
      *
-     * @param byte[] historical bytes from a NFC tag
      * @return true if historical bytes are blocked, otherwise false.
      */
     @VisibleForTesting

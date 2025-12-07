@@ -1,0 +1,26 @@
+{
+  "metadata" : {
+    "browser_name" : "Safari",
+    "browser_version" : "18.4",
+    "data_type" : "history",
+    "export_time_usec" : 1751296375693668,
+    "schema_version" : 1
+  },
+  "history" : [
+    {
+      "url" : "https://www.whatsmydns.net/example-multi-redirect",
+      "time_usec" : 1751296375691025,
+      "visit_count" : 1,
+      "destination_url" : "https://www.whatsmydns.net/",
+      "destination_time_usec" : 1751296375691668
+    },
+    {
+      "url" : "https://www.whatsmydns.net/",
+      "time_usec" : 1751296375691668,
+      "visit_count" : 1,
+      "title" : "DNS Propagation Checker - Global DNS Testing Tool",
+      "source_url" : "https://www.whatsmydns.net/example-multi-redirect",
+      "source_time_usec" : 1751296375691025
+    }
+  ]
+}

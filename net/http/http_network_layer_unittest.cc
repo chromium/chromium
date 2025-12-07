@@ -83,30 +83,29 @@ class HttpNetworkLayerTest : public PlatformTest, public WithTaskEnvironment {
 };
 
 TEST_F(HttpNetworkLayerTest, CreateAndDestroy) {
-  std::unique_ptr<HttpTransaction> trans;
-  int rv = factory_->CreateTransaction(DEFAULT_PRIORITY, &trans);
-  EXPECT_THAT(rv, IsOk());
-  EXPECT_TRUE(trans.get() != nullptr);
+  auto trans = factory_->CreateTransaction(DEFAULT_PRIORITY);
+  EXPECT_TRUE(trans);
 }
 
 TEST_F(HttpNetworkLayerTest, Suspend) {
-  std::unique_ptr<HttpTransaction> trans;
-  int rv = factory_->CreateTransaction(DEFAULT_PRIORITY, &trans);
-  EXPECT_THAT(rv, IsOk());
+  TestCompletionCallback callback;
 
-  trans.reset();
+  HttpRequestInfo request_info;
+  request_info.url = GURL("http://www.google.com/");
+  request_info.method = "GET";
+  request_info.extra_headers.SetHeader(HttpRequestHeaders::kUserAgent,
+                                       "Foo/1.0");
+  request_info.load_flags = LOAD_NORMAL;
+  request_info.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  factory_->OnSuspend();
+  std::unique_ptr<HttpTransaction> trans =
+      factory_->CreateTransaction(DEFAULT_PRIORITY);
+  ASSERT_TRUE(trans);
+  factory_->GetSession()->OnSuspend();
 
-  rv = factory_->CreateTransaction(DEFAULT_PRIORITY, &trans);
+  int rv = trans->Start(&request_info, callback.callback(), NetLogWithSource());
   EXPECT_THAT(rv, IsError(ERR_NETWORK_IO_SUSPENDED));
-
-  ASSERT_TRUE(trans == nullptr);
-
-  factory_->OnResume();
-
-  rv = factory_->CreateTransaction(DEFAULT_PRIORITY, &trans);
-  EXPECT_THAT(rv, IsOk());
 }
 
 TEST_F(HttpNetworkLayerTest, GET) {
@@ -135,11 +134,11 @@ TEST_F(HttpNetworkLayerTest, GET) {
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  std::unique_ptr<HttpTransaction> trans;
-  int rv = factory_->CreateTransaction(DEFAULT_PRIORITY, &trans);
-  EXPECT_THAT(rv, IsOk());
+  std::unique_ptr<HttpTransaction> trans =
+      factory_->CreateTransaction(DEFAULT_PRIORITY);
+  ASSERT_TRUE(trans);
 
-  rv = trans->Start(&request_info, callback.callback(), NetLogWithSource());
+  int rv = trans->Start(&request_info, callback.callback(), NetLogWithSource());
   rv = callback.GetResult(rv);
   ASSERT_THAT(rv, IsOk());
 
@@ -175,11 +174,11 @@ TEST_F(HttpNetworkLayerTest, NetworkVerified) {
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  std::unique_ptr<HttpTransaction> trans;
-  int rv = factory_->CreateTransaction(DEFAULT_PRIORITY, &trans);
-  EXPECT_THAT(rv, IsOk());
+  std::unique_ptr<HttpTransaction> trans =
+      factory_->CreateTransaction(DEFAULT_PRIORITY);
+  ASSERT_TRUE(trans);
 
-  rv = trans->Start(&request_info, callback.callback(), NetLogWithSource());
+  int rv = trans->Start(&request_info, callback.callback(), NetLogWithSource());
   ASSERT_THAT(callback.GetResult(rv), IsOk());
 
   EXPECT_TRUE(trans->GetResponseInfo()->network_accessed);
@@ -209,11 +208,11 @@ TEST_F(HttpNetworkLayerTest, NetworkUnVerified) {
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  std::unique_ptr<HttpTransaction> trans;
-  int rv = factory_->CreateTransaction(DEFAULT_PRIORITY, &trans);
-  EXPECT_THAT(rv, IsOk());
+  std::unique_ptr<HttpTransaction> trans =
+      factory_->CreateTransaction(DEFAULT_PRIORITY);
+  ASSERT_TRUE(trans);
 
-  rv = trans->Start(&request_info, callback.callback(), NetLogWithSource());
+  int rv = trans->Start(&request_info, callback.callback(), NetLogWithSource());
   ASSERT_THAT(callback.GetResult(rv), IsError(ERR_CONNECTION_RESET));
 
   // network_accessed is true; the HTTP stack did try to make a connection.

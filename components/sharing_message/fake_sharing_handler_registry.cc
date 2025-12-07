@@ -4,7 +4,7 @@
 
 #include "components/sharing_message/fake_sharing_handler_registry.h"
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "components/sharing_message/sharing_message_handler.h"
 
 FakeSharingHandlerRegistry::FakeSharingHandlerRegistry() = default;

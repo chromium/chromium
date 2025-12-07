@@ -16,7 +16,10 @@
 #include "components/url_matcher/url_matcher.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -36,7 +39,7 @@ class DeclarativeContentPageUrlConditionTrackerTest
  protected:
   class Delegate : public ContentPredicateEvaluator::Delegate {
    public:
-    Delegate() {}
+    Delegate() = default;
 
     Delegate(const Delegate&) = delete;
     Delegate& operator=(const Delegate&) = delete;
@@ -47,12 +50,12 @@ class DeclarativeContentPageUrlConditionTrackerTest
     }
 
     // ContentPredicateEvaluator::Delegate:
-    void RequestEvaluation(content::WebContents* contents) override {
+    void NotifyPredicateStateUpdated(content::WebContents* contents) override {
       EXPECT_FALSE(base::Contains(evaluation_requests_, contents));
       evaluation_requests_.insert(contents);
     }
 
-    bool ShouldManageConditionsForBrowserContext(
+    bool ShouldManagePredicatesForBrowserContext(
         content::BrowserContext* context) override {
       return true;
     }

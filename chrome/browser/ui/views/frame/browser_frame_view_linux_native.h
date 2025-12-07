@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_LINUX_NATIVE_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_LINUX_NATIVE_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_linux.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -19,7 +21,7 @@ class BrowserFrameViewLinuxNative : public BrowserFrameViewLinux {
   METADATA_HEADER(BrowserFrameViewLinuxNative, BrowserFrameViewLinux)
  public:
   BrowserFrameViewLinuxNative(
-      BrowserFrame* frame,
+      BrowserWidget* widget,
       BrowserView* browser_view,
       BrowserFrameViewLayoutLinuxNative* layout,
       std::unique_ptr<ui::NavButtonProvider> nav_button_provider);
@@ -34,6 +36,7 @@ class BrowserFrameViewLinuxNative : public BrowserFrameViewLinux {
   void Layout(PassKey) override;
   FrameButtonStyle GetFrameButtonStyle() const override;
   int GetTranslucentTopAreaHeight() const override;
+  BrowserLayoutParams GetBrowserLayoutParams() const override;
 
  protected:
   // BrowserFrameViewLinux:
@@ -62,7 +65,9 @@ class BrowserFrameViewLinuxNative : public BrowserFrameViewLinux {
 
   const raw_ptr<BrowserFrameViewLayoutLinuxNative> layout_;
 
-  DrawFrameButtonParams cache_{0, false, false};
+  // Cache the last parameters with which the caption buttons were drawn.
+  // Parameters still need to be computed even if the buttons cannot be drawn.
+  std::optional<DrawFrameButtonParams> cache_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_LINUX_NATIVE_H_

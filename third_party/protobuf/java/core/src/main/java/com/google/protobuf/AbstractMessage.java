@@ -1,32 +1,9 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// https://developers.google.com/protocol-buffers/
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above
-// copyright notice, this list of conditions and the following disclaimer
-// in the documentation and/or other materials provided with the
-// distribution.
-//     * Neither the name of Google Inc. nor the names of its
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 
 package com.google.protobuf;
 
@@ -47,10 +24,17 @@ import java.util.Map;
  * A partial implementation of the {@link Message} interface which implements as many methods of
  * that interface as possible in terms of other methods.
  *
+ * <p>Users should generally ignore this class and use the Message interface instead.
+ *
+ * <p>This class is intended to only be extended by protoc created gencode. It is not intended or
+ * supported to extend this class, and any protected methods may be removed without it being
+ * considered a breaking change as long as all supported gencode does not depend on the changed
+ * methods.
+ *
  * @author kenton@google.com Kenton Varda
  */
 public abstract class AbstractMessage
-    // TODO(dweis): Update GeneratedMessage to parameterize with MessageType and BuilderType.
+    // TODO: Update GeneratedMessage to parameterize with MessageType and BuilderType.
     extends AbstractMessageLite implements Message {
 
   @Override
@@ -83,7 +67,6 @@ public abstract class AbstractMessage
     throw new UnsupportedOperationException("Nested builder is not supported for this type.");
   }
 
-
   @Override
   public List<String> findInitializationErrors() {
     return MessageReflection.findMissingFields(this);
@@ -94,13 +77,13 @@ public abstract class AbstractMessage
     return MessageReflection.delimitWithCommas(findInitializationErrors());
   }
 
-  // TODO(jieluo): Clear it when all subclasses have implemented this method.
+  // TODO: Clear it when all subclasses have implemented this method.
   @Override
   public boolean hasOneof(OneofDescriptor oneof) {
     throw new UnsupportedOperationException("hasOneof() is not implemented.");
   }
 
-  // TODO(jieluo): Clear it when all subclasses have implemented this method.
+  // TODO: Clear it when all subclasses have implemented this method.
   @Override
   public FieldDescriptor getOneofFieldDescriptor(OneofDescriptor oneof) {
     throw new UnsupportedOperationException("getOneofFieldDescriptor() is not implemented.");
@@ -108,7 +91,8 @@ public abstract class AbstractMessage
 
   @Override
   public final String toString() {
-    return TextFormat.printer().printToString(this);
+    return TextFormat.Printer.getOutputModePrinter()
+        .printToString(this, TextFormat.Printer.FieldReporterLevel.ABSTRACT_TO_STRING);
   }
 
   @Override
@@ -139,6 +123,17 @@ public abstract class AbstractMessage
     return memoizedSize;
   }
 
+  /*
+   * This method will only ever return true if `this` and `other` have the same descriptor instance
+   * for their type (including a gencode message compared to a `DynamicMessage` constructed using
+   * the same descriptor instance).
+   *
+   * For reasons of backward compatibility, a comparison
+   * involving `DynamicMessage` that is constructed using semantically the same descriptor which
+   * was loaded separately (such that the reference identity of the descriptors does not match) will
+   * always return false even if there is otherwise no skew between the descriptors and the contents
+   * of the instances.
+   */
   @Override
   public boolean equals(final Object other) {
     if (other == this) {
@@ -325,19 +320,19 @@ public abstract class AbstractMessage
       throw new UnsupportedOperationException("clone() should be implemented in subclasses.");
     }
 
-    /** TODO(jieluo): Clear it when all subclasses have implemented this method. */
+    /** TODO: Clear it when all subclasses have implemented this method. */
     @Override
     public boolean hasOneof(OneofDescriptor oneof) {
       throw new UnsupportedOperationException("hasOneof() is not implemented.");
     }
 
-    /** TODO(jieluo): Clear it when all subclasses have implemented this method. */
+    /** TODO: Clear it when all subclasses have implemented this method. */
     @Override
     public FieldDescriptor getOneofFieldDescriptor(OneofDescriptor oneof) {
       throw new UnsupportedOperationException("getOneofFieldDescriptor() is not implemented.");
     }
 
-    /** TODO(jieluo): Clear it when all subclasses have implemented this method. */
+    /** TODO: Clear it when all subclasses have implemented this method. */
     @Override
     public BuilderType clearOneof(OneofDescriptor oneof) {
       throw new UnsupportedOperationException("clearOneof() is not implemented.");
@@ -461,7 +456,8 @@ public abstract class AbstractMessage
 
     @Override
     public String toString() {
-      return TextFormat.printer().printToString(this);
+      return TextFormat.Printer.getOutputModePrinter()
+          .printToString(this, TextFormat.Printer.FieldReporterLevel.ABSTRACT_BUILDER_TO_STRING);
     }
 
     /** Construct an UninitializedMessageException reporting missing fields in the given message. */
@@ -561,45 +557,5 @@ public abstract class AbstractMessage
         final InputStream input, final ExtensionRegistryLite extensionRegistry) throws IOException {
       return (BuilderType) super.mergeFrom(input, extensionRegistry);
     }
-  }
-
-  /**
-   * @deprecated from v3.0.0-beta-3+, for compatibility with v2.5.0 and v2.6.1
-   * generated code.
-   */
-  @Deprecated
-  protected static int hashLong(long n) {
-    return (int) (n ^ (n >>> 32));
-  }
-  //
-  /**
-   * @deprecated from v3.0.0-beta-3+, for compatibility with v2.5.0 and v2.6.1
-   * generated code.
-   */
-  @Deprecated
-  protected static int hashBoolean(boolean b) {
-    return b ? 1231 : 1237;
-  }
-  //
-  /**
-   * @deprecated from v3.0.0-beta-3+, for compatibility with v2.5.0 and v2.6.1
-   * generated code.
-   */
-  @Deprecated
-  protected static int hashEnum(EnumLite e) {
-    return e.getNumber();
-  }
-  //
-  /**
-   * @deprecated from v3.0.0-beta-3+, for compatibility with v2.5.0 and v2.6.1
-   * generated code.
-   */
-  @Deprecated
-  protected static int hashEnumList(List<? extends EnumLite> list) {
-    int hash = 1;
-    for (EnumLite e : list) {
-      hash = 31 * hash + hashEnum(e);
-    }
-    return hash;
   }
 }

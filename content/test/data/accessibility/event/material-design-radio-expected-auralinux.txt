@@ -1,0 +1,49 @@
+=== Accessibility tree before go() pass 1 ===
+[document web] name='Material Web Radio Events' focused
+++[section] name='Ready'
+++++[radio button] name='Option 1' checkable checkable:true
+++++[radio button] name='Option 2' checkable checkable:true
+++++[radio button] name='Option 3' checkable checkable:true
+=== End accessibility tree ===
+STATE-CHANGE:CHECKED:TRUE role=ROLE_RADIO_BUTTON name='Option 1' CHECKED,ENABLED,FOCUSABLE,SENSITIVE,SHOWING,VISIBLE,CHECKABLE
+=== Accessibility tree after go() pass 1 ===
+[document web] name='Material Web Radio Events' focused
+++[section] name='Ready'
+++++[radio button] name='Option 1' checked checkable checkable:true <<<<<< CHANGED
+++++[radio button] name='Option 2' checkable checkable:true
+++++[radio button] name='Option 3' checkable checkable:true
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 2 ===
+[document web] name='Material Web Radio Events' focused
+++[section] name='Ready'
+++++[radio button] name='Option 1' checked checkable checkable:true
+++++[radio button] name='Option 2' checkable checkable:true
+++++[radio button] name='Option 3' checkable checkable:true
+=== End accessibility tree ===
+STATE-CHANGE:CHECKED:FALSE role=ROLE_RADIO_BUTTON name='Option 1' ENABLED,FOCUSABLE,SENSITIVE,SHOWING,VISIBLE,CHECKABLE
+STATE-CHANGE:CHECKED:TRUE role=ROLE_RADIO_BUTTON name='Option 2' CHECKED,ENABLED,FOCUSABLE,SENSITIVE,SHOWING,VISIBLE,CHECKABLE
+=== Accessibility tree after go() pass 2 ===
+[document web] name='Material Web Radio Events' focused
+++[section] name='Ready'
+++++[radio button] name='Option 1' checkable checkable:true <<<<<< CHANGED
+++++[radio button] name='Option 2' checked checkable checkable:true <<<<<< CHANGED
+++++[radio button] name='Option 3' checkable checkable:true
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 3 ===
+[document web] name='Material Web Radio Events' focused
+++[section] name='Ready'
+++++[radio button] name='Option 1' checkable checkable:true
+++++[radio button] name='Option 2' checked checkable checkable:true
+++++[radio button] name='Option 3' checkable checkable:true
+=== End accessibility tree ===
+STATE-CHANGE:CHECKED:FALSE role=ROLE_RADIO_BUTTON name='Option 2' ENABLED,FOCUSABLE,SENSITIVE,SHOWING,VISIBLE,CHECKABLE
+STATE-CHANGE:CHECKED:TRUE role=ROLE_RADIO_BUTTON name='Option 3' CHECKED,ENABLED,FOCUSABLE,SENSITIVE,SHOWING,VISIBLE,CHECKABLE
+=== Accessibility tree after go() pass 3 ===
+[document web] name='Material Web Radio Events' focused
+++[section] name='Ready'
+++++[radio button] name='Option 1' checkable checkable:true
+++++[radio button] name='Option 2' checkable checkable:true <<<<<< CHANGED
+++++[radio button] name='Option 3' checked checkable checkable:true <<<<<< CHANGED
+=== End accessibility tree ===

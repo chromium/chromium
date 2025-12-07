@@ -19,6 +19,7 @@
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
@@ -74,9 +75,10 @@ class TestContextMenuController : public ContextMenuController {
   ~TestContextMenuController() override = default;
 
   // ContextMenuController:
-  void ShowContextMenuForViewImpl(View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override {}
+  void ShowContextMenuForViewImpl(
+      View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override {}
 };
 
 class TestButton : public Button {
@@ -95,8 +97,9 @@ class TestButton : public Button {
   ~TestButton() override = default;
 
   KeyClickAction GetKeyClickActionForEvent(const ui::KeyEvent& event) override {
-    if (custom_key_click_action_ == KeyClickAction::kNone)
+    if (custom_key_click_action_ == KeyClickAction::kNone) {
       return Button::GetKeyClickActionForEvent(event);
+    }
     return custom_key_click_action_;
   }
 
@@ -189,7 +192,7 @@ class ButtonTest : public ViewsTestBase {
     // correctly.
     widget_ = std::make_unique<Widget>();
     Widget::InitParams params =
-        CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
                      Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     params.bounds = gfx::Rect(0, 0, 650, 650);
     widget_->Init(std::move(params));
@@ -267,9 +270,8 @@ TEST_F(ButtonTest, HoverStateOnVisibilityChange) {
     // If another widget has capture, the button should ignore mouse position
     // and not enter hovered state.
     Widget second_widget;
-    Widget::InitParams params =
-        CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                     Widget::InitParams::TYPE_POPUP);
+    Widget::InitParams params = CreateParams(
+        Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
     params.bounds = gfx::Rect(700, 700, 10, 10);
     second_widget.Init(std::move(params));
     second_widget.Show();
@@ -319,7 +321,7 @@ TEST_F(ButtonTest, HoverStatePreservedOnDescendantViewHierarchyChange) {
 
   EXPECT_EQ(Button::STATE_HOVERED, button()->GetState());
   Label* child = new Label(std::u16string());
-  button()->AddChildView(child);
+  button()->AddChildViewRaw(child);
   delete child;
   EXPECT_EQ(Button::STATE_HOVERED, button()->GetState());
 }
@@ -559,7 +561,7 @@ TEST_F(ButtonTest, HideInkDropWhenShowingContextMenu) {
   ink_drop->SetHovered(true);
   ink_drop->AnimateToState(InkDropState::ACTION_PENDING);
 
-  button()->ShowContextMenu(gfx::Point(), ui::MENU_SOURCE_MOUSE);
+  button()->ShowContextMenu(gfx::Point(), ui::mojom::MenuSourceType::kMouse);
 
   EXPECT_FALSE(ink_drop->is_hovered());
   EXPECT_EQ(InkDropState::HIDDEN, ink_drop->GetTargetInkDropState());
@@ -574,7 +576,7 @@ TEST_F(ButtonTest, DontHideInkDropWhenShowingContextMenu) {
   ink_drop->SetHovered(true);
   ink_drop->AnimateToState(InkDropState::ACTION_PENDING);
 
-  button()->ShowContextMenu(gfx::Point(), ui::MENU_SOURCE_MOUSE);
+  button()->ShowContextMenu(gfx::Point(), ui::mojom::MenuSourceType::kMouse);
 
   EXPECT_TRUE(ink_drop->is_hovered());
   EXPECT_EQ(InkDropState::ACTION_PENDING, ink_drop->GetTargetInkDropState());
@@ -619,7 +621,7 @@ TEST_F(ButtonTest, InkDropAfterTryingToShowContextMenu) {
   ink_drop->SetHovered(true);
   ink_drop->AnimateToState(InkDropState::ACTION_PENDING);
 
-  button()->ShowContextMenu(gfx::Point(), ui::MENU_SOURCE_MOUSE);
+  button()->ShowContextMenu(gfx::Point(), ui::mojom::MenuSourceType::kMouse);
 
   EXPECT_TRUE(ink_drop->is_hovered());
   EXPECT_EQ(InkDropState::ACTION_PENDING, ink_drop->GetTargetInkDropState());
@@ -804,8 +806,9 @@ class VisibilityTestButton : public TestButton {
  public:
   VisibilityTestButton() : TestButton(false) {}
   ~VisibilityTestButton() override {
-    if (layer())
+    if (layer()) {
       ADD_FAILURE();
+    }
   }
 
   void AddLayerToRegion(ui::Layer* layer, views::LayerRegion region) override {
@@ -982,11 +985,11 @@ TEST_F(ButtonTest, SetStateNotifiesObserver) {
 // Verifies setting the tooltip text will call NotifyAccessibilityEvent.
 TEST_F(ButtonTest, SetTooltipTextNotifiesAccessibilityEvent) {
   std::u16string test_tooltip_text = u"Test Tooltip Text";
-  test::AXEventCounter counter(views::AXEventManager::Get());
+  test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged));
   button()->SetTooltipText(test_tooltip_text);
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged));
-  EXPECT_EQ(test_tooltip_text, button()->GetTooltipText(gfx::Point()));
+  EXPECT_EQ(test_tooltip_text, button()->GetRenderedTooltipText(gfx::Point()));
   ui::AXNodeData data;
   button()->GetViewAccessibility().GetAccessibleNodeData(&data);
   const std::string& name =
@@ -1008,6 +1011,52 @@ TEST_F(ButtonTest, AccessibleRole) {
   EXPECT_EQ(data.role, ax::mojom::Role::kCheckBox);
   EXPECT_EQ(button()->GetViewAccessibility().GetCachedRole(),
             ax::mojom::Role::kCheckBox);
+}
+
+// Verify that when there is no accessible name, the tooltip text is used as the
+// name.
+TEST_F(ButtonTest, SetTooltipTextAccessibleName) {
+  std::u16string test_tooltip_text = u"Test Tooltip Text";
+  button()->SetTooltipText(test_tooltip_text);
+  button()->SetAccessibleName(std::u16string());
+  EXPECT_EQ(test_tooltip_text, button()->GetRenderedTooltipText(gfx::Point()));
+  ui::AXNodeData data;
+  button()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  const std::string& name =
+      data.GetStringAttribute(ax::mojom::StringAttribute::kName);
+  EXPECT_EQ(test_tooltip_text, base::ASCIIToUTF16(name));
+}
+
+// Verify that the tooltip text will be used as the accessible description.
+TEST_F(ButtonTest, SetTooltipTextAccessibleDescription) {
+  std::u16string test_tooltip_text = u"Test Tooltip Text";
+  std::u16string test_name = u"Test Name";
+  button()->SetTooltipText(test_tooltip_text);
+  button()->SetAccessibleName(test_name);
+  EXPECT_EQ(test_tooltip_text, button()->GetRenderedTooltipText(gfx::Point()));
+  ui::AXNodeData data;
+  button()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  const std::string& name =
+      data.GetStringAttribute(ax::mojom::StringAttribute::kName);
+  EXPECT_EQ(test_name, base::ASCIIToUTF16(name));
+  const std::string& description =
+      data.GetStringAttribute(ax::mojom::StringAttribute::kDescription);
+  EXPECT_EQ(test_tooltip_text, base::ASCIIToUTF16(description));
+}
+
+TEST_F(ButtonTest, AccessibleCheckedState) {
+  ui::AXNodeData data;
+  event_generator()->MoveMouseTo(button()->GetBoundsInScreen().CenterPoint());
+  event_generator()->PressLeftButton();
+  EXPECT_EQ(Button::STATE_PRESSED, button()->GetState());
+  button()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kTrue);
+
+  event_generator()->ReleaseLeftButton();
+  EXPECT_EQ(Button::STATE_HOVERED, button()->GetState());
+  data = ui::AXNodeData();
+  button()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kNone);
 }
 
 TEST_F(ButtonTest, AccessibleDefaultActionVerb) {

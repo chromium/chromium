@@ -1,0 +1,97 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+#container {
+  align-items: center;
+  display: grid;
+  grid-template-columns: 1fr 3fr 1fr;
+  margin: 12px auto;
+  width: 100%;
+}
+
+#infoContainer {
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+}
+
+.notice-item {
+  min-width: calc-size(fit-content, min(50%, size));
+  padding: 0 16px;
+  position: relative;
+}
+
+.notice-item > p,
+.notice-item > button {
+  color: var(--color-new-tab-footer-text);
+  font-size: 13px;
+  line-height: 20px;
+  margin: 0;
+  overflow: hidden;
+  padding: 6px 0;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+[role="link"] {
+  border:none;
+  background: none;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* Add a vertical divider after each container item in the footer
+ * except the last one. */
+#infoContainer > div:not(:last-child):after {
+  background-color: var(--color-new-tab-footer-text);
+  content: "";
+  display: inline-block;
+  height: 13px;
+  position: absolute;
+  right: 0;
+  top: calc(50% - 6px);
+  width: 1px;
+}
+
+#customizeButtons {
+  display: flex;
+  justify-content: flex-end;
+  margin-inline-end: 16px;
+}
+
+#managementNoticeContainer {
+  display: flex;
+}
+
+#managementNoticeLogoContainer {
+  align-items: center;
+  display: flex;
+  flex-shrink: 0;
+  height: 32px;
+  justify-content: center;
+  width: 32px;
+  margin-right: 8px;
+}
+
+.custom_logo {
+  background-color: var(--color-new-tab-footer-logo-background);
+  border-radius: 8px;
+}
+
+#managementNoticeLogoContainer > cr-icon,
+#managementNoticeLogoContainer > img {
+  width: 20px;
+  height: 20px;
+}
+
+cr-icon {
+   --iron-icon-fill-color: var(--color-new-tab-footer-text);
+}

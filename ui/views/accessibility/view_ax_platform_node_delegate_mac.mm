@@ -15,7 +15,8 @@
 namespace views {
 
 // static
-std::unique_ptr<ViewAccessibility> ViewAccessibility::Create(View* view) {
+std::unique_ptr<ViewAccessibility>
+ViewAXPlatformNodeDelegate::CreatePlatformSpecific(View* view) {
   auto result = std::make_unique<ViewAXPlatformNodeDelegateMac>(view);
   result->Init();
   return result;
@@ -28,29 +29,34 @@ ViewAXPlatformNodeDelegateMac::~ViewAXPlatformNodeDelegateMac() = default;
 
 gfx::NativeViewAccessible ViewAXPlatformNodeDelegateMac::GetNSWindow() {
   auto* widget = view()->GetWidget();
-  if (!widget)
-    return nil;
+  if (!widget) {
+    return gfx::NativeViewAccessible();
+  }
 
   auto* window_host = NativeWidgetMacNSWindowHost::GetFromNativeWindow(
       widget->GetNativeWindow());
-  if (!window_host)
-    return nil;
+  if (!window_host) {
+    return gfx::NativeViewAccessible();
+  }
 
   return window_host->GetNativeViewAccessibleForNSWindow();
 }
 
 gfx::NativeViewAccessible ViewAXPlatformNodeDelegateMac::GetParent() const {
-  if (view()->parent())
+  if (view()->parent()) {
     return ViewAXPlatformNodeDelegate::GetParent();
+  }
 
   auto* widget = view()->GetWidget();
-  if (!widget)
-    return nil;
+  if (!widget) {
+    return gfx::NativeViewAccessible();
+  }
 
   auto* window_host = NativeWidgetMacNSWindowHost::GetFromNativeWindow(
       view()->GetWidget()->GetNativeWindow());
-  if (!window_host)
-    return nil;
+  if (!window_host) {
+    return gfx::NativeViewAccessible();
+  }
 
   return window_host->GetNativeViewAccessibleForNSView();
 }
@@ -58,7 +64,7 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegateMac::GetParent() const {
 void ViewAXPlatformNodeDelegateMac::OverrideNativeWindowTitle(
     const std::string& title) {
   if (gfx::NativeViewAccessible ax_window = GetNSWindow()) {
-    [ax_window setAccessibilityLabel:base::SysUTF8ToNSString(title)];
+    [ax_window.Get() setAccessibilityLabel:base::SysUTF8ToNSString(title)];
   }
 }
 

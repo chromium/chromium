@@ -56,7 +56,7 @@ class ImportNotifierTest(unittest.TestCase):
         self.host.filesystem.write_text_file(
             self.finder.path_from_wpt_tests('MANIFEST.json'),
             json.dumps({
-                'version': 8,
+                'version': 9,
                 'items': {
                     'testharness': {
                         'foo': {
@@ -207,10 +207,8 @@ class ImportNotifierTest(unittest.TestCase):
 
     def _setup_import_cl(self, messages: List[str]):
         gerrit_query = (
-            'https://chromium-review.googlesource.com/changes/'
-            '?q=owner:wpt-autoroller%40chops-service-accounts.'
-            'iam.gserviceaccount.com'
-            f'+prefixsubject:"Import+wpt%40{"f" * 40}"+status:merged'
+            'https://chromium-review.googlesource.com/changes/?q='
+            f'prefixsubject:"Import+wpt%40{"f" * 40}"+status:merged'
             '&n=1&o=CURRENT_FILES&o=CURRENT_REVISION&o=COMMIT_FOOTERS'
             '&o=DETAILED_ACCOUNTS&o=MESSAGES')
         payload = {
@@ -487,7 +485,7 @@ class ImportNotifierTest(unittest.TestCase):
         imported_commits = [
             ('SHA1', 'Subject 1'),
             # Use non-ASCII chars to really test Unicode handling.
-            ('SHA2', u'ABC~‾¥≈¤･・•∙·☼★星🌟星★☼·∙•・･¤≈¥‾~XYZ')
+            ('SHA2', 'ABC~‾¥≈¤･・•∙·☼★星🌟星★☼·∙•・･¤≈¥‾~XYZ')
         ]
 
         def _is_commit_affecting_directory(commit, directory):
@@ -499,8 +497,8 @@ class ImportNotifierTest(unittest.TestCase):
         self.assertEqual(
             self.notifier.format_commit_list(
                 imported_commits, MOCK_WEB_TESTS + 'external/wpt/foo'),
-            u'Subject 1: https://github.com/web-platform-tests/wpt/commit/SHA1 [affecting this directory]\n'
-            u'ABC~‾¥≈¤･・•∙·☼★星🌟星★☼·∙•・･¤≈¥‾~XYZ: https://github.com/web-platform-tests/wpt/commit/SHA2\n'
+            'Subject 1: https://github.com/web-platform-tests/wpt/commit/SHA1 [affecting this directory]\n'
+            'ABC~‾¥≈¤･・•∙·☼★星🌟星★☼·∙•・･¤≈¥‾~XYZ: https://github.com/web-platform-tests/wpt/commit/SHA2\n'
         )
 
     def test_find_directory_for_bug_non_virtual(self):
@@ -580,7 +578,7 @@ class ImportNotifierTest(unittest.TestCase):
             'third_party/blink/web_tests/TestExpectations#100',
             bug.description.splitlines())
         checks_url = ('See ' + CHECKS_URL_TEMPLATE + ' for details.').format(
-            '12345', '1')
+            issue=12345, patchset=1, test_filter='external/wpt/foo')
         self.assertIn(checks_url, bug.description.splitlines())
         self.assertIn(
             'This bug was filed automatically due to a new WPT test failure '

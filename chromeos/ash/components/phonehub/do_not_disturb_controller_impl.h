@@ -8,8 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/do_not_disturb_controller.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 class MessageSender;
 class UserActionRecorder;
@@ -39,7 +38,6 @@ class DoNotDisturbControllerImpl : public DoNotDisturbController {
   bool can_request_new_dnd_state_ = false;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_DO_NOT_DISTURB_CONTROLLER_IMPL_H_

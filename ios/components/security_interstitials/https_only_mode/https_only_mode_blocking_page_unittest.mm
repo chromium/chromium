@@ -22,11 +22,11 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
-using security_interstitials::IOSSecurityInterstitialPage;
-using security_interstitials::SecurityInterstitialCommand;
-using security_interstitials::MetricsHelper;
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kSpinDelaySeconds;
+using base::test::ios::WaitUntilConditionOrTimeout;
+using security_interstitials::IOSSecurityInterstitialPage;
+using security_interstitials::MetricsHelper;
+using security_interstitials::SecurityInterstitialCommand;
 
 namespace {
 
@@ -88,13 +88,13 @@ class HttpsOnlyModeBlockingPageTest : public PlatformTest {
 // allow list and reloading the page.
 TEST_F(HttpsOnlyModeBlockingPageTest, HandleProceedCommand) {
   page_ = CreateBlockingPage(&web_state_, url_, service());
-  ASSERT_FALSE(service()->IsHttpAllowedForHost(url_.host()));
+  ASSERT_FALSE(service()->IsHttpAllowedForHost(url_.GetHost()));
   ASSERT_FALSE(navigation_manager_->ReloadWasCalled());
 
   // Send the proceed command.
   SendCommand(security_interstitials::CMD_PROCEED);
 
-  EXPECT_TRUE(service()->IsHttpAllowedForHost(url_.host()));
+  EXPECT_TRUE(service()->IsHttpAllowedForHost(url_.GetHost()));
   EXPECT_TRUE(navigation_manager_->ReloadWasCalled());
 
   // Verify that metrics are recorded correctly.

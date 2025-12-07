@@ -37,9 +37,10 @@ SystemSignalsServiceHostFactory::SystemSignalsServiceHostFactory()
 
 SystemSignalsServiceHostFactory::~SystemSignalsServiceHostFactory() = default;
 
-KeyedService* SystemSignalsServiceHostFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SystemSignalsServiceHostFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new system_signals::SystemSignalsServiceHostImpl();
+  return std::make_unique<system_signals::SystemSignalsServiceHostImpl>();
 }
 
 }  // namespace enterprise_signals

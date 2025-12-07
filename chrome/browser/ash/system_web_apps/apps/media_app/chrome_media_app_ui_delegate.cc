@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/media_app_ui/file_system_access_helpers.h"
 #include "ash/webui/media_app_ui/url_constants.h"
+#include "base/check_deref.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
@@ -16,37 +17,31 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/media_app_ash.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/common/channel_info.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/user_manager/user.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/events/event_constants.h"
+#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 ChromeMediaAppUIDelegate::ChromeMediaAppUIDelegate(content::WebUI* web_ui)
     : web_ui_(web_ui) {}
 
-ChromeMediaAppUIDelegate::~ChromeMediaAppUIDelegate() {}
+ChromeMediaAppUIDelegate::~ChromeMediaAppUIDelegate() = default;
 
 std::optional<std::string> ChromeMediaAppUIDelegate::OpenFeedbackDialog() {
   Profile* profile = Profile::FromWebUI(web_ui_);
@@ -69,10 +64,9 @@ std::optional<std::string> ChromeMediaAppUIDelegate::OpenFeedbackDialog() {
 }
 
 void ChromeMediaAppUIDelegate::ToggleBrowserFullscreenMode() {
-  Browser* browser = chrome::FindBrowserWithTab(web_ui_->GetWebContents());
-  if (browser) {
-    chrome::ToggleFullscreenMode(browser);
-  }
+  views::Widget* top = views::Widget::GetTopLevelWidgetForNativeView(
+      web_ui_->GetWebContents()->GetNativeView());
+  top->SetFullscreen(!top->IsFullscreen());
 }
 
 void ChromeMediaAppUIDelegate::MaybeTriggerPdfHats() {
@@ -149,7 +143,7 @@ void ChromeMediaAppUIDelegate::IsFileArcWritableImpl(
       std::move(is_file_arc_writable_callback).Run(false);
       return;
     case VolumeType::NUM_VOLUME_TYPE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -197,33 +191,9 @@ void ChromeMediaAppUIDelegate::EditInPhotosImpl(
 void ChromeMediaAppUIDelegate::SubmitForm(const GURL& url,
                                           const std::vector<int8_t>& payload,
                                           const std::string& header) {
-  if (crosapi::browser_util::IsLacrosEnabled()) {
-    crosapi::CrosapiManager::Get()->crosapi_ash()->media_app_ash()->SubmitForm(
-        url, payload, header, base::DoNothing());
-    return;
-  }
-  // Keep this impl in sync with chrome/browser/lacros/media_app_lacros.cc
-  Profile* profile = Profile::FromWebUI(web_ui_);
-  NavigateParams navigate_params(
-      profile, url,
-      // The page transition is chosen to satisfy one of the conditions in
-      // lacros_url_handling::IsNavigationInterceptable.
-      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                ui::PAGE_TRANSITION_FROM_API |
-                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
-  navigate_params.window_action = NavigateParams::SHOW_WINDOW;
-  navigate_params.post_data = network::ResourceRequestBody::CreateFromBytes(
-      reinterpret_cast<const char*>(payload.data()), payload.size());
-  navigate_params.extra_headers = header;
-
-  navigate_params.browser = chrome::FindTabbedBrowser(profile, false);
-  if (!navigate_params.browser &&
-      Browser::GetCreationStatusForProfile(profile) ==
-          Browser::CreationStatus::kOk) {
-    Browser::CreateParams create_params(profile, navigate_params.user_gesture);
-    create_params.should_trigger_session_restore = false;
-    navigate_params.browser = Browser::Create(create_params);
-  }
-
-  Navigate(&navigate_params);
+  const user_manager::User& user =
+      CHECK_DEREF(ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+          Profile::FromWebUI(web_ui_)));
+  ash::BrowserController::GetInstance()->NewTabWithPostData(
+      user.GetAccountId(), url, base::as_byte_span(payload), header);
 }

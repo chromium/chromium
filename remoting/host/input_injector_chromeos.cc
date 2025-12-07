@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/icu_string_conversions.h"
 #include "base/location.h"
+#include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
@@ -52,8 +53,7 @@ ui::EventFlags MouseButtonToUIFlags(MouseEvent::MouseButton button) {
     case MouseEvent::BUTTON_MIDDLE:
       return ui::EF_MIDDLE_MOUSE_BUTTON;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return ui::EF_NONE;
+      NOTREACHED();
   }
 }
 
@@ -197,8 +197,9 @@ void InputInjectorChromeos::Core::InjectTextEvent(const TextEvent& event) {
     return;
   }
   ui::TextInputClient* text_input_client = input_method->GetTextInputClient();
-  if (!text_input_client) {
-    LOG(ERROR) << "text_input_client is null, can't inject text.";
+  if (!text_input_client ||
+      text_input_client->GetTextInputType() == ui::TEXT_INPUT_TYPE_NONE) {
+    LOG(ERROR) << "text_input_client is null or none, can't inject text.";
     return;
   }
 

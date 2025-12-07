@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <optional>
 #include <string>
 #include <vector>
@@ -15,9 +14,10 @@
 #include "build/build_config.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
 #include "third_party/blink/public/common/navigation/impression.h"
+#include "third_party/blink/public/mojom/annotation/annotation.mojom-forward.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-forward.h"
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-shared.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
@@ -127,7 +127,7 @@ struct BLINK_COMMON_EXPORT UntrustworthyContextMenuParams {
   GURL link_followed;
   std::vector<blink::mojom::CustomContextMenuItemPtr> custom_items;
 
-  ui::MenuSourceType source_type;
+  ui::mojom::MenuSourceType source_type;
 
   // For the outermost main frame's widget, this will be the selection rect in
   // viewport space. For a local root, this is in the coordinates of the local
@@ -137,9 +137,16 @@ struct BLINK_COMMON_EXPORT UntrustworthyContextMenuParams {
   // Start position of the selection text.
   int selection_start_offset;
 
-  // The context menu was opened by right clicking on an existing
-  // highlight/fragment.
-  bool opened_from_highlight = false;
+  // If set to a value, the context menu was opened by right clicking on an
+  // existing annotation highlight with the corresponding type.
+  std::optional<mojom::AnnotationType> annotation_type;
+
+  // True when the context menu was opened from an element with the
+  // `interestfor` attribute.
+  bool opened_from_interest_for = false;
+  // If opened_from_interest_for is true, this will contain the DOMNodeID of the
+  // link that generated the context menu.
+  int interest_for_node_id = 0;
 
   // The type of the form control element on which the context menu is invoked,
   // if any.
@@ -160,11 +167,6 @@ struct BLINK_COMMON_EXPORT UntrustworthyContextMenuParams {
   // associated.
   // See `autofill::FormRendererId` for the semantics of renderer IDs.
   uint64_t form_renderer_id = 0;
-
-  // True iff a field's type is plain text but heuristics (e.g. the name
-  // attribute contains 'password' as a substring) recognize it as a password
-  // field.
-  bool is_password_type_by_heuristics = false;
 
  private:
   void Assign(const UntrustworthyContextMenuParams& other);

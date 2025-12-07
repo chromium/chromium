@@ -10,6 +10,8 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.page_load_metrics.PageLoadMetrics;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
@@ -18,20 +20,16 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
-
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Tracks the first navigation and first contentful paint events for a tab within an activity during
  * startup.
  */
+@NullMarked
 public class LegacyTabStartupMetricsTracker {
-    private static final String FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM =
-            "Startup.Android.Cold.FirstNavigationCommitOccurredPreForeground";
     private static final String FIRST_PAINT_OCCURRED_PRE_FOREGROUND_HISTOGRAM =
             "Startup.Android.Cold.FirstPaintOccurredPreForeground";
 
@@ -72,28 +70,17 @@ public class LegacyTabStartupMetricsTracker {
     // Event duration recorded from the |mActivityStartTimeMs|.
     private long mFirstCommitTimeMs;
     private @ActivityType int mHistogramSuffix;
-    private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
-    private PageLoadMetricsObserverImpl mPageLoadMetricsObserver;
+    private @Nullable TabModelSelectorTabObserver mTabModelSelectorTabObserver;
+    private @Nullable PageLoadMetricsObserverImpl mPageLoadMetricsObserver;
     private boolean mShouldTrackStartupMetrics;
-    private boolean mFirstVisibleContentRecorded;
     private boolean mFirstVisibleContent2Recorded;
     private boolean mVisibleContentRecorded;
     private boolean mBackPressOccurred;
+    private boolean mBackBeforeFirstVisibleContentRecorded;
 
-    // Records whether the tracked first navigation commit was recorded pre-the app being in the
-    // foreground. Used for investigating crbug.com/1273097.
-    private boolean mRegisteredFirstCommitPreForeground;
     // Records whether StartupPaintPreview's first paint was recorded pre-the app being in the
     // foreground. Used for investigating crbug.com/1273097.
     private boolean mRegisteredFirstPaintPreForeground;
-
-    // The time it took for SafetyNet API to return a Safe Browsing response for the first time. The
-    // SB request is on the critical path to navigation commit, and the response may be severely
-    // delayed by GmsCore (see http://crbug.com/1296097). The value is recorded only when the
-    // navigation commits successfully and the URL of first navigation is checked by SafetyNet API.
-    // Updating the value atomically from another thread to provide a simpler guarantee that the
-    // value is not lost after posting a few tasks.
-    private final AtomicLong mFirstSafetyNetResponseTimeMicros = new AtomicLong();
 
     public LegacyTabStartupMetricsTracker(
             long activityId, ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
@@ -101,12 +88,6 @@ public class LegacyTabStartupMetricsTracker {
         mActivityStartTimeMs = SystemClock.uptimeMillis();
         TraceEvent.startupActivityStart(mActivityId, mActivityStartTimeMs);
         tabModelSelectorSupplier.addObserver(this::registerObservers);
-        SafeBrowsingApiBridge.setOneTimeSafetyNetApiUrlCheckObserver(
-                this::updateSafetyNetCheckTime);
-    }
-
-    private void updateSafetyNetCheckTime(long urlCheckTimeDeltaMicros) {
-        mFirstSafetyNetResponseTimeMicros.compareAndSet(0, urlCheckTimeDeltaMicros);
     }
 
     /**
@@ -158,20 +139,10 @@ public class LegacyTabStartupMetricsTracker {
      * time.
      */
     private void registerHasComeToForegroundWithNative() {
-        // Record cases where first navigation commit and/or StartupPaintPreview's first
-        // paint happened pre-foregrounding.
-        if (mRegisteredFirstCommitPreForeground) {
-            RecordHistogram.recordBooleanHistogram(
-                    FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, true);
-        }
         if (mRegisteredFirstPaintPreForeground) {
             RecordHistogram.recordBooleanHistogram(
                     FIRST_PAINT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, true);
         }
-
-        RecordHistogram.recordMediumTimesHistogram(
-                "Startup.Android.Cold.TimeToForegroundSessionStart",
-                SystemClock.uptimeMillis() - mActivityStartTimeMs);
 
         UmaUtils.removeObserver();
     }
@@ -187,7 +158,6 @@ public class LegacyTabStartupMetricsTracker {
                     public void onFirstPaint(long durationMs) {
                         RecordHistogram.recordBooleanHistogram(
                                 FIRST_PAINT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, false);
-                        recordFirstVisibleContent(durationMs);
                         recordFirstVisibleContent2(durationMs);
                         recordVisibleContent(durationMs);
                     }
@@ -218,19 +188,18 @@ public class LegacyTabStartupMetricsTracker {
         mShouldTrackStartupMetrics = false;
     }
 
-    /**
-     * TODO(crbug.com/40944523): This is exposed in order to investigate whether back press will
-     * interrupt the recording of first visible content related histograms. Remove this once a
-     * definitive conclusion is reached.
-     *
-     * @return Whether first visible content related histogram is recorded.
-     */
-    public boolean isFirstVisibleContentRecorded() {
-        return mFirstVisibleContent2Recorded;
-    }
-
+    /** Record if back press occurs before first visible content is drawn. */
     public void onBackPressed() {
         mBackPressOccurred = true;
+
+        if (!mShouldTrackStartupMetrics
+                || mBackBeforeFirstVisibleContentRecorded
+                || mFirstVisibleContent2Recorded) {
+            return;
+        }
+
+        mBackBeforeFirstVisibleContentRecorded = true;
+        RecordUserAction.record("SystemBackBeforeFirstVisibleContent2");
     }
 
     public void destroy() {
@@ -262,27 +231,17 @@ public class LegacyTabStartupMetricsTracker {
                 && UmaUtils.hasComeToForegroundWithNative()
                 && !UmaUtils.hasComeToBackgroundWithNative()) {
             mFirstCommitTimeMs = SystemClock.uptimeMillis() - mActivityStartTimeMs;
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "Startup.Android.Cold.TimeToFirstNavigationCommit"
                             + activityTypeToSuffix(mHistogramSuffix),
                     mFirstCommitTimeMs);
-            if (mHistogramSuffix == ActivityType.TABBED) {
-                recordFirstVisibleContent(mFirstCommitTimeMs);
-                recordFirstSafeBrowsingResponseTime();
-            }
-            RecordHistogram.recordBooleanHistogram(
-                    FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, false);
-        } else if (isTrackedPage
-                && !UmaUtils.hasComeToForegroundWithNative()
-                && !UmaUtils.hasComeToBackgroundWithNative()) {
-            mRegisteredFirstCommitPreForeground = true;
         }
 
         if (mHistogramSuffix == ActivityType.TABBED
                 && isTrackedPage
                 && SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()) {
             mFirstCommitTimeMs = SystemClock.uptimeMillis() - mActivityStartTimeMs;
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "Startup.Android.Cold.TimeToFirstNavigationCommit2.Tabbed", mFirstCommitTimeMs);
             recordFirstVisibleContent2(mFirstCommitTimeMs);
         }
@@ -294,15 +253,6 @@ public class LegacyTabStartupMetricsTracker {
         if (type == ActivityType.TABBED) return ".Tabbed";
         assert type == ActivityType.WEB_APK;
         return ".WebApk";
-    }
-
-    private void recordFirstSafeBrowsingResponseTime() {
-        long safetyNetDeltaMicros = mFirstSafetyNetResponseTimeMicros.getAndSet(0);
-        if (safetyNetDeltaMicros != 0) {
-            RecordHistogram.recordMediumTimesHistogram(
-                    "Startup.Android.Cold.FirstSafeBrowsingResponseTime.Tabbed",
-                    safetyNetDeltaMicros / 1000);
-        }
     }
 
     /**
@@ -317,7 +267,7 @@ public class LegacyTabStartupMetricsTracker {
 
         if (UmaUtils.hasComeToForegroundWithNative() && !UmaUtils.hasComeToBackgroundWithNative()) {
             long durationMs = firstContentfulPaintMs - mActivityStartTimeMs;
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "Startup.Android.Cold.TimeToFirstContentfulPaint"
                             + activityTypeToSuffix(mHistogramSuffix),
                     durationMs);
@@ -331,29 +281,9 @@ public class LegacyTabStartupMetricsTracker {
     }
 
     /**
-     * Records the legacy version of the time to first visible content.
-     *
-     * This metric acts as the Clank cold start guardian metric.
-     *
-     * Reports the minimum value of Startup.Android.Cold.TimeToFirstNavigationCommit.Tabbed and
-     * Browser.PaintPreview.TabbedPlayer.TimeToFirstBitmap.
-     *
-     * @param durationMs duration in millis.
-     */
-    private void recordFirstVisibleContent(long durationMs) {
-        if (mFirstVisibleContentRecorded) return;
-
-        mFirstVisibleContentRecorded = true;
-        RecordHistogram.recordMediumTimesHistogram(
-                "Startup.Android.Cold.TimeToFirstVisibleContent", durationMs);
-    }
-
-    /**
      * Records the time to first visible content.
      *
-     * This metric aims to become the new the Clank cold start guardian metric.
-     *
-     * Reports the minimum value of Startup.Android.Cold.TimeToFirstNavigationCommit2.Tabbed and
+     * <p>Reports the minimum value of Startup.Android.Cold.TimeToFirstNavigationCommit2.Tabbed and
      * Browser.PaintPreview.TabbedPlayer.TimeToFirstBitmap.
      *
      * @param durationMs duration in millis.
@@ -362,7 +292,7 @@ public class LegacyTabStartupMetricsTracker {
         if (mFirstVisibleContent2Recorded) return;
 
         mFirstVisibleContent2Recorded = true;
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "Startup.Android.Cold.TimeToFirstVisibleContent2", durationMs);
         TraceEvent.startupTimeToFirstVisibleContent2(mActivityId, mActivityStartTimeMs, durationMs);
         if (mBackPressOccurred) {
@@ -382,7 +312,7 @@ public class LegacyTabStartupMetricsTracker {
         if (mVisibleContentRecorded) return;
 
         mVisibleContentRecorded = true;
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "Startup.Android.Cold.TimeToVisibleContent", durationMs);
     }
 }

@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_future.h"
@@ -28,14 +29,15 @@
 #include "chrome/browser/ash/login/test/network_portal_detector_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/chrome_extension_test_notification_observer.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
@@ -65,6 +67,7 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -79,7 +82,7 @@ using ::net::test_server::HttpResponse;
 using ::net::test_server::HungResponse;
 
 // Email of owner account for test.
-const char kTestGaiaId[] = "12345";
+const GaiaId::Literal kTestGaiaId("12345");
 const char kTestEmail[] = "username@gmail.com";
 const char kTestRawEmail[] = "User.Name@gmail.com";
 const char kTestAccountPassword[] = "fake-password";
@@ -111,15 +114,11 @@ constexpr char kRandomPagePath[] = "/non_google_page";
 constexpr char kMultiLoginPath[] = "/oauth/multilogin";
 
 CoreAccountId PickAccountId(Profile* profile,
-                            const std::string& gaia_id,
+                            const GaiaId& gaia_id,
                             const std::string& email) {
   return IdentityManagerFactory::GetInstance()
       ->GetForProfile(profile)
       ->PickAccountIdForAccount(gaia_id, email);
-}
-
-const char* BoolToString(bool value) {
-  return value ? "true" : "false";
 }
 
 class OAuth2LoginManagerStateWaiter : public OAuth2LoginManager::Observer {
@@ -305,7 +304,7 @@ class OAuth2Test : public OobeBaseTest {
 
   void SetupGaiaServerForUnexpiredAccount() {
     FakeGaia::Configuration params;
-    params.email = kTestEmail;
+    params.emails = {kTestEmail};
     fake_gaia_.fake_gaia()->SetConfiguration(params);
     fake_gaia_.SetupFakeGaiaForLogin(kTestEmail, kTestGaiaId,
                                      kTestRefreshToken);
@@ -462,7 +461,7 @@ class OAuth2Test : public OobeBaseTest {
   void InterceptRequest(const HttpRequest& request) {
     const GURL request_url =
         GURL("http://localhost").Resolve(request.relative_url);
-    auto it = request_deferers_.find(request_url.path());
+    auto it = request_deferers_.find(request_url.GetPath());
     if (it == request_deferers_.end())
       return;
 
@@ -485,7 +484,11 @@ class OAuth2Test : public OobeBaseTest {
 
  private:
   base::FilePath test_data_dir_;
-  std::map<std::string, RequestDeferrer*> request_deferers_;
+  std::map<std::string, raw_ptr<RequestDeferrer, CtnExperimental>>
+      request_deferers_;
+
+  // TODO(https://crbug.com/40804030): Remove this when updated to use MV3.
+  extensions::ScopedTestMV2Enabler mv2_enabler;
 };
 
 class CookieReader {
@@ -596,7 +599,7 @@ IN_PROC_BROWSER_TEST_F(OAuth2Test, DISABLED_MergeSession) {
 
   CoreAccountId account_id =
       PickAccountId(GetProfile(), kTestGaiaId, kTestEmail);
-  ASSERT_EQ(kTestGaiaId, account_id.ToString());
+  ASSERT_EQ(CoreAccountId::FromGaiaId(kTestGaiaId), account_id);
 
   // Wait for the session merge to finish.
   WaitForMergeSessionCompletion(OAuth2LoginManager::SESSION_RESTORE_DONE);
@@ -733,7 +736,7 @@ class FakeGoogle {
     // The scheme and host of the URL is actually not important but required to
     // get a valid GURL in order to parse `request.relative_url`.
     GURL request_url = GURL("http://localhost").Resolve(request.relative_url);
-    std::string request_path = request_url.path();
+    std::string request_path = request_url.GetPath();
     std::unique_ptr<BasicHttpResponse> http_response(new BasicHttpResponse());
     if (request_path == kHelloPagePath) {  // Serving "google" page.
       start_event_.Signal();
@@ -986,7 +989,7 @@ IN_PROC_BROWSER_TEST_P(MergeSessionTest, Throttle) {
       ext->id(), base::StringPrintf("startThrottledTests('%s', '%s', %s)",
                                     fake_google_page_url_.spec().c_str(),
                                     non_google_page_url_.spec().c_str(),
-                                    BoolToString(do_async_xhr())));
+                                    base::ToString(do_async_xhr())));
   ExtensionTestMessageListener listener("Both XHR's Opened");
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 
@@ -1054,7 +1057,7 @@ IN_PROC_BROWSER_TEST_P(MergeSessionTest, MAYBE_XHRNotThrottled) {
       ext->id(), base::StringPrintf("startThrottledTests('%s', '%s', %s)",
                                     fake_google_page_url_.spec().c_str(),
                                     non_google_page_url_.spec().c_str(),
-                                    BoolToString(do_async_xhr())));
+                                    base::ToString(do_async_xhr())));
 
   if (do_async_xhr()) {
     // Verify that we've sent XHR request from the extension side...
@@ -1136,7 +1139,7 @@ IN_PROC_BROWSER_TEST_P(MergeSessionTimeoutTest, XHRMergeTimeout) {
       ext->id(), base::StringPrintf("startThrottledTests('%s', '%s', %s)",
                                     fake_google_page_url_.spec().c_str(),
                                     non_google_page_url_.spec().c_str(),
-                                    BoolToString(do_async_xhr())));
+                                    base::ToString(do_async_xhr())));
 
   if (do_async_xhr()) {
     // Verify that we've sent XHR requests from the extension side...

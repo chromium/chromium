@@ -8,22 +8,20 @@ namespace blink {
 
 IndexedDBKeyRange::IndexedDBKeyRange() = default;
 
-IndexedDBKeyRange::IndexedDBKeyRange(const blink::IndexedDBKey& lower,
-                                     const blink::IndexedDBKey& upper,
+IndexedDBKeyRange::IndexedDBKeyRange(IndexedDBKey lower,
+                                     IndexedDBKey upper,
                                      bool lower_open,
                                      bool upper_open)
-    : lower_(lower),
-      upper_(upper),
+    : lower_(std::move(lower)),
+      upper_(std::move(upper)),
       lower_open_(lower_open),
       upper_open_(upper_open) {}
 
-IndexedDBKeyRange::IndexedDBKeyRange(const blink::IndexedDBKey& key)
-    : lower_(key), upper_(key) {}
-
-IndexedDBKeyRange::IndexedDBKeyRange(const IndexedDBKeyRange& other) = default;
 IndexedDBKeyRange::~IndexedDBKeyRange() = default;
-IndexedDBKeyRange& IndexedDBKeyRange::operator=(
-    const IndexedDBKeyRange& other) = default;
+
+IndexedDBKeyRange::IndexedDBKeyRange(IndexedDBKeyRange&& other) = default;
+IndexedDBKeyRange& IndexedDBKeyRange::operator=(IndexedDBKeyRange&& other) =
+    default;
 
 bool IndexedDBKeyRange::IsOnlyKey() const {
   if (lower_open_ || upper_open_)
@@ -36,6 +34,11 @@ bool IndexedDBKeyRange::IsOnlyKey() const {
 
 bool IndexedDBKeyRange::IsEmpty() const {
   return !lower_.IsValid() && !upper_.IsValid();
+}
+
+IndexedDBKey IndexedDBKeyRange::TakeOnlyKey() && {
+  CHECK(IsOnlyKey());
+  return std::move(lower_);
 }
 
 }  // namespace blink

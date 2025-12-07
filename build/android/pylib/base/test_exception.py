@@ -12,3 +12,31 @@ class InvalidShardingSettings(TestException):
     super().__init__(
         'Invalid sharding settings. shard_index: %d total_shards: %d' %
         (shard_index, total_shards))
+
+
+class InstallationError(TestException):
+  """When installation of apk, apex, etc., has any error."""
+
+
+class InstallationFailedError(InstallationError):
+  """When installation of apk, apex, etc., fails."""
+
+
+class InstallationTimeoutError(InstallationError):
+  """When installation of apk, apex, etc., times out."""
+
+
+class StartInstrumentationError(TestException):
+  """When "am instrument" command has any error."""
+
+
+class StartInstrumentationFailedError(StartInstrumentationError):
+  """When "am instrument" command fails."""
+
+
+class StartInstrumentationTimeoutError(StartInstrumentationError):
+  """When "am instrument" command times out."""
+
+
+class StartInstrumentationStdoutError(StartInstrumentationError):
+  """When the command to read the instrumentation stdout file."""

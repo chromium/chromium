@@ -11,13 +11,6 @@
 
 namespace blink {
 
-bool CompressionDictionaryTransportFullyEnabled(
-    const FeatureContext* feature_context) {
-  return RuntimeEnabledFeatures::CompressionDictionaryTransportEnabled(
-             feature_context) &&
-         RuntimeEnabledFeatures::CompressionDictionaryTransportBackendEnabled();
-}
-
 Resource* LinkDictionaryResource::Fetch(FetchParameters& params,
                                         ResourceFetcher* fetcher) {
   return fetcher->RequestResource(params, Factory(), nullptr);

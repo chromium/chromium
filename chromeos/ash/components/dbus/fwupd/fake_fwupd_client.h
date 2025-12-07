@@ -44,12 +44,19 @@ class COMPONENT_EXPORT(ASH_DBUS_FWUPD) FakeFwupdClient : public FwupdClient {
     defer_install_update_callback_ = new_value;
   }
 
+  void set_update_with_reboot(bool new_value) {
+    update_with_reboot_ = new_value;
+  }
+
  private:
   void SetFwupdFeatureFlags() override;
 
   // True if install update callbacks should be deferred. Call
   // TriggerSuccessfulUpdateForTesting to invoke the callback.
   bool defer_install_update_callback_ = false;
+
+  // Determine whether the simulated update requires a reboot or not.
+  bool update_with_reboot_ = false;
 
   // True if InstallUpdate has been called.
   bool has_update_started_ = false;

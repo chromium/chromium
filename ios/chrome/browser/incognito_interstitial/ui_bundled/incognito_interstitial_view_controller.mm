@@ -9,12 +9,13 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/ios/ios_util.h"
+#import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/incognito/incognito_view.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/util/attributed_string_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_constants.h"
-#import "ios/chrome/browser/ui/ntp/incognito/incognito_view.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -84,9 +85,9 @@ const CGFloat kTitleLabelLineHeightMultiple = 1.3;
   self.title = title;
   self.titleText = title;
   self.titleHorizontalMargin = 0;
-  self.primaryActionString = l10n_util::GetNSString(
+  self.configuration.primaryActionString = l10n_util::GetNSString(
       IDS_IOS_INCOGNITO_INTERSTITIAL_OPEN_IN_CHROME_INCOGNITO);
-  self.secondaryActionString =
+  self.configuration.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_INCOGNITO_INTERSTITIAL_OPEN_IN_CHROME);
 
   // This needs to be called after parameters of `PromoStyleViewController` have
@@ -200,15 +201,20 @@ const CGFloat kTitleLabelLineHeightMultiple = 1.3;
         constraintEqualToAnchor:self.view.trailingAnchor],
     [self.navigationBar.topAnchor constraintEqualToAnchor:self.view.topAnchor],
   ]];
-}
 
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  self.shouldHideBanner = IsCompactHeight(self.traitCollection);
-  [self updateNavigationBarAppearance];
+  NSArray<UITrait>* traits =
+      TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
+  __weak __typeof(self) weakSelf = self;
+  UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                   UITraitCollection* previousCollection) {
+    weakSelf.shouldHideBanner = IsCompactHeight(traitEnvironment);
+    [weakSelf updateNavigationBarAppearance];
+  };
+  [self registerForTraitChanges:traits withHandler:handler];
 }
 
 - (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
   if (self.URLIsExpanded) {
     self.expandURLButton.hidden = YES;
     self.URLLabel.numberOfLines = 0;

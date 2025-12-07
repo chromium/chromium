@@ -1,0 +1,23 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+static_library("power_ui") {
+  sources = [
+    "power_ui.cc",
+    "power_ui.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ash/power",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//content/public/browser",
+    "//content/public/common",
+    "//ui/base",
+    "//ui/webui",
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "name": "icon with bad mime type",
+  "manifest_version": 3,
+  "version": "1",
+  "icons": {
+    "32": "files/bad_icon.txt"
+  }
+}

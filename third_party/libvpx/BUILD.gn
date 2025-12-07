@@ -30,14 +30,14 @@ if (current_cpu == "x86") {
   } else {
     cpu_arch_full = "arm"
   }
-} else if (current_cpu == "arm64") {
-  if (is_win || is_chromeos || is_mac) {
+} else if (current_cpu == "arm64" || current_cpu == "arm64e") {
+  if (is_win || is_chromeos || is_mac || is_ios) {
     # This is necessary for CrOS and macOS as they reuse the Linux
     # configuration, of which there are two (see the later definition of
     # os_category).
     cpu_arch_full = "arm64-highbd"
   } else {
-    cpu_arch_full = current_cpu
+    cpu_arch_full = "arm64"
   }
 } else if (current_cpu == "riscv64") {
   cpu_arch_full = "generic"
@@ -47,23 +47,19 @@ if (current_cpu == "x86") {
   cpu_arch_full = current_cpu
 }
 
-if (is_nacl) {
-  platform_include_dir = "source/config/nacl"
-} else {
-  # The mac configurations are currently a relic. They were useful when
-  # x86inc.asm did not work for MACH_O but now the build is identical to the
-  # linux config. iOS for arm on the other hand needs an apple-specific twist in
-  # vpx_config.asm
-  if (is_ios && current_cpu == "arm") {
-    os_category = current_os
-  } else if (is_posix || is_fuchsia) {
-    # Should cover linux, fuchsia, mac, and the ios simulator.
-    os_category = "linux"
-  } else {  # This should only match windows.
-    os_category = current_os
-  }
-  platform_include_dir = "source/config/$os_category/$cpu_arch_full"
+# The mac configurations are currently a relic. They were useful when
+# x86inc.asm did not work for MACH_O but now the build is identical to the
+# linux config. iOS for arm on the other hand needs an apple-specific twist in
+# vpx_config.asm
+if (is_ios && current_cpu == "arm") {
+  os_category = current_os
+} else if (is_posix || is_fuchsia) {
+  # Should cover linux, fuchsia, mac, and the ios simulator.
+  os_category = "linux"
+} else {  # This should only match windows.
+  os_category = current_os
 }
+platform_include_dir = "source/config/$os_category/$cpu_arch_full"
 
 libvpx_include_dirs = [
   "source/config",
@@ -155,7 +151,12 @@ if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
     } else if (current_cpu == "x64") {
       sources = libvpx_srcs_x86_64_assembly
     }
-
+    inputs = [
+      "$platform_include_dir/vpx_config.asm",
+      "source/libvpx/third_party/x86inc/x86inc.asm",
+      "source/libvpx/vpx_dsp/x86/bitdepth_conversion_sse2.asm",
+      "source/libvpx/vpx_ports/x86_abi_support.asm",
+    ]
     defines = [ "CHROMIUM" ]
     if (is_android) {
       # On Android, define __ANDROID__ to use alternative standard library
@@ -310,7 +311,7 @@ if (current_cpu == "loong64") {
   }
 }
 
-if (current_cpu == "arm" || current_cpu == "arm64") {
+if (current_cpu == "arm" || current_cpu == "arm64" || current_cpu == "arm64e") {
   source_set("libvpx_intrinsics_neon") {
     check_includes = false
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -339,7 +340,7 @@ if (current_cpu == "arm" || current_cpu == "arm64") {
   }
 }
 
-if (current_cpu == "arm64") {
+if (current_cpu == "arm64" || current_cpu == "arm64e") {
   source_set("libvpx_intrinsics_neon_dotprod") {
     check_includes = false
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -509,10 +510,6 @@ source_set("libvpx_ppc64_headers") {
   sources = libvpx_srcs_ppc64_headers
 }
 
-source_set("libvpx_nacl_headers") {
-  sources = libvpx_srcs_nacl_headers
-}
-
 source_set("libvpx_generic_headers") {
   sources = libvpx_srcs_generic_headers
 }
@@ -523,10 +520,7 @@ static_library("libvpx") {
     configs += [ "//build/config/compiler:optimize_max" ]
   }
 
-  if (is_nacl) {
-    sources = libvpx_srcs_generic
-    public_deps = [ ":libvpx_generic_headers" ]
-  } else if (current_cpu == "x86") {
+  if (current_cpu == "x86") {
     sources = libvpx_srcs_x86
     public_deps = [ ":libvpx_x86_headers" ]
   } else if (current_cpu == "x64") {
@@ -554,8 +548,8 @@ static_library("libvpx") {
       sources = libvpx_srcs_arm
       public_deps = [ ":libvpx_arm_headers" ]
     }
-  } else if (current_cpu == "arm64") {
-    if (is_chromeos || is_win || is_mac) {
+  } else if (current_cpu == "arm64" || current_cpu == "arm64e") {
+    if (is_chromeos || is_win || is_mac || is_ios) {
       sources = libvpx_srcs_arm64_highbd
       public_deps = [ ":libvpx_arm64_highbd_headers" ]
     } else {
@@ -590,10 +584,11 @@ static_library("libvpx") {
     ]
   }
   if (cpu_arch_full == "arm-neon-highbd" || cpu_arch_full == "arm-neon" ||
-      cpu_arch_full == "arm-neon-cpu-detect" || current_cpu == "arm64") {
+      cpu_arch_full == "arm-neon-cpu-detect" || current_cpu == "arm64" ||
+      current_cpu == "arm64e") {
     deps += [ ":libvpx_intrinsics_neon" ]
   }
-  if (current_cpu == "arm64") {
+  if (current_cpu == "arm64" || current_cpu == "arm64e") {
     deps += [ ":libvpx_intrinsics_neon_dotprod" ]
     deps += [ ":libvpx_intrinsics_neon_i8mm" ]
     if (!is_win) {
@@ -636,6 +631,15 @@ static_library("libvpxrc") {
   public_deps = [ ":libvpx" ]
 
   public_configs = [ ":libvpx_public_config" ]
+
+  if (is_apple) {
+    # TODO(https://crbug.com/434866376): macOS/iOS builds require more
+    # modulemaps from Apple SDKs for this, e.g. Darwin.modulemap,
+    # Darwin_Mach.modulemap.
+    # Currently disable clang module for target to enable clang module by
+    # default in other places first.
+    use_libcxx_modules = false
+  }
 }
 
 test("vp8_encoder_fuzz_test") {

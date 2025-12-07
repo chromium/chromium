@@ -42,8 +42,7 @@ void UIBrokerImpl::ShowDiscovery(scoped_refptr<Device> device) {
                               weak_pointer_factory_.GetWeakPtr(), device));
       break;
     case Protocol::kFastPairRetroactive:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -84,8 +83,7 @@ void UIBrokerImpl::ShowAssociateAccount(scoped_refptr<Device> device) {
                               weak_pointer_factory_.GetWeakPtr(), device));
       break;
     case Protocol::kFastPairSubsequent:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -117,6 +115,10 @@ void UIBrokerImpl::ShowLaunchCompanionApp(scoped_refptr<Device> device) {
                               weak_pointer_factory_.GetWeakPtr(), device));
       break;
   }
+}
+
+void UIBrokerImpl::ShowPasskey(std::u16string device_name, uint32_t passkey) {
+  fast_pair_presenter_->ShowPasskey(device_name, passkey);
 }
 
 void UIBrokerImpl::RemoveNotifications() {

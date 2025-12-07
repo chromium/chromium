@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/public/cpp/desk_profiles_delegate.h"
 #include "ash/public/cpp/desk_template.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -19,9 +18,10 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "base/metrics/histogram_functions.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -29,16 +29,11 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 namespace ash {
 namespace {
-
-// The size of desk profile icon.
-constexpr int kIconProfileSize = 24;
-
-// The size for selected profile checker icon.
-constexpr int kCheckButtonSize = 20;
 
 class MenuModelAdapter : public views::MenuModelAdapter {
  public:
@@ -55,10 +50,6 @@ class MenuModelAdapter : public views::MenuModelAdapter {
 
     const int command_id = model->GetCommandIdAt(index);
     views::MenuItemView* item_view = menu->AppendMenuItem(command_id);
-
-    if (command_id >= DeskActionContextMenu::kDynamicProfileStart) {
-      item_view->SetSecondaryTitle(model->GetMinorTextAt(index));
-    }
 
     item_view->SetIcon(model->GetIconAt(index));
 
@@ -117,53 +108,6 @@ DeskActionContextMenu::DeskActionContextMenu(Config config,
       separator_needed = false;
     }
   };
-
-  // Set the accessible name for menu items here and then pipe the information
-  // to the view instances during `ShowContextMenuForViewImpl()`.
-
-  if (config_.profiles.size() > 1) {
-    for (size_t i = 0; i != config_.profiles.size(); ++i) {
-      const auto& summary = config_.profiles[i];
-
-      gfx::ImageSkia icon = gfx::ImageSkiaOperations::CreateResizedImage(
-          summary.icon, skia::ImageOperations::RESIZE_BEST,
-          gfx::Size(kIconProfileSize, kIconProfileSize));
-
-      context_menu_model_.AddItemWithIcon(
-          static_cast<int>(kDynamicProfileStart + i), summary.name,
-          ui::ImageModel::FromImageSkia(
-              gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
-                  kIconProfileSize, icon)));
-
-      auto entry_index = context_menu_model_.GetItemCount() - 1;
-      context_menu_model_.SetMinorText(entry_index, summary.email);
-
-      int profile_a11y_id = IDS_ASH_DESKS_MENU_ITEM_PROFILE_NOT_CHECKED;
-      if (summary.profile_id == config_.current_lacros_profile_id) {
-        context_menu_model_.SetMinorIcon(
-            entry_index, ui::ImageModel::FromVectorIcon(
-                             kHollowCheckCircleIcon,
-                             cros_tokens::kCrosSysPrimary, kCheckButtonSize));
-        profile_a11y_id = IDS_ASH_DESKS_MENU_ITEM_PROFILE_CHECKED;
-      }
-
-      context_menu_model_.SetAccessibleNameAt(
-          entry_index, l10n_util::GetStringFUTF16(profile_a11y_id, summary.name,
-                                                  summary.email));
-    }
-
-    context_menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
-    const std::u16string profile_manager_a11y =
-        l10n_util::GetStringUTF16(IDS_ASH_DESKS_OPEN_PROFILE_MANAGER);
-    context_menu_model_.AddItemWithIcon(
-        CommandId::kShowProfileManager, profile_manager_a11y,
-        ui::ImageModel::FromVectorIcon(
-            kSettingsIcon, cros_tokens::kCrosSysOnSurface, kCheckButtonSize));
-    context_menu_model_.SetAccessibleNameAt(
-        context_menu_model_.GetItemCount() - 1, profile_manager_a11y);
-
-    separator_needed = true;
-  }
 
   // Accessible names should be set on each of the following menu items to
   // ensure the labels are read properly by screen readers.
@@ -267,14 +211,6 @@ void DeskActionContextMenu::ExecuteCommand(int command_id, int event_flags) {
     case CommandId::kCloseAll:
       config_.close_all_callback.Run();
       break;
-    case CommandId::kShowProfileManager:
-      base::UmaHistogramBoolean(kDeskProfilesOpenProfileManagerHistogramName,
-                                true);
-      Shell::Get()->shell_delegate()->OpenProfileManager();
-      break;
-    default:
-      MaybeSetLacrosProfileId(command_id);
-      break;
   }
 }
 
@@ -287,7 +223,7 @@ void DeskActionContextMenu::MenuClosed(ui::SimpleMenuModel* menu) {
 void DeskActionContextMenu::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   const int run_types = views::MenuRunner::USE_ASH_SYS_UI_LAYOUT |
                         views::MenuRunner::CONTEXT_MENU |
                         views::MenuRunner::FIXED_ANCHOR |
@@ -315,14 +251,6 @@ void DeskActionContextMenu::ShowContextMenuForViewImpl(
         !a11y_name.empty()) {
       item_views[view_index++]->GetViewAccessibility().SetName(a11y_name);
     }
-  }
-}
-
-void DeskActionContextMenu::MaybeSetLacrosProfileId(int command_id) {
-  size_t profile_index = static_cast<size_t>(command_id - kDynamicProfileStart);
-  if (profile_index < config_.profiles.size()) {
-    config_.set_lacros_profile_id.Run(
-        config_.profiles[profile_index].profile_id);
   }
 }
 

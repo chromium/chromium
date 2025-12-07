@@ -19,7 +19,6 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
-#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "components/chromeos_camera/common/dmabuf.mojom.h"
@@ -263,15 +262,12 @@ void MojoJpegEncodeAcceleratorService::EncodeWithFD(
     return;
   }
 
-  const uint8_t* input_shm_memory =
-      input_mapping.GetMemoryAsSpan<uint8_t>().data();
   scoped_refptr<media::VideoFrame> frame = media::VideoFrame::WrapExternalData(
       media::PIXEL_FORMAT_I420,  // format
       coded_size,                // coded_size
       gfx::Rect(coded_size),     // visible_rect
       coded_size,                // natural_size
-      input_shm_memory,          // data
-      input_buffer_size,         // data_size
+      input_mapping,             // data
       base::TimeDelta());        // timestamp
   if (!frame.get()) {
     LOG(ERROR) << "Could not create VideoFrame for buffer id " << task_id;
@@ -371,7 +367,7 @@ void MojoJpegEncodeAcceleratorService::NotifyEncodeStatus(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   auto iter = encode_cb_map_.find(task_id);
-  CHECK(iter != encode_cb_map_.end(), base::NotFatalUntil::M130);
+  CHECK(iter != encode_cb_map_.end());
   EncodeWithDmaBufCallback encode_cb = std::move(iter->second);
   encode_cb_map_.erase(iter);
   std::move(encode_cb).Run(encoded_picture_size, error);

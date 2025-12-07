@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "components/power_metrics/energy_impact_mac.h"
 
@@ -180,7 +176,7 @@ std::optional<EnergyImpactCoefficients> ReadCoefficientsForBoardIdOrDefault(
 
 std::optional<std::string> GetBoardIdForThisMachine() {
   base::mac::ScopedIOObject<io_service_t> platform_expert(
-      IOServiceGetMatchingService(kIOMasterPortDefault,
+      IOServiceGetMatchingService(kIOMainPortDefault,
                                   IOServiceMatching("IOPlatformExpertDevice")));
   if (!platform_expert)
     return std::nullopt;

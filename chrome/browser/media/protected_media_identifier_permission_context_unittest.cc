@@ -6,21 +6,17 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_command_line.h"
+#include "chrome/browser/profiles/profile_testing_helper.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#include "components/prefs/testing_pref_service.h"
 #include "media/base/media_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/dbus/constants/dbus_switches.h"  // nogncheck
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
-#endif
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/profiles/profile_testing_helper.h"
+#include "chromeos/dbus/constants/dbus_switches.h"
 #endif
 
 class ProtectedMediaIdentifierPermissionContextTest : public testing::Test {
@@ -29,12 +25,7 @@ class ProtectedMediaIdentifierPermissionContextTest : public testing::Test {
       : requesting_origin_("https://example.com"),
         requesting_sub_domain_origin_("https://subdomain.example.com") {
     command_line_ = scoped_command_line_.GetProcessCommandLine();
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
     profile_testing_helper_.SetUp();
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    attestation_enabled_ = true;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
   bool IsOriginAllowed(const GURL& origin) {
@@ -46,21 +37,12 @@ class ProtectedMediaIdentifierPermissionContextTest : public testing::Test {
         IsProtectedMediaIdentifierEnabled(profile);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void OnAttestationEnabledChanged(base::Value value) {
-    return ProtectedMediaIdentifierPermissionContext::
-        OnAttestationEnabledChanged(value);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   GURL requesting_origin_;
   GURL requesting_sub_domain_origin_;
 
   base::test::ScopedCommandLine scoped_command_line_;
   raw_ptr<base::CommandLine> command_line_;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   ProfileTestingHelper profile_testing_helper_;
-#endif
 };
 
 TEST_F(ProtectedMediaIdentifierPermissionContextTest,
@@ -130,9 +112,7 @@ TEST_F(ProtectedMediaIdentifierPermissionContextTest,
   ASSERT_FALSE(IsProtectedMediaIdentifierEnabled(
       profile_testing_helper_.regular_profile()));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ProtectedMediaIdentifierPermissionContextTest,
        ProtectedMediaIdentifierEnabledOnDevModeWithAshSwitch) {
   command_line_->AppendSwitch(chromeos::switches::kSystemDevMode);
@@ -143,19 +123,28 @@ TEST_F(ProtectedMediaIdentifierPermissionContextTest,
   ASSERT_TRUE(IsProtectedMediaIdentifierEnabled(
       profile_testing_helper_.regular_profile()));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST_F(ProtectedMediaIdentifierPermissionContextTest,
-       ProtectedMediaIdentifierEnterprisePolicyChanges) {
-  // As long as `kAllowRAInDevMode` is appended, then even if system is on dev
-  // mode, the protected media identifier should be enabled.
+       ProtectedContentIdentifierAllowedByPolicyDefault) {
   ASSERT_TRUE(IsProtectedMediaIdentifierEnabled(
       profile_testing_helper_.regular_profile()));
-
-  OnAttestationEnabledChanged(base::Value(false));
-
-  ASSERT_FALSE(IsProtectedMediaIdentifierEnabled(
-      profile_testing_helper_.regular_profile()));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+TEST_F(ProtectedMediaIdentifierPermissionContextTest,
+       ProtectedContentIdentifierAllowedByPolicyExplicitlyAllowed) {
+  Profile* profile = profile_testing_helper_.regular_profile();
+  profile->GetPrefs()->SetBoolean(
+      policy::policy_prefs::kProtectedContentIdentifiersAllowed, true);
+
+  ASSERT_TRUE(IsProtectedMediaIdentifierEnabled(profile));
+}
+
+TEST_F(ProtectedMediaIdentifierPermissionContextTest,
+       ProtectedContentIdentifierBlockedByPolicy) {
+  Profile* profile = profile_testing_helper_.regular_profile();
+  profile->GetPrefs()->SetBoolean(
+      policy::policy_prefs::kProtectedContentIdentifiersAllowed, false);
+
+  ASSERT_FALSE(IsProtectedMediaIdentifierEnabled(profile));
+}

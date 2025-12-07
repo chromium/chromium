@@ -17,15 +17,17 @@ namespace extensions {
 // TODO(solomonkinard): Take GUID-based dynamic URLs in account. Also,
 // disambiguate ExtensionHost.
 ExtensionId ExtensionSet::GetExtensionIdByURL(const GURL& url) {
-  if (url.SchemeIs(kExtensionScheme))
-    return url.host();
+  if (url.SchemeIs(kExtensionScheme)) {
+    return url.GetHost();
+  }
 
   // Trying url::Origin is important to properly handle extension schemes inside
   // blob: and filesystem: URLs, which won't match the extension scheme check
   // above.
   url::Origin origin = url::Origin::Create(url);
-  if (origin.scheme() == kExtensionScheme)
+  if (origin.scheme() == kExtensionScheme) {
     return origin.host();
+  }
 
   return ExtensionId();
 }
@@ -82,14 +84,16 @@ void ExtensionSet::Clear() {
 
 ExtensionId ExtensionSet::GetExtensionOrAppIDByURL(const GURL& url) const {
   ExtensionId extension_id = GetExtensionIdByURL(url);
-  if (!extension_id.empty())
+  if (!extension_id.empty()) {
     return extension_id;
+  }
 
   // GetHostedAppByURL already supports filesystem: URLs (via MatchesURL).
   // TODO(crbug.com/41394231): Add support for blob: URLs in MatchesURL.
   const Extension* extension = GetHostedAppByURL(url);
-  if (!extension)
+  if (!extension) {
     return ExtensionId();
+  }
 
   return extension->id();
 }
@@ -97,8 +101,9 @@ ExtensionId ExtensionSet::GetExtensionOrAppIDByURL(const GURL& url) const {
 const Extension* ExtensionSet::GetExtensionOrAppByURL(const GURL& url,
                                                       bool include_guid) const {
   ExtensionId extension_id = GetExtensionIdByURL(url);
-  if (!extension_id.empty())
+  if (!extension_id.empty()) {
     return include_guid ? GetByIDorGUID(extension_id) : GetByID(extension_id);
+  }
 
   // GetHostedAppByURL already supports filesystem: URLs (via MatchesURL).
   // TODO(crbug.com/41394231): Add support for blob: URLs in MatchesURL.
@@ -112,7 +117,7 @@ const Extension* ExtensionSet::GetAppByURL(const GURL& url) const {
 
 const Extension* ExtensionSet::GetHostedAppByURL(const GURL& url) const {
   auto hosted_app_itr =
-      base::ranges::find_if(extensions_, [&](const auto& extension_info) {
+      std::ranges::find_if(extensions_, [&](const auto& extension_info) {
         return extension_info.second->web_extent().MatchesURL(url);
       });
   return hosted_app_itr != extensions_.end() ? hosted_app_itr->second.get()
@@ -122,7 +127,7 @@ const Extension* ExtensionSet::GetHostedAppByURL(const GURL& url) const {
 const Extension* ExtensionSet::GetHostedAppByOverlappingWebExtent(
     const URLPatternSet& extent) const {
   auto hosted_app_itr =
-      base::ranges::find_if(extensions_, [&](const auto& extension_info) {
+      std::ranges::find_if(extensions_, [&](const auto& extension_info) {
         return extension_info.second->web_extent().OverlapsWith(extent);
       });
   return hosted_app_itr != extensions_.end() ? hosted_app_itr->second.get()
@@ -140,7 +145,7 @@ const Extension* ExtensionSet::GetByID(const ExtensionId& id) const {
 }
 
 const Extension* ExtensionSet::GetByGUID(const std::string& guid) const {
-  auto extension_itr = base::ranges::find(
+  auto extension_itr = std::ranges::find(
       extensions_, guid,
       [](const auto& extension_info) { return extension_info.second->guid(); });
   return extension_itr != extensions_.end() ? extension_itr->second.get()
@@ -149,8 +154,9 @@ const Extension* ExtensionSet::GetByGUID(const std::string& guid) const {
 
 const Extension* ExtensionSet::GetByIDorGUID(
     const std::string& id_or_guid) const {
-  if (auto* extension = GetByID(id_or_guid))
+  if (auto* extension = GetByID(id_or_guid)) {
     return extension;
+  }
   return GetByGUID(id_or_guid);
 }
 
@@ -163,10 +169,11 @@ ExtensionIdSet ExtensionSet::GetIDs() const {
 }
 
 bool ExtensionSet::ExtensionBindingsAllowed(const GURL& url) const {
-  if (url.SchemeIs(kExtensionScheme))
+  if (url.SchemeIs(kExtensionScheme)) {
     return true;
+  }
 
-  return base::ranges::any_of(extensions_, [&url](const auto& extension_info) {
+  return std::ranges::any_of(extensions_, [&url](const auto& extension_info) {
     const Extension* extension = extension_info.second.get();
     return extension->location() == mojom::ManifestLocation::kComponent &&
            extension->web_extent().MatchesURL(url);

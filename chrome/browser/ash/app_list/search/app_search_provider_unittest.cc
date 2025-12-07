@@ -11,7 +11,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "base/containers/contains.h"
@@ -29,17 +28,25 @@
 #include "chrome/browser/ash/app_list/search/app_search_provider_test_base.h"
 #include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
+#include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 #include "components/crx_file/id_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/stub_icon_loader.h"
+#include "components/user_manager/fake_user_manager_delegate.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager_impl.h"
+#include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -105,11 +112,13 @@ class AppSearchProviderTest : public AppSearchProviderTestBase {
 };
 
 TEST_F(AppSearchProviderTest, Basic) {
-  arc_test().SetUp(profile());
+  // TODO(crbug.com/454468678): This should be called before profile is created.
+  arc_app_test().PreProfileSetUp();
+  arc_app_test().PostProfileSetUp(profile());
   std::vector<arc::mojom::AppInfoPtr> arc_apps;
   for (int i = 0; i < 2; i++)
-    arc_apps.emplace_back(arc_test().fake_apps()[i]->Clone());
-  arc_test().app_instance()->SendRefreshAppList(arc_apps);
+    arc_apps.emplace_back(arc_app_test().fake_apps()[i]->Clone());
+  arc_app_test().app_instance()->SendRefreshAppList(arc_apps);
 
   // Allow async callbacks to run.
   base::RunLoop().RunUntilIdle();
@@ -138,24 +147,28 @@ TEST_F(AppSearchProviderTest, Basic) {
   result = RunQuery("app2");
   EXPECT_TRUE(result == "Packaged App 2,Fake App 2" ||
               result == "Fake App 2,Packaged App 2");
-  arc_test().TearDown();
+  arc_app_test().PreProfileTearDown();
+  // TODO(crbug.com/454468678): This should be called after profile is deleted.
+  arc_app_test().PostProfileTearDown();
 }
 
 TEST_F(AppSearchProviderTest, NonLatinLocale) {
   base::i18n::SetICUDefaultLocale("sr");
 
-  arc_test().SetUp(profile());
+  // TODO(crbug.com/454468678): This should be called before profile is created.
+  arc_app_test().PreProfileSetUp();
+  arc_app_test().PostProfileSetUp(profile());
 
   const std::string test_app_id_1 = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
   AddExtension(test_app_id_1, "Тестна апликација 1",
                ManifestLocation::kExternalPrefDownload,
                extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
-  service_->EnableExtension(test_app_id_1);
+  registrar()->EnableExtension(test_app_id_1);
   const std::string test_app_id_2 = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
   AddExtension(test_app_id_2, "Тестна апликација 2",
                ManifestLocation::kExternalPrefDownload,
                extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
-  service_->EnableExtension(test_app_id_2);
+  registrar()->EnableExtension(test_app_id_2);
 
   AddArcApp("Лажна апликација 1", "fake.app.first", "activity");
   AddArcApp("Лажна апликација 2", "fake.app.second", "activity");
@@ -186,7 +199,9 @@ TEST_F(AppSearchProviderTest, NonLatinLocale) {
   result = RunQuery("апликација 1");
   EXPECT_TRUE(result == "Тестна апликација 1,Лажна апликација 1" ||
               result == "Лажна апликација 1,Тестна апликација 1");
-  arc_test().TearDown();
+  arc_app_test().PreProfileTearDown();
+  // TODO(crbug.com/454468678): This should be called after profile is deleted.
+  arc_app_test().PostProfileTearDown();
 
   base::i18n::SetICUDefaultLocale("en");
 }
@@ -196,11 +211,11 @@ TEST_F(AppSearchProviderTest, DisableAndEnable) {
 
   EXPECT_EQ("Hosted App", RunQuery("host"));
 
-  service_->DisableExtension(kHostedAppId,
-                             extensions::disable_reason::DISABLE_USER_ACTION);
+  registrar()->DisableExtension(
+      kHostedAppId, {extensions::disable_reason::DISABLE_USER_ACTION});
   EXPECT_EQ("Hosted App", RunQuery("host"));
 
-  service_->EnableExtension(kHostedAppId);
+  registrar()->EnableExtension(kHostedAppId);
   EXPECT_EQ("Hosted App", RunQuery("host"));
 }
 
@@ -208,7 +223,7 @@ TEST_F(AppSearchProviderTest, UninstallExtension) {
   InitializeSearchProvider();
 
   EXPECT_EQ("Packaged App 1", RunQuery("app 1 p"));
-  service_->UninstallExtension(
+  registrar()->UninstallExtension(
       kPackagedApp1Id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
 
   // Allow async callbacks to run.
@@ -226,9 +241,11 @@ TEST_F(AppSearchProviderTest, UninstallExtension) {
 }
 
 TEST_F(AppSearchProviderTest, InstallUninstallArc) {
-  arc_test().SetUp(profile());
+  // TODO(crbug.com/454468678): This should be called before profile is created.
+  arc_app_test().PreProfileSetUp();
+  arc_app_test().PostProfileSetUp(profile());
   std::vector<arc::mojom::AppInfoPtr> arc_apps;
-  arc_test().app_instance()->SendRefreshAppList(arc_apps);
+  arc_app_test().app_instance()->SendRefreshAppList(arc_apps);
 
   // Allow async callbacks to run.
   base::RunLoop().RunUntilIdle();
@@ -238,8 +255,8 @@ TEST_F(AppSearchProviderTest, InstallUninstallArc) {
   EXPECT_EQ("", GetSortedResultsString());
   EXPECT_EQ("", RunQuery("fake1"));
 
-  arc_apps.emplace_back(arc_test().fake_apps()[0]->Clone());
-  arc_test().app_instance()->SendRefreshAppList(arc_apps);
+  arc_apps.emplace_back(arc_app_test().fake_apps()[0]->Clone());
+  arc_app_test().app_instance()->SendRefreshAppList(arc_apps);
 
   // Allow async callbacks to run.
   base::RunLoop().RunUntilIdle();
@@ -247,7 +264,7 @@ TEST_F(AppSearchProviderTest, InstallUninstallArc) {
   EXPECT_EQ("Fake App 1", RunQuery("fake1"));
 
   arc_apps.clear();
-  arc_test().app_instance()->SendRefreshAppList(arc_apps);
+  arc_app_test().app_instance()->SendRefreshAppList(arc_apps);
 
   // Allow async callbacks to run.
   base::RunLoop().RunUntilIdle();
@@ -258,7 +275,9 @@ TEST_F(AppSearchProviderTest, InstallUninstallArc) {
   // Let uninstall code to clean up.
   base::RunLoop().RunUntilIdle();
 
-  arc_test().TearDown();
+  arc_app_test().PreProfileTearDown();
+  // TODO(crbug.com/454468678): This should be called after profile is deleted.
+  arc_app_test().PostProfileTearDown();
 }
 
 TEST_F(AppSearchProviderTest, NoResultsAfterClearingSearch) {
@@ -279,10 +298,12 @@ TEST_F(AppSearchProviderTest, NoResultsAfterClearingSearch) {
 }
 
 TEST_F(AppSearchProviderTest, FilterDuplicate) {
-  arc_test().SetUp(profile());
+  // TODO(crbug.com/454468678): This should be called before profile is created.
+  arc_app_test().PreProfileSetUp();
+  arc_app_test().PostProfileSetUp(profile());
 
   extensions::ExtensionPrefs* extension_prefs =
-      extensions::ExtensionPrefs::Get(profile_.get());
+      extensions::ExtensionPrefs::Get(profile());
   ASSERT_TRUE(extension_prefs);
 
   AddExtension(extension_misc::kGmailAppId, kGmailExtensionName,
@@ -291,10 +312,10 @@ TEST_F(AppSearchProviderTest, FilterDuplicate) {
 
   const std::string arc_gmail_app_id =
       AddArcApp(kGmailArcName, kGmailArcPackage, kGmailArcActivity);
-  arc_test().arc_app_list_prefs()->SetLastLaunchTime(arc_gmail_app_id);
+  arc_app_test().arc_app_list_prefs()->SetLastLaunchTime(arc_gmail_app_id);
 
   std::unique_ptr<ArcAppListPrefs::AppInfo> arc_gmail_app_info =
-      arc_test().arc_app_list_prefs()->GetApp(arc_gmail_app_id);
+      arc_app_test().arc_app_list_prefs()->GetApp(arc_gmail_app_id);
   ASSERT_TRUE(arc_gmail_app_info);
 
   EXPECT_FALSE(arc_gmail_app_info->last_launch_time.is_null());
@@ -319,12 +340,14 @@ TEST_F(AppSearchProviderTest, FilterDuplicate) {
 
   InitializeSearchProvider();
   EXPECT_EQ(kGmailExtensionName, RunQuery(kGmailQuery));
-  arc_test().TearDown();
+  arc_app_test().PreProfileTearDown();
+  // TODO(crbug.com/454468678): This should be called after profile is deleted.
+  arc_app_test().PostProfileTearDown();
 }
 
 TEST_F(AppSearchProviderTest, WebApp) {
   const webapps::AppId app_id = web_app::test::InstallDummyWebApp(
-      testing_profile(), kWebAppName, GURL(kWebAppUrl));
+      profile(), kWebAppName, GURL(kWebAppUrl));
 
   // Allow async callbacks to run.
   base::RunLoop().RunUntilIdle();
@@ -340,28 +363,45 @@ class AppSearchProviderCrostiniTest : public AppSearchProviderTest {
     ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
+
+    user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
+        std::make_unique<user_manager::FakeUserManagerDelegate>(),
+        TestingBrowserProcess::GetGlobal()->local_state()));
+
+    const AccountId account_id =
+        AccountId::FromUserEmailGaiaId("test@test", GaiaId("12345"));
+    ASSERT_TRUE(user_manager::TestHelper(user_manager_.Get())
+                    .AddRegularUser(account_id));
+    user_manager_->UserLoggedIn(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
+
     AppSearchProviderTest::SetUp();
+    ash::AnnotatedAccountId::Set(profile(), account_id);
   }
 
   void TearDown() override {
-    profile_.reset();
     AppSearchProviderTest::TearDown();
 
     // |profile_| is initialized in AppListTestBase::SetUp but not destroyed in
     // the ::TearDown method, but we need it to go away before shutting down
     // DBusThreadManager to ensure all keyed services that might rely on DBus
     // clients are destroyed.
-    profile_.reset();
+    DeleteProfile();
+
+    user_manager_.Reset();
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
     ash::ChunneldClient::Shutdown();
   }
+
+ private:
+  user_manager::ScopedUserManager user_manager_;
 };
 
 TEST_F(AppSearchProviderCrostiniTest, CrostiniApp) {
   // This both allows Crostini UI and enables Crostini.
-  crostini::CrostiniTestHelper crostini_test_helper(testing_profile());
+  crostini::CrostiniTestHelper crostini_test_helper(profile());
   crostini_test_helper.ReInitializeAppServiceIntegration();
   InitializeSearchProvider();
 
@@ -389,7 +429,7 @@ TEST_F(AppSearchProviderCrostiniTest, CrostiniAppWithExactMathing) {
   // Set a non-latin locale, which don't support fuzzy matching.
   base::i18n::SetICUDefaultLocale("sr");
   // This both allows Crostini UI and enables Crostini.
-  crostini::CrostiniTestHelper crostini_test_helper(testing_profile());
+  crostini::CrostiniTestHelper crostini_test_helper(profile());
   crostini_test_helper.ReInitializeAppServiceIntegration();
   InitializeSearchProvider();
 
@@ -493,18 +533,18 @@ class AppSearchProviderOemAppTest
 TEST_P(AppSearchProviderOemAppTest, OemResultsOnFirstBoot) {
   // Disable the pre-installed high-priority extensions. This test simulates
   // a brand new profile being added to a device, and should not include these.
-  service_->UninstallExtension(
+  registrar()->UninstallExtension(
       kHostedAppId, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
-  service_->UninstallExtension(
+  registrar()->UninstallExtension(
       kPackagedApp1Id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
-  service_->UninstallExtension(
+  registrar()->UninstallExtension(
       kPackagedApp2Id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
 
   base::RunLoop().RunUntilIdle();
 
   // OEM-installed apps should only appear as the first app results
   // if the profile is running for the first time on a device.
-  profile_->SetIsNewProfile(true);
+  testing_profile()->SetIsNewProfile(true);
   ASSERT_TRUE(profile()->IsNewProfile());
 
   extensions::ExtensionPrefs* const prefs =
@@ -521,9 +561,9 @@ TEST_P(AppSearchProviderOemAppTest, OemResultsOnFirstBoot) {
                  ManifestLocation::kExternalPrefDownload,
                  extensions::Extension::WAS_INSTALLED_BY_OEM);
 
-    service_->EnableExtension(internal_app_id);
+    registrar()->EnableExtension(internal_app_id);
 
-    EXPECT_TRUE(prefs->WasInstalledByOem(internal_app_id));
+    EXPECT_TRUE(WasInstalledByOem(prefs, internal_app_id));
   }
 
   // Allow OEM app install to finish.
@@ -566,11 +606,13 @@ TEST_P(AppSearchProviderWithArcAppInstallType,
       GetParam() == TestArcAppInstallType::INSTALLED_BY_DEFAULT;
   if (default_app) {
     ArcDefaultAppList::UseTestAppsDirectory();
-    arc_test().set_wait_default_apps(true);
+    arc_app_test().set_wait_default_apps(true);
   }
-  arc_test().SetUp(profile());
+  // TODO(crbug.com/454468678): This should be called before profile is created.
+  arc_app_test().PreProfileSetUp();
+  arc_app_test().PostProfileSetUp(profile());
 
-  ArcAppListPrefs* const prefs = arc_test().arc_app_list_prefs();
+  ArcAppListPrefs* const prefs = arc_app_test().arc_app_list_prefs();
   ASSERT_TRUE(prefs);
 
   // Install normal app.
@@ -624,7 +666,9 @@ TEST_P(AppSearchProviderWithArcAppInstallType,
   EXPECT_EQ(std::string(kRankingInternalAppName) + "," +
                 std::string(kRankingNormalAppName),
             RunQuery(kRankingAppQuery));
-  arc_test().TearDown();
+  arc_app_test().PreProfileTearDown();
+  // TODO(crbug.com/454468678): This should be called after profile is deleted.
+  arc_app_test().PostProfileTearDown();
 }
 
 INSTANTIATE_TEST_SUITE_P(All, AppSearchProviderOemAppTest, ::testing::Bool());

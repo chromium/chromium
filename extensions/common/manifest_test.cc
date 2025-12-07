@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/common/manifest_test.h"
 
 #include <optional>
@@ -127,6 +122,8 @@ std::optional<base::Value::Dict> ManifestTest::LoadManifest(
   return LoadManifestFile(manifest_path, error);
 }
 
+// TODO(crbug.com/41317803): Continue removing std::string error and
+// replacing with std::u16string.
 scoped_refptr<Extension> ManifestTest::LoadExtension(
     const ManifestData& manifest,
     std::string* error,
@@ -138,8 +135,12 @@ scoped_refptr<Extension> ManifestTest::LoadExtension(
   if (!dict) {
     return nullptr;
   }
-  return Extension::Create(test_data_dir.DirName(), location, *dict, flags,
-                           GetTestExtensionID(), error);
+  std::u16string utf16_error;
+  scoped_refptr<Extension> extension =
+      Extension::Create(test_data_dir.DirName(), location, *dict, flags,
+                        GetTestExtensionID(), &utf16_error);
+  *error = base::UTF16ToUTF8(utf16_error);
+  return extension;
 }
 
 scoped_refptr<Extension> ManifestTest::LoadAndExpectSuccess(
@@ -327,11 +328,10 @@ ManifestTest::Testcase::Testcase(const std::string& manifest_filename,
       location_(location),
       flags_(flags) {}
 
-void ManifestTest::RunTestcases(const Testcase* testcases,
-                                size_t num_testcases,
+void ManifestTest::RunTestcases(base::span<const Testcase> testcases,
                                 ExpectType type) {
-  for (size_t i = 0; i < num_testcases; ++i) {
-    RunTestcase(testcases[i], type);
+  for (const auto& testcase : testcases) {
+    RunTestcase(testcase, type);
   }
 }
 
@@ -340,19 +340,19 @@ void ManifestTest::RunTestcase(const Testcase& testcase, ExpectType type) {
                                   testcase.manifest_filename_.c_str()));
 
   switch (type) {
-    case EXPECT_TYPE_ERROR:
+    case ExpectType::kError:
       LoadAndExpectError(testcase.manifest_filename_.c_str(),
                          testcase.expected_error_,
                          testcase.location_,
                          testcase.flags_);
       break;
-    case EXPECT_TYPE_WARNING:
+    case ExpectType::kWarning:
       LoadAndExpectWarning(testcase.manifest_filename_.c_str(),
                            testcase.expected_error_,
                            testcase.location_,
                            testcase.flags_);
       break;
-    case EXPECT_TYPE_SUCCESS:
+    case ExpectType::kSuccess:
       LoadAndExpectSuccess(testcase.manifest_filename_.c_str(),
                            testcase.location_,
                            testcase.flags_);

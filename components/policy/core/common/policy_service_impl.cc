@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "components/policy/core/common/policy_service_impl.h"
 
@@ -24,14 +20,12 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_map.h"
@@ -324,7 +318,7 @@ void PolicyServiceImpl::UseLocalTestPolicyProvider(
 }
 
 void PolicyServiceImpl::OnUpdatePolicy(ConfigurationPolicyProvider* provider) {
-  DCHECK_EQ(1, base::ranges::count(providers_, provider));
+  DCHECK_EQ(1, std::ranges::count(providers_, provider));
   refresh_pending_.erase(provider);
   provider_update_pending_.insert(provider);
 
@@ -430,7 +424,6 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
   // Swap first, so that observers that call GetPolicies() see the current
   // values.
   std::swap(policy_bundle_, bundle);
-  RecordUserAffiliationStatus();
   NotifyPoliciesUpdated(bundle);
 }
 
@@ -584,7 +577,7 @@ void PolicyServiceImpl::MaybeNotifyPolicyDomainStatusChange(
   // domain status changes to ready. Ignore if scope is unspecified.
   if (policy_domain_status_[POLICY_DOMAIN_CHROME] ==
           PolicyDomainStatus::kPolicyReady &&
-      base::ranges::find(updated_domains, POLICY_DOMAIN_CHROME) !=
+      std::ranges::find(updated_domains, POLICY_DOMAIN_CHROME) !=
           updated_domains.end()) {
     RecordInitializationTime(
         scope_for_metrics_,
@@ -596,7 +589,7 @@ void PolicyServiceImpl::MaybeNotifyPolicyDomainStatusChange(
 
 void PolicyServiceImpl::CheckRefreshComplete() {
   if (refresh_pending_.empty()) {
-    VLOG(2) << "Policy refresh complete";
+    VLOG_POLICY(2, POLICY_PROCESSING) << "Policy refresh complete";
   }
 
   // Invoke all the callbacks if a refresh has just fully completed.
@@ -606,27 +599,6 @@ void PolicyServiceImpl::CheckRefreshComplete() {
     for (auto& callback : callbacks)
       std::move(callback).Run();
   }
-}
-
-void PolicyServiceImpl::RecordUserAffiliationStatus() {
-  auto& policies =
-      policy_bundle_.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
-  // All policy fetches seem to include a policy service with an unmanaged user,
-  // even if the only open profile is managed. As a result, only log policy
-  // fetches where a managed user is involved.
-  if (policies.GetUserAffiliationIds().empty()) {
-    return;
-  }
-
-  CloudUserAffiliationStatus status = CloudUserAffiliationStatus::kUserOnly;
-  if (policies.IsUserAffiliated()) {
-    status = CloudUserAffiliationStatus::kDeviceAndUserAffiliated;
-  } else if (!policies.GetDeviceAffiliationIds().empty()) {
-    status = CloudUserAffiliationStatus::kDeviceAndUserUnaffiliated;
-  }
-
-  base::UmaHistogramEnumeration("Enterprise.CloudUserAffiliationStatus",
-                                status);
 }
 
 // static

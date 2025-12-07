@@ -31,9 +31,6 @@ class PositionWithAffinityTemplate {
   // Returns true if both |this| and |other| is null or both |position_|
   // and |affinity_| equal.
   bool operator==(const PositionWithAffinityTemplate& other) const;
-  bool operator!=(const PositionWithAffinityTemplate& other) const {
-    return !operator==(other);
-  }
 
   bool IsValidFor(const Document& document) const {
     return position_.IsValidFor(document);

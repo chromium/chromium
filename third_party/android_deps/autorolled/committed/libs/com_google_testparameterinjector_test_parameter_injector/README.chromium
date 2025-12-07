@@ -1,0 +1,16 @@
+Name: TestParameterInjector for JUnit4
+Short Name: test-parameter-injector
+URL: https://repo.maven.apache.org/maven2/com/google/testparameterinjector/test-parameter-injector/1.18/test-parameter-injector-1.18.jar
+Version: 1.18
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: no
+Shipped: no
+
+Description:
+Testparameterinjector test parameter injector pulled in via gradle.
+
+Local Modifications:
+No modifications.

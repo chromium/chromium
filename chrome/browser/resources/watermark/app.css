@@ -1,0 +1,190 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+/* TODO(crbug.com/434676946): Adjust styling to align with UX guidelines
+ * before enabling the experiment. This includes replacing hard-coded
+ * values with named constants/tokens. */
+
+:host {
+  display: block;
+  padding: 24px;
+  box-sizing: border-box;
+  overflow: auto;
+  height: 100vh;
+  width: 100vw;
+}
+
+.controls-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, .3),
+              0 2px 6px 2px rgba(0, 0, 0, .15);
+  padding: 16px 24px;
+  width: 360px;
+}
+
+.card-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.card-header cr-button {
+  border-radius: 100px;
+  flex-shrink: 0;
+  height: 32px;
+  padding: 0 16px;
+  border: 1px solid #A8C7FA;
+  color: #0B57D0;
+}
+
+.header-text > h1 {
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.header-text > p {
+  color: #5f6368;
+  font-size: 13px;
+  margin: 2px 0 0 0;
+}
+
+.control-row {
+  align-items: baseline;
+  display: flex;
+  height: 40px;
+  justify-content: space-between;
+}
+
+.number-control-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.control-row:has(cr-slider) {
+  align-items: center;
+}
+
+.control-row > span {
+  color: #202124;
+  font-size: 13px;
+}
+
+cr-slider {
+  width: 160px;
+  --cr-slider-active-color: #1F6DD2;
+  --cr-slider-knob-color: #1A73E8;
+  --cr-slider-container-color: #D2E3FC;
+  --cr-slider-bar-height: 4px;
+  line-height: 20px;
+}
+
+.slider-container {
+  display: flex;
+  align-items: center;
+}
+
+.slider-container > span {
+  color: #202124;
+  font-size: 13px;
+  width: 30px;
+  text-align: right;
+  display: inline-block;
+}
+
+cr-input.font-size-input.stroked {
+  --cr-input-border-radius: 8px;
+  width: 70px;
+  --cr-input-border-color: #C7C7C7;
+  --cr-input-color: #1F1F1F;
+}
+
+cr-input.font-size-input.stroked > #input {
+  text-align: center;
+}
+
+cr-input.font-size-input::part(input)::-webkit-inner-spin-button,
+cr-input.font-size-input::part(input)::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.spinner-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-100%);
+  visibility: hidden;
+}
+
+.number-control-container:focus-within .spinner-buttons {
+  visibility: visible;
+}
+
+.spinner-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  color: #5f6368;
+  opacity:0.9;
+}
+
+.spinner-btn.up {
+  border-bottom: 5px solid currentColor;
+}
+
+.spinner-btn.down {
+  border-top: 5px solid currentColor;
+}
+
+.spinner-btn:active:not(:disabled) {
+  transform: scale(0.75);
+}
+
+.spinner-btn:disabled,
+.spinner-btn.hidden {
+  cursor: default;
+  visibility: hidden;
+}
+
+#fontSizeInputError {
+  align-items: right;
+  display: flex;
+  justify-content: right;
+  visibility: hidden;
+}
+
+#fontSizeInputError > span {
+  color: #dc6322;
+  font-size: 11px;
+}
+
+#values {
+  border-top: 1px solid #e8eaed;
+  color: #5f6368;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+}
+
+#watermark {
+  display: none;
+}

@@ -4,6 +4,7 @@
 
 #import "ui/accessibility/platform/ax_platform_node_mac.h"
 
+#include "base/apple/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ui/accessibility/platform/ax_platform_node_cocoa.h"
 
@@ -45,17 +46,21 @@ void NotifyMacEvent(AXPlatformNodeCocoa* target, ax::mojom::Event event_type) {
 namespace ui {
 
 // static
-AXPlatformNode* AXPlatformNode::Create(AXPlatformNodeDelegate* delegate) {
+AXPlatformNode::Pointer AXPlatformNode::Create(
+    AXPlatformNodeDelegate& delegate) {
   AXPlatformNode* node = new AXPlatformNodeMac();
   node->Init(delegate);
-  return node;
+  return Pointer(node);
 }
 
 // static
 AXPlatformNode* AXPlatformNode::FromNativeViewAccessible(
     gfx::NativeViewAccessible accessible) {
-  if ([accessible isKindOfClass:[AXPlatformNodeCocoa class]])
-    return [accessible node];
+  AXPlatformNodeCocoa* node_cocoa =
+      base::apple::ObjCCast<AXPlatformNodeCocoa>(accessible.Get());
+  if (node_cocoa) {
+    return [node_cocoa node];
+  }
   return nullptr;
 }
 
@@ -69,7 +74,7 @@ AXPlatformNodeMac::~AXPlatformNodeMac() = default;
 
 void AXPlatformNodeMac::Destroy() {
   if (objc_storage_->native_node) {
-    [objc_storage_->native_node detach];
+    [objc_storage_->native_node detachAndNotifyDestroyed:YES];
     // Also, clear the pointer to make accidental use-after-free impossible.
     objc_storage_->native_node = nil;
   }
@@ -106,7 +111,7 @@ gfx::NativeViewAccessible AXPlatformNodeMac::GetNativeViewAccessible() {
     objc_storage_->native_node =
         [[AXPlatformNodeCocoa alloc] initWithNode:this];
   }
-  return objc_storage_->native_node;
+  return gfx::NativeViewAccessible(objc_storage_->native_node);
 }
 
 void AXPlatformNodeMac::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
@@ -126,11 +131,11 @@ void AXPlatformNodeMac::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
   }
   if (event_type == ax::mojom::Event::kSelection) {
     ax::mojom::Role role = GetRole();
-    if (ui::IsMenuItem(role)) {
+    if (IsMenuItem(role)) {
       // On Mac, map menu item selection to a focus event.
       NotifyMacEvent(objc_storage_->native_node, ax::mojom::Event::kFocus);
       return;
-    } else if (ui::IsListItem(role)) {
+    } else if (IsListItem(role)) {
       if (const AXPlatformNodeBase* container = GetSelectionContainer()) {
         if (container->GetRole() == ax::mojom::Role::kListBox &&
             !container->HasState(ax::mojom::State::kMultiselectable) &&
@@ -170,7 +175,7 @@ bool IsNameExposedInAXValueForRole(ax::mojom::Role role) {
 void AXPlatformNodeMac::AddAttributeToList(const char* name,
                                            const char* value,
                                            PlatformAttributeList* attributes) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace ui

@@ -24,13 +24,14 @@ class PrefHashStoreImpl : public PrefHashStore {
     VERSION_LATEST = 2,
   };
 
+  using PrefHashStore::BeginTransaction;
+
   // Constructs a PrefHashStoreImpl that calculates hashes using
   // |seed| and |legacy_device_id| and stores them in |contents|.
   //
   // The same |seed| and |legacy_device_id| must be used to load and validate
   // previously stored hashes in |contents|.
   PrefHashStoreImpl(const std::string& seed,
-                    const std::string& legacy_device_id,
                     bool use_super_mac);
 
   PrefHashStoreImpl(const PrefHashStoreImpl&) = delete;
@@ -44,7 +45,8 @@ class PrefHashStoreImpl : public PrefHashStore {
 
   // PrefHashStore implementation.
   std::unique_ptr<PrefHashStoreTransaction> BeginTransaction(
-      HashStoreContents* storage) override;
+      HashStoreContents* storage,
+      const os_crypt_async::Encryptor* encryptor) override;
 
   std::string ComputeMac(const std::string& path,
                          const base::Value* new_value) override;
@@ -52,7 +54,23 @@ class PrefHashStoreImpl : public PrefHashStore {
       const std::string& path,
       const base::Value::Dict* split_values) override;
 
+  std::string ComputeEncryptedHash(
+      const std::string& path,
+      const base::Value* value,
+      const os_crypt_async::Encryptor* encryptor) override;
+
+  std::string ComputeEncryptedHash(
+      const std::string& path,
+      const base::Value::Dict* dict,
+      const os_crypt_async::Encryptor* encryptor) override;
+
+  base::Value::Dict ComputeSplitEncryptedHashes(
+      const std::string& path,
+      const base::Value::Dict* split_values,
+      const os_crypt_async::Encryptor* encryptor) override;
+
  private:
+  friend class PrefHashStoreImplEncryptedTest;
   class PrefHashStoreTransactionImpl;
 
   std::string ComputeMac(const std::string& path,

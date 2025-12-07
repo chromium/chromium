@@ -23,8 +23,9 @@ namespace network {
 class NetworkQualityTracker;
 }  // namespace network
 
-namespace url {
 class GURL;
+
+namespace url {
 class Origin;
 }  // namespace url
 
@@ -63,9 +64,6 @@ class AwClientHintsControllerDelegate
 
   bool IsJavaScriptAllowed(const GURL& url,
                            content::RenderFrameHost* parent_rfh) override;
-
-  bool AreThirdPartyCookiesBlocked(const GURL& url,
-                                   content::RenderFrameHost* rfh) override;
 
   blink::UserAgentMetadata GetUserAgentMetadata() override;
 

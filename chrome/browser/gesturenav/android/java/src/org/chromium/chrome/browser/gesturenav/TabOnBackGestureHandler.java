@@ -7,6 +7,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.UserData;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.base.BackGestureEventSwipeEdge;
 
@@ -15,6 +16,7 @@ import org.chromium.ui.base.BackGestureEventSwipeEdge;
  * performed on a navigable tab page.
  */
 @JNINamespace("gesturenav")
+@NullMarked
 public class TabOnBackGestureHandler implements UserData {
     private static final Class<TabOnBackGestureHandler> USER_DATA_KEY =
             TabOnBackGestureHandler.class;
@@ -36,25 +38,29 @@ public class TabOnBackGestureHandler implements UserData {
     }
 
     public void onBackStarted(
-            float x,
-            float y,
             float progress,
             @BackGestureEventSwipeEdge int edge,
-            boolean forward) {
-        TabOnBackGestureHandlerJni.get().onBackStarted(mNativePtr, x, y, progress, edge, forward);
+            boolean forward,
+            boolean isGestureMode) {
+        TabOnBackGestureHandlerJni.get()
+                .onBackStarted(mNativePtr, progress, edge, forward, isGestureMode);
     }
 
     public void onBackProgressed(
-            float x, float y, float progress, @BackGestureEventSwipeEdge int edge) {
-        TabOnBackGestureHandlerJni.get().onBackProgressed(mNativePtr, x, y, progress, edge);
+            float progress,
+            @BackGestureEventSwipeEdge int edge,
+            boolean forward,
+            boolean isGestureMode) {
+        TabOnBackGestureHandlerJni.get()
+                .onBackProgressed(mNativePtr, progress, edge, forward, isGestureMode);
     }
 
-    public void onBackCancelled() {
-        TabOnBackGestureHandlerJni.get().onBackCancelled(mNativePtr);
+    public void onBackCancelled(boolean isGestureMode) {
+        TabOnBackGestureHandlerJni.get().onBackCancelled(mNativePtr, isGestureMode);
     }
 
-    public void onBackInvoked() {
-        TabOnBackGestureHandlerJni.get().onBackInvoked(mNativePtr);
+    public void onBackInvoked(boolean isGestureMode) {
+        TabOnBackGestureHandlerJni.get().onBackInvoked(mNativePtr, isGestureMode);
     }
 
     public static boolean shouldAnimateNavigationTransition(
@@ -73,18 +79,21 @@ public class TabOnBackGestureHandler implements UserData {
 
         void onBackStarted(
                 long nativeTabOnBackGestureHandler,
-                float x,
-                float y,
                 float progress,
                 int edge,
-                boolean forward);
+                boolean forward,
+                boolean isGestureMode);
 
         void onBackProgressed(
-                long nativeTabOnBackGestureHandler, float x, float y, float progress, int edge);
+                long nativeTabOnBackGestureHandler,
+                float progress,
+                int edge,
+                boolean forward,
+                boolean isGestureMode);
 
-        void onBackCancelled(long nativeTabOnBackGestureHandler);
+        void onBackCancelled(long nativeTabOnBackGestureHandler, boolean isGestureMode);
 
-        void onBackInvoked(long nativeTabOnBackGestureHandler);
+        void onBackInvoked(long nativeTabOnBackGestureHandler, boolean isGestureMode);
 
         boolean shouldAnimateNavigationTransition(boolean forward, int edge);
 

@@ -57,8 +57,6 @@ class AccessibilitySelectionTest : public AccessibilityTest {
   // accessibility selection.
   void RunSelectionTest(const std::string& test_name,
                         const std::string& suffix = std::string()) const;
-
- private:
 };
 
 }  // namespace blink

@@ -24,7 +24,7 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/ui/ash/thumbnail_loader.h"
+#include "chrome/browser/ui/ash/thumbnail_loader/thumbnail_loader.h"
 #include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "chromeos/ash/components/string_matching/tokenized_string_match.h"
@@ -47,15 +47,6 @@ using ::ash::string_matching::TokenizedStringMatch;
 
 // The default relevance returned by CalculateRelevance.
 constexpr double kDefaultRelevance = 0.5;
-
-// Parameters for FuzzyTokenizedStringMatch.
-constexpr bool kUseWeightedRatio = false;
-
-// Flag to enable/disable diacritics stripping
-constexpr bool kStripDiacritics = true;
-
-// Flag to enable/disable acronym matcher.
-constexpr bool kUseAcronymMatcher = true;
 
 // The maximum penalty applied to a relevance by PenalizeRelevanceByAccessTime,
 // which will multiply the relevance by a number in [`kMaxPenalty`, 1].
@@ -83,8 +74,7 @@ gfx::Size GetIconSizeForDisplayType(ash::SearchResultDisplayType display_type) {
     case ash::SearchResultDisplayType::kAnswerCard:
     case ash::SearchResultDisplayType::kRecentApps:
     case ash::SearchResultDisplayType::kLast:
-      NOTREACHED_IN_MIGRATION();
-      return gfx::Size();
+      NOTREACHED();
   }
 }
 
@@ -129,7 +119,7 @@ void LogRelevance(ChromeSearchResult::ResultType result_type,
       // TODO(b/260646344): add UMA metric
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -179,7 +169,7 @@ FileResult::FileResult(const std::string& id,
       SetMetricsType(ash::IMAGE_SEARCH);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   SetTitle(GetFileTitle(filepath));
@@ -258,15 +248,8 @@ double FileResult::CalculateRelevance(
                         use_default_relevance);
   if (use_default_relevance)
     return kDefaultRelevance;
-  double relevance;
-  if (search_features::IsLauncherFuzzyMatchAcrossProvidersEnabled()) {
-    FuzzyTokenizedStringMatch fuzzy_match;
-    relevance = fuzzy_match.Relevance(query.value(), title, kUseWeightedRatio,
-                                      kStripDiacritics, kUseAcronymMatcher);
-  } else {
-    TokenizedStringMatch match;
-    relevance = match.Calculate(query.value(), title);
-  }
+  TokenizedStringMatch match;
+  double relevance = match.Calculate(query.value(), title);
   if (!last_accessed) {
     return relevance;
   }

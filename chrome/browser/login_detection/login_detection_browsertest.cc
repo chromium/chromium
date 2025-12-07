@@ -74,7 +74,7 @@ class LoginDetectionBrowserTest : public InProcessBrowserTest {
   // with the given expected bucket count for the prerendering test.
   void ExpectLoginDetectionTypeMetric(
       LoginDetectionType type,
-      base::HistogramBase::Count expected_bucket_count) {
+      base::HistogramBase::Count32 expected_bucket_count) {
     histogram_tester_->ExpectUniqueSample("Login.PageLoad.DetectionType", type,
                                           expected_bucket_count);
   }
@@ -99,14 +99,14 @@ IN_PROC_BROWSER_TEST_F(LoginDetectionBrowserTest, PopUpBasedOAuthLoginFlow) {
   ResetHistogramTester();
 
   // Create a popup for the navigation flow.
-  content::WebContentsAddedObserver web_contents_added_observer;
+  ui_test_utils::AllBrowserTabAddedWaiter tab_added_waiter;
   ASSERT_TRUE(content::ExecJs(
       GetWebContents(),
       content::JsReplace(
           "window.open($1, 'oauth_window', 'width=10,height=10');",
           https_test_server_.GetURL("www.oauthprovider.com",
                                     "/title2.html?client_id=123"))));
-  auto* popup_contents = web_contents_added_observer.GetWebContents();
+  auto* popup_contents = tab_added_waiter.Wait();
   content::TestNavigationObserver observer(popup_contents);
   observer.WaitForNavigationFinished();
   EXPECT_TRUE(observer.last_navigation_succeeded());
@@ -120,6 +120,42 @@ IN_PROC_BROWSER_TEST_F(LoginDetectionBrowserTest, PopUpBasedOAuthLoginFlow) {
   destroyed_watcher.Wait();
   ExpectLoginDetectionTypeMetric(
       LoginDetectionType::kOauthPopUpFirstTimeLoginFlow);
+}
+
+IN_PROC_BROWSER_TEST_F(LoginDetectionBrowserTest,
+                       SimplePageLoadRecordsNoLogin) {
+  // Navigate to a simple page.
+  ASSERT_TRUE(content::NavigateToURL(
+      GetWebContents(),
+      https_test_server_.GetURL("www.foo.com", "/empty.html")));
+
+  // Expect kNoLogin to be recorded for a standard page load.
+  ExpectLoginDetectionTypeMetric(LoginDetectionType::kNoLogin);
+}
+
+IN_PROC_BROWSER_TEST_F(LoginDetectionBrowserTest, OAuthLoginFlowRecordsMetric) {
+  // Navigate to the OAuth requester site.
+  ASSERT_TRUE(content::NavigateToURL(
+      GetWebContents(),
+      https_test_server_.GetURL("www.foo.com", "/title1.html")));
+  ExpectLoginDetectionTypeMetric(LoginDetectionType::kNoLogin);
+  ResetHistogramTester();
+
+  // Simulate the OAuth start navigation.
+  ASSERT_TRUE(content::NavigateToURL(
+      GetWebContents(),
+      https_test_server_.GetURL("www.oauthprovider.com",
+                                "/title2.html?client_id=123")));
+  // The start navigation itself doesn't complete the flow, so kNoLogin is
+  // expected.
+  ExpectLoginDetectionTypeMetric(LoginDetectionType::kNoLogin);
+  ResetHistogramTester();
+
+  // Simulate the OAuth completion navigation.
+  ASSERT_TRUE(content::NavigateToURL(
+      GetWebContents(), https_test_server_.GetURL(
+                            "www.foo.com", "/title1.html#access_token=token")));
+  ExpectLoginDetectionTypeMetric(LoginDetectionType::kOauthFirstTimeLoginFlow);
 }
 
 class LoginDetectionPrerenderBrowserTest : public LoginDetectionBrowserTest {
@@ -161,7 +197,8 @@ IN_PROC_BROWSER_TEST_F(LoginDetectionPrerenderBrowserTest,
   ASSERT_TRUE(content::NavigateToURL(GetWebContents(), initial_url));
   ResetHistogramTester();
 
-  const int host_id = prerender_test_helper().AddPrerender(prerender_url);
+  const content::FrameTreeNodeId host_id =
+      prerender_test_helper().AddPrerender(prerender_url);
   content::test::PrerenderHostObserver host_observer(*GetWebContents(),
                                                      host_id);
   EXPECT_FALSE(host_observer.was_activated());

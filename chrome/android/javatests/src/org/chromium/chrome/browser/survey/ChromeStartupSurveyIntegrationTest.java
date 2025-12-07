@@ -14,14 +14,15 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.hats.TestSurveyUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
@@ -35,17 +36,19 @@ import java.util.List;
 
 /** Integration test for {@link ChromeSurveyController} using {@link SurveyClient}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({
-    "force-fieldtrials=Study/Group",
-    "force-fieldtrial-params=Study.Group:autodismiss_duration_ms/500/"
-            + TestSurveyUtils.TEST_SURVEY_TRIGGER_ID_OVERRIDE_TEMPLATE
-            + TestSurveyUtils.TEST_TRIGGER_ID_FOO
-})
-@Features.EnableFeatures({ChromeFeatureList.CHROME_SURVEY_NEXT_ANDROID + "<Study"})
+@Features.EnableFeatures(
+        ChromeFeatureList.CHROME_SURVEY_NEXT_ANDROID
+                + ":autodismiss_duration_ms/500"
+                + "/probability/1.0"
+                + "/"
+                + TestSurveyUtils.TRIGGER_ID_PARAM_NAME
+                + "/"
+                + TestSurveyUtils.TEST_TRIGGER_ID_FOO)
 @Batch(Batch.PER_CLASS)
 public class ChromeStartupSurveyIntegrationTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule
     public TestSurveyUtils.TestSurveyComponentRule mTestSurveyComponentRule =
@@ -53,12 +56,13 @@ public class ChromeStartupSurveyIntegrationTest {
 
     private MessageDispatcher mMessageDispatcher;
     private PropertyModel mSurveyMessage;
+    private WebPageStation mPage;
 
     @Before
     public void setup() {
         ChromeSurveyController.setEnableForTesting();
         ChromeSurveyController.forceIsUMAEnabledForTesting(true);
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
         waitForSurveyMessagePresented();
     }
 
@@ -67,7 +71,8 @@ public class ChromeStartupSurveyIntegrationTest {
     public void acceptSurvey() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mSurveyMessage.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
+                    var unused =
+                            mSurveyMessage.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
                 });
         Assert.assertEquals(
                 "Last shown survey triggerId not match.",
@@ -87,7 +92,7 @@ public class ChromeStartupSurveyIntegrationTest {
     }
 
     private void waitForSurveyMessagePresented() {
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mPage.getTab();
         CriteriaHelper.pollUiThread(() -> !tab.isLoading() && tab.isUserInteractable());
 
         ThreadUtils.runOnUiThreadBlocking(

@@ -30,16 +30,17 @@ public class NativeTest {
     private static final String TAG = "NativeTest";
 
     private String mCommandLineFilePath;
-    private StringBuilder mCommandLineFlags = new StringBuilder();
+    private final StringBuilder mCommandLineFlags = new StringBuilder();
     private TestStatusReporter mReporter;
     private boolean mRunInSubThread;
+    private boolean mKeepUserDataDir;
     private String mStdoutFilePath;
 
     private static class ReportingUncaughtExceptionHandler
             implements Thread.UncaughtExceptionHandler {
 
-        private TestStatusReporter mReporter;
-        private Thread.UncaughtExceptionHandler mWrappedHandler;
+        private final TestStatusReporter mReporter;
+        private final Thread.UncaughtExceptionHandler mWrappedHandler;
 
         public ReportingUncaughtExceptionHandler(
                 TestStatusReporter reporter, Thread.UncaughtExceptionHandler wrappedHandler) {
@@ -81,6 +82,10 @@ public class NativeTest {
                         mReporter, Thread.getDefaultUncaughtExceptionHandler()));
     }
 
+    public boolean shouldKeepUserDataDir() {
+        return mKeepUserDataDir;
+    }
+
     private void parseArgumentsFromIntent(Activity activity, Intent intent) {
         Log.i(TAG, "Extras:");
         Bundle extras = intent.getExtras();
@@ -110,6 +115,12 @@ public class NativeTest {
         String gtestFilter = intent.getStringExtra(NativeTestIntent.EXTRA_GTEST_FILTER);
         if (gtestFilter != null) {
             appendCommandLineFlags("--gtest_filter=" + gtestFilter);
+            Log.i(TAG, "Tests from gtest_filter: %s", gtestFilter);
+        }
+
+        mKeepUserDataDir = intent.getBooleanExtra(NativeTestIntent.EXTRA_KEEP_USER_DATA_DIR, false);
+        if (mKeepUserDataDir) {
+            Log.i(TAG, "user data dir is kept for the tests.");
         }
 
         mStdoutFilePath = intent.getStringExtra(NativeTestIntent.EXTRA_STDOUT_FILE);
@@ -161,22 +172,17 @@ public class NativeTest {
     }
 
     private void runTests(Activity activity) {
+        String commandLineFlags = mCommandLineFlags.toString();
+        Log.i(TAG, "test run starting with command line flags: %s", commandLineFlags);
         NativeTestJni.get()
                 .runTests(
-                        mCommandLineFlags.toString(),
+                        commandLineFlags,
                         mCommandLineFilePath,
                         mStdoutFilePath,
                         activity.getApplicationContext(),
                         UrlUtils.getIsolatedTestRoot());
-        activity.finish();
+        Log.i(TAG, "test run finished with command line flags: %s", commandLineFlags);
         mReporter.testRunFinished(Process.myPid());
-    }
-
-    // Signal a failure of the native test loader to python scripts
-    // which run tests.  For example, we look for
-    // RUNNER_FAILED build/android/test_package.py.
-    private void nativeTestFailed() {
-        Log.e(TAG, "[ RUNNER_FAILED ] could not load native library");
     }
 
     @NativeMethods

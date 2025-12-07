@@ -12,8 +12,10 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/notimplemented.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
@@ -21,7 +23,7 @@
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ui/ash/chrome_shell_delegate.h"
+#include "chrome/browser/ui/ash/shell_delegate/chrome_shell_delegate.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
@@ -153,7 +155,7 @@ class TestAshTraceDestinationIO : public hud_display::AshTraceDestinationIO {
   int fstat(base::PlatformFile fd, struct stat* statbuf) override {
     LOG(INFO) << "TestAshTraceDestinationIO::fstat(): Called.";
     AssertRegistry();
-    memset(statbuf, 0, sizeof(struct stat));
+    UNSAFE_TODO(memset(statbuf, 0, sizeof(struct stat)));
     return CanWriteFile(fd) ? 0 : -1;
   }
 

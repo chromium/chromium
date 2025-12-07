@@ -8,10 +8,10 @@
 #include <memory>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/router/discovery/dial/dial_media_sink_service_impl.h"
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
@@ -40,13 +40,16 @@ class CastMediaSinkService : public DnsSdRegistry::DnsSdObserver {
   ~CastMediaSinkService() override;
 
   // Starts Cast sink discovery. No-ops if already started.
-  // |sink_discovery_cb|: Callback to invoke when the list of discovered sinks
+  // `sink_discovery_cb`: Callback to invoke when the list of discovered sinks
   // has been updated.
-  // |dial_media_sink_service|: Optional pointer to DIAL MediaSinkService for
-  // dual discovery.
-  // Marked virtual for tests.
-  virtual void Initialize(const OnSinksDiscoveredCallback& sinks_discovered_cb,
-                          MediaSinkServiceBase* dial_media_sink_service);
+  // `discovery_permission_rejected_cb`: Callback to invoke when the DnsSd
+  // discovery fails due to permission rejected.
+  // `dial_media_sink_service`: Optional pointer to DIAL MediaSinkService for
+  // dual discovery. Marked virtual for tests.
+  virtual void Initialize(
+      const OnSinksDiscoveredCallback& sinks_discovered_cb,
+      base::RepeatingClosure discovery_permission_rejected_cb,
+      DialMediaSinkServiceImpl* dial_media_sink_service);
 
   virtual void DiscoverSinksNow();
 
@@ -57,7 +60,7 @@ class CastMediaSinkService : public DnsSdRegistry::DnsSdObserver {
   // Marked virtual for tests.
   virtual std::unique_ptr<CastMediaSinkServiceImpl, base::OnTaskRunnerDeleter>
   CreateImpl(const OnSinksDiscoveredCallback& sinks_discovered_cb,
-             MediaSinkServiceBase* dial_media_sink_service);
+             DialMediaSinkServiceImpl* dial_media_sink_service);
 
   CastMediaSinkServiceImpl* impl() { return impl_.get(); }
 
@@ -105,6 +108,9 @@ class CastMediaSinkService : public DnsSdRegistry::DnsSdObserver {
 
   // List of cast sinks found in current round of mDNS discovery.
   std::vector<MediaSinkInternal> cast_sinks_;
+
+  // Invoked when `OnDnsSdPermissionRejected()` is called.
+  base::RepeatingClosure discovery_permission_rejected_cb_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<CastMediaSinkService> weak_ptr_factory_{this};

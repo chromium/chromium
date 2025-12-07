@@ -28,10 +28,11 @@ ShellSpeechRecognitionManagerDelegate::
 ~ShellSpeechRecognitionManagerDelegate() {
 }
 
-#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void ShellSpeechRecognitionManagerDelegate::BindSpeechRecognitionContext(
-    mojo::PendingReceiver<media::mojom::SpeechRecognitionContext> receiver) {}
-#endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
+    mojo::PendingReceiver<media::mojom::SpeechRecognitionContext> receiver,
+    const std::string& language) {}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void ShellSpeechRecognitionManagerDelegate::OnRecognitionStart(int session_id) {
 }
@@ -101,10 +102,8 @@ void ShellSpeechRecognitionManagerDelegate::CheckRenderFrameType(
   bool check_permission = false;
 
   if (render_frame_host) {
-    WebContents* web_contents =
-        WebContents::FromRenderFrameHost(render_frame_host);
     extensions::mojom::ViewType view_type =
-        extensions::GetViewType(web_contents);
+        extensions::GetViewType(render_frame_host);
 
     if (view_type == extensions::mojom::ViewType::kAppWindow ||
         view_type == extensions::mojom::ViewType::kExtensionBackgroundPage) {

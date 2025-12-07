@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/common/chrome_features.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/ui_base_features.h"
@@ -66,7 +67,7 @@ int GetLayoutConstant(LayoutConstant constant) {
       //   constants, so instead of spreading the permutation logic here and
       //   elsewhere, it's consolidated in `Layout()` and will be moved back
       //   here once we decide on a permutation.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case LOCATION_BAR_TRAILING_DECORATION_EDGE_PADDING:
       return touch_ui ? 3 : 12;
     case LOCATION_BAR_TRAILING_DECORATION_INNER_PADDING:
@@ -79,6 +80,10 @@ int GetLayoutConstant(LayoutConstant constant) {
       return GetLayoutConstant(LOCATION_BAR_ICON_SIZE);
     case LOCATION_BAR_TRAILING_ICON_SIZE:
       return 20;
+    case NEW_TAB_BUTTON_LEADING_MARGIN:
+      return 0;
+    case STAR_RATING_ICON_SIZE:
+      return 14;
     case TAB_AFTER_TITLE_PADDING:
       return touch_ui ? 8 : 4;
     case TAB_ALERT_INDICATOR_CAPTURE_ICON_WIDTH:
@@ -101,11 +106,6 @@ int GetLayoutConstant(LayoutConstant constant) {
     case TAB_STACK_DISTANCE:
       return touch_ui ? 4 : 6;
     case TABSTRIP_TOOLBAR_OVERLAP:
-      // Because tab scrolling puts the tabstrip on a separate layer,
-      // changing paint order, this overlap isn't compatible with scrolling.
-      if (base::FeatureList::IsEnabled(tabs::kScrollableTabStrip)) {
-        return 0;
-      }
       return 1;
     case TOOLBAR_BUTTON_HEIGHT:
       return touch_ui ? 48 : 34;
@@ -123,17 +123,25 @@ int GetLayoutConstant(LayoutConstant constant) {
       return touch_ui ? 0 : 2;
     case TOOLBAR_STANDARD_SPACING:
       return touch_ui ? 12 : 9;
+    case TOOLBAR_HEIGHT_SIDE_PANEL_INSET:
+      return 8;
     case PAGE_INFO_ICON_SIZE:
       return 20;
     case DOWNLOAD_ICON_SIZE:
       return 20;
+    case MAIN_BACKGROUND_REGION_CORNER_RADIUS:
     case TOOLBAR_CORNER_RADIUS:
       return 8;
+    case VERTICAL_TAB_HEIGHT:
+      return 30;
+    case VERTICAL_TAB_STRIP_HORIZONTAL_PADDING:
+      return 12;
+    case VERTICAL_TAB_STRIP_BOTTOM_BUTTON_PADDING:
+      return 4;
     default:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 gfx::Insets GetLayoutInsets(LayoutInset inset) {
@@ -170,6 +178,9 @@ gfx::Insets GetLayoutInsets(LayoutInset inset) {
         return gfx::Insets::TLBR(7, 4, 7, 6);
       }
 
+    case WEB_APP_APP_MENU_CHIP_PADDING:
+      return gfx::Insets::TLBR(0, 4, 0, 6);
+
     case AVATAR_CHIP_PADDING:
       if (touch_ui) {
         return GetLayoutInsets(TOOLBAR_BUTTON);
@@ -178,11 +189,10 @@ gfx::Insets GetLayoutInsets(LayoutInset inset) {
       }
 
     case TOOLBAR_INTERIOR_MARGIN:
-      return touch_ui ? gfx::Insets() : gfx::Insets::VH(6, 5);
+      return touch_ui ? gfx::Insets::VH(4, 0) : gfx::Insets::VH(6, 5);
 
     case WEBUI_TAB_STRIP_TOOLBAR_INTERIOR_MARGIN:
       return gfx::Insets::VH(4, 0);
   }
-  NOTREACHED_IN_MIGRATION();
-  return gfx::Insets();
+  NOTREACHED();
 }

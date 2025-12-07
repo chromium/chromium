@@ -6,7 +6,7 @@
 #define COMPONENTS_OFFLINE_PAGES_CORE_BACKGROUND_SNAPSHOT_CONTROLLER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 
@@ -49,7 +49,7 @@ class BackgroundSnapshotController {
     virtual void StartSnapshot() = 0;
 
    protected:
-    virtual ~Client() {}
+    virtual ~Client() = default;
   };
 
   BackgroundSnapshotController(

@@ -3,10 +3,12 @@ Short Name: libx11
 URL: https://gitlab.freedesktop.org/xorg/lib/libx11
 Version: 9f9c5365816bdd036fd80d54b22e86764ea4b7a7
 Revision: 9f9c5365816bdd036fd80d54b22e86764ea4b7a7
+Update Mechanism: Manual
 License: MIT
 License File: LICENSE
 Security Critical: no
 Shipped: yes
+CPEPrefix: cpe:/a:x.org:libx11
 
 Description:
 Core X11 protocol client library

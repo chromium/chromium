@@ -21,6 +21,12 @@ class TargetImpl {
   flattenUnions(unions) {}
   flattenMap(map) {}
   requestSubinterface(request, client) {}
+  methodWithReservedNameParameter(arguments_) {
+    return Promise.resolve({arguments: arguments_});
+  }
+  testResult(success) {
+    return success ? Promise.resolve(true) : Promise.reject(-1);
+  }
 }
 
 promise_test(() => {
@@ -31,6 +37,16 @@ promise_test(() => {
     assert_equals(impl.numPokes, 1);
   });
 }, 'messages with replies return Promises that resolve on reply received');
+
+
+promise_test(() => {
+  let impl = new TargetImpl;
+  let remote = impl.target.$.bindNewPipeAndPassRemote();
+  return remote.methodWithReservedNameParameter([1, 2, 3, 4]).then(reply => {
+    assert_array_equals(reply.arguments, [1, 2, 3, 4]);
+  });
+}, 'Methods with reserved argument names are properly handled.');
+
 
 promise_test(() => {
   let impl = new TargetImpl;
@@ -206,3 +222,32 @@ promise_test(() => {
   remote.$.close();
   return disconnectPromise;
 }, 'InterfaceTarget connection error handler runs when set on an InterfaceCallbackRouter object');
+
+promise_test(() => {
+  let impl = new TargetImpl;
+  let remote = impl.target.$.bindNewPipeAndPassRemote();
+  return remote.testResult(true).then((result) => {
+    assert_equals(result, true);
+  });
+}, 'result type promise resolves');
+
+promise_test(() => {
+  let router = new TestMessageTargetCallbackRouter;
+  let remote = router.$.bindNewPipeAndPassRemote();
+  router.testResult.addListener((success) => Promise.resolve(success));
+  return remote.testResult(true).then(result => {
+    assert_equals(result, true);
+  });
+}, 'result type promise resolves using callback router');
+
+promise_test(() => {
+  let impl = new TargetImpl;
+  let remote = impl.target.$.bindNewPipeAndPassRemote();
+  return remote.testResult(false)
+      .then(() => {
+        return Promise.reject('should have rejected');
+      })
+      .catch((result) => {
+        assert_equals(result, -1);
+      });
+}, 'result type promise rejects');

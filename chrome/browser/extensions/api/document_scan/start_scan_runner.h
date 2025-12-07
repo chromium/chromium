@@ -14,7 +14,7 @@
 #include "base/types/expected.h"
 #include "chromeos/crosapi/mojom/document_scan.mojom.h"
 #include "extensions/common/extension_id.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace content {
 class BrowserContext;
@@ -24,9 +24,9 @@ namespace gfx {
 class Image;
 }  // namespace gfx
 
-namespace views {
+namespace ui {
 class NativeWindowTracker;
-}  // namespace views
+}  // namespace ui
 
 namespace extensions {
 
@@ -86,7 +86,7 @@ class StartScanRunner {
   const raw_ptr<content::BrowserContext> browser_context_;
 
   // Tracks whether `native_window_` got destroyed.
-  std::unique_ptr<views::NativeWindowTracker> native_window_tracker_;
+  std::unique_ptr<ui::NativeWindowTracker> native_window_tracker_;
 
   scoped_refptr<const Extension> extension_;
 

@@ -10,7 +10,10 @@ Works better for text formats or protocols. For binary ones may be useless.
 """
 
 import argparse
-import HTMLParser
+# This is a Python 2-only import despite the file using a Python 3 shebang. This
+# implies that this file has been unused for years and has not been properly
+# converted to Python 3.
+import HTMLParser  # pylint: disable=import-error
 import logging
 import os
 import re
@@ -34,7 +37,7 @@ def EscapeDictionaryElement(element):
   """Escape all unprintable and control characters in an element."""
   element_escaped = element.encode('string_escape')
   # Remove escaping for single quote because it breaks libFuzzer.
-  element_escaped = element_escaped.replace('\\\'', '\'')
+  element_escaped = element_escaped.replace("\\'", "'")
   # Add escaping for double quote.
   element_escaped = element_escaped.replace('"', '\\"')
   return element_escaped
@@ -81,7 +84,7 @@ def FindIndentedText(text):
   previous_number_of_spaces = 0
 
   # Go through every line and concatenate space-indented blocks into lines.
-  for i in xrange(0, len(lines), 1):
+  for i in range(0, len(lines), 1):
     if not lines[i]:
       # Ignore empty lines.
       continue
@@ -119,7 +122,7 @@ def GenerateDictionary(path_to_binary, path_to_spec, strategy, is_html=False):
   """Generate a dictionary for given pair of fuzzer binary and specification."""
   for filepath in [path_to_binary, path_to_spec]:
     if not os.path.exists(filepath):
-      logging.error('%s doesn\'t exist. Exit.', filepath)
+      logging.error("%s doesn't exist. Exit.", filepath)
       sys.exit(1)
 
   words_from_binary = ExtractWordsFromBinary(path_to_binary)
@@ -205,7 +208,7 @@ def WriteDictionary(dictionary_path, dictionary):
 
 
 def main():
-  parser = argparse.ArgumentParser(description="Generate fuzzer dictionary.")
+  parser = argparse.ArgumentParser(description='Generate fuzzer dictionary.')
   parser.add_argument('--fuzzer',
                       required=True,
                       help='Path to a fuzzer binary executable. It is '

@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include "base/i18n/case_conversion.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/features.h"
 #include "components/history/core/browser/keyword_search_term.h"
@@ -156,7 +158,7 @@ void GetAutocompleteSearchTermsFromEnumerator(
   // Populate `search_terms` with the top `count` search terms in descending
   // recency or frecency scores.
   size_t num_search_terms = std::min(search_terms->size(), count);
-  base::ranges::partial_sort(
+  std::ranges::partial_sort(
       search_terms->begin(), std::next(search_terms->begin(), num_search_terms),
       search_terms->end(), [&](const auto& a, const auto& b) {
         return ranking_policy == SearchTermRankingPolicy::kFrecency
@@ -293,11 +295,15 @@ void GetMostRepeatedSearchTermsFromEnumerator(
   // Populate `search_terms` with the top `count` search terms in descending
   // frecency scores.
   size_t num_search_terms = std::min(search_terms->size(), count);
-  base::ranges::partial_sort(
+  std::ranges::partial_sort(
       search_terms->begin(), std::next(search_terms->begin(), num_search_terms),
       search_terms->end(),
       [](const auto& a, const auto& b) { return a->score > b->score; });
   search_terms->resize(num_search_terms);
+}
+
+std::u16string NormalizeTerm(const std::u16string& term) {
+  return base::i18n::ToLower(base::CollapseWhitespace(term, false));
 }
 
 }  // namespace history

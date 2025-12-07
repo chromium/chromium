@@ -1,0 +1,11 @@
+Name: heck
+URL: https://crates.io/crates/heck
+Version: 0.5.0
+Revision: 070693322aee7c5c7fbee7c9964bf8d7d3a29c96
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/heck-v0_5/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: heck is a case conversion library.

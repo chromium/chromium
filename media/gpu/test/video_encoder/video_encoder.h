@@ -6,6 +6,8 @@
 #define MEDIA_GPU_TEST_VIDEO_ENCODER_VIDEO_ENCODER_H_
 
 #include <limits.h>
+
+#include <array>
 #include <atomic>
 #include <memory>
 #include <utility>
@@ -18,13 +20,13 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "media/gpu/test/bitstream_helpers.h"
 
 namespace media {
 class VideoBitrateAllocation;
 
 namespace test {
 
-class BitstreamProcessor;
 class RawVideo;
 class VideoEncoderClient;
 struct VideoEncoderClientConfig;
@@ -93,8 +95,11 @@ class VideoEncoder {
   // Force key frame.
   void ForceKeyFrame();
 
+  bool IsFlushSupported();
+
   // Get the current state of the video encoder.
   EncoderState GetState() const;
+  bool IsHardwareAccelerated();
 
   // Wait for an event to occur the specified number of times. All events that
   // occurred since last calling this function will be taken into account. All
@@ -142,8 +147,8 @@ class VideoEncoder {
   // The list of events thrown by the video encoder client.
   std::vector<EncoderEvent> video_encoder_events_ GUARDED_BY(event_lock_);
   // The number of times each event has occurred.
-  size_t video_encoder_event_counts_[EncoderEvent::kNumEvents] GUARDED_BY(
-      event_lock_);
+  std::array<size_t, EncoderEvent::kNumEvents> video_encoder_event_counts_
+      GUARDED_BY(event_lock_);
   // The index of the next event to start at, when waiting for events.
   size_t next_unprocessed_event_ GUARDED_BY(event_lock_);
 

@@ -5,14 +5,15 @@ package org.chromium.base;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.SparseArray;
 
+import org.chromium.base.library_loader.IRelroLibInfo;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.process_launcher.ChildProcessServiceDelegate;
+import org.chromium.base.process_launcher.IChildProcessArgs;
 import org.chromium.native_test.MainRunner;
 
 import java.util.List;
@@ -22,7 +23,6 @@ public class MultiprocessTestClientServiceDelegate implements ChildProcessServic
     private static final String TAG = "MPTestCSDelegate";
 
     private ITestCallback mTestCallback;
-    private IBinder mBinderBox;
 
     private final ITestController.Stub mTestController =
             new ITestController.Stub() {
@@ -48,10 +48,8 @@ public class MultiprocessTestClientServiceDelegate implements ChildProcessServic
     public void onServiceBound(Intent intent) {}
 
     @Override
-    public void onConnectionSetup(
-            Bundle connectionBundle, List<IBinder> callbacks, IBinder binderBox) {
+    public void onConnectionSetup(IChildProcessArgs args, List<IBinder> callbacks) {
         mTestCallback = ITestCallback.Stub.asInterface(callbacks.get(0));
-        mBinderBox = binderBox;
     }
 
     @Override
@@ -80,7 +78,7 @@ public class MultiprocessTestClientServiceDelegate implements ChildProcessServic
 
     @Override
     public void runMain() {
-        int result = MainRunner.runMain(CommandLine.getJavaSwitchesForTesting(), mBinderBox);
+        int result = MainRunner.runMain(CommandLine.getJavaSwitchesForTesting());
         try {
             mTestCallback.mainReturned(result);
         } catch (RemoteException re) {
@@ -89,5 +87,5 @@ public class MultiprocessTestClientServiceDelegate implements ChildProcessServic
     }
 
     @Override
-    public void consumeRelroBundle(Bundle bundle) {}
+    public void consumeRelroLibInfo(IRelroLibInfo libInfo) {}
 }

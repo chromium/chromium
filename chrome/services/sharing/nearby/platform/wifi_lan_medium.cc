@@ -9,7 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -21,8 +21,7 @@
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 namespace {
 
@@ -77,7 +76,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // enforce the transformation.
 const char kServiceTypeSuffix[] = "local";
 
-std::string LongServiceType(const std::string service_type) {
+std::string LongServiceType(const std::string& service_type) {
   // Should not already have the suffix.
   auto found_index =
       service_type.find(kServiceTypeSuffix, /*pos=*/service_type.length() -
@@ -86,7 +85,7 @@ std::string LongServiceType(const std::string service_type) {
   return service_type + kServiceTypeSuffix;
 }
 
-std::string ShortServiceType(const std::string service_type) {
+std::string ShortServiceType(const std::string& service_type) {
   // Should already have the suffix.
   CHECK(service_type.length() >= strlen(kServiceTypeSuffix));
   auto found_index =
@@ -123,6 +122,9 @@ WifiLanMedium::WifiLanMedium(
 }
 
 WifiLanMedium::~WifiLanMedium() {
+  if (mdns_observer_.is_bound()) {
+    mdns_observer_.reset();
+  }
   // For thread safety, shut down on the |task_runner_|.
   base::WaitableEvent shutdown_waitable_event;
   task_runner_->PostTask(FROM_HERE, base::BindOnce(&WifiLanMedium::Shutdown,
@@ -654,8 +656,8 @@ void WifiLanMedium::Shutdown(base::WaitableEvent* shutdown_waitable_event) {
   socket_factory_.reset();
   cros_network_config_.reset();
   firewall_hole_factory_.reset();
-  mdns_manager_.reset();
   discovery_callbacks_.clear();
+  mdns_manager_.reset();
 
   // Cancel all pending connect/listen calls. This is thread safe because all
   // changes to the pending-event sets are sequenced. Make a copy of the events
@@ -682,5 +684,4 @@ void WifiLanMedium::Shutdown(base::WaitableEvent* shutdown_waitable_event) {
   shutdown_waitable_event->Signal();
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

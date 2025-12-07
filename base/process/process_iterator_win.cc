@@ -4,6 +4,7 @@
 
 #include "base/process/process_iterator.h"
 
+#include "base/compiler_specific.h"
 #include "base/strings/string_util.h"
 
 namespace base {
@@ -28,13 +29,13 @@ bool ProcessIterator::CheckForNextProcess() {
 }
 
 void ProcessIterator::InitProcessEntry(ProcessEntry* entry) {
-  memset(entry, 0, sizeof(*entry));
+  UNSAFE_TODO(memset(entry, 0, sizeof(*entry)));
   entry->dwSize = sizeof(*entry);
 }
 
 bool NamedProcessIterator::IncludeEntry() {
   // Case insensitive.
-  return !_wcsicmp(executable_name_.c_str(), entry().exe_file()) &&
+  return UNSAFE_TODO(!_wcsicmp(executable_name_.c_str(), entry().exe_file())) &&
          ProcessIterator::IncludeEntry();
 }
 

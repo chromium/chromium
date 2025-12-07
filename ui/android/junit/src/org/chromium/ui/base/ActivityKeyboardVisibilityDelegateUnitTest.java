@@ -52,7 +52,8 @@ public class ActivityKeyboardVisibilityDelegateUnitTest {
     @Captor private ArgumentCaptor<View.OnLayoutChangeListener> mOnLayoutChangeListener;
 
     private FrameLayout mRootView;
-    private ObservableSupplierImpl<Integer> mKeyboardInsetSupplier = new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Integer> mKeyboardInsetSupplier =
+            new ObservableSupplierImpl<>();
     private LazyOneshotSupplier<ObservableSupplier<Integer>> mLazyKeyboardInsetSupplier;
     private ActivityKeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
 
@@ -70,7 +71,7 @@ public class ActivityKeyboardVisibilityDelegateUnitTest {
         when(mRootView.isAttachedToWindow()).thenReturn(false);
         activity.setContentView(mRootView);
         mKeyboardVisibilityDelegate =
-                new ActivityKeyboardVisibilityDelegate(new WeakReference<Activity>(activity));
+                new ActivityKeyboardVisibilityDelegate(new WeakReference<>(activity));
         mKeyboardVisibilityDelegate.setContentViewForTesting(mRootView);
         setRootViewKeyboardInset(0);
     }

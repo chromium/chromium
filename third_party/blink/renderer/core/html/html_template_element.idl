@@ -30,9 +30,9 @@
 
 // https://html.spec.whatwg.org/C/#the-template-element
 [
-    Exposed=Window,
-    HTMLConstructor
+    Exposed=Window
 ] interface HTMLTemplateElement : HTMLElement {
+    [HTMLConstructor] constructor();
     readonly attribute DocumentFragment content;
 
     // These are the declarative Shadow DOM IDL attributes, which reflect the
@@ -48,4 +48,7 @@
 
     // Used by the DOM Parts API
     [Reflect, RuntimeEnabled=DOMPartsAPI] attribute boolean parseparts;
+
+    // Used by Scoped Element Registries
+    [CEReactions, Reflect, RuntimeEnabled=ScopedCustomElementRegistry] attribute DOMString shadowRootCustomElementRegistry;
 };

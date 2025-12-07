@@ -6,19 +6,18 @@ package org.chromium.chrome.browser.webapps;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 import android.content.res.Resources;
 import android.graphics.Color;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.android.XmlResourceParserImpl;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
@@ -37,9 +36,9 @@ import org.chromium.chrome.test.util.browser.webapps.WebApkIntentDataProviderBui
 import org.chromium.components.sync.protocol.WebApkSpecifics;
 
 import java.io.ByteArrayInputStream;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -65,14 +64,10 @@ public class WebApkSyncServiceTest {
 
     @Mock private Resources mMockResources;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public FakeTimeTestRule mFakeClockRule = new FakeTimeTestRule();
 
     private String mPrimaryIconXmlContents;
-
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     private XmlResourceParserImpl getMockXmlResourceParserImpl() {
         try {
@@ -84,8 +79,8 @@ public class WebApkSyncServiceTest {
             Document document =
                     documentBuilder.parse(
                             new ByteArrayInputStream(mPrimaryIconXmlContents.getBytes()));
-
-            return new XmlResourceParserImpl(document, "file", PACKAGE_NAME, PACKAGE_NAME, null);
+            return new XmlResourceParserImpl(
+                    document, Paths.get("file"), PACKAGE_NAME, PACKAGE_NAME, null);
         } catch (Exception e) {
             return null;
         }
@@ -93,24 +88,19 @@ public class WebApkSyncServiceTest {
 
     public WebappDataStorage registerWebappAndGetStorage(String packageName) throws Exception {
         String webappId = WebappIntentUtils.getIdForWebApkPackage(packageName);
-        try {
-            CallbackHelper helper = new CallbackHelper();
-            WebappRegistry.getInstance()
-                    .register(
-                            webappId,
-                            new WebappRegistry.FetchWebappDataStorageCallback() {
-                                @Override
-                                public void onWebappDataStorageRetrieved(
-                                        WebappDataStorage storage) {
-                                    helper.notifyCalled();
-                                }
-                            });
-            BackgroundShadowAsyncTask.runBackgroundTasks();
-            ShadowLooper.runUiThreadTasks();
-            helper.waitForOnly();
-        } catch (TimeoutException e) {
-            fail();
-        }
+        CallbackHelper helper = new CallbackHelper();
+        WebappRegistry.getInstance()
+                .register(
+                        webappId,
+                        new WebappRegistry.FetchWebappDataStorageCallback() {
+                            @Override
+                            public void onWebappDataStorageRetrieved(WebappDataStorage storage) {
+                                helper.notifyCalled();
+                            }
+                        });
+        BackgroundShadowAsyncTask.runBackgroundTasks();
+        ShadowLooper.runUiThreadTasks();
+        helper.waitForOnly();
 
         return WebappRegistry.getInstance().getWebappDataStorage(webappId);
     }
@@ -202,7 +192,7 @@ public class WebApkSyncServiceTest {
     @Test
     public void testGetIconsFallback() throws Exception {
         WebappIcon testIcon = new WebappIcon();
-        Map<String, String> iconUrlAndIconMurmur2HashMap = new HashMap<String, String>();
+        Map<String, String> iconUrlAndIconMurmur2HashMap = new HashMap<>();
         iconUrlAndIconMurmur2HashMap.put(ICON_URL, ICON_MURMUR2_HASH);
         iconUrlAndIconMurmur2HashMap.put(ICON_URL2, ICON_MURMUR2_HASH);
         BrowserServicesIntentDataProvider intentDataProvider =

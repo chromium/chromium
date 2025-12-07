@@ -16,6 +16,8 @@ component("web_modal") {
     "web_contents_modal_dialog_manager_delegate.cc",
     "web_contents_modal_dialog_manager_delegate.h",
     "web_modal_export.h",
+    "web_modal_utils.cc",
+    "web_modal_utils.h",
   ]
 
   defines = [ "WEB_MODAL_IMPLEMENTATION" ]
@@ -55,6 +57,14 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [ "web_contents_modal_dialog_manager_unittest.cc" ]
+
+  if (is_mac) {
+    sources += [
+      "web_contents_modal_dialog_manager_unittest_mac_helper.h",
+      "web_contents_modal_dialog_manager_unittest_mac_helper.mm",
+    ]
+    frameworks = [ "Foundation.framework" ]
+  }
 
   deps = [
     ":test_support",

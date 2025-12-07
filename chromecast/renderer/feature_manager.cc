@@ -12,7 +12,6 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/not_fatal_until.h"
 #include "base/values.h"
 #include "chromecast/base/cast_features.h"
 #include "chromecast/common/feature_constants.h"
@@ -143,7 +142,7 @@ bool FeatureManager::FeatureEnabled(const std::string& feature) const {
 const chromecast::shell::mojom::FeaturePtr& FeatureManager::GetFeature(
     const std::string& feature) const {
   auto itor = features_map_.find(feature);
-  CHECK(itor != features_map_.end(), base::NotFatalUntil::M130);
+  CHECK(itor != features_map_.end());
   return itor->second;
 }
 

@@ -138,31 +138,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="kEINVAL"/>
 </enum>
 
-<enum name="MachineLearningServiceWebPlatformTfLiteFlatBufferModelComputeEvent">
-  <int value="0" label="kSuccess"/>
-  <int value="1" label="kIncorrectNumberOfInputs"/>
-  <int value="2" label="kMissingInput"/>
-  <int value="3" label="kInvalidInputBufferSize"/>
-  <int value="4" label="kFailToCompute"/>
-</enum>
-
-<enum
-    name="MachineLearningServiceWebPlatformTfLiteFlatBufferModelCreateModelLoaderResultEvent">
-  <int value="0" label="kOk"/>
-  <int value="1" label="kUnknownError"/>
-  <int value="2" label="kNotSupported"/>
-</enum>
-
-<enum name="MachineLearningServiceWebPlatformTfLiteFlatBufferModelLoadEvent">
-  <int value="0" label="kSuccess"/>
-  <int value="1" label="kInvalidInputBigBuffer"/>
-  <int value="2" label="kInvalidSharedBuffer"/>
-  <int value="3" label="kUnknownTypeOfInputBigBuffer"/>
-  <int value="4" label="kBuildModelFailed"/>
-  <int value="5" label="kInterpretModelFailed"/>
-  <int value="6" label="kAllocateTensorFailed"/>
-</enum>
-
 </enums>
 
 </histogram-configuration>

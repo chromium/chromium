@@ -153,13 +153,13 @@ TEST(MediaSourceTest, ForDesktopWithAudio) {
 }
 
 TEST(MediaSourceTest, ForUnchosenDesktop) {
+#if BUILDFLAG(IS_MAC)
   base::test::ScopedFeatureList scoped_features;
-  auto enabled_features = std::vector<base::test::FeatureRef>(
-      {media::kCastLoopbackAudioToAudioReceivers});
-#if BUILDFLAG(IS_LINUX)
-  enabled_features.push_back(media::kPulseaudioLoopbackForCast);
+  scoped_features.InitAndEnableFeature(media::kMacCatapLoopbackAudioForCast);
+#elif BUILDFLAG(IS_LINUX)
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(media::kPulseaudioLoopbackForCast);
 #endif
-  scoped_features.InitWithFeatures(enabled_features, {});
 
   auto source = MediaSource::ForUnchosenDesktop();
   EXPECT_TRUE(source.IsDesktopMirroringSource());

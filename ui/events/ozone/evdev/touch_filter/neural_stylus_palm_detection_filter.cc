@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "ui/events/ozone/evdev/touch_filter/neural_stylus_palm_detection_filter.h"
 
+#include <algorithm>
 #include <functional>
 #include <memory>
 #include <queue>
@@ -21,7 +18,6 @@
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 #include "ui/events/ozone/evdev/touch_filter/neural_stylus_palm_detection_filter_model.h"
@@ -568,7 +564,7 @@ bool NeuralStylusPalmDetectionFilter::
 
   static constexpr int kRequiredAbsMtCodes[] = {
       ABS_MT_POSITION_X, ABS_MT_POSITION_Y, ABS_MT_TOUCH_MAJOR};
-  if (!base::ranges::all_of(kRequiredAbsMtCodes, code_check)) {
+  if (!std::ranges::all_of(kRequiredAbsMtCodes, code_check)) {
     return false;
   }
 
@@ -585,8 +581,8 @@ bool NeuralStylusPalmDetectionFilter::
 
   // Check the switch string.
 
-  std::optional<base::Value> value =
-      base::JSONReader::Read(ozone_params_switch_string);
+  std::optional<base::Value> value = base::JSONReader::Read(
+      ozone_params_switch_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (value != std::nullopt && !ozone_params_switch_string.empty()) {
     base::Value::Dict* value_dict = value->GetIfDict();
     if (!value_dict) {

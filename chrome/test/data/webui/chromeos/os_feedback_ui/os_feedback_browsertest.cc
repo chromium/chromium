@@ -33,8 +33,7 @@ IN_PROC_BROWSER_TEST_F(OSFeedbackBrowserTest, DISABLED_ConfirmationPage) {
   RunTestAtPath("confirmation_page_test.js");
 }
 
-// TODO(b/40884343): Flaky.
-IN_PROC_BROWSER_TEST_F(OSFeedbackBrowserTest, DISABLED_FeedbackFlow) {
+IN_PROC_BROWSER_TEST_F(OSFeedbackBrowserTest, FeedbackFlow) {
   RunTestAtPath("feedback_flow_test.js");
 }
 

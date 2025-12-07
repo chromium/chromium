@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "base/threading/sequence_bound.h"
 #include "base/types/pass_key.h"
 #include "content/browser/media/cdm_file_impl.h"
@@ -120,6 +121,8 @@ class CONTENT_EXPORT CdmStorageManager : public media::mojom::CdmStorage,
 
   void DidWriteFile(base::OnceCallback<void(bool)> callback, bool success);
 
+  void DidGetDatabaseSize(const uint64_t size);
+
   void DidGetSize(base::OnceCallback<void(uint64_t)> callback,
                   const std::string& operation,
                   std::optional<uint64_t> size);
@@ -127,6 +130,9 @@ class CONTENT_EXPORT CdmStorageManager : public media::mojom::CdmStorage,
   void ReportDatabaseOpenError(CdmStorageOpenError error);
 
   const base::FilePath path_;
+
+  // Track CdmStorageDatabase size.
+  bool database_size_reported_ = false;
 
   // All file operations are run through this member.
   base::SequenceBound<CdmStorageDatabase> db_
@@ -139,7 +145,7 @@ class CONTENT_EXPORT CdmStorageManager : public media::mojom::CdmStorage,
   // Keep track of all media::mojom::CdmFile receivers, as each CdmFileImpl
   // object keeps a reference to `this`. If `this` goes away unexpectedly,
   // all remaining CdmFile receivers will be closed.
-  std::map<CdmFileIdTwo, std::unique_ptr<CdmFileImpl>> cdm_files_
+  std::map<CdmFileId, std::unique_ptr<CdmFileImpl>> cdm_files_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<CdmStorageManager> weak_factory_{this};

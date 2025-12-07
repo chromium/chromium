@@ -11,8 +11,10 @@
 #include <memory>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/metrics/bucket_ranges.h"
 #include "base/metrics/histogram.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -168,7 +170,7 @@ TEST_F(SampleVectorTest, BucketIndexDeath) {
   EXPECT_DEATH_IF_SUPPORTED(samples2.Accumulate(10, 100), "");
 }
 
-TEST_F(SampleVectorTest, AddSubtractBucketNotMatchDeath) {
+TEST_F(SampleVectorTest, AddSubtractBucketNotMatch) {
   // Custom buckets 1: [1, 3) [3, 5)
   BucketRanges ranges1(3);
   ranges1.set_range(0, 1);
@@ -186,27 +188,27 @@ TEST_F(SampleVectorTest, AddSubtractBucketNotMatchDeath) {
   SampleVector samples2(2, &ranges2);
 
   samples2.Accumulate(1, 100);
-  samples1.Add(samples2);
-  EXPECT_EQ(100, samples1.GetCountAtIndex(0));
+  // Despite [1, 3) matching in both samples, we expect AddSubtractImpl to fail
+  // as it requires perfect alignment of buckets.
+  EXPECT_FALSE(samples1.Add(samples2));
 
-  // Extra bucket in the beginning. These should CHECK in GetBucketIndex.
+  // Extra bucket in the beginning. These should cause AddSubtractImpl to fail.
   samples2.Accumulate(0, 100);
-  EXPECT_DEATH_IF_SUPPORTED(samples1.Add(samples2), "");
-  EXPECT_DEATH_IF_SUPPORTED(samples1.Subtract(samples2), "");
+  EXPECT_FALSE(samples1.Add(samples2));
+  EXPECT_FALSE(samples1.Subtract(samples2));
 
-  // Extra bucket in the end. These should cause AddSubtractImpl to fail, and
-  // Add to DCHECK as a result.
+  // Extra bucket in the end. These should cause AddSubtractImpl to fail.
   samples2.Accumulate(0, -100);
   samples2.Accumulate(6, 100);
-  EXPECT_DCHECK_DEATH(samples1.Add(samples2));
-  EXPECT_DCHECK_DEATH(samples1.Subtract(samples2));
+  EXPECT_FALSE(samples1.Add(samples2));
+  EXPECT_FALSE(samples1.Subtract(samples2));
 
   // Bucket not match: [3, 5) VS [3, 6). These should cause AddSubtractImpl to
-  // DCHECK.
+  // fail.
   samples2.Accumulate(6, -100);
   samples2.Accumulate(3, 100);
-  EXPECT_DCHECK_DEATH(samples1.Add(samples2));
-  EXPECT_DCHECK_DEATH(samples1.Subtract(samples2));
+  EXPECT_FALSE(samples1.Add(samples2));
+  EXPECT_FALSE(samples1.Subtract(samples2));
 }
 
 TEST_F(SampleVectorTest, Iterate) {
@@ -227,9 +229,9 @@ TEST_F(SampleVectorTest, Iterate) {
 
   int i;
   size_t index;
-  HistogramBase::Sample min;
+  HistogramBase::Sample32 min;
   int64_t max;
-  HistogramBase::Count count;
+  HistogramBase::Count32 count;
   for (i = 1; !it->Done(); i++, it->Next()) {
     it->Get(&min, &max, &count);
     EXPECT_EQ(i, min);
@@ -268,9 +270,9 @@ TEST_F(SampleVectorTest, Iterator_InvalidSingleSample) {
 
   // Create an iterator. Verify that the new samples are returned, and that the
   // invalid sample is not (it was discarded).
-  HistogramBase::Sample min;
+  HistogramBase::Sample32 min;
   int64_t max;
-  HistogramBase::Count count;
+  HistogramBase::Count32 count;
   it = samples.Iterator();
   ASSERT_FALSE(it->Done());
   it->Get(&min, &max, &count);
@@ -328,9 +330,9 @@ TEST_F(SampleVectorTest, IterateDoneDeath) {
 
   EXPECT_TRUE(it->Done());
 
-  HistogramBase::Sample min;
+  HistogramBase::Sample32 min;
   int64_t max;
-  HistogramBase::Count count;
+  HistogramBase::Count32 count;
   EXPECT_DCHECK_DEATH(it->Get(&min, &max, &count));
 
   EXPECT_DCHECK_DEATH(it->Next());
@@ -361,9 +363,9 @@ TEST_F(SampleVectorTest, SingleSample) {
   EXPECT_EQ(600, samples.redundant_count());
 
   // Ensure that the iterator returns only one value.
-  HistogramBase::Sample min;
+  HistogramBase::Sample32 min;
   int64_t max;
-  HistogramBase::Count count;
+  HistogramBase::Count32 count;
   std::unique_ptr<SampleCountIterator> it = samples.Iterator();
   ASSERT_FALSE(it->Done());
   it->Get(&min, &max, &count);
@@ -418,8 +420,7 @@ TEST_F(SampleVectorTest, PersistentSampleVector) {
   LocalPersistentMemoryAllocator allocator(64 << 10, 0, "");
   std::atomic<PersistentMemoryAllocator::Reference> samples_ref;
   samples_ref.store(0, std::memory_order_relaxed);
-  HistogramSamples::Metadata samples_meta;
-  memset(&samples_meta, 0, sizeof(samples_meta));
+  HistogramSamples::Metadata samples_meta = {};
 
   // Custom buckets: [1, 5) [5, 10)
   BucketRanges ranges(3);
@@ -428,12 +429,14 @@ TEST_F(SampleVectorTest, PersistentSampleVector) {
   ranges.set_range(2, 10);
 
   // Persistent allocation.
+  const auto name = std::string_view("histogram_name");
+  const auto id = HashMetricName(name);
   const size_t counts_bytes =
       sizeof(HistogramBase::AtomicCount) * ranges.bucket_count();
   const DelayedPersistentAllocation allocation(&allocator, &samples_ref, 1,
                                                counts_bytes, false);
 
-  PersistentSampleVector samples1(0, &ranges, &samples_meta, allocation);
+  PersistentSampleVector samples1(name, id, &ranges, &samples_meta, allocation);
   EXPECT_FALSE(HasSamplesCounts(samples1));
   samples1.Accumulate(3, 200);
   EXPECT_EQ(200, samples1.GetCount(3));
@@ -441,13 +444,13 @@ TEST_F(SampleVectorTest, PersistentSampleVector) {
   EXPECT_EQ(0, samples1.GetCount(8));
   EXPECT_FALSE(HasSamplesCounts(samples1));
 
-  PersistentSampleVector samples2(0, &ranges, &samples_meta, allocation);
+  PersistentSampleVector samples2(name, id, &ranges, &samples_meta, allocation);
   EXPECT_EQ(200, samples2.GetCount(3));
   EXPECT_FALSE(HasSamplesCounts(samples2));
 
-  HistogramBase::Sample min;
+  HistogramBase::Sample32 min;
   int64_t max;
-  HistogramBase::Count count;
+  HistogramBase::Count32 count;
   std::unique_ptr<SampleCountIterator> it = samples2.Iterator();
   ASSERT_FALSE(it->Done());
   it->Get(&min, &max, &count);
@@ -483,7 +486,7 @@ TEST_F(SampleVectorTest, PersistentSampleVector) {
   it->Next();
   EXPECT_TRUE(it->Done());
 
-  PersistentSampleVector samples3(0, &ranges, &samples_meta, allocation);
+  PersistentSampleVector samples3(name, id, &ranges, &samples_meta, allocation);
   EXPECT_TRUE(HasSamplesCounts(samples2));
   EXPECT_EQ(200, samples3.GetCount(3));
   EXPECT_EQ(100, samples3.GetCount(8));
@@ -511,8 +514,7 @@ TEST_F(SampleVectorTest, PersistentSampleVectorTestWithOutsideAlloc) {
   LocalPersistentMemoryAllocator allocator(64 << 10, 0, "");
   std::atomic<PersistentMemoryAllocator::Reference> samples_ref;
   samples_ref.store(0, std::memory_order_relaxed);
-  HistogramSamples::Metadata samples_meta;
-  memset(&samples_meta, 0, sizeof(samples_meta));
+  HistogramSamples::Metadata samples_meta = {};
 
   // Custom buckets: [1, 5) [5, 10)
   BucketRanges ranges(3);
@@ -521,28 +523,30 @@ TEST_F(SampleVectorTest, PersistentSampleVectorTestWithOutsideAlloc) {
   ranges.set_range(2, 10);
 
   // Persistent allocation.
+  const auto name = std::string_view("histogram_name");
+  const auto id = HashMetricName(name);
   const size_t counts_bytes =
       sizeof(HistogramBase::AtomicCount) * ranges.bucket_count();
   const DelayedPersistentAllocation allocation(&allocator, &samples_ref, 1,
                                                counts_bytes, false);
 
-  PersistentSampleVector samples1(0, &ranges, &samples_meta, allocation);
+  PersistentSampleVector samples1(name, id, &ranges, &samples_meta, allocation);
   EXPECT_FALSE(HasSamplesCounts(samples1));
   samples1.Accumulate(3, 200);
   EXPECT_EQ(200, samples1.GetCount(3));
   EXPECT_FALSE(HasSamplesCounts(samples1));
 
   // Because the delayed allocation can be shared with other objects (the
-  // |offset| parameter allows concatinating multiple data blocks into the
+  // |offset| parameter allows concatenating multiple data blocks into the
   // same allocation), it's possible that the allocation gets realized from
   // the outside even though the data block being accessed is all zero.
   allocation.Get<uint8_t>();
   EXPECT_EQ(200, samples1.GetCount(3));
   EXPECT_FALSE(HasSamplesCounts(samples1));
 
-  HistogramBase::Sample min;
+  HistogramBase::Sample32 min;
   int64_t max;
-  HistogramBase::Count count;
+  HistogramBase::Count32 count;
   std::unique_ptr<SampleCountIterator> it = samples1.Iterator();
   ASSERT_FALSE(it->Done());
   it->Get(&min, &max, &count);
@@ -554,7 +558,7 @@ TEST_F(SampleVectorTest, PersistentSampleVectorTestWithOutsideAlloc) {
 
   // A duplicate samples object should still see the single-sample entry even
   // when storage is available.
-  PersistentSampleVector samples2(0, &ranges, &samples_meta, allocation);
+  PersistentSampleVector samples2(name, id, &ranges, &samples_meta, allocation);
   EXPECT_EQ(200, samples2.GetCount(3));
 
   // New accumulations, in both directions, of the existing value should work.

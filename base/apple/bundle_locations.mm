@@ -12,12 +12,16 @@ namespace base::apple {
 
 namespace {
 
+NSBundle* g_override_main_bundle = nil;
 NSBundle* g_override_framework_bundle = nil;
 NSBundle* g_override_outer_bundle = nil;
 
 }  // namespace
 
 NSBundle* MainBundle() {
+  if (g_override_main_bundle) {
+    return g_override_main_bundle;
+  }
   return NSBundle.mainBundle;
 }
 
@@ -74,12 +78,21 @@ NSBundle* BundleFromPath(const FilePath& file_path) {
 
 }  // namespace
 
+void SetOverrideMainBundle(NSBundle* bundle) {
+  g_override_main_bundle = bundle;
+}
+
 void SetOverrideOuterBundle(NSBundle* bundle) {
   g_override_outer_bundle = bundle;
 }
 
 void SetOverrideFrameworkBundle(NSBundle* bundle) {
   g_override_framework_bundle = bundle;
+}
+
+void SetOverrideMainBundlePath(const FilePath& file_path) {
+  NSBundle* bundle = BundleFromPath(file_path);
+  g_override_main_bundle = bundle;
 }
 
 void SetOverrideOuterBundlePath(const FilePath& file_path) {

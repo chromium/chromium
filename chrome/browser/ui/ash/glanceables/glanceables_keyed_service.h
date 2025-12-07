@@ -10,10 +10,13 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
-class Profile;
+class PolicyBlocklistService;
+class PrefService;
 
 namespace google_apis {
 class RequestSender;
@@ -25,6 +28,7 @@ struct NetworkTrafficAnnotationTag;
 
 namespace signin {
 class IdentityManager;
+enum class OAuthConsumerId;
 }
 
 namespace ash {
@@ -46,7 +50,15 @@ class GlanceablesClassroomClientImpl;
 // support is needed.
 class GlanceablesKeyedService : public KeyedService {
  public:
-  explicit GlanceablesKeyedService(Profile* profile);
+  // LINT.IfChange(Deps)
+  GlanceablesKeyedService(
+      const AccountId& account_id,
+      PrefService* pref_service,
+      apps::AppServiceProxy* app_service_proxy,
+      PolicyBlocklistService* policy_blocklist_service,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      signin::IdentityManager* identity_manager);
+  // LINT.ThenChange(//chrome/browser/ui/ash/glanceables/glanceables_keyed_service_factory.cc:Deps)
   GlanceablesKeyedService(const GlanceablesKeyedService&) = delete;
   GlanceablesKeyedService& operator=(const GlanceablesKeyedService&) = delete;
   ~GlanceablesKeyedService() override;
@@ -56,22 +68,20 @@ class GlanceablesKeyedService : public KeyedService {
 
  private:
   // Helper method that creates a `google_apis::RequestSender` instance.
-  // `scopes` - OAuth 2 scopes needed for a client.
+  // `oauth_consumer_id` - OAuth2 consumer id needed for a client.
   // `traffic_annotation_tag` - describes requests issued by a client (for more
   // details see docs/network_traffic_annotations.md and
   // chrome/browser/privacy/traffic_annotation.proto).
   std::unique_ptr<google_apis::RequestSender> CreateRequestSenderForClient(
-      const std::vector<std::string>& scopes,
+      signin::OAuthConsumerId oauth_consumer_id,
       const net::NetworkTrafficAnnotationTag& traffic_annotation_tag) const;
-
-  // The profile for which this keyed service was created.
-  const raw_ptr<Profile> profile_;
-
-  // Identity manager associated with `profile_`.
-  raw_ptr<signin::IdentityManager> identity_manager_;
 
   // Account id associated with the primary profile.
   const AccountId account_id_;
+
+  const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  raw_ptr<signin::IdentityManager> identity_manager_;
 
   // Instance of the `GlanceablesClassroomClient` interface implementation.
   std::unique_ptr<GlanceablesClassroomClientImpl> classroom_client_;

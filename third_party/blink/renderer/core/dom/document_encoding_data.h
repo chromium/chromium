@@ -47,13 +47,13 @@ class CORE_EXPORT DocumentEncodingData {
   explicit DocumentEncodingData(const TextResourceDecoder&);
   explicit DocumentEncodingData(const WebEncodingData&);
 
-  const WTF::TextEncoding& Encoding() const { return encoding_; }
-  void SetEncoding(const WTF::TextEncoding&);
+  const TextEncoding& Encoding() const { return encoding_; }
+  void SetEncoding(const TextEncoding&);
   bool WasDetectedHeuristically() const { return was_detected_heuristically_; }
   bool SawDecodingError() const { return saw_decoding_error_; }
 
  private:
-  WTF::TextEncoding encoding_;
+  TextEncoding encoding_;
   bool was_detected_heuristically_;
   bool saw_decoding_error_;
 };

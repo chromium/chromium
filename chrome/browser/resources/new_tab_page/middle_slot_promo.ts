@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+
 import {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -13,9 +17,10 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
+import {recordEnumeration} from './metrics_utils.js';
 import {getCss} from './middle_slot_promo.css.js';
 import {getHtml} from './middle_slot_promo.html.js';
-import type {Promo} from './new_tab_page.mojom-webui.js';
+import type {PageHandlerRemote, Promo} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {WindowProxy} from './window_proxy.js';
 
@@ -27,12 +32,13 @@ import {WindowProxy} from './window_proxy.js';
 export enum PromoDismissAction {
   DISMISS = 0,
   RESTORE = 1,
+  MAX_VALUE = RESTORE,
 }
 
 export function recordPromoDismissAction(action: PromoDismissAction) {
-  chrome.metricsPrivate.recordEnumerationValue(
+  recordEnumeration(
       'NewTabPage.Promos.DismissAction', action,
-      Object.keys(PromoDismissAction).length);
+      PromoDismissAction.MAX_VALUE + 1);
 }
 
 /**
@@ -44,10 +50,6 @@ export async function renderPromo(promo: Promo):
     Promise<{container: Element, id: string | null}|null> {
   const browserHandler = NewTabPageProxy.getInstance().handler;
   const promoBrowserCommandHandler = BrowserCommandProxy.getInstance().handler;
-  if (!promo) {
-    return null;
-  }
-
   const commandIds: Command[] = [];
 
   function createAnchor(target: Url) {
@@ -60,6 +62,7 @@ export async function renderPromo(promo: Promo):
     if (!commandIdMatch) {
       el.href = target.url;
     } else {
+      assert(commandIdMatch[1]);
       commandId = +commandIdMatch[1];
       // Make sure we don't send unsupported commands to the browser.
       if (!Object.values(Command).includes(commandId)) {
@@ -169,12 +172,17 @@ export class MiddleSlotPromoElement extends CrLitElement {
     };
   }
 
+  protected accessor shownMiddleSlotPromoId_: string = '';
+  private accessor promo_: Promo|null = null;
+  private blocklistedMiddleSlotPromoId_: string = '';
   private eventTracker_: EventTracker = new EventTracker();
-  protected shownMiddleSlotPromoId_: string;
-  private blocklistedMiddleSlotPromoId_: string;
-  private promo_: Promo;
-
+  private pageHandler_: PageHandlerRemote;
   private setPromoListenerId_: number|null = null;
+
+  constructor() {
+    super();
+    this.pageHandler_ = NewTabPageProxy.getInstance().handler;
+  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -184,7 +192,7 @@ export class MiddleSlotPromoElement extends CrLitElement {
               this.promo_ = promo;
             });
     this.eventTracker_.add(window, 'keydown', this.onWindowKeydown_.bind(this));
-    NewTabPageProxy.getInstance().handler.updatePromoData();
+    this.pageHandler_.updatePromoData();
   }
 
   override disconnectedCallback() {
@@ -205,29 +213,44 @@ export class MiddleSlotPromoElement extends CrLitElement {
     }
   }
 
+  private hidePromoContainer_() {
+    this.$.promoAndDismissContainer.hidden = true;
+    this.fire('ntp-middle-slot-promo-loaded');
+  }
+
   private onPromoChange_() {
+    if (!this.promo_) {
+      this.hidePromoContainer_();
+      return;
+    }
+
     renderPromo(this.promo_).then(promo => {
       if (!promo) {
-        this.$.promoAndDismissContainer.hidden = true;
-      } else {
-        const promoContainer =
-            this.shadowRoot!.getElementById('promoContainer');
-        if (promoContainer) {
-          promoContainer.remove();
-        }
-        if (loadTimeData.getBoolean('middleSlotPromoDismissalEnabled')) {
-          this.shownMiddleSlotPromoId_ = promo.id ?? '';
-        }
-        const renderedPromoContainer = promo.container;
-        assert(renderedPromoContainer);
-        this.$.promoAndDismissContainer.prepend(renderedPromoContainer);
-        this.$.promoAndDismissContainer.hidden = false;
+        this.hidePromoContainer_();
+        return;
       }
+
+      const promoContainer = this.shadowRoot.getElementById('promoContainer');
+      if (promoContainer) {
+        promoContainer.remove();
+      }
+      if (loadTimeData.getBoolean('middleSlotPromoDismissalEnabled')) {
+        this.shownMiddleSlotPromoId_ = promo.id ?? '';
+      }
+      const renderedPromoContainer = promo.container;
+      assert(renderedPromoContainer);
+      this.$.promoAndDismissContainer.prepend(renderedPromoContainer);
+      this.$.promoAndDismissContainer.hidden = false;
       this.fire('ntp-middle-slot-promo-loaded');
     });
   }
 
+  // Allow users to undo the dismissal of the default promo using Ctrl+Z (or
+  // Cmd+Z on macOS). Mobile promo dismissal is handled by `mobile_promo.ts`.
   private onWindowKeydown_(e: KeyboardEvent) {
+    if (!this.blocklistedMiddleSlotPromoId_) {
+      return;
+    }
     let ctrlKeyPressed = e.ctrlKey;
     // <if expr="is_macosx">
     ctrlKeyPressed = ctrlKeyPressed || e.metaKey;
@@ -240,8 +263,7 @@ export class MiddleSlotPromoElement extends CrLitElement {
   protected onDismissPromoButtonClick_() {
     assert(this.$.promoAndDismissContainer);
     this.$.promoAndDismissContainer.hidden = true;
-    NewTabPageProxy.getInstance().handler.blocklistPromo(
-        this.shownMiddleSlotPromoId_);
+    this.pageHandler_.blocklistPromo(this.shownMiddleSlotPromoId_);
     this.blocklistedMiddleSlotPromoId_ = this.shownMiddleSlotPromoId_;
     this.$.dismissPromoButtonToast.show();
     recordPromoDismissAction(PromoDismissAction.DISMISS);
@@ -249,8 +271,7 @@ export class MiddleSlotPromoElement extends CrLitElement {
 
   protected onUndoDismissPromoButtonClick_() {
     assert(this.$.promoAndDismissContainer);
-    NewTabPageProxy.getInstance().handler.undoBlocklistPromo(
-        this.blocklistedMiddleSlotPromoId_);
+    this.pageHandler_.undoBlocklistPromo(this.blocklistedMiddleSlotPromoId_);
     this.$.promoAndDismissContainer.hidden = false;
     this.$.dismissPromoButtonToast.hide();
     recordPromoDismissAction(PromoDismissAction.RESTORE);

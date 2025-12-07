@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "mojo/public/cpp/base/message_pump_type_mojom_traits.h"
+
+#include "base/notreached.h"
 #include "build/build_config.h"
 
 namespace mojo {
@@ -29,8 +31,7 @@ EnumTraits<mojo_base::mojom::MessagePumpType, base::MessagePumpType>::ToMojom(
       return mojo_base::mojom::MessagePumpType::kNsRunloop;
 #endif
   }
-  NOTREACHED_IN_MIGRATION();
-  return mojo_base::mojom::MessagePumpType::kDefault;
+  NOTREACHED();
 }
 
 // static

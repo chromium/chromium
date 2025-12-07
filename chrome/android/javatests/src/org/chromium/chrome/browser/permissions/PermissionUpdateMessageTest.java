@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.permissions;
 
+import static org.chromium.components.permissions.PermissionUtil.getGeolocationType;
+
 import android.Manifest;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -27,11 +29,9 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
-import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.content_settings.SessionModel;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
@@ -79,17 +79,16 @@ public class PermissionUpdateMessageTest {
                 List<String> requestablePermissions,
                 List<String> policyRevokedPermissions) {
             mHasPermissions =
-                    new HashSet<>(
-                            hasPermissions == null ? new ArrayList<String>() : hasPermissions);
+                    new HashSet<>(hasPermissions == null ? new ArrayList<>() : hasPermissions);
             mRequestablePermissions =
                     new HashSet<>(
                             requestablePermissions == null
-                                    ? new ArrayList<String>()
+                                    ? new ArrayList<>()
                                     : requestablePermissions);
             mPolicyRevokedPermissions =
                     new HashSet<>(
                             policyRevokedPermissions == null
-                                    ? new ArrayList<String>()
+                                    ? new ArrayList<>()
                                     : policyRevokedPermissions);
         }
 
@@ -148,7 +147,6 @@ public class PermissionUpdateMessageTest {
      * @param windowAndroid The WindowAndroid to get the messages from.
      * @return The {@link PropertyModel} of an enqueued permission update message, null if the
      *     message is not present.
-     * @throws ExecutionException
      */
     public static PropertyModel getPermissionUpdateMessage(WindowAndroid windowAndroid)
             throws ExecutionException {
@@ -173,16 +171,27 @@ public class PermissionUpdateMessageTest {
     public void setNativeContentSetting(
             @ContentSettingsType.EnumType int type,
             final String origin,
-            @ContentSettingValues int value) {
+            @ContentSetting int value) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    WebsitePreferenceBridgeJni.get()
-                            .setPermissionSettingForOrigin(
-                                    ProfileManager.getLastUsedRegularProfile(),
-                                    type,
-                                    origin,
-                                    origin,
-                                    value);
+                    if (type == ContentSettingsType.GEOLOCATION_WITH_OPTIONS) {
+                        WebsitePreferenceBridgeJni.get()
+                                .setGeolocationSettingForOrigin(
+                                        ProfileManager.getLastUsedRegularProfile(),
+                                        type,
+                                        origin,
+                                        origin,
+                                        value,
+                                        value);
+                    } else {
+                        WebsitePreferenceBridgeJni.get()
+                                .setPermissionSettingForOrigin(
+                                        ProfileManager.getLastUsedRegularProfile(),
+                                        type,
+                                        origin,
+                                        origin,
+                                        value);
+                    }
                 });
     }
 
@@ -214,7 +223,7 @@ public class PermissionUpdateMessageTest {
                 new TestAndroidPermissionDelegate(null, Arrays.asList(androidPermission), null));
         final String url = mTestServer.getURL(testPage);
         try {
-            setNativeContentSetting(contentSettingsType, url, ContentSettingValues.ALLOW);
+            setNativeContentSetting(contentSettingsType, url, ContentSetting.ALLOW);
             mActivityTestRule.loadUrl(mTestServer.getURL(testPage));
 
             if (javascriptToExecute != null && !javascriptToExecute.isEmpty()) {
@@ -266,7 +275,7 @@ public class PermissionUpdateMessageTest {
                                 Matchers.is(countTabs));
                     });
         } finally {
-            setNativeContentSetting(contentSettingsType, url, ContentSettingValues.DEFAULT);
+            setNativeContentSetting(contentSettingsType, url, ContentSetting.DEFAULT);
         }
     }
 
@@ -281,7 +290,7 @@ public class PermissionUpdateMessageTest {
                 GEOLOCATION_PAGE,
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 /* javascriptToExecute= */ null,
-                ContentSettingsType.GEOLOCATION,
+                getGeolocationType(),
                 /* switchContent= */ false);
     }
 
@@ -324,7 +333,7 @@ public class PermissionUpdateMessageTest {
                 GEOLOCATION_PAGE,
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 /* javascriptToExecute= */ null,
-                ContentSettingsType.GEOLOCATION,
+                getGeolocationType(),
                 /* switchContent= */ true);
     }
 
@@ -343,19 +352,6 @@ public class PermissionUpdateMessageTest {
 
         final var windowAndroid = mActivityTestRule.getActivity().getWindowAndroid();
         final String locationUrl = mTestServer.getURL(GEOLOCATION_PAGE);
-        final PermissionInfo geolocationSettings =
-                ThreadUtils.runOnUiThreadBlocking(
-                        new Callable<PermissionInfo>() {
-                            @Override
-                            public PermissionInfo call() {
-                                return new PermissionInfo(
-                                        ContentSettingsType.GEOLOCATION,
-                                        locationUrl,
-                                        null,
-                                        /* isEmbargoed= */ false,
-                                        SessionModel.DURABLE);
-                            }
-                        });
 
         mActivityTestRule
                 .getActivity()
@@ -368,12 +364,7 @@ public class PermissionUpdateMessageTest {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
 
         try {
-            ThreadUtils.runOnUiThreadBlocking(
-                    () ->
-                            geolocationSettings.setContentSetting(
-                                    ProfileManager.getLastUsedRegularProfile(),
-                                    ContentSettingValues.ALLOW));
-
+            setNativeContentSetting(getGeolocationType(), locationUrl, ContentSetting.ALLOW);
             mActivityTestRule.loadUrl(mTestServer.getURL(GEOLOCATION_PAGE));
             CriteriaHelper.pollUiThread(
                     () -> {
@@ -387,7 +378,7 @@ public class PermissionUpdateMessageTest {
 
             final WebContents webContents =
                     ThreadUtils.runOnUiThreadBlocking(
-                            new Callable<WebContents>() {
+                            new Callable<>() {
                                 @Override
                                 public WebContents call() {
                                     return mActivityTestRule
@@ -413,11 +404,7 @@ public class PermissionUpdateMessageTest {
                                 Matchers.is(1));
                     });
         } finally {
-            ThreadUtils.runOnUiThreadBlocking(
-                    () ->
-                            geolocationSettings.setContentSetting(
-                                    ProfileManager.getLastUsedRegularProfile(),
-                                    ContentSettingValues.DEFAULT));
+            setNativeContentSetting(getGeolocationType(), locationUrl, ContentSetting.DEFAULT);
         }
     }
 }

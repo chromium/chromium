@@ -87,6 +87,13 @@ class ASH_EXPORT CaptureModeTestApi {
   // Sets a callback that will be triggered once the video recording is started.
   void SetOnVideoRecordingStartedCallback(base::OnceClosure callback);
 
+  // Sets a callback that will be triggered once the image is captured and
+  // encoded as JPEG bytes.
+  using OnImageCapturedForSearchCallback =
+      base::OnceCallback<void(PerformCaptureType capture_type)>;
+  void SetOnImageCapturedForSearchCallback(
+      OnImageCapturedForSearchCallback callback);
+
   // Stops the video recording. Can only be called if a video recording was
   // in progress.
   void StopVideoRecording();

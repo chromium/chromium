@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_oscillator_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_oscillator_type.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_param.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_scheduled_source_node.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
@@ -16,10 +17,7 @@
 
 namespace blink {
 
-class BaseAudioContext;
 class ExceptionState;
-class OscillatorOptions;
-class PeriodicWave;
 class PeriodicWaveImpl;
 
 class OscillatorHandler final : public AudioScheduledSourceHandler {
@@ -50,8 +48,8 @@ class OscillatorHandler final : public AudioScheduledSourceHandler {
   // AudioHandler
   void Process(uint32_t frames_to_process) override;
 
-  String GetType() const;
-  void SetType(const String&, ExceptionState&);
+  V8OscillatorType::Enum GetType() const;
+  void SetType(V8OscillatorType::Enum, ExceptionState&);
 
   void SetPeriodicWave(PeriodicWaveImpl*);
 

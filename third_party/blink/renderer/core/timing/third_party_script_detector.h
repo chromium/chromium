@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_THIRD_PARTY_SCRIPT_DETECTOR_H_
 
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -16,13 +15,11 @@ class LocalDOMWindow;
 
 class ThirdPartyScriptDetector final
     : public GarbageCollected<ThirdPartyScriptDetector>,
-      public Supplement<LocalDOMWindow> {
+      public GarbageCollectedMixin {
  public:
-  static const char kSupplementName[];
-
   static ThirdPartyScriptDetector& From(LocalDOMWindow&);
 
-  explicit ThirdPartyScriptDetector(LocalDOMWindow&);
+  ThirdPartyScriptDetector();
   ThirdPartyScriptDetector(const ThirdPartyScriptDetector&) = delete;
   ThirdPartyScriptDetector& operator=(const ThirdPartyScriptDetector&) = delete;
 
@@ -47,18 +44,21 @@ class ThirdPartyScriptDetector final
     kGoogleAdsLibraries = 1 << 12,
     kFundingChoices = 1 << 13,
     kElementor = 1 << 14,
-    kLast = kElementor
+    kSliderRevolution = 1 << 15,
+    kLast = kSliderRevolution
     // If adding new technologies, add above kLast and shift kLast accordingly.
     // Keep in sync with `ThirdPartyTechnology` in
     // base/tracing/protos/chrome_track_event.proto.
+    // The enum value (n) here is converted to the proto value (m) by
+    // m = bit_width(n) + 1.
     // Max value allowed: 1 << 63. Limited by UKM bitfield.
   };
 
-  Technology Detect(const WTF::String url);
+  Technology Detect(const String url);
 
  private:
   RE2 precompiled_detection_regex__;
-  HashMap<WTF::String, Technology> url_to_technology_cache_;
+  HashMap<String, Technology> url_to_technology_cache_;
 };
 
 }  // namespace blink

@@ -1,0 +1,199 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+import("//build/config/ui.gni")
+
+assert(toolkit_views || is_android)
+
+source_set("plus_addresses") {
+  public = [
+    "plus_address_creation_controller.h",
+    "plus_address_creation_view.h",
+  ]
+  public_deps = [
+    "//components/plus_addresses/core/browser:types",
+    "//content/public/browser",
+    "//ui/base/interaction",
+    "//url",
+  ]
+
+  if (toolkit_views) {
+    public += [
+      "plus_address_creation_controller_desktop.h",
+      "plus_address_menu_model.h",
+      "views/plus_address_creation_dialog_delegate.h",
+    ]
+    public_deps += [
+      "//base",
+      "//components/autofill/core/browser",
+      "//components/autofill/core/common",
+      "//components/plus_addresses/core/browser/metrics",
+      "//components/plus_addresses/core/browser/settings",
+      "//components/plus_addresses/core/common:prefs",
+      "//ui/menus",
+      "//ui/views",
+    ]
+  }
+
+  if (is_android) {
+    public += [
+      "android/all_plus_addresses_bottom_sheet_controller.h",
+      "android/all_plus_addresses_bottom_sheet_view.h",
+    ]
+    public_deps += [
+      "//base",
+      "//components/autofill/core/browser",
+      "//components/autofill/core/common",
+      "//components/plus_addresses/core/browser:hats_utils",
+      "//components/plus_addresses/core/browser:plus_address_java_enums",
+      "//components/plus_addresses/core/browser/metrics",
+      "//ui/gfx",
+    ]
+  }
+}
+
+source_set("impl") {
+  if (toolkit_views) {
+    sources = [
+      "plus_address_menu_model.cc",
+      "views/plus_address_creation_controller_desktop.cc",
+      "views/plus_address_creation_dialog_delegate.cc",
+    ]
+    deps = [
+      ":plus_addresses",
+      "//build:branding_buildflags",
+      "//chrome/app/theme:theme_resources",
+      "//chrome/browser/plus_addresses",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/user_education",
+      "//components/autofill/content/browser",
+      "//components/constrained_window",
+      "//components/feature_engagement/public",
+      "//components/plus_addresses/core/browser",
+      "//components/plus_addresses/core/browser/resources/strings",
+      "//components/plus_addresses/core/common:features",
+      "//components/url_formatter",
+      "//components/vector_icons",
+      "//components/web_modal",
+      "//content/public/common",
+      "//ui/base",
+      "//ui/base/metadata",
+      "//ui/color",
+      "//ui/events",
+      "//ui/gfx",
+    ]
+
+    if (is_chrome_branded) {
+      deps +=
+          [ "//components/plus_addresses/core/browser/resources:vector_icons" ]
+    }
+  }
+
+  if (is_android) {
+    sources = [
+      "android/all_plus_addresses_bottom_sheet_controller.cc",
+      "android/all_plus_addresses_bottom_sheet_view.cc",
+    ]
+    deps = [
+      ":plus_addresses",
+      "//chrome/browser/plus_addresses",
+      "//chrome/browser/profiles",
+      "//chrome/browser/ui/android/tab_model",
+      "//chrome/browser/ui/plus_addresses/android:jni_headers",
+      "//components/autofill/content/browser",
+      "//components/plus_addresses/core/browser",
+      "//components/plus_addresses/core/browser/resources/strings",
+      "//components/plus_addresses/core/browser/settings",
+      "//components/plus_addresses/core/common:features",
+      "//components/plus_addresses/core/common:prefs",
+      "//ui/android",
+    ]
+  }
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  sources = []
+
+  if (!is_android && !is_chromeos_device) {
+    sources += [ "views/plus_address_creation_dialog_interactive_uitest.cc" ]
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    deps = [
+      ":plus_addresses",
+      "//base/test:test_support",
+      "//chrome/browser/plus_addresses",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/plus_addresses/core/browser:test_support",
+      "//components/plus_addresses/core/browser/resources/strings:strings_grit",
+      "//components/plus_addresses/core/browser/settings:test_support",
+      "//components/signin/public/identity_manager:test_support",
+      "//components/sync:test_support",
+      "//content/test:test_support",
+      "//ui/views:test_support",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":plus_addresses",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/plus_addresses",
+    "//chrome/test:test_support",
+    "//components/autofill/content/browser:test_support",
+    "//components/plus_addresses/core/browser",
+    "//components/plus_addresses/core/browser:test_support",
+    "//components/plus_addresses/core/browser/metrics",
+    "//components/plus_addresses/core/browser/settings:test_support",
+    "//components/plus_addresses/core/common:features",
+    "//components/plus_addresses/core/common:prefs",
+    "//components/sync_preferences:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  if (!is_android) {
+    sources = [
+      "plus_address_creation_controller_desktop_unittest.cc",
+      "plus_address_menu_model_unittest.cc",
+    ]
+    deps += [
+      "//chrome/browser/ui/hats",
+      "//components/autofill/core/common",
+      "//components/signin/public/identity_manager:test_support",
+    ]
+  }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+if (is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "android/all_plus_addresses_bottom_sheet_view_browsertest.cc" ]
+    deps = [
+      ":plus_addresses",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/plus_addresses",
+      "//chrome/browser/profiles:profile",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui_android",
+      "//components/plus_addresses/core/browser",
+      "//components/plus_addresses/core/browser:plus_address_java_enums",
+      "//components/plus_addresses/core/browser:test_support",
+      "//components/plus_addresses/core/common:features",
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
+  }
+}

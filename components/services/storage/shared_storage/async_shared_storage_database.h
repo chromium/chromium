@@ -6,7 +6,6 @@
 #define COMPONENTS_SERVICES_STORAGE_SHARED_STORAGE_ASYNC_SHARED_STORAGE_DATABASE_H_
 
 #include <memory>
-#include <queue>
 #include <string>
 #include <vector>
 
@@ -41,11 +40,13 @@ class AsyncSharedStorageDatabase {
   using InitStatus = SharedStorageDatabase::InitStatus;
   using SetBehavior = SharedStorageDatabase::SetBehavior;
   using OperationResult = SharedStorageDatabase::OperationResult;
+  using BatchUpdateResult = SharedStorageDatabase::BatchUpdateResult;
   using GetResult = SharedStorageDatabase::GetResult;
   using BudgetResult = SharedStorageDatabase::BudgetResult;
   using TimeResult = SharedStorageDatabase::TimeResult;
   using MetadataResult = SharedStorageDatabase::MetadataResult;
   using EntriesResult = SharedStorageDatabase::EntriesResult;
+  using DataClearSource = SharedStorageDatabase::DataClearSource;
 
   // A callback type to check if a given origin matches a storage policy.
   // Can be passed empty/null where used, which means the origin will always
@@ -148,7 +149,17 @@ class AsyncSharedStorageDatabase {
   // Clears all entries for `context_origin`. The parameter of `callback`
   // reports whether the operation is successful.
   virtual void Clear(url::Origin context_origin,
-                     base::OnceCallback<void(OperationResult)> callback) = 0;
+                     base::OnceCallback<void(OperationResult)> callback,
+                     DataClearSource source = DataClearSource::kSite) = 0;
+
+  // Executes `methods_with_options` as a transaction. If any method fails, the
+  // entire batch operation is rolled back. The parameter of `callback` reports
+  // whether the operation is successful.
+  virtual void BatchUpdate(
+      url::Origin context_origin,
+      std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+          methods_with_options,
+      base::OnceCallback<void(BatchUpdateResult)> callback) = 0;
 
   // The parameter of `callback` reports the number of entries for
   // `context_origin`, 0 if there are none, or -1 on operation failure.

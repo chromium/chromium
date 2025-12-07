@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("help_app") {
   sources = [
@@ -22,9 +22,10 @@ static_library("help_app") {
     "//ash/webui/help_app_ui",
     "//base",
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
+    "//chromeos/ash/experiences/system_web_apps/types",
+    "//components/variations/service",
     "//content/public/browser",
     "//ui/gfx/geometry",
   ]
@@ -33,6 +34,7 @@ static_library("help_app") {
     "//ash",
     "//ash/constants",
     "//ash/public/cpp",
+    "//ash/webui/help_app_ui:mojo_bindings",
     "//ash/webui/resources:help_app_resources",
     "//ash/webui/settings/public/constants:mojom",
     "//chrome/app:generated_resources",
@@ -41,9 +43,8 @@ static_library("help_app") {
     "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/arc",
-    "//chrome/browser/ash/assistant",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/borealis",
-    "//chrome/browser/ash/child_accounts",
     "//chrome/browser/ash/child_accounts/on_device_controls",
     "//chrome/browser/ash/input_method",
     "//chrome/browser/ash/login/quick_unlock",
@@ -53,14 +54,13 @@ static_library("help_app") {
     "//chrome/browser/ash/system_web_apps/apps/personalization_app",
     "//chrome/browser/chromeos/upload_office_to_cloud",
     "//chrome/browser/feedback",
-    "//chrome/browser/scalable_iph:scalable_iph_factory",
+    "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
-    "//chrome/common:channel_info",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
     "//chromeos/ash/components/browser_context_helper",
-    "//chromeos/ash/components/scalable_iph:constants",
+    "//chromeos/ash/components/channel",
     "//chromeos/ash/components/system",
     "//chromeos/ash/services/multidevice_setup/public/cpp:prefs",
     "//chromeos/constants",
@@ -76,6 +76,7 @@ static_library("help_app") {
     "//ui/chromeos",
     "//ui/chromeos/styles:cros_styles_views",
     "//ui/display",
+    "//ui/events/ash",
     "//ui/events/devices",
     "//url",
   ]
@@ -96,22 +97,21 @@ source_set("browser_tests") {
     "//ash/constants",
     "//ash/webui/help_app_ui",
     "//ash/webui/help_app_ui:buildflags",
+    "//ash/webui/help_app_ui:help_app_ui_pref",
     "//ash/webui/help_app_ui/search:mojo_bindings",
     "//ash/webui/web_applications/test:test_support",
     "//base",
     "//base/test:test_support",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/apps/app_service/app_install:implementation",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/first_run",
     "//chrome/browser/ash/release_notes",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
-    "//chrome/browser/ui/ash",
-    "//chrome/browser/ui/webui/ash",
+    "//chrome/browser/ui/ash/system",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//chrome/common:chrome_features",
@@ -134,6 +134,7 @@ source_set("browser_tests") {
     "//ui/display",
     "//ui/display/types",
     "//ui/events:events_base",
+    "//ui/events:test_support",
     "//ui/gfx:color_utils",
     "//ui/gfx/geometry",
     "//ui/views",
@@ -147,17 +148,19 @@ source_set("unit_tests") {
   sources = [
     "help_app_notification_controller_unittest.cc",
     "help_app_ui_delegate_unittest.cc",
+    "help_app_untrusted_ui_config_unittest.cc",
   ]
 
   deps = [
     "//ash",
     "//ash/constants",
+    "//ash/webui/help_app_ui:mojo_bindings",
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser:browser_process",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/borealis/testing:test_support",
+    "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/system_web_apps/apps/help_app",
     "//chrome/common:constants",
     "//chrome/test:test_support",
@@ -165,7 +168,13 @@ source_set("unit_tests") {
     "//components/language/core/browser",
     "//components/pref_registry",
     "//components/prefs:test_support",
+    "//components/variations/service",
     "//components/version_info",
     "//content/test:test_support",
+    "//testing/gtest",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

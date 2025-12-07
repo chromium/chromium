@@ -51,12 +51,6 @@ bool ParseOptionsUrl(Extension* extension,
     return true;
   }
 
-  // Otherwise the options URL should be inside the extension.
-  if (GURL(url_string).is_valid()) {
-    *error = errors::kInvalidOptionsPageExpectUrlInPackage;
-    return false;
-  }
-
   GURL resource_url = extension->GetResourceURL(url_string);
   if (!resource_url.is_valid()) {
     *error = ErrorUtils::FormatErrorMessageUTF16(errors::kInvalidOptionsPage,
@@ -77,8 +71,7 @@ OptionsPageInfo::OptionsPageInfo(const GURL& options_page,
       open_in_tab_(open_in_tab) {
 }
 
-OptionsPageInfo::~OptionsPageInfo() {
-}
+OptionsPageInfo::~OptionsPageInfo() = default;
 
 // static
 const GURL& OptionsPageInfo::GetOptionsPage(const Extension* extension) {
@@ -131,9 +124,9 @@ std::unique_ptr<OptionsPageInfo> OptionsPageInfo::Create(
         install_warnings->emplace_back(base::UTF16ToASCII(options_parse_error));
       }
       if (options_ui->chrome_style) {
-        if (extension->manifest_version() < 3)
+        if (extension->manifest_version() < 3) {
           chrome_style = *options_ui->chrome_style;
-        else {
+        } else {
           *error = errors::kChromeStyleInvalidForManifestV3;
           return nullptr;
         }
@@ -158,9 +151,8 @@ std::unique_ptr<OptionsPageInfo> OptionsPageInfo::Create(
                                            open_in_tab);
 }
 
-OptionsPageHandler::OptionsPageHandler() {}
-
-OptionsPageHandler::~OptionsPageHandler() {}
+OptionsPageHandler::OptionsPageHandler() = default;
+OptionsPageHandler::~OptionsPageHandler() = default;
 
 bool OptionsPageHandler::Parse(Extension* extension, std::u16string* error) {
   std::vector<InstallWarning> install_warnings;
@@ -182,25 +174,28 @@ bool OptionsPageHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<OptionsPageInfo> info =
       OptionsPageInfo::Create(extension, options_ui_dict, options_page_string,
                               &install_warnings, error);
-  if (!info)
+  if (!info) {
     return false;
+  }
 
   extension->AddInstallWarnings(std::move(install_warnings));
   extension->SetManifestData(keys::kOptionsUI, std::move(info));
   return true;
 }
 
-bool OptionsPageHandler::Validate(const Extension* extension,
+bool OptionsPageHandler::Validate(const Extension& extension,
                                   std::string* error,
                                   std::vector<InstallWarning>* warnings) const {
   // Validate path to the options page.  Don't check the URL for hosted apps,
   // because they are expected to refer to an external URL.
-  if (!OptionsPageInfo::HasOptionsPage(extension) || extension->is_hosted_app())
+  if (!OptionsPageInfo::HasOptionsPage(&extension) ||
+      extension.is_hosted_app()) {
     return true;
+  }
 
   base::FilePath options_path = file_util::ExtensionURLToRelativeFilePath(
-      OptionsPageInfo::GetOptionsPage(extension));
-  base::FilePath path = extension->GetResource(options_path).GetFilePath();
+      OptionsPageInfo::GetOptionsPage(&extension));
+  base::FilePath path = extension.GetResource(options_path).GetFilePath();
   if (path.empty() || !base::PathExists(path)) {
     *error = l10n_util::GetStringFUTF8(IDS_EXTENSION_LOAD_OPTIONS_PAGE_FAILED,
                                        options_path.LossyDisplayName());

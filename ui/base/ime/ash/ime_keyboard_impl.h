@@ -33,6 +33,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) ImeKeyboardImpl : public ImeKeyboard {
   bool SetAutoRepeatRate(const AutoRepeatRate& rate) override;
   void SetAutoRepeatEnabled(bool enabled) override;
   bool GetAutoRepeatEnabled() override;
+  void SetSlowKeysEnabled(bool enabled) override;
+  bool IsSlowKeysEnabled() const override;
+  void SetSlowKeysDelay(base::TimeDelta delay) override;
   void SetCapsLockEnabled(bool enable_caps_lock) override;
   bool IsCapsLockEnabled() override;
 

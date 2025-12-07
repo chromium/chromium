@@ -4,11 +4,12 @@
 
 #include "content/app/android/content_main_android.h"
 
+#include <cpu-features.h>
+
 #include <memory>
 
-#include "base/android/binder.h"
-#include "base/android/binder_box.h"
 #include "base/lazy_instance.h"
+#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
 #include "content/public/app/content_main.h"
@@ -20,7 +21,7 @@
 #include "content/public/android/content_app_jni/ContentMain_jni.h"
 
 using base::LazyInstance;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace content {
 
@@ -46,12 +47,11 @@ class ContentClientCreator {
   }
 };
 
-static void JNI_ContentMain_SetBindersFromParent(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& binder_box) {
-  base::android::SetBindersFromParent(
-      base::android::UnpackBinderBox(env, binder_box)
-          .value_or(std::vector<base::android::BinderRef>()));
+int StartContentMain(bool start_minimal_browser) {
+  TRACE_EVENT0("startup", "content::Start");
+  ContentMainParams params(g_content_main_delegate.Get().get());
+  params.minimal_browser_mode = start_minimal_browser;
+  return RunContentProcess(std::move(params), GetContentMainRunner());
 }
 
 // TODO(qinmin/hanxi): split this function into 2 separate methods: One to
@@ -59,10 +59,7 @@ static void JNI_ContentMain_SetBindersFromParent(
 // process. The first method should always be called upon browser start, and
 // the second method can be deferred. See http://crbug.com/854209.
 static jint JNI_ContentMain_Start(JNIEnv* env, jboolean start_minimal_browser) {
-  TRACE_EVENT0("startup", "content::Start");
-  ContentMainParams params(g_content_main_delegate.Get().get());
-  params.minimal_browser_mode = start_minimal_browser;
-  return RunContentProcess(std::move(params), GetContentMainRunner());
+  return StartContentMain(start_minimal_browser);
 }
 
 void SetContentMainDelegate(ContentMainDelegate* delegate) {
@@ -79,4 +76,13 @@ ContentMainDelegate* GetContentMainDelegateForTesting() {
   return g_content_main_delegate.Get().get();
 }
 
+void InitChildProcessCommon(int32_t cpu_count, int64_t cpu_features) {
+  // Set the CPU properties.
+  if (!android_setCpu(cpu_count, cpu_features)) {
+    LOG(WARNING) << "android_setCpu already initialized";
+  }
+}
+
 }  // namespace content
+
+DEFINE_JNI(ContentMain)

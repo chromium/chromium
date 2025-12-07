@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/ozone/platform/flatland/flatland_surface_canvas.h"
 
 #include <fuchsia/sysmem2/cpp/fidl.h>
 #include <fuchsia/ui/composition/cpp/fidl.h>
 
+#include "base/compiler_specific.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -20,6 +16,7 @@
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "third_party/skia/include/core/SkColorType.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/vsync_provider.h"
 
@@ -127,9 +124,9 @@ void FlatlandSurfaceCanvas::Frame::CopyDirtyRegionFrom(const Frame& frame) {
   int stride = surface->width() * SkColorTypeBytesPerPixel(kN32_SkColorType);
   for (SkRegion::Iterator i(dirty_region); !i.done(); i.next()) {
     uint8_t* dst_ptr =
-        static_cast<uint8_t*>(memory_mapping.memory()) +
-        i.rect().x() * SkColorTypeBytesPerPixel(kN32_SkColorType) +
-        i.rect().y() * stride;
+        UNSAFE_TODO(static_cast<uint8_t*>(memory_mapping.memory()) +
+                    i.rect().x() * SkColorTypeBytesPerPixel(kN32_SkColorType) +
+                    i.rect().y() * stride);
     frame.surface->readPixels(
         SkImageInfo::MakeN32Premul(i.rect().width(), i.rect().height()),
         dst_ptr, stride, i.rect().x(), i.rect().y());
@@ -206,8 +203,7 @@ void FlatlandSurfaceCanvas::ResizeCanvas(const gfx::Size& viewport_size,
 
   fuchsia::ui::composition::RegisterBufferCollectionArgs args;
   args.set_export_token(std::move(export_token));
-  args.set_buffer_collection_token(fuchsia::sysmem::BufferCollectionTokenHandle(
-      collection_token_for_flatland.Unbind().TakeChannel()));
+  args.set_buffer_collection_token2(std::move(collection_token_for_flatland));
   args.set_usage(
       fuchsia::ui::composition::RegisterBufferCollectionUsage::DEFAULT);
 
@@ -281,19 +277,21 @@ void FlatlandSurfaceCanvas::FinalizeBufferAllocation() {
     image_properties.set_size(
         fuchsia::math::SizeU{static_cast<uint32_t>(viewport_size_.width()),
                              static_cast<uint32_t>(viewport_size_.height())});
-    frames_[i].image_id = flatland_.NextContentId();
+    UNSAFE_TODO(frames_[i]).image_id = flatland_.NextContentId();
 
     fuchsia::ui::composition::BufferCollectionImportToken token;
     status = import_token_.Clone(&token);
     ZX_DCHECK(status == ZX_OK, status);
 
-    flatland_.flatland()->CreateImage(frames_[i].image_id, std::move(token), i,
+    flatland_.flatland()->CreateImage(UNSAFE_TODO(frames_[i]).image_id,
+                                      std::move(token), i,
                                       std::move(image_properties));
 
     // TODO(crbug.com/42050483): We should set SRC blend mode when Chrome has a
     // reliable signal for opaque background.
     flatland_.flatland()->SetImageBlendingFunction(
-        frames_[i].image_id, fuchsia::ui::composition::BlendMode::SRC_OVER);
+        UNSAFE_TODO(frames_[i]).image_id,
+        fuchsia::ui::composition::BlendMode::SRC_OVER);
   }
   import_token_.value.reset();
 
@@ -304,8 +302,9 @@ void FlatlandSurfaceCanvas::FinalizeBufferAllocation() {
               format.bytes_per_row_divisor());
 
   for (size_t i = 0; i < kNumBuffers; ++i) {
-    frames_[i].InitializeBuffer(std::move(buffer_info.mutable_buffers()->at(i)),
-                                viewport_size_, stride);
+    UNSAFE_TODO(frames_[i])
+        .InitializeBuffer(std::move(buffer_info.mutable_buffers()->at(i)),
+                          viewport_size_, stride);
   }
 }
 
@@ -316,17 +315,20 @@ SkCanvas* FlatlandSurfaceCanvas::GetCanvas() {
     FinalizeBufferAllocation();
   }
 
-  if (viewport_size_.IsEmpty() || frames_[current_frame_].is_empty()) {
+  if (viewport_size_.IsEmpty() ||
+      UNSAFE_TODO(frames_[current_frame_]).is_empty()) {
     return nullptr;
   }
 
   // Wait for the buffer to become available. This call has to be blocking
   // because GetSurface() and PresentCanvas() are synchronous.
-  if (frames_[current_frame_].release_fence) {
-    auto status = frames_[current_frame_].release_fence.wait_one(
-        ZX_EVENT_SIGNALED,
-        zx::deadline_after(zx::duration(kFrameReleaseTimeout.InNanoseconds())),
-        nullptr);
+  if (UNSAFE_TODO(frames_[current_frame_]).release_fence) {
+    auto status =
+        UNSAFE_TODO(frames_[current_frame_])
+            .release_fence.wait_one(ZX_EVENT_SIGNALED,
+                                    zx::deadline_after(zx::duration(
+                                        kFrameReleaseTimeout.InNanoseconds())),
+                                    nullptr);
     if (status == ZX_ERR_TIMED_OUT) {
       // Timeout here indicates that Scenic is most likely broken. If it still
       // works, then in the worst case returning before |release_fence| is
@@ -337,7 +339,7 @@ SkCanvas* FlatlandSurfaceCanvas::GetCanvas() {
     }
   }
 
-  return frames_[current_frame_].surface->getCanvas();
+  return UNSAFE_TODO(frames_[current_frame_]).surface->getCanvas();
 }
 
 void FlatlandSurfaceCanvas::PresentCanvas(const gfx::Rect& damage) {
@@ -346,35 +348,38 @@ void FlatlandSurfaceCanvas::PresentCanvas(const gfx::Rect& damage) {
   // Subtract |damage| from the dirty region in the current frame since it's
   // been repainted.
   SkIRect sk_damage = gfx::RectToSkIRect(damage);
-  frames_[current_frame_].dirty_region.op(sk_damage, SkRegion::kDifference_Op);
+  UNSAFE_TODO(frames_[current_frame_])
+      .dirty_region.op(sk_damage, SkRegion::kDifference_Op);
 
   // Copy dirty region from the previous buffer to make sure the whole frame
   // is up to date.
   int prev_frame =
       current_frame_ == 0 ? (kNumBuffers - 1) : (current_frame_ - 1);
-  frames_[current_frame_].CopyDirtyRegionFrom(frames_[prev_frame]);
+  UNSAFE_TODO(frames_[current_frame_])
+      .CopyDirtyRegionFrom(UNSAFE_TODO(frames_[prev_frame]));
 
   // |damage| rect was updated in the current frame. It means that the rect is
   // no longer valid in all other buffers. Add |damage| to |dirty_region| in all
   // buffers except the current one.
   for (size_t i = 0; i < kNumBuffers; ++i) {
     if (i != current_frame_) {
-      frames_[i].dirty_region.op(sk_damage, SkRegion::kUnion_Op);
+      UNSAFE_TODO(frames_[i]).dirty_region.op(sk_damage, SkRegion::kUnion_Op);
     }
   }
 
-  flatland_.flatland()->SetContent(root_transform_id_,
-                                   frames_[current_frame_].image_id);
+  flatland_.flatland()->SetContent(
+      root_transform_id_, UNSAFE_TODO(frames_[current_frame_]).image_id);
 
   // Create release fence for the current buffer or reset it if it already
   // exists.
-  if (!frames_[current_frame_].release_fence) {
+  if (!UNSAFE_TODO(frames_[current_frame_]).release_fence) {
     auto status = zx::event::create(
-        /*options=*/0u, &(frames_[current_frame_].release_fence));
+        /*options=*/0u, &(UNSAFE_TODO(frames_[current_frame_]).release_fence));
     ZX_CHECK(status == ZX_OK, status);
   } else {
-    auto status = frames_[current_frame_].release_fence.signal(
-        /*clear_mask=*/ZX_EVENT_SIGNALED, /*set_mask=*/0);
+    auto status = UNSAFE_TODO(frames_[current_frame_])
+                      .release_fence.signal(
+                          /*clear_mask=*/ZX_EVENT_SIGNALED, /*set_mask=*/0);
     ZX_CHECK(status == ZX_OK, status);
   }
 
@@ -382,8 +387,9 @@ void FlatlandSurfaceCanvas::PresentCanvas(const gfx::Rect& damage) {
   // GetCanvas() to ensure that we reuse the buffer only after it's released
   // from scenic.
   zx::event release_fence_dup;
-  auto status = frames_[current_frame_].release_fence.duplicate(
-      ZX_RIGHT_SAME_RIGHTS, &release_fence_dup);
+  auto status =
+      UNSAFE_TODO(frames_[current_frame_])
+          .release_fence.duplicate(ZX_RIGHT_SAME_RIGHTS, &release_fence_dup);
   ZX_CHECK(status == ZX_OK, status);
 
   fuchsia::ui::composition::PresentArgs present_args;

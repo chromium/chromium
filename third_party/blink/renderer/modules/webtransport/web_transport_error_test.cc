@@ -21,7 +21,7 @@ TEST(WebTransportErrorTest, DefaultConstruct) {
   EXPECT_EQ(error->code(), 0);
   EXPECT_EQ(error->streamErrorCode(), std::nullopt);
   EXPECT_EQ(error->message(), "");
-  EXPECT_EQ(error->source(), "stream");
+  EXPECT_EQ(error->source(), V8WebTransportErrorSource::Enum::kStream);
 }
 
 TEST(WebTransportErrorTest, ConstructWithStreamErrorCode) {
@@ -48,8 +48,8 @@ TEST(WebTransportErrorTest, InternalCreate) {
   V8TestingScope scope;
   auto* isolate = scope.GetIsolate();
   auto context = scope.GetContext();
-  auto v8value = WebTransportError::Create(isolate, 27, "badness",
-                                           WebTransportError::Source::kSession);
+  auto v8value = WebTransportError::Create(
+      isolate, 27, "badness", V8WebTransportErrorSource::Enum::kSession);
 
   ASSERT_TRUE(v8value->IsObject());
   v8::Local<v8::Value> stack;
@@ -69,7 +69,7 @@ TEST(WebTransportErrorTest, InternalCreate) {
   ASSERT_TRUE(error->streamErrorCode().has_value());
   EXPECT_EQ(error->streamErrorCode().value(), 27u);
   EXPECT_EQ(error->message(), "badness");
-  EXPECT_EQ(error->source(), "session");
+  EXPECT_EQ(error->source(), V8WebTransportErrorSource::Enum::kSession);
 }
 
 }  // namespace blink

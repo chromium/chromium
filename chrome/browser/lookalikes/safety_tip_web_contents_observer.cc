@@ -13,10 +13,12 @@
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
+#include "chrome/browser/lookalikes/lookalike_url_service_factory.h"
 #include "chrome/browser/lookalikes/safety_tip_ui.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
 #include "components/security_state/core/security_state.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/common/page_visibility_state.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -63,7 +65,7 @@ void OnSafetyTipClosed(SafetyTipCheckResult result,
   if (action == SafetyTipInteraction::kDismissWithEsc ||
       action == SafetyTipInteraction::kDismissWithClose ||
       action == SafetyTipInteraction::kDismissWithIgnore) {
-    LookalikeUrlService::Get(profile)->SetUserIgnore(url);
+    LookalikeUrlServiceFactory::GetForProfile(profile)->SetUserIgnore(url);
 
     // Record that the user dismissed the safety tip. kDismiss is recorded in
     // all dismiss-like cases, which makes it easier to track overall dismissals
@@ -120,7 +122,7 @@ void RecordSafetyTipStatusWithInitiatorOriginInfo(
     suffix = "SameOrigin";
   } else if (lookalikes::GetETLDPlusOne(
                  committed_initiator_origin.value().host()) ==
-             lookalikes::GetETLDPlusOne(current_url.host())) {
+             lookalikes::GetETLDPlusOne(current_url.GetHost())) {
     // The user has clicked on a link on a page, and it's bumped to another
     // page on the same eTLD+1. If that happens and this is a non-none and
     // non-ignored status, that implies that the first eTLD+1 load didn't
@@ -235,7 +237,7 @@ void SafetyTipWebContentsObserver::MaybeShowSafetyTip(
     return;
   }
 
-  LookalikeUrlService::Get(profile_)->CheckSafetyTipStatus(
+  LookalikeUrlServiceFactory::GetForProfile(profile_)->CheckSafetyTipStatus(
       url, web_contents(),
       base::BindOnce(&SafetyTipWebContentsObserver::HandleSafetyTipCheckResult,
                      weak_factory_.GetWeakPtr(), navigation_source_id,

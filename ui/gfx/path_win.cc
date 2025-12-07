@@ -13,8 +13,8 @@
 namespace gfx {
 
 HRGN CreateHRGNFromSkRegion(const SkRegion& region) {
-  base::win::ScopedRegion temp(::CreateRectRgn(0, 0, 0, 0));
-  base::win::ScopedRegion result(::CreateRectRgn(0, 0, 0, 0));
+  base::win::ScopedGDIObject<HRGN> temp(::CreateRectRgn(0, 0, 0, 0));
+  base::win::ScopedGDIObject<HRGN> result(::CreateRectRgn(0, 0, 0, 0));
 
   for (SkRegion::Iterator i(region); !i.done(); i.next()) {
     const SkIRect& rect = i.rect();

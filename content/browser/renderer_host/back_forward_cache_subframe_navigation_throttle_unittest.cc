@@ -4,8 +4,12 @@
 
 #include "content/browser/renderer_host/back_forward_cache_subframe_navigation_throttle.h"
 
+#include <memory>
+
 #include "base/test/bind.h"
+#include "content/public/test/mock_navigation_throttle_registry.h"
 #include "content/public/test/test_navigation_throttle.h"
+#include "content/public/test/test_navigation_throttle_inserter.h"
 #include "content/test/navigation_simulator_impl.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
@@ -31,6 +35,13 @@ class BackForwardCacheSubframeNavigationThrottleTestBase
     subframe_rfh_ = main_test_rfh()->AppendChild("Child");
   }
 
+  void TearDown() override {
+    // Delete `registry_` first to avoid a dangling pointer to a navigation
+    // request that could be deleted in the bass class first.
+    registry_.reset();
+    RenderViewHostImplTestHarness::TearDown();
+  }
+
   // Returns a paused `NavigationRequest` for subframe navigation.
   // The returned request hasn't reached "pending commit" stage.
   // To ensure this behavior, subclass that tests navigation without URLLoader
@@ -46,19 +57,27 @@ class BackForwardCacheSubframeNavigationThrottleTestBase
   // Subclass should override this method to achieve desired behavior. See
   // `CreatePausedSubframeNavigationRequest`.
   void DidStartNavigation(NavigationHandle* handle) override {
-    NOTIMPLEMENTED();
+    ASSERT_TRUE(false) << "DidStartNavigation should not be called";
   }
 
   // Returns `BackForwardCacheSubframeNavigationThrottle` for a paused subframe
   // navigation.
-  std::unique_ptr<BackForwardCacheSubframeNavigationThrottle>
+  std::unique_ptr<NavigationThrottle>
   GetNavigationThrottleFromPausedSubframeNavigation(const GURL& url) {
+    EXPECT_FALSE(registry_) << "Doesn't support multiple calls";
+
     // Create navigation request which hasn't reached commit and get
     // `BackForwardCacheSubframeNavigationThrottle` for this navigation.
     NavigationRequest* request =
         CreatePausedSubframeNavigationRequest(subframe_rfh_, url);
-    return BackForwardCacheSubframeNavigationThrottle::MaybeCreateThrottleFor(
-        request);
+    registry_ = std::make_unique<MockNavigationThrottleRegistry>(
+        request, MockNavigationThrottleRegistry::RegistrationMode::kHold);
+    BackForwardCacheSubframeNavigationThrottle::MaybeCreateAndAdd(*registry_);
+    EXPECT_EQ(registry_->throttles().size(), 1u);
+    if (registry_->throttles().size() < 1u) {
+      return nullptr;
+    }
+    return std::move(registry_->throttles().back());
   }
 
   // Sets lifecycle state of `subframe_rfh` to `kInBackForwardCache`.
@@ -95,6 +114,7 @@ class BackForwardCacheSubframeNavigationThrottleTestBase
 
  private:
   raw_ptr<TestRenderFrameHost, DanglingUntriaged> subframe_rfh_;
+  std::unique_ptr<MockNavigationThrottleRegistry> registry_;
 };
 
 // A test suite to cover BFCaching a page with subframe navigation without
@@ -107,19 +127,29 @@ class BackForwardCacheSubframeNavigationThrottleWithoutUrlLoaderTest
   void SetUp() override {
     BackForwardCacheSubframeNavigationThrottleTestBase::SetUp();
     Observe(contents());
+
+    throttle_inserter_ = std::make_unique<TestNavigationThrottleInserter>(
+        contents(),
+        base::BindLambdaForTesting(
+            [&](NavigationThrottleRegistry& registry) -> void {
+              // Defers subframe navigations on `WillCommitWithoutUrlLoader` by
+              // registering a `TestNavigationThrottle`, so that
+              // NavigationRequest created in each test from
+              // `CreatePausedSubframeNavigationRequest` wouldn't commit
+              // immediately.
+              auto throttle =
+                  std::make_unique<TestNavigationThrottle>(registry);
+              throttle->SetResponse(
+                  TestNavigationThrottle::WILL_COMMIT_WITHOUT_URL_LOADER,
+                  TestNavigationThrottle::SYNCHRONOUS,
+                  NavigationThrottle::DEFER);
+              registry.AddThrottle(std::move(throttle));
+            }));
   }
 
-  // Defers subframe navigations on `WillCommitWithoutUrlLoader` by
-  // registering a `TestNavigationThrottle`, so that NavigationRequest created
-  // in each test from `CreatePausedSubframeNavigationRequest` wouldn't commit
-  // immediately.
   void DidStartNavigation(NavigationHandle* handle) override {
-    auto throttle = std::make_unique<TestNavigationThrottle>(handle);
-    throttle->SetResponse(
-        TestNavigationThrottle::WILL_COMMIT_WITHOUT_URL_LOADER,
-        TestNavigationThrottle::SYNCHRONOUS, NavigationThrottle::DEFER);
-    handle->RegisterThrottleForTesting(
-        std::unique_ptr<TestNavigationThrottle>(std::move(throttle)));
+    // Override to hide the parent class's ASSERT_TRUE(false) to permit the
+    // callback.
   }
 
   GURL GetNavigationTargetURL() override {
@@ -128,6 +158,7 @@ class BackForwardCacheSubframeNavigationThrottleWithoutUrlLoaderTest
 
  private:
   static constexpr char kSubframeNavigateWithoutURLLoaderURL[] = "about:blank";
+  std::unique_ptr<TestNavigationThrottleInserter> throttle_inserter_;
 };
 
 TEST_F(BackForwardCacheSubframeNavigationThrottleWithoutUrlLoaderTest,
@@ -136,10 +167,10 @@ TEST_F(BackForwardCacheSubframeNavigationThrottleWithoutUrlLoaderTest,
       subframe_rfh(), GetNavigationTargetURL());
 
   // Confirm that we can create throttle for subframes.
-  EXPECT_THAT(
-      BackForwardCacheSubframeNavigationThrottle::MaybeCreateThrottleFor(
-          request),
-      NotNull());
+  MockNavigationThrottleRegistry registry(
+      request, MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  BackForwardCacheSubframeNavigationThrottle::MaybeCreateAndAdd(registry);
+  EXPECT_EQ(registry.throttles().size(), 1u);
 }
 
 TEST_F(BackForwardCacheSubframeNavigationThrottleWithoutUrlLoaderTest,
@@ -148,10 +179,10 @@ TEST_F(BackForwardCacheSubframeNavigationThrottleWithoutUrlLoaderTest,
       main_test_rfh(), GetNavigationTargetURL());
 
   // Confirm that we never create throttle for main frames.
-  EXPECT_THAT(
-      BackForwardCacheSubframeNavigationThrottle::MaybeCreateThrottleFor(
-          request),
-      IsNull());
+  MockNavigationThrottleRegistry registry(
+      request, MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  BackForwardCacheSubframeNavigationThrottle::MaybeCreateAndAdd(registry);
+  EXPECT_EQ(registry.throttles().size(), 0u);
 }
 
 TEST_F(BackForwardCacheSubframeNavigationThrottleWithoutUrlLoaderTest,
@@ -227,7 +258,10 @@ TEST_F(
 class BackForwardCacheSubframeNavigationThrottleTest
     : public BackForwardCacheSubframeNavigationThrottleTestBase {
  protected:
-  void DidStartNavigation(NavigationHandle* handle) override {}
+  void DidStartNavigation(NavigationHandle* handle) override {
+    // Override to hide the parent class's ASSERT_TRUE(false) to permit the
+    // callback.
+  }
 
   GURL GetNavigationTargetURL() override {
     return GURL(kSubframeNavigateWithURLLoaderURL);

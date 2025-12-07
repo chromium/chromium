@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<style>
+  @font-face {
+    font-family: 'ahem';
+    src: url(Ahem.ttf);
+  }
+  html {
+    font-family: 'ahem';
+    font-size: 30px;
+  }
+  body {
+    --x: 33em;
+    --cycle1: var(--cycle2);
+    --cycle2: var(--cycle1);
+    width: 1000px;
+    height: 6000px;
+  }
+  @property --reg-prop {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 11px;
+  }
+  div {
+    --prop: 13px;
+    font-size: 15px;
+    width: 150px;
+    height: 150px;
+    background-color: blueviolet;
+  }
+  .outer {
+    font-size: 10px;
+    width: 600px;
+    height: 300px;
+    margin: 300px 300px 300px 300px;
+    padding: 500px 500px 500px 500px;
+    background-color: ghostwhite;
+  }
+  .inner {
+    font-size: 5px;
+    width: 60px;
+    height: 30px;
+    margin: 30px 30px 30px 30px;
+    padding: 70px 70px 70px 70px;
+    background-color: slateblue;
+  }
+  .display-none {
+    font-size: 10px;
+    height: 100px;
+    display: none;
+  }
+  div::after {
+    content: 'test';
+    font-size: 3px;
+    width: 30px;
+    height: 30px;
+  }
+  div::before {
+    font-size: 3px;
+    width: 30px;
+    height: 30px;
+  }
+</style>
+
+<body>
+  <div class="outer">
+    <div class="inner" data-foo="13px">test</div>
+  </div>
+  <div class="display-none">test</div>
+</body>

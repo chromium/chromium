@@ -142,7 +142,7 @@ String TextFragmentGenerationNavigationTest::GenerateSelector(
                    shared_highlighting::LinkGenerationError error) {
     selector = generated_selector.ToString();
   };
-  auto callback = WTF::BindOnce(lambda, std::ref(selector));
+  auto callback = BindOnce(lambda, std::ref(selector));
 
   MakeGarbageCollected<TextFragmentSelectorGenerator>(GetDocument().GetFrame())
       ->Generate(selection_range, std::move(callback));

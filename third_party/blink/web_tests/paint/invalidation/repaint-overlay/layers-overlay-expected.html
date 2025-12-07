@@ -4,7 +4,7 @@
 <label><input type="checkbox">Use solid colors</label>
 <br>
 <span>Expected Invalidations</span>
-<canvas id="canvas" width="2000" height="2000" style="border: 1px solid black">
+<canvas id="canvas" width="2000" height="2000" style="border: 1px solid black; display: block;"></canvas>
 <script>
   var context = canvas.getContext("2d");
   context.fillStyle = 'rgba(255, 0, 0, 0.25)';

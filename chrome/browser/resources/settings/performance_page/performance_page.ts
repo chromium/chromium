@@ -5,6 +5,7 @@
 import '../controls/settings_toggle_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import '../settings_page/settings_section.js';
 import '../settings_shared.css.js';
 import './tab_discard/exception_list.js';
 
@@ -18,6 +19,7 @@ import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
+import {PerformanceBrowserProxyImpl, PerformanceFeedbackCategory} from './performance_browser_proxy.js';
 import type {PerformanceMetricsProxy} from './performance_metrics_proxy.js';
 import {PerformanceMetricsProxyImpl} from './performance_metrics_proxy.js';
 import {getTemplate} from './performance_page.html.js';
@@ -51,22 +53,8 @@ export class SettingsPerformancePageElement extends
     return getTemplate();
   }
 
-  static get properties() {
-    return {
-      isPerformanceInterventionUiEnabled_: {
-        readOnly: true,
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isPerformanceInterventionUiEnabled');
-        },
-      },
-    };
-  }
-
   private metricsProxy_: PerformanceMetricsProxy =
       PerformanceMetricsProxyImpl.getInstance();
-
-  private isPerformanceInterventionUiEnabled_: boolean;
 
   override ready() {
     super.ready();
@@ -107,6 +95,14 @@ export class SettingsPerformancePageElement extends
         this.getPref<boolean>(PERFORMANCE_INTERVENTION_NOTIFICATION_PREF)
             .value);
   }
+
+  // <if expr="_google_chrome">
+  private onSendFeedbackClick_(e: Event) {
+    e.stopPropagation();
+    PerformanceBrowserProxyImpl.getInstance().openFeedbackDialog(
+        PerformanceFeedbackCategory.NOTIFICATIONS);
+  }
+  // </if>
 }
 
 declare global {

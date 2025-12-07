@@ -149,7 +149,7 @@ uint32_t EventModelImpl::GetSnoozeCount(const std::string& event_name,
 
 bool EventModelImpl::IsSnoozeDismissed(const std::string& event_name) const {
   const Event* event = GetEvent(event_name);
-  return event ? event->snooze_dismissed() : false;
+  return event && event->snooze_dismissed();
 }
 
 void EventModelImpl::OnStoreLoaded(OnModelInitializationFinished callback,

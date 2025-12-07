@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/login/signin/signin_error_notifier.h"
 
 #include <stddef.h>
@@ -14,9 +9,12 @@
 #include <memory>
 #include <string>
 
+#include "ash/public/cpp/token_handle_store.h"
+#include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/signin/signin_error_notifier_factory.h"
+#include "chrome/browser/ash/login/signin/token_handle_store_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -29,6 +27,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -63,6 +62,7 @@ class SigninErrorNotifierTest : public BrowserWithTestWindowTest {
 
     identity_test_env_profile_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(GetProfile());
+    token_handle_store_ = TokenHandleStoreFactory::Get()->GetTokenHandleStore();
   }
 
   void TearDown() override {
@@ -70,7 +70,10 @@ class SigninErrorNotifierTest : public BrowserWithTestWindowTest {
     // will be destroyed as part of the TearDown() process.
     identity_test_env_profile_adaptor_.reset();
 
+    token_handle_store_ = nullptr;
     ash::UserDataAuthClient::Shutdown();
+    SigninErrorNotifierFactory::GetForProfile(GetProfile())->Shutdown();
+    TokenHandleStoreFactory::Get()->DestroyTokenHandleStore();
     BrowserWithTestWindowTest::TearDown();
   }
 
@@ -93,6 +96,7 @@ class SigninErrorNotifierTest : public BrowserWithTestWindowTest {
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
+  raw_ptr<TokenHandleStore> token_handle_store_;
 };
 
 TEST_F(SigninErrorNotifierTest, NoNotification) {
@@ -236,7 +240,15 @@ TEST_F(SigninErrorNotifierTest, AuthStatusEnumerateAllErrors) {
           .account_id;
 
   for (size_t i = 0; i < std::size(table); ++i) {
-    GoogleServiceAuthError error(table[i]);
+    GoogleServiceAuthError error;
+    if (UNSAFE_TODO(table[i]) ==
+        GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR) {
+      error = GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
+          GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+              kInvalidGrantRaptError);
+    } else {
+      error = GoogleServiceAuthError(UNSAFE_TODO(table[i]));
+    }
     SetAuthError(account_id, error);
     std::optional<message_center::Notification> notification =
         display_service_->GetNotification(kPrimaryAccountErrorNotificationId);
@@ -303,14 +315,14 @@ TEST_F(SigninErrorNotifierTest, ChildSecondaryAccountMigrationTest) {
 // Tests that token handle errors display the expected error message.
 TEST_F(SigninErrorNotifierTest, TokenHandleTest) {
   // Setup.
-  const CoreAccountId core_account_id =
+  const GaiaId gaia_id =
       identity_test_env()
           ->MakePrimaryAccountAvailable(kTestEmail, signin::ConsentLevel::kSync)
-          .account_id;
+          .gaia;
   const AccountId account_id = AccountId::FromUserEmailGaiaId(
-      /*user_email=*/kTestEmail, /*gaia_id=*/core_account_id.ToString());
-  TokenHandleUtil::StoreTokenHandle(account_id, kTokenHandle);
-  TokenHandleUtil::SetInvalidTokenForTesting(kTokenHandle);
+      /*user_email=*/kTestEmail, gaia_id);
+  token_handle_store_->StoreTokenHandle(account_id, kTokenHandle);
+  token_handle_store_->SetInvalidTokenForTesting(kTokenHandle);
   SigninErrorNotifier* signin_error_notifier =
       SigninErrorNotifierFactory::GetForProfile(GetProfile());
   signin_error_notifier->OnTokenHandleCheck(account_id, kTokenHandle,
@@ -335,14 +347,14 @@ TEST_F(SigninErrorNotifierTest,
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
 
   // Setup Device Account.
-  const CoreAccountId core_account_id =
+  const GaiaId gaia_id =
       identity_test_env()
           ->MakePrimaryAccountAvailable(kTestEmail, signin::ConsentLevel::kSync)
-          .account_id;
+          .gaia;
   const AccountId account_id = AccountId::FromUserEmailGaiaId(
-      /*user_email=*/kTestEmail, /*gaia_id=*/core_account_id.ToString());
-  TokenHandleUtil::StoreTokenHandle(account_id, kTokenHandle);
-  TokenHandleUtil::SetInvalidTokenForTesting(kTokenHandle);
+      /*user_email=*/kTestEmail, gaia_id);
+  token_handle_store_->StoreTokenHandle(account_id, kTokenHandle);
+  token_handle_store_->SetInvalidTokenForTesting(kTokenHandle);
   SigninErrorNotifier* signin_error_notifier =
       SigninErrorNotifierFactory::GetForProfile(GetProfile());
   signin_error_notifier->OnTokenHandleCheck(account_id, kTokenHandle,

@@ -1,0 +1,75 @@
+{
+  "description": "Report is never sent due to network connectivity",
+  "input": {
+    "registrations": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "123",
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "1000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "7"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      // Disables report sends.
+      {
+        "timestamp": "2000",
+        "connection": false
+      },
+      // Enables report sends after retry time frame.
+      {
+        "timestamp": "174100000",
+        "connection": false
+      }
+    ]
+  },
+  "output": {
+    "reports": [
+      {
+        "payload": [
+          {
+            "body": {
+              "attribution_destination": "https://destination.test",
+              "source_event_id": "123",
+              "source_site": "https://source.test"
+            },
+            "type": "source-success"
+          }
+        ],
+        "report_time": "0",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      }
+    ]
+  }
+}

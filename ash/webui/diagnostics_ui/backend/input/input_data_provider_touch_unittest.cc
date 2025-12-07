@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "ash/webui/diagnostics_ui/backend/input/input_data_provider_touch.h"
+
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/webui/diagnostics_ui/backend/input/input_data_provider.h"
+#include "base/strings/stringprintf.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
 #include "content/public/test/browser_task_environment.h"
 #include "ui/base/resource/resource_bundle.h"

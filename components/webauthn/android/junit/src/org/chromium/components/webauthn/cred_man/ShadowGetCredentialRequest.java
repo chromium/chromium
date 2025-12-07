@@ -48,7 +48,7 @@ public class ShadowGetCredentialRequest {
 
         private Bundle mData;
         private String mOrigin;
-        private List<CredentialOption> mCredentialOptions = new ArrayList<>();
+        private final List<CredentialOption> mCredentialOptions = new ArrayList<>();
 
         @Implementation
         protected void __constructor__(Bundle data) {

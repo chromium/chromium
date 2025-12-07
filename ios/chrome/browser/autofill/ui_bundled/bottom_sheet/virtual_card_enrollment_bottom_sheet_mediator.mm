@@ -6,14 +6,13 @@
 
 #import <optional>
 
-#import "base/feature_list.h"
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
 #import "components/autofill/core/browser/payments/virtual_card_enroll_metrics_logger.h"
 #import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
-#import "components/autofill/core/common/autofill_payments_features.h"
 #import "ios/chrome/browser/autofill/model/credit_card/credit_card_data.h"
+#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/bottom_sheet_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/virtual_card_enrollment_bottom_sheet_data.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -46,10 +45,6 @@ class UiModelObserverBridge
                           UiModelObserverBridge>
       scoped_model_observation_{this};
 };
-
-// The delay between showing the confirmation and dismissing the virtual card
-// enrollment prompt.
-const base::TimeDelta kConfirmationDismissDelay = base::Seconds(1.5);
 
 }  // namespace
 
@@ -108,12 +103,8 @@ const base::TimeDelta kConfirmationDismissDelay = base::Seconds(1.5);
     _model = std::move(model);
     _callbacks = std::move(callbacks);
     _browserCoordinatorHandler = browserCoordinatorHandler;
-    if (base::FeatureList::IsEnabled(
-            autofill::features::
-                kAutofillEnableVcnEnrollLoadingAndConfirmation)) {
-      _uiModelObserverBridge =
-          std::make_unique<UiModelObserverBridge>(_model.get(), self);
-    }
+    _uiModelObserverBridge =
+        std::make_unique<UiModelObserverBridge>(_model.get(), self);
   }
   return self;
 }
@@ -135,14 +126,8 @@ const base::TimeDelta kConfirmationDismissDelay = base::Seconds(1.5);
   _callbacks.reset();
   [self logResultMetric:autofill::VirtualCardEnrollmentBubbleResult::
                             VIRTUAL_CARD_ENROLLMENT_BUBBLE_ACCEPTED];
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation)) {
-    [_consumer showLoadingState];
-    autofill::LogVirtualCardEnrollmentLoadingViewShown(/*is_shown=*/true);
-    return;
-  }
-  autofill::LogVirtualCardEnrollmentLoadingViewShown(/*is_shown=*/false);
-  [_browserCoordinatorHandler dismissVirtualCardEnrollmentBottomSheet];
+  [_consumer showLoadingState];
+  autofill::LogVirtualCardEnrollmentLoadingViewShown(/*is_shown=*/true);
 }
 
 - (void)didCancel {
@@ -184,7 +169,7 @@ const base::TimeDelta kConfirmationDismissDelay = base::Seconds(1.5);
     case autofill::VirtualCardEnrollUiModel::EnrollmentProgress::kOffered:
       // The enrollment progress is set by IOSChromePaymentsAutofillClient to
       // either kEnrolled or kFailed and cannot transition back to kOffered.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

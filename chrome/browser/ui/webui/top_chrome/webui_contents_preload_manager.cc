@@ -17,23 +17,29 @@
 #include "base/no_destructor.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/log_web_ui_url.h"
 #include "chrome/browser/ui/webui/top_chrome/per_profile_webui_tracker.h"
 #include "chrome/browser/ui/webui/top_chrome/preload_context.h"
 #include "chrome/browser/ui/webui/top_chrome/profile_preload_candidate_selector.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_state.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/crash/core/common/crash_key.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "ui/base/models/menu_model.h"
+#include "url/gurl.h"
 #include "url/url_constants.h"
 
 namespace {
@@ -69,7 +75,8 @@ class FixedCandidateSelector : public webui::PreloadCandidateSelector {
   }
   std::optional<GURL> GetURLToPreload(
       const webui::PreloadContext& context) const override {
-    return webui_url_;
+    return IsUrlExcludedByFlag(webui_url_) ? std::nullopt
+                                           : std::make_optional(webui_url_);
   }
 
  private:
@@ -111,19 +118,9 @@ content::WebUIController* GetWebUIController(
   return webui->GetController();
 }
 
-std::vector<GURL> GetAllPreloadableWebUIURLs() {
-  // Retrieves top-chrome WebUIs that enables IsPreloadable() in its WebUI
-  // config.
-  std::vector<GURL> preloadable_urls;
-  TopChromeWebUIConfig::ForEachConfig([&preloadable_urls](
-                                          TopChromeWebUIConfig* config) {
-    if (config->IsPreloadable()) {
-      preloadable_urls.emplace_back(base::StrCat(
-          {config->scheme(), url::kStandardSchemeSeparator, config->host()}));
-    }
-  });
-
-  return preloadable_urls;
+bool IsShowingErrorPage(content::WebContents* web_contents) {
+  return web_contents->GetSiteInstance()->GetSiteURL().SchemeIs(
+      content::kChromeErrorScheme);
 }
 
 }  // namespace
@@ -140,7 +137,10 @@ class WebUIContentsPreloadManager::WebUIControllerEmbedderStub final
   void ShowContextMenu(gfx::Point point,
                        std::unique_ptr<ui::MenuModel> menu_model) override {}
   void HideContextMenu() override {}
-  void ShowUI() override { is_ready_to_show_ = true; }
+  void ShowUI() override {
+    CHECK(preload_state_);
+    preload_state_->ready_to_show = true;
+  }
 
   // Attach this stub as the embedder of `web_contents`, assuming that the
   // contents is not yet ready to be shown.
@@ -157,12 +157,25 @@ class WebUIContentsPreloadManager::WebUIControllerEmbedderStub final
         static_cast<TopChromeWebUIController*>(webui_controller);
     bubble_controller->set_embedder(this->GetWeakPtr());
     web_contents_ = web_contents;
-    is_ready_to_show_ = false;
+    preload_state_ = WebUIContentsPreloadState::FromWebContents(web_contents);
+    CHECK(preload_state_);
   }
 
   // Detach from the previously attached `web_contents`.
   void Detach() {
     if (!web_contents_) {
+      return;
+    }
+
+    // The enterprise policy might block navigation to the WebUI. When such
+    // policy is in place, the WebUI object is created on LoadURL(), then
+    // asynchronously the navigation commit fails, destroying the WebUI object
+    // and the RFH. For unknown reasons the primary main RFH of the WebContents
+    // might be dangling at this point, causing a crash on calling
+    // WebContents::GetWebUI(). See https://crbug.com/409389408.
+    // TODO(crbug.com/424551539): figure out why the primary main RFH is
+    // dangling.
+    if (IsShowingErrorPage(web_contents_)) {
       return;
     }
 
@@ -176,9 +189,8 @@ class WebUIContentsPreloadManager::WebUIControllerEmbedderStub final
         static_cast<TopChromeWebUIController*>(webui_controller);
     bubble_controller->set_embedder(nullptr);
     web_contents_ = nullptr;
+    preload_state_ = nullptr;
   }
-
-  bool is_ready_to_show() const { return is_ready_to_show_; }
 
   base::WeakPtr<WebUIControllerEmbedderStub> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -186,8 +198,50 @@ class WebUIContentsPreloadManager::WebUIControllerEmbedderStub final
 
  private:
   raw_ptr<content::WebContents> web_contents_ = nullptr;
-  bool is_ready_to_show_ = false;
+  raw_ptr<WebUIContentsPreloadState> preload_state_ = nullptr;
   base::WeakPtrFactory<WebUIControllerEmbedderStub> weak_ptr_factory_{this};
+};
+
+class WebUIContentsPreloadManager::PendingPreload
+    : public content::WebContentsObserver,
+      public ProfileObserver {
+ public:
+  // Notifies the manager to preload when `busy_web_contents_to_watch` emits the
+  // first non-empty paint or when `deadline` has passed.
+  PendingPreload(WebUIContentsPreloadManager* manager,
+                 Profile* profile,
+                 content::WebContents* busy_web_contents_to_watch,
+                 PreloadReason preload_reason,
+                 base::TimeDelta deadline)
+      : manager_(manager), profile_(profile), preload_reason_(preload_reason) {
+    WebContentsObserver::Observe(busy_web_contents_to_watch);
+    profile_observation_.Observe(profile_);
+    deadline_timer_.Start(FROM_HERE, deadline, this, &PendingPreload::Preload);
+  }
+
+  void Preload() {
+    deadline_timer_.Stop();
+    WebContentsObserver::Observe(nullptr);
+    manager_->MaybePreloadForBrowserContext(profile_, preload_reason_);
+  }
+
+  // content::WebContentsObserver:
+  void DidFirstVisuallyNonEmptyPaint() override { Preload(); }
+
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override {
+    profile_observation_.Reset();
+    profile_ = nullptr;
+    WebContentsObserver::Observe(nullptr);
+    deadline_timer_.Stop();
+  }
+
+ private:
+  raw_ptr<WebUIContentsPreloadManager> manager_;
+  raw_ptr<Profile> profile_;
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
+  const PreloadReason preload_reason_;
+  base::OneShotTimer deadline_timer_;
 };
 
 using RequestResult = WebUIContentsPreloadManager::RequestResult;
@@ -238,18 +292,15 @@ void WebUIContentsPreloadManager::WarmupForBrowser(Browser* browser) {
   }
 
   CHECK_EQ(preload_mode_, PreloadMode::kPreloadOnWarmup);
-  MaybePreloadForBrowserContext(browser->profile());
-}
 
-void WebUIContentsPreloadManager::MaybePreloadForBrowserContextForTesting(
-    content::BrowserContext* browser_context) {
-  MaybePreloadForBrowserContext(browser_context);
-}
-
-std::optional<GURL>
-WebUIContentsPreloadManager::GetNextWebUIURLToPreloadForTesting(
-    content::BrowserContext* browser_context) const {
-  return GetNextWebUIURLToPreload(browser_context);
+  if (IsDelayPreloadEnabled()) {
+    MaybePreloadForBrowserContextLater(
+        browser->profile(), browser->tab_strip_model()->GetActiveWebContents(),
+        PreloadReason::kBrowserWarmup);
+  } else {
+    MaybePreloadForBrowserContext(browser->profile(),
+                                  PreloadReason::kBrowserWarmup);
+  }
 }
 
 std::optional<GURL> WebUIContentsPreloadManager::GetNextWebUIURLToPreload(
@@ -259,16 +310,19 @@ std::optional<GURL> WebUIContentsPreloadManager::GetNextWebUIURLToPreload(
           Profile::FromBrowserContext(browser_context)));
 }
 
-// static
-std::vector<GURL>
-WebUIContentsPreloadManager::GetAllPreloadableWebUIURLsForTesting() {
-  return GetAllPreloadableWebUIURLs();
-}
+std::vector<GURL> WebUIContentsPreloadManager::GetAllPreloadableWebUIURLs() {
+  // Retrieves top-chrome WebUIs that enables IsPreloadable() in its WebUI
+  // config.
+  std::vector<GURL> preloadable_urls;
+  TopChromeWebUIConfig::ForEachConfig([&preloadable_urls](
+                                          TopChromeWebUIConfig* config) {
+    if (config->IsPreloadable()) {
+      preloadable_urls.emplace_back(base::StrCat(
+          {config->scheme(), url::kStandardSchemeSeparator, config->host()}));
+    }
+  });
 
-void WebUIContentsPreloadManager::SetPreloadCandidateSelectorForTesting(
-    std::unique_ptr<webui::PreloadCandidateSelector>
-        preload_candidate_selector) {
-  SetPreloadCandidateSelector(std::move(preload_candidate_selector));
+  return preloadable_urls;
 }
 
 void WebUIContentsPreloadManager::SetPreloadCandidateSelector(
@@ -281,7 +335,10 @@ void WebUIContentsPreloadManager::SetPreloadCandidateSelector(
 }
 
 void WebUIContentsPreloadManager::MaybePreloadForBrowserContext(
-    content::BrowserContext* browser_context) {
+    content::BrowserContext* browser_context,
+    PreloadReason preload_reason) {
+  pending_preload_.reset();
+
   if (!ShouldPreloadForBrowserContext(browser_context)) {
     return;
   }
@@ -306,6 +363,26 @@ void WebUIContentsPreloadManager::MaybePreloadForBrowserContext(
   }
 
   SetPreloadedContents(CreateNewContents(browser_context, *preload_url));
+  base::UmaHistogramEnumeration("WebUI.TopChrome.Preload.Reason",
+                                preload_reason);
+}
+
+void WebUIContentsPreloadManager::MaybePreloadForBrowserContextLater(
+    content::BrowserContext* browser_context,
+    content::WebContents* busy_web_contents_to_watch,
+    PreloadReason preload_reason,
+    base::TimeDelta deadline) {
+  CHECK(!is_delay_preload_disabled_for_test_);
+
+  // Usually destroying a WebContents may trigger preload, but if the
+  // destroy is caused by setting new preload contents, ignore it.
+  if (is_setting_preloaded_web_contents_) {
+    return;
+  }
+
+  pending_preload_ = std::make_unique<PendingPreload>(
+      this, Profile::FromBrowserContext(browser_context),
+      busy_web_contents_to_watch, preload_reason, deadline);
 }
 
 void WebUIContentsPreloadManager::SetPreloadedContents(
@@ -320,6 +397,8 @@ void WebUIContentsPreloadManager::SetPreloadedContents(
     webui_controller_embedder_stub_->AttachTo(preloaded_web_contents_.get());
     profile_observation_.Observe(Profile::FromBrowserContext(
         preloaded_web_contents_->GetBrowserContext()));
+    WebUIContentsPreloadState::FromWebContents(preloaded_web_contents_.get())
+        ->preloaded = true;
   }
 }
 
@@ -328,7 +407,6 @@ RequestResult WebUIContentsPreloadManager::Request(
     content::BrowserContext* browser_context) {
   const base::TimeTicks request_time = base::TimeTicks::Now();
   std::unique_ptr<content::WebContents> web_contents_ret;
-  bool is_ready_to_show = false;
   WebUIPreloadResult preload_result = preloaded_web_contents_
                                           ? WebUIPreloadResult::kMiss
                                           : WebUIPreloadResult::kNoPreload;
@@ -338,7 +416,7 @@ RequestResult WebUIContentsPreloadManager::Request(
   // TODO(325836830): allow navigations between WebUIs.
   if (preloaded_web_contents_ &&
       preloaded_web_contents_->GetBrowserContext() == browser_context &&
-      (preloaded_web_contents_->GetURL().host() == webui_url.host() ||
+      (preloaded_web_contents_->GetURL().GetHost() == webui_url.GetHost() ||
        preloaded_web_contents_->GetURL().IsAboutBlank() ||
        webui_url.IsAboutBlank())) {
     preload_result = WebUIPreloadResult::kHit;
@@ -348,16 +426,14 @@ RequestResult WebUIContentsPreloadManager::Request(
       LoadURLForContents(preloaded_web_contents_.get(), webui_url);
     }
     web_contents_ret = std::move(preloaded_web_contents_);
-    is_ready_to_show = webui_controller_embedder_stub_->is_ready_to_show();
     SetPreloadedContents(nullptr);
   } else {
     web_contents_ret = CreateNewContents(browser_context, webui_url);
-    is_ready_to_show = false;
   }
 
   // Navigate to path if the request URL has a different path.
   if (!is_navigation_disabled_for_test_ &&
-      webui_url.path() != web_contents_ret->GetURL().path()) {
+      webui_url.GetPath() != web_contents_ret->GetURL().GetPath()) {
     CHECK(url::IsSameOriginWith(webui_url, web_contents_ret->GetURL()));
     LoadURLForContents(web_contents_ret.get(), webui_url);
   }
@@ -366,30 +442,51 @@ RequestResult WebUIContentsPreloadManager::Request(
                                 preload_result);
 
   // Preload a new contents.
-  MaybePreloadForBrowserContext(browser_context);
+  if (IsDelayPreloadEnabled()) {
+    MaybePreloadForBrowserContextLater(browser_context, web_contents_ret.get(),
+                                       PreloadReason::kWebUIRequested);
+  } else {
+    MaybePreloadForBrowserContext(browser_context,
+                                  PreloadReason::kWebUIRequested);
+  }
 
   task_manager::WebContentsTags::ClearTag(web_contents_ret.get());
-  request_time_map_[web_contents_ret.get()] = request_time;
+
+  auto* preload_state =
+      WebUIContentsPreloadState::FromWebContents(web_contents_ret.get());
+  CHECK(preload_state);
+  preload_state->request_time = request_time;
+  // Non-preloaded WebUIs are logged by WebUIMainFrameObserver.
+  if (preload_state->preloaded) {
+    webui::LogWebUIShown(web_contents_ret->GetSiteInstance()->GetSiteURL());
+  }
 
   RequestResult result;
   result.web_contents = std::move(web_contents_ret);
-  result.is_ready_to_show = is_ready_to_show;
+  result.is_ready_to_show = preload_state->ready_to_show;
   return result;
 }
 
 std::optional<base::TimeTicks> WebUIContentsPreloadManager::GetRequestTime(
     content::WebContents* web_contents) {
-  return base::Contains(request_time_map_, web_contents)
-             ? std::make_optional(request_time_map_[web_contents])
-             : std::nullopt;
-}
-
-std::optional<GURL> WebUIContentsPreloadManager::GetPreloadedURLForTesting()
-    const {
-  if (!preloaded_web_contents_) {
+  auto* preload_state =
+      WebUIContentsPreloadState::FromWebContents(web_contents);
+  if (!preload_state) {
     return std::nullopt;
   }
-  return preloaded_web_contents_->GetVisibleURL();
+
+  return preload_state->request_time;
+}
+
+bool WebUIContentsPreloadManager::WasPreloaded(
+    content::WebContents* web_contents) const {
+  if (!web_contents) {
+    return false;
+  }
+
+  auto* preload_state =
+      WebUIContentsPreloadState::FromWebContents(web_contents);
+  return preload_state ? preload_state->preloaded : false;
 }
 
 void WebUIContentsPreloadManager::DisableNavigationForTesting() {
@@ -407,10 +504,10 @@ WebUIContentsPreloadManager::CreateNewContents(
   // Propagates user prefs to web contents.
   // This is needed by, for example, text selection color on ChromeOS.
   PrefsTabHelper::CreateForWebContents(web_contents.get());
-
+  WebUIContentsPreloadState::CreateForWebContents(web_contents.get());
   task_manager::WebContentsTags::CreateForToolContents(
       web_contents.get(), IDS_TASK_MANAGER_PRELOADED_RENDERER_FOR_UI);
-  chrome::InitializePageLoadMetricsForWebContents(web_contents.get());
+  InitializePageLoadMetricsForWebContents(web_contents.get());
   webui_tracker_->AddWebContents(web_contents.get());
 
   LoadURLForContents(web_contents.get(), url);
@@ -441,15 +538,32 @@ bool WebUIContentsPreloadManager::ShouldPreloadForBrowserContext(
     return false;
   }
 
+  // Only preloads for regular profiles because WebContents::GetWebUI()
+  // may crash due to dangling RFH if navigation fails. See crbug.com/409389408.
+  // TODO(crbug.com/424551539): remove after fixing dangling RFH.
+  if (!Profile::FromBrowserContext(browser_context)->IsRegularProfile()) {
+    return false;
+  }
+
   // Don't preload if under heavy memory pressure.
   const auto* memory_monitor = base::MemoryPressureMonitor::Get();
-  if (memory_monitor && memory_monitor->GetCurrentPressureLevel() >=
-                            base::MemoryPressureMonitor::MemoryPressureLevel::
-                                MEMORY_PRESSURE_LEVEL_MODERATE) {
+  if (memory_monitor &&
+      memory_monitor->GetCurrentPressureLevel(
+          base::MemoryPressureMonitorTag::kWebUIContentsPreloadManager) >=
+          base::MEMORY_PRESSURE_LEVEL_MODERATE) {
     return false;
   }
 
   return true;
+}
+
+bool WebUIContentsPreloadManager::IsDelayPreloadEnabled() const {
+  if (is_delay_preload_disabled_for_test_) {
+    return false;
+  }
+
+  return IsFeatureEnabled() &&
+         features::kPreloadTopChromeWebUIDelayPreload.Get();
 }
 
 void WebUIContentsPreloadManager::OnProfileWillBeDestroyed(Profile* profile) {
@@ -468,8 +582,13 @@ void WebUIContentsPreloadManager::OnWebContentsDestroyed(
   // Triggers preloading when a WebUI is destroyed. Without this step, the
   // preloaded content would only be the second highest engaged WebUI for
   // the most time.
-  MaybePreloadForBrowserContext(web_contents->GetBrowserContext());
-  request_time_map_.erase(web_contents);
+  if (IsDelayPreloadEnabled()) {
+    MaybePreloadForBrowserContextLater(web_contents->GetBrowserContext(),
+                                       nullptr, PreloadReason::kWebUIDestroyed);
+  } else {
+    MaybePreloadForBrowserContext(web_contents->GetBrowserContext(),
+                                  PreloadReason::kWebUIDestroyed);
+  }
 }
 
 void WebUIContentsPreloadManager::OnWebContentsPrimaryPageChanged(
@@ -477,6 +596,17 @@ void WebUIContentsPreloadManager::OnWebContentsPrimaryPageChanged(
   if (web_contents == preloaded_web_contents_.get()) {
     content::RenderWidgetHostView* render_widget_host_view =
         web_contents->GetRenderWidgetHostView();
+
+    // TODO(crbug.com/383937390): TopChromeWebUIConfig::From() returns nullptr.
+    // This crash key is to investigate if the visible URL is empty.
+    static crash_reporter::CrashKeyString<1024> visible_url(
+        "webui-preload-visible-url");
+    visible_url.Set(web_contents->GetVisibleURL().possibly_invalid_spec());
+    static crash_reporter::CrashKeyString<1024> site_instance_url(
+        "webui-preload-site-instance-url");
+    site_instance_url.Set(
+        web_contents->GetSiteInstance()->GetSiteURL().possibly_invalid_spec());
+
     const bool should_auto_reisze_host =
         TopChromeWebUIConfig::From(web_contents->GetBrowserContext(),
                                    web_contents->GetVisibleURL())

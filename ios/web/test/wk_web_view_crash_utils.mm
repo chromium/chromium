@@ -10,6 +10,7 @@
 #import "base/check.h"
 #import "ios/web/common/web_view_creation_util.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
+#import "ios/web/web_state/crw_web_view.h"
 #import "third_party/ocmock/OCMock/NSInvocation+OCMAdditions.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
@@ -49,25 +50,24 @@ void SimulateWKWebViewCrash(WKWebView* webView) {
 
 WKWebView* BuildTerminatedWKWebView() {
   id fail = ^void(NSInvocation* invocation) {
-      // Always fails with WKErrorWebContentProcessTerminated error.
-      NSError* error =
-          [NSError errorWithDomain:WKErrorDomain
-                              code:WKErrorWebContentProcessTerminated
-                          userInfo:nil];
+    // Always fails with WKErrorWebContentProcessTerminated error.
+    NSError* error = [NSError errorWithDomain:WKErrorDomain
+                                         code:WKErrorWebContentProcessTerminated
+                                     userInfo:nil];
 
-      void (^completionHandler)(id, NSError*) =
-          [invocation getArgumentAtIndexAsObject:3];
-      completionHandler(nil, error);
+    void (^completionHandler)(id, NSError*) =
+        [invocation getArgumentAtIndexAsObject:3];
+    completionHandler(nil, error);
   };
   return BuildMockWKWebViewWithStubbedJSEvalFunction(fail);
 }
 
 WKWebView* BuildHealthyWKWebView() {
   id succeed = ^void(NSInvocation* invocation) {
-      void (^completionHandler)(id, NSError*) =
-          [invocation getArgumentAtIndexAsObject:3];
-      // Always succceeds with nil result.
-      completionHandler(nil, nil);
+    void (^completionHandler)(id, NSError*) =
+        [invocation getArgumentAtIndexAsObject:3];
+    // Always succceeds with nil result.
+    completionHandler(nil, nil);
   };
   return BuildMockWKWebViewWithStubbedJSEvalFunction(succeed);
 }

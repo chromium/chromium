@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom";
 import "url/mojom/url.mojom";
 
@@ -22,5 +23,8 @@ interface WebLaunchService {
   // Used to notify a frame that it was opened as a web app. This method is
   // fire-and-forget.
   // TODO(crbug.com/1250225): Unify SetLaunchFiles() into this method.
-  EnqueueLaunchParams(url.mojom.Url launch_url);
+  EnqueueLaunchParams(
+      url.mojom.Url launch_url,
+      mojo_base.mojom.TimeTicks time_navigation_started_in_browser,
+      bool navigation_started);
 };

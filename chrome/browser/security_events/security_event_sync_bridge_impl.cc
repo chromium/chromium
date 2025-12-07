@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -59,7 +60,13 @@ SecurityEventSyncBridgeImpl::SecurityEventSyncBridgeImpl(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-SecurityEventSyncBridgeImpl::~SecurityEventSyncBridgeImpl() {}
+SecurityEventSyncBridgeImpl::~SecurityEventSyncBridgeImpl() {
+  // TODO(crbug.com/362428820): Remove logging once investigation is complete.
+  if (store_) {
+    VLOG(1) << "SecurityEvents during destruction: "
+            << store_->in_memory_data().size();
+  }
+}
 
 void SecurityEventSyncBridgeImpl::RecordSecurityEvent(
     sync_pb::SecurityEventSpecifics specifics) {
@@ -101,7 +108,7 @@ SecurityEventSyncBridgeImpl::MergeFullSyncData(
     syncer::EntityChangeList entity_data) {
   DCHECK(entity_data.empty());
   DCHECK(change_processor()->IsTrackingMetadata());
-  DCHECK(!change_processor()->TrackedAccountId().empty());
+  DCHECK(!change_processor()->TrackedGaiaId().empty());
   return ApplyIncrementalSyncChanges(std::move(metadata_change_list),
                                      std::move(entity_data));
 }
@@ -149,13 +156,19 @@ SecurityEventSyncBridgeImpl::GetAllDataForDebugging() {
 }
 
 std::string SecurityEventSyncBridgeImpl::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return GetStorageKey(entity_data);
 }
 
 std::string SecurityEventSyncBridgeImpl::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return GetStorageKeyFromSpecifics(entity_data.specifics.security_event());
+}
+
+bool SecurityEventSyncBridgeImpl::IsEntityDataValid(
+    const syncer::EntityData& entity_data) const {
+  // SECURITY_EVENTS is a commit only data type so this method is not called.
+  NOTREACHED();
 }
 
 void SecurityEventSyncBridgeImpl::ApplyDisableSyncChanges(

@@ -37,6 +37,8 @@ class ASH_PUBLIC_EXPORT TabClusterUIItem {
     double boundary_strength = 0.0;
     // The browser window that holds the tab's contents.
     raw_ptr<aura::Window> browser_window = nullptr;
+
+    bool is_loading = false;
   };
 
   TabClusterUIItem();

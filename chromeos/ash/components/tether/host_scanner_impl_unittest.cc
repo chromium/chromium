@@ -31,6 +31,7 @@
 #include "chromeos/ash/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -151,13 +152,7 @@ std::vector<ScannedDeviceInfo> CreateFakeScannedDeviceInfos(
         connection_strength = 101 + i;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        // Set values for |battery_percentage| and |connection_strength| here to
-        // prevent a compiler warning which says that they may be unset at this
-        // point.
-        battery_percentage = 0;
-        connection_strength = 0;
-        break;
+        NOTREACHED();
     }
 
     DeviceStatus device_status = CreateTestDeviceStatus(
@@ -194,7 +189,8 @@ class HostScannerImplTest : public testing::Test {
         std::make_unique<device_sync::FakeDeviceSyncClient>();
     fake_secure_channel_client_ =
         std::make_unique<secure_channel::FakeSecureChannelClient>();
-    session_manager_ = std::make_unique<session_manager::SessionManager>();
+    session_manager_ = std::make_unique<session_manager::SessionManager>(
+        std::make_unique<session_manager::FakeSessionManagerDelegate>());
     fake_tether_host_fetcher_ =
         std::make_unique<FakeTetherHostFetcher>(test_devices_[0]);
     mock_tether_host_response_recorder_ =
@@ -378,7 +374,7 @@ class HostScannerImplTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
 
-  NetworkStateTestHelper helper_{true /* use_default_devices_and_services */};
+  NetworkStateTestHelper helper_{/*use_default_devices_and_services=*/true};
   const multidevice::RemoteDeviceRefList test_devices_;
   const std::vector<ScannedDeviceInfo> test_scanned_device_infos;
 

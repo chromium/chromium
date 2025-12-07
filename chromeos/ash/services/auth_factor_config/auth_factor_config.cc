@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/login/auth/public/auth_factors_configuration.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -125,7 +126,9 @@ void AuthFactorConfig::IsSupportedWithContext(
             cryptohome::AuthFactorType::kRecovery));
         return;
       }
-      case mojom::AuthFactor::kPin: {
+      case mojom::AuthFactor::kPrefBasedPin:
+      case mojom::AuthFactor::kCryptohomePin:
+      case mojom::AuthFactor::kCryptohomePinV2: {
         std::move(callback).Run(
             cryptohome_supported_factors.Has(cryptohome::AuthFactorType::kPin));
         return;
@@ -137,7 +140,7 @@ void AuthFactorConfig::IsSupportedWithContext(
       }
     }
 
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   auto split_callback = base::SplitOnceCallback(std::move(callback));
@@ -163,6 +166,47 @@ void AuthFactorConfig::IsConfigured(const std::string& auth_token,
                                std::move(callback)));
 }
 
+void AuthFactorConfig::CheckConfiguredFactors(
+    const std::string& auth_token,
+    AuthFactorSet factors,
+    base::OnceCallback<void(AuthFactorSet)> callback) {
+  CHECK(!factors.empty());
+  CheckConfiguredFactorsInternal(auth_token, factors, AuthFactorSet(),
+                                 std::move(callback));
+}
+
+void AuthFactorConfig::CheckConfiguredFactorsInternal(
+    const std::string& auth_token,
+    AuthFactorSet factors,
+    AuthFactorSet configured_factors,
+    base::OnceCallback<void(AuthFactorSet)> callback) {
+  if (factors.empty()) {
+    std::move(callback).Run(configured_factors);
+    return;
+  }
+  mojom::AuthFactor factor_under_check = *factors.begin();
+  factors.Remove(factor_under_check);
+  IsConfigured(auth_token, factor_under_check,
+               base::BindOnce(&AuthFactorConfig::CheckConfiguredFactorsOnResult,
+                              weak_factory_.GetWeakPtr(), auth_token, factors,
+                              configured_factors, std::move(callback),
+                              factor_under_check));
+}
+
+void AuthFactorConfig::CheckConfiguredFactorsOnResult(
+    const std::string& auth_token,
+    AuthFactorSet factors,
+    AuthFactorSet configured_factors,
+    base::OnceCallback<void(AuthFactorSet)> callback,
+    mojom::AuthFactor factor_under_check,
+    bool success) {
+  if (success) {
+    configured_factors.Put(factor_under_check);
+  }
+  CheckConfiguredFactorsInternal(auth_token, factors, configured_factors,
+                                 std::move(callback));
+}
+
 void AuthFactorConfig::IsConfiguredWithContext(
     const std::string& auth_token,
     mojom::AuthFactor factor,
@@ -176,20 +220,25 @@ void AuthFactorConfig::IsConfiguredWithContext(
 
   if (context->HasAuthFactorsConfiguration()) {
     const auto& config = context->GetAuthFactorsConfiguration();
-    ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
 
+    const cryptohome::AuthFactor* pin_factor =
+        context->GetAuthFactorsConfiguration().FindFactorByType(
+            cryptohome::AuthFactorType::kPin);
+    bool hasCryptohomePin =
+        pin_factor && pin_factor->GetCommonMetadata().lockout_policy() !=
+                          cryptohome::LockoutPolicy::kTimeLimited;
+    bool hasCryptohomePinV2 =
+        pin_factor && pin_factor->GetCommonMetadata().lockout_policy() ==
+                          cryptohome::LockoutPolicy::kTimeLimited;
+
+    ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
     switch (factor) {
       case mojom::AuthFactor::kRecovery: {
         std::move(callback).Run(
             config.HasConfiguredFactor(cryptohome::AuthFactorType::kRecovery));
         return;
       }
-      case mojom::AuthFactor::kPin: {
-        // We have to consider both cryptohome based PIN and legacy pref PIN.
-        if (config.HasConfiguredFactor(cryptohome::AuthFactorType::kPin)) {
-          std::move(callback).Run(true);
-          return;
-        }
+      case mojom::AuthFactor::kPrefBasedPin: {
         const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
         if (!user) {
           LOG(ERROR) << "No logged in user";
@@ -207,6 +256,14 @@ void AuthFactorConfig::IsConfiguredWithContext(
             !prefs->GetString(prefs::kQuickUnlockPinSalt).empty();
 
         std::move(callback).Run(has_prefs_pin);
+        return;
+      }
+      case mojom::AuthFactor::kCryptohomePin: {
+        std::move(callback).Run(hasCryptohomePin);
+        return;
+      }
+      case mojom::AuthFactor::kCryptohomePinV2: {
+        std::move(callback).Run(hasCryptohomePinV2);
         return;
       }
       case mojom::AuthFactor::kGaiaPassword: {
@@ -233,7 +290,7 @@ void AuthFactorConfig::IsConfiguredWithContext(
       }
     }
 
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   auto split_callback = base::SplitOnceCallback(std::move(callback));
@@ -268,7 +325,9 @@ void AuthFactorConfig::GetManagementType(
       std::move(callback).Run(result);
       return;
     }
-    case mojom::AuthFactor::kPin: {
+    case mojom::AuthFactor::kPrefBasedPin:
+    case mojom::AuthFactor::kCryptohomePin:
+    case mojom::AuthFactor::kCryptohomePinV2: {
       const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
       CHECK(user);
       const PrefService* prefs = quick_unlock_storage_->GetPrefService(*user);
@@ -290,7 +349,7 @@ void AuthFactorConfig::GetManagementType(
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void AuthFactorConfig::IsEditable(const std::string& auth_token,
@@ -342,7 +401,9 @@ void AuthFactorConfig::IsEditableWithContext(
         std::move(callback).Run(false);
         return;
       }
-      case mojom::AuthFactor::kPin: {
+      case mojom::AuthFactor::kPrefBasedPin:
+      case mojom::AuthFactor::kCryptohomePin:
+      case mojom::AuthFactor::kCryptohomePinV2: {
         const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
         CHECK(user);
         const PrefService* prefs = quick_unlock_storage_->GetPrefService(*user);
@@ -385,7 +446,7 @@ void AuthFactorConfig::IsEditableWithContext(
       }
     }
 
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   auto split_callback = base::SplitOnceCallback(std::move(callback));

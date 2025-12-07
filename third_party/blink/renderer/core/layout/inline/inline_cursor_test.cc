@@ -8,6 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node_data.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
@@ -55,8 +56,7 @@ Vector<String> LayoutObjectToDebugStringList(InlineCursor cursor) {
   return list;
 }
 
-class InlineCursorTest : public RenderingTest,
-                         public testing::WithParamInterface<bool> {
+class InlineCursorTest : public RenderingTest {
  protected:
   InlineCursor SetupCursor(const String& html) {
     SetBodyInnerHTML(html);
@@ -122,9 +122,7 @@ class InlineCursorTest : public RenderingTest,
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(InlineCursorTest, InlineCursorTest, testing::Bool());
-
-TEST_P(InlineCursorTest, BidiLevelInlineBoxLTR) {
+TEST_F(InlineCursorTest, BidiLevelInlineBoxLTR) {
   InsertStyleElement("b { display: inline-block; }");
   InlineCursor cursor = SetupCursor(
       "<div id=root dir=ltr>"
@@ -134,7 +132,7 @@ TEST_P(InlineCursorTest, BidiLevelInlineBoxLTR) {
               ElementsAre("#linebox", "abc:0", "#def:0", "#ghi:3", "jkl:0"));
 }
 
-TEST_P(InlineCursorTest, BidiLevelInlineBoxRTL) {
+TEST_F(InlineCursorTest, BidiLevelInlineBoxRTL) {
   InsertStyleElement("b { display: inline-block; }");
   InlineCursor cursor = SetupCursor(
       "<div id=root dir=rtl>"
@@ -144,7 +142,7 @@ TEST_P(InlineCursorTest, BidiLevelInlineBoxRTL) {
               ElementsAre("#linebox", "abc:2", "#def:2", "#ghi:3", "jkl:2"));
 }
 
-TEST_P(InlineCursorTest, BidiLevelSimpleLTR) {
+TEST_F(InlineCursorTest, BidiLevelSimpleLTR) {
   InlineCursor cursor = SetupCursor(
       "<div id=root dir=ltr>"
       "<bdo dir=rtl>GHI<bdo dir=ltr>abc</bdo>DEF</bdo><br>"
@@ -154,7 +152,7 @@ TEST_P(InlineCursorTest, BidiLevelSimpleLTR) {
                                 "#linebox", "123, jkl:0", "MNO:3"));
 }
 
-TEST_P(InlineCursorTest, BidiLevelSimpleRTL) {
+TEST_F(InlineCursorTest, BidiLevelSimpleRTL) {
   InlineCursor cursor = SetupCursor(
       "<div id=root dir=rtl>"
       "<bdo dir=rtl>GHI<bdo dir=ltr>abc</bdo>DEF</bdo><br>"
@@ -165,14 +163,14 @@ TEST_P(InlineCursorTest, BidiLevelSimpleRTL) {
                         "MNO:3", ":1", "jkl:2", ",:1", "123:2"));
 }
 
-TEST_P(InlineCursorTest, GetLayoutBlockFlowWithScopedCursor) {
+TEST_F(InlineCursorTest, GetLayoutBlockFlowWithScopedCursor) {
   InlineCursor line = SetupCursor("<div id=root>line1<br>line2</div>");
   ASSERT_TRUE(line.Current().IsLineBox()) << line;
   InlineCursor cursor = line.CursorForDescendants();
   EXPECT_EQ(line.GetLayoutBlockFlow(), cursor.GetLayoutBlockFlow());
 }
 
-TEST_P(InlineCursorTest, Parent) {
+TEST_F(InlineCursorTest, Parent) {
   InlineCursor cursor = SetupCursor(R"HTML(
     <style>
     span { background: yellow; } /* Ensure not culled. */
@@ -207,7 +205,7 @@ TEST_P(InlineCursorTest, Parent) {
   EXPECT_THAT(ids, testing::ElementsAre("span2", "span1", "root"));
 }
 
-TEST_P(InlineCursorTest, ContainingLine) {
+TEST_F(InlineCursorTest, ContainingLine) {
   // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("a, b { background: gray; }");
   InlineCursor cursor =
@@ -238,7 +236,7 @@ TEST_P(InlineCursorTest, ContainingLine) {
   EXPECT_EQ(line2, cursor);
 }
 
-TEST_P(InlineCursorTest, CulledInlineWithAtomicInline) {
+TEST_F(InlineCursorTest, CulledInlineWithAtomicInline) {
   SetBodyInnerHTML(
       "<div id=root>"
       "<b id=culled>abc<div style=display:inline>ABC<br>XYZ</div>xyz</b>"
@@ -252,7 +250,7 @@ TEST_P(InlineCursorTest, CulledInlineWithAtomicInline) {
 // We should not have float:right fragment, because it isn't in-flow in
 // an inline formatting context.
 // For https://crbug.com/1026022
-TEST_P(InlineCursorTest, CulledInlineWithFloat) {
+TEST_F(InlineCursorTest, CulledInlineWithFloat) {
   SetBodyInnerHTML(
       "<div id=root>"
       "<b id=culled>abc<div style=float:right></div>xyz</b>"
@@ -262,7 +260,7 @@ TEST_P(InlineCursorTest, CulledInlineWithFloat) {
   EXPECT_THAT(LayoutObjectToDebugStringList(cursor), ElementsAre("abc", "xyz"));
 }
 
-TEST_P(InlineCursorTest, CulledInlineWithOOF) {
+TEST_F(InlineCursorTest, CulledInlineWithOOF) {
   SetBodyInnerHTML(R"HTML(
     <div id=root>
       <b id=culled>abc<span style="position:absolute"></span>xyz</b>
@@ -273,7 +271,7 @@ TEST_P(InlineCursorTest, CulledInlineWithOOF) {
   EXPECT_THAT(LayoutObjectToDebugStringList(cursor), ElementsAre("abc", "xyz"));
 }
 
-TEST_P(InlineCursorTest, CulledInlineNested) {
+TEST_F(InlineCursorTest, CulledInlineNested) {
   SetBodyInnerHTML(R"HTML(
     <div id=root>
       <b id=culled><span>abc</span> xyz</b>
@@ -284,7 +282,7 @@ TEST_P(InlineCursorTest, CulledInlineNested) {
   EXPECT_THAT(LayoutObjectToDebugStringList(cursor), ElementsAre("abc", "xyz"));
 }
 
-TEST_P(InlineCursorTest, CulledInlineBlockChild) {
+TEST_F(InlineCursorTest, CulledInlineBlockChild) {
   SetBodyInnerHTML(R"HTML(
     <div id=root>
       <b id=culled>
@@ -299,7 +297,7 @@ TEST_P(InlineCursorTest, CulledInlineBlockChild) {
               ElementsAre("#culled", "#culled", "#culled"));
 }
 
-TEST_P(InlineCursorTest, CulledInlineWithRoot) {
+TEST_F(InlineCursorTest, CulledInlineWithRoot) {
   InlineCursor cursor = SetupCursor(R"HTML(
     <div id="root"><a id="a"><b>abc</b><br><i>xyz</i></a></div>
   )HTML");
@@ -309,7 +307,7 @@ TEST_P(InlineCursorTest, CulledInlineWithRoot) {
               ElementsAre("abc", "", "xyz"));
 }
 
-TEST_P(InlineCursorTest, CulledInlineWithoutRoot) {
+TEST_F(InlineCursorTest, CulledInlineWithoutRoot) {
   SetBodyInnerHTML(R"HTML(
     <div id="root"><a id="a"><b>abc</b><br><i>xyz</i></a></div>
   )HTML");
@@ -320,7 +318,7 @@ TEST_P(InlineCursorTest, CulledInlineWithoutRoot) {
               ElementsAre("abc", "", "xyz"));
 }
 
-TEST_P(InlineCursorTest, CursorForMovingAcrossFragmentainer) {
+TEST_F(InlineCursorTest, CursorForMovingAcrossFragmentainer) {
   LoadAhem();
   InsertStyleElement(
       "div { font: 10px/15px Ahem; column-count: 2; width: 20ch; }");
@@ -346,7 +344,7 @@ TEST_P(InlineCursorTest, CursorForMovingAcrossFragmentainer) {
   EXPECT_EQ(cursor2.CurrentItem(), cursor3.CurrentItem());
 }
 
-TEST_P(InlineCursorTest, FirstChild) {
+TEST_F(InlineCursorTest, FirstChild) {
   // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("a, b { background: gray; }");
   InlineCursor cursor =
@@ -356,7 +354,7 @@ TEST_P(InlineCursorTest, FirstChild) {
   EXPECT_FALSE(cursor.TryMoveToFirstChild());
 }
 
-TEST_P(InlineCursorTest, FirstChild2) {
+TEST_F(InlineCursorTest, FirstChild2) {
   // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("a, b { background: gray; }");
   InlineCursor cursor = SetupCursor(
@@ -369,7 +367,7 @@ TEST_P(InlineCursorTest, FirstChild2) {
   EXPECT_FALSE(cursor.TryMoveToFirstChild());
 }
 
-TEST_P(InlineCursorTest, FirstLastLogicalLeafInSimpleText) {
+TEST_F(InlineCursorTest, FirstLastLogicalLeafInSimpleText) {
   // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
   InlineCursor cursor =
@@ -384,7 +382,7 @@ TEST_P(InlineCursorTest, FirstLastLogicalLeafInSimpleText) {
   EXPECT_EQ("last", ToDebugString(last_logical_leaf));
 }
 
-TEST_P(InlineCursorTest, FirstLastLogicalLeafInRtlText) {
+TEST_F(InlineCursorTest, FirstLastLogicalLeafInRtlText) {
   // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
   InlineCursor cursor = SetupCursor(
@@ -401,7 +399,7 @@ TEST_P(InlineCursorTest, FirstLastLogicalLeafInRtlText) {
   EXPECT_EQ("last", ToDebugString(last_logical_leaf));
 }
 
-TEST_P(InlineCursorTest, FirstLastLogicalLeafInTextAsDeepDescendants) {
+TEST_F(InlineCursorTest, FirstLastLogicalLeafInTextAsDeepDescendants) {
   // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
   InlineCursor cursor = SetupCursor(
@@ -420,50 +418,82 @@ TEST_P(InlineCursorTest, FirstLastLogicalLeafInTextAsDeepDescendants) {
   EXPECT_EQ("last", ToDebugString(last_logical_leaf));
 }
 
-TEST_P(InlineCursorTest, MoveToEndOfLineWithNoCharsLtr) {
+TEST_F(InlineCursorTest, MoveToEndOfLineWithNoCharsLtr) {
   SetBodyContent(
       "<textarea rows=\"3\" cols=\"50\">foo&#10;&#10;bar</textarea>");
-  const auto& textarea =
-      ToTextControl(*GetDocument().QuerySelector(AtomicString("textarea")));
+  const auto& textarea = ToTextControl(*QuerySelector("textarea"));
   const LayoutObject* textarea_layout =
       textarea.InnerEditorElement()->GetLayoutObject();
   const LayoutBlockFlow& block_flow = *To<LayoutBlockFlow>(textarea_layout);
 
-  InlineCursor move_to_end_of_line(block_flow);
-  // Preparing the InlineCursor to start from beginning
-  // of second line(Empty Line).
-  move_to_end_of_line.MoveToNextLine();
+  // Preparing the InlineCursor to start from beginning of the second line
+  // (Empty Line).
+  const LayoutBlockFlow* second_anonymous =
+      RuntimeEnabledFeatures::TextareaMultipleIfcsEnabled()
+          ? To<LayoutBlockFlow>(block_flow.FirstChild()->NextSibling())
+          : nullptr;
+  InlineCursor move_to_end_of_line(second_anonymous ? *second_anonymous
+                                                    : block_flow);
+  if (!second_anonymous) {
+    // Preparing the InlineCursor to start from beginning
+    // of second line(Empty Line).
+    move_to_end_of_line.MoveToNextLine();
+  }
   InlineCursor next_line = move_to_end_of_line.CursorForDescendants();
   // Verify if it has been successfully placed at the correct position.
-  EXPECT_EQ(4u, next_line.Current().TextStartOffset());
+  if (!second_anonymous) {
+    EXPECT_EQ(4u, next_line.Current().TextStartOffset());
+  } else {
+    EXPECT_EQ(0u, next_line.Current().TextStartOffset());
+  }
   const PositionWithAffinity end_position =
       move_to_end_of_line.PositionForEndOfLine();
-  EXPECT_EQ(4, end_position.GetPosition().OffsetInContainerNode());
+  if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()) {
+    EXPECT_TRUE(end_position.AnchorNode()->HasTagName(html_names::kBrTag));
+  } else {
+    EXPECT_EQ(4, end_position.GetPosition().OffsetInContainerNode());
+  }
 }
 
-TEST_P(InlineCursorTest, MoveToEndOfLineWithNoCharsRtl) {
+TEST_F(InlineCursorTest, MoveToEndOfLineWithNoCharsRtl) {
   SetBodyContent(
       "<textarea rows=\"3\" cols=\"50\" "
       "dir=\"rtl\">foo&#10;&#10;bar</textarea>");
-  const auto& textarea =
-      ToTextControl(*GetDocument().QuerySelector(AtomicString("textarea")));
+  const auto& textarea = ToTextControl(*QuerySelector("textarea"));
   const LayoutObject* textarea_layout =
       textarea.InnerEditorElement()->GetLayoutObject();
   const LayoutBlockFlow& block_flow = *To<LayoutBlockFlow>(textarea_layout);
 
-  InlineCursor move_to_end_of_line(block_flow);
-  // Preparing the InlineCursor to start from beginning
-  // of second line(Empty Line).
-  move_to_end_of_line.MoveToNextLine();
+  // Preparing the InlineCursor to start from beginning of the second line
+  // (Empty Line).
+  const LayoutBlockFlow* second_anonymous =
+      RuntimeEnabledFeatures::TextareaMultipleIfcsEnabled()
+          ? To<LayoutBlockFlow>(block_flow.FirstChild()->NextSibling())
+          : nullptr;
+  InlineCursor move_to_end_of_line(second_anonymous ? *second_anonymous
+                                                    : block_flow);
+  if (!second_anonymous) {
+    // Preparing the InlineCursor to start from beginning
+    // of second line(Empty Line).
+    move_to_end_of_line.MoveToNextLine();
+  }
   InlineCursor next_line = move_to_end_of_line.CursorForDescendants();
   // Verify if it has been successfully placed at the correct position.
-  EXPECT_EQ(4u, next_line.Current().TextStartOffset());
+  if (!second_anonymous) {
+    EXPECT_EQ(4u, next_line.Current().TextStartOffset());
+  } else {
+    EXPECT_EQ(0u, next_line.Current().TextStartOffset());
+  }
   const PositionWithAffinity end_position =
       move_to_end_of_line.PositionForEndOfLine();
-  EXPECT_EQ(4, end_position.GetPosition().OffsetInContainerNode());
+  if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()) {
+    EXPECT_TRUE(end_position.AnchorNode()->HasTagName(html_names::kBrTag));
+  } else {
+    EXPECT_EQ(4, end_position.GetPosition().OffsetInContainerNode());
+  }
 }
 
-TEST_P(InlineCursorTest, FirstLastLogicalLeafWithInlineBlock) {
+TEST_F(InlineCursorTest, FirstLastLogicalLeafWithInlineBlock) {
   InsertStyleElement("b { display: inline-block; }");
   InlineCursor cursor = SetupCursor(
       "<div id=root>"
@@ -481,7 +511,7 @@ TEST_P(InlineCursorTest, FirstLastLogicalLeafWithInlineBlock) {
       << "stop at inline-block";
 }
 
-TEST_P(InlineCursorTest, FirstLastLogicalLeafWithImages) {
+TEST_F(InlineCursorTest, FirstLastLogicalLeafWithImages) {
   InlineCursor cursor =
       SetupCursor("<div id=root><img id=first>middle<img id=last></div>");
 
@@ -495,7 +525,7 @@ TEST_P(InlineCursorTest, FirstLastLogicalLeafWithImages) {
 }
 
 // http://crbug.com/1295087
-TEST_P(InlineCursorTest, FirstNonPseudoLeafWithBlockImage) {
+TEST_F(InlineCursorTest, FirstNonPseudoLeafWithBlockImage) {
   InsertStyleElement("img { display: block; }");
   InlineCursor cursor = SetupCursor("<p id=root><b><img id=target></b></p>");
 
@@ -515,7 +545,7 @@ TEST_P(InlineCursorTest, FirstNonPseudoLeafWithBlockImage) {
   EXPECT_EQ(&target, cursor.Current()->BlockInInline());
 }
 
-TEST_P(InlineCursorTest, IsEmptyLineBox) {
+TEST_F(InlineCursorTest, IsEmptyLineBox) {
   InsertStyleElement("b { margin-bottom: 1px; }");
   InlineCursor cursor = SetupCursor("<div id=root>abc<br><b></b></div>");
 
@@ -526,7 +556,7 @@ TEST_P(InlineCursorTest, IsEmptyLineBox) {
       << "<b></b> with margin produces empty line box.";
 }
 
-TEST_P(InlineCursorTest, LastChild) {
+TEST_F(InlineCursorTest, LastChild) {
   // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("a, b { background: gray; }");
   InlineCursor cursor =
@@ -536,7 +566,7 @@ TEST_P(InlineCursorTest, LastChild) {
   EXPECT_FALSE(cursor.TryMoveToLastChild());
 }
 
-TEST_P(InlineCursorTest, LastChild2) {
+TEST_F(InlineCursorTest, LastChild2) {
   // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("a, b { background: gray; }");
   InlineCursor cursor = SetupCursor(
@@ -549,7 +579,7 @@ TEST_P(InlineCursorTest, LastChild2) {
   EXPECT_FALSE(cursor.TryMoveToLastChild());
 }
 
-TEST_P(InlineCursorTest, Next) {
+TEST_F(InlineCursorTest, Next) {
   SetBodyInnerHTML(R"HTML(
     <style>
     span { background: gray; }
@@ -575,7 +605,7 @@ TEST_P(InlineCursorTest, Next) {
                                 "#span2", "text3", "text4", "text5"));
 }
 
-TEST_P(InlineCursorTest, NextIncludingFragmentainer) {
+TEST_F(InlineCursorTest, NextIncludingFragmentainer) {
   // TDOO(yosin): Remove style for <b> once FragmentItem don't do culled
   // inline.
   LoadAhem();
@@ -596,7 +626,7 @@ TEST_P(InlineCursorTest, NextIncludingFragmentainer) {
                           "LayoutInline B", "ghi", "", "#linebox", "jkl"));
 }
 
-TEST_P(InlineCursorTest, NextWithEllipsis) {
+TEST_F(InlineCursorTest, NextWithEllipsis) {
   LoadAhem();
   InsertStyleElement(
       "#root {"
@@ -611,7 +641,7 @@ TEST_P(InlineCursorTest, NextWithEllipsis) {
   EXPECT_THAT(list, ElementsAre("#linebox", "abcdefghi", "abcd", u"#'\u2026'"));
 }
 
-TEST_P(InlineCursorTest, NextWithEllipsisInlineBoxOnly) {
+TEST_F(InlineCursorTest, NextWithEllipsisInlineBoxOnly) {
   LoadAhem();
   InsertStyleElement(
       "#root {"
@@ -626,7 +656,7 @@ TEST_P(InlineCursorTest, NextWithEllipsisInlineBoxOnly) {
   EXPECT_THAT(list, ElementsAre("#linebox", "LayoutInline SPAN"));
 }
 
-TEST_P(InlineCursorTest, NextWithListItem) {
+TEST_F(InlineCursorTest, NextWithListItem) {
   InlineCursor cursor = SetupCursor("<ul><li id=root>abc</li></ul>");
   Vector<String> list = ToDebugStringList(cursor);
   EXPECT_THAT(
@@ -636,7 +666,7 @@ TEST_P(InlineCursorTest, NextWithListItem) {
   EXPECT_EQ(GetLayoutObjectByElementId("root"), cursor.GetLayoutBlockFlow());
 }
 
-TEST_P(InlineCursorTest, NextWithSoftHyphens) {
+TEST_F(InlineCursorTest, NextWithSoftHyphens) {
   // Use "Ahem" font to get U+2010 as soft hyphen instead of U+002D
   LoadAhem();
   InsertStyleElement("#root {width: 3ch; font: 10px/10px Ahem;}");
@@ -646,7 +676,7 @@ TEST_P(InlineCursorTest, NextWithSoftHyphens) {
                                 "#linebox", "def"));
 }
 
-TEST_P(InlineCursorTest, NextInlineLeaf) {
+TEST_F(InlineCursorTest, NextInlineLeaf) {
   // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
   InlineCursor cursor = SetupCursor("<div id=root>abc<b>DEF</b><br>xyz</div>");
@@ -659,7 +689,7 @@ TEST_P(InlineCursorTest, NextInlineLeaf) {
 }
 
 // Note: This is for AccessibilityLayoutTest.NextOnLine.
-TEST_P(InlineCursorTest, NextInlineLeafOnLineFromLayoutInline) {
+TEST_F(InlineCursorTest, NextInlineLeafOnLineFromLayoutInline) {
   // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
   InlineCursor cursor = SetupCursor(
@@ -677,7 +707,7 @@ TEST_P(InlineCursorTest, NextInlineLeafOnLineFromLayoutInline) {
       << "we don't have 'abc' and items in second line.";
 }
 
-TEST_P(InlineCursorTest, NextInlineLeafOnLineFromNestedLayoutInline) {
+TEST_F(InlineCursorTest, NextInlineLeafOnLineFromNestedLayoutInline) {
   // Never return a descendant for AXLayoutObject::NextOnLine().
   // Instead, if NextOnLine() is called on a container, return the first
   // content from a sibling subtree.
@@ -699,7 +729,7 @@ TEST_P(InlineCursorTest, NextInlineLeafOnLineFromNestedLayoutInline) {
       << "next on line doesn't return descendant.";
 }
 
-TEST_P(InlineCursorTest, NextInlineLeafOnLineFromLayoutText) {
+TEST_F(InlineCursorTest, NextInlineLeafOnLineFromLayoutText) {
   // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
   InlineCursor cursor = SetupCursor(
@@ -717,7 +747,7 @@ TEST_P(InlineCursorTest, NextInlineLeafOnLineFromLayoutText) {
       << "We don't have items from second line.";
 }
 
-TEST_P(InlineCursorTest, NextInlineLeafWithEllipsis) {
+TEST_F(InlineCursorTest, NextInlineLeafWithEllipsis) {
   LoadAhem();
   InsertStyleElement(
       "#root {"
@@ -737,7 +767,7 @@ TEST_P(InlineCursorTest, NextInlineLeafWithEllipsis) {
   EXPECT_THAT(list, ElementsAre("#linebox", "abcd"));
 }
 
-TEST_P(InlineCursorTest, NextInlineLeafWithSoftHyphens) {
+TEST_F(InlineCursorTest, NextInlineLeafWithSoftHyphens) {
   InlineCursor cursor =
       SetupCursor("<div id=root style='width:3ch'>abc&shy;def</div>");
   Vector<String> list;
@@ -749,7 +779,7 @@ TEST_P(InlineCursorTest, NextInlineLeafWithSoftHyphens) {
   EXPECT_THAT(list, ElementsAre("#linebox", u"abc\u00AD", "def"));
 }
 
-TEST_P(InlineCursorTest, NextInlineLeafIgnoringLineBreak) {
+TEST_F(InlineCursorTest, NextInlineLeafIgnoringLineBreak) {
   // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
   InlineCursor cursor = SetupCursor("<div id=root>abc<b>DEF</b><br>xyz</div>");
@@ -761,7 +791,7 @@ TEST_P(InlineCursorTest, NextInlineLeafIgnoringLineBreak) {
   EXPECT_THAT(list, ElementsAre("#linebox", "abc", "DEF", "xyz"));
 }
 
-TEST_P(InlineCursorTest, NextLine) {
+TEST_F(InlineCursorTest, NextLine) {
   InlineCursor cursor = SetupCursor("<div id=root>abc<br>xyz</div>");
   InlineCursor line1(cursor);
   while (line1 && !line1.Current().IsLineBox())
@@ -782,13 +812,13 @@ TEST_P(InlineCursorTest, NextLine) {
   EXPECT_TRUE(should_be_null.IsNull());
 }
 
-TEST_P(InlineCursorTest, NextWithImage) {
+TEST_F(InlineCursorTest, NextWithImage) {
   InlineCursor cursor = SetupCursor("<div id=root>abc<img id=img>xyz</div>");
   Vector<String> list = ToDebugStringList(cursor);
   EXPECT_THAT(list, ElementsAre("#linebox", "abc", "#img", "xyz"));
 }
 
-TEST_P(InlineCursorTest, NextWithInlineBox) {
+TEST_F(InlineCursorTest, NextWithInlineBox) {
   InsertStyleElement("b { display: inline-block; }");
   InlineCursor cursor =
       SetupCursor("<div id=root>abc<b id=ib>def</b>xyz</div>");
@@ -800,7 +830,7 @@ TEST_P(InlineCursorTest, NextWithInlineBox) {
   EXPECT_EQ(GetLayoutObjectByElementId("ib"), cursor2.GetLayoutBlockFlow());
 }
 
-TEST_P(InlineCursorTest, NextForSameLayoutObject) {
+TEST_F(InlineCursorTest, NextForSameLayoutObject) {
   InlineCursor cursor = SetupCursor("<pre id=root>abc\ndef\nghi</pre>");
   cursor.MoveTo(*GetLayoutObjectByElementId("root")->SlowFirstChild());
   EXPECT_THAT(LayoutObjectToDebugStringList(cursor),
@@ -808,7 +838,7 @@ TEST_P(InlineCursorTest, NextForSameLayoutObject) {
 }
 
 // Test |NextForSameLayoutObject| with limit range set.
-TEST_P(InlineCursorTest, NextForSameLayoutObjectWithRange) {
+TEST_F(InlineCursorTest, NextForSameLayoutObjectWithRange) {
   // In this snippet, `<span>` wraps to 3 lines, and that there are 3 fragments
   // for `<span>`.
   SetBodyInnerHTML(R"HTML(
@@ -843,7 +873,7 @@ TEST_P(InlineCursorTest, NextForSameLayoutObjectWithRange) {
   EXPECT_THAT(LayoutObjectToDebugStringList(line2), ElementsAre("#span1"));
 }
 
-TEST_P(InlineCursorTest, Sibling) {
+TEST_F(InlineCursorTest, Sibling) {
   // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("a, b { background: gray; }");
   InlineCursor cursor =
@@ -854,7 +884,7 @@ TEST_P(InlineCursorTest, Sibling) {
   EXPECT_THAT(list, ElementsAre("abc", "LayoutInline A", "xyz"));
 }
 
-TEST_P(InlineCursorTest, Sibling2) {
+TEST_F(InlineCursorTest, Sibling2) {
   // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("a, b { background: gray; }");
   InlineCursor cursor =
@@ -866,7 +896,7 @@ TEST_P(InlineCursorTest, Sibling2) {
   EXPECT_THAT(list, ElementsAre("abc", "LayoutInline B", "xyz"));
 }
 
-TEST_P(InlineCursorTest, NextSkippingChildren) {
+TEST_F(InlineCursorTest, NextSkippingChildren) {
   // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("span { background: gray; }");
   SetBodyInnerHTML(R"HTML(
@@ -899,7 +929,7 @@ TEST_P(InlineCursorTest, NextSkippingChildren) {
   EXPECT_THAT(list, ElementsAre("#span2", "text4", "text5"));
 }
 
-TEST_P(InlineCursorTest, EmptyOutOfFlow) {
+TEST_F(InlineCursorTest, EmptyOutOfFlow) {
   SetBodyInnerHTML(R"HTML(
     <div id=root>
       <span style="position: absolute"></span>
@@ -913,7 +943,7 @@ TEST_P(InlineCursorTest, EmptyOutOfFlow) {
   EXPECT_THAT(list, ElementsAre());
 }
 
-TEST_P(InlineCursorTest, PositionForPointInChildHorizontalLTR) {
+TEST_F(InlineCursorTest, PositionForPointInChildHorizontalLTR) {
   LoadAhem();
   InsertStyleElement(
       "p {"
@@ -949,7 +979,7 @@ TEST_P(InlineCursorTest, PositionForPointInChildHorizontalLTR) {
             cursor.PositionForPointInChild(left_top + PhysicalOffset(25, 0)));
 }
 
-TEST_P(InlineCursorTest, PositionForPointInChildHorizontalRTL) {
+TEST_F(InlineCursorTest, PositionForPointInChildHorizontalRTL) {
   LoadAhem();
   InsertStyleElement(
       "p {"
@@ -986,7 +1016,7 @@ TEST_P(InlineCursorTest, PositionForPointInChildHorizontalRTL) {
             cursor.PositionForPointInChild(left_top + PhysicalOffset(25, 0)));
 }
 
-TEST_P(InlineCursorTest, PositionForPointInChildVerticalLTR) {
+TEST_F(InlineCursorTest, PositionForPointInChildVerticalLTR) {
   LoadAhem();
   InsertStyleElement(
       "p {"
@@ -1022,7 +1052,7 @@ TEST_P(InlineCursorTest, PositionForPointInChildVerticalLTR) {
             cursor.PositionForPointInChild(left_top + PhysicalOffset(0, 25)));
 }
 
-TEST_P(InlineCursorTest, PositionForPointInChildVerticalRTL) {
+TEST_F(InlineCursorTest, PositionForPointInChildVerticalRTL) {
   LoadAhem();
   InsertStyleElement(
       "p {"
@@ -1060,7 +1090,7 @@ TEST_P(InlineCursorTest, PositionForPointInChildVerticalRTL) {
 }
 
 // For http://crbug.com/1096110
-TEST_P(InlineCursorTest, PositionForPointInChildBlockChildren) {
+TEST_F(InlineCursorTest, PositionForPointInChildBlockChildren) {
   InsertStyleElement("b { display: inline-block; }");
   // Note: <b>.ChildrenInline() == false
   InlineCursor cursor =
@@ -1071,7 +1101,7 @@ TEST_P(InlineCursorTest, PositionForPointInChildBlockChildren) {
             cursor.PositionForPointInChild(PhysicalOffset()));
 }
 
-TEST_P(InlineCursorTest, Previous) {
+TEST_F(InlineCursorTest, Previous) {
   // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
   InlineCursor cursor = SetupCursor("<div id=root>abc<b>DEF</b><br>xyz</div>");
@@ -1085,7 +1115,7 @@ TEST_P(InlineCursorTest, Previous) {
                                 "abc", "#linebox"));
 }
 
-TEST_P(InlineCursorTest, PreviousIncludingFragmentainer) {
+TEST_F(InlineCursorTest, PreviousIncludingFragmentainer) {
   // TDOO(yosin): Remove style for <b> once FragmentItem don't do culled
   // inline.
   LoadAhem();
@@ -1106,7 +1136,7 @@ TEST_P(InlineCursorTest, PreviousIncludingFragmentainer) {
                                 "#linebox"));
 }
 
-TEST_P(InlineCursorTest, PreviousInlineLeaf) {
+TEST_F(InlineCursorTest, PreviousInlineLeaf) {
   // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
   InlineCursor cursor = SetupCursor("<div id=root>abc<b>DEF</b><br>xyz</div>");
@@ -1119,7 +1149,7 @@ TEST_P(InlineCursorTest, PreviousInlineLeaf) {
   EXPECT_THAT(list, ElementsAre("xyz", "", "DEF", "abc"));
 }
 
-TEST_P(InlineCursorTest, PreviousInlineLeafIgnoringLineBreak) {
+TEST_F(InlineCursorTest, PreviousInlineLeafIgnoringLineBreak) {
   // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
   InlineCursor cursor = SetupCursor("<div id=root>abc<b>DEF</b><br>xyz</div>");
@@ -1132,7 +1162,7 @@ TEST_P(InlineCursorTest, PreviousInlineLeafIgnoringLineBreak) {
   EXPECT_THAT(list, ElementsAre("xyz", "DEF", "abc"));
 }
 
-TEST_P(InlineCursorTest, PreviousInlineLeafOnLineFromLayoutInline) {
+TEST_F(InlineCursorTest, PreviousInlineLeafOnLineFromLayoutInline) {
   // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
   InlineCursor cursor = SetupCursor(
@@ -1150,7 +1180,7 @@ TEST_P(InlineCursorTest, PreviousInlineLeafOnLineFromLayoutInline) {
       << "We don't have 'DEF' and items in first line.";
 }
 
-TEST_P(InlineCursorTest, PreviousInlineLeafOnLineFromNestedLayoutInline) {
+TEST_F(InlineCursorTest, PreviousInlineLeafOnLineFromNestedLayoutInline) {
   // Never return a descendant for AXLayoutObject::PreviousOnLine().
   // Instead, if PreviousOnLine() is called on a container, return a previpus
   // item from the previous siblings subtree.
@@ -1172,7 +1202,7 @@ TEST_P(InlineCursorTest, PreviousInlineLeafOnLineFromNestedLayoutInline) {
       << "previous on line doesn't return descendant.";
 }
 
-TEST_P(InlineCursorTest, PreviousInlineLeafOnLineFromLayoutText) {
+TEST_F(InlineCursorTest, PreviousInlineLeafOnLineFromLayoutText) {
   // TDOO(yosin): Remove <style> once FragmentItem don't do culled inline.
   InsertStyleElement("b { background: gray; }");
   InlineCursor cursor = SetupCursor(
@@ -1190,7 +1220,7 @@ TEST_P(InlineCursorTest, PreviousInlineLeafOnLineFromLayoutText) {
       << "We don't have items in first line.";
 }
 
-TEST_P(InlineCursorTest, PreviousLine) {
+TEST_F(InlineCursorTest, PreviousLine) {
   InlineCursor cursor = SetupCursor("<div id=root>abc<br>xyz</div>");
   InlineCursor line1(cursor);
   while (line1 && !line1.Current().IsLineBox())
@@ -1211,7 +1241,7 @@ TEST_P(InlineCursorTest, PreviousLine) {
   EXPECT_EQ(line1, should_be_line1);
 }
 
-TEST_P(InlineCursorTest, CursorForDescendants) {
+TEST_F(InlineCursorTest, CursorForDescendants) {
   SetBodyInnerHTML(R"HTML(
     <style>
     span { background: yellow; }
@@ -1253,7 +1283,7 @@ TEST_P(InlineCursorTest, CursorForDescendants) {
               ElementsAre("text3"));
 }
 
-TEST_P(InlineCursorTest, MoveToVisualFirstOrLast) {
+TEST_F(InlineCursorTest, MoveToVisualFirstOrLast) {
   SetBodyInnerHTML(R"HTML(
     <div id=root dir="rtl">
       here is

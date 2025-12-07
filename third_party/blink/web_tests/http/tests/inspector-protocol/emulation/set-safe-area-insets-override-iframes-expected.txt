@@ -1,0 +1,12 @@
+Tests that the safe-area-(max-)inset-* environment variables can be overridden in OOPIFs.
+iframe loaded, overriding insets
+Environment:
+safe-area-inset-top: 1
+safe-area-max-inset-top: 2
+safe-area-inset-left: 3
+safe-area-max-inset-left: 4
+safe-area-inset-bottom: 5
+safe-area-max-inset-bottom: 6
+safe-area-inset-right: 7
+safe-area-max-inset-right: 8
+

@@ -11,9 +11,12 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/extensions/install_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "extensions/browser/install_observer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace content {
 class BrowserContext;
@@ -46,11 +49,11 @@ class ExtensionGarbageCollector : public KeyedService, public InstallObserver {
 
   // InstallObserver:
   void OnBeginCrxInstall(content::BrowserContext* context,
-                         const CrxInstaller& installer,
                          const ExtensionId& extension_id) override;
   void OnFinishCrxInstall(content::BrowserContext* context,
-                          const CrxInstaller& installer,
+                          const base::FilePath& source_file,
                           const ExtensionId& extension_id,
+                          const Extension* extension,
                           bool success) override;
 
  protected:

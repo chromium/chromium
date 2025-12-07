@@ -70,12 +70,12 @@ def test_no_such_shadow_root_with_shadow_root_from_other_frame(
     session, get_test_page
 ):
     session.url = get_test_page(as_frame=True)
-    session.switch_frame(0)
+    session.switch_to_frame(0)
 
     host = session.find.css("custom-element", all=False)
     shadow_root = host.shadow_root
 
-    session.switch_frame("parent")
+    session.switch_to_parent_frame()
 
     response = find_elements(session, shadow_root.id, "css selector", "div")
     assert_error(response, "no such shadow root")
@@ -87,7 +87,7 @@ def test_detached_shadow_root(session, get_test_page, as_frame):
 
     if as_frame:
         frame = session.find.css("iframe", all=False)
-        session.switch_frame(frame)
+        session.switch_to_frame(frame)
 
     host = session.find.css("custom-element", all=False)
     shadow_root = host.shadow_root

@@ -12,6 +12,8 @@ import android.util.SparseArray;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,9 +24,10 @@ import java.util.Map;
  * AndroidPermissionDelegate that implements much of the logic around requesting permissions.
  * Subclasses need to implement only the basic permissions checking and requesting methods.
  */
+@NullMarked
 public abstract class AndroidPermissionDelegateWithRequester implements AndroidPermissionDelegate {
-    private Handler mHandler;
-    private SparseArray<PermissionRequestInfo> mOutstandingPermissionRequests;
+    private final Handler mHandler;
+    private final SparseArray<PermissionRequestInfo> mOutstandingPermissionRequests;
     private int mNextRequestCode;
 
     // Constants used for permission request code bounding.
@@ -33,7 +36,7 @@ public abstract class AndroidPermissionDelegateWithRequester implements AndroidP
 
     public AndroidPermissionDelegateWithRequester() {
         mHandler = new Handler();
-        mOutstandingPermissionRequests = new SparseArray<PermissionRequestInfo>();
+        mOutstandingPermissionRequests = new SparseArray<>();
     }
 
     @Override
@@ -137,15 +140,17 @@ public abstract class AndroidPermissionDelegateWithRequester implements AndroidP
     /**
      * Returns if an information about permission denial should be stored. Denial should not be
      * stored iff:
+     *
      * <ul>
-     *   <li> Android version >= Android.R
-     *   <li> The information about initial @see Activity.shouldShowRequestPermissionRationale is
-     *        present and the value is false
-     *   <li> The current value of @see Activity.shouldShowRequestPermissionRationale is false as
-     *        well
+     *   <li>Android version >= Android.R
+     *   <li>The information about initial @see Activity.shouldShowRequestPermissionRationale is
+     *       present and the value is false
+     *   <li>The current value of @see Activity.shouldShowRequestPermissionRationale is false as
+     *       well
      * </ul>
      */
-    private boolean shouldPersistDenial(PermissionRequestInfo requestInfo, String permission) {
+    private boolean shouldPersistDenial(
+            @Nullable PermissionRequestInfo requestInfo, String permission) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return true;
 
         boolean initialShowRationaleState = false;

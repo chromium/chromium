@@ -1,0 +1,16 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("translate") {
+  sources = [ "chrome_translate_client.h" ]
+  public_deps = [
+    "//base",
+    "//components/language/core/browser",
+    "//components/language_detection/content/browser",
+    "//components/translate/content/browser",
+    "//components/translate/core/browser",
+    "//components/translate/core/common",
+    "//content/public/browser",
+  ]
+}

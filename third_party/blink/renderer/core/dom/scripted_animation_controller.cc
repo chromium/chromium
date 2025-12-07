@@ -45,14 +45,14 @@ namespace blink {
 bool ScriptedAnimationController::InsertToPerFrameEventsMap(
     const Event* event) {
   HashSet<const StringImpl*>& set =
-      per_frame_events_.insert(event->target(), HashSet<const StringImpl*>())
+      per_frame_events_.insert(event->RawTarget(), HashSet<const StringImpl*>())
           .stored_value->value;
   return set.insert(event->type().Impl()).is_new_entry;
 }
 
 void ScriptedAnimationController::EraseFromPerFrameEventsMap(
     const Event* event) {
-  EventTarget* target = event->target();
+  EventTarget* target = event->RawTarget();
   PerFrameEventsMap::iterator it = per_frame_events_.find(target);
   if (it != per_frame_events_.end()) {
     HashSet<const StringImpl*>& set = it->value;
@@ -84,7 +84,7 @@ void ScriptedAnimationController::ContextLifecycleStateChanged(
 }
 
 void ScriptedAnimationController::DispatchEventsAndCallbacksForPrinting() {
-  DispatchEvents(WTF::BindRepeating([](Event* event) {
+  DispatchEvents(BindRepeating([](Event* event) {
     return event->InterfaceName() ==
            event_interface_names::kMediaQueryListEvent;
   }));
@@ -146,7 +146,7 @@ bool ScriptedAnimationController::DispatchEvents(DispatchFilter filter) {
 
   for (const auto& event : events) {
     did_dispatch = true;
-    EventTarget* event_target = event->target();
+    EventTarget* event_target = event->RawTarget();
     // FIXME: we should figure out how to make dispatchEvent properly virtual to
     // avoid special casting window.
     // FIXME: We should not fire events for nodes that are no longer in the
@@ -211,8 +211,8 @@ void ScriptedAnimationController::EnqueueTask(base::OnceClosure task) {
 }
 
 void ScriptedAnimationController::EnqueueEvent(Event* event) {
-  event->async_task_context()->Schedule(event->target()->GetExecutionContext(),
-                                        event->type());
+  event->async_task_context()->Schedule(
+      event->RawTarget()->GetExecutionContext(), event->type());
   event_queue_.push_back(event);
   ScheduleAnimationIfNeeded();
 }

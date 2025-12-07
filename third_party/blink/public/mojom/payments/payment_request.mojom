@@ -7,7 +7,7 @@ module payments.mojom;
 
 import "components/payments/mojom/payment_request_data.mojom";
 import "mojo/public/mojom/base/time.mojom";
-import "third_party/blink/public/mojom/payments/payment_credential.mojom";
+import "third_party/blink/public/mojom/payments/secure_payment_confirmation_service.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 import "third_party/blink/public/mojom/webauthn/authenticator.mojom";
@@ -166,21 +166,30 @@ struct SecurePaymentConfirmationRequest {
   // Webauthn extensions to be set on the credential request.
   blink.mojom.AuthenticationExtensionsClientInputs? extensions;
 
+  // Specifies the types of algorithms that may be used for creating the
+  // browser bound keys that the relying party would accept. If empty a default
+  // is used instead.
+  array<blink.mojom.PublicKeyCredentialParameters> browser_bound_pub_key_cred_params;
+
   // Whether or not to render an 'opt out' experience on the browser-hosted UX,
   // which allows the user to indicate to the RP that they wish to remove any
   // RP-stored information.
   bool show_opt_out;
 
-  // Experimental members that allow specifying information about the card
-  // network and issuer, including icons for both. These are controlled by the
-  // SecurePaymentConfirmationNetworkAndIssuerIcons Blink runtime feature.
-  NetworkOrIssuerInformation? network_info;
-  NetworkOrIssuerInformation? issuer_info;
+  // A list of logos representing entities that are facilitating the payment
+  // that this SPC call is for.
+  array<PaymentEntityLogo> payment_entities_logos;
 };
 
 struct NetworkOrIssuerInformation {
   string name;
   url.mojom.Url icon;
+};
+
+struct PaymentEntityLogo {
+  // Only HTTP(s) or data URLs are permitted.
+  url.mojom.Url url;
+  string label;
 };
 
 struct PaymentMethodData {

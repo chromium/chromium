@@ -1,8 +1,12 @@
-mdjones@chromium.org
-dtrainor@chromium.org
-twellington@chromium.org
-pnoland@chromium.org
+# Desktop User Education
+per-file *.h=file://components/user_education/OWNERS
+per-file *.cc=file://components/user_education/OWNERS
 
-# Desktop browser
-dfried@chromium.org
-mickeyburks@chromium.org
+# NTP Promos
+per-file ntp_promo_identifiers.h=file://components/search/OWNERS
+
+# Android User Education
+per-file java=mdjones@chromium.org
+per-file java=dtrainor@chromium.org
+per-file java=twellington@chromium.org
+per-file java=pnoland@chromium.org

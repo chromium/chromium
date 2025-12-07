@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // This tool converts Hunspell .aff/.dic pairs to a combined binary dictionary
 // format (.bdic). This format is more compact, and can be more efficiently
 // read by the client application.
@@ -21,6 +16,7 @@
 
 #include "base/at_exit.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -58,20 +54,21 @@ bool VerifyWords(const convert_dict::DicReader::WordList& org_words,
     }
 
     if (org_words[i].first != buf) {
-      printf("Word doesn't match, word #%s\n", buf);
+      UNSAFE_TODO(printf("Word doesn't match, word #%s\n", buf));
       return false;
     }
 
     if (affix_matches != static_cast<int>(org_words[i].second.size())) {
-      printf("Different number of affix indices, word #%s\n", buf);
+      UNSAFE_TODO(printf("Different number of affix indices, word #%s\n", buf));
       return false;
     }
 
     // Check the individual affix indices.
     for (size_t affix_index = 0; affix_index < org_words[i].second.size();
          affix_index++) {
-      if (affix_ids[affix_index] != org_words[i].second[affix_index]) {
-        printf("Index doesn't match, word #%s\n", buf);
+      if (UNSAFE_TODO(affix_ids[affix_index]) !=
+          org_words[i].second[affix_index]) {
+        UNSAFE_TODO(printf("Index doesn't match, word #%s\n", buf));
         return false;
       }
     }
@@ -102,7 +99,7 @@ int main(int argc, char* argv[]) {
   base::AtExitManager exit_manager;
   base::i18n::InitializeICU();
 
-  base::FilePath file_base = base::FilePath(argv[1]);
+  base::FilePath file_base = base::FilePath(UNSAFE_TODO(argv[1]));
 
   base::FilePath aff_path =
       file_base.ReplaceExtension(FILE_PATH_LITERAL(".aff"));
@@ -148,7 +145,8 @@ int main(int argc, char* argv[]) {
     printf("ERROR writing file\n");
     return 1;
   }
-  size_t written = fwrite(&serialized[0], 1, serialized.size(), out_file);
+  size_t written =
+      UNSAFE_TODO(fwrite(&serialized[0], 1, serialized.size(), out_file));
   CHECK(written == serialized.size());
   base::CloseFile(out_file);
 

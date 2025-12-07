@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace autofill {
 class AutofillProfile;
@@ -24,7 +24,7 @@ class FastCheckoutController {
   // credit cards to the user.
   virtual void Show(
       const std::vector<const autofill::AutofillProfile*>& autofill_profiles,
-      const std::vector<autofill::CreditCard*>& credit_cards) = 0;
+      const std::vector<const autofill::CreditCard*>& credit_cards) = 0;
 
   // Informs the controller that the user has made a selection.
   virtual void OnOptionsSelected(

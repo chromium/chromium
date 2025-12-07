@@ -5,7 +5,8 @@
 import 'chrome://os-settings/os_settings.js';
 import 'chrome://os-settings/lazy_load.js';
 
-import {AboutPageBrowserProxyImpl, BrowserChannel, IronIconElement, LifetimeBrowserProxyImpl, OsAboutPageElement, Router, routes, settingMojom, setUserActionRecorderForTesting, UpdateStatus, userActionRecorderMojom} from 'chrome://os-settings/os_settings.js';
+import type {CrButtonElement, IronIconElement, OsAboutPageElement, userActionRecorderMojom} from 'chrome://os-settings/os_settings.js';
+import {AboutPageBrowserProxyImpl, BrowserChannel, LifetimeBrowserProxyImpl, Router, routes, settingMojom, setUserActionRecorderForTesting, UpdateStatus} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -23,8 +24,6 @@ type UserActionRecorderInterface =
     userActionRecorderMojom.UserActionRecorderInterface;
 
 suite('<os-about-page> AllBuilds', () => {
-  const isRevampWayfindingEnabled =
-      loadTimeData.getBoolean('isRevampWayfindingEnabled');
   let page: OsAboutPageElement;
   let aboutBrowserProxy: TestAboutPageBrowserProxy;
   let lifetimeBrowserProxy: TestLifetimeBrowserProxy;
@@ -35,7 +34,7 @@ suite('<os-about-page> AllBuilds', () => {
   const SPINNER_ICON_DARK_MODE =
       'chrome://resources/images/throbber_small_dark.svg';
 
-  setup(async () => {
+  setup(() => {
     loadTimeData.overrideValues({
       isManaged: false,
     });
@@ -99,14 +98,12 @@ suite('<os-about-page> AllBuilds', () => {
     flush();
   }
 
-  if (isRevampWayfindingEnabled) {
-    test('Crostini settings card is visible', async () => {
-      await initPage();
-      const crostiniSettingsCard =
-          page.shadowRoot!.querySelector('crostini-settings-card');
-      assertTrue(isVisible(crostiniSettingsCard));
-    });
-  }
+  test('Crostini settings card is visible', async () => {
+    await initPage();
+    const crostiniSettingsCard =
+        page.shadowRoot!.querySelector('crostini-settings-card');
+    assertTrue(isVisible(crostiniSettingsCard));
+  });
 
   ['light', 'dark'].forEach((mode) => {
     suite(`with ${mode} mode active`, () => {
@@ -153,10 +150,7 @@ suite('<os-about-page> AllBuilds', () => {
 
         fireStatusChanged(UpdateStatus.NEARLY_UPDATED);
         assertNull(updateRowIcon.src);
-        assertEquals(
-            isRevampWayfindingEnabled ? 'os-settings:about-update-complete' :
-                                        'settings:check-circle',
-            updateRowIcon.icon);
+        assertEquals('os-settings:about-update-complete', updateRowIcon.icon);
         assertNotEquals(previousMessageText, statusMessageEl.innerText);
         previousMessageText = statusMessageEl.innerText;
 
@@ -167,10 +161,7 @@ suite('<os-about-page> AllBuilds', () => {
 
         fireStatusChanged(UpdateStatus.FAILED);
         assertNull(updateRowIcon.src);
-        assertEquals(
-            isRevampWayfindingEnabled ? 'os-settings:about-update-error' :
-                                        'cr:error-outline',
-            updateRowIcon.icon);
+        assertEquals('os-settings:about-update-error', updateRowIcon.icon);
         assertEquals(0, statusMessageEl.innerText.trim().length);
 
         fireStatusChanged(UpdateStatus.DISABLED);
@@ -536,6 +527,20 @@ suite('<os-about-page> AllBuilds', () => {
   });
 
   suite('End of life', () => {
+    function assertCheckForUpdatesButtonVisibility(): void {
+      let checkForUpdatesButton: CrButtonElement = page.$.checkForUpdatesButton;
+      assertTrue(!!checkForUpdatesButton);
+      // When the device is checking for any available updates, the Check for
+      // updates button should be hidden.
+      assertTrue(checkForUpdatesButton.hidden);
+
+      // When the user has checked for updates and there are none available for
+      // their device, the Check for updates button should become visible.
+      fireStatusChanged(UpdateStatus.UPDATED);
+      checkForUpdatesButton = page.$.checkForUpdatesButton;
+      assertTrue(isVisible(checkForUpdatesButton));
+    }
+
     /**
      * Checks the visibility of the end of life message and icon.
      */
@@ -562,9 +567,7 @@ suite('<os-about-page> AllBuilds', () => {
         assertNull(updateRowIcon.src);
         assertEquals('os-settings:end-of-life', updateRowIcon.icon);
 
-        const {checkForUpdatesButton} = page.$;
-        assertTrue(!!checkForUpdatesButton);
-        assertTrue(checkForUpdatesButton.hidden);
+        assertCheckForUpdatesButtonVisibility();
       }
     }
 
@@ -572,7 +575,6 @@ suite('<os-about-page> AllBuilds', () => {
       aboutBrowserProxy.setEndOfLifeInfo({
         hasEndOfLife: true,
         aboutPageEndOfLifeMessage: '',
-        shouldShowEndOfLifeIncentive: false,
         shouldShowOfferText: false,
         isExtendedUpdatesDatePassed: false,
         isExtendedUpdatesOptInRequired: false,
@@ -585,7 +587,6 @@ suite('<os-about-page> AllBuilds', () => {
       aboutBrowserProxy.setEndOfLifeInfo({
         hasEndOfLife: false,
         aboutPageEndOfLifeMessage: '',
-        shouldShowEndOfLifeIncentive: false,
         shouldShowOfferText: false,
         isExtendedUpdatesDatePassed: false,
         isExtendedUpdatesOptInRequired: false,
@@ -615,26 +616,12 @@ suite('<os-about-page> AllBuilds', () => {
       aboutBrowserProxy.setEndOfLifeInfo({
         hasEndOfLife: false,
         aboutPageEndOfLifeMessage: '',
-        shouldShowEndOfLifeIncentive: false,
         shouldShowOfferText: false,
         isExtendedUpdatesDatePassed: false,
         isExtendedUpdatesOptInRequired: false,
       });
       await initPage();
       await assertEndOfLifeIncentive(false);
-    });
-
-    test('End of life incentive is shown', async () => {
-      aboutBrowserProxy.setEndOfLifeInfo({
-        hasEndOfLife: false,
-        aboutPageEndOfLifeMessage: '',
-        shouldShowEndOfLifeIncentive: true,
-        shouldShowOfferText: false,
-        isExtendedUpdatesDatePassed: false,
-        isExtendedUpdatesOptInRequired: false,
-      });
-      await initPage();
-      await assertEndOfLifeIncentive(true);
     });
   });
 
@@ -915,7 +902,6 @@ suite('<os-about-page> AllBuilds', () => {
               aboutBrowserProxy.setEndOfLifeInfo({
                 hasEndOfLife: tc.eolPassed,
                 aboutPageEndOfLifeMessage: '',
-                shouldShowEndOfLifeIncentive: false,
                 shouldShowOfferText: false,
                 isExtendedUpdatesDatePassed: tc.extDatePassed,
                 isExtendedUpdatesOptInRequired: tc.optInRequired,

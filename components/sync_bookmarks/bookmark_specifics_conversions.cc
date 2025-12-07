@@ -189,7 +189,7 @@ std::string InferGuidForLegacyBookmark(
 
   static_assert(base::kSHA1Length >= 16, "16 bytes needed to infer UUID");
 
-  const std::string guid = ComputeGuidFromBytes(base::make_span(hash));
+  const std::string guid = ComputeGuidFromBytes(base::span(hash));
   DCHECK(base::Uuid::ParseLowercase(guid).is_valid());
   return guid;
 }
@@ -229,21 +229,26 @@ void MoveAllChildren(BookmarkModelView* model,
   }
 
   // This code relies on the underlying type to store children in the
-  // BookmarkModel which is vector. It moves the last child from |old_parent| to
-  // the end of |new_parent| step by step (which reverses the order of
-  // children). After that all children must be reordered to keep the original
-  // order in |new_parent|.
+  // BookmarkModel which is vector. It moves children from |old_parent| to
+  // the end of |new_parent| one by one, from last to first (which reverses the
+  // order of children). After that all children must be reordered to keep the
+  // original order in |new_parent|.
   // This algorithm is used because of performance reasons.
-  std::vector<const bookmarks::BookmarkNode*> children_order(
-      old_parent->children().size(), nullptr);
-  for (size_t i = old_parent->children().size(); i > 0; --i) {
-    const size_t old_index = i - 1;
-    const bookmarks::BookmarkNode* child_to_move =
-        old_parent->children()[old_index].get();
-    children_order[old_index] = child_to_move;
-    model->Move(child_to_move, new_parent, new_parent->children().size());
+  std::vector<const bookmarks::BookmarkNode*> children_in_original_order;
+  children_in_original_order.reserve(old_parent->children().size());
+  for (const auto& child : old_parent->children()) {
+    children_in_original_order.push_back(child.get());
   }
-  model->ReorderChildren(new_parent, children_order);
+
+  // Move children one by one, from last to first, to avoid O(n^2) performance.
+  while (!old_parent->children().empty()) {
+    model->Move(old_parent->children().back().get(), new_parent,
+                new_parent->children().size());
+  }
+
+  // The children are now in reversed order in `new_parent`. Restore original
+  // order.
+  model->ReorderChildren(new_parent, children_in_original_order);
 }
 
 }  // namespace
@@ -373,8 +378,7 @@ const bookmarks::BookmarkNode* CreateBookmarkNodeFromSpecifics(
 
   switch (specifics.type()) {
     case sync_pb::BookmarkSpecifics::UNSPECIFIED:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case sync_pb::BookmarkSpecifics::URL: {
       const bookmarks::BookmarkNode* node =
           model->AddURL(parent, index, NodeTitleFromSpecifics(specifics),
@@ -396,8 +400,7 @@ const bookmarks::BookmarkNode* CreateBookmarkNodeFromSpecifics(
                               &metainfo, creation_time, guid);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void UpdateBookmarkNodeFromSpecifics(
@@ -480,7 +483,7 @@ const bookmarks::BookmarkNode* ReplaceBookmarkNodeUuid(
 
 bool IsValidBookmarkSpecifics(const sync_pb::BookmarkSpecifics& specifics) {
   bool is_valid = true;
-  if (specifics.ByteSize() == 0) {
+  if (specifics.ByteSizeLong() == 0) {
     DLOG(ERROR) << "Invalid bookmark: empty specifics.";
     LogInvalidSpecifics(InvalidBookmarkSpecificsError::kEmptySpecifics);
     is_valid = false;

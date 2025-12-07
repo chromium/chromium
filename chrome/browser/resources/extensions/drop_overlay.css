@@ -1,0 +1,47 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #include=cr-hidden-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  align-items: center;
+  background-color: rgba(241, 241, 241, .9);
+  color: var(--cr-secondary-text-color);
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  position: absolute;
+  width: 100%;
+  z-index: 10;
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    /* TODO(dbeam): share with cr-dialog dialog::backdrop? */
+    background-color: rgba(0, 0, 0, .6);
+  }
+}
+
+#container {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+
+cr-icon {
+  height: 64px;
+  margin-bottom: 16px;
+  width: 64px;
+}
+
+#text {
+  color: #6e6e6e;
+  font-size: 123.1%;
+  font-weight: 500;
+}

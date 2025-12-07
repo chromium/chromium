@@ -52,8 +52,9 @@ namespace declarativeNetRequest {
 
   // This describes the possible operations for a "modifyHeaders" rule.
   enum HeaderOperation {
-    // Adds a new entry for the specified header. This operation is not
-    // supported for request headers.
+    // Adds a new entry for the specified header. When modifying the headers of
+    // a request, this operation is only supported for
+    // <a href="#header_modification">specific headers</a>.
     append,
     // Sets a new value for the specified header, removing any existing headers
     // with the same name.
@@ -121,7 +122,6 @@ namespace declarativeNetRequest {
   };
 
   // Describes modification to various url components.
-  [noinline_doc]
   dictionary URLTransform {
      // The new scheme for the request. Allowed values are "http", "https",
      // "ftp" and "chrome-extension".
@@ -190,7 +190,7 @@ namespace declarativeNetRequest {
     DOMString[]? excludedValues;
   };
 
-  [noinline_doc] dictionary RuleCondition {
+  dictionary RuleCondition {
 
     // The pattern which is matched against the network request url.
     // Supported constructs:
@@ -306,6 +306,41 @@ namespace declarativeNetRequest {
     // </ul>
     DOMString[]? excludedRequestDomains;
 
+    // The rule will only match network requests when the associated top-level
+    // frame's domain matches one from the list of <code>topDomains</code>. If
+    // the list is omitted, the rule is applied to requests associated with all
+    // top-level frame domains. An empty list is not allowed.
+    //
+    // Notes:
+    // <ul>
+    //  <li>Sub-domains like "a.example.com" are also allowed.</li>
+    //  <li>The entries must consist of only ascii characters.</li>
+    //  <li>Use punycode encoding for internationalized domains.</li>
+    //  <li>Sub-domains of the listed domains are also matched.</li>
+    //  <li>For requests with no associated top-level frame (e.g. ServiceWorker
+    //      initiated requests, the request initiator's domain is considered
+    //      instead.</li>
+    // </ul>
+    [nodoc] DOMString[]? topDomains;
+
+    // The rule will not match network requests when the associated top-level
+    // frame's domain matches one from the list of
+    // <code>excludedTopDomains</code>. If the list is empty or omitted, no
+    // domains are excluded. This takes precedence over
+    // <code>topDomains</code>.
+    //
+    // Notes:
+    // <ul>
+    //  <li>Sub-domains like "a.example.com" are also allowed.</li>
+    //  <li>The entries must consist of only ascii characters.</li>
+    //  <li>Use punycode encoding for internationalized domains.</li>
+    //  <li>Sub-domains of the listed domains are also excluded.</li>
+    //  <li>For requests with no associated top-level frame (e.g. ServiceWorker
+    //      initiated requests, the request initiator's domain is considered
+    //      instead.</li>
+    // </ul>
+    [nodoc] DOMString[]? excludedTopDomains;
+
     // The rule will only match network requests originating from the list of
     // <code>domains</code>.
     [deprecated="Use $(ref:initiatorDomains) instead"]
@@ -371,19 +406,44 @@ namespace declarativeNetRequest {
     HeaderInfo[]? excludedResponseHeaders;
   };
 
+  // Options for regex filters and substitutions for headers.
+  [nodoc] dictionary HeaderRegexOptions {
+    // Whether the regex should match all groups for the value. This is only
+    // relevant if a regex substitution is present and would thus need to be
+    // applied onto all matching groups. Equivalent to the "g" flag.
+    // Defaults to false.
+    boolean? matchAll;
+  };
+
   dictionary ModifyHeaderInfo {
     // The name of the header to be modified.
     DOMString header;
 
     // The operation to be performed on a header.
+    // <!-- TODO(crbug.com/352093575): Make this field optional: It is ignored
+    // if `regexSubstitution` is specified but is required otherwise. -->
     HeaderOperation operation;
 
     // The new value for the header. Must be specified for <code>append</code>
     // and <code>set</code> operations.
+    // <!-- TODO(crbug.com/352093575): Ignored if `regexSubstitution` is
+    // specified, -->
     DOMString? value;
+
+    // A regular expression to match against the header value. This follows the
+    // RE2 syntax for consistency with the rest of the API.
+    [nodoc] DOMString? regexFilter;
+
+    // Substitution pattern for the response header. `regexFilter` must be
+    // specified for this to be valid. Takes precedence over `value` and
+    // `operation` if specified and valid.
+    [nodoc] DOMString? regexSubstitution;
+
+    // Options for the regex filter. If not specified, all options will be
+    // default.
+    [nodoc] HeaderRegexOptions? regexOptions;
   };
 
-  [noinline_doc]
   dictionary RuleAction {
     // The type of action to perform.
     RuleActionType type;
@@ -426,13 +486,11 @@ namespace declarativeNetRequest {
     DOMString rulesetId;
   };
 
-  [noinline_doc]
   dictionary GetRulesFilter {
     // If specified, only rules with matching IDs are included.
     long[]? ruleIds;
   };
 
-  [noinline_doc]
   dictionary MatchedRuleInfo {
     MatchedRule rule;
 
@@ -460,7 +518,6 @@ namespace declarativeNetRequest {
      MatchedRuleInfo[] rulesMatchedInfo;
   };
 
-  [noinline_doc]
   dictionary RequestDetails {
     // The ID of the request. Request IDs are unique within a browser session.
     DOMString requestId;
@@ -528,6 +585,9 @@ namespace declarativeNetRequest {
     // not need to correspond to a real tab ID. Default is -1, meaning that
     // the request isn't related to a tab.
     long? tabId;
+
+    // The associated top-level frame URL (if any) for the request.
+    [nodoc] DOMString? topUrl;
 
     // The headers provided by a hypothetical response if the request does not
     // get blocked or redirected before it is sent. Represented as an object

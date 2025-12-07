@@ -49,6 +49,8 @@ PASS window.cached_navigator_connection.effectiveType is window.navigator.connec
 PASS window.cached_navigator_connection.onchange is null
 PASS window.cached_navigator_connection.rtt is window.navigator.connection.rtt
 PASS window.cached_navigator_connection.saveData is false
+PASS window.cached_navigator_devicePosture.onchange is null
+PASS window.cached_navigator_devicePosture.type is window.navigator.devicePosture.type
 PASS window.cached_navigator_gpu_wgslLanguageFeatures.size is window.navigator.gpu.wgslLanguageFeatures.size
 PASS window.cached_navigator_hid.onconnect is null
 PASS window.cached_navigator_hid.ondisconnect is null
@@ -85,6 +87,7 @@ PASS window.cached_navigator_virtualKeyboard_boundingRect.y is 0
 PASS window.cached_navigator_windowControlsOverlay.ongeometrychange is null
 PASS window.cached_navigator_windowControlsOverlay.visible is false
 PASS window.cached_navigator_xr.ondevicechange is null
+PASS window.cached_performance.interactionCount is 0
 PASS window.cached_performance.onresourcetimingbufferfull is null
 PASS window.cached_performance_navigation.redirectCount is 0
 PASS window.cached_performance_navigation.type is 0
@@ -114,11 +117,11 @@ PASS window.cached_screen.availHeight is 0
 PASS window.cached_screen.availLeft is 0
 PASS window.cached_screen.availTop is 0
 PASS window.cached_screen.availWidth is 0
-PASS window.cached_screen.colorDepth is 0
+PASS window.cached_screen.colorDepth is 24
 PASS window.cached_screen.height is 0
 PASS window.cached_screen.isExtended is false
 PASS window.cached_screen.onchange is null
-PASS window.cached_screen.pixelDepth is 0
+PASS window.cached_screen.pixelDepth is 24
 PASS window.cached_screen.width is 0
 PASS window.cached_screen_orientation.angle is 0
 PASS window.cached_screen_orientation.onchange is null
@@ -132,6 +135,7 @@ PASS window.cached_statusbar.visible is false
 PASS window.cached_styleMedia.type is ''
 PASS window.cached_toolbar.visible is false
 PASS window.cached_trustedTypes.defaultPolicy is null
+PASS window.cached_viewport.segments is null
 PASS window.cached_visualViewport.height is 0
 PASS window.cached_visualViewport.offsetLeft is 0
 PASS window.cached_visualViewport.offsetTop is 0

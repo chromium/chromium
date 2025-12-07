@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.layouts.content;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager.Observer;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
@@ -13,6 +15,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 
 /** Helper class attaching Tab's content layer to {@link TabContentManager}. */
+@NullMarked
 public final class TabContentManagerHandler extends TabModelSelectorTabObserver {
     private final TabContentManager mTabContentManager;
 
@@ -25,7 +28,7 @@ public final class TabContentManagerHandler extends TabModelSelectorTabObserver 
     private boolean mShouldRemoveThumbnail;
 
     // A tab whose thumbnail needs to be removed.
-    private Tab mThumbnailTab;
+    private @Nullable Tab mThumbnailTab;
 
     public static void create(
             TabContentManager manager,

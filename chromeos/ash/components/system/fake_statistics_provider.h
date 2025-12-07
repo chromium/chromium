@@ -36,6 +36,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) FakeStatisticsProvider
   bool IsRunningOnVm() override;
   bool IsCrosDebugMode() override;
   VpdStatus GetVpdStatus() const override;
+  LoadingState GetLoadingState() const override;
 
   void SetMachineStatistic(const std::string& key, const std::string& value);
   void ClearMachineStatistic(std::string_view key);
@@ -43,12 +44,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) FakeStatisticsProvider
   void SetMachineFlag(const std::string& key, bool value);
   void ClearMachineFlag(std::string_view key);
   void SetVpdStatus(VpdStatus new_status);
+  void SetLoadingState(LoadingState new_state);
 
  private:
   base::flat_map<std::string, std::string> machine_statistics_;
   base::flat_map<std::string, bool> machine_flags_;
 
   VpdStatus vpd_status_{VpdStatus::kUnknown};
+  LoadingState loading_state_{LoadingState::kNotStarted};
 };
 
 // A convenience subclass that automatically registers itself as the test

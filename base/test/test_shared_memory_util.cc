@@ -5,14 +5,13 @@
 #include "base/test/test_shared_memory_util.h"
 
 #include <gtest/gtest.h>
-
 #include <stddef.h>
 #include <stdint.h>
 
 #include "base/logging.h"
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
+#if BUILDFLAG(IS_POSIX)
 #include <errno.h>
 #include <string.h>
 #include <sys/mman.h>
@@ -33,8 +32,6 @@
 #endif
 
 namespace base {
-
-#if !BUILDFLAG(IS_NACL)
 
 static const size_t kDataSize = 1024;
 
@@ -139,8 +136,6 @@ bool CheckReadOnlyPlatformSharedMemoryRegionForTesting(
 #endif
 }
 
-#endif  // !BUILDFLAG(IS_NACL)
-
 WritableSharedMemoryMapping MapForTesting(
     subtle::PlatformSharedMemoryRegion* region) {
   return MapAtForTesting(region, 0, region->GetSize());
@@ -152,8 +147,9 @@ WritableSharedMemoryMapping MapAtForTesting(
     size_t size) {
   SharedMemoryMapper* mapper = SharedMemoryMapper::GetDefaultInstance();
   auto result = region->MapAt(offset, size, mapper);
-  if (!result.has_value())
+  if (!result.has_value()) {
     return {};
+  }
 
   return WritableSharedMemoryMapping(result.value(), size, region->GetGUID(),
                                      mapper);

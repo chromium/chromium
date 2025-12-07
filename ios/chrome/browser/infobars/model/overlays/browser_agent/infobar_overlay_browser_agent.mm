@@ -11,10 +11,9 @@
 
 #pragma mark - InfobarOverlayBrowserAgent
 
-BROWSER_USER_DATA_KEY_IMPL(InfobarOverlayBrowserAgent)
-
 InfobarOverlayBrowserAgent::InfobarOverlayBrowserAgent(Browser* browser)
     : OverlayBrowserAgentBase(browser),
+      BrowserUserData(browser),
       overlay_visibility_observer_(browser, this) {}
 
 InfobarOverlayBrowserAgent::~InfobarOverlayBrowserAgent() = default;
@@ -54,8 +53,9 @@ void InfobarOverlayBrowserAgent::
 
 InfobarInteractionHandler* InfobarOverlayBrowserAgent::GetInteractionHandler(
     OverlayRequest* request) {
-  if (!request)
+  if (!request) {
     return nullptr;
+  }
   return interaction_handlers_[GetOverlayRequestInfobarType(request)].get();
 }
 
@@ -78,8 +78,9 @@ InfobarOverlayBrowserAgent::OverlayVisibilityObserver::
 void InfobarOverlayBrowserAgent::OverlayVisibilityObserver::
     OverlayVisibilityChanged(OverlayRequest* request, bool visible) {
   InfoBarIOS* infobar = GetOverlayRequestInfobar(request);
-  if (!infobar)
+  if (!infobar) {
     return;
+  }
   browser_agent_->GetInteractionHandler(request)->InfobarVisibilityChanged(
       infobar, GetOverlayRequestInfobarOverlayType(request), visible);
 }

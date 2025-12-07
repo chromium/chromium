@@ -10,26 +10,24 @@
 #import "ios/chrome/app/application_delegate/observing_app_state_agent.h"
 
 @class AppRefreshProvider;
+@protocol BackgroundRefreshAudience;
+@protocol StartupInformation;
 
 // An app agent that manages background refresh tasks.
 // DEBUGGING/TESTING note: App refresh does not work on simulators; you must
 // use a device.
 @interface BackgroundRefreshAppAgent : SceneObservingAppAgent
 
+// Audience for the background refresh lifecycle.
+@property(nonatomic, weak) id<BackgroundRefreshAudience> audience;
+
+@property(nonatomic, weak) id<StartupInformation> startupInformation;
+
 // Register `provider` as providing app refresh tasks. Registration must happen
 // before refresh tasks execute, ideally during basic app init.
 - (void)addAppRefreshProvider:(AppRefreshProvider*)provider;
 
 // TODO(crbug.com/354918794): Add an API for removing a provider if needed.
-
-// Request that app refresh runs no sooner than `delay` seconds from now.
-// Multiple requests for refresh will be coalesced.
-// TODO(crbug.com/354918222): Derive `delay` from the refresh intervals of the
-// providers.
-- (void)requestAppRefreshWithDelay:(NSTimeInterval)delay;
-
-// TODO(crbug.com/354918794): Add an API for recurring refreshes, or make that
-// the default.
 
 // TODO(crbug.com/354918794): Add an API for cancelling any pending refresh, if
 // needed.

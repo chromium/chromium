@@ -14,6 +14,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
@@ -110,8 +111,7 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
   void WindowClosing() override;
   View* GetContentsView() override;
   ClientView* CreateClientView(Widget* widget) override;
-  std::unique_ptr<NonClientFrameView> CreateNonClientFrameView(
-      Widget* widget) override;
+  std::unique_ptr<FrameView> CreateFrameView(Widget* widget) override;
   View* GetInitiallyFocusedView() override;
   bool ShouldShowWindowTitle() const override;
   bool ShouldShowCloseButton() const override;
@@ -119,7 +119,7 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
   const Widget* GetWidget() const override;
 
   // ui::WebDialogDelegate:
-  ui::ModalType GetDialogModalType() const override;
+  ui::mojom::ModalType GetDialogModalType() const override;
   std::u16string GetDialogTitle() const override;
   GURL GetDialogContentURL() const override;
   void GetWebUIMessageHandlers(
@@ -149,19 +149,21 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
       const content::OpenURLParams& params,
       base::OnceCallback<void(content::NavigationHandle&)>
           navigation_handle_callback) override;
-  void AddNewContents(content::WebContents* source,
-                      std::unique_ptr<content::WebContents> new_contents,
-                      const GURL& target_url,
-                      WindowOpenDisposition disposition,
-                      const blink::mojom::WindowFeatures& window_features,
-                      bool user_gesture,
-                      bool* was_blocked) override;
+  content::WebContents* AddNewContents(
+      content::WebContents* source,
+      std::unique_ptr<content::WebContents> new_contents,
+      const GURL& target_url,
+      WindowOpenDisposition disposition,
+      const blink::mojom::WindowFeatures& window_features,
+      bool user_gesture,
+      bool* was_blocked) override;
   void LoadingStateChanged(content::WebContents* source,
                            bool should_show_loading_ui) override;
   void BeforeUnloadFired(content::WebContents* tab,
                          bool proceed,
                          bool* proceed_to_fire_unload) override;
   bool IsWebContentsCreationOverridden(
+      content::RenderFrameHost* opener,
       content::SiteInstance* source_site_instance,
       content::mojom::WindowContainerType window_container_type,
       const GURL& opener_url,
@@ -188,6 +190,8 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
   ObservableWebView* GetWebView() const { return web_view_; }
 
   void NotifyDialogWillClose();
+
+  void UpdateAccessibleNameForRootView();
 
   // This view is a delegate to the HTML content since it needs to get notified
   // about when the dialog is closing. For all other actions (besides dialog
@@ -224,6 +228,8 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
   UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 
   bool disable_url_load_for_test_ = false;
+
+  base::WeakPtrFactory<WebDialogView> weak_ptr_factory_{this};
 };
 
 }  // namespace views

@@ -16,9 +16,9 @@
 #include "content/browser/devtools/devtools_manager.h"
 #include "content/browser/devtools/shared_worker_devtools_manager.h"
 #include "content/browser/shared_storage/shared_storage_document_service_impl.h"
+#include "content/browser/shared_storage/shared_storage_runtime_manager.h"
 #include "content/browser/shared_storage/shared_storage_worklet_driver.h"
 #include "content/browser/shared_storage/shared_storage_worklet_host.h"
-#include "content/browser/shared_storage/shared_storage_worklet_host_manager.h"
 #include "content/common/content_constants_internal.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -117,11 +117,13 @@ class SharedStorageWorkletDevToolsAgentHostTest
             main_rfh);
     document_service->CreateWorklet(
         script_url, url::Origin::Create(script_url),
-        network::mojom::CredentialsMode::kSameOrigin, {},
+        blink::mojom::SharedStorageDataOriginType::kScriptOrigin,
+        network::mojom::CredentialsMode::kSameOrigin,
+        blink::mojom::SharedStorageWorkletCreationMethod::kCreateWorklet, {},
         std::move(worklet_host), base::DoNothing());
 
-    SharedStorageWorkletHostManager* manager =
-        GetSharedStorageWorkletHostManagerForStoragePartition(
+    SharedStorageRuntimeManager* manager =
+        GetSharedStorageRuntimeManagerForStoragePartition(
             main_rfh->GetStoragePartition());
     std::map<SharedStorageDocumentServiceImpl*,
              std::map<SharedStorageWorkletHost*,

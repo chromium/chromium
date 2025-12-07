@@ -32,8 +32,8 @@ SerialPortUnderlyingSource::SerialPortUnderlyingSource(
       serial_port_(serial_port) {
   watcher_.Watch(data_pipe_.get(), MOJO_HANDLE_SIGNAL_READABLE,
                  MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
-                 WTF::BindRepeating(&SerialPortUnderlyingSource::OnHandleReady,
-                                    WrapWeakPersistent(this)));
+                 BindRepeating(&SerialPortUnderlyingSource::OnHandleReady,
+                               WrapWeakPersistent(this)));
 }
 
 ScriptPromise<IDLUndefined> SerialPortUnderlyingSource::Pull(
@@ -52,8 +52,7 @@ ScriptPromise<IDLUndefined> SerialPortUnderlyingSource::Pull(
   return ToResolvedUndefinedPromise(script_state_.Get());
 }
 
-ScriptPromise<IDLUndefined> SerialPortUnderlyingSource::Cancel(
-    ExceptionState& exception_state) {
+ScriptPromise<IDLUndefined> SerialPortUnderlyingSource::Cancel() {
   DCHECK(data_pipe_);
 
   Close();
@@ -67,17 +66,15 @@ ScriptPromise<IDLUndefined> SerialPortUnderlyingSource::Cancel(
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state_);
-  serial_port_->Flush(
-      device::mojom::blink::SerialPortFlushMode::kReceive,
-      WTF::BindOnce(&SerialPortUnderlyingSource::OnFlush, WrapPersistent(this),
-                    WrapPersistent(resolver)));
+  serial_port_->Flush(device::mojom::blink::SerialPortFlushMode::kReceive,
+                      BindOnce(&SerialPortUnderlyingSource::OnFlush,
+                               WrapPersistent(this), WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
 ScriptPromise<IDLUndefined> SerialPortUnderlyingSource::Cancel(
-    v8::Local<v8::Value> reason,
-    ExceptionState& exception_state) {
-  return Cancel(exception_state);
+    v8::Local<v8::Value> reason) {
+  return Cancel();
 }
 
 ScriptState* SerialPortUnderlyingSource::GetScriptState() {
@@ -95,8 +92,7 @@ void SerialPortUnderlyingSource::SignalErrorOnClose(SerialReceiveError error) {
   v8::Local<v8::Value> exception;
   switch (error) {
     case SerialReceiveError::NONE:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case SerialReceiveError::DISCONNECTED:
       [[fallthrough]];
     case SerialReceiveError::DEVICE_LOST:
@@ -163,13 +159,14 @@ void SerialPortUnderlyingSource::ReadDataOrArmWatcher() {
       if (ReadableStreamBYOBRequest* request = controller_->byobRequest()) {
         DOMArrayPiece view(request->view().Get());
         buffer = buffer.first(std::min(view.ByteLength(), buffer.size()));
-        view.ByteSpan().first(buffer.size()).copy_from(buffer);
+        view.ByteSpan().copy_prefix_from(buffer);
+        result = data_pipe_->EndReadData(buffer.size());
         request->respond(script_state_, buffer.size(), exception_state);
       } else {
         auto chunk = NotShared(DOMUint8Array::Create(buffer));
+        result = data_pipe_->EndReadData(buffer.size());
         controller_->enqueue(script_state_, chunk, exception_state);
       }
-      result = data_pipe_->EndReadData(buffer.size());
       DCHECK_EQ(result, MOJO_RESULT_OK);
       break;
     }
@@ -179,8 +176,13 @@ void SerialPortUnderlyingSource::ReadDataOrArmWatcher() {
     case MOJO_RESULT_SHOULD_WAIT:
       watcher_.ArmOrNotify();
       break;
+    case MOJO_RESULT_BUSY:
+      DUMP_WILL_BE_NOTREACHED()
+          << "BeginReadData returned MOJO_RESULT_BUSY. This should not happen "
+             "because the data pipe is released before enqueuing data to the "
+             "stream.";
+      break;
     default:
-      invalid_data_pipe_read_result_ = result;
       DUMP_WILL_BE_NOTREACHED() << "Invalid data pipe read result: " << result;
       break;
   }
@@ -222,6 +224,12 @@ void SerialPortUnderlyingSource::PipeClosed() {
 void SerialPortUnderlyingSource::Close() {
   watcher_.Cancel();
   data_pipe_.reset();
+}
+
+void SerialPortUnderlyingSource::Dispose() {
+  // Ensure that `watcher_` is disarmed so that `OnHandleReady()` is not called
+  // after this object becomes garbage.
+  Close();
 }
 
 }  // namespace blink

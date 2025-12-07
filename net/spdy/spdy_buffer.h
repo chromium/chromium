@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/net_export.h"
@@ -51,9 +52,8 @@ class NET_EXPORT_PRIVATE SpdyBuffer {
   // owned by |frame| or outlives it.
   explicit SpdyBuffer(std::unique_ptr<spdy::SpdySerializedFrame> frame);
 
-  // Construct with a copy of the given raw data. |data| must be
-  // non-NULL and |size| must be non-zero.
-  SpdyBuffer(const char* data, size_t size);
+  // Construct with a copy of the given raw data. `data` must be non-empty.
+  explicit SpdyBuffer(base::span<const uint8_t> data);
 
   SpdyBuffer(const SpdyBuffer&) = delete;
   SpdyBuffer& operator=(const SpdyBuffer&) = delete;
@@ -63,7 +63,7 @@ class NET_EXPORT_PRIVATE SpdyBuffer {
   ~SpdyBuffer();
 
   // Returns the remaining (unconsumed) data.
-  const char* GetRemainingData() const;
+  base::span<const uint8_t> GetRemaining() const;
 
   // Returns the number of remaining (unconsumed) bytes.
   size_t GetRemainingSize() const;

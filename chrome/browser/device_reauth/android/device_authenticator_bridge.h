@@ -19,6 +19,7 @@ enum class DeviceAuthUIResult {
   kSuccessWithDeviceLock = 2,
   kCanceledByUser = 3,
   kFailed = 4,
+  kLockout = 5,
 };
 
 // Different states for biometric availability for a given device. Either no
@@ -37,9 +38,11 @@ enum class BiometricsAvailability {
   kHwUnavailable = 4,
   kNotEnrolled = 5,
   kSecurityUpdateRequired = 6,
-  kAndroidVersionNotSupported = 7,
+  // Deprecated: kAndroidVersionNotSupported = 7,
+  // Deprecated: kRequired = 8,
+  // Deprecated: kRequiredButHasError = 9,
 
-  kMaxValue = kAndroidVersionNotSupported,
+  kMaxValue = kSecurityUpdateRequired,
 };
 
 }  // namespace device_reauth

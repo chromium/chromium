@@ -29,11 +29,15 @@ include_rules = [
   "+components/browser_ui/webshare/android",
   "+components/browser_ui/widget/android",
   "+components/browsing_data/content/android/java",
+  "+components/cached_flags/android",
   "+components/commerce/core",
+  "+components/input",
   "+components/content_capture",
   "+components/content_settings",
+  "+components/browser_ui/desktop_windowing/android",
   "+components/download",
   "+components/embedder_support/android",
+  "+components/enterprise/browser/reporting/android",
   "+components/external_intents/android",
   "+components/externalauth/android",
   "+components/favicon/android",
@@ -48,11 +52,13 @@ include_rules = [
   "+components/metrics",
   "+components/page_info/android/java",
   "+components/permissions/android/nfc",
+  "+components/plus_addresses/android/java",
   "+components/policy",
   "+components/prefs/android",
   "+components/privacy_sandbox/android",
   "+components/query_tiles",
   "+components/safe_browsing/android/java",
+  "+components/saved_tab_groups/public/android/java",
   "+components/security_interstitials/content/android",
   "+components/signin/public/android",
   "+components/site_engagement/content/android",
@@ -60,6 +66,8 @@ include_rules = [
   "+components/strictmode/android",
   "+components/subresource_filter/android",
   "+components/supervised_user/android",
+  "+components/tabs/public/android",
+  "+components/tab_groups/android/java",
   "+components/translate/content/android",
   "+components/user_prefs/android",
   "+components/version_info/android",
@@ -67,10 +75,13 @@ include_rules = [
   "+components/webapk/android",
   "+components/webapps/browser/android/java",
   "+components/webrtc/android",
+  "+google_apis/gaia/android/java",
   "+jni",
   "+media/base/android/java",
   "+services/device/public",
   "+services/media_session/public",
+  "+ui/android",
+  "+ui/edge_to_edge",
 ]
 
 specific_include_rules = {
@@ -108,6 +119,9 @@ specific_include_rules = {
 
   # Exceptions to the Chrome*Activity dependency restriction. These will all eventually be removed
   # new code should rely on acceptable dependency aquisition patterns.
+  "MultiInstanceManagerImpl\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
+  ],
   "TabGroupUtils\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
   ],

@@ -54,7 +54,9 @@ class PasskeyCredential {
                     Username username = Username(""),
                     DisplayName display_name = DisplayName(""),
                     // Must be provided for kAndroidPhone credentials.
-                    std::optional<base::Time> creation_time = std::nullopt);
+                    std::optional<base::Time> creation_time = std::nullopt,
+                    std::optional<base::Time> last_used_time = std::nullopt,
+                    bool hidden = false);
   ~PasskeyCredential();
 
   PasskeyCredential(const PasskeyCredential&);
@@ -67,11 +69,9 @@ class PasskeyCredential {
   // belongs to.
   std::u16string GetAuthenticatorLabel() const;
 
-  // Sets an authenticator label for this passkey. If no label is set, a generic
-  // device name will be returned by GetAuthenticatorLabel().
-  void set_authenticator_label(const std::u16string& authenticator_label) {
-    authenticator_label_ = authenticator_label;
-  }
+  // Sets an authenticator label for this passkey. If no label is set, the
+  // source type will determine the result of GetAuthenticatorLabel().
+  void SetAuthenticatorLabel(const std::u16string& authenticator_label);
 
   Source source() const { return source_; }
   const std::string& rp_id() const { return rp_id_; }
@@ -82,8 +82,13 @@ class PasskeyCredential {
   const std::optional<base::Time>& creation_time() const {
     return creation_time_;
   }
+  const std::optional<base::Time>& last_used_time() const {
+    return last_used_time_;
+  }
+  bool hidden() const { return hidden_; }
 
  private:
+  std::u16string GetAuthenticatorLabelBySourceType() const;
   friend bool operator==(const PasskeyCredential& lhs,
                          const PasskeyCredential& rhs);
 
@@ -117,6 +122,14 @@ class PasskeyCredential {
   // The time when the credential was created. Used for display in management
   // UIs. This value is not available for passkeys from some sources.
   std::optional<base::Time> creation_time_;
+
+  // The time when the credential was last used, when known.
+  std::optional<base::Time> last_used_time_;
+
+  // Indicates that the credential was marked for deletion (e.g. by a website)
+  // and should be marked as such in management surfaces and hidden from
+  // authentication surfaces.
+  bool hidden_ = false;
 };
 
 bool operator==(const PasskeyCredential& lhs, const PasskeyCredential& rhs);

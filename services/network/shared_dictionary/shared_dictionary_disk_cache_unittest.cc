@@ -126,7 +126,10 @@ class SharedDictionaryDiskCacheTest : public testing::Test {
     ASSERT_TRUE(base::WriteFile(index_file_path, "corrupted"));
     file_permissions_restorer_ = std::make_unique<base::FilePermissionRestorer>(
         tmp_directory_.GetPath());
-    // Mark the parent directory unwritable, so that we can't restore the dist
+    // Mark the parent directory unwritable. When the disk cache is corrupted,
+    // the SimpleCache backend will try to recreate the cache directory. By
+    // making the parent directory unwritable, we can simulate the failure of
+    // this recreation process.
     ASSERT_TRUE(base::MakeFileUnwritable(tmp_directory_.GetPath()));
   }
 

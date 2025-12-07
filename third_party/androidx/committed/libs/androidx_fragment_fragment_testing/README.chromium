@@ -1,0 +1,20 @@
+Name: Fragment Testing Extensions
+Short Name: fragment-testing
+URL: https://androidx.dev/snapshots/builds/14500233/artifacts/repository/androidx/fragment/fragment-testing/1.9.0-SNAPSHOT/fragment-testing-1.9.0-20251126.133552-1.aar
+Version: 1.9.0-SNAPSHOT
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: no
+Shipped: no
+License Android Compatible: yes
+
+Description:
+Extensions for testing 'fragment' artifact
+
+See also: https://developer.android.com/jetpack/androidx/releases/fragment#1.9.0-SNAPSHOT
+
+
+Local Modifications:
+No modifications.

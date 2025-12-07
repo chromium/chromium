@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './pdf_shared.css.js';
-
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {ChangePageOrigin} from './viewer_bookmark.js';
-import {getTemplate} from './viewer_thumbnail.html.js';
+import {getCss} from './viewer_thumbnail.css.js';
+import {getHtml} from './viewer_thumbnail.html.js';
 
 // The maximum widths of thumbnails for each layout (px).
 // These constants should be kept in sync with `kMaxWidthPortraitPx` and
@@ -16,6 +16,12 @@ import {getTemplate} from './viewer_thumbnail.html.js';
 const PORTRAIT_WIDTH: number = 108;
 
 const LANDSCAPE_WIDTH: number = 140;
+
+const PDF_CANVAS_ID: string = 'pdf-canvas';
+
+// <if expr="enable_pdf_ink2">
+const INK2_CANVAS_ID: string = 'ink2-canvas';
+// </if>
 
 export const PAINTED_ATTRIBUTE: string = 'painted';
 
@@ -25,57 +31,109 @@ export interface ViewerThumbnailElement {
   };
 }
 
-export class ViewerThumbnailElement extends PolymerElement {
+export class ViewerThumbnailElement extends CrLitElement {
   static get is() {
     return 'viewer-thumbnail';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      clockwiseRotations: {
-        type: Number,
-        value: 0,
-        observer: 'clockwiseRotationsChanged_',
-      },
+      clockwiseRotations: {type: Number},
 
       isActive: {
         type: Boolean,
-        observer: 'isActiveChanged_',
-        reflectToAttribute: true,
+        reflect: true,
       },
 
-      pageNumber: Number,
+      pageNumber: {type: Number},
     };
   }
 
-  clockwiseRotations: number;
-  isActive: boolean;
-  pageNumber: number;
+  accessor clockwiseRotations: number = 0;
+  accessor isActive: boolean = true;
+  accessor pageNumber: number = 0;
 
-  set image(imageData: ImageData) {
-    let canvas = this.getCanvas_();
-    if (!canvas) {
-      canvas = document.createElement('canvas');
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
 
-      // Prevent copying or saving of the thumbnail image in case the document
-      // has restricted access rights.
-      canvas.oncontextmenu = e => e.preventDefault();
-
-      this.$.thumbnail.appendChild(canvas);
+    if (changedProperties.has('clockwiseRotations')) {
+      const canvas = this.getCanvas_();
+      if (canvas) {
+        this.styleCanvas_(canvas);
+      }
+      // <if expr="enable_pdf_ink2">
+      const ink2Canvas = this.getInk2Canvas_();
+      if (ink2Canvas) {
+        this.styleCanvas_(ink2Canvas);
+      }
+      // </if>
     }
 
+    if (changedProperties.has('isActive') && this.isActive) {
+      const scrollIntoViewOptions: ScrollIntoViewOptions = {
+        block: 'nearest',
+      };
+      if (document.documentElement.hasAttribute('pdfOopifEnabled')) {
+        scrollIntoViewOptions.container = 'nearest';
+      }
+      this.scrollIntoView(scrollIntoViewOptions);
+    }
+  }
+
+  private createCanvasHelper_(id: string) {
+    const canvas = document.createElement('canvas');
+    canvas.id = id;
+
+    // Prevent copying or saving of the thumbnail image in case the document
+    // has restricted access rights.
+    canvas.oncontextmenu = e => e.preventDefault();
+
+    return canvas;
+  }
+
+  private setImageHelper_(canvas: HTMLCanvasElement, imageData: ImageData) {
     canvas.width = imageData.width;
     canvas.height = imageData.height;
 
-    this.styleCanvas_();
+    this.styleCanvas_(canvas);
 
     const ctx = canvas.getContext('2d')!;
     ctx.putImageData(imageData, 0, 0);
   }
+
+  set image(imageData: ImageData) {
+    let canvas = this.getCanvas_();
+    if (!canvas) {
+      canvas = this.createCanvasHelper_(PDF_CANVAS_ID);
+      const canvasContainer =
+          this.$.thumbnail.querySelector('#canvas-container')!;
+      canvasContainer.appendChild(canvas);
+    }
+
+    this.setImageHelper_(canvas, imageData);
+  }
+
+  // <if expr="enable_pdf_ink2">
+  set ink2Image(imageData: ImageData) {
+    let canvas = this.getInk2Canvas_();
+    if (!canvas) {
+      canvas = this.createCanvasHelper_(INK2_CANVAS_ID);
+      const canvasContainer =
+          this.$.thumbnail.querySelector('#canvas-container')!;
+      canvasContainer.insertBefore(canvas, canvasContainer.firstChild);
+    }
+
+    this.setImageHelper_(canvas, imageData);
+  }
+  // </if>
 
   clearImage() {
     if (!this.isPainted()) {
@@ -88,6 +146,12 @@ export class ViewerThumbnailElement extends PolymerElement {
     if (canvas) {
       canvas.remove();
     }
+    // <if expr="enable_pdf_ink2">
+    const ink2Canvas = this.getInk2Canvas_();
+    if (ink2Canvas) {
+      ink2Canvas.remove();
+    }
+    // </if>
     this.removeAttribute(PAINTED_ATTRIBUTE);
   }
 
@@ -95,15 +159,15 @@ export class ViewerThumbnailElement extends PolymerElement {
     return this.$.thumbnail;
   }
 
-  private clockwiseRotationsChanged_() {
-    if (this.getCanvas_()) {
-      this.styleCanvas_();
-    }
+  private getCanvas_(): HTMLCanvasElement|null {
+    return this.shadowRoot.querySelector('#' + PDF_CANVAS_ID);
   }
 
-  private getCanvas_(): HTMLCanvasElement|null {
-    return this.shadowRoot!.querySelector('canvas');
+  // <if expr="enable_pdf_ink2">
+  private getInk2Canvas_(): HTMLCanvasElement|null {
+    return this.shadowRoot.querySelector('#' + INK2_CANVAS_ID);
   }
+  // </if>
 
   /**
    * Calculates the CSS size of the thumbnail depending on the rotation, the
@@ -114,7 +178,8 @@ export class ViewerThumbnailElement extends PolymerElement {
   private getThumbnailCssSize_(rotated: boolean):
       {width: number, height: number} {
     const canvas = this.getCanvas_()!;
-    const isPortrait = canvas.width < canvas.height !== rotated;
+    const isPortrait = (canvas.width !== canvas.height) &&
+        (canvas.width < canvas.height !== rotated);
     const orientedWidth = rotated ? canvas.height : canvas.width;
     const orientedHeight = rotated ? canvas.width : canvas.height;
 
@@ -132,7 +197,7 @@ export class ViewerThumbnailElement extends PolymerElement {
   /**
    * Focuses and scrolls the element into view.
    * The default scroll behavior of focus() acts differently than
-   * scrollIntoView(), which is called in isActiveChanged_(). This method
+   * scrollIntoView(), which is called in updated(). This method
    * unifies the behavior.
    */
   focusAndScroll() {
@@ -148,29 +213,20 @@ export class ViewerThumbnailElement extends PolymerElement {
     this.toggleAttribute(PAINTED_ATTRIBUTE, true);
   }
 
-  private isActiveChanged_() {
-    if (this.isActive) {
-      this.scrollIntoView({block: 'nearest'});
-    }
-  }
-
-  private onClick_() {
-    this.dispatchEvent(new CustomEvent('change-page', {
-      detail: {page: this.pageNumber - 1, origin: ChangePageOrigin.THUMBNAIL},
-      bubbles: true,
-      composed: true,
-    }));
+  protected onClick_() {
+    this.fire(
+        'change-page',
+        {page: this.pageNumber - 1, origin: ChangePageOrigin.THUMBNAIL});
   }
 
   /**
    * Sets the canvas CSS size to maintain the resolution of the thumbnail at any
    * rotation.
    */
-  private styleCanvas_() {
+  private styleCanvas_(canvas: HTMLCanvasElement) {
     assert(this.clockwiseRotations >= 0 && this.clockwiseRotations < 4);
 
-    const canvas = this.getCanvas_()!;
-    const div = this.shadowRoot!.querySelector<HTMLElement>('#thumbnail')!;
+    const div = this.shadowRoot.querySelector<HTMLElement>('#thumbnail')!;
 
     const degreesRotated = this.clockwiseRotations * 90;
     canvas.style.transform = `rotate(${degreesRotated}deg)`;

@@ -5,26 +5,32 @@
 
 import argparse
 import json
-import os
+import urllib.request
+
+def latest():
+  request = urllib.request.Request('https://gitlab.freedesktop.org/libinput/'
+                                   'libei/-/releases/permalink/latest',
+                                   method='HEAD')
+  response = urllib.request.urlopen(request)
+  return response.url.split('/')[-1]
+
 
 def do_latest(*args, **kwargs):
-  print('main')
+  print(latest())
 
 
 def get_download_url(*args, **kwargs):
+  version = latest()
+
   urls = [
       "https://gitlab.freedesktop.org/libinput/libei/-/"
-      "archive/main/libei-main.tar.gz",
-      "https://files.pythonhosted.org/packages/95/"
-      "7e/68018b70268fb4a2a605e2be44ab7b4dd7ce7808adae6c5ef32e34f4b55a/"
-      "MarkupSafe-2.1.2.tar.gz",
+      f"archive/{version}/libei-{version}.tar.gz",
       "https://github.com/WayneD/rsync/archive/refs/tags/v3.2.7.tar.gz",
       "https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.4.114.tar.gz",
   ]
 
   packages = [
-      "libei-main.tar.gz",
-      "MarkupSafe-2.1.2.tar.gz",
+      f"libei-{version}.tar.gz",
       "v3.2.7.tar.gz",  # rsync tar ball
       "linux-5.4.114.tar.gz",
   ]

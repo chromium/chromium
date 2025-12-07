@@ -63,19 +63,23 @@ class PowerMonitorBroadcastSource : public base::PowerMonitorSource {
 
     void Init(mojo::PendingRemote<mojom::PowerMonitor> remote_monitor);
 
-    bool last_reported_on_battery_power_state() const {
-      return last_reported_on_battery_power_state_;
+    base::PowerStateObserver::BatteryPowerStatus
+    last_reported_battery_power_status() const {
+      return last_reported_battery_power_status_;
     }
 
     // device::mojom::PowerMonitorClient implementation
-    void PowerStateChange(bool on_battery_power) override;
+    void PowerStateChange(base::PowerStateObserver::BatteryPowerStatus
+                              battery_power_status) override;
     void Suspend() override;
     void Resume() override;
 
    private:
     mojo::Receiver<device::mojom::PowerMonitorClient> receiver_{this};
 
-    bool last_reported_on_battery_power_state_ = false;
+    base::PowerStateObserver::BatteryPowerStatus
+        last_reported_battery_power_status_ =
+            base::PowerStateObserver::BatteryPowerStatus::kUnknown;
   };
 
   // This constructor is used by test code to mock the Client class.
@@ -85,7 +89,8 @@ class PowerMonitorBroadcastSource : public base::PowerMonitorSource {
 
   Client* client_for_testing() const { return client_.get(); }
 
-  bool IsOnBatteryPower() override;
+  base::PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus()
+      const override;
 
   std::unique_ptr<Client> client_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

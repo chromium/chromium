@@ -1,24 +1,133 @@
 # Copyright 2024 The Chromium Authors
-# Use of this source code is governed by a BSD - style license that can be
+# Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash, "OnTask is only supported in Ash")
+assert(is_chromeos, "OnTask is only supported in Ash")
 
 static_library("on_task") {
   sources = [
+    "locked_quiz_session_manager.cc",
+    "locked_quiz_session_manager.h",
+    "locked_quiz_session_manager_factory.cc",
+    "locked_quiz_session_manager_factory.h",
+    "locked_session_window_tracker_factory.cc",
+    "locked_session_window_tracker_factory.h",
+    "on_task_extensions_manager_impl.cc",
+    "on_task_extensions_manager_impl.h",
+    "on_task_locked_session_navigation_throttle.cc",
+    "on_task_locked_session_navigation_throttle.h",
+    "on_task_locked_session_window_tracker.cc",
+    "on_task_locked_session_window_tracker.h",
+    "on_task_pod_controller_impl.cc",
+    "on_task_pod_controller_impl.h",
     "on_task_system_web_app_manager_impl.cc",
     "on_task_system_web_app_manager_impl.h",
   ]
 
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
+  ]
+
   deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
     "//ash/webui/boca_ui",
+    "//ash/webui/boca_ui:constants",
+    "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
-    "//chrome/browser/apps/app_service",
-    "//chrome/browser/profiles:profile",
+    "//chrome/app:command_ids",
+    "//chrome/browser:primitives",
+    "//chrome/browser/ash/browser_delegate",
+    "//chrome/browser/profiles",
     "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/exclusive_access",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/views/frame:immersive_mode_controller",
+    "//chromeos/ash/components/audio",
+    "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca/on_task",
-    "//content/public/browser",
+    "//chromeos/ash/components/boca/on_task:activity",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/strings:strings_grit",
+    "//chromeos/ui/frame",
+    "//components/keyed_service/content",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/prefs",
+    "//components/sessions",
+    "//components/user_manager",
+    "//components/user_prefs",
+    "//extensions/browser",
+    "//ui/base",
+    "//ui/chromeos",
+
+    # Explicitly depend on boca to get around with circular dependency on
+    # //chrome/browser/apps/almanac_api_client:almanac_api_client
+    "//chrome/browser/ash/boca",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/boca" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "content_settings_handler_unittest.cc",
+    "on_task_extensions_manager_impl_unittest.cc",
+  ]
+
+  deps = [
+    ":on_task",
+    "//ash/webui/boca_ui",
+    "//ash/webui/boca_ui/mojom",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "locked_quiz_session_manager_browsertest.cc",
+    "on_task_locked_session_navigation_throttle_interactive_ui_test.cc",
+    "on_task_locked_session_window_tracker_browsertest.cc",
+    "on_task_pod_controller_impl_browsertest.cc",
+    "on_task_session_manager_browsertest.cc",
+    "on_task_system_web_app_manager_impl_browsertest.cc",
+  ]
+
+  deps = [
+    ":on_task",
+    "//ash",
+    "//ash/webui/boca_ui",
+    "//ash/webui/boca_ui:constants",
+    "//base/test:test_support",
+    "//chrome/browser/ash/boca",
+    "//chrome/browser/ash/browser_delegate",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/views/frame:immersive_mode_controller",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/boca",
+    "//chromeos/ash/components/boca/on_task",
+    "//chromeos/ash/components/boca/on_task:util",
+    "//chromeos/ash/components/boca/proto",
+    "//chromeos/strings:strings_grit",
+    "//chromeos/ui/wm",
+    "//ui/base",
   ]
 }

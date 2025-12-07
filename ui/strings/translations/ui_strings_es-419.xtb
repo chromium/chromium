@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{hace 1 día}other{hace # días}}</translation>
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="1243314992276662751">Cargar</translation>
+<translation id="1253734725326687145">El objetivo táctil se movió a la parte superior derecha. Presiona aquí.</translation>
 <translation id="1266864766717917324">No se pudo compartir <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">Intenta compartir el texto en fragmentos más pequeños.</translation>
@@ -38,6 +39,7 @@
 <translation id="19085484004813472">Esta es una función nueva</translation>
 <translation id="2006524834898217237">Comprueba que este dispositivo tenga conexión a Internet.</translation>
 <translation id="208586643495776849">Vuelve a intentarlo</translation>
+<translation id="2111134541987263231">Activa la opción <ph name="BEGIN_BOLD" />Permitir en modo incógnito<ph name="END_BOLD" />.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 d}other{# d}}</translation>
 <translation id="2148716181193084225">Hoy</translation>
 <translation id="2168039046890040389">Retroceder página</translation>
@@ -48,12 +50,14 @@
 <translation id="2289052229480071835">Presiona los objetivos táctiles en tu pantalla.</translation>
 <translation id="2295140143284145483">Encuesta</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{No se puede encontrar una extensión con el ID <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Comunícate con el administrador.}other{No se pueden encontrar las extensiones con los IDs <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Comunícate con el administrador.}}</translation>
 <translation id="2353636109065292463">Revisando tu conexión a Internet</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2388990488038464401">¿Quieres llamar a este número desde tu teléfono?</translation>
 <translation id="2435457462613246316">Mostrar contraseña</translation>
 <translation id="24452542372838207">Expandir notificación</translation>
 <translation id="2445449901874883781">Usar la densidad alta</translation>
+<translation id="2448407890032181691">El objetivo táctil se movió a la parte inferior derecha. Presiona aquí.</translation>
 <translation id="2482878487686419369">Notificaciones</translation>
 <translation id="2497284189126895209">Todos los archivos</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -70,6 +74,7 @@
 <translation id="2878511608894704031">Borrar todo</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{en 1 día}other{en # días}}</translation>
 <translation id="2922712708897119705">Columna <ph name="COLUMN_NAME" /> dispuesta en orden descendente.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{No se puede encontrar una extensión}other{No se pueden encontrar unas extensiones}}</translation>
 <translation id="3036649622769666520">Abrir archivos</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3087734570205094154">Inferior</translation>
@@ -77,11 +82,12 @@
 <translation id="3157931365184549694">Restaurar</translation>
 <translation id="3183922693828471536">Desplazarse hasta aquí</translation>
 <translation id="3234408098842461169">Flecha abajo</translation>
-<translation id="3240426699337459095">Vínculo copiado</translation>
+<translation id="3240426699337459095">Se copió el vínculo</translation>
 <translation id="3291688615589870984">{DAYS,plural, =1{1 día}other{# días}}</translation>
 <translation id="3295886253693811851">Realizar una llamada desde</translation>
 <translation id="3306688585798492231">Pantalla integrada</translation>
 <translation id="335581015389089642">Voz</translation>
+<translation id="3372635229069101468">Haz clic en <ph name="BEGIN_BOLD" />Detalles<ph name="END_BOLD" />.</translation>
 <translation id="3389286852084373014">El texto es demasiado largo</translation>
 <translation id="3406306243914553062">Contenido HTML</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{Falta 1 día.}other{Faltan # días.}}</translation>
@@ -102,7 +108,9 @@
 <translation id="3994749195054421561">Columna <ph name="COLUMN_NAME" /> dispuesta en orden ascendente.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 notificación sin leer}other{# notificaciones sin leer}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Activa la siguiente extensión en modo Incógnito:}other{Activa las siguientes extensiones en modo Incógnito:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Hace 1 mes}other{Hace # meses}}</translation>
+<translation id="4277033906326892359">Columna <ph name="COLUMN_NAME" /> dispuesta en orden ascendente</translation>
 <translation id="4289300219472526559">Empezar a hablar</translation>
 <translation id="4289540628985791613">Descripción general</translation>
 <translation id="4491109536499578614">Imagen</translation>
@@ -113,6 +121,8 @@
 <translation id="4729257764711776855">número</translation>
 <translation id="4746179598275229723">Se dejó de fijar la extensión</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{Queda 1 mes}other{Quedan # meses}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Para usar el modo Incógnito, tu organización requiere una extensión}other{Para usar el modo Incógnito, tu organización necesita algunas extensiones}}</translation>
+<translation id="482932175346970750">Escribe <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> en tu navegador.</translation>
 <translation id="4888938634149558681">Realizar llamada</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 segundo}other{# segundos}}</translation>
@@ -121,6 +131,7 @@
 <translation id="5076340679995252485">&amp;Pegar</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">No se pudo enviar</translation>
+<translation id="5283101102242354279">Activa una extensión en el modo Incógnito:</translation>
 <translation id="528468243742722775">Finalizar</translation>
 <translation id="5329858601952122676">&amp;Suprimir</translation>
 <translation id="5361107212971249203">texto</translation>
@@ -129,13 +140,16 @@
 <translation id="5528053674512161860">No se pudo cargar la página porque el módulo de IU del desarrollador (dev_ui) no está instalado</translation>
 <translation id="5574202486608032840">Sistema <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Tecla de retroceso</translation>
+<translation id="5606865426897221650">Tab</translation>
 <translation id="5613020302032141669">Flecha izquierda</translation>
 <translation id="5633029987065897167">Vacío</translation>
+<translation id="5651438382973553530">El objetivo táctil se movió a la parte inferior izquierda. Presiona aquí.</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min}other{# min}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Activo hoy}=1{Activo hace 1 día}other{Activo hace # días}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 día y }other{# días y }}</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5843690142429128814">Imagen.</translation>
+<translation id="5860491529813859533">Activar</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{en 1 año}other{en # años}}</translation>
 <translation id="588258955323874662">Pantalla completa</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{Falta 1 segundo.}other{Faltan # segundos.}}</translation>
@@ -151,6 +165,7 @@
 <translation id="6264365405983206840">Seleccion&amp;ar todo</translation>
 <translation id="6346952829206698721">Pegar desde el portapapeles</translation>
 <translation id="6364916375976753737">Desplazar hacia la izquierda</translation>
+<translation id="63712816010840859">Si la pantalla actual no es táctil, presiona Esc.</translation>
 <translation id="6394627529324717982">Coma</translation>
 <translation id="6397363302884558537">Dejar de hablar</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{Hace 1 s.}other{Hace # s.}}</translation>
@@ -162,9 +177,11 @@
 <translation id="6612467943526193239">Para salir de las opciones de calibración, presiona Esc.</translation>
 <translation id="6620110761915583480">Guardar archivo</translation>
 <translation id="6699343763173986273">Pista multimedia siguiente</translation>
+<translation id="6738856801552481343">Si esta pantalla no es táctil, presiona Esc.</translation>
+<translation id="6807086321996342431">Columna <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">Detener contenido multimedia</translation>
 <translation id="6845383723252244143">Seleccionar carpeta</translation>
-<translation id="6863590663815976734">{HOURS,plural, =1{Falta 1 hora.}other{Faltan # horas.}}</translation>
+<translation id="6863590663815976734">{HOURS,plural, =1{falta 1 hora}other{faltan # horas}}</translation>
 <translation id="688711909580084195">Página web sin título</translation>
 <translation id="6902419395050653510">Contenido HTML.</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> PB/s</translation>
@@ -176,6 +193,7 @@
 <translation id="7170202025028120564">La próxima vez que reinicies la aplicación, se implementará la configuración de pantalla.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{Falta 1 min.}other{Faltan # min.}}</translation>
+<translation id="7252604552361840748">Busca la extensión anterior.</translation>
 <translation id="7363164521834647158">Enviar respuesta</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{Hace 1 min.}other{Hace # min.}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
@@ -192,16 +210,15 @@
 <translation id="7969046989155602842">Comando</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Más de 1 notificación sin leer}other{Más de # notificaciones sin leer}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{en 1 min}other{en # min}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">Número de <ph name="ORIGIN" /></translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{Hace 1 hora.}other{Hace # horas.}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{Falta 1 s.}other{Faltan # s.}}</translation>
 <translation id="8134065097954893699">Vuelve a cargar esta página</translation>
+<translation id="813785873406874127">Columna <ph name="COLUMN_NAME" /> sin ordenar</translation>
 <translation id="815598010540052116">Desplazar hacia abajo</translation>
 <translation id="8179976553408161302">Intro</translation>
 <translation id="8210608804940886430">Avanzar página</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8245914219290430011">Tabulador</translation>
 <translation id="8259556432390118667">Valor de color hexadecimal</translation>
 <translation id="8328145009876646418">Borde izquierdo</translation>
 <translation id="8331626408530291785">Desplazar hacia arriba</translation>
@@ -209,6 +226,7 @@
 <translation id="8393700583063109961">Enviar mensaje</translation>
 <translation id="8394908167088220973">Reproducir o pausar contenido multimedia</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 a}other{# a}}</translation>
+<translation id="8582972250170726813">Columna <ph name="COLUMN_NAME" /> dispuesta en orden descendente</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> Archivo (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>
@@ -225,7 +243,9 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 s}other{# s}}</translation>
 <translation id="9059834730836941392">Contraer notificación</translation>
 <translation id="9170848237812810038">&amp;Deshacer</translation>
-<translation id="932327136139879170">Página principal</translation>
+<translation id="9195990613383871904">Mañana</translation>
+<translation id="928628199082367701">Super</translation>
+<translation id="932327136139879170">Casa</translation>
 <translation id="944069440740578670">Notificaciones sin leer</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{hace 1 segundo}other{hace # segundos}}</translation>
 </translationbundle>

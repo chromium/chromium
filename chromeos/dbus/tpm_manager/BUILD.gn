@@ -13,7 +13,7 @@ component("tpm_manager") {
   deps = [
     ":tpm_manager_proto",
     "//base",
-    "//chromeos/dbus/constants:constants",
+    "//chromeos/dbus/constants",
     "//dbus",
   ]
 

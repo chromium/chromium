@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -61,7 +60,7 @@ class TestBase : public WebSocketStreamCreateTestBase {
                         const std::string& response_body) {
     url_request_context_host_.SetExpectations(
         WebSocketStandardRequestWithCookies(
-            url.path(), url.host(), origin, cookie_header,
+            url.GetPath(), url.GetHost(), origin, cookie_header,
             /*send_additional_request_headers=*/{}, /*extra_headers=*/{}),
         response_body);
     CreateAndConnectStream(url, NoSubProtocols(), origin, site_for_cookies,

@@ -1,0 +1,22 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++comboBoxSelect name='Transformer' value='Random Transformer' setSize=7 posInSet=1
+++++++++menuListPopup activedescendantId=menuListOption setSize=7 ispopup=auto
+++++++++++menuListOption name='Random Transformer' setSize=7 posInSet=1 selected=true
+++++++++++group name='group 1'
+++++++++++++genericContainer ignored
+++++++++++++++menuListOption name='Optimus Prime' setSize=7 posInSet=2 selected=false
+++++++++++++++menuListOption name='Bumblebee' setSize=7 posInSet=3 selected=false
+++++++++++++++menuListOption name='Jazz' setSize=7 posInSet=4 selected=false
+++++++++++group name='group 2'
+++++++++++++genericContainer ignored
+++++++++++++++legend ignored
+++++++++++++++++staticText name='group '
+++++++++++++++++++inlineTextBox name='group '
+++++++++++++++++mark
+++++++++++++++++++staticText name='2'
+++++++++++++++++++++inlineTextBox name='2'
+++++++++++++++menuListOption name='Megatron' setSize=7 posInSet=5 selected=false
+++++++++++++++menuListOption name='Starscream' setSize=7 posInSet=6 selected=false
+++++++++++++++menuListOption name='Brawl' setSize=7 posInSet=7 selected=false

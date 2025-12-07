@@ -6,17 +6,19 @@
 
 namespace content {
 
-const char kV8SnapshotDataDescriptor[] = "v8_snapshot_data";
-
+#if BUILDFLAG(IS_ANDROID)
 const char kV8Snapshot32DataDescriptor[] = "v8_snapshot_32_data";
 
 const char kV8Snapshot64DataDescriptor[] = "v8_snapshot_64_data";
 
-const char kV8ContextSnapshotDataDescriptor[] = "v8_context_snapshot_data";
-
 const char kV8ContextSnapshot32DataDescriptor[] = "v8_context_snapshot_32_data";
 
 const char kV8ContextSnapshot64DataDescriptor[] = "v8_context_snapshot_64_data";
+#else
+const char kV8SnapshotDataDescriptor[] = "v8_snapshot_data";
+
+const char kV8ContextSnapshotDataDescriptor[] = "v8_context_snapshot_data";
+#endif  // BUILDFLAG(IS_ANDROID)
 
 const char kNetworkContextParentDirsDescriptor[] = "network_parent_dirs_pipe";
 

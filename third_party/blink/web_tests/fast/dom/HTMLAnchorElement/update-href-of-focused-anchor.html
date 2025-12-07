@@ -5,11 +5,12 @@
 <script>
 jsTestIsAsync = true;
 var target = document.getElementById('target');
-window.onload = function() {
+window.onload = async function() {
     debug('Remove href.');
     target.focus();
     shouldBe('document.activeElement', 'target');
     target.removeAttribute('href');
+    await new Promise(setTimeout);
     shouldBe('document.activeElement', 'document.body');
 
     debug('Update href.');

@@ -16,10 +16,12 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/map_util.h"
 #include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
 #include "base/json/json_writer.h"
 #include "base/memory/singleton.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -31,6 +33,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/file_util.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handler.h"
@@ -97,7 +100,7 @@ bool IsManifestSupported(int manifest_version,
       manifest_version <= kMaximumSupportedManifestVersion) {
     // Emit a warning for unpacked extensions on Manifest V2 warning that
     // MV2 is deprecated.
-    if (type == Manifest::TYPE_EXTENSION && manifest_version == 2 &&
+    if (type == Manifest::Type::kExtension && manifest_version == 2 &&
         Manifest::IsUnpackedLocation(location) &&
         !g_silence_deprecated_manifest_version_warnings) {
       *warning = errors::kManifestV2IsDeprecatedWarning;
@@ -127,7 +130,7 @@ bool IsManifestSupported(int manifest_version,
   bool allow_legacy_extensions =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kAllowLegacyExtensionManifests);
-  if (type == Manifest::TYPE_EXTENSION && allow_legacy_extensions) {
+  if (type == Manifest::Type::kExtension && allow_legacy_extensions) {
     return true;
   }
 
@@ -136,12 +139,12 @@ bool IsManifestSupported(int manifest_version,
   }
 
   static constexpr int kMinimumExtensionManifestVersion = 2;
-  if (type == Manifest::TYPE_EXTENSION) {
+  if (type == Manifest::Type::kExtension) {
     return manifest_version >= kMinimumExtensionManifestVersion;
   }
 
   static constexpr int kMinimumPlatformAppManifestVersion = 2;
-  if (type == Manifest::TYPE_PLATFORM_APP) {
+  if (type == Manifest::Type::kPlatformApp) {
     return manifest_version >= kMinimumPlatformAppManifestVersion;
   }
 
@@ -177,8 +180,7 @@ bool ComputeExtensionID(const base::Value::Dict& manifest,
   // reloading the extension.
   *extension_id = crx_file::id_util::GenerateIdForPath(path);
   if (extension_id->empty()) {
-    NOTREACHED_IN_MIGRATION() << "Could not create ID from path.";
-    return false;
+    NOTREACHED() << "Could not create ID from path.";
   }
   return true;
 }
@@ -235,32 +237,25 @@ scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
                                            ManifestLocation location,
                                            const base::Value::Dict& value,
                                            int flags,
-                                           std::string* utf8_error) {
-  return Extension::Create(path,
-                           location,
-                           value,
-                           flags,
+                                           std::u16string* error) {
+  return Extension::Create(path, location, value, flags,
                            std::string(),  // ID is ignored if empty.
-                           utf8_error);
+                           error);
 }
 
-// TODO(sungguk): Continue removing std::string errors and replacing
-// with std::u16string. See http://crbug.com/71980.
 scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
                                            ManifestLocation location,
                                            const base::Value::Dict& value,
                                            int flags,
                                            const ExtensionId& explicit_id,
-                                           std::string* utf8_error) {
+                                           std::u16string* error) {
   base::ElapsedTimer timer;
-  DCHECK(utf8_error);
-  std::u16string error;
+  DCHECK(error);
 
   ExtensionId extension_id;
   if (!explicit_id.empty()) {
     extension_id = explicit_id;
-  } else if (!ComputeExtensionID(value, path, flags, &error, &extension_id)) {
-    *utf8_error = base::UTF16ToUTF8(error);
+  } else if (!ComputeExtensionID(value, path, flags, error, &extension_id)) {
     return nullptr;
   }
 
@@ -279,32 +274,55 @@ scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
   scoped_refptr<Extension> extension = new Extension(path, std::move(manifest));
   extension->install_warnings_.swap(install_warnings);
 
-  if (!extension->InitFromValue(flags, &error)) {
-    *utf8_error = base::UTF16ToUTF8(error);
-    return nullptr;
-  }
-
+  // Some manifest parsing may require the dynamic URL to be present on the
+  // extension; instantiate it now.
   extension->guid_ = base::Uuid::GenerateRandomV4();
   extension->dynamic_url_ = Extension::GetBaseURLFromExtensionId(
       extension->guid_.AsLowercaseString());
+
+  if (!extension->InitFromValue(flags, error)) {
+    return nullptr;
+  }
 
   return extension;
 }
 
 Manifest::Type Extension::GetType() const {
-  return converted_from_user_script() ?
-      Manifest::TYPE_USER_SCRIPT : manifest_->type();
+  return converted_from_user_script() ? Manifest::Type::kUserScript
+                                      : manifest_->type();
+}
+
+// static
+GURL Extension::ResolveExtensionURL(const GURL& extension_url,
+                                    std::string_view relative_url) {
+  DCHECK(extension_url.SchemeIs(kExtensionScheme));
+  GURL resolved = extension_url.Resolve(relative_url);
+  if (!url::IsSameOriginWith(resolved, extension_url)) {
+    return GURL();
+  }
+
+  return resolved;
 }
 
 // static
 GURL Extension::GetResourceURL(const GURL& extension_url,
-                               const std::string& relative_path) {
-  DCHECK(extension_url.SchemeIs(kExtensionScheme));
-  return extension_url.Resolve(relative_path);
+                               std::string_view relative_url) {
+  GURL resolved = Extension::ResolveExtensionURL(extension_url, relative_url);
+
+  // Make sure that the relative path is valid. The validation is aligned with
+  // GetResource, i.e. we don't allow retrieving resource URLs for paths that
+  // GetResource would reject.
+  base::FilePath relative_path =
+      file_util::ExtensionURLToRelativeFilePath(resolved);
+  if (ContainsReservedCharacters(relative_path)) {
+    return GURL();
+  }
+
+  return resolved;
 }
 
 bool Extension::ResourceMatches(const URLPatternSet& pattern_set,
-                                const std::string& resource) const {
+                                std::string_view resource) const {
   return pattern_set.MatchesURL(extension_url_.Resolve(resource));
 }
 
@@ -342,14 +360,13 @@ ExtensionResource Extension::GetResource(
 // util class in base:
 // http://code.google.com/p/chromium/issues/detail?id=13572
 // static
-bool Extension::ParsePEMKeyBytes(const std::string& input,
-                                 std::string* output) {
+bool Extension::ParsePEMKeyBytes(std::string_view input, std::string* output) {
   DCHECK(output);
   if (!output || input.length() == 0 || input.length() > kMaxInputSizeBytes) {
     return false;
   }
 
-  std::string working = input;
+  std::string working{input};
   if (base::StartsWith(working, kKeyBeginHeaderMarker,
                        base::CompareCase::SENSITIVE)) {
     working = base::CollapseWhitespaceASCII(working, true);
@@ -377,7 +394,7 @@ bool Extension::ParsePEMKeyBytes(const std::string& input,
 }
 
 // static
-bool Extension::ProducePEM(const std::string& input, std::string* output) {
+bool Extension::ProducePEM(std::string_view input, std::string* output) {
   DCHECK(output);
   if (input.empty()) {
     return false;
@@ -387,7 +404,7 @@ bool Extension::ProducePEM(const std::string& input, std::string* output) {
 }
 
 // static
-bool Extension::FormatPEMForFileOutput(const std::string& input,
+bool Extension::FormatPEMForFileOutput(std::string_view input,
                                        std::string* output,
                                        bool is_public) {
   DCHECK(output);
@@ -443,10 +460,10 @@ bool Extension::OverlapsWithOrigin(const GURL& origin) const {
 
   // Note: patterns and extents ignore port numbers.
   URLPattern origin_only_pattern(kValidWebExtentSchemes);
-  if (!origin_only_pattern.SetScheme(origin.scheme())) {
+  if (!origin_only_pattern.SetScheme(origin.GetScheme())) {
     return false;
   }
-  origin_only_pattern.SetHost(origin.host());
+  origin_only_pattern.SetHost(origin.GetHost());
   origin_only_pattern.SetPath("/*");
 
   URLPatternSet origin_only_pattern_list;
@@ -455,8 +472,8 @@ bool Extension::OverlapsWithOrigin(const GURL& origin) const {
   return web_extent().OverlapsWith(origin_only_pattern_list);
 }
 
-Extension::ManifestData* Extension::GetManifestData(const std::string& key)
-    const {
+Extension::ManifestData* Extension::GetManifestData(
+    std::string_view key) const {
   DCHECK(finished_parsing_manifest_ || thread_checker_.CalledOnValidThread());
   auto iter = manifest_data_.find(key);
   if (iter != manifest_data_.end()) {
@@ -465,10 +482,12 @@ Extension::ManifestData* Extension::GetManifestData(const std::string& key)
   return nullptr;
 }
 
-void Extension::SetManifestData(const std::string& key,
+void Extension::SetManifestData(std::string_view key,
                                 std::unique_ptr<Extension::ManifestData> data) {
-  DCHECK(!finished_parsing_manifest_ && thread_checker_.CalledOnValidThread());
-  manifest_data_[key] = std::move(data);
+  DCHECK(!finished_parsing_manifest_);
+  DCHECK(thread_checker_.CalledOnValidThread());
+  bool inserted = manifest_data_.emplace(key, std::move(data)).second;
+  DCHECK(inserted);
 }
 
 void Extension::SetGUID(const ExtensionGuid& guid) {
@@ -803,8 +822,7 @@ bool Extension::LoadManifestVersion(std::u16string* error) {
   std::string warning;
   if (!IsManifestSupported(manifest_version_, GetType(), location(),
                            creation_flags_, &warning)) {
-    std::string json;
-    base::JSONWriter::Write(*manifest_->value(), &json);
+    std::string json = base::WriteJson(*manifest_->value()).value_or("");
     LOG(WARNING) << "Failed to load extension.  Manifest JSON: " << json;
     *error = InvalidManifestVersionError(
         key_exists ? errors::kInvalidManifestVersionUnsupported

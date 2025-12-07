@@ -12,6 +12,7 @@
 #include "ash/login/ui/animation_frame.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/view.h"
@@ -25,6 +26,7 @@ class ASH_EXPORT AnimatedRoundedImageView : public views::View {
  public:
   enum class Playback {
     kFirstFrameOnly,  // Only the first frame in the animation will be shown.
+    kLastFrameOnly,   // Only the last frame in the animation will be shown.
     kSingle,          // Play the animation only once.
     kRepeat,          // Play the animation repeatedly.
   };
@@ -52,6 +54,9 @@ class ASH_EXPORT AnimatedRoundedImageView : public views::View {
   // Show a static image.
   void SetImage(const gfx::ImageSkia& image);
 
+  // Show a static image from image model.
+  void SetImageModel(const ui::ImageModel& image_model);
+
   // Set playback type of the animation.
   void SetAnimationPlayback(Playback playback);
 
@@ -59,6 +64,9 @@ class ASH_EXPORT AnimatedRoundedImageView : public views::View {
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   void OnPaint(gfx::Canvas* canvas) override;
+
+  // Invalidate frames. The next OnPaint will rebuild the frames.
+  void InvalidateFrames();
 
  private:
   void StartOrStopAnimation();

@@ -2,27 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/v4l2/v4l2_utils.h"
 
 #include <fcntl.h>
 #include <sys/ioctl.h>
 
+#include <algorithm>
 #include <iomanip>
 #include <iostream>
 #include <map>
 #include <sstream>
 
-// build_config.h must come before BUILDFLAG()
-#include "build/build_config.h"
-#if BUILDFLAG(IS_CHROMEOS)
-#include <linux/media/av1-ctrls.h>
+#if BUILDFLAG(IS_LINUX)
+#include <drm_fourcc.h>
 #endif
 
 #include "base/containers/contains.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/ranges/algorithm.h"
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
@@ -30,6 +33,7 @@
 #include "media/base/video_types.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/macros.h"
+#include "media/gpu/v4l2/v4l2_device.h"
 #include "media/media_buildflags.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -46,22 +50,28 @@
 #define MAKE_V4L2_CODEC_PAIR(codec, suffix) \
   std::make_pair(codec##_##suffix, codec)
 
+#ifndef DRM_FORMAT_MOD_MTK_16L_32S_TILE
+#define DRM_FORMAT_MOD_MTK_16L_32S_TILE 0x0b00000000000001
+#endif
+
 namespace {
 int HandledIoctl(int fd, int request, void* arg) {
   return HANDLE_EINTR(ioctl(fd, request, arg));
 }
+
+std::string GetDriverName(const media::IoctlAsCallback& ioctl_cb) {
+  struct v4l2_capability caps;
+  memset(&caps, 0, sizeof(caps));
+  if (ioctl_cb.Run(VIDIOC_QUERYCAP, &caps) != 0) {
+    VPLOGF(1) << "ioctl() failed: VIDIOC_QUERYCAP" << ", caps check failed: 0x"
+              << std::hex << caps.capabilities;
+    return "";
+  }
+
+  return std::string(reinterpret_cast<const char*>(caps.driver));
+}
 }  // namespace
 namespace media {
-
-void RecordMediaIoctlUMA(MediaIoctlRequests function) {
-  base::UmaHistogramEnumeration("Media.V4l2VideoDecoder.MediaIoctlError",
-                                function);
-}
-
-void RecordVidiocIoctlErrorUMA(VidiocIoctlRequests function) {
-  base::UmaHistogramEnumeration("Media.V4l2VideoDecoder.VidiocIoctlError",
-                                function);
-}
 
 const char* V4L2MemoryToString(const v4l2_memory memory) {
   switch (memory) {
@@ -193,7 +203,7 @@ VideoCodecProfile V4L2ProfileToVideoCodecProfile(uint32_t v4l2_codec,
       }
       break;
 #endif
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(USE_AV1_HW_DECODER)
     case V4L2_CID_MPEG_VIDEO_AV1_PROFILE:
       switch (v4l2_profile) {
         case V4L2_MPEG_VIDEO_AV1_PROFILE_MAIN:
@@ -233,6 +243,12 @@ std::optional<VideoFrameLayout> V4L2FormatToVideoFrameLayout(
     return std::nullopt;
   }
   const VideoPixelFormat video_format = video_fourcc->ToVideoPixelFormat();
+  uint64_t modifiers = gfx::NativePixmapHandle::kNoModifier;
+#if BUILDFLAG(IS_LINUX)
+  if (video_fourcc == Fourcc(Fourcc::MM21)) {
+    modifiers = DRM_FORMAT_MOD_MTK_16L_32S_TILE;
+  }
+#endif
   const size_t num_buffers = pix_mp.num_planes;
   const size_t num_color_planes = VideoFrame::NumPlanes(video_format);
   if (num_color_planes == 0) {
@@ -303,11 +319,11 @@ std::optional<VideoFrameLayout> V4L2FormatToVideoFrameLayout(
   if (num_buffers == 1) {
     return VideoFrameLayout::CreateWithPlanes(
         video_format, gfx::Size(pix_mp.width, pix_mp.height), std::move(planes),
-        buffer_alignment);
+        buffer_alignment, modifiers);
   } else {
     return VideoFrameLayout::CreateMultiPlanar(
         video_format, gfx::Size(pix_mp.width, pix_mp.height), std::move(planes),
-        buffer_alignment);
+        buffer_alignment, modifiers);
   }
 }
 
@@ -319,14 +335,13 @@ static const std::map<v4l2_enum_type, v4l2_enum_type>
         {V4L2_PIX_FMT_H264, V4L2_CID_MPEG_VIDEO_H264_PROFILE},
         {V4L2_PIX_FMT_H264_SLICE, V4L2_CID_MPEG_VIDEO_H264_PROFILE},
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-        {V4L2_PIX_FMT_HEVC, V4L2_CID_MPEG_VIDEO_HEVC_PROFILE},
         {V4L2_PIX_FMT_HEVC_SLICE, V4L2_CID_MPEG_VIDEO_HEVC_PROFILE},
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
         {V4L2_PIX_FMT_VP8, V4L2_CID_MPEG_VIDEO_VP8_PROFILE},
         {V4L2_PIX_FMT_VP8_FRAME, V4L2_CID_MPEG_VIDEO_VP8_PROFILE},
         {V4L2_PIX_FMT_VP9, V4L2_CID_MPEG_VIDEO_VP9_PROFILE},
         {V4L2_PIX_FMT_VP9_FRAME, V4L2_CID_MPEG_VIDEO_VP9_PROFILE},
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(USE_AV1_HW_DECODER)
         {V4L2_PIX_FMT_AV1, V4L2_CID_MPEG_VIDEO_AV1_PROFILE},
         {V4L2_PIX_FMT_AV1_FRAME, V4L2_CID_MPEG_VIDEO_AV1_PROFILE},
 #endif
@@ -347,7 +362,7 @@ static const std::map<v4l2_enum_type, std::vector<VideoCodecProfile>>
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
         {V4L2_CID_MPEG_VIDEO_VP8_PROFILE, {VP8PROFILE_ANY}},
         {V4L2_CID_MPEG_VIDEO_VP9_PROFILE, {VP9PROFILE_PROFILE0}},
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(USE_AV1_HW_DECODER)
         {V4L2_CID_MPEG_VIDEO_AV1_PROFILE, {AV1PROFILE_PROFILE_MAIN}},
 #endif
 };
@@ -367,7 +382,7 @@ static const std::map<VideoCodecProfile,
         {VP8PROFILE_ANY, MAKE_V4L2_CODEC_PAIR(V4L2_PIX_FMT_VP8, FRAME)},
         {VP9PROFILE_PROFILE0, MAKE_V4L2_CODEC_PAIR(V4L2_PIX_FMT_VP9, FRAME)},
         {VP9PROFILE_PROFILE2, MAKE_V4L2_CODEC_PAIR(V4L2_PIX_FMT_VP9, FRAME)},
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(USE_AV1_HW_DECODER)
         {AV1PROFILE_PROFILE_MAIN,
          MAKE_V4L2_CODEC_PAIR(V4L2_PIX_FMT_AV1, FRAME)},
 #endif
@@ -444,8 +459,7 @@ std::vector<VideoCodecProfile> EnumerateSupportedProfilesForV4L2Codec(
 
   v4l2_queryctrl query_ctrl = {.id = static_cast<__u32>(profile_cid)};
   if (ioctl_cb.Run(VIDIOC_QUERYCTRL, &query_ctrl) != kIoctlOk) {
-    // This happens for example for VP8 on Hana MTK8173, or for HEVC on Trogdor
-    // QC SC7180) at the time of writing.
+    // This happens for example for VP8 on Hana MTK8173 at the time of writing.
     DVLOGF(4) << "Driver doesn't support enumerating "
               << FourccToString(codec_as_pix_fmt)
               << " profiles, using default ones.";
@@ -477,8 +491,9 @@ std::vector<VideoCodecProfile> EnumerateSupportedProfilesForV4L2Codec(
 
   // Erase duplicated profiles. This is needed because H264PROFILE_BASELINE maps
   // to both V4L2_MPEG_VIDEO_H264_PROFILE__BASELINE/CONSTRAINED_BASELINE
-  base::ranges::sort(profiles);
-  profiles.erase(base::ranges::unique(profiles), profiles.end());
+  std::ranges::sort(profiles);
+  auto to_remove = std::ranges::unique(profiles);
+  profiles.erase(to_remove.begin(), to_remove.end());
   return profiles;
 }
 
@@ -515,7 +530,8 @@ void GetSupportedResolution(const IoctlAsCallback& ioctl_cb,
   memset(&frame_size, 0, sizeof(frame_size));
   frame_size.pixel_format = pixelformat;
   if (ioctl_cb.Run(VIDIOC_ENUM_FRAMESIZES, &frame_size) == kIoctlOk) {
-    if (frame_size.type == V4L2_FRMSIZE_TYPE_STEPWISE) {
+    if (frame_size.type == V4L2_FRMSIZE_TYPE_STEPWISE ||
+        frame_size.type == V4L2_FRMSIZE_TYPE_CONTINUOUS) {
       max_resolution->SetSize(frame_size.stepwise.max_width,
                               frame_size.stepwise.max_height);
       min_resolution->SetSize(frame_size.stepwise.min_width,
@@ -550,46 +566,71 @@ base::TimeDelta TimeValToTimeDelta(const struct timeval& timeval) {
 struct timeval TimeDeltaToTimeVal(base::TimeDelta time_delta) {
   const int64_t time_delta_linear = time_delta.InMicroseconds();
   constexpr int64_t kMicrosecondsPerSecond = 1000 * 1000;
-  return {.tv_sec = base::checked_cast<__time_t>(time_delta_linear /
-                                                 kMicrosecondsPerSecond),
-          .tv_usec = base::checked_cast<__suseconds_t>(time_delta_linear %
-                                                       kMicrosecondsPerSecond)};
+  int64_t tv_sec = time_delta_linear / kMicrosecondsPerSecond;
+  int64_t tv_usec = time_delta_linear % kMicrosecondsPerSecond;
+
+  // Ensure that microseconds timeval field is non-negative.
+  if (tv_usec < 0) {
+    tv_usec += kMicrosecondsPerSecond;
+    tv_sec -= 1;
+  }
+
+  return {.tv_sec = base::checked_cast<__time_t>(tv_sec),
+          .tv_usec = base::checked_cast<__suseconds_t>(tv_usec)};
 }
 
 std::optional<SupportedVideoDecoderConfigs> GetSupportedV4L2DecoderConfigs() {
   SupportedVideoDecoderConfigs supported_media_configs;
+  std::vector<std::string> candidate_paths;
 
-  constexpr char kVideoDeviceDriverPath[] = "/dev/video-dec0";
-  base::ScopedFD device_fd(HANDLE_EINTR(
-      open(kVideoDeviceDriverPath, O_RDWR | O_NONBLOCK | O_CLOEXEC)));
-  if (!device_fd.is_valid()) {
-    PLOG(ERROR) << "Could not open " << kVideoDeviceDriverPath;
-    return std::nullopt;
-  }
-
-  std::vector<uint32_t> v4l2_codecs = EnumerateSupportedPixFmts(
-      base::BindRepeating(&HandledIoctl, device_fd.get()),
-      V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
-
-  for (const uint32_t v4l2_codec : v4l2_codecs) {
-    const std::vector<VideoCodecProfile> media_codec_profiles =
-        EnumerateSupportedProfilesForV4L2Codec(
-            base::BindRepeating(&HandledIoctl, device_fd.get()), v4l2_codec);
-
-    gfx::Size min_coded_size;
-    gfx::Size max_coded_size;
-    GetSupportedResolution(base::BindRepeating(&HandledIoctl, device_fd.get()),
-                           v4l2_codec, &min_coded_size, &max_coded_size);
-
-    for (const auto& profile : media_codec_profiles) {
-      supported_media_configs.emplace_back(SupportedVideoDecoderConfig(
-          profile, profile, min_coded_size, max_coded_size,
-#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-          /*allow_encrypted=*/true,
+#if BUILDFLAG(IS_CHROMEOS)
+  constexpr char kVideoDevicePattern[] = "/dev/video-dec0";
+  candidate_paths.push_back(kVideoDevicePattern);
 #else
-          /*allow_encrypted=*/false,
+  constexpr char kVideoDevicePattern[] = "/dev/video";
+  constexpr int kMaxDevices = 256;
+  candidate_paths.reserve(kMaxDevices);
+  for (int i = 0; i < kMaxDevices; ++i) {
+    candidate_paths.push_back(
+        base::StringPrintf("%s%d", kVideoDevicePattern, i));
+  }
 #endif
-          /*require_encrypted=*/false));
+
+  for (const auto& path : candidate_paths) {
+    base::ScopedFD device_fd(
+        HANDLE_EINTR(open(path.c_str(), O_RDWR | O_NONBLOCK | O_CLOEXEC)));
+    if (!device_fd.is_valid()) {
+#if BUILDFLAG(IS_CHROMEOS)
+      PLOG(WARNING) << "Could not open " << path;
+#endif
+      continue;
+    }
+
+    std::vector<uint32_t> v4l2_codecs = EnumerateSupportedPixFmts(
+        base::BindRepeating(&HandledIoctl, device_fd.get()),
+        V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
+
+    for (const uint32_t v4l2_codec : v4l2_codecs) {
+      const std::vector<VideoCodecProfile> media_codec_profiles =
+          EnumerateSupportedProfilesForV4L2Codec(
+              base::BindRepeating(&HandledIoctl, device_fd.get()), v4l2_codec);
+
+      gfx::Size min_coded_size;
+      gfx::Size max_coded_size;
+      GetSupportedResolution(
+          base::BindRepeating(&HandledIoctl, device_fd.get()), v4l2_codec,
+          &min_coded_size, &max_coded_size);
+
+      for (const auto& profile : media_codec_profiles) {
+        supported_media_configs.emplace_back(SupportedVideoDecoderConfig(
+            profile, profile, min_coded_size, max_coded_size,
+#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+            /*allow_encrypted=*/true,
+#else
+            /*allow_encrypted=*/false,
+#endif
+            /*require_encrypted=*/false));
+      }
     }
   }
 
@@ -605,9 +646,7 @@ std::optional<SupportedVideoDecoderConfigs> GetSupportedV4L2DecoderConfigs() {
 }
 
 bool IsV4L2DecoderStateful() {
-  constexpr char kVideoDeviceDriverPath[] = "/dev/video-dec0";
-  base::ScopedFD device_fd(HANDLE_EINTR(
-      open(kVideoDeviceDriverPath, O_RDWR | O_NONBLOCK | O_CLOEXEC)));
+  auto device_fd = V4L2Device::OpenFDForType(V4L2Device::Type::kDecoder);
   if (!device_fd.is_valid()) {
     return false;
   }
@@ -619,9 +658,6 @@ bool IsV4L2DecoderStateful() {
   // V4L2 stateful formats (don't end up with _SLICE or _FRAME) supported.
   constexpr std::array<uint32_t, 4> kSupportedStatefulInputCodecs = {
       V4L2_PIX_FMT_H264,
-#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-      V4L2_PIX_FMT_HEVC,
-#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
       V4L2_PIX_FMT_VP8,
       V4L2_PIX_FMT_VP9,
   };
@@ -630,6 +666,18 @@ bool IsV4L2DecoderStateful() {
                             kSupportedStatefulInputCodecs.begin(),
                             kSupportedStatefulInputCodecs.end()) !=
          v4l2_codecs.end();
+}
+
+bool IsVislDriver() {
+  auto device_fd = V4L2Device::OpenFDForType(V4L2Device::Type::kDecoder);
+  if (!device_fd.is_valid()) {
+    return false;
+  }
+
+  std::string v4l2_driver_name =
+      GetDriverName(base::BindRepeating(&HandledIoctl, device_fd.get()));
+
+  return v4l2_driver_name.compare("visl") == 0;
 }
 
 #ifndef NDEBUG

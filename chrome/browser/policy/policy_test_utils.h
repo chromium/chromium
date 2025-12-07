@@ -8,6 +8,7 @@
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "url/gurl.h"
@@ -26,6 +27,10 @@ namespace policy {
 class PolicyMap;
 
 void GetTestDataDirectory(base::FilePath* test_data_directory);
+
+// Returns test_data_directory/dir/<file>.
+base::FilePath GetTestFilePath(const base::FilePath& dir,
+                               const base::FilePath& file);
 
 class PolicyTest : public PlatformBrowserTest {
  public:

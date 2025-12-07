@@ -1,0 +1,51 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions,
+       "Cannot depend on extensions because enable_extensions=false.")
+
+source_set("autofill_private") {
+  sources = [
+    "autofill_ai_util.cc",
+    "autofill_ai_util.h",
+    "autofill_private_api.cc",
+    "autofill_private_api.h",
+    "autofill_private_event_router.cc",
+    "autofill_private_event_router.h",
+    "autofill_private_event_router_factory.cc",
+    "autofill_private_event_router_factory.h",
+    "autofill_util.cc",
+    "autofill_util.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/autofill",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/sync",
+    "//chrome/browser/ui/user_education",
+    "//chrome/common/extensions/api",
+    "//components/autofill/content/browser",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common:credit_card_number_validation",
+    "//components/device_reauth",
+    "//components/feature_engagement/public",
+    "//components/prefs",
+    "//components/strings:components_branded_strings_grit",
+    "//components/strings:components_strings_grit",
+    "//components/sync/service",
+    "//components/variations/service",
+    "//components/wallet/core/browser",
+    "//extensions/browser",
+    "//skia",
+    "//third_party/libaddressinput:util",
+  ]
+}

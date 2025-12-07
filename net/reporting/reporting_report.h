@@ -40,7 +40,6 @@ struct NET_EXPORT ReportingReport {
     SUCCESS,
   };
 
-  // TODO(chlily): Remove |attempts| argument as it is (almost?) always 0.
   ReportingReport(const std::optional<base::UnguessableToken>& reporting_source,
                   const NetworkAnonymizationKey& network_anonymization_key,
                   const GURL& url,
@@ -50,7 +49,6 @@ struct NET_EXPORT ReportingReport {
                   base::Value::Dict body,
                   int depth,
                   base::TimeTicks queued,
-                  int attempts,
                   ReportingTargetType target_type);
 
   // Do NOT use this constructor outside of mojo deserialization context.

@@ -6,6 +6,7 @@ import {assert, assertInstanceof, assertNotReached} from '../assert.js';
 import {reportError} from '../error.js';
 import {Point} from '../geometry.js';
 import * as localDev from '../local_dev.js';
+import {getCanUseBigBuffer} from '../models/load_time_data.js';
 import {
   ErrorLevel,
   ErrorType,
@@ -14,6 +15,7 @@ import {
 import {windowController} from '../window_controller.js';
 
 import {
+  AspectRatio,
   BigBuffer,
   CameraAppHelper,
   CameraAppHelperRemote,
@@ -113,15 +115,32 @@ export async function createNumArrayFromBlob(blob: Blob): Promise<number[]> {
   return castToNumberArray(new Uint8Array(buffer));
 }
 
-export abstract class ChromeHelper {
-  /**
-   * TODO(b/349015781): A flag to determine if we should use BigBuffer. It
-   * will be turned off when something went wrong when using BigBuffer. In the
-   * future, we want to monitor the error metrics to see if this flag is still
-   * needed.
-   */
-  static useBigBuffer = true;
+/**
+ * When BigBuffer fails, set this flag to `true` and fallback to inline buffer
+ * for further calls.
+ */
+let bigBufferFailed = false;
 
+/**
+ * Returns if BigBuffer should be used.
+ */
+export function shouldUseBigBuffer(): boolean {
+  return getCanUseBigBuffer() && !bigBufferFailed;
+}
+
+/**
+ * Sets the `bigBufferFailed` flag and reports the error.
+ */
+export function handleBigBufferError(e: unknown): void {
+  bigBufferFailed = true;
+  reportError(
+      ErrorType.BIG_BUFFER_FAILURE,
+      ErrorLevel.WARNING,
+      assertInstanceof(e, Error),
+  );
+}
+
+export abstract class ChromeHelper {
   /**
    * Starts monitoring tablet mode state of device.
    *
@@ -273,7 +292,7 @@ export abstract class ChromeHelper {
   abstract initLidStateMonitor(onChange: (lidStatus: LidState) => void):
       Promise<LidState>;
 
-  abstract initSWPrivacySwitchMonitor(
+  abstract initSwPrivacySwitchMonitor(
       onChange: (is_sw_privacy_switch_on: boolean) => void): Promise<boolean>;
 
   abstract getEventsSender(): Promise<EventsSenderRemote>;
@@ -287,6 +306,8 @@ export abstract class ChromeHelper {
 
   abstract createPdfBuilder(): PdfBuilderRemote;
 
+  abstract getAspectRatioOrder(): Promise<AspectRatio[]>;
+
   /**
    * Creates a new instance of ChromeHelper if it is not set. Returns the
    *     existing instance.
@@ -298,15 +319,6 @@ export abstract class ChromeHelper {
       instance = getInstanceImpl();
     }
     return instance;
-  }
-
-  static handleBigBufferError(e: unknown): void {
-    ChromeHelper.useBigBuffer = false;
-    reportError(
-        ErrorType.BIG_BUFFER_FAILURE,
-        ErrorLevel.WARNING,
-        assertInstanceof(e, Error),
-    );
   }
 }
 
@@ -524,7 +536,7 @@ class ChromeHelperImpl extends ChromeHelper {
     return lidStatus;
   }
 
-  override async initSWPrivacySwitchMonitor(
+  override async initSwPrivacySwitchMonitor(
       onChange: (is_sw_privacy_switch_on: boolean) => void): Promise<boolean> {
     const monitorCallbackRouter =
         wrapEndpoint(new SWPrivacySwitchMonitorCallbackRouter());
@@ -560,13 +572,13 @@ class ChromeHelperImpl extends ChromeHelper {
 
   override async performOcr(jpeg: Blob): Promise<OcrResult> {
     try {
-      if (ChromeHelper.useBigBuffer) {
+      if (shouldUseBigBuffer()) {
         const bigBuffer = await createBigBufferFromBlob(jpeg);
         const {ocrResult} = await this.remote.performOcr(bigBuffer);
         return ocrResult;
       }
     } catch (e) {
-      ChromeHelper.handleBigBufferError(e);
+      handleBigBufferError(e);
     }
     const numArray = await createNumArrayFromBlob(jpeg);
     const {ocrResult} = await this.remote.performOcrInline(numArray);
@@ -578,5 +590,10 @@ class ChromeHelperImpl extends ChromeHelper {
     const pdfBuilderReceiver = pdfBuilderRemote.$.bindNewPipeAndPassReceiver();
     this.remote.createPdfBuilder(pdfBuilderReceiver);
     return wrapEndpoint(pdfBuilderRemote);
+  }
+
+  override async getAspectRatioOrder(): Promise<AspectRatio[]> {
+    const {order} = await this.remote.getAspectRatioOrder();
+    return order;
   }
 }

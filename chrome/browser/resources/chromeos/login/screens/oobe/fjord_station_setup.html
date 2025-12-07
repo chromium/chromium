@@ -1,0 +1,22 @@
+<style>
+  webview {
+    display: flex;
+    height: 90%;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  oobe-text-button {
+    float: inline-end;
+    padding-inline-end: var(--oobe-adaptive-dialog-buttons-horizontal-padding);
+  }
+</style>
+
+<webview id="fjordStationSetupFrame" src="http://codec.localhost:27702/oobe/station-setup">
+</webview>
+
+<oobe-text-button on-click="onDoneButtonClicked"
+    text-key="fjordStationSetupNextButton"
+    inverse
+    id="primaryButton">
+</oobe-text-button>

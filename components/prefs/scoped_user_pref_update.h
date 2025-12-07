@@ -34,6 +34,7 @@ class COMPONENTS_PREFS_EXPORT ScopedUserPrefUpdateBase {
   ScopedUserPrefUpdateBase& operator=(const ScopedUserPrefUpdateBase&) = delete;
 
  protected:
+  ScopedUserPrefUpdateBase(PrefService& service, std::string_view path);
   ScopedUserPrefUpdateBase(PrefService* service, std::string_view path);
 
   // Calls Notify().
@@ -69,6 +70,8 @@ class COMPONENTS_PREFS_EXPORT ScopedDictPrefUpdate
  public:
   // The underlying dictionary must not be removed from `service` during
   // the lifetime of the created ScopedDictPrefUpdate.
+  ScopedDictPrefUpdate(PrefService& service, std::string_view path)
+      : ScopedUserPrefUpdateBase(service, path) {}
   ScopedDictPrefUpdate(PrefService* service, std::string_view path)
       : ScopedUserPrefUpdateBase(service, path) {}
 
@@ -104,6 +107,8 @@ class COMPONENTS_PREFS_EXPORT ScopedListPrefUpdate
  public:
   // The underlying list must not be removed from `service` during
   // the lifetime of the created ScopedListPrefUpdate.
+  ScopedListPrefUpdate(PrefService& service, std::string_view path)
+      : ScopedUserPrefUpdateBase(service, path) {}
   ScopedListPrefUpdate(PrefService* service, std::string_view path)
       : ScopedUserPrefUpdateBase(service, path) {}
 

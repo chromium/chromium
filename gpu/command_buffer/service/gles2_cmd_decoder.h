@@ -14,14 +14,15 @@
 #include <string_view>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
-#include "base/memory/weak_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/command_buffer/common/constants.h"
+#include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/command_buffer/common/context_result.h"
 #include "gpu/command_buffer/service/common_decoder.h"
 #include "gpu/command_buffer/service/decoder_context.h"
@@ -34,13 +35,13 @@ class GLSurface;
 namespace gpu {
 
 class DecoderClient;
-struct Mailbox;
 
 namespace gles2 {
 
 class ContextGroup;
 class CopyTexImageResourceManager;
 class CopyTextureCHROMIUMResourceManager;
+struct DisallowedFeatures;
 class FramebufferManager;
 class GLES2Util;
 class Logger;
@@ -68,7 +69,7 @@ struct GPU_GLES2_EXPORT DisallowedFeatures {
   }
 
   bool operator==(const DisallowedFeatures& other) const {
-    return !std::memcmp(this, &other, sizeof(*this));
+    return !UNSAFE_TODO(std::memcmp(this, &other, sizeof(*this)));
   }
 
   bool npot_support = false;
@@ -97,10 +98,11 @@ class GPU_GLES2_EXPORT GLES2Decoder : public CommonDecoder,
   static const unsigned int kDefaultStencilMask;
 
   // Creates a decoder.
-  static GLES2Decoder* Create(DecoderClient* client,
-                              CommandBufferServiceBase* command_buffer_service,
-                              Outputter* outputter,
-                              ContextGroup* group);
+  static std::unique_ptr<GLES2Decoder> Create(
+      DecoderClient* client,
+      CommandBufferServiceBase* command_buffer_service,
+      Outputter* outputter,
+      ContextGroup* group);
 
   GLES2Decoder(const GLES2Decoder&) = delete;
   GLES2Decoder& operator=(const GLES2Decoder&) = delete;
@@ -147,19 +149,33 @@ class GPU_GLES2_EXPORT GLES2Decoder : public CommonDecoder,
 
   int GetRasterDecoderId() const override;
 
+  // Initializes the graphics context. Can create an offscreen
+  // decoder with a frame buffer that can be referenced from the parent.
+  // Takes ownership of GLContext.
+  // Parameters:
+  //  surface: the GL surface to render to.
+  //  context: the GL context to render to.
+  //  offscreen: whether to make the context offscreen or not. When FBO 0 is
+  //      bound, offscreen contexts render to an internal buffer, onscreen ones
+  //      to the surface.
+  //  context_type: type of the command buffer, should be WEBGL1, WEBGL2 or
+  //      OPENGLES2.
+  //  lose_context_when_out_of_memory: lose this context in case of out of
+  //      memory errors.
+  // Returns:
+  //   true if successful.
+  virtual gpu::ContextResult Initialize(
+      const scoped_refptr<gl::GLSurface>& surface,
+      const scoped_refptr<gl::GLContext>& context,
+      bool offscreen,
+      ContextType context_type,
+      bool lose_context_when_out_of_memory) = 0;
+
   // Set the surface associated with the default FBO.
   virtual void SetSurface(const scoped_refptr<gl::GLSurface>& surface) = 0;
   // Releases the surface associated with the GL context.
   // The decoder should not be used until a new surface is set.
   virtual void ReleaseSurface() = 0;
-
-  // This is intended only for use with NaCL swapchain, replacing
-  // TakeFrontBuffer/ReturnFrontBuffer flow.
-  virtual void SetDefaultFramebufferSharedImage(const Mailbox& mailbox,
-                                                int samples,
-                                                bool preserve,
-                                                bool needs_depth,
-                                                bool needs_stencil) = 0;
 
   // Gets the GLES2 Util which holds info.
   virtual GLES2Util* GetGLES2Util() = 0;

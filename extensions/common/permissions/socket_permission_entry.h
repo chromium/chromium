@@ -5,17 +5,11 @@
 #define EXTENSIONS_COMMON_PERMISSIONS_SOCKET_PERMISSION_ENTRY_H_
 
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include "content/public/common/socket_permission_request.h"
-#include "ipc/ipc_param_traits.h"
-
-namespace ipc_fuzzer {
-template <class T>
-struct FuzzTraits;
-template <class T>
-struct GenerateTraits;
-}  // namespace ipc_fuzzer
+#include "ipc/param_traits.h"
 
 namespace extensions {
 
@@ -28,10 +22,21 @@ class SocketPermissionEntry {
   SocketPermissionEntry();
   ~SocketPermissionEntry();
 
-  // operators <, == are needed by container std::set and algorithms
-  // std::set_includes and std::set_differences.
-  bool operator<(const SocketPermissionEntry& rhs) const;
-  bool operator==(const SocketPermissionEntry& rhs) const;
+  friend auto operator<=>(const SocketPermissionEntry& a,
+                          const SocketPermissionEntry& b) {
+    return std::tie(a.pattern_.type, a.pattern_.host, a.match_subdomains_,
+                    a.pattern_.port) <=>
+           std::tie(b.pattern_.type, b.pattern_.host, b.match_subdomains_,
+                    b.pattern_.port);
+  }
+
+  friend bool operator==(const SocketPermissionEntry& a,
+                         const SocketPermissionEntry& b) {
+    return std::tie(a.pattern_.type, a.pattern_.host, a.match_subdomains_,
+                    a.pattern_.port) ==
+           std::tie(b.pattern_.type, b.pattern_.host, b.match_subdomains_,
+                    b.pattern_.port);
+  }
 
   bool Check(const content::SocketPermissionRequest& request) const;
 
@@ -69,8 +74,6 @@ class SocketPermissionEntry {
  private:
   // Friend so ParamTraits can serialize us.
   friend struct IPC::ParamTraits<SocketPermissionEntry>;
-  friend struct ipc_fuzzer::FuzzTraits<SocketPermissionEntry>;
-  friend struct ipc_fuzzer::GenerateTraits<SocketPermissionEntry>;
 
   // The permission type, host and port.
   content::SocketPermissionRequest pattern_;

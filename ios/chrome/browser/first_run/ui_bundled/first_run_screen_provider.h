@@ -7,15 +7,14 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/ui/screen/screen_provider.h"
+#import "ios/chrome/browser/screen/ui_bundled/screen_provider.h"
 
-class ChromeBrowserState;
+class ProfileIOS;
 
 // The class that provides a list of first run screens.
 @interface FirstRunScreenProvider : ScreenProvider
 
-- (instancetype)initForBrowserState:(ChromeBrowserState*)browserState
-    NS_DESIGNATED_INITIALIZER;
+- (instancetype)initForProfile:(ProfileIOS*)profile NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

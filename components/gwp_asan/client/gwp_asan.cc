@@ -19,6 +19,7 @@
 #include "base/functional/function_ref.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_math.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
@@ -31,6 +32,11 @@
 #include "components/gwp_asan/client/sampling_helpers.h"
 #include "components/gwp_asan/common/crash_key_name.h"
 #include "partition_alloc/buildflags.h"
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_BUILDFLAG(IS_ANDROID)
+#include "base/system/sys_info.h"
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
+        // PA_BUILDFLAG(IS_ANDROID)
 
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include "components/gwp_asan/client/lightweight_detector/malloc_shims.h"
@@ -124,7 +130,6 @@ constexpr int kMaxEvictionTaskIntervalMs = 10000;
 #endif  // defined(ARCH_CPU_64_BITS)
 
 BASE_FEATURE(kLightweightUafDetector,
-             "LightweightUafDetector",
 #if BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -241,29 +246,30 @@ size_t AllocationSamplingFrequency(const base::Feature& feature,
 // reasons. When both features are enabled, we prefer GWP-ASan to
 // compensate for its lower sampling rate.
 bool IsMutuallyExclusiveFeatureAllowed(const base::Feature& feature) {
-  static auto disabled_features = []() {
-    constexpr double kGwpAsanPickProbability = 0.9;
+  static base::NoDestructor<base::flat_set<const base::Feature*>>
+      disabled_features([]() {
+        constexpr double kGwpAsanPickProbability = 0.9;
 
-    base::flat_set<const base::Feature*> disabled_features;
+        base::flat_set<const base::Feature*> disabled_features;
 
-    bool gwp_asan_enabled =
-        base::FeatureList::IsEnabled(internal::kGwpAsanMalloc) ||
-        base::FeatureList::IsEnabled(internal::kGwpAsanPartitionAlloc);
-    bool lud_enabled =
-        base::FeatureList::IsEnabled(internal::kLightweightUafDetector);
-    if (gwp_asan_enabled && lud_enabled) {
-      if (base::RandDouble() <= kGwpAsanPickProbability) {
-        disabled_features.emplace(&internal::kLightweightUafDetector);
-      } else {
-        disabled_features.emplace(&internal::kGwpAsanMalloc);
-        disabled_features.emplace(&internal::kGwpAsanPartitionAlloc);
-      }
-    }
+        bool gwp_asan_enabled =
+            base::FeatureList::IsEnabled(internal::kGwpAsanMalloc) ||
+            base::FeatureList::IsEnabled(internal::kGwpAsanPartitionAlloc);
+        bool lud_enabled =
+            base::FeatureList::IsEnabled(internal::kLightweightUafDetector);
+        if (gwp_asan_enabled && lud_enabled) {
+          if (base::RandDouble() <= kGwpAsanPickProbability) {
+            disabled_features.emplace(&internal::kLightweightUafDetector);
+          } else {
+            disabled_features.emplace(&internal::kGwpAsanMalloc);
+            disabled_features.emplace(&internal::kGwpAsanPartitionAlloc);
+          }
+        }
 
-    return disabled_features;
-  }();
+        return disabled_features;
+      }());
 
-  return disabled_features.find(&feature) == disabled_features.end();
+  return disabled_features->find(&feature) == disabled_features->end();
 }
 
 }  // namespace
@@ -308,6 +314,21 @@ GWP_ASAN_EXPORT std::optional<AllocatorSettings> GetAllocatorSettingsImpl(
     return std::nullopt;
   }
 
+  const auto sampling_min_size =
+      GetIntParam(feature, "SamplingMinSize", 1, process_type,
+                  [](int /*unused*/) { return false; });
+  if (!sampling_min_size.has_value()) {
+    return std::nullopt;
+  }
+  const auto sampling_max_size =
+      GetIntParam(feature, "SamplingMaxSize", std::numeric_limits<int>::max(),
+                  process_type, [sampling_min_size](int param_int) {
+                    return param_int <= sampling_min_size;
+                  });
+  if (!sampling_max_size.has_value()) {
+    return std::nullopt;
+  }
+
   size_t alloc_sampling_freq =
       AllocationSamplingFrequency(feature, process_type);
   if (!alloc_sampling_freq)
@@ -316,7 +337,9 @@ GWP_ASAN_EXPORT std::optional<AllocatorSettings> GetAllocatorSettingsImpl(
   return AllocatorSettings{static_cast<size_t>(max_allocations.value()),
                            static_cast<size_t>(max_metadata.value()),
                            static_cast<size_t>(total_pages.value()),
-                           alloc_sampling_freq};
+                           alloc_sampling_freq,
+                           static_cast<size_t>(sampling_min_size.value()),
+                           static_cast<size_t>(sampling_max_size.value())};
 }
 
 // Exported for testing.
@@ -496,16 +519,17 @@ void EnableForMalloc(bool boost_sampling, std::string_view process_type) {
   static bool init_once = [&]() -> bool {
     const auto settings = internal::GetAllocatorSettings(
         internal::kGwpAsanMalloc, boost_sampling, process_type);
+    bool activated_gwp_asan = false;
+    if (settings.has_value()) {
+      activated_gwp_asan = internal::InstallMallocHooks(
+          settings.value(),
+          internal::CreateOomCallback("Malloc", process_type,
+                                      settings->sampling_frequency));
+    }
     internal::ReportGwpAsanActivated("Malloc", process_type,
-                                     settings.has_value());
-    if (!settings)
-      return false;
+                                     activated_gwp_asan);
 
-    internal::InstallMallocHooks(
-        settings.value(),
-        internal::CreateOomCallback("Malloc", process_type,
-                                    settings->sampling_frequency));
-    return true;
+    return activated_gwp_asan;
   }();
   std::ignore = init_once;
 #else
@@ -520,16 +544,16 @@ void EnableForPartitionAlloc(bool boost_sampling,
   static bool init_once = [&]() -> bool {
     const auto settings = internal::GetAllocatorSettings(
         internal::kGwpAsanPartitionAlloc, boost_sampling, process_type);
+    bool activated_gwp_asan = false;
+    if (settings.has_value()) {
+      activated_gwp_asan = internal::InstallPartitionAllocHooks(
+          settings.value(),
+          internal::CreateOomCallback("PartitionAlloc", process_type,
+                                      settings->sampling_frequency));
+    }
     internal::ReportGwpAsanActivated("PartitionAlloc", process_type,
-                                     settings.has_value());
-    if (!settings)
-      return false;
-
-    internal::InstallPartitionAllocHooks(
-        settings.value(),
-        internal::CreateOomCallback("PartitionAlloc", process_type,
-                                    settings->sampling_frequency));
-    return true;
+                                     activated_gwp_asan);
+    return activated_gwp_asan;
   }();
   std::ignore = init_once;
 #else
@@ -548,6 +572,21 @@ void MaybeEnableLightweightDetector(bool boost_sampling,
 void MaybeEnableExtremeLightweightDetector(bool boost_sampling,
                                            std::string_view process_type) {
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(IS_ANDROID)
+  // The negative performance impacts of ELUD are not negligible, thus we'd like
+  // to apply ELUD only to high memory devices (approximately high-end devices)
+  // in case of Android. On other platforms, the performance impacts are
+  // acceptable.
+  //
+  // It is very important to filter this condition before
+  // `base::FeatureList::IsEnabled` gets called so that the finch system applies
+  // the experiments to the right devices equally and collects the accurate
+  // statistics from the devices.
+  if (base::SysInfo::AmountOfPhysicalMemory() < base::GiB(8)) {
+    return;
+  }
+#endif  // PA_BUILDFLAG(IS_ANDROID)
+
   if (!base::FeatureList::IsEnabled(internal::kExtremeLightweightUAFDetector)) {
     return;
   }
@@ -571,12 +610,24 @@ void MaybeEnableExtremeLightweightDetector(bool boost_sampling,
   [[maybe_unused]] static bool init_once = [&]() -> bool {
     size_t sampling_frequency = static_cast<size_t>(
         internal::kExtremeLightweightUAFDetectorSamplingFrequency.Get());
-    size_t quarantine_capacity_in_bytes = static_cast<size_t>(
-        internal::kExtremeLightweightUAFDetectorQuarantineCapacityInBytes
+    size_t quarantine_capacity_for_small_objects_in_bytes = static_cast<size_t>(
+        internal::
+            kExtremeLightweightUAFDetectorQuarantineCapacityForSmallObjectsInBytes
+                .Get());
+    size_t quarantine_capacity_for_large_objects_in_bytes = static_cast<size_t>(
+        internal::
+            kExtremeLightweightUAFDetectorQuarantineCapacityForLargeObjectsInBytes
+                .Get());
+    size_t object_size_threshold_in_bytes = static_cast<size_t>(
+        internal::kExtremeLightweightUAFDetectorObjectSizeThresholdInBytes
             .Get());
     internal::InstallExtremeLightweightDetectorHooks(
         {.sampling_frequency = sampling_frequency,
-         .quarantine_capacity_in_bytes = quarantine_capacity_in_bytes});
+         .quarantine_capacity_for_small_objects_in_bytes =
+             quarantine_capacity_for_small_objects_in_bytes,
+         .quarantine_capacity_for_large_objects_in_bytes =
+             quarantine_capacity_for_large_objects_in_bytes,
+         .object_size_threshold_in_bytes = object_size_threshold_in_bytes});
     return true;
   }();
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

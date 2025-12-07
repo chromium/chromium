@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("accessibility") {
   sources = [
@@ -24,6 +24,7 @@ static_library("accessibility") {
     "dictation.h",
     "event_handler_common.cc",
     "event_handler_common.h",
+    "facegaze_settings_event_handler.h",
     "magnification_manager.cc",
     "magnification_manager.h",
     "magnifier_type.h",
@@ -39,16 +40,21 @@ static_library("accessibility") {
     "//chrome/browser:browser_process",
     "//chrome/browser:resources",
     "//chrome/browser:resources_grit",
-    "//chrome/browser/ash/accessibility/service",
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/extensions/api/braille_display_private:controller",
+    "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/ui/ash/keyboard",
+    "//chrome/browser/ui/aura/accessibility",
     "//chrome/common",
     "//chrome/common:constants",
+    "//chromeos/ash/components/audio/public/cpp/sounds",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/upstart",
     "//chromeos/ash/components/language_packs",
+    "//chromeos/ash/experiences/settings_ui",
     "//chromeos/dbus/power",
+    "//components/application_locale_storage",
     "//components/input",
     "//components/language/core/browser",
     "//components/language/core/common",
@@ -57,7 +63,7 @@ static_library("accessibility") {
     "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
     "//extensions/common:mojom",
     "//services/accessibility:buildflags",
-    "//services/audio/public/cpp",
+    "//ui/base/interaction",
     "//ui/content_accelerators",
     "//ui/events/ash",
     "//ui/views/controls/webview",
@@ -80,9 +86,6 @@ static_library("accessibility") {
     "//skia",
     "//ui/events/devices",
   ]
-
-  allow_circular_includes_from =
-      [ "//chrome/browser/ash/accessibility/service" ]
 }
 
 static_library("test_support") {
@@ -97,6 +100,8 @@ static_library("test_support") {
     "autoclick_test_utils.h",
     "automation_test_utils.cc",
     "automation_test_utils.h",
+    "chromevox_test_utils.cc",
+    "chromevox_test_utils.h",
     "dictation_test_utils.cc",
     "dictation_test_utils.h",
     "facegaze_test_utils.cc",
@@ -172,6 +177,8 @@ source_set("browser_tests") {
     "dictation_bubble_test_helper.cc",
     "dictation_bubble_test_helper.h",
     "facegaze_browsertest.cc",
+    "facegaze_bubble_test_helper.cc",
+    "facegaze_bubble_test_helper.h",
     "magnification_controller_browsertest.cc",
     "magnification_manager_browsertest.cc",
     "select_to_speak_browsertest.cc",
@@ -186,28 +193,36 @@ source_set("browser_tests") {
   deps = [
     ":accessibility",
     ":test_support",
+    "//ash/app_list",
+    "//ash/app_list/model:app_list_model",
     "//base",
     "//chrome/app:command_ids",
     "//chrome/browser/apps/app_service",
-    "//chrome/browser/ash:test_support",
-    "//chrome/browser/ash/accessibility/service:test_support",
+    "//chrome/browser/ash/accessibility/live_caption:browser_tests",
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/test:test_support",
     "//chrome/browser/ash/base",
-    "//chrome/browser/ash/input_method/ui",
+    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/login/test:test_support",
-    "//chrome/browser/ash/login/ui",
+    "//chrome/browser/ash/preferences",
+    "//chrome/browser/extensions/api/braille_display_private:controller",
+    "//chrome/browser/ui/ash/input_method",
+    "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/shelf",
+    "//chrome/browser/ui/aura/accessibility",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
+    "//components/live_caption",
     "//components/live_caption:constants",
+    "//ui/base/mojom:ui_base_types",
     "//ui/events:test_support",
-
-    # Tests from subdirectories:
-    "//chrome/browser/ash/accessibility/live_caption:browser_tests",
-    "//chrome/browser/ash/accessibility/service:browser_tests",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (is_chromeos_device) {

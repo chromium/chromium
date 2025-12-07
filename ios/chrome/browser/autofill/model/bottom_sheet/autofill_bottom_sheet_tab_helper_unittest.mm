@@ -3,18 +3,22 @@
 // found in the LICENSE file.
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/autofill/core/common/autofill_test_utils.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
+#import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
 #import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_state_test_util.h"
@@ -54,47 +58,46 @@ class AutofillBottomSheetTabHelperTest : public PlatformTest {
   }
 
  protected:
-  class TestAutofillClient : public autofill::ChromeAutofillClientIOS {
-   public:
-    using ChromeAutofillClientIOS::ChromeAutofillClientIOS;
-    autofill::AutofillCrowdsourcingManager* GetCrowdsourcingManager() override {
-      return nullptr;
-    }
-  };
-
   AutofillBottomSheetTabHelperTest()
       : web_client_(std::make_unique<ChromeWebClient>()) {
-    chrome_browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
 
-    web::WebState::CreateParams params(chrome_browser_state_.get());
+    web::WebState::CreateParams params(profile_.get());
     web_state_ = web::WebState::Create(params);
 
     AutofillBottomSheetTabHelper::CreateForWebState(web_state_.get());
     helper_ = AutofillBottomSheetTabHelper::FromWebState(web_state_.get());
 
-    autofill_agent_ = [[AutofillAgent alloc]
-        initWithPrefService:chrome_browser_state_->GetPrefs()
-                   webState:web_state_.get()];
+    autofill_agent_ =
+        [[AutofillAgent alloc] initWithPrefService:profile_->GetPrefs()
+                                          webState:web_state_.get()];
 
     InfoBarManagerImpl::CreateForWebState(web_state_.get());
     infobars::InfoBarManager* infobar_manager =
         InfoBarManagerImpl::FromWebState(web_state_.get());
 
-    autofill_client_ = std::make_unique<TestAutofillClient>(
-        chrome_browser_state_.get(), web_state_.get(), infobar_manager,
-        autofill_agent_);
-
-    autofill::AutofillDriverIOSFactory::CreateForWebState(
-        web_state_.get(), autofill_client_.get(), autofill_agent_,
-        /*app_locale=*/"en");
+    // The AutofillClient has strange dependencies:
+    // - It must be initialized *after* `web_state_` because it depends on
+    //   `web_state_`.
+    // - It must be destroyed *after* `web_state_` because AutofillDriverIOS
+    //   holds a reference to it and is destroyed together with `web_state_`.
+    //
+    // That's why we initialize it in the constructor but put it in the
+    // declaration order above `web_state_`.
+    autofill_client_ = std::make_unique<
+        autofill::WithFakedFromWebState<autofill::ChromeAutofillClientIOS>>(
+        profile_.get(), web_state_.get(), infobar_manager, autofill_agent_);
   }
 
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::WebTaskEnvironment task_environment_;
+  autofill::test::AutofillUnitTestEnvironment autofill_test_environment_{
+      {.disable_server_communication = true}};
   web::ScopedTestingWebClient web_client_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
-  std::unique_ptr<web::WebState> web_state_;
-  AutofillBottomSheetTabHelper* helper_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<autofill::AutofillClient> autofill_client_;
+  std::unique_ptr<web::WebState> web_state_;
+  raw_ptr<AutofillBottomSheetTabHelper> helper_;
   AutofillAgent* autofill_agent_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -137,6 +140,10 @@ TEST_F(AutofillBottomSheetTabHelperTest,
   // Using OnFormMessageReceived to emulate receiving a signal from the
   // proactive password generation listeners. This emulates the trigger (the
   // focus on the listened field), so the bottom sheet should show.
+  helper_->OnFormMessageReceived(form_message);
+
+  // Attempt to trigger a second time but this should be no op this time
+  // because the listeners were detached on the first trigger.
   helper_->OnFormMessageReceived(form_message);
 
   // Verify that the bottom sheet is triggered upon receiving the signal from

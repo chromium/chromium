@@ -4,8 +4,7 @@
 
 import("//extensions/buildflags/buildflags.gni")
 
-assert(enable_extensions,
-       "Cannot depend on extensions because enable_extensions=false.")
+assert(enable_extensions_core)
 
 source_set("content_settings") {
   sources = [
@@ -13,20 +12,27 @@ source_set("content_settings") {
     "content_settings_custom_extension_provider.h",
     "content_settings_helpers.cc",
     "content_settings_helpers.h",
+    "content_settings_service.cc",
+    "content_settings_service.h",
     "content_settings_store.cc",
     "content_settings_store.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
+  public_deps = [
     "//base",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
+    "//extensions/browser:browser_sources",
+    "//extensions/common",
+    "//extensions/common/api",
+  ]
+
+  deps = [
     "//components/permissions:permissions_common",
     "//content/public/browser",
     "//content/public/common",
-    "//extensions/common",
-    "//extensions/common/api",
+    "//url",
   ]
 }

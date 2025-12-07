@@ -4,36 +4,34 @@
 
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 
+#include <stdint.h>
+
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/common/chrome_content_client.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #include "components/invalidation/impl/profile_identity_provider.h"
-#include "components/invalidation/invalidation_factory.h"
 #include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/profile_invalidation_provider.h"
-#include "components/invalidation/public/invalidation_service.h"
-#include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/pref_registry.h"
-#include "content/public/browser/storage_partition.h"
+#include "content/public/browser/browser_context.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/files/file_path.h"
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/device_identity/device_identity_provider.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
@@ -43,22 +41,31 @@
 namespace invalidation {
 namespace {
 
-std::variant<std::unique_ptr<InvalidationService>,
-             std::unique_ptr<InvalidationListener>>
-CreateInvalidationServiceOrListenerImpl(Profile* profile,
-                                        IdentityProvider* identity_provider,
-                                        std::string sender_id,
-                                        std::string project_number,
-                                        std::string log_prefix) {
-  return CreateInvalidationServiceOrListener(
-      identity_provider,
+std::unique_ptr<InvalidationListener> CreateInvalidationListener(
+    Profile* profile,
+    int64_t project_number,
+    std::string log_prefix) {
+  return invalidation::InvalidationListener::Create(
       gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver(),
       instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
           ->driver(),
-      profile->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess(),
-      profile->GetPrefs(), std::move(sender_id), std::move(project_number),
-      std::move(log_prefix));
+      project_number, std::move(log_prefix));
+}
+
+std::unique_ptr<IdentityProvider> CreateIdentityProvider(Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS)
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
+  if (user_manager::UserManager::IsInitialized() &&
+      user_manager::UserManager::Get()->IsLoggedInAsKioskChromeApp() &&
+      connector->IsDeviceEnterpriseManaged()) {
+    return std::make_unique<DeviceIdentityProvider>(
+        DeviceOAuth2TokenServiceFactory::Get());
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  return std::make_unique<ProfileIdentityProvider>(
+      IdentityManagerFactory::GetForProfile(profile));
 }
 
 }  // namespace
@@ -66,7 +73,7 @@ CreateInvalidationServiceOrListenerImpl(Profile* profile,
 // static
 ProfileInvalidationProvider* ProfileInvalidationProviderFactory::GetForProfile(
     Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (ash::IsSigninBrowserContext(profile) ||
       (user_manager::UserManager::IsInitialized() &&
        user_manager::UserManager::Get()->IsLoggedInAsGuest())) {
@@ -98,6 +105,8 @@ ProfileInvalidationProviderFactory::ProfileInvalidationProviderFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
+  // TODO(crbug.com/341377023): `IdentityProvider` is needed for legacy topics
+  // cleanup. Remove it once cleanup is done.
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(gcm::GCMProfileServiceFactory::GetInstance());
   DependsOn(instance_id::InstanceIDProfileServiceFactory::GetInstance());
@@ -118,36 +127,12 @@ ProfileInvalidationProviderFactory::BuildServiceInstanceForBrowserContext(
     return testing_factory_.Run(context);
   }
 
-  std::unique_ptr<IdentityProvider> identity_provider;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  if (user_manager::UserManager::IsInitialized() &&
-      user_manager::UserManager::Get()->IsLoggedInAsKioskApp() &&
-      connector->IsDeviceEnterpriseManaged()) {
-    identity_provider = std::make_unique<DeviceIdentityProvider>(
-        DeviceOAuth2TokenServiceFactory::Get());
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   Profile* profile = Profile::FromBrowserContext(context);
 
-  if (!identity_provider) {
-    identity_provider = std::make_unique<ProfileIdentityProvider>(
-        IdentityManagerFactory::GetForProfile(profile));
-  }
-  ProfileInvalidationProvider::InvalidationServiceOrListenerFactory
-      service_or_listener_factory =
-          base::BindRepeating(&CreateInvalidationServiceOrListenerImpl, profile,
-                              identity_provider.get());
   return std::make_unique<ProfileInvalidationProvider>(
-      std::move(identity_provider), std::move(service_or_listener_factory));
-}
-
-void ProfileInvalidationProviderFactory::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  ProfileInvalidationProvider::RegisterProfilePrefs(registry);
+      profile->GetURLLoaderFactory(),
+      CreateIdentityProvider(profile), profile->GetPrefs(),
+      base::BindRepeating(&CreateInvalidationListener, profile));
 }
 
 }  // namespace invalidation

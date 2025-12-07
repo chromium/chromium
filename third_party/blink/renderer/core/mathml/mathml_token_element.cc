@@ -26,7 +26,7 @@ UChar32 TokenCodePoint(const String& text_content) {
   if ((content_length > 2) || (content_length == 0) ||
       (content_length == 1 && !U16_IS_SINGLE(text_content[0])) ||
       (content_length == 2 && !U16_IS_LEAD(text_content[0])))
-    return kNonCharacter;
+    return uchar::kNonCharacter;
 
   UChar32 character;
   unsigned offset = 0;
@@ -48,7 +48,7 @@ bool MathMLTokenElement::IsPresentationAttribute(
 void MathMLTokenElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name == mathml_names::kMathvariantAttr &&
       EqualIgnoringASCIICase(value, "normal")) {
     AddPropertyToPresentationAttributeStyle(

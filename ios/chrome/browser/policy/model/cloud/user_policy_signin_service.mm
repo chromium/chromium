@@ -4,8 +4,11 @@
 
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service.h"
 
+#import "base/feature_list.h"
 #import "base/logging.h"
 #import "base/time/time.h"
+#import "components/enterprise/browser/identifiers/profile_id_service.h"
+#import "components/enterprise/browser/reporting/common_pref_names.h"
 #import "components/policy/core/browser/cloud/user_policy_signin_service_util.h"
 #import "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
 #import "components/policy/core/common/policy_logger.h"
@@ -16,8 +19,10 @@
 #import "components/signin/public/identity_manager/primary_account_change_event.h"
 #import "google_apis/gaia/core_account_id.h"
 #import "google_apis/gaia/gaia_auth_util.h"
-#import "ios/chrome/browser/policy/model/cloud/user_policy_switch.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/policy/model/reporting/features.h"
+#import "ios/chrome/browser/shared/model/profile/features.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
@@ -28,8 +33,9 @@ namespace {
 //
 // Gets the AccountId from the provided `account_info`.
 AccountId AccountIdFromAccountInfo(const CoreAccountInfo& account_info) {
-  if (account_info.email.empty() || account_info.gaia.empty())
+  if (account_info.email.empty() || account_info.gaia.empty()) {
     return EmptyAccountId();
+  }
 
   return AccountId::FromUserEmailGaiaId(
       gaia::CanonicalizeEmail(account_info.email), account_info.gaia);
@@ -40,8 +46,9 @@ AccountId AccountIdFromAccountInfo(const CoreAccountInfo& account_info) {
 namespace policy {
 
 UserPolicySigninService::UserPolicySigninService(
-    PrefService* browser_state_prefs,
+    PrefService* pref_service,
     PrefService* local_state,
+    enterprise::ProfileIdService* profile_id_service,
     DeviceManagementService* device_management_service,
     UserCloudPolicyManager* policy_manager,
     signin::IdentityManager* identity_manager,
@@ -51,9 +58,14 @@ UserPolicySigninService::UserPolicySigninService(
                                   policy_manager,
                                   identity_manager,
                                   system_url_loader_factory),
-      browser_state_prefs_(browser_state_prefs) {
+      pref_service_(pref_service),
+      profile_id_service_(profile_id_service) {
   if (identity_manager) {
     scoped_identity_manager_observation_.Observe(identity_manager);
+  }
+  if (base::FeatureList::IsEnabled(
+          enterprise_reporting::kCloudProfileReporting)) {
+    CHECK(profile_id_service_);
   }
 
   TryInitialize();
@@ -71,6 +83,16 @@ void UserPolicySigninService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   if (IsSignoutEvent(event)) {
     ShutdownCloudPolicyManager();
+  } else if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    TryInitialize();
+  }
+}
+
+void UserPolicySigninService::OnPolicyFetched(CloudPolicyClient* client) {
+  std::optional<std::string> profile_id = client->profile_id();
+  if (profile_id.has_value() && !profile_id.value().empty()) {
+    pref_service_->SetBoolean(
+        enterprise_reporting::kPoliciesEverFetchedWithProfileId, true);
   }
 }
 
@@ -83,8 +105,7 @@ void UserPolicySigninService::TryInitialize() {
     return;
   }
 
-  if (!IsAnyUserPolicyFeatureEnabled() ||
-      !CanApplyPolicies(/*check_for_refresh_token=*/false)) {
+  if (!CanApplyPolicies(/*check_for_refresh_token=*/false)) {
     // Clear existing user policies if the feature is disabled or if policies
     // can no longer be applied.
     DVLOG_POLICY(3, POLICY_PROCESSING)
@@ -92,46 +113,32 @@ void UserPolicySigninService::TryInitialize() {
     ShutdownCloudPolicyManager();
     return;
   }
-  AccountId account_id =
-      AccountIdFromAccountInfo(identity_manager()->GetPrimaryAccountInfo(
-          GetConsentLevelForRegistration()));
+  AccountId account_id = AccountIdFromAccountInfo(
+      identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
   InitializeForSignedInUser(account_id, system_url_loader_factory());
 }
 
 bool UserPolicySigninService::CanApplyPolicies(bool check_for_refresh_token) {
-  // Can't apply policies for an account that is using Sync if the feature isn't
-  // explicitly enabled.
-  bool sync_on =
-      check_for_refresh_token
-          ? identity_manager()->HasPrimaryAccountWithRefreshToken(
-                signin::ConsentLevel::kSync)
-          : identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync);
-  if (!IsUserPolicyEnabledForSigninOrSyncConsentLevel() && sync_on) {
-    return false;
-  }
-
   return CanApplyPoliciesForSignedInUser(check_for_refresh_token,
-                                         GetConsentLevelForRegistration(),
+                                         signin::ConsentLevel::kSignin,
                                          identity_manager());
 }
 
 std::string UserPolicySigninService::GetProfileId() {
+  if (base::FeatureList::IsEnabled(
+          enterprise_reporting::kCloudProfileReporting)) {
+    return profile_id_service_->GetProfileId().value_or(std::string());
+  }
   // Profile ID hasn't been implemented on iOS yet.
   return std::string();
 }
 
 base::TimeDelta UserPolicySigninService::GetTryRegistrationDelay() {
-  return GetTryRegistrationDelayFromPrefs(browser_state_prefs_);
+  return GetTryRegistrationDelayFromPrefs(pref_service_);
 }
-
-void UserPolicySigninService::ProhibitSignoutIfNeeded() {}
 
 void UserPolicySigninService::UpdateLastPolicyCheckTime() {
-  UpdateLastPolicyCheckTimeInPrefs(browser_state_prefs_);
-}
-
-signin::ConsentLevel UserPolicySigninService::GetConsentLevelForRegistration() {
-  return signin::ConsentLevel::kSignin;
+  UpdateLastPolicyCheckTimeInPrefs(pref_service_);
 }
 
 void UserPolicySigninService::OnUserPolicyNotificationSeen() {

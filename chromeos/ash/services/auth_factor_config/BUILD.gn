@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash, "Only ash builds can depend on //chromeos/ash")
+assert(is_chromeos, "Only ash builds can depend on //chromeos/ash")
 
 static_library("auth_factor_config") {
   sources = [
@@ -29,7 +27,10 @@ static_library("auth_factor_config") {
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/login/auth",
     "//chromeos/ash/components/osauth/public",
+    "//chromeos/ash/components/policy/local_auth_factors",
+    "//components/account_id",
     "//components/prefs",
+    "//components/session_manager/core",
     "//components/user_manager",
   ]
 

@@ -20,15 +20,15 @@ class FakeImageCapture : public media::mojom::blink::ImageCapture {
 
   void Bind(mojo::ScopedMessagePipeHandle handle);
 
-  void GetPhotoState(const WTF::String& source_id,
+  void GetPhotoState(const String& source_id,
                      GetPhotoStateCallback callback) override;
 
-  void SetPhotoOptions(const WTF::String& source_id,
+  void SetPhotoOptions(const String& source_id,
                        media::mojom::blink::PhotoSettingsPtr settings,
                        SetPhotoOptionsCallback callback) override {}
 
-  void TakePhoto(const WTF::String& source_id,
-                 TakePhotoCallback callback) override {}
+  void TakePhoto(const String& source_id, TakePhotoCallback callback) override {
+  }
 
  private:
   mojo::ReceiverSet<media::mojom::blink::ImageCapture> receivers_;

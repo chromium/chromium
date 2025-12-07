@@ -12,12 +12,15 @@
 
 #include "base/base64.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/viz/service/debugger/viz_debugger.h"
 #include "third_party/skia/include/codec/SkCodec.h"
-#include "third_party/skia/include/codec/SkPngDecoder.h"
+#include "third_party/skia/include/codec/SkPngRustDecoder.h"
+#include "third_party/skia/include/core/SkStream.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/skia_span_util.h"
 
 #if VIZ_DEBUGGER_IS_ON()
 
@@ -152,8 +155,8 @@ void VisualDebuggerTestBase::GetFrameData(bool clear_cache) {
     uint32_t red;
     uint32_t green;
     uint32_t blue;
-    std::sscanf(option_dict->FindString("color")->c_str(), "#%x%x%x", &red,
-                &green, &blue);
+    UNSAFE_TODO(std::sscanf(option_dict->FindString("color")->c_str(),
+                            "#%x%x%x", &red, &green, &blue));
 
     option->color_r = red;
     option->color_g = green;
@@ -224,13 +227,13 @@ void VisualDebuggerTestBase::GetFrameData(bool clear_cache) {
           base::Base64Decode(image_base64_encoded);
       EXPECT_TRUE(image_bytes.has_value());
 
-      // |MakeWithoutCopy| is safe because we expect to be done decoding |data|
-      // into |buff.bitmap| before we release |image_bytes|.
-      sk_sp<SkData> data =
-          SkData::MakeWithoutCopy(image_bytes->data(), image_bytes->size());
+      // Safe for `data` to be a span over `image_bytes` because this code will
+      // be done decoding `data` into `buff.bitmap` before releasing
+      // `image_bytes`.
+      sk_sp<SkData> data = gfx::MakeSkDataFromSpanWithoutCopy(*image_bytes);
       SkCodec::Result decode_result;
-      std::unique_ptr<SkCodec> codec =
-          SkPngDecoder::Decode(data, &decode_result);
+      std::unique_ptr<SkCodec> codec = SkPngRustDecoder::Decode(
+          std::make_unique<SkMemoryStream>(std::move(data)), &decode_result);
       EXPECT_EQ(SkCodec::Result::kSuccess, decode_result);
 
       VizDebuggerInternal::BufferInfo buff;

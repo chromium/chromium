@@ -10,7 +10,7 @@
 #include "base/android/jni_string.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ui/autofill/payments/credit_card_scanner_view_delegate.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
@@ -19,7 +19,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/CreditCardScannerBridge_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace autofill {
 
@@ -48,17 +48,14 @@ CreditCardScannerViewAndroid::CreditCardScannerViewAndroid(
           reinterpret_cast<intptr_t>(this),
           web_contents->GetJavaWebContents())) {}
 
-CreditCardScannerViewAndroid::~CreditCardScannerViewAndroid() {}
+CreditCardScannerViewAndroid::~CreditCardScannerViewAndroid() = default;
 
-void CreditCardScannerViewAndroid::ScanCancelled(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& object) {
+void CreditCardScannerViewAndroid::ScanCancelled(JNIEnv* env) {
   delegate_->ScanCancelled();
 }
 
 void CreditCardScannerViewAndroid::ScanCompleted(
     JNIEnv* env,
-    const JavaParamRef<jobject>& object,
     const std::u16string& card_holder_name,
     const std::u16string& card_number,
     jint expiration_month,
@@ -77,3 +74,5 @@ void CreditCardScannerViewAndroid::Show() {
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(CreditCardScannerBridge)

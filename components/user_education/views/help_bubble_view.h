@@ -14,7 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/views/help_bubble_event_relay.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -83,8 +83,6 @@ class HelpBubbleView : public views::BubbleDialogDelegateView {
   // Returns whether the given dialog is a help bubble.
   static bool IsHelpBubble(views::DialogDelegate* dialog);
 
-  bool IsFocusInHelpBubble() const;
-
   views::LabelButton* GetDefaultButtonForTesting() const;
   views::LabelButton* GetNonDefaultButtonForTesting(int index) const;
 
@@ -104,6 +102,7 @@ class HelpBubbleView : public views::BubbleDialogDelegateView {
  private:
   FRIEND_TEST_ALL_PREFIXES(HelpBubbleViewTimeoutTest,
                            RespectsProvidedTimeoutAfterActivate);
+  FRIEND_TEST_ALL_PREFIXES(HelpBubbleViewsTest, RootViewAccessibleName);
   friend class HelpBubbleViewsTest;
   friend class HelpBubbleEventRelay;
 
@@ -155,6 +154,16 @@ class HelpBubbleView : public views::BubbleDialogDelegateView {
   // Observes the anchor view. Dismisses the help bubble if it loses visibility.
   // Useful when our anchor element is not the anchor view.
   std::unique_ptr<AnchorViewObserver> anchor_observer_;
+
+// TODO(https://crbug.com/382611284): On some platforms the help bubble is not
+// minimized with the window, leading to visual artifacts and errors. For now,
+// work around this problem by closing the bubble if the widget is minimized.
+// When the underlying issue is fixed at the framework level, this can be
+// removed.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+  class PrimaryWidgetObserver;
+  std::unique_ptr<PrimaryWidgetObserver> primary_widget_observer_;
+#endif
 
   // Auto close timeout. If the value is 0 (default), the bubble never times
   // out.

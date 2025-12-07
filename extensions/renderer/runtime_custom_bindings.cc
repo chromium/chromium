@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/strings/string_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/view_type.mojom.h"

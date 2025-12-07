@@ -6,11 +6,13 @@
 #define CHROME_BROWSER_PASSWORD_EDIT_DIALOG_ANDROID_PASSWORD_EDIT_DIALOG_BRIDGE_H_
 
 #include <jni.h>
+
 #include <memory>
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/password_edit_dialog/android/password_edit_dialog_bridge_delegate.h"
 
 namespace content {
@@ -101,17 +103,15 @@ class PasswordEditDialogBridge : public PasswordEditDialog {
   // |username| and
   // |password| which are going to be saved.
   void OnDialogAccepted(JNIEnv* env,
-                        const base::android::JavaParamRef<jstring>& username,
-                        const base::android::JavaParamRef<jstring>& password);
+                        std::u16string& username,
+                        std::u16string& password);
 
   // Called from Java when the modal dialog is dismissed.
   void OnDialogDismissed(JNIEnv* env, jboolean dialogAccepted);
 
   // Called from Java to identify whether the credential to be saved/updated
   // will be saved/updated in the account storage.
-  jboolean IsUsingAccountStorage(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& username);
+  jboolean IsUsingAccountStorage(JNIEnv* env, std::u16string& username);
 
  private:
   PasswordEditDialogBridge(

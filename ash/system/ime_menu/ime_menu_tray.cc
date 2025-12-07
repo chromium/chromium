@@ -55,6 +55,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/range/range.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -173,7 +174,6 @@ class ImeMenuLabel : public views::Label {
       const views::SizeBounds& available_size) const override {
     return gfx::Size(kTrayItemSize, kTrayItemSize);
   }
-  int GetHeightForWidth(int width) const override { return kTrayItemSize; }
 };
 
 BEGIN_METADATA(ImeMenuLabel)
@@ -211,7 +211,7 @@ class ImeTitleView : public views::BoxLayoutView {
     title_label->SetBorder(
         views::CreateEmptyBorder(gfx::Insets::TLBR(0, 0, 1, 0)));
     title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    title_label->SetEnabledColorId(kColorAshTextColorPrimary);
+    title_label->SetEnabledColor(kColorAshTextColorPrimary);
     title_label->SetAutoColorReadabilityEnabled(false);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
                                           *title_label);
@@ -291,7 +291,7 @@ class ImeButtonsView : public views::View {
                               input_method::ImeKeyset::kEmoji),
           kImeMenuEmoticonIcon, IDS_ASH_STATUS_TRAY_IME_EMOJI);
       emoji_button_->SetID(kEmojiButtonId);
-      AddChildView(emoji_button_.get());
+      AddChildViewRaw(emoji_button_.get());
     }
 
     if (show_handwriting) {
@@ -300,7 +300,7 @@ class ImeButtonsView : public views::View {
                               base::Unretained(this),
                               input_method::ImeKeyset::kHandwriting),
           kImeMenuWriteIcon, IDS_ASH_STATUS_TRAY_IME_HANDWRITING);
-      AddChildView(handwriting_button_.get());
+      AddChildViewRaw(handwriting_button_.get());
     }
 
     if (show_voice) {
@@ -310,7 +310,7 @@ class ImeButtonsView : public views::View {
                               input_method::ImeKeyset::kVoice),
           kImeMenuMicrophoneIcon, IDS_ASH_STATUS_TRAY_IME_VOICE);
       voice_button_->SetID(kVoiceButtonId);
-      AddChildView(voice_button_.get());
+      AddChildViewRaw(voice_button_.get());
     }
   }
 
@@ -397,6 +397,9 @@ ImeMenuTray::ImeMenuTray(Shelf* shelf)
   // Show the tray even if virtual keyboard is shown. (Other tray buttons will
   // be hidden).
   set_show_with_virtual_keyboard(true);
+
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ASH_IME_MENU_ACCESSIBLE_NAME));
 }
 
 ImeMenuTray::~ImeMenuTray() {
@@ -489,10 +492,6 @@ void ImeMenuTray::OnThemeChanged() {
   UpdateTrayLabel();
 }
 
-std::u16string ImeMenuTray::GetAccessibleNameForTray() {
-  return l10n_util::GetStringUTF16(IDS_ASH_IME_MENU_ACCESSIBLE_NAME);
-}
-
 void ImeMenuTray::HandleLocaleChange() {
   if (image_view_) {
     image_view_->SetTooltipText(
@@ -500,7 +499,8 @@ void ImeMenuTray::HandleLocaleChange() {
   }
 
   if (label_) {
-    label_->SetTooltipText(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME));
+    label_->SetCustomTooltipText(
+        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME));
   }
 }
 
@@ -519,7 +519,7 @@ void ImeMenuTray::UpdateTrayItemColor(bool is_active) {
       extension_ime_util::IsArcIME(ime_controller_->current_ime().id));
 }
 
-void ImeMenuTray::CloseBubble() {
+void ImeMenuTray::CloseBubbleInternal() {
   bubble_.reset();
   ime_list_view_ = nullptr;
   SetIsActive(false);
@@ -653,8 +653,9 @@ void ImeMenuTray::CreateLabel() {
   label_ = new ImeMenuLabel();
   SetupLabelForTray(label_);
   label_->SetElideBehavior(gfx::TRUNCATE);
-  label_->SetTooltipText(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME));
-  tray_container()->AddChildView(label_.get());
+  label_->SetCustomTooltipText(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME));
+  tray_container()->AddChildViewRaw(label_.get());
 }
 
 void ImeMenuTray::CreateImageView() {
@@ -670,7 +671,7 @@ void ImeMenuTray::CreateImageView() {
   image_view_ = new ImeMenuImageView();
   image_view_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME));
-  tray_container()->AddChildView(image_view_.get());
+  tray_container()->AddChildViewRaw(image_view_.get());
 }
 
 void ImeMenuTray::UpdateTrayImageOrLabelColor(bool is_image) {
@@ -684,7 +685,7 @@ void ImeMenuTray::UpdateTrayImageOrLabelColor(bool is_image) {
     return;
   }
 
-  label_->SetEnabledColorId(color_id);
+  label_->SetEnabledColor(color_id);
 }
 
 BEGIN_METADATA(ImeMenuTray)

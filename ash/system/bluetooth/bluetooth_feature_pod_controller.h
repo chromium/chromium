@@ -68,6 +68,9 @@ class ASH_EXPORT BluetoothFeaturePodController
   // Returns true if `tile_` is toggled, otherwise false.
   bool IsButtonToggled() const;
 
+  // Returns true if Bluetooth is available, otherwise false.
+  bool IsBluetoothAvailable() const;
+
   // Updates `tile_` state to reflect the cached Bluetooth state.
   void UpdateTileStateIfExists();
 

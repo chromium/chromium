@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
@@ -23,16 +22,22 @@ if (is_android) {
 
 fuzzable_proto_library("proto") {
   sources = [
-    "client_variations.proto",
     "layer.proto",
+    "stored_seed_info.proto",
     "study.proto",
     "variations_seed.proto",
   ]
+}
+
+proto_library("client_variations_proto") {
+  sources = [ "client_variations.proto" ]
 
   # The generated JavaScript bindings are used to build a small, self-contained
   # parser for ClientVariations in Dev Tools. This parser is used to decode the
   # X-Client-Data header.
-  # Note: This doesn't do anything when use_libfuzzer is true.
+  #
+  # Note: This is incompatible with "edition" syntax of protobuf. The plan is to
+  # migrate this away from JS proto bindings, tracked here: crbug.com/40253708
   generate_javascript = true
 }
 

@@ -57,8 +57,7 @@ void AssistantBindings::OnMessage(base::Value message) {
   v8::Local<v8::Function> handler = v8::Local<v8::Function>::New(
       isolate, std::move(assistant_message_handler_));
 
-  std::string json;
-  base::JSONWriter::Write(message, &json);
+  std::string json = base::WriteJson(message).value_or("");
   v8::Local<v8::Value> message_val =
       gin::Converter<std::string>::ToV8(isolate, json);
 
@@ -144,7 +143,8 @@ void AssistantBindings::FlushV8ToAssistantQueue() {
   DCHECK(message_pipe_.is_bound());
 
   for (auto& request : v8_to_assistant_queue_) {
-    auto value = base::JSONReader::Read(request);
+    auto value =
+        base::JSONReader::Read(request, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!value) {
       LOG(ERROR) << "Unable to parse Assistant message JSON.";
       continue;

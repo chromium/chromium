@@ -6,7 +6,7 @@ desc: |-
 
         Leaving the policy unset means <ph name="SSL_ERROR_OVERRIDE_ALLOWED_POLICY_NAME">SSLErrorOverrideAllowed</ph> applies for all sites.
 
-        For detailed information on valid input patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy. This policy only matches based on origin, so any path in the URL pattern is ignored.
+        For detailed information on valid input patterns, please see https://chromeenterprise.google/policies/url-patterns/. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy. This policy only matches based on origin, so any path in the URL pattern is ignored.
 example_value:
 - https://www.example.com
 - '[*.]example.edu'

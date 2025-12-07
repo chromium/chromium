@@ -14,9 +14,8 @@
 #include "components/policy/core/common/management/platform_management_status_provider_mac.h"
 #elif BUILDFLAG(IS_WIN)
 #include "components/policy/core/common/management/platform_management_status_provider_win.h"
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "build/chromeos_buildflags.h"
-#include "components/policy/core/common/management/platform_management_status_provider_lacros.h"
+#elif BUILDFLAG(IS_IOS)
+#include "components/policy/core/common/management/platform_management_status_provider_ios.h"
 #endif
 
 namespace policy {
@@ -26,17 +25,15 @@ std::vector<std::unique_ptr<ManagementStatusProvider>>
 GetPlatformManagementSatusProviders() {
   std::vector<std::unique_ptr<ManagementStatusProvider>> providers;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  providers.emplace_back(std::make_unique<DomainEnrollmentStatusProvider>());
-  providers.emplace_back(
+  providers.push_back(std::make_unique<DomainEnrollmentStatusProvider>());
+  providers.push_back(
       std::make_unique<EnterpriseMDMManagementStatusProvider>());
 #endif
 #if BUILDFLAG(IS_WIN)
-  providers.emplace_back(
-      std::make_unique<AzureActiveDirectoryStatusProvider>());
+  providers.push_back(std::make_unique<AzureActiveDirectoryStatusProvider>());
 #endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  providers.emplace_back(
-      std::make_unique<DeviceEnterpriseManagedStatusProvider>());
+#if BUILDFLAG(IS_IOS)
+  providers.push_back(std::make_unique<DeviceManagementStatusProvider>());
 #endif
   return providers;
 }
@@ -60,7 +57,7 @@ void PlatformManagementService::AddLocalBrowserManagementStatusProvider(
   has_local_browser_managment_status_provider_ = true;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void PlatformManagementService::AddChromeOsStatusProvider(
     std::unique_ptr<ManagementStatusProvider> provider) {
   AddManagementStatusProvider(std::move(provider));

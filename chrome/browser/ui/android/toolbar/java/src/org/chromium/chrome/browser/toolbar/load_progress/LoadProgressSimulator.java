@@ -11,13 +11,16 @@ import android.os.Message;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * Simulator for  load progress changes when the page being rendered doesn't actually send load
+ * Simulator for load progress changes when the page being rendered doesn't actually send load
  * progress signals, e.g. when swapping in a pre-rendered page. Uses a message loop to send update
  * messages to itself to update the simulated progress value on a regular interval.
  */
+@NullMarked
 class LoadProgressSimulator {
     private static final int MSG_ID_UPDATE_PROGRESS = 1;
     private static final int PROGRESS_INCREMENT_DELAY_MS = 10;
@@ -27,6 +30,7 @@ class LoadProgressSimulator {
     private final Handler mHandler;
 
     private float mProgress;
+    private boolean mIsStarted;
 
     public LoadProgressSimulator(PropertyModel model) {
         mModel = model;
@@ -42,6 +46,7 @@ class LoadProgressSimulator {
                             mModel.set(
                                     LoadProgressProperties.COMPLETION_STATE,
                                     LoadProgressProperties.CompletionState.FINISHED_DO_ANIMATE);
+                            mIsStarted = false;
                             return;
                         }
                         sendEmptyMessageDelayed(
@@ -52,6 +57,7 @@ class LoadProgressSimulator {
 
     /** Start simulating load progress from a baseline of 0. */
     public void start() {
+        mIsStarted = true;
         mProgress = 0.0f;
         mModel.set(
                 LoadProgressProperties.COMPLETION_STATE,
@@ -62,9 +68,12 @@ class LoadProgressSimulator {
 
     /** Cancels simulating load progress. */
     public void cancel() {
-        mModel.set(
-                LoadProgressProperties.COMPLETION_STATE,
-                LoadProgressProperties.CompletionState.FINISHED_DONT_ANIMATE);
+        if (!ChromeFeatureList.sAndroidAnimatedProgressBarInBrowser.isEnabled()
+                || (mIsStarted && !MathUtils.areFloatsEqual(mProgress, 1.0f))) {
+            mModel.set(
+                    LoadProgressProperties.COMPLETION_STATE,
+                    LoadProgressProperties.CompletionState.FINISHED_DONT_ANIMATE);
+        }
         mHandler.removeMessages(MSG_ID_UPDATE_PROGRESS);
     }
 }

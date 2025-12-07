@@ -4,6 +4,9 @@
 
 #include "ash/system/unified/notification_icons_controller.h"
 
+#include <optional>
+#include <string>
+
 #include "ash/constants/ash_constants.h"
 #include "ash/public/cpp/vm_camera_mic_constants.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -21,6 +24,7 @@
 #include "ash/system/tray/tray_utils.h"
 #include "ash/system/unified/notification_counter_view.h"
 #include "ash/system/unified/unified_system_tray.h"
+#include "base/strings/string_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -66,7 +70,8 @@ bool ShouldShowNotification(message_center::Notification* notification) {
   if (notifier_id == kVmCameraMicNotifierId ||
       notifier_id == kBatteryNotificationNotifierId ||
       notifier_id == kUsbNotificationNotifierId ||
-      notifier_id == kPrivacyIndicatorsNotifierId) {
+      notifier_id == kPrivacyIndicatorsNotifierId ||
+      notifier_id == kPrivacyIndicatorsMultiCaptureNotifierId) {
     return false;
   }
 
@@ -115,7 +120,7 @@ void NotificationIconTrayItemView::MaybeReset() {
 void NotificationIconTrayItemView::Reset() {
   notification_id_ = std::string();
   notification_.reset();
-  image_view()->SetImage(gfx::ImageSkia());
+  image_view()->SetImage(ui::ImageModel());
   image_view()->SetTooltipText(std::u16string());
 }
 
@@ -172,7 +177,7 @@ void NotificationIconTrayItemView::UpdateImageViewColor() {
       color_provider->GetColor(ui::kColorNotificationIconBackground),
       color_provider->GetColor(ui::kColorNotificationIconForeground));
   if (!masked_small_icon.IsEmpty()) {
-    image_view()->SetImage(masked_small_icon.AsImageSkia());
+    image_view()->SetImage(ui::ImageModel::FromImage(masked_small_icon));
   } else {
     image_view()->SetImage(ui::ImageModel::FromVectorIcon(
         message_center::kProductIcon, color_id, kUnifiedTrayIconSize));
@@ -205,9 +210,11 @@ NotificationIconsController::~NotificationIconsController() {
 void NotificationIconsController::AddNotificationTrayItems(
     TrayContainer* tray_container) {
   for (int i = 0; i < kMaxNotificationIconsShown; ++i) {
-    tray_items_.push_back(tray_container->AddChildView(
+    NotificationIconTrayItemView* tray_item = tray_container->AddChildView(
         std::make_unique<NotificationIconTrayItemView>(shelf_,
-                                                       /*controller=*/this)));
+                                                       /*controller=*/this));
+    tray_items_.push_back(tray_item);
+    notification_center_tray_->AddTooltipChangedCallbackToNotificationIcon(tray_item);
   }
 
   notification_counter_view_ = tray_container->AddChildView(
@@ -227,9 +234,19 @@ size_t NotificationIconsController::TrayNotificationIconsCount() const {
   return first_unused_item_index_;
 }
 
-std::u16string NotificationIconsController::GetAccessibleNameString() const {
-  if (!TrayItemHasNotification())
+std::optional<std::u16string>
+NotificationIconsController::GetAccessibleNameString() const {
+  if (quiet_mode_view_ && quiet_mode_view_->GetVisible()) {
+    return quiet_mode_view_->GetAccessibleNameString();
+  }
+
+  if (!notification_counter_view_) {
+    return std::nullopt;
+  }
+
+  if (!TrayItemHasNotification()) {
     return notification_counter_view_->GetAccessibleNameString();
+  }
 
   std::vector<std::u16string> status;
   status.push_back(l10n_util::GetPluralStringFUTF16(
@@ -238,7 +255,9 @@ std::u16string NotificationIconsController::GetAccessibleNameString() const {
   for (NotificationIconTrayItemView* tray_item : tray_items_) {
     status.push_back(tray_item->GetAccessibleNameString());
   }
-  status.push_back(notification_counter_view_->GetAccessibleNameString());
+  status.push_back(
+      notification_counter_view_->GetAccessibleNameString().value_or(
+          std::u16string()));
   return l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_NOTIFICATIONS_ICONS_ACCESSIBLE_NAME, status, nullptr);
 }
@@ -264,6 +283,7 @@ void NotificationIconsController::UpdateNotificationIcons() {
   }
 
   first_unused_item_index_ = std::distance(tray_items_.rbegin(), tray_it);
+  notification_center_tray_->UpdateAccessibleName();
 
   for (; tray_it != tray_items_.rend(); ++tray_it) {
     // Note: It is important to set the visibility before resetting so that the
@@ -280,7 +300,7 @@ void NotificationIconsController::UpdateNotificationIndicators() {
 
 void NotificationIconsController::UpdateIconsViewVisibleForDisplaySize() {
   aura::Window* window = shelf_->status_area_widget()->GetNativeWindow();
-  auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+  auto display = display::Screen::Get()->GetDisplayNearestWindow(window);
   const int display_size =
       std::max(display.size().width(), display.size().height());
   icons_view_visible_ = display_size >= kIconsViewDisplaySizeThreshold;
@@ -290,7 +310,7 @@ void NotificationIconsController::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t changed_metrics) {
   aura::Window* window = shelf_->status_area_widget()->GetNativeWindow();
-  if (display::Screen::GetScreen()->GetDisplayNearestWindow(window).id() !=
+  if (display::Screen::Get()->GetDisplayNearestWindow(window).id() !=
       display.id()) {
     return;
   }

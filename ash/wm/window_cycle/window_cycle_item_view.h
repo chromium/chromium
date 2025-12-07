@@ -6,7 +6,7 @@
 #define ASH_WM_WINDOW_CYCLE_WINDOW_CYCLE_ITEM_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ash/wm/scoped_layer_tree_synchronizer.h"
+#include "ash/wm/layer_tree_synchronizer.h"
 #include "ash/wm/window_mini_view.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -58,13 +58,13 @@ class ASH_EXPORT WindowCycleItemView : public WindowMiniView {
   void RefreshItemVisuals() override;
 
  private:
-  std::unique_ptr<ScopedLayerTreeSynchronizer> layer_tree_synchronizer_;
+  std::unique_ptr<LayerTreeSynchronizer> layer_tree_synchronizer_;
   const raw_ptr<WindowCycleController> window_cycle_controller_;
 };
 
 // Container view used to host multiple `WindowCycleItemView`s and be the focus
 // target for window groups while tabbing in window cycle view.
-class GroupContainerCycleView : public WindowMiniViewBase {
+class ASH_EXPORT GroupContainerCycleView : public WindowMiniViewBase {
   METADATA_HEADER(GroupContainerCycleView, WindowMiniViewBase)
 
  public:
@@ -88,10 +88,14 @@ class GroupContainerCycleView : public WindowMiniViewBase {
   void SetSelectedWindowForFocus(aura::Window* window) override;
   void ClearFocusSelection() override;
 
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
  private:
+  void OnChildFocusChanged();
+  void UpdateAccessibleName(const std::string& name);
+  void OnAXNameChanged(ax::mojom::StringAttribute attribute,
+                       const std::optional<std::string>& name);
+  void OnAccessibleIgnoredStateChanged(ax::mojom::State state,
+                                       const bool value);
+
   std::vector<raw_ptr<WindowCycleItemView, VectorExperimental>> mini_views_;
 
   // True if the `SnapGroup` represented by `this` has horizontal window layout,
@@ -101,6 +105,11 @@ class GroupContainerCycleView : public WindowMiniViewBase {
   // True if `this` is the first time a focus selection request is made to this
   // item.
   bool is_first_focus_selection_request_ = true;
+
+  std::vector<base::CallbackListSubscription> focus_changed_callback_;
+  base::CallbackListSubscription name_changed_subscription_;
+  base::CallbackListSubscription ignored_state_changed_callback_;
+  base::WeakPtrFactory<GroupContainerCycleView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

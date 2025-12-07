@@ -22,15 +22,102 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="FirstInteractionType">
+  <variant name="LensMenu"/>
+  <variant name="Permission"/>
+  <variant name="RegionSelect"/>
+  <variant name="Searchbox"/>
+  <variant name="TextSelect"/>
+</variants>
+
 <variants name="InvocationSources">
+  <variant name="AIHub"/>
   <variant name="AppMenu"/>
   <variant name="ContentAreaContextMenuImage"/>
   <variant name="ContentAreaContextMenuPage"/>
+  <variant name="ContentAreaContextMenuText"/>
+  <variant name="ContentAreaContextMenuVideo"/>
+  <variant name="ContextMenu"/>
   <variant name="FindInPage"/>
+  <variant name="FREPromo"/>
+  <variant name="HomeworkActionChip"/>
+  <variant name="LVFGallery"/>
+  <variant name="LVFShutterButton"/>
   <variant name="Omnibox"/>
+  <variant name="OmniboxContextualSuggestion"/>
+  <variant name="OmniboxPageAction"/>
   <variant name="Toolbar"/>
   <variant name="Unknown"/>
 </variants>
+
+<!-- LINT.IfChange(LensOverlayMimeType) -->
+
+<!-- The MimeType enum used for UMA histograms. -->
+
+<variants name="MimeTypes">
+  <variant name="AnnotatedPageContent"/>
+  <variant name="Audio"/>
+  <variant name="Html"/>
+  <variant name="Image"/>
+  <variant name="Json"/>
+  <variant name="Pdf"/>
+  <variant name="PlainText"/>
+  <variant name="Unknown"/>
+  <variant name="Video"/>
+</variants>
+
+<!-- LINT.ThenChange(//components/lens/lens_overlay_mime_type.h:LensOverlayMimeType) -->
+
+<histogram name="Lens.BottomSheet.PositionAfterSwipe"
+    enum="SheetDimensionState" expires_after="2026-03-26">
+  <owner>stkhapugin@google.com</owner>
+  <owner>radunitescu@google.com</owner>
+  <summary>
+    Logged when the user swiped the sheet, resulting in a change of dimension.
+    Only logged on iOS.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Composebox.HandshakeCompletedInSession" enum="Boolean"
+    expires_after="2026-08-21">
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens side panel is dismissed. Records whether the AIM
+    handshake with the remote UI was compoleted at least once in the session.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Composebox.ShownInSession" enum="Boolean"
+    expires_after="2026-08-21">
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens side panel is dismissed. Records whether the
+    composebox was shown in this Lens session. Only recorded if the Lens side
+    panel was shown.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Composebox.UserAction" enum="ComposeboxUserAction"
+    expires_after="2026-08-21">
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded everytime a user makes an action in the composebox. Records which
+    action was taken.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Composebox.UserActionInSession"
+    enum="ComposeboxUserAction" expires_after="2026-08-21">
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens side panel is dismissed. Records any user action
+    that was taken in the composebox during this Lens session.
+  </summary>
+</histogram>
 
 <histogram name="Lens.ImageClassification.ClassificationTime.EarlyTerminatedMs"
     units="ms" expires_after="2022-07-31">
@@ -79,7 +166,7 @@ chromium-metrics-reviews@google.com.
   <owner>yusuyoutube@google.com</owner>
   <owner>benwgold@google.com</owner>
   <owner>fgorski@chromium.org</owner>
-  <owner>wylieb@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
     Whether the user supports the camera assisted search with Google Lens and if
@@ -88,9 +175,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Lens.Overlay.ByDocumentType.{DocumentType}.Invoked"
+    enum="Boolean" expires_after="2026-05-17">
+  <owner>stanfield@google.com</owner>
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is invoked, sliced by type of
+    the top level document.
+  </summary>
+  <token key="DocumentType" variants="MimeTypes"/>
+</histogram>
+
+<histogram
+    name="Lens.Overlay.ByInvocationSource.{InvocationSource}.ContextMenuOption.Shown"
+    enum="LensOverlayContextMenuOption" expires_after="2026-05-17">
+  <owner>hujasonx@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when a context menu option is shown in the Lens overlay. This
+    is triggered when the user selects a region of the page, or after the user
+    right-clicks to restore an already-used context menu. This histogram is
+    sliced by invocation source.
+  </summary>
+  <token key="InvocationSource" variants="InvocationSources"/>
+</histogram>
+
 <histogram
     name="Lens.Overlay.ByInvocationSource.{InvocationSource}.InvocationResultedInSearch"
-    enum="Boolean" expires_after="2025-05-06">
+    enum="Boolean" expires_after="2026-05-17">
   <owner>jdonnelly@chromium.org</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -102,8 +215,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Lens.Overlay.ByInvocationSource.{InvocationSource}.SelectionState.CloseButtonEvent"
+    enum="LensOverlaySelectionCloseButtonEvent" expires_after="2026-05-24">
+  <owner>juanmojica@google.com</owner>
+  <owner>lens-chrome-eng@google.com</owner>
+  <summary>
+    Records an event for the close button on the selection overlay. Recorded
+    every time the button is shown to the user, and once if it is used in the
+    session. This allows for measuring click-through rate.
+  </summary>
+  <token key="InvocationSource" variants="InvocationSources"/>
+</histogram>
+
+<histogram
     name="Lens.Overlay.ByInvocationSource.{InvocationSource}.SessionDuration"
-    units="ms" expires_after="2025-05-06">
+    units="ms" expires_after="2026-05-17">
   <owner>jdonnelly@chromium.org</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -115,8 +241,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Lens.Overlay.ByInvocationSource.{InvocationSource}.SessionForegroundDuration"
+    units="ms" expires_after="2025-09-07">
+  <owner>christianxu@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is dismissed, sliced by
+    invocation source. It measures the total duration that the overlay is in the
+    foreground. Sum of all times that the overlay tab is returned to the
+    foreground.
+  </summary>
+  <token key="InvocationSource" variants="InvocationSources"/>
+</histogram>
+
+<histogram
     name="Lens.Overlay.ByInvocationSource.{InvocationSource}.TimeToFirstInteraction"
-    units="ms" expires_after="2025-05-06">
+    units="ms" expires_after="2026-05-17">
   <owner>jdonnelly@chromium.org</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -128,8 +268,293 @@ chromium-metrics-reviews@google.com.
   <token key="InvocationSource" variants="InvocationSources"/>
 </histogram>
 
+<histogram name="Lens.Overlay.ByPageContentType.Pdf.PageCount" units="Pages"
+    expires_after="2026-05-10">
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded whenever a PDF is fetched from the PDF renderer. Records the number
+    of pages in the PDF that was fetched.
+  </summary>
+</histogram>
+
+<histogram
+    name="Lens.Overlay.ByPageContentType.{PageContentType}.DocumentSize2"
+    units="KB" expires_after="2026-05-10">
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded when bytes are retrieved from the underlying page content. For web,
+    both the innerText and the innerHtml are logged to help estimate the delta
+    between the two.
+  </summary>
+  <token key="PageContentType" variants="MimeTypes"/>
+</histogram>
+
+<histogram name="Lens.Overlay.ContextMenuOption.Shown"
+    enum="LensOverlayContextMenuOption" expires_after="2026-04-26">
+  <owner>hujasonx@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when a context menu option is shown in the Lens overlay. This
+    is triggered when the user selects a region of the page, or after the user
+    right-clicks to restore an already-used context menu.
+  </summary>
+</histogram>
+
+<histogram
+    name="Lens.Overlay.ContextualSearchBox.ByDocumentType.{DocumentType}.ShownInSession"
+    enum="BooleanShown" expires_after="2026-05-10">
+  <owner>stanfield@google.com</owner>
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is dismissed, sliced by the
+    document content type, as specified by the WebContents. This is different
+    from the page content type defined below, which logs based on the content
+    type of the bytes extracted from the page. Records whether the contextual
+    searchbox was shown in the session.
+  </summary>
+  <token key="DocumentType" variants="MimeTypes"/>
+</histogram>
+
+<histogram
+    name="Lens.Overlay.ContextualSearchBox.ByPageContentType.{PageContentType}.FocusedInSession"
+    enum="Boolean" expires_after="2026-05-10">
+  <owner>niharm@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is dismissed, sliced by the type
+    of content extracted from the page. Records whether the contextual searchbox
+    was focused at least once in sessions in which it was shown.
+  </summary>
+  <token key="PageContentType" variants="MimeTypes"/>
+</histogram>
+
+<histogram
+    name="Lens.Overlay.ContextualSearchBox.ByPageContentType.{PageContentType}.ShownInSession"
+    enum="BooleanShown" expires_after="2026-05-10">
+  <owner>stanfield@google.com</owner>
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is dismissed, sliced by page
+    content type. Records whether the contextual searchbox was shown in the
+    session.
+  </summary>
+  <token key="PageContentType" variants="MimeTypes"/>
+</histogram>
+
+<histogram
+    name="Lens.Overlay.ContextualSearchBox.ByPageContentType.{PageContentType}.TimeFromInvocationToFirstFocus"
+    units="ms" expires_after="2026-05-10">
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay contextual searchbox is focused for the
+    first time, sliced by page content type. Records the time from the user
+    invoking the Lens Overlay to the user focusing into the contextual
+    searchbox. Does not log if the user never focuses into the contextual
+    searchbox.
+  </summary>
+  <token key="PageContentType" variants="MimeTypes"/>
+</histogram>
+
+<histogram
+    name="Lens.Overlay.ContextualSearchBox.ByPageContentType.{PageContentType}.TimeFromNavigationToFirstFocus"
+    units="ms" expires_after="2026-05-10">
+  <owner>mercerd@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once after the first focus into the contextual searchbox following
+    a navigation to a new page while the results side panel is open, sliced by
+    page content type. Measures the elapsed time between when the page navigated
+    and when the user subsequently focuses the contextual searchbox.
+  </summary>
+  <token key="PageContentType" variants="MimeTypes"/>
+</histogram>
+
+<histogram
+    name="Lens.Overlay.ContextualSearchBox.ByPageContentType.{PageContentType}.TimeFromNavigationToFirstInteraction"
+    units="ms" expires_after="2026-05-10">
+  <owner>mercerd@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once after the first query issued from the contextual searchbox
+    following a navigation to a new page while the results side panel is open,
+    sliced by document type. Measures the elapsed time between when the page
+    navigated and when the user subsequently interacts with the contextual
+    searchbox.
+  </summary>
+  <token key="PageContentType" variants="MimeTypes"/>
+</histogram>
+
+<histogram name="Lens.Overlay.ContextualSearchBox.FocusedInSession"
+    enum="Boolean" expires_after="2026-05-10">
+  <owner>niharm@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is dismissed. Records whether
+    the contextual searchbox was focused at least once in sessions in which it
+    was shown.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.ContextualSearchBox.ShownInSession"
+    enum="BooleanShown" expires_after="2026-05-10">
+  <owner>stanfield@google.com</owner>
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is dismissed. Records whether
+    the contextual searchbox was shown in the session.
+  </summary>
+</histogram>
+
+<histogram
+    name="Lens.Overlay.ContextualSuggest.ByPageContentType.{PageContentType}.QueryIssuedInSession"
+    enum="Boolean" expires_after="2026-05-10">
+  <owner>niharm@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is dismissed, sliced by document
+    type. Records whether at least one contextual query was issued in sessions
+    in which the contextual searchbox was shown (includes zero prefix suggest
+    queries and typed queries). The document type is the intial document type
+    when the lens overlay is invoked, not necessarily the same as the document
+    type as when ZPS is shown.
+  </summary>
+  <token key="PageContentType" variants="MimeTypes"/>
+</histogram>
+
+<histogram
+    name="Lens.Overlay.ContextualSuggest.FollowUpQuery.ByPageContentType.{PageContentType}.QueryIssuedInSessionBeforeSuggestShown"
+    enum="Boolean" expires_after="2026-05-10">
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is dismissed. Records whether
+    the user issued a query from the contextual searchbox before any contextual
+    suggestions were shown, sliced by page content type. This metric only tracks
+    follow-up queries, aka the query issued when the live page is visible next
+    to the results panel. This metric is session based, meaning if at anytime
+    over the span of multiple follow queries, the user issues a query before any
+    suggestions are shown, this metric will be recorded as true.
+  </summary>
+  <token key="PageContentType" variants="MimeTypes"/>
+</histogram>
+
+<histogram
+    name="Lens.Overlay.ContextualSuggest.FollowUpQuery.QueryIssuedInSessionBeforeSuggestShown"
+    enum="Boolean" expires_after="2026-05-10">
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is dismissed. Records whether
+    the user issued a query from the contextual searchbox before any contextual
+    suggestions were shown. This metric only tracks follow-up queries, aka the
+    query issued when the live page is visible next to the results panel. This
+    metric is session based, meaning if at anytime over the span of multiple
+    follow queries, the user issues a query before any suggestions are shown,
+    this metric will be recorded as true.
+  </summary>
+</histogram>
+
+<histogram
+    name="Lens.Overlay.ContextualSuggest.InitialQuery.ByPageContentType.{PageContentType}.QueryIssuedInSessionBeforeSuggestShown"
+    enum="Boolean" expires_after="2026-05-10">
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is dismissed. Records whether
+    the user issued a query from the contextual searchbox before any contextual
+    suggestions were shown, sliced by page content type. This metric only tracks
+    the initial query, aka the query issued when the visual selection overlay is
+    open.
+  </summary>
+  <token key="PageContentType" variants="MimeTypes"/>
+</histogram>
+
+<histogram
+    name="Lens.Overlay.ContextualSuggest.InitialQuery.QueryIssuedInSessionBeforeSuggestShown"
+    enum="Boolean" expires_after="2025-10-31">
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is dismissed. Records whether
+    the user issued a query from the contextual searchbox before any contextual
+    suggestions were shown. This metric only tracks the initial query, aka the
+    query issued when the visual selection overlay is open.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.ContextualSuggest.QueryIssuedInSession"
+    enum="Boolean" expires_after="2026-05-10">
+  <owner>niharm@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is dismissed. Records whether at
+    least one contextual query was issued in sessions in which the contextual
+    searchbox was shown (includes zero prefix suggest queries and typed
+    queries).
+  </summary>
+</histogram>
+
+<histogram
+    name="Lens.Overlay.ContextualSuggest.ZPS.ByPageContentType.{PageContentType}.ShownInSession"
+    enum="Boolean" expires_after="2026-05-10">
+  <owner>niharm@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is dismissed, sliced by the type
+    of content extracted from the page. Records whether any zero prefix
+    contextual suggestions were shown in sessions in which the contextual
+    searchbox was shown. The document type is the intial document type when the
+    lens overlay is invoked, not necessarily the same as the document type as
+    when ZPS is shown.
+  </summary>
+  <token key="PageContentType" variants="MimeTypes"/>
+</histogram>
+
+<histogram
+    name="Lens.Overlay.ContextualSuggest.ZPS.ByPageContentType.{PageContentType}.SuggestionUsedInSession"
+    enum="Boolean" expires_after="2026-05-10">
+  <owner>niharm@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is dismissed, sliced by document
+    type. Records whether at least one contextual zero prefix suggestion was
+    used in sessions in which the contextual searchbox was shown. The document
+    type is the intial document type when the lens overlay is invoked, not
+    necessarily the same as the document type as when ZPS suggestion was used.
+  </summary>
+  <token key="PageContentType" variants="MimeTypes"/>
+</histogram>
+
+<histogram name="Lens.Overlay.ContextualSuggest.ZPS.ShownInSession"
+    enum="Boolean" expires_after="2026-05-10">
+  <owner>niharm@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is dismissed. Records whether
+    any zero prefix contextual suggestions were shown in sessions in which the
+    contextual searchbox was shown.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.ContextualSuggest.ZPS.SuggestionUsedInSession"
+    enum="Boolean" expires_after="2026-05-10">
+  <owner>niharm@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is dismissed. Records whether at
+    least one contextual zero prefix suggestion was used in sessions in which
+    the contextual searchbox was shown.
+  </summary>
+</histogram>
+
 <histogram name="Lens.Overlay.Dismissed" enum="LensOverlayDismissalSource"
-    expires_after="2025-05-06">
+    expires_after="2026-05-17">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mercerd@google.com</owner>
   <summary>
@@ -137,11 +562,36 @@ chromium-metrics-reviews@google.com.
     UI entry point used or the event that triggered the dimissal. In general, it
     should not be possible to attempt to dismiss the feature if the overlay is
     not currently showing but if this happens, nothing will be recorded.
+
+    In M130 and later, the &quot;Error: Renderer exited&quot; bucket is no
+    longer recorded, replaced by the more fine-grained &quot;overlay renderer
+    exited&quot; and &quot;page renderer exited&quot; buckets (two each for
+    normal and unexpected shutdown).
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.GeneratedTab" enum="LensOverlayNewTabSource"
+    expires_after="2026-05-24">
+  <owner>christianxu@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded when the lens overlay opens a new tab, enumerated by the source
+    that opened it.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.GeneratedTab.SessionCount" units="count"
+    expires_after="2026-05-17">
+  <owner>christianxu@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once the Lens Overlay is dismissed. Measures the number of tabs
+    opened by the lens overlay from invocation to dismissal.
   </summary>
 </histogram>
 
 <histogram name="Lens.Overlay.InvocationResultedInSearch" enum="Boolean"
-    expires_after="2025-05-06">
+    expires_after="2026-03-22">
   <owner>jdonnelly@chromium.org</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -151,7 +601,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.Invoked" enum="LensOverlayInvocationSource"
-    expires_after="2025-05-06">
+    expires_after="2026-05-17">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mercerd@google.com</owner>
   <summary>
@@ -168,9 +618,68 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Lens.Overlay.LensResponseTime" units="ms"
+    expires_after="2026-05-17">
+  <owner>christianxu@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded when receiving a Lens result. Measures the time elapsed between the
+    time a Lens request was initiated and the time a response was received.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.NonBlockingPrivacyNotice.Accepted"
+    enum="LensOverlayNonBlockingPrivacyNoticeUserAction"
+    expires_after="2026-03-15">
+  <owner>nguyenbryan@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded each time the user interacts with the Lens Permission Bubble,
+    enumerated by those actions.
+  </summary>
+</histogram>
+
+<histogram
+    name="Lens.Overlay.NonBlockingPrivacyNotice.ByInvocationSource.{InvocationSource}.Accepted"
+    enum="LensOverlayNonBlockingPrivacyNoticeUserAction"
+    expires_after="2026-03-15">
+  <owner>nguyenbryan@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded each time the user interacts with the Lens Permission Bubble,
+    enumerated by those actions and sliced by invocation source.
+  </summary>
+  <token key="InvocationSource" variants="InvocationSources"/>
+</histogram>
+
+<histogram name="Lens.Overlay.NonBlockingPrivacyNotice.Shown"
+    enum="LensOverlayInvocationSource" expires_after="2026-03-15">
+  <owner>nguyenbryan@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded each time the Lens Permission Bubble is requested to be shown,
+    enumerated by invocation source.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.OcrDomSimilarity" units="%"
+    expires_after="2026-05-24">
+  <owner>mercerd@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Records the percentage of text in the Lens OCR response that is also present
+    in the DOM. This is a measure of how well the OCR response matches the
+    contents of the page. Recorded once per session at the time when both the
+    extracted DOM content and the Lens OCR response are available. This metric
+    is not recorded if the page content is not HTML or PDF, if the DOM is too
+    large, if the overlay closes before OCR is received, or if the OCR language
+    is not English (since the score is not reliable for CJK languages).
+  </summary>
+</histogram>
+
 <histogram
     name="Lens.Overlay.Overlay.ByInvocationSource.{InvocationSource}.UserAction"
-    enum="LensOverlayUserAction" expires_after="2025-05-06">
+    enum="LensOverlayUserAction" expires_after="2026-05-17">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mercerd@google.com</owner>
   <summary>
@@ -187,7 +696,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.Overlay.UserAction" enum="LensOverlayUserAction"
-    expires_after="2025-05-06">
+    expires_after="2026-05-17">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mercerd@google.com</owner>
   <summary>
@@ -202,9 +711,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Lens.Overlay.Performance.AverageFPS" units="fps"
+    expires_after="2026-03-01">
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once at the end of a Lens Overlay session. Measures the average FPS
+    of the Lens Overlay, as calculated via Javascript requestAnimationFrame.
+    This is an estimate, but should be accurate enough to provide an indication
+    of performance changes. This is only logged when the overlay is closed
+    asyncronously, so the Javascript has time to run the logging code.
+  </summary>
+</histogram>
+
 <histogram
     name="Lens.Overlay.PermissionBubble.ByInvocationSource.{InvocationSource}.Shown"
-    enum="BooleanShown" expires_after="2025-05-06">
+    enum="BooleanShown" expires_after="2026-05-17">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mercerd@google.com</owner>
   <summary>
@@ -218,7 +740,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Lens.Overlay.PermissionBubble.ByInvocationSource.{InvocationSource}.UserAction"
-    enum="LensPermissionBubbleUserAction" expires_after="2025-05-06">
+    enum="LensPermissionBubbleUserAction" expires_after="2026-05-17">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mercerd@google.com</owner>
   <summary>
@@ -229,7 +751,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.PermissionBubble.Shown" enum="BooleanShown"
-    expires_after="2025-05-06">
+    expires_after="2026-05-17">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mercerd@google.com</owner>
   <summary>
@@ -240,7 +762,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.PermissionBubble.UserAction"
-    enum="LensPermissionBubbleUserAction" expires_after="2025-05-06">
+    enum="LensPermissionBubbleUserAction" expires_after="2026-05-17">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mercerd@google.com</owner>
   <summary>
@@ -249,8 +771,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Lens.Overlay.SelectionState.CloseButtonEvent"
+    enum="LensOverlaySelectionCloseButtonEvent" expires_after="2026-05-24">
+  <owner>juanmojica@google.com</owner>
+  <owner>lens-chrome-eng@google.com</owner>
+  <summary>
+    Records an event for the close button on the selection overlay. Recorded
+    every time the button is shown to the user, and once if it is used in the
+    session. This allows for measuring click-through rate.
+  </summary>
+</histogram>
+
 <histogram name="Lens.Overlay.SessionDuration" units="ms"
-    expires_after="2025-05-06">
+    expires_after="2026-05-17">
   <owner>jdonnelly@chromium.org</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -259,7 +792,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Lens.Overlay.Shown" enum="BooleanEnabled" expires_after="M135">
+<histogram name="Lens.Overlay.SessionForegroundDuration" units="ms"
+    expires_after="2026-05-17">
+  <owner>christianxu@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is dismissed. It measures the
+    total duration that the overlay is in the foreground. Sum of all times that
+    the overlay tab is returned to the foreground.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.Shown" enum="BooleanEnabled"
+    expires_after="2026-05-24">
   <owner>erikchen@chromium.org</owner>
   <owner>mercerd@google.com</owner>
   <summary>
@@ -268,8 +813,90 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Lens.Overlay.SidePanel.SelectedMoreInfoMenuOption"
+    enum="LensOverlaySidePanelMenuOption" expires_after="2025-07-29">
+  <owner>nguyenbryan@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded when an option in the lens overlay side panel more info menu is
+    selected.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.SidePanelResultStatus"
+    enum="SidePanelResultStatus" expires_after="2026-04-05">
+  <owner>juanmojica@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded one after loading a result in the side panel iframe. Records the
+    state of the side panel content, whether successful result display or the
+    specific reason for any error that prevented display.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.TextDirectiveResult"
+    enum="LensOverlayTextDirectiveResult" expires_after="2026-04-05">
+  <owner>juanmojica@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once whenever the text finder is invoked on the Lens overlay.
+    Indicates whether the text finder was successful in finding text in the
+    page.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.TimeToCheckPageContextEligibility" units="ms"
+    expires_after="2026-03-01">
+  <owner>dianaou@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when checking if the page context is eligible for Lens.
+    Measures the elapsed time to check for eligibility.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.TimeToCloseOpenedSidePanel" units="ms"
+    expires_after="2026-03-01">
+  <owner>dianaou@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the side panel is closed after being opened from the
+    overlay. Measures the elapsed time to close the side panel.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.TimeToCreateScreenshotBitmap" units="ms"
+    expires_after="2026-03-01">
+  <owner>dianaou@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when a bitmap is created from a screenshot. Measures the
+    elapsed time to create the screenshot bitmap.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.TimeToFetchBoundingBoxes" units="ms"
+    expires_after="2026-03-01">
+  <owner>dianaou@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the bounding boxes for images on the page are fetched.
+    Measures the elapsed time to fetch the bounding boxes.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.TimeToFetchPdfPage" units="ms"
+    expires_after="2026-03-01">
+  <owner>dianaou@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when a PDF page is fetched for the Lens Overlay. Measures the
+    elapsed time to fetch the PDF page.
+  </summary>
+</histogram>
+
 <histogram name="Lens.Overlay.TimeToFirstInteraction" units="ms"
-    expires_after="2025-05-06">
+    expires_after="2026-05-17">
   <owner>jdonnelly@chromium.org</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -280,13 +907,56 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Lens.Overlay.TimeToFirstInteraction.{FirstInteractionType}"
+    units="ms" expires_after="2026-05-17">
+  <owner>christianxu@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the user first interacts with the overlay, sliced by
+    interaction type. Measures the elapsed time between when the overlay was
+    invoked and when the user first interacts with the overlay.
+  </summary>
+  <token key="FirstInteractionType" variants="FirstInteractionType"/>
+</histogram>
+
+<histogram name="Lens.Overlay.TimeToGetPageContext" units="ms"
+    expires_after="2026-03-01">
+  <owner>dianaou@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the page context is retrieved. Measures the elapsed time
+    to get the page context.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.TimeToScreenshot" units="ms"
+    expires_after="2026-03-01">
+  <owner>dianaou@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when a screenshot is successfully captured for the Lens
+    Overlay. Measures the elapsed time to capture the screenshot.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.TimeToWebuiBound" units="ms"
+    expires_after="2026-03-01">
+  <owner>dianaou@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the page handler is bound to the C++ controller. Measures
+    the elapsedtime for the page to bind.
+  </summary>
+</histogram>
+
 <histogram name="Lens.Overlay.TimeToWebUIReady" units="ms"
-    expires_after="2025-05-06">
+    expires_after="2026-04-12">
   <owner>jdonnelly@chromium.org</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
     Recorded once when the Lens Overlay WebUI is ready. Measures the elapsed
-    time between when the overlay was invoked and when its WebUI was ready.
+    time between when the overlay was invoked and when its WebUI was ready. On
+    iOS, when the LensUI is ready.
   </summary>
 </histogram>
 
@@ -301,6 +971,17 @@ chromium-metrics-reviews@google.com.
     Quick Action Search Widget.
 
     Note: Gap between 04/22 - 08/23.
+  </summary>
+</histogram>
+
+<histogram name="Lens.SidePanel.IframeLoadStatus"
+    enum="LensSidePanelIframeLoadStatus" expires_after="2026-09-01">
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded after a navigation in the side panel iframe or one of its
+    subframes. Records whether the iframe loaded successfully, or the reason for
+    the error if it failed.
   </summary>
 </histogram>
 

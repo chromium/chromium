@@ -5,20 +5,20 @@
 package org.chromium.chrome.browser.download.dialogs;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.R;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
-import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Dialog for confirming that the user wants to open a pdf download after download completion. */
+@NullMarked
 public class OpenDownloadDialog {
     /**
      * Events related to the open download dialog, used for UMA reporting. These values are
@@ -40,9 +40,6 @@ public class OpenDownloadDialog {
         int COUNT = 4;
     }
 
-    private PropertyModelChangeProcessor<PropertyModel, OpenDownloadCustomView, PropertyKey>
-            mPropertyModelChangeProcessor;
-
     /**
      * Called to show a dialog for opening a download.
      *
@@ -57,11 +54,8 @@ public class OpenDownloadDialog {
             Context context,
             ModalDialogManager modalDialogManager,
             boolean autoOpenEnabled,
-            String appName,
+            @Nullable String appName,
             Callback<Integer> callback) {
-        OpenDownloadCustomView customView =
-                (OpenDownloadCustomView)
-                        LayoutInflater.from(context).inflate(R.layout.open_download_dialog, null);
         var controller =
                 new ModalDialogProperties.Controller() {
                     @Override
@@ -82,7 +76,7 @@ public class OpenDownloadDialog {
                             int result = OpenDownloadDialogEvent.OPEN_DOWNLOAD_DIALOG_DISMISS;
                             if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
                                 result =
-                                        customView.getAutoOpenEnabled()
+                                        model.get(ModalDialogProperties.CHECKBOX_CHECKED)
                                                 ? OpenDownloadDialogEvent
                                                         .OPEN_DOWNLOAD_DIALOG_ALWAYS_OPEN
                                                 : OpenDownloadDialogEvent
@@ -101,28 +95,18 @@ public class OpenDownloadDialog {
             positiveButtonText = resources.getString(R.string.open_download_dialog_open_text);
         }
         PropertyModel propertyModel =
-                new PropertyModel.Builder(OpenDownloadDialogProperties.ALL_KEYS)
-                        .with(OpenDownloadDialogProperties.TITLE, title)
-                        .with(
-                                OpenDownloadDialogProperties.AUTO_OPEN_CHECKBOX_CHECKED,
-                                autoOpenEnabled)
-                        .build();
-        mPropertyModelChangeProcessor =
-                PropertyModelChangeProcessor.create(
-                        propertyModel,
-                        customView,
-                        OpenDownloadDialogViewBinder::bind,
-                        /* performInitialBind= */ true);
-
-        PropertyModel showPropertyModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, controller)
-                        .with(ModalDialogProperties.CUSTOM_VIEW, customView)
+                        .with(ModalDialogProperties.TITLE, title)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, positiveButtonText)
                         .with(
                                 ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                                 resources.getString(R.string.open_download_dialog_cancel_text))
+                        .with(
+                                ModalDialogProperties.CHECKBOX_TEXT,
+                                resources.getString(R.string.open_download_dialog_auto_open_text))
+                        .with(ModalDialogProperties.CHECKBOX_CHECKED, autoOpenEnabled)
                         .build();
-        modalDialogManager.showDialog(showPropertyModel, ModalDialogManager.ModalDialogType.TAB);
+        modalDialogManager.showDialog(propertyModel, ModalDialogManager.ModalDialogType.TAB);
     }
 }

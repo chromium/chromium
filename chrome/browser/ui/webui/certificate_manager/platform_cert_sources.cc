@@ -7,10 +7,11 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/certificate_dialogs.h"
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_handler.h"
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_utils.h"
-#include "chrome/browser/ui/webui/certificate_viewer_webui.h"
+#include "chrome/browser/ui/webui/certificate_viewer/certificate_viewer_webui.h"
 #include "chrome/common/net/x509_certificate_model.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/web_contents.h"
@@ -30,15 +31,16 @@ void PopulatePlatformRootStoreLogsAsync(
   //
   // Even more ideally, store this information somewhere such that multiple
   // PlatformCertSource objects can use the same cached results.
-  std::vector<certificate_manager_v2::mojom::SummaryCertInfoPtr> cert_infos;
+  std::vector<certificate_manager::mojom::SummaryCertInfoPtr> cert_infos;
   for (auto const& cert_info : info->user_added_certs) {
     if (trust != cert_info->trust_setting) {
       continue;
     }
     x509_certificate_model::X509CertificateModel model(
-        net::x509_util::CreateCryptoBuffer(cert_info->cert), "");
-    cert_infos.push_back(certificate_manager_v2::mojom::SummaryCertInfo::New(
-        model.HashCertSHA256(), model.GetTitle()));
+        net::x509_util::CreateCryptoBuffer(cert_info->cert));
+    cert_infos.push_back(certificate_manager::mojom::SummaryCertInfo::New(
+        model.HashCertSHA256(), model.GetTitle(),
+        /*is_deletable=*/false));
   }
   std::move(callback).Run(std::move(cert_infos));
 }

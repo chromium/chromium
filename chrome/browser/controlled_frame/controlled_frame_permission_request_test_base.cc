@@ -11,7 +11,9 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/task/current_thread.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/controlled_frame/controlled_frame_test_base.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,14 +23,15 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "url/origin.h"
 
 using testing::EndsWith;
@@ -44,33 +47,62 @@ const std::vector<PermissionRequestTestParam> kTestParams = {
     {.name = "Succeeds",
      .calls_allow = true,
      .embedder_policy = EmbedderPolicy::kBothEmbedderAndRequestingOrigin,
-     .has_embedder_content_setting = true,
+     .allowed_by_embedder_content_settings = true,
+     .embedded_origin_content_settings_state = ContentSettingsState::kDefault,
      .expected_success = true},
     {.name = "FailsBecauseNotAllow",
      .calls_allow = false,
      .embedder_policy = EmbedderPolicy::kBothEmbedderAndRequestingOrigin,
-     .has_embedder_content_setting = true,
+     .allowed_by_embedder_content_settings = true,
+     .embedded_origin_content_settings_state = ContentSettingsState::kDefault,
      .expected_success = false},
     {.name = "FailsBecauseEmbedderDoesNotHavePermissionsPolicy",
      .calls_allow = true,
      .embedder_policy = EmbedderPolicy::kNoPolicy,
-     .has_embedder_content_setting = true,
+     .allowed_by_embedder_content_settings = true,
+     .embedded_origin_content_settings_state = ContentSettingsState::kDefault,
      .expected_success = false},
     {.name = "FailsBecauseEmbedderPermissionsPolicyMissingEmbedderOrigin",
      .calls_allow = true,
      .embedder_policy = EmbedderPolicy::kNoEmbedderOrigin,
-     .has_embedder_content_setting = true},
+     .allowed_by_embedder_content_settings = true,
+     .embedded_origin_content_settings_state = ContentSettingsState::kDefault,
+     .expected_success = false},
     {.name = "FailsBecauseEmbedderPermissionsPolicyMissingRequestingOrigin",
      .calls_allow = true,
      .embedder_policy = EmbedderPolicy::kNoRequestingOrigin,
-     .has_embedder_content_setting = true,
+     .allowed_by_embedder_content_settings = true,
+     .embedded_origin_content_settings_state = ContentSettingsState::kDefault,
      .expected_success = false},
     {.name = "FailsBecauseNoEmbedderContentSettings",
      .calls_allow = true,
      .embedder_policy = EmbedderPolicy::kBothEmbedderAndRequestingOrigin,
-     .has_embedder_content_setting = false,
+     .allowed_by_embedder_content_settings = false,
+     .embedded_origin_content_settings_state = ContentSettingsState::kDefault,
+     .expected_success = false},
+    {.name = "SucceedsWhenEmbeddedOriginPermissionStateIsDenied",
+     .calls_allow = true,
+     .embedder_policy = EmbedderPolicy::kBothEmbedderAndRequestingOrigin,
+     .allowed_by_embedder_content_settings = true,
+     .embedded_origin_content_settings_state = ContentSettingsState::kDeny,
+     .expected_success = true},
+    {.name = "FailsWhenEmbeddedOriginPermissionStateIsAllowed",
+     .calls_allow = true,
+     .embedder_policy = EmbedderPolicy::kBothEmbedderAndRequestingOrigin,
+     .allowed_by_embedder_content_settings = false,
+     .embedded_origin_content_settings_state = ContentSettingsState::kAllow,
      .expected_success = false},
 };
+
+const std::vector<DisabledPermissionTestParam> kDisabledPermissionsTestParams =
+    {{.name = "BothFailsWhenPermissionsPolicyIsNotEnabled",
+      .policy_features_enabled = false,
+      .iwa_expect_success = false,
+      .controlled_frame_expect_success = false},
+     {.name = "IwaSucceedsButControlledFrameFails",
+      .policy_features_enabled = true,
+      .iwa_expect_success = true,
+      .controlled_frame_expect_success = false}};
 
 class PermissionRequestEventObserver
     : public extensions::EventRouter::TestObserver {
@@ -89,6 +121,65 @@ class PermissionRequestEventObserver
   std::vector<std::string> events_;
 };
 
+ContentSetting ContentSettingFromState(ContentSettingsState state) {
+  CHECK(state != ContentSettingsState::kDefault);
+  if (state == ContentSettingsState::kAllow) {
+    return ContentSetting::CONTENT_SETTING_ALLOW;
+  }
+  return ContentSetting::CONTENT_SETTING_BLOCK;
+}
+
+void FocusControlledFrame(content::RenderFrameHost* app_frame,
+                          content::RenderFrameHost* controlled_frame,
+                          bool must_wait_document_focus) {
+  // Focus when the frame is loaded.
+  EXPECT_THAT(content::EvalJs(app_frame,
+                              R"(
+      (function() {
+        const frame = document.getElementsByTagName('controlledframe')[0];
+        if (!frame) {
+          throw new Error('FAIL: Could not find a controlledframe element.');
+        }
+        frame.addEventListener('loadstop', () => {
+          frame.focus();
+        });
+        return 'SUCCESS';
+      })();
+    )"),
+              content::EvalJsResult::IsOk());
+
+  WaitForHitTestData(controlled_frame);
+
+  // Make user activation on <controlledframe> with a fake click.
+  content::SimulateMouseClickAt(
+      content::WebContents::FromRenderFrameHost(app_frame),
+      /*modifiers=*/0, blink::WebMouseEvent::Button::kLeft,
+      controlled_frame->GetView()->TransformPointToRootCoordSpace(
+          gfx::Point(20, 20)));
+
+  if (must_wait_document_focus) {
+    // Wait for the focus.
+    // Couldn't get FocusChangedObserver to work, it resulted in
+    // timeouts, probably because webContents already was focused,
+    // and there are internal race conditions.
+    base::test::ScopedRunLoopTimeout default_timeout(FROM_HERE,
+                                                     base::Seconds(5));
+    base::test::RunUntil([&]() -> bool {
+      auto* web_contents = content::WebContents::FromRenderFrameHost(app_frame);
+      return web_contents->GetFocusedFrame() == controlled_frame;
+    });
+
+    // Verify document focused.
+    EXPECT_TRUE(
+        content::EvalJs(controlled_frame, "document.hasFocus()").ExtractBool());
+
+    // Verify that mouse click gave user activation.
+    EXPECT_TRUE(
+        content::EvalJs(controlled_frame, "navigator.userActivation.isActive")
+            .ExtractBool());
+  }
+}
+
 }  // namespace
 
 PermissionRequestTestCase::PermissionRequestTestCase() = default;
@@ -97,6 +188,14 @@ PermissionRequestTestCase::~PermissionRequestTestCase() = default;
 const std::vector<PermissionRequestTestParam>&
 GetDefaultPermissionRequestTestParams() {
   return kTestParams;
+}
+
+DisabledPermissionTestCase::DisabledPermissionTestCase() = default;
+DisabledPermissionTestCase::~DisabledPermissionTestCase() = default;
+
+const std::vector<DisabledPermissionTestParam>&
+GetDefaultDisabledPermissionTestParams() {
+  return kDisabledPermissionsTestParams;
 }
 
 void ControlledFramePermissionRequestTestBase::SetUpOnMainThread() {
@@ -135,7 +234,7 @@ void ControlledFramePermissionRequestTestBase::
                                                       handle_request_str)));
 }
 
-void ControlledFramePermissionRequestTestBase::RunTestAndVerify(
+void ControlledFramePermissionRequestTestBase::VerifyEnabledPermission(
     const PermissionRequestTestCase& test_case,
     const PermissionRequestTestParam& test_param,
     std::optional<base::OnceCallback<std::string(bool)>>
@@ -150,8 +249,8 @@ void ControlledFramePermissionRequestTestBase::RunTestAndVerify(
 
   // If the permission has no dependent embedder content setting, then skip
   // the true negative embedder content settings test cases.
-  if (!test_param.has_embedder_content_setting &&
-      test_case.embedder_content_settings_type.empty()) {
+  if (!test_param.allowed_by_embedder_content_settings &&
+      test_case.content_settings_type.empty()) {
     return;
   }
 
@@ -177,23 +276,31 @@ void ControlledFramePermissionRequestTestBase::RunTestAndVerify(
           /*controlled_frame_src_relative_url=*/"/index.html",
           manifest_builder);
 
-  // Focus <controlledframe> with a fake click.
-  content::SimulateMouseClick(
-      content::WebContents::FromRenderFrameHost(controlled_frame),
-      /*modifiers=*/0, blink::WebMouseEvent::Button::kLeft);
+  FocusControlledFrame(app_frame, controlled_frame,
+                       test_case.must_wait_for_document_focus);
 
   SetUpPermissionRequestEventListener(app_frame, test_case.permission_name,
                                       test_param.calls_allow);
 
-  for (const auto& content_settings_type :
-       test_case.embedder_content_settings_type) {
+  for (const auto& content_settings_type : test_case.content_settings_type) {
     HostContentSettingsMapFactory::GetForProfile(profile())
         ->SetContentSettingDefaultScope(
             app_frame->GetLastCommittedOrigin().GetURL(),
             app_frame->GetLastCommittedOrigin().GetURL(), content_settings_type,
-            test_param.has_embedder_content_setting
+            test_param.allowed_by_embedder_content_settings
                 ? ContentSetting::CONTENT_SETTING_ALLOW
                 : ContentSetting::CONTENT_SETTING_BLOCK);
+
+    if (test_param.embedded_origin_content_settings_state !=
+        ContentSettingsState::kDefault) {
+      HostContentSettingsMapFactory::GetForProfile(profile())
+          ->SetContentSettingDefaultScope(
+              controlled_frame->GetLastCommittedOrigin().GetURL(),
+              controlled_frame->GetLastCommittedOrigin().GetURL(),
+              content_settings_type,
+              ContentSettingFromState(
+                  test_param.embedded_origin_content_settings_state));
+    }
   }
 
   PermissionRequestEventObserver event_observer;
@@ -226,6 +333,81 @@ void ControlledFramePermissionRequestTestBase::RunTestAndVerify(
 
   extensions::EventRouter::Get(profile())->RemoveObserverForTesting(
       &event_observer);
+}
+
+void ControlledFramePermissionRequestTestBase::VerifyDisabledPermission(
+    const DisabledPermissionTestCase& test_case,
+    const DisabledPermissionTestParam& test_param) {
+  auto [app_frame, controlled_frame] =
+      SetUpControlledFrame(test_case, test_param);
+  if (!app_frame || !controlled_frame) {
+    return;
+  }
+  VerifyDisabledPermission(test_case, test_param, app_frame, controlled_frame);
+}
+
+void ControlledFramePermissionRequestTestBase::VerifyDisabledPermission(
+    const DisabledPermissionTestCase& test_case,
+    const DisabledPermissionTestParam& test_param,
+    content::RenderFrameHost* app_frame,
+    content::RenderFrameHost* controlled_frame) {
+  std::string expected_iwa_result = test_param.iwa_expect_success
+                                        ? test_case.success_result
+                                        : test_case.failure_result;
+  std::string expected_cf_result = test_param.controlled_frame_expect_success
+                                       ? test_case.success_result
+                                       : test_case.failure_result;
+
+  EXPECT_THAT(content::EvalJs(app_frame, test_case.request_script),
+              expected_iwa_result);
+
+  FocusControlledFrame(app_frame, controlled_frame,
+                       /*must_wait_document_focus=*/false);
+
+  ASSERT_EQ("SUCCESS", content::EvalJs(app_frame,
+                                       R"(
+(function() {
+  const frame = document.getElementsByTagName('controlledframe')[0];
+  if (!frame) {
+    return 'FAIL: Could not find a controlledframe element.';
+  }
+  window.permissionEventHandled = false;
+  frame.addEventListener('permissionrequest', (e) => {
+    window.permissionEventHandled = true;
+  });
+  return 'SUCCESS';
+})();
+    )"));
+
+  EXPECT_THAT(content::EvalJs(controlled_frame, test_case.request_script),
+              expected_cf_result);
+
+  EXPECT_EQ(content::EvalJs(app_frame, "window.permissionEventHandled;"),
+            false);
+}
+
+std::pair<content::RenderFrameHost*, content::RenderFrameHost*>
+ControlledFramePermissionRequestTestBase::SetUpControlledFrame(
+    const DisabledPermissionTestCase& test_case,
+    const DisabledPermissionTestParam& test_param) {
+  // If the permission has no dependent permissions policy feature, then
+  // skip
+  // the true negative permissions policy test cases.
+  if (!test_param.policy_features_enabled &&
+      test_case.policy_features.empty()) {
+    return {nullptr, nullptr};
+  }
+
+  web_app::ManifestBuilder manifest_builder = web_app::ManifestBuilder();
+  if (test_param.policy_features_enabled) {
+    for (auto& policy_feature : test_case.policy_features) {
+      manifest_builder.AddPermissionsPolicyWildcard(policy_feature);
+    }
+  }
+
+  return InstallAndOpenIwaThenCreateControlledFrame(
+      /*controlled_frame_host_name=*/kPermissionAllowedHost,
+      /*controlled_frame_src_relative_url=*/"/index.html", manifest_builder);
 }
 
 }  // namespace controlled_frame

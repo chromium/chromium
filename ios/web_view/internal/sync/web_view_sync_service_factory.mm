@@ -6,21 +6,24 @@
 
 #import <utility>
 
+#import "base/feature_list.h"
 #import "base/functional/callback_helpers.h"
 #import "base/no_destructor.h"
 #import "base/time/time.h"
-#import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/webdata/addresses/autofill_profile_sync_bridge.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/browser_sync/common_controller_builder.h"
+#import "components/sync/base/features.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/metrics/demographics/user_demographics.h"
 #import "components/password_manager/core/browser/sharing/password_receiver_service.h"
 #import "components/password_manager/core/browser/sharing/password_sender_service.h"
-#import "components/plus_addresses/settings/plus_address_setting_service.h"
-#import "components/plus_addresses/webdata/plus_address_webdata_service.h"
+#import "components/plus_addresses/core/browser/settings/plus_address_setting_service.h"
+#import "components/plus_addresses/core/browser/webdata/plus_address_webdata_service.h"
 #import "components/sync/base/data_type.h"
 #import "components/sync/base/sync_util.h"
+#import "components/sync/engine/net/http_bridge.h"
 #import "components/sync/service/data_type_controller.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_impl.h"
@@ -29,6 +32,7 @@
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web_view/internal/app/application_context.h"
+#import "ios/web_view/internal/autofill/cwv_autofill_prefs.h"
 #import "ios/web_view/internal/passwords/web_view_account_password_store_factory.h"
 #import "ios/web_view/internal/passwords/web_view_profile_password_store_factory.h"
 #import "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
@@ -45,13 +49,18 @@
 namespace ios_web_view {
 namespace {
 
-syncer::DataTypeSet GetDisabledTypes() {
+syncer::DataTypeSet GetDisabledTypes(PrefService* prefs) {
   syncer::DataTypeSet disabled_types = syncer::UserTypes();
   disabled_types.Remove(syncer::AUTOFILL);
   disabled_types.Remove(syncer::AUTOFILL_WALLET_DATA);
   disabled_types.Remove(syncer::AUTOFILL_WALLET_METADATA);
   disabled_types.Remove(syncer::AUTOFILL_PROFILE);
   disabled_types.Remove(syncer::PASSWORDS);
+
+  if (prefs->GetBoolean(ios_web_view::kCWVAutofillAddressSyncEnabled)) {
+    disabled_types.Remove(syncer::CONTACT_INFO);
+  }
+
   return disabled_types;
 }
 
@@ -66,11 +75,10 @@ syncer::DataTypeController::TypeVector CreateControllers(
                                             ServiceAccessType::IMPLICIT_ACCESS);
 
   browser_sync::CommonControllerBuilder controller_builder;
+  PrefService* prefs = browser_state->GetPrefs();
 
   controller_builder.SetAutofillWebDataService(
-      web::GetUIThreadTaskRunner({}),
-      autofill_profile_web_data_service->GetDBTaskRunner(),
-      autofill_profile_web_data_service,
+      web::GetUIThreadTaskRunner({}), autofill_profile_web_data_service,
       WebViewWebDataServiceWrapperFactory::GetAutofillWebDataForAccount(
           browser_state, ServiceAccessType::IMPLICIT_ACCESS));
   controller_builder.SetDeviceInfoSyncService(
@@ -84,7 +92,7 @@ syncer::DataTypeController::TypeVector CreateControllers(
           browser_state, ServiceAccessType::IMPLICIT_ACCESS),
       WebViewAccountPasswordStoreFactory::GetForBrowserState(
           browser_state, ServiceAccessType::IMPLICIT_ACCESS));
-  controller_builder.SetPrefService(browser_state->GetPrefs());
+  controller_builder.SetPrefService(prefs);
 
   // Unused.
   controller_builder.SetBookmarkModel(nullptr);
@@ -99,18 +107,20 @@ syncer::DataTypeController::TypeVector CreateControllers(
   controller_builder.SetPasswordReceiverService(nullptr);
   controller_builder.SetPasswordSenderService(nullptr);
   controller_builder.SetPlusAddressServices(nullptr, nullptr);
-  controller_builder.SetPowerBookmarkService(nullptr);
   controller_builder.SetPrefServiceSyncable(nullptr);
   // TODO(crbug.com/330201909) implement for iOS.
   controller_builder.SetProductSpecificationsService(nullptr);
   controller_builder.SetSendTabToSelfSyncService(nullptr);
   controller_builder.SetSessionSyncService(nullptr);
+  controller_builder.SetSharingMessageBridge(nullptr);
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   controller_builder.SetSupervisedUserSettingsService(nullptr);
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  controller_builder.SetTabGroupSyncService(nullptr);
+  controller_builder.SetTemplateURLService(nullptr);
   controller_builder.SetUserEventService(nullptr);
 
-  return controller_builder.Build(GetDisabledTypes(), sync_service,
+  return controller_builder.Build(GetDisabledTypes(prefs), sync_service,
                                   version_info::Channel::STABLE);
 }
 
@@ -164,9 +174,21 @@ WebViewSyncServiceFactory::BuildServiceInstanceFor(
       WebViewSyncInvalidationsServiceFactory::GetForBrowserState(
           browser_state));
   init_params.url_loader_factory = browser_state->GetSharedURLLoaderFactory();
+  init_params.create_http_post_provider_factory = base::BindRepeating(
+      [](const std::string& user_agent,
+         std::unique_ptr<network::PendingSharedURLLoaderFactory>
+             pending_url_loader_factory)
+          -> std::unique_ptr<syncer::HttpPostProviderFactory> {
+        return std::make_unique<syncer::HttpBridgeFactory>(
+            user_agent, std::move(pending_url_loader_factory));
+      });
   init_params.network_connection_tracker =
       ApplicationContext::GetInstance()->GetNetworkConnectionTracker();
   init_params.channel = version_info::Channel::STABLE;
+  if (base::FeatureList::IsEnabled(syncer::kSyncUseOsCryptAsync)) {
+    init_params.os_crypt_async =
+        ApplicationContext::GetInstance()->GetOSCryptAsync();
+  }
 
   auto sync_service =
       std::make_unique<syncer::SyncServiceImpl>(std::move(init_params));

@@ -12,7 +12,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/platform_window_delegate.h"
 
@@ -22,24 +22,14 @@ class HeadlessWindowManager;
 
 class HeadlessWindow : public PlatformWindow {
  public:
-  explicit HeadlessWindow(PlatformWindowDelegate* delegate,
-                          HeadlessWindowManager* manager,
-                          const gfx::Rect& bounds);
+  HeadlessWindow(PlatformWindowDelegate* delegate,
+                 HeadlessWindowManager* manager,
+                 const gfx::Rect& bounds);
 
   HeadlessWindow(const HeadlessWindow&) = delete;
   HeadlessWindow& operator=(const HeadlessWindow&) = delete;
 
   ~HeadlessWindow() override;
-
- protected:
-  PlatformWindowDelegate* delegate() { return delegate_; }
-
- private:
-  enum class ActivationState {
-    kUnknown,
-    kActive,
-    kInactive,
-  };
 
   // PlatformWindow:
   void Show(bool inactive) override;
@@ -77,6 +67,18 @@ class HeadlessWindow : public PlatformWindow {
   void RestoreWindowBounds();
   void UpdateBounds(const gfx::Rect& bounds);
   void UpdateWindowState(PlatformWindowState new_window_state);
+
+  gfx::AcceleratedWidget widget() const { return widget_; }
+
+ protected:
+  PlatformWindowDelegate* delegate() { return delegate_; }
+
+ private:
+  enum class ActivationState {
+    kUnknown,
+    kActive,
+    kInactive,
+  };
 
   raw_ptr<PlatformWindowDelegate> delegate_ = nullptr;
   raw_ptr<HeadlessWindowManager> manager_;

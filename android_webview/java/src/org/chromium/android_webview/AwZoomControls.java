@@ -9,19 +9,24 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ZoomButtonsController;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 // This class is visible purely for tests.
 @Lifetime.WebView
+@NullMarked
 public class AwZoomControls {
-    private AwContents mAwContents;
+    private final AwContents mAwContents;
 
     // It is advised to use getZoomController() where possible.
     @SuppressWarnings("deprecation")
-    private android.widget.ZoomButtonsController mZoomButtonsController;
+    private @MonotonicNonNull ZoomButtonsController mZoomButtonsController;
 
     private boolean mCanZoomIn;
     private boolean mCanZoomOut;
@@ -42,14 +47,14 @@ public class AwZoomControls {
 
     @SuppressWarnings("deprecation")
     public void invokeZoomPicker() {
-        android.widget.ZoomButtonsController zoomController = getZoomController();
+        ZoomButtonsController zoomController = getZoomController();
         if (zoomController != null) {
             zoomController.setVisible(true);
         }
     }
 
     public void setAutoDismissed(boolean autoDismiss) {
-        android.widget.ZoomButtonsController zoomController = getZoomController();
+        ZoomButtonsController zoomController = getZoomController();
         if (zoomController != null) {
             zoomController.setAutoDismissed(autoDismiss);
         }
@@ -57,7 +62,7 @@ public class AwZoomControls {
 
     @SuppressWarnings("deprecation")
     public void dismissZoomPicker() {
-        android.widget.ZoomButtonsController zoomController = getZoomController();
+        ZoomButtonsController zoomController = getZoomController();
         if (zoomController != null) {
             zoomController.setVisible(false);
         }
@@ -65,7 +70,7 @@ public class AwZoomControls {
 
     @SuppressWarnings("deprecation")
     public void updateZoomControls() {
-        android.widget.ZoomButtonsController zoomController = getZoomController();
+        ZoomButtonsController zoomController = getZoomController();
         if (zoomController == null) {
             return;
         }
@@ -82,18 +87,17 @@ public class AwZoomControls {
     }
 
     // This method is used in tests. It doesn't modify the state of zoom controls.
-    View getZoomControlsViewForTest() {
+    @Nullable View getZoomControlsViewForTest() {
         return mZoomButtonsController != null ? mZoomButtonsController.getZoomControls() : null;
     }
 
     @SuppressLint("RtlHardcoded")
     @SuppressWarnings("deprecation")
-    private android.widget.ZoomButtonsController getZoomController() {
+    private @Nullable ZoomButtonsController getZoomController() {
         if (mZoomButtonsController == null
                 && mAwContents.getSettings().shouldDisplayZoomControls()) {
-            mZoomButtonsController =
-                    new android.widget.ZoomButtonsController(mAwContents.getContainerView());
-            mZoomButtonsController.setOnZoomListener(new ZoomListener());
+            mZoomButtonsController = new ZoomButtonsController(mAwContents.getContainerView());
+            mZoomButtonsController.setOnZoomListener(new ZoomListener(mZoomButtonsController));
             // ZoomButtonsController positions the buttons at the bottom, but in
             // the middle. Change their layout parameters so they appear on the
             // right.
@@ -107,12 +111,18 @@ public class AwZoomControls {
     }
 
     @SuppressWarnings("deprecation")
-    private class ZoomListener implements android.widget.ZoomButtonsController.OnZoomListener {
+    private class ZoomListener implements ZoomButtonsController.OnZoomListener {
+        private final ZoomButtonsController mController;
+
+        public ZoomListener(ZoomButtonsController controller) {
+            mController = controller;
+        }
+
         @Override
         public void onVisibilityChanged(boolean visible) {
             if (visible) {
                 // Bring back the hidden zoom controls.
-                mZoomButtonsController.getZoomControls().setVisibility(View.VISIBLE);
+                mController.getZoomControls().setVisibility(View.VISIBLE);
                 updateZoomControls();
             }
         }

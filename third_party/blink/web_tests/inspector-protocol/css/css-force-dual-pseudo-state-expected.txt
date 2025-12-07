@@ -1,0 +1,67 @@
+Test CSS.forcePseudoStates method for dual pseudo state pairs
+TESTCASE: test1
+Original states: read-only
+New states: read-write
+Should match: read-write
+TESTCASE: test2
+Original states: read-write
+New states: read-only
+Should match: read-only
+TESTCASE: test3
+Original states: read-write
+New states: read-only
+Should match: read-only
+TESTCASE: test4
+Original states: enabled valid optional read-write
+New states: disabled invalid required read-only
+Should match: disabled invalid required read-only
+TESTCASE: test5
+Original states: enabled optional read-only
+New states: disabled required read-write
+Should match: disabled required read-write
+TESTCASE: test6
+Original states: disabled optional read-only
+New states: enabled required read-write
+Should match: enabled required read-write
+TESTCASE: test7
+Original states: disabled optional read-only
+New states: enabled required read-write
+Should match: enabled required read-write
+TESTCASE: test8
+Original states: enabled valid optional read-write
+New states: disabled invalid required read-only
+Should match: disabled invalid required read-only
+TESTCASE: test9
+Original states: enabled optional read-only
+New states: disabled required read-write
+Should match: disabled required read-write
+TESTCASE: test10
+Original states: disabled optional read-only
+New states: enabled required read-write
+Should match: enabled required read-write
+TESTCASE: test11
+Original states: disabled optional read-only
+New states: enabled required read-write
+Should match: enabled required read-write
+TESTCASE: test12
+Original states: enabled valid optional read-only
+New states: disabled invalid required read-write
+Should match: disabled invalid required read-write
+TESTCASE: test13
+Original states: disabled optional read-only
+New states: enabled required read-write
+Should match: enabled required read-write
+TESTCASE: test14
+Original states: enabled invalid required read-write
+New states: disabled valid optional read-only
+Should match: disabled valid optional read-only
+TESTCASE: test15
+Original states: enabled invalid optional read-write out-of-range
+New states: disabled valid required read-only in-range
+Should match: disabled valid required read-only in-range
+TESTCASE: test16
+Original states: enabled valid optional read-write in-range
+New states: disabled invalid required read-only out-of-range
+Should match: disabled invalid required read-only out-of-range
+Didn't fail after disabling the CSS agent (https://crbug.com/1123526).
+

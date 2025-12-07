@@ -33,8 +33,12 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_pointer_event.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
+#include "third_party/blink/public/mojom/css/preferred_contrast.mojom-shared.h"
+#include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
+#include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
@@ -88,7 +92,6 @@ Scrollbar::Scrollbar(ScrollableArea* scrollable_area,
       scroll_timer_(scrollable_area->GetTimerTaskRunner(),
                     this,
                     &Scrollbar::AutoscrollTimerFired),
-      elastic_overscroll_(0),
       injected_gesture_scroll_begin_(false),
       scrollbar_manipulation_in_progress_on_cc_thread_(false),
       style_source_(style_source) {
@@ -148,6 +151,27 @@ int Scrollbar::Maximum() const {
   gfx::Vector2d max_offset = scrollable_area_->MaximumScrollOffsetInt() -
                              scrollable_area_->MinimumScrollOffsetInt();
   return orientation_ == kHorizontalScrollbar ? max_offset.x() : max_offset.y();
+}
+
+WebThemeEngine::State Scrollbar::GetStateForPart(ScrollbarPart part) const {
+  if (!enabled_) {
+    return WebThemeEngine::kStateDisabled;
+  }
+  if (part == pressed_part_) {
+    return WebThemeEngine::kStatePressed;
+  }
+  if (part == hovered_part_) {
+    // Don't draw a hovered state when the device does not have hover available.
+    if (const Settings* const settings =
+            style_source_ ? style_source_->GetDocument().GetSettings()
+                          : nullptr;
+        !settings ||
+        (settings->GetAvailableHoverTypes() &
+         static_cast<int>(mojom::blink::HoverType::kHoverHoverType))) {
+      return WebThemeEngine::kStateHover;
+    }
+  }
+  return WebThemeEngine::kStateNormal;
 }
 
 void Scrollbar::OffsetDidChange(mojom::blink::ScrollType scroll_type) {
@@ -271,15 +295,12 @@ ScrollDirectionPhysical Scrollbar::PressedPartScrollDirectionPhysical() {
 }
 
 ui::ScrollGranularity Scrollbar::PressedPartScrollGranularity() {
-  if (pressed_part_ == kBackButtonStartPart ||
-      pressed_part_ == kBackButtonEndPart ||
-      pressed_part_ == kForwardButtonStartPart ||
-      pressed_part_ == kForwardButtonEndPart) {
-    return RuntimeEnabledFeatures::PercentBasedScrollingEnabled()
-               ? ui::ScrollGranularity::kScrollByPercentage
-               : ui::ScrollGranularity::kScrollByLine;
-  }
-  return ui::ScrollGranularity::kScrollByPage;
+  return (pressed_part_ == kBackButtonStartPart ||
+          pressed_part_ == kBackButtonEndPart ||
+          pressed_part_ == kForwardButtonStartPart ||
+          pressed_part_ == kForwardButtonEndPart)
+             ? ui::ScrollGranularity::kScrollByLine
+             : ui::ScrollGranularity::kScrollByPage;
 }
 
 void Scrollbar::MoveThumb(int pos, bool dragging_document) {
@@ -356,8 +377,9 @@ void Scrollbar::SetPressedPart(ScrollbarPart part, WebInputEvent::Type type) {
     SetNeedsPaintInvalidation(
         static_cast<ScrollbarPart>(pressed_part_ | hovered_part_ | part));
 
-  if (GetScrollableArea() && part != kNoPart)
-    GetScrollableArea()->DidScrollWithScrollbar(part, Orientation(), type);
+  if (scrollable_area_ && part != kNoPart) {
+    scrollable_area_->DidScrollWithScrollbar(part, Orientation(), type);
+  }
 
   pressed_part_ = part;
 }
@@ -622,10 +644,9 @@ void Scrollbar::MouseDown(const WebMouseEvent& evt) {
 
 void Scrollbar::InjectScrollGestureForPressedPart(
     WebInputEvent::Type gesture_type) {
-  ui::ScrollGranularity granularity = PressedPartScrollGranularity();
-  ScrollOffset delta =
-      ToScrollDelta(PressedPartScrollDirectionPhysical(),
-                    ScrollableArea::DirectionBasedScrollDelta(granularity));
+  const ui::ScrollGranularity granularity = PressedPartScrollGranularity();
+  const ScrollOffset delta =
+      ToScrollDelta(PressedPartScrollDirectionPhysical(), 1);
   InjectScrollGesture(gesture_type, delta, granularity);
 }
 
@@ -914,9 +935,28 @@ EScrollbarWidth Scrollbar::CSSScrollbarWidth() const {
   return EScrollbarWidth::kAuto;
 }
 
+std::optional<blink::Color> Scrollbar::RootScrollbarThemeColor() const {
+  if (RuntimeEnabledFeatures::RootScrollbarFollowsBrowserThemeEnabled() &&
+      scrollable_area_ && scrollable_area_->IsGlobalRootNonOverlayScroller()) {
+    if (const auto* layout_box = GetLayoutBox()) {
+      if (const auto theme_color = layout_box->GetDocument()
+                                       .GetSettings()
+                                       ->GetRootScrollbarThemeColor()) {
+        return blink::Color::FromRGBA32(theme_color.value());
+      }
+    }
+  }
+  return std::nullopt;
+}
+
 std::optional<blink::Color> Scrollbar::ScrollbarThumbColor() const {
-  if (style_source_) {
+  if (style_source_ &&
+      style_source_->StyleRef().ScrollbarThumbColorResolved()) {
     return style_source_->StyleRef().ScrollbarThumbColorResolved();
+  }
+  if (theme_.UsesFluentScrollbars() && !InForcedColorsMode() &&
+      !ScrollbarTrackColor().has_value()) {
+    return RootScrollbarThemeColor();
   }
   return std::nullopt;
 }
@@ -948,6 +988,43 @@ mojom::blink::ColorScheme Scrollbar::UsedColorScheme() const {
   return IsOverlayScrollbar()
              ? scrollable_area_->GetOverlayScrollbarColorScheme()
              : scrollable_area_->UsedColorSchemeScrollbars();
+}
+
+LayoutBox* Scrollbar::GetLayoutBox() const {
+  return scrollable_area_ ? scrollable_area_->GetLayoutBox() : nullptr;
+}
+
+bool Scrollbar::IsScrollCornerVisible() const {
+  return scrollable_area_ && scrollable_area_->IsScrollCornerVisible();
+}
+
+bool Scrollbar::ShouldPaint() const {
+  // When the frame is throttled, the scrollbar will not be painted because
+  // the frame has not had its lifecycle updated.
+  return scrollable_area_ && !scrollable_area_->IsThrottled();
+}
+
+bool Scrollbar::LastKnownMousePositionInFrameRect() const {
+  return scrollable_area_ &&
+         FrameRect().Contains(scrollable_area_->LastKnownMousePosition());
+}
+
+const ui::ColorProvider* Scrollbar::GetColorProvider(
+    mojom::blink::ColorScheme color_scheme) const {
+  const auto* const box = GetLayoutBox();
+  return box ? box->GetDocument().GetColorProviderForPainting(color_scheme)
+             : nullptr;
+}
+
+mojom::blink::PreferredContrast Scrollbar::GetPreferredContrast() const {
+  const auto* const box = GetLayoutBox();
+  return box ? box->GetDocument().GetPreferredContrast()
+             : mojom::blink::PreferredContrast::kNoPreference;
+}
+
+bool Scrollbar::InForcedColorsMode() const {
+  const auto* const box = GetLayoutBox();
+  return box && box->GetDocument().InForcedColorsMode();
 }
 
 }  // namespace blink

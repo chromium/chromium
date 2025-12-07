@@ -19,7 +19,7 @@ source_set("eg2_tests") {
     "//components/autofill/ios/browser:autofill_test_bundle_data",
     "//components/strings",
     "//ios/chrome/browser/autofill/model:constants",
-    "//ios/chrome/browser/ui/infobars:constants",
+    "//ios/chrome/browser/infobars/ui_bundled:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:launch_configuration",
@@ -42,7 +42,7 @@ source_set("eg_app_support+eg2") {
     "//components/autofill/ios/browser",
     "//components/strings",
     "//ios/chrome/browser/autofill/model",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/test/app:test_support",
     "//ios/testing:nserror_support",
     "//ios/testing/earl_grey:eg_app_support+eg2",
@@ -50,6 +50,10 @@ source_set("eg_app_support+eg2") {
     "//ios/web/public/js_messaging",
   ]
   frameworks = [ "XCTest.framework" ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("eg_test_support+eg2") {

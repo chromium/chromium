@@ -4,16 +4,20 @@
 
 #include "components/autofill/core/browser/metrics/stored_profile_metrics.h"
 
+#include <algorithm>
+#include <functional>
+
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
-#include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill::autofill_metrics {
 
-void LogStoredProfileCountStatistics(AutofillProfileSourceCategory category,
+void LogStoredProfileCountStatistics(AutofillProfileRecordTypeCategory category,
                                      const StoredProfileCounts& counts) {
   const std::string kSuffix = GetProfileCategorySuffix(category);
 
@@ -34,8 +38,9 @@ void LogStoredProfileCountStatistics(AutofillProfileSourceCategory category,
       100 * used / counts.total);
 }
 
-void LogStoredProfileDaysSinceLastUse(AutofillProfileSourceCategory category,
-                                      size_t days) {
+void LogStoredProfileDaysSinceLastUse(
+    AutofillProfileRecordTypeCategory category,
+    size_t days) {
   base::UmaHistogramCounts1000(
       base::StrCat({"Autofill.DaysSinceLastUse.StoredProfile.",
                     GetProfileCategorySuffix(category)}),
@@ -47,13 +52,14 @@ void LogStoredProfileMetrics(
   const base::Time now = AutofillClock::Now();
   // Counts stored profile metrics for all profile of the given `category` and
   // emits UMA metrics for them.
-  auto count_and_log = [&](AutofillProfileSourceCategory category) {
+  auto count_and_log = [&](AutofillProfileRecordTypeCategory category) {
     StoredProfileCounts counts;
     for (const AutofillProfile* profile : profiles) {
       if (category != GetCategoryOfProfile(*profile)) {
         continue;
       }
-      const base::TimeDelta time_since_last_use = now - profile->use_date();
+      const base::TimeDelta time_since_last_use =
+          now - profile->usage_history().use_date();
       LogStoredProfileDaysSinceLastUse(category, time_since_last_use.InDays());
       counts.total++;
       counts.disused += time_since_last_use > kDisusedDataModelTimeDelta;
@@ -61,40 +67,64 @@ void LogStoredProfileMetrics(
     LogStoredProfileCountStatistics(category, counts);
   };
 
-  count_and_log(AutofillProfileSourceCategory::kLocalOrSyncable);
-  count_and_log(AutofillProfileSourceCategory::kAccountChrome);
-  count_and_log(AutofillProfileSourceCategory::kAccountNonChrome);
+  count_and_log(AutofillProfileRecordTypeCategory::kLocalOrSyncable);
+  count_and_log(AutofillProfileRecordTypeCategory::kAccountChrome);
+  count_and_log(AutofillProfileRecordTypeCategory::kAccountNonChrome);
+  count_and_log(AutofillProfileRecordTypeCategory::kAccountHome);
+  count_and_log(AutofillProfileRecordTypeCategory::kAccountWork);
+  count_and_log(AutofillProfileRecordTypeCategory::kAccountNameEmail);
+
+  // Update the metrics when adding a new address type.
+  static_assert(AutofillProfile::RecordType::kMaxValue ==
+                AutofillProfile::RecordType::kAccountNameEmail);
+
   base::UmaHistogramCounts1M("Autofill.StoredProfileCount.Total",
                              profiles.size());
+
+  base::UmaHistogramCounts1M(
+      "Autofill.StoredProfileCount.TotalPostalAddressProfiles",
+      std::ranges::count_if(profiles, [](const AutofillProfile* p) {
+        return autofill_metrics::IsPostalAddress(*p);
+      }));
 }
 
 void LogLocalProfileSupersetMetrics(
     std::vector<const AutofillProfile*> profiles,
     std::string_view app_locale) {
-  // Place all `kLocalOrSyncable` profiles before all `kAccount` profiles.
-  std::vector<const AutofillProfile*>::iterator begin_account_profiles =
-      base::ranges::partition(profiles, [](const AutofillProfile* profile) {
-        return profile->source() == AutofillProfile::Source::kLocalOrSyncable;
-      });
+  // Place all local profiles before all account profiles.
+  auto account_profiles = std::ranges::partition(
+      profiles, std::not_fn(&AutofillProfile::IsAccountProfile));
   // Determines if a given `profile` is a strict superset of any account
   // profile.
   auto is_account_superset = [&, comparator =
                                      AutofillProfileComparator(app_locale)](
                                  const AutofillProfile* profile) {
-    return base::ranges::any_of(begin_account_profiles, profiles.end(),
-                                [&](const AutofillProfile* account_profile) {
-                                  return profile->IsStrictSupersetOf(
-                                      comparator, *account_profile);
-                                });
+    return std::ranges::any_of(account_profiles,
+                               [&](const AutofillProfile* account_profile) {
+                                 return profile->IsStrictSupersetOf(
+                                     comparator, *account_profile);
+                               });
   };
   // Count the number of local profiles which are a superset of some account
   // profile.
   base::UmaHistogramCounts100(
       "Autofill.Leipzig.Duplication.NumberOfLocalSupersetProfilesOnStartup",
-      base::ranges::count_if(profiles.begin(), begin_account_profiles,
-                             [&](const AutofillProfile* local_profile) {
-                               return is_account_superset(local_profile);
-                             }));
+      std::ranges::count_if(profiles.begin(), account_profiles.begin(),
+                            [&](const AutofillProfile* local_profile) {
+                              return is_account_superset(local_profile);
+                            }));
+}
+
+void LogStoredProfileCountWithAlternativeName(
+    base::span<const AutofillProfile* const> profiles) {
+  size_t count =
+      std::ranges::count_if(profiles, [](const AutofillProfile* profile) {
+        return profile->GetAddressCountryCode() == AddressCountryCode("JP") &&
+               profile->HasInfo(ALTERNATIVE_FULL_NAME);
+      });
+
+  base::UmaHistogramCounts100("Autofill.StoredProfileCount.WithAlternativeName",
+                              count);
 }
 
 }  // namespace autofill::autofill_metrics

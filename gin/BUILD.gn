@@ -43,6 +43,7 @@ component("gin") {
     "per_context_data.h",
     "per_isolate_data.cc",
     "per_isolate_data.h",
+    "persistent.h",
     "public/context_holder.h",
     "public/cppgc.h",
     "public/debug.h",
@@ -50,6 +51,7 @@ component("gin") {
     "public/isolate_holder.h",
     "public/v8_idle_task_runner.h",
     "public/v8_platform.h",
+    "public/wrappable_pointer_tags.h",
     "public/wrapper_info.h",
     "runner.cc",
     "runner.h",
@@ -74,6 +76,7 @@ component("gin") {
     "v8_platform.cc",
     "v8_shared_memory_dump_provider.cc",
     "v8_shared_memory_dump_provider.h",
+    "weak_cell.h",
     "wrappable.cc",
     "wrappable.h",
     "wrapper_info.cc",
@@ -138,7 +141,7 @@ if (is_android && enable_java_templates &&
       sources = []
       deps = []
       if (use_v8_context_snapshot) {
-        deps += [ "//tools/v8_context_snapshot:v8_context_snapshot" ]
+        deps += [ "//tools/v8_context_snapshot" ]
         sources += [ "$root_build_dir/$v8_context_snapshot_filename" ]
       }
       if (!use_v8_context_snapshot || include_both_v8_snapshots) {
@@ -154,7 +157,7 @@ if (is_android && enable_java_templates &&
     }
   }
 
-  if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
+  if (defined(android_app_secondary_abi)) {
     android_assets("v8_snapshot_secondary_abi_assets") {
       # only import asset when v8_use_external_startup_data == true
       # like "v8_snapshot_assets" above
@@ -164,13 +167,14 @@ if (is_android && enable_java_templates &&
         disable_compression = true
         sources = []
         deps = []
-        if (use_v8_context_snapshot) {
+        if (use_v8_context_snapshot_android_secondary_abi) {
           sources += [ "$root_out_dir/v8_context_snapshot_32.bin" ]
           deps += [
             "//tools/v8_context_snapshot($android_secondary_abi_toolchain)",
           ]
         }
-        if (!use_v8_context_snapshot || include_both_v8_snapshots) {
+        if (!use_v8_context_snapshot_android_secondary_abi ||
+            include_both_v8_snapshots_android_secondary_abi) {
           _secondary_abi_out_dir =
               get_label_info("//v8($android_secondary_abi_toolchain)",
                              "root_out_dir")
@@ -241,7 +245,7 @@ test("gin_unittests") {
 
   data_deps = [
     "//testing/buildbot/filters:gin_unittests_filters",
-    "//tools/v8_context_snapshot:v8_context_snapshot",
+    "//tools/v8_context_snapshot",
   ]
   data = []
 

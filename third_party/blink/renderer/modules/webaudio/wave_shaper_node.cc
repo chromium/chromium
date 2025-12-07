@@ -25,11 +25,10 @@
 
 #include "third_party/blink/renderer/modules/webaudio/wave_shaper_node.h"
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_wave_shaper_options.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
-#include "third_party/blink/renderer/modules/webaudio/wave_shaper_handler.h"
-#include "third_party/blink/renderer/modules/webaudio/wave_shaper_processor.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
@@ -65,9 +64,8 @@ WaveShaperNode* WaveShaperNode::Create(BaseAudioContext* context,
 
   return node;
 }
-WaveShaperProcessor* WaveShaperNode::GetWaveShaperProcessor() const {
-  return static_cast<WaveShaperProcessor*>(
-      static_cast<WaveShaperHandler&>(Handler()).Processor());
+WaveShaperHandler& WaveShaperNode::GetWaveShaperHandler() const {
+  return static_cast<WaveShaperHandler&>(Handler());
 }
 
 void WaveShaperNode::SetCurveImpl(const float* curve_data,
@@ -98,7 +96,7 @@ void WaveShaperNode::SetCurveImpl(const float* curve_data,
   // Initialize() and Uninitialize(), changing the number of kernels.
   DeferredTaskHandler::GraphAutoLocker context_locker(context());
 
-  GetWaveShaperProcessor()->SetCurve(curve_data, length);
+  GetWaveShaperHandler().SetCurve(curve_data, length);
 }
 
 void WaveShaperNode::setCurve(NotShared<DOMFloat32Array> curve,
@@ -119,8 +117,8 @@ void WaveShaperNode::setCurve(const Vector<float>& curve,
   SetCurveImpl(curve.data(), curve.size(), exception_state);
 }
 
-NotShared<DOMFloat32Array> WaveShaperNode::curve() {
-  Vector<float>* curve = GetWaveShaperProcessor()->Curve();
+NotShared<DOMFloat32Array> WaveShaperNode::curve() const {
+  const Vector<float>* curve = GetWaveShaperHandler().Curve();
   if (!curve) {
     return NotShared<DOMFloat32Array>(nullptr);
   }
@@ -128,45 +126,24 @@ NotShared<DOMFloat32Array> WaveShaperNode::curve() {
   unsigned size = curve->size();
 
   NotShared<DOMFloat32Array> result(DOMFloat32Array::Create(size));
-  memcpy(result->Data(), curve->data(), sizeof(float) * size);
+  UNSAFE_TODO(memcpy(result->Data(), curve->data(), sizeof(float) * size));
 
   return result;
 }
 
-void WaveShaperNode::setOversample(const String& type) {
+void WaveShaperNode::setOversample(const V8OverSampleType& type) {
   DCHECK(IsMainThread());
 
   // This is to synchronize with the changes made in
   // AudioBasicProcessorNode::checkNumberOfChannelsForInput() where we can
   // initialize() and uninitialize().
   DeferredTaskHandler::GraphAutoLocker context_locker(context());
-
-  if (type == "none") {
-    GetWaveShaperProcessor()->SetOversample(
-        WaveShaperProcessor::kOverSampleNone);
-  } else if (type == "2x") {
-    GetWaveShaperProcessor()->SetOversample(WaveShaperProcessor::kOverSample2x);
-  } else if (type == "4x") {
-    GetWaveShaperProcessor()->SetOversample(WaveShaperProcessor::kOverSample4x);
-  } else {
-    NOTREACHED_IN_MIGRATION();
-  }
+  GetWaveShaperHandler().SetOversample(type.AsEnum());
 }
 
-String WaveShaperNode::oversample() const {
-  switch (const_cast<WaveShaperNode*>(this)
-              ->GetWaveShaperProcessor()
-              ->Oversample()) {
-    case WaveShaperProcessor::kOverSampleNone:
-      return "none";
-    case WaveShaperProcessor::kOverSample2x:
-      return "2x";
-    case WaveShaperProcessor::kOverSample4x:
-      return "4x";
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return "none";
-  }
+V8OverSampleType WaveShaperNode::oversample() const {
+  return V8OverSampleType(
+      const_cast<WaveShaperNode*>(this)->GetWaveShaperHandler().Oversample());
 }
 
 void WaveShaperNode::ReportDidCreate() {

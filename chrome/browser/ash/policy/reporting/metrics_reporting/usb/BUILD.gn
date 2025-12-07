@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("usb") {
   sources = [
@@ -34,6 +34,10 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("browser_tests") {
@@ -51,7 +55,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/settings:test_support",
-    "//chrome/browser/chromeos",
+    "//chrome/browser/chromeos/reporting",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/services/cros_healthd/public/cpp:fakes",

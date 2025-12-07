@@ -183,13 +183,13 @@ struct BLINK_COMMON_EXPORT
 };
 
 template <>
-struct BLINK_COMMON_EXPORT
-    StructTraits<blink::mojom::ServiceWorkerRouterRaceSourceDataView,
-                 blink::ServiceWorkerRouterRaceSource> {
-  static bool Read(blink::mojom::ServiceWorkerRouterRaceSourceDataView data,
-                   blink::ServiceWorkerRouterRaceSource* out) {
-    return true;
-  }
+struct BLINK_COMMON_EXPORT StructTraits<
+    blink::mojom::ServiceWorkerRouterRaceNetworkAndFetchEventSourceDataView,
+    blink::ServiceWorkerRouterRaceNetworkAndFetchEventSource> {
+  static bool Read(
+      blink::mojom::ServiceWorkerRouterRaceNetworkAndFetchEventSourceDataView
+          data,
+      blink::ServiceWorkerRouterRaceNetworkAndFetchEventSource* out);
 };
 
 template <>
@@ -217,6 +217,20 @@ struct BLINK_COMMON_EXPORT
 };
 
 template <>
+struct BLINK_COMMON_EXPORT StructTraits<
+    blink::mojom::ServiceWorkerRouterRaceNetworkAndCacheSourceDataView,
+    blink::ServiceWorkerRouterRaceNetworkAndCacheSource> {
+  static const blink::ServiceWorkerRouterCacheSource& cache_source(
+      const blink::ServiceWorkerRouterRaceNetworkAndCacheSource& data) {
+    return data.cache_source;
+  }
+
+  static bool Read(
+      blink::mojom::ServiceWorkerRouterRaceNetworkAndCacheSourceDataView data,
+      blink::ServiceWorkerRouterRaceNetworkAndCacheSource* out);
+};
+
+template <>
 struct BLINK_COMMON_EXPORT
     UnionTraits<blink::mojom::ServiceWorkerRouterSourceDataView,
                 blink::ServiceWorkerRouterSource> {
@@ -228,9 +242,10 @@ struct BLINK_COMMON_EXPORT
     return *data.network_source;
   }
 
-  static const blink::ServiceWorkerRouterRaceSource& race_source(
+  static const blink::ServiceWorkerRouterRaceNetworkAndFetchEventSource&
+  race_network_and_fetch_event_source(
       const blink::ServiceWorkerRouterSource& data) {
-    return *data.race_source;
+    return *data.race_network_and_fetch_event_source;
   }
 
   static const blink::ServiceWorkerRouterFetchEventSource& fetch_event_source(
@@ -241,6 +256,11 @@ struct BLINK_COMMON_EXPORT
   static const blink::ServiceWorkerRouterCacheSource& cache_source(
       const blink::ServiceWorkerRouterSource& data) {
     return *data.cache_source;
+  }
+
+  static const blink::ServiceWorkerRouterRaceNetworkAndCacheSource&
+  race_network_and_cache_source(const blink::ServiceWorkerRouterSource& data) {
+    return *data.race_network_and_cache_source;
   }
 
   static bool Read(blink::mojom::ServiceWorkerRouterSourceDataView data,

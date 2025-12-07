@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("shimless_rma") {
   sources = [
@@ -35,7 +35,7 @@ static_library("shimless_rma") {
     "//chrome/browser/ash/system",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui/ash",
+    "//chrome/browser/ui/webui/ash/diagnostics_dialog",
     "//chrome/browser/web_applications",
     "//chrome/common:constants",
     "//chrome/common/chromeos/extensions",
@@ -63,7 +63,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/shimless_rma",
     "//chrome/browser/extensions",
     "//chrome/browser/extensions:test_support",
@@ -73,6 +72,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/browser_context_helper",
     "//components/variations:test_support",
     "//components/webapps/browser",
+    "//components/webapps/isolated_web_apps/types",
     "//content/test:test_support",
     "//testing/gtest",
     "//third_party/blink/public/common:headers",

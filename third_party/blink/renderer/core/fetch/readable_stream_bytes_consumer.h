@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_READABLE_STREAM_BYTES_CONSUMER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_READABLE_STREAM_BYTES_CONSUMER_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
@@ -30,7 +29,7 @@ class CORE_EXPORT ReadableStreamBytesConsumer final : public BytesConsumer {
       delete;
   ~ReadableStreamBytesConsumer() override;
 
-  Result BeginRead(const char** buffer, size_t* available) override;
+  Result BeginRead(base::span<const char>& buffer) override;
   Result EndRead(size_t read_size) override;
   void SetClient(BytesConsumer::Client*) override;
   void ClearClient() override;

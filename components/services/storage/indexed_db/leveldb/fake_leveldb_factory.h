@@ -17,7 +17,7 @@
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
-namespace content {
+namespace content::indexed_db {
 class LevelDBState;
 
 class FakeLevelDBFactory {
@@ -47,6 +47,6 @@ class FakeLevelDBFactory {
   CreateBreakableDB(std::unique_ptr<leveldb::DB> db);
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LEVELDB_FAKE_LEVELDB_FACTORY_H_

@@ -14,7 +14,9 @@
 
 namespace gl {
 namespace {
-void* QueryDeviceObjectFromANGLE(EGLDisplay egl_display, int object_type) {
+void* QueryDeviceObjectFromANGLE(EGLDisplay egl_display,
+                                 int object_type,
+                                 const char* required_extension) {
   TRACE_EVENT0("gpu", "QueryDeviceObjectFromANGLE");
   if (egl_display == EGL_NO_DISPLAY) {
     DVLOG(1) << "Failed to retrieve EGLDisplay";
@@ -37,6 +39,16 @@ void* QueryDeviceObjectFromANGLE(EGLDisplay egl_display, int object_type) {
     return nullptr;
   }
 
+  if (required_extension != nullptr) {
+    const char* extensions = static_cast<const char*>(eglQueryDeviceStringEXT(
+        reinterpret_cast<EGLDeviceEXT>(egl_device), EGL_EXTENSIONS));
+    if (strstr(extensions, required_extension) == nullptr) {
+      DVLOG(1) << "Unable to retrieve ANGLE device due to missing extension: "
+               << required_extension;
+      return nullptr;
+    }
+  }
+
   intptr_t device = 0;
   if (!eglQueryDeviceAttribEXT(reinterpret_cast<EGLDeviceEXT>(egl_device),
                                object_type, &device)) {
@@ -50,25 +62,25 @@ void* QueryDeviceObjectFromANGLE(EGLDisplay egl_display, int object_type) {
 
 Microsoft::WRL::ComPtr<ID3D11Device> QueryD3D11DeviceObjectFromANGLE() {
   auto* display = GLSurfaceEGL::GetGLDisplayEGL();
-  if (!display || (display->GetDisplayType() != ANGLE_D3D11 &&
-                   display->GetDisplayType() != ANGLE_D3D11_NULL &&
-                   display->GetDisplayType() != ANGLE_D3D11on12)) {
+  if (!display) {
     return nullptr;
   }
-  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device;
-  d3d11_device = reinterpret_cast<ID3D11Device*>(QueryDeviceObjectFromANGLE(
-      display->GetDisplay(), EGL_D3D11_DEVICE_ANGLE));
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+      reinterpret_cast<ID3D11Device*>(QueryDeviceObjectFromANGLE(
+          display->GetDisplay(), EGL_D3D11_DEVICE_ANGLE,
+          "EGL_ANGLE_device_d3d11"));
   return d3d11_device;
 }
 
 Microsoft::WRL::ComPtr<IDirect3DDevice9> QueryD3D9DeviceObjectFromANGLE() {
   auto* display = GLSurfaceEGL::GetGLDisplayEGL();
-  if (!display || display->GetDisplayType() != ANGLE_D3D9) {
+  if (!display) {
     return nullptr;
   }
-  Microsoft::WRL::ComPtr<IDirect3DDevice9> d3d9_device;
-  d3d9_device = reinterpret_cast<IDirect3DDevice9*>(
-      QueryDeviceObjectFromANGLE(display->GetDisplay(), EGL_D3D9_DEVICE_ANGLE));
+  Microsoft::WRL::ComPtr<IDirect3DDevice9> d3d9_device =
+      reinterpret_cast<IDirect3DDevice9*>(QueryDeviceObjectFromANGLE(
+          display->GetDisplay(), EGL_D3D9_DEVICE_ANGLE,
+          "EGL_ANGLE_device_d3d9"));
   return d3d9_device;
 }
 

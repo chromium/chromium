@@ -10,11 +10,13 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Utility for determining if Picture-in-Picture is available and whether the user has disabled
  * Picture-in-Picture for Chrome using the system's per-application settings.
  */
+@NullMarked
 public abstract class PictureInPicture {
     private PictureInPicture() {}
 

@@ -121,5 +121,5 @@ found in the LICENSE file.
         android:enabled="false"
         android:singleLine="true"
         android:gravity="center"
-        style="@style/FilledButton.Flat"/>
+        style="@style/FilledButton"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

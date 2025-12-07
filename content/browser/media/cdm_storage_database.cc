@@ -10,6 +10,8 @@
 #include "base/files/file_util.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "sql/statement.h"
 
 namespace content {
@@ -53,7 +55,8 @@ CdmStorageDatabase::CdmStorageDatabase(const base::FilePath& path)
       // bytes) and that we'll typically only be pulling one file at a time
       // (playback), specify a large page size to allow inner nodes can pack
       // many keys, to keep the index B-tree flat.
-      db_(sql::DatabaseOptions{.page_size = 32768, .cache_size = 8}) {
+      db_(sql::DatabaseOptions().set_page_size(32768).set_cache_size(8),
+          /*tag=*/"CdmStorage") {
   // base::Unretained is safe because `db_` is owned by `this`
   db_.set_error_callback(base::BindRepeating(
       &CdmStorageDatabase::OnDatabaseError, base::Unretained(this)));
@@ -102,13 +105,7 @@ std::optional<std::vector<uint8_t>> CdmStorageDatabase::ReadFile(
     return std::vector<uint8_t>();
   }
 
-  std::vector<uint8_t> data;
-  if (!statement.ColumnBlobAsVector(0, &data)) {
-    DVLOG(1) << "Error reading Cdm storage data.";
-    return std::nullopt;
-  }
-
-  return data;
+  return statement.ColumnBlobAsVector(0);
 }
 
 bool CdmStorageDatabase::WriteFile(const blink::StorageKey& storage_key,
@@ -286,7 +283,7 @@ CdmStorageKeyUsageSize CdmStorageDatabase::GetUsagePerAllStorageKeys(
   while (get_all_storage_keys_statement.Step()) {
     std::optional<blink::StorageKey> maybe_storage_key =
         blink::StorageKey::Deserialize(
-            get_all_storage_keys_statement.ColumnString(0));
+            get_all_storage_keys_statement.ColumnStringView(0));
     if (maybe_storage_key) {
       auto storage_key = maybe_storage_key.value();
       usage_per_storage_keys.emplace_back(
@@ -462,6 +459,36 @@ bool CdmStorageDatabase::ClearDatabase() {
   return sql::Database::Delete(path_);
 }
 
+uint64_t CdmStorageDatabase::GetDatabaseSize() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  static constexpr char kPageCountSql[] = "PRAGMA page_count";
+  DCHECK(db_.IsSQLValid(kPageCountSql));
+
+  last_operation_ = "QueryPageCount";
+
+  sql::Statement statement_count(
+      db_.GetCachedStatement(SQL_FROM_HERE, kPageCountSql));
+  statement_count.Step();
+
+  uint64_t page_count = statement_count.ColumnInt(0);
+
+  static constexpr char kPageSizeSql[] = "PRAGMA page_size";
+  DCHECK(db_.IsSQLValid(kPageSizeSql));
+
+  last_operation_ = "QueryPageSize";
+
+  sql::Statement statement_size(
+      db_.GetCachedStatement(SQL_FROM_HERE, kPageSizeSql));
+  statement_size.Step();
+
+  uint64_t page_size = statement_size.ColumnInt(0);
+
+  last_operation_.reset();
+
+  return page_count * page_size;
+}
+
 void CdmStorageDatabase::CloseDatabaseForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -562,7 +589,6 @@ CdmStorageOpenError CdmStorageDatabase::OpenDatabase(bool is_retry) {
 
 bool CdmStorageDatabase::UpgradeDatabaseSchema(sql::MetaTable* meta_table) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Histogram to track when incompatible version schema detected.
 
   // Previously in UpgradeDatabaseSchema, we were setting the version number for
   // the meta table, but not the compatible version number, which should have
@@ -570,12 +596,12 @@ bool CdmStorageDatabase::UpgradeDatabaseSchema(sql::MetaTable* meta_table) {
   // would be called all the time since we compare meta_table's compatible
   // version number to kVersionNumber. This fixes this change by setting it
   // correctly in the cases where this was incorrectly set.
-  // TODO(crbug.com/40272342): Remove in M123.
   if (meta_table->GetCompatibleVersionNumber() == 1 &&
       meta_table->GetVersionNumber() == 2) {
     return meta_table->SetCompatibleVersionNumber(2);
   }
 
+  // Histogram to track when incompatible version schema detected.
   base::UmaHistogramBoolean(
       "Media.EME.CdmStorageDatabase.IncompatibleDatabaseDetected", true);
 

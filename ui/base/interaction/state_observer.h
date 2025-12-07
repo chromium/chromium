@@ -6,6 +6,7 @@
 #define UI_BASE_INTERACTION_STATE_OBSERVER_H_
 
 #include <algorithm>
+#include <concepts>
 #include <ostream>
 #include <utility>
 
@@ -13,6 +14,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/interactive_test_definitions.h"
+#include "ui/base/interaction/typed_identifier.h"
 
 namespace ui::test {
 
@@ -23,6 +26,7 @@ namespace ui::test {
 //
 // Value type `T` must be default-constructible and copy-assignable.
 template <typename T>
+  requires ::ui::test::internal::IsValidMatcherType<T>
 class StateObserver {
  public:
   using StateChangedCallback = base::RepeatingCallback<void(T)>;
@@ -50,12 +54,19 @@ class StateObserver {
  protected:
   // Call to update the state.
   void OnStateObserverStateChanged(T state) {
-    state_changed_callback_.Run(state);
+    if (state_changed_callback_) {
+      state_changed_callback_.Run(state);
+    }
   }
 
  private:
   StateChangedCallback state_changed_callback_;
 };
+
+template <typename T>
+concept IsStateObserver = requires {
+  typename T::ValueType;
+} && std::derived_from<T, StateObserver<typename T::ValueType>>;
 
 // State observer that uses a `ScopedObservation<T, Source, Observer>` to watch
 // for state changes using an observer pattern.
@@ -100,54 +111,8 @@ class ObservationStateObserver : public StateObserver<T>, public Observer {
   base::ScopedObservation<Source, Observer> observation_{this};
 };
 
-// Uniquely identifies a state associated with `ObserverType`.
-//
-// Use the DECLARE/DEFINE macros below to create unique identifiers, similarly
-// to how ElementIdentifier, etc. work.
-template <typename ObserverType>
-class StateIdentifier final {
- public:
-  constexpr StateIdentifier() = default;
-
-  explicit constexpr StateIdentifier(ElementIdentifier identifier)
-      : identifier_(identifier) {}
-
-  constexpr ElementIdentifier identifier() const { return identifier_; }
-
-  constexpr explicit operator bool() const {
-    return static_cast<bool>(identifier_);
-  }
-
-  constexpr bool operator!() const { return !identifier_; }
-
-  constexpr bool operator==(const StateIdentifier<ObserverType>& other) const {
-    return identifier_ == other.identifier_;
-  }
-
-  constexpr bool operator!=(const StateIdentifier<ObserverType>& other) const {
-    return identifier_ != other.identifier_;
-  }
-
-  constexpr bool operator<(const StateIdentifier<ObserverType>& other) const {
-    return identifier_ < other.identifier_;
-  }
-
- private:
-  ElementIdentifier identifier_;
-};
-
 template <typename T>
-extern void PrintTo(StateIdentifier<T> state_identifier, std::ostream* os) {
-  *os << "StateIdentifier " << state_identifier.identifier().GetRawValue()
-      << " [" << state_identifier.identifier().GetName() << "]";
-}
-
-template <typename T>
-extern std::ostream& operator<<(std::ostream& os,
-                                StateIdentifier<T> state_identifier) {
-  PrintTo(state_identifier, os);
-  return os;
-}
+using StateIdentifier = TypedIdentifier<T>;
 
 }  // namespace ui::test
 
@@ -169,15 +134,12 @@ extern std::ostream& operator<<(std::ostream& os,
 // identifiers.
 
 #define DECLARE_STATE_IDENTIFIER_VALUE(ObserverType, Name) \
-  DECLARE_ELEMENT_IDENTIFIER_VALUE(Name##Impl);            \
-  extern const ui::test::StateIdentifier<ObserverType> Name
+  DECLARE_TYPED_IDENTIFIER_VALUE(ObserverType, Name)
 
 #define DEFINE_STATE_IDENTIFIER_VALUE(ObserverType, Name) \
-  DEFINE_ELEMENT_IDENTIFIER_VALUE(Name##Impl);            \
-  constexpr ui::test::StateIdentifier<ObserverType> Name(Name##Impl)
+  DEFINE_TYPED_IDENTIFIER_VALUE(ObserverType, Name)
 
-#define DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ObserverType, Name)          \
-  DEFINE_MACRO_ELEMENT_IDENTIFIER_VALUE(__FILE__, __LINE__, Name##Impl); \
-  constexpr ui::test::StateIdentifier<ObserverType> Name(Name##Impl)
+#define DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ObserverType, Name) \
+  DEFINE_MACRO_TYPED_IDENTIFIER_VALUE(__FILE__, __LINE__, ObserverType, Name)
 
 #endif  // UI_BASE_INTERACTION_STATE_OBSERVER_H_

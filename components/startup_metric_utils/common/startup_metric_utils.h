@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_STARTUP_METRIC_UTILS_COMMON_STARTUP_METRIC_UTILS_H_
 #define COMPONENTS_STARTUP_METRIC_UTILS_COMMON_STARTUP_METRIC_UTILS_H_
 
+#include <string_view>
+
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/dcheck_is_on.h"
@@ -83,6 +85,27 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS) CommonStartupMetricRecorder final {
   // reset in tests via ResetSessionForTesting()). Callers should use FROM_HERE
   // as a unique id.
   void AssertFirstCallInSession(base::Location from_here);
+
+  // Common helper to report "startup" category trace events as well as a
+  // histogram of the same name. Example call:
+  //     EmitHistogramWithTraceEvent(
+  //         &base::UmaHistogramLongTimes,
+  //         "Startup.LoadTime.ApplicationStartToChromeMain",
+  //         GetCommon().application_start_ticks_,
+  //         GetCommon().chrome_main_entry_ticks_);
+  using HistogramTimeFunction = void(std::string_view name, base::TimeDelta);
+  void EmitHistogramWithTraceEvent(HistogramTimeFunction* histogram_function,
+                                   const char* name,
+                                   base::TimeTicks begin_ticks,
+                                   base::TimeTicks end_ticks);
+
+  // Emit a "startup" category event.
+  void EmitTraceEvent(const char* name,
+                      base::TimeTicks begin_ticks,
+                      base::TimeTicks end_ticks);
+
+  // Emit info to the "startup" category in the form of an instant event.
+  void EmitInstantEvent(const char* name);
 
   base::TimeTicks process_creation_ticks_;
 

@@ -184,6 +184,14 @@ class PathFinder(object):
         return self._filesystem.dirname(
             self._filesystem.dirname(self._blink_base()))
 
+    @memoized
+    def is_cog(self) -> bool:
+        """Check whether the CWD belongs to cogfs, which is used by Cider-G.
+
+        For Googlers: see go/cog for details.
+        """
+        return self._filesystem.getcwd().startswith('/google/cog/cloud')
+
     def web_tests_dir(self):
         return self.path_from_chromium_base('third_party', 'blink',
                                             'web_tests')

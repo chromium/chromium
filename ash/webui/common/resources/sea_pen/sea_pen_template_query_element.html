@@ -159,6 +159,7 @@
             slot="prefix-icon"
             asset-url="chrome://resources/ash/common/sea_pen/lightbulb_icon.json"
             loop
+            autoplay="[[autoplay_]]"
             dynamic
             aria-hidden>
         </cros-lottie-renderer>
@@ -175,7 +176,7 @@
       </cr-button>
     </template>
   </div>
-  <template is="dom-if" if="[[shouldShowFreeformNavigationInfo_()]]">
+  <template is="dom-if" if="[[shouldShowFreeformNavigationInfo_(thumbnailsLoading_)]]">
     <div id="freeformInfo"
         inner-h-t-m-l="[[i18nAdvanced('seaPenFreeformNavigationDescription')]]">
     </div>

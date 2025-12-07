@@ -11,13 +11,13 @@
 #include "base/functional/bind.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/chrome_template_url_service_client.h"
+#include "chrome/browser/search_engines/template_url_prepopulate_data_resolver_factory.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -25,12 +25,12 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/default_search_manager.h"
-#include "components/search_engines/enterprise_site_search_manager.h"
+#include "components/search_engines/enterprise/enterprise_search_manager.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url_service.h"
 #include "rlz/buildflags/buildflags.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #endif
 
@@ -40,7 +40,8 @@
 
 // static
 TemplateURLService* TemplateURLServiceFactory::GetForProfile(Profile* profile) {
-  TRACE_EVENT0("loading", "TemplateURLServiceFactory::GetForProfile");
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("loading"),
+              "TemplateURLServiceFactory::GetForProfile");
 
   return static_cast<TemplateURLService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
@@ -67,6 +68,8 @@ std::unique_ptr<KeyedService> TemplateURLServiceFactory::BuildInstanceFor(
       CHECK_DEREF(
           search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
               profile)),
+      CHECK_DEREF(
+          TemplateURLPrepopulateData::ResolverFactory::GetForProfile(profile)),
       std::make_unique<UIThreadSearchTermsData>(),
       WebDataServiceFactory::GetKeywordWebDataForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),
@@ -74,12 +77,7 @@ std::unique_ptr<KeyedService> TemplateURLServiceFactory::BuildInstanceFor(
           new ChromeTemplateURLServiceClient(
               HistoryServiceFactory::GetForProfile(
                   profile, ServiceAccessType::EXPLICIT_ACCESS))),
-      dsp_change_callback
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      ,
-      profile->IsMainProfile()
-#endif  // BUIDFLAG(IS_CHROMEOS_LACROS)
-  );
+      dsp_change_callback);
 }
 
 TemplateURLServiceFactory::TemplateURLServiceFactory()
@@ -107,7 +105,7 @@ std::unique_ptr<KeyedService>
 TemplateURLServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS creates various unusual profiles (login, lock screen...) that do
   // not need a template URL service and cannot search.  The only non-regular
   // profile that needs a template URL is the signin profile.  The
@@ -128,7 +126,7 @@ TemplateURLServiceFactory::BuildServiceInstanceForBrowserContext(
 void TemplateURLServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   DefaultSearchManager::RegisterProfilePrefs(registry);
-  EnterpriseSiteSearchManager::RegisterProfilePrefs(registry);
+  EnterpriseSearchManager::RegisterProfilePrefs(registry);
   TemplateURLService::RegisterProfilePrefs(registry);
 }
 

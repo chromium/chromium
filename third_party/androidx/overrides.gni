@@ -1,0 +1,109 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+template("define_override_androidx_targets") {
+  not_needed([
+               "invoker",
+               "target_name",
+             ])
+
+  android_library("compose_ui_overrides_java") {
+    visibility = [
+      ":*",
+      "//third_party/androidx:*",
+    ]
+
+    # AndroidVectorResources has no local modifications but is an internal class so must be compiled again.
+    sources = [
+      "local_modifications/compose_ui/java/androidx/compose/ui/graphics/vector/compat/AndroidVectorResources.android.kt",
+      "local_modifications/compose_ui/java/androidx/compose/ui/graphics/vector/compat/XmlVectorParser.android.kt",
+    ]
+    jar_excluded_patterns = [ "*AndroidVectorResources*" ]
+    deps = [
+      ":androidx_activity_activity_ktx_java",
+      ":androidx_annotation_annotation_experimental_java",
+      ":androidx_annotation_annotation_jvm_java",
+      ":androidx_autofill_autofill_java",
+      ":androidx_collection_collection_jvm_java",
+      ":androidx_compose_runtime_runtime_android_java",
+      ":androidx_compose_runtime_runtime_saveable_android_java",
+      ":androidx_compose_ui_ui_android_java",
+      ":androidx_compose_ui_ui_geometry_android_java",
+      ":androidx_compose_ui_ui_graphics_android_java",
+      ":androidx_compose_ui_ui_text_android_java",
+      ":androidx_compose_ui_ui_unit_android_java",
+      ":androidx_compose_ui_ui_util_android_java",
+      ":androidx_core_core_java",
+      ":androidx_customview_customview_poolingcontainer_java",
+      ":androidx_lifecycle_lifecycle_runtime_compose_android_java",
+      ":androidx_lifecycle_lifecycle_viewmodel_android_java",
+      ":androidx_lifecycle_lifecycle_viewmodel_ktx_java",
+      ":androidx_savedstate_savedstate_ktx_java",
+      ":core_overrides_java",
+      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_android_java",
+      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  android_library("core_overrides_java") {
+    resources_package = "androidx.core"
+    visibility = [
+      ":*",
+      "//third_party/androidx:*",
+    ]
+    sources = [ "local_modifications/core/java/androidx/core/content/res/TypedArrayUtils.java" ]
+
+    if (enable_chrome_android_internal) {
+      sources += [ "local_modifications/core/java/androidx/core/view/accessibility/AccessibilityNodeInfoCompat.java" ]
+    }
+
+    deps = [
+      ":androidx_annotation_annotation_experimental_java",
+      ":androidx_annotation_annotation_jvm_java",
+      ":androidx_collection_collection_jvm_java",
+      ":androidx_concurrent_concurrent_futures_java",
+      ":androidx_core_core_java",
+      ":androidx_core_core_viewtree_java",
+      ":androidx_interpolator_interpolator_java",
+      ":androidx_lifecycle_lifecycle_runtime_android_java",
+      ":androidx_tracing_tracing_android_java",
+      ":androidx_versionedparcelable_versionedparcelable_java",
+      "//third_party/android_deps:org_jspecify_jspecify_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  android_library("androidx_recyclerview_recyclerview_overrides_java") {
+    resources_package = "androidx.recyclerview"
+    sources = [
+      "local_modifications/recyclerview/java/org/chromium/ui/recyclerview/widget/ItemTouchHelper2.java",
+
+      # Need to include this due to "internal" visibilty.
+      "local_modifications/recyclerview/java/org/chromium/ui/recyclerview/widget/ItemTouchUIUtilImpl2.java",
+    ]
+    deps = [
+      "//third_party/android_deps:org_jspecify_jspecify_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_core_core_java",
+      "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    ]
+  }
+
+  android_library("chromium_espresso_overrides_java") {
+    testonly = true
+    sources = [ "local_modifications/espresso/java/androidx/test/espresso/base/ViewHierarchyExceptionHandler.java" ]
+    deps = [
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_test_core_java",
+      "//third_party/androidx:androidx_test_espresso_espresso_core_java",
+      "//third_party/androidx:androidx_test_monitor_java",
+      "//third_party/androidx:androidx_test_services_storage_java",
+      "//third_party/hamcrest:hamcrest_java",
+      "//third_party/junit",
+    ]
+  }
+}

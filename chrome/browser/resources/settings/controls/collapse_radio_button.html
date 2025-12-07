@@ -1,0 +1,108 @@
+    <style include="settings-shared cr-radio-button-style">
+      :host {
+        display: block;
+      }
+
+      :host([disabled]) {
+        opacity: 1;
+      }
+
+      cr-policy-pref-indicator,
+      :host([disabled]) cr-expand-button {
+        pointer-events: auto;
+      }
+
+      :host([disabled]) .disc-wrapper {
+        opacity: var(--cr-disabled-opacity);
+      }
+
+      :host([disabled]) #labelWrapper {
+        opacity: 1;
+      }
+
+      cr-collapse {
+        margin-inline-end: 0;
+        margin-inline-start: calc(var(--cr-radio-button-label-spacing, 20px)
+            + var(--cr-radio-button-size));
+      }
+
+      .disc-wrapper {
+        margin-inline-end: var(--cr-radio-button-label-spacing, 20px);
+      }
+
+      .separator {
+        margin-inline-end: 0;
+        min-height: calc(var(--settings-collapse-toggle-min-height, 48px) / 2);
+      }
+
+      #borderWrapper {
+        align-items: center;
+        border-top: var(--settings-collapse-separator-line);
+        display: flex;
+        min-height: var(--settings-collapse-toggle-min-height);
+        width: 100%;
+      }
+
+      #buttonIcon {
+        padding-inline-end: 6px;
+      }
+
+      #labelWrapper {
+        --cr-radio-button-label-spacing: 0;
+      }
+
+      #radioCollapse {
+        align-items: center;
+        display: flex;
+      }
+
+      slot[name='noSelectionCollapse'] {
+       cursor: auto;
+      }
+    </style>
+    <div id="radioCollapse">
+      <div aria-checked$="[[getAriaChecked_(checked)]]"
+          aria-disabled$="[[getAriaDisabled_(disabled)]]"
+          aria-labelledby="label"
+          aria-describedby="sub-label"
+          class="disc-wrapper"
+          id="button"
+          role="radio"
+          tabindex$="[[buttonTabIndex_]]"
+          on-focus="onRadioFocus_"
+          on-keydown="onInputKeydown_">
+        <div class="disc-border"></div>
+        <div class="disc"></div>
+      </div>
+      <div id="borderWrapper">
+        <cr-icon id="buttonIcon" icon="[[icon]]" hidden$="[[!icon]]"></cr-icon>
+        <div id="labelWrapper" class="cr-padded-text">
+          <div id="label" aria-hidden="true">
+            [[label]]
+            <slot name="label"></slot>
+          </div>
+          <div hidden$="[[!subLabel]]" id="sub-label" class="secondary">
+            [[subLabel]]
+            <slot name="sub-label"></slot>
+          </div>
+        </div>
+        <template is="dom-if" if="[[pref]]">
+          <cr-policy-pref-indicator pref="[[pref]]"
+              icon-aria-label="[[indicatorAriaLabel]]"
+              associated-value="[[name]]" on-focus="onNonRadioFocus_">
+          </cr-policy-pref-indicator>
+        </template>
+        <div hidden$="[[noCollapse]]" class="separator"></div>
+        <cr-expand-button id="expandButton" no-hover
+              aria-label="[[expandAriaLabel]]"
+              hidden$="[[noCollapse]]" expanded="{{expanded}}"
+              on-click="onExpandClicked_"
+              on-focus="onNonRadioFocus_">
+        </cr-expand-button>
+      </div>
+    </div>
+
+    <cr-collapse opened="[[expanded]]">
+      <slot name="collapse"></slot>
+      <slot name="noSelectionCollapse"></slot>
+    </cr-collapse>

@@ -11,7 +11,6 @@ import android.database.Cursor;
 import android.net.Uri;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
@@ -20,6 +19,8 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -28,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** A browser-process class for querying SafeMode state and executing SafeModeActions. */
+@NullMarked
 public class SafeModeController {
     public static final String SAFE_MODE_STATE_COMPONENT =
             "org.chromium.android_webview.SafeModeState";
@@ -37,11 +39,11 @@ public class SafeModeController {
 
     private static final String TAG = "WebViewSafeMode";
 
-    private SafeModeAction[] mRegisteredActions;
+    private SafeModeAction @Nullable [] mRegisteredActions;
 
     private SafeModeController() {}
 
-    private static SafeModeController sInstanceForTests;
+    private static @Nullable SafeModeController sInstanceForTests;
 
     private static class LazyHolder {
         static final SafeModeController INSTANCE = new SafeModeController();
@@ -56,7 +58,7 @@ public class SafeModeController {
         SafeModeExecutionResult.ACTION_UNKNOWN,
         SafeModeExecutionResult.COUNT
     })
-    public static @interface SafeModeExecutionResult {
+    public @interface SafeModeExecutionResult {
         int SUCCESS = 0;
         int UNKNOWN_ERROR = 1;
         int ACTION_FAILED = 2;
@@ -64,6 +66,7 @@ public class SafeModeController {
         int COUNT = 3;
     }
 
+    // LINT.IfChange(SafeModeActionIds)
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
     @IntDef({
@@ -73,9 +76,11 @@ public class SafeModeController {
         SafeModeActionName.DISABLE_ANDROID_AUTOFILL,
         SafeModeActionName.DISABLE_ORIGIN_TRIALS,
         SafeModeActionName.DISABLE_SAFE_BROWSING,
-        SafeModeActionName.RESET_COMPONENT_UPDATER
+        SafeModeActionName.RESET_COMPONENT_UPDATER,
+        SafeModeActionName.DISABLE_SUPERVISION_CHECKS,
+        SafeModeActionName.DISABLE_STARTUP_TASKS_LOGIC
     })
-    private static @interface SafeModeActionName {
+    private @interface SafeModeActionName {
         int DELETE_VARIATIONS_SEED = 0;
         int FAST_VARIATIONS_SEED = 1;
         int NOOP = 2;
@@ -84,7 +89,9 @@ public class SafeModeController {
         int DISABLE_ORIGIN_TRIALS = 5;
         int DISABLE_SAFE_BROWSING = 6;
         int RESET_COMPONENT_UPDATER = 7;
-        int COUNT = 8;
+        int DISABLE_SUPERVISION_CHECKS = 8;
+        int DISABLE_STARTUP_TASKS_LOGIC = 9;
+        int COUNT = 10;
     }
 
     // Maps the SafeModeAction ID to its histogram enum
@@ -108,14 +115,23 @@ public class SafeModeController {
         map.put(
                 SafeModeActionIds.RESET_COMPONENT_UPDATER,
                 SafeModeActionName.RESET_COMPONENT_UPDATER);
+        map.put(
+                SafeModeActionIds.DISABLE_SUPERVISION_CHECKS,
+                SafeModeActionName.DISABLE_SUPERVISION_CHECKS);
+        map.put(
+                SafeModeActionIds.DISABLE_STARTUP_TASKS_LOGIC,
+                SafeModeActionName.DISABLE_STARTUP_TASKS_LOGIC);
         return map;
     }
+
+    // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:SafeModeActionIds)
 
     /**
      * Sets the singleton instance for testing. Not thread safe, must only be called from single
      * threaded tests.
+     *
      * @param controller The SafeModeController object to return from getInstance(). Passing in a
-     * null value resets this.
+     *     null value resets this.
      */
     public static void setInstanceForTests(SafeModeController controller) {
         sInstanceForTests = controller;
@@ -133,7 +149,7 @@ public class SafeModeController {
      * @throws IllegalStateException if actions have already been registered.
      * @throws IllegalArgumentException if there are any duplicates.
      */
-    public void registerActions(@NonNull SafeModeAction[] actions) {
+    public void registerActions(SafeModeAction[] actions) {
         if (mRegisteredActions != null) {
             throw new IllegalStateException("Already registered a list of actions in this process");
         }
@@ -262,7 +278,7 @@ public class SafeModeController {
      *
      * @return A copy of the list of registered {@link SafeModeAction} actions.
      */
-    public SafeModeAction[] getRegisteredActions() {
+    public SafeModeAction @Nullable [] getRegisteredActions() {
         if (mRegisteredActions == null) {
             return null;
         }
@@ -279,7 +295,7 @@ public class SafeModeController {
             RecordHistogram.recordEnumeratedHistogram(
                     "Android.WebView.SafeMode.ActionName",
                     sSafeModeActionLoggingMap.get(actionName),
-                    SafeModeExecutionResult.COUNT);
+                    SafeModeActionName.COUNT);
         }
     }
 

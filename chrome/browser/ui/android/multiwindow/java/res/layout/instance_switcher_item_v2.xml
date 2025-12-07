@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/content"
+    style="@style/ListItemContainer" >
+
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/favicon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="@dimen/instance_switcher_dialog_favicon_start_margin"
+        android:layout_marginEnd="16dp"
+        android:layout_marginVertical="22dp"
+        android:scaleType="fitCenter"
+        android:layout_gravity="center_vertical"
+        android:importantForAccessibility="no" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/instance_switcher_dialog_list_item_height"
+        android:orientation="horizontal"
+        android:weightSum="8"
+        android:layout_toEndOf="@id/favicon"
+        android:layout_toStartOf="@+id/buttons_container"
+        android:layout_centerVertical="true">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:layout_gravity="center_vertical">
+            <org.chromium.ui.widget.TextViewWithLeading
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textAppearance="@style/TextAppearance.TextLarge.Primary.InstanceSwitcherItem"
+                app:leading="@dimen/text_size_large_leading"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/desc"
+                app:layout_constraintVertical_chainStyle="packed" />
+            <TextView
+                android:id="@+id/desc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.TextLarge.Secondary.InstanceSwitcherItem"
+                app:leading="@dimen/text_size_medium_leading"
+                app:layout_constraintTop_toBottomOf="@+id/title"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/last_accessed"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:ellipsize="end"
+            android:layout_marginEnd="16dp"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.TextLarge.Secondary.InstanceSwitcherItem"
+            android:layout_gravity="center_vertical"
+            android:gravity="end"
+            app:leading="@dimen/text_size_medium_leading" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/buttons_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true">
+
+        <ImageButton
+            android:id="@+id/close_button"
+            android:background="@drawable/default_icon_background"
+            android:visibility="gone"
+            android:src="@drawable/material_ic_close_24dp"
+            android:contentDescription="@string/close"
+            android:layout_width="@dimen/min_touch_target_size"
+            android:layout_height="@dimen/min_touch_target_size"
+            android:layout_marginEnd="4dp"
+            android:scaleType="center"
+            app:tint="@color/instance_switcher_item_foreground_color_list"/>
+
+        <org.chromium.ui.listmenu.ListMenuButton
+            android:id="@+id/more"
+            android:src="@drawable/ic_more_vert_24dp"
+            android:layout_width="@dimen/min_touch_target_size"
+            android:layout_height="@dimen/min_touch_target_size"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/default_icon_background"
+            android:visibility="visible"
+            app:tint="@color/instance_switcher_item_foreground_color_list" />
+    </FrameLayout>
+</RelativeLayout>

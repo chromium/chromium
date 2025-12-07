@@ -1,0 +1,58 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+android_library("javatests") {
+  testonly = true
+  sources = [ "java/src/org/chromium/chrome/browser/renderer_host/JavascriptOptimizerFeatureTest.java" ]
+  deps = [
+    ":test_support_java",
+    "//base:base_java_test_support",
+    "//base:service_loader_java",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//chrome/test/android:chrome_java_transit",
+    "//components/browser_ui/site_settings/android:java",
+    "//components/browsing_data/core:java",
+    "//components/content_settings/android:content_settings_enums_java",
+    "//components/content_settings/core/common:content_settings_types_java",
+    "//components/permissions/android:core_java",
+    "//components/permissions/android:java",
+    "//content/public/android:content_java",
+    "//net/android:net_java_test_support",
+    "//third_party/androidx:androidx_test_monitor_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+    "//url:url_java",
+  ]
+}
+
+android_library("test_support_java") {
+  testonly = true
+  sources = [ "java/src/org/chromium/chrome/browser/renderer_host/JavascriptOptimizerFeatureTestHelperAndroid.java" ]
+  deps = [
+    "//content/public/android:content_java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+  srcjar_deps = [ ":jni_headers" ]
+}
+
+generate_jni("jni_headers") {
+  testonly = true
+  sources = [ "java/src/org/chromium/chrome/browser/renderer_host/JavascriptOptimizerFeatureTestHelperAndroid.java" ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [ "javascript_optimizer_feature_test_helper_android.cc" ]
+  deps = [
+    ":jni_headers",
+    "//content/public/browser",
+  ]
+}

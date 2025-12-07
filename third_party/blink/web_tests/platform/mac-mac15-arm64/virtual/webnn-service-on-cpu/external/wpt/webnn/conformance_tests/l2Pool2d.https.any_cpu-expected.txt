@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] [optional] l2Pool2d float32 4D tensor options.dilations
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported dilations."
+[FAIL] [optional] l2Pool2d float32 4D tensor options.roundingType=ceil
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported padding for pooling, padding has to be symmetric for ceil roundingType."
+[FAIL] [optional] l2Pool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported padding for pooling, padding has to be symmetric for ceil roundingType."
+[FAIL] [optional] l2Pool2d float16 4D tensor options.dilations
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported dilations."
+[FAIL] [optional] l2Pool2d float16 4D tensor options.layout=nhwc
+  assert_less_than_equal: assert_array_approx_equals_ulp: test l2Pool2d float16 actual Infinity should be close enough to expected 289 by ULP distance: expected a number less than or equal to 27 but got 8060
+[FAIL] [optional] l2Pool2d float16 4D tensor options.roundingType=ceil
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported padding for pooling, padding has to be symmetric for ceil roundingType."
+[FAIL] [optional] l2Pool2d float16 4D tensor options.outputSizes ignores options.roundingType=floor
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported padding for pooling, padding has to be symmetric for ceil roundingType."
+Harness: the test ran to completion.
+

@@ -40,7 +40,7 @@ class WidgetSwapQueue {
              VisualStateRequestCallback callback,
              bool* is_first);
 
-  // The method will append cllbacks queued for frame numbers lower or equal to
+  // The method will append callbacks queued for frame numbers lower or equal to
   // |source_frame_number|
   //
   // |source_frame_number| - swapped frame number.

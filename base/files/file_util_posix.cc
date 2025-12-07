@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "base/files/file_util.h"
 
 #include <dirent.h>
@@ -68,6 +73,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/content_uri_utils.h"
+#include "base/android/virtual_document_path.h"
 #include "base/os_compat_android.h"
 #endif
 
@@ -121,8 +127,9 @@ bool VerifySpecificPathControlledByUser(const FilePath& path,
 }
 #endif
 
-base::FilePath GetTempTemplate() {
-  return FormatTemporaryFileName("XXXXXX");
+base::FilePath GetTempTemplate(FilePath::StringViewType prefix, bool hidden) {
+  return FormatTemporaryFileName(
+      StrCat({prefix, prefix.empty() ? "" : ".", "XXXXXX"}), hidden);
 }
 
 bool AdvanceEnumeratorWithStat(FileEnumerator* traversal,
@@ -376,7 +383,7 @@ bool DoDeleteFile(const FilePath& path, bool recursive) {
 
 #if BUILDFLAG(IS_ANDROID)
   if (path.IsContentUri()) {
-    return DeleteContentUri(path);
+    return internal::DeleteContentUri(path);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -427,9 +434,46 @@ bool PreReadFileSlow(const FilePath& file_path, int64_t max_bytes) {
 }
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+
+// Checks if the given path is under ~/MyFiles or /media.
+// Recognizes the following patterns:
+// - "/home/chronos/user/MyFiles/<dir>[/...]"
+// - "/home/chronos/u-<id>/MyFiles/<dir>[/...]"
+// - "/media/<dir>[/...]"
+bool IsVisibleToUser(const FilePath& path) {
+  if (!path.IsAbsolute()) {
+    return false;
+  }
+
+  const std::vector parts = path.GetComponents();
+
+  // Since the path is absolute, the first part should be the root directory.
+  DCHECK(!parts.empty());
+  DCHECK_EQ(parts[0], "/");
+
+  // Is path under /media?
+  if (parts.size() > 2 && parts[1] == "media" && !parts[2].empty()) {
+    return true;
+  }
+
+  // Is path under ~/MyFiles?
+  return parts.size() > 5 && parts[1] == "home" && parts[2] == "chronos" &&
+         (parts[3] == "user" ||
+          (parts[3].starts_with("u-") && parts[3].size() > 2)) &&
+         parts[4] == "MyFiles" && !parts[5].empty();
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace
 
 FilePath MakeAbsoluteFilePath(const FilePath& input) {
+#if BUILDFLAG(IS_ANDROID)
+  if (input.IsContentUri() || input.IsVirtualDocumentPath()) {
+    return input;
+  }
+#endif
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   char full_path[PATH_MAX];
   if (realpath(input.value().c_str(), full_path) == nullptr) {
@@ -451,7 +495,7 @@ std::optional<FilePath> MakeAbsoluteFilePathNoResolveSymbolicLinks(
   // a relative |input|.
   if (input.IsAbsolute()) {
     collapsed_path = FilePath(components_span[0]);
-    components_span = components_span.subspan(1);
+    components_span = components_span.subspan<1>();
   } else {
     if (!GetCurrentDirectory(&collapsed_path)) {
       return std::nullopt;
@@ -595,8 +639,9 @@ bool RemoveCloseOnExec(int fd) {
 bool PathExists(const FilePath& path) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 #if BUILDFLAG(IS_ANDROID)
-  if (path.IsContentUri()) {
-    return ContentUriExists(path);
+  if (path.IsContentUri() || path.IsVirtualDocumentPath()) {
+    std::optional<FilePath> content_uri = base::ResolveToContentUri(path);
+    return content_uri && internal::ContentUriExists(*content_uri);
   }
 #endif
   return access(path.value().c_str(), F_OK) == 0;
@@ -638,7 +683,7 @@ ScopedFD CreateAndOpenFdForTemporaryFileInDir(const FilePath& directory,
   ScopedBlockingCall scoped_blocking_call(
       FROM_HERE,
       BlockingType::MAY_BLOCK);  // For call to mkstemp().
-  *path = directory.Append(GetTempTemplate());
+  *path = directory.Append(GetTempTemplate("", true));
   const std::string& tmpdir_string = path->value();
   // this should be OK since mkstemp just replaces characters in place
   char* buffer = const_cast<char*>(tmpdir_string.c_str());
@@ -701,6 +746,14 @@ bool GetPosixFilePermissions(const FilePath& path, int* mode) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(mode);
 
+#if BUILDFLAG(IS_ANDROID)
+  // Stat() for content URIs only implements dir bit currently, so fail for
+  // GetPosixFilePermissions() until permissions are implemented.
+  if (path.IsContentUri()) {
+    return false;
+  }
+#endif
+
   stat_wrapper_t file_info;
   // Uses stat(), because on symbolic link, lstat() does not return valid
   // permission bits in st_mode
@@ -738,8 +791,8 @@ bool SetPosixFilePermissions(const FilePath& path, int mode) {
 
 bool ExecutableExistsInPath(Environment* env,
                             const FilePath::StringType& executable) {
-  std::string path;
-  if (!env->GetVar("PATH", &path)) {
+  std::string path = env->GetVar("PATH").value_or("");
+  if (path.empty()) {
     LOG(ERROR) << "No $PATH variable. Assuming no " << executable << ".";
     return false;
   }
@@ -819,7 +872,8 @@ bool CreateTemporaryFileInDir(const FilePath& dir, FilePath* temp_file) {
   return fd.is_valid();
 }
 
-FilePath FormatTemporaryFileName(FilePath::StringPieceType identifier) {
+FilePath FormatTemporaryFileName(FilePath::StringViewType identifier,
+                                 bool hidden) {
 #if BUILDFLAG(IS_APPLE)
   std::string_view prefix = base::apple::BaseBundleID();
 #elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -827,7 +881,7 @@ FilePath FormatTemporaryFileName(FilePath::StringPieceType identifier) {
 #else
   std::string_view prefix = "org.chromium.Chromium";
 #endif
-  return FilePath(StrCat({".", prefix, ".", identifier}));
+  return FilePath(StrCat({hidden ? "." : "", prefix, ".", identifier}));
 }
 
 ScopedFILE CreateAndOpenTemporaryStreamInDir(const FilePath& dir,
@@ -868,7 +922,7 @@ static bool CreateTemporaryDirInDirImpl(const FilePath& base_dir,
 }
 
 bool CreateTemporaryDirInDir(const FilePath& base_dir,
-                             FilePath::StringPieceType prefix,
+                             FilePath::StringViewType prefix,
                              FilePath* new_dir) {
   FilePath::StringType mkdtemp_template(prefix);
   mkdtemp_template.append("XXXXXX");
@@ -876,36 +930,49 @@ bool CreateTemporaryDirInDir(const FilePath& base_dir,
                                      new_dir);
 }
 
-bool CreateNewTempDirectory(const FilePath::StringType& prefix,
+bool CreateNewTempDirectory(FilePath::StringViewType prefix,
                             FilePath* new_temp_path) {
   FilePath tmpdir;
   if (!GetTempDir(&tmpdir)) {
     return false;
   }
 
-  return CreateTemporaryDirInDirImpl(tmpdir, GetTempTemplate(), new_temp_path);
+  return CreateTemporaryDirInDirImpl(tmpdir, GetTempTemplate(prefix, false),
+                                     new_temp_path);
 }
 
 bool CreateDirectoryAndGetError(const FilePath& full_path, File::Error* error) {
   ScopedBlockingCall scoped_blocking_call(
       FROM_HERE, BlockingType::MAY_BLOCK);  // For call to mkdir().
-  std::vector<FilePath> subpaths;
 
-  // Collect a list of all parent directories.
+  // Avoid checking subdirs if directory already exists.
+  if (DirectoryExists(full_path)) {
+    return true;
+  }
+
+  // Collect a list of all missing directories.
+  std::vector<FilePath> missing_subpaths({full_path});
   FilePath last_path = full_path;
-  subpaths.push_back(full_path);
   for (FilePath path = full_path.DirName(); path.value() != last_path.value();
        path = path.DirName()) {
-    subpaths.push_back(path);
+    if (DirectoryExists(path)) {
+      break;
+    }
+    missing_subpaths.push_back(path);
     last_path = path;
   }
 
-  // Iterate through the parents and create the missing ones.
-  for (const FilePath& subpath : base::Reversed(subpaths)) {
-    if (DirectoryExists(subpath)) {
-      continue;
+  // Iterate through the missing directories and create.
+  for (const FilePath& subpath : base::Reversed(missing_subpaths)) {
+    mode_t mode = S_IRWXU;
+
+#if BUILDFLAG(IS_CHROMEOS)
+    if (IsVisibleToUser(subpath)) {
+      mode |= S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
     }
-    if (mkdir(subpath.value().c_str(), 0700) == 0) {
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+    if (File::Mkdir(subpath, mode) == 0) {
       continue;
     }
     // Mkdir failed, but it might have failed with EEXIST, or some other error
@@ -980,31 +1047,9 @@ bool IsLink(const FilePath& file_path) {
 
 bool GetFileInfo(const FilePath& file_path, File::Info* results) {
   stat_wrapper_t file_info;
-#if BUILDFLAG(IS_ANDROID)
-  if (file_path.IsContentUri()) {
-    File file = OpenContentUri(file_path, File::FLAG_OPEN | File::FLAG_READ);
-    if (!file.IsValid()) {
-      return false;
-    }
-    bool success = file.GetInfo(results);
-    // Fstat on a virtual content-uri will get size=0 and last_modified=now.
-    // Fix size, and set last_modified=0 to at least make it stable.
-    if (success && results->size == 0) {
-      int64_t size = GetContentUriFileSize(file_path);
-      if (size >= 0) {
-        results->size = size;
-        results->last_modified = Time();
-      }
-    }
-    return success;
-  } else {
-#endif  // BUILDFLAG(IS_ANDROID)
-    if (File::Stat(file_path, &file_info) != 0) {
-      return false;
-    }
-#if BUILDFLAG(IS_ANDROID)
+  if (File::Stat(file_path, &file_info) != 0) {
+    return false;
   }
-#endif  // BUILDFLAG(IS_ANDROID)
 
   results->FromStat(file_info);
   return true;
@@ -1018,6 +1063,21 @@ FILE* OpenFile(const FilePath& filename, const char* mode) {
       (strchr(mode, ',') != nullptr && strchr(mode, 'e') > strchr(mode, ',')));
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   FILE* result = nullptr;
+#if BUILDFLAG(IS_ANDROID)
+  if (filename.IsContentUri() || filename.IsVirtualDocumentPath()) {
+    std::optional<FilePath> content_uri = base::ResolveToContentUri(filename);
+    if (!content_uri) {
+      return nullptr;
+    }
+    // TODO(crbug.com/428129200): use mode.
+    int fd = internal::ContentUriGetFd(internal::OpenContentUri(
+        *content_uri, File::FLAG_OPEN | File::FLAG_READ));
+    if (fd < 0) {
+      return nullptr;
+    }
+    return fdopen(fd, mode);
+  }
+#endif
 #if BUILDFLAG(IS_APPLE)
   // macOS does not provide a mode character to set O_CLOEXEC; see
   // https://developer.apple.com/legacy/library/documentation/Darwin/Reference/ManPages/man3/fopen.3.html.
@@ -1039,7 +1099,6 @@ FILE* OpenFile(const FilePath& filename, const char* mode) {
 }
 
 // NaCl doesn't implement system calls to open files directly.
-#if !BUILDFLAG(IS_NACL)
 FILE* FileToFILE(File file, const char* mode) {
   PlatformFile unowned = file.GetPlatformFile();
   FILE* stream = fdopen(file.TakePlatformFile(), mode);
@@ -1062,7 +1121,6 @@ File FILEToFile(FILE* file_stream) {
   }
   return File(std::move(other_fd));
 }
-#endif  // !BUILDFLAG(IS_NACL)
 
 std::optional<uint64_t> ReadFile(const FilePath& filename, span<char> buffer) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
@@ -1087,24 +1145,30 @@ std::optional<uint64_t> ReadFile(const FilePath& filename, span<char> buffer) {
   return bytes_read;
 }
 
-int WriteFile(const FilePath& filename, const char* data, int size) {
+bool WriteFile(const FilePath& filename, span<const uint8_t> data) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-  if (size < 0) {
-    return -1;
+#if BUILDFLAG(IS_ANDROID)
+  if (filename.IsVirtualDocumentPath()) {
+    std::optional<files_internal::VirtualDocumentPath> vp =
+        files_internal::VirtualDocumentPath::Parse(filename.value());
+    return vp && vp->WriteFile(data);
+  } else if (filename.IsContentUri()) {
+    File file(filename,
+              File::Flags::FLAG_WRITE | File::Flags::FLAG_CREATE_ALWAYS);
+    return file.Write(0, data).has_value();
   }
+#endif
+
   int fd = HANDLE_EINTR(creat(filename.value().c_str(), 0666));
   if (fd < 0) {
-    return -1;
+    return false;
   }
 
-  int bytes_written =
-      WriteFileDescriptor(fd, std::string_view(data, static_cast<size_t>(size)))
-          ? size
-          : -1;
+  bool success = WriteFileDescriptor(fd, data);
   if (IGNORE_EINTR(close(fd)) < 0) {
-    return -1;
+    return false;
   }
-  return bytes_written;
+  return success;
 }
 
 bool WriteFileDescriptor(int fd, span<const uint8_t> data) {
@@ -1121,7 +1185,7 @@ bool WriteFileDescriptor(int fd, span<const uint8_t> data) {
 }
 
 bool WriteFileDescriptor(int fd, std::string_view data) {
-  return WriteFileDescriptor(fd, as_bytes(make_span(data)));
+  return WriteFileDescriptor(fd, as_byte_span(data));
 }
 
 bool AllocateFileRegion(File* file, int64_t offset, size_t size) {
@@ -1230,7 +1294,7 @@ bool AppendToFile(const FilePath& filename, span<const uint8_t> data) {
 }
 
 bool AppendToFile(const FilePath& filename, std::string_view data) {
-  return AppendToFile(filename, as_bytes(make_span(data)));
+  return AppendToFile(filename, as_byte_span(data));
 }
 
 bool GetCurrentDirectory(FilePath* dir) {
@@ -1269,7 +1333,7 @@ bool VerifyPathControlledByUser(const FilePath& base,
     // |base| must be a subpath of |path|, so all components should match.
     // If these CHECKs fail, look at the test that base is a parent of
     // path at the top of this function.
-    CHECK(ip != path_components.end(), base::NotFatalUntil::M125);
+    CHECK(ip != path_components.end());
     DCHECK(*ip == *ib);
   }
 
@@ -1354,16 +1418,7 @@ bool GetShmemTempDir(bool executable, FilePath* path) {
 // Mac has its own implementation, this is for all other Posix systems.
 bool CopyFile(const FilePath& from_path, const FilePath& to_path) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-  File infile;
-#if BUILDFLAG(IS_ANDROID)
-  if (from_path.IsContentUri()) {
-    infile = OpenContentUri(from_path, File::FLAG_OPEN | File::FLAG_READ);
-  } else {
-    infile = File(from_path, File::FLAG_OPEN | File::FLAG_READ);
-  }
-#else
-  infile = File(from_path, File::FLAG_OPEN | File::FLAG_READ);
-#endif
+  File infile(from_path, File::FLAG_OPEN | File::FLAG_READ);
   if (!infile.IsValid()) {
     return false;
   }

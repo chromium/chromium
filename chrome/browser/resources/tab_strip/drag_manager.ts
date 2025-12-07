@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './strings.m.js';
+import '/strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -12,7 +12,7 @@ import {isTabElement} from './tab.js';
 import type {TabGroupElement} from './tab_group.js';
 import {isDragHandle, isTabGroupElement} from './tab_group.js';
 import type {Tab} from './tab_strip.mojom-webui.js';
-import {TabNetworkState} from './tab_strip.mojom-webui.js';
+import {TabNetworkState} from './tabs.mojom-webui.js';
 import type {TabsApiProxy} from './tabs_api_proxy.js';
 import {TabsApiProxyImpl} from './tabs_api_proxy.js';
 
@@ -268,7 +268,7 @@ class DragSession {
     let scaleFactor = 1;
     let verticalOffset = 0;
 
-    // <if expr="chromeos_ash">
+    // <if expr="is_chromeos">
     // Touch on ChromeOS automatically scales drag images by 1.2 and adds a
     // vertical offset of 25px. See //ash/drag_drop/drag_drop_controller.cc.
     scaleFactor = 1.2;

@@ -88,9 +88,7 @@ std::ostream& operator<<(std::ostream& out, const OfflinePageItem& item) {
     value.Set("attribution", item.attribution);
   }
 
-  std::string value_string;
-  base::JSONWriter::Write(value, &value_string);
-  return out << value_string;
+  return out << base::WriteJson(value).value_or("");
 }
 
 std::string OfflinePageVisuals::ToString() const {

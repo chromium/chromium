@@ -178,8 +178,8 @@ class FatalCrashEventsObserver
   base::ObserverList<FatalCrashEventLogObserver> event_log_observers_;
 
   // Callbacks and variables used for test only.
-  std::unique_ptr<SettingsForTest> settings_for_test_ GUARDED_BY_CONTEXT(
-      sequence_checker_){std::make_unique<SettingsForTest>()};
+  std::unique_ptr<SettingsForTest> settings_for_test_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<FatalCrashEventsObserver> weak_factory_{this};
 };

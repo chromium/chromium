@@ -30,7 +30,7 @@ using OnboardingStatus =
     privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus;
 
 bool IsSameSite(const GURL& url1, const GURL& url2) {
-  return url1.SchemeIs(url2.scheme()) &&
+  return url1.SchemeIs(url2.GetScheme()) &&
          net::registry_controlled_domains::SameDomainOrHost(
              url1, url2,
              net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
@@ -144,7 +144,13 @@ void ThirdPartyCookieDeprecationMetricsObserver::RecordCookieUseCounters(
     const GURL& first_party_url,
     bool blocked_by_policy,
     ThirdPartyCookieAllowMechanism allow_mechanism) {
-  if (blocked_by_policy || !IsThirdParty(url, first_party_url)) {
+  if (!IsThirdParty(url, first_party_url)) {
+    return;
+  }
+  if (blocked_by_policy) {
+    page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
+        GetDelegate().GetWebContents()->GetPrimaryMainFrame(),
+        blink::mojom::WebFeature::kThirdPartyCookieBlocked);
     return;
   }
 
@@ -162,14 +168,21 @@ void ThirdPartyCookieDeprecationMetricsObserver::RecordCookieUseCounters(
         allow_mechanism);
   }
 
-  if (CookieSettingsBase::Is1PDtRelatedAllowMechanism(allow_mechanism)) {
+  if (const CookieSettingsBase::MetadataSourceType metadata_source_type =
+          CookieSettingsBase::AllowMechanismToMetadataSourceType(
+              allow_mechanism);
+      metadata_source_type != CookieSettingsBase::MetadataSourceType::None) {
+    bool is_dt_deployed =
+        allow_mechanism ==
+            ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD ||
+        allow_mechanism == ThirdPartyCookieAllowMechanism::kAllowBy3PCD;
     ukm::builders::Tpcd_Mitigations_Dt_FirstParty_Deployment2(
         GetDelegate()
             .GetWebContents()
             ->GetPrimaryMainFrame()
             ->GetPageUkmSourceId())
-        .SetDeployed(allow_mechanism ==
-                     ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD)
+        .SetDeployed(is_dt_deployed)
+        .SetSource(static_cast<int32_t>(metadata_source_type))
         .Record(ukm::UkmRecorder::Get());
   }
 
@@ -186,7 +199,6 @@ void ThirdPartyCookieDeprecationMetricsObserver::RecordCookieUseCounters(
 
   switch (allow_mechanism) {
     case ThirdPartyCookieAllowMechanism::kAllowByExplicitSetting:
-    case ThirdPartyCookieAllowMechanism::kAllowByTrackingProtectionException:
       third_party_cookie_features.push_back(
           blink::mojom::WebFeature::
               kThirdPartyCookieDeprecation_AllowByExplicitSetting);
@@ -237,8 +249,8 @@ void ThirdPartyCookieDeprecationMetricsObserver::RecordCookieUseCounters(
     // No feature usage recorded for the following mechanism values.
     case ThirdPartyCookieAllowMechanism::kNone:
     case ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD:
-    case ThirdPartyCookieAllowMechanism::kAllowByCORSException:
     case ThirdPartyCookieAllowMechanism::kAllowByScheme:
+    case ThirdPartyCookieAllowMechanism::kAllowBySandboxValue:
       break;
   }
 

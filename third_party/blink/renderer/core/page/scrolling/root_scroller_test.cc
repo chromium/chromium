@@ -4,6 +4,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
+#include "third_party/blink/public/common/input/web_gesture_device.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/web/web_console_message.h"
 #include "third_party/blink/public/web/web_hit_test_result.h"
@@ -35,6 +36,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/core/testing/web_view_test_helper.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -284,7 +286,8 @@ TEST_F(RootScrollerTest, BrowserControlsAndOverscroll) {
     EXPECT_TRUE(
         widget->last_overscroll()->Equals(mojom::blink::DidOverscrollParams(
             gfx::Vector2dF(0, 50), gfx::Vector2dF(0, 50), gfx::Vector2dF(),
-            gfx::PointF(100, 100), cc::OverscrollBehavior())));
+            gfx::PointF(100, 100), cc::OverscrollBehavior(),
+            blink::WebGestureDevice::kTouchscreen)));
 
     EXPECT_FLOAT_EQ(maximum_scroll, container->scrollTop());
     EXPECT_FLOAT_EQ(0,
@@ -301,7 +304,8 @@ TEST_F(RootScrollerTest, BrowserControlsAndOverscroll) {
     EXPECT_TRUE(
         widget->last_overscroll()->Equals(mojom::blink::DidOverscrollParams(
             gfx::Vector2dF(0, 70), gfx::Vector2dF(0, 20), gfx::Vector2dF(),
-            gfx::PointF(100, 100), cc::OverscrollBehavior())));
+            gfx::PointF(100, 100), cc::OverscrollBehavior(),
+            blink::WebGestureDevice::kTouchscreen)));
 
     EXPECT_FLOAT_EQ(maximum_scroll, container->scrollTop());
     EXPECT_FLOAT_EQ(0,
@@ -327,7 +331,8 @@ TEST_F(RootScrollerTest, BrowserControlsAndOverscroll) {
     EXPECT_TRUE(
         widget->last_overscroll()->Equals(mojom::blink::DidOverscrollParams(
             gfx::Vector2dF(0, 30), gfx::Vector2dF(0, 30), gfx::Vector2dF(),
-            gfx::PointF(100, 100), cc::OverscrollBehavior())));
+            gfx::PointF(100, 100), cc::OverscrollBehavior(),
+            blink::WebGestureDevice::kTouchscreen)));
 
     EXPECT_FLOAT_EQ(maximum_scroll, container->scrollTop());
     EXPECT_FLOAT_EQ(0,
@@ -547,7 +552,7 @@ TEST_F(RootScrollerTest, RemoveRootScrollerFromDom) {
 
     ASSERT_EQ(iframe, EffectiveRootScroller(MainFrame()->GetDocument()));
 
-    iframe->contentDocument()->body()->setInnerHTML("");
+    iframe->contentDocument()->body()->SetInnerHTMLWithoutTrustedTypes("");
 
     // If the root scroller wasn't updated by the DOM removal above, this
     // will touch the disposed root scroller's ScrollableArea.
@@ -1994,16 +1999,17 @@ TEST_F(ImplicitRootScrollerSimTest, ScrollRestorationIgnoresImplicit) {
   GetDocument()
       .View()
       ->GetScrollableArea()
-      ->SetPendingHistoryRestoreScrollOffset(view_state, true);
+      ->SetPendingHistoryRestoreScrollOffset(
+          view_state, true, mojom::blink::ScrollBehavior::kAuto);
   GetDocument().View()->LayoutViewport()->SetPendingHistoryRestoreScrollOffset(
-      view_state, true);
+      view_state, true, mojom::blink::ScrollBehavior::kAuto);
   GetDocument().View()->ScheduleAnimation();
 
   Compositor().BeginFrame();
   EXPECT_EQ(ScrollOffset(0, 0),
             GetDocument().View()->GetScrollableArea()->GetScrollOffset());
 
-  GetDocument().domWindow()->scrollTo(0, 20);
+  GetDocument().domWindow()->scrollToForTesting(0, 20);
   GetDocument().View()->ScheduleAnimation();
   // Check that an implicit scroll offset is not saved.
   // TODO(chrishtr): probably it should?
@@ -2088,7 +2094,8 @@ TEST_F(ImplicitRootScrollerSimTest,
   Compositor().BeginFrame();
   EXPECT_EQ(container,
             GetDocument().GetRootScrollerController().EffectiveRootScroller());
-  EXPECT_EQ(To<LayoutBox>(container->GetLayoutObject())->Size().height, 600);
+  EXPECT_EQ(To<LayoutBox>(container->GetLayoutObject())->StitchedSize().height,
+            600);
   WebView().MainFrameWidget()->SetZoomLevel(ZoomFactorToZoomLevel(2.0));
   WebView().GetPage()->GetBrowserControls().SetShownRatio(0, 0);
   WebView().ResizeWithBrowserControls(gfx::Size(800, 650), 50, 50, false);
@@ -2839,7 +2846,7 @@ class RootScrollerHitTest : public ImplicitRootScrollerSimTest {
     // target.
     gfx::Point point(200, 445);
     gfx::Size tap_area(20, 20);
-    WebHitTestResult result = WebView().HitTestResultForTap(point, tap_area);
+    WebHitTestResult result = HitTestResultForTap(&WebView(), point, tap_area);
 
     Node* hit_node = result.GetNode().Unwrap<Node>();
     EXPECT_EQ(target, hit_node);
@@ -2867,7 +2874,8 @@ class RootScrollerHitTest : public ImplicitRootScrollerSimTest {
                          .GlobalRootScroller();
     ScrollableArea* scrollable_area =
         To<LayoutBox>(scroller->GetLayoutObject())->GetScrollableArea();
-    scrollable_area->DidCompositorScroll(gfx::PointF(0, 100000));
+    scrollable_area->DidCompositorScroll(gfx::PointF(0, 100000),
+                                         cc::ScrollSourceType::kNone);
 
     WebView().ResizeWithBrowserControls(gfx::Size(400, 450), 50, 50, false);
 

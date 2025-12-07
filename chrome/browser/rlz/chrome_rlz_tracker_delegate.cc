@@ -12,7 +12,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -36,20 +35,20 @@
 #include "chrome/installer/util/google_update_settings.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #endif
 
-ChromeRLZTrackerDelegate::ChromeRLZTrackerDelegate() {}
+ChromeRLZTrackerDelegate::ChromeRLZTrackerDelegate() = default;
 
-ChromeRLZTrackerDelegate::~ChromeRLZTrackerDelegate() {}
+ChromeRLZTrackerDelegate::~ChromeRLZTrackerDelegate() = default;
 
 // static
 void ChromeRLZTrackerDelegate::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
 #if BUILDFLAG(ENABLE_RLZ)
   int rlz_ping_delay_seconds = 90;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           ash::switches::kRlzPingDelay)) {
     // Use a switch for overwriting the default delay because it doesn't seem

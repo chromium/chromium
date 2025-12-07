@@ -90,8 +90,11 @@ std::ostream& operator<<(std::ostream& out, ConnectionStatus status);
 // Sets the Drive connection status for testing purposes.
 void SetDriveConnectionStatusForTesting(ConnectionStatus status);
 
-// Returns the Drive connection status for the |profile|.
-ConnectionStatus GetDriveConnectionStatus(Profile* profile);
+// Returns the Drive connection status for the `profile`. Also returns the
+// device's online state in `is_online`. This could be different from the
+// connection status if drivefs is not running for some reason.
+ConnectionStatus GetDriveConnectionStatus(Profile* profile,
+                                          bool* is_online = nullptr);
 
 // Returns true if the supplied mime type is of a pinnable type. This indicates
 // the file can be made available offline.

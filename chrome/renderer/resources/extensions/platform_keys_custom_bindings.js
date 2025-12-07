@@ -4,17 +4,17 @@
 
 // Custom bindings for the platformKeys API.
 
-var SubtleCrypto = require('platformKeys.SubtleCrypto').SubtleCrypto;
-var cryptoKeyUtil = require('platformKeys.getCryptoKeyUtil');
-var getPublicKey = cryptoKeyUtil.getPublicKey;
-var getPublicKeyBySpki = cryptoKeyUtil.getPublicKeyBySpki;
-var getSymKeyById = cryptoKeyUtil.getSymKeyById;
-var internalAPI = getInternalApi('platformKeysInternal');
+const SubtleCrypto = require('platformKeys.SubtleCrypto').SubtleCrypto;
+const cryptoKeyUtil = require('platformKeys.getCryptoKeyUtil');
+const getPublicKey = cryptoKeyUtil.getPublicKey;
+const getPublicKeyBySpki = cryptoKeyUtil.getPublicKeyBySpki;
+const getSymKeyById = cryptoKeyUtil.getSymKeyById;
+const internalAPI = getInternalApi('platformKeysInternal');
 
-var keyModule = require('platformKeys.Key');
-var Key = keyModule.Key;
-var KeyType = keyModule.KeyType;
-var KeyUsage = keyModule.KeyUsage;
+const keyModule = require('platformKeys.Key');
+const Key = keyModule.Key;
+const KeyType = keyModule.KeyType;
+const KeyUsage = keyModule.KeyUsage;
 
 // TODO(b/288880151): replace the fixed `usages` list below with the actual list
 // for the given key, which will be returned by the internal API.
@@ -41,8 +41,8 @@ function createSymKey(keyIdentifier, algorithm) {
 }
 
 apiBridge.registerCustomHook(function(api) {
-  var apiFunctions = api.apiFunctions;
-  var subtleCrypto = new SubtleCrypto(/*tokenId=*/ '');
+  const apiFunctions = api.apiFunctions;
+  const subtleCrypto = new SubtleCrypto(/*tokenId=*/ '');
 
   apiFunctions.setHandleRequest(
       'selectClientCertificates', function(details, callback) {
@@ -63,8 +63,9 @@ apiBridge.registerCustomHook(function(api) {
         });
       });
 
-  apiFunctions.setHandleRequest(
-      'subtleCrypto', function() { return subtleCrypto });
+  apiFunctions.setHandleRequest('subtleCrypto', function() {
+    return subtleCrypto;
+  });
 
   apiFunctions.setHandleRequest('getKeyPair', function(cert, params, callback) {
     getPublicKey(cert, params, function(foundKeySpki, foundKeyAlgorithm) {

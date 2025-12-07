@@ -12,8 +12,9 @@ PerfTimeLogger::PerfTimeLogger(const char* test_name)
     : logged_(false), test_name_(test_name) {}
 
 PerfTimeLogger::~PerfTimeLogger() {
-  if (!logged_)
+  if (!logged_) {
     Done();
+  }
 }
 
 void PerfTimeLogger::Done() {

@@ -131,10 +131,11 @@ void HttpsLatencyRoutine::AttemptNextResolution() {
   GURL url = hostnames_to_query_dns_.back();
   hostnames_to_query_dns_.pop_back();
 
+  // Resolver host parameter source must be unset or set to ANY in order for DNS
+  // queries with BuiltInDnsClientEnabled policy disabled to work (b/353448388).
   network::mojom::ResolveHostParametersPtr parameters =
       network::mojom::ResolveHostParameters::New();
   parameters->dns_query_type = net::DnsQueryType::A;
-  parameters->source = net::HostResolverSource::DNS;
   parameters->cache_usage =
       network::mojom::ResolveHostParameters::CacheUsage::DISALLOWED;
 
@@ -152,10 +153,10 @@ void HttpsLatencyRoutine::AttemptNextResolution() {
 void HttpsLatencyRoutine::OnHostResolutionComplete(
     int result,
     const net::ResolveErrorInfo&,
-    const std::optional<net::AddressList>& resolved_addresses,
-    const std::optional<net::HostResolverEndpointResults>&) {
+    const net::AddressList& resolved_addresses,
+    const net::HostResolverEndpointResults&) {
   if (result != net::OK) {
-    CHECK(!resolved_addresses);
+    CHECK(resolved_addresses.empty());
     successfully_resolved_hosts_ = false;
     AnalyzeResultsAndExecuteCallback();
     return;

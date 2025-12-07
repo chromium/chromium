@@ -13,7 +13,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 
@@ -56,8 +56,9 @@ class ViewSkiaGoldPixelDiffTest : public views::test::WidgetTest {
 
   views::View* AddChildViewToWidget(views::Widget* widget) {
     auto view_unique_ptr = std::make_unique<views::View>();
-    if (widget->client_view())
+    if (widget->client_view()) {
       return widget->client_view()->AddChildView(std::move(view_unique_ptr));
+    }
 
     return widget->SetContentsView(std::move(view_unique_ptr));
   }
@@ -100,7 +101,7 @@ TEST_F(ViewSkiaGoldPixelDiffTest, CompareScreenshotByView) {
   views::Widget* widget = CreateTopLevelNativeWidget();
   views::View* child_view = AddChildViewToWidget(widget);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   constexpr char kPrefix[] = "Prefix.Demo.";
 #else
   constexpr char kPrefix[] = "Prefix_Demo_";

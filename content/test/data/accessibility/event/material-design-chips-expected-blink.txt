@@ -1,0 +1,170 @@
+=== Accessibility tree before go() pass 1 ===
+rootWebArea htmlTag='#document' name='Material Web Filter Chips Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++toolbar horizontal htmlTag='md-chip-set'
+++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='md-filter-chip'
+++++++++++++++genericContainer className='container   ' htmlTag='div'
+++++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++toggleButton className='primary action' htmlTag='button' name='Chip 1' checkedState=false
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++staticText name='Chip 1'
+++++++++++++++++++++++++inlineTextBox name='Chip 1'
+++++++++++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='md-filter-chip'
+++++++++++++++genericContainer className='container   ' htmlTag='div'
+++++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++toggleButton className='primary action' htmlTag='button' name='Chip 2' checkedState=false
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++staticText name='Chip 2'
+++++++++++++++++++++++++inlineTextBox name='Chip 2'
+++++++++++++++++++genericContainer ignored
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 1 ===
+rootWebArea htmlTag='#document' name='Material Web Filter Chips Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++toolbar horizontal htmlTag='md-chip-set'
+++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='md-filter-chip'
+++++++++++++++genericContainer className='container has-icon selected' htmlTag='div' <<<<<< CHANGED
+++++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++toggleButton className='primary action' htmlTag='button' name='Chip 1' checkedState=true <<<<<< CHANGED
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++staticText name='Chip 1'
+++++++++++++++++++++++++inlineTextBox name='Chip 1'
+++++++++++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='md-filter-chip'
+++++++++++++++genericContainer className='container   ' htmlTag='div'
+++++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++toggleButton className='primary action' htmlTag='button' name='Chip 2' checkedState=false
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++staticText name='Chip 2'
+++++++++++++++++++++++++inlineTextBox name='Chip 2'
+++++++++++++++++++genericContainer ignored
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 2 ===
+rootWebArea htmlTag='#document' name='Material Web Filter Chips Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++toolbar horizontal htmlTag='md-chip-set'
+++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='md-filter-chip'
+++++++++++++++genericContainer className='container has-icon selected' htmlTag='div'
+++++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++toggleButton className='primary action' htmlTag='button' name='Chip 1' checkedState=true
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++staticText name='Chip 1'
+++++++++++++++++++++++++inlineTextBox name='Chip 1'
+++++++++++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='md-filter-chip'
+++++++++++++++genericContainer className='container   ' htmlTag='div'
+++++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++toggleButton className='primary action' htmlTag='button' name='Chip 2' checkedState=false
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++staticText name='Chip 2'
+++++++++++++++++++++++++inlineTextBox name='Chip 2'
+++++++++++++++++++genericContainer ignored
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 2 ===
+rootWebArea htmlTag='#document' name='Material Web Filter Chips Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++toolbar horizontal htmlTag='md-chip-set'
+++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='md-filter-chip'
+++++++++++++++genericContainer className='container has-icon selected' htmlTag='div'
+++++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++toggleButton className='primary action' htmlTag='button' name='Chip 1' checkedState=true
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++staticText name='Chip 1'
+++++++++++++++++++++++++inlineTextBox name='Chip 1'
+++++++++++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='md-filter-chip'
+++++++++++++++genericContainer className='container has-icon selected' htmlTag='div'
+++++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++toggleButton className='primary action' htmlTag='button' name='Chip 2' checkedState=true <<<<<< CHANGED
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++staticText name='Chip 2'
+++++++++++++++++++++++++inlineTextBox name='Chip 2'
+++++++++++++++++++genericContainer ignored
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 3 ===
+rootWebArea htmlTag='#document' name='Material Web Filter Chips Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++toolbar horizontal htmlTag='md-chip-set'
+++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='md-filter-chip'
+++++++++++++++genericContainer className='container has-icon selected' htmlTag='div'
+++++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++toggleButton className='primary action' htmlTag='button' name='Chip 1' checkedState=true
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++staticText name='Chip 1'
+++++++++++++++++++++++++inlineTextBox name='Chip 1'
+++++++++++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='md-filter-chip'
+++++++++++++++genericContainer className='container has-icon selected' htmlTag='div'
+++++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++toggleButton className='primary action' htmlTag='button' name='Chip 2' checkedState=true
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++staticText name='Chip 2'
+++++++++++++++++++++++++inlineTextBox name='Chip 2'
+++++++++++++++++++genericContainer ignored
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 3 ===
+rootWebArea htmlTag='#document' name='Material Web Filter Chips Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++toolbar horizontal htmlTag='md-chip-set'
+++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='md-filter-chip'
+++++++++++++++genericContainer className='container' htmlTag='div' <<<<<< CHANGED
+++++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++toggleButton className='primary action' htmlTag='button' name='Chip 1' checkedState=false <<<<<< CHANGED
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++staticText name='Chip 1'
+++++++++++++++++++++++++inlineTextBox name='Chip 1'
+++++++++++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='md-filter-chip'
+++++++++++++++genericContainer className='container has-icon selected' htmlTag='div'
+++++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++toggleButton className='primary action' htmlTag='button' name='Chip 2' checkedState=true
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++staticText name='Chip 2'
+++++++++++++++++++++++++inlineTextBox name='Chip 2'
+++++++++++++++++++genericContainer ignored
+=== End accessibility tree ===

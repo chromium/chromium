@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 generate_grd("build_grdp") {
@@ -48,33 +47,42 @@ generate_grd("build_grdp") {
     "2x/select.png",
   ]
 
-  if (!is_android && !is_ios) {
+  if (!is_ios) {
     input_files += [
       "arrow_down.svg",
+      "chrome_logo_dark.svg",
+      "dark/arrow_down.svg",
+      "icon_arrow_back.svg",
+      "icon_delete_gray.svg",
+      "icon_edit.svg",
+      "icon_more_vert.svg",
+    ]
+  }
+
+  if (!is_android && !is_ios) {
+    input_files += [
       "arrow_right.svg",
       "business.svg",
       "colorize.svg",
       "chevron_down.svg",
-      "chrome_logo_dark.svg",
-      "dark/arrow_down.svg",
       "dark/chevron_down.svg",
-      "icon_arrow_back.svg",
       "icon_arrow_drop_down_cr23.svg",
       "icon_arrow_drop_up_cr23.svg",
+      "icon_arrow_upward.svg",
       "icon_bookmark.svg",
       "icon_clear.svg",
       "icon_clock.svg",
-      "icon_delete_gray.svg",
-      "icon_edit.svg",
       "icon_filetype_generic.svg",
       "icon_folder_open.svg",
       "icon_history.svg",
       "icon_journeys.svg",
-      "icon_more_vert.svg",
       "icon_picture_delete.svg",
       "icon_settings.svg",
       "icon_visibility_off.svg",
       "icon_visibility.svg",
+      "promotion_banner_light.svg",
+      "dark/promotion_banner_dark.svg",
+      "promotion_policy_banner_close.svg",
     ]
   }
 

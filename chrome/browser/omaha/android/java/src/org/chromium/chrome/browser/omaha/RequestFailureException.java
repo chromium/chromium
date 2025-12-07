@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.omaha;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Serves as a general exception for failed POST requests to the Omaha Update Server. */
+@NullMarked
 public class RequestFailureException extends Exception {
     public static final int ERROR_UNDEFINED = 0;
     public static final int ERROR_MALFORMED_XML = 1;

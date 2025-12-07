@@ -32,6 +32,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/vdmx_parser.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkFontMetrics.h"
 #include "third_party/skia/include/core/SkTypeface.h"
@@ -72,21 +73,21 @@ void FontMetrics::AscentDescentWithHacks(
   // using FreeType.  With DirectWrite or CoreText, no bytecode hinting is ever
   // done.  This code should be pushed into FreeType (hinted font metrics).
   static const uint32_t kVdmxTag = SkSetFourByteTag('V', 'D', 'M', 'X');
-  int pixel_size = platform_data.size() + 0.5;
+  int pixel_size = ClampTo<int>(platform_data.size() + 0.5);
   // TODO(xiaochengh): How do we support ascent/descent override with VDMX?
   if (!ascent_override && !descent_override && !font.isForceAutoHinting() &&
       (font.getHinting() == SkFontHinting::kFull ||
        font.getHinting() == SkFontHinting::kNormal)) {
     size_t vdmx_size = face->getTableSize(kVdmxTag);
     if (vdmx_size && vdmx_size < kMaxVDMXTableSize) {
-      uint8_t* vdmx_table = (uint8_t*)WTF::Partitions::FastMalloc(
+      uint8_t* vdmx_table = (uint8_t*)Partitions::FastMalloc(
           vdmx_size, WTF_HEAP_PROFILER_TYPE_NAME(FontMetrics));
       if (vdmx_table &&
           face->getTableData(kVdmxTag, 0, vdmx_size, vdmx_table) == vdmx_size &&
           ParseVDMX(&vdmx_ascent, &vdmx_descent, vdmx_table, vdmx_size,
                     pixel_size))
         is_vdmx_valid = true;
-      WTF::Partitions::FastFree(vdmx_table);
+      Partitions::FastFree(vdmx_table);
     }
   }
 #endif
@@ -146,11 +147,7 @@ float FontMetrics::FloatAscentInternal(
     ApplyBaselineTable apply_baseline_table) const {
   switch (baseline_type) {
     case kAlphabeticBaseline:
-      NOTREACHED_IN_MIGRATION();
-      if (alphabetic_baseline_position_.has_value() && apply_baseline_table) {
-        return float_ascent_ - alphabetic_baseline_position_.value();
-      }
-      return float_ascent_;
+      NOTREACHED();
     case kCentralBaseline:
       return FloatHeight() / 2;
 
@@ -178,8 +175,7 @@ float FontMetrics::FloatAscentInternal(
     case kTextOverBaseline:
       return 0;
   }
-  NOTREACHED_IN_MIGRATION();
-  return float_ascent_;
+  NOTREACHED();
 }
 
 int FontMetrics::IntAscentInternal(
@@ -187,13 +183,7 @@ int FontMetrics::IntAscentInternal(
     ApplyBaselineTable apply_baseline_table) const {
   switch (baseline_type) {
     case kAlphabeticBaseline:
-      NOTREACHED_IN_MIGRATION();
-      if (alphabetic_baseline_position_.has_value() && apply_baseline_table) {
-        return static_cast<int>(
-            int_ascent_ -
-            static_cast<int>(lroundf(alphabetic_baseline_position_.value())));
-      }
-      return int_ascent_;
+      NOTREACHED();
     case kCentralBaseline:
       return Height() - Height() / 2;
 
@@ -224,7 +214,6 @@ int FontMetrics::IntAscentInternal(
     case kTextOverBaseline:
       return 0;
   }
-  NOTREACHED_IN_MIGRATION();
-  return int_ascent_;
+  NOTREACHED();
 }
 }

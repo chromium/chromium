@@ -24,12 +24,14 @@
 //  * Marks entries in the file between "// ===BEGIN PRIVATE DOMAINS==="
 //    and "// ===END PRIVATE DOMAINS===" as private.
 
+#include <iostream>
+
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "base/path_service.h"
 #include "base/process/memory.h"
 #include "net/tools/tld_cleanup/tld_cleanup_util.h"
@@ -37,8 +39,8 @@
 int main(int argc, const char* argv[]) {
   base::EnableTerminationOnHeapCorruption();
   if (argc != 1) {
-    fprintf(stderr, "Normalizes and verifies UTF-8 TLD data files\n");
-    fprintf(stderr, "Usage: %s\n", argv[0]);
+    std::cerr << "Normalizes and verifies UTF-8 TLD data files\n";
+    std::cerr << "Usage: " << argv[0] << "\n";
     return 1;
   }
 
@@ -55,32 +57,26 @@ int main(int argc, const char* argv[]) {
 
   base::CommandLine::Init(argc, argv);
 
-  base::FilePath log_filename;
-  base::PathService::Get(base::DIR_EXE, &log_filename);
-  log_filename = log_filename.AppendASCII("tld_cleanup.log");
   logging::LoggingSettings settings;
   settings.logging_dest = destination;
-  settings.log_file_path = log_filename.value().c_str();
+  settings.log_file_path = base::PathService::CheckedGet(base::DIR_EXE)
+                               .AppendASCII("tld_cleanup.log")
+                               .value();
   settings.delete_old = logging::DELETE_OLD_LOG_FILE;
   logging::InitLogging(settings);
 
   base::i18n::InitializeICU();
 
-  base::FilePath input_file;
-  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &input_file);
-  input_file = input_file.Append(FILE_PATH_LITERAL("net"))
-                         .Append(FILE_PATH_LITERAL("base"))
-                         .Append(FILE_PATH_LITERAL(
-                             "registry_controlled_domains"))
-                         .Append(FILE_PATH_LITERAL("effective_tld_names.dat"));
-  base::FilePath output_file;
-  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &output_file);
-  output_file = output_file.Append(FILE_PATH_LITERAL("net"))
-                           .Append(FILE_PATH_LITERAL("base"))
-                           .Append(FILE_PATH_LITERAL(
-                               "registry_controlled_domains"))
-                           .Append(FILE_PATH_LITERAL(
-                               "effective_tld_names.gperf"));
+  base::FilePath src_root =
+      base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT);
+  base::FilePath input_file = src_root.AppendASCII("net")
+                                  .AppendASCII("base")
+                                  .AppendASCII("registry_controlled_domains")
+                                  .AppendASCII("effective_tld_names.dat");
+  base::FilePath output_file = src_root.AppendASCII("net")
+                                   .AppendASCII("base")
+                                   .AppendASCII("registry_controlled_domains")
+                                   .AppendASCII("effective_tld_names.gperf");
   net::tld_cleanup::NormalizeResult result =
       net::tld_cleanup::NormalizeFile(input_file, output_file);
   if (result != net::tld_cleanup::NormalizeResult::kSuccess) {

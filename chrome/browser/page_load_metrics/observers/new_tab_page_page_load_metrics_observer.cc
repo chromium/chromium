@@ -4,24 +4,19 @@
 
 #include "chrome/browser/page_load_metrics/observers/new_tab_page_page_load_metrics_observer.h"
 
-#include <algorithm>
-
-#include "chrome/browser/search/search.h"
-#include "components/page_load_metrics/browser/navigation_handle_user_data.h"
+#include "base/notreached.h"
+#include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
-#include "services/metrics/public/cpp/ukm_source.h"
 
 namespace {
 
-const char kNewTabPagePrerenderNavigationToActivation[] =
-    "NewTabPage.PrerenderNavigationToActivation";
-const char kNewTabPageNavigationOrActivationToFirstContentfulPaint[] =
-    "NewTabPage.NavigationOrActivationToFirstContentfulPaint";
-const char kNewTabPageNavigationOrActivationToFirstMeaningfulPaint[] =
-    "NewTabPage.NavigationOrActivationToFirstMeaningfulPaint";
-const char kNewTabPageNavigationOrActivationToLargestContentfulPaint[] =
-    "NewTabPage.NavigationOrActivationToLargestContentfulPaint";
+const char kNewTabPageFirstContentfulPaintHistogram[] =
+    "NewTabPage.LoadTime.FirstContentfulPaint";
+const char kNewTabPageLargestContentfulPaintHistogram[] =
+    "NewTabPage.LoadTime.LargestContentfulPaint";
+
 }  // namespace
 
 NewTabPagePageLoadMetricsObserver::NewTabPagePageLoadMetricsObserver() =
@@ -30,19 +25,43 @@ NewTabPagePageLoadMetricsObserver::NewTabPagePageLoadMetricsObserver() =
 NewTabPagePageLoadMetricsObserver::~NewTabPagePageLoadMetricsObserver() =
     default;
 
+const char* NewTabPagePageLoadMetricsObserver::GetObserverName() const {
+  return "NewTabPagePageLoadMetricsObserver";
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+NewTabPagePageLoadMetricsObserver::ShouldObserveScheme(const GURL& url) const {
+  // Observes chrome:// and chrome-untrusted://, which are not observed by
+  // default.
+  if (url.SchemeIs(content::kChromeUIScheme) ||
+      url.SchemeIs(content::kChromeUIUntrustedScheme)) {
+    return CONTINUE_OBSERVING;
+  }
+  return STOP_OBSERVING;
+}
+
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 NewTabPagePageLoadMetricsObserver::OnStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url,
     bool started_in_foreground) {
-  return CONTINUE_OBSERVING;
+  // Observes chrome://new-tab-page and chrome-untrusted://new-tab-page
+  // but not third-party NTPs.
+  if (url::IsSameOriginWith(navigation_handle->GetURL(),
+                            GURL(chrome::kChromeUINewTabPageURL)) ||
+      url::IsSameOriginWith(navigation_handle->GetURL(),
+                            GURL(chrome::kChromeUIUntrustedNewTabPageUrl))) {
+    return CONTINUE_OBSERVING;
+  }
+  return STOP_OBSERVING;
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 NewTabPagePageLoadMetricsObserver::OnPrerenderStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
-  return CONTINUE_OBSERVING;
+  // Prerenderer should never run on non-HTTPs navigations.
+  NOTREACHED();
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
@@ -53,73 +72,11 @@ NewTabPagePageLoadMetricsObserver::OnFencedFramesStart(
   return STOP_OBSERVING;
 }
 
-void NewTabPagePageLoadMetricsObserver::DidActivatePrerenderedPage(
-    content::NavigationHandle* navigation_handle) {
-  // `navigation_handle` here is for the activation navigation, while
-  // `GetDelegate().GetNavigationStart()` is the start time of initial prerender
-  // navigation.
-  base::TimeDelta navigation_to_activation =
-      navigation_handle->NavigationStart() - GetDelegate().GetNavigationStart();
-  PAGE_LOAD_HISTOGRAM(kNewTabPagePrerenderNavigationToActivation,
-                      navigation_to_activation);
-}
-
-page_load_metrics::PageLoadMetricsObserver::ObservePolicy
-NewTabPagePageLoadMetricsObserver::OnCommit(
-    content::NavigationHandle* navigation_handle) {
-  // NavigationHandleUserData is set to be
-  // page_load_metrics::NavigationHandleUserData::InitiatorLocation::kNewTabPage
-  // for all NewTabPage triggered prerender and non-prerender navigation. The
-  // value is checked here to keep on monitoring only NewTabPage triggered
-  // cases.
-  auto* navigation_userdata =
-      page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
-          *navigation_handle);
-  if (navigation_userdata && navigation_userdata->navigation_type() ==
-                                 page_load_metrics::NavigationHandleUserData::
-                                     InitiatorLocation::kNewTabPage) {
-    return CONTINUE_OBSERVING;
-  }
-
-  return STOP_OBSERVING;
-}
-
 void NewTabPagePageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   CHECK(timing.paint_timing->first_contentful_paint);
-  base::TimeDelta fcp = timing.paint_timing->first_contentful_paint.value();
-
-  if (page_load_metrics::WasActivatedInForegroundOptionalEventInForeground(
-          timing.paint_timing->first_contentful_paint, GetDelegate())) {
-    base::TimeDelta activation_to_fcp =
-        page_load_metrics::CorrectEventAsNavigationOrActivationOrigined(
-            GetDelegate(), timing.paint_timing->first_contentful_paint.value());
-
-    PAGE_LOAD_HISTOGRAM(kNewTabPageNavigationOrActivationToFirstContentfulPaint,
-                        activation_to_fcp);
-  } else if (page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
-                 timing.paint_timing->first_contentful_paint, GetDelegate())) {
-    PAGE_LOAD_HISTOGRAM(kNewTabPageNavigationOrActivationToFirstContentfulPaint,
-                        fcp);
-  }
-}
-
-void NewTabPagePageLoadMetricsObserver::
-    OnFirstMeaningfulPaintInMainFrameDocument(
-        const page_load_metrics::mojom::PageLoadTiming& timing) {
-  if (page_load_metrics::WasActivatedInForegroundOptionalEventInForeground(
-          timing.paint_timing->first_meaningful_paint, GetDelegate())) {
-    base::TimeDelta activation_to_meaningful_fcp =
-        page_load_metrics::CorrectEventAsNavigationOrActivationOrigined(
-            GetDelegate(), timing.paint_timing->first_meaningful_paint.value());
-
-    PAGE_LOAD_HISTOGRAM(kNewTabPageNavigationOrActivationToFirstMeaningfulPaint,
-                        activation_to_meaningful_fcp);
-  } else if (page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
-                 timing.paint_timing->first_meaningful_paint, GetDelegate())) {
-    PAGE_LOAD_HISTOGRAM(kNewTabPageNavigationOrActivationToFirstMeaningfulPaint,
-                        timing.paint_timing->first_meaningful_paint.value());
-  }
+  PAGE_LOAD_HISTOGRAM(kNewTabPageFirstContentfulPaintHistogram,
+                      *timing.paint_timing->first_contentful_paint);
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
@@ -144,20 +101,10 @@ void NewTabPagePageLoadMetricsObserver::RecordSessionEndHistograms(
           .GetLargestContentfulPaintHandler()
           .MergeMainFrameAndSubframes();
 
-  if (largest_contentful_paint.ContainsValidTime() &&
-      page_load_metrics::WasActivatedInForegroundOptionalEventInForeground(
-          largest_contentful_paint.Time(), GetDelegate())) {
-    base::TimeDelta activation_to_meaningful_fcp =
-        page_load_metrics::CorrectEventAsNavigationOrActivationOrigined(
-            GetDelegate(), largest_contentful_paint.Time().value());
-    PAGE_LOAD_HISTOGRAM(
-        kNewTabPageNavigationOrActivationToLargestContentfulPaint,
-        activation_to_meaningful_fcp);
-  } else if (largest_contentful_paint.ContainsValidTime() &&
-             WasStartedInForegroundOptionalEventInForeground(
-                 largest_contentful_paint.Time(), GetDelegate())) {
-    PAGE_LOAD_HISTOGRAM(
-        kNewTabPageNavigationOrActivationToLargestContentfulPaint,
-        largest_contentful_paint.Time().value());
+  if (!largest_contentful_paint.ContainsValidTime()) {
+    return;
   }
+
+  PAGE_LOAD_HISTOGRAM(kNewTabPageLargestContentfulPaintHistogram,
+                      largest_contentful_paint.Time().value());
 }

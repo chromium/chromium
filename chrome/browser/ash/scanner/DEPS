@@ -1,0 +1,27 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ash/scanner",
+  # Also allow the manta service factory which is used to instantiate the
+  # Scanner provider.
+  "+chrome/browser/manta/manta_service_factory.h",
+  # And any browser dependencies required for a ProfileKeyedService.
+  "+chrome/browser/profiles",
+
+  # Required for getting a `signin::IdentityManager`.
+  "+chrome/browser/signin",
+
+  # Required for getting the feedback dialog UI used for Scanner.
+  "+chrome/browser/ui/webui/ash/scanner_feedback_dialog",
+]
+
+specific_include_rules = {
+  # Allow ProfileKeyedServiceFactory to depend on browser_process for now.
+  "scanner_keyed_service_factory\\.cc": [
+    "+chrome/browser/browser_process.h",
+  ],
+}

@@ -27,10 +27,12 @@ using ::attribution_reporting::mojom::DebugDataType;
   X(kSourceDestinationPerDayRateLimit,                                         \
     "source-destination-per-day-rate-limit")                                   \
   X(kSourceDestinationRateLimit, "source-destination-rate-limit")              \
+  X(kSourceMaxEventStatesLimit, "source-max-event-states-limit")               \
   X(kSourceNoised, "source-noised")                                            \
   X(kSourceReportingOriginLimit, "source-reporting-origin-limit")              \
   X(kSourceReportingOriginPerSiteLimit,                                        \
     "source-reporting-origin-per-site-limit")                                  \
+  X(kSourceScopesChannelCapacityLimit, "source-scopes-channel-capacity-limit") \
   X(kSourceStorageLimit, "source-storage-limit")                               \
   X(kSourceSuccess, "source-success")                                          \
   X(kSourceTriggerStateCardinalityLimit,                                       \
@@ -42,6 +44,8 @@ using ::attribution_reporting::mojom::DebugDataType;
     "trigger-aggregate-attributions-per-source-destination-limit")            \
   X(kTriggerAggregateDeduplicated, "trigger-aggregate-deduplicated")          \
   X(kTriggerAggregateExcessiveReports, "trigger-aggregate-excessive-reports") \
+  X(kTriggerAggregateInsufficientNamedBudget,                                 \
+    "trigger-aggregate-insufficient-named-budget")                            \
   X(kTriggerAggregateInsufficientBudget,                                      \
     "trigger-aggregate-insufficient-budget")                                  \
   X(kTriggerAggregateNoContributions, "trigger-aggregate-no-contributions")   \
@@ -87,7 +91,7 @@ std::string_view SerializeDebugDataType(DebugDataType data_type) {
 
 #undef TYPE_TO_STR
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 #define STR_TO_TYPE(name, str) {str, DebugDataType::name},

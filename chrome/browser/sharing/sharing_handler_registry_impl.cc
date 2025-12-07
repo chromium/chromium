@@ -5,7 +5,6 @@
 #include "chrome/browser/sharing/sharing_handler_registry_impl.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/sharing/optimization_guide/optimization_guide_message_handler.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/sharing_message/ack_message_handler.h"
@@ -24,8 +23,7 @@
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/sharing/shared_clipboard/remote_copy_message_handler.h"
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS_LACROS)) BUILDFLAG(IS_CHROMEOS)
+#endif
 
 SharingHandlerRegistryImpl::SharingHandlerRegistryImpl(
     Profile* profile,

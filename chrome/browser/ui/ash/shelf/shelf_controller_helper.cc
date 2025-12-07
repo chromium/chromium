@@ -7,15 +7,11 @@
 #include <optional>
 #include <vector>
 
-#include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/metrics/arc_metrics_constants.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
-#include "chrome/browser/apps/app_service/metrics/shortcut_metrics.h"
 #include "chrome/browser/apps/app_service/package_id_util.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
@@ -23,13 +19,11 @@
 #include "chrome/browser/apps/browser_instance/web_contents_instance_id_utils.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ash/app_list/internal_app/internal_app_metadata.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_shelf_utils.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/arc_app_shelf_id.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
@@ -39,6 +33,9 @@
 #include "chrome/browser/ui/extensions/extension_enable_flow.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
@@ -71,7 +68,7 @@ std::string GetSourceFromAppListSource(ash::ShelfLaunchSource source) {
 ShelfControllerHelper::ShelfControllerHelper(Profile* profile)
     : profile_(profile) {}
 
-ShelfControllerHelper::~ShelfControllerHelper() {}
+ShelfControllerHelper::~ShelfControllerHelper() = default;
 
 std::u16string ShelfControllerHelper::GetLabelForPromiseStatus(
     apps::PromiseStatus status) {
@@ -115,8 +112,9 @@ std::u16string ShelfControllerHelper::GetAccessibleLabelForPromiseStatus(
 // static
 std::u16string ShelfControllerHelper::GetAppTitle(Profile* profile,
                                                   const std::string& app_id) {
-  if (app_id.empty())
+  if (app_id.empty()) {
     return std::u16string();
+  }
 
   // Get the title if the app is an ARC app. ARC shortcuts could call this
   // function when it's created, so AppService can't be used for ARC shortcuts,
@@ -141,24 +139,23 @@ std::u16string ShelfControllerHelper::GetAppTitle(Profile* profile,
     return base::UTF8ToUTF16(name);
   }
 
-  if (ash::features::ArePromiseIconsEnabled()) {
-    const std::u16string promise_app_title =
-        GetPromiseAppTitle(profile, app_id);
-    if (!promise_app_title.empty()) {
-      return promise_app_title;
-    }
+  const std::u16string promise_app_title = GetPromiseAppTitle(profile, app_id);
+  if (!promise_app_title.empty()) {
+    return promise_app_title;
   }
 
   // Get the title for the extension which is not managed by AppService.
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(profile);
-  if (!registry)
+  if (!registry) {
     return std::u16string();
+  }
 
   auto* extension = registry->GetExtensionById(
       app_id, extensions::ExtensionRegistry::EVERYTHING);
-  if (extension && extension->is_extension())
+  if (extension && extension->is_extension()) {
     return base::UTF8ToUTF16(extension->name());
+  }
 
   return std::u16string();
 }
@@ -166,9 +163,6 @@ std::u16string ShelfControllerHelper::GetAppTitle(Profile* profile,
 std::u16string ShelfControllerHelper::GetPromiseAppAccessibleName(
     Profile* profile,
     const std::string& package_id) {
-  if (!ash::features::ArePromiseIconsEnabled()) {
-    return std::u16string();
-  }
   const apps::PromiseApp* promise_app =
       apps::AppServiceProxyFactory::GetForProfile(profile)
           ->PromiseAppRegistryCache()
@@ -187,14 +181,12 @@ std::string ShelfControllerHelper::GetAppPackageId(Profile* profile,
     return std::string();
   }
 
-  if (ash::features::ArePromiseIconsEnabled()) {
-    const apps::PromiseApp* promise_app =
-        apps::AppServiceProxyFactory::GetForProfile(profile)
-            ->PromiseAppRegistryCache()
-            ->GetPromiseAppForStringPackageId(app_id);
-    if (promise_app) {
-      return promise_app->package_id.ToString();
-    }
+  const apps::PromiseApp* promise_app =
+      apps::AppServiceProxyFactory::GetForProfile(profile)
+          ->PromiseAppRegistryCache()
+          ->GetPromiseAppForStringPackageId(app_id);
+  if (promise_app) {
+    return promise_app->package_id.ToString();
   }
 
   std::optional<apps::PackageId> package_id;
@@ -217,17 +209,16 @@ ash::AppStatus ShelfControllerHelper::GetAppStatus(Profile* profile,
                                                    const std::string& app_id) {
   ash::AppStatus status = ash::AppStatus::kReady;
 
-  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile))
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
     return status;
+  }
 
-  if (ash::features::ArePromiseIconsEnabled()) {
-    const apps::PromiseApp* promise_app =
-        apps::AppServiceProxyFactory::GetForProfile(profile)
-            ->PromiseAppRegistryCache()
-            ->GetPromiseAppForStringPackageId(app_id);
-    if (promise_app) {
-      return ConvertPromiseStatusToAppStatus(promise_app->status);
-    }
+  const apps::PromiseApp* promise_app =
+      apps::AppServiceProxyFactory::GetForProfile(profile)
+          ->PromiseAppRegistryCache()
+          ->GetPromiseAppForStringPackageId(app_id);
+  if (promise_app) {
+    return ConvertPromiseStatusToAppStatus(promise_app->status);
   }
 
   apps::AppServiceProxyFactory::GetForProfile(profile)
@@ -307,9 +298,6 @@ float ShelfControllerHelper::GetPromiseAppProgress(
 // static
 bool ShelfControllerHelper::IsPromiseApp(Profile* profile,
                                          const std::string& id) {
-  if (!ash::features::ArePromiseIconsEnabled()) {
-    return false;
-  }
   return apps::AppServiceProxyFactory::GetForProfile(profile)
       ->PromiseAppRegistryCache()
       ->GetPromiseAppForStringPackageId(id);
@@ -334,8 +322,9 @@ ash::AppStatus ShelfControllerHelper::ConvertPromiseStatusToAppStatus(
 
 bool ShelfControllerHelper::IsValidIDForCurrentUser(
     const std::string& app_id) const {
-  if (IsValidIDForArcApp(app_id))
+  if (IsValidIDForArcApp(app_id)) {
     return true;
+  }
 
   return IsValidIDFromAppService(app_id);
 }
@@ -395,13 +384,15 @@ void ShelfControllerHelper::LaunchApp(const ash::ShelfID& id,
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(profile_)->GetExtensionById(
           app_id, extensions::ExtensionRegistry::EVERYTHING);
-  if (!extension)
+  if (!extension) {
     return;
+  }
 
   if (!extensions::util::IsAppLaunchableWithoutEnabling(app_id, profile_)) {
     // Do nothing if there is already a running enable flow.
-    if (extension_enable_flow_)
+    if (extension_enable_flow_) {
       return;
+    }
 
     extension_enable_flow_ =
         std::make_unique<ExtensionEnableFlow>(profile_, app_id, this);

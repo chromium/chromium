@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html>
+  <video id="video" height="720" width="1024" onclick="this.play()" />
+
+  <script>
+    let file = new URLSearchParams(window.location.search).get("file");
+    document.getElementById("video").src = "videos/" + file
+  </script>
+</html>

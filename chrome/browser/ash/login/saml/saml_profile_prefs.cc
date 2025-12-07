@@ -41,6 +41,8 @@ void RegisterSamlProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kLockScreenReauthenticationEnabled,
       constants::kDefaultLockScreenReauthenticationEnabled);
 
+  registry->RegisterTimePref(prefs::kLastOnlineSignInTime, base::Time());
+
   SamlPasswordAttributes::RegisterProfilePrefs(registry);
 }
 

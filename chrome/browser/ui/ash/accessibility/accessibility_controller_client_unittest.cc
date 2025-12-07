@@ -8,8 +8,8 @@
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
-#include "ash/test/ash_test_base.h"
 #include "base/time/time.h"
+#include "chrome/test/base/chrome_ash_test_base.h"
 #include "chromeos/ash/components/audio/sounds.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -84,7 +84,7 @@ class FakeAccessibilityControllerClient : public AccessibilityControllerClient {
 
 }  // namespace
 
-class AccessibilityControllerClientTest : public ash::AshTestBase {
+class AccessibilityControllerClientTest : public ChromeAshTestBase {
  public:
   AccessibilityControllerClientTest() = default;
 

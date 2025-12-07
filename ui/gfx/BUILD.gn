@@ -11,6 +11,7 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
 if (is_ios) {
+  import("//build/config/apple/mobile_config.gni")
   import("//build/config/ios/bundle_data_from_filelist.gni")
 }
 
@@ -20,14 +21,6 @@ if (is_android) {
   import("//third_party/jni_zero/jni_zero.gni")
 }
 
-# Several targets want to include this header file, and some of them are
-# child dependencies of "gfx". Therefore, we separate it out here so multiple
-# targets can all have a dependency for header checking purposes without
-# creating circular dependencies.
-source_set("gfx_export") {
-  sources = [ "gfx_export.h" ]
-}
-
 # Used for color generation at build time without importing all the gfx.
 component("color_utils") {
   sources = [
@@ -35,9 +28,8 @@ component("color_utils") {
     "color_utils.cc",
     "color_utils.h",
   ]
-  defines = [ "GFX_IMPLEMENTATION" ]
+  defines = [ "IS_GFX_COLOR_UTILS_IMPL" ]
   public_deps = [
-    ":gfx_export",
     "//base",
     "//skia",
     "//ui/gfx/geometry",
@@ -47,6 +39,8 @@ component("color_utils") {
 component("gfx_skia") {
   sources = [
     "gfx_skia_export.h",
+    "skia_span_util.cc",
+    "skia_span_util.h",
     "skia_util.cc",
     "skia_util.h",
   ]
@@ -67,6 +61,13 @@ if (is_win) {
       "/DELAYLOAD:api-ms-win-core-handle-l1-1-0.dll",
     ]
   }
+}
+
+# Binds together the `gfx` component.
+#
+# See also: `docs/component_build.md`
+config("gfx_impl_define") {
+  defines = [ "IS_GFX_IMPL" ]
 }
 
 component("gfx") {
@@ -98,16 +99,8 @@ component("gfx") {
     "font_util.cc",
     "font_util.h",
     "frame_data.h",
-    "gdi_util.cc",
-    "gdi_util.h",
     "gpu_extra_info.cc",
     "gpu_extra_info.h",
-    "half_float.cc",
-    "half_float.h",
-    "icon_util.cc",
-    "icon_util.h",
-    "image/buffer_w_stream.cc",
-    "image/buffer_w_stream.h",
     "image/image.cc",
     "image/image.h",
     "image/image_family.cc",
@@ -125,12 +118,19 @@ component("gfx") {
     "image/image_util.h",
     "interpolated_transform.cc",
     "interpolated_transform.h",
+    "monogram_utils.cc",
+    "monogram_utils.h",
+    "native_ui_util.h",
+    "overlay_layer_id.cc",
+    "overlay_layer_id.h",
     "overlay_plane_data.cc",
     "overlay_plane_data.h",
     "overlay_transform_utils.cc",
     "overlay_transform_utils.h",
     "platform_font.cc",
     "platform_font.h",
+    "scoped_animation_duration_scale_mode.cc",
+    "scoped_animation_duration_scale_mode.h",
     "scrollbar_size.cc",
     "scrollbar_size.h",
     "selection_model.cc",
@@ -142,8 +142,6 @@ component("gfx") {
     "skbitmap_operations.cc",
     "skbitmap_operations.h",
     "swap_result.cc",
-    "sys_color_change_listener.cc",
-    "sys_color_change_listener.h",
     "text_constants.h",
     "text_elider.cc",
     "text_elider.h",
@@ -153,6 +151,7 @@ component("gfx") {
     "ui_gfx_exports.cc",
     "utf16_indexing.cc",
     "utf16_indexing.h",
+    "vector_icon_types.cc",
     "vector_icon_types.h",
     "vector_icon_utils.cc",
     "vector_icon_utils.h",
@@ -160,144 +159,12 @@ component("gfx") {
     "vsync_provider.cc",
     "vsync_provider.h",
   ]
-  if (is_android) {
-    sources += [
-      "android/achoreographer_compat.cc",
-      "android/achoreographer_compat.h",
-      "android/android_surface_control_compat.cc",
-      "android/android_surface_control_compat.h",
-      "android/java_bitmap.cc",
-      "android/java_bitmap.h",
-      "android/view_configuration.cc",
-      "android/view_configuration.h",
-    ]
-  }
-  if (is_linux || is_chromeos) {
-    sources += [
-      "font_fallback_linux.cc",
-      "font_fallback_linux.h",
-      "font_render_params_linux.cc",
-      "font_render_params_linux.h",
-      "linux/fontconfig_util.cc",
-      "linux/fontconfig_util.h",
-    ]
-  }
-  if (is_mac) {
-    sources += [
-      "ca_layer_result.h",
-      "decorated_text_mac.h",
-      "decorated_text_mac.mm",
-      "font_fallback_mac.mm",
-      "image/image_mac.mm",
-      "image/image_skia_util_mac.h",
-      "image/image_skia_util_mac.mm",
-      "image/image_util_mac.mm",
-      "mac/coordinate_conversion.h",
-      "mac/coordinate_conversion.mm",
-      "mac/nswindow_frame_controls.h",
-      "mac/nswindow_frame_controls.mm",
-      "mac/scoped_cocoa_disable_screen_updates.h",
-      "mac/scoped_cocoa_disable_screen_updates.mm",
-      "platform_font_mac.h",
-      "platform_font_mac.mm",
-      "scoped_cg_context_save_gstate_mac.h",
-      "scoped_ns_graphics_context_save_gstate_mac.h",
-      "scoped_ns_graphics_context_save_gstate_mac.mm",
-    ]
-  }
-  if (is_win) {
-    sources += [
-      "font_fallback_win.cc",
-      "font_fallback_win.h",
-      "font_render_params_win.cc",
-      "font_util_win.cc",
-      "font_util_win.h",
-      "path_win.cc",
-      "path_win.h",
-      "system_fonts_win.cc",
-      "system_fonts_win.h",
-      "win/crash_id_helper.cc",
-      "win/crash_id_helper.h",
-      "win/d3d_shared_fence.cc",
-      "win/d3d_shared_fence.h",
-      "win/direct_write.cc",
-      "win/direct_write.h",
-      "win/hwnd_util.cc",
-      "win/hwnd_util.h",
-      "win/msg_util.h",
-      "win/physical_size.cc",
-      "win/physical_size.h",
-      "win/rendering_window_manager.cc",
-      "win/rendering_window_manager.h",
-      "win/scoped_set_map_mode.h",
-      "win/singleton_hwnd.cc",
-      "win/singleton_hwnd.h",
-      "win/singleton_hwnd_hot_key_observer.cc",
-      "win/singleton_hwnd_hot_key_observer.h",
-      "win/singleton_hwnd_observer.cc",
-      "win/singleton_hwnd_observer.h",
-      "win/text_analysis_source.cc",
-      "win/text_analysis_source.h",
-      "win/window_impl.cc",
-      "win/window_impl.h",
-    ]
-  }
-  if (is_apple) {
-    sources += [ "font_render_params_mac.cc" ]
-  }
-  if (is_ios) {
-    sources += [
-      "image/image_ios.mm",
-      "image/image_skia_util_ios.h",
-      "image/image_skia_util_ios.mm",
-      "image/image_util_ios.mm",
-      "ios/NSString+CrStringDrawing.h",
-      "ios/NSString+CrStringDrawing.mm",
-      "platform_font_ios.h",
-      "platform_font_ios.mm",
-      "scoped_ui_graphics_push_context_ios.h",
-      "scoped_ui_graphics_push_context_ios.mm",
-      "text_utils_ios.mm",
-    ]
-    if (!use_blink) {
-      sources += [
-        "image/image_skia_rep_ios.cc",
-        "image/image_skia_rep_ios.h",
-      ]
-    }
-  }
-  if (use_blink) {
-    sources += [
-      "blit.cc",
-      "blit.h",
-      "canvas.cc",
-      "canvas.h",
-      "canvas_skia.cc",
-      "image/canvas_image_source.cc",
-      "image/canvas_image_source.h",
-      "image/image_generic.cc",
-      "image/image_skia_operations.cc",
-      "image/image_skia_operations.h",
-      "image/image_skia_rep_default.cc",
-      "image/image_skia_rep_default.h",
-      "paint_throbber.cc",
-      "paint_throbber.h",
-      "scoped_canvas.cc",
-      "scoped_canvas.h",
-      "shadow_util.cc",
-      "shadow_util.h",
-      "skia_paint_util.cc",
-      "skia_paint_util.h",
-    ]
-  }
 
   configs += [
+    ":gfx_impl_define",
     "//build/config:precompiled_headers",
     "//build/config/compiler:wexit_time_destructors",
   ]
-
-  # This is part of the gfx component in the component build.
-  defines = [ "GFX_IMPLEMENTATION" ]
 
   public_deps = [
     ":color_space",
@@ -319,40 +186,32 @@ component("gfx") {
     "//ui/gfx/range",
   ]
   deps = [
-    ":gfx_export",
     "//base",
     "//base:base_static",
     "//base:i18n",
     "//build:blink_buildflags",
-    "//build:chromeos_buildflags",
     "//device/vr/buildflags",
     "//mojo/public/cpp/bindings:struct_traits",
     "//skia",
     "//third_party/zlib",
+    "//ui/base:features",
     "//ui/base:ozone_buildflags",
     "//ui/base:ui_data_pack",
   ]
 
-  if (!is_apple) {
-    sources += [
-      "platform_font_skia.cc",
-      "platform_font_skia.h",
-    ]
-  }
-
-  # iOS.
-  if (is_ios) {
-    sources += [ "scoped_cg_context_save_gstate_mac.h" ]
-    public_deps += [ "//ui/gfx/ios:uikit_util" ]
-  }
-
-  if (use_blink) {
-    public_deps += [ "//cc/paint" ]
-    deps += [ "//third_party:freetype_harfbuzz" ]
-  }
-
-  # Android.
   if (is_android) {
+    sources += [
+      "android/achoreographer_compat.cc",
+      "android/achoreographer_compat.h",
+      "android/android_surface_control_compat.cc",
+      "android/android_surface_control_compat.h",
+      "android/java_bitmap.cc",
+      "android/java_bitmap.h",
+      "android/surface_control_frame_rate.h",
+      "android/view_configuration.cc",
+      "android/view_configuration.h",
+    ]
+
     if (!is_debug) {
       configs -= [ "//build/config/compiler:default_optimization" ]
       configs += [ "//build/config/compiler:optimize_max" ]
@@ -365,7 +224,175 @@ component("gfx") {
     ]
   }
 
+  if (is_linux) {
+    deps += [ "//ui/linux:linux_ui" ]
+  }
+
+  if (is_linux || is_chromeos) {
+    sources += [
+      "font_fallback_linux.cc",
+      "font_fallback_linux.h",
+      "font_render_params_linux.cc",
+      "font_render_params_linux.h",
+      "linux/fontconfig_util.cc",
+      "linux/fontconfig_util.h",
+    ]
+    deps += [ "//third_party/fontconfig" ]
+  }
+
+  if (is_apple) {
+    sources += [ "font_render_params_mac.cc" ]
+    frameworks = [ "IOSurface.framework" ]
+    deps += [ "//ui/base:features" ]
+  } else {
+    sources += [
+      "platform_font_skia.cc",
+      "platform_font_skia.h",
+    ]
+  }
+  if (is_mac) {
+    sources += [
+      "ca_layer_result.h",
+      "decorated_text_mac.h",
+      "decorated_text_mac.mm",
+      "font_fallback_mac.mm",
+      "image/image_mac.mm",
+      "image/image_skia_util_mac.h",
+      "image/image_skia_util_mac.mm",
+      "image/image_util_mac.mm",
+      "mac/coordinate_conversion.h",
+      "mac/coordinate_conversion.mm",
+      "mac/nswindow_frame_controls.h",
+      "mac/nswindow_frame_controls.mm",
+      "mac/scoped_cocoa_disable_screen_updates.h",
+      "mac/scoped_cocoa_disable_screen_updates.mm",
+      "native_ui_util_mac.mm",
+      "platform_font_mac.h",
+      "platform_font_mac.mm",
+      "scoped_cg_context_save_gstate_mac.h",
+      "scoped_ns_graphics_context_save_gstate_mac.h",
+      "scoped_ns_graphics_context_save_gstate_mac.mm",
+    ]
+    frameworks += [
+      "AppKit.framework",
+      "CoreFoundation.framework",
+      "CoreGraphics.framework",
+      "CoreText.framework",
+    ]
+  }
+  if (is_ios) {
+    sources += [
+      "image/image_ios.mm",
+      "image/image_skia_util_ios.h",
+      "image/image_skia_util_ios.mm",
+      "image/image_util_ios.mm",
+      "ios/NSString+CrStringDrawing.h",
+      "ios/NSString+CrStringDrawing.mm",
+      "platform_font_ios.h",
+      "platform_font_ios.mm",
+      "scoped_cg_context_save_gstate_mac.h",
+      "scoped_ui_graphics_push_context_ios.h",
+      "scoped_ui_graphics_push_context_ios.mm",
+      "text_utils_ios.mm",
+    ]
+    public_deps += [ "//ui/gfx/ios:uikit_util" ]
+
+    if (!use_blink) {
+      sources += [
+        "image/image_skia_rep_ios.cc",
+        "image/image_skia_rep_ios.h",
+      ]
+    }
+  }
+
+  if (is_win) {
+    sources += [
+      "font_fallback_win.cc",
+      "font_fallback_win.h",
+      "font_render_params_win.cc",
+      "font_util_win.cc",
+      "font_util_win.h",
+      "path_win.cc",
+      "path_win.h",
+      "system_fonts_win.cc",
+      "system_fonts_win.h",
+      "win/crash_id_helper.cc",
+      "win/crash_id_helper.h",
+      "win/d3d_shared_fence.cc",
+      "win/d3d_shared_fence.h",
+      "win/direct_write.cc",
+      "win/direct_write.h",
+      "win/gdi_util.cc",
+      "win/gdi_util.h",
+      "win/get_elevation_icon.cc",
+      "win/get_elevation_icon.h",
+      "win/hwnd_util.cc",
+      "win/hwnd_util.h",
+      "win/icon_util.cc",
+      "win/icon_util.h",
+      "win/msg_util.h",
+      "win/physical_size.cc",
+      "win/physical_size.h",
+      "win/rendering_window_manager.cc",
+      "win/rendering_window_manager.h",
+      "win/scoped_set_map_mode.h",
+      "win/singleton_hwnd.cc",
+      "win/singleton_hwnd.h",
+      "win/singleton_hwnd_hot_key_observer.cc",
+      "win/singleton_hwnd_hot_key_observer.h",
+      "win/text_analysis_source.cc",
+      "win/text_analysis_source.h",
+      "win/window_impl.cc",
+      "win/window_impl.h",
+    ]
+    libs = [
+      "setupapi.lib",
+      "dwmapi.lib",
+      "dwrite.lib",
+      "onecore.lib",
+    ]
+    all_dependent_configs = [ ":gfx_win_linker_flags" ]
+    public_deps += [ "//components/crash/core/common" ]
+  }
+
   if (use_blink) {
+    sources += [
+      "bidi_line_iterator.cc",
+      "bidi_line_iterator.h",
+      "blit.cc",
+      "blit.h",
+      "canvas.cc",
+      "canvas.h",
+      "canvas_skia.cc",
+      "harfbuzz_font_skia.cc",
+      "harfbuzz_font_skia.h",
+      "image/canvas_image_source.cc",
+      "image/canvas_image_source.h",
+      "image/image_generic.cc",
+      "image/image_skia_operations.cc",
+      "image/image_skia_operations.h",
+      "image/image_skia_rep_default.cc",
+      "image/image_skia_rep_default.h",
+      "paint_throbber.cc",
+      "paint_throbber.h",
+      "paint_vector_icon.cc",
+      "paint_vector_icon.h",
+      "render_text.cc",
+      "render_text.h",
+      "render_text_harfbuzz.cc",
+      "render_text_harfbuzz.h",
+      "scoped_canvas.cc",
+      "scoped_canvas.h",
+      "shadow_util.cc",
+      "shadow_util.h",
+      "skia_paint_util.cc",
+      "skia_paint_util.h",
+      "text_utils_skia.cc",
+    ]
+
+    public_deps += [ "//cc/paint" ]
+    deps += [ "//third_party/harfbuzz-ng" ]
+
     if (is_android || is_fuchsia || is_ios) {
       sources += [
         "font_fallback_skia.cc",
@@ -379,64 +406,6 @@ component("gfx") {
         "font_fallback_skia_impl.h",
       ]
     }
-
-    sources += [
-      "bidi_line_iterator.cc",
-      "bidi_line_iterator.h",
-      "harfbuzz_font_skia.cc",
-      "harfbuzz_font_skia.h",
-      "paint_vector_icon.cc",
-      "paint_vector_icon.h",
-      "render_text.cc",
-      "render_text.h",
-      "render_text_harfbuzz.cc",
-      "render_text_harfbuzz.h",
-      "text_utils_skia.cc",
-    ]
-  }
-
-  # Windows.
-  if (is_win) {
-    deps += [ "//ui/base:features" ]
-    libs = [
-      "setupapi.lib",
-      "dwmapi.lib",
-      "dwrite.lib",
-      "onecore.lib",
-    ]
-
-    all_dependent_configs = [ ":gfx_win_linker_flags" ]
-    public_deps += [ "//components/crash/core/common" ]
-  } else {
-    sources -= [
-      "gdi_util.cc",
-      "gdi_util.h",
-      "icon_util.cc",
-      "icon_util.h",
-      "sys_color_change_listener.cc",
-      "sys_color_change_listener.h",
-    ]
-  }
-
-  # Linux.
-  if (is_linux) {
-    deps += [ "//ui/linux:linux_ui" ]
-  }
-  if (is_linux || is_chromeos) {
-    deps += [ "//third_party/fontconfig" ]
-  }
-
-  if (is_apple) {
-    frameworks = [ "IOSurface.framework" ]
-    deps += [ "//ui/base:features" ]
-  }
-  if (is_mac) {
-    frameworks += [
-      "AppKit.framework",
-      "CoreFoundation.framework",
-      "CoreGraphics.framework",
-      "CoreText.framework",
-    ]
   }
 
   if (use_aura || toolkit_views) {
@@ -445,12 +414,14 @@ component("gfx") {
       "nine_image_painter.h",
     ]
   }
+
+  if (use_aura) {
+    sources += [ "native_ui_util_aura.cc" ]
+  }
 }
 
 component("color_space") {
   sources = [
-    "color_conversion_sk_filter_cache.cc",
-    "color_conversion_sk_filter_cache.h",
     "color_space.cc",
     "color_space.h",
     "color_space_export.h",
@@ -460,6 +431,8 @@ component("color_space") {
     "display_color_spaces.h",
     "hdr_metadata.cc",
     "hdr_metadata.h",
+    "hdr_metadata_agtm.cc",
+    "hdr_metadata_agtm.h",
     "hdr_static_metadata.cc",
     "hdr_static_metadata.h",
     "icc_profile.cc",
@@ -474,9 +447,10 @@ component("color_space") {
     ]
   }
   deps = [
-    "//build:chromeos_buildflags",
+    "//components/viz/common/resources:shared_image_format",
     "//skia:skcms",
     "//ui/gfx:buffer_types",
+    "//ui/gfx:gfx_switches",
     "//ui/gfx/geometry:geometry_skia",
   ]
   public_deps = [
@@ -527,19 +501,16 @@ group("native_widget_types") {
 source_set("native_widget_types_sources") {
   visibility = [ ":*" ]  # Depend on through ":native_widget_types".
 
-  public = [ "native_widget_types.h" ]
+  public = [ "native_ui_types.h" ]
 
-  public_deps = [
-    ":gfx_export",
-    "//base",
-  ]
+  public_deps = [ "//base" ]
 
-  deps = [ "//build:chromeos_buildflags" ]
+  configs += [ ":gfx_impl_define" ]
 
-  defines = [ "GFX_IMPLEMENTATION" ]
+  deps = [ "//build:blink_buildflags" ]
 
   if (is_mac) {
-    sources = [ "native_widget_types_mac.mm" ]
+    sources = [ "native_ui_types_mac.mm" ]
     frameworks = [ "AppKit.framework" ]
   }
 }
@@ -558,14 +529,14 @@ source_set("selection_bound_sources") {
   visibility = [ ":*" ]  # Depend on through ":selection_bound".
 
   sources = [
-    "gfx_export.h",
     "selection_bound.cc",
     "selection_bound.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
-  defines = [ "GFX_IMPLEMENTATION" ]
+  configs += [
+    ":gfx_impl_define",
+    "//build/config/compiler:wexit_time_destructors",
+  ]
 
   public_deps = [
     "//base",
@@ -576,6 +547,7 @@ source_set("selection_bound_sources") {
 # Depend on this to use buffer_types.h without pulling in all of gfx.
 source_set("buffer_types") {
   sources = [ "buffer_types.h" ]
+  deps = [ "//base" ]
 }
 
 # The GPU memory buffer stuff is separate from "gfx" to allow GPU-related
@@ -607,48 +579,43 @@ source_set("memory_buffer_sources") {
     "client_native_pixmap_factory.h",
     "generic_shared_memory_id.cc",
     "generic_shared_memory_id.h",
-    "gfx_export.h",
     "gpu_fence.cc",
     "gpu_fence.h",
     "gpu_fence_handle.cc",
     "gpu_fence_handle.h",
+    "native_pixmap.h",
     "overlay_priority_hint.h",
     "overlay_transform.h",
     "overlay_type.h",
     "surface_origin.h",
   ]
 
-  if (!is_nacl) {
-    sources += [ "native_pixmap.h" ]
-  }
-
   if (use_blink) {
     sources += [
       "ca_layer_params.cc",
       "ca_layer_params.h",
-      "gpu_memory_buffer.cc",
-      "gpu_memory_buffer.h",
+      "gpu_memory_buffer_handle.cc",
+      "gpu_memory_buffer_handle.h",
     ]
   }
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
-  defines = [ "GFX_IMPLEMENTATION" ]
+  configs += [
+    ":gfx_impl_define",
+    "//build/config/compiler:wexit_time_destructors",
+  ]
 
   public_deps = [ ":buffer_types" ]
 
   deps = [
     ":gfx_switches",
+    ":native_widget_types_sources",
     "//base",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
+    "//components/viz/common/resources:shared_image_format",
     "//gpu/vulkan:buildflags",
     "//ui/gfx/geometry",
   ]
-
-  if (!is_nacl) {
-    deps += [ ":native_widget_types_sources" ]
-  }
 
   if (is_linux || is_chromeos) {
     sources += [
@@ -672,16 +639,21 @@ source_set("memory_buffer_sources") {
     sources += [
       "mac/io_surface.cc",
       "mac/io_surface.h",
+      "mac/mtl_shared_event_fence.h",
+      "mac/mtl_shared_event_fence.mm",
     ]
 
-    public_deps += [ "//ui/gfx:color_space" ]
+    public_deps += [
+      "//components/viz/common/resources:shared_image_format",
+      "//ui/gfx:color_space",
+    ]
   }
 
   if (is_win) {
     public_deps += [ "//ipc:message_support" ]
   }
 
-  if ((is_linux || is_chromeos || use_ozone) && !is_nacl) {
+  if (is_linux || is_chromeos || use_ozone) {
     sources += [
       "native_pixmap_handle.cc",
       "native_pixmap_handle.h",
@@ -740,7 +712,6 @@ static_library("test_support") {
   public_deps = [ ":gfx" ]
 
   deps = [
-    ":gfx_export",
     "//base",
     "//base/test:test_support",
     "//skia",
@@ -754,8 +725,12 @@ static_library("test_support") {
   if (use_blink) {
     sources += [ "render_text_test_api.h" ]
 
-    deps += [ "//third_party:freetype_harfbuzz" ]
+    deps += [ "//third_party/harfbuzz-ng" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 test("gfx_unittests") {
@@ -770,7 +745,6 @@ test("gfx_unittests") {
     "geometry/sin_cos_degrees_unittest.cc",
     "geometry/transform_operations_unittest.cc",
     "geometry/transform_unittest.cc",
-    "image/buffer_w_stream_unittest.cc",
     "image/image_family_unittest.cc",
     "image/image_skia_unittest.cc",
     "image/image_unittest.cc",
@@ -779,7 +753,7 @@ test("gfx_unittests") {
     "text_elider_unittest.cc",
     "text_utils_unittest.cc",
   ]
-  if (is_linux) {
+  if (is_linux || is_chromeos) {
     sources += [ "font_render_params_linux_unittest.cc" ]
   }
   if (is_linux || is_chromeos) {
@@ -799,14 +773,20 @@ test("gfx_unittests") {
     ]
   }
   if (is_win) {
-    sources += [ "font_fallback_win_unittest.cc" ]
+    sources += [
+      "font_fallback_win_unittest.cc",
+      "win/get_elevation_icon_unittest.cc",
+      "win/hwnd_util_unittest.cc",
+    ]
   }
   if (is_ios) {
     sources += [
       "image/image_ios_unittest.mm",
-      "ios/NSString+CrStringDrawing_unittest.mm",
       "ios/uikit_util_unittest.mm",
     ]
+    if (target_platform == "iphoneos") {
+      sources += [ "ios/NSString+CrStringDrawing_unittest.mm" ]
+    }
   }
   if (is_android) {
     sources += [ "android/android_surface_control_compat_unittest.cc" ]
@@ -843,6 +823,7 @@ test("gfx_unittests") {
       "geometry/cubic_bezier_unittest.cc",
       "geometry/insets_f_unittest.cc",
       "geometry/insets_unittest.cc",
+      "geometry/line_f_unittest.cc",
       "geometry/matrix3_unittest.cc",
       "geometry/point3_f_unittest.cc",
       "geometry/point_f_unittest.cc",
@@ -863,12 +844,12 @@ test("gfx_unittests") {
       "geometry/vector2d_f_unittest.cc",
       "geometry/vector2d_unittest.cc",
       "geometry/vector3d_f_unittest.cc",
-      "half_float_unittest.cc",
       "icc_profile_unittest.cc",
       "image/image_skia_operations_unittest.cc",
       "image/image_util_unittest.cc",
       "mojom/mojom_traits_unittest.cc",
       "overlay_transform_utils_unittest.cc",
+      "paint_throbber_unittest.cc",
       "paint_vector_icon_unittest.cc",
       "range/range_unittest.cc",
       "render_text_unittest.cc",
@@ -896,12 +877,11 @@ test("gfx_unittests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//skia",
     "//skia:skcms",
     "//testing/gtest",
     "//third_party/icu:icuuc",
-    "//third_party/libpng",
+    "//third_party/libpng:libpng_for_testonly",
     "//third_party/zlib",
     "//ui/base",
     "//ui/gfx/animation",
@@ -911,7 +891,7 @@ test("gfx_unittests") {
   ]
 
   if (use_blink) {
-    deps += [ "//third_party:freetype_harfbuzz" ]
+    deps += [ "//third_party/harfbuzz-ng" ]
   }
 
   data_deps = [ "//ui/resources:ui_test_pak_data" ]
@@ -940,12 +920,12 @@ test("gfx_unittests") {
     sources += [
       "font_render_params_win_unittest.cc",
       "font_util_win.cc",
-      "icon_util_unittest.cc",
-      "icon_util_unittests.rc",
-      "icon_util_unittests_resource.h",
       "path_win_unittest.cc",
       "win/crash_id_helper_unittest.cc",
       "win/direct_write_unittest.cc",
+      "win/icon_util_unittest.cc",
+      "win/icon_util_unittests.rc",
+      "win/icon_util_unittests_resource.h",
       "win/text_analysis_source_unittest.cc",
     ]
 
@@ -957,6 +937,7 @@ test("gfx_unittests") {
     libs = [
       "d2d1.lib",
       "d3d10_1.lib",
+      "dwmapi.lib",
       "dwrite.lib",
       "imm32.lib",
       "oleacc.lib",
@@ -985,7 +966,10 @@ test("gfx_unittests") {
       "linux/fontconfig_util_unittest.cc",
       "linux/native_pixmap_dmabuf_unittest.cc",
     ]
-    deps += [ "//third_party/fontconfig" ]
+    deps += [
+      "//components/viz/common/resources:shared_image_format",
+      "//third_party/fontconfig",
+    ]
   }
 
   if (is_fuchsia) {
@@ -993,12 +977,15 @@ test("gfx_unittests") {
     additional_manifest_fragments =
         [ "//build/config/fuchsia/test/test_fonts.shard.test-cml" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (is_android) {
   generate_jni("gfx_jni_headers") {
     sources = [
-      "../android/java/src/org/chromium/ui/gfx/Animation.java",
       "../android/java/src/org/chromium/ui/gfx/BitmapHelper.java",
       "../android/java/src/org/chromium/ui/gfx/ViewConfigurationHelper.java",
     ]
@@ -1040,7 +1027,6 @@ fuzzer_test("render_text_api_fuzzer") {
     ":gfx",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
   ]
 
   dict = "test/data/render_text/unicode_text_fuzzer.dict"
@@ -1062,7 +1048,7 @@ if (is_android) {
     # External code should depend on ":ui_gfx_java" instead.
     visibility = [ ":*" ]
     sources = [ "switches.cc" ]
-    template = "android/java/src/org/chromium/ui/gfx/GfxSwitches.java.tmpl"
+    class_name = "org.chromium.ui.gfx.GfxSwitches"
   }
 
   android_library("ui_gfx_java") {

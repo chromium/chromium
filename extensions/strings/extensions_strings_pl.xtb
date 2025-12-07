@@ -5,7 +5,6 @@
 <translation id="1140871961407805696">Tylny</translation>
 <translation id="1196338895211115272">Nie można wyeksportować klucza prywatnego.</translation>
 <translation id="132960226125594336">Nie udało się wczytać pliku „<ph name="RELATIVE_PATH" />” dla skryptu dotyczącego treści, ponieważ spowodowałoby to przekroczenie maksymalnego rozmiaru skryptu lub maksymalnego całkowitego rozmiaru skryptu treści dla rozszerzenia.</translation>
-<translation id="1420684932347524586">Ojej! Nie można wygenerować losowego klucza prywatnego RSA.</translation>
 <translation id="1445572445564823378">To rozszerzenie spowalnia pracę <ph name="PRODUCT_NAME" />. Wyłącz je, aby przywrócić wydajność przeglądarki <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">Interfejs WebGL nie jest obsługiwany.</translation>
 <translation id="1610570795592207282">Nie udało się wczytać pliku css „<ph name="RELATIVE_PATH" />” dla skryptu.</translation>
@@ -19,13 +18,11 @@
 <translation id="3115238746683532089">Nieznany produkt <ph name="PRODUCT_ID" />, którego producent to <ph name="VENDOR_ID" /> (numer seryjny <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Nie można zastąpić pliku crx. Sprawdź, czy nie jest on używany.</translation>
 <translation id="3163201441334626963">Nieznany produkt <ph name="PRODUCT_ID" />, którego producent to <ph name="VENDOR_ID" /></translation>
-<translation id="3369521687965833290">Nie można rozpakować rozszerzenia. Aby bezpiecznie rozpakować rozszerzenie, musi istnieć ścieżka do katalogu profilu, która zaczyna się literą dysku i nie zawiera punktu połączenia, punktu instalacji (montowania) ani dowiązania symbolicznego. W przypadku Twojego profilu taka ścieżka nie istnieje.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (numer seryjny <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> wyprodukowany przez <ph name="VENDOR_ID" /> (numer seryjny <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Wartość wejściowa klucza prywatnego musi być prawidłową ścieżką.</translation>
 <translation id="388442998277590542">Nie można wczytać strony opcji „<ph name="OPTIONS_PAGE" />”.</translation>
 <translation id="3984413272403535372">Błąd podczas podpisywania rozszerzenia.</translation>
-<translation id="4115165561519362854">Administrator tego urządzenia wymaga, by rozszerzenie <ph name="EXTENSION_NAME" /> było w wersji co najmniej <ph name="EXTENSION_VERSION" />. Jeśli rozszerzenie nie zostanie zaktualizowane do tej wersji (lub nowszej), nie zostanie włączone.</translation>
 <translation id="4233778200880751280">Nie udało się załadować strony z informacjami: „<ph name="ABOUT_PAGE" />”.</translation>
 <translation id="471800408830181311">Nie można przekazać klucza prywatnego.</translation>
 <translation id="4811956658694082538">Nie udało się zainstalować pakietu, ponieważ nastąpiła awaria procesu narzędzia. Uruchom ponownie Chrome i spróbuj jeszcze raz.</translation>
@@ -39,7 +36,6 @@
 <translation id="5972529113578162692">Administrator tego urządzenia wymaga, by było na nim zainstalowane rozszerzenie <ph name="EXTENSION_NAME" />. Nie można go odinstalować.</translation>
 <translation id="6027032947578871493">Nieznany produkt <ph name="PRODUCT_ID" /> firmy <ph name="VENDOR_NAME" /> (numer seryjny <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> wyprodukowany przez <ph name="VENDOR_ID" /></translation>
-<translation id="6143635259298204954">Nie można rozpakować rozszerzenia. Aby bezpiecznie rozpakować rozszerzenie, musi istnieć ścieżka do katalogu profilu, która nie zawiera dowiązania symbolicznego. W przypadku Twojego profilu taka ścieżka nie istnieje.</translation>
 <translation id="6322279351188361895">Nie można odczytać klucza prywatnego.</translation>
 <translation id="6391538222494443604">Katalog wejściowy musi istnieć.</translation>
 <translation id="641087317769093025">Nie można rozpakować rozszerzenia</translation>
@@ -52,12 +48,14 @@
 <translation id="7068383018033524534">Plik manifestu jest nieprawidłowy</translation>
 <translation id="7217838517480956708">Administrator tego komputera wymaga zainstalowanego rozszerzenia <ph name="EXTENSION_NAME" />. Nie można go usunąć ani modyfikować.</translation>
 <translation id="7612608473764576263">Wartość wejściowa klucza prywatnego musi mieć prawidłowy format (klucz RSA z kodowaniem PEM w formacie PKCS#8).</translation>
+<translation id="7876803335449432072">Nie udało się wczytać pliku „<ph name="RELATIVE_PATH" />” dla skryptu treści. Arkusze stylów skryptów treści mogą być wczytywane tylko z obsługiwanych plików arkuszy stylów, takich jak pliki .css.</translation>
 <translation id="7939686037314084444">Rozszerzenie nie załadowało się poprawnie. Być może nie działa przechwytywanie żądań sieciowych.</translation>
 <translation id="7972881773422714442">Opcje: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Przedni</translation>
 <translation id="8047248493720652249">Rozszerzenie nie może odczytać nazwy pobieranego pliku „<ph name="ATTEMPTED_FILENAME" />”, ponieważ inne rozszerzenie (<ph name="EXTENSION_NAME" />) odczytało odmienną jego nazwę „<ph name="ACTUAL_FILENAME" />”.</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> od <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Brak pliku manifestu lub nie można go odczytać</translation>
+<translation id="8621383749470166852">Nie udało się wczytać pliku „<ph name="RELATIVE_PATH" />” dla skryptu treści. Skrypty treści mogą być wczytywane tylko z obsługiwanych plików JavaScript, takich jak pliki .js.</translation>
 <translation id="8636666366616799973">Pakiet jest nieprawidłowy. Szczegółowe informacje: „<ph name="ERROR_MESSAGE" />”.</translation>
 <translation id="8761756413268424715"><ph name="APP_NAME" /> żąda dostępu do jednego z Twoich urządzeń:</translation>
 <translation id="8885905466771744233">Klucz prywatny dla określonego rozszerzenia już istnieje. Użyj ponownie tego klucza lub najpierw go usuń.</translation>

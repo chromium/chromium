@@ -12,7 +12,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui_handler_delegate.h"
-#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 
 namespace ash {
 
@@ -50,7 +51,7 @@ class ParentAccessDialog : public ParentAccessUiHandlerDelegate,
   ParentAccessDialog& operator=(const ParentAccessDialog&) = delete;
 
   // ui::WebDialogDelegate:
-  ui::ModalType GetDialogModalType() const override;
+  ui::mojom::ModalType GetDialogModalType() const override;
   void GetDialogSize(gfx::Size* size) const override;
   bool ShouldCloseDialogOnEscape() const override;
   bool ShouldShowDialogTitle() const override;

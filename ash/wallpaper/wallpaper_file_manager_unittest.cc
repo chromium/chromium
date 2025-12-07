@@ -69,8 +69,7 @@ INSTANTIATE_TEST_SUITE_P(
         case WallpaperType::kCustomized:
           return "Customized";
         default:
-          CHECK(false);
-          return "Unknown";
+          NOTREACHED();
       }
     });
 
@@ -118,7 +117,7 @@ TEST_P(WallpaperFileManagerTest, SaveAndLoadSameWallpaper) {
     case WallpaperType::kThirdParty:
     case WallpaperType::kOneShot:
     case WallpaperType::kCount:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   base::test::TestFuture<const gfx::ImageSkia&> load_wallpaper_future;

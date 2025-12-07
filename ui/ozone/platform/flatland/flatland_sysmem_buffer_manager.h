@@ -14,6 +14,7 @@
 #include <unordered_map>
 
 #include "base/containers/small_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/unguessable_token.h"
@@ -21,6 +22,7 @@
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_pixmap.h"
+#include "ui/ozone/public/native_pixmap_usage.h"
 
 namespace ui {
 
@@ -45,10 +47,11 @@ class FlatlandSysmemBufferManager {
   // Initialize() again.
   void Shutdown();
 
-  scoped_refptr<gfx::NativePixmap> CreateNativePixmap(VkDevice vk_device,
-                                                      gfx::Size size,
-                                                      gfx::BufferFormat format,
-                                                      gfx::BufferUsage usage);
+  scoped_refptr<gfx::NativePixmap> CreateNativePixmap(
+      VkDevice vk_device,
+      gfx::Size size,
+      viz::SharedImageFormat format,
+      NativePixmapUsageSet usage);
 
   // TODO(crbug.com/42050538): Instead of an additional
   // |register_with_flatland_allocator| bool, we can rely on |usage| to decide
@@ -58,7 +61,7 @@ class FlatlandSysmemBufferManager {
       zx::eventpair service_handle,
       zx::channel sysmem_token,
       gfx::Size size,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       gfx::BufferUsage usage,
       size_t min_buffer_count,
       bool register_with_flatland_allocator);
@@ -83,7 +86,7 @@ class FlatlandSysmemBufferManager {
 
   void OnCollectionReleased(zx_koid_t id);
 
-  FlatlandSurfaceFactory* const flatland_surface_factory_;
+  const raw_ptr<FlatlandSurfaceFactory> flatland_surface_factory_;
   fuchsia::sysmem2::AllocatorSyncPtr sysmem_allocator_;
   fuchsia::ui::composition::AllocatorPtr flatland_allocator_;
 

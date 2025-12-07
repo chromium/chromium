@@ -22,16 +22,16 @@
 namespace ui {
 
 class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatterUia
-    : public ui::AXTreeFormatterBase {
+    : public AXTreeFormatterBase {
  public:
   AXTreeFormatterUia();
   ~AXTreeFormatterUia() override;
 
   // AccessibilityTreeFormatterBase:
-  base::Value::Dict BuildTree(ui::AXPlatformNodeDelegate* start) const override;
+  base::Value::Dict BuildTree(AXPlatformNodeDelegate* start) const override;
   base::Value::Dict BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
-  base::Value::Dict BuildNode(ui::AXPlatformNodeDelegate* node) const override;
+  base::Value::Dict BuildNode(AXPlatformNodeDelegate* node) const override;
 
  protected:
   void AddDefaultFilters(

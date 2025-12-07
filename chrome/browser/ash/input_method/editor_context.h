@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/input_method/editor_geolocation_provider.h"
 #include "chrome/browser/ash/input_method/text_field_contextual_info_fetcher.h"
 #include "chromeos/ui/base/app_types.h"
@@ -16,6 +17,11 @@
 #include "url/gurl.h"
 
 namespace ash::input_method {
+
+struct EditorTextSelection {
+  bool is_valid_selection = true;
+  size_t non_whitespace_selected_text_length = 0;
+};
 
 // Holds any "interesting" context for the Editor feature. This includes; the
 // currently active input method, size of the currently selected text, among
@@ -49,8 +55,8 @@ class EditorContext {
       const TextInputMethod::InputContext& input_context,
       const TextFieldContextualInfo& text_field_contextual_info);
   void OnActivateIme(std::string_view engine_id);
+  void OnTextSelectionChanged(const EditorTextSelection& text_selection);
   void OnTabletModeUpdated(bool tablet_mode_enabled);
-  void OnTextSelectionLengthChanged(size_t new_length);
 
   // Getters
   std::string active_country_code();
@@ -60,6 +66,7 @@ class EditorContext {
   std::string_view app_id();
   GURL active_url();
   size_t selected_text_length();
+  bool is_selection_valid();
 
  private:
   // Not owned by this class
@@ -74,7 +81,7 @@ class EditorContext {
   std::string app_id_;
   GURL active_url_;
   bool tablet_mode_enabled_ = false;
-  size_t selected_text_length_ = 0;
+  EditorTextSelection text_selection_;
 };
 
 }  // namespace ash::input_method

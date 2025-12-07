@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -222,7 +223,7 @@ TEST_F(BlobImplTest, ReadAll_BrokenBlob) {
   client_receiver.FlushForTesting();
   EXPECT_FALSE(client.calculated_size_);
   EXPECT_TRUE(client.completed_);
-  EXPECT_EQ(net::ERR_FAILED, client.status_);
+  EXPECT_EQ(net::ERR_BLOB_INVALID_CONSTRUCTION_ARGUMENTS, client.status_);
   EXPECT_EQ(0u, client.data_length_);
 }
 
@@ -362,7 +363,7 @@ TEST_F(BlobImplTest, ReadRange_BrokenBlob) {
   client_receiver.FlushForTesting();
   EXPECT_FALSE(client.calculated_size_);
   EXPECT_TRUE(client.completed_);
-  EXPECT_EQ(net::ERR_FAILED, client.status_);
+  EXPECT_EQ(net::ERR_BLOB_INVALID_CONSTRUCTION_ARGUMENTS, client.status_);
   EXPECT_EQ(0u, client.data_length_);
 }
 

@@ -75,6 +75,7 @@ bool ManifestHandlerRegistry::ValidateExtension(
     const Extension* extension,
     std::string* error,
     std::vector<InstallWarning>* warnings) {
+  CHECK(extension);
   std::set<ManifestHandler*> handlers;
   for (const auto& iter : handlers_) {
     ManifestHandler* handler = iter.second;
@@ -84,7 +85,7 @@ bool ManifestHandlerRegistry::ValidateExtension(
     }
   }
   for (auto* handler : handlers) {
-    if (!handler->Validate(extension, error, warnings)) {
+    if (!handler->Validate(*extension, error, warnings)) {
       return false;
     }
   }

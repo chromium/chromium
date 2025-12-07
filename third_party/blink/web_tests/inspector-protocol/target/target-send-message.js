@@ -12,51 +12,34 @@
     window.worker.onmessage = function(event) { };
     window.worker.postMessage(1);
   `);
-  let {params:{sessionId}} = await attachedPromise;
+  const {params:{sessionId}} = await attachedPromise;
 
-  let p = dp.Target.onceReceivedMessageFromTarget();
+  const event0 = await dp.Target.onceReceivedMessageFromTarget();
+  testRunner.log(event0.params.message);
+
+  const testMessage = async message => {
+    const event = dp.Target.onceReceivedMessageFromTarget();
+    dp.Target.sendMessageToTarget({
+      sessionId: sessionId,
+      message,
+    });
+    testRunner.log((await event).params.message);
+  };
+
   testRunner.log('JSON syntax error..');
-  dp.Target.sendMessageToTarget({
-    sessionId: sessionId,
-    message: "{\"method\":\"Runtime.evaluate\",\"params\":{\"expression\":\"1\", awaitPromise: true},\"id\":1}"
-  });
-  let {params:{message}} = await p;
-  testRunner.log(message);
+  await testMessage("{\"method\":\"Runtime.evaluate\",\"params\":{\"expression\":\"1\", awaitPromise: true},\"id\":1}");
 
   testRunner.log('JSON with primitive value..');
-  p = dp.Target.onceReceivedMessageFromTarget();
-  dp.Target.sendMessageToTarget({
-    sessionId: sessionId,
-    message: "42"
-  });
-  ({params:{message}} = await p);
-  testRunner.log(message);
+  await testMessage("42");
 
   testRunner.log('JSON without method property..');
-  p = dp.Target.onceReceivedMessageFromTarget();
-  dp.Target.sendMessageToTarget({
-    sessionId: sessionId,
-    message: "{}"
-  });
-  ({params:{message}} = await p);
-  testRunner.log(message);
+  await testMessage("{}");
 
   testRunner.log('JSON without id property..');
-  p = dp.Target.onceReceivedMessageFromTarget();
-  dp.Target.sendMessageToTarget({
-    sessionId: sessionId,
-    message: "{\"method\":\"Runtime.evaluate\",\"params\":{\"expression\":\"42\"}}"
-  });
-  ({params:{message}} = await p);
-  testRunner.log(message);
+  await testMessage("{\"method\":\"Runtime.evaluate\",\"params\":{\"expression\":\"42\"}}");
 
   testRunner.log('Valid JSON..');
-  p = dp.Target.onceReceivedMessageFromTarget();
-  dp.Target.sendMessageToTarget({
-    sessionId: sessionId,
-    message: "{\"method\":\"Runtime.evaluate\",\"params\":{\"expression\":\"42\"},\"id\":1}"
-  });
-  ({params:{message}} = await p);
-  testRunner.log(message);
+  await testMessage("{\"method\":\"Runtime.evaluate\",\"params\":{\"expression\":\"42\"},\"id\":1}");
+
   testRunner.completeTest();
 })

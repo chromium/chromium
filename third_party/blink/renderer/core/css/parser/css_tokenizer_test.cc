@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 
 namespace blink {
@@ -61,31 +61,17 @@ void TestTokens(const String& string,
                 const CSSParserToken& token2 = CSSParserToken(kEOFToken),
                 const CSSParserToken& token3 = CSSParserToken(kEOFToken),
                 bool unicode_ranges_allowed = false) {
-  Vector<CSSParserToken> expected_tokens;
-  expected_tokens.push_back(token1);
-  if (token2.GetType() != kEOFToken) {
-    expected_tokens.push_back(token2);
-    if (token3.GetType() != kEOFToken) {
-      expected_tokens.push_back(token3);
+  CSSParserTokenStream stream(string);
+  CSSParserTokenStream::EnableUnicodeRanges enable(stream,
+                                                   unicode_ranges_allowed);
+  CompareTokens(token1, stream.Peek());
+  if (!stream.AtEnd()) {
+    stream.ConsumeRaw();
+    CompareTokens(token2, stream.Peek());
+    if (!stream.AtEnd()) {
+      stream.ConsumeRaw();
+      CompareTokens(token3, stream.Peek());
     }
-  }
-
-  CSSParserTokenRange expected(expected_tokens);
-
-  CSSTokenizer tokenizer(string);
-  Vector<CSSParserToken, 32> tokens;
-  if (unicode_ranges_allowed) {
-    tokens = tokenizer.TokenizeToEOFWithUnicodeRanges();
-  } else {
-    tokens = tokenizer.TokenizeToEOF();
-  }
-  CSSParserTokenRange actual(tokens);
-
-  // Just check that serialization doesn't hit any asserts
-  actual.Serialize();
-
-  while (!expected.AtEnd() || !actual.AtEnd()) {
-    CompareTokens(expected.Consume(), actual.Consume());
   }
 }
 
@@ -145,10 +131,10 @@ static CSSParserToken Percentage(NumericValueType type, double value) {
 
 // We need to initialize PartitionAlloc before creating CSSParserTokens
 // because CSSParserToken depends on PartitionAlloc. It is safe to call
-// WTF::Partitions::initialize() multiple times.
+// Partitions::initialize() multiple times.
 #define DEFINE_TOKEN(name, argument)                       \
   static CSSParserToken& name() {                          \
-    WTF::Partitions::Initialize();                         \
+    Partitions::Initialize();                              \
     DEFINE_STATIC_LOCAL(CSSParserToken, name, (argument)); \
     return name;                                           \
   }
@@ -250,8 +236,9 @@ TEST(CSSTokenizerTest, Escapes) {
   TEST_TOKENS("\\\f", Delim('\\'), Whitespace());
   TEST_TOKENS("\\\r\n", Delim('\\'), Whitespace());
   String replacement = FromUChar32(0xFFFD);
-  TEST_TOKENS(String("null\\\0", 6u), Ident("null" + replacement));
-  TEST_TOKENS(String("null\\\0\0", 7u),
+  TEST_TOKENS(String(base::span_from_cstring("null\\\0")),
+              Ident("null" + replacement));
+  TEST_TOKENS(String(base::span_from_cstring("null\\\0\0")),
               Ident("null" + replacement + replacement));
   TEST_TOKENS("null\\0", Ident("null" + replacement));
   TEST_TOKENS("null\\0000", Ident("null" + replacement));
@@ -284,9 +271,12 @@ TEST(CSSTokenizerTest, IdentToken) {
               Ident(FromUChar32(0xA0)));  // non-breaking space
   TEST_TOKENS(FromUChar32(0x1234), Ident(FromUChar32(0x1234)));
   TEST_TOKENS(FromUChar32(0x12345), Ident(FromUChar32(0x12345)));
-  TEST_TOKENS(String("\0", 1u), Ident(FromUChar32(0xFFFD)));
-  TEST_TOKENS(String("ab\0c", 4u), Ident("ab" + FromUChar32(0xFFFD) + "c"));
-  TEST_TOKENS(String("ab\0c", 4u), Ident("ab" + FromUChar32(0xFFFD) + "c"));
+  TEST_TOKENS(String(base::span_from_cstring("\0")),
+              Ident(FromUChar32(0xFFFD)));
+  TEST_TOKENS(String(base::span_from_cstring("ab\0c")),
+              Ident("ab" + FromUChar32(0xFFFD) + "c"));
+  TEST_TOKENS(String(base::span_from_cstring("ab\0c")),
+              Ident("ab" + FromUChar32(0xFFFD) + "c"));
 }
 
 TEST(CSSTokenizerTest, FunctionToken) {
@@ -361,10 +351,11 @@ TEST(CSSTokenizerTest, StringToken) {
   TEST_TOKENS("'bad\rstring", BadString(), Whitespace(), Ident("string"));
   TEST_TOKENS("'bad\r\nstring", BadString(), Whitespace(), Ident("string"));
   TEST_TOKENS("'bad\fstring", BadString(), Whitespace(), Ident("string"));
-  TEST_TOKENS(String("'\0'", 3u), GetString(FromUChar32(0xFFFD)));
-  TEST_TOKENS(String("'hel\0lo'", 8u),
+  TEST_TOKENS(String(base::span_from_cstring("'\0'")),
+              GetString(FromUChar32(0xFFFD)));
+  TEST_TOKENS(String(base::span_from_cstring("'hel\0lo'")),
               GetString("hel" + FromUChar32(0xFFFD) + "lo"));
-  TEST_TOKENS(String("'h\\65l\0lo'", 10u),
+  TEST_TOKENS(String(base::span_from_cstring("'h\\65l\0lo'")),
               GetString("hel" + FromUChar32(0xFFFD) + "lo"));
 }
 

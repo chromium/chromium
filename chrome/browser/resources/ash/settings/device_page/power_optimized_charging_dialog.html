@@ -1,0 +1,115 @@
+<style include="settings-shared">
+  :host {
+    --cr-dialog-width: 512px;
+    --cr-dialog-height: 400px;
+
+    --cr-dialog-title-slot-padding-top: 32px;
+    --cr-dialog-title-slot-padding-start: 32px;
+    --cr-dialog-title-slot-padding-end: 32px;
+
+    --cr-dialog-body-padding-horizontal: 32px;
+
+    /* When a radio button is aligned to the top of the container, the top of
+     * the text doesn't always reach the top of the container, creating a
+     * misalignment. This moves the radio button down by a couple of pixels to
+     * make the alignment pixel-perfect with the text.
+     */
+    --cr-radio-button-disc-margin-block-start: 2px;
+
+    --cr-dialog-button-container-padding-horizontal: 32px;
+    --cr-dialog-button-container-padding-bottom: 32px;
+  }
+
+  #dialogTitleIcon {
+    fill: var(--cros-sys-primary);
+
+    width: 24px;
+    height: 24px;
+
+    padding-left: 8px;
+    padding-right: 8px;
+
+    margin-bottom: 20px;
+  }
+
+  #dialogTitle {
+    font-size: 18px;
+  }
+
+  .link {
+    color: var(--cr-link-color);
+  }
+
+  cr-radio-button {
+    /* Align content to the top of div, and then pad the top so the radio button
+       shadow doesn't get cut off. */
+    align-items: start;
+    padding-top: 12px;
+  }
+
+  cr-radio-button:not(:last-child) {
+    /* Use padding not margin, so that the gap area remains clickable.*/
+    padding-bottom: 16px;
+  }
+
+  cr-radio-button:not(:first-child) {
+    /* Use padding not margin, so that the gap area remains clickable.*/
+    padding-top: 16px;
+  }
+
+  cr-radio-button > div.cr-radio-button-title-text {
+    color: var(--cr-primary-text-color);
+  }
+
+  cr-radio-button[checked] > div.cr-radio-button-title-text {
+    font-weight: 500;
+  }
+
+  cr-radio-button:not([checked]) > div.cr-radio-button-title-text {
+    font-weight: 400;
+  }
+
+</style>
+<cr-dialog id="dialog" show-on-attach>
+  <div slot="title">
+    <iron-icon id="dialogTitleIcon" icon="os-settings:battery-charging-80">
+    </iron-icon>
+    <div id="dialogTitle" class="title">
+      $i18n{powerOptimizedChargingLabel}
+    </div>
+  </div>
+  <div slot="body">
+    <cr-radio-group id="radioGroup" selected="{{selectedOption_}}">
+      <cr-radio-button id="adaptiveCharging" name="adaptive-charging">
+        <div class="cr-radio-button-title-text">
+          $i18n{powerAdaptiveChargingLabel}
+        </div>
+        <div class="cr-secondary-text flex">
+          $i18n{powerAdaptiveChargingSubtext}
+          <a id="learn-more" href="$i18n{powerAdaptiveChargingLearnMoreUrl}"
+              aria-label="$i18n{powerAdaptiveChargingLearnMoreAriaLabel}"
+              target="_blank"
+              aria-description="$i18n{opensInNewTab}">
+            $i18n{learnMore}
+          </a>
+        </div>
+      </cr-radio-button>
+      <cr-radio-button id="chargeLimit" name="charge-limit">
+        <div class="cr-radio-button-title-text">
+          $i18n{powerBatteryChargeLimitLabel}
+        </div>
+        <div class="cr-secondary-text flex">
+          $i18n{powerBatteryChargeLimitSubtext}
+        </div>
+      </cr-radio-button>
+    </cr-radio-group>
+  </div>
+  <div slot="button-container">
+    <cr-button class="cancel-button" id="cancel" on-click="onCancelClick_">
+        $i18n{powerOptimizedChargingDialogCancelLabel}
+    </cr-button>
+    <cr-button class="action-button" id="done" on-click="onDoneClick_">
+        $i18n{powerOptimizedChargingDialogDoneLabel}
+    </cr-button>
+  </div>
+</cr-dialog>

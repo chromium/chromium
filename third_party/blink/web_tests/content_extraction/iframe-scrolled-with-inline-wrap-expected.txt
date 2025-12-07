@@ -1,0 +1,17 @@
+Before scroll:
+text "ABC DEF GHI JKL MNO PQR STU"
+  bounding_box: [0,0 70x40]
+  fragment_visible_bounding_boxes:
+    [0,0 70x10]
+    [0,10 70x10]
+    [0,20 70x10]
+    [0,30 30x10]
+
+After scroll:
+text "ABC DEF GHI JKL MNO PQR STU"
+  outer_bounding_box: [-15,-15 70x40]
+  visible_bounding_box: [0,0 55x25]
+  fragment_visible_bounding_boxes:
+    [0,0 55x5]
+    [0,5 55x10]
+    [0,15 15x10]

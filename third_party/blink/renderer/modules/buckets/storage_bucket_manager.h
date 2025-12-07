@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -22,13 +21,10 @@ class StorageBucket;
 
 class MODULES_EXPORT StorageBucketManager final
     : public ScriptWrappable,
-      public Supplement<NavigatorBase>,
       public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
-
   // Web-exposed as navigator.storageBuckets
   static StorageBucketManager* storageBuckets(NavigatorBase& navigator);
 

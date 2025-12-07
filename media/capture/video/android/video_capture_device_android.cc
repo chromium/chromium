@@ -2,23 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/capture/video/android/video_capture_device_android.h"
 
 #include <stdint.h>
+
+#include <algorithm>
 #include <utility>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/system/system_monitor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "media/capture/mojom/image_capture_types.h"
@@ -33,9 +31,8 @@
 using base::android::AttachCurrentThread;
 using base::android::CheckException;
 using base::android::GetClass;
-using base::android::JavaParamRef;
-using base::android::MethodID;
 using base::android::JavaRef;
+using base::android::MethodID;
 using base::android::ScopedJavaLocalRef;
 
 namespace media {
@@ -55,7 +52,7 @@ mojom::MeteringMode ToMojomMeteringMode(
       return mojom::MeteringMode::NONE;
     case PhotoCapabilities::AndroidMeteringMode::NOT_SET:
     case PhotoCapabilities::AndroidMeteringMode::NUM_ENTRIES:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return mojom::MeteringMode::NONE;
 }
@@ -72,7 +69,7 @@ PhotoCapabilities::AndroidMeteringMode ToAndroidMeteringMode(
     case mojom::MeteringMode::NONE:
       return PhotoCapabilities::AndroidMeteringMode::NONE;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 mojom::FillLightMode ToMojomFillLightMode(
@@ -86,9 +83,9 @@ mojom::FillLightMode ToMojomFillLightMode(
       return mojom::FillLightMode::OFF;
     case PhotoCapabilities::AndroidFillLightMode::NOT_SET:
     case PhotoCapabilities::AndroidFillLightMode::NUM_ENTRIES:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 PhotoCapabilities::AndroidFillLightMode ToAndroidFillLightMode(
@@ -101,7 +98,15 @@ PhotoCapabilities::AndroidFillLightMode ToAndroidFillLightMode(
     case mojom::FillLightMode::OFF:
       return PhotoCapabilities::AndroidFillLightMode::OFF;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
+}
+
+void notifyVideoCaptureDeviceChanged() {
+  base::SystemMonitor* monitor = base::SystemMonitor::Get();
+  if (monitor) {
+    monitor->ProcessDevicesChanged(
+        base::SystemMonitor::DeviceType::DEVTYPE_VIDEO_CAPTURE);
+  }
 }
 
 }  // anonymous namespace
@@ -276,8 +281,7 @@ void VideoCaptureDeviceAndroid::SetPhotoOptions(
 
 void VideoCaptureDeviceAndroid::OnFrameAvailable(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jbyteArray>& data,
+    const base::android::JavaRef<jbyteArray>& data,
     jint length,
     jint rotation) {
   if (!IsClientConfigured())
@@ -296,7 +300,7 @@ void VideoCaptureDeviceAndroid::OnFrameAvailable(
     return;
   }
 
-  jbyte* buffer = env->GetByteArrayElements(data, NULL);
+  jbyte* buffer = env->GetByteArrayElements(data.obj(), NULL);
   if (!buffer) {
     LOG(ERROR) << "VideoCaptureDeviceAndroid::OnFrameAvailable: "
                   "failed to GetByteArrayElements";
@@ -312,21 +316,21 @@ void VideoCaptureDeviceAndroid::OnFrameAvailable(
   SendIncomingDataToClient(reinterpret_cast<uint8_t*>(buffer), length, rotation,
                            current_time, capture_time);
 
-  env->ReleaseByteArrayElements(data, buffer, JNI_ABORT);
+  env->ReleaseByteArrayElements(data.obj(), buffer, JNI_ABORT);
 }
 
-void VideoCaptureDeviceAndroid::OnI420FrameAvailable(JNIEnv* env,
-                                                     jobject obj,
-                                                     jobject y_buffer,
-                                                     jint y_stride,
-                                                     jobject u_buffer,
-                                                     jobject v_buffer,
-                                                     jint uv_row_stride,
-                                                     jint uv_pixel_stride,
-                                                     jint width,
-                                                     jint height,
-                                                     jint rotation,
-                                                     jlong timestamp) {
+void VideoCaptureDeviceAndroid::OnI420FrameAvailable(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& y_buffer,
+    jint y_stride,
+    const base::android::JavaRef<jobject>& u_buffer,
+    const base::android::JavaRef<jobject>& v_buffer,
+    jint uv_row_stride,
+    jint uv_pixel_stride,
+    jint width,
+    jint height,
+    jint rotation,
+    jlong timestamp) {
   if (!IsClientConfigured())
     return;
   const int64_t absolute_micro =
@@ -343,42 +347,51 @@ void VideoCaptureDeviceAndroid::OnI420FrameAvailable(JNIEnv* env,
   }
 
   uint8_t* const y_src =
-      reinterpret_cast<uint8_t*>(env->GetDirectBufferAddress(y_buffer));
+      reinterpret_cast<uint8_t*>(env->GetDirectBufferAddress(y_buffer.obj()));
   CHECK(y_src);
   uint8_t* const u_src =
-      reinterpret_cast<uint8_t*>(env->GetDirectBufferAddress(u_buffer));
+      reinterpret_cast<uint8_t*>(env->GetDirectBufferAddress(u_buffer.obj()));
   CHECK(u_src);
   uint8_t* const v_src =
-      reinterpret_cast<uint8_t*>(env->GetDirectBufferAddress(v_buffer));
+      reinterpret_cast<uint8_t*>(env->GetDirectBufferAddress(v_buffer.obj()));
   CHECK(v_src);
 
   const int y_plane_length = width * height;
   const int uv_plane_length = y_plane_length / 4;
   const int buffer_length = y_plane_length + uv_plane_length * 2;
-  auto buffer = std::make_unique<uint8_t[]>(buffer_length);
+  auto buffer = base::HeapArray<uint8_t>::Uninit(
+      base::checked_cast<size_t>(buffer_length));
+
+  auto dst_y_span = buffer.subspan(0, y_plane_length);
+  auto dst_u_span = buffer.subspan(y_plane_length, uv_plane_length);
+  auto dst_v_span =
+      buffer.subspan(y_plane_length + uv_plane_length, uv_plane_length);
 
   libyuv::Android420ToI420(y_src, y_stride, u_src, uv_row_stride, v_src,
-                           uv_row_stride, uv_pixel_stride, buffer.get(), width,
-                           buffer.get() + y_plane_length, width / 2,
-                           buffer.get() + y_plane_length + uv_plane_length,
-                           width / 2, width, height);
+                           uv_row_stride, uv_pixel_stride, dst_y_span.data(),
+                           width, dst_u_span.data(), width / 2,
+                           dst_v_span.data(), width / 2, width, height);
 
-  SendIncomingDataToClient(buffer.get(), buffer_length, rotation, current_time,
+  SendIncomingDataToClient(buffer.data(), buffer_length, rotation, current_time,
                            capture_time);
 }
 
-void VideoCaptureDeviceAndroid::OnError(JNIEnv* env,
-                                        const JavaParamRef<jobject>& obj,
-                                        int android_video_capture_error,
-                                        const JavaParamRef<jstring>& message) {
+void VideoCaptureDeviceAndroid::OnError(
+    JNIEnv* env,
+    int android_video_capture_error,
+    const base::android::JavaRef<jstring>& message) {
   SetErrorState(
       static_cast<media::VideoCaptureError>(android_video_capture_error),
       FROM_HERE, base::android::ConvertJavaStringToUTF8(env, message));
+  // When an external camera is unplugged during use, we cannot rely on
+  // `CameraAvailabilityObserver` since camera availability is unavailable
+  // before/after unplugging. We have to notify `SystemMonitor` that the
+  // video capture device may have changed here.
+  notifyVideoCaptureDeviceChanged();
 }
 
 void VideoCaptureDeviceAndroid::OnFrameDropped(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     int android_video_capture_frame_drop_reason) {
   base::AutoLock lock(lock_);
   if (!client_)
@@ -389,21 +402,15 @@ void VideoCaptureDeviceAndroid::OnFrameDropped(
 
 void VideoCaptureDeviceAndroid::OnGetPhotoCapabilitiesReply(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     jlong callback_id,
-    jobject result) {
+    const base::android::JavaRef<jobject>& result) {
   base::AutoLock lock(photo_callbacks_lock_);
-  GetPhotoStateCallback* const cb =
-      reinterpret_cast<GetPhotoStateCallback*>(callback_id);
-  // Search for the pointer |cb| in the list of |take_photo_callbacks_|.
-  const auto reference_it =
-      base::ranges::find(get_photo_state_callbacks_, cb,
-                         &std::unique_ptr<GetPhotoStateCallback>::get);
+
+  const auto reference_it = get_photo_state_callbacks_.find(callback_id);
   if (reference_it == get_photo_state_callbacks_.end()) {
-    NOTREACHED_IN_MIGRATION() << "|callback_id| not found.";
-    return;
+    NOTREACHED() << "|callback_id| not found.";
   }
-  if (result == nullptr) {
+  if (result.is_null()) {
     get_photo_state_callbacks_.erase(reference_it);
     return;
   }
@@ -541,15 +548,14 @@ void VideoCaptureDeviceAndroid::OnGetPhotoCapabilitiesReply(
     modes.push_back(ToMojomFillLightMode(fill_light_mode));
   photo_capabilities->fill_light_mode = modes;
 
-  std::move(*cb).Run(std::move(photo_capabilities));
+  std::move(reference_it->second).Run(std::move(photo_capabilities));
   get_photo_state_callbacks_.erase(reference_it);
 }
 
 void VideoCaptureDeviceAndroid::OnPhotoTaken(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     jlong callback_id,
-    const base::android::JavaParamRef<jbyteArray>& data) {
+    const base::android::JavaRef<jbyteArray>& data) {
   DCHECK(callback_id);
   TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                        "VideoCaptureDeviceAndroid::OnPhotoTaken",
@@ -557,35 +563,39 @@ void VideoCaptureDeviceAndroid::OnPhotoTaken(
 
   base::AutoLock lock(photo_callbacks_lock_);
 
-  TakePhotoCallback* const cb =
-      reinterpret_cast<TakePhotoCallback*>(callback_id);
-  // Search for the pointer |cb| in the list of |take_photo_callbacks_|.
-  const auto reference_it = base::ranges::find(
-      take_photo_callbacks_, cb, &std::unique_ptr<TakePhotoCallback>::get);
+  const auto reference_it = take_photo_callbacks_.find(callback_id);
   if (reference_it == take_photo_callbacks_.end()) {
-    NOTREACHED_IN_MIGRATION() << "|callback_id| not found.";
+    // `OnPhotoTaken` may be invoked for the same `TakePhoto` callback when
+    // `createCaptureSession` fails. In some cases, when `createCaptureSession`
+    // fails, `CrPhotoSessionListener::onConfigured` will be invoked first, then
+    // camera device hits a FATAL error and throws a CameraAccessException. It
+    // makes `OnPhotoTaken` be invoked twice with the same `callback_id`, but
+    // the callback has been removed from `take_photo_callbacks_` already.
+    // Since it only happens when an error occurs with the camera device, you
+    // won't get `OnPhotoTaken` with the same `callback_id` invoked with photo
+    // data twice.
+    if (!data.is_null()) {
+      NOTREACHED() << "|callback_id| not found.";
+    }
     return;
   }
-
-  if (data != nullptr) {
+  if (!data.is_null()) {
     mojom::BlobPtr blob = mojom::Blob::New();
     base::android::JavaByteArrayToByteVector(env, data, &blob->data);
     blob->mime_type = blob->data.empty() ? "" : "image/jpeg";
-    std::move(*cb).Run(std::move(blob));
+    std::move(reference_it->second).Run(std::move(blob));
   }
 
   take_photo_callbacks_.erase(reference_it);
 }
 
-void VideoCaptureDeviceAndroid::OnStarted(JNIEnv* env,
-                                          const JavaParamRef<jobject>& obj) {
+void VideoCaptureDeviceAndroid::OnStarted(JNIEnv* env) {
   if (client_)
     client_->OnStarted();
 }
 
 void VideoCaptureDeviceAndroid::DCheckCurrentlyOnIncomingTaskRunner(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+    JNIEnv* env) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 }
 
@@ -630,7 +640,8 @@ void VideoCaptureDeviceAndroid::SendIncomingDataToClient(
     return;
   client_->OnIncomingCapturedData(
       data, length, capture_format_, capture_color_space_, rotation,
-      false /* flip_y */, reference_time, timestamp, std::nullopt);
+      false /* flip_y */, reference_time, timestamp,
+      /*capture_begin_timestamp=*/std::nullopt, /*metadata=*/std::nullopt);
 }
 
 VideoPixelFormat VideoCaptureDeviceAndroid::GetColorspace() {
@@ -675,13 +686,11 @@ void VideoCaptureDeviceAndroid::DoTakePhoto(TakePhotoCallback callback) {
   }
 #endif
   JNIEnv* env = AttachCurrentThread();
-
-  // Make copy on the heap so we can pass the pointer through JNI.
-  auto heap_callback = std::make_unique<TakePhotoCallback>(std::move(callback));
-  const intptr_t callback_id = reinterpret_cast<intptr_t>(heap_callback.get());
+  int64_t callback_id;
   {
     base::AutoLock lock(photo_callbacks_lock_);
-    take_photo_callbacks_.push_back(std::move(heap_callback));
+    callback_id = nextPhotoRequestId_++;
+    take_photo_callbacks_[callback_id] = std::move(callback);
   }
   Java_VideoCapture_takePhotoAsync(env, j_capture_, callback_id);
 }
@@ -697,14 +706,11 @@ void VideoCaptureDeviceAndroid::DoGetPhotoState(
   }
 #endif
   JNIEnv* env = AttachCurrentThread();
-
-  // Make copy on the heap so we can pass the pointer through JNI.
-  auto heap_callback =
-      std::make_unique<GetPhotoStateCallback>(std::move(callback));
-  const intptr_t callback_id = reinterpret_cast<intptr_t>(heap_callback.get());
+  int64_t callback_id;
   {
     base::AutoLock lock(photo_callbacks_lock_);
-    get_photo_state_callbacks_.push_back(std::move(heap_callback));
+    callback_id = nextPhotoRequestId_++;
+    get_photo_state_callbacks_[callback_id] = std::move(callback);
   }
   Java_VideoCapture_getPhotoCapabilitiesAsync(env, j_capture_, callback_id);
 }
@@ -782,3 +788,5 @@ void VideoCaptureDeviceAndroid::DoSetPhotoOptions(
 }
 
 }  // namespace media
+
+DEFINE_JNI(VideoCapture)

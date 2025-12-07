@@ -62,7 +62,7 @@ bool IsSafeSearchSettingUrl(const GURL& url) {
     return false;
   }
 
-  return url.path_piece() == "/safesearch";
+  return url.path() == "/safesearch";
 }
 
 }  // namespace
@@ -85,7 +85,7 @@ void ForceGoogleSafeSearch(const GURL& url, GURL* new_url) {
     return;
   }
 
-  std::string query = url.query();
+  std::string query = url.GetQuery();
   std::string new_query = AddSafeSearchParameters(query);
   if (query == new_query) {
     return;
@@ -108,8 +108,7 @@ void ForceYouTubeRestrict(const GURL& url,
   switch (mode) {
     case YOUTUBE_RESTRICT_OFF:
     case YOUTUBE_RESTRICT_COUNT:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
 
     case YOUTUBE_RESTRICT_MODERATE:
       headers->SetHeader(kYouTubeRestrictHeaderName,

@@ -27,20 +27,24 @@
 #import "components/sync/service/local_data_description.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "ios/chrome/browser/authentication/ui_bundled/account_settings_presenter.h"
+#import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_signin_promo_item.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/bookmarks/model/managed_bookmark_service_factory.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_ui_constants.h"
+#import "ios/chrome/browser/bookmarks/public/bookmarks_ui_constants.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_utils_ios.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/cells/bookmark_home_node_item.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/cells/bookmark_table_cell_title_editing.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmark_promo_controller.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_home_consumer.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_home_node_item.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/synced_bookmarks_bridge.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -50,10 +54,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/ui/authentication/account_settings_presenter.h"
-#import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
-#import "ios/chrome/browser/ui/authentication/signin_presenter.h"
-#import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -100,14 +100,14 @@ bool IsABookmarkNodeSectionForIdentifier(
     case BookmarksBatchUploadSectionIdentifier:
       return false;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 @interface BookmarksHomeMediator () <AccountSettingsPresenter,
                                      BookmarkModelBridgeObserver,
                                      BookmarkPromoControllerDelegate,
                                      PrefObserverDelegate,
-                                     SigninPresenter,
+                                     SigninPromoViewMediatorDelegate,
                                      SyncObserverModelBridge> {
   // Observer to keep track of the signin and syncing status.
   std::unique_ptr<sync_bookmarks::SyncedBookmarksObserverBridge>
@@ -140,7 +140,7 @@ bool IsABookmarkNodeSectionForIdentifier(
   bookmark_utils_ios::NodeSet _selectedNodesForEditMode;
 }
 
-+ (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry {
++ (void)registerProfilePrefs:(user_prefs::PrefRegistrySyncable*)registry {
   registry->RegisterBooleanPref(
       prefs::kIosBookmarkUploadSyncLeftBehindCompleted, false);
 }
@@ -149,7 +149,7 @@ bool IsABookmarkNodeSectionForIdentifier(
                   bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
                   displayedNode:(const BookmarkNode*)displayedNode {
   if ((self = [super init])) {
-    DCHECK(browser);
+    CHECK(browser, base::NotFatalUntil::M152);
     CHECK(displayedNode);
     CHECK(bookmarkModel);
     CHECK(bookmarkModel->loaded());
@@ -162,25 +162,25 @@ bool IsABookmarkNodeSectionForIdentifier(
 }
 
 - (void)startMediating {
-  DCHECK(self.consumer);
+  CHECK(self.consumer, base::NotFatalUntil::M152);
 
   // Set up observers.
-  ChromeBrowserState* browserState = [self originalBrowserState];
+  ProfileIOS* profile = [self originalProfile];
   _bookmarkModelBridge =
       std::make_unique<BookmarkModelBridge>(self, _bookmarkModel.get());
   _syncedBookmarksObserver =
-      std::make_unique<sync_bookmarks::SyncedBookmarksObserverBridge>(
-          self, browserState);
-  _syncService = SyncServiceFactory::GetForBrowserState(browserState);
+      std::make_unique<sync_bookmarks::SyncedBookmarksObserverBridge>(self,
+                                                                      profile);
+  _syncService = SyncServiceFactory::GetForProfile(profile);
   _bookmarkPromoController =
       [[BookmarkPromoController alloc] initWithBrowser:_browser.get()
                                            syncService:_syncService
                                               delegate:self
-                                       signinPresenter:self
+                       signinPromoViewMediatorDelegate:self
                               accountSettingsPresenter:self];
 
   _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
-  _prefChangeRegistrar->Init(browserState->GetPrefs());
+  _prefChangeRegistrar->Init(profile->GetPrefs());
   _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
 
   _prefObserverBridge->ObserveChangesForPreference(
@@ -208,7 +208,15 @@ bool IsABookmarkNodeSectionForIdentifier(
 }
 
 - (void)dealloc {
-  DCHECK(!_bookmarkPromoController);
+  CHECK(!_bookmarkPromoController, base::NotFatalUntil::M152);
+}
+
+- (BOOL)canDismiss {
+  // While sign-in is in progress, the UI should be frozen.
+  // The promo manager is in charge of displaying the activity overlay, but
+  // we’re still in charge of stopping dismiss from occurring.
+  // In case of doubt, let dismissal occur, so that we don’t froze the UI.
+  return _bookmarkPromoController.signinInProgress != signin::Tribool::kTrue;
 }
 
 #pragma mark - Initial Model Setup
@@ -249,9 +257,9 @@ bool IsABookmarkNodeSectionForIdentifier(
 // Generate the table view data when the current currently displayed node is the
 // outermost root.
 - (void)generateTableViewDataForRootNode {
-  ChromeBrowserState* browserState = [self originalBrowserState];
+  ProfileIOS* profile = [self originalProfile];
   bookmarks::ManagedBookmarkService* managedBookmarkService =
-      ManagedBookmarkServiceFactory::GetForBrowserState(browserState);
+      ManagedBookmarkServiceFactory::GetForProfile(profile);
   const BookmarkNode* managedNode = managedBookmarkService->managed_node();
 
   std::vector<const bookmarks::BookmarkNode*> localPermanentNodes =
@@ -329,7 +337,6 @@ bool IsABookmarkNodeSectionForIdentifier(
   // Add "no result" item.
   TableViewTextItem* item =
       [[TableViewTextItem alloc] initWithType:BookmarksHomeItemTypeMessage];
-  item.textAlignment = NSTextAlignmentLeft;
   item.textColor = [UIColor colorNamed:kTextPrimaryColor];
   item.text = noResults;
   [self.consumer.tableViewModel addItem:item
@@ -341,7 +348,7 @@ bool IsABookmarkNodeSectionForIdentifier(
   // show the spinner backgound. Otherwise, check if we need to show the empty
   // background.
   if (self.consumer.isDisplayingBookmarkRoot) {
-    if (_bookmarkModel->HasNoUserCreatedBookmarksOrFolders() &&
+    if (!_bookmarkModel->HasUserCreatedBookmarksOrFolders() &&
         _syncedBookmarksObserver->IsPerformingInitialSync()) {
       [self.consumer
           updateTableViewBackgroundStyle:BookmarksHomeBackgroundStyleLoading];
@@ -382,8 +389,10 @@ bool IsABookmarkNodeSectionForIdentifier(
   SigninPromoViewMediator* signinPromoViewMediator =
       self.bookmarkPromoController.signinPromoViewMediator;
   if (self.promoVisible) {
-    DCHECK(![self.consumer.tableViewModel
-        hasSectionForSectionIdentifier:BookmarksHomeSectionIdentifierPromo]);
+    CHECK(
+        ![self.consumer.tableViewModel
+            hasSectionForSectionIdentifier:BookmarksHomeSectionIdentifierPromo],
+        base::NotFatalUntil::M152);
     [self.consumer.tableViewModel
         insertSectionWithIdentifier:BookmarksHomeSectionIdentifierPromo
                             atIndex:0];
@@ -415,8 +424,10 @@ bool IsABookmarkNodeSectionForIdentifier(
       [signinPromoViewMediator signinPromoViewIsHidden];
     }
 
-    DCHECK([self.consumer.tableViewModel
-        hasSectionForSectionIdentifier:BookmarksHomeSectionIdentifierPromo]);
+    CHECK(
+        [self.consumer.tableViewModel
+            hasSectionForSectionIdentifier:BookmarksHomeSectionIdentifierPromo],
+        base::NotFatalUntil::M152);
     [self.consumer.tableViewModel
         removeSectionWithIdentifier:BookmarksHomeSectionIdentifierPromo];
   }
@@ -430,8 +441,8 @@ bool IsABookmarkNodeSectionForIdentifier(
   self.syncService->TriggerLocalDataMigration(
       syncer::DataTypeSet({syncer::BOOKMARKS}));
 
-  ChromeBrowserState* browserState = [self originalBrowserState];
-  PrefService* prefService = browserState->GetPrefs();
+  ProfileIOS* profile = [self originalProfile];
+  PrefService* prefService = profile->GetPrefs();
   prefService->SetBoolean(prefs::kIosBookmarkUploadSyncLeftBehindCompleted,
                           true);
 }
@@ -459,7 +470,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 }
 
 - (void)setCurrentlyInEditMode:(BOOL)currentlyInEditMode {
-  DCHECK(self.consumer.tableView);
+  CHECK(self.consumer.tableView, base::NotFatalUntil::M152);
 
   // If not in editing mode but the tableView's editing is ON, it means the
   // table is waiting for a swipe-to-delete confirmation.  In this case, we need
@@ -482,6 +493,12 @@ bool IsABookmarkNodeSectionForIdentifier(
          _bookmarkModel->IsLocalOnlyNode(*bookmarkNode);
 }
 
+- (void)signinDidCompleteWithResult:(SigninCoordinatorResult)result {
+  [self.bookmarkPromoController.signinPromoViewMediator
+      signinDidCompleteWithResult:result];
+  [self.bookmarkPromoController updateShouldShowSigninPromo];
+}
+
 #pragma mark - BookmarkModelBridgeObserver
 
 - (void)bookmarkModelWillRemoveAllNodes {
@@ -500,7 +517,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 // Instances of this class automatically observe the bookmark model.
 // The bookmark model has loaded.
 - (void)bookmarkModelLoaded {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED(base::NotFatalUntil::M152);
 }
 
 // The node has changed, but not its children.
@@ -556,8 +573,9 @@ bool IsABookmarkNodeSectionForIdentifier(
 // `node` will be deleted from `folder`.
 - (void)willDeleteNode:(const BookmarkNode*)node
             fromFolder:(const BookmarkNode*)folder {
-  DCHECK(node);
-  if (self.displayedNode == node) {
+  CHECK(node, base::NotFatalUntil::M152);
+  if (self.displayedNode && self.displayedNode->HasAncestor(node)) {
+    self.displayedNode = nullptr;
     [self.consumer closeThisFolder];
   }
 }
@@ -575,7 +593,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 
 - (void)didChangeFaviconForNode:(const BookmarkNode*)bookmarkNode {
   // Only urls have favicons.
-  DCHECK(bookmarkNode->is_url());
+  CHECK(bookmarkNode->is_url(), base::NotFatalUntil::M152);
 
   // Update image of corresponding cell.
   BookmarksHomeNodeItem* nodeItem = [self itemForNode:bookmarkNode];
@@ -635,10 +653,12 @@ bool IsABookmarkNodeSectionForIdentifier(
   return _syncedBookmarksObserver->IsPerformingInitialSync();
 }
 
-#pragma mark - SigninPresenter
+#pragma mark - SigninPromoViewMediatorDelegate
 
-- (void)showSignin:(ShowSigninCommand*)command {
+- (void)showSignin:(SigninPromoViewMediator*)mediator
+           command:(ShowSigninCommand*)command {
   // Proxy this call along to the consumer.
+  CHECK_EQ(mediator, self.bookmarkPromoController.signinPromoViewMediator);
   [self.consumer showSignin:command];
 }
 
@@ -657,6 +677,12 @@ bool IsABookmarkNodeSectionForIdentifier(
     // TODO(crbug.com/40064261): This `if` is a workaround until this bug is
     // fixed. This if should be remove when the bug will be closed.
     [self disconnect];
+    return;
+  }
+  if (self.addingNewFolder) {
+    // Adding new folder will trigger a sync update and this callback. Avoid
+    // refreshing content which doesn't add much value and will stop the
+    // editting of the folder name.
     return;
   }
   // If user starts or stops syncing bookmarks, we may have to remove or add the
@@ -739,23 +765,17 @@ bool IsABookmarkNodeSectionForIdentifier(
           syncer::SyncService::TransportState::PAUSED) {
     return NO;
   }
-  // Do not show for syncing users.
-  // TODO(crbug.com/40066949): Remove this after UNO phase 3. See
-  // ConsentLevel::kSync documentation for more details.
-  if (self.syncService->HasSyncConsent()) {
-    return NO;
-  }
   // Do not show if last syncing account is different from the current one.
   // Note that the "last syncing" account pref is cleared during the migration
   // of syncing users to the signed-in state, but these users should also be
   // covered here, so check the "migrated syncing user" pref too.
   // This implicitly covers the case when SyncDisabled policy is enabled, as
   // kGoogleServicesLastSyncingGaiaId will be empty.
-  ChromeBrowserState* browserState = [self originalBrowserState];
-  const std::string lastSyncingGaiaId = browserState->GetPrefs()->GetString(
-      prefs::kGoogleServicesLastSyncingGaiaId);
-  const std::string migratedGaiaId = browserState->GetPrefs()->GetString(
-      prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn);
+  ProfileIOS* profile = [self originalProfile];
+  const GaiaId lastSyncingGaiaId(
+      profile->GetPrefs()->GetString(prefs::kGoogleServicesLastSyncingGaiaId));
+  const GaiaId migratedGaiaId(profile->GetPrefs()->GetString(
+      prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn));
   if (self.syncService->GetAccountInfo().gaia != lastSyncingGaiaId &&
       self.syncService->GetAccountInfo().gaia != migratedGaiaId) {
     return NO;
@@ -767,7 +787,7 @@ bool IsABookmarkNodeSectionForIdentifier(
     return NO;
   }
   // Do not show if the user has already uploaded the left-behind bookmarks.
-  if (browserState->GetPrefs()->GetBoolean(
+  if (profile->GetPrefs()->GetBoolean(
           prefs::kIosBookmarkUploadSyncLeftBehindCompleted)) {
     return NO;
   }
@@ -853,10 +873,10 @@ bool IsABookmarkNodeSectionForIdentifier(
                                     BookmarksBatchUploadSectionIdentifier];
 }
 
-// The original chrome browser state used for services that don't exist in
+// The original chrome profile used for services that don't exist in
 // incognito mode. E.g., `_syncService` and `ManagedBookmarkService`.
-- (ChromeBrowserState*)originalBrowserState {
-  return _browser->GetBrowserState()->GetOriginalChromeBrowserState();
+- (ProfileIOS*)originalProfile {
+  return _browser->GetProfile()->GetOriginalProfile();
 }
 
 - (BOOL)hasBookmarksOrFolders {
@@ -904,7 +924,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 
 // Returns YES if the user cannot turn on sync for enterprise policy reasons.
 - (BOOL)isSyncDisabledByAdministrator {
-  DCHECK(self.syncService);
+  CHECK(self.syncService, base::NotFatalUntil::M152);
   bool syncDisabledPolicy = self.syncService->HasDisableReason(
       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
   bool syncTypesDisabledPolicy =

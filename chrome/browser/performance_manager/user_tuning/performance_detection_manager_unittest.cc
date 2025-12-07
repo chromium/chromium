@@ -14,8 +14,12 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
+#include "chrome/browser/performance_manager/test_support/page_discarding_utils.h"
+#include "chrome/browser/performance_manager/user_tuning/cpu_health_tracker.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/performance_manager/public/features.h"
+#include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/resource_attribution/page_context.h"
 #include "components/performance_manager/test_support/test_harness_helper.h"
@@ -99,18 +103,6 @@ class MockPerformanceDetectionManagerActionableTabsObserver
                std::vector<resource_attribution::PageContext>),
               (override));
 };
-
-// Number of times to see a health status consecutively for the health status to
-// change
-const int kNumHealthStatusForChange =
-    performance_manager::features::kCPUTimeOverThreshold.Get() /
-    performance_manager::features::kCPUSampleFrequency.Get();
-
-const int kUnhealthySystemCpuUsagePercentage =
-    performance_manager::features::kCPUUnhealthyPercentageThreshold.Get() + 1;
-const int kDegradedSystemCpuUsagePercentage =
-    performance_manager::features::kCPUDegradedHealthPercentageThreshold.Get() +
-    1;
 }  // namespace
 
 class PerformanceDetectionManagerTest : public ChromeRenderViewHostTestHarness {
@@ -123,6 +115,13 @@ class PerformanceDetectionManagerTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
     pm_harness_.SetUp();
     SetContents(CreateTestWebContents());
+    Graph* graph = PerformanceManager::GetGraph();
+    graph->PassToGraph(std::make_unique<policies::DiscardEligibilityPolicy>());
+    auto page_discarding_helper =
+        std::make_unique<policies::PageDiscardingHelper>();
+    page_discarding_helper->SetMockDiscarderForTesting(
+        std::make_unique<testing::MockPageDiscarder>());
+    graph->PassToGraph(std::move(page_discarding_helper));
   }
 
   void TearDown() override {
@@ -214,12 +213,7 @@ TEST_F(PerformanceDetectionManagerTest, UpdatedActionableTabsSentToObservers) {
 TEST_F(PerformanceDetectionManagerTest, DiscardMetricsRecorded) {
   CreateManager();
   base::HistogramTester histogram_tester;
-  base::RunLoop run_loop;
-  manager()->DiscardTabs(
-      {}, base::BindOnce([](base::RepeatingClosure quit_closure,
-                            bool did_discard) { quit_closure.Run(); },
-                         run_loop.QuitClosure()));
-  run_loop.Run();
+  manager()->DiscardTabs({});
   const std::string health_status_prefix =
       "PerformanceControls.Intervention.BackgroundTab.Cpu."
       "HealthStatusAfterDiscard.";

@@ -17,8 +17,6 @@
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gfx/buffer_types.h"

@@ -20,7 +20,7 @@ history::DeletionInfo* ToDeletionInfo(jlong j_deletion_info) {
 
 }  // namespace
 
-ScopedJavaLocalRef<jobjectArray> JNI_HistoryDeletionInfo_GetDeletedURLs(
+static ScopedJavaLocalRef<jobjectArray> JNI_HistoryDeletionInfo_GetDeletedURLs(
     JNIEnv* env,
     jlong history_deletion_info_ptr) {
   history::DeletionInfo* deletion_info =
@@ -33,7 +33,7 @@ ScopedJavaLocalRef<jobjectArray> JNI_HistoryDeletionInfo_GetDeletedURLs(
   return base::android::ToJavaArrayOfStrings(env, deleted_urls);
 }
 
-jboolean JNI_HistoryDeletionInfo_IsTimeRangeValid(
+static jboolean JNI_HistoryDeletionInfo_IsTimeRangeValid(
     JNIEnv* env,
     jlong history_deletion_info_ptr) {
   history::DeletionInfo* deletion_info =
@@ -41,7 +41,7 @@ jboolean JNI_HistoryDeletionInfo_IsTimeRangeValid(
   return deletion_info->time_range().IsValid();
 }
 
-jboolean JNI_HistoryDeletionInfo_IsTimeRangeForAllTime(
+static jboolean JNI_HistoryDeletionInfo_IsTimeRangeForAllTime(
     JNIEnv* env,
     jlong history_deletion_info_ptr) {
   history::DeletionInfo* deletion_info =
@@ -55,3 +55,5 @@ ScopedJavaLocalRef<jobject> CreateHistoryDeletionInfo(
   return Java_HistoryDeletionInfo_create(
       env, reinterpret_cast<intptr_t>(deletion_info));
 }
+
+DEFINE_JNI(HistoryDeletionInfo)

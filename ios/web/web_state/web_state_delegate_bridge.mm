@@ -4,6 +4,8 @@
 
 #import "ios/web/public/web_state_delegate_bridge.h"
 
+#import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
 #import "ios/web/public/ui/context_menu_params.h"
 
 namespace web {
@@ -17,8 +19,8 @@ WebState* WebStateDelegateBridge::CreateNewWebState(WebState* source,
                                                     const GURL& url,
                                                     const GURL& opener_url,
                                                     bool initiated_by_user) {
-  SEL selector =
-      @selector(webState:createNewWebStateForURL:openerURL:initiatedByUser:);
+  SEL selector = @selector(webState:
+            createNewWebStateForURL:openerURL:initiatedByUser:);
   if ([delegate_ respondsToSelector:selector]) {
     return [delegate_ webState:source
         createNewWebStateForURL:url
@@ -37,8 +39,9 @@ void WebStateDelegateBridge::CloseWebState(WebState* source) {
 WebState* WebStateDelegateBridge::OpenURLFromWebState(
     WebState* source,
     const WebState::OpenURLParams& params) {
-  if ([delegate_ respondsToSelector:@selector(webState:openURLWithParams:)])
+  if ([delegate_ respondsToSelector:@selector(webState:openURLWithParams:)]) {
     return [delegate_ webState:source openURLWithParams:params];
+  }
   return nullptr;
 }
 
@@ -55,6 +58,52 @@ void WebStateDelegateBridge::ShowRepostFormWarningDialog(
     bool default_response =
         warning_type == FormWarningType::kRepost ? true : false;
     std::move(callback).Run(default_response);
+  }
+}
+
+void WebStateDelegateBridge::ShouldAllowCopy(
+    WebState* source,
+    base::OnceCallback<void(bool)> callback) {
+  SEL selector = @selector(webState:shouldAllowCopyWithDecisionHandler:);
+  if ([delegate_ respondsToSelector:selector]) {
+    [delegate_ webState:source
+        shouldAllowCopyWithDecisionHandler:base::CallbackToBlock(
+                                               std::move(callback))];
+  } else {
+    std::move(callback).Run(true);
+  }
+}
+
+void WebStateDelegateBridge::ShouldAllowPaste(
+    WebState* source,
+    base::OnceCallback<void(bool)> callback) {
+  SEL selector = @selector(webState:shouldAllowPasteWithDecisionHandler:);
+  if ([delegate_ respondsToSelector:selector]) {
+    [delegate_ webState:source
+        shouldAllowPasteWithDecisionHandler:base::CallbackToBlock(
+                                                std::move(callback))];
+  } else {
+    std::move(callback).Run(true);
+  }
+}
+
+void WebStateDelegateBridge::ShouldAllowCut(
+    WebState* source,
+    base::OnceCallback<void(bool)> callback) {
+  SEL selector = @selector(webState:shouldAllowCutWithDecisionHandler:);
+  if ([delegate_ respondsToSelector:selector]) {
+    [delegate_ webState:source
+        shouldAllowCutWithDecisionHandler:base::CallbackToBlock(
+                                              std::move(callback))];
+  } else {
+    std::move(callback).Run(true);
+  }
+}
+
+void WebStateDelegateBridge::DidFinishClipboardRead(WebState* source) {
+  if ([delegate_
+          respondsToSelector:@selector(webStateDidFinishClipboardRead:)]) {
+    [delegate_ webStateDidFinishClipboardRead:source];
   }
 }
 
@@ -87,10 +136,10 @@ void WebStateDelegateBridge::OnAuthRequired(
     NSURLCredential* proposed_credential,
     AuthCallback callback) {
   if ([delegate_
-          respondsToSelector:@selector(webState:
-                                 didRequestHTTPAuthForProtectionSpace:
-                                                   proposedCredential:
-                                                    completionHandler:)]) {
+          respondsToSelector:@selector
+          (webState:
+              didRequestHTTPAuthForProtectionSpace:proposedCredential
+                                                  :completionHandler:)]) {
     __block AuthCallback local_callback = std::move(callback);
     [delegate_ webState:source
         didRequestHTTPAuthForProtectionSpace:protection_space
@@ -143,4 +192,10 @@ id<CRWResponderInputView> WebStateDelegateBridge::GetResponderInputView(
   return nil;
 }
 
-}  // web
+void WebStateDelegateBridge::OnNewWebViewCreated(WebState* source) {
+  if ([delegate_ respondsToSelector:@selector(webStateDidCreateWebView:)]) {
+    [delegate_ webStateDidCreateWebView:source];
+  }
+}
+
+}  // namespace web

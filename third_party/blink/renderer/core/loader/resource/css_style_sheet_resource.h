@@ -48,8 +48,7 @@ class CORE_EXPORT CSSStyleSheetResource final : public TextResource {
   static CSSStyleSheetResource* Fetch(FetchParameters&,
                                       ResourceFetcher*,
                                       ResourceClient*);
-  static CSSStyleSheetResource* CreateForTest(const KURL&,
-                                              const WTF::TextEncoding&);
+  static CSSStyleSheetResource* CreateForTest(const KURL&, const TextEncoding&);
 
   CSSStyleSheetResource(const ResourceRequest&,
                         const ResourceLoaderOptions&,

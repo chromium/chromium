@@ -10,7 +10,6 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -26,8 +25,10 @@
 #include "extensions/renderer/bindings/binding_access_checker.h"
 #include "extensions/renderer/bindings/declarative_event.h"
 #include "gin/arguments.h"
-#include "gin/handle.h"
 #include "gin/per_context_data.h"
+#include "gin/public/gin_embedders.h"
+#include "v8/include/cppgc/allocation.h"
+#include "v8/include/v8-cppgc.h"
 
 namespace extensions {
 
@@ -87,7 +88,8 @@ void RunAPIBindingHandlerCallback(
 
   v8::Local<v8::External> external;
   CHECK(args.GetData(&external));
-  auto* callback = static_cast<APIBinding::HandlerCallback*>(external->Value());
+  auto* callback = static_cast<APIBinding::HandlerCallback*>(
+      external->Value(gin::kAPIBindingHandlerCallbackTag));
 
   callback->Run(&args);
 }
@@ -362,7 +364,7 @@ APIBinding::~APIBinding() = default;
 v8::Local<v8::Object> APIBinding::CreateInstance(
     v8::Local<v8::Context> context) {
   DCHECK(binding::IsContextValid(context));
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   if (object_template_.IsEmpty())
     InitializeTemplate(isolate);
   DCHECK(!object_template_.IsEmpty());
@@ -421,16 +423,18 @@ void APIBinding::InitializeTemplate(v8::Isolate* isolate) {
 
     object_template->Set(
         gin::StringToSymbol(isolate, key_value.first),
-        v8::FunctionTemplate::New(isolate, &RunAPIBindingHandlerCallback,
-                                  v8::External::New(isolate, &method.callback),
-                                  v8::Local<v8::Signature>(), 0,
-                                  v8::ConstructorBehavior::kThrow));
+        v8::FunctionTemplate::New(
+            isolate, &RunAPIBindingHandlerCallback,
+            v8::External::New(isolate, &method.callback,
+                              gin::kAPIBindingHandlerCallbackTag),
+            v8::Local<v8::Signature>(), 0, v8::ConstructorBehavior::kThrow));
   }
 
   for (const auto& event : events_) {
     object_template->SetLazyDataProperty(
         gin::StringToSymbol(isolate, event->exposed_name),
-        &APIBinding::GetEventObject, v8::External::New(isolate, event.get()));
+        &APIBinding::GetEventObject,
+        v8::External::New(isolate, event.get(), gin::kAPIBindingEventDataTag));
   }
 
   for (const auto& entry : enums_) {
@@ -479,8 +483,9 @@ void APIBinding::DecorateTemplateWithProperties(
       auto is_this_platform = [&this_platform](const base::Value& platform) {
         return platform.is_string() && platform.GetString() == this_platform;
       };
-      if (base::ranges::none_of(*platforms, is_this_platform))
+      if (std::ranges::none_of(*platforms, is_this_platform)) {
         continue;
+      }
     }
 
     v8::Local<v8::String> v8_key = gin::StringToSymbol(isolate, item.first);
@@ -492,7 +497,8 @@ void APIBinding::DecorateTemplateWithProperties(
           *ref, item.first, property_values, create_custom_type_);
       object_template->SetLazyDataProperty(
           v8_key, &APIBinding::GetCustomPropertyObject,
-          v8::External::New(isolate, property_data.get()));
+          v8::External::New(isolate, property_data.get(),
+                            gin::kAPIBindingCustomPropertyDataTag));
       custom_properties_.push_back(std::move(property_data));
       if (is_root)
         root_properties_.insert(item.first);
@@ -540,24 +546,24 @@ void APIBinding::GetEventObject(
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context;
-  if (!info.Holder()->GetCreationContext().ToLocal(&context) ||
-      !binding::IsContextValidOrThrowError(context))
+  if (!info.HolderV2()->GetCreationContext(isolate).ToLocal(&context) ||
+      !binding::IsContextValidOrThrowError(context)) {
     return;
+  }
 
   CHECK(info.Data()->IsExternal());
-  auto* event_data =
-      static_cast<EventData*>(info.Data().As<v8::External>()->Value());
+  auto* event_data = static_cast<EventData*>(
+      info.Data().As<v8::External>()->Value(gin::kAPIBindingEventDataTag));
   v8::Local<v8::Value> retval;
   if (event_data->binding->binding_hooks_->CreateCustomEvent(
           context, event_data->full_name, &retval)) {
     // A custom event was created; our work is done.
   } else if (event_data->supports_rules) {
-    gin::Handle<DeclarativeEvent> event = gin::CreateHandle(
-        isolate, new DeclarativeEvent(
-                     event_data->full_name, event_data->binding->type_refs_,
-                     event_data->binding->request_handler_, event_data->actions,
-                     event_data->conditions, 0));
-    retval = event.ToV8();
+    auto* event = cppgc::MakeGarbageCollected<DeclarativeEvent>(
+        isolate->GetCppHeap()->GetAllocationHandle(), event_data->full_name,
+        event_data->binding->type_refs_, event_data->binding->request_handler_,
+        event_data->actions, event_data->conditions, 0);
+    retval = event->GetWrapper(isolate).ToLocalChecked();
   } else {
     retval = event_data->binding->event_handler_->CreateEventInstance(
         event_data->full_name, event_data->supports_filters,
@@ -573,14 +579,16 @@ void APIBinding::GetCustomPropertyObject(
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context;
-  if (!info.Holder()->GetCreationContext().ToLocal(&context) ||
-      !binding::IsContextValid(context))
+  if (!info.HolderV2()->GetCreationContext(isolate).ToLocal(&context) ||
+      !binding::IsContextValid(context)) {
     return;
+  }
 
   v8::Context::Scope context_scope(context);
   CHECK(info.Data()->IsExternal());
   auto* property_data =
-      static_cast<CustomPropertyData*>(info.Data().As<v8::External>()->Value());
+      static_cast<CustomPropertyData*>(info.Data().As<v8::External>()->Value(
+          gin::kAPIBindingCustomPropertyDataTag));
 
   v8::Local<v8::Object> property = property_data->create_custom_type.Run(
       isolate, property_data->type_name, property_data->property_name,

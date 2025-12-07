@@ -10,8 +10,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/omnibox/browser/autocomplete_scoring_model_executor.h"
-#include "components/optimization_guide/core/model_handler.h"
-#include "components/optimization_guide/core/optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/inference/model_handler.h"
 #include "components/optimization_guide/proto/autocomplete_scoring_model_metadata.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "third_party/metrics_proto/omnibox_scoring_signals.pb.h"
@@ -30,7 +30,11 @@ class AutocompleteScoringModelHandler
       scoped_refptr<base::SequencedTaskRunner> model_executor_task_runner,
       std::unique_ptr<AutocompleteScoringModelExecutor> model_executor,
       optimization_guide::proto::OptimizationTarget optimization_target,
-      const std::optional<optimization_guide::proto::Any>& model_metadata);
+      const std::optional<optimization_guide::proto::Any>& model_metadata,
+      // If model_loading_task_runner is nullptr then model_task_runner will be
+      // used for model loading.
+      scoped_refptr<base::SequencedTaskRunner> model_loading_task_runner =
+          nullptr);
   ~AutocompleteScoringModelHandler() override;
 
   // Disallow copy/assign.

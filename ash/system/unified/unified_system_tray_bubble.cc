@@ -7,6 +7,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/bubble/bubble_constants.h"
 #include "ash/constants/ash_features.h"
+#include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/notification_center/ash_message_popup_collection.h"
@@ -32,6 +33,7 @@ namespace ash {
 
 namespace {
 constexpr int kDetailedViewHeight = 464;
+constexpr int kSystemTrayBubbleCornerRadius = 24;
 }  // namespace
 
 UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
@@ -45,7 +47,7 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
       CreateInitParamsForTrayBubble(tray, /*anchor_to_shelf_corner=*/true);
   init_params.preferred_width = kWideTrayMenuWidth;
   init_params.close_on_deactivate = false;
-
+  init_params.corner_radius = kSystemTrayBubbleCornerRadius;
   bubble_view_ = new TrayBubbleView(init_params);
 
   // Max height calculated from the maximum available height of the screen.
@@ -66,10 +68,10 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
   bubble_view_->InitializeAndShowBubble();
 
   // Notify accessibility features that the status tray has opened.
-  NotifyAccessibilityEvent(ax::mojom::Event::kShow, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kShow, true);
 
   // Explicitly close the app list in clamshell mode.
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     Shell::Get()->app_list_controller()->DismissAppList();
   }
 }
@@ -87,6 +89,7 @@ UnifiedSystemTrayBubble::~UnifiedSystemTrayBubble() {
     unified_system_tray_->NotifyLeavingCalendarView();
   }
 
+  KeyboardController::Get()->RemoveObserver(this);
   if (Shell::Get()->tablet_mode_controller()) {
     Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
   }
@@ -96,7 +99,7 @@ UnifiedSystemTrayBubble::~UnifiedSystemTrayBubble() {
   // Remove child views synchronously to ensure they don't try to access
   // `controller_` after `this` goes out of scope.
   if (bubble_view_) {
-    controller_->ShutDownDetailedViewController();
+    controller_->PrepareBubbleDestroy();
     bubble_view_->RemoveAllChildViews();
     quick_settings_view_ = nullptr;
     bubble_view_->ResetDelegate();
@@ -115,6 +118,7 @@ UnifiedSystemTrayBubble::~UnifiedSystemTrayBubble() {
 void UnifiedSystemTrayBubble::InitializeObservers() {
   unified_system_tray_->shelf()->AddObserver(this);
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
+  KeyboardController::Get()->AddObserver(this);
 
   CHECK(bubble_widget_);
   CHECK(bubble_view_);
@@ -218,7 +222,7 @@ void UnifiedSystemTrayBubble::OnWidgetDestroying(views::Widget* widget) {
   bubble_widget_->RemoveObserver(this);
   bubble_widget_ = nullptr;
 
-  controller_->ShutDownDetailedViewController();
+  controller_->PrepareBubbleDestroy();
   bubble_view_->RemoveAllChildViews();
   quick_settings_view_ = nullptr;
   bubble_view_->ResetDelegate();
@@ -250,6 +254,15 @@ void UnifiedSystemTrayBubble::OnTabletPhysicalStateChanged() {
 void UnifiedSystemTrayBubble::OnAutoHideStateChanged(
     ShelfAutoHideState new_state) {
   UpdateBubbleBounds();
+}
+
+void UnifiedSystemTrayBubble::OnKeyboardVisibilityChanged(
+    const bool is_visible) {
+  // When keyboard visibility changes, delay updating the bubble bounds until
+  // after all the keyboard changes have been processed.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&UnifiedSystemTrayBubble::UpdateBubbleBounds,
+                                weak_factory_.GetWeakPtr()));
 }
 
 void UnifiedSystemTrayBubble::UpdateBubbleHeight(bool is_showing_detiled_view) {
@@ -308,12 +321,13 @@ void UnifiedSystemTrayBubble::UpdateBubbleBounds() {
       unified_system_tray_->shelf()->GetSystemTrayAnchorRect());
 }
 
-void UnifiedSystemTrayBubble::NotifyAccessibilityEvent(ax::mojom::Event event,
-                                                       bool send_native_event) {
+void UnifiedSystemTrayBubble::NotifyAccessibilityEventDeprecated(
+    ax::mojom::Event event,
+    bool send_native_event) {
   if (!bubble_view_) {
     return;
   }
-  bubble_view_->NotifyAccessibilityEvent(event, send_native_event);
+  bubble_view_->NotifyAccessibilityEventDeprecated(event, send_native_event);
 }
 
 bool UnifiedSystemTrayBubble::ShowingAudioDetailedView() const {

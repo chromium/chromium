@@ -4,24 +4,22 @@
 
 #include "chrome/browser/ash/early_prefs/early_prefs_export_service.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "components/flags_ui/flags_ui_pref_names.h"
-#include "components/prefs/pref_change_registrar.h"
-#include "components/prefs/pref_service.h"
-
-#include "ash/constants/ash_features.h"
-#include "base/containers/contains.h"
-#include "base/notreached.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/webui/flags/flags_ui_pref_names.h"
 
 namespace ash {
 
@@ -40,9 +38,16 @@ EarlyPrefsExportService::EarlyPrefsExportService(const base::FilePath& root_dir,
   // we can restart session with correct flags before loading
   // profile.
   StoreAndTrackPref(flags_ui::prefs::kAboutFlagsEntries);
+
   // Some policies need to be enforced early in the login flow
   // to limit lifetime of authenticated authsession.
   StoreAndTrackPref(ash::prefs::kRecoveryFactorBehavior);
+
+  // Used for determining the complexity of local auth factors.
+  StoreAndTrackPref(ash::prefs::kLocalAuthFactorsComplexity);
+
+  // Used for determining which local auth factors have been enabled.
+  StoreAndTrackPref(prefs::kLocalAuthFactors);
 }
 
 EarlyPrefsExportService::~EarlyPrefsExportService() = default;

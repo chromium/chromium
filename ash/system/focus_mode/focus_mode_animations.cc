@@ -48,27 +48,27 @@ void PerformViewsVerticalShitfAnimation(
   }
 }
 
-void PerformTaskContainerViewResizeAnimation(ui::Layer* task_container_layer,
+void PerformTaskContainerViewResizeAnimation(ui::Layer* resized_container_layer,
                                              const int old_bounds_height) {
-  task_container_layer->CompleteAllAnimations();
+  resized_container_layer->CompleteAllAnimations();
   // TODO(b/313923915): we may want to use `SetTransform` instead of `SetBounds`
   // in future. If so, we will set a background view which is siblings with the
   // task row header the header of task and the `FocusModeTaskView`, and we will
   // only transform the background view with animation.
-  const gfx::Rect target_bounds = task_container_layer->bounds();
+  const gfx::Rect target_bounds = resized_container_layer->bounds();
 
   // We need to calculate the actual old bounds to guarantee that we get the
   // correct old bounds if we scroll down the `FocusModeDetailedView`.
-  auto old_bounds = task_container_layer->bounds();
+  auto old_bounds = resized_container_layer->bounds();
   old_bounds.set_height(old_bounds_height);
-  task_container_layer->SetBounds(old_bounds);
+  resized_container_layer->SetBounds(old_bounds);
 
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
       .Once()
       .SetDuration(kContainerViewResizeDuration)
-      .SetBounds(task_container_layer, target_bounds,
+      .SetBounds(resized_container_layer, target_bounds,
                  gfx::Tween::ACCEL_20_DECEL_100);
 }
 

@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{1 napja}other{# napja}}</translation>
 <translation id="1181037720776840403">Eltávolítás</translation>
 <translation id="1243314992276662751">Feltöltés</translation>
+<translation id="1253734725326687145">Az érinthető terület a jobb felső sarokba lett áthelyezve. Koppintson ide.</translation>
 <translation id="1266864766717917324">Nem sikerült a(z) <ph name="CONTENT_TYPE" /> megosztása</translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">Próbálja meg kisebb részletekben megosztani a szöveget.</translation>
@@ -38,6 +39,7 @@
 <translation id="19085484004813472">Ez a funkció új</translation>
 <translation id="2006524834898217237">Ellenőrizze, hogy az eszköz csatlakozik-e az internethez.</translation>
 <translation id="208586643495776849">Próbálkozzon újra</translation>
+<translation id="2111134541987263231">Kapcsolja be az <ph name="BEGIN_BOLD" />Engedélyezés inkognitó módban<ph name="END_BOLD" /> beállítást.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 n}other{# n}}</translation>
 <translation id="2148716181193084225">Ma</translation>
 <translation id="2168039046890040389">Oldal fel</translation>
@@ -48,12 +50,14 @@
 <translation id="2289052229480071835">Koppintson a képernyőn az érintési célpontokra.</translation>
 <translation id="2295140143284145483">Felmérés</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Nem található a(z) <ph name="BEGIN_LIST" /><ph name="END_LIST" /> azonosítójú bővítmény. Forduljon a rendszergazdához.}other{Nem találhatók a(z) <ph name="BEGIN_LIST" /><ph name="END_LIST" /> azonosítójú bővítmények. Forduljon a rendszergazdához.}}</translation>
 <translation id="2353636109065292463">Az internetkapcsolat ellenőrzése</translation>
 <translation id="2359808026110333948">Tovább</translation>
 <translation id="2388990488038464401">Szeretné ezt a számot hívni a telefonjáról?</translation>
 <translation id="2435457462613246316">Jelszó megjelenítése</translation>
 <translation id="24452542372838207">Értesítés kibontása</translation>
 <translation id="2445449901874883781">Magas sűrűség használata</translation>
+<translation id="2448407890032181691">Az érinthető terület a jobb alsó sarokba lett áthelyezve. Koppintson ide.</translation>
 <translation id="2482878487686419369">Értesítések</translation>
 <translation id="2497284189126895209">Minden fájl</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -70,6 +74,7 @@
 <translation id="2878511608894704031">Az összes törlése</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 nap múlva}other{# nap múlva}}</translation>
 <translation id="2922712708897119705"><ph name="COLUMN_NAME" /> oszlop csökkenő sorrendbe rendezve.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Hiányzó bővítmény}other{Hiányzó bővítmények}}</translation>
 <translation id="3036649622769666520">Fájlok megnyitása</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3087734570205094154">Alja</translation>
@@ -82,6 +87,7 @@
 <translation id="3295886253693811851">Hívás indítása a következővel:</translation>
 <translation id="3306688585798492231">Beépített kijelző</translation>
 <translation id="335581015389089642">Beszéd</translation>
+<translation id="3372635229069101468">Kattintson a <ph name="BEGIN_BOLD" />Részletek<ph name="END_BOLD" /> lehetőségre.</translation>
 <translation id="3389286852084373014">A szöveg túl nagy</translation>
 <translation id="3406306243914553062">HTML-tartalom</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1 nap van hátra}other{# nap van hátra}}</translation>
@@ -102,7 +108,9 @@
 <translation id="3994749195054421561"><ph name="COLUMN_NAME" /> oszlop növekvő sorrendbe rendezve.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 olvasatlan értesítés}other{# olvasatlan értesítés}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Kapcsolja be a következő bővítményt inkognitó módban:}other{Kapcsolja be a következő bővítményeket inkognitó módban:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 hónapja}other{# hónapja}}</translation>
+<translation id="4277033906326892359"><ph name="COLUMN_NAME" /> oszlop növekvő sorrendbe rendezve</translation>
 <translation id="4289300219472526559">Beszéd megkezdése</translation>
 <translation id="4289540628985791613">Áttekintés</translation>
 <translation id="4491109536499578614">Kép</translation>
@@ -113,6 +121,8 @@
 <translation id="4729257764711776855">szám</translation>
 <translation id="4746179598275229723">Bővítmény kitűzése feloldva</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{hátralévő idő: 1 hónap}other{hátralévő idő: # hónap}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Az inkognitó mód használatához szervezetének szüksége van egy bővítményre}other{Az inkognitó mód használatához szervezetének szüksége van bizonyos bővítményekre}}</translation>
+<translation id="482932175346970750">Írja be a <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> kifejezést a böngészőbe.</translation>
 <translation id="4888938634149558681">Hívás indítása</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" /> és <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 másodperc}other{# másodperc}}</translation>
@@ -121,6 +131,7 @@
 <translation id="5076340679995252485">&amp;Beillesztés</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">Sikertelen küldés</translation>
+<translation id="5283101102242354279">Bővítmény bekapcsolása inkognitó módban:</translation>
 <translation id="528468243742722775">Befejezés</translation>
 <translation id="5329858601952122676">&amp;Törlés</translation>
 <translation id="5361107212971249203">szöveg</translation>
@@ -129,13 +140,16 @@
 <translation id="5528053674512161860">Az oldal betöltése nem sikerült, mert nincs telepítve a fejlesztői UI-modul (dev_ui)</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> rendszer</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5606865426897221650">Tab</translation>
 <translation id="5613020302032141669">Bal nyíl</translation>
 <translation id="5633029987065897167">Üres</translation>
+<translation id="5651438382973553530">Az érinthető terület a bal alsó sarokba lett áthelyezve. Koppintson ide.</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 perc}other{# perc}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Ma volt aktív}=1{1 napja volt aktív}other{# napja volt aktív}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 nap és }other{# nap és }}</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5843690142429128814">Kép.</translation>
+<translation id="5860491529813859533">Bekapcsolás</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{1 év múlva}other{# év múlva}}</translation>
 <translation id="588258955323874662">Teljes képernyő</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 másodperc van hátra}other{# másodperc van hátra}}</translation>
@@ -151,6 +165,7 @@
 <translation id="6264365405983206840">Össz&amp;es kiválasztása</translation>
 <translation id="6346952829206698721">Beillesztés a vágólapról</translation>
 <translation id="6364916375976753737">Görgetés balra</translation>
+<translation id="63712816010840859">Ha az aktuális kijelző nem érintőképernyő, nyomja meg az Esc billentyűt.</translation>
 <translation id="6394627529324717982">Vessző</translation>
 <translation id="6397363302884558537">Beszéd leállítása</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{1 másodperce}other{# másodperce}}</translation>
@@ -162,6 +177,8 @@
 <translation id="6612467943526193239">Ha ki szeretne lépni a kalibrálásból, nyomja meg az Esc billentyűt.</translation>
 <translation id="6620110761915583480">Fájl mentése</translation>
 <translation id="6699343763173986273">Következő szám</translation>
+<translation id="6738856801552481343">Ha ez a kijelző nem érintőképernyő, nyomja meg az Esc billentyűt.</translation>
+<translation id="6807086321996342431"><ph name="COLUMN_NAME" /> oszlop</translation>
 <translation id="6808150112686056157">Leállítás</translation>
 <translation id="6845383723252244143">Mappa választása</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 óra van hátra}other{# óra van hátra}}</translation>
@@ -176,6 +193,7 @@
 <translation id="7170202025028120564">Az alkalmazás megjelenítési beállításai a következő indításkor lépnek érvénybe.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 perc van hátra}other{# perc van hátra}}</translation>
+<translation id="7252604552361840748">Keresse meg a fenti bővítményt.</translation>
 <translation id="7363164521834647158">Válasz küldése</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 perce}other{# perce}}</translation>
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>
@@ -192,16 +210,15 @@
 <translation id="7969046989155602842">Command</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Több mint 1 olvasatlan értesítés}other{Több mint # olvasatlan értesítés}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{1 perc múlva}other{# perc múlva}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">Hívás innen: <ph name="ORIGIN" /></translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{1 órája}other{# órája}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 mp van hátra}other{# mp van hátra}}</translation>
 <translation id="8134065097954893699">Az oldal újratöltése</translation>
+<translation id="813785873406874127"><ph name="COLUMN_NAME" /> oszlop rendezése megszüntetve</translation>
 <translation id="815598010540052116">Görgetés lefelé</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Page Down</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" /> és <ph name="TYPE_2" /></translation>
-<translation id="8245914219290430011">Lap</translation>
 <translation id="8259556432390118667">Hexadecimális színérték</translation>
 <translation id="8328145009876646418">Bal sarok</translation>
 <translation id="8331626408530291785">Görgetés felfelé</translation>
@@ -209,6 +226,7 @@
 <translation id="8393700583063109961">Üzenet küldése</translation>
 <translation id="8394908167088220973">Lejátszás/szüneteltetés</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 é}other{# é}}</translation>
+<translation id="8582972250170726813"><ph name="COLUMN_NAME" /> oszlop csökkenő sorrendbe rendezve</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> fájl (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> kB/s</translation>
@@ -225,6 +243,8 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 mp}other{# mp}}</translation>
 <translation id="9059834730836941392">Értesítés összecsukása</translation>
 <translation id="9170848237812810038">&amp;Visszavonás</translation>
+<translation id="9195990613383871904">Holnap</translation>
+<translation id="928628199082367701">Super</translation>
 <translation id="932327136139879170">Főoldal</translation>
 <translation id="944069440740578670">Olvasatlan értesítések</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{1 másodperce}other{# másodperce}}</translation>

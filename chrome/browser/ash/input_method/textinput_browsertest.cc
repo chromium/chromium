@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_view_host.h"
@@ -31,7 +32,7 @@ using TextInput_TextInputStateChangedTest = TextInputTestBase;
 IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest,
                        SwitchToPasswordFieldTest) {
   TextInputTestHelper helper(GetInputMethod());
-  GURL url = ui_test_utils::GetTestUrl(
+  GURL url = chrome_test_utils::GetTestUrl(
       base::FilePath(FILE_PATH_LITERAL("textinput")),
       base::FilePath(FILE_PATH_LITERAL("ime_enable_disable_test.html")));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -53,7 +54,7 @@ IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest, FocusOnLoadTest) {
   TextInputTestHelper helper(GetInputMethod());
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE, helper.GetTextInputType());
 
-  GURL url = ui_test_utils::GetTestUrl(
+  GURL url = chrome_test_utils::GetTestUrl(
       base::FilePath(FILE_PATH_LITERAL("textinput")),
       base::FilePath(FILE_PATH_LITERAL("focus_input_on_load.html")));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -67,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest,
   TextInputTestHelper helper(GetInputMethod());
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE, helper.GetTextInputType());
 
-  GURL url = ui_test_utils::GetTestUrl(
+  GURL url = chrome_test_utils::GetTestUrl(
       base::FilePath(FILE_PATH_LITERAL("textinput")),
       base::FilePath(FILE_PATH_LITERAL("focus_input_on_content_js.html")));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -80,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest, MouseClickChange) {
   TextInputTestHelper helper(GetInputMethod());
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE, helper.GetTextInputType());
 
-  GURL url = ui_test_utils::GetTestUrl(
+  GURL url = chrome_test_utils::GetTestUrl(
       base::FilePath(FILE_PATH_LITERAL("textinput")),
       base::FilePath(FILE_PATH_LITERAL("focus_input_with_mouse_click.html")));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -105,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest,
   TextInputTestHelper helper(GetInputMethod());
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE, helper.GetTextInputType());
 
-  GURL url = ui_test_utils::GetTestUrl(
+  GURL url = chrome_test_utils::GetTestUrl(
       base::FilePath(FILE_PATH_LITERAL("textinput")),
       base::FilePath(FILE_PATH_LITERAL("focus_input_on_anothor_focus.html")));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -136,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest,
   TextInputTestHelper helper(GetInputMethod());
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE, helper.GetTextInputType());
 
-  GURL url = ui_test_utils::GetTestUrl(
+  GURL url = chrome_test_utils::GetTestUrl(
       base::FilePath(FILE_PATH_LITERAL("textinput")),
       base::FilePath(FILE_PATH_LITERAL("simple_textinput.html")));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -163,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest,
   TextInputTestHelper helper(GetInputMethod());
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE, helper.GetTextInputType());
 
-  GURL url = ui_test_utils::GetTestUrl(
+  GURL url = chrome_test_utils::GetTestUrl(
       base::FilePath(FILE_PATH_LITERAL("textinput")),
       base::FilePath(FILE_PATH_LITERAL("simple_textinput.html")));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -190,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest,
   TextInputTestHelper helper(GetInputMethod());
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE, helper.GetTextInputType());
 
-  GURL url = ui_test_utils::GetTestUrl(
+  GURL url = chrome_test_utils::GetTestUrl(
       base::FilePath(FILE_PATH_LITERAL("textinput")),
       base::FilePath(FILE_PATH_LITERAL("content_editable.html")));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -219,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest,
   TextInputTestHelper helper(GetInputMethod());
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE, helper.GetTextInputType());
 
-  GURL url = ui_test_utils::GetTestUrl(
+  GURL url = chrome_test_utils::GetTestUrl(
       base::FilePath(FILE_PATH_LITERAL("textinput")),
       base::FilePath(FILE_PATH_LITERAL("all_input_node.html")));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -260,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest,
   TextInputTestHelper helper(GetInputMethod());
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE, helper.GetTextInputType());
 
-  GURL base_url = ui_test_utils::GetTestUrl(
+  GURL base_url = chrome_test_utils::GetTestUrl(
       base::FilePath(FILE_PATH_LITERAL("textinput")),
       base::FilePath(FILE_PATH_LITERAL("all_input_node.html")));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), base_url));
@@ -273,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest,
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_PASSWORD, helper.GetTextInputType());
 
   // Then opening new foreground tab and wait new TextInputType.
-  GURL new_url = ui_test_utils::GetTestUrl(
+  GURL new_url = chrome_test_utils::GetTestUrl(
       base::FilePath(FILE_PATH_LITERAL("textinput")),
       base::FilePath(FILE_PATH_LITERAL("focus_input_on_load.html")));
   ui_test_utils::NavigateToURLWithDisposition(

@@ -14,8 +14,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/common/task_annotator.h"
 #include "base/test/task_environment.h"
+#include "base/test/trace_test_utils.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_config.h"
+#include "base/trace_event/trace_log.h"
 #include "base/trace_event/traced_value.h"
 #include "perf_test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,7 +47,7 @@ class TraceEventPerfTest : public ::testing::Test {
   void BeginTrace() {
     TraceConfig config("*", "");
     config.SetTraceRecordMode(TraceRecordMode::RECORD_CONTINUOUSLY);
-    TraceLog::GetInstance()->SetEnabled(config, TraceLog::RECORDING_MODE);
+    TraceLog::GetInstance()->SetEnabled(config);
   }
 
   void EndTraceAndFlush() {
@@ -97,6 +100,7 @@ class TraceEventPerfTest : public ::testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment;
+  base::test::TracingEnvironment tracing_environment_;
 };
 
 TEST_F(TraceEventPerfTest, Submit_10000_TRACE_EVENT0) {

@@ -7,7 +7,6 @@
 
 #include <optional>
 #include <string>
-#include <tuple>
 #include <vector>
 
 #include "net/base/connection_endpoint_metadata.h"
@@ -28,13 +27,8 @@ struct NET_EXPORT_PRIVATE HostResolverEndpointResult {
   HostResolverEndpointResult(HostResolverEndpointResult&&);
   HostResolverEndpointResult& operator=(HostResolverEndpointResult&&) = default;
 
-  bool operator==(const HostResolverEndpointResult& other) const {
-    return std::tie(ip_endpoints, metadata) ==
-           std::tie(other.ip_endpoints, other.metadata);
-  }
-  bool operator!=(const HostResolverEndpointResult& other) const {
-    return !(*this == other);
-  }
+  friend bool operator==(const HostResolverEndpointResult&,
+                         const HostResolverEndpointResult&) = default;
 
   // IP endpoints at which to connect to the service.
   std::vector<net::IPEndPoint> ip_endpoints;
@@ -63,14 +57,8 @@ struct NET_EXPORT_PRIVATE ServiceEndpoint {
   ServiceEndpoint(ServiceEndpoint&&);
   ServiceEndpoint& operator=(ServiceEndpoint&&) = default;
 
-  bool operator==(const ServiceEndpoint& other) const {
-    return std::forward_as_tuple(ipv4_endpoints, ipv6_endpoints, metadata) ==
-           std::forward_as_tuple(other.ipv4_endpoints, other.ipv6_endpoints,
-                                 other.metadata);
-  }
-  bool operator!=(const ServiceEndpoint& other) const {
-    return !(*this == other);
-  }
+  friend bool operator==(const ServiceEndpoint&,
+                         const ServiceEndpoint&) = default;
 
   base::Value::Dict ToValue() const;
 

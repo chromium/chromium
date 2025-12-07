@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include <array>
+#include <cstdint>
 #include <vector>
 
+#include "base/containers/auto_spanification_helper.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
+#include "base/numerics/safe_conversions.h"
 
 // Expected rewrite:
 // base::span<T> get()
@@ -61,7 +64,9 @@ void fct() {
   // ee = dd;
   ee = dd;
 
-  ee++;  // Buffer usage, leads e to be rewritten.
+  // Expected rewrite:
+  // base::PostIncrementSpan(ee);
+  base::PostIncrementSpan(ee);  // Buffer usage, leads e to be rewritten.
 
   // Expected rewrite:
   // base::span<int> ff = {};
@@ -69,7 +74,9 @@ void fct() {
 
   ff = get<int>();
 
-  ++ff;  // Leads to ff being rewritten.
+  // Expected rewrite:
+  // base::PreIncrementSpan(ff);
+  base::PreIncrementSpan(ff);  // Leads to ff being rewritten.
 
   // Exptected rewrite:
   // base::span<int> gg = {};
@@ -79,5 +86,13 @@ void fct() {
   // gg = (condition) ? ctn1 : ctn2;
   gg = (condition) ? ctn1 : ctn2;
 
-  gg += 1;  // Buffer usage, leads gg to be rewritten.
+  // Buffer usage, leads gg to be rewritten.
+  // Expected rewrite:
+  // gg = gg.subspan(1u);
+  gg = gg.subspan(1u);
+
+  // Buffer usage
+  // Expected rewrite:
+  // gg = gg.subspan(base::checked_cast<size_t>(index * 2));
+  gg = gg.subspan(base::checked_cast<size_t>(index * 2));
 }

@@ -13,7 +13,7 @@
 // cleaned up all public uses of this interface.
 class PrefNotifier {
  public:
-  virtual ~PrefNotifier() {}
+  virtual ~PrefNotifier() = default;
 
   // Sends out a change notification for the preference identified by
   // |pref_name|.

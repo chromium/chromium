@@ -18,6 +18,7 @@
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
 #include "content/public/browser/web_contents.h"
 #import "ui/base/cocoa/cocoa_base_utils.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace {
 
@@ -28,14 +29,16 @@ void SetToggleState(bool toggled, id item) {
     NSControlStateValue old_state = [menuItem state];
     NSControlStateValue new_state =
         toggled ? NSControlStateValueOn : NSControlStateValueOff;
-    if (old_state != new_state)
+    if (old_state != new_state) {
       [menuItem setState:new_state];
+    }
   } else if (buttonItem) {
     NSControlStateValue old_state = [buttonItem state];
     NSControlStateValue new_state =
         toggled ? NSControlStateValueOn : NSControlStateValueOff;
-    if (old_state != new_state)
+    if (old_state != new_state) {
       [buttonItem setState:new_state];
+    }
   }
 }
 
@@ -49,10 +52,11 @@ remote_cocoa::NativeWidgetNSWindowBridge* FindBridgeForSender(
     id sender,
     NSWindow* window) {
   NSWindow* targetWindow = window;
-  if ([sender respondsToSelector:@selector(window)])
+  if ([sender respondsToSelector:@selector(window)]) {
     targetWindow = [sender window];
-  auto* bridge = remote_cocoa::NativeWidgetNSWindowBridge::GetFromNativeWindow(
-      targetWindow);
+  }
+  auto* bridge =
+      remote_cocoa::NativeWidgetNSWindowBridge::GetFromNSWindow(targetWindow);
   DCHECK(bridge);
   return bridge;
 }
@@ -68,34 +72,34 @@ remote_cocoa::NativeWidgetNSWindowBridge* FindBridgeForSender(
     // NSWindow should only forward the above selectors here. All other
     // selectors must be handled by the default -[NSWindow
     // validateUserInterfaceItem:window:].
-    NOTREACHED_IN_MIGRATION();
-    // By default, interface items are enabled if the object in the responder
-    // chain that implements the action does not implement
-    // -validateUserInterfaceItem. Since we only care about -commandDispatch,
-    // return YES for all other actions.
-    return YES;
+    NOTREACHED();
   }
 
   auto* bridge =
-      remote_cocoa::NativeWidgetNSWindowBridge::GetFromNativeWindow(window);
+      remote_cocoa::NativeWidgetNSWindowBridge::GetFromNSWindow(window);
   DCHECK(bridge);
 
   remote_cocoa::mojom::ValidateUserInterfaceItemResultPtr result;
-  if (!bridge->host()->ValidateUserInterfaceItem([item tag], &result))
+  if (!bridge->host()->ValidateUserInterfaceItem([item tag], &result)) {
     return NO;
+  }
 
-  if (result->set_toggle_state)
+  if (result->set_toggle_state) {
     SetToggleState(result->new_toggle_state, item);
+  }
 
   if (NSMenuItem* menuItem = base::apple::ObjCCast<NSMenuItem>(item)) {
-    if (result->disable_if_has_no_key_equivalent)
+    if (result->disable_if_has_no_key_equivalent) {
       result->enable &= !![[menuItem keyEquivalent] length];
+    }
 
-    if (result->set_hidden_state)
+    if (result->set_hidden_state) {
       [menuItem setHidden:result->new_hidden_state];
+    }
 
-    if (result->new_title)
+    if (result->new_title) {
       [menuItem setTitle:base::SysUTF16ToNSString(*result->new_title)];
+    }
   }
 
   return result->enable;

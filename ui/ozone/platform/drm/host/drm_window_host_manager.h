@@ -9,7 +9,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace gfx {
 class Point;
@@ -59,6 +59,10 @@ class DrmWindowHostManager {
 
   // Called when a mouse physicall moved into the |window|.
   void MouseOnWindow(DrmWindowHost* window);
+
+  // This will cause the next mouse event to call
+  // 'PlatformWindowDelegate::OnCursorUpdate`.
+  void ForceCursorUpdateOnNextMouseMove();
 
   // Gets the current widget recipient of mouse events.
   gfx::AcceleratedWidget event_grabber() const { return event_grabber_; }

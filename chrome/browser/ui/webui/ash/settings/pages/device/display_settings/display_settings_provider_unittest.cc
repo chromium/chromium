@@ -107,7 +107,8 @@ class FakeDisplayBrightnessSettingsObserver
   double current_brightness() { return current_brightness_; }
 
   // mojom::DisplayBrightnessSettingsObserver:
-  void OnDisplayBrightnessChanged(double brightness_percent) override {
+  void OnDisplayBrightnessChanged(double brightness_percent,
+                                  bool triggered_by_als) override {
     ++num_display_brightness_changed_calls_;
     current_brightness_ = brightness_percent;
 
@@ -238,6 +239,8 @@ class DisplaySettingsProviderTest : public ChromeAshTestBase {
 
   void SetUp() override {
     ChromeAshTestBase::SetUp();
+    feature_list_.InitAndDisableFeature(
+        features::kEnableBrightnessControlInSettings);
     provider_ = std::make_unique<DisplaySettingsProvider>();
     brightness_control_delegate_ =
         std::make_unique<FakeBrightnessControlDelegate>();
@@ -458,7 +461,7 @@ TEST_F(DisplaySettingsProviderTest, NewDisplayConnectedHistogram) {
           kNewDisplayConnected,
       0);
 
-  int64_t id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  int64_t id = display::Screen::Get()->GetPrimaryDisplay().id();
   provider_->OnDisplayAdded(display::Display(id));
 
   // Expect to count new display is connected.
@@ -497,7 +500,7 @@ TEST_F(DisplaySettingsProviderTest, NewDisplayConnectedHistogram) {
 // Test histogram is recorded when user overrides system default display
 // settings.
 TEST_F(DisplaySettingsProviderTest, UserOverrideDefaultSettingsHistogram) {
-  int64_t id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  int64_t id = display::Screen::Get()->GetPrimaryDisplay().id();
   provider_->OnDisplayAdded(display::Display(id));
 
   constexpr uint16_t kTimeDeltaInMinute = 15;
@@ -543,7 +546,7 @@ TEST_F(DisplaySettingsProviderTest, UserOverrideDefaultSettingsHistogram) {
 // settings after 60 minutes.
 TEST_F(DisplaySettingsProviderTest,
        UserOverrideDefaultSettingsHistogramNotFired) {
-  int64_t id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  int64_t id = display::Screen::Get()->GetPrimaryDisplay().id();
   provider_->OnDisplayAdded(display::Display(id));
 
   constexpr uint16_t kTimeDeltaInMinute = 61;
@@ -611,10 +614,6 @@ TEST_F(DisplaySettingsProviderTest, DisplayBrightnessSettingsObservation) {
 // the feature flag is disabled).
 TEST_F(DisplaySettingsProviderTest,
        SetInternalDisplayScreenBrightness_FeatureDisabled) {
-  feature_list_.Reset();
-  feature_list_.InitAndDisableFeature(
-      ash::features::kEnableBrightnessControlInSettings);
-
   // No histograms should have been recorded yet.
   histogram_tester_.ExpectTotalCount(
       "ChromeOS.Settings.Display.Internal.BrightnessSliderAdjusted",
@@ -704,10 +703,6 @@ TEST_F(DisplaySettingsProviderTest,
 // the feature flag is disabled).
 TEST_F(DisplaySettingsProviderTest,
        SetAmbientLightSensorEnabled_FeatureDisabled) {
-  feature_list_.Reset();
-  feature_list_.InitAndDisableFeature(
-      ash::features::kEnableBrightnessControlInSettings);
-
   // No histograms should have been recorded.
   histogram_tester_.ExpectTotalCount(
       "ChromeOS.Settings.Display.Internal.AutoBrightnessEnabled",

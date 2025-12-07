@@ -1,0 +1,16 @@
+include_rules = [
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor ash codes in //chrome to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  "+chrome/browser/apps/app_service",
+  "+chrome/browser/ash/profiles",
+  "+chrome/browser/ash/system_web_apps",
+  "+chrome/browser/profiles",
+  "+chrome/browser/ash/browser_delegate/browser_type_conversion.h",
+  "+chrome/browser/ui/ash/multi_user",
+  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/web_applications",
+  "+chrome/browser/ui/webui/theme_source.h",
+  "+chrome/browser/web_applications",
+  "+chrome/common",
+]

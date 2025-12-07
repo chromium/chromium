@@ -11,6 +11,8 @@
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/mock_callback.h"
@@ -159,7 +161,7 @@ class UserDataSnapshotBrowserTestBase : public InProcessBrowserTest {
               mock_relaunch_callback_->Get());
 
       // Expect that browser startup short-circuits into a relaunch.
-      set_expected_exit_code(chrome::RESULT_CODE_DOWNGRADE_AND_RELAUNCH);
+      set_expected_exit_code(CHROME_RESULT_CODE_DOWNGRADE_AND_RELAUNCH);
     }
   }
 
@@ -437,10 +439,10 @@ class TabsSnapshotTest : public UserDataSnapshotBrowserTestBase {
 
     // embedded_test_server() might return a different hostname.
     content::WaitForLoadStop(tab_strip->GetWebContentsAt(0));
-    EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path(),
+    EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().GetPath(),
               "/title1.html");
     content::WaitForLoadStop(tab_strip->GetWebContentsAt(1));
-    EXPECT_EQ(tab_strip->GetWebContentsAt(1)->GetLastCommittedURL().path(),
+    EXPECT_EQ(tab_strip->GetWebContentsAt(1)->GetLastCommittedURL().GetPath(),
               "/title2.html");
   }
 };

@@ -27,7 +27,9 @@
 #include "content/public/test/fake_speech_recognition_manager.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_host_test_helper.h"
+#include "extensions/browser/extension_registry_test_helper.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_observer.h"
 #include "ui/base/ime/ash/ime_bridge.h"
@@ -57,10 +59,11 @@ constexpr char kTextAreaUrl[] = R"(
     data:text/html;charset=utf-8,<textarea id='input'
         class='editableForDictation' autofocus></textarea>
 )";
-constexpr char kPumpkinTestFilePath[] =
-    "resources/chromeos/accessibility/accessibility_common/third_party/pumpkin";
-constexpr char kTestSupportPath[] =
-    "chrome/browser/resources/chromeos/accessibility/accessibility_common/"
+constexpr char kPumpkinMV3TestFilePath[] =
+    "resources/chromeos/accessibility/accessibility_common/mv3/third_party/"
+    "pumpkin";
+constexpr char kTestSupportMV3Path[] =
+    "chrome/browser/resources/chromeos/accessibility/accessibility_common/mv3/"
     "dictation/dictation_test_support.js";
 
 // Listens for changes to the clipboard. This class only allows `Wait()` to be
@@ -123,8 +126,8 @@ DictationTestUtils::DictationTestUtils(
       editable_type_(editable_type) {
   automation_test_utils_ = std::make_unique<AutomationTestUtils>(
       extension_misc::kAccessibilityCommonExtensionId);
-  test_helper_ =
-      std::make_unique<SpeechRecognitionTestHelper>(speech_recognition_type);
+  test_helper_ = std::make_unique<SpeechRecognitionTestHelper>(
+      speech_recognition_type, media::mojom::RecognizerClientType::kDictation);
 }
 
 DictationTestUtils::~DictationTestUtils() {
@@ -144,19 +147,18 @@ void DictationTestUtils::EnableDictation(
 
   // Set up the Pumpkin dir before turning on Dictation because the
   // extension will immediately request a Pumpkin installation once activated.
-  DictationTestUtils::SetUpPumpkinDir();
+  DictationTestUtils::SetUpPumpkinDir(kPumpkinMV3TestFilePath);
   test_helper_->SetUp(profile_);
   ASSERT_FALSE(AccessibilityManager::Get()->IsDictationEnabled());
   profile_->GetPrefs()->SetBoolean(
       prefs::kDictationAcceleratorDialogHasBeenAccepted, true);
 
   if (wait_for_accessibility_common_extension_load_) {
-    // Use ExtensionHostTestHelper to detect when the accessibility common
-    // extension loads.
-    extensions::ExtensionHostTestHelper host_helper(
-        profile_, extension_misc::kAccessibilityCommonExtensionId);
+    // Watch events from an MV3 extension which runs in a service worker.
+    extensions::ExtensionRegistryTestHelper observer(
+        extension_misc::kAccessibilityCommonExtensionId, profile);
     AccessibilityManager::Get()->SetDictationEnabled(true);
-    host_helper.WaitForHostCompletedFirstLoad();
+    observer.WaitForServiceWorkerStart();
   } else {
     // In some cases (e.g. DictationWithAutoclickTest) the accessibility
     // common extension is already setup and loaded. For these cases, simply
@@ -176,8 +178,8 @@ void DictationTestUtils::EnableDictation(
 
   // Create an instance of the DictationTestSupport JS class, which can be
   // used from these tests to interact with Dictation JS. For more
-  // information, see kTestSupportPath.
-  SetUpTestSupport();
+  // information, see kTestSupportMV3Path.
+  SetUpTestSupport(kTestSupportMV3Path);
 
   // Wait for focus to propagate.
   WaitForEditableFocus();
@@ -322,24 +324,34 @@ void DictationTestUtils::WaitForCommitText(const std::u16string& value) {
   input_context_handler_->RemoveObserver(&waiter);
 }
 
-void DictationTestUtils::SetUpPumpkinDir() {
+void DictationTestUtils::DisableConsoleObserver() {
+  console_observer_.reset();
+}
+
+void DictationTestUtils::AddAllowedExtensionError(
+    const std::u16string& allowed) {
+  if (console_observer_) {
+    console_observer_->AddAllowedError(allowed);
+  }
+}
+
+void DictationTestUtils::SetUpPumpkinDir(const char* pumpkin_dir) {
   // Set the path to the Pumpkin test files. For more details, see the
   // `pumpkin_test_files` rule in the accessibility_common BUILD file.
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath gen_root_dir;
   ASSERT_TRUE(
       base::PathService::Get(base::DIR_OUT_TEST_DATA_ROOT, &gen_root_dir));
-  base::FilePath pumpkin_test_file_path =
-      gen_root_dir.AppendASCII(kPumpkinTestFilePath);
+  base::FilePath pumpkin_test_file_path = gen_root_dir.AppendASCII(pumpkin_dir);
   ASSERT_TRUE(base::PathExists(pumpkin_test_file_path));
   AccessibilityManager::Get()->SetDlcPathForTest(pumpkin_test_file_path);
 }
 
-void DictationTestUtils::SetUpTestSupport() {
+void DictationTestUtils::SetUpTestSupport(const char* test_support_dir) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath source_dir;
   CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_dir));
-  auto test_support_path = source_dir.AppendASCII(kTestSupportPath);
+  auto test_support_path = source_dir.AppendASCII(test_support_dir);
   std::string script;
   ASSERT_TRUE(base::ReadFileToString(test_support_path, &script))
       << test_support_path;
@@ -349,7 +361,7 @@ void DictationTestUtils::SetUpTestSupport() {
 void DictationTestUtils::WaitForDictationJSReady() {
   std::string script = base::StringPrintf(R"JS(
     (async function() {
-      window.accessibilityCommon.setFeatureLoadCallbackForTest('dictation',
+      globalThis.accessibilityCommon.setFeatureLoadCallbackForTest('dictation',
           () => {
             chrome.test.sendScriptResult('ready');
           });

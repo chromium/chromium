@@ -1,0 +1,15 @@
+include_rules = [
+  "+content/public/browser",
+  "+content/public/common",
+  "+mojo/public/cpp",
+]
+
+specific_include_rules = {
+  "^(test_|.*_(unit|pixel|perf|browser)?test).*\.(cc|h)": [
+    "+components/network_session_configurator/common",
+    "+content/public/test",
+    "+content/shell/browser",
+    "+net/dns",
+    "+net/test",
+  ],
+}

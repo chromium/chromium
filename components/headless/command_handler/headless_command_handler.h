@@ -65,6 +65,8 @@ class HeadlessCommandHandler : public content::WebContentsObserver {
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
   void WebContentsDestroyed() override;
 
+  void OnDevToolsProtocolExposed(base::Value::Dict);
+
   void OnTargetCrashed(const base::Value::Dict&);
 
   void OnCommandsResult(base::Value::Dict result);

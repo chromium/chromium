@@ -4,12 +4,14 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("drive") {
   sources = [
     "drive_integration_service.cc",
     "drive_integration_service.h",
+    "drive_integration_service_factory.cc",
+    "drive_integration_service_factory.h",
     "drivefs_native_message_host_ash.cc",
     "drivefs_native_message_host_ash.h",
     "file_system_util.cc",
@@ -23,7 +25,6 @@ static_library("drive") {
     "//chromeos/ash/components/drivefs",
     "//chromeos/ash/components/drivefs/mojom",
     "//chromeos/ash/components/network",
-    "//chromeos/crosapi/mojom",
     "//components/drive",
     "//components/keyed_service/core",
     "//components/prefs",
@@ -35,11 +36,12 @@ static_library("drive") {
   deps = [
     "//ash/constants",
     "//chrome/browser:browser_process",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos/drivefs",
     "//chrome/browser/chromeos/drivefs:native_message_host_origins",
+    "//chrome/browser/notifications",
     "//chrome/browser/profiles",
+    "//chrome/browser/signin",
     "//chrome/common:constants",
     "//chromeos/ash/components/drivefs/mojom:mojom_shared",
     "//chromeos/ash/components/drivefs/mojom:mojom_shared_cpp_sources",
@@ -81,7 +83,7 @@ static_library("test_support") {
 
   deps = [
     "//base/test:test_support",
-    "//chrome/browser/ash",
+    "//chrome/browser:browser_process",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
@@ -106,14 +108,13 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser/ash",
+    "//chrome/browser:browser_process",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chromeos/ash/components/drivefs:test_support",
     "//chromeos/ash/components/drivefs/mojom",
     "//chromeos/components/drivefs/mojom",
-    "//chromeos/crosapi/mojom",
     "//components/drive",
     "//components/prefs",
     "//components/prefs:test_support",
@@ -135,8 +136,7 @@ source_set("unit_tests") {
     ":drive",
     "//ash/constants",
     "//base",
-    "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/login/users:test_support",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/login/login_state",

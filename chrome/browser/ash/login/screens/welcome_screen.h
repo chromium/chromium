@@ -195,6 +195,10 @@ class WelcomeScreen : public BaseScreen,
   // The exact language code selected by user in the menu.
   std::string selected_language_code_;
 
+  // Whether the QuickStart entry point visibility has already been determined.
+  // This flag prevents duplicate histogram entries.
+  bool has_emitted_quick_start_visible = false;
+
   base::ObserverList<Observer>::Unchecked observers_;
 
   base::CallbackListSubscription accessibility_subscription_;

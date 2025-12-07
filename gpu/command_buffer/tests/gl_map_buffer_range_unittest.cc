@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #include <GLES2/gl2extchromium.h>
 #include <GLES3/gl3.h>
 #include <stdint.h>
 
+#include <array>
+
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
@@ -548,8 +546,9 @@ TEST_F(ES3MapBufferRangeTest, CopyBufferSubData) {
       glMapBufferRange(GL_ARRAY_BUFFER, 0, kSize, GL_MAP_READ_BIT));
   ASSERT_NE(nullptr, map_ptr);
 
-  EXPECT_EQ(0, memcmp(map_ptr, data0.data(), kHalfSize));
-  EXPECT_EQ(0, memcmp(map_ptr + kHalfSize, data1.data(), kHalfSize));
+  UNSAFE_TODO(EXPECT_EQ(0, memcmp(map_ptr, data0.data(), kHalfSize)));
+  UNSAFE_TODO(
+      EXPECT_EQ(0, memcmp(map_ptr + kHalfSize, data1.data(), kHalfSize)));
 
   glUnmapBuffer(GL_ARRAY_BUFFER);
 
@@ -563,13 +562,13 @@ TEST_F(ES3MapBufferRangeTest, CopyBufferSubData) {
   ASSERT_NE(nullptr, map_ptr);
 
   for (GLsizeiptr ii = 0; ii < kHalfSize; ++ii) {
-    EXPECT_EQ(kValue0, map_ptr[ii]);
+    UNSAFE_TODO(EXPECT_EQ(kValue0, map_ptr[ii]));
   }
   for (GLsizeiptr ii = kHalfSize; ii < kSize; ++ii) {
     if (ii >= kWriteOffset && ii < kWriteOffset + kCopySize) {
-      EXPECT_EQ(kValue0, map_ptr[ii]);
+      UNSAFE_TODO(EXPECT_EQ(kValue0, map_ptr[ii]));
     } else {
-      EXPECT_EQ(kValue1, map_ptr[ii]);
+      UNSAFE_TODO(EXPECT_EQ(kValue1, map_ptr[ii]));
     }
   }
 }
@@ -582,8 +581,8 @@ TEST_F(ES3MapBufferRangeTest, Delete) {
   const int kNumBuffers = 3;
   const int kSize = sizeof(GLuint);
 
-  GLuint buffers[kNumBuffers];
-  glGenBuffers(kNumBuffers, buffers);
+  std::array<GLuint, kNumBuffers> buffers;
+  glGenBuffers(kNumBuffers, buffers.data());
   // Set each buffer to contain its name.
   for (int i = 0; i < kNumBuffers; ++i) {
     EXPECT_NE(0u, buffers[i]);

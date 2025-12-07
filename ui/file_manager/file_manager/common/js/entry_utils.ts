@@ -7,8 +7,6 @@ import type {VolumeInfo} from '../../background/js/volume_info.js';
 import type {VolumeManager} from '../../background/js/volume_manager.js';
 import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {ODFS_EXTENSION_ID} from '../../foreground/js/constants.js';
-import type {DirectoryItem} from '../../foreground/js/ui/directory_tree.js';
-import type {TreeItem} from '../../foreground/js/ui/tree.js';
 import {driveRootEntryListKey, myFilesEntryListKey, recentRootKey, trashRootKey} from '../../state/ducks/volumes.js';
 import {type CurrentDirectory, EntryType, type FileData, type FileKey, type State, type Volume} from '../../state/state.js';
 import {getEntry, getStore, getVolume} from '../../state/store.js';
@@ -17,7 +15,7 @@ import type {XfTreeItem} from '../../widgets/xf_tree_item.js';
 import {createDOMError} from './dom_utils.js';
 import type {VolumeEntry} from './files_app_entry_types.js';
 import {EntryList, FakeEntryImpl} from './files_app_entry_types.js';
-import {isArcVmEnabled, isNewDirectoryTreeEnabled, isPluginVmEnabled} from './flags.js';
+import {isArcVmEnabled, isPluginVmEnabled, isSkyvaultV2Enabled} from './flags.js';
 import {collator, getEntryLabel} from './translations.js';
 import type {TrashEntry} from './trash.js';
 import {FileErrorToDomError} from './util.js';
@@ -950,23 +948,15 @@ export function shouldSupportDriveSpecificIcons(fileData: FileData): boolean {
  * Extracts the `entry` from the supplied `treeItem` depending on if the new
  * directory tree is enabled or not.
  */
-export function getTreeItemEntry(treeItem: DirectoryItem|XfTreeItem|TreeItem|
-                                 null|undefined): Entry|FilesAppEntry|null {
+export function getTreeItemEntry(treeItem: XfTreeItem|null|undefined): Entry|
+    FilesAppEntry|null {
   if (!treeItem) {
     return null;
   }
 
-  if ('entry' in treeItem && treeItem.entry) {
-    return treeItem.entry;
-  }
-
-  if (isNewDirectoryTreeEnabled()) {
-    const item = treeItem as XfTreeItem;
-    const state = getStore().getState();
-    return getEntry(state, item.dataset['navigationKey']!);
-  }
-
-  return null;
+  const item = treeItem as XfTreeItem;
+  const state = getStore().getState();
+  return getEntry(state, item.dataset['navigationKey']!);
 }
 
 /**
@@ -1065,4 +1055,40 @@ export function canHaveSubDirectories(fileData: FileData|null) {
   }
 
   return true;
+}
+
+/**
+ * Determines if the given entry can be deleted, considering read-only status
+ * and SkyVault.
+ */
+export function isReadOnlyForDelete(
+    volumeManager: VolumeManager, entry: Entry|FilesAppEntry) {
+  if (isNonModifiable(volumeManager, entry)) {
+    return true;
+  }
+
+  const locationInfo = volumeManager.getLocationInfo(entry);
+  const isReadOnly = locationInfo && locationInfo.isReadOnly;
+
+  if (!isReadOnly || !isSkyvaultV2Enabled()) {
+    // If not read-only, or if SkyVault is disabled, just return
+    return isReadOnly;
+  }
+  // Else, further checks are needed
+  const volumeInfo = locationInfo.volumeInfo;
+  if (!volumeInfo) {
+    return isReadOnly;
+  }
+
+  // Allow deletion even if read-only, when:
+  //  - local storage is disabled
+  //  - the volume is in MyFiles or Downloads
+  const state = getStore().getState();
+  const localUserFilesAllowed = state.preferences?.localUserFilesAllowed;
+  if (!localUserFilesAllowed &&
+      (volumeInfo.volumeType === VolumeType.DOWNLOADS ||
+       volumeInfo.volumeType === VolumeType.MY_FILES)) {
+    return false;
+  }
+  return isReadOnly;
 }

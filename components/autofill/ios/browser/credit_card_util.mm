@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/ios/browser/credit_card_util.h"
+#import "components/autofill/ios/browser/credit_card_util.h"
 
-#include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/autofill_type.h"
+#import "components/autofill/core/browser/data_model/payments/credit_card.h"
 
 namespace autofill {
 
@@ -22,6 +22,10 @@ NSString* GetCreditCardNameAndLastFourDigits(const CreditCard& credit_card) {
 
 NSString* GetCreditCardNicknameString(const CreditCard& credit_card) {
   return base::SysUTF16ToNSString(credit_card.nickname());
+}
+
+NSString* GetCreditCardCvcString(const CreditCard& credit_card) {
+  return base::SysUTF16ToNSString(credit_card.cvc());
 }
 
 NSDateComponents* GetCreditCardExpirationDate(const CreditCard& credit_card) {

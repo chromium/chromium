@@ -13,12 +13,12 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "components/sync/model/data_type_store.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
-#include "components/sync/model/data_type_store.h"
 #include "components/sync/protocol/security_event_specifics.pb.h"
-#include "components/sync/test/mock_data_type_store.h"
 #include "components/sync/test/data_type_store_test_util.h"
+#include "components/sync/test/mock_data_type_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -142,7 +142,8 @@ TEST_F(DataTypeStoreWithInMemoryCacheTest, HandlesStoreCreationError) {
   base::MockCallback<OnceDataTypeStoreFactory> store_factory;
   EXPECT_CALL(store_factory, Run)
       .WillOnce(RunOnceCallback<1>(
-          ModelError(FROM_HERE, "Store creation error!"), nullptr));
+          ModelError(FROM_HERE, syncer::ModelError::Type::kGenericTestError),
+          nullptr));
   std::optional<ModelError> error;
   std::unique_ptr<StoreWithCache> store;
   std::unique_ptr<MetadataBatch> metadata_batch;
@@ -150,7 +151,7 @@ TEST_F(DataTypeStoreWithInMemoryCacheTest, HandlesStoreCreationError) {
       CreateAndLoadStoreWithCache(store_factory.Get());
 
   ASSERT_TRUE(error.has_value());
-  EXPECT_EQ(error->message(), "Store creation error!");
+  EXPECT_EQ(error->type(), syncer::ModelError::Type::kGenericTestError);
   EXPECT_FALSE(store);
   EXPECT_FALSE(metadata_batch);
 }
@@ -162,8 +163,9 @@ TEST_F(DataTypeStoreWithInMemoryCacheTest, HandlesStoreLoadError) {
       DataTypeStoreTestUtil::MoveStoreToFactory(std::move(underlying_store));
 
   EXPECT_CALL(*underlying_store_raw, ReadAllDataAndMetadata)
-      .WillOnce(RunOnceCallback<0>(ModelError(FROM_HERE, "Store load error!"),
-                                   nullptr, nullptr));
+      .WillOnce(RunOnceCallback<0>(
+          ModelError(FROM_HERE, ModelError::Type::kGenericTestError), nullptr,
+          nullptr));
 
   std::optional<ModelError> error;
   std::unique_ptr<StoreWithCache> store;
@@ -172,7 +174,7 @@ TEST_F(DataTypeStoreWithInMemoryCacheTest, HandlesStoreLoadError) {
       CreateAndLoadStoreWithCache(std::move(store_factory));
 
   ASSERT_TRUE(error.has_value());
-  EXPECT_EQ(error->message(), "Store load error!");
+  EXPECT_EQ(error->type(), ModelError::Type::kGenericTestError);
   EXPECT_FALSE(store);
   EXPECT_FALSE(metadata_batch);
 }

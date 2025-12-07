@@ -23,6 +23,8 @@
 #include "absl/strings/str_cat.h"
 #include "mediapipe/framework/graph_service_manager.h"
 #include "mediapipe/framework/port/logging.h"
+#include "mediapipe/framework/resources.h"
+#include "mediapipe/framework/resources_service.h"
 
 namespace mediapipe {
 
@@ -31,7 +33,7 @@ CalculatorState::CalculatorState(
     const std::string& calculator_type,
     const CalculatorGraphConfig::Node& node_config,
     std::shared_ptr<ProfilingContext> profiling_context,
-    std::shared_ptr<GraphServiceManager> graph_service_manager)
+    const GraphServiceManager* graph_service_manager)
     : node_name_(node_name),
       node_id_(node_id),
       calculator_type_(calculator_type),
@@ -39,6 +41,12 @@ CalculatorState::CalculatorState(
       profiling_context_(profiling_context),
       graph_service_manager_(graph_service_manager),
       counter_factory_(nullptr) {
+  if (graph_service_manager) {
+    resources_ = graph_service_manager->GetServiceObject(kResourcesService);
+  }
+  if (!resources_) {
+    resources_ = CreateDefaultResources();
+  }
   options_.Initialize(node_config);
   ResetBetweenRuns();
 }

@@ -51,8 +51,9 @@ size_t HashInts32Impl(uint32_t value1, uint32_t value2) {
   uint64_t value1_64 = value1;
   uint64_t hash64 = (value1_64 << 32) | value2;
 
-  if (sizeof(size_t) >= sizeof(uint64_t))
+  if (sizeof(size_t) >= sizeof(uint64_t)) {
     return static_cast<size_t>(hash64);
+  }
 
   uint64_t odd_random = 481046412LL << 32 | 1025306955LL;
   uint32_t shift_random = 10121U << 16;
@@ -86,8 +87,9 @@ size_t HashInts64Impl(uint64_t value1, uint64_t value2) {
 
   uint64_t hash64 = product1 + product2 + product3 + product4;
 
-  if (sizeof(size_t) >= sizeof(uint64_t))
+  if (sizeof(size_t) >= sizeof(uint64_t)) {
     return static_cast<size_t>(hash64);
+  }
 
   uint64_t odd_random = 1578233944LL << 32 | 194370989LL;
   uint32_t shift_random = 20591U << 16;
@@ -141,15 +143,14 @@ uint32_t PersistentHash(span<const uint8_t> data) {
   // This hash function must not change, since it is designed to be persistable
   // to disk.
   if (data.size() > size_t{std::numeric_limits<int>::max()}) {
-    NOTREACHED_IN_MIGRATION();
-    return 0;
+    NOTREACHED();
   }
   auto chars = as_chars(data);
   return ::SuperFastHash(chars.data(), checked_cast<int>(chars.size()));
 }
 
 uint32_t PersistentHash(std::string_view str) {
-  return PersistentHash(as_bytes(make_span(str)));
+  return PersistentHash(as_byte_span(str));
 }
 
 size_t HashInts32(uint32_t value1, uint32_t value2) {

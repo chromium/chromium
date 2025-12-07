@@ -11,7 +11,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/version.h"
-#include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -22,23 +21,33 @@
 #include "components/sync/service/sync_prefs.h"
 #include "components/sync/service/sync_service_crypto.h"
 #include "components/version_info/version_info.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace syncer {
 
 namespace {
 
-// Converts |selected_types| to the corresponding DataTypeSet (e.g.
+// Converts `selected_types` to the corresponding DataTypeSet (e.g.
 // {kExtensions} becomes {EXTENSIONS, EXTENSION_SETTINGS}).
-DataTypeSet UserSelectableTypesToDataTypes(
-    UserSelectableTypeSet selected_types) {
+DataTypeSet UserSelectableTypesToDataTypes(UserSelectableTypeSet selected_types,
+                                           bool is_explicit_browser_sign_in) {
   DataTypeSet preferred_types;
   for (UserSelectableType type : selected_types) {
+    if (type == UserSelectableType::kPayments && !is_explicit_browser_sign_in) {
+      // If sign-in is implicit (legacy desktop Dice state), types such as
+      // AUTOFILL_WALLET_METADATA must be excluded.
+      preferred_types.PutAll(Intersection(
+          UserSelectableTypeToAllDataTypes(type),
+          DataTypeSet{AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_CREDENTIAL,
+                      AUTOFILL_WALLET_USAGE}));
+      continue;
+    }
     preferred_types.PutAll(UserSelectableTypeToAllDataTypes(type));
   }
   return preferred_types;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 DataTypeSet UserSelectableOsTypesToDataTypes(
     UserSelectableOsTypeSet selected_types) {
   DataTypeSet preferred_types;
@@ -47,7 +56,7 @@ DataTypeSet UserSelectableOsTypesToDataTypes(
   }
   return preferred_types;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 int GetCurrentMajorProductVersion() {
   DCHECK(version_info::GetVersion().IsValid());
@@ -88,6 +97,7 @@ SyncUserSettingsImpl::SyncUserSettingsImpl(Delegate* delegate,
   CHECK(delegate_);
   CHECK(crypto_);
   CHECK(prefs_);
+  prefs_observation_.Observe(prefs_);
 }
 
 SyncUserSettingsImpl::~SyncUserSettingsImpl() = default;
@@ -96,7 +106,7 @@ bool SyncUserSettingsImpl::IsInitialSyncFeatureSetupComplete() const {
   return prefs_->IsInitialSyncFeatureSetupComplete();
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 void SyncUserSettingsImpl::SetInitialSyncFeatureSetupComplete(
     SyncFirstSetupCompleteSource source) {
   if (IsInitialSyncFeatureSetupComplete()) {
@@ -104,8 +114,9 @@ void SyncUserSettingsImpl::SetInitialSyncFeatureSetupComplete(
   }
   UMA_HISTOGRAM_ENUMERATION("Signin.SyncFirstSetupCompleteSource", source);
   prefs_->SetInitialSyncFeatureSetupComplete();
+  delegate_->OnInitialSyncFeatureSetupCompleted();
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 bool SyncUserSettingsImpl::IsSyncEverythingEnabled() const {
   return prefs_->HasKeepEverythingSynced();
@@ -118,10 +129,9 @@ UserSelectableTypeSet SyncUserSettingsImpl::GetSelectedTypes() const {
     case SyncPrefs::SyncAccountState::kNotSignedIn: {
       return UserSelectableTypeSet();
     }
-    case SyncPrefs::SyncAccountState::kSignedInNotSyncing: {
-      signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(
+    case SyncPrefs::SyncAccountState::kSignedInWithoutSyncConsent: {
+      types = prefs_->GetSelectedTypesForAccount(
           delegate_->GetSyncAccountInfoForPrefs().gaia);
-      types = prefs_->GetSelectedTypesForAccount(gaia_id_hash);
       break;
     }
     case SyncPrefs::SyncAccountState::kSyncing: {
@@ -130,18 +140,6 @@ UserSelectableTypeSet SyncUserSettingsImpl::GetSelectedTypes() const {
     }
   }
   types.RetainAll(GetRegisteredSelectableTypes());
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (base::FeatureList::IsEnabled(kSyncChromeOSAppsToggleSharing) &&
-      GetRegisteredSelectableTypes().Has(UserSelectableType::kApps)) {
-    // Apps sync is controlled by dedicated preference on Lacros, corresponding
-    // to Apps toggle in OS Sync settings.
-    types.Remove(UserSelectableType::kApps);
-    if (prefs_->IsAppsSyncEnabledByOs()) {
-      types.Put(UserSelectableType::kApps);
-    }
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   return types;
 }
@@ -160,22 +158,15 @@ SyncUserSettings::UserSelectableTypePrefState
 SyncUserSettingsImpl::GetTypePrefStateForAccount(
     UserSelectableType type) const {
   if (delegate_->GetSyncAccountStateForPrefs() !=
-      SyncPrefs::SyncAccountState::kSignedInNotSyncing) {
+      SyncPrefs::SyncAccountState::kSignedInWithoutSyncConsent) {
     return SyncUserSettings::UserSelectableTypePrefState::kNotApplicable;
   }
-  signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(
-      delegate_->GetSyncAccountInfoForPrefs().gaia);
-  if (prefs_->IsTypeDisabledByUserForAccount(type, gaia_id_hash)) {
+  if (prefs_->IsTypeDisabledByUserForAccount(
+          type, delegate_->GetSyncAccountInfoForPrefs().gaia)) {
     return SyncUserSettings::UserSelectableTypePrefState::kDisabled;
   }
   return SyncUserSettings::UserSelectableTypePrefState::kEnabledOrDefault;
 }
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-int SyncUserSettingsImpl::GetNumberOfAccountsWithPasswordsSelected() const {
-  return prefs_->GetNumberOfAccountsWithPasswordsSelected();
-}
-#endif
 
 void SyncUserSettingsImpl::SetSelectedTypes(bool sync_everything,
                                             UserSelectableTypeSet types) {
@@ -186,11 +177,8 @@ void SyncUserSettingsImpl::SetSelectedTypes(bool sync_everything,
 
   switch (delegate_->GetSyncAccountStateForPrefs()) {
     case SyncPrefs::SyncAccountState::kNotSignedIn:
-      // TODO(crbug.com/40945692): Convert to NOTREACHED_NORETURN.
-      DUMP_WILL_BE_NOTREACHED()
-          << "Must not set selected types while signed out";
-      break;
-    case SyncPrefs::SyncAccountState::kSignedInNotSyncing:
+      NOTREACHED();
+    case SyncPrefs::SyncAccountState::kSignedInWithoutSyncConsent:
       for (UserSelectableType type : registered_types) {
         SetSelectedType(type, types.Has(type) || sync_everything);
       }
@@ -208,16 +196,11 @@ void SyncUserSettingsImpl::SetSelectedType(UserSelectableType type,
   CHECK(registered_types.Has(type));
 
   switch (delegate_->GetSyncAccountStateForPrefs()) {
-    case SyncPrefs::SyncAccountState::kNotSignedIn: {
-      // TODO(crbug.com/40945692): Convert to NOTREACHED_NORETURN.
-      DUMP_WILL_BE_NOTREACHED()
-          << "Must not set selected types while signed out";
-      break;
-    }
-    case SyncPrefs::SyncAccountState::kSignedInNotSyncing: {
-      signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(
-          delegate_->GetSyncAccountInfoForPrefs().gaia);
-      prefs_->SetSelectedTypeForAccount(type, is_type_on, gaia_id_hash);
+    case SyncPrefs::SyncAccountState::kNotSignedIn:
+      NOTREACHED();
+    case SyncPrefs::SyncAccountState::kSignedInWithoutSyncConsent: {
+      prefs_->SetSelectedTypeForAccount(
+          type, is_type_on, delegate_->GetSyncAccountInfoForPrefs().gaia);
       break;
     }
     case SyncPrefs::SyncAccountState::kSyncing: {
@@ -231,8 +214,15 @@ void SyncUserSettingsImpl::SetSelectedType(UserSelectableType type,
   }
 }
 
+void SyncUserSettingsImpl::ResetSelectedType(UserSelectableType type) {
+  CHECK_EQ(SyncPrefs::SyncAccountState::kSignedInWithoutSyncConsent,
+           delegate_->GetSyncAccountStateForPrefs());
+  prefs_->ResetSelectedTypeForAccount(
+      type, delegate_->GetSyncAccountInfoForPrefs().gaia);
+}
+
 void SyncUserSettingsImpl::KeepAccountSettingsPrefsOnlyForUsers(
-    const std::vector<signin::GaiaIdHash>& available_gaia_ids) {
+    const std::vector<GaiaId>& available_gaia_ids) {
   prefs_->KeepAccountSettingsPrefsOnlyForUsers(available_gaia_ids);
 }
 
@@ -249,13 +239,17 @@ UserSelectableTypeSet SyncUserSettingsImpl::GetRegisteredSelectableTypes()
   return registered_types;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void SyncUserSettingsImpl::SetSyncFeatureDisabledViaDashboard() {
   prefs_->SetSyncFeatureDisabledViaDashboard();
 }
 
 void SyncUserSettingsImpl::ClearSyncFeatureDisabledViaDashboard() {
+  if (!IsSyncFeatureDisabledViaDashboard()) {
+    return;
+  }
   prefs_->ClearSyncFeatureDisabledViaDashboard();
+  delegate_->OnSyncFeatureDisabledViaDashboardCleared();
 }
 
 bool SyncUserSettingsImpl::IsSyncFeatureDisabledViaDashboard() const {
@@ -296,14 +290,7 @@ UserSelectableOsTypeSet SyncUserSettingsImpl::GetRegisteredSelectableOsTypes()
   }
   return registered_types;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void SyncUserSettingsImpl::SetAppsSyncEnabledByOs(bool apps_sync_enabled) {
-  DCHECK(base::FeatureList::IsEnabled(kSyncChromeOSAppsToggleSharing));
-  prefs_->SetAppsSyncEnabledByOs(apps_sync_enabled);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool SyncUserSettingsImpl::IsCustomPassphraseAllowed() const {
   return delegate_->IsCustomPassphraseAllowed();
@@ -384,50 +371,66 @@ bool SyncUserSettingsImpl::SetDecryptionPassphrase(
   return crypto_->SetDecryptionPassphrase(passphrase);
 }
 
-void SyncUserSettingsImpl::SetExplicitPassphraseDecryptionNigoriKey(
-    std::unique_ptr<Nigori> nigori) {
-  return crypto_->SetExplicitPassphraseDecryptionNigoriKey(std::move(nigori));
-}
-
-std::unique_ptr<Nigori>
-SyncUserSettingsImpl::GetExplicitPassphraseDecryptionNigoriKey() const {
-  return crypto_->GetExplicitPassphraseDecryptionNigoriKey();
-}
-
 DataTypeSet SyncUserSettingsImpl::GetPreferredDataTypes() const {
-  DataTypeSet types = UserSelectableTypesToDataTypes(GetSelectedTypes());
-  types.PutAll(AlwaysPreferredUserTypes());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  types.PutAll(UserSelectableOsTypesToDataTypes(GetSelectedOsTypes()));
+  DataTypeSet types = UserSelectableTypesToDataTypes(
+      GetSelectedTypes(), prefs_->IsExplicitBrowserSignin() ||
+                              delegate_->GetSyncAccountStateForPrefs() ==
+                                  SyncPrefs::SyncAccountState::kSyncing);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (IsSyncFeatureDisabledViaDashboard()) {
+    // If sync is disabled via dashboard, only a minimal set of datatypes should
+    // sync. This prevents code changes from causing accidental behavioral
+    // differences in this ChromeOS-specific edge case, as a side effect of
+    // starting sync-the-transport.
+    types.Clear();
+  } else {
+    types.PutAll(UserSelectableOsTypesToDataTypes(GetSelectedOsTypes()));
+  }
 #endif
+
+  types.PutAll(AlwaysPreferredUserTypes());
   types.RetainAll(registered_data_types_);
 
   // Control types (in practice, NIGORI) are always considered "preferred", even
   // though they're technically not registered.
   types.PutAll(ControlTypes());
 
-  static_assert(53 == GetNumDataTypes(),
+  static_assert(59 == GetNumDataTypes(),
                 "If adding a new sync data type, update the list below below if"
-                " you want to disable the new data type for local sync.");
+                " you want to disable the new data type for local sync, aka"
+                " roaming profiles on Windows.");
   if (prefs_->IsLocalSyncEnabled()) {
+    types.Remove(ACCOUNT_SETTING);
     types.Remove(APP_LIST);
+    // Note: AUTOFILL_WALLET_CREDENTIAL *is* supported - the user can still save
+    // CVVs for local credit cards.
+    types.Remove(AUTOFILL_VALUABLE);
+    types.Remove(AUTOFILL_VALUABLE_METADATA);
+    types.Remove(AUTOFILL_WALLET_DATA);
+    types.Remove(AUTOFILL_WALLET_METADATA);
     types.Remove(AUTOFILL_WALLET_OFFER);
     types.Remove(AUTOFILL_WALLET_USAGE);
     types.Remove(COLLABORATION_GROUP);
     types.Remove(CONTACT_INFO);
     types.Remove(COOKIES);
     types.Remove(HISTORY);
+    types.Remove(HISTORY_DELETE_DIRECTIVES);
     types.Remove(INCOMING_PASSWORD_SHARING_INVITATION);
     types.Remove(OUTGOING_PASSWORD_SHARING_INVITATION);
     types.Remove(PLUS_ADDRESS);
     types.Remove(PLUS_ADDRESS_SETTING);
     types.Remove(SECURITY_EVENTS);
     types.Remove(SEND_TAB_TO_SELF);
+    types.Remove(SHARED_COMMENT);
+    types.Remove(SHARED_TAB_GROUP_ACCOUNT_DATA);
     types.Remove(SHARED_TAB_GROUP_DATA);
     types.Remove(SHARING_MESSAGE);
     types.Remove(USER_CONSENTS);
     types.Remove(USER_EVENTS);
     types.Remove(WORKSPACE_DESK);
+    types.Remove(AI_THREAD);
+    types.Remove(CONTEXTUAL_TASK);
   }
   return types;
 }
@@ -453,26 +456,35 @@ bool SyncUserSettingsImpl::IsEncryptedDatatypePreferred() const {
 }
 
 std::string SyncUserSettingsImpl::GetEncryptionBootstrapToken() const {
-  const std::string& gaia_id = delegate_->GetSyncAccountInfoForPrefs().gaia;
+  const GaiaId& gaia_id = delegate_->GetSyncAccountInfoForPrefs().gaia;
   if (gaia_id.empty()) {
     return std::string();
   }
-  signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(gaia_id);
-  CHECK(gaia_id_hash.IsValid());
-  return prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash);
+  return prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id);
 }
 
 void SyncUserSettingsImpl::SetEncryptionBootstrapToken(
     const std::string& token) {
-  const std::string& gaia_id = delegate_->GetSyncAccountInfoForPrefs().gaia;
+  const GaiaId& gaia_id = delegate_->GetSyncAccountInfoForPrefs().gaia;
   if (gaia_id.empty()) {
-    // TODO(crbug.com/40945692): Convert to NOTREACHED_NORETURN.
-    DUMP_WILL_BE_NOTREACHED() << "Must not set passphrase while signed out";
+    // The user must be signed in, so the only legit scenario where SyncService
+    // uses no Gaia ID is local sync (roaming profiles).
+    CHECK(prefs_->IsLocalSyncEnabled());
     return;
   }
-  signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(gaia_id);
-  CHECK(gaia_id_hash.IsValid());
-  prefs_->SetEncryptionBootstrapTokenForAccount(token, gaia_id_hash);
+  prefs_->SetEncryptionBootstrapTokenForAccount(token, gaia_id);
+}
+
+bool SyncUserSettingsImpl::IsSyncClientDisabledByPolicy() const {
+  return prefs_->IsSyncClientDisabledByPolicy();
+}
+
+void SyncUserSettingsImpl::OnSyncManagedPrefChange(bool is_sync_managed) {
+  delegate_->OnSyncClientDisabledByPolicyChanged();
+}
+
+void SyncUserSettingsImpl::OnSelectedTypesPrefChange() {
+  delegate_->OnSelectedTypesChanged();
 }
 
 }  // namespace syncer

@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 
+#include "ash/lobster/lobster_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/shell.h"
 #include "ash/system/magic_boost/magic_boost_disclaimer_view.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/input_method/editor_panel_manager.h"
@@ -16,22 +18,32 @@
 
 namespace ash {
 
+namespace {
+
+MagicBoostControllerAsh* g_instance = nullptr;
+
 // The disclaimer terms of service and learn more urls.
 constexpr char kDisclaimerTOSURL[] = "https://policies.google.com/terms";
 constexpr char kLearnMoreURL[] =
     "https://support.google.com/chromebook/?p=settings_help_me_read_write";
 
+}  // namespace
+
 using TransitionAction = crosapi::mojom::MagicBoostController::TransitionAction;
 
-MagicBoostControllerAsh::MagicBoostControllerAsh() = default;
+// static
+MagicBoostControllerAsh* MagicBoostControllerAsh::Get() {
+  return g_instance;
+}
 
-MagicBoostControllerAsh::~MagicBoostControllerAsh() = default;
+MagicBoostControllerAsh::MagicBoostControllerAsh() {
+  DCHECK(!g_instance);
+  g_instance = this;
+}
 
-void MagicBoostControllerAsh::BindReceiver(
-    mojo::PendingReceiver<crosapi::mojom::MagicBoostController> receiver) {
-  // The receiver is only from lacros chrome as present, but more mojo clients
-  // may be added in the future.
-  receivers_.Add(this, std::move(receiver));
+MagicBoostControllerAsh::~MagicBoostControllerAsh() {
+  DCHECK_EQ(this, g_instance);
+  g_instance = nullptr;
 }
 
 void MagicBoostControllerAsh::ShowDisclaimerUi(int64_t display_id,
@@ -79,7 +91,6 @@ void MagicBoostControllerAsh::OnDisclaimerAcceptButtonPressed(
   }
   magic_boost_state->AsyncWriteConsentStatus(
       chromeos::HMRConsentStatus::kApproved);
-  magic_boost_state->AsyncWriteHMREnabled(/*enabled=*/true);
 
   switch (action) {
     case TransitionAction::kDoNothing:
@@ -90,6 +101,13 @@ void MagicBoostControllerAsh::OnDisclaimerAcceptButtonPressed(
     case TransitionAction::kShowHmrPanel:
       chromeos::MahiManager::Get()->OpenMahiPanel(
           display_id, disclaimer_widget_->GetWindowBoundsInScreen());
+      break;
+    case TransitionAction::kShowLobsterPanel:
+      LobsterController* lobster_controller =
+          ash::Shell::Get()->lobster_controller();
+      if (lobster_controller != nullptr) {
+        lobster_controller->LoadUIFromCachedContext();
+      }
       break;
   }
 
@@ -103,6 +121,7 @@ void MagicBoostControllerAsh::OnDisclaimerDeclineButtonPressed() {
   auto* magic_boost_state = chromeos::MagicBoostState::Get();
   if (opt_in_features_ == OptInFeatures::kOrcaAndHmr) {
     magic_boost_state->DisableOrcaFeature();
+    magic_boost_state->DisableLobsterSettings();
   }
   magic_boost_state->AsyncWriteConsentStatus(
       chromeos::HMRConsentStatus::kDeclined);
@@ -115,7 +134,7 @@ void MagicBoostControllerAsh::OnDisclaimerDeclineButtonPressed() {
 }
 
 void MagicBoostControllerAsh::OnLinkPressed(const std::string& url) {
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(url), NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
 

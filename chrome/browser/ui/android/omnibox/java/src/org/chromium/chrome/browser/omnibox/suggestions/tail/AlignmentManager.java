@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox.suggestions.tail;
 import android.util.ArraySet;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.base.ViewUtils;
 
 /**
@@ -32,6 +33,7 @@ import org.chromium.ui.base.ViewUtils;
  *    [             ... Omnibox Android]
  * </pre>
  */
+@NullMarked
 class AlignmentManager {
     private final ArraySet<View> mVisibleTailSuggestions = new ArraySet<>();
     private int mLongestFullTextWidth;
@@ -72,7 +74,7 @@ class AlignmentManager {
      * Register view to receive layout requests in cases where it may be misaligned with other
      * views.
      *
-     * @param View view to register.
+     * @param view view to register.
      */
     void registerView(View view) {
         mVisibleTailSuggestions.add(view);

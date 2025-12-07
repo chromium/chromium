@@ -4,8 +4,9 @@
 
 import {join} from 'chrome://resources/mwc/lit/index.js';
 
-import {usePlatformHandler} from './lit/context.js';
-import {forceCast, upcast} from './utils/type_utils.js';
+import {PlatformHandler} from '../platforms/index.js';
+
+import {forceCast} from './utils/type_utils.js';
 
 type I18nArgType = number|string;
 
@@ -17,7 +18,12 @@ function withArgs<Args extends I18nArgType[]>(): Args {
   return forceCast<Args>(null);
 }
 
-const noArgStrings = [
+const noArgStringNames = [
+  'appName',
+  'backToMainButtonAriaLabel',
+  'backToMainButtonTooltip',
+  'closeDialogButtonTooltip',
+  'errorDialogConsentButton',
   'exportDialogAudioFormatWebmOption',
   'exportDialogAudioHeader',
   'exportDialogCancelButton',
@@ -26,12 +32,60 @@ const noArgStrings = [
   'exportDialogTranscriptionFormatTxtOption',
   'exportDialogTranscriptionHeader',
   'genAiDisclaimerText',
+  'genAiDownloadErrorStatusMessage',
+  'genAiDownloadFinishedStatusMessage',
+  'genAiDownloadStartedStatusMessage',
   'genAiErrorGeneralLabel',
+  'genAiErrorModelDownloadButton',
+  'genAiErrorModelDownloadButtonAriaLabel',
+  'genAiErrorModelLoadFailureLabel',
+  'genAiErrorSummaryLanguageUnsupportedLabel',
+  'genAiErrorSummaryNeedsRebootLabel',
+  'genAiErrorSummaryTranscriptTooLongLabel',
+  'genAiErrorSummaryTranscriptTooShortLabel',
   'genAiErrorSummaryTrustAndSafetyLabel',
+  'genAiErrorTitleSuggestionLanguageUnsupportedLabel',
+  'genAiErrorTitleSuggestionNeedsRebootLabel',
+  'genAiErrorTitleSuggestionTranscriptTooLongLabel',
+  'genAiErrorTitleSuggestionTranscriptTooShortLabel',
   'genAiErrorTitleSuggestionTrustAndSafetyLabel',
   'genAiExperimentBadge',
+  'genAiFeedbackModelInputField',
+  'genAiFeedbackPrompt',
+  'genAiFeedbackSummaryOutputField',
+  'genAiFeedbackTitleSuggestionOutputField',
   'genAiLearnMoreLink',
-  'micSelectionMenuChromebookAudioOption',
+  'genAiLearnMoreLinkTooltip',
+  'genAiNeedsRebootStatusMessage',
+  'genaiNegativeFeedbackButtonTooltip',
+  'genaiPositiveFeedbackButtonTooltip',
+  'languageDropdownHintOption',
+  'languagePickerAvailableLanguagesHeader',
+  'languagePickerBackButtonAriaLabel',
+  'languagePickerBackButtonTooltip',
+  'languagePickerHeader',
+  'languagePickerLanguageDownloadButton',
+  'languagePickerLanguageDownloadingButton',
+  'languagePickerLanguageErrorDescription',
+  'languagePickerLanguageNeedsRebootDescription',
+  'languagePickerLanguagesListLandmarkAriaLabel',
+  'languagePickerSelectedLanguageHeader',
+  'languagePickerSelectedLanguageNoneLabel',
+  'mainChooseMicNudge',
+  'mainRecordingBarLandmarkAriaLabel',
+  'mainRecordingsListLandmarkAriaLabel',
+  'mainSearchLandmarkAriaLabel',
+  'mainStartRecordButtonTooltip',
+  'mainStartRecordNudge',
+  'micConnectionErrorDialogDescription',
+  'micConnectionErrorDialogHeader',
+  'micSelectionMenuButtonTooltip',
+  'micSelectionMenuMicConnectionErrorDescription',
+  'micSelectionMenuSystemAudioOption',
+  'onboardingDialogLanguageSelectionCancelButton',
+  'onboardingDialogLanguageSelectionDescription',
+  'onboardingDialogLanguageSelectionDownloadButton',
+  'onboardingDialogLanguageSelectionHeader',
   'onboardingDialogSpeakerLabelAllowButton',
   'onboardingDialogSpeakerLabelDeferButton',
   'onboardingDialogSpeakerLabelDescriptionListItem1',
@@ -45,15 +99,36 @@ const noArgStrings = [
   'onboardingDialogTranscriptionCancelButton',
   'onboardingDialogTranscriptionDeferButton',
   'onboardingDialogTranscriptionDescription',
+  'onboardingDialogTranscriptionDownloadButton',
   'onboardingDialogTranscriptionHeader',
   'onboardingDialogTranscriptionTurnOnButton',
+  'onboardingDialogTranscriptionTurnOnDescription',
+  'onboardingDialogTranscriptionTurnOnHeader',
   'onboardingDialogWelcomeDescription',
+  'onboardingDialogWelcomeDescriptionWithoutGenAiFeatures',
   'onboardingDialogWelcomeHeader',
   'onboardingDialogWelcomeNextButton',
+  'playbackBackwardButtonTooltip',
+  'playbackControlsLandmarkAriaLabel',
+  'playbackFloatingVolumeCloseButtonAriaLabel',
+  'playbackFloatingVolumeShowButtonAriaLabel',
+  'playbackForwardButtonTooltip',
+  'playbackHideTranscriptButtonTooltip',
+  'playbackMenuButtonTooltip',
   'playbackMenuDeleteOption',
   'playbackMenuExportOption',
   'playbackMenuShowDetailOption',
+  'playbackMuteButtonTooltip',
+  'playbackPauseButtonTooltip',
+  'playbackPlayButtonTooltip',
+  'playbackSeekSliderAriaLabel',
+  'playbackShowTranscriptButtonTooltip',
+  'playbackSpeedButtonTooltip',
   'playbackSpeedNormalOption',
+  'playbackTranscriptLandmarkAriaLabel',
+  'playbackUnmuteButtonTooltip',
+  'playbackVolumeSliderAriaLabel',
+  'recordDeleteButtonTooltip',
   'recordDeleteDialogCancelButton',
   'recordDeleteDialogCurrentHeader',
   'recordDeleteDialogDeleteButton',
@@ -64,13 +139,22 @@ const noArgStrings = [
   'recordExitDialogDescription',
   'recordExitDialogHeader',
   'recordExitDialogSaveAndExitButton',
+  'recordGeneralAudioErrorDialogDescription',
+  'recordGeneralAudioErrorDialogHeader',
+  'recordHideTranscriptButtonTooltip',
   'recordInfoDialogDateLabel',
   'recordInfoDialogDurationLabel',
   'recordInfoDialogHeader',
   'recordInfoDialogSizeLabel',
   'recordInfoDialogTitleLabel',
+  'recordMenuButtonTooltip',
   'recordMenuDeleteOption',
+  'recordMenuToggleSpeakerLabelOption',
   'recordMenuToggleTranscriptionOption',
+  'recordMuteButtonTooltip',
+  'recordPauseButtonTooltip',
+  'recordResumeButtonTooltip',
+  'recordShowTranscriptButtonTooltip',
   'recordStopButton',
   'recordTranscriptionEntryPointDescription',
   'recordTranscriptionEntryPointDisableButton',
@@ -78,60 +162,164 @@ const noArgStrings = [
   'recordTranscriptionEntryPointHeader',
   'recordTranscriptionOffDescription',
   'recordTranscriptionOffHeader',
+  'recordTranscriptionUnusableErrorDescription',
+  'recordTranscriptionUnusableHeader',
+  'recordTranscriptionUnusableNeedsRebootDescription',
+  'recordTranscriptionUnusableNotInstalledDescription',
+  'recordTranscriptionUnusableSelectLanguageDescription',
+  'recordTranscriptionWaitingDownloadText',
+  'recordUnmuteButtonTooltip',
+  'recordingItemOptionsButtonTooltip',
+  'recordingItemPauseButtonTooltip',
+  'recordingItemPlayButtonTooltip',
   'recordingListHeader',
   'recordingListNoMatchText',
+  'recordingListSearchBoxClearButtonAriaLabel',
+  'recordingListSearchBoxCloseButtonAriaLabel',
   'recordingListSearchBoxPlaceholder',
+  'recordingListSearchButtonTooltip',
+  'recordingListSortButtonTooltip',
   'recordingListSortByDateOption',
-  'recordingListSortByNameOption',
+  'recordingListSortByTitleOption',
   'recordingListThisMonthHeader',
   'recordingListTodayHeader',
   'recordingListYesterdayHeader',
   'settingsHeader',
   'settingsOptionsDoNotDisturbDescription',
   'settingsOptionsDoNotDisturbLabel',
+  'settingsOptionsGenAiDescription',
+  'settingsOptionsGenAiDownloadButton',
+  'settingsOptionsGenAiDownloadButtonAriaLabel',
+  'settingsOptionsGenAiDownloadingButton',
+  'settingsOptionsGenAiDownloadingProgressDescription',
+  'settingsOptionsGenAiErrorDescription',
+  'settingsOptionsGenAiLabel',
+  'settingsOptionsGenAiLearnMoreLink',
+  'settingsOptionsGenAiLearnMoreLinkAriaLabel',
+  'settingsOptionsGenAiNeedsRebootDescription',
   'settingsOptionsKeepScreenOnLabel',
+  'settingsOptionsLanguageSubpageButtonAriaLabel',
   'settingsOptionsSpeakerLabelDescription',
   'settingsOptionsSpeakerLabelLabel',
-  'settingsOptionsSummaryDescription',
-  'settingsOptionsSummaryDownloadButton',
-  'settingsOptionsSummaryDownloadingButton',
-  'settingsOptionsSummaryLabel',
-  'settingsOptionsSummaryLearnMoreLink',
   'settingsOptionsTranscriptionDownloadButton',
+  'settingsOptionsTranscriptionDownloadButtonAriaLabel',
   'settingsOptionsTranscriptionDownloadingButton',
+  'settingsOptionsTranscriptionErrorDescription',
   'settingsOptionsTranscriptionLabel',
+  'settingsOptionsTranscriptionLanguageDescription',
+  'settingsOptionsTranscriptionLanguageLabel',
+  'settingsOptionsTranscriptionNeedsRebootDescription',
   'settingsSectionGeneralHeader',
   'settingsSectionTranscriptionSummaryHeader',
+  'summaryCollapseTooltip',
   'summaryDisabledLabel',
-  'summaryDownloadModelDescription',
-  'summaryDownloadModelDisableButton',
-  'summaryDownloadModelDownloadButton',
-  'summaryDownloadModelHeader',
+  'summaryDownloadGenAiModelDescription',
+  'summaryDownloadGenAiModelDisableButton',
+  'summaryDownloadGenAiModelDownloadButton',
+  'summaryDownloadGenAiModelHeader',
+  'summaryExpandTooltip',
+  'summaryFailedStatusMessage',
+  'summaryFinishedStatusMessage',
   'summaryHeader',
-  'titleRenameTooltip',
+  'summaryStartedStatusMessage',
+  'systemAudioConsentDialogCancelButton',
+  'systemAudioConsentDialogConsentButton',
+  'systemAudioConsentDialogDescription',
+  'systemAudioConsentDialogHeader',
+  'titleEditSnackbarMessage',
+  'titleEditTooltip',
+  'titleSuggestionButtonTooltip',
+  'titleSuggestionFailedStatusMessage',
+  'titleSuggestionFinishedStatusMessage',
   'titleSuggestionHeader',
+  'titleSuggestionStartedStatusMessage',
+  'titleTextfieldAriaLabel',
   'transcriptionAutoscrollButton',
   'transcriptionNoSpeechText',
+  'transcriptionSpeakerLabelPendingLabel',
   'transcriptionWaitingSpeechText',
 ] as const;
 
-type NoArgStrings = (typeof noArgStrings)[number];
+export type NoArgStringName = (typeof noArgStringNames)[number];
 
-const withArgsStrings = {
+const withArgsStringNames = {
   // This contains all the other strings that needs argument.
   // Usage example:
   // Add `fooBar: withArgs<[number, string]>(),` here,
   // then `i18n.fooBar(1, '2')` works.
-  settingsOptionsSummaryDownloadingProgressDescription: withArgs<[number]>(),
+  languagePickerLanguageDownloadButtonAriaLabel: withArgs<[string]>(),
+  languagePickerLanguageDownloadErrorAriaLabel: withArgs<[string]>(),
+  languagePickerLanguageDownloadErrorStatusMessage: withArgs<[string]>(),
+  languagePickerLanguageDownloadFinishedStatusMessage: withArgs<[string]>(),
+  languagePickerLanguageDownloadStartedStatusMessage: withArgs<[string]>(),
+  languagePickerLanguageDownloadingAriaLabel: withArgs<[string, number]>(),
+  languagePickerLanguageDownloadingProgressDescription: withArgs<[number]>(),
+  languagePickerLanguageNeedsRebootAriaLabel: withArgs<[string]>(),
+  languagePickerLanguageNeedsRebootStatusMessage: withArgs<[string]>(),
+  languagePickerLanguageNotDownloadedAriaLabel: withArgs<[string]>(),
+  languagePickerLanguageNotSelectedAriaLabel: withArgs<[string]>(),
+  languagePickerLanguageSelectedAriaLabel: withArgs<[string]>(),
+  recordingItemOptionsButtonAriaLabel: withArgs<[string]>(),
+  recordingItemPauseButtonAriaLabel: withArgs<[string]>(),
+  recordingItemPlayButtonAriaLabel: withArgs<[string]>(),
+  settingsOptionsGenAiDownloadingProgressDescription: withArgs<[number]>(),
   settingsOptionsTranscriptionDownloadingProgressDescription:
     withArgs<[number]>(),
-  summaryDownloadingProgressDescription: withArgs<[number]>(),
+  summaryGenAiDownloadingProgressDescription: withArgs<[number]>(),
   transcriptionSpeakerLabelLabel: withArgs<[string]>(),
 } satisfies Record<string, I18nArgType[]>;
-type WithArgsStrings = typeof withArgsStrings;
+type WithArgsStringNames = typeof withArgsStringNames;
 
-type I18nType = Record<NoArgStrings, string>&{
-  [k in keyof WithArgsStrings]: (...args: WithArgsStrings[k]) => string;
+const withDeviceStringNames = [
+  'genAiDownloadErrorStatusMessage',
+  'genAiErrorModelLoadFailureLabel',
+  'genAiErrorSummaryNeedsRebootLabel',
+  'genAiErrorTitleSuggestionLanguageUnsupportedLabel',
+  'genAiErrorTitleSuggestionNeedsRebootLabel',
+  'genAiNeedsRebootStatusMessage',
+  'languagePickerLanguageDownloadErrorAriaLabel',
+  'languagePickerLanguageDownloadErrorStatusMessage',
+  'languagePickerLanguageErrorDescription',
+  'languagePickerLanguageNeedsRebootAriaLabel',
+  'languagePickerLanguageNeedsRebootDescription',
+  'languagePickerLanguageNeedsRebootStatusMessage',
+  'micSelectionMenuSystemAudioOption',
+  'recordGeneralAudioErrorDialogDescription',
+  'recordTranscriptionUnusableErrorDescription',
+  'recordTranscriptionUnusableNeedsRebootDescription',
+  'settingsOptionsGenAiErrorDescription',
+  'settingsOptionsGenAiNeedsRebootDescription',
+  'settingsOptionsTranscriptionErrorDescription',
+  'settingsOptionsTranscriptionNeedsRebootDescription',
+  'systemAudioConsentDialogDescription',
+  'systemAudioConsentDialogHeader',
+];
+
+function maybeReplaceDeviceType(name: string, i18nString: string) {
+  if (withDeviceStringNames.includes(name)) {
+    return i18nString.replaceAll(
+      '[deviceType]',
+      PlatformHandler.getDeviceType(),
+    );
+  }
+  return i18nString;
+}
+
+function getI18nString(name: string): string {
+  return maybeReplaceDeviceType(name, PlatformHandler.getStringF(name));
+}
+
+function createI18nStringFormatter(name: string) {
+  return (...args: I18nArgType[]) => {
+    return maybeReplaceDeviceType(
+      name,
+      PlatformHandler.getStringF(name, ...args),
+    );
+  };
+}
+
+type I18nObjectType = Record<NoArgStringName, string>&{
+  [k in keyof WithArgsStringNames]: (...args: WithArgsStringNames[k]) => string;
 };
 
 /**
@@ -141,32 +329,15 @@ type I18nType = Record<NoArgStrings, string>&{
  *   i18n.foo  // For strings without arguments.
  *   i18n.bar('arg1', 2)  // For strings with arguments.
  */
-// TODO(pihsun): Have some initialize code to initialize i18n to a concrete
-// object instead of having it as a proxy. Since it use usePlatformHandler()
-// which are not available at module import time, we'll need to initialize it
-// separately similar to other context states.
-//
-// forceCast: The proxy wrapper changed the type of the target.
-export const i18n = forceCast<I18nType>(
-  new Proxy(
-    {},
-    {
-      get(_target, name) {
-        if (typeof name !== 'string') {
-          return;
-        }
-        if (upcast<readonly string[]>(noArgStrings).includes(name)) {
-          return usePlatformHandler().getStringF(name);
-        }
-        if (Object.hasOwn(withArgsStrings, name)) {
-          return (...args: I18nArgType[]) => {
-            return usePlatformHandler().getStringF(name, ...args);
-          };
-        }
-        return undefined;
-      },
-    },
-  ),
+// forceCast: TypeScript can't deduce type for Object.fromEntries correctly.
+export const i18n = forceCast<I18nObjectType>(
+  Object.fromEntries([
+    ...noArgStringNames.map((name) => [name, getI18nString(name)] as const),
+    ...Object.keys(withArgsStringNames)
+      .map(
+        (name) => [name, createI18nStringFormatter(name)] as const,
+      ),
+  ]),
 );
 
 /**

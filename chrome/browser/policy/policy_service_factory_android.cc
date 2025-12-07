@@ -15,14 +15,14 @@
 namespace policy {
 namespace android {
 
-base::android::ScopedJavaLocalRef<jobject>
+static base::android::ScopedJavaLocalRef<jobject>
 JNI_PolicyServiceFactory_GetGlobalPolicyService(JNIEnv* env) {
   return g_browser_process->policy_service()
       ->GetPolicyServiceAndroid()
       ->GetJavaObject();
 }
 
-base::android::ScopedJavaLocalRef<jobject>
+static base::android::ScopedJavaLocalRef<jobject>
 JNI_PolicyServiceFactory_GetProfilePolicyService(JNIEnv* env,
                                                  Profile* profile) {
   DCHECK(profile);
@@ -34,3 +34,5 @@ JNI_PolicyServiceFactory_GetProfilePolicyService(JNIEnv* env,
 
 }  // namespace android
 }  // namespace policy
+
+DEFINE_JNI(PolicyServiceFactory)

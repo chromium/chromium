@@ -6,14 +6,12 @@
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/base_search_provider.h"
-#include "components/omnibox/browser/omnibox_controller.h"
-#include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -26,7 +24,13 @@ ZeroSuggestPrefetchTabHelper::ZeroSuggestPrefetchTabHelper(
 
 ZeroSuggestPrefetchTabHelper::~ZeroSuggestPrefetchTabHelper() = default;
 
-void ZeroSuggestPrefetchTabHelper::PrimaryPageChanged(content::Page& page) {
+void ZeroSuggestPrefetchTabHelper::DidFinishLoad(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& validated_url) {
+  if (!render_frame_host->IsInPrimaryMainFrame()) {
+    return;
+  }
+
   // Make sure to observe the TabStripModel, if not already, in order to get
   // notified when a New Tab Page is switched to.
   // Note that this is done here, i.e., after the New Tab Page is navigated to,
@@ -58,12 +62,7 @@ void ZeroSuggestPrefetchTabHelper::OnTabStripModelChanged(
 }
 
 void ZeroSuggestPrefetchTabHelper::StartPrefetch() {
-  auto* omnibox_view = search::GetOmniboxView(web_contents());
-  if (!omnibox_view) {
-    return;
-  }
-
-  auto* omnibox_controller = omnibox_view->controller();
+  auto* omnibox_controller = search::GetOmniboxController(web_contents());
   if (!omnibox_controller) {
     return;
   }

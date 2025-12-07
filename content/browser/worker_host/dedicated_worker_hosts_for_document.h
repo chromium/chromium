@@ -42,6 +42,10 @@ class CONTENT_EXPORT DedicatedWorkerHostsForDocument
   // Called when the page is restored from back/forward cache.
   void OnRestoreFromBackForwardCache();
 
+  // Called when subresource loader factories should be updated,
+  // for example when DevTools interception is enabled/disabled.
+  void UpdateSubresourceLoaderFactories();
+
  private:
   explicit DedicatedWorkerHostsForDocument(RenderFrameHost* rfh);
 

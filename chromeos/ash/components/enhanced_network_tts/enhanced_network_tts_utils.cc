@@ -87,9 +87,7 @@ std::string FormatJsonRequest(const mojom::TtsRequestPtr tts_request) {
                             std::move(voice_criteria_and_selections));
   }
 
-  std::string json_request;
-  base::JSONWriter::Write(request, &json_request);
-  return json_request;
+  return base::WriteJson(request).value_or("");
 }
 
 std::vector<uint16_t> FindTextBreaks(const std::u16string& utterance,

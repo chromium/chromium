@@ -9,13 +9,16 @@ import android.content.Context;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DiscardableReferencePool;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
+import java.util.function.Supplier;
+
 /** Factory class to build a DownloadManagerCoordinator instance. */
+@NullMarked
 public class DownloadManagerCoordinatorFactory {
     private DownloadManagerCoordinatorFactory() {}
 
@@ -24,9 +27,10 @@ public class DownloadManagerCoordinatorFactory {
             Activity activity,
             DownloadManagerUiConfig config,
             Supplier<Boolean> exploreOfflineTabVisibilitySupplier,
-            Callback<Context> settingsLauncher,
+            Callback<Context> settingsNavigation,
             SnackbarManager snackbarManager,
             ModalDialogManager modalDialogManager,
+            DownloadHelpPageLauncher helpPageLauncher,
             Tracker tracker,
             FaviconProvider faviconProvider,
             OfflineContentProvider provider,
@@ -35,9 +39,10 @@ public class DownloadManagerCoordinatorFactory {
                 activity,
                 config,
                 exploreOfflineTabVisibilitySupplier,
-                settingsLauncher,
+                settingsNavigation,
                 snackbarManager,
                 modalDialogManager,
+                helpPageLauncher,
                 tracker,
                 faviconProvider,
                 provider,

@@ -34,8 +34,8 @@ ReportingEndpointGroupKey::ReportingEndpointGroupKey(
     const std::optional<url::Origin>& origin,
     const std::string& group_name,
     ReportingTargetType target_type)
-    : network_anonymization_key(network_anonymization_key),
-      reporting_source(std::move(reporting_source)),
+    : reporting_source(std::move(reporting_source)),
+      network_anonymization_key(network_anonymization_key),
       origin(origin),
       group_name(group_name),
       target_type(target_type) {
@@ -70,11 +70,6 @@ ReportingEndpointGroupKey& ReportingEndpointGroupKey::operator=(
     ReportingEndpointGroupKey&&) = default;
 
 ReportingEndpointGroupKey::~ReportingEndpointGroupKey() = default;
-
-bool operator!=(const ReportingEndpointGroupKey& lhs,
-                const ReportingEndpointGroupKey& rhs) {
-  return !(lhs == rhs);
-}
 
 bool operator<(const ReportingEndpointGroupKey& lhs,
                const ReportingEndpointGroupKey& rhs) {

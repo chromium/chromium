@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] Basic B&A auction
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on 'Navigator': Invalid Coordinator"
+[FAIL] Basic B&A auction - not authorized
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on 'Navigator': Invalid Coordinator"
+[FAIL] Basic B&A auction with reporting URLs
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on 'Navigator': Invalid Coordinator"
+[FAIL] Hybrid B&A auction
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on 'Navigator': Invalid Coordinator"
+[FAIL] Hybrid B&A auction with reporting URLs
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on 'Navigator': Invalid Coordinator"
+[FAIL] Basic B&A auction - fault inject at CBOR
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on 'Navigator': Invalid Coordinator"
+Harness: the test ran to completion.
+

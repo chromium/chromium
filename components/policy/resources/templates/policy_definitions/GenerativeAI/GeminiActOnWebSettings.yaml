@@ -1,0 +1,40 @@
+caption: Allows Gemini app integrations to directly act on web pages
+desc: |-
+  Controls if the Gemini app is allowed to take action on the web pages on behalf of the user.
+
+  0/unset  = Gemini app is allowed to take action on the web pages.
+
+  1 = Gemini app is not allowed to take action on the web pages.
+
+  This policy has no effect when the Gemini app is disabled. For example, the Gemini app can be disabled by <ph name="GEMINI_SETTINGS_POLICY_NAME">GeminiSettings</ph> policy.
+
+  For more information on Gemini in Chrome, please see https://support.google.com/chrome/a/answer/16291696.
+
+  Gemini's actuation is not available in all countries or all languages. Setting this policy does not guarantee the feature will be enabled; it remains subject to availability. For more info on the roll-out, check the Enterprise Release Notes: https://support.google.com/chrome/a/answer/7679408?hl=en
+
+owners:
+- liuwilliam@chromium.org
+- file://chrome/browser/glic/OWNERS
+example_value: 0
+future_on:
+- chrome_os
+features:
+  dynamic_refresh: true
+  per_profile: true
+type: int-enum
+schema:
+  type: integer
+  enum:
+  - 0
+  - 1
+items:
+- caption: Allow the Gemini app to take action on the web pages.
+  name: Enabled
+  value: 0
+- caption: Disallow the Gemini app to take action on the web pages.
+  name: Disabled
+  value: 1
+default: 0
+supported_on:
+- chrome.*:143-
+tags: []

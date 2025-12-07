@@ -19,90 +19,29 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
-#include "chrome/browser/web_applications/web_app_internals_utils.h"
+#include "chrome/browser/web_applications/web_app_logging.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 
 namespace web_app {
 
-namespace {
-
-constexpr char kWebAppInstallManagerName[] = "WebAppInstallManager";
-
-}  // namespace
-
 WebAppInstallManager::WebAppInstallManager(Profile* profile)
-    : profile_(profile) {
-  if (base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo)) {
-    error_log_ = std::make_unique<ErrorLog>();
-    ReadErrorLog(GetWebAppsRootDirectory(profile_), kWebAppInstallManagerName,
-                 base::BindOnce(&WebAppInstallManager::OnReadErrorLog,
-                                weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    ClearErrorLog(GetWebAppsRootDirectory(profile_), kWebAppInstallManagerName,
-                  base::DoNothing());
-  }
-}
+    : profile_(profile) {}
 
 WebAppInstallManager::~WebAppInstallManager() {
   NotifyWebAppInstallManagerDestroyed();
 }
 
+void WebAppInstallManager::SetProvider(base::PassKey<WebAppProvider>,
+                                       WebAppProvider& provider) {
+  provider_ = &provider;
+}
+
 void WebAppInstallManager::Start() {}
 
 void WebAppInstallManager::Shutdown() {}
-
-void WebAppInstallManager::TakeCommandErrorLog(
-    base::PassKey<WebAppCommandManager>,
-    base::Value::Dict log) {
-  if (error_log_)
-    LogErrorObject(std::move(log));
-}
-
-void WebAppInstallManager::MaybeWriteErrorLog() {
-  DCHECK(error_log_);
-  if (error_log_writing_in_progress_ || !error_log_updated_)
-    return;
-
-  WriteErrorLog(GetWebAppsRootDirectory(profile_), kWebAppInstallManagerName,
-                base::Value(error_log_->Clone()),
-                base::BindOnce(&WebAppInstallManager::OnWriteErrorLog,
-                               weak_ptr_factory_.GetWeakPtr()));
-
-  error_log_writing_in_progress_ = true;
-  error_log_updated_ = false;
-}
-
-void WebAppInstallManager::OnWriteErrorLog(Result result) {
-  error_log_writing_in_progress_ = false;
-  MaybeWriteErrorLog();
-}
-
-void WebAppInstallManager::OnReadErrorLog(Result result,
-                                          base::Value error_log) {
-  DCHECK(error_log_);
-  if (result != Result::kOk || !error_log.is_list())
-    return;
-
-  ErrorLog early_error_log = std::move(*error_log_);
-  *error_log_ = std::move(error_log).TakeList();
-
-  // Appends the `early_error_log` at the end.
-  error_log_->reserve(error_log_->size() + early_error_log.size());
-  for (auto& error : early_error_log) {
-    error_log_->Append(std::move(error));
-  }
-}
-
-void WebAppInstallManager::LogErrorObject(base::Value::Dict object) {
-  if (!error_log_)
-    return;
-
-  error_log_->Append(std::move(object));
-  error_log_updated_ = true;
-  MaybeWriteErrorLog();
-}
 
 void WebAppInstallManager::AddObserver(WebAppInstallManagerObserver* observer) {
   observers_.AddObserver(observer);
@@ -114,6 +53,7 @@ void WebAppInstallManager::RemoveObserver(
 }
 
 void WebAppInstallManager::NotifyWebAppInstalled(const webapps::AppId& app_id) {
+  DVLOG(1) << "NotifyWebAppInstalled " << app_id;
   for (WebAppInstallManagerObserver& observer : observers_) {
     observer.OnWebAppInstalled(app_id);
   }
@@ -123,6 +63,7 @@ void WebAppInstallManager::NotifyWebAppInstalled(const webapps::AppId& app_id) {
 
 void WebAppInstallManager::NotifyWebAppInstalledWithOsHooks(
     const webapps::AppId& app_id) {
+  DVLOG(1) << "NotifyWebAppInstalledWithOsHooks " << app_id;
   for (WebAppInstallManagerObserver& obs : observers_) {
     obs.OnWebAppInstalledWithOsHooks(app_id);
   }
@@ -130,6 +71,7 @@ void WebAppInstallManager::NotifyWebAppInstalledWithOsHooks(
 
 void WebAppInstallManager::NotifyWebAppSourceRemoved(
     const webapps::AppId& app_id) {
+  DVLOG(1) << "NotifyWebAppSourceRemoved " << app_id;
   for (WebAppInstallManagerObserver& observer : observers_) {
     observer.OnWebAppSourceRemoved(app_id);
   }
@@ -138,6 +80,7 @@ void WebAppInstallManager::NotifyWebAppSourceRemoved(
 void WebAppInstallManager::NotifyWebAppUninstalled(
     const webapps::AppId& app_id,
     webapps::WebappUninstallSource uninstall_source) {
+  DVLOG(1) << "NotifyWebAppUninstalled " << app_id;
   for (WebAppInstallManagerObserver& observer : observers_) {
     observer.OnWebAppUninstalled(app_id, uninstall_source);
   }
@@ -145,6 +88,7 @@ void WebAppInstallManager::NotifyWebAppUninstalled(
 
 void WebAppInstallManager::NotifyWebAppManifestUpdated(
     const webapps::AppId& app_id) {
+  DVLOG(1) << "NotifyWebAppManifestUpdated " << app_id;
   for (WebAppInstallManagerObserver& observer : observers_) {
     observer.OnWebAppManifestUpdated(app_id);
   }
@@ -152,6 +96,7 @@ void WebAppInstallManager::NotifyWebAppManifestUpdated(
 
 void WebAppInstallManager::NotifyWebAppWillBeUninstalled(
     const webapps::AppId& app_id) {
+  DVLOG(1) << "NotifyWebAppWillBeUninstalled " << app_id;
   for (WebAppInstallManagerObserver& observer : observers_) {
     observer.OnWebAppWillBeUninstalled(app_id);
   }
@@ -159,6 +104,7 @@ void WebAppInstallManager::NotifyWebAppWillBeUninstalled(
 }
 
 void WebAppInstallManager::NotifyWebAppInstallManagerDestroyed() {
+  DVLOG(1) << "NotifyWebAppInstallManagerDestroyed";
   for (WebAppInstallManagerObserver& observer : observers_) {
     observer.OnWebAppInstallManagerDestroyed();
   }

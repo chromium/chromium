@@ -8,13 +8,13 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/test/ios/wait_util.h"
-#import "base/test/task_environment.h"
 #import "base/test/test_timeouts.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "ui/base/device_form_factor.h"
@@ -30,8 +30,8 @@ const CGFloat kDialogVerticalLocation = 20;
 class RepostFormCoordinatorTest : public PlatformTest {
  protected:
   RepostFormCoordinatorTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     view_controller_ = [[UIViewController alloc] init];
     CGPoint dialogLocation =
         CGPointMake(kDialogHorizontalLocation, kDialogVerticalLocation);
@@ -57,8 +57,8 @@ class RepostFormCoordinatorTest : public PlatformTest {
   RepostFormCoordinator* coordinator_;
 
  private:
-  base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   ScopedKeyWindow scoped_key_window_;
   web::FakeWebState web_state_;

@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "chrome/test/chromedriver/chrome/heap_snapshot_taker.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <list>
 #include <memory>
 #include <string>
@@ -23,7 +20,7 @@
 
 namespace {
 
-const char* const chunks[] = {"{\"a\": 1,", "\"b\": 2}"};
+constexpr auto chunks = std::to_array<const char*>({"{\"a\": 1,", "\"b\": 2}"});
 
 base::Value GetSnapshotAsValue() {
   return base::Value("{\"a\": 1,\"b\": 2}");
@@ -36,7 +33,7 @@ class DummyDevToolsClient : public StubDevToolsClient {
         error_after_events_(error_after_events),
         uid_(1),
         disabled_(false) {}
-  ~DummyDevToolsClient() override {}
+  ~DummyDevToolsClient() override = default;
 
   bool IsDisabled() { return disabled_; }
 

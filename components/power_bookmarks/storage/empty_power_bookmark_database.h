@@ -43,13 +43,7 @@ class EmptyPowerBookmarkDatabase : public PowerBookmarkDatabase {
       const GURL& url,
       const sync_pb::PowerBookmarkSpecifics::PowerType& power_type,
       std::vector<std::string>* deleted_guids) override;
-  std::vector<std::unique_ptr<Power>> GetAllPowers() override;
-  std::vector<std::unique_ptr<Power>> GetPowersForGUIDs(
-      const std::vector<std::string>& guids) override;
-  std::unique_ptr<Power> GetPowerForGUID(const std::string& guid) override;
-  bool CreateOrMergePowerFromSync(const Power& power) override;
-  bool DeletePowerFromSync(const std::string& guid) override;
-  PowerBookmarkSyncMetadataDatabase* GetSyncMetadataDatabase() override;
+
   std::unique_ptr<Transaction> BeginTransaction() override;
 };
 

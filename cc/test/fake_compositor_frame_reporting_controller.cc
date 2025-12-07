@@ -15,12 +15,16 @@ base::TimeDelta INTERVAL = base::Milliseconds(16);
 FakeCompositorFrameReportingController::FakeCompositorFrameReportingController()
     : CompositorFrameReportingController(/*should_report_histograms=*/false,
                                          /*should_report_ukm=*/false,
-                                         /*layer_tree_host_id=*/1) {}
+                                         /*layer_tree_host_id=*/1,
+                                         /*is_trees_in_viz_client=*/false) {}
 
 void FakeCompositorFrameReportingController::WillBeginMainFrame(
     const viz::BeginFrameArgs& args) {
-  if (!HasReporterAt(PipelineStage::kBeginImplFrame))
-    CompositorFrameReportingController::WillBeginImplFrame(args);
+  if (!HasReporterAt(PipelineStage::kBeginImplFrame)) {
+    CompositorFrameReportingController::WillBeginImplFrame(
+        args,
+        /*will_throttle_main=*/false);
+  }
   CompositorFrameReportingController::WillBeginMainFrame(args);
 }
 

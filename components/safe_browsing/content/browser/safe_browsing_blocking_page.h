@@ -30,6 +30,7 @@
 
 #include <map>
 
+#include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "components/safe_browsing/content/browser/base_blocking_page.h"
@@ -41,10 +42,6 @@ class HistoryService;
 
 namespace network {
 class SharedURLLoaderFactory;
-}
-
-namespace weblayer {
-class WebLayerSafeBrowsingBlockingPageFactory;
 }
 
 namespace safe_browsing {
@@ -73,7 +70,6 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
 
  protected:
   friend class ChromeSafeBrowsingBlockingPageFactory;
-  friend class weblayer::WebLayerSafeBrowsingBlockingPageFactory;
   friend class SafeBrowsingBlockingPageTestBase;
   friend class SafeBrowsingBlockingPageBrowserTest;
   friend class SafeBrowsingBlockingQuietPageFactoryImpl;
@@ -109,7 +105,6 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
           security_interstitials::SecurityInterstitialControllerClient>
           controller_client,
       const BaseSafeBrowsingErrorUI::SBErrorDisplayOptions& display_options,
-      bool should_trigger_reporting,
       history::HistoryService* history_service,
       SafeBrowsingNavigationObserverManager* navigation_observer_manager,
       SafeBrowsingMetricsCollector* metrics_collector,
@@ -145,11 +140,10 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
                            int num_visits) override;
 
   // Log UKM for the user bypassing a safe browsing interstitial.
-  void LogSafeBrowsingInterstitialBypassedUKM(
-      content::WebContents* web_contents);
+  void LogSafeBrowsingInterstitialBypassedUKM();
 
   // Log UKM for the safe browsing interstitial being shown to the user.
-  void LogSafeBrowsingInterstitialShownUKM(content::WebContents* web_contents4);
+  void LogSafeBrowsingInterstitialShownUKM();
 
   // Whether ThreatDetails collection is in progress as part of this
   // interstitial.

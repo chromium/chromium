@@ -1,0 +1,29 @@
+caption:  Control the visibility of the extension attribution on the New Tab page
+default: true
+desc: |-
+  This policy determines whether an attribution to the extension modifying the New Tab Page (NTP) is displayed in the NTP's footer.
+
+  By default, if an extension has overridden the standard NTP, a message attributing this change to the specific extension will appear in the footer. This attribution typically includes a link to the relevant extension in the Chrome Web Store.
+
+  If this policy is left unset or set to true, the extension attribution will be visible on the NTP footer when an extension is controlling the NTP.
+
+  If this policy is set to false, the attribution to the extension in the NTP footer will be suppressed.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+supported_on:
+- chrome.*:138-
+- chrome_os:138-
+items:
+- caption: Enable extension attribution on NTP Footer
+  value: true
+- caption: Disable extension attribution on NTP Footer
+  value: false
+owners:
+- file://components/policy/OWNERS
+- esalma@google.com
+schema:
+  type: boolean
+tags: []
+type: main

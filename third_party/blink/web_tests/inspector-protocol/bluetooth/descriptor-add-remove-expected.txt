@@ -1,0 +1,6 @@
+Tests Bluetooth adding and removing descriptor from a characteristic
+After adding characteristic user description descriptor: 00002901-0000-1000-8000-00805f9b34fb
+After adding client characteristic configuration descriptor: 00002901-0000-1000-8000-00805f9b34fb,00002902-0000-1000-8000-00805f9b34fb
+After removing client characteristic configuration descriptor: 00002901-0000-1000-8000-00805f9b34fb
+After removing characteristic user description descriptor: No Descriptors found in Characteristic.
+

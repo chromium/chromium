@@ -274,6 +274,14 @@ interface SmartCardConnection {
   BeginTransaction() => (SmartCardTransactionResult result);
 };
 
+// An interface for notifying that either:
+// - the connection has been just used to transfer data (via calling the method)
+// - the connection should be severed (via closing the pipe)
+interface SmartCardConnectionWatcher {
+  // Notifies the browser about smart card transmissions.
+  NotifyConnectionUsed();
+};
+
 // An interface to a valid context in a PC/SC (winscard.h) provider.
 //
 // Dropping a remote of this interface equates to calling SCardReleaseContext()
@@ -294,7 +302,8 @@ interface SmartCardContext {
 
   // Establishes a connection to the specified reader.
   Connect(string reader, SmartCardShareMode share_mode,
-          SmartCardProtocols preferred_protocols) =>
+          SmartCardProtocols preferred_protocols,
+          pending_remote<SmartCardConnectionWatcher>? connection_watcher) =>
     (SmartCardConnectResult result);
 };
 

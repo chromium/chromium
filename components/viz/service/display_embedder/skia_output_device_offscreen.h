@@ -21,7 +21,7 @@ class SkiaOutputDeviceOffscreen : public SkiaOutputDevice {
       scoped_refptr<gpu::SharedContextState> context_state,
       gfx::SurfaceOrigin origin,
       bool has_alpha,
-      gpu::MemoryTracker* memory_tracker,
+      scoped_refptr<gpu::MemoryTracker> memory_tracker,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);
 
   SkiaOutputDeviceOffscreen(const SkiaOutputDeviceOffscreen&) = delete;
@@ -40,6 +40,7 @@ class SkiaOutputDeviceOffscreen : public SkiaOutputDevice {
   SkSurface* BeginPaint(
       std::vector<GrBackendSemaphore>* end_semaphores) override;
   void EndPaint() override;
+  void ReadbackForTesting(base::OnceCallback<void(SkBitmap)> callback) override;
 
  protected:
   scoped_refptr<gpu::SharedContextState> context_state_;

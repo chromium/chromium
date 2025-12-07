@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
@@ -38,7 +37,6 @@
 using ::base::test::RunOnceCallback;
 using segmentation_platform::processing::FeatureListQueryProcessor;
 using testing::_;
-using testing::Invoke;
 using testing::Return;
 using testing::SaveArg;
 using testing::SetArgReferee;

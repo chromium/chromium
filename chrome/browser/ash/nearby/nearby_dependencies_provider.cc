@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
+#include "base/notimplemented.h"
 #include "chrome/browser/ash/nearby/bluetooth_adapter_manager.h"
 #include "chrome/browser/ash/nearby/nearby_dependencies_provider_factory.h"
 #include "chrome/browser/ash/nearby/presence/credential_storage/credential_storage_initializer.h"
@@ -276,10 +277,6 @@ NearbyDependenciesProvider::GetWebRtcDependencies() {
 
 ::sharing::mojom::WifiLanDependenciesPtr
 NearbyDependenciesProvider::GetWifiLanDependencies() {
-  if (!base::FeatureList::IsEnabled(::features::kNearbySharingWifiLan)) {
-    return nullptr;
-  }
-
   MojoPipe<chromeos::network_config::mojom::CrosNetworkConfig>
       cros_network_config;
   ash::GetNetworkConfigService(std::move(cros_network_config.receiver));
@@ -313,11 +310,6 @@ NearbyDependenciesProvider::GetWifiLanDependencies() {
 
 sharing::mojom::WifiDirectDependenciesPtr
 NearbyDependenciesProvider::GetWifiDirectDependencies() {
-  if (!ash::features::IsWifiDirectEnabled() ||
-      !base::FeatureList::IsEnabled(::features::kNearbySharingWifiDirect)) {
-    return nullptr;
-  }
-
   MojoPipe<sharing::mojom::FirewallHoleFactory> firewall_hole_factory;
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<NearbyConnectionsFirewallHoleFactory>(),

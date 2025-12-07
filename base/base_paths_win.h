@@ -55,7 +55,9 @@ enum {
   DIR_TASKBAR_PINS,            // Directory for the shortcuts pinned to taskbar.
   DIR_IMPLICIT_APP_SHORTCUTS,  // The implicit user pinned shortcut directory.
   DIR_WINDOWS_FONTS,           // Usually C:\Windows\Fonts.
-
+  DIR_SYSTEM_TEMP,             // %SystemRoot%\SystemTemp or %ProgramFiles%;
+                               // only for admin processes.
+  DIR_ONE_DRIVE,               // The synced personal OneDrive directory.
   PATH_WIN_END
 };
 

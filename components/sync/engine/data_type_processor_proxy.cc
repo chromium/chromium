@@ -10,6 +10,7 @@
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/sync/engine/commit_queue.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 
 namespace syncer {
 
@@ -45,9 +46,8 @@ void ForwardGetLocalChangesCall(
   }
 }
 
-void DataTypeProcessorProxy::GetLocalChanges(
-    size_t max_entries,
-    GetLocalChangesCallback callback) {
+void DataTypeProcessorProxy::GetLocalChanges(size_t max_entries,
+                                             GetLocalChangesCallback callback) {
   task_runner_->PostTask(FROM_HERE,
                          base::BindOnce(&ForwardGetLocalChangesCall, processor_,
                                         max_entries, std::move(callback)));

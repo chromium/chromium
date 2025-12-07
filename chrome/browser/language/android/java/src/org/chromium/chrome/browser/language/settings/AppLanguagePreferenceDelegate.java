@@ -7,28 +7,34 @@ package org.chromium.chrome.browser.language.settings;
 import android.app.Activity;
 import android.content.res.Resources;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.ApkInfo;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.language.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
+import org.chromium.ui.util.TokenHolder;
 
 /**
  * Helper class to manage the preferences UI when selecting an app language from LanguageSettings.
- * This helper is responsible for starting the language split download, showing a Snackbar when
- * the download completes, and updating the summary text on the {@link LanguageItemPikerPreference}
+ * This helper is responsible for starting the language split download, showing a Snackbar when the
+ * download completes, and updating the summary text on the {@link LanguageItemPikerPreference}
  * representing the overridden app language.
  */
+@NullMarked
 public class AppLanguagePreferenceDelegate {
     /** Interface for holding the Chrome restart action. Passed in from {@link SettingsActivity}. */
     public interface RestartAction {
         void restart();
     }
 
+    private int mSnackbarToken = TokenHolder.INVALID_TOKEN;
     private SnackbarManager mSnackbarManager;
-    private Snackbar mSnackbar;
+    private @Nullable Snackbar mSnackbar;
     private SnackbarController mSnackbarController;
     // Preference representing the current app language.
     private LanguageItemPickerPreference mPreference;
@@ -42,6 +48,7 @@ public class AppLanguagePreferenceDelegate {
      *
      * @param action RestartAction handler to restart Chrome from the Snackbar.
      */
+    @Initializer
     public void setRestartAction(RestartAction action) {
         mSnackbarController = new SuccessSnackbarControllerImpl(action);
     }
@@ -54,6 +61,7 @@ public class AppLanguagePreferenceDelegate {
      * @param preference LanguageItemPickerPreference for the app language.
      * @param profile The Profile for the current session.
      */
+    @Initializer
     public void setup(
             LanguageSettings fragment, LanguageItemPickerPreference preference, Profile profile) {
         mActivity = fragment.getActivity();
@@ -66,10 +74,13 @@ public class AppLanguagePreferenceDelegate {
     /** Show the {@link Snackbar} if one can be shown and there is a saved Snackbar to show. */
     public void maybeShowSnackbar() {
         if (mSnackbar != null && mSnackbarManager.canShowSnackbar()) {
-            // SnackbarManager is created/owned by this class, so the override doesn't need to be
-            // popped.
-            mSnackbarManager.pushParentViewToOverrideStack(
-                    mActivity.findViewById(android.R.id.content));
+            if (mSnackbarToken == TokenHolder.INVALID_TOKEN) {
+                // SnackbarManager is created/owned by this class, so the override doesn't need to
+                // be popped.
+                mSnackbarToken =
+                        mSnackbarManager.pushParentViewToOverrideStack(
+                                mActivity.findViewById(android.R.id.content));
+            }
             mSnackbarManager.showSnackbar(mSnackbar);
             mSnackbar = null;
         }
@@ -82,7 +93,7 @@ public class AppLanguagePreferenceDelegate {
      * language downloads.
      * @param code String language code to be downloaded and installed.
      */
-    public void startLanguageSplitDownload(String code) {
+    public void startLanguageSplitDownload(@Nullable String code) {
         assert mActivity != null : "mActivity must be set to start language split download";
         assert mPreference != null : "mPreference must be set to start language split download";
         // Set language text and initial downloading summary.
@@ -111,7 +122,7 @@ public class AppLanguagePreferenceDelegate {
     /** Callback to update the UI when a language split has successfully been installed. */
     private void languageSplitDownloadComplete() {
         CharSequence nativeName = mPreference.getLanguageItem().getNativeDisplayName();
-        CharSequence appName = BuildInfo.getInstance().hostPackageLabel;
+        CharSequence appName = ApkInfo.getHostPackageLabel();
         CharSequence summary =
                 mActivity
                         .getResources()
@@ -146,7 +157,7 @@ public class AppLanguagePreferenceDelegate {
                                 Snackbar.TYPE_PERSISTENT,
                                 Snackbar.UMA_LANGUAGE_SPLIT_RESTART)
                         .setAction(resources.getString(R.string.languages_infobar_restart), null);
-        snackbar.setSingleLine(false);
+        snackbar.setDefaultLines(false);
         if (mSnackbarManager.canShowSnackbar()) {
             mSnackbarManager.showSnackbar(snackbar);
         } else {
@@ -156,14 +167,14 @@ public class AppLanguagePreferenceDelegate {
 
     // Inner class for successfully downloaded language split SnackbarController.
     private static class SuccessSnackbarControllerImpl implements SnackbarController {
-        private RestartAction mRestartAction;
+        private final RestartAction mRestartAction;
 
         SuccessSnackbarControllerImpl(RestartAction action) {
             mRestartAction = action;
         }
 
         @Override
-        public void onAction(Object actionData) {
+        public void onAction(@Nullable Object actionData) {
             if (mRestartAction != null) mRestartAction.restart();
         }
     }

@@ -29,10 +29,10 @@ import java.util.TreeMap;
 public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
     private String mTargetLanguage;
     private ArrayList<String> mUserAcceptLanguages;
-    private LinkedHashSet<String> mDefaultUserAcceptLanguages;
-    private HashSet<String> mNeverLanguages;
-    private HashSet<String> mAlwaysLanguages;
-    private TreeMap<String, LanguageItem> mChromeLanguages;
+    private final LinkedHashSet<String> mDefaultUserAcceptLanguages;
+    private final HashSet<String> mNeverLanguages;
+    private final HashSet<String> mAlwaysLanguages;
+    private final TreeMap<String, LanguageItem> mChromeLanguages;
     private boolean mAppLanguagePromptShown;
     private String mCurrentLanguage;
     private boolean mIsPageTranslated;
@@ -45,7 +45,7 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
             Collection<String> neverLanguages,
             Collection<String> alwaysLanguages,
             String targetLanguage) {
-        mChromeLanguages = new TreeMap<String, LanguageItem>();
+        mChromeLanguages = new TreeMap<>();
         for (LanguageItem item : chromeLanguages) {
             mChromeLanguages.put(item.getDisplayName(), item);
         }
@@ -58,7 +58,7 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
 
     /** Create a basic fake translate bridge with English as the default language. */
     public FakeTranslateBridgeJni() {
-        mChromeLanguages = new TreeMap<String, LanguageItem>();
+        mChromeLanguages = new TreeMap<>();
         mUserAcceptLanguages = new ArrayList(Arrays.asList("en"));
         mDefaultUserAcceptLanguages = new LinkedHashSet(Arrays.asList("en"));
         mNeverLanguages = new HashSet(Arrays.asList("en"));
@@ -236,7 +236,7 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
     }
 
     @Override
-    public boolean shouldShowManualTranslateIPH(WebContents webContents) {
+    public boolean shouldShowManualTranslateIph(WebContents webContents) {
         throw new UnsupportedOperationException();
     }
 

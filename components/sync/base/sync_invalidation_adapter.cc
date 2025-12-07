@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/sync/base/sync_invalidation_adapter.h"
+
 #include "base/check.h"
 
 namespace syncer {

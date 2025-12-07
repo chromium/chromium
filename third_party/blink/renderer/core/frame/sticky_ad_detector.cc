@@ -64,7 +64,7 @@ void StickyAdDetector::MaybeFireDetection(LocalFrame* outermost_main_frame) {
 
   // Skip any measurement before the FCP.
   if (PaintTiming::From(*outermost_main_frame->GetDocument())
-          .FirstContentfulPaintIgnoringSoftNavigations()
+          .FirstContentfulPaint()
           .is_null()) {
     return;
   }

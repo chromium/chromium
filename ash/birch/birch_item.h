@@ -39,6 +39,14 @@ enum class BirchItemType {
   kMaxValue = kCoral,
 };
 
+// These values are used to determine the style of the primary icon.
+enum class PrimaryIconType {
+  kIcon,
+  kIllustration,
+  kWeatherImage,
+  kCoralGroupIcon,
+};
+
 // These values are used to determine which secondary icon to load for the items
 // that contain secondary icons.
 enum class SecondaryIconType {
@@ -49,6 +57,7 @@ enum class SecondaryIconType {
   kLostMediaAudio,            // Type that links to audio icon.
   kLostMediaVideo,            // Type that links to media icon.
   kLostMediaVideoConference,  // Type that links to video conference icon.
+  kSelfShareIcon,             // Type that links to self share icon.
   kNoIcon,                    // Type where we will not load a secondary icon.
   kMaxValue = kNoIcon,
 };
@@ -56,8 +65,10 @@ enum class SecondaryIconType {
 // These values are used to determine the types of chip add-ons which is an
 // additional UI component like the join button of calendar item.
 enum class BirchAddonType {
-  kNone,    // No add-ons.
-  kButton,  // A button with an action, e,g. the calendar join button.
+  kNone,         // No add-ons.
+  kButton,       // A button with an action, e,g. the calendar join button.
+  kCoralButton,  // A special button for coral, has a different UI and brings up
+                 // a new UI on click.
   kWeatherTempLabelF,  // A label for weather temperature in Fahrenheit.
   kWeatherTempLabelC,  // A label for weather temperature in Celsius.
 };
@@ -87,8 +98,8 @@ class ASH_EXPORT BirchItem {
   // (e.g. with a local icon) or there may be a delay for a network fetch.
   // The `SecondaryIconType` passed to `BirchChipButton` allows the view to set
   // a corresponding secondary icon image.
-  using LoadIconCallback =
-      base::OnceCallback<void(const ui::ImageModel&, SecondaryIconType)>;
+  using LoadIconCallback = base::OnceCallback<
+      void(PrimaryIconType, SecondaryIconType, const ui::ImageModel&)>;
   virtual void LoadIcon(LoadIconCallback callback) const = 0;
 
   // Records metrics when the user takes an action on the item (e.g. clicks or
@@ -104,7 +115,9 @@ class ASH_EXPORT BirchItem {
   virtual BirchAddonType GetAddonType() const;
   virtual std::u16string GetAddonAccessibleName() const;
 
+  void set_title(const std::u16string& title) { title_ = title; }
   const std::u16string& title() const { return title_; }
+
   const std::u16string& subtitle() const { return subtitle_; }
 
   void set_ranking(float ranking) { ranking_ = ranking; }
@@ -291,8 +304,7 @@ class ASH_EXPORT BirchTabItem : public BirchItem {
                const base::Time& timestamp,
                const GURL& favicon_url,
                const std::string& session_name,
-               const DeviceFormFactor& form_factor,
-               const ui::ImageModel& backup_icon);
+               const DeviceFormFactor& form_factor);
   BirchTabItem(BirchTabItem&&);
   BirchTabItem(const BirchTabItem&);
   BirchTabItem& operator=(const BirchTabItem&);
@@ -323,16 +335,14 @@ class ASH_EXPORT BirchTabItem : public BirchItem {
   std::string session_name_;
   DeviceFormFactor form_factor_;
   SecondaryIconType secondary_icon_type_;
-  ui::ImageModel backup_icon_;
 };
 
 // A birch item for the last active URL.
 class ASH_EXPORT BirchLastActiveItem : public BirchItem {
  public:
   BirchLastActiveItem(const std::u16string& title,
-                      const GURL& url,
-                      base::Time last_visit,
-                      ui::ImageModel icon);
+                      const GURL& page_url,
+                      base::Time last_visit);
   BirchLastActiveItem(BirchLastActiveItem&&);
   BirchLastActiveItem(const BirchLastActiveItem&);
   BirchLastActiveItem& operator=(const BirchLastActiveItem&);
@@ -345,21 +355,18 @@ class ASH_EXPORT BirchLastActiveItem : public BirchItem {
   void PerformAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
 
-  const GURL& url() const { return url_; }
+  const GURL& page_url() const { return page_url_; }
 
  private:
   static std::u16string GetSubtitle(base::Time last_visit);
 
-  GURL url_;
-  ui::ImageModel icon_;
+  GURL page_url_;
 };
 
 // A birch item for a most-frequently-visited URL.
 class ASH_EXPORT BirchMostVisitedItem : public BirchItem {
  public:
-  BirchMostVisitedItem(const std::u16string& title,
-                       const GURL& url,
-                       ui::ImageModel icon);
+  BirchMostVisitedItem(const std::u16string& title, const GURL& page_url);
   BirchMostVisitedItem(BirchMostVisitedItem&&);
   BirchMostVisitedItem(const BirchMostVisitedItem&);
   BirchMostVisitedItem& operator=(const BirchMostVisitedItem&);
@@ -372,13 +379,12 @@ class ASH_EXPORT BirchMostVisitedItem : public BirchItem {
   void PerformAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
 
-  const GURL& url() const { return url_; }
+  const GURL& page_url() const { return page_url_; }
 
  private:
   static std::u16string GetSubtitle();
 
-  GURL url_;
-  ui::ImageModel icon_;
+  GURL page_url_;
 };
 
 // A birch item which contains tabs shared to self information.
@@ -389,7 +395,6 @@ class ASH_EXPORT BirchSelfShareItem : public BirchItem {
                      const GURL& url,
                      const base::Time& shared_time,
                      const std::u16string& device_name,
-                     const ui::ImageModel& backup_icon,
                      const SecondaryIconType& secondary_icon_type,
                      base::RepeatingClosure activation_callback);
   BirchSelfShareItem(BirchSelfShareItem&&);
@@ -418,7 +423,6 @@ class ASH_EXPORT BirchSelfShareItem : public BirchItem {
   std::u16string guid_;
   GURL url_;
   base::Time shared_time_;
-  ui::ImageModel backup_icon_;
   SecondaryIconType secondary_icon_type_;
   // `activation_callback_` is triggered when the item is clicked by the user,
   // calling `OnItemPressed()` in `BirchSelfShareProvider` to mark the
@@ -432,7 +436,7 @@ class ASH_EXPORT BirchLostMediaItem : public BirchItem {
  public:
   BirchLostMediaItem(const GURL& source_url,
                      const std::u16string& media_title,
-                     const ui::ImageModel& backup_icon,
+                     const std::optional<ui::ImageModel>& backup_icon,
                      const SecondaryIconType& secondary_icon_type,
                      base::RepeatingClosure activation_callback);
   BirchLostMediaItem(BirchLostMediaItem&&);
@@ -458,7 +462,7 @@ class ASH_EXPORT BirchLostMediaItem : public BirchItem {
 
   GURL source_url_;
   std::u16string media_title_;
-  ui::ImageModel backup_icon_;
+  std::optional<ui::ImageModel> backup_icon_;
   SecondaryIconType secondary_icon_type_;
   base::RepeatingClosure activation_callback_;
 };
@@ -467,8 +471,7 @@ class ASH_EXPORT BirchWeatherItem : public BirchItem {
  public:
   BirchWeatherItem(const std::u16string& weather_description,
                    float temp_f,
-                   const GURL& icon_url,
-                   const ui::ImageModel& backup_icon);
+                   const GURL& icon_url);
   BirchWeatherItem(BirchWeatherItem&&);
   BirchWeatherItem(const BirchWeatherItem&);
   BirchWeatherItem& operator=(const BirchWeatherItem&);
@@ -492,27 +495,6 @@ class ASH_EXPORT BirchWeatherItem : public BirchItem {
 
   float temp_f_;
   GURL icon_url_;
-  ui::ImageModel backup_icon_;
-};
-
-class ASH_EXPORT BirchCoralItem : public BirchItem {
- public:
-  BirchCoralItem(const std::u16string& coral_title,
-                 const std::u16string& coral_text);
-  BirchCoralItem(BirchCoralItem&&);
-  BirchCoralItem(const BirchCoralItem&);
-  BirchCoralItem& operator=(const BirchCoralItem&);
-  bool operator==(const BirchCoralItem& rhs) const;
-  ~BirchCoralItem() override;
-
-  // BirchItem:
-  BirchItemType GetType() const override;
-  std::string ToString() const override;
-  void PerformAction() override;
-  void LoadIcon(LoadIconCallback callback) const override;
-
- private:
-  // TODO(yulunwu):Add coral data to `BirchCoralItem`
 };
 
 class ASH_EXPORT BirchReleaseNotesItem : public BirchItem {

@@ -57,6 +57,7 @@ struct CONTENT_EXPORT InterestGroupUpdate {
   // when the value is `null` in JSON, allowing for a downgrade from KVv2 to
   // KVv1.
   std::optional<std::optional<url::Origin>> trusted_bidding_signals_coordinator;
+  std::optional<std::vector<url::Origin>> view_and_click_counts_providers;
   std::optional<std::string> user_bidding_signals;
   std::optional<std::vector<blink::InterestGroup::Ad>> ads, ad_components;
   std::optional<base::flat_map<std::string, blink::AdSize>> ad_sizes;

@@ -4,11 +4,11 @@
 
 #include "chromecast/browser/cast_web_view_default.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromecast/base/cast_features.h"
@@ -27,7 +27,6 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/site_instance.h"
-#include "ipc/ipc_message.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
@@ -108,8 +107,7 @@ CastWebViewDefault::CastWebViewDefault(
 #if defined(USE_AURA)
   web_contents_->GetNativeView()->SetName(params_->activity_id);
   if (params_->force_720p_resolution) {
-    const auto primary_display =
-        display::Screen::GetScreen()->GetPrimaryDisplay();
+    const auto primary_display = display::Screen::Get()->GetPrimaryDisplay();
 
     // Force scale factor to 1.0 and screen bounds to 720p.
     // When performed prior to the creation of the web view this causes blink to
@@ -225,8 +223,8 @@ const blink::MediaStreamDevice* GetRequestedDeviceOrDefault(
     const blink::MediaStreamDevices& devices,
     const std::vector<std::string>& requested_device_ids) {
   if (!requested_device_ids.empty() && !requested_device_ids.front().empty()) {
-    auto it = base::ranges::find(devices, requested_device_ids.front(),
-                                 &blink::MediaStreamDevice::id);
+    auto it = std::ranges::find(devices, requested_device_ids.front(),
+                                &blink::MediaStreamDevice::id);
     return it != devices.end() ? &(*it) : nullptr;
   }
 

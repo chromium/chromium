@@ -1,0 +1,127 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Local Network Access With Public Address</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
+<script src="resources/RTCPeerConnection-helper.js"></script>
+<script src="test_sdp_data.js"></script>
+<script>
+  "use strict";
+
+  promise_test(async t => {
+    await test_driver.set_permission({ name: 'local-network-access' }, "denied");
+
+    const pc = new RTCPeerConnection();
+    const dataChannel = await pc.createDataChannel("myWebRTCChannel");
+    t.add_cleanup(() => pc.close());
+
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    await pc.setRemoteDescription({
+      type: 'answer',
+      sdp: REMOTE_DESCRIPTION_WITH_LOCAL_ADDRESS,
+    });
+
+    // When the permission is denied the candidate is not added to the ICE Agent
+    // so the connection process doesn't start and the 'connectionstatechanged'
+    // event isn't fired.
+    await waitForIceGatheringState(pc, 'complete');
+  }, 'setRemoteDescription() doesn\'t crash with denied permission and local address.');
+
+  promise_test(async t => {
+    await test_driver.set_permission({ name: 'local-network-access' }, "granted");
+
+    const pc = new RTCPeerConnection();
+    const dataChannel = await pc.createDataChannel("myWebRTCChannel");
+    t.add_cleanup(() => pc.close());
+
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    await pc.setRemoteDescription({
+      type: 'answer',
+      sdp: REMOTE_DESCRIPTION_WITH_LOCAL_ADDRESS,
+    });
+
+    await waitForConnectionStateChange(pc, 'connecting');
+  }, 'setRemoteDescription() doesn\'t crash with granted permission and local address.');
+
+  promise_test(async t => {
+    await test_driver.set_permission({ name: 'local-network-access' }, "denied");
+
+    const pc = new RTCPeerConnection();
+    const dataChannel = await pc.createDataChannel("myWebRTCChannel");
+    t.add_cleanup(() => pc.close());
+
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    await pc.setRemoteDescription({
+      type: 'answer',
+      sdp: REMOTE_DESCRIPTION_WITH_NO_CANDIDATE,
+    });
+
+    await pc.addIceCandidate({
+      candidate: LOCAL_ADDRESS_CANDIDATE,
+      sdpMid: '0',
+      sdpMLineIndex: 0,
+    });
+
+    // When the permission is denied the candidate is not added to the ICE Agent
+    // so the connection process doesn't start and the 'connectionstatechanged'
+    // event isn't fired.
+    await waitForIceGatheringState(pc, 'complete');
+  }, 'addIceCandidate() doesn\'t crash with denied permission and local address.');
+
+  promise_test(async t => {
+    await test_driver.set_permission({ name: 'local-network-access' }, "granted");
+
+    const pc = new RTCPeerConnection();
+    const dataChannel = await pc.createDataChannel("myWebRTCChannel");
+    t.add_cleanup(() => pc.close());
+
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    await pc.setRemoteDescription({
+      type: 'answer',
+      sdp: REMOTE_DESCRIPTION_WITH_NO_CANDIDATE,
+    });
+
+    await pc.addIceCandidate({
+      candidate: LOCAL_ADDRESS_CANDIDATE,
+      sdpMid: '0',
+      sdpMLineIndex: 0,
+    });
+
+    await waitForConnectionStateChange(pc, 'connecting');
+  }, 'addIceCandidate() doesn\'t crash with granted permission and local address.');
+
+  for (const serverType of ['turn', 'stun']) {
+    for (const permissionStatus of ['granted', 'denied']) {
+      promise_test(async t => {
+        await test_driver.set_permission({ name: 'local-network-access' },
+          permissionStatus);
+
+        const pc = new RTCPeerConnection({
+          iceServers: [{
+            urls: `${serverType}:127.0.0.1:12345`,
+            username: "myuser",
+            credential: "mypassword",
+          }],
+        });
+
+        const dataChannel = await pc.createDataChannel("myWebRTCChannel");
+
+        t.add_cleanup(() => pc.close());
+
+        const offer = await pc.createOffer();
+
+        const iceCandidateFired = waitUntilEvent(pc, 'icecandidate');
+        await pc.setLocalDescription(offer);
+
+        await iceCandidateFired;
+      }, `Using a ${serverType} server with a local address and ` +
+      `${permissionStatus} permission doesn't crash.`);
+    }
+  }
+</script>

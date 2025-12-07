@@ -23,7 +23,7 @@ class CrossUserSharingPublicKey {
       delete;
   ~CrossUserSharingPublicKey();
 
-  // Initialize the key using |public_key|.
+  // Initialize the key using `public_key`.
   static std::optional<CrossUserSharingPublicKey> CreateByImport(
       base::span<const uint8_t> public_key);
 

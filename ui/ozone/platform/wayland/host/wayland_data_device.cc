@@ -11,12 +11,12 @@
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_offer.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_exchange_data_provider.h"
@@ -56,7 +56,6 @@ void WaylandDataDevice::StartDrag(const WaylandDataSource& data_source,
 }
 
 void WaylandDataDevice::ResetDragDelegate() {
-  DCHECK(drag_delegate_);
   drag_delegate_ = nullptr;
 }
 
@@ -124,9 +123,9 @@ void WaylandDataDevice::OnEnter(void* data,
   DCHECK(self->new_offer_);
   self->drag_delegate_->OnDragOffer(std::move(self->new_offer_));
 
-  gfx::PointF point = self->connection()->MaybeConvertLocation(
-      gfx::PointF(wl_fixed_to_double(x), wl_fixed_to_double(y)), window);
-  self->drag_delegate_->OnDragEnter(window, point, timestamp, serial);
+  self->drag_delegate_->OnDragEnter(
+      window, gfx::PointF(wl_fixed_to_double(x), wl_fixed_to_double(y)),
+      timestamp, serial);
 
   self->connection()->Flush();
 }
@@ -138,11 +137,9 @@ void WaylandDataDevice::OnMotion(void* data,
                                  wl_fixed_t y) {
   auto* self = static_cast<WaylandDataDevice*>(data);
   if (self->drag_delegate_) {
-    gfx::PointF point = self->connection()->MaybeConvertLocation(
+    self->drag_delegate_->OnDragMotion(
         gfx::PointF(wl_fixed_to_double(x), wl_fixed_to_double(y)),
-        self->drag_delegate_->GetDragTarget());
-    self->drag_delegate_->OnDragMotion(point,
-                                       wl::EventMillisecondsToTimeTicks(time));
+        wl::EventMillisecondsToTimeTicks(time));
   }
 }
 
@@ -154,19 +151,6 @@ void WaylandDataDevice::OnDrop(void* data, wl_data_device* data_device) {
     self->drag_delegate_->OnDragDrop(timestamp);
     self->connection()->Flush();
   }
-
-  // There are buggy Exo versions, which send 'drop' event (even for
-  // unsuccessful drops) without a subsequent 'leave'. In order to mitigate
-  // potential leaks and/or UAFs, forcibly call corresponding delegate callback
-  // here, in Lacros. TODO(crbug.com/40819972): Remove once Exo bug is fixed.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Delegate might have been reset already if the drag was cancelled in
-  // response to the drop event.
-  if (self->drag_delegate_) {
-    self->drag_delegate_->OnDragLeave(timestamp);
-    self->ResetDragDelegateIfNotDragSource();
-  }
-#endif
 }
 
 void WaylandDataDevice::OnLeave(void* data, wl_data_device* data_device) {

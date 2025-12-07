@@ -8,24 +8,37 @@
 #include <cstddef>
 #include <memory>
 
+#include "base/functional/bind.h"
+#include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
+#include "third_party/blink/renderer/bindings/core/v8/serialization/post_message_helper.h"
+#include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/serialization/unpacked_serialized_script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_message_port.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_post_message_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_worker_options.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/thread_debugger_common_impl.h"
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message.h"
+#include "third_party/blink/renderer/core/messaging/message_channel.h"
+#include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/wait_for_event.h"
+#include "third_party/blink/renderer/core/workers/custom_event_message.h"
 #include "third_party/blink/renderer/core/workers/dedicated_worker.h"
 #include "third_party/blink/renderer/core/workers/dedicated_worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/dedicated_worker_messaging_proxy.h"
@@ -34,16 +47,118 @@
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/parent_execution_context_task_runners.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread_startup_data.h"
+#include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/core/workers/worker_thread_test_helper.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "v8-value.h"
 
 namespace blink {
+
+namespace {
+
+constexpr char kCustomEventName[] = "custom";
+constexpr char kCustomErrorEventName[] = "customerror";
+
+class CustomEventWithData final : public Event {
+ public:
+  explicit CustomEventWithData(const AtomicString& event_type)
+      : Event(event_type, Bubbles::kNo, Cancelable::kNo) {}
+  explicit CustomEventWithData(const AtomicString& event_type,
+                               scoped_refptr<SerializedScriptValue> data)
+      : CustomEventWithData(event_type, std::move(data), nullptr) {}
+
+  explicit CustomEventWithData(const AtomicString& event_type,
+                               scoped_refptr<SerializedScriptValue> data,
+                               GCedMessagePortArray* ports)
+      : Event(event_type, Bubbles::kNo, Cancelable::kNo),
+        data_as_serialized_script_value_(
+            SerializedScriptValue::Unpack(std::move(data))),
+        ports_(ports) {}
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(data_as_serialized_script_value_);
+    visitor->Trace(ports_);
+    Event::Trace(visitor);
+  }
+  SerializedScriptValue* DataAsSerializedScriptValue() const {
+    if (!data_as_serialized_script_value_) {
+      return nullptr;
+    }
+    return data_as_serialized_script_value_->Value();
+  }
+
+  GCedMessagePortArray* ports() { return ports_; }
+
+ private:
+  Member<UnpackedSerializedScriptValue> data_as_serialized_script_value_;
+  Member<GCedMessagePortArray> ports_;
+};
+
+ScriptValue CreateStringScriptValue(ScriptState* script_state,
+                                    const String& str) {
+  return ScriptValue(script_state->GetIsolate(),
+                     V8String(script_state->GetIsolate(), str));
+}
+
+CrossThreadFunction<Event*(ScriptState*, CustomEventMessage)>
+CustomEventFactoryCallback(base::RepeatingClosure quit_closure,
+                           CustomEventWithData** out_event = nullptr) {
+  return CrossThreadBindRepeating(base::BindLambdaForTesting(
+      [quit_closure = std::move(quit_closure), out_event](
+          ScriptState*, CustomEventMessage data) -> Event* {
+        CustomEventWithData* result = MakeGarbageCollected<CustomEventWithData>(
+            AtomicString::FromUTF8(kCustomEventName), std::move(data.message));
+        if (out_event) {
+          *out_event = result;
+        }
+        quit_closure.Run();
+        return result;
+      }));
+}
+
+CrossThreadFunction<Event*(ScriptState*)> CustomEventFactoryErrorCallback(
+    base::RepeatingClosure quit_closure,
+    Event** out_event = nullptr) {
+  return CrossThreadBindRepeating(base::BindLambdaForTesting(
+      [quit_closure = std::move(quit_closure), out_event](ScriptState*) {
+        Event* result = MakeGarbageCollected<CustomEventWithData>(
+            AtomicString::FromUTF8(kCustomErrorEventName));
+        if (out_event) {
+          *out_event = result;
+        }
+        quit_closure.Run();
+        return result;
+      }));
+}
+
+CrossThreadFunction<Event*(ScriptState*, CustomEventMessage)>
+CustomEventWithPortsFactoryCallback(base::RepeatingClosure quit_closure,
+                                    CustomEventWithData** out_event = nullptr) {
+  return CrossThreadBindRepeating(base::BindLambdaForTesting(
+      [quit_closure = std::move(quit_closure), out_event](
+          ScriptState* script_state, CustomEventMessage message) -> Event* {
+        GCedMessagePortArray* ports = MessagePort::EntanglePorts(
+            *ExecutionContext::From(script_state), std::move(message.ports));
+        CustomEventWithData* result = MakeGarbageCollected<CustomEventWithData>(
+            AtomicString::FromUTF8(kCustomEventName),
+            std::move(message.message), ports);
+        if (out_event) {
+          *out_event = result;
+        }
+        quit_closure.Run();
+        return result;
+      }));
+}
+
+}  // namespace
 
 class DedicatedWorkerThreadForTest final : public DedicatedWorkerThread {
  public:
@@ -142,9 +257,9 @@ class DedicatedWorkerObjectProxyForTest final
   }
 
  private:
-  std::bitset<static_cast<size_t>(WebFeature::kNumberOfFeatures)>
+  std::bitset<static_cast<size_t>(WebFeature::kMaxValue) + 1>
       reported_features_;
-  std::bitset<static_cast<size_t>(WebDXFeature::kNumberOfFeatures)>
+  std::bitset<static_cast<size_t>(WebDXFeature::kMaxValue) + 1>
       reported_webdx_features_;
 };
 
@@ -198,14 +313,13 @@ class DedicatedWorkerMessagingProxyForTest
             WorkerBackingThreadStartupData::AtomicsWaitMode::kAllow),
         WorkerObjectProxy().token());
 
-    if (base::FeatureList::IsEnabled(features::kPlzDedicatedWorker)) {
-      PostCrossThreadTask(
-          *GetDedicatedWorkerThread()->GetTaskRunner(TaskType::kInternalTest),
-          FROM_HERE,
-          CrossThreadBindOnce(
-              &DedicatedWorkerThreadForTest::InitializeGlobalScope,
-              CrossThreadUnretained(GetDedicatedWorkerThread()), script_url_));
-    }
+    PostCrossThreadTask(
+        *GetDedicatedWorkerThread()->GetTaskRunner(TaskType::kInternalTest),
+        FROM_HERE,
+        CrossThreadBindOnce(
+            &DedicatedWorkerThreadForTest::InitializeGlobalScope,
+            CrossThreadUnretained(GetDedicatedWorkerThread()), script_url_));
+
   }
 
   void EvaluateClassicScript(const String& source) {
@@ -237,10 +351,6 @@ class FakeWebDedicatedWorkerHostFactoryClient
     : public WebDedicatedWorkerHostFactoryClient {
  public:
   // Implements WebDedicatedWorkerHostFactoryClient.
-  void CreateWorkerHostDeprecated(
-      const DedicatedWorkerToken& dedicated_worker_token,
-      const WebURL& script_url,
-      CreateWorkerHostCallback callback) override {}
   void CreateWorkerHost(
       const DedicatedWorkerToken& dedicated_worker_token,
       const WebURL& script_url,
@@ -295,6 +405,22 @@ DedicatedWorkerTest::WorkerMessagingProxy() {
 
 DedicatedWorkerThreadForTest* DedicatedWorkerTest::GetWorkerThread() {
   return worker_messaging_proxy_->GetDedicatedWorkerThread();
+}
+
+void DedicatedWorkerTest::RunOnWorkerThread(
+    CrossThreadOnceFunction<void(ExecutionContext*)> task) {
+  base::RunLoop run_loop;
+  PostCrossThreadTaskAndReply(
+      *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
+      CrossThreadBindOnce(
+          [](CrossThreadOnceFunction<void(ExecutionContext*)> task,
+             DedicatedWorkerThreadForTest* worker_thread) {
+            auto* execution_context = worker_thread->GlobalScope();
+            std::move(task).Run(execution_context);
+          },
+          std::move(task), CrossThreadUnretained(GetWorkerThread())),
+      CrossThreadOnceClosure(run_loop.QuitClosure()));
+  run_loop.Run();
 }
 
 void DedicatedWorkerTest::StartWorker(
@@ -497,27 +623,27 @@ TEST_F(DedicatedWorkerTest, DispatchMessageEventOnWorkerGlobalScope) {
       *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
       CrossThreadBindOnce(
           [](DedicatedWorkerThreadForTest* worker_thread,
-             AtomicString* event_type, WTF::CrossThreadOnceClosure quit_1,
-             WTF::CrossThreadOnceClosure quit_2) {
+             AtomicString* event_type, CrossThreadOnceClosure quit_1,
+             CrossThreadOnceClosure quit_2) {
             auto* global_scope = worker_thread->GlobalScope();
             auto* wait = MakeGarbageCollected<WaitForEvent>();
             wait->AddEventListener(global_scope, event_type_names::kMessage);
             wait->AddEventListener(global_scope,
                                    event_type_names::kMessageerror);
-            wait->AddCompletionClosure(WTF::BindOnce(
+            wait->AddCompletionClosure(BindOnce(
                 [](WaitForEvent* wait, AtomicString* event_type,
-                   WTF::CrossThreadOnceClosure quit_closure) {
+                   CrossThreadOnceClosure quit_closure) {
                   *event_type = wait->GetLastEvent()->type();
                   std::move(quit_closure).Run();
                 },
-                WrapPersistent(wait), WTF::Unretained(event_type),
+                WrapPersistent(wait), Unretained(event_type),
                 std::move(quit_2)));
             std::move(quit_1).Run();
           },
           CrossThreadUnretained(GetWorkerThread()),
           CrossThreadUnretained(&event_type),
-          WTF::CrossThreadOnceClosure(run_loop_1.QuitClosure()),
-          WTF::CrossThreadOnceClosure(run_loop_2.QuitClosure())));
+          CrossThreadOnceClosure(run_loop_1.QuitClosure()),
+          CrossThreadOnceClosure(run_loop_2.QuitClosure())));
 
   // Wait for the first run loop to quit, which signals that the event listeners
   // are registered. Then post the message and wait to be notified of the
@@ -544,15 +670,16 @@ TEST_F(DedicatedWorkerTest, TopLevelFrameSecurityOrigin) {
       .SetSecurityOriginForTesting(security_origin);
   StartWorker(WorkerObject()->CreateGlobalScopeCreationParams(
       script_url, network::mojom::ReferrerPolicy::kDefault,
-      Vector<network::mojom::blink::ContentSecurityPolicyPtr>()));
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+      mojo::NullReceiver(), mojo::NullReceiver()));
   base::RunLoop run_loop;
 
   PostCrossThreadTask(
       *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
       CrossThreadBindOnce(
           [](DedicatedWorkerThreadForTest* worker_thread,
-             WTF::CrossThreadOnceClosure quit,
-             const SecurityOrigin* security_origin, const KURL& script_url) {
+             CrossThreadOnceClosure quit, const SecurityOrigin* security_origin,
+             const KURL& script_url) {
             // Check the worker's top level frame security origin.
             auto* worker_global_scope =
                 static_cast<WorkerGlobalScope*>(worker_thread->GlobalScope());
@@ -571,8 +698,8 @@ TEST_F(DedicatedWorkerTest, TopLevelFrameSecurityOrigin) {
               auto nested_worker_params =
                   nested_worker_object->CreateGlobalScopeCreationParams(
                       script_url, network::mojom::ReferrerPolicy::kDefault,
-                      Vector<
-                          network::mojom::blink::ContentSecurityPolicyPtr>());
+                      Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+                      mojo::NullReceiver(), mojo::NullReceiver());
               ASSERT_TRUE(
                   nested_worker_params->top_level_frame_security_origin);
               EXPECT_TRUE(nested_worker_params->top_level_frame_security_origin
@@ -581,7 +708,7 @@ TEST_F(DedicatedWorkerTest, TopLevelFrameSecurityOrigin) {
             std::move(quit).Run();
           },
           CrossThreadUnretained(GetWorkerThread()),
-          WTF::CrossThreadOnceClosure(run_loop.QuitClosure()),
+          CrossThreadOnceClosure(run_loop.QuitClosure()),
           CrossThreadUnretained(WorkerObject()
                                     ->GetExecutionContext()
                                     ->GetSecurityContext()
@@ -615,27 +742,27 @@ TEST_F(DedicatedWorkerTest,
       *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
       CrossThreadBindOnce(
           [](DedicatedWorkerThreadForTest* worker_thread,
-             AtomicString* event_type, WTF::CrossThreadOnceClosure quit_1,
-             WTF::CrossThreadOnceClosure quit_2) {
+             AtomicString* event_type, CrossThreadOnceClosure quit_1,
+             CrossThreadOnceClosure quit_2) {
             auto* global_scope = worker_thread->GlobalScope();
             auto* wait = MakeGarbageCollected<WaitForEvent>();
             wait->AddEventListener(global_scope, event_type_names::kMessage);
             wait->AddEventListener(global_scope,
                                    event_type_names::kMessageerror);
-            wait->AddCompletionClosure(WTF::BindOnce(
+            wait->AddCompletionClosure(BindOnce(
                 [](WaitForEvent* wait, AtomicString* event_type,
-                   WTF::CrossThreadOnceClosure quit_closure) {
+                   CrossThreadOnceClosure quit_closure) {
                   *event_type = wait->GetLastEvent()->type();
                   std::move(quit_closure).Run();
                 },
-                WrapPersistent(wait), WTF::Unretained(event_type),
+                WrapPersistent(wait), Unretained(event_type),
                 std::move(quit_2)));
             std::move(quit_1).Run();
           },
           CrossThreadUnretained(worker_thread),
           CrossThreadUnretained(&event_type),
-          WTF::CrossThreadOnceClosure(run_loop_1.QuitClosure()),
-          WTF::CrossThreadOnceClosure(run_loop_2.QuitClosure())));
+          CrossThreadOnceClosure(run_loop_1.QuitClosure()),
+          CrossThreadOnceClosure(run_loop_2.QuitClosure())));
 
   // Wait for the first run loop to quit, which signals that the event listeners
   // are registered. Then post the message and wait to be notified of the
@@ -647,6 +774,188 @@ TEST_F(DedicatedWorkerTest,
   run_loop_2.Run();
 
   EXPECT_EQ(event_type, event_type_names::kMessageerror);
+}
+
+TEST_F(DedicatedWorkerTest, PostCustomEventWithString) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+
+  StartWorker();
+  EvaluateClassicScript("");
+  WaitUntilWorkerIsRunning();
+
+  base::RunLoop run_loop;
+  HeapVector<ScriptObject> transfer;
+  CustomEventWithData* event = nullptr;
+  String data = "postEventWithDataTesting";
+  WorkerObject()->PostCustomEvent(
+      TaskType::kPostedMessage, script_state,
+      CustomEventFactoryCallback(run_loop.QuitClosure(), &event),
+      CustomEventFactoryErrorCallback(run_loop.QuitClosure()),
+      CreateStringScriptValue(script_state, data), transfer,
+      v8_scope.GetExceptionState());
+  run_loop.Run();
+
+  ASSERT_NE(event, nullptr);
+  EXPECT_EQ(event->type(), kCustomEventName);
+  v8::Local<v8::Value> value =
+      event->DataAsSerializedScriptValue()->Deserialize(
+          v8_scope.GetIsolate(), SerializedScriptValue::DeserializeOptions());
+  String result;
+  ScriptValue(v8_scope.GetIsolate(), value).ToString(result);
+  EXPECT_EQ(result, data);
+}
+
+TEST_F(DedicatedWorkerTest, PostCustomEventWithNumber) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+
+  StartWorker();
+  EvaluateClassicScript("");
+  WaitUntilWorkerIsRunning();
+
+  base::RunLoop run_loop;
+  HeapVector<ScriptObject> transfer;
+  CustomEventWithData* event = nullptr;
+  const double kNumber = 2.34;
+  v8::Local<v8::Value> v8_number =
+      v8::Number::New(v8_scope.GetIsolate(), kNumber);
+
+  WorkerObject()->PostCustomEvent(
+      TaskType::kPostedMessage, script_state,
+      CustomEventFactoryCallback(run_loop.QuitClosure(), &event),
+      CustomEventFactoryErrorCallback(run_loop.QuitClosure()),
+      ScriptValue(script_state->GetIsolate(), v8_number), transfer,
+      v8_scope.GetExceptionState());
+  run_loop.Run();
+
+  ASSERT_NE(event, nullptr);
+  EXPECT_EQ(event->type(), kCustomEventName);
+  v8::Local<v8::Value> value =
+      static_cast<CustomEventWithData*>(event)
+          ->DataAsSerializedScriptValue()
+          ->Deserialize(v8_scope.GetIsolate(),
+                        SerializedScriptValue::DeserializeOptions());
+  EXPECT_EQ(ScriptValue(v8_scope.GetIsolate(), value)
+                .V8Value()
+                .As<v8::Number>()
+                ->Value(),
+            kNumber);
+}
+
+TEST_F(DedicatedWorkerTest, PostCustomEventBeforeWorkerStarts) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+
+  base::RunLoop run_loop;
+  HeapVector<ScriptObject> transfer;
+  CustomEventWithData* event = nullptr;
+  String data = "postEventWithDataTesting";
+  WorkerObject()->PostCustomEvent(
+      TaskType::kPostedMessage, script_state,
+      CustomEventFactoryCallback(run_loop.QuitClosure(), &event),
+      CustomEventFactoryErrorCallback(run_loop.QuitClosure()),
+      CreateStringScriptValue(script_state, data), transfer,
+      v8_scope.GetExceptionState());
+
+  StartWorker();
+  EvaluateClassicScript("");
+  WaitUntilWorkerIsRunning();
+  run_loop.Run();
+  ASSERT_NE(event, nullptr);
+
+  EXPECT_EQ(event->type(), kCustomEventName);
+  v8::Local<v8::Value> value =
+      event->DataAsSerializedScriptValue()->Deserialize(
+          v8_scope.GetIsolate(), SerializedScriptValue::DeserializeOptions());
+  String result;
+  EXPECT_TRUE(ScriptValue(v8_scope.GetIsolate(), value).ToString(result));
+  EXPECT_EQ(result, data);
+}
+
+TEST_F(DedicatedWorkerTest, PostCustomEventWithPort) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+
+  StartWorker();
+  EvaluateClassicScript("");
+  WaitUntilWorkerIsRunning();
+
+  MessageChannel* channel =
+      MakeGarbageCollected<MessageChannel>(v8_scope.GetExecutionContext());
+  ScriptObject script_object =
+      ScriptObject::From(v8_scope.GetScriptState(), channel->port1());
+  HeapVector<ScriptObject> transfer = {script_object};
+  CustomEventWithData* event = nullptr;
+  base::RunLoop run_loop;
+
+  WorkerObject()->PostCustomEvent(
+      TaskType::kPostedMessage, script_state,
+      CustomEventWithPortsFactoryCallback(run_loop.QuitClosure(), &event),
+      CustomEventFactoryErrorCallback(run_loop.QuitClosure()), script_object,
+      transfer, v8_scope.GetExceptionState());
+  run_loop.Run();
+
+  ASSERT_NE(event, nullptr);
+  EXPECT_EQ(event->type(), kCustomEventName);
+  ASSERT_FALSE(event->ports()->empty());
+  EXPECT_NE(event->ports()->at(0), nullptr);
+}
+
+TEST_F(DedicatedWorkerTest, PostCustomEventCannotDeserialize) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+
+  StartWorker();
+  EvaluateClassicScript("");
+  WaitUntilWorkerIsRunning();
+
+  auto* worker_thread = GetWorkerThread();
+  SerializedScriptValue::ScopedOverrideCanDeserializeInForTesting
+      override_can_deserialize_in(base::BindLambdaForTesting(
+          [&](const SerializedScriptValue&, ExecutionContext* execution_context,
+              bool can_deserialize) {
+            EXPECT_EQ(execution_context, worker_thread->GlobalScope());
+            EXPECT_TRUE(can_deserialize);
+            return false;
+          }));
+  base::RunLoop run_loop;
+  HeapVector<ScriptObject> transfer;
+  String data = "postEventWithDataTesting";
+  Event* event = nullptr;
+  WorkerObject()->PostCustomEvent(
+      TaskType::kPostedMessage, script_state,
+      CustomEventFactoryCallback(run_loop.QuitClosure()),
+      CustomEventFactoryErrorCallback(run_loop.QuitClosure(), &event),
+      CreateStringScriptValue(script_state, data), transfer,
+      v8_scope.GetExceptionState());
+  run_loop.Run();
+  EXPECT_EQ(event->type(), kCustomErrorEventName);
+}
+
+TEST_F(DedicatedWorkerTest, PostCustomEventNoMessage) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+
+  StartWorker();
+  EvaluateClassicScript("");
+  WaitUntilWorkerIsRunning();
+
+  base::RunLoop run_loop;
+  HeapVector<ScriptObject> transfer;
+  CustomEventWithData* event = nullptr;
+
+  WorkerObject()->PostCustomEvent(
+      TaskType::kPostedMessage, script_state,
+      CustomEventFactoryCallback(run_loop.QuitClosure(), &event),
+      CustomEventFactoryErrorCallback(run_loop.QuitClosure()), ScriptValue(),
+      transfer, v8_scope.GetExceptionState());
+  run_loop.Run();
+
+  ASSERT_NE(event, nullptr);
+  EXPECT_EQ(event->type(), kCustomEventName);
+  EXPECT_EQ(event->DataAsSerializedScriptValue(), nullptr);
+  EXPECT_EQ(event->ports(), nullptr);
 }
 
 }  // namespace blink

@@ -27,6 +27,7 @@
 #include "base/scoped_observation.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/keyword_id.h"
 
 namespace base {
@@ -74,8 +75,7 @@ class InMemoryHistoryBackend : public HistoryServiceObserver {
 
   // HistoryServiceObserver:
   void OnURLVisited(history::HistoryService* history_service,
-                    const history::URLRow& url_row,
-                    const history::VisitRow& new_visit) override;
+                    const VisitedURLInfo& visited_url_info) override;
   void OnURLsModified(HistoryService* history_service,
                       const URLRows& changed_urls) override;
   void OnHistoryDeletions(HistoryService* history_service,

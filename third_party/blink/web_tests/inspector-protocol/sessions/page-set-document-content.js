@@ -3,9 +3,9 @@
   var page = await testRunner.createPage();
 
   var session1 = await page.createSession();
-  session1.protocol.Page.enable();
+  await session1.protocol.Page.enable();
   var session2 = await page.createSession();
-  session2.protocol.Page.enable();
+  await session2.protocol.Page.enable();
 
   var promise1 = session1.protocol.Page.onceFrameNavigated();
   var promise2 = session2.protocol.Page.onceFrameNavigated();

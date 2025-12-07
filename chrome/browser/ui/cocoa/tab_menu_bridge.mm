@@ -8,13 +8,22 @@
 
 #include "base/functional/callback.h"
 #include "base/strings/sys_string_conversions.h"
+#include "chrome/browser/ui/cocoa/group_menu_util.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/tabs/public/tab_group.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
+#include "ui/base/models/image_model.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_util_mac.h"
 
 using MenuItemCallback = base::RepeatingCallback<void(NSMenuItem*)>;
@@ -22,8 +31,12 @@ using MenuItemCallback = base::RepeatingCallback<void(NSMenuItem*)>;
 namespace {
 
 void UpdateItemForWebContents(NSMenuItem* item,
-                              content::WebContents* web_contents) {
-  TabUIHelper* tab_ui_helper = TabUIHelper::FromWebContents(web_contents);
+                              content::WebContents* web_contents,
+                              TabStripModel* tab_strip_model) {
+  tabs::TabInterface* const tab_interface =
+      tabs::TabInterface::GetFromContents(web_contents);
+  TabUIHelper* const tab_ui_helper =
+      tab_interface->GetTabFeatures()->tab_ui_helper();
 
   auto* audio_helper = RecentlyAudibleHelper::FromWebContents(web_contents);
   if (audio_helper && audio_helper->WasRecentlyAudible()) {
@@ -45,6 +58,22 @@ void UpdateItemForWebContents(NSMenuItem* item,
   } else {
     item.title = base::SysUTF16ToNSString(tab_ui_helper->GetTitle());
   }
+
+  if (base::FeatureList::IsEnabled(features::kShowTabGroupsMacSystemMenu)) {
+    std::optional<tab_groups::TabGroupColorId> tab_group_color_id;
+    std::optional<tab_groups::TabGroupId> group =
+        tab_strip_model->GetTabForWebContents(web_contents)->GetGroup();
+    if (group.has_value()) {
+      TabGroup* tab_group =
+          tab_strip_model->group_model()->GetTabGroup(group.value());
+      if (tab_group) {
+        tab_group_color_id = tab_group->visual_data()->color();
+      }
+    }
+
+    chrome::UpdateGroupIndicatorForMenuItem(item, tab_group_color_id);
+  }
+
   item.image = NSImageFromImageSkia(
       tab_ui_helper->GetFavicon().Rasterize(&web_contents->GetColorProvider()));
 }
@@ -94,8 +123,9 @@ TabMenuBridge::TabMenuBridge(TabStripModel* model, NSMenuItem* menu_item)
 }
 
 TabMenuBridge::~TabMenuBridge() {
-  if (model_)
+  if (model_) {
     model_->RemoveObserver(this);
+  }
   RemoveMenuItems(DynamicMenuItems());
 }
 
@@ -140,7 +170,7 @@ void TabMenuBridge::AddDynamicItemsFromModel() {
     if (model_->active_index() == i) {
       [item setState:NSControlStateValueOn];
     }
-    UpdateItemForWebContents(item, model_->GetWebContentsAt(i));
+    UpdateItemForWebContents(item, model_->GetWebContentsAt(i), model_);
 
     if ([item menu] == nil) {
       [tabMenu addItem:item];
@@ -151,8 +181,9 @@ void TabMenuBridge::AddDynamicItemsFromModel() {
 }
 
 void TabMenuBridge::OnDynamicItemChosen(NSMenuItem* item) {
-  if (!model_)
+  if (!model_) {
     return;
+  }
 
   DCHECK_EQ(item.target, menu_listener_);
   int index = [menu_item_.submenu indexOfItem:item] - dynamic_items_start_;
@@ -174,7 +205,7 @@ void TabMenuBridge::OnTabStripModelChanged(
     const TabStripModelChange::Replace* replace = change.GetReplace();
     int menu_index = replace->index + dynamic_items_start_;
     UpdateItemForWebContents([menu_item_.submenu itemAtIndex:menu_index],
-                             replace->new_contents);
+                             replace -> new_contents, model_);
     return;
   }
 
@@ -188,8 +219,9 @@ void TabMenuBridge::TabChangedAt(content::WebContents* contents,
 
   // Ignore loading state changes - they happen very often during page load and
   // are used to drive the load spinner, which is not interesting to this menu.
-  if (change_type == TabChangeType::kLoadingOnly)
+  if (change_type == TabChangeType::kLoadingOnly) {
     return;
+  }
 
   int menu_index = index + dynamic_items_start_;
 
@@ -205,11 +237,28 @@ void TabMenuBridge::TabChangedAt(content::WebContents* contents,
   // As such, this code early-outs instead of DCHECKing. The newly-added
   // WebContents will be picked up later anyway when this object does get
   // notified of the addition.
-  if (menu_index < 0 || menu_index >= menu_item_.submenu.numberOfItems)
+  if (menu_index < 0 || menu_index >= menu_item_.submenu.numberOfItems) {
     return;
+  }
 
   NSMenuItem* item = [menu_item_.submenu itemAtIndex:menu_index];
-  UpdateItemForWebContents(item, contents);
+  UpdateItemForWebContents(item, contents, model_);
+}
+
+// If a tab group is changed, update group indicator for each tab.
+void TabMenuBridge::OnTabGroupChanged(const TabGroupChange& change) {
+  AddDynamicItemsFromModel();
+}
+
+// If a tab is moved into or outside the group, then update group indicator for
+// each tab.
+void TabMenuBridge::TabGroupedStateChanged(
+    TabStripModel* tab_strip_model,
+    std::optional<tab_groups::TabGroupId> old_group,
+    std::optional<tab_groups::TabGroupId> new_group,
+    tabs::TabInterface* tab,
+    int index) {
+  AddDynamicItemsFromModel();
 }
 
 void TabMenuBridge::OnTabStripModelDestroyed(TabStripModel* model) {

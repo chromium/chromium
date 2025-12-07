@@ -25,12 +25,8 @@ const String& PaymentMethodChangeEvent::methodName() const {
   return method_name_;
 }
 
-const ScriptValue PaymentMethodChangeEvent::methodDetails(
-    ScriptState* script_state) const {
-  if (method_details_.IsEmpty())
-    return ScriptValue::CreateNull(script_state->GetIsolate());
-  return ScriptValue(script_state->GetIsolate(),
-                     method_details_.GetAcrossWorld(script_state));
+const ScriptObject& PaymentMethodChangeEvent::methodDetails() const {
+  return method_details_;
 }
 
 void PaymentMethodChangeEvent::Trace(Visitor* visitor) const {
@@ -45,11 +41,7 @@ PaymentMethodChangeEvent::PaymentMethodChangeEvent(
     : PaymentRequestUpdateEvent(ExecutionContext::From(script_state),
                                 type,
                                 init),
-      method_name_(init->methodName()) {
-  if (init->hasMethodDetails()) {
-    method_details_.Set(script_state->GetIsolate(),
-                        init->methodDetails().V8Value());
-  }
-}
+      method_name_(init->methodName()),
+      method_details_(init->methodDetails()) {}
 
 }  // namespace blink

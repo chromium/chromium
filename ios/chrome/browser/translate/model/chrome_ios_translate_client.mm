@@ -12,6 +12,7 @@
 #import "base/memory/ptr_util.h"
 #import "base/notreached.h"
 #import "components/infobars/core/infobar.h"
+#import "components/infobars/core/infobar_manager.h"
 #import "components/language/core/browser/accept_languages_service.h"
 #import "components/language/core/browser/language_model_manager.h"
 #import "components/language/core/browser/pref_names.h"
@@ -27,37 +28,36 @@
 #import "ios/chrome/browser/language/model/accept_languages_service_factory.h"
 #import "ios/chrome/browser/language/model/language_model_manager_factory.h"
 #import "ios/chrome/browser/language/model/url_language_histogram_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/translate/model/language_detection_model_service_factory.h"
-#import "ios/chrome/browser/translate/model/translate_model_service_factory.h"
+#import "ios/chrome/browser/language_detection/model/language_detection_model_loader_service_ios_factory.h"
+#import "ios/chrome/browser/language_detection/model/language_detection_model_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/translate/model/translate_ranker_factory.h"
 #import "ios/chrome/browser/translate/model/translate_service_ios.h"
 #import "ios/chrome/grit/ios_theme_resources.h"
-#import "ios/web/public/browser_state.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 #import "third_party/metrics_proto/translate_event.pb.h"
 #import "url/gurl.h"
 
-ChromeIOSTranslateClient::ChromeIOSTranslateClient(web::WebState* web_state)
+ChromeIOSTranslateClient::ChromeIOSTranslateClient(
+    web::WebState* web_state,
+    infobars::InfoBarManager* infobar_manager)
     : web_state_(web_state),
+      infobar_manager_(infobar_manager),
       translate_driver_(
           web_state,
-          LanguageDetectionModelServiceFactory::GetForBrowserState(
-              ChromeBrowserState::FromBrowserState(
-                  web_state->GetBrowserState()))),
+          LanguageDetectionModelLoaderServiceIOSFactory::GetForProfile(
+              ProfileIOS::FromBrowserState(web_state->GetBrowserState()))),
       translate_manager_(std::make_unique<translate::TranslateManager>(
           this,
-          translate::TranslateRankerFactory::GetForBrowserState(
-              ChromeBrowserState::FromBrowserState(
-                  web_state->GetBrowserState())),
-          LanguageModelManagerFactory::GetForBrowserState(
-              ChromeBrowserState::FromBrowserState(
-                  web_state->GetBrowserState()))
+          translate::TranslateRankerFactory::GetForProfile(
+              ProfileIOS::FromBrowserState(web_state->GetBrowserState())),
+          LanguageModelManagerFactory::GetForProfile(
+              ProfileIOS::FromBrowserState(web_state->GetBrowserState()))
               ->GetPrimaryModel())) {
   translate_driver_.Initialize(
-      UrlLanguageHistogramFactory::GetForBrowserState(
-          ChromeBrowserState::FromBrowserState(web_state->GetBrowserState())),
+      UrlLanguageHistogramFactory::GetForProfile(
+          ProfileIOS::FromBrowserState(web_state->GetBrowserState())),
       translate_manager_.get()),
       web_state_->AddObserver(this);
 }
@@ -81,8 +81,16 @@ translate::TranslateManager* ChromeIOSTranslateClient::GetTranslateManager() {
 
 std::unique_ptr<infobars::InfoBar> ChromeIOSTranslateClient::CreateInfoBar(
     std::unique_ptr<translate::TranslateInfoBarDelegate> delegate) const {
-  bool skip_banner = delegate->translate_step() ==
-                     translate::TranslateStep::TRANSLATE_STEP_TRANSLATING;
+  // Skip the banner if the page is in the process of being translated or if
+  // the page has been translated programmatically. If the page is translated
+  // via a user action (triggering from a menu) then show the infobar so that
+  // they have access to translate Settings.
+  bool skip_banner =
+      delegate->translate_step() ==
+          translate::TranslateStep::TRANSLATE_STEP_TRANSLATING ||
+      (delegate->translate_step() ==
+           translate::TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE &&
+       !delegate->triggered_from_menu());
   return std::make_unique<InfoBarIOS>(InfobarType::kInfobarTypeTranslate,
                                       std::move(delegate), skip_banner);
 }
@@ -98,12 +106,17 @@ bool ChromeIOSTranslateClient::ShowTranslateUI(
     step = translate::TRANSLATE_STEP_TRANSLATE_ERROR;
   }
 
+  // If infobar management is not available from the web state then
+  // do not show translation infobar.
+  if (!infobar_manager_) {
+    return false;
+  }
+
   // Infobar UI.
   translate::TranslateInfoBarDelegate::Create(
       step != translate::TRANSLATE_STEP_BEFORE_TRANSLATE || triggered_from_menu,
-      translate_manager_->GetWeakPtr(),
-      InfoBarManagerImpl::FromWebState(web_state_), step, source_language,
-      target_language, error_type, triggered_from_menu);
+      translate_manager_->GetWeakPtr(), infobar_manager_.get(), step,
+      source_language, target_language, error_type, triggered_from_menu);
 
   return true;
 }
@@ -114,28 +127,24 @@ translate::IOSTranslateDriver* ChromeIOSTranslateClient::GetTranslateDriver() {
 
 PrefService* ChromeIOSTranslateClient::GetPrefs() {
   DCHECK(web_state_);
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
-  return chrome_browser_state->GetOriginalChromeBrowserState()->GetPrefs();
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  return profile->GetOriginalProfile()->GetPrefs();
 }
 
 std::unique_ptr<translate::TranslatePrefs>
 ChromeIOSTranslateClient::GetTranslatePrefs() {
   DCHECK(web_state_);
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
-  return CreateTranslatePrefs(chrome_browser_state->GetPrefs());
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  return CreateTranslatePrefs(profile->GetPrefs());
 }
 
 language::AcceptLanguagesService*
 ChromeIOSTranslateClient::GetAcceptLanguagesService() {
   DCHECK(web_state_);
-  return AcceptLanguagesServiceFactory::GetForBrowserState(
-      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState()));
-}
-
-int ChromeIOSTranslateClient::GetInfobarIconID() const {
-  return IDR_IOS_INFOBAR_TRANSLATE;
+  return AcceptLanguagesServiceFactory::GetForProfile(
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState()));
 }
 
 bool ChromeIOSTranslateClient::IsTranslatableURL(const GURL& url) {
@@ -194,6 +203,7 @@ void ChromeIOSTranslateClient::WasHidden(web::WebState* web_state) {
 
 void ChromeIOSTranslateClient::WebStateDestroyed(web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
+  infobar_manager_ = nullptr;
   web_state_->RemoveObserver(this);
   web_state_ = nullptr;
 
@@ -211,5 +221,3 @@ void ChromeIOSTranslateClient::DidPageLoadComplete() {
     translate_metrics_logger_.reset();
   }
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(ChromeIOSTranslateClient)

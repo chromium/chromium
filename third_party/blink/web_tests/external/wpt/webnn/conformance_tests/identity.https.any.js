@@ -1,5 +1,5 @@
 // META: title=test WebNN API element-wise identity operation
-// META: global=window,dedicatedworker
+// META: global=window,worker
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -13,14 +13,6 @@
 //
 // MLOperand identity(MLOperand input);
 
-
-const getIdentityPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 0, float16: 0};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
-
 const identityTests = [
   {
     'name': 'identity float32 0D scalar',
@@ -28,7 +20,7 @@ const identityTests = [
       'inputs': {
         'identityInput': {
           'data': [-4.273642539978027],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -39,7 +31,7 @@ const identityTests = [
       'expectedOutputs': {
         'identityOutput': {
           'data': [-4.273642539978027],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       }
     }
@@ -59,7 +51,7 @@ const identityTests = [
             -9.782458305358887,  5.496699810028076,   -9.967339515686035,
             -6.901016712188721,  -2.8501904010772705, 3.279616355895996
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'},
+          'descriptor': {shape: [24], dataType: 'float32'},
           'constant': true
         }
       },
@@ -80,7 +72,7 @@ const identityTests = [
             -9.782458305358887,  5.496699810028076,   -9.967339515686035,
             -6.901016712188721,  -2.8501904010772705, 3.279616355895996
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -100,7 +92,7 @@ const identityTests = [
             -9.782458305358887,  5.496699810028076,   -9.967339515686035,
             -6.901016712188721,  -2.8501904010772705, 3.279616355895996
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -120,7 +112,7 @@ const identityTests = [
             -9.782458305358887,  5.496699810028076,   -9.967339515686035,
             -6.901016712188721,  -2.8501904010772705, 3.279616355895996
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -140,7 +132,7 @@ const identityTests = [
             -9.782458305358887,  5.496699810028076,   -9.967339515686035,
             -6.901016712188721,  -2.8501904010772705, 3.279616355895996
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -160,7 +152,7 @@ const identityTests = [
             -9.782458305358887,  5.496699810028076,   -9.967339515686035,
             -6.901016712188721,  -2.8501904010772705, 3.279616355895996
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       }
     }
@@ -180,7 +172,7 @@ const identityTests = [
             -9.782458305358887,  5.496699810028076,   -9.967339515686035,
             -6.901016712188721,  -2.8501904010772705, 3.279616355895996
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -200,7 +192,7 @@ const identityTests = [
             -9.782458305358887,  5.496699810028076,   -9.967339515686035,
             -6.901016712188721,  -2.8501904010772705, 3.279616355895996
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -220,7 +212,7 @@ const identityTests = [
             -9.782458305358887,  5.496699810028076,   -9.967339515686035,
             -6.901016712188721,  -2.8501904010772705, 3.279616355895996
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -240,7 +232,7 @@ const identityTests = [
             -9.782458305358887,  5.496699810028076,   -9.967339515686035,
             -6.901016712188721,  -2.8501904010772705, 3.279616355895996
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -260,7 +252,7 @@ const identityTests = [
             -9.782458305358887,  5.496699810028076,   -9.967339515686035,
             -6.901016712188721,  -2.8501904010772705, 3.279616355895996
           ],
-          'descriptor': {'dimensions': [2, 1, 4, 1, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 1, 4, 1, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -280,18 +272,253 @@ const identityTests = [
             -9.782458305358887,  5.496699810028076,   -9.967339515686035,
             -6.901016712188721,  -2.8501904010772705, 3.279616355895996
           ],
-          'descriptor': {'dimensions': [2, 1, 4, 1, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 1, 4, 1, 3], dataType: 'float32'}
+        }
+      }
+    }
+  },
+
+  // float16 tests
+  {
+    'name': 'identity float16 0D scalar',
+    'graph': {
+      'inputs': {
+        'identityInput': {
+          'data': [-4.2734375],
+          'descriptor': {shape: [], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'identity',
+        'arguments': [{'input': 'identityInput'}],
+        'outputs': 'identityOutput'
+      }],
+      'expectedOutputs': {
+        'identityOutput': {
+          'data': [-4.2734375],
+          'descriptor': {shape: [], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'identity float16 1D constant tensor',
+    'graph': {
+      'inputs': {
+        'identityInput': {
+          'data': [
+            0.37744140625, -0.88916015625, 9.96875,      7.96484375,
+            -4.20703125,   -3.748046875,   -2.51171875,  5.77734375,
+            -4.47265625,   -8.40625,       -3.857421875, 6.03515625,
+            9.078125,      7.1015625,      1.4169921875, -5.64453125,
+            -2.599609375,  -7.265625,      -9.78125,     5.49609375,
+            -9.96875,      -6.90234375,    -2.849609375, 3.279296875
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'identity',
+        'arguments': [{'input': 'identityInput'}],
+        'outputs': 'identityOutput'
+      }],
+      'expectedOutputs': {
+        'identityOutput': {
+          'data': [
+            0.37744140625, -0.88916015625, 9.96875,      7.96484375,
+            -4.20703125,   -3.748046875,   -2.51171875,  5.77734375,
+            -4.47265625,   -8.40625,       -3.857421875, 6.03515625,
+            9.078125,      7.1015625,      1.4169921875, -5.64453125,
+            -2.599609375,  -7.265625,      -9.78125,     5.49609375,
+            -9.96875,      -6.90234375,    -2.849609375, 3.279296875
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'identity float16 1D tensor',
+    'graph': {
+      'inputs': {
+        'identityInput': {
+          'data': [
+            0.37744140625, -0.88916015625, 9.96875,      7.96484375,
+            -4.20703125,   -3.748046875,   -2.51171875,  5.77734375,
+            -4.47265625,   -8.40625,       -3.857421875, 6.03515625,
+            9.078125,      7.1015625,      1.4169921875, -5.64453125,
+            -2.599609375,  -7.265625,      -9.78125,     5.49609375,
+            -9.96875,      -6.90234375,    -2.849609375, 3.279296875
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'identity',
+        'arguments': [{'input': 'identityInput'}],
+        'outputs': 'identityOutput'
+      }],
+      'expectedOutputs': {
+        'identityOutput': {
+          'data': [
+            0.37744140625, -0.88916015625, 9.96875,      7.96484375,
+            -4.20703125,   -3.748046875,   -2.51171875,  5.77734375,
+            -4.47265625,   -8.40625,       -3.857421875, 6.03515625,
+            9.078125,      7.1015625,      1.4169921875, -5.64453125,
+            -2.599609375,  -7.265625,      -9.78125,     5.49609375,
+            -9.96875,      -6.90234375,    -2.849609375, 3.279296875
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'identity float16 2D tensor',
+    'graph': {
+      'inputs': {
+        'identityInput': {
+          'data': [
+            0.37744140625, -0.88916015625, 9.96875,      7.96484375,
+            -4.20703125,   -3.748046875,   -2.51171875,  5.77734375,
+            -4.47265625,   -8.40625,       -3.857421875, 6.03515625,
+            9.078125,      7.1015625,      1.4169921875, -5.64453125,
+            -2.599609375,  -7.265625,      -9.78125,     5.49609375,
+            -9.96875,      -6.90234375,    -2.849609375, 3.279296875
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'identity',
+        'arguments': [{'input': 'identityInput'}],
+        'outputs': 'identityOutput'
+      }],
+      'expectedOutputs': {
+        'identityOutput': {
+          'data': [
+            0.37744140625, -0.88916015625, 9.96875,      7.96484375,
+            -4.20703125,   -3.748046875,   -2.51171875,  5.77734375,
+            -4.47265625,   -8.40625,       -3.857421875, 6.03515625,
+            9.078125,      7.1015625,      1.4169921875, -5.64453125,
+            -2.599609375,  -7.265625,      -9.78125,     5.49609375,
+            -9.96875,      -6.90234375,    -2.849609375, 3.279296875
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'identity float16 3D tensor',
+    'graph': {
+      'inputs': {
+        'identityInput': {
+          'data': [
+            0.37744140625, -0.88916015625, 9.96875,      7.96484375,
+            -4.20703125,   -3.748046875,   -2.51171875,  5.77734375,
+            -4.47265625,   -8.40625,       -3.857421875, 6.03515625,
+            9.078125,      7.1015625,      1.4169921875, -5.64453125,
+            -2.599609375,  -7.265625,      -9.78125,     5.49609375,
+            -9.96875,      -6.90234375,    -2.849609375, 3.279296875
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'identity',
+        'arguments': [{'input': 'identityInput'}],
+        'outputs': 'identityOutput'
+      }],
+      'expectedOutputs': {
+        'identityOutput': {
+          'data': [
+            0.37744140625, -0.88916015625, 9.96875,      7.96484375,
+            -4.20703125,   -3.748046875,   -2.51171875,  5.77734375,
+            -4.47265625,   -8.40625,       -3.857421875, 6.03515625,
+            9.078125,      7.1015625,      1.4169921875, -5.64453125,
+            -2.599609375,  -7.265625,      -9.78125,     5.49609375,
+            -9.96875,      -6.90234375,    -2.849609375, 3.279296875
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'identity float16 4D tensor',
+    'graph': {
+      'inputs': {
+        'identityInput': {
+          'data': [
+            0.37744140625, -0.88916015625, 9.96875,      7.96484375,
+            -4.20703125,   -3.748046875,   -2.51171875,  5.77734375,
+            -4.47265625,   -8.40625,       -3.857421875, 6.03515625,
+            9.078125,      7.1015625,      1.4169921875, -5.64453125,
+            -2.599609375,  -7.265625,      -9.78125,     5.49609375,
+            -9.96875,      -6.90234375,    -2.849609375, 3.279296875
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'identity',
+        'arguments': [{'input': 'identityInput'}],
+        'outputs': 'identityOutput'
+      }],
+      'expectedOutputs': {
+        'identityOutput': {
+          'data': [
+            0.37744140625, -0.88916015625, 9.96875,      7.96484375,
+            -4.20703125,   -3.748046875,   -2.51171875,  5.77734375,
+            -4.47265625,   -8.40625,       -3.857421875, 6.03515625,
+            9.078125,      7.1015625,      1.4169921875, -5.64453125,
+            -2.599609375,  -7.265625,      -9.78125,     5.49609375,
+            -9.96875,      -6.90234375,    -2.849609375, 3.279296875
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'identity float16 5D tensor',
+    'graph': {
+      'inputs': {
+        'identityInput': {
+          'data': [
+            0.37744140625, -0.88916015625, 9.96875,      7.96484375,
+            -4.20703125,   -3.748046875,   -2.51171875,  5.77734375,
+            -4.47265625,   -8.40625,       -3.857421875, 6.03515625,
+            9.078125,      7.1015625,      1.4169921875, -5.64453125,
+            -2.599609375,  -7.265625,      -9.78125,     5.49609375,
+            -9.96875,      -6.90234375,    -2.849609375, 3.279296875
+          ],
+          'descriptor': {shape: [2, 1, 4, 1, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'identity',
+        'arguments': [{'input': 'identityInput'}],
+        'outputs': 'identityOutput'
+      }],
+      'expectedOutputs': {
+        'identityOutput': {
+          'data': [
+            0.37744140625, -0.88916015625, 9.96875,      7.96484375,
+            -4.20703125,   -3.748046875,   -2.51171875,  5.77734375,
+            -4.47265625,   -8.40625,       -3.857421875, 6.03515625,
+            9.078125,      7.1015625,      1.4169921875, -5.64453125,
+            -2.599609375,  -7.265625,      -9.78125,     5.49609375,
+            -9.96875,      -6.90234375,    -2.849609375, 3.279296875
+          ],
+          'descriptor': {shape: [2, 1, 4, 1, 3], dataType: 'float16'}
         }
       }
     }
   }
 ];
 
-if (navigator.ml) {
-  identityTests.forEach((test) => {
-    webnn_conformance_test(
-        buildGraphAndCompute, getIdentityPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    identityTests, buildAndExecuteGraph, getZeroULPTolerance);

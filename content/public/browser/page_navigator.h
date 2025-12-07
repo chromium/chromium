@@ -14,17 +14,14 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/child_process_host.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/reload_type.h"
-#include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/site_instance.h"
 #include "content/public/common/referrer.h"
-#include "ipc/ipc_message.h"
-#include "services/network/public/cpp/resource_request_body.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "ipc/constants.mojom.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-shared.h"
@@ -32,9 +29,15 @@
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
+namespace network {
+class ResourceRequestBody;
+class SharedURLLoaderFactory;
+}
+
 namespace content {
 
 class NavigationHandle;
+class SiteInstance;
 class WebContents;
 
 struct CONTENT_EXPORT OpenURLParams {
@@ -51,7 +54,7 @@ struct CONTENT_EXPORT OpenURLParams {
                 bool started_from_context_menu);
   OpenURLParams(const GURL& url,
                 const Referrer& referrer,
-                int frame_tree_node_id,
+                FrameTreeNodeId frame_tree_node_id,
                 WindowOpenDisposition disposition,
                 ui::PageTransition transition,
                 bool is_renderer_initiated);
@@ -108,12 +111,12 @@ struct CONTENT_EXPORT OpenURLParams {
   // is terminated by \r\n.  May be empty if no extra headers are needed.
   std::string extra_headers;
 
-  // The browser-global FrameTreeNode ID or RenderFrameHost::kNoFrameTreeNodeId
-  // to indicate the main frame.
-  int frame_tree_node_id = RenderFrameHost::kNoFrameTreeNodeId;
+  // The browser-global FrameTreeNode ID for the frame to navigate, or the
+  // default-constructed invalid value to indicate the main frame.
+  FrameTreeNodeId frame_tree_node_id;
 
   // Routing id of the source RenderFrameHost.
-  int source_render_frame_id = MSG_ROUTING_NONE;
+  int source_render_frame_id = IPC::mojom::kRoutingIdNone;
 
   // Process id of the source RenderFrameHost.
   int source_render_process_id = ChildProcessHost::kInvalidUniqueID;
@@ -146,9 +149,9 @@ struct CONTENT_EXPORT OpenURLParams {
   // Optional URLLoaderFactory to facilitate navigation to a blob URL.
   scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory;
 
-  // Indicates that the navigation should happen in an app window if
-  // possible, i.e. if an app for the URL is installed.
-  bool open_app_window_if_possible = false;
+  // Indicates that this is a service worker openWindow() call targeting a new
+  // window.
+  bool is_service_worker_open_window = false;
 
   // If this navigation was initiated from a link that specified the
   // hrefTranslate attribute, this contains the attribute's value (a BCP47

@@ -16,6 +16,31 @@
      =1 {1 item (and more on synced devices)}
      other {# items (and more on synced devices)}}
   </message>
+  <message name="IDS_DEL_NO_BROWSING_HISTORY_TEXT" desc="This string will be shown in Delete Browsing Data indicating that there are no history entries within deletion range.">
+    None
+  </message>
+  <message name="IDS_DEL_NO_BROWSING_HISTORY_SYNC_TEXT" desc="This string will be shown in Delete Browsing Data indicating that there are no history entries within deletion range on the device but more items might be synced and affected by the deletion.">
+    From at least 1 site on synced devices
+  </message>
+  <message name="IDS_DEL_BROWSING_HISTORY_DOMAIN_COUNT_TEXT" desc="This string will be shown in Delete Browsing Data. It will start by mentioning the last visited domain, followed by this string showing the count of other unique domains that the user has visited that might be affected by the deletion. For example: if a user visits/revisits facebook.com, followed by figma.com, within the specified time range, then this text would say 'figma.com and 1 other site'.">
+    {DOMAIN_COUNT, plural,
+      =1 {+ 1 site}
+      other {+ # sites}}
+  </message>
+  <message name="IDS_DEL_BROWSING_HISTORY_DOMAIN_COUNT_SYNC_TEXT" desc="This string will be shown in Delete Browsing Data. It will start by mentioning the last visited domain, followed by this string showing the count of other unique domains that the user has visited that might be affected by the deletion. More items might be synced and affected by the deletion. For example: if a user visits/revisits facebook.com, followed by figma.com, within the specified time range, then this text would say 'figma.com and 1 other site (more on sync devices)'.">
+    {DOMAIN_COUNT, plural,
+      =1 {+ 1 site (more on synced devices)}
+      other {+ # sites (more on synced devices)}}
+  </message>
+  <message name="IDS_DEL_BROWSING_HISTORY_COUNTER_MULTIPLE_DOMAINS_TEXT" desc="This string will be shown in Delete Browsing Data the Browsing History title. It will start by mentioning the last visited domain, followed by this string showing the count of other unique domains that the user has visited that might be affected by the deletion. More items might be synced and affected by the deletion which can be reflected on the second string. For example: if a user visits/revisits facebook.com, followed by figma.com, within the specified time range, then this text would say 'figma.com and 1 other site (more on sync devices)'.">
+    From <ph name="TYPE_1">$1<ex>google.com</ex></ph> <ph name="TYPE_2">$2<ex>+ 1 site</ex></ph>
+  </message>
+  <message name="IDS_DEL_BROWSING_HISTORY_COUNTER_SINGLE_DOMAIN_TEXT" desc="This string will be shown in Delete Browsing Data below the Browsing History title. It concatenates one string with the from prefix. For example: 'From figma.com + 1 site'.">
+    From <ph name="TYPE_1">$1<ex>google.com</ex></ph>
+  </message>
+  <message name="IDS_DEL_BROWSING_HISTORY_COUNTER_SINGLE_DOMAIN_SYNC_TEXT" desc="This string will be shown in Delete Browsing Data. It concatenates one string stating what is deleted with the fact that more items might be synced and affected by the deletion. E.g. 'From figma.com + 1 site (more on synced devices)'.">
+    From <ph name="TYPE_1">$1<ex>From google.com</ex></ph> (more on synced devices)
+  </message>
   <message name="IDS_DEL_CACHE_COUNTER_UPPER_ESTIMATE" desc="A counter showing that the user has less than X megabytes of cache. The value X will be substituted.">
     Less than <ph name="UPPER_ESTIMATE">$1<ex>328 MB</ex></ph>
   </message>
@@ -93,10 +118,10 @@
   <message name="IDS_DEL_AUTOFILL_COUNTER_EMPTY" desc="A counter showing that the user has no form data stored.">
     None
   </message>
-  <message name="IDS_DEL_AUTOFILL_COUNTER_CREDIT_CARDS" desc="A counter showing how many credit cards the user has.">
+  <message name="IDS_DEL_AUTOFILL_COUNTER_PAYMENT_METHODS" desc="A counter showing how many payment methods the user has.">
     {COUNT, plural,
-     =1 {1 credit card}
-     other {# credit cards}}
+     =1 {1 payment method}
+     other {# payment methods}}
   </message>
   <message name="IDS_DEL_AUTOFILL_COUNTER_ADDRESSES" desc="A counter showing how many addresses the user has.">
     {COUNT, plural,
@@ -108,30 +133,38 @@
      =1 {1 suggestion}
      other {# suggestions}}
   </message>
+  <message name="IDS_DEL_AUTOFILL_COUNTER_USER_ANNOTATION_ENTRIES" desc="A counter showing how many annotation entries the user has." translateable="false">
+    {COUNT, plural,
+     =1 {1 suggestion (device only)}
+     other {# suggestions (device only)}}
+  </message>
   <message name="IDS_DEL_AUTOFILL_COUNTER_SUGGESTIONS_LONG" desc="A counter showing how many other form autocompletion suggestions the user has. Note that this message is shown at the end of an enumeration of form data types, such as '2 addresses, 5 others suggestions'.">
     {COUNT, plural,
      =1 {1 other suggestion}
      other {# other suggestions}}
   </message>
-  <message name="IDS_DEL_AUTOFILL_COUNTER_SUGGESTIONS_SHORT" desc="A counter showing how many other items of form data the user has. Note that this message is shown at the end of an enumeration of form data types, such as '3 credit cards, 2 addresses, 5 others'.">
+  <message name="IDS_DEL_AUTOFILL_COUNTER_SUGGESTIONS_SHORT" desc="A counter showing how many other items of form data the user has. Note that this message is shown at the end of an enumeration of form data types, such as '3 payment methods, 2 addresses, 5 others'.">
     {COUNT, plural,
      =1 {1 other}
      other {# others}}
   </message>
   <message name="IDS_DEL_AUTOFILL_COUNTER_ONE_TYPE_SYNCED" desc="A counter showing that the user has one type of form data and that it is synced. The type will be substituted, this message only provides the (synced) part.">
-    <ph name="TYPE_1">$1<ex>2 credit cards</ex></ph> (synced)
+    <ph name="TYPE_1">$1<ex>2 payment methods</ex></ph> (synced)
   </message>
   <message name="IDS_DEL_AUTOFILL_COUNTER_TWO_TYPES" desc="A counter showing that the user has two types of form data. The types and their counts will be substituted, this message only provides the comma separator.">
-    <ph name="TYPE_1">$1<ex>2 credit cards</ex></ph>, <ph name="TYPE_2">$2<ex>1 address</ex></ph>
+    <ph name="TYPE_1">$1<ex>2 payment methods</ex></ph>, <ph name="TYPE_2">$2<ex>1 address</ex></ph>
   </message>
   <message name="IDS_DEL_AUTOFILL_COUNTER_TWO_TYPES_SYNCED" desc="A counter showing that the user has two types of form data and that they are synced. The types and their counts will be substituted, this message only provides the comma separator.">
-    <ph name="TYPE_1">$1<ex>2 credit cards</ex></ph>, <ph name="TYPE_2">$2<ex>1 address</ex></ph> (synced)
+    <ph name="TYPE_1">$1<ex>2 payment methods</ex></ph>, <ph name="TYPE_2">$2<ex>1 address</ex></ph> (synced)
   </message>
   <message name="IDS_DEL_AUTOFILL_COUNTER_THREE_TYPES" desc="A counter showing that the user has three types of form data. The types and their counts will be substituted, this message only provides the comma separators.">
-    <ph name="TYPE_1">$1<ex>2 credit cards</ex></ph>, <ph name="TYPE_2">$2<ex>1 address</ex></ph>, <ph name="TYPE_3">$3<ex>5 others</ex></ph>
+    <ph name="TYPE_1">$1<ex>2 payment methods</ex></ph>, <ph name="TYPE_2">$2<ex>1 address</ex></ph>, <ph name="TYPE_3">$3<ex>5 others</ex></ph>
   </message>
   <message name="IDS_DEL_AUTOFILL_COUNTER_THREE_TYPES_SYNCED" desc="A counter showing that the user has three types of form data and that they are synced. The types and their counts will be substituted, this message only provides the comma separators.">
-    <ph name="TYPE_1">$1<ex>2 credit cards</ex></ph>, <ph name="TYPE_2">$2<ex>1 address</ex></ph>, <ph name="TYPE_3">$3<ex>5 others</ex></ph> (synced)
+    <ph name="TYPE_1">$1<ex>2 payment methods</ex></ph>, <ph name="TYPE_2">$2<ex>1 address</ex></ph>, <ph name="TYPE_3">$3<ex>5 others</ex></ph> (synced)
+  </message>
+  <message name="IDS_DEL_AUTOFILL_SYNCABLE_NON_SYNCABLE_COMBINATION" desc="A string for binding syncable and non-syncable autofill data." translateable="false">
+    <ph name="SYNCABLE_PART">$1<ex>2 payment methods</ex></ph>; <ph name="NON_SYNCABLE_PART">$2<ex>1 suggestion (device only)</ex></ph>
   </message>
   <message name="IDS_DEL_COOKIES_COUNTER" desc="A static message shown in the Clear Browsing Data dialog explaining to the user that deleting cookies and site data will result in the user being signed out of most websites.">
     This will sign you out of most websites.
@@ -139,8 +172,8 @@
   <message name="IDS_DEL_COOKIES_COUNTER_ADVANCED" desc="A counter showing the number of sites that use cookies.">
     {COUNT, plural,
       =0 {None}
-      =1 {From 1 site }
-      other {From # sites }}
+      =1 {From 1 site}
+      other {From # sites}}
   </message>
   <message name="IDS_DEL_COOKIES_COUNTER_ADVANCED_WITH_SIGNED_IN_EXCEPTION" desc="A counter showing the number of sites that use cookies, followed by an exception message that the user will stay signed in to their Google account.">
     {COUNT, plural,
@@ -190,5 +223,8 @@
   </message>
   <message name="IDS_DEL_TABS_MULTIWINDOW_COUNTER" desc="A counter showing how many tabs the user opened or modified across multiple windows.">
     <ph name="TAB_COUNT">$1<ex>5 tabs</ex></ph> from <ph name="WINDOW_COUNT">$2<ex>2 windows</ex></ph> on this device
+  </message>
+  <message name="IDS_DEL_GOOGLE_COOKIES_SIGNOUT_LINK" desc="A message that will be appended to IDS_DEL_COOKIES_COUNTER_ADVANCED if the user is signed in. It informs the user that their Google cookies will only be deleted if they signed out of Chrome. This string includes a link that, when clicked on, will sign the user out of Chrome.">
+    To delete Google cookies from this device, <ph name="BEGIN_LINK">&lt;a href="#" target="_blank" id="signOutLink"&gt;</ph>sign out of Chrome<ph name="END_LINK">&lt;/a&gt;</ph>.
   </message>
 </grit-part>

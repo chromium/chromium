@@ -23,17 +23,14 @@ PrintingTask::PrintingTask(content::WebContents* web_contents)
           RendererTask::GetFaviconFromWebContents(web_contents),
           web_contents) {}
 
-PrintingTask::~PrintingTask() {
-}
+PrintingTask::~PrintingTask() = default;
 
 void PrintingTask::UpdateTitle() {
   set_title(PrefixPrintTitle(GetTitleFromWebContents(web_contents())));
 }
 
 void PrintingTask::UpdateFavicon() {
-  const gfx::ImageSkia* icon =
-      RendererTask::GetFaviconFromWebContents(web_contents());
-  set_icon(icon ? *icon : gfx::ImageSkia());
+  DefaultUpdateFaviconImpl();
 }
 
 }  // namespace task_manager

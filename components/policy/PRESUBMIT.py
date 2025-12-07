@@ -552,6 +552,10 @@ def CheckPolicyChangeVersionPlatformCompatibility(input_api, output_api):
   if skip_compatibility_check:
     return results
 
+  bypass_errors_check_message = ('If this is intentional, add '
+            'BYPASS_POLICY_COMPATIBILITY_CHECK=<reason> to your CL '
+            'description.\n')
+
   policy_changelist = _GetPolicyChangeList(input_api)
   current_version = _GetCurrentVersion(input_api)
   for policy_changes in policy_changelist:
@@ -568,7 +572,7 @@ def CheckPolicyChangeVersionPlatformCompatibility(input_api, output_api):
           results.append(output_api.PresubmitError(
             f"In policy {policy_name}: Policy has been removed on {platform}. "
             "A released policy cannot be removed. Mark it as deprecated and "
-            "update the supported versions."))
+            f"update the supported versions. {bypass_errors_check_message}"))
 
       if original_range['from'] >= current_version:
         if platform not in new_policy_platforms:
@@ -581,7 +585,8 @@ def CheckPolicyChangeVersionPlatformCompatibility(input_api, output_api):
           platform not in original_policy_platforms):
         results.append(output_api.PresubmitError(
           f"In policy {policy_name}: Support can't be added on platform "
-          f"{platform} because version {new_from_version} is already released.")
+          f"{platform} because version {new_from_version} is already released."
+          f" {bypass_errors_check_message}")
         )
 
       if (new_from_version == current_version - 1 and

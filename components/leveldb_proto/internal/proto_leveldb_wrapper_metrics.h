@@ -21,19 +21,10 @@ namespace leveldb_proto {
 // appropriate ProtoDB.* metrics.
 class ProtoLevelDBWrapperMetrics {
  public:
-  static void RecordInit(const std::string& client,
-                         const leveldb::Status& status);
   static void RecordUpdate(const std::string& client,
                            bool success,
                            const leveldb::Status& status);
-  static void RecordGet(const std::string& client,
-                        bool success,
-                        bool found,
-                        const leveldb::Status& status);
-  static void RecordLoadKeys(const std::string& client, bool success);
   static void RecordLoadEntries(const std::string& client, bool success);
-  static void RecordLoadKeysAndEntries(const std::string& client, bool success);
-  static void RecordDestroy(const std::string& client, bool success);
 };
 
 }  // namespace leveldb_proto

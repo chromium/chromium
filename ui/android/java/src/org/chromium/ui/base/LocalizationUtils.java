@@ -14,11 +14,14 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Locale;
 
 /** This class provides the locale related methods for the native library. */
 @JNINamespace("l10n_util")
+@NullMarked
 public class LocalizationUtils {
 
     // This is mirrored from base/i18n/rtl.h. Please keep in sync.
@@ -26,7 +29,7 @@ public class LocalizationUtils {
     public static final int RIGHT_TO_LEFT = 1;
     public static final int LEFT_TO_RIGHT = 2;
 
-    private static Boolean sIsLayoutRtlForTesting;
+    private static @Nullable Boolean sIsLayoutRtlForTesting;
 
     private LocalizationUtils() {
         /* cannot be instantiated */
@@ -71,10 +74,6 @@ public class LocalizationUtils {
     /** Returns whether navigation gestures should be mirrored due to the UI language. */
     @CalledByNative
     public static boolean shouldMirrorBackForwardGestures() {
-        if (!UiAndroidFeatureMap.isEnabled(UiAndroidFeatures.MIRROR_BACK_FORWARD_GESTURES_IN_RTL)) {
-            return false;
-        }
-
         return LocalizationUtils.isLayoutRtl();
     }
 

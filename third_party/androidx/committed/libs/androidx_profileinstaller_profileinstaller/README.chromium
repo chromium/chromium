@@ -1,0 +1,20 @@
+Name: Profile Installer
+Short Name: profileinstaller
+URL: https://androidx.dev/snapshots/builds/14500233/artifacts/repository/androidx/profileinstaller/profileinstaller/1.5.0-SNAPSHOT/profileinstaller-1.5.0-20251126.133552-1.aar
+Version: 1.5.0-SNAPSHOT
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+Allows libraries to prepopulate ahead of time compilation traces to be read by ART
+
+See also: https://developer.android.com/jetpack/androidx/releases/profileinstaller#1.5.0-SNAPSHOT
+
+
+Local Modifications:
+No modifications.

@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.toolbar.top;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -36,9 +38,11 @@ import java.lang.annotation.RetentionPolicy;
     ToolbarSnapshotDifference.FORWARD_BUTTON,
     ToolbarSnapshotDifference.RELOAD_BUTTON,
     ToolbarSnapshotDifference.MINIMIZE_BUTTON,
+    ToolbarSnapshotDifference.CONTROLS_POSITION,
     ToolbarSnapshotDifference.NUM_ENTRIES
 })
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 public @interface ToolbarSnapshotDifference {
     int NONE = 0;
     int NULL = 1;
@@ -60,6 +64,7 @@ public @interface ToolbarSnapshotDifference {
     int FORWARD_BUTTON = 17;
     int RELOAD_BUTTON = 18;
     int MINIMIZE_BUTTON = 19;
+    int CONTROLS_POSITION = 20;
 
-    int NUM_ENTRIES = 20;
+    int NUM_ENTRIES = 21;
 }

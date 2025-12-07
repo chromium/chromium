@@ -12,8 +12,6 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
 #include "chromeos/ash/components/auth_panel/impl/auth_factor_store.h"
@@ -25,6 +23,7 @@
 #include "components/account_id/account_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -40,12 +39,12 @@ namespace ash {
 
 AuthPanelDebugView::AuthPanelDebugView(const AccountId& account_id,
                                        bool use_legacy_authpanel) {
-  //  MODAL_TYPE_SYSTEM is used to get a semi-transparent background behind the
+  //  ModalType::kSystem is used to get a semi-transparent background behind the
   //  local authentication request view, when it is used directly on a widget.
   //  The overlay consumes all the inputs from the user, so that they can only
   //  interact with the local authentication request view while it is visible.
-  // SetModalType(ui::MODAL_TYPE_SYSTEM);
-  // SetButtons(ui::DIALOG_BUTTON_NONE);
+  // SetModalType(ui::mojom::ModalType::kSystem);
+  // SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   // Main view contains all other views aligned vertically and centered.
 
   SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -55,7 +54,7 @@ AuthPanelDebugView::AuthPanelDebugView(const AccountId& account_id,
       .SetCollapseMargins(false);
 
   ui::ColorId background_color_id = cros_tokens::kCrosSysSystemBaseElevated;
-  SetBackground(views::CreateThemedSolidBackground(background_color_id));
+  SetBackground(views::CreateSolidBackground(background_color_id));
 
   if (use_legacy_authpanel) {
     auto* auth_hub = AuthHub::Get();
@@ -66,7 +65,7 @@ AuthPanelDebugView::AuthPanelDebugView(const AccountId& account_id,
   } else {
     auto* auth_panel = AddChildView(std::make_unique<AuthContainerView>(
         AuthFactorSet{AuthInputType::kPassword, AuthInputType::kPin}));
-    auth_panel->SetBackground(views::CreateThemedRoundedRectBackground(
+    auth_panel->SetBackground(views::CreateRoundedRectBackground(
         cros_tokens::kCrosSysSystemBase, /*radius=*/8));
   }
 }
@@ -109,7 +108,7 @@ void AuthPanelDebugView::OnUserAuthAttemptConfirmed(
       base::BindRepeating(&AuthPanelDebugView::OnAuthPanelPreferredSizeChanged,
                           weak_ptr_factory_.GetWeakPtr()),
       connector));
-  auth_panel->SetBackground(views::CreateThemedRoundedRectBackground(
+  auth_panel->SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemBase, /*radius=*/8));
   LOG(ERROR) << "auth panel visible: " << auth_panel->GetVisible();
   LOG(ERROR) << "auth panel visible bounds: "

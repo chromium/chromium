@@ -16,11 +16,56 @@
 #include "third_party/blink/renderer/platform/bindings/thread_debugger.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
-std::unique_ptr<SourceLocation> CaptureSourceLocation(
-    ExecutionContext* execution_context) {
+String CaptureCurrentScriptUrl(v8::Isolate* isolate) {
+  DCHECK(isolate);
+  if (!isolate->InContext()) {
+    return String();
+  }
+
+  v8::Local<v8::String> script_name =
+      v8::StackTrace::CurrentScriptNameOrSourceURL(isolate);
+  return ToCoreStringWithNullCheck(isolate, script_name);
+}
+
+Vector<String> CaptureScriptUrlsFromCurrentStack(v8::Isolate* isolate,
+                                                 wtf_size_t unique_url_count) {
+  Vector<String> unique_urls;
+
+  if (!isolate || !isolate->InContext()) {
+    return unique_urls;
+  }
+
+  // CurrentStackTrace is 10x faster than CaptureStackTrace if all that you
+  // need is the url of the script at the top of the stack. See
+  // crbug.com/1057211 for more detail.
+  // Get at most 10 frames, regardless of the requested url count, to minimize
+  // the performance impact.
+  v8::Local<v8::StackTrace> stack_trace =
+      v8::StackTrace::CurrentStackTrace(isolate, /*frame_limit=*/10);
+
+  int frame_count = stack_trace->GetFrameCount();
+  for (int i = 0; i < frame_count; ++i) {
+    v8::Local<v8::StackFrame> frame = stack_trace->GetFrame(isolate, i);
+    v8::Local<v8::String> script_name = frame->GetScriptName();
+    if (script_name.IsEmpty() || !script_name->Length()) {
+      continue;
+    }
+    String url = ToCoreString(isolate, script_name);
+    if (!unique_urls.Contains(url)) {
+      unique_urls.push_back(std::move(url));
+    }
+    if (unique_urls.size() == unique_url_count) {
+      break;
+    }
+  }
+  return unique_urls;
+}
+
+SourceLocation* CaptureSourceLocation(ExecutionContext* execution_context) {
   std::unique_ptr<v8_inspector::V8StackTrace> stack_trace =
       SourceLocation::CaptureStackTraceInternal(false);
   if (stack_trace && !stack_trace->isEmpty()) {
@@ -38,20 +83,19 @@ std::unique_ptr<SourceLocation> CaptureSourceLocation(
             document->GetScriptableDocumentParser()->LineNumber().OneBasedInt();
       }
     }
-    return std::make_unique<SourceLocation>(document->Url().GetString(),
-                                            String(), line_number, 0,
-                                            std::move(stack_trace));
+    return MakeGarbageCollected<SourceLocation>(document->Url().GetString(),
+                                                String(), line_number, 0,
+                                                std::move(stack_trace));
   }
 
-  return std::make_unique<SourceLocation>(
+  return MakeGarbageCollected<SourceLocation>(
       execution_context ? execution_context->Url().GetString() : String(),
       String(), 0, 0, std::move(stack_trace));
 }
 
-std::unique_ptr<SourceLocation> CaptureSourceLocation(
-    v8::Isolate* isolate,
-    v8::Local<v8::Message> message,
-    ExecutionContext* execution_context) {
+SourceLocation* CaptureSourceLocation(v8::Isolate* isolate,
+                                      v8::Local<v8::Message> message,
+                                      ExecutionContext* execution_context) {
   v8::Local<v8::StackTrace> stack = message->GetStackTrace();
   std::unique_ptr<v8_inspector::V8StackTrace> stack_trace;
   ThreadDebugger* debugger = ThreadDebugger::From(isolate);
@@ -85,9 +129,9 @@ std::unique_ptr<SourceLocation> CaptureSourceLocation(
   if (url.empty()) {
     url = execution_context->Url();
   }
-  return std::make_unique<SourceLocation>(url, String(), line_number,
-                                          column_number, std::move(stack_trace),
-                                          script_id);
+  return MakeGarbageCollected<SourceLocation>(
+      url, String(), line_number, column_number, std::move(stack_trace),
+      script_id);
 }
 
 }  // namespace blink

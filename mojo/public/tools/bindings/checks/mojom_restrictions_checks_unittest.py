@@ -123,7 +123,7 @@ class MojoBindingsCheckTest(MojomParserTestCase):
     mojoms = self._WriteBasicMojoms()
     self.WriteFile(filename, content)
     mojoms.append(filename)
-    with self.assertRaisesRegexp(check.CheckException, regexp):
+    with self.assertRaisesRegex(check.CheckException, regexp):
       self._ParseAndGenerate(mojoms)
 
   def testMissingAnnotation(self):

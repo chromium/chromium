@@ -10,7 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
@@ -132,26 +131,29 @@ void WebAppNavigationBrowserTest::ClickLink(
     const std::string& rel,
     int modifiers,
     blink::WebMouseEvent::Button button) {
-  std::string script = base::StringPrintf(
-      "(() => {"
-      "const link = document.createElement('a');"
-      "link.href = '%s';"
-      "link.target = '%s';"
-      "link.rel = '%s';"
-      // Make a click target that covers the whole viewport.
-      "const click_target = document.createElement('textarea');"
-      "click_target.style.position = 'absolute';"
-      "click_target.style.top = 0;"
-      "click_target.style.left = 0;"
-      "click_target.style.height = '100vh';"
-      "click_target.style.width = '100vw';"
-      "link.appendChild(click_target);"
-      "document.body.appendChild(link);"
-      "})();",
+  std::string script = content::JsReplace(
+      R"(
+(() => {
+  document.body.innerHTML = '';
+  const link = document.createElement('a');
+  link.href = $1;
+  link.target = $2;
+  link.rel = $3;
+  // Make a click target that covers the whole viewport.
+  const click_target = document.createElement('textarea');
+  click_target.style.position = 'absolute';
+  click_target.style.top = 0;
+  click_target.style.left = 0;
+  click_target.style.height = '100vh';
+  click_target.style.width = '100vw';
+  link.appendChild(click_target);
+  document.body.appendChild(link);
+})();)",
       link_url.spec().c_str(), target == LinkTarget::SELF ? "_self" : "_blank",
       rel.c_str());
   ASSERT_TRUE(content::ExecJs(web_contents, script));
 
+  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents);
   content::SimulateMouseClick(web_contents, modifiers, button);
 }
 
@@ -199,19 +201,19 @@ void WebAppNavigationBrowserTest::SetUp() {
   https_server_.AddDefaultHandlers(GetChromeTestDataDir());
   // Register a request handler that will return empty pages. Tests are
   // responsible for adding elements and firing events on these empty pages.
-  https_server_.RegisterRequestHandler(
-      base::BindRepeating([](const net::test_server::HttpRequest& request) {
+  https_server_.RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
         // Let the default request handlers handle redirections.
-        if (request.GetURL().path() == "/server-redirect" ||
-            request.GetURL().path() == "/client-redirect") {
-          return std::unique_ptr<net::test_server::HttpResponse>();
+        if (request.GetURL().GetPath() == "/server-redirect" ||
+            request.GetURL().GetPath() == "/client-redirect") {
+          return {};
         }
         auto response = std::make_unique<net::test_server::BasicHttpResponse>();
         response->set_content_type("text/html");
         response->AddCustomHeader("Access-Control-Allow-Origin", "*");
         response->AddCustomHeader("Supports-Loading-Mode", "fenced-frame");
-        return static_cast<std::unique_ptr<net::test_server::HttpResponse>>(
-            std::move(response));
+        return response;
       }));
 
   WebAppBrowserTestBase::SetUp();
@@ -250,7 +252,7 @@ void WebAppNavigationBrowserTest::TearDownOnMainThread() {
   const WebAppRegistrar& registrar = provider->registrar_unsafe();
   std::vector<webapps::AppId> app_ids = registrar.GetAppIds();
   for (const auto& app_id : app_ids) {
-    if (!registrar.IsInstalled(app_id)) {
+    if (!registrar.IsInRegistrar(app_id)) {
       continue;
     }
     const WebApp* app = registrar.GetAppById(app_id);

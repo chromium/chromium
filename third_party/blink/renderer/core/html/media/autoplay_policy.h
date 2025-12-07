@@ -11,10 +11,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
@@ -97,15 +94,24 @@ class CORE_EXPORT AutoplayPolicy final
   // Unlock user gesture if a user gesture can be utilized.
   void TryUnlockingUserGesture();
 
-  // Return true if and only if a user gesture is requried for playback.  Even
+  // Return true if and only if a user gesture is required for playback.  Even
   // if isLockedPendingUserGesture() return true, this might return false if
   // the requirement is currently overridden.  This does not check if a user
   // gesture is currently being processed.
   bool IsGestureNeededForPlayback() const;
 
+  // Returns whether the media-playback-while-not-visible permission policy
+  // allows this media element to play while not visible.
+  bool CanPlayWhileHidden() const;
+
+  // Returns true if the iframe containing the media element not rendered. This
+  // can happen for example when the "visibility" and "display" CSS properties
+  // are respectively set to "hidden" and "none".
+  bool IsFrameHidden() const;
+
   // Returns an error string to be used by the HTMLMediaElement when the play()
   // method fails because of autoplay restrictions.
-  WTF::String GetPlayErrorMessage() const;
+  String GetPlayErrorMessage() const;
 
   // Returns whether the media element was initiated via autoplay.
   // In this context, autoplay means that it was initiated before any user
@@ -118,7 +124,7 @@ class CORE_EXPORT AutoplayPolicy final
   // avoid false positives.
   void EnsureAutoplayInitiatedSet();
 
-  virtual void Trace(Visitor*) const;
+  void Trace(Visitor*) const;
 
  private:
   friend class AutoplayUmaHelper;

@@ -6,6 +6,7 @@
 #define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_SAVE_ITEM_DATA_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/supports_user_data.h"
@@ -45,4 +46,4 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadSaveItemData
 
 }  // namespace download
 
-#endif  //  COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_SAVE_ITEM_DATA_H_
+#endif  // COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_SAVE_ITEM_DATA_H_

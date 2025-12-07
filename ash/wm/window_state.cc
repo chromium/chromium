@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller.h"
-#include "ash/focus_cycler.h"
+#include "ash/focus/focus_cycler.h"
 #include "ash/metrics/pip_uma.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -39,11 +39,16 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "ash/wm/wm_metrics.h"
+#include "base/check_is_test.h"
 #include "base/containers/adapters.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notimplemented.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "chromeos/constants/chromeos_features.h"
+#include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/frame_utils.h"
@@ -54,10 +59,12 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/painter.h"
 #include "ui/views/widget/widget.h"
@@ -85,6 +92,7 @@ using ::chromeos::kImmersiveIsActive;
 using ::chromeos::kPartialSplitDurationHistogramName;
 using ::chromeos::kWindowManagerManagesOpacityKey;
 using ::chromeos::WindowStateType;
+using enum WindowSnapGrouping;
 
 // This defines the map from different window states to their restore layers.
 // The assumption is that a window state with higher restore layer number can
@@ -123,16 +131,12 @@ bool CanRestoreState(WindowStateType current_state,
     return false;
   }
 
-  if (kWindowStateRestoreHistoryLayerMap.at(current_state) >
-      kWindowStateRestoreHistoryLayerMap.at(previous_state)) {
-    return true;
-  }
-
-  return false;
+  return kWindowStateRestoreHistoryLayerMap.at(current_state) >
+         kWindowStateRestoreHistoryLayerMap.at(previous_state);
 }
 
 bool IsTabletModeEnabled() {
-  return display::Screen::GetScreen()->InTabletMode();
+  return display::Screen::Get()->InTabletMode();
 }
 
 bool IsToplevelContainer(aura::Window* window) {
@@ -191,23 +195,24 @@ class BoundsSetter : public aura::LayoutManager {
   }
 };
 
-WMEventType WMEventTypeFromShowState(ui::WindowShowState requested_show_state) {
+WMEventType WMEventTypeFromShowState(
+    ui::mojom::WindowShowState requested_show_state) {
   switch (requested_show_state) {
-    case ui::SHOW_STATE_DEFAULT:
-    case ui::SHOW_STATE_NORMAL:
+    case ui::mojom::WindowShowState::kDefault:
+    case ui::mojom::WindowShowState::kNormal:
       return WM_EVENT_NORMAL;
-    case ui::SHOW_STATE_MINIMIZED:
+    case ui::mojom::WindowShowState::kMinimized:
       return WM_EVENT_MINIMIZE;
-    case ui::SHOW_STATE_MAXIMIZED:
+    case ui::mojom::WindowShowState::kMaximized:
       return WM_EVENT_MAXIMIZE;
-    case ui::SHOW_STATE_FULLSCREEN:
+    case ui::mojom::WindowShowState::kFullscreen:
       return WM_EVENT_FULLSCREEN;
-    case ui::SHOW_STATE_INACTIVE:
+    case ui::mojom::WindowShowState::kInactive:
       return WM_EVENT_SHOW_INACTIVE;
 
-    case ui::SHOW_STATE_END:
-      NOTREACHED_IN_MIGRATION()
-          << "No WMEvent defined for the show state:" << requested_show_state;
+    case ui::mojom::WindowShowState::kEnd:
+      NOTREACHED() << "No WMEvent defined for the show state:"
+                   << requested_show_state;
   }
   return WM_EVENT_NORMAL;
 }
@@ -221,7 +226,7 @@ WMEventType WMEventTypeFromShowState(ui::WindowShowState requested_show_state) {
 // before committing the snap event if needed.
 float GetTargetSnapRatio(aura::Window* window,
                          const WindowSnapWMEvent* snap_event) {
-  if (Shell::Get()->IsInTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     return snap_event->snap_ratio();
   }
 
@@ -269,8 +274,7 @@ void MoveAllTransientChildrenToNewRoot(aura::Window* window) {
     wm::ConvertRectToScreen(dst_root, &child_bounds);
     container->AddChild(transient_child);
     transient_child->SetBoundsInScreen(
-        child_bounds,
-        display::Screen::GetScreen()->GetDisplayNearestWindow(window));
+        child_bounds, display::Screen::Get()->GetDisplayNearestWindow(window));
 
     // Transient children may have transient children.
     MoveAllTransientChildrenToNewRoot(transient_child);
@@ -295,13 +299,40 @@ void SaveWindowForWindowRestore(WindowState* window_state) {
     controller->SaveWindow(window_state);
 }
 
+bool ShouldWindowHaveRoundedCornersForWindowState(
+    const WindowState* window_state) {
+  // In overview mode, the native window is displayed in `ash::WindowMiniView`
+  // with its own `ash::WindowMiniViewHeaderView`. This mini view has its own
+  // rounded corners. Therefore we do not need to round the native window.
+  // Apart from redundant rounding, rounding the native frame is problematic for
+  // browsers. For packaged apps, we hide the frame header but for browsers, we
+  // still show the header since the tab strip is rendered over the header. In
+  // overview mode, the header becomes a part of contents of WindowMiniView and
+  // rounding the header ends up rounding the top corners of the contents.
+  const bool in_overview =
+      window_state->window()->GetProperty(chromeos::kIsShowingInOverviewKey);
+  return !in_overview && WindowState::ShouldWindowStateHaveRoundedCorners(
+                             window_state->GetStateType());
+}
+
 bool ShouldSetExplicitOpaqueRegionsForOcclusion(WindowState* window_state) {
   // If the window manager manages the window opacity, set the opaque regions
   // explicitly if the window must be transparent (e.g. has rounded corners).
-  return chromeos::ShouldWindowStateHaveRoundedCorners(
-             window_state->GetStateType()) &&
+  return ShouldWindowHaveRoundedCornersForWindowState(window_state) &&
          window_state->window()->GetProperty(
              ash::kWindowManagerManagesOpacityKey);
+}
+
+WindowStateType IgnoreGrouping(ExtendedWindowStateType type) {
+  if (std::holds_alternative<WindowStateType>(type)) {
+    return std::get<WindowStateType>(type);
+  }
+  switch (std::get<GroupedWindowStateType>(type)) {
+    case GroupedWindowStateType::kPrimarySnapped:
+      return chromeos::WindowStateType::kPrimarySnapped;
+    case GroupedWindowStateType::kSecondarySnapped:
+      return chromeos::WindowStateType::kSecondarySnapped;
+  }
 }
 
 }  // namespace
@@ -345,6 +376,15 @@ WindowState::~WindowState() {
     base::UmaHistogramCounts100(kDragToMaximizeMisTriggersHistogramName,
                                 num_of_drag_to_maximize_mis_triggers_);
   }
+}
+
+std::vector<chromeos::WindowStateType>
+WindowState::GetWindowStateTypeRestoreHistoryForTesting() const {
+  std::vector<chromeos::WindowStateType> result;
+  for (auto type : restore_history_.GetWindowStatesForTesting()) {  // IN-TEST
+    result.push_back(IgnoreGrouping(type));
+  }
+  return result;
 }
 
 bool WindowState::HasDelegate() const {
@@ -400,12 +440,13 @@ bool WindowState::IsSnapped() const {
 }
 
 bool WindowState::IsPinned() const {
+  // Locked fullscreen is considered a pinned state.
   return GetStateType() == WindowStateType::kPinned ||
-         GetStateType() == WindowStateType::kTrustedPinned;
+         GetStateType() == WindowStateType::kLockedFullscreen;
 }
 
-bool WindowState::IsTrustedPinned() const {
-  return GetStateType() == WindowStateType::kTrustedPinned;
+bool WindowState::IsLockedFullscreen() const {
+  return GetStateType() == WindowStateType::kLockedFullscreen;
 }
 
 bool WindowState::IsPip() const {
@@ -468,6 +509,23 @@ bool WindowState::CanActivate() const {
   return wm::CanActivateWindow(window_);
 }
 
+bool WindowState::ShouldWindowHaveRoundedCorners() const {
+  return window_->GetProperty(chromeos::kWindowHasRoundedCornersKey);
+}
+
+gfx::RoundedCornersF WindowState::GetWindowRoundedCorners() const {
+  if (!ShouldWindowHaveRoundedCorners()) {
+    return gfx::RoundedCornersF();
+  }
+
+  auto radii = window_->GetProperty(aura::client::kWindowRoundedCornersKey);
+  if (radii) {
+    return *radii;
+  }
+
+  return gfx::RoundedCornersF();
+}
+
 bool WindowState::CanSnap() {
   return CanSnapOnDisplay(GetDisplay());
 }
@@ -485,11 +543,11 @@ bool WindowState::HasRestoreBounds() const {
 }
 
 void WindowState::Maximize() {
-  wm::SetWindowState(window_, ui::SHOW_STATE_MAXIMIZED);
+  wm::SetWindowState(window_, ui::mojom::WindowShowState::kMaximized);
 }
 
 void WindowState::Minimize() {
-  wm::SetWindowState(window_, ui::SHOW_STATE_MINIMIZED);
+  wm::SetWindowState(window_, ui::mojom::WindowShowState::kMinimized);
 }
 
 void WindowState::Unminimize() {
@@ -750,15 +808,12 @@ void WindowState::SetBoundsChangedByUser(bool bounds_changed_by_user) {
   }
 }
 
-std::unique_ptr<PresentationTimeRecorder> WindowState::OnDragStarted(
-    int window_component) {
+void WindowState::OnDragStarted(int window_component) {
   DCHECK(drag_details_);
 
   if (delegate_) {
-    return delegate_->OnDragStarted(window_component);
+    delegate_->OnDragStarted(window_component);
   }
-
-  return nullptr;
 }
 
 void WindowState::OnCompleteDrag(const gfx::PointF& location) {
@@ -786,15 +841,18 @@ void WindowState::OnActivationLost() {
 }
 
 display::Display WindowState::GetDisplay() const {
-  return display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
+  return display::Screen::Get()->GetDisplayNearestWindow(window_);
 }
 
 WindowStateType WindowState::GetRestoreWindowState() const {
-  WindowStateType restore_state =
-      window_state_restore_history_.empty() ||
-              window_state_restore_history_.back() == WindowStateType::kDefault
-          ? WindowStateType::kNormal
-          : window_state_restore_history_.back();
+  WindowStateType restore_state = WindowStateType::kNormal;
+
+  if (!restore_history_.IsEmpty()) {
+    WindowStateType top_state = IgnoreGrouping(restore_history_.GetTop());
+    restore_state = (top_state == WindowStateType::kDefault)
+                        ? WindowStateType::kNormal
+                        : top_state;
+  }
 
   // Floated state has a limitation of one floated window per desk. So if we try
   // to restore a window to floated state, and there is a existing floated
@@ -826,6 +884,14 @@ WindowStateType WindowState::GetRestoreWindowState() const {
   }
 
   return restore_state;
+}
+
+WindowSnapGrouping WindowState::GetSnapGroupingForRestore() const {
+  return (!restore_history_.IsEmpty() &&
+          std::holds_alternative<GroupedWindowStateType>(
+              restore_history_.GetTop()))
+             ? kGrouped
+             : kUngrouped;
 }
 
 void WindowState::TrackDragToMaximizeBehavior() {
@@ -880,7 +946,7 @@ ui::ZOrderLevel WindowState::GetZOrdering() const {
   return window_->GetProperty(aura::client::kZOrderingKey);
 }
 
-ui::WindowShowState WindowState::GetShowState() const {
+ui::mojom::WindowShowState WindowState::GetShowState() const {
   return window_->GetProperty(aura::client::kShowStateKey);
 }
 
@@ -897,15 +963,14 @@ void WindowState::AdjustSnappedBoundsForDisplayWorkspaceChange(
   // might end up calling this function during work area changes, so we avoid
   // unnecessary task in that case when it will be overwritten by tablet mode
   // work.
-  if (is_dragged() || !IsSnapped() ||
-      display::Screen::GetScreen()->InTabletMode()) {
+  if (is_dragged() || !IsSnapped() || display::Screen::Get()->InTabletMode()) {
     return;
   }
   gfx::Rect maximized_bounds =
       screen_util::GetMaximizedWindowBoundsInParent(window_);
 
   const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
+      display::Screen::Get()->GetDisplayNearestWindow(window_);
 
   // For snapped window, `GetSnappedWindowBounds` computes bounds position
   // from snap type and size from |snap_ratio|.
@@ -932,7 +997,7 @@ void WindowState::AdjustSnappedBoundsForDisplayWorkspaceChange(
 }
 
 void WindowState::UpdateWindowPropertiesFromStateType() {
-  ui::WindowShowState new_window_state =
+  ui::mojom::WindowShowState new_window_state =
       ToWindowShowState(current_state_->GetType());
   if (new_window_state != GetShowState()) {
     base::AutoReset<bool> resetter(&ignore_property_change_, true);
@@ -942,6 +1007,15 @@ void WindowState::UpdateWindowPropertiesFromStateType() {
   if (GetStateType() != window_->GetProperty(chromeos::kWindowStateTypeKey)) {
     base::AutoReset<bool> resetter(&ignore_property_change_, true);
     window_->SetProperty(chromeos::kWindowStateTypeKey, GetStateType());
+  }
+
+  const bool should_round_window =
+      ShouldWindowHaveRoundedCornersForWindowState(this);
+  if (window_->GetProperty(chromeos::kWindowHasRoundedCornersKey) !=
+      should_round_window) {
+    base::AutoReset<bool> resetter(&ignore_property_change_, true);
+    window_->SetProperty(chromeos::kWindowHasRoundedCornersKey,
+                         should_round_window);
   }
 
   if (window_->GetProperty(ash::kWindowManagerManagesOpacityKey)) {
@@ -964,13 +1038,14 @@ void WindowState::NotifyPreStateTypeChange(
 }
 
 void WindowState::NotifyPostStateTypeChange(
-    WindowStateType old_window_state_type) {
+    ExtendedWindowStateType old_window_state_type) {
+  WindowStateType old_plain_type = IgnoreGrouping(old_window_state_type);
   for (auto& observer : observer_list_)
-    observer.OnPostWindowStateTypeChange(this, old_window_state_type);
-  OnPostPipStateChange(old_window_state_type);
+    observer.OnPostWindowStateTypeChange(this, old_plain_type);
+  OnPostPipStateChange(old_plain_type);
   UpdateWindowStateRestoreHistoryStack(old_window_state_type);
   SaveWindowForWindowRestore(this);
-  if (chromeos::IsSnappedWindowStateType(old_window_state_type)) {
+  if (chromeos::IsSnappedWindowStateType(old_plain_type)) {
     // If the state type is no longer snapped, partial may have ended.
     MaybeRecordPartialDuration();
   }
@@ -998,11 +1073,12 @@ void WindowState::SetBoundsDirect(const gfx::Rect& bounds_in_parent) {
     gfx::Size min_size = window_->delegate()
                              ? window_->delegate()->GetMinimumSize()
                              : gfx::Size();
-    gfx::Size max_size = window_->delegate()
-                             ? window_->delegate()->GetMaximumSize()
-                             : gfx::Size();
+    gfx::Size max_size =
+        window_->delegate()
+            ? window_->delegate()->GetMaximumSize().value_or(gfx::Size())
+            : gfx::Size();
     const display::Display display =
-        display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
+        display::Screen::Get()->GetDisplayNearestWindow(window_);
     min_size.SetToMin(display.work_area().size());
 
     actual_new_bounds.set_width(
@@ -1200,29 +1276,59 @@ void WindowState::MaybeRecordPartialDuration() {
   }
 }
 
-void WindowState::UpdateWindowStateRestoreHistoryStack(
-    chromeos::WindowStateType previous_state_type) {
-  WindowStateType current_state_type = GetStateType();
+WindowState::RestoreHistoryStack::RestoreHistoryStack() = default;
 
+WindowState::RestoreHistoryStack::~RestoreHistoryStack() = default;
+
+void WindowState::RestoreHistoryStack::Push(
+    ExtendedWindowStateType state_type) {
+  CHECK(IsValidForRestoreHistory(IgnoreGrouping(state_type)));
+  window_states_.push_back(state_type);
+}
+
+void WindowState::RestoreHistoryStack::Clear() {
+  window_states_.clear();
+}
+
+void WindowState::RestoreHistoryStack::PopIncompatible(
+    WindowStateType current_state_type) {
+  for (auto state_type : base::Reversed(window_states_)) {
+    if (CanRestoreState(current_state_type, IgnoreGrouping(state_type))) {
+      break;
+    }
+    window_states_.pop_back();
+  }
+}
+
+bool WindowState::RestoreHistoryStack::IsEmpty() const {
+  return window_states_.empty();
+}
+
+ExtendedWindowStateType WindowState::RestoreHistoryStack::GetTop() const {
+  CHECK(!IsEmpty());
+  return window_states_.back();
+}
+
+const std::vector<ExtendedWindowStateType>&
+WindowState::RestoreHistoryStack::GetWindowStatesForTesting() const {
+  CHECK_IS_TEST();
+  return window_states_;
+}
+
+void WindowState::UpdateWindowStateRestoreHistoryStack(
+    ExtendedWindowStateType previous_state_type) {
+  WindowStateType current_state_type = GetStateType();
   if (!IsValidForRestoreHistory(current_state_type)) {
-    window_state_restore_history_.clear();
+    restore_history_.Clear();
     window_->ClearProperty(aura::client::kRestoreShowStateKey);
     return;
   }
 
-  // We'll need to pop out any window state that the `current_state_type` can
-  // not restore back to (i.e., whose restore order is equal or higher than
-  // `current_state_type`).
-  for (auto state : base::Reversed(window_state_restore_history_)) {
-    if (CanRestoreState(current_state_type, state)) {
-      break;
-    }
-    window_state_restore_history_.pop_back();
-  }
+  restore_history_.PopIncompatible(current_state_type);
 
-  if (IsValidForRestoreHistory(previous_state_type) &&
-      CanRestoreState(current_state_type, previous_state_type)) {
-    window_state_restore_history_.push_back(previous_state_type);
+  if (CanRestoreState(current_state_type,
+                      IgnoreGrouping(previous_state_type))) {
+    restore_history_.Push(previous_state_type);
   }
 
   // TODO(xdai): For now we don't save the restore history in tablet mode in the
@@ -1245,13 +1351,13 @@ void WindowState::UpdateWindowStateRestoreHistoryStack(
   //
   // If we detect that we are in full restore, we will artificially create a
   // normal restore state in history to retain the bounds.
-  if (window_state_restore_history_.empty() && HasRestoreBounds() &&
+  if (restore_history_.IsEmpty() && HasRestoreBounds() &&
       !IsNormalStateType()) {
-    window_state_restore_history_.push_back(WindowStateType::kDefault);
+    restore_history_.Push(WindowStateType::kDefault);
   }
 }
 
-chromeos::WindowStateType WindowState::GetWindowTypeOnMaximizable() const {
+WindowStateType WindowState::GetWindowTypeOnMaximizable() const {
   return CanMaximize() && wm::GetTransientParent(window_) == nullptr
              ? WindowStateType::kMaximized
              : WindowStateType::kNormal;
@@ -1296,6 +1402,14 @@ WindowState* WindowState::ForActiveWindow() {
   return active ? WindowState::Get(active) : nullptr;
 }
 
+// static
+bool WindowState::ShouldWindowStateHaveRoundedCorners(
+    chromeos::WindowStateType state_type) {
+  return IsNormalWindowStateType(state_type) ||
+         state_type == WindowStateType::kFloated ||
+         state_type == WindowStateType::kPip;
+}
+
 void WindowState::OnWindowPropertyChanged(aura::Window* window,
                                           const void* key,
                                           intptr_t old) {
@@ -1324,6 +1438,15 @@ void WindowState::OnWindowPropertyChanged(aura::Window* window,
     }
     return;
   }
+
+  if (key == chromeos::kIsShowingInOverviewKey ||
+      key == aura::client::kWindowRoundedCornersKey) {
+    if (!ignore_property_change_) {
+      UpdateWindowPropertiesFromStateType();
+    }
+    return;
+  }
+
   if (key == aura::client::kWindowWorkspaceKey ||
       key == aura::client::kDeskUuidKey) {
     // Save the window for window restore purposes unless
@@ -1371,7 +1494,9 @@ void WindowState::OnWindowDestroying(aura::Window* window) {
   auto* widget = views::Widget::GetWidgetForNativeWindow(window);
   if (widget)
     Shell::Get()->focus_cycler()->RemoveWidget(widget);
-
+  if (delegate_) {
+    delegate_->OnWindowDestroying();
+  }
   current_state_->OnWindowDestroying(this);
   delegate_.reset();
 }

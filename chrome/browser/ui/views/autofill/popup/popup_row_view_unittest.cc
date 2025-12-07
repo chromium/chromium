@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
@@ -21,8 +22,8 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/web_contents.h"
@@ -45,7 +46,6 @@
 #include "ui/views/widget/widget_utils.h"
 
 namespace autofill {
-
 namespace {
 
 using ::testing::_;
@@ -58,17 +58,11 @@ using CellIndex = PopupRowView::SelectionDelegate::CellIndex;
 
 constexpr gfx::Point kOutOfBounds{1000, 1000};
 
-}  // namespace
-
 class PopupRowViewTest : public ChromeViewsTestBase {
  public:
-  PopupRowViewTest() {
-    features_.InitAndEnableFeatureWithParameters(
-        features::kAutofillGranularFillingAvailable,
-        {{features::
-              kAutofillGranularFillingAvailableWithExpandControlVisibleOnSelectionOnly
-                  .name,
-          "false"}});
+  explicit PopupRowViewTest(
+      std::vector<base::test::FeatureRefAndParams> enabled_features = {}) {
+    features_.InitWithFeaturesAndParameters(enabled_features, {});
   }
 
   // views::ViewsTestBase:
@@ -89,12 +83,14 @@ class PopupRowViewTest : public ChromeViewsTestBase {
                 bool has_control,
                 bool is_acceptable = true,
                 SuggestionType type = SuggestionType::kAddressEntry) {
-    std::vector<Suggestion> suggestions(line_number + 1);
+    std::vector<Suggestion> suggestions(line_number + 1, Suggestion(type));
     suggestions[line_number].type = type;
-    suggestions[line_number].is_acceptable = is_acceptable;
+    suggestions[line_number].acceptability =
+        is_acceptable ? Suggestion::Acceptability::kAcceptable
+                      : Suggestion::Acceptability::kUnacceptable;
     suggestions[line_number].main_text = Suggestion::Text(u"Suggestion");
     if (has_control) {
-      suggestions[line_number].children = {Suggestion()};
+      suggestions[line_number].children = {Suggestion(type)};
     }
     ShowView(line_number, std::move(suggestions));
   }
@@ -160,7 +156,6 @@ class PopupRowViewTest : public ChromeViewsTestBase {
   }
   MockAutofillPopupController& controller() { return mock_controller_; }
   PopupRowView& row_view() { return *row_view_; }
-  base::test::ScopedFeatureList& features() { return features_; }
 
  private:
   content::RenderViewHostTestEnabler render_view_host_test_enabler_;
@@ -174,6 +169,27 @@ class PopupRowViewTest : public ChromeViewsTestBase {
   raw_ptr<PopupRowView> row_view_ = nullptr;
   base::test::ScopedFeatureList features_;
 };
+
+// Tests that the background colors of both the `PopupRowView` and the
+// `PopupRowContentView` are updated correctly when the content cell is
+// selected.
+TEST_F(PopupRowViewTest, BackgroundColorOnContentSelect) {
+  ShowView(/*line_number=*/0,
+           {Suggestion(u"Some entry", SuggestionType::kAutocompleteEntry)});
+  ASSERT_EQ(row_view().GetSelectedCell(), std::nullopt);
+  EXPECT_EQ(row_view().GetBackground()->color(), ui::kColorDropdownBackground);
+  EXPECT_FALSE(row_view().GetContentView().GetBackground());
+
+  row_view().SetSelectedCell(CellType::kContent);
+  // If only the content view is selected, then the background color of the row
+  // view remains the same ...
+  EXPECT_EQ(row_view().GetBackground()->color(), ui::kColorDropdownBackground);
+  // ... but the background of the content view is set.
+  views::Background* content_background =
+      row_view().GetContentView().GetBackground();
+  ASSERT_TRUE(content_background);
+  EXPECT_EQ(content_background->color(), ui::kColorDropdownBackgroundSelected);
+}
 
 TEST_F(PopupRowViewTest, MouseEnterExitInformsSelectionDelegate) {
   ShowView(/*line_number=*/2, /*has_control=*/true);
@@ -325,6 +341,44 @@ TEST_F(PopupRowViewTest, NotifyAXSelectionCalledOnChangesOnly) {
   row_view().SetSelectedCell(CellType::kContent);
 }
 
+TEST_F(PopupRowViewTest, UnselectResetsA11ySelectionState) {
+  ShowView(/*line_number=*/0, /*has_control=*/false);
+
+  EXPECT_CALL(a11y_selection_delegate(),
+              NotifyAXSelection(Ref(row_view().GetContentView())));
+
+  row_view().SetSelectedCell(CellType::kContent);
+  ui::AXNodeData node_data;
+  row_view().GetContentView().GetViewAccessibility().GetAccessibleNodeData(
+      &node_data);
+  EXPECT_TRUE(node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+
+  row_view().SetSelectedCell(std::nullopt);
+
+  node_data = ui::AXNodeData();
+  row_view().GetContentView().GetViewAccessibility().GetAccessibleNodeData(
+      &node_data);
+  EXPECT_FALSE(node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+}
+
+TEST_F(PopupRowViewTest,
+       UnselectResetsA11ySelectionStateForNonAcceptableSuggestion) {
+  ShowView(/*line_number=*/0, /*has_control=*/false, /*is_acceptable=*/false);
+
+  EXPECT_CALL(a11y_selection_delegate(), NotifyAXSelection(Ref(row_view())));
+
+  row_view().SetSelectedCell(CellType::kContent);
+  ui::AXNodeData node_data;
+  row_view().GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_TRUE(node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+
+  row_view().SetSelectedCell(std::nullopt);
+
+  node_data = ui::AXNodeData();
+  row_view().GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_FALSE(node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+}
+
 TEST_F(PopupRowViewTest, ReturnKeyEventsAreHandled) {
   ShowView(/*line_number=*/0, /*has_control=*/true);
   ASSERT_TRUE(row_view().GetExpandChildSuggestionsView());
@@ -450,103 +504,11 @@ TEST_F(PopupRowViewTest, AccessibleProperties) {
   ui::AXNodeData node_data;
   row_view().GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(node_data.role, ax::mojom::Role::kListBoxOption);
+  EXPECT_EQ(node_data.GetStringAttribute(ax::mojom::StringAttribute::kName),
+            "test_value test_label");
   EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet), 1);
   EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize), 1);
 }
-
-TEST_F(PopupRowViewTest, ExpandChildSuggestionsIconRemainsVisible) {
-  ShowView(/*line_number=*/0, /*has_control=*/true);
-
-  ASSERT_EQ(row_view().GetSelectedCell(), std::nullopt);
-  ASSERT_NE(row_view().GetExpandChildSuggestionsIconViewForTesting(), nullptr);
-
-  EXPECT_TRUE(
-      row_view().GetExpandChildSuggestionsIconViewForTesting()->GetVisible());
-
-  row_view().SetSelectedCell(CellType::kContent);
-  EXPECT_TRUE(
-      row_view().GetExpandChildSuggestionsIconViewForTesting()->GetVisible());
-
-  row_view().SetSelectedCell(CellType::kControl);
-  EXPECT_TRUE(
-      row_view().GetExpandChildSuggestionsIconViewForTesting()->GetVisible());
-
-  row_view().SetSelectedCell(std::nullopt);
-  EXPECT_TRUE(
-      row_view().GetExpandChildSuggestionsIconViewForTesting()->GetVisible());
-}
-
-TEST_F(PopupRowViewTest,
-       ExpandChildSuggestionsIconVisibleDependsOnSelectedCell) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kAutofillGranularFillingAvailable,
-      {{features::
-            kAutofillGranularFillingAvailableWithExpandControlVisibleOnSelectionOnly
-                .name,
-        "true"}});
-
-  ShowView(/*line_number=*/0, /*has_control=*/true);
-
-  ASSERT_EQ(row_view().GetSelectedCell(), std::nullopt);
-  ASSERT_NE(row_view().GetExpandChildSuggestionsIconViewForTesting(), nullptr);
-
-  EXPECT_FALSE(
-      row_view().GetExpandChildSuggestionsIconViewForTesting()->GetVisible());
-
-  row_view().SetSelectedCell(CellType::kContent);
-  EXPECT_TRUE(
-      row_view().GetExpandChildSuggestionsIconViewForTesting()->GetVisible());
-
-  row_view().SetSelectedCell(CellType::kControl);
-  EXPECT_TRUE(
-      row_view().GetExpandChildSuggestionsIconViewForTesting()->GetVisible());
-
-  row_view().SetSelectedCell(std::nullopt);
-  EXPECT_FALSE(
-      row_view().GetExpandChildSuggestionsIconViewForTesting()->GetVisible());
-}
-
-class PopupRowExpandVisibilityNonEligibleSuggestionsTest
-    : public PopupRowViewTest,
-      public ::testing::WithParamInterface<SuggestionType> {};
-
-TEST_P(PopupRowExpandVisibilityNonEligibleSuggestionsTest, All) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kAutofillGranularFillingAvailable,
-      {{features::
-            kAutofillGranularFillingAvailableWithExpandControlVisibleOnSelectionOnly
-                .name,
-        "true"}});
-
-  // `SuggestionType::kDevtoolsTestAddresses` suggestions are not acceptable.
-  ShowView(
-      /*line_number=*/0, /*has_control=*/true,
-      /*is_acceptable=*/GetParam() != SuggestionType::kDevtoolsTestAddresses,
-      GetParam());
-  ASSERT_EQ(row_view().GetSelectedCell(), std::nullopt);
-  ASSERT_NE(row_view().GetExpandChildSuggestionsIconViewForTesting(), nullptr);
-
-  EXPECT_TRUE(
-      row_view().GetExpandChildSuggestionsIconViewForTesting()->GetVisible());
-
-  row_view().SetSelectedCell(CellType::kContent);
-  EXPECT_TRUE(
-      row_view().GetExpandChildSuggestionsIconViewForTesting()->GetVisible());
-
-  row_view().SetSelectedCell(std::nullopt);
-  EXPECT_TRUE(
-      row_view().GetExpandChildSuggestionsIconViewForTesting()->GetVisible());
-}
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PopupRowExpandVisibilityNonEligibleSuggestionsTest,
-                         ::testing::ValuesIn({
-                             SuggestionType::kComposeProactiveNudge,
-                             SuggestionType::kDevtoolsTestAddresses,
-                         }));
-
 struct PosInSetTestdata {
   // The popup item ids of the suggestions to be shown.
   std::vector<SuggestionType> types;
@@ -627,9 +589,17 @@ INSTANTIATE_TEST_SUITE_P(All,
                          PopupRowPosInSetViewTest,
                          ::testing::ValuesIn(kPosInSetTestcases));
 
-TEST_F(PopupRowViewTest, NoQuickSuggestionAccepting_ReturnKeyPress) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillPopupDontAcceptNonVisibleEnoughSuggestion);
+class PopupRowViewAcceptGuardEnabledTest : public PopupRowViewTest {
+ public:
+  PopupRowViewAcceptGuardEnabledTest()
+      : PopupRowViewTest(
+            {{features::kAutofillPopupDontAcceptNonVisibleEnoughSuggestion,
+              {}}}) {}
+};
+
+TEST_F(PopupRowViewAcceptGuardEnabledTest,
+       NoQuickSuggestionAccepting_ReturnKeyPress) {
+  base::HistogramTester histogram_tester;
   ON_CALL(controller(), IsViewVisibilityAcceptingThresholdEnabled())
       .WillByDefault(Return(true));
 
@@ -637,11 +607,13 @@ TEST_F(PopupRowViewTest, NoQuickSuggestionAccepting_ReturnKeyPress) {
   row_view().SetSelectedCell(CellType::kContent);
   EXPECT_CALL(controller(), AcceptSuggestion).Times(0);
   EXPECT_FALSE(SimulateKeyPress(ui::VKEY_RETURN));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.AcceptedSuggestionDesktopRowViewVisibleEnough", 0, 1);
 }
 
-TEST_F(PopupRowViewTest, NoQuickSuggestionAccepting_LeftClick) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillPopupDontAcceptNonVisibleEnoughSuggestion);
+TEST_F(PopupRowViewAcceptGuardEnabledTest,
+       NoQuickSuggestionAccepting_LeftClick) {
+  base::HistogramTester histogram_tester;
   ON_CALL(controller(), IsViewVisibilityAcceptingThresholdEnabled())
       .WillByDefault(Return(true));
   ShowView(/*line_number=*/0, /*has_control=*/false);
@@ -652,13 +624,15 @@ TEST_F(PopupRowViewTest, NoQuickSuggestionAccepting_LeftClick) {
       row_view().GetContentView().GetBoundsInScreen().CenterPoint());
   EXPECT_CALL(controller(), AcceptSuggestion).Times(0);
   generator().ClickLeftButton();
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.AcceptedSuggestionDesktopRowViewVisibleEnough", 0, 1);
 }
 
 // Gestures are not supported on MacOS.
 #if !BUILDFLAG(IS_MAC)
-TEST_F(PopupRowViewTest, NoQuickSuggestionAccepting_GestureEvents) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillPopupDontAcceptNonVisibleEnoughSuggestion);
+TEST_F(PopupRowViewAcceptGuardEnabledTest,
+       NoQuickSuggestionAccepting_GestureEvents) {
+  base::HistogramTester histogram_tester;
   ON_CALL(controller(), IsViewVisibilityAcceptingThresholdEnabled())
       .WillByDefault(Return(true));
   EXPECT_CALL(controller(), ShouldIgnoreMouseObservedOutsideItemBoundsCheck())
@@ -668,7 +642,30 @@ TEST_F(PopupRowViewTest, NoQuickSuggestionAccepting_GestureEvents) {
   EXPECT_CALL(controller(), AcceptSuggestion).Times(0);
   generator().GestureTapAt(
       row_view().GetContentView().GetBoundsInScreen().CenterPoint());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.AcceptedSuggestionDesktopRowViewVisibleEnough", 0, 1);
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
+TEST_F(PopupRowViewAcceptGuardEnabledTest,
+       SuggestionIsAcceptedIfVisibleLongEnough) {
+  base::HistogramTester histogram_tester;
+  ON_CALL(controller(), IsViewVisibilityAcceptingThresholdEnabled())
+      .WillByDefault(Return(true));
+
+  ShowView(/*line_number=*/0, /*has_control=*/false);
+  row_view().SetSelectedCell(CellType::kContent);
+
+  EXPECT_CALL(controller(), AcceptSuggestion);
+
+  task_environment()->FastForwardBy(
+      AutofillSuggestionController::kIgnoreEarlyClicksOnSuggestionsDuration);
+
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RETURN));
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.AcceptedSuggestionDesktopRowViewVisibleEnough", 1, 1);
+}
+
+}  // namespace
 }  // namespace autofill

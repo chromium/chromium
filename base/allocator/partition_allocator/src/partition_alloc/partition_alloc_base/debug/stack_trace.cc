@@ -12,6 +12,10 @@
 #include "partition_alloc/partition_alloc_base/process/process_handle.h"
 #include "partition_alloc/partition_alloc_base/threading/platform_thread.h"
 
+#if PA_BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
+#include <algorithm>
+#endif
+
 #if (PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)) && defined(__GLIBC__)
 extern "C" void* __libc_stack_end;
 #endif
@@ -40,7 +44,7 @@ static uintptr_t StripPointerAuthenticationBits(uintptr_t ptr) {
   // with and without pointer authentication). xpaclri is used here because it's
   // in the HINT space and treated as a no-op on older Arm cores (unlike the
   // more generic xpaci which has a new encoding). The downside is that ptr has
-  // to be moved to x30 to use this instruction. TODO(richard.townsend@arm.com):
+  // to be moved to x30 to use this instruction. TODO(ritownsend@google.com):
   // replace with an intrinsic once that is available.
   register uintptr_t x30 __asm("x30") = ptr;
   asm("xpaclri" : "+r"(x30));
@@ -59,8 +63,8 @@ uintptr_t GetNextStackFrame(uintptr_t fp) {
 
 uintptr_t GetStackFramePC(uintptr_t fp) {
   const uintptr_t* fp_addr = reinterpret_cast<const uintptr_t*>(fp);
-  PA_MSAN_UNPOISON(&fp_addr[1], sizeof(uintptr_t));
-  return StripPointerAuthenticationBits(fp_addr[1]);
+  PA_MSAN_UNPOISON(&PA_UNSAFE_TODO(fp_addr[1]), sizeof(uintptr_t));
+  return StripPointerAuthenticationBits(PA_UNSAFE_TODO(fp_addr[1]));
 }
 
 bool IsStackFrameValid(uintptr_t fp, uintptr_t prev_fp, uintptr_t stack_end) {
@@ -163,7 +167,7 @@ __attribute__((always_inline)) size_t TraceStackFramePointersInternal(
     if (skip_initial != 0) {
       skip_initial--;
     } else {
-      out_trace[depth++] = reinterpret_cast<const void*>(pc);
+      PA_UNSAFE_TODO(out_trace[depth++]) = reinterpret_cast<const void*>(pc);
     }
 
     uintptr_t next_fp = GetNextStackFrame(fp);

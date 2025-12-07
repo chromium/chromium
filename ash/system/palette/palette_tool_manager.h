@@ -12,7 +12,6 @@
 #include "ash/ash_export.h"
 #include "ash/system/palette/palette_ids.h"
 #include "ash/system/palette/palette_tool.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 
 namespace aura {
@@ -50,13 +49,6 @@ class ASH_EXPORT PaletteToolManager : public PaletteTool::Delegate {
 
     // Return the window associated with this palette.
     virtual aura::Window* GetWindow() = 0;
-
-    // Record usage of each pen palette option.
-    virtual void RecordPaletteOptionsUsage(PaletteTrayOptions option,
-                                           PaletteInvocationMethod method) = 0;
-
-    // Record mode cancellation of pen palette.
-    virtual void RecordPaletteModeCancellation(PaletteModeCancelType type) = 0;
 
    protected:
     virtual ~Delegate() {}
@@ -111,9 +103,6 @@ class ASH_EXPORT PaletteToolManager : public PaletteTool::Delegate {
   void HidePalette() override;
   void HidePaletteImmediately() override;
   aura::Window* GetWindow() override;
-  void RecordPaletteOptionsUsage(PaletteTrayOptions option,
-                                 PaletteInvocationMethod method) override;
-  void RecordPaletteModeCancellation(PaletteModeCancelType type) override;
 
   PaletteTool* FindToolById(PaletteToolId tool_id) const;
 
@@ -121,7 +110,7 @@ class ASH_EXPORT PaletteToolManager : public PaletteTool::Delegate {
   raw_ptr<Delegate> delegate_;
 
   // Unowned pointer to the active tool / group.
-  std::map<PaletteGroup, PaletteTool*> active_tools_;
+  std::map<PaletteGroup, raw_ptr<PaletteTool, CtnExperimental>> active_tools_;
 
   // Owned list of all tools.
   std::vector<std::unique_ptr<PaletteTool>> tools_;

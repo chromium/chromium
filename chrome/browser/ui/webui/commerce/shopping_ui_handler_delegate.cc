@@ -8,33 +8,35 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/commerce/product_specifications_disclosure_dialog.h"
-#include "chrome/browser/ui/webui/commerce/shopping_insights_side_panel_ui.h"
 #include "chrome/common/url_constants.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/webui/shopping_service_handler.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "shopping_ui_handler_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 
 namespace commerce {
 
-ShoppingUiHandlerDelegate::ShoppingUiHandlerDelegate(
-    ShoppingInsightsSidePanelUI* insights_side_panel_ui,
-    Profile* profile)
-    : insights_side_panel_ui_(insights_side_panel_ui),
-      profile_(profile),
+ShoppingUiHandlerDelegate::ShoppingUiHandlerDelegate(Profile* profile)
+    : profile_(profile),
       bookmark_model_(BookmarkModelFactory::GetForBrowserContext(profile)) {}
 
 ShoppingUiHandlerDelegate::~ShoppingUiHandlerDelegate() = default;
@@ -53,18 +55,9 @@ std::optional<GURL> ShoppingUiHandlerDelegate::GetCurrentTabUrl() {
   return std::make_optional<GURL>(web_contents->GetLastCommittedURL());
 }
 
-void ShoppingUiHandlerDelegate::ShowInsightsSidePanelUI() {
-  if (insights_side_panel_ui_) {
-    auto embedder = insights_side_panel_ui_->embedder();
-    if (embedder) {
-      embedder->ShowUI();
-    }
-  }
-}
-
 const bookmarks::BookmarkNode*
 ShoppingUiHandlerDelegate::GetOrAddBookmarkForCurrentUrl() {
-  auto* browser = chrome::FindLastActive();
+  auto* browser = chrome::FindLastActiveWithProfile(profile_);
   if (!browser) {
     return nullptr;
   }
@@ -77,15 +70,16 @@ ShoppingUiHandlerDelegate::GetOrAddBookmarkForCurrentUrl() {
   const bookmarks::BookmarkNode* existing_node =
       bookmark_model_->GetMostRecentlyAddedUserNodeForURL(
           web_contents->GetLastCommittedURL());
-  if (existing_node != nullptr) {
+  if (existing_node != nullptr &&
+      !bookmark_model_->IsLocalOnlyNode(*existing_node)) {
     return existing_node;
   }
   GURL url;
   std::u16string title;
-  if (chrome::GetURLAndTitleToBookmark(web_contents, &url, &title)) {
-    const bookmarks::BookmarkNode* parent =
-        commerce::GetShoppingCollectionBookmarkFolder(bookmark_model_, true);
+  const bookmarks::BookmarkNode* parent =
+      commerce::GetShoppingCollectionBookmarkFolder(bookmark_model_, true);
 
+  if (chrome::GetURLAndTitleToBookmark(web_contents, &url, &title) && parent) {
     return bookmark_model_->AddNewURL(parent, parent->children().size(), title,
                                       url);
   }
@@ -93,7 +87,7 @@ ShoppingUiHandlerDelegate::GetOrAddBookmarkForCurrentUrl() {
 }
 
 void ShoppingUiHandlerDelegate::OpenUrlInNewTab(const GURL& url) {
-  auto* browser = chrome::FindLastActive();
+  auto* browser = chrome::FindLastActiveWithProfile(profile_);
   if (!browser) {
     return;
   }
@@ -107,7 +101,7 @@ void ShoppingUiHandlerDelegate::SwitchToOrOpenTab(const GURL& url) {
   }
   auto* browser = chrome::FindBrowserWithActiveWindow();
   if (!browser) {
-    browser = chrome::FindLastActive();
+    browser = chrome::FindLastActiveWithProfile(profile_);
   }
   if (!browser) {
     return;
@@ -125,24 +119,9 @@ void ShoppingUiHandlerDelegate::SwitchToOrOpenTab(const GURL& url) {
   NavigateToUrl(browser, url);
 }
 
-void ShoppingUiHandlerDelegate::ShowFeedbackForPriceInsights() {
-  auto* browser = chrome::FindLastActive();
-  if (!browser) {
-    return;
-  }
-
-  chrome::ShowFeedbackPage(
-      browser, feedback::kFeedbackSourcePriceInsights,
-      /*description_template=*/std::string(),
-      /*description_placeholder_text=*/
-      l10n_util::GetStringUTF8(IDS_SHOPPING_INSIGHTS_FEEDBACK_FORM_TITLE),
-      /*category_tag=*/"price_insights",
-      /*extra_diagnostics=*/std::string());
-}
-
 void ShoppingUiHandlerDelegate::ShowFeedbackForProductSpecifications(
     const std::string& log_id) {
-  auto* browser = chrome::FindLastActive();
+  auto* browser = chrome::FindLastActiveWithProfile(profile_);
   if (!browser) {
     return;
   }
@@ -153,29 +132,10 @@ void ShoppingUiHandlerDelegate::ShowFeedbackForProductSpecifications(
       browser, feedback::kFeedbackSourceAI,
       /*description_template=*/std::string(),
       /*description_placeholder_text=*/
-      l10n_util::GetStringUTF8(IDS_PRODUCT_SPECIFICATIONS_FEEDBACK_PLACEHOLDER),
-      /*category_tag=*/"product_specifications",
+      l10n_util::GetStringUTF8(IDS_COMPARE_FEEDBACK_PLACEHOLDER),
+      /*category_tag=*/"compare",
       /*extra_diagnostics=*/std::string(),
       /*autofill_metadata=*/base::Value::Dict(), std::move(feedback_metadata));
-}
-
-void ShoppingUiHandlerDelegate::ShowBookmarkEditorForCurrentUrl() {
-  auto current_url = GetCurrentTabUrl();
-  if (!current_url.has_value()) {
-    return;
-  }
-  auto* browser = chrome::FindLastActive();
-  if (!browser) {
-    return;
-  }
-  const bookmarks::BookmarkNode* existing_node =
-      bookmark_model_->GetMostRecentlyAddedUserNodeForURL(current_url.value());
-  if (!existing_node) {
-    return;
-  }
-  BookmarkEditor::Show(browser->window()->GetNativeWindow(), profile_,
-                       BookmarkEditor::EditDetails::EditNode(existing_node),
-                       BookmarkEditor::SHOW_TREE);
 }
 
 ukm::SourceId ShoppingUiHandlerDelegate::GetCurrentTabUkmSourceId() {
@@ -189,44 +149,6 @@ ukm::SourceId ShoppingUiHandlerDelegate::GetCurrentTabUkmSourceId() {
     return ukm::kInvalidSourceId;
   }
   return web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
-}
-
-void ShoppingUiHandlerDelegate::ShowProductSpecificationsDisclosureDialog(
-    const std::vector<GURL>& urls,
-    const std::string& name) {
-  auto* browser = chrome::FindTabbedBrowser(profile_, false);
-  content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
-  if (!web_contents) {
-    return;
-  }
-  // Currently this method is only used to trigger the dialog which will open
-  // the potential product specification set in the current tab.
-  DialogArgs dialog_args(urls, name, /*in_new_tab=*/false);
-  ProductSpecificationsDisclosureDialog::ShowDialog(profile_, web_contents,
-                                                    std::move(dialog_args));
-}
-
-void ShoppingUiHandlerDelegate::ShowProductSpecificationsSetForUuid(
-    const base::Uuid& uuid,
-    bool in_new_tab) {
-  const GURL product_spec_url = commerce::GetProductSpecsTabUrlForID(uuid);
-  if (in_new_tab) {
-    OpenUrlInNewTab(product_spec_url);
-  } else {
-    auto* browser = chrome::FindLastActive();
-    if (!browser) {
-      return;
-    }
-    content::WebContents* web_contents =
-        browser->tab_strip_model()->GetActiveWebContents();
-    if (!web_contents) {
-      return;
-    }
-    web_contents->GetController().LoadURL(product_spec_url, content::Referrer(),
-                                          ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
-                                          /*extra_headers=*/std::string());
-  }
 }
 
 void ShoppingUiHandlerDelegate::NavigateToUrl(Browser* browser,

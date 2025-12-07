@@ -5,6 +5,7 @@
 #ifndef BASE_TASK_THREAD_POOL_PRIORITY_QUEUE_H_
 #define BASE_TASK_THREAD_POOL_PRIORITY_QUEUE_H_
 
+#include <array>
 #include <functional>
 #include <memory>
 

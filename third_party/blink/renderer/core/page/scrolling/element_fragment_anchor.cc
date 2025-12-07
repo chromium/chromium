@@ -44,14 +44,15 @@ ElementFragmentAnchor* ElementFragmentAnchor::TryCreate(const KURL& url,
 
   // If our URL has no ref, then we have no place we need to jump to.
   // OTOH If CSS target was set previously, we want to set it to 0, recalc
-  // and possibly paint invalidation because :target pseudo class may have been
+  // and possibly paint invalidation because :target pseudo-class may have been
   // set (see bug 11321).
   // Similarly for svg, if we had a previous svgView() then we need to reset
   // the initial view if we don't have a fragment.
   if (!url.HasFragmentIdentifier() && !doc.CssTarget() && !doc.IsSVGDocument())
     return nullptr;
 
-  String fragment = RemoveFragmentDirectives(url.FragmentIdentifier());
+  String fragment =
+      RemoveFragmentDirectives(url.FragmentIdentifier().ToString());
   Node* anchor_node = doc.FindAnchor(fragment);
 
   // Setting to null will clear the current target.
@@ -80,8 +81,7 @@ ElementFragmentAnchor* ElementFragmentAnchor::TryCreate(const KURL& url,
   if (!should_scroll)
     return nullptr;
 
-  HTMLDetailsElement::ExpandDetailsAncestors(*anchor_node);
-  DisplayLockUtilities::RevealHiddenUntilFoundAncestors(*anchor_node);
+  DisplayLockUtilities::RevealAutoExpandableAncestors(*anchor_node);
 
   return MakeGarbageCollected<ElementFragmentAnchor>(*anchor_node, frame);
 }
@@ -114,8 +114,8 @@ bool ElementFragmentAnchor::Invoke() {
 
   if (element_to_scroll) {
     ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
-    options->setBlock("start");
-    options->setInlinePosition("nearest");
+    options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
+    options->setInlinePosition(V8ScrollLogicalPosition::Enum::kNearest);
     ScrollElementIntoViewWithOptions(element_to_scroll, options);
   }
 
@@ -140,7 +140,7 @@ void ElementFragmentAnchor::Installed() {
   if (needs_focus_) {
     // Attempts to focus the anchor if we couldn't focus above. This can cause
     // script to run so we can't do it from Invoke.
-    frame_->GetDocument()->EnqueueAnimationFrameTask(WTF::BindOnce(
+    frame_->GetDocument()->EnqueueAnimationFrameTask(BindOnce(
         &ElementFragmentAnchor::ApplyFocusIfNeeded, WrapPersistent(this)));
   }
 

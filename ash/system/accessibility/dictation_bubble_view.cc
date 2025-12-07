@@ -24,15 +24,18 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/lottie/animation.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/animated_image_view.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace ash {
 
@@ -60,7 +63,7 @@ std::unique_ptr<views::Label> CreateLabelView(
   return views::Builder<views::Label>()
       .CopyAddressTo(destination_view)
       .SetText(text)
-      .SetEnabledColorId(enabled_color_id)
+      .SetEnabledColor(enabled_color_id)
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
       .SetMultiLine(false)
       .Build();
@@ -107,6 +110,11 @@ class ASH_EXPORT TopRowView : public views::View {
         CreateImageView(&macro_failed_image_, kDictationBubbleMacroFailedIcon));
     AddChildView(
         CreateLabelView(&label_, std::u16string(), kColorAshTextColorPrimary));
+
+    GetViewAccessibility().SetRole(ax::mojom::Role::kGenericContainer);
+    // Note: this static variable is used so that this view can be identified
+    // from tests. Do not change this, as it will cause test failures.
+    GetViewAccessibility().SetClassName("DictationBubbleView");
   }
 
   TopRowView(const TopRowView&) = delete;
@@ -135,16 +143,6 @@ class ASH_EXPORT TopRowView : public views::View {
     label_->SetVisible(text.has_value());
     label_->SetText(text.has_value() ? text.value() : std::u16string());
     SizeToPreferredSize();
-  }
-
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    // Note: this static variable is used so that this view can be identified
-    // from tests. Do not change this, as it will cause test failures.
-    static constexpr char kDictationBubbleViewName[] = "DictationBubbleView";
-    node_data->role = ax::mojom::Role::kGenericContainer;
-    node_data->AddStringAttribute(ax::mojom::StringAttribute::kClassName,
-                                  kDictationBubbleViewName);
   }
 
  private:
@@ -195,10 +193,12 @@ END_METADATA
 }  // namespace
 
 DictationBubbleView::DictationBubbleView() {
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_parent_window(
       Shell::GetContainer(Shell::GetPrimaryRootWindow(),
                           kShellWindowId_AccessibilityBubbleContainer));
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kGenericContainer);
 }
 
 DictationBubbleView::~DictationBubbleView() = default;
@@ -234,11 +234,7 @@ void DictationBubbleView::OnBeforeBubbleWidgetInit(
   params->name = "DictationBubbleView";
 }
 
-void DictationBubbleView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kGenericContainer;
-}
-
-std::u16string DictationBubbleView::GetTextForTesting() {
+std::u16string_view DictationBubbleView::GetTextForTesting() {
   return top_row_view_->label_->GetText();
 }
 
@@ -269,10 +265,15 @@ std::vector<std::u16string> DictationBubbleView::GetVisibleHintsForTesting() {
   std::vector<std::u16string> hints;
   for (size_t i = 0; i < hint_view_->labels_.size(); ++i) {
     views::Label* label = hint_view_->labels_[i];
-    if (label->GetVisible())
-      hints.push_back(label->GetText());
+    if (label->GetVisible()) {
+      hints.emplace_back(label->GetText());
+    }
   }
   return hints;
+}
+
+views::View* DictationBubbleView::GetTopRowView() {
+  return top_row_view_;
 }
 
 BEGIN_METADATA(DictationBubbleView)
@@ -291,6 +292,8 @@ DictationHintView::DictationHintView() {
         i == 0 ? kColorAshTextColorSecondary : kColorAshTextColorPrimary;
     AddChildView(CreateLabelView(&labels_[i], std::u16string(), color_id));
   }
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kGenericContainer);
 }
 
 DictationHintView::~DictationHintView() = default;
@@ -320,15 +323,11 @@ void DictationHintView::Update(
   // hints to the user.
   if (num_visible_hints > 0) {
     SetVisible(true);
-    NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert, true);
   } else {
     SetVisible(false);
   }
   SizeToPreferredSize();
-}
-
-void DictationHintView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kGenericContainer;
 }
 
 BEGIN_METADATA(DictationHintView)

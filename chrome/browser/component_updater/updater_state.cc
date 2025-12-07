@@ -24,10 +24,8 @@
 #include "build/build_config.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "chrome/updater/util/win_util.h"
-#endif
+#include "components/update_client/persisted_data.h"
+#include "components/update_client/update_client_errors.h"
 
 namespace component_updater {
 namespace {
@@ -54,28 +52,23 @@ std::unique_ptr<UpdaterState::StateReader> UpdaterState::StateReader::Create(
           [is_machine]() -> std::unique_ptr<StateReader> {
         // Create a `StateReaderChromiumUpdater` instance only if a prefs.json
         // file for the updater can be found and parsed successfully.
-        const updater::UpdaterScope updater_scope =
-            is_machine ? updater::UpdaterScope::kSystem
-                       : updater::UpdaterScope::kUser;
         const std::optional<base::FilePath> global_prefs_dir =
-#if BUILDFLAG(IS_WIN)
-            // Google Chrome ships with an x86 updater.
-            updater::GetInstallDirectoryX86(updater_scope);
-#else
-            updater::GetInstallDirectory(updater_scope);
-#endif  //  IS_WIN
+            updater::GetInstallDirectory(is_machine
+                                             ? updater::UpdaterScope::kSystem
+                                             : updater::UpdaterScope::kUser);
         if (!global_prefs_dir)
           return nullptr;
         std::string contents;
-        constexpr char kUpdaterPrefsFilename[] = "prefs.json";
-        constexpr int kMaxPrefsFileSize = 0x20000;  // 128KiB.
+        static constexpr char kUpdaterPrefsFilename[] = "prefs.json";
+        static constexpr int kMaxPrefsFileSize = 0x20000;  // 128KiB.
         if (!base::ReadFileToStringWithMaxSize(
                 global_prefs_dir->AppendASCII(kUpdaterPrefsFilename), &contents,
                 kMaxPrefsFileSize)) {
           return nullptr;
         }
         std::optional<base::Value::Dict> parsed_json =
-            base::JSONReader::ReadDict(contents);
+            base::JSONReader::ReadDict(contents,
+                                       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
         return parsed_json ? std::make_unique<StateReaderChromiumUpdater>(
                                  std::move(*parsed_json))
                            : nullptr;
@@ -135,6 +128,22 @@ int UpdaterState::StateReaderChromiumUpdater::GetUpdatePolicy() const {
   return UpdaterState::GetUpdatePolicy();
 }
 
+update_client::CategorizedError
+UpdaterState::StateReaderChromiumUpdater::GetLastUpdateCheckError() const {
+  return {
+      .category = static_cast<update_client::ErrorCategory>(
+          parsed_json_
+              .FindInt(update_client::kLastUpdateCheckErrorCategoryPreference)
+              .value_or(0)),
+      .code =
+          parsed_json_.FindInt(update_client::kLastUpdateCheckErrorPreference)
+              .value_or(0),
+      .extra =
+          parsed_json_
+              .FindInt(update_client::kLastUpdateCheckErrorExtraCode1Preference)
+              .value_or(0)};
+}
+
 UpdaterState::State UpdaterState::StateReader::Read(bool is_machine) const {
   State state;
   state.updater_name = GetUpdaterName();
@@ -147,6 +156,7 @@ UpdaterState::State UpdaterState::StateReader::Read(bool is_machine) const {
     CHECK((update_policy >= 0 && update_policy <= 3) || update_policy == -1);
     return update_policy;
   }();
+  state.last_update_check_error = GetLastUpdateCheckError();
   return state;
 }
 
@@ -198,12 +208,18 @@ UpdaterState::Attributes UpdaterState::Serialize() const {
         state_->is_autoupdate_check_enabled ? "1" : "0";
 
     attributes["updatepolicy"] = base::NumberToString(state_->update_policy);
+    attributes["lastupdatecheckerrorcode"] =
+        state_->last_update_check_error.code;
+    attributes["lastupdatecheckerrorcat"] =
+        static_cast<int>(state_->last_update_check_error.category);
+    attributes["lastupdatecheckextracode1"] =
+        state_->last_update_check_error.extra;
   }
 
   return attributes;
 }
 
-std::string UpdaterState::NormalizeTimeDelta(const base::TimeDelta& delta) {
+std::string UpdaterState::NormalizeTimeDelta(base::TimeDelta delta) {
   const base::TimeDelta two_weeks = base::Days(14);
   const base::TimeDelta two_months = base::Days(56);
 

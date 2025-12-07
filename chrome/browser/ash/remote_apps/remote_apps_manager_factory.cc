@@ -24,8 +24,6 @@ RemoteAppsManager* RemoteAppsManagerFactory::GetForProfile(Profile* profile) {
 
 // static
 RemoteAppsManagerFactory* RemoteAppsManagerFactory::GetInstance() {
-  // TODO(crbug.com/40205142): Restore use of base::NoDestructor when
-  // it no longer causes unit_test failures.
   static base::NoDestructor<RemoteAppsManagerFactory> instance;
   return instance.get();
 }

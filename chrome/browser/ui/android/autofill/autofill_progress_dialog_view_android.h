@@ -5,13 +5,12 @@
 #ifndef CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_PROGRESS_DIALOG_VIEW_ANDROID_H_
 #define CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_PROGRESS_DIALOG_VIEW_ANDROID_H_
 
-#include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_view.h"
-
 #include <jni.h>
 #include <stddef.h>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_view.h"
 #include "content/public/browser/web_contents.h"
 
 namespace autofill {

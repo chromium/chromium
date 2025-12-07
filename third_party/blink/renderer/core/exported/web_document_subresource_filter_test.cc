@@ -5,6 +5,7 @@
 #include "third_party/blink/public/platform/web_document_subresource_filter.h"
 
 #include "base/containers/contains.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -31,15 +32,17 @@ class TestDocumentSubresourceFilter : public WebDocumentSubresourceFilter {
       : load_policy_(policy) {}
 
   LoadPolicy GetLoadPolicy(const WebURL& resource_url,
-                           mojom::blink::RequestContextType) override {
-    String resource_path = KURL(resource_url).GetPath();
+                           network::mojom::RequestDestination,
+                           subresource_filter::ScopedRule* out_rule) override {
+    String resource_path = KURL(resource_url).GetPath().ToString();
     if (!base::Contains(queried_subresource_paths_, resource_path)) {
       queried_subresource_paths_.push_back(resource_path);
     }
     String resource_string = resource_url.GetString();
     for (const String& suffix : blocklisted_suffixes_) {
-      if (resource_string.EndsWith(suffix))
+      if (resource_string.EndsWith(suffix)) {
         return load_policy_;
+      }
     }
     return LoadPolicy::kAllow;
   }
@@ -77,7 +80,7 @@ class SubresourceFilteringWebFrameClient
   void DidCommitNavigation(
       WebHistoryCommitType commit_type,
       bool should_reset_browser_interface_broker,
-      const ParsedPermissionsPolicy& permissions_policy_header,
+      const network::ParsedPermissionsPolicy& permissions_policy_header,
       const DocumentPolicyFeatureState& document_policy_header) override {
     subresource_filter_ =
         new TestDocumentSubresourceFilter(load_policy_for_next_load_);

@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("optin") {
   sources = [
@@ -23,12 +23,11 @@ static_library("optin") {
 
   deps = [
     "//ash",
-    "//ash/components/arc",
     "//ash/constants",
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/settings",
-    "//chrome/browser/ui/webui/ash/login",
+    "//chromeos/ash/experiences/arc",
     "//components/metrics",
     "//components/prefs",
     "//third_party/nearby:presence_types",
@@ -44,20 +43,21 @@ source_set("unit_tests") {
   deps = [
     ":optin",
     "//ash",
-    "//ash/components/arc",
     "//ash/constants",
     "//base",
     "//chrome/browser",
-    "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc/extensions:test_support",
     "//chrome/browser/ash/ownership",
-    "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/consent_auditor",
+    "//chrome/browser/consent_auditor:test_support",
+    "//chrome/browser/signin",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/policy/device_policy:test_support",
+    "//chromeos/ash/experiences/arc",
     "//components/consent_auditor:test_support",
     "//components/metrics:test_support",
     "//components/policy/core/common",

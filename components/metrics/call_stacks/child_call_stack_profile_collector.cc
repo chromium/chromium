@@ -11,6 +11,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
 
 namespace metrics {
@@ -22,7 +23,7 @@ ChildCallStackProfileCollector::ProfileState::ProfileState(ProfileState&&) =
 ChildCallStackProfileCollector::ProfileState::ProfileState(
     base::TimeTicks start_timestamp,
     mojom::ProfileType profile_type,
-    std::string&& profile)
+    mojom::SampledProfilePtr profile)
     : start_timestamp(start_timestamp),
       profile_type(profile_type),
       profile(std::move(profile)) {}
@@ -34,9 +35,9 @@ ChildCallStackProfileCollector::ProfileState&
 ChildCallStackProfileCollector::ProfileState::operator=(ProfileState&&) =
     default;
 
-ChildCallStackProfileCollector::ChildCallStackProfileCollector() {}
+ChildCallStackProfileCollector::ChildCallStackProfileCollector() = default;
 
-ChildCallStackProfileCollector::~ChildCallStackProfileCollector() {}
+ChildCallStackProfileCollector::~ChildCallStackProfileCollector() = default;
 
 void ChildCallStackProfileCollector::SetParentProfileCollector(
     mojo::PendingRemote<metrics::mojom::CallStackProfileCollector>
@@ -55,10 +56,8 @@ void ChildCallStackProfileCollector::SetParentProfileCollector(
     parent_collector_.Bind(std::move(parent_collector));
     if (parent_collector_) {
       for (ProfileState& state : profiles_) {
-        mojom::SampledProfilePtr mojo_profile = mojom::SampledProfile::New();
-        mojo_profile->contents = std::move(state.profile);
         parent_collector_->Collect(state.start_timestamp, state.profile_type,
-                                   std::move(mojo_profile));
+                                   std::move(state.profile));
       }
     }
   }
@@ -82,24 +81,28 @@ void ChildCallStackProfileCollector::Collect(base::TimeTicks start_timestamp,
     return;
   }
 
+  if (!parent_collector_ && !retain_profiles_) {
+    // Nothing to do.
+    return;
+  }
+
+  mojom::SampledProfilePtr mojo_profile = mojom::SampledProfile::New();
+  mojo_profile->contents = mojo_base::ProtoWrapper(profile);
+
   const mojom::ProfileType profile_type =
       profile.trigger_event() == SampledProfile::PERIODIC_HEAP_COLLECTION
           ? mojom::ProfileType::kHeap
           : mojom::ProfileType::kCPU;
 
   if (parent_collector_) {
-    mojom::SampledProfilePtr mojo_profile = mojom::SampledProfile::New();
-    profile.SerializeToString(&mojo_profile->contents);
     parent_collector_->Collect(start_timestamp, profile_type,
                                std::move(mojo_profile));
     return;
   }
 
   if (retain_profiles_) {
-    std::string serialized_profile;
-    profile.SerializeToString(&serialized_profile);
     profiles_.emplace_back(start_timestamp, profile_type,
-                           std::move(serialized_profile));
+                           std::move(mojo_profile));
   }
 }
 

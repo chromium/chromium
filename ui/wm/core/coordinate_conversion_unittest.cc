@@ -13,23 +13,23 @@ namespace wm {
 typedef aura::test::AuraTestBase CoordinateConversionTest;
 
 TEST_F(CoordinateConversionTest, ConvertRect) {
-  aura::Window* w = aura::test::CreateTestWindowWithBounds(
-      gfx::Rect(10, 20, 100, 200), root_window());
+  std::unique_ptr<aura::Window> w = aura::test::CreateTestWindow(
+      {.parent = root_window(), .bounds = {10, 20, 100, 200}});
 
   gfx::Rect r1(10, 20, 100, 120);
-  ConvertRectFromScreen(w, &r1);
+  ConvertRectFromScreen(w.get(), &r1);
   EXPECT_EQ("0,0 100x120", r1.ToString());
 
   gfx::Rect r2(0, 0, 100, 200);
-  ConvertRectFromScreen(w, &r2);
+  ConvertRectFromScreen(w.get(), &r2);
   EXPECT_EQ("-10,-20 100x200", r2.ToString());
 
   gfx::Rect r3(30, 30, 100, 200);
-  ConvertRectToScreen(w, &r3);
+  ConvertRectToScreen(w.get(), &r3);
   EXPECT_EQ("40,50 100x200", r3.ToString());
 
   gfx::Rect r4(-10, -20, 100, 200);
-  ConvertRectToScreen(w, &r4);
+  ConvertRectToScreen(w.get(), &r4);
   EXPECT_EQ("0,0 100x200", r4.ToString());
 }
 

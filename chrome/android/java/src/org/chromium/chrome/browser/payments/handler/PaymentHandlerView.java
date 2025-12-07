@@ -9,21 +9,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
-import org.chromium.components.payments.InputProtector;
+import org.chromium.components.payments.ui.InputProtector;
 import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.WebContents;
 
 /**
- * The view of the PaymentHandler UI. This view can be divided into the toolbar area and the
- * content area. The content area does not include the toolbar area; it includes the BottomSheet
- * area below the toolbar, which includes the part that extends beneath the screen. The ThinWebView
- * has a fixed height, which is the height of visible content area when the sheet is in full state.
+ * The view of the PaymentHandler UI. This view can be divided into the toolbar area and the content
+ * area. The content area does not include the toolbar area; it includes the BottomSheet area below
+ * the toolbar, which includes the part that extends beneath the screen. The ThinWebView has a fixed
+ * height, which is the height of visible content area when the sheet is in full state.
  */
+@NullMarked
 /* package */ class PaymentHandlerView implements BottomSheetContent {
     private final View mToolbarView;
     private final PaymentHandlerContentFrameLayout mContentView;
@@ -32,7 +35,7 @@ import org.chromium.content_public.browser.WebContents;
     private final int mToolbarHeightPx;
     private final ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier =
             new ObservableSupplierImpl<>();
-    private Runnable mBackPressCallback;
+    private @Nullable Runnable mBackPressCallback;
 
     /**
      * Construct the PaymentHandlerView.
@@ -131,12 +134,8 @@ import org.chromium.content_public.browser.WebContents;
     }
 
     @Override
-    public int getPeekHeight() {
-        return BottomSheetContent.HeightMode.DISABLED;
-    }
-
-    @Override
     public boolean handleBackPress() {
+        assert mBackPressCallback != null;
         mBackPressCallback.run();
         return true; // Prevent further handling of the back press.
     }
@@ -148,26 +147,27 @@ import org.chromium.content_public.browser.WebContents;
 
     @Override
     public void onBackPressed() {
+        assert mBackPressCallback != null;
         mBackPressCallback.run();
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.payment_handler_sheet_description;
+    public String getSheetContentDescription(Context context) {
+        return context.getString(R.string.payment_handler_sheet_description);
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         return R.string.payment_handler_sheet_opened_half;
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
         return R.string.payment_handler_sheet_opened_full;
     }
 
     @Override
-    public int getSheetClosedAccessibilityStringId() {
+    public @StringRes int getSheetClosedAccessibilityStringId() {
         return R.string.payment_handler_sheet_closed;
     }
 

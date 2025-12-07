@@ -11,6 +11,8 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
+#include "components/trusted_vault/proto/vault.pb.h"
+#include "components/trusted_vault/trusted_vault_connection.h"
 #include "net/http/http_status_code.h"
 
 namespace network {
@@ -36,6 +38,9 @@ class FakeSecurityDomainService {
   using MaybeResponse =
       std::optional<std::pair<net::HttpStatusCode, std::string>>;
 
+  using JoinMemberMatcher = base::RepeatingCallback<bool(
+      const trusted_vault_pb::JoinSecurityDomainsRequest&)>;
+
   static std::unique_ptr<FakeSecurityDomainService> New(int epoch);
 
   virtual ~FakeSecurityDomainService() = 0;
@@ -53,8 +58,29 @@ class FakeSecurityDomainService {
   // epoch, as if MagicArch had just completed.
   virtual void pretend_there_are_members() = 0;
 
+  // Returns an HTTP 500 when the request matches |filter|.
+  virtual void fail_join_requests_matching(JoinMemberMatcher filter) = 0;
+
+  // Simulates the user resetting the security domain.
+  virtual void ResetSecurityDomain() = 0;
+
+  // Changes the GPM PIN recovery member to not be usable, i.e.
+  // usable_for_recovery is set to false and no metadata is returned.
+  virtual void MakePinMemberUnusable() = 0;
+
+  // Removes the GPM PIN recovery member.
+  virtual void RemovePinMember() = 0;
+
+  // Updates the public key of the PIN member.
+  virtual void SetPinMemberPublicKey(std::string public_key) = 0;
+
+  // Updates the PIN member metadata wrapped PIN.
+  virtual void SetPinMemberWrappedPin(std::string wrapped_pin) = 0;
+
   virtual size_t num_physical_members() const = 0;
   virtual size_t num_pin_members() const = 0;
+  virtual std::string GetPinMemberPublicKey() const = 0;
+  virtual trusted_vault::GpmPinMetadata GetPinMetadata() const = 0;
   virtual base::span<const trusted_vault_pb::SecurityDomainMember> members()
       const = 0;
 };

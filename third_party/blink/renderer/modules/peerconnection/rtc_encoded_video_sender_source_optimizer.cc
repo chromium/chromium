@@ -12,7 +12,7 @@ namespace blink {
 
 RtcEncodedVideoSenderSourceOptimizer::RtcEncodedVideoSenderSourceOptimizer(
     UnderlyingSourceSetter set_underlying_source,
-    WTF::CrossThreadOnceClosure disconnect_callback)
+    CrossThreadOnceClosure disconnect_callback)
     : set_underlying_source_(std::move(set_underlying_source)),
       disconnect_callback_(std::move(disconnect_callback)) {}
 

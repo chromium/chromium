@@ -21,17 +21,16 @@ class Element;
 // https://html.spec.whatwg.org/C/#custom-element-reactions
 class CORE_EXPORT CustomElementReactionStack final
     : public GarbageCollected<CustomElementReactionStack>,
-      public NameClient,
-      public Supplement<Agent> {
+      public NameClient {
  public:
-  explicit CustomElementReactionStack(Agent& agent);
+  CustomElementReactionStack() = default;
   CustomElementReactionStack(const CustomElementReactionStack&) = delete;
   CustomElementReactionStack& operator=(const CustomElementReactionStack&) =
       delete;
   ~CustomElementReactionStack() override = default;
 
-  void Trace(Visitor*) const override;
-  const char* NameInHeapSnapshot() const override {
+  void Trace(Visitor*) const;
+  const char* GetHumanReadableName() const override {
     return "CustomElementReactionStack";
   }
 
@@ -43,7 +42,6 @@ class CORE_EXPORT CustomElementReactionStack final
   void ClearQueue(Element&);
 
   static CustomElementReactionStack& From(Agent& agent);
-  static const char kSupplementName[];
 
  private:
   friend class ResetCustomElementReactionStackForTest;
@@ -56,7 +54,7 @@ class CORE_EXPORT CustomElementReactionStack final
       Agent& agent,
       CustomElementReactionStack* new_stack);
 
-  using ElementQueue = HeapVector<Member<Element>, 1>;
+  using ElementQueue = GCedHeapVector<Member<Element>, 1>;
   HeapVector<Member<ElementQueue>> stack_;
   Member<ElementQueue> backup_queue_;
 

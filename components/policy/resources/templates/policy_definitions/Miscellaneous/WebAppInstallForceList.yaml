@@ -33,7 +33,9 @@ desc: |-
         version 99, and version 112 on all other desktop operating systems, allows you to
         override the app icon of installed apps. The icons have to be square,
         maximal 1 MB in size, and in one of the following formats: jpeg, png, gif, webp, ico.
-        The hash value has to be the SHA256 hash of the icon file.)
+        The hash value has to be the SHA256 hash of the icon file. The <ph name="URL_LABEL">url</ph>
+        should be accessible without authentication to ensure the icon can be used
+        upon app installation.)
 
         - <ph name="INSTALL_AS_SHORTCUT_LABEL">install_as_shortcut</ph>
         (Starting with <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>

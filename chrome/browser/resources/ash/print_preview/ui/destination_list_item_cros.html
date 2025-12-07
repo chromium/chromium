@@ -1,0 +1,48 @@
+<style include="destination-list-item-style">
+  .configuring-failed-text {
+    color: var(--google-red-600);
+    font-style: italic;
+  }
+
+  :host([is-destination-cros-local_]) .connection-status,
+  :host([is-destination-cros-local_]) .connection-status.status-red {
+    color: var(--error-status-alert);
+  }
+
+  :host([is-destination-cros-local_]) .connection-status.status-orange {
+    color: var(--error-status-warning);
+  }
+</style>
+<iron-media-query query="(prefers-color-scheme: dark)"
+    query-matches="{{isDarkModeActive_}}">
+</iron-media-query>
+<cr-icon icon="[[destinationIcon_]]"></cr-icon>
+<span class="name searchable">[[destination.displayName]]</span>
+<span class="search-hint searchable" hidden="[[!searchHint_]]">
+  [[searchHint_]]
+</span>
+<span class$="[[computeStatusClass_(destination.printerStatusReason)]]"
+    hidden="[[!statusText_]]">
+  [[statusText_]]
+</span>
+<span class="extension-controlled-indicator"
+    hidden$="[[!destination.isExtension]]">
+  <span class="extension-name searchable">
+    [[destination.extensionName]]
+  </span>
+  <span class="extension-icon" role="button" tabindex="0"
+      title="[[getExtensionPrinterTooltip_(destination)]]"></span>
+</span>
+<span class="configuring-in-progress-text"
+  hidden$="[[!checkConfigurationStatus_(statusEnum_.IN_PROGRESS,
+                                        configurationStatus_)]]">
+  $i18n{configuringInProgressText}
+  <span class="configuring-text-jumping-dots">
+    <span>.</span><span>.</span><span>.</span>
+  </span>
+</span>
+<span class="configuring-failed-text"
+  hidden$="[[!checkConfigurationStatus_(statusEnum_.FAILED,
+                                        configurationStatus_)]]">
+  $i18n{configuringFailedText}
+</span>

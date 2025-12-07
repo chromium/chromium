@@ -15,25 +15,23 @@
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/permissions/permission_util.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "media/base/media_switches.h"
 #include "net/base/url_util.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/dbus/constants/dbus_switches.h"  // nogncheck
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
 #include "base/metrics/histogram_macros.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/dbus/constants/dbus_switches.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/request_type.h"
@@ -45,34 +43,33 @@
 #error This file currently only supports Chrome OS, Android and Windows.
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/prefs.mojom.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+namespace {
+
+// Returns whether the use of protected content identifier is allowed by
+// enterprise policy.
+bool IsProtectedContentIdentifierAllowedByPolicy(Profile* profile) {
+  PrefService* service = profile->GetPrefs();
+  DCHECK(service);
+
+  return service->GetBoolean(
+      policy::policy_prefs::kProtectedContentIdentifiersAllowed);
+}
+
+}  // namespace
 
 ProtectedMediaIdentifierPermissionContext::
     ProtectedMediaIdentifierPermissionContext(
         content::BrowserContext* browser_context)
-    : PermissionContextBase(
+    : permissions::ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
-          blink::mojom::PermissionsPolicyFeature::kEncryptedMedia) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // base::Unretained is safe because this object is built as a singleton and
-  // lives while the browser process is alive.
-  attestation_enabled_observer_ = std::make_unique<CrosapiPrefObserver>(
-      crosapi::mojom::PrefPath::kAttestationForContentProtectionEnabled,
-      base::BindRepeating(&ProtectedMediaIdentifierPermissionContext::
-                              OnAttestationEnabledChanged,
-                          base::Unretained(this)));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-}
+          network::mojom::PermissionsPolicyFeature::kEncryptedMedia) {}
 
 ProtectedMediaIdentifierPermissionContext::
-    ~ProtectedMediaIdentifierPermissionContext() {
-}
+    ~ProtectedMediaIdentifierPermissionContext() = default;
 
 ContentSetting
-ProtectedMediaIdentifierPermissionContext::GetPermissionStatusInternal(
+ProtectedMediaIdentifierPermissionContext::GetContentSettingStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
@@ -85,8 +82,8 @@ ProtectedMediaIdentifierPermissionContext::GetPermissionStatusInternal(
     return CONTENT_SETTING_BLOCK;
   }
 
-  ContentSetting content_setting =
-      permissions::PermissionContextBase::GetPermissionStatusInternal(
+  ContentSetting content_setting = permissions::
+      ContentSettingPermissionContextBase::GetContentSettingStatusInternal(
           render_frame_host, requesting_origin, embedding_origin);
   DCHECK(content_setting == CONTENT_SETTING_ALLOW ||
 #if BUILDFLAG(IS_ANDROID)
@@ -124,18 +121,17 @@ bool ProtectedMediaIdentifierPermissionContext::IsOriginAllowed(
 }
 
 void ProtectedMediaIdentifierPermissionContext::UpdateTabContext(
-    const permissions::PermissionRequestID& id,
-    const GURL& requesting_frame,
+    const permissions::PermissionRequestData& request_data,
     bool allowed) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // WebContents may have gone away.
   content_settings::PageSpecificContentSettings* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
-          id.global_render_frame_host_id());
+          request_data.id.global_render_frame_host_id());
   if (content_settings) {
     content_settings->OnProtectedMediaIdentifierPermissionSet(
-        requesting_frame.DeprecatedGetOriginAsURL(), allowed);
+        request_data.requesting_origin.DeprecatedGetOriginAsURL(), allowed);
   }
 }
 
@@ -164,14 +160,10 @@ bool ProtectedMediaIdentifierPermissionContext::
   // This could be disabled by the device policy or by a switch in content
   // settings.
   bool attestation_enabled = true;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!ash::CrosSettings::Get()->GetBoolean(
           ash::kAttestationForContentProtectionEnabled, &attestation_enabled)) {
     attestation_enabled = false;
   }
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  attestation_enabled = attestation_enabled_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   if (!attestation_enabled) {
     DVLOG(1) << "Protected media identifier disabled by the user or by device "
                 "policy.";
@@ -180,13 +172,11 @@ bool ProtectedMediaIdentifierPermissionContext::
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 
+  if (!IsProtectedContentIdentifierAllowedByPolicy(profile)) {
+    DVLOG(1)
+        << "Protected content identifier disabled due to enterprise policy.";
+    return false;
+  }
+
   return true;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void ProtectedMediaIdentifierPermissionContext::OnAttestationEnabledChanged(
-    base::Value value) {
-  DCHECK(value.is_bool());
-  attestation_enabled_ = value.GetBool();
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

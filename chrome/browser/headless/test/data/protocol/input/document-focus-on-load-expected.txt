@@ -1,0 +1,2 @@
+Tests document focus on load.
+Document has focus on load

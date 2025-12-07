@@ -229,7 +229,7 @@ TEST_F(WebAppIconDownloaderTest, SkipPageFavicons) {
       test_future;
   WebAppIconDownloader downloader;
   downloader.Start(web_contents(), extra_urls, test_future.GetCallback(),
-                   {.skip_page_favicons = true});
+                   {.download_page_favicons = false});
 
   const std::vector<gfx::Size> sizes_1 = {gfx::Size{16, 16}};
   web_contents_tester()->TestDidDownloadImage(
@@ -323,7 +323,8 @@ TEST_F(WebAppIconDownloaderTest, PageNavigatesAfterDownload) {
   downloader.Start(web_contents(),
                    std::vector<IconUrlWithSize>{
                        IconUrlWithSize::CreateForUnspecifiedSize(url)},
-                   test_future.GetCallback(), {.skip_page_favicons = true});
+                   test_future.GetCallback(),
+                   {.download_page_favicons = false});
 
   std::vector<gfx::Size> sizes = {gfx::Size(32, 32)};
   web_contents_tester()->TestDidDownloadImage(

@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{1 日前}other{# 日前}}</translation>
 <translation id="1181037720776840403">削除</translation>
 <translation id="1243314992276662751">アップロード</translation>
+<translation id="1253734725326687145">タップ ターゲットが右上に移動しました。ここをタップしてください。</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> を共有できませんでした</translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">共有するテキスト ブロックを小さくしてください。</translation>
@@ -38,6 +39,7 @@
 <translation id="19085484004813472">これは新しい機能です</translation>
 <translation id="2006524834898217237">このデバイスがインターネットに接続されているかご確認ください。</translation>
 <translation id="208586643495776849">もう一度お試しください</translation>
+<translation id="2111134541987263231">[<ph name="BEGIN_BOLD" />シークレット モードでの実行を許可する<ph name="END_BOLD" />] をオンにする</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1日}other{#日}}</translation>
 <translation id="2148716181193084225">今日</translation>
 <translation id="2168039046890040389">前のページへ</translation>
@@ -48,12 +50,14 @@
 <translation id="2289052229480071835">画面に表示されるタップ ターゲットをタップします。</translation>
 <translation id="2295140143284145483">アンケート</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/秒</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{次の ID の拡張機能<ph name="BEGIN_LIST" /><ph name="END_LIST" />が見つかりません。管理者にお問い合わせください。}other{次の ID の拡張機能<ph name="BEGIN_LIST" /><ph name="END_LIST" />が見つかりません。管理者にお問い合わせください。}}</translation>
 <translation id="2353636109065292463">インターネット接続を確認しています</translation>
 <translation id="2359808026110333948">続行</translation>
 <translation id="2388990488038464401">スマートフォンからこの番号に電話しますか？</translation>
 <translation id="2435457462613246316">パスワードを表示</translation>
 <translation id="24452542372838207">通知を展開</translation>
 <translation id="2445449901874883781">表示間隔を狭くする</translation>
+<translation id="2448407890032181691">タップ ターゲットが右下に移動しました。ここをタップしてください。</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2497284189126895209">すべてのファイル</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -64,15 +68,16 @@
 <translation id="2583543531130364912">タッチスクリーンのキャリブレーション</translation>
 <translation id="2586657967955657006">クリップボード</translation>
 <translation id="2653844658857826081">新規</translation>
-<translation id="2666092431469916601">一番上</translation>
+<translation id="2666092431469916601">上部</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> から共有されました</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 年前}other{# 年前}}</translation>
 <translation id="2878511608894704031">すべて削除</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1日}other{#日}}</translation>
 <translation id="2922712708897119705">「<ph name="COLUMN_NAME" />」列の降順で並べ替えました。</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{拡張機能が見つかりません}other{拡張機能が見つかりません}}</translation>
 <translation id="3036649622769666520">ファイルを開く</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
-<translation id="3087734570205094154">下</translation>
+<translation id="3087734570205094154">下部</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3157931365184549694">復元</translation>
 <translation id="3183922693828471536">ここまでスクロール</translation>
@@ -82,6 +87,7 @@
 <translation id="3295886253693811851">次を使って電話</translation>
 <translation id="3306688585798492231">内蔵ディスプレイ</translation>
 <translation id="335581015389089642">スピーチ</translation>
+<translation id="3372635229069101468">[<ph name="BEGIN_BOLD" />詳細<ph name="END_BOLD" />] をクリックする</translation>
 <translation id="3389286852084373014">テキストが大きすぎます</translation>
 <translation id="3406306243914553062">HTML コンテンツ</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{残り 1 日}other{残り # 日}}</translation>
@@ -102,7 +108,9 @@
 <translation id="3994749195054421561">「<ph name="COLUMN_NAME" />」列の昇順で並べ替えました。</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{未読のお知らせ 1 件}other{未読のお知らせ # 件}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{シークレット モードで次の拡張機能をオンにしてください。}other{シークレット モードで次の拡張機能をオンにしてください。}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 か月前}other{# か月前}}</translation>
+<translation id="4277033906326892359">「<ph name="COLUMN_NAME" />」列を昇順で並べ替えました</translation>
 <translation id="4289300219472526559">読み上げを開始</translation>
 <translation id="4289540628985791613">概要</translation>
 <translation id="4491109536499578614">画像</translation>
@@ -113,6 +121,8 @@
 <translation id="4729257764711776855">数値</translation>
 <translation id="4746179598275229723">拡張機能の固定を解除しました</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{残り 1 か月}other{残り # か月}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{シークレット モードを使用するには、拡張機能をオンにするよう組織が求めています}other{シークレット モードを使用するには、拡張機能をオンにするよう組織が求めています}}</translation>
+<translation id="482932175346970750">ブラウザに「<ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" />」と入力する</translation>
 <translation id="4888938634149558681">電話をかける</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 秒}other{# 秒}}</translation>
@@ -121,6 +131,7 @@
 <translation id="5076340679995252485">貼り付け(&amp;P)</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">送信できませんでした</translation>
+<translation id="5283101102242354279">シークレット モードで拡張機能をオンにするには:</translation>
 <translation id="528468243742722775">終了</translation>
 <translation id="5329858601952122676">削除(&amp;D)</translation>
 <translation id="5361107212971249203">テキスト</translation>
@@ -129,13 +140,16 @@
 <translation id="5528053674512161860">デベロッパー UI モジュール（dev_ui）がインストールされていないため、ページを読み込めませんでした</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> システム</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5606865426897221650">タブ</translation>
 <translation id="5613020302032141669">左矢印キー</translation>
 <translation id="5633029987065897167">何もありません</translation>
+<translation id="5651438382973553530">タップ ターゲットが左下に移動しました。ここをタップしてください。</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 分}other{# 分}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{アクティブ: 今日}=1{アクティブ: 1 日前}other{アクティブ: # 日前}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 日と }other{# 日と }}</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5843690142429128814">画像です。</translation>
+<translation id="5860491529813859533">オンにする</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{1年}other{#年}}</translation>
 <translation id="588258955323874662">全画面表示</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{残り 1 秒}other{残り # 秒}}</translation>
@@ -151,6 +165,7 @@
 <translation id="6264365405983206840">すべて選択(&amp;A)</translation>
 <translation id="6346952829206698721">クリップボードから貼り付け</translation>
 <translation id="6364916375976753737">左にスクロール</translation>
+<translation id="63712816010840859">現在のディスプレイがタッチ操作に対応していない場合は、Esc キーを押します。</translation>
 <translation id="6394627529324717982">カンマ</translation>
 <translation id="6397363302884558537">読み上げを停止</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{1 秒前}other{# 秒前}}</translation>
@@ -162,6 +177,8 @@
 <translation id="6612467943526193239">キャリブレーションを終了するには Esc キーを押します。</translation>
 <translation id="6620110761915583480">ファイルを保存</translation>
 <translation id="6699343763173986273">メディアの次のトラック</translation>
+<translation id="6738856801552481343">このディスプレイがタッチ操作に対応していない場合は、Esc キーを押します。</translation>
+<translation id="6807086321996342431">「<ph name="COLUMN_NAME" />」列</translation>
 <translation id="6808150112686056157">メディアの停止</translation>
 <translation id="6845383723252244143">フォルダを選択</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{残り 1 時間}other{残り # 時間}}</translation>
@@ -176,6 +193,7 @@
 <translation id="7170202025028120564">アプリケーションの表示設定は、再起動すると有効になります。</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{残り 1 分}other{残り # 分}}</translation>
+<translation id="7252604552361840748">上記の拡張機能を見つける</translation>
 <translation id="7363164521834647158">返信</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 分前}other{# 分前}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
@@ -192,16 +210,15 @@
 <translation id="7969046989155602842">コマンド</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{1 件以上の未読の通知}other{# 件以上の未読の通知}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{1分}other{#分}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568"><ph name="ORIGIN" /> からの発信番号</translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{1 時間前}other{# 時間前}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{残り 1 秒}other{残り # 秒}}</translation>
 <translation id="8134065097954893699">ページを再読み込み</translation>
+<translation id="813785873406874127">「<ph name="COLUMN_NAME" />」列の並べ替えを解除しました</translation>
 <translation id="815598010540052116">下にスクロール</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">次のページへ</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />、<ph name="TYPE_2" /></translation>
-<translation id="8245914219290430011">タブ</translation>
 <translation id="8259556432390118667">16 進数色コード</translation>
 <translation id="8328145009876646418">左端</translation>
 <translation id="8331626408530291785">上にスクロール</translation>
@@ -209,6 +226,7 @@
 <translation id="8393700583063109961">メッセージを送信</translation>
 <translation id="8394908167088220973">メディアの再生/一時停止</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1年}other{#年}}</translation>
+<translation id="8582972250170726813">「<ph name="COLUMN_NAME" />」列を降順で並べ替えました</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> ファイル (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/秒</translation>
@@ -225,7 +243,9 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 秒}other{# 秒}}</translation>
 <translation id="9059834730836941392">通知を折りたたむ</translation>
 <translation id="9170848237812810038">取消(&amp;U)</translation>
-<translation id="932327136139879170">ホーム</translation>
+<translation id="9195990613383871904">明日</translation>
+<translation id="928628199082367701">Super</translation>
+<translation id="932327136139879170">自宅</translation>
 <translation id="944069440740578670">未読のお知らせ</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{1 秒前}other{# 秒前}}</translation>
 </translationbundle>

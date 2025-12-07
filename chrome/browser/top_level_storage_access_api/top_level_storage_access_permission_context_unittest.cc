@@ -16,7 +16,10 @@
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_util.h"
+#include "components/permissions/resolvers/content_setting_permission_resolver.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
+#include "content/public/browser/permission_descriptor_util.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/navigation_simulator.h"
@@ -29,13 +32,17 @@
 
 namespace {
 
+using testing::Contains;
+using testing::Each;
 using PermissionStatus = blink::mojom::PermissionStatus;
-
-using testing::IsEmpty;
-using testing::SizeIs;
 
 constexpr char kRequestOutcomeHistogram[] =
     "API.TopLevelStorageAccess.RequestOutcome";
+
+MATCHER_P(DecidedByRelatedWebsiteSets, inner, "") {
+  return testing::ExplainMatchResult(
+      inner, arg.metadata.decided_by_related_website_sets(), result_listener);
+}
 
 GURL GetTopLevelURL() {
   return GURL("https://embedder.example.com");
@@ -72,18 +79,19 @@ class TopLevelStorageAccessPermissionContextTest
     first_party_sets_handler_.SetGlobalSets(net::GlobalFirstPartySets());
   }
 
-  ContentSetting DecidePermissionSync(
+  PermissionStatus DecidePermissionSync(
       TopLevelStorageAccessPermissionContext* permission_context,
       bool user_gesture,
       const GURL& requester_url,
       const GURL& embedding_url) {
-    base::test::TestFuture<ContentSetting> future;
+    base::test::TestFuture<content::PermissionResult> future;
     permission_context->DecidePermissionForTesting(
-        permissions::PermissionRequestData(permission_context, CreateFakeID(),
-                                           user_gesture, requester_url,
-                                           embedding_url),
+        std::make_unique<permissions::PermissionRequestData>(
+            std::make_unique<permissions::ContentSettingPermissionResolver>(
+                ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS),
+            CreateFakeID(), user_gesture, requester_url, embedding_url),
         future.GetCallback());
-    return future.Get();
+    return future.Get().status;
   }
 
   void TearDown() override {
@@ -130,7 +138,7 @@ TEST_F(TopLevelStorageAccessPermissionContextTest,
 
   EXPECT_EQ(DecidePermissionSync(&permission_context, /*user_gesture=*/false,
                                  GetRequesterURL(), GetTopLevelURL()),
-            CONTENT_SETTING_BLOCK);
+            PermissionStatus::DENIED);
 
   EXPECT_EQ(histogram_tester().GetBucketCount(
                 kRequestOutcomeHistogram,
@@ -142,11 +150,18 @@ TEST_F(TopLevelStorageAccessPermissionContextTest,
        PermissionStatusAsksWhenFeatureEnabled) {
   TopLevelStorageAccessPermissionContext permission_context(profile());
 
-  EXPECT_EQ(PermissionStatus::ASK,
-            permission_context
-                .GetPermissionStatus(/*render_frame_host=*/nullptr,
-                                     GetRequesterURL(), GetTopLevelURL())
-                .status);
+  EXPECT_EQ(
+      PermissionStatus::ASK,
+      permission_context
+          .GetPermissionStatus(
+              content::PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionType(
+                      permissions::PermissionUtil::
+                          ContentSettingsTypeToPermissionType(
+                              permission_context.content_settings_type())),
+              /*render_frame_host=*/nullptr, GetRequesterURL(),
+              GetTopLevelURL())
+          .status);
 }
 
 TEST_F(TopLevelStorageAccessPermissionContextTest,
@@ -157,31 +172,37 @@ TEST_F(TopLevelStorageAccessPermissionContextTest,
       HostContentSettingsMapFactory::GetForProfile(profile());
   CHECK(settings_map);
 
-  // Check no `SessionModel::NON_RESTORABLE_USER_SESSION` setting exists yet.
-  ASSERT_THAT(
-      settings_map->GetSettingsForOneType(
-          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-          content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION),
-      IsEmpty());
+  // Check no `SessionModel::DURABLE` setting with
+  // `decided_by_related_website_sets` exists yet.
+  ASSERT_THAT(settings_map->GetSettingsForOneType(
+                  ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
+                  content_settings::mojom::SessionModel::DURABLE),
+              Each(DecidedByRelatedWebsiteSets(false)));
 
   EXPECT_EQ(DecidePermissionSync(&permission_context, /*user_gesture=*/true,
                                  GetRequesterURL(), GetDummyEmbeddingUrl()),
-            CONTENT_SETTING_BLOCK);
+            PermissionStatus::DENIED);
 
-  // Check the `SessionModel::NON_RESTORABLE_USER_SESSION` settings.
-  // None were granted, and implicit denials are not currently persisted, which
-  // preserves the default `ASK` setting.
-  EXPECT_THAT(
-      settings_map->GetSettingsForOneType(
-          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-          content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION),
-      IsEmpty());
+  // Check the `SessionModel::DURABLE` settings with
+  // `decided_by_related_website_sets`. None were granted, and implicit denials
+  // are not currently persisted, which preserves the default `ASK` setting.
+  EXPECT_THAT(settings_map->GetSettingsForOneType(
+                  ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
+                  content_settings::mojom::SessionModel::DURABLE),
+              Each(DecidedByRelatedWebsiteSets(false)));
 
-  EXPECT_EQ(PermissionStatus::ASK,
-            permission_context
-                .GetPermissionStatus(/*render_frame_host=*/nullptr,
-                                     GetRequesterURL(), GetDummyEmbeddingUrl())
-                .status);
+  EXPECT_EQ(
+      PermissionStatus::ASK,
+      permission_context
+          .GetPermissionStatus(
+              content::PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionType(
+                      permissions::PermissionUtil::
+                          ContentSettingsTypeToPermissionType(
+                              permission_context.content_settings_type())),
+              /*render_frame_host=*/nullptr, GetRequesterURL(),
+              GetDummyEmbeddingUrl())
+          .status);
 }
 
 class TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest
@@ -198,9 +219,9 @@ class TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest
         /*entries=*/
         {
             {net::SchemefulSite(GetRequesterURL()),
-             net::FirstPartySetEntry(top_level, net::SiteType::kAssociated, 0)},
-            {top_level, net::FirstPartySetEntry(
-                            top_level, net::SiteType::kPrimary, std::nullopt)},
+             net::FirstPartySetEntry(top_level, net::SiteType::kAssociated)},
+            {top_level,
+             net::FirstPartySetEntry(top_level, net::SiteType::kPrimary)},
         },
         /*aliases=*/{}));
   }
@@ -216,28 +237,27 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
       HostContentSettingsMapFactory::GetForProfile(profile());
   CHECK(settings_map);
 
-  // Check no `SessionModel::NON_RESTORABLE_USER_SESSION` setting exists yet.
-  ASSERT_THAT(
-      settings_map->GetSettingsForOneType(
-          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-          content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION),
-      IsEmpty());
+  // Check no `SessionModel::DURABLE` setting with
+  // `decided_by_related_website_sets` exists yet.
+  ASSERT_THAT(settings_map->GetSettingsForOneType(
+                  ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
+                  content_settings::mojom::SessionModel::DURABLE),
+              Each(DecidedByRelatedWebsiteSets(false)));
 
   EXPECT_EQ(DecidePermissionSync(&permission_context, /*user_gesture=*/true,
                                  GetRequesterURL(), GetTopLevelURL()),
-            CONTENT_SETTING_ALLOW);
+            PermissionStatus::GRANTED);
   EXPECT_EQ(histogram_tester().GetBucketCount(
                 kRequestOutcomeHistogram,
                 TopLevelStorageAccessRequestOutcome::kGrantedByFirstPartySet),
             1);
 
-  // Check the `SessionModel::NON_RESTORABLE_USER_SESSION` settings granted by
-  // FPS.
-  EXPECT_THAT(
-      settings_map->GetSettingsForOneType(
-          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-          content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION),
-      SizeIs(1));
+  // Check the `SessionModel::DURABLE` setting with
+  // `decided_by_related_website_sets` granted by FPS.
+  EXPECT_THAT(settings_map->GetSettingsForOneType(
+                  ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
+                  content_settings::mojom::SessionModel::DURABLE),
+              Contains(DecidedByRelatedWebsiteSets(true)));
 }
 
 TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
@@ -249,24 +269,23 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
       HostContentSettingsMapFactory::GetForProfile(profile());
   CHECK(settings_map);
 
-  // Check no `SessionModel::NON_RESTORABLE_USER_SESSION` setting exists yet.
-  ASSERT_THAT(
-      settings_map->GetSettingsForOneType(
-          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-          content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION),
-      IsEmpty());
+  // Check no `SessionModel::DURABLE` setting with
+  // `decided_by_related_website_sets` exists yet.
+  ASSERT_THAT(settings_map->GetSettingsForOneType(
+                  ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
+                  content_settings::mojom::SessionModel::DURABLE),
+              Each(DecidedByRelatedWebsiteSets(false)));
 
   EXPECT_EQ(DecidePermissionSync(&permission_context, /*user_gesture=*/true,
                                  GetRequesterURL(), GetTopLevelURL()),
-            CONTENT_SETTING_ALLOW);
+            PermissionStatus::GRANTED);
 
-  // Check the `SessionModel::NON_RESTORABLE_USER_SESSION` settings granted by
-  // FPS.
-  EXPECT_THAT(
-      settings_map->GetSettingsForOneType(
-          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-          content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION),
-      SizeIs(1));
+  // Check the `SessionModel::DURABLE` setting with
+  // `decided_by_related_website_sets` granted by FPS.
+  EXPECT_THAT(settings_map->GetSettingsForOneType(
+                  ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
+                  content_settings::mojom::SessionModel::DURABLE),
+              Contains(DecidedByRelatedWebsiteSets(true)));
 
   // Next, set up a cross-site frame.
   content::RenderFrameHostTester* rfh_tester =
@@ -278,11 +297,17 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
 
   // Even though the permission is granted, queries from cross-site frames
   // should return the default value.
-  EXPECT_EQ(PermissionStatus::ASK,
-            permission_context
-                .GetPermissionStatus(navigated_subframe, GetRequesterURL(),
-                                     GetTopLevelURL())
-                .status);
+  EXPECT_EQ(
+      PermissionStatus::ASK,
+      permission_context
+          .GetPermissionStatus(
+              content::PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionType(
+                      permissions::PermissionUtil::
+                          ContentSettingsTypeToPermissionType(
+                              permission_context.content_settings_type())),
+              navigated_subframe, GetRequesterURL(), GetTopLevelURL())
+          .status);
 }
 
 TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
@@ -293,29 +318,28 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
       HostContentSettingsMapFactory::GetForProfile(profile());
   CHECK(settings_map);
 
-  // Check no `SessionModel::NON_RESTORABLE_USER_SESSION` setting exists yet.
-  ASSERT_THAT(
-      settings_map->GetSettingsForOneType(
-          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-          content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION),
-      IsEmpty());
+  // Check no `SessionModel::DURABLE` setting with
+  // `decided_by_related_website_sets` exists yet.
+  ASSERT_THAT(settings_map->GetSettingsForOneType(
+                  ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
+                  content_settings::mojom::SessionModel::DURABLE),
+              Each(DecidedByRelatedWebsiteSets(false)));
 
   EXPECT_EQ(DecidePermissionSync(&permission_context, /*user_gesture=*/true,
                                  GetRequesterURL(), GetDummyEmbeddingUrl()),
-            CONTENT_SETTING_BLOCK);
+            PermissionStatus::DENIED);
   EXPECT_EQ(histogram_tester().GetBucketCount(
                 kRequestOutcomeHistogram,
                 TopLevelStorageAccessRequestOutcome::kDeniedByFirstPartySet),
             1);
 
-  // Check the `SessionModel::NON_RESTORABLE_USER_SESSION` settings.
-  // None were granted, and implicit denials are not currently persisted, which
-  // preserves the default `ASK` setting.
-  ASSERT_THAT(
-      settings_map->GetSettingsForOneType(
-          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-          content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION),
-      IsEmpty());
+  // Check the `SessionModel::DURABLE` setting with
+  // `decided_by_related_website_sets`. None were granted, and implicit denials
+  // are not currently persisted, which preserves the default `ASK` setting.
+  EXPECT_THAT(settings_map->GetSettingsForOneType(
+                  ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
+                  content_settings::mojom::SessionModel::DURABLE),
+              Each(DecidedByRelatedWebsiteSets(false)));
 }
 
 TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
@@ -327,32 +351,38 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
       HostContentSettingsMapFactory::GetForProfile(profile());
   CHECK(settings_map);
 
-  // Check no `SessionModel::NON_RESTORABLE_USER_SESSION` setting exists yet.
-  ASSERT_THAT(
-      settings_map->GetSettingsForOneType(
-          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-          content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION),
-      IsEmpty());
+  // Check no `SessionModel::DURABLE` setting with
+  // `decided_by_related_website_sets` exists yet.
+  ASSERT_THAT(settings_map->GetSettingsForOneType(
+                  ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
+                  content_settings::mojom::SessionModel::DURABLE),
+              Each(DecidedByRelatedWebsiteSets(false)));
 
   EXPECT_EQ(DecidePermissionSync(&permission_context, /*user_gesture=*/true,
                                  GetRequesterURL(), GetDummyEmbeddingUrl()),
-            CONTENT_SETTING_BLOCK);
+            PermissionStatus::DENIED);
 
-  // Check the `SessionModel::NON_RESTORABLE_USER_SESSION` settings.
-  // None were granted, and implicit denials are not currently persisted, which
-  // preserves the default `ASK` setting.
-  EXPECT_THAT(
-      settings_map->GetSettingsForOneType(
-          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-          content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION),
-      IsEmpty());
+  // Check the `SessionModel::DURABLE` setting with
+  // `decided_by_related_website_sets`. None were granted, and implicit denials
+  // are not currently persisted, which preserves the default `ASK` setting.
+  EXPECT_THAT(settings_map->GetSettingsForOneType(
+                  ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
+                  content_settings::mojom::SessionModel::DURABLE),
+              Each(DecidedByRelatedWebsiteSets(false)));
 
   // The permission denial should not be exposed via query. Note that the block
   // setting is not persisted anyway with the current implementation; this is a
   // forward-looking test.
-  EXPECT_EQ(PermissionStatus::ASK,
-            permission_context
-                .GetPermissionStatus(/*render_frame_host=*/nullptr,
-                                     GetRequesterURL(), GetDummyEmbeddingUrl())
-                .status);
+  EXPECT_EQ(
+      PermissionStatus::ASK,
+      permission_context
+          .GetPermissionStatus(
+              content::PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionType(
+                      permissions::PermissionUtil::
+                          ContentSettingsTypeToPermissionType(
+                              permission_context.content_settings_type())),
+              /*render_frame_host=*/nullptr, GetRequesterURL(),
+              GetDummyEmbeddingUrl())
+          .status);
 }

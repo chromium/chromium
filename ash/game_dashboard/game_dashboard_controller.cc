@@ -47,31 +47,22 @@ namespace {
 GameDashboardController* g_instance = nullptr;
 
 // List of known app IDs that are games.
-static const std::array<std::string, 7> kGameAppIdAllowList{
-    extension_misc::kGeForceNowAppId,   "iicceeckdelepgbcpojbgahbhnklpane",
-    "ojjlibnpojmhhabohpkclejfdblglkpj", "hhkmajjdndhdnkbmomodobajdjngeejb",
-    "gihmggjjlnjaldngedmnegjmhccccahg", "lbefcdhjbnilmnokeflglbaiaebadckd",
-    "bifaabbnnccaenolhjngemgmegdjflkg"};
-
-// List of additional game PWA app IDs that are being tested.
-// TODO(b/343400145): Move these PWA app IDs into `kGameAppIdAllowList` once
-// they have been fully evaluated and the `game-dashboard-game-pwas` flag is
-// removed.
-static const std::array<std::string, 13> kPWAGameAppIdAllowList{
-    extension_misc::kAmazonLunaAppIdCA,   extension_misc::kAmazonLunaAppIdDE,
-    extension_misc::kAmazonLunaAppIdES,   extension_misc::kAmazonLunaAppIdFR,
-    extension_misc::kAmazonLunaAppIdIT,   extension_misc::kAmazonLunaAppIdUK,
-    extension_misc::kAmazonLunaAppIdUS,   extension_misc::kBoosteroidAppId,
-    extension_misc::kCoolMathGamesAppId,  extension_misc::kNowGGAppIdUK,
-    extension_misc::kNowGGAppIdUS,        extension_misc::kPokiAppId,
+static const std::array<std::string, 19> kGameAppIdAllowList{
+    extension_misc::kGeForceNowAppId,     "iicceeckdelepgbcpojbgahbhnklpane",
+    "ojjlibnpojmhhabohpkclejfdblglkpj",   "hhkmajjdndhdnkbmomodobajdjngeejb",
+    "gihmggjjlnjaldngedmnegjmhccccahg",   "lbefcdhjbnilmnokeflglbaiaebadckd",
+    "bifaabbnnccaenolhjngemgmegdjflkg",   extension_misc::kAmazonLunaAppIdCA,
+    extension_misc::kAmazonLunaAppIdDE,   extension_misc::kAmazonLunaAppIdES,
+    extension_misc::kAmazonLunaAppIdFR,   extension_misc::kAmazonLunaAppIdIT,
+    extension_misc::kAmazonLunaAppIdNL,   extension_misc::kAmazonLunaAppIdPL,
+    extension_misc::kAmazonLunaAppIdUK,   extension_misc::kAmazonLunaAppIdUS,
+    extension_misc::kBoosteroidAppId,     extension_misc::kPokiAppId,
     extension_misc::kXboxCloudGamingAppId};
 
 // Checks whether the given `app_id` is allow listed to show the Game
 // Dashboard button.
 bool IsAppIdAllowListed(const std::string& app_id) {
-  return base::Contains(kGameAppIdAllowList, app_id) ||
-         (features::IsGameDashboardGamePWAsEnabled() &&
-          base::Contains(kPWAGameAppIdAllowList, app_id));
+  return base::Contains(kGameAppIdAllowList, app_id);
 }
 }  // namespace
 
@@ -216,10 +207,11 @@ void GameDashboardController::OnWindowTransformed(
     ui::PropertyChangeReason reason) {
   if (auto* context = GetGameDashboardContext(window);
       context && game_dashboard_utils::ShouldEnableFeatures()) {
-    // Enable the features if the window is not minimized or undergoing an
-    // animation. Otherwise, disable them.
+    // Enable if the transformation is from an animation AND the window is not
+    // minimized or fullscreen.
     const bool enable = (reason == ui::PropertyChangeReason::FROM_ANIMATION) &&
-                        !(WindowState::Get(window)->IsMinimized());
+                        !(WindowState::Get(window)->IsMinimized() ||
+                          WindowState::Get(window)->IsFullscreen());
     context->EnableFeatures(enable,
                             GameDashboardMainMenuToggleMethod::kAnimation);
   }
@@ -266,8 +258,13 @@ void GameDashboardController::OnDisplayTabletStateChanged(
     case display::TabletState::kInClamshellMode:
       // Cancel the tablet toast if it is still shown.
       Shell::Get()->toast_manager()->Cancel(game_dashboard::kTabletToastId);
-      MaybeEnableFeatures(/*enable=*/true,
-                          GameDashboardMainMenuToggleMethod::kTabletMode);
+      // Enable the Game Dashboard features if the display is not in Overview
+      // Mode.
+      OverviewController::Get()->InOverviewSession()
+          ? MaybeEnableFeatures(/*enable=*/false,
+                                GameDashboardMainMenuToggleMethod::kOverview)
+          : MaybeEnableFeatures(/*enable=*/true,
+                                GameDashboardMainMenuToggleMethod::kTabletMode);
       break;
     case display::TabletState::kEnteringTabletMode: {
       const int toast_text_id =

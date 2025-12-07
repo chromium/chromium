@@ -1,51 +1,232 @@
-    <style include="cr-shared-style cr-hidden-style settings-shared">
-      #noSearchResults {
-        margin-top: 80px;
-        text-align: center;
-      }
+<style include="cr-shared-style">
+  #noSearchResults {
+    margin-top: 80px;
+    text-align: center;
+  }
 
-      #noSearchResults div:first-child {
-        font-size: 123%;  /* Should be 16px when 100% is 13px. */
-        margin-bottom: 10px;
-      }
+  #noSearchResults div:first-child {
+    font-size: 123%;  /* Should be 16px when 100% is 13px. */
+    margin-bottom: 10px;
+  }
 
-      managed-footnote {
-        border-top: none;
-        /* margin-bottom is needed to compensate for the next element's 21px
-         * margin at the top and 8px padding at the top. This leaves a 12px
-         * padding between this element's content and the top of the next
-         * element's text. */
-        margin-bottom: calc(-21px - 8px);
-        padding-bottom: 16px;
-        padding-top: 12px;
-        /* The next element spills over this element. This ensures the link
-         * is clickable. */
-        position: relative;
-        z-index: 1;
-      }
-    </style>
-    <div id="noSearchResults" hidden$="[[!showNoResultsFound_]]">
-      <div>$i18n{searchNoResults}</div>
-      <div>$i18nRaw{searchNoResultsHelp}</div>
+  managed-footnote {
+    border-top: none;
+    /* margin-bottom is needed to compensate for the next element's 21px
+     * margin at the top and 8px padding at the top. This leaves a 12px
+     * padding between this element's content and the top of the next
+     * element's text. */
+    margin-bottom: calc(-21px - 8px);
+    padding-bottom: 16px;
+    padding-top: 12px;
+    /* The next element spills over this element. This ensures the link
+     * is clickable. */
+    position: relative;
+    z-index: 1;
+  }
+
+  cr-view-manager {
+    display: block;
+    position: relative;
+  }
+
+  cr-view-manager [hidden-by-search] {
+    display: none;
+  }
+</style>
+<div id="noSearchResults" hidden$="[[!showNoResultsFound_]]">
+  <div>$i18n{searchNoResults}</div>
+  <div>$i18nRaw{searchNoResultsHelp}</div>
+</div>
+<template is="dom-if" if="[[showManagedHeader_(inSearchMode_, lastRoute_)]]"
+    restamp>
+  <managed-footnote></managed-footnote>
+</template>
+
+<if expr="not is_chromeos">
+  <template is="dom-if" if="[[showPage_(pageVisibility_.languages)]]">
+    <settings-languages languages="{{languages_}}" prefs="{{prefs}}">
+    </settings-languages>
+  </template>
+</if>
+
+<template is="dom-if" if="[[showResetProfileBanner_]]" restamp>
+  <settings-reset-profile-banner on-close="onResetProfileBannerClose_">
+  </settings-reset-profile-banner>
+</template>
+
+<cr-view-manager id="switcher"
+    show-all$="[[shouldShowAll_(inSearchMode_, lastRoute_)]]">
+  <template is="dom-if" if="[[showPage_(pageVisibility_.people)]]">
+    <div slot="view" id="people">
+      <template is="dom-if" if="[[renderPlugin_(
+          routes_.PEOPLE, lastRoute_, inSearchMode_)]]">
+        <settings-people-page-index prefs="{{prefs}}"
+            in-search-mode="[[inSearchMode_]]">
+        </settings-people-page-index>
+      </template>
     </div>
-    <template is="dom-if"
-        if="[[showManagedHeader_(inSearchMode_, showingSubpage_,
-        showPages_.about)]]" restamp>
-      <managed-footnote></managed-footnote>
-    </template>
-    <template is="dom-if" if="[[showPages_.settings]]">
-      <settings-basic-page
-          class="cr-centered-card-container"
-          prefs="{{prefs}}"
-          page-visibility="[[pageVisibility]]"
-          on-subpage-expand="onShowingSubpage_"
-          on-showing-main-page="onShowingMainPage_"
+  </template>
+
+  <template is="dom-if" if="[[showPage_(pageVisibility_.privacy)]]">
+    <div slot="view" id="privacy">
+      <template is="dom-if" if="[[renderPlugin_(
+          routes_.PRIVACY, lastRoute_, inSearchMode_)]]">
+        <settings-privacy-page-index prefs="{{prefs}}"
+            in-search-mode="[[inSearchMode_]]">
+        </settings-privacy-page-index>
+      </template>
+    </div>
+  </template>
+
+  <template is="dom-if" if="[[showAutofillPage_(pageVisibility_.autofill)]]">
+    <div slot="view" id="autofill">
+      <template is="dom-if" if="[[renderPlugin_(
+          routes_.AUTOFILL, lastRoute_, inSearchMode_)]]">
+        <settings-autofill-page-index prefs="{{prefs}}"
+            in-search-mode="[[inSearchMode_]]">
+        </settings-autofill-page-index>
+      </template>
+    </div>
+  </template>
+
+  <template is="dom-if" if="[[showYourSavedInfoPage_(
+      pageVisibility_.yourSavedInfo)]]">
+    <div slot="view" id="yourSavedInfo">
+      <template is="dom-if" if="[[renderPlugin_(
+          routes_.YOUR_SAVED_INFO, lastRoute_, inSearchMode_)]]">
+        <settings-your-saved-info-page-index prefs="{{prefs}}"
+            in-search-mode="[[inSearchMode_]]">
+        </settings-your-saved-info-page-index>
+      </template>
+    </div>
+  </template>
+
+  <template is="dom-if" if="[[showPage_(pageVisibility_.performance)]]">
+    <div slot="view" id="performance">
+      <template is="dom-if" if="[[renderPlugin_(
+          routes_.PERFORMANCE, lastRoute_, inSearchMode_)]]">
+        <settings-performance-page-index prefs="{{prefs}}"
+            in-search-mode="[[inSearchMode_]]">
+        </settings-performance-page-index>
+      </template>
+    </div>
+  </template>
+
+  <template is="dom-if" if="[[showAiPage_(pageVisibility_.ai)]]">
+    <div slot="view" id="ai">
+      <template is="dom-if" if="[[renderPlugin_(
+          routes_.AI, lastRoute_, inSearchMode_)]]">
+        <settings-ai-page-index prefs="{{prefs}}"
+            in-search-mode="[[inSearchMode_]]">
+        </settings-ai-page-index>
+      </template>
+    </div>
+  </template>
+
+  <template is="dom-if" if="[[showPage_(pageVisibility_.appearance)]]">
+    <div slot="view" id="appearance">
+      <template is="dom-if" if="[[renderPlugin_(
+          routes_.APPEARANCE, lastRoute_, inSearchMode_)]]">
+        <settings-appearance-page-index prefs="{{prefs}}"
+            in-search-mode="[[inSearchMode_]]">
+        </settings-appearance-page-index>
+      </template>
+    </div>
+  </template>
+
+  <div slot="view" id="search">
+    <template is="dom-if" if="[[renderPlugin_(
+        routes_.SEARCH, lastRoute_, inSearchMode_)]]">
+      <settings-search-page-index prefs="{{prefs}}"
           in-search-mode="[[inSearchMode_]]">
-      </settings-basic-page>
+      </settings-search-page-index>
     </template>
-    <template is="dom-if" if="[[showPages_.about]]">
-      <settings-about-page role="main"
-          class="cr-centered-card-container"
+  </div>
+
+<if expr="not is_chromeos">
+  <template is="dom-if" if="[[showPage_(pageVisibility_.defaultBrowser)]]">
+    <div slot="view" id="defaultBrowser">
+      <template is="dom-if" if="[[renderPlugin_(
+          routes_.DEFAULT_BROWSER, lastRoute_, inSearchMode_)]]">
+        <settings-default-browser-page></settings-default-browser-page>
+      </template>
+    </div>
+  </template>
+</if>
+
+  <template is="dom-if" if="[[showPage_(pageVisibility_.onStartup)]]">
+    <div slot="view" id="onStartup">
+      <template is="dom-if" if="[[renderPlugin_(
+          routes_.ON_STARTUP, lastRoute_, inSearchMode_)]]">
+        <settings-on-startup-page prefs="{{prefs}}">
+        </settings-on-startup-page>
+      </template>
+    </div>
+  </template>
+
+  <template is="dom-if" if="[[showPage_(pageVisibility_.languages)]]">
+    <div slot="view" id="languages">
+      <template is="dom-if" if="[[renderPlugin_(
+          routes_.LANGUAGES, lastRoute_, inSearchMode_)]]">
+<if expr="is_chromeos">
+        <settings-languages-page-index-cros>
+        </settings-languages-page-index-cros>
+</if>
+<if expr="not is_chromeos">
+        <settings-languages-page-index prefs="{{prefs}}"
+            languages="[[languages_]]" in-search-mode="[[inSearchMode_]]">
+        </settings-languages-page-index>
+</if>
+      </template>
+    </div>
+  </template>
+
+  <template is="dom-if" if="[[showPage_(pageVisibility_.downloads)]]">
+    <div slot="view" id="downloads">
+      <template is="dom-if" if="[[renderPlugin_(
+          routes_.DOWNLOADS, lastRoute_, inSearchMode_)]]">
+        <settings-downloads-page prefs="{{prefs}}"></settings-downloads-page>
+      </template>
+    </div>
+  </template>
+
+  <template is="dom-if" if="[[showPage_(pageVisibility_.a11y)]]">
+    <div slot="view" id="a11y">
+      <template is="dom-if" if="[[renderPlugin_(
+          routes_.ACCESSIBILITY, lastRoute_, inSearchMode_)]]">
+        <settings-a11y-page-index prefs="{{prefs}}"
+            in-search-mode="[[inSearchMode_]]">
+        </settings-a11y-page-index>
+      </template>
+    </div>
+  </template>
+
+<if expr="not is_chromeos">
+  <template is="dom-if" if="[[showPage_(pageVisibility_.system)]]">
+    <div slot="view" id="system">
+      <template is="dom-if" if="[[renderPlugin_(
+          routes_.SYSTEM, lastRoute_, inSearchMode_)]]">
+        <settings-system-page prefs="{{prefs}}"></settings-system-page>
+      </template>
+    </div>
+  </template>
+</if>
+
+  <template is="dom-if" if="[[showPage_(pageVisibility_.reset)]]">
+    <div slot="view" id="reset">
+      <template is="dom-if" if="[[renderPlugin_(
+          routes_.RESET, lastRoute_, inSearchMode_)]]">
+        <settings-reset-page></settings-reset-page>
+      </template>
+    </div>
+  </template>
+
+  <div slot="view" id="about">
+    <template is="dom-if" if="[[renderPlugin_(
+        routes_.ABOUT, lastRoute_, inSearchMode_)]]">
+      <settings-about-page role="main" class="cr-centered-card-container"
           prefs="{{prefs}}">
       </settings-about-page>
     </template>
+  </div>
+</cr-view-manager>

@@ -21,18 +21,25 @@
 namespace viz {
 
 // OverlayProcessor subclass that attempts to promote to overlay all the draw
-// quads of the root render pass. This is currently only used by LaCros.
+// quads of the root render pass. This was only used by LaCros.
 // TODO(petermcneeley): This class and its Apple equivalent(s) will eventually
 // be refactored in merged together into a unified delegation processor.
 // Delegation will just become an extended feature of ozone and we avoid/push
 // down platform specific defines and files where possible.
+//
+// TODO(crbug.com/375523817): consider either merging that with
+// OverlayProcessorOzone or completely remove it.
 class VIZ_SERVICE_EXPORT OverlayProcessorDelegated
     : public OverlayProcessorOzone {
  public:
+  // TODO(crbug.com/444264038): Delete this declaration when the RPDQ refactor
+  // is finished. Need to avoid hiding the base class' overload.
+  using OverlayProcessorInterface::ProcessForOverlays;
+
   OverlayProcessorDelegated(
       std::unique_ptr<ui::OverlayCandidatesOzone> overlay_candidates,
       std::vector<OverlayStrategy> available_strategies,
-      gpu::SharedImageInterface* shared_image_interface);
+      std::unique_ptr<PixmapProvider> pixmap_provider);
   OverlayProcessorDelegated(const OverlayProcessorDelegated&) = delete;
   OverlayProcessorDelegated& operator=(const OverlayProcessorDelegated&) =
       delete;
@@ -47,26 +54,16 @@ class VIZ_SERVICE_EXPORT OverlayProcessorDelegated
       const FilterOperationsMap& render_pass_filters,
       const FilterOperationsMap& render_pass_backdrop_filters,
       SurfaceDamageRectList surface_damage_rect_list,
-      OutputSurfaceOverlayPlane* output_surface_plane,
+      std::optional<OverlayCandidate>& primary_plane,
       CandidateList* overlay_candidates,
       gfx::Rect* damage_rect,
       std::vector<gfx::Rect>* content_bounds) final;
-
-  // This function takes a pointer to the std::optional instance so the
-  // instance can be reset. When the overlay strategy covers the entire output
-  // surface, we no longer need the output surface as a separate overlay. This
-  // is also used by SurfaceControl to adjust rotation.
-  // TODO(weiliangc): Internalize the |output_surface_plane| inside the overlay
-  // processor.
-  void AdjustOutputSurfaceOverlay(
-      std::optional<OutputSurfaceOverlayPlane>* output_surface_plane) override;
 
   gfx::RectF GetUnassignedDamage() const override;
 
  private:
   gfx::RectF GetPrimaryPlaneDisplayRect(
-      const OverlayProcessorInterface::OutputSurfaceOverlayPlane*
-          primary_plane);
+      const std::optional<OverlayCandidate>& primary_plane);
   // Iterate through a list of strategies and attempt to overlay with each.
   // Returns true if one of the attempts is successful. Has to be called after
   // InitializeStrategies(). A |primary_plane| represents the output surface's
@@ -82,7 +79,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorDelegated
       const DisplayResourceProvider* resource_provider,
       AggregatedRenderPassList* render_pass_list,
       SurfaceDamageRectList* surface_damage_rect_list,
-      OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
+      std::optional<OverlayCandidate>& primary_plane,
       OverlayCandidateList* candidates,
       std::vector<gfx::Rect>* content_bounds);
 
@@ -95,11 +92,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorDelegated
   bool BlockForCopyRequests(const AggregatedRenderPassList* render_pass_list);
 
   DelegationStatus delegated_status_ = DelegationStatus::kCompositedOther;
-  bool supports_clip_rect_ = false;
-  bool supports_out_of_window_clip_rect_ = false;
   bool needs_background_image_ = false;
-  bool supports_affine_transform_ = false;
-  bool has_transformation_fix_ = false;
   gfx::RectF unassigned_damage_;
   // Used to count the number of frames we should wait until allowing delegation
   // again.

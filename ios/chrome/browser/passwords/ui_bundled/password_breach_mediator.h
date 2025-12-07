@@ -2,16 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_PASSWORDS_PASSWORD_BREACH_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_UI_PASSWORDS_PASSWORD_BREACH_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_PASSWORDS_UI_BUNDLED_PASSWORD_BREACH_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_PASSWORDS_UI_BUNDLED_PASSWORD_BREACH_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
 
-#include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
-#include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#import "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
-@protocol ApplicationCommands;
+namespace password_manager::metrics_util {
+class LeakDialogMetricsRecorder;
+}
+
+class AuthenticationService;
 @protocol PasswordBreachConsumer;
 @protocol PasswordBreachPresenter;
 
@@ -19,13 +22,15 @@
 @interface PasswordBreachMediator : NSObject <ConfirmationAlertActionHandler>
 
 - (instancetype)
-    initWithConsumer:(id<PasswordBreachConsumer>)consumer
-           presenter:(id<PasswordBreachPresenter>)presenter
-    metrics_recorder:
-        (std::unique_ptr<
-            password_manager::metrics_util::LeakDialogMetricsRecorder>)
-            metrics_recorder
-            leakType:(password_manager::CredentialLeakType)leakType;
+         initWithConsumer:(id<PasswordBreachConsumer>)consumer
+                presenter:(id<PasswordBreachPresenter>)presenter
+         metrics_recorder:
+             (std::unique_ptr<
+                 password_manager::metrics_util::LeakDialogMetricsRecorder>)
+                 metrics_recorder
+                 leakType:(password_manager::CredentialLeakType)leakType
+    authenticationService:(AuthenticationService*)authenticationService
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -37,4 +42,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_PASSWORDS_PASSWORD_BREACH_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_PASSWORDS_UI_BUNDLED_PASSWORD_BREACH_MEDIATOR_H_

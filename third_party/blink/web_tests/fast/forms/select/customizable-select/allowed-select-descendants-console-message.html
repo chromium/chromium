@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:ansollan@microsoft.com">
+<link rel=help href="https://issues.chromium.org/issues/347890366">
+
+<style>
+  select, ::picker(select) {
+    appearance: base-select;
+  }
+</style>
+
+<!-- None of these <select>s should print a console message. -->
+
+<!-- Direct children of <select>: -->
+  <!-- <button> -->
+  <select>
+    <button>..</button>
+  </select>
+
+  <select>
+    <button>button</button>
+    <option>..</option>
+  </select>
+
+  <!-- <option> -->
+  <select>
+    <option>..</option>
+    <option>..</option>
+  </select>
+
+  <!-- <optgroup> -->
+  <select>
+    <optgroup>
+      <option>..</option>
+    </optgroup>
+  </select>
+
+  <!-- <hr /> and <optgroup> children -->
+  <select>
+    <option>..</option>
+    <hr />
+    <optgroup>
+      <option>..</option>
+    </optgroup>
+    <hr />
+  </select>
+
+  <!-- <div> -->
+  <select>
+    <div>
+    </div>
+  </select>
+
+  <!-- <div> with <option> children -->
+  <select>
+    <div>
+      <option>..</option>
+      <option>..</option>
+    </div>
+  </select>
+
+  <!-- Nested <div>s -->
+  <select>
+    <div>
+      <div>
+        <div>
+          <option>..</option>
+          <option>..</option>
+        </div>
+      </div>
+    </div>
+  </select>
+
+  <!-- <span> -->
+  <select>
+    <span>
+    </span>
+  </select>
+
+  <!-- <span> with <option> children -->
+  <select>
+    <span>
+      <option>..</option>
+      <option>..</option>
+    </span>
+  </select>
+
+  <!-- Nested <span>s -->
+  <select>
+    <span>
+      <span>
+        <span>
+          <option>..</option>
+          <option>..</option>
+        </span>
+      </span>
+    </span>
+  </select>
+
+  <!-- Custom element -->
+  <script>
+    class CustomElement extends HTMLElement {
+        constructor() {
+            super();
+        }
+    }
+    customElements.define('custom-element', CustomElement);
+  </script>
+
+  <select>
+    <custom-element></custom-element>
+  </select>
+
+  <!-- Custom element with <option> children -->
+  <select>
+    <custom-element>
+      <option>..</option>
+      <option>..</option>
+    </custom-element>
+  </select>
+
+  <!-- Nested custom elements -->
+  <select>
+    <custom-element>
+      <custom-element>
+        <custom-element>
+          <option>..</option>
+          <option>..</option>
+        </custom-element>
+      </custom-element>
+    </custom-element>
+  </select>
+
+  <!-- <noscript> -->
+  <select>
+    <noscript>
+    </noscript>
+  </select>
+
+  <!-- <script>-supporting elements -->
+  <select>
+    <template>
+    </template>
+    <script>
+    </script>
+  </select>
+
+  <select>
+    <template>
+      <div>
+        <option>JavaScript is disabled</option>
+        <optgroup>
+          <option>1</option>
+        </optgroup>
+      </div>
+    </template>
+    <script>
+      console.log("<script> element");
+    </script>
+  </select>
+
+<!-- Direct children of <button>: -->
+  <!-- <selectedcontent> -->
+  <select>
+    <button>
+      <selectedcontent></selectedcontent>
+    </button>
+  </select>
+
+  <!-- <selectedcontent> and text -->
+  <select>
+    <button>
+      button
+      <selectedcontent></selectedcontent>
+    </button>
+    <option>..</option>
+  </select>
+
+  <!-- <selectedcontent> as descendant of <div>, <span>, custom element -->
+  <select>
+    <button>
+      <div>
+        <selectedcontent></selectedcontent>
+      </div>
+    </button>
+  </select>
+
+  <select>
+    <button>
+      <span>
+        <selectedcontent></selectedcontent>
+      </span>
+    </button>
+  </select>
+
+  <select>
+    <button>
+      <custom-element>
+        <selectedcontent></selectedcontent>
+      </custom-element>
+    </button>
+  </select>
+
+  <!-- Allowed phrasing content as descendant of <button> and <div> -->
+  <select>
+    <button>
+      <div>
+        <small>Text</small>
+      </div>
+      <small>Text</small>
+    </button>
+  </select>
+
+  <select>
+    <button>
+      <selectedcontent></selectedcontent>
+      <svg width="100" height="100">
+        <circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red" />
+      </svg>
+    </button>
+  </select>
+
+  <!-- <selectedcontent> and <option> content with multiple levels of children -->
+  <select>
+    <button>
+      <selectedcontent></selectedcontent>
+    </button>
+    <option>
+      <span>
+        <svg width="100" height="100">
+          <circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red" />
+        </svg>
+        <span>..</span>
+      </span>
+      <div>
+        <svg width="100" height="100">
+          <circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red" />
+        </svg>
+        <div>..</div>
+      </div>
+    </option>
+  </select>
+
+<!-- Direct children of <optgroup>: -->
+  <!-- <option> -->
+  <select>
+    <optgroup>
+      <option>..</option>
+      <option>..</option>
+    </optgroup>
+    <optgroup>
+      <option>1</option>
+      <option>2</option>
+    </optgroup>
+  </select>
+
+  <!-- <div> -->
+  <select>
+    <optgroup>
+      <div>
+        <option>..</option>
+        <option>..</option>
+      </div>
+    </optgroup>
+  </select>
+
+  <!-- Nested <div>s -->
+  <select>
+    <optgroup>
+      <div>
+        <div>
+          <div>
+            <option>..</option>
+            <option>..</option>
+          </div>
+        </div>
+      </div>
+    </optgroup>
+  </select>
+
+  <!-- <span> -->
+  <select>
+    <optgroup>
+      <span>
+        <option>..</option>
+        <option>..</option>
+      </span>
+    </optgroup>
+  </select>
+
+  <!-- Nested <span>s -->
+  <select>
+    <optgroup>
+      <span>
+        <span>
+          <span>
+            <option>..</option>
+            <option>..</option>
+          </span>
+        </span>
+      </span>
+    </optgroup>
+  </select>
+
+  <!-- Custom element -->
+  <select>
+    <optgroup>
+      <custom-element>
+        <option>..</option>
+        <option>..</option>
+      </custom-element>
+    </optgroup>
+  </select>
+  
+  <!-- Nested custom elements -->
+  <select>
+    <optgroup>
+      <custom-element>
+        <custom-element>
+          <custom-element>
+            <option>..</option>
+            <option>..</option>
+          </custom-element>
+        </custom-element>
+      </custom-element>
+    </optgroup>
+  </select>
+
+  <!-- <noscript> -->
+  <select>
+    <optgroup>
+      <noscript></noscript>
+    </optgroup>
+  </select>
+
+  <!-- <script>-supporting elements -->
+  <select>
+    <optgroup>
+      <template>
+        <div>
+          <option>..</option>
+          <option>..</option>
+        </div>
+      </template>
+      <script>
+        console.log("<script> element");
+      </script>
+    </optgroup>
+  </select>
+
+<!-- Direct children of <option>: -->
+  <!-- <svg> and <img> -->
+  <select>
+    <option>
+      <svg width="100" height="100">
+        <circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red" />
+      </svg>
+    </option>
+    <option>
+      <img />
+    </option>
+  </select>
+
+  <!-- Phrasing content -->
+  <select>
+    <option><b>One</b></option>
+  </select>
+
+  <select>
+    <option id="empty-option-one"></option>
+    <option id="empty-option-two"></option>
+  </select>
+
+<script>
+  const b1 = document.createElement('b');
+  // Appending a <b> element before a text node.
+  document.getElementById('empty-option-one').appendChild(b1);
+  b1.appendChild(document.createTextNode('One'));
+
+  const b2 = document.createElement('b');
+  // Appending a text node before a <b> element.
+  b2.appendChild(document.createTextNode('Two'));
+  document.getElementById('empty-option-two').appendChild(b2);
+</script>
+
+  <!-- <div> -->
+  <select>
+    <option>
+      <div></div>
+    </option>
+  </select>
+
+  <select>
+    <div>
+      <option>
+        <div>some text</div>
+      </option>
+    </div>
+  </select>
+
+  <!-- Nested <div>s -->
+  <select>
+    <option>
+      <div>
+        <div>
+          ..
+        </div>
+      </div>
+    </option>
+  </select>
+
+  <!-- <span> -->
+  <select>
+    <option>
+      <span>..</span>
+    </option>
+    <option>
+      <span>..</span>
+    </option>
+  </select>
+
+  <!-- Nested <span>s -->
+  <select>
+    <option>
+      <span>
+        <span>..</span>
+      </span>
+    </option>
+  </select>
+
+  <!-- Custom element -->
+    <select>
+      <option>
+        <custom-element></custom-element>
+      </option>
+      <option>
+        <custom-element></custom-element>
+      </option>
+    </select>
+  
+    <!-- Nested custom elements -->
+    <select>
+      <option>
+        <custom-element>
+          <custom-element></custom-element>
+        </custom-element>
+      </option>
+    </select>
+
+  <!-- <noscript> -->
+  <select>
+    <option>
+      <noscript></noscript>
+    </option>
+  </select>
+
+  <!-- <script>-supporting elements -->
+  <select>
+    <option>
+      <template>
+        <span>A</span>
+      </template>
+      <script>
+        console.log("<script> element");
+      </script>
+    </option>
+  </select>
+
+  <!-- Comments -->
+  <select>
+    <!-- 1 -->
+    <optgroup>
+      <!-- 2 -->
+      <option>
+        <!-- 3 -->
+        ..
+      </option>
+    </optgroup>
+  </select>
+
+<script>
+testRunner.dumpAsText();
+</script>

@@ -292,7 +292,7 @@ void MaybeAddTopaz(bool report_full_names, std::vector<AvProduct>* products) {
     return;
 
   // Old versions are under the 'Diebold' directory.
-  const base::FilePath::StringPieceType kPossibleInstallPaths[] = {
+  const base::FilePath::StringViewType kPossibleInstallPaths[] = {
       FILE_PATH_LITERAL("Topaz OFD"), FILE_PATH_LITERAL("Diebold")};
 
   for (const auto install_path : kPossibleInstallPaths) {

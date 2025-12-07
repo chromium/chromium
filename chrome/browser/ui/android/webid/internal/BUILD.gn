@@ -33,12 +33,14 @@ android_library("java") {
     "//components/embedder_support/android:util_java",
     "//components/favicon/android:java",
     "//components/image_fetcher:java",
+    "//components/ukm/android:java",
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_full_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_browser_browser_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/blink/public/mojom:mojom_platform_java",
     "//third_party/jni_zero:jni_zero_java",
@@ -46,7 +48,11 @@ android_library("java") {
     "//url:gurl_java",
   ]
 
-  srcjar_deps = [ ":jni" ]
+  srcjar_deps = [
+    ":java_enum_srcjar",
+    ":jni",
+  ]
+
   sources = [
     "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionBottomSheetContent.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionBridge.java",
@@ -54,6 +60,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionMediator.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionProperties.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionViewBinder.java",
+    "java/src/org/chromium/chrome/browser/ui/android/webid/ExpandOnFocusAccessibilityDelegate.java",
   ]
 
   resources_package = "org.chromium.chrome.browser.ui.android.webid"
@@ -68,17 +75,20 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable/arrow_range.xml",
     "java/res/layout/account_selection_account_item.xml",
-    "java/res/layout/account_selection_add_account_button.xml",
+    "java/res/layout/account_selection_active_mode_account_chip.xml",
+    "java/res/layout/account_selection_active_mode_account_item.xml",
+    "java/res/layout/account_selection_active_mode_add_account_button.xml",
+    "java/res/layout/account_selection_active_mode_add_account_row_item.xml",
+    "java/res/layout/account_selection_active_mode_continue_button.xml",
+    "java/res/layout/account_selection_active_mode_data_sharing_consent_item.xml",
+    "java/res/layout/account_selection_active_mode_header_item.xml",
+    "java/res/layout/account_selection_active_mode_sheet.xml",
     "java/res/layout/account_selection_add_account_row_item.xml",
-    "java/res/layout/account_selection_button_mode_account_chip.xml",
-    "java/res/layout/account_selection_button_mode_account_item.xml",
-    "java/res/layout/account_selection_button_mode_continue_button.xml",
-    "java/res/layout/account_selection_button_mode_data_sharing_consent_item.xml",
-    "java/res/layout/account_selection_button_mode_header_item.xml",
-    "java/res/layout/account_selection_button_mode_sheet.xml",
+    "java/res/layout/account_selection_add_account_row_item.xml",
     "java/res/layout/account_selection_continue_button.xml",
     "java/res/layout/account_selection_data_sharing_consent_item.xml",
     "java/res/layout/account_selection_header_item.xml",
+    "java/res/layout/account_selection_login_buttons_start_separator.xml",
     "java/res/layout/account_selection_sheet.xml",
     "java/res/layout/error_description_text_item.xml",
     "java/res/layout/error_summary_text_item.xml",
@@ -149,13 +159,14 @@ android_library("javatests") {
 
     # TODO(majidvp): Remove this dependency after test clean up. https://crbug.com/1214820
     "//chrome/android:chrome_java",
-    "//chrome/android:chrome_test_java",
+    "//chrome/android/javatests:chrome_test_java_helper",
     "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/webid:public_java",
     "//chrome/browser/webid:java",
     "//chrome/test/android:chrome_java_integration_test_support",
+    "//chrome/test/android:chrome_java_transit",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/bottomsheet/android/test:java",
     "//components/image_fetcher:java",
@@ -177,4 +188,8 @@ android_library("javatests") {
     "//url:gurl_java",
     "//url:gurl_junit_test_support",
   ]
+}
+
+java_cpp_enum("java_enum_srcjar") {
+  sources = [ "//chrome/browser/ui/webid/identity_ui_utils.h" ]
 }

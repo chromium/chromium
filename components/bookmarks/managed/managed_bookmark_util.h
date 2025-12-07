@@ -10,11 +10,11 @@ namespace bookmarks {
 class BookmarkPermanentNode;
 class ManagedBookmarkService;
 
-// Returns whether |node| is a permanent node.
+// Returns whether `node` is a permanent node.
 bool IsPermanentNode(const BookmarkPermanentNode* node,
                      ManagedBookmarkService* managed_bookmark_service);
 
-// Returns whether |node| is a managed node.
+// Returns whether `node` is a managed node.
 bool IsManagedNode(const BookmarkPermanentNode* node,
                    ManagedBookmarkService* managed_bookmark_service);
 

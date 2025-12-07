@@ -17,8 +17,6 @@
 #include "components/soda/constants.h"
 #include "components/update_client/update_client.h"
 
-class PrefService;
-
 namespace base {
 class FilePath;
 }  // namespace base
@@ -30,7 +28,6 @@ class SodaLanguagePackComponentInstallerPolicy
  public:
   SodaLanguagePackComponentInstallerPolicy(
       speech::SodaLanguagePackComponentConfig language_config,
-      PrefService* prefs,
       OnSodaLanguagePackComponentReadyCallback on_ready_callback);
   ~SodaLanguagePackComponentInstallerPolicy() override;
 
@@ -67,14 +64,12 @@ class SodaLanguagePackComponentInstallerPolicy
 
   speech::SodaLanguagePackComponentConfig language_config_;
 
-  raw_ptr<PrefService> prefs_;
   OnSodaLanguagePackComponentReadyCallback on_ready_callback_;
 };
 
 void RegisterSodaLanguagePackComponent(
     speech::SodaLanguagePackComponentConfig language_config,
     ComponentUpdateService* cus,
-    PrefService* prefs,
     OnSodaLanguagePackComponentReadyCallback on_ready_callback);
 
 }  // namespace component_updater

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "android_webview/browser/aw_contents_statics.h"
+
 #include "android_webview/browser/aw_browser_process.h"
 #include "android_webview/browser/aw_content_browser_client.h"
 #include "android_webview/browser/aw_contents.h"
@@ -14,11 +16,11 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "components/flags_ui/flags_ui_metrics.h"
 #include "components/google/core/common/google_util.h"
 #include "components/security_interstitials/core/urls.h"
 #include "components/variations/variations_ids_provider.h"
 #include "components/version_info/version_info.h"
+#include "components/webui/flags/flags_ui_metrics.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
@@ -31,7 +33,6 @@
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
@@ -40,6 +41,9 @@ using content::BrowserThread;
 namespace android_webview {
 
 namespace {
+
+RendererLibraryPrefetchMode g_renderer_library_prefetch_mode =
+    RendererLibraryPrefetchMode::kDefault;
 
 void ClientCertificatesCleared(const JavaRef<jobject>& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -61,9 +65,24 @@ void SafeBrowsingAllowlistAssigned(const JavaRef<jobject>& callback,
 
 }  // namespace
 
+net::SocketTag GetDefaultSocketTag() {
+  JNIEnv* env = AttachCurrentThread();
+  uid_t uid = Java_AwContentsStatics_getDefaultTrafficStatsUid(env);
+  int32_t tag = Java_AwContentsStatics_getDefaultTrafficStatsTag(env);
+  return net::SocketTag(uid, tag);
+}
+
+void SetRendererLibraryPrefetchMode(RendererLibraryPrefetchMode mode) {
+  g_renderer_library_prefetch_mode = mode;
+}
+
+RendererLibraryPrefetchMode GetRendererLibraryPrefetchMode() {
+  return g_renderer_library_prefetch_mode;
+}
+
 // static
-ScopedJavaLocalRef<jstring>
-JNI_AwContentsStatics_GetSafeBrowsingPrivacyPolicyUrl(JNIEnv* env) {
+static std::string JNI_AwContentsStatics_GetSafeBrowsingPrivacyPolicyUrl(
+    JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   GURL privacy_policy_url(
       security_interstitials::kSafeBrowsingPrivacyPolicyUrl);
@@ -71,13 +90,13 @@ JNI_AwContentsStatics_GetSafeBrowsingPrivacyPolicyUrl(JNIEnv* env) {
       AwBrowserProcess::GetInstance()->GetSafeBrowsingUIManager()->app_locale();
   privacy_policy_url =
       google_util::AppendGoogleLocaleParam(privacy_policy_url, locale);
-  return base::android::ConvertUTF8ToJavaString(env, privacy_policy_url.spec());
+  return privacy_policy_url.spec();
 }
 
 // static
-void JNI_AwContentsStatics_ClearClientCertPreferences(
+static void JNI_AwContentsStatics_ClearClientCertPreferences(
     JNIEnv* env,
-    const JavaParamRef<jobject>& callback) {
+    const JavaRef<jobject>& callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::GetIOThreadTaskRunner({})->PostTaskAndReply(
       FROM_HERE, base::BindOnce(&NotifyClientCertificatesChanged),
@@ -86,24 +105,22 @@ void JNI_AwContentsStatics_ClearClientCertPreferences(
 }
 
 // static
-ScopedJavaLocalRef<jstring> JNI_AwContentsStatics_GetUnreachableWebDataUrl(
-    JNIEnv* env) {
-  return base::android::ConvertUTF8ToJavaString(
-      env, content::kUnreachableWebDataURL);
+static std::string JNI_AwContentsStatics_GetUnreachableWebDataUrl(JNIEnv* env) {
+  return content::kUnreachableWebDataURL;
 }
 
 // static
-ScopedJavaLocalRef<jstring> JNI_AwContentsStatics_GetProductVersion(
+static ScopedJavaLocalRef<jstring> JNI_AwContentsStatics_GetProductVersion(
     JNIEnv* env) {
   return base::android::ConvertUTF8ToJavaString(
       env, version_info::GetVersionNumber());
 }
 
 // static
-void JNI_AwContentsStatics_SetSafeBrowsingAllowlist(
+static void JNI_AwContentsStatics_SetSafeBrowsingAllowlist(
     JNIEnv* env,
-    const JavaParamRef<jobjectArray>& jrules,
-    const JavaParamRef<jobject>& callback) {
+    const JavaRef<jobjectArray>& jrules,
+    const JavaRef<jobject>& callback) {
   std::vector<std::string> rules;
   base::android::AppendJavaStringArrayToStringVector(env, jrules, &rules);
   AwSafeBrowsingAllowlistManager* allowlist_manager =
@@ -115,14 +132,14 @@ void JNI_AwContentsStatics_SetSafeBrowsingAllowlist(
 }
 
 // static
-void JNI_AwContentsStatics_SetCheckClearTextPermitted(
+static void JNI_AwContentsStatics_SetCheckClearTextPermitted(
     JNIEnv* env,
     jboolean permitted) {
   AwContentBrowserClient::set_check_cleartext_permitted(permitted);
 }
 
 // static
-void JNI_AwContentsStatics_LogCommandLineForDebugging(JNIEnv* env) {
+static void JNI_AwContentsStatics_LogCommandLineForDebugging(JNIEnv* env) {
   // Note: this should only be called for debugging purposes, since this is
   // *very* spammy.
   const base::CommandLine& command_line =
@@ -135,10 +152,10 @@ void JNI_AwContentsStatics_LogCommandLineForDebugging(JNIEnv* env) {
 }
 
 // static
-void JNI_AwContentsStatics_LogFlagMetrics(
+static void JNI_AwContentsStatics_LogFlagMetrics(
     JNIEnv* env,
-    const JavaParamRef<jobjectArray>& jswitches,
-    const JavaParamRef<jobjectArray>& jfeatures) {
+    const JavaRef<jobjectArray>& jswitches,
+    const JavaRef<jobjectArray>& jfeatures) {
   std::set<std::string> switches;
   for (const auto& jswitch : jswitches.ReadElements<jstring>()) {
     switches.insert(ConvertJavaStringToUTF8(jswitch));
@@ -154,22 +171,43 @@ void JNI_AwContentsStatics_LogFlagMetrics(
 }
 
 // static
-jboolean JNI_AwContentsStatics_IsMultiProcessEnabled(JNIEnv* env) {
+static jboolean JNI_AwContentsStatics_IsMultiProcessEnabled(JNIEnv* env) {
   return !content::RenderProcessHost::run_renderer_in_process();
 }
 
 // static
-ScopedJavaLocalRef<jstring> JNI_AwContentsStatics_GetVariationsHeader(
-    JNIEnv* env) {
+static std::string JNI_AwContentsStatics_GetVariationsHeader(JNIEnv* env) {
   const bool is_signed_in = false;
   auto headers =
       variations::VariationsIdsProvider::GetInstance()->GetClientDataHeaders(
           is_signed_in);
   if (!headers)
-    return base::android::ConvertUTF8ToJavaString(env, "");
-  return base::android::ConvertUTF8ToJavaString(
-      env,
-      headers->headers_map.at(variations::mojom::GoogleWebVisibility::ANY));
+    return "";
+  return headers->headers_map.at(variations::mojom::GoogleWebVisibility::ANY);
+}
+
+// static
+static void JNI_AwContentsStatics_SetRendererLibraryPrefetchMode(JNIEnv* env,
+                                                                 jint mode) {
+  SetRendererLibraryPrefetchMode(
+      static_cast<RendererLibraryPrefetchMode>(mode));
+}
+
+// static
+static jint JNI_AwContentsStatics_GetRendererLibraryPrefetchMode(JNIEnv* env) {
+  return static_cast<jint>(GetRendererLibraryPrefetchMode());
+}
+
+// static
+static void JNI_AwContentsStatics_ForceVariationIdsForTesting(  // IN-TEST
+    JNIEnv* env,
+    std::vector<std::string>& variationIds,
+    std::string& commandLineVariationIds) {
+  variations::VariationsIdsProvider::GetInstance()
+      ->ForceVariationIdsForTesting(  // IN-TEST
+          variationIds, commandLineVariationIds);
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwContentsStatics)

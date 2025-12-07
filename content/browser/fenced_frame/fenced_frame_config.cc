@@ -10,13 +10,12 @@
 #include "base/strings/string_util.h"
 #include "base/uuid.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
-#include "third_party/blink/public/common/frame/fenced_frame_permissions_policies.h"
+#include "services/network/public/cpp/permissions_policy/fenced_frame_permissions_policies.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 
 namespace content {
-
-const char kUrnUuidPrefix[] = "urn:uuid:";
 
 GURL GenerateUrnUuid() {
   return GURL(kUrnUuidPrefix +
@@ -298,15 +297,6 @@ FencedFrameProperties::RedactFor(FencedFrameEntity entity) const {
     }
   }
 
-  if (fenced_frame_reporter_ || is_ad_component_) {
-    // An ad component should use its parent's fenced frame reporter. Even
-    // though it does not have a reporter in its `FencedFrameProperties`, this
-    // flag is still marked as true. Content that is cross-origin to the
-    // config's mapped url gets access to its parent's reporter only if both the
-    // parent and the content opt in to cross-origin event reporting.
-    redacted_properties.has_fenced_frame_reporting_ = true;
-  }
-
   // The mode never needs to be redacted, because it is a function of which API
   // was called to generate the config, rather than any cross-site data.
   redacted_properties.mode_ = mode_;
@@ -332,36 +322,6 @@ FencedFrameProperties::RedactFor(FencedFrameEntity entity) const {
 void FencedFrameProperties::UpdateMappedURL(GURL url) {
   CHECK(mapped_url_.has_value());
   mapped_url_->value_ = url;
-}
-
-void FencedFrameProperties::UpdateAutomaticBeaconData(
-    blink::mojom::AutomaticBeaconType event_type,
-    const std::string& event_data,
-    const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
-    bool once,
-    bool cross_origin_exposed) {
-  // For an ad component, the event data from its automatic beacon is ignored.
-  automatic_beacon_info_[event_type] =
-      AutomaticBeaconInfo(is_ad_component_ ? std::string{} : event_data,
-                          destinations, once, cross_origin_exposed);
-}
-
-void FencedFrameProperties::MaybeResetAutomaticBeaconData(
-    blink::mojom::AutomaticBeaconType event_type) {
-  auto it = automatic_beacon_info_.find(event_type);
-  if (it != automatic_beacon_info_.end() && it->second.once == true) {
-    automatic_beacon_info_.erase(it);
-  }
-}
-
-const std::optional<AutomaticBeaconInfo>
-FencedFrameProperties::GetAutomaticBeaconInfo(
-    blink::mojom::AutomaticBeaconType event_type) const {
-  auto it = automatic_beacon_info_.find(event_type);
-  if (it == automatic_beacon_info_.end()) {
-    return std::nullopt;
-  }
-  return it->second;
 }
 
 std::vector<std::pair<GURL, FencedFrameConfig>>
@@ -392,7 +352,7 @@ FencedFrameProperties::GenerateURNConfigVectorForConfigs(
 }
 
 void FencedFrameProperties::UpdateParentParsedPermissionsPolicy(
-    const blink::PermissionsPolicy* parent_policy,
+    const network::PermissionsPolicy* parent_policy,
     const url::Origin& parent_origin) {
   // Sanity check that a fenced frame loaded through Protected Audience or
   // Shared Storage did not reach this point. `effective_enabled_permissions_`
@@ -400,9 +360,9 @@ void FencedFrameProperties::UpdateParentParsedPermissionsPolicy(
   // loaded through any other means, the vector remains empty.
   CHECK_EQ(effective_enabled_permissions_.size(), 0u);
   CHECK(parent_policy);
-  std::vector<blink::ParsedPermissionsPolicyDeclaration> parsed_policies;
-  for (auto feature : blink::kFencedFrameAllowedFeatures) {
-    const blink::PermissionsPolicy::Allowlist allow_list =
+  std::vector<network::ParsedPermissionsPolicyDeclaration> parsed_policies;
+  for (auto feature : network::kFencedFrameAllowedFeatures) {
+    const network::PermissionsPolicy::Allowlist allow_list =
         parent_policy->GetAllowlistForFeature(feature);
     parsed_policies.emplace_back(
         feature, allow_list.AllowedOrigins(), allow_list.SelfIfMatches(),

@@ -13,6 +13,8 @@ namespace autofill::autofill_metrics {
 
 void LogVirtualCardStandaloneCvcSuggestionFormEventMetric(
     VirtualCardStandaloneCvcSuggestionFormEvent event) {
+  // TODO: crbug.com/362988980 - Reuse Autofill.FormEvents.StandaloneCvc after
+  // launch of virtual card card-on-file project.
   base::UmaHistogramEnumeration("Autofill.VirtualCard.StandaloneCvc.FormEvents",
                                 event);
 }

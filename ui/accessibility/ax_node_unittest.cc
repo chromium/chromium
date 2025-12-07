@@ -290,10 +290,9 @@ TEST(AXNodeTest, TreeWalking) {
   }
 
   {
-    std::vector<AXNode::AllChildIterator> siblings;
-    for (auto iter = root_node->AllChildrenBegin();
-         iter != root_node->AllChildrenEnd(); ++iter) {
-      siblings.push_back(iter);
+    std::vector<AXNode*> siblings;
+    for (AXNode* child : root_node->GetAllChildren()) {
+      siblings.push_back(child);
     }
     EXPECT_THAT(siblings, ElementsAre(HasAXNodeID(paragraph_0),
                                       HasAXNodeID(paragraph_1_ignored),
@@ -1031,5 +1030,102 @@ TEST(AXNodeTest, GroupAsTreeItemParentPosInSetSetSize) {
   EXPECT_EQ(tree.GetFromId(8)->GetPosInSet(), 1);
   EXPECT_EQ(tree.GetFromId(8)->GetSetSize(), 6);
 }
+
+TEST(AXNodeTest, GridCellsFocusableViaARIAActiveDescendant) {
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kGrid stringAttribute=kHtmlTag,"table" intAttribute=kActivedescendantId,4
+    ++++++3 kRow stringAttribute=kHtmlTag,"tr"
+    ++++++++4 kColumnHeader stringAttribute=kHtmlId,"row1-cell1" stringAttribute=kHtmlTag,"th"
+    ++++++5 kRow stringAttribute=kHtmlTag,"tr"
+    ++++++++6 kGridCell stringAttribute=kHtmlId,"row2-cell1" stringAttribute=kHtmlTag,"td"
+    ++++7 kGrid stringAttribute=kHtmlTag,"table"
+    ++++++8 kRow stringAttribute=kHtmlTag,"tr"
+    ++++++++9 kColumnHeader stringAttribute=kHtmlId,"row1-cell1" stringAttribute=kHtmlTag,"th"
+    ++++++10 kRow stringAttribute=kHtmlTag,"tr"
+    ++++++++11 kGridCell stringAttribute=kHtmlId,"row2-cell1" stringAttribute=kHtmlTag,"td"
+  )HTML"));
+
+  AXTree tree(update);
+
+  // Grid with aria-activedescendant should have focusable cells because they
+  // have HTML ids. Rows shouldn't. None of the cells in the grid without
+  // aria-activedescendant should be focusable.
+  for (int id : {4, 6}) {
+    const AXNode* n = tree.GetFromId(id);
+    ASSERT_NE(n, nullptr) << "Node " << id << " missing";
+    EXPECT_TRUE(n->IsFocusable()) << "cell with " << id << " not focusable";
+  }
+
+  for (int id : {2, 3, 5, 7, 8, 9, 10, 11}) {
+    const AXNode* n = tree.GetFromId(id);
+    ASSERT_NE(n, nullptr) << "Node " << id << " missing";
+    EXPECT_FALSE(n->IsFocusable()) << "Node " << id << " is focusable";
+  }
+}
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+TEST(AXNodeTest, ExtraAnnouncementNodesNotCreated) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+
+  AXTreeUpdate initial_state;
+  initial_state.root_id = root.id;
+  initial_state.nodes = {root};
+  initial_state.has_tree_data = true;
+
+  AXTreeData tree_data;
+  tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+  tree_data.title = "Application";
+  initial_state.tree_data = tree_data;
+
+  AXTree tree;
+  ASSERT_TRUE(tree.Unserialize(initial_state)) << tree.error();
+
+  const AXNode* root_node = tree.root();
+  ASSERT_EQ(root.id, root_node->id());
+
+  // Extra announcement nodes should not be created unless a call to
+  // GetExtraAnnouncementNode is made.
+  ASSERT_EQ(nullptr, tree.extra_announcement_nodes());
+}
+
+TEST(AXNodeTest, GetExtraAnnouncementNodeByPriority) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+
+  AXTreeUpdate initial_state;
+  initial_state.root_id = root.id;
+  initial_state.nodes = {root};
+  initial_state.has_tree_data = true;
+
+  AXTreeData tree_data;
+  tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+  tree_data.title = "Application";
+  initial_state.tree_data = tree_data;
+
+  AXTree tree;
+  ASSERT_TRUE(tree.Unserialize(initial_state)) << tree.error();
+
+  const AXNode* root_node = tree.root();
+  ASSERT_EQ(root.id, root_node->id());
+
+  const AXNode* assertive_node = root_node->GetExtraAnnouncementNode(
+      ax::mojom::AriaNotificationPriority::kHigh);
+  EXPECT_EQ(assertive_node->id(), -1);
+  EXPECT_EQ(assertive_node->data().GetStringAttribute(
+                ax::mojom::StringAttribute::kContainerLiveStatus),
+            "assertive");
+
+  const AXNode* polite_node = root_node->GetExtraAnnouncementNode(
+      ax::mojom::AriaNotificationPriority::kNormal);
+  EXPECT_EQ(polite_node->id(), -2);
+  EXPECT_EQ(polite_node->data().GetStringAttribute(
+                ax::mojom::StringAttribute::kContainerLiveStatus),
+            "polite");
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
 }  // namespace ui

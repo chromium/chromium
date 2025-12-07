@@ -12,11 +12,12 @@
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/color/color_id.h"
+#include "ui/color/color_variant.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/scrollbar/scroll_bar.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace cc {
 struct ElementId;
@@ -25,7 +26,7 @@ struct ElementId;
 namespace gfx {
 class PointF;
 class RoundedCornersF;
-}
+}  // namespace gfx
 
 namespace views {
 namespace test {
@@ -53,10 +54,10 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
 
  public:
   // Indicates whether or not scroll view is initialized with layer-scrolling.
-  enum class ScrollWithLayers { kDisabled, kEnabled };
+  enum class ScrollWithLayers : bool { kDisabled, kEnabled };
 
   // Controls how a scroll bar appears and functions.
-  enum class ScrollBarMode {
+  enum class ScrollBarMode : uint8_t {
     // The scrollbar is hidden, and the pane will not respond to e.g. mousewheel
     // events even if the contents are larger than the viewport.
     kDisabled,
@@ -127,18 +128,14 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   // rounded corners to the `contents_viewport_` layer. See `ScrollWithLayers`.
   void SetViewportRoundedCornerRadius(const gfx::RoundedCornersF& radii);
 
-  // The background color can be configured in two distinct ways:
-  // . By way of SetBackgroundThemeColorId(). This is the default and when
-  //   called the background color comes from the theme (and changes if the
-  //   theme changes).
-  // . By way of setting an explicit color, i.e. SetBackgroundColor(). Use
-  //   std::nullopt if you don't want any color, but be warned this
+  // Specify the background color:
+  // . Set a ColorId. This is the default and when called the background color
+  //   comes from the theme (and changes if the theme changes).
+  // . Set an explicit color.
+  // . Use std::nullopt if you don't want any color, but be warned this
   //   produces awful results when layers are used with subpixel rendering.
-  std::optional<SkColor> GetBackgroundColor() const;
-  void SetBackgroundColor(const std::optional<SkColor>& color);
-
-  std::optional<ui::ColorId> GetBackgroundThemeColorId() const;
-  void SetBackgroundThemeColorId(const std::optional<ui::ColorId>& color_id);
+  std::optional<ui::ColorVariant> GetBackgroundColor() const;
+  void SetBackgroundColor(const std::optional<ui::ColorVariant>& color);
 
   // Returns the visible region of the content View.
   gfx::Rect GetVisibleRect() const;
@@ -149,7 +146,9 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   // Scrolls the `contents_` to an offset.
   void ScrollToOffset(const gfx::PointF& offset);
 
-  bool GetUseColorId() const { return !!background_color_id_; }
+  // Get the current scroll offset either from the ui::Layer or from the
+  // |contents_| origin offset.
+  gfx::PointF CurrentOffset() const;
 
   ScrollBarMode GetHorizontalScrollBarMode() const {
     return horizontal_scroll_bar_mode_;
@@ -235,7 +234,6 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   void OnScrollEvent(ui::ScrollEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnThemeChanged() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
 
   // ScrollBarController overrides:
@@ -245,8 +243,21 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
                          bool is_positive) override;
   void OnScrollEnded() override;
 
+  // Registers a callback to be called after the layout is complete. This
+  // callback can be used e.g. to scroll the view to the appropriate position
+  // in the contents by explicitly calling `ScrollToOffset` or `ScrollByOffset`
+  // and to update the scrollbars to reflect the new position.
+  // The callback should not trigger any new layouts on the scroll view,
+  // otherwise it will lead to a CHECK failure.
+  void RegisterPostLayoutCallback(
+      base::RepeatingCallback<void(ScrollView*)> post_layout_callback);
+
   bool is_scrolling() const {
     return horiz_sb_->is_scrolling() || vert_sb_->is_scrolling();
+  }
+
+  void SetUseContentsPreferredSize(bool use_contents_preferred_size) {
+    use_contents_preferred_size_ = use_contents_preferred_size;
   }
 
  private:
@@ -297,10 +308,6 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
 
   // Update the scrollbars positions given viewport and content sizes.
   void UpdateScrollBarPositions();
-
-  // Get the current scroll offset either from the ui::Layer or from the
-  // |contents_| origin offset.
-  gfx::PointF CurrentOffset() const;
 
   // Whether the ScrollView scrolls using ui::Layer APIs.
   bool ScrollsWithLayers() const;
@@ -369,8 +376,8 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   int max_height_ = -1;
 
   // See description of SetBackgroundColor() for details.
-  std::optional<SkColor> background_color_;
-  std::optional<ui::ColorId> background_color_id_ = ui::kColorDialogBackground;
+  std::optional<ui::ColorVariant> background_color_ =
+      ui::kColorDialogBackground;
 
   // How to handle the case when the contents overflow the viewport.
   ScrollBarMode horizontal_scroll_bar_mode_ = ScrollBarMode::kEnabled;
@@ -398,6 +405,11 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   // Whether the left/right/up/down arrow keys attempt to scroll the view.
   bool allow_keyboard_scrolling_ = true;
 
+  // Uses the contents' preferred size when laying out if one exists. This
+  // should eventually be true for all cases but using this bool in the interim
+  // to prevent breaking any existing ScrollView uses.
+  bool use_contents_preferred_size_ = false;
+
   // The layer type used for content view when scroll by layers is enabled.
   ui::LayerType layer_type_ = ui::LAYER_TEXTURED;
 
@@ -406,6 +418,9 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   // Scrolling callbacks.
   ScrollViewCallbackList on_contents_scrolled_;
   ScrollViewCallbackList on_contents_scroll_ended_;
+
+  // Post-layout callback.
+  base::RepeatingCallback<void(ScrollView*)> post_layout_callback_;
 };
 
 // When building with GCC this ensures that an instantiation of the
@@ -417,13 +432,12 @@ VIEW_BUILDER_VIEW_TYPE_PROPERTY(View, Contents)
 VIEW_BUILDER_PROPERTY(ui::LayerType, ContentsLayerType)
 VIEW_BUILDER_VIEW_TYPE_PROPERTY(View, Header)
 VIEW_BUILDER_PROPERTY(bool, AllowKeyboardScrolling)
-VIEW_BUILDER_PROPERTY(std::optional<ui::ColorId>, BackgroundThemeColorId)
+VIEW_BUILDER_PROPERTY(std::optional<ui::ColorVariant>, BackgroundColor)
 VIEW_BUILDER_METHOD(ClipHeightTo, int, int)
 VIEW_BUILDER_PROPERTY(ScrollView::ScrollBarMode, HorizontalScrollBarMode)
 VIEW_BUILDER_PROPERTY(ScrollView::ScrollBarMode, VerticalScrollBarMode)
 VIEW_BUILDER_PROPERTY(bool, TreatAllScrollEventsAsHorizontal)
 VIEW_BUILDER_PROPERTY(bool, DrawOverflowIndicator)
-VIEW_BUILDER_PROPERTY(std::optional<SkColor>, BackgroundColor)
 VIEW_BUILDER_VIEW_PROPERTY(ScrollBar, HorizontalScrollBar)
 VIEW_BUILDER_VIEW_PROPERTY(ScrollBar, VerticalScrollBar)
 VIEW_BUILDER_PROPERTY(bool, HasFocusIndicator)

@@ -5,24 +5,23 @@
 #include "chrome/browser/printing/web_api/web_printing_permission_context.h"
 
 #include "components/content_settings/browser/page_specific_content_settings.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 WebPrintingPermissionContext::WebPrintingPermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(
+    : ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::WEB_PRINTING,
-          blink::mojom::PermissionsPolicyFeature::kWebPrinting) {}
+          network::mojom::PermissionsPolicyFeature::kWebPrinting) {}
 
 WebPrintingPermissionContext::~WebPrintingPermissionContext() = default;
 
 void WebPrintingPermissionContext::UpdateTabContext(
-    const permissions::PermissionRequestID& id,
-    const GURL& requesting_frame,
+    const permissions::PermissionRequestData& request_data,
     bool allowed) {
   if (auto* content_settings =
           content_settings::PageSpecificContentSettings::GetForFrame(
-              id.global_render_frame_host_id())) {
+              request_data.id.global_render_frame_host_id())) {
     if (allowed) {
       content_settings->OnContentAllowed(ContentSettingsType::WEB_PRINTING);
     } else {

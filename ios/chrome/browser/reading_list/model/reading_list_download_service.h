@@ -11,11 +11,11 @@
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/reading_list/core/reading_list_model_observer.h"
+#include "ios/chrome/browser/dom_distiller/model/distiller_service.h"
 #include "ios/chrome/browser/reading_list/model/url_downloader.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
 class GURL;
-class PrefService;
 class ReadingListModel;
 namespace base {
 class FilePath;
@@ -36,10 +36,9 @@ class ReadingListDownloadService
  public:
   ReadingListDownloadService(
       ReadingListModel* reading_list_model,
-      PrefService* prefs,
       base::FilePath chrome_profile_path,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::unique_ptr<dom_distiller::DistillerFactory> distiller_factory,
+      DistillerService* distiller_service,
       std::unique_ptr<reading_list::ReadingListDistillerPageFactory>
           distiller_page_factory);
 
@@ -68,8 +67,8 @@ class ReadingListDownloadService
   void ReadingListDidAddEntry(const ReadingListModel* model,
                               const GURL& url,
                               reading_list::EntrySource entry_source) override;
-  void ReadingListDidMoveEntry(const ReadingListModel* model,
-                               const GURL& url) override;
+  void ReadingListDidUpdateEntry(const ReadingListModel* model,
+                                 const GURL& url) override;
 
  private:
   // Checks the model and determines which entries are processed and which
@@ -114,7 +113,7 @@ class ReadingListDownloadService
   bool had_connection_;
   std::unique_ptr<reading_list::ReadingListDistillerPageFactory>
       distiller_page_factory_;
-  std::unique_ptr<dom_distiller::DistillerFactory> distiller_factory_;
+  raw_ptr<DistillerService> distiller_service_;
 
   base::ScopedObservation<ReadingListModel, ReadingListModelObserver>
       model_observation_{this};

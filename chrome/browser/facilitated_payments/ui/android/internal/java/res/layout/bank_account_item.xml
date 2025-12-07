@@ -19,15 +19,11 @@ found in the LICENSE file.
 
     <ImageView
         android:id="@+id/bank_account_icon"
-        android:importantForAccessibility="no"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:layout_gravity="center"
         android:layout_marginEnd="16dp"
-        android:background="@drawable/bank_account_icon_background"
-        android:paddingHorizontal="@dimen/facilitated_payments_bank_account_icon_padding_horizontal"
-        android:paddingVertical="@dimen/facilitated_payments_bank_account_icon_padding_vertical"
-        android:scaleType="centerInside" />
+        android:importantForAccessibility="no" />
 
     <!-- TODO(b/340328974): Only the first and end suggestions should have curved background. -->
     <LinearLayout
@@ -40,14 +36,45 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.TextLarge.Primary"/>
+            android:ellipsize="end"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+            android:id="@+id/bank_account_payment_rail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:layout_weight="0"
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+            <TextView
+                android:id="@+id/bank_account_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:layout_weight="1"
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+            <TextView
+                android:id="@+id/bank_account_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:maxLines="1"
+                android:layout_weight="0"
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/bank_account_summary"
+            android:id="@+id/bank_account_additional_info"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
-
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
     </LinearLayout>
 </LinearLayout>

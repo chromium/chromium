@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <map>
 #include <set>
 #include <utility>
@@ -24,13 +25,14 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/uuid.h"
+#include "components/autofill/core/browser/webdata/payments/payments_sync_util.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/hash_util.h"
 #include "components/sync/base/sync_invalidation_adapter.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/bookmark_update_preprocessing.h"
@@ -50,12 +52,6 @@ namespace syncer {
 
 namespace {
 
-const char kTimeUntilEncryptionKeyFoundHistogramName[] =
-    "Sync.DataTypeTimeUntilEncryptionKeyFound";
-const char kUndecryptablePendingUpdatesDroppedHistogramName[] =
-    "Sync.DataTypeUndecryptablePendingUpdatesDropped";
-const char kBlockedByUndecryptableUpdateHistogramName[] =
-    "Sync.DataTypeBlockedDueToUndecryptableUpdate";
 const char kPasswordNotesStateHistogramName[] =
     "Sync.PasswordNotesStateInUpdate";
 constexpr char kEntityEncryptionResultHistogramName[] =
@@ -92,9 +88,16 @@ void LogEncryptionResult(DataType type, bool success) {
       success);
 }
 
-void LogCrossUserSharingDecryptionResult(
-    CrossUserSharingDecryptionResult result) {
-  base::UmaHistogramEnumeration("Sync.CrossUserSharingDecryptionResult",
+void LogNudgedUpdateLatency(DataType type, base::TimeDelta latency) {
+  base::UmaHistogramLongTimes(base::StrCat({"Sync.NudgedUpdateLatency.",
+                                            DataTypeToHistogramSuffix(type)}),
+                              latency);
+}
+
+void LogNudgedUpdateResult(UpdateHandler::NudgedUpdateResult result,
+                           DataType type) {
+  base::UmaHistogramEnumeration(base::StrCat({"Sync.NudgedUpdateResult.",
+                                              DataTypeToHistogramSuffix(type)}),
                                 result);
 }
 
@@ -102,7 +105,7 @@ void LogCrossUserSharingDecryptionResult(
 // commit queue injected on construction.
 class CommitQueueProxy : public CommitQueue {
  public:
-  // Must be called from the sequence where |commit_queue| lives.
+  // Must be called from the sequence where `commit_queue` lives.
   explicit CommitQueueProxy(const base::WeakPtr<CommitQueue>& commit_queue)
       : commit_queue_(commit_queue) {}
   ~CommitQueueProxy() override = default;
@@ -118,54 +121,72 @@ class CommitQueueProxy : public CommitQueue {
       base::SequencedTaskRunner::GetCurrentDefault();
 };
 
-void AdaptClientTagForFullUpdateData(DataType data_type,
-                                     syncer::EntityData* data) {
+void MaybeAdaptClientTagIfMissing(DataType data_type,
+                                  syncer::EntityData& data) {
+  CHECK(!data.specifics.has_encrypted());
+  if (!data.client_tag_hash.value().empty()) {
+    // Client tag hash is already set, nothing to do.
+    return;
+  }
   // Server does not send any client tags for wallet data entities or offer data
   // entities. This code manually asks the bridge to create the client tags for
   // each entity, so that we can use ClientTagBasedDataTypeProcessor for
   // AUTOFILL_WALLET_DATA or AUTOFILL_WALLET_OFFER.
-  if (data->legacy_parent_id == "0") {
+  if (data.legacy_parent_id == "0") {
     // Ignore the permanent root node as that one should have no client tag
     // hash.
     return;
   }
-  DCHECK(!data->specifics.has_encrypted());
-  if (data_type == AUTOFILL_WALLET_DATA) {
-    DCHECK(data->specifics.has_autofill_wallet());
-    data->client_tag_hash = ClientTagHash::FromUnhashed(
-        AUTOFILL_WALLET_DATA, GetUnhashedClientTagFromAutofillWalletSpecifics(
-                                  data->specifics.autofill_wallet()));
-  } else if (data_type == AUTOFILL_WALLET_OFFER) {
-    DCHECK(data->specifics.has_autofill_offer());
-    data->client_tag_hash = ClientTagHash::FromUnhashed(
-        AUTOFILL_WALLET_OFFER, GetUnhashedClientTagFromAutofillOfferSpecifics(
-                                   data->specifics.autofill_offer()));
-  } else {
-    NOTREACHED_IN_MIGRATION();
+  switch (data_type) {
+    case AUTOFILL_WALLET_DATA:
+      CHECK(data.specifics.has_autofill_wallet());
+      data.client_tag_hash = ClientTagHash::FromUnhashed(
+          AUTOFILL_WALLET_DATA,
+          autofill::GetUnhashedClientTagFromAutofillWalletSpecifics(
+              data.specifics.autofill_wallet()));
+      break;
+    case AUTOFILL_WALLET_OFFER:
+      CHECK(data.specifics.has_autofill_offer());
+      data.client_tag_hash = ClientTagHash::FromUnhashed(
+          AUTOFILL_WALLET_OFFER,
+          autofill::GetUnhashedClientTagFromAutofillOfferSpecifics(
+              data.specifics.autofill_offer()));
+      break;
+    case AUTOFILL_VALUABLE:
+      CHECK(data.specifics.has_autofill_valuable());
+      data.client_tag_hash = ClientTagHash::FromUnhashed(
+          AUTOFILL_VALUABLE,
+          autofill::GetUnhashedClientTagFromAutofillValuableSpecifics(
+              data.specifics.autofill_valuable()));
+      break;
+    default:
+      // Other datatypes populate the client tag hash in the protocol and there
+      // is no need to infer it client-side.
+      break;
   }
 }
 
-void AdaptWebAuthnClientTagHash(syncer::EntityData* data) {
+void AdaptWebAuthnClientTagHash(syncer::EntityData& data) {
   // Google Play Services may create entities where the client_tag_hash doesn't
   // conform to the form expected by Chromium. These values are the hex-encoded,
   // 16-byte random `sync_id` value, and will therefore always be 32 bytes long.
   // Valid ClientTagHash values are Base64(SHA1(protobuf_prefix + client_tag))
   // and therefore always 28 bytes.
-  const std::string& client_tag_hash = data->client_tag_hash.value();
+  const std::string& client_tag_hash = data.client_tag_hash.value();
   std::string sync_id;
   if (client_tag_hash.size() == 32 &&
       base::HexStringToString(client_tag_hash, &sync_id) &&
       // Deletions don't include the specifics, only the client_tag_hash.
-      (!data->specifics.has_webauthn_credential() ||
+      (!data.specifics.has_webauthn_credential() ||
        // Otherwise, check that the client_tag_hash really is the hex encoded
        // sync_id.
-       sync_id == data->specifics.webauthn_credential().sync_id())) {
-    data->client_tag_hash =
+       sync_id == data.specifics.webauthn_credential().sync_id())) {
+    data.client_tag_hash =
         ClientTagHash::FromUnhashed(DataType::WEBAUTHN_CREDENTIAL, sync_id);
   }
 }
 
-// Returns empty string if |entity| is not encrypted.
+// Returns empty string if `entity` is not encrypted.
 // TODO(crbug.com/40141634): Consider moving this to a util file and converting
 // UpdateResponseData::encryption_key_name into a method that calls it. Consider
 // returning a struct containing also the encrypted blob, which would make the
@@ -184,12 +205,12 @@ std::string GetEncryptionKeyName(const sync_pb::SyncEntity& entity) {
   return std::string();
 }
 
-// Attempts to decrypt the given specifics and return them in the |out|
+// Attempts to decrypt the given specifics and return them in the `out`
 // parameter. The cryptographer must know the decryption key, i.e.
 // cryptographer.CanDecrypt(specifics.encrypted()) must return true.
 //
 // Returns false if the decryption failed. There are no guarantees about the
-// contents of |out| when that happens.
+// contents of `out` when that happens.
 //
 // In theory, this should never fail. Only corrupt or invalid entries could
 // cause this to fail, and no clients are known to create such entries. The
@@ -213,11 +234,11 @@ bool DecryptSpecifics(const Cryptographer& cryptographer,
 }
 
 // Attempts to decrypt the given password specifics and return them in the
-// |out| parameter. The cryptographer must know the decryption key, i.e.
+// `out` parameter. The cryptographer must know the decryption key, i.e.
 // cryptographer.CanDecrypt(in.encrypted()) must return true.
 //
 // Returns false if the decryption failed. There are no guarantees about the
-// contents of |out| when that happens.
+// contents of `out` when that happens.
 //
 // In theory, this should never fail. Only corrupt or invalid entries could
 // cause this to fail, and no clients are known to create such entries. The
@@ -265,37 +286,29 @@ bool DecryptIncomingPasswordSharingInvitationSpecifics(
     sync_pb::PasswordSharingInvitationData* unencrypted_invitation_data) {
   if (!invitation.has_encrypted_password_sharing_invitation_data() ||
       !invitation.sender_info().has_cross_user_sharing_public_key()) {
-    LogCrossUserSharingDecryptionResult(
-        CrossUserSharingDecryptionResult::kInvitationMissingFields);
     DLOG(ERROR) << "The invitation is missing required fields";
     return false;
   }
 
   std::optional<std::vector<uint8_t>> decrypted =
       cryptographer.AuthDecryptForCrossUserSharing(
-          base::as_bytes(base::make_span(
-              invitation.encrypted_password_sharing_invitation_data())),
-          base::as_bytes(base::make_span(invitation.sender_info()
-                                             .cross_user_sharing_public_key()
-                                             .x25519_public_key())),
+          base::as_byte_span(
+              invitation.encrypted_password_sharing_invitation_data()),
+          base::as_byte_span(invitation.sender_info()
+                                 .cross_user_sharing_public_key()
+                                 .x25519_public_key()),
           invitation.recipient_key_version());
   if (!decrypted) {
-    LogCrossUserSharingDecryptionResult(
-        CrossUserSharingDecryptionResult::kFailedToDecryptInvitation);
     DLOG(ERROR) << "Failed to decrypt the invitation";
     return false;
   }
 
   if (!unencrypted_invitation_data->ParseFromArray(decrypted->data(),
                                                    decrypted->size())) {
-    LogCrossUserSharingDecryptionResult(
-        CrossUserSharingDecryptionResult::kFailedToParseDecryptedInvitation);
     DLOG(ERROR) << "Failed to parse the decrypted invitation";
     return false;
   }
 
-  LogCrossUserSharingDecryptionResult(
-      CrossUserSharingDecryptionResult::kSuccess);
   return true;
 }
 
@@ -326,7 +339,7 @@ DataTypeWorker::DataTypeWorker(DataType type,
   if (!data_type_state_.invalidations().empty()) {
     if (static_cast<size_t>(data_type_state_.invalidations_size()) >
         kMaxPendingInvalidations) {
-      DVLOG(1) << "Cleaning invalidations in |data_type_state_| due to "
+      DVLOG(1) << "Cleaning invalidations in `data_type_state_` due to "
                   "invalidations overflow.";
       data_type_state_.clear_invalidations();
     }
@@ -334,25 +347,27 @@ DataTypeWorker::DataTypeWorker(DataType type,
     // DataTypeWorker::ctor(), but sync cycle is not scheduled. New sync
     // cycle has to be triggered right after we loaded persisted
     // invalidations.
-    for (int i = 0; i < data_type_state_.invalidations_size(); ++i) {
+    for (const sync_pb::DataTypeState::Invalidation& invalidation :
+         data_type_state_.invalidations()) {
+      // Do not populate `received_time` on load from the disk because it is not
+      // persisted.
       pending_invalidations_.emplace_back(
           std::make_unique<SyncInvalidationAdapter>(
-              data_type_state_.invalidations(i).hint(),
-              data_type_state_.invalidations(i).has_version()
-                  ? std::optional<int64_t>(
-                        data_type_state_.invalidations(i).version())
+              invalidation.hint(),
+              invalidation.has_version()
+                  ? std::optional<int64_t>(invalidation.version())
                   : std::nullopt),
-          false);
+          /*is_processed=*/false,
+          /*received_time=*/std::nullopt);
     }
 
-    bool is_version_order_correct = true;
-    for (size_t i = 1; i < pending_invalidations_.size(); ++i) {
-      is_version_order_correct &= (SyncInvalidation::LessThanByVersion(
-          *pending_invalidations_[i - 1].pending_invalidation,
-          *pending_invalidations_[i].pending_invalidation));
-    }
-    if (!is_version_order_correct) {
-      DVLOG(1) << "Cleaning invalidations in |data_type_state| due to "
+    if (!std::is_sorted(
+            pending_invalidations_.begin(), pending_invalidations_.end(),
+            [](const PendingInvalidation& a, const PendingInvalidation& b) {
+              return SyncInvalidation::LessThanByVersion(
+                  *a.pending_invalidation, *b.pending_invalidation);
+            })) {
+      DVLOG(1) << "Cleaning invalidations in `data_type_state` due to "
                   "incorrect version order.";
       pending_invalidations_.clear();
       data_type_state_.clear_invalidations();
@@ -365,17 +380,17 @@ DataTypeWorker::DataTypeWorker(DataType type,
   }
 }
 
-DataTypeWorker::PendingInvalidation::PendingInvalidation() = default;
 DataTypeWorker::PendingInvalidation::PendingInvalidation(
     PendingInvalidation&&) = default;
 DataTypeWorker::PendingInvalidation&
-DataTypeWorker::PendingInvalidation::operator=(PendingInvalidation&&) =
-    default;
+DataTypeWorker::PendingInvalidation::operator=(PendingInvalidation&&) = default;
 DataTypeWorker::PendingInvalidation::PendingInvalidation(
     std::unique_ptr<SyncInvalidation> invalidation,
-    bool is_processed)
+    bool is_processed,
+    std::optional<base::TimeTicks> received_time)
     : pending_invalidation(std::move(invalidation)),
-      is_processed(is_processed) {}
+      is_processed(is_processed),
+      received_time(received_time) {}
 DataTypeWorker::PendingInvalidation::~PendingInvalidation() = default;
 
 DataTypeWorker::~DataTypeWorker() {
@@ -410,8 +425,8 @@ void DataTypeWorker::ConnectSync(
     nudge_handler_->NudgeForInitialDownload(type_);
   }
 
-  // |data_type_state_| might have an outdated encryption key name, e.g.
-  // because |cryptographer_| was updated before this worker was constructed.
+  // `data_type_state_` might have an outdated encryption key name, e.g.
+  // because `cryptographer_` was updated before this worker was constructed.
   // OnCryptographerChange() might never be called, so update the key manually
   // here and push it to the processor. SendPendingUpdatesToProcessorIfReady()
   // takes care to only send updated if initial sync is (at least partially)
@@ -447,8 +462,8 @@ void DataTypeWorker::EnableEncryption() {
 
 void DataTypeWorker::OnCryptographerChange() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Always try to decrypt, regardless of |encryption_enabled_|. This might
-  // add some elements to |pending_updates_|.
+  // Always try to decrypt, regardless of `encryption_enabled_`. This might
+  // add some elements to `pending_updates_`.
   DecryptStoredEntities();
   bool had_oudated_key_name = UpdateTypeEncryptionKeyName();
   if (had_oudated_key_name || !pending_updates_.empty()) {
@@ -501,6 +516,9 @@ void DataTypeWorker::ProcessGetUpdatesResponse(
       // received which means that all existing data should be cleaned up.
       pending_updates_.clear();
       entries_pending_decryption_.clear();
+      // Since there are no more entries pending decryption, there are also no
+      // more unknown encryption keys.
+      unknown_encryption_keys_by_name_.clear();
     }
 
     // Ignore collaboration GC for non-shared types.
@@ -514,7 +532,10 @@ void DataTypeWorker::ProcessGetUpdatesResponse(
                                              .active_collaboration_ids());
       std::erase_if(pending_updates_, [&active_collaborations](
                                           const UpdateResponseData& update) {
-        return !active_collaborations.contains(update.entity.collaboration_id);
+        return !update.entity.collaboration_metadata.has_value() ||
+               !active_collaborations.contains(
+                   update.entity.collaboration_metadata->collaboration_id()
+                       .value());
       });
       std::erase_if(entries_pending_decryption_,
                     [&active_collaborations](const auto& pending_decryption) {
@@ -562,8 +583,8 @@ void DataTypeWorker::ProcessGetUpdatesResponse(
         const std::string& server_id = update_entity->id_string();
         if (ShouldIgnoreUpdatesEncryptedWith(key_name)) {
           // Don't queue the incoming update. If there's a queued entry for
-          // |server_id|, don't clear it: outdated data is better than nothing.
-          // Such entry should be encrypted with another key, since |key_name|'s
+          // `server_id`, don't clear it: outdated data is better than nothing.
+          // Such entry should be encrypted with another key, since `key_name`'s
           // queued updates would've have been dropped by now.
           DCHECK(!entries_pending_decryption_.contains(server_id) ||
                  GetEncryptionKeyName(entries_pending_decryption_[server_id]) !=
@@ -573,10 +594,10 @@ void DataTypeWorker::ProcessGetUpdatesResponse(
           break;
         }
         // Copy the sync entity for later decryption.
-        // TODO(crbug.com/40805099): Any write to |entries_pending_decryption_|
+        // TODO(crbug.com/40805099): Any write to `entries_pending_decryption_`
         // should do like DeduplicatePendingUpdatesBasedOnServerId() and honor
         // entity version. Additionally, it should look up the same server id
-        // in |pending_updates_| and compare versions. In fact, the 2 containers
+        // in `pending_updates_` and compare versions. In fact, the 2 containers
         // should probably be moved to a separate class with unit tests.
         entries_pending_decryption_[server_id] = *update_entity;
         break;
@@ -593,12 +614,6 @@ void DataTypeWorker::ProcessGetUpdatesResponse(
   // ones. So some encryption keys may no longer fit the definition of unknown.
   RemoveKeysNoLongerUnknown();
 
-  if (!entries_pending_decryption_.empty() &&
-      (!encryption_enabled_ || cryptographer_->CanEncrypt())) {
-    base::UmaHistogramEnumeration(kBlockedByUndecryptableUpdateHistogramName,
-                                  DataTypeHistogramValue(type_));
-  }
-
   // Usually, updates must only be applied at the end of a sync cycle, once all
   // updates have been downloaded. This is mostly important during initial sync,
   // so that the merge of local and remote data can happen.
@@ -611,7 +626,7 @@ void DataTypeWorker::ProcessGetUpdatesResponse(
 }
 
 // static
-// |response_data| must be not null.
+// `response_data` must be not null.
 DataTypeWorker::DecryptionStatus DataTypeWorker::PopulateUpdateResponseData(
     const Cryptographer& cryptographer,
     DataType data_type,
@@ -687,10 +702,11 @@ DataTypeWorker::DecryptionStatus DataTypeWorker::PopulateUpdateResponseData(
 
   // Populate shared type fields.
   if (SharedTypes().Has(data_type)) {
-    data.collaboration_id = update_entity.collaboration().collaboration_id();
+    data.collaboration_metadata =
+        CollaborationMetadata::FromRemoteProto(update_entity.collaboration());
   }
 
-  // Populate |originator_cache_guid| and |originator_client_item_id|. This is
+  // Populate `originator_cache_guid` and `originator_client_item_id`. This is
   // currently relevant only for bookmarks.
   data.originator_cache_guid = update_entity.originator_cache_guid();
   data.originator_client_item_id = update_entity.originator_client_item_id();
@@ -707,12 +723,10 @@ DataTypeWorker::DecryptionStatus DataTypeWorker::PopulateUpdateResponseData(
     // because the logic requires access to tracked entities. Hence, it is
     // done by BookmarkDataTypeProcessor, with logic implemented in
     // components/sync_bookmarks/parent_guid_preprocessing.cc.
-  } else if (data_type == AUTOFILL_WALLET_DATA ||
-             data_type == AUTOFILL_WALLET_OFFER) {
-    AdaptClientTagForFullUpdateData(data_type, &data);
   } else if (data_type == WEBAUTHN_CREDENTIAL) {
-    AdaptWebAuthnClientTagHash(&data);
+    AdaptWebAuthnClientTagHash(data);
   }
+  MaybeAdaptClientTagIfMissing(data_type, data);
 
   response_data->entity = std::move(data);
   return SUCCESS;
@@ -756,10 +770,18 @@ void DataTypeWorker::ApplyUpdates(StatusController* status, bool cycle_done) {
   if (cycle_done) {
     // Processed pending invalidations are deleted, and unprocessed
     // invalidations will be used again in the next sync cycle.
+    std::optional<base::TimeTicks> oldest_processed_invalidation_received_time;
     auto it = pending_invalidations_.begin();
     while (it != pending_invalidations_.end()) {
       if (it->is_processed) {
         LogPendingInvalidationStatus(PendingInvalidationStatus::kAcknowledged);
+
+        if (it->received_time.has_value()) {
+          if (!oldest_processed_invalidation_received_time.has_value() ||
+              oldest_processed_invalidation_received_time > it->received_time) {
+            oldest_processed_invalidation_received_time = it->received_time;
+          }
+        }
         it->pending_invalidation->Acknowledge();
         it = pending_invalidations_.erase(it);
       } else {
@@ -768,6 +790,20 @@ void DataTypeWorker::ApplyUpdates(StatusController* status, bool cycle_done) {
     }
     UpdateDataTypeStateInvalidations();
 
+    if (oldest_processed_invalidation_received_time.has_value()) {
+      // Record the latency between applying updates and the very first
+      // invalidation received for this datatype.
+      LogNudgedUpdateLatency(
+          type_, base::TimeTicks::Now() -
+                     oldest_processed_invalidation_received_time.value());
+
+      // Record the result of the GetUpdates request which contained an
+      // invalidation for this datatype.
+      LogNudgedUpdateResult(pending_updates_.empty()
+                                ? NudgedUpdateResult::kEmptyResponse
+                                : NudgedUpdateResult::kSuccess,
+                            type_);
+    }
     has_dropped_invalidation_ = false;
 
     nudge_handler_->SetHasPendingInvalidations(type_,
@@ -828,7 +864,7 @@ void DataTypeWorker::NudgeForCommit() {
 }
 
 void DataTypeWorker::NudgeIfReadyToCommit() {
-  // TODO(crbug.com/40173160): |kNoNudgedLocalChanges| is used to keep the
+  // TODO(crbug.com/40173160): `kNoNudgedLocalChanges` is used to keep the
   // existing behaviour. But perhaps there is no need to nudge for commit if all
   // known changes are already in flight.
   if (has_local_changes_state_ != kNoNudgedLocalChanges && CanCommitItems()) {
@@ -855,7 +891,7 @@ std::unique_ptr<CommitContribution> DataTypeWorker::GetContribution(
 
   // Pull local changes from the processor (in the model thread/sequence). Note
   // that this takes place independently of nudges (i.e.
-  // |has_local_changes_state_|), in case the processor decided a local change
+  // `has_local_changes_state_`), in case the processor decided a local change
   // was not worth a nudge.
   scoped_refptr<GetLocalChangesRequest> request =
       base::MakeRefCounted<GetLocalChangesRequest>();
@@ -874,13 +910,13 @@ std::unique_ptr<CommitContribution> DataTypeWorker::GetContribution(
 
   DCHECK(response.size() <= max_entries);
   if (response.size() < max_entries) {
-    // In case when response.size() equals to |max_entries|, there will be
+    // In case when response.size() equals to `max_entries`, there will be
     // another commit request (see CommitProcessor::GatherCommitContributions).
-    // Hence, in general it should be normal if |has_local_changes_state_| is
-    // |kNewlyNudgedLocalChanges| (even if there are no more items in the
-    // processor). In other words, |kAllNudgedLocalChangesInFlight| means that
+    // Hence, in general it should be normal if `has_local_changes_state_` is
+    // `kNewlyNudgedLocalChanges` (even if there are no more items in the
+    // processor). In other words, `kAllNudgedLocalChangesInFlight` means that
     // there might not be another commit request in the current sync cycle (but
-    // still possible if some other data type contributes |max_entities|).
+    // still possible if some other data type contributes `max_entities`).
     has_local_changes_state_ = kAllNudgedLocalChangesInFlight;
   }
 
@@ -1015,23 +1051,9 @@ void DataTypeWorker::DecryptStoredEntities() {
     }
   }
 
-  // Note this can perfectly contain keys that were encrypting corrupt updates
-  // (FAILED_TO_DECRYPT above); all that matters is the key was found.
-  const std::vector<UnknownEncryptionKeyInfo> newly_found_keys =
-      RemoveKeysNoLongerUnknown();
-  for (const UnknownEncryptionKeyInfo& newly_found_key : newly_found_keys) {
-    // Don't record UMA for the dominant case where the key was only unknown
-    // while the cryptographer was pending external interaction.
-    if (newly_found_key.get_updates_while_should_have_been_known > 0) {
-      base::UmaHistogramCounts1000(
-          kTimeUntilEncryptionKeyFoundHistogramName,
-          newly_found_key.get_updates_while_should_have_been_known);
-      base::UmaHistogramCounts1000(
-          base::StrCat({kTimeUntilEncryptionKeyFoundHistogramName, ".",
-                        DataTypeToHistogramSuffix(type_)}),
-          newly_found_key.get_updates_while_should_have_been_known);
-    }
-  }
+  // Note this can perfectly remove keys that were encrypting corrupt updates
+  // (FAILED_TO_DECRYPT above).
+  RemoveKeysNoLongerUnknown();
 }
 
 void DataTypeWorker::DeduplicatePendingUpdatesBasedOnServerId() {
@@ -1050,12 +1072,12 @@ void DataTypeWorker::DeduplicatePendingUpdatesBasedOnServerId() {
         id_to_index.emplace(candidate.entity.id, pending_updates_.size());
     if (success) {
       // New server id, append at the end. Note that we already inserted
-      // the correct index (|pending_updates_.size()|) above.
+      // the correct index (`pending_updates_.size()`) above.
       pending_updates_.push_back(std::move(candidate));
       continue;
     }
 
-    // Duplicate! Overwrite the existing update if |candidate| has a more recent
+    // Duplicate! Overwrite the existing update if `candidate` has a more recent
     // version.
     const size_t existing_index = it->second;
     UpdateResponseData& existing_update = pending_updates_[existing_index];
@@ -1083,12 +1105,12 @@ void DataTypeWorker::DeduplicatePendingUpdatesBasedOnClientTagHash() {
                                               pending_updates_.size());
     if (success) {
       // New client tag hash, append at the end. Note that we already inserted
-      // the correct index (|pending_updates_.size()|) above.
+      // the correct index (`pending_updates_.size()`) above.
       pending_updates_.push_back(std::move(candidate));
       continue;
     }
 
-    // Duplicate! Overwrite the existing update if |candidate| has a more recent
+    // Duplicate! Overwrite the existing update if `candidate` has a more recent
     // version.
     const size_t existing_index = it->second;
     UpdateResponseData& existing_update = pending_updates_[existing_index];
@@ -1122,12 +1144,12 @@ void DataTypeWorker::DeduplicatePendingUpdatesBasedOnOriginatorClientItemId() {
         pending_updates_.size());
     if (success) {
       // New item ID, append at the end. Note that we already inserted the
-      // correct index (|pending_updates_.size()|) above.
+      // correct index (`pending_updates_.size()`) above.
       pending_updates_.push_back(std::move(candidate));
       continue;
     }
 
-    // Duplicate! Overwrite the existing update if |candidate| has a more recent
+    // Duplicate! Overwrite the existing update if `candidate` has a more recent
     // version.
     const size_t existing_index = it->second;
     UpdateResponseData& existing_update = pending_updates_[existing_index];
@@ -1139,9 +1161,9 @@ void DataTypeWorker::DeduplicatePendingUpdatesBasedOnOriginatorClientItemId() {
 
 bool DataTypeWorker::ShouldIgnoreUpdatesEncryptedWith(
     const std::string& key_name) {
-  return unknown_encryption_keys_by_name_.contains(key_name) &&
-         unknown_encryption_keys_by_name_.at(key_name)
-                 .get_updates_while_should_have_been_known >=
+  auto it = unknown_encryption_keys_by_name_.find(key_name);
+  return it != unknown_encryption_keys_by_name_.end() &&
+         it->second.get_updates_while_should_have_been_known >=
              kMinGuResponsesToIgnoreKey;
 }
 
@@ -1151,26 +1173,12 @@ void DataTypeWorker::MaybeDropPendingUpdatesEncryptedWith(
     return;
   }
 
-  size_t updates_before_dropping = entries_pending_decryption_.size();
   std::erase_if(entries_pending_decryption_, [&](const auto& id_and_update) {
     return key_name == GetEncryptionKeyName(id_and_update.second);
   });
-
-  // If updates were dropped, record how many.
-  const size_t dropped_updates =
-      updates_before_dropping - entries_pending_decryption_.size();
-  if (dropped_updates > 0) {
-    base::UmaHistogramCounts1000(
-        kUndecryptablePendingUpdatesDroppedHistogramName, dropped_updates);
-    base::UmaHistogramCounts1000(
-        base::StrCat({kUndecryptablePendingUpdatesDroppedHistogramName, ".",
-                      DataTypeToHistogramSuffix(type_)}),
-        dropped_updates);
-  }
 }
 
-std::vector<DataTypeWorker::UnknownEncryptionKeyInfo>
-DataTypeWorker::RemoveKeysNoLongerUnknown() {
+void DataTypeWorker::RemoveKeysNoLongerUnknown() {
   std::set<std::string> keys_blocking_updates;
   for (const auto& [id, update] : entries_pending_decryption_) {
     const std::string key_name = GetEncryptionKeyName(update);
@@ -1178,17 +1186,10 @@ DataTypeWorker::RemoveKeysNoLongerUnknown() {
     keys_blocking_updates.insert(key_name);
   }
 
-  std::vector<DataTypeWorker::UnknownEncryptionKeyInfo> removed_keys;
-  for (const auto& [key_name, info] : unknown_encryption_keys_by_name_) {
-    if (!keys_blocking_updates.contains(key_name)) {
-      removed_keys.push_back(info);
-    }
-  }
   std::erase_if(unknown_encryption_keys_by_name_,
                 [&](const auto& key_and_info) {
                   return !keys_blocking_updates.contains(key_and_info.first);
                 });
-  return removed_keys;
 }
 
 bool DataTypeWorker::HasNonDeletionUpdates() const {
@@ -1238,7 +1239,7 @@ void DataTypeWorker::ExtractGcDirective() {
   }
 
   // Note that normally if the server returns non-empty updates for a
-  // download-only data type, it returns a non-empty |gc_directive| as well.
+  // download-only data type, it returns a non-empty `gc_directive` as well.
   // However, it's safer to keep the GC directive until it's applied even if the
   // server returns non-empty updates without GC directive within the same sync
   // cycle.
@@ -1263,6 +1264,8 @@ void DataTypeWorker::RecordRemoteInvalidation(
   // Overlaps should be extremely rare for most invalidations.  They can happen
   // for unknown version invalidations, though.
 
+  // TODO(crbug.com/363104067): simplify the logic below to just ignore the same
+  // invalidations (there are no unknown version invalidations anymore).
   auto it = pending_invalidations_.begin();
 
   // Find the lower bound.
@@ -1282,7 +1285,9 @@ void DataTypeWorker::RecordRemoteInvalidation(
     // Acknowledge and overwrite existing.
 
     // Insert before the existing and get iterator to inserted.
-    auto it2 = pending_invalidations_.insert(it, {std::move(incoming), false});
+    auto it2 = pending_invalidations_.insert(
+        it, {std::move(incoming), /*is_processed=*/false,
+             /*received_time=*/base::TimeTicks::Now()});
 
     // Increment that iterator to the old one, then acknowledge and remove it.
     LogPendingInvalidationStatus(
@@ -1295,7 +1300,9 @@ void DataTypeWorker::RecordRemoteInvalidation(
   } else {
     // The incoming has a version not in the pending_invalidations_ list.
     // Add it to the list at the proper position.
-    pending_invalidations_.insert(it, {std::move(incoming), false});
+    pending_invalidations_.insert(it,
+                                  {std::move(incoming), /*is_processed=*/false,
+                                   /*received_time=*/base::TimeTicks::Now()});
   }
 
   // The incoming invalidation may have caused us to exceed our buffer size.
@@ -1309,6 +1316,17 @@ void DataTypeWorker::RecordRemoteInvalidation(
   }
   nudge_handler_->SetHasPendingInvalidations(type_, HasPendingInvalidations());
   SendPendingInvalidationsToProcessor();
+}
+
+void DataTypeWorker::RecordDownloadFailure(
+    NudgedUpdateResult failure_result) const {
+  // Record the failure only if the data type was nudged / invalidated.
+  for (const PendingInvalidation& invalidation : pending_invalidations_) {
+    if (invalidation.is_processed) {
+      LogNudgedUpdateResult(failure_result, type_);
+      break;
+    }
+  }
 }
 
 void DataTypeWorker::CollectPendingInvalidations(
@@ -1426,9 +1444,9 @@ void DataTypeWorker::EncryptOutgoingPasswordSharingInvitations(
 
     std::optional<std::vector<uint8_t>> encrypted_data =
         cryptographer_->AuthEncryptForCrossUserSharing(
-            base::as_bytes(base::make_span(serialized_password_data)),
-            base::as_bytes(base::make_span(
-                entity_data->recipient_public_key.x25519_public_key())));
+            base::as_byte_span(serialized_password_data),
+            base::as_byte_span(
+                entity_data->recipient_public_key.x25519_public_key()));
     // There should not be encryption failure but DCHECK is not used because
     // it's not guaranteed. In the worst case, the entity will be committed with
     // empty specifics (no unencrypted data will be committed to the server).

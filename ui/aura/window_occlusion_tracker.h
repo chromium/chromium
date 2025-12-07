@@ -181,6 +181,13 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
 
   bool IsPaused() const { return num_pause_occlusion_tracking_; }
 
+  const std::vector<raw_ptr<WindowTreeHost>>&
+  GetObservingWindowTreeHostsForTest() const;
+
+  void set_num_tracked_windows_count_check_for_test(bool check) {
+    num_tracked_windows_count_check_ = check;
+  }
+
  private:
   friend class test::WindowOcclusionTrackerTestApi;
   friend class Env;
@@ -192,6 +199,7 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
   struct RootWindowState {
     // Number of Windows whose occlusion state is tracked under this root
     // Window.
+    // TODO(crbug.com/435754476): Remove this in m142.
     int num_tracked_windows = 0;
 
     // Whether the occlusion state of tracked Windows under this root is stale.
@@ -381,6 +389,7 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
   void OnWindowAddedToRootWindow(Window* window) override;
   void OnWindowRemovingFromRootWindow(Window* window,
                                       Window* new_root) override;
+  void OnWindowRemoved(Window* window) override;
   void OnWindowLayerRecreated(Window* window) override;
   void OnWindowOpaqueRegionsForOcclusionChanged(Window* window) override;
 
@@ -413,6 +422,10 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
   // Root Windows of Windows in |tracked_windows_|.
   base::flat_map<Window*, RootWindowState> root_windows_;
 
+  // This is an indicator that WindowTreeHost may not longer have to be observed
+  // when a window is being removed or moved from the window tree host.
+  raw_ptr<WindowTreeHost> maybe_removed_host_ = nullptr;
+
   // Number of times that occlusion has been recomputed in this process. We keep
   // track of this for tests.
   int num_times_occlusion_recomputed_ = 0;
@@ -437,6 +450,8 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
 
   // Optional factory to create occlusion change builder.
   OcclusionChangeBuilderFactory occlusion_change_builder_factory_;
+
+  bool num_tracked_windows_count_check_ = DCHECK_IS_ON();
 
   // Stores the window for which the occlusion tracker is computing the
   // occlusion based on target bounds, opacity, transform, and visibility

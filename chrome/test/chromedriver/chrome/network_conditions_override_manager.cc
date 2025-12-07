@@ -14,14 +14,15 @@ NetworkConditionsOverrideManager::NetworkConditionsOverrideManager(
   client_->AddListener(this);
 }
 
-NetworkConditionsOverrideManager::~NetworkConditionsOverrideManager() {
-}
+NetworkConditionsOverrideManager::~NetworkConditionsOverrideManager() = default;
 
 Status NetworkConditionsOverrideManager::OverrideNetworkConditions(
     const NetworkConditions& network_conditions) {
   Status status = ApplyOverride(&network_conditions);
-  if (status.IsOk())
-    overridden_network_conditions_ = &network_conditions;
+  if (status.IsOk()) {
+    overridden_network_conditions_ =
+        std::make_unique<NetworkConditions>(network_conditions);
+  }
   return status;
 }
 
@@ -42,7 +43,7 @@ Status NetworkConditionsOverrideManager::OnEvent(
 
 Status NetworkConditionsOverrideManager::ApplyOverrideIfNeeded() {
   if (overridden_network_conditions_)
-    return ApplyOverride(overridden_network_conditions_);
+    return ApplyOverride(overridden_network_conditions_.get());
   return Status(kOk);
 }
 

@@ -15,7 +15,6 @@
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_content_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_events_proxy.h"
 #include "chromeos/components/mahi/public/cpp/mahi_util.h"
-#include "chromeos/crosapi/mojom/mahi.mojom.h"
 #include "ui/aura/window_observer.h"
 
 namespace ash {
@@ -46,19 +45,23 @@ class MahiMediaAppContentManagerImpl
                   chromeos::GetMediaAppContentCallback callback) override;
   void OnMahiContextMenuClicked(int64_t display_id,
                                 chromeos::mahi::ButtonType button_type,
-                                const std::u16string& question,
+                                std::u16string_view question,
                                 const gfx::Rect& mahi_menu_bounds) override;
   void AddClient(base::UnguessableToken client_id,
                  MahiMediaAppClient* client) override;
   void RemoveClient(base::UnguessableToken client_id) override;
   bool ObservingWindow(const aura::Window* window) const override;
   bool ActivateClientWindow(const base::UnguessableToken client_id) override;
+  void SetSelectedText(const std::string& selected_text) override;
+  std::string GetSelectedText() const override;
 
  private:
   std::map<base::UnguessableToken, raw_ptr<MahiMediaAppClient>>
       client_id_to_client_;
   std::set<raw_ptr<const aura::Window, SetExperimental>>
       windows_of_live_clients_;
+  // The user selected text on the current focused PDF content.
+  std::string selected_text_;
 };
 
 }  // namespace ash

@@ -16,7 +16,6 @@
 #include "ash/app_list/views/search_result_view.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -44,9 +43,8 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
     // chance of being exactly what the user is looking for.
     kAnswerCard,
     // kBestMatch list view contains the results that are the best match for the
-    // current query. This category should be used when productivity launcher is
-    // enabled. All search results will show up under this category until search
-    // metadata is updated with the other category labels.
+    // current query. All search results will show up under this category until
+    // search metadata is updated with the other category labels.
     kBestMatch,
     // kApps list view contains existing non-game ARC and PWA apps that are
     // installed and are relevant to but not the best match for the current
@@ -79,7 +77,7 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
       AppListViewDelegate* view_delegate,
       SearchResultPageDialogController* dialog_controller,
       SearchResultView::SearchResultViewType search_result_view_type,
-      std::optional<size_t> productivity_launcher_index);
+      std::optional<size_t> search_result_category_index);
 
   SearchResultListView(const SearchResultListView&) = delete;
   SearchResultListView& operator=(const SearchResultListView&) = delete;
@@ -158,11 +156,11 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
       SearchResultListType::kBestMatch;
   raw_ptr<views::Label> title_label_ = nullptr;  // Owned by view hierarchy.
 
-  // The search result list view's location in the
-  // productivity_launcher_search_view_'s list of 'search_result_list_view_'.
-  // Not set if productivity_launcher is disabled or if the position of the
-  // category is const as for kBestMatch.
-  const std::optional<size_t> productivity_launcher_index_;
+  // The search result list view's category in the
+  // app_list_search_view_'s list of 'search_result_list_view_'.
+  // Not set if the position of the category is const as for kBestMatch or
+  // kAnswerCard.
+  const std::optional<size_t> search_result_category_index_;
 
   const SearchResultView::SearchResultViewType search_result_view_type_;
 

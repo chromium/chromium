@@ -7,6 +7,7 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include <memory>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -46,6 +47,8 @@ class REMOTE_COCOA_APP_SHIM_EXPORT SelectFileDialogBridge
   static NSSavePanel* GetLastCreatedNativePanelForTesting();
 
  private:
+  class ScopedPreventKeyWindow;
+
   // Sets the accessory view for |dialog_| and sets
   // |extension_dropdown_handler_|. |is_save_panel| specifies whether this is
   // for a save panel or not.
@@ -68,6 +71,9 @@ class REMOTE_COCOA_APP_SHIM_EXPORT SelectFileDialogBridge
 
   // The parent window for |panel_|.
   NSWindow* __strong owning_window_;
+
+  // Used to prevent the sheet parent from getting key.
+  std::unique_ptr<ScopedPreventKeyWindow> scoped_prevent_key_window_;
 
   // The delegate for |panel|.
   SelectFileDialogDelegate* __strong delegate_;

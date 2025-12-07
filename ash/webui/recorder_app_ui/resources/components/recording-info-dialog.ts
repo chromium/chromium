@@ -6,6 +6,7 @@ import './cra/cra-button.js';
 import './cra/cra-dialog.js';
 import './cra/cra-icon.js';
 import './cra/cra-icon-button.js';
+import './time-duration.js';
 
 import {
   createRef,
@@ -28,12 +29,19 @@ import {
 } from '../core/reactive/lit.js';
 import {computed} from '../core/reactive/signal.js';
 import {assert} from '../core/utils/assert.js';
-import {formatDuration, formatFullDatetime} from '../core/utils/datetime.js';
+import {
+  formatFullDatetime,
+} from '../core/utils/datetime.js';
 
 import {CraDialog} from './cra/cra-dialog.js';
+import {withTooltip} from './directives/with-tooltip.js';
 
 export class RecordingInfoDialog extends ReactiveLitElement {
   static override styles: CSSResultGroup = css`
+    :host {
+      display: contents;
+    }
+
     cra-dialog {
       width: 420px;
 
@@ -66,6 +74,7 @@ export class RecordingInfoDialog extends ReactiveLitElement {
         flex: 1;
         flex-flow: column;
         font: var(--cros-body-2-font);
+        overflow-wrap: anywhere;
       }
     }
   `;
@@ -148,7 +157,7 @@ export class RecordingInfoDialog extends ReactiveLitElement {
     return formatter.format(displayValue);
   }
 
-  private renderRow(icon: string, label: string, value: string) {
+  private renderRow(icon: string, label: string, value: RenderResult) {
     return html`<div class="row">
       <cra-icon .name=${icon}></cra-icon>
       <div class="content">
@@ -163,13 +172,14 @@ export class RecordingInfoDialog extends ReactiveLitElement {
     if (meta === null) {
       return nothing;
     }
+    const recordingDuration = {milliseconds: meta.durationMs};
     return [
       this.renderRow(
         'duration',
         i18n.recordInfoDialogDurationLabel,
-        formatDuration({
-          milliseconds: meta.durationMs,
-        }),
+        html`<time-duration
+          .duration=${recordingDuration}
+        ></time-duration>`,
       ),
       this.renderRow(
         'time_created',
@@ -186,7 +196,12 @@ export class RecordingInfoDialog extends ReactiveLitElement {
   }
 
   override render(): RenderResult {
-    return html`<cra-dialog ${ref(this.dialog)}>
+    // Sets aria-label explicitly since the default aria-labelledby takes the
+    // whole headline, which includes the "close" button.
+    return html`<cra-dialog
+      ${ref(this.dialog)}
+      aria-label=${i18n.recordInfoDialogHeader}
+    >
       <div slot="headline">
         ${i18n.recordInfoDialogHeader}
         <cra-icon-button
@@ -194,6 +209,8 @@ export class RecordingInfoDialog extends ReactiveLitElement {
           size="small"
           shape="circle"
           @click=${this.hide}
+          aria-label=${i18n.closeDialogButtonTooltip}
+          ${withTooltip()}
         >
           <cra-icon slot="icon" name="close"></cra-icon>
         </cra-icon-button>

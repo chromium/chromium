@@ -6,6 +6,7 @@
 #define UI_VIEWS_WIDGET_WIDGET_DELETION_OBSERVER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -23,15 +24,13 @@ class VIEWS_EXPORT WidgetDeletionObserver : public WidgetObserver {
   ~WidgetDeletionObserver() override;
 
   // Returns true if the widget passed in the constructor is still alive.
-  bool IsWidgetAlive() { return widget_ != nullptr; }
+  bool IsWidgetAlive() const;
 
   // Overridden from WidgetObserver.
   void OnWidgetDestroying(Widget* widget) override;
 
  private:
-  void CleanupWidget();
-
-  raw_ptr<Widget> widget_;
+  base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
 };
 
 }  // namespace views

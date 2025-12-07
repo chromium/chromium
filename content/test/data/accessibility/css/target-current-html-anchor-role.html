@@ -1,0 +1,33 @@
+<!--
+@BLINK-ALLOW:ariaCurrent*
+-->
+<!DOCTYPE html>
+<style>
+  .carousel {
+    overflow: auto;
+    columns: 1;
+    height: 200px;
+
+    &>div {
+      height: 100%;
+    }
+  }
+
+  .wrapper {
+    scroll-target-group: auto;
+
+    &>a:target-current {
+      color: green;
+    }
+  }
+</style>
+<div class="wrapper">
+  <a href="#one">One</a>
+  <a href="#two">Two</a>
+  <a href="#three">Three</a>
+</div>
+<div class="carousel">
+  <div id="one">One</div>
+  <div id="two">Two</div>
+  <div id="three">Three</div>
+</div>

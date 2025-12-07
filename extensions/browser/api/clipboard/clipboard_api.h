@@ -8,14 +8,13 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "extensions/browser/api/clipboard/clipboard_api_types.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/api/clipboard.h"
 #include "ui/base/clipboard/clipboard_observer.h"
 
 namespace extensions {
-
-using AdditionalDataItemList = std::vector<api::clipboard::AdditionalDataItem>;
 
 class ClipboardAPI : public BrowserContextKeyedAPI,
                      public ui::ClipboardObserver {

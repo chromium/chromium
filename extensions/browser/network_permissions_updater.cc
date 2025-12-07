@@ -5,6 +5,7 @@
 #include "extensions/browser/network_permissions_updater.h"
 
 #include "base/barrier_closure.h"
+#include "base/functional/callback_helpers.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/cors_origin_pattern_setter.h"
 #include "extensions/browser/extension_registry.h"

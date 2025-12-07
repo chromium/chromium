@@ -40,10 +40,6 @@ audio::-webkit-media-controls-play-button {
   cursor: pointer;
 }
 
-audio::-webkit-media-controls-volume-slider {
-  display: none;
-}
-
 audio:focus,
 audio::-webkit-media-controls-timeline:focus,
 audio::-webkit-media-controls-mute-button:focus,

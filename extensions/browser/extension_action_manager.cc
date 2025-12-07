@@ -39,15 +39,15 @@ class ExtensionActionManagerFactory : public BrowserContextKeyedServiceFactory {
             "ExtensionActionManager",
             BrowserContextDependencyManager::GetInstance()) {}
 
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* browser_context) const override {
-    return new ExtensionActionManager(browser_context);
+    return std::make_unique<ExtensionActionManager>(browser_context);
   }
 
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override {
     return ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
-        context, /*force_guest_profile=*/true);
+        context);
   }
 };
 
@@ -87,13 +87,15 @@ void ExtensionActionManager::OnExtensionUnloaded(
 ExtensionAction* ExtensionActionManager::GetExtensionAction(
     const Extension& extension) const {
   auto iter = actions_.find(extension.id());
-  if (iter != actions_.end())
+  if (iter != actions_.end()) {
     return iter->second.get();
+  }
 
   const ActionInfo* action_info =
       ActionInfo::GetExtensionActionInfo(&extension);
-  if (!action_info)
+  if (!action_info) {
     return nullptr;
+  }
 
   // Only create action info for enabled extensions.
   // This avoids bugs where actions are recreated just after being removed
@@ -119,8 +121,8 @@ ExtensionAction* ExtensionActionManager::GetExtensionAction(
 }
 
 // static
-void ExtensionActionManager::EnsureFactoryBuilt() {
-  ExtensionActionManagerFactory::GetInstance();
+BrowserContextKeyedServiceFactory* ExtensionActionManager::GetFactory() {
+  return ExtensionActionManagerFactory::GetInstance();
 }
 
 }  // namespace extensions

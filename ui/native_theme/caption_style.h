@@ -8,13 +8,13 @@
 #include <optional>
 #include <string>
 
+#include "base/component_export.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkScalar.h"
-#include "ui/native_theme/native_theme_export.h"
 
 namespace ui {
 
-struct NATIVE_THEME_EXPORT CaptionStyle {
+struct COMPONENT_EXPORT(NATIVE_THEME) CaptionStyle {
   CaptionStyle();
   CaptionStyle(const CaptionStyle& other);
   ~CaptionStyle();

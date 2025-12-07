@@ -8,6 +8,8 @@
 #include <stdint.h>
 
 #include <optional>
+#include <variant>
+#include <vector>
 
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/base/file_path_mojom_traits.h"
@@ -15,7 +17,6 @@
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/bindings/union_traits.h"
 #include "services/network/public/mojom/referrer_policy.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/data_transfer/data_transfer.mojom-shared.h"
 #include "third_party/blink/public/mojom/drag/drag.mojom-shared.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom-blink.h"
@@ -27,19 +28,14 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
-namespace blink {
-template <typename T>
-class WebVector;
-}
-
 namespace mojo {
 
 template <>
 struct PLATFORM_EXPORT StructTraits<blink::mojom::DragItemStringDataView,
                                     blink::WebDragData::StringItem> {
-  static WTF::String string_type(const blink::WebDragData::StringItem& item);
-  static WTF::String string_data(const blink::WebDragData::StringItem& item);
-  static WTF::String title(const blink::WebDragData::StringItem& item);
+  static blink::String string_type(const blink::WebDragData::StringItem& item);
+  static blink::String string_data(const blink::WebDragData::StringItem& item);
+  static blink::String title(const blink::WebDragData::StringItem& item);
   static std::optional<blink::KURL> base_url(
       const blink::WebDragData::StringItem& item);
   static bool Read(blink::mojom::DragItemStringDataView data,
@@ -69,7 +65,7 @@ struct PLATFORM_EXPORT StructTraits<blink::mojom::DragItemBinaryDataView,
   static blink::KURL source_url(const blink::WebDragData::BinaryDataItem& item);
   static base::FilePath filename_extension(
       const blink::WebDragData::BinaryDataItem& item);
-  static WTF::String content_disposition(
+  static blink::String content_disposition(
       const blink::WebDragData::BinaryDataItem& item);
   static bool Read(blink::mojom::DragItemBinaryDataView data,
                    blink::WebDragData::BinaryDataItem* out);
@@ -81,7 +77,7 @@ struct PLATFORM_EXPORT
                  blink::WebDragData::FileSystemFileItem> {
   static blink::KURL url(const blink::WebDragData::FileSystemFileItem& item);
   static int64_t size(const blink::WebDragData::FileSystemFileItem& item);
-  static WTF::String file_system_id(
+  static blink::String file_system_id(
       const blink::WebDragData::FileSystemFileItem& item);
   static scoped_refptr<blink::BlobDataHandle> serialized_blob(
       const blink::WebDragData::FileSystemFileItem& item);
@@ -94,19 +90,19 @@ struct PLATFORM_EXPORT
     UnionTraits<blink::mojom::DragItemDataView, blink::WebDragData::Item> {
   static const blink::WebDragData::StringItem& string(
       const blink::WebDragData::Item& item) {
-    return absl::get<blink::WebDragData::StringItem>(item);
+    return std::get<blink::WebDragData::StringItem>(item);
   }
   static const blink::WebDragData::FilenameItem& file(
       const blink::WebDragData::Item& item) {
-    return absl::get<blink::WebDragData::FilenameItem>(item);
+    return std::get<blink::WebDragData::FilenameItem>(item);
   }
   static const blink::WebDragData::BinaryDataItem& binary(
       const blink::WebDragData::Item& item) {
-    return absl::get<blink::WebDragData::BinaryDataItem>(item);
+    return std::get<blink::WebDragData::BinaryDataItem>(item);
   }
   static const blink::WebDragData::FileSystemFileItem& file_system_file(
       const blink::WebDragData::Item& item) {
-    return absl::get<blink::WebDragData::FileSystemFileItem>(item);
+    return std::get<blink::WebDragData::FileSystemFileItem>(item);
   }
   static bool Read(blink::mojom::DragItemDataView data,
                    blink::WebDragData::Item* out);
@@ -117,9 +113,9 @@ struct PLATFORM_EXPORT
 template <>
 struct PLATFORM_EXPORT
     StructTraits<blink::mojom::DragDataDataView, blink::WebDragData> {
-  static const blink::WebVector<blink::WebDragData::Item>& items(
+  static const std::vector<blink::WebDragData::Item>& items(
       const blink::WebDragData& drag_data);
-  static WTF::String file_system_id(const blink::WebDragData& drag_data);
+  static blink::String file_system_id(const blink::WebDragData& drag_data);
   static bool force_default_action(const blink::WebDragData& drag_data);
   static network::mojom::ReferrerPolicy referrer_policy(
       const blink::WebDragData& drag_data);

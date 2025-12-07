@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -24,11 +23,10 @@ class ExceptionState;
 class ScriptState;
 
 class CookieStoreManager final : public ScriptWrappable,
-                                 public Supplement<ServiceWorkerRegistration> {
+                                 public GarbageCollectedMixin {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
   // Web Exposed as registration.cookies
   static CookieStoreManager* cookies(ServiceWorkerRegistration& registration);
 

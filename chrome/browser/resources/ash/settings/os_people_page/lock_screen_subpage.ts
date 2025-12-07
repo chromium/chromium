@@ -14,7 +14,6 @@
  * </settings-lock-screen-subpage>
  */
 
-import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_radio_button/cr_radio_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_radio_group/cr_radio_group.js';
@@ -34,18 +33,21 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-import {AuthFactor, ConfigureResult, FactorObserverReceiver, ManagementType} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
+import {AuthFactor, ConfigureResult, FactorObserverReceiver, ManagementType, PinFactorEditor} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
-import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import type {PrefsState} from '../common/types.js';
+import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {LockStateMixin} from '../lock_state_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, Router, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
-import {FingerprintBrowserProxy, FingerprintBrowserProxyImpl} from './fingerprint_browser_proxy.js';
+import type {FingerprintBrowserProxy} from './fingerprint_browser_proxy.js';
+import {FingerprintBrowserProxyImpl} from './fingerprint_browser_proxy.js';
 import {getTemplate} from './lock_screen_subpage.html.js';
 
 const SettingsLockScreenElementBase =
@@ -62,7 +64,10 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
 
   static get properties() {
     return {
-      prefs: {type: Object},
+      prefs: {
+        type: Object,
+        notify: true,
+      },
 
       /**
        * Authentication token provided by lock-screen-password-prompt-dialog.
@@ -91,7 +96,7 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
         observer: 'updateNumFingerprintsDescription_',
       },
 
-      numFingerprintsDescription_: {
+      numFingerprintDescription_: {
         type: String,
       },
 
@@ -151,34 +156,29 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
       showDisableRecoveryDialog_: Boolean,
 
       /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
+       * Whether the device account is managed.
        */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kLockScreenV2,
-          Setting.kChangeAuthPinV2,
-          Setting.kLockScreenNotification,
-          Setting.kDataRecovery,
-        ]),
-      },
-
-      /**
-       * Whether switch from Gaia password factor to local password factor are
-       * allowed by the feature flag.
-       */
-      changePasswordFactorSetupEnabled_: {
+      deviceAccountManaged_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('changePasswordFactorSetupEnabled');
+          return loadTimeData.getBoolean('isDeviceAccountManaged');
         },
         readOnly: true,
       },
     };
   }
 
-  prefs: Object;
+  prefs: PrefsState;
   authToken: string|undefined;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kLockScreenV2,
+    Setting.kChangeAuthPinV2,
+    Setting.kLockScreenNotification,
+    Setting.kDataRecovery,
+  ]);
+
   private fingerprintUnlockEnabled_: boolean;
   private numFingerprints_: number;
   private numFingerprintDescription_: string;
@@ -190,7 +190,7 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
   private showPasswordSettings_: boolean;
   private showDisableRecoveryDialog_: boolean;
   private fingerprintBrowserProxy_: FingerprintBrowserProxy;
-  private changePasswordFactorSetupEnabled_: boolean;
+  private deviceAccountManaged_: boolean;
 
   static get observers() {
     return [
@@ -445,15 +445,37 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
     }
     assert(authToken === this.authToken);
 
-    const [{configured: hasGaiaPassword}, {configured: hasLocalPassword}] =
-        await Promise.all([
-          this.authFactorConfig.isConfigured(
-              this.authToken, AuthFactor.kGaiaPassword),
-          this.authFactorConfig.isConfigured(
-              this.authToken, AuthFactor.kLocalPassword),
-        ]);
-    this.showPasswordSettings_ = hasLocalPassword ||
-        (this.changePasswordFactorSetupEnabled_ && hasGaiaPassword);
+    const [
+      { configured: hasGaiaPassword },
+      { configured: hasLocalPassword },
+      { pinFactor },
+    ] = await Promise.all([
+      this.authFactorConfig.isConfigured(
+        this.authToken, AuthFactor.kGaiaPassword),
+      this.authFactorConfig.isConfigured(
+        this.authToken, AuthFactor.kLocalPassword),
+      PinFactorEditor.getRemote().getConfiguredPinFactor(this.authToken),
+    ]);
+
+    if (hasLocalPassword) {
+      // Local Password is the overriding factor here. We need to show change
+      // option here.
+      this.showPasswordSettings_ = true;
+    } else if (!this.deviceAccountManaged_) {
+      // Onto scenarios for non managed accounts now.
+      if (hasGaiaPassword) {
+        // If the gaia password is setup, for non managed users, we will allow
+        // them to switch to local password.
+        this.showPasswordSettings_ = true;
+      } else if (!hasGaiaPassword && pinFactor !== null) {
+        // At this point we know the user does not have a password
+        // and has a pin. We can allow them to set password.
+        this.showPasswordSettings_ = true;
+      }
+    } else {
+      // This is a safety reset.
+      this.showPasswordSettings_ = false;
+    }
   }
 
   /**
@@ -493,6 +515,8 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
         case ConfigureResult.kFatalError:
           console.error('Error configuring recovery');
           return;
+        default:
+          break;
       }
     } finally {
       this.recoveryChangeInProcess_ = false;

@@ -7,16 +7,17 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/chrome_views_export.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
-#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 
 class FindBarHost;
 class FindBarMatchCountLabel;
@@ -33,7 +34,7 @@ namespace views {
 class Painter;
 class Separator;
 class Textfield;
-}
+}  // namespace views
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -53,7 +54,6 @@ class FindBarView : public views::BoxLayoutView,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPreviousButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kNextButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCloseButtonElementId);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kLensButtonElementId);
 
   explicit FindBarView(FindBarHost* host = nullptr);
 
@@ -67,14 +67,14 @@ class FindBarView : public views::BoxLayoutView,
   // Accessors for the text and selection displayed in the text box.
   void SetFindTextAndSelectedRange(const std::u16string& find_text,
                                    const gfx::Range& selected_range);
-  std::u16string GetFindText() const;
+  std::u16string_view GetFindText() const;
   gfx::Range GetSelectedRange() const;
 
   // Gets the selected text in the text box.
-  std::u16string GetFindSelectedText() const;
+  std::u16string_view GetFindSelectedText() const;
 
   // Gets the match count text displayed in the text box.
-  std::u16string GetMatchCountText() const;
+  std::u16string_view GetMatchCountText() const;
 
   // Updates the label inside the Find text box that shows the ordinal of the
   // active item and how many matches were found.
@@ -87,11 +87,16 @@ class FindBarView : public views::BoxLayoutView,
   // Claims focus for the text field and selects its contents.
   void FocusAndSelectAll();
 
+  // Check whether the find bar currently contains focus. This function is used
+  // to determine if the find bar is actively holding focus, which is necessary
+  // to ensure that focus is restored to the last focused element when find bar
+  // don't have focus.
+  bool ContainsFocus() const;
+
   // views::View:
   bool OnMousePressed(const ui::MouseEvent& event) override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  void OnThemeChanged() override;
 
   // views::TextfieldController:
   bool HandleKeyEvent(views::Textfield* sender,
@@ -100,8 +105,12 @@ class FindBarView : public views::BoxLayoutView,
   void OnAfterPaste() override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(LegacyFindInPageTest, AccessibleName);
+  const views::ViewAccessibility&
+  GetFindBarMatchCountLabelViewAccessibilityForTesting();
+
   // Starts finding |search_text|.  If the text is empty, stops finding.
-  void Find(const std::u16string& search_text);
+  void Find(std::u16string_view search_text);
 
   // Find the next/previous occurrence of search text when clicking the
   // next/previous button.
@@ -114,16 +123,6 @@ class FindBarView : public views::BoxLayoutView,
 
   // Returns the color for the icons on the buttons per the current NativeTheme.
   SkColor GetTextColorForIcon();
-
-  // Hides the Lens Overlay entrypoint if search_text is not empty, else, shows
-  // the button.
-  void UpdateLensButtonVisibility(const std::u16string& search_text);
-
-  // Returns the IDS to use for the Lens message.
-  int GetLensOverlayFindBarMessageIds();
-
-  // Returns the IDS to use for the Lens button label.
-  int GetLensOverlayFindBarButtonLabelIds();
 
   // The OS-specific view for the find bar that acts as an intermediary
   // between us and the WebContentsView.
@@ -141,7 +140,6 @@ class FindBarView : public views::BoxLayoutView,
   raw_ptr<views::ImageButton> find_previous_button_;
   raw_ptr<views::ImageButton> find_next_button_;
   raw_ptr<views::ImageButton> close_button_;
-  raw_ptr<views::BoxLayoutView> lens_entrypoint_container_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, FindBarView, views::BoxLayoutView)

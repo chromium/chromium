@@ -34,17 +34,17 @@ constexpr char kTestUser[] = "user@test";
 
 // HoldingSpaceAnimationRegistryTest -------------------------------------------
 
-class HoldingSpaceAnimationRegistryTest : public AshTestBase {
+class HoldingSpaceAnimationRegistryTest : public NoSessionAshTestBase {
  public:
-  // AshTestBase:
+  // NoSessionAshTestBase:
   void SetUp() override {
-    AshTestBase::SetUp();
+    NoSessionAshTestBase::SetUp();
 
     // Initialize holding space for `kTestUser`.
     AccountId user_account = AccountId::FromUserEmail(kTestUser);
     HoldingSpaceController::Get()->RegisterClientAndModelForUser(
         user_account, client(), model());
-    GetSessionControllerClient()->AddUserSession(kTestUser);
+    SimulateUserLogin({kTestUser});
     holding_space_prefs::MarkTimeOfFirstAvailability(
         GetSessionControllerClient()->GetUserPrefService(user_account));
   }

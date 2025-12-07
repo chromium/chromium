@@ -7,7 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "content/browser/date_time_chooser/ios/date_time_chooser_coordinator.h"
-#import "ui/gfx/native_widget_types.h"
+#import "ui/gfx/native_ui_types.h"
 
 namespace content {
 

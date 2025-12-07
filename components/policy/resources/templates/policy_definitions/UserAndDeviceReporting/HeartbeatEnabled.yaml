@@ -4,6 +4,7 @@ desc: |-
   Setting the policy to Enabled sends monitoring network packets (<ph name="HEARTBEATS_TERM">heartbeats</ph>) to the management server to monitor online status, to allow the server to detect if the device is offline.
 
         Setting the policy to Disabled or leaving it unset sends no packets.
+default: false
 device_only: true
 example_value: false
 features:

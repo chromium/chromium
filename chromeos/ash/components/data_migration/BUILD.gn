@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 source_set("constants") {
   sources = [ "constants.h" ]
@@ -22,7 +20,7 @@ source_set("data_migration") {
     ":device",
     "//base",
     "//chrome/browser/nearby_sharing/common",
-    "//chromeos/ash/components/nearby/common/connections_manager:connections_manager",
+    "//chromeos/ash/components/nearby/common/connections_manager",
     "//components/keyed_service/core",
     "//third_party/nearby:platform_base_util",
   ]
@@ -39,7 +37,7 @@ source_set("device") {
     ":pending_file_transfer_queue",
     ":rts_receiver",
     "//base",
-    "//chromeos/ash/components/nearby/common/connections_manager:connections_manager",
+    "//chromeos/ash/components/nearby/common/connections_manager",
   ]
 }
 
@@ -51,7 +49,7 @@ source_set("file_receiver") {
 
   deps = [
     "//base",
-    "//chromeos/ash/components/nearby/common/connections_manager:connections_manager",
+    "//chromeos/ash/components/nearby/common/connections_manager",
     "//chromeos/ash/services/nearby/public/mojom",
   ]
 }
@@ -67,7 +65,7 @@ source_set("file_transfer") {
     ":file_receiver",
     ":pending_file_transfer_queue",
     "//base",
-    "//chromeos/ash/components/nearby/common/connections_manager:connections_manager",
+    "//chromeos/ash/components/nearby/common/connections_manager",
   ]
 }
 
@@ -89,7 +87,7 @@ source_set("rts_receiver") {
   deps = [
     ":pending_file_transfer_queue",
     "//base",
-    "//chromeos/ash/components/nearby/common/connections_manager:connections_manager",
+    "//chromeos/ash/components/nearby/common/connections_manager",
   ]
 }
 

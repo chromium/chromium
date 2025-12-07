@@ -34,8 +34,9 @@ items:
   name: keep_all
   value: keep_all
 owners:
-- janagrill@google.com
+- artyomchen@google.com
 - vsavu@google.com
+- chromeos-commercial-remote-management@google.com
 schema:
   enum:
   - none
@@ -44,6 +45,7 @@ schema:
   - keep_all
   type: string
 supported_on:
-- chrome_os:110-
+- chrome_os:110-130
 tags: []
 type: string-enum
+deprecated: true

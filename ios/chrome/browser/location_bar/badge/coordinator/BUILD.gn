@@ -1,0 +1,86 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "location_bar_badge_coordinator.h",
+    "location_bar_badge_coordinator.mm",
+    "location_bar_badge_coordinator_delegate.h",
+    "location_bar_badge_mediator.h",
+    "location_bar_badge_mediator.mm",
+    "location_bar_badge_mediator_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/public:feature_constants",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/badges/ui_bundled",
+    "//ios/chrome/browser/contextual_panel/entrypoint/coordinator",
+    "//ios/chrome/browser/contextual_panel/entrypoint/ui",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/fullscreen/ui_bundled",
+    "//ios/chrome/browser/intelligence/bwg/model:bwg_service",
+    "//ios/chrome/browser/intelligence/bwg/model:bwg_service_factory",
+    "//ios/chrome/browser/intelligence/bwg/model:tab_helper",
+    "//ios/chrome/browser/intelligence/bwg/utils:constants",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/location_bar/badge/model",
+    "//ios/chrome/browser/location_bar/badge/ui",
+    "//ios/chrome/browser/location_bar/ui_bundled:metrics",
+    "//ios/chrome/browser/reader_mode/ui:chip",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/layout_guide",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util:omnibox_util",
+    "//ios/web/public",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "location_bar_badge_coordinator_unittest.mm",
+    "location_bar_badge_mediator_unittest.mm",
+  ]
+  deps = [
+    ":coordinator",
+    "//base/test:test_support",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/test:test_support",
+    "//components/prefs",
+    "//components/signin/public/identity_manager:test_support",
+    "//ios/chrome/browser/contextual_panel/entrypoint/coordinator",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/intelligence/bwg/model:bwg_service_factory",
+    "//ios/chrome/browser/intelligence/bwg/model:tab_helper",
+    "//ios/chrome/browser/intelligence/bwg/utils:constants",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/location_bar/badge/model",
+    "//ios/chrome/browser/location_bar/badge/ui",
+    "//ios/chrome/browser/optimization_guide/model",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/sync/model:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test/fakes",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

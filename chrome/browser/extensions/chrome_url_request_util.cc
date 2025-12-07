@@ -15,15 +15,18 @@
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/thread_pool.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/common/extensions/chrome_manifest_url_handlers.h"
+#include "content/public/common/url_constants.h"
 #include "extensions/browser/component_extension_resource_manager.h"
 #include "extensions/browser/extension_protocols.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/url_request_util.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/file_util.h"
+#include "extensions/common/manifest_handlers/devtools_page_handler.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -39,6 +42,8 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/template_expressions.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::ExtensionsBrowserClient;
 
@@ -56,9 +61,20 @@ void DetermineCharset(const std::string& mime_type,
   }
 }
 
+bool IsHtmlMimeType(std::string_view mime_type) {
+  return base::EqualsCaseInsensitiveASCII(mime_type, "text/html") ||
+         base::EqualsCaseInsensitiveASCII(mime_type, "text/css");
+}
+
+bool IsJavaScriptMimeType(std::string_view mime_type) {
+  return base::EqualsCaseInsensitiveASCII(mime_type, "text/javascript") ||
+         base::EqualsCaseInsensitiveASCII(mime_type, "application/javascript");
+}
+
 scoped_refptr<base::RefCountedMemory> GetResource(
     int resource_id,
-    const extensions::ExtensionId& extension_id) {
+    const extensions::ExtensionId& extension_id,
+    const std::string_view mime_type) {
   const ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   scoped_refptr<base::RefCountedMemory> bytes =
       rb.LoadDataResourceBytes(resource_id);
@@ -69,10 +85,15 @@ scoped_refptr<base::RefCountedMemory> GetResource(
                 ->GetTemplateReplacementsForExtension(extension_id)
           : nullptr;
 
-  if (replacements) {
-    std::string temp_str = ui::ReplaceTemplateExpressions(
-        base::as_string_view(*bytes), *replacements);
+  std::string temp_str;
+  if (replacements && IsHtmlMimeType(mime_type)) {
+    temp_str = ui::ReplaceTemplateExpressions(base::as_string_view(*bytes),
+                                              *replacements);
     DCHECK(!temp_str.empty());
+    return base::MakeRefCounted<base::RefCountedString>(std::move(temp_str));
+  } else if (replacements && IsJavaScriptMimeType(mime_type)) {
+    CHECK(ui::ReplaceTemplateExpressionsInJS(base::as_string_view(*bytes),
+                                             *replacements, &temp_str));
     return base::MakeRefCounted<base::RefCountedString>(std::move(temp_str));
   } else {
     return bytes;
@@ -107,14 +128,12 @@ class ResourceBundleFileLoader : public network::mojom::URLLoader {
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
       const std::optional<GURL>& new_url) override {
-    NOTREACHED_IN_MIGRATION() << "No redirects for local file loads.";
+    NOTREACHED() << "No redirects for local file loads.";
   }
   // Current implementation reads all resource data at start of resource
   // load, so priority, and pausing is not currently implemented.
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override {}
-  void PauseReadingBodyFromNet() override {}
-  void ResumeReadingBodyFromNet() override {}
 
  private:
   explicit ResourceBundleFileLoader(
@@ -134,7 +153,6 @@ class ResourceBundleFileLoader : public network::mojom::URLLoader {
         &ResourceBundleFileLoader::OnReceiverError, base::Unretained(this)));
     client_.set_disconnect_handler(base::BindOnce(
         &ResourceBundleFileLoader::OnMojoDisconnect, base::Unretained(this)));
-    auto data = GetResource(resource_id, request.url.host());
 
     std::string* read_mime_type = new std::string;
     base::ThreadPool::PostTaskAndReplyWithResult(
@@ -142,11 +160,12 @@ class ResourceBundleFileLoader : public network::mojom::URLLoader {
         base::BindOnce(&net::GetMimeTypeFromFile, filename,
                        base::Unretained(read_mime_type)),
         base::BindOnce(&ResourceBundleFileLoader::OnMimeTypeRead,
-                       weak_factory_.GetWeakPtr(), std::move(data),
-                       base::Owned(read_mime_type)));
+                       weak_factory_.GetWeakPtr(), resource_id,
+                       request.url.GetHost(), base::Owned(read_mime_type)));
   }
 
-  void OnMimeTypeRead(scoped_refptr<base::RefCountedMemory> data,
+  void OnMimeTypeRead(int resource_id,
+                      const extensions::ExtensionId& extension_id,
                       std::string* read_mime_type,
                       bool read_result) {
     if (!client_) {
@@ -156,6 +175,8 @@ class ResourceBundleFileLoader : public network::mojom::URLLoader {
       // so wait for the |receiver_| disconnect to destroy us.
       return;
     }
+
+    auto data = GetResource(resource_id, extension_id, *read_mime_type);
 
     auto head = network::mojom::URLResponseHead::New();
     head->request_start = base::TimeTicks::Now();
@@ -249,13 +270,16 @@ bool AllowCrossRendererResourceLoad(
     return true;
   }
 
-  // If there aren't any explicitly marked web accessible resources, the
-  // load should be allowed only if it is by DevTools. A close approximation is
-  // checking if the extension contains a DevTools page.
   if (extension &&
       !chrome_manifest_urls::GetDevToolsPage(extension).is_empty()) {
-    *allowed = true;
-    return true;
+    // Allow the load if the initiator is either a devtools origin, or if
+    // there is no initiator (in which case it was likely a browser-initiated
+    // request).
+    if (!request.request_initiator ||
+        request.request_initiator->scheme() == content::kChromeDevToolsScheme) {
+      *allowed = true;
+      return true;
+    }
   }
 
   // Couldn't determine if the resource is allowed or not.
@@ -282,10 +306,11 @@ base::FilePath GetBundleResourcePath(
 
   const base::FilePath request_relative_path =
       extensions::file_util::ExtensionURLToRelativeFilePath(request.url);
-  if (!ExtensionsBrowserClient::Get()
-           ->GetComponentExtensionResourceManager()
-           ->IsComponentExtensionResource(extension_resources_path,
-                                          request_relative_path, resource_id)) {
+  auto* manager =
+      ExtensionsBrowserClient::Get()->GetComponentExtensionResourceManager();
+  CHECK(manager);
+  if (!manager->IsComponentExtensionResource(
+          extension_resources_path, request_relative_path, resource_id)) {
     return base::FilePath();
   }
   DCHECK_NE(0, *resource_id);

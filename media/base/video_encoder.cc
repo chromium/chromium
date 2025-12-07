@@ -8,11 +8,26 @@
 
 #include "base/numerics/checked_math.h"
 #include "base/numerics/clamped_math.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/system/sys_info.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 
 namespace media {
+
+namespace {
+const char* GetContentHintName(VideoEncoder::ContentHint content_hint) {
+  switch (content_hint) {
+    case VideoEncoder::ContentHint::Camera:
+      return "camera";
+    case VideoEncoder::ContentHint::Screen:
+      return "screen";
+  }
+}
+
+}  // namespace
 
 uint8_t GetDefaultVideoEncoderDropFrameThreshold() {
   // This function is to be invoked only in WebCodecs usage.
@@ -60,6 +75,42 @@ int GetNumberOfThreadsForSoftwareEncoding(gfx::Size frame_size) {
   return desired_threads;
 }
 
+uint8_t QIndexToQuantizer(VideoCodec codec, uint8_t q_index) {
+  if (codec == VideoCodec::kAV1 || codec == VideoCodec::kVP9) {
+    // The following computation is based on the table in
+    // //third_party/libvpx/source/libvpx/vp9/encoder/vp9_quantize.c.
+    // //third_party/libaom/source/libaom/av1/encoder/av1_quantize.c
+    // {
+    //   0,   4,   8,   12,  16,  20,  24,  28,  32,  36,  40,  44,  48,
+    //   52,  56,  60,  64,  68,  72,  76,  80,  84,  88,  92,  96,  100,
+    //   104, 108, 112, 116, 120, 124, 128, 132, 136, 140, 144, 148, 152,
+    //   156, 160, 164, 168, 172, 176, 180, 184, 188, 192, 196, 200, 204,
+    //   208, 212, 216, 220, 224, 228, 232, 236, 240, 244, 249, 255,
+    // };
+    if (q_index <= 244) {
+      return (q_index + 3) / 4;
+    }
+    if (q_index <= 249) {
+      return 62;
+    }
+    return 63;
+  }
+  return q_index;
+}
+
+uint8_t QuantizerToQIndex(VideoCodec codec, uint8_t quantizer) {
+  if (codec == VideoCodec::kAV1 || codec == VideoCodec::kVP9) {
+    uint8_t q_index = quantizer * 4;
+    if (q_index == 248) {
+      q_index = 249;
+    } else if (q_index == 252) {
+      q_index = 255;
+    }
+    return q_index;
+  }
+  return quantizer;
+}
+
 VideoEncoderOutput::VideoEncoderOutput() = default;
 VideoEncoderOutput::VideoEncoderOutput(VideoEncoderOutput&&) = default;
 VideoEncoderOutput::~VideoEncoderOutput() = default;
@@ -70,6 +121,42 @@ VideoEncoder::~VideoEncoder() = default;
 VideoEncoder::Options::Options() = default;
 VideoEncoder::Options::Options(const Options&) = default;
 VideoEncoder::Options::~Options() = default;
+
+std::string VideoEncoder::Options::ToString() {
+  std::vector<std::string> keys;
+  if (bitrate) {
+    keys.push_back("bitrate: " + bitrate->ToString());
+  }
+  if (framerate) {
+    keys.push_back(base::StringPrintf("framerate: %f", *framerate));
+  }
+  keys.push_back("frame_size: " + frame_size.ToString());
+  if (keyframe_interval) {
+    keys.push_back(
+        base::StringPrintf("keyframe_interval: %d", *keyframe_interval));
+  }
+  keys.push_back(base::StringPrintf(
+      "latency_mode: %s",
+      latency_mode == LatencyMode::Quality ? "quality" : "realtime"));
+  if (scalability_mode) {
+    keys.push_back(base::StringPrintf(
+        "scalability_mode: %s", GetScalabilityModeName(*scalability_mode)));
+  }
+  if (content_hint) {
+    keys.push_back(base::StringPrintf("content_hint: %s",
+                                      GetContentHintName(*content_hint)));
+  }
+  if (subsampling) {
+    keys.push_back("subsampling: " + VideoChromaSamplingToString(*subsampling));
+  }
+  if (bit_depth) {
+    keys.push_back(base::StringPrintf("bit_depth: %d", *bit_depth));
+  }
+  keys.push_back(base::StringPrintf(
+      "produce_annexb: %s",
+      base::ToString(avc.produce_annexb || hevc.produce_annexb)));
+  return base::JoinString(keys, ",  ");
+}
 
 VideoEncoder::PendingEncode::PendingEncode() = default;
 VideoEncoder::PendingEncode::PendingEncode(PendingEncode&&) = default;

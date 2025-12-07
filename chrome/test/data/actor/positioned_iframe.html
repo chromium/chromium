@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <title>Positioned Iframe Test Case</title>
+    <style>
+      /* Make the outer page scrollable */
+      body {
+        width: 200vw;
+        height: 200vh;
+      }
+      /* Position the iframe in the bottom right quadrant of the viewport */
+      iframe {
+        position: absolute;
+        width: 50vw;
+        height: 50vh;
+        bottom: 20px;
+        right: 20px;
+      }
+    </style>
+  </head>
+  <iframe id="iframe"></iframe>
+  <script>
+    // Browser tests manually navigate the subframe. For manual reproduction
+    // locally append ?path=<path-to-file> to the URL.
+    const params = new URLSearchParams(location.search.substr(1));
+    const path = params.get('path');
+    if (path) {
+      document.getElementById('iframe').src = path;
+    }
+  </script>
+</html>

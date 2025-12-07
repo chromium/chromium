@@ -38,25 +38,24 @@ namespace {{namespace}} {
   (property.compositable and 'kCompositableProperty' or ''),
   (property.is_property and 'kProperty' or ''),
   (property.inherited and 'kInherited' or ''),
-  (property.visited and 'kVisited' or ''),
+  (property.visited and 'kVisited' or 'kNotVisited'),
   (property.is_internal and 'kInternal' or ''),
-  (property.is_animation_property and 'kAnimation' or ''),
+  (property.is_animation_property and 'kAnimation' or 'kNotAnimation'),
   (property.supports_incremental_style and 'kSupportsIncrementalStyle' or ''),
   (property.idempotent and 'kIdempotent' or ''),
   (property.accepts_numeric_literal and 'kAcceptsNumericLiteral' or ''),
   ((property.overlapping or property.legacy_overlapping) and 'kOverlapping' or ''),
-  (property.legacy_overlapping and 'kLegacyOverlapping' or ''),
+  (property.legacy_overlapping and 'kLegacyOverlapping' or 'kNotLegacyOverlapping'),
   (property.valid_for_first_letter and 'kValidForFirstLetter' or ''),
   (property.valid_for_first_line and 'kValidForFirstLine' or ''),
   (property.valid_for_cue and 'kValidForCue' or ''),
   (property.valid_for_marker and 'kValidForMarker' or ''),
-  (property.valid_for_formatted_text and 'kValidForFormattedText' or ''),
-  (property.valid_for_formatted_text_run and 'kValidForFormattedTextRun' or ''),
   (property.valid_for_keyframe and 'kValidForKeyframe' or ''),
   (property.valid_for_position_try and 'kValidForPositionTry' or ''),
-  (property.valid_for_limited_page_context and 'kValidForLimitedPageContext' or ''),
   (property.valid_for_page_context and 'kValidForPageContext' or ''),
   (property.valid_for_permission_element and 'kValidForPermissionElement' or ''),
+  (property.valid_for_permission_icon and 'kValidForPermissionIcon' or ''),
+  (property.valid_for_visited and 'kValidForVisited' or ''),
   (is_surrogate and 'kSurrogate' or ''),
   (property.font and 'kAffectsFont' or ''),
   (property.is_background and 'kBackground' or ''),
@@ -64,7 +63,6 @@ namespace {{namespace}} {
   (property.is_border_radius and 'kBorderRadius' or ''),
   (property.is_highlight_colors and 'kHighlightColors' or ''),
   (property.is_visited_highlight_colors and 'kVisitedHighlightColors' or ''),
-  (property.valid_for_highlight_legacy and 'kValidForHighlightLegacy' or ''),
   (property.valid_for_highlight and 'kValidForHighlight' or ''),
   (property.logical_property_group and 'kInLogicalPropertyGroup' or ''),
 ] | reject('==', '') | join(' | ') %}
@@ -77,7 +75,7 @@ class CORE_EXPORT {{class_name}} final : public {{property.superclass}} {
  public:
   constexpr {{class_name}}() : {{property.superclass}}({{ctor_args | join(', ')}}) { }
   const char* GetPropertyName() const override;
-  const WTF::AtomicString& GetPropertyNameAtomicString() const override;
+  const AtomicString& GetPropertyNameAtomicString() const override;
   const char* GetJSPropertyName() const override;
   {% if not property.known_exposed %}
   CSSExposure Exposure(const ExecutionContext*) const override;
@@ -104,7 +102,7 @@ class CORE_EXPORT {{class_name}} final : public {{property.superclass}} {
   {% if property.logical_property_group %}
   bool IsInSameLogicalPropertyGroupWithDifferentMappingLogic(CSSPropertyID) const override;
     {% if property.logical_property_group.is_logical %}
-  const CSSProperty& ResolveDirectionAwarePropertyInternal(
+  const CSSProperty& ToPhysicalInternal(
       WritingDirectionMode) const override;
   const CSSValue* CSSValueFromComputedStyleInternal(
       const ComputedStyle&,
@@ -113,15 +111,20 @@ class CORE_EXPORT {{class_name}} final : public {{property.superclass}} {
       CSSValuePhase value_phase) const override {
     // Directional properties are resolved by CSSDirectionAwareResolver
     // before calling CSSValueFromComputedStyleInternal.
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
+    {% else %}
+  const CSSProperty& ToLogicalInternal(
+      WritingDirectionMode) const override;
     {% endif %}
   {% endif %}
   {% if property.style_builder_declare %}
   void ApplyInitial(StyleResolverState&) const override;
   void ApplyInherit(StyleResolverState&) const override;
   void ApplyValue(StyleResolverState&, const CSSValue&, ValueMode) const override;
+  {% endif %}
+  {% if property.includes_currentcolor %}
+  [[nodiscard]] bool IsAffectedByCurrentColor(const ComputedStyle& style) const override;
   {% endif %}
   {% endif %} {# not is_alias #}
 };

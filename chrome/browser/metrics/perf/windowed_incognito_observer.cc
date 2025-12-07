@@ -10,6 +10,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace metrics {
@@ -66,10 +68,13 @@ void WindowedIncognitoMonitor::RegisterInstance() {
     return;
   BrowserList::AddObserver(this);
 
-  for (Browser* window : *BrowserList::GetInstance()) {
-    if (window->profile()->IsOffTheRecord())
-      num_active_incognito_windows_++;
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this](BrowserWindowInterface* browser) {
+        if (browser->GetProfile()->IsOffTheRecord()) {
+          num_active_incognito_windows_++;
+        }
+        return true;
+      });
 }
 
 void WindowedIncognitoMonitor::UnregisterInstance() {

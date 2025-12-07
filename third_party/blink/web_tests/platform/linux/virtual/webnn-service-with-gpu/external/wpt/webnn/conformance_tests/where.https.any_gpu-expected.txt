@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] [required] where float32 4D tensors only broadcast condition 1D to 4D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test where float32 actual -1.5351932048797607 should be close enough to expected -39.82423782348633 by ULP distance: expected a number less than or equal to 0n but got 39504591n
+[FAIL] [required] where float32 4D tensors only broadcast condition 2D to 4D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test where float32 actual -83.77035522460938 should be close enough to expected -21.683168411254883 by ULP distance: expected a number less than or equal to 0n but got 16388939n
+[FAIL] [required] where float16 4D tensors only broadcast condition 1D to 4D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test where float16 actual -1.53515625 should be close enough to expected -39.8125 by ULP distance: expected a number less than or equal to 0 but got 4822
+[FAIL] [required] where float16 4D tensors only broadcast condition 2D to 4D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test where float16 actual -83.75 should be close enough to expected -21.6875 by ULP distance: expected a number less than or equal to 0 but got 2000
+Harness: the test ran to completion.
+

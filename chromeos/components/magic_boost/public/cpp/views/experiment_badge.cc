@@ -30,13 +30,13 @@ constexpr int kBadgeCornerRadius = 9;
 ExperimentBadge::ExperimentBadge() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       ui::kColorCrosSysComplementVariant, kBadgeCornerRadius));
 
   label_ = AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_EDITOR_MENU_EXPERIMENT_BADGE)));
-  label_->SetEnabledColorId(ui::kColorSysOnSurface);
-  label_->SetTooltipText(
+  label_->SetEnabledColor(ui::kColorSysOnSurface);
+  label_->SetCustomTooltipText(
       l10n_util::GetStringUTF16(IDS_MAHI_EXPERIMENT_BADGE_ACCESSIBLE_NAME));
   label_->SetBorder(views::CreateEmptyBorder(kBadgePadding));
 }

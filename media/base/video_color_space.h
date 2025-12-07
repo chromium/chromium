@@ -14,6 +14,9 @@ namespace media {
 class MEDIA_EXPORT VideoColorSpace {
  public:
   // Table 2
+  //
+  // TODO(https://crbug.com/380457000): Delete this enum and use
+  // `SkNamedPrimaries::CicpId` instead.
   enum class PrimaryID : uint8_t {
     INVALID = 0,
     BT709 = 1,
@@ -32,6 +35,9 @@ class MEDIA_EXPORT VideoColorSpace {
   };
 
   // Table 3
+  //
+  // TODO(https://crbug.com/380457000): Delete this enum and use
+  // `SkNamedTransferFn::CicpId` instead.
   enum class TransferID : uint8_t {
     INVALID = 0,
     BT709 = 1,
@@ -91,6 +97,9 @@ class MEDIA_EXPORT VideoColorSpace {
   // Returns true if all of the fields have a value other
   // than INVALID or UNSPECIFIED.
   bool IsSpecified() const;
+
+  // Returns true if HDR.
+  bool IsHDR() const;
 
   // These will return INVALID if the number you give it
   // is not a valid enum value.

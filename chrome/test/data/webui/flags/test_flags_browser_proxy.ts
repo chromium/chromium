@@ -14,20 +14,14 @@ export class TestFlagsBrowserProxy extends TestBrowserProxy implements
     'needsRestart': false,
     'showBetaChannelPromotion': false,
     'showDevChannelPromotion': false,
-    // <if expr="chromeos_ash">
+    // <if expr="is_chromeos">
     'showOwnerWarning': false,
-    // </if>
-    // <if expr="chromeos_lacros or chromeos_ash">
-    'showSystemFlagsLink': true,
     // </if>
   };
 
   constructor() {
     super([
       'restartBrowser',
-      // <if expr="is_chromeos">
-      'crosUrlFlagsRedirect',
-      // </if>
       'resetAllFlags',
       'requestDeprecatedFeatures',
       'requestExperimentalFeatures',
@@ -45,12 +39,6 @@ export class TestFlagsBrowserProxy extends TestBrowserProxy implements
   restartBrowser() {
     this.methodCalled('restartBrowser');
   }
-
-  // <if expr="is_chromeos">
-  crosUrlFlagsRedirect() {
-    this.methodCalled('crosUrlFlagsRedirect');
-  }
-  // </if>
 
   resetAllFlags() {
     this.methodCalled('resetAllFlags');

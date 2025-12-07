@@ -144,6 +144,8 @@ class CC_EXPORT RenderFrameMetadata {
   // Returns whether the root RenderPass of the CompositorFrame has a
   // transparent background color.
   bool has_transparent_background = false;
+
+  bool has_offset_tag = false;
 #endif
 };
 

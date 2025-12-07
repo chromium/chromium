@@ -12,6 +12,7 @@
 <translation id="3983305234037158273">탭 복원을 위해 동기화된 기기는 터치하여 변경할 수 있습니다. 터치 시 현재 기기를 위해 선택된 탭을 검토하거나 복원할 수 있는 위치로 이동합니다. 키보드가 숨겨졌습니다.</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{탭 <ph name="TABS_COUNT_ONE" />개 열기}other{탭 <ph name="TABS_COUNT_MANY" />개 열기}}</translation>
 <translation id="4509609396389120020">다른 기기에서 탭 가져오기</translation>
+<translation id="4619615317237390068">다른 기기의 탭</translation>
 <translation id="4811934403802581334">현재 선택한 기기에서 선택한 모든 탭이 복원됩니다.</translation>
 <translation id="5336031759968328813">모든 탭 검토</translation>
 <translation id="5494920125229734069">모두 선택</translation>

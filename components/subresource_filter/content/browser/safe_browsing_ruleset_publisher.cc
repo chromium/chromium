@@ -30,9 +30,9 @@ std::unique_ptr<RulesetPublisher> SafeBrowsingRulesetPublisher::Factory::Create(
 void SafeBrowsingRulesetPublisher::SendRulesetToRenderProcess(
     base::File* file,
     content::RenderProcessHost* rph) {
-  CHECK(rph, base::NotFatalUntil::M129);
-  CHECK(file, base::NotFatalUntil::M129);
-  CHECK(file->IsValid(), base::NotFatalUntil::M129);
+  CHECK(rph);
+  CHECK(file);
+  CHECK(file->IsValid());
   if (!rph->GetChannel()) {
     return;
   }

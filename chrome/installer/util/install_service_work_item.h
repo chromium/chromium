@@ -16,6 +16,7 @@
 #include <string>
 #include <vector>
 
+#include "base/strings/cstring_view.h"
 #include "chrome/installer/util/work_item.h"
 
 namespace base {
@@ -36,6 +37,10 @@ class InstallServiceWorkItem : public WorkItem {
   //
   // |display_name| is the human-readable name that is visible in the Service
   // control panel. For example, "Chrome Elevation Service".
+  //
+  // |description| is the human-readable description, a comment that explains
+  // the purpose of the service, and is visible in the Service control panel.
+  // For example, "Foo Service keeps Bar up to date".
   //
   // |start_type| is typically SERVICE_DEMAND_START or SERVICE_AUTO_START.
   //
@@ -61,6 +66,7 @@ class InstallServiceWorkItem : public WorkItem {
   // required, |iids| should contain the Interfaces and Typelibs to register.
   InstallServiceWorkItem(const std::wstring& service_name,
                          const std::wstring& display_name,
+                         const std::wstring& description,
                          uint32_t start_type,
                          const base::CommandLine& service_cmd_line,
                          const base::CommandLine& com_service_cmd_line_args,
@@ -77,6 +83,14 @@ class InstallServiceWorkItem : public WorkItem {
                             const std::wstring& registry_path,
                             const std::vector<GUID>& clsids,
                             const std::vector<GUID>& iids);
+
+  // Returns true if a cursory check appears to indicate that the service
+  // hosting `clsid` is installed.
+  static bool IsComServiceInstalled(const GUID& clsid);
+
+  // Returns the current name of the service as registered with the SCM.
+  static std::wstring GetCurrentServiceName(base::wcstring_view service_name,
+                                            base::wcstring_view registry_path);
 
  private:
   friend class InstallServiceWorkItemTest;

@@ -6,6 +6,83 @@
 
 namespace manual_fill {
 
+// Passwords
+
+NSString* const kAccessoryPasswordAccessibilityIdentifier =
+    @"ManualFillAccessoryPasswordAccessibilityIdentifier";
+
+NSString* const kExpandedManualFillPasswordFaviconID =
+    @"ExpandedManualFillPasswordFaviconID";
+
+NSString* const kPasswordDoneButtonAccessibilityIdentifier =
+    @"ManualFillPasswordDoneButtonAccessibilityIdentifier";
+
+NSString* const kPasswordSearchBarAccessibilityIdentifier =
+    @"ManualFillPasswordSearchBarAccessibilityIdentifier";
+
+NSString* const kPasswordTableViewAccessibilityIdentifier =
+    @"ManualFillPasswordTableViewAccessibilityIdentifier";
+
+NSString* const kManagePasswordsAccessibilityIdentifier =
+    @"ManualFillManagePasswordsAccessibilityIdentifier";
+
+NSString* const kManageSettingsAccessibilityIdentifier =
+    @"ManualFillManageSettingsAccessibilityIdentifier";
+
+NSString* const kOtherPasswordsAccessibilityIdentifier =
+    @"ManualFillOtherPasswordsAccessibilityIdentifier";
+
+NSString* const kSuggestPasswordAccessibilityIdentifier =
+    @"ManualFillSuggestPasswordAccessibilityIdentifier";
+
+NSString* const kMaskedPasswordButtonText = @"••••••••";
+
+// Payments
+
+NSString* const kPaymentManualFillGPayLogoID = @"PaymentManualFillGPayLogoID";
+
+NSString* const kCardTableViewAccessibilityIdentifier =
+    @"ManualFillCardTableViewAccessibilityIdentifier";
+
+NSString* const kManagePaymentMethodsAccessibilityIdentifier =
+    @"ManualFillManagePaymentMethodsAccessibilityIdentifier";
+
+NSString* const kAddPaymentMethodAccessibilityIdentifier =
+    @"ManualFillAddPaymentMethodAccessibilityIdentifier";
+
+// Addresses
+
+NSString* const kAddressTableViewAccessibilityIdentifier =
+    @"ManualFillManualFillAddressTableViewAccessibilityIdentifier";
+
+NSString* const kManageAddressAccessibilityIdentifier =
+    @"ManualFillManageAddressAccessibilityIdentifier";
+
+// Plus Addresses
+
+NSString* const kManagePlusAddressAccessibilityIdentifier =
+    @"ManagePlusAddressAccessibilityIdentifier";
+
+NSString* const kCreatePlusAddressAccessibilityIdentifier =
+    @"CreatePlusAddressAccessibilityIdentifier";
+
+NSString* const kSelectPlusAddressAccessibilityIdentifier =
+    @"SelectPlusAddressAccessibilityIdentifier";
+
+NSString* const kExpandedManualFillPlusAddressFaviconID =
+    @"ExpandedManualFillPlusAddressFaviconID";
+
+NSString* const kExpandedManualFillPlusAddressOverflowMenuID =
+    @"ExpandedManualFillPlusAddressOverflowMenuID";
+
+NSString* const kPlusAddressDoneButtonAccessibilityIdentifier =
+    @"PlusAddressDoneButtonAccessibilityIdentifier";
+
+NSString* const kPlusAddressSearchBarAccessibilityIdentifier =
+    @"PlusAddressSearchBarAccessibilityIdentifier";
+
+// Miscellaneous
+
 NSString* const kExpandedManualFillViewID = @"ExpandedManualFillViewID";
 
 NSString* const kExpandedManualFillHeaderViewID =
@@ -17,7 +94,11 @@ NSString* const kExpandedManualFillHeaderTopViewID =
 NSString* const kExpandedManualFillChromeLogoID =
     @"ExpandedManualFillChromeLogoID";
 
-NSString* const kPaymentManualFillGPayLogoID = @"PaymentManualFillGPayLogoID";
+NSString* const kExpandedManualFillAutofillFormButtonID =
+    @"ExpandedManualFillAutofillFormButtonID";
+
+NSString* const kAccessoryKeyboardAccessibilityIdentifier =
+    @"ManualFillAccessoryKeyboardAccessibilityIdentifier";
 
 }  // namespace manual_fill
 
@@ -31,18 +112,28 @@ NSString* const kPaymentManualFillGPayLogoID = @"PaymentManualFillGPayLogoID";
       return manual_fill::ManualFillDataType::kAddress;
     case autofill::FillingProduct::kCreditCard:
     case autofill::FillingProduct::kIban:
-    case autofill::FillingProduct::kStandaloneCvc:
       return manual_fill::ManualFillDataType::kPaymentMethod;
     case autofill::FillingProduct::kPassword:
       return manual_fill::ManualFillDataType::kPassword;
     case autofill::FillingProduct::kAutocomplete:
+    case autofill::FillingProduct::kDataList:
+    case autofill::FillingProduct::kPasskey:
     case autofill::FillingProduct::kNone:
       return manual_fill::ManualFillDataType::kOther;
     case autofill::FillingProduct::kCompose:
+    case autofill::FillingProduct::kAutofillAi:
     case autofill::FillingProduct::kMerchantPromoCode:
+    case autofill::FillingProduct::kLoyaltyCard:
+    case autofill::FillingProduct::kIdentityCredential:
+    case autofill::FillingProduct::kOneTimePassword:
       // These cases are currently not available on iOS.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
+}
+
++ (NSString*)expandedManualFillOverflowMenuID:(NSInteger)cellIndex {
+  return [NSString stringWithFormat:@"ExpandedManualFillOverflowMenuID_%ld",
+                                    (long)cellIndex];
 }
 
 @end

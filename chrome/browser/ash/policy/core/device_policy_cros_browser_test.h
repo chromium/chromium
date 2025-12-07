@@ -8,9 +8,9 @@
 #include <string>
 
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
-#include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_test_helper.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chromeos/ash/components/policy/device_policy/device_policy_builder.h"
 #include "components/prefs/pref_change_registrar.h"
 
 namespace ash {

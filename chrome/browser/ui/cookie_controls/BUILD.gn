@@ -1,0 +1,94 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+source_set("cookie_controls") {
+  sources = []
+  public_deps = []
+
+  if (!is_android) {
+    sources += [
+      "roll_back_mode_b_infobar_controller.h",
+      "roll_back_mode_b_infobar_delegate.h",
+    ]
+    public_deps += [
+      "//base",
+      "//chrome/browser/infobars",
+      "//chrome/browser/privacy_sandbox:roll_back_3pcd_notice_action",
+      "//chrome/browser/sync",
+      "//components/privacy_sandbox:tracking_protection_settings",
+      "//content/public/browser",
+    ]
+  }
+}
+
+source_set("impl") {
+  sources = []
+  deps = []
+
+  if (!is_android) {
+    sources += [
+      "roll_back_mode_b_infobar_controller.cc",
+      "roll_back_mode_b_infobar_delegate.cc",
+    ]
+    deps += [
+      ":cookie_controls",
+      "//base",
+      "//chrome/common",
+      "//components/infobars/content",
+      "//components/privacy_sandbox:privacy_sandbox_prefs",
+      "//components/strings:components_strings",
+      "//components/vector_icons",
+      "//content/public/common",
+      "//ui/base",
+    ]
+  }
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "cookie_controls_controller_unittest.cc" ]
+  deps = [
+    "//chrome/browser/content_settings",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/test:test_support",
+    "//components/content_settings/browser",
+    "//components/content_settings/browser/ui",
+    "//components/privacy_sandbox:features",
+    "//components/privacy_sandbox:privacy_sandbox_prefs",
+    "//components/privacy_sandbox:tracking_protection_settings",
+    "//components/site_engagement/content",
+    "//components/ukm:test_support",
+    "//net",
+  ]
+
+  if (!is_android) {
+    sources += [
+      "roll_back_mode_b_infobar_controller_unittest.cc",
+      "roll_back_mode_b_infobar_delegate_unittest.cc",
+    ]
+    deps += [
+      ":cookie_controls",
+      "//components/infobars/core",
+      "//components/privacy_sandbox:privacy_sandbox_prefs",
+    ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "roll_back_mode_b_infobar_controller_browsertest.cc" ]
+    deps = [
+      "//chrome/browser",
+      "//chrome/test:test_support",
+      "//components/infobars/content",
+      "//components/privacy_sandbox:features",
+      "//components/privacy_sandbox:privacy_sandbox_prefs",
+    ]
+  }
+}

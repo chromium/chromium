@@ -130,6 +130,14 @@ class InputOverlayUkm {
         .SetFunction(static_cast<int64_t>(function))
         .Record(ukm::UkmRecorder::Get());
   }
+
+  static void RecordPlayGameWithGameControls(const std::string& package_name,
+                                             bool played_with_game_controls) {
+    ukm::builders::GameControls_PlayGameWithGameControls(
+        ukm::AppSourceUrlRecorder::GetSourceIdForArcPackageName(package_name))
+        .SetPlayedWith(played_with_game_controls)
+        .Record(ukm::UkmRecorder::Get());
+  }
 };
 
 std::string BuildGameControlsHistogramName(const std::string& name) {
@@ -239,6 +247,15 @@ void RecordToggleWithMappingSource(const std::string& package_name,
       source);
   InputOverlayUkm::RecordToggleWithMappingSource(package_name, is_feature,
                                                  is_on, source);
+}
+
+void RecordPlayGameWithGameControls(const std::string& package_name,
+                                    bool played_with_game_controls) {
+  base::UmaHistogramBoolean(
+      BuildGameControlsHistogramName(kPlayGameWithGameControlsHistogram),
+      played_with_game_controls);
+  InputOverlayUkm::RecordPlayGameWithGameControls(package_name,
+                                                  played_with_game_controls);
 }
 
 }  // namespace arc::input_overlay

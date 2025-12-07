@@ -12,6 +12,7 @@
 namespace ui {
 
 std::unique_ptr<ui::GbmDevice> CreateGbmDevice(int fd);
+std::unique_ptr<ui::GbmDevice> WrapGbmDevice(gbm_device* device);
 
 }  // namespace ui
 

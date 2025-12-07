@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ssl/sct_reporting_service.h"
 
+#include <utility>
+
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -21,7 +23,6 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 constexpr net::NetworkTrafficAnnotationTag kSCTAuditReportTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("sct_auditing", R"(

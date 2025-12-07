@@ -5,19 +5,22 @@
 #ifndef IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_MODEL_SEARCH_ENGINE_CHOICE_UTIL_H_
 #define IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_MODEL_SEARCH_ENGINE_CHOICE_UTIL_H_
 
-#include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
-
-class ChromeBrowserState;
+class ProfileIOS;
 
 // Utilities for the search engine choice screen.
 
+// Maximum number of times the search engine choice screen can be skipped
+// because the application is started via an external intent. Once this
+// count is reached, the search engine choice screen is presented on all
+// restarts until the user has made a decision.
+constexpr int kSearchEngineChoiceMaximumSkipCount = 10;
+
 // Whether or not the choice screen should be displayed for existing users.
-// The parameter `app_started_via_external_intent` is used only if `promo`
-// is set to search_engines::ChoicePromo::kDialog. The value is ignored for
-// other promo types.
+// The parameter `app_started_via_external_intent` is used only if
+// `is_first_run_entrypoint` is set to `false . The value is ignored otherwise.
 bool ShouldDisplaySearchEngineChoiceScreen(
-    ChromeBrowserState& browser_state,
-    search_engines::ChoicePromo promo,
+    ProfileIOS& profile,
+    bool is_first_run_entrypoint,
     bool app_started_via_external_intent);
 
 #endif  // IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_MODEL_SEARCH_ENGINE_CHOICE_UTIL_H_

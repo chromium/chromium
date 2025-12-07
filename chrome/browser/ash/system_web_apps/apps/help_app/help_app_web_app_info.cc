@@ -30,7 +30,53 @@ constexpr gfx::Size HELP_DEFAULT_SIZE(960, 600);
 
 }  // namespace
 
-std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForHelpWebApp() {
+HelpAppSystemAppDelegate::HelpAppSystemAppDelegate(Profile* profile)
+    : SystemWebAppDelegate(SystemWebAppType::HELP,
+                           "Help",
+                           GURL("chrome://help-app/pwa.html"),
+                           profile) {}
+
+gfx::Rect HelpAppSystemAppDelegate::GetDefaultBounds(BrowserDelegate*) const {
+  // Help app is centered.
+  gfx::Rect bounds =
+      display::Screen::Get()->GetDisplayForNewWindows().work_area();
+  bounds.ClampToCenteredSize(HELP_DEFAULT_SIZE);
+  return bounds;
+}
+
+bool HelpAppSystemAppDelegate::ShouldCaptureNavigations() const {
+  return true;
+}
+
+gfx::Size HelpAppSystemAppDelegate::GetMinimumWindowSize() const {
+  return {600, 320};
+}
+
+std::vector<int> HelpAppSystemAppDelegate::GetAdditionalSearchTerms() const {
+  return {IDS_GENIUS_APP_NAME, IDS_HELP_APP_PERKS, IDS_HELP_APP_OFFERS};
+}
+
+BrowserDelegate* HelpAppSystemAppDelegate::LaunchAndNavigateSystemWebApp(
+    Profile* profile,
+    web_app::WebAppProvider* provider,
+    const GURL& url,
+    const apps::AppLaunchParams& params) const {
+  UMA_HISTOGRAM_ENUMERATION("Discover.Overall.AppLaunched",
+                            static_cast<int>(params.launch_source),
+                            static_cast<int>(apps::LaunchSource::kMaxValue));
+  return SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(profile, provider,
+                                                             url, params);
+}
+
+std::optional<SystemWebAppBackgroundTaskInfo>
+HelpAppSystemAppDelegate::GetTimerInfo() const {
+  return SystemWebAppBackgroundTaskInfo(std::nullopt,
+                                        GURL("chrome://help-app/background"),
+                                        /*open_immediately=*/true);
+}
+
+std::unique_ptr<web_app::WebAppInstallInfo>
+HelpAppSystemAppDelegate::GetWebAppInfo() const {
   GURL start_url = GURL(kChromeUIHelpAppURL);
   auto info =
       web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
@@ -56,60 +102,6 @@ std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForHelpWebApp() {
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
   return info;
-}
-
-gfx::Rect GetDefaultBoundsForHelpApp(Browser*) {
-  // Help app is centered.
-  gfx::Rect bounds =
-      display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
-  bounds.ClampToCenteredSize(HELP_DEFAULT_SIZE);
-  return bounds;
-}
-
-HelpAppSystemAppDelegate::HelpAppSystemAppDelegate(Profile* profile)
-    : SystemWebAppDelegate(SystemWebAppType::HELP,
-                           "Help",
-                           GURL("chrome://help-app/pwa.html"),
-                           profile) {}
-
-gfx::Rect HelpAppSystemAppDelegate::GetDefaultBounds(Browser* browser) const {
-  return GetDefaultBoundsForHelpApp(browser);
-}
-
-bool HelpAppSystemAppDelegate::ShouldCaptureNavigations() const {
-  return true;
-}
-
-gfx::Size HelpAppSystemAppDelegate::GetMinimumWindowSize() const {
-  return {600, 320};
-}
-
-std::vector<int> HelpAppSystemAppDelegate::GetAdditionalSearchTerms() const {
-  return {IDS_GENIUS_APP_NAME, IDS_HELP_APP_PERKS, IDS_HELP_APP_OFFERS};
-}
-
-Browser* HelpAppSystemAppDelegate::LaunchAndNavigateSystemWebApp(
-    Profile* profile,
-    web_app::WebAppProvider* provider,
-    const GURL& url,
-    const apps::AppLaunchParams& params) const {
-  UMA_HISTOGRAM_ENUMERATION("Discover.Overall.AppLaunched",
-                            static_cast<int>(params.launch_source),
-                            static_cast<int>(apps::LaunchSource::kMaxValue));
-  return SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(profile, provider,
-                                                             url, params);
-}
-
-std::optional<SystemWebAppBackgroundTaskInfo>
-HelpAppSystemAppDelegate::GetTimerInfo() const {
-  return SystemWebAppBackgroundTaskInfo(std::nullopt,
-                                        GURL("chrome://help-app/background"),
-                                        /*open_immediately=*/true);
-}
-
-std::unique_ptr<web_app::WebAppInstallInfo>
-HelpAppSystemAppDelegate::GetWebAppInfo() const {
-  return CreateWebAppInfoForHelpWebApp();
 }
 
 }  // namespace ash

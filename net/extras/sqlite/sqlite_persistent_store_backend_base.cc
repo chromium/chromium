@@ -11,10 +11,10 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
-#include "sql/database.h"
 #include "sql/error_delegate_util.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -25,7 +25,7 @@ namespace net {
 
 SQLitePersistentStoreBackendBase::SQLitePersistentStoreBackendBase(
     const base::FilePath& path,
-    const std::string& histogram_tag,
+    sql::Database::Tag histogram_tag,
     const int current_version_number,
     const int compatible_version_number,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
@@ -93,11 +93,12 @@ bool SQLitePersistentStoreBackendBase::InitializeDatabase() {
 
   // TODO(crbug.com/40262972): Remove explicit_locking = false. This currently
   // needs to be set to false because of several failing MigrationTests.
-  db_ = std::make_unique<sql::Database>(sql::DatabaseOptions{
-      .exclusive_locking = false,
-      .exclusive_database_file_lock = enable_exclusive_access_});
-
-  db_->set_histogram_tag(histogram_tag_);
+  db_ = std::make_unique<sql::Database>(
+      sql::DatabaseOptions()
+          .set_exclusive_locking(false)
+          .set_exclusive_database_file_lock(enable_exclusive_access_)
+          .set_preload(true),
+      histogram_tag_);
 
   // base::Unretained is safe because |this| owns (and therefore outlives) the
   // sql::Database held by |db_|.
@@ -105,52 +106,29 @@ bool SQLitePersistentStoreBackendBase::InitializeDatabase() {
       &SQLitePersistentStoreBackendBase::DatabaseErrorCallback,
       base::Unretained(this)));
 
-  bool has_been_preloaded = false;
-  // It is not possible to preload a database opened with exclusive access,
-  // because the file cannot be opened again to preload it. In this case,
-  // preload before opening the database.
-  if (enable_exclusive_access_) {
-    has_been_preloaded = true;
-
-    // Can only attempt to preload before Open if the file exists.
-    if (base::PathExists(path_)) {
-      // See comments in Database::Preload for explanation of these values.
-      constexpr int kPreReadSize = 128 * 1024 * 1024;  // 128 MB
-      // TODO(crbug.com/40904059): Consider moving preload behind a database
-      // option.
-      base::PreReadFile(path_, /*is_executable=*/false, /*sequential=*/false,
-                        kPreReadSize);
-    }
-  }
-
   if (!db_->Open(path_)) {
-    DLOG(ERROR) << "Unable to open " << histogram_tag_ << " DB.";
+    DLOG(ERROR) << "Unable to open " << histogram_tag_.value << " DB.";
     RecordOpenDBProblem();
     Reset();
     return false;
   }
 
-  // Only attempt a preload if the database hasn't already been preloaded above.
-  if (!has_been_preloaded) {
-    db_->Preload();
-  }
-
   if (!MigrateDatabaseSchema() || !CreateDatabaseSchema()) {
-    DLOG(ERROR) << "Unable to update or initialize " << histogram_tag_
+    DLOG(ERROR) << "Unable to update or initialize " << histogram_tag_.value
                 << " DB tables.";
     RecordDBMigrationProblem();
     Reset();
     return false;
   }
 
-  base::UmaHistogramCustomTimes(histogram_tag_ + ".TimeInitializeDB",
-                                timer.Elapsed(), base::Milliseconds(1),
-                                base::Minutes(1), 50);
+  base::UmaHistogramCustomTimes(
+      base::StrCat({histogram_tag_.value, ".TimeInitializeDB"}),
+      timer.Elapsed(), base::Milliseconds(1), base::Minutes(1), 50);
 
   initialized_ = DoInitializeDatabase();
 
   if (!initialized_) {
-    DLOG(ERROR) << "Unable to initialize " << histogram_tag_ << " DB.";
+    DLOG(ERROR) << "Unable to initialize " << histogram_tag_.value << " DB.";
     RecordOpenDBProblem();
     Reset();
     return false;
@@ -208,7 +186,7 @@ bool SQLitePersistentStoreBackendBase::MigrateDatabaseSchema() {
   }
 
   if (meta_table_.GetCompatibleVersionNumber() > current_version_number_) {
-    LOG(WARNING) << histogram_tag_ << " database is too new.";
+    LOG(WARNING) << histogram_tag_.value << " database is too new.";
     return false;
   }
 
@@ -221,15 +199,15 @@ bool SQLitePersistentStoreBackendBase::MigrateDatabaseSchema() {
   // Metatable is corrupted. Try to recover.
   if (cur_version.value() < current_version_number_) {
     meta_table_.Reset();
-    db_ = std::make_unique<sql::Database>();
+    db_ = std::make_unique<sql::Database>(histogram_tag_);
     bool recovered = sql::Database::Delete(path_) && db()->Open(path_) &&
                      meta_table_.Init(db(), current_version_number_,
                                       compatible_version_number_);
-    base::UmaHistogramBoolean(histogram_tag_ + ".CorruptMetaTableRecovered",
-                              recovered);
+    base::UmaHistogramBoolean(
+        base::StrCat({histogram_tag_.value, ".CorruptMetaTableRecovered"}),
+        recovered);
     if (!recovered) {
-      DUMP_WILL_BE_NOTREACHED()
-          << "Unable to reset the " << histogram_tag_ << " DB.";
+      DLOG(ERROR) << "Unable to recover the " << histogram_tag_.value << " DB.";
       meta_table_.Reset();
       db_.reset();
       return false;
@@ -273,11 +251,13 @@ void SQLitePersistentStoreBackendBase::DatabaseErrorCallback(
   corruption_detected_ = true;
 
   if (!initialized_) {
-    sql::UmaHistogramSqliteResult(histogram_tag_ + ".ErrorInitializeDB", error);
+    sql::UmaHistogramSqliteResult(
+        base::StrCat({histogram_tag_.value, ".ErrorInitializeDB"}), error);
 
 #if BUILDFLAG(IS_WIN)
-    base::UmaHistogramSparse(histogram_tag_ + ".WinGetLastErrorInitializeDB",
-                             ::GetLastError());
+    base::UmaHistogramSparse(
+        base::StrCat({histogram_tag_.value, ".WinGetLastErrorInitializeDB"}),
+        ::GetLastError());
 #endif  // BUILDFLAG(IS_WIN)
   }
 

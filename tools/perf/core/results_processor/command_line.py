@@ -11,7 +11,6 @@ import argparse
 import datetime
 import logging
 import os
-import re
 import sys
 
 from py_utils import cloud_storage
@@ -93,9 +92,6 @@ def ArgumentParser(standalone=False):
           % ', '.join(sorted(cloud_storage.BUCKET_ALIASES)),
           'Defaults to: %(default)s.'))
   group.add_argument(
-      '--experimental-tbmv3-metrics', action='store_true',
-      help='Enable running experimental TBMv3 metrics.')
-  group.add_argument(
       '--fetch-power-profile',
       action='store_true',
       help=('Specify this if you want to run proxy power metrics that use '
@@ -117,6 +113,11 @@ def ArgumentParser(standalone=False):
       action='store_true',
       help=('Argument to enable fetching data from a device.'))
   device_group.add_argument(
+      '--fetch-device-data-on-success',
+      action='store_true',
+      help=('When --fetch-device-data is enabled, this switch ensures that '
+            'data is only pulled after a successful run (exited with 0)'))
+  device_group.add_argument(
       '--fetch-device-data-platform',
       dest='fetch_data_platform',
       choices=['android', 'chromeos'],
@@ -126,7 +127,8 @@ def ArgumentParser(standalone=False):
       '--fetch-data-path-device',
       dest='device_data_path',
       help=('Use this to specify the path on device to pull data from. Should '
-            'be used with --fetch-device-data.'))
+            'be used with --fetch-device-data. Use "auto" for dynamic '
+            'detection on Android.'))
   device_group.add_argument(
       '--fetch-data-path-local',
       dest='local_data_path',
@@ -177,13 +179,9 @@ def ProcessOptions(options):
   if options.intermediate_dir:
     options.intermediate_dir = resolve_dir(options.intermediate_dir)
   else:
-    if options.results_label:
-      filesafe_label = re.sub(r'\W+', '_', options.results_label)
-    else:
-      filesafe_label = 'run'
     start_time = datetime.datetime.utcnow().strftime('%Y%m%dT%H%M%SZ')
-    options.intermediate_dir = os.path.join(
-        options.output_dir, 'artifacts', '%s_%s' % (filesafe_label, start_time))
+    options.intermediate_dir = os.path.join(options.output_dir, 'artifacts',
+                                            'run_%s' % start_time)
 
   if options.upload_results:
     options.upload_bucket = cloud_storage.BUCKET_ALIASES.get(
@@ -207,6 +205,11 @@ def ProcessOptions(options):
       raise argparse.ArgumentError(options.device_data_path,
                                    ('--fetch-data-path-device must be set '
                                     'with --fetch-device-data'))
+  if options.fetch_device_data_on_success:
+    if not options.fetch_device_data:
+      raise argparse.ArgumentError(options.fetch_device_data_on_success,
+                                   ('--fetch-device-data must be set '
+                                    'with --fetch-device-data-on-success'))
 
 
 def _CreateTopLevelParser(standalone):

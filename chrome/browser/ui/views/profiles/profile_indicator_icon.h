@@ -7,6 +7,7 @@
 
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/views/view.h"
 
 namespace gfx {

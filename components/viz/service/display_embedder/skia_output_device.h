@@ -21,7 +21,7 @@
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-#include "third_party/skia/include/gpu/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
 #include "ui/gfx/swap_result.h"
 
 class GrDirectContext;
@@ -36,10 +36,11 @@ struct PresentationFeedback;
 namespace gpu {
 class MemoryTracker;
 class MemoryTypeTracker;
+class SharedContextState;
+class GraphiteSharedContext;
 }  // namespace gpu
 
 namespace skgpu::graphite {
-class Context;
 class Recording;
 }  // namespace skgpu::graphite
 
@@ -75,7 +76,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
     bool Draw(sk_sp<const GrDeferredDisplayList> ddl);
 
     // Graphite
-    bool Draw(std::unique_ptr<skgpu::graphite::Recording> graphite_recording,
+    bool Draw(gpu::GraphiteSharedContext* graphite_shared_context,
+              std::unique_ptr<skgpu::graphite::Recording> graphite_recording,
               base::OnceClosure on_finished);
 
     std::vector<GrBackendSemaphore> TakeEndPaintSemaphores() {
@@ -102,8 +104,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
 
   SkiaOutputDevice(
       GrDirectContext* gr_context,
-      skgpu::graphite::Context* graphite_context,
-      gpu::MemoryTracker* memory_tracker,
+      gpu::GraphiteSharedContext* graphite_shared_context,
+      scoped_refptr<gpu::MemoryTracker> memory_tracker,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback,
       ReleaseOverlaysCallback release_overlays_callback = base::DoNothing());
 
@@ -133,14 +135,13 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
   };
   virtual bool Reshape(const ReshapeParams& params) = 0;
 
-  // For devices that supports viewporter.
-  virtual void SetViewportSize(const gfx::Size& viewport_size);
-
   // Submit the GrContext and run |callback| after. Note most but not all
   // implementations will run |callback| in this call stack.
   // If the |sync_cpu| flag is true this function will return once the gpu
   // has finished with all submitted work.
-  virtual void Submit(bool sync_cpu, base::OnceClosure callback);
+  virtual void Submit(scoped_refptr<gpu::SharedContextState> context_state,
+                      bool sync_cpu,
+                      base::OnceClosure callback);
 
   // Presents the back buffer. Optional `update_rect` represents hint of the
   // rect that was updated in the back buffer. If not specified the whole buffer
@@ -169,14 +170,19 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
   // This should be called when the GPU thread decides to skip a swap that was
   // invoked by the viz thread to ensure that we still run the relevant metrics
   // bookkeeping.
-  virtual void SwapBuffersSkipped(BufferPresentedCallback feedback,
-                                  OutputSurfaceFrame frame);
+  void SwapBuffersSkipped(BufferPresentedCallback feedback,
+                          OutputSurfaceFrame frame);
 
   bool is_emulated_rgbx() const { return is_emulated_rgbx_; }
 
   void SetDrawTimings(base::TimeTicks submitted, base::TimeTicks started);
 
   void SetDependencyTimings(base::TimeTicks task_ready);
+
+  // Copy and return the contents of the surface owned by this device. If this
+  // output device is surfaceless, then reads back from the OS compositor tree,
+  // including non-protected overlays.
+  virtual void ReadbackForTesting(base::OnceCallback<void(SkBitmap)> callback);
 
  protected:
   // Only valid between StartSwapBuffers and FinishSwapBuffers.
@@ -223,6 +229,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
   virtual bool Draw(SkSurface* sk_surface,
                     sk_sp<const GrDeferredDisplayList> ddl);
   virtual bool Draw(
+      gpu::GraphiteSharedContext* graphite_shared_context,
       SkSurface* sk_surface,
       std::unique_ptr<skgpu::graphite::Recording> graphite_recording,
       base::OnceClosure on_finished);
@@ -239,10 +246,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
       OutputSurfaceFrame frame,
       const std::optional<gfx::Rect>& damage_area = std::nullopt,
       std::vector<gpu::Mailbox> released_overlays = {});
-
-  // TODO(crbug.com/40266876): Reset device on context loss to fix dangling ptr.
-  const raw_ptr<GrDirectContext, DanglingUntriaged> gr_context_;
-  const raw_ptr<skgpu::graphite::Context> graphite_context_;
 
   OutputSurface::Capabilities capabilities_;
 

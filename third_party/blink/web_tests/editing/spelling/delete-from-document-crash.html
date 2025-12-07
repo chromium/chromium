@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<samp>
+  <script>
+    test(function () {
+      document.addEventListener("DOMContentLoaded", function () {
+        document.body.contentEditable = "true";
+
+        const selection = document.getSelection();
+        const style = document.querySelector('style');
+
+        // Add a large text to the style so that the text length can exceed the
+        // kHotModeChunkSize in CalculateHotModeCheckingRange.
+        // This will cause the crash in https://crbug.com/428041891.
+        style.appendChild(document.createTextNode(`/*${"#".repeat(1024)}*/`));
+
+        document.execCommand("SelectAll")
+        document.execCommand('InsertText', false, '111');
+        selection.modify('extend', 'backward', 'documentboundary')
+        selection.deleteFromDocument();
+
+        if (window.internals)
+          internals.runIdleTimeSpellChecker(document);
+      });
+    })
+  </script>
+  <style>
+    *:first-of-type {
+      display: table-caption;
+    }
+
+    *:root {
+      -webkit-text-security: disc;
+    }
+  </style>
+</samp>
+<p>This test passes if it doesn't crash</p>

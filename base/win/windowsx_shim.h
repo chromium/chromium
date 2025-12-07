@@ -5,24 +5,18 @@
 #ifndef BASE_WIN_WINDOWSX_SHIM_H_
 #define BASE_WIN_WINDOWSX_SHIM_H_
 
-// The Win32 platform header <windowsx.h> contains some macros for
-// common function names. To work around that, windowsx.h is not to be
-// included directly, and instead this file should be included. If one
-// of the removed Win32 macros is wanted, use the expanded form
-// manually instead.
-
-#ifdef _INC_WINDOWS_X
-#error "There is an include of windowsx.h in the code. Use windowsx_shim.h"
-#endif  // _INC_WINDOWS_X
+// Any Chromium headers which want to `#include <windowsx.h>` should instead
+// #include this header.
 
 #include <windowsx.h>
 
-#undef GetNextSibling  // Same as GetWindow(hwnd, GW_HWNDNEXT)
-#undef GetFirstChild   // Same as GetTopWindow(hwnd)
-#undef IsMaximized     // Defined to IsZoomed, use IsZoomed directly instead
-#undef IsMinimized     // Defined to IsIconic, use IsIconic directly instead
-#undef IsRestored      // Macro to check that neither WS_MINIMIZE, nor
-                       // WS_MAXIMIZE is set in the GetWindowStyle return
-                       // value.
+// `<windowsx.h>` #defines some macros which conflict with function names in
+// Chromium. Use the expanded form given below if you wanted to use one of these
+// macros.
+#undef GetNextSibling  // `GetWindow(hwnd, GW_HWNDNEXT)`
+#undef GetFirstChild   // `GetTopWindow(hwnd)`
+#undef IsMaximized     // `IsZoomed()`
+#undef IsMinimized     // `IsIconic()`
+#undef IsRestored  // `!(GetWindowStyle(hwnd) & (WS_MINIMIZE | WS_MAXIMIZE))`
 
 #endif  // BASE_WIN_WINDOWSX_SHIM_H_

@@ -1,0 +1,130 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module webui_browser.mojom;
+
+import "components/browser_apis/tab_strip/tab_strip_api_types.mojom";
+import "mojo/public/mojom/base/values.mojom";
+import "url/mojom/url.mojom";
+
+// Used by the WebUI page to bootstrap communication to/from the browser
+// process.
+interface PageHandlerFactory {
+  // The WebUI calls this method when the page is first initialized.
+  CreatePageHandler(
+      pending_remote<Page> page,
+      pending_receiver<PageHandler> handler);
+
+  // How far to offset tab strip to avoid overlapping with the caption buttons.
+  GetTabStripInset() => (int32 width);
+};
+
+// Fullscreen context when in fullscreen mode.
+enum FullscreenContext {
+  // Browser/user-initiated fullscreen.
+  kBrowser,
+  // Tab/content/renderer-initiated fullscreen.
+  kTab,
+};
+
+// Requests from the browser to WebUI ui for it.
+interface Page {
+  // Requests the location box be focused. `is_user_initiated` is true if the
+  // user has asked for it explicitly (e.g. by pressing Ctrl-L) rather than this
+  // being done automatically.
+  SetFocusToLocationBar(bool is_user_initiated);
+
+  // Update the Reload/Stop button's state based on `is_loading`.
+  SetReloadStopState(bool is_loading);
+
+  // Shows the side panel UI. The side panel contents is hosted by a guest
+  // contents.
+  ShowSidePanel(int32 guest_contents_id, string title);
+
+  // Closes the side panel, destroys the webview.
+  CloseSidePanel();
+
+  // Notifies the WebUI that fullscreen state has changed.
+  // `context` will be present only when `is_fullscreen` is true.
+  OnFullscreenModeChanged(bool is_fullscreen, FullscreenContext? context);
+};
+
+// Browser-side handler for requests from WebUI page.
+interface PageHandler {
+  // Get the guest id for a tab id and connect up the GuestHandler.
+  GetGuestIdForTabId(
+      tabs_api.mojom.NodeId tab_id,
+      pending_receiver<GuestHandler> handler) => (int32 guest_id);
+
+  // Load TabSearch in a guest contents and returns the guest id.
+  LoadTabSearch() => (int32 guest_id);
+
+  // Shows the Tab Search bubble.
+  ShowTabSearchBubble(string anchor_name);
+
+  // Opens the app menu.
+  OpenAppMenu();
+
+  // Opens the profile menu.
+  OpenProfileMenu();
+
+  // Launch Chrome DevTools inspecting the browser UI itself.
+  LaunchDevToolsForBrowser();
+
+  // Called when the side panel is closed.
+  OnSidePanelClosed();
+
+  // Minimizes the browser window.
+  Minimize();
+  // Maximizes the browser window.
+  Maximize();
+  // Restores the browser window to its not-minimized not-maximized size.
+  Restore();
+  // Closes the browser window.
+  Close();
+};
+
+// These are all the different icons that can be displayed in the chip next to
+// a URL in the omnibox.
+enum SecurityIcon {
+  HttpChromeRefresh,
+  SecurePageInfoChromeRefresh,
+  NoEncryption,
+  NotSecureWarningChromeRefresh,
+  BusinessChromeRefresh,
+  DangerousChromeRefresh,
+  ProductChromeRefresh,
+  ExtensionChromeRefresh,
+  OfflinePin,
+};
+
+// Browser-side handler for requests from a GuestContents.
+interface GuestHandler {
+  // Navigates the GuestContents to `src`.
+  Navigate(url.mojom.Url src);
+
+  // Checks if GuestContents can go back in the nav stack.
+  CanGoBack() => (bool can_go_back);
+
+  // Navigates the GuestContents to back in the nav stack.
+  GoBack();
+
+  // Checks if GuestContents with can go forward in the nav stack.
+  CanGoForward() => (bool can_go_forward);
+
+  // Navigates the GuestContents to forward in the nav stack.
+  GoForward();
+
+  // Reload the GuestContents.
+  Reload();
+
+  // Stop loading the GuestContents.
+  StopLoading();
+
+  // Opens the page info menu.
+  OpenPageInfoMenu();
+
+  // Returns appropriate security icon for this GuestContents.
+  GetSecurityIcon() => (SecurityIcon security_icon);
+};

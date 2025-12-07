@@ -24,46 +24,152 @@ chromium-metrics-reviews@google.com.
 
 <variants name="WebNNCoreMLActions">
   <variant name="CompiledModelLoad"
-      summary="Time to load the compiled .mlmodelc file."/>
+      summary="time to load the compiled .mlmodelc file."/>
   <variant name="MLModelCompile"
-      summary="Time to compile the generated .mlmodel file."/>
+      summary="time to compile the generated .mlmodel file."/>
   <variant name="MLModelTranslate"
-      summary="Time to translate from webnn graph to CoreML representation
+      summary="time to translate from webnn graph to CoreML representation
                and serializes to disk."/>
   <variant name="MLModelWrite"
-      summary="Time to write the temporary .mlmodel file."/>
+      summary="time to write the temporary .mlmodel file."/>
   <variant name="MLWeightsWrite"
-      summary="Time to write the temporary weights.bin file."/>
-  <variant name="ModelOutputRead"
-      summary="Time it took to read back the inference results."/>
-  <variant name="ModelPredict"
-      summary="Time predictionFromFeatures took when calling compute()."/>
+      summary="time to write the temporary weights.bin file."/>
   <variant name="ModelPredictWithDispatch"
-      summary="Time predictionFromFeatures took when calling dispatch()."/>
+      summary="time predictionFromFeatures took when calling dispatch()."/>
 </variants>
 
 <variants name="WebNNDMLActions">
-  <variant name="Compilation" summary="Time to compile the DirectML graph."/>
+  <variant name="Compilation" summary="time to compile the DirectML graph."/>
+  <variant name="RecordGraphExecutionOnBackgroundThread"
+      summary="time to record graph execution on background thread."/>
+  <variant name="RecordGraphExecutionOnMainThread"
+      summary="time to record graph execution on the main thread."/>
 </variants>
 
+<variants name="WebNNOrtActions">
+  <variant name="Compilation" summary="time to compile the graph."/>
+  <variant name="CreateEnvironment"
+      summary="time to create the ORT environment."/>
+  <variant name="Inference" summary="time to inference."/>
+</variants>
+
+<histogram name="WebNN.ConstantDataSizeInKB" units="KB"
+    expires_after="2026-06-27">
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>Records the constant data sizes in KB.</summary>
+</histogram>
+
 <histogram name="WebNN.CoreML.TimingMs.{WebNNCoreMLActions}" units="ms"
-    expires_after="2025-02-26">
+    expires_after="2026-06-27">
   <owner>reillyg@chromium.org</owner>
   <owner>src/services/webnn/OWNERS</owner>
   <summary>
-    The time taken to perform a WebNN CoreML action. This includes model
-    creation, model compilation, and model inference.
+    The time taken to perform a WebNN CoreML action. This includes
+    {WebNNCoreMLActions}
   </summary>
+  <token key="WebNNCoreMLActions" variants="WebNNCoreMLActions"/>
+</histogram>
+
+<histogram name="WebNN.DeviceType" enum="DeviceTypeUma"
+    expires_after="2026-06-27">
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>Records what device type WebNN is running on.</summary>
 </histogram>
 
 <histogram name="WebNN.DML.TimingMs.{WebNNDMLActions}" units="ms"
-    expires_after="2025-06-27">
+    expires_after="2026-06-27">
   <owner>reillyg@chromium.org</owner>
   <owner>src/services/webnn/OWNERS</owner>
   <summary>
-    The time taken to perform a WebNN DML action. This includes model
-    compilation.
+    The time taken to perform a WebNN DML action. This includes
+    {WebNNDMLActions}
   </summary>
+  <token key="WebNNDMLActions" variants="WebNNDMLActions"/>
+</histogram>
+
+<histogram name="WebNN.DMLCreateDevice.Error" enum="Hresult"
+    expires_after="2026-06-27">
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>
+    The HRESULT returned when an attempt to create a dml device fails.
+  </summary>
+</histogram>
+
+<histogram name="WebNN.MLTensor.TimingMs.Read" units="ms"
+    expires_after="2026-06-27">
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>The time taken to read the ml tensor.</summary>
+</histogram>
+
+<histogram name="WebNN.Operator" enum="MLGraphOperatorUma"
+    expires_after="2026-06-27">
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>
+    When an MLGraph is built using WebNN, this histogram records whether a given
+    operator has been used. The enum value GraphBuilt is always logged once per
+    MLGraph, so to see the prevalence of a given operator, you need to divide
+    its count by GraphBuilt count.
+  </summary>
+</histogram>
+
+<histogram name="WebNN.ORT.TimingMs.{WebNNOrtActions}" units="ms"
+    expires_after="2026-06-27">
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>
+    The time taken to perform a WebNN ORT action. This includes
+    {WebNNOrtActions}
+  </summary>
+  <token key="WebNNOrtActions" variants="WebNNOrtActions"/>
+</histogram>
+
+<histogram name="WebNN.ORT.WinAppRuntimeInstallState"
+    enum="WinAppRuntimeInstallStateUma" expires_after="2026-06-27">
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>
+    This histogram records the installation state during installation of the
+    Windows App Runtime package at browser startup. The state reflects whether
+    the installation completed, failed, or encountered other relevant
+    conditions.
+  </summary>
+</histogram>
+
+<histogram name="WebNN.ORT.{PackageDependencyAction}.ErrorResult"
+    enum="Hresult" expires_after="2026-06-27">
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>
+    This histogram records the HRESULT of {PackageDependencyAction}. This action
+    occurs during installation of the Windows App Runtime package at browser
+    startup, or when initializing the WebNN ORT backend.
+  </summary>
+  <token key="PackageDependencyAction">
+    <variant name="AddPackageDependency"/>
+    <variant name="DeletePackageDependency"/>
+    <variant name="TryCreatePackageDependency"/>
+  </token>
+</histogram>
+
+<histogram name="WebNN.ORT.{WebNNOrtExecutionProvider}.Status"
+    enum="ExecutionProviderStatusUma" expires_after="2026-06-27">
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>
+    WebNN ORT backend can run on different execution providers (EPs). This
+    histogram records the status of {WebNNOrtExecutionProvider} during the EP
+    initialization, queried by EP Catalog API.
+  </summary>
+  <token key="WebNNOrtExecutionProvider">
+    <variant name="NvTensorRTRTXExecutionProvider"/>
+    <variant name="OpenVINOExecutionProvider"/>
+    <variant name="QNNExecutionProvider"/>
+  </token>
 </histogram>
 
 </histograms>

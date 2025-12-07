@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/strings/string_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -17,6 +17,8 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/display/screen_base.h"
 #include "ui/display/test/test_screen.h"
@@ -25,10 +27,10 @@
 #include "content/browser/renderer_host/test_render_widget_host_view_mac_factory.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/shell.h"
 #include "ui/display/test/display_manager_test_api.h"  // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif                                                 // BUILDFLAG(IS_CHROMEOS)
 
 // Fake screen that allows tests to dynamically override the "current" display
 // for a window or view even if the underlying OS does not signal a screen
@@ -72,19 +74,22 @@ class FakeScreen : public display::ScreenBase {
 class MAYBE_WindowManagementTest : public InProcessBrowserTest {
  public:
   void SetUp() override {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+    feature_list_.InitWithFeatures(
+        {blink::features::kScreenDetailedHdrHeadroom}, {});
+
+#if !BUILDFLAG(IS_CHROMEOS)
     screen_.display_list().AddDisplay({1, gfx::Rect(100, 1, 801, 802)},
                                       display::DisplayList::Type::PRIMARY);
     display::Screen::SetScreenInstance(&screen_);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
     InProcessBrowserTest::SetUp();
   }
 
   void TearDown() override {
     InProcessBrowserTest::TearDown();
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     display::Screen::SetScreenInstance(nullptr);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   }
 
   void SetUpOnMainThread() override {
@@ -102,7 +107,7 @@ class MAYBE_WindowManagementTest : public InProcessBrowserTest {
     net::test_server::RegisterDefaultHandlers(https_test_server_.get());
     content::SetupCrossSiteRedirector(https_test_server_.get());
     ASSERT_TRUE(https_test_server_->Start());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
         .UpdateDisplay("100+1-801x802");
 #endif
@@ -139,13 +144,14 @@ class MAYBE_WindowManagementTest : public InProcessBrowserTest {
 
  protected:
   std::unique_ptr<net::EmbeddedTestServer> https_test_server_;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  base::test::ScopedFeatureList feature_list_;
+#if !BUILDFLAG(IS_CHROMEOS)
   FakeScreen screen_;
 #endif
 };
 
 IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, OnScreensChangeEvent) {
-  ASSERT_EQ(1, display::Screen::GetScreen()->GetNumDisplays());
+  ASSERT_EQ(1, display::Screen::Get()->GetNumDisplays());
   SetupTwoIframes();
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
   content::RenderFrameHost* local_child =
@@ -189,14 +195,14 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, OnScreensChangeEvent) {
   EXPECT_TRUE(ExecJs(tab, add_screens_change_promise));
   EXPECT_TRUE(ExecJs(local_child, add_screens_change_promise));
   EXPECT_TRUE(ExecJs(remote_child, add_screens_change_promise));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("100+100-801x802,901+100-803x804");
 #else
   screen_.display_list().AddDisplay({2, gfx::Rect(901, 100, 803, 804)},
                                     display::DisplayList::Type::PRIMARY);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  ASSERT_EQ(2, display::Screen::Get()->GetNumDisplays());
 
   auto* await_screens_change = R"(
       (async () => {
@@ -218,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, OnScreensChangeEvent) {
   EXPECT_TRUE(ExecJs(tab, add_screens_change_promise));
   EXPECT_TRUE(ExecJs(local_child, add_screens_change_promise));
   EXPECT_TRUE(ExecJs(remote_child, add_screens_change_promise));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("901+100-803x804");
 #else
@@ -226,8 +232,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, OnScreensChangeEvent) {
   EXPECT_EQ(screen_.display_list().displays().size(), 2u);
   screen_.display_list().RemoveDisplay(1);
   EXPECT_EQ(screen_.display_list().displays().size(), 1u);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  ASSERT_EQ(1, display::Screen::GetScreen()->GetNumDisplays());
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  ASSERT_EQ(1, display::Screen::Get()->GetNumDisplays());
 
   {
     auto result = content::ListValueOf(803);
@@ -244,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, OnScreensChangeEvent) {
   EXPECT_TRUE(ExecJs(tab, add_screens_change_promise));
   EXPECT_TRUE(ExecJs(local_child, add_screens_change_promise));
   EXPECT_TRUE(ExecJs(remote_child, add_screens_change_promise));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("0+0-803x600,1000+0-804x600");
 #else
@@ -253,8 +259,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, OnScreensChangeEvent) {
                                     display::DisplayList::Type::PRIMARY);
   screen_.display_list().AddDisplay({4, gfx::Rect(0, 4, 804, 600)},
                                     display::DisplayList::Type::NOT_PRIMARY);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  ASSERT_EQ(2, display::Screen::Get()->GetNumDisplays());
 
   {
     auto result = content::ListValueOf(803, 804);
@@ -270,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, OnScreensChangeEvent) {
 // also fires in the same scenarios.  (This is not true in all cases, e.g.
 // isInternal changing, but is true for width/height tests here.)
 IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, OnCurrentScreenChangeEvent) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("100+100-801x802,901+100-803x804");
 #else
@@ -278,8 +284,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, OnCurrentScreenChangeEvent) {
                                        display::DisplayList::Type::PRIMARY);
   screen_.display_list().AddDisplay({2, gfx::Rect(901, 100, 803, 802)},
                                     display::DisplayList::Type::NOT_PRIMARY);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  ASSERT_EQ(2, display::Screen::Get()->GetNumDisplays());
 
   SetupTwoIframes();
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
@@ -326,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, OnCurrentScreenChangeEvent) {
   EXPECT_TRUE(ExecJs(local_child, add_current_screen_change_promise));
   EXPECT_TRUE(ExecJs(remote_child, add_current_screen_change_promise));
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   screen_.SetCurrentDisplayOverride(2);
 #if BUILDFLAG(IS_MAC)
   // On Mac, ScreenInfo will not update if the window does change displays
@@ -336,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, OnCurrentScreenChangeEvent) {
           ->tab_strip_model()
           ->GetActiveWebContents()
           ->GetRenderWidgetHostView(),
-      display::Screen::GetScreen()->GetScreenInfosNearestDisplay(2));
+      display::Screen::Get()->GetScreenInfosNearestDisplay(2));
 
 #endif
 #endif
@@ -367,13 +373,13 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, OnCurrentScreenChangeEvent) {
   EXPECT_TRUE(ExecJs(local_child, add_current_screen_change_promise));
   EXPECT_TRUE(ExecJs(remote_child, add_current_screen_change_promise));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("100+100-801x802,901+100-802x300");
 #else
   screen_.display_list().UpdateDisplay({2, gfx::Rect(901, 100, 802, 300)},
                                        display::DisplayList::Type::NOT_PRIMARY);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   auto* await_change_height = R"(
       (async () => {
@@ -397,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, OnCurrentScreenChangeEvent) {
 // Test that onchange events for individual screens in the screen list are
 // supported.
 IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, ScreenDetailedOnChange) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("100+100-801x802,901+100-802x803");
 #else
@@ -405,8 +411,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, ScreenDetailedOnChange) {
                                        display::DisplayList::Type::PRIMARY);
   screen_.display_list().AddDisplay({2, gfx::Rect(901, 100, 802, 803)},
                                     display::DisplayList::Type::NOT_PRIMARY);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  ASSERT_EQ(2, display::Screen::Get()->GetNumDisplays());
 
   SetupTwoIframes();
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
@@ -454,13 +460,13 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, ScreenDetailedOnChange) {
   EXPECT_TRUE(ExecJs(local_child, add_change0));
   EXPECT_TRUE(ExecJs(remote_child, add_change0));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("100+100-801x301,901+100-802x803");
 #else
   screen_.display_list().UpdateDisplay({1, gfx::Rect(100, 100, 801, 301)},
                                        display::DisplayList::Type::PRIMARY);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   auto* await_change0_height = R"(
       (async () => {
@@ -486,13 +492,13 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, ScreenDetailedOnChange) {
   EXPECT_TRUE(ExecJs(local_child, add_change1));
   EXPECT_TRUE(ExecJs(remote_child, add_change1));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("100+100-801x301,901+100-802x302");
 #else
   screen_.display_list().UpdateDisplay({2, gfx::Rect(901, 100, 802, 302)},
                                        display::DisplayList::Type::NOT_PRIMARY);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   auto* await_change1_height = R"(
       (async () => {
@@ -520,7 +526,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, ScreenDetailedOnChange) {
   EXPECT_TRUE(ExecJs(local_child, add_both_changes));
   EXPECT_TRUE(ExecJs(remote_child, add_both_changes));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("100+100-401x301,901+100-402x302");
 #else
@@ -528,7 +534,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, ScreenDetailedOnChange) {
                                        display::DisplayList::Type::PRIMARY);
   screen_.display_list().UpdateDisplay({2, gfx::Rect(901, 100, 402, 302)},
                                        display::DisplayList::Type::NOT_PRIMARY);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   auto* await_both_changes_width = R"(
       (async () => {
@@ -552,6 +558,124 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, ScreenDetailedOnChange) {
   EXPECT_EQ(true, EvalJs(local_child, await_both_changes_width));
   EXPECT_EQ(true, EvalJs(remote_child, await_both_changes_width));
 }
+
+// Test that onchange events for individual screens in the screen list are
+// supported.
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest,
+                       ScreenDetailedOnHdrHeadroomChange) {
+  display::Display display(1, gfx::Rect(100, 100, 801, 802));
+  auto display_cs = display.GetColorSpaces();
+  // Transitions between HDR headroom 0 and HDR headroom >0 will result in the
+  // bit depth from 8 to 10. Start at 10 bit, to avoid extra change events.
+  display.set_color_depth(30);
+  display.set_depth_per_component(10);
+  screen_.display_list().UpdateDisplay(display,
+                                       display::DisplayList::Type::PRIMARY);
+  ASSERT_EQ(1, display::Screen::Get()->GetNumDisplays());
+
+  SetupTwoIframes();
+  auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
+
+  EXPECT_EQ(true, EvalJs(tab, R"(
+      var screenDetails;
+      var promiseForEvent = (target, evt) => {
+        return new Promise((resolve) => {
+          const handler = (e) => {
+            target.removeEventListener(evt, handler);
+            resolve(e);
+          };
+          target.addEventListener(evt, handler);
+        });
+      }
+      var screenChanges = 0;
+      var screenHdrHeadroomChanges = 0;
+      (async () => {
+        screenDetails = await self.getScreenDetails();
+        if (screenDetails.screens.length !== 1)
+          return false;
+        // Add some event listeners for individual screens.
+        screenDetails.screens[0].addEventListener('change', () => {
+          screenChanges++;
+        });
+        screenDetails.screens[0].addEventListener('hdrheadroomchange', () => {
+          screenHdrHeadroomChanges++;
+        });
+        return true;
+      })();
+  )"));
+
+  // Update the display to have a different height. Ensure that the HDR headroom
+  // event does not fire.
+  {
+    EXPECT_TRUE(ExecJs(tab, R"(
+      var change0 = promiseForEvent(screenDetails.screens[0], 'change');
+    )"));
+    display.set_bounds(gfx::Rect(100, 100, 801, 301));
+    screen_.display_list().UpdateDisplay(display,
+                                         display::DisplayList::Type::PRIMARY);
+    EXPECT_EQ(301, EvalJs(tab, R"(
+        (async () => {
+            if (!change0) return -1;
+            await change0;
+            if (screenChanges !== 1)
+              return -2;
+            if (screenHdrHeadroomChanges !== 0)
+              return -3;
+            return screenDetails.screens[0].height;
+        })();
+    )"));
+  }
+
+  // Update the display's HDR headroom. Ensure that the HDR headroom event
+  // fires, but the change event does not fire.
+  {
+    EXPECT_TRUE(ExecJs(tab, R"(
+      var change1 = promiseForEvent(screenDetails.screens[0],
+                                    'hdrheadroomchange');
+    )"));
+    display_cs.SetHDRMaxLuminanceRelative(2.f);
+    display.SetColorSpaces(display_cs);
+    screen_.display_list().UpdateDisplay(display,
+                                         display::DisplayList::Type::PRIMARY);
+    EXPECT_EQ(1, EvalJs(tab, R"(
+        (async () => {
+            if (!change1) return -4;
+            await change1;
+            if (screenChanges !== 1)
+              return -5;
+            if (screenHdrHeadroomChanges !== 1)
+              return -6;
+            return screenDetails.screens[0].hdrHeadroom;
+        })();
+    )"));
+  }
+
+  // Update the display's HDR headroom again. Ensure that the HDR headroom event
+  // fires, but the change event does not fire.
+  {
+    EXPECT_TRUE(ExecJs(tab, R"(
+      var change2 = promiseForEvent(screenDetails.screens[0],
+                                    'hdrheadroomchange');
+    )"));
+    display_cs.SetHDRMaxLuminanceRelative(4.f);
+    display.SetColorSpaces(display_cs);
+    screen_.display_list().UpdateDisplay(display,
+                                         display::DisplayList::Type::PRIMARY);
+    EXPECT_EQ(2, EvalJs(tab, R"(
+        (async () => {
+            if (!change2) return -7;
+            await change2;
+            if (screenChanges !== 1)
+              return -8;
+            if (screenHdrHeadroomChanges !== 2)
+              return -9;
+            return screenDetails.screens[0].hdrHeadroom;
+        })();
+    )"));
+  }
+}
+#endif
 
 // Tests that the old alias for window-management throws an error.
 // See: https://chromestatus.com/feature/5137018030391296

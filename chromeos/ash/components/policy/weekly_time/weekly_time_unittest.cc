@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/policy/weekly_time/weekly_time.h"
 
 #include <memory>
@@ -14,6 +9,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
@@ -101,7 +97,7 @@ TEST_P(SingleWeeklyTimeTest, ExtractFromProto_InvalidDay) {
 
 TEST_P(SingleWeeklyTimeTest, ExtractFromProto_InvalidTime) {
   em::WeeklyTimeProto proto;
-  proto.set_day_of_week(kWeekdays[day_of_week()]);
+  proto.set_day_of_week(UNSAFE_TODO(kWeekdays[day_of_week()]));
   proto.set_time(-1);
   auto result = WeeklyTime::ExtractFromProto(proto, timezone_offset());
   ASSERT_FALSE(result);
@@ -110,7 +106,7 @@ TEST_P(SingleWeeklyTimeTest, ExtractFromProto_InvalidTime) {
 TEST_P(SingleWeeklyTimeTest, ExtractFromProto_Valid) {
   int milliseconds = minutes() * kMinute.InMilliseconds();
   em::WeeklyTimeProto proto;
-  proto.set_day_of_week(kWeekdays[day_of_week()]);
+  proto.set_day_of_week(UNSAFE_TODO(kWeekdays[day_of_week()]));
   proto.set_time(milliseconds);
   auto result = WeeklyTime::ExtractFromProto(proto, timezone_offset());
   ASSERT_TRUE(result);

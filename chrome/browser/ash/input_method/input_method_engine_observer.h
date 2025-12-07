@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_INPUT_METHOD_ENGINE_OBSERVER_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_INPUT_METHOD_ENGINE_OBSERVER_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>

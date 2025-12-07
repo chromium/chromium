@@ -60,17 +60,6 @@ bool StrEndsWith(const wchar_t* str, const wchar_t* end_str);
 // (specified by start_str).
 bool StrStartsWith(const wchar_t* str, const wchar_t* start_str);
 
-// Case insensitive search of the first occurrence of |find| in |source|.
-const wchar_t* SearchStringI(const wchar_t* source, const wchar_t* find);
-
-// Searches for |tag| within |str|.  Returns true if |tag| is found and is
-// immediately followed by '-' or is at the end of the string.  If |position|
-// is non-nullptr, the location of the tag is returned in |*position| on
-// success.
-bool FindTagInStr(const wchar_t* str,
-                  const wchar_t* tag,
-                  const wchar_t** position);
-
 // Takes the path to file and returns a pointer to the basename component.
 // Example input -> output:
 //     c:\full\path\to\file.ext -> file.ext
@@ -123,11 +112,6 @@ class StackString {
   size_t length() const { return SafeStrLen(buffer_, kCapacity); }
 
   bool empty() const { return length() == 0; }
-
-  // Does a case insensitive search for a substring.
-  const wchar_t* findi(const wchar_t* find) const {
-    return SearchStringI(buffer_, find);
-  }
 
   // Case insensitive string compare.
   int comparei(const wchar_t* str) const { return lstrcmpiW(buffer_, str); }

@@ -50,7 +50,7 @@ CookieDeletionInfo::TimeRange::TimeRange(base::Time start, base::Time end)
 CookieDeletionInfo::TimeRange& CookieDeletionInfo::TimeRange::operator=(
     const TimeRange& rhs) = default;
 
-bool CookieDeletionInfo::TimeRange::Contains(const base::Time& time) const {
+bool CookieDeletionInfo::TimeRange::Contains(base::Time time) const {
   DCHECK(!time.is_null());
 
   if (!start_.is_null() && start_ == end_)

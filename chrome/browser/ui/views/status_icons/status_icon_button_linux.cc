@@ -11,12 +11,17 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/wm_role_names_linux.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/transform.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/native_ui_types.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/ozone/public/ozone_platform.h"
+#include "ui/views/border.h"
 
 namespace {
 
@@ -39,8 +44,12 @@ StatusIconButtonLinux::StatusIconButtonLinux()
 
 StatusIconButtonLinux::~StatusIconButtonLinux() = default;
 
-void StatusIconButtonLinux::SetIcon(const gfx::ImageSkia& image) {
+void StatusIconButtonLinux::SetImage(const gfx::ImageSkia& image) {
   SchedulePaint();
+}
+
+void StatusIconButtonLinux::SetIcon(const gfx::VectorIcon& icon) {
+  SetImage(gfx::CreateVectorIcon(icon, SK_ColorWHITE));
 }
 
 void StatusIconButtonLinux::SetToolTip(const std::u16string& tool_tip) {
@@ -52,13 +61,24 @@ void StatusIconButtonLinux::UpdatePlatformContextMenu(ui::MenuModel* model) {
 }
 
 void StatusIconButtonLinux::OnSetDelegate() {
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformRuntimeProperties()
+           .supports_system_tray_windowing) {
+    return;
+  }
+
+  // The delegate may have been cleared.
+  if (!delegate_) {
+    return;
+  }
+
   widget_ = std::make_unique<StatusIconWidget>();
 
   const int width = std::max(1, delegate_->GetImage().width());
   const int height = std::max(1, delegate_->GetImage().height());
 
   views::Widget::InitParams params(
-      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.activatable = views::Widget::InitParams::Activatable::kNo;
@@ -82,10 +102,10 @@ void StatusIconButtonLinux::OnSetDelegate() {
   }
 
   widget_->SetContentsView(this);
-  set_owned_by_client();
+  set_owned_by_client(OwnedByClientPassKey());
 
   SetBorder(nullptr);
-  SetIcon(delegate_->GetImage());
+  SetImage(delegate_->GetImage());
   SetTooltipText(delegate_->GetToolTip());
   set_context_menu_controller(this);
 
@@ -95,7 +115,7 @@ void StatusIconButtonLinux::OnSetDelegate() {
 void StatusIconButtonLinux::ShowContextMenuForViewImpl(
     View* source,
     const gfx::Point& point,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   ui::MenuModel* menu = delegate_->GetMenuModel();
   if (!menu) {
     return;

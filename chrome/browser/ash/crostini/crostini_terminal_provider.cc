@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/extensions/api/terminal/startup_status.h"
 #include "chrome/browser/ui/views/crostini/crostini_recovery_view.h"
@@ -105,7 +106,7 @@ bool CrostiniTerminalProvider::AllowedByPolicy() {
 std::string CrostiniTerminalProvider::PrepareCwd(storage::FileSystemURL url) {
   std::string cwd;
   CrostiniManager::RestartOptions options;
-  auto* share_path = guest_os::GuestOsSharePath::GetForProfile(profile_);
+  auto* share_path = guest_os::GuestOsSharePathFactory::GetForProfile(profile_);
   base::FilePath path;
   if (file_manager::util::ConvertFileSystemURLToPathInsideCrostini(
           profile_, url, &path)) {

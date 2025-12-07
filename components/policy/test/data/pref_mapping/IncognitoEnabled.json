@@ -4,11 +4,18 @@
       "win",
       "linux",
       "mac",
-      "chromeos_ash",
-      "chromeos_lacros",
+      "chromeos",
       "android"
     ],
     "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "incognito.mode_availability": {
+            "default_value": 0
+          }
+        }
+      },
       {
         "policies": {
           "IncognitoEnabled": false
@@ -16,6 +23,52 @@
         "prefs": {
           "incognito.mode_availability": {
             "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "IncognitoEnabled": true
+        },
+        "prefs": {
+          "incognito.mode_availability": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "note": "IncognitoModeAvailability policy trumps deprecated IncognitoEnabled policy",
+        "policies": {
+          "IncognitoEnabled": true,
+          "IncognitoModeAvailability": 1
+        },
+        "prefs": {
+          "incognito.mode_availability": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "note": "IncognitoModeAvailability policy trumps deprecated IncognitoEnabled policy",
+        "policies": {
+          "IncognitoEnabled": false,
+          "IncognitoModeAvailability": 0
+        },
+        "prefs": {
+          "incognito.mode_availability": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "note": "IncognitoModeAvailability policy trumps deprecated IncognitoEnabled policy",
+        "policies": {
+          "IncognitoEnabled": false,
+          "IncognitoModeAvailability": 2
+        },
+        "prefs": {
+          "incognito.mode_availability": {
+            "value": 2
           }
         }
       }

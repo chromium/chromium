@@ -24,15 +24,6 @@ class VIEWS_EXPORT SublevelManager : public WidgetObserver {
 
   ~SublevelManager() override;
 
-  // Tracks a child widget.
-  void TrackChildWidget(Widget* child);
-
-  // Untracks a child widget.
-  // This is intended for internal use and to work around platform-specific
-  // compatibility issues.
-  // You should not use this.
-  void UntrackChildWidget(Widget* child);
-
   // Sets the sublevel of `owner_` and triggers `EnsureOwnerSublevel()`.
   void SetSublevel(int sublevel);
 
@@ -47,10 +38,15 @@ class VIEWS_EXPORT SublevelManager : public WidgetObserver {
   // are respected.
   void EnsureOwnerTreeSublevel();
 
- private:
   // WidgetObserver:
-  void OnWidgetDestroying(Widget* owner) override;
+  void OnWidgetChildAdded(Widget* owner, Widget* child) override;
+  // There are some calls to `OnWidgetChildRemoved` from external callers.  This
+  // is intended for internal use and to work around platform-specific
+  // compatibility issues.
+  // You should not use this directly.
+  void OnWidgetChildRemoved(Widget* owner, Widget* child) override;
 
+ private:
   // Repositions `child_` among its siblings of the same z-order level
   // to ensure that its sublevel is respected.
   void OrderChildWidget(Widget* child);

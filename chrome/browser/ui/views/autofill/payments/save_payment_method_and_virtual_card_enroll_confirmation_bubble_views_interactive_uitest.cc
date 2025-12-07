@@ -4,22 +4,24 @@
 
 #include <optional>
 
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl_test_api.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
-#include "chrome/browser/ui/views/autofill/payments/save_payment_method_and_virtual_card_enroll_confirmation_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_payment_icon_view.h"
+#include "chrome/browser/ui/views/autofill/payments/save_payment_method_and_virtual_card_enroll_confirmation_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_icon_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/widget_test.h"
@@ -27,9 +29,29 @@
 namespace autofill {
 
 class SaveCardConfirmationBubbleViewsInteractiveUiTest
-    : public InProcessBrowserTest {
+    : public InProcessBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
-  SaveCardConfirmationBubbleViewsInteractiveUiTest() = default;
+  SaveCardConfirmationBubbleViewsInteractiveUiTest() {
+    const bool is_page_action_migration_enabled = GetParam();
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {};
+    std::vector<base::test::FeatureRef> disabled_features = {};
+
+    if (is_page_action_migration_enabled) {
+      enabled_features.push_back(
+          {::features::kPageActionsMigration,
+           {
+               {::features::kPageActionsMigrationSavePayments.name, "true"},
+           }});
+    } else {
+      disabled_features.emplace_back(::features::kPageActionsMigration);
+    }
+
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
+
+    CHECK_EQ(IsPageActionMigrationEnabled(), is_page_action_migration_enabled);
+  }
   ~SaveCardConfirmationBubbleViewsInteractiveUiTest() override = default;
   SaveCardConfirmationBubbleViewsInteractiveUiTest(
       const SaveCardConfirmationBubbleViewsInteractiveUiTest&) = delete;
@@ -56,18 +78,24 @@ class SaveCardConfirmationBubbleViewsInteractiveUiTest
   }
 
   SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews* BubbleView() {
-    return static_cast<SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews*>(
+    return static_cast<
+        SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews*>(
         GetController()->GetPaymentBubbleView());
   }
 
-  SavePaymentIconView* IconView() {
+  IconLabelBubbleView* IconView() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
-    PageActionIconView* icon =
-        browser_view->toolbar_button_provider()->GetPageActionIconView(
-            PageActionIconType::kSaveCard);
+    IconLabelBubbleView* icon;
+    if (IsPageActionMigrationEnabled()) {
+      icon = browser_view->toolbar_button_provider()->GetPageActionView(
+          kActionShowPaymentsBubbleOrPage);
+    } else {
+      icon = browser_view->toolbar_button_provider()->GetPageActionIconView(
+          PageActionIconType::kSaveCard);
+    }
     CHECK(icon);
-    return static_cast<SavePaymentIconView*>(icon);
+    return icon;
   }
 
   void ShowBubble(bool card_saved) {
@@ -83,21 +111,24 @@ class SaveCardConfirmationBubbleViewsInteractiveUiTest
     destroyed_waiter.Wait();
   }
 
+  bool IsPageActionMigrationEnabled() {
+    return IsPageActionMigrated(PageActionIconType::kSaveCard);
+  }
+
  private:
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
-  base::test::ScopedFeatureList feature_list_{
-      features::kAutofillEnableSaveCardLoadingAndConfirmation};
+  base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SaveCardConfirmationBubbleViewsInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(SaveCardConfirmationBubbleViewsInteractiveUiTest,
                        ShowSuccessBubbleViewThenHideBubbleView) {
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
 
   ShowBubble(/*card_saved=*/true);
 
   EXPECT_NE(BubbleView(), nullptr);
-  // Checks the count of accessibility event registered by AXEventManager when
+  // Checks the count of accessibility event registered by AXUpdateNotifier when
   // bubble is shown.
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
 
@@ -123,7 +154,8 @@ IN_PROC_BROWSER_TEST_F(SaveCardConfirmationBubbleViewsInteractiveUiTest,
                 .GetCachedName(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT));
-  EXPECT_EQ(BubbleView()->buttons(), ui::DIALOG_BUTTON_NONE);
+  EXPECT_EQ(BubbleView()->buttons(),
+            static_cast<int>(ui::mojom::DialogButton::kNone));
   EXPECT_TRUE(IconView()->GetVisible());
 
   HideBubble(views::Widget::ClosedReason::kLostFocus);
@@ -131,14 +163,14 @@ IN_PROC_BROWSER_TEST_F(SaveCardConfirmationBubbleViewsInteractiveUiTest,
   EXPECT_FALSE(IconView()->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(SaveCardConfirmationBubbleViewsInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(SaveCardConfirmationBubbleViewsInteractiveUiTest,
                        ShowFailureBubbleViewThenHideBubbleView) {
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
   ShowBubble(/*card_saved=*/false);
 
   EXPECT_NE(BubbleView(), nullptr);
-  // Checks the count of accessibility event registered by AXEventManager when
+  // Checks the count of accessibility event registered by AXUpdateNotifier when
   // bubble is shown.
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
 
@@ -162,9 +194,10 @@ IN_PROC_BROWSER_TEST_F(SaveCardConfirmationBubbleViewsInteractiveUiTest,
                 .GetCachedName(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_DESCRIPTION_TEXT));
-  EXPECT_EQ(BubbleView()->buttons(), ui::DIALOG_BUTTON_OK);
+  EXPECT_EQ(BubbleView()->buttons(),
+            static_cast<int>(ui::mojom::DialogButton::kOk));
   EXPECT_EQ(
-      BubbleView()->GetDialogButtonLabel(ui::DIALOG_BUTTON_OK),
+      BubbleView()->GetDialogButtonLabel(ui::mojom::DialogButton::kOk),
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUTTON_TEXT));
   EXPECT_EQ(
@@ -178,10 +211,39 @@ IN_PROC_BROWSER_TEST_F(SaveCardConfirmationBubbleViewsInteractiveUiTest,
   EXPECT_FALSE(IconView()->GetVisible());
 }
 
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SaveCardConfirmationBubbleViewsInteractiveUiTest,
+    ::testing::Bool(),
+    [](const ::testing::TestParamInfo<
+        SaveCardConfirmationBubbleViewsInteractiveUiTest::ParamType>& info) {
+      return base::StrCat({
+          info.param ? "NewPageAction" : "OldPageAction",
+      });
+    });
+
 class VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest
-    : public InProcessBrowserTest {
+    : public InProcessBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
-  VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest() = default;
+  VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {};
+    std::vector<base::test::FeatureRef> disabled_features = {};
+
+    if (GetParam()) {
+      enabled_features.push_back(
+          {::features::kPageActionsMigration,
+           {
+               {::features::kPageActionsMigrationVirtualCard.name, "true"},
+           }});
+    } else {
+      disabled_features.emplace_back(::features::kPageActionsMigration);
+    }
+
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
+  }
+
   ~VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest() override =
       default;
   VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest(
@@ -211,40 +273,44 @@ class VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest
   }
 
   SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews* BubbleView() {
-    return static_cast<SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews*>(
+    return static_cast<
+        SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews*>(
         GetController()->GetVirtualCardBubbleView());
   }
 
-  VirtualCardEnrollIconView* IconView() {
+  IconLabelBubbleView* IconView() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
-    PageActionIconView* icon =
-        browser_view->toolbar_button_provider()->GetPageActionIconView(
-            PageActionIconType::kVirtualCardEnroll);
+    IconLabelBubbleView* icon =
+        browser_view->toolbar_button_provider()->GetPageActionView(
+            kActionVirtualCardEnroll);
     CHECK(icon);
-    return static_cast<VirtualCardEnrollIconView*>(icon);
+    return icon;
   }
 
   void ShowBubble(bool is_vcn_enrolled) {
-    GetController()->ShowConfirmationBubbleView(is_vcn_enrolled);
+    GetController()->ShowConfirmationBubbleView(
+        is_vcn_enrolled
+            ? payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess
+            : payments::PaymentsAutofillClient::PaymentsRpcResult::
+                  kPermanentFailure);
   }
 
  private:
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
-  base::test::ScopedFeatureList feature_list_{
-      features::kAutofillEnableVcnEnrollLoadingAndConfirmation};
+  base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest,
     ShowSuccessBubbleViewThenHideBubbleView) {
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
 
   ShowBubble(/*is_vcn_enrolled=*/true);
 
   EXPECT_NE(BubbleView(), nullptr);
-  // Checks the count of accessibility event registered by AXEventManager when
+  // Checks the count of accessibility event registered by AXUpdateNotifier when
   // bubble is shown.
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
   EXPECT_TRUE(BubbleView()->ShouldShowCloseButton());
@@ -272,7 +338,8 @@ IN_PROC_BROWSER_TEST_F(
           .GetCachedName(),
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT));
-  EXPECT_EQ(BubbleView()->buttons(), ui::DIALOG_BUTTON_NONE);
+  EXPECT_EQ(BubbleView()->buttons(),
+            static_cast<int>(ui::mojom::DialogButton::kNone));
   EXPECT_TRUE(IconView()->GetVisible());
 
   GetController()->HideIconAndBubble();
@@ -280,7 +347,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(IconView()->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest,
     ShowFailureBubbleViewThenHideBubbleView) {
   CreditCard card = test::GetCreditCard();
@@ -290,13 +357,13 @@ IN_PROC_BROWSER_TEST_F(
       .SetUiModel(
           std::make_unique<VirtualCardEnrollUiModel>(enrollment_fields));
 
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
 
   ShowBubble(/*is_vcn_enrolled=*/false);
 
   EXPECT_NE(BubbleView(), nullptr);
-  // Checks the count of accessibility event registered by AXEventManager when
+  // Checks the count of accessibility event registered by AXUpdateNotifier when
   // bubble is shown.
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
   EXPECT_FALSE(BubbleView()->ShouldShowCloseButton());
@@ -324,9 +391,10 @@ IN_PROC_BROWSER_TEST_F(
       l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_CONFIRMATION_FAILURE_DESCRIPTION_TEXT,
           card.NetworkAndLastFourDigits()));
-  EXPECT_EQ(BubbleView()->buttons(), ui::DIALOG_BUTTON_OK);
+  EXPECT_EQ(BubbleView()->buttons(),
+            static_cast<int>(ui::mojom::DialogButton::kOk));
   EXPECT_EQ(
-      BubbleView()->GetDialogButtonLabel(ui::DIALOG_BUTTON_OK),
+      BubbleView()->GetDialogButtonLabel(ui::mojom::DialogButton::kOk),
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUTTON_TEXT));
   EXPECT_EQ(
@@ -339,5 +407,15 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(BubbleView(), nullptr);
   EXPECT_FALSE(IconView()->GetVisible());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest,
+    ::testing::Bool(),
+    [](const ::testing::TestParamInfo<
+        VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest::ParamType>&
+           info) {
+      return base::StrCat({info.param ? "NewPageAction" : "OldPageAction"});
+    });
 
 }  // namespace autofill

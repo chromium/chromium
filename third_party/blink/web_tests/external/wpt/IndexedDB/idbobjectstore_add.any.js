@@ -3,8 +3,8 @@
 // META: script=resources/support.js
 // @author Microsoft <https://www.microsoft.com>
 // @author Intel <http://www.intel.com>
+'use strict';
 
-'use_strict';
 
 async_test(t => {
     let db;
@@ -19,7 +19,7 @@ async_test(t => {
     };
 
     open_rq.onsuccess = function(e) {
-      const rq = db.transaction("store", "readonly", { durability: 'relaxed' })
+      const rq = db.transaction("store", "readonly")
         .objectStore("store")
         .get(record.key);
 
@@ -45,7 +45,7 @@ async_test(t => {
     };
 
     open_rq.onsuccess = function(e) {
-      const rq = db.transaction("store", "readonly", { durability: 'relaxed' })
+      const rq = db.transaction("store", "readonly")
         .objectStore("store")
         .get(key);
 
@@ -127,7 +127,7 @@ async_test(t => {
     };
 
     open_rq.onsuccess = function(e) {
-      const rq = db.transaction("store", "readonly", { durability: 'relaxed' })
+      const rq = db.transaction("store", "readonly")
         .objectStore("store")
         .get(record.test.obj.key);
 
@@ -158,7 +158,7 @@ async_test(t => {
 
     open_rq.onsuccess = function(e) {
       const actual_keys = [];
-      const rq = db.transaction("store", "readonly", { durability: 'relaxed' })
+      const rq = db.transaction("store", "readonly")
         .objectStore("store")
         .openCursor();
 
@@ -194,7 +194,7 @@ async_test(t => {
 
     open_rq.onsuccess = function(e) {
       const actual_keys = [];
-      const rq = db.transaction("store", "readonly", { durability: 'relaxed' })
+      const rq = db.transaction("store", "readonly")
         .objectStore("store")
         .openCursor();
 
@@ -231,7 +231,7 @@ async_test(t => {
 
     open_rq.onsuccess = function(e) {
       const actual_keys = [];
-      const rq = db.transaction("store", "readonly", { durability: 'relaxed' })
+      const rq = db.transaction("store", "readonly")
         .objectStore("store")
         .openCursor();
 
@@ -256,7 +256,7 @@ async_test(t => {
     const open_rq = createdb(t);
     open_rq.onupgradeneeded = function(e) {
       let rq;
-      db = e.target.result;
+      const db = e.target.result;
       const objStore = db.createObjectStore("store", { keyPath: "key" });
 
       assert_throws_dom("DataError", function() {
@@ -380,8 +380,7 @@ async_test(t => {
     }
 
     open_rq.onsuccess = function (event) {
-        const txn = db.transaction("store", "readonly",
-         {durability: 'relaxed'});
+        const txn = db.transaction("store", "readonly");
         const ostore = txn.objectStore("store");
         t.step(function() {
             assert_throws_dom("ReadOnlyError", function() {

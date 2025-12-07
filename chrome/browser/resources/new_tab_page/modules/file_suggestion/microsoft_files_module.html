@@ -1,0 +1,22 @@
+<ntp-module-header
+    id="moduleHeaderElementV2"
+    header-text="$i18n{modulesMicrosoftFilesName}"
+    .menuItems="${this.getMenuItems_()}"
+    more-actions-text="${this.i18nRecursive('',
+                                  'modulesMoreActions',
+                                  'modulesMicrosoftFilesName')}"
+    @disable-button-click="${this.onDisableButtonClick_}"
+    @dismiss-button-click="${this.onDismissButtonClick_}"
+    @signout-button-click="${this.onSignOutButtonClick_}"
+    @info-button-click="${this.onInfoButtonClick_}">
+</ntp-module-header>
+<ntp-file-suggestion module-name="MicrosoftFiles"
+    id="microsoft-files"
+    .files="${this.files_}">
+</ntp-file-suggestion>
+${this.showInfoDialog_ ? html`
+  <ntp-info-dialog show-on-attach
+      .innerHTML="${this.i18nAdvanced('modulesMicrosoftFilesInfo')}"
+      @close="${this.onInfoDialogClose_}">
+  </ntp-info-dialog>
+` : ''}

@@ -37,10 +37,6 @@ enum State {
   // Chrome needs to ask the user to confirm password updating.
   PENDING_PASSWORD_UPDATE_STATE,
 
-  // A user opted in to account storage is about to lose some unsynced
-  // passwords.
-  WILL_DELETE_UNSYNCED_ACCOUNT_PASSWORDS_STATE,
-
   // The user used a profile credential to log in successfully and should see a
   // prompt that allows them to move the credential to their account store.
   MOVE_CREDENTIAL_AFTER_LOG_IN_STATE,
@@ -60,7 +56,7 @@ enum State {
   BIOMETRIC_AUTHENTICATION_CONFIRMATION_STATE,
 
   // A form that contained generated password and was missing username, was
-  // successfully submited. Only used when there were no credentials saved for
+  // successfully submitted. Only used when there were no credentials saved for
   // current domain.
   GENERATED_PASSWORD_CONFIRMATION_STATE,
 
@@ -77,15 +73,26 @@ enum State {
   // Move credential bubble opened from the footer in manage bubble.
   MOVE_CREDENTIAL_FROM_MANAGE_BUBBLE_STATE,
 
-  // DefaultStoreChanged bubble opened before showing save/update bubble, since
-  // the password store was changed without user interaction.
-  PASSWORD_STORE_CHANGED_BUBBLE_STATE,
-
   // Passkey was successfully created and saved.
   PASSKEY_SAVED_CONFIRMATION_STATE,
 
   // Passkey was successfully deleted.
   PASSKEY_DELETED_CONFIRMATION_STATE,
+
+  // Passkey was successfully updated.
+  PASSKEY_UPDATED_CONFIRMATION_STATE,
+
+  // Passkey was successfully deleted because it was not present on an all
+  // accepted credentials report.
+  PASSKEY_NOT_ACCEPTED_STATE,
+
+  // A passkey was created automatically to "upgrade" an existing password for
+  // the same website and user.
+  PASSKEY_UPGRADE_STATE,
+
+  // Password change flow ended successfully. User can trigger this state
+  // from the password change success toast.
+  PASSWORD_CHANGE_STATE,
 };
 
 }  // namespace password_manager::ui

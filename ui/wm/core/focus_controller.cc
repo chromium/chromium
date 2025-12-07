@@ -13,6 +13,7 @@
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_tracker.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event.h"
 #include "ui/wm/core/focus_rules.h"
@@ -26,8 +27,10 @@ namespace {
 // to the front. This function must be called before the modal transient is
 // stacked at the top to ensure correct stacking order.
 void StackTransientParentsBelowModalWindow(aura::Window* window) {
-  if (window->GetProperty(aura::client::kModalKey) != ui::MODAL_TYPE_WINDOW)
+  if (window->GetProperty(aura::client::kModalKey) !=
+      ui::mojom::ModalType::kWindow) {
     return;
+  }
 
   aura::Window* transient_parent = wm::GetTransientParent(window);
   while (transient_parent) {
@@ -49,6 +52,12 @@ FocusController::FocusController(FocusRules* rules)
 }
 
 FocusController::~FocusController() = default;
+
+void FocusController::SetFocusRules(std::unique_ptr<FocusRules> new_rules) {
+  CHECK(!pending_activation_);
+
+  rules_ = std::move(new_rules);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // FocusController, ActivationClient implementation:
@@ -410,8 +419,31 @@ bool FocusController::SetActiveWindow(
 }
 
 void FocusController::StackActiveWindow() {
-  if (active_window_) {
-    StackTransientParentsBelowModalWindow(active_window_);
+  if (!active_window_) {
+    return;
+  }
+
+  StackTransientParentsBelowModalWindow(active_window_);
+
+  // |active_window_| must be stacked below its transient siblings and above its
+  // non-transient siblings. Restacking is only needed if that is not already
+  // true.
+  bool needs_restack = false;
+  bool has_found_window = false;
+  for (const auto child_window : active_window_->parent()->children()) {
+    if (child_window == active_window_) {
+      has_found_window = true;
+      continue;
+    }
+
+    if (has_found_window !=
+        HasTransientAncestor(child_window, active_window_)) {
+      needs_restack = true;
+      break;
+    }
+  }
+
+  if (needs_restack) {
     active_window_->parent()->StackChildAtTop(active_window_);
   }
 }

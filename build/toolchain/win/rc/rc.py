@@ -8,6 +8,7 @@ A resource compiler for .rc files.
 
 options:
 -h, --help     Print this message.
+-Werror        Treat warnings as errors.
 -I<dir>        Add include path, used for both headers and resources.
 -imsvc<dir>    Add system include path, used for preprocessing only.
 /winsysroot<d> Set winsysroot, used for preprocessing only.
@@ -40,6 +41,7 @@ def ParseFlags():
   output = None
   input = None
   show_includes = False
+  werror = False
   # Parse.
   for flag in sys.argv[1:]:
     if flag == '-h' or flag == '--help':
@@ -63,6 +65,8 @@ def ParseFlags():
       pass
     elif flag == '/showIncludes':
       show_includes = True
+    elif flag == '-Werror':
+      werror = True
     elif (flag.startswith('-') or
           (flag.startswith('/') and not os.path.exists(flag))):
       print('rc.py: error: unknown flag', flag, file=sys.stderr)
@@ -81,7 +85,7 @@ def ParseFlags():
     output = os.path.splitext(input)[0] + '.res'
   Flags = namedtuple('Flags', [
       'includes', 'defines', 'output', 'imsvcs', 'winsysroot', 'input',
-      'show_includes'
+      'show_includes', 'werror'
   ])
   return Flags(includes=includes,
                defines=defines,
@@ -89,7 +93,8 @@ def ParseFlags():
                imsvcs=imsvcs,
                winsysroot=winsysroot,
                input=input,
-               show_includes=show_includes)
+               show_includes=show_includes,
+               werror=werror)
 
 
 def ReadInput(input):
@@ -141,6 +146,8 @@ def Preprocess(rc_file_data, flags):
     clang_cmd.append('-I' + os.path.dirname(flags.input))
   if flags.show_includes:
     clang_cmd.append('/showIncludes')
+  if flags.werror:
+    clang_cmd.append('/WX')
   clang_cmd += flags.imsvcs + flags.winsysroot + flags.includes + flags.defines
   p = subprocess.Popen(clang_cmd, stdin=subprocess.PIPE)
   p.communicate(input=rc_file_data)

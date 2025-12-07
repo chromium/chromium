@@ -68,7 +68,7 @@ class DeskTemplateSemanticsTest : public testing::TestWithParam<std::string> {
   apps::AppRegistryCache* app_cache() { return cache_.get(); }
 
  private:
-  // In memory model type store needs to be able to post tasks.
+  // In memory data type store needs to be able to post tasks.
   base::test::TaskEnvironment task_environment_;
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   std::unique_ptr<apps::AppRegistryCache> cache_;
@@ -79,7 +79,7 @@ class DeskTemplateSemanticsTest : public testing::TestWithParam<std::string> {
 
 TEST_P(DeskTemplateSemanticsTest, PolicyTemplateSemanticallyEquivalentToProto) {
   auto expected_json = base::JSONReader::ReadAndReturnValueWithError(
-      std::string_view(GetParam()));
+      std::string_view(GetParam()), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   EXPECT_TRUE(expected_json.has_value());
   EXPECT_TRUE(expected_json->is_dict());

@@ -10,15 +10,24 @@
 namespace profile_metrics {
 
 struct Counts {
-  base::HistogramBase::Sample total = 0;
-  base::HistogramBase::Sample signedin = 0;
-  base::HistogramBase::Sample supervised = 0;
-  base::HistogramBase::Sample active = 0;
-  base::HistogramBase::Sample unused = 0;
+  base::HistogramBase::Sample32 total = 0;
+  base::HistogramBase::Sample32 signedin = 0;
+  base::HistogramBase::Sample32 supervised = 0;
+  base::HistogramBase::Sample32 active = 0;
+  base::HistogramBase::Sample32 unused = 0;
 };
 
-// Logs metrics related to |counts|.
-void LogProfileMetricsCounts(const Counts& counts);
+enum class ProfileActivityThreshold {
+  kDuration1Day,
+  kDuration7Days,
+  kDuration28Days,  // Used as the default threshold check.
+};
+
+void LogTotalNumberOfProfiles(base::HistogramBase::Sample32 number_of_profiles);
+// Logs metrics related to `counts`. If `counts.total` is 0, nothing is
+// recorded.
+void LogProfileMetricsCounts(const Counts& counts,
+                             ProfileActivityThreshold activity_threshold);
 
 }  // namespace profile_metrics
 

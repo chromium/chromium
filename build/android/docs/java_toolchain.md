@@ -108,12 +108,9 @@ This step happens only when targets that have `jar_excluded_patterns` or
   further on in the build process.
   * E.g.: `R.class` files - a part of [Android Resources].
   * E.g.: `GEN_JNI.class` - a part of our [JNI] glue.
-  * E.g.: `AppHooksImpl.class` - how `chrome_java` wires up different
-    implementations for [non-public builds][apphooks].
 
 [JNI]: /third_party/jni_zero/README.md
 [Android Resources]: life_of_a_resource.md
-[apphooks]: /chrome/android/java/src/org/chromium/chrome/browser/AppHooksImpl.java
 
 ### Step 6: Per-Library Dexing
 

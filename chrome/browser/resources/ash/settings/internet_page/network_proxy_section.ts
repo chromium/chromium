@@ -19,23 +19,27 @@ import '../controls/extension_controlled_indicator.js';
 import '../settings_vars.css.js';
 import './internet_shared.css.js';
 import '../controls/settings_toggle_button.js';
-import '../common/lacros_extension_controlled_indicator.js';
 
-import {PrefsMixin, PrefsMixinInterface} from '/shared/settings/prefs/prefs_mixin.js';
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
-import {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
-import {NetworkProxyElement} from 'chrome://resources/ash/common/network/network_proxy.js';
+import type {PrefsMixinInterface} from '/shared/settings/prefs/prefs_mixin.js';
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
+import type {I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import type {CrPolicyNetworkBehaviorMojoInterface} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
+import {CrPolicyNetworkBehaviorMojo} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
+import type {NetworkProxyElement} from 'chrome://resources/ash/common/network/network_proxy.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {ManagedProperties, ManagedString} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import type {ManagedProperties, ManagedString} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {OncSource, PolicySource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../common/route_observer_mixin.js';
-import {Constructor} from '../common/types.js';
-import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
-import {Route, routes} from '../router.js';
+import type {RouteObserverMixinInterface} from '../common/route_observer_mixin.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
+import type {Constructor} from '../common/types.js';
+import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import type {Route} from '../router.js';
+import {routes} from '../router.js';
 
 import {getTemplate} from './network_proxy_section.html.js';
 
@@ -85,15 +89,14 @@ export class NetworkProxySectionElement extends NetworkProxySectionElementBase {
       useSharedProxies_: Boolean,
 
       /**
-       * Indicates if the proxy if set by an extension in the Lacros primary
-       * profile.
+       * Reflects whether prefs.settings.proxy_override_rules has values,
+       * for data binding.
        */
-      isProxySetByLacrosExtension_: Boolean,
+      hasProxyOverrideRules_: Boolean,
 
       /**
-       * Information about the extension in the Ash or Lacros browser which
-       * controlling the proxy. Can be null is the proxy is not controlled by an
-       * extension.
+       * Information about the extension controlling the proxy. Can be null if
+       * the proxy is not controlled by an extension.
        */
       extensionInfo_: Object,
     };
@@ -102,16 +105,15 @@ export class NetworkProxySectionElement extends NetworkProxySectionElementBase {
   static get observers() {
     return [
       'useSharedProxiesChanged_(prefs.settings.use_shared_proxies.value)',
-      'extensionProxyChanged_(prefs.ash.lacros_proxy_controlling_extension, ' +
-          'managedProperties.proxySettings)',
+      'proxyOverrideRulesChanged_(prefs.proxy_override_rules.value)',
     ];
   }
 
   disabled: boolean;
   managedProperties: ManagedProperties|undefined;
   private extensionInfo_: ExtensionInfo|undefined;
-  private isProxySetByLacrosExtension_: boolean;
   private useSharedProxies_: boolean;
+  private hasProxyOverrideRules_: boolean;
 
   /**
    * Returns the allow shared CrToggleElement.
@@ -132,30 +134,15 @@ export class NetworkProxySectionElement extends NetworkProxySectionElementBase {
     this.useSharedProxies_ = !!pref && !!pref.value;
   }
 
-  private extensionProxyChanged_(): void {
-    if (this.proxySetByAshExtension_()) {
-      return;
-    }
-
-    const property = this.getProxySettingsTypeProperty_();
-    if (!property || !this.isExtensionControlled(property)) {
-      this.isProxySetByLacrosExtension_ = false;
-      return;
-    }
-
-    const pref = this.getPref('ash.lacros_proxy_controlling_extension');
-    this.isProxySetByLacrosExtension_ = !!pref.value &&
-        !!pref.value['extension_id_key'] && !!pref.value['extension_name_key'];
-    if (this.isProxySetByLacrosExtension_) {
-      this.extensionInfo_ = {
-        id: pref.value['extension_id_key'],
-        name: pref.value['extension_name_key'],
-        canBeDisabled: pref.value['can_be_disabled_key'],
-      };
-    }
+  private proxyOverrideRulesChanged_(): void {
+    const overrideRules = this.getPref('proxy_override_rules');
+    this.hasProxyOverrideRules_ = overrideRules &&
+        Array.isArray(overrideRules.value) && overrideRules.value.length > 0;
   }
-
-  private proxySetByAshExtension_(): boolean {
+  /**
+   * Return true if the proxy is controlled by an extension.
+   */
+  private isProxySetByExtension_(): boolean {
     const property = this.getProxySettingsTypeProperty_();
     if (!property || !this.isExtensionControlled(property) ||
         !this.prefs.proxy.controlledByName) {
@@ -167,14 +154,6 @@ export class NetworkProxySectionElement extends NetworkProxySectionElementBase {
       canBeDisabled: this.prefs.proxy.extensionCanBeDisabled,
     };
     return true;
-  }
-
-  /**
-   * Return true if the proxy is controlled by an extension in the Ash Browser
-   * or in the Lacros Browser.
-   */
-  private isProxySetByExtension_(): boolean {
-    return this.proxySetByAshExtension_() || this.isProxySetByLacrosExtension_;
   }
 
   private isShared_(): boolean {
@@ -190,6 +169,13 @@ export class NetworkProxySectionElement extends NetworkProxySectionElementBase {
     return proxySettings ? proxySettings.type : undefined;
   }
 
+  private getProxyOverrideSettingsTypeProperty_(): ManagedString {
+    // Proxy override rules are only supported as user policies.
+    const managedString = OncMojo.createManagedString('ProxyOverrideRules');
+    managedString.policySource = PolicySource.kUserPolicyEnforced;
+    return managedString;
+  }
+
   private getAllowSharedDialogTitle_(allowShared: boolean): string {
     if (allowShared) {
       return this.i18n('networkProxyAllowSharedDisableWarningTitle');
@@ -197,10 +183,22 @@ export class NetworkProxySectionElement extends NetworkProxySectionElementBase {
     return this.i18n('networkProxyAllowSharedEnableWarningTitle');
   }
 
-  private shouldShowNetworkPolicyIndicator_(): boolean {
+  private hasProxySettingsPolicy_(): boolean {
     const property = this.getProxySettingsTypeProperty_();
     return !!property && !this.isProxySetByExtension_() &&
         this.isNetworkPolicyEnforced(property);
+  }
+
+  private shouldShowOverridePolicyIndicator_(): boolean {
+    return this.hasProxyOverrideRules_ && !this.hasProxySettingsPolicy_();
+  }
+
+  private shouldShowNetworkPolicyIndicator_(): boolean {
+    return this.hasProxySettingsPolicy_() && !this.hasProxyOverrideRules_;
+  }
+
+  private shouldShowCombinedNetworkPolicyIndicator_(): boolean {
+    return this.hasProxyOverrideRules_ && this.hasProxySettingsPolicy_();
   }
 
   private shouldShowAllowShared_(_property: OncMojo.ManagedProperty): boolean {

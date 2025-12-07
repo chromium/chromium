@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/vr/elements/ui_element_name.h"
+
+#include <array>
 
 #include "base/check_op.h"
 
@@ -15,7 +12,8 @@ namespace vr {
 
 namespace {
 
-static const char* g_ui_element_name_strings[] = {
+// LINT.IfChange(UiElementName)
+static std::array<const char*, kNumUiElementNames> g_ui_element_name_strings = {
     "kNone",
     "kRoot",
     "kWebVrRoot",
@@ -48,16 +46,12 @@ static const char* g_ui_element_name_strings[] = {
     "kMidiConnectedIndicator",
     "kWebXrMidiConnectedIndicator",
 };
-
-static_assert(
-    kNumUiElementNames == std::size(g_ui_element_name_strings),
-    "Mismatch between the kUiElementName enum and the corresponding array "
-    "of strings.");
+// LINT.ThenChange(//chrome/browser/vr/elements/ui_element_name.h:UiElementName)
 
 }  // namespace
 
 std::string UiElementNameToString(UiElementName name) {
-  DCHECK_GT(kNumUiElementNames, name);
+  CHECK_GT(kNumUiElementNames, name);
   return g_ui_element_name_strings[name];
 }
 

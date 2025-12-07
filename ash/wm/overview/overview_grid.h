@@ -18,6 +18,7 @@
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/overview/overview_types.h"
+#include "ash/wm/overview/overview_ui_task_pool.h"
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 #include "ash/wm/splitview/split_view_observer.h"
 #include "base/containers/flat_set.h"
@@ -49,8 +50,6 @@ class OverviewGridEventHandler;
 class OverviewItemBase;
 class OverviewSession;
 class RoundedLabelWidget;
-class SavedDeskSaveDeskButton;
-class SavedDeskSaveDeskButtonContainer;
 class SavedDeskLibraryView;
 class ScopedOverviewHideWindows;
 class ScopedOverviewWallpaperClipper;
@@ -88,8 +87,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   OverviewGrid& operator=(const OverviewGrid&) = delete;
 
   ~OverviewGrid() override;
-
-  const gfx::Rect& bounds() const { return bounds_; }
 
   // Exits overview mode.
   void Shutdown(OverviewEnterExitType exit_type);
@@ -401,8 +398,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   void EnableSaveDeskButtonContainer();
 
   bool IsSaveDeskButtonContainerVisible() const;
-  bool IsSaveDeskAsTemplateButtonVisible() const;
-  bool IsSaveDeskForLaterButtonVisible() const;
 
   // Called by `OverviewSession` when tablet mode changes to update necessary UI
   // if needed.
@@ -412,16 +407,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // if it exists, and if two windows are in a snap group, they are a single
   // item.
   size_t GetNumWindows() const;
-
-  // Returns the save desk as template button if available, otherwise null.
-  SavedDeskSaveDeskButton* GetSaveDeskAsTemplateButton();
-
-  // Returns the save desk for later button if available, otherwise null.
-  SavedDeskSaveDeskButton* GetSaveDeskForLaterButton();
-
-  // Returns the save button container if available, otherwise null.
-  SavedDeskSaveDeskButtonContainer* GetSaveDeskButtonContainer();
-  const SavedDeskSaveDeskButtonContainer* GetSaveDeskButtonContainer() const;
 
   const SplitViewSetupView* GetSplitViewSetupView() const;
 
@@ -469,7 +454,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   // Returns the root window in which the grid displays the windows.
   aura::Window* root_window() { return root_window_; }
-  const aura::Window* root_window() const { return root_window_; }
 
   OverviewSession* overview_session() { return overview_session_; }
 
@@ -493,11 +477,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   aura::Window* dragged_window() { return dragged_window_.get(); }
 
-  // TODO(sammiequon): Remove some of these getters by using friend or helper
-  // function.
   RoundedLabelWidget* no_windows_widget() { return no_windows_widget_.get(); }
 
-  const views::Widget* desks_widget() const { return desks_widget_.get(); }
   views::Widget* desks_widget() { return desks_widget_.get(); }
 
   const OverviewDeskBarView* desks_bar_view() const { return desks_bar_view_; }
@@ -516,9 +497,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   views::Widget* informed_restore_widget() {
     return informed_restore_widget_.get();
   }
-  const views::Widget* informed_restore_widget() const {
-    return informed_restore_widget_.get();
-  }
 
   views::Widget* save_desk_button_container_widget() {
     return save_desk_button_container_widget_.get();
@@ -528,9 +506,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
     return scoped_overview_wallpaper_clipper_.get();
   }
 
-  int num_incognito_windows() const { return num_incognito_windows_; }
-
-  int num_unsupported_windows() const { return num_unsupported_windows_; }
+  OverviewUiTaskPool& enter_animation_task_pool() {
+    return enter_animation_task_pool_;
+  }
 
   SaveDeskOptionStatus GetEnableStateAndTooltipIDForTemplateType(
       DeskTemplateType type) const;
@@ -796,6 +774,11 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   std::optional<OverviewController::ScopedOcclusionPauser> scroll_pauser_;
 
   const base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator_;
+
+  // Set of tasks that get run on the UI thread while the enter-animation is
+  // in progress. These tasks are not immediately necessary but may be after the
+  // enter-animation is complete.
+  OverviewUiTaskPool enter_animation_task_pool_;
 
   base::WeakPtrFactory<OverviewGrid> weak_ptr_factory_{this};
 };

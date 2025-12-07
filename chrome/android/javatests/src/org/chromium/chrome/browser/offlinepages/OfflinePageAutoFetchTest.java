@@ -33,10 +33,13 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -50,7 +53,6 @@ import java.io.OutputStream;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicReference;
 
 /** Unit tests for auto-fetch-on-net-error-page. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -61,7 +63,8 @@ public class OfflinePageAutoFetchTest {
     private static final long WAIT_TIMEOUT_MS = 20000;
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule
     public TestWatcher mTestWatcher =
@@ -80,7 +83,7 @@ public class OfflinePageAutoFetchTest {
 
     private Profile mProfile;
     private OfflinePageBridge mOfflinePageBridge;
-    private CallbackHelper mPageAddedHelper = new CallbackHelper();
+    private final CallbackHelper mPageAddedHelper = new CallbackHelper();
     private OfflinePageItem mAddedPage;
     private WebServer mWebServer;
 
@@ -88,6 +91,7 @@ public class OfflinePageAutoFetchTest {
     private Intent mLastInProgressDeleteIntent;
     private Intent mLastCompleteClickIntent;
     private Intent mLastCompleteDeleteIntent;
+    private WebPageStation mStartingPage;
 
     private class NotifierHooks implements AutoFetchNotifier.TestHooks {
         @Override
@@ -155,7 +159,7 @@ public class OfflinePageAutoFetchTest {
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mStartingPage = mActivityTestRule.startOnBlankPage();
 
         AutoFetchNotifier.mTestHooks = new NotifierHooks();
 
@@ -435,7 +439,7 @@ public class OfflinePageAutoFetchTest {
     }
 
     private Tab activityTab() {
-        return mActivityTestRule.getActivity().getActivityTab();
+        return mActivityTestRule.getActivityTab();
     }
 
     // Attempt to load a page on the active tab. Does not assert that the page is loaded
@@ -462,12 +466,6 @@ public class OfflinePageAutoFetchTest {
         return tab;
     }
 
-    private boolean isErrorPage(final Tab tab) {
-        final AtomicReference<Boolean> result = new AtomicReference<Boolean>(false);
-        ThreadUtils.runOnUiThreadBlocking(() -> result.set(tab.isShowingErrorPage()));
-        return result.get();
-    }
-
     private void closeTab(Tab tab) {
         final TabModel model =
                 mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel();
@@ -475,7 +473,10 @@ public class OfflinePageAutoFetchTest {
         // Attempt to close the tab, which will delay closing until the undo timeout goes away.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    TabModelUtils.closeTabById(model, tab.getId(), true);
+                    model.getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeTab(tab).allowUndo(true).build(),
+                                    /* allowDialog= */ false);
                 });
     }
 
@@ -500,7 +501,8 @@ public class OfflinePageAutoFetchTest {
     }
 
     private Tab getCurrentTab() {
-        return TabModelUtils.getCurrentTab(getCurrentTabModel());
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> TabModelUtils.getCurrentTab(getCurrentTabModel()));
     }
 
     private void logAdditionalContext() {

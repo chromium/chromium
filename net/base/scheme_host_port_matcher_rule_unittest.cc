@@ -5,6 +5,7 @@
 #include "net/base/scheme_host_port_matcher_rule.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace net {
 

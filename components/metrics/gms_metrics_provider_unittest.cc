@@ -4,7 +4,6 @@
 
 #include "components/metrics/gms_metrics_provider.h"
 
-#include "base/android/build_info.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

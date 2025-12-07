@@ -6,7 +6,6 @@
 #define COMPONENTS_COMPOSE_CORE_BROWSER_COMPOSE_FEATURES_H_
 
 #include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 
 namespace compose::features {
 
@@ -59,20 +58,29 @@ BASE_DECLARE_FEATURE(kComposeUiParams);
 // Enables animation of text output. Applies only to on-device evaluation.
 BASE_DECLARE_FEATURE(kComposeTextOutputAnimation);
 
-// Constrols parameters around text selection and insert/replacement heuristics.
-BASE_DECLARE_FEATURE(kComposeTextSelection);
-
 // Enables client-side timeout of a Compose request.
 BASE_DECLARE_FEATURE(kComposeRequestLatencyTimeout);
-
-// Enables enhanced compose dialog UI.
-BASE_DECLARE_FEATURE(kComposeUiRefinement);
 
 // Default nudge allow/deny decision for unspecified hint.
 BASE_DECLARE_FEATURE(kEnableNudgeForUnspecifiedHint);
 
 // A kill switch for additional metrics added to ComposeTextUsageLogger.
 BASE_DECLARE_FEATURE(kEnableAdditionalTextMetrics);
+
+// Enables or disables the Happiness Tracking System for Compose acceptance.
+BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForComposeAcceptance);
+
+// Enables or disables the Happiness Tracking System for Compose on close.
+BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForComposeClose);
+
+// Enables or disables the Happiness Tracking System for nudge dismissal.
+BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForComposeNudgeClose);
+
+// Enables on-device execution, if available.
+BASE_DECLARE_FEATURE(kComposeAllowOnDeviceExecution);
+
+// Enables or disables upfront input modes in the dialog.
+BASE_DECLARE_FEATURE(kComposeUpfrontInputModes);
 
 }  // namespace compose::features
 

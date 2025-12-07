@@ -1,0 +1,93 @@
+{
+  "$build/chromium_tests_builder_config": {
+    "builder_config": {
+      "builder_db": {
+        "entries": [
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "Dawn Win11 arm64 DEPS Builder",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.dawn",
+              "execution_mode": "COMPILE_AND_TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_arch": "arm",
+                "target_bits": 64,
+                "target_platform": "win"
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              }
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "Dawn Win11 arm64 DEPS Release (Qualcomm Snapdragon X Elite)",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.dawn",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "win"
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "Dawn Win11 arm64 DEPS Builder",
+                "project": "chromium"
+              },
+              "run_tests_serially": true
+            }
+          }
+        ]
+      },
+      "builder_ids": [
+        {
+          "bucket": "ci",
+          "builder": "Dawn Win11 arm64 DEPS Release (Qualcomm Snapdragon X Elite)",
+          "project": "chromium"
+        }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "dawn-try-win11-arm64-snapdragon-x-elite-deps-rel",
+          "group": "tryserver.chromium.dawn"
+        }
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Dawn Win11 arm64 DEPS Release (Qualcomm Snapdragon X Elite)/targets"
+    }
+  },
+  "$recipe_engine/resultdb/test_presentation": {
+    "column_keys": [],
+    "grouping_keys": [
+      "status",
+      "v.test_suite"
+    ]
+  },
+  "builder_group": "chromium.dawn",
+  "dawn_ref": "refs/heads/main",
+  "gardener_rotations": [
+    "dawn"
+  ],
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "dawn"
+  ]
+}

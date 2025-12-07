@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_RAW_EID_GENERATOR_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_RAW_EID_GENERATOR_H_
 
+#include <stdint.h>
+
 #include <string>
 
 namespace ash::secure_channel {

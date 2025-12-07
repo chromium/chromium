@@ -98,6 +98,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandler {
   // Trying to configure a network that is blocked by policy.
   static const char kErrorBlockedByPolicy[];
 
+  // Trying to connect to a network while enterprise policy mandates that a scan
+  // must finish first for policy enforcement purposes.
+  static const char kErrorWaitingForScan[];
+
   // The HexSSID is missing.
   static const char kErrorHexSsidRequired[];
 

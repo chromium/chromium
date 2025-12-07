@@ -6,6 +6,7 @@
 #define DBUS_MOCK_BUS_H_
 
 #include <stdint.h>
+#include <string>
 
 #include "base/task/sequenced_task_runner.h"
 #include "dbus/bus.h"
@@ -20,12 +21,12 @@ namespace dbus {
 // D-Bus calls.
 class MockBus : public Bus {
  public:
-  MockBus(const Bus::Options& options);
+  explicit MockBus(Bus::Options options);
 
-  MOCK_METHOD2(GetObjectProxy, ObjectProxy*(const std::string& service_name,
+  MOCK_METHOD2(GetObjectProxy, ObjectProxy*(std::string_view service_name,
                                             const ObjectPath& object_path));
   MOCK_METHOD3(GetObjectProxyWithOptions,
-               ObjectProxy*(const std::string& service_name,
+               ObjectProxy*(std::string_view service_name,
                             const ObjectPath& object_path,
                             int options));
   MOCK_METHOD1(GetExportedObject, ExportedObject*(
@@ -75,6 +76,7 @@ class MockBus : public Bus {
   MOCK_METHOD0(HasDBusThread, bool());
   MOCK_METHOD0(AssertOnOriginThread, void());
   MOCK_METHOD0(AssertOnDBusThread, void());
+  MOCK_METHOD0(GetConnectionName, std::string());
   MOCK_METHOD0(IsConnected, bool());
 
  protected:

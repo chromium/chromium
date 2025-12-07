@@ -5,10 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_SESSIONS_MODEL_TEST_SESSION_RESTORATION_SERVICE_H_
 #define IOS_CHROME_BROWSER_SESSIONS_MODEL_TEST_SESSION_RESTORATION_SERVICE_H_
 
+#include <memory>
+
+#include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "ios/chrome/browser/sessions/model/session_restoration_observer.h"
 #include "ios/chrome/browser/sessions/model/session_restoration_service.h"
+#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 // A test implementation of SessionRestorationService.
 //
@@ -16,18 +20,20 @@
 // but correctly implements the SessionRestoration API.
 class TestSessionRestorationService : public SessionRestorationService {
  public:
+  // Factory for the KeyedService infrastructure.
+  using TestingFactory = ProfileKeyedServiceFactoryIOS::TestingFactory;
+
   TestSessionRestorationService();
   ~TestSessionRestorationService() override;
 
   // Returns a callback that can be used as a TestingFactory for KeyedService
   // infrastructure.
-  static BrowserStateKeyedServiceFactory::TestingFactory GetTestingFactory();
+  static TestingFactory GetTestingFactory();
 
   // SessionRestorationService implementation.
   void AddObserver(SessionRestorationObserver* observer) override;
   void RemoveObserver(SessionRestorationObserver* observer) override;
   void SaveSessions() override;
-  void ScheduleSaveSessions() override;
   void SetSessionID(Browser* browser, const std::string& identifier) override;
   void LoadSession(Browser* browser) override;
   void LoadWebStateStorage(Browser* browser,

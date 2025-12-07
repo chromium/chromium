@@ -1,0 +1,31 @@
+# results: [ Timeout Crash Pass Failure Skip ]
+
+# These these expectations are used instead of the typical TestExpectations
+# file when running on the internal.optimization_guide Official Linux builder
+# in order to test the behavior of the TFLite GPU delegate provided by
+# liboptimization_guide_internal.so.
+#
+# See //third_party/blink/web_tests/TestLists/optimization_guide.filter for the
+# tests run in this configuration.
+
+virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/add.https.any.html?gpu [ Crash ]
+virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.html?gpu [ Crash ]
+virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.serviceworker.html?gpu [ Crash ]
+virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.sharedworker.html?gpu [ Crash ]
+virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.worker.html?gpu [ Crash ]
+
+# These tests produce different results locally vs. a bot.
+virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/averagePool2d.https.any.html?gpu [ Failure ]
+virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/cast.https.any.html?gpu [ Failure ]
+virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/dequantizeLinear.https.any.html?gpu [ Failure ]
+virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/erf.https.any.html?gpu [ Failure ]
+virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/exp.https.any.html?gpu [ Failure ]
+virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gemm.https.any.html?gpu [ Failure ]
+virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/matmul.https.any.html?gpu [ Failure ]
+virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/pow.https.any.html?gpu [ Failure ]
+virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/quantizeLinear.https.any.html?gpu [ Failure ]
+virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/reduce_l2.https.any.html?gpu [ Failure ]
+virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/reshape.https.any.html?gpu [ Failure ]
+virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/softsign.https.any.html?gpu [ Failure ]
+virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/tan.https.any.html?gpu [ Failure ]
+crbug.com/463763785 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/batch_normalization_constant.https.any.html?gpu [ Failure ]

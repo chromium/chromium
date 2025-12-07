@@ -13,10 +13,6 @@ Content-Transfer-Encoding: 8bit
  <head>
   <meta charset='utf-8'>
   <title>MHTML Tests</title>
-  <script>
-   if (window.testRunner)
-     testRunner.dumpAsText();
-  </script>
  </head>
  <body>
   <h1>MHTML Content-Transfer-Encoding 8-bit test - 😉</h1>

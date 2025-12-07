@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/zucchini/disassembler_elf.h"
 
 #include <stddef.h>
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -287,14 +283,17 @@ bool DisassemblerElf<TRAITS>::ParseHeader() {
   elf::Elf32_Half string_section_id = header_->e_shstrndx;
   if (string_section_id >= sections_count_)
     return false;
-  size_t section_names_size = sections_[string_section_id].sh_size;
+  size_t section_names_size = UNSAFE_TODO(sections_[string_section_id]).sh_size;
   if (section_names_size > 0) {
     // If nonempty, then last byte of string section must be null.
     const char* section_names = nullptr;
-    source = BufferSource(image_, sections_[string_section_id].sh_offset);
+    source = BufferSource(image_,
+                          UNSAFE_TODO(sections_[string_section_id].sh_offset));
     section_names = source.GetArray<char>(section_names_size);
-    if (!section_names || section_names[section_names_size - 1] != '\0')
+    if (!section_names ||
+        UNSAFE_TODO(section_names[section_names_size - 1]) != '\0') {
       return false;
+    }
   }
 
   // Establish bound on encountered offsets.
@@ -302,7 +301,8 @@ bool DisassemblerElf<TRAITS>::ParseHeader() {
 
   // Visits |segments_| to get estimate on |offset_bound|.
   for (const typename Traits::Elf_Phdr* segment = segments_;
-       segment != segments_ + segments_count_; ++segment) {
+       segment != UNSAFE_TODO(segments_ + segments_count_);
+       UNSAFE_TODO(++segment)) {
     // |image_.covers()| is a sufficient check except when size_t is 32 bit and
     // parsing ELF64. In such cases a value-in-range check is needed on the
     // segment. This fixes crbug/1035603.
@@ -323,7 +323,7 @@ bool DisassemblerElf<TRAITS>::ParseHeader() {
   section_judgements_.reserve(sections_count_);
 
   for (int i = 0; i < sections_count_; ++i) {
-    const typename Traits::Elf_Shdr* section = &sections_[i];
+    const typename Traits::Elf_Shdr* section = UNSAFE_TODO(&sections_[i]);
     int judgement = JudgeSection<Traits>(image_.size(), section);
     section_judgements_.push_back(judgement);
     if ((judgement & SECTION_BIT_SAFE) == 0)
@@ -357,7 +357,7 @@ void DisassemblerElf<TRAITS>::ExtractInterestingSectionHeaders() {
   DCHECK(reloc_section_dims_.empty());
   DCHECK(exec_headers_.empty());
   for (elf::Elf32_Half i = 0; i < sections_count_; ++i) {
-    const typename Traits::Elf_Shdr* section = sections_ + i;
+    const typename Traits::Elf_Shdr* section = UNSAFE_TODO(sections_ + i);
     if ((section_judgements_[i] & SECTION_BIT_MAYBE_USEFUL_FOR_POINTERS) != 0) {
       if (IsRelocSection<Traits>(*section))
         reloc_section_dims_.emplace_back(*section);
@@ -459,7 +459,8 @@ void DisassemblerElfIntel<TRAITS>::ParseExecSection(
 
   AddressTranslator::RvaToOffsetCache target_rva_checker(translator_);
 
-  ConstBufferView region(image_.begin() + section.sh_offset, section.sh_size);
+  ConstBufferView region(UNSAFE_TODO(image_.begin() + section.sh_offset),
+                         section.sh_size);
   Abs32GapFinder gap_finder(image_, region, abs32_locations_, kAbs32Width);
   typename TRAITS::Rel32FinderUse rel_finder(image_, translator_);
   // Iterate over gaps between abs32 references, to avoid collision.
@@ -550,7 +551,8 @@ void DisassemblerElfArm<Traits>::ParseExecSection(
   const AddressTranslator& translator_ = this->translator_;
   auto& abs32_locations_ = this->abs32_locations_;
 
-  ConstBufferView region(image_.begin() + section.sh_offset, section.sh_size);
+  ConstBufferView region(UNSAFE_TODO(image_.begin() + section.sh_offset),
+                         section.sh_size);
   Abs32GapFinder gap_finder(image_, region, abs32_locations_, Traits::kVAWidth);
   std::unique_ptr<typename Traits::Rel32FinderUse> rel_finder =
       MakeRel32Finder(section);
@@ -699,8 +701,8 @@ bool DisassemblerElfAArch32::IsExecSectionThumb2(
   // ARM mode requires 4-byte alignment.
   if (section.sh_addr % 4 != 0 || section.sh_size % 4 != 0)
     return true;
-  const uint8_t* first = image_.begin() + section.sh_offset;
-  const uint8_t* end = first + section.sh_size;
+  const uint8_t* first = UNSAFE_TODO(image_.begin() + section.sh_offset);
+  const uint8_t* end = UNSAFE_TODO(first + section.sh_size);
   // Each instruction in 32-bit ARM (little-endian) looks like
   //   ?? ?? ?? X?,
   // where X specifies conditional execution. X = 0xE represents AL = "ALways
@@ -708,9 +710,9 @@ bool DisassemblerElfAArch32::IsExecSectionThumb2(
   // to discern 32-bit ARM mode from THUMB2 mode.
   size_t num = 0;
   size_t den = 0;
-  for (const uint8_t* cur = first; cur < end; cur += 4) {
+  for (const uint8_t* cur = first; cur < end; UNSAFE_TODO(cur += 4)) {
     // |cur[3]| is within bounds because |end - cur| is a multiple of 4.
-    uint8_t maybe_cond = cur[3] & 0xF0;
+    uint8_t maybe_cond = UNSAFE_TODO(cur[3]) & 0xF0;
     if (maybe_cond == 0xE0)
       ++num;
     ++den;

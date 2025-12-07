@@ -17,7 +17,7 @@ class MetricsScheduler {
   // Creates MetricsScheduler object with the given |task_callback|
   // callback to call when a task should happen.
   MetricsScheduler(const base::RepeatingClosure& task_callback,
-                   bool fast_startup_for_testing);
+                   bool fast_startup);
 
   MetricsScheduler(const MetricsScheduler&) = delete;
   MetricsScheduler& operator=(const MetricsScheduler&) = delete;
@@ -31,6 +31,9 @@ class MetricsScheduler {
   // Stops scheduling uploads.
   void Stop();
 
+  // Whether the scheduler is running.
+  bool IsRunning() { return running_; }
+
   // Returns the initial delay before the task is run for the first time.
   static int GetInitialIntervalSeconds();
 
@@ -42,6 +45,13 @@ class MetricsScheduler {
 
   // Called by the Timer when it's time to run the task.
   virtual void TriggerTask();
+
+  // Whether a callback is currently pending (i.e. TriggerTask() was run, but
+  // not its matching TaskDone()).
+  bool IsCallbackPending() { return callback_pending_; }
+
+  // Sets `interval_`.
+  void SetInterval(base::TimeDelta interval) { interval_ = interval; }
 
  private:
   // Schedules a future call to TriggerTask if one isn't already pending.

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var internalAPI = getInternalApi('platformKeysInternal');
+const internalAPI = getInternalApi('platformKeysInternal');
 
-var normalizeAlgorithm =
-  requireNative('platform_keys_natives').NormalizeAlgorithm;
+const normalizeAlgorithm =
+    requireNative('platform_keys_natives').NormalizeAlgorithm;
 
 // Returns the normalized parameters of |importParams|, which can be used to
 // import asymmetric keys. Unknown parameters will be ignored.
@@ -18,30 +18,30 @@ function normalizeImportParams(importParams) {
     throw $Error.self('Only P-256 named curve is supported.');
   }
 
-  var filteredParams = {
+  const filteredParams = {
     name: importParams.name,
-    namedCurve: importParams.namedCurve
+    namedCurve: importParams.namedCurve,
   };
 
-  var hashIsNone = false;
+  let hashIsNone = false;
   if (importParams.hash) {
     if (importParams.hash.name.toLowerCase() === 'none') {
       hashIsNone = true;
       // Temporarily replace |hash| by a valid WebCrypto Hash for normalization.
       // This will be reverted to 'none' after normalization.
-      filteredParams.hash = { name: 'SHA-1' };
+      filteredParams.hash = {name: 'SHA-1'};
     } else {
-      filteredParams.hash = { name: importParams.hash.name }
+      filteredParams.hash = {name: importParams.hash.name};
     }
   }
 
   // Apply WebCrypto's algorithm normalization.
-  var resultParams = normalizeAlgorithm(filteredParams, 'ImportKey');
+  const resultParams = normalizeAlgorithm(filteredParams, 'ImportKey');
   if (!resultParams) {
     throw $Error.self('A required parameter was missing or out-of-range');
   }
   if (hashIsNone) {
-    resultParams.hash = { name: 'none' };
+    resultParams.hash = {name: 'none'};
   }
   return resultParams;
 }
@@ -64,14 +64,14 @@ function getPublicKey(cert, importParams, callback) {
   // TODO(crbug.com/40136219): Check cert type is ArrayBuffer.
   importParams = normalizeImportParams(importParams);
   internalAPI.getPublicKey(
-    cert, importParams.name, function (publicKey, algorithm) {
-      if (chrome.runtime.lastError) {
-        callback();
-        return;
-      }
-      var combinedAlgorithm = combineAlgorithms(algorithm, importParams);
-      callback(publicKey, combinedAlgorithm);
-    });
+      cert, importParams.name, function(publicKey, algorithm) {
+        if (chrome.runtime.lastError) {
+          callback();
+          return;
+        }
+        const combinedAlgorithm = combineAlgorithms(algorithm, importParams);
+        callback(publicKey, combinedAlgorithm);
+      });
 }
 
 function getPublicKeyBySpki(publicKeySpkiDer, importParams, callback) {
@@ -80,17 +80,16 @@ function getPublicKeyBySpki(publicKeySpkiDer, importParams, callback) {
   }
   importParams = normalizeImportParams(importParams);
   internalAPI.getPublicKeyBySpki(
-    publicKeySpkiDer,
-    importParams.name,
-    function (foundKeySpki, foundKeyAlgorithm) {
-      if (bindingUtil.hasLastError()) {
-        callback();
-        return;
-      }
-      var combinedAlgorithm =
-        combineAlgorithms(foundKeyAlgorithm, importParams);
-      callback(foundKeySpki, combinedAlgorithm);
-    });
+      publicKeySpkiDer, importParams.name,
+      function(foundKeySpki, foundKeyAlgorithm) {
+        if (bindingUtil.hasLastError()) {
+          callback();
+          return;
+        }
+        const combinedAlgorithm =
+            combineAlgorithms(foundKeyAlgorithm, importParams);
+        callback(foundKeySpki, combinedAlgorithm);
+      });
 }
 
 function getSymKeyById(symKeyId, callback) {
@@ -101,7 +100,7 @@ function getSymKeyById(symKeyId, callback) {
   // TODO(b/288880151): Call |internalAPI.getSymKeyById()|, when the new method
   // is added there.
   throw $Error.self(
-    'getSymKeyById: method still not implemented by the internal API.');
+      'getSymKeyById: method still not implemented by the internal API.');
 }
 
 exports.$set('getPublicKey', getPublicKey);

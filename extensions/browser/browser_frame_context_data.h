@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "extensions/common/frame_context_data.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -25,7 +26,7 @@ class BrowserFrameContextData : public FrameContextData {
   ~BrowserFrameContextData() override = default;
 
   std::unique_ptr<FrameContextData> CloneFrameContextData() const override;
-  bool HasIsolatedContextCapability() const override;
+  bool HasControlledFrameCapability() const override;
 
   std::unique_ptr<FrameContextData> GetLocalParentOrOpener() const override;
 

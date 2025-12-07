@@ -27,8 +27,8 @@
 #error VS 2017 Update 3.2 or higher is required
 #endif
 
-#if !defined(NTDDI_WIN10_NI)
-#error Windows 10.0.22621.0 SDK or higher required.
+#if !defined(NTDDI_WIN11_GE)
+#error Windows 10.0.26100.0 SDK or higher required.
 #endif
 
 namespace base {
@@ -57,8 +57,9 @@ std::pair<int, std::string> GetVersionData() {
     // when naming changed to mixed letters and numbers.
     key.ReadValue(L"DisplayVersion", &release_id);
     // Use discontinued "ReleaseId" instead, if the former is unavailable.
-    if (release_id.empty())
+    if (release_id.empty()) {
       key.ReadValue(L"ReleaseId", &release_id);
+    }
   }
 
   return std::make_pair(static_cast<int>(ubr), WideToUTF8(release_id));
@@ -79,7 +80,7 @@ const _SYSTEM_INFO& GetSystemInfoStorage() {
 OSInfo** OSInfo::GetInstanceStorage() {
   // Note: we don't use the Singleton class because it depends on AtExitManager,
   // and it's convenient for other modules to use this class without it.
-  static OSInfo* info = []() {
+  static OSInfo* info = [] {
     _OSVERSIONINFOEXW version_info = {sizeof(version_info)};
 
 #pragma clang diagnostic push
@@ -169,9 +170,6 @@ OSInfo::OSInfo(const _OSVERSIONINFOEXW& version_info,
   version_ = MajorMinorBuildToVersion(
       version_number_.major, version_number_.minor, version_number_.build);
   InitializeWowStatusValuesForProcess(GetCurrentProcess());
-  service_pack_.major = version_info.wServicePackMajor;
-  service_pack_.minor = version_info.wServicePackMinor;
-  service_pack_str_ = WideToUTF8(version_info.szCSDVersion);
 
   processors_ = static_cast<int>(system_info.dwNumberOfProcessors);
   allocation_granularity_ = system_info.dwAllocationGranularity;
@@ -211,6 +209,10 @@ OSInfo::OSInfo(const _OSVERSIONINFOEXW& version_info,
       case PRODUCT_BUSINESS_N:
       case PRODUCT_IOTENTERPRISE:
       case PRODUCT_IOTENTERPRISES:
+      // PRODUCT_SERVERRDSH (0xAF) has been reused for Windows 10/11 Enterprise
+      // Multi-Session, a client OS with multi-session support, commonly used
+      // with Azure Virtual Desktop.
+      case PRODUCT_SERVERRDSH:
         version_type_ = SUITE_ENTERPRISE;
         break;
       case PRODUCT_PRO_FOR_EDUCATION:
@@ -240,10 +242,11 @@ OSInfo::OSInfo(const _OSVERSIONINFOEXW& version_info,
     }
   } else if (version_info.dwMajorVersion == 5 &&
              version_info.dwMinorVersion == 1) {
-    if (version_info.wSuiteMask & VER_SUITE_PERSONAL)
+    if (version_info.wSuiteMask & VER_SUITE_PERSONAL) {
       version_type_ = SUITE_HOME;
-    else
+    } else {
       version_type_ = SUITE_PROFESSIONAL;
+    }
   } else {
     // Windows is pre XP so we don't care but pick a safe default.
     version_type_ = SUITE_HOME;
@@ -331,14 +334,26 @@ bool OSInfo::IsWowX86OnOther() const {
 
 std::string OSInfo::processor_model_name() {
   if (processor_model_name_.empty()) {
-    const wchar_t kProcessorNameString[] =
+    static constexpr wchar_t kProcessorNameString[] =
         L"HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0";
-    RegKey key(HKEY_LOCAL_MACHINE, kProcessorNameString, KEY_READ);
+    RegKey key(HKEY_LOCAL_MACHINE, kProcessorNameString, KEY_QUERY_VALUE);
     std::wstring value;
     key.ReadValue(L"ProcessorNameString", &value);
     processor_model_name_ = WideToUTF8(value);
   }
   return processor_model_name_;
+}
+
+std::string OSInfo::processor_vendor_name() {
+  if (processor_vendor_name_.empty()) {
+    static constexpr wchar_t kVendorNameString[] =
+        L"HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0";
+    RegKey key(HKEY_LOCAL_MACHINE, kVendorNameString, KEY_QUERY_VALUE);
+    std::wstring value;
+    key.ReadValue(L"VendorIdentifier", &value);
+    processor_vendor_name_ = WideToUTF8(value);
+  }
+  return processor_vendor_name_;
 }
 
 bool OSInfo::IsWindowsNSku() const {
@@ -379,6 +394,9 @@ Version OSInfo::MajorMinorBuildToVersion(uint32_t major,
   }
 
   if (major == 10) {
+    if (build >= 26100) {
+      return Version::WIN11_24H2;
+    }
     if (build >= 22631) {
       return Version::WIN11_23H2;
     }
@@ -501,8 +519,9 @@ OSInfo::WowNativeMachine OSInfo::GetWowNativeMachineArchitecture(
 
 void OSInfo::InitializeWowStatusValuesFromLegacyApi(HANDLE process_handle) {
   BOOL is_wow64 = FALSE;
-  if (!::IsWow64Process(process_handle, &is_wow64))
+  if (!::IsWow64Process(process_handle, &is_wow64)) {
     return;
+  }
   if (is_wow64) {
     wow_process_machine_ = WowProcessMachine::kX86;
     wow_native_machine_ = WowNativeMachine::kAMD64;

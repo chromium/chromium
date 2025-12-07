@@ -6,13 +6,15 @@
 
 #include "base/json/json_writer.h"
 #include "base/strings/escape.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace autofill::payments {
 
 namespace {
 const char kUnmaskIbanRequestPath[] =
-    "payments/apis-secure/ibanservice/"
+    "payments/apis-secure/chromepaymentsservice/"
     "getpaymentinstrument?s7e_suffix=chromewallet";
 
 const char kUnmaskIbanRequestFormat[] =
@@ -20,7 +22,7 @@ const char kUnmaskIbanRequestFormat[] =
 }  // namespace
 
 UnmaskIbanRequest::UnmaskIbanRequest(
-    const PaymentsNetworkInterface::UnmaskIbanRequestDetails& request_details,
+    const UnmaskIbanRequestDetails& request_details,
     bool full_sync_enabled,
     base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                             const std::u16string&)> callback)
@@ -41,7 +43,8 @@ std::string UnmaskIbanRequest::GetRequestContentType() {
 std::string UnmaskIbanRequest::GetRequestContent() {
   base::Value::Dict request_dict;
   base::Value::Dict context;
-  context.Set("billable_service", request_details_.billable_service_number);
+  context.Set("billable_service",
+              payments::kUnmaskPaymentMethodBillableServiceNumber);
   if (request_details_.billing_customer_number != 0) {
     context.Set("customer_context",
                 BuildCustomerContextDictionary(

@@ -19,12 +19,19 @@ source_set("account_picker_selection") {
   deps = [
     ":identity_item_configurator",
     "//base",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager/objc",
     "//ios/chrome/app/strings:ios_strings",
+    "//ios/chrome/browser/account_picker/ui_bundled:account_picker_layout",
+    "//ios/chrome/browser/account_picker/ui_bundled/account_picker_screen",
+    "//ios/chrome/browser/authentication/ui_bundled/cells",
+    "//ios/chrome/browser/authentication/ui_bundled/enterprise:enterprise_utils",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
@@ -33,10 +40,6 @@ source_set("account_picker_selection") {
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:system_identity",
-    "//ios/chrome/browser/account_picker/ui_bundled:account_picker_layout",
-    "//ios/chrome/browser/account_picker/ui_bundled/account_picker_screen",
-    "//ios/chrome/browser/ui/authentication/cells",
-    "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
     "//ios/chrome/common/ui/colors",
     "//ui/base",
   ]
@@ -47,5 +50,8 @@ source_set("identity_item_configurator") {
     "account_picker_selection_screen_identity_item_configurator.h",
     "account_picker_selection_screen_identity_item_configurator.mm",
   ]
-  deps = [ "//ios/chrome/browser/ui/authentication/cells" ]
+  deps = [
+    "//google_apis",
+    "//ios/chrome/browser/authentication/ui_bundled/cells",
+  ]
 }

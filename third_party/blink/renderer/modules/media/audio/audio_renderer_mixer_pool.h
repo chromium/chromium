@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_AUDIO_AUDIO_RENDERER_MIXER_POOL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_AUDIO_AUDIO_RENDERER_MIXER_POOL_H_
 
-#include <string>
+#include <string_view>
 
+#include "base/memory/scoped_refptr.h"
 #include "media/base/audio_latency.h"
 #include "media/base/output_device_info.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -40,9 +41,10 @@ class BLINK_MODULES_EXPORT AudioRendererMixerPool {
   // GetOutputDeviceInfoAsync() on `sink` to get `sink_info`, and it must have
   // a device_status() == OUTPUT_DEVICE_STATUS_OK.
   //
-  // `main_frame_token` is used to determine when mixers can be shared among
-  // multiple AudioRenderMixerInput instances.
+  // `source_frame_token`, `main_frame_token` are used to determine when mixers
+  // can be shared among multiple AudioRenderMixerInput instances.
   virtual AudioRendererMixer* GetMixer(
+      const LocalFrameToken& source_frame_token,
       const FrameToken& main_frame_token,
       const media::AudioParameters& input_params,
       media::AudioLatency::Type latency,
@@ -57,6 +59,7 @@ class BLINK_MODULES_EXPORT AudioRendererMixerPool {
   // to get a sink to use with a subsequent GetMixer()
   virtual scoped_refptr<media::AudioRendererSink> GetSink(
       const LocalFrameToken& source_frame_token,
+      const FrameToken& main_frame_token,
       std::string_view device_id) = 0;
 };
 

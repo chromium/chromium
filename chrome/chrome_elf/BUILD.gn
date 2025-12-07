@@ -52,29 +52,23 @@ static_library("test_stubs") {
 # in the world.
 shared_library("chrome_elf") {
   sources = [
+    "chrome_elf.def",
     "chrome_elf_main.cc",
     "chrome_elf_main.h",
   ]
-  if (target_cpu == "x86") {
-    sources += [ "chrome_elf_x86.def" ]
-  } else if (target_cpu == "arm64") {
-    sources += [ "chrome_elf_arm64.def" ]
-  } else {
-    sources += [ "chrome_elf_x64.def" ]
-  }
 
   deps = [
     ":chrome_elf_manifest",
     ":chrome_elf_resources",
     ":constants",
     ":crash",
-    ":hook_util",
     ":nt_registry",
     ":security",
     ":third_party_dlls",
     "//chrome/install_static:install_static_util",
     "//chrome/install_static:primary_module",
     "//components/crash/core/app:crash_export_thunks",
+    "//sandbox/policy:win_hook_util",
   ]
 
   configs += [ "//build/config/win:windowed" ]
@@ -114,7 +108,6 @@ static_library("crash") {
   ]
   deps = [
     ":constants",
-    ":hook_util",
     "//base",  # This needs to go.  DEP of app, crash_keys, client.
     "//base:base_static",  # pe_image
     "//chrome/install_static:install_static_util",
@@ -122,6 +115,7 @@ static_library("crash") {
     "//components/crash/core/common",  # crash_keys
     "//components/version_info:channel",
     "//content/public/common:result_codes",
+    "//sandbox/policy:win_hook_util",
     "//third_party/crashpad/crashpad/client",  # DumpWithoutCrash
   ]
 }
@@ -139,16 +133,6 @@ executable("dll_hash_main") {
   deps = [
     ":dll_hash",
     "//build/win:default_exe_manifest",
-  ]
-}
-
-static_library("hook_util") {
-  sources = [
-    "hook_util/hook_util.cc",
-    "hook_util/hook_util.h",
-  ]
-  deps = [
-    "//base:base_static",  # pe_image
   ]
 }
 
@@ -182,7 +166,7 @@ source_set("security") {
   deps = [
     ":constants",
     ":nt_registry",
-    "//base:base",
+    "//base",
     "//chrome/install_static:install_static_util",
   ]
 }
@@ -217,12 +201,12 @@ source_set("third_party_dlls") {
   public_deps = [
     ":constants",
     ":crash",
-    ":hook_util",
     ":nt_registry",
     ":pe_image_safe",
     ":sha1",
     ":third_party_shared_defines",
     "//chrome/install_static:install_static_util",
+    "//sandbox/policy:win_hook_util",
   ]
 }
 
@@ -266,7 +250,6 @@ test("chrome_elf_unittests") {
     ":chrome_elf",
     ":constants",
     ":crash",
-    ":hook_util",
     ":hook_util_test_dll",
     ":nt_registry",
     ":pe_image_safe",
@@ -280,6 +263,7 @@ test("chrome_elf_unittests") {
     "//chrome/install_static:install_static_util",
     "//chrome/install_static/test:test_support",
     "//components/crash/core/app:test_support",
+    "//sandbox/policy:win_hook_util",
     "//testing/gtest",
   ]
   data_deps = [

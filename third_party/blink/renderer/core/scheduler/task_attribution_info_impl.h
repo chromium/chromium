@@ -7,26 +7,25 @@
 
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/scheduler/script_wrappable_task_state.h"
+#include "third_party/blink/renderer/core/scheduler/task_attribution_task_state.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
-class AbortSignal;
-class DOMTaskSignal;
+class SchedulerTaskContext;
 class SoftNavigationContext;
 
 class CORE_EXPORT TaskAttributionInfoImpl final
-    : public ScriptWrappableTaskState,
+    : public TaskAttributionTaskState,
       public scheduler::TaskAttributionInfo {
  public:
   TaskAttributionInfoImpl(scheduler::TaskAttributionId, SoftNavigationContext*);
 
-  // `ScriptWrappableTaskState` implementation:
-  AbortSignal* AbortSource() override;
-  DOMTaskSignal* PrioritySource() override;
+  // `TaskAttributionTaskState` implementation:
   scheduler::TaskAttributionInfo* GetTaskAttributionInfo() override;
+  SchedulerTaskContext* GetSchedulerTaskContext() override;
 
   // `scheduler::TaskAttributionInfo` implementation:
   scheduler::TaskAttributionId Id() const override;

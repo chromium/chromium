@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/webui/demo_mode_app_ui/demo_mode_app_untrusted_ui.h"
 
 #include <memory>
@@ -73,13 +68,10 @@ void DemoModeAppUntrustedUI::SourceDataFromComponent(
   std::string resource_path_or_root =
       resource_path == "" ? "index.html" : resource_path;
   // Convert to GURL to strip out query params and URL fragments
-  //
-  // TODO (b/234170189): Verify that query params won't be used in the prod Demo
-  // App, or add support for them here instead of ignoring them.
   GURL full_url =
       GURL(kChromeUntrustedUIDemoModeAppURL + resource_path_or_root);
   // Trim leading slash from path
-  std::string path = full_url.path().substr(1);
+  std::string path = full_url.GetPath().substr(1);
 
   base::FilePath absolute_resource_path = component_path.AppendASCII(path);
 
@@ -103,10 +95,9 @@ DemoModeAppUntrustedUI::DemoModeAppUntrustedUI(
 
   base::flat_set<std::string> webui_resource_paths;
   // Add required resources.
-  for (size_t i = 0; i < kAshDemoModeAppResourcesSize; ++i) {
-    data_source->AddResourcePath(kAshDemoModeAppResources[i].path,
-                                 kAshDemoModeAppResources[i].id);
-    webui_resource_paths.insert(kAshDemoModeAppResources[i].path);
+  for (const auto& resource : kAshDemoModeAppResources) {
+    data_source->AddResourcePath(resource.path, resource.id);
+    webui_resource_paths.insert(resource.path);
   }
 
   data_source->SetRequestFilter(
@@ -138,13 +129,19 @@ void DemoModeAppUntrustedUI::CreatePageHandler(
   views::Widget* widget =
       views::Widget::GetWidgetForNativeWindow(top_level_native_window);
   demo_mode_page_handler_ = std::make_unique<DemoModeUntrustedPageHandler>(
-      std::move(handler), widget, this);
-  // kLandscapePrimary means 0 degree. If it's kLandscapeSecondary, that means
-  // 180 degrees upside down. When the demo mode app is closed,
-  // UnlockOrientationForWindow() will be called before the window is destroyed.
-  // The lock_info_map_ will not keep the demo mode app window info.
-  ash::Shell::Get()->screen_orientation_controller()->LockOrientationForWindow(
-      top_level_native_window, chromeos::OrientationType::kLandscapePrimary);
+      std::move(handler), widget, delegate_.get());
+
+  if (ash::features::IsDemoModeAppLandscapeLockedEnabled()) {
+    // kLandscapePrimary is 0 degree, and kLandscapeSecondary is 180 degrees
+    // (upside down). kLandscape includes both. When the demo mode app is
+    // closed, UnlockOrientationForWindow() will be called before the window is
+    // destroyed. The lock_info_map_ will not keep the demo mode app window
+    // info.
+    ash::Shell::Get()
+        ->screen_orientation_controller()
+        ->LockOrientationForWindow(top_level_native_window,
+                                   chromeos::OrientationType::kLandscape);
+  }
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(DemoModeAppUntrustedUI)

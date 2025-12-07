@@ -1,0 +1,15 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+// This is used for sending GPU process log messages to the browser process.
+// This mojom file is extracted from gpu_host.mojom, to have a separate mojo
+// channel to handle log messages. The Remote side is running on GPU IO thread.
+// When GPU context is lost, terminate GPU process on IO thread to make sure
+// GPU log messages are sent to browser process as much as possible.
+interface GpuLogging {
+  // Record GPU process log messages. The messages are shown on chrome://gpu.
+  RecordLogMessage(int32 severity, string header, string message);
+};

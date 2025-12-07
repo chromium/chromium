@@ -7,7 +7,7 @@
 
 #include <jni.h>
 
-#include "base/feature_list.h"
+#include <optional>
 
 class PrefRegistrySimple;
 class PrefService;
@@ -21,6 +21,9 @@ enum CustomTabsVisibilityHistogram {
   NO_VISIBLE_TAB,
   kMaxValue = NO_VISIBLE_TAB,
 };
+
+// Following enum should always be in sync with ChromeActivityType defined in
+// tools/metrics/histograms/metadata/android/enums.xml
 
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.flags
 enum class ActivityType {
@@ -54,15 +57,16 @@ enum class ActivityType {
   //   https://chromium.googlesource.com/chromium/src/+/refs/heads/main/chrome/android/webapk/README.md
   kWebApk,
 
-  // Chrome is running embedded in another application as auth-dedicated view.
-  // TODO(b/353517557): Add a link to a developer guide
-  kAuthView,
-
   // Chrome has started running, but no tab has yet become visible (for example:
   // warm-up,
   // FRE, downloads manager shown in response to a notification click, etc).
   kPreFirstTab,
-  kMaxValue = kPreFirstTab,
+
+  // Chrome is running embedded in another application as auth-dedicated tab.
+  // TODO(b/353517557): Add a link to a developer guide
+  kAuthTab,
+
+  kMaxValue = kAuthTab,
 };
 
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.flags

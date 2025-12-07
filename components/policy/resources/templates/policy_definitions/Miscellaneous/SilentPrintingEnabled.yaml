@@ -1,0 +1,31 @@
+caption: Enable Silent Printing
+desc: |-
+  Setting this policy to true enables silent printing, which immediately closes
+  print preview window when opened and prints to the default printer with
+  default options. If the default printer is 'Save as PDF', the file will be
+  saved to the Downloads folder.
+
+  Not setting this policy or setting this policy to false disables silent
+  printing, which doesn't automatically close print preview window and requires
+  the user to make a selection as usual.
+features:
+  dynamic_refresh: true
+  per_profile: false
+items:
+- caption: Enable Silent Printing
+  value: true
+- caption: Disable Silent Printing
+  value: false
+default: false
+example_value: false
+owners:
+- file://components/policy/OWNERS
+- poromov@chromium.org
+- orko@igalia.com
+schema:
+  type: boolean
+supported_on:
+- chrome_os:144-
+- chrome.*:144-
+tags: []
+type: main

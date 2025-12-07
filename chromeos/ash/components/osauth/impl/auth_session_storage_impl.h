@@ -69,6 +69,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorageImpl
   std::unique_ptr<ScopedSessionRefresher> KeepAlive(
       const AuthProofToken& token) override;
 
+  bool CheckHasKeepAliveForTesting(const AuthProofToken& token) const override;
+
  private:
   friend class ScopedSessionRefresherImpl;
   enum class TokenState {

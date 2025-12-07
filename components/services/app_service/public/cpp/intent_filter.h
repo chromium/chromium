@@ -107,8 +107,8 @@ struct COMPONENT_EXPORT(APP_TYPES) ConditionValue {
   ConditionValue& operator=(const ConditionValue&) = delete;
   ~ConditionValue();
 
-  bool operator==(const ConditionValue& other) const;
-  bool operator!=(const ConditionValue& other) const;
+  friend bool operator==(const ConditionValue&,
+                         const ConditionValue&) = default;
 
   std::string ToString() const;
 
@@ -130,7 +130,6 @@ struct COMPONENT_EXPORT(APP_TYPES) Condition {
   ~Condition();
 
   bool operator==(const Condition& other) const;
-  bool operator!=(const Condition& other) const;
 
   std::unique_ptr<Condition> Clone() const;
 
@@ -154,7 +153,6 @@ struct COMPONENT_EXPORT(APP_TYPES) IntentFilter {
   ~IntentFilter();
 
   bool operator==(const IntentFilter& other) const;
-  bool operator!=(const IntentFilter& other) const;
 
   std::unique_ptr<IntentFilter> Clone() const;
 
@@ -212,6 +210,15 @@ base::flat_map<std::string, IntentFilters> CloneIntentFiltersMap(
 
 COMPONENT_EXPORT(APP_TYPES)
 bool IsEqual(const IntentFilters& source, const IntentFilters& target);
+
+// Note that the comparison rules are somewhat specific:
+// * If both `source` and `target` are defined, normal comparison rules apply;
+// * If both `source` and `target` are undefined, they're equal;
+// * If only one of the two is undefined, then they're equal if and only if the
+// other one has length of zero.
+COMPONENT_EXPORT(APP_TYPES)
+bool IsEqual(const std::optional<IntentFilters>& source,
+             const std::optional<IntentFilters>& target);
 
 // Returns true if `intent_filters` contains `intent_filter`.
 COMPONENT_EXPORT(APP_TYPES)

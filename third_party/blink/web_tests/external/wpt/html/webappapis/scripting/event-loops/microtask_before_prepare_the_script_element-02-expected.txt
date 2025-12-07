@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Microtask before prepare-the-script-element steps
+  assert_false: Classic script should not run expected false got true
+Harness: the test ran to completion.
+

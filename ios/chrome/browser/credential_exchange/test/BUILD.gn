@@ -1,0 +1,20 @@
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "credential_export_egtest.mm" ]
+  deps = [
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
+    "//ios/chrome/browser/credential_exchange/ui:constants",
+    "//ios/chrome/browser/credential_provider/model:buildflags",
+    "//ios/chrome/browser/settings/ui_bundled:settings_root_constants",
+    "//ios/chrome/browser/settings/ui_bundled/password:eg_test_support",
+    "//ios/chrome/browser/settings/ui_bundled/password:eg_test_support+eg2",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

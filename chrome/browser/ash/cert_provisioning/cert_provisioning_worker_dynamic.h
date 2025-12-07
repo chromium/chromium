@@ -23,7 +23,7 @@
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_invalidator.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_worker.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
+#include "chromeos/ash/components/platform_keys/platform_keys.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "net/base/backoff_entry.h"
 
@@ -53,6 +53,7 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   void MarkWorkerForReset() override;
   bool IsWorkerMarkedForReset() const override;
   bool IsWaiting() const override;
+  const std::string& GetProcessId() const override;
   const CertProfile& GetCertProfile() const override;
   const std::vector<uint8_t>& GetPublicKey() const override;
   CertProvisioningWorkerState GetState() const override;
@@ -60,7 +61,7 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   base::Time GetLastUpdateTime() const override;
   const std::optional<BackendServerError>& GetLastBackendServerError()
       const override;
-  std::string GetFailureMessage() const override;
+  std::string GetFailureMessageWithPii() const override;
 
  private:
   friend class CertProvisioningSerializer;
@@ -74,8 +75,7 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
                                 chromeos::platform_keys::Status status);
 
   void GenerateKeyForVa();
-  void OnGenerateKeyForVaDone(base::TimeTicks start_time,
-                              const attestation::TpmChallengeKeyResult& result);
+  void OnGenerateKeyForVaDone(const attestation::TpmChallengeKeyResult& result);
 
   void Start();
   void OnStartResponse(
@@ -97,7 +97,6 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
 
   void BuildVaChallengeResponse();
   void OnBuildVaChallengeResponseDone(
-      base::TimeTicks start_time,
       const attestation::TpmChallengeKeyResult& result);
 
   void RegisterKey();
@@ -116,8 +115,7 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
       base::expected<void, CertProvisioningClient::Error> response);
 
   void BuildProofOfPossession();
-  void OnBuildProofOfPossessionDone(base::TimeTicks start_time,
-                                    std::vector<uint8_t> signature,
+  void OnBuildProofOfPossessionDone(std::vector<uint8_t> signature,
                                     chromeos::platform_keys::Status status);
 
   void UploadProofOfPossession();
@@ -133,22 +131,25 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   // require an invalidation to continue.
   void ScheduleNextStep(base::TimeDelta delay,
                         bool try_provisioning_on_timeout);
+  // Same as ScheduleNextStep, but also calls `state_change_callback` given
+  // in the constructor.
+  void ScheduleNextStepAndNotifyStateChange(base::TimeDelta delay,
+                                            bool try_provisioning_on_timeout);
   void CancelScheduledTasks();
 
   enum class ContinueReason {
     kTimeout,
-    kSubscribedToInvalidation,
     kInvalidationReceived
   };
   void OnShouldContinue(ContinueReason reason);
 
-  // Registers for |invalidation_topic_| that allows to receive notification
+  // Registers for invalidations that allows to receive notification
   // when server side is ready to continue provisioning process.
-  void RegisterForInvalidationTopic();
+  void RegisterForInvalidations();
   // Should be called only when provisioning process is finished (successfully
   // or not). Should not be called when the worker is destroyed, but will be
   // deserialized back later.
-  void UnregisterFromInvalidationTopic();
+  void UnregisterFromInvalidations();
 
   // Callback from invalidations system.
   void OnInvalidationEvent(InvalidationEvent invalidation_event);
@@ -193,7 +194,7 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
 
   // A convenience method to generate a string that contains some additional
   // info and should be included in all logs.
-  std::string GetLogInfoBlock();
+  std::string GetLogInfoBlock() const;
 
   std::string process_id_;
   CertScope cert_scope_ = CertScope::kUser;
@@ -227,6 +228,8 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   bool is_continued_without_invalidation_for_uma_ = false;
   // Calculates retry timeout for network related failures.
   net::BackoffEntry request_backoff_;
+  // Calculates retry timeout for fetching the next instruction.
+  net::BackoffEntry fetch_instruction_backoff_;
 
   // Marks where a key pair used by this worker is located.
   KeyLocation key_location_ = KeyLocation::kNone;
@@ -240,7 +243,6 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   // Public key - represented as DER-encoded X.509 SubjectPublicKeyInfo
   // (binary).
   std::vector<uint8_t> public_key_;
-  std::string invalidation_topic_;
 
   // These variables may not contain valid values after
   // kFinishCsrResponseReceived state because of deserialization (and they don't
@@ -251,11 +253,10 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   std::string va_challenge_response_;
 
   // Instruction payload and response for "Proof Of Possession".
-  // DMServer might not send any signature algorithm, in which case
-  // SIGNATURE_ALGORITHM_RSA_PKCS1_V1_5_NO_HASH is implied.
+  // Must be provided by DMServer.
   enterprise_management::CertProvSignatureAlgorithm signature_algorithm_ =
       enterprise_management::CertProvSignatureAlgorithm::
-          SIGNATURE_ALGORITHM_RSA_PKCS1_V1_5_NO_HASH;
+          SIGNATURE_ALGORITHM_UNSPECIFIED;
   std::vector<uint8_t> data_to_sign_;
   std::vector<uint8_t> signature_;
 
@@ -265,13 +266,13 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   // Holds a message describing the reason for failure when the worker fails.
   // This may not contain PII or stable identifiers as it will be logged.
   // If the worker did not fail, this message is empty.
-  std::string failure_message_;
+  std::string failure_message_no_pii_;
   // Optionally holds a message like `failure_message_` but containing PII or
   // stable identifiers for display on the UI.
   // If the worker did not fail, this is absent.
   // If the worker did fail and this is absent, the UI should display
   // failure_message_.
-  std::optional<std::string> failure_message_ui_;
+  std::optional<std::string> failure_message_with_pii_;
 
   // IMPORTANT:
   // Increment this when you add/change any member in

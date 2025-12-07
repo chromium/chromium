@@ -1,0 +1,29 @@
+This is a testharness.js-based test.
+[FAIL] [quantizeLinear] Test scale's shape = [3, 2, 5] and zeroPoint's shape = [3, 2, 5] which is the same as input's shape.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int8 for input operand named 'zeroPoint', must be one of [float32, float16, int32]."
+[FAIL] [quantizeLinear] Test scale's shape = [1, 1, 5] and zeroPoint's shape = [1, 1, 5] which is unidirectionally broadcastable to input's shape.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int8 for input operand named 'zeroPoint', must be one of [float32, float16, int32]."
+[FAIL] [quantizeLinear] Test scale's shape = [1, 1, 1] and zeroPoint's shape = [1, 1, 1] which is unidirectionally broadcastable to input's shape.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int8 for input operand named 'zeroPoint', must be one of [float32, float16, int32]."
+[FAIL] [quantizeLinear] Test block-wise quantization with block_size = [3, 2, 5].
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int8 for input operand named 'zeroPoint', must be one of [float32, float16, int32]."
+[FAIL] [quantizeLinear] Throw if the scale rank is not equal to input rank.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int8 for input operand named 'zeroPoint', must be one of [float32, float16, int32]."
+[FAIL] [quantizeLinear] Throw if the scale size is not a factor of input size.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int8 for input operand named 'zeroPoint', must be one of [float32, float16, int32]."
+[FAIL] [quantizeLinear] Throw if the shape of zero_point is not the same as the shape of input.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int8 for input operand named 'zeroPoint', must be one of [float32, float16, int32]."
+[FAIL] [quantizeLinear] Throw if the data type of input is not the same as scale.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int8 for input operand named 'zeroPoint', must be one of [float32, float16, int32]."
+[FAIL] [quantizeLinear] Throw if the data type of input is not float32 or float16.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int8 for input operand named 'zeroPoint', must be one of [float32, float16, int32]."
+[FAIL] [quantizeLinear] Throw if the data type of scale is not float32 or float16.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint8 for input operand named 'zeroPoint', must be one of [float32, float16, int32]."
+[FAIL] [quantizeLinear] throw if input is from another builder
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int8 for input operand named 'zeroPoint', must be one of [float32, float16, int32]."
+[FAIL] [quantizeLinear] throw if scale is from another builder
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int8 for input operand named 'zeroPoint', must be one of [float32, float16, int32]."
+[FAIL] [quantizeLinear] throw if zeroPoint is from another builder
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int8 for input operand named 'zeroPoint', must be one of [float32, float16, int32]."
+Harness: the test ran to completion.
+

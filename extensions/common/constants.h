@@ -9,7 +9,9 @@
 #include <cstdint>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
+#include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/common/extensions_export.h"
 
@@ -17,6 +19,10 @@ namespace extensions {
 
 // Scheme we serve extension content from.
 inline constexpr char kExtensionScheme[] = "chrome-extension";
+
+// URL used to indicate that an extension resource load request was invalid.
+inline constexpr char kExtensionInvalidRequestURL[] =
+    "chrome-extension://invalid/";
 
 // The name of the manifest inside an extension.
 inline constexpr base::FilePath::CharType kManifestFilename[] =
@@ -95,8 +101,8 @@ inline constexpr base::FilePath::CharType kExtensionFileExtension[] =
 inline constexpr base::FilePath::CharType kExtensionKeyFileExtension[] =
     FILE_PATH_LITERAL(".pem");
 
-// Default frequency for auto updates, if turned on (5 hours).
-inline constexpr int kDefaultUpdateFrequencySeconds = 60 * 60 * 5;
+// Default frequency for auto updates, if turned on.
+inline constexpr base::TimeDelta kDefaultUpdateFrequency = base::Hours(5);
 
 // The name of the directory inside the profile where per-app local settings
 // are stored.
@@ -157,8 +163,8 @@ inline constexpr char kMimeTypePng[] = "image/png";
 inline constexpr char kWebStoreAppId[] = "ahfgeienlihckogmohjhadlkjgocpleb";
 
 // The key used for signing some pieces of data from the webstore.
-EXTENSIONS_EXPORT extern const uint8_t kWebstoreSignaturesPublicKey[];
-EXTENSIONS_EXPORT extern const size_t kWebstoreSignaturesPublicKeySize;
+EXTENSIONS_EXPORT extern const base::span<const uint8_t>
+    kWebstoreSignaturesPublicKey;
 
 // A preference for storing the extension's update URL data.
 inline constexpr char kUpdateURLData[] = "update_url_data";
@@ -216,19 +222,30 @@ enum class AppLaunchSource {
 // application.
 // Do not remove items or re-order this enum as it is used in preferences
 // and histograms.
+// TODO(crbug.com/420858216): Add add "class" to declaration.
 enum LaunchType {
-  LAUNCH_TYPE_INVALID = -1,
-  LAUNCH_TYPE_FIRST = 0,
-  LAUNCH_TYPE_PINNED = LAUNCH_TYPE_FIRST,
-  LAUNCH_TYPE_REGULAR = 1,
-  LAUNCH_TYPE_FULLSCREEN = 2,
-  LAUNCH_TYPE_WINDOW = 3,
-  NUM_LAUNCH_TYPES,
+  kInvalid = -1,
+  kFirst = 0,
+  kPinned = kFirst,
+  kRegular = 1,
+  kFullscreen = 2,
+  kWindow = 3,
+  kNumLaunchTypes,
 
   // Launch an app in the in the way a click on the NTP would,
   // if no user pref were set.  Update this constant to change
   // the default for the NTP and chrome.management.launchApp().
-  LAUNCH_TYPE_DEFAULT = LAUNCH_TYPE_REGULAR
+  kDefault = kRegular,
+
+  // TODO(crbug.com/420858216): Remove these legacy values/names.
+  LAUNCH_TYPE_INVALID = kInvalid,
+  LAUNCH_TYPE_FIRST = kFirst,
+  LAUNCH_TYPE_PINNED = kPinned,
+  LAUNCH_TYPE_REGULAR = kRegular,
+  LAUNCH_TYPE_FULLSCREEN = kFullscreen,
+  LAUNCH_TYPE_WINDOW = kWindow,
+  NUM_LAUNCH_TYPES = kNumLaunchTypes,
+  LAUNCH_TYPE_DEFAULT = kDefault
 };
 
 }  // namespace extensions
@@ -267,9 +284,11 @@ inline constexpr char kChromeVoxExtensionId[] =
 // The extension id of the PDF extension.
 inline constexpr char kPdfExtensionId[] = "mhjfbmdgcfjbbpaeojofohoefgiehjai";
 
+#if BUILDFLAG(IS_CHROMEOS)
 // The extension id of the Office Viewer component extension.
 inline constexpr char kQuickOfficeComponentExtensionId[] =
     "bpmcpldpdmajfigpchkicefoigmkfalc";
+#endif
 
 // The extension id of the Office Viewer extension on the internal webstore.
 inline constexpr char kQuickOfficeInternalExtensionId[] =
@@ -286,11 +305,17 @@ inline constexpr char kMimeHandlerPrivateTestExtensionId[] =
 // The extension id of the Files Manager application.
 inline constexpr char kFilesManagerAppId[] = "hhaomjibdihmijegdhdafkllkbggdgoj";
 
+// The extension id of the Files Manager SWA.
+inline constexpr char kFilesManagerSWAId[] = "fkiggjmkendpmbegkagpmagjepfkpmeb";
+
 // The extension id of the Calculator application.
 inline constexpr char kCalculatorAppId[] = "joodangkbfjnajiiifokapkpmhfnpleo";
 
 // The extension id of the demo Calendar application.
 inline constexpr char kCalendarDemoAppId[] = "fpgfohogebplgnamlafljlcidjedbdeb";
+
+// The extension id of the Camera application.
+inline constexpr char kCameraAppId[] = "njfbnohfdkmbmnjapinfcopialeghnmh";
 
 // The extension id of the GMail application.
 inline constexpr char kGmailAppId[] = "pjkljhegncpnkpknbcohdijeoejaedia";
@@ -343,13 +368,23 @@ inline constexpr char kClipchampAppId[] = "pfepfhbcedkbjdkanpimmmdjfgoddhkg";
 // The extension id of the GeForce NOW PWA.
 inline constexpr char kGeForceNowAppId[] = "egmafekfmcnknbdlbfbhafbllplmjlhn";
 
-// The extension id of the Zoom PWA.
-inline constexpr char kZoomAppId[] = "jldpdkiafafcejhceeincjmlkmibemgj";
+// The extension id of the Zoom PWA. We used to have
+// jldpdkiafafcejhceeincjmlkmibemgj for Zoom with its old url https://zoom.us/.
+// However, nowadays, it always redirect to https://www.zoom.com/ so its
+// extension id becomes ddamjdmghnhnicfnliimfobemngigiom.
+inline constexpr char kZoomAppId[] = "ddamjdmghnhnicfnliimfobemngigiom";
 
 // The extension id of the Sumo PWA.
-inline constexpr char kSumoAppId[] = "mfknjekfflbfdchhohffdpkokgfbfmdc";
+inline constexpr char kSumoAppId[] = "genadphlobhbpdnafiphnppelkagmghm";
 
-// The extension id of the Sumo PWA.
+// The extension id of Gemini App if installed manually.
+inline constexpr char kGeminiAppId[] = "caidcmannjgahlnbpmidmiecjcoiiigg";
+
+// The extension id of Gemini App if added by policy.
+inline constexpr char kGeminiAppByPolicyId[] =
+    "gdfaincndogidkdcdkhapmbffkckdkhn";
+
+// The extension id of the Adobe Spark PWA.
 inline constexpr char kAdobeSparkAppId[] = "magefboookdoiehjohjmbjmkepngibhm";
 
 // The extension id of the Google Docs application.
@@ -361,7 +396,7 @@ inline constexpr char kGoogleSheetsAppId[] = "felcaaldnbdncclmgdcncolpebgiejap";
 // The extension id of the Google Slides application.
 inline constexpr char kGoogleSlidesAppId[] = "aapocclcgogkmnckokdopfmhonfmgoek";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // The id of the testing extension allowed in the signin profile.
 inline constexpr char kSigninProfileTestExtensionId[] =
     "mecfefiddjlmabpeilblgegnbioikfmp";
@@ -384,6 +419,12 @@ inline constexpr char kAmazonLunaAppIdFR[] = "khklcoifabacgdieoekhmfcilgfmdmbh";
 
 // The extension id of the Amazon Luna .it Italy PWA.
 inline constexpr char kAmazonLunaAppIdIT[] = "agcdabkknemgfgbjdpckaehhncgkfcdi";
+
+// The extension id of the Amazon Luna .nl Netherlands PWA.
+inline constexpr char kAmazonLunaAppIdNL[] = "opkohmiamoeiojmgmhgelaaieecjifod";
+
+// The extension id of the Amazon Luna .pl Poland PWA.
+inline constexpr char kAmazonLunaAppIdPL[] = "alddamigfjonblpigkpieckmhbjdgadd";
 
 // The extension id of the Amazon Luna .co.uk UK PWA.
 inline constexpr char kAmazonLunaAppIdUK[] = "aolalpmkbpdlpjhmhhmcobipjkhlimkj";
@@ -415,9 +456,7 @@ inline constexpr char kXboxCloudGamingAppId[] =
 // that that on other operating systems would be considered part of the OS,
 // for example the file manager.
 EXTENSIONS_EXPORT bool IsSystemUIApp(std::string_view extension_id);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS)
 // The extension id of the default Demo Mode Highlights app.
 inline constexpr char kHighlightsAppId[] = "lpmakjfjcconjeehbidjclhdlpjmfjjj";
 
@@ -431,6 +470,9 @@ inline constexpr char kNewAttractLoopAppId[] =
 // The extension id of 2022 Demo Mode screensaver app.
 inline constexpr char kNewHighlightsAppId[] =
     "enchmnkoajljphdmahljlebfmpkkbnkj";
+
+// The extension id of 2024 Demo Mode App.
+inline constexpr char kDemoModeSWA[] = "bmpphkbpdoljalglilnffmikoggpdolg";
 
 // Returns true if this app is one of Demo Mode Chrome Apps, including
 // attract loop and highlights apps.
@@ -451,6 +493,10 @@ EXTENSIONS_EXPORT bool IsPreinstalledAppId(std::string_view app_id);
 // Error message when enterprise policy blocks scripting of webpage.
 inline constexpr char kPolicyBlockedScripting[] =
     "This page cannot be scripted due to an ExtensionsSettings policy.";
+
+// Error message when extension tries to allow 3PCs in incognito.
+inline constexpr char kCookiesAllowedIncognitoErrorMessage[] =
+    "Third-party cookies are blocked in incognito and cannot be re-allowed.";
 
 // Error message when access to incognito preferences is denied.
 inline constexpr char kIncognitoErrorMessage[] =
@@ -476,6 +522,9 @@ inline constexpr int kContentVerificationDefaultBlockSize = 4096;
 // resolved.
 inline constexpr char kDocsOfflineExtensionId[] =
     "ghbmnnjooekpmoecnnnilnnbdlolhkhi";
+
+// This is used extensively, generally as a key in a dictionary.
+inline constexpr char kId[] = "id";
 
 }  // namespace extension_misc
 

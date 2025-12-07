@@ -6,6 +6,7 @@ module media.mojom;
 
 import "media/capture/mojom/video_capture_buffer.mojom";
 import "media/capture/mojom/video_capture_types.mojom";
+import "media/mojo/mojom/media_types.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
 // This file describes the communication between a given Renderer Host interface
@@ -86,8 +87,8 @@ interface VideoCaptureObserver {
   OnFrameDropped(media.mojom.VideoCaptureFrameDropReason reason);
 
   // All subsequent buffers are guaranteed to have this
-  // sub-capture-target-version or higher.
-  OnNewSubCaptureTargetVersion(uint32 sub_capture_target_version);
+  // capture-target-version or higher.
+  OnNewCaptureVersion(media.mojom.CaptureVersion capture_version);
 };
 
 interface VideoCaptureHost {

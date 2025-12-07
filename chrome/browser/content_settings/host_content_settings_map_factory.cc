@@ -11,7 +11,6 @@
 #include "build/buildflag.h"
 #include "chrome/browser/content_settings/one_time_permission_provider.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_factory.h"
-#include "chrome/browser/profiles/off_the_record_profile_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -29,15 +28,22 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/trace_event/trace_event.h"
-#include "extensions/browser/api/content_settings/content_settings_custom_extension_provider.h"
-#include "extensions/browser/api/content_settings/content_settings_service.h"
-#endif
+#include "extensions/browser/api/content_settings/content_settings_custom_extension_provider.h"  // nogncheck
+#include "extensions/browser/api/content_settings/content_settings_service.h"  // nogncheck
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/content_settings/javascript_optimizer_provider_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/notifications/notification_channels_provider_android.h"
+#include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/webapps/installable/installed_webapp_provider.h"
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/chromeos/extensions/component_extension_content_settings/component_extension_content_settings_allowlist_factory.h"
+#include "chrome/browser/chromeos/extensions/component_extension_content_settings/component_extension_content_settings_provider.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
 #include "chrome/browser/sessions/exit_type_service_factory.h"
@@ -59,12 +65,18 @@ HostContentSettingsMapFactory::HostContentSettingsMapFactory()
               .Build()) {
   DependsOn(SupervisedUserSettingsServiceFactory::GetInstance());
 #if BUILDFLAG(IS_ANDROID)
+  DependsOn(
+      safe_browsing::AdvancedProtectionStatusManagerFactory::GetInstance());
   DependsOn(TemplateURLServiceFactory::GetInstance());
 #endif
   DependsOn(OneTimePermissionsTrackerFactory::GetInstance());
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   DependsOn(extensions::ContentSettingsService::GetFactoryInstance());
 #endif
+#if BUILDFLAG(IS_CHROMEOS)
+  DependsOn(extensions::ComponentExtensionContentSettingsAllowlistFactory::
+                GetInstance());
+#endif  // BUILDFLAG(IS_CHROMEOS)
   // Used by way of ShouldRestoreOldSessionCookies().
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
   DependsOn(ExitTypeServiceFactory::GetInstance());
@@ -104,16 +116,26 @@ scoped_refptr<RefcountedKeyedService>
   if (profile->IsOffTheRecord() && !profile->IsGuestSession())
     GetForProfile(original_profile);
 
+  bool should_record_metrics = profiles::IsRegularUserProfile(profile);
   scoped_refptr<HostContentSettingsMap> settings_map(new HostContentSettingsMap(
       profile->GetPrefs(),
       profile->IsOffTheRecord() || profile->IsGuestSession(),
       /*store_last_modified=*/true, profile->ShouldRestoreOldSessionCookies(),
-      profiles::IsRegularUserProfile(profile)));
+      should_record_metrics));
 
   auto allowlist_provider = std::make_unique<WebUIAllowlistProvider>(
       WebUIAllowlist::GetOrCreate(profile));
   settings_map->RegisterProvider(ProviderType::kWebuiAllowlistProvider,
                                  std::move(allowlist_provider));
+
+#if BUILDFLAG(IS_CHROMEOS)
+  auto component_extension_provider =
+      std::make_unique<extensions::ComponentExtensionContentSettingsProvider>(
+          extensions::ComponentExtensionContentSettingsAllowlistFactory::
+              GetForBrowserContext(profile));
+  settings_map->RegisterProvider(ProviderType::kComponentExtensionProvider,
+                                 std::move(component_extension_provider));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // These must be registered before before the HostSettings are passed over to
@@ -129,6 +151,7 @@ scoped_refptr<RefcountedKeyedService>
           // interaction with profile->IsGuestSession()?
           false));
 #endif // BUILDFLAG(ENABLE_EXTENSIONS)
+
   supervised_user::SupervisedUserSettingsService* supervised_service =
       SupervisedUserSettingsServiceFactory::GetForKey(profile->GetProfileKey());
   // This may be null in testing.
@@ -159,6 +182,11 @@ scoped_refptr<RefcountedKeyedService>
     settings_map->RegisterProvider(ProviderType::kInstalledWebappProvider,
                                    std::move(webapp_provider));
   }
+
+  settings_map->RegisterProvider(
+      ProviderType::kJavascriptOptimizerAndroidProvider,
+      std::make_unique<JavascriptOptimizerProviderAndroid>(
+          profile, should_record_metrics));
 #endif  // defined (OS_ANDROID)
   auto one_time_permission_provider =
       std::make_unique<OneTimePermissionProvider>(

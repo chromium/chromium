@@ -14,14 +14,15 @@ import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.interpolators.Interpolators;
 
 import java.util.ArrayList;
 
 /** Animates children of a vertical {@link LinearLayout} expanding/collapsing when focused. */
+@NullMarked
 public class FocusAnimator {
     private static final int ANIMATION_LENGTH_MS = 225;
 
@@ -29,7 +30,7 @@ public class FocusAnimator {
     private final LinearLayout mLayout;
 
     /** Child that is being focused. */
-    private final View mFocusedChild;
+    private final @Nullable View mFocusedChild;
 
     /** Number of children initially set when the {@link FocusAnimator} was created. */
     private final int mInitialNumberOfChildren;
@@ -94,7 +95,7 @@ public class FocusAnimator {
         }
 
         // Animate each child moving and changing size to match their final locations.
-        ArrayList<Animator> animators = new ArrayList<Animator>();
+        ArrayList<Animator> animators = new ArrayList<>();
         ValueAnimator childAnimator = ValueAnimator.ofFloat(0f, 1f);
         animators.add(childAnimator);
         for (int i = 0; i < mLayout.getChildCount(); i++) {
@@ -195,12 +196,12 @@ public class FocusAnimator {
     /**
      * Calculates where the top of each child view should be.
      *
-     * @return Array containing the values of {@link View#getTop} for each child of the layout.
-     *         An additional value at the end indicates the total height of the layout and points at
-     *         the bottom of the last child.
+     * @return Array containing the values of {@link View#getTop} for each child of the layout. An
+     *     additional value at the end indicates the total height of the layout and points at the
+     *     bottom of the last child.
      */
     private ArrayList<Integer> calculateChildTops() {
-        ArrayList<Integer> tops = new ArrayList<Integer>();
+        ArrayList<Integer> tops = new ArrayList<>();
 
         int runningTotal = 0;
         for (int i = 0; i < mLayout.getChildCount(); i++) {

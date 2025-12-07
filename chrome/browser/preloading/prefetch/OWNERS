@@ -1,0 +1,2 @@
+per-file chrome_prefetch*=taiyo@chromium.org
+per-file prefetch_browsertest.cc=taiyo@chromium.org

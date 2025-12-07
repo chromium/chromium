@@ -155,7 +155,6 @@ _EXPIRED_AFTER_RE = (
 _HISTOGRAM_TYPE = models.ObjectNodeType(
     'histogram',
     attributes=[
-        ('base', str, r'^$|^true|false$'),
         ('name', str, None),
         ('enum', str, r'^[A-Za-z0-9._]*$'),
         ('units', str, None),
@@ -199,7 +198,6 @@ _HISTOGRAMS_TYPE = models.ObjectNodeType(
 
 _SUFFIX_TYPE = models.ObjectNodeType('suffix',
                                      attributes=[
-                                         ('base', str, r'^$|^true|false$'),
                                          ('name', str, None),
                                          ('label', str, None),
                                      ],

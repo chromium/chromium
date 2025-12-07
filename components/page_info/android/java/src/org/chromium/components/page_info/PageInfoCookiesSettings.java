@@ -3,34 +3,42 @@
 // found in the LICENSE file.
 package org.chromium.components.page_info;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
-import android.text.TextPaint;
 import android.text.format.DateUtils;
 import android.text.format.Formatter;
-import android.text.style.ClickableSpan;
 import android.view.View;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
 
 import org.chromium.base.Callback;
 import org.chromium.base.TimeUtils;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
+import org.chromium.components.browser_ui.settings.search.BaseSearchIndexProvider;
 import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
 import org.chromium.components.browser_ui.site_settings.ForwardingManagedPreferenceDelegate;
-import org.chromium.components.browser_ui.site_settings.RWSCookieInfo;
+import org.chromium.components.browser_ui.site_settings.RwsCookieInfo;
 import org.chromium.components.browser_ui.util.date.CalendarUtils;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.components.content_settings.CookieControlsState;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
-import org.chromium.ui.util.AttrUtils;
 
 /** View showing a toggle and a description for third-party cookie blocking for a site. */
+@NullMarked
 public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     private static final String COOKIE_SUMMARY_PREFERENCE = "cookie_summary";
     private static final String COOKIE_SWITCH_PREFERENCE = "cookie_switch";
@@ -41,50 +49,83 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
 
     private ChromeSwitchPreference mCookieSwitch;
     private ChromeImageViewPreference mCookieInUse;
-    private ChromeImageViewPreference mRWSInUse;
+    private ChromeBasePreference mRwsInUse;
     private TextMessagePreference mThirdPartyCookiesTitle;
     private TextMessagePreference mThirdPartyCookiesSummary;
+    private TextMessagePreference mCookieSummary;
     private Runnable mOnClearCallback;
     private Runnable mOnCookieSettingsLinkClicked;
     private Callback<Activity> mOnFeedbackClicked;
-    private Dialog mConfirmationDialog;
+    private @Nullable Dialog mConfirmationDialog;
     private boolean mDeleteDisabled;
     private boolean mDataUsed;
-    private CharSequence mHostName;
-    private RWSCookieInfo mRWSInfo;
-    private boolean mBlockAll3PC;
+    private @Nullable CharSequence mHostName;
+    private boolean mIsModeBUi;
+    private boolean mBlockAll3pc;
     private boolean mIsIncognito;
-    private PageInfoControllerDelegate mPageInfoControllerDelegate;
+    // Sets a constant # of days until expiration to prevent test flakiness.
+    private @Nullable Integer mDaysUntilExpirationForTesting;
 
     /** Parameters to configure the cookie controls view. */
-    public static class PageInfoCookiesViewParams {
-        // Called when the toggle controlling third-party cookie blocking changes.
-        public boolean thirdPartyCookieBlockingEnabled;
-        public Callback<Boolean> onThirdPartyCookieToggleChanged;
-        public Runnable onClearCallback;
-        public Runnable onCookieSettingsLinkClicked;
-        public Callback<Activity> onFeedbackLinkClicked;
-        public boolean disableCookieDeletion;
-        public CharSequence hostName;
-        // Block all third-party cookies when Tracking Protection is on.
-        public boolean blockAll3PC;
-        public boolean isIncognito;
+    static class PageInfoCookiesViewParams {
+        public final Callback<Boolean> onThirdPartyCookieToggleChanged;
+        public final Runnable onClearCallback;
+        public final Runnable onCookieSettingsLinkClicked;
+        public final Callback<Activity> onFeedbackLinkClicked;
+        public final boolean disableCookieDeletion;
+        public final CharSequence hostName;
+        public final boolean blockAll3pc;
+        public final boolean isIncognito;
+        public final boolean isModeBUi;
+        public final @Nullable Integer daysUntilExpirationForTesting;
+
+        public PageInfoCookiesViewParams(
+                Callback<Boolean> onThirdPartyCookieToggleChanged,
+                Runnable onClearCallback,
+                Runnable onCookieSettingsLinkClicked,
+                Callback<Activity> onFeedbackLinkClicked,
+                boolean disableCookieDeletion,
+                CharSequence hostName,
+                boolean blockAll3pc,
+                boolean isIncognito,
+                boolean isModeBUi,
+                @Nullable Integer daysUntilExpirationForTesting) {
+            this.onThirdPartyCookieToggleChanged = onThirdPartyCookieToggleChanged;
+            this.onClearCallback = onClearCallback;
+            this.onCookieSettingsLinkClicked = onCookieSettingsLinkClicked;
+            this.onFeedbackLinkClicked = onFeedbackLinkClicked;
+            this.disableCookieDeletion = disableCookieDeletion;
+            this.hostName = hostName;
+            this.blockAll3pc = blockAll3pc;
+            this.isIncognito = isIncognito;
+            this.isModeBUi = isModeBUi;
+            this.daysUntilExpirationForTesting = daysUntilExpirationForTesting;
+        }
     }
 
     @Override
-    public void onCreatePreferences(Bundle bundle, String s) {
+    public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         // Remove this Preference if it is restored without SiteSettingsDelegate.
         if (!hasSiteSettingsDelegate()) {
             getParentFragmentManager().beginTransaction().remove(this).commit();
+            // Appease NullAway.
+            assumeNonNull(mRwsInUse);
             return;
         }
         SettingsUtils.addPreferencesFromResource(this, R.xml.page_info_cookie_preference);
-        mCookieSwitch = findPreference(COOKIE_SWITCH_PREFERENCE);
-        mCookieInUse = findPreference(COOKIE_IN_USE_PREFERENCE);
-        mRWSInUse = findPreference(RWS_IN_USE_PREFERENCE);
-        mRWSInUse.setVisible(false);
-        mThirdPartyCookiesTitle = findPreference(TPC_TITLE);
-        mThirdPartyCookiesSummary = findPreference(TPC_SUMMARY);
+        mCookieSwitch = assertNonNull(findPreference(COOKIE_SWITCH_PREFERENCE));
+        mCookieInUse = assertNonNull(findPreference(COOKIE_IN_USE_PREFERENCE));
+        mRwsInUse = assertNonNull(findPreference(RWS_IN_USE_PREFERENCE));
+        mRwsInUse.setVisible(false);
+        mCookieSummary = assertNonNull(findPreference(COOKIE_SUMMARY_PREFERENCE));
+        mThirdPartyCookiesTitle = assertNonNull(findPreference(TPC_TITLE));
+        mThirdPartyCookiesSummary = assertNonNull(findPreference(TPC_SUMMARY));
+        // Set accessibility properties on the region that will change with the toggle.
+        // Two a11y live regions don't work at the same time. Using a workaround of setting the
+        // content description for both the title and the summary on one of them.
+        // See crbug.com/388844792 for more background.
+        updateContentDescriptionsForA11y();
+        mThirdPartyCookiesSummary.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
     }
 
     @Override
@@ -95,28 +136,25 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         }
     }
 
-    private String getQuantityString(int resId, int count) {
-        return getContext().getResources().getQuantityString(resId, count, count);
-    }
-
-    public void setParams(PageInfoCookiesViewParams params) {
-        mBlockAll3PC = params.blockAll3PC;
-        mIsIncognito = params.isIncognito;
+    /**
+     * @param delegate {@link PageInfoControllerDelegate} for showing filtered RWS (Related Website
+     *     Sets) in settings.
+     */
+    @Initializer
+    public void setParams(PageInfoCookiesViewParams params, PageInfoControllerDelegate delegate) {
         mOnCookieSettingsLinkClicked = params.onCookieSettingsLinkClicked;
-        Preference cookieSummary = findPreference(COOKIE_SUMMARY_PREFERENCE);
-        NoUnderlineClickableSpan linkSpan =
-                new NoUnderlineClickableSpan(
-                        getContext(),
-                        (view) -> {
-                            mOnCookieSettingsLinkClicked.run();
-                        });
-        cookieSummary.setSummary(
-                SpanApplier.applySpans(
-                        getString(R.string.page_info_cookies_description),
-                        new SpanApplier.SpanInfo("<link>", "</link>", linkSpan)));
+        mBlockAll3pc = params.blockAll3pc;
+        mIsIncognito = params.isIncognito;
+        mIsModeBUi = params.isModeBUi;
+        mDaysUntilExpirationForTesting = params.daysUntilExpirationForTesting;
+        mDeleteDisabled = params.disableCookieDeletion;
+        mOnClearCallback = params.onClearCallback;
+        mOnFeedbackClicked = params.onFeedbackLinkClicked;
+        mHostName = params.hostName;
 
-        // TODO(crbug.com/40129299): Set a ManagedPreferenceDelegate?
-        mCookieSwitch.setVisible(params.thirdPartyCookieBlockingEnabled);
+        // Initialize UI elements that are based on params.
+        setCookieSummary();
+
         mCookieSwitch.setOnPreferenceChangeListener(
                 (preference, newValue) -> {
                     boolean boolValue = (Boolean) newValue;
@@ -126,22 +164,51 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                     return true;
                 });
 
+        initCookieInUse();
+        updateCookieDeleteButton();
+    }
+
+    private void setCookieSummary() {
+        mCookieSummary.setVisible(true);
+        int id;
+        if (!mIsModeBUi) {
+            // Pre Mode B description: "Cookies and other site data are used to remember you..."
+            id = R.string.page_info_cookies_description;
+        } else if (mIsIncognito) {
+            // Description of chrome blocking sites: "Chrome blocks sites..."
+            id = R.string.page_info_tracking_protection_incognito_blocked_cookies_description;
+        } else if (mBlockAll3pc) {
+            // Description of user blocking sites: "You blocked sites..."
+            id = R.string.page_info_tracking_protection_blocked_cookies_description;
+        } else {
+            // Description of Chrome limiting cookies: "Chrome limits most sites...""
+            id = R.string.page_info_tracking_protection_description;
+        }
+
+        mCookieSummary.setSummary(
+                SpanApplier.applySpans(
+                        getString(id),
+                        new SpanApplier.SpanInfo(
+                                "<link>",
+                                "</link>",
+                                new ChromeClickableSpan(
+                                        getContext(),
+                                        (view) -> {
+                                            mOnCookieSettingsLinkClicked.run();
+                                        }))));
+    }
+
+    private void initCookieInUse() {
         mCookieInUse.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.gm_database_24));
         mCookieInUse.setImageView(
                 R.drawable.ic_delete_white_24dp, R.string.page_info_cookies_clear, null);
         // Disabling enables passthrough of clicks to the main preference.
         mCookieInUse.setImageViewEnabled(false);
-        mDeleteDisabled = params.disableCookieDeletion;
         mCookieInUse.setOnPreferenceClickListener(
                 preference -> {
                     showClearCookiesConfirmation();
                     return true;
                 });
-        updateCookieDeleteButton();
-
-        mOnClearCallback = params.onClearCallback;
-        mOnFeedbackClicked = params.onFeedbackLinkClicked;
-        mHostName = params.hostName;
     }
 
     private void showClearCookiesConfirmation() {
@@ -161,102 +228,159 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                         .show();
     }
 
-    public void setCookieStatus(
-            boolean controlsVisible,
-            boolean protectionsOn,
+    public void updateState(
+            @CookieControlsState int controlsState,
             @CookieControlsEnforcement int enforcement,
             long expiration) {
-        boolean isEnforced = enforcement != CookieControlsEnforcement.NO_ENFORCEMENT;
-
         if (enforcement == CookieControlsEnforcement.ENFORCED_BY_TPCD_GRANT) {
-            // Hide all the 3PC controls.
-            mCookieSwitch.setVisible(false);
-            mThirdPartyCookiesTitle.setVisible(false);
-            findPreference(COOKIE_SUMMARY_PREFERENCE).setVisible(false);
-            ClickableSpan linkSpan =
-                    new ClickableSpan() {
-                        @Override
-                        public void onClick(View view) {
-                            mOnCookieSettingsLinkClicked.run();
-                        }
-
-                        @Override
-                        public void updateDrawState(TextPaint textPaint) {
-                            super.updateDrawState(textPaint);
-                            textPaint.setColor(
-                                    AttrUtils.resolveColor(
-                                            getContext().getTheme(),
-                                            R.attr.globalClickableSpanColor,
-                                            R.color.default_text_color_link_baseline));
-                        }
-                    };
-            mThirdPartyCookiesSummary.setSummary(
-                    SpanApplier.applySpans(
-                            getString(
-                                    R.string.page_info_tracking_protection_site_grant_description),
-                            new SpanApplier.SpanInfo("<link>", "</link>", linkSpan)));
-            mThirdPartyCookiesSummary.setDividerAllowedAbove(true);
+            setTpcdGrantState();
+            updateContentDescriptionsForA11y();
             return;
         }
+        boolean visible = controlsState != CookieControlsState.HIDDEN;
+        mCookieSwitch.setVisible(visible);
+        mThirdPartyCookiesTitle.setVisible(visible);
+        mThirdPartyCookiesSummary.setVisible(visible);
 
-        mCookieSwitch.setVisible(controlsVisible);
-        mThirdPartyCookiesTitle.setVisible(controlsVisible);
-        mThirdPartyCookiesSummary.setVisible(controlsVisible);
+        if (!visible) return;
 
-        if (!controlsVisible) return;
+        switch (controlsState) {
+            case CookieControlsState.BLOCKED3PC:
+                setBlocked3pcTitleAndSummary();
+                updateCookieSwitch(/* cookiesAllowed= */ false, enforcement);
+                break;
+            case CookieControlsState.ALLOWED3PC:
+                setAllowed3pcTitleAndSummary(expiration);
+                updateCookieSwitch(/* cookiesAllowed= */ true, enforcement);
+                break;
+            default:
+                assert false : "Should not be reached.";
+        }
+        updateContentDescriptionsForA11y();
+    }
 
+    private void setTpcdGrantState() {
+        mCookieSwitch.setVisible(false);
+        mThirdPartyCookiesTitle.setVisible(false);
+        mCookieSummary.setVisible(false);
+        mThirdPartyCookiesSummary.setSummary(
+                SpanApplier.applySpans(
+                        getString(R.string.page_info_tracking_protection_site_grant_description),
+                        new SpanApplier.SpanInfo(
+                                "<link>",
+                                "</link>",
+                                new ChromeClickableSpan(
+                                        getContext(),
+                                        (view) -> {
+                                            mOnCookieSettingsLinkClicked.run();
+                                        }))));
+        mThirdPartyCookiesSummary.setDividerAllowedAbove(true);
+    }
+
+    private void setBlocked3pcTitleAndSummary() {
+        mThirdPartyCookiesTitle.setTitle(
+                getString(R.string.page_info_cookies_site_not_working_title));
+        int resId = R.string.page_info_cookies_site_not_working_description_tracking_protection;
+        mThirdPartyCookiesSummary.setSummary(getString(resId));
+    }
+
+    private void setAllowed3pcTitleAndSummary(long expiration) {
+        String title;
+        if (expiration == 0) {
+            title = getString(R.string.page_info_cookies_permanent_allowed_title);
+        } else {
+            int days = daysUntilExpiration(TimeUtils.currentTimeMillis(), expiration);
+            boolean limit3pcs = mIsModeBUi && !mBlockAll3pc;
+            if (days == 0) {
+                title =
+                        getString(
+                                limit3pcs
+                                        ? R.string.page_info_cookies_limiting_restart_today_title
+                                        : R.string.page_info_cookies_blocking_restart_today_title);
+            } else {
+                int resId;
+                if (limit3pcs) {
+                    resId = R.plurals.page_info_cookies_limiting_restart_title;
+                } else {
+                    resId = R.plurals.page_info_cookies_blocking_restart_tracking_protection_title;
+                }
+                title = getContext().getResources().getQuantityString(resId, days, days);
+            }
+        }
+        mThirdPartyCookiesTitle.setTitle(title);
+
+        int resId;
+        if (expiration == 0) {
+            resId = R.string.page_info_cookies_tracking_protection_permanent_allowed_description;
+        } else if (mIsModeBUi) {
+            resId = R.string.page_info_cookies_tracking_protection_description;
+        } else {
+            resId = R.string.page_info_cookies_send_feedback_description;
+        }
+        mThirdPartyCookiesSummary.setSummary(
+                SpanApplier.applySpans(
+                        getString(resId),
+                        new SpanApplier.SpanInfo(
+                                "<link>",
+                                "</link>",
+                                new ChromeClickableSpan(
+                                        getContext(),
+                                        (view) -> {
+                                            mOnFeedbackClicked.onResult(this.getActivity());
+                                        }))));
+    }
+
+    /**
+     * Returns the number of days left until the exception expiration.
+     *
+     * @param currentTime Current timestamps (can be obtained using TimeUtils.currentTimeMillis())
+     * @param expiration A timestamp for the expiration.
+     * @return Number of days until expiration. Day boundary is considered to be the local midnight.
+     */
+    @VisibleForTesting
+    public int daysUntilExpiration(long currentTime, long expiration) {
+        if (mDaysUntilExpirationForTesting != null) return mDaysUntilExpirationForTesting;
+        long currentMidnight = CalendarUtils.getStartOfDay(currentTime).getTime().getTime();
+        long expirationMidnight = CalendarUtils.getStartOfDay(expiration).getTime().getTime();
+        return (int) ((expirationMidnight - currentMidnight) / DateUtils.DAY_IN_MILLIS);
+    }
+
+    private void updateCookieSwitch(
+            boolean cookiesAllowed, @CookieControlsEnforcement int enforcement) {
         mCookieSwitch.setIcon(
                 SettingsUtils.getTintedIcon(
                         getContext(),
-                        protectionsOn
-                                ? R.drawable.ic_visibility_off_black
-                                : R.drawable.ic_visibility_black));
-        mCookieSwitch.setChecked(!protectionsOn);
-        mCookieSwitch.setEnabled(!isEnforced);
+                        cookiesAllowed
+                                ? R.drawable.ic_visibility_black
+                                : R.drawable.ic_visibility_off_black));
+        mCookieSwitch.setChecked(cookiesAllowed);
+        mCookieSwitch.setEnabled(enforcement == CookieControlsEnforcement.NO_ENFORCEMENT);
         mCookieSwitch.setManagedPreferenceDelegate(
                 new ForwardingManagedPreferenceDelegate(
                         getSiteSettingsDelegate().getManagedPreferenceDelegate()) {
                     @Override
                     public boolean isPreferenceControlledByPolicy(Preference preference) {
-                        return isEnforced;
+                        return enforcement == CookieControlsEnforcement.ENFORCED_BY_POLICY;
                     }
                 });
-
-        boolean permanentException = (expiration == 0);
-
-        NoUnderlineClickableSpan feedbackSpan =
-                new NoUnderlineClickableSpan(
-                        getContext(),
-                        (view) -> {
-                            mOnFeedbackClicked.onResult(this.getActivity());
-                        });
-
-        if (protectionsOn) {
-            mThirdPartyCookiesTitle.setTitle(
-                    getString(R.string.page_info_cookies_site_not_working_title));
-            int resId =
-                    willCreatePermanentException()
-                            ? R.string.page_info_cookies_site_not_working_description_permanent
-                            : R.string.page_info_cookies_site_not_working_description_temporary;
-            mThirdPartyCookiesSummary.setSummary(getString(resId));
-        } else if (permanentException) {
-            mThirdPartyCookiesTitle.setTitle(
-                    getString(R.string.page_info_cookies_permanent_allowed_title));
-            int resId = R.string.page_info_cookies_send_feedback_description;
-            mThirdPartyCookiesSummary.setSummary(
-                    SpanApplier.applySpans(
-                            getString(resId),
-                            new SpanApplier.SpanInfo("<link>", "</link>", feedbackSpan)));
-        } else { // Not blocking and temporary exception.
-            int days = calculateDaysUntilExpiration(TimeUtils.currentTimeMillis(), expiration);
-            updateThirdPartyCookiesTitleTemporary(days);
-            int resId = R.string.page_info_cookies_send_feedback_description;
-            mThirdPartyCookiesSummary.setSummary(
-                    SpanApplier.applySpans(
-                            getString(resId),
-                            new SpanApplier.SpanInfo("<link>", "</link>", feedbackSpan)));
+        int resId;
+        if (cookiesAllowed) {
+            resId = R.string.page_info_tracking_protection_toggle_allowed;
+        } else if (mIsModeBUi && !mBlockAll3pc) {
+            resId = R.string.page_info_tracking_protection_toggle_limited;
+        } else {
+            resId = R.string.page_info_tracking_protection_toggle_blocked;
         }
-        updateCookieSwitch();
+        mCookieSwitch.setSummary(getString(resId));
+    }
+
+    // TODO(crbug.com/388844792): Revert back to two live regions once that's supported.
+    private void updateContentDescriptionsForA11y() {
+        // Combine both the title and the summary into a content description inside of a single a11y
+        // live region.
+        mThirdPartyCookiesTitle.setTitleContentDescription("");
+        mThirdPartyCookiesSummary.setSummaryContentDescription(
+                mThirdPartyCookiesTitle.getTitle() + " " + mThirdPartyCookiesSummary.getSummary());
     }
 
     public void setStorageUsage(long storageUsage) {
@@ -269,68 +393,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         updateCookieDeleteButton();
     }
 
-    /**
-     * @param delegate {@link PageInfoControllerDelegate} for showing filtered RWS (Related Website
-     *     Sets) in settings.
-     */
-    public void setPageInfoDelegate(PageInfoControllerDelegate delegate) {
-        mPageInfoControllerDelegate = delegate;
-    }
-
-    /**
-     * Returns a boolean indicating if the RWS info has been shown or not.
-     *
-     * @param rwsInfo First Party Sets info to show.
-     * @param currentOrigin PageInfo current origin.
-     * @return a boolean indicating if the RWS info has been shown or not.
-     */
-    public boolean maybeShowRWSInfo(RWSCookieInfo rwsInfo, String currentOrigin) {
-        mRWSInfo = rwsInfo;
-        if (rwsInfo == null || mRWSInUse == null) {
-            return false;
-        }
-
-        assert getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUIFeatureEnabled()
-                        && getSiteSettingsDelegate().isRelatedWebSetsDataAccessEnabled()
-                : "Related Web Sets UI and access should be enabled to show RWS info.";
-
-        mRWSInUse.setVisible(true);
-        mRWSInUse.setTitle(R.string.cookie_info_fps_title);
-        mRWSInUse.setSummary(
-                String.format(getString(R.string.cookie_info_fps_summary), rwsInfo.getOwner()));
-        mRWSInUse.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.tenancy));
-        mRWSInUse.setManagedPreferenceDelegate(
-                new ForwardingManagedPreferenceDelegate(
-                        getSiteSettingsDelegate().getManagedPreferenceDelegate()) {
-                    @Override
-                    public boolean isPreferenceControlledByPolicy(Preference preference) {
-                        return getSiteSettingsDelegate()
-                                .isPartOfManagedRelatedWebSet(currentOrigin);
-                    }
-                });
-        if (getSiteSettingsDelegate().shouldShowPrivacySandboxRwsUi()) {
-            mRWSInUse.setOnPreferenceClickListener(
-                    preference -> {
-                        mPageInfoControllerDelegate.showAllSettingsForRws(mRWSInfo.getOwner());
-                        return false;
-                    });
-        }
-
-        return true;
-    }
-
-    /**
-     * Returns the number of days left until the exception expiration.
-     * @param currentTime Current timestamps (can be obtained using TimeUtils.currentTimeMillis())
-     * @param expiration A timestamp for the expiration.
-     * @return Number of days until expiration. Day boundary is considered to be the local midnight.
-     */
-    public static int calculateDaysUntilExpiration(long currentTime, long expiration) {
-        long currentMidnight = CalendarUtils.getStartOfDay(currentTime).getTime().getTime();
-        long expirationMidnight = CalendarUtils.getStartOfDay(expiration).getTime().getTime();
-        return (int) ((expirationMidnight - currentMidnight) / DateUtils.DAY_IN_MILLIS);
-    }
-
     private void updateCookieDeleteButton() {
         mCookieInUse.setImageColor(
                 !mDeleteDisabled && mDataUsed
@@ -338,26 +400,41 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                         : R.color.default_icon_color_disabled);
     }
 
-    private void updateCookieSwitch() {
-        // TODO(crbug.com/40064612): Update the strings for when FPS are on.
-        if (!mCookieSwitch.isChecked()) {
-            mCookieSwitch.setSummary(
-                    getString(R.string.page_info_tracking_protection_toggle_blocked));
-        } else {
-            mCookieSwitch.setSummary(
-                    getString(R.string.page_info_tracking_protection_toggle_allowed));
+    /**
+     * Returns a boolean indicating if the RWS info has been shown or not.
+     *
+     * @param rwsInfo Related Website Sets info to show.
+     * @param currentOrigin PageInfo current origin.
+     * @return a boolean indicating if the RWS info has been shown or not.
+     */
+    public boolean maybeShowRwsInfo(@Nullable RwsCookieInfo rwsInfo, String currentOrigin) {
+        if (rwsInfo == null) {
+            return false;
         }
+
+        assert getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled()
+                : "RWS access should be enabled to show info.";
+
+        mRwsInUse.setVisible(true);
+        mRwsInUse.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.tenancy));
+        mRwsInUse.setTitle(R.string.cookie_info_rws_title);
+        mRwsInUse.setSummary(
+                String.format(getString(R.string.cookie_info_rws_summary), rwsInfo.getOwner()));
+        mRwsInUse.setManagedPreferenceDelegate(
+                new ForwardingManagedPreferenceDelegate(
+                        getSiteSettingsDelegate().getManagedPreferenceDelegate()) {
+                    @Override
+                    public boolean isPreferenceControlledByPolicy(Preference preference) {
+                        return getSiteSettingsDelegate()
+                                .isPartOfManagedRelatedWebsiteSet(currentOrigin);
+                    }
+                });
+
+        return true;
     }
 
-    private void updateThirdPartyCookiesTitleTemporary(int days) {
-        mThirdPartyCookiesTitle.setTitle(
-                days == 0
-                        ? getString(R.string.page_info_cookies_blocking_restart_today_title)
-                        : getQuantityString(
-                                R.plurals.page_info_cookies_blocking_restart_title, days));
-    }
-
-    private boolean willCreatePermanentException() {
-        return "0d".equals(PageInfoFeatures.getUserBypassExpiration());
-    }
+    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling.
+    public static final BaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new BaseSearchIndexProvider(
+                    PageInfoCookiesSettings.class.getName(), R.xml.page_info_cookie_preference);
 }

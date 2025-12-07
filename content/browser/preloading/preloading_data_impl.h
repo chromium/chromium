@@ -10,7 +10,6 @@
 #include <tuple>
 #include <vector>
 
-#include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/preloading_confidence.h"
 #include "content/browser/preloading/preloading_prediction.h"
 #include "content/public/browser/preloading_data.h"
@@ -20,6 +19,8 @@
 
 namespace content {
 
+class PrefetchKey;
+class PrefetchService;
 class PreloadingAttemptImpl;
 
 // Defines predictors confusion matrix enums used by UMA records. Entries should
@@ -60,8 +61,8 @@ class CONTENT_EXPORT PreloadingDataImpl
   // any NoVarySearch query using `PrefetchService` if No-Vary-Search feature is
   // enabled.
   static PreloadingURLMatchCallback GetPrefetchServiceMatcher(
-      PrefetchService* prefetch_service,
-      const PrefetchContainer::Key& predicted);
+      PrefetchService& prefetch_service,
+      const PrefetchKey& predicted);
 
   // Disallow copy and assign.
   PreloadingDataImpl(const PreloadingDataImpl& other) = delete;
@@ -72,7 +73,6 @@ class CONTENT_EXPORT PreloadingDataImpl
       PreloadingPredictor predictor,
       PreloadingType preloading_type,
       PreloadingURLMatchCallback url_match_predicate,
-      std::optional<PreloadingType> planned_max_preloading_type,
       ukm::SourceId triggering_primary_page_source_id) override;
   void AddPreloadingPrediction(
       PreloadingPredictor predictor,
@@ -95,14 +95,13 @@ class CONTENT_EXPORT PreloadingDataImpl
 
   // A version of `AddPreloadingAttempt` which takes two PreloadingPredictors in
   // the case where one predictor creates a preloading candidate which is
-  // enacted by another predictor (e.g. a non-eager speculation rule creates a
-  // candidate which is enacted by a pointer down heuristic).
+  // enacted by another predictor (e.g. a non-immediate speculation rule creates
+  // a candidate which is enacted by a pointer down heuristic).
   PreloadingAttemptImpl* AddPreloadingAttempt(
       const PreloadingPredictor& creating_predictor,
       const PreloadingPredictor& enacting_predictor,
       PreloadingType preloading_type,
       PreloadingURLMatchCallback url_match_predicate,
-      std::optional<PreloadingType> planned_max_preloading_type,
       ukm::SourceId triggering_primary_page_source_id);
 
   void CopyPredictorDomains(const PreloadingDataImpl& other,
@@ -138,6 +137,9 @@ class CONTENT_EXPORT PreloadingDataImpl
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
   void WebContentsDestroyed() override;
+
+  // A commonly used `PredictorDomainCallback`.
+  static bool IsLinkClickNavigation(NavigationHandle* navigation_handle);
 
   size_t GetPredictionsSizeForTesting() const;
   void SetMaxPredictionsToTenForTesting();

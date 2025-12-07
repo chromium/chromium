@@ -1,39 +1,57 @@
 <!DOCTYPE html>
-<html>
-<body>
-<div contenteditable="true" id="editable">
-<span id="item1">Lorem</span><br>
-more Lorem!
-<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px;">
-ipsum<br>
-
-<ul>
-<li>Foo</li>
-<li>Bar</li>
-<li>Baz</li>
-</ul>
-Dolor
-</blockquote>
-<ul>
-  <li>Dinner time?</li>
-</ul>
-Sum!<br>
-<span id="item2">Thing</span>
-</div>
-
-<script src="../../resources/dump-as-markup.js"></script> 
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-var s = window.getSelection();
-var p1 = document.getElementById("item1");
-var p2 = document.getElementById("item2");
-s.collapse(p1, 0);
-s.setBaseAndExtent(p1, 0, p2, 1);
-document.execCommand("Outdent", false, "");
-Markup.description("This test uses the execCommand to Outdent the text below.\n" +
-    "This demonstrates a bug: the content in the blockquote that's not in a list is pulled out of position.");
-Markup.dump(editable);
 
+// Note: The behavior here is different from Firefox which removes the
+// outermost blockquote preserving its children and not unlistifying
+// the list with "Foo", "Bar", and "Baz".
+
+selection_test(
+    [
+      '<div contenteditable="true" id="editable">',
+          '<span id="item1">^Lorem</span><br>',
+          'more Lorem!',
+          '<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px;">',
+              'ipsum<br>',
+              '',
+              '<ul>',
+                  '<li>Foo</li>',
+                  '<li>Bar</li>',
+                  '<li>Baz</li>',
+              '</ul>',
+              'Dolor',
+          '</blockquote>',
+          '<ul>',
+              '<li>Dinner time?</li>',
+          '</ul>',
+          'Sum!<br>',
+          '<span id="item2">T|hing</span>',
+      '</div>',
+    ],
+    'outdent',
+    [
+      '<div contenteditable="true" id="editable">',
+          '<span id="item1">^Lorem</span><br>',
+          'more Lorem!',
+          '<br>',
+          'ipsum<br>',
+          '',
+          '<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px;">',
+              'Foo',
+              '<br>',
+              'Bar',
+              '<br>',
+              'Baz',
+              '<br>',
+          '</blockquote>',
+          'Dolor',
+          '<br>',
+          'Dinner time?',
+          '<br>',
+          'Sum!<br>',
+          '<span id="item2">T|hing</span>',
+      '</div>',
+    ]);
 </script>
-
-</body>
-</html>

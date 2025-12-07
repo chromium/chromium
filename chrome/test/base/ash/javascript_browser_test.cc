@@ -4,7 +4,11 @@
 
 #include "chrome/test/base/ash/javascript_browser_test.h"
 
+#include <optional>
+
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
@@ -12,7 +16,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ash/js_test_api.h"
-#include "components/nacl/common/buildflags.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "content/public/browser/web_ui.h"
 #include "net/base/filename_util.h"
@@ -23,27 +26,9 @@ void JavaScriptBrowserTest::AddLibrary(const base::FilePath& library_path) {
 
 JavaScriptBrowserTest::JavaScriptBrowserTest() = default;
 
-JavaScriptBrowserTest::~JavaScriptBrowserTest() {
-}
-
-void JavaScriptBrowserTest::SetUpInProcessBrowserTestFixture() {
-  ash_starter_ = std::make_unique<test::AshBrowserTestStarter>();
-  if (ash_starter_->HasLacrosArgument()) {
-    ASSERT_TRUE(ash_starter_->PrepareEnvironmentForLacros());
-    ash_starter_->EnableFeaturesInLacros(
-        {privacy_sandbox::kDisablePrivacySandboxPrompts});
-  }
-}
-
-void JavaScriptBrowserTest::TearDownInProcessBrowserTestFixture() {
-  if (ash_starter_->HasLacrosArgument())
-    ash_starter_.reset();
-}
+JavaScriptBrowserTest::~JavaScriptBrowserTest() = default;
 
 void JavaScriptBrowserTest::SetUpOnMainThread() {
-  if (ash_starter_->HasLacrosArgument())
-    ash_starter_->StartLacros(this);
-
   JsTestApiConfig config;
   library_search_paths_.push_back(config.search_path);
   DCHECK(user_libraries_.empty());
@@ -62,59 +47,78 @@ void JavaScriptBrowserTest::SetUpOnMainThread() {
   library_search_paths_.push_back(source_root_directory);
 }
 
-// TODO(dtseng): Make this return bool (success/failure) and remove ASSERt_TRUE
-// calls.
-void JavaScriptBrowserTest::BuildJavascriptLibraries(
+bool JavaScriptBrowserTest::BuildJavascriptLibraries(
     std::vector<std::u16string>* libraries) {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  ASSERT_TRUE(libraries != nullptr);
-  std::vector<base::FilePath>::iterator user_libraries_iterator;
-  for (user_libraries_iterator = user_libraries_.begin();
-       user_libraries_iterator != user_libraries_.end();
-       ++user_libraries_iterator) {
+  if (!libraries) {
+    LOG(ERROR) << "BuildJavascriptLibraries called with null libraries pointer";
+    return false;
+  }
+
+  // Path processing logic.
+  auto resolve_mapped_or_absolute_path =
+      [&](const base::FilePath& path) -> std::optional<base::FilePath> {
+    const auto components = path.GetComponents();
+    if (components.front() == FILE_PATH_LITERAL("ROOT_GEN_DIR")) {
+      base::FilePath exe_dir;
+      if (!base::PathService::Get(base::DIR_EXE, &exe_dir)) {
+        LOG(ERROR) << "Failed to get base::DIR_EXE for ROOT_GEN_DIR: "
+                   << path.value();
+        return std::nullopt;
+      }
+      base::FilePath abs_path = exe_dir.AppendASCII("gen");
+      for (size_t i = 1; i < components.size(); ++i) {
+        abs_path = abs_path.Append(components[i]);
+      }
+      return abs_path.NormalizePathSeparators();
+    }
+    return path.IsAbsolute() ? std::optional<base::FilePath>(path)
+                             : std::nullopt;
+  };
+
+  for (const auto& library_path : user_libraries_) {
     std::string library_content;
     base::FilePath library_absolute_path;
-    std::vector<base::FilePath::StringType> components =
-        user_libraries_iterator->GetComponents();
-    if (components[0] == FILE_PATH_LITERAL("ROOT_GEN_DIR")) {
-      base::FilePath exe_dir;
-      base::PathService::Get(base::DIR_EXE, &exe_dir);
-      library_absolute_path = exe_dir.AppendASCII("gen");
-      for (size_t i = 1; i < components.size(); i++)
-        library_absolute_path = library_absolute_path.Append(components[i]);
-      library_absolute_path = library_absolute_path.NormalizePathSeparators();
-      ASSERT_TRUE(
-          base::ReadFileToString(library_absolute_path, &library_content))
-          << user_libraries_iterator->value();
-    } else if (user_libraries_iterator->IsAbsolute()) {
-      library_absolute_path = *user_libraries_iterator;
-      ASSERT_TRUE(
-          base::ReadFileToString(library_absolute_path, &library_content))
-          << user_libraries_iterator->value();
-    } else {
-      bool ok = false;
-      std::vector<base::FilePath>::iterator library_search_path_iterator;
-      for (library_search_path_iterator = library_search_paths_.begin();
-           library_search_path_iterator != library_search_paths_.end();
-           ++library_search_path_iterator) {
-        library_absolute_path = base::MakeAbsoluteFilePath(
-            library_search_path_iterator->Append(*user_libraries_iterator));
-        ok = base::ReadFileToString(library_absolute_path, &library_content);
-        if (ok)
-          break;
+    bool found = false;
+    // Resolve mapped paths or absolute paths.
+    if (auto resolved_path = resolve_mapped_or_absolute_path(library_path)) {
+      if (base::ReadFileToString(*resolved_path, &library_content)) {
+        library_absolute_path = *resolved_path;
+        found = true;
+      } else {
+        LOG(ERROR) << "Failed to read resolved library file: "
+                   << resolved_path->value();
       }
-      ASSERT_TRUE(ok) << "User library not found: "
-                      << user_libraries_iterator->value();
+    } else {
+      // Handling relative paths.
+      for (const auto& search_path : library_search_paths_) {
+        base::FilePath candidate =
+            base::MakeAbsoluteFilePath(search_path.Append(library_path));
+        if (base::ReadFileToString(candidate, &library_content)) {
+          library_absolute_path = candidate;
+          found = true;
+          break;
+        }
+      }
     }
-    library_content.append(";\n");
+
+    if (!found) {
+      LOG(ERROR) << "Failed to load JS library: " << library_path.value();
+      return false;
+    }
 
     // This magic code puts filenames in stack traces.
-    library_content.append("//# sourceURL=");
-    library_content.append(
-        net::FilePathToFileURL(library_absolute_path).spec());
-    library_content.append("\n");
+    std::string source_url =
+        "//# sourceURL=" +
+        net::FilePathToFileURL(library_absolute_path).spec() + "\n";
+
+    library_content.reserve(library_content.size() + source_url.size() + 3);
+    library_content += ";\n";
+    library_content += source_url;
+
     libraries->push_back(base::UTF8ToUTF16(library_content));
   }
+  return true;
 }
 
 std::u16string JavaScriptBrowserTest::BuildRunTestJSCall(
@@ -129,13 +133,5 @@ std::u16string JavaScriptBrowserTest::BuildRunTestJSCall(
 }
 
 Profile* JavaScriptBrowserTest::GetProfile() const {
-  CHECK(ash_starter_);
-  if (ash_starter_->HasLacrosArgument()) {
-    // In LacrosOnly mode, ash web browser is disabled, don't access profile via
-    // browser().
-    Profile* profile = ProfileManager::GetActiveUserProfile();
-    CHECK(profile) << "Failed to get a valid profile in Ash.";
-    return profile;
-  }
   return browser()->profile();
 }

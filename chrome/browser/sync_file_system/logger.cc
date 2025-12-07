@@ -4,7 +4,6 @@
 
 #include "chrome/browser/sync_file_system/logger.h"
 
-#include "base/files/file_util.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/notreached.h"
@@ -30,8 +29,7 @@ const char* LogSeverityToString(logging::LogSeverity level) {
       return "VERBOSE";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return "Unknown Log Severity";
+  NOTREACHED();
 }
 
 }  // namespace

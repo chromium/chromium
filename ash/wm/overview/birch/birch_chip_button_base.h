@@ -22,12 +22,23 @@ class BirchChipButtonBase : public views::Button {
   BirchChipButtonBase& operator=(const BirchChipButtonBase&) = delete;
   ~BirchChipButtonBase() override;
 
+  // Configure the chip with given `item`.
+  virtual void Init(BirchItem* item) = 0;
+
   // Get birch item attached to the chip.
   virtual const BirchItem* GetItem() const = 0;
   virtual BirchItem* GetItem() = 0;
 
   // Shut down the chip while destroying the bar view.
   virtual void Shutdown() = 0;
+
+ protected:
+  // Updates all the UI that will be affected by rounded corner change (border,
+  // background, focus ring). This depends on whether the selection widget is
+  // visible, which only the birch coral chip has.
+  void UpdateRoundedCorners(bool selection_widget_visible);
+
+  int GetRoundedCornerRadius() const;
 };
 
 BEGIN_VIEW_BUILDER(/*no export*/, BirchChipButtonBase, views::Button)

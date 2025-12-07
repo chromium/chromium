@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sql/statement.h"
 
 #include <stddef.h>
@@ -20,6 +15,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/location.h"
@@ -29,9 +25,12 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
+#include "base/trace_event/trace_event.h"
 #include "sql/database.h"
 #include "sql/sqlite_result_code.h"
 #include "sql/sqlite_result_code_values.h"
@@ -42,6 +41,19 @@ namespace sql {
 // static
 int64_t Statement::TimeToSqlValue(base::Time time) {
   return time.ToDeltaSinceWindowsEpoch().InMicroseconds();
+}
+
+std::string GetSqlStatementStringForTracing(sqlite3_stmt* stmt) {
+  // See https://www.sqlite.org/c3ref/expanded_sql.html
+  // The SQLITE_OMIT_TRACE compile-time option causes sqlite3_expanded_sql() to
+  // always return NULL. Chromium is typically built with SQLITE_OMIT_TRACE
+  // defined, but conditionally expanding the statement allows us to make
+  // one-off builds that produce traces with visible expanded statements.
+#if defined(SQLITE_OMIT_TRACE)
+  return sqlite3_sql(stmt);
+#else
+  return sqlite3_expanded_sql(stmt);
+#endif
 }
 
 // This empty constructor initializes our reference with an empty one so that
@@ -75,7 +87,7 @@ void Statement::Clear() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   Assign(base::MakeRefCounted<Database::StatementRef>(nullptr, nullptr, false));
-  succeeded_ = false;
+  last_sqlite_result_code_ = std::nullopt;
 }
 
 bool Statement::CheckValid() const {
@@ -88,16 +100,42 @@ bool Statement::CheckValid() const {
   return is_valid();
 }
 
+void Statement::CheckCanReadColumn(int column_index) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  CHECK(is_valid());
+  // Reading from columns must happen after Step() is called and returns true.
+  CHECK(last_sqlite_result_code_.has_value());
+  CHECK_EQ(*last_sqlite_result_code_, SqliteResultCode::kRow);
+
+  CHECK_GE(column_index, 0);
+  CHECK_LT(column_index, sqlite3_data_count(ref_->stmt()));
+}
+
 SqliteResultCode Statement::StepInternal() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!CheckValid())
     return SqliteResultCode::kError;
 
+  base::ElapsedTimer timer;
+  if (!time_spent_stepping_) {
+    time_spent_stepping_ = base::TimeDelta();
+    TRACE_EVENT_BEGIN("sql", "Database::Statement",
+                      ref_->database()->GetTracingNamedTrack(),
+                      timer.start_time(), "statement",
+                      GetSqlStatementStringForTracing(ref_->stmt()));
+  }
+
   std::optional<base::ScopedBlockingCall> scoped_blocking_call;
   ref_->InitScopedBlockingCall(FROM_HERE, &scoped_blocking_call);
 
   auto sqlite_result_code = ToSqliteResultCode(sqlite3_step(ref_->stmt()));
+
+  auto elapsed = timer.Elapsed();
+  ref_->database()->RecordTimingHistogram("Sql.Statement.StepTime.", elapsed);
+  *time_spent_stepping_ += elapsed;
+
   return CheckSqliteResultCode(sqlite_result_code);
 }
 
@@ -110,13 +148,18 @@ void Statement::ReportQueryExecutionMetrics() const {
   const int kResetVMStepsToZero = 1;
   const int vm_steps = sqlite3_stmt_status(
       ref_->stmt(), SQLITE_STMTSTATUS_VM_STEP, kResetVMStepsToZero);
-  if (vm_steps > 0) {
-    const Database* database = ref_->database();
-    if (!database->histogram_tag().empty()) {
-      const std::string histogram_name =
-          "Sql.Statement." + database->histogram_tag() + ".VMSteps";
-      base::UmaHistogramCounts10000(histogram_name, vm_steps);
-    }
+  const Database* database = ref_->database();
+  if (vm_steps > 0 && !database->histogram_tag().empty()) {
+    const std::string histogram_name =
+        "Sql.Statement." + database->histogram_tag() + ".VMSteps";
+    base::UmaHistogramCounts10000(histogram_name, vm_steps);
+  }
+
+  if (time_spent_stepping_) {
+    TRACE_EVENT_END("sql", database->GetTracingNamedTrack(), "statement",
+                    GetSqlStatementStringForTracing(ref_->stmt()));
+    database->RecordTimingHistogram("Sql.Statement.ExecutionTime.",
+                                    *time_spent_stepping_);
   }
 }
 
@@ -150,14 +193,7 @@ void Statement::Reset(bool clear_bound_vars) {
     // Reports the execution cost for this SQL statement.
     ReportQueryExecutionMetrics();
 
-    if (clear_bound_vars)
-      sqlite3_clear_bindings(ref_->stmt());
-
-    // StepInternal() cannot track success because statements may be reset
-    // before reaching SQLITE_DONE.  Don't call CheckError() because
-    // sqlite3_reset() returns the last step error, which StepInternal() already
-    // checked.
-    sqlite3_reset(ref_->stmt());
+    ref_->Reset(clear_bound_vars);
   }
 
   // Potentially release dirty cache pages if an autocommit statement made
@@ -165,17 +201,27 @@ void Statement::Reset(bool clear_bound_vars) {
   if (ref_->database())
     ref_->database()->ReleaseCacheMemoryIfNeeded(false);
 
-  succeeded_ = false;
+  last_sqlite_result_code_ = std::nullopt;
 #if DCHECK_IS_ON()
   run_called_ = false;
   step_called_ = false;
 #endif  // DCHECK_IS_ON()
+
+  time_spent_stepping_ = std::nullopt;
 }
 
 bool Statement::Succeeded() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  return is_valid() && succeeded_;
+  return is_valid() && last_sqlite_result_code_.has_value() &&
+         IsSqliteSuccessCode(*last_sqlite_result_code_);
+}
+
+void Statement::WillBindParameter(int param_index) {
+  DCHECK_GE(param_index, 0);
+  DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
+      << "Invalid parameter index";
+  ref_->ClearBlobMemory(param_index);
 }
 
 void Statement::BindNull(int param_index) {
@@ -189,9 +235,8 @@ void Statement::BindNull(int param_index) {
   if (!is_valid())
     return;
 
-  DCHECK_GE(param_index, 0);
-  DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
-      << "Invalid parameter index";
+  WillBindParameter(param_index);
+
   int sqlite_result_code = sqlite3_bind_null(ref_->stmt(), param_index + 1);
   DCHECK_EQ(sqlite_result_code, SQLITE_OK);
 }
@@ -213,9 +258,7 @@ void Statement::BindInt(int param_index, int val) {
   if (!is_valid())
     return;
 
-  DCHECK_GE(param_index, 0);
-  DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
-      << "Invalid parameter index";
+  WillBindParameter(param_index);
   int sqlite_result_code = sqlite3_bind_int(ref_->stmt(), param_index + 1, val);
   DCHECK_EQ(sqlite_result_code, SQLITE_OK);
 }
@@ -231,9 +274,7 @@ void Statement::BindInt64(int param_index, int64_t val) {
   if (!is_valid())
     return;
 
-  DCHECK_GE(param_index, 0);
-  DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
-      << "Invalid parameter index";
+  WillBindParameter(param_index);
   int sqlite_result_code =
       sqlite3_bind_int64(ref_->stmt(), param_index + 1, val);
   DCHECK_EQ(sqlite_result_code, SQLITE_OK);
@@ -250,9 +291,7 @@ void Statement::BindDouble(int param_index, double val) {
   if (!is_valid())
     return;
 
-  DCHECK_GE(param_index, 0);
-  DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
-      << "Invalid parameter index";
+  WillBindParameter(param_index);
   int sqlite_result_code =
       sqlite3_bind_double(ref_->stmt(), param_index + 1, val);
   DCHECK_EQ(sqlite_result_code, SQLITE_OK);
@@ -269,9 +308,7 @@ void Statement::BindTime(int param_index, base::Time val) {
   if (!is_valid())
     return;
 
-  DCHECK_GE(param_index, 0);
-  DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
-      << "Invalid parameter index";
+  WillBindParameter(param_index);
   int64_t int_value = TimeToSqlValue(val);
   int sqlite_result_code =
       sqlite3_bind_int64(ref_->stmt(), param_index + 1, int_value);
@@ -290,9 +327,7 @@ void Statement::BindTimeDelta(int param_index, base::TimeDelta delta) {
     return;
   }
 
-  DCHECK_GE(param_index, 0);
-  DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
-      << "Invalid parameter index";
+  WillBindParameter(param_index);
   int64_t int_value = delta.InMicroseconds();
   int sqlite_result_code =
       sqlite3_bind_int64(ref_->stmt(), param_index + 1, int_value);
@@ -311,9 +346,7 @@ void Statement::BindCString(int param_index, const char* val) {
   if (!is_valid())
     return;
 
-  DCHECK_GE(param_index, 0);
-  DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
-      << "Invalid parameter index";
+  WillBindParameter(param_index);
 
   // If the string length is more than SQLITE_MAX_LENGTH (or the per-database
   // SQLITE_LIMIT_LENGTH limit), sqlite3_bind_text() fails with SQLITE_TOOBIG.
@@ -338,9 +371,7 @@ void Statement::BindString(int param_index, std::string_view value) {
   if (!is_valid())
     return;
 
-  DCHECK_GE(param_index, 0);
-  DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
-      << "Invalid parameter index";
+  WillBindParameter(param_index);
 
   // std::string_view::data() may return null for empty pieces. In particular,
   // this may happen when the std::string_view is created from the default
@@ -369,7 +400,8 @@ void Statement::BindString16(int param_index, std::u16string_view value) {
   return BindString(param_index, base::UTF16ToUTF8(value));
 }
 
-void Statement::BindBlob(int param_index, base::span<const uint8_t> value) {
+void Statement::BindBlob(int param_index,
+                         scoped_refptr<base::RefCountedMemory> blob) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
 #if DCHECK_IS_ON()
@@ -377,12 +409,13 @@ void Statement::BindBlob(int param_index, base::span<const uint8_t> value) {
   DCHECK(!step_called_) << __func__ << " must not be called after Step()";
 #endif  // DCHECK_IS_ON()
 
-  if (!is_valid())
+  if (!is_valid()) {
     return;
+  }
 
-  DCHECK_GE(param_index, 0);
-  DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
-      << "Invalid parameter index";
+  WillBindParameter(param_index);
+  base::span<const uint8_t> value =
+      ref_->TakeBlobMemory(param_index, std::move(blob));
 
   // span::data() may return null for empty spans. In particular, this may
   // happen when the span is created out of a std::vector, because
@@ -404,9 +437,40 @@ void Statement::BindBlob(int param_index, base::span<const uint8_t> value) {
   // default (1 billion bytes) in Chrome's SQLite build, so this is an unlilely
   // issue.
 
-  int sqlite_result_code = sqlite3_bind_blob(
-      ref_->stmt(), param_index + 1, data, value.size(), SQLITE_TRANSIENT);
+  int sqlite_result_code = sqlite3_bind_blob(ref_->stmt(), param_index + 1,
+                                             data, value.size(), SQLITE_STATIC);
   DCHECK_EQ(sqlite_result_code, SQLITE_OK);
+}
+
+void Statement::BindBlob(int param_index, std::string blob) {
+  BindBlob(param_index,
+           base::MakeRefCounted<base::RefCountedString>(std::move(blob)));
+}
+
+void Statement::BindBlob(int param_index, std::u16string blob) {
+  BindBlob(param_index,
+           base::MakeRefCounted<base::RefCountedString16>(std::move(blob)));
+}
+
+void Statement::BindBlob(int param_index, std::vector<uint8_t> blob) {
+  BindBlob(param_index,
+           base::MakeRefCounted<base::RefCountedBytes>(std::move(blob)));
+}
+
+void Statement::BindBlob(int param_index, base::span<const uint8_t> blob) {
+  BindBlob(param_index, base::MakeRefCounted<base::RefCountedBytes>(blob));
+}
+
+void Statement::BindBlobForStreaming(int param_index, uint64_t size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!is_valid()) {
+    return;
+  }
+
+  // SQLite param indexes start at 1.
+  CHECK_EQ(SQLITE_OK, sqlite3_bind_zeroblob(ref_->stmt(), param_index + 1,
+                                            base::checked_cast<int>(size)));
 }
 
 int Statement::ColumnCount() const {
@@ -431,11 +495,7 @@ static_assert(static_cast<int>(ColumnType::kNull) == SQLITE_NULL,
 
 ColumnType Statement::GetColumnType(int col) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-#if DCHECK_IS_ON()
-  DCHECK(!run_called_) << __func__ << " can be used after Step(), not Run()";
-  DCHECK(step_called_) << __func__ << " can only be used after Step()";
-#endif  // DCHECK_IS_ON()
+  CheckCanReadColumn(col);
 
   return static_cast<enum ColumnType>(sqlite3_column_type(ref_->stmt(), col));
 }
@@ -447,68 +507,28 @@ bool Statement::ColumnBool(int column_index) {
 
 int Statement::ColumnInt(int column_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-#if DCHECK_IS_ON()
-  DCHECK(!run_called_) << __func__ << " can be used after Step(), not Run()";
-  DCHECK(step_called_) << __func__ << " can only be used after Step()";
-#endif  // DCHECK_IS_ON()
-
-  if (!CheckValid())
-    return 0;
-  DCHECK_GE(column_index, 0);
-  DCHECK_LT(column_index, sqlite3_data_count(ref_->stmt()))
-      << "Invalid column index";
+  CheckCanReadColumn(column_index);
 
   return sqlite3_column_int(ref_->stmt(), column_index);
 }
 
 int64_t Statement::ColumnInt64(int column_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-#if DCHECK_IS_ON()
-  DCHECK(!run_called_) << __func__ << " can be used after Step(), not Run()";
-  DCHECK(step_called_) << __func__ << " can only be used after Step()";
-#endif  // DCHECK_IS_ON()
-
-  if (!CheckValid())
-    return 0;
-  DCHECK_GE(column_index, 0);
-  DCHECK_LT(column_index, sqlite3_data_count(ref_->stmt()))
-      << "Invalid column index";
+  CheckCanReadColumn(column_index);
 
   return sqlite3_column_int64(ref_->stmt(), column_index);
 }
 
 double Statement::ColumnDouble(int column_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-#if DCHECK_IS_ON()
-  DCHECK(!run_called_) << __func__ << " can be used after Step(), not Run()";
-  DCHECK(step_called_) << __func__ << " can only be used after Step()";
-#endif  // DCHECK_IS_ON()
-
-  if (!CheckValid())
-    return 0;
-  DCHECK_GE(column_index, 0);
-  DCHECK_LT(column_index, sqlite3_data_count(ref_->stmt()))
-      << "Invalid column index";
+  CheckCanReadColumn(column_index);
 
   return sqlite3_column_double(ref_->stmt(), column_index);
 }
 
 base::Time Statement::ColumnTime(int column_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-#if DCHECK_IS_ON()
-  DCHECK(!run_called_) << __func__ << " can be used after Step(), not Run()";
-  DCHECK(step_called_) << __func__ << " can only be used after Step()";
-#endif  // DCHECK_IS_ON()
-
-  if (!CheckValid())
-    return base::Time();
-  DCHECK_GE(column_index, 0);
-  DCHECK_LT(column_index, sqlite3_data_count(ref_->stmt()))
-      << "Invalid column index";
+  CheckCanReadColumn(column_index);
 
   int64_t int_value = sqlite3_column_int64(ref_->stmt(), column_index);
   return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(int_value));
@@ -516,172 +536,64 @@ base::Time Statement::ColumnTime(int column_index) {
 
 base::TimeDelta Statement::ColumnTimeDelta(int column_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-#if DCHECK_IS_ON()
-  DCHECK(!run_called_) << __func__ << " can be used after Step(), not Run()";
-  DCHECK(step_called_) << __func__ << " can only be used after Step()";
-#endif  // DCHECK_IS_ON()
-
-  if (!CheckValid()) {
-    return base::TimeDelta();
-  }
-  DCHECK_GE(column_index, 0);
-  DCHECK_LT(column_index, sqlite3_data_count(ref_->stmt()))
-      << "Invalid column index";
+  CheckCanReadColumn(column_index);
 
   int64_t int_value = sqlite3_column_int64(ref_->stmt(), column_index);
   return base::Microseconds(int_value);
 }
 
-std::string Statement::ColumnString(int column_index) {
+std::string_view Statement::ColumnStringView(int column_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-#if DCHECK_IS_ON()
-  DCHECK(!run_called_) << __func__ << " can be used after Step(), not Run()";
-  DCHECK(step_called_) << __func__ << " can only be used after Step()";
-#endif  // DCHECK_IS_ON()
-
-  if (!CheckValid())
-    return std::string();
-  DCHECK_GE(column_index, 0);
-  DCHECK_LT(column_index, sqlite3_data_count(ref_->stmt()))
-      << "Invalid column index";
+  CheckCanReadColumn(column_index);
 
   const char* string_buffer = reinterpret_cast<const char*>(
       sqlite3_column_text(ref_->stmt(), column_index));
   int size = sqlite3_column_bytes(ref_->stmt(), column_index);
+  DCHECK(size == 0 || string_buffer != nullptr)
+      << "sqlite3_column_text() returned a null buffer for a non-empty string";
 
-  std::string result;
-  if (string_buffer && size > 0)
-    result.assign(string_buffer, size);
-  return result;
+  return std::string_view(string_buffer, base::checked_cast<size_t>(size));
+}
+
+std::string Statement::ColumnString(int column_index) {
+  return std::string(ColumnStringView(column_index));
 }
 
 std::u16string Statement::ColumnString16(int column_index) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-#if DCHECK_IS_ON()
-  DCHECK(!run_called_) << __func__ << " can be used after Step(), not Run()";
-  DCHECK(step_called_) << __func__ << " can only be used after Step()";
-#endif  // DCHECK_IS_ON()
-
-  if (!CheckValid())
-    return std::u16string();
-  DCHECK_GE(column_index, 0);
-  DCHECK_LT(column_index, sqlite3_data_count(ref_->stmt()))
-      << "Invalid column index";
-
-  std::string string = ColumnString(column_index);
-  return string.empty() ? std::u16string() : base::UTF8ToUTF16(string);
+  return base::UTF8ToUTF16(ColumnStringView(column_index));
 }
 
 base::span<const uint8_t> Statement::ColumnBlob(int column_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CheckCanReadColumn(column_index);
 
-#if DCHECK_IS_ON()
-  DCHECK(!run_called_) << __func__ << " can be used after Step(), not Run()";
-  DCHECK(step_called_) << __func__ << " can only be used after Step()";
-#endif  // DCHECK_IS_ON()
-
-  if (!CheckValid())
-    return base::span<const uint8_t>();
-  DCHECK_GE(column_index, 0);
-  DCHECK_LT(column_index, sqlite3_data_count(ref_->stmt()))
-      << "Invalid column index";
-
-  int result_size = sqlite3_column_bytes(ref_->stmt(), column_index);
   const void* result_buffer = sqlite3_column_blob(ref_->stmt(), column_index);
+  int result_size = sqlite3_column_bytes(ref_->stmt(), column_index);
   DCHECK(result_size == 0 || result_buffer != nullptr)
       << "sqlite3_column_blob() returned a null buffer for a non-empty BLOB";
 
-  return base::make_span(static_cast<const uint8_t*>(result_buffer),
-                         base::checked_cast<size_t>(result_size));
+  return UNSAFE_TODO(base::span(static_cast<const uint8_t*>(result_buffer),
+                                base::checked_cast<size_t>(result_size)));
 }
 
-bool Statement::ColumnBlobAsString(int column_index, std::string* result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-#if DCHECK_IS_ON()
-  DCHECK(!run_called_) << __func__ << " can be used after Step(), not Run()";
-  DCHECK(step_called_) << __func__ << " can only be used after Step()";
-#endif  // DCHECK_IS_ON()
-
-  if (!CheckValid())
-    return false;
-  DCHECK_GE(column_index, 0);
-  DCHECK_LT(column_index, sqlite3_data_count(ref_->stmt()))
-      << "Invalid column index";
-
-  const void* result_buffer = sqlite3_column_blob(ref_->stmt(), column_index);
-  int size = sqlite3_column_bytes(ref_->stmt(), column_index);
-  if (result_buffer && size > 0) {
-    result->assign(reinterpret_cast<const char*>(result_buffer), size);
-  } else {
-    result->clear();
-  }
-  return true;
+std::string Statement::ColumnBlobAsString(int column_index) {
+  return std::string(base::as_string_view(ColumnBlob(column_index)));
 }
 
-bool Statement::ColumnBlobAsString16(int column_index, std::u16string* result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(result);
-
-#if DCHECK_IS_ON()
-  DCHECK(!run_called_) << __func__ << " can be used after Step(), not Run()";
-  DCHECK(step_called_) << __func__ << " can only be used after Step()";
-#endif  // DCHECK_IS_ON()
-
-  if (!CheckValid()) {
-    return false;
+std::optional<std::u16string> Statement::ColumnBlobAsString16(
+    int column_index) {
+  base::span<const uint8_t> bytes = ColumnBlob(column_index);
+  if (bytes.size() % 2 != 0) {
+    return std::nullopt;
   }
-  DCHECK_GE(column_index, 0);
-  DCHECK_LT(column_index, sqlite3_data_count(ref_->stmt()))
-      << "Invalid column index";
-
-  const void* result_buffer = sqlite3_column_blob(ref_->stmt(), column_index);
-  int size = sqlite3_column_bytes(ref_->stmt(), column_index);
-  if (result_buffer && size > 0) {
-    result->assign(reinterpret_cast<const char16_t*>(result_buffer), size / 2);
-  } else {
-    result->clear();
-  }
-  return true;
+  std::u16string result(bytes.size() / 2, 0);
+  base::as_writable_byte_span(result).copy_from_nonoverlapping(bytes);
+  return result;
 }
 
-bool Statement::ColumnBlobAsVector(int column_index,
-                                   std::vector<char>* result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-#if DCHECK_IS_ON()
-  DCHECK(!run_called_) << __func__ << " can be used after Step(), not Run()";
-  DCHECK(step_called_) << __func__ << " can only be used after Step()";
-#endif  // DCHECK_IS_ON()
-
-  if (!CheckValid())
-    return false;
-  DCHECK_GE(column_index, 0);
-  DCHECK_LT(column_index, sqlite3_data_count(ref_->stmt()))
-      << "Invalid column index";
-
-  const void* result_buffer = sqlite3_column_blob(ref_->stmt(), column_index);
-  int size = sqlite3_column_bytes(ref_->stmt(), column_index);
-  if (result_buffer && size > 0) {
-    // Unlike std::string, std::vector does not have an assign() overload that
-    // takes a buffer and a size.
-    result->assign(static_cast<const char*>(result_buffer),
-                   static_cast<const char*>(result_buffer) + size);
-  } else {
-    result->clear();
-  }
-  return true;
-}
-
-bool Statement::ColumnBlobAsVector(int column_index,
-                                   std::vector<uint8_t>* result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  return ColumnBlobAsVector(column_index,
-                            reinterpret_cast<std::vector<char>*>(result));
+std::vector<uint8_t> Statement::ColumnBlobAsVector(int column_index) {
+  base::span<const uint8_t> byte_span = ColumnBlob(column_index);
+  return std::vector<uint8_t>(byte_span.begin(), byte_span.end());
 }
 
 std::string Statement::GetSQLStatement() {
@@ -713,8 +625,10 @@ SqliteResultCode Statement::CheckSqliteResultCode(
     SqliteResultCode sqlite_result_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  succeeded_ = IsSqliteSuccessCode(sqlite_result_code);
-  if (!succeeded_ && ref_.get() && ref_->database()) {
+  last_sqlite_result_code_ = sqlite_result_code;
+
+  if (!IsSqliteSuccessCode(sqlite_result_code) && ref_.get() &&
+      ref_->database()) {
     auto sqlite_error_code = ToSqliteErrorCode(sqlite_result_code);
     ref_->database()->OnSqliteError(sqlite_error_code, this, nullptr);
   }

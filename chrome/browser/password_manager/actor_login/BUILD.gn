@@ -1,0 +1,57 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android)
+
+source_set("service") {
+  sources = [
+    "actor_login_quality_logger.cc",
+    "actor_login_quality_logger.h",
+    "actor_login_service.h",
+    "actor_login_service_impl.cc",
+    "actor_login_service_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/password_manager/actor_login/internal:delegate",
+    "//components/affiliations/core/browser:affiliations",
+    "//components/optimization_guide/core:model_execution",
+    "//components/password_manager/content/browser",
+    "//components/password_manager/core/browser/actor_login:common",
+    "//components/password_manager/core/browser/actor_login/internal:delegate",
+    "//components/tabs:public",
+    "//components/translate/core/browser",
+    "//components/variations/service",
+    "//content/public/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "actor_login_quality_logger_unittest.cc",
+    "actor_login_service_impl_unittest.cc",
+  ]
+
+  deps = [
+    ":service",
+    "//base/test:test_support",
+    "//chrome/browser/password_manager/actor_login/internal:delegate",
+    "//chrome/browser/password_manager/actor_login/internal:unit_tests",
+    "//chrome/test:test_support",
+    "//components/optimization_guide/core:model_execution_test_support",
+    "//components/password_manager/core/browser/actor_login:common",
+    "//components/password_manager/core/browser/actor_login/internal:delegate",
+    "//components/password_manager/core/browser/actor_login/test:test_support",
+    "//components/tabs:public",
+    "//components/tabs:test_support",
+    "//components/translate/core/browser:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ namespace {
 
 // Array of features exposed through the Java AccessibilityFeaturesMap API.
 const base::Feature* const kFeaturesExposedToJava[] = {
-    &features::kAccessibilitySnapshotStressTests,
+    &features::kAccessibilityTextFormatting,
 };
 
 // static
@@ -32,3 +32,5 @@ static jlong JNI_AccessibilityFeaturesMap_GetNativeMap(JNIEnv* env) {
 }
 
 }  // namespace ui
+
+DEFINE_JNI(AccessibilityFeaturesMap)

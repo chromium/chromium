@@ -59,7 +59,6 @@ template base::OnceCallback<void(SyncStatusCode)> AssignAndQuitCallback(
   template base::OnceCallback<void(type)> CreateResultReceiver(type*)
 INSTANTIATE_RECEIVER(SyncStatusCode);
 INSTANTIATE_RECEIVER(google_apis::ApiErrorCode);
-INSTANTIATE_RECEIVER(std::unique_ptr<RemoteFileSyncService::OriginStatusMap>);
 #undef INSTANTIATE_RECEIVER
 
 }  // namespace sync_file_system

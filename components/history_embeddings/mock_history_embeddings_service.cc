@@ -6,14 +6,19 @@
 
 namespace history_embeddings {
 
-MockHistoryEmbeddingsService::MockHistoryEmbeddingsService()
-    : HistoryEmbeddingsService(nullptr,
-                               nullptr,
-                               nullptr,
-                               nullptr,
-                               nullptr,
-                               nullptr,
-                               nullptr) {}
+MockHistoryEmbeddingsService::MockHistoryEmbeddingsService(
+    os_crypt_async::OSCryptAsync* os_crypt_async,
+    history::HistoryService* history_service,
+    passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
+    passage_embeddings::Embedder* embedder)
+    : HistoryEmbeddingsService(os_crypt_async,
+                               history_service,
+                               /*page_content_annotations_service=*/nullptr,
+                               /*optimization_guide_decider=*/nullptr,
+                               embedder_metadata_provider,
+                               embedder,
+                               /*answerer=*/nullptr,
+                               /*intent_classifier=*/nullptr) {}
 
 MockHistoryEmbeddingsService::~MockHistoryEmbeddingsService() = default;
 

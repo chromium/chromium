@@ -46,7 +46,7 @@ WebContents* WebDialogWebContentsDelegate::OpenURLFromTab(
                                   std::move(navigation_handle_callback));
 }
 
-void WebDialogWebContentsDelegate::AddNewContents(
+WebContents* WebDialogWebContentsDelegate::AddNewContents(
     WebContents* source,
     std::unique_ptr<WebContents> new_contents,
     const GURL& target_url,
@@ -59,6 +59,7 @@ void WebDialogWebContentsDelegate::AddNewContents(
   handler_->AddNewContents(browser_context_, source, std::move(new_contents),
                            target_url, disposition, window_features,
                            user_gesture);
+  return nullptr;
 }
 
 bool WebDialogWebContentsDelegate::PreHandleGestureEvent(

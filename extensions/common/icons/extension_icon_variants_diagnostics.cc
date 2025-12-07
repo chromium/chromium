@@ -6,6 +6,10 @@
 
 #include <optional>
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions::diagnostics::icon_variants {
 
 // List of diagnostics.
@@ -50,14 +54,14 @@ constexpr Diagnostic diagnostics[] = {
         Feature::kIconVariants,
         Id::kIconVariantsInvalid,
         Surface::kManifest,
-        Severity::kError,
-        "Error: 'icon_variants' is not valid.",
+        Severity::kWarning,
+        "'icon_variants' is not valid.",
     },
     {
         Feature::kIconVariants,
         Id::kIconVariantsKeyMustBeAList,
         Surface::kManifest,
-        Severity::kError,
+        Severity::kWarning,
         "'icon_variants' must be a list.",
     },
     {
@@ -73,6 +77,27 @@ constexpr Diagnostic diagnostics[] = {
         Surface::kManifest,
         Severity::kWarning,
         "Unexpected 'color_scheme'.",
+    },
+    {
+        Feature::kIconVariants,
+        Id::kIconVariantsNotEnabled,
+        Surface::kManifest,
+        Severity::kWarning,
+        "'icon_variants' not enabled.",
+    },
+    {
+        Feature::kIconVariants,
+        Id::kIconVariantsInvalidMimeType,
+        Surface::kManifest,
+        Severity::kWarning,
+        "'icon_variants' file path unsupported mime type.",
+    },
+    {
+        Feature::kIconVariants,
+        Id::kIconVariantPathInvalid,
+        Surface::kManifest,
+        Severity::kWarning,
+        "'icon_variants' invalid file path.",
     },
 };
 

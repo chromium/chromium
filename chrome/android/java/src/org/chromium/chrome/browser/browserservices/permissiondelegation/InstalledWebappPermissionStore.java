@@ -8,12 +8,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Base64;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.browser.trusted.Token;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 
@@ -50,6 +51,7 @@ import java.util.Set;
  *
  * TODO(peconn): Unify this and WebappDataStorage?
  */
+@NullMarked
 public class InstalledWebappPermissionStore {
     private static final String SHARED_PREFS_FILE = "twa_permission_registry";
 
@@ -93,8 +95,7 @@ public class InstalledWebappPermissionStore {
      * Retrieves the permission setting of {@link ContentSettingsType} for the origin due to
      * delegation to an app. Returns {@code null} if the origin is not linked to an app.
      */
-    @Nullable
-    public @ContentSettingValues Integer getPermission(
+    public @Nullable @ContentSetting Integer getPermission(
             @ContentSettingsType.EnumType int type, Origin origin) {
         String key = createPermissionSettingKey(type, origin);
 
@@ -103,24 +104,21 @@ public class InstalledWebappPermissionStore {
             String fallbackKey = createPermissionKey(type, origin);
             if (!mPreferences.contains(fallbackKey)) return null;
             boolean enabled = mPreferences.getBoolean(fallbackKey, false);
-            return enabled ? ContentSettingValues.ALLOW : ContentSettingValues.BLOCK;
+            return enabled ? ContentSetting.ALLOW : ContentSetting.BLOCK;
         }
 
-        return mPreferences.getInt(key, ContentSettingValues.ASK);
+        return mPreferences.getInt(key, ContentSetting.ASK);
     }
 
-    @Nullable
-    String getDelegateAppName(Origin origin) {
+    public @Nullable String getDelegateAppName(Origin origin) {
         return mPreferences.getString(createAppNameKey(origin), null);
     }
 
-    @Nullable
-    String getDelegatePackageName(Origin origin) {
+    public @Nullable String getDelegatePackageName(Origin origin) {
         return mPreferences.getString(createPackageNameKey(origin), null);
     }
 
-    @Nullable
-    Set<Token> getAllDelegateApps(Origin origin) {
+    public @Nullable Set<Token> getAllDelegateApps(Origin origin) {
         Set<String> tokens = mPreferences.getStringSet(createAllDelegateAppsKey(origin), null);
         if (tokens == null) return null;
 
@@ -131,7 +129,7 @@ public class InstalledWebappPermissionStore {
         return result;
     }
 
-    void addDelegateApp(Origin origin, Token token) {
+    public void addDelegateApp(Origin origin, Token token) {
         String key = createAllDelegateAppsKey(origin);
         Set<String> allDelegateApps =
                 new HashSet<>(mPreferences.getStringSet(key, Collections.emptySet()));
@@ -152,12 +150,12 @@ public class InstalledWebappPermissionStore {
      * Sets the permission state for the origin. Returns whether {@code true} if state was changed,
      * {@code false} if the provided state was the same as the state beforehand.
      */
-    boolean setStateForOrigin(
+    public boolean setStateForOrigin(
             Origin origin,
             String packageName,
             String appName,
             @ContentSettingsType.EnumType int type,
-            @ContentSettingValues int settingValue) {
+            @ContentSetting int settingValue) {
         boolean modified = !getStoredOrigins().contains(origin.toString());
 
         if (!modified) {
@@ -165,8 +163,7 @@ public class InstalledWebappPermissionStore {
             boolean settingChanged =
                     settingValue
                             != mPreferences.getInt(
-                                    createPermissionSettingKey(type, origin),
-                                    ContentSettingValues.ASK);
+                                    createPermissionSettingKey(type, origin), ContentSetting.ASK);
             boolean packageChanged =
                     !packageName.equals(mPreferences.getString(createPackageNameKey(origin), null));
             boolean appNameChanged =
@@ -187,7 +184,7 @@ public class InstalledWebappPermissionStore {
     }
 
     /** Removes the origin from the store. */
-    void removeOrigin(Origin origin) {
+    public void removeOrigin(Origin origin) {
         Set<String> origins = getStoredOrigins();
         origins.remove(origin.toString());
 
@@ -198,6 +195,10 @@ public class InstalledWebappPermissionStore {
                 .remove(createPermissionSettingKey(ContentSettingsType.NOTIFICATIONS, origin))
                 .remove(createPermissionKey(ContentSettingsType.GEOLOCATION, origin))
                 .remove(createPermissionSettingKey(ContentSettingsType.GEOLOCATION, origin))
+                .remove(createPermissionKey(ContentSettingsType.GEOLOCATION_WITH_OPTIONS, origin))
+                .remove(
+                        createPermissionSettingKey(
+                                ContentSettingsType.GEOLOCATION_WITH_OPTIONS, origin))
                 .remove(createAppNameKey(origin))
                 .remove(createPackageNameKey(origin))
                 .remove(createAllDelegateAppsKey(origin))
@@ -205,7 +206,7 @@ public class InstalledWebappPermissionStore {
     }
 
     /** Reset permission {@type} from the store. */
-    void resetPermission(Origin origin, @ContentSettingsType.EnumType int type) {
+    public void resetPermission(Origin origin, @ContentSettingsType.EnumType int type) {
         mPreferences
                 .edit()
                 .remove(createPermissionKey(type, origin))
@@ -214,8 +215,8 @@ public class InstalledWebappPermissionStore {
     }
 
     /** Stores the notification permission setting the origin had before the app was installed. */
-    void setPreInstallNotificationPermission(
-            Origin origin, @ContentSettingValues int settingValue) {
+    public void setPreInstallNotificationPermission(
+            Origin origin, @ContentSetting int settingValue) {
         mPreferences
                 .edit()
                 .putInt(createPreInstallNotificationPermissionSettingKey(origin), settingValue)
@@ -227,9 +228,8 @@ public class InstalledWebappPermissionStore {
      * {@code null} if no setting is stored. If a setting was stored, calling this method removes
      * it.
      */
-    @Nullable
-    @ContentSettingValues
-    Integer getAndRemovePreInstallNotificationPermission(Origin origin) {
+    public @Nullable @ContentSetting Integer getAndRemovePreInstallNotificationPermission(
+            Origin origin) {
         String key = createPreInstallNotificationPermissionSettingKey(origin);
 
         if (!mPreferences.contains(key)) {
@@ -238,10 +238,10 @@ public class InstalledWebappPermissionStore {
             if (!mPreferences.contains(fallbackKey)) return null;
             boolean enabled = mPreferences.getBoolean(fallbackKey, false);
             mPreferences.edit().remove(fallbackKey).apply();
-            return enabled ? ContentSettingValues.ALLOW : ContentSettingValues.BLOCK;
+            return enabled ? ContentSetting.ALLOW : ContentSetting.BLOCK;
         }
 
-        @ContentSettingValues int settingValue = mPreferences.getInt(key, ContentSettingValues.ASK);
+        @ContentSetting int settingValue = mPreferences.getInt(key, ContentSetting.ASK);
         mPreferences.edit().remove(key).apply();
         return settingValue;
     }
@@ -263,6 +263,7 @@ public class InstalledWebappPermissionStore {
             case ContentSettingsType.NOTIFICATIONS:
                 return KEY_NOTIFICATION_PERMISSION_PREFIX;
             case ContentSettingsType.GEOLOCATION:
+            case ContentSettingsType.GEOLOCATION_WITH_OPTIONS:
                 return KEY_GEOLOCATION_PERMISSION_PREFIX;
             default:
                 throw new IllegalStateException("Unsupported permission type.");
@@ -274,6 +275,7 @@ public class InstalledWebappPermissionStore {
             case ContentSettingsType.NOTIFICATIONS:
                 return KEY_NOTIFICATION_PERMISSION_SETTING_PREFIX;
             case ContentSettingsType.GEOLOCATION:
+            case ContentSettingsType.GEOLOCATION_WITH_OPTIONS:
                 return KEY_GEOLOCATION_PERMISSION_SETTING_PREFIX;
             default:
                 throw new IllegalStateException("Unsupported permission type.");

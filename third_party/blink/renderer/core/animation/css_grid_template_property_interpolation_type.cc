@@ -9,6 +9,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/animation/interpolable_grid_track_list.h"
+#include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
@@ -19,23 +20,25 @@ namespace blink {
 
 class CSSGridTrackListNonInterpolableValue final : public NonInterpolableValue {
  public:
-  ~CSSGridTrackListNonInterpolableValue() final = default;
-
-  static scoped_refptr<CSSGridTrackListNonInterpolableValue> Create(
-      NamedGridLinesMap named_grid_lines,
-      OrderedNamedGridLines ordered_named_grid_lines) {
-    return base::AdoptRef(new CSSGridTrackListNonInterpolableValue(
-        std::move(named_grid_lines), std::move(ordered_named_grid_lines),
-        NamedGridLinesMap(), OrderedNamedGridLines()));
-  }
-
-  static scoped_refptr<CSSGridTrackListNonInterpolableValue> Create(
+  CSSGridTrackListNonInterpolableValue(
+      NamedGridLinesMap named_grid_lines_from,
+      OrderedNamedGridLines ordered_named_grid_lines_from,
+      NamedGridLinesMap named_grid_lines_to = NamedGridLinesMap(),
+      OrderedNamedGridLines ordered_named_grid_lines_to =
+          OrderedNamedGridLines())
+      : named_grid_lines_from_(std::move(named_grid_lines_from)),
+        ordered_named_grid_lines_from_(
+            std::move(ordered_named_grid_lines_from)),
+        named_grid_lines_to_(std::move(named_grid_lines_to)),
+        ordered_named_grid_lines_to_(std::move(ordered_named_grid_lines_to)) {}
+  CSSGridTrackListNonInterpolableValue(
       const CSSGridTrackListNonInterpolableValue& start,
-      const CSSGridTrackListNonInterpolableValue& end) {
-    return base::AdoptRef(new CSSGridTrackListNonInterpolableValue(
-        start.GetNamedGridLines(), start.GetOrderedNamedGridLines(),
-        end.GetNamedGridLines(), end.GetOrderedNamedGridLines()));
-  }
+      const CSSGridTrackListNonInterpolableValue& end)
+      : named_grid_lines_from_(start.GetNamedGridLines()),
+        ordered_named_grid_lines_from_(start.GetOrderedNamedGridLines()),
+        named_grid_lines_to_(end.GetNamedGridLines()),
+        ordered_named_grid_lines_to_(end.GetOrderedNamedGridLines()) {}
+  ~CSSGridTrackListNonInterpolableValue() final = default;
 
   bool Equals(const CSSGridTrackListNonInterpolableValue& other) const {
     return named_grid_lines_from_ == other.named_grid_lines_from_ &&
@@ -64,16 +67,6 @@ class CSSGridTrackListNonInterpolableValue final : public NonInterpolableValue {
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
-  explicit CSSGridTrackListNonInterpolableValue(
-      NamedGridLinesMap named_grid_lines_from,
-      OrderedNamedGridLines ordered_named_grid_lines_from,
-      NamedGridLinesMap named_grid_lines_to,
-      OrderedNamedGridLines ordered_named_grid_lines_to)
-      : named_grid_lines_from_(std::move(named_grid_lines_from)),
-        ordered_named_grid_lines_from_(
-            std::move(ordered_named_grid_lines_from)),
-        named_grid_lines_to_(std::move(named_grid_lines_to)),
-        ordered_named_grid_lines_to_(std::move(ordered_named_grid_lines_to)) {}
 
   // For the first half of the interpolation, we return the 'from' values for
   // named grid lines. For the second half, we return the 'to' values. As the
@@ -130,7 +123,7 @@ class UnderlyingGridTrackListChecker final
 class InheritedGridTrackListChecker
     : public CSSInterpolationType::CSSConversionChecker {
  public:
-  explicit InheritedGridTrackListChecker(const NGGridTrackList& track_list,
+  explicit InheritedGridTrackListChecker(const GridTrackList& track_list,
                                          const CSSPropertyID& property_id)
       : track_list_(track_list), property_id_(property_id) {}
 
@@ -138,10 +131,10 @@ class InheritedGridTrackListChecker
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue&) const final {
     const ComputedStyle& style = *state.ParentStyle();
-    const NGGridTrackList& state_track_list =
+    const GridTrackList& state_track_list =
         (property_id_ == CSSPropertyID::kGridTemplateColumns)
-            ? style.GridTemplateColumns().track_list
-            : style.GridTemplateRows().track_list;
+            ? style.GridTemplateColumns().GetTrackList()
+            : style.GridTemplateRows().GetTrackList();
 
     if (track_list_.HasAutoRepeater() || state_track_list.HasAutoRepeater() ||
         track_list_.RepeaterCount() != state_track_list.RepeaterCount() ||
@@ -161,14 +154,14 @@ class InheritedGridTrackListChecker
     return true;
   }
 
-  const NGGridTrackList track_list_;
+  const GridTrackList track_list_;
   const CSSPropertyID property_id_;
 };
 
 // static
 InterpolableValue*
 CSSGridTemplatePropertyInterpolationType::CreateInterpolableGridTrackList(
-    const NGGridTrackList& track_list,
+    const GridTrackList& track_list,
     const CSSProperty& property,
     float zoom) {
   return InterpolableGridTrackList::MaybeCreate(track_list, property, zoom);
@@ -185,7 +178,7 @@ CSSGridTemplatePropertyInterpolationType::MaybeMergeSingles(
   }
   return PairwiseInterpolationValue(
       std::move(start.interpolable_value), std::move(end.interpolable_value),
-      CSSGridTrackListNonInterpolableValue::Create(
+      MakeGarbageCollected<CSSGridTrackListNonInterpolableValue>(
           To<CSSGridTrackListNonInterpolableValue>(
               *start.non_interpolable_value),
           To<CSSGridTrackListNonInterpolableValue>(
@@ -222,8 +215,8 @@ CSSGridTemplatePropertyInterpolationType::MaybeConvertInherit(
       (property_id_ == CSSPropertyID::kGridTemplateColumns)
           ? parent_style->GridTemplateColumns()
           : parent_style->GridTemplateRows();
-  const NGGridTrackList& parent_track_list =
-      parent_computed_grid_track_list.track_list;
+  const GridTrackList& parent_track_list =
+      parent_computed_grid_track_list.GetTrackList();
 
   conversion_checkers.push_back(
       MakeGarbageCollected<InheritedGridTrackListChecker>(parent_track_list,
@@ -231,9 +224,9 @@ CSSGridTemplatePropertyInterpolationType::MaybeConvertInherit(
   return InterpolationValue(
       CreateInterpolableGridTrackList(parent_track_list, CssProperty(),
                                       parent_style->EffectiveZoom()),
-      CSSGridTrackListNonInterpolableValue::Create(
-          parent_computed_grid_track_list.named_grid_lines,
-          parent_computed_grid_track_list.ordered_named_grid_lines));
+      MakeGarbageCollected<CSSGridTrackListNonInterpolableValue>(
+          parent_computed_grid_track_list.GetNamedGridLines(),
+          parent_computed_grid_track_list.GetOrderedNamedGridLines()));
 }
 
 InterpolationValue CSSGridTemplatePropertyInterpolationType::
@@ -244,32 +237,32 @@ InterpolationValue CSSGridTemplatePropertyInterpolationType::
           ? style.GridTemplateColumns()
           : style.GridTemplateRows();
   return InterpolationValue(
-      CreateInterpolableGridTrackList(computed_grid_track_list.track_list,
+      CreateInterpolableGridTrackList(computed_grid_track_list.GetTrackList(),
                                       CssProperty(), style.EffectiveZoom()),
-      CSSGridTrackListNonInterpolableValue::Create(
-          computed_grid_track_list.named_grid_lines,
-          computed_grid_track_list.ordered_named_grid_lines));
+      MakeGarbageCollected<CSSGridTrackListNonInterpolableValue>(
+          computed_grid_track_list.GetNamedGridLines(),
+          computed_grid_track_list.GetOrderedNamedGridLines()));
 }
 
 InterpolationValue CSSGridTemplatePropertyInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState& state,
     ConversionCheckers&) const {
-  if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+  if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kNone);
     return InterpolationValue(nullptr);
   }
 
-  ComputedGridTrackList computed_grid_track_list;
-  StyleBuilderConverter::ConvertGridTrackList(
-      value, computed_grid_track_list, *const_cast<StyleResolverState*>(state));
+  ComputedGridTrackList* computed_grid_track_list =
+      StyleBuilderConverter::ConvertGridTrackList(
+          const_cast<StyleResolverState&>(state), value);
   return InterpolationValue(
-      CreateInterpolableGridTrackList(computed_grid_track_list.track_list,
+      CreateInterpolableGridTrackList(computed_grid_track_list->GetTrackList(),
                                       CssProperty(),
-                                      state->StyleBuilder().EffectiveZoom()),
-      CSSGridTrackListNonInterpolableValue::Create(
-          computed_grid_track_list.named_grid_lines,
-          computed_grid_track_list.ordered_named_grid_lines));
+                                      state.StyleBuilder().EffectiveZoom()),
+      MakeGarbageCollected<CSSGridTrackListNonInterpolableValue>(
+          computed_grid_track_list->GetNamedGridLines(),
+          computed_grid_track_list->GetOrderedNamedGridLines()));
 }
 
 void CSSGridTemplatePropertyInterpolationType::ApplyStandardPropertyValue(
@@ -285,17 +278,19 @@ void CSSGridTemplatePropertyInterpolationType::ApplyStandardPropertyValue(
   bool is_for_columns = property_id_ == CSSPropertyID::kGridTemplateColumns;
   ComputedStyleBuilder& builder = state.StyleBuilder();
   CSSToLengthConversionData conversion_data = state.CssToLengthConversionData();
-  ComputedGridTrackList computed_grid_track_list(
-      is_for_columns ? builder.GridTemplateColumns()
-                     : builder.GridTemplateRows());
+  ComputedGridTrackList* computed_grid_track_list(
+      is_for_columns ? MakeGarbageCollected<ComputedGridTrackList>(
+                           std::move(builder.GridTemplateColumns()))
+                     : MakeGarbageCollected<ComputedGridTrackList>(
+                           std::move(builder.GridTemplateRows())));
 
-  computed_grid_track_list.track_list =
-      interpolable_grid_track_list.CreateNGGridTrackList(conversion_data);
-  computed_grid_track_list.named_grid_lines =
-      non_interoplable_grid_track_list->GetCurrentNamedGridLines(progress);
-  computed_grid_track_list.ordered_named_grid_lines =
+  computed_grid_track_list->SetTrackList(
+      interpolable_grid_track_list.CreateGridTrackList(conversion_data));
+  computed_grid_track_list->SetNamedGridLines(
+      non_interoplable_grid_track_list->GetCurrentNamedGridLines(progress));
+  computed_grid_track_list->SetOrderedNamedGridLines(
       non_interoplable_grid_track_list->GetCurrentOrderedNamedGridLines(
-          progress);
+          progress));
 
   if (is_for_columns)
     builder.SetGridTemplateColumns(computed_grid_track_list);
@@ -312,7 +307,7 @@ void CSSGridTemplatePropertyInterpolationType::Composite(
            *underlying_value_owner.Value().interpolable_value)
            .IsCompatibleWith(
                To<InterpolableGridTrackList>(*value.interpolable_value))) {
-    underlying_value_owner.Set(*this, value);
+    underlying_value_owner.Set(this, value);
     return;
   }
   underlying_value_owner.SetNonInterpolableValue(value.non_interpolable_value);

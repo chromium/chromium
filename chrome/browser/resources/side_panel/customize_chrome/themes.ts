@@ -7,16 +7,18 @@ import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import './check_mark_wrapper.js';
+import '/strings.m.js';
 
 import type {SpHeadingElement} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {CustomizeChromeAction, recordCustomizeChromeAction} from './common.js';
+import {CustomizeChromeAction, NtpImageType, recordCustomizeChromeAction, recordCustomizeChromeImageError} from './common.js';
 import type {BackgroundCollection, CollectionImage, CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface, Theme} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import {getCss} from './themes.css.js';
@@ -54,18 +56,21 @@ export class ThemesElement extends ThemesElementBase {
     return {
       selectedCollection: {type: Object},
       header_: {type: String},
+      imageErrorDetectionEnabled_: {type: Boolean},
       isRefreshToggleChecked_: {type: Boolean},
       theme_: {type: Object},
       themes_: {type: Array},
     };
   }
 
-  selectedCollection: BackgroundCollection|null = null;
+  accessor selectedCollection: BackgroundCollection|null = null;
 
-  protected header_: string = '';
-  protected isRefreshToggleChecked_: boolean = false;
-  private theme_?: Theme;
-  protected themes_: CollectionImage[] = [];
+  protected accessor header_: string = '';
+  protected accessor imageErrorDetectionEnabled_: boolean =
+      loadTimeData.getBoolean('imageErrorDetectionEnabled');
+  protected accessor isRefreshToggleChecked_: boolean = false;
+  private accessor theme_: Theme|undefined;
+  protected accessor themes_: CollectionImage[] = [];
 
   private callbackRouter_: CustomizeChromePageCallbackRouter;
   private pageHandler_: CustomizeChromePageHandlerInterface;
@@ -131,13 +136,24 @@ export class ThemesElement extends ThemesElementBase {
   }
 
   private onThemesRendered_() {
-    const firstTile = this.shadowRoot!.querySelector('.tile.theme');
+    const firstTile = this.shadowRoot.querySelector('.tile.theme');
     if (firstTile) {
       this.registerHelpBubble(CHROME_THEME_ELEMENT_ID, firstTile);
     }
   }
 
-  protected onPreviewImageLoad_() {
+  protected shouldShowTheme_(itemLoaded: boolean) {
+    return !this.imageErrorDetectionEnabled_ || itemLoaded;
+  }
+
+  protected onPreviewImageLoad_(e: Event) {
+    if (this.imageErrorDetectionEnabled_) {
+      const index = Number((e.currentTarget as HTMLElement).dataset['index']);
+      assert(this.themes_[index]);
+      this.themes_[index].imageVerified = true;
+      this.requestUpdate();
+    }
+
     chrome.metricsPrivate.recordValue(
         {
           metricName: 'NewTabPage.Images.ShownTime.ThemePreviewImage',
@@ -151,12 +167,18 @@ export class ThemesElement extends ThemesElementBase {
             this.previewImageLoadStartEpoch_));
   }
 
+  protected onPreviewImageError_() {
+    if (this.imageErrorDetectionEnabled_) {
+      recordCustomizeChromeImageError(NtpImageType.BACKGROUND_IMAGE);
+    }
+  }
+
   private onCollectionChange_() {
     this.header_ = '';
     this.themes_ = [];
     if (this.selectedCollection) {
       this.previewImageLoadStartEpoch_ = WindowProxy.getInstance().now();
-      this.pageHandler_.getBackgroundImages(this.selectedCollection!.id)
+      this.pageHandler_.getBackgroundImages(this.selectedCollection.id)
           .then(({images}) => {
             this.themes_ = images;
           });
@@ -193,8 +215,7 @@ export class ThemesElement extends ThemesElementBase {
     }
     return !!this.theme_ && !!this.theme_.backgroundImage &&
         this.theme_.backgroundImage.dailyRefreshEnabled &&
-        this.selectedCollection!.id ===
-        this.theme_.backgroundImage.collectionId;
+        this.selectedCollection.id === this.theme_.backgroundImage.collectionId;
   }
 
   protected onRefreshDailyToggleChange_(e: CustomEvent<boolean>) {

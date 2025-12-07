@@ -4,12 +4,10 @@
 
 #include "chromeos/ash/components/phonehub/icon_decoder_impl.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 IconDecoder::DecodingData::DecodingData(unsigned long id,
                                         const std::string& input_data)
     : id(id), input_data(input_data) {}
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

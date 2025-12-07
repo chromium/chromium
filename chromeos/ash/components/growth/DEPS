@@ -1,7 +1,8 @@
 include_rules = [
-  "+ash/constants",
   "+base",
   "+chromeos/ash/components/demo_mode",
+  "+chromeos/ash/components/channel",
+  "+chromeos/ash/components/scalable_iph/buildflags.h",
   "+components/feature_engagement/public",
   "+components/prefs",
   "+components/user_manager",
@@ -11,4 +12,11 @@ include_rules = [
   "+ui/gfx",
   "+ui/chromeos/styles/cros_tokens_color_mappings.h",
   "+third_party/re2",
+
+  # TODO(crbug.com/402346171): Components should not have dependencies to //ash.
+  # Resolve it.
+  "+ash/resources/vector_icons/vector_icons.h",
+  "+ash/webui/grit/ash_mall_cros_app_resources.h",
+  "+ash/webui/grit/ash_print_management_resources.h",
+  "+ash/webui/grit/ash_personalization_app_resources.h"
 ]

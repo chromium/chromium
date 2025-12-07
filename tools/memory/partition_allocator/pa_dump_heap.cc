@@ -16,6 +16,7 @@
 #include "base/bits.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -24,6 +25,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/thread_annotations.h"
 #include "base/values.h"
+#include "partition_alloc/bucket_lookup.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/in_slot_metadata.h"
 #include "partition_alloc/partition_alloc_config.h"
@@ -35,11 +37,10 @@
 
 namespace partition_alloc::tools {
 
-using partition_alloc::internal::kInvalidBucketSize;
 using partition_alloc::internal::kSuperPageSize;
 using partition_alloc::internal::PartitionPageMetadata;
 using partition_alloc::internal::PartitionPageSize;
-using partition_alloc::internal::ReadOnlyPartitionSuperPageExtentEntry;
+using partition_alloc::internal::PartitionSuperPageExtentEntry;
 using partition_alloc::internal::SystemPageSize;
 
 // See https://www.kernel.org/doc/Documentation/vm/pagemap.txt.
@@ -128,11 +129,11 @@ class HeapDumper {
     uintptr_t extent_address =
         reinterpret_cast<uintptr_t>(root_.get()->first_extent);
     while (extent_address) {
-      auto extent = RawBuffer<ReadOnlyPartitionSuperPageExtentEntry>::
-          ReadFromProcessMemory(reader_, extent_address);
+      auto extent =
+          RawBuffer<PartitionSuperPageExtentEntry>::ReadFromProcessMemory(
+              reader_, extent_address);
       uintptr_t first_super_page_address = SuperPagesBeginFromExtent(
-          reinterpret_cast<ReadOnlyPartitionSuperPageExtentEntry*>(
-              extent_address));
+          reinterpret_cast<PartitionSuperPageExtentEntry*>(extent_address));
       for (uintptr_t super_page = first_super_page_address;
            super_page < first_super_page_address +
                             extent->get()->number_of_consecutive_super_pages *
@@ -173,8 +174,14 @@ class HeapDumper {
       ret.Set("type", value);
 
       if (value != "metadata" && value != "guard") {
+        // TODO(crbug.com/40238514): provide `offsets_to_metadata_`
+        // and `pool` information for pa_dump_heap.
+        // Currently there is no way to provide `metadata_offset_` for
+        // pa_dump_heap. So pa_dump_heap cannot find any metadata, i.e.
+        // PartitionPageMetadata, SlotSpanMetadata, and so on.
+        constexpr std::ptrdiff_t metadata_offset = 0;
         const auto* page_metadata = PartitionPageMetadata::FromAddr(
-            reinterpret_cast<uintptr_t>(data + offset));
+            reinterpret_cast<uintptr_t>(data + offset), metadata_offset);
         ret.Set("page_index_in_span", page_metadata->slot_span_metadata_offset);
         if (page_metadata->slot_span_metadata_offset == 0 &&
             page_metadata->slot_span_metadata.bucket) {
@@ -372,9 +379,6 @@ class HeapDumper {
   base::Value::List DumpBuckets() {
     base::Value::List ret;
     for (const auto& bucket : root_.get()->buckets) {
-      if (bucket.slot_size == kInvalidBucketSize)
-        continue;
-
       base::Value::Dict bucket_value;
       bucket_value.Set("slot_size", static_cast<int>(bucket.slot_size));
       ret.Append(std::move(bucket_value));
@@ -460,15 +464,14 @@ int main(int argc, char** argv) {
 
   std::string json_string;
   bool ok = base::JSONWriter::WriteWithOptions(
-      overall_dump, base::JSONWriter::Options::OPTIONS_PRETTY_PRINT,
-      &json_string);
+      overall_dump, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json_string);
 
   if (ok) {
     base::FilePath json_filename = command_line->GetSwitchValuePath("json");
     auto f = base::File(json_filename, base::File::Flags::FLAG_CREATE_ALWAYS |
                                            base::File::Flags::FLAG_WRITE);
     if (f.IsValid()) {
-      f.WriteAtCurrentPos(json_string.c_str(), json_string.size());
+      f.WriteAtCurrentPos(base::as_byte_span(json_string));
       LOG(WARNING) << "\n\nDumped JSON to " << json_filename;
       return 0;
     }

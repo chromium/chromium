@@ -9,10 +9,14 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/extensions/install_gate.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/install_gate.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace content {
 class BrowserContext;
@@ -22,7 +26,8 @@ namespace extensions {
 class Extension;
 class ExtensionSet;
 
-class SharedModuleService : public ExtensionRegistryObserver,
+class SharedModuleService : public KeyedService,
+                            public ExtensionRegistryObserver,
                             public InstallGate {
  public:
   enum ImportStatus {
@@ -38,16 +43,19 @@ class SharedModuleService : public ExtensionRegistryObserver,
     IMPORT_STATUS_UNRECOVERABLE
   };
 
-  explicit SharedModuleService(content::BrowserContext* context);
+  static SharedModuleService* Get(content::BrowserContext* context);
 
   SharedModuleService(const SharedModuleService&) = delete;
   SharedModuleService& operator=(const SharedModuleService&) = delete;
 
   ~SharedModuleService() override;
 
+  // KeyedService:
+  void Shutdown() override;
+
   // Checks an extension's imports. Imports that are not installed are stored
-  // in |missing_modules|, and imports that are out of date are stored in
-  // |outdated_modules|.
+  // in `missing_modules`, and imports that are out of date are stored in
+  // `outdated_modules`.
   ImportStatus CheckImports(
       const Extension* extension,
       std::list<SharedModuleInfo::ImportInfo>* missing_modules,
@@ -55,7 +63,7 @@ class SharedModuleService : public ExtensionRegistryObserver,
 
   // Checks an extension's shared module imports to see if they are satisfied.
   // If they are not, this function adds the dependencies to the pending install
-  // list if |extension| came from the webstore.
+  // list if `extension` came from the webstore.
   ImportStatus SatisfyImports(const Extension* extension);
 
   // Returns a set of extensions that import a given extension.
@@ -67,6 +75,10 @@ class SharedModuleService : public ExtensionRegistryObserver,
                      bool install_immediately) override;
 
  private:
+  friend class SharedModuleServiceFactory;
+
+  explicit SharedModuleService(content::BrowserContext* context);
+
   // Uninstall shared modules which are not used by other extensions.
   void PruneSharedModules();
 

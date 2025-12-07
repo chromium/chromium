@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
+#include <string_view>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "url/url_canon.h"
 #include "url/url_canon_internal.h"
 
@@ -48,107 +47,97 @@ namespace {
 // match the given |type| in SharedCharTypes. This version will accept 8 or 16
 // bit characters, but assumes that they have only 7-bit values. It also assumes
 // that all UTF-8 values are correct, so doesn't bother checking
-template<typename CHAR>
-void AppendRaw8BitQueryString(const CHAR* source, int length,
+template <typename CHAR>
+void AppendRaw8BitQueryString(std::basic_string_view<CHAR> source,
                               CanonOutput* output) {
-  for (int i = 0; i < length; i++) {
-    if (!IsQueryChar(static_cast<unsigned char>(source[i])))
-      AppendEscapedChar(static_cast<unsigned char>(source[i]), output);
-    else  // Doesn't need escaping.
-      output->push_back(static_cast<char>(source[i]));
+  for (const CHAR& c : source) {
+    unsigned char uc = static_cast<unsigned char>(c);
+    if (!IsQueryChar(uc)) {
+      AppendEscapedChar(uc, output);
+    } else {  // Doesn't need escaping.
+      output->push_back(static_cast<char>(uc));
+    }
   }
 }
 
 // Runs the converter on the given UTF-8 input. Since the converter expects
 // UTF-16, we have to convert first. The converter must be non-NULL.
-void RunConverter(const char* spec,
-                  const Component& query,
+void RunConverter(std::string_view input,
                   CharsetConverter* converter,
                   CanonOutput* output) {
-  DCHECK(query.is_valid());
   // This function will replace any misencoded values with the invalid
   // character. This is what we want so we don't have to check for error.
   RawCanonOutputW<1024> utf16;
-  ConvertUTF8ToUTF16(&spec[query.begin], static_cast<size_t>(query.len),
-                     &utf16);
-  converter->ConvertFromUTF16(utf16.data(), utf16.length(), output);
+  ConvertUTF8ToUTF16(input, &utf16);
+  converter->ConvertFromUTF16(utf16.view(), output);
 }
 
 // Runs the converter with the given UTF-16 input. We don't have to do
 // anything, but this overridden function allows us to use the same code
 // for both UTF-8 and UTF-16 input.
-void RunConverter(const char16_t* spec,
-                  const Component& query,
+void RunConverter(std::u16string_view input,
                   CharsetConverter* converter,
                   CanonOutput* output) {
-  DCHECK(query.is_valid());
-  converter->ConvertFromUTF16(&spec[query.begin],
-                              static_cast<size_t>(query.len), output);
+  converter->ConvertFromUTF16(input, output);
 }
 
 template <typename CHAR, typename UCHAR>
-void DoConvertToQueryEncoding(const CHAR* spec,
-                              const Component& query,
+void DoConvertToQueryEncoding(std::basic_string_view<CHAR> input,
                               CharsetConverter* converter,
                               CanonOutput* output) {
   if (converter) {
     // Run the converter to get an 8-bit string, then append it, escaping
     // necessary values.
     RawCanonOutput<1024> eight_bit;
-    RunConverter(spec, query, converter, &eight_bit);
-    AppendRaw8BitQueryString(eight_bit.data(), eight_bit.length(), output);
+    RunConverter(input, converter, &eight_bit);
+    AppendRaw8BitQueryString(eight_bit.view(), output);
 
   } else {
     // No converter, do our own UTF-8 conversion.
-    AppendStringOfType(&spec[query.begin], static_cast<size_t>(query.len),
-                       CHAR_QUERY, output);
+    AppendStringOfType(input, CHAR_QUERY, output);
   }
 }
 
-template<typename CHAR, typename UCHAR>
-void DoCanonicalizeQuery(const CHAR* spec,
-                         const Component& query,
+template <typename CHAR, typename UCHAR>
+void DoCanonicalizeQuery(std::optional<std::basic_string_view<CHAR>> input,
                          CharsetConverter* converter,
                          CanonOutput* output,
                          Component* out_query) {
-  if (!query.is_valid()) {
+  if (!input.has_value()) {
     *out_query = Component();
     return;
   }
 
+  auto input_value = input.value();
+
   output->push_back('?');
   out_query->begin = output->length();
 
-  DoConvertToQueryEncoding<CHAR, UCHAR>(spec, query, converter, output);
+  DoConvertToQueryEncoding<CHAR, UCHAR>(input_value, converter, output);
 
   out_query->len = output->length() - out_query->begin;
 }
 
 }  // namespace
 
-void CanonicalizeQuery(const char* spec,
-                       const Component& query,
+void CanonicalizeQuery(std::optional<std::string_view> input,
                        CharsetConverter* converter,
                        CanonOutput* output,
                        Component* out_query) {
-  DoCanonicalizeQuery<char, unsigned char>(spec, query, converter,
-                                           output, out_query);
+  DoCanonicalizeQuery<char, unsigned char>(input, converter, output, out_query);
 }
 
-void CanonicalizeQuery(const char16_t* spec,
-                       const Component& query,
+void CanonicalizeQuery(std::optional<std::u16string_view> input,
                        CharsetConverter* converter,
                        CanonOutput* output,
                        Component* out_query) {
-  DoCanonicalizeQuery<char16_t, char16_t>(spec, query, converter, output,
-                                          out_query);
+  DoCanonicalizeQuery<char16_t, char16_t>(input, converter, output, out_query);
 }
 
-void ConvertUTF16ToQueryEncoding(const char16_t* input,
-                                 const Component& query,
+void ConvertUTF16ToQueryEncoding(std::u16string_view input,
                                  CharsetConverter* converter,
                                  CanonOutput* output) {
-  DoConvertToQueryEncoding<char16_t, char16_t>(input, query, converter, output);
+  DoConvertToQueryEncoding<char16_t, char16_t>(input, converter, output);
 }
 
 }  // namespace url

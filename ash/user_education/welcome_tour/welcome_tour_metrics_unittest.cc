@@ -10,6 +10,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/user_education/user_education_ash_test_base.h"
+#include "ash/user_education/user_education_util.h"
 #include "base/containers/enum_set.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -58,7 +59,7 @@ class WelcomeTourChangedExperimentalArmMetricTest
     scoped_feature_list.InitWithFeatureStates(
         {{features::kWelcomeTourCounterfactualArm, IsV1Enabled()},
          {features::kWelcomeTourHoldbackArm, IsHoldbackEnabled()},
-         {features::kWelcomeTourV2, IsV2Enabled()},
+         {features::kWelcomeTourV3, IsV3Enabled()},
          {features::kWelcomeTourForceUserEligibility, true}});
   }
 
@@ -76,7 +77,7 @@ class WelcomeTourChangedExperimentalArmMetricTest
 
   bool IsPrefValueV1() const { return GetPrefValue() == ExperimentalArm::kV1; }
 
-  bool IsPrefValueV2() const { return GetPrefValue() == ExperimentalArm::kV2; }
+  bool IsPrefValueV3() const { return GetPrefValue() == ExperimentalArm::kV3; }
 
   bool IsHoldbackEnabled() const {
     return GetEnabledArm() == ExperimentalArm::kHoldback;
@@ -84,7 +85,7 @@ class WelcomeTourChangedExperimentalArmMetricTest
 
   bool IsV1Enabled() const { return GetEnabledArm() == ExperimentalArm::kV1; }
 
-  bool IsV2Enabled() const { return GetEnabledArm() == ExperimentalArm::kV2; }
+  bool IsV3Enabled() const { return GetEnabledArm() == ExperimentalArm::kV3; }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list;
@@ -98,12 +99,12 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Values(std::nullopt,
                           std::make_optional(ExperimentalArm::kHoldback),
                           std::make_optional(ExperimentalArm::kV1),
-                          std::make_optional(ExperimentalArm::kV2)),
+                          std::make_optional(ExperimentalArm::kV3)),
         /*enabled_arm=*/
         ::testing::Values(std::nullopt,
                           std::make_optional(ExperimentalArm::kHoldback),
                           std::make_optional(ExperimentalArm::kV1),
-                          std::make_optional(ExperimentalArm::kV2))));
+                          std::make_optional(ExperimentalArm::kV3))));
 
 // Tests -----------------------------------------------------------------------
 
@@ -114,22 +115,19 @@ TEST_P(WelcomeTourChangedExperimentalArmMetricTest,
 
   // Add a primary user session for an existing user. This should *not* trigger
   // the Welcome Tour to start.
-  const auto primary_account_id = AccountId::FromUserEmail("primary@test");
-  auto* const session_controller_client = GetSessionControllerClient();
-  session_controller_client->AddUserSession(
-      primary_account_id.GetUserEmail(), user_manager::UserType::kRegular,
-      /*provide_pref_service=*/true, /*is_new_profile=*/false);
+  const auto primary_account_id = SimulateUserLogin(
+      {.display_email = "primary@test", .activate_session = false});
 
   const std::optional<ExperimentalArm> pref_value = GetPrefValue();
   if (pref_value) {
     Shell::Get()
         ->session_controller()
         ->GetLastActiveUserPrefService()
-        ->SetInteger("ash.welcome_tour.v2.experimental_arm.first",
+        ->SetInteger("ash.welcome_tour.v3.experimental_arm.first",
                      static_cast<int>(pref_value.value()));
   }
 
-  session_controller_client->SetSessionState(
+  GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::ACTIVE);
 
   // If there is change between the pref value and the enabled experimental
@@ -160,7 +158,7 @@ class WelcomeTourExperimentalArmMetricTest
     scoped_feature_list.InitWithFeatureStates(
         {{features::kWelcomeTourCounterfactualArm, IsV1Enabled()},
          {features::kWelcomeTourHoldbackArm, IsHoldbackEnabled()},
-         {features::kWelcomeTourV2, IsV2Enabled()},
+         {features::kWelcomeTourV3, IsV3Enabled()},
          {features::kWelcomeTourForceUserEligibility, true}});
   }
 
@@ -172,7 +170,7 @@ class WelcomeTourExperimentalArmMetricTest
 
   bool IsV1Enabled() const { return GetEnabledArm() == ExperimentalArm::kV1; }
 
-  bool IsV2Enabled() const { return GetEnabledArm() == ExperimentalArm::kV2; }
+  bool IsV3Enabled() const { return GetEnabledArm() == ExperimentalArm::kV3; }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list;
@@ -185,7 +183,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(std::nullopt,
                       std::make_optional(ExperimentalArm::kHoldback),
                       std::make_optional(ExperimentalArm::kV1),
-                      std::make_optional(ExperimentalArm::kV2)));
+                      std::make_optional(ExperimentalArm::kV3)));
 
 // Tests -----------------------------------------------------------------------
 
@@ -224,7 +222,7 @@ class WelcomeTourInteractionMetricsTest
     // Only one of those features can be enabled at a time.
     scoped_feature_list.InitWithFeatureStates(
         {{features::kWelcomeTourHoldbackArm, IsHoldback()},
-         {features::kWelcomeTourV2, false},
+         {features::kWelcomeTourV3, false},
          {features::kWelcomeTourCounterfactualArm, false}});
   }
 
@@ -279,14 +277,15 @@ INSTANTIATE_TEST_SUITE_P(
 // appropriate histogram is submitted.
 TEST_P(WelcomeTourInteractionMetricsTest, RecordInteraction) {
   SimulateNewUserFirstLogin("user@test");
-  ClearPref("ash.welcome_tour.v2.prevented.first_reason");
-  ClearPref("ash.welcome_tour.v2.prevented.first_time");
+  ClearPref("ash.welcome_tour.v3.prevented.first_reason");
+  ClearPref("ash.welcome_tour.v3.prevented.first_time");
 
   base::HistogramTester histogram_tester;
+  PrefService* prefs = user_education_util::GetLastActiveUserPrefService();
 
   // Case: Before tour attempt. No interactions should be logged.
   for (auto interaction : kAllInteractionsSet) {
-    RecordInteraction(interaction);
+    RecordInteraction(prefs, interaction);
     histogram_tester.ExpectTotalCount(
         GetInteractionFirstTimeBucketMetricName(interaction), 0);
     histogram_tester.ExpectTotalCount(
@@ -298,13 +297,13 @@ TEST_P(WelcomeTourInteractionMetricsTest, RecordInteraction) {
   // Case: First time after tour attempt. Interactions should be recorded, along
   // with first interaction times, if the tour was attempted.
   if (const auto completed = IsCompleted()) {
-    RecordTourDuration(base::Minutes(1), completed.value());
+    RecordTourDuration(prefs, base::Minutes(1), completed.value());
   } else if (GetPreventedReason()) {
-    RecordTourPrevented(GetPreventedReason().value());
+    RecordTourPrevented(prefs, GetPreventedReason().value());
   }
 
   for (auto interaction : kAllInteractionsSet) {
-    RecordInteraction(interaction);
+    RecordInteraction(prefs, interaction);
 
     if (InteractionsShouldBeRecorded()) {
       histogram_tester.ExpectTotalCount(
@@ -327,7 +326,7 @@ TEST_P(WelcomeTourInteractionMetricsTest, RecordInteraction) {
   // the tour was attempted, but the first time metric should not be recorded
   // again.
   for (auto interaction : kAllInteractionsSet) {
-    RecordInteraction(interaction);
+    RecordInteraction(prefs, interaction);
 
     if (InteractionsShouldBeRecorded()) {
       histogram_tester.ExpectTotalCount(
@@ -349,10 +348,10 @@ TEST_P(WelcomeTourInteractionMetricsTest, RecordInteraction) {
 
 // Verifies that attempting to record an interaction before login doesn't crash.
 TEST_P(WelcomeTourInteractionMetricsTest, RecordInteractionBeforeLogin) {
-  EXPECT_FALSE(
-      Shell::Get()->session_controller()->GetLastActiveUserPrefService());
+  PrefService* prefs = user_education_util::GetLastActiveUserPrefService();
+  EXPECT_FALSE(prefs);
   for (auto interaction : kAllInteractionsSet) {
-    RecordInteraction(interaction);
+    RecordInteraction(prefs, interaction);
   }
 }
 
@@ -375,7 +374,7 @@ TEST_F(WelcomeTourMetricsEnumTest, AllExperimentalArms) {
     switch (arm) {
       case ExperimentalArm::kHoldback:
       case ExperimentalArm::kV1:
-      case ExperimentalArm::kV2:
+      case ExperimentalArm::kV3:
         should_exist_in_all_set = true;
     }
 
@@ -512,12 +511,13 @@ TEST_F(WelcomeTourMetricsTest, RecordTourDuration) {
   static constexpr auto kTestTourLength = base::Seconds(30);
 
   SimulateNewUserFirstLogin("user@test");
+  PrefService* prefs = user_education_util::GetLastActiveUserPrefService();
 
   // Case: Tour is aborted.
   {
     base::HistogramTester histogram_tester;
 
-    RecordTourDuration(kTestTourLength, /*completed=*/false);
+    RecordTourDuration(prefs, kTestTourLength, /*completed=*/false);
     histogram_tester.ExpectTotalCount(kAbortedTourDurationMetricName, 1);
     histogram_tester.ExpectTotalCount(kCompletedTourDurationMetricName, 0);
     histogram_tester.ExpectTimeBucketCount(kAbortedTourDurationMetricName,
@@ -528,7 +528,7 @@ TEST_F(WelcomeTourMetricsTest, RecordTourDuration) {
   {
     base::HistogramTester histogram_tester;
 
-    RecordTourDuration(kTestTourLength, /*completed=*/true);
+    RecordTourDuration(prefs, kTestTourLength, /*completed=*/true);
     histogram_tester.ExpectTotalCount(kAbortedTourDurationMetricName, 0);
     histogram_tester.ExpectTotalCount(kCompletedTourDurationMetricName, 1);
     histogram_tester.ExpectTimeBucketCount(kCompletedTourDurationMetricName,
@@ -539,10 +539,18 @@ TEST_F(WelcomeTourMetricsTest, RecordTourDuration) {
 // Verifies that all valid values of the `PreventedReason` enum can be
 // successfully recorded by the `RecordTourPrevented()` utility function.
 TEST_F(WelcomeTourMetricsTest, RecordTourPrevented) {
+  static constexpr char kTourPreventedReasonMetricName[] =
+      "Ash.WelcomeTour.Prevented.Reason";
+
   SimulateNewUserFirstLogin("user@test");
-  TestEnumHistogram<PreventedReason>("Ash.WelcomeTour.Prevented.Reason",
-                                     kAllPreventedReasonsSet,
-                                     &RecordTourPrevented);
+  PrefService* prefs = user_education_util::GetLastActiveUserPrefService();
+
+  for (auto reason : kAllPreventedReasonsSet) {
+    base::HistogramTester histogram_tester;
+    RecordTourPrevented(prefs, reason);
+    histogram_tester.ExpectUniqueSample(kTourPreventedReasonMetricName, reason,
+                                        1);
+  }
 }
 
 }  // namespace ash::welcome_tour_metrics

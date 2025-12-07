@@ -48,7 +48,8 @@ SendTabToSelfSyncServiceFactory::SendTabToSelfSyncServiceFactory()
 
 SendTabToSelfSyncServiceFactory::~SendTabToSelfSyncServiceFactory() = default;
 
-KeyedService* SendTabToSelfSyncServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SendTabToSelfSyncServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
@@ -63,7 +64,7 @@ KeyedService* SendTabToSelfSyncServiceFactory::BuildServiceInstanceFor(
       DeviceInfoSyncServiceFactory::GetForProfile(profile)
           ->GetDeviceInfoTracker();
 
-  return new send_tab_to_self::SendTabToSelfSyncService(
+  return std::make_unique<send_tab_to_self::SendTabToSelfSyncService>(
       chrome::GetChannel(), std::move(store_factory), history_service,
       profile->GetPrefs(), device_info_tracker);
 }

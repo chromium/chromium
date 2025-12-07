@@ -69,6 +69,7 @@ def _ParseEditsFromStdin(build_directory):
     A dictionary mapping filenames to the associated edits.
   """
   path_to_resolved_path = {}
+
   def _ResolvePath(path):
     if path in path_to_resolved_path:
       return path_to_resolved_path[path]
@@ -122,7 +123,7 @@ def _FindPrimaryHeaderBasename(filepath):
   return basename
 
 
-_INCLUDE_INSERTION_POINT_REGEX_TEMPLATE = r'''
+_SYSTEM_INCLUDE_INSERTION_POINT_REGEX_TEMPLATE = r'''
    ^(?!               # Match the start of the first line that is
                       # not one of the following:
 
@@ -149,10 +150,11 @@ _INCLUDE_INSERTION_POINT_REGEX_TEMPLATE = r'''
     | \#ifndef \s+ (?P<guard> [A-Za-z0-9_]* ) \s* $ ( \n | \r )* ^
       \#define \s+ (?P=guard) \s* ( | 1 \s* ) $
     | \#define \s+ (?P=guard) \s* ( | 1 \s* ) $  # Skipping previous line.
-
-      # 5. A C/C++ system include
+    # 5. A C/C++ system include
     | \#include \s* < .* >
+  '''
 
+_INCLUDE_INSERTION_POINT_REGEX_TEMPLATE = r'''
       # 6. A primary header include
       #    (%%s should be the basename returned by _FindPrimaryHeaderBasename).
       #
@@ -164,7 +166,6 @@ _INCLUDE_INSERTION_POINT_REGEX_TEMPLATE = r'''
           %s[^"/]*\.h "  # Matching both basename.h and basename_posix.h
     )
 '''
-
 
 _NEWLINE_CHARACTERS = [ord('\n'), ord('\r')]
 
@@ -211,15 +212,14 @@ def _SkipOverPreviousComment(contents, index):
   # Is the previous line a non-comment?  If so, just return `index`.
   new_index = _FindStartOfPreviousLine(contents, index)
   prev_text = contents[new_index:index]
-  _COMMENT_START_REGEX = b"^  \s*  (  //  |  \*  )"
-  if not re.search(_COMMENT_START_REGEX, prev_text, re.VERBOSE):
+  if not re.search(br"^  \s*  (  //  |  \*  )", prev_text, re.VERBOSE):
     return index
 
   # Otherwise skip over the previous line + continue skipping via recursion.
   return _SkipOverPreviousComment(contents, new_index)
 
 
-def _InsertNonSystemIncludeHeader(filepath, header_line_to_add, contents):
+def _InsertIncludeHeader(filepath, header_line_to_add, contents, is_system):
   """ Mutates |contents| (contents of |filepath|) to #include
       the |header_to_add
   """
@@ -237,7 +237,13 @@ def _InsertNonSystemIncludeHeader(filepath, header_line_to_add, contents):
   primary_header_basename = _FindPrimaryHeaderBasename(filepath)
   if primary_header_basename is None:
     primary_header_basename = ':this:should:never:match:'
-  regex_text = _INCLUDE_INSERTION_POINT_REGEX_TEMPLATE % primary_header_basename
+  regex_text = _SYSTEM_INCLUDE_INSERTION_POINT_REGEX_TEMPLATE
+  if is_system:
+    regex_text += ')'
+  else:
+    regex_text += (_INCLUDE_INSERTION_POINT_REGEX_TEMPLATE %
+                   primary_header_basename)
+
   match = re.search(regex_text.encode("utf-8"), contents,
                     re.MULTILINE | re.VERBOSE)
   assert (match is not None)
@@ -285,18 +291,24 @@ def _ApplyReplacement(filepath, contents, edit, last_edit):
   return contents
 
 
-def _ApplyIncludeHeader(filepath, contents, edit, last_edit):
-  header_line_to_add = '#include "%s"' % edit.replacement.decode("utf-8")
-  return _InsertNonSystemIncludeHeader(filepath,
-                                       header_line_to_add.encode("utf-8"),
-                                       contents)
+def _ApplyIncludeHeader(filepath, contents, edit, last_edit, is_system):
+  header_line_to_add = '#include '
+  name = edit.replacement.decode("utf-8")
+  if is_system:
+    header_line_to_add += '<%s>' % name
+  else:
+    header_line_to_add += '"%s"' % name
+  return _InsertIncludeHeader(filepath, header_line_to_add.encode("utf-8"),
+                              contents, is_system)
 
 
 def _ApplySingleEdit(filepath, contents, edit, last_edit):
   if edit.edit_type == 'r':
     return _ApplyReplacement(filepath, contents, edit, last_edit)
   elif edit.edit_type == 'include-user-header':
-    return _ApplyIncludeHeader(filepath, contents, edit, last_edit)
+    return _ApplyIncludeHeader(filepath, contents, edit, last_edit, False)
+  elif edit.edit_type == 'include-system-header':
+    return _ApplyIncludeHeader(filepath, contents, edit, last_edit, True)
   else:
     raise ValueError('Unrecognized edit directive "%s": %s\n' %
                      (edit.edit_type, filepath))
@@ -453,9 +465,10 @@ suppress this behavior is to replace the text with a single space or similar
 
   filenames = set(_GetFilesFromGit(args.path_filter))
   edits = _ParseEditsFromStdin(args.p)
-  return _ApplyEdits(
-      {k: v
-       for k, v in edits.items() if os.path.realpath(k) in filenames})
+  return _ApplyEdits({
+      k: v
+      for k, v in edits.items() if os.path.realpath(k) in filenames
+  })
 
 
 if __name__ == '__main__':

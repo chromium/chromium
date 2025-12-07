@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] a.relList in http://www.w3.org/2000/svg namespace should be DOMTokenList.
-  assert_class_string: expected "[object DOMTokenList]" but got "[object Undefined]"
-Harness: the test ran to completion.
-

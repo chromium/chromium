@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "printing/metafile_skia.h"
 
 #include <algorithm>
@@ -15,13 +10,13 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -83,6 +78,7 @@ struct MetafileSkiaData {
   std::map<uint32_t, sk_sp<SkPicture>> subframe_pics;
   int document_cookie = 0;
   raw_ptr<ContentProxySet> typeface_content_info = nullptr;
+  raw_ptr<ContentProxySet> image_content_info = nullptr;
 
   // The scale factor is used because Blink occasionally calls
   // PaintCanvas::getTotalMatrix() even though the total matrix is not as
@@ -115,6 +111,10 @@ bool MetafileSkia::Init() {
 void MetafileSkia::UtilizeTypefaceContext(
     ContentProxySet* typeface_content_info) {
   data_->typeface_content_info = typeface_content_info;
+}
+
+void MetafileSkia::UtilizeImageContext(ContentProxySet* image_content_info) {
+  data_->image_content_info = image_content_info;
 }
 
 // TODO(halcanary): Create a Metafile class that only stores data.
@@ -217,7 +217,8 @@ bool MetafileSkia::FinishDocument() {
 #endif
     case mojom::SkiaDocumentType::kMSKP:
       SkSerialProcs procs = SerializationProcs(&data_->subframe_content_info,
-                                               data_->typeface_content_info);
+                                               data_->typeface_content_info,
+                                               data_->image_content_info);
       doc = SkMultiPictureDocument::Make(&stream, &procs);
       // It is safe to use base::Unretained(this) because the callback
       // is only used by `canvas` in the following loop which has shorter
@@ -253,7 +254,8 @@ void MetafileSkia::FinishFrameContent() {
   sk_sp<SkPicture> pic = data_->pages[0].content.ToSkPicture(
       SkRect::MakeSize(data_->pages[0].size), nullptr, callbacks);
   SkSerialProcs procs = SerializationProcs(&data_->subframe_content_info,
-                                           data_->typeface_content_info);
+                                           data_->typeface_content_info,
+                                           data_->image_content_info);
   SkDynamicMemoryWStream stream;
   pic->serialize(&stream, &procs);
   data_->data_stream = stream.detachAsStream();
@@ -295,20 +297,17 @@ unsigned int MetafileSkia::GetPageCount() const {
 }
 
 printing::NativeDrawingContext MetafileSkia::context() const {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 #if BUILDFLAG(IS_WIN)
 bool MetafileSkia::Playback(printing::NativeDrawingContext hdc,
                             const RECT* rect) const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool MetafileSkia::SafePlayback(printing::NativeDrawingContext hdc) const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 #elif BUILDFLAG(IS_APPLE)
@@ -382,10 +381,12 @@ bool MetafileSkia::SaveTo(base::File* file) const {
       break;
     }
     DCHECK_GE(buffer.size(), read_size);
-    if (!file->WriteAtCurrentPosAndCheck(
-            base::make_span(&buffer[0], read_size))) {
-      return false;
-    } else if (is_at_end) {
+    UNSAFE_TODO({
+      if (!file->WriteAtCurrentPosAndCheck(base::span(&buffer[0], read_size))) {
+        return false;
+      }
+    });
+    if (is_at_end) {
       break;
     }
   } while (true);
@@ -409,6 +410,7 @@ std::unique_ptr<MetafileSkia> MetafileSkia::GetMetafileForCurrentPage(
   metafile->data_->subframe_content_info = data_->subframe_content_info;
   metafile->data_->subframe_pics = data_->subframe_pics;
   metafile->data_->typeface_content_info = data_->typeface_content_info;
+  metafile->data_->image_content_info = data_->image_content_info;
 
   if (!metafile->FinishDocument())  // Generate PDF.
     metafile.reset();
@@ -461,7 +463,7 @@ void MetafileSkia::CustomDataToSkPictureCallback(SkCanvas* canvas,
     return;
 
   auto it = data_->subframe_pics.find(content_id);
-  CHECK(it != data_->subframe_pics.end(), base::NotFatalUntil::M130);
+  CHECK(it != data_->subframe_pics.end());
 
   // Found the picture, draw it on canvas.
   sk_sp<SkPicture> pic = it->second;

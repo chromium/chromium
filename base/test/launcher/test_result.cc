@@ -17,23 +17,24 @@ TestResultPart::TestResultPart() = default;
 TestResultPart::~TestResultPart() = default;
 
 TestResultPart::TestResultPart(const TestResultPart& other) = default;
-TestResultPart::TestResultPart(TestResultPart&& other) = default;
 TestResultPart& TestResultPart::operator=(const TestResultPart& other) =
     default;
+TestResultPart::TestResultPart(TestResultPart&& other) = default;
 TestResultPart& TestResultPart::operator=(TestResultPart&& other) = default;
 
 // static
 bool TestResultPart::TypeFromString(const std::string& str, Type* type) {
-  if (str == "success")
+  if (str == "success") {
     *type = kSuccess;
-  else if (str == "failure")
+  } else if (str == "failure") {
     *type = kNonFatalFailure;
-  else if (str == "fatal_failure")
+  } else if (str == "fatal_failure") {
     *type = kFatalFailure;
-  else if (str == "skip")
+  } else if (str == "skip") {
     *type = kSkip;
-  else
+  } else {
     return false;
+  }
   return true;
 }
 
@@ -51,8 +52,21 @@ std::string TestResultPart::TypeAsString() const {
   return "unknown";
 }
 
-TestResult::TestResult() : status(TEST_UNKNOWN) {
+SubTestResult::SubTestResult() = default;
+
+SubTestResult::SubTestResult(const SubTestResult& other) = default;
+SubTestResult::SubTestResult(SubTestResult&& other) noexcept = default;
+SubTestResult& SubTestResult::operator=(const SubTestResult& other) = default;
+SubTestResult& SubTestResult::operator=(SubTestResult&& other) noexcept =
+    default;
+
+SubTestResult::~SubTestResult() = default;
+
+std::string SubTestResult::FullName() const {
+  return classname + "." + name + "__" + subname;
 }
+
+TestResult::TestResult() : status(TEST_UNKNOWN) {}
 
 TestResult::~TestResult() = default;
 
@@ -84,8 +98,7 @@ std::string TestResult::StatusAsString() const {
       // Rely on compiler warnings to ensure all possible values are handled.
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 std::string TestResult::GetTestName() const {
@@ -107,6 +120,10 @@ void TestResult::AddLink(const std::string& name, const std::string& url) {
 
 void TestResult::AddTag(const std::string& name, const std::string& value) {
   tags[name].push_back(value);
+}
+
+void TestResult::AddSubTestResult(SubTestResult sub_test_result) {
+  sub_test_results.push_back(std::move(sub_test_result));
 }
 
 void TestResult::AddProperty(const std::string& name,

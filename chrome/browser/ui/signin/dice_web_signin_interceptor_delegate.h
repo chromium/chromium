@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_UI_SIGNIN_DICE_WEB_SIGNIN_INTERCEPTOR_DELEGATE_H_
 #define CHROME_BROWSER_UI_SIGNIN_DICE_WEB_SIGNIN_INTERCEPTOR_DELEGATE_H_
 
-#include "chrome/browser/signin/web_signin_interceptor.h"
-
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
+#include "chrome/browser/signin/web_signin_interceptor.h"
 
 namespace content {
 class WebContents;
@@ -34,12 +34,15 @@ class DiceWebSigninInterceptorDelegate : public WebSigninInterceptor::Delegate {
   ShowOidcInterceptionDialog(
       content::WebContents* web_contents,
       const BubbleParameters& bubble_parameters,
-      signin::SigninChoiceWithConfirmationCallback callback,
-      base::OnceClosure dialog_closed_closure) override;
+      signin::SigninChoiceWithConfirmAndRetryCallback callback,
+      base::OnceClosure dialog_closed_closure,
+      base::RepeatingClosure retry_callback) override;
   void ShowFirstRunExperienceInNewProfile(
       Browser* browser,
       const CoreAccountId& account_id,
       WebSigninInterceptor::SigninInterceptionType interception_type) override;
+  void ShowSigninError(content::WebContents* web_contents,
+                       const SigninUIError& error) override;
 
   // Returns the histogram suffix related to the given interception type.
   static std::string GetHistogramSuffix(
@@ -59,9 +62,7 @@ class DiceWebSigninInterceptorDelegate : public WebSigninInterceptor::Delegate {
       const BubbleParameters& bubble_parameters,
       base::OnceCallback<void(SigninInterceptionResult)> callback);
 
-  // Implemented in profile_customization_bubble_view.cc
   static bool IsSigninInterceptionSupportedInternal(const Browser& Browser);
-  void ShowProfileCustomizationBubbleInternal(Browser* browser);
 };
 
 #endif  // CHROME_BROWSER_UI_SIGNIN_DICE_WEB_SIGNIN_INTERCEPTOR_DELEGATE_H_

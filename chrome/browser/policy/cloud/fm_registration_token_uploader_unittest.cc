@@ -4,6 +4,8 @@
 
 #include "chrome/browser/policy/cloud/fm_registration_token_uploader.h"
 
+#include <stdint.h>
+
 #include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "components/invalidation/invalidation_listener.h"
@@ -27,6 +29,7 @@ namespace {
 
 const char kFakeRegistrationToken[] = "fake_registration_token";
 const char kFakeDMToken[] = "fake_dm_token";
+const int64_t kFakeProjectNumber = 1234567890;
 const int kExpectedProtocolVersion = 1;
 const base::Time kFakeTokenEndOfLife = base::Time::Now();
 
@@ -45,6 +48,8 @@ class MockInvalidationListener : public invalidation::InvalidationListener {
               (RegistrationTokenUploadStatus status),
               (override));
   MOCK_METHOD(void, Shutdown, (), (override));
+
+  int64_t project_number() const override { return kFakeProjectNumber; }
 };
 }  // namespace
 
@@ -94,6 +99,7 @@ TEST_F(FmRegistrationTokenUploaderTest,
   request.set_protocol_version(kExpectedProtocolVersion);
   request.set_token_type(
       enterprise_management::FmRegistrationTokenUploadRequest::DEVICE);
+  request.set_project_number(kFakeProjectNumber);
   request.set_expiration_timestamp_ms(
       kFakeTokenEndOfLife.InMillisecondsSinceUnixEpoch());
   EXPECT_CALL(*client_ptr, UploadFmRegistrationToken(EqualsProto(request), _));
@@ -132,6 +138,7 @@ TEST_F(FmRegistrationTokenUploaderTest,
   request.set_protocol_version(kExpectedProtocolVersion);
   request.set_token_type(
       enterprise_management::FmRegistrationTokenUploadRequest::DEVICE);
+  request.set_project_number(kFakeProjectNumber);
   request.set_expiration_timestamp_ms(
       kFakeTokenEndOfLife.InMillisecondsSinceUnixEpoch());
   EXPECT_CALL(*client_ptr, UploadFmRegistrationToken(EqualsProto(request), _));
@@ -176,6 +183,7 @@ TEST_F(FmRegistrationTokenUploaderTest,
   request.set_protocol_version(kExpectedProtocolVersion);
   request.set_token_type(
       enterprise_management::FmRegistrationTokenUploadRequest::DEVICE);
+  request.set_project_number(kFakeProjectNumber);
   request.set_expiration_timestamp_ms(
       kFakeTokenEndOfLife.InMillisecondsSinceUnixEpoch());
   EXPECT_CALL(*client_ptr, UploadFmRegistrationToken(EqualsProto(request), _));
@@ -214,6 +222,21 @@ TEST_F(FmRegistrationTokenUploaderTest,
           MockInvalidationListener::RegistrationTokenUploadStatus::kFailed));
   uploader.OnRegistrationTokenReceived(kFakeRegistrationToken,
                                        kFakeTokenEndOfLife);
+  testing::Mock::VerifyAndClearExpectations(&mock_invalidation_listener_);
+
+  // The first retry should be scheduled in about 5 minutes.
+  // Let's wait for less (4 minutes) and check that no updates have been sent to
+  // the listener.
+
+  EXPECT_CALL(mock_invalidation_listener_, SetRegistrationUploadStatus(_))
+      .Times(0);
+
+  task_environment_.FastForwardBy(base::Minutes(4));
+  testing::Mock::VerifyAndClearExpectations(&mock_invalidation_listener_);
+
+  // Now setup up the actual expectations for a successful request and wait for
+  // the remaining minute.
+
   // Make next registration token upload requests successful.
   SetRegistrationTokenUploadState(
       *client_ptr,
@@ -225,6 +248,7 @@ TEST_F(FmRegistrationTokenUploaderTest,
   request.set_protocol_version(kExpectedProtocolVersion);
   request.set_token_type(
       enterprise_management::FmRegistrationTokenUploadRequest::DEVICE);
+  request.set_project_number(kFakeProjectNumber);
   request.set_expiration_timestamp_ms(
       kFakeTokenEndOfLife.InMillisecondsSinceUnixEpoch());
   EXPECT_CALL(*client_ptr, UploadFmRegistrationToken(EqualsProto(request), _));
@@ -234,6 +258,28 @@ TEST_F(FmRegistrationTokenUploaderTest,
           MockInvalidationListener::RegistrationTokenUploadStatus::kSucceeded));
 
   task_environment_.FastForwardBy(base::Minutes(1));
+}
+
+TEST_F(FmRegistrationTokenUploaderTest,
+       CoreDisconnectBeforeClientIsRegistered) {
+  auto client = std::make_unique<MockCloudPolicyClient>();
+  MockCloudPolicyClient* client_ptr = client.get();
+
+  // Connect cloud policy client without registration.
+  core_.Connect(std::move(client));
+  FmRegistrationTokenUploader uploader(PolicyInvalidationScope::kDevice,
+                                       &mock_invalidation_listener_, &core_);
+
+  // Expect that `UploadFmRegistrationToken()` will be never be called.
+  EXPECT_CALL(*client_ptr, UploadFmRegistrationToken(_, _)).Times(0);
+  EXPECT_CALL(mock_invalidation_listener_, SetRegistrationUploadStatus(_))
+      .Times(0);
+
+  uploader.OnRegistrationTokenReceived(kFakeRegistrationToken,
+                                       kFakeTokenEndOfLife);
+
+  // Disconnect cloud policy core should not cleanup everything properly.
+  core_.Disconnect();
 }
 
 }  // namespace policy

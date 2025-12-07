@@ -1,0 +1,25 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("personal_collaboration_data") {
+  sources = [
+    "personal_collaboration_data_service_factory.h",
+    "personal_collaboration_data_service_factory.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/data_sharing/internal:personal_collaboration_data_internal",
+    "//components/data_sharing/public:features",
+    "//components/data_sharing/public:personal_collaboration_data",
+    "//components/keyed_service/core",
+    "//components/sync/base",
+    "//components/sync/model",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/sync/model:data_type_store_service_factory",
+    "//ios/chrome/common",
+    "//ios/web/public",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}

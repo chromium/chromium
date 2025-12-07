@@ -6,12 +6,21 @@
 #define COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_KNOWN_INTERCEPTION_DISCLOSURE_UI_H_
 
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
 
 namespace content {
 class WebUI;
 }
 
 namespace security_interstitials {
+
+class KnownInterceptionDisclosureUI;
+
+class KnownInterceptionDisclosureUIConfig
+    : public content::DefaultWebUIConfig<KnownInterceptionDisclosureUI> {
+ public:
+  KnownInterceptionDisclosureUIConfig();
+};
 
 // The WebUI for chrome://connection-monitoring-detected, which provides details
 // to users when Chrome has detected known network interception.

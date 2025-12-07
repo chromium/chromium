@@ -17,8 +17,10 @@
 #include "third_party/blink/renderer/core/xml/xsl_style_sheet.h"
 #include "third_party/blink/renderer/core/xml/xslt_processor.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -65,14 +67,12 @@ class DOMContentLoadedListener final
   Member<ProcessingInstruction> processing_instruction_;
 };
 
-DocumentXSLT::DocumentXSLT(Document& document)
-    : Supplement<Document>(document) {}
-
 void DocumentXSLT::ApplyXSLTransform(Document& document,
                                      ProcessingInstruction* pi) {
   DCHECK(!pi->IsLoading());
-  UseCounter::Count(document, WebFeature::kXSLProcessingInstruction);
-  XSLTProcessor* processor = XSLTProcessor::Create(document);
+  CHECK(XSLTProcessor::XSLTEnabled());
+  XSLTProcessor* processor = XSLTProcessor::Create(
+      document, ASSERT_NO_EXCEPTION, WebFeature::kXSLProcessingInstruction);
   processor->SetXSLStyleSheet(To<XSLStyleSheet>(pi->sheet()));
   String result_mime_type;
   String new_source;
@@ -145,21 +145,15 @@ bool DocumentXSLT::SheetLoaded(Document& document, ProcessingInstruction* pi) {
   return true;
 }
 
-// static
-const char DocumentXSLT::kSupplementName[] = "DocumentXSLT";
-
 bool DocumentXSLT::HasTransformSourceDocument(Document& document) {
-  return Supplement<Document>::From<DocumentXSLT>(document);
+  return document.GetDocumentXSLT();
 }
 
 void DocumentXSLT::SetHasTransformSource(Document& document) {
   DCHECK(!HasTransformSourceDocument(document));
-  Supplement<Document>::ProvideTo(document,
-                                  MakeGarbageCollected<DocumentXSLT>(document));
+  document.SetDocumentXSLT(MakeGarbageCollected<DocumentXSLT>());
 }
 
-void DocumentXSLT::Trace(Visitor* visitor) const {
-  Supplement<Document>::Trace(visitor);
-}
+void DocumentXSLT::Trace(Visitor* visitor) const {}
 
 }  // namespace blink

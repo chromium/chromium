@@ -6,6 +6,7 @@
 #define ASH_WALLPAPER_WALLPAPER_CONTROLLER_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -31,7 +32,7 @@
 #include "ash/wallpaper/sea_pen_wallpaper_manager.h"
 #include "ash/wallpaper/wallpaper_blur_manager.h"
 #include "ash/wallpaper/wallpaper_file_manager.h"
-#include "ash/wallpaper/wallpaper_info_migrator.h"
+#include "ash/wallpaper/wallpaper_pref_manager.h"
 #include "ash/wallpaper/wallpaper_time_of_day_scheduler.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
@@ -71,7 +72,6 @@ class WallpaperDailyRefreshScheduler;
 class WallpaperDriveFsDelegate;
 class WallpaperImageDownloader;
 class WallpaperMetricsManager;
-class WallpaperPrefManager;
 class WallpaperResizer;
 class WallpaperWindowStateManager;
 
@@ -90,6 +90,7 @@ using CustomWallpaperMap = std::map<AccountId, CustomWallpaperElement>;
 //     state is ACTIVE;
 class ASH_EXPORT WallpaperControllerImpl
     : public WallpaperController,
+      public WallpaperPrefManager::Observer,
       public display::DisplayManagerObserver,
       public ShellObserver,
       public LoginDataDispatcher::Observer,
@@ -122,13 +123,12 @@ class ASH_EXPORT WallpaperControllerImpl
 
   // Returns custom wallpaper path. Appends |sub_dir|, |wallpaper_files_id| and
   // |file_name| to custom wallpaper directory.
-  static base::FilePath GetCustomWallpaperPath(
-      const std::string& sub_dir,
-      const std::string& wallpaper_files_id,
-      const std::string& file_name);
+  base::FilePath GetCustomWallpaperPath(const std::string& sub_dir,
+                                        const std::string& wallpaper_files_id,
+                                        const std::string& file_name) const;
 
   // Returns custom wallpaper directory by appending corresponding |sub_dir|.
-  static base::FilePath GetCustomWallpaperDir(const std::string& sub_dir);
+  base::FilePath GetCustomWallpaperDir(const std::string& sub_dir) const;
 
   // Returns the k mean color of the current wallpaper.
   SkColor GetKMeanColor() const;
@@ -238,10 +238,6 @@ class ASH_EXPORT WallpaperControllerImpl
   void SetClient(WallpaperControllerClient* client) override;
   void SetDriveFsDelegate(
       std::unique_ptr<WallpaperDriveFsDelegate> drivefs_delegate) override;
-  void Init(const base::FilePath& user_data,
-            const base::FilePath& wallpapers,
-            const base::FilePath& custom_wallpapers,
-            const base::FilePath& device_policy_wallpaper) override;
   bool CanSetUserWallpaper(const AccountId& account_id) const override;
   void SetCustomWallpaper(const AccountId& account_id,
                           const base::FilePath& file_path,
@@ -273,7 +269,7 @@ class ASH_EXPORT WallpaperControllerImpl
       DailyGooglePhotosIdCache& ids_out) const override;
 
   void SetTimeOfDayWallpaper(const AccountId& account_id,
-                             SetWallpaperCallback callback) override;
+                             SetTimeOfDayWallpaperCallback callback) override;
   bool IsTimeOfDayWallpaper() const;
   void SetDefaultWallpaper(const AccountId& account_id,
                            bool show_wallpaper,
@@ -334,6 +330,10 @@ class ASH_EXPORT WallpaperControllerImpl
       RefreshWallpaperCallback callback = base::DoNothing()) override;
   void SyncLocalAndRemotePrefs(const AccountId& account_id) override;
   const AccountId& CurrentAccountId() const override;
+
+  // ash::WallpaperPrefManager::Observer:
+  void OnDeviceWallpaperImageFilePathUpdated(
+      const base::FilePath& path) override;
 
   // display::DisplayManagerObserver:
   void OnDidApplyDisplayChanges() override;
@@ -429,24 +429,6 @@ class ASH_EXPORT WallpaperControllerImpl
     base::FilePath file_path;
   };
 
-  // Saves the wallpaper info to pref store. No-op if `migrated_info` is
-  // nullopt.
-  void SaveMigratedWallpaperInfo(
-      const std::optional<WallpaperInfo>& migrated_info);
-
-  // Processes the wallpaper info after having saved it to the local store.
-  void HandleWallpaperInfoAfterMigration(const AccountId& account_id);
-
-  // Processes the synced wallpaper info after the migration.
-  void HandleSyncedWallpaperInfoAfterMigration(
-      const AccountId& account_id,
-      const std::optional<WallpaperInfo>& synced_info);
-
-  // Processes the deprecated synced wallpaper info after the migration.
-  void HandleDeprecatedSyncedWallpaperInfoAfterMigration(
-      const AccountId& account_id,
-      const std::optional<WallpaperInfo>& synced_info);
-
   // Callback after `WallpaperResizer` is done scaling the current wallpaper to
   // the current display size.
   void OnWallpaperResized();
@@ -523,6 +505,9 @@ class ASH_EXPORT WallpaperControllerImpl
                                 SetWallpaperCallback callback,
                                 const gfx::ImageSkia& image);
 
+  void OnGetCustomizationIdForOobe(
+      std::optional<std::string_view> customization_id);
+
   // Used as the callback as soon as the OOBE wallpaper is loaded and decoded
   // from file system.
   void OnOobeWallpaperDecoded(const base::FilePath& path,
@@ -591,8 +576,6 @@ class ASH_EXPORT WallpaperControllerImpl
                                       bool preview_mode,
                                       SetWallpaperCallback callback,
                                       const base::FilePath& file_path);
-
-  void OnSeaPenFilesMigrated(const AccountId& account_id, bool success);
 
   // Saves |image| to disk if the user's data is not ephemeral, or if it is a
   // policy wallpaper for public accounts. Shows the wallpaper immediately if
@@ -714,8 +697,13 @@ class ASH_EXPORT WallpaperControllerImpl
   void HandleWallpaperInfoSyncedIn(const AccountId& account_id,
                                    const WallpaperInfo& info);
 
+  void OnGetCustomizationIdForTimeOfDayWallpaper(
+      const AccountId& account_id,
+      SetTimeOfDayWallpaperCallback set_time_of_day_wallpaper_callback,
+      std::optional<std::string_view> customization_id);
+
   // Called as a callback for `SetTimeOfDayWallpaper`.
-  void OnTimeOfDayWallpaperSetAfterOobe(bool success);
+  void OnTimeOfDayWallpaperSetAfterOobe(uint64_t unit_id, bool success);
 
   // Called as a callback for `UpdateDailyRefreshWallpaper`.
   void OnDailyRefreshWallpaperUpdated(RefreshWallpaperCallback callback,
@@ -729,6 +717,10 @@ class ASH_EXPORT WallpaperControllerImpl
 
   // If the user has a Google Photos wallpaper set.
   bool IsGooglePhotosWallpaperSet() const;
+
+  base::FilePath GetUserGooglePhotosWallpaperDir(
+      const AccountId& account_id) const;
+  base::FilePath GetUserSeaPenWallpaperDir(const AccountId& account_id) const;
 
   // Checks to make sure the currently selected Google Photos wallpaper still
   // exists in the user's Google Photos library.
@@ -826,6 +818,12 @@ class ASH_EXPORT WallpaperControllerImpl
   // Cached OOBE wallpaper.
   CachedDefaultWallpaper cached_oobe_wallpaper_;
 
+  // The paths of wallpaper directories.
+  base::FilePath wallpapers_dir_;
+  base::FilePath custom_wallpapers_dir_;
+  base::FilePath google_photos_wallpapers_dir_;
+  base::FilePath sea_pen_wallpaper_dir_;
+
   // The paths of the customized default wallpapers, if they exist.
   base::FilePath customized_default_small_path_;
   base::FilePath customized_default_large_path_;
@@ -868,10 +866,6 @@ class ASH_EXPORT WallpaperControllerImpl
   // A utility class that handles file operations and decoding for SeaPen
   // wallpapers.
   SeaPenWallpaperManager sea_pen_wallpaper_manager_;
-
-  // A utility class that migrates non versioned wallpaper info to the
-  // versioned format.
-  WallpaperInfoMigrator wallpaper_info_migrator_;
 
   // Provides signals to trigger wallpaper daily refresh.
   std::unique_ptr<WallpaperDailyRefreshScheduler> daily_refresh_scheduler_;
@@ -933,6 +927,9 @@ class ASH_EXPORT WallpaperControllerImpl
   // 'set wallpaper' request. (e.g. when a custom wallpaper decoding fails, a
   // default wallpaper decoding is initiated.)
   std::vector<base::FilePath> decode_requests_for_testing_;
+
+  base::ScopedObservation<WallpaperPrefManager, WallpaperPrefManager::Observer>
+      pref_manager_observation_{this};
 
   base::WeakPtrFactory<WallpaperControllerImpl> weak_factory_{this};
 

@@ -5,13 +5,13 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/ios_util.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
+#import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/passwords_table_view_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_root_table_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_constants.h"
-#import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
-#import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
-#import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -51,6 +51,17 @@
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuButton()]
       performAction:grey_tap()];
 
+  [ChromeEarlGreyUI closeToolsMenu];
+}
+
+// Tests that app works correctly when using a gendered language for the UI.
+- (void)testGenderedLanguage {
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.language = "de-DE";
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+  // Open the tools menu to display a bunch of localized strings.
+  // Test passes by not crashing.
+  [ChromeEarlGreyUI openToolsMenu];
   [ChromeEarlGreyUI closeToolsMenu];
 }
 
@@ -167,7 +178,7 @@
 
 // Tests waitForSufficientlyVisibleElementWithMatcher in chrome_earl_grey.h
 - (void)testWaitForSufficientlyVisibleElementWithMatcher {
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::NewTabPageOmnibox()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
@@ -199,6 +210,9 @@
 // Tests enabling/disabling features through [AppLaunchManager
 // ensureAppLaunchedWithFeaturesEnabled]
 - (void)testAppLaunchManagerLaunchWithFeatures {
+  if ([ChromeTestCase forceRestartAndWipe]) {
+    EARL_GREY_TEST_SKIPPED(@"NoForceRelaunchAndResetState being removed.");
+  }
   [[AppLaunchManager sharedManager]
       ensureAppLaunchedWithFeaturesEnabled:{kTestFeature}
                                   disabled:{}
@@ -276,6 +290,9 @@
 
 // Tests running resets after relaunch through AppLaunchManager.
 - (void)testAppLaunchManagerNoForceRelaunchAndResetState {
+  if ([ChromeTestCase forceRestartAndWipe]) {
+    EARL_GREY_TEST_SKIPPED(@"NoForceRelaunchAndResetState being removed.");
+  }
   [self disableMockAuthentication];
   [ChromeEarlGrey openNewTab];
   [[AppLaunchManager sharedManager]
@@ -288,6 +305,9 @@
 
 // Tests no force relaunch.
 - (void)testAppLaunchManagerNoForceRelaunchAndKeepState {
+  if ([ChromeTestCase forceRestartAndWipe]) {
+    EARL_GREY_TEST_SKIPPED(@"NoForceRelaunchAndKeepState being removed.");
+  }
   [self disableMockAuthentication];
   [ChromeEarlGrey openNewTab];
   // No relauch when feature list isn't changed.
@@ -321,7 +341,6 @@
 - (void)testGetPrefs {
   // The actual pref names and values below are irrelevant, but the calls
   // themselves should return data without crashing or asserting.
-  [ChromeEarlGrey localStateIntegerPref:prefs::kBrowserStatesNumCreated];
   [ChromeEarlGrey localStateBooleanPref:prefs::kAppStoreRatingPolicyEnabled];
 
   [ChromeEarlGrey userBooleanPref:prefs::kIosBookmarkPromoAlreadySeen];

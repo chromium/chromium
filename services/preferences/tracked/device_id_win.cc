@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/containers/heap_array.h"
 
 MachineIdStatus GetDeterministicMachineSpecificId(std::string* machine_id) {
   DCHECK(machine_id);
@@ -25,7 +26,8 @@ MachineIdStatus GetDeterministicMachineSpecificId(std::string* machine_id) {
   char sid_buffer[SECURITY_MAX_SID_SIZE];
   SID* sid = reinterpret_cast<SID*>(sid_buffer);
   DWORD domain_size = 128;  // Will expand below if needed.
-  std::unique_ptr<wchar_t[]> domain_buffer(new wchar_t[domain_size]);
+  base::HeapArray<wchar_t> domain_buffer =
+      base::HeapArray<wchar_t>::Uninit(domain_size);
   SID_NAME_USE sid_name_use;
 
   // Although the fifth argument to |LookupAccountNameW()|,
@@ -36,16 +38,17 @@ MachineIdStatus GetDeterministicMachineSpecificId(std::string* machine_id) {
   // has succeeded, it is necessary to include the following logic and
   // obtain the domain name.
   if (!::LookupAccountNameW(nullptr, computer_name, sid, &sid_size,
-                            domain_buffer.get(), &domain_size, &sid_name_use)) {
+                            domain_buffer.data(), &domain_size,
+                            &sid_name_use)) {
     // If the initial size of |domain_buffer| was too small, the
     // required size is now found in |domain_size|. Resize and try
     // again.
     if (::GetLastError() != ERROR_INSUFFICIENT_BUFFER)
       return MachineIdStatus::FAILURE;
 
-    domain_buffer.reset(new wchar_t[domain_size]);
+    domain_buffer = base::HeapArray<wchar_t>::Uninit(domain_size);
     if (!::LookupAccountNameW(nullptr, computer_name, sid, &sid_size,
-                              domain_buffer.get(), &domain_size,
+                              domain_buffer.data(), &domain_size,
                               &sid_name_use)) {
       return MachineIdStatus::FAILURE;
     }

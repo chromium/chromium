@@ -5,13 +5,13 @@ Found 58 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Screen interface: existence and properties of interface prototype object
   assert_equals: prototype of Screen.prototype is not Object.prototype expected object "[object Object]" but got object "[object EventTarget]"
 [FAIL] CSSPseudoElement interface: operation getBoxQuads(optional BoxQuadOptions)
-  assert_own_property: self does not have own property "CSSPseudoElement" expected property "CSSPseudoElement" missing
+  assert_own_property: interface prototype object missing non-static operation expected property "getBoxQuads" missing
 [FAIL] CSSPseudoElement interface: operation convertQuadFromNode(DOMQuadInit, GeometryNode, optional ConvertCoordinateOptions)
-  assert_own_property: self does not have own property "CSSPseudoElement" expected property "CSSPseudoElement" missing
+  assert_own_property: interface prototype object missing non-static operation expected property "convertQuadFromNode" missing
 [FAIL] CSSPseudoElement interface: operation convertRectFromNode(DOMRectReadOnly, GeometryNode, optional ConvertCoordinateOptions)
-  assert_own_property: self does not have own property "CSSPseudoElement" expected property "CSSPseudoElement" missing
+  assert_own_property: interface prototype object missing non-static operation expected property "convertRectFromNode" missing
 [FAIL] CSSPseudoElement interface: operation convertPointFromNode(DOMPointInit, GeometryNode, optional ConvertCoordinateOptions)
-  assert_own_property: self does not have own property "CSSPseudoElement" expected property "CSSPseudoElement" missing
+  assert_own_property: interface prototype object missing non-static operation expected property "convertPointFromNode" missing
 [FAIL] Element interface: document.createElement("div") must inherit property "getBoxQuads(optional BoxQuadOptions)" with the proper type
   assert_inherits: property "getBoxQuads" not found in prototype chain
 [FAIL] Element interface: calling getBoxQuads(optional BoxQuadOptions) on document.createElement("div") with too few arguments must throw TypeError

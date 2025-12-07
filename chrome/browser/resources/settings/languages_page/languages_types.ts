@@ -85,23 +85,6 @@ export interface LanguageHelper {
 
   // </if>
 
-  /**
-   * @return The language code for ARC IMEs.
-   */
-  getArcImeLanguageCode(): string;
-
-  /**
-   * @param language
-   * @return the [displayName] - [nativeDisplayName] if displayName and
-   * nativeDisplayName are different.
-   * If they're the same than only returns the displayName.
-   */
-  getFullName(language: chrome.languageSettingsPrivate.Language): string;
-
-  isLanguageCodeForArcIme(languageCode: string): boolean;
-
-  isTranslateBaseLanguage(language: chrome.languageSettingsPrivate.Language):
-      boolean;
   isLanguageEnabled(languageCode: string): boolean;
 
   /**
@@ -157,24 +140,6 @@ export interface LanguageHelper {
    * Enables or disables spell check for the given language.
    */
   toggleSpellCheck(languageCode: string, enable: boolean): void;
-
-  /**
-   * Converts the language code for translate. There are some differences
-   * between the language set the Translate server uses and that for
-   * Accept-Language.
-   */
-  convertLanguageCodeForTranslate(languageCode: string): string;
-
-  /**
-   * Converts the language code to Chrome format.
-   */
-  convertLanguageCodeForChrome(languageCode: string): string;
-
-  /**
-   * Given a language code, returns just the base language. E.g., converts
-   * 'en-GB' to 'en'.
-   */
-  getBaseLanguage(languageCode: string): string;
 
   getLanguage(languageCode: string): chrome.languageSettingsPrivate.Language
       |undefined;

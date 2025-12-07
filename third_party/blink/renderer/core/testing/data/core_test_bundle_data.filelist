@@ -14,6 +14,7 @@ testing/data/Ahem.ttf
 testing/data/Ahem.woff2
 testing/data/GoogleSans-Regular.ttf
 testing/data/MaterialIcons-Regular.woff2
+testing/data/Revalia.woff
 testing/data/add-frame-in-unload-main.html
 testing/data/add-frame-in-unload-subframe.html
 testing/data/add_frame_in_unload.html
@@ -98,6 +99,7 @@ testing/data/enter_key_hint_search.html
 testing/data/enter_key_hint_send.html
 testing/data/exif-orientation-1-ul.jpg
 testing/data/exif-orientation-5-lu.jpg
+testing/data/exported-names.wasm
 testing/data/fallback.html
 testing/data/find.html
 testing/data/find_in_generated_frame.html
@@ -132,6 +134,7 @@ testing/data/fractional-scroll-fixed-position.html
 testing/data/fragment_middle_click.html
 testing/data/frame-a-b-c.html
 testing/data/frame.html
+testing/data/frame_another.html
 testing/data/frame_owner_properties.html
 testing/data/frame_timing_1.html
 testing/data/frame_timing_2.html
@@ -269,13 +272,13 @@ testing/data/input_mode_type_tel.html
 testing/data/input_mode_type_text.html
 testing/data/input_mode_type_url.html
 testing/data/input_placeholder.html
+testing/data/invalid-module.wasm
 testing/data/invisible_iframe.html
 testing/data/large-div.html
 testing/data/link-manifest-change.html
 testing/data/link-manifest-fetch.json
 testing/data/listener/listener_leak1.html
 testing/data/listener/listener_leak2.html
-testing/data/listener/mutation_event_listener.html
 testing/data/long_press_draggable_div.html
 testing/data/long_press_empty_div.html
 testing/data/long_press_empty_editable_selection.html
@@ -303,6 +306,7 @@ testing/data/move_caret.html
 testing/data/move_range.html
 testing/data/move_range_selection_extent.html
 testing/data/move_range_selection_extent_input_field.html
+testing/data/named-frame-a-b-c.html
 testing/data/navigate_to_same.html
 testing/data/navigation-api/onnavigate-preventDefault.html
 testing/data/navigation-api/onnavigate-window-stop.html
@@ -310,6 +314,7 @@ testing/data/no_scale_for_you.html
 testing/data/no_viewport_tag.html
 testing/data/nodeimage.html
 testing/data/non-scrollable.html
+testing/data/non_UTF8.wasm
 testing/data/non_user_input_text_update.html
 testing/data/not_an_image.ico
 testing/data/notifications/100x100.png
@@ -322,7 +327,7 @@ testing/data/notifications/48x48.png
 testing/data/notifications/500x500.png
 testing/data/notifications/file.txt
 testing/data/orientation-frame-detach.html
-testing/data/origin-trial-dummy.html
+testing/data/origin-trial-enabled.html
 testing/data/overflow-hidden.html
 testing/data/overflow-scrolling.html
 testing/data/overscroll/div-overscroll.html
@@ -389,7 +394,6 @@ testing/data/popup/select_event_remove_on_click.html
 testing/data/popup/select_mid_screen.html
 testing/data/popup/select_rtl.html
 testing/data/popup/select_rtl_width.html
-testing/data/popup/select_with_datalist.html
 testing/data/postmessage_test.html
 testing/data/prerender/any_prerender.html
 testing/data/prerender/multiple_prerenders.html
@@ -407,6 +411,7 @@ testing/data/priorities/injected-async.js
 testing/data/priorities/injected.js
 testing/data/promote_img_in_viewport_priority.html
 testing/data/push_state.html
+testing/data/push_state_empty.html
 testing/data/reload_post.html
 testing/data/resize_scroll_fixed_layout.html
 testing/data/resize_scroll_fixed_width.html
@@ -428,6 +433,12 @@ testing/data/rtl-iframe-inner.html
 testing/data/rtl-iframe.html
 testing/data/rtl-overview-mode.html
 testing/data/scale_oscillate.html
+testing/data/script/nested-script.js
+testing/data/script/not-parser-blocked-async-nested-script.html
+testing/data/script/parser-blocked-defer-nested-script.html
+testing/data/script/parser-blocked-external-nested-script.html
+testing/data/script/parser-blocked-inline-nested-script.html
+testing/data/script/parser-blocked-module-nested-script.html
 testing/data/script_priority.html
 testing/data/scroll-event-handler-window.html
 testing/data/scroll-event-handler.html
@@ -446,6 +457,7 @@ testing/data/shifted_plugin_containing_page.html
 testing/data/show_unhandled_tap.html
 testing/data/simple_div.html
 testing/data/single_iframe.html
+testing/data/single_sandboxed_iframe.html
 testing/data/small_text_iframe.html
 testing/data/smartclip.html
 testing/data/smartclip_reversed_positions.html

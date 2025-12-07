@@ -26,10 +26,10 @@ namespace syncer {
 class LoopbackServerEntity {
  public:
   // Creates an ID of the form <type><separator><inner-id> where
-  // <type> is the EntitySpecifics field number for |data_type|, <separator>
-  // is kIdSeparator, and <inner-id> is |inner_id|.
+  // <type> is the EntitySpecifics field number for `data_type`, <separator>
+  // is kIdSeparator, and <inner-id> is `inner_id`.
   //
-  // If |inner_id| is globally unique, then the returned ID will also be
+  // If `inner_id` is globally unique, then the returned ID will also be
   // globally unique.
   static std::string CreateId(const syncer::DataType& data_type,
                               const std::string& inner_id);
@@ -48,7 +48,7 @@ class LoopbackServerEntity {
   const std::string& GetName() const;
   void SetName(const std::string& name);
 
-  // Replaces |specifics_| with |updated_specifics|. This method is meant to be
+  // Replaces `specifics_` with `updated_specifics`. This method is meant to be
   // used to mimic a client commit.
   void SetSpecifics(const sync_pb::EntitySpecifics& updated_specifics);
   sync_pb::EntitySpecifics GetSpecifics() const;
@@ -66,11 +66,11 @@ class LoopbackServerEntity {
   virtual void SerializeAsLoopbackServerEntity(
       sync_pb::LoopbackServerEntity* entity) const;
 
-  // Extracts the DataType from |id|. If |id| is malformed or does not contain
+  // Extracts the DataType from `id`. If `id` is malformed or does not contain
   // a valid DataType, UNSPECIFIED is returned.
   static syncer::DataType GetDataTypeFromId(const std::string& id);
 
-  // Extracts the inner ID as specified in the constructor from |id|.
+  // Extracts the inner ID as specified in the constructor from `id`.
   static std::string GetInnerIdFromId(const std::string& id);
 
  protected:

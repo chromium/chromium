@@ -2,21 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "components/domain_reliability/quic_error_mapping.h"
+
+#include <array>
 
 namespace domain_reliability {
 
 namespace {
 
-const struct QuicErrorMapping {
+struct QuicErrorMapping {
   quic::QuicErrorCode quic_error;
   const char* beacon_quic_error;
-} kQuicErrorMap[] = {
+};
+const auto kQuicErrorMap = std::to_array<QuicErrorMapping>({
     // Connection has reached an invalid state.
     {quic::QUIC_INTERNAL_ERROR, "quic.internal_error"},
     // There were data frames after the a fin or reset.
@@ -293,7 +292,7 @@ const struct QuicErrorMapping {
     {quic::QUIC_INVALID_PATH_CHALLENGE_DATA,
      "quic.invalid.path_challenge_data"},
     {quic::QUIC_INVALID_PATH_RESPONSE_DATA, "quic.invalid.path_response_data"},
-    {quic::QUIC_INVALID_MESSAGE_DATA, "quic.invalid.message_data"},
+    {quic::QUIC_INVALID_DATAGRAM_DATA, "quic.invalid.datagram_data"},
     {quic::IETF_QUIC_PROTOCOL_VIOLATION, "quic.ietf.protocol_violation"},
     {quic::QUIC_INVALID_NEW_TOKEN, "quic.invalid_new_token"},
     {quic::QUIC_DATA_RECEIVED_ON_WRITE_UNIDIRECTIONAL_STREAM,
@@ -480,12 +479,40 @@ const struct QuicErrorMapping {
     {quic::QUIC_HANDSHAKE_FAILED_PACKETS_BUFFERED_TOO_LONG,
      "quic.quic_handshake_failed_packets_buffered_too_long"},
 
+    // Handshake failed due to invalid hostname in ClientHello. Only sent from
+    // server.
+    {quic::QUIC_HANDSHAKE_FAILED_INVALID_HOSTNAME,
+     "quic.quic_handshake_failed_invalid_hostname"},
+
     // Client application lost network access.
     {quic::QUIC_CLIENT_LOST_NETWORK_ACCESS,
      "quic.quic_client_lost_network_access"},
 
+    // Handshake failed because server is rejecting all connections. Only sent
+    // from server.
+    {quic::QUIC_HANDSHAKE_FAILED_REJECTING_ALL_CONNECTIONS,
+     "quic.quic_handshake_failed_rejecting_all_connections"},
+
+    // Handshake failed because the connection failed validity checks in
+    // QuicDispatcher. Only sent from server.
+    {quic::QUIC_HANDSHAKE_FAILED_INVALID_CONNECTION,
+     "quic.quic_handshake_failed_invalid_connection"},
+
+    // Handshake failed because
+    // 1) There used to be a QuicConnection created for the connection ID. And
+    // 2) When the QuicConnection was destroyed, it did not have a termination
+    //    packet so the QuicDispatcher synthesized one using this error code.
+    // Only sent from server.
+    {quic::QUIC_HANDSHAKE_FAILED_SYNTHETIC_CONNECTION_CLOSE,
+     "quic.quic_handshake_failed_synthetic_connection_close"},
+
+    // Handshake failed because there is a CID collision. Only sent from server.
+    {quic::QUIC_HANDSHAKE_FAILED_CID_COLLISION,
+     "quic.quic_handshake_failed_cid_collision"},
+
     // No error. Used as bound while iterating.
-    {quic::QUIC_LAST_ERROR, "quic.last_error"}};
+    {quic::QUIC_LAST_ERROR, "quic.last_error"},
+});
 
 // Must be updated any time a quic::QuicErrorCode is deprecated in
 // net/third_party/quiche/src/quiche/quic/core/quic_error_codes.h.

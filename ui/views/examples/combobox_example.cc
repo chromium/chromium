@@ -87,15 +87,12 @@ void ComboboxExample::CreateExampleView(View* container) {
 }
 
 void ComboboxExample::ValueChanged() {
-  PrintStatus("Selected: %s",
-              base::UTF16ToUTF8(combobox_->GetModel()->GetItemAt(
-                                    combobox_->GetSelectedIndex().value()))
-                  .c_str());
+  PrintStatus("Selected: " + base::UTF16ToUTF8(combobox_->GetModel()->GetItemAt(
+                                 combobox_->GetSelectedIndex().value())));
 }
 
 void ComboboxExample::EditableValueChanged() {
-  PrintStatus("Changed: %s",
-              base::UTF16ToUTF8(editable_combobox_->GetText()).c_str());
+  PrintStatus("Changed: " + base::UTF16ToUTF8(editable_combobox_->GetText()));
 }
 
 }  // namespace views::examples

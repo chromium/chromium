@@ -65,23 +65,21 @@ suite('CrComponentsThemeColorPickerTest', () => {
     [false, LIGHT_BASELINE_BLUE_COLOR],
   ] as Array<[boolean, Color]>)
       .forEach(([isDarkMode, defaultColor]) => {
-        test(
-            `render DarkMode ${isDarkMode} default color`, async () => {
-              initializeElement();
-              const theme: Theme = createTheme(isDarkMode);
+        test(`render DarkMode ${isDarkMode} default color`, async () => {
+          initializeElement();
+          const theme: Theme = createTheme(isDarkMode);
 
-              callbackRouter.setTheme(theme);
-              await callbackRouter.$.flushForTesting();
+          callbackRouter.setTheme(theme);
+          await callbackRouter.$.flushForTesting();
 
-              const defaultColorElement =
-                  $$<ThemeColorElement>(colorsElement, '#defaultColor')!;
-              assertDeepEquals(
-                  defaultColor.foreground, defaultColorElement.foregroundColor);
-              assertDeepEquals(
-                  defaultColor.background, defaultColorElement.backgroundColor);
-              assertDeepEquals(
-                  defaultColor.base, defaultColorElement.baseColor);
-            });
+          const defaultColorElement =
+              $$<ThemeColorElement>(colorsElement, '#defaultColor')!;
+          assertDeepEquals(
+              defaultColor.foreground, defaultColorElement.foregroundColor);
+          assertDeepEquals(
+              defaultColor.background, defaultColorElement.backgroundColor);
+          assertDeepEquals(defaultColor.base, defaultColorElement.baseColor);
+        });
       });
 
   ([
@@ -164,7 +162,7 @@ suite('CrComponentsThemeColorPickerTest', () => {
     await microtasksFinished();
 
     const colorElements =
-        colorsElement.shadowRoot!.querySelectorAll<ThemeColorElement>(
+        colorsElement.shadowRoot.querySelectorAll<ThemeColorElement>(
             '.chrome-color');
     assertEquals(2, colorElements.length);
     assertDeepEquals({value: 1}, colorElements[0]!.backgroundColor);
@@ -197,8 +195,8 @@ suite('CrComponentsThemeColorPickerTest', () => {
 
     chromeColorsResolver.resolve(colors);
     await microtasksFinished();
-    colorsElement.shadowRoot!.querySelector<ThemeColorElement>(
-                                 '.chrome-color')!.click();
+    colorsElement.shadowRoot.querySelector<ThemeColorElement>(
+                                '.chrome-color')!.click();
 
     const args = handler.getArgs('setSeedColor')[0];
     assertEquals(1, handler.getCallCount('setSeedColor'));
@@ -348,13 +346,13 @@ suite('CrComponentsThemeColorPickerTest', () => {
     const defaultColorElement =
         $$<ThemeColorElement>(colorsElement, '#defaultColor')!;
     let checkedColors =
-        colorsElement.shadowRoot!.querySelectorAll<ThemeColorElement>(
+        colorsElement.shadowRoot.querySelectorAll<ThemeColorElement>(
             '[checked]');
     assertEquals(1, checkedColors.length);
     assertEquals(defaultColorElement, checkedColors[0]);
     assertEquals(defaultColorElement.getAttribute('aria-checked'), 'true');
     let indexedColors =
-        colorsElement.shadowRoot!.querySelectorAll('[tabindex="0"]');
+        colorsElement.shadowRoot.querySelectorAll('[tabindex="0"]');
     assertEquals(1, indexedColors.length);
     assertEquals(defaultColorElement, indexedColors[0]);
 
@@ -366,15 +364,14 @@ suite('CrComponentsThemeColorPickerTest', () => {
 
     // Check Chrome color selected.
     checkedColors =
-        colorsElement.shadowRoot!.querySelectorAll<ThemeColorElement>(
+        colorsElement.shadowRoot.querySelectorAll<ThemeColorElement>(
             '[checked]');
     assertEquals(1, checkedColors.length);
     assertEquals('chrome-color', checkedColors[0]!.className);
     assertEquals(checkedColors[0]!.getAttribute('aria-checked'), 'true');
     assertEquals(2, checkedColors[0]!.foregroundColor.value);
-    assertEquals(3, checkedColors[0]!.baseColor!.value);
-    indexedColors =
-        colorsElement.shadowRoot!.querySelectorAll('[tabindex="0"]');
+    assertEquals(3, checkedColors[0]!.baseColor.value);
+    indexedColors = colorsElement.shadowRoot.querySelectorAll('[tabindex="0"]');
     assertEquals(1, indexedColors.length);
     assertEquals('chrome-color', indexedColors[0]!.className);
 
@@ -385,16 +382,14 @@ suite('CrComponentsThemeColorPickerTest', () => {
     await callbackRouter.$.flushForTesting();
 
     // Check custom color selected.
-    checkedColors = colorsElement.shadowRoot!.querySelectorAll('[checked]');
+    checkedColors = colorsElement.shadowRoot.querySelectorAll('[checked]');
     assertEquals(1, checkedColors.length);
     assertEquals(colorsElement.$.customColor, checkedColors[0]);
     assertEquals(
-        colorsElement.$.customColorContainer.getAttribute('aria-checked'),
-        'true');
-    indexedColors =
-        colorsElement.shadowRoot!.querySelectorAll('[tabindex="0"]');
+        colorsElement.$.customColor.getAttribute('aria-checked'), 'true');
+    indexedColors = colorsElement.shadowRoot.querySelectorAll('[tabindex="0"]');
     assertEquals(1, indexedColors.length);
-    assertEquals(colorsElement.$.customColorContainer, indexedColors[0]);
+    assertEquals(colorsElement.$.customColor, indexedColors[0]);
   });
 
   [false, true].forEach(hasBackgroundImage => {
@@ -408,7 +403,7 @@ suite('CrComponentsThemeColorPickerTest', () => {
           await callbackRouter.$.flushForTesting();
 
           const colors =
-              colorsElement.shadowRoot!.querySelectorAll('cr-theme-color');
+              colorsElement.shadowRoot.querySelectorAll('cr-theme-color');
           for (const color of colors) {
             if (color.id === 'customColor') {
               assertTrue(color.backgroundColorHidden);

@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
+#include "base/notreached.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected.h"
@@ -116,10 +117,6 @@ class AuxGPUInfoEnumerator : public gpu::GPUInfo::Enumerator {
 
   void EndVideoEncodeAcceleratorSupportedProfile() override {}
 
-  void BeginImageDecodeAcceleratorSupportedProfile() override {}
-
-  void EndImageDecodeAcceleratorSupportedProfile() override {}
-
   void BeginOverlayInfo() override {}
 
   void EndOverlayInfo() override {}
@@ -175,45 +172,6 @@ VideoEncodeAcceleratorSupportedProfileToProtocol(
       .Build();
 }
 
-std::unique_ptr<SystemInfo::ImageDecodeAcceleratorCapability>
-ImageDecodeAcceleratorSupportedProfileToProtocol(
-    const gpu::ImageDecodeAcceleratorSupportedProfile& profile) {
-  auto subsamplings = std::make_unique<protocol::Array<std::string>>();
-  for (const auto subsampling : profile.subsamplings) {
-    switch (subsampling) {
-      case gpu::ImageDecodeAcceleratorSubsampling::k420:
-        subsamplings->emplace_back(SystemInfo::SubsamplingFormatEnum::Yuv420);
-        break;
-      case gpu::ImageDecodeAcceleratorSubsampling::k422:
-        subsamplings->emplace_back(SystemInfo::SubsamplingFormatEnum::Yuv422);
-        break;
-      case gpu::ImageDecodeAcceleratorSubsampling::k444:
-        subsamplings->emplace_back(SystemInfo::SubsamplingFormatEnum::Yuv444);
-        break;
-    }
-  }
-
-  SystemInfo::ImageType image_type;
-  switch (profile.image_type) {
-    case gpu::ImageDecodeAcceleratorType::kJpeg:
-      image_type = SystemInfo::ImageTypeEnum::Jpeg;
-      break;
-    case gpu::ImageDecodeAcceleratorType::kWebP:
-      image_type = SystemInfo::ImageTypeEnum::Webp;
-      break;
-    case gpu::ImageDecodeAcceleratorType::kUnknown:
-      image_type = SystemInfo::ImageTypeEnum::Unknown;
-      break;
-  }
-
-  return SystemInfo::ImageDecodeAcceleratorCapability::Create()
-      .SetImageType(image_type)
-      .SetMaxDimensions(GfxSizeToSystemInfoSize(profile.max_encoded_dimensions))
-      .SetMinDimensions(GfxSizeToSystemInfoSize(profile.min_encoded_dimensions))
-      .SetSubsamplings(std::move(subsamplings))
-      .Build();
-}
-
 void SendGetInfoResponse(std::unique_ptr<GetInfoCallback> callback) {
   gpu::GPUInfo gpu_info = GpuDataManagerImpl::GetInstance()->GetGPUInfo();
   auto devices = std::make_unique<protocol::Array<GPUDevice>>();
@@ -257,14 +215,6 @@ void SendGetInfoResponse(std::unique_ptr<GetInfoCallback> callback) {
         VideoEncodeAcceleratorSupportedProfileToProtocol(profile));
   }
 
-  auto image_profiles = std::make_unique<
-      protocol::Array<SystemInfo::ImageDecodeAcceleratorCapability>>();
-  for (const auto& profile :
-       gpu_info.image_decode_accelerator_supported_profiles) {
-    image_profiles->emplace_back(
-        ImageDecodeAcceleratorSupportedProfileToProtocol(profile));
-  }
-
   std::unique_ptr<GPUInfo> gpu =
       GPUInfo::Create()
           .SetDevices(std::move(devices))
@@ -273,7 +223,6 @@ void SendGetInfoResponse(std::unique_ptr<GetInfoCallback> callback) {
           .SetDriverBugWorkarounds(std::move(driver_bug_workarounds))
           .SetVideoDecoding(std::move(decoding_profiles))
           .SetVideoEncoding(std::move(encoding_profiles))
-          .SetImageDecoding(std::move(image_profiles))
           .Build();
 
   base::CommandLine* command = base::CommandLine::ForCurrentProcess();
@@ -322,7 +271,7 @@ class SystemInfoHandlerGpuObserver : public content::GpuDataManagerObserver {
 
   void ObserverWatchdogCallback() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    CHECK(false) << "Gathering system GPU info took more than "
+    NOTREACHED() << "Gathering system GPU info took more than "
                  << (kGPUInfoWatchdogTimeoutMs / 1000) << " seconds.";
   }
 

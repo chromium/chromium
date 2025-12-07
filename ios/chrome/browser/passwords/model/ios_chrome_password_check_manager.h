@@ -5,27 +5,25 @@
 #ifndef IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_PASSWORD_CHECK_MANAGER_H_
 #define IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_PASSWORD_CHECK_MANAGER_H_
 
-#include <optional>
+#import <optional>
 
 #import "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
-#include "base/observer_list_types.h"
-#include "base/scoped_observation.h"
-#include "base/sequence_checker.h"
-#include "base/time/time.h"
-#include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
-#include "components/password_manager/core/browser/ui/bulk_leak_check_service_adapter.h"
-#include "components/password_manager/core/browser/ui/credential_utils.h"
-#include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
-#include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "base/memory/scoped_refptr.h"
+#import "base/memory/weak_ptr.h"
+#import "base/observer_list.h"
+#import "base/observer_list_types.h"
+#import "base/scoped_observation.h"
+#import "base/sequence_checker.h"
+#import "base/time/time.h"
+#import "components/keyed_service/core/refcounted_keyed_service.h"
+#import "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
+#import "components/password_manager/core/browser/ui/bulk_leak_check_service_adapter.h"
+#import "components/password_manager/core/browser/ui/credential_utils.h"
+#import "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
+#import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 class IOSChromePasswordCheckManager;
-namespace {
-class IOSChromePasswordCheckManagerProxy;
-}
 class PrefService;
 
 // Enum which represents possible states of Password Check on UI.
@@ -43,11 +41,12 @@ enum class PasswordCheckState {
 
 // This class handles the bulk password check feature.
 class IOSChromePasswordCheckManager final
-    : public base::RefCounted<IOSChromePasswordCheckManager>,
+    : public RefcountedKeyedService,
       public password_manager::SavedPasswordsPresenter::Observer,
       public password_manager::InsecureCredentialsManager::Observer,
       public password_manager::BulkLeakCheckServiceInterface::Observer {
  public:
+  // Observer of IOSChromePasswordCheckManager.
   class Observer : public base::CheckedObserver {
    public:
     // Notifies the observer that the password check status has changed to
@@ -61,6 +60,12 @@ class IOSChromePasswordCheckManager final
     virtual void ManagerWillShutdown(
         IOSChromePasswordCheckManager* password_check_manager) {}
   };
+
+  explicit IOSChromePasswordCheckManager(
+      PrefService* user_prefs,
+      password_manager::BulkLeakCheckServiceInterface* bulk_leak_check_service,
+      std::unique_ptr<password_manager::SavedPasswordsPresenter>
+          saved_passwords_presenter);
 
   // Requests to start a check for insecure passwords.
   void StartPasswordCheck(password_manager::LeakDetectionInitiator initiator);
@@ -78,10 +83,8 @@ class IOSChromePasswordCheckManager final
   std::vector<password_manager::CredentialUIEntry> GetInsecureCredentials()
       const;
 
-  // TODO(crbug.com/40282637): Convert IOSChromePasswordCheckManager to a
-  // KeyedService; deprecate IOSChromePasswordCheckManagerProxy and
-  // IOSChromePasswordCheckManagerHolder.
-  void Shutdown();
+  // RefCountedKeyedService
+  void ShutdownOnUIThread() final;
 
   void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
   void RemoveObserver(Observer* observer) {
@@ -103,14 +106,6 @@ class IOSChromePasswordCheckManager final
   }
 
  private:
-  friend class base::RefCounted<IOSChromePasswordCheckManager>;
-  friend class IOSChromePasswordCheckManagerProxy;
-
-  explicit IOSChromePasswordCheckManager(
-      password_manager::SavedPasswordsPresenter* saved_password_presenter,
-      password_manager::BulkLeakCheckServiceInterface* bulk_leak_check_service,
-      PrefService* user_prefs);
-
   ~IOSChromePasswordCheckManager() override;
 
   // password_manager::SavedPasswordsPresenter::Observer:
@@ -165,7 +160,7 @@ class IOSChromePasswordCheckManager final
   std::optional<base::Time> last_completed_weak_or_reuse_check_;
 
   // Pref service.
-  const raw_ptr<PrefService> user_prefs_;
+  const raw_ptr<PrefService, DanglingUntriaged> user_prefs_;
 
   // This indicate what was the reason to start the password check.
   password_manager::LeakDetectionInitiator password_check_initiator_ =

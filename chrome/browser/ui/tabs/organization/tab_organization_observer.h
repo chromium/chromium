@@ -20,7 +20,7 @@ class TabOrganizationObserver {
                                 TabOrganizationSession* session) {}
 
   // Called when the user accepts a suggested tab group.
-  virtual void OnOrganizationAccepted(const Browser* browser) {}
+  virtual void OnOrganizationAccepted(Browser* browser) {}
 
   // Called when the user invokes the feature directly.
   virtual void OnUserInvokedFeature(const Browser* browser) {}

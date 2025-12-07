@@ -22,8 +22,12 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "build/build_config.h"
 #include "components/history/core/browser/url_database.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
+#include "components/omnibox/browser/autocomplete_provider_client.h"
+#include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/url_index_private_data.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/search/search.h"
@@ -31,6 +35,7 @@
 #include "components/variations/hashing.h"
 #include "components/variations/variations_associated_data.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "ui/base/device_form_factor.h"
 #include "ui/base/ui_base_features.h"
 
 using metrics::OmniboxEventProto;
@@ -96,72 +101,6 @@ void InitializeScoreBuckets(const VariationParams& params,
   }
 }
 
-// Background and implementation details:
-//
-// Each experiment group in any field trial can come with an optional set of
-// parameters (key-value pairs).  In the bundled omnibox experiment
-// (kBundledExperimentFieldTrialName), each experiment group comes with a
-// list of parameters in the form:
-//   key=<Rule>:
-//       <OmniboxEventProto::PageClassification (as an int)>:
-//       <whether Instant Extended is enabled (as a 1 or 0)>
-//     (note that there are no linebreaks in keys; this format is for
-//      presentation only>
-//   value=<arbitrary string>
-// Both the OmniboxEventProto::PageClassification and the Instant Extended
-// entries can be "*", which means this rule applies for all values of the
-// matching portion of the context.
-// One example parameter is
-//   key=SearchHistory:6:1
-//   value=PreventInlining
-// This means in page classification context 6 (a search result page doing
-// search term replacement) with Instant Extended enabled, the SearchHistory
-// experiment should PreventInlining.
-//
-// When an exact match to the rule in the current context is missing, we
-// give preference to a wildcard rule that matches the instant extended
-// context over a wildcard rule that matches the page classification
-// context.  Hopefully, though, users will write their field trial configs
-// so as not to rely on this fall back order.
-//
-// In short, this function tries to find the value associated with key
-// |rule|:|page_classification|:|instant_extended|, failing that it looks up
-// |rule|:*:|instant_extended|, failing that it looks up
-// |rule|:|page_classification|:*, failing that it looks up |rule|:*:*,
-// and failing that it returns the empty string.
-std::string GetValueForRuleInContextFromVariationParams(
-    const std::map<std::string, std::string>& params,
-    const std::string& rule,
-    OmniboxEventProto::PageClassification page_classification) {
-  if (params.empty()) {
-    return std::string();
-  }
-
-  const std::string page_classification_str =
-      base::NumberToString(static_cast<int>(page_classification));
-  const std::string instant_extended =
-      search::IsInstantExtendedAPIEnabled() ? "1" : "0";
-  // Look up rule in this exact context.
-  VariationParams::const_iterator it = params.find(
-      rule + ":" + page_classification_str + ":" + instant_extended);
-  if (it != params.end()) {
-    return it->second;
-  }
-  // Fall back to the global page classification context.
-  it = params.find(rule + ":*:" + instant_extended);
-  if (it != params.end()) {
-    return it->second;
-  }
-  // Fall back to the global instant extended context.
-  it = params.find(rule + ":" + page_classification_str + ":*");
-  if (it != params.end()) {
-    return it->second;
-  }
-  // Look up rule in the global context.
-  it = params.find(rule + ":*:*");
-  return (it != params.end()) ? it->second : std::string();
-}
-
 OmniboxFieldTrial::MLConfig& GetMLConfigInternal() {
   static base::NoDestructor<OmniboxFieldTrial::MLConfig> s_config;
   return *s_config;
@@ -171,6 +110,12 @@ bool IsKoreanLocale(const std::string& locale) {
   return locale == "ko" || locale == "ko-KR";
 }
 
+#if !BUILDFLAG(IS_IOS)
+bool IsEnglishLocale(const std::string& locale) {
+  return base::StartsWith(locale, "en", base::CompareCase::SENSITIVE);
+}
+#endif  // !BUILDFLAG(IS_IOS)
+
 }  // namespace
 
 HUPScoringParams::ScoreBuckets::ScoreBuckets()
@@ -179,7 +124,7 @@ HUPScoringParams::ScoreBuckets::ScoreBuckets()
 HUPScoringParams::ScoreBuckets::ScoreBuckets(const ScoreBuckets& other) =
     default;
 
-HUPScoringParams::ScoreBuckets::~ScoreBuckets() {}
+HUPScoringParams::ScoreBuckets::~ScoreBuckets() = default;
 
 size_t HUPScoringParams::ScoreBuckets::EstimateMemoryUsage() const {
   return base::trace_event::EstimateMemoryUsage(buckets_);
@@ -226,68 +171,6 @@ void OmniboxFieldTrial::GetActiveSuggestFieldTrialHashes(
   }
 }
 
-void OmniboxFieldTrial::GetDemotionsByType(
-    OmniboxEventProto::PageClassification current_page_classification,
-    DemotionMultipliers* demotions_by_type) {
-  demotions_by_type->clear();
-
-  // Explicitly check whether the feature is enabled before calling
-  // |GetValueForRuleInContextByFeature| because it is possible for
-  // |GetValueForRuleInContextByFeature| to return an empty string even if the
-  // feature is enabled, and we don't want to fallback to
-  // |GetValueForRuleInContext| in this case.
-  std::string demotion_rule =
-      base::FeatureList::IsEnabled(omnibox::kOmniboxDemoteByType)
-          ? OmniboxFieldTrial::internal::GetValueForRuleInContextByFeature(
-                omnibox::kOmniboxDemoteByType, kDemoteByTypeRule,
-                current_page_classification)
-          : OmniboxFieldTrial::internal::GetValueForRuleInContext(
-                kDemoteByTypeRule, current_page_classification);
-  // If there is no demotion rule for this context, then use the default
-  // value for that context.
-  if (demotion_rule.empty()) {
-    // This rule demotes URLs as strongly as possible without violating user
-    // expectations.  In particular, for URL-seeking inputs, if the user would
-    // likely expect a URL first (i.e., it would be inline autocompleted), then
-    // that URL will still score strongly enough to be first.  This is done
-    // using a demotion multipler of 0.61.  If a URL would get a score high
-    // enough to be inline autocompleted (1400+), even after demotion it will
-    // score above 850 ( 1400 * 0.61 > 850).  850 is the maximum score for
-    // queries when the input has been detected as URL-seeking.
-#if BUILDFLAG(IS_ANDROID)
-    if (current_page_classification ==
-        OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT) {
-      demotion_rule = "1:61,2:61,3:61,4:61,16:61,24:61";
-    }
-#endif
-    if (current_page_classification ==
-            OmniboxEventProto::INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS ||
-        current_page_classification == OmniboxEventProto::NTP_REALBOX) {
-      demotion_rule = "1:10,2:10,3:10,4:10,5:10,16:10,17:10,24:10";
-    }
-  }
-
-  // The value of the DemoteByType rule is a comma-separated list of
-  // {ResultType + ":" + Number} where ResultType is an AutocompleteMatchType::
-  // Type enum represented as an integer and Number is an integer number
-  // between 0 and 100 inclusive.   Relevance scores of matches of that result
-  // type are multiplied by Number / 100.  100 means no change.
-  base::StringPairs kv_pairs;
-  if (base::SplitStringIntoKeyValuePairs(demotion_rule, ':', ',', &kv_pairs)) {
-    for (base::StringPairs::const_iterator it = kv_pairs.begin();
-         it != kv_pairs.end(); ++it) {
-      // This is a best-effort conversion; we trust the hand-crafted parameters
-      // downloaded from the server to be perfect.  There's no need to handle
-      // errors smartly.
-      int k, v;
-      base::StringToInt(it->first, &k);
-      base::StringToInt(it->second, &v);
-      (*demotions_by_type)[static_cast<AutocompleteMatchType::Type>(k)] =
-          static_cast<float>(v) / 100.0f;
-    }
-  }
-}
-
 size_t OmniboxFieldTrial::GetProviderMaxMatches(
     AutocompleteProvider::Type provider) {
   size_t default_max_matches_per_provider = 3;
@@ -328,20 +211,7 @@ size_t OmniboxFieldTrial::GetProviderMaxMatches(
   return default_max_matches_per_provider;
 }
 
-bool OmniboxFieldTrial::IsMaxURLMatchesFeatureEnabled() {
-  return base::FeatureList::IsEnabled(omnibox::kOmniboxMaxURLMatches);
-}
 
-size_t OmniboxFieldTrial::GetMaxURLMatches() {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  constexpr size_t kDefaultMaxURLMatches = 5;
-#else
-  constexpr size_t kDefaultMaxURLMatches = 7;
-#endif
-  return base::GetFieldTrialParamByFeatureAsInt(
-      omnibox::kOmniboxMaxURLMatches,
-      OmniboxFieldTrial::kOmniboxMaxURLMatchesParam, kDefaultMaxURLMatches);
-}
 
 void OmniboxFieldTrial::GetDefaultHUPScoringParams(
     HUPScoringParams* scoring_params) {
@@ -564,10 +434,24 @@ bool OmniboxFieldTrial::IsOnDeviceHeadSuggestEnabledForAnyMode() {
          IsOnDeviceHeadSuggestEnabledForNonIncognito();
 }
 
-bool OmniboxFieldTrial::IsOnDeviceTailSuggestEnabled() {
+bool OmniboxFieldTrial::IsOnDeviceTailSuggestEnabled(
+    const std::string& locale) {
   // Tail model will only be enabled when head provider is also enabled.
-  return base::FeatureList::IsEnabled(omnibox::kOnDeviceTailModel) &&
-         IsOnDeviceHeadSuggestEnabledForAnyMode();
+  if (!IsOnDeviceHeadSuggestEnabledForAnyMode()) {
+    return false;
+  }
+
+  // Currently only launch for English locales. Remove this flag once i18n is
+  // also launched.
+  // Do not launch for iOS since the feature is not supported in iOS yet.
+#if !BUILDFLAG(IS_IOS)
+  if (IsEnglishLocale(locale)) {
+    return base::FeatureList::IsEnabled(
+        omnibox::kOnDeviceTailEnableEnglishModel);
+  }
+#endif  // !BUILDFLAG(IS_IOS)
+
+  return base::FeatureList::IsEnabled(omnibox::kOnDeviceTailModel);
 }
 
 bool OmniboxFieldTrial::ShouldEncodeLeadingSpaceForOnDeviceTailSuggest() {
@@ -580,17 +464,16 @@ bool OmniboxFieldTrial::ShouldApplyOnDeviceHeadModelSelectionFix() {
   return base::GetFieldTrialParamByFeatureAsBool(
              omnibox::kOnDeviceHeadProviderNonIncognito,
              OmniboxFieldTrial::kOnDeviceHeadModelSelectionFix,
-             /*default_value=*/false) ||
+             /*default_value=*/true) ||
          base::GetFieldTrialParamByFeatureAsBool(
              omnibox::kOnDeviceHeadProviderIncognito,
              OmniboxFieldTrial::kOnDeviceHeadModelSelectionFix,
-             /*default_value=*/false);
+             /*default_value=*/true);
 }
 
 bool OmniboxFieldTrial::IsOnDeviceHeadSuggestEnabledForLocale(
     const std::string& locale) {
-  if (IsKoreanLocale(locale) &&
-      !base::FeatureList::IsEnabled(omnibox::kOnDeviceHeadProviderKorean)) {
+  if (IsKoreanLocale(locale)) {
     return false;
   }
   return IsOnDeviceHeadSuggestEnabledForAnyMode();
@@ -609,74 +492,9 @@ std::string OmniboxFieldTrial::OnDeviceHeadModelLocaleConstraint(
   return constraint;
 }
 
-// Omnibox UI simplification - Uniform Suggestion Row Heights
-const base::FeatureParam<bool> OmniboxFieldTrial::kSquareSuggestIconAnswers(
-    &omnibox::kSquareSuggestIcons,
-    "OmniboxSquareSuggestIconAnswers",
-    true);
-const base::FeatureParam<bool> OmniboxFieldTrial::kSquareSuggestIconIcons(
-    &omnibox::kSquareSuggestIcons,
-    "OmniboxSquareSuggestIconIcons",
-    false);
-const base::FeatureParam<bool> OmniboxFieldTrial::kSquareSuggestIconEntities(
-    &omnibox::kSquareSuggestIcons,
-    "OmniboxSquareSuggestIconEntities",
-    false);
-const base::FeatureParam<double>
-    OmniboxFieldTrial::kSquareSuggestIconEntitiesScale(
-        &omnibox::kSquareSuggestIcons,
-        "OmniboxSquareSuggestIconEntitiesScale",
-        0.8722);
-const base::FeatureParam<bool> OmniboxFieldTrial::kSquareSuggestIconWeather(
-    &omnibox::kSquareSuggestIcons,
-    "OmniboxSquareSuggestIconWeather",
-    true);
-
-bool OmniboxFieldTrial::IsUniformRowHeightEnabled() {
-  return base::FeatureList::IsEnabled(omnibox::kUniformRowHeight);
-}
-
-const base::FeatureParam<int> OmniboxFieldTrial::kRichSuggestionVerticalMargin(
-    &omnibox::kUniformRowHeight,
-    "OmniboxRichSuggestionVerticalMargin",
-    6);
-
-bool OmniboxFieldTrial::IsGM3TextStyleEnabled() {
-  return base::FeatureList::IsEnabled(omnibox::kOmniboxSteadyStateTextStyle);
-}
-
-// In order to control the value of this "font size" param via Finch, the
-// `kOmniboxSteadyStateTextStyle` feature flag must be enabled.
-//
-// Enabling `ChromeRefresh2023` Level 2 while leaving the
-// `kOmniboxSteadyStateTextStyle` flag disabled, will result in the param being
-// locked to its default value and ignoring any overrides provided via Finch.
-//
-// If neither `ChromeRefresh2023` Level 2 nor `kOmniboxSteadyStateTextStyle` are
-// enabled, then this "font size" param will have zero effect on Chrome UI.
-const base::FeatureParam<int> OmniboxFieldTrial::kFontSizeTouchUI(
-    &omnibox::kOmniboxSteadyStateTextStyle,
-    "OmniboxFontSizeTouchUI",
-    15);
-
-// In order to control the value of this "font size" param via Finch, the
-// `kOmniboxSteadyStateTextStyle` feature flag must be enabled.
-//
-// Enabling `ChromeRefresh2023` Level 2 while leaving the
-// `kOmniboxSteadyStateTextStyle` flag disabled, will result in the param being
-// locked to its default value and ignoring any overrides provided via Finch.
-//
-// If neither `ChromeRefresh2023` Level 2 nor `kOmniboxSteadyStateTextStyle` are
-// enabled, then this "font size" param will have zero effect on Chrome UI.
-const base::FeatureParam<int> OmniboxFieldTrial::kFontSizeNonTouchUI(
-    &omnibox::kOmniboxSteadyStateTextStyle,
-    "OmniboxFontSizeNonTouchUI",
-    13);
-
 const char OmniboxFieldTrial::kBundledExperimentFieldTrialName[] =
     "OmniboxBundledExperimentV1";
 const char OmniboxFieldTrial::kDisableProvidersRule[] = "DisableProviders";
-const char OmniboxFieldTrial::kDemoteByTypeRule[] = "DemoteByType";
 const char OmniboxFieldTrial::kHQPBookmarkValueRule[] = "HQPBookmarkValue";
 const char OmniboxFieldTrial::kHQPTypedValueRule[] = "HQPTypedValue";
 const char OmniboxFieldTrial::kHQPAllowMatchInTLDRule[] = "HQPAllowMatchInTLD";
@@ -727,8 +545,6 @@ const char
 
 const char OmniboxFieldTrial::kMaxZeroSuggestMatchesParam[] =
     "MaxZeroSuggestMatches";
-const char OmniboxFieldTrial::kOmniboxMaxURLMatchesParam[] =
-    "OmniboxMaxURLMatches";
 const char OmniboxFieldTrial::kUIMaxAutocompleteMatchesByProviderParam[] =
     "UIMaxAutocompleteMatchesByProvider";
 const char OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam[] =
@@ -737,6 +553,8 @@ const char OmniboxFieldTrial::kDynamicMaxAutocompleteUrlCutoffParam[] =
     "OmniboxDynamicMaxAutocompleteUrlCutoff";
 const char OmniboxFieldTrial::kDynamicMaxAutocompleteIncreasedLimitParam[] =
     "OmniboxDynamicMaxAutocompleteIncreasedLimit";
+const char OmniboxFieldTrial::kSuppressPsuggestBackfillWithMIAParam[] =
+    "SuppressPsuggestBackfillWithMIA";
 
 const char OmniboxFieldTrial::kOnDeviceHeadModelLocaleConstraint[] =
     "ForceModelLocaleConstraint";
@@ -747,6 +565,16 @@ int OmniboxFieldTrial::kDefaultMinimumTimeBetweenSuggestQueriesMs = 100;
 namespace OmniboxFieldTrial {
 
 // Local history zero-prefix (aka zero-suggest) and prefix suggestions:
+
+// Whether to ignore all ZPS prefetch responses received from the Suggest
+// service when the user is on a Google SRP. This can be used, for example,
+// during experimentation to measure the performance impact of only the
+// request/response portion of ZPS prefetching (i.e. without updating the
+// user-visible list of suggestions in the Omnibox).
+const base::FeatureParam<bool> kZeroSuggestPrefetchingOnSRPCounterfactual(
+    &omnibox::kZeroSuggestPrefetchingOnSRP,
+    "ZeroSuggestPrefetchingOnSRPCounterfactual",
+    false);
 
 // The debouncing delay (in milliseconds) to use when throttling ZPS prefetch
 // requests.
@@ -769,24 +597,11 @@ const base::FeatureParam<int> kZeroSuggestCacheMaxSize(
     "ZeroSuggestCacheMaxSize",
     5);
 
-// The relevance score for remote zero-suggest ranges from 550-1400. A default
-// value of 500 places local history zero-suggest below the remote zero-suggest.
-const base::FeatureParam<int> kLocalHistoryZeroSuggestRelevanceScore(
-    &omnibox::kAdjustLocalHistoryZeroSuggestRelevanceScore,
-    "LocalHistoryZeroSuggestRelevanceScore",
-    500);
-
-bool IsZeroSuggestPrefetchingEnabled() {
-  return base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetching) ||
-         base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetchingOnSRP) ||
-         base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetchingOnWeb);
-}
-
 bool IsZeroSuggestPrefetchingEnabledInContext(
     metrics::OmniboxEventProto::PageClassification page_classification) {
   switch (page_classification) {
     case metrics::OmniboxEventProto::NTP_ZPS_PREFETCH:
-      return base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetching);
+      return true;
     case metrics::OmniboxEventProto::SRP_ZPS_PREFETCH:
       return base::FeatureList::IsEnabled(
           omnibox::kZeroSuggestPrefetchingOnSRP);
@@ -798,130 +613,82 @@ bool IsZeroSuggestPrefetchingEnabledInContext(
   }
 }
 
+bool IsOnFocusZeroSuggestEnabledInContext(
+    metrics::OmniboxEventProto::PageClassification page_classification) {
+  static bool enabled =
+      base::FeatureList::IsEnabled(omnibox::kFocusTriggersWebAndSRPZeroSuggest);
+
+  switch (page_classification) {
+    case metrics::OmniboxEventProto::
+        SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT:
+    case metrics::OmniboxEventProto::OTHER:
+      return enabled;
+    default:
+      return false;
+  }
+}
+
+bool IsHideSuggestionGroupHeadersEnabledInContext(
+    metrics::OmniboxEventProto::PageClassification page_classification) {
+  static bool enabled =
+      base::FeatureList::IsEnabled(omnibox::kHideSuggestionGroupHeaders);
+
+  switch (page_classification) {
+    case metrics::OmniboxEventProto::
+        SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT:
+    case metrics::OmniboxEventProto::OTHER:
+      return enabled;
+    default:
+      return false;
+  }
+}
+
+bool IsDeterministicAimActionInTypedStateEnabled(
+    AutocompleteProviderClient* client) {
+  ui::DeviceFormFactor factor = ui::GetDeviceFormFactor();
+  if (!(factor == ui::DEVICE_FORM_FACTOR_PHONE ||
+        factor == ui::DEVICE_FORM_FACTOR_FOLDABLE)) {
+    return false;
+  }
+
+  return AimEligibilityService::GenericKillSwitchFeatureCheck(
+      client->GetAimEligibilityService(),
+      omnibox::kOmniboxAimShortcutTypedState);
+}
+
+bool IsAimOmniboxEntrypointEnabled(
+    const AimEligibilityService* aim_eligibility_service) {
+  return AimEligibilityService::GenericKillSwitchFeatureCheck(
+      aim_eligibility_service, omnibox::kAiModeOmniboxEntryPoint,
+      omnibox::kAiModeOmniboxEntryPointEnUs);
+}
+
+bool IsAimStarterPackEnabled(
+    const AimEligibilityService* aim_eligibility_service) {
+  // AI starter pack should be available if any AI omnibox feature is available.
+  return AimEligibilityService::GenericKillSwitchFeatureCheck(
+             aim_eligibility_service,
+             omnibox_feature_configs::Toolbelt::kOmniboxToolbelt) ||
+         AimEligibilityService::GenericKillSwitchFeatureCheck(
+             aim_eligibility_service, omnibox::kAiModeStartPack);
+}
+
 // Rich autocompletion.
 
 bool IsRichAutocompletionEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kRichAutocompletion);
 }
 
-bool RichAutocompletionShowAdditionalText() {
-  return IsRichAutocompletionEnabled() &&
-         kRichAutocompletionShowAdditionalText.Get();
-}
-
-const base::FeatureParam<bool> kRichAutocompletionAutocompleteTitles(
-    &omnibox::kRichAutocompletion,
-    "RichAutocompletionAutocompleteTitles",
-    false);
-
-const base::FeatureParam<bool>
-    kRichAutocompletionAutocompleteTitlesShortcutProvider(
-        &omnibox::kRichAutocompletion,
-        "RichAutocompletionAutocompleteTitlesShortcutProvider",
-        true);
-
-const base::FeatureParam<int> kRichAutocompletionAutocompleteTitlesMinChar(
+const base::FeatureParam<size_t> kRichAutocompletionAutocompleteTitlesMinChar(
     &omnibox::kRichAutocompletion,
     "RichAutocompletionAutocompleteTitlesMinChar",
     3);
 
-const base::FeatureParam<bool> kRichAutocompletionAutocompleteNonPrefixAll(
-    &omnibox::kRichAutocompletion,
-    "RichAutocompletionAutocompleteNonPrefixAll",
-    false);
-
-const base::FeatureParam<bool>
-    kRichAutocompletionAutocompleteNonPrefixShortcutProvider(
-        &omnibox::kRichAutocompletion,
-        "RichAutocompletionAutocompleteNonPrefixShortcutProvider",
-        false);
-
-const base::FeatureParam<int> kRichAutocompletionAutocompleteNonPrefixMinChar(
-    &omnibox::kRichAutocompletion,
-    "RichAutocompletionAutocompleteNonPrefixMinChar",
-    0);
-
-const base::FeatureParam<bool> kRichAutocompletionShowAdditionalText(
-    &omnibox::kRichAutocompletion,
-    "RichAutocompletionAutocompleteShowAdditionalText",
-    true);
-
-const base::FeatureParam<bool> kRichAutocompletionAdditionalTextWithParenthesis(
-    &omnibox::kRichAutocompletion,
-    "RichAutocompletionAdditionalTextWithParenthesis",
-    false);
-
-const base::FeatureParam<bool> kRichAutocompletionAutocompleteShortcutText(
-    &omnibox::kRichAutocompletion,
-    "RichAutocompletionAutocompleteShortcutText",
-    true);
-
-const base::FeatureParam<int>
+const base::FeatureParam<size_t>
     kRichAutocompletionAutocompleteShortcutTextMinChar(
         &omnibox::kRichAutocompletion,
         "RichAutocompletionAutocompleteShortcutTextMinChar",
         3);
-
-const base::FeatureParam<bool> kRichAutocompletionCounterfactual(
-    &omnibox::kRichAutocompletion,
-    "RichAutocompletionCounterfactual",
-    false);
-
-const base::FeatureParam<bool>
-    kRichAutocompletionAutocompletePreferUrlsOverPrefixes(
-        &omnibox::kRichAutocompletion,
-        "RichAutocompletionAutocompletePreferUrlsOverPrefixes",
-        false);
-
-const base::FeatureParam<bool> kDomainSuggestionsCounterfactual(
-    &omnibox::kDomainSuggestions,
-    "DomainSuggestionsCounterfactual",
-    false);
-
-const base::FeatureParam<int> kDomainSuggestionsTypedUrlsThreshold(
-    &omnibox::kDomainSuggestions,
-    "DomainSuggestionsTypedUrlsThreshold",
-    7);
-
-const base::FeatureParam<int> kDomainSuggestionsTypedUrlsOffset(
-    &omnibox::kDomainSuggestions,
-    "DomainSuggestionsTypedUrlsOffset",
-    1);
-
-const base::FeatureParam<int> kDomainSuggestionsTypedVisitThreshold(
-    &omnibox::kDomainSuggestions,
-    "DomainSuggestionsTypedVisitThreshold",
-    4);
-
-const base::FeatureParam<int> kDomainSuggestionsTypedVisitOffset(
-    &omnibox::kDomainSuggestions,
-    "DomainSuggestionsTypedVisitOffset",
-    1);
-
-const base::FeatureParam<int> kDomainSuggestionsTypedVisitCapPerVisit(
-    &omnibox::kDomainSuggestions,
-    "DomainSuggestionsTypedVisitCapPerVisit",
-    2);
-
-const base::FeatureParam<int> kDomainSuggestionsMinInputLength(
-    &omnibox::kDomainSuggestions,
-    "DomainSuggestionsMinInputLength",
-    4);
-
-const base::FeatureParam<int> kDomainSuggestionsMaxMatchesPerDomain(
-    &omnibox::kDomainSuggestions,
-    "DomainSuggestionsMaxMatchesPerDomain",
-    2);
-
-const base::FeatureParam<double> kDomainSuggestionsScoreFactor(
-    &omnibox::kDomainSuggestions,
-    "DomainSuggestionsScoreFactor",
-    1);
-
-const base::FeatureParam<bool> kDomainSuggestionsAlternativeScoring(
-    &omnibox::kDomainSuggestions,
-    "DomainSuggestionsAlternativeScoring",
-    false);
 
 // ---------------------------------------------------------
 // ML Relevance Scoring ->
@@ -961,6 +728,9 @@ const base::FeatureParam<std::string> kMlUrlScoringMaxMatchesByProvider(
 MLConfig::MLConfig() {
   log_url_scoring_signals =
       base::FeatureList::IsEnabled(omnibox::kLogUrlScoringSignals);
+  enable_history_scoring_signals_annotator_for_searches =
+      base::FeatureList::IsEnabled(
+          omnibox::kEnableHistoryScoringSignalsAnnotatorForSearches);
   enable_scoring_signals_annotators =
       kEnableScoringSignalsAnnotatorsForLogging.Get() ||
       kEnableScoringSignalsAnnotatorsForMlScoring.Get();
@@ -1019,6 +789,17 @@ MLConfig::MLConfig() {
           &omnibox::kMlUrlPiecewiseMappedSearchBlending,
           "MlUrlPiecewiseMappedSearchBlending_BreakPoints", "")
           .Get();
+  piecewise_mapped_search_blending_break_points_verbatim_url =
+      base::FeatureParam<std::string>(
+          &omnibox::kMlUrlPiecewiseMappedSearchBlending,
+          "MlUrlPiecewiseMappedSearchBlending_BreakPoints_VerbatimUrl",
+          piecewise_mapped_search_blending_break_points.c_str())
+          .Get();
+  piecewise_mapped_search_blending_break_points_search =
+      base::FeatureParam<std::string>(
+          &omnibox::kMlUrlPiecewiseMappedSearchBlending,
+          "MlUrlPiecewiseMappedSearchBlending_BreakPoints_Search", "0,0;1,1400")
+          .Get();
   piecewise_mapped_search_blending_relevance_bias =
       base::FeatureParam<int>(
           &omnibox::kMlUrlPiecewiseMappedSearchBlending,
@@ -1035,7 +816,19 @@ MLConfig::MLConfig() {
                               "MlUrlScoreCaching_MaxMlScoreCacheSize",
                               max_ml_score_cache_size)
           .Get();
+
+  enable_ml_scoring_for_searches =
+      base::FeatureParam<bool>(&omnibox::kMlUrlScoring,
+                               "MlUrlScoring_EnableMlScoringForSearches", false)
+          .Get();
+  enable_ml_scoring_for_verbatim_urls =
+      base::FeatureParam<bool>(&omnibox::kMlUrlScoring,
+                               "MlUrlScoring_EnableMlScoringForVerbatimUrls",
+                               false)
+          .Get();
 }
+
+MLConfig::~MLConfig() = default;
 
 MLConfig::MLConfig(const MLConfig&) = default;
 
@@ -1090,11 +883,29 @@ bool IsMlUrlScoreCachingEnabled() {
   return GetMLConfig().ml_url_score_caching;
 }
 
-std::vector<std::pair<double, int>> GetPiecewiseMappingBreakPoints() {
+std::vector<std::pair<double, int>> GetPiecewiseMappingBreakPoints(
+    PiecewiseMappingVariant mapping_variant) {
   std::vector<std::pair<double, int>> break_points;
 
-  std::string param_value = OmniboxFieldTrial::GetMLConfig()
-                                .piecewise_mapped_search_blending_break_points;
+  std::string param_value;
+  switch (mapping_variant) {
+    case PiecewiseMappingVariant::kRegular:
+      param_value = OmniboxFieldTrial::GetMLConfig()
+                        .piecewise_mapped_search_blending_break_points;
+      break;
+    case PiecewiseMappingVariant::kVerbatimUrl:
+      param_value =
+          OmniboxFieldTrial::GetMLConfig()
+              .piecewise_mapped_search_blending_break_points_verbatim_url;
+      break;
+    case PiecewiseMappingVariant::kSearch:
+      param_value = OmniboxFieldTrial::GetMLConfig()
+                        .piecewise_mapped_search_blending_break_points_search;
+      break;
+    default:
+      NOTREACHED();
+  }
+
   base::StringPairs pairs;
   if (base::SplitStringIntoKeyValuePairs(param_value, ',', ';', &pairs)) {
     for (const auto& p : pairs) {
@@ -1124,59 +935,16 @@ const base::FeatureParam<int>
 const base::FeatureParam<std::string> kGeminiUrlOverride(
     &omnibox::kStarterPackExpansion,
     "StarterPackGeminiUrlOverride",
-    "https://gemini.google.com/prompt");
+    "https://gemini.google.com/prompt?"
+    "utm_source=chrome_omnibox&utm_medium=owned&utm_campaign=gemini_shortcut");
 
 bool IsStarterPackExpansionEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kStarterPackExpansion);
 }
 
-const base::FeatureParam<int> kStarterPackIPHPerSessionLimit(
-    &omnibox::kStarterPackIPH,
-    "StarterPackIPHPerSessionLimit",
-    3);
-
 bool IsStarterPackIPHEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kStarterPackIPH);
 }
+
 // <- Site Search Starter Pack
-// ---------------------------------------------------------
-// Featured Enterprise Site Search ->
-bool IsFeaturedEnterpriseSearchIPHEnabled() {
-  return base::FeatureList::IsEnabled(
-      omnibox::kShowFeaturedEnterpriseSiteSearchIPH);
-}
-// <- Featured Enterprise Site Search
-// ---------------------------------------------------------
-// Featured Search ->
-bool IsFeaturedSearchIPHEnabled() {
-  return IsStarterPackIPHEnabled() || IsFeaturedEnterpriseSearchIPHEnabled();
-}
-// <- Featured Search
-// ---------------------------------------------------------
-
 }  // namespace OmniboxFieldTrial
-
-std::string OmniboxFieldTrial::internal::GetValueForRuleInContext(
-    const std::string& rule,
-    OmniboxEventProto::PageClassification page_classification) {
-  VariationParams params;
-  if (!base::GetFieldTrialParams(kBundledExperimentFieldTrialName, &params)) {
-    return std::string();
-  }
-
-  return GetValueForRuleInContextFromVariationParams(params, rule,
-                                                     page_classification);
-}
-
-std::string OmniboxFieldTrial::internal::GetValueForRuleInContextByFeature(
-    const base::Feature& feature,
-    const std::string& rule,
-    metrics::OmniboxEventProto::PageClassification page_classification) {
-  VariationParams params;
-  if (!base::GetFieldTrialParamsByFeature(feature, &params)) {
-    return std::string();
-  }
-
-  return GetValueForRuleInContextFromVariationParams(params, rule,
-                                                     page_classification);
-}

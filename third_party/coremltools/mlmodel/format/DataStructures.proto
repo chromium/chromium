@@ -116,7 +116,7 @@ message DoubleRange {
  *
  * The table must have only valid values; do not use `NaN`, `+/- INF`,
  * or negative values. The application is responsible for inter/extrapolating
- * approprate confidence threshold based on the application's specifc need.
+ * approprate confidence threshold based on the application's specific need.
  */
 message PrecisionRecallCurve {
   FloatVector precisionValues = 1;

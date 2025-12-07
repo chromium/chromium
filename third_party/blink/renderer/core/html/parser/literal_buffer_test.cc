@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/parser/literal_buffer.h"
 
+#include "base/compiler_specific.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -50,7 +51,7 @@ TEST(LiteralBufferTest, AppendLiteral) {
   buf.AppendLiteral(lit);
 
   EXPECT_EQ(6ul, buf.size());
-  EXPECT_EQ(memcmp(buf.data(), u"defabc", buf.size()), 0);
+  UNSAFE_TODO(EXPECT_EQ(memcmp(buf.data(), u"defabc", buf.size()), 0));
 }
 
 TEST(LiteralBufferTest, Copy) {

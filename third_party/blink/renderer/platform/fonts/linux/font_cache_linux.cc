@@ -27,6 +27,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/linux/web_sandbox_support.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "ui/gfx/font_fallback_linux.h"
@@ -67,31 +68,16 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
     UChar32 c,
     const SimpleFontData*,
     FontFallbackPriority fallback_priority) {
-  // The m_fontManager is set only if it was provided by the embedder with
-  // WebFontRendering::setSkiaFontManager. This is used to emulate android fonts
-  // on linux so we always request the family from the font manager and if none
-  // is found, we return the LastResort fallback font and avoid using
-  // FontCache::GetFontForCharacter which would use sandbox support to query the
-  // underlying system for the font family.
-  if (font_manager_) {
-    AtomicString family_name = GetFamilyNameForCharacter(
-        font_manager_.get(), c, font_description, nullptr, fallback_priority);
-    if (family_name.empty())
-      return GetLastResortFallbackFont(font_description);
-    return FontDataFromFontPlatformData(GetFontPlatformData(
-        font_description, FontFaceCreationParams(family_name)));
-  }
-
-  if (fallback_priority == FontFallbackPriority::kEmojiEmoji) {
+  if (IsEmojiPresentationEmoji(fallback_priority)) {
     // FIXME crbug.com/591346: We're overriding the fallback character here
     // with the FAMILY emoji in the hope to find a suitable emoji font.
     // This should be improved by supporting fallback for character
     // sequences like DIGIT ONE + COMBINING keycap etc.
-    c = kFamilyCharacter;
+    c = uchar::kFamily;
   }
 
   // First try the specified font with standard style & weight.
-  if (fallback_priority != FontFallbackPriority::kEmojiEmoji &&
+  if (!IsEmojiPresentationEmoji(fallback_priority) &&
       (font_description.Style() == kItalicSlopeValue ||
        font_description.Weight() >= kBoldThreshold)) {
     const SimpleFontData* font_data =
@@ -103,11 +89,12 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
   gfx::FallbackFontData fallback_font;
   if (!FontCache::GetFontForCharacter(
           c,
-          fallback_priority == FontFallbackPriority::kEmojiEmoji
+          IsEmojiPresentationEmoji(fallback_priority)
               ? kColorEmojiLocale
               : font_description.LocaleOrDefault().Ascii().c_str(),
-          &fallback_font))
+          &fallback_font)) {
     return nullptr;
+  }
 
   FontFaceCreationParams creation_params;
   creation_params = FontFaceCreationParams(

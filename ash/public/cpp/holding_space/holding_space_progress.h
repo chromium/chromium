@@ -5,6 +5,8 @@
 #ifndef ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_PROGRESS_H_
 #define ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_PROGRESS_H_
 
+#include <stdint.h>
+
 #include <optional>
 
 #include "ash/public/cpp/ash_public_export.h"

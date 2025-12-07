@@ -9,7 +9,21 @@ source_set("browser") {
     "passkey_data_type_controller.cc",
     "passkey_data_type_controller.h",
   ]
-  deps = [ "//components/sync" ]
+  deps = [
+    "//components/sync",
+    "//components/webauthn:features",
+  ]
+
+  if (!is_android && !is_ios) {
+    sources += [
+      "immediate_request_rate_limiter.cc",
+      "immediate_request_rate_limiter.h",
+      "passkey_change_quota_tracker.cc",
+      "passkey_change_quota_tracker.h",
+      "rate_limiter_slide_window.cc",
+      "rate_limiter_slide_window.h",
+    ]
+  }
 
   if (!is_ios) {
     sources += [ "internal_authenticator.h" ]
@@ -28,12 +42,15 @@ source_set("browser") {
     deps += [
       ":passkey_model",
       "//base",
+      "//components/webauthn/core/browser/import",
     ]
   }
 }
 
 source_set("passkey_model") {
   sources = [
+    "gpm_user_verification_policy.cc",
+    "gpm_user_verification_policy.h",
     "passkey_model.cc",
     "passkey_model.h",
     "passkey_model_change.cc",
@@ -52,21 +69,62 @@ source_set("passkey_model") {
   frameworks = [ "Foundation.framework" ]
 }
 
+source_set("client_data") {
+  sources = [
+    "client_data_json.cc",
+    "client_data_json.h",
+  ]
+  deps = [
+    ":common_utils",
+    "//base",
+    "//url",
+  ]
+}
+
+source_set("common_utils") {
+  sources = [
+    "common_utils.cc",
+    "common_utils.h",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = []
   deps = []
 
-  if (!is_ios && !is_android) {
+  if (!is_android) {
     sources += [ "passkey_model_utils_unittest.cc" ]
+    if (!is_ios) {
+      sources += [
+        "immediate_request_rate_limiter_unittest.cc",
+        "passkey_change_quota_tracker_unittest.cc",
+        "rate_limiter_slide_window_unittest.cc",
+      ]
+      deps += [
+        "//base/test:test_support",
+        "//device/fido",
+      ]
+    }
     deps += [
-      ":browser",
       ":passkey_model",
-      "//base/test:test_support",
       "//components/sync/protocol",
       "//crypto",
+      "//testing/gmock",
+      "//testing/gtest",
     ]
+    if (!is_ios) {
+      deps += [
+        ":browser",
+        "//url",
+      ]
+    }
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 static_library("test_support") {

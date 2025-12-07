@@ -5,15 +5,15 @@
 import 'chrome://compare/product_selector.js';
 
 import type {ProductSelectorElement} from 'chrome://compare/product_selector.js';
-import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
+import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import {stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('ProductSelectorTest', () => {
-  const shoppingServiceApi = TestMock.fromClass(BrowserProxyImpl);
+  const shoppingServiceApi =
+      TestMock.fromClass(ShoppingServiceBrowserProxyImpl);
 
   async function createSelector(): Promise<ProductSelectorElement> {
     const selector = document.createElement('product-selector');
@@ -23,7 +23,7 @@ suite('ProductSelectorTest', () => {
       imageUrl: 'https://current-selection-image.com',
     };
     document.body.appendChild(selector);
-    await flushTasks();
+    await microtasksFinished();
     return selector;
   }
 
@@ -43,10 +43,10 @@ suite('ProductSelectorTest', () => {
         Promise.resolve({urlInfos: recentlyViewedTabs}));
   }
 
-  setup(async () => {
+  setup(() => {
     shoppingServiceApi.reset();
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    BrowserProxyImpl.setInstance(shoppingServiceApi);
+    ShoppingServiceBrowserProxyImpl.setInstance(shoppingServiceApi);
   });
 
   test('menu shown on enter', async () => {
@@ -61,7 +61,7 @@ suite('ProductSelectorTest', () => {
 
     selector.$.currentProductContainer.dispatchEvent(
         new KeyboardEvent('keydown', {key: 'Enter'}));
-    await flushTasks();
+    await microtasksFinished();
 
     assertNotEquals(menu.$.menu.getIfExists(), null);
     assertTrue(selector.$.currentProductContainer.classList.contains(
@@ -77,7 +77,7 @@ suite('ProductSelectorTest', () => {
         showingMenuClass));
 
     selector.$.currentProductContainer.click();
-    await flushTasks();
+    await microtasksFinished();
 
     assertTrue(selector.$.currentProductContainer.classList.contains(
         showingMenuClass));

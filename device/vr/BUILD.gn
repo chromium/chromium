@@ -5,6 +5,7 @@
 import("//device/vr/buildflags/buildflags.gni")
 
 if (is_android) {
+  import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
   import("//third_party/jni_zero/jni_zero.gni")
 }
@@ -54,7 +55,8 @@ if (enable_vr) {
     sources = [
       "create_anchor_request.cc",
       "create_anchor_request.h",
-      "vr_device.h",
+      "hit_test_subscription_data.cc",
+      "hit_test_subscription_data.h",
       "vr_device_base.cc",
       "vr_device_base.h",
       "vr_gl_util.cc",
@@ -86,8 +88,6 @@ if (enable_vr) {
       "util/fps_meter.h",
       "util/gamepad_builder.cc",
       "util/gamepad_builder.h",
-      "util/hit_test_subscription_data.cc",
-      "util/hit_test_subscription_data.h",
       "util/sample_queue.cc",
       "util/sample_queue.h",
       "util/sliding_average.cc",
@@ -135,7 +135,7 @@ if (enable_vr) {
       ":vr_base",
       ":vr_util",
       "//base",
-      "//components/ukm:ukm",
+      "//components/ukm",
       "//device/base",
       "//device/vr/buildflags",
       "//device/vr/public/mojom:isolated_xr_service",
@@ -158,6 +158,10 @@ if (enable_vr) {
         "openxr/fb/openxr_hand_tracker_fb.h",
         "openxr/msft/openxr_anchor_manager_msft.cc",
         "openxr/msft/openxr_anchor_manager_msft.h",
+        "openxr/msft/openxr_hit_test_manager_msft.cc",
+        "openxr/msft/openxr_hit_test_manager_msft.h",
+        "openxr/msft/openxr_plane_manager_msft.cc",
+        "openxr/msft/openxr_plane_manager_msft.h",
         "openxr/msft/openxr_scene_bounds_msft.cc",
         "openxr/msft/openxr_scene_bounds_msft.h",
         "openxr/msft/openxr_scene_msft.cc",
@@ -176,6 +180,8 @@ if (enable_vr) {
         "openxr/openxr_anchor_manager.h",
         "openxr/openxr_api_wrapper.cc",
         "openxr/openxr_api_wrapper.h",
+        "openxr/openxr_composition_layer.cc",
+        "openxr/openxr_composition_layer.h",
         "openxr/openxr_controller.cc",
         "openxr/openxr_controller.h",
         "openxr/openxr_debug_util.cc",
@@ -195,15 +201,23 @@ if (enable_vr) {
         "openxr/openxr_graphics_binding.h",
         "openxr/openxr_hand_tracker.cc",
         "openxr/openxr_hand_tracker.h",
+        "openxr/openxr_hand_utils.cc",
+        "openxr/openxr_hand_utils.h",
+        "openxr/openxr_hit_test_manager.cc",
+        "openxr/openxr_hit_test_manager.h",
         "openxr/openxr_input_helper.cc",
         "openxr/openxr_input_helper.h",
         "openxr/openxr_interaction_profile_paths.h",
         "openxr/openxr_interaction_profiles.cc",
         "openxr/openxr_interaction_profiles.h",
+        "openxr/openxr_layers.cc",
+        "openxr/openxr_layers.h",
         "openxr/openxr_light_estimator.cc",
         "openxr/openxr_light_estimator.h",
         "openxr/openxr_path_helper.cc",
         "openxr/openxr_path_helper.h",
+        "openxr/openxr_plane_manager.cc",
+        "openxr/openxr_plane_manager.h",
         "openxr/openxr_platform.h",
         "openxr/openxr_platform_helper.cc",
         "openxr/openxr_platform_helper.h",
@@ -211,22 +225,45 @@ if (enable_vr) {
         "openxr/openxr_render_loop.h",
         "openxr/openxr_scene_understanding_manager.cc",
         "openxr/openxr_scene_understanding_manager.h",
+        "openxr/openxr_space_based_anchor_manager.cc",
+        "openxr/openxr_space_based_anchor_manager.h",
+        "openxr/openxr_spatial_anchor_manager.cc",
+        "openxr/openxr_spatial_anchor_manager.h",
+        "openxr/openxr_spatial_capability_configuration_base.cc",
+        "openxr/openxr_spatial_capability_configuration_base.h",
+        "openxr/openxr_spatial_framework_manager.cc",
+        "openxr/openxr_spatial_framework_manager.h",
+        "openxr/openxr_spatial_hit_test_manager.cc",
+        "openxr/openxr_spatial_hit_test_manager.h",
+        "openxr/openxr_spatial_plane_manager.cc",
+        "openxr/openxr_spatial_plane_manager.h",
+        "openxr/openxr_spatial_utils.cc",
+        "openxr/openxr_spatial_utils.h",
         "openxr/openxr_stage_bounds_provider.h",
         "openxr/openxr_stage_bounds_provider_basic.cc",
         "openxr/openxr_stage_bounds_provider_basic.h",
+        "openxr/openxr_swapchain_info.cc",
+        "openxr/openxr_swapchain_info.h",
         "openxr/openxr_unbounded_space_provider.cc",
         "openxr/openxr_unbounded_space_provider.h",
         "openxr/openxr_util.cc",
         "openxr/openxr_util.h",
         "openxr/openxr_view_configuration.cc",
         "openxr/openxr_view_configuration.h",
-        "test/test_hook.h",
+        "openxr/openxr_visibility_mask_handler.cc",
+        "openxr/openxr_visibility_mask_handler.h",
+        "openxr/scoped_openxr_object.h",
+      ]
+
+      deps += [
+        ":vr_test_hook",
+        "//third_party/blink/public:blink_headers",
       ]
 
       if (is_win) {
         libs = [
           "d3d11.lib",
-          "DXGI.lib",
+          "dxgi.lib",
         ]
 
         sources += [
@@ -254,20 +291,23 @@ if (enable_vr) {
           "openxr/android/openxr_depth_sensor_android.h",
           "openxr/android/openxr_graphics_binding_open_gles.cc",
           "openxr/android/openxr_graphics_binding_open_gles.h",
+          "openxr/android/openxr_hit_test_manager_android.cc",
+          "openxr/android/openxr_hit_test_manager_android.h",
           "openxr/android/openxr_light_estimator_android.cc",
           "openxr/android/openxr_light_estimator_android.h",
+          "openxr/android/openxr_plane_manager_android.cc",
+          "openxr/android/openxr_plane_manager_android.h",
           "openxr/android/openxr_platform_helper_android_statics.cc",
           "openxr/android/openxr_scene_understanding_manager_android.cc",
           "openxr/android/openxr_scene_understanding_manager_android.h",
-          "openxr/android/openxr_stage_bounds_provider_android.cc",
-          "openxr/android/openxr_stage_bounds_provider_android.h",
           "openxr/android/openxr_unbounded_space_provider_android.cc",
           "openxr/android/openxr_unbounded_space_provider_android.h",
         ]
 
-        configs += [ "//third_party/khronos:khronos_headers" ]
-
-        deps += [ "//device/vr/android:vr_android" ]
+        deps += [
+          "//device/vr/android:vr_android",
+          "//third_party/angle:includes",
+        ]
       }
 
       deps += [
@@ -280,6 +320,17 @@ if (enable_vr) {
         "//ui/gl/init",
       ]
     }
+  }
+
+  source_set("vr_test_hook") {
+    sources = [ "test/test_hook.h" ]
+
+    deps = [
+      "//device/vr/public/mojom:vr_service",
+      "//device/vr/public/mojom/test:test_mojom",
+      "//ui/gfx",
+      "//ui/gfx/mojom",
+    ]
   }
 
   component("vr_fakes") {
@@ -322,7 +373,7 @@ if (enable_vr) {
 
       libs = [
         "d3d11.lib",
-        "DXGI.lib",
+        "dxgi.lib",
       ]
 
       deps = [ "//base" ]
@@ -345,14 +396,28 @@ if (enable_openxr) {
   # json file instead of the registry key. This json file copied to the output
   # folder points to our mock OpenXR runtime.
   copy("json_mock") {
-    sources = [ "openxr/test/openxr.json" ]
+    sources = []
+    if (is_win) {
+      sources += [ "openxr/test/openxr_win.json" ]
+    } else if (is_android) {
+      sources += [ "openxr/test/openxr_android.json" ]
+    }
+
     outputs = [ "$root_out_dir/mock_vr_clients/bin/openxr/openxr.json" ]
   }
 
-  if (is_win) {
+  if (is_win || is_android) {
     shared_library("openxr_mock") {
       testonly = true
-      output_name = "mock_vr_clients/bin/openxr/openxrruntime"
+
+      # Not everything seems to respect `output_dir`, so we can't actually use
+      # it on both platforms. Furthermore, on Android if there are directories
+      # in the output_name path, then symbolization on the bots is broken.
+      if (is_win) {
+        output_name = "mock_vr_clients/bin/openxr/openxrruntime"
+      } else if (is_android) {
+        output_name = "libmockopenxrruntime"
+      }
 
       defines = [ "XR_EXTENSION_PROTOTYPES" ]
 
@@ -366,30 +431,65 @@ if (enable_openxr) {
         "openxr/openxr_view_configuration.cc",
         "openxr/openxr_view_configuration.h",
         "openxr/test/fake_openxr_impl_api.cc",
-        "openxr/test/openxr.def",
         "openxr/test/openxr_negotiate.h",
         "openxr/test/openxr_test_helper.cc",
         "openxr/test/openxr_test_helper.h",
-        "test/test_hook.h",
-      ]
-
-      libs = [
-        "d3d11.lib",
-        "DXGI.lib",
       ]
 
       deps = [
+        ":vr_test_hook",
         "//base",
         "//components/version_info",
         "//device/gamepad/public/cpp:shared_with_blink",
-        "//device/vr/public/mojom:test_mojom",
         "//device/vr/public/mojom:vr_service",
+        "//device/vr/public/mojom/test:test_mojom",
         "//third_party/openxr:openxr_headers",
       ]
+
+      if (is_win) {
+        sources += [ "openxr/test/openxr.def" ]
+        libs = [
+          "d3d11.lib",
+          "dxgi.lib",
+        ]
+      } else if (is_android) {
+        configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
+        configs += [ "//build/config/gcc:symbol_visibility_default" ]
+        ldflags = [ "-Wl,--version-script=" +
+                    rebase_path("//device/vr/openxr/test/openxr.lst",
+                                root_build_dir) ]
+        inputs = [ "//device/vr/openxr/test/openxr.lst" ]
+        sources += [
+          "openxr/test/xr_test_gl.cc",
+          "openxr/test/xr_test_gl.h",
+        ]
+        libs = [
+          "EGL",
+          "GLESv2",
+        ]
+      }
 
       public_deps = [ ":openxr_data" ]
 
       data_deps = [ "//device/vr:json_mock" ]
+
+      # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+      # enable the diagnostic by removing this line.
+      configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+    }
+
+    if (is_android) {
+      android_apk("openxr_test_support_apk") {
+        # Used as an additional_apk in test scripts.
+        never_incremental = true
+        testonly = true
+
+        shared_libraries = [ ":openxr_mock" ]
+        library_always_compress = [ "libmockopenxrruntime.so" ]
+
+        apk_name = "OpenXrTestSupport"
+        android_manifest = "openxr/test/AndroidManifest.xml"
+      }
     }
   }
 }

@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rule_set.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rules_metrics.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -34,8 +35,8 @@ void SpeculationRuleLoader::LoadResource(SpeculationRulesResource* resource) {
 void SpeculationRuleLoader::NotifyFinished() {
   DCHECK(resource_);
 
-  UMA_HISTOGRAM_MEDIUM_TIMES("Blink.SpeculationRules.FetchTime",
-                             base::TimeTicks::Now() - start_time_);
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("Blink.SpeculationRules.FetchTime",
+                                        base::TimeTicks::Now() - start_time_);
 
   const ResourceResponse& response = resource_->GetResponse();
   if (resource_->LoadFailedOrCanceled()) {
@@ -45,14 +46,14 @@ void SpeculationRuleLoader::NotifyFinished() {
     if (int response_code = response.HttpStatusCode()) {
       message.AppendFormat("; HTTP status %d", response_code);
     }
-    message.Append(String(") for rule set requested from \"" +
-                          resource_->GetResourceRequest().Url().ElidedString() +
-                          "\" found in Speculation-Rules header."));
+    message.Append(") for rule set requested from \"");
+    message.Append(resource_->GetResourceRequest().Url().ElidedString());
+    message.Append("\" found in Speculation-Rules header.");
     CountSpeculationRulesLoadOutcome(
         SpeculationRulesLoadOutcome::kLoadFailedOrCanceled);
     document_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
-        mojom::blink::ConsoleMessageLevel::kWarning, message.ToString()));
+        mojom::blink::ConsoleMessageLevel::kWarning, message.ReleaseString()));
     return;
   }
 
@@ -63,11 +64,11 @@ void SpeculationRuleLoader::NotifyFinished() {
     document_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kWarning,
-        "Received a response with invalid MIME type \"" +
-            resource_->HttpContentType() +
-            "\" for the rule set requested from \"" +
-            resource_->GetResourceRequest().Url().ElidedString() +
-            "\" found in the Speculation-Rules header."));
+        StrCat({"Received a response with invalid MIME type \"",
+                resource_->HttpContentType(),
+                "\" for the rule set requested from \"",
+                resource_->GetResourceRequest().Url().ElidedString(),
+                "\" found in the Speculation-Rules header."})));
     return;
   }
   if (!resource_->HasData()) {
@@ -76,10 +77,9 @@ void SpeculationRuleLoader::NotifyFinished() {
     document_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kWarning,
-        "Received a response with no data for rule set \"" +
-            resource_->GetResourceRequest().Url().ElidedString() +
-            "\" found in Speculation-Rules "
-            "header."));
+        StrCat({"Received a response with no data for rule set \"",
+                resource_->GetResourceRequest().Url().ElidedString(),
+                "\" found in Speculation-Rules header."})));
     return;
   }
 

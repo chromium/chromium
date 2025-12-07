@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {BrowserBridge} from './browser_bridge.js';
-// <if expr="chromeos_ash">
+// <if expr="is_chromeos">
 import {CrosView} from './chromeos_view.js';
 // </if>
 import {DnsView} from './dns_view.js';
@@ -84,7 +84,7 @@ export class MainView extends WindowView {
     addTab(SocketsView);
     addTab(DomainSecurityPolicyView);
     addTab(SharedDictionaryView);
-    // <if expr="chromeos_ash">
+    // <if expr="is_chromeos">
     addTab(CrosView);
     // </if>
   }
@@ -129,7 +129,7 @@ export class MainView extends WindowView {
       parsed.tabHash = EventsView.TAB_HASH;
     }
 
-    // <if expr="not chromeos_ash">
+    // <if expr="not is_chromeos">
     // Don't switch to the chromeos view if not on chromeos.
     if (parsed.tabHash === '#chromeos') {
       parsed.tabHash = EventsView.TAB_HASH;

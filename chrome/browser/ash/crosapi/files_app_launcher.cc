@@ -9,7 +9,7 @@
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/check.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
+#include "chromeos/ash/components/file_manager/app_id.h"
 
 namespace crosapi {
 
@@ -54,7 +54,7 @@ void FilesAppLauncher::LaunchInternal() {
   // Launching traditional files.app and launching SWA files.app need quite
   // different procedure.
   // Use ash::NewWindowDelegate::OpenFileManager that handles the diff nicely.
-  ash::NewWindowDelegate::GetPrimary()->OpenFileManager();
+  ash::NewWindowDelegate::GetInstance()->OpenFileManager();
 }
 
 void FilesAppLauncher::OnAppUpdate(const apps::AppUpdate& update) {

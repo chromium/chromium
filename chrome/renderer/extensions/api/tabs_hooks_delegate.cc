@@ -34,7 +34,7 @@ constexpr char kSendTabsRequest[] = "tabs.sendRequest";
 TabsHooksDelegate::TabsHooksDelegate(
     NativeRendererMessagingService* messaging_service)
     : messaging_service_(messaging_service) {}
-TabsHooksDelegate::~TabsHooksDelegate() {}
+TabsHooksDelegate::~TabsHooksDelegate() = default;
 
 RequestResult TabsHooksDelegate::HandleRequest(
     const std::string& method_name,
@@ -177,15 +177,16 @@ RequestResult TabsHooksDelegate::HandleConnect(
         messaging_util::PARSE_FRAME_ID | messaging_util::PARSE_CHANNEL_NAME);
   }
 
-  gin::Handle<GinPort> port = messaging_service_->Connect(
+  GinPort* port = messaging_service_->Connect(
       script_context,
       MessageTarget::ForTab(tab_id, options.frame_id, options.document_id),
       options.channel_name,
       messaging_util::GetSerializationFormat(*script_context));
-  DCHECK(!port.IsEmpty());
+  DCHECK(port);
 
   RequestResult result(RequestResult::HANDLED);
-  result.return_value = port.ToV8();
+  result.return_value =
+      port->GetWrapper(script_context->isolate()).ToLocalChecked();
   return result;
 }
 

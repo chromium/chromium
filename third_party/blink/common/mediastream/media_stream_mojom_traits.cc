@@ -104,7 +104,9 @@ bool StructTraits<blink::mojom::StreamControlsDataView, blink::StreamControls>::
   out->hotword_enabled = input.hotword_enabled();
   out->disable_local_echo = input.disable_local_echo();
   out->suppress_local_audio_playback = input.suppress_local_audio_playback();
+  out->restrict_own_audio = input.restrict_own_audio();
   out->exclude_system_audio = input.exclude_system_audio();
+  out->window_audio_preference = input.window_audio_preference();
   out->exclude_self_browser_surface = input.exclude_self_browser_surface();
   out->request_pan_tilt_zoom_permission =
       input.request_pan_tilt_zoom_permission();

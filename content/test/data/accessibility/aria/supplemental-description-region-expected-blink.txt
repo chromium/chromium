@@ -1,0 +1,23 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++region name='Example'
+++++++++paragraph
+++++++++++staticText name='The region role should be reserved for sections of content sufficiently important that users will likely want to navigate to the section easily and to have it listed in a summary of the page.'
+++++++++++++inlineTextBox name='The region '
+++++++++++++inlineTextBox name='role should '
+++++++++++++inlineTextBox name='be reserved '
+++++++++++++inlineTextBox name='for sections '
+++++++++++++inlineTextBox name='of content '
+++++++++++++inlineTextBox name='sufficiently '
+++++++++++++inlineTextBox name='important '
+++++++++++++inlineTextBox name='that users '
+++++++++++++inlineTextBox name='will likely '
+++++++++++++inlineTextBox name='want to '
+++++++++++++inlineTextBox name='navigate to '
+++++++++++++inlineTextBox name='the section '
+++++++++++++inlineTextBox name='easily and '
+++++++++++++inlineTextBox name='to have it '
+++++++++++++inlineTextBox name='listed in a '
+++++++++++++inlineTextBox name='summary of '
+++++++++++++inlineTextBox name='the page.'

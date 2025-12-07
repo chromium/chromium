@@ -28,7 +28,7 @@ const base::TimeDelta DnsConfigService::kInvalidationTimeout =
     base::Milliseconds(150);
 
 DnsConfigService::DnsConfigService(
-    base::FilePath::StringPieceType hosts_file_path,
+    base::FilePath::StringViewType hosts_file_path,
     std::optional<base::TimeDelta> config_change_delay)
     : config_change_delay_(config_change_delay),
       hosts_file_path_(hosts_file_path) {
@@ -62,7 +62,7 @@ void DnsConfigService::WatchConfig(const CallbackType& callback) {
 
 void DnsConfigService::RefreshConfig() {
   // Overridden on supported platforms.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 DnsConfigService::Watcher::Watcher(DnsConfigService& service)
@@ -87,7 +87,7 @@ void DnsConfigService::Watcher::CheckOnCorrectSequence() {
 }
 
 DnsConfigService::HostsReader::HostsReader(
-    base::FilePath::StringPieceType hosts_file_path,
+    base::FilePath::StringViewType hosts_file_path,
     DnsConfigService& service)
     : service_(&service), hosts_file_path_(hosts_file_path) {}
 
@@ -229,7 +229,7 @@ void DnsConfigService::OnTimeout() {
 }
 
 void DnsConfigService::OnCompleteConfig() {
-  timer_.AbandonAndStop();
+  timer_.Stop();
   if (!need_update_)
     return;
   need_update_ = false;

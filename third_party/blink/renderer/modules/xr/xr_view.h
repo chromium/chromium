@@ -5,9 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_VIEW_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_VIEW_H_
 
+#include "device/vr/public/mojom/visibility_mask_id.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
+#include "third_party/blink/renderer/modules/xr/xr_graphics_binding.h"
 #include "third_party/blink/renderer/modules/xr/xr_rigid_transform.h"
+#include "third_party/blink/renderer/modules/xr/xr_view_geometry.h"
 #include "third_party/blink/renderer/modules/xr/xr_viewport.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -19,6 +22,7 @@
 
 namespace blink {
 
+class V8XREye;
 class XRCamera;
 class XRCPUDepthInformation;
 class XRDepthManager;
@@ -35,15 +39,17 @@ class MODULES_EXPORT XRView final : public ScriptWrappable {
          XRViewData* view_data,
          const gfx::Transform& ref_space_from_mojo);
 
-  const String& eye() const { return eye_string_; }
+  V8XREye eye() const;
+  unsigned index() const;
   device::mojom::blink::XREye EyeValue() const { return eye_; }
+  gfx::Transform refSpaceFromMojo() const { return ref_space_from_mojo_; }
   XRViewData* ViewData() const { return view_data_.Get(); }
   XRViewport* Viewport(double scale);
 
   XRFrame* frame() const;
   XRSession* session() const;
-  DOMFloat32Array* projectionMatrix() const;
-  XRRigidTransform* refSpaceFromView() const;
+  NotShared<DOMFloat32Array> projectionMatrix() const;
+  XRRigidTransform* viewGeometryTransform() const;
   XRCamera* camera() const;
 
   // isFirstPersonObserver is only true for views that composed with a video
@@ -64,61 +70,54 @@ class MODULES_EXPORT XRView final : public ScriptWrappable {
 
  private:
   device::mojom::blink::XREye eye_;
-  String eye_string_;
+  gfx::Transform ref_space_from_mojo_;
   Member<XRFrame> frame_;
   Member<XRViewData> view_data_;
   // The transform from the view to the reference space requested by
   // XRFrame::getViewerPose.
   Member<XRRigidTransform> ref_space_from_view_;
-  Member<DOMFloat32Array> projection_matrix_;
+  // This is just a cached/converted version of the projection matrix from the
+  // view_data. It's mutable so that we can update it when queried if it was
+  // detached.
+  mutable NotShared<DOMFloat32Array> projection_matrix_;
   Member<XRViewport> viewport_;
 };
 
-class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
+class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData>,
+                                        public XRViewGeometry {
  public:
-  explicit XRViewData(device::mojom::blink::XREye eye, gfx::Rect viewport)
-      : eye_(eye), viewport_(viewport) {}
+  XRViewData(wtf_size_t index,
+             device::mojom::blink::XREye eye,
+             gfx::Rect viewport,
+             XRGraphicsBinding::Api graphics_api)
+      : XRViewGeometry(graphics_api),
+        index_(index),
+        eye_(eye),
+        viewport_(viewport) {}
   XRViewData(
+      wtf_size_t index,
       device::mojom::blink::XRViewPtr view,
       double depth_near,
       double depth_far,
       const device::mojom::blink::XRSessionDeviceConfig& device_config,
-      const HashSet<device::mojom::XRSessionFeature>& enabled_feature_set);
+      const HashSet<device::mojom::XRSessionFeature>& enabled_feature_set,
+      XRGraphicsBinding::Api graphics_api);
 
   void UpdateView(device::mojom::blink::XRViewPtr view,
                   double depth_near,
                   double depth_far);
 
-  void UpdateProjectionMatrixFromFoV(float up_rad,
-                                     float down_rad,
-                                     float left_rad,
-                                     float right_rad,
-                                     float near_depth,
-                                     float far_depth);
-  void UpdateProjectionMatrixFromAspect(float fovy,
-                                        float aspect,
-                                        float near_depth,
-                                        float far_depth);
-
-  gfx::Transform UnprojectPointer(double x,
-                                  double y,
-                                  double canvas_width,
-                                  double canvas_height);
-
-  void SetMojoFromView(const gfx::Transform& mojo_from_view);
-
+  wtf_size_t index() const { return index_; }
   device::mojom::blink::XREye Eye() const { return eye_; }
-  const gfx::Transform& MojoFromView() const { return mojo_from_view_; }
-  const gfx::Transform& ProjectionMatrix() const { return projection_matrix_; }
   const gfx::Rect& Viewport() const { return viewport_; }
   bool IsFirstPersonObserver() const { return is_first_person_observer_; }
 
   XRCPUDepthInformation* GetCpuDepthInformation(
-      const XRFrame* xr_frame,
+      const XRView* xr_view,
       ExceptionState& exception_state) const;
 
   XRWebGLDepthInformation* GetWebGLDepthInformation(
-      const XRFrame* xr_frame,
+      const XRView* xr_view,
       ExceptionState& exception_state) const;
 
   std::optional<double> recommendedViewportScale() const;
@@ -138,14 +137,20 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
   }
   double RequestedViewportScale() const { return requested_viewport_scale_; }
 
+  // Returns true if the viewport scale actually changed.
+  bool ApplyViewportScaleForFrame();
+
+  const device::mojom::blink::XRVisibilityMaskPtr& visibility_mask() {
+    return visibility_mask_;
+  }
+  void OnVisibilityMaskChangeEvent();
+  bool NeedsVisibilityMaskChangeEvent() const;
+
   void Trace(Visitor*) const;
 
  private:
+  const wtf_size_t index_;
   const device::mojom::blink::XREye eye_;
-  gfx::Transform mojo_from_view_;
-  gfx::Transform projection_matrix_;
-  gfx::Transform inv_projection_;
-  bool inv_projection_dirty_ = true;
   gfx::Rect viewport_;
   bool is_first_person_observer_ = false;
   std::optional<double> recommended_viewport_scale_ = std::nullopt;
@@ -153,6 +158,10 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
   double current_viewport_scale_ = 1.0;
   bool viewport_modifiable_ = false;
   Member<XRDepthManager> depth_manager_;
+
+  device::mojom::blink::XRVisibilityMaskPtr visibility_mask_;
+  device::XrVisibilityMaskId visibility_mask_id_;
+  std::optional<device::XrVisibilityMaskId> last_evented_visibility_mask_id_;
 };
 
 }  // namespace blink

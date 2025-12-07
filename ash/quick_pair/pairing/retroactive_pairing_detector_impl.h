@@ -177,7 +177,8 @@ class RetroactivePairingDetectorImpl final
   base::flat_set<std::string> potential_retroactive_addresses_;
 
   // Map of the classic pairing address to their corresponding MessageStreams.
-  base::flat_map<std::string, MessageStream*> message_streams_;
+  base::flat_map<std::string, raw_ptr<MessageStream, CtnExperimental>>
+      message_streams_;
 
   // Map of the classic pairing address to their corresponding model id and
   // ble address, if they exist.

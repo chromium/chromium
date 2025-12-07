@@ -91,7 +91,7 @@ TEST(UnitTestUtil, Processes) {
 
   // Terminate the long-lived processes, expect to find them not running, then
   // inspect their exit code.
-  constexpr int kExitCode = 12345;
+  static constexpr int kExitCode = 12345;
   EXPECT_FALSE(WaitForProcessesToExit(kTestProcessExecutableName,
                                       base::Milliseconds(1)));
   EXPECT_TRUE(KillProcesses(kTestProcessExecutableName, kExitCode));

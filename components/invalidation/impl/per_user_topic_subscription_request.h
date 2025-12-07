@@ -6,6 +6,7 @@
 #define COMPONENTS_INVALIDATION_IMPL_PER_USER_TOPIC_SUBSCRIPTION_REQUEST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -92,10 +93,10 @@ class PerUserTopicSubscriptionRequest {
   // which potentially lead to destroying |this|. Hence, |this| object must
   // assume that it is dead after invoking any of these methods and must not
   // run any more code.
-  void OnURLFetchComplete(std::unique_ptr<std::string> response_body);
+  void OnURLFetchComplete(std::optional<std::string> response_body);
   void OnURLFetchCompleteInternal(int net_error,
                                   int response_code,
-                                  std::unique_ptr<std::string> response_body);
+                                  std::optional<std::string> response_body);
   void OnJsonParse(data_decoder::DataDecoder::ValueOrError result);
 
   // Invokes |request_completed_callback_| with (|status|, |topic_name|). Per

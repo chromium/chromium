@@ -83,7 +83,6 @@ int StyleRuleKeyframes::FindKeyframeIndex(const CSSParserContext* context,
 }
 
 void StyleRuleKeyframes::TraceAfterDispatch(blink::Visitor* visitor) const {
-  visitor->Trace(layer_);
   visitor->Trace(keyframes_);
   StyleRuleBase::TraceAfterDispatch(visitor);
 }

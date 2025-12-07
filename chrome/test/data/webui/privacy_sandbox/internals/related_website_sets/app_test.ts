@@ -28,7 +28,7 @@ suite('AppTest', () => {
     await microtasksFinished();
   });
 
-  test('check initial state', async () => {
+  test('check initial state', () => {
     assertEquals(1, testProxy.handler.getCallCount('getRelatedWebsiteSets'));
     assertTrue(isVisible(app.$.toolbar));
     assertTrue(isVisible(app.$.sidebar));
@@ -40,7 +40,7 @@ suite('AppTest', () => {
 
     assertFalse(app.$.drawer.open);
     const menuButton =
-        app.$.toolbar.$.mainToolbar.shadowRoot!.querySelector<HTMLElement>(
+        app.$.toolbar.$.mainToolbar.shadowRoot.querySelector<HTMLElement>(
             '#menuButton');
     assertTrue(isVisible(menuButton));
     menuButton!.click();
@@ -54,7 +54,7 @@ suite('AppTest', () => {
     const drawerItems = drawerSidebar!.$.selector.children;
     assertEquals(menuItems.length, drawerItems.length);
     for (const [i, menuItem] of menuItems.entries()) {
-      assertEquals(menuItem.name, drawerItems[i]!.textContent!.trim());
+      assertEquals(menuItem.name, drawerItems[i]!.textContent.trim());
     }
     app.$.drawer.close();
     await microtasksFinished();
@@ -73,7 +73,7 @@ suite('AppTest', () => {
         'test', app.$.toolbar.$.mainToolbar.getSearchField().getValue());
   });
 
-  test('UI search box updates URL parameters', async () => {
+  test('UI search box updates URL parameters', () => {
     app.$.toolbar.$.mainToolbar.getSearchField().setValue('hello');
     const urlParams = new URLSearchParams(window.location.search);
     const query = urlParams.get('q');
@@ -87,7 +87,7 @@ suite('AppTest', () => {
     toolbar.setSearchFieldValue(expectedQuery);
     await microtasksFinished();
     const contentContainer =
-        app.shadowRoot!.querySelector<RelatedWebsiteSetsListContainerElement>(
+        app.shadowRoot.querySelector<RelatedWebsiteSetsListContainerElement>(
             '#content > related-website-sets-list-container');
     assertTrue(!!contentContainer);
     const actualQuery = contentContainer.query;

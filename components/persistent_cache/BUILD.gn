@@ -1,0 +1,138 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("persistent_cache") {
+  public = [
+    "backend_storage.h",
+    "backend_type.h",
+    "buffer_provider.h",
+    "entry_metadata.h",
+    "lock_state.h",
+    "pending_backend.h",
+    "persistent_cache.h",
+    "persistent_cache_collection.h",
+    "transaction_error.h",
+  ]
+
+  sources = [
+    "backend.cc",
+    "backend.h",
+    "backend_storage.cc",
+    "pending_backend.cc",
+    "persistent_cache_collection.cc",
+  ]
+
+  if (is_fuchsia) {
+    sources += [ "persistent_cache_fuchsia.cc" ]
+  }
+
+  # Cross-process file locks are not available on Fuchsia.
+  if (!is_fuchsia) {
+    public += [ "sqlite/vfs/sandboxed_file.h" ]
+
+    sources += [
+      "persistent_cache.cc",
+      "sqlite/backend_storage_delegate.cc",
+      "sqlite/backend_storage_delegate.h",
+      "sqlite/constants.h",
+      "sqlite/sqlite_backend_impl.cc",
+      "sqlite/sqlite_backend_impl.h",
+      "sqlite/vfs/sandboxed_file.cc",
+      "sqlite/vfs/sandboxed_file.h",
+      "sqlite/vfs/sqlite_database_vfs_file_set.cc",
+      "sqlite/vfs/sqlite_database_vfs_file_set.h",
+      "sqlite/vfs/sqlite_sandboxed_vfs.cc",
+      "sqlite/vfs/sqlite_sandboxed_vfs.h",
+    ]
+
+    deps = [
+      "//sql",
+      "//third_party/sqlite",
+    ]
+  }
+
+  # See base/component_export.h
+  defines = [ "IS_PERSISTENT_CACHE_IMPL" ]
+
+  public_deps = [ "//base" ]
+
+  friend = [
+    ":perf_tests",
+    ":test_support",
+    ":unit_tests",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "mock/mock_backend.cc",
+    "mock/mock_backend.h",
+    "mock/mock_backend_storage_delegate.cc",
+    "mock/mock_backend_storage_delegate.h",
+    "test_utils.cc",
+    "test_utils.h",
+  ]
+
+  deps = [
+    ":persistent_cache",
+    "//base",
+    "//base/test:test_support",
+    "//sql",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/sqlite",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "backend_storage_unittest.cc" ]
+
+  # Cross-process file locks are not available on Fuchsia.
+  if (!is_fuchsia) {
+    sources += [
+      "persistent_cache_collection_unittest.cc",
+      "persistent_cache_unittest.cc",
+      "sqlite/backend_storage_delegate_unittest.cc",
+      "sqlite/vfs/sandboxed_file_unittest.cc",
+      "sqlite/vfs/sqlite_database_vfs_file_set_unittest.cc",
+      "sqlite/vfs/sqlite_sandboxed_vfs_unittest.cc",
+    ]
+  }
+
+  deps = [
+    ":persistent_cache",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//build:blink_buildflags",
+    "//components/persistent_cache/mojom:unit_tests",
+    "//sql",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/sqlite",
+  ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+if (!is_fuchsia) {
+  source_set("perf_tests") {
+    testonly = true
+    sources = [ "persistent_cache_perftest.cc" ]
+    deps = [
+      ":persistent_cache",
+      ":test_support",
+      "//base",
+      "//base/test:test_support",
+      "//testing/gtest",
+      "//testing/perf",
+    ]
+  }
+}

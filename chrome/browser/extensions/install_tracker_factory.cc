@@ -5,11 +5,12 @@
 #include "chrome/browser/extensions/install_tracker_factory.h"
 
 #include "base/no_destructor.h"
-#include "chrome/browser/extensions/install_tracker.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/install_tracker.h"
+#include "extensions/buildflags/buildflags.h"
 
 namespace extensions {
 
@@ -32,8 +33,8 @@ InstallTrackerFactory::InstallTrackerFactory()
           // so should the install progress.
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kRedirectedToOriginal)
-              // TODO(crbug.com/40257657): Check if this service is needed in
-              // Guest mode.
+              // TODO(crbug.com/40257657): Audit whether these should be
+              // redirected or should have their own instance.
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.

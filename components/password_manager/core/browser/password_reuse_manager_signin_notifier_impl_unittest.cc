@@ -11,6 +11,7 @@
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
@@ -74,17 +75,17 @@ TEST_F(PasswordReuseManagerSigninNotifierImplTest, SignOutContentArea) {
   EXPECT_CALL(reuse_manager_, ClearGaiaPasswordHash("username2"));
   auto* identity_manager = identity_test_env()->identity_manager();
   identity_manager->GetAccountsMutator()->AddOrUpdateAccount(
-      /*gaia_id=*/"secondary_account_id",
+      GaiaId("secondary_account_id"),
       /*email=*/"username2",
       /*refresh_token=*/"refresh_token",
       /*is_under_advanced_protection=*/false,
-      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
+      signin_metrics::AccessPoint::kUnknown,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   // This call is necessary to ensure that the account removal is fully
   // processed in this testing context.
   identity_test_env()->EnableRemovalOfExtendedAccountInfo();
   identity_manager->GetAccountsMutator()->RemoveAccount(
-      CoreAccountId::FromGaiaId("secondary_account_id"),
+      CoreAccountId::FromGaiaId(GaiaId("secondary_account_id")),
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   testing::Mock::VerifyAndClearExpectations(&reuse_manager_);
 

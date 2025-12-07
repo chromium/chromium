@@ -1,0 +1,19 @@
+Name: Robolectric Nativeruntime Distribution Compat
+Short Name: nativeruntime-dist-compat
+URL: https://repo.maven.apache.org/maven2/org/robolectric/nativeruntime-dist-compat/1.0.18/nativeruntime-dist-compat-1.0.18.jar
+Version: 1.0.18
+Update Mechanism: Autoroll
+License: Apache-2.0, MIT
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: no
+Shipped: no
+
+Description:
+Robolectric Nativeruntime Distribution Compat
+
+See also: https://source.android.com/
+
+
+Local Modifications:
+No modifications.

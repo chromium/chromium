@@ -4,13 +4,12 @@
 
 #include "extensions/browser/api/declarative_net_request/regex_rules_matcher.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/url_pattern_index/url_pattern_index.h"
@@ -50,8 +49,9 @@ bool DoesRuleMetadataMatchRequest(const flat_rule::UrlRule& rule,
   }
 
   // Compares included and excluded request domains.
-  if (!url_pattern_index::DoesURLMatchRequestDomainList(*params.url, rule))
+  if (!url_pattern_index::DoesURLMatchRequestDomainList(*params.url, rule)) {
     return false;
+  }
 
   // Compares included and excluded initiator domains.
   return url_pattern_index::DoesOriginMatchInitiatorDomainList(
@@ -73,7 +73,7 @@ bool ActionTypeAllowsMultipleActions(flat::ActionType action_type) {
     case flat::ActionType_modify_headers:
       return true;
     case flat::ActionType_count:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return true;
 }
@@ -157,14 +157,15 @@ std::optional<RequestAction> RegexRulesMatcher::GetAllowAllRequestsAction(
     RulesetMatchingStage stage) const {
   const std::vector<RegexRuleInfo>& potential_matches =
       GetMatcherForStage(stage).GetPotentialMatches(params);
-  auto info = base::ranges::find_if(
+  auto info = std::ranges::find_if(
       potential_matches, [&params](const RegexRuleInfo& info) {
         return info.regex_rule->action_type() ==
                    flat::ActionType_allow_all_requests &&
                re2::RE2::PartialMatch(params.url->spec(), *info.regex);
       });
-  if (info == potential_matches.end())
+  if (info == potential_matches.end()) {
     return std::nullopt;
+  }
 
   return CreateAllowAllRequestsAction(params, *info->regex_rule->url_rule());
 }
@@ -174,7 +175,7 @@ std::optional<RequestAction> RegexRulesMatcher::GetActionIgnoringAncestors(
     RulesetMatchingStage stage) const {
   const std::vector<RegexRuleInfo>& potential_matches =
       GetMatcherForStage(stage).GetPotentialMatches(params);
-  auto info = base::ranges::find_if(
+  auto info = std::ranges::find_if(
       potential_matches, [&params](const RegexRuleInfo& info) {
         return !ActionTypeAllowsMultipleActions(
                    info.regex_rule->action_type()) &&
@@ -238,7 +239,7 @@ RegexRulesMatcher::MatchHelper::GetPotentialMatches(
   std::vector<RegexRuleInfo> potential_matches;
   for (int re2_id : potential_re2_ids) {
     auto it = re2_id_to_rules_map_.find(re2_id);
-    CHECK(it != re2_id_to_rules_map_.end(), base::NotFatalUntil::M130);
+    CHECK(it != re2_id_to_rules_map_.end());
 
     const flat::RegexRule* rule = it->second;
     if (!DoesRuleMetadataMatchRequest(*rule->url_rule(), params)) {
@@ -267,14 +268,15 @@ bool RegexRulesMatcher::MatchHelper::IsEmpty() const {
 }
 
 void RegexRulesMatcher::MatchHelper::InitializeMatcher() {
-  if (IsEmpty())
+  if (IsEmpty()) {
     return;
+  }
 
   for (const auto* regex_rule : *regex_list_) {
     const flat_rule::UrlRule* rule = regex_rule->url_rule();
 
     const bool is_case_sensitive =
-        !(rule->options() & flat_rule::OptionFlag_IS_CASE_INSENSITIVE);
+        rule->options() & flat_rule::OptionFlag_IS_MATCH_CASE;
 
     const bool require_capturing = !!regex_rule->regex_substitution();
 
@@ -292,8 +294,9 @@ void RegexRulesMatcher::MatchHelper::InitializeMatcher() {
     // possible where this may happen, for example, the library's implementation
     // may change etc.
     // TODO(crbug.com/40118204): Notify the extension about the same.
-    if (error_code != re2::RE2::NoError)
+    if (error_code != re2::RE2::NoError) {
       continue;
+    }
 
     const bool did_insert =
         re2_id_to_rules_map_.insert({re2_id, regex_rule}).second;
@@ -307,8 +310,8 @@ void RegexRulesMatcher::MatchHelper::InitializeMatcher() {
 
   // FilteredRE2 guarantees that the returned set of candidate strings is
   // lower-cased.
-  DCHECK(base::ranges::all_of(strings_to_match, [](const std::string& s) {
-    return base::ranges::all_of(
+  DCHECK(std::ranges::all_of(strings_to_match, [](const std::string& s) {
+    return std::ranges::all_of(
         s, [](const char c) { return !base::IsAsciiUpper(c); });
   }));
 
@@ -317,8 +320,9 @@ void RegexRulesMatcher::MatchHelper::InitializeMatcher() {
   std::vector<base::MatcherStringPattern> patterns;
   patterns.reserve(strings_to_match.size());
 
-  for (size_t i = 0; i < strings_to_match.size(); ++i)
+  for (size_t i = 0; i < strings_to_match.size(); ++i) {
     patterns.emplace_back(std::move(strings_to_match[i]), i);
+  }
 
   substring_matcher_ = std::make_unique<base::SubstringSetMatcher>();
 
@@ -351,8 +355,7 @@ std::optional<RequestAction> RegexRulesMatcher::CreateActionFromInfo(
       return CreateAllowAllRequestsAction(params, rule);
     case flat::ActionType_modify_headers:
     case flat::ActionType_count:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   return std::nullopt;
@@ -388,8 +391,9 @@ RegexRulesMatcher::CreateRegexSubstitutionRedirectAction(
 
   // Redirects to JavaScript urls are not allowed.
   // TODO(crbug.com/40111509): this results in counterintuitive behavior.
-  if (redirect_url.SchemeIs(url::kJavaScriptScheme))
+  if (redirect_url.SchemeIs(url::kJavaScriptScheme)) {
     return std::nullopt;
+  }
 
   return CreateRedirectAction(params, *info.regex_rule->url_rule(),
                               std::move(redirect_url));
@@ -404,8 +408,7 @@ const RegexRulesMatcher::MatchHelper& RegexRulesMatcher::GetMatcherForStage(
       return headers_received_matcher_;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return before_request_matcher_;
+  NOTREACHED();
 }
 
 }  // namespace extensions::declarative_net_request

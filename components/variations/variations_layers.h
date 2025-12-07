@@ -42,7 +42,7 @@ enum class InvalidLayerReason {
 // with studies that require a different member to be active.
 class COMPONENT_EXPORT(VARIATIONS) VariationsLayers {
  public:
-  // Instantiates a `VariationsLayers` object with the given `seed`, and
+  // Instantiates a `VariationsLayers` object with `seed` and
   // `entropy_providers`.
   VariationsLayers(const VariationsSeed& seed,
                    const EntropyProviders& entropy_providers);
@@ -68,8 +68,16 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsLayers {
       const LayerMemberReference& layer_member_reference,
       uint32_t layer_member_id);
 
-  // Returns whether the layer that's associated with the `layer_id` is active.
-  // If not, for the same `layer_id`, IsLayerMemberActive() and
+  // Returns the soon-to-be-deprecated `layer_member_id` field as a repeated
+  // field. This is a fallback if the `layer_member_ids` field of `ref` is
+  // empty.
+  // TODO: crbug.com/417695924 - Remove once layer_member_ids field is launched.
+  static google::protobuf::RepeatedField<uint32_t> FallbackLayerMemberIds(
+      const LayerMemberReference& ref);
+
+  // Checks if the client's slot for that layer is associated with a layer
+  // member. Returns whether the layer that's associated with the `layer_id` is
+  // active. If not, for the same `layer_id`, IsLayerMemberActive() and
   // ActiveLayerMemberDependsOnHighEntropy() will always be false, and
   // GetRemainderEntropy() will return an entropy provider that always
   // randomizes to a fixed value (revealing no entropy).
@@ -124,7 +132,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsLayers {
   // the layer is not active.
   std::optional<Layer::EntropyMode> GetEntropyMode(uint32_t layer_id) const;
 
-  NormalizedMurmurHashEntropyProvider nil_entropy;
+  NormalizedMurmurHashEntropyProvider nil_entropy_;
   std::map<uint32_t, LayerInfo> active_member_for_layer_;
 };
 

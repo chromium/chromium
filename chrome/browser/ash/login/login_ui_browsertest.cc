@@ -37,22 +37,26 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/device_settings_cache_test_support.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
+
+namespace em = enterprise_management;
 
 namespace ash {
 
@@ -129,17 +133,26 @@ class LoginUIConsumerTest : public LoginUITestBase {
   LoginUIConsumerTest() = default;
   ~LoginUIConsumerTest() override = default;
 
-  void SetUpOnMainThread() override {
-    scoped_testing_cros_settings_.device_settings()->Set(
-        kDeviceOwner, base::Value(owner_.account_id.GetUserEmail()));
-    LoginUITestBase::SetUpOnMainThread();
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    LoginUITestBase::SetUpLocalStatePrefService(local_state);
+
+    ash::device_settings_cache::Update(
+        local_state, [&](em::PolicyData& policy) {
+          policy.set_username(owner_.account_id.GetUserEmail());
+        });
+
+    policy_helper_.device_policy()->policy_data().set_username(
+        owner_.account_id.GetUserEmail());
+    policy_helper_.device_policy()->policy_data().set_management_mode(
+        em::PolicyData::LOCAL_OWNER);
+    policy_helper_.RefreshDevicePolicy();
   }
 
  protected:
   LoginManagerMixin::TestUserInfo owner_{login_manager_mixin_.users()[3]};
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED};
-  ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  policy::DevicePolicyCrosTestHelper policy_helper_;
 };
 
 // Verifies basic login UI properties.
@@ -250,9 +263,9 @@ class DisplayPasswordButtonTest : public LoginManagerTest {
 
  protected:
   const LoginManagerMixin::TestUserInfo not_managed_user_{
-      AccountId::FromUserEmailGaiaId("user@gmail.com", "1111")};
+      AccountId::FromUserEmailGaiaId("user@gmail.com", GaiaId("1111"))};
   const LoginManagerMixin::TestUserInfo managed_user_{
-      AccountId::FromUserEmailGaiaId("user@example.com", "22222")};
+      AccountId::FromUserEmailGaiaId("user@example.com", GaiaId("22222"))};
   UserPolicyMixin user_policy_mixin_{&mixin_host_, managed_user_.account_id};
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
 };
@@ -377,9 +390,9 @@ class UserManagementDisclosureTest : public LoginManagerTest {
 
  protected:
   const LoginManagerMixin::TestUserInfo not_managed_user{
-      AccountId::FromUserEmailGaiaId("user@gmail.com", "1111")};
+      AccountId::FromUserEmailGaiaId("user@gmail.com", GaiaId("1111"))};
   const LoginManagerMixin::TestUserInfo managed_user{
-      AccountId::FromUserEmailGaiaId("user@example.com", "11111")};
+      AccountId::FromUserEmailGaiaId("user@example.com", GaiaId("11111"))};
   UserPolicyMixin managed_user_policy_mixin_{&mixin_host_,
                                              managed_user.account_id};
   LoginManagerMixin login_manager_mixin_{&mixin_host_};

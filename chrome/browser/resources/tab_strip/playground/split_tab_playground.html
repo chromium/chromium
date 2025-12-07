@@ -1,0 +1,16 @@
+<style>
+  :host {
+    display: flex;
+    gap: 4px;
+    border: 2px dashed var(--google-grey-500);
+    border-radius: 12px;
+    padding: 4px;
+    min-width: fit-content;
+    height: 100%;
+    flex-direction: column;
+  }
+</style>
+
+<div id="container" draggable="true">
+  <slot id="slot"></slot>
+</div>

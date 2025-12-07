@@ -55,15 +55,15 @@ void ReportingObserver::QueueReport(Report* report) {
   // batch.
   if (report_queue_.size() == 1) {
     execution_context_->GetTaskRunner(TaskType::kMiscPlatformAPI)
-        ->PostTask(FROM_HERE,
-                   WTF::BindOnce(&ReportingObserver::ReportToCallback,
-                                 WrapWeakPersistent(this)));
+        ->PostTask(FROM_HERE, BindOnce(&ReportingObserver::ReportToCallback,
+                                       WrapWeakPersistent(this)));
   }
 }
 
 bool ReportingObserver::ObservedType(const String& type) {
-  return !options_->hasTypesNonNull() || options_->typesNonNull().empty() ||
-         options_->typesNonNull().Find(type) != kNotFound;
+  return !options_->hasTypes() || !options_->types() ||
+         options_->types()->empty() ||
+         options_->types()->Find(type) != kNotFound;
 }
 
 bool ReportingObserver::Buffered() {

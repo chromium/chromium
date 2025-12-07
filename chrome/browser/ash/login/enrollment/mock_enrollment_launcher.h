@@ -63,8 +63,11 @@ class MockEnrollmentLauncher {
   MOCK_METHOD(void,
               UpdateDeviceAttributes,
               (const std::string& asset_id, const std::string& location));
-  MOCK_METHOD(void, ClearAuth, (base::OnceClosure callback));
+  MOCK_METHOD(void,
+              ClearAuth,
+              (base::OnceClosure callback, bool revoke_oauth2_tokens));
   MOCK_METHOD(bool, InProgress, (), (const));
+  MOCK_METHOD(std::string, GetOAuth2RefreshToken, (), (const));
 
   // Returns status consumer associated with the bound fake launcher. Crashes if
   // no fake launcher was create and bound to the mock.
@@ -110,13 +113,15 @@ class FakeEnrollmentLauncher : public EnrollmentLauncher {
   void EnrollUsingToken(const std::string& token) override;
   void EnrollUsingAttestation() override;
   void EnrollUsingEnrollmentToken() override;
-  void ClearAuth(base::OnceClosure callback) override;
+  void ClearAuth(base::OnceClosure callback,
+                 bool revoke_oauth2_tokens) override;
   void GetDeviceAttributeUpdatePermission() override;
   void UpdateDeviceAttributes(const std::string& asset_id,
                               const std::string& location) override;
   void Setup(const policy::EnrollmentConfig& enrollment_config,
              const std::string& enrolling_user_domain) override;
   bool InProgress() const override;
+  std::string GetOAuth2RefreshToken() const override;
 
  private:
   FakeEnrollmentLauncher(MockEnrollmentLauncher* mock,

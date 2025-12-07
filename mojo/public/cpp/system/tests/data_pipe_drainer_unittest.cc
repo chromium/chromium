@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"

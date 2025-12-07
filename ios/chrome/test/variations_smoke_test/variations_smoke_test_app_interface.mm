@@ -6,15 +6,19 @@
 
 #import <sys/sysctl.h>
 
+#import <string>
+
+#import "base/base64.h"
 #import "base/process/process.h"
+#import "base/run_loop.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/test/bind.h"
+#import "base/threading/thread.h"
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
 #import "components/variations/pref_names.h"
+#import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-
-using variations::prefs::kVariationsCompressedSeed;
-using variations::prefs::kVariationsLastFetchTime;
-using variations::prefs::kVariationsSeedSignature;
 
 namespace {
 
@@ -32,25 +36,46 @@ base::Time GetProcessStartTime() {
 
 @implementation VariationsSmokeTestAppInterface
 
-+ (BOOL)variationsSeedInLocalStatePrefs {
-  PrefService* localState = GetApplicationContext()->GetLocalState();
-  const std::string& compressedSeed =
-      localState->GetString(kVariationsCompressedSeed);
-  const std::string& seedSignature =
-      localState->GetString(kVariationsSeedSignature);
-  return !compressedSeed.empty() && !seedSignature.empty();
++ (void)isVariationsSeedStored:(void (^)(BOOL hasSeed))completion {
+  GetApplicationContext()
+      ->GetVariationsService()
+      ->GetSeedStoreForTesting()
+      ->GetSeedReaderWriterForTesting()
+      ->ReadSeedData(base::BindLambdaForTesting(
+          [completion](
+              variations::SeedReaderWriter::ReadSeedDataResult result) {
+            BOOL hasSeed =
+                (result.result != variations::LoadSeedResult::kEmpty);
+            completion(hasSeed);
+          }));
 }
 
 + (BOOL)variationsSeedFetchedInCurrentLaunch {
-  // If the pref value doesn't exist, the returned time will be 0 microseconds
+  // If there's no fetch time, the returned time will be std::nullopt.
+  base::Time lastFetchTime = GetApplicationContext()
+                                 ->GetVariationsService()
+                                 ->GetSeedStoreForTesting()
+                                 ->GetSeedReaderWriterForTesting()
+                                 ->GetSeedInfo()
+                                 .client_fetch_time;
+  // If there's no fetch time, the returned time will be 0 microseconds
   // from Windows epoch.
-  base::Time lastFetchTime = GetApplicationContext()->GetLocalState()->GetTime(
-      kVariationsLastFetchTime);
   return GetProcessStartTime() < lastFetchTime;
 }
 
 + (void)localStatePrefsCommitPendingWrite {
   GetApplicationContext()->GetLocalState()->CommitPendingWrite();
+}
+
++ (void)storeSeed:(NSString*)seed_data andSignature:(NSString*)signature {
+  std::string string_seed = base::SysNSStringToUTF8(seed_data);
+  std::string string_signature = base::SysNSStringToUTF8(signature);
+  GetApplicationContext()
+      ->GetVariationsService()
+      ->GetSeedStoreForTesting()
+      ->GetSeedReaderWriterForTesting()
+      ->StoreBase64EncodedSeedAndSignatureForTesting(string_seed,
+                                                     string_signature);
 }
 
 @end

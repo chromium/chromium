@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.omnibox.suggestions.answer;
 
 import android.text.Html;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
 
 /** Shared logic for implementations of {@link AnswerText} */
+@NullMarked
 class AnswerTextUtils {
     // Utils class, no member state.
     private AnswerTextUtils() {}

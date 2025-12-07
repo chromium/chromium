@@ -48,6 +48,7 @@ class PluginResponseWriter final {
   std::string body_;
   mojo::Remote<network::mojom::URLLoaderClient> client_;
   std::unique_ptr<mojo::DataPipeProducer> producer_;
+  std::string coep_header_;
 };
 
 }  // namespace pdf

@@ -26,6 +26,8 @@
 #include "content/test/test_content_browser_client.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
+#include "ui/gfx/native_ui_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
@@ -53,8 +55,9 @@ class WebViewTestWebContentsObserver : public content::WebContentsObserver {
       const WebViewTestWebContentsObserver&) = delete;
 
   ~WebViewTestWebContentsObserver() override {
-    if (web_contents_)
+    if (web_contents_) {
       content::WebContentsObserver::Observe(nullptr);
+    }
   }
 
   void WebContentsDestroyed() override {
@@ -164,6 +167,10 @@ class WebViewUnitTest : public views::test::WidgetTest {
   }
 
   void SetUp() override {
+    // Set the test content browser client to avoid pulling in needless
+    // dependencies from content.
+    SetBrowserClientForTesting(&test_browser_client_);
+
     rvh_enabler_ = std::make_unique<content::RenderViewHostTestEnabler>();
 
     views::WebView::WebContentsCreator creator = base::BindRepeating(
@@ -173,9 +180,6 @@ class WebViewUnitTest : public views::test::WidgetTest {
             creator);
     browser_context_ = std::make_unique<content::TestBrowserContext>();
     WidgetTest::SetUp();
-    // Set the test content browser client to avoid pulling in needless
-    // dependencies from content.
-    SetBrowserClientForTesting(&test_browser_client_);
 
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kDisableBackgroundingOccludedWindowsForTesting);
@@ -362,7 +366,7 @@ TEST_F(WebViewUnitTest, CrashedOverlayView) {
   web_view->SetWebContents(web_contents.get());
 
   auto crashed_overlay_view = std::make_unique<View>();
-  crashed_overlay_view->set_owned_by_client();
+  crashed_overlay_view->set_owned_by_client(View::OwnedByClientPassKey());
   web_view->SetCrashedOverlayView(crashed_overlay_view.get());
   EXPECT_FALSE(crashed_overlay_view->IsDrawn());
 
@@ -416,7 +420,8 @@ TEST_F(WebViewUnitTest, ReparentingUpdatesParentAccessible) {
   // a reference to the old parent's accessible object.
   std::unique_ptr<WebView> removed_view =
       contents_view_1->RemoveChildViewT(added_web_view);
-  EXPECT_EQ(nullptr, added_web_view->holder()->GetParentAccessible());
+  EXPECT_EQ(gfx::NativeViewAccessible(),
+            added_web_view->holder()->GetParentAccessible());
   added_web_view = contents_view_2->AddChildView(std::move(removed_view));
 
   // After reparenting the holder's NativeViewAccessible should match that of
@@ -456,6 +461,17 @@ TEST_F(WebViewUnitTest, WebViewClearsWebContentsOnDestruction) {
   EXPECT_EQ(web_contents.get(), web_view()->web_contents());
   web_contents.reset();
   EXPECT_EQ(nullptr, web_view()->web_contents());
+}
+
+TEST_F(WebViewUnitTest, AccessibleProperties) {
+  const std::unique_ptr<content::WebContents> web_contents =
+      CreateWebContents();
+  auto web_view = std::make_unique<WebView>(web_contents->GetBrowserContext());
+  web_view->SetWebContents(web_contents.get());
+
+  ui::AXNodeData data;
+  web_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kWebView);
 }
 
 }  // namespace views

@@ -4,27 +4,36 @@
 
 #include "services/on_device_model/public/cpp/test_support/test_response_holder.h"
 
+#include "base/functional/bind.h"
+
 namespace on_device_model {
 
 TestResponseHolder::TestResponseHolder() = default;
 
 TestResponseHolder::~TestResponseHolder() = default;
 
-mojo::PendingRemote<mojom::StreamingResponder>
-TestResponseHolder::BindRemote() {
-  return receiver_.BindNewPipeAndPassRemote();
-}
-
-void TestResponseHolder::WaitForCompletion() {
-  run_loop_.Run();
-}
-
 void TestResponseHolder::OnResponse(mojom::ResponseChunkPtr chunk) {
   responses_.push_back(chunk->text);
 }
 
 void TestResponseHolder::OnComplete(mojom::ResponseSummaryPtr summary) {
-  run_loop_.Quit();
+  complete_ = true;
+  output_token_count_ = summary->output_token_count;
+  OnCompleted();
+}
+
+TestAsrResponseHolder::TestAsrResponseHolder() = default;
+TestAsrResponseHolder::~TestAsrResponseHolder() = default;
+
+void TestAsrResponseHolder::OnResponse(
+    std::vector<mojom::SpeechRecognitionResultPtr> results) {
+  for (const auto& r : results) {
+    responses_.push_back(r->transcript);
+  }
+  if (wait_for_response_) {
+    wait_for_response_ = false;
+    OnCompleted();
+  }
 }
 
 }  // namespace on_device_model

@@ -31,6 +31,7 @@ public class DefaultSearchEngineDialogHelperUtils {
         CriteriaHelper.pollUiThread(
                 () -> {
                     ViewGroup options = rootView.findViewById(OPTION_LAYOUT_ID);
+                    Criteria.checkThat(options, Matchers.notNullValue());
                     Criteria.checkThat(options.getChildCount(), Matchers.greaterThan(0));
                 });
 
@@ -39,10 +40,10 @@ public class DefaultSearchEngineDialogHelperUtils {
                 () -> {
                     ViewGroup options = rootView.findViewById(OPTION_LAYOUT_ID);
                     options.getChildAt(0).performClick();
-                    sSelectedEngine = (String) (options.getChildAt(0).getTag());
+                    sSelectedEngine = (String) options.getChildAt(0).getTag();
                 });
 
-        // Wait for the OK button to be clicakble.
+        // Wait for the OK button to be clickable.
         CriteriaHelper.pollUiThread(
                 () -> {
                     View view = rootView.findViewById(OK_BUTTON_ID);

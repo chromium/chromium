@@ -5,11 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ENCRYPTEDMEDIA_MEDIA_KEY_SYSTEM_ACCESS_INITIALIZER_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ENCRYPTEDMEDIA_MEDIA_KEY_SYSTEM_ACCESS_INITIALIZER_BASE_H_
 
+#include <vector>
+
 #include "third_party/blink/public/platform/web_media_key_system_configuration.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_key_system_configuration.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/encrypted_media_request.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -24,7 +26,8 @@ class MediaKeySystemAccessInitializerBase : public EncryptedMediaRequest,
       ScriptPromiseResolverBase*,
       const String& key_system,
       const HeapVector<Member<MediaKeySystemConfiguration>>&
-          supported_configurations);
+          supported_configurations,
+      bool is_from_media_capabilities);
 
   MediaKeySystemAccessInitializerBase(
       const MediaKeySystemAccessInitializerBase&) = delete;
@@ -35,7 +38,7 @@ class MediaKeySystemAccessInitializerBase : public EncryptedMediaRequest,
 
   // EncryptedMediaRequest implementation.
   WebString KeySystem() const override { return key_system_; }
-  const WebVector<WebMediaKeySystemConfiguration>& SupportedConfigurations()
+  const std::vector<WebMediaKeySystemConfiguration>& SupportedConfigurations()
       const override {
     return supported_configurations_;
   }
@@ -54,7 +57,10 @@ class MediaKeySystemAccessInitializerBase : public EncryptedMediaRequest,
 
   Member<ScriptPromiseResolverBase> resolver_;
   const String key_system_;
-  WebVector<WebMediaKeySystemConfiguration> supported_configurations_;
+  std::vector<WebMediaKeySystemConfiguration> supported_configurations_
+      ALLOW_DISCOURAGED_TYPE(
+          "Matches WebEncryptedMediaRequest::SupportedConfiguurations");
+  bool is_from_media_capabilities_;
 };
 
 }  // namespace blink

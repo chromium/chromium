@@ -1,0 +1,64 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "non_modal_signin_promo_coordinator.h",
+    "non_modal_signin_promo_coordinator.mm",
+    "non_modal_signin_promo_mediator.h",
+    "non_modal_signin_promo_mediator.mm",
+    "non_modal_signin_promo_metrics_util.h",
+    "non_modal_signin_promo_metrics_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/feature_engagement/public",
+    "//components/signin/public/identity_manager/objc",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/ui_bundled:continuation",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
+    "//ios/chrome/browser/authentication/ui_bundled/signin_promo",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/infobars/ui_bundled/banners",
+    "//ios/chrome/browser/infobars/ui_bundled/coordinators",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ui/base",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "non_modal_signin_promo_mediator_unittest.mm" ]
+
+  deps = [
+    ":coordinator",
+    "//base",
+    "//base/test:test_support",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/test:test_support",
+    "//components/signin/public/identity_manager/objc",
+    "//ios/chrome/browser/authentication/ui_bundled/signin_promo",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

@@ -1,0 +1,36 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+source_set("toasts") {
+  sources = [
+    "toast_id.cc",
+    "toast_id.h",
+    "toast_registry.cc",
+    "toast_registry.h",
+    "toast_specification.cc",
+    "toast_specification.h",
+  ]
+  public_deps = [
+    "//base",
+    "//ui/base",
+    "//ui/menus",
+  ]
+  deps = [ "//components/vector_icons" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "toast_registry_unittest.cc" ]
+  deps = [
+    ":toasts",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//testing/gtest",
+    "//ui/gfx",
+    "//ui/menus",
+  ]
+}

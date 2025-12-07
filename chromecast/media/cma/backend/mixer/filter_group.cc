@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -231,7 +232,7 @@ float FilterGroup::MixAndFilter(
       float* buffer = input.channel_mixer->Transform(
           input.group->GetOutputBuffer(), input_frames_per_write_);
       for (int i = 0; i < input_frames_per_write_ * num_channels_; ++i) {
-        interleaved_[i] += buffer[i];
+        interleaved_[i] += UNSAFE_TODO(buffer[i]);
       }
     }
   }
@@ -241,7 +242,7 @@ float FilterGroup::MixAndFilter(
     if (input->has_render_output()) {
       float* buffer = input->RenderedAudioBuffer();
       for (int i = 0; i < input_frames_per_write_ * num_channels_; ++i) {
-        interleaved_[i] += buffer[i];
+        interleaved_[i] += UNSAFE_TODO(buffer[i]);
       }
     }
   }

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/platform/peerconnection/webrtc_video_track_source.h"
+
 #include <algorithm>
 
 #include "base/functional/callback_helpers.h"
@@ -10,18 +12,20 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
+#include "media/base/format_utils.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/peerconnection/webrtc_video_track_source.h"
 #include "third_party/blink/renderer/platform/testing/video_frame_utils.h"
 #include "third_party/blink/renderer/platform/webrtc/convert_to_webrtc_video_frame_buffer.h"
 #include "third_party/webrtc/api/video/video_frame.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::Mock;
 using testing::Sequence;
 
@@ -35,7 +39,7 @@ void ExpectUpdateRectEquals(const gfx::Rect& expected,
   EXPECT_EQ(expected.height(), actual.height);
 }
 
-class MockVideoSink : public rtc::VideoSinkInterface<webrtc::VideoFrame> {
+class MockVideoSink : public webrtc::VideoSinkInterface<webrtc::VideoFrame> {
  public:
   MOCK_METHOD1(OnFrame, void(const webrtc::VideoFrame&));
 };
@@ -43,7 +47,7 @@ class MockVideoSink : public rtc::VideoSinkInterface<webrtc::VideoFrame> {
 TEST(WebRtcVideoTrackSourceRefreshFrameTest, CallsRefreshFrame) {
   bool called = false;
   scoped_refptr<WebRtcVideoTrackSource> track_source =
-      new rtc::RefCountedObject<WebRtcVideoTrackSource>(
+      new webrtc::RefCountedObject<WebRtcVideoTrackSource>(
           /*is_screencast=*/false,
           /*needs_denoising=*/std::nullopt,
           base::BindLambdaForTesting([](const media::VideoCaptureFeedback&) {}),
@@ -58,14 +62,18 @@ class WebRtcVideoTrackSourceTest
           std::tuple<media::VideoFrame::StorageType, media::VideoPixelFormat>> {
  public:
   WebRtcVideoTrackSourceTest()
-      : track_source_(new rtc::RefCountedObject<WebRtcVideoTrackSource>(
+      : shared_resources_(WebRtcVideoFrameAdapter::SharedResources::Create(
+            /*gpu_factories=*/nullptr)),
+        track_source_(new webrtc::RefCountedObject<WebRtcVideoTrackSource>(
             /*is_screencast=*/false,
             /*needs_denoising=*/std::nullopt,
             base::BindRepeating(&WebRtcVideoTrackSourceTest::ProcessFeedback,
                                 base::Unretained(this)),
             base::BindLambdaForTesting([] {}),
-            /*gpu_factories=*/nullptr)) {
-    track_source_->AddOrUpdateSink(&mock_sink_, rtc::VideoSinkWants());
+            /*gpu_factories=*/nullptr,
+            shared_resources_)) {
+    track_source_->AddOrUpdateSink(&mock_sink_, webrtc::VideoSinkWants());
+    test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
   }
 
   void ProcessFeedback(const media::VideoCaptureFeedback& feedback) {
@@ -73,7 +81,9 @@ class WebRtcVideoTrackSourceTest
   }
 
   ~WebRtcVideoTrackSourceTest() override {
-    track_source_->RemoveSink(&mock_sink_);
+    if (track_source_) {
+      track_source_->RemoveSink(&mock_sink_);
+    }
   }
 
   struct FrameParameters {
@@ -84,12 +94,52 @@ class WebRtcVideoTrackSourceTest
     media::VideoPixelFormat pixel_format;
   };
 
+  void RegisterCallback(base::OnceCallback<void(bool)> result_cb) {
+    map_callbacks_.push_back(std::move(result_cb));
+  }
+
+  void InvokeNextMapCallback() {
+    ASSERT_FALSE(map_callbacks_.empty());
+    auto cb = std::move(map_callbacks_.front());
+    map_callbacks_.pop_front();
+    std::move(cb).Run(true);
+  }
+
   void SendTestFrame(const FrameParameters& frame_parameters,
                      base::TimeDelta timestamp) {
     scoped_refptr<media::VideoFrame> frame = CreateTestFrame(
         frame_parameters.coded_size, frame_parameters.visible_rect,
         frame_parameters.natural_size, frame_parameters.storage_type,
-        frame_parameters.pixel_format, timestamp);
+        frame_parameters.pixel_format, timestamp, test_sii_.get());
+    track_source_->OnFrameCaptured(frame);
+  }
+
+  void SendTestFrameWithMappableGMB(const FrameParameters& frame_parameters,
+                                    base::TimeDelta timestamp,
+                                    bool premapped) {
+    std::optional<viz::SharedImageFormat> si_format =
+        media::VideoPixelFormatToSharedImageFormat(
+            frame_parameters.pixel_format);
+    CHECK(si_format) << "Pixel format "
+                     << media::VideoPixelFormatToString(
+                            frame_parameters.pixel_format)
+                     << " has no corresponding viz::SharedImageFormat";
+
+    // Setting some default usage in order to get a mappable shared image.
+    auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+                    gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+    auto shared_image = test_sii_->CreateSharedImageWithAsyncMapControl(
+        {*si_format, frame_parameters.coded_size, gfx::ColorSpace(),
+         gpu::SharedImageUsageSet(si_usage), "WebRtcVideoTrackSourceTest"},
+        gfx::BufferUsage::GPU_READ_CPU_READ_WRITE, premapped,
+        base::BindRepeating(&WebRtcVideoTrackSourceTest::RegisterCallback,
+                            base::Unretained(this)));
+    CHECK(shared_image) << "Failed to create a mappable shared image.";
+    auto frame = media::VideoFrame::WrapMappableSharedImage(
+        std::move(shared_image), test_sii_->GenVerifiedSyncToken(),
+        base::NullCallback(), frame_parameters.visible_rect,
+        frame_parameters.natural_size, timestamp);
+
     track_source_->OnFrameCaptured(frame);
   }
 
@@ -99,7 +149,7 @@ class WebRtcVideoTrackSourceTest
     scoped_refptr<media::VideoFrame> frame = CreateTestFrame(
         frame_parameters.coded_size, frame_parameters.visible_rect,
         frame_parameters.natural_size, frame_parameters.storage_type,
-        frame_parameters.pixel_format, base::TimeDelta());
+        frame_parameters.pixel_format, base::TimeDelta(), test_sii_.get());
     track_source_->OnFrameCaptured(frame);
     EXPECT_EQ(feedback_.max_pixels, max_pixels);
     EXPECT_EQ(feedback_.max_framerate_fps, max_framerate);
@@ -111,7 +161,7 @@ class WebRtcVideoTrackSourceTest
     scoped_refptr<media::VideoFrame> frame = CreateTestFrame(
         frame_parameters.coded_size, frame_parameters.visible_rect,
         frame_parameters.natural_size, frame_parameters.storage_type,
-        frame_parameters.pixel_format, base::TimeDelta());
+        frame_parameters.pixel_format, base::TimeDelta(), test_sii_.get());
     frame->metadata().capture_counter = capture_counter;
     frame->metadata().capture_update_rect = update_rect;
     track_source_->OnFrameCaptured(frame);
@@ -122,7 +172,8 @@ class WebRtcVideoTrackSourceTest
     scoped_refptr<media::VideoFrame> frame = CreateTestFrame(
         frame_parameters.coded_size, frame_parameters.visible_rect,
         frame_parameters.natural_size, frame_parameters.storage_type,
-        frame_parameters.pixel_format, base::TimeDelta());
+        frame_parameters.pixel_format, base::TimeDelta(), test_sii_.get(),
+        color_space);
     frame->set_color_space(color_space);
     track_source_->OnFrameCaptured(frame);
   }
@@ -166,10 +217,18 @@ class WebRtcVideoTrackSourceTest
     };
   }
 
+  void SetRequireMappedFrame(bool require_mapped_frame) {
+    shared_resources_->SetFeedback(
+        media::VideoCaptureFeedback().RequireMapped(require_mapped_frame));
+  }
+
  protected:
   MockVideoSink mock_sink_;
+  scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> shared_resources_;
   scoped_refptr<WebRtcVideoTrackSource> track_source_;
   media::VideoCaptureFeedback feedback_;
+  Deque<base::OnceCallback<void(bool)>> map_callbacks_;
+  scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
 };
 
 namespace {
@@ -182,7 +241,7 @@ std::vector<WebRtcVideoTrackSourceTest::ParamType> TestParams() {
         media::VideoFrame::StorageType::STORAGE_OWNED_MEMORY, format);
   }
   test_params.emplace_back(
-      media::VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER,
+      media::VideoFrame::StorageType::STORAGE_MAPPABLE_SHARED_IMAGE,
       media::VideoPixelFormat::PIXEL_FORMAT_NV12);
   test_params.emplace_back(media::VideoFrame::STORAGE_OPAQUE,
                            media::VideoPixelFormat::PIXEL_FORMAT_NV12);
@@ -203,16 +262,16 @@ TEST_P(WebRtcVideoTrackSourceTest, TestTimestamps) {
   Sequence s;
   EXPECT_CALL(mock_sink_, OnFrame(_))
       .InSequence(s)
-      .WillOnce(Invoke([](const webrtc::VideoFrame& frame) {
+      .WillOnce([](const webrtc::VideoFrame& frame) {
         ASSERT_TRUE(frame.capture_time_identifier().has_value());
         EXPECT_EQ(frame.capture_time_identifier().value().us(), 0);
-      }));
+      });
   EXPECT_CALL(mock_sink_, OnFrame(_))
       .InSequence(s)
-      .WillOnce(Invoke([](const webrtc::VideoFrame& frame) {
+      .WillOnce([](const webrtc::VideoFrame& frame) {
         ASSERT_TRUE(frame.capture_time_identifier().has_value());
         EXPECT_EQ(frame.capture_time_identifier().value().us(), 16666);
-      }));
+      });
   SendTestFrame(frame_parameters, base::Seconds(0));
   const float kFps = 60.0;
   SendTestFrame(frame_parameters, base::Seconds(1 / kFps));
@@ -231,10 +290,10 @@ TEST_P(WebRtcVideoTrackSourceTest, CropFrameTo640360) {
       FrameAdaptation_KeepAsIs(kNaturalSize));
 
   EXPECT_CALL(mock_sink_, OnFrame(_))
-      .WillOnce(Invoke([kNaturalSize](const webrtc::VideoFrame& frame) {
+      .WillOnce([kNaturalSize](const webrtc::VideoFrame& frame) {
         EXPECT_EQ(kNaturalSize.width(), frame.width());
         EXPECT_EQ(kNaturalSize.height(), frame.height());
-      }));
+      });
   SendTestFrame(frame_parameters, base::TimeDelta());
 }
 
@@ -250,11 +309,20 @@ TEST_P(WebRtcVideoTrackSourceTest, TestColorSpaceSettings) {
       .storage_type = std::get<0>(GetParam()),
       .pixel_format = std::get<1>(GetParam())};
 
+  if (frame_parameters.pixel_format == media::PIXEL_FORMAT_ABGR ||
+      frame_parameters.pixel_format == media::PIXEL_FORMAT_ARGB ||
+      frame_parameters.pixel_format == media::PIXEL_FORMAT_XBGR ||
+      frame_parameters.pixel_format == media::PIXEL_FORMAT_XRGB) {
+    // RGB frames can't be encoded directly, they will be converted and color
+    // space will change.
+    return;
+  }
+
   Sequence s;
 
   EXPECT_CALL(mock_sink_, OnFrame(_))
       .InSequence(s)
-      .WillOnce(Invoke([](const webrtc::VideoFrame& frame) {
+      .WillOnce([](const webrtc::VideoFrame& frame) {
         ASSERT_TRUE(frame.color_space().has_value());
         EXPECT_EQ(frame.color_space().value().matrix(),
                   webrtc::ColorSpace::MatrixID::kSMPTE170M);
@@ -264,10 +332,10 @@ TEST_P(WebRtcVideoTrackSourceTest, TestColorSpaceSettings) {
                   webrtc::ColorSpace::PrimaryID::kBT709);
         EXPECT_EQ(frame.color_space().value().range(),
                   webrtc::ColorSpace::RangeID::kLimited);
-      }));
+      });
   EXPECT_CALL(mock_sink_, OnFrame(_))
       .InSequence(s)
-      .WillOnce(Invoke([](const webrtc::VideoFrame& frame) {
+      .WillOnce([](const webrtc::VideoFrame& frame) {
         ASSERT_TRUE(frame.color_space().has_value());
         EXPECT_EQ(frame.color_space().value().matrix(),
                   webrtc::ColorSpace::MatrixID::kBT709);
@@ -277,16 +345,20 @@ TEST_P(WebRtcVideoTrackSourceTest, TestColorSpaceSettings) {
                   webrtc::ColorSpace::PrimaryID::kBT709);
         EXPECT_EQ(frame.color_space().value().range(),
                   webrtc::ColorSpace::RangeID::kFull);
-      }));
-
-  // For default REC709{BT709,BT709,BT709,Limited}, we will not set color space
-  // and transmit it by RTP since decoder side would guess it if color space is
-  // invalid.
+      });
   EXPECT_CALL(mock_sink_, OnFrame(_))
       .InSequence(s)
-      .WillOnce(Invoke([](const webrtc::VideoFrame& frame) {
-        ASSERT_FALSE(frame.color_space().has_value());
-      }));
+      .WillOnce([](const webrtc::VideoFrame& frame) {
+        ASSERT_TRUE(frame.color_space().has_value());
+        EXPECT_EQ(frame.color_space().value().matrix(),
+                  webrtc::ColorSpace::MatrixID::kSMPTE170M);
+        EXPECT_EQ(frame.color_space().value().transfer(),
+                  webrtc::ColorSpace::TransferID::kSMPTE170M);
+        EXPECT_EQ(frame.color_space().value().primaries(),
+                  webrtc::ColorSpace::PrimaryID::kSMPTE170M);
+        EXPECT_EQ(frame.color_space().value().range(),
+                  webrtc::ColorSpace::RangeID::kLimited);
+      });
 
   gfx::ColorSpace color_range_limited(
       gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::BT709,
@@ -298,10 +370,11 @@ TEST_P(WebRtcVideoTrackSourceTest, TestColorSpaceSettings) {
       gfx::ColorSpace::MatrixID::BT709, gfx::ColorSpace::RangeID::FULL);
   SendTestFrameWithColorSpace(frame_parameters, color_range_full);
 
-  gfx::ColorSpace default_bt709_color_space(
-      gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::BT709,
-      gfx::ColorSpace::MatrixID::BT709, gfx::ColorSpace::RangeID::LIMITED);
-  SendTestFrameWithColorSpace(frame_parameters, default_bt709_color_space);
+  gfx::ColorSpace default_bt601_color_space(
+      gfx::ColorSpace::PrimaryID::SMPTE170M,
+      gfx::ColorSpace::TransferID::SMPTE170M,
+      gfx::ColorSpace::MatrixID::SMPTE170M, gfx::ColorSpace::RangeID::LIMITED);
+  SendTestFrameWithColorSpace(frame_parameters, default_bt601_color_space);
 }
 
 TEST_P(WebRtcVideoTrackSourceTest, SetsFeedback) {
@@ -314,7 +387,7 @@ TEST_P(WebRtcVideoTrackSourceTest, SetsFeedback) {
   const gfx::Size kScaleToSize = gfx::Size(320, 180);
   const float k5Fps = 5.0;
 
-  rtc::VideoSinkWants sink_wants;
+  webrtc::VideoSinkWants sink_wants;
   sink_wants.max_pixel_count = kScaleToSize.GetArea();
   sink_wants.max_framerate_fps = static_cast<int>(k5Fps);
   track_source_->SetSinkWantsForTesting(sink_wants);
@@ -337,10 +410,10 @@ TEST_P(WebRtcVideoTrackSourceTest, CropFrameTo320320) {
       FrameAdaptation_KeepAsIs(kNaturalSize));
 
   EXPECT_CALL(mock_sink_, OnFrame(_))
-      .WillOnce(Invoke([kNaturalSize](const webrtc::VideoFrame& frame) {
+      .WillOnce([kNaturalSize](const webrtc::VideoFrame& frame) {
         EXPECT_EQ(kNaturalSize.width(), frame.width());
         EXPECT_EQ(kNaturalSize.height(), frame.height());
-      }));
+      });
   SendTestFrame(frame_parameters, base::TimeDelta());
 }
 
@@ -356,10 +429,10 @@ TEST_P(WebRtcVideoTrackSourceTest, Scale720To640360) {
       FrameAdaptation_KeepAsIs(kNaturalSize));
 
   EXPECT_CALL(mock_sink_, OnFrame(_))
-      .WillOnce(Invoke([kNaturalSize](const webrtc::VideoFrame& frame) {
+      .WillOnce([kNaturalSize](const webrtc::VideoFrame& frame) {
         EXPECT_EQ(kNaturalSize.width(), frame.width());
         EXPECT_EQ(kNaturalSize.height(), frame.height());
-      }));
+      });
   SendTestFrame(frame_parameters, base::TimeDelta());
 }
 
@@ -377,19 +450,19 @@ TEST_P(WebRtcVideoTrackSourceTest, UpdateRectWithNoTransform) {
   // ignored and the full frame should be marked as updated.
   const gfx::Rect kUpdateRect1(1, 2, 3, 4);
   EXPECT_CALL(mock_sink_, OnFrame(_))
-      .WillOnce(Invoke([](const webrtc::VideoFrame& frame) {
+      .WillOnce([](const webrtc::VideoFrame& frame) {
         ExpectUpdateRectEquals(gfx::Rect(0, 0, frame.width(), frame.height()),
                                frame.update_rect());
-      }));
+      });
   int capture_counter = 101;  // arbitrary absolute value
   SendTestFrameWithUpdateRect(frame_parameters, capture_counter, kUpdateRect1);
   Mock::VerifyAndClearExpectations(&mock_sink_);
 
   // Update rect for second frame should get passed along.
   EXPECT_CALL(mock_sink_, OnFrame(_))
-      .WillOnce(Invoke([kUpdateRect1](const webrtc::VideoFrame& frame) {
+      .WillOnce([kUpdateRect1](const webrtc::VideoFrame& frame) {
         ExpectUpdateRectEquals(kUpdateRect1, frame.update_rect());
-      }));
+      });
   SendTestFrameWithUpdateRect(frame_parameters, ++capture_counter,
                               kUpdateRect1);
   Mock::VerifyAndClearExpectations(&mock_sink_);
@@ -409,12 +482,11 @@ TEST_P(WebRtcVideoTrackSourceTest, UpdateRectWithNoTransform) {
       FrameAdaptation_KeepAsIs(frame_parameters.natural_size));
   const gfx::Rect kUpdateRect3(3, 4, 5, 6);
   EXPECT_CALL(mock_sink_, OnFrame(_))
-      .WillOnce(
-          Invoke([kUpdateRect2, kUpdateRect3](const webrtc::VideoFrame& frame) {
-            gfx::Rect expected_update_rect(kUpdateRect2);
-            expected_update_rect.Union(kUpdateRect3);
-            ExpectUpdateRectEquals(expected_update_rect, frame.update_rect());
-          }));
+      .WillOnce([kUpdateRect2, kUpdateRect3](const webrtc::VideoFrame& frame) {
+        gfx::Rect expected_update_rect(kUpdateRect2);
+        expected_update_rect.Union(kUpdateRect3);
+        ExpectUpdateRectEquals(expected_update_rect, frame.update_rect());
+      });
   SendTestFrameWithUpdateRect(frame_parameters, ++capture_counter,
                               kUpdateRect3);
   Mock::VerifyAndClearExpectations(&mock_sink_);
@@ -424,9 +496,9 @@ TEST_P(WebRtcVideoTrackSourceTest, UpdateRectWithNoTransform) {
   ++capture_counter;
   const gfx::Rect kUpdateRect4(4, 5, 6, 7);
   EXPECT_CALL(mock_sink_, OnFrame(_))
-      .WillOnce(Invoke([kVisibleRect](const webrtc::VideoFrame& frame) {
+      .WillOnce([kVisibleRect](const webrtc::VideoFrame& frame) {
         ExpectUpdateRectEquals(kVisibleRect, frame.update_rect());
-      }));
+      });
   SendTestFrameWithUpdateRect(frame_parameters, ++capture_counter,
                               kUpdateRect4);
   Mock::VerifyAndClearExpectations(&mock_sink_);
@@ -435,18 +507,18 @@ TEST_P(WebRtcVideoTrackSourceTest, UpdateRectWithNoTransform) {
   // indicates that nothing has changed.
   const gfx::Rect kEmptyRectWithZeroOrigin(0, 0, 0, 0);
   EXPECT_CALL(mock_sink_, OnFrame(_))
-      .WillOnce(Invoke([](const webrtc::VideoFrame& frame) {
+      .WillOnce([](const webrtc::VideoFrame& frame) {
         EXPECT_TRUE(frame.update_rect().IsEmpty());
-      }));
+      });
   SendTestFrameWithUpdateRect(frame_parameters, ++capture_counter,
                               kEmptyRectWithZeroOrigin);
   Mock::VerifyAndClearExpectations(&mock_sink_);
 
   const gfx::Rect kEmptyRectWithNonZeroOrigin(10, 20, 0, 0);
   EXPECT_CALL(mock_sink_, OnFrame(_))
-      .WillOnce(Invoke([](const webrtc::VideoFrame& frame) {
+      .WillOnce([](const webrtc::VideoFrame& frame) {
         EXPECT_TRUE(frame.update_rect().IsEmpty());
-      }));
+      });
   SendTestFrameWithUpdateRect(frame_parameters, ++capture_counter,
                               kEmptyRectWithNonZeroOrigin);
   Mock::VerifyAndClearExpectations(&mock_sink_);
@@ -454,9 +526,9 @@ TEST_P(WebRtcVideoTrackSourceTest, UpdateRectWithNoTransform) {
   // A frame without a CAPTURE_COUNTER and CAPTURE_UPDATE_RECT is treated as the
   // whole content having changed.
   EXPECT_CALL(mock_sink_, OnFrame(_))
-      .WillOnce(Invoke([kVisibleRect](const webrtc::VideoFrame& frame) {
+      .WillOnce([kVisibleRect](const webrtc::VideoFrame& frame) {
         ExpectUpdateRectEquals(kVisibleRect, frame.update_rect());
-      }));
+      });
   SendTestFrame(frame_parameters, base::TimeDelta());
   Mock::VerifyAndClearExpectations(&mock_sink_);
 }
@@ -475,10 +547,10 @@ TEST_P(WebRtcVideoTrackSourceTest, UpdateRectWithCropFromUpstream) {
   // ignored and the full frame should be marked as updated.
   const gfx::Rect kUpdateRect1(120, 70, 160, 40);
   EXPECT_CALL(mock_sink_, OnFrame(_))
-      .WillOnce(Invoke([](const webrtc::VideoFrame& frame) {
+      .WillOnce([](const webrtc::VideoFrame& frame) {
         ExpectUpdateRectEquals(gfx::Rect(0, 0, frame.width(), frame.height()),
                                frame.update_rect());
-      }));
+      });
   int capture_counter = 101;  // arbitrary absolute value
   SendTestFrameWithUpdateRect(frame_parameters, capture_counter, kUpdateRect1);
   Mock::VerifyAndClearExpectations(&mock_sink_);
@@ -486,12 +558,11 @@ TEST_P(WebRtcVideoTrackSourceTest, UpdateRectWithCropFromUpstream) {
   // Update rect for second frame should get passed along.
   // Update rect fully contained in crop region.
   EXPECT_CALL(mock_sink_, OnFrame(_))
-      .WillOnce(
-          Invoke([kUpdateRect1, kVisibleRect](const webrtc::VideoFrame& frame) {
-            gfx::Rect expected_update_rect(kUpdateRect1);
-            expected_update_rect.Offset(-kVisibleRect.x(), -kVisibleRect.y());
-            ExpectUpdateRectEquals(expected_update_rect, frame.update_rect());
-          }));
+      .WillOnce([kUpdateRect1, kVisibleRect](const webrtc::VideoFrame& frame) {
+        gfx::Rect expected_update_rect(kUpdateRect1);
+        expected_update_rect.Offset(-kVisibleRect.x(), -kVisibleRect.y());
+        ExpectUpdateRectEquals(expected_update_rect, frame.update_rect());
+      });
   SendTestFrameWithUpdateRect(frame_parameters, ++capture_counter,
                               kUpdateRect1);
   Mock::VerifyAndClearExpectations(&mock_sink_);
@@ -499,9 +570,9 @@ TEST_P(WebRtcVideoTrackSourceTest, UpdateRectWithCropFromUpstream) {
   // Update rect outside crop region.
   const gfx::Rect kUpdateRect2(2, 3, 4, 5);
   EXPECT_CALL(mock_sink_, OnFrame(_))
-      .WillOnce(Invoke([](const webrtc::VideoFrame& frame) {
+      .WillOnce([](const webrtc::VideoFrame& frame) {
         EXPECT_TRUE(frame.update_rect().IsEmpty());
-      }));
+      });
   SendTestFrameWithUpdateRect(frame_parameters, ++capture_counter,
                               kUpdateRect2);
   Mock::VerifyAndClearExpectations(&mock_sink_);
@@ -510,11 +581,11 @@ TEST_P(WebRtcVideoTrackSourceTest, UpdateRectWithCropFromUpstream) {
   const gfx::Rect kUpdateRect3(kVisibleRect.x() + 10, kVisibleRect.y() + 8,
                                kVisibleRect.width(), kVisibleRect.height());
   EXPECT_CALL(mock_sink_, OnFrame(_))
-      .WillOnce(Invoke([kVisibleRect](const webrtc::VideoFrame& frame) {
+      .WillOnce([kVisibleRect](const webrtc::VideoFrame& frame) {
         ExpectUpdateRectEquals(gfx::Rect(10, 8, kVisibleRect.width() - 10,
                                          kVisibleRect.height() - 8),
                                frame.update_rect());
-      }));
+      });
   SendTestFrameWithUpdateRect(frame_parameters, ++capture_counter,
                               kUpdateRect3);
   Mock::VerifyAndClearExpectations(&mock_sink_);
@@ -525,10 +596,10 @@ TEST_P(WebRtcVideoTrackSourceTest, UpdateRectWithCropFromUpstream) {
                                 kVisibleRect.width(), kVisibleRect.height());
   frame_parameters.visible_rect = kVisibleRect2;
   EXPECT_CALL(mock_sink_, OnFrame(_))
-      .WillOnce(Invoke([](const webrtc::VideoFrame& frame) {
+      .WillOnce([](const webrtc::VideoFrame& frame) {
         ExpectUpdateRectEquals(gfx::Rect(0, 0, frame.width(), frame.height()),
                                frame.update_rect());
-      }));
+      });
   SendTestFrameWithUpdateRect(frame_parameters, ++capture_counter,
                               kUpdateRect1);
   Mock::VerifyAndClearExpectations(&mock_sink_);
@@ -540,10 +611,10 @@ TEST_P(WebRtcVideoTrackSourceTest, UpdateRectWithCropFromUpstream) {
                                 kVisibleRect2.height() - 1);
   frame_parameters.visible_rect = kVisibleRect3;
   EXPECT_CALL(mock_sink_, OnFrame(_))
-      .WillOnce(Invoke([](const webrtc::VideoFrame& frame) {
+      .WillOnce([](const webrtc::VideoFrame& frame) {
         ExpectUpdateRectEquals(gfx::Rect(0, 0, frame.width(), frame.height()),
                                frame.update_rect());
-      }));
+      });
   SendTestFrameWithUpdateRect(frame_parameters, ++capture_counter,
                               kUpdateRect1);
   Mock::VerifyAndClearExpectations(&mock_sink_);
@@ -569,9 +640,9 @@ TEST_P(WebRtcVideoTrackSourceTest, UpdateRectWithScaling) {
   // ignored and no update rect should be set.
   const gfx::Rect kUpdateRect1(120, 70, 160, 40);
   EXPECT_CALL(mock_sink_, OnFrame(_))
-      .WillOnce(Invoke([](const webrtc::VideoFrame& frame) {
+      .WillOnce([](const webrtc::VideoFrame& frame) {
         EXPECT_FALSE(frame.has_update_rect());
-      }));
+      });
   int capture_counter = 101;  // arbitrary absolute value
   SendTestFrameWithUpdateRect(frame_parameters, capture_counter, kUpdateRect1);
   Mock::VerifyAndClearExpectations(&mock_sink_);
@@ -580,32 +651,135 @@ TEST_P(WebRtcVideoTrackSourceTest, UpdateRectWithScaling) {
   // update rect.
   // Calculated by hand according to KNaturalSize and KScaleToSize.
   EXPECT_CALL(mock_sink_, OnFrame(_))
-      .WillOnce(Invoke([](const webrtc::VideoFrame& frame) {
+      .WillOnce([](const webrtc::VideoFrame& frame) {
         ExpectUpdateRectEquals(gfx::Rect(10, 10, 100, 30), frame.update_rect());
-      }));
+      });
   SendTestFrameWithUpdateRect(frame_parameters, ++capture_counter,
                               kUpdateRect1);
 
   // When UPDATE_RECT is empty, we expect to deliver an empty UpdateRect even if
   // scaling is applied.
   EXPECT_CALL(mock_sink_, OnFrame(_))
-      .WillOnce(Invoke([](const webrtc::VideoFrame& frame) {
+      .WillOnce([](const webrtc::VideoFrame& frame) {
         EXPECT_TRUE(frame.update_rect().IsEmpty());
-      }));
+      });
   SendTestFrameWithUpdateRect(frame_parameters, ++capture_counter, gfx::Rect());
 
   // When UPDATE_RECT is empty, but the scaling has changed, we expect to
   // deliver no known update_rect.
   EXPECT_CALL(mock_sink_, OnFrame(_))
-      .WillOnce(Invoke([](const webrtc::VideoFrame& frame) {
+      .WillOnce([](const webrtc::VideoFrame& frame) {
         EXPECT_FALSE(frame.has_update_rect());
-      }));
+      });
   const gfx::Size kScaleToSize2 = gfx::Size(60, 26);
   track_source_->SetCustomFrameAdaptationParamsForTesting(
       FrameAdaptation_Scale(kNaturalSize, kScaleToSize2));
   SendTestFrameWithUpdateRect(frame_parameters, ++capture_counter, gfx::Rect());
 
   Mock::VerifyAndClearExpectations(&mock_sink_);
+}
+
+TEST_P(WebRtcVideoTrackSourceTest, PassesMappedFramesInOrder) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  FrameParameters frame_parameters = {
+      .coded_size = gfx::Size(640, 480),
+      .visible_rect = gfx::Rect(0, 60, 640, 360),
+      .natural_size = gfx::Size(640, 360),
+      .storage_type = std::get<0>(GetParam()),
+      .pixel_format = std::get<1>(GetParam())};
+  if (frame_parameters.storage_type !=
+      media::VideoFrame::StorageType::STORAGE_MAPPABLE_SHARED_IMAGE) {
+    // Mapping is only valid for GMB backed frames.
+    return;
+  }
+  constexpr int kSentFrames = 10;
+  Sequence s;
+  for (int i = 0; i < kSentFrames; ++i) {
+    EXPECT_CALL(mock_sink_, OnFrame(_))
+        .InSequence(s)
+        .WillOnce([=](const webrtc::VideoFrame& frame) {
+          EXPECT_EQ(frame.capture_time_identifier().value().us(), 1000000 * i);
+        });
+  }
+
+  SetRequireMappedFrame(false);
+  SendTestFrameWithMappableGMB(frame_parameters, base::Seconds(0),
+                               /*premapped=*/false);
+
+  SetRequireMappedFrame(true);
+  // This will be the 1st async frame.
+  SendTestFrameWithMappableGMB(frame_parameters, base::Seconds(1),
+                               /*premapped=*/false);
+  SetRequireMappedFrame(true);
+  // This will be the 2nd async frame.
+  SendTestFrameWithMappableGMB(frame_parameters, base::Seconds(2),
+                               /*premapped=*/false);
+  SetRequireMappedFrame(true);
+  SendTestFrameWithMappableGMB(frame_parameters, base::Seconds(3),
+                               /*premapped=*/true);
+  // This will return the 1st async frame.
+  InvokeNextMapCallback();
+
+  SetRequireMappedFrame(true);
+  SendTestFrameWithMappableGMB(frame_parameters, base::Seconds(4),
+                               /*premapped=*/true);
+
+  SetRequireMappedFrame(true);
+  // This will be the 3rd async frame.
+  SendTestFrameWithMappableGMB(frame_parameters, base::Seconds(5),
+                               /*premapped=*/false);
+
+  SetRequireMappedFrame(false);
+  SendTestFrameWithMappableGMB(frame_parameters, base::Seconds(6),
+                               /*premapped=*/false);
+
+  // This will return the 2nd async frame.
+  InvokeNextMapCallback();
+
+  SetRequireMappedFrame(true);
+  // This will be the 4th async frame.
+  SendTestFrameWithMappableGMB(frame_parameters, base::Seconds(7),
+                               /*premapped=*/false);
+
+  // This will return the 3rd async frame.
+  InvokeNextMapCallback();
+
+  // This will return the 4th async frame.
+  InvokeNextMapCallback();
+
+  SetRequireMappedFrame(true);
+  // This will be the 5th async frame.
+  SendTestFrameWithMappableGMB(frame_parameters, base::Seconds(8),
+                               /*premapped=*/false);
+
+  SetRequireMappedFrame(true);
+  SendTestFrameWithMappableGMB(frame_parameters, base::Seconds(9),
+                               /*premapped=*/true);
+
+  // This will return the 5th async frame.
+  InvokeNextMapCallback();
+}
+
+TEST_P(WebRtcVideoTrackSourceTest, DoesntCrashOnLateCallbacks) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  FrameParameters frame_parameters = {
+      .coded_size = gfx::Size(640, 480),
+      .visible_rect = gfx::Rect(0, 60, 640, 360),
+      .natural_size = gfx::Size(640, 360),
+      .storage_type = std::get<0>(GetParam()),
+      .pixel_format = std::get<1>(GetParam())};
+  if (frame_parameters.storage_type !=
+      media::VideoFrame::StorageType::STORAGE_MAPPABLE_SHARED_IMAGE) {
+    // Mapping is only valid for GMB backed frames.
+    return;
+  }
+  SetRequireMappedFrame(true);
+  SendTestFrameWithMappableGMB(frame_parameters, base::Seconds(0),
+                               /*premapped=*/false);
+  track_source_->Dispose();
+  track_source_->RemoveSink(&mock_sink_);
+  track_source_.reset();
+  InvokeNextMapCallback();
 }
 
 INSTANTIATE_TEST_SUITE_P(

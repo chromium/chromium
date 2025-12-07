@@ -8,23 +8,20 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
 class NavigatorBase;
 
 class MODULES_EXPORT LockedMode final : public ScriptWrappable,
-                                        public Supplement<NavigatorBase> {
+                                        public GarbageCollectedMixin {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
-
   // Web-exposed getter for `navigator.lockedMode`.
   static LockedMode* lockedMode(NavigatorBase&);
 
-  explicit LockedMode(NavigatorBase&);
+  LockedMode() = default;
   ~LockedMode() override;
 
   // ScriptWrappable

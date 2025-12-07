@@ -24,18 +24,26 @@ ComponentsInfoHolder* ComponentsInfoHolder::GetInstance() {
 }
 
 void ComponentsInfoHolder::AddComponent(const std::string& component_id,
-                                        const base::Version& version) {
+                                        const base::Version& version,
+                                        const std::string& cohort_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  components_[component_id] = version;
+  for (auto& component : components_) {
+    if (component.id == component_id) {
+      // Update the existing entry
+      component.version = version;
+      component.cohort_id = cohort_id;
+      return;
+    }
+  }
+
+  // Add a new entry if not found
+  components_.emplace_back(component_id, "", std::u16string(), version,
+                           cohort_id);
 }
 
 std::vector<ComponentInfo> ComponentsInfoHolder::GetComponents() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::vector<ComponentInfo> components_info;
-  for (const auto& it : components_) {
-    components_info.emplace_back(it.first, "", std::u16string(), it.second, "");
-  }
-  return components_info;
+  return components_;
 }
 
 }  // namespace component_updater

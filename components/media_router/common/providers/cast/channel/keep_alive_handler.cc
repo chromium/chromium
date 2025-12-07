@@ -89,8 +89,9 @@ bool KeepAliveHandler::HandleMessage(const CastMessage& message) {
     static const char* ping_message_type = ToString(CastMessageType::kPing);
     if (message.payload_utf8().find(ping_message_type) != std::string::npos) {
       DVLOG(2) << "Received PING.";
-      if (started_)
+      if (started_) {
         SendKeepAliveMessage(pong_message_, CastMessageType::kPong);
+      }
     } else {
       DCHECK_NE(std::string::npos,
                 message.payload_utf8().find(ToString(CastMessageType::kPong)));
@@ -132,8 +133,9 @@ void KeepAliveHandler::SendKeepAliveMessageComplete(
     return;
   }
 
-  if (liveness_timer_)
+  if (liveness_timer_) {
     liveness_timer_->Reset();
+  }
 }
 
 void KeepAliveHandler::LivenessTimeout() {

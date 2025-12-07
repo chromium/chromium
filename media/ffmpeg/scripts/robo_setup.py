@@ -70,11 +70,12 @@ def CreateAndInitOutputDirectory(robo_configuration, relative_directory, opts):
         shell.log(f"Creating build dir {absolute_directory}")
         os.mkdir(absolute_directory)
 
-    with open(os.path.join(absolute_directory, "args.gn"), "w") as f:
+    build_args_file = os.path.join(absolute_directory, "args.gn")
+    with open(build_args_file, "w") as f:
         for opt in opts:
-            print(opt)
             f.write(opt)
             f.write("\n")
+    shell.log(f"Created {build_args_file}")
 
     # Ask gn to generate build files.
     shell.log(f"Running gn gen on {relative_directory}")
@@ -83,7 +84,7 @@ def CreateAndInitOutputDirectory(robo_configuration, relative_directory, opts):
 
     shell.log(f"Cleaning {relative_directory}")
     if robo_configuration.Call(
-        ["ninja", "clean", "-C", relative_directory, "-t", "clean"]):
+        ["autoninja", "cleanup", "-C", relative_directory]):
         raise Exception(f"Unable to clean {relative_directory}")
 
 
@@ -158,9 +159,8 @@ def EnsureGClientTargets(robo_configuration):
             gclient_filename)
 
     # Sync regardless of whether we changed the config.
-    shell.log("Running gclient sync")
     robo_configuration.chdir_to_chrome_src()
-    if robo_configuration.Call(["gclient", "sync"]):
+    if robo_configuration.Call(["gclient", "--sync", "-D"]):
         raise Exception("gclient sync failed")
 
 
@@ -169,9 +169,11 @@ def FetchAdditionalWindowsBinaries(robo_configuration):
   sometimes remove these.  Re-run this if you're missing llvm-nm or llvm-ar."""
     robo_configuration.chdir_to_chrome_src()
     shell.log("Downloading some additional compiler tools")
-    if robo_configuration.Call(
-        ["tools/clang/scripts/update.py", "--package=objdump"]):
-        raise Exception("update.py --package=objdump failed")
+    updater = "tools/clang/scripts/update.py"
+    robo_configuration.CheckCall([updater, "--package=objdump"],
+                                 errmsg="Fetching objdump failed")
+    robo_configuration.CheckCall([updater, "--package=clang"],
+                                 errmsg="Fetching clang failed")
 
 
 def FetchMacSDK(robo_configuration):
@@ -208,9 +210,9 @@ def EnsureLLVMSymlinks(robo_configuration):
 
 
 def EnsureSysroots(robo_configuration):
-    """Install arm/arm64/mips/mips64 sysroots."""
+    """Install arm/arm64/mips/mips64/riscv64 sysroots."""
     robo_configuration.chdir_to_chrome_src()
-    for arch in ["arm", "arm64", "mips", "mips64el"]:
+    for arch in ["arm", "arm64", "mips", "mips64el", "riscv64"]:
         if robo_configuration.Call([
                 "build/linux/sysroot_scripts/install-sysroot.py",
                 f"--arch={arch}"
@@ -223,10 +225,10 @@ def EnsureChromiumNasm(robo_configuration):
   too old."""
     robo_configuration.chdir_to_chrome_src()
 
-    # nasm in the LLVM bin directory that we already added to $PATH.  Note that we
-    # put it there so that configure can find is as "nasm", rather than us having
-    # to give it the full path.  I think the full path would affect the real
-    # build.  That's not good.
+    # nasm in the LLVM bin directory that we already added to $PATH.  Note that
+    # we put it there so that configure can find is as "nasm", rather than us
+    # having to give it the full path.  I think the full path would affect the
+    # real build.  That's not good.
     llvm_nasm_path = os.path.join(robo_configuration.llvm_path(), "nasm")
     if os.path.exists(llvm_nasm_path):
         shell.log("nasm already installed in llvm bin directory")
@@ -280,11 +282,13 @@ def EnsureUpstreamRemote(robo_configuration):
 
 def EnsureLinuxSysroots(robo_configuration):
     '''
-    linux arm/arm-neon/arm64/mipsel/mips64el:
-    Script can run on a normal Ubuntu with ARM/ARM64 or MIPS32/MIPS64 ready Chromium checkout:
+    linux arm/arm-neon/arm64/mipsel/mips64el/riscv64:
+    Script can run on a normal Ubuntu with ARM/ARM64 or MIPS32/MIPS64 or RISCV64 ready
+    Chromium checkout:
       build/linux/sysroot_scripts/install-sysroot.py --arch=arm
       build/linux/sysroot_scripts/install-sysroot.py --arch=arm64
       build/linux/sysroot_scripts/install-sysroot.py --arch=mips
       build/linux/sysroot_scripts/install-sysroot.py --arch=mips64el
+      build/linux/sysroot_scripts/install-sysroot.py --arch=riscv64
     '''
     pass

@@ -135,15 +135,15 @@ class LCharStringPrinter(StringPrinter):
         return lstring_to_string(self.val)
 
 
-class WTFAtomicStringPrinter(StringPrinter):
-    "Print a WTF::AtomicString"
+class BlinkAtomicStringPrinter(StringPrinter):
+    "Print a blink::AtomicString"
 
     def to_string(self):
         return self.val['string_']
 
 
-class WTFStringImplPrinter(StringPrinter):
-    "Print a WTF::StringImpl"
+class BlinkStringImplPrinter(StringPrinter):
+    "Print a blink::StringImpl"
 
     def get_length(self):
         return self.val['length_']
@@ -162,8 +162,8 @@ class WTFStringImplPrinter(StringPrinter):
         return int(str(self.val['hash_and_flags_'])) % 2
 
 
-class WTFStringPrinter(StringPrinter):
-    "Print a WTF::String"
+class BlinkStringPrinter(StringPrinter):
+    "Print a blink::String"
 
     def stringimpl_ptr(self):
         return self.val['impl_']['ptr_']
@@ -171,7 +171,7 @@ class WTFStringPrinter(StringPrinter):
     def get_length(self):
         if not self.stringimpl_ptr():
             return 0
-        return WTFStringImplPrinter(
+        return BlinkStringImplPrinter(
             self.stringimpl_ptr().dereference()).get_length()
 
     def to_string(self):
@@ -184,7 +184,7 @@ class blinkKURLPrinter(StringPrinter):
     "Print a blink::KURL"
 
     def to_string(self):
-        return WTFAtomicStringPrinter(self.val['string_']).to_string()
+        return BlinkAtomicStringPrinter(self.val['string_']).to_string()
 
 
 class blinkLayoutUnitPrinter:
@@ -197,16 +197,15 @@ class blinkLayoutUnitPrinter:
         return "%.14gpx" % (self.val['value_'] / 64.0)
 
 
-class blinkLayoutSizePrinter:
-    "Print a blink::DeprecatedLayoutSize"
+class blinkFixedPointPrinter:
+    "Print a blink::FixedPoint (LayoutUnit, etc.)"
 
     def __init__(self, val):
         self.val = val
 
     def to_string(self):
-        return 'DeprecatedLayoutSize(%s, %s)' % (
-            blinkLayoutUnitPrinter(self.val['width_']).to_string(),
-            blinkLayoutUnitPrinter(self.val['height_']).to_string())
+        return "%.14gpx" % (float(self.val['value_']) /
+                            float(self.val['kFixedPointDenominator']))
 
 
 class blinkLayoutPointPrinter:
@@ -229,9 +228,9 @@ class blinkQualifiedNamePrinter(StringPrinter):
         self.prefix_length = 0
         self.length = 0
         if self.val['impl_']:
-            self.prefix_printer = WTFStringPrinter(
+            self.prefix_printer = BlinkStringPrinter(
                 self.val['impl_']['ptr_']['prefix_']['string_'])
-            self.local_name_printer = WTFStringPrinter(
+            self.local_name_printer = BlinkStringPrinter(
                 self.val['impl_']['ptr_']['local_name_']['string_'])
             self.prefix_length = self.prefix_printer.get_length()
             if self.prefix_length > 0:
@@ -293,37 +292,39 @@ class BlinkLengthPrinter:
         if ltype == 6:
             return 'Length(FillAvailable)'
         if ltype == 7:
-            return 'Length(FitContent)'
+            return 'Length(Stretch)'
         if ltype == 8:
+            return 'Length(FitContent)'
+        if ltype == 9:
             # Would like to print pixelsAndPercent() but can't call member
             # functions - https://sourceware.org/bugzilla/show_bug.cgi?id=13326
             return 'Length(Calculated)'
-        if ltype == 9:
-            return 'Length(ExtendToZoom)'
         if ltype == 10:
-            return 'Length(DeviceWidth)'
+            return 'Length(ExtendToZoom)'
         if ltype == 11:
-            return 'Length(DeviceHeight)'
+            return 'Length(DeviceWidth)'
         if ltype == 12:
+            return 'Length(DeviceHeight)'
+        if ltype == 13:
             return 'Length(MaxSizeNone)'
         return 'Length(unknown type %i)' % ltype
 
 
-class WTFVectorPrinter:
-    """Pretty Printer for a WTF::Vector.
+class BlinkVectorPrinter:
+    """Pretty Printer for a blink::Vector.
 
     The output of this pretty printer is similar to the output of std::vector's
     pretty printer, which is bundled in gcc.
 
     Example gdb session should look like:
     (gdb) p v
-    $3 = WTF::Vector of length 7, capacity 16 = {7, 17, 27, 37, 47, 57, 67}
+    $3 = blink::Vector of length 7, capacity 16 = {7, 17, 27, 37, 47, 57, 67}
     (gdb) set print elements 3
     (gdb) p v
-    $6 = WTF::Vector of length 7, capacity 16 = {7, 17, 27...}
+    $6 = blink::Vector of length 7, capacity 16 = {7, 17, 27...}
     (gdb) set print array
     (gdb) p v
-    $7 = WTF::Vector of length 7, capacity 16 = {
+    $7 = blink::Vector of length 7, capacity 16 = {
       7,
       17,
       27
@@ -331,7 +332,7 @@ class WTFVectorPrinter:
     }
     (gdb) set print elements 200
     (gdb) p v
-    $8 = WTF::Vector of length 7, capacity 16 = {
+    $8 = blink::Vector of length 7, capacity 16 = {
       7,
       17,
       27,
@@ -373,21 +374,21 @@ class WTFVectorPrinter:
 
     def to_string(self):
         return ('%s of length %d, capacity %d' %
-                ('WTF::Vector', self.val['size_'], self.val['capacity_']))
+                ('blink::Vector', self.val['size_'], self.val['capacity_']))
 
     def display_hint(self):
         return 'array'
 
 
-class WTFHashTablePrinter:
-    """Pretty printer for a WTF::HashTable.
+class BlinkHashTablePrinter:
+    """Pretty printer for a blink::HashTable.
 
     The output of this pretty printer is similar to the output of
     std::unordered_map's pretty printer, which is bundled with gcc.
 
     An example gdb session should look like:
     (gdb) print m
-    $1 = {impl_ = WTF::HashTable with 2 elements = {
+    $1 = {impl_ = blink::HashTable with 2 elements = {
         ["a-start"] = 0, ["a-end"] = 1}}
     """
 
@@ -434,12 +435,12 @@ class WTFHashTablePrinter:
         # HashSets use a HashTable where the value and key are the same so the
         # iteration needs to know whether to look for an explicit key or not.
         extractor_name = self.val.type.template_argument(2).name
-        is_keyval = extractor_name != 'WTF::IdentityExtractor'
+        is_keyval = extractor_name != 'blink::IdentityExtractor'
         return self.Iterator(start, start + self.val['table_size_'], is_keyval)
 
     def to_string(self):
         return ('%s with %d elements' %
-                ('WTF::HashTable', self.val['key_count_']))
+                ('blink::HashTable', self.val['key_count_']))
 
     def display_hint(self):
         return 'array'
@@ -489,18 +490,18 @@ class CcPaintOpBufferPrinter:
 
 def add_pretty_printers():
     pretty_printers = (
-        (re.compile("^WTF::Vector<.*>$"), WTFVectorPrinter),
-        (re.compile("^WTF::HashTable<.*>$"), WTFHashTablePrinter),
-        (re.compile("^WTF::AtomicString$"), WTFAtomicStringPrinter),
-        (re.compile("^WTF::String$"), WTFStringPrinter),
-        (re.compile("^WTF::StringImpl$"), WTFStringImplPrinter),
+        (re.compile("^blink::AtomicString$"), BlinkAtomicStringPrinter),
+        (re.compile("^blink::FixedPoint<.*>$"), blinkFixedPointPrinter),
+        (re.compile("^blink::HashTable<.*>$"), BlinkHashTablePrinter),
         (re.compile("^blink::KURL$"), blinkKURLPrinter),
         (re.compile("^blink::LayoutUnit$"), blinkLayoutUnitPrinter),
         (re.compile("^blink::LayoutPoint$"), blinkLayoutPointPrinter),
-        (re.compile("^blink::DeprecatedLayoutSize$"), blinkLayoutSizePrinter),
         (re.compile("^blink::QualifiedName$"), blinkQualifiedNamePrinter),
         (re.compile("^blink::PixelsAndPercent$"),
          BlinkPixelsAndPercentPrinter),
+        (re.compile("^blink::String$"), BlinkStringPrinter),
+        (re.compile("^blink::StringImpl$"), BlinkStringImplPrinter),
+        (re.compile("^blink::Vector<.*>$"), BlinkVectorPrinter),
         (re.compile("^blink::Length$"), BlinkLengthPrinter),
         (re.compile("^blink::DataRef<.*>$"), BlinkDataRefPrinter),
         (re.compile("^blink::JSONValue$"), BlinkJSONValuePrinter),

@@ -156,13 +156,14 @@ void PrefixMatcher::TokenPrefixMatch(MatchInfo& token_match_info) {
   for (size_t text_pos = 0; text_pos < num_text_token; ++text_pos) {
     const std::u16string text_token = text_->tokens()[text_pos];
 
-    if (query_map.contains(text_token)) {
-      DCHECK(!query_map[text_token].empty());
-      size_t query_pos = query_map[text_token].front();
+    if (auto it = query_map.find(text_token); it != query_map.end()) {
+      DCHECK(!it->second.empty());
+      size_t query_pos = it->second.front();
 
-      query_map[text_token].pop();
-      if (query_map[text_token].empty())
-        query_map.erase(text_token);
+      it->second.pop();
+      if (it->second.empty()) {
+        query_map.erase(it);
+      }
 
       UpdateInfoForTokenPrefixMatch(query_pos, text_pos, token_match_info);
       ++matched_num;

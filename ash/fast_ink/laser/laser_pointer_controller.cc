@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/fast_ink/fast_ink_pointer_controller.h"
 #include "ash/fast_ink/laser/laser_pointer_view.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
@@ -181,6 +182,7 @@ void LaserPointerController::UpdatePointerView(ui::MouseEvent* event) {
 }
 
 void LaserPointerController::DestroyPointerView() {
+  FastInkPointerController::DestroyPointerView();
   root_window_observation_.Reset();
   laser_pointer_view_widget_.reset();
 }

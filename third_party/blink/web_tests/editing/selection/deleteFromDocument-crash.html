@@ -1,9 +1,14 @@
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script>
-onload = function() {
-    document.execCommand('selectAll');
-    selection = document.getSelection();
-    selection.deleteFromDocument();
-}
+promise_test(async () => {
+  await new Promise(resolve => addEventListener('load', resolve));
+  document.execCommand('selectAll');
+  const selection = document.getSelection();
+  selection.deleteFromDocument();
+  assert_equals(selection.toString(), 'text\ntext2\ntext3');
+  assert_equals(document.querySelector('textarea').value, 'text\ntext2\ntext3');
+}, 'deleteFromDocument should not modify text control contents.');
 </script>
 <textarea autofocus >
 text

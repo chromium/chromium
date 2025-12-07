@@ -68,11 +68,10 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
 
    public:
     SchedulingAffectingFeatureHandle() = default;
-    SchedulingAffectingFeatureHandle(
-        SchedulingPolicy::Feature feature,
-        SchedulingPolicy policy,
-        std::unique_ptr<SourceLocation> source_location,
-        base::WeakPtr<FrameOrWorkerScheduler>);
+    SchedulingAffectingFeatureHandle(SchedulingPolicy::Feature feature,
+                                     SchedulingPolicy policy,
+                                     SourceLocation* source_location,
+                                     base::WeakPtr<FrameOrWorkerScheduler>);
     SchedulingAffectingFeatureHandle(SchedulingAffectingFeatureHandle&&);
     SchedulingAffectingFeatureHandle& operator=(
         SchedulingAffectingFeatureHandle&&);
@@ -88,6 +87,7 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
     }
 
     SchedulingPolicy GetPolicy() const;
+    SchedulingPolicy::Feature GetFeature() const;
 
     const FeatureAndJSLocationBlockingBFCache&
     GetFeatureAndJSLocationBlockingBFCache() const;
@@ -122,11 +122,11 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
       }
     }
     void Clear() { details_list.clear(); }
-    bool operator==(BFCacheBlockingFeatureAndLocations& other) {
+    bool operator==(const BFCacheBlockingFeatureAndLocations& other) const {
       return details_list == other.details_list;
     }
 
-    WTF::Vector<FeatureAndJSLocationBlockingBFCache> details_list;
+    Vector<FeatureAndJSLocationBlockingBFCache> details_list;
   };
 
   class PLATFORM_EXPORT Delegate {
@@ -158,10 +158,6 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
   };
 
   virtual ~FrameOrWorkerScheduler();
-
-  using Preempted = base::StrongAlias<class PreemptedTag, bool>;
-  // Stops any tasks from running while we yield and run a nested loop.
-  virtual void SetPreemptedForCooperativeScheduling(Preempted) = 0;
 
   // Notifies scheduler that this execution context has started using a feature
   // which impacts scheduling decisions.
@@ -241,13 +237,12 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
   virtual void OnStartedUsingNonStickyFeature(
       SchedulingPolicy::Feature feature,
       const SchedulingPolicy& policy,
-      std::unique_ptr<SourceLocation> source_location,
+      SourceLocation* source_location,
       SchedulingAffectingFeatureHandle* handle) = 0;
   // |source_location| is nullptr when JS is not running.
-  virtual void OnStartedUsingStickyFeature(
-      SchedulingPolicy::Feature feature,
-      const SchedulingPolicy& policy,
-      std::unique_ptr<SourceLocation> source_location) = 0;
+  virtual void OnStartedUsingStickyFeature(SchedulingPolicy::Feature feature,
+                                           const SchedulingPolicy& policy,
+                                           SourceLocation* source_location) = 0;
   virtual void OnStoppedUsingNonStickyFeature(
       SchedulingAffectingFeatureHandle* handle) = 0;
 

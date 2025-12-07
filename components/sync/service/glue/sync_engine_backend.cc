@@ -14,9 +14,11 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/sync/base/legacy_directory_deletion.h"
 #include "components/sync/base/sync_invalidation_adapter.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
+#include "components/sync/engine/configure_reason.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/engine_components_factory.h"
@@ -43,14 +45,11 @@ namespace syncer {
 
 namespace {
 
-const base::FilePath::CharType kNigoriStorageFilename[] =
+constexpr base::FilePath::CharType kNigoriStorageFilename[] =
     FILE_PATH_LITERAL("Nigori.bin");
 
 void RecordInvalidationPerDataType(DataType type) {
   UMA_HISTOGRAM_ENUMERATION("Sync.InvalidationPerDataType",
-                            DataTypeHistogramValue(type));
-  // Legacy equivalent, before the metric was renamed.
-  UMA_HISTOGRAM_ENUMERATION("Sync.InvalidationPerModelType",
                             DataTypeHistogramValue(type));
 }
 
@@ -146,7 +145,7 @@ void SyncEngineBackend::DoInitialize(
     DLOG(FATAL) << "Sync Data directory creation failed.";
   }
 
-  authenticated_account_id_ = params.authenticated_account_info.account_id;
+  authenticated_gaia_id_ = params.authenticated_account_info.gaia;
 
   auto nigori_processor = std::make_unique<NigoriDataTypeProcessor>();
   // Note: NIGORI always runs in SyncMode::kFull (see
@@ -160,7 +159,8 @@ void SyncEngineBackend::DoInitialize(
   sync_encryption_handler_ = std::make_unique<NigoriSyncBridgeImpl>(
       std::move(nigori_processor),
       std::make_unique<NigoriStorageImpl>(
-          sync_data_folder_.Append(kNigoriStorageFilename)));
+          sync_data_folder_.Append(kNigoriStorageFilename),
+          std::move(params.encryptor)));
 
   sync_manager_ = params.sync_manager_factory->CreateSyncManager(name_);
   sync_manager_->AddObserver(this);
@@ -184,8 +184,8 @@ void SyncEngineBackend::DoInitialize(
   LoadAndConnectNigoriController();
 
   ConfigureReason reason = sync_manager_->InitialSyncEndedTypes().empty()
-                               ? CONFIGURE_REASON_NEW_CLIENT
-                               : CONFIGURE_REASON_NEWLY_ENABLED_DATA_TYPE;
+                               ? ConfigureReason::kNewClient
+                               : ConfigureReason::kExistingClientRestart;
 
   DataTypeSet new_control_types =
       Difference(ControlTypes(), sync_manager_->InitialSyncEndedTypes());
@@ -285,10 +285,10 @@ void SyncEngineBackend::ShutdownOnUIThread() {
 void SyncEngineBackend::DoShutdown(ShutdownReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // |sync_manager_| and |nigori_controller_| may be null if DoInitialize() was
+  // `sync_manager_` and `nigori_controller_` may be null if DoInitialize() was
   // never called.
   if (sync_manager_) {
-    // However, |sync_manager_| and |nigori_controller_| are always either both
+    // However, `sync_manager_` and `nigori_controller_` are always either both
     // null or both non-null.
     DCHECK(nigori_controller_);
 
@@ -312,24 +312,6 @@ void SyncEngineBackend::DoShutdown(ShutdownReason reason) {
 
   host_.Reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
-}
-
-void SyncEngineBackend::DoPurgeDisabledTypes(const DataTypeSet& to_purge) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (to_purge.Has(NIGORI)) {
-    // We are using USS implementation of Nigori and someone asked us to purge
-    // it's data. For regular datatypes it's controlled DataTypeManager, but
-    // for Nigori we need to do it here.
-    // TODO(crbug.com/40154783): try to find better way to implement this logic,
-    // it's likely happen only due to BackendMigrator.
-    // TODO(crbug.com/40154783): Evaluate whether this logic is necessary at
-    // all. There's no "purging" logic for any other data type, so likely it's
-    // not necessary for NIGORI either.
-    sync_manager_->GetDataTypeConnector()->DisconnectDataType(NIGORI);
-    nigori_controller_->Stop(SyncStopMetadataFate::CLEAR_METADATA,
-                             base::DoNothing());
-    LoadAndConnectNigoriController();
-  }
 }
 
 void SyncEngineBackend::DoConfigureSyncer(
@@ -461,9 +443,24 @@ void SyncEngineBackend::DoOnActiveDevicesChanged(
       std::move(active_devices_invalidation_info));
 }
 
+void SyncEngineBackend::DoClearNigoriDataForMigration() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Purging is needed for migrations triggered via protocol code
+  // MIGRATION_DONE, see BackendMigrator for details.
+  //
+  // For regular datatypes, DataTypeManager achieves purging by interacting with
+  // the datatype's controller. Nigori doesn't have one, and its implementation
+  // is deeply coupled with the Sync engine's, so it is necessary to use this
+  // TODO(crbug.com/40154783): try to find better way to implement this logic.
+  sync_manager_->GetDataTypeConnector()->DisconnectDataType(NIGORI);
+  nigori_controller_->Stop(SyncStopMetadataFate::CLEAR_METADATA,
+                           base::DoNothing());
+  LoadAndConnectNigoriController();
+}
+
 void SyncEngineBackend::GetNigoriNodeForDebugging(AllNodesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  nigori_controller_->GetAllNodes(std::move(callback));
+  nigori_controller_->GetAllNodesForDebugging(std::move(callback));
 }
 
 void SyncEngineBackend::RecordNigoriMemoryUsageAndCountsHistograms() {
@@ -477,24 +474,20 @@ bool SyncEngineBackend::HasUnsyncedItemsForTest() const {
   return sync_manager_->HasUnsyncedItemsForTest();
 }
 
-DataTypeSet SyncEngineBackend::GetTypesWithUnsyncedData() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(sync_manager_);
-  return sync_manager_->GetTypesWithUnsyncedData();
-}
-
 void SyncEngineBackend::LoadAndConnectNigoriController() {
   // The controller for Nigori is not exposed to the UI thread or the
   // DataTypeManager, so we need to start it here manually.
-  ConfigureContext configure_context = {
-      .authenticated_account_id = authenticated_account_id_,
-      .cache_guid = sync_manager_->cache_guid(),
-      // Always use kFull mode: it is actually not relevant for Nigori and
-      // switching modes harder to detect on this level / can make first sync
-      // setup more complicated.
-      .sync_mode = SyncMode::kFull,
-      .configuration_start_time = base::Time::Now()};
+  ConfigureContext configure_context;
+  configure_context.authenticated_gaia_id = authenticated_gaia_id_;
+  configure_context.cache_guid = sync_manager_->cache_guid();
+  // Always use kFull mode: it is actually not relevant for Nigori and
+  // switching modes harder to detect on this level / can make first sync
+  // setup more complicated.
+  configure_context.sync_mode = SyncMode::kFull;
+  configure_context.configuration_start_time = base::Time::Now();
+
   nigori_controller_->LoadModels(configure_context, base::DoNothing());
+
   DCHECK_EQ(nigori_controller_->state(), DataTypeController::MODEL_LOADED);
   sync_manager_->GetDataTypeConnector()->ConnectDataType(
       NIGORI, nigori_controller_->Connect());

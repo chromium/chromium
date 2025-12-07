@@ -21,20 +21,22 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/prefs/pref_registry.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 namespace {
 
-const char kSAMLUserId1[] = "12345";
-const char kSAMLUserEmail1[] = "alice@corp.example.com";
+constexpr GaiaId::Literal kSAMLUserId1("12345");
+constexpr char kSAMLUserEmail1[] = "alice@corp.example.com";
 
-const char kSyncToken[] = "sync-token-1";
+constexpr char kSyncToken[] = "sync-token-1";
 
 constexpr base::TimeDelta kSyncTokenCheckInterval = base::Minutes(6);
 
@@ -64,20 +66,13 @@ class PasswordSyncTokenVerifierTest : public testing::Test {
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
   raw_ptr<TestingProfile> primary_profile_ = nullptr;
 
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged> user_manager_ = nullptr;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  user_manager::TypedScopedUserManager<FakeChromeUserManager> user_manager_;
   std::unique_ptr<PasswordSyncTokenVerifier> verifier_;
   std::unique_ptr<user_manager::KnownUser> known_user_;
 };
 
-PasswordSyncTokenVerifierTest::PasswordSyncTokenVerifierTest() {
-  std::unique_ptr<FakeChromeUserManager> fake_user_manager =
-      std::make_unique<FakeChromeUserManager>();
-  scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-      std::move(fake_user_manager));
-
-  user_manager_ =
-      static_cast<FakeChromeUserManager*>(user_manager::UserManager::Get());
+PasswordSyncTokenVerifierTest::PasswordSyncTokenVerifierTest()
+    : user_manager_(std::make_unique<FakeChromeUserManager>()) {
   known_user_ = std::make_unique<user_manager::KnownUser>(
       g_browser_process->local_state());
 }

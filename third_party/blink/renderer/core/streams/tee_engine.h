@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_TEE_ENGINE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_TEE_ENGINE_H_
 
+#include <array>
+
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -23,7 +21,6 @@ class ReadableStream;
 class ReadableStreamDefaultController;
 class ReadableStreamDefaultReader;
 class ScriptState;
-class StreamPromiseResolver;
 
 // Implementation of "ReadableStreamDefaultTee()" from the standard.
 // https://streams.spec.whatwg.org/#abstract-opdef-readablestreamdefaulttee
@@ -66,7 +63,7 @@ class TeeEngine final : public GarbageCollected<TeeEngine> {
 
   Member<ReadableStream> stream_;
   Member<ReadableStreamDefaultReader> reader_;
-  Member<StreamPromiseResolver> cancel_promise_;
+  Member<ScriptPromiseResolver<IDLUndefined>> cancel_promise_;
   bool reading_ = false;
   bool read_again_ = false;
   bool clone_for_branch2_ = false;
@@ -75,10 +72,10 @@ class TeeEngine final : public GarbageCollected<TeeEngine> {
   // stream. These are implemented as arrays here. While they are 1-indexed in
   // the standard, they are 0-indexed here; ie. "canceled_[0]" here corresponds
   // to "canceled1" in the standard.
-  bool canceled_[2] = {false, false};
-  TraceWrapperV8Reference<v8::Value> reason_[2];
-  Member<ReadableStream> branch_[2];
-  Member<ReadableStreamDefaultController> controller_[2];
+  std::array<bool, 2> canceled_ = {false, false};
+  std::array<TraceWrapperV8Reference<v8::Value>, 2> reason_;
+  std::array<Member<ReadableStream>, 2> branch_;
+  std::array<Member<ReadableStreamDefaultController>, 2> controller_;
 };
 
 }  // namespace blink

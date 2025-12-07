@@ -29,16 +29,6 @@ namespace ash {
 
 class UiResourceManager;
 
-class ViewTreeHostUiResource : public UiResource {
- public:
-  ViewTreeHostUiResource();
-
-  ViewTreeHostUiResource(const ViewTreeHostUiResource&) = delete;
-  ViewTreeHostUiResource& operator=(const ViewTreeHostUiResource&) = delete;
-
-  ~ViewTreeHostUiResource() override;
-};
-
 class ASH_EXPORT ViewTreeHostRootViewFrameFactory {
  public:
   explicit ViewTreeHostRootViewFrameFactory(views::Widget* widget);
@@ -50,11 +40,11 @@ class ASH_EXPORT ViewTreeHostRootViewFrameFactory {
 
   ~ViewTreeHostRootViewFrameFactory() = default;
 
-  // Creates a ViewTreeHostUiResource of a given `size` and `format`. We draw
+  // Creates a UiResource of a given `size` and `format`. We draw
   // the textures of view tree host by `widget` into the gpu buffer associated
   // with the resource and attach it to a compositor frame by converting it into
   // a transferable resource. Note: This method is also used in unittests.
-  static std::unique_ptr<ViewTreeHostUiResource> CreateUiResource(
+  static std::unique_ptr<UiResource> CreateUiResource(
       const gfx::Size& size,
       viz::SharedImageFormat format,
       UiSourceId ui_source_id,
@@ -71,7 +61,7 @@ class ASH_EXPORT ViewTreeHostRootViewFrameFactory {
  private:
   void Paint(const gfx::Rect& invalidation_rect,
              const gfx::Transform& rotate_transform,
-             ViewTreeHostUiResource* resource);
+             UiResource* resource);
 
   // Configures and adds a `TextureDrawQuad` to the `render_pass`.
   void AppendQuad(viz::CompositorRenderPass& render_pass,
@@ -80,9 +70,9 @@ class ASH_EXPORT ViewTreeHostRootViewFrameFactory {
                   const gfx::Size& buffer_size,
                   const gfx::Transform& buffer_to_target_transform) const;
 
-  // Get a ViewTreeHostUiResource to paint the texture. We try to reuse any
+  // Get a UiResource to paint the texture. We try to reuse any
   // existing resources in `resource_manager` before creating a new resource.
-  std::unique_ptr<ViewTreeHostUiResource> AcquireUiResource(
+  std::unique_ptr<UiResource> AcquireUiResource(
       const gfx::Size& size,
       bool is_overlay_candidate,
       UiResourceManager& resource_manager) const;

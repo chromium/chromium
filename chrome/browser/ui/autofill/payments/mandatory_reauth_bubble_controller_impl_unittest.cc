@@ -7,10 +7,12 @@
 #include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/with_feature_override.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -49,30 +51,30 @@ class MandatoryReauthBubbleControllerImplTest
   }
 
   void ShowBubble() {
-    controller()->ShowBubble(accept_callback.Get(), cancel_callback.Get(),
-                             close_callback.Get());
+    controller()->SetupAndShowBubble(
+        accept_callback.Get(), cancel_callback.Get(), close_callback.Get());
   }
 
   void ReshowBubble() { controller()->ReshowBubble(); }
 
   void ClickAcceptButton() {
-    controller()->OnBubbleClosed(PaymentsBubbleClosedReason::kAccepted);
+    controller()->OnBubbleClosed(PaymentsUiClosedReason::kAccepted);
   }
 
   void ClickCancelButton() {
-    controller()->OnBubbleClosed(PaymentsBubbleClosedReason::kCancelled);
+    controller()->OnBubbleClosed(PaymentsUiClosedReason::kCancelled);
   }
 
   void CloseBubble() {
-    controller()->OnBubbleClosed(PaymentsBubbleClosedReason::kClosed);
+    controller()->OnBubbleClosed(PaymentsUiClosedReason::kClosed);
   }
 
   void LoseFocus() {
-    controller()->OnBubbleClosed(PaymentsBubbleClosedReason::kLostFocus);
+    controller()->OnBubbleClosed(PaymentsUiClosedReason::kLostFocus);
   }
 
   void FailToInteract() {
-    controller()->OnBubbleClosed(PaymentsBubbleClosedReason::kNotInteracted);
+    controller()->OnBubbleClosed(PaymentsUiClosedReason::kNotInteracted);
   }
 
   base::MockOnceClosure accept_callback;
@@ -91,28 +93,37 @@ class MandatoryReauthBubbleControllerImplTest
       weak_ptr_factory_{this};
 };
 
-TEST_F(MandatoryReauthBubbleControllerImplTest,
+class MandatoryReauthBubbleControllerImplTestWithFeatureOverride
+    : public base::test::WithFeatureOverride,
+      public MandatoryReauthBubbleControllerImplTest {
+ public:
+  MandatoryReauthBubbleControllerImplTestWithFeatureOverride()
+      : base::test::WithFeatureOverride(
+            features::kAutofillShowBubblesBasedOnPriorities) {}
+};
+
+TEST_P(MandatoryReauthBubbleControllerImplTestWithFeatureOverride,
        SuccessfullyInvokesAcceptCallback) {
   ShowBubble();
   EXPECT_CALL(accept_callback, Run).Times(1);
   ClickAcceptButton();
 }
 
-TEST_F(MandatoryReauthBubbleControllerImplTest,
+TEST_P(MandatoryReauthBubbleControllerImplTestWithFeatureOverride,
        SuccessfullyInvokesCancelCallback) {
   ShowBubble();
   EXPECT_CALL(cancel_callback, Run).Times(1);
   ClickCancelButton();
 }
 
-TEST_F(MandatoryReauthBubbleControllerImplTest,
+TEST_P(MandatoryReauthBubbleControllerImplTestWithFeatureOverride,
        SuccessfullyInvokesCloseCallback) {
   ShowBubble();
   EXPECT_CALL(close_callback, Run).Times(1);
   CloseBubble();
 }
 
-TEST_F(MandatoryReauthBubbleControllerImplTest,
+TEST_P(MandatoryReauthBubbleControllerImplTestWithFeatureOverride,
        Metrics_OptInConfirmationBubble_Shown) {
   base::HistogramTester histogram_tester;
   ShowBubble();
@@ -125,6 +136,9 @@ TEST_F(MandatoryReauthBubbleControllerImplTest,
       autofill_metrics::MandatoryReauthOptInConfirmationBubbleMetric::kShown,
       1);
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    MandatoryReauthBubbleControllerImplTestWithFeatureOverride);
 
 class MandatoryReauthBubbleControllerOptInBubbleMetricsTest
     : public MandatoryReauthBubbleControllerImplTest,

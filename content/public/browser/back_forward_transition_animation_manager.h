@@ -5,7 +5,10 @@
 #ifndef CONTENT_PUBLIC_BROWSER_BACK_FORWARD_TRANSITION_ANIMATION_MANAGER_H_
 #define CONTENT_PUBLIC_BROWSER_BACK_FORWARD_TRANSITION_ANIMATION_MANAGER_H_
 
+#include "base/auto_reset.h"
 #include "content/common/content_export.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/events/back_gesture_event.h"
 
 namespace ui {
@@ -35,8 +38,23 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManager {
     // Indicates that an ongoing gesture has invoked. An animation to remove the
     // content of the entry the user is navigation away from is in progress.
     kInvokeAnimation,
+    // A native progress bar is also drawn, in addition to the the invoke
+    // animation.
+    kInvokeAnimationWithProgressBar,
+    // Indicates that animation manager is waiting for the embedder to show
+    // its content.
+    kWaitingForEmbedderContentForCommittedEntry,
     // All other stages for an active animation.
     kOther,
+  };
+
+  // Provides drawing information about the fallback UX for navigation
+  // transitions, when no valid screenshot is available.
+  struct FallbackUXConfig {
+    // The color of the rounded rectangle that embeds the favicon.
+    SkColor4f rounded_rectangle_color = SkColors::kTransparent;
+    // The background color of the fallback UX.
+    SkColor4f background_color = SkColors::kTransparent;
   };
 
   virtual ~BackForwardTransitionAnimationManager() = default;
@@ -82,11 +100,23 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManager {
   // Get current stage of the back forward transition.
   virtual AnimationStage GetCurrentAnimationStage() = 0;
 
+  // Sets the favicon for navigation transitions. The favicon is associated with
+  // the last committed entry for the current WebContents. The favicon will be
+  // used to compose a fallback UX when needed.
+  virtual void SetFavicon(const SkBitmap& favicon) = 0;
+
   // Returns true if a gesture navigation from the screen edge `edge`, towards
   // the session history direction `navigation_direction` should be animated.
   static bool ShouldAnimateNavigationTransition(
       NavigationDirection navigation_direction,
       ui::BackGestureEventSwipeEdge edge);
+
+  // Returns true if back forward visual transitions are supported on this
+  // device.
+  static bool ShouldAnimateBackForwardTransitions();
+
+  // Sets the minimum required physical ram in Mb for the feature to be enabled.
+  static base::AutoReset<int> SetMinRequiredPhysicalRamMbForTesting(int mb);
 };
 
 }  // namespace content

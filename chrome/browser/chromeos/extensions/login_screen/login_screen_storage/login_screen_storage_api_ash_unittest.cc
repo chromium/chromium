@@ -8,6 +8,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -17,7 +18,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::WithArgs;
 
 namespace {
@@ -79,7 +79,7 @@ namespace extensions {
 
 class LoginScreenStorageApiUnittest : public ExtensionApiUnittest {
  public:
-  LoginScreenStorageApiUnittest() {}
+  LoginScreenStorageApiUnittest() = default;
 
   LoginScreenStorageApiUnittest(const LoginScreenStorageApiUnittest&) = delete;
   LoginScreenStorageApiUnittest& operator=(
@@ -106,10 +106,10 @@ TEST_F(LoginScreenStorageApiUnittest, StorePersistentDataSuccess) {
       {kPersistentDataKeyPrefix, kExtensionId, "_", kExtensionId2});
   EXPECT_CALL(session_manager_client_,
               LoginScreenStorageStore(expected_key1, _, kData, _))
-      .WillOnce(WithArgs<3>(Invoke(LoginScreenStorageStoreSuccess)));
+      .WillOnce(WithArgs<3>(LoginScreenStorageStoreSuccess));
   EXPECT_CALL(session_manager_client_,
               LoginScreenStorageStore(expected_key2, _, kData, _))
-      .WillOnce(WithArgs<3>(Invoke(LoginScreenStorageStoreSuccess)));
+      .WillOnce(WithArgs<3>(LoginScreenStorageStoreSuccess));
 
   auto function =
       base::MakeRefCounted<LoginScreenStorageStorePersistentDataFunction>();
@@ -123,7 +123,7 @@ TEST_F(LoginScreenStorageApiUnittest, StorePersistentDataError) {
       {kPersistentDataKeyPrefix, kExtensionId, "_", kExtensionId2});
   EXPECT_CALL(session_manager_client_,
               LoginScreenStorageStore(expected_key, _, kData, _))
-      .WillRepeatedly(WithArgs<3>(Invoke(LoginScreenStorageStoreError)));
+      .WillRepeatedly(WithArgs<3>(LoginScreenStorageStoreError));
 
   auto function =
       base::MakeRefCounted<LoginScreenStorageStorePersistentDataFunction>();
@@ -137,7 +137,7 @@ TEST_F(LoginScreenStorageApiUnittest, RetrievePersistentDataSuccess) {
       {kPersistentDataKeyPrefix, kExtensionId1, "_", kExtensionId});
   EXPECT_CALL(session_manager_client_,
               LoginScreenStorageRetrieve(expected_key, _))
-      .WillOnce(WithArgs<1>(Invoke(LoginScreenStorageRetrieveSuccess)));
+      .WillOnce(WithArgs<1>(LoginScreenStorageRetrieveSuccess));
 
   auto function =
       base::MakeRefCounted<LoginScreenStorageRetrievePersistentDataFunction>();
@@ -151,7 +151,7 @@ TEST_F(LoginScreenStorageApiUnittest, RetrievePersistentDataError) {
       {kPersistentDataKeyPrefix, kExtensionId1, "_", kExtensionId});
   EXPECT_CALL(session_manager_client_,
               LoginScreenStorageRetrieve(expected_key, _))
-      .WillOnce(WithArgs<1>(Invoke(LoginScreenStorageRetrieveError)));
+      .WillOnce(WithArgs<1>(LoginScreenStorageRetrieveError));
 
   auto function =
       base::MakeRefCounted<LoginScreenStorageRetrievePersistentDataFunction>();
@@ -164,7 +164,7 @@ TEST_F(LoginScreenStorageApiUnittest, StoreCredentialsSuccess) {
       base::StrCat({kCredentialsKeyPrefix, kExtensionId1});
   EXPECT_CALL(session_manager_client_,
               LoginScreenStorageStore(expected_key, _, kData, _))
-      .WillOnce(WithArgs<3>(Invoke(LoginScreenStorageStoreSuccess)));
+      .WillOnce(WithArgs<3>(LoginScreenStorageStoreSuccess));
 
   auto function =
       base::MakeRefCounted<LoginScreenStorageStoreCredentialsFunction>();
@@ -178,7 +178,7 @@ TEST_F(LoginScreenStorageApiUnittest, StoreCredentialsError) {
       base::StrCat({kCredentialsKeyPrefix, kExtensionId1});
   EXPECT_CALL(session_manager_client_,
               LoginScreenStorageStore(expected_key, _, kData, _))
-      .WillRepeatedly(WithArgs<3>(Invoke(LoginScreenStorageStoreError)));
+      .WillRepeatedly(WithArgs<3>(LoginScreenStorageStoreError));
 
   auto function =
       base::MakeRefCounted<LoginScreenStorageStoreCredentialsFunction>();
@@ -192,7 +192,7 @@ TEST_F(LoginScreenStorageApiUnittest, RetrieveCredentialsSuccess) {
       base::StrCat({kCredentialsKeyPrefix, kExtensionId});
   EXPECT_CALL(session_manager_client_,
               LoginScreenStorageRetrieve(expected_key, _))
-      .WillOnce(WithArgs<1>(Invoke(LoginScreenStorageRetrieveSuccess)));
+      .WillOnce(WithArgs<1>(LoginScreenStorageRetrieveSuccess));
 
   auto function =
       base::MakeRefCounted<LoginScreenStorageRetrieveCredentialsFunction>();
@@ -205,7 +205,7 @@ TEST_F(LoginScreenStorageApiUnittest, RetrieveCredentialsError) {
       base::StrCat({kCredentialsKeyPrefix, kExtensionId});
   EXPECT_CALL(session_manager_client_,
               LoginScreenStorageRetrieve(expected_key, _))
-      .WillOnce(WithArgs<1>(Invoke(LoginScreenStorageRetrieveError)));
+      .WillOnce(WithArgs<1>(LoginScreenStorageRetrieveError));
 
   auto function =
       base::MakeRefCounted<LoginScreenStorageRetrieveCredentialsFunction>();

@@ -4,10 +4,13 @@
 
 #include "content/browser/isolation_context.h"
 
+#include "base/check_deref.h"
+#include "content/public/browser/browser_thread.h"
+
 namespace content {
 
 IsolationContext::IsolationContext(BrowserContext* browser_context)
-    : browser_or_resource_context_(BrowserOrResourceContext(browser_context)),
+    : browser_context_(CHECK_DEREF(browser_context)),
       is_guest_(false),
       is_fenced_(false),
       default_isolation_state_(
@@ -22,24 +25,12 @@ IsolationContext::IsolationContext(
     bool is_guest,
     bool is_fenced,
     OriginAgentClusterIsolationState default_isolation_state)
-    : IsolationContext(browsing_instance_id,
-                       BrowserOrResourceContext(browser_context),
-                       is_guest,
-                       is_fenced,
-                       default_isolation_state) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-}
-
-IsolationContext::IsolationContext(
-    BrowsingInstanceId browsing_instance_id,
-    BrowserOrResourceContext browser_or_resource_context,
-    bool is_guest,
-    bool is_fenced,
-    OriginAgentClusterIsolationState default_isolation_state)
     : browsing_instance_id_(browsing_instance_id),
-      browser_or_resource_context_(browser_or_resource_context),
+      browser_context_(CHECK_DEREF(browser_context)),
       is_guest_(is_guest),
       is_fenced_(is_fenced),
-      default_isolation_state_(default_isolation_state) {}
+      default_isolation_state_(default_isolation_state) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+}
 
 }  // namespace content

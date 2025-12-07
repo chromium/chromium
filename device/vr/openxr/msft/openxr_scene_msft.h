@@ -4,6 +4,8 @@
 #ifndef DEVICE_VR_OPENXR_MSFT_OPENXR_SCENE_MSFT_H_
 #define DEVICE_VR_OPENXR_MSFT_OPENXR_SCENE_MSFT_H_
 
+#include <vector>
+
 #include "base/memory/raw_ref.h"
 #include "base/scoped_generic.h"
 #include "device/vr/openxr/openxr_extension_handle.h"

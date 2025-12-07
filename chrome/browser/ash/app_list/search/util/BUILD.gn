@@ -5,7 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 proto_library("proto") {
   sources = [
@@ -27,15 +27,12 @@ static_library("util") {
     "score_normalizer.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     ":proto",
     "//ash",
     "//base",
-
-    # TODO(crbug.com/353875741): Remove this after fixing cyclic dependency from
-    # //chrome/browser/ash/app_list/search for
-    # obj/chrome/browser/ash/app_list/search/util/util/keyword_cache.o.
-    "//chrome/browser/apps/app_preload_service/proto",
   ]
 }
 

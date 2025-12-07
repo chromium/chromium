@@ -8,7 +8,10 @@ import("//build/config/linux/pkg_config.gni")
 
 if (use_gio) {
   pkg_config("gio_config") {
-    packages = [ "gio-2.0" ]
+    packages = [
+      "gio-2.0",
+      "gio-unix-2.0",
+    ]
 
     defines = [ "USE_GIO" ]
   }
@@ -23,8 +26,7 @@ if (use_system_freetype) {
   # the system, use with caution,for details see build/config/freetype/BUILD.gn.
   pkg_config("freetype_from_pkgconfig") {
     visibility = [
-      "//build/config/freetype:freetype",
-      "//third_party:freetype_harfbuzz",
+      "//build/config/freetype",
       "//third_party/harfbuzz-ng:harfbuzz_source",
     ]
     packages = [ "freetype2" ]

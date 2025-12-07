@@ -1,0 +1,50 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("common") {
+  public = [ "common/device_attestation_types.h" ]
+}
+
+static_library("device_attestation") {
+  public = [
+    "device_attestation_service.h",
+    "device_attestation_service_factory.h",
+  ]
+  sources = [
+    "device_attestation_service.cc",
+    "device_attestation_service_factory.cc",
+  ]
+
+  deps = [
+    ":common",
+    "//base",
+  ]
+
+  if (is_android) {
+    public += [ "android/device_attestation_service_android.h" ]
+    sources += [ "android/device_attestation_service_android.cc" ]
+    deps += [ "//components/enterprise/device_attestation/android" ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+  public = [
+    "mock_device_attestation_service.h",
+    "scoped_device_attestation_service_factory.h",
+  ]
+
+  sources = [
+    "mock_device_attestation_service.cc",
+    "scoped_device_attestation_service_factory.cc",
+  ]
+
+  public_deps = [
+    ":device_attestation",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  deps = [ "//base" ]
+}

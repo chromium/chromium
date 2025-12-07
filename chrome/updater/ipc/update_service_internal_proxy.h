@@ -11,13 +11,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
+#include "chrome/updater/ipc/update_service_internal_proxy_impl.h"
 #include "chrome/updater/update_service_internal.h"
-
-#if BUILDFLAG(IS_POSIX)
-#include "chrome/updater/ipc/update_service_internal_proxy_posix.h"
-#elif BUILDFLAG(IS_WIN)
-#include "chrome/updater/ipc/update_service_internal_proxy_win.h"
-#endif
 
 namespace updater {
 

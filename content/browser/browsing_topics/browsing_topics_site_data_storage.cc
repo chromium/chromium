@@ -5,6 +5,7 @@
 #include "content/browser/browsing_topics/browsing_topics_site_data_storage.h"
 
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "sql/database.h"
 #include "sql/recovery.h"
@@ -236,9 +237,9 @@ bool BrowsingTopicsSiteDataStorage::LazyInit() {
   if (db_init_status_ != InitStatus::kUnattempted)
     return db_init_status_ == InitStatus::kSuccess;
 
-  db_ = std::make_unique<sql::Database>(
-      sql::DatabaseOptions{.page_size = 4096, .cache_size = 32});
-  db_->set_histogram_tag("BrowsingTopics");
+  db_ =
+      std::make_unique<sql::Database>(sql::DatabaseOptions().set_cache_size(32),
+                                      sql::Database::Tag("BrowsingTopics"));
 
   // base::Unretained is safe here because this BrowsingTopicsSiteDataStorage
   // owns the sql::Database instance that stores and uses the callback. So,
@@ -257,9 +258,9 @@ bool BrowsingTopicsSiteDataStorage::LazyInit() {
     return false;
   }
 
-  int64_t file_size = 0L;
-  if (base::GetFileSize(path_to_database_, &file_size)) {
-    int64_t file_size_kb = file_size / 1024;
+  std::optional<int64_t> file_size = base::GetFileSize(path_to_database_);
+  if (file_size.has_value()) {
+    int64_t file_size_kb = file_size.value() / 1024;
     base::UmaHistogramCounts1M("BrowsingTopics.SiteDataStorage.FileSize.KB",
                                file_size_kb);
   }

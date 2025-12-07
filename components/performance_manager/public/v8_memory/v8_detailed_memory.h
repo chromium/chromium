@@ -8,12 +8,11 @@
 #include <optional>
 #include <string>
 
+#include "base/byte_count.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 
@@ -55,8 +54,7 @@ namespace v8_memory {
 // V8DetailedMemoryRequest, V8DetailedMemoryExecutionContextData and
 // V8DetailedMemoryProcessData must all be accessed on the graph sequence, and
 // V8DetailedMemoryObserver::OnV8MemoryMeasurementAvailable will be called on
-// this sequence. To request memory measurements from another sequence use the
-// wrappers in v8_detailed_memory_any_seq.h.
+// this sequence.
 //
 // Usage:
 //
@@ -71,17 +69,17 @@ namespace v8_memory {
 //         const V8DetailedMemoryProcessData* data) override {
 //       DCHECK(data);
 //       LOG(INFO) << "Process " << process_node->GetProcessId() <<
-//           " reported " << data->detached_v8_bytes_used() <<
+//           " reported " << data->detached_v8_memory_used() <<
 //           " bytes of V8 memory that wasn't associated with a frame.";
 //       LOG(INFO) << "Process " << process_node->GetProcessId() <<
-//           " reported " << data->shared_v8_bytes_used() <<
+//           " reported " << data->shared_v8_memory_used() <<
 //           " bytes of V8 memory that are shared between all frames";
 //       for (auto* frame_node : process_node->GetFrameNodes()) {
 //         auto* frame_data =
 //             V8DetailedMemoryExecutionContextData::ForFrame(frame_node);
 //         if (frame_data) {
 //           LOG(INFO) << "Frame " << frame_node->GetFrameToken().value() <<
-//               " reported " << frame_data->v8_bytes_used() <<
+//               " reported " << frame_data->v8_memory_used() <<
 //               " bytes of V8 memory in its main world.";
 //         }
 //       }
@@ -91,12 +89,11 @@ namespace v8_memory {
 //   class MemoryMonitor {
 //    public:
 //     MemoryMonitor() {
-//       PerformanceManager::CallOnGraph(FROM_HERE,
-//           base::BindOnce(&Start, base::Unretained(this)));
+//       Start();
 //     }
 //
-//     void Start(Graph* graph) {
-//       DCHECK_ON_GRAPH_SEQUENCE(graph);
+//     void Start() {
+//       Graph* graph = PerformanceManager::GetGraph();
 //
 //       // Creating a V8DetailedMemoryRequest with the |graph| parameter
 //       // automatically starts measurements.
@@ -106,9 +103,7 @@ namespace v8_memory {
 //       request_->AddObserver(observer_.get());
 //     }
 //
-//     void Stop(Graph* graph) {
-//       DCHECK_ON_GRAPH_SEQUENCE(graph);
-//
+//     void Stop() {
 //       // |observer_| must be removed from |request_| before deleting it.
 //       // Afterwards they can be deleted in any order.
 //       request_->RemoveObserver(observer_.get());
@@ -139,25 +134,25 @@ class V8DetailedMemoryExecutionContextData {
       V8DetailedMemoryExecutionContextData&&);
 
   bool operator==(const V8DetailedMemoryExecutionContextData& other) const {
-    return v8_bytes_used_ == other.v8_bytes_used_ && url_ == other.url_;
+    return v8_memory_used_ == other.v8_memory_used_ && url_ == other.url_;
   }
 
-  // Returns the number of bytes used by V8 for this frame at the last
+  // Returns memory used by V8 for this frame at the last
   // measurement.
-  uint64_t v8_bytes_used() const { return v8_bytes_used_; }
+  base::ByteCount v8_memory_used() const { return v8_memory_used_; }
 
-  void set_v8_bytes_used(uint64_t v8_bytes_used) {
-    v8_bytes_used_ = v8_bytes_used;
+  void set_v8_memory_used(base::ByteCount v8_memory_used) {
+    v8_memory_used_ = v8_memory_used;
   }
 
-  // Returns the number of bytes used by canvas elements for this frame at the
+  // Returns the memory used by canvas elements for this frame at the
   // last measurement. It is empty if the frame has no canvas elements.
-  std::optional<uint64_t> canvas_bytes_used() const {
-    return canvas_bytes_used_;
+  std::optional<base::ByteCount> canvas_memory_used() const {
+    return canvas_memory_used_;
   }
 
-  void set_canvas_bytes_used(uint64_t canvas_bytes_used) {
-    canvas_bytes_used_ = canvas_bytes_used;
+  void set_canvas_memory_used(base::ByteCount canvas_memory_used) {
+    canvas_memory_used_ = canvas_memory_used;
   }
 
   // TODO(crbug.com/40093136): Remove this once PlzDedicatedWorker ships. Until
@@ -177,16 +172,18 @@ class V8DetailedMemoryExecutionContextData {
   static const V8DetailedMemoryExecutionContextData* ForExecutionContext(
       const execution_context::ExecutionContext* ec);
 
- private:
-  friend class WebMemoryTestHarness;
-
+  // Returns frame data for the given node, creating an empty data object if no
+  // measurement has been taken.
   static V8DetailedMemoryExecutionContextData* CreateForTesting(
       const FrameNode* node);
   static V8DetailedMemoryExecutionContextData* CreateForTesting(
       const WorkerNode* node);
 
-  uint64_t v8_bytes_used_ = 0;
-  std::optional<uint64_t> canvas_bytes_used_;
+ private:
+  friend class WebMemoryTestHarness;
+
+  base::ByteCount v8_memory_used_;
+  std::optional<base::ByteCount> canvas_memory_used_;
   std::optional<std::string> url_;
 };
 
@@ -196,43 +193,48 @@ class V8DetailedMemoryProcessData {
   virtual ~V8DetailedMemoryProcessData() = default;
 
   bool operator==(const V8DetailedMemoryProcessData& other) const {
-    return detached_v8_bytes_used_ == other.detached_v8_bytes_used_ &&
-           shared_v8_bytes_used_ == other.shared_v8_bytes_used_;
+    return detached_v8_memory_used_ == other.detached_v8_memory_used_ &&
+           shared_v8_memory_used_ == other.shared_v8_memory_used_;
   }
 
-  // Returns the number of bytes used by V8 at the last measurement in this
+  // Returns the memory used by V8 at the last measurement in this process that
+  // could not be attributed to a frame.
+  base::ByteCount detached_v8_memory_used() const {
+    return detached_v8_memory_used_;
+  }
+
+  void set_detached_v8_memory_used(base::ByteCount detached_v8_memory_used) {
+    detached_v8_memory_used_ = detached_v8_memory_used;
+  }
+
+  // Returns the memory used by canvas elements at the last measurement in this
   // process that could not be attributed to a frame.
-  uint64_t detached_v8_bytes_used() const { return detached_v8_bytes_used_; }
-
-  void set_detached_v8_bytes_used(uint64_t detached_v8_bytes_used) {
-    detached_v8_bytes_used_ = detached_v8_bytes_used;
+  base::ByteCount detached_canvas_memory_used() const {
+    return detached_canvas_memory_used_;
   }
 
-  // Returns the number of bytes used by canvas elements at the last
-  // measurement in this process that could not be attributed to a frame.
-  uint64_t detached_canvas_bytes_used() const {
-    return detached_canvas_bytes_used_;
+  void set_detached_canvas_memory_used(
+      base::ByteCount detached_canvas_memory_used) {
+    detached_canvas_memory_used_ = detached_canvas_memory_used;
   }
 
-  void set_detached_canvas_bytes_used(uint64_t detached_canvas_bytes_used) {
-    detached_canvas_bytes_used_ = detached_canvas_bytes_used;
+  // Returns the memory used by V8 at the last measurement in this process that
+  // are shared between all frames.
+  base::ByteCount shared_v8_memory_used() const {
+    return shared_v8_memory_used_;
   }
 
-  // Returns the number of bytes used by V8 at the last measurement in this
-  // process that are shared between all frames.
-  uint64_t shared_v8_bytes_used() const { return shared_v8_bytes_used_; }
-
-  void set_shared_v8_bytes_used(uint64_t shared_v8_bytes_used) {
-    shared_v8_bytes_used_ = shared_v8_bytes_used;
+  void set_shared_v8_memory_used(base::ByteCount shared_v8_memory_used) {
+    shared_v8_memory_used_ = shared_v8_memory_used;
   }
 
-  // Returns the number of bytes used by Blink heaps corresponding to V8
+  // Returns the memory used by Blink heaps corresponding to V8
   // isolates at the last measurement in this process that are shared between
   // all frames.
-  uint64_t blink_bytes_used() const { return blink_bytes_used_; }
+  base::ByteCount blink_memory_used() const { return blink_memory_used_; }
 
-  void set_blink_bytes_used(uint64_t blink_bytes_used) {
-    blink_bytes_used_ = blink_bytes_used;
+  void set_blink_memory_used(base::ByteCount blink_memory_used) {
+    blink_memory_used_ = blink_memory_used;
   }
 
   // Returns process data for the given node, or nullptr if no measurement has
@@ -246,10 +248,10 @@ class V8DetailedMemoryProcessData {
 
   static V8DetailedMemoryProcessData* GetOrCreateForTesting(
       const ProcessNode* node);
-  uint64_t detached_v8_bytes_used_ = 0;
-  uint64_t detached_canvas_bytes_used_ = 0;
-  uint64_t shared_v8_bytes_used_ = 0;
-  uint64_t blink_bytes_used_ = 0;
+  base::ByteCount detached_v8_memory_used_;
+  base::ByteCount detached_canvas_memory_used_;
+  base::ByteCount shared_v8_memory_used_;
+  base::ByteCount blink_memory_used_;
 };
 
 class V8DetailedMemoryObserver : public base::CheckedObserver {
@@ -270,7 +272,6 @@ class V8DetailedMemoryObserver : public base::CheckedObserver {
 // The following classes create requests for memory measurements.
 
 class V8DetailedMemoryDecorator;
-class V8DetailedMemoryRequestAnySeq;
 class V8DetailedMemoryRequestOneShot;
 class V8DetailedMemoryRequestQueue;
 
@@ -333,8 +334,9 @@ class V8DetailedMemoryRequest {
 
   // Requests measurements for all ProcessNode's in |graph|. There must be at
   // most one call to this or StartMeasurementForProcess for each
-  // V8DetailedMemoryRequest.
-  void StartMeasurement(Graph* graph);
+  // V8DetailedMemoryRequest. If |graph| is null, uses the default graph
+  // returned by PerformanceManager::GetGraph().
+  void StartMeasurement(Graph* graph = nullptr);
 
   // Requests measurements only for the given |process_node|, which must be a
   // renderer process. There must be at most one call to this or
@@ -346,19 +348,6 @@ class V8DetailedMemoryRequest {
   void RemoveObserver(V8DetailedMemoryObserver* observer);
 
   // Implementation details below this point.
-
-  // Private constructor for V8DetailedMemoryRequestAnySeq. Saves
-  // |off_sequence_request| as a pointer to the off-sequence object that
-  // triggered the request and starts measurements with frequency
-  // |min_time_between_requests|. If |process_to_measure| is nullopt, the
-  // request will be sent to every renderer process, otherwise it will be sent
-  // only to |process_to_measure|.
-  V8DetailedMemoryRequest(
-      base::PassKey<V8DetailedMemoryRequestAnySeq>,
-      const base::TimeDelta& min_time_between_requests,
-      MeasurementMode mode,
-      std::optional<base::WeakPtr<ProcessNode>> process_to_measure,
-      base::WeakPtr<V8DetailedMemoryRequestAnySeq> off_sequence_request);
 
   // Private constructor for V8DetailedMemoryRequestOneShot. Sets
   // min_time_between_requests_ to 0, which is not allowed for repeating
@@ -380,9 +369,6 @@ class V8DetailedMemoryRequest {
       const ProcessNode* process_node) const;
 
  private:
-  void StartMeasurementFromOffSequence(
-      std::optional<base::WeakPtr<ProcessNode>> process_to_measure,
-      Graph* graph);
   void StartMeasurementImpl(Graph* graph, const ProcessNode* process_node);
 
   base::TimeDelta min_time_between_requests_
@@ -393,15 +379,6 @@ class V8DetailedMemoryRequest {
   base::ObserverList<V8DetailedMemoryObserver, /*check_empty=*/true> observers_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Pointer back to the off-sequence V8DetailedMemoryRequestAnySeq that
-  // created this, if any.
-  base::WeakPtr<V8DetailedMemoryRequestAnySeq> off_sequence_request_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Sequence that |off_sequence_request_| lives on.
-  scoped_refptr<base::SequencedTaskRunner> off_sequence_request_sequence_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
   // Additional closure that will be called from OnOwnerUnregistered for
   // one-shot requests. Used to clean up resources in the
   // V8DetailedMemoryRequestOneShot wrapper.
@@ -410,8 +387,6 @@ class V8DetailedMemoryRequest {
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
-
-class V8DetailedMemoryRequestOneShotAnySeq;
 
 class V8DetailedMemoryRequestOneShot final : public V8DetailedMemoryObserver {
  public:
@@ -469,18 +444,8 @@ class V8DetailedMemoryRequestOneShot final : public V8DetailedMemoryObserver {
 
   // Implementation details below this point.
 
-  // Private constructor for V8DetailedMemoryRequestOneShotAnySeq. Will be
-  // called from off-sequence.
-  V8DetailedMemoryRequestOneShot(
-      base::PassKey<V8DetailedMemoryRequestOneShotAnySeq>,
-      base::WeakPtr<ProcessNode> process,
-      MeasurementCallback callback,
-      MeasurementMode mode = MeasurementMode::kDefault);
-
  private:
   void InitializeRequest();
-  void StartMeasurementFromOffSequence(base::WeakPtr<ProcessNode>,
-                                       MeasurementCallback callback);
   void DeleteRequest();
   void OnOwnerUnregistered();
 

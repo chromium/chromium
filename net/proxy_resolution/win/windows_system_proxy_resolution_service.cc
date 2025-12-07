@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "base/win/windows_version.h"
 #include "net/base/net_errors.h"
+#include "net/base/net_info_source_list.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
@@ -72,7 +73,8 @@ int WindowsSystemProxyResolutionService::ResolveProxy(
     ProxyInfo* results,
     CompletionOnceCallback callback,
     std::unique_ptr<ProxyResolutionRequest>* request,
-    const NetLogWithSource& net_log) {
+    const NetLogWithSource& net_log,
+    RequestPriority priority) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
   DCHECK(request);
@@ -82,8 +84,8 @@ int WindowsSystemProxyResolutionService::ResolveProxy(
   // Once it's created, the WindowsSystemProxyResolutionRequest immediately
   // kicks off proxy resolution in a separate process.
   auto req = std::make_unique<WindowsSystemProxyResolutionRequest>(
-      this, url, method, results, std::move(callback), net_log,
-      windows_system_proxy_resolver_.get());
+      this, url, method, network_anonymization_key, results,
+      std::move(callback), net_log, windows_system_proxy_resolver_.get());
 
   DCHECK(!ContainsPendingRequest(req.get()));
   pending_requests_.insert(req.get());
@@ -96,13 +98,17 @@ int WindowsSystemProxyResolutionService::ResolveProxy(
 
 void WindowsSystemProxyResolutionService::ReportSuccess(
     const ProxyInfo& proxy_info) {
-  // TODO(crbug.com/40111093): Update proxy retry info with new proxy
-  // resolution data.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const ProxyRetryInfoMap& new_retry_info = proxy_info.proxy_retry_info();
+  ProxyResolutionService::ProcessProxyRetryInfo(
+      new_retry_info, proxy_retry_info_, proxy_delegate_);
 }
 
 void WindowsSystemProxyResolutionService::SetProxyDelegate(
     ProxyDelegate* delegate) {
-  // TODO(crbug.com/40111093): Implement proxy delegates.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!proxy_delegate_ || !delegate);
+  proxy_delegate_ = delegate;
 }
 
 void WindowsSystemProxyResolutionService::OnShutdown() {
@@ -121,8 +127,20 @@ const ProxyRetryInfoMap& WindowsSystemProxyResolutionService::proxy_retry_info()
 }
 
 base::Value::Dict WindowsSystemProxyResolutionService::GetProxyNetLogValues() {
-  // TODO (https://crbug.com/1032820): Implement net logs.
-  return base::Value::Dict();
+  base::Value::Dict net_info_dict;
+
+  // Log proxy settings - Windows system proxy uses the system configuration
+  {
+    base::Value::Dict dict;
+    dict.Set("source", "system");
+    dict.Set("description", "Windows system proxy configuration");
+    net_info_dict.Set(kNetInfoProxySettings, std::move(dict));
+  }
+
+  // Log Bad Proxies.
+  net_info_dict.Set(kNetInfoBadProxies, BuildBadProxiesList(proxy_retry_info_));
+
+  return net_info_dict;
 }
 
 bool WindowsSystemProxyResolutionService::
@@ -149,17 +167,35 @@ void WindowsSystemProxyResolutionService::RemovePendingRequest(
 int WindowsSystemProxyResolutionService::DidFinishResolvingProxy(
     const GURL& url,
     const std::string& method,
+    const NetworkAnonymizationKey& network_anonymization_key,
     ProxyInfo* result,
     WinHttpStatus winhttp_status,
+    int windows_error,
     const NetLogWithSource& net_log) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/40111093): Implement net logs.
-  // TODO(crbug.com/40111093): Implement proxy delegate.
-  // TODO(crbug.com/40111093): Implement proxy retry info.
+  // Log the diagnostic information about the WinHTTP resolution
+  net_log.AddEvent(
+      NetLogEventType::PROXY_RESOLUTION_SERVICE_RESOLVED_PROXY_LIST, [&] {
+        base::Value::Dict resolution_dict;
+        resolution_dict.Set("winhttp_status", static_cast<int>(winhttp_status));
+        resolution_dict.Set("windows_error", windows_error);
+        if (winhttp_status == WinHttpStatus::kOk) {
+          resolution_dict.Set("proxy_info", result->ToDebugString());
+        }
+        return resolution_dict;
+      });
 
-  if (winhttp_status != WinHttpStatus::kOk)
+  if (winhttp_status == WinHttpStatus::kOk) {
+    if (proxy_delegate_) {
+      proxy_delegate_->OnResolveProxy(url, network_anonymization_key, method,
+                                      proxy_retry_info_, result);
+    }
+
+    DeprioritizeBadProxyChains(proxy_retry_info_, result, net_log);
+  } else {
     result->UseDirect();
+  }
 
   net_log.EndEvent(NetLogEventType::PROXY_RESOLUTION_SERVICE);
   return OK;

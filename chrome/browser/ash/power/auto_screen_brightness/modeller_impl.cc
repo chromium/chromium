@@ -14,8 +14,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -34,30 +32,6 @@ namespace auto_screen_brightness {
 
 namespace {
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class ModelLoadingStatus {
-  // Global curve, personal curve and model iteration count are all loaded
-  // successfully.
-  kSuccess = 0,
-  // Global curve data is missing.
-  kMissingGlobal = 1,
-  // Global curve data exists but cannot be used to create a curve.
-  kIllFormattedGlobal = 2,
-  // Personal curve data is missing.
-  kMissingPersonal = 3,
-  // Personal curve data exists but cannot be used to create a curve.
-  kIllFormattedPersonal = 4,
-  // Model iteration count is missing or is invalid.
-  kMissingIterationCount = 5,
-  kMaxValue = kMissingIterationCount
-};
-
-void LogModelLoadingStatus(ModelLoadingStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("AutoScreenBrightness.ModelLoadingStatus", status);
-  VLOG(1) << "ABModel model loading status: " << static_cast<int>(status);
-}
-
 // Loads saved model from locations specified by |spec|. This
 // should run in another thread to be non-blocking to the main thread (if
 // |is_testing| is false). The ambient values read from disk should be in the
@@ -73,12 +47,10 @@ Model LoadModelFromDisk(const ModellerImpl::ModelSavingSpec& spec,
   // data.
   if (!PathExists(spec.global_curve) ||
       !base::ReadFileToString(spec.global_curve, &content)) {
-    LogModelLoadingStatus(ModelLoadingStatus::kMissingGlobal);
     return loaded_model;
   }
   loaded_model.global_curve = MonotoneCubicSpline::FromString(content);
   if (!loaded_model.global_curve) {
-    LogModelLoadingStatus(ModelLoadingStatus::kIllFormattedGlobal);
     return loaded_model;
   }
 
@@ -86,12 +58,10 @@ Model LoadModelFromDisk(const ModellerImpl::ModelSavingSpec& spec,
   // saved personal model. The iteration count is implicitly set to 0.
   if (!PathExists(spec.personal_curve) ||
       !base::ReadFileToString(spec.personal_curve, &content)) {
-    LogModelLoadingStatus(ModelLoadingStatus::kMissingPersonal);
     return loaded_model;
   }
   loaded_model.personal_curve = MonotoneCubicSpline::FromString(content);
   if (!loaded_model.personal_curve) {
-    LogModelLoadingStatus(ModelLoadingStatus::kIllFormattedPersonal);
     return loaded_model;
   }
 
@@ -100,12 +70,10 @@ Model LoadModelFromDisk(const ModellerImpl::ModelSavingSpec& spec,
   if (!PathExists(spec.iteration_count) ||
       !base::ReadFileToString(spec.iteration_count, &content) ||
       content.empty() || !base::StringToInt(content, &iteration_count)) {
-    LogModelLoadingStatus(ModelLoadingStatus::kMissingIterationCount);
     return loaded_model;
   }
   loaded_model.iteration_count = iteration_count;
 
-  LogModelLoadingStatus(ModelLoadingStatus::kSuccess);
   return loaded_model;
 }
 
@@ -382,7 +350,6 @@ ModellerImpl::ModellerImpl(
   DCHECK(model_config_loader);
 
   DCHECK(trainer_);
-  DCHECK(user_activity_detector);
 
   if (!profile) {
     is_modeller_enabled_ = false;
@@ -398,7 +365,10 @@ ModellerImpl::ModellerImpl(
   brightness_monitor_observation_.Observe(brightness_monitor);
   model_config_loader_observation_.Observe(model_config_loader);
 
-  user_activity_observation_.Observe(user_activity_detector);
+  // |user_activity_detector| can be null in tests.
+  if (user_activity_detector) {
+    user_activity_observation_.Observe(user_activity_detector);
+  }
 
   blocking_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -512,10 +482,6 @@ void ModellerImpl::OnInitializationComplete() {
   DCHECK(is_modeller_enabled_.has_value());
   DCHECK(*is_modeller_enabled_ == model_.global_curve.has_value());
 
-  UMA_HISTOGRAM_COUNTS_1000(
-      "AutoScreenBrightness.ModelIterationCountAtInitialization",
-      model_.iteration_count);
-
   for (auto& observer : observers_) {
     NotifyObserverInitStatus(observer);
   }
@@ -539,8 +505,6 @@ void ModellerImpl::OnModelLoadedFromDisk(const Model& model) {
     global_curve_reset_ = true;
     VLOG(1) << "ABModel global curve reset";
   }
-  UMA_HISTOGRAM_BOOLEAN("AutoScreenBrightness.GlobalCurveResetOnInitialization",
-                        global_curve_reset_);
 
   DCHECK(model_.global_curve);
   // Run SetInitialCurves calculations on background thread to avoid blocking UI
@@ -557,15 +521,6 @@ void ModellerImpl::OnModelLoadedFromDisk(const Model& model) {
 
 void ModellerImpl::OnModelSavedToDisk(bool is_successful) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const base::TimeTicks now = tick_clock_->NowTicks();
-
-  UMA_HISTOGRAM_BOOLEAN("AutoScreenBrightness.NewCurveSaved.Success",
-                        is_successful);
-  if (is_successful) {
-    UMA_HISTOGRAM_TIMES("AutoScreenBrightness.NewCurveSaved.Duration",
-                        now - training_start_.value());
-  }
-
   // We don't want to repeatedly save the global curve.
   global_curve_reset_ = false;
 }
@@ -573,8 +528,6 @@ void ModellerImpl::OnModelSavedToDisk(bool is_successful) {
 void ModellerImpl::OnSetInitialCurves(bool is_personal_curve_valid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  UMA_HISTOGRAM_BOOLEAN("AutoScreenBrightness.PersonalCurveValid",
-                        is_personal_curve_valid);
   VLOG(1) << "ABModel initial personal curve valid: "
           << is_personal_curve_valid;
 
@@ -634,7 +587,6 @@ void ModellerImpl::StartTraining() {
 }
 
 void ModellerImpl::OnTrainingFinished(const TrainingResult& result) {
-  const base::TimeTicks now = tick_clock_->NowTicks();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Only export the curve if there's a new curve and the error is small.
@@ -653,11 +605,6 @@ void ModellerImpl::OnTrainingFinished(const TrainingResult& result) {
   VLOG(1) << "ABModel training finished (has_new_curve,error,updated): "
           << result.new_curve.has_value() << ", " << FormatToPrint(result.error)
           << ", " << export_personal_curve;
-
-  const std::string histogram_name =
-      std::string("AutoScreenBrightness.TrainingCompleteDuration.") +
-      (export_personal_curve ? "NewCurve" : "NoNewCurve");
-  base::UmaHistogramTimes(histogram_name, now - training_start_.value());
 
   blocking_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,

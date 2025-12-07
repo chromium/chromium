@@ -15,12 +15,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/infobars/core/infobar.h"
 #include "components/language/core/browser/accept_languages_service.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/common/language_experiments.h"
+#include "components/language_detection/core/constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/translate/core/browser/mock_translate_client.h"
@@ -34,7 +34,6 @@
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/translate/core/browser/translate_step.h"
-#include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_associated_data.h"
@@ -125,7 +124,7 @@ struct ProfilePrefRegistration {
       sync_preferences::TestingPrefServiceSyncable* prefs) {
     language::LanguagePrefs::RegisterProfilePrefs(prefs->registry());
     prefs->SetString(accept_languages_prefs, std::string());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     prefs->SetString(preferred_languages_prefs, std::string());
 #endif
     TranslatePrefs::RegisterProfilePrefs(prefs->registry());
@@ -154,7 +153,7 @@ class TranslateManagerTest : public ::testing::Test {
 
   void TearDown() override {
     manager_->ResetForTesting();
-    variations::testing::ClearAllVariationParams();
+    variations::test::ClearAllVariationParams();
   }
 
   // Utility function to prepare translate_manager_ for testing.
@@ -213,7 +212,7 @@ class TranslateManagerTest : public ::testing::Test {
   // uses ObserverListThreadSafe.
   base::test::TaskEnvironment task_environment_;
 
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 
   sync_preferences::TestingPrefServiceSyncable prefs_;
@@ -998,7 +997,7 @@ TEST_F(TranslateManagerTest, CanManuallyTranslate_UndefinedSourceLanguage) {
       .WillByDefault(Return(true));
 
   translate_manager_->GetLanguageState()->LanguageDetermined(
-      kUnknownLanguageCode, true);
+      language_detection::kUnknownLanguageCode, true);
 
   EXPECT_TRUE(translate_manager_->CanManuallyTranslate());
 }
@@ -1376,7 +1375,8 @@ TEST_F(TranslateManagerTest,
   translate_manager_->GetLanguageState()->LanguageDetermined("en", true);
   network_notifier_.SimulateOnline();
 
-  translate_manager_->ShowTranslateUI("pl", /* auto_translate */ true,
+  translate_manager_->ShowTranslateUI(std::nullopt, "pl",
+                                      /* auto_translate */ true,
                                       /* triggered_from_menu= */ false);
 }
 
@@ -1407,7 +1407,39 @@ TEST_F(TranslateManagerTest, ShowTranslateUI_ExplicitTargetSameAsTarget) {
   translate_manager_->GetLanguageState()->LanguageDetermined("de", true);
   network_notifier_.SimulateOnline();
 
-  translate_manager_->ShowTranslateUI("pl", /* auto_translate */ true,
+  translate_manager_->ShowTranslateUI(std::nullopt, "pl",
+                                      /* auto_translate */ true,
+                                      /* triggered_from_menu= */ false);
+}
+
+TEST_F(TranslateManagerTest, ShowTranslateUI_ExplicitSourceLanguage) {
+  manager_->set_application_locale("en");
+  mock_language_model_.details = {
+      MockLanguageModel::LanguageDetails("pl", 1.0),
+  };
+  ON_CALL(mock_translate_client_, IsTranslatableURL(GURL()))
+      .WillByDefault(Return(true));
+  language::AcceptLanguagesService accept_languages(&prefs_,
+                                                    accept_languages_prefs);
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
+      .WillByDefault(Return(&accept_languages));
+  // TranslateManager::ShowTranslateUI should result in a translation, reflected
+  // by a call to TranslateClient::ShowTranslateUI using the
+  // TRANSLATE_STEP_TRANSLATING step and the specified languages.
+  EXPECT_CALL(
+      mock_translate_client_,
+      ShowTranslateUI(TRANSLATE_STEP_TRANSLATING, "tl", "pl",
+                      TranslateErrors::NONE, false /* triggered_from_menu */))
+      .WillOnce(Return(true));
+
+  translate_manager_ = std::make_unique<TranslateManager>(
+      &mock_translate_client_, &mock_translate_ranker_, &mock_language_model_);
+
+  prefs_.SetBoolean(prefs::kOfferTranslateEnabled, true);
+  translate_manager_->GetLanguageState()->LanguageDetermined("tl", true);
+  network_notifier_.SimulateOnline();
+
+  translate_manager_->ShowTranslateUI("fil", "pl", /* auto_translate */ true,
                                       /* triggered_from_menu= */ false);
 }
 

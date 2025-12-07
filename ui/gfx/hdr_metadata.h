@@ -11,6 +11,7 @@
 #include <string>
 
 #include "skia/ext/skcolorspace_primaries.h"
+#include "third_party/skia/include/private/SkHdrMetadata.h"
 #include "ui/gfx/color_space_export.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -38,13 +39,10 @@ struct COLOR_SPACE_EXPORT HdrMetadataCta861_3 {
   bool IsValid() const {
     return max_content_light_level > 0 || max_frame_average_light_level > 0;
   }
-  bool operator==(const HdrMetadataCta861_3& rhs) const {
-    return max_content_light_level == rhs.max_content_light_level &&
-           max_frame_average_light_level == rhs.max_frame_average_light_level;
-  }
-  bool operator!=(const HdrMetadataCta861_3& rhs) const {
-    return !(*this == rhs);
-  }
+  friend bool operator==(const HdrMetadataCta861_3&,
+                         const HdrMetadataCta861_3&) = default;
+  friend auto operator<=>(const HdrMetadataCta861_3&,
+                          const HdrMetadataCta861_3&) = default;
 };
 
 // SMPTE ST 2086 color volume metadata.
@@ -70,14 +68,8 @@ struct COLOR_SPACE_EXPORT HdrMetadataSmpteSt2086 {
            luminance_min != 0.f;
   }
 
-  bool operator==(const HdrMetadataSmpteSt2086& rhs) const {
-    return (primaries == rhs.primaries && luminance_max == rhs.luminance_max &&
-            luminance_min == rhs.luminance_min);
-  }
-
-  bool operator!=(const HdrMetadataSmpteSt2086& rhs) const {
-    return !(*this == rhs);
-  }
+  bool operator==(const HdrMetadataSmpteSt2086&) const = default;
+  std::partial_ordering operator<=>(const HdrMetadataSmpteSt2086&) const;
 };
 
 // Nominal diffuse white level (NDWL) metadata.
@@ -91,9 +83,10 @@ struct COLOR_SPACE_EXPORT HdrMetadataNdwl {
 
   std::string ToString() const;
 
-  bool operator==(const HdrMetadataNdwl& rhs) const { return nits == rhs.nits; }
-
-  bool operator!=(const HdrMetadataNdwl& rhs) const { return !(*this == rhs); }
+  friend bool operator==(const HdrMetadataNdwl&,
+                         const HdrMetadataNdwl&) = default;
+  friend auto operator<=>(const HdrMetadataNdwl&,
+                          const HdrMetadataNdwl&) = default;
 };
 
 // HDR metadata for extended range color spaces.
@@ -118,14 +111,29 @@ struct COLOR_SPACE_EXPORT HdrMetadataExtendedRange {
 
   std::string ToString() const;
 
-  bool operator==(const HdrMetadataExtendedRange& rhs) const {
-    return (current_headroom == rhs.current_headroom &&
-            desired_headroom == rhs.desired_headroom);
-  }
+  friend bool operator==(const HdrMetadataExtendedRange&,
+                         const HdrMetadataExtendedRange&) = default;
+  friend auto operator<=>(const HdrMetadataExtendedRange&,
+                          const HdrMetadataExtendedRange&) = default;
+};
 
-  bool operator!=(const HdrMetadataExtendedRange& rhs) const {
-    return !(*this == rhs);
-  }
+struct COLOR_SPACE_EXPORT HdrMetadataAgtm {
+  HdrMetadataAgtm();
+  explicit HdrMetadataAgtm(sk_sp<SkData> payload);
+  HdrMetadataAgtm(const void* payload, size_t size);
+  HdrMetadataAgtm(const HdrMetadataAgtm& other);
+  HdrMetadataAgtm& operator=(const HdrMetadataAgtm& other);
+  ~HdrMetadataAgtm();
+
+  // Return whether or not use of AGTM metadata is enabled by default or not.
+  static bool IsEnabled();
+  std::string ToString() const;
+
+  bool operator==(const HdrMetadataAgtm& rhs) const;
+  std::strong_ordering operator<=>(const HdrMetadataAgtm& rhs) const;
+
+  // The raw encoded AGTM metadata payload.
+  sk_sp<SkData> payload;
 };
 
 // HDR metadata common for HDR10 and WebM/VP9-based HDR formats.
@@ -142,21 +150,37 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
   // Brightness points for extended range color spaces.
   std::optional<HdrMetadataExtendedRange> extended_range;
 
-  HDRMetadata() = default;
+  // Agtm metadata.
+  std::optional<HdrMetadataAgtm> agtm;
+
+  HDRMetadata();
+  HDRMetadata(const skhdr::Metadata& sk_hdr_metadata);
   HDRMetadata(const HdrMetadataSmpteSt2086& smpte_st_2086,
-              const HdrMetadataCta861_3& cta_861_3)
-      : smpte_st_2086(smpte_st_2086), cta_861_3(cta_861_3) {}
-  explicit HDRMetadata(const HdrMetadataSmpteSt2086& smpte_st_2086)
-      : smpte_st_2086(smpte_st_2086) {}
-  explicit HDRMetadata(const HdrMetadataCta861_3& cta_861_3)
-      : cta_861_3(cta_861_3) {}
-  HDRMetadata(const HDRMetadata& rhs) = default;
-  HDRMetadata& operator=(const HDRMetadata& rhs) = default;
+              const HdrMetadataCta861_3& cta_861_3);
+  explicit HDRMetadata(const HdrMetadataSmpteSt2086& smpte_st_2086);
+  explicit HDRMetadata(const HdrMetadataCta861_3& cta_861_3);
+  HDRMetadata(const HDRMetadata& rhs);
+  HDRMetadata& operator=(const HDRMetadata& rhs);
+  ~HDRMetadata();
+
+  // Return true if this structure holds no metadata.
+  bool IsEmpty() const {
+    return !smpte_st_2086.has_value() && !cta_861_3.has_value() &&
+           !ndwl.has_value() && !extended_range.has_value() &&
+           !agtm.has_value();
+  }
 
   bool IsValid() const {
     return (cta_861_3 && cta_861_3->IsValid()) ||
            (smpte_st_2086 && smpte_st_2086->IsValid()) || extended_range;
   }
+
+  // Compute the maximum luminance for the specified HDR metadata. This will
+  // - return the CTA 861.3 max content light level metadata, if present
+  // - return the SMPTE ST 2086 luminance max metadata, if present
+  // - otherwise return 1,000 nits
+  static float GetContentMaxLuminance(
+      const std::optional<gfx::HDRMetadata>& metadata);
 
   // Return a copy of `hdr_metadata` with its `smpte_st_2086` fully
   // populated. Any unspecified values are set to default values (in particular,
@@ -169,12 +193,8 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
 
   std::string ToString() const;
 
-  bool operator==(const HDRMetadata& rhs) const {
-    return cta_861_3 == rhs.cta_861_3 && smpte_st_2086 == rhs.smpte_st_2086 &&
-           ndwl == rhs.ndwl && extended_range == rhs.extended_range;
-  }
-
-  bool operator!=(const HDRMetadata& rhs) const { return !(*this == rhs); }
+  friend bool operator==(const HDRMetadata&, const HDRMetadata&) = default;
+  friend auto operator<=>(const HDRMetadata&, const HDRMetadata&) = default;
 };
 
 // HDR metadata types as described in

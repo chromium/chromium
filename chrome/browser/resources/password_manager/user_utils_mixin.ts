@@ -25,29 +25,12 @@ export const UserUtilMixin = dedupingMixin(
         static get properties() {
           return {
             /**
-             * Indicates whether user opted in using passwords stored on
-             * their account.
-             */
-            isOptedInForAccountStorage: {
-              type: Boolean,
-              value: false,
-            },
-
-            /* Account storage eligibility. */
-            isEligibleForAccountStorage: {
-              type: Boolean,
-              value: false,
-              computed: 'computeIsEligibleForAccountStorage_(syncInfo_)',
-            },
-
-            /**
              * If true, the edit dialog and removal notification show
              * information about which location(s) a password is stored.
              */
             isAccountStoreUser: {
               type: Boolean,
-              computed: 'computeIsAccountStoreUser_(' +
-                  'isOptedInForAccountStorage, isEligibleForAccountStorage)',
+              value: false,
             },
 
             isSyncingPasswords: {
@@ -69,43 +52,45 @@ export const UserUtilMixin = dedupingMixin(
               value: '',
               computed: 'computeAvatarImage_(accountInfo_)',
             },
+
+            syncInfo_: Object,
+            accountInfo_: Object,
           };
         }
 
-        isOptedInForAccountStorage: boolean;
-        isEligibleForAccountStorage: boolean;
-        isAccountStoreUser: boolean;
-        isSyncingPasswords: boolean;
-        accountEmail: string;
-        avatarImage: string;
-        private syncInfo_: SyncInfo;
-        private accountInfo_: AccountInfo;
+        declare isAccountStoreUser: boolean;
+        declare isSyncingPasswords: boolean;
+        declare accountEmail: string;
+        declare avatarImage: string;
+        declare private syncInfo_: SyncInfo;
+        declare private accountInfo_: AccountInfo;
 
-        private setIsOptedInForAccountStorageListener_:
-            ((isOptedIn: boolean) => void)|null = null;
+        private setIsAccountStorageEnabledListener_:
+            ((enabled: boolean) => void)|null = null;
 
         override connectedCallback() {
           super.connectedCallback();
 
           // Create listener functions.
-          this.setIsOptedInForAccountStorageListener_ = (optedIn) =>
-              this.isOptedInForAccountStorage = optedIn;
+          this.setIsAccountStorageEnabledListener_ = (enabled) =>
+              this.isAccountStoreUser = enabled;
           const syncInfoChanged = (syncInfo: SyncInfo) => this.syncInfo_ =
               syncInfo;
           const accountInfoChanged = (accountInfo: AccountInfo) =>
               this.accountInfo_ = accountInfo;
 
           // Request initial data.
-          PasswordManagerImpl.getInstance().isOptedInForAccountStorage().then(
-              this.setIsOptedInForAccountStorageListener_);
+          PasswordManagerImpl.getInstance().isAccountStorageEnabled().then(
+              this.setIsAccountStorageEnabledListener_);
           SyncBrowserProxyImpl.getInstance().getSyncInfo().then(
               syncInfoChanged);
           SyncBrowserProxyImpl.getInstance().getAccountInfo().then(
               accountInfoChanged);
 
           // Listen for changes.
-          PasswordManagerImpl.getInstance().addAccountStorageOptInStateListener(
-              this.setIsOptedInForAccountStorageListener_);
+          PasswordManagerImpl.getInstance()
+              .addAccountStorageEnabledStateListener(
+                  this.setIsAccountStorageEnabledListener_);
           this.addWebUiListener('sync-info-changed', syncInfoChanged);
           this.addWebUiListener('stored-accounts-changed', accountInfoChanged);
         }
@@ -113,40 +98,31 @@ export const UserUtilMixin = dedupingMixin(
         override disconnectedCallback() {
           super.disconnectedCallback();
 
-          assert(this.setIsOptedInForAccountStorageListener_);
+          assert(this.setIsAccountStorageEnabledListener_);
           PasswordManagerImpl.getInstance()
-              .removeAccountStorageOptInStateListener(
-                  this.setIsOptedInForAccountStorageListener_);
-          this.setIsOptedInForAccountStorageListener_ = null;
+              .removeAccountStorageEnabledStateListener(
+                  this.setIsAccountStorageEnabledListener_);
+          this.setIsAccountStorageEnabledListener_ = null;
         }
 
-        optInForAccountStorage() {
-          PasswordManagerImpl.getInstance().optInForAccountStorage(true);
+        enableAccountStorage() {
+          PasswordManagerImpl.getInstance().setAccountStorageEnabled(true);
         }
 
-        optOutFromAccountStorage() {
-          PasswordManagerImpl.getInstance().optInForAccountStorage(false);
-        }
-
-        private computeIsEligibleForAccountStorage_(): boolean {
-          return !!this.syncInfo_ && this.syncInfo_.isEligibleForAccountStorage;
+        disableAccountStorage() {
+          PasswordManagerImpl.getInstance().setAccountStorageEnabled(false);
         }
 
         private computeIsSyncingPasswords_(): boolean {
-          return !!this.syncInfo_ && this.syncInfo_.isSyncingPasswords;
+          return !!(this.syncInfo_?.isSyncingPasswords);
         }
 
         private computeAccountEmail_(): string {
-          return (this.accountInfo_ ? this.accountInfo_.email : '');
+          return this.accountInfo_?.email || '';
         }
 
         private computeAvatarImage_(): string {
-          return this.accountInfo_.avatarImage || '';
-        }
-
-        private computeIsAccountStoreUser_(): boolean {
-          return this.isEligibleForAccountStorage &&
-              this.isOptedInForAccountStorage;
+          return this.accountInfo_?.avatarImage || '';
         }
       }
 
@@ -155,12 +131,10 @@ export const UserUtilMixin = dedupingMixin(
 
 
 export interface UserUtilMixinInterface {
-  isOptedInForAccountStorage: boolean;
-  isEligibleForAccountStorage: boolean;
   isAccountStoreUser: boolean;
   isSyncingPasswords: boolean;
   accountEmail: string;
   avatarImage: string;
-  optInForAccountStorage(): void;
-  optOutFromAccountStorage(): void;
+  enableAccountStorage(): void;
+  disableAccountStorage(): void;
 }

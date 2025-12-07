@@ -126,5 +126,34 @@ TEST(ProtoEnumConversionsTest,
       sync_pb::TrustedVaultAutoUpgradeExperimentGroup::Type);
 }
 
+TEST(ProtoEnumConversionsTest, GetBrowserColorVariantString) {
+  TestEnumStringsNonEmpty(sync_pb::UserColorTheme::BrowserColorVariant);
+}
+
+TEST(ProtoEnumConversionsTest, GetBrowserColorSchemeString) {
+  TestEnumStringsNonEmpty(sync_pb::ThemeSpecifics::BrowserColorScheme);
+}
+
+TEST(ProtoEnumConversionsTest, GetContactInfoAddressType) {
+  TestEnumStringsNonEmpty(sync_pb::ContactInfoSpecifics::AddressType);
+}
+
+TEST(ProtoEnumConversionsTest, GetCardInfoRetrievalEnrollmentStateString) {
+  TestEnumStringsNonEmpty(
+      sync_pb::WalletMaskedCreditCard::CardInfoRetrievalEnrollmentState);
+}
+
+TEST(ProtoEnumConversionsTest, GetCardBenefitSourceString) {
+  TestEnumStringsNonEmpty(sync_pb::WalletMaskedCreditCard::CardBenefitSource);
+}
+
+TEST(ProtoEnumConversionsTest, GetCardCreationSourceString) {
+  TestEnumStringsNonEmpty(sync_pb::WalletMaskedCreditCard::CardCreationSource);
+}
+
+TEST(ProtoEnumConversionsTest, GetActionRequiredString) {
+  TestEnumStringsNonEmpty(sync_pb::PaymentInstrument::ActionRequired);
+}
+
 }  // namespace
 }  // namespace syncer

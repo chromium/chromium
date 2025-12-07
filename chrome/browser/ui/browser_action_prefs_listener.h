@@ -5,13 +5,15 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_ACTION_PREFS_LISTENER_H_
 #define CHROME_BROWSER_UI_BROWSER_ACTION_PREFS_LISTENER_H_
 
+#include "base/memory/raw_ref.h"
 #include "components/prefs/pref_change_registrar.h"
 
-class Browser;
+class BrowserActions;
+class Profile;
 
 class BrowserActionPrefsListener final {
  public:
-  explicit BrowserActionPrefsListener(Browser& browser);
+  BrowserActionPrefsListener(Profile* profile, BrowserActions* browser_actions);
   BrowserActionPrefsListener(const BrowserActionPrefsListener&) = delete;
   BrowserActionPrefsListener& operator=(const BrowserActionPrefsListener&) =
       delete;
@@ -21,7 +23,8 @@ class BrowserActionPrefsListener final {
   void UpdateActionsForSharingHubPolicy();
   void UpdateQRCodeGeneratorActionEnabledState();
 
-  const raw_ref<Browser> browser_;
+  const raw_ref<Profile> profile_;
+  const raw_ref<BrowserActions> browser_actions_;
   PrefChangeRegistrar profile_pref_registrar_;
   PrefChangeRegistrar local_pref_registrar_;
 };

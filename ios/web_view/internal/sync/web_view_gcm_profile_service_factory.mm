@@ -36,8 +36,9 @@ void RequestProxyResolvingSocketFactoryOnUIThread(
     base::WeakPtr<gcm::GCMProfileService> service,
     mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>
         receiver) {
-  if (!service)
+  if (!service) {
     return;
+  }
   context->GetProxyResolvingSocketFactory(std::move(receiver));
 }
 
@@ -104,6 +105,7 @@ WebViewGCMProfileServiceFactory::BuildServiceInstanceFor(
       WebViewIdentityManagerFactory::GetForBrowserState(browser_state),
       base::WrapUnique(new gcm::GCMClientFactory),
       web::GetUIThreadTaskRunner({}), web::GetIOThreadTaskRunner({}),
-      blocking_task_runner);
+      blocking_task_runner,
+      ApplicationContext::GetInstance()->GetOSCryptAsync());
 }
 }  // namespace ios_web_view

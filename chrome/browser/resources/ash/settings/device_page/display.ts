@@ -25,8 +25,9 @@ import 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {CrCheckboxElement} from 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
-import {CrSliderElement, SliderTick} from 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
+import type {CrCheckboxElement} from 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
+import type {SliderTick} from 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
+import {CrSliderElement} from 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 import {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
@@ -37,17 +38,20 @@ import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/pol
 
 import {assertExists, cast, castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {isDisplayBrightnessControlInSettingsEnabled, isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
+import {isDisplayBrightnessControlInSettingsEnabled} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
-import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
-import {SettingsSliderElement} from '../controls/settings_slider.js';
-import {AmbientLightSensorObserverReceiver, DisplayBrightnessSettingsObserverReceiver, DisplayConfigurationObserverReceiver, DisplaySettingsOrientationOption, DisplaySettingsProviderInterface, DisplaySettingsType, DisplaySettingsValue, TabletModeObserverReceiver} from '../mojom-webui/display_settings_provider.mojom-webui.js';
+import type {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
+import type {SettingsSliderElement} from '../controls/settings_slider.js';
+import type {DisplaySettingsProviderInterface, DisplaySettingsValue} from '../mojom-webui/display_settings_provider.mojom-webui.js';
+import {AmbientLightSensorObserverReceiver, DisplayBrightnessSettingsObserverReceiver, DisplayConfigurationObserverReceiver, DisplaySettingsOrientationOption, DisplaySettingsType, TabletModeObserverReceiver} from '../mojom-webui/display_settings_provider.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {routes} from '../router.js';
 
-import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, getDisplayApi} from './device_page_browser_proxy.js';
+import type {DevicePageBrowserProxy} from './device_page_browser_proxy.js';
+import {DevicePageBrowserProxyImpl, getDisplayApi} from './device_page_browser_proxy.js';
 import {getTemplate} from './display.html.js';
-import {SettingsDisplayOverscanDialogElement} from './display_overscan_dialog.js';
+import type {SettingsDisplayOverscanDialogElement} from './display_overscan_dialog.js';
 import {getDisplaySettingsProvider} from './display_settings_mojo_interface_provider.js';
 
 import DisplayLayout = chrome.system.display.DisplayLayout;
@@ -93,6 +97,11 @@ export interface SettingsDisplayElement {
 const SettingsDisplayElementBase =
     DeepLinkingMixin(PrefsMixin(RouteObserverMixin(I18nMixin(PolymerElement))));
 
+// Set the MIN_VISIBLE_PERCENT to 10%. The lowest brightness that the slider can
+// go is 5%, so the slider appears the same at 0% and 5%. Therefore, the minimum
+// visible percent should be greater than 5%.
+const MIN_VISIBLE_PERCENT = 10;
+
 export class SettingsDisplayElement extends SettingsDisplayElementBase {
   static get is() {
     return 'settings-display';
@@ -104,14 +113,6 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
 
   static get properties() {
     return {
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value: () => {
-          return isRevampWayfindingEnabled();
-        },
-        readOnly: true,
-      },
-
       selectedModePref_: {
         type: Object,
         value() {
@@ -146,6 +147,8 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
 
       /** Primary display id */
       primaryDisplayId: String,
+
+      primaryDisplay: Object,
 
       selectedDisplay: Object,
 
@@ -197,10 +200,17 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
         },
       },
 
-      listAllDisplayModes_: {
+      excludeDisplayInMirrorModeEnabled_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('listAllDisplayModes');
+          return loadTimeData.getBoolean('excludeDisplayInMirrorModeEnabled');
+        },
+      },
+
+      opsDisplayScaleFactorEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('opsDisplayScaleFactorEnabled');
         },
       },
 
@@ -266,25 +276,6 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
         type: Number,
         value: null,
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kDisplaySize,
-          Setting.kDisplayOrientation,
-          Setting.kDisplayArrangement,
-          Setting.kDisplayResolution,
-          Setting.kDisplayRefreshRate,
-          Setting.kDisplayMirroring,
-          Setting.kAllowWindowsToSpanDisplays,
-          Setting.kAmbientColors,
-          Setting.kTouchscreenCalibration,
-          Setting.kDisplayOverscan,
-        ]),
-      },
     };
   }
 
@@ -304,7 +295,24 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   mirroringDestinationIds: string[];
   overscanDisplayId: string;
   primaryDisplayId: string;
+  primaryDisplay?: DisplayUnitInfo;
   selectedDisplay?: DisplayUnitInfo;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kDisplaySize,
+    Setting.kDisplayOrientation,
+    Setting.kDisplayArrangement,
+    Setting.kDisplayResolution,
+    Setting.kDisplayRefreshRate,
+    Setting.kDisplayMirroring,
+    Setting.kAllowWindowsToSpanDisplays,
+    Setting.kAmbientColors,
+    Setting.kTouchscreenCalibration,
+    Setting.kDisplayOverscan,
+  ]);
+
+  private readonly ambientColorAvailable_: boolean;
   private browserProxy_: DevicePageBrowserProxy;
   private brightnessSliderMax_: number;
   private brightnessSliderMin_: number;
@@ -316,16 +324,18 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   private displayModeList_: DropdownMenuOptionList;
   private displaySettingsProvider: DisplaySettingsProviderInterface;
   private displayTabNames_: string[];
+  private readonly excludeDisplayInMirrorModeEnabled_: boolean;
   private hasAmbientLightSensor_: boolean;
   private invalidDisplayId_: string;
   private isAmbientLightSensorEnabled_: boolean;
   private isDisplayPerformanceEnabled_: boolean;
-  private readonly isRevampWayfindingEnabled_: boolean;
+  private readonly isDisplayPerformanceSupported_: boolean;
   private isTabletMode_: boolean;
-  private listAllDisplayModes_: boolean;
   private logicalResolutionText_: string;
+  private mirroringExcludedId_: string;
   private modeToParentModeMap_: Map<number, number>;
   private modeValues_: number[];
+  private opsDisplayScaleFactorEnabled_: boolean;
   private parentModeToRefreshRateMap_: Map<number, DropdownMenuOptionList>;
   private pendingSettingId_: Setting|null;
   private refreshRateList_: DropdownMenuOptionList;
@@ -333,6 +343,7 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   private selectedParentModePref_: chrome.settingsPrivate.PrefObject;
   private selectedTab_: number;
   private selectedZoomPref_: chrome.settingsPrivate.PrefObject;
+  private readonly unifiedDesktopAvailable_: boolean;
   private unifiedDesktopMode_: boolean;
   private zoomValues_: SliderTick[];
 
@@ -357,6 +368,8 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
     this.displayChangedListener_ = null;
 
     this.invalidDisplayId_ = loadTimeData.getString('invalidDisplayId');
+
+    this.mirroringExcludedId_ = this.invalidDisplayId_;
 
     this.currentRoute_ = null;
 
@@ -449,7 +462,18 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   /**
    * Implements DisplayBrightnessSettingsObserver.OnDisplayBrightnessChanged.
    */
-  onDisplayBrightnessChanged(brightnessPercent: number): void {
+  onDisplayBrightnessChanged(
+      brightnessPercent: number, triggeredByAls: boolean): void {
+    if (triggeredByAls && brightnessPercent > 0 &&
+        brightnessPercent < MIN_VISIBLE_PERCENT) {
+      // When auto-brightness is enabled, it's likely that the automated
+      // brightness percentage will fall between 0% and 10%. To avoid confusion
+      // where the user cannot distinguish between the screen being off (0%)
+      // and low brightness levels, set the slider to a minimum visible
+      // percentage (10%).
+      this.currentInternalScreenBrightness_ = MIN_VISIBLE_PERCENT;
+      return;
+    }
     this.currentInternalScreenBrightness_ = brightnessPercent;
   }
 
@@ -532,6 +556,20 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
             this.displayLayoutFetched_(displays, layouts));
     if (this.isMirrored(displays)) {
       this.mirroringDestinationIds = displays[0].mirroringDestinationIds;
+      // If the display length is not 1, it means we are in mixed mirror mode,
+      // so we need to update mirroringExcludedId_.
+      if (displays.length !== 1) {
+        const mirroringSourceId = displays[0].mirroringSourceId;
+        this.mirroringExcludedId_ =
+            this.displays
+                .filter(
+                    display =>
+                        !this.mirroringDestinationIds.includes(display.id) &&
+                        display.id !== mirroringSourceId)[0]
+                .id;
+      } else {
+        this.mirroringExcludedId_ = this.invalidDisplayId_;
+      }
     } else {
       this.mirroringDestinationIds = [];
     }
@@ -608,33 +646,6 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
         !resolutionPref.value!.recommended;
   }
 
-
-  /**
-   * Parses the display modes for |selectedDisplay|. |displayModeList_| will
-   * contain entries representing a combined resolution + refresh rate.
-   * Only one parse*DisplayModes_ method must be called, depending on the
-   * state of |listAllDisplayModes_|.
-   */
-  private parseCompoundDisplayModes_(selectedDisplay: DisplayUnitInfo): void {
-    assert(!this.listAllDisplayModes_);
-    const optionList: DropdownMenuOptionList = [];
-    for (let i = 0; i < selectedDisplay.modes.length; ++i) {
-      const mode = selectedDisplay.modes[i];
-
-      const id = 'displayResolutionMenuItem';
-      const refreshRate = Math.round(mode.refreshRate * 100) / 100;
-      const resolution = this.i18n(
-          id, mode.width.toString(), mode.height.toString(),
-          refreshRate.toString());
-
-      optionList.push({
-        name: resolution,
-        value: i,
-      });
-    }
-    this.displayModeList_ = optionList;
-  }
-
   /**
    * Uses the modes of |selectedDisplay| to build a nested map of width =>
    * height => refreshRate => modeIndex. modeIndex is the index of the
@@ -646,24 +657,30 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
     const modes = new Map();
     for (let i = 0; i < selectedDisplay.modes.length; ++i) {
       const mode = selectedDisplay.modes[i];
-      if (!modes.has(mode.width)) {
-        modes.set(mode.width, new Map());
+      if (!modes.has(mode.widthInNativePixels)) {
+        modes.set(mode.widthInNativePixels, new Map());
       }
 
-      if (!modes.get(mode.width).has(mode.height)) {
-        modes.get(mode.width).set(mode.height, new Map());
+      if (!modes.get(mode.widthInNativePixels).has(mode.heightInNativePixels)) {
+        modes.get(mode.widthInNativePixels)
+            .set(mode.heightInNativePixels, new Map());
       }
 
       // Prefer the first native mode we find, for consistency.
-      if (modes.get(mode.width).get(mode.height).has(mode.refreshRate)) {
-        const existingModeIndex =
-            modes.get(mode.width).get(mode.height).get(mode.refreshRate);
+      if (modes.get(mode.widthInNativePixels)
+              .get(mode.heightInNativePixels)
+              .has(mode.refreshRate)) {
+        const existingModeIndex = modes.get(mode.widthInNativePixels)
+                                      .get(mode.heightInNativePixels)
+                                      .get(mode.refreshRate);
         const existingMode = selectedDisplay.modes[existingModeIndex];
         if (existingMode.isNative || !mode.isNative) {
           continue;
         }
       }
-      modes.get(mode.width).get(mode.height).set(mode.refreshRate, i);
+      modes.get(mode.widthInNativePixels)
+          .get(mode.heightInNativePixels)
+          .set(mode.refreshRate, i);
     }
     return modes;
   }
@@ -675,11 +692,9 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
    * method goes through the mode list for a given display creating data
    * structures so that given a resolution, the default refresh rate is
    * selected, and other possible refresh rates at that resolution are shown
-   * in a dropdown. Only one parse*DisplayModes_ method must be called,
-   * depending on the state of |listAllDisplayModes_|.
+   * in a dropdown.
    */
-  private parseSplitDisplayModes_(selectedDisplay: DisplayUnitInfo): void {
-    assert(this.listAllDisplayModes_);
+  private parseDisplayModes_(selectedDisplay: DisplayUnitInfo): void {
     // Clear the mappings before recalculating.
     this.modeToParentModeMap_ = new Map();
     this.parentModeToRefreshRateMap_ = new Map();
@@ -721,8 +736,8 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
     // Construct mode->parentMode map so we can get parent modes later.
     for (let i = 0; i < selectedDisplay.modes.length; i++) {
       const mode = selectedDisplay.modes[i];
-      const parentModeIndex =
-          this.getParentModeIndex_(modes.get(mode.width)!.get(mode.height)!);
+      const parentModeIndex = this.getParentModeIndex_(
+          modes.get(mode.widthInNativePixels)!.get(mode.heightInNativePixels)!);
       this.modeToParentModeMap_.set(i, parentModeIndex);
     }
     assert(this.modeToParentModeMap_.size === selectedDisplay.modes.length);
@@ -749,8 +764,6 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
    */
   private addResolution_(
       parentModeIndex: number, width: number, height: number): void {
-    assert(this.listAllDisplayModes_);
-
     // Add an entry in the outer map for |parentModeIndex|. The inner
     // array (the value at |parentModeIndex|) will be populated with all
     // possible refresh rates for the given resolution.
@@ -774,8 +787,6 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   private addRefreshRate_(
       parentModeIndex: number, modeIndex: number, rate: number,
       isInterlaced?: boolean): void {
-    assert(this.listAllDisplayModes_);
-
     // Truncate at two decimal places for display. If the refresh rate
     // is a whole number, remove the mantissa.
     let refreshRate = Number(rate).toFixed(2);
@@ -814,16 +825,12 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
 
   /**
    * Parses display modes for |selectedDisplay|. A 'mode' is a resolution +
-   * refresh rate combo. If |listAllDisplayModes_| is on, resolution and
-   * refresh rate are parsed into separate dropdowns and
-   * |parentModeToRefreshRateMap_| + |modeToParentModeMap_| are populated.
+   * refresh rate combo. Resolution and refresh rate are parsed into separate
+   * dropdowns and |parentModeToRefreshRateMap_| + |modeToParentModeMap_| are
+   * populated.
    */
   private updateDisplayModeStructures_(selectedDisplay: DisplayUnitInfo): void {
-    if (this.listAllDisplayModes_) {
-      this.parseSplitDisplayModes_(selectedDisplay);
-    } else {
-      this.parseCompoundDisplayModes_(selectedDisplay);
-    }
+    this.parseDisplayModes_(selectedDisplay);
   }
 
   /**
@@ -898,16 +905,12 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
     // This will also cause the parent mode to be updated.
     this.set('selectedModePref_.value', this.currentSelectedModeIndex_);
 
-    if (this.listAllDisplayModes_) {
-      // Now that everything is in sync, set the selected mode to its correct
-      // value right before updating the pref.
-      this.currentSelectedParentModeIndex_ =
-          this.modeToParentModeMap_.get(currentModeIndex)!;
-      this.refreshRateList_ = this.parentModeToRefreshRateMap_.get(
-          this.currentSelectedParentModeIndex_)!;
-    } else {
-      this.currentSelectedParentModeIndex_ = currentModeIndex;
-    }
+    // Now that everything is in sync, set the selected mode to its correct
+    // value right before updating the pref.
+    this.currentSelectedParentModeIndex_ =
+        this.modeToParentModeMap_.get(currentModeIndex)!;
+    this.refreshRateList_ = this.parentModeToRefreshRateMap_.get(
+        this.currentSelectedParentModeIndex_)!;
 
     this.set(
         'selectedParentModePref_.value', this.currentSelectedParentModeIndex_);
@@ -926,8 +929,7 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
    * Returns true if the refresh rate setting needs to be displayed.
    */
   private showRefreshRateSetting_(display: DisplayUnitInfo): boolean {
-    return this.listAllDisplayModes_ &&
-        this.showDropDownResolutionSetting_(display);
+    return this.showDropDownResolutionSetting_(display);
   }
 
   /**
@@ -939,6 +941,13 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   private showTouchCalibrationSetting_(display: DisplayUnitInfo): boolean {
     return !display.isInternal &&
         loadTimeData.getBoolean('enableTouchCalibrationSetting');
+  }
+
+  /**
+   * Returns true if external touch devices are connected a
+   */
+  private showTouchRemappingExperience_(): boolean {
+    return loadTimeData.getBoolean('enableTouchscreenMappingExperience');
   }
 
   /**
@@ -1004,7 +1013,11 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
    * Returns the i18n string for the text to be used for mirroring settings.
    * @return i18n string for mirroring settings text.
    */
-  private getDisplayMirrorText_(displays: DisplayUnitInfo[]): string {
+  private getDisplayMirrorText_(
+      displays: DisplayUnitInfo[], primaryDisplay: DisplayUnitInfo): string {
+    if (primaryDisplay) {
+      return this.i18n('displayMirror', primaryDisplay.name);
+    }
     return this.i18n('displayMirror', displays[0].name);
   }
 
@@ -1040,6 +1053,28 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   isMirrored(displays: DisplayUnitInfo[]): boolean {
     return displays !== undefined && displays.length > 0 &&
         !!displays[0].mirroringSourceId;
+  }
+
+  private showExcludeInMirror_(
+      unifiedDesktopMode: boolean,
+      excludeDisplayInMirrorModeEnabled: boolean,
+      allowExcludeDisplayInMirrorModePref: boolean,
+      displays: DisplayUnitInfo[],
+      selectedDisplay: DisplayUnitInfo): boolean {
+    if (!selectedDisplay) {
+      return false;
+    }
+    if (this.isMirrored(displays)) {
+      return selectedDisplay.id === this.mirroringExcludedId_;
+    }
+    if (!excludeDisplayInMirrorModeEnabled &&
+        !allowExcludeDisplayInMirrorModePref) {
+      return false;
+    }
+    if (displays.length < 3) {
+      return false;
+    }
+    return this.showMirror(unifiedDesktopMode, displays);
   }
 
   private isSelected_(
@@ -1087,8 +1122,8 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
     }
     const mode =
         castExists(this.selectedDisplay.modes[this.selectedModePref_.value]);
-    const widthStr = mode.width.toString();
-    const heightStr = mode.height.toString();
+    const widthStr = mode.widthInNativePixels.toString();
+    const heightStr = mode.heightInNativePixels.toString();
     if (this.isBestMode_(this.selectedDisplay, mode)) {
       return this.i18n('displayResolutionTextBest', widthStr, heightStr);
     } else if (mode.isNative) {
@@ -1104,7 +1139,8 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
    */
   private updateLogicalResolutionText_(zoomFactor: number): void {
     assertExists(this.selectedDisplay);
-    if (!this.selectedDisplay.isInternal) {
+    if (!this.selectedDisplay.isInternal &&
+        !this.opsDisplayScaleFactorEnabled_) {
       this.logicalResolutionText_ = '';
       return;
     }
@@ -1192,6 +1228,10 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
    */
   private onTouchCalibrationClick_(): void {
     getDisplayApi().showNativeTouchCalibration(this.selectedDisplay!.id);
+  }
+
+  private onTouchMappingClick_(): void {
+    this.displaySettingsProvider.startNativeTouchscreenMappingExperience();
   }
 
   /**
@@ -1340,8 +1380,9 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
     const currentMode =
         this.selectedDisplay.modes[this.currentSelectedModeIndex_];
     const newMode = this.selectedDisplay.modes[this.selectedModePref_.value];
-    const displaySettingsType = (currentMode.height === newMode.height &&
-                                 currentMode.width === newMode.width) ?
+    const displaySettingsType =
+        (currentMode.heightInNativePixels === newMode.heightInNativePixels &&
+         currentMode.widthInNativePixels === newMode.widthInNativePixels) ?
         DisplaySettingsType.kRefreshRate :
         DisplaySettingsType.kResolution;
     this.displaySettingsProvider.recordChangingDisplaySettings(
@@ -1420,8 +1461,41 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
     (event.currentTarget as CrCheckboxElement).blur();
 
     const mirrorModeInfo: MirrorModeInfo = {
-      mode: this.isMirrored(this.displays) ? MirrorMode.OFF : MirrorMode.NORMAL,
+      mode: this.isMirrored(this.displays) ? MirrorMode.OFF :
+          this.mirroringExcludedId_ === this.invalidDisplayId_ ?
+                                             MirrorMode.NORMAL :
+                                             MirrorMode.MIXED,
     };
+    if (mirrorModeInfo.mode === MirrorMode.MIXED) {
+      const mirroredDisplay = this.displayIds.split(',').filter(
+          display => (display !== this.mirroringExcludedId_));
+      mirrorModeInfo.mirroringSourceId = mirroredDisplay[0];
+      mirrorModeInfo.mirroringDestinationIds = mirroredDisplay.slice(1);
+    }
+    this.setMirrorMode(mirrorModeInfo);
+  }
+
+  private shouldExcludeInMirror_(selectedDisplay: DisplayUnitInfo): boolean {
+    return this.mirroringExcludedId_ === selectedDisplay.id;
+  }
+
+  private onExcludeInMirrorClick_(event: Event): void {
+    (event.currentTarget as CrToggleElement).blur();
+    assertExists(this.selectedDisplay);
+    if (this.mirroringExcludedId_ === this.selectedDisplay.id) {
+      this.mirroringExcludedId_ = this.invalidDisplayId_;
+    } else {
+      this.mirroringExcludedId_ = this.selectedDisplay.id;
+    }
+    if (this.isMirrored(this.displays)) {
+      const mirrorModeInfo: MirrorModeInfo = {
+        mode: MirrorMode.NORMAL,
+      };
+      this.setMirrorMode(mirrorModeInfo);
+    }
+  }
+
+  private setMirrorMode(mirrorModeInfo: MirrorModeInfo): void {
     getDisplayApi().setMirrorMode(mirrorModeInfo).then(() => {
       const error = chrome.runtime.lastError;
       if (error) {
@@ -1430,7 +1504,7 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
     });
     this.displaySettingsProvider.recordChangingDisplaySettings(
         DisplaySettingsType.kMirrorMode, /*value=*/ createDisplayValue({
-          mirrorModeStatus: mirrorModeInfo.mode === MirrorMode.NORMAL,
+          mirrorModeStatus: mirrorModeInfo.mode !== MirrorMode.OFF,
         }));
   }
 
@@ -1481,6 +1555,7 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
       }
     }
     this.displayIds = displayIds;
+    this.primaryDisplay = primaryDisplay;
     this.primaryDisplayId = (primaryDisplay && primaryDisplay.id) || '';
     selectedDisplay = selectedDisplay || primaryDisplay ||
         (this.displays && this.displays[0]);

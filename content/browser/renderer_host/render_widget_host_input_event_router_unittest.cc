@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/input/features.h"
 #include "components/input/render_widget_targeter.h"
 #include "components/viz/common/hit_test/hit_test_query.h"
 #include "components/viz/host/host_frame_sink_manager.h"
@@ -33,7 +34,9 @@
 #include "services/viz/public/mojom/hit_test/input_target_client.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
+#include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/blink/public/mojom/input/touch_event.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/test/aura_test_helper.h"
@@ -85,7 +88,8 @@ class StubHitTestQuery : public viz::HitTestQuery {
  public:
   StubHitTestQuery(RenderWidgetHostViewBase* hittest_result,
                    bool query_renderer)
-      : hittest_result_(hittest_result->GetWeakPtr()),
+      : HitTestQuery(std::nullopt),
+        hittest_result_(hittest_result->GetWeakPtr()),
         query_renderer_(query_renderer) {}
   ~StubHitTestQuery() override = default;
 
@@ -326,6 +330,9 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
   }
   input::RenderWidgetHostViewInput* bubbling_gesture_scroll_target() {
     return rwhier()->bubbling_gesture_scroll_target_;
+  }
+  input::RenderWidgetHostViewInput* wheel_target() {
+    return rwhier()->wheel_target_;
   }
 
   void TestSendNewGestureWhileBubbling(
@@ -741,7 +748,7 @@ TEST_F(RenderWidgetHostInputEventRouterTest,
 
   // Start a scroll that gets bubbled up from the child view.
   {
-    ASSERT_FALSE(child.view.get()->is_scroll_sequence_bubbling_);
+    ASSERT_FALSE(child.view.get()->input_helper_->IsScrollSequenceBubbling());
 
     child.view->GestureEventAck(
         scroll_begin, blink::mojom::InputEventResultSource::kCompositorThread,
@@ -749,7 +756,7 @@ TEST_F(RenderWidgetHostInputEventRouterTest,
 
     EXPECT_EQ(child.view.get(), bubbling_gesture_scroll_origin());
     EXPECT_EQ(view_root_.get(), bubbling_gesture_scroll_target());
-    ASSERT_TRUE(child.view->is_scroll_sequence_bubbling_);
+    ASSERT_TRUE(child.view.get()->input_helper_->IsScrollSequenceBubbling());
   }
 
   // Simulate a debounce filtered GSE/GSB pair which looks like an ACK consumed
@@ -764,7 +771,7 @@ TEST_F(RenderWidgetHostInputEventRouterTest,
 
     EXPECT_EQ(child.view.get(), bubbling_gesture_scroll_origin());
     EXPECT_EQ(view_root_.get(), bubbling_gesture_scroll_target());
-    EXPECT_TRUE(child.view->is_scroll_sequence_bubbling_);
+    EXPECT_TRUE(child.view.get()->input_helper_->IsScrollSequenceBubbling());
   }
 
   // An unfiltered GSE should now clear state.
@@ -774,14 +781,14 @@ TEST_F(RenderWidgetHostInputEventRouterTest,
     child.view->GestureEventAck(scroll_end,
                                 blink::mojom::InputEventResultSource::kBrowser,
                                 blink::mojom::InputEventResultState::kIgnored);
-    EXPECT_FALSE(child.view->is_scroll_sequence_bubbling_);
+    EXPECT_FALSE(child.view.get()->input_helper_->IsScrollSequenceBubbling());
     EXPECT_EQ(bubbling_gesture_scroll_origin(), nullptr);
     EXPECT_EQ(bubbling_gesture_scroll_target(), nullptr);
   }
 
   // A new scroll should once again establish bubbling.
   {
-    ASSERT_FALSE(child.view.get()->is_scroll_sequence_bubbling_);
+    ASSERT_FALSE(child.view.get()->input_helper_->IsScrollSequenceBubbling());
 
     child.view->GestureEventAck(
         scroll_begin, blink::mojom::InputEventResultSource::kCompositorThread,
@@ -789,7 +796,7 @@ TEST_F(RenderWidgetHostInputEventRouterTest,
 
     EXPECT_EQ(child.view.get(), bubbling_gesture_scroll_origin());
     EXPECT_EQ(view_root_.get(), bubbling_gesture_scroll_target());
-    ASSERT_TRUE(child.view->is_scroll_sequence_bubbling_);
+    ASSERT_TRUE(child.view.get()->input_helper_->IsScrollSequenceBubbling());
   }
 }
 
@@ -931,10 +938,50 @@ TEST_F(RenderWidgetHostInputEventRouterTest, DoNotBubbleMultipleSequences) {
   EXPECT_EQ(outer1.view.get(), bubbling_gesture_scroll_target());
 }
 
+// Adapted from base/debug/crash_logging_unittest.cc.
+// TODO(crbug.com/346629231): remove this and associated code when resolved.
+class TestCrashKeyImplementation : public base::debug::CrashKeyImplementation {
+ public:
+  explicit TestCrashKeyImplementation(std::map<std::string, std::string>& data)
+      : data_(data) {}
+
+  TestCrashKeyImplementation(const TestCrashKeyImplementation&) = delete;
+  TestCrashKeyImplementation& operator=(const TestCrashKeyImplementation&) =
+      delete;
+
+  base::debug::CrashKeyString* Allocate(
+      const char* name,
+      base::debug::CrashKeySize size) override {
+    return new base::debug::CrashKeyString(name, size);
+  }
+
+  void Set(base::debug::CrashKeyString* crash_key,
+           std::string_view value) override {
+    ASSERT_TRUE(data_->emplace(crash_key->name, value).second);
+  }
+
+  void Clear(base::debug::CrashKeyString* crash_key) override {
+    ASSERT_EQ(1u, data_->erase(crash_key->name));
+  }
+
+  void OutputCrashKeysToStream(std::ostream& out) override {
+    for (auto const& [key, val] : *data_) {
+      out << key << ":" << val << ";";
+    }
+  }
+
+ private:
+  const raw_ref<std::map<std::string, std::string>> data_;
+};
+
 // If a view tries to bubble scroll and the target view has an unrelated
 // gesture in progress, do not bubble the conflicting sequence.
 TEST_F(RenderWidgetHostInputEventRouterTest,
        DoNotBubbleIfUnrelatedGestureInTarget) {
+  std::map<std::string, std::string> crash_key_data;
+  base::debug::SetCrashKeyImplementation(
+      std::make_unique<TestCrashKeyImplementation>(crash_key_data));
+
   gfx::Vector2dF delta(0.f, 10.f);
   blink::WebGestureEvent scroll_begin =
       blink::SyntheticWebGestureEventBuilder::BuildScrollBegin(
@@ -972,8 +1019,81 @@ TEST_F(RenderWidgetHostInputEventRouterTest,
 
   EXPECT_FALSE(rwhier()->BubbleScrollEvent(view_root_.get(), child.view.get(),
                                            scroll_begin));
+
+  // Verify that the DwoC code set the crash string.
+  // TODO(crbug.com/346629231): remove this block and associated code when
+  // resolved.
+  if (base::FeatureList::IsEnabled(
+          input::features::kLogBubblingTouchscreenGesturesForDebug)) {
+    std::ostringstream stream;
+    base::debug::OutputCrashKeysToStream(stream);
+    EXPECT_EQ("Bug346629231-tscr_gesture_evt_history:{GestureTapDown,TS,f};",
+              stream.str());
+  }
+
   EXPECT_EQ(nullptr, bubbling_gesture_scroll_origin());
   EXPECT_EQ(nullptr, bubbling_gesture_scroll_target());
+}
+
+// Same as DoNotBubbleIfUnrelatedGestureInTarget, except this time the unrelated
+// gesture is from a different source device, so allow the bubbling to proceed.
+// This tests the fix for https://crbug.com/346629231.
+TEST_F(RenderWidgetHostInputEventRouterTest, DoBubbleIfSourceDeviceMismatch) {
+  if (!base::FeatureList::IsEnabled(
+          input::features::kIgnoreBubblingCollisionIfSourceDevicesMismatch)) {
+    return;
+  }
+
+  gfx::Vector2dF delta(0.f, 10.f);
+  blink::WebGestureEvent scroll_begin =
+      blink::SyntheticWebGestureEventBuilder::BuildScrollBegin(
+          delta.x(), delta.y(), blink::WebGestureDevice::kTouchpad);
+
+  ChildViewState child = MakeChildView(view_root_.get());
+
+  view_root_->SetHittestResult(view_root_.get(), false);
+
+  blink::WebTouchEvent touch_event(
+      blink::WebInputEvent::Type::kTouchStart,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  touch_event.touches_length = 1;
+  touch_event.touches[0].state = blink::WebTouchPoint::State::kStatePressed;
+  touch_event.unique_touch_event_id = 123;
+
+  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event, ui::LatencyInfo());
+  EXPECT_EQ(view_root_.get(), touch_target());
+
+  blink::WebGestureEvent gesture_event(
+      blink::WebInputEvent::Type::kGestureTapDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests(),
+      blink::WebGestureDevice::kTouchscreen);
+  gesture_event.unique_touch_event_id = touch_event.unique_touch_event_id;
+
+  rwhier()->RouteGestureEvent(view_root_.get(), &gesture_event,
+                              ui::LatencyInfo());
+  EXPECT_EQ(view_root_.get(), touchscreen_gesture_target());
+
+  // Send a TouchCancel so the touch_target will be cleared before we attempt
+  // to do the bubbling.
+  blink::WebTouchEvent touch_cancel_event(
+      blink::WebInputEvent::Type::kTouchCancel,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  touch_cancel_event.touches_length = 1;
+  touch_cancel_event.touches[0].state =
+      blink::WebTouchPoint::State::kStateCancelled;
+  touch_cancel_event.unique_touch_event_id = 124;
+  rwhier()->RouteTouchEvent(view_root_.get(), &touch_cancel_event,
+                            ui::LatencyInfo());
+
+  // Now that we have a gesture in |view_root_|, suppose that there was a
+  // previous gesture from a different source device in |child.view| that has
+  // resulted in a scroll which we will now attempt to bubble. This should
+  // succeed.
+  EXPECT_TRUE(rwhier()->BubbleScrollEvent(view_root_.get(), child.view.get(),
+                                          scroll_begin));
 }
 
 // Like DoNotBubbleIfUnrelatedGestureInTarget, but considers bubbling from a
@@ -1093,8 +1213,8 @@ TEST_F(RenderWidgetHostInputEventRouterTest,
 // devtools connect to a browser instance running on a mobile.  It should not
 // crash.
 TEST_F(RenderWidgetHostInputEventRouterTest, CanCallShowContextMenuAtPoint) {
-  rwhier()->ShowContextMenuAtPoint(gfx::Point(0, 0), ui::MENU_SOURCE_MOUSE,
-                                   view_root_.get());
+  rwhier()->ShowContextMenuAtPoint(
+      gfx::Point(0, 0), ui::mojom::MenuSourceType::kMouse, view_root_.get());
 }
 
 // Input events get latched to a target when middle click autoscroll is in
@@ -1152,6 +1272,28 @@ TEST_F(RenderWidgetHostInputEventRouterTest, QueryResultAfterChildViewDead) {
 
   // Wait for the callback.
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(RenderWidgetHostInputEventRouterTest,
+       RouteMouseWheelEventMayBeginPhase) {
+  ChildViewState child = MakeChildView(view_root_.get());
+  // Simulate the mouse wheel event in MayBegin phase
+
+  // We start the touch in the area for |child.view|.
+  view_root_->SetHittestResult(child.view.get(), false);
+
+  blink::WebMouseWheelEvent wheel_event(
+      blink::WebInputEvent::Type::kMouseWheel,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  wheel_event.SetPositionInWidget(gfx::PointF(20, 21));
+  wheel_event.delta_x = 0;
+  wheel_event.delta_y = 0;
+  wheel_event.phase = blink::WebMouseWheelEvent::kPhaseMayBegin;
+
+  rwhier()->RouteMouseWheelEvent(view_root_.get(), &wheel_event,
+                                 ui::LatencyInfo());
+  EXPECT_EQ(child.view.get(), wheel_target());
 }
 
 #if defined(USE_AURA)
@@ -1632,12 +1774,7 @@ TEST_P(DelegatedInkPointTest, IgnoreEnterAndExitEvents) {
 
 // This test confirms that points can be forwarded when using delegated ink in
 // a child frame, such as an OOPIF.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_ForwardPointsToChildFrame DISABLED_ForwardPointsToChildFrame
-#else
-#define MAYBE_ForwardPointsToChildFrame ForwardPointsToChildFrame
-#endif
-TEST_P(DelegatedInkPointTest, MAYBE_ForwardPointsToChildFrame) {
+TEST_P(DelegatedInkPointTest, ForwardPointsToChildFrame) {
   // Make the child frame, set the delegated ink flag on it, give it a
   // compositor, and set it as the hit test result so that the input router
   // sends points to it.

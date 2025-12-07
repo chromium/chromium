@@ -33,7 +33,6 @@
 namespace net {
 
 BASE_FEATURE(kTransportSecurityFileWriterSchedule,
-             "TransportSecurityFileWriterSchedule",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
@@ -47,10 +46,18 @@ constexpr base::TimeDelta kMinCommitInterval = base::Seconds(10);
 constexpr base::TimeDelta kMaxCommitInterval = base::Minutes(10);
 
 // Overrides the default commit interval for the ImportantFileWriter.
+//
+// go/transport-security-file-writer-schedule-impact explains why the value
+// varies by platform.
 const base::FeatureParam<base::TimeDelta> kCommitIntervalParam(
     &kTransportSecurityFileWriterSchedule,
     "commit_interval",
-    kMinCommitInterval);
+#if BUILDFLAG(IS_ANDROID)
+    kMinCommitInterval
+#else
+    kMaxCommitInterval
+#endif
+);
 
 constexpr const char* kHistogramSuffix = "TransportSecurityPersister";
 
@@ -76,19 +83,16 @@ std::optional<TransportSecurityState::HashedHost> ExternalStringToHashedDomain(
 }
 
 // Version 2 of the on-disk format consists of a single JSON object. The
-// top-level dictionary has "version", "sts", and "expect_ct" entries. The first
-// is an integer, the latter two are unordered lists of dictionaries, each
-// representing cached data for a single host.
+// top-level dictionary has "version" (with integer value) and "sts" with
+// an unordered list of dictionaries, each representing cached data for
+// a single host. Version 2 is the only currently supported format.
 
 // Stored in serialized dictionary values to distinguish incompatible versions.
-// Version 1 is distinguished by the lack of an integer version value.
 const char kVersionKey[] = "version";
 const int kCurrentVersionValue = 2;
 
-// Keys in top level serialized dictionary, for lists of STS and Expect-CT
-// entries, respectively. The Expect-CT key is legacy and deleted when read.
+// Key for the list of STS entries in top level serialized dictionary.
 const char kSTSKey[] = "sts";
-const char kExpectCTKey[] = "expect_ct";
 
 // Hostname entry, used in serialized STS dictionaries. Value is produced by
 // passing hashed hostname strings to HashedDomainToExternalString().
@@ -280,12 +284,7 @@ void TransportSecurityPersister::LoadEntries(const std::string& serialized) {
   DCHECK(foreground_runner_->RunsTasksInCurrentSequence());
 
   transport_security_state_->ClearDynamicData();
-  bool contains_legacy_expect_ct_data = false;
-  Deserialize(serialized, transport_security_state_,
-              contains_legacy_expect_ct_data);
-  if (contains_legacy_expect_ct_data) {
-    StateIsDirty(transport_security_state_);
-  }
+  Deserialize(serialized, transport_security_state_);
 }
 
 // static
@@ -294,29 +293,23 @@ base::TimeDelta TransportSecurityPersister::GetCommitInterval() {
                     kMaxCommitInterval);
 }
 
-void TransportSecurityPersister::Deserialize(
-    const std::string& serialized,
-    TransportSecurityState* state,
-    bool& contains_legacy_expect_ct_data) {
-  std::optional<base::Value> value = base::JSONReader::Read(serialized);
-  if (!value || !value->is_dict())
+void TransportSecurityPersister::Deserialize(const std::string& serialized,
+                                             TransportSecurityState* state) {
+  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+      serialized, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  if (!value) {
     return;
+  }
 
-  base::Value::Dict& dict = value->GetDict();
-  std::optional<int> version = dict.FindInt(kVersionKey);
+  std::optional<int> version = value->FindInt(kVersionKey);
 
-  // Stop if the data is out of date (or in the previous format that didn't have
-  // a version number).
+  // Version 2 is the only currently supported format
   if (!version || *version != kCurrentVersionValue)
     return;
 
-  base::Value* sts_value = dict.Find(kSTSKey);
+  base::Value* sts_value = value->Find(kSTSKey);
   if (sts_value)
     DeserializeSTSData(*sts_value, state);
-
-  // If an Expect-CT key is found on deserialization, record this so that a
-  // write can be scheduled to clear it from disk.
-  contains_legacy_expect_ct_data = !!dict.Find(kExpectCTKey);
 }
 
 void TransportSecurityPersister::CompleteLoad(const std::string& state) {

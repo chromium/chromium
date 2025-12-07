@@ -4,15 +4,20 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
+import("//ui/webui/webui_features.gni")
 
 assert(!is_android && !is_ios)
 
 mojom("mojo_bindings") {
-  sources = [ "help_bubble.mojom" ]
+  sources = [
+    "custom_help_bubble.mojom",
+    "help_bubble.mojom",
+  ]
 
   public_deps = [
     "//mojo/public/mojom/base",
     "//ui/gfx/geometry/mojom",
+    "//ui/webui/resources/js/tracked_element:mojo_bindings",
   ]
 
   webui_module_path = "chrome://resources/cr_components/help_bubble/"
@@ -21,25 +26,34 @@ mojom("mojo_bindings") {
 build_webui("build") {
   grd_prefix = "cr_components_help_bubble"
 
-  non_web_component_files = [
-    "help_bubble.ts",
+  ts_files = [
+    "custom_help_bubble_proxy.ts",
     "help_bubble.html.ts",
+    "help_bubble.ts",
+    "help_bubble_controller.ts",
     "help_bubble_mixin.ts",
     "help_bubble_mixin_lit.ts",
     "help_bubble_proxy.ts",
-    "help_bubble_controller.ts",
+    "new_badge.html.ts",
+    "new_badge.ts",
   ]
 
-  css_files = [ "help_bubble.css" ]
+  # TODO(thestig): Move this into //pdf.
+  ts_files += [ "pdf_help_bubble_proxy.ts" ]
+
+  css_files = [
+    "help_bubble.css",
+    "new_badge.css",
+  ]
 
   icons_html_files = [ "help_bubble_icons.html" ]
 
   mojo_files_deps = [ ":mojo_bindings_ts__generator" ]
-  mojo_files = [ "$target_gen_dir/help_bubble.mojom-webui.ts" ]
+  mojo_files = [
+    "$target_gen_dir/custom_help_bubble.mojom-webui.ts",
+    "$target_gen_dir/help_bubble.mojom-webui.ts",
+  ]
 
-  html_to_wrapper_template = "detect"
-
-  ts_tsconfig_base = "//tools/typescript/tsconfig_base_lit.json"
   ts_out_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_components/help_bubble"
   ts_composite = true
   ts_deps = [
@@ -52,4 +66,5 @@ build_webui("build") {
   webui_context_type = "relative"
   generate_grdp = true
   grd_resource_path_prefix = rebase_path(".", "//ui/webui/resources")
+  generate_code_cache = enable_webui_generate_code_cache
 }

@@ -73,6 +73,11 @@ void WebViewMessageHandlerJavaScriptFeature::UnregisterHandler(
   handlers_.erase(command);
 }
 
+bool WebViewMessageHandlerJavaScriptFeature::IsHandlerRegistered(
+    std::string& command) {
+  return handlers_.find(command) != handlers_.end();
+}
+
 std::optional<std::string>
 WebViewMessageHandlerJavaScriptFeature::GetScriptMessageHandlerName() const {
   return kWebViewMessageHandlerName;

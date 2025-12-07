@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/http/http_vary_data.h"
 
 #include <algorithm>
+#include <array>
 
+#include "base/pickle.h"
 #include "net/http/http_request_info.h"
 #include "net/http/http_response_headers.h"
+#include "net/http/http_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -42,14 +40,14 @@ struct TestTransaction {
 
 TEST(HttpVaryDataTest, IsInvalid) {
   // Only first of these result in an invalid vary data object.
-  const char* const kTestResponses[] = {
-    "HTTP/1.1 200 OK\n\n",
-    "HTTP/1.1 200 OK\nVary: *\n\n",
-    "HTTP/1.1 200 OK\nVary: cookie, *, bar\n\n",
-    "HTTP/1.1 200 OK\nVary: cookie\nFoo: 1\nVary: *\n\n",
-  };
+  const auto kTestResponses = std::to_array<const char*>({
+      "HTTP/1.1 200 OK\n\n",
+      "HTTP/1.1 200 OK\nVary: *\n\n",
+      "HTTP/1.1 200 OK\nVary: cookie, *, bar\n\n",
+      "HTTP/1.1 200 OK\nVary: cookie\nFoo: 1\nVary: *\n\n",
+  });
 
-  const bool kExpectedValid[] = {false, true, true, true};
+  const auto kExpectedValid = std::to_array<bool>({false, true, true, true});
 
   for (size_t i = 0; i < std::size(kTestResponses); ++i) {
     TestTransaction t;
@@ -154,6 +152,139 @@ TEST(HttpVaryDataTest, DoesntVaryByCookieForRedirect) {
 
   HttpVaryData v;
   EXPECT_FALSE(v.Init(a.request, *a.response.get()));
+}
+
+TEST(HttpVaryDataTest, PersistAndLoadMD5) {
+  const ExtraHeaders kRequestHeaders = {{"Foo", "1"}};
+  const char kResponse[] = "HTTP/1.1 200 OK\nVary: Foo\n\n";
+
+  TestTransaction a;
+  a.Init(kRequestHeaders, kResponse);
+
+  HttpVaryData vary_data;
+  ASSERT_TRUE(vary_data.Init(a.request, *a.response.get(),
+                             HttpVaryData::HashType::kMD5));
+  EXPECT_TRUE(vary_data.is_valid());
+
+  base::Pickle pickle;
+  vary_data.Persist(&pickle);
+
+  HttpVaryData new_vary_data;
+  base::PickleIterator iter(pickle);
+  EXPECT_TRUE(new_vary_data.InitFromPickle(&iter));
+  EXPECT_TRUE(new_vary_data.is_valid());
+  EXPECT_EQ(HttpVaryData::HashType::kMD5, new_vary_data.hash_type());
+}
+
+TEST(HttpVaryDataTest, PersistAndLoadSHA256) {
+  const ExtraHeaders kRequestHeaders = {{"Foo", "1"}};
+  const char kResponse[] = "HTTP/1.1 200 OK\nVary: Foo\n\n";
+
+  TestTransaction a;
+  a.Init(kRequestHeaders, kResponse);
+
+  HttpVaryData vary_data;
+  ASSERT_TRUE(vary_data.Init(a.request, *a.response.get(),
+                             HttpVaryData::HashType::kSHA256));
+  EXPECT_TRUE(vary_data.is_valid());
+
+  base::Pickle pickle;
+  vary_data.Persist(&pickle);
+
+  HttpVaryData new_vary_data;
+  base::PickleIterator iter(pickle);
+  EXPECT_TRUE(new_vary_data.InitFromPickle(&iter));
+  EXPECT_TRUE(new_vary_data.is_valid());
+  EXPECT_EQ(HttpVaryData::HashType::kSHA256, new_vary_data.hash_type());
+}
+
+TEST(HttpVaryDataTest, PersistOldFormatAsNewFormat) {
+  // Create a pickle with an old-format raw MD5 hash.
+  base::Pickle old_pickle;
+  Md5Hash md5_hash = {1, 2, 3};
+  old_pickle.WriteBytes(md5_hash);
+
+  // Load it.
+  HttpVaryData vary_data;
+  base::PickleIterator iter(old_pickle);
+  ASSERT_TRUE(vary_data.InitFromPickle(&iter));
+  EXPECT_EQ(HttpVaryData::HashType::kMD5, vary_data.hash_type());
+
+  // Persist it to a new pickle.
+  base::Pickle new_pickle;
+  vary_data.Persist(&new_pickle);
+
+  // Verify that the new pickle is in the new format.
+  base::PickleIterator new_iter(new_pickle);
+  int hash_type;
+  ASSERT_TRUE(new_iter.ReadInt(&hash_type));
+  EXPECT_EQ(static_cast<int>(HttpVaryData::HashType::kMD5), hash_type);
+  std::optional<base::span<const uint8_t>> bytes =
+      new_iter.ReadBytes(crypto::obsolete::Md5::kSize);
+  ASSERT_TRUE(bytes);
+  EXPECT_EQ(base::span(md5_hash), *bytes);
+}
+
+TEST(HttpVaryDataTest, MatchesRequestMD5) {
+  HttpRequestInfo request_info;
+  request_info.extra_headers.SetHeader("accept-language", "en-US");
+  std::string raw_headers = "HTTP/1.1 200 OK\nVary: accept-language\n\n";
+  std::replace(raw_headers.begin(), raw_headers.end(), '\n', '\0');
+  auto response_headers =
+      base::MakeRefCounted<HttpResponseHeaders>(raw_headers);
+
+  HttpVaryData vary_data;
+  ASSERT_TRUE(vary_data.Init(request_info, *response_headers,
+                             HttpVaryData::HashType::kMD5));
+
+  // Matching request.
+  EXPECT_TRUE(vary_data.MatchesRequest(request_info, *response_headers));
+
+  // Mismatched request.
+  HttpRequestInfo other_request_info;
+  other_request_info.extra_headers.SetHeader("accept-language", "en-GB");
+  EXPECT_FALSE(vary_data.MatchesRequest(other_request_info, *response_headers));
+}
+
+TEST(HttpVaryDataTest, MatchesRequestSHA256) {
+  HttpRequestInfo request_info;
+  request_info.extra_headers.SetHeader("accept-language", "en-US");
+  std::string raw_headers = "HTTP/1.1 200 OK\nVary: accept-language\n\n";
+  std::replace(raw_headers.begin(), raw_headers.end(), '\n', '\0');
+  auto response_headers =
+      base::MakeRefCounted<HttpResponseHeaders>(raw_headers);
+
+  HttpVaryData vary_data;
+  ASSERT_TRUE(vary_data.Init(request_info, *response_headers,
+                             HttpVaryData::HashType::kSHA256));
+
+  // Matching request.
+  EXPECT_TRUE(vary_data.MatchesRequest(request_info, *response_headers));
+
+  // Mismatched request.
+  HttpRequestInfo other_request_info;
+  other_request_info.extra_headers.SetHeader("accept-language", "en-GB");
+  EXPECT_FALSE(vary_data.MatchesRequest(other_request_info, *response_headers));
+}
+
+TEST(HttpVaryDataTest, InitFromInvalidPickle) {
+  // An empty pickle is invalid.
+  {
+    HttpVaryData vary_data;
+    base::Pickle pickle;
+    base::PickleIterator iter(pickle);
+    EXPECT_FALSE(vary_data.InitFromPickle(&iter));
+  }
+
+  // A pickle with random data is invalid.
+  {
+    base::Pickle pickle;
+    pickle.WriteInt(12345);
+    pickle.WriteString("foo");
+    base::PickleIterator iter(pickle);
+    HttpVaryData new_vary_data;
+    EXPECT_FALSE(new_vary_data.InitFromPickle(&iter));
+  }
 }
 
 }  // namespace net

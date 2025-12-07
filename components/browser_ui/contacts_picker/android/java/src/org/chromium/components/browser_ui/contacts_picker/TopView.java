@@ -13,12 +13,17 @@ import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.text.SpanApplier;
 
 import java.text.NumberFormat;
 
-/** A container class for the Disclaimer and Select All functionality (and both associated labels). */
+/**
+ * A container class for the Disclaimer and Select All functionality (and both associated labels).
+ */
+@NullMarked
 public class TopView extends RelativeLayout
         implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
     /** An interface for communicating when the Select All checkbox is toggled. */
@@ -70,7 +75,7 @@ public class TopView extends RelativeLayout
     // A Chip for filtering out telephones.
     private ChipView mIconsFilterChip;
 
-    // The callback to use to notify when the filter chips are toggled.
+    // The callback to use to notify when the filter chips are toggled.    @
     private ChipToggledCallback mChipToggledCallback;
 
     // Whether to temporarily ignore clicks on the checkbox.
@@ -101,35 +106,39 @@ public class TopView extends RelativeLayout
         textView.setText(R.string.top_view_names_filter_label);
         mNamesFilterChip.setSelected(true);
         mNamesFilterChip.setOnClickListener(this);
-        mNamesFilterChip.setIcon(R.drawable.ic_check_googblue_24dp, false);
+        mNamesFilterChip.setIconWithTint(
+                R.drawable.ic_check_googblue_24dp, /* tintWithTextColor= */ false);
 
         mAddressFilterChip = findViewById(R.id.address_filter);
         textView = mAddressFilterChip.getPrimaryTextView();
         textView.setText(R.string.top_view_address_filter_label);
         mAddressFilterChip.setSelected(true);
         mAddressFilterChip.setOnClickListener(this);
-        mAddressFilterChip.setIcon(R.drawable.ic_check_googblue_24dp, false);
+        mAddressFilterChip.setIconWithTint(
+                R.drawable.ic_check_googblue_24dp, /* tintWithTextColor= */ false);
 
         mEmailFilterChip = findViewById(R.id.email_filter);
         textView = mEmailFilterChip.getPrimaryTextView();
         textView.setText(R.string.top_view_email_filter_label);
         mEmailFilterChip.setSelected(true);
         mEmailFilterChip.setOnClickListener(this);
-        mEmailFilterChip.setIcon(R.drawable.ic_check_googblue_24dp, false);
+        mEmailFilterChip.setIconWithTint(
+                R.drawable.ic_check_googblue_24dp, /* tintWithTextColor= */ false);
 
         mTelephonesFilterChip = findViewById(R.id.tel_filter);
         textView = mTelephonesFilterChip.getPrimaryTextView();
         textView.setText(R.string.top_view_telephone_filter_label);
         mTelephonesFilterChip.setSelected(true);
         mTelephonesFilterChip.setOnClickListener(this);
-        mTelephonesFilterChip.setIcon(R.drawable.ic_check_googblue_24dp, false);
+        mTelephonesFilterChip.setIconWithTint(
+                R.drawable.ic_check_googblue_24dp, /* tintWithTextColor= */ false);
 
         mIconsFilterChip = findViewById(R.id.icon_filter);
         textView = mIconsFilterChip.getPrimaryTextView();
         textView.setText(R.string.top_view_icon_filter_label);
         mIconsFilterChip.setSelected(true);
         mIconsFilterChip.setOnClickListener(this);
-        mIconsFilterChip.setIcon(R.drawable.ic_check_googblue_24dp, false);
+        mIconsFilterChip.setIconWithTint(R.drawable.ic_check_googblue_24dp, false);
     }
 
     @Override
@@ -184,8 +193,9 @@ public class TopView extends RelativeLayout
         }
 
         chipView.setSelected(!chipView.isSelected());
-        chipView.setIcon(
-                chipView.isSelected() ? R.drawable.ic_check_googblue_24dp : iconResId, true);
+        chipView.setIconWithTint(
+                chipView.isSelected() ? R.drawable.ic_check_googblue_24dp : iconResId,
+                /* tintWithTextColor= */ true);
         mChipToggledCallback.onChipToggled(chip);
     }
 
@@ -194,6 +204,7 @@ public class TopView extends RelativeLayout
      *
      * @param origin The origin string to display.
      */
+    @Initializer
     public void setSiteString(String origin) {
         TextView explanation = findViewById(R.id.explanation);
         StyleSpan boldSpan = new StyleSpan(android.graphics.Typeface.BOLD);
@@ -208,11 +219,13 @@ public class TopView extends RelativeLayout
      *
      * @param callback The callback to use.
      */
+    @Initializer
     public void registerSelectAllCallback(SelectAllToggleCallback callback) {
         mSelectAllCallback = callback;
     }
 
     /** Register a callback to use to notify when the filter chips are toggled. */
+    @Initializer
     public void registerChipToggledCallback(ChipToggledCallback callback) {
         mChipToggledCallback = callback;
     }
@@ -290,11 +303,7 @@ public class TopView extends RelativeLayout
         return checked;
     }
 
-    /**
-     * Updates the state of the checkbox to reflect whether everything is selected.
-     *
-     * @param allSelected
-     */
+    /** Updates the state of the checkbox to reflect whether everything is selected. */
     public void updateSelectAllCheckbox(boolean allSelected) {
         mIgnoreCheck = true;
         mSelectAllBox.setChecked(allSelected);
@@ -303,6 +312,8 @@ public class TopView extends RelativeLayout
 
     @Override
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-        if (!mIgnoreCheck) mSelectAllCallback.onSelectAllToggled(mSelectAllBox.isChecked());
+        if (!mIgnoreCheck) {
+            mSelectAllCallback.onSelectAllToggled(mSelectAllBox.isChecked());
+        }
     }
 }

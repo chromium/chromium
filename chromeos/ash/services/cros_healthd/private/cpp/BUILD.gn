@@ -3,9 +3,8 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/args.gni")
-import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 source_set("cpp") {
   sources = [
@@ -15,11 +14,11 @@ source_set("cpp") {
     "dlc_utils.h",
   ]
   deps = [
-    "//ash:ash",
+    "//ash",
     "//base",
     "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/mojo_service_manager",
-    "//content/public/browser:browser",
+    "//content/public/browser",
     "//ui/events/devices",
     "//ui/events/ozone/evdev:event_device_info",
   ]

@@ -14,9 +14,10 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/browser/ui/suggestion_button_action.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -56,8 +57,14 @@ class MockAutofillPopupController : public AutofillPopupController {
 
   // AutofillSuggestionController:
   MOCK_METHOD(void, OnSuggestionsChanged, (), (override));
-  MOCK_METHOD(void, AcceptSuggestion, (int), (override));
-  MOCK_METHOD(void, PerformButtonActionForSuggestion, (int), (override));
+  MOCK_METHOD(void,
+              AcceptSuggestion,
+              (int, autofill::AutofillMetrics::SuggestionAcceptedMethod),
+              (override));
+  MOCK_METHOD(void,
+              PerformButtonActionForSuggestion,
+              (int, const SuggestionButtonAction&),
+              (override));
   MOCK_METHOD(std::optional<AutofillClient::PopupScreenLocation>,
               GetPopupScreenLocation,
               (),
@@ -96,16 +103,20 @@ class MockAutofillPopupController : public AutofillPopupController {
   MOCK_METHOD(void, HideSubPopup, (), (override));
   MOCK_METHOD(void,
               Show,
-              (std::vector<Suggestion>,
+              (UiSessionId,
+               std::vector<Suggestion>,
                AutofillSuggestionTriggerSource,
                AutoselectFirstSuggestion),
               (override));
+  MOCK_METHOD(std::optional<AutofillSuggestionController::UiSessionId>,
+              GetUiSessionId,
+              (),
+              (const override));
   MOCK_METHOD(void, SetKeepPopupOpenForTesting, (bool), (override));
   MOCK_METHOD(void,
               UpdateDataListValues,
               (base::span<const SelectOption>),
               (override));
-  MOCK_METHOD(void, PinView, (), (override));
   MOCK_METHOD(void, SetFilter, (std::optional<SuggestionFilter>), (override));
   MOCK_METHOD(void, OnPopupPainted, (), (override));
   MOCK_METHOD(bool,

@@ -3,10 +3,12 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/chromeos/ui_mode.gni")
-import("//components/nacl/toolchain.gni")
 import("//crypto/features.gni")
 import("//testing/test.gni")
+
+if (is_ios) {
+  import("//build/config/apple/mobile_config.gni")  # For `target_platform`
+}
 
 buildflag_header("buildflags") {
   header = "crypto_buildflags.h"
@@ -18,29 +20,43 @@ component("crypto") {
   sources = [
     "aead.cc",
     "aead.h",
+    "aes_cbc.cc",
+    "aes_cbc.h",
+    "aes_ctr.cc",
+    "aes_ctr.h",
+    "cose.cc",
+    "cose.h",
     "crypto_export.h",
-    "ec_private_key.cc",
-    "ec_private_key.h",
-    "ec_signature_creator.cc",
-    "ec_signature_creator.h",
-    "ec_signature_creator_impl.cc",
-    "ec_signature_creator_impl.h",
-    "encryptor.cc",
-    "encryptor.h",
+    "ecdsa_utils.cc",
+    "ecdsa_utils.h",
+    "evp.cc",
+    "evp.h",
     "features.cc",
     "features.h",
+    "hash.cc",
+    "hash.h",
     "hkdf.cc",
     "hkdf.h",
     "hmac.cc",
     "hmac.h",
+    "kdf.cc",
+    "kdf.h",
+    "kex.cc",
+    "kex.h",
+    "keypair.cc",
+    "keypair.h",
+    "obsolete/md5.cc",
+    "obsolete/md5.h",
+    "obsolete/sha1.cc",
+    "obsolete/sha1.h",
     "openssl_util.cc",
     "openssl_util.h",
-    "p224_spake.cc",
-    "p224_spake.h",
+    "pem.cc",
+    "pem.h",
+    "process_bound_string.cc",
+    "process_bound_string.h",
     "random.cc",
     "random.h",
-    "rsa_private_key.cc",
-    "rsa_private_key.h",
     "scoped_nss_types.h",
     "secure_hash.cc",
     "secure_hash.h",
@@ -48,12 +64,12 @@ component("crypto") {
     "secure_util.h",
     "sha2.cc",
     "sha2.h",
-    "signature_creator.cc",
-    "signature_creator.h",
+    "sign.cc",
+    "sign.h",
     "signature_verifier.cc",
     "signature_verifier.h",
-    "symmetric_key.cc",
-    "symmetric_key.h",
+    "subtle_passkey.cc",
+    "subtle_passkey.h",
     "unexportable_key.cc",
     "unexportable_key.h",
     "unexportable_key_metrics.cc",
@@ -63,7 +79,7 @@ component("crypto") {
     "user_verifying_key.h",
   ]
 
-  deps = []
+  deps = [ "//components/cbor" ]
 
   public_deps = [
     ":buildflags",
@@ -73,35 +89,40 @@ component("crypto") {
 
   if (is_apple) {
     sources += [
-      "apple_keychain.h",
-      "apple_keychain_util.h",
-      "apple_keychain_util.mm",
-      "apple_keychain_v2.h",
-      "apple_keychain_v2.mm",
+      "apple/keychain.cc",
+      "apple/keychain.h",
+      "apple/keychain_secitem.h",
+      "apple/keychain_secitem.mm",
+      "apple/keychain_util.h",
+      "apple/keychain_util.mm",
+      "apple/keychain_v2.h",
+      "apple/keychain_v2.mm",
+      "apple/scoped_keychain_user_interaction_allowed.cc",
+      "apple/scoped_keychain_user_interaction_allowed.h",
     ]
 
     if (is_mac) {
       sources += [
-        "apple_keychain_mac.cc",
-        "mac_security_services_lock.cc",
-        "mac_security_services_lock.h",
-        "scoped_lacontext.h",
-        "scoped_lacontext.mm",
-        "unexportable_key_mac.h",
-        "unexportable_key_mac.mm",
+        "apple/scoped_lacontext.h",
+        "apple/scoped_lacontext.mm",
+        "apple/security_framework_lock.cc",
+        "apple/security_framework_lock.h",
+        "apple/unexportable_key_mac.h",
+        "apple/unexportable_key_mac.mm",
         "user_verifying_key_mac.mm",
       ]
-    } else if (is_ios) {
-      sources += [ "apple_keychain_ios.mm" ]
     }
 
     frameworks = [
-      "LocalAuthentication.framework",
       "CoreFoundation.framework",
       "CryptoTokenKit.framework",
       "Foundation.framework",
       "Security.framework",
     ]
+
+    if (is_mac || (is_ios && target_platform != "tvos")) {
+      frameworks += [ "LocalAuthentication.framework" ]
+    }
   }
 
   if (is_win) {
@@ -112,7 +133,10 @@ component("crypto") {
       "unexportable_key_win.h",
       "user_verifying_key_win.cc",
     ]
-    libs = [ "ncrypt.lib" ]
+    libs = [
+      "crypt32.lib",
+      "ncrypt.lib",
+    ]
   }
 
   # Some files are built when NSS is used for the platform certificate library.
@@ -125,39 +149,28 @@ component("crypto") {
       "nss_util.h",
       "nss_util_internal.h",
     ]
-    deps += [
-      "//build:chromeos_buildflags",
-      "//components/nacl/common:buildflags",
-    ]
     configs += [ "//build/config/linux/nss" ]
   }
 
-  if (is_chromeos_ash && !is_minimal_toolchain) {
-    sources += [ "nss_util_chromeos.cc" ]
-  }
-
-  if (is_chromeos && !is_minimal_toolchain) {
+  if (is_chromeos) {
     sources += [
       "chaps_support.cc",
       "chaps_support.h",
+      "nss_util_chromeos.cc",
     ]
   }
 
   defines = [ "CRYPTO_IMPLEMENTATION" ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 if (is_apple) {
+  # TODO(https://crbug.com/431952820): move this into a crypto/apple/BUILD.gn
   source_set("mock_apple_keychain") {
     sources = [
-      "mock_apple_keychain.cc",
-      "mock_apple_keychain.h",
+      "apple/mock_keychain.cc",
+      "apple/mock_keychain.h",
     ]
-
-    if (is_mac) {
-      sources += [ "mock_apple_keychain_mac.cc" ]
-    } else if (is_ios) {
-      sources += [ "mock_apple_keychain_ios.cc" ]
-    }
 
     deps = [
       ":crypto",
@@ -169,29 +182,63 @@ if (is_apple) {
 test("crypto_unittests") {
   sources = [
     "aead_unittest.cc",
-    "ec_private_key_unittest.cc",
-    "ec_signature_creator_unittest.cc",
-    "encryptor_unittest.cc",
+    "aes_cbc_unittest.cc",
+    "aes_ctr_unittest.cc",
+    "cose_unittest.cc",
+    "ecdsa_utils_unittest.cc",
+    "evp_unittest.cc",
+    "hash_unittest.cc",
     "hmac_unittest.cc",
-    "p224_spake_unittest.cc",
+    "kdf_unittest.cc",
+    "kex_unittest.cc",
+    "keypair_unittest.cc",
+    "obsolete/md5_unittest.cc",
+    "obsolete/sha1_unittest.cc",
+    "pem_unittest.cc",
+    "process_bound_string_unittest.cc",
     "random_unittest.cc",
-    "rsa_private_key_unittest.cc",
     "secure_hash_unittest.cc",
     "sha2_unittest.cc",
-    "signature_creator_unittest.cc",
+    "sign_unittest.cc",
     "signature_verifier_unittest.cc",
-    "symmetric_key_unittest.cc",
     "unexportable_key_unittest.cc",
+  ]
+
+  deps = [
+    ":crypto",
+    ":test_support",
+    "//base",
+    "//base/test:run_all_unittests",
+    "//base/test:test_support",
+    "//components/cbor",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 
   if (is_win || is_mac) {
     sources += [ "unexportable_key_metrics_unittest.cc" ]
   }
 
+  if (is_apple) {
+    sources += [ "apple/mock_keychain_unittest.cc" ]
+  }
+
+  if (is_ios) {
+    sources += [ "apple/keychain_secitem_ios_unittest.mm" ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
+    deps += [ ":unittests_bundle_data" ]
+  } else {
+    data = [ "test/data/" ]
+  }
+
   if (is_mac) {
     sources += [
-      "apple_keychain_util_unittest.mm",
-      "unexportable_key_mac_unittest.mm",
+      "apple/keychain_util_unittest.mm",
+      "apple/unexportable_key_mac_unittest.mm",
       "user_verifying_key_mac_unittest.mm",
     ]
   }
@@ -205,24 +252,26 @@ test("crypto_unittests") {
     configs += [ "//build/config/linux/nss" ]
   }
 
-  deps = [
-    ":crypto",
-    ":test_support",
-    "//base",
-    "//base/test:run_all_unittests",
-    "//base/test:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
+  if (is_win) {
+    libs = [ "ncrypt.lib" ]
+  }
+
+  if (is_apple) {
+    deps += [ ":mock_apple_keychain" ]
+  }
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("test_support") {
   testonly = true
   sources = [
+    "scoped_fake_unexportable_key_provider.cc",
+    "scoped_fake_unexportable_key_provider.h",
     "scoped_fake_user_verifying_key_provider.cc",
     "scoped_fake_user_verifying_key_provider.h",
-    "scoped_mock_unexportable_key_provider.cc",
-    "scoped_mock_unexportable_key_provider.h",
+    "test_support.cc",
+    "test_support.h",
   ]
 
   if (use_nss_certs) {
@@ -233,7 +282,7 @@ static_library("test_support") {
     configs += [ "//build/config/linux/nss" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "scoped_test_nss_chromeos_user.cc",
       "scoped_test_nss_chromeos_user.h",
@@ -244,10 +293,10 @@ static_library("test_support") {
 
   if (is_mac) {
     sources += [
-      "fake_apple_keychain_v2.h",
-      "fake_apple_keychain_v2.mm",
-      "scoped_fake_apple_keychain_v2.h",
-      "scoped_fake_apple_keychain_v2.mm",
+      "apple/fake_keychain_v2.h",
+      "apple/fake_keychain_v2.mm",
+      "apple/scoped_fake_keychain_v2.h",
+      "apple/scoped_fake_keychain_v2.mm",
     ]
     frameworks = [
       "CoreFoundation.framework",
@@ -261,4 +310,13 @@ static_library("test_support") {
     ":crypto",
     "//base",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+bundle_data("unittests_bundle_data") {
+  testonly = true
+  sources = [ "test/data" ]
+  outputs = [ "{{bundle_resources_dir}}/{{source_root_relative_dir}}/" +
+              "{{source_file_part}}" ]
 }

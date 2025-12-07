@@ -8,7 +8,6 @@
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
@@ -16,16 +15,20 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/search_hijacking_detector.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
-#include "components/metrics/content/subprocess_metrics_provider.h"
+#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -75,15 +78,10 @@ class ExtensionTelemetryServiceBrowserTest
   ExtensionTelemetryServiceBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {kExtensionTelemetryForEnterprise,
-         kExtensionTelemetryReportContactedHosts,
-         kExtensionTelemetryReportHostsContactedViaWebSocket,
-         kExtensionTelemetryTabsApiSignal,
-         kExtensionTelemetryTabsApiSignalCaptureVisibleTab,
-         kExtensionTelemetryDeclarativeNetRequestActionSignal,
+        {kExtensionTelemetryDeclarativeNetRequestActionSignal,
+         kExtensionTelemetrySearchHijackingSignal,
          extensions_features::kIncludeJSCallStackInExtensionApiRequest},
-        /*disabled_features=*/
-        {kExtensionTelemetryInterceptRemoteHostsContactedInRenderer});
+        /*disabled_features=*/{});
     CHECK(base::PathService::Get(chrome::DIR_TEST_DATA, &test_extension_dir_));
     test_extension_dir_ =
         test_extension_dir_.AppendASCII("safe_browsing/extension_telemetry");
@@ -93,17 +91,17 @@ class ExtensionTelemetryServiceBrowserTest
     extensions::ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
 
-    // Enable enterprise policy. Verify that enterprise reporting is enabled.
+    // Helper to set up enterprise reporting and enable by default.
+    event_report_validator_helper_ = std::make_unique<
+        enterprise_connectors::test::EventReportValidatorHelper>(
+        browser()->profile(), /*browser_test=*/true);
+    // Enable enterprise policy.
     enterprise_connectors::test::SetOnSecurityEventReporting(
         /*prefs=*/prefs(),
         /*enabled=*/true,
         /*enabled_event_names=*/{},
         /*enabled_opt_in_events=*/
         {{enterprise_connectors::kExtensionTelemetryEvent, {"*"}}});
-    // Helper to set up enterprise reporting and enable by default.
-    event_report_validator_helper_ = std::make_unique<
-        enterprise_connectors::test::EventReportValidatorHelper>(
-        browser()->profile(), /*browser_test=*/true);
   }
 
   void TearDownOnMainThread() override {
@@ -167,88 +165,6 @@ class ExtensionTelemetryServiceBrowserTest
   std::unique_ptr<enterprise_connectors::test::EventReportValidatorHelper>
       event_report_validator_helper_;
 };
-
-IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
-                       DetectsAndReportsRemoteHostContactedSignal) {
-  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
-                       SafeBrowsingState::ENHANCED_PROTECTION);
-  ASSERT_TRUE(StartEmbeddedTestServer());
-
-  extensions::ResultCatcher result_catcher;
-  // Load extension from the test extension directory.
-  const auto* extension =
-      LoadExtension(test_extension_dir_.AppendASCII("basic_crx"));
-  ASSERT_TRUE(extension);
-  ASSERT_TRUE(result_catcher.GetNextResult());
-
-  // Successfully retrieve the extension telemetry instance.
-  ASSERT_NE(telemetry_service(), nullptr);
-  ASSERT_TRUE(IsTelemetryServiceEnabledForESB());
-  // Process signal.
-  {
-    // Verify that the registered extension information is saved in the
-    // telemetry service's extension store.
-    const ExtensionInfo* info =
-        GetExtensionInfoFromExtensionStore(extension->id());
-    EXPECT_EQ(extension->name(), kExtensionName);
-    EXPECT_EQ(extension->id(), extension->id());
-    EXPECT_EQ(info->version(), kExtensionVersion);
-  }
-  // Generate ESB telemetry report and verify the contents.
-  std::unique_ptr<TelemetryReport> telemetry_report_pb = GetTelemetryReport();
-  ASSERT_NE(telemetry_report_pb, nullptr);
-  // Retrieve the report corresponding to the test extension.
-  int report_index = -1;
-  for (int i = 0; i < telemetry_report_pb->reports_size(); i++) {
-    if (telemetry_report_pb->reports(i).extension().id() == extension->id()) {
-      report_index = i;
-    }
-  }
-  ASSERT_NE(report_index, -1);
-  const auto& extension_report = telemetry_report_pb->reports(report_index);
-  EXPECT_EQ(extension_report.extension().id(), extension->id());
-  EXPECT_EQ(extension_report.extension().name(), kExtensionName);
-  EXPECT_EQ(extension_report.extension().version(), kExtensionVersion);
-  // Verify the designated test extension's report has signal data.
-  ASSERT_EQ(extension_report.signals().size(), 1);
-  // Verify that extension store has been cleared after creating a telemetry
-  // report.
-  EXPECT_TRUE(IsExtensionStoreEmpty());
-  // Verify signal proto from the reports.
-  const ExtensionTelemetryReportRequest_SignalInfo& signal =
-      extension_report.signals()[0];
-  const RemoteHostContactedInfo& remote_host_contacted_info =
-      signal.remote_host_contacted_info();
-  ASSERT_EQ(remote_host_contacted_info.remote_host_size(), 2);
-  EXPECT_FALSE(remote_host_contacted_info.collected_from_new_interception());
-
-  const RemoteHostInfo& remote_host_info =
-      remote_host_contacted_info.remote_host(0);
-  EXPECT_EQ(remote_host_info.contact_count(), static_cast<uint32_t>(1));
-  EXPECT_EQ(remote_host_info.url(), kExtensionContactedHost);
-  EXPECT_EQ(remote_host_info.connection_protocol(), RemoteHostInfo::HTTP_HTTPS);
-  EXPECT_EQ(remote_host_info.contacted_by(), RemoteHostInfo::EXTENSION);
-  const RemoteHostInfo& remote_host_contacted_info_websocket =
-      remote_host_contacted_info.remote_host(1);
-  EXPECT_EQ(remote_host_contacted_info_websocket.contact_count(),
-            static_cast<uint32_t>(1));
-  EXPECT_EQ(remote_host_contacted_info_websocket.url(),
-            kExtensionContactedHost);
-  EXPECT_EQ(remote_host_contacted_info_websocket.connection_protocol(),
-            RemoteHostInfo::WEBSOCKET);
-  EXPECT_EQ(remote_host_contacted_info_websocket.contacted_by(),
-            RemoteHostInfo::EXTENSION);
-
-  // Verify enterprise telemetry reporting.
-  ASSERT_TRUE(IsTelemetryServiceEnabledForEnterprise());
-  std::unique_ptr<TelemetryReport> enterprise_telemetry_report_pb =
-      GetTelemetryReportForEnterprise();
-  const auto& enterprise_extension_report =
-      enterprise_telemetry_report_pb->reports(0);
-
-  EXPECT_THAT(extension_report, EqualsProto(enterprise_extension_report));
-  EXPECT_TRUE(IsEnterpriseExtensionStoreEmpty());
-}
 
 IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
                        DetectsAndReportsCookiesGetAllSignal) {
@@ -678,8 +594,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
   EXPECT_EQ(action_detail.redirect_url(), "http://google.com/pages/");
 }
 
+// TODO(crbug.com/444383306): Deflake this test on mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DetectsAndReportsTabsApiSignal \
+  DISABLED_DetectsAndReportsTabsApiSignal
+#else
+#define MAYBE_DetectsAndReportsTabsApiSignal DetectsAndReportsTabsApiSignal
+#endif
 IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
-                       DetectsAndReportsTabsApiSignal) {
+                       MAYBE_DetectsAndReportsTabsApiSignal) {
   SetSafeBrowsingState(browser()->profile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -865,27 +788,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
   EXPECT_TRUE(IsEnterpriseExtensionStoreEmpty());
 }
 
-// Test fixture with kExtensionTelemetryInterceptRemoteHostsContactedInRenderer
-// enabled.
-class
-    ExtensionTelemetryServiceBrowserTestWithInterceptRemoteHostsContactedInRendererEnabled
-    : public ExtensionTelemetryServiceBrowserTest {
- public:
-  ExtensionTelemetryServiceBrowserTestWithInterceptRemoteHostsContactedInRendererEnabled() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {kExtensionTelemetryInterceptRemoteHostsContactedInRenderer,
-         kExtensionTelemetryReportContactedHosts,
-         kExtensionTelemetryReportHostsContactedViaWebSocket},
-        /*disabled_features=*/{});
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(
-    ExtensionTelemetryServiceBrowserTestWithInterceptRemoteHostsContactedInRendererEnabled,
-    InterceptsRemoteHostContactedSignalInRenderer) {
-  base::HistogramTester histogram_tester;
+IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
+                       InterceptsRemoteHostContactedSignalInRenderer) {
   SetSafeBrowsingState(browser()->profile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -913,7 +817,7 @@ IN_PROC_BROWSER_TEST_F(
     // Verify the contents of telemetry report generated.
     std::unique_ptr<TelemetryReport> telemetry_report_pb = GetTelemetryReport();
     ASSERT_NE(telemetry_report_pb, nullptr);
-    auto extension_report = base::ranges::find_if(
+    auto extension_report = std::ranges::find_if(
         telemetry_report_pb->reports(), [&](const auto& report) {
           return report.extension().id() == extension->id();
         });
@@ -951,22 +855,10 @@ IN_PROC_BROWSER_TEST_F(
     EXPECT_EQ(remote_host_contacted_info_websocket.contacted_by(),
               RemoteHostInfo::EXTENSION);
   }
-  // Using MergeHistogramDeltasForTesting syncs the browser and renderer process
-  // logs.
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  // A log of "false" represents the data being sent, while a log of "true"
-  // represents the data being received.
-  histogram_tester.ExpectBucketCount(
-      "SafeBrowsing.ExtensionTelemetry.WebSocketRequestDataSentOrReceived",
-      false, 1);
-  histogram_tester.ExpectBucketCount(
-      "SafeBrowsing.ExtensionTelemetry.WebSocketRequestDataSentOrReceived",
-      true, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    ExtensionTelemetryServiceBrowserTestWithInterceptRemoteHostsContactedInRendererEnabled,
-    DetectsWebRequestFromContentScript) {
+IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
+                       DetectsWebRequestFromContentScript) {
   SetSafeBrowsingState(browser()->profile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -1028,7 +920,7 @@ IN_PROC_BROWSER_TEST_F(
     // Verify the contents of telemetry report generated.
     std::unique_ptr<TelemetryReport> telemetry_report_pb = GetTelemetryReport();
     ASSERT_NE(telemetry_report_pb, nullptr);
-    auto extension_report = base::ranges::find_if(
+    auto extension_report = std::ranges::find_if(
         telemetry_report_pb->reports(), [&](const auto& report) {
           return report.extension().id() == extension->id();
         });
@@ -1067,6 +959,75 @@ IN_PROC_BROWSER_TEST_F(
     EXPECT_EQ(remote_host_contacted_info_websocket.contacted_by(),
               RemoteHostInfo::CONTENT_SCRIPT);
   }
+}
+
+// TODO(crbug.com/444572871) Fix test
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DetectsAndReportsSearchHijackingSignal \
+  DISABLED_DetectsAndReportsSearchHijackingSignal
+#else
+#define MAYBE_DetectsAndReportsSearchHijackingSignal \
+  DetectsAndReportsSearchHijackingSignal
+#endif
+IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
+                       MAYBE_DetectsAndReportsSearchHijackingSignal) {
+  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // Load a minimal extension.
+  static constexpr char kManifest[] =
+      R"({
+         "name": "Test Extension",
+         "version": "0.1",
+         "manifest_version": 3
+       })";
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  const auto* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  ASSERT_NE(telemetry_service(), nullptr);
+  ASSERT_TRUE(IsTelemetryServiceEnabledForESB());
+
+  // Set up DSE.
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+  TemplateURLData data;
+  data.SetShortName(u"Test");
+  data.SetKeyword(u"test");
+  data.SetURL("http://test.com/search?q={searchTerms}");
+  TemplateURL* template_url =
+      template_url_service->Add(std::make_unique<TemplateURL>(data));
+  template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
+
+  // Configure the search hijacking detector for testing.
+  SearchHijackingDetector* search_hijacking_detector =
+      telemetry_service()->search_hijacking_detector_for_testing();
+  search_hijacking_detector->SetHeuristicCheckInterval(base::Seconds(0));
+  search_hijacking_detector->SetHeuristicThreshold(5);
+
+  // Simulate search events.
+  AutocompleteMatch match;
+  match.destination_url = GURL("http://test.com/search?q=foo");
+
+  for (int i = 0; i < 10; ++i) {
+    telemetry_service()->OnOmniboxSearch(match);
+  }
+  for (int i = 0; i < 3; ++i) {
+    telemetry_service()->OnDseSerpLoaded();
+  }
+
+  // Manually trigger the heuristic check.
+  search_hijacking_detector->MaybeCheckForHeuristicMatch();
+
+  // Generate telemetry report and verify.
+  std::unique_ptr<TelemetryReport> telemetry_report_pb = GetTelemetryReport();
+  ASSERT_NE(telemetry_report_pb, nullptr);
+  ASSERT_TRUE(telemetry_report_pb->has_search_hijacking_signal());
+  const auto& signal = telemetry_report_pb->search_hijacking_signal();
+  EXPECT_EQ(signal.omnibox_search_count(), 10);
+  EXPECT_EQ(signal.serp_landing_count(), 3);
 }
 
 }  // namespace safe_browsing

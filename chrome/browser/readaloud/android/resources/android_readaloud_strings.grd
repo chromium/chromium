@@ -2,7 +2,7 @@
 
 <!-- android_readaloud_strings.grd contains UI strings for Read Aloud in Chrome Android. -->
 
-<grit current_release="1" latest_public_release="0" output_all_resource_defines="false">
+<grit current_release="1" latest_public_release="0">
   <outputs>
     <output filename="values-af/android_readaloud_strings.xml" lang="af" type="android" />
     <output filename="values-am/android_readaloud_strings.xml" lang="am" type="android" />
@@ -187,8 +187,50 @@
         “Listen to this page” player minimized.
       </message>
       <message name="IDS_READALOUD_CHROME_NOW_PLAYING" desc="Text in 'Listen to this page' player appearing before the title of the currently playing page.">
-        Chrome now playing
+        Standard playback
       </message>
+      <message name="IDS_READALOUD_CHROME_NOW_PLAYING_AUDIO_OVERVIEW" desc="Text in the expanded player appearing before the title, when in Audio Overviews mode.">
+        AI playback
+      </message>
+      <message name="IDS_READALOUD_FEEDBACK_THUMB_UP" desc="Accessibility string for thumb up button (for audio overview mode only).">
+        Thumbs up button, select to submit feedback that you like this feature
+      </message>
+      <message name="IDS_READALOUD_FEEDBACK_THUMB_DOWN" desc="Accessibility string for thumb down button (for audio overview mode only).">
+        Thumbs down button, select to open a form to give detailed feedback about an issue with this feature
+      </message>
+      <message name="IDS_READALOUD_NEGATIVE_FEEDBACK_MENU_TITLE" desc="Menu title for negative feedback.">
+        What went wrong?
+      </message>
+      <message name="IDS_READALOUD_NEGATIVE_FEEDBACK_MENU_DISCLAIMER" desc="Disclaimer message for the user that the feedback content will be sent to google servers.">
+        Your URL will be uploaded with the feedback to improve quality and research.
+      </message>
+      <message name="IDS_READALOUD_NEGATIVE_FEEDBACK_MENU_DESCRIPTION" desc="Menu content description for negative feedback.">
+        Negative feedback options menu
+      </message>
+
+      <!-- Negative feedback reasons. -->
+      <message name="IDS_READALOUD_NEGATIVE_FEEDBACK_NOT_FACTUALLY_CORRECT" desc="Menu item for not-factually-correct feedback.">
+        Not factually correct
+      </message>
+      <message name="IDS_READALOUD_NEGATIVE_FEEDBACK_DIDNT_LIKE_THE_VOICE" desc="Menu item for bad voice feedback.">
+        Didn't like the voice
+      </message>
+      <message name="IDS_READALOUD_NEGATIVE_FEEDBACK_NOT_ENGAGING_ENOUGH" desc="Menu item for not engaging enough feedback.">
+        Not engaging enough
+      </message>
+      <message name="IDS_READALOUD_NEGATIVE_FEEDBACK_OFFENSIVE_CONTENT" desc="Menu item for offensive content feedback.">
+        Offensive content
+      </message>
+      <message name="IDS_READALOUD_NEGATIVE_FEEDBACK_TECHNICAL_ISSUE" desc="Menu item for technical issue feedback.">
+        Technical issue
+      </message>
+      <message name="IDS_READALOUD_NEGATIVE_FEEDBACK_OTHER" desc="Menu item for other feedback.">
+        Other
+      </message>
+      <message name="IDS_READALOUD_FEEDBACK_TOAST_MESSAGE" desc="Text to show in the toast after the user submits a feedback for Audio Overviews">
+        Thank you! Your feedback helps.
+      </message>
+
       <message name="IDS_READALOUD_REPLAY" desc="Accessibility string for the button that rewinds 'Listen to this page' playback by the specified number of seconds.">
         Go back <ph name="NUMBER_OF_SECONDS">%1$s<ex>10</ex></ph> seconds
       </message>
@@ -197,6 +239,12 @@
       </message>
       <message name="IDS_READALOUD_PLAY" desc="Accessibility string for the 'Listen to this page' play button.">
         Play
+      </message>
+      <message name="IDS_READALOUD_PREVIOUS" desc="Accessibility string for the button that moves to previous article.">
+        Move to previous
+      </message>
+      <message name="IDS_READALOUD_NEXT" desc="Accessibility string for the button that moves to next article.">
+        Move to next
       </message>
       <message name="IDS_READALOUD_PAUSE" desc="Accessibility string for the 'Listen to this page' pause button.">
         Pause
@@ -213,6 +261,12 @@
       <message name="IDS_READALOUD_MENU_BACK" desc="Accessibility string for the 'navigate back' button on the bottom sheet menus.">
         Back
       </message>
+      <message name="IDS_READALOUD_PLAYBACK_MODE_SELECTOR_CLASSIC" desc="Accessibility string for when the playback mode selector is in classic mode.">
+        Standard playback
+      </message>
+      <message name="IDS_READALOUD_PLAYBACK_MODE_SELECTOR_OVERVIEW" desc="Accessibility string for when the playback mode selector is in overview mode.">
+        AI playback
+      </message>
       <message name="IDS_READALOUD_PLAYBACK_ERROR" desc="Message displayed when an error occured during 'Listen to this page' playback.">
         Playback is unavailable for this page.
       </message>
@@ -224,6 +278,15 @@
       </message>
       <message name="IDS_READALOUD_PLAYBACK_LOADING" desc="Message displayed when 'Listen to this page' playback is buffering.">
         Loading…
+      </message>
+      <message name="IDS_READALOUD_MINI_PLAYER_SPINNER_CLASSIC_CONTENT_DESCRIPTION" desc="Accessibility string for the mini-player spinner when loading classic readaloud">
+        Loading
+      </message>
+      <message name="IDS_READALOUD_MINI_PLAYER_SPINNER_OVERVIEW_CONTENT_DESCRIPTION" desc="Accessibility string for the mini-player spinner when loading audio overviews">
+        Generating AI playback
+      </message>
+      <message name="IDS_READALOUD_MINI_PLAYER_LOADING_AI_PLAYBACK" desc="Description message displayed in the mini player when about to play Audio Overviews">
+        Generating AI playback...
       </message>
        <message name="IDS_READALOUD_VOICE_MENU_TITLE" desc="Voice menu title in options menu.">
         Voice
@@ -241,7 +304,7 @@
         Playback Speed
       </message>
       <message name="IDS_READALOUD_SEEK_BAR" desc="Accessibility string for the 'seekbar'.">
-        Scrub Playback
+        Seek control. <ph name="ELAPSED">%1$s<ex>23 seconds</ex></ph> elapsed out of <ph name="TOTAL">%2$s<ex>30 seconds</ex></ph>.
       </message>
       <message name="IDS_READALOUD_OPTIONS_MENU_DESCRIPTION" desc="Accessibility string announced when the player options menu is opened.">
         Options menu
@@ -297,8 +360,41 @@
       <message name="IDS_READALOUD_VOICE_DESCRIPTION" desc="List of descriptive words shown with a voice in the 'Listen to this page' voice selection menu.">
         <ph name="PITCH">%1$s<ex>Mid-pitch</ex></ph>, <ph name="TONE">%2$s<ex>Calm</ex></ph>
       </message>
-       <message name="IDS_READALOUD_EXPANDED_PLAYER_IPH" desc="Text shown on in-product-help bubble to inform a user that tapping on the mini player will expand it, allowing to access more options.">
-          Tap to expand the player for more options.
+      <message name="IDS_READALOUD_EXPANDED_PLAYER_IPH" desc="Text shown on in-product-help bubble to inform a user that tapping on the mini player will expand it, allowing to access more options.">
+          Tap to expand the player for more options
+      </message>
+      <message name="IDS_READALOUD_PLAYBACK_MODE_IPH" desc="Text shown on IPH for playback mode selector.">
+          Tap to switch playback mode
+      </message>
+      <message name="IDS_READALOUD_VOICE_DISPLAY_NAME_RUBY" desc="Display name of a text-to-speech voice named Ruby.">
+          Ruby
+      </message>
+      <message name="IDS_READALOUD_VOICE_DISPLAY_NAME_RIVER" desc="Display name of a text-to-speech voice named River.">
+          River
+      </message>
+      <message name="IDS_READALOUD_VOICE_DISPLAY_NAME_FIELD" desc="Display name of a text-to-speech voice named Field.">
+          Field
+      </message>
+      <message name="IDS_READALOUD_VOICE_DISPLAY_NAME_MOSS" desc="Display name of a text-to-speech voice named Moss.">
+          Moss
+      </message>
+      <message name="IDS_READALOUD_VOICE_DISPLAY_NAME_CLOUD" desc="Display name of a text-to-speech voice named Cloud.">
+          Cloud
+      </message>
+      <message name="IDS_READALOUD_VOICE_DISPLAY_NAME_DALE" desc="Display name of a text-to-speech voice named Dale.">
+          Dale
+      </message>
+      <message name="IDS_READALOUD_VOICE_DISPLAY_NAME_LAKE" desc="Display name of a text-to-speech voice named Lake.">
+          Lake
+      </message>
+      <message name="IDS_READALOUD_VOICE_DISPLAY_NAME_AIR" desc="Display name of a text-to-speech voice named Air.">
+          Air
+      </message>
+      <message name="IDS_READALOUD_VOICE_DISPLAY_NAME_COAST" desc="Display name of a text-to-speech voice named Coast.">
+          Coast
+      </message>
+      <message name="IDS_READALOUD_VOICE_DISPLAY_NAME_CORAL" desc="Display name of a text-to-speech voice named Coral.">
+          Coral
       </message>
     </messages>
   </release>

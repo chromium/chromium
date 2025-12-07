@@ -17,14 +17,16 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * This class is similar in principle to MemoryPurgeManager in blink, but on the browser process
  * side. It triggers a critical memory pressure notification once the application has been in the
  * background for more than a few minutes.
  *
- * UI thread only.
+ * <p>UI thread only.
  */
+@NullMarked
 public class MemoryPurgeManager implements ApplicationStatus.ApplicationStateListener {
     private boolean mStarted;
     private long mLastBackgroundPeriodStart = NEVER;
@@ -36,6 +38,11 @@ public class MemoryPurgeManager implements ApplicationStatus.ApplicationStateLis
     // TODO(crbug.com/40860286): Should ideally be tuned according to the distribution of background
     // time residency.
     @VisibleForTesting static final long PURGE_DELAY_MS = 4 * 60 * 1000;
+    // Arbitrary delay for compacting our process memory. This should be longer
+    // than |PURGE_DELAY_MS|, so that we don't touch memory again right after
+    // compacting it. It should also be longer than 70s, so that we can avoid
+    // compacting memory if App Freezer does it for us (on Android 14+).
+    @VisibleForTesting static final long SELF_FREEZE_DELAY_MS = 5 * 60 * 1000;
     private static final long NEVER = -1;
 
     @VisibleForTesting
@@ -85,6 +92,7 @@ public class MemoryPurgeManager implements ApplicationStatus.ApplicationStateLis
                 if (mLastBackgroundPeriodStart == NEVER) {
                     mLastBackgroundPeriodStart = TimeUtils.elapsedRealtimeMillis();
                     maybePostDelayedPurgingTask(PURGE_DELAY_MS);
+                    maybePostDelayedSelfFreezeTask();
                 }
                 break;
             case ApplicationState.HAS_DESTROYED_ACTIVITIES:
@@ -120,6 +128,12 @@ public class MemoryPurgeManager implements ApplicationStatus.ApplicationStateLis
         MemoryPressureListener.notifyMemoryPressure(MemoryPressureLevel.CRITICAL);
     }
 
+    protected void notifySelfFreeze() {
+        if (MemoryPurgeManagerJni.get() == null) return;
+
+        MemoryPressureListener.notifySelfFreeze();
+    }
+
     protected int getApplicationState() {
         return ApplicationStatus.getStateForApplication();
     }
@@ -140,9 +154,34 @@ public class MemoryPurgeManager implements ApplicationStatus.ApplicationStateLis
         mDelayedPurgeTaskPending = true;
     }
 
+    private void maybePostDelayedSelfFreezeTask() {
+        ThreadUtils.assertOnUiThread();
+
+        if (!shouldSelfFreeze()) return;
+
+        ThreadUtils.postOnUiThreadDelayed(
+                () -> {
+                    doSelfFreeze();
+                },
+                SELF_FREEZE_DELAY_MS);
+    }
+
     private void delayedPurgeTask(boolean mustPurgeNow) {
         mDelayedPurgeTaskPending = false;
         delayedPurge(mustPurgeNow);
+    }
+
+    private void doSelfFreeze() {
+        // We are in foreground now, so do not run this task.
+        if (mLastBackgroundPeriodStart == NEVER) return;
+
+        assert mLastBackgroundPeriodStart < TimeUtils.elapsedRealtimeMillis();
+        long inBackgroundFor = TimeUtils.elapsedRealtimeMillis() - mLastBackgroundPeriodStart;
+        if (inBackgroundFor < SELF_FREEZE_DELAY_MS) {
+            return;
+        }
+
+        notifySelfFreeze();
     }
 
     private boolean shouldTrimMemoryOnPreFreeze() {
@@ -150,6 +189,16 @@ public class MemoryPurgeManager implements ApplicationStatus.ApplicationStateLis
         if (MemoryPurgeManagerJni.get() == null) return false;
 
         return MemoryPurgeManagerJni.get().isOnPreFreezeMemoryTrimEnabled();
+    }
+
+    protected boolean shouldSelfFreeze() {
+        // This is the last check before we call native.
+        if (!LibraryLoader.getInstance().isInitialized()) return false;
+        if (MemoryPurgeManagerJni.get() == null) return false;
+
+        // We don't check the feature here, because we need to forward to
+        // native in all cases, in order to record metrics.
+        return true;
     }
 
     @NativeMethods

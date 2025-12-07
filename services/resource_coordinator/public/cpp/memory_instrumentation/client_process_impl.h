@@ -61,23 +61,17 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
 
   // Callback passed to base::MemoryDumpManager::CreateProcessDump().
   void OnChromeMemoryDumpDone(
-      bool success,
+      base::trace_event::ProcessMemoryDumpOutcome outcome,
       uint64_t dump_guid,
       std::unique_ptr<base::trace_event::ProcessMemoryDump>);
 
   // mojom::ClientProcess implementation. The Coordinator calls this.
   void RequestOSMemoryDump(mojom::MemoryMapOption mmap_option,
+                           const std::vector<mojom::MemDumpFlags>& flags,
                            const std::vector<base::ProcessId>& ids,
                            RequestOSMemoryDumpCallback callback) override;
 
-  struct OSMemoryDumpArgs {
-    OSMemoryDumpArgs();
-    OSMemoryDumpArgs(OSMemoryDumpArgs&&);
-    ~OSMemoryDumpArgs();
-    mojom::MemoryMapOption mmap_option;
-    std::vector<base::ProcessId> pids;
-    RequestOSMemoryDumpCallback callback;
-  };
+  struct OSMemoryDumpArgs;
   void PerformOSMemoryDump(OSMemoryDumpArgs args);
 
   // Map containing pending chrome memory callbacks indexed by dump guid.

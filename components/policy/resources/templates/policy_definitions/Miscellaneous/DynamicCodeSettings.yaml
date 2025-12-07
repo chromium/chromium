@@ -3,7 +3,7 @@ default: 0
 desc: |-
   This policy controls the dynamic code settings for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
 
-  Disabling dynamic code improves the security of <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> by preventing potentially hostile dynamic code and third-party code from making changes to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s behavior, but might cause compatibility issues with third-party software that must run inside the browser process.
+  Disabling dynamic code improves the security of <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> by preventing potentially hostile dynamic code and third-party code from making changes to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s behavior, but might cause compatibility issues with third-party software (e.g. certain printer drivers) that must run inside the browser process.
 
   If the policy is set to 0 - Default or left unset then <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will use the default settings.
 

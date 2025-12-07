@@ -59,6 +59,7 @@ class COMPONENT_EXPORT(VR_CARDBOARD) CardboardImageTransport
   // directly if possible.
   CardboardEyeTextureDescription left_eye_description_;
   CardboardEyeTextureDescription right_eye_description_;
+
   internal::ScopedCardboardObject<CardboardDistortionRenderer*> renderer_;
   internal::ScopedCardboardObject<CardboardLensDistortion*> lens_distortion_;
 

@@ -17,16 +17,19 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.components.browser_ui.widget.text.AlertDialogEditText;
 import org.chromium.components.offline_items_collection.RenameResult;
 import org.chromium.ui.text.EmptyTextWatcher;
 
 /** Content View of dialog in Download Home that allows users to rename a downloaded file. */
+@NullMarked
 public class RenameDialogCustomView extends ScrollView {
     private TextView mErrorMessageView;
     private AlertDialogEditText mFileName;
-    private Callback</*Empty*/ Boolean> mEmptyFileNameObserver;
+    private @Nullable Callback</*Empty*/ Boolean> mEmptyFileNameObserver;
 
     public RenameDialogCustomView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -98,7 +101,7 @@ public class RenameDialogCustomView extends ScrollView {
      * @return A String from user input for the target name.
      */
     public String getTargetName() {
-        return mFileName.getText().toString();
+        return mFileName.getText() == null ? "" : mFileName.getText().toString();
     }
 
     private void highlightEditText(String name) {

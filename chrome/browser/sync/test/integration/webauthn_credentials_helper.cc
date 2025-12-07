@@ -80,6 +80,8 @@ void LocalPasskeysChangedChecker::OnPasskeyModelShuttingDown() {
   observation_.Reset();
 }
 
+void LocalPasskeysChangedChecker::OnPasskeyModelIsReady(bool is_ready) {}
+
 LocalPasskeysMatchChecker::LocalPasskeysMatchChecker(int profile,
                                                      Matcher matcher)
     : profile_(profile), matcher_(matcher) {
@@ -92,7 +94,11 @@ bool LocalPasskeysMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Waiting for local passkeys to match: ";
   testing::StringMatchResultListener result_listener;
   const bool matches = testing::ExplainMatchResult(
-      matcher_, GetModel(profile_).GetAllPasskeys(), &result_listener);
+      matcher_,
+      GetModel(profile_).GetPasskeys(
+          webauthn::PasskeyModel::AnyRp(),
+          webauthn::PasskeyModel::ShadowedCredentials::kInclude),
+      &result_listener);
   *os << result_listener.str();
   return matches;
 }
@@ -105,6 +111,8 @@ void LocalPasskeysMatchChecker::OnPasskeysChanged(
 void LocalPasskeysMatchChecker::OnPasskeyModelShuttingDown() {
   observation_.Reset();
 }
+
+void LocalPasskeysMatchChecker::OnPasskeyModelIsReady(bool is_ready) {}
 
 ServerPasskeysMatchChecker::ServerPasskeysMatchChecker(Matcher matcher)
     : matcher_(matcher) {}
@@ -141,7 +149,7 @@ bool PasskeyChangeObservationChecker::IsExitConditionSatisfied(
     return false;
   }
   for (const auto& change : changes_observed_) {
-    if (base::ranges::none_of(
+    if (std::ranges::none_of(
             expected_changes_, [&change](const auto& expected_change) {
               return expected_change.first == change.type() &&
                      expected_change.second == change.passkey().sync_id();
@@ -164,6 +172,8 @@ void PasskeyChangeObservationChecker::OnPasskeysChanged(
 void PasskeyChangeObservationChecker::OnPasskeyModelShuttingDown() {
   observation_.Reset();
 }
+
+void PasskeyChangeObservationChecker::OnPasskeyModelIsReady(bool is_ready) {}
 
 MockPasskeyModelObserver::MockPasskeyModelObserver(
     webauthn::PasskeyModel* model) {

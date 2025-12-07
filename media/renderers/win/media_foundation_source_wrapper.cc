@@ -40,12 +40,6 @@ HRESULT MediaFoundationSourceWrapper::RuntimeClassInitialize(
     MediaLog* media_log,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   DVLOG_FUNC(1);
-
-  if (media_resource->GetType() != MediaResource::Type::kStream) {
-    DLOG(ERROR) << "MediaResource is not of Type STREAM";
-    return E_INVALIDARG;
-  }
-
   task_runner_ = task_runner;
 
   auto demuxer_streams = media_resource->GetAllStreams();
@@ -223,8 +217,10 @@ HRESULT MediaFoundationSourceWrapper::Start(
       continue;
     }
 
+    // TODO(crbug.com/460732308): Need to add unittest coverage to prevent
+    // regression in race condition where stream samples are processed in
+    // parallel just prior to stream start/seek event is sent.
     ComPtr<MediaFoundationStreamWrapper> stream = media_streams_[stream_id];
-    stream->SetFlushed(false);
     if (selected) {
       MediaEventType event_type = MENewStream;
       if (stream->IsSelected()) {
@@ -588,7 +584,7 @@ void MediaFoundationSourceWrapper::FlushStreams() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   for (auto stream : media_streams_) {
-    stream->SetFlushed(true);
+    stream->Flush();
   }
 }
 

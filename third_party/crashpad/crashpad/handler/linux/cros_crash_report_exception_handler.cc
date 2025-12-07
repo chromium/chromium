@@ -257,8 +257,6 @@ bool CrosCrashReportExceptionHandler::HandleExceptionWithConnection(
   constexpr int32_t kFixedVersion = 15363;
   // TODO(https://crbug.com/1420445): Remove this check (and the
   // CRASHPAD_IS_IN_CHROMIUM defines) when M115 branches.
-  // (Lacros is guaranteed not to be more than 2 milestones ahead of ash, and
-  // M113 on ash has the relevant crash_reporter change.)
   if (major_version >= kFixedVersion) {
     // Used to distinguish between non-fatal and fatal crashes.
     const ExceptionSnapshot* const exception_snapshot = snapshot->Exception();

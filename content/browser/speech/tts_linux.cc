@@ -2,18 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <math.h>
 #include <stddef.h>
 
+#include <algorithm>
 #include <map>
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/debug/leak_annotations.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -263,16 +260,16 @@ void TtsPlatformImplBackgroundWorker::InitializeVoices(PlatformVoices* voices) {
   char** modules = libspeechd_loader_.spd_list_modules(conn_);
   if (!modules)
     return;
-  for (int i = 0; modules[i]; i++) {
-    char* module = modules[i];
+  for (int i = 0; UNSAFE_TODO(modules[i]); i++) {
+    char* module = UNSAFE_TODO(modules[i]);
     libspeechd_loader_.spd_set_output_module(conn_, module);
     SPDVoice** spd_voices = libspeechd_loader_.spd_list_synthesis_voices(conn_);
     if (!spd_voices) {
       free(module);
       continue;
     }
-    for (int j = 0; spd_voices[j]; j++) {
-      SPDVoice* spd_voice = spd_voices[j];
+    for (int j = 0; UNSAFE_TODO(spd_voices[j]); j++) {
+      SPDVoice* spd_voice = UNSAFE_TODO(spd_voices[j]);
       SPDChromeVoice spd_data;
       spd_data.name = spd_voice->name;
       spd_data.module = module;
@@ -282,9 +279,9 @@ void TtsPlatformImplBackgroundWorker::InitializeVoices(PlatformVoices* voices) {
       key.append(" ");
       key.append(spd_data.module);
       voices->insert(std::pair<std::string, SPDChromeVoice>(key, spd_data));
-      free(spd_voices[j]);
+      free(UNSAFE_TODO(spd_voices[j]));
     }
-    free(modules[i]);
+    free(UNSAFE_TODO(modules[i]));
   }
 }
 
@@ -564,10 +561,8 @@ void TtsPlatformImplLinux::ProcessSpeech(
   DCHECK(BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
   // Speech dispatcher's speech params are around 3x at either limit.
-  float rate = params.rate > 3 ? 3 : params.rate;
-  rate = params.rate < 0.334 ? 0.334 : rate;
-  float pitch = params.pitch > 3 ? 3 : params.pitch;
-  pitch = params.pitch < 0.334 ? 0.334 : pitch;
+  float rate = std::clamp(static_cast<float>(params.rate), 0.334f, 3.0f);
+  float pitch = std::clamp(static_cast<float>(params.pitch), 0.334f, 3.0f);
 
   SPDChromeVoice matched_voice;
   auto it = voices_.find(voice.name);

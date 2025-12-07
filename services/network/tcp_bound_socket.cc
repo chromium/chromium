@@ -27,10 +27,9 @@ TCPBoundSocket::TCPBoundSocket(
     net::NetLog* net_log,
     const net::NetworkTrafficAnnotationTag& traffic_annotation)
     : socket_factory_(socket_factory),
-      socket_(std::make_unique<net::TCPSocket>(
-          nullptr /*socket_performance_watcher*/,
-          net_log,
-          net::NetLogSource())),
+      socket_(net::TCPSocket::Create(nullptr /*socket_performance_watcher*/,
+                                     net_log,
+                                     net::NetLogSource())),
       traffic_annotation_(traffic_annotation) {}
 
 TCPBoundSocket::~TCPBoundSocket() = default;
@@ -62,11 +61,7 @@ void TCPBoundSocket::Listen(
   DCHECK(socket_->IsValid());
 
   if (!socket_) {
-    // Drop unexpected calls on the floor. Could destroy |this|, but as this is
-    // currently only reachable from more trusted processes, doesn't seem too
-    // useful.
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   int result = ListenInternal(backlog);
@@ -99,11 +94,7 @@ void TCPBoundSocket::Connect(
   DCHECK(socket_->IsValid());
 
   if (!socket_) {
-    // Drop unexpected calls on the floor. Could destroy |this|, but as this is
-    // currently only reachable from more trusted processes, doesn't seem too
-    // useful.
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   DCHECK(!connect_callback_);

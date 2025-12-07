@@ -21,6 +21,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/property_effects.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -63,7 +64,7 @@ class TestView : public views::View {
  private:
   int int_param_ = 0;
   float float_param_ = 0.0;
-  views::PropertyEffects property_effects_ = views::kPropertyEffectsNone;
+  views::PropertyEffects property_effects_ = views::PropertyEffects::kNone;
 };
 
 BEGIN_VIEW_BUILDER(, TestView, views::View)
@@ -184,13 +185,13 @@ TEST_F(ViewFactoryTest, TestViewBuilderOwnerships) {
 TEST_F(ViewFactoryTest, TestViewBuilderArbitraryMethod) {
   auto view = views::Builder<internal::TestView>()
                   .SetEnabled(false)
-                  .ArbitraryMethod(10, 5.5, views::kPropertyEffectsLayout)
+                  .ArbitraryMethod(10, 5.5, views::PropertyEffects::kLayout)
                   .Build();
 
   EXPECT_FALSE(view->GetEnabled());
   EXPECT_EQ(view->get_int_param(), 10);
   EXPECT_EQ(view->get_float_param(), 5.5);
-  EXPECT_EQ(view->get_property_effects(), views::kPropertyEffectsLayout);
+  EXPECT_EQ(view->get_property_effects(), views::PropertyEffects::kLayout);
 }
 
 TEST_F(ViewFactoryTest, TestViewBuilderCustomConfigure) {
@@ -276,22 +277,22 @@ TEST_F(ViewFactoryTest, TestOrderOfOperations) {
     // not guaranteed by the builder.
     EXPECT_CALL(custom_configure_callback, Run(testing::Pointer(view)))
         .Times(2)
-        .WillRepeatedly(testing::Invoke([](views::View* view) {
+        .WillRepeatedly([](views::View* view) {
           // Properties should be set *before* but children shouldn't be added
           // until *after* custom callbacks are run.
           EXPECT_EQ(view->GetID(), 1);
           EXPECT_EQ(view->children().size(), 0u);
-        }));
+        });
 
     // Expect that two after build callbacks will be run *after* any custom
     // configure callbacks. The order of the after build callbacks is not
     // guaranteed by the builder.
     EXPECT_CALL(after_build_callback, Run(testing::Pointer(view)))
         .Times(2)
-        .WillRepeatedly(testing::Invoke([](views::View* view) {
+        .WillRepeatedly([](views::View* view) {
           // Children should be added *before* after build callbacks are run.
           EXPECT_EQ(view->children().size(), 1u);
-        }));
+        });
   }
 
   // Build the view and verify order of operations.

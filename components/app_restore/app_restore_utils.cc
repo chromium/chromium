@@ -5,6 +5,7 @@
 #include "components/app_restore/app_restore_utils.h"
 
 #include "base/functional/bind.h"
+#include "base/strings/string_number_conversions.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/app_constants/constants.h"
@@ -31,11 +32,6 @@ static int32_t session_id_counter = kArcSessionIdOffsetForRestoredLaunching;
 bool IsArcWindow(aura::Window* window) {
   return window->GetProperty(chromeos::kAppTypeKey) ==
          chromeos::AppType::ARC_APP;
-}
-
-bool IsLacrosWindow(aura::Window* window) {
-  return window->GetProperty(chromeos::kAppTypeKey) ==
-         chromeos::AppType::LACROS;
 }
 
 bool HasWindowInfo(int32_t restore_window_id) {
@@ -208,18 +204,6 @@ std::string GetAppIdFromAppName(const std::string& app_name) {
   if (app_name.substr(0, prefix.length()) != prefix)
     return std::string();
   return app_name.substr(prefix.length());
-}
-
-const std::string GetLacrosWindowId(aura::Window* window) {
-  const std::string* lacros_window_id =
-      window->GetProperty(app_restore::kLacrosWindowId);
-  DCHECK(lacros_window_id);
-  return *lacros_window_id;
-}
-
-int32_t GetLacrosRestoreWindowId(const std::string& lacros_window_id) {
-  return full_restore::FullRestoreReadHandler::GetInstance()
-      ->GetLacrosRestoreWindowId(lacros_window_id);
 }
 
 std::tuple<int, int, int> GetWindowAndTabCount(

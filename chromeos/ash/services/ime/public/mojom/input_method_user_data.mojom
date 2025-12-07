@@ -6,6 +6,7 @@ module ash.ime.mojom;
 
 import "chromeos/ash/services/ime/public/mojom/user_data_japanese_dictionary.mojom";
 import "chromeos/ash/services/ime/public/mojom/user_data_japanese_legacy_config.mojom";
+import "mojo/public/mojom/base/big_string.mojom";
 
 struct Status {
   bool success;
@@ -55,4 +56,23 @@ interface InputMethodUserDataService {
 
   // Delete the Japanese dictionary specified by the dict_id.
   DeleteJapaneseDictionary(uint64 dict_id) => (Status status);
+
+  // Get tab separated values that represent the dictionary.
+  ExportJapaneseDictionary(uint64 dict_id)
+      => (mojo_base.mojom.BigString result);
+
+  // Import tab separated entries into the dictionary.
+  // The tsv_data is a user provided dictionary that would be loaded from a file
+  // and then sent directly to the sandboxed IMEService.
+  ImportJapaneseDictionary(
+      uint64 dict_id, mojo_base.mojom.BigString tsv_data) => (Status status);
+
+  // Clears the Japanese personalization data on the device.
+  // clear_conversion_history set to true will clear the conversion history for
+  // Japanese input.
+  // clear_suggestion_history set to true will clear the suggestion history for
+  // Japanese input.
+  ClearJapanesePersonalizationData(
+      bool clear_conversion_history, bool clear_suggestion_history)
+      => (Status status);
 };

@@ -6,6 +6,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
@@ -13,9 +14,11 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/country_codes/country_codes.h"
+#include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_service.h"
@@ -110,19 +113,23 @@ class SearchEngineChoiceDialogInteractiveUiTest
               /*force_chrome_build=*/true);
   base::HistogramTester histogram_tester_;
   base::UserActionTester user_action_tester_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kSearchEngineChoiceTrigger};
 };
 
+// TODO(crbug.com/431780231): Flaky on mac bots.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ChooseSearchEngine DISABLED_ChooseSearchEngine
+#else
+#define MAYBE_ChooseSearchEngine ChooseSearchEngine
+#endif
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogInteractiveUiTest,
-                       ChooseSearchEngine) {
+                       MAYBE_ChooseSearchEngine) {
   SearchEngineChoiceDialogService* search_engine_choice_service =
       SearchEngineChoiceDialogServiceFactory::GetForProfile(
           browser()->profile());
   int first_search_engine_id =
       search_engine_choice_service->GetSearchEngines().at(0)->prepopulate_id();
 
-  RunTestSequence(InAnyContext(Steps(
+  RunTestSequence(InAnyContext(
       WaitForShow(kSearchEngineChoiceDialogId),
       InstrumentNonTabWebView(kWebContentsId, kSearchEngineChoiceDialogId),
       Do([&] {
@@ -144,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogInteractiveUiTest,
       PressJsButton(kWebContentsId, kRadioButton),
       WaitForButtonEnabled(kWebContentsId, kActionButton),
       PressJsButton(kWebContentsId, kActionButton),
-      WaitForHide(kSearchEngineChoiceDialogId))));
+      WaitForHide(kSearchEngineChoiceDialogId)));
 
   HistogramTester().ExpectBucketCount(
       search_engines::kSearchEngineChoiceScreenEventsHistogram,

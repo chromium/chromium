@@ -9,6 +9,7 @@
 //components/test/data/password_manager/affiliation_db_v3.sql
 //components/test/data/password_manager/affiliation_db_v4.sql
 //components/test/data/password_manager/affiliation_db_v5.sql
+//components/test/data/password_manager/affiliation_db_v7.sql
 //components/test/data/password_manager/form_annotation_extension/README
 //components/test/data/password_manager/form_annotation_extension/background.js
 //components/test/data/password_manager/form_annotation_extension/content.js
@@ -63,6 +64,8 @@
 //components/test/data/password_manager/login_db_v4.sql
 //components/test/data/password_manager/login_db_v40.sql
 //components/test/data/password_manager/login_db_v41.sql
+//components/test/data/password_manager/login_db_v42.sql
+//components/test/data/password_manager/login_db_v43.sql
 //components/test/data/password_manager/login_db_v5.sql
 //components/test/data/password_manager/login_db_v6.sql
 //components/test/data/password_manager/login_db_v7.sql

@@ -4,10 +4,12 @@
 
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "ash/accessibility/magnifier/magnifier_utils.h"
 #include "ash/accessibility/scoped_a11y_override_window_setter.h"
+#include "ash/capture_mode/action_button_container_view.h"
 #include "ash/capture_mode/capture_button_view.h"
 #include "ash/capture_mode/capture_label_view.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
@@ -17,9 +19,13 @@
 #include "ash/capture_mode/capture_mode_settings_view.h"
 #include "ash/capture_mode/capture_mode_source_view.h"
 #include "ash/capture_mode/capture_mode_type_view.h"
+#include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/recording_type_menu_view.h"
+#include "ash/capture_mode/search_results_panel.h"
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
 #include "ash/style/tab_slider_button.h"
@@ -28,13 +34,23 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "ui/base/class_property.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/events/event.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/events/types/event_type.h"
+#include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/link.h"
+#include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(
@@ -46,8 +62,7 @@ namespace {
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(
     CaptureModeSessionFocusCycler::HighlightHelper,
-    kCaptureModeHighlightHelper,
-    nullptr)
+    kCaptureModeHighlightHelper)
 
 // The focusable items for the FocusGroup::kSelection group.
 constexpr std::array<FineTunePosition, 9> kSelectionTabbingOrder = {
@@ -56,6 +71,10 @@ constexpr std::array<FineTunePosition, 9> kSelectionTabbingOrder = {
     FineTunePosition::kRightEdge,  FineTunePosition::kBottomRightVertex,
     FineTunePosition::kBottomEdge, FineTunePosition::kBottomLeftVertex,
     FineTunePosition::kLeftEdge};
+
+// The index of the smart actions button within the `FocusGroup::kActionButtons`
+// group.
+constexpr int kSmartActionsButtonIndex = 0;
 
 // We inset the `window_of_interest` by `kWindowOfInterestInset` and outset any
 // other window by `kIntersectingWindowOutset` we intersect with it, so that the
@@ -67,6 +86,10 @@ constexpr std::array<FineTunePosition, 9> kSelectionTabbingOrder = {
 constexpr int kIntersectingWindowOutset =
     chromeos::kResizeOutsideBoundsSize + 1;
 constexpr int kWindowOfInterestInset = 1;
+
+// In addition to the default size of the spoken feedback orange highlight, add
+// this amount when focusing the affordance circle with spoken feedback.
+constexpr int kSpokenFeedbackAffordanceExtraOutset = 12;
 
 std::vector<raw_ptr<aura::Window, VectorExperimental>>
 GetWindowListIgnoreModalForActiveDesk() {
@@ -251,6 +274,48 @@ bool IsCaptureWindowSelectable(aura::Window* window) {
   return !IsWindowFullyOccluded(window);
 }
 
+std::u16string GetA11yNameForFineTunePosition(
+    FineTunePosition fine_tune_position) {
+  int message_id;
+  switch (fine_tune_position) {
+    case FineTunePosition::kCenter:
+      message_id = IDS_ASH_SCREEN_CAPTURE_SELECTED_AREA_ACCESSIBLE_NAME;
+      break;
+    case FineTunePosition::kTopLeftVertex:
+      message_id = IDS_ASH_SCREEN_CAPTURE_DRAG_HANDLE_TOP_LEFT_ACCESSIBLE_NAME;
+      break;
+    case FineTunePosition::kTopRightVertex:
+      message_id = IDS_ASH_SCREEN_CAPTURE_DRAG_HANDLE_TOP_RIGHT_ACCESSIBLE_NAME;
+      break;
+    case FineTunePosition::kBottomRightVertex:
+      message_id =
+          IDS_ASH_SCREEN_CAPTURE_DRAG_HANDLE_BOTTOM_RIGHT_ACCESSIBLE_NAME;
+      break;
+    case FineTunePosition::kBottomLeftVertex:
+      message_id =
+          IDS_ASH_SCREEN_CAPTURE_DRAG_HANDLE_BOTTOM_LEFT_ACCESSIBLE_NAME;
+      break;
+    case FineTunePosition::kTopEdge:
+      message_id = IDS_ASH_SCREEN_CAPTURE_DRAG_HANDLE_TOP_EDGE_ACCESSIBLE_NAME;
+      break;
+    case FineTunePosition::kRightEdge:
+      message_id =
+          IDS_ASH_SCREEN_CAPTURE_DRAG_HANDLE_RIGHT_EDGE_ACCESSIBLE_NAME;
+      break;
+    case FineTunePosition::kBottomEdge:
+      message_id =
+          IDS_ASH_SCREEN_CAPTURE_DRAG_HANDLE_BOTTOM_EDGE_ACCESSIBLE_NAME;
+      break;
+    case FineTunePosition::kLeftEdge:
+      message_id = IDS_ASH_SCREEN_CAPTURE_DRAG_HANDLE_LEFT_EDGE_ACCESSIBLE_NAME;
+      break;
+    case FineTunePosition::kNone:
+      return u"";
+  }
+
+  return l10n_util::GetStringUTF16(message_id);
+}
+
 }  // namespace
 
 // -----------------------------------------------------------------------------
@@ -266,6 +331,32 @@ void CaptureModeSessionFocusCycler::HighlightableView::
   needs_highlight_path_ = true;
 }
 
+void CaptureModeSessionFocusCycler::HighlightableView::SetUpFocusPredicate() {
+  // If the view has a preset focus ring, use it instead of creating a new
+  // one.
+  views::View* view = GetView();
+  auto* preset_focus_ring = views::FocusRing::Get(view);
+  focus_ring_ = preset_focus_ring ? preset_focus_ring
+                                  : StyleUtil::SetUpFocusRingForView(view);
+
+  // Use a custom focus predicate, as the default one checks if `view` actually
+  // has focus, whereas we want to check for pseudo focus if a session is active
+  // and direct focus (i.e., not clicked with the mouse) otherwise.
+  focus_ring_->SetHasFocusPredicate(base::BindRepeating(
+      [](const HighlightableView* highlightable, const views::View* view) {
+        // If the session is active, we only need to check if the
+        // `HighlightableView` has focus.
+        const bool directly_focused =
+            view->GetFocusManager()->focus_change_reason() ==
+            views::FocusManager::FocusChangeReason::kDirectFocusChange;
+        return CaptureModeController::Get()->IsActive()
+                   ? (view->GetVisible() && highlightable->has_focus_)
+                   : (view->GetVisible() && view->HasFocus() &&
+                      !directly_focused);
+      },
+      base::Unretained(this)));
+}
+
 void CaptureModeSessionFocusCycler::HighlightableView::PseudoFocus() {
   has_focus_ = true;
 
@@ -276,18 +367,7 @@ void CaptureModeSessionFocusCycler::HighlightableView::PseudoFocus() {
   // for children of HighlightableView, so it will not replace any other style
   // of FocusRing.
   if (!focus_ring_) {
-    // If the view has a preset focus ring, use it instead of creating a new
-    // one.
-    auto* preset_focus_ring = views::FocusRing::Get(view);
-    focus_ring_ = preset_focus_ring ? preset_focus_ring
-                                    : StyleUtil::SetUpFocusRingForView(view);
-    // Use a custom focus predicate as the default one checks if |view| actually
-    // has focus which won't be happening since our widgets are not activatable.
-    focus_ring_->SetHasFocusPredicate(base::BindRepeating(
-        [](const HighlightableView* highlightable, const views::View* view) {
-          return view->GetVisible() && highlightable->has_focus_;
-        },
-        base::Unretained(this)));
+    SetUpFocusPredicate();
   }
 
   if (needs_highlight_path_) {
@@ -297,10 +377,16 @@ void CaptureModeSessionFocusCycler::HighlightableView::PseudoFocus() {
     needs_highlight_path_ = false;
   }
 
+  // Request actual focus for the textfield so users can interact with it and
+  // make multimodal searches.
+  if (auto* textfield = views::AsViewClass<views::Textfield>(view)) {
+    textfield->RequestFocus();
+  }
+
   focus_ring_->DeprecatedLayoutImmediately();
   focus_ring_->SchedulePaint();
 
-  view->NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
+  view->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelection, true);
 
   magnifier_utils::MaybeUpdateActiveMagnifierFocus(
       view->GetBoundsInScreen().CenterPoint());
@@ -308,6 +394,15 @@ void CaptureModeSessionFocusCycler::HighlightableView::PseudoFocus() {
 
 void CaptureModeSessionFocusCycler::HighlightableView::PseudoBlur() {
   has_focus_ = false;
+
+  // If the view is focused, set the stored focus view to nullptr before
+  // clearing it, so focus doesn't jump to another view.
+  views::View* view = GetView();
+  views::FocusManager* focus_manager = view->GetFocusManager();
+  if (focus_manager && focus_manager->GetFocusedView() == view) {
+    focus_manager->SetStoredFocusView(nullptr);
+    focus_manager->ClearFocus();
+  }
 
   if (!focus_ring_)
     return;
@@ -320,22 +415,23 @@ bool CaptureModeSessionFocusCycler::HighlightableView::ClickView() {
   views::View* view = GetView();
   DCHECK(view);
 
-  views::Button* button = views::Button::AsButton(view);
-  if (!button) {
+  if (!views::IsViewClass<views::Button>(view) &&
+      !views::IsViewClass<views::Link>(view)) {
     return false;
   }
 
-  // `button` such as the close button or the capture button may be destroyed
-  // after `AcceleratorPressed`, which will cause UAF. Use a `WeakPtr` to detect
+  // Views such as the close button or the capture button may be destroyed
+  // after `OnKeyPressed`, which will cause UAF. Use a `WeakPtr` to detect
   // this and skip `NotifyAccessibilityEvent` in this case.
   auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
 
   bool handled = false;
-  if (button->AcceleratorPressed(
-          ui::Accelerator(ui::VKEY_SPACE, /*modifiers=*/0))) {
+  if (view->OnKeyPressed(ui::KeyEvent(ui::EventType::kKeyPressed,
+                                      ui::VKEY_RETURN, ui::EF_NONE))) {
     handled = true;
     if (weak_ptr) {
-      button->NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged, true);
+      view->NotifyAccessibilityEventDeprecated(
+          ax::mojom::Event::kStateChanged, true);
     }
   }
 
@@ -451,10 +547,12 @@ CaptureModeSessionFocusCycler::CaptureModeSessionFocusCycler(
                              FocusGroup::kSettingsMenu,
                              FocusGroup::kSettingsClose},
       groups_for_region_{
-          FocusGroup::kNone,          FocusGroup::kTypeSource,
-          FocusGroup::kSelection,     FocusGroup::kCameraPreview,
-          FocusGroup::kCaptureButton, FocusGroup::kRecordingTypeMenu,
-          FocusGroup::kSettingsMenu,  FocusGroup::kSettingsClose},
+          FocusGroup::kNone,          FocusGroup::kSearchResultsPanel,
+          FocusGroup::kTypeSource,    FocusGroup::kSelection,
+          FocusGroup::kCameraPreview, FocusGroup::kCaptureButton,
+          FocusGroup::kActionButtons, FocusGroup::kRecordingTypeMenu,
+          FocusGroup::kSettingsMenu,  FocusGroup::kSettingsClose,
+      },
       groups_for_window_{FocusGroup::kNone, FocusGroup::kTypeSource,
                          FocusGroup::kCaptureWindow, FocusGroup::kSettingsMenu,
                          FocusGroup::kSettingsClose},
@@ -462,6 +560,12 @@ CaptureModeSessionFocusCycler::CaptureModeSessionFocusCycler(
           FocusGroup::kNone, FocusGroup::kStartRecordingButton,
           FocusGroup::kCameraPreview, FocusGroup::kSettingsMenu,
           FocusGroup::kSettingsClose},
+      groups_for_sunfish_{FocusGroup::kNone,
+                          FocusGroup::kSearchResultsPanel,
+                          FocusGroup::kSearchResultsPanelWebContents,
+                          FocusGroup::kSelection,
+                          FocusGroup::kActionButtons,
+                          FocusGroup::kSettingsClose},
       session_(session),
       scoped_a11y_overrider_(
           std::make_unique<ScopedA11yOverrideWindowSetter>()) {
@@ -522,8 +626,26 @@ void CaptureModeSessionFocusCycler::AdvanceFocus(bool reverse) {
   if (reverse)
     MaybeFocusHighlightableWindow(current_views);
 
-  // Focus the new item.
-  if (!current_views.empty()) {
+  // Focus the new item. If it's the web view, then we want to request actual
+  // focus so the user can properly use the keyboard like they would with a
+  // regular search page.
+  if (current_focus_group_ == FocusGroup::kSearchResultsPanelWebContents) {
+    SearchResultsPanel* panel =
+        CaptureModeController::Get()->GetSearchResultsPanel();
+    if (panel) {
+      // The web contents might not be available when we try to focus them, but
+      // we can focus the loading animation instead.
+      if (panel->search_results_view()) {
+        views::View* web_view = panel->GetWebViewForFocus();
+        CHECK(web_view);
+        web_view->AboutToRequestFocusFromTabTraversal(reverse);
+        web_view->RequestFocus();
+      } else {
+        focus_index_ = 0u;
+        panel->GetHighlightableLoadingAnimation()->PseudoFocus();
+      }
+    }
+  } else if (!current_views.empty()) {
     DCHECK_LT(focus_index_, current_views.size());
     current_views[focus_index_]->PseudoFocus();
   }
@@ -541,8 +663,7 @@ void CaptureModeSessionFocusCycler::AdvanceFocus(bool reverse) {
   if (current_group_is_selection) {
     const gfx::Rect user_region =
         CaptureModeController::Get()->user_capture_region();
-    if (user_region.IsEmpty())
-      return;
+    DCHECK(!user_region.IsEmpty());
 
     const auto fine_tune_position = GetFocusedFineTunePosition();
     DCHECK_NE(fine_tune_position, FineTunePosition::kNone);
@@ -555,7 +676,91 @@ void CaptureModeSessionFocusCycler::AdvanceFocus(bool reverse) {
     wm::ConvertPointToScreen(session_->current_root(), &point_of_interest);
     magnifier_utils::MaybeUpdateActiveMagnifierFocus(point_of_interest);
 
+    // If the root has changed, remove the old `ax_widget_` so we can create it
+    // and its virtual a11y views on the correct root.
+    if (ax_widget_ && ax_widget_->GetNativeWindow()->GetRootWindow() !=
+                          session_->current_root()) {
+      ax_virtual_views_.clear();
+      ax_widget_.reset();
+    }
+
+    // Lazily create the widget that hosts the virtual a11y views and the
+    // virtual a11y root.
+    if (!ax_widget_ &&
+        Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
+      ax_widget_ = std::make_unique<views::Widget>();
+      views::Widget::InitParams params(
+          views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+          views::Widget::InitParams::TYPE_POPUP);
+      // Using can maximize and a container with a fill layout means the widget
+      // bounds will always match the root window bounds.
+      auto delegate = std::make_unique<views::WidgetDelegate>();
+      delegate->RegisterWindowClosingCallback(
+          base::BindOnce(&CaptureModeSessionFocusCycler::OnAXWidgetClosing,
+                         weak_ptr_factory_.GetWeakPtr()));
+      delegate->SetCanMaximize(true);
+      delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
+      params.delegate = delegate.release();
+      params.layer_type = ui::LAYER_NOT_DRAWN;
+      params.parent = Shell::GetContainer(session_->current_root(),
+                                          kShellWindowId_WallpaperContainer);
+      ax_widget_->Init(std::move(params));
+      ax_widget_->ShowInactive();
+
+      auto ax_virtual_root = std::make_unique<views::AXVirtualView>();
+      ax_virtual_root->SetRole(ax::mojom::Role::kGenericContainer);
+      ax_widget_->GetRootView()->GetViewAccessibility().AddVirtualChildView(
+          std::move(ax_virtual_root));
+    }
+
+    // Lazily create the virtual a11y view for the currently focused
+    // `fine_tune_position`.
+    if (ax_widget_ && !ax_virtual_views_.contains(fine_tune_position)) {
+      auto ax_virtual_view = std::make_unique<views::AXVirtualView>();
+      ax_virtual_views_[fine_tune_position] = ax_virtual_view.get();
+      ax_virtual_view->SetRole(ax::mojom::Role::kButton);
+      ax_virtual_view->SetName(
+          GetA11yNameForFineTunePosition(fine_tune_position));
+      const views::AXVirtualView::AXVirtualViews& ax_virtual_children =
+          ax_widget_->GetRootView()->GetViewAccessibility().virtual_children();
+      CHECK_EQ(ax_virtual_children.size(), 1u);
+      ax_virtual_children[0]->AddChildView(std::move(ax_virtual_view));
+    }
+    OnFineTunePositionUpdated(/*notify_selection_event=*/true);
+
     return;
+  }
+}
+
+void CaptureModeSessionFocusCycler::OnFineTunePositionUpdated(
+    bool notify_selection_event) {
+  const FineTunePosition fine_tune_position = GetFocusedFineTunePosition();
+  if (!ax_virtual_views_.contains(fine_tune_position)) {
+    return;
+  }
+
+  views::AXVirtualView* affordance_ax_virtual_view =
+      ax_virtual_views_[fine_tune_position];
+  if (!affordance_ax_virtual_view) {
+    return;
+  }
+  CHECK(affordance_ax_virtual_view);
+
+  const gfx::Rect user_region =
+      CaptureModeController::Get()->user_capture_region();
+  gfx::Rect a11y_rect_in_root =
+      fine_tune_position == FineTunePosition::kCenter
+          ? user_region
+          : gfx::Rect(capture_mode_util::GetLocationForFineTunePosition(
+                          user_region, fine_tune_position),
+                      gfx::Size());
+  a11y_rect_in_root.Outset(kSpokenFeedbackAffordanceExtraOutset);
+
+  scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
+      ax_widget_->GetNativeWindow());
+  affordance_ax_virtual_view->SetBounds(gfx::RectF(a11y_rect_in_root));
+  if (notify_selection_event) {
+    affordance_ax_virtual_view->NotifyEvent(ax::mojom::Event::kSelection, true);
   }
 }
 
@@ -634,14 +839,85 @@ void CaptureModeSessionFocusCycler::OnCaptureLabelWidgetUpdated() {
 void CaptureModeSessionFocusCycler::OnMenuOpened(views::Widget* widget,
                                                  FocusGroup focus_group,
                                                  bool by_key_event) {
-  DCHECK(!menu_widget_observeration_.IsObserving());
-
-  menu_widget_observeration_.Observe(widget);
+  session_widget_observeration_.AddObservation(widget);
   ClearCurrentVisibleFocus();
   current_focus_group_ = focus_group;
   menu_opened_with_keyboard_nav_ = by_key_event;
   focus_index_ = 0u;
   UpdateA11yAnnotation();
+}
+
+void CaptureModeSessionFocusCycler::OnSearchResultsPanelCreated(
+    views::Widget* panel_widget) {
+  session_widget_observeration_.AddObservation(panel_widget);
+}
+
+void CaptureModeSessionFocusCycler::OnScannerActionsFetched() {
+  // Only focus the first suggested action if the smart actions button was
+  // previously focused. This is since we don't need to move focus if the user
+  // fetched Scanner actions with a mouse click instead of keyboard navigation,
+  // or the user already navigated away from the action container.
+  if (current_focus_group_ != FocusGroup::kActionButtons ||
+      focus_index_ != kSmartActionsButtonIndex ||
+      GetGroupSize(current_focus_group_) == 0) {
+    return;
+  }
+
+  ClearCurrentVisibleFocus();
+  // Focus on the first action button.
+  focus_index_ = 0;
+  GetGroupItems(current_focus_group_)[focus_index_]->PseudoFocus();
+}
+
+void CaptureModeSessionFocusCycler::OnDisclaimerWidgetOpened(
+    views::Widget* disclaimer_widget) {
+  // Only move focus if the focus cycler previously had focus, i.e. if the user
+  // has spoken feedback enabled or opened the disclaimer using keyboard
+  // navigation.
+  if (HasFocus()) {
+    scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
+        disclaimer_widget->GetNativeView());
+  }
+}
+
+void CaptureModeSessionFocusCycler::OnDisclaimerWidgetClosed() {
+  // Try to restore focus to the previously focused view if there was one. If
+  // there was no previously focused view (e.g. because the user opened the
+  // disclaimer using mouse clicks), then there is no need to do anything.
+  if (focus_index_ >= GetGroupSize(current_focus_group_)) {
+    return;
+  }
+
+  scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
+      GetA11yOverrideWindow());
+  GetGroupItems(current_focus_group_)[focus_index_]->PseudoFocus();
+}
+
+void CaptureModeSessionFocusCycler::AdvanceFocusAfterSearchResultsPanel(
+    bool reverse) {
+  // Fully remove focus from the web view if available.
+  SearchResultsPanel* panel =
+      CaptureModeController::Get()->GetSearchResultsPanel();
+  if (panel) {
+    views::FocusManager* focus_manager = panel->GetFocusManager();
+    focus_manager->SetStoredFocusView(nullptr);
+    focus_manager->ClearFocus();
+  }
+
+  // Override the current focus parameters in case we did not naturally cycle
+  // focus to the web view before.
+  current_focus_group_ = FocusGroup::kSearchResultsPanelWebContents;
+  focus_index_ = 0u;
+  AdvanceFocus(reverse);
+}
+
+void CaptureModeSessionFocusCycler::
+    SetA11yOverrideWindowToSearchResultsPanel() {
+  auto* search_results_panel_widget =
+      CaptureModeController::Get()->search_results_panel_widget();
+  CHECK(search_results_panel_widget);
+  scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
+      search_results_panel_widget->GetNativeWindow());
 }
 
 void CaptureModeSessionFocusCycler::OnWidgetClosing(views::Widget* widget) {
@@ -660,23 +936,26 @@ void CaptureModeSessionFocusCycler::OnWidgetDestroying(views::Widget* widget) {
   //   `CloseNow()`. See https://crbug.com/1350743.
   // Implementing both let's us handle the closing synchronously via
   // `OnWidgetClosing()`, and avoid any crashes or UAFs if it was never called.
-  if (!menu_widget_observeration_.IsObserving()) {
+  if (!session_widget_observeration_.IsObservingSource(widget)) {
     return;
   }
 
   menu_opened_with_keyboard_nav_ = false;
-  menu_widget_observeration_.Reset();
+  session_widget_observeration_.RemoveObservation(widget);
 
   // Return immediately if the widget is closing by the closing of `session_`.
   if (session_->is_shutting_down())
     return;
 
-  // Remove focus if one of the menu-related groups is currently focused.
+  // Remove focus if one of the menu-related groups or the search results panel
+  // are currently focused.
   bool should_update_focus = false;
   if (current_focus_group_ == FocusGroup::kPendingSettings ||
-      current_focus_group_ == FocusGroup::kSettingsMenu) {
-    // If the settings menu is closed while focus is in or about to be in it,
-    // we manually put the focus back on the settings button.
+      current_focus_group_ == FocusGroup::kSettingsMenu ||
+      current_focus_group_ == FocusGroup::kSearchResultsPanel) {
+    // If the settings menu or or search results panel are closed while focus is
+    // in or about to be in it, we manually put the focus back on the settings
+    // button.
     current_focus_group_ = FocusGroup::kSettingsClose;
     focus_index_ = 0u;
     should_update_focus = true;
@@ -696,7 +975,17 @@ void CaptureModeSessionFocusCycler::OnWidgetDestroying(views::Widget* widget) {
 
   if (should_update_focus) {
     const auto highlightable_views = GetGroupItems(current_focus_group_);
-    DCHECK_EQ(highlightable_views.size(), 2u);
+
+    // In a Sunfish session, we update the focus back to the settings button,
+    // and `FocusGroup::kSettingsClose` should only contain one highlightable
+    // view.
+    if (session_->active_behavior()->behavior_type() ==
+        BehaviorType::kSunfish) {
+      DCHECK_EQ(highlightable_views.size(), 1u);
+    } else {
+      DCHECK_EQ(highlightable_views.size(), 2u);
+    }
+
     scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
         GetA11yOverrideWindow());
     highlightable_views[focus_index_]->PseudoFocus();
@@ -738,7 +1027,7 @@ CaptureModeSessionFocusCycler::GetNextGroup(bool reverse) const {
 
   const std::vector<FocusGroup>& groups_list = GetCurrentGroupList();
   const int increment = reverse ? -1 : 1;
-  const auto iter = base::ranges::find(groups_list, current_focus_group_);
+  const auto iter = std::ranges::find(groups_list, current_focus_group_);
   DCHECK(iter != groups_list.end());
   size_t next_group_index = std::distance(groups_list.begin(), iter);
   const auto group_size = groups_list.size();
@@ -751,9 +1040,13 @@ CaptureModeSessionFocusCycler::GetNextGroup(bool reverse) const {
 
 const std::vector<CaptureModeSessionFocusCycler::FocusGroup>&
 CaptureModeSessionFocusCycler::GetCurrentGroupList() const {
-  if (session_->active_behavior()->behavior_type() ==
-      BehaviorType::kGameDashboard) {
+  // Behavior-specific focus groups.
+  BehaviorType active_behavior = session_->active_behavior()->behavior_type();
+  if (active_behavior == BehaviorType::kGameDashboard) {
     return groups_for_game_capture_;
+  }
+  if (active_behavior == BehaviorType::kSunfish) {
+    return groups_for_sunfish_;
   }
 
   switch (session_->controller_->source()) {
@@ -779,12 +1072,14 @@ bool CaptureModeSessionFocusCycler::IsGroupAvailable(FocusGroup group) const {
     }
     case FocusGroup::kStartRecordingButton:
       return session_->capture_mode_bar_view_->GetStartRecordingButton();
-    case FocusGroup::kSelection:
+    case FocusGroup::kSelection: {
+      return !CaptureModeController::Get()->user_capture_region().IsEmpty();
+    }
     case FocusGroup::kCaptureButton: {
-      // The selection UI and capture button are focusable only when it is
-      // interactable, meaning it has buttons that can be pressed. The capture
-      // label widget can be hidden when it intersects with other capture UIs.
-      // In that case, we shouldn't navigate to it via the keyboard.
+      // The capture button is focusable only when it is interactable, meaning
+      // it has buttons that can be pressed. The capture label widget can be
+      // hidden when it intersects with other capture UIs. In that case, we
+      // shouldn't navigate to it via the keyboard.
       auto* capture_label_view = session_->capture_label_view_.get();
       return capture_label_view &&
              capture_label_view->GetWidget()->IsVisible() &&
@@ -801,6 +1096,16 @@ bool CaptureModeSessionFocusCycler::IsGroupAvailable(FocusGroup group) const {
     }
     case FocusGroup::kRecordingTypeMenu:
       return !!GetRecordingTypeMenuWidget();
+    case FocusGroup::kActionButtons: {
+      return session_->action_container_view_ &&
+             !session_->action_container_view_->GetFocusableViews().empty();
+    }
+    case FocusGroup::kSearchResultsPanel: {
+      return CaptureModeController::Get()->IsSearchResultsPanelVisible();
+    }
+    case FocusGroup::kSearchResultsPanelWebContents: {
+      return CaptureModeController::Get()->IsSearchResultsPanelVisible();
+    }
   }
 }
 
@@ -873,9 +1178,11 @@ CaptureModeSessionFocusCycler::GetGroupItems(FocusGroup group) const {
       CaptureModeBarView* bar_view = session_->capture_mode_bar_view_;
       for (auto* button :
            {bar_view->settings_button(), bar_view->close_button()}) {
-        auto* highlight_helper = HighlightHelper::Get(button);
-        DCHECK(highlight_helper);
-        items.push_back(highlight_helper);
+        if (button && button->GetEnabled()) {
+          auto* highlight_helper = HighlightHelper::Get(button);
+          DCHECK(highlight_helper);
+          items.push_back(highlight_helper);
+        }
       }
       break;
     }
@@ -901,6 +1208,42 @@ CaptureModeSessionFocusCycler::GetGroupItems(FocusGroup group) const {
       DCHECK(session_->recording_type_menu_view_);
       session_->recording_type_menu_view_->AppendHighlightableItems(items);
       break;
+    }
+    case FocusGroup::kActionButtons: {
+      auto* action_container_view = session_->action_container_view_.get();
+      if (action_container_view) {
+        for (views::View* view : action_container_view->GetFocusableViews()) {
+          auto* highlight_helper = HighlightHelper::Get(view);
+          CHECK(highlight_helper);
+          items.push_back(highlight_helper);
+        }
+      }
+      break;
+    }
+    case FocusGroup::kSearchResultsPanel: {
+      auto* controller = CaptureModeController::Get();
+      auto* search_results_panel_widget =
+          controller->search_results_panel_widget();
+      if (search_results_panel_widget &&
+          search_results_panel_widget->IsVisible()) {
+        items = controller->GetSearchResultsPanel()->GetHighlightableItems();
+      }
+      break;
+    }
+    // The web contents are not highlightable, only the animation view. We'll
+    // let `AdvanceFocus` handle the web contents separately.
+    case FocusGroup::kSearchResultsPanelWebContents: {
+      auto* controller = CaptureModeController::Get();
+      auto* search_results_panel_widget =
+          controller->search_results_panel_widget();
+      if (search_results_panel_widget &&
+          search_results_panel_widget->IsVisible()) {
+        auto* animation_view = controller->GetSearchResultsPanel()
+                                   ->GetHighlightableLoadingAnimation();
+        if (animation_view) {
+          items.push_back(animation_view);
+        }
+      }
     }
   }
   return items;
@@ -934,6 +1277,13 @@ aura::Window* CaptureModeSessionFocusCycler::GetA11yOverrideWindow() const {
       return GetCameraPreviewWidget()->GetNativeWindow();
     case FocusGroup::kRecordingTypeMenu:
       return GetRecordingTypeMenuWidget()->GetNativeWindow();
+    case FocusGroup::kActionButtons:
+      return session_->action_container_widget()->GetNativeWindow();
+    case FocusGroup::kSearchResultsPanel:
+    case FocusGroup::kSearchResultsPanelWebContents:
+      return CaptureModeController::Get()
+          ->search_results_panel_widget()
+          ->GetNativeWindow();
   }
 }
 
@@ -944,7 +1294,7 @@ bool CaptureModeSessionFocusCycler::FindFocusedViewAndUpdateFocusIndex(
     return true;
 
   const size_t current_focus_index =
-      base::ranges::find(
+      std::ranges::find(
           views, true,
           &CaptureModeSessionFocusCycler::HighlightableView::has_focus) -
       views.begin();
@@ -969,30 +1319,37 @@ bool CaptureModeSessionFocusCycler::FindFocusedViewAndUpdateFocusIndex(
 void CaptureModeSessionFocusCycler::UpdateA11yAnnotation() {
   std::vector<views::Widget*> a11y_widgets;
 
+  auto maybe_add_widget = [&a11y_widgets](views::Widget* widget) {
+    if (widget && !widget->IsClosed()) {
+      a11y_widgets.push_back(widget);
+    }
+  };
+
+  // Add the search results panel if it exists.
+  maybe_add_widget(CaptureModeController::Get()->search_results_panel_widget());
+
   // If the bar widget is not available, then this is called while shutting
   // down the capture mode session.
-  views::Widget* bar_widget = session_->capture_mode_bar_widget_.get();
-  if (bar_widget)
-    a11y_widgets.push_back(bar_widget);
+  maybe_add_widget(session_->capture_mode_bar_widget_.get());
 
   // Add the label widget only if the button is visible.
   if (auto* capture_label_view = session_->capture_label_view_.get();
       capture_label_view && capture_label_view->IsViewInteractable() &&
       capture_label_view->GetWidget()->IsVisible()) {
-    a11y_widgets.push_back(capture_label_view->GetWidget());
+    maybe_add_widget(capture_label_view->GetWidget());
   }
 
-  // Add the recording type widget if it exists.
-  if (auto* recording_type_menu_widget =
-          session_->recording_type_menu_widget_.get()) {
-    a11y_widgets.push_back(recording_type_menu_widget);
+  // Add the action container widget if it exists and it contains action
+  // buttons.
+  if (auto* action_container_widget = session_->action_container_widget_.get();
+      action_container_widget && session_->action_container_view_ &&
+      !session_->action_container_view_->children().empty()) {
+    maybe_add_widget(action_container_widget);
   }
 
-  // Add the settings widget if it exists.
-  if (auto* settings_menu_widget =
-          session_->capture_mode_settings_widget_.get()) {
-    a11y_widgets.push_back(settings_menu_widget);
-  }
+  // Add the recording type and settings widgets if they exist.
+  maybe_add_widget(session_->recording_type_menu_widget_.get());
+  maybe_add_widget(session_->capture_mode_settings_widget_.get());
 
   // Helper to update |target|'s a11y focus with |previous| and |next|, which
   // can be null.
@@ -1003,8 +1360,8 @@ void CaptureModeSessionFocusCycler::UpdateA11yAnnotation() {
         auto& view_a11y = contents_view->GetViewAccessibility();
         view_a11y.SetPreviousFocus(previous);
         view_a11y.SetNextFocus(next);
-        contents_view->NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged,
-                                                true);
+        contents_view->NotifyAccessibilityEventDeprecated(
+            ax::mojom::Event::kTreeChanged, true);
       };
 
   // If there is only one widget left, clear the focus overrides so that they
@@ -1045,6 +1402,10 @@ void CaptureModeSessionFocusCycler::MaybeFocusHighlightableWindow(
                                 focusable_items_in_a_window;
     current_views[window_index]->PseudoFocus();
   }
+}
+
+void CaptureModeSessionFocusCycler::OnAXWidgetClosing() {
+  ax_virtual_views_.clear();
 }
 
 }  // namespace ash

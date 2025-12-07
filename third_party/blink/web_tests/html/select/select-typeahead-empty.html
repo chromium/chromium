@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<p>
+  Check that select does not crash on search when it's empty.
+</p>
+<select id="select">
+</select>
+
+<style>
+  select, ::picker(select) {
+    appearance: base-select;
+  }
+</style>
+<div id="result">Cannot run interactively.</div>
+<script>
+    if (window.testRunner) {
+        testRunner.dumpAsText();
+        var select = document.getElementById("select");
+        select.focus();
+        eventSender.keyDown("z");
+        eventSender.keyDown("z");
+        eventSender.keyDown("z");
+        eventSender.keyDown("z");
+        eventSender.keyDown("z");
+        eventSender.keyDown("z");
+    }
+</script>

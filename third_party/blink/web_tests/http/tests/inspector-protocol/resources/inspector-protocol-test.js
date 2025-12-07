@@ -22,6 +22,7 @@ var TestRunner = class {
     this._fetch = fetch;
     this._params = params;
     this._browserSession = new TestRunner.Session(this, '');
+    this._stableValues = new Map();
   }
 
   static get stabilizeNames() {
@@ -49,7 +50,10 @@ var TestRunner = class {
       'guid',
       'requestId',
       'openerFrameId',
+      'parentFrameId',
       'issueId',
+      'initiatingFrameId',
+      'pipelineId'
     ];
   }
 
@@ -60,6 +64,10 @@ var TestRunner = class {
     ]
   };
 
+  setAllowUnsafeOperations(enabled) {
+    DevToolsAPI.setAllowUnsafeOperations(enabled);
+  }
+
   startDumpingProtocolMessages() {
     this._dumpInspectorProtocolMessages = true;
   };
@@ -68,9 +76,9 @@ var TestRunner = class {
     this._completeTest.call(null);
   }
 
-  log(item, title, stabilizeNames) {
+  log(item, title, stabilizeNames, stabilizeValues) {
     if (typeof item === 'object')
-      return this._logObject(item, title, stabilizeNames);
+      return this._logObject(item, title, stabilizeNames, stabilizeValues);
     this._log.call(null, item);
   }
 
@@ -83,8 +91,9 @@ var TestRunner = class {
     return this._params;
   }
 
-  _logObject(object, title, stabilizeNames = TestRunner.stabilizeNames) {
+  _logObject(object, title, stabilizeNames = TestRunner.stabilizeNames, stabilizeValues = []) {
     var lines = [];
+    const stableValues = this._stableValues;
 
     function dumpValue(value, prefix, prefixWithName) {
       if (typeof value === 'object' && value !== null) {
@@ -110,8 +119,14 @@ var TestRunner = class {
           continue;
         var prefixWithName = '    ' + prefix + name + ' : ';
         var value = object[name];
-        if (stabilizeNames && stabilizeNames.includes(name))
+        if (stabilizeValues && stabilizeValues.includes(name)) {
+          if (!stableValues.has(value)) {
+            stableValues.set(value, `<${typeof value} ${stableValues.size}>`);
+          }
+          value = stableValues.get(value);
+        } else if (stabilizeNames && stabilizeNames.includes(name)) {
           value = `<${typeof value}>`;
+        }
         dumpValue(value, '    ' + prefix, prefixWithName);
       }
       lines.push(prefix + '}');
@@ -382,7 +397,7 @@ TestRunner.Page = class {
     var session = await this.createSession();
     await session.protocol.Runtime.evaluate({
       awaitPromise: true,
-      expression: `
+      expression: `(function() {
       document.write('${html}');
 
       // wait for all scripts to load
@@ -396,7 +411,8 @@ TestRunner.Page = class {
         window._loadHTMLResolve();
 
       document.close();
-      promise;
+      return promise;
+      })()
     `});
     await session.disconnect();
   }
@@ -652,6 +668,14 @@ DevToolsAPI.dispatchMessage = function(messageOrObject) {
   }
 };
 
+DevToolsAPI.setAllowUnsafeOperations = function (enabled) {
+  const embedderMessage = {
+    method: 'setAllowUnsafeOperations',
+    params: [enabled],
+  };
+  DevToolsHost.sendMessageToEmbedder(JSON.stringify(embedderMessage));
+}
+
 DevToolsAPI._sendCommand = function(sessionId, method, params, timeout = 0) {
   var requestId = ++DevToolsAPI._requestId;
   var messageObject = {'id': requestId, 'method': method, 'params': params};
@@ -691,9 +715,11 @@ DevToolsAPI._fetch = function(url) {
   });
 };
 
-testRunner.dumpAsText();
-testRunner.waitUntilDone();
-testRunner.setPopupBlockingEnabled(false);
+if (window["testRunner"]) {
+  testRunner.dumpAsText();
+  testRunner.waitUntilDone();
+  testRunner.setPopupBlockingEnabled(false);
+}
 
 window.addEventListener('load', () => {
   var params = new URLSearchParams(window.location.search);
@@ -761,4 +787,6 @@ TestRunner.wrapPromiseWithTimeout = (promise, timeout, label) => {
   ]);
 };
 
-exports.TestRunner = TestRunner;
+if (self.exports !== undefined) {
+  exports.TestRunner = TestRunner;
+}

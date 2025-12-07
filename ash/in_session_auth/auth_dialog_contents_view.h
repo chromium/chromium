@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <string>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/login_types.h"
@@ -141,7 +142,7 @@ class AuthDialogContentsView : public views::View {
 
   // Called when the user submits password or PIN. If authenticated_by_pin is
   // false, the user authenticated by password.
-  void OnAuthSubmit(bool authenticated_by_pin, const std::u16string& password);
+  void OnAuthSubmit(bool authenticated_by_pin, std::u16string_view password);
 
   // Called when password or PIN authentication of the user completes. If
   // authenticated_by_pin is false, the user authenticated by password.

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+    <color name="ntp_customization_edit_icon_background_color">@color/color_primary_with_alpha_15</color>
+
+    <!-- Ntp customization theme colors. -->
+    <color name="ntp_color_blue_primary">@color/ntp_color_blue_primary_light</color>
+    <color name="ntp_color_aqua_primary">@color/ntp_color_aqua_primary_light</color>
+    <color name="ntp_color_green_primary">@color/ntp_color_green_primary_light</color>
+    <color name="ntp_color_viridian_primary">@color/ntp_color_viridian_primary_light</color>
+    <color name="ntp_color_citron_primary">@color/ntp_color_citron_primary_light</color>
+    <color name="ntp_color_orange_primary">@color/ntp_color_orange_primary_light</color>
+    <color name="ntp_color_rose_primary">@color/ntp_color_rose_primary_light</color>
+    <color name="ntp_color_fuchsia_primary">@color/ntp_color_fuchsia_primary_light</color>
+    <color name="ntp_color_violet_primary">@color/ntp_color_violet_primary_light</color>
+</resources>

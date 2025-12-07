@@ -6,8 +6,8 @@
 
 #include <string>
 
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/protobuf_matchers.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/data_type_state.pb.h"
@@ -21,6 +21,7 @@ namespace autofill {
 
 namespace {
 
+using base::test::EqualsProto;
 using sync_pb::DataTypeState;
 using sync_pb::EntityMetadata;
 using syncer::EntityMetadataMap;
@@ -52,8 +53,7 @@ TEST_P(AutfillSyncMetadataTableTest, AutofillNoMetadata) {
   MetadataBatch metadata_batch;
   EXPECT_TRUE(table_->GetAllSyncMetadata(data_type, &metadata_batch));
   EXPECT_EQ(0u, metadata_batch.TakeAllMetadata().size());
-  EXPECT_EQ(DataTypeState().SerializeAsString(),
-            metadata_batch.GetDataTypeState().SerializeAsString());
+  EXPECT_THAT(DataTypeState(), EqualsProto(metadata_batch.GetDataTypeState()));
 }
 
 TEST_P(AutfillSyncMetadataTableTest, AutofillGetAllSyncMetadata) {
@@ -123,8 +123,7 @@ TEST_P(AutfillSyncMetadataTableTest, AutofillWriteThenDeleteSyncMetadata) {
   // Now delete the data type state.
   EXPECT_TRUE(table_->ClearDataTypeState(data_type));
   EXPECT_TRUE(table_->GetAllSyncMetadata(data_type, &metadata_batch));
-  EXPECT_EQ(DataTypeState().SerializeAsString(),
-            metadata_batch.GetDataTypeState().SerializeAsString());
+  EXPECT_THAT(DataTypeState(), EqualsProto(metadata_batch.GetDataTypeState()));
 }
 
 TEST_P(AutfillSyncMetadataTableTest, AutofillCorruptSyncMetadata) {

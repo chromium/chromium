@@ -4,9 +4,11 @@
 
 #include "chrome/browser/apps/link_capturing/chromeos_link_capturing_delegate.h"
 
+#include <algorithm>
 #include <optional>
 #include <string_view>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
@@ -14,20 +16,17 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/values_equivalent.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
-#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_tab_data.h"
 #include "chrome/browser/apps/link_capturing/metrics/intent_handling_metrics.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
+#include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
-#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/navigation_handle.h"
@@ -67,8 +66,8 @@ GURL RedirectUrlIfSwa(Profile* profile,
   if (app_id == ash::kChromeUIUntrustedProjectorSwaAppId &&
       url.GetWithEmptyPath() == GURL(ash::kChromeUIUntrustedProjectorPwaUrl)) {
     std::string override_url = ash::kChromeUIUntrustedProjectorUrl;
-    if (url.path().length() > 1) {
-      override_url += url.path().substr(1);
+    if (url.GetPath().length() > 1) {
+      override_url += url.GetPath().substr(1);
     }
     std::stringstream ss;
     // Since ChromeOS doesn't reload an app if the URL doesn't change, the line
@@ -78,7 +77,7 @@ GURL RedirectUrlIfSwa(Profile* profile,
     ss << override_url << "?timestamp=" << clock->NowTicks();
 
     if (url.has_query()) {
-      ss << '&' << url.query();
+      ss << '&' << url.GetQuery();
     }
 
     GURL result(ss.str());
@@ -99,19 +98,14 @@ IntentHandlingMetrics::Platform GetMetricsPlatform(AppType app_type) {
     case AppType::kSystemWeb:
       return IntentHandlingMetrics::Platform::PWA;
     case AppType::kUnknown:
-    case AppType::kBuiltIn:
     case AppType::kCrostini:
     case AppType::kChromeApp:
     case AppType::kPluginVm:
-    case AppType::kStandaloneBrowser:
     case AppType::kRemote:
     case AppType::kBorealis:
-    case AppType::kStandaloneBrowserChromeApp:
     case AppType::kExtension:
-    case AppType::kStandaloneBrowserExtension:
     case AppType::kBruschetta:
-      NOTREACHED_IN_MIGRATION();
-      return IntentHandlingMetrics::Platform::ARC;
+      NOTREACHED();
   }
 }
 
@@ -148,18 +142,32 @@ static const base::TickClock*& GetTickClock() {
 // static
 std::optional<std::string> ChromeOsLinkCapturingDelegate::GetLaunchAppId(
     const AppIdsToLaunchForUrl& app_ids_to_launch,
-    bool is_navigation_from_link) {
+    bool is_navigation_from_link,
+    int redirection_chain_size) {
   if (app_ids_to_launch.candidates.empty()) {
     return std::nullopt;
   }
 
-  if (ShouldOnlyCaptureLinks(app_ids_to_launch.candidates) &&
-      !is_navigation_from_link) {
-    return std::nullopt;
-  }
-
   if (app_ids_to_launch.preferred) {
-    return app_ids_to_launch.preferred;
+    if (is_navigation_from_link) {
+      // A link click is always captured.
+      return app_ids_to_launch.preferred;
+    }
+    if (!ShouldOnlyCaptureLinks(app_ids_to_launch.candidates)) {
+      // For specific applications, we want to launch them even when there's no
+      // link click.
+      return app_ids_to_launch.preferred;
+    }
+
+    if (redirection_chain_size > 1 &&
+        web_app::ChromeOsWebAppExperiments::ShouldLaunchForRedirectedNavigation(
+            *app_ids_to_launch.preferred)) {
+      // For specific applications, we want to launch them after a redirect led
+      // to an app-controlled URL. Note: this behavior isn't covered by the web
+      // specs for Navigation Capturing, still it shouldn't be removed without
+      // prior alignment (e.g., the Enterprise Clippy project).
+      return app_ids_to_launch.preferred;
+    }
   }
 
   return std::nullopt;
@@ -176,8 +184,9 @@ ChromeOsLinkCapturingDelegate::ChromeOsLinkCapturingDelegate() = default;
 ChromeOsLinkCapturingDelegate::~ChromeOsLinkCapturingDelegate() = default;
 
 bool ChromeOsLinkCapturingDelegate::ShouldCancelThrottleCreation(
-    content::NavigationHandle* handle) {
-  content::WebContents* web_contents = handle->GetWebContents();
+    content::NavigationThrottleRegistry& registry) {
+  content::NavigationHandle& handle = registry.GetNavigationHandle();
+  content::WebContents* web_contents = handle.GetWebContents();
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   return !AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile);
@@ -188,13 +197,15 @@ ChromeOsLinkCapturingDelegate::CreateLinkCaptureLaunchClosure(
     Profile* profile,
     content::WebContents* web_contents,
     const GURL& url,
-    bool is_navigation_from_link) {
+    bool is_navigation_from_link,
+    int redirection_chain_size) {
+  CHECK(web_contents);
   AppServiceProxy* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
 
   AppIdsToLaunchForUrl app_ids_to_launch = FindAppIdsToLaunchForUrl(proxy, url);
 
-  std::optional<std::string> launch_app_id =
-      GetLaunchAppId(app_ids_to_launch, is_navigation_from_link);
+  std::optional<std::string> launch_app_id = GetLaunchAppId(
+      app_ids_to_launch, is_navigation_from_link, redirection_chain_size);
   if (!launch_app_id) {
     return std::nullopt;
   }
@@ -219,11 +230,9 @@ ChromeOsLinkCapturingDelegate::CreateLinkCaptureLaunchClosure(
   // previous early return didn't trigger, this means we are in an app window
   // but out of scope of the original app, and navigating will put us back in
   // scope.
-  web_app::WebAppProvider* provider =
-      web_app::WebAppProvider::GetForWebApps(profile);
-  if (provider && base::ValuesEquivalent(
-                      provider->ui_manager().GetAppIdForWindow(web_contents),
-                      &launch_app_id.value())) {
+  web_app::WebAppTabHelper* tab_helper =
+      web_app::WebAppTabHelper::FromWebContents(web_contents);
+  if (tab_helper && tab_helper->window_app_id() == launch_app_id) {
     return std::nullopt;
   }
 

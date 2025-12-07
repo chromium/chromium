@@ -24,10 +24,6 @@
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "third_party/boringssl/src/pki/parsed_certificate.h"
 
-namespace crypto {
-class RSAPrivateKey;
-}
-
 namespace net {
 
 namespace x509_util {
@@ -67,28 +63,17 @@ NET_EXPORT_PRIVATE bool GetTLSServerEndPointChannelBinding(
     const X509Certificate& certificate,
     std::string* token);
 
-// Creates a public-private keypair and a self-signed certificate.
-// Subject, serial number and validity period are given as parameters.
-// The certificate is signed by the private key in |key|. The key length and
-// signature algorithm may be updated periodically to match best practices.
+// Creates a certificate which cannot be used: a random private key is
+// generated, then a self-signed certificate using that private key is created
+// and the private key is discarded. The resulting cert can never be used to
+// actually authenticate anything because the private key is unknown, so this
+// function is only useful for test and demonstration purposes.
 //
-// |subject| specifies the subject and issuer names as in AddName()
-//
-// SECURITY WARNING
-//
-// Using self-signed certificates has the following security risks:
-// 1. Encryption without authentication and thus vulnerable to
-//    man-in-the-middle attacks.
-// 2. Self-signed certificates cannot be revoked.
-//
-// Use this certificate only after the above risks are acknowledged.
-NET_EXPORT bool CreateKeyAndSelfSignedCert(
-    std::string_view subject,
-    uint32_t serial_number,
-    base::Time not_valid_before,
-    base::Time not_valid_after,
-    std::unique_ptr<crypto::RSAPrivateKey>* key,
-    std::string* der_cert);
+// |subject| specifies the subject and issuer names as in AddName() - a string
+// consisting of a very small subset of the X.509 DN syntax. All fields of the
+// cert that are not specified here are hardcoded. The certificate's lifetime is
+// always from 5 minutes ago to 1 hour from now.
+NET_EXPORT std::vector<uint8_t> CreateUnusableCert(std::string_view subject);
 
 struct NET_EXPORT Extension {
   Extension(base::span<const uint8_t> oid,
@@ -186,7 +171,7 @@ NET_EXPORT bssl::ParseCertificateOptions DefaultParseCertificateOptions();
 // valid certificate, returns false and |hash| is in an undefined state.
 [[nodiscard]] NET_EXPORT bool CalculateSha256SpkiHash(
     const CRYPTO_BUFFER* buffer,
-    HashValue* hash);
+    SHA256HashValue* hash);
 
 // Calls |verifier->VerifyInit|, using the public key from |certificate|,
 // checking if the digitalSignature key usage bit is present, and returns true

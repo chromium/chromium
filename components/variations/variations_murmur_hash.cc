@@ -35,7 +35,7 @@ std::vector<uint32_t> VariationsMurmurHash::StringToLE32(
   if (total_words > full_words) {
     const size_t rem = data_size % 4u;
     std::array<uint8_t, 4u> bytes = {};
-    base::span(bytes).first(rem).copy_from(data.last(rem));
+    base::span(bytes).copy_prefix_from(data.last(rem));
     words[full_words] = base::U32FromLittleEndian(bytes);
   }
   return words;

@@ -12,7 +12,7 @@
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
-#include "components/performance_manager/test_support/performance_manager_test_harness.h"
+#include "components/performance_manager/test_support/test_harness_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -119,7 +119,13 @@ TEST_F(GraphRegisteredTest, GraphRegistrationWorks) {
 
   // At this point if the graph is torn down it should explode because foo
   // hasn't been unregistered.
-  EXPECT_CHECK_DEATH(TearDownAndDestroyGraph());
+  // TODO(pbos): Figure out why the DCHECK build dies in a different place (a
+  // DCHECK) and see if these can be consolidated into one EXPECT_DCHECK_DEATH.
+  if (DCHECK_IS_ON()) {
+    EXPECT_DCHECK_DEATH(TearDownAndDestroyGraph());
+  } else {
+    EXPECT_CHECK_DEATH(TearDownAndDestroyGraph());
+  }
 
   graph()->UnregisterObject(&foo);
 }
@@ -172,57 +178,71 @@ TEST_F(GraphRegisteredTest, GraphOwnedAndRegistered) {
   TearDownAndDestroyGraph();
 }
 
-namespace {
+TEST_F(GraphRegisteredTest, GetFromGraph_Default) {
+  PerformanceManagerTestHarnessHelper pm_helper;
 
-// This class is non-sensically both a GraphRegistered object and a
-// PerformanceManagerRegistered object. This is done to ensure that the
-// implementations use the appropriately typed "TypeId" functions, as there are
-// now two of them available!
-class Baz : public GraphRegisteredImpl<Baz>,
-            public PerformanceManagerRegisteredImpl<Baz> {
- public:
-  Baz() = default;
-  ~Baz() override = default;
-};
+  // Before PerformanceManager is available, GetFromGraph() should safely return
+  // nullptr.
+  EXPECT_FALSE(PerformanceManager::IsAvailable());
+  EXPECT_EQ(Foo::GetFromGraph(), nullptr);
+  EXPECT_EQ(OwnedFoo::GetFromGraph(), nullptr);
 
-using GraphAndPerformanceManagerRegisteredTest = PerformanceManagerTestHarness;
+  pm_helper.SetUp();
 
-}  // namespace
+  // Objects not registered.
+  EXPECT_TRUE(PerformanceManager::IsAvailable());
+  EXPECT_EQ(Foo::GetFromGraph(), nullptr);
+  EXPECT_EQ(OwnedFoo::GetFromGraph(), nullptr);
 
-TEST_F(GraphAndPerformanceManagerRegisteredTest, GraphAndPMRegistered) {
-  // Each TypeId should be backed by a distinct "TypeId" implementation and
-  // value.
-  const uintptr_t kGraphId = GraphRegisteredImpl<Baz>::TypeId();
-  const uintptr_t kPMId = PerformanceManagerRegisteredImpl<Baz>::TypeId();
-  ASSERT_NE(kGraphId, kPMId);
+  // Register objects.
+  Graph* graph = PerformanceManager::GetGraph();
+  ASSERT_TRUE(graph);
+  Foo foo;
+  graph->RegisterObject(&foo);
+  OwnedFoo* owned_foo = graph->PassToGraph(std::make_unique<OwnedFoo>());
+  EXPECT_EQ(Foo::GetFromGraph(), &foo);
+  EXPECT_EQ(OwnedFoo::GetFromGraph(), owned_foo);
 
-  // Create a stand-alone graph that is bound to this sequence so we can test
-  // both the PM and a graph on the same sequence.
-  std::unique_ptr<GraphImpl> graph(new GraphImpl());
-  graph->SetUp();
+  // Remove objects.
+  graph->UnregisterObject(&foo);
+  graph->TakeFromGraph(owned_foo);
+  EXPECT_EQ(Foo::GetFromGraph(), nullptr);
+  EXPECT_EQ(OwnedFoo::GetFromGraph(), nullptr);
 
-  PerformanceManagerRegistryImpl* registry =
-      PerformanceManagerRegistryImpl::GetInstance();
+  pm_helper.TearDown();
 
-  Baz baz;
-  graph->RegisterObject(&baz);
-  registry->RegisterObject(&baz);
+  // After PerformanceManager is gone, GetFromGraph() should safely return
+  // nullptr again.
+  EXPECT_FALSE(PerformanceManager::IsAvailable());
+  EXPECT_EQ(Foo::GetFromGraph(), nullptr);
+  EXPECT_EQ(OwnedFoo::GetFromGraph(), nullptr);
+}
 
-  EXPECT_EQ(&baz, graph->GetRegisteredObject(kGraphId));
-  EXPECT_EQ(&baz, registry->GetRegisteredObject(kPMId));
-  EXPECT_EQ(nullptr, graph->GetRegisteredObject(kPMId));
-  EXPECT_EQ(nullptr, registry->GetRegisteredObject(kGraphId));
+TEST_F(GraphRegisteredTest, GetFromGraph_WithParam) {
+  PerformanceManagerTestHarnessHelper pm_helper;
+  pm_helper.SetUp();
 
-  // This directly tests that the templated helper function uses the correct
-  // instance of TypeId.
-  EXPECT_EQ(&baz, graph->GetRegisteredObjectAs<Baz>());
-  EXPECT_EQ(&baz, PerformanceManager::GetRegisteredObjectAs<Baz>());
+  Graph* graph = PerformanceManager::GetGraph();
+  TestGraphImpl graph2;
+  graph2.SetUp();
 
-  graph->UnregisterObject(&baz);
-  registry->UnregisterObject(&baz);
+  OwnedFoo* foo = graph->PassToGraph(std::make_unique<OwnedFoo>());
+  OwnedBar* bar = graph2.PassToGraph(std::make_unique<OwnedBar>());
 
-  graph->TearDown();
-  graph.reset();
+  EXPECT_EQ(OwnedFoo::GetFromGraph(), foo);
+  EXPECT_EQ(OwnedFoo::GetFromGraph(graph), foo);
+  EXPECT_EQ(OwnedFoo::GetFromGraph(&graph2), nullptr);
+
+  EXPECT_EQ(OwnedBar::GetFromGraph(), nullptr);
+  EXPECT_EQ(OwnedBar::GetFromGraph(graph), nullptr);
+  EXPECT_EQ(OwnedBar::GetFromGraph(&graph2), bar);
+
+  // Passing a parameter should still work when PM is not available.
+  pm_helper.TearDown();
+  EXPECT_FALSE(PerformanceManager::IsAvailable());
+  EXPECT_EQ(OwnedBar::GetFromGraph(&graph2), bar);
+
+  graph2.TearDown();
 }
 
 }  // namespace performance_manager

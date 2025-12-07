@@ -5,6 +5,7 @@
 import os
 import logging
 import posixpath
+import time
 
 from contextlib import contextmanager
 from typing import List, Optional
@@ -20,6 +21,9 @@ from devil.android import device_temp_file
 from devil.android import device_utils
 from devil.android.sdk import intent
 
+# Wait time after loading a page to allow the scrollbar to disappear before
+# taking a screenshot.
+SCREENSHOT_WAIT_TIME_SECONDS = 5
 
 @attr.attrs()
 class AndroidDriverFactory(DriverFactory):
@@ -77,6 +81,10 @@ class AndroidDriverFactory(DriverFactory):
     return local_seed_file
 
   #override
+  def wait_for_screenshot(self):
+    time.sleep(SCREENSHOT_WAIT_TIME_SECONDS)
+
+  #override
   @contextmanager
   def create_driver(
     self,
@@ -98,6 +106,10 @@ class AndroidDriverFactory(DriverFactory):
       options.add_argument(
         f'variations-test-seed-path={installed_seed_path}')
       options.add_argument(f'--fake-variations-channel={self.channel}')
+      # TODO(http://crbug.com/379869158) -- remove this once the new
+      # seed loading mechanism is fixed.
+      options.add_argument(
+        '--force-fieldtrials=SeedFileTrial/Default')
 
     driver = None
     try:

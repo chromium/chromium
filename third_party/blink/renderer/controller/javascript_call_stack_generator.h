@@ -28,8 +28,8 @@ class CONTROLLER_EXPORT JavaScriptCallStackGenerator
   void InterruptIsolateAndCollectCallStack(v8::Isolate* isolate);
 
   mojo::Receiver<mojom::blink::CallStackGenerator> receiver_{this};
-  WTF::HashMap<JavaScriptCallStackCollector*,
-               std::unique_ptr<JavaScriptCallStackCollector>>
+  HashMap<JavaScriptCallStackCollector*,
+          std::unique_ptr<JavaScriptCallStackCollector>>
       collectors_;
 };
 

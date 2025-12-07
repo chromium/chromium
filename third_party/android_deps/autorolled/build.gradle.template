@@ -1,0 +1,105 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{{generated_disclaimer}}
+
+// This needs be be before `apply plugin: ChromiumPlugin` because otherwise we
+// would not have access to it early enough (inside the ResolutionStrategy
+// closure).
+// This map is empty when rolling but is filled by fetch_all_autorolled.py to
+// cache the resolved values of all the '+' versions when we are not trying to
+// roll (e.g. when the main project imports this subproject).
+project.ext.versionCache = [:]
+{{version_overrides}}
+
+apply plugin: ChromiumPlugin
+
+repositories {
+    google()
+    mavenCentral()
+    // <ANDROIDX_REPO>
+}
+
+dependencies {
+    // Use testCompile to have requires_robolectric = true set on targets.
+    testCompileLatest 'org.robolectric:robolectric:+'
+
+    supportsAndroidCompileLatest 'com.google.guava:guava:+'
+
+    // Libraries from Google:
+    compileLatest 'com.google.protobuf:protobuf-javalite:+'
+    compileLatest 'com.google.android.libraries.identity.googleid:googleid:+'
+    compileLatest 'com.google.android.material:material:+'
+    compileLatest 'com.google.android.play:feature-delivery:+'
+    compileLatest 'com.google.code.gson:gson:+'
+    compileLatest 'io.grpc:grpc-binder:+'
+    compileLatest 'io.grpc:grpc-api:+'
+    compileLatest 'io.grpc:grpc-stub:+'
+    compileLatest 'io.grpc:grpc-protobuf-lite:+'
+    androidTestCompileLatest 'io.grpc:grpc-android:+'
+    androidTestCompileLatest 'io.grpc:grpc-testing:+'
+    androidTestCompileLatest 'io.grpc:grpc-inprocess:+'
+    androidTestCompileLatest 'io.grpc:grpc-util:+'
+
+    // A dependency of androidx.xr.runtime:runtime, but must be listed here in
+    // order to be auto-rolled and not manually rolled.
+    compileLatest 'com.google.ar:impress:+'
+
+    // Play Services & Firebase
+    compileLatest 'com.google.android.gms:play-services-auth-api-phone:+'
+    compileLatest 'com.google.android.gms:play-services-auth-base:+'
+    compileLatest 'com.google.android.gms:play-services-auth-blockstore:+'
+    compileLatest 'com.google.android.gms:play-services-auth:+'
+    compileLatest 'com.google.android.gms:play-services-base:+'
+    compileLatest 'com.google.android.gms:play-services-basement:+'
+    compileLatest 'com.google.android.gms:play-services-cast-framework:+'
+    compileLatest 'com.google.android.gms:play-services-cast:+'
+    compileLatest 'com.google.android.gms:play-services-fido:+'
+    compileLatest 'com.google.android.gms:play-services-gcm:+'
+    compileLatest 'com.google.android.gms:play-services-identity-credentials:+'
+    compileLatest 'com.google.android.gms:play-services-iid:+'
+    compileLatest 'com.google.android.gms:play-services-instantapps:+'
+    compileLatest 'com.google.android.gms:play-services-location:+'
+    compileLatest 'com.google.android.gms:play-services-tasks:+'
+    compileLatest 'com.google.android.gms:play-services-time:+'
+    compileLatest 'com.google.android.gms:play-services-vision-common:+'
+    compileLatest 'com.google.android.gms:play-services-vision:+'
+    compileLatest 'com.google.firebase:firebase-messaging:+'
+
+    // Other libraries
+    compileLatest 'com.airbnb.android:lottie:+'
+    compileLatest 'com.google.errorprone:error_prone_annotations:+'
+    compileLatest 'org.jspecify:jspecify:+'
+    compileLatest 'javax.inject:javax.inject:+'
+    compileLatest 'javax.annotation:javax.annotation-api:+'
+    compileLatest 'com.squareup.leakcanary:leakcanary-android:+'
+    compileLatest 'com.squareup.leakcanary:leakcanary-android-core:+'
+    compileLatest 'com.squareup.leakcanary:shark:+'
+    compileLatest 'com.squareup.leakcanary:shark-android:+'
+    androidTestCompileLatest 'com.squareup.leakcanary:leakcanary-android-instrumentation:+'
+    buildCompileLatest 'org.ow2.asm:asm:+'
+    buildCompileLatest 'org.ow2.asm:asm-commons:+'
+    buildCompileLatest 'com.android.extensions.xr:extensions-xr:+'
+
+    // Needed by internal targets
+    supportsAndroidCompileLatest 'com.google.auto.service:auto-service-annotations:+'
+    supportsAndroidCompileLatest 'com.google.code.findbugs:jsr305:+'
+    supportsAndroidCompileLatest 'com.google.j2objc:j2objc-annotations:+'
+    supportsAndroidCompileLatest 'com.squareup.okio:okio-jvm:+'
+    supportsAndroidCompileLatest 'io.reactivex.rxjava2:rxandroid:+'
+    supportsAndroidCompileLatest 'org.checkerframework:checker-qual:+'
+    supportsAndroidCompileLatest 'org.checkerframework:checker-util:+'
+    supportsAndroidCompileLatest 'org.codehaus.mojo:animal-sniffer-annotations:+'
+    supportsAndroidCompileLatest 'org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:+'
+    supportsAndroidCompileLatest 'org.reactivestreams:reactive-streams:+'
+    compileLatest 'org.jetbrains.kotlinx:kotlinx-coroutines-android:+'
+}
+
+task setUpRepository(type: BuildConfigGenerator) {
+    pathToBuildGradle 'third_party/android_deps/autorolled'
+    cipdPackagePrefix 'chromium/third_party/android_deps/autorolled'
+    internalTargetVisibility = [ '//third_party/androidx:*', ':*' ]
+    ignoreDEPS true
+    writeBoM true
+}

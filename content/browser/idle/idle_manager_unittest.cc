@@ -18,6 +18,7 @@
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_permission_manager.h"
 #include "content/public/test/test_browser_context.h"
@@ -35,9 +36,13 @@
 using blink::mojom::IdleManagerError;
 using blink::mojom::IdleStatePtr;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
+
+MATCHER_P(PermissionTypeMatcher, id, "") {
+  return ::testing::Matches(::testing::Eq(id))(
+      blink::PermissionDescriptorToPermissionType(arg));
+}
 
 namespace content {
 
@@ -57,7 +62,7 @@ enum ScreenIdleState {
 
 class MockIdleMonitor : public blink::mojom::IdleMonitor {
  public:
-  MOCK_METHOD2(Update, void(IdleStatePtr, bool));
+  MOCK_METHOD(void, Update, (IdleStatePtr, bool));
 };
 
 class MockIdleTimeProvider : public ui::IdleTimeProvider {
@@ -67,18 +72,20 @@ class MockIdleTimeProvider : public ui::IdleTimeProvider {
   MockIdleTimeProvider(const MockIdleTimeProvider&) = delete;
   MockIdleTimeProvider& operator=(const MockIdleTimeProvider&) = delete;
 
-  MOCK_METHOD0(CalculateIdleTime, base::TimeDelta());
-  MOCK_METHOD0(CheckIdleStateIsLocked, bool());
+  MOCK_METHOD(base::TimeDelta, CalculateIdleTime, ());
+  MOCK_METHOD(bool, CheckIdleStateIsLocked, ());
 };
 
 class IdleManagerTest : public RenderViewHostTestHarness {
+ public:
+  IdleManagerTest(const IdleManagerTest&) = delete;
+  IdleManagerTest& operator=(const IdleManagerTest&) = delete;
+
  protected:
   IdleManagerTest()
       : RenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~IdleManagerTest() override = default;
-  IdleManagerTest(const IdleManagerTest&) = delete;
-  IdleManagerTest& operator=(const IdleManagerTest&) = delete;
 
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
@@ -111,10 +118,11 @@ class IdleManagerTest : public RenderViewHostTestHarness {
 
   void SetPermissionStatus(blink::mojom::PermissionStatus permission_status) {
     ON_CALL(*permission_manager_,
-            GetPermissionStatusForCurrentDocument(
-                blink::PermissionType::IDLE_DETECTION, main_rfh(),
+            GetPermissionResultForCurrentDocument(
+                PermissionTypeMatcher(blink::PermissionType::IDLE_DETECTION),
+                main_rfh(),
                 /*should_include_device_status*/ false))
-        .WillByDefault(Return(permission_status));
+        .WillByDefault(Return(PermissionResult(permission_status)));
   }
 
   std::tuple<UserIdleState, ScreenIdleState> AddMonitorRequest() {
@@ -135,11 +143,11 @@ class IdleManagerTest : public RenderViewHostTestHarness {
     IdleStatePtr result;
 
     EXPECT_CALL(idle_monitor_, Update(_, expect_override))
-        .WillOnce(Invoke([&loop, &result](IdleStatePtr state,
-                                          bool is_overridden_by_devtools) {
+        .WillOnce([&loop, &result](IdleStatePtr state,
+                                   bool is_overridden_by_devtools) {
           result = std::move(state);
           loop.Quit();
-        }));
+        });
 
     if (!expect_override) {
       // If we aren't expecting an override then we need to fast forward in

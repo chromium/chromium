@@ -11,6 +11,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "build/config/linux/dbus/buildflags.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -42,7 +43,7 @@
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
 #include "ui/display/screen.h"
 #endif
 
@@ -62,6 +63,10 @@
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+#include "components/dbus/thread_linux/dbus_thread_linux.h"
+#endif
+
 namespace content {
 
 // RenderFrameHostTester ------------------------------------------------------
@@ -69,12 +74,6 @@ namespace content {
 // static
 RenderFrameHostTester* RenderFrameHostTester::For(RenderFrameHost* host) {
   return static_cast<TestRenderFrameHost*>(host);
-}
-
-// static
-bool RenderFrameHostTester::TestOnMessageReceived(RenderFrameHost* rfh,
-                                                  const IPC::Message& msg) {
-  return static_cast<RenderFrameHostImpl*>(rfh)->OnMessageReceived(msg);
 }
 
 // static
@@ -215,7 +214,7 @@ RenderViewHostTestHarness::CreateTestWebContents() {
 
   scoped_refptr<SiteInstance> instance =
       SiteInstance::Create(GetBrowserContext());
-  instance->GetProcess()->Init();
+  instance->GetOrCreateProcessForTesting()->Init();
 
   return TestWebContents::Create(GetBrowserContext(), std::move(instance));
 }
@@ -243,7 +242,7 @@ void RenderViewHostTestHarness::SetUp() {
 #if BUILDFLAG(IS_WIN)
   ole_initializer_ = std::make_unique<ui::ScopedOleInitializer>();
 #endif
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   screen_ = std::make_unique<display::ScopedNativeScreen>();
 #endif
 
@@ -274,6 +273,10 @@ void RenderViewHostTestHarness::TearDown() {
   // Make sure that we flush any messages related to WebContentsImpl destruction
   // before we destroy the browser context.
   base::RunLoop().RunUntilIdle();
+
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+  dbus_thread_linux::ShutdownOnDBusThreadAndBlock();
+#endif
 
 #if BUILDFLAG(IS_WIN)
   ole_initializer_.reset();

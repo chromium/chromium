@@ -20,15 +20,12 @@
 
 // https://html.spec.whatwg.org/multipage/iframe-embed-object.html#htmliframeelement
 
-// The `HTMLString` references below are from Trusted Types:
-// https://github.com/w3c/trusted-types/, which is still WIP.
-// https://crbug.com/739170.
 [
-    Exposed=Window,
-    HTMLConstructor
+    Exposed=Window
 ] interface HTMLIFrameElement : HTMLElement {
+    [HTMLConstructor] constructor();
     [CEReactions, Reflect, URL] attribute USVString src;
-    [CEReactions, Reflect, RaisesException=Setter] attribute HTMLString srcdoc;
+    [CEReactions, RaisesException=Setter] attribute (DOMString or TrustedHTML) srcdoc;
     [CEReactions, Reflect] attribute DOMString name;
     [PutForwards=value] readonly attribute DOMTokenList sandbox;
     // Note: The seamless attribute was once supported, but was removed.
@@ -38,7 +35,7 @@
 
     [CheckSecurity=ReturnValue] readonly attribute Document? contentDocument;
     readonly attribute Window? contentWindow;
-    [CheckSecurity=ReturnValue, RaisesException] Document? getSVGDocument();
+    [CheckSecurity=ReturnValue] Document? getSVGDocument();
     [CEReactions, Reflect, ReflectOnly=("","no-referrer","origin","no-referrer-when-downgrade","origin-when-cross-origin","unsafe-url"), ReflectMissing="", ReflectInvalid=""] attribute DOMString referrerPolicy;
     // https://w3c.github.io/webappsec-csp/embedded/#dom-htmliframeelement-csp
     [CEReactions, Reflect] attribute DOMString csp;
@@ -60,7 +57,7 @@
     [RuntimeEnabled=TopicsAPI, SecureContext, CEReactions, Reflect] attribute boolean browsingTopics;
 
     // Protected Audience (https://wicg.github.io/turtledove)
-    [RuntimeEnabled=FledgeNegativeTargeting, SecureContext, CEReactions, Reflect] attribute boolean adAuctionHeaders;
+    [SecureContext, CEReactions, Reflect] attribute boolean adAuctionHeaders;
 
     // Iframes credentialless
     // https://github.com/WICG/anonymous-iframe

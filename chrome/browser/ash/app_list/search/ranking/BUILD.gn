@@ -5,7 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 proto_library("proto") {
   sources = [ "removed_results.proto" ]
@@ -45,6 +45,8 @@ static_library("ranking") {
     "util.cc",
     "util.h",
   ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
     ":proto",

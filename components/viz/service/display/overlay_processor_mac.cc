@@ -34,14 +34,6 @@ bool OverlayProcessorMac::IsOverlaySupported() const {
   return true;
 }
 
-gfx::Rect OverlayProcessorMac::GetPreviousFrameOverlaysBoundingRect() const {
-  // This function's return value is used to determine the range of quads
-  // produced by surface aggregation. We use the quads to generate our CALayer
-  // tree every frame, and we use the quads that didn't change. For that
-  // reason, always return the full frame.
-  return previous_frame_full_bounding_rect_;
-}
-
 gfx::Rect OverlayProcessorMac::GetAndResetOverlayDamage() {
   gfx::Rect result = ca_overlay_damage_rect_;
   ca_overlay_damage_rect_ = gfx::Rect();
@@ -56,16 +48,12 @@ void OverlayProcessorMac::ProcessForOverlays(
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     SurfaceDamageRectList surface_damage_rect_list,
-    OutputSurfaceOverlayPlane* output_surface_plane,
+    std::optional<OverlayCandidate>& primary_plane,
     CandidateList* candidates,
     gfx::Rect* damage_rect,
     std::vector<gfx::Rect>* content_bounds) {
   TRACE_EVENT0("viz", "OverlayProcessorMac::ProcessForOverlays");
   auto* render_pass = render_passes->back().get();
-
-  // Clear to get ready to handle output surface as overlay.
-  output_surface_already_handled_ = false;
-  previous_frame_full_bounding_rect_ = render_pass->output_rect;
 
   // We could have surfaceless overlay but not ca overlay system on. In this
   // case we would still have the OutputSurfaceOverlayPlane.
@@ -76,10 +64,6 @@ void OverlayProcessorMac::ProcessForOverlays(
       render_pass, resource_provider, gfx::RectF(render_pass->output_rect),
       render_pass_filters, render_pass_backdrop_filters, candidates);
   if (success) {
-    // Mark the output surface as already handled (there is no output surface
-    // anymore).
-    output_surface_already_handled_ = true;
-
     // Set |ca_overlay_damage_rect_| to be everything, so that the next
     // composite that we draw to the output surface will do a full re-draw.
     ca_overlay_damage_rect_ = render_pass->output_rect;
@@ -94,16 +78,15 @@ void OverlayProcessorMac::ProcessForOverlays(
         resource_provider, render_pass, gfx::RectF(render_pass->output_rect),
         &render_pass->quad_list, render_pass_filters,
         render_pass_backdrop_filters, candidates);
+
+    CHECK(primary_plane);
+    render_pass->has_transparent_background |= !primary_plane->is_opaque;
+
+    // Mac doesn't use the plane_z_order field and it needs to have primary
+    // plane last in the list of overlays.
+    candidates->push_back(std::move(primary_plane).value());
+    primary_plane.reset();
   }
-}
-
-void OverlayProcessorMac::AdjustOutputSurfaceOverlay(
-    std::optional<OutputSurfaceOverlayPlane>* output_surface_plane) {
-  if (!output_surface_plane->has_value())
-    return;
-
-  if (output_surface_already_handled_)
-    output_surface_plane->reset();
 }
 
 bool OverlayProcessorMac::NeedsSurfaceDamageRectList() const {

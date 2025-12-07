@@ -1,0 +1,79 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+static_library("echo_private") {
+  sources = [
+    "echo_private_api.cc",
+    "echo_private_api.h",
+  ]
+
+  deps = [
+    ":echo_private_api_util",
+    "//base",
+    "//base:i18n",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/notifications",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//chrome/common/extensions/api",
+    "//chromeos/ash/components/report:utils",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/components/system",
+    "//components/prefs",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//extensions/common",
+    "//extensions/common:mojom",
+    "//third_party/icu",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "echo_private_apitest.cc" ]
+
+  deps = [
+    ":echo_private",
+    ":echo_private_api_util",
+    "//base",
+    "//chrome/browser/ash/notifications",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/policy/device_policy:test_support",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/components/settings:test_support",
+    "//chromeos/ash/components/system",
+    "//content/test:test_support",
+    "//extensions:test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("echo_private_api_util") {
+  sources = [
+    "echo_private_api_util.cc",
+    "echo_private_api_util.h",
+  ]
+
+  public_deps = [ "//base" ]
+
+  deps = [
+    "//chrome/common:constants",
+    "//components/prefs",
+  ]
+}

@@ -1,0 +1,37 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos || is_win || is_mac || is_linux,
+       "components/webapps/isolated_web_apps are no-op on Android or iOS.")
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "signed_web_bundle_utils.cc",
+    "signed_web_bundle_utils.h",
+    "signing_keys.h",
+    "test_iwa_client.cc",
+    "test_iwa_client.h",
+    "test_signed_web_bundle_builder.cc",
+    "test_signed_web_bundle_builder.h",
+  ]
+
+  deps = [
+    "//base/test:test_support",
+    "//components/webapps/isolated_web_apps/reading",
+    "//net",
+    "//skia",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/web_package",
+    "//components/web_package/test_support",
+    "//components/webapps/isolated_web_apps:iwa_client",
+    "//components/webapps/isolated_web_apps/types",
+    "//mojo/public/cpp/system",
+    "//url",
+  ]
+}

@@ -10,6 +10,7 @@ error: Failed getting cookie attribute: Version
     }
     entries : [
         {
+            _connectionId : <string>
             _initiator : <object>
             _priority : <string>
             _resourceType : "document"
@@ -60,6 +61,9 @@ error: Failed getting cookie attribute: Version
                 _fetchedViaServiceWorker : true
                 _responseCacheStorageCacheName : "v1"
                 _serviceWorkerResponseSource : "cache-storage"
+                _serviceWorkerRouterActualSourceType : "cache"
+                _serviceWorkerRouterMatchedSourceType : "cache"
+                _serviceWorkerRouterRuleIdMatched : 3
                 _transferSize : <number>
                 bodySize : <number>
                 content : {
@@ -111,6 +115,7 @@ error: Failed getting cookie attribute: Version
             timings : <object>
         }
         {
+            _connectionId : <string>
             _initiator : <object>
             _priority : <string>
             _resourceType : "xhr"
@@ -138,6 +143,9 @@ error: Failed getting cookie attribute: Version
                 _fetchedViaServiceWorker : false
                 _responseCacheStorageCacheName : undefined
                 _serviceWorkerResponseSource : undefined
+                _serviceWorkerRouterActualSourceType : undefined
+                _serviceWorkerRouterMatchedSourceType : undefined
+                _serviceWorkerRouterRuleIdMatched : undefined
                 _transferSize : <number>
                 bodySize : <number>
                 content : {

@@ -1,0 +1,40 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("theme") {
+  sources = [
+    "composebox_theme.h",
+    "composebox_theme.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/common/ui/colors",
+    "//ios/web/public",
+    "//ui/base",
+  ]
+  public_deps = [ ":input_plate_position" ]
+}
+
+source_set("animation") {
+  sources = [ "composebox_animation_base.h" ]
+  deps = [ "//base" ]
+}
+
+source_set("input_plate_position") {
+  sources = [ "composebox_input_plate_position.h" ]
+  deps = [ "//base" ]
+}
+
+source_set("input_plate_controls") {
+  sources = [ "composebox_input_plate_controls.h" ]
+  deps = [ "//base" ]
+}

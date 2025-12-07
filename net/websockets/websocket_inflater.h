@@ -25,7 +25,7 @@ class IOBufferWithSize;
 class NET_EXPORT_PRIVATE WebSocketInflater {
  public:
   WebSocketInflater();
-  // |input_queue_capacity| is a capacity for each contiguous block in the
+  // `input_queue_capacity` is a capacity for each contiguous block in the
   // input queue. The input queue can grow without limit.
   WebSocketInflater(size_t input_queue_capacity, size_t output_buffer_capacity);
 
@@ -35,32 +35,32 @@ class NET_EXPORT_PRIVATE WebSocketInflater {
   ~WebSocketInflater();
 
   // Returns true if there is no error.
-  // |window_bits| must be between 8 and 15 (both inclusive).
+  // `window_bits` must be between 8 and 15 (both inclusive).
   // This function must be called exactly once before calling any of the
   // following functions.
   bool Initialize(int window_bits);
 
-  // Adds bytes to |stream_|.
+  // Adds bytes from the given span `data` to `stream_`.
   // Returns true if there is no error.
   // If the size of the output data reaches the capacity of the output buffer,
   // the following input data will be "choked", i.e. stored in the input queue,
   // staying compressed.
-  bool AddBytes(const char* data, size_t size);
+  bool AddBytes(base::span<const uint8_t> data);
 
   // Flushes the input.
   // Returns true if there is no error.
   bool Finish();
 
-  // Returns up to |size| bytes of the decompressed output.
+  // Returns up to `size` bytes of the decompressed output.
   // Returns null if there is an inflation error.
   // The returned bytes will be dropped from the current output and never be
   // returned again.
   // If some input data is choked, calling this function may restart the
   // inflation process.
-  // This means that even if you call |Finish()| and call |GetOutput()| with
-  // size = |CurrentOutputSize()|, the inflater may have some remaining data.
+  // This means that even if you call `Finish()` and call `GetOutput()` with
+  // size = `CurrentOutputSize()`, the inflater may have some remaining data.
   // To confirm the inflater emptiness, you should check whether
-  // |CurrentOutputSize()| is zero.
+  // `CurrentOutputSize()` is zero.
   scoped_refptr<IOBufferWithSize> GetOutput(size_t size);
 
   // Returns the size of the current inflated output.
@@ -77,41 +77,39 @@ class NET_EXPORT_PRIVATE WebSocketInflater {
     ~OutputBuffer();
 
     size_t Size() const;
-    // Returns (tail pointer, availabe size).
+    // Returns a span representing the writable tail area.
     // A user can push data to the queue by writing the data to
     // the area returned by this function and calling AdvanceTail.
-    std::pair<char*, size_t> GetTail();
-    void Read(char* dest, size_t size);
+    base::span<uint8_t> GetTail();
+    void Read(base::span<uint8_t> dest);
     void AdvanceTail(size_t advance);
 
    private:
     void AdvanceHead(size_t advance);
 
     const size_t capacity_;
-    std::vector<char> buffer_;
+    std::vector<uint8_t> buffer_;
     size_t head_ = 0;
     size_t tail_ = 0;
   };
 
   class InputQueue {
    public:
-    // |capacity| is used for the capacity of each IOBuffer in this queue.
+    // `capacity` is used for the capacity of each IOBuffer in this queue.
     // this queue itself can grow without limit.
     explicit InputQueue(size_t capacity);
     ~InputQueue();
 
-    // Returns (data pointer, size), the first component of unconsumed data.
-    // The type of data pointer is non-const because |inflate| function
-    // requires so.
-    std::pair<char*, size_t> Top();
+    // Returns a span representing the first component of unconsumed data
+    base::span<const uint8_t> Top();
     bool IsEmpty() const { return buffers_.empty(); }
-    void Push(const char* data, size_t size);
-    // Consumes the topmost |size| bytes.
-    // |size| must be less than or equal to the first buffer size.
+    void Push(base::span<const uint8_t> data);
+    // Consumes the topmost `size` bytes.
+    // `size` must be less than or equal to the first buffer size.
     void Consume(size_t size);
 
    private:
-    size_t PushToLastBuffer(const char* data, size_t size);
+    void TakeAndPushToLastBuffer(base::span<const uint8_t>& data);
 
     const size_t capacity_;
     size_t head_of_first_buffer_ = 0;
@@ -119,8 +117,9 @@ class NET_EXPORT_PRIVATE WebSocketInflater {
     base::circular_deque<scoped_refptr<IOBufferWithSize>> buffers_;
   };
 
-  int InflateWithFlush(const char* next_in, size_t avail_in);
-  int Inflate(const char* next_in, size_t avail_in, int flush);
+  int InflateWithFlush(base::span<const uint8_t> next_in);
+  int Inflate(base::span<const uint8_t> next_in, int flush);
+  int InflateExistingInput(int flush);
   int InflateChokedInput();
 
   std::unique_ptr<z_stream_s> stream_;

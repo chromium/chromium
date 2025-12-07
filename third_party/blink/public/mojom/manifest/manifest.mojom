@@ -6,10 +6,9 @@ module blink.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
 import "services/device/public/mojom/screen_orientation_lock_types.mojom";
-import "third_party/blink/public/mojom/manifest/capture_links.mojom";
 import "third_party/blink/public/mojom/manifest/display_mode.mojom";
 import "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom";
-import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
+import "services/network/public/mojom/permissions_policy/permissions_policy.mojom";
 import "third_party/blink/public/mojom/safe_url_pattern.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/origin.mojom";
@@ -23,9 +22,20 @@ import "url/mojom/url.mojom";
 // if the manifest failed to parse.
 [JavaClassName="WebManifest"]
 struct Manifest {
+  enum TextDirection {
+    // Text direction is unknown.
+    kAuto,
+    // Left-to-right text.
+    kLTR,
+    // Right-to-left text.
+    kRTL,
+  };
+
   // The URL this manifest was loaded from. This can be an empty URL if this is
   // an automatically generated "default" manifest.
   url.mojom.Url manifest_url;
+
+  TextDirection dir;
 
   mojo_base.mojom.String16? name;
 
@@ -50,6 +60,8 @@ struct Manifest {
 
   array<DisplayMode> display_override;
 
+  array<SafeUrlPattern> borderless_url_patterns;
+
   device.mojom.ScreenOrientationLockType orientation;
 
   array<ManifestImageResource> icons;
@@ -69,11 +81,6 @@ struct Manifest {
   // The URLProtocolHandler explainer can be found here:
   // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/URLProtocolHandler/explainer.md
   array<ManifestProtocolHandler> protocol_handlers;
-
-  // TODO(crbug.com/1072058): This field is non-standard and part of an
-  // experiment. See:
-  // https://github.com/WICG/pwa-url-handler/blob/main/explainer.md
-  array<ManifestUrlHandler> url_handlers;
 
   // TODO(crbug.com/1250011): This field is non-standard and part of an
   // experiment. See:
@@ -111,13 +118,12 @@ struct Manifest {
   // filename, query, and fragment removed if not present.
   url.mojom.Url scope;
 
-  // TODO(crbug.com/1163398): This field is non-standard and part of a Chrome
-  // experiment. See:
-  // https://github.com/WICG/web-app-launch/blob/main/declarative_link_capturing.md#proposal
-  // As such, this field should not be exposed by default.
-  CaptureLinks capture_links;
+  array<network.mojom.ParsedPermissionsPolicyDeclaration> permissions_policy;
 
-  array<ParsedPermissionsPolicyDeclaration> permissions_policy;
+  // TODO(crbug.com/454569670): This field is non-standard and used for
+  // unmanaged IWA installs.
+  // See: https://github.com/WICG/isolated-web-apps
+  url.mojom.Url? update_manifest_url;
 
   // TODO(crbug.com/1231886): This field is non-standard and part of a Chrome
   // experiment. See:
@@ -146,6 +152,22 @@ struct Manifest {
   // TODO(crbug.com/1444407): This field is non-standard and part of an
   // experiment. See: https://github.com/WICG/isolated-web-apps
   mojo_base.mojom.String16? version;
+
+  // Localized fields map locales with localized value.
+  // See: https://www.w3.org/TR/appmanifest/#x_localized-members
+  map<mojo_base.mojom.String16, ManifestLocalizedTextObject> name_localized;
+  map<mojo_base.mojom.String16, ManifestLocalizedTextObject> short_name_localized;
+  map<mojo_base.mojom.String16, ManifestLocalizedTextObject> description_localized;
+  map<mojo_base.mojom.String16, array<ManifestImageResource>> icons_localized;
+};
+
+struct ManifestLocalizedTextObject {
+  // value is required
+  mojo_base.mojom.String16 value;
+
+  Manifest.TextDirection? dir;
+
+  mojo_base.mojom.String16? lang;
 };
 
 // Structure representing a Shortcut Item per the Manifest specification, see:
@@ -164,6 +186,11 @@ struct ManifestShortcutItem {
   url.mojom.Url url;
 
   array<ManifestImageResource> icons;
+
+  map<mojo_base.mojom.String16, ManifestLocalizedTextObject> name_localized;
+  map<mojo_base.mojom.String16, ManifestLocalizedTextObject> short_name_localized;
+  map<mojo_base.mojom.String16, ManifestLocalizedTextObject> description_localized;
+  map<mojo_base.mojom.String16, array<ManifestImageResource>> icons_localized;
 };
 
 // Structure representing an icon as per the Manifest specification, see:
@@ -223,14 +250,6 @@ struct ManifestFileFilter {
 struct ManifestProtocolHandler {
   mojo_base.mojom.String16 protocol;
   url.mojom.Url url;
-};
-
-struct ManifestUrlHandler {
-  url.mojom.Origin origin;
-  // A boolean that is used to show if a wildcard is present for the origin.
-  // If true, the application indicates that it wants to handle all subdomains
-  // of |origin|. If false, the application only wants to handle |origin|.
-  bool has_origin_wildcard;
 };
 
 struct ManifestScopeExtension {

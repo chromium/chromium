@@ -5,7 +5,6 @@
 #include "third_party/blink/public/common/permissions_policy/policy_value.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom.h"
 
 namespace blink {

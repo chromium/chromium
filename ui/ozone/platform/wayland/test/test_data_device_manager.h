@@ -8,6 +8,7 @@
 #include <wayland-server-protocol.h>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
 
 namespace wl {
@@ -37,9 +38,14 @@ class TestDataDeviceManager : public GlobalObject {
     data_source_ = data_source;
   }
 
+  base::WeakPtr<TestDataDeviceManager> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
-  raw_ptr<TestDataDevice, DanglingUntriaged> data_device_ = nullptr;
+  raw_ptr<TestDataDevice> data_device_ = nullptr;
   raw_ptr<TestDataSource, DanglingUntriaged> data_source_ = nullptr;
+  base::WeakPtrFactory<TestDataDeviceManager> weak_ptr_factory_{this};
 };
 
 }  // namespace wl

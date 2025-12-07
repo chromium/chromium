@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/bubble/ui_bundled/gesture_iph/gesture_in_product_help_constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -18,10 +19,13 @@
 namespace {
 
 // FirstRunRecency key, should match the one in `system_flags`.
-NSString* kFirstRunRecencyKey = @"FirstRunRecency";
+NSString* const kFirstRunRecencyKey = @"FirstRunRecency";
 
 // Constant for timeout while waiting for a gestural IPH to appear or disappear.
-const base::TimeDelta kWaitForGestureIPHTimeOut = base::Seconds(2);
+const base::TimeDelta kWaitForGestureIPHTimeOut = base::Seconds(3);
+
+// Constant for wait time for Tab Grid animation to complete.
+const base::TimeDelta kWaitForTabGridAnimationTime = base::Seconds(1);
 
 }  // namespace
 
@@ -34,19 +38,24 @@ void ResetFirstRunRecency() {
 }
 
 void RelaunchWithIPHFeature(NSString* feature, BOOL safari_switcher) {
+  RelaunchConfigurationWithIPHFeature(AppLaunchConfiguration(), feature,
+                                      safari_switcher);
+}
+
+void RelaunchConfigurationWithIPHFeature(AppLaunchConfiguration config,
+                                         NSString* feature,
+                                         BOOL safari_switcher) {
   // Enable the flag to ensure the IPH triggers.
-  AppLaunchConfiguration config = AppLaunchConfiguration();
   config.iph_feature_enabled = base::SysNSStringToUTF8(feature);
   if (safari_switcher) {
-    config.additional_args.push_back("--enable-features=IPHForSafariSwitcher");
     // Force the conditions that allow the iph to show.
     config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
     config.additional_args.push_back("SyncedAndFirstDevice");
   }
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Cannot setup histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
 }
 
 void AssertGestureIPHVisibleWithDismissAction(NSString* description,
@@ -56,11 +65,15 @@ void AssertGestureIPHVisibleWithDismissAction(NSString* description,
   BOOL visibility =
       [ChromeEarlGrey
           testUIElementAppearanceWithMatcher:
-              grey_accessibilityID(kGestureInProductHelpViewBackgroundAXId)
+              grey_allOf(
+                  grey_accessibilityID(kGestureInProductHelpViewBackgroundAXId),
+                  grey_sufficientlyVisible(), nil)
                                      timeout:kWaitForGestureIPHTimeOut] &&
       [ChromeEarlGrey
           testUIElementAppearanceWithMatcher:
-              grey_accessibilityID(kGestureInProductHelpViewBubbleAXId)
+              grey_allOf(
+                  grey_accessibilityID(kGestureInProductHelpViewBubbleAXId),
+                  grey_sufficientlyVisible(), nil)
                                      timeout:kWaitForGestureIPHTimeOut];
   GREYAssertTrue(visibility, description);
   if (action) {
@@ -71,17 +84,26 @@ void AssertGestureIPHVisibleWithDismissAction(NSString* description,
 void AssertGestureIPHInvisible(NSString* description) {
   // Disable scoped synchronization to perform checks with animation running.
   ScopedSynchronizationDisabler sync_disabler;
-  id<GREYInteraction> selectIPH =
-      [EarlGrey selectElementWithMatcher:
-                    grey_allOf(grey_ancestor(grey_accessibilityID(
-                                   kGestureInProductHelpViewBackgroundAXId)),
-                               grey_ancestor(grey_accessibilityID(
-                                   kGestureInProductHelpViewBubbleAXId)),
-                               nil)];
+
+  id<GREYMatcher> iphBackgroundMatcher =
+      grey_allOf(grey_accessibilityID(kGestureInProductHelpViewBackgroundAXId),
+                 grey_sufficientlyVisible(), nil);
+  id<GREYMatcher> iphBubbleMatcher =
+      grey_allOf(grey_accessibilityID(kGestureInProductHelpViewBubbleAXId),
+                 grey_sufficientlyVisible(), nil);
 
   ConditionBlock iphInvisible = ^{
     NSError* error = nil;
-    [selectIPH assertWithMatcher:grey_nil() error:&error];
+    [[EarlGrey selectElementWithMatcher:iphBackgroundMatcher]
+        assertWithMatcher:grey_nil()
+                    error:&error];
+    if (error) {
+      return NO;
+    }
+
+    [[EarlGrey selectElementWithMatcher:iphBubbleMatcher]
+        assertWithMatcher:grey_nil()
+                    error:&error];
     return error == nil;
   };
 
@@ -92,12 +114,25 @@ void AssertGestureIPHInvisible(NSString* description) {
   // Also make sure it doesn't re-appear.
   ConditionBlock iphVisible = ^{
     NSError* error = nil;
-    [selectIPH assertWithMatcher:grey_sufficientlyVisible() error:&error];
+    [[EarlGrey selectElementWithMatcher:iphBackgroundMatcher]
+        assertWithMatcher:grey_notNil()
+                    error:&error];
+    if (error) {
+      return NO;
+    }
+
+    [[EarlGrey selectElementWithMatcher:iphBubbleMatcher]
+        assertWithMatcher:grey_notNil()
+                    error:&error];
     return error == nil;
   };
   matched = base::test::ios::WaitUntilConditionOrTimeout(
       kWaitForGestureIPHTimeOut, iphVisible);
   GREYAssertFalse(matched, description);
+}
+
+void WaitForTabGridDisappearance() {
+  base::PlatformThread::Sleep(kWaitForTabGridAnimationTime);
 }
 
 void TapDismissButton() {
@@ -150,5 +185,5 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
     error = [MetricsAppInterface expectTotalCount:1
                                      forHistogram:dismissalHistogramName];
   }
-  GREYAssertNil(error, error.description);
+  chrome_test_util::GREYAssertErrorNil(error);
 }

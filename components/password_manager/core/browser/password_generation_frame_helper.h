@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/common/password_generation_util.h"
@@ -16,6 +17,10 @@
 #include "components/autofill/core/common/unique_ids.h"
 
 class GURL;
+
+namespace autofill {
+struct AutofillServerPrediction;
+}
 
 namespace password_manager {
 
@@ -51,8 +56,7 @@ class PasswordGenerationFrameHelper {
   void ProcessPasswordRequirements(
       const autofill::FormData& form,
       const base::flat_map<autofill::FieldGlobalId,
-                           autofill::AutofillType::ServerPrediction>&
-          predictions);
+                           autofill::AutofillServerPrediction>& predictions);
 
   // Determines current state of password generation
   // `log_debug_data` determines whether log entries are sent to the
@@ -60,6 +64,14 @@ class PasswordGenerationFrameHelper {
   //
   // Virtual for testing
   virtual bool IsGenerationEnabled(bool log_debug_data) const;
+
+  // Returns true if `field_renderer_id` is in `generation_enabled_fields_` set.
+  virtual bool IsManualGenerationEnabledField(
+      autofill::FieldRendererId field_renderer_id) const;
+
+  // Adds `field_renderer_id` to `generation_enabled_fields_` set.
+  virtual void AddManualGenerationEnabledField(
+      autofill::FieldRendererId field_renderer_id);
 
   // Returns a randomly generated password that should (but is not guaranteed
   // to) match the requirements of the site.
@@ -80,16 +92,25 @@ class PasswordGenerationFrameHelper {
       autofill::FieldSignature field_signature,
       uint64_t max_length);
 
+  const base::flat_set<autofill::FieldRendererId>&
+  GenerationEnabledFieldsForTests() const {
+    return generation_enabled_fields_;
+  }
+
  private:
   friend class PasswordGenerationFrameHelperTest;
 
   // The PasswordManagerClient instance associated with this instance. Must
   // outlive this instance.
-  const raw_ptr<PasswordManagerClient> client_;
+  const raw_ptr<PasswordManagerClient, DanglingUntriaged> client_;
 
   // The PasswordManagerDriver instance associated with this instance. Must
   // outlive this instance.
-  const raw_ptr<PasswordManagerDriver> driver_;
+  const raw_ptr<PasswordManagerDriver, DanglingUntriaged> driver_;
+
+  // The fields that have manual generation enabled. This includes fields that
+  // have type="text".
+  base::flat_set<autofill::FieldRendererId> generation_enabled_fields_;
 };
 
 }  // namespace password_manager

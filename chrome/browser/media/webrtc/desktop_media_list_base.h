@@ -18,7 +18,7 @@ class Image;
 }
 
 // Thumbnail size is 100*100 pixels
-constexpr gfx::Size kDefaultThumbnailSize = {100, 100};
+inline constexpr gfx::Size kDefaultThumbnailSize = {100, 100};
 
 // Base class for DesktopMediaList implementations. Implements logic shared
 // between implementations. Specifically it's responsible for keeping current
@@ -47,6 +47,7 @@ class DesktopMediaListBase : public DesktopMediaList {
   void ClearDelegatedSourceListSelection() override;
   void FocusList() override;
   void HideList() override;
+  void ShowDelegatedList() override;
 
   static uint32_t GetImageHash(const gfx::Image& image);
 
@@ -58,6 +59,7 @@ class DesktopMediaListBase : public DesktopMediaList {
 
     content::DesktopMediaID id;
     std::u16string name;
+    std::optional<bool> is_chromium_window;
   };
 
   DesktopMediaListBase(base::TimeDelta update_period,

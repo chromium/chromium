@@ -12,28 +12,30 @@ import 'chrome://resources/js/focus_row.js';
 import 'chrome://resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import '../icons.html.js';
 import '../settings_shared.css.js';
 import './os_search_result_row.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {CrToolbarSearchFieldElement} from 'chrome://resources/ash/common/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
+import type {CrToolbarSearchFieldElement} from 'chrome://resources/ash/common/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
-import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
 import {recordSearch} from '../metrics_recorder.js';
-import {SearchResultsObserverInterface as PersonalizationSearchResultsObserverInterface, SearchResultsObserverReceiver as PersonalizationSearchResultsObserverReceiver} from '../mojom-webui/personalization_search.mojom-webui.js';
-import {ParentResultBehavior, SearchResultsObserverInterface, SearchResultsObserverReceiver} from '../mojom-webui/search.mojom-webui.js';
+import type {SearchResultsObserverInterface as PersonalizationSearchResultsObserverInterface} from '../mojom-webui/personalization_search.mojom-webui.js';
+import {SearchResultsObserverReceiver as PersonalizationSearchResultsObserverReceiver} from '../mojom-webui/personalization_search.mojom-webui.js';
+import type {SearchResultsObserverInterface} from '../mojom-webui/search.mojom-webui.js';
+import {ParentResultBehavior, SearchResultsObserverReceiver} from '../mojom-webui/search.mojom-webui.js';
 import {Router, routes} from '../router.js';
-import {combinedSearch, getPersonalizationSearchHandler, getSettingsSearchHandler, SearchResult} from '../search/combined_search_handler.js';
+import type {SearchResult} from '../search/combined_search_handler.js';
+import {combinedSearch, getPersonalizationSearchHandler, getSettingsSearchHandler} from '../search/combined_search_handler.js';
 
-import {OsSearchResultRowElement} from './os_search_result_row.js';
+import type {OsSearchResultRowElement} from './os_search_result_row.js';
 import {getTemplate} from './os_settings_search_box.html.js';
-import {OsSettingsSearchBoxBrowserProxy, OsSettingsSearchBoxBrowserProxyImpl} from './os_settings_search_box_browser_proxy.js';
+import type {OsSettingsSearchBoxBrowserProxy} from './os_settings_search_box_browser_proxy.js';
+import {OsSettingsSearchBoxBrowserProxyImpl} from './os_settings_search_box_browser_proxy.js';
 
 const MAX_NUM_SEARCH_RESULTS = 5;
 
@@ -322,14 +324,9 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
 
     this.spinnerActive = true;
 
-    // The C++ layer uses std::u16string, which use 16 bit characters. JS
-    // strings support either 8 or 16 bit characters, and must be converted to
-    // an array of 16 bit character codes that match std::u16string.
-    const queryMojoString16 = stringToMojoString16(query);
     const timeOfSearchRequest = Date.now();
     combinedSearch(
-        queryMojoString16, MAX_NUM_SEARCH_RESULTS,
-        ParentResultBehavior.kAllowParentResults)
+        query, MAX_NUM_SEARCH_RESULTS, ParentResultBehavior.kAllowParentResults)
         .then(response => {
           const latencyMs = Date.now() - timeOfSearchRequest;
           chrome.metricsPrivate.recordTime(

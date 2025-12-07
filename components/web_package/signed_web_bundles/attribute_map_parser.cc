@@ -4,12 +4,14 @@
 
 #include "components/web_package/signed_web_bundles/attribute_map_parser.h"
 
+#include <variant>
+
 #include "base/containers/contains.h"
 #include "base/containers/extend.h"
-#include "base/functional/overloaded.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected_macros.h"
 #include "components/web_package/input_reader.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace web_package {
 
@@ -137,8 +139,8 @@ void AttributeMapParser::ReadAttributeValueCborHeader(
   }
 
   RETURN_IF_ERROR(
-      absl::visit(
-          base::Overloaded{
+      std::visit(
+          absl::Overload{
               [&](bool value) -> base::expected<void, std::string> {
                 attributes_map_.emplace(std::move(attribute_name), value);
                 ReadNextAttributeEntry();

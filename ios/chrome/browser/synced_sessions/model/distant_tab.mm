@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/synced_sessions/model/distant_tab.h"
 
+#import "base/strings/utf_ostream_operators.h"
 #import "components/sync_sessions/open_tabs_ui_delegate.h"
 
 namespace synced_sessions {

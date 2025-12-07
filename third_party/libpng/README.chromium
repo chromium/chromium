@@ -1,10 +1,11 @@
 Name: libpng
 URL: http://libpng.org/
 Version: 1.6.43
+Update Mechanism: Manual
 CPEPrefix: cpe:/a:libpng:libpng:1.6.43
 Security Critical: yes
 Shipped: yes
-License: libpng license
+License: Libpng-2.0, Libpng
 License File: LICENSE
 License Android Compatible: yes
 

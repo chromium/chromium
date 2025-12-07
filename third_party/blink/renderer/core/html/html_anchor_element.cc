@@ -26,16 +26,20 @@
 
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/navigation/impression.h"
+#include "third_party/blink/public/common/switches.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/web_link_preview_triggerer.h"
+#include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_group_data.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
@@ -43,36 +47,35 @@
 #include "third_party/blink/renderer/core/events/web_input_event_conversion.h"
 #include "third_party/blink/renderer/core/frame/ad_tracker.h"
 #include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
-#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/anchor_element_metrics_sender.h"
-#include "third_party/blink/renderer/core/html/anchor_element_observer_for_service_worker.h"
+#include "third_party/blink/renderer/core/html/anchor_element_utils.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/loader/anchor_element_interaction_tracker.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/navigation_policy.h"
-#include "third_party/blink/renderer/core/loader/ping_loader.h"
 #include "third_party/blink/renderer/core/loader/render_blocking_resource_manager.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_api.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
+#include "third_party/blink/renderer/core/url/dom_origin.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
@@ -80,43 +83,9 @@ namespace blink {
 
 namespace {
 
-// The download attribute specifies a filename, and an excessively long one can
-// crash the browser process. Filepaths probably can't be longer than 4096
-// characters, but this is enough to prevent the browser process from becoming
-// unresponsive or crashing.
-const int kMaxDownloadAttrLength = 1000000;
-
-// Note: Here it covers download originated from clicking on <a download> link
-// that results in direct download. Features in this method can also be logged
-// from browser for download due to navigations to non-web-renderable content.
-bool ShouldInterveneDownloadByFramePolicy(LocalFrame* frame) {
-  bool should_intervene_download = false;
-  Document& document = *(frame->GetDocument());
-  UseCounter::Count(document, WebFeature::kDownloadPrePolicyCheck);
-  bool has_gesture = LocalFrame::HasTransientUserActivation(frame);
-  if (!has_gesture) {
-    UseCounter::Count(document, WebFeature::kDownloadWithoutUserGesture);
-  }
-  if (frame->IsAdFrame()) {
-    UseCounter::Count(document, WebFeature::kDownloadInAdFrame);
-    if (!has_gesture) {
-      UseCounter::Count(document,
-                        WebFeature::kDownloadInAdFrameWithoutUserGesture);
-      should_intervene_download = true;
-    }
-  }
-  if (frame->DomWindow()->IsSandboxed(
-          network::mojom::blink::WebSandboxFlags::kDownloads)) {
-    UseCounter::Count(document, WebFeature::kDownloadInSandbox);
-    should_intervene_download = true;
-  }
-  if (!should_intervene_download)
-    UseCounter::Count(document, WebFeature::kDownloadPostPolicyCheck);
-  return should_intervene_download;
-}
-
-void EmitDidAnchorElementReceiveMouseEvent(HTMLAnchorElement& anchor_element,
-                                           Event& event) {
+void EmitDidAnchorElementReceiveMouseEvent(
+    HTMLAnchorElementBase& anchor_element,
+    Event& event) {
   if (!event.IsMouseEvent()) {
     return;
   }
@@ -144,55 +113,59 @@ void EmitDidAnchorElementReceiveMouseEvent(HTMLAnchorElement& anchor_element,
 
 }  // namespace
 
-HTMLAnchorElement::HTMLAnchorElement(Document& document)
-    : HTMLAnchorElement(html_names::kATag, document) {}
-
-HTMLAnchorElement::HTMLAnchorElement(const QualifiedName& tag_name,
-                                     Document& document)
+HTMLAnchorElementBase::HTMLAnchorElementBase(const QualifiedName& tag_name,
+                                             Document& document)
     : HTMLElement(tag_name, document),
       link_relations_(0),
       cached_visited_link_hash_(0),
       rel_list_(MakeGarbageCollected<RelList>(this)) {}
 
-HTMLAnchorElement::~HTMLAnchorElement() = default;
+HTMLAnchorElementBase::~HTMLAnchorElementBase() = default;
 
-bool HTMLAnchorElement::SupportsFocus(UpdateBehavior update_behavior) const {
+FocusableState HTMLAnchorElementBase::SupportsFocus(
+    UpdateBehavior update_behavior) const {
   if (IsLink() && !IsEditable(*this)) {
-    return true;
+    return FocusableState::kFocusable;
   }
   return HTMLElement::SupportsFocus(update_behavior);
 }
 
-bool HTMLAnchorElement::ShouldHaveFocusAppearance() const {
+bool HTMLAnchorElementBase::ShouldHaveFocusAppearance() const {
   // TODO(crbug.com/1444450): Can't this be done with focus-visible now?
   return (GetDocument().LastFocusType() != mojom::blink::FocusType::kMouse) ||
-         HTMLElement::SupportsFocus(UpdateBehavior::kNoneForIsFocused);
+         HTMLElement::SupportsFocus(UpdateBehavior::kNoneForFocusManagement) !=
+             FocusableState::kNotFocusable;
 }
 
-bool HTMLAnchorElement::IsFocusable(UpdateBehavior update_behavior) const {
+FocusableState HTMLAnchorElementBase::IsFocusableState(
+    UpdateBehavior update_behavior) const {
   if (!IsFocusableStyle(update_behavior)) {
-    return false;
+    return FocusableState::kNotFocusable;
   }
   if (IsLink()) {
     return SupportsFocus(update_behavior);
   }
-  return HTMLElement::IsFocusable(update_behavior);
+  return HTMLElement::IsFocusableState(update_behavior);
 }
 
-bool HTMLAnchorElement::IsKeyboardFocusable(
+bool HTMLAnchorElementBase::IsKeyboardFocusableSlow(
     UpdateBehavior update_behavior) const {
   if (!IsFocusableStyle(update_behavior)) {
     return false;
   }
 
-  // Anchor is focusable if the base element supports focus and is focusable.
-  if (Element::SupportsFocus(update_behavior) && IsFocusable(update_behavior)) {
-    return HTMLElement::IsKeyboardFocusable(update_behavior);
+  // Anchor is focusable if the base element is focusable. Note that
+  // because HTMLAnchorElementBase overrides IsFocusable, we need to check
+  // both SupportsFocus and IsFocusable.
+  if (Element::SupportsFocus(update_behavior) !=
+          FocusableState::kNotFocusable &&
+      IsFocusable(update_behavior)) {
+    return HTMLElement::IsKeyboardFocusableSlow(update_behavior);
   }
 
   if (IsLink() && !GetDocument().GetPage()->GetChromeClient().TabsToLinks())
     return false;
-  return HTMLElement::IsKeyboardFocusable(update_behavior);
+  return HTMLElement::IsKeyboardFocusableSlow(update_behavior);
 }
 
 static void AppendServerMapMousePosition(StringBuilder& url, Event* event) {
@@ -200,8 +173,8 @@ static void AppendServerMapMousePosition(StringBuilder& url, Event* event) {
   if (!mouse_event)
     return;
 
-  DCHECK(event->target());
-  Node* target = event->target()->ToNode();
+  DCHECK(event->RawTarget());
+  Node* target = event->RawTarget()->ToNode();
   DCHECK(target);
   auto* image_element = DynamicTo<HTMLImageElement>(target);
   if (!image_element || !image_element->IsServerMap())
@@ -236,32 +209,9 @@ static void AppendServerMapMousePosition(StringBuilder& url, Event* event) {
   url.AppendNumber(clamped_point.y());
 }
 
-void HTMLAnchorElement::DefaultEventHandler(Event& event) {
+void HTMLAnchorElementBase::DefaultEventHandler(Event& event) {
   if (IsLink()) {
     EmitDidAnchorElementReceiveMouseEvent(*this, event);
-
-    static const bool kSpeculativeServiceWorkerWarmUpIsEnabled =
-        base::FeatureList::IsEnabled(features::kSpeculativeServiceWorkerWarmUp);
-    static const bool kSpeculativeServiceWorkerWarmUpOnPointerover =
-        features::kSpeculativeServiceWorkerWarmUpOnPointerover.Get();
-    static const bool kSpeculativeServiceWorkerWarmUpOnPointerdown =
-        features::kSpeculativeServiceWorkerWarmUpOnPointerdown.Get();
-    if (isConnected() && kSpeculativeServiceWorkerWarmUpIsEnabled) {
-      Document& top_document = GetDocument().TopDocument();
-      if (auto* observer =
-              AnchorElementObserverForServiceWorker::From(top_document)) {
-        if (kSpeculativeServiceWorkerWarmUpOnPointerover &&
-            (event.type() == event_type_names::kMouseover ||
-             event.type() == event_type_names::kPointerover)) {
-          observer->MaybeSendNavigationTargetLinks({this});
-        } else if (kSpeculativeServiceWorkerWarmUpOnPointerdown &&
-                   (event.type() == event_type_names::kMousedown ||
-                    event.type() == event_type_names::kPointerdown ||
-                    event.type() == event_type_names::kTouchstart)) {
-          observer->MaybeSendNavigationTargetLinks({this});
-        }
-      }
-    }
 
     if (IsFocused() && IsEnterKeyKeydownEvent(event) && IsLiveLink()) {
       event.SetDefaultHandled();
@@ -279,18 +229,18 @@ void HTMLAnchorElement::DefaultEventHandler(Event& event) {
   HTMLElement::DefaultEventHandler(event);
 }
 
-bool HTMLAnchorElement::HasActivationBehavior() const {
+bool HTMLAnchorElementBase::HasActivationBehavior() const {
   return IsLink();
 }
 
-void HTMLAnchorElement::SetActive(bool active) {
+void HTMLAnchorElementBase::SetActive(bool active) {
   if (active && IsEditable(*this))
     return;
 
   HTMLElement::SetActive(active);
 }
 
-void HTMLAnchorElement::AttributeChanged(
+void HTMLAnchorElementBase::AttributeChanged(
     const AttributeModificationParams& params) {
   HTMLElement::AttributeChanged(params);
 
@@ -298,11 +248,20 @@ void HTMLAnchorElement::AttributeChanged(
     return;
   if (params.name != html_names::kHrefAttr)
     return;
-  if (!IsLink() && AdjustedFocusedElementInTreeScope() == this)
+  if (RuntimeEnabledFeatures::LinkBlurImprovementEnabled()) {
+    if (!IsLink() && AdjustedFocusedElementInTreeScope() == this) {
+      // Removing the href attribute might make this element no longer
+      // focusable, but other attributes like tabindex can keep it focusable.
+      // Style and layout are needed in order to check focusability.
+      GetDocument().UpdateStyleAndLayoutTree();
+      GetDocument().ClearFocusedElementIfNeeded();
+    }
+  } else if (!IsLink() && AdjustedFocusedElementInTreeScope() == this) {
     blur();
+  }
 }
 
-void HTMLAnchorElement::ParseAttribute(
+void HTMLAnchorElementBase::ParseAttribute(
     const AttributeModificationParams& params) {
   if (params.name == html_names::kHrefAttr) {
     if (params.old_value == params.new_value) {
@@ -328,17 +287,12 @@ void HTMLAnchorElement::ParseAttribute(
     InvalidateCachedVisitedLinkHash();
     LogUpdateAttributeIfIsolatedWorldAndInDocument("a", params);
   } else if (params.name == html_names::kNameAttr) {
-    if (GetDocument().HasRenderBlockingExpectLinkElements() && isConnected() &&
-        IsFinishedParsingChildren() && !params.new_value.empty()) {
-      DCHECK(GetDocument().GetRenderBlockingResourceManager());
-      GetDocument()
-          .GetRenderBlockingResourceManager()
-          ->RemovePendingParsingElement(params.new_value, this);
-    }
+    ProcessElementRenderBlocking(params.new_value);
   } else if (params.name == html_names::kTitleAttr) {
     // Do nothing.
   } else if (params.name == html_names::kRelAttr) {
-    SetRel(params.new_value);
+    link_relations_ =
+        AnchorElementUtils::ParseRelAttribute(params.new_value, GetDocument());
     rel_list_->DidUpdateAttributeValue(params.old_value, params.new_value);
     if (isConnected() && IsLink() && params.old_value != params.new_value) {
       if (auto* document_rules =
@@ -365,19 +319,20 @@ void HTMLAnchorElement::ParseAttribute(
   }
 }
 
-bool HTMLAnchorElement::IsURLAttribute(const Attribute& attribute) const {
+bool HTMLAnchorElementBase::IsURLAttribute(const Attribute& attribute) const {
   return attribute.GetName().LocalName() == html_names::kHrefAttr ||
          HTMLElement::IsURLAttribute(attribute);
 }
 
-bool HTMLAnchorElement::HasLegalLinkAttribute(const QualifiedName& name) const {
+bool HTMLAnchorElementBase::HasLegalLinkAttribute(
+    const QualifiedName& name) const {
   return name == html_names::kHrefAttr ||
          HTMLElement::HasLegalLinkAttribute(name);
 }
 
-void HTMLAnchorElement::FinishParsingChildren() {
+void HTMLAnchorElementBase::FinishParsingChildren() {
   Element::FinishParsingChildren();
-  if (GetDocument().HasRenderBlockingExpectLinkElements()) {
+  if (GetDocument().HasPendingExpectLinkElements()) {
     DCHECK(GetDocument().GetRenderBlockingResourceManager());
     GetDocument()
         .GetRenderBlockingResourceManager()
@@ -385,13 +340,13 @@ void HTMLAnchorElement::FinishParsingChildren() {
   }
 }
 
-bool HTMLAnchorElement::CanStartSelection() const {
+bool HTMLAnchorElementBase::CanStartSelection() const {
   if (!IsLink())
     return HTMLElement::CanStartSelection();
   return IsEditable(*this);
 }
 
-bool HTMLAnchorElement::draggable() const {
+bool HTMLAnchorElementBase::draggable() const {
   // Should be draggable if we have an href attribute.
   const AtomicString& value = FastGetAttribute(html_names::kDraggableAttr);
   if (EqualIgnoringASCIICase(value, "true"))
@@ -401,16 +356,16 @@ bool HTMLAnchorElement::draggable() const {
   return FastHasAttribute(html_names::kHrefAttr);
 }
 
-KURL HTMLAnchorElement::Href() const {
+KURL HTMLAnchorElementBase::Href() const {
   return GetDocument().CompleteURL(StripLeadingAndTrailingHTMLSpaces(
       FastGetAttribute(html_names::kHrefAttr)));
 }
 
-void HTMLAnchorElement::SetHref(const AtomicString& value) {
+void HTMLAnchorElementBase::SetHref(const AtomicString& value) {
   setAttribute(html_names::kHrefAttr, value);
 }
 
-KURL HTMLAnchorElement::Url() const {
+KURL HTMLAnchorElementBase::Url() const {
   KURL href = Href();
   if (!href.IsValid()) {
     return KURL();
@@ -418,107 +373,52 @@ KURL HTMLAnchorElement::Url() const {
   return href;
 }
 
-void HTMLAnchorElement::SetURL(const KURL& url) {
+void HTMLAnchorElementBase::SetURL(const KURL& url) {
   SetHref(AtomicString(url.GetString()));
 }
 
-String HTMLAnchorElement::Input() const {
+DOMOrigin* HTMLAnchorElementBase::GetDOMOrigin(LocalDOMWindow*) const {
+  // No access check is necessary, as anchor elements are not accessible
+  // cross-origin.
+  if (FastHasAttribute(html_names::kHrefAttr)) {
+    return DOMOrigin::Create(SecurityOrigin::Create(Url()));
+  }
+  return nullptr;
+}
+
+String HTMLAnchorElementBase::Input() const {
   return FastGetAttribute(html_names::kHrefAttr);
 }
 
-void HTMLAnchorElement::setHref(const String& value) {
+void HTMLAnchorElementBase::setHref(const String& value) {
   SetHref(AtomicString(value));
 }
 
-bool HTMLAnchorElement::HasRel(uint32_t relation) const {
-  return link_relations_ & relation;
-}
-
-void HTMLAnchorElement::SetRel(const AtomicString& value) {
-  link_relations_ = 0;
-  SpaceSplitString new_link_relations(value.LowerASCII());
-  // FIXME: Add link relations as they are implemented
-  if (new_link_relations.Contains(AtomicString("noreferrer"))) {
-    link_relations_ |= kRelationNoReferrer;
-  }
-  if (new_link_relations.Contains(AtomicString("noopener"))) {
-    link_relations_ |= kRelationNoOpener;
-  }
-  if (new_link_relations.Contains(AtomicString("opener"))) {
-    link_relations_ |= kRelationOpener;
-    UseCounter::Count(GetDocument(), WebFeature::kLinkRelOpener);
-  }
-
-  // These don't currently have web-facing behavior, but embedders may wish to
-  // expose their presence to users:
-  if (new_link_relations.Contains(AtomicString("privacy-policy"))) {
-    link_relations_ |= kRelationPrivacyPolicy;
-    UseCounter::Count(GetDocument(), WebFeature::kLinkRelPrivacyPolicy);
-  }
-  if (new_link_relations.Contains(AtomicString("terms-of-service"))) {
-    link_relations_ |= kRelationTermsOfService;
-    UseCounter::Count(GetDocument(), WebFeature::kLinkRelTermsOfService);
-  }
-
-  // Adding or removing a value here whose processing model is web-visible
-  // (e.g. if the value is listed as a "supported token" for `<a>`'s `rel`
-  // attribute in HTML) also requires you to update the list of tokens in
-  // RelList::SupportedTokensAnchorAndAreaAndForm().
-}
-
-const AtomicString& HTMLAnchorElement::GetName() const {
+const AtomicString& HTMLAnchorElementBase::GetName() const {
   return GetNameAttribute();
 }
 
-const AtomicString& HTMLAnchorElement::GetEffectiveTarget() const {
+const AtomicString& HTMLAnchorElementBase::GetEffectiveTarget() const {
   const AtomicString& target = FastGetAttribute(html_names::kTargetAttr);
   if (!target.empty())
     return target;
   return GetDocument().BaseTarget();
 }
 
-int HTMLAnchorElement::DefaultTabIndex() const {
+int HTMLAnchorElementBase::DefaultTabIndex() const {
   return 0;
 }
 
-bool HTMLAnchorElement::IsLiveLink() const {
+bool HTMLAnchorElementBase::IsLiveLink() const {
   return IsLink() && !IsEditable(*this);
 }
 
-void HTMLAnchorElement::SendPings(const KURL& destination_url) const {
-  const AtomicString& ping_value = FastGetAttribute(html_names::kPingAttr);
-  if (ping_value.IsNull() || !GetDocument().GetSettings() ||
-      !GetDocument().GetSettings()->GetHyperlinkAuditingEnabled()) {
-    return;
-  }
-
-  // Pings should not be sent if MHTML page is loaded.
-  if (GetDocument().Fetcher()->Archive())
-    return;
-
-  if ((ping_value.Contains('\n') || ping_value.Contains('\r') ||
-       ping_value.Contains('\t')) &&
-      ping_value.Contains('<')) {
-    Deprecation::CountDeprecation(
-        GetExecutionContext(), WebFeature::kCanRequestURLHTTPContainingNewline);
-    return;
-  }
-
-  UseCounter::Count(GetDocument(), WebFeature::kHTMLAnchorElementPingAttribute);
-
-  SpaceSplitString ping_urls(ping_value);
-  for (unsigned i = 0; i < ping_urls.size(); i++) {
-    PingLoader::SendLinkAuditPing(GetDocument().GetFrame(),
-                                  GetDocument().CompleteURL(ping_urls[i]),
-                                  destination_url);
-  }
-}
-
-void HTMLAnchorElement::NavigateToHyperlink(ResourceRequest request,
-                                            NavigationPolicy navigation_policy,
-                                            bool is_trusted,
-                                            base::TimeTicks platform_time_stamp,
-                                            KURL completed_url) {
+void HTMLAnchorElementBase::NavigateToHyperlink(
+    ResourceRequest request,
+    NavigationPolicy navigation_policy,
+    bool is_trusted,
+    base::TimeTicks platform_time_stamp,
+    KURL completed_url) {
   LocalDOMWindow* window = GetDocument().domWindow();
   if (!window) {
     return;
@@ -544,20 +444,29 @@ void HTMLAnchorElement::NavigateToHyperlink(ResourceRequest request,
   frame_request.SetSourceElement(this);
   const AtomicString& target =
       frame_request.CleanNavigationTarget(GetEffectiveTarget());
-  if (HasRel(kRelationNoReferrer)) {
-    frame_request.SetNoReferrer();
-    frame_request.SetNoOpener();
-  }
-  if (HasRel(kRelationNoOpener) ||
-      (EqualIgnoringASCIICase(target, "_blank") && !HasRel(kRelationOpener) &&
-       frame->GetSettings()
-           ->GetTargetBlankImpliesNoOpenerEnabledWillBeRemoved())) {
-    frame_request.SetNoOpener();
-  }
-  if (RuntimeEnabledFeatures::RelOpenerBcgDependencyHintEnabled(
-          GetExecutionContext()) &&
-      HasRel(kRelationOpener) && !frame_request.GetWindowFeatures().noopener) {
-    frame_request.SetExplicitOpener();
+
+  AnchorElementUtils::HandleRelAttribute(frame_request, frame->GetSettings(),
+                                         GetExecutionContext(), target,
+                                         link_relations_);
+
+  if (completed_url.ProtocolIs("blob")) {
+    auto blob_url_site =
+        BlinkSchemefulSite(SecurityOrigin::Create(completed_url));
+    BlinkSchemefulSite top_level_site =
+        window->GetStorageKey().GetTopLevelSite();
+    if (top_level_site != blob_url_site) {
+      if (base::FeatureList::IsEnabled(
+              features::kEnforceNoopenerOnBlobURLNavigation) &&
+          !base::CommandLine::ForCurrentProcess()->HasSwitch(
+              blink::switches::kDisableBlobUrlPartitioning)) {
+        frame_request.SetNoOpener();
+      }
+      UseCounter::Count(GetDocument(),
+                        WebFeature::kCrossTopLevelSiteBlobURLNavigation);
+      AuditsIssue::ReportPartitioningBlobURLIssue(
+          window, completed_url.GetString(),
+          mojom::blink::PartitioningBlobURLInfo::kEnforceNoopenerForNavigation);
+    }
   }
 
   frame_request.SetTriggeringEventInfo(
@@ -578,11 +487,16 @@ void HTMLAnchorElement::NavigateToHyperlink(ResourceRequest request,
     // Attach the impression regardless, the embedder will be able to drop
     // impressions for subframe navigations.
 
-    frame_request.SetImpression(
+    std::optional<Impression> impression =
         frame->GetAttributionSrcLoader()->RegisterNavigation(
             /*navigation_url=*/completed_url, attribution_src,
             /*element=*/this, request.HasUserGesture(),
-            request.GetReferrerPolicy()));
+            request.GetReferrerPolicy());
+    if (impression.has_value()) {
+      impression->is_empty_attribution_src_tag = attribution_src.empty();
+    }
+
+    frame_request.SetImpression(impression);
   }
 
   Frame* target_frame =
@@ -599,7 +513,8 @@ void HTMLAnchorElement::NavigateToHyperlink(ResourceRequest request,
                       WebFeature::kHTMLAnchorElementHrefTranslateAttribute);
   }
 
-  if (target_frame == frame && HasRel(kRelationOpener)) {
+  if (target_frame == frame &&
+      AnchorElementUtils::HasRel(link_relations_, kRelationOpener)) {
     // TODO(https://crbug.com/1431495): rel=opener is currently only meaningful
     // with target=_blank. Applying it to same-frame navigations is a potential
     // opt-out for issue 1431495, but how many sites would trigger this opt-out
@@ -613,32 +528,14 @@ void HTMLAnchorElement::NavigateToHyperlink(ResourceRequest request,
   }
 }
 
-void HTMLAnchorElement::SetHovered(bool hovered) {
-  HTMLElement::SetHovered(hovered);
+bool HTMLAnchorElementBase::IsValidInterestInvoker(Element& target) const {
+  DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled());
+  // Anchor elements that don't have the `href` attribute are not interactive,
+  // so they can't support `interestfor`.
+  return IsLink();
 }
 
-Element* HTMLAnchorElement::interestTargetElement() {
-  CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
-
-  if (!IsInTreeScope()) {
-    return nullptr;
-  }
-
-  return GetElementAttribute(html_names::kInteresttargetAttr);
-}
-
-AtomicString HTMLAnchorElement::interestAction() const {
-  CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
-  const AtomicString& attribute_value =
-      FastGetAttribute(html_names::kInterestactionAttr);
-  if (attribute_value && !attribute_value.IsNull() &&
-      !attribute_value.empty()) {
-    return attribute_value;
-  }
-  return g_empty_atom;
-}
-
-void HTMLAnchorElement::HandleClick(MouseEvent& event) {
+void HTMLAnchorElementBase::HandleClick(MouseEvent& event) {
   event.SetDefaultHandled();
 
   LocalDOMWindow* window = GetDocument().domWindow();
@@ -662,20 +559,14 @@ void HTMLAnchorElement::HandleClick(MouseEvent& event) {
 
   // Schedule the ping before the frame load. Prerender in Chrome may kill the
   // renderer as soon as the navigation is sent out.
-  SendPings(completed_url);
+  AnchorElementUtils::SendPings(completed_url, GetDocument(),
+                                FastGetAttribute(html_names::kPingAttr));
 
   ResourceRequest request(completed_url);
 
-  network::mojom::ReferrerPolicy policy;
-  if (FastHasAttribute(html_names::kReferrerpolicyAttr) &&
-      SecurityPolicy::ReferrerPolicyFromString(
-          FastGetAttribute(html_names::kReferrerpolicyAttr),
-          kSupportReferrerPolicyLegacyKeywords, &policy) &&
-      !HasRel(kRelationNoReferrer)) {
-    UseCounter::Count(GetDocument(),
-                      WebFeature::kHTMLAnchorElementReferrerPolicyAttribute);
-    request.SetReferrerPolicy(policy);
-  }
+  AnchorElementUtils::HandleReferrerPolicyAttribute(
+      request, FastGetAttribute(html_names::kReferrerpolicyAttr),
+      link_relations_, GetDocument());
 
   LocalFrame* frame = window->GetFrame();
   request.SetHasUserGesture(LocalFrame::HasTransientUserActivation(frame));
@@ -687,55 +578,17 @@ void HTMLAnchorElement::HandleClick(MouseEvent& event) {
   if (FastHasAttribute(html_names::kDownloadAttr) &&
       navigation_policy != kNavigationPolicyDownload &&
       window->GetSecurityOrigin()->CanReadContent(completed_url)) {
-    if (ShouldInterveneDownloadByFramePolicy(frame))
-      return;
-
     String download_attr =
         static_cast<String>(FastGetAttribute(html_names::kDownloadAttr));
-    if (download_attr.length() > kMaxDownloadAttrLength) {
-      AddConsoleMessage(
-          mojom::blink::ConsoleMessageSource::kRendering,
-          mojom::blink::ConsoleMessageLevel::kError,
-          String::Format("Download attribute for anchor element is too long. "
-                         "Max: %d, given: %d",
-                         kMaxDownloadAttrLength, download_attr.length()));
-      return;
-    }
 
-    auto* params = MakeGarbageCollected<NavigateEventDispatchParams>(
-        completed_url, NavigateEventType::kCrossDocument,
-        WebFrameLoadType::kStandard);
-    if (event.isTrusted())
-      params->involvement = UserNavigationInvolvement::kActivation;
-    params->download_filename = download_attr;
-    params->source_element = this;
-    if (window->navigation()->DispatchNavigateEvent(params) !=
-        NavigationApi::DispatchResult::kContinue) {
-      return;
-    }
-    // A download will never notify blink about its completion. Tell the
-    // NavigationApi that the navigation was dropped, so that it doesn't
-    // leave the frame thinking it is loading indefinitely.
-    window->navigation()->InformAboutCanceledNavigation(
-        CancelNavigationReason::kDropped);
-
-    request.SetSuggestedFilename(download_attr);
-    request.SetRequestContext(mojom::blink::RequestContextType::DOWNLOAD);
-    request.SetRequestorOrigin(window->GetSecurityOrigin());
-    network::mojom::ReferrerPolicy referrer_policy =
-        request.GetReferrerPolicy();
-    if (referrer_policy == network::mojom::ReferrerPolicy::kDefault)
-      referrer_policy = window->GetReferrerPolicy();
-    Referrer referrer = SecurityPolicy::GenerateReferrer(
-        referrer_policy, completed_url, window->OutgoingReferrer());
-    request.SetReferrerString(referrer.referrer);
-    request.SetReferrerPolicy(referrer.referrer_policy);
-    frame->DownloadURL(request, network::mojom::blink::RedirectMode::kManual);
+    AnchorElementUtils::HandleDownloadAttribute(
+        this, download_attr, completed_url, window, event.isTrusted(),
+        std::move(request));
     return;
   }
 
-  base::OnceClosure navigate_closure = WTF::BindOnce(
-      &HTMLAnchorElement::NavigateToHyperlink, WrapWeakPersistent(this),
+  base::OnceClosure navigate_closure = blink::BindOnce(
+      &HTMLAnchorElementBase::NavigateToHyperlink, WrapWeakPersistent(this),
       std::move(request), navigation_policy, event.isTrusted(),
       event.PlatformTimeStamp(), std::move(completed_url));
 
@@ -768,21 +621,18 @@ bool IsLinkClick(Event& event) {
       !mouse_event) {
     return false;
   }
-  int16_t button = mouse_event->button();
-  return (button == static_cast<int16_t>(WebPointerProperties::Button::kLeft) ||
-          button ==
-              static_cast<int16_t>(WebPointerProperties::Button::kMiddle));
+  return mouse_event->IsLinkClickButton();
 }
 
-bool HTMLAnchorElement::WillRespondToMouseClickEvents() {
+bool HTMLAnchorElementBase::WillRespondToMouseClickEvents() {
   return IsLink() || HTMLElement::WillRespondToMouseClickEvents();
 }
 
-bool HTMLAnchorElement::IsInteractiveContent() const {
+bool HTMLAnchorElementBase::IsInteractiveContent() const {
   return IsLink();
 }
 
-Node::InsertionNotificationRequest HTMLAnchorElement::InsertedInto(
+Node::InsertionNotificationRequest HTMLAnchorElementBase::InsertedInto(
     ContainerNode& insertion_point) {
   InsertionNotificationRequest request =
       HTMLElement::InsertedInto(insertion_point);
@@ -802,10 +652,13 @@ Node::InsertionNotificationRequest HTMLAnchorElement::InsertedInto(
     }
   }
 
+  if (FastHasAttribute(html_names::kNameAttr)) {
+    ProcessElementRenderBlocking(FastGetAttribute(html_names::kNameAttr));
+  }
   return request;
 }
 
-void HTMLAnchorElement::RemovedFrom(ContainerNode& insertion_point) {
+void HTMLAnchorElementBase::RemovedFrom(ContainerNode& insertion_point) {
   HTMLElement::RemovedFrom(insertion_point);
 
   if (insertion_point.isConnected()) {
@@ -823,9 +676,54 @@ void HTMLAnchorElement::RemovedFrom(ContainerNode& insertion_point) {
   }
 }
 
-void HTMLAnchorElement::Trace(Visitor* visitor) const {
+void HTMLAnchorElementBase::Trace(Visitor* visitor) const {
   visitor->Trace(rel_list_);
   HTMLElement::Trace(visitor);
+}
+
+HTMLAnchorElement::HTMLAnchorElement(Document& document)
+    : HTMLAnchorElementBase(html_names::kATag, document) {}
+
+void HTMLAnchorElement::AttachLayoutTree(AttachContext& context) {
+  // It's ok to set the update flag here, since update traversal will only
+  // happen if there are elements with scroll-target-group property set, and
+  // if there are some, the update traversal will happen anyway.
+  GetDocument().SetNeedsScrollTargetGroupRelationsUpdate();
+  HTMLAnchorElementBase::AttachLayoutTree(context);
+}
+
+void HTMLAnchorElement::DetachLayoutTree(bool performing_reattach) {
+  if (ScrollMarkerGroupData* data = GetScrollTargetGroupContainerData()) {
+    data->RemoveFromFocusGroup(*this);
+  }
+  HTMLAnchorElementBase::DetachLayoutTree(performing_reattach);
+}
+
+Element* HTMLAnchorElement::ScrollTargetElement() const {
+  const KURL& url = Url();
+  if (!url.HasFragmentIdentifier()) {
+    return nullptr;
+  }
+  String fragment = url.FragmentIdentifier().ToString();
+  Node* anchor_node = GetDocument().FindAnchor(fragment);
+  return DynamicTo<Element>(anchor_node);
+}
+
+PaintLayerScrollableArea*
+HTMLAnchorElement::AncestorScrollableAreaOfScrollTargetElement() const {
+  Element* scroll_target = ScrollTargetElement();
+  if (!scroll_target || !scroll_target->GetLayoutObject()) {
+    return nullptr;
+  }
+  for (LayoutBox* parent_box = scroll_target->GetLayoutObject()->EnclosingBox();
+       parent_box; parent_box = parent_box->ParentBox()) {
+    if (ScrollableArea* scrollable_area =
+            scroll_into_view_util::GetScrollableAreaForLayoutBox(
+                *parent_box, /*make_visible_in_visual_viewport=*/false)) {
+      return DynamicTo<PaintLayerScrollableArea>(scrollable_area);
+    }
+  }
+  return nullptr;
 }
 
 }  // namespace blink

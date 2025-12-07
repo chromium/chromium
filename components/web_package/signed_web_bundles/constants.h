@@ -11,14 +11,6 @@
 
 namespace web_package {
 
-enum class IntegrityBlockVersion { kV1, kV2 };
-
-// The V1 integrity block is a CBOR array with three entries:
-//  * Magic Bytes
-//  * Version
-//  * Signature Stack
-inline constexpr uint32_t kIntegrityBlockV1TopLevelArrayLength = 3;
-
 // The V2 integrity block is a CBOR array with four entries:
 //  * Magic Bytes
 //  * Version
@@ -30,7 +22,7 @@ inline constexpr std::array<uint8_t, 8> kIntegrityBlockMagicBytes = {
     // "🖋📦" magic bytes (in UTF-8)
     0xF0, 0x9F, 0x96, 0x8B, 0xF0, 0x9F, 0x93, 0xA6};
 
-// Version V1: "1b\0\0".
+// [DEPRECATED, here only for error detecting] Version V1: "1b\0\0".
 inline constexpr std::array<uint8_t, 4> kIntegrityBlockV1VersionBytes = {
     '1', 'b', 0x00, 0x00};
 

@@ -4,11 +4,18 @@
 
 package org.chromium.chrome.browser.hub;
 
-/** A helper class to select a pane before opening the {@link HubLayout}. */
-public class HubShowPaneHelper {
-    private @PaneId Integer mNextPaneId;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
-    public HubShowPaneHelper() {}
+/** A helper class to select a pane before opening the {@link HubLayout}. */
+@NullMarked
+public class HubShowPaneHelper {
+    private @Nullable @PaneId Integer mNextPaneId;
+    private final @PaneId int mDefaultPaneId;
+
+    public HubShowPaneHelper(@PaneId int defaultPaneId) {
+        mDefaultPaneId = defaultPaneId;
+    }
 
     // Sets the next pane id.
     public void setPaneToShow(@PaneId int nextPaneId) {
@@ -32,7 +39,7 @@ public class HubShowPaneHelper {
         }
 
         if (mNextPaneId == null) {
-            return PaneId.TAB_SWITCHER;
+            return mDefaultPaneId;
         }
 
         return mNextPaneId;
@@ -52,7 +59,7 @@ public class HubShowPaneHelper {
         return nextPaneId;
     }
 
-    Integer getNextPaneIdForTesting() {
+    @Nullable Integer getNextPaneIdForTesting() {
         return mNextPaneId;
     }
 }

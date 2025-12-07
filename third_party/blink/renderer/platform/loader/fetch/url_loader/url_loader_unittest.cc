@@ -9,6 +9,7 @@
 
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/command_line.h"
@@ -34,13 +35,11 @@
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#include "services/network/public/mojom/encoded_body_length.mojom-forward.h"
 #include "services/network/public/mojom/encoded_body_length.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_loader_completion_status.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_data.h"
@@ -50,7 +49,6 @@
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/public/platform/web_url_response.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/resource_request_client.h"
@@ -84,7 +82,7 @@ class MockResourceRequestSender : public ResourceRequestSender {
       uint32_t loader_options,
       SyncLoadResponse* response,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      WebVector<std::unique_ptr<URLLoaderThrottle>> throttles,
+      std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
       base::TimeDelta timeout,
       const Vector<String>& cors_exempt_header_list,
       base::WaitableEvent* terminate_sync_load_event,
@@ -103,7 +101,7 @@ class MockResourceRequestSender : public ResourceRequestSender {
       const Vector<String>& cors_exempt_header_list,
       scoped_refptr<ResourceRequestClient> resource_request_client,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      WebVector<std::unique_ptr<URLLoaderThrottle>> throttles,
+      std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
       std::unique_ptr<ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
       CodeCacheHost* code_cache_host,
@@ -160,12 +158,12 @@ class FakeURLLoaderFactory final : public network::mojom::URLLoaderFactory {
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
       override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 };
 
@@ -237,7 +235,7 @@ class TestURLLoaderClient : public URLLoaderClient {
 
   void DidReceiveResponse(
       const WebURLResponse& response,
-      absl::variant<mojo::ScopedDataPipeConsumerHandle, SegmentedBuffer> body,
+      std::variant<mojo::ScopedDataPipeConsumerHandle, SegmentedBuffer> body,
       std::optional<mojo_base::BigBuffer> cached_metadata) override {
     EXPECT_TRUE(loader_);
     EXPECT_FALSE(did_receive_response_);
@@ -250,9 +248,9 @@ class TestURLLoaderClient : public URLLoaderClient {
     }
     DCHECK(!response_body_);
     // SegmentedBuffer is used only for BackgroundUrlLoader.
-    CHECK(absl::holds_alternative<mojo::ScopedDataPipeConsumerHandle>(body));
+    CHECK(std::holds_alternative<mojo::ScopedDataPipeConsumerHandle>(body));
     mojo::ScopedDataPipeConsumerHandle body_handle =
-        std::move(absl::get<mojo::ScopedDataPipeConsumerHandle>(body));
+        std::move(std::get<mojo::ScopedDataPipeConsumerHandle>(body));
     if (body_handle) {
       response_body_ = std::move(body_handle);
     }
@@ -357,12 +355,12 @@ class URLLoaderTest : public testing::Test {
     resource_request_client()->OnReceivedRedirect(
         redirect_info, network::mojom::URLResponseHead::New(),
         /*follow_redirect_callback=*/
-        WTF::BindOnce(
+        BindOnce(
             [](bool* callback_called, std::vector<std::string> removed_headers,
                net::HttpRequestHeaders modified_headers) {
               *callback_called = true;
             },
-            WTF::Unretained(&callback_called)));
+            Unretained(&callback_called)));
     DCHECK(callback_called);
     EXPECT_TRUE(client()->did_receive_redirect());
   }
@@ -516,11 +514,11 @@ TEST_F(URLLoaderTest, ResponseAddressSpace) {
   KURL url("http://foo.example");
 
   network::mojom::URLResponseHead head;
-  head.response_address_space = network::mojom::IPAddressSpace::kPrivate;
+  head.response_address_space = network::mojom::IPAddressSpace::kLocal;
 
   WebURLResponse response = WebURLResponse::Create(url, head, true, -1);
 
-  EXPECT_EQ(network::mojom::IPAddressSpace::kPrivate, response.AddressSpace());
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal, response.AddressSpace());
 }
 
 TEST_F(URLLoaderTest, ClientAddressSpace) {
@@ -583,7 +581,7 @@ TEST_F(URLLoaderTest, SyncLengths) {
   sync_load_response.error_code = net::OK;
   sync_load_response.url = GURL(url);
   sync_load_response.data =
-      SharedBuffer::Create(kBodyData, sizeof(kBodyData) - 1);
+      SharedBuffer::Create(base::span_from_cstring(kBodyData));
   ASSERT_EQ(17u, sync_load_response.data->size());
   sync_load_response.head->encoded_body_length =
       network::mojom::EncodedBodyLength::New(kEncodedBodyLength);

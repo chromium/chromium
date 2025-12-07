@@ -30,8 +30,9 @@ std::optional<HistogramEnumEntryMap> ParseEnumFromHistogramsXml(
 
   while (true) {
     const std::string node_name = reader->NodeName();
-    if (node_name == "enum" && reader->IsClosingElement())
+    if (node_name == "enum" && reader->IsClosingElement()) {
       break;
+    }
 
     if (node_name == "int") {
       ++entries_index;
@@ -52,7 +53,7 @@ std::optional<HistogramEnumEntryMap> ParseEnumFromHistogramsXml(
         success = false;
       }
 
-      HistogramBase::Sample value;
+      HistogramBase::Sample32 value;
       if (has_value && !StringToInt(value_str, &value)) {
         ADD_FAILURE() << "Bad " << enum_name << " enum entry (at index "
                       << entries_index << ", label='" << label
@@ -69,15 +70,17 @@ std::optional<HistogramEnumEntryMap> ParseEnumFromHistogramsXml(
                       << result[value] << "'.";
         success = false;
       }
-      if (success)
+      if (success) {
         result[value] = label;
+      }
     }
     // All enum entries are on the same level, so it is enough to iterate
     // until possible.
     reader->Next();
   }
-  if (success)
+  if (success) {
     return result;
+  }
   return std::nullopt;
 }
 
@@ -142,12 +145,14 @@ std::optional<HistogramEnumEntryMap> ReadEnumFromEnumsXml(
       }
     }
     // Go deeper if possible (stops at the closing tag of the deepest node).
-    if (enums_xml_reader.Read())
+    if (enums_xml_reader.Read()) {
       continue;
+    }
 
     // Try next node on the same level (skips closing tag).
-    if (enums_xml_reader.Next())
+    if (enums_xml_reader.Next()) {
       continue;
+    }
 
     // Go up until next node on the same level exists.
     while (enums_xml_reader.Depth() && !enums_xml_reader.SkipToElement()) {
@@ -155,8 +160,9 @@ std::optional<HistogramEnumEntryMap> ReadEnumFromEnumsXml(
 
     // Reached top. histograms.xml consists of the single top level node
     // 'histogram-configuration', so this is the end.
-    if (!enums_xml_reader.Depth())
+    if (!enums_xml_reader.Depth()) {
       break;
+    }
   }
   return result;
 }

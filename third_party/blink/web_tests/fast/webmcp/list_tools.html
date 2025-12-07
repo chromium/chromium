@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+async function echo(obj) {
+  return obj.text;
+}
+
+navigator.modelContext.registerTool({
+  execute: echo,
+  name: "echo",
+  description: "echo input",
+  inputSchema: {
+      type: "object",
+      properties: {
+          "text": {
+              description: "Value to echo",
+              type: "string",
+          }
+      },
+      required: ["text"]
+  },
+});
+
+function print(message) {
+    document.getElementById("console").appendChild(document.createTextNode(message + "\n"));
+}
+
+function runTests() {
+    if (window.testRunner)
+        testRunner.dumpAsText();
+
+    if (!window.navigator.modelContext) {
+        print("FAIL: modelContext API disabled");
+        return;
+    }
+
+    if (!window.navigator.modelContextTesting) {
+        print("FAIL: Testing API disabled");
+        return;
+    }
+
+    try {
+        print("Calling navigator.modelContextTesting.listTools()...");
+        // Call the synchronous listTools() method
+        const tools = navigator.modelContextTesting.listTools();
+
+        if (!tools) {
+            print("FAIL: listTools() returned null or undefined.");
+            return;
+        }
+
+        if (typeof tools.length !== 'number') {
+            print("FAIL: listTools() did not return an array-like object (sequence).");
+            return;
+        }
+
+        if (tools.length === 0) {
+            print("FAIL: listTools() returned an empty array. Expected registered 'echo' tool.");
+            return;
+        }
+
+        print(`SUCCESS: listTools() returned ${tools.length} tool(s).`);
+
+        // Find the specific tool we registered
+        const echoTool = tools.find(t => t.name === "echo");
+
+        if (!echoTool) {
+            print("FAIL: 'echo' tool not found in the list returned by listTools().");
+            return;
+        }
+
+        print("SUCCESS: Found 'echo' tool in the list.");
+
+        // Verify the properties of the found tool
+        let allTestsPassed = true;
+
+        if (echoTool.description !== "echo input") {
+            print(`FAIL: 'echo' tool description is incorrect. Expected "echo input", got "${echoTool.description}"`);
+            allTestsPassed = false;
+        } else {
+            print("SUCCESS: 'echo' tool description is correct.");
+        }
+
+        const expectedSchema = '{"type":"object","properties":{"text":{"description":"Value to echo","type":"string"}},"required":["text"]}';
+
+        if (!echoTool.inputSchema) {
+            print("FAIL: 'echo' tool inputSchema is missing");
+            allTestsPassed = false;
+        } else if (echoTool.inputSchema !== expectedSchema) {
+            print(`FAIL: 'echo' tool inputSchema is incorrect:`);
+            print(`  Expected: ${expectedSchema}`);
+            print(`  Got:      ${echoTool.inputSchema}`);
+            allTestsPassed = false;
+        } else {
+            print("SUCCESS: 'echo' tool inputSchema is correct.");
+        }
+
+        if(allTestsPassed) {
+            print("\nAll tests passed.");
+        } else {
+            print("\nSome tests failed.");
+        }
+
+    } catch (e) {
+        print("FAIL: listTools() threw an exception: " + e.message);
+    }
+}
+
+</script>
+</head>
+<body onload="runTests();">
+This tests that document.navigator.modelContextTesting works correctly.
+<pre id="console">
+</pre>
+</body>
+</html>

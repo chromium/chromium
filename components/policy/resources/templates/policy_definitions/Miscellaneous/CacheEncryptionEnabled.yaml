@@ -1,0 +1,31 @@
+caption: This policy allows administrators to encrypt http cache on disk.
+desc: |-
+  This policy allows the administrators to encrypt browser http cache on disk.
+
+  When this policy is Enabled, browser cache will be encrypted.
+
+  When this policy is Disabled or not set, browser cache will not be encrypted.
+
+  Browser cache encryption may result in a performance impact.
+owners:
+- haihan@google.com
+- valadkevich@google.com
+- cbe-cep-eng@google.com
+future_on:
+- chrome.*
+- chrome_os
+- android
+features:
+  dynamic_refresh: true
+  per_profile: true
+type: main
+schema:
+  type: boolean
+items:
+- caption: Use the cache encryption.
+  value: true
+- caption: Do not use the cache encryption.
+  value: false
+default: false
+example_value: true
+tags: []

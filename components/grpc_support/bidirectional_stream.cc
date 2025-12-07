@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/grpc_support/bidirectional_stream.h"
 
 #include <memory>
@@ -14,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -39,9 +35,9 @@
 
 namespace grpc_support {
 
-BidirectionalStream::WriteBuffers::WriteBuffers() {}
+BidirectionalStream::WriteBuffers::WriteBuffers() = default;
 
-BidirectionalStream::WriteBuffers::~WriteBuffers() {}
+BidirectionalStream::WriteBuffers::~WriteBuffers() = default;
 
 void BidirectionalStream::WriteBuffers::Clear() {
   write_buffer_list.clear();
@@ -116,7 +112,7 @@ bool BidirectionalStream::ReadData(char* buffer, int capacity) {
     return false;
   scoped_refptr<net::WrappedIOBuffer> read_buffer =
       base::MakeRefCounted<net::WrappedIOBuffer>(
-          base::make_span(buffer, static_cast<size_t>(capacity)));
+          UNSAFE_TODO(base::span(buffer, static_cast<size_t>(capacity))));
 
   PostToNetworkThread(
       FROM_HERE, base::BindOnce(&BidirectionalStream::ReadDataOnNetworkThread,
@@ -132,7 +128,7 @@ bool BidirectionalStream::WriteData(const char* buffer,
 
   scoped_refptr<net::WrappedIOBuffer> write_buffer =
       base::MakeRefCounted<net::WrappedIOBuffer>(
-          base::make_span(buffer, static_cast<size_t>(count)));
+          UNSAFE_TODO(base::span(buffer, static_cast<size_t>(count))));
 
   PostToNetworkThread(
       FROM_HERE,
@@ -152,15 +148,6 @@ void BidirectionalStream::Cancel() {
   PostToNetworkThread(
       FROM_HERE,
       base::BindOnce(&BidirectionalStream::CancelOnNetworkThread, weak_this_));
-}
-
-void BidirectionalStream::Destroy() {
-  // Destroy could be called from any thread, including network thread (if
-  // posting task to executor throws an exception), but is posted, so |this|
-  // is valid until calling task is complete.
-  PostToNetworkThread(
-      FROM_HERE, base::BindOnce(&BidirectionalStream::DestroyOnNetworkThread,
-                                base::Unretained(this)));
 }
 
 void BidirectionalStream::OnStreamReady(bool request_headers_sent) {
@@ -196,10 +183,10 @@ void BidirectionalStream::OnHeadersReceived(
   }
   const char* protocol = "unknown";
   switch (bidi_stream_->GetProtocol()) {
-    case net::kProtoHTTP2:
+    case net::NextProto::kProtoHTTP2:
       protocol = "h2";
       break;
-    case net::kProtoQUIC:
+    case net::NextProto::kProtoQUIC:
       protocol = "quic/1+spdy/3";
       break;
     default:
@@ -387,11 +374,6 @@ void BidirectionalStream::CancelOnNetworkThread() {
   bidi_stream_.reset();
   weak_factory_.InvalidateWeakPtrs();
   delegate_->OnCanceled();
-}
-
-void BidirectionalStream::DestroyOnNetworkThread() {
-  DCHECK(IsOnNetworkThread());
-  delete this;
 }
 
 void BidirectionalStream::MaybeOnSucceded() {

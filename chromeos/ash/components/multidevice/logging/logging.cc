@@ -22,7 +22,7 @@ ScopedDisableLoggingForTesting::~ScopedDisableLoggingForTesting() {
   g_logging_enabled = true;
 }
 
-ScopedLogMessage::ScopedLogMessage(const std::string_view file,
+ScopedLogMessage::ScopedLogMessage(std::string_view file,
                                    int line,
                                    logging::LogSeverity severity)
     : file_(file), line_(line), severity_(severity) {}

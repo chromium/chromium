@@ -19,10 +19,10 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/variations/service/variations_service.h"
 #import "components/version_info/version_info.h"
-#import "components/version_ui/version_handler_helper.h"
-#import "components/version_ui/version_ui_constants.h"
+#import "components/webui/version/version_handler_helper.h"
+#import "components/webui/version/version_ui_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/webui/ui_bundled/version_handler.h"
 #import "ios/chrome/common/channel_info.h"
@@ -52,6 +52,9 @@ web::WebUIIOSDataSource* CreateVersionUIDataSource() {
   html_source->AddLocalizedString(version_ui::kOSName, IDS_VERSION_UI_OS);
   html_source->AddString(version_ui::kOSType,
                          std::string(version_info::GetOSType()));
+
+  // Always empty on iOS.
+  html_source->AddString(version_ui::kVersionSuffix, std::string());
 
   html_source->AddLocalizedString(version_ui::kCompany,
                                   IDS_IOS_ABOUT_VERSION_COMPANY_NAME);
@@ -92,8 +95,10 @@ web::WebUIIOSDataSource* CreateVersionUIDataSource() {
   std::string command_line;
   typedef std::vector<std::string> ArgvList;
   const ArgvList& argv = base::CommandLine::ForCurrentProcess()->argv();
-  for (ArgvList::const_iterator iter = argv.begin(); iter != argv.end(); iter++)
+  for (ArgvList::const_iterator iter = argv.begin(); iter != argv.end();
+       iter++) {
     command_line += " " + *iter;
+  }
   // This assumes that `command_line` uses UTF-8 encoding.
   html_source->AddString(version_ui::kCommandLine, command_line);
 
@@ -101,6 +106,10 @@ web::WebUIIOSDataSource* CreateVersionUIDataSource() {
                                   IDS_VERSION_UI_VARIATIONS);
   html_source->AddLocalizedString(version_ui::kVariationsCmdName,
                                   IDS_VERSION_UI_VARIATIONS_CMD);
+  html_source->AddLocalizedString(version_ui::kCopyVariationsLabel,
+                                  IDS_VERSION_UI_COPY_VARIATIONS_LABEL);
+  html_source->AddLocalizedString(version_ui::kCopyVariationsNotice,
+                                  IDS_VERSION_UI_COPY_VARIATIONS_NOTICE);
   html_source->AddLocalizedString(version_ui::kVariationsSeedName,
                                   IDS_VERSION_UI_VARIATIONS_SEED_NAME);
 
@@ -113,8 +122,7 @@ web::WebUIIOSDataSource* CreateVersionUIDataSource() {
                          std::string(version_info::GetSanitizerList()));
 
   html_source->UseStringsJs();
-  html_source->AddResourcePaths(
-      base::make_span(kVersionUiResources, kVersionUiResourcesSize));
+  html_source->AddResourcePaths(kVersionUiResources);
   html_source->AddResourcePath("images/product_logo.png", IDR_PRODUCT_LOGO);
   html_source->AddResourcePath("images/product_logo_white.png",
                                IDR_PRODUCT_LOGO_WHITE);
@@ -127,7 +135,7 @@ web::WebUIIOSDataSource* CreateVersionUIDataSource() {
 VersionUI::VersionUI(web::WebUIIOS* web_ui, const std::string& host)
     : web::WebUIIOSController(web_ui, host) {
   web_ui->AddMessageHandler(std::make_unique<VersionHandler>());
-  web::WebUIIOSDataSource::Add(ChromeBrowserState::FromWebUIIOS(web_ui),
+  web::WebUIIOSDataSource::Add(ProfileIOS::FromWebUIIOS(web_ui),
                                CreateVersionUIDataSource());
 }
 

@@ -5,12 +5,10 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
-import type {Signals} from '../omnibox.mojom-webui.js';
+import type {Signals} from '../omnibox_internals.mojom-webui.js';
 import {clamp, createEl, setFormattedClipboardForMl, signalNames} from '../omnibox_util.js';
 
 import type {MlBrowserProxy} from './ml_browser_proxy.js';
-/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
-// @ts-ignore:next-line
 import sheet from './ml_calculator.css' with {type : 'css'};
 import {getTemplate} from './ml_calculator.html.js';
 

@@ -5,6 +5,7 @@
 #![forbid(unsafe_op_in_unsafe_fn)]
 #![forbid(unsafe_code)]
 
+pub mod condition;
 pub mod config;
 pub mod crates;
 pub mod deps;
@@ -12,9 +13,10 @@ pub mod gn;
 pub mod group;
 pub mod inherit;
 pub mod manifest;
-pub mod metadata_util;
 pub mod paths;
-pub mod platforms;
 pub mod readme;
-pub mod util;
-pub mod vet;
+pub mod target_triple {
+    include!(concat!(env!("OUT_DIR"), "/target_triple.rs"));
+}
+pub mod toml_edit_utils;
+pub mod unsafe_code_detector;

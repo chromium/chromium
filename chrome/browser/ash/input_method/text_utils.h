@@ -11,10 +11,9 @@
 #include "ui/gfx/range/range.h"
 
 // TODO(crbug/1223213): Move these to a sandbox environment.
-namespace ash {
-namespace input_method {
+namespace ash::input_method {
 
-constexpr uint32_t kUndefined = std::numeric_limits<uint32_t>::max();
+inline constexpr uint32_t kUndefined = std::numeric_limits<uint32_t>::max();
 
 struct Sentence {
   Sentence();
@@ -22,8 +21,7 @@ struct Sentence {
   Sentence(const Sentence& other);
   ~Sentence();
 
-  bool operator==(const Sentence& other) const;
-  bool operator!=(const Sentence& other) const;
+  friend bool operator==(const Sentence&, const Sentence&) = default;
 
   // The range of the sentence in the original text.
   gfx::Range original_range;
@@ -44,7 +42,6 @@ Sentence FindLastSentence(const std::u16string& text, uint32_t pos);
 // Find the sentence containing the cursor position |pos|.
 Sentence FindCurrentSentence(const std::u16string& text, uint32_t pos);
 
-}  // namespace input_method
-}  // namespace ash
+}  // namespace ash::input_method
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_TEXT_UTILS_H_

@@ -1,0 +1,49 @@
+[document web]
+++[section]
+++++[push button] name='d1 button - outside & next - show-popover'
+++++[push button] name='d1 button - outside - hide-popover'
+++++[push button] name='d1 button - outside - toggle-popover'
+++++[push button] name='d1 button - outside - unrelated action'
+++++[push button] name='d1 button - outside - custom action'
+++++[push button] name='d2 button - outside & next - show-popover' expanded details=[panel] details-from:command-for details-roles:popover
+++++[push button] name='d2 button - outside - hide-popover' expanded details=[panel] details-from:command-for details-roles:popover
+++++[push button] name='d2 button - outside - toggle-popover' expanded details=[panel] details-from:command-for details-roles:popover
+++++[push button] name='d2 button - outside - unrelated action'
+++++[push button] name='d2 button - outside - custom action'
+++++[panel] details-for=[push button,push button,push button]
+++++++[push button] name='d2 button - inside - show-popover'
+++++++[push button] name='d2 button - inside - hide-popover'
+++++++[push button] name='d2 button - inside - toggle-popover'
+++++++[push button] name='d2 button - inside - related action'
+++++++[push button] name='d2 button - inside - custom action'
+++++[push button] name='d3 button - outside & next - show-popover' expanded details=[panel] details-from:command-for details-roles:popover
+++++[push button] name='d3 button - outside - hide-popover' expanded details=[panel] details-from:command-for details-roles:popover
+++++[push button] name='d3 button - outside - toggle-popover' expanded details=[panel] details-from:command-for details-roles:popover
+++++[push button] name='d3 button - outside - unrelated action'
+++++[push button] name='d3 button - outside - custom action'
+++++[panel] details-for=[push button,push button,push button]
+++++++[push button] name='d3 button - inside - show-popover'
+++++++[push button] name='d3 button - inside - hide-popover'
+++++++[push button] name='d3 button - inside - toggle-popover'
+++++++[push button] name='d3 button - inside - related action'
+++++++[push button] name='d3 button - inside - custom action'
+++++[push button] name='d4 button - outside & next - show-popover'
+++++[push button] name='d4 button - outside - hide-popover'
+++++[push button] name='d4 button - outside - toggle-popover'
+++++[push button] name='d4 button - outside - unrelated action'
+++++[push button] name='d4 button - outside - custom action'
+++++[push button] name='d5 button - outside & next - show-popover'
+++++[push button] name='d5 button - outside - hide-popover'
+++++[push button] name='d5 button - outside - toggle-popover'
+++++[push button] name='d5 button - outside - unrelated action'
+++++[push button] name='d5 button - outside - custom action'
+++++[push button] name='d1 button - outside & next - show-popover'
+++++[push button] name='d1 button - outside - hide-popover'
+++++[push button] name='d1 button - outside - toggle-popover'
+++++[push button] name='d1 button - outside - unrelated action'
+++++[push button] name='d1 button - outside - custom action'
+++++[push button] name='d1 button - outside & next - show-popover'
+++++[push button] name='d1 button - outside - hide-popover'
+++++[push button] name='d1 button - outside - toggle-popover'
+++++[push button] name='d1 button - outside - unrelated action'
+++++[push button] name='d1 button - outside - custom action'

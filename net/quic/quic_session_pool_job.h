@@ -71,6 +71,10 @@ class QuicSessionPool::Job : public QuicSessionAttempt::Delegate {
   void AssociateWithNetLogSource(
       const NetLogWithSource& http_stream_job_net_log) const;
 
+  // TODO(crbug.com/404586727): Remove once we confirm the crash no longer
+  // happens.
+  void set_is_deleting() { is_deleting_ = true; }
+
   // QuicSessionAttempt::Delegate implementation.
   QuicSessionPool* GetQuicSessionPool() override;
   const QuicSessionAliasKey& GetKey() override;
@@ -93,6 +97,9 @@ class QuicSessionPool::Job : public QuicSessionAttempt::Delegate {
   RequestPriority priority_;
   const NetLogWithSource net_log_;
   std::set<raw_ptr<QuicSessionRequest, SetExperimental>> requests_;
+
+ private:
+  bool is_deleting_ = false;
 };
 
 }  // namespace net

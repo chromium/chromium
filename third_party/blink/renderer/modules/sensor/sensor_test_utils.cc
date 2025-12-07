@@ -50,8 +50,8 @@ SensorTestContext::SensorTestContext()
 
   testing_scope_.GetFrame().GetBrowserInterfaceBroker().SetBinderForTesting(
       mojom::blink::WebSensorProvider::Name_,
-      WTF::BindRepeating(&SensorTestContext::BindSensorProviderRequest,
-                         WTF::Unretained(this)));
+      BindRepeating(&SensorTestContext::BindSensorProviderRequest,
+                    Unretained(this)));
 }
 
 SensorTestContext::~SensorTestContext() {
@@ -77,7 +77,7 @@ void SensorTestContext::BindSensorProviderRequest(
 
 // static
 void SensorTestUtils::WaitForEvent(EventTarget* event_target,
-                                   const WTF::AtomicString& event_type) {
+                                   const AtomicString& event_type) {
   base::RunLoop run_loop;
   auto* event_listener =
       MakeGarbageCollected<SyncEventListener>(run_loop.QuitClosure());

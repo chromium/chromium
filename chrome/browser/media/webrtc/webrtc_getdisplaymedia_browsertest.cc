@@ -13,11 +13,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"  // PLATFORM_CFM
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
@@ -32,6 +34,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
+#include "components/permissions/permission_request_manager.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -39,14 +42,19 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/url_formatter/elide_url.h"
+#include "content/public/browser/audio_service.h"
+#include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/mock_captured_surface_controller.h"
+#include "media/audio/audio_features.h"
+#include "media/audio/audio_system.h"
 #include "media/base/media_switches.h"
 #include "net/base/filename_util.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gl/gl_switches.h"
 
@@ -55,7 +63,7 @@
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_content_manager_test_helper.h"
 #endif
@@ -72,6 +80,7 @@ using ::content::WebContentsMediaCaptureId;
 using ::testing::_;
 using ::testing::Bool;
 using ::testing::Combine;
+using ::testing::HasSubstr;
 using ::testing::Mock;
 using ::testing::Values;
 using TabSharingInfoBarButton =
@@ -128,15 +137,22 @@ struct TestConfigForFakeUI {
   const char* display_surface;
 };
 
-struct TestConfigForSelectAllScreens {
-  const char* display_surface;
-  bool enable_select_all_screens;
-};
-
-struct TestConfigForHiDpi {
-  bool enable_hidpi;
+struct TestConfigForMediaResolution {
   int constraint_width;
   int constraint_height;
+};
+
+struct TestConfigForRestrictOwnAudio {
+  TestConfigForRestrictOwnAudio(bool restrict_own_audio,
+                                bool suppress_local_audio_playback)
+      : restrict_own_audio(restrict_own_audio),
+        suppress_local_audio_playback(suppress_local_audio_playback) {}
+
+  explicit TestConfigForRestrictOwnAudio(std::tuple<bool, bool> input_tuple)
+      : TestConfigForRestrictOwnAudio(std::get<0>(input_tuple),
+                                      std::get<1>(input_tuple)) {}
+  bool restrict_own_audio;
+  bool suppress_local_audio_playback;
 };
 
 constexpr char kAppWindowTitle[] = "AppWindow Display Capture Test";
@@ -154,7 +170,7 @@ std::string DisplaySurfaceTypeAsString(
     case DisplaySurfaceType::kScreen:
       return "screen";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void RunGetDisplayMedia(content::WebContents* tab,
@@ -180,7 +196,7 @@ void RunGetDisplayMedia(content::WebContents* tab,
 #if BUILDFLAG(IS_MAC)
   if (!is_fake_ui && !is_tab_capture &&
       system_media_permissions::CheckSystemScreenCapturePermission() !=
-          system_media_permissions::SystemPermission::kAllowed) {
+          system_permission_settings::SystemPermission::kAllowed) {
     expect_success = false;
   }
 #endif
@@ -188,6 +204,16 @@ void RunGetDisplayMedia(content::WebContents* tab,
   EXPECT_EQ(result, expect_success           ? "capture-success"
                     : expected_error.empty() ? "capture-failure"
                                              : "expected-error");
+}
+
+void RunGetUserMedia(content::WebContents* tab,
+                     const std::string& constraints) {
+  const std::string script =
+      base::StrCat({"runGetUserMedia(", constraints, ");"});
+  std::string result = content::EvalJs(tab->GetPrimaryMainFrame(), script,
+                                       content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+                           .ExtractString();
+  EXPECT_EQ(result, "gum-success");
 }
 
 void StopAllTracks(content::WebContents* tab) {
@@ -250,14 +276,34 @@ void AdjustCommandLineForZeroCopyCapture(base::CommandLine* command_line) {
 #endif
 }
 
+// The concept of "zoom level" is overloaded. For clarity, when we mean the
+// "factor times 100," we'll just name it "zoom level percentage," at least
+// in tests.
+int GetZoomLevelPercentage(WebContents* wc) {
+  return std::round(100 * blink::ZoomLevelToZoomFactor(
+                              content::HostZoomMap::GetZoomLevel(wc)));
+}
+
+void SetZoomFactor(WebContents* wc, double zoom_factor) {
+  content::HostZoomMap* const host_zoom_map =
+      content::HostZoomMap::GetForWebContents(wc);
+  CHECK(host_zoom_map);
+
+  host_zoom_map->SetTemporaryZoomLevel(
+      wc->GetPrimaryMainFrame()->GetGlobalId(),
+      blink::ZoomFactorToZoomLevel(zoom_factor));
+
+  if (!blink::ZoomValuesEqual(GetZoomLevelPercentage(wc), 100 * zoom_factor)) {
+    FAIL();  // Abort test, not just the helper method.
+  }
+}
+
 }  // namespace
 
 // Base class for top level tests for getDisplayMedia().
 class WebRtcScreenCaptureBrowserTest : public WebRtcTestBase {
  public:
   ~WebRtcScreenCaptureBrowserTest() override = default;
-
-  enum class SelectAllScreens { kUndefined = 0, kTrue = 1, kFalse = 2 };
 
   void SetUpInProcessBrowserTestFixture() override {
     DetectErrorsInJavaScript();
@@ -267,19 +313,21 @@ class WebRtcScreenCaptureBrowserTest : public WebRtcTestBase {
 
   std::string GetConstraints(bool video,
                              bool audio,
-                             SelectAllScreens select_all_screens) const {
-    std::string select_all_screens_property =
-        (select_all_screens == SelectAllScreens::kUndefined)
-            ? ""
-            : base::StringPrintf(
-                  "autoSelectAllScreens: %s",
-                  (select_all_screens == SelectAllScreens::kFalse) ? "false"
-                                                                   : "true");
-    return base::StringPrintf(
-        "{video: %s, audio: %s, preferCurrentTab: %s, %s}",
-        video ? "true" : "false", audio ? "true" : "false",
-        PreferCurrentTab() ? "true" : "false",
-        select_all_screens_property.c_str());
+                             bool prefer_current_tab) const {
+    return base::StringPrintf("{video: %s, audio: %s, preferCurrentTab: %s}",
+                              base::ToString(video), base::ToString(audio),
+                              base::ToString(prefer_current_tab));
+  }
+
+  std::string GetConstraints(bool video,
+                             bool audio,
+                             GetDisplayMediaVariant variant) const {
+    return GetConstraints(video, audio,
+                          variant == GetDisplayMediaVariant::kPreferCurrentTab);
+  }
+
+  std::string GetConstraints(bool video, bool audio) const {
+    return GetConstraints(video, audio, PreferCurrentTab());
   }
 };
 
@@ -309,13 +357,13 @@ class WebRtcScreenCaptureBrowserTestWithPicker
                                      ? switches::kThisTabCaptureAutoAccept
                                      : switches::kThisTabCaptureAutoReject);
     } else {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       command_line->AppendSwitchASCII(switches::kAutoSelectDesktopCaptureSource,
                                       "Display");
 #else
       command_line->AppendSwitchASCII(switches::kAutoSelectDesktopCaptureSource,
                                       "Entire screen");
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     }
   }
 
@@ -351,15 +399,13 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
   content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
   RunGetDisplayMedia(tab,
                      GetConstraints(
-                         /*video=*/true, /*audio=*/false,
-                         /*select_all_screens=*/
-                         SelectAllScreens::kUndefined),
+                         /*video=*/true, /*audio=*/false),
                      /*is_fake_ui=*/false,
                      /*expect_success=*/test_config_.accept_this_tab_capture,
                      /*is_tab_capture=*/PreferCurrentTab());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
                        ScreenCaptureVideoWithDlp) {
   if (!test_config_.should_prefer_current_tab &&
@@ -373,9 +419,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
   content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
   RunGetDisplayMedia(tab,
                      GetConstraints(
-                         /*video=*/true, /*audio=*/false,
-                         /*select_all_screens=*/
-                         SelectAllScreens::kUndefined),
+                         /*video=*/true, /*audio=*/false),
                      /*is_fake_ui=*/false,
                      /*expect_success=*/test_config_.accept_this_tab_capture,
                      /*is_tab_capture=*/PreferCurrentTab());
@@ -405,19 +449,17 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
   EXPECT_EQ(content::EvalJs(tab->GetPrimaryMainFrame(), "waitVideoUnmuted();"),
             "unmuted");
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // TODO(crbug.com/40744542): Real desktop capture is flaky on below platforms.
 // TODO(crbug.com/41493366): enable this flaky test.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_ScreenCaptureVideoAndAudio DISABLED_ScreenCaptureVideoAndAudio
 // On linux debug bots, it's flaky as well.
-#elif ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
-       !defined(NDEBUG))
+#elif BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
 #define MAYBE_ScreenCaptureVideoAndAudio DISABLED_ScreenCaptureVideoAndAudio
 // On linux asan bots, it's flaky as well - msan and other rel bot are fine.
-#elif ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
-       defined(ADDRESS_SANITIZER))
+#elif BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
 #define MAYBE_ScreenCaptureVideoAndAudio DISABLED_ScreenCaptureVideoAndAudio
 #else
 #define MAYBE_ScreenCaptureVideoAndAudio ScreenCaptureVideoAndAudio
@@ -434,9 +476,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
   content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
   RunGetDisplayMedia(tab,
                      GetConstraints(
-                         /*video=*/true, /*audio=*/true,
-                         /*select_all_screens=*/
-                         SelectAllScreens::kUndefined),
+                         /*video=*/true, /*audio=*/true),
                      /*is_fake_ui=*/false,
                      /*expect_success=*/test_config_.accept_this_tab_capture,
                      /*is_tab_capture=*/PreferCurrentTab());
@@ -478,9 +518,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithFakeUI,
   content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
   RunGetDisplayMedia(tab,
                      GetConstraints(
-                         /*video=*/true, /*audio=*/false,
-                         /*select_all_screens=*/
-                         SelectAllScreens::kUndefined),
+                         /*video=*/true, /*audio=*/false),
                      /*is_fake_ui=*/true, /*expect_success=*/true,
                      /*is_tab_capture=*/PreferCurrentTab());
 
@@ -503,9 +541,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithFakeUI,
   content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
   RunGetDisplayMedia(tab,
                      GetConstraints(
-                         /*video=*/true, /*audio=*/true,
-                         /*select_all_screens=*/
-                         SelectAllScreens::kUndefined),
+                         /*video=*/true, /*audio=*/true),
                      /*is_fake_ui=*/true, /*expect_success=*/true,
                      /*is_tab_capture=*/PreferCurrentTab());
 
@@ -525,13 +561,16 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithFakeUI,
       "should_prefer_current_tab: "
       "%s}",
       kMaxWidth, kMaxFrameRate,
-      test_config_.should_prefer_current_tab ? "true" : "false");
+      base::ToString(test_config_.should_prefer_current_tab));
   RunGetDisplayMedia(tab, constraints,
                      /*is_fake_ui=*/true, /*expect_success=*/true,
                      /*is_tab_capture=*/PreferCurrentTab());
-
-  EXPECT_EQ(content::EvalJs(tab->GetPrimaryMainFrame(), "getWidthSetting();"),
-            base::StringPrintf("%d", kMaxWidth));
+  auto result =
+      content::EvalJs(tab->GetPrimaryMainFrame(), "getWidthSetting();")
+          .ExtractString();
+  int value;
+  EXPECT_TRUE(base::StringToInt(result, &value));
+  EXPECT_LE(value, kMaxWidth);
 
   EXPECT_EQ(
       content::EvalJs(tab->GetPrimaryMainFrame(), "getFrameRateSetting();"),
@@ -598,7 +637,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCapturePermissionPolicyBrowserTest,
   // using just one tab. It is orthogonal to the test's purpose.
   const std::string constraints = base::StringPrintf(
       "{video: true, selfBrowserSurface: 'include', preferCurrentTab: %s}",
-      PreferCurrentTab() ? "true" : "false");
+      base::ToString(PreferCurrentTab()));
 
   EXPECT_EQ(
       content::EvalJs(
@@ -730,9 +769,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcSameOriginPolicyBrowserTest,
       target_tab, base::UTF8ToUTF16(std::string(kSameOriginRenamedTitle)));
   RunGetDisplayMedia(capturing_tab,
                      GetConstraints(
-                         /*video=*/true, /*audio=*/true,
-                         /*select_all_screens=*/
-                         SelectAllScreens::kUndefined),
+                         /*video=*/true, /*audio=*/true),
                      /*is_fake_ui=*/false, /*expect_success=*/true,
                      /*is_tab_capture=*/true);
 
@@ -772,9 +809,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcSameOriginPolicyBrowserTest,
       target_tab, base::UTF8ToUTF16(std::string(kSameOriginRenamedTitle)));
   RunGetDisplayMedia(capturing_tab,
                      GetConstraints(
-                         /*video=*/true, /*audio=*/true,
-                         /*select_all_screens=*/
-                         SelectAllScreens::kUndefined),
+                         /*video=*/true, /*audio=*/true),
                      /*is_fake_ui=*/false, /*expect_success=*/true,
                      /*is_tab_capture=*/true);
 
@@ -899,7 +934,7 @@ class GetDisplayMediaVideoTrackBrowserTest
       case DisplaySurfaceType::kScreen:
         return "MediaStreamTrack";
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
  protected:
@@ -954,29 +989,21 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaVideoTrackBrowserTest, RunCombinedTest) {
     !(defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER))
 class GetDisplayMediaHiDpiBrowserTest
     : public WebRtcTestBase,
-      public testing::WithParamInterface<TestConfigForHiDpi> {
+      public testing::WithParamInterface<TestConfigForMediaResolution> {
  public:
   GetDisplayMediaHiDpiBrowserTest() : test_config_(GetParam()) {}
 
   // The browser window size must be consistent with the
-  // INSTANTIATE_TEST_SUITE_P TestConfigForHiDpi configurations below. See the
-  // comments there for more details.
+  // INSTANTIATE_TEST_SUITE_P TestConfigForMediaResolution configurations below.
+  // See the comments there for more details.
   static constexpr int kBrowserWindowWidth = 800;
   static constexpr int kBrowserWindowHeight = 600;
 
-  bool enable_hidpi() const { return test_config_.enable_hidpi; }
   int constraint_width() const { return test_config_.constraint_width; }
   int constraint_height() const { return test_config_.constraint_height; }
 
   void SetUpInProcessBrowserTestFixture() override {
-    if (enable_hidpi()) {
-      feature_list_.InitAndEnableFeature(media::kWebContentsCaptureHiDpi);
-    } else {
-      feature_list_.InitAndDisableFeature(media::kWebContentsCaptureHiDpi);
-    }
-
     WebRtcTestBase::SetUpInProcessBrowserTestFixture();
-
     DetectErrorsInJavaScript();
   }
 
@@ -984,14 +1011,6 @@ class GetDisplayMediaHiDpiBrowserTest
     WebRtcTestBase::SetUpOnMainThread();
 
     ASSERT_TRUE(embedded_test_server()->Start());
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // The picker itself shows previews which are unsupported in Lacros tests.
-    base::Value::List matchlist;
-    matchlist.Append("*");
-    browser()->profile()->GetPrefs()->SetList(
-        prefs::kTabCaptureAllowedByOrigins, std::move(matchlist));
-#endif
 
     // Fire up the page.
     tab_ = OpenTestPageInNewTab(kMainHtmlPage);
@@ -1043,8 +1062,7 @@ class GetDisplayMediaHiDpiBrowserTest
         .ExtractString();
   }
 
-  base::test::ScopedFeatureList feature_list_;
-  const TestConfigForHiDpi test_config_;
+  const TestConfigForMediaResolution test_config_;
   raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> tab_ = nullptr;
 };
 
@@ -1075,14 +1093,12 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaHiDpiBrowserTest, Capture) {
   // The HiDPI scale change only occurs once the capture has actually started
   // and the size information was propagated back to the browser process.
   // Waiting for the video to start playing helps ensure that this is the case.
-  StartDetectingVideo(Tab(), "local-view");
+  StartDetectingVideo(Tab(), "video");
   WaitForVideoToPlay(Tab());
 
   // If the video size is higher resolution than the browser window
-  // size, expect that HiDPI mode should be active. This requires
-  // the feature to be enabled.
-  bool expect_hidpi = enable_hidpi() &&
-                      constraint_width() > kBrowserWindowWidth &&
+  // size, expect that HiDPI mode should be active.
+  bool expect_hidpi = constraint_width() > kBrowserWindowWidth &&
                       constraint_height() > kBrowserWindowHeight;
 
   double device_pixel_ratio = GetDevicePixelRatio();
@@ -1102,15 +1118,10 @@ INSTANTIATE_TEST_SUITE_P(
     // (cf. kBrowserWindowWidth and kBrowserWindowHeight in
     // GetDisplayMediaHiDpiBrowserTest above), and the large sizes must be
     // significantly larger than the browser window size.
-    Values(TestConfigForHiDpi{/*enable_hidpi=*/false,
-                              /*constraint_width=*/3840,
-                              /*constraint_height=*/2160},
-           TestConfigForHiDpi{/*enable_hidpi=*/true,
-                              /*constraint_width=*/640,
-                              /*constraint_height=*/480},
-           TestConfigForHiDpi{/*enable_hidpi=*/true,
-                              /*constraint_width=*/3840,
-                              /*constraint_height=*/2160}));
+    Values(TestConfigForMediaResolution{/*constraint_width=*/640,
+                                        /*constraint_height=*/480},
+           TestConfigForMediaResolution{/*constraint_width=*/3840,
+                                        /*constraint_height=*/2160}));
 #endif
 
 class GetDisplayMediaChangeSourceBrowserTest
@@ -1126,7 +1137,7 @@ class GetDisplayMediaChangeSourceBrowserTest
   void SetUp() override {
     // TODO(crbug.com/40245399): Fix GetDisplayMediaChangeSourceBrowserTest with
     // audio requested on ChromeOS
-#if (BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_CHROMEOS)
     if (dynamic_surface_switching_requested_ && feature_enabled_ &&
         user_shared_audio_) {
       GTEST_SKIP();
@@ -1156,7 +1167,7 @@ class GetDisplayMediaChangeSourceBrowserTest
     AdjustCommandLineForZeroCopyCapture(command_line);
 
     if (!user_shared_audio_) {
-      command_line->AppendSwitch(switches::kScreenCaptureAudioDefaultUnchecked);
+      command_line->AppendSwitch(switches::kTabCaptureAudioDefaultUnchecked);
     }
   }
 
@@ -1458,82 +1469,7 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaSelfBrowserSurfaceBrowserTest,
   EXPECT_FALSE(other_tab->IsBeingCaptured());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
-
-class WebRtcScreenCaptureSelectAllScreensTest
-    : public WebRtcScreenCaptureBrowserTest,
-      public testing::WithParamInterface<TestConfigForSelectAllScreens> {
- public:
-  WebRtcScreenCaptureSelectAllScreensTest() : test_config_(GetParam()) {}
-  ~WebRtcScreenCaptureSelectAllScreensTest() override = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Enables GetAllScreensMedia features for multi surface capture.
-    // TODO(simonha): remove when feature becomes stable.
-    if (test_config_.enable_select_all_screens) {
-      command_line->AppendSwitch(switches::kEnableBlinkTestFeatures);
-    }
-    command_line->AppendSwitch(
-        switches::kEnableExperimentalWebPlatformFeatures);
-    command_line->AppendSwitch(switches::kUseFakeUIForMediaStream);
-    command_line->RemoveSwitch(switches::kUseFakeDeviceForMediaStream);
-    command_line->AppendSwitchASCII(
-        switches::kUseFakeDeviceForMediaStream,
-        base::StringPrintf("display-media-type=%s",
-                           test_config_.display_surface));
-  }
-
-  bool PreferCurrentTab() const override { return false; }
-
- protected:
-  TestConfigForSelectAllScreens test_config_;
-};
-
-IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureSelectAllScreensTest,
-                       GetDisplayMediaAutoSelectAllScreensTrueDisallowed) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
-  RunGetDisplayMedia(tab,
-                     GetConstraints(/*video=*/true, /*audio=*/false,
-                                    /*select_all_screens=*/
-                                    SelectAllScreens::kTrue),
-                     /*is_fake_ui=*/true,
-                     /*expect_success=*/!test_config_.enable_select_all_screens,
-                     /*is_tab_capture=*/false);
-}
-
-IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureSelectAllScreensTest,
-                       GetDisplayMediaAutoSelectAllScreensFalseAlwaysAllowed) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
-  RunGetDisplayMedia(tab,
-                     GetConstraints(/*video=*/true, /*audio=*/false,
-                                    /*select_all_screens=*/
-                                    SelectAllScreens::kFalse),
-                     /*is_fake_ui=*/true, /*expect_success=*/true,
-                     /*is_tab_capture=*/false);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    WebRtcScreenCaptureSelectAllScreensTest,
-    Values(TestConfigForSelectAllScreens{/*display_surface=*/"browser",
-                                         /*enable_select_all_screens=*/true},
-           TestConfigForSelectAllScreens{/*display_surface=*/"browser",
-                                         /*enable_select_all_screens=*/false},
-           TestConfigForSelectAllScreens{/*display_surface=*/"window",
-                                         /*enable_select_all_screens=*/true},
-           TestConfigForSelectAllScreens{/*display_surface=*/"window",
-                                         /*enable_select_all_screens=*/false},
-           TestConfigForSelectAllScreens{/*display_surface=*/"monitor",
-                                         /*enable_select_all_screens=*/true},
-           TestConfigForSelectAllScreens{/*display_surface=*/"monitor",
-                                         /*enable_select_all_screens=*/false}));
-
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
-
+// Covers whether transient activation is required to call getDisplayMedia.
 class GetDisplayMediaTransientActivationRequiredTest
     : public WebRtcScreenCaptureBrowserTest,
       public testing::WithParamInterface<
@@ -1625,9 +1561,7 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaTransientActivationRequiredTest, Check) {
             "'MediaDevices': getDisplayMedia() requires transient activation "
             "(user gesture).";
 
-  RunGetDisplayMedia(tab,
-                     GetConstraints(/*video=*/true, /*audio=*/true,
-                                    SelectAllScreens::kUndefined),
+  RunGetDisplayMedia(tab, GetConstraints(/*video=*/true, /*audio=*/true),
                      /*is_fake_ui=*/true, expect_success,
                      /*is_tab_capture=*/false, expected_error,
                      with_user_gesture_);
@@ -1643,6 +1577,178 @@ INSTANTIATE_TEST_SUITE_P(
         /*policy_allowlist_value=*/
         Values(std::nullopt, kEmbeddedTestServerOrigin, kOtherOrigin)),
     &GetDisplayMediaTransientActivationRequiredTest::GetDescription);
+
+// Covers whether transient activation is conferred by the user's interaction
+// with the prompt shown by getDisplayMedia.
+class GetDisplayMediaConfersTransientActivationTest
+    : public WebRtcScreenCaptureBrowserTest,
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+ public:
+  static std::string GetDescription(
+      const testing::TestParamInfo<
+          GetDisplayMediaConfersTransientActivationTest::ParamType>& info) {
+    const bool feature_enabled = std::get<0>(info.param);
+    const bool prefer_current_tab = std::get<1>(info.param);
+    const bool user_accepts = std::get<2>(info.param);
+    return base::StrCat(
+        {"WithFeature", feature_enabled ? "Enabled" : "Disabled",
+         prefer_current_tab ? "PreferCurrentTabVariant" : "StandardVariant",
+         "User", user_accepts ? "Accepts" : "Rejects", "Prompt"});
+  }
+
+  GetDisplayMediaConfersTransientActivationTest()
+      : feature_enabled_(std::get<0>(GetParam())),
+        prefer_current_tab_(std::get<1>(GetParam())),
+        user_accepts_(std::get<2>(GetParam())) {}
+  ~GetDisplayMediaConfersTransientActivationTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    if (prefer_current_tab_) {
+      command_line->AppendSwitch(user_accepts_
+                                     ? switches::kThisTabCaptureAutoAccept
+                                     : switches::kThisTabCaptureAutoReject);
+    } else {
+      if (user_accepts_) {
+        command_line->AppendSwitchASCII(
+            switches::kAutoSelectTabCaptureSourceByTitle, kCapturedTabTitle);
+      } else {
+        command_line->AppendSwitch(switches::kCaptureAutoReject);
+      }
+    }
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    WebRtcScreenCaptureBrowserTest::SetUpInProcessBrowserTestFixture();
+    feature_list_.InitWithFeatureState(media::kGetDisplayMediaConfersActivation,
+                                       feature_enabled_);
+    DetectErrorsInJavaScript();
+  }
+
+  bool PreferCurrentTab() const override { return prefer_current_tab_; }
+
+ protected:
+  const bool feature_enabled_;
+  const bool prefer_current_tab_;
+  const bool user_accepts_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    GetDisplayMediaConfersTransientActivationTest,
+    Combine(
+        /*feature_enabled=*/Bool(),
+        /*prefer_current_tab=*/Bool(),
+        /*user_accepts=*/Bool()),
+    &GetDisplayMediaConfersTransientActivationTest::GetDescription);
+
+// TODO(crbug.com/420406085): Re-enable the tests.
+#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER)
+#define MAYBE_GdmActivation_RunTest DISABLED_RunTest
+#else
+#define MAYBE_GdmActivation_RunTest RunTest
+#endif
+IN_PROC_BROWSER_TEST_P(GetDisplayMediaConfersTransientActivationTest,
+                       MAYBE_GdmActivation_RunTest) {
+  // Setup
+  ASSERT_TRUE(embedded_test_server()->Start());
+  OpenTestPageInNewTab(kCapturedPageMain);
+  content::WebContents* capturing_tab = OpenTestPageInNewTab(kMainHtmlPage);
+
+  ASSERT_FALSE(
+      capturing_tab->GetPrimaryMainFrame()->HasTransientUserActivation());
+
+  // `with_user_gesture` is set to `false` because `getDisplayMedia()` does not
+  // currently consume the activation (nor requires it).
+  RunGetDisplayMedia(
+      capturing_tab,
+      GetConstraints(/*video=*/true, /*audio=*/true, prefer_current_tab_),
+      /*is_fake_ui=*/false, /*expect_success=*/user_accepts_,
+      /*is_tab_capture=*/true, /*expected_error=*/"",
+      /*with_user_gesture=*/false);
+
+  EXPECT_EQ(capturing_tab->GetPrimaryMainFrame()->HasTransientUserActivation(),
+            feature_enabled_ && user_accepts_);
+}
+
+// This test suite ensures that, no matter the combination of inputs,
+// an interaction with getUserMedia() does not confer transient activation.
+// That is, the code authored for gDM does not mistrigger and run for gUM.
+class GetUserMediaDoesNotConferTransientActivationTest
+    : public WebRtcTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+ public:
+  static std::string GetDescription(
+      const testing::TestParamInfo<
+          GetUserMediaDoesNotConferTransientActivationTest::ParamType>& info) {
+    const bool video = std::get<0>(info.param);
+    const bool audio = std::get<1>(info.param);
+    const bool user_accepts = std::get<2>(info.param);
+    return base::StrCat({"Video", video ? "On" : "Off", "Audio",
+                         audio ? "On" : "Off", "User",
+                         user_accepts ? "Accepts" : "Rejects", "Prompt"});
+  }
+
+  GetUserMediaDoesNotConferTransientActivationTest()
+      : video_(std::get<0>(GetParam())),
+        audio_(std::get<1>(GetParam())),
+        user_accepts_(std::get<2>(GetParam())) {}
+  ~GetUserMediaDoesNotConferTransientActivationTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kUseFakeDeviceForMediaStream);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    WebRtcTestBase::SetUpInProcessBrowserTestFixture();
+    DetectErrorsInJavaScript();
+  }
+
+ protected:
+  const bool video_;
+  const bool audio_;
+  const bool user_accepts_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    GetUserMediaDoesNotConferTransientActivationTest,
+    Combine(
+        /*video=*/Bool(),
+        /*audio=*/Bool(),
+        /*user_accepts=*/Bool()),
+    &GetUserMediaDoesNotConferTransientActivationTest::GetDescription);
+
+// TODO(crbug.com/420406085): Re-enable the tests.
+#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER)
+#define MAYBE_GumActivation_RunTest DISABLED_RunTest
+#else
+#define MAYBE_GumActivation_RunTest RunTest
+#endif
+IN_PROC_BROWSER_TEST_P(GetUserMediaDoesNotConferTransientActivationTest,
+                       MAYBE_GumActivation_RunTest) {
+  if (!video_ && !audio_) {
+    GTEST_SKIP();
+  }
+
+  // Setup
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* const wc = OpenTestPageInNewTab(kMainHtmlPage);
+  permissions::PermissionRequestManager::FromWebContents(wc)
+      ->set_auto_response_for_test(
+          permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  ASSERT_FALSE(wc->GetPrimaryMainFrame()->HasTransientUserActivation());
+
+  const std::string constraints =
+      base::StringPrintf("{video: %s, audio: %s}", video_ ? "true" : "false",
+                         audio_ ? "true" : "false");
+  RunGetUserMedia(wc, constraints);
+
+  EXPECT_FALSE(wc->GetPrimaryMainFrame()->HasTransientUserActivation());
+}
 
 // Encapsulates information about a capture-session in which one tab starts
 // out capturing a specific other tab, and later possibly moves to capturing
@@ -1666,8 +1772,10 @@ class CaptureSessionDetails {
         capturing_tab_(capturing_tab) {}
 
   std::unique_ptr<MockCapturedSurfaceController>
-  MakeMockCapturedSurfaceController(GlobalRenderFrameHostId gdm_rfhid,
-                                    WebContentsMediaCaptureId captured_wc_id) {
+  MakeMockCapturedSurfaceController(
+      blink::mojom::CapturedSurfaceControlResult permission_response,
+      GlobalRenderFrameHostId gdm_rfhid,
+      WebContentsMediaCaptureId captured_wc_id) {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
     EXPECT_FALSE(mock_captured_surface_controller_)
@@ -1675,8 +1783,8 @@ class CaptureSessionDetails {
 
     mock_captured_surface_controller_ =
         new MockCapturedSurfaceController(gdm_rfhid, captured_wc_id);
-    mock_captured_surface_controller_->SetSendWheelResponse(
-        blink::mojom::CapturedSurfaceControlResult::kSuccess);
+    mock_captured_surface_controller_->SetRequestPermissionResponse(
+        permission_response);
 
     return base::WrapUnique(mock_captured_surface_controller_.get());
   }
@@ -1690,7 +1798,8 @@ class CaptureSessionDetails {
   }
 
   // Sets a factory that produces mock controllers for Captured Surface Control
-  // and attaches them to `this` CaptureSessionDetails object.
+  // and attaches them to `this` CaptureSessionDetails object. They will respond
+  // to permission checks with the preconfigured `permission_response`.
   //
   // The factory is global. Tests that instantiate multiple capture sessions
   // should make sure to call this again from the new CaptureSessionDetails
@@ -1699,7 +1808,9 @@ class CaptureSessionDetails {
   //
   // This method is called on the UI thread. Hops to the IO thread and sets the
   // CSC-factory, then unblocks execution on the UI thread.
-  void SetCapturedSurfaceControllerFactory() {
+  void SetCapturedSurfaceControllerFactory(
+      blink::mojom::CapturedSurfaceControlResult permission_response =
+          blink::mojom::CapturedSurfaceControlResult::kSuccess) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
     base::RunLoop run_loop;
@@ -1707,7 +1818,8 @@ class CaptureSessionDetails {
         FROM_HERE,
         base::BindOnce(
             &CaptureSessionDetails::SetCapturedSurfaceControllerFactoryOnIO,
-            base::Unretained(this), run_loop.QuitClosure()));
+            base::Unretained(this), permission_response,
+            run_loop.QuitClosure()));
     run_loop.Run();
   }
 
@@ -1743,7 +1855,22 @@ class CaptureSessionDetails {
       case CapturedTab::kCapturingTab:
         return capturing_tab_;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
+  }
+
+  WebContents* GetCapturedTab() {
+    CHECK_EQ(static_cast<int>(capturing_tab_->IsBeingCaptured()) +
+                 static_cast<int>(initially_captured_tab_->IsBeingCaptured()) +
+                 static_cast<int>(other_tab_->IsBeingCaptured()),
+             1);
+    if (capturing_tab_->IsBeingCaptured()) {
+      return capturing_tab_;
+    } else if (initially_captured_tab_->IsBeingCaptured()) {
+      return initially_captured_tab_;
+    } else if (other_tab_->IsBeingCaptured()) {
+      return other_tab_;
+    }
+    NOTREACHED();
   }
 
   // Get the tab that's neither capturing nor being captured.
@@ -1776,26 +1903,60 @@ class CaptureSessionDetails {
               kShareThisTabInsteadMessage);
   }
 
-  void SendWheel(std::string action = "{}") {
-    EXPECT_EQ(
-        content::EvalJs(capturing_tab_->GetPrimaryMainFrame(),
-                        base::StringPrintf("sendWheel(%s);", action.c_str())),
-        "send-wheel-resolved");
+  // Forwards from the target element, or stops forwarding if target is "null".
+  std::string ForwardWheel(const std::string& target) {
+    return content::EvalJs(
+               capturing_tab_->GetPrimaryMainFrame(),
+               base::StringPrintf("forwardWheel(%s);", target.c_str()))
+        .ExtractString();
   }
 
-  void SetZoomLevel(int zoom_level) {
-    EXPECT_EQ(
-        content::EvalJs(capturing_tab_->GetPrimaryMainFrame(),
-                        base::StringPrintf("setZoomLevel(%d);", zoom_level)),
-        "set-zoom-level-resolved");
+  void UpdateZoomLevel(const std::string& action, bool expect_success = true) {
+    const std::string command =
+        base::StringPrintf("updateZoomLevel(\"%s\");", action);
+    const std::string expected_result = base::StringPrintf(
+        "%s-zoom-level-%s", action, expect_success ? "resolved" : "error");
+
+    EXPECT_EQ(content::EvalJs(capturing_tab_->GetPrimaryMainFrame(), command),
+              expected_result);
   }
 
-  int GetZoomLevel() {
-    const int result = content::EvalJs(capturing_tab_->GetPrimaryMainFrame(),
-                                       "getZoomLevel();")
-                           .ExtractInt();
-    EXPECT_GT(result, 0);
+  std::optional<int> GetZoomLevel() {
+    const content::EvalJsResult result = content::EvalJs(
+        capturing_tab_->GetPrimaryMainFrame(), "getZoomLevel();");
+    return (result == base::Value())
+               ? std::nullopt
+               : std::make_optional<int>(result.ExtractInt());
+  }
+
+  // Call `controller.getSupportedZoomLevels()`.
+  // Returns the result if successful; the error otherwise.
+  base::expected<std::vector<int>, std::string> GetSupportedZoomLevels() {
+    content::EvalJsResult js_result = content::EvalJs(
+        capturing_tab_->GetPrimaryMainFrame(), "getSupportedZoomLevels();");
+
+    const base::Value::List& list = js_result.ExtractList();
+    EXPECT_GE(list.size(), 1u);
+    if (list.size() == 1u) {
+      // Reserved for an error.
+      return base::unexpected(list[0].GetString());
+    }
+
+    std::vector<int> result;
+    result.reserve(list.size());
+    for (const base::Value& val : list) {
+      EXPECT_TRUE(val.is_int());
+      result.push_back(val.GetInt());
+    }
     return result;
+  }
+
+  int GetZoomLevelChangeEventsSinceLast() {
+    // Note that ExtractInt() will implicitly ensure the script did not run into
+    // an error.
+    return content::EvalJs(capturing_tab_->GetPrimaryMainFrame(),
+                           "zoomLevelChangeEventsSinceLast();")
+        .ExtractInt();
   }
 
   WebContents* initially_captured_tab() const {
@@ -1806,12 +1967,13 @@ class CaptureSessionDetails {
 
  private:
   void SetCapturedSurfaceControllerFactoryOnIO(
+      blink::mojom::CapturedSurfaceControlResult permission_response,
       base::RepeatingClosure done_closure) {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
     CapturedSurfaceControllerFactoryCallback factory = base::BindRepeating(
         &CaptureSessionDetails::MakeMockCapturedSurfaceController,
-        base::Unretained(this));
+        base::Unretained(this), permission_response);
 
     content::SetCapturedSurfaceControllerFactoryForTesting(factory);
 
@@ -1849,43 +2011,78 @@ class CaptureSessionDetails {
   raw_ptr<MockCapturedSurfaceController> mock_captured_surface_controller_;
 };
 
-class GetDisplayMediaCapturedSurfaceControlTest : public WebRtcTestBase {
+class CapturedSurfaceControlTest : public WebRtcTestBase {
  public:
   enum class Action {
-    kSendWheel,
-    kSetZoomLevel,
+    kForwardWheel,      // forwardWheel(validElement)
+    kForwardWheelNull,  // forwardWheel(null)
+    kIncreaseZoomLevel,
+    kDecreaseZoomLevel,
+    kResetZoomLevel,
     kGetZoomLevel,
+    kGetSupportedZoomLevels,
   };
 
-  static bool IsWriteAccessAction(Action action) {
-    switch (action) {
-      case Action::kSendWheel:
-      case Action::kSetZoomLevel:
-        return true;
+  static const char* ToZoomLevelAction(Action input) {
+    switch (input) {
+      case Action::kIncreaseZoomLevel:
+        return "increase";
+      case Action::kDecreaseZoomLevel:
+        return "decrease";
+      case Action::kResetZoomLevel:
+        return "reset";
+      case Action::kForwardWheel:
+      case Action::kForwardWheelNull:
       case Action::kGetZoomLevel:
-        return false;
+      case Action::kGetSupportedZoomLevels:
+        break;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED() << "Not a ZoomLevelAction.";
   }
 
-  GetDisplayMediaCapturedSurfaceControlTest() = default;
-  ~GetDisplayMediaCapturedSurfaceControlTest() override = default;
+  static bool ShouldTriggerCscIndicator(Action action) {
+    switch (action) {
+      case Action::kForwardWheel:
+      case Action::kIncreaseZoomLevel:
+      case Action::kDecreaseZoomLevel:
+      case Action::kResetZoomLevel:
+        return true;
+      case Action::kGetZoomLevel:
+      case Action::kGetSupportedZoomLevels:
+      case Action::kForwardWheelNull:
+        return false;
+    }
+    NOTREACHED();
+  }
 
   static void MakeValidApiCall(CaptureSessionDetails& capture_session,
                                Action action) {
     switch (action) {
-      case Action::kSendWheel:
-        capture_session.SendWheel();
+      case Action::kForwardWheel:
+        EXPECT_EQ(capture_session.ForwardWheel("video"),
+                  "forward-wheel-resolved");
         return;
-      case Action::kSetZoomLevel:
-        capture_session.SetZoomLevel(200);
+      case Action::kForwardWheelNull:
+        EXPECT_EQ(capture_session.ForwardWheel("null"),
+                  "forward-wheel-resolved");
+        return;
+      case Action::kIncreaseZoomLevel:
+      case Action::kDecreaseZoomLevel:
+      case Action::kResetZoomLevel:
+        capture_session.UpdateZoomLevel(ToZoomLevelAction(action));
         return;
       case Action::kGetZoomLevel:
         capture_session.GetZoomLevel();
         return;
+      case Action::kGetSupportedZoomLevels:
+        (void)capture_session.GetSupportedZoomLevels();
+        return;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
+
+  CapturedSurfaceControlTest() = default;
+  ~CapturedSurfaceControlTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     feature_list_.InitWithFeatures(
@@ -1906,6 +2103,8 @@ class GetDisplayMediaCapturedSurfaceControlTest : public WebRtcTestBase {
         switches::kEnableExperimentalWebPlatformFeatures);
     command_line->AppendSwitchASCII(
         switches::kAutoSelectTabCaptureSourceByTitle, kCapturedTabTitle);
+    command_line->AppendSwitch(
+        switches::kAutoGrantCapturedSurfaceControlPrompt);
 
     AdjustCommandLineForZeroCopyCapture(command_line);
   }
@@ -1916,6 +2115,14 @@ class GetDisplayMediaCapturedSurfaceControlTest : public WebRtcTestBase {
   // to parameterize the entire test suite.
   void RunChangeSourceWorksOnCorrectCaptureSession(
       size_t session_experiencing_change);
+
+  // Runs the `ChangingCapturedTabZoomChangeEventTest` test.
+  // This is defined as a method in order to test both of the following tests
+  // without the overhead and unclarity of parameterizing a test suite for it.
+  // * ChangingCapturedTabIssuesEventIfDifferentZoomLevels
+  // * ChangingCapturedTabDoesNotIssueEventIfSameZoomLevels
+  void RunChangingCapturedTabZoomChangeEventTest(double zoom_level_first_tab,
+                                                 double zoom_level_second_tab);
 
  protected:
   using CapturedTab = ::CaptureSessionDetails::CapturedTab;
@@ -1932,9 +2139,380 @@ class GetDisplayMediaCapturedSurfaceControlTest : public WebRtcTestBase {
   base::test::ScopedFeatureList feature_list_;
 };
 
-using CscAction = GetDisplayMediaCapturedSurfaceControlTest::Action;
+using CscAction = CapturedSurfaceControlTest::Action;
 
-IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
+                       UnboundCaptureControllerReportNullZoomLevel) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Note absence of call to RunGetDisplayMedia().
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+
+  EXPECT_EQ(capture_session.GetZoomLevel(), std::nullopt);
+}
+
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
+                       CorrectlyReportDefaultCapturedSurfaceZoomLevel) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Note absence of call to SetZoomFactor().
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+  capture_session.RunGetDisplayMedia();
+
+  WebContents* const captured_tab = capture_session.GetCapturedTab();
+  EXPECT_EQ(GetZoomLevelPercentage(captured_tab), 100);
+}
+
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
+                       CorrectlyReportNonDefaultCapturedSurfaceZoomLevel) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+
+  // Set the zoom factor to something other than the default before
+  // capture starts.
+  WebContents* const captured_tab =
+      capture_session.GetTab(CapturedTab::kInitiallyCapturedTab);
+  SetZoomFactor(captured_tab, 0.5);
+
+  // Start the capture.
+  capture_session.RunGetDisplayMedia();
+  ASSERT_EQ(capture_session.GetCapturedTab(), captured_tab);
+
+  // The initially reported zoom level is as expected.
+  EXPECT_EQ(GetZoomLevelPercentage(captured_tab), 50);
+}
+
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
+                       GetSupportedZoomLevelsFailsOnUnboundCaptureController) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Note absence of call to RunGetDisplayMedia().
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+
+  const base::expected<std::vector<int>, std::string> result =
+      capture_session.GetSupportedZoomLevels();
+  EXPECT_FALSE(result.has_value());
+  EXPECT_NE(result.error().find("InvalidStateError"), std::string::npos);
+}
+
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
+                       GetSupportedZoomLevelsSucceedsIfCapturingTab) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+  capture_session.RunGetDisplayMedia();
+
+  EXPECT_TRUE(capture_session.GetSupportedZoomLevels().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
+                       GetSupportedZoomLevelsMonotonouslyIncreasing) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+  capture_session.RunGetDisplayMedia();
+
+  const base::expected<std::vector<int>, std::string> result =
+      capture_session.GetSupportedZoomLevels();
+  EXPECT_TRUE(result.has_value());
+  const std::vector<int>& values = result.value();
+  ASSERT_GE(values.size(), 2u);
+  for (size_t i = 0; i < values.size() - 1; ++i) {
+    EXPECT_GT(values[i + 1], values[i]);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
+                       GetSupportedZoomLevelsFailsIfTracksStopped) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+  capture_session.RunGetDisplayMedia();
+
+  ASSERT_TRUE(capture_session.GetSupportedZoomLevels().has_value());
+
+  StopAllTracks(capture_session.capturing_tab());
+
+  const base::expected<std::vector<int>, std::string> result =
+      capture_session.GetSupportedZoomLevels();
+  EXPECT_FALSE(result.has_value());
+  EXPECT_NE(result.error().find("InvalidStateError"), std::string::npos);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CapturedSurfaceControlTest,
+    NoZoomLevelChangeEventFiredWhenCaptureStartsWithDefaultZoomLevel) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Note absence of call to SetZoomFactor().
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+  capture_session.RunGetDisplayMedia();
+
+  EXPECT_EQ(capture_session.GetZoomLevelChangeEventsSinceLast(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CapturedSurfaceControlTest,
+    NoZoomLevelChangeEventFiredWhenCaptureStartsWithNonDefaultZoomLevel) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+
+  // Set the zoom factor to something other than the default before
+  // capture starts.
+  WebContents* const captured_tab =
+      capture_session.GetTab(CapturedTab::kInitiallyCapturedTab);
+  SetZoomFactor(captured_tab, 0.5);
+
+  capture_session.RunGetDisplayMedia();
+  ASSERT_EQ(capture_session.GetCapturedTab(), captured_tab);
+
+  EXPECT_EQ(capture_session.GetZoomLevelChangeEventsSinceLast(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
+                       IncreaseZoomLevelSucceedsBelowMaxValue) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+  capture_session.RunGetDisplayMedia();
+
+  WebContents* const captured_tab = capture_session.GetCapturedTab();
+  ASSERT_EQ(GetZoomLevelPercentage(captured_tab), 100);
+
+  capture_session.UpdateZoomLevel("increase");
+
+  // Check both the actual zoom level as well as the one reported to JS.
+  const int actual_zoom_level_percent = GetZoomLevelPercentage(captured_tab);
+  EXPECT_GT(actual_zoom_level_percent, 100);
+  EXPECT_EQ(actual_zoom_level_percent, capture_session.GetZoomLevel());
+}
+
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
+                       IncreaseZoomLevelFailsAtMaxValue) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+  capture_session.RunGetDisplayMedia();
+
+  WebContents* const captured_tab = capture_session.GetCapturedTab();
+  const double max_factor = blink::kPresetBrowserZoomFactors.back();
+  SetZoomFactor(captured_tab, max_factor);
+  ASSERT_EQ(GetZoomLevelPercentage(captured_tab), std::round(100 * max_factor));
+
+  capture_session.UpdateZoomLevel("increase", /*expect_success=*/false);
+
+  // Check both the actual zoom level as well as the one reported to JS.
+  const int actual_zoom_level_percent = GetZoomLevelPercentage(captured_tab);
+  EXPECT_EQ(actual_zoom_level_percent, std::round(100 * max_factor));
+  EXPECT_EQ(actual_zoom_level_percent, capture_session.GetZoomLevel());
+}
+
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
+                       IncreaseZoomLevelIssuesEvent) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+  capture_session.RunGetDisplayMedia();
+
+  capture_session.UpdateZoomLevel("increase");
+  EXPECT_EQ(capture_session.GetZoomLevelChangeEventsSinceLast(), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
+                       DecreaseZoomLevelSucceedsAboveMinValue) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+  capture_session.RunGetDisplayMedia();
+
+  WebContents* const captured_tab = capture_session.GetCapturedTab();
+  ASSERT_EQ(GetZoomLevelPercentage(captured_tab), 100);
+
+  capture_session.UpdateZoomLevel("decrease");
+
+  // Check both the actual zoom level as well as the one reported to JS.
+  const int actual_zoom_level_percent = GetZoomLevelPercentage(captured_tab);
+  EXPECT_LT(actual_zoom_level_percent, 100);
+  EXPECT_EQ(actual_zoom_level_percent, capture_session.GetZoomLevel());
+}
+
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
+                       DecreaseZoomLevelFailsAtMinValue) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+  capture_session.RunGetDisplayMedia();
+
+  WebContents* const captured_tab = capture_session.GetCapturedTab();
+  const double min_factor = blink::kPresetBrowserZoomFactors.front();
+  SetZoomFactor(captured_tab, min_factor);
+  ASSERT_EQ(GetZoomLevelPercentage(captured_tab), std::round(100 * min_factor));
+
+  capture_session.UpdateZoomLevel("decrease", /*expect_success=*/false);
+
+  // Check both the actual zoom level as well as the one reported to JS.
+  const int actual_zoom_level_percent = GetZoomLevelPercentage(captured_tab);
+  EXPECT_EQ(actual_zoom_level_percent, std::round(100 * min_factor));
+  EXPECT_EQ(actual_zoom_level_percent, capture_session.GetZoomLevel());
+}
+
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
+                       DecreaseZoomLevelIssuesEvent) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+  capture_session.RunGetDisplayMedia();
+
+  capture_session.UpdateZoomLevel("decrease");
+  EXPECT_EQ(capture_session.GetZoomLevelChangeEventsSinceLast(), 1);
+}
+
+// The "expected" case of resetZoomLevel() - changing *back* to
+// the default value.
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
+                       ResetZoomLevelSucceedsIfNonDefaultLevel) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+
+  // Set the zoom factor to something other than the default before
+  // capture starts.
+  WebContents* const captured_tab =
+      capture_session.GetTab(CapturedTab::kInitiallyCapturedTab);
+  SetZoomFactor(captured_tab, 0.5);
+
+  // Start the capture.
+  capture_session.RunGetDisplayMedia();
+  ASSERT_EQ(capture_session.GetCapturedTab(), captured_tab);
+  ASSERT_EQ(GetZoomLevelPercentage(captured_tab), 50);
+
+  // Reset works as expected.
+  capture_session.UpdateZoomLevel("reset");
+
+  // Check both the actual zoom level as well as the one reported to JS.
+  EXPECT_EQ(GetZoomLevelPercentage(captured_tab), 100);
+  EXPECT_EQ(capture_session.GetZoomLevel(), 100);
+}
+
+// The less "expected" case of resetZoomLevel() - calling reset...()
+// when already at the default value. Should be no-op but succeed.
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
+                       ResetZoomLevelSucceedsIfDefaultLevel) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+
+  capture_session.RunGetDisplayMedia();
+  WebContents* const captured_tab = capture_session.GetCapturedTab();
+  ASSERT_EQ(GetZoomLevelPercentage(captured_tab), 100);
+
+  // Reset works as expected.
+  capture_session.UpdateZoomLevel("reset");
+
+  // Check both the actual zoom level as well as the one reported to JS.
+  EXPECT_EQ(GetZoomLevelPercentage(captured_tab), 100);
+  EXPECT_EQ(capture_session.GetZoomLevel(), 100);
+}
+
+void CapturedSurfaceControlTest::RunChangingCapturedTabZoomChangeEventTest(
+    double zoom_level_first_tab,
+    double zoom_level_second_tab) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+
+  WebContents* const first_captured_tab =
+      capture_session.GetTab(CapturedTab::kInitiallyCapturedTab);
+  SetZoomFactor(first_captured_tab, zoom_level_first_tab);
+
+  WebContents* const second_captured_tab =
+      capture_session.GetTab(CapturedTab::kOtherTab);
+  SetZoomFactor(second_captured_tab, zoom_level_second_tab);
+
+  capture_session.RunGetDisplayMedia();
+  ASSERT_EQ(GetZoomLevelPercentage(first_captured_tab),
+            100 * zoom_level_first_tab);
+  ASSERT_EQ(capture_session.GetZoomLevelChangeEventsSinceLast(), 0);
+
+  GetDelegate(second_captured_tab)->ShareThisTabInstead();
+  capture_session.WaitForCaptureOf(CapturedTab::kOtherTab);
+  ASSERT_EQ(capture_session.GetCapturedTab(), second_captured_tab);
+  ASSERT_EQ(GetZoomLevelPercentage(second_captured_tab),
+            100 * zoom_level_second_tab);
+
+  const int expected_event_count =
+      (zoom_level_first_tab != zoom_level_second_tab) ? 1 : 0;
+  EXPECT_EQ(capture_session.GetZoomLevelChangeEventsSinceLast(),
+            expected_event_count);
+}
+
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
+                       ChangingCapturedTabIssuesEventIfDifferentZoomLevels) {
+  SCOPED_TRACE("ChangingCapturedTabIssuesEventIfDifferentZoomLevels");
+  RunChangingCapturedTabZoomChangeEventTest(0.5, 0.75);
+}
+
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
+                       ChangingCapturedTabDoesNotIssueEventIfSameZoomLevels) {
+  SCOPED_TRACE("ChangingCapturedTabDoesNotIssueEventIfSameZoomLevels");
+  RunChangingCapturedTabZoomChangeEventTest(0.5, 0.5);
+}
+
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
+                       ResetZoomLevelOnlyIssuesEventsWhenZoomLevelChanges) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+
+  // Set the zoom factor to something other than the default before
+  // capture starts.
+  WebContents* const captured_tab =
+      capture_session.GetTab(CapturedTab::kInitiallyCapturedTab);
+  SetZoomFactor(captured_tab, 0.5);
+
+  // Start the capture.
+  capture_session.RunGetDisplayMedia();
+  ASSERT_EQ(capture_session.GetCapturedTab(), captured_tab);
+  ASSERT_EQ(GetZoomLevelPercentage(captured_tab), 50);
+  ASSERT_EQ(capture_session.GetZoomLevelChangeEventsSinceLast(), 0);
+
+  // Expectation #1 - the initial reset issues an event.
+  capture_session.UpdateZoomLevel("reset");
+  EXPECT_EQ(capture_session.GetZoomLevelChangeEventsSinceLast(), 1);
+
+  // Expectation #2 - additional resets don't issue an event.
+  capture_session.UpdateZoomLevel("reset");
+  EXPECT_EQ(capture_session.GetZoomLevelChangeEventsSinceLast(), 0);
+
+  // Expectation #3 - events still generally issued, they just
+  // require actual change of zoom level. (Test is sane.)
+  capture_session.UpdateZoomLevel("increase");
+  capture_session.UpdateZoomLevel("reset");
+  EXPECT_EQ(capture_session.GetZoomLevelChangeEventsSinceLast(), 2);
+}
+
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
                        ChangeSourceTriggersUpdateCaptureTarget) {
   SCOPED_TRACE("ChangeSourceTriggersUpdateCaptureTarget");
 
@@ -1946,7 +2524,7 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
   capture_session.RunGetDisplayMedia();
   capture_session.ExpectCapturedTab(CapturedTab::kInitiallyCapturedTab);
 
-  capture_session.SendWheel();
+  EXPECT_EQ(capture_session.ForwardWheel("video"), "forward-wheel-resolved");
 
   // Expect that clicking "share this tab instead" will pipe a notification of
   // the change to the captured surface controller.
@@ -1957,9 +2535,8 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
   capture_session.VerifyAndClearExpectations();
 }
 
-void GetDisplayMediaCapturedSurfaceControlTest::
-    RunChangeSourceWorksOnCorrectCaptureSession(
-        size_t session_experiencing_change) {
+void CapturedSurfaceControlTest::RunChangeSourceWorksOnCorrectCaptureSession(
+    size_t session_experiencing_change) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   CaptureSessionDetails capture_session_0 =
@@ -1967,14 +2544,14 @@ void GetDisplayMediaCapturedSurfaceControlTest::
   capture_session_0.SetCapturedSurfaceControllerFactory();
   capture_session_0.RunGetDisplayMedia();
   capture_session_0.ExpectCapturedTab(CapturedTab::kInitiallyCapturedTab);
-  capture_session_0.SendWheel();
+  EXPECT_EQ(capture_session_0.ForwardWheel("video"), "forward-wheel-resolved");
 
   CaptureSessionDetails capture_session_1 =
       MakeCaptureSessionDetails("capture_session_1");
   capture_session_1.SetCapturedSurfaceControllerFactory();
   capture_session_1.RunGetDisplayMedia();
   capture_session_1.ExpectCapturedTab(CapturedTab::kInitiallyCapturedTab);
-  capture_session_1.SendWheel();
+  EXPECT_EQ(capture_session_1.ForwardWheel("video"), "forward-wheel-resolved");
 
   // Expect that clicking "share this tab instead" will pipe a notification of
   // the change to the correct CapturedSurfaceController.
@@ -1993,28 +2570,57 @@ void GetDisplayMediaCapturedSurfaceControlTest::
 }
 
 // Test when the first of two capture sessions experiences the source-change.
-IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
                        ChangeSourceWorksOnCorrectCaptureSession0) {
   SCOPED_TRACE("ChangeSourceWorksOnCorrectCaptureSession0");
   RunChangeSourceWorksOnCorrectCaptureSession(0);
 }
 
 // Test when the second of two capture sessions experiences the source-change.
-IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
                        ChangeSourceWorksOnCorrectCaptureSession1) {
   SCOPED_TRACE("ChangeSourceWorksOnCorrectCaptureSession1");
   RunChangeSourceWorksOnCorrectCaptureSession(1);
 }
 
-class GetDisplayMediaCapturedSurfaceControlIndicatorTest
-    : public GetDisplayMediaCapturedSurfaceControlTest,
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
+                       ForwardWheelElementFailsIfNoPermission) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+  capture_session.SetCapturedSurfaceControllerFactory(
+      blink::mojom::CapturedSurfaceControlResult::kNoPermissionError);
+  capture_session.RunGetDisplayMedia();
+  capture_session.ExpectCapturedTab(CapturedTab::kInitiallyCapturedTab);
+
+  EXPECT_THAT(capture_session.ForwardWheel("video"),
+              HasSubstr("NotAllowedError"));
+}
+
+IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
+                       ForwardWheelNullSucceedsWithoutPermission) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  CaptureSessionDetails capture_session =
+      MakeCaptureSessionDetails("capture_session");
+  capture_session.SetCapturedSurfaceControllerFactory(
+      blink::mojom::CapturedSurfaceControlResult::kNoPermissionError);
+  capture_session.RunGetDisplayMedia();
+  capture_session.ExpectCapturedTab(CapturedTab::kInitiallyCapturedTab);
+
+  EXPECT_EQ(capture_session.ForwardWheel("null"), "forward-wheel-resolved");
+}
+
+class CapturedSurfaceControlIndicatorTest
+    : public CapturedSurfaceControlTest,
       public testing::WithParamInterface<CscAction> {
  public:
-  GetDisplayMediaCapturedSurfaceControlIndicatorTest() : action_(GetParam()) {}
-  ~GetDisplayMediaCapturedSurfaceControlIndicatorTest() override = default;
+  CapturedSurfaceControlIndicatorTest() : action_(GetParam()) {}
+  ~CapturedSurfaceControlIndicatorTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    GetDisplayMediaCapturedSurfaceControlTest::SetUpCommandLine(command_line);
+    CapturedSurfaceControlTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(
         switches::kAutoGrantCapturedSurfaceControlPrompt);
   }
@@ -2024,12 +2630,16 @@ class GetDisplayMediaCapturedSurfaceControlIndicatorTest
 };
 
 INSTANTIATE_TEST_SUITE_P(,
-                         GetDisplayMediaCapturedSurfaceControlIndicatorTest,
-                         Values(CscAction::kSendWheel,
-                                CscAction::kSetZoomLevel,
-                                CscAction::kGetZoomLevel));
+                         CapturedSurfaceControlIndicatorTest,
+                         Values(CscAction::kForwardWheel,
+                                CscAction::kForwardWheelNull,
+                                CscAction::kIncreaseZoomLevel,
+                                CscAction::kDecreaseZoomLevel,
+                                CscAction::kResetZoomLevel,
+                                CscAction::kGetZoomLevel,
+                                CscAction::kGetSupportedZoomLevels));
 
-IN_PROC_BROWSER_TEST_P(GetDisplayMediaCapturedSurfaceControlIndicatorTest,
+IN_PROC_BROWSER_TEST_P(CapturedSurfaceControlIndicatorTest,
                        IndicatorNotShownBeforeApiInvocation) {
   SCOPED_TRACE("IndicatorNotShownBeforeApiInvocation");
 
@@ -2046,7 +2656,7 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaCapturedSurfaceControlIndicatorTest,
   EXPECT_FALSE(HasCscIndicator(capture_session.other_tab()));
 }
 
-IN_PROC_BROWSER_TEST_P(GetDisplayMediaCapturedSurfaceControlIndicatorTest,
+IN_PROC_BROWSER_TEST_P(CapturedSurfaceControlIndicatorTest,
                        IndicatorShownAfterWriteAccessApiInvocation) {
   SCOPED_TRACE("IndicatorShownAfterWriteAccessApiInvocation");
 
@@ -2062,7 +2672,7 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaCapturedSurfaceControlIndicatorTest,
   // The capturing tab's infobar shows the CSC indicator, but only
   // if the action was a write-access action.
   EXPECT_EQ(HasCscIndicator(capture_session.capturing_tab()),
-            IsWriteAccessAction(action_));
+            ShouldTriggerCscIndicator(action_));
 
   // The CSC indicator is not shown on any other infobar.
   EXPECT_FALSE(HasCscIndicator(capture_session.initially_captured_tab()));
@@ -2070,7 +2680,7 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaCapturedSurfaceControlIndicatorTest,
 }
 
 IN_PROC_BROWSER_TEST_P(
-    GetDisplayMediaCapturedSurfaceControlIndicatorTest,
+    CapturedSurfaceControlIndicatorTest,
     IndicatorStateRetainedAfterShareThisTabInsteadNoCscBefore) {
   SCOPED_TRACE("IndicatorStateRetainedAfterShareThisTabInsteadNoCscBefore");
 
@@ -2094,7 +2704,7 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 IN_PROC_BROWSER_TEST_P(
-    GetDisplayMediaCapturedSurfaceControlIndicatorTest,
+    CapturedSurfaceControlIndicatorTest,
     IndicatorStateRetainedAfterShareThisTabInsteadAfterCscAction) {
   SCOPED_TRACE("IndicatorStateRetainedAfterShareThisTabInsteadAfterCscAction");
 
@@ -2111,9 +2721,186 @@ IN_PROC_BROWSER_TEST_P(
   // The capturing tab's infobar show the CSC indicator if the action
   // was a write-access action.
   EXPECT_EQ(HasCscIndicator(capture_session.capturing_tab()),
-            IsWriteAccessAction(action_));
+            ShouldTriggerCscIndicator(action_));
 
   // The CSC indicator is not shown on any other infobar.
   EXPECT_FALSE(HasCscIndicator(capture_session.initially_captured_tab()));
   EXPECT_FALSE(HasCscIndicator(capture_session.other_tab()));
 }
+
+class WebRtcScreenCaptureBrowserTestUserRejection
+    : public WebRtcScreenCaptureBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  WebRtcScreenCaptureBrowserTestUserRejection()
+      : prefer_current_tab_(GetParam()) {}
+  ~WebRtcScreenCaptureBrowserTestUserRejection() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WebRtcScreenCaptureBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(prefer_current_tab_
+                                   ? switches::kThisTabCaptureAutoReject
+                                   : switches::kCaptureAutoReject);
+  }
+
+  bool PreferCurrentTab() const override { return prefer_current_tab_; }
+
+ private:
+  const bool prefer_current_tab_;
+};
+
+INSTANTIATE_TEST_SUITE_P(, WebRtcScreenCaptureBrowserTestUserRejection, Bool());
+
+IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestUserRejection,
+                       CorrectErrorReported) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  OpenTestPageInNewTab(kCapturedPageMain);
+  content::WebContents* capturing_tab = OpenTestPageInNewTab(kMainHtmlPage);
+
+  RunGetDisplayMedia(
+      capturing_tab,
+      GetConstraints(
+          /*video=*/true, /*audio=*/false),
+      /*is_fake_ui=*/false,
+      /*expect_success=*/false,
+      /*is_tab_capture=*/true,
+      /*expected_error=*/"NotAllowedError: Permission denied by user");
+}
+
+// RestrictOwnAudio is only supported on macOS and Windows.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+class GetDisplayMediaRestrictOwnAudioTest
+    : public WebRtcTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  GetDisplayMediaRestrictOwnAudioTest() : test_config_(GetParam()) {}
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kAutoSelectScreenCaptureSource);
+    command_line->AppendSwitch(switches::kSystemAudioCaptureDefaultChecked);
+  }
+
+  void SetUpOnMainThread() override {
+    WebRtcTestBase::SetUpOnMainThread();
+    // Ensure that the bot has audio devices since we know that the test will
+    // fail without it. getDisplayMedia() hangs on bots without audio devices
+    // unless fake audio is used. A real audio track is required to verify that
+    // both the device ID and track label are correct; hence using a fake audio
+    // device will not work for this test.
+    if (!HasAudioOutputDevices() || !HasAudioInputDevices()) {
+      GTEST_SKIP() << "Missing audio devices: skipping test...";
+    }
+#if BUILDFLAG(IS_MAC)
+    // The API for system audio sharing is available from macOS 14.2. If macOS
+    // older then 14.2 is used, there will be no option in the UI for sharing
+    // system audio, and we will not have an audio track in the test.
+    int mac_os_version = base::mac::MacOSVersion();
+    int major_mac_os_version = mac_os_version / 1'00'00;
+    int minor_mac_os_version = (mac_os_version / 1'00) % 1'00;
+    if (major_mac_os_version <= 13 ||
+        (major_mac_os_version == 14 && minor_mac_os_version < 2)) {
+      GTEST_SKIP() << "macOS version do not support system audio sharing: "
+                      "skipping test...";
+    }
+#endif
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+#if BUILDFLAG(IS_MAC)
+    feature_list_.InitWithFeatures({media::kMacCatapLoopbackAudioForCast,
+                                    media::kMacCatapLoopbackAudioForScreenShare,
+                                    blink::features::kRestrictOwnAudio},
+                                   {media::kUseSCContentSharingPicker});
+#elif BUILDFLAG(IS_WIN)
+    feature_list_.InitWithFeatures({blink::features::kRestrictOwnAudio}, {});
+#endif
+
+    WebRtcTestBase::SetUpInProcessBrowserTestFixture();
+
+    DetectErrorsInJavaScript();
+  }
+
+  // Synchronously checks if the system/bot has audio output devices.
+  bool HasAudioOutputDevices() {
+    bool has_devices = false;
+    base::RunLoop run_loop;
+    auto audio_system = content::CreateAudioSystemForAudioService();
+    audio_system->HasOutputDevices(base::BindOnce(
+        [](base::OnceClosure finished_callback, bool* result, bool received) {
+          *result = received;
+          std::move(finished_callback).Run();
+        },
+        run_loop.QuitClosure(), &has_devices));
+    run_loop.Run();
+    return has_devices;
+  }
+  // Synchronously checks if the system/bot has audio input devices.
+  bool HasAudioInputDevices() {
+    bool has_devices = false;
+    base::RunLoop run_loop;
+    auto audio_system = content::CreateAudioSystemForAudioService();
+    audio_system->HasInputDevices(base::BindOnce(
+        [](base::OnceClosure finished_callback, bool* result, bool received) {
+          *result = received;
+          std::move(finished_callback).Run();
+        },
+        run_loop.QuitClosure(), &has_devices));
+    run_loop.Run();
+    return has_devices;
+  }
+
+  std::string GetConstraintsSystemAudio(bool suppress_local_audio_playback,
+                                        bool restrict_own_audio) const {
+    return base::StringPrintf(
+        "{video: true, audio: {suppressLocalAudioPlayback: %s, "
+        "restrictOwnAudio: %s}, preferCurrentTab: false, systemAudio: "
+        "\"include\"}",
+        base::ToString(suppress_local_audio_playback),
+        base::ToString(restrict_own_audio));
+  }
+
+  const TestConfigForRestrictOwnAudio test_config_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         GetDisplayMediaRestrictOwnAudioTest,
+                         Combine(
+                             /*restrict_own_audio=*/Bool(),
+                             /*suppress_local_audio_playback=*/Bool()));
+
+IN_PROC_BROWSER_TEST_P(GetDisplayMediaRestrictOwnAudioTest,
+                       ScreenCaptureWithRestrictOwnAudio) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
+  RunGetDisplayMedia(
+      tab,
+      GetConstraintsSystemAudio(test_config_.suppress_local_audio_playback,
+                                test_config_.restrict_own_audio),
+      /*is_fake_ui=*/false,
+      /*expect_success=*/true,
+      /*is_tab_capture=*/false);
+  EXPECT_EQ(content::EvalJs(tab->GetPrimaryMainFrame(), "hasAudioTrack();"),
+            "true");
+  EXPECT_EQ(
+      content::EvalJs(tab->GetPrimaryMainFrame(), "getAudioTrackLabel();"),
+      "System Audio");
+
+  if (test_config_.restrict_own_audio) {
+    EXPECT_EQ(
+        content::EvalJs(tab->GetPrimaryMainFrame(), "getAudioDeviceId();"),
+        "loopbackWithoutChrome");
+  } else if (test_config_.suppress_local_audio_playback) {
+    EXPECT_EQ(
+        content::EvalJs(tab->GetPrimaryMainFrame(), "getAudioDeviceId();"),
+        "loopbackWithMute");
+  } else {
+    EXPECT_EQ(
+        content::EvalJs(tab->GetPrimaryMainFrame(), "getAudioDeviceId();"),
+        "loopback");
+  }
+}
+
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

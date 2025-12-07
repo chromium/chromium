@@ -96,12 +96,12 @@ bool IsAppListShowSourceUserTriggered(AppListShowSource show_source) {
     case AppListShowSource::kSwipeFromShelf:
       return true;
     case AppListShowSource::kTabletMode:
-    case AppListShowSource::kAssistantEntryPoint:
+    case AppListShowSource::kAssistantEntryPoint_DEPRECATED:
     case AppListShowSource::kBrowser:
     case AppListShowSource::kWelcomeTour:
       return false;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void RecordSearchResultOpenTypeHistogram(AppListLaunchedFrom launch_location,
@@ -142,10 +142,10 @@ void RecordSearchResultOpenTypeHistogram(AppListLaunchedFrom launch_location,
     case AppListLaunchedFrom::kLaunchedFromQuickAppAccess:
     case AppListLaunchedFrom::kLaunchedFromAppsCollections:
     case AppListLaunchedFrom::kLaunchedFromDiscoveryChip:
+    case AppListLaunchedFrom::kLaunchedFromSearchBoxIcon:
       // Search results don't live in the shelf, the app grid, apps collections
       // or recent apps.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

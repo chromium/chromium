@@ -313,7 +313,8 @@ class RingBufferAnnotationSnapshot final {
     std::vector<uint8_t> bytes;
     while (ring_buffer_reader.Pop(bytes)) {
       int next_value;
-      std::string_view str = base::as_string_view(bytes);
+      std::string_view str(reinterpret_cast<const char*>(&bytes[0]),
+                           bytes.size());
       if (!base::HexStringToInt(str, &next_value)) {
         fprintf(stderr,
                 "Couldn't parse value: [%.*s]\n",

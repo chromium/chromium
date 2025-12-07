@@ -9,9 +9,7 @@
 #include <utility>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
-#include "chrome/browser/background/background_mode_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -32,7 +30,7 @@
 #include "content/public/browser/session_storage_namespace.h"
 #include "content/public/browser/web_contents.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #endif
 
@@ -50,25 +48,24 @@ AppSessionService::AppSessionService(Profile* profile)
                          SessionServiceBase::SessionServiceType::kAppRestore) {}
 
 AppSessionService::~AppSessionService() {
-  // The BrowserList should outlive the SessionService since it's static and
-  // the SessionService is a KeyedService.
-  // BrowserList is subscribed to by SessionServiceBase's constructor.
-  BrowserList::RemoveObserver(this);
   command_storage_manager()->Save();
 
   DestroyCommandStorageManager();
 }
 
 void AppSessionService::TabClosed(SessionID window_id, SessionID tab_id) {
-  if (!tab_id.id())
+  if (!tab_id.id()) {
     return;  // Happens when the tab is replaced.
+  }
 
-  if (!ShouldTrackChangesToWindow(window_id))
+  if (!ShouldTrackChangesToWindow(window_id)) {
     return;
+  }
 
   auto i = tab_to_available_range()->find(tab_id);
-  if (i != tab_to_available_range()->end())
+  if (i != tab_to_available_range()->end()) {
     tab_to_available_range()->erase(i);
+  }
 
   // If an individual tab is being closed or a secondary window is being
   // closed, just mark the tab as closed now.
@@ -76,8 +73,9 @@ void AppSessionService::TabClosed(SessionID window_id, SessionID tab_id) {
 }
 
 void AppSessionService::WindowOpened(Browser* browser) {
-  if (!ShouldTrackBrowser(browser))
+  if (!ShouldTrackBrowser(browser)) {
     return;
+  }
 
   SetWindowType(browser->session_id(), browser->type());
   SetWindowAppName(browser->session_id(), browser->app_name());
@@ -89,8 +87,9 @@ void AppSessionService::WindowOpened(Browser* browser) {
 }
 
 void AppSessionService::WindowClosing(SessionID window_id) {
-  if (!ShouldTrackChangesToWindow(window_id))
+  if (!ShouldTrackChangesToWindow(window_id)) {
     return;
+  }
 
   // If Chrome is closed immediately after a history deletion, we have to
   // rebuild commands before this window is closed, otherwise these tabs would
@@ -113,8 +112,9 @@ void AppSessionService::WindowClosed(SessionID window_id) {
 void AppSessionService::SetWindowType(SessionID window_id, Browser::Type type) {
   sessions::SessionWindow::WindowType window_type =
       WindowTypeForBrowserType(type);
-  if (!ShouldRestoreWindowOfType(window_type))
+  if (!ShouldRestoreWindowOfType(window_type)) {
     return;
+  }
 
   windows_tracking()->insert(window_id);
 
@@ -146,6 +146,7 @@ void AppSessionService::ScheduleResetCommands() {
 }
 
 void AppSessionService::RebuildCommandsIfRequired() {
-  if (rebuild_on_next_save())
+  if (rebuild_on_next_save()) {
     ScheduleResetCommands();
+  }
 }

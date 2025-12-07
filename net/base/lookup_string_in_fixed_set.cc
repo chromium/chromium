@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/base/lookup_string_in_fixed_set.h"
 
-#include <cstdint>
+#include <stdint.h>
+
+#include <string_view>
 
 #include "base/check.h"
 #include "base/containers/span.h"
@@ -25,27 +22,28 @@ namespace {
 // Returns true if an offset could be read; false otherwise.
 inline bool GetNextOffset(base::span<const uint8_t>* bytes,
                           base::span<const uint8_t>* offset_bytes) {
-  if (!bytes->size()) {
+  if (bytes->empty()) {
     return false;
   }
 
   size_t bytes_consumed;
-  switch (bytes->front() & 0x60) {
+  switch ((*bytes)[0] & 0x60) {
     case 0x60:  // Read three byte offset
-      *offset_bytes = offset_bytes->subspan(((bytes->front() & 0x1F) << 16) |
-                                            ((*bytes)[1] << 8) | (*bytes)[2]);
+      *offset_bytes = offset_bytes->subspan(static_cast<size_t>(
+          (((*bytes)[0] & 0x1F) << 16) | ((*bytes)[1] << 8) | (*bytes)[2]));
       bytes_consumed = 3;
       break;
     case 0x40:  // Read two byte offset
-      *offset_bytes =
-          offset_bytes->subspan(((bytes->front() & 0x1F) << 8) | (*bytes)[1]);
+      *offset_bytes = offset_bytes->subspan(
+          static_cast<size_t>((((*bytes)[0] & 0x1F) << 8) | (*bytes)[1]));
       bytes_consumed = 2;
       break;
     default:
-      *offset_bytes = offset_bytes->subspan(bytes->front() & 0x3F);
+      *offset_bytes =
+          offset_bytes->subspan(static_cast<size_t>((*bytes)[0] & 0x3F));
       bytes_consumed = 1;
   }
-  if ((bytes->front() & 0x80) != 0) {
+  if ((*bytes)[0] & 0x80) {
     *bytes = base::span<const uint8_t>();
   } else {
     *bytes = bytes->subspan(bytes_consumed);
@@ -112,7 +110,7 @@ bool FixedSetIncrementalLookup::Advance(char input) {
         // If this is not the last character in the label, the next byte should
         // be interpreted as a character or return value. Otherwise, the next
         // byte should be interpreted as a list of child node offsets.
-        bytes_ = bytes_.subspan(1);
+        bytes_ = bytes_.subspan<1>();
         DCHECK(!bytes_.empty());
         bytes_starts_with_label_character_ = !is_last_char_in_label;
         return true;
@@ -143,7 +141,7 @@ bool FixedSetIncrementalLookup::Advance(char input) {
           // should be interpreted as a character or return value. Otherwise,
           // the next byte should be interpreted as a list of child node
           // offsets.
-          bytes_ = offset_bytes.subspan(1);
+          bytes_ = offset_bytes.subspan<1>();
           DCHECK(!bytes_.empty());
           bytes_starts_with_label_character_ = !is_last_char_in_label;
           return true;
@@ -189,16 +187,14 @@ int FixedSetIncrementalLookup::GetResultForCurrentSequence() const {
 }
 
 int LookupStringInFixedSet(base::span<const uint8_t> graph,
-                           const char* key,
-                           size_t key_length) {
+                           std::string_view key) {
   // Do an incremental lookup until either the end of the graph is reached, or
-  // until every character in |key| is consumed.
+  // until every character in `key` is consumed.
   FixedSetIncrementalLookup lookup(graph);
-  const char* key_end = key + key_length;
-  while (key != key_end) {
-    if (!lookup.Advance(*key))
+  for (char input : key) {
+    if (!lookup.Advance(input)) {
       return kDafsaNotFound;
-    key++;
+    }
   }
   // The entire input was consumed without reaching the end of the graph. Return
   // the result code (if present) for the current position, or kDafsaNotFound.

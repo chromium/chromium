@@ -1,1 +1,3 @@
 file://ui/android/java/res/LAYOUT_OWNERS
+
+per-file composeplate_loop_*.json=hanxi@chromium.org

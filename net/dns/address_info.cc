@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/dns/address_info.h"
 
 #include <memory>
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/sys_byteorder.h"
@@ -37,11 +33,6 @@ const addrinfo* Next(const addrinfo* ai) {
 //// iterator
 
 AddressInfo::const_iterator::const_iterator(const addrinfo* ai) : ai_(ai) {}
-
-bool AddressInfo::const_iterator::operator!=(
-    const AddressInfo::const_iterator& o) const {
-  return ai_ != o.ai_;
-}
 
 AddressInfo::const_iterator& AddressInfo::const_iterator::operator++() {
   ai_ = Next(ai_);
@@ -137,10 +128,11 @@ bool AddressInfo::IsAllLocalhostOfOneFamily() const {
       case AF_INET6: {
         const struct sockaddr_in6* addr_in6 =
             reinterpret_cast<struct sockaddr_in6*>(ai->ai_addr);
-        if (IN6_IS_ADDR_LOOPBACK(&addr_in6->sin6_addr))
+        if (UNSAFE_TODO(IN6_IS_ADDR_LOOPBACK(&addr_in6->sin6_addr))) {
           saw_v6_localhost = true;
-        else
+        } else {
           return false;
+        }
         break;
       }
       default:
@@ -153,9 +145,9 @@ bool AddressInfo::IsAllLocalhostOfOneFamily() const {
 
 AddressList AddressInfo::CreateAddressList() const {
   AddressList list;
-  auto canonical_name = GetCanonicalName();
+  std::optional<std::string> canonical_name = GetCanonicalName();
   if (canonical_name) {
-    std::vector<std::string> aliases({*canonical_name});
+    std::vector<std::string> aliases({*std::move(canonical_name)});
     list.SetDnsAliases(std::move(aliases));
   }
   for (auto&& ai : *this) {

@@ -1,0 +1,48 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package ash;
+
+// Properties for System Web Apps.
+message SystemWebAppDataProto {
+  enum SystemWebAppType {
+    FILE_MANAGER = 1;
+    // TELEMETRY_DEPRECATED = 2;
+    SAMPLE = 3;
+    SETTINGS = 4;
+    CAMERA = 5;
+    TERMINAL = 6;
+    MEDIA = 7;
+    HELP = 8;
+    PRINT_MANAGEMENT = 9;
+    SCANNING = 10;
+    DIAGNOSTICS = 11;
+    CONNECTIVITY_DIAGNOSTICS = 12;
+    ECHE = 13;
+    CROSH = 14;
+    PERSONALIZATION = 15;
+    SHORTCUT_CUSTOMIZATION = 16;
+    SHIMLESS_RMA = 17;
+    DEMO_MODE = 18;
+    OS_FEEDBACK = 19;
+    PROJECTOR = 20;
+    // Removed: OS_URL_HANDLER = 21;
+    FIRMWARE_UPDATE = 22;
+    OS_FLAGS = 23;
+    FACE_ML = 24;
+    VC_BACKGROUND = 25;
+    PRINT_PREVIEW_CROS = 26;
+    BOCA = 27;
+    MALL = 28;
+    OS_SANITIZE = 29;
+    RECORDER = 30;
+    GRADUATION = 31;
+  };
+
+  optional SystemWebAppType system_app_type = 1;
+}

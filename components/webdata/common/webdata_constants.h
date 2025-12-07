@@ -11,10 +11,6 @@
 
 WEBDATA_EXPORT extern const base::FilePath::CharType kWebDataFilename[];
 
-// Note: On desktop, the account-scoped web data store is only stored in memory,
-// so doesn't have a file path. So this constant only exists on mobile.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 WEBDATA_EXPORT extern const base::FilePath::CharType kAccountWebDataFilename[];
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 #endif  // COMPONENTS_WEBDATA_COMMON_WEBDATA_CONSTANTS_H_

@@ -16,7 +16,6 @@ if (is_android) {
   android_library("java") {
     srcjar_deps = [ ":jni_headers" ]
     sources = [
-      "java/src/org/chromium/chrome/browser/metrics/AppUpdateInfo.java",
       "java/src/org/chromium/chrome/browser/metrics/MainIntentBehaviorMetrics.java",
       "java/src/org/chromium/chrome/browser/metrics/PackageMetrics.java",
     ]
@@ -24,6 +23,7 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
+      "//base:service_loader_java",
       "//chrome/browser/preferences:java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/ui/android/default_browser_promo:java",
@@ -40,18 +40,7 @@ if (is_android) {
   android_library("delegate_java") {
     sources = [
       "java/src/org/chromium/chrome/browser/metrics/AppUpdateInfoDelegate.java",
-      "java/src/org/chromium/chrome/browser/metrics/AppUpdateInfoDelegateImpl.java",
     ]
-
-    # Add the actual implementation where necessary so that downstream
-    # targets can provide their own implementations.
-    jar_excluded_patterns = [ "*/AppUpdateInfoDelegateImpl.class" ]
-  }
-
-  android_library("delegate_public_impl_java") {
-    sources = [ "java/src/org/chromium/chrome/browser/metrics/AppUpdateInfoDelegateImpl.java" ]
-
-    deps = [ ":delegate_java" ]
   }
 
   static_library("ukm_utils_for_test") {
@@ -61,7 +50,7 @@ if (is_android) {
       "//base",
       "//chrome/browser:browser_process",
       "//chrome/browser/android/metrics:test_jni_headers",
-      "//components/metrics_services_manager:metrics_services_manager",
+      "//components/metrics_services_manager",
       "//components/ukm",
     ]
   }
@@ -97,6 +86,7 @@ if (is_android) {
       "//chrome/browser/signin/services/android:java",
       "//chrome/browser/tab:java",
       "//chrome/test/android:chrome_java_integration_test_support",
+      "//chrome/test/android:chrome_java_transit",
       "//components/browsing_data/core:java",
       "//components/metrics:metrics_java",
       "//content/public/test/android:content_java_test_support",

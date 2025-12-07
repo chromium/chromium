@@ -42,7 +42,11 @@ StatusChangeChecker::StatusChangeChecker()
 
 StatusChangeChecker::~StatusChangeChecker() = default;
 
-bool StatusChangeChecker::Wait() {
+void StatusChangeChecker::WillStartWaiting() {}
+
+bool StatusChangeChecker::Wait(const base::Location& location) {
+  WillStartWaiting();
+
   std::ostringstream s;
   if (IsExitConditionSatisfied(&s)) {
     DVLOG(1) << "Already satisfied: " << s.str();
@@ -50,7 +54,7 @@ bool StatusChangeChecker::Wait() {
     WaitDone();
   } else {
     DVLOG(1) << "Blocking: " << s.str();
-    StartBlockingWait();
+    StartBlockingWait(location);
   }
   return !TimedOut();
 }
@@ -86,25 +90,28 @@ void StatusChangeChecker::CheckExitCondition() {
   }
 }
 
-void StatusChangeChecker::StartBlockingWait() {
+void StatusChangeChecker::StartBlockingWait(const base::Location& location) {
   DCHECK(!run_loop_.running());
 
   base::OneShotTimer timer;
-  timer.Start(
-      FROM_HERE, timeout_,
-      base::BindOnce(&StatusChangeChecker::OnTimeout, base::Unretained(this)));
+  timer.Start(FROM_HERE, timeout_,
+              base::BindOnce(&StatusChangeChecker::OnTimeout,
+                             base::Unretained(this), location));
 
   run_loop_.Run();
 }
 
-void StatusChangeChecker::OnTimeout() {
+void StatusChangeChecker::OnTimeout(const base::Location& location) {
   timed_out_ = true;
 
   std::ostringstream s;
   if (IsExitConditionSatisfied(&s)) {
-    ADD_FAILURE() << "Await -> Timed out despite conditions being satisfied.";
+    ADD_FAILURE() << "Await -> Timed out despite conditions being satisfied, "
+                     "triggered from "
+                  << location.ToString();
   } else {
-    ADD_FAILURE() << "Await -> Timed out: " << s.str();
+    ADD_FAILURE() << "Await -> Timed out: " << s.str() << ", triggered from "
+                  << location.ToString();
   }
 
   StopWaiting();

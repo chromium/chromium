@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/html/html_table_col_element.h"
 
 #include <algorithm>
+
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/html/html_table_cell_element.h"
 #include "third_party/blink/renderer/core/html/html_table_element.h"
@@ -32,6 +33,7 @@
 #include "third_party/blink/renderer/core/html/table_constants.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 
 namespace blink {
 
@@ -49,7 +51,7 @@ bool HTMLTableColElement::IsPresentationAttribute(
 void HTMLTableColElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kWidthAttr)
     AddHTMLLengthToStyle(style, CSSPropertyID::kWidth, value);
   else
@@ -73,7 +75,7 @@ void HTMLTableColElement::ParseAttribute(
       if (GetLayoutObject() && GetLayoutObject()->IsLayoutTableCol()) {
         auto* col = To<LayoutBox>(GetLayoutObject());
         int new_width = Width().ToInt();
-        if (new_width != col->Size().width) {
+        if (new_width != col->StitchedSize().width) {
           col->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
               layout_invalidation_reason::kAttributeChanged);
         }

@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("skyvault") {
   sources = [
@@ -14,8 +14,11 @@ static_library("skyvault") {
     "drive_upload_observer.h",
     "file_location_utils.cc",
     "file_location_utils.h",
+    "histogram_helper.cc",
+    "histogram_helper.h",
     "local_files_cleanup.cc",
     "local_files_cleanup.h",
+    "local_files_migration_constants.h",
     "local_files_migration_manager.cc",
     "local_files_migration_manager.h",
     "local_user_files_policy_observer.cc",
@@ -24,6 +27,8 @@ static_library("skyvault") {
     "migration_coordinator.h",
     "migration_notification_manager.cc",
     "migration_notification_manager.h",
+    "odfs_file_deleter.cc",
+    "odfs_file_deleter.h",
     "odfs_skyvault_uploader.cc",
     "odfs_skyvault_uploader.h",
     "policy_utils.cc",
@@ -34,7 +39,11 @@ static_library("skyvault") {
     "skyvault_capture_upload_notification.h",
     "skyvault_rename_handler.cc",
     "skyvault_rename_handler.h",
+    "waitable_scoped_temp_dir.cc",
+    "waitable_scoped_temp_dir.h",
   ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
     "//ash/constants",
@@ -47,15 +56,19 @@ static_library("skyvault") {
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
+    "//chrome/browser/chromeos/upload_office_to_cloud",
+    "//chrome/browser/notifications",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui/ash/skyvault",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
     "//chromeos/ash/components/drivefs",
     "//chromeos/ash/components/drivefs/mojom",
+    "//chromeos/ash/components/system",
     "//components/download/public/common:public",
     "//components/drive",
     "//components/keyed_service/content",
@@ -74,25 +87,35 @@ static_library("skyvault") {
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ash/policy/core",
-    "//chrome/browser/ui/webui/ash/skyvault",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "local_files_migration_manager_unittest.cc",
     "signin_notification_helper_unittest.cc",
     "skyvault_capture_upload_notification_unittest.cc",
     "skyvault_rename_handler_unittest.cc",
   ]
 
   deps = [
+    ":skyvault",
     "//base/test:test_support",
     "//chrome/browser/ash/file_manager",
-    "//chrome/browser/ash/policy/skyvault",
+    "//chrome/browser/ash/policy/skyvault/test:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/dbus/userdataauth:test_support",
+    "//chromeos/ash/components/disks:test_support",
+    "//chromeos/ash/components/system",
     "//components/download/public/common:test_support",
     "//content/test:test_support",
     "//storage/browser",
@@ -129,6 +152,8 @@ source_set("browser_tests") {
     "//chrome/browser/ash/file_manager:test_support",
     "//chrome/browser/ash/file_system_provider",
     "//chrome/browser/ash/file_system_provider:test_support",
+    "//chrome/browser/ash/policy/skyvault/test:test_support",
+    "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
     "//chrome/browser/policy:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
@@ -142,6 +167,7 @@ source_set("browser_tests") {
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/dbus/userdataauth:test_support",
     "//chromeos/ash/components/drivefs/mojom",
+    "//chromeos/ash/components/system",
     "//chromeos/constants",
     "//components/drive",
     "//components/policy:generated",

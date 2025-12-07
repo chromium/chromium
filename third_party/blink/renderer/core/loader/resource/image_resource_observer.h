@@ -23,14 +23,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_IMAGE_RESOURCE_OBSERVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_IMAGE_RESOURCE_OBSERVER_H_
 
+#include <optional>
+
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_context_types.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_priority.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
 
 namespace blink {
 
@@ -81,14 +80,29 @@ class CORE_EXPORT ImageResourceObserver : public GarbageCollectedMixin {
     return false;
   }
 
-  // Return the observer's requested resource priority. An implementation of
-  // this method is not allowed to add or remove ImageResource observers.
+  // Compute and return the observer's requested resource priority. An
+  // implementation of this method is not allowed to add or remove ImageResource
+  // observers.
   virtual ResourcePriority ComputeResourcePriority() const {
     return ResourcePriority();
   }
+  // Return the last computed ResourcePriority, if available.
+  virtual std::optional<ResourcePriority> CachedResourcePriority() const {
+    return std::nullopt;
+  }
+
+  virtual bool CanBeSpeculativelyDecoded() const { return true; }
+  virtual gfx::Size ComputeSpeculativeDecodeSize() const { return gfx::Size(); }
+  virtual gfx::Size CachedSpeculativeDecodeSize() const { return gfx::Size(); }
+  virtual InterpolationQuality ComputeSpeculativeDecodeQuality() const {
+    return kInterpolationNone;
+  }
+  virtual InterpolationQuality CachedSpeculativeDecodeQuality() const {
+    return kInterpolationNone;
+  }
 
   // Name for debugging, e.g. shown in memory-infra.
-  virtual WTF::String DebugName() const = 0;
+  virtual String DebugName() const = 0;
 
   static bool IsExpectedType(ImageResourceObserver*) { return true; }
 

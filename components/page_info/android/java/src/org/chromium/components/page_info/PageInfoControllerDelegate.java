@@ -9,12 +9,13 @@ import android.graphics.drawable.Drawable;
 import android.view.ViewGroup;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
+import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsObserver;
 import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
@@ -27,7 +28,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Collection;
 import java.util.function.Consumer;
 
-/**  Provides embedder-level information to PageInfoController. */
+/** Provides embedder-level information to PageInfoController. */
+@NullMarked
 public abstract class PageInfoControllerDelegate {
     @IntDef({
         OfflinePageState.NOT_OFFLINE_PAGE,
@@ -46,7 +48,7 @@ public abstract class PageInfoControllerDelegate {
     private final boolean mCookieControlsShown;
     protected @OfflinePageState int mOfflinePageState;
     protected boolean mIsHttpsImageCompressionApplied;
-    protected String mOfflinePageUrl;
+    protected @Nullable String mOfflinePageUrl;
 
     public PageInfoControllerDelegate(
             AutocompleteSchemeClassifier autocompleteSchemeClassifier,
@@ -81,8 +83,7 @@ public abstract class PageInfoControllerDelegate {
     }
 
     /** Gets the Url of the offline page being shown if any. Returns null otherwise. */
-    @Nullable
-    public String getOfflinePageUrl() {
+    public @Nullable String getOfflinePageUrl() {
         return mOfflinePageUrl;
     }
 
@@ -113,20 +114,18 @@ public abstract class PageInfoControllerDelegate {
     }
 
     /**
-     * Return the connection message shown for an offline page, if appropriate.
-     * Returns null if there's no offline page.
+     * Return the connection message shown for an offline page, if appropriate. Returns null if
+     * there's no offline page.
      */
-    @Nullable
-    public String getOfflinePageConnectionMessage() {
+    public @Nullable String getOfflinePageConnectionMessage() {
         return null;
     }
 
     /**
-     * Return the connection message shown for a paint preview page, if appropriate.
-     * Returns null if there's no paint preview page.
+     * Return the connection message shown for a paint preview page, if appropriate. Returns null if
+     * there's no paint preview page.
      */
-    @Nullable
-    public String getPaintPreviewPageConnectionMessage() {
+    public @Nullable String getPaintPreviewPageConnectionMessage() {
         return null;
     }
 
@@ -134,8 +133,7 @@ public abstract class PageInfoControllerDelegate {
      * Return the connection message shown for a pdf page, if appropriate. Returns null if there's
      * no pdf page.
      */
-    @Nullable
-    public String getPdfPageConnectionMessage() {
+    public @Nullable String getPdfPageConnectionMessage() {
         return null;
     }
 
@@ -147,11 +145,12 @@ public abstract class PageInfoControllerDelegate {
     /** Show cookie settings. */
     public abstract void showCookieSettings();
 
-    /** Show Tracking Protection settings. */
-    public abstract void showTrackingProtectionSettings();
-
-    /** Show RWS (related website sets) sites in all site settings filtered by {@param rwsOwner}. */
-    public abstract void showAllSettingsForRws(String rwsOwner);
+    /**
+     * Show site settings for the current page.
+     *
+     * @param currentSite Website containing data about the site the PageInfo bubble is shown for.
+     */
+    public abstract void showSiteSettings(Website currentSite);
 
     /**
      * Shows cookie feedback UI.
@@ -165,34 +164,36 @@ public abstract class PageInfoControllerDelegate {
 
     /**
      * Creates Cookie Controls Bridge.
+     *
      * @param observer The CookieControlsObserver to create the bridge with.
      * @return the object that facilitates interfacing with native code.
      */
-    @NonNull
     public abstract CookieControlsBridge createCookieControlsBridge(
             CookieControlsObserver observer);
 
     /**
      * Allows the delegate to insert additional {@link PageInfoRowView} views.
+     *
      * @return a collection of controllers corresponding to these views.
      */
-    @NonNull
     public abstract Collection<PageInfoSubpageController> createAdditionalRowViews(
             PageInfoMainController mainController, ViewGroup rowWrapper);
 
-    /** @return Returns the browser context associated with this dialog. */
-    @NonNull
+    /**
+     * @return Returns the browser context associated with this dialog.
+     */
     public abstract BrowserContextHandle getBrowserContext();
 
-    /** @return Returns the SiteSettingsDelegate for this page info. */
-    @NonNull
+    /**
+     * @return Returns the SiteSettingsDelegate for this page info.
+     */
     public abstract SiteSettingsDelegate getSiteSettingsDelegate();
 
     /**
      * Fetches a favicon for the current page and passes it to callback.
      * The UI will use a fallback icon if null is supplied.
      */
-    public abstract void getFavicon(GURL url, Callback<Drawable> callback);
+    public abstract void getFavicon(GURL url, Callback<@Nullable Drawable> callback);
 
     /**
      * Checks to see that touch exploration or an accessibility service that can perform gestures
@@ -201,19 +202,14 @@ public abstract class PageInfoControllerDelegate {
      */
     public abstract boolean isAccessibilityEnabled();
 
-    public abstract FragmentManager getFragmentManager();
+    public abstract @Nullable FragmentManager getFragmentManager();
 
     public abstract boolean isIncognito();
 
     /**
      * @return Whether the Tracking Protection UI should be shown instead of the cookies one.
      */
-    public abstract boolean showTrackingProtectionUI();
-
-    /**
-     * @return Whether the Tracking Protection with ACT Features UI should be shown.
-     */
-    public abstract boolean showTrackingProtectionACTFeaturesUI();
+    public abstract boolean showTrackingProtectionUi();
 
     /**
      * @return Whether all 3PCs are blocked when Tracking Protection is on.

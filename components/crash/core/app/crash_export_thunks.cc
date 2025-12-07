@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/crash/core/app/crash_export_thunks.h"
 
 #include <algorithm>
 #include <type_traits>
 
+#include "base/compiler_specific.h"
 #include "base/process/process.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/crash/core/app/crash_reporter_client.h"
 #include "components/crash/core/app/crashpad.h"
 #include "components/crash/core/app/dump_hung_process_with_ptype.h"
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
@@ -25,8 +22,8 @@ void RequestSingleCrashUpload_ExportThunk(const char* local_id) {
 
 size_t GetCrashReports_ExportThunk(crash_reporter::Report* reports,
                                    size_t reports_size) {
-  static_assert(std::is_pod<crash_reporter::Report>::value,
-                "crash_reporter::Report must be POD");
+  static_assert(std::is_trivially_copyable<crash_reporter::Report>::value,
+                "crash_reporter::Report must be trivially copyable");
   // Since this could be called across module boundaries, retrieve the full
   // list of reports into this vector, and then manually copy however much fits
   // into the caller's copy.
@@ -38,7 +35,7 @@ size_t GetCrashReports_ExportThunk(crash_reporter::Report* reports,
 
   size_t to_copy = std::min(reports_size, crash_reports.size());
   for (size_t i = 0; i < to_copy; ++i)
-    reports[i] = crash_reports[i];
+    UNSAFE_TODO(reports[i]) = crash_reports[i];
 
   return crash_reports.size();
 }
@@ -57,6 +54,14 @@ int CrashForException_ExportThunk(EXCEPTION_POINTERS* info) {
 // not enforced to avoid blocking startup code on synchronizing them.
 void SetUploadConsent_ExportThunk(bool consent) {
   crash_reporter::SetUploadConsent(consent);
+}
+
+bool GetUploadConsent_ExportThunk() {
+  return crash_reporter::GetCrashReporterClient()->GetCollectStatsConsent();
+}
+
+void GetProductInfo_ExportThunk(crash_reporter::ProductInfo* product_info) {
+  return crash_reporter::GetCrashReporterClient()->GetProductInfo(product_info);
 }
 
 HANDLE InjectDumpForHungInput_ExportThunk(HANDLE process) {

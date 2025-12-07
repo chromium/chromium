@@ -8,11 +8,20 @@ import './speaker-label-consent-dialog-content.js';
 
 import {createRef, css, html, ref} from 'chrome://resources/mwc/lit/index.js';
 
-import {i18n} from '../core/i18n.js';
+import {i18n, NoArgStringName} from '../core/i18n.js';
+import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {settings, SpeakerLabelEnableState} from '../core/state/settings.js';
 
 import {CraFeatureTourDialog} from './cra/cra-feature-tour-dialog.js';
+import {
+  DESCRIPTION_NAMES as SPEAKER_LABEL_DIALOG_DESCRIPTION_NAMES,
+} from './speaker-label-consent-dialog-content.js';
+
+const ALLOW_BUTTON_NAME: NoArgStringName =
+  'onboardingDialogSpeakerLabelAllowButton';
+const DISALLOW_BUTTON_NAME: NoArgStringName =
+  'onboardingDialogSpeakerLabelDisallowButton';
 
 /**
  * Dialog for asking speaker label consent from user.
@@ -45,6 +54,8 @@ export class SpeakerLabelConsentDialog extends ReactiveLitElement {
 
   private readonly dialog = createRef<CraFeatureTourDialog>();
 
+  private readonly platformHandler = usePlatformHandler();
+
   async show(): Promise<void> {
     await this.dialog.value?.show();
   }
@@ -57,6 +68,11 @@ export class SpeakerLabelConsentDialog extends ReactiveLitElement {
     settings.mutate((s) => {
       s.speakerLabelEnabled = SpeakerLabelEnableState.DISABLED_FIRST;
     });
+    this.platformHandler.recordSpeakerLabelConsent(
+      false,
+      SPEAKER_LABEL_DIALOG_DESCRIPTION_NAMES,
+      DISALLOW_BUTTON_NAME,
+    );
     this.hide();
   }
 
@@ -64,11 +80,15 @@ export class SpeakerLabelConsentDialog extends ReactiveLitElement {
     settings.mutate((s) => {
       s.speakerLabelEnabled = SpeakerLabelEnableState.ENABLED;
     });
+    this.platformHandler.recordSpeakerLabelConsent(
+      true,
+      SPEAKER_LABEL_DIALOG_DESCRIPTION_NAMES,
+      ALLOW_BUTTON_NAME,
+    );
     this.hide();
   }
 
   override render(): RenderResult {
-    // TODO: b/336963138 - Add correct link
     return html`<cra-feature-tour-dialog
       ${ref(this.dialog)}
       illustrationName="onboarding_speaker_label"
@@ -80,16 +100,14 @@ export class SpeakerLabelConsentDialog extends ReactiveLitElement {
         <cra-button
           .label=${i18n.onboardingDialogSpeakerLabelDeferButton}
           class="left"
-          button-style="secondary"
           @click=${this.hide}
         ></cra-button>
         <cra-button
-          .label=${i18n.onboardingDialogSpeakerLabelDisallowButton}
-          button-style="secondary"
+          .label=${i18n[DISALLOW_BUTTON_NAME]}
           @click=${this.disableSpeakerLabel}
         ></cra-button>
         <cra-button
-          .label=${i18n.onboardingDialogSpeakerLabelAllowButton}
+          .label=${i18n[ALLOW_BUTTON_NAME]}
           @click=${this.enableSpeakerLabel}
         ></cra-button>
       </div>

@@ -1,0 +1,1259 @@
+# File: ../../third_party/androidx/androidx_annotations.flags
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+-keep @androidx.annotation.Keep class *
+-keepclasseswithmembers,allowaccessmodification class * {
+  @androidx.annotation.Keep <fields>;
+}
+-keepclasseswithmembers,allowaccessmodification class * {
+  @androidx.annotation.Keep <methods>;
+}
+
+# File: ../../third_party/androidx/androidx_fragment.flags
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Help R8 to remove debug related coded. All of these static constants are
+# initialized to: Log.isLoggable(DEBUG, TAG).
+
+-assumevalues class androidx.fragment.** {
+  static boolean DEBUG return false;
+}
+
+-assumenosideeffects class androidx.fragment.app.FragmentManager {
+  static boolean isLoggingEnabled(...) return false;
+}
+
+# File: ../../third_party/androidx/androidx_mediarouter.flags
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Help R8 determine that we don't use MediaRouteDynamicChooserDialog.
+# https://crbug.com/1147188
+-assumevalues class ** {
+  boolean mUseDynamicGroup return false;
+}
+
+# File: ../../third_party/androidx/androidx_preferences.flags
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# AndroidX classes that are inflated via reflection.
+-keep public class androidx.preference.ListPreference {
+    public <init>(android.content.Context, android.util.AttributeSet);
+}
+-keep public class androidx.preference.Preference {
+    public <init>(android.content.Context, android.util.AttributeSet);
+}
+-keep public class androidx.preference.PreferenceCategory {
+    public <init>(android.content.Context, android.util.AttributeSet);
+}
+-keep public class androidx.preference.PreferenceScreen {
+    public <init>(android.content.Context, android.util.AttributeSet);
+}
+
+# Referenced by androidx.preference.PreferenceInflater.
+-keep public class androidx.preference.SwitchPreference {}
+
+# File: ../../third_party/androidx/androidx_xr.flags
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+-dontwarn com.google.ar.imp.core.web.FragmentHost
+
+# File: ../../third_party/jni_zero/checkdiscard_proguard.flags
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Chromium only applies this check when ENABLE_DCHECK=false.
+
+-checkdiscard @org.jni_zero.CheckDiscard class ** {
+  *;
+}
+-checkdiscard class ** {
+  @org.jni_zero.CheckDiscard *;
+}
+
+# File: ../../build/android/chromium_annotations.flags
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Contains flags related to annotations in //build/android that can be safely
+# shared with Cronet, and thus would be appropriate for third-party apps to
+# include.
+
+# Keep all annotation related attributes that can affect runtime
+-keepattributes RuntimeVisible*Annotations
+-keepattributes AnnotationDefault
+
+# Keeps for class level annotations.
+-keep,allowaccessmodification @org.chromium.build.annotations.UsedByReflection class ** {}
+
+# Keeps for method level annotations.
+-keepclasseswithmembers,allowaccessmodification class ** {
+  @org.chromium.build.annotations.UsedByReflection <methods>;
+}
+-keepclasseswithmembers,allowaccessmodification class ** {
+  @org.chromium.build.annotations.UsedByReflection <fields>;
+}
+
+# Never inline classes, methods, or fields with this annotation, but allow
+# shrinking and obfuscation.
+# Relevant to fields when they are needed to store strong references to objects
+# that are held as weak references by native code.
+-if @org.chromium.build.annotations.DoNotInline class * {
+    *** *(...);
+}
+-keep,allowobfuscation,allowaccessmodification class <1> {
+    *** <2>(...);
+}
+-keepclassmembers,allowobfuscation,allowaccessmodification class * {
+   @org.chromium.build.annotations.DoNotInline <methods>;
+}
+-keepclassmembers,allowobfuscation,allowaccessmodification class * {
+   @org.chromium.build.annotations.DoNotInline <fields>;
+}
+
+-alwaysinline class * {
+    @org.chromium.build.annotations.AlwaysInline *;
+}
+
+# Keep all logs (Log.VERBOSE = 2). R8 does not allow setting to 0.
+-maximumremovedandroidloglevel 1 class ** {
+   @org.chromium.build.annotations.DoNotStripLogs <methods>;
+}
+-maximumremovedandroidloglevel 1 @org.chromium.build.annotations.DoNotStripLogs class ** {
+   <methods>;
+}
+
+# Never merge classes horizontally or vertically with this annotation.
+# Relevant to classes being used as a key in maps or sets.
+-keep,allowaccessmodification,allowobfuscation,allowshrinking @org.chromium.build.annotations.DoNotClassMerge class *
+
+# Mark members annotated with IdentifierNameString as identifier name strings
+-identifiernamestring class * {
+    @org.chromium.build.annotations.IdentifierNameString *;
+}
+
+# Mark fields with this to help R8 figure out that they cannot be null.
+# Use assumevalues in addition to assumenosideeffects block because Google3 proguard cannot parse
+# assumenosideeffects blocks which overwrite return value.
+-assumevalues class ** {
+  @org.chromium.build.annotations.OptimizeAsNonNull *** *(...) return _NONNULL_;
+}
+-assumenosideeffects class ** {
+  @org.chromium.build.annotations.OptimizeAsNonNull *** *(...);
+}
+-assumevalues class ** {
+  @org.chromium.build.annotations.OptimizeAsNonNull *** * return _NONNULL_;
+}
+-assumenosideeffects class ** {
+  @org.chromium.build.annotations.OptimizeAsNonNull *** *;
+}
+
+# File: ../../base/android/proguard/chromium_apk.flags
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Contains //base flags that we'd like all Chromium .apks to use. Note that
+# these rules will not be applied to Chromium code that ships in third-party
+# APKs, e.g. Cronet.
+
+# Keep line number information, useful for stack traces.
+-keepattributes SourceFile,LineNumberTable
+
+# Enable protobuf-related optimizations.
+-shrinkunusedprotofields
+
+# Allowing Proguard to change modifiers.
+-allowaccessmodification
+
+# Keep all CREATOR fields within Parcelable that are kept.
+-keepclassmembers class !cr_allowunused,** implements android.os.Parcelable {
+  public static *** CREATOR;
+}
+
+# Don't obfuscate Parcelables as they might be marshalled outside Chrome.
+# If we annotated all Parcelables that get put into Bundles other than
+# for saveInstanceState (e.g. PendingIntents), then we could actually keep the
+# names of just those ones. For now, we'll just keep them all.
+-keepnames,allowaccessmodification class !cr_allowunused,** implements android.os.Parcelable {}
+
+# Keep all default constructors for used Fragments. Required since they are
+# called reflectively when fragments are reinflated after the app is killed.
+-keepclassmembers class !cr_allowunused,** extends android.app.Fragment {
+  public <init>();
+}
+-keepclassmembers class !cr_allowunused,** extends androidx.fragment.app.Fragment {
+  public <init>();
+}
+
+# This is to workaround crbug.com/1204690 - an old GMS app version crashes when
+# ObjectWrapper contains > 1 fields, and this prevents R8 from inserting a
+# synthetic field.
+-keep,allowaccessmodification class !cr_allowunused,com.google.android.gms.dynamic.ObjectWrapper {
+  <fields>;
+}
+
+# Remove calls to String.format() where the result goes unused. This can mask
+# exceptions if the parameters to String.format() are invalid, but such cases
+# are generally programming bugs anyways.
+# Not using the return value generally occurs due to logging being stripped.
+-assumenosideeffects class java.lang.String {
+  static java.lang.String format(...);
+}
+
+# Allows R8 to remove static field accesses to library APIs when the results
+# are unused (E.g. tell it that it's okay to not trigger <clinit>).
+# Not using the return value generally occurs due to logging being stripped.
+-assumenosideeffects class android.**, java.** {
+  static <fields>;
+}
+
+# Causes R8 to more agressively optimize ServiceLoader.load() calls, by
+# assuming no exceptions will be thrown.
+-assumenosideeffects class java.util.ServiceLoader {
+  static *** load(...);
+}
+
+# Keep the names of exception types, to make it easier to understand stack
+# traces in contexts where it's not trivial to deobfuscate them - for example
+# when reported to app developers who are using WebView.
+-keepnames,allowaccessmodification class ** extends java.lang.Throwable {}
+
+# Should be removed once we use Android V SDK. b/336753747
+-keep class !cr_allowunused,androidx.privacysandbox.ads.adservices.internal.ContinuationOutcomeReceiver {
+  <methods>;
+}
+
+# File: ../../build/android/dcheck_is_off.flags
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Contains flags that are applied only when ENABLE_DCHECK=false.
+
+-checkdiscard @org.chromium.build.annotations.CheckDiscard class ** {
+  *;
+}
+-checkdiscard class ** {
+  @org.chromium.build.annotations.CheckDiscard *;
+}
+
+# We always expect ServiceLoader.load() calls to be resolved by R8.
+-whyareyounotinlining class java.util.ServiceLoader { *** load(...); }
+
+# This has a ServiceLoader.load() failure that we filter out in dex.py.
+-checkdiscard class !cr_allowunused,kotlinx.coroutines.internal.FastServiceLoader {
+  *;
+}
+
+# Remove kotlin assertions since they add a lot of string and rarely fail.
+-assumenosideeffects class kotlin.jvm.internal.Intrinsics {
+  public static void check*(...);
+}
+
+# File: ../../chrome/android/proguard/main.flags
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Every fragment must have an empty constructor, so it can be instantiated when
+# restoring its activity's state.
+-keep public class org.chromium.** extends androidx.fragment.app.Fragment {
+  public <init>();
+}
+
+# Keep implementation classes needed for split compat. These will be accessed by
+# reflection.
+-keep,allowobfuscation,allowoptimization,allowaccessmodification public class ** extends org.chromium.chrome.browser.base.SplitCompat*$Impl {
+  public <init>();
+}
+
+# To fix crbug/1017396. This is because AppBarLayout$ScrollingViewBehavior
+# is instantiated via java.lang.reflect.Constructor in CoordinatorLayout.java.
+# Note that AppBarLayout$Behavior is needed to keep the scrolling behavior.
+-keep class com.google.android.material.appbar.AppBarLayout$Behavior {
+    public <init>(android.content.Context, android.util.AttributeSet);
+    public <init>();
+}
+-keep class com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior {
+    public <init>(android.content.Context, android.util.AttributeSet);
+    public <init>();
+}
+
+# @IdentifierNameString, but does not exist due to the module not having any
+# Java code in it (this class is generated and then stripped as unused).
+-dontwarn org.chromium.chrome.modules.stack_unwinder.StackUnwinderModuleContentsImpl
+
+# TODO(crbug.com/430099860): Remove once OnDemandModuleEntryPointsImpl is not
+# removed due to being unused.
+-dontwarn org.chromium.chrome.modules.on_demand.OnDemandModuleEntryPointsImpl
+
+# File: ../../third_party/android_deps/material_design.flags
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# We're setting ignore_proguard_configs to avoid a rule keeping Behaviour
+# subclasses, but we need this one still.
+-if class androidx.appcompat.app.AppCompatViewInflater
+-keep class com.google.android.material.theme.MaterialComponentsViewInflater {
+    <init>();
+}
+
+# File: ../../components/module_installer/android/module_installer.flags
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# -identifiernamestring doesn't keep the module impl around, we have to
+# explicitly keep it.
+-if @org.chromium.components.module_installer.builder.ModuleInterface interface *
+-keep,allowobfuscation,allowaccessmodification class !cr_allowunused,** extends <1> {
+  <init>();
+}
+# This is necessary to work around a bug: crbug.com/337905171.
+-keep,allowobfuscation,allowshrinking @org.chromium.components.module_installer.builder.ModuleInterface interface !cr_allowunused,*
+
+# File: ../../third_party/cardboard/proguard-rules.pro
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+# Keep classes, methods, and fields that are accessed with JNI.
+-keep class com.google.cardboard.sdk.UsedByNative
+-keepclasseswithmembers,includedescriptorclasses class ** {
+  @com.google.cardboard.sdk.UsedByNative *;
+}
+# Keep proto methods that are directly queried over JNI since proguard cannot
+# determine which methods those are.
+-keep,includedescriptorclasses class com.google.cardboard.proto.CardboardDevice$DeviceParams$VerticalAlignmentType {
+  ordinal();
+}
+-keep,includedescriptorclasses class com.google.cardboard.proto.CardboardDevice$DeviceParams {
+  getScreenToLensDistance();
+  getInterLensDistance();
+  getTrayToLensDistance();
+  getVerticalAlignment();
+  getDistortionCoefficients(int);
+  getDistortionCoefficientsCount();
+  getLeftEyeFieldOfViewAngles(int);
+}
+# Prevent native methods which are used from being obfuscated.
+-keepclasseswithmembernames,includedescriptorclasses,allowaccessmodification class com.google.cardboard.sdk.** {
+  native <methods>;
+}
+
+# File: ../../third_party/jni_zero/proguard.flags
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Keeps for method level annotations.
+-keepclasseswithmembers,allowaccessmodification class ** {
+  @**org.jni_zero.AccessedByNative <fields>;
+}
+-keepclasseswithmembers,includedescriptorclasses,allowaccessmodification,allowoptimization class ** {
+  @**org.jni_zero.CalledByNative <methods>;
+}
+-keepclasseswithmembers,includedescriptorclasses,allowaccessmodification,allowoptimization class ** {
+  @**org.jni_zero.CalledByNativeUnchecked <methods>;
+}
+
+# Allow unused native methods to be removed, but prevent renaming on those that
+# are kept.
+# TODO(crbug.com/315973491): Restrict the broad scope of this rule.
+-keepclasseswithmembernames,includedescriptorclasses,allowaccessmodification class ** {
+  native <methods>;
+}
+
+# Used when multiplexing. We don't package our own @UsedByReflection, so using this instead.
+-keepclasseswithmembers class !cr_allowunused,**J.N {
+  public long *_HASH;
+}
+
+# File: obj/third_party/androidx/androidx_appcompat_appcompat_java/proguard.txt
+# Copyright (C) 2018 The Android Open Source Project
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Never inline methods, but allow shrinking and obfuscation.
+-keepclassmembernames,allowobfuscation,allowshrinking class androidx.appcompat.widget.AppCompatTextViewAutoSizeHelper$Impl* {
+  <methods>;
+}
+
+# File: obj/third_party/androidx/androidx_appsearch_appsearch_java/proguard.txt
+#  Copyright (C) 2021 The Android Open Source Project
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+# Keep DocumentClassFactory classes only when DocumentClassFactoryRegistry is used. Since
+# DocumentClassFactoryRegistry loads these classes by name, also do not obfuscate names.
+-if class androidx.appsearch.app.DocumentClassFactoryRegistry {}
+-keep,allowoptimization class ** implements androidx.appsearch.app.DocumentClassFactory {}
+
+-if class androidx.appsearch.app.DocumentClassFactoryRegistry {}
+-keep,allowshrinking @androidx.appsearch.annotation.Document class ** {}
+
+# Keep AppSearchDocumentClassMap name for ServiceLoader
+-keep,allowshrinking,allowoptimization class androidx.appsearch.app.AppSearchDocumentClassMap {}
+
+# If AppSearchDocumentClassMap#getGlobalMap() is used, keep any implementing subclasses since
+# AppSearchDocumentClassMap#getMap() is used to populate the global map.
+-if class androidx.appsearch.app.AppSearchDocumentClassMap {
+  public static java.util.Map getGlobalMap();
+}
+-keep,allowoptimization class ** implements androidx.appsearch.app.AppSearchDocumentClassMap {
+  public java.util.Map getMap();
+}
+
+# File: obj/third_party/androidx/androidx_biometric_biometric_java/proguard.txt
+# Copyright (C) 2020 The Android Open Source Project
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# We supply these as stubs and will only use them in older Android versions which had a framework
+# implementation. We don't want R8 to complain about them not being there during optimization.
+-dontwarn android.hardware.fingerprint.FingerprintManager.**
+
+# Never inline methods, but allow shrinking and obfuscation.
+-keepclassmembernames,allowobfuscation,allowshrinking
+        class androidx.biometric.AuthenticationCallbackProvider$Api* {
+    <methods>;
+}
+-keepclassmembernames,allowobfuscation,allowshrinking
+        class androidx.biometric.BiometricFragment$Api* {
+    <methods>;
+}
+-keepclassmembernames,allowobfuscation,allowshrinking
+        class androidx.biometric.BiometricManager$Api* {
+    <methods>;
+}
+-keepclassmembernames,allowobfuscation,allowshrinking
+        class androidx.biometric.CancellationSignalProvider$Api* {
+    <methods>;
+}
+-keepclassmembernames,allowobfuscation,allowshrinking
+        class androidx.biometric.CryptoObjectUtils$Api* {
+    <methods>;
+}
+-keepclassmembernames,allowobfuscation,allowshrinking
+        class androidx.biometric.FingerprintDialogFragment$Api* {
+    <methods>;
+}
+-keepclassmembernames,allowobfuscation,allowshrinking
+        class androidx.biometric.KeyguardUtils$Api* {
+    <methods>;
+}
+-keepclassmembernames,allowobfuscation,allowshrinking
+        class androidx.biometric.PackageUtils$Api* {
+    <methods>;
+}
+
+# File: obj/third_party/androidx/androidx_datastore_datastore_core_android_java/proguard.txt
+# make sure r8 can remove the fake counter that is only in the code to handle the
+# robolectric tests.
+-assumenosideeffects class androidx.datastore.core.SharedCounter$Factory {
+    private boolean isDalvik() return true;
+}
+
+-keepclasseswithmembernames,includedescriptorclasses class androidx.datastore.core.NativeSharedCounter {
+    native <methods>;
+}
+
+# File: obj/third_party/androidx/androidx_datastore_datastore_preferences_core_android_java/proguard.txt
+-keepclassmembers class * extends androidx.datastore.preferences.protobuf.GeneratedMessageLite {
+    <fields>;
+}
+
+# File: obj/third_party/androidx/androidx_fragment_fragment_java/proguard.txt
+# Copyright (C) 2020 The Android Open Source Project
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# The default FragmentFactory creates Fragment instances using reflection
+-if public class ** extends androidx.fragment.app.Fragment
+-keepclasseswithmembers,allowobfuscation public class <1> {
+    public <init>();
+}
+
+# FragmentTransition will reflectively lookup:
+# androidx.transition.FragmentTransitionSupport
+# We should ensure that we keep the constructor if the code using this is alive
+-if class androidx.fragment.app.FragmentTransition {
+   private static androidx.fragment.app.FragmentTransitionImpl resolveSupportImpl();
+}
+-keep class androidx.transition.FragmentTransitionSupport {
+    public <init>();
+}
+
+# File: obj/third_party/androidx/androidx_lifecycle_lifecycle_runtime_android_java/proguard.txt
+-keepattributes AnnotationDefault,
+                RuntimeVisibleAnnotations,
+                RuntimeVisibleParameterAnnotations,
+                RuntimeVisibleTypeAnnotations
+
+-keepclassmembers enum androidx.lifecycle.Lifecycle$Event {
+    <fields>;
+}
+
+-keep class * implements androidx.lifecycle.GeneratedAdapter {
+    <init>(...);
+}
+
+-keepclassmembers class ** {
+    @androidx.lifecycle.OnLifecycleEvent *;
+}
+
+# The deprecated `android.app.Fragment` creates `Fragment` instances using reflection.
+# See: b/338958225, b/341537875
+-keepclasseswithmembers,allowobfuscation public class androidx.lifecycle.ReportFragment {
+    public <init>();
+}
+
+# this rule is need to work properly when app is compiled with api 28, see b/142778206
+# Also this rule prevents registerIn from being inlined.
+-keepclassmembers class androidx.lifecycle.ReportFragment$LifecycleCallbacks { *; }
+
+# File: obj/third_party/androidx/androidx_lifecycle_lifecycle_viewmodel_android_java/proguard.txt
+-keepclassmembers,allowobfuscation class * extends androidx.lifecycle.ViewModel {
+    <init>();
+}
+
+-keepclassmembers,allowobfuscation class * extends androidx.lifecycle.AndroidViewModel {
+    <init>(android.app.Application);
+}
+
+# File: obj/third_party/androidx/androidx_lifecycle_lifecycle_viewmodel_savedstate_android_java/proguard.txt
+-keepclassmembers,allowobfuscation class * extends androidx.lifecycle.ViewModel {
+    <init>(androidx.lifecycle.SavedStateHandle);
+}
+
+-keepclassmembers,allowobfuscation class * extends androidx.lifecycle.AndroidViewModel {
+    <init>(android.app.Application,androidx.lifecycle.SavedStateHandle);
+}
+
+# File: obj/third_party/androidx/androidx_media_media_java/proguard.txt
+# Copyright (C) 2017 The Android Open Source Project
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Prevent Parcelable objects from being removed or renamed.
+-keep class android.support.v4.media.** implements android.os.Parcelable {
+    public static final android.os.Parcelable$Creator *;
+}
+
+# Prevent Parcelable objects from being removed or renamed.
+-keep class androidx.media.** implements android.os.Parcelable {
+    public static final android.os.Parcelable$Creator *;
+}
+
+# File: obj/third_party/androidx/androidx_mediarouter_mediarouter_java/proguard.txt
+# Copyright 2019 The Android Open Source Project
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Allow R8 / ProGuard to remove debugging code.
+-assumevalues class androidx.mediarouter.** {
+  static boolean DEBUG return false;
+}
+
+# File: obj/third_party/androidx/androidx_recyclerview_recyclerview_java/proguard.txt
+# Copyright (C) 2015 The Android Open Source Project
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# When layoutManager xml attribute is used, RecyclerView inflates
+#LayoutManagers' constructors using reflection.
+-keep public class * extends androidx.recyclerview.widget.RecyclerView$LayoutManager {
+    public <init>(android.content.Context, android.util.AttributeSet, int, int);
+    public <init>();
+}
+
+-keepclassmembers class androidx.recyclerview.widget.RecyclerView {
+    public void suppressLayout(boolean);
+    public boolean isLayoutSuppressed();
+}
+
+# File: obj/third_party/androidx/androidx_savedstate_savedstate_android_java/proguard.txt
+# Copyright (C) 2019 The Android Open Source Project
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+-keepclassmembers,allowobfuscation class * implements androidx.savedstate.SavedStateRegistry$AutoRecreated {
+    <init>();
+}
+
+# File: obj/third_party/androidx/androidx_transition_transition_java/proguard.txt
+# Copyright (C) 2017 The Android Open Source Project
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Keep a field in transition that is used to keep a reference to weakly-referenced object
+-keepclassmembers class androidx.transition.ChangeBounds$* extends android.animation.AnimatorListenerAdapter {
+  androidx.transition.ChangeBounds$ViewBounds mViewBounds;
+}
+
+# File: obj/third_party/androidx/androidx_vectordrawable_vectordrawable_animated_java/proguard.txt
+# Copyright (C) 2016 The Android Open Source Project
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# keep setters in VectorDrawables so that animations can still work.
+-keepclassmembers class androidx.vectordrawable.graphics.drawable.VectorDrawableCompat$* {
+   void set*(***);
+   *** get*();
+}
+
+# File: obj/third_party/androidx/androidx_versionedparcelable_versionedparcelable_java/proguard.txt
+-keep class * implements androidx.versionedparcelable.VersionedParcelable
+-keep public class android.support.**Parcelizer { *; }
+-keep public class androidx.**Parcelizer { *; }
+-keep public class androidx.versionedparcelable.ParcelImpl
+
+# File: obj/third_party/androidx/androidx_window_window_java/proguard.txt
+# Copyright (C) 2020 The Android Open Source Project
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# A rule that will keep classes that implement SidecarInterface$SidecarCallback if Sidecar seems
+# be used. See b/157286362 and b/165268619 for details.
+# TODO(b/208543178) investigate how to pass header jar to R8 so we don't need this rule
+-if class androidx.window.layout.adapter.sidecar.SidecarCompat {
+  public *** setExtensionCallback(androidx.window.layout.adapter.sidecar.ExtensionInterfaceCompat$ExtensionCallbackInterface);
+}
+-keep class androidx.window.layout.adapter.sidecar.SidecarCompat$TranslatingCallback,
+ androidx.window.layout.adapter.sidecar.DistinctElementSidecarCallback {
+  public *** onDeviceStateChanged(androidx.window.sidecar.SidecarDeviceState);
+  public *** onWindowLayoutChanged(android.os.IBinder, androidx.window.sidecar.SidecarWindowLayoutInfo);
+}
+# Required for window area API reflection guard
+-keep interface androidx.window.area.reflectionguard.* {*;}
+# Required to support kotlin-reflect
+-keep,allowshrinking class androidx.window.layout.adapter.extensions.MulticastConsumer {
+  void accept(androidx.window.extensions.layout.WindowLayoutInfo);
+}
+-keep interface androidx.window.reflection.Consumer2 {
+  public *** accept(***);
+}
+-keep interface androidx.window.reflection.Predicate2 {
+  public *** test(***);
+}
+-keep interface androidx.window.reflection.JFunction2 {
+  public *** apply(***);
+}
+
+# File: ../../third_party/arcore-android-sdk-client/proguard.txt
+# Keep ARCore public-facing classes
+# This line from the ARCore SDK's .aar should not be needed when consuming ARCore SDK:
+# -keepparameternames
+
+# These are part of the Java <-> native interfaces for ARCore.
+-keepclasseswithmembernames,includedescriptorclasses class !com.google.ar.core.viewer.**, !com.google.ar.core.services.logging.**, !com.google.ar.sceneform.**, com.google.ar.** {
+    native <methods>;
+}
+
+# This line from the ARCore SDK's .aar should not be needed when consuming ARCore SDK:
+# -keep public class !com.google.ar.core.viewer.**, !com.google.ar.core**.R$*, !com.google.ar.core.services.logging.**, com.google.ar.core.** {*;}
+
+# If you need to build a library on top of arcore_client, and use this library for your project
+# Please un-comment this line below.
+# -keepattributes *Annotation*
+
+-keep class com.google.ar.core.annotations.UsedByNative
+-keep @com.google.ar.core.annotations.UsedByNative class *
+-keepclassmembers class * {
+    @com.google.ar.core.annotations.UsedByNative *;
+}
+
+-keep class com.google.ar.core.annotations.UsedByReflection
+-keep @com.google.ar.core.annotations.UsedByReflection class *
+-keepclassmembers class * {
+    @com.google.ar.core.annotations.UsedByReflection *;
+}
+# Keep Dynamite classes
+
+# .aidl file will be proguarded, we should keep all Aidls.
+# These lines from the ARCore SDK's .aar should not be needed when consuming ARCore SDK:
+# -keep class com.google.vr.dynamite.client.IObjectWrapper { *; }
+# -keep class com.google.vr.dynamite.client.ILoadedInstanceCreator { *; }
+# -keep class com.google.vr.dynamite.client.INativeLibraryLoader { *; }
+
+# Keep annotation files and the file got annotated.
+-keep class com.google.vr.dynamite.client.UsedByNative
+-keep @com.google.vr.dynamite.client.UsedByNative class *
+-keepclassmembers class * {
+    @com.google.vr.dynamite.client.UsedByNative *;
+}
+
+-keep class com.google.vr.dynamite.client.UsedByReflection
+-keep @com.google.vr.dynamite.client.UsedByReflection class *
+-keepclassmembers class * {
+    @com.google.vr.dynamite.client.UsedByReflection *;
+}
+
+# File: obj/third_party/android_deps/google_android_datatransport_transport_api_java/proguard.txt
+-dontwarn com.google.auto.value.AutoValue
+-dontwarn com.google.auto.value.AutoValue$Builder
+
+# File: obj/third_party/android_deps/google_android_datatransport_transport_backend_cct_java/proguard.txt
+-dontwarn com.google.auto.value.AutoValue
+-dontwarn com.google.auto.value.AutoValue$Builder
+
+# File: obj/third_party/android_deps/google_firebase_firebase_common_java/proguard.txt
+-dontwarn com.google.firebase.platforminfo.KotlinDetector
+-dontwarn com.google.auto.value.AutoValue
+-dontwarn com.google.auto.value.AutoValue$Builder
+
+# File: obj/third_party/android_deps/google_firebase_firebase_components_java/proguard.txt
+-dontwarn com.google.firebase.components.Component$Instantiation
+-dontwarn com.google.firebase.components.Component$ComponentType
+
+-keep class * implements com.google.firebase.components.ComponentRegistrar { void <init>(); }
+-keep,allowshrinking interface com.google.firebase.components.ComponentRegistrar
+
+# File: obj/third_party/android_deps/google_play_services_auth_base_java/proguard.txt
+# We keep all fields for every generated proto file as the runtime uses
+# reflection over them that ProGuard cannot detect. Without this keep
+# rule, fields may be removed that would cause runtime failures.
+-keepclassmembers class * extends com.google.android.gms.internal.auth.zzaay {
+  <fields>;
+}
+
+# Checkdiscard flags for the auth frp client. Add these flags to ensure
+# no accidental API leakage.
+# This file is only applied when making the SDK, and is not forwarded to end developers.
+-checkdiscard class com.google.android.gms.auth.frp.FrpClient {
+  public *** FrpClient;
+  public *** isChallengeSupported();
+  public *** isChallengeRequired();
+}
+
+-dontwarn dalvik.system.VMStack
+
+# File: obj/third_party/android_deps/google_play_services_base_java/proguard.txt
+# b/35135904 Ensure that proguard will not strip the mResultGuardian.
+-keepclassmembers class com.google.android.gms.common.api.internal.BasePendingResult {
+  com.google.android.gms.common.api.internal.BasePendingResult$ReleasableResultGuardian mResultGuardian;
+}
+
+# File: obj/third_party/android_deps/google_play_services_basement_java/proguard.txt
+# Needed when building against pre-Marshmallow SDK.
+-dontwarn android.security.NetworkSecurityPolicy
+
+# Needed when building against Marshmallow SDK.
+-dontwarn android.app.Notification
+
+# Protobuf has references not on the Android boot classpath
+-dontwarn sun.misc.Unsafe
+-dontwarn libcore.io.Memory
+
+# Annotations used during internal SDK shrinking.
+-dontwarn com.google.android.apps.common.proguard.**
+
+# Annotations referenced by the SDK but whose definitions are contained in
+# non-required dependencies.
+-dontwarn javax.annotation.**
+-dontwarn org.checkerframework.**
+-dontwarn com.google.errorprone.annotations.**
+-dontwarn org.jspecify.annotations.NullMarked
+
+# Annotations no longer exist. Suppression prevents ProGuard failures in
+# SDKs which depend on earlier versions of play-services-basement.
+-dontwarn com.google.android.gms.common.util.VisibleForTesting
+
+# Proguard flags for consumers of the Google Play services SDK
+# https://developers.google.com/android/guides/setup#add_google_play_services_to_your_project
+
+# Keep SafeParcelable NULL value, needed for reflection by DowngradeableSafeParcel
+-keepclassmembers public class com.google.android.gms.common.internal.safeparcel.SafeParcelable {
+    public static final *** NULL;
+}
+
+# Needed for Parcelable/SafeParcelable classes & their creators to not get renamed, as they are
+# found via reflection.
+-keep class com.google.android.gms.common.internal.ReflectedParcelable
+-keepnames class * implements com.google.android.gms.common.internal.ReflectedParcelable
+-keepclassmembers class * implements android.os.Parcelable {
+  public static final *** CREATOR;
+}
+
+# Keep the classes/members we need for client functionality.
+-keep @interface android.support.annotation.Keep
+-keep @androidx.annotation.Keep class *
+-keepclasseswithmembers class * {
+  @androidx.annotation.Keep <fields>;
+}
+-keepclasseswithmembers class * {
+  @androidx.annotation.Keep <methods>;
+}
+
+# Keep androidX equivalent of above android.support to allow Jetification.
+-keep @interface androidx.annotation.Keep
+-keep @androidx.annotation.Keep class *
+-keepclasseswithmembers class * {
+  @androidx.annotation.Keep <fields>;
+}
+-keepclasseswithmembers class * {
+  @androidx.annotation.Keep <methods>;
+}
+
+# Keep the names of classes/members we need for client functionality.
+-keep @interface com.google.android.gms.common.annotation.KeepName
+-keepnames @com.google.android.gms.common.annotation.KeepName class *
+-keepclassmembernames class * {
+  @com.google.android.gms.common.annotation.KeepName *;
+}
+
+# Keep Dynamite API entry points
+-keep @interface com.google.android.gms.common.util.DynamiteApi
+-keep @com.google.android.gms.common.util.DynamiteApi public class * {
+  public <fields>;
+  public <methods>;
+}
+
+# File: obj/third_party/android_deps/google_play_services_cast_framework_java/proguard.txt
+-keep public class * implements com.google.android.gms.cast.framework.OptionsProvider {
+  public <methods>;
+}
+
+# Don't warn about the auto value in Cast SDK Proguard.
+# This is due to the dependency on transport-api:2.0.0.
+# Can be removed after transport-api exposes this in their proguard rule.
+-dontwarn com.google.auto.value.**
+
+# Don't warn about the VMStack class in Cast SDK Proguard.
+-dontwarn dalvik.system.VMStack
+
+# We keep all fields for every generated proto file as the runtime uses
+# reflection over them that ProGuard cannot detect. Without this keep
+# rule, fields may be removed that would cause runtime failures.
+-keepclassmembers class * extends com.google.android.gms.internal.cast.zzyd {
+  <fields>;
+}
+
+# File: obj/third_party/android_deps/google_play_services_cast_java/proguard.txt
+# We keep all fields for every generated proto file as the runtime uses
+# reflection over them that ProGuard cannot detect. Without this keep
+# rule, fields may be removed that would cause runtime failures.
+-keepclassmembers class * extends com.google.android.gms.internal.cast.zzyd {
+  <fields>;
+}
+
+# File: obj/third_party/android_deps/google_play_services_clearcut_java/proguard.txt
+# We keep all fields for every generated proto file as the runtime uses
+# reflection over them that ProGuard cannot detect. Without this keep
+# rule, fields may be removed that would cause runtime failures.
+-keepclassmembers class * extends com.google.android.gms.internal.clearcut.zzcg {
+  <fields>;
+}
+
+# File: obj/third_party/android_deps/google_play_services_gcm_java/proguard.txt
+# Ensure that proguard will not strip the handleIntent method.
+-keepclassmembers class com.google.android.gms.gcm.GcmListenerService {
+    public void handleIntent(android.content.Intent);
+}
+
+# File: obj/third_party/android_deps/google_play_services_identity_credentials_java/proguard.txt
+# Proguard cannot process META-INF/versions/9.
+# See https://discuss.gradle.org/t/meta-inf-version-duplicate-error-when-using-proguard/31380
+-dontwarn module-info
+
+# File: obj/third_party/android_deps/google_play_services_vision_common_java/proguard.txt
+# We keep all fields for every generated proto file as the runtime uses
+# reflection over them that ProGuard cannot detect. Without this keep
+# rule, fields may be removed that would cause runtime failures.
+-keepclassmembers class * extends com.google.android.gms.internal.vision.zzjb {
+  <fields>;
+}
+
+# File: obj/third_party/android_deps/google_play_services_vision_java/proguard.txt
+# We keep all fields for every generated proto file as the runtime uses
+# reflection over them that ProGuard cannot detect. Without this keep
+# rule, fields may be removed that would cause runtime failures.
+-keepclassmembers class * extends com.google.android.gms.internal.vision.zzjb {
+  <fields>;
+}
+
+# File: ../../base/android/proguard/remove_logging.flags
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Remove Log.d(), Log.v(), and corresponding isLoggable() calls.
+# Log.DEBUG = 3, Log.VERBOSE = 2.
+# https://stackoverflow.com/questions/73876633/what-does-the-r8-maximumremovedandroidloglevel-option
+-maximumremovedandroidloglevel 3
+
+# Makes try-with-resources less inefficient. Saved 3.8kb when added.
+-assumenosideeffects class java.lang.Throwable {
+  void addSuppressed(...);
+}
+
+# Remove all logging calls via JDK Loggers. They are generally from
+# unused parts of third-party libraries.
+-assumenosideeffects class java.util.logging.Logger {
+    void finest(...);
+    void finer(...);
+    void fine(...);
+    void info(...);
+    void warning(...);
+    void severe(...);
+    void throwing(...);
+    void log(...);
+    void logp(...);
+    static java.util.logging.Logger getLogger(...) return _NONNULL_;
+    boolean isLoggable(...) return false;
+}
+
+# Remove accesses to Level.<thing> that go unused.
+-assumenosideeffects class java.util.logging.Level {
+  <fields>;
+  # Flogger uses Level objects, so do not set a return value for intValue().
+  int intValue();
+}
+
+# Remove fields of type Logger.
+-assumenosideeffects class * {
+  java.util.logging.Logger * return _NONNULL_;
+}
+
+# File: ../../base/android/proguard/shared_with_cronet.flags
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Contains flags that we want to apply not only to Chromium APKs, but also to
+# third-party apps that bundle the Cronet library.
+
+# WARNING: rules in this file are applied to entire third-party APKs, not just
+# Chromium code. They MUST be scoped appropriately to avoid side effects on app
+# code that we do not own.
+
+# Keep all CREATOR fields within Parcelable that are kept.
+-keepclassmembers class !cr_allowunused,org.chromium.** implements android.os.Parcelable {
+  public static *** CREATOR;
+}
+
+# Don't obfuscate Parcelables as they might be marshalled outside Chrome.
+# If we annotated all Parcelables that get put into Bundles other than
+# for saveInstanceState (e.g. PendingIntents), then we could actually keep the
+# names of just those ones. For now, we'll just keep them all.
+-keepnames,allowaccessmodification class !cr_allowunused,org.chromium.** implements android.os.Parcelable {}
+
+# Keep all enum values and valueOf methods. See
+# http://proguard.sourceforge.net/index.html#manual/examples.html
+# for the reason for this. Also, see http://crbug.com/248037.
+-keepclassmembers enum !cr_allowunused,org.chromium.** {
+    public static **[] values();
+}
+
+# Required to remove fields until b/274802355 is resolved.
+-assumevalues class !cr_allowunused,** {
+  final org.chromium.base.ThreadUtils$ThreadChecker * return _NONNULL_;
+}
+
+# File: ../../third_party/android_deps/autorolled/cipd/libs/com_google_code_gson_gson/gson.jar:META-INF/proguard/gson.pro
+### Gson ProGuard and R8 rules which are relevant for all users
+### This file is automatically recognized by ProGuard and R8, see https://developer.android.com/build/shrink-code#configuration-files
+###
+### IMPORTANT:
+### - These rules are additive; don't include anything here which is not specific to Gson (such as completely
+###   disabling obfuscation for all classes); the user would be unable to disable that then
+### - These rules are not complete; users will most likely have to add additional rules for their specific
+###   classes, for example to disable obfuscation for certain fields or to keep no-args constructors
+###
+
+# Keep generic signatures; needed for correct type resolution
+-keepattributes Signature
+
+# Keep Gson annotations
+# Note: Cannot perform finer selection here to only cover Gson annotations, see also https://stackoverflow.com/q/47515093
+-keepattributes RuntimeVisibleAnnotations,AnnotationDefault
+
+### The following rules are needed for R8 in "full mode" which only adheres to `-keepattribtues` if
+### the corresponding class or field is matches by a `-keep` rule as well, see
+### https://r8.googlesource.com/r8/+/refs/heads/main/compatibility-faq.md#r8-full-mode
+
+# Keep class TypeToken (respectively its generic signature) if present
+-if class com.google.gson.reflect.TypeToken
+-keep,allowobfuscation class com.google.gson.reflect.TypeToken
+
+# Keep any (anonymous) classes extending TypeToken
+-keep,allowobfuscation class * extends com.google.gson.reflect.TypeToken
+
+# Keep classes with @JsonAdapter annotation
+-keep,allowobfuscation,allowoptimization @com.google.gson.annotations.JsonAdapter class *
+
+# Keep fields with any other Gson annotation
+# Also allow obfuscation, assuming that users will additionally use @SerializedName or
+# other means to preserve the field names
+-keepclassmembers,allowobfuscation class * {
+  @com.google.gson.annotations.Expose <fields>;
+  @com.google.gson.annotations.JsonAdapter <fields>;
+  @com.google.gson.annotations.Since <fields>;
+  @com.google.gson.annotations.Until <fields>;
+}
+
+# Keep no-args constructor of classes which can be used with @JsonAdapter
+# By default their no-args constructor is invoked to create an adapter instance
+-keepclassmembers class * extends com.google.gson.TypeAdapter {
+  <init>();
+}
+-keepclassmembers class * implements com.google.gson.TypeAdapterFactory {
+  <init>();
+}
+-keepclassmembers class * implements com.google.gson.JsonSerializer {
+  <init>();
+}
+-keepclassmembers class * implements com.google.gson.JsonDeserializer {
+  <init>();
+}
+
+# Keep fields annotated with @SerializedName for classes which are referenced.
+# If classes with fields annotated with @SerializedName have a no-args
+# constructor keep that as well. Based on
+# https://issuetracker.google.com/issues/150189783#comment11.
+# See also https://github.com/google/gson/pull/2420#discussion_r1241813541
+# for a more detailed explanation.
+-if class *
+-keepclasseswithmembers,allowobfuscation class <1> {
+  @com.google.gson.annotations.SerializedName <fields>;
+}
+-if class * {
+  @com.google.gson.annotations.SerializedName <fields>;
+}
+-keepclassmembers,allowobfuscation,allowoptimization class <1> {
+  <init>();
+}
+
+# File: ../../third_party/android_deps/autorolled/cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_android/kotlinx-coroutines-android.jar:META-INF/com.android.tools/r8-from-1.6.0/coroutines.pro
+# Allow R8 to optimize away the FastServiceLoader.
+# Together with ServiceLoader optimization in R8
+# this results in direct instantiation when loading Dispatchers.Main
+-assumenosideeffects class kotlinx.coroutines.internal.MainDispatcherLoader {
+    boolean FAST_SERVICE_LOADER_ENABLED return false;
+}
+
+-assumenosideeffects class kotlinx.coroutines.internal.FastServiceLoaderKt {
+    boolean ANDROID_DETECTED return true;
+}
+
+# Disable support for "Missing Main Dispatcher", since we always have Android main dispatcher
+-assumenosideeffects class kotlinx.coroutines.internal.MainDispatchersKt {
+    boolean SUPPORT_MISSING return false;
+}
+
+# Statically turn off all debugging facilities and assertions
+-assumenosideeffects class kotlinx.coroutines.DebugKt {
+    boolean getASSERTIONS_ENABLED() return false;
+    boolean getDEBUG() return false;
+    boolean getRECOVER_STACK_TRACES() return false;
+}
+
+# File: ../../third_party/android_deps/autorolled/cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm/kotlinx-coroutines-core-jvm.jar:META-INF/com.android.tools/r8/coroutines.pro
+# When editing this file, update the following files as well:
+# - META-INF/proguard/coroutines.pro
+# - META-INF/com.android.tools/proguard/coroutines.pro
+
+# Most of volatile fields are updated with AFU and should not be mangled
+-keepclassmembers class kotlinx.coroutines.** {
+    volatile <fields>;
+}
+
+# Same story for the standard library's SafeContinuation that also uses AtomicReferenceFieldUpdater
+-keepclassmembers class kotlin.coroutines.SafeContinuation {
+    volatile <fields>;
+}
+
+# These classes are only required by kotlinx.coroutines.debug.internal.AgentPremain, which is only loaded when
+# kotlinx-coroutines-core is used as a Java agent, so these are not needed in contexts where ProGuard is used.
+-dontwarn java.lang.instrument.ClassFileTransformer
+-dontwarn sun.misc.SignalHandler
+-dontwarn java.lang.instrument.Instrumentation
+-dontwarn sun.misc.Signal
+
+# Only used in `kotlinx.coroutines.internal.ExceptionsConstructor`.
+# The case when it is not available is hidden in a `try`-`catch`, as well as a check for Android.
+-dontwarn java.lang.ClassValue
+
+# An annotation used for build tooling, won't be directly accessed.
+-dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
+
+# File: ../../third_party/android_deps/autorolled/cipd/libs/org_jetbrains_kotlinx_kotlinx_serialization_core_jvm/kotlinx-serialization-core-jvm.jar:META-INF/com.android.tools/r8/kotlinx-serialization-common.pro
+# Keep `Companion` object fields of serializable classes.
+# This avoids serializer lookup through `getDeclaredClasses` as done for named companion objects.
+-if @kotlinx.serialization.Serializable class **
+-keepclassmembers class <1> {
+    static <1>$Companion Companion;
+}
+
+# Keep `serializer()` on companion objects (both default and named) of serializable classes.
+-if @kotlinx.serialization.Serializable class ** {
+    static **$* *;
+}
+-keepclassmembers class <2>$<3> {
+    kotlinx.serialization.KSerializer serializer(...);
+}
+
+# Keep `INSTANCE.serializer()` of serializable objects.
+-if @kotlinx.serialization.Serializable class ** {
+    public static ** INSTANCE;
+}
+-keepclassmembers class <1> {
+    public static <1> INSTANCE;
+    kotlinx.serialization.KSerializer serializer(...);
+}
+
+# @Serializable and @Polymorphic are used at runtime for polymorphic serialization.
+-keepattributes RuntimeVisibleAnnotations,AnnotationDefault
+
+# Don't print notes about potential mistakes or omissions in the configuration for kotlinx-serialization classes
+# See also https://github.com/Kotlin/kotlinx.serialization/issues/1900
+-dontnote kotlinx.serialization.**
+
+# Serialization core uses `java.lang.ClassValue` for caching inside these specified classes.
+# If there is no `java.lang.ClassValue` (for example, in Android), then R8/ProGuard will print a warning.
+# However, since in this case they will not be used, we can disable these warnings
+-dontwarn kotlinx.serialization.internal.ClassValueReferences
+
+# disable optimisation for descriptor field because in some versions of ProGuard, optimization generates incorrect bytecode that causes a verification error
+# see https://github.com/Kotlin/kotlinx.serialization/issues/2719
+-keepclassmembers public class **$$serializer {
+    private ** descriptor;
+}
+
+# File: ../../third_party/android_deps/autorolled/cipd/libs/org_jetbrains_kotlinx_kotlinx_serialization_core_jvm/kotlinx-serialization-core-jvm.jar:META-INF/com.android.tools/r8/kotlinx-serialization-r8.pro
+# Rule to save runtime annotations on serializable class.
+# If the R8 full mode is used, annotations are removed from classes-files.
+#
+# For the annotation serializer, it is necessary to read the `Serializable` annotation inside the serializer<T>() function - if it is present,
+# then `SealedClassSerializer` is used, if absent, then `PolymorphicSerializer'.
+#
+# When using R8 full mode, all interfaces will be serialized using `PolymorphicSerializer`.
+#
+# see https://github.com/Kotlin/kotlinx.serialization/issues/2050
+
+ -if @kotlinx.serialization.Serializable class **
+ -keep, allowshrinking, allowoptimization, allowobfuscation, allowaccessmodification class <1>
+
+# File: //build/android/gyp/proguard.py (generated rules)
+-repackageclasses ''

@@ -67,8 +67,10 @@ void LayoutSVGFilterPrimitive::WillBeDestroyed() {
   LayoutObject::WillBeDestroyed();
 }
 
-void LayoutSVGFilterPrimitive::StyleDidChange(StyleDifference diff,
-                                              const ComputedStyle* old_style) {
+void LayoutSVGFilterPrimitive::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
   if (!old_style)
     return;
@@ -95,7 +97,8 @@ SVGLayoutResult LayoutSVGFilterPrimitive::UpdateSVGLayout(
     const SVGLayoutInfo&) {
   NOT_DESTROYED();
   ClearNeedsLayout();
-  return {};
+  return SVGLayoutResult(/*bounds_changed=*/false,
+                         /*has_viewport_dependence=*/false);
 }
 
 }  // namespace blink

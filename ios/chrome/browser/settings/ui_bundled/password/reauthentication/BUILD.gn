@@ -1,0 +1,89 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("reauthentication") {
+  sources = [
+    "local_reauthentication_coordinator.h",
+    "local_reauthentication_coordinator.mm",
+  ]
+
+  deps = [
+    ":reauthentication_constants",
+    ":reauthentication_ui",
+    "//base",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/settings/ui_bundled/password:features",
+    "//ios/chrome/browser/settings/ui_bundled/utils",
+    "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_observer",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/common/ui/reauthentication",
+    "//ios/public/provider/chrome/browser/passcode_settings:passcode_settings_api",
+    "//ui/base",
+  ]
+
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("reauthentication_ui") {
+  sources = [
+    "local_reauthentication_view_controller.h",
+    "local_reauthentication_view_controller.mm",
+  ]
+
+  deps = [
+    ":reauthentication_constants",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/settings/ui_bundled/password:title_view",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements:branded_navigation_item_title_view",
+    "//ios/chrome/common/ui/reauthentication",
+    "//ui/base",
+  ]
+
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("reauthentication_constants") {
+  sources = [
+    "local_reauthentication_constants.h",
+    "local_reauthentication_constants.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("reauthentication_delegate") {
+  sources = [ "password_manager_reauthentication_delegate.h" ]
+
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "local_reauthentication_coordinator_unittest.mm" ]
+
+  deps = [
+    ":reauthentication",
+    ":reauthentication_ui",
+    "//base/test:test_support",
+    "//ios/chrome/browser/settings/ui_bundled/password:features",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/common/ui/reauthentication:mock_reauthentication_module",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+
+  frameworks = [ "UIKit.framework" ]
+}

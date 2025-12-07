@@ -35,8 +35,7 @@ class View;
 // space to leave around each child view. The |interior_margin| says how much
 // empty space to leave at the edges of the parent view. If |collapse_margins|
 // is false, these values are additive; if true, the greater of the two values
-// is used. The |default_child_margins| provides a fallback for views without
-// kMarginsKey set.
+// is used.
 //
 // collapse_margins = false:
 //

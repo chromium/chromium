@@ -1,0 +1,4 @@
+WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++Button contentDescription:"popover description" clickable focusable expandedState:1 actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, EXPAND] bundle:[chromeRole="button", clickableScore="300"]
+++++Button contentDescription:"popover description" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300"]

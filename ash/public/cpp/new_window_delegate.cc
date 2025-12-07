@@ -9,35 +9,22 @@
 
 namespace ash {
 namespace {
-NewWindowDelegateProvider* g_delegate_provider = nullptr;
+NewWindowDelegate* g_new_window_delegate = nullptr;
 }
 
 // static
 NewWindowDelegate* NewWindowDelegate::GetInstance() {
-  if (!g_delegate_provider)
-    return nullptr;
-  return g_delegate_provider->GetInstance();
+  return g_new_window_delegate;
 }
 
-// static
-NewWindowDelegate* NewWindowDelegate::GetPrimary() {
-  if (!g_delegate_provider)
-    return nullptr;
-  return g_delegate_provider->GetPrimary();
+NewWindowDelegate::NewWindowDelegate() {
+  CHECK(!g_new_window_delegate);
+  g_new_window_delegate = this;
 }
 
-NewWindowDelegate::NewWindowDelegate() = default;
-
-NewWindowDelegate::~NewWindowDelegate() = default;
-
-NewWindowDelegateProvider::NewWindowDelegateProvider() {
-  DCHECK(!g_delegate_provider);
-  g_delegate_provider = this;
-}
-
-NewWindowDelegateProvider::~NewWindowDelegateProvider() {
-  DCHECK_EQ(g_delegate_provider, this);
-  g_delegate_provider = nullptr;
+NewWindowDelegate::~NewWindowDelegate() {
+  CHECK_EQ(this, g_new_window_delegate);
+  g_new_window_delegate = nullptr;
 }
 
 }  // namespace ash

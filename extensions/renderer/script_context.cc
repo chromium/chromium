@@ -4,12 +4,13 @@
 
 #include "extensions/renderer/script_context.h"
 
+#include <algorithm>
+
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -25,6 +26,7 @@
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_handlers/sandboxed_page_info.h"
 #include "extensions/common/mojom/context_type.mojom.h"
+#include "extensions/common/mojom/match_origin_as_fallback.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
 #include "extensions/renderer/dispatcher.h"
@@ -50,7 +52,7 @@ namespace {
 GURL GetEffectiveDocumentURL(
     blink::WebLocalFrame* frame,
     const GURL& document_url,
-    MatchOriginAsFallbackBehavior match_origin_as_fallback,
+    mojom::MatchOriginAsFallbackBehavior match_origin_as_fallback,
     bool allow_inaccessible_parents) {
   return ContentScriptInjectionUrlGetter::Get(
       RendererFrameContextData(frame), document_url, match_origin_as_fallback,
@@ -75,15 +77,12 @@ std::string GetContextTypeDescriptionString(mojom::ContextType context_type) {
       return "WEBUI";
     case mojom::ContextType::kUntrustedWebUi:
       return "WEBUI_UNTRUSTED";
-    case mojom::ContextType::kLockscreenExtension:
-      return "LOCK_SCREEN_EXTENSION";
     case mojom::ContextType::kOffscreenExtension:
       return "OFFSCREEN_EXTENSION_CONTEXT";
     case mojom::ContextType::kUserScript:
       return "USER_SCRIPT_CONTEXT";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 static std::string ToStringOrDefault(v8::Isolate* isolate,
@@ -136,7 +135,7 @@ ScriptContext::ScriptContext(const v8::Local<v8::Context>& v8_context,
                              const Extension* effective_extension,
                              mojom::ContextType effective_context_type)
     : is_valid_(true),
-      v8_context_(v8_context->GetIsolate(), v8_context),
+      v8_context_(v8::Isolate::GetCurrent(), v8_context),
       web_frame_(web_frame),
       host_id_(host_id),
       extension_(extension),
@@ -146,7 +145,7 @@ ScriptContext::ScriptContext(const v8::Local<v8::Context>& v8_context,
       effective_context_type_(effective_context_type),
       context_id_(base::UnguessableToken::Create()),
       safe_builtins_(this),
-      isolate_(v8_context->GetIsolate()),
+      isolate_(v8::Isolate::GetCurrent()),
       service_worker_version_id_(blink::mojom::kInvalidServiceWorkerVersionId) {
   VLOG(1) << "Created context:\n" << GetDebugString();
   v8_context_.AnnotateStrongRetainer("extensions::ScriptContext::v8_context_");
@@ -174,9 +173,9 @@ bool ScriptContext::IsSandboxedPage(const GURL& url) {
   // HasAccessOrThrowError.
   if (url.SchemeIs(kExtensionScheme)) {
     const Extension* extension =
-        RendererExtensionRegistry::Get()->GetByID(url.host());
+        RendererExtensionRegistry::Get()->GetByID(url.GetHost());
     if (extension) {
-      return SandboxedPageInfo::IsSandboxedPage(extension, url.path());
+      return SandboxedPageInfo::IsSandboxedPage(extension, url.GetPath());
     }
   }
   return false;
@@ -267,12 +266,12 @@ void ScriptContext::SafeCallFunction(
 }
 
 Feature::Availability ScriptContext::GetAvailability(
-    const std::string& api_name) {
+    std::string_view api_name) {
   return GetAvailability(api_name, CheckAliasStatus::ALLOWED);
 }
 
 Feature::Availability ScriptContext::GetAvailability(
-    const std::string& api_name,
+    std::string_view api_name,
     CheckAliasStatus check_alias) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
@@ -285,7 +284,8 @@ Feature::Availability ScriptContext::GetAvailability(
                         switches::kExtensionTestApiOnWebPages) &&
                     context_type_ == mojom::ContextType::kWebPage);
     Feature::AvailabilityResult result =
-        allowed ? Feature::IS_AVAILABLE : Feature::MISSING_COMMAND_LINE_SWITCH;
+        allowed ? Feature::AvailabilityResult::kIsAvailable
+                : Feature::AvailabilityResult::kMissingCommandLineSwitch;
     return Feature::Availability(result,
                                  allowed ? "" : "Only allowed in tests");
   }
@@ -303,14 +303,14 @@ Feature::Availability ScriptContext::GetAvailability(
         "runtime.connect",
     };
 
-    if (base::ranges::find(kMessagingApis, api_name) !=
+    if (std::ranges::find(kMessagingApis, api_name) !=
         std::end(kMessagingApis)) {
       bool is_available =
           IsolatedWorldManager::GetInstance()
               .IsMessagingEnabledInUserScriptWorld(*blink_isolated_world_id_);
       if (!is_available) {
         return Feature::Availability(
-            Feature::INVALID_CONTEXT,
+            Feature::AvailabilityResult::kInvalidContext,
             "Messaging APIs are not enabled for this user script world.");
       }
     }
@@ -411,9 +411,9 @@ GURL ScriptContext::GetEffectiveDocumentURLForContext(
   // TODO(devlin): Determine if this could use kAlways instead of
   // kMatchForAboutSchemeAndClimbTree.
   auto match_origin_as_fallback =
-      match_about_blank
-          ? MatchOriginAsFallbackBehavior::kMatchForAboutSchemeAndClimbTree
-          : MatchOriginAsFallbackBehavior::kNever;
+      match_about_blank ? mojom::MatchOriginAsFallbackBehavior::
+                              kMatchForAboutSchemeAndClimbTree
+                        : mojom::MatchOriginAsFallbackBehavior::kNever;
   return GetEffectiveDocumentURL(frame, document_url, match_origin_as_fallback,
                                  allow_inaccessible_parents);
 }
@@ -422,7 +422,7 @@ GURL ScriptContext::GetEffectiveDocumentURLForContext(
 GURL ScriptContext::GetEffectiveDocumentURLForInjection(
     blink::WebLocalFrame* frame,
     const GURL& document_url,
-    MatchOriginAsFallbackBehavior match_origin_as_fallback) {
+    mojom::MatchOriginAsFallbackBehavior match_origin_as_fallback) {
   // We explicitly allow inaccessible parents here. Extensions should still be
   // able to inject into a sandboxed iframe if it has access to the embedding
   // origin.
@@ -462,7 +462,7 @@ bool ScriptContext::HasAccessOrThrowError(const std::string& name) {
   // [1] citation needed. This ScriptContext should already be in a state that
   // doesn't allow this, from ScriptContextSet::ClassifyJavaScriptContext.
   if (extension() &&
-      SandboxedPageInfo::IsSandboxedPage(extension(), url_.path())) {
+      SandboxedPageInfo::IsSandboxedPage(extension(), url_.GetPath())) {
     static const char kMessage[] =
         "%s cannot be used within a sandboxed frame.";
     std::string error_msg = base::StringPrintf(kMessage, name.c_str());

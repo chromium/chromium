@@ -50,7 +50,7 @@ class DownloadCoreService : public KeyedService {
   // no HistoryService for profile. Virtual for testing.
   virtual DownloadHistory* GetDownloadHistory() = 0;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   virtual extensions::ExtensionDownloadsEventRouter*
   GetExtensionEventRouter() = 0;
 #endif
@@ -86,6 +86,12 @@ class DownloadCoreService : public KeyedService {
   // Returns false if at least one extension has disabled the UI, true
   // otherwise.
   virtual bool IsDownloadUiEnabled() = 0;
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  // Simulates an extension using chrome.download.setUiOptions() to enable or
+  // disable the downloads UI.
+  virtual void SetDownloadUiEnabledForTest(bool enabled) {}
+#endif
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_CORE_SERVICE_H_

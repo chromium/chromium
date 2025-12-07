@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Switching timelines and pausing at the same time [immediate]
+  assert_equals: expected "120px" but got "100px"
+[FAIL] Switching timelines and pausing at the same time [scroll]
+  assert_equals: expected "120px" but got "100px"
+Harness: the test ran to completion.
+

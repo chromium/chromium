@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/commerce/mock_commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_email_dialog_view.h"
@@ -26,6 +25,7 @@
 #include "components/commerce/core/test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -49,7 +49,7 @@ class PriceTrackingEmailDialogConsentViewInteractiveTest
     : public InteractiveBrowserTest {
  public:
   void SetUp() override {
-    MockCommerceUiTabHelper::ReplaceFactory();
+    commerce_ui_override_ = MockCommerceUiTabHelper::ReplaceFactory();
     test_iph_features_.InitForDemo(
         feature_engagement::kIPHPriceTrackingEmailConsentFeature);
 
@@ -130,6 +130,7 @@ class PriceTrackingEmailDialogConsentViewInteractiveTest
     mock_shopping_service->SetIsSubscribedCallbackValue(true);
   }
 
+  ui::UserDataFactory::ScopedOverride commerce_ui_override_;
   base::WeakPtrFactory<PriceTrackingEmailDialogConsentViewInteractiveTest>
       weak_ptr_factory_{this};
 };
@@ -147,18 +148,14 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingEmailDialogConsentViewInteractiveTest,
 
       PressButton(kBookmarkStarViewElementId),
 
-      WaitForShow(kBookmarkBubbleOkButtonId),
-
-      FlushEvents());
+      WaitForShow(kBookmarkBubbleOkButtonId));
 
   // Manually apply the meta to the bookmark since everything else is mocked.
   ApplyMetaToBookmark();
 
   RunTestSequence(PressButton(kBookmarkBubbleOkButtonId),
 
-                  WaitForShow(kPriceTrackingEmailConsentDialogId),
-
-                  FlushEvents());
+                  WaitForShow(kPriceTrackingEmailConsentDialogId));
 }
 
 IN_PROC_BROWSER_TEST_F(PriceTrackingEmailDialogConsentViewInteractiveTest,
@@ -174,7 +171,5 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingEmailDialogConsentViewInteractiveTest,
 
       PressButton(kBookmarkBubbleOkButtonId),
 
-      EnsureNotPresent(kPriceTrackingEmailConsentDialogId),
-
-      FlushEvents());
+      EnsureNotPresent(kPriceTrackingEmailConsentDialogId));
 }

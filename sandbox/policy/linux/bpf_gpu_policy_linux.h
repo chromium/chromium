@@ -12,9 +12,14 @@
 namespace sandbox {
 namespace policy {
 
+enum class MremapPolicy {
+  kBlock,
+  kAllow,
+};
+
 class SANDBOX_POLICY_EXPORT GpuProcessPolicy : public BPFBasePolicy {
  public:
-  GpuProcessPolicy();
+  explicit GpuProcessPolicy(MremapPolicy mremap_policy);
 
   GpuProcessPolicy(const GpuProcessPolicy&) = delete;
   GpuProcessPolicy& operator=(const GpuProcessPolicy&) = delete;
@@ -22,6 +27,9 @@ class SANDBOX_POLICY_EXPORT GpuProcessPolicy : public BPFBasePolicy {
   ~GpuProcessPolicy() override;
 
   bpf_dsl::ResultExpr EvaluateSyscall(int system_call_number) const override;
+
+ private:
+  MremapPolicy mremap_policy_;
 };
 
 }  // namespace policy

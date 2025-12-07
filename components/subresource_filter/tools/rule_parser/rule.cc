@@ -11,7 +11,6 @@
 
 #include "base/check_op.h"
 #include "base/logging.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 
 namespace subresource_filter {
@@ -52,8 +51,9 @@ void DomainListJoin(const google::protobuf::RepeatedPtrField<
                     char separator,
                     std::string* output) {
   for (const url_pattern_index::proto::DomainListItem& item : domain_list) {
-    if (item.exclude())
+    if (item.exclude()) {
       *output += '~';
+    }
     *output += item.domain();
     *output += separator;
   }
@@ -99,8 +99,9 @@ url_pattern_index::proto::UrlRule UrlRule::ToProtobuf() const {
       LOG(FATAL);
   }
 
-  if (type_mask & kAllElementTypes)
+  if (type_mask & kAllElementTypes) {
     result.set_element_types(type_mask & kAllElementTypes);
+  }
   if (type_mask & kAllActivationTypes) {
     result.set_activation_types((type_mask & kAllActivationTypes) >>
                                 kActivationTypesShift);
@@ -109,8 +110,9 @@ url_pattern_index::proto::UrlRule UrlRule::ToProtobuf() const {
   for (const std::string& domain : domains) {
     url_pattern_index::proto::DomainListItem* list_item =
         result.add_initiator_domains();
-    if (domain.empty())
+    if (domain.empty()) {
       continue;
+    }
     if (domain[0] == '~') {
       list_item->set_domain(domain.substr(1));
       list_item->set_exclude(true);
@@ -122,10 +124,12 @@ url_pattern_index::proto::UrlRule UrlRule::ToProtobuf() const {
   result.set_url_pattern_type(url_pattern_type);
   result.set_anchor_left(anchor_left);
   result.set_anchor_right(anchor_right);
-  if (match_case != result.match_case())
+  if (match_case != result.match_case()) {
     result.set_match_case(match_case);
-  if (!url_pattern.empty())
+  }
+  if (!url_pattern.empty()) {
     result.set_url_pattern(url_pattern);
+  }
 
   return result;
 }
@@ -144,11 +148,6 @@ CssRule::~CssRule() = default;
 
 CssRule& CssRule::operator=(const CssRule&) = default;
 
-bool CssRule::operator==(const CssRule& other) const {
-  return is_allowlist == other.is_allowlist && domains == other.domains &&
-         css_selector == other.css_selector;
-}
-
 url_pattern_index::proto::CssRule CssRule::ToProtobuf() const {
   url_pattern_index::proto::CssRule result;
 
@@ -158,8 +157,9 @@ url_pattern_index::proto::CssRule CssRule::ToProtobuf() const {
 
   for (const std::string& domain : domains) {
     url_pattern_index::proto::DomainListItem* list_item = result.add_domains();
-    if (domain.empty())
+    if (domain.empty()) {
       continue;
+    }
     if (domain[0] == '~') {
       list_item->set_domain(domain.substr(1));
       list_item->set_exclude(true);
@@ -168,8 +168,9 @@ url_pattern_index::proto::CssRule CssRule::ToProtobuf() const {
     }
   }
 
-  if (!css_selector.empty())
+  if (!css_selector.empty()) {
     result.set_css_selector(css_selector);
+  }
 
   return result;
 }
@@ -179,8 +180,9 @@ void CssRule::Canonicalize() {
 }
 
 void UrlRule::CanonicalizeUrlPattern() {
-  if (url_pattern_type == url_pattern_index::proto::URL_PATTERN_TYPE_REGEXP)
+  if (url_pattern_type == url_pattern_index::proto::URL_PATTERN_TYPE_REGEXP) {
     return;
+  }
   // TODO(melandory): Canonicalize more, e.g. squeeze '/\*\*+/' sequences
   // down to one '*'.
   if (anchor_left != url_pattern_index::proto::ANCHOR_TYPE_SUBDOMAIN &&
@@ -246,24 +248,27 @@ std::string ToString(const url_pattern_index::proto::UrlRule& rule) {
     // Try to print as few element types as possible.
     int balance = 0;
     for (const auto& element_type : kElementTypes) {
-      if (rule.element_types() & type_mask_for(element_type.type))
+      if (rule.element_types() & type_mask_for(element_type.type)) {
         ++balance;
-      else
+      } else {
         --balance;
+      }
     }
     const bool print_positives = (balance <= 0);
 
     for (const auto& element_type : kElementTypes) {
-      if (element_type.type == url_pattern_index::proto::ELEMENT_TYPE_POPUP)
+      if (element_type.type == url_pattern_index::proto::ELEMENT_TYPE_POPUP) {
         continue;
+      }
 
       const bool is_positive =
           rule.element_types() & type_mask_for(element_type.type);
       if (is_positive == print_positives) {
-        if (is_positive)
+        if (is_positive) {
           options.push_back(element_type.name);
-        else
+        } else {
           options.push_back(std::string("~") + element_type.name);
+        }
       }
     }
 
@@ -271,15 +276,15 @@ std::string ToString(const url_pattern_index::proto::UrlRule& rule) {
     if (rule.element_types() &
         type_mask_for(url_pattern_index::proto::ELEMENT_TYPE_POPUP)) {
       const auto& popup_type = kElementTypes[11];
-      CHECK_EQ(url_pattern_index::proto::ELEMENT_TYPE_POPUP, popup_type.type,
-               base::NotFatalUntil::M129);
+      CHECK_EQ(url_pattern_index::proto::ELEMENT_TYPE_POPUP, popup_type.type);
       options.push_back(popup_type.name);
     }
   }
 
   for (const auto& activation_type : kActivationTypes) {
-    if (rule.activation_types() & activation_type.type)
+    if (rule.activation_types() & activation_type.type) {
       options.push_back(activation_type.name);
+    }
   }
 
   // This workaround produces a text rule which, when parsed back from text,
@@ -287,8 +292,7 @@ std::string ToString(const url_pattern_index::proto::UrlRule& rule) {
   // element_types == kDefaultElementTypes instead of 0.
   if (!rule.element_types() && !rule.activation_types()) {
     const auto& image_type = kElementTypes[2];
-    CHECK_EQ(url_pattern_index::proto::ELEMENT_TYPE_IMAGE, image_type.type,
-             base::NotFatalUntil::M129);
+    CHECK_EQ(url_pattern_index::proto::ELEMENT_TYPE_IMAGE, image_type.type);
     options.push_back(image_type.name);
     options.push_back(std::string("~") + image_type.name);
   }
@@ -308,8 +312,9 @@ std::string ToString(const url_pattern_index::proto::UrlRule& rule) {
       LOG(FATAL);
   }
 
-  if (rule.match_case())
+  if (rule.match_case()) {
     options.push_back("match-case");
+  }
 
   if (rule.initiator_domains_size()) {
     std::string domains = "domain=";
@@ -327,8 +332,9 @@ std::string ToString(const url_pattern_index::proto::UrlRule& rule) {
 
 std::string ToString(const url_pattern_index::proto::CssRule& rule) {
   std::string result;
-  if (rule.domains_size())
+  if (rule.domains_size()) {
     DomainListJoin(rule.domains(), ',', &result);
+  }
 
   switch (rule.semantics()) {
     case url_pattern_index::proto::RULE_SEMANTICS_BLOCKLIST:

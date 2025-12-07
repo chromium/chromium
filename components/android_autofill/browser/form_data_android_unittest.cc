@@ -27,10 +27,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-
 namespace {
 
-using ::autofill::test::DeepEqualsFormData;
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::InSequence;
@@ -70,8 +68,6 @@ FormData CreateTestForm() {
   f.set_renderer_id(test::MakeFormRendererId());
   return f;
 }
-
-}  // namespace
 
 class FormDataAndroidTest : public ::testing::Test {
  public:
@@ -127,10 +123,10 @@ TEST_F(FormDataAndroidTest, Form) {
   FormData form = CreateTestForm();
   FormDataAndroid form_android(form, kSampleSessionId);
 
-  EXPECT_TRUE(FormData::DeepEqual(form, form_android.form()));
+  EXPECT_EQ(form_android.form(), form);
 
   form.set_name(form.name() + u"x");
-  EXPECT_FALSE(FormData::DeepEqual(form, form_android.form()));
+  EXPECT_NE(form_android.form(), form);
 }
 
 // Tests that form similarity checks include name, name_attribute, id_attribute,
@@ -283,34 +279,34 @@ TEST_F(FormDataAndroidTest, UpdateFieldTypesWithExplicitType) {
   MockFunction<void(int)> check;
   {
     InSequence s;
-    EXPECT_CALL(*field_bridges()[0], UpdateFieldTypes(Eq(kUsername)));
-    EXPECT_CALL(*field_bridges()[1], UpdateFieldTypes(Eq(kPassword)));
+    EXPECT_CALL(*field_bridges()[0], UpdateFieldTypes(Eq(USERNAME)));
+    EXPECT_CALL(*field_bridges()[1], UpdateFieldTypes(Eq(PASSWORD)));
     EXPECT_CALL(check, Call(1));
     EXPECT_CALL(check, Call(2));
-    EXPECT_CALL(*field_bridges()[0], UpdateFieldTypes(Eq(kPassword)));
+    EXPECT_CALL(*field_bridges()[0], UpdateFieldTypes(Eq(PASSWORD)));
     EXPECT_CALL(check, Call(3));
-    EXPECT_CALL(*field_bridges()[0], UpdateFieldTypes(Eq(kUsername)));
+    EXPECT_CALL(*field_bridges()[0], UpdateFieldTypes(Eq(USERNAME)));
   }
 
   // Update all the fields to new types.
-  form_android.UpdateFieldTypes({{form.fields()[0].global_id(), kUsername},
-                                 {form.fields()[1].global_id(), kPassword}});
+  form_android.UpdateFieldTypes({{form.fields()[0].global_id(), USERNAME},
+                                 {form.fields()[1].global_id(), PASSWORD}});
   check.Call(1);
 
   // Update to the same type - this should not trigger calls to JNI.
-  form_android.UpdateFieldTypes({{form.fields()[0].global_id(), kUsername},
-                                 {form.fields()[1].global_id(), kPassword}});
+  form_android.UpdateFieldTypes({{form.fields()[0].global_id(), USERNAME},
+                                 {form.fields()[1].global_id(), PASSWORD}});
   check.Call(2);
 
   // Update only one field.
   FieldGlobalId unknown_id = CreateTestField().global_id();
   form_android.UpdateFieldTypes(
-      {{form.fields()[0].global_id(), kPassword}, {unknown_id, kUsername}});
+      {{form.fields()[0].global_id(), PASSWORD}, {unknown_id, USERNAME}});
   check.Call(3);
 
   // Update both, but only the first one has changes.
-  form_android.UpdateFieldTypes({{form.fields()[0].global_id(), kUsername},
-                                 {form.fields()[1].global_id(), kPassword}});
+  form_android.UpdateFieldTypes({{form.fields()[0].global_id(), USERNAME},
+                                 {form.fields()[1].global_id(), PASSWORD}});
 }
 
 // Tests that the calls to update field types are propagated to the fields.
@@ -342,7 +338,7 @@ TEST_F(FormDataAndroidTest, UpdateFieldVisibilities) {
   form.set_fields({CreateTestField(), CreateTestField(), CreateTestField()});
   test_api(form).field(0).set_role(FormFieldData::RoleAttribute::kPresentation);
   test_api(form).field(1).set_is_focusable(false);
-  EXPECT_FALSE(form.fields()[0].IsFocusable());
+  EXPECT_TRUE(form.fields()[0].IsFocusable());
   EXPECT_FALSE(form.fields()[1].IsFocusable());
   EXPECT_TRUE(form.fields()[2].IsFocusable());
   FormDataAndroid form_android(form, kSampleSessionId);
@@ -354,18 +350,17 @@ TEST_F(FormDataAndroidTest, UpdateFieldVisibilities) {
 
   // `form_android` created a copy of `form` - therefore modifying the fields
   // here does not change the values inside `form_android`.
-  test_api(form).field(0).set_role(FormFieldData::RoleAttribute::kOther);
   test_api(form).field(1).set_is_focusable(true);
   EXPECT_TRUE(form.fields()[0].IsFocusable());
   EXPECT_TRUE(form.fields()[1].IsFocusable());
   EXPECT_TRUE(form.fields()[2].IsFocusable());
 
-  EXPECT_CALL(*field_bridges()[0], UpdateVisible(true));
-  EXPECT_CALL(*field_bridges()[1], UpdateVisible(true));
-  EXPECT_CALL(*field_bridges()[2], UpdateVisible).Times(0);
+  EXPECT_CALL(*field_bridges()[0], UpdateFocusable).Times(0);
+  EXPECT_CALL(*field_bridges()[1], UpdateFocusable(true));
+  EXPECT_CALL(*field_bridges()[2], UpdateFocusable).Times(0);
   form_android.UpdateFieldVisibilities(form);
 
-  EXPECT_TRUE(FormData::DeepEqual(form, form_android.form()));
+  EXPECT_EQ(form_android.form(), form);
 }
 
 // Tests that `GetJavaPeer` passes the correct `FormData`, `SessionId` and
@@ -374,9 +369,10 @@ TEST_F(FormDataAndroidTest, GetJavaPeer) {
   FormData form = CreateTestForm();
   FormDataAndroid af(form, kSampleSessionId);
   EXPECT_CALL(form_bridge(),
-              GetOrCreateJavaPeer(DeepEqualsFormData(form), kSampleSessionId,
+              GetOrCreateJavaPeer(Eq(form), kSampleSessionId,
                                   Pointwise(SimilarFieldAs(), form.fields())));
   af.GetJavaPeer();
 }
 
+}  // namespace
 }  // namespace autofill

@@ -15,9 +15,11 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "media/base/bitrate.h"
 #include "media/base/encoder_status.h"
 #include "media/base/media_export.h"
+#include "media/base/media_log.h"
 #include "media/base/svc_scalability_mode.h"
 #include "media/base/video_bitrate_allocation.h"
 #include "media/base/video_codecs.h"
@@ -29,8 +31,8 @@
 namespace media {
 
 class BitstreamBuffer;
-class MediaLog;
 class VideoFrame;
+class CommandBufferHelper;
 
 // Metadata for a dropped frame.
 // BitstreamBufferMetadata has this data if and only if the frame is
@@ -50,12 +52,6 @@ struct MEDIA_EXPORT DropFrameMetadata final {
 struct MEDIA_EXPORT H264Metadata final {
   uint8_t temporal_idx = 0;
   bool layer_sync = false;
-};
-
-// Metadata for H265 bitstream buffer.
-//  |temporal_idx|  indicates the temporal index of this frame.
-struct MEDIA_EXPORT H265Metadata final {
-  uint8_t temporal_idx = 0;
 };
 
 //  Metadata for a VP8 bitstream buffer.
@@ -118,13 +114,24 @@ struct MEDIA_EXPORT Vp9Metadata final {
   std::vector<uint8_t> p_diffs;
 };
 
-// Metadata for an AV1 bitstream buffer.
-struct MEDIA_EXPORT Av1Metadata final {
-  Av1Metadata();
-  ~Av1Metadata();
-  Av1Metadata(const Av1Metadata&);
+// Metadata for filling webrtc::CodecSpecificInfo.generic_frame_info.
+struct MEDIA_EXPORT SVCGenericMetadata final {
+  // True iff the reference dependency follows any of the scalability modes
+  // defined in https://www.w3.org/TR/webrtc-svc/#dependencydiagrams*.
+  // Otherwise, set |follow_svc_spec| to false and fill the accurate
+  // |reference_flags| and |refresh_flags| for each encoded frame.
+  bool follow_svc_spec;
+
   // The temporal index for this frame.
   uint8_t temporal_idx = 0;
+  // The spatial index for this frame.
+  uint8_t spatial_idx = 0;
+
+  // Contains a bitmask that specifies which dpb slots are referenced
+  // by current frame, the least significant bit indicates slot 0.
+  std::optional<uint16_t> reference_flags;
+  // Similar to reference_flags, but for which slots are refreshed.
+  std::optional<uint16_t> refresh_flags;
 };
 
 //  Metadata associated with a bitstream buffer.
@@ -159,15 +166,18 @@ struct MEDIA_EXPORT BitstreamBufferMetadata final {
   bool dropped_frame() const;
   std::optional<uint8_t> spatial_idx() const;
 
-  // |drop|, |h264|, |vp8|, |vp9|, |av1| and |h265| may be set, but not multiple
-  // of them. Presumably, it's also possible for none of them to be set.
+  // |drop|, |h264|, |vp8| and |vp9| may be set, but not multiple of them.
+  // Presumably, it's also possible for none of them to be set.
   // |drop| is set if and only if the frame is dropped.
   std::optional<DropFrameMetadata> drop;
   std::optional<H264Metadata> h264;
   std::optional<Vp8Metadata> vp8;
   std::optional<Vp9Metadata> vp9;
-  std::optional<Av1Metadata> av1;
-  std::optional<H265Metadata> h265;
+
+  // Metadata for SVC encoding is expected to be set in |svc_generic|.
+  // TODO: Deprecate the above legacy codec specific medadata and replace them
+  // with |svc_generic|.
+  std::optional<SVCGenericMetadata> svc_generic;
 
   // Some platforms may adjust the encoding size to meet hardware requirements.
   // If not set, the encoded size is the same as configured.
@@ -198,7 +208,8 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
         uint32_t max_framerate_denominator = 1u,
         SupportedRateControlMode rc_modes = kConstantMode,
         const std::vector<SVCScalabilityMode>& scalability_modes = {},
-        const std::vector<VideoPixelFormat>& gpu_suppoted_pixel_formats = {});
+        const std::vector<VideoPixelFormat>& gpu_suppoted_pixel_formats = {},
+        bool supports_shared_images = false);
     SupportedProfile(const SupportedProfile& other);
     SupportedProfile& operator=(const SupportedProfile& other) = default;
     ~SupportedProfile();
@@ -211,6 +222,7 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     std::vector<SVCScalabilityMode> scalability_modes;
     bool is_software_codec = false;
     std::vector<VideoPixelFormat> gpu_supported_pixel_formats;
+    bool supports_gpu_shared_images = false;
   };
   using SupportedProfiles = std::vector<SupportedProfile>;
   using FlushCallback = base::OnceCallback<void(bool)>;
@@ -339,6 +351,11 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     // Indicates what type of encoder is required. Useful when OS software
     // encoders may be present and/or superior to built-in encoders.
     EncoderType required_encoder_type = EncoderType::kHardware;
+
+    // When set to true, indicates that the frame reference structure is
+    // specified per frame by application, and ignores config item specified by
+    // `spatial_layers` and `inter_layer_pred`.
+    bool manual_reference_buffer_control = false;
   };
 
   // Interface for clients that use VideoEncodeAccelerator. These callbacks will
@@ -394,8 +411,8 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
   virtual SupportedProfiles GetSupportedProfiles() = 0;
 
   // Initializes the video encoder with specific configuration.  Called once per
-  // encoder construction.  This call is synchronous and returns true iff
-  // initialization is successful.
+  // encoder construction.  This call is synchronous and returns
+  // EncoderStatus::Codes::kOk iff initialization is successful.
   // TODO(mcasas): Update to asynchronous, https://crbug.com/744210.
   // Parameters:
   //  |config| contains the initialization parameters.
@@ -403,9 +420,9 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
   //  be valid until Destroy() is called.
   //  |media_log| is used to report error messages.
   // TODO(sheu): handle resolution changes.  http://crbug.com/249944
-  virtual bool Initialize(const Config& config,
-                          Client* client,
-                          std::unique_ptr<MediaLog> media_log) = 0;
+  virtual EncoderStatus Initialize(const Config& config,
+                                   Client* client,
+                                   std::unique_ptr<MediaLog> media_log) = 0;
 
   // Encodes the given frame.
   // The storage type of |frame| must be the |storage_type| if it is specified
@@ -491,17 +508,30 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
   // This method must be called after VEA has been initialized.
   virtual bool IsGpuFrameResizeSupported();
 
+  // Provides a callback to acquire a CommandBufferStub, which may be used
+  // to access shared images.
+  virtual void SetCommandBufferHelperCB(
+      base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
+          get_command_buffer_helper_cb,
+      scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner);
+
+  virtual void SetSharedImageInterfaceForTesting(
+      scoped_refptr<gpu::SharedImageInterface> sii);
+
  protected:
   // Do not delete directly; use Destroy() or own it with a unique_ptr, which
   // will Destroy() it properly by default.
   virtual ~VideoEncodeAccelerator();
+
+  static size_t EstimateBitstreamBufferSize(const Bitrate& bitrate,
+                                            uint32_t framerate,
+                                            const gfx::Size& coded_size);
 };
 
 MEDIA_EXPORT bool operator==(const VideoEncodeAccelerator::SupportedProfile& l,
                              const VideoEncodeAccelerator::SupportedProfile& r);
 MEDIA_EXPORT bool operator==(const Vp8Metadata& l, const Vp8Metadata& r);
 MEDIA_EXPORT bool operator==(const Vp9Metadata& l, const Vp9Metadata& r);
-MEDIA_EXPORT bool operator==(const Av1Metadata& l, const Av1Metadata& r);
 MEDIA_EXPORT bool operator==(const BitstreamBufferMetadata& l,
                              const BitstreamBufferMetadata& r);
 MEDIA_EXPORT bool operator==(

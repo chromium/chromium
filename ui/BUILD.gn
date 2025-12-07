@@ -12,6 +12,7 @@ if (is_android) {
     deps = [
       "//ui/accessibility:ui_accessibility_junit_tests",
       "//ui/android:ui_android_junit_tests",
+      "//ui/edge_to_edge:junit",
     ]
   }
 }

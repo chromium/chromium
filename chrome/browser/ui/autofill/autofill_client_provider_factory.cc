@@ -7,10 +7,16 @@
 #include <utility>
 
 #include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/ui/autofill/autofill_client_provider.h"
 #include "content/public/browser/browser_context.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/autofill/android/android_sms_otp_backend_factory.h"
+#include "chrome/browser/autofill/one_time_token_service_factory.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace autofill {
 
@@ -39,7 +45,12 @@ AutofillClientProviderFactory::AutofillClientProviderFactory()
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
               .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .WithSystem(ProfileSelection::kNone)
-              .Build()) {}
+              .Build()) {
+#if BUILDFLAG(IS_ANDROID)
+  DependsOn(AndroidSmsOtpBackendFactory::GetInstance());
+  DependsOn(OneTimeTokenServiceFactory::GetInstance());
+#endif  // BUILDFLAG(IS_ANDROID)
+}
 
 AutofillClientProviderFactory::~AutofillClientProviderFactory() = default;
 

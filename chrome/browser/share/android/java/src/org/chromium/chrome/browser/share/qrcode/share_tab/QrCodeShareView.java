@@ -18,10 +18,12 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.ui.widget.ChromeImageView;
 
 /** Manages the Android View representing the QrCode share panel. */
+@NullMarked
 class QrCodeShareView {
     private final Context mContext;
     private final View mView;

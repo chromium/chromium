@@ -42,12 +42,13 @@ class MEDIA_EXPORT AudioTrackOutputStream : public MuteableAudioOutputStream {
   void SetMute(bool muted) override;
 
   // AudioOutputStream::SourceCallback implementation methods called from Java.
-  base::android::ScopedJavaLocalRef<jobject> OnMoreData(JNIEnv* env,
-                                                        jobject obj,
-                                                        jobject audio_data,
-                                                        jlong delay);
-  void OnError(JNIEnv* env, jobject obj);
-  jlong GetAddress(JNIEnv* env, jobject obj, jobject byte_buffer);
+  base::android::ScopedJavaLocalRef<jobject> OnMoreData(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& audio_data,
+      jlong delay);
+  void OnError(JNIEnv* env);
+  jlong GetAddress(JNIEnv* env,
+                   const base::android::JavaRef<jobject>& byte_buffer);
 
  private:
   const AudioParameters params_;

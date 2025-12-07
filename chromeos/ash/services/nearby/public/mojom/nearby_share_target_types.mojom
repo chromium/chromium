@@ -8,7 +8,11 @@ module nearby_share.mojom;
 // The numeric values are used to encode/decode advertisement bytes, and must
 // kept in sync with Android implementation.
 // These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
+// numeric values should never be reused. Keep in sync with the
+// NearbyShareDeviceType UMA enum defined in
+// //tools/metrics/histograms/metadata/nearby/enums.xml.
+//
+// LINT.IfChange(NearbyShareDeviceType)
 enum ShareTargetType {
   // Unknown device type.
   kUnknown = 0,
@@ -19,3 +23,4 @@ enum ShareTargetType {
   // A laptop.
   kLaptop = 3,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/nearby/enums.xml:NearbyShareDeviceType)

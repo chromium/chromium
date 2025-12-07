@@ -6,7 +6,7 @@
 import 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
 
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
-import {CrCheckboxElement} from 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
+import type {CrCheckboxElement} from 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
 import {keyDownOn, keyUpOn, pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertFalse, assertTrue, assertLT, assertGT} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -201,7 +201,7 @@ suite('cr-checkbox', function() {
 
     checkbox = document.querySelector('cr-checkbox')!;
     innerCheckbox =
-        checkbox.shadowRoot!.querySelector('#checkbox')! as HTMLElement;
+        checkbox.shadowRoot!.querySelector<HTMLElement>('#checkbox')!;
 
     // Should not override tabindex if it is initialized.
     assertEquals(-1, checkbox.tabIndex);
@@ -216,7 +216,7 @@ suite('cr-checkbox', function() {
 
     checkbox = document.querySelector('cr-checkbox')!;
     innerCheckbox =
-        checkbox.shadowRoot!.querySelector('#checkbox')! as HTMLElement;
+        checkbox.shadowRoot!.querySelector<HTMLElement>('#checkbox')!;
 
     // Initializing with disabled should make tabindex="-1".
     assertEquals(-1, checkbox.tabIndex);

@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/common/safe_browsing/disk_image_type_sniffer_mac.h"
+
+#include "base/compiler_specific.h"
 #include "base/threading/scoped_blocking_call.h"
 
 namespace safe_browsing {
@@ -14,7 +16,7 @@ constexpr size_t kSizeKolySignatureInBytes = sizeof(kKolySignature);
 
 }  // namespace
 
-DiskImageTypeSnifferMac::DiskImageTypeSnifferMac() {}
+DiskImageTypeSnifferMac::DiskImageTypeSnifferMac() = default;
 
 // static
 bool DiskImageTypeSnifferMac::IsAppleDiskImage(const base::FilePath& dmg_file) {
@@ -48,8 +50,7 @@ bool DiskImageTypeSnifferMac::IsAppleDiskImageTrailer(
   const base::span<const uint8_t> subspan =
       trailer.last(kSizeKolySignatureInBytes);
 
-  return (memcmp(subspan.data(), kKolySignature, kSizeKolySignatureInBytes) ==
-          0);
+  return subspan == kKolySignature;
 }
 
 DiskImageTypeSnifferMac::~DiskImageTypeSnifferMac() = default;

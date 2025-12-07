@@ -5,16 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SIGNIN_MERGE_SESSION_NAVIGATION_THROTTLE_H_
 #define CHROME_BROWSER_ASH_LOGIN_SIGNIN_MERGE_SESSION_NAVIGATION_THROTTLE_H_
 
-#include <memory>
-
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/signin/oauth2_login_manager.h"
 #include "content/public/browser/navigation_throttle.h"
-
-namespace content {
-class NavigationHandle;
-}
 
 namespace ash {
 
@@ -25,8 +19,7 @@ namespace ash {
 class MergeSessionNavigationThrottle : public content::NavigationThrottle,
                                        public OAuth2LoginManager::Observer {
  public:
-  static std::unique_ptr<content::NavigationThrottle> Create(
-      content::NavigationHandle* handle);
+  static void CreateAndAdd(content::NavigationThrottleRegistry& registry);
 
   MergeSessionNavigationThrottle(const MergeSessionNavigationThrottle&) =
       delete;
@@ -36,7 +29,8 @@ class MergeSessionNavigationThrottle : public content::NavigationThrottle,
   ~MergeSessionNavigationThrottle() override;
 
  private:
-  explicit MergeSessionNavigationThrottle(content::NavigationHandle* handle);
+  explicit MergeSessionNavigationThrottle(
+      content::NavigationThrottleRegistry& registry);
 
   // content::NavigationThrottle implementation:
   content::NavigationThrottle::ThrottleCheckResult WillStartRequest() override;

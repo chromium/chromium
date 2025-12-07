@@ -7,11 +7,10 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
-#include "chrome/browser/apps/app_service/publishers/extension_apps_chromeos.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/services/app_service/public/cpp/icon_loader.h"
 #include "extensions/browser/uninstall_reason.h"
-#include "ui/views/native_window_tracker.h"
+#include "ui/native_window_tracker/native_window_tracker.h"
 #include "ui/views/widget/widget.h"
 
 namespace apps {
@@ -29,7 +28,7 @@ UninstallDialog::UninstallDialog(Profile* profile,
       parent_window_(parent_window),
       uninstall_callback_(std::move(uninstall_callback)) {
   if (parent_window) {
-    parent_window_tracker_ = views::NativeWindowTracker::Create(parent_window);
+    parent_window_tracker_ = ui::NativeWindowTracker::Create(parent_window);
   }
 }
 
@@ -45,8 +44,7 @@ void UninstallDialog::PrepareToShow(IconKey icon_key,
         icon_key.icon_effects | apps::IconEffects::kMdIconStyle);
   }
 
-  if (app_type_ == AppType::kChromeApp ||
-      app_type_ == AppType::kStandaloneBrowserChromeApp) {
+  if (app_type_ == AppType::kChromeApp) {
     UMA_HISTOGRAM_ENUMERATION("Extensions.UninstallSource",
                               extensions::UNINSTALL_SOURCE_APP_LIST,
                               extensions::NUM_UNINSTALL_SOURCES);

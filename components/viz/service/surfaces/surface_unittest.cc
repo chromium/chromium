@@ -13,7 +13,6 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
-#include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/surfaces/pending_copy_output_request.h"
@@ -36,41 +35,14 @@ const uint64_t kBeginFrameSourceId = 1337;
 
 class SurfaceTest : public testing::Test {
  public:
-  SurfaceTest()
-      : frame_sink_manager_(
-            FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)) {}
+  SurfaceTest() : frame_sink_manager_(FrameSinkManagerImpl::InitParams()) {}
 
  protected:
   std::unique_ptr<base::SimpleTestTickClock> now_src_;
-  ServerSharedBitmapManager shared_bitmap_manager_;
   FrameSinkManagerImpl frame_sink_manager_;
 };
 
-// Supports testing features::OnBeginFrameAcks, which changes the expectations
-// of what IPCs are sent to the CompositorFrameSinkClient. When enabled
-// OnBeginFrame also handles ReturnResources as well as
-// DidReceiveCompositorFrameAck.
-class OnBeginFrameAcksSurfaceTest : public SurfaceTest,
-                                    public testing::WithParamInterface<bool> {
- public:
-  OnBeginFrameAcksSurfaceTest();
-  ~OnBeginFrameAcksSurfaceTest() override = default;
-
-  bool BeginFrameAcksEnabled() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-OnBeginFrameAcksSurfaceTest::OnBeginFrameAcksSurfaceTest() {
-  if (BeginFrameAcksEnabled()) {
-    scoped_feature_list_.InitAndEnableFeature(features::kOnBeginFrameAcks);
-  } else {
-    scoped_feature_list_.InitAndDisableFeature(features::kOnBeginFrameAcks);
-  }
-}
-
-TEST_P(OnBeginFrameAcksSurfaceTest, PresentationCallback) {
+TEST_F(SurfaceTest, PresentationCallback) {
   constexpr gfx::Size kSurfaceSize(300, 300);
   constexpr gfx::Rect kDamageRect(0, 0);
   const LocalSurfaceId local_surface_id(6, base::UnguessableToken::Create());
@@ -78,9 +50,6 @@ TEST_P(OnBeginFrameAcksSurfaceTest, PresentationCallback) {
   MockCompositorFrameSinkClient client;
   auto support = std::make_unique<CompositorFrameSinkSupport>(
       &client, &frame_sink_manager_, kArbitraryFrameSinkId, kIsRoot);
-  if (BeginFrameAcksEnabled()) {
-    support->SetWantsBeginFrameAcks();
-  }
   uint32_t frame_token = kInvalidFrameToken;
   {
     CompositorFrame frame =
@@ -90,8 +59,7 @@ TEST_P(OnBeginFrameAcksSurfaceTest, PresentationCallback) {
             .Build();
     frame_token = frame.metadata.frame_token;
     ASSERT_NE(frame_token, kInvalidFrameToken);
-    EXPECT_CALL(client, DidReceiveCompositorFrameAck(testing::_))
-        .Times(BeginFrameAcksEnabled() ? 0 : 1);
+    EXPECT_CALL(client, DidReceiveCompositorFrameAck(testing::_)).Times(1);
     support->SubmitCompositorFrame(local_surface_id, std::move(frame));
     testing::Mock::VerifyAndClearExpectations(&client);
   }
@@ -104,22 +72,13 @@ TEST_P(OnBeginFrameAcksSurfaceTest, PresentationCallback) {
             .AddRenderPass(gfx::Rect(kSurfaceSize), kDamageRect)
             .SetBeginFrameSourceId(kBeginFrameSourceId)
             .Build();
-    EXPECT_CALL(client, DidReceiveCompositorFrameAck(testing::_))
-        .Times(BeginFrameAcksEnabled() ? 0 : 1);
+    EXPECT_CALL(client, DidReceiveCompositorFrameAck(testing::_)).Times(1);
     support->SubmitCompositorFrame(local_surface_id, std::move(frame));
     ASSERT_EQ(1u, support->timing_details().size());
     EXPECT_EQ(frame_token, support->timing_details().begin()->first);
     testing::Mock::VerifyAndClearExpectations(&client);
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(,
-                         OnBeginFrameAcksSurfaceTest,
-                         testing::Bool(),
-                         [](auto& info) {
-                           return info.param ? "BeginFrameAcks"
-                                             : "CompositoFrameAcks";
-                         });
 
 TEST_F(SurfaceTest, SurfaceIds) {
   for (size_t i = 0; i < 3; ++i) {
@@ -166,8 +125,8 @@ TEST_F(SurfaceTest, CopyRequestLifetime) {
   EXPECT_TRUE(surface_manager->GetSurfaceForId(surface_id));
   EXPECT_FALSE(copy_called);
 
-  int max_frame = 3, start_id = 200;
-  for (int i = 0; i < max_frame; ++i) {
+  uint64_t max_frame = 3, start_id = 200;
+  for (uint64_t i = 0; i < max_frame; ++i) {
     frame = CompositorFrameBuilder().Build();
     frame.render_pass_list.push_back(CompositorRenderPass::Create());
     frame.render_pass_list.back()->id =
@@ -183,6 +142,7 @@ TEST_F(SurfaceTest, CopyRequestLifetime) {
   }
 
   CompositorRenderPassId last_pass_id{(max_frame - 1) * 3 + start_id + 2};
+
   // The copy request should stay on the Surface until TakeCopyOutputRequests
   // is called.
   EXPECT_FALSE(copy_called);
@@ -346,20 +306,10 @@ TEST_F(SurfaceTest, PendingCopySurfaceIncludedInActiveReferencedSurfaces) {
   ASSERT_TRUE(curr_surface->active_referenced_surfaces().empty());
 }
 
-// Parameterized by whether we should enable kDrawImmediatelyWhenInteractive.
-class ImmediateActivationSurfaceTest
-    : public SurfaceTest,
-      public testing::WithParamInterface<bool> {
+class ImmediateActivationSurfaceTest : public SurfaceTest {
  public:
-  ImmediateActivationSurfaceTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kDrawImmediatelyWhenInteractive);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kDrawImmediatelyWhenInteractive);
-    }
-  }
+  ImmediateActivationSurfaceTest() = default;
+  ~ImmediateActivationSurfaceTest() override = default;
 
   void SetUp() override {
     SurfaceTest::SetUp();
@@ -369,16 +319,11 @@ class ImmediateActivationSurfaceTest
   }
 
   base::TimeTicks Now() { return now_src_->NowTicks(); }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-INSTANTIATE_TEST_SUITE_P(All, ImmediateActivationSurfaceTest, testing::Bool());
 
 // Checks that submitting a compositor frame with a dependency always results in
 // activation dependencies if we have no interaction.
-TEST_P(ImmediateActivationSurfaceTest, WithNoInteraction) {
+TEST_F(ImmediateActivationSurfaceTest, WithNoInteraction) {
   constexpr gfx::Rect output_rect(100, 100);
   SurfaceManager* surface_manager = frame_sink_manager_.surface_manager();
 
@@ -414,9 +359,9 @@ TEST_P(ImmediateActivationSurfaceTest, WithNoInteraction) {
   EXPECT_FALSE(surface->activation_dependencies().empty());
 }
 
-// Checks that submitting a compositor frame with a dependency only results in
-// activation dependencies if we haven't enabled immediate activation.
-TEST_P(ImmediateActivationSurfaceTest, WithInteraction) {
+// Checks that submitting a compositor frame with a dependency and interaction
+// does not result in activation dependencies.
+TEST_F(ImmediateActivationSurfaceTest, WithInteraction) {
   constexpr gfx::Rect output_rect(100, 100);
   SurfaceManager* surface_manager = frame_sink_manager_.surface_manager();
 
@@ -450,7 +395,7 @@ TEST_P(ImmediateActivationSurfaceTest, WithInteraction) {
   }
 
   Surface* surface = surface_manager->GetSurfaceForId(root_surface_id);
-  EXPECT_EQ(surface->activation_dependencies().empty(), GetParam());
+  EXPECT_TRUE(surface->activation_dependencies().empty());
 }
 
 }  // namespace

@@ -94,8 +94,8 @@ async function runSecondSession() {
   // Verify user script still uses the customized csp.
   chrome.test.assertEq(['customized_csp'], await getInjectedElementIds(tab.id));
 
-  // Disable messaging and csp (by omitting its entry).
-  chrome.userScripts.configureWorld({messaging: false});
+  // Reset to defaults.
+  chrome.userScripts.resetWorldConfiguration();
   chrome.test.succeed();
 }
 
@@ -126,11 +126,11 @@ async function runThirdSession() {
 chrome.runtime.onStartup.addListener(async () => {});
 
 chrome.test.sendMessage('ready', testName => {
-  if (testName === 'PRE_PRE_PersistentWorldConfiguration')
+  if (testName.startsWith('PRE_PRE_PersistentWorldConfiguration'))
     runFirstSession();
-  else if (testName === 'PRE_PersistentWorldConfiguration')
+  else if (testName.startsWith('PRE_PersistentWorldConfiguration'))
     runSecondSession();
-  else if (testName === 'PersistentWorldConfiguration')
+  else if (testName.startsWith('PersistentWorldConfiguration'))
     runThirdSession();
   else
     chrome.test.fail();

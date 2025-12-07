@@ -8,11 +8,14 @@
 
   await dp.Audits.enable();
 
-  const issue = dp.Audits.onceIssueAdded();
-
-  await page.navigate(
+  page.navigate(
       'https://devtools.test:8443/inspector-protocol/attribution-reporting/resources/preload.html');
 
-  testRunner.log((await issue).params.issue, 'Issue reported: ', ['violatingNodeId']);
+  let issue;
+  do {
+    issue = await dp.Audits.onceIssueAdded();
+  } while (issue.params.issue.code !== 'AttributionReportingIssue');
+
+  testRunner.log(issue.params.issue, 'Issue reported: ', ['violatingNodeId']);
   testRunner.completeTest();
 })

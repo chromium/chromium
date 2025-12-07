@@ -10,7 +10,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
   await TestRunner.showPanel('console');
 
-  await TestRunner.DebuggerAgent.setAsyncCallStackDepth(200);
+  await TestRunner.DebuggerAgent.invoke_setAsyncCallStackDepth({maxDepth: 200});
 
   ConsoleTestRunner.waitUntilNthMessageReceived(1, step2);
   TestRunner.evaluateInPage('setTimeout("~", 0)');

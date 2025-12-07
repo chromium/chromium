@@ -9,7 +9,6 @@
 #include "base/task/thread_pool/task_source.h"
 #include "base/task/thread_pool/task_tracker.h"
 #include "base/task/thread_pool/worker_thread.h"
-#include "base/task/thread_pool/worker_thread_waitable_event.h"
 #include "base/test/gtest_util.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -19,7 +18,7 @@ namespace base::internal {
 
 namespace {
 
-class MockWorkerThreadDelegate : public WorkerThreadWaitableEvent::Delegate {
+class MockWorkerThreadDelegate : public WorkerThread::Delegate {
  public:
   WorkerThread::ThreadLabel GetThreadLabel() const override {
     return WorkerThread::ThreadLabel::DEDICATED;
@@ -39,15 +38,15 @@ class MockWorkerThreadDelegate : public WorkerThreadWaitableEvent::Delegate {
 class ThreadPoolWorkerSetTest : public testing::Test {
  protected:
   void SetUp() override {
-    worker_a_ = MakeRefCounted<WorkerThreadWaitableEvent>(
+    worker_a_ = MakeRefCounted<WorkerThread>(
         ThreadType::kDefault, std::make_unique<MockWorkerThreadDelegate>(),
         task_tracker_.GetTrackedRef(), 0);
     ASSERT_TRUE(worker_a_);
-    worker_b_ = MakeRefCounted<WorkerThreadWaitableEvent>(
+    worker_b_ = MakeRefCounted<WorkerThread>(
         ThreadType::kDefault, std::make_unique<MockWorkerThreadDelegate>(),
         task_tracker_.GetTrackedRef(), 1);
     ASSERT_TRUE(worker_b_);
-    worker_c_ = MakeRefCounted<WorkerThreadWaitableEvent>(
+    worker_c_ = MakeRefCounted<WorkerThread>(
         ThreadType::kDefault, std::make_unique<MockWorkerThreadDelegate>(),
         task_tracker_.GetTrackedRef(), 2);
     ASSERT_TRUE(worker_c_);
@@ -57,9 +56,9 @@ class ThreadPoolWorkerSetTest : public testing::Test {
   TaskTracker task_tracker_;
 
  protected:
-  scoped_refptr<WorkerThreadWaitableEvent> worker_a_;
-  scoped_refptr<WorkerThreadWaitableEvent> worker_b_;
-  scoped_refptr<WorkerThreadWaitableEvent> worker_c_;
+  scoped_refptr<WorkerThread> worker_a_;
+  scoped_refptr<WorkerThread> worker_b_;
+  scoped_refptr<WorkerThread> worker_c_;
 };
 
 }  // namespace
@@ -84,7 +83,7 @@ TEST_F(ThreadPoolWorkerSetTest, InsertTake) {
   EXPECT_FALSE(set.IsEmpty());
   EXPECT_EQ(3U, set.Size());
 
-  WorkerThreadWaitableEvent* idle_worker = set.Take();
+  WorkerThread* idle_worker = set.Take();
   EXPECT_EQ(idle_worker, worker_a_.get());
   EXPECT_FALSE(set.IsEmpty());
   EXPECT_EQ(2U, set.Size());
@@ -129,7 +128,7 @@ TEST_F(ThreadPoolWorkerSetTest, PeekPop) {
   EXPECT_FALSE(set.IsEmpty());
   EXPECT_EQ(3U, set.Size());
 
-  WorkerThreadWaitableEvent* idle_worker = set.Take();
+  WorkerThread* idle_worker = set.Take();
   EXPECT_EQ(worker_a_.get(), idle_worker);
   EXPECT_EQ(worker_b_.get(), set.Peek());
   EXPECT_FALSE(set.IsEmpty());
@@ -169,7 +168,7 @@ TEST_F(ThreadPoolWorkerSetTest, Contains) {
   EXPECT_TRUE(set.Contains(worker_b_.get()));
   EXPECT_TRUE(set.Contains(worker_c_.get()));
 
-  WorkerThreadWaitableEvent* idle_worker = set.Take();
+  WorkerThread* idle_worker = set.Take();
   EXPECT_EQ(idle_worker, worker_a_.get());
   EXPECT_FALSE(set.Contains(worker_a_.get()));
   EXPECT_TRUE(set.Contains(worker_b_.get()));

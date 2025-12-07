@@ -46,6 +46,12 @@ class BASE_EXPORT Location {
     return lhs.program_counter_ <=> rhs.program_counter_;
   }
 
+  // The program counter should uniquely identify a location.
+  template <typename H>
+  friend H AbslHashValue(H h, const base::Location& m) {
+    return H::combine(std::move(h), m.program_counter());
+  }
+
   // Returns true if there is source code location info. If this is false,
   // the Location object only contains a program counter or is
   // default-initialized (the program counter is also null).
@@ -78,6 +84,10 @@ class BASE_EXPORT Location {
   static Location Current(const char* function_name = __builtin_FUNCTION(),
                           const char* file_name = __builtin_FILE(),
                           int line_number = __builtin_LINE());
+
+  static Location CurrentWithoutFunctionName(
+      const char* file_name = __builtin_FILE(),
+      int line_number = __builtin_LINE());
 
  private:
   // Only initializes the file name and program counter, the source information

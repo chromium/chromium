@@ -24,6 +24,7 @@ class SmsQueue {
   ~SmsQueue();
 
   using FailureType = SmsFetchFailureType;
+  using OriginList = SmsFetcher::OriginList;
   using Subscriber = SmsFetcher::Subscriber;
 
   void Push(const OriginList& origin_list, Subscriber* subscriber);

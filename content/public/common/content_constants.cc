@@ -34,8 +34,6 @@ const int kHistogramSynchronizerReservedSequenceNumber = 0;
 // same resource (see bugs 46104 and 31014).
 const int kDefaultDetachableCancelDelayMs = 30000;
 
-const char kCorsExemptPurposeHeaderName[] = "Purpose";
-
 std::string GetCorsExemptRequestedWithHeaderName() {
   std::vector<std::string> pieces;
   pieces.push_back("X");
@@ -67,5 +65,8 @@ static_assert(kPluginOomScore > 0, "kPluginOomScore should be greater than 0");
 #if BUILDFLAG(IS_ANDROID)
 const int kAndroidMinimumTabletWidthDp = 600;
 #endif
+
+const base::FilePath::CharType kDevToolsActivePortFileName[] =
+    FILE_PATH_LITERAL("DevToolsActivePort");
 
 }  // namespace content

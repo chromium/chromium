@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/metrics/field_trial_params.h"
@@ -18,14 +19,28 @@
 #include "build/build_config.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/crx_file/id_util.h"
+#include "components/language/core/browser/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace speech {
-const constexpr char* const kDefaultEnabledLanguages[] = {
-    "en-US", "fr-FR", "it-IT", "de-DE",       "es-ES",
-    "ja-JP", "hi-IN", "pt-BR", "ko-KR",       "pl-PL",
-    "th-TH", "tr-TR", "id-ID", "cmn-Hans-CN", "cmn-Hant-TW"};
+// If `language_name` is Chinese variant, then return the master locale.
+// Otherwise, return `language_name`.
+const std::string MaybeMapToChineseLocale(const std::string& language_name) {
+  const base::flat_map<std::string, std::string> chinese_locale_map = {
+      {"cmn-hans-cn", "cmn-Hans-CN"}, {"cmn-hant-tw", "cmn-Hant-TW"},
+      {"zh-cn", "cmn-Hans-CN"},       {"zh-hans-cn", "cmn-Hans-CN"},
+      {"zh-hant-tw", "cmn-Hant-TW"},  {"zh-tw", "cmn-Hant-TW"},
+  };
+  auto chinese_locale =
+      chinese_locale_map.find(base::ToLowerASCII(language_name));
+  if (chinese_locale != chinese_locale_map.end()) {
+    return chinese_locale->second;
+  }
+
+  return language_name;
+}
 
 const char kUsEnglishLocale[] = "en-US";
 
@@ -150,10 +165,11 @@ std::optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
 
 std::optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
     const std::string& language_name) {
+  auto locale = MaybeMapToChineseLocale(language_name);
   for (const SodaLanguagePackComponentConfig& config :
        kLanguageComponentConfigs) {
     if (base::ToLowerASCII(config.language_name) ==
-        base::ToLowerASCII(language_name)) {
+        base::ToLowerASCII(locale)) {
       return config;
     }
   }
@@ -164,6 +180,12 @@ std::optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
 std::optional<SodaLanguagePackComponentConfig>
 GetLanguageComponentConfigMatchingLanguageSubtag(
     const std::string& language_name) {
+  // Use full locale to get Chinese variant config.
+  auto locale = MaybeMapToChineseLocale(language_name);
+  if (locale.substr(0, 3) == kChineseLocaleNoCountry) {
+    return GetLanguageComponentConfig(locale);
+  }
+
   for (const SodaLanguagePackComponentConfig& config :
        kLanguageComponentConfigs) {
     if (l10n_util::GetLanguage(base::ToLowerASCII(config.language_name)) ==
@@ -259,17 +281,31 @@ const std::string GetInstallationResultMetricForLanguage(
       {"SodaInstaller.Language.", language, ".InstallationResult"});
 }
 
-std::vector<std::string> GetLiveCaptionEnabledLanguages() {
-  std::vector<std::string> enabled_languages = base::SplitString(
-      base::GetFieldTrialParamValueByFeature(
-          media::kLiveCaptionExperimentalLanguages, "available_languages"),
-      ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+const std::string GetDefaultLiveCaptionLanguage(
+    const std::string& application_locale,
+    PrefService* profile_prefs) {
+  std::optional<SodaLanguagePackComponentConfig> application_locale_config =
+      GetLanguageComponentConfigMatchingLanguageSubtag(application_locale);
 
-  for (const char* const enabled_language : kDefaultEnabledLanguages) {
-    enabled_languages.push_back(enabled_language);
+  if (application_locale_config.has_value() &&
+      application_locale_config.value().language_code != LanguageCode::kNone) {
+    return application_locale_config.value().language_name;
   }
 
-  return enabled_languages;
+  std::string accept_languages_pref =
+      profile_prefs->GetString(language::prefs::kAcceptLanguages);
+  for (std::string language :
+       base::SplitString(accept_languages_pref, ",", base::TRIM_WHITESPACE,
+                         base::SPLIT_WANT_NONEMPTY)) {
+    std::optional<SodaLanguagePackComponentConfig> config =
+        GetLanguageComponentConfigMatchingLanguageSubtag(language);
+    if (config.has_value() &&
+        config.value().language_code != LanguageCode::kNone) {
+      return config.value().language_name;
+    }
+  }
+
+  return kUsEnglishLocale;
 }
 
 }  // namespace speech

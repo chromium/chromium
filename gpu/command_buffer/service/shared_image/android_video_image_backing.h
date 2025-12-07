@@ -11,7 +11,7 @@
 
 #include "gpu/command_buffer/service/shared_image/android_image_backing.h"
 #include "gpu/gpu_gles2_export.h"
-#include "gpu/ipc/common/vulkan_ycbcr_info.h"
+#include "gpu/vulkan/vulkan_ycbcr_info.h"
 
 namespace viz {
 class VulkanContextProvider;

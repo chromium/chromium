@@ -171,6 +171,8 @@ component("x") {
     "keyboard_state.h",
     "property_cache.cc",
     "property_cache.h",
+    "randr_output_manager.cc",
+    "randr_output_manager.h",
     "ref_counted_fd.cc",
     "ref_counted_fd.h",
     "visual_manager.cc",
@@ -183,6 +185,8 @@ component("x") {
     "window_event_manager.h",
     "wm_sync.cc",
     "wm_sync.h",
+    "x11_crtc_resizer.cc",
+    "x11_crtc_resizer.h",
     "x11_path.cc",
     "x11_path.h",
     "xlib_support.cc",
@@ -217,8 +221,10 @@ source_set("unit_test") {
     "connection_unittest.cc",
     "geometry_cache_unittest.cc",
     "property_cache_unittest.cc",
+    "randr_output_manager_unittest.cc",
     "window_cache_unittest.cc",
     "wm_sync_unittest.cc",
+    "x11_crtc_resizer_unittest.cc",
   ]
   deps = [
     "//base",

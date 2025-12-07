@@ -2,15 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "base/functional/bind.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/message.h"
 #include "mojo/public/tools/fuzzers/fuzz_impl.h"
+#include "mojo/public/tools/fuzzers/suppress_validation_error_logging.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/at_exit.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 void FuzzMessage(const uint8_t* data, size_t size, base::RunLoop* run) {
   mojo::PendingRemote<fuzz::mojom::FuzzInterface> fuzz;
@@ -47,6 +58,12 @@ struct Environment {
         "MojoParseMessageFuzzerProcess");
     mojo::core::Init();
   }
+
+#if BUILDFLAG(IS_WIN)
+  // Windows thread executor has a dependency on AtExitManager.
+  std::unique_ptr<base::AtExitManager> at_exit_manager_ =
+      std::make_unique<base::AtExitManager>();
+#endif  // BUILDFLAG(IS_WIN)
 
   // TaskExecutor loop to send and handle messages on.
   base::SingleThreadTaskExecutor main_thread_task_executor;

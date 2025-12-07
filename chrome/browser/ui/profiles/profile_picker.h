@@ -6,16 +6,14 @@
 #define CHROME_BROWSER_UI_PROFILES_PROFILE_PICKER_H_
 
 #include <optional>
+#include <variant>
 
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -27,8 +25,8 @@ class View;
 class WebView;
 }  // namespace views
 
-enum class StartupProfileModeReason;
-enum class ReauthUIError;
+enum class StartupProfileMode;
+class ForceSigninUIError;
 
 class ProfilePicker {
  public:
@@ -37,10 +35,8 @@ class ProfilePicker {
     // The user completed the FRE and is continuing to launch the browser.
     kCompleted = 0,
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // The user exited the FRE before going through the mandatory steps.
-    kQuitEarly = 1,
-#endif
+    // `kQuitEarly = 1` used to be a lacros-only status. It has been removed
+    // but in order to keep backward compatibility, its value has been retired.
 
     // The user finished the mandatory FRE steps but abandoned their task
     // (closed the browser app).
@@ -66,6 +62,8 @@ class ProfilePicker {
   // An entry point that triggers the profile picker window to open.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  //
+  // LINT.IfChange(EntryPoint)
   enum class EntryPoint {
     kOnStartup = 0,
     kProfileMenuManageProfiles = 1,
@@ -77,17 +75,14 @@ class ProfilePicker {
     kProfileLocked = 5,
     kUnableToCreateBrowser = 6,
     kBackgroundModeManager = 7,
-    // May only be used on lacros, opens an account picker, listing all accounts
-    // that are not used in the provided profile, yet.
-    kLacrosSelectAvailableAccount = 8,
-    // May only be used on lacros, opens a first run experience (provided no
-    // policies prevent it) to let the user opt in to sync, etc. for the primary
-    // profile.
-    // TODO(crbug.com/40242849): Migrate to only using kFirstRun.
-    kLacrosPrimaryProfileFirstRun = 9,
+
+    // `8` and `9` used to be lacros-only entry points. They has been removed
+    // but in order to keep backward compatibility, their values have been
+    // retired.
+
     // The Profile became idle, due to the IdleProfileCloseTimeout policy.
     kProfileIdle = 10,
-    // Opens the first run experience on non-Lacros desktop platforms to let the
+    // Opens the first run experience on desktop platforms to let the
     // user sign in, opt in to sync, etc.
     kFirstRun = 11,
     // There was no usable profile on startup (e.g. the profiles were locked by
@@ -101,8 +96,16 @@ class ProfilePicker {
     // Opens the add new profile view from the app menu.
     kAppMenuProfileSubMenuAddNewProfile = 15,
 
-    kMaxValue = kAppMenuProfileSubMenuAddNewProfile,
+    // Opens the Glic version of the Profile Picker
+    kGlicManager = 16,
+
+    // Opens the profile picker on startup, and creates a profile with an email
+    // address.
+    kOnStartupCreateProfileWithEmail = 17,
+
+    kMaxValue = kOnStartupCreateProfileWithEmail,
   };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/profile/enums.xml:ProfilePickerEntryPoint)
 
   class Params final {
    public:
@@ -119,6 +122,10 @@ class ProfilePicker {
     // are available (e.g. `ForBackgroundManager()`).
     static Params FromEntryPoint(EntryPoint entry_point);
 
+    // Builds parameter with the `kOnStartupCreateProfileWithEmail` entry point.
+    // Allows specifying the email address used to pre-fill the email field.
+    static Params FromStartupWithEmail(const std::string& email);
+
     // Builds parameter with the `kBackgroundModeManager` entry point. Allows
     // specifying extra parameters.
     static Params ForBackgroundManager(
@@ -134,38 +141,26 @@ class ProfilePicker {
       return on_select_profile_target_url_;
     }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Builds parameter with the `kLacrosSelectAvailableAccount` entry point.
-    //
-    // `profile_path` specifies the profile that should be used to render
-    // the profile picker. If `profile_path` matches the current value
-    // for an existing picker, then `Show()` reactivates the existing picker.
-    // Otherwise `Show()` hides the current window and shows a new one.
-    //
-    // `account_selected_callback` is called when the user picks an account on
-    // the account selection screen. If the user closes the window, it is called
-    // with the empty string. If the user clicks "Use another account" and
-    // starts an OS account addition, this callback is passed to
-    // `ShowAddAccountDialog()` and will be called with its result.
-    static Params ForLacrosSelectAvailableAccount(
-        const base::FilePath& profile_path,
-        base::OnceCallback<void(const std::string&)> account_selected_callback);
+    // The email address to pre-fill the email field when creating a new
+    // signed in profile.
+    const std::string& initial_email() const { return initial_email_; }
 
-    // Calls `account_selected_callback_`. See
-    // `ForLacrosSelectAvailableAccount()` for more details.
-    void NotifyAccountSelected(const std::string& gaia_id);
-#endif
-
-    // Builds parameter with the `kFirstRun` (on Dice) or the
-    //  `kLacrosPrimaryProfileFirstRun` (on Lacros) entry point.
+    // Builds parameter with the `kFirstRun` entry point.
     //
-    // `profile_path` is the profile for which to open the FRE. On Lacros we
-    // expect it to be the main profile path.
+    // `profile_path` is the profile for which to open the FRE.
     // `first_run_exited_callback` is called when the first run experience is
     // exited, with a `FirstRunExitStatus` indicating how the user responded to
     // it.
     static Params ForFirstRun(const base::FilePath& profile_path,
                               FirstRunExitedCallback first_run_exited_callback);
+
+    // Builds parameter with the `kForGlicManager` entry point.
+    //
+    // `picked_profile_callback` will be called when a Profile is selected
+    // (returning the loaded profile) or when the picker is closed (returning a
+    // nullptr profile).
+    static Params ForGlicManager(
+        base::OnceCallback<void(Profile*)> picked_profile_callback);
 
     // Calls `first_run_exited_callback_`, forwarding `exit_status`.See
     // `ForFirstRun()` for more details.
@@ -174,6 +169,12 @@ class ProfilePicker {
     // intent to quit will be assumed and `first_run_exited_callback_` will be
     // called by the destructor with quit-related arguments.
     void NotifyFirstRunExited(FirstRunExitStatus exit_status);
+
+    // Calls `picked_profile_callback_`, forwarding the `profile`. See
+    // `ForGlicManager()` for more details.
+    // This method will be called if the view/controller are destroyed without a
+    // profile being picked - the `profile` will be null in this case.
+    void NotifyProfilePicked(Profile* profile);
 
     // Returns whether the current profile picker window can be reused for
     // different parameters. If this returns false, the picker cannot be reused
@@ -185,13 +186,11 @@ class ProfilePicker {
     explicit Params(EntryPoint entry_point, const base::FilePath& profile_path);
 
     EntryPoint entry_point_ = EntryPoint::kOnStartup;
+    std::string initial_email_;
     GURL on_select_profile_target_url_;
     base::FilePath profile_path_;
     FirstRunExitedCallback first_run_exited_callback_;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    base::OnceCallback<void(const std::string&)> account_selected_callback_;
-
-#endif
+    base::OnceCallback<void(Profile*)> picked_profile_callback_;
   };
 
   // Values for the ProfilePickerOnStartupAvailability policy. Should not be
@@ -212,13 +211,12 @@ class ProfilePicker {
   // re-activation). When reactivated, the displayed page is not updated.
   static void Show(Params&& params);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Helper struct to allow passing different profile information for sign in:
   // - An optional color for a new profile.
   // - A file path for an existing profile.
-  using ProfileInfo = absl::variant<std::optional<SkColor>, base::FilePath>;
+  using ProfileInfo = std::variant<std::optional<SkColor>, base::FilePath>;
 
-  // Starts the Dice sign-in flow. The layout of the window gets updated for the
+  // Starts the sign-in flow. The layout of the window gets updated for the
   // sign-in flow while the profiles are created/loaded.
   // The sign in flow can be triggered for a new or existing profile.
   // For new profiles, the expected color is expected to be given as the
@@ -231,7 +229,7 @@ class ProfilePicker {
   // rendered with the profile.
   // `switch_finished_callback` gets informed whether the creation of the new
   // profile succeeded and the sign-in page gets displayed.
-  static void SwitchToDiceSignIn(
+  static void SwitchToSignIn(
       ProfileInfo profile_info,
       base::OnceCallback<void(bool)> switch_finished_callback);
 
@@ -244,54 +242,48 @@ class ProfilePicker {
   // the `profile` will be opened. On unsuccessful reauth, the user will be
   // redirected to the profile picker main page, with a popup error dialog
   // displayed through `on_error_callback`.
+  // `switch_finished_callback` will be called once the step was switched (or
+  // failed to switch to), the bool parameter indicating the success of the
+  // switch.
   static void SwitchToReauth(
       Profile* profile,
-      base::OnceCallback<void(ReauthUIError)> on_error_callback);
-#endif
+      base::OnceCallback<void(bool)> switch_finished_callback,
+      base::OnceCallback<void(const ForceSigninUIError&)> on_error_callback);
 
   // Switch to the flow that comes when the user decides to create a profile
   // without signing in.
   // `profile_color` is the profile's color. It is undefined for the default
   // theme.
-  // `profile_picked_time_on_startup` is the time when the user picked a
-  // profile to open, to measure browser startup performance. It is only set
-  // when the picker is shown on startup.
   static void SwitchToSignedOutPostIdentityFlow(
-      std::optional<SkColor> profile_color,
-      base::TimeTicks profile_picked_time_on_startup,
-      base::OnceCallback<void(bool)> switch_finished_callback);
+      std::optional<SkColor> profile_color);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Starts the flow to set-up a signed-in profile. `signed_in_profile` must
-  // have an unconsented primary account.
-  static void SwitchToSignedInFlow(std::optional<SkColor> profile_color,
-                                   Profile* signed_in_profile);
-#endif
+  struct ProfilePickingArgs {
+    // Opens the settings page of the profile once it is first picked.
+    bool open_settings = false;
+    // Whether we are recording timing metrics about loading the profile and
+    // opening the first web content.
+    bool should_record_startup_metrics = false;
+    // Whether to exit the flow after the profile is picked.
+    bool exit_flow_after_profile_picked = true;
+  };
 
-  // Cancel the signed-in flow and returns back to the main picker screen (if
+  // Picks the profile with `profile_path`.
+  // `pick_profile_complete_callback` will be called when a browser is opened
+  // with the profile associated with `profile_path`, the boolean parameter
+  // returning whether a browser was successfully opened or not.
+  static void PickProfile(
+      const base::FilePath& profile_path,
+      ProfilePickingArgs args,
+      base::OnceCallback<void(bool)> pick_profile_complete_callback);
+
+  // Cancel the sign-in flow and returns back to the main picker screen (if
   // the original EntryPoint was to open the picker). Must only be called from
-  // within the signed-in flow. This will delete the profile previously created
+  // within the sign-in flow. This will delete the profile previously created
   // for the signed-in flow.
-  static void CancelSignedInFlow();
+  static void CancelSignInFlow();
 
   // Returns the path of the default profile used for rendering the picker.
   static base::FilePath GetPickerProfilePath();
-
-  // Shows a dialog where the user can auth the profile or see the
-  // auth error message. If a dialog is already shown, this destroys the current
-  // dialog and creates a new one.
-  static void ShowDialog(Profile* profile, const GURL& url);
-
-  // Hides the dialog if it is showing.
-  static void HideDialog();
-
-  // Getter of the target page  url. If not empty and is valid, it opens on
-  // profile selection instead of the new tab page.
-  static GURL GetOnSelectProfileTargetUrl();
-
-  // Getter of the path of profile which is displayed on the profile switch
-  // screen.
-  static base::FilePath GetSwitchProfilePath();
 
   // Hides the profile picker.
   static void Hide();
@@ -326,37 +318,11 @@ class ProfilePicker {
   // Returns whether to show profile picker at launch. This can be called on
   // startup or when Chrome is re-opened, e.g. when clicking on the dock icon on
   // MacOS when there are no windows, or from Windows tray icon.
-  static StartupProfileModeReason GetStartupModeReason();
+  static StartupProfileMode GetStartupMode();
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Calls the callback passed to
-  // `ProfilePicker::Params::ForLacrosSelectAvailableAccount()`.
-  static void NotifyAccountSelected(const std::string& gaia_id);
-#endif
-
-  // Show the dialog and display local sign in error message without browser.
-  static void ShowDialogAndDisplayErrorMessage(Profile* profile);
-};
-
-// Dialog that will be displayed when a locked profile is selected in the
-// ProfilePicker when force-signin is enabled.
-class ProfilePickerForceSigninDialog {
- public:
-  // Dimensions of the reauth dialog displaying the password-separated signin
-  // flow.
-  static constexpr int kDialogHeight = 512;
-  static constexpr int kDialogWidth = 448;
-
-  // Shows a dialog where the user reauthenticates their primary account that
-  // has invalid credentials, when force signin is enabled.
-  static void ShowReauthDialog(Profile* profile, const std::string& email);
-
-  // Shows a dialog where the user logs into their profile for the first time
-  // via the profile picker, when force signin is enabled.
-  static void ShowForceSigninDialog(Profile* profile);
-
-  // Display local sign in error message without browser.
-  static void DisplayErrorMessage();
+  // Opens the command line urls in the next profile that is opened.
+  static void SetOpenCommandLineUrlsInNextProfileOpened(bool value);
+  static bool GetOpenCommandLineUrlsInNextProfileOpened();
 };
 
 #endif  // CHROME_BROWSER_UI_PROFILES_PROFILE_PICKER_H_

@@ -9,20 +9,20 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
+#include <variant>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_broker.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
-#include "components/invalidation/invalidation_listener.h"
 #include "components/policy/core/common/schema_registry.h"
 
-static_assert(BUILDFLAG(IS_CHROMEOS_ASH), "For ChromeOS ash-chrome only");
+static_assert(BUILDFLAG(IS_CHROMEOS), "For ChromeOS only");
 
 namespace ash {
 class DeviceSettingsService;
@@ -43,7 +43,6 @@ class SharedURLLoaderFactory;
 
 namespace policy {
 
-class AffiliatedInvalidationServiceProvider;
 class DeviceLocalAccountExternalDataService;
 class DeviceManagementService;
 
@@ -69,10 +68,9 @@ class DeviceLocalAccountPolicyService {
       ash::SessionManagerClient* session_manager_client,
       ash::DeviceSettingsService* device_settings_service,
       ash::CrosSettings* cros_settings,
-      std::variant<AffiliatedInvalidationServiceProvider*,
-                   invalidation::InvalidationListener*>
-          invalidation_service_provider_or_listener,
+      invalidation::InvalidationListener* invalidation_listener,
       scoped_refptr<base::SequencedTaskRunner> store_background_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> store_first_load_task_runner,
       scoped_refptr<base::SequencedTaskRunner> extension_cache_task_runner,
       scoped_refptr<base::SequencedTaskRunner>
           external_data_service_backend_task_runner,
@@ -83,7 +81,7 @@ class DeviceLocalAccountPolicyService {
   DeviceLocalAccountPolicyService& operator=(
       const DeviceLocalAccountPolicyService&) = delete;
 
-  virtual ~DeviceLocalAccountPolicyService();
+  ~DeviceLocalAccountPolicyService();
 
   // Shuts down the service and prevents further policy fetches from the cloud.
   void Shutdown();
@@ -93,18 +91,20 @@ class DeviceLocalAccountPolicyService {
 
   // Get the policy broker for a given |user_id|. Returns NULL if that |user_id|
   // does not belong to an existing device-local account.
-  DeviceLocalAccountPolicyBroker* GetBrokerForUser(const std::string& user_id);
+  DeviceLocalAccountPolicyBroker* GetBrokerForUser(std::string_view user_id);
 
   // Indicates whether policy has been successfully fetched for the given
   // |user_id|.
-  bool IsPolicyAvailableForUser(const std::string& user_id);
+  bool IsPolicyAvailableForUser(std::string_view user_id);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
  private:
-  typedef std::map<std::string, std::unique_ptr<DeviceLocalAccountPolicyBroker>>
-      PolicyBrokerMap;
+  using PolicyBrokerMap =
+      std::map<std::string,
+               std::unique_ptr<DeviceLocalAccountPolicyBroker>,
+               std::less<>>;
 
   // Returns |true| if the directory in which force-installed extensions are
   // cached for |account_id| is busy, either because a broker that was using
@@ -148,9 +148,7 @@ class DeviceLocalAccountPolicyService {
   raw_ptr<ash::SessionManagerClient> session_manager_client_;
   raw_ptr<ash::DeviceSettingsService> device_settings_service_;
   raw_ptr<ash::CrosSettings> cros_settings_;
-  std::variant<raw_ptr<AffiliatedInvalidationServiceProvider>,
-               raw_ptr<invalidation::InvalidationListener>>
-      invalidation_service_provider_or_listener_;
+  raw_ptr<invalidation::InvalidationListener> invalidation_listener_;
 
   raw_ptr<DeviceManagementService> device_management_service_;
 
@@ -176,6 +174,7 @@ class DeviceLocalAccountPolicyService {
   std::set<std::string> busy_extension_cache_directories_;
 
   const scoped_refptr<base::SequencedTaskRunner> store_background_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> store_first_load_task_runner_;
   const scoped_refptr<base::SequencedTaskRunner> extension_cache_task_runner_;
   const scoped_refptr<base::SequencedTaskRunner> resource_cache_task_runner_;
 

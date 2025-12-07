@@ -6,9 +6,9 @@
 #define IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_PREDICTION_MODEL_DOWNLOAD_CLIENT_H_
 
 #import "base/memory/raw_ptr.h"
-#include "components/download/public/background_service/client.h"
+#import "components/download/public/background_service/client.h"
 
-class ChromeBrowserState;
+class ProfileIOS;
 
 namespace download {
 struct CompletionInfo;
@@ -21,7 +21,7 @@ class PredictionModelDownloadManager;
 
 class PredictionModelDownloadClient : public download::Client {
  public:
-  explicit PredictionModelDownloadClient(ChromeBrowserState* browser_state);
+  explicit PredictionModelDownloadClient(ProfileIOS* profile);
   ~PredictionModelDownloadClient() override;
   PredictionModelDownloadClient(const PredictionModelDownloadClient&) = delete;
   PredictionModelDownloadClient& operator=(
@@ -48,10 +48,10 @@ class PredictionModelDownloadClient : public download::Client {
                      download::GetUploadDataCallback callback) override;
 
  private:
-  // Returns the PredictionModelDownloadManager for the BrowserState.
+  // Returns the PredictionModelDownloadManager for the profile.
   PredictionModelDownloadManager* GetPredictionModelDownloadManager();
 
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
 };
 
 }  // namespace optimization_guide

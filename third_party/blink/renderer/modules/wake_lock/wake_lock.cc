@@ -2,14 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/wake_lock/wake_lock.h"
 
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -32,21 +27,17 @@ namespace blink {
 using mojom::blink::PermissionService;
 
 // static
-const char WakeLock::kSupplementName[] = "WakeLock";
-
-// static
 WakeLock* WakeLock::wakeLock(NavigatorBase& navigator) {
-  WakeLock* supplement = Supplement<NavigatorBase>::From<WakeLock>(navigator);
+  WakeLock* supplement = navigator.GetWakeLock();
   if (!supplement && navigator.GetExecutionContext()) {
     supplement = MakeGarbageCollected<WakeLock>(navigator);
-    ProvideTo(navigator, supplement);
+    navigator.SetWakeLock(supplement);
   }
   return supplement;
 }
 
 WakeLock::WakeLock(NavigatorBase& navigator)
-    : Supplement<NavigatorBase>(navigator),
-      ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
+    : ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
       PageVisibilityObserver(navigator.DomWindow()
                                  ? navigator.DomWindow()->GetFrame()->GetPage()
                                  : nullptr),
@@ -93,7 +84,7 @@ ScriptPromise<WakeLockSentinel> WakeLock::request(
   // but we can perform FP checks in workers in Blink]
   if (type == V8WakeLockType::Enum::kScreen &&
       !context->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kScreenWakeLock,
+          network::mojom::PermissionsPolicyFeature::kScreenWakeLock,
           ReportOptions::kReportOnFailure)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                       "Access to Screen Wake Lock features is "
@@ -187,8 +178,8 @@ void WakeLock::DoRequest(V8WakeLockType::Enum type,
       CreatePermissionDescriptor(permission_name),
       LocalFrame::HasTransientUserActivation(local_frame),
       resolver->WrapCallbackInScriptScope(
-          WTF::BindOnce(&WakeLock::DidReceivePermissionResponse,
-                        WrapPersistent(this), type)));
+          BindOnce(&WakeLock::DidReceivePermissionResponse,
+                   WrapPersistent(this), type)));
 }
 
 void WakeLock::DidReceivePermissionResponse(
@@ -270,7 +261,6 @@ void WakeLock::Trace(Visitor* visitor) const {
   for (const Member<WakeLockManager>& manager : managers_)
     visitor->Trace(manager);
   visitor->Trace(permission_service_);
-  Supplement<NavigatorBase>::Trace(visitor);
   PageVisibilityObserver::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   ScriptWrappable::Trace(visitor);

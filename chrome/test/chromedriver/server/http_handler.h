@@ -13,7 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "chrome/test/chromedriver/command.h"
@@ -182,6 +182,7 @@ class HttpHandler {
                            std::unique_ptr<base::Value> result,
                            const std::string& session_id,
                            bool w3c);
+  void OnSessionTerminated(std::string session_id);
   void OnNewBidiSessionOnCmdThread(HttpServerInterface* http_server,
                                    int connection_id,
                                    const std::optional<base::Value>& maybe_id,

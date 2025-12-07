@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <h3>
-This test verifies that text-align:-webkit-match-parent is the default style for list elements.
+This test verifies that text-align:match-parent is the default style for list elements.
 </h3>
 
 <div>
@@ -63,7 +63,7 @@ function assertAlignment(enclosingListElement, i, expectedAlignment)
             enclosingListElement.innerHTML = (leftAlign == isLeftAligned ? 'PASS' : 'FAIL');
             return;
         }
-        
+
         if (leftAlign && computedStyle.textAlign == 'left')
             enclosingListElement.innerHTML = 'PASS';
         else if (!leftAlign && computedStyle.textAlign == 'right')

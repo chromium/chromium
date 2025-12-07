@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
+#include "ui/strings/grit/ax_strings.h"
 
 namespace blink {
 
@@ -29,11 +30,11 @@ MediaControlFullscreenButtonElement::MediaControlFullscreenButtonElement(
 void MediaControlFullscreenButtonElement::SetIsFullscreen(bool is_fullscreen) {
   if (is_fullscreen) {
     setAttribute(html_names::kAriaLabelAttr,
-                 WTF::AtomicString(GetLocale().QueryString(
+                 AtomicString(GetLocale().QueryString(
                      IDS_AX_MEDIA_EXIT_FULL_SCREEN_BUTTON)));
   } else {
     setAttribute(html_names::kAriaLabelAttr,
-                 WTF::AtomicString(GetLocale().QueryString(
+                 AtomicString(GetLocale().QueryString(
                      IDS_AX_MEDIA_ENTER_FULL_SCREEN_BUTTON)));
   }
   SetClass("fullscreen", is_fullscreen);

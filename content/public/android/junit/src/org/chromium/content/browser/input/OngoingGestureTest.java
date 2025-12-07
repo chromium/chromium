@@ -10,19 +10,18 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.blink.mojom.HandwritingGestureResult;
+import org.chromium.blink.mojom.StylusWritingGestureData;
 
 /**
  * Tests for the OngoingGesture helper class which is used in association with
  * StylusGestureConverter to process and apply stylus gestures in Chrome and WebView.
  */
-@RunWith(RobolectricTestRunner.class)
-@Batch(Batch.PER_CLASS)
+@RunWith(BaseRobolectricTestRunner.class)
 public class OngoingGestureTest {
     private static final String GESTURE_RESULT_HISTOGRAM =
             "InputMethod.StylusHandwriting.GestureResult";
@@ -32,9 +31,12 @@ public class OngoingGestureTest {
     public void testGestureRequestsHaveIncreasingIDs() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    OngoingGesture baseline = new OngoingGesture(null, null, null);
-                    OngoingGesture request1 = new OngoingGesture(null, null, null);
-                    OngoingGesture request2 = new OngoingGesture(null, null, null);
+                    OngoingGesture baseline =
+                            new OngoingGesture(new StylusWritingGestureData(), null, null);
+                    OngoingGesture request1 =
+                            new OngoingGesture(new StylusWritingGestureData(), null, null);
+                    OngoingGesture request2 =
+                            new OngoingGesture(new StylusWritingGestureData(), null, null);
                     assertEquals(baseline.getId() + 1, request1.getId());
                     assertEquals(baseline.getId() + 2, request2.getId());
                 });
@@ -49,10 +51,7 @@ public class OngoingGestureTest {
                             HistogramWatcher.newSingleRecordWatcher(
                                     GESTURE_RESULT_HISTOGRAM, HandwritingGestureResult.UNKNOWN);
                     OngoingGesture request =
-                            new OngoingGesture(
-                                    new org.chromium.blink.mojom.StylusWritingGestureData(),
-                                    null,
-                                    (value) -> {});
+                            new OngoingGesture(new StylusWritingGestureData(), null, (value) -> {});
                     request.onGestureHandled(HandwritingGestureResult.SUCCESS);
                     histogram.assertExpected();
                 });
@@ -68,9 +67,7 @@ public class OngoingGestureTest {
                                     GESTURE_RESULT_HISTOGRAM, HandwritingGestureResult.UNKNOWN);
                     OngoingGesture request =
                             new OngoingGesture(
-                                    new org.chromium.blink.mojom.StylusWritingGestureData(),
-                                    (command) -> {},
-                                    null);
+                                    new StylusWritingGestureData(), (command) -> {}, null);
                     request.onGestureHandled(HandwritingGestureResult.FAILED);
                     histogram.assertExpected();
                 });
@@ -83,9 +80,7 @@ public class OngoingGestureTest {
                 () -> {
                     OngoingGesture request =
                             new OngoingGesture(
-                                    new org.chromium.blink.mojom.StylusWritingGestureData(),
-                                    (command) -> {},
-                                    (value) -> {});
+                                    new StylusWritingGestureData(), (command) -> {}, (value) -> {});
 
                     var histogram =
                             HistogramWatcher.newSingleRecordWatcher(

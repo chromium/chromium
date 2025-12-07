@@ -18,24 +18,25 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecorder.UMA_KEYBOARD_ACCESSORY_ACTION_IMPRESSION;
-import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecorder.UMA_KEYBOARD_ACCESSORY_TOGGLE_CLICKED;
-import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecorder.UMA_KEYBOARD_ACCESSORY_TOGGLE_IMPRESSION;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type.DIVIDER;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type.FOOTER_COMMAND;
-import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type.PASSKEY_SECTION;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type.PASSWORD_INFO;
-import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type.PLUS_ADDRESS_SECTION;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type.TITLE;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.getType;
+import static org.chromium.chrome.browser.keyboard_accessory.utils.ManualFillingMetricsRecorder.UMA_KEYBOARD_ACCESSORY_ACTION_IMPRESSION;
+import static org.chromium.chrome.browser.keyboard_accessory.utils.ManualFillingMetricsRecorder.UMA_KEYBOARD_ACCESSORY_TOGGLE_CLICKED;
+import static org.chromium.chrome.browser.keyboard_accessory.utils.ManualFillingMetricsRecorder.UMA_KEYBOARD_ACCESSORY_TOGGLE_IMPRESSION;
 
 import android.graphics.drawable.Drawable;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
@@ -50,12 +51,8 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.FooterCommand;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.OptionToggle;
-import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PasskeySection;
-import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PlusAddressSection;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.UserInfo;
-import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
-import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.ui.modelutil.ListObservable;
@@ -68,6 +65,8 @@ import java.util.concurrent.atomic.AtomicReference;
         manifest = Config.NONE,
         shadows = {CustomShadowAsyncTask.class})
 public class PasswordAccessorySheetControllerTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private AccessorySheetTabView mMockView;
     @Mock private ListObservable.ListObserver<Void> mMockItemListObserver;
     @Mock private Profile mProfile;
@@ -77,7 +76,6 @@ public class PasswordAccessorySheetControllerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         when(mMockView.getContext()).thenReturn(ContextUtils.getApplicationContext());
         AccessorySheetTabCoordinator.IconProvider.setIconForTesting(mock(Drawable.class));
         mCoordinator =
@@ -124,20 +122,28 @@ public class PasswordAccessorySheetControllerTest {
 
     @Test
     public void testModelNotifiesAboutTabDataChangedByProvider() {
-        final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
+        final Provider<AccessorySheetData> testProvider = new Provider<>();
 
         mSheetDataPieces.addObserver(mMockItemListObserver);
         mCoordinator.registerDataProvider(testProvider);
 
         // If the coordinator receives a set of initial items, the model should report an insertion.
         testProvider.notifyObservers(
-                new AccessorySheetData(AccessoryTabType.PASSWORDS, "Passwords", ""));
+                new AccessorySheetData(
+                        AccessoryTabType.PASSWORDS,
+                        /* userInfoTitle= */ "Passwords",
+                        /* plusAddressTitle= */ "",
+                        /* warning= */ ""));
         verify(mMockItemListObserver).onItemRangeInserted(mSheetDataPieces, 0, 1);
         assertThat(mSheetDataPieces.size(), is(1));
 
         // If the coordinator receives a new set of items, the model should report a change.
         testProvider.notifyObservers(
-                new AccessorySheetData(AccessoryTabType.PASSWORDS, "Other Passwords", ""));
+                new AccessorySheetData(
+                        AccessoryTabType.PASSWORDS,
+                        /* userInfoTitle= */ "Other Passwords",
+                        /* plusAddressTitle= */ "",
+                        /* warning= */ ""));
         verify(mMockItemListObserver).onItemRangeChanged(mSheetDataPieces, 0, 1, null);
         assertThat(mSheetDataPieces.size(), is(1));
 
@@ -152,55 +158,63 @@ public class PasswordAccessorySheetControllerTest {
     }
 
     @Test
-    public void testUsesTabTitleOnlyForEmptyLists() {
-        final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
+    public void testNoDividerWithUserInfo() {
+        final Provider<AccessorySheetData> testProvider = new Provider<>();
         final AccessorySheetData testData =
-                new AccessorySheetData(AccessoryTabType.PASSWORDS, "No passwords for this", "");
+                new AccessorySheetData(
+                        AccessoryTabType.PASSWORDS,
+                        /* userInfoTitle= */ "", // Backend sends no title if a password exists.
+                        /* plusAddressTitle= */ "",
+                        /* warning= */ "");
+        mCoordinator.registerDataProvider(testProvider);
+
+        // Providing a User Info doesn't add a separator, even with footers present:
+        testData.getUserInfoList().add(new UserInfo("example.com", true));
+        testData.getFooterCommands().add(new FooterCommand("Manage passwords", result -> {}));
+        testProvider.notifyObservers(testData);
+
+        assertThat(mSheetDataPieces.size(), is(2));
+        assertThat(getType(mSheetDataPieces.get(0)), is(PASSWORD_INFO));
+        assertThat(getType(mSheetDataPieces.get(1)), is(FOOTER_COMMAND));
+    }
+
+    @Test
+    public void testUsesTabTitleOnlyForEmptyLists() {
+        final Provider<AccessorySheetData> testProvider = new Provider<>();
+        final AccessorySheetData testData =
+                new AccessorySheetData(
+                        AccessoryTabType.PASSWORDS,
+                        /* userInfoTitle= */ "No passwords for this domain",
+                        /* plusAddressTitle= */ "No plus addresses for this domain",
+                        /* warning= */ "");
         mCoordinator.registerDataProvider(testProvider);
 
         // Providing only FooterCommands and no User Info shows the title as empty state:
         testData.getFooterCommands().add(new FooterCommand("Manage passwords", result -> {}));
         testProvider.notifyObservers(testData);
 
-        assertThat(mSheetDataPieces.size(), is(2));
-        assertThat(getType(mSheetDataPieces.get(0)), is(TITLE));
-        assertThat(getType(mSheetDataPieces.get(1)), is(FOOTER_COMMAND));
-        assertThat(mSheetDataPieces.get(0).getDataPiece(), is(equalTo("No passwords for this")));
-
-        // As soon UserInfo is available, discard the title.
-        testData.getPasskeySectionList().add(0, new PasskeySection("Someone", () -> {}));
-        testData.getUserInfoList().add(new UserInfo("www.example.com", true));
-        testData.getUserInfoList()
-                .get(0)
-                .addField(new UserInfoField("Name", "Name", "", false, null));
-        testData.getUserInfoList()
-                .get(0)
-                .addField(
-                        new UserInfoField("Password", "Password for Name", "", true, field -> {}));
-        testData.getPlusAddressSectionList()
-                .add(
-                        new PlusAddressSection(
-                                "google.com",
-                                new UserInfoField(
-                                        "example@gmail.com",
-                                        "example@gmail.com",
-                                        "",
-                                        false,
-                                        unused -> {})));
-        testProvider.notifyObservers(testData);
-
         assertThat(mSheetDataPieces.size(), is(4));
-        assertThat(getType(mSheetDataPieces.get(0)), is(PASSKEY_SECTION));
-        assertThat(getType(mSheetDataPieces.get(1)), is(PASSWORD_INFO));
-        assertThat(getType(mSheetDataPieces.get(2)), is(PLUS_ADDRESS_SECTION));
+        assertThat(getType(mSheetDataPieces.get(0)), is(TITLE));
+        assertThat(
+                mSheetDataPieces.get(0).getDataPiece(),
+                is(equalTo("No passwords for this domain")));
+        assertThat(getType(mSheetDataPieces.get(1)), is(TITLE));
+        assertThat(
+                mSheetDataPieces.get(1).getDataPiece(),
+                is(equalTo("No plus addresses for this domain")));
+        assertThat(getType(mSheetDataPieces.get(2)), is(DIVIDER));
         assertThat(getType(mSheetDataPieces.get(3)), is(FOOTER_COMMAND));
     }
 
     @Test
     public void testOptionToggleCompoundCallback() {
-        final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
+        final Provider<AccessorySheetData> testProvider = new Provider<>();
         final AccessorySheetData testData =
-                new AccessorySheetData(AccessoryTabType.PASSWORDS, "Passwords", "");
+                new AccessorySheetData(
+                        AccessoryTabType.PASSWORDS,
+                        /* userInfoTitle= */ "Passwords",
+                        /* plusAddressTitle= */ "",
+                        /* warning= */ "");
         AtomicReference<Boolean> toggleEnabled = new AtomicReference<>();
         testData.setOptionToggle(
                 new OptionToggle(
@@ -324,9 +338,13 @@ public class PasswordAccessorySheetControllerTest {
     }
 
     private void addToggleToSheet(boolean toggleEnabled) {
-        final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
+        final Provider<AccessorySheetData> testProvider = new Provider<>();
         final AccessorySheetData testData =
-                new AccessorySheetData(AccessoryTabType.PASSWORDS, "Passwords", "");
+                new AccessorySheetData(
+                        AccessoryTabType.PASSWORDS,
+                        /* userInfoTitle= */ "Passwords",
+                        /* plusAddressTitle= */ "",
+                        /* warning= */ "");
         testData.setOptionToggle(
                 new OptionToggle(
                         "Save passwords for this site",

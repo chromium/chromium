@@ -6,14 +6,18 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include <optional>
+
 #include "ui/base/metadata/metadata_impl_macros.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/native_frame_view.h"
 
 namespace views {
 
-NativeFrameViewMac::NativeFrameViewMac(Widget* widget)
-    : NativeFrameView(widget) {}
+NativeFrameViewMac::NativeFrameViewMac(Widget* widget,
+                                       NativeFrameViewMacClient* client)
+    : NativeFrameView(widget), client_(client) {}
 
 NativeFrameViewMac::~NativeFrameViewMac() = default;
 
@@ -24,9 +28,20 @@ gfx::Rect NativeFrameViewMac::GetWindowBoundsForClientBounds(
       frameRectForContentRect:gfx::ScreenRectToNSRect(client_bounds)]);
   // Enforce minimum size (1, 1) in case that |client_bounds| is passed with
   // empty size.
-  if (window_bounds.IsEmpty())
+  if (window_bounds.IsEmpty()) {
     window_bounds.set_size(gfx::Size(1, 1));
+  }
   return window_bounds;
+}
+
+int NativeFrameViewMac::NonClientHitTest(const gfx::Point& point) {
+  if (client_) {
+    if (std::optional<int> result = client_->NonClientHitTest(point)) {
+      return result.value();
+    }
+  }
+
+  return NativeFrameView::NonClientHitTest(point);
 }
 
 BEGIN_METADATA(NativeFrameViewMac)

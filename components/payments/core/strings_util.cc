@@ -5,7 +5,7 @@
 #include "components/payments/core/strings_util.h"
 
 #include "base/notreached.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -44,8 +44,7 @@ std::u16string GetShippingAddressSelectorInfoMessage(
       return l10n_util::GetStringUTF16(
           IDS_PAYMENTS_SELECT_SHIPPING_ADDRESS_FOR_SHIPPING_METHODS);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::u16string();
+      NOTREACHED();
   }
 }
 
@@ -59,8 +58,7 @@ std::u16string GetShippingAddressSectionString(
     case PaymentShippingType::SHIPPING:
       return l10n_util::GetStringUTF16(IDS_PAYMENTS_SHIPPING_ADDRESS_LABEL);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::u16string();
+      NOTREACHED();
   }
 }
 
@@ -74,8 +72,7 @@ std::u16string GetShippingOptionSectionString(
     case PaymentShippingType::SHIPPING:
       return l10n_util::GetStringUTF16(IDS_PAYMENTS_SHIPPING_OPTION_LABEL);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::u16string();
+      NOTREACHED();
   }
 }
 

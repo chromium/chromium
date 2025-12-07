@@ -24,7 +24,7 @@
 #include "base/memory/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
-namespace WTF {
+namespace blink {
 
 template <typename T, typename Traits>
 class RefCounted;
@@ -32,7 +32,7 @@ class RefCounted;
 template <typename T>
 struct DefaultRefCountedTraits {
   static void Destruct(const T* x) {
-    WTF::RefCounted<T, DefaultRefCountedTraits>::DeleteInternal(x);
+    RefCounted<T, DefaultRefCountedTraits>::DeleteInternal(x);
   }
 };
 
@@ -55,17 +55,6 @@ class RefCounted : public base::RefCounted<T, Traits> {
   }
 };
 
-// Allows subclasses to use the default copy constructor.
-template <typename T>
-class RefCountedCopyable : public RefCounted<T> {
- protected:
-  RefCountedCopyable() = default;
-  RefCountedCopyable(const RefCountedCopyable&) : RefCounted<T>() {}
-};
-
-}  // namespace WTF
-
-using WTF::RefCounted;
-using WTF::RefCountedCopyable;
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_REF_COUNTED_H_

@@ -16,6 +16,7 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/test/buildflags.h"
 #include "components/viz/test/paths.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -74,7 +75,7 @@ class LayerTreeHostReadbackPixelTest
       DCHECK_NE(renderer_type_, viz::RendererType::kSoftware);
       request = std::make_unique<viz::CopyOutputRequest>(
           viz::CopyOutputRequest::ResultFormat::RGBA,
-          viz::CopyOutputRequest::ResultDestination::kNativeTextures,
+          viz::CopyOutputRequest::ResultDestination::kSharedImage,
           base::BindOnce(
               &LayerTreeHostReadbackPixelTest::ReadbackResultAsTexture,
               base::Unretained(this)));
@@ -107,9 +108,10 @@ class LayerTreeHostReadbackPixelTest
     PostSetNeedsCommitToMainThread();
   }
 
-  void CleanupBeforeDestroy() override {
+  void AfterTest() override {
     // Avoid extending the lifetime of the context.
     context_provider_.reset();
+    LayerTreePixelTest::AfterTest();
   }
 
   void DidCommitAndDrawFrame() override {
@@ -133,16 +135,11 @@ class LayerTreeHostReadbackPixelTest
 
   SkBitmap CopyMailboxToBitmap(const gfx::Size& size,
                                const gpu::Mailbox& mailbox,
-                               const gpu::SyncToken& sync_token,
                                const gfx::ColorSpace& color_space) {
     DCHECK(context_provider_);
     viz::RasterContextProvider::ScopedRasterContextLock lock(
         context_provider_.get());
     auto* ri = context_provider_->RasterInterface();
-
-    if (sync_token.HasData()) {
-      ri->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
-    }
 
     SkBitmap bitmap;
     bitmap.allocPixels(SkImageInfo::MakeN32Premul(
@@ -160,19 +157,19 @@ class LayerTreeHostReadbackPixelTest
     ASSERT_FALSE(result->IsEmpty());
     ASSERT_EQ(result->format(), viz::CopyOutputResult::Format::RGBA);
     ASSERT_EQ(result->destination(),
-              viz::CopyOutputResult::Destination::kNativeTextures);
+              viz::CopyOutputResult::Destination::kSharedImage);
 
-    gpu::Mailbox mailbox = result->GetTextureResult()->mailbox;
-    gfx::ColorSpace color_space = result->GetTextureResult()->color_space;
+    scoped_refptr<gpu::ClientSharedImage> shared_image =
+        result->GetSharedImage();
+    gpu::Mailbox mailbox = shared_image->mailbox();
+    gfx::ColorSpace color_space = shared_image->color_space();
     EXPECT_EQ(color_space, output_color_space_);
 
-    viz::CopyOutputResult::ReleaseCallbacks release_callbacks =
-        result->TakeTextureOwnership();
-    EXPECT_EQ(1u, release_callbacks.size());
+    viz::ReleaseCallback release_callback = result->TakeSharedImageOwnership();
+    ASSERT_TRUE(release_callback);
 
-    SkBitmap bitmap = CopyMailboxToBitmap(result->size(), mailbox,
-                                          gpu::SyncToken(), color_space);
-    std::move(release_callbacks[0]).Run(gpu::SyncToken(), false);
+    SkBitmap bitmap = CopyMailboxToBitmap(result->size(), mailbox, color_space);
+    std::move(release_callback).Run(gpu::SyncToken(), false);
 
     ReadbackResultAsBitmap(std::make_unique<viz::CopyOutputSkBitmapResult>(
         result->rect(), std::move(bitmap)));

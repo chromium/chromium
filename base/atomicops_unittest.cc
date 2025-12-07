@@ -6,8 +6,11 @@
 
 #include <stdint.h>
 #include <string.h>
-#include <type_traits>
 
+#include <type_traits>
+#include <vector>
+
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 template <class AtomicType>
@@ -26,8 +29,8 @@ static void TestAtomicIncrement() {
   } s;
 
   AtomicType prev_word_value, next_word_value;
-  memset(&prev_word_value, 0xFF, sizeof(AtomicType));
-  memset(&next_word_value, 0xEE, sizeof(AtomicType));
+  UNSAFE_TODO(memset(&prev_word_value, 0xFF, sizeof(AtomicType)));
+  UNSAFE_TODO(memset(&next_word_value, 0xEE, sizeof(AtomicType)));
 
   s.prev_word = prev_word_value;
   s.count = 0;
@@ -79,9 +82,7 @@ static void TestAtomicIncrement() {
   EXPECT_EQ(s.next_word, next_word_value);
 }
 
-
 #define NUM_BITS(T) (sizeof(T) * 8)
-
 
 template <class AtomicType>
 static void TestCompareAndSwap() {
@@ -99,8 +100,8 @@ static void TestCompareAndSwap() {
 
   // Use test value that has non-zero bits in both halves, more for testing
   // 64-bit implementation on 32-bit platforms.
-  const AtomicType k_test_val = (static_cast<uint64_t>(1) <<
-                                 (NUM_BITS(AtomicType) - 2)) + 11;
+  const AtomicType k_test_val =
+      (static_cast<uint64_t>(1) << (NUM_BITS(AtomicType) - 2)) + 11;
   value = k_test_val;
   prev = base::subtle::NoBarrier_CompareAndSwap(&value, 0, 5);
   EXPECT_EQ(k_test_val, value);
@@ -112,7 +113,6 @@ static void TestCompareAndSwap() {
   EXPECT_EQ(k_test_val, prev);
 }
 
-
 template <class AtomicType>
 static void TestAtomicExchange() {
   AtomicType value = 0;
@@ -122,8 +122,8 @@ static void TestAtomicExchange() {
 
   // Use test value that has non-zero bits in both halves, more for testing
   // 64-bit implementation on 32-bit platforms.
-  const AtomicType k_test_val = (static_cast<uint64_t>(1) <<
-                                 (NUM_BITS(AtomicType) - 2)) + 11;
+  const AtomicType k_test_val =
+      (static_cast<uint64_t>(1) << (NUM_BITS(AtomicType) - 2)) + 11;
   value = k_test_val;
   new_value = base::subtle::NoBarrier_AtomicExchange(&value, k_test_val);
   EXPECT_EQ(k_test_val, value);
@@ -135,12 +135,11 @@ static void TestAtomicExchange() {
   EXPECT_EQ(k_test_val, new_value);
 }
 
-
 template <class AtomicType>
 static void TestAtomicIncrementBounds() {
   // Test at rollover boundary between int_max and int_min
-  AtomicType test_val = (static_cast<uint64_t>(1) <<
-                         (NUM_BITS(AtomicType) - 1));
+  AtomicType test_val =
+      (static_cast<uint64_t>(1) << (NUM_BITS(AtomicType) - 1));
   AtomicType value = -1 ^ test_val;
   AtomicType new_value = base::subtle::NoBarrier_AtomicIncrement(&value, 1);
   EXPECT_EQ(test_val, value);
@@ -164,7 +163,7 @@ static void TestAtomicIncrementBounds() {
 template <class AtomicType>
 static AtomicType TestFillValue() {
   AtomicType val = 0;
-  memset(&val, 0xa5, sizeof(AtomicType));
+  UNSAFE_TODO(memset(&val, 0xa5, sizeof(AtomicType)));
   return val;
 }
 
@@ -217,7 +216,6 @@ TEST(AtomicOpsTest, Inc) {
 
 TEST(AtomicOpsTest, CompareAndSwap) {
   TestCompareAndSwap<base::subtle::Atomic32>();
-  TestCompareAndSwap<base::subtle::AtomicWord>();
 }
 
 TEST(AtomicOpsTest, Exchange) {
@@ -238,4 +236,25 @@ TEST(AtomicOpsTest, Store) {
 TEST(AtomicOpsTest, Load) {
   TestLoad<base::subtle::Atomic32>();
   TestLoad<base::subtle::AtomicWord>();
+}
+
+TEST(AtomicOpsTest, RelaxedAtomicWriteMemcpy) {
+  std::vector<uint8_t> src(17);
+  for (size_t i = 0; i < src.size(); i++) {
+    src[i] = i + 1;
+  }
+
+  for (size_t i = 0; i < src.size(); i++) {
+    std::vector<uint8_t> dst(src.size());
+    size_t bytes_to_copy = src.size() - i;
+    base::subtle::RelaxedAtomicWriteMemcpy(
+        base::span(dst).first(bytes_to_copy),
+        base::span(src).subspan(i, bytes_to_copy));
+    for (size_t j = 0; j < bytes_to_copy; j++) {
+      EXPECT_EQ(src[i + j], dst[j]);
+    }
+    for (size_t j = bytes_to_copy; j < dst.size(); j++) {
+      EXPECT_EQ(0, dst[j]);
+    }
+  }
 }

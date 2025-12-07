@@ -9,8 +9,10 @@
 #include <optional>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/sequence_checker.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_icon_cache.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"

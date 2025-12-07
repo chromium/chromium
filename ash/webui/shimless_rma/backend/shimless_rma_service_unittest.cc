@@ -282,8 +282,7 @@ class ShimlessRmaServiceTest : public NoSessionAshTestBase {
   }
 
   FakeRmadClientForTest* fake_rmad_client_() {
-    return google::protobuf::down_cast<FakeRmadClientForTest*>(
-        rmad_client_.get());
+    return static_cast<FakeRmadClientForTest*>(rmad_client_.get());
   }
 
   void SetupWiFiNetwork(const std::string& guid) {
@@ -1322,7 +1321,7 @@ TEST_F(ShimlessRmaServiceTest, SetManuallyDisableWriteProtect) {
       }));
   run_loop.RunUntilIdle();
 
-  shimless_rma_provider_->ChooseManuallyDisableWriteProtect(
+  shimless_rma_provider_->SetManuallyDisableWriteProtect(
       base::BindLambdaForTesting([&](mojom::StateResultPtr state_result_ptr) {
         EXPECT_EQ(state_result_ptr->state, mojom::State::kChooseDestination);
         EXPECT_EQ(state_result_ptr->error, rmad::RmadErrorCode::RMAD_ERROR_OK);
@@ -1344,7 +1343,7 @@ TEST_F(ShimlessRmaServiceTest,
       }));
   run_loop.RunUntilIdle();
 
-  shimless_rma_provider_->ChooseManuallyDisableWriteProtect(
+  shimless_rma_provider_->SetManuallyDisableWriteProtect(
       base::BindLambdaForTesting([&](mojom::StateResultPtr state_result_ptr) {
         EXPECT_EQ(state_result_ptr->state, mojom::State::kChooseDestination);
         EXPECT_EQ(state_result_ptr->error,
@@ -1375,7 +1374,7 @@ TEST_F(ShimlessRmaServiceTest, SetRsuDisableWriteProtect) {
       }));
   run_loop.RunUntilIdle();
 
-  shimless_rma_provider_->ChooseRsuDisableWriteProtect(
+  shimless_rma_provider_->SetRsuDisableWriteProtect(
       base::BindLambdaForTesting([&](mojom::StateResultPtr state_result_ptr) {
         EXPECT_EQ(state_result_ptr->state, mojom::State::kChooseDestination);
         EXPECT_EQ(state_result_ptr->error, rmad::RmadErrorCode::RMAD_ERROR_OK);
@@ -1396,7 +1395,7 @@ TEST_F(ShimlessRmaServiceTest, SetRsuDisableWriteProtectFromWrongStateFails) {
       }));
   run_loop.RunUntilIdle();
 
-  shimless_rma_provider_->ChooseRsuDisableWriteProtect(
+  shimless_rma_provider_->SetRsuDisableWriteProtect(
       base::BindLambdaForTesting([&](mojom::StateResultPtr state_result_ptr) {
         EXPECT_EQ(state_result_ptr->state, mojom::State::kChooseDestination);
         EXPECT_EQ(state_result_ptr->error,
@@ -2826,8 +2825,8 @@ TEST_F(ShimlessRmaServiceTest, StartCalibrationFromWrongStateFails) {
   const std::vector<rmad::GetStateReply> fake_states = {CreateStateReply(
       rmad::RmadState::kDeviceDestination, rmad::RMAD_ERROR_OK)};
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
-  fake_rmad_client_()->check_state_callback = base::BindRepeating(
-      [](const rmad::RmadState& state) { NOTREACHED_IN_MIGRATION(); });
+  fake_rmad_client_()->check_state_callback =
+      base::BindRepeating([](const rmad::RmadState& state) { NOTREACHED(); });
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(
       base::BindLambdaForTesting([&](mojom::StateResultPtr state_result_ptr) {
@@ -3747,16 +3746,14 @@ class FakeHardwareVerificationStatusObserver
     : public mojom::HardwareVerificationStatusObserver {
  public:
   struct Observation {
-    bool is_compliant;
-    std::string error_message;
+    mojom::HardwareVerificationResultPtr result;
   };
 
-  void OnHardwareVerificationResult(bool is_compliant,
-                                    const std::string& error_message) override {
+  void OnHardwareVerificationResult(
+      mojom::HardwareVerificationResultPtr result) override {
     Observation observation;
-    observation.is_compliant = is_compliant;
-    observation.error_message = error_message;
-    observations.push_back(observation);
+    observation.result = std::move(result);
+    observations.push_back(std::move(observation));
   }
 
   std::vector<Observation> observations;
@@ -3768,24 +3765,23 @@ TEST_F(ShimlessRmaServiceTest, ObserveHardwareVerification) {
   shimless_rma_provider_->ObserveHardwareVerificationStatus(
       fake_observer.receiver.BindNewPipeAndPassRemote());
   base::RunLoop run_loop;
-  fake_rmad_client_()->TriggerHardwareVerificationResultObservation(true, "ok");
+  fake_rmad_client_()->TriggerHardwareVerificationResultObservation(true, "",
+                                                                    false);
   run_loop.RunUntilIdle();
   EXPECT_EQ(fake_observer.observations.size(), 1UL);
-  EXPECT_EQ(fake_observer.observations[0].is_compliant, true);
-  EXPECT_EQ(fake_observer.observations[0].error_message, "ok");
+  EXPECT_TRUE(fake_observer.observations[0].result->is_pass_result());
 }
 
 TEST_F(ShimlessRmaServiceTest, ObserveHardwareVerificationAfterSignal) {
-  fake_rmad_client_()->TriggerHardwareVerificationResultObservation(true,
-                                                                    "also ok");
+  fake_rmad_client_()->TriggerHardwareVerificationResultObservation(true, "",
+                                                                    false);
   FakeHardwareVerificationStatusObserver fake_observer;
   shimless_rma_provider_->ObserveHardwareVerificationStatus(
       fake_observer.receiver.BindNewPipeAndPassRemote());
   base::RunLoop run_loop;
   run_loop.RunUntilIdle();
   EXPECT_EQ(fake_observer.observations.size(), 1UL);
-  EXPECT_EQ(fake_observer.observations[0].is_compliant, true);
-  EXPECT_EQ(fake_observer.observations[0].error_message, "also ok");
+  EXPECT_TRUE(fake_observer.observations[0].result->is_pass_result());
 }
 
 class FakeFinalizationObserver : public mojom::FinalizationObserver {

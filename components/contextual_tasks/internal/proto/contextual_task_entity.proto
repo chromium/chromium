@@ -1,0 +1,33 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package contextual_tasks.proto;
+
+import "components/sync/protocol/contextual_task_specifics.proto";
+
+// Proto message for storing syncable and local ContextualTask data.
+message ContextualTaskEntity {
+  // Thread data to be synced.
+  optional sync_pb.ContextualTaskSpecifics specifics = 1;
+
+  // Local data that is not synced to the server.
+  message LocalData {
+    // Defines the last-known UI state for this task.
+    enum UiState {
+      UNKNOWN = 0;
+      LEFT_SIDEPANEL = 1;
+      RIGHT_SIDEPANEL = 2;
+      TAB = 3;
+    }
+
+    // The last-known UI state for this task.
+    optional UiState ui_state = 1;
+  }
+
+  optional LocalData local_data = 2;
+}

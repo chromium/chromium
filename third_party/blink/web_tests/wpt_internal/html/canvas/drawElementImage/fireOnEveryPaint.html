@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<title>fireOnEveryPaint causes callback for canvas child changes</title>
+<link rel="help" href="https://github.com/WICG/html-in-canvas">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+  div, canvas {
+    background: blue;
+  }
+  .color-change {
+    background: green;
+  }
+  #child {
+    width: 100px;
+    height: 100px;
+  }
+  #grandchild {
+    width: 50px;
+    height: 50px;
+  }
+  #sibling {
+    width: 100px;
+    height: 100px;
+  }
+</style>
+
+<div id="container">
+  <canvas id="canvas" width="200" height="200" layoutsubtree>
+    <div id="child">
+      <div id="grandchild"></div>
+    </div>
+  </canvas>
+  <div id="sibling"></div>
+</div>
+
+<script>
+  'use strict';
+
+  function waitForOneFrame() {
+    return new Promise(resolve => {
+      requestAnimationFrame(() => {
+        setTimeout(resolve, 0);
+      });
+    });
+  }
+
+  promise_test(async t => {
+    let observationCount = 0;
+    const resizeObserver = new ResizeObserver(entries => {
+      const entry = entries.find(entry => entry.target === canvas);
+      if (entry) {
+        observationCount++;
+      }
+    });
+    resizeObserver.observe(canvas, {fireOnEveryPaint: true});
+
+    // Wait a frame and assert that the initial observation occurred.
+    await waitForOneFrame();
+    assert_equals(observationCount, 1, 'An initial resize observer observation should always occur.');
+
+    // Wait another frame and assert that no observations occurred.
+    await waitForOneFrame();
+    assert_equals(observationCount, 1, 'No observation should occur without a repaint.');
+  }, 'fireOnEveryPaint should not trigger without changes');
+
+  promise_test(async t => {
+    let observationCount = 0;
+    const resizeObserver = new ResizeObserver(entries => {
+      const entry = entries.find(entry => entry.target === canvas);
+      if (entry) {
+        observationCount++;
+      }
+    });
+    resizeObserver.observe(canvas, {fireOnEveryPaint: true});
+
+    // 1. Wait a frame and assert that the initial observation occurred.
+    await waitForOneFrame();
+    assert_equals(observationCount, 1, 'An initial resize observer observation should always occur.');
+
+    // 2. Make a change that causes a repaint.
+    child.classList.toggle('color-change');
+
+    // 3. Wait a frame and assert that one new observation occurred.
+    await waitForOneFrame();
+    assert_equals(observationCount, 2, 'An observation should occur after a repaint.');
+
+    // 4. Wait another frame and assert that no additional observations occurred.
+    await waitForOneFrame();
+    assert_equals(observationCount, 2, 'No additional observation should occur without another repaint.');
+  }, 'fireOnEveryPaint should trigger one observation if a canvas child changes');
+
+  promise_test(async t => {
+    let observationCount = 0;
+    const resizeObserver = new ResizeObserver(entries => {
+      const entry = entries.find(entry => entry.target === canvas);
+      if (entry) {
+        observationCount++;
+      }
+    });
+    resizeObserver.observe(canvas, {fireOnEveryPaint: true});
+
+    // 1. Wait a frame and assert that the initial observation occurred.
+    await waitForOneFrame();
+    assert_equals(observationCount, 1, 'An initial resize observer observation should always occur.');
+
+    // 2. Make a change that causes a repaint.
+    grandchild.classList.toggle('color-change');
+
+    // 3. Wait a frame and assert that one observation occurred.
+    await waitForOneFrame();
+    assert_equals(observationCount, 2, 'An observation should occur after a repaint.');
+
+    // 4. Wait another frame and assert that no additional observations occurred.
+    await waitForOneFrame();
+    assert_equals(observationCount, 2, 'No additional observation should occur without another repaint.');
+  }, 'fireOnEveryPaint should trigger one observation if a canvas grandchild changes');
+
+  promise_test(async t => {
+    let observationCount = 0;
+    const resizeObserver = new ResizeObserver(entries => {
+      const entry = entries.find(entry => entry.target === canvas);
+      if (entry) {
+        observationCount++;
+      }
+    });
+    resizeObserver.observe(canvas, {fireOnEveryPaint: true});
+
+    // 1. Wait a frame and assert that the initial observation occurred.
+    await waitForOneFrame();
+    assert_equals(observationCount, 1, 'An initial resize observer observation should always occur.');
+
+    // 2. Make a change to the canvas element itself that causes a repaint.
+    canvas.classList.toggle('color-change');
+
+    // 3. Wait a frame and assert that one observation occurred.
+    await waitForOneFrame();
+    assert_equals(observationCount, 2, 'An observation should occur after a repaint.');
+
+    // 4. Wait another frame and assert that no additional observations occurred.
+    await waitForOneFrame();
+    assert_equals(observationCount, 2, 'No additional observation should occur without another repaint.');
+  }, 'fireOnEveryPaint should trigger one observation if the observed canvas changes');
+
+  promise_test(async t => {
+    let observationCount = 0;
+    const resizeObserver = new ResizeObserver(entries => {
+      const entry = entries.find(entry => entry.target === canvas);
+      if (entry) {
+        observationCount++;
+      }
+    });
+    resizeObserver.observe(canvas, {fireOnEveryPaint: true});
+
+    // 1. Wait a frame and assert that the initial observation occurred.
+    await waitForOneFrame();
+    assert_equals(observationCount, 1, 'An initial resize observer observation should always occur.');
+
+    // 2. Make a change that causes a repaint.
+    sibling.classList.toggle('color-change');
+
+    // 3. Wait a frame and assert that no observation occurs.
+    await waitForOneFrame();
+    assert_equals(observationCount, 1, 'An observation should not occur for element changes outside the canvas.');
+  }, 'fireOnEveryPaint should not trigger if a canvas sibling changes');
+
+  promise_test(async t => {
+    let observationCount = 0;
+    const resizeObserver = new ResizeObserver(entries => {
+      const entry = entries.find(entry => entry.target === canvas);
+      if (entry) {
+        observationCount++;
+      }
+    });
+    resizeObserver.observe(canvas, {fireOnEveryPaint: true});
+
+    // 1. Wait a frame and assert that the initial observation occurred.
+    await waitForOneFrame();
+    assert_equals(observationCount, 1, 'An initial resize observer observation should always occur.');
+
+    // 2. Make a change that causes a repaint.
+    container.classList.toggle('color-change');
+
+    // 3. Wait a frame and assert that no observation occurs.
+    await waitForOneFrame();
+    assert_equals(observationCount, 1, 'An observation should not occur for element changes outside the canvas.');
+  }, 'fireOnEveryPaint should not trigger if a canvas ancestor changes');
+
+  promise_test(async t => {
+    t.add_cleanup(() => {
+      child.style.transform = '';
+    });
+
+    let observationCount = 0;
+    const resizeObserver = new ResizeObserver(entries => {
+      const entry = entries.find(entry => entry.target === canvas);
+      if (entry) {
+        observationCount++;
+        if (observationCount > 1) {
+          child.style.transform = `translateX(${observationCount}px)`;
+        }
+      }
+    });
+    resizeObserver.observe(canvas, {fireOnEveryPaint: true});
+
+    // 1. Wait a frame and assert that the initial observation occurred.
+    await waitForOneFrame();
+    assert_equals(observationCount, 1, 'An initial resize observer observation should always occur.');
+
+    // 2. Make a change that causes a repaint. The resize observer that fires
+    //    in response will also change CSS transform.
+    child.classList.toggle('color-change');
+
+    // 3. Wait a frame and assert that only one observation occurred.
+    await waitForOneFrame();
+    assert_equals(observationCount, 2, 'An observation should occur after a repaint.');
+    assert_equals(child.style.transform, 'translateX(2px)');
+
+    // 4. Wait another frame and assert that no additional observations occurred.
+    await waitForOneFrame();
+    assert_equals(observationCount, 2, 'No additional observation should occur without another repaint.');
+  }, 'fireOnEveryPaint should not trigger if css transform changes on a canvas sibling');
+</script>

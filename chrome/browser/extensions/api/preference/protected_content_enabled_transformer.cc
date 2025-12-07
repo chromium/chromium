@@ -6,6 +6,9 @@
 
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

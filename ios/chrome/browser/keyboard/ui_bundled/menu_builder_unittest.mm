@@ -39,6 +39,74 @@
   _wasMutated = YES;
 }
 
+- (void)replaceMenuForIdentifier:(UIMenuIdentifier)replacedIdentifier
+                    withElements:(NSArray<UIMenuElement*>*)replacementElements {
+  _wasMutated = YES;
+}
+
+- (void)replaceActionForIdentifier:(UIActionIdentifier)replacedIdentifier
+                      withElements:
+                          (NSArray<UIMenuElement*>*)replacementElements {
+  _wasMutated = YES;
+}
+
+- (void)replaceCommandForAction:(SEL)replacedAction
+                   propertyList:(nullable id)replacedPropertyList
+                   withElements:(NSArray<UIMenuElement*>*)replacementElements {
+  _wasMutated = YES;
+}
+
+- (void)insertElements:(NSArray<UIMenuElement*>*)insertedElements
+    beforeMenuForIdentifier:(UIMenuIdentifier)siblingIdentifier {
+  _wasMutated = YES;
+}
+
+- (void)insertElements:(NSArray<UIMenuElement*>*)insertedElements
+    afterMenuForIdentifier:(UIMenuIdentifier)siblingIdentifier {
+  _wasMutated = YES;
+}
+
+- (void)insertElements:(NSArray<UIMenuElement*>*)insertedElements
+    beforeActionForIdentifier:(UIActionIdentifier)siblingIdentifier {
+  _wasMutated = YES;
+}
+
+- (void)insertElements:(NSArray<UIMenuElement*>*)insertedElements
+    afterActionForIdentifier:(UIActionIdentifier)siblingIdentifier {
+  _wasMutated = YES;
+}
+
+- (void)insertElements:(NSArray<UIMenuElement*>*)insertedElements
+    beforeCommandForAction:(SEL)siblingAction
+              propertyList:(nullable id)siblingPropertyList {
+  _wasMutated = YES;
+}
+
+- (void)insertElements:(NSArray<UIMenuElement*>*)insertedElements
+    afterCommandForAction:(SEL)siblingAction
+             propertyList:(nullable id)siblingPropertyList {
+  _wasMutated = YES;
+}
+
+- (void)insertElements:(NSArray<UIMenuElement*>*)childElements
+    atStartOfMenuForIdentifier:(UIMenuIdentifier)parentIdentifier {
+  _wasMutated = YES;
+}
+
+- (void)insertElements:(NSArray<UIMenuElement*>*)childElements
+    atEndOfMenuForIdentifier:(UIMenuIdentifier)parentIdentifier {
+  _wasMutated = YES;
+}
+
+- (void)removeActionForIdentifier:(UIActionIdentifier)removedIdentifier {
+  _wasMutated = YES;
+}
+
+- (void)removeCommandForAction:(SEL)removedAction
+                  propertyList:(nullable id)removedPropertyList {
+  _wasMutated = YES;
+}
+
 - (void)replaceChildrenOfMenuForIdentifier:(UIMenuIdentifier)parentIdentifier
                          fromChildrenBlock:
                              (NSArray<UIMenuElement*>*(NS_NOESCAPE ^)(

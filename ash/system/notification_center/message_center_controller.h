@@ -11,7 +11,6 @@
 #include "ash/public/cpp/message_center/arc_notifications_host_initializer.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/observer_list.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 
 class PrefRegistrySimple;
 
@@ -44,9 +43,9 @@ class ASH_EXPORT MessageCenterController
   ~MessageCenterController() override;
 
   // ArcNotificationsHostInitializer:
-  void SetArcNotificationManagerInstance(
-      std::unique_ptr<ArcNotificationManagerBase> manager_instance) override;
-  ArcNotificationManagerBase* GetArcNotificationManagerInstance() override;
+  void SetArcNotificationManager(std::unique_ptr<ArcNotificationManagerBase>
+                                     arc_notification_manager) override;
+  ArcNotificationManagerBase* GetArcNotificationManager() override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 

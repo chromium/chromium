@@ -4,14 +4,15 @@
 
 #include "components/feedback/feedback_common.h"
 
+#include <algorithm>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
+#include "base/strings/to_string.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "components/feedback/feedback_constants.h"
 #include "components/feedback/feedback_report.h"
 #include "components/feedback/feedback_util.h"
@@ -21,7 +22,7 @@
 #include "components/feedback/proto/math.pb.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #endif
 
@@ -42,7 +43,7 @@ constexpr char kZipExt[] = ".zip";
 constexpr char kPngMimeType[] = "image/png";
 constexpr char kArbitraryMimeType[] = "application/octet-stream";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Keep in sync with
 // google3/java/com/google/wireless/android/tools/betterbug/protos/uploadfeedbackreport.proto.
 constexpr char kIsCrossDeviceIssueKey[] = "is_cross_device_issue";
@@ -53,7 +54,7 @@ constexpr char kInitiatingDeviceName[] = "initiating_device_name";
 // Enum value for MAC_ADDRESS type.
 constexpr char kTargetDeviceIdTypeMacAddressValue[] = "1";
 constexpr char kInitiatingDeviceNameValue[] = "Chromebook";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 constexpr char kIsOffensiveOrUnsafeKey[] = "is_offensive_or_unsafe";
 
@@ -62,7 +63,7 @@ constexpr char kIsOffensiveOrUnsafeKey[] = "is_offensive_or_unsafe";
 bool BelowCompressionThreshold(const std::string& content) {
   if (content.length() > kFeedbackMaxLength)
     return false;
-  const size_t line_count = base::ranges::count(content, '\n');
+  const size_t line_count = std::ranges::count(content, '\n');
   if (line_count > kFeedbackMaxLineCount)
     return false;
   return true;
@@ -85,7 +86,7 @@ void AddFeedbackData(userfeedback::ExtensionSubmit* feedback_data,
 // Adds data as an attachment to feedback_data if the data is non-empty.
 void AddAttachment(userfeedback::ExtensionSubmit* feedback_data,
                    const char* name,
-                   const std::string& data) {
+                   const std::vector<uint8_t>& data) {
   if (data.empty())
     return;
 
@@ -93,7 +94,7 @@ void AddAttachment(userfeedback::ExtensionSubmit* feedback_data,
       feedback_data->add_product_specific_binary_data();
   attachment->set_mime_type(kArbitraryMimeType);
   attachment->set_name(name);
-  attachment->set_data(data);
+  attachment->set_data(data.data(), data.size());
 }
 
 }  // namespace
@@ -103,10 +104,16 @@ void AddAttachment(userfeedback::ExtensionSubmit* feedback_data,
 ////////////////////////////////////////////////////////////////////////////////
 
 FeedbackCommon::AttachedFile::AttachedFile(const std::string& filename,
-                                           std::string data)
+                                           std::vector<uint8_t> data)
     : name(filename), data(std::move(data)) {}
 
-FeedbackCommon::AttachedFile::~AttachedFile() {}
+FeedbackCommon::AttachedFile::~AttachedFile() = default;
+
+FeedbackCommon::AttachedFile::AttachedFile(FeedbackCommon::AttachedFile&&) =
+    default;
+
+FeedbackCommon::AttachedFile& FeedbackCommon::AttachedFile::operator=(
+    FeedbackCommon::AttachedFile&&) = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 // FeedbackCommon::
@@ -115,6 +122,14 @@ FeedbackCommon::AttachedFile::~AttachedFile() {}
 FeedbackCommon::FeedbackCommon() : product_id_(-1) {}
 
 void FeedbackCommon::AddFile(const std::string& filename, std::string data) {
+  base::AutoLock lock(attachments_lock_);
+  base::span<const uint8_t> byte_span = base::as_byte_span(data);
+  attachments_.emplace_back(
+      filename, std::vector<uint8_t>(byte_span.begin(), byte_span.end()));
+}
+
+void FeedbackCommon::AddFile(const std::string& filename,
+                             std::vector<uint8_t> data) {
   base::AutoLock lock(attachments_lock_);
   attachments_.emplace_back(filename, std::move(data));
 }
@@ -142,7 +157,7 @@ void FeedbackCommon::PrepareReport(
 
   // Set whether we're reporting from ChromeOS or Chrome on another platform.
   userfeedback::ChromeData chrome_data;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const userfeedback::ChromeData_ChromePlatform chrome_platform =
       userfeedback::ChromeData_ChromePlatform_CHROME_OS;
   const int default_product_id = feedback::kChromeOSProductId;
@@ -158,7 +173,7 @@ void FeedbackCommon::PrepareReport(
   chrome_browser_data.set_category(
       userfeedback::ChromeBrowserData_ChromeBrowserCategory_OTHER);
   *(chrome_data.mutable_chrome_browser_data()) = chrome_browser_data;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   chrome_data.set_chrome_platform(chrome_platform);
   // TODO(b/301518187): Investigate if this line is needed in order for custom
   // product IDs to work. Remove `include_chrome_platform_` if it's not needed.
@@ -186,7 +201,11 @@ void FeedbackCommon::PrepareReport(
 
   if (image().size()) {
     userfeedback::PostedScreenshot screenshot;
-    screenshot.set_mime_type(kPngMimeType);
+    if (image_mime_type().empty()) {
+      screenshot.set_mime_type(kPngMimeType);
+    } else {
+      screenshot.set_mime_type(image_mime_type());
+    }
 
     // Set that we 'have' dimensions of the screenshot. These dimensions are
     // ignored by the server but are a 'required' field in the protobuf.
@@ -202,7 +221,7 @@ void FeedbackCommon::PrepareReport(
 
   if (category_tag().size())
     feedback_data->set_bucket(category_tag());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (ash::features::IsLinkCrossDeviceDogfoodFeedbackEnabled() &&
       gaia::IsGoogleInternalAccountEmail(user_email()) &&
       mac_address_.has_value()) {
@@ -214,16 +233,16 @@ void FeedbackCommon::PrepareReport(
     AddFeedbackData(feedback_data, kInitiatingDeviceName,
                     kInitiatingDeviceNameValue);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (is_offensive_or_unsafe_.has_value()) {
     AddFeedbackData(feedback_data, kIsOffensiveOrUnsafeKey,
-                    is_offensive_or_unsafe_.value() ? "true" : "false");
+                    base::ToString(is_offensive_or_unsafe_.value()));
   }
   if (!ai_metadata_.empty()) {
     // Add feedback data for each key/value pair.
-    std::optional<base::Value::Dict> dict =
-        base::JSONReader::ReadDict(ai_metadata_);
+    std::optional<base::Value::Dict> dict = base::JSONReader::ReadDict(
+        ai_metadata_, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     CHECK(dict);
     for (auto pair : dict.value()) {
       AddFeedbackData(feedback_data, pair.first, pair.second.GetString());
@@ -252,12 +271,12 @@ int FeedbackCommon::GetMahiProductId() {
   return feedback::kMahiFeedbackProductId;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // static
 int FeedbackCommon::GetChromeOSProductId() {
   return feedback::kChromeOSProductId;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 FeedbackCommon::~FeedbackCommon() = default;
 

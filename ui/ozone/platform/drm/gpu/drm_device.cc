@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 
 #include <fcntl.h>
@@ -15,13 +10,14 @@
 #include <xf86drm.h>
 #include <xf86drmMode.h>
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/current_thread.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -55,12 +51,12 @@ bool ProcessDrmEvent(int fd, const DrmEventHandler& callback) {
   while (idx < len) {
     DCHECK_LE(static_cast<int>(sizeof(drm_event)), len - idx);
     drm_event event;
-    memcpy(&event, &buffer[idx], sizeof(event));
+    UNSAFE_TODO(memcpy(&event, &buffer[idx], sizeof(event)));
     switch (event.type) {
       case DRM_EVENT_FLIP_COMPLETE: {
         DCHECK_LE(static_cast<int>(sizeof(drm_event_vblank)), len - idx);
         drm_event_vblank vblank;
-        memcpy(&vblank, &buffer[idx], sizeof(vblank));
+        UNSAFE_TODO(memcpy(&vblank, &buffer[idx], sizeof(vblank)));
         std::unique_ptr<base::trace_event::TracedValue> drm_data(
             new base::trace_event::TracedValue());
         drm_data->SetInteger("frame_count", 1);
@@ -84,8 +80,7 @@ bool ProcessDrmEvent(int fd, const DrmEventHandler& callback) {
       case DRM_EVENT_VBLANK:
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
 
     idx += event.length;
@@ -106,7 +101,7 @@ class DrmDevice::PageFlipManager {
   ~PageFlipManager() = default;
 
   void OnPageFlip(uint32_t frame, base::TimeTicks timestamp, uint64_t id) {
-    auto it = base::ranges::find(callbacks_, id, &PageFlip::id);
+    auto it = std::ranges::find(callbacks_, id, &PageFlip::id);
     if (it == callbacks_.end()) {
       LOG(WARNING) << "Could not find callback for page flip id=" << id;
       return;
@@ -142,7 +137,7 @@ class DrmDevice::PageFlipManager {
   std::vector<PageFlip> callbacks_;
 };
 
-class DrmDevice::IOWatcher : public base::MessagePumpLibevent::FdWatcher {
+class DrmDevice::IOWatcher : public base::MessagePumpEpoll::FdWatcher {
  public:
   IOWatcher(int fd, DrmDevice::PageFlipManager* page_flip_manager)
       : page_flip_manager_(page_flip_manager), controller_(FROM_HERE), fd_(fd) {
@@ -166,7 +161,7 @@ class DrmDevice::IOWatcher : public base::MessagePumpLibevent::FdWatcher {
     controller_.StopWatchingFileDescriptor();
   }
 
-  // base::MessagePumpLibevent::FdWatcher overrides:
+  // base::MessagePumpEpoll::FdWatcher overrides:
   void OnFileCanReadWithoutBlocking(int fd) override {
     DCHECK(base::CurrentIOThread::IsSet());
     TRACE_EVENT1("drm", "OnDrmEvent", "socket", fd);
@@ -177,13 +172,11 @@ class DrmDevice::IOWatcher : public base::MessagePumpLibevent::FdWatcher {
       Unregister();
   }
 
-  void OnFileCanWriteWithoutBlocking(int fd) override {
-    NOTREACHED_IN_MIGRATION();
-  }
+  void OnFileCanWriteWithoutBlocking(int fd) override { NOTREACHED(); }
 
   raw_ptr<DrmDevice::PageFlipManager> page_flip_manager_;
 
-  base::MessagePumpLibevent::FdWatchController controller_;
+  base::MessagePumpEpoll::FdWatchController controller_;
 
   int fd_;
 };

@@ -35,8 +35,7 @@ struct EnumTraits<chromecast::mojom::VisibilityType,
       CASE_TRANSLATE_ENUM(TILE);
       CASE_TRANSLATE_ENUM(TRANSIENTLY_HIDDEN);
     }
-    NOTREACHED_IN_MIGRATION();
-    return chromecast::mojom::VisibilityType::UNKNOWN;
+    NOTREACHED();
   }
 
   static bool FromMojom(chromecast::mojom::VisibilityType type,
@@ -51,9 +50,7 @@ struct EnumTraits<chromecast::mojom::VisibilityType,
       CASE_TRANSLATE_MOJOM_ENUM(TILE);
       CASE_TRANSLATE_MOJOM_ENUM(TRANSIENTLY_HIDDEN);
     }
-    NOTREACHED_IN_MIGRATION();
-    *out = chromecast::VisibilityType::UNKNOWN;
-    return false;
+    NOTREACHED();
   }
 };
 
@@ -73,8 +70,7 @@ struct EnumTraits<chromecast::mojom::VisibilityPriority,
       CASE_TRANSLATE_ENUM(HIDDEN);
       CASE_TRANSLATE_ENUM(HIDDEN_STICKY);
     }
-    NOTREACHED_IN_MIGRATION();
-    return chromecast::mojom::VisibilityPriority::DEFAULT;
+    NOTREACHED();
   }
 
   static bool FromMojom(chromecast::mojom::VisibilityPriority priority,
@@ -94,9 +90,7 @@ struct EnumTraits<chromecast::mojom::VisibilityPriority,
         CASE_TRANSLATE_MOJOM_ENUM(HIDDEN);
         CASE_TRANSLATE_MOJOM_ENUM(HIDDEN_STICKY);
     }
-    NOTREACHED_IN_MIGRATION();
-    *out = chromecast::VisibilityPriority::DEFAULT;
-    return false;
+    NOTREACHED();
   }
 };
 

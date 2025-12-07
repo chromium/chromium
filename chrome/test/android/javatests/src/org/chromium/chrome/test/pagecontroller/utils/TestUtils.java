@@ -68,7 +68,7 @@ public final class TestUtils {
      * @return ArgumentMatcher that matches a BySelector for the given depth.
      */
     public static ArgumentMatcher<BySelector> matchesByDepth(final int depth) {
-        return new ArgumentMatcher<BySelector>() {
+        return new ArgumentMatcher<>() {
             // Need to do logical matching since BySelector does not override equals(Object).
             @Override
             public boolean matches(BySelector argument) {
@@ -93,7 +93,7 @@ public final class TestUtils {
      * @return ArgumentMatcher that matches a BySelector for the field using pattern.
      */
     public static ArgumentMatcher<BySelector> matchesByField(Pattern pattern, String fieldName) {
-        return new ArgumentMatcher<BySelector>() {
+        return new ArgumentMatcher<>() {
             // Need to do logical matching since BySelector does not override equals(Object).
             @Override
             public boolean matches(BySelector argument) {

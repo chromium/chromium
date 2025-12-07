@@ -45,22 +45,22 @@ class SimpleHostResolverImpl : public SimpleHostResolver,
 
  private:
   // network::ResolveHostClientBase:
-  void OnComplete(int result,
-                  const net::ResolveErrorInfo& resolve_error_info,
-                  const std::optional<net::AddressList>& resolved_addresses,
-                  const std::optional<net::HostResolverEndpointResults>&
-                      endpoint_results_with_metadata) override {
+  void OnComplete(
+      int result,
+      const net::ResolveErrorInfo& resolve_error_info,
+      const net::AddressList& resolved_addresses,
+      const net::HostResolverEndpointResults& alternative_endpoints) override {
     auto callback = std::move(receivers_.current_context());
     receivers_.Remove(receivers_.current_receiver());
     std::move(callback).Run(result, resolve_error_info, resolved_addresses,
-                            endpoint_results_with_metadata);
+                            alternative_endpoints);
   }
 
   void OnReceiverDisconnected() {
     std::move(receivers_.current_context())
         .Run(net::ERR_FAILED, net::ResolveErrorInfo(net::ERR_FAILED),
-             /*resolved_addresses=*/std::nullopt,
-             /*endpoint_results_with_metadata=*/std::nullopt);
+             /*resolved_addresses=*/{},
+             /*alternative_endpoints=*/{});
   }
 
   mojom::NetworkContext* GetNetworkContext() const {

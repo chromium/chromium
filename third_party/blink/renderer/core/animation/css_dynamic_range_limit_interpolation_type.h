@@ -25,7 +25,7 @@ class CORE_EXPORT CSSDynamicRangeLimitInterpolationType
                                   StyleResolverState&) const final;
   static InterpolationValue ConvertDynamicRangeLimit(DynamicRangeLimit limit);
   InterpolationValue MaybeConvertValue(const CSSValue&,
-                                       const StyleResolverState*,
+                                       const StyleResolverState&,
                                        ConversionCheckers&) const final;
 
  private:

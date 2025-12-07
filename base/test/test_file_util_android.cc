@@ -17,12 +17,12 @@ namespace base {
 
 FilePath InsertImageIntoMediaStore(const FilePath& path) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> j_path =
-      base::android::ConvertUTF8ToJavaString(env, path.value());
-  ScopedJavaLocalRef<jstring> j_uri =
+  std::string j_path = path.value();
+  std::string uri =
       Java_ContentUriTestUtils_insertImageIntoMediaStore(env, j_path);
-  std::string uri = base::android::ConvertJavaStringToUTF8(j_uri);
   return FilePath(uri);
 }
 
 }  // namespace base
+
+DEFINE_JNI(ContentUriTestUtils)

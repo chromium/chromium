@@ -7,6 +7,17 @@ module history_embeddings.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
 
+enum AnswerStatus {
+  kUnspecified,
+  kLoading,
+  kSuccess,
+  kUnanswerable,
+  kModelUnavailable,
+  kExecutionFailure,
+  kExecutionCanceled,
+  kFiltered,
+};
+
 // Some SearchResultItem may be specialized and marked as the query answer.
 // When that happens, it will have an AnswerData instance for details.
 struct AnswerData {
@@ -27,8 +38,12 @@ struct SearchResultItem {
   // The URL formatted for display.
   string url_for_display;
 
-  // A localized string for the last visit time for the above URL, from history.
+  // A localized string for how long it has been since the last visit time for
+  // the above URL, from history.
   string relative_time;
+
+  // A localized string for the last visit time for the above URL, from history.
+  string short_date_time;
 
   // The last visit time for the above URL, from history. Used for removing
   // history item.
@@ -41,6 +56,10 @@ struct SearchResultItem {
   // When present, this contains information about how to mark this
   // SearchResultItem as the query answer. Most items will not have it.
   AnswerData? answer_data;
+
+  // Set to true for results that have at least 1 visit known to sync. This is
+  // used to determine if the UI can request images for the URL.
+  bool is_url_known_to_sync;
 };
 
 // Represents a search query for the history embeddings database.
@@ -55,8 +74,13 @@ struct SearchQuery {
 
 // Represents the results of a search query.
 struct SearchResult {
+  // Query associated with this set of results.
   string query;
+  // Status of the answer generation attempt.
+  AnswerStatus answer_status;
+  // Latest generated answer.
   string answer;
+  // The set of history results.
   array<SearchResultItem> items;
 };
 
@@ -85,7 +109,10 @@ interface PageHandler {
 
   // Records the results from an embeddings query: whether the UI received
   // non-empty embeddings results, and if the user clicked one of the results.
-  RecordSearchResultsMetrics(bool nonEmptyResults, bool userClickedResult);
+  RecordSearchResultsMetrics(bool nonEmptyResults, bool userClickedResult,
+                             bool answerShown, bool answerCitationClicked,
+                             bool otherHistoryResultClicked,
+                             uint32 queryWordCount);
 
   // Store the user feedback supplied by the user.
   SetUserFeedback(UserFeedback feedback);
@@ -93,6 +120,10 @@ interface PageHandler {
   // Attempt to show the IPH bubble to promote the feature. Called from the
   // main history app on page load.
   MaybeShowFeaturePromo();
+
+  // Opens the History Search Settings page in a new tab, for use in the side
+  // panel where normal anchor tags do not work.
+  OpenSettingsPage();
 };
 
 // WebUI-side handler for requests from the browser.

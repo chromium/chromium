@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <memory>
 
 #include "build/build_config.h"
@@ -83,8 +78,7 @@ class WebAssociatedURLLoaderTest : public testing::Test,
         full_url, file_path, response);
   }
 
-  KURL RegisterMockedUrl(const std::string& url_root,
-                         const WTF::String& filename) {
+  KURL RegisterMockedUrl(const std::string& url_root, const String& filename) {
     WebURLResponse response;
     response.SetMimeType("text/html");
     KURL url = ToKURL(url_root + filename.Utf8());
@@ -103,8 +97,8 @@ class WebAssociatedURLLoaderTest : public testing::Test,
         "visible_iframe.html",
         "zero_sized_iframe.html",
     };
-    for (size_t i = 0; i < std::size(iframe_support_files); ++i) {
-      RegisterMockedUrl(url_root, iframe_support_files[i]);
+    for (const auto*& iframe_support_file : iframe_support_files) {
+      RegisterMockedUrl(url_root, iframe_support_file);
     }
 
     frame_test_helpers::LoadFrame(MainFrame(), url.GetString().Utf8().c_str());
@@ -155,10 +149,10 @@ class WebAssociatedURLLoaderTest : public testing::Test,
     did_download_data_ = true;
   }
 
-  void DidReceiveData(const char* data, int data_length) override {
+  void DidReceiveData(base::span<const char> data) override {
     did_receive_data_ = true;
-    EXPECT_TRUE(data);
-    EXPECT_GT(data_length, 0);
+    EXPECT_TRUE(data.data());
+    EXPECT_GT(data.size(), 0u);
   }
 
   void DidFinishLoading() override { did_finish_loading_ = true; }

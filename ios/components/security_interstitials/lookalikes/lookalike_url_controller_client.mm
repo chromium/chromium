@@ -52,6 +52,6 @@ void LookalikeUrlControllerClient::GoBack() {
 
 void LookalikeUrlControllerClient::Proceed() {
   LookalikeUrlTabAllowList::FromWebState(web_state())
-      ->AllowDomain(request_url_.host());
+      ->AllowDomain(request_url_.GetHost());
   Reload();
 }

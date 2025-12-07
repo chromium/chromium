@@ -8,11 +8,17 @@
 #include <memory>
 
 #include "base/supports_user_data.h"
+#include "base/types/id_type.h"
 
 class OverlayCallbackManager;
 namespace web {
 class WebState;
 }
+
+class OverlayRequest;
+
+// Identifier for OverlayRequests.
+using OverlayRequestId = base::IdTypeU64<OverlayRequest>;
 
 // Model object used to track overlays requested for OverlayManager.
 class OverlayRequest {
@@ -52,6 +58,9 @@ class OverlayRequest {
   // a queue, the WebState will be set for the remainder of the request's
   // lifetime.
   virtual web::WebState* GetQueueWebState() = 0;
+
+  // Returns the request identifier.
+  virtual OverlayRequestId GetRequestId() const = 0;
 
  protected:
   OverlayRequest() = default;

@@ -1,0 +1,69 @@
+{
+  "mac-updater-builder-rel": {
+    "additional_compile_targets": [
+      "chrome/updater:all"
+    ]
+  },
+  "mac13-x64-updater-tester-rel": {
+    "gtest_tests": [
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//chrome/updater:updater_tests",
+        "module_scheme": "gtest",
+        "name": "updater_tests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-13",
+            "pool": "chromium.tests"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "updater_tests",
+        "test_id_prefix": "ninja://chrome/updater:updater_tests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//chrome/updater:updater_tests_system",
+        "module_scheme": "gtest",
+        "name": "updater_tests_system",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-13",
+            "pool": "chromium.tests.updater"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "updater_tests_system",
+        "test_id_prefix": "ninja://chrome/updater:updater_tests_system/"
+      }
+    ]
+  },
+  "mac14-x64-updater-tester-rel": {
+    "gtest_tests": [
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//chrome/updater:updater_tests",
+        "module_scheme": "gtest",
+        "name": "updater_tests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-14",
+            "pool": "chromium.tests"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "updater_tests",
+        "test_id_prefix": "ninja://chrome/updater:updater_tests/"
+      }
+    ]
+  }
+}

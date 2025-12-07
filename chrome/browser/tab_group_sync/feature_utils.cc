@@ -6,22 +6,23 @@
 
 #include "build/build_config.h"
 #include "components/prefs/pref_service.h"
+#include "components/saved_tab_groups/public/features.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/utils_jni_headers/TabGroupSyncFeatures_jni.h"
-#include "components/saved_tab_groups/features.h"
-#include "components/saved_tab_groups/pref_names.h"
+#include "components/saved_tab_groups/public/pref_names.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace tab_groups {
 
 #if BUILDFLAG(IS_ANDROID)
 // static
-jboolean JNI_TabGroupSyncFeatures_IsTabGroupSyncEnabled(JNIEnv* env,
-                                                        Profile* profile) {
+static jboolean JNI_TabGroupSyncFeatures_IsTabGroupSyncEnabled(
+    JNIEnv* env,
+    Profile* profile) {
   DCHECK(profile);
   return IsTabGroupSyncEnabled(profile->GetPrefs());
 }
@@ -34,11 +35,13 @@ bool IsTabGroupSyncEnabled(PrefService* pref_service) {
   // current device but is enabled on one of the remote devices. We will
   // deprecate this after a milestone.
   pref_service->ClearPref(tab_groups::prefs::kSyncableTabGroups);
-
-  return base::FeatureList::IsEnabled(tab_groups::kTabGroupSyncAndroid);
-#else
-  return false;
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  return true;
 }
 
 }  // namespace tab_groups
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(TabGroupSyncFeatures)
+#endif

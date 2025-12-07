@@ -31,11 +31,13 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_CONTENT_DECRYPTION_MODULE_SESSION_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_CONTENT_DECRYPTION_MODULE_SESSION_H_
 
+#include <vector>
+
+#include "base/containers/span.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_content_decryption_module_exception.h"
 #include "third_party/blink/public/platform/web_content_decryption_module_result.h"
 #include "third_party/blink/public/platform/web_encrypted_media_types.h"
-#include "third_party/blink/public/platform/web_vector.h"
 
 namespace media {
 enum class CdmMessageType;
@@ -53,8 +55,7 @@ class BLINK_PLATFORM_EXPORT WebContentDecryptionModuleSession {
   class BLINK_PLATFORM_EXPORT Client {
    public:
     virtual void OnSessionMessage(media::CdmMessageType,
-                                  const unsigned char* message,
-                                  size_t message_length) = 0;
+                                  base::span<const uint8_t> message) = 0;
     virtual void OnSessionClosed(media::CdmSessionClosedReason reason) = 0;
 
     // Called when the expiration time for the session changes.
@@ -69,7 +70,7 @@ class BLINK_PLATFORM_EXPORT WebContentDecryptionModuleSession {
     // renewed, etc.) and the browser should attempt to resume playback
     // if necessary.
     virtual void OnSessionKeysChange(
-        const WebVector<WebEncryptedMediaKeyInformation>&,
+        const std::vector<WebEncryptedMediaKeyInformation>&,
         bool has_additional_usable_key) = 0;
 
    protected:
@@ -82,13 +83,11 @@ class BLINK_PLATFORM_EXPORT WebContentDecryptionModuleSession {
   virtual WebString SessionId() const = 0;
 
   virtual void InitializeNewSession(media::EmeInitDataType,
-                                    const unsigned char* init_data,
-                                    size_t init_data_length,
+                                    base::span<const uint8_t> init_data,
                                     WebContentDecryptionModuleResult) = 0;
   virtual void Load(const WebString& session_id,
                     WebContentDecryptionModuleResult) = 0;
-  virtual void Update(const unsigned char* response,
-                      size_t response_length,
+  virtual void Update(base::span<const uint8_t> response,
                       WebContentDecryptionModuleResult) = 0;
   virtual void Close(WebContentDecryptionModuleResult) = 0;
   virtual void Remove(WebContentDecryptionModuleResult) = 0;

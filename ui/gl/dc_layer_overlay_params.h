@@ -7,16 +7,14 @@
 
 #include <optional>
 
-#include "base/functional/callback.h"
-#include "base/memory/scoped_refptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_space.h"
-#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/hdr_metadata.h"
+#include "ui/gfx/overlay_layer_id.h"
 #include "ui/gfx/video_types.h"
 #include "ui/gl/dc_layer_overlay_image.h"
 #include "ui/gl/gl_export.h"
@@ -27,11 +25,17 @@ struct GL_EXPORT DCLayerOverlayParams {
   DCLayerOverlayParams();
   ~DCLayerOverlayParams();
 
+  DCLayerOverlayParams(DCLayerOverlayParams&&);
+  DCLayerOverlayParams& operator=(DCLayerOverlayParams&&);
+
   // Image to display in overlay - could be hardware or software video frame,
   // swap chain, or dcomp surface. If null and |background_color| is present,
   // then this overlay will represents a solid color quad. If both this and
   // |background_color| are null, this overlay will not have any visible output.
   std::optional<DCLayerOverlayImage> overlay_image;
+
+  // Damage in buffer space.
+  gfx::RectF damage_rect;
 
   // Stacking order relative to backbuffer which has z-order 0.
   int z_order = 1;
@@ -63,8 +67,9 @@ struct GL_EXPORT DCLayerOverlayParams {
   // blended behind |overlay_image|.
   std::optional<SkColor4f> background_color;
 
-  // Used to detect when multiple overlays are part of the same tile layer.
-  uint64_t aggregated_layer_id = 0;
+  // Expected to be unique in a frame.
+  // See |OverlayCandidate::layer_id|.
+  gfx::OverlayLayerId layer_id;
 
   // Parameters for video overlays, only used by |SwapChainPresenter|.
   struct VideoParams {
@@ -78,11 +83,19 @@ struct GL_EXPORT DCLayerOverlayParams {
 
     gfx::HDRMetadata hdr_metadata;
 
+    // P010 pixel format is used for 10-bit YUV video frames, either HDR or
+    // SDR.
+    bool is_p010_content = false;
+
     // Indication of the overlay to be detected as possible full screen
     // letterboxing.
     // Go to viz::OverlayCandidate::possible_video_fullscreen_letterboxing for
     // the details.
     bool possible_video_fullscreen_letterboxing = false;
+
+    // This overlay represents a full screen, letterboxed, or pillarboxed video.
+    // This means all pixels behind the video can be assumed to be solid black.
+    bool is_full_screen_video = false;
   };
 
   VideoParams video_params;

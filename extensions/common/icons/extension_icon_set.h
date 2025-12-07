@@ -43,8 +43,8 @@ class ExtensionIconSet {
   // already present, it is overwritten.
   void Add(int size_in_px, const std::string& path);
 
-  // Gets path value of the icon found when searching for |size_in_px| using
-  // |match_type|.
+  // Gets path value of the icon found when searching for `size_in_px` using
+  // `match_type`.
   const std::string& Get(int size_in_px, Match match_type) const;
 
   // Returns true iff the set contains the specified path.
@@ -54,7 +54,7 @@ class ExtensionIconSet {
   // if not found.
   int GetIconSizeFromPath(std::string_view path) const;
 
-  // Add the paths of all icons in this set into |paths|, handling the
+  // Add the paths of all icons in this set into `paths`, handling the
   // conversion of (string) -> (base::FilePath). Note that these paths are not
   // validated in any way, so they may be invalid paths or reference
   // nonexistent files.

@@ -4,9 +4,8 @@
 
 package org.chromium.chrome.browser.quick_delete;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -15,33 +14,33 @@ import org.chromium.ui.modelutil.PropertyModel;
  * The mediator responsible for listening to back-end changes affecting the quick delete {@link
  * View}.
  */
+@NullMarked
 class QuickDeleteMediator
         implements QuickDeleteDialogDelegate.TimePeriodChangeObserver,
                 QuickDeleteBridge.DomainVisitsCallback {
-    private final @NonNull PropertyModel mPropertyModel;
-    private final @NonNull Profile mProfile;
-    private final @NonNull QuickDeleteBridge mQuickDeleteBridge;
-    private final @NonNull QuickDeleteTabsFilter mQuickDeleteRegularTabsFilter;
+    private final PropertyModel mPropertyModel;
+    private final Profile mProfile;
+    private final QuickDeleteBridge mQuickDeleteBridge;
+    private final QuickDeleteTabsFilter mQuickDeleteRegularTabsFilter;
     // Null when declutter is disabled.
     private final @Nullable QuickDeleteTabsFilter mQuickDeleteArchivedTabsFilter;
 
     /**
      * @param propertyModel {@link PropertyModel} associated with the quick delete {@link View}.
      * @param profile {@link Profile} to check if the user is signed-in or syncing.
-     * @param quickDeleteBridge {@link QuickDeleteBridge} used to fetch the recent visited domain
-     *     and site data.
-     * @param quickDeleteTabsFilter {@link QuickDeleteTabsFilter} used to fetch the tabs to be
-     *     closed data.
+     * @param quickDeleteRegularTabsFilter {@link QuickDeleteTabsFilter} used to fetch the regular
+     *     tabs to be closed.
+     * @param quickDeleteArchivedTabsFilter {@link QuickDeleteTabsFilter} used to fetch the archived
+     *     tabs to be closed.
      */
     QuickDeleteMediator(
-            @NonNull PropertyModel propertyModel,
-            @NonNull Profile profile,
-            @NonNull QuickDeleteBridge quickDeleteBridge,
-            @NonNull QuickDeleteTabsFilter quickDeleteRegularTabsFilter,
+            PropertyModel propertyModel,
+            Profile profile,
+            QuickDeleteTabsFilter quickDeleteRegularTabsFilter,
             @Nullable QuickDeleteTabsFilter quickDeleteArchivedTabsFilter) {
         mPropertyModel = propertyModel;
         mProfile = profile;
-        mQuickDeleteBridge = quickDeleteBridge;
+        mQuickDeleteBridge = new QuickDeleteBridge(mProfile, this);
         mQuickDeleteRegularTabsFilter = quickDeleteRegularTabsFilter;
         mQuickDeleteArchivedTabsFilter = quickDeleteArchivedTabsFilter;
     }
@@ -74,7 +73,7 @@ class QuickDeleteMediator
         mPropertyModel.set(QuickDeleteProperties.IS_SYNCING_HISTORY, false);
         mPropertyModel.set(QuickDeleteProperties.IS_DOMAIN_VISITED_DATA_PENDING, true);
         // This is an async call which would update the browsing history row.
-        mQuickDeleteBridge.getLastVisitedDomainAndUniqueDomainCount(timePeriod, this);
+        mQuickDeleteBridge.restartCounterForTimePeriod(timePeriod);
     }
 
     /**
@@ -103,5 +102,9 @@ class QuickDeleteMediator
             count += mQuickDeleteArchivedTabsFilter.getListOfTabsFilteredToBeClosed().size();
         }
         return count;
+    }
+
+    public void destroy() {
+        mQuickDeleteBridge.destroy();
     }
 }

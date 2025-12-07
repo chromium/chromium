@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <!-- Subtitle specific strings -->
+  <message name="IDS_IOS_WHATS_NEW_PRICE_INSIGHTS_SUBTITLE" desc="Subtitle in What's New for Price Insights release.">
+    Get shopping insights that help you track prices, see price history, and buy at the best time
+  </message>
+  <message name="IDS_IOS_WHATS_NEW_LENS_SEARCH_SUBTITLE" desc="Subtitle in What's New for Lens Search release.">
+    Google Lens makes it easy to learn more as you browse. You can now search what you see on any page to explore products, places, and text.
+  </message>
+</grit-part>

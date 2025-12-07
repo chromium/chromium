@@ -8,20 +8,21 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/lens/model/lens_browser_agent.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
+#import "ios/chrome/browser/shared/public/commands/page_side_swipe_commands.h"
 #import "ios/chrome/browser/web/model/web_navigation_ntp_delegate.h"
 #import "ios/chrome/browser/web/model/web_navigation_util.h"
 #import "ios/web/common/user_agent.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/web_state.h"
 
-BROWSER_USER_DATA_KEY_IMPL(WebNavigationBrowserAgent)
-
 WebNavigationBrowserAgent::WebNavigationBrowserAgent(Browser* browser)
-    : web_state_list_(browser->GetWebStateList()), browser_(browser) {}
+    : BrowserUserData(browser), web_state_list_(browser->GetWebStateList()) {}
 
 WebNavigationBrowserAgent::~WebNavigationBrowserAgent() {}
 
@@ -74,6 +75,16 @@ void WebNavigationBrowserAgent::GoBack() {
     return;
   }
 
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(active_web_state->GetBrowserState());
+  if (IsLensOverlaySameTabNavigationEnabled(profile->GetPrefs())) {
+    CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+    if ([HandlerForProtocol(dispatcher, PageSideSwipeCommands)
+            navigateBackWithSideSwipeAnimationIfNeeded]) {
+      return;
+    }
+  }
+
   web_navigation_util::GoBack(active_web_state);
 
   // If the previous page was an eligible Lens Web Page, then display the LVF.
@@ -86,20 +97,23 @@ void WebNavigationBrowserAgent::GoBack() {
 
 void WebNavigationBrowserAgent::GoForward() {
   web::WebState* active_web_state = web_state_list_->GetActiveWebState();
-  if (active_web_state)
+  if (active_web_state) {
     web_navigation_util::GoForward(active_web_state);
+  }
 }
 
 void WebNavigationBrowserAgent::StopLoading() {
   web::WebState* active_web_state = web_state_list_->GetActiveWebState();
-  if (active_web_state)
+  if (active_web_state) {
     active_web_state->Stop();
+  }
 }
 
 void WebNavigationBrowserAgent::Reload() {
   web::WebState* active_web_state = web_state_list_->GetActiveWebState();
-  if (!active_web_state)
+  if (!active_web_state) {
     return;
+  }
 
   if (delegate_.NTPActiveForCurrentWebState) {
     [delegate_ reloadNTPForWebState:active_web_state];
@@ -119,8 +133,7 @@ void WebNavigationBrowserAgent::SetDelegate(
 void WebNavigationBrowserAgent::RequestDesktopSite() {
   ReloadWithUserAgentType(web::UserAgentType::DESKTOP);
 
-  feature_engagement::TrackerFactory::GetForBrowserState(
-      browser_->GetBrowserState())
+  feature_engagement::TrackerFactory::GetForProfile(browser_->GetProfile())
       ->NotifyEvent(feature_engagement::events::kDesktopVersionRequested);
 }
 
@@ -131,8 +144,9 @@ void WebNavigationBrowserAgent::RequestMobileSite() {
 void WebNavigationBrowserAgent::ReloadWithUserAgentType(
     web::UserAgentType userAgentType) {
   web::WebState* web_state = web_state_list_->GetActiveWebState();
-  if (UserAgentType(web_state) == userAgentType)
+  if (UserAgentType(web_state) == userAgentType) {
     return;
+  }
 
   web_state->GetNavigationManager()->ReloadWithUserAgentType(userAgentType);
 }

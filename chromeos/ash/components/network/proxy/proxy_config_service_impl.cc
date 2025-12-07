@@ -51,16 +51,9 @@ bool GetNetworkProxyConfig(const PrefService* profile_prefs,
                                                            proxy_config);
 }
 
-// When the CaptivePortalPopupWindow feature is enabled, this code is
-// responsible for determining whether proxies should be disabled for
-// captive portal signin windows.
+// This code is responsible for determining whether proxies should be disabled
+// for captive portal signin windows.
 bool ProxiesDisabledForCaptivePortalSignin(const PrefService* profile_prefs) {
-  // If the CaptivePortalPopupWindow feature is not enabled, the logic for
-  // avoiding proxies for captive portal signin is handled in
-  // NetworkPortalSigninController.
-  if (!chromeos::features::IsCaptivePortalPopupWindowEnabled()) {
-    return false;
-  }
   // Prior to login only the signin Profile can be used with no special
   // behavior.
   if (!profile_prefs) {

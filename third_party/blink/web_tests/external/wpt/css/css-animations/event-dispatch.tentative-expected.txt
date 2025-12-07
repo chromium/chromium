@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
 [FAIL] Active -> Idle, setting Animation.timeline = null
   assert_approx_equals: expected 0.1 +/- 0.0005 but got 0
+[FAIL] The cancel event with an earlier position in animation list should be fired earlier
+  assert_equals: expected "anim" but got "anim2"
 Harness: the test ran to completion.
 

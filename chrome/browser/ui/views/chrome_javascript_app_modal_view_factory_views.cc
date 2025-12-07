@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/javascript_dialogs/chrome_javascript_app_modal_dialog_view_factory.h"
-
 #include <memory>
 
 #include "build/build_config.h"
 #include "chrome/browser/ui/blocked_content/popunder_preventer.h"
 #include "chrome/browser/ui/javascript_dialogs/chrome_app_modal_dialog_manager_delegate.h"
+#include "chrome/browser/ui/javascript_dialogs/chrome_javascript_app_modal_dialog_view_factory.h"
 #include "chrome/browser/ui/views/javascript_app_modal_event_blocker.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
@@ -17,7 +16,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/display/screen.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_OZONE)
@@ -81,7 +80,7 @@ class ChromeJavaScriptAppModalDialogViews
 void AdjustWidgetBoundsIfOffscreen(views::Widget* widget) {
   gfx::Rect widget_bounds = widget->GetWindowBoundsInScreen();
   gfx::Rect screen_rect =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestPoint(widget_bounds.CenterPoint())
           .work_area();
 

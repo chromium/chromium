@@ -25,16 +25,6 @@ namespace ash {
 class UiResourceManager;
 class RoundedDisplayGutter;
 
-class RoundedDisplayUiResource : public UiResource {
- public:
-  RoundedDisplayUiResource();
-
-  RoundedDisplayUiResource(const RoundedDisplayUiResource&) = delete;
-  RoundedDisplayUiResource& operator=(const RoundedDisplayUiResource&) = delete;
-
-  ~RoundedDisplayUiResource() override;
-};
-
 class ASH_EXPORT RoundedDisplayFrameFactory {
  public:
   explicit RoundedDisplayFrameFactory() = default;
@@ -50,7 +40,7 @@ class ASH_EXPORT RoundedDisplayFrameFactory {
   // attach it to a compositor frame by converting it into a transferable
   // resource.
   // Note: This method is also used in unittests.
-  static std::unique_ptr<RoundedDisplayUiResource> CreateUiResource(
+  static std::unique_ptr<UiResource> CreateUiResource(
       const gfx::Size& size,
       viz::SharedImageFormat format,
       UiSourceId ui_source_id,
@@ -74,17 +64,15 @@ class ASH_EXPORT RoundedDisplayFrameFactory {
 
   // Get a UiResource for the `gutter`. We try to reuse any existing resources
   // in `resource_manager` before creating a new resource.
-  std::unique_ptr<RoundedDisplayUiResource> AcquireUiResource(
+  std::unique_ptr<UiResource> AcquireUiResource(
       const RoundedDisplayGutter& gutter,
       UiResourceManager& resource_manager) const;
 
-  std::unique_ptr<RoundedDisplayUiResource> Draw(
-      const RoundedDisplayGutter& gutter,
-      UiResourceManager& resource_manager) const;
+  std::unique_ptr<UiResource> Draw(const RoundedDisplayGutter& gutter,
+                                   UiResourceManager& resource_manager) const;
 
   // Paints the gutter's texture into the SharedImage held by `resource`.
-  void Paint(const RoundedDisplayGutter& gutter,
-             RoundedDisplayUiResource* resource) const;
+  void Paint(const RoundedDisplayGutter& gutter, UiResource* resource) const;
 };
 
 }  // namespace ash

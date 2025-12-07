@@ -46,7 +46,6 @@ static_library("channel") {
   deps = [
     ":capability",
     "//base",
-    "//build:chromeos_buildflags",
     "//components/keyed_service/content",
     "//components/keyed_service/core",
     "//components/media_router/common/providers/cast/certificate",
@@ -145,7 +144,7 @@ if (use_fuzzing_engine) {
       "//third_party/openscreen/src/cast/common/certificate/proto",
       "//third_party/openscreen/src/cast/common/channel/proto",
     ]
-    link_deps = [
+    deps = [
       "//third_party/openscreen/src/cast/common/certificate/proto:certificate_proto",
       "//third_party/openscreen/src/cast/common/channel/proto:channel_proto",
     ]

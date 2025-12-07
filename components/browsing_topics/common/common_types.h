@@ -40,6 +40,9 @@ enum class ApiCallerSource {
 
   // The API usage is from <iframe src=[url] browsingtopics>.
   kIframeAttribute,
+
+  // The API usage is from <img src=[url] browsingtopics>.
+  kImgAttribute,
 };
 
 // Represents the different reasons why the topics API access is denied. These

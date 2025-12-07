@@ -4,7 +4,8 @@
 
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {RouteObserver, Router} from 'chrome://shortcut-customization/js/router.js';
+import type {RouteObserver} from 'chrome://shortcut-customization/js/router.js';
+import {Router} from 'chrome://shortcut-customization/js/router.js';
 import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 
 suite('RouterTest', function() {
@@ -22,7 +23,7 @@ suite('RouterTest', function() {
     }
   }
 
-  test('Basic router test', async () => {
+  test('Basic router test', () => {
     Router.resetInstanceForTesting(new Router());
     const url = new URL('chrome://shortcut-customization');
     url.searchParams.append('testParam', 'testValue');
@@ -32,7 +33,7 @@ suite('RouterTest', function() {
         window.location.href);
   });
 
-  test('Reset route test', async () => {
+  test('Reset route test', () => {
     Router.resetInstanceForTesting(new Router());
     const url = new URL('chrome://shortcut-customization');
     url.searchParams.append('testParam', 'testValue');
@@ -44,7 +45,7 @@ suite('RouterTest', function() {
     assertEquals('chrome://shortcut-customization/', window.location.href);
   });
 
-  test('Observer test', async () => {
+  test('Observer test', () => {
     Router.resetInstanceForTesting(new Router());
     const router = Router.getInstance();
 

@@ -76,6 +76,8 @@ class WebContentsViewMac : public WebContentsView,
   void FocusThroughTabTraversal(bool reverse) override;
   DropData* GetDropData() const override;
   gfx::Rect GetViewBounds() const override;
+  void Resize(const gfx::Rect& new_bounds) override;
+  gfx::Size GetSize() const override;
   void CreateView(gfx::NativeView context) override;
   RenderWidgetHostViewBase* CreateViewForWidget(
       RenderWidgetHost* render_widget_host) override;
@@ -89,9 +91,9 @@ class WebContentsViewMac : public WebContentsView,
   bool CloseTabAfterEventTrackingIfNeeded() override;
   void OnCapturerCountChanged() override;
   void FullscreenStateChanged(bool is_fullscreen) override;
-  void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect) override;
   BackForwardTransitionAnimationManager*
   GetBackForwardTransitionAnimationManager() override;
+  void DestroyBackForwardTransitionAnimationManager() override;
 
   // RenderViewHostDelegateView:
   void StartDragging(const DropData& drop_data,
@@ -113,7 +115,6 @@ class WebContentsViewMac : public WebContentsView,
       RenderFrameHost* render_frame_host,
       mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client,
       const gfx::Rect& bounds,
-      int item_height,
       double item_font_size,
       int selected_item,
       std::vector<blink::mojom::MenuItemPtr> menu_items,
@@ -126,7 +127,7 @@ class WebContentsViewMac : public WebContentsView,
   // ViewsHostableView:
   void ViewsHostableAttach(ViewsHostableView::Host* host) override;
   void ViewsHostableDetach() override;
-  void ViewsHostableSetBounds(const gfx::Rect& bounds_in_window) override;
+  void ViewsHostableSetBounds(const gfx::Rect& bounds_in_superview) override;
   void ViewsHostableSetVisible(bool visible) override;
   void ViewsHostableMakeFirstResponder() override;
   void ViewsHostableSetParentAccessible(
@@ -148,6 +149,9 @@ class WebContentsViewMac : public WebContentsView,
   // Used to override the creation of RenderWidgetHostViews in tests.
   CONTENT_EXPORT static void InstallCreateHookForTests(
       RenderWidgetHostViewCreateFunction create_render_widget_host_view);
+
+  CONTENT_EXPORT static void SetReadWritePermissionsForFileForTests(
+      base::File& file);
 
  private:
   WebContentsViewCocoa* GetInProcessNSView() const;
@@ -171,9 +175,16 @@ class WebContentsViewMac : public WebContentsView,
                           const GURL& download_url,
                           const url::Origin& source_origin,
                           base::FilePath* out_file_path) override;
-  void EndDrag(uint32_t drag_opeation,
+  void EndDrag(uint32_t drag_operation,
                const gfx::PointF& local_point,
                const gfx::PointF& screen_point) override;
+
+  // Helper used by `EndDrag` to pass a callback to `drag_dest_`. This can be
+  // called either synchronously or asynchronously depending on if `drag_dest_`
+  // delays firing "dragend" or not.
+  void PerformEndDrag(uint32_t drag_operation,
+                      const gfx::PointF& local_point,
+                      const gfx::PointF& screen_point);
 
   // remote_cocoa::mojom::WebContentsNSViewHost, synchronous methods:
   void DraggingEntered(remote_cocoa::mojom::DraggingInfoPtr dragging_info,
@@ -215,7 +226,7 @@ class WebContentsViewMac : public WebContentsView,
   raw_ptr<ViewsHostableView::Host> views_host_ = nullptr;
 
   // The accessibility element specified via ViewsHostableSetParentAccessible.
-  gfx::NativeViewAccessible views_host_accessibility_element_ = nil;
+  gfx::NativeViewAccessible views_host_accessibility_element_;
 
   std::unique_ptr<PopupMenuHelper> popup_menu_helper_;
 

@@ -55,9 +55,8 @@ message WebApk {
     DARK_BACKGROUND_COLOR_DIFFERS = 18;
     DARK_THEME_COLOR_DIFFERS = 19;
     PRIMARY_ICON_CHANGE_BELOW_THRESHOLD = 20;
-    PRIMARY_ICON_CHANGE_SHELL_UPDATE = 21;
 
-    reserved 4;
+    reserved 4, 21;
   }
 
   // Package name of the WebAPK.

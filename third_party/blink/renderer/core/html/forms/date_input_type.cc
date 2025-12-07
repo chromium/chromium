@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/platform/text/date_components.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
+#include "ui/strings/grit/ax_strings.h"
 
 namespace blink {
 
@@ -77,6 +78,10 @@ bool DateInputType::SetMillisecondToDateComponents(double value,
                                                    DateComponents* date) const {
   DCHECK(date);
   return date->SetMillisecondsSinceEpochForDate(value);
+}
+
+bool DateInputType::CanSetSuggestedValue() {
+  return true;
 }
 
 void DateInputType::WarnIfValueIsInvalid(const String& value) const {

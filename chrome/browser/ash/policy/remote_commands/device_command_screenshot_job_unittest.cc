@@ -46,10 +46,8 @@ em::RemoteCommand GenerateScreenshotCommandProto(
   command_proto.set_type(em::RemoteCommand_Type_DEVICE_SCREENSHOT);
   command_proto.set_command_id(unique_id);
   command_proto.set_age_of_command(age_of_command.InMilliseconds());
-  std::string payload;
   auto root_dict = base::Value::Dict().Set(kUploadUrlFieldName, upload_url);
-  base::JSONWriter::Write(root_dict, &payload);
-  command_proto.set_payload(payload);
+  command_proto.set_payload(base::WriteJson(root_dict).value_or(""));
   return command_proto;
 }
 
@@ -118,16 +116,17 @@ scoped_refptr<base::RefCountedBytes> GenerateTestPNG(const int& width,
       *bmp.getAddr32(x, y) = background_color;
     }
   }
-  scoped_refptr<base::RefCountedBytes> png_bytes(new base::RefCountedBytes());
-  gfx::PNGCodec::ColorFormat color_format = gfx::PNGCodec::FORMAT_RGBA;
-  if (!gfx::PNGCodec::Encode(
-          reinterpret_cast<const unsigned char*>(bmp.getPixels()), color_format,
-          gfx::Size(bmp.width(), bmp.height()),
-          static_cast<int>(bmp.rowBytes()), false,
-          std::vector<gfx::PNGCodec::Comment>(), &png_bytes->as_vector())) {
+  std::optional<std::vector<uint8_t>> png_bytes = gfx::PNGCodec::Encode(
+      reinterpret_cast<const unsigned char*>(bmp.getPixels()),
+      gfx::PNGCodec::FORMAT_RGBA, gfx::Size(bmp.width(), bmp.height()),
+      static_cast<int>(bmp.rowBytes()), false,
+      std::vector<gfx::PNGCodec::Comment>());
+  if (!png_bytes) {
     LOG(ERROR) << "Failed to encode image";
+    return base::MakeRefCounted<base::RefCountedBytes>();
   }
-  return png_bytes;
+  return base::MakeRefCounted<base::RefCountedBytes>(
+      std::move(png_bytes).value());
 }
 
 class FakeScreenshotDelegate : public DeviceCommandScreenshotJob::Delegate {
@@ -238,13 +237,11 @@ void DeviceCommandScreenshotTest::InitializeScreenshotJob(
 
 std::string DeviceCommandScreenshotTest::CreatePayloadFromResultCode(
     DeviceCommandScreenshotJob::ResultCode result_code) {
-  std::string payload;
   base::Value::Dict root_dict;
   if (result_code != DeviceCommandScreenshotJob::SUCCESS) {
     root_dict.Set(kResultFieldName, result_code);
   }
-  base::JSONWriter::Write(root_dict, &payload);
-  return payload;
+  return base::WriteJson(root_dict).value_or("");
 }
 
 void DeviceCommandScreenshotTest::VerifyResults(

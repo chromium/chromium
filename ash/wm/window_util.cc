@@ -4,12 +4,13 @@
 
 #include "ash/wm/window_util.h"
 
+#include <algorithm>
 #include <memory>
 #include <tuple>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/multi_user/multi_user_window_manager_impl.h"
+#include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -28,6 +29,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "ash/wm/scoped_windows_mover.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -41,8 +43,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -59,6 +59,7 @@
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
@@ -88,7 +89,7 @@ bool ContainsSystemModalWindow(const aura::Window* window) {
   }
 
   if (window->GetProperty(aura::client::kModalKey) ==
-      ui::ModalType::MODAL_TYPE_SYSTEM) {
+      ui::mojom::ModalType::kSystem) {
     return true;
   }
 
@@ -152,16 +153,10 @@ aura::Window* FindTopMostChild(aura::Window* parent,
 
 }  // namespace
 
-int GetMiniWindowRoundedCornerRadius() {
-  return chromeos::features::IsRoundedWindowsEnabled()
-             ? chromeos::features::RoundedWindowsRadius()
-             : kWindowMiniViewCornerRadius;
-}
-
 gfx::RoundedCornersF GetMiniWindowRoundedCorners(const aura::Window* window,
                                                  bool include_header_rounding,
                                                  std::optional<float> scale) {
-  const int corner_radius = window_util::GetMiniWindowRoundedCornerRadius();
+  const int corner_radius = kWindowMiniViewCornerRadius;
   const float scaled_corner_radius = corner_radius / scale.value_or(1.0f);
 
   if (SnapGroupController* snap_group_controller = SnapGroupController::Get()) {
@@ -229,8 +224,8 @@ bool IsStackedBelow(aura::Window* win1, aura::Window* win2) {
   CHECK_EQ(win1->parent(), win2->parent());
 
   const auto& children = win1->parent()->children();
-  auto win1_iter = base::ranges::find(children, win1);
-  auto win2_iter = base::ranges::find(children, win2);
+  auto win1_iter = std::ranges::find(children, win1);
+  auto win2_iter = std::ranges::find(children, win2);
   CHECK(win1_iter != children.end());
   CHECK(win2_iter != children.end());
   return win1_iter < win2_iter;
@@ -238,7 +233,9 @@ bool IsStackedBelow(aura::Window* win1, aura::Window* win2) {
 
 aura::Window* GetTopMostWindow(const aura::Window::Windows& windows) {
   aura::Window* lowest_common_parent = FindLowestCommonParent(windows);
-  CHECK(lowest_common_parent);
+  if (!lowest_common_parent) {
+    return nullptr;
+  }
 
   return FindTopMostChild(lowest_common_parent, windows);
 }
@@ -307,7 +304,7 @@ bool IsWindowUserPositionable(aura::Window* window) {
 }
 
 void PinWindow(aura::Window* window, bool trusted) {
-  WMEvent event(trusted ? WM_EVENT_TRUSTED_PIN : WM_EVENT_PIN);
+  WMEvent event(trusted ? WM_EVENT_LOCKED_FULLSCREEN : WM_EVENT_PIN);
   WindowState::Get(window)->OnWMEvent(&event);
 }
 
@@ -323,16 +320,26 @@ bool MoveWindowToDisplay(aura::Window* window, int64_t display_id) {
 
   aura::Window* root = Shell::GetRootWindowForDisplayId(display_id);
   if (!root || root == window->GetRootWindow()) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
+  }
+
+  ScopedWindowsMover mover(display_id);
+  // If snapped , breake it.
+  if (auto* snap_group =
+          SnapGroupController::Get()->GetSnapGroupForGivenWindow(window)) {
+    mover.add_window(snap_group->window1() == window ? snap_group->window2()
+                                                     : snap_group->window1());
+    SnapGroupController::Get()->RemoveSnapGroup(
+        snap_group, SnapGroupExitPoint::kMoveToAnotherDisplay);
   }
 
   WindowState* window_state = WindowState::Get(window);
   if (window_state->allow_set_bounds_direct()) {
     display::Display display;
-    if (!display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id,
-                                                               &display))
+    if (!display::Screen::Get()->GetDisplayWithDisplayId(display_id,
+                                                         &display)) {
       return false;
+    }
     gfx::Rect bounds = window->bounds();
     gfx::Rect work_area_in_display(display.size());
     work_area_in_display.Inset(display.GetWorkAreaInsets());
@@ -394,6 +401,12 @@ bool IsDraggingTabs(const aura::Window* window) {
   return window->GetProperty(ash::kIsDraggingTabsKey);
 }
 
+const WindowState* GetTabDraggingSourceWindowState(
+    const aura::Window* drag_window) {
+  return WindowState::Get(
+      drag_window->GetProperty(ash::kTabDraggingSourceWindowKey));
+}
+
 bool ShouldExcludeForCycleList(const aura::Window* window) {
   // Exclude windows:
   // - non user positionable windows, such as extension popups.
@@ -422,7 +435,7 @@ bool ShouldExcludeForOverview(const aura::Window* window) {
     return true;
   }
 
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     return window == SplitViewController::Get(window->GetRootWindow())
                          ->GetDefaultSnappedWindow();
   }
@@ -516,7 +529,7 @@ void MinimizeAndHideWithoutAnimation(
 
 aura::Window* GetRootWindowAt(const gfx::Point& point_in_screen) {
   const display::Display& display =
-      display::Screen::GetScreen()->GetDisplayNearestPoint(point_in_screen);
+      display::Screen::Get()->GetDisplayNearestPoint(point_in_screen);
   DCHECK(display.is_valid());
   RootWindowController* root_window_controller =
       Shell::GetRootWindowControllerWithDisplayId(display.id());
@@ -526,7 +539,7 @@ aura::Window* GetRootWindowAt(const gfx::Point& point_in_screen) {
 
 aura::Window* GetRootWindowMatching(const gfx::Rect& rect_in_screen) {
   const display::Display& display =
-      display::Screen::GetScreen()->GetDisplayMatching(rect_in_screen);
+      display::Screen::Get()->GetDisplayMatching(rect_in_screen);
   RootWindowController* root_window_controller =
       Shell::GetRootWindowControllerWithDisplayId(display.id());
   return root_window_controller ? root_window_controller->GetRootWindow()
@@ -544,7 +557,7 @@ void ExpandArcPipWindow() {
     return;
 
   auto pip_window_iter =
-      base::ranges::find_if(pip_container->children(), IsArcPipWindow);
+      std::ranges::find_if(pip_container->children(), IsArcPipWindow);
   if (pip_window_iter == pip_container->children().end())
     return;
 
@@ -623,7 +636,7 @@ bool ShouldMinimizeTopWindowOnBack() {
     return false;
   }
 
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     return false;
   }
 
@@ -764,7 +777,7 @@ views::DialogDelegate* AsDialogDelegate(aura::Window* transient_window) {
 
 bool ShouldShowForCurrentUser(aura::Window* window) {
   MultiUserWindowManager* multi_user_window_manager =
-      MultiUserWindowManagerImpl::Get();
+      MultiUserWindowManager::Get();
   if (!multi_user_window_manager)
     return true;
 
@@ -832,20 +845,20 @@ float GetSnapRatioForWindow(aura::Window* window) {
 }
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  // TODO(sophiewen): Determine whether to enable the setting by default.
   registry->RegisterBooleanPref(prefs::kSnapWindowSuggestions, true);
 }
 
 bool IsInFasterSplitScreenSetupSession(const aura::Window* window) {
   SplitViewOverviewSession* split_view_overview_session =
       RootWindowController::ForWindow(window)->split_view_overview_session();
-  return !Shell::Get()->IsInTabletMode() && split_view_overview_session &&
+  return !display::Screen::Get()->InTabletMode() &&
+         split_view_overview_session &&
          split_view_overview_session->setup_type() ==
              SplitViewOverviewSetupType::kSnapThenAutomaticOverview;
 }
 
 bool IsInFasterSplitScreenSetupSession() {
-  if (!IsInOverviewSession() || display::Screen::GetScreen()->InTabletMode()) {
+  if (!IsInOverviewSession() || display::Screen::Get()->InTabletMode()) {
     return false;
   }
   auto* overview_session = GetOverviewSession();

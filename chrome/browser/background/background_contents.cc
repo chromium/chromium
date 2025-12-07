@@ -22,6 +22,7 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/mojom/view_type.mojom.h"
+#include "ipc/constants.mojom.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "ui/gfx/geometry/rect.h"
@@ -43,10 +44,12 @@ BackgroundContents::BackgroundContents(
       site_instance->GetBrowserContext());
 
   WebContents::CreateParams create_params(profile_, std::move(site_instance));
+  create_params.is_never_composited = true;
   create_params.opener_render_process_id =
-      opener ? opener->GetProcess()->GetID() : MSG_ROUTING_NONE;
+      opener ? opener->GetProcess()->GetDeprecatedID()
+             : IPC::mojom::kRoutingIdNone;
   create_params.opener_render_frame_id =
-      opener ? opener->GetRoutingID() : MSG_ROUTING_NONE;
+      opener ? opener->GetRoutingID() : IPC::mojom::kRoutingIdNone;
 
   if (session_storage_namespace) {
     content::SessionStorageNamespaceMap session_storage_namespace_map;
@@ -108,7 +111,7 @@ void BackgroundContents::PrimaryPageChanged(content::Page& page) {
 }
 
 // Forward requests to add a new WebContents to our delegate.
-void BackgroundContents::AddNewContents(
+WebContents* BackgroundContents::AddNewContents(
     WebContents* source,
     std::unique_ptr<WebContents> new_contents,
     const GURL& target_url,
@@ -118,12 +121,7 @@ void BackgroundContents::AddNewContents(
     bool* was_blocked) {
   delegate_->AddWebContents(std::move(new_contents), target_url, disposition,
                             window_features, was_blocked);
-}
-
-bool BackgroundContents::IsNeverComposited(content::WebContents* web_contents) {
-  DCHECK_EQ(extensions::mojom::ViewType::kBackgroundContents,
-            extensions::GetViewType(web_contents));
-  return true;
+  return nullptr;
 }
 
 void BackgroundContents::PrimaryMainFrameRenderProcessGone(

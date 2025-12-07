@@ -32,7 +32,6 @@
 <translation id="2175927920773552910">QR kôd</translation>
 <translation id="2244252133441425811">Omogući birač broja kadrova u sekundi za video</translation>
 <translation id="2271433936731426666">Omogući pregled videa pune veličine</translation>
-<translation id="2281736597583450397">Dobijajte oštrije detalje uz poboljšano zumiranje</translation>
 <translation id="2320741269052147773">Pomeranje ulevo</translation>
 <translation id="2360840973209616515">Aplikacijom kamere upravlja administrator.
         Obratite se administratoru za detalje.</translation>
@@ -112,7 +111,6 @@
 <translation id="5975083100439434680">Umanjivanje</translation>
 <translation id="5976160379964388480">Drugi</translation>
 <translation id="6073451960410192870">Zaustavi snimanje</translation>
-<translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6197807149213783179">Sačuvaj metapodatke</translation>
 <translation id="6233780560267770709">3 sa 3</translation>
 <translation id="6243827288366940320">Zlatni presek</translation>
@@ -122,7 +120,6 @@
 Ako su povratne informacije u vezi sa kvalitetom slike ili videa, priložite uzorak slike ili videa i opišite šta nije u redu. (Na primer, slika je previše tamna ili subjekat nije u fokusu.)</translation>
 <translation id="6519884562954018934">Pridruži me mreži <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Deli</translation>
-<translation id="6586509689874700895">Prvo pritisnite <ph name="BUTTON_NAME" /> da biste uvećali prikaz. Kada zatim snimite sliku, videćete poboljšane detalje.</translation>
 <translation id="659539649712855529">Kopirano je: <ph name="CONTENT" /></translation>
 <translation id="6617916774429601017">Pokaži sve rezolucije</translation>
 <translation id="6631515515009660915">Preslikavanje je isključeno</translation>
@@ -168,7 +165,6 @@ Ako su povratne informacije u vezi sa kvalitetom slike ili videa, priložite uzo
 <translation id="8609951387004618906">Otvori <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Uključite zvuk mikrofona. Dugme za isključivanje zvuka je uključeno</translation>
-<translation id="8712637175834984815">Važi</translation>
 <translation id="8730621377337864115">Gotovo</translation>
 <translation id="8732462232047530626">Prikaži metapodatke</translation>
 <translation id="874854738381978209">Otkrivena je WiFi mreža.</translation>

@@ -9,9 +9,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import android.content.Context;
-
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -90,9 +87,8 @@ public class UuidBasedUniqueIdentificationGeneratorTest {
 
     private UuidBasedUniqueIdentificationGenerator createSpiedGenerator(
             String preferenceKey, String uuidToReturn) {
-        Context context = ApplicationProvider.getApplicationContext();
         UuidBasedUniqueIdentificationGenerator spiedGenerator =
-                Mockito.spy(new UuidBasedUniqueIdentificationGenerator(context, preferenceKey));
+                Mockito.spy(new UuidBasedUniqueIdentificationGenerator(preferenceKey));
         doReturn(uuidToReturn).when(spiedGenerator).getUUID();
         return spiedGenerator;
     }

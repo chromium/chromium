@@ -1,0 +1,42 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// The maximum number of tokens allowed for the input for the Writing Assistance
+// APIs (summarizer, writer, rewriter).
+const uint64 kWritingAssistanceMaxInputTokenSize = 6000;
+
+struct AILanguageCode {
+  // BCP 47 language code used for the Built-in AI APIs.
+  // This code may be hardcoded in Chrome or passed from the JS API.
+  string code;
+};
+
+struct QuotaErrorInfo {
+  // The number of tokens requested that caused the quota exceeded error.
+  uint32 requested;
+
+  // The number of available tokens. Expected to be less than `requested`.
+  uint32 quota;
+};
+
+// Types of error that could occur when AIManager attempts to create a client
+// such as AISummarizer, AIWriter, AIRewriter or AILanguageModel.
+enum AIManagerCreateClientError {
+  // The underlying service fails to create the on-device session.
+  kUnableToCreateSession = 0,
+
+  // The manager is unable to calculate the token size of the initial input.
+  // This error type should be sent with `QuotaErrorInfo`.
+  kUnableToCalculateTokenSize = 1,
+
+  // The initial input (context or prompt) exceeds the quota limit.
+  kInitialInputTooLarge = 2,
+
+  // The expected language is not supported.
+  kUnsupportedLanguage = 3,
+
+  // Append new line here
+};

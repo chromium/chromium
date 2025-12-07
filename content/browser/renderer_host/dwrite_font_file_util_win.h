@@ -9,6 +9,7 @@
 #include <dwrite_2.h>
 #include <dwrite_3.h>
 
+#include <cstdint>
 #include <set>
 #include <string>
 

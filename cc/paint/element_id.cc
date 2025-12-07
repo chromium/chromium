@@ -34,11 +34,16 @@ std::string ElementId::ToString() const {
 }
 
 size_t ElementIdHash::operator()(ElementId key) const {
-  return std::hash<int>()(key.id_);
+  return std::hash<ElementId::InternalValue>()(key.id_);
 }
 
 std::ostream& operator<<(std::ostream& out, const ElementId& id) {
   return out << id.ToString();
+}
+
+ElementId RemapElementIdToCcNamespace(ElementId element_id) {
+  CHECK(!(element_id.GetInternalValue() & 1));
+  return ElementId(element_id.GetInternalValue() | 1);
 }
 
 }  // namespace cc

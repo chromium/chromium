@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
@@ -133,7 +134,7 @@ class MODULES_EXPORT EventSource final
   HeapTaskRunnerTimer<EventSource> connect_timer_;
 
   uint64_t reconnect_delay_;
-  String event_stream_origin_;
+  scoped_refptr<const SecurityOrigin> event_stream_origin_;
   uint64_t resource_identifier_ = 0;
 
   // The world in which this EventSource was created. We need to store this

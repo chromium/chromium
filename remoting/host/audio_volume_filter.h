@@ -5,6 +5,7 @@
 #ifndef REMOTING_HOST_AUDIO_VOLUME_FILTER_H_
 #define REMOTING_HOST_AUDIO_VOLUME_FILTER_H_
 
+#include "base/containers/span.h"
 #include "remoting/host/audio_silence_detector.h"
 
 namespace remoting {
@@ -18,10 +19,12 @@ class AudioVolumeFilter {
   explicit AudioVolumeFilter(int silence_threshold);
   virtual ~AudioVolumeFilter();
 
-  // Adjusts audio samples in |data|. If the samples are silent before applying
+  // Adjusts audio samples in |data|. The `data` span should
+  // contain `frames * channels` total samples.
+  // If the samples are silent before applying
   // the volume level or the GetAudioLevel() returns 0, this function returns
-  // false. If |frames| is 0, this function also returns false.
-  bool Apply(int16_t* data, size_t frames);
+  // false. If |data.size()| is 0, this function also returns false.
+  bool Apply(base::span<int16_t> data);
 
   // Updates the sampling rate and channels.
   void Initialize(int sampling_rate, int channels);

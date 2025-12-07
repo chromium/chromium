@@ -1,0 +1,19 @@
+Name: Moshi
+Short Name: moshi
+URL: https://repo.maven.apache.org/maven2/com/squareup/moshi/moshi/1.13.0/moshi-1.13.0.jar
+Version: 1.13.0
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: no
+Shipped: no
+
+Description:
+A modern JSON API for Android and Java
+
+See also: https://github.com/square/moshi/
+
+
+Local Modifications:
+No modifications.

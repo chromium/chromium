@@ -98,7 +98,7 @@ TEST(DisplayTest, GammaCurve) {
       {32768, 2, 5},
       {65535, 3, 9},
   });
-  GammaCurve curve(lut);
+  GammaCurve curve(std::move(lut));
   uint16_t r, g, b;
 
   // Evaluate at the control points.
@@ -159,8 +159,8 @@ TEST(DisplayTest, GammaCurveMakeConcat) {
     lut_g[i].b = static_cast<uint16_t>(std::round(65535.f * b));
   }
 
-  GammaCurve curve_f(lut_f);
-  GammaCurve curve_g(lut_g);
+  GammaCurve curve_f(std::move(lut_f));
+  GammaCurve curve_g(std::move(lut_g));
   GammaCurve curve = GammaCurve::MakeConcat(curve_f, curve_g);
 
   for (size_t i = 0; i < 256; ++i) {

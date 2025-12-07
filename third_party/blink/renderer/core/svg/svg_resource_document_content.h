@@ -54,7 +54,7 @@ struct SVGResourceTarget;
 //
 // Calling SVGResourceDocumentContent::Fetch() - the expected way of creating an
 // SVGResourceDocumentContent - will return an instance that has its lifetime
-// managed by the SVGResourceDocumentCache. The cache is responsible for
+// managed by the `SVGDocumentResourceTracker`. The tracker is responsible for
 // disposing the instance when it is unused. The criteria for "is unused" is
 // that no observers are registered with the SVGResourceDocumentContent
 // instance. _If_ an instance is created directly, Dispose() _must_ be called

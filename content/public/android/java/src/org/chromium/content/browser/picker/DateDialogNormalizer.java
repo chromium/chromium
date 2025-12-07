@@ -7,12 +7,15 @@ package org.chromium.content.browser.picker;
 import android.widget.DatePicker;
 import android.widget.DatePicker.OnDateChangedListener;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 /** Sets the current, min, and max values on the given DatePicker. */
+@NullMarked
 public class DateDialogNormalizer {
 
     /**
@@ -61,10 +64,7 @@ public class DateDialogNormalizer {
     }
 
     private static void setLimits(
-            DatePicker picker,
-            long currentMillisForPicker,
-            long minMillisForPicker,
-            long maxMillisForPicker) {
+            DatePicker picker, long minMillisForPicker, long maxMillisForPicker) {
         // On KitKat and earlier, DatePicker requires the minDate is always less than maxDate, even
         // during the process of setting those values (eek), so set them in an order that preserves
         // this invariant throughout.
@@ -111,11 +111,7 @@ public class DateDialogNormalizer {
             currentDate = maxDate;
         }
 
-        setLimits(
-                picker,
-                currentDate.millisForPicker,
-                minDate.millisForPicker,
-                maxDate.millisForPicker);
+        setLimits(picker, minDate.millisForPicker, maxDate.millisForPicker);
         picker.init(currentDate.year, currentDate.month, currentDate.day, listener);
     }
 }

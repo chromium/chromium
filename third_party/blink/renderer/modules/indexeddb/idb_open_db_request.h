@@ -31,7 +31,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "third_party/blink/public/mojom/feature_observer/feature_observer.mojom-blink.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_factory_client.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_request.h"
@@ -51,8 +50,7 @@ class MODULES_EXPORT IDBOpenDBRequest final : public IDBRequest {
       IDBTransaction::TransactionMojoRemote transaction_remote,
       int64_t transaction_id,
       int64_t version,
-      IDBRequest::AsyncTraceState metrics,
-      mojo::PendingRemote<mojom::blink::ObservedFeature> connection_lifetime);
+      IDBRequest::AsyncTraceState metrics);
   ~IDBOpenDBRequest() override;
 
   void Trace(Visitor*) const override;
@@ -85,6 +83,11 @@ class MODULES_EXPORT IDBOpenDBRequest final : public IDBRequest {
   // EventTarget
   const AtomicString& InterfaceName() const override;
 
+  void set_connection_priority(int priority) {
+    connection_priority_ = priority;
+    metrics_.set_is_fg_client(priority == 0);
+  }
+
   DEFINE_ATTRIBUTE_EVENT_LISTENER(blocked, kBlocked)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(upgradeneeded, kUpgradeneeded)
 
@@ -101,11 +104,13 @@ class MODULES_EXPORT IDBOpenDBRequest final : public IDBRequest {
   const int64_t transaction_id_;
   int64_t version_;
 
-  // Passed to the IDBDatabase when created.
-  mojo::PendingRemote<mojom::blink::ObservedFeature> connection_lifetime_;
-
   base::Time start_time_;
   bool open_time_recorded_ = false;
+
+  // The priority for this connection request which is passed to the backend.
+  // This should be passed along to the database after a successful open
+  // attempt.
+  int connection_priority_ = 0;
 
   // Pointer back to the IDBFactoryClient that holds a persistent reference
   // to this object.

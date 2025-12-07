@@ -3,6 +3,7 @@ desc: |-
   This policy controls if Sync Consent can be shown to the user during first sign-in. It should be set to false if Sync Consent is never needed for the user.
         If set to false, Sync Consent will not be displayed.
         If set to true or unset, Sync Consent can be displayed.
+default: true
 example_value: false
 features:
   dynamic_refresh: true

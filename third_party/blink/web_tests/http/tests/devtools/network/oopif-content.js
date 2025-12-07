@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
+import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
+
 (async function() {
   // TestRunner.startDumpingProtocolMessages();
   TestRunner.addResult(`Tests content is available for a cross-process iframe.\n`);
@@ -17,7 +19,7 @@ import {NetworkTestRunner} from 'network_test_runner';
     TestRunner.completeTest();
     return;
   }
-  const { content, error, isEncoded } = await request.requestContent();
+  const { content, error, isEncoded } = await request.requestContentData().then(TextUtils.ContentData.ContentData.asDeferredContent);
   TestRunner.addResult(`content: ${content}`);
   TestRunner.completeTest();
 })();

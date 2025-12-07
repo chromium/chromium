@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PASSWORDS_MANAGE_PASSWORDS_DETAILS_VIEW_H_
 
 #include <optional>
+#include <string_view>
 
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
@@ -52,7 +53,7 @@ class ManagePasswordsDetailsView : public views::BoxLayoutView {
   ManagePasswordsDetailsView(
       password_manager::PasswordForm password_form,
       bool allow_empty_username_edit,
-      base::RepeatingCallback<bool(const std::u16string&)>
+      base::RepeatingCallback<bool(std::u16string_view)>
           username_exists_callback,
       base::RepeatingClosure switched_to_edit_mode_callback,
       base::RepeatingClosure on_activity_callback,
@@ -88,8 +89,7 @@ class ManagePasswordsDetailsView : public views::BoxLayoutView {
 
   // Can be used to check whether a credential with the same username already
   // exists for this website.
-  base::RepeatingCallback<bool(const std::u16string&)>
-      username_exists_callback_;
+  base::RepeatingCallback<bool(std::u16string_view)> username_exists_callback_;
 
   // The callback that is invoked when the user decide to edit one of the
   // editable field in the UI. This is to inform the embedder to do the

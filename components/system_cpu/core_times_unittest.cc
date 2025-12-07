@@ -34,7 +34,7 @@ TEST_F(CoreTimesTest, TimeUtilizationBalanced) {
   };
 
   for (const CoreTimes& times : test_cases) {
-    SCOPED_TRACE(times.times_);
+    SCOPED_TRACE(times.times_.data());
     EXPECT_EQ(0.5, times.TimeUtilization(baseline));
   }
 }
@@ -52,7 +52,7 @@ TEST_F(CoreTimesTest, TimeUtilizationEmptyRange) {
   };
 
   for (const CoreTimes& times : test_cases) {
-    SCOPED_TRACE(times.times_);
+    SCOPED_TRACE(times.times_.data());
     EXPECT_EQ(-1, times.TimeUtilization(baseline));
   }
 }
@@ -71,7 +71,7 @@ TEST_F(CoreTimesTest, TimeUtilizationNegativeRange) {
   };
 
   for (const CoreTimes& times : test_cases) {
-    SCOPED_TRACE(times.times_);
+    SCOPED_TRACE(times.times_.data());
     EXPECT_EQ(-1, times.TimeUtilization(baseline));
   }
 }
@@ -102,7 +102,7 @@ TEST_F(CoreTimesTest, TimeUtilizationComputation) {
   };
 
   for (const TestCase& test_case : test_cases) {
-    SCOPED_TRACE(test_case.times.times_);
+    SCOPED_TRACE(test_case.times.times_.data());
     EXPECT_EQ(test_case.utilization, test_case.times.TimeUtilization(baseline));
   }
 }

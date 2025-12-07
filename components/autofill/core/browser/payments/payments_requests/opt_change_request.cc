@@ -16,10 +16,9 @@ const char kOptChangeRequestPath[] =
 }  // namespace
 
 OptChangeRequest::OptChangeRequest(
-    const PaymentsNetworkInterface::OptChangeRequestDetails& request_details,
-    base::OnceCallback<
-        void(PaymentsAutofillClient::PaymentsRpcResult,
-             PaymentsNetworkInterface::OptChangeResponseDetails&)> callback,
+    const OptChangeRequestDetails& request_details,
+    base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
+                            OptChangeResponseDetails&)> callback,
     const bool full_sync_enabled)
     : request_details_(request_details),
       callback_(std::move(callback)),
@@ -48,19 +47,17 @@ std::string OptChangeRequest::GetRequestContent() {
 
   std::string reason;
   switch (request_details_.reason) {
-    case PaymentsNetworkInterface::OptChangeRequestDetails::ENABLE_FIDO_AUTH:
+    case OptChangeRequestDetails::Reason::kEnableFidoAuth:
       reason = "ENABLE_FIDO_AUTH";
       break;
-    case PaymentsNetworkInterface::OptChangeRequestDetails::DISABLE_FIDO_AUTH:
+    case OptChangeRequestDetails::Reason::kDisableFidoAuth:
       reason = "DISABLE_FIDO_AUTH";
       break;
-    case PaymentsNetworkInterface::OptChangeRequestDetails::
-        ADD_CARD_FOR_FIDO_AUTH:
+    case OptChangeRequestDetails::Reason::kAddCardForFidoAuth:
       reason = "ADD_CARD_FOR_FIDO_AUTH";
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   request_dict.Set("reason", std::move(reason));
 
@@ -80,9 +77,8 @@ std::string OptChangeRequest::GetRequestContent() {
                      std::move(fido_authentication_info));
   }
 
-  std::string request_content;
-  base::JSONWriter::Write(request_dict, &request_content);
-  VLOG(3) << "updateautofilluserpreference request body: " << request_content;
+  std::string request_content = base::WriteJson(request_dict).value_or("");
+  DVLOG(3) << "updateautofilluserpreference request body: " << request_content;
   return request_content;
 }
 

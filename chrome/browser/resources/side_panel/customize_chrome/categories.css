@@ -85,6 +85,7 @@ cr-grid {
   font-weight: 400;
   line-height: 16px;
   text-align: center;
+  overflow-wrap: break-word;
 }
 
 .tile:nth-of-type(-n+4) {

@@ -28,8 +28,8 @@ class OverlayRequestCancelHandler {
   OverlayRequestQueue* queue() const { return queue_; }
 
  private:
-  raw_ptr<OverlayRequest> request_ = nullptr;
-  raw_ptr<OverlayRequestQueue> queue_ = nullptr;
+  raw_ptr<OverlayRequest, DanglingUntriaged> request_ = nullptr;
+  raw_ptr<OverlayRequestQueue, DanglingUntriaged> queue_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_OVERLAYS_MODEL_PUBLIC_OVERLAY_REQUEST_CANCEL_HANDLER_H_

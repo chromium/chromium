@@ -5,9 +5,13 @@
 <translation id="1014750484722996375">டெஸ்க்குகள்</translation>
 <translation id="1018219910092211213">DNSஸைத் தீர்க்க முடியவில்லை</translation>
 <translation id="1018656279737460067">ரத்து செய்யப்பட்டது</translation>
+<translation id="1019971142067430077">இந்த உள்ளடக்கத்திற்கு ரெக்கார்டிங் தலைப்புகளை உருவாக்க முடியவில்லை</translation>
 <translation id="1020274983236703756">பிரத்தியேக <ph name="PRODUCT_NAME" /> அசெட்டுகள் தற்போது கிடைக்கின்றன</translation>
 <translation id="1022628058306505708">எர்த் ஃப்ளோ</translation>
+<translation id="102432830749687801">அணுகலை இழப்பதற்கு முன் உங்கள் பள்ளிக் கணக்கின் தரவை உங்கள் தனிப்பட்ட கணக்கிற்கு நகர்த்த, Google வழங்கும் உள்ளடக்கப் பரிமாற்ற ஆப்ஸைப் பயன்படுத்துவதை உறுதிசெய்துகொள்ளவும்.</translation>
 <translation id="1026212596705997935">இந்த ஷார்ட்கட் "<ph name="CONFLICT_ACCEL_NAME" />" என்பதற்குப் பயன்படுத்தப்படுகிறது. புதிய ஷார்ட்கட்டை அழுத்தவும். ஏற்கெனவே இருக்கும் ஷார்ட்கட்டை மாற்றியமைக்க இந்த ஷார்ட்கட்டை மீண்டும் அழுத்தவும்.</translation>
+<translation id="1030856839388844477">டேட்டா பயன்பாட்டை மீட்டமைக்கும்</translation>
+<translation id="1047095725494118091">பதிவிறக்க முடியவில்லை. மீண்டும் முயலவும் அல்லது உங்கள்<ph name="DEVICE_TYPE" /> சாதனத்தை மீண்டும் தொடங்கவும்.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> தொடரிழைகள், <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">புதிய அம்சம் உள்ளது. மேலும் அறிய, மேல்நோக்கிய அம்புக்குறி விசையைப் பயன்படுத்துங்கள்.</translation>
 <translation id="1049663189809099096">பேஸ்ட்டல் மஞ்சள்</translation>
@@ -16,14 +20,20 @@
 <translation id="1059913517121127803">ஸ்கேன் செய்ய முடியவில்லை</translation>
 <translation id="1061864016440983342">இருப்பிடம் இல்லாமல் பயன்படுத்து</translation>
 <translation id="1062823486781306604"><ph name="COUNT" />ல் <ph name="INDEX" />வது, <ph name="NAME" />.</translation>
+<translation id="106558928761833284">நீலம், இளஞ்சிவப்பு, ஊதா வண்ணக்கலவையில், அழகிய காஸ்மிக் நெப்யூலா கேலக்ஸியை வேகமாகக் கடக்கும் அதிநவீன விண்கலம்</translation>
+<translation id="1069150558259542054">பிரத்தியேகமான ஷார்ட்கட்களுக்கு விரைவாகச் சேர்த்தல் அம்சத்தைப் பயன்படுத்த முடியாது.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ஃபயர்வால் கண்டறியப்பட்டது</translation>
 <translation id="1075811647922107217">பக்க அளவு</translation>
 <translation id="1082009148392559545">ஸ்கிரீன் சேவரைப் பதிவிறக்குகிறது</translation>
 <translation id="1094693127011229778">IP முகவரி கிடைக்கவில்லை</translation>
 <translation id="1100902271996134409">படங்களை உருவாக்குகிறது...</translation>
+<translation id="1102946598597843031">ஏரிக்கரையில் செர்ரி மலர் இலைகள் உதிரும் நிலையில் நிலவின் 4K படம்</translation>
+<translation id="1107856713690040084"><ph name="DEVICE_TYPE" /> ஆடியோ</translation>
 <translation id="1116694919640316211">அறிமுகம்</translation>
 <translation id="1118572504348554005">நீங்கள் எங்களிடம் புகாரளித்த பிழைகளையும் பிற சிக்கல்களையும் பிழையறிந்து திருத்துவதற்கு, இந்தப் படிவத்தின் மூலம் சமர்ப்பித்த கருத்தை எங்கள் கூட்டாளர்களுடன் நாங்கள் பகிரக்கூடும். கடவுச்சொற்கள் போன்ற பாதுகாக்கவேண்டிய தகவல்களைச் சேர்க்க வேண்டாம்.</translation>
+<translation id="1118596190635569417">இந்த மெனுவை வலதுபுறம் நகர்த்தும்</translation>
+<translation id="1119403468619527527">சுருக்குவதற்கான வார்த்தைகள் மிகவும் குறைவாக உள்ளன</translation>
 <translation id="1119447706177454957">அகப் பிழை</translation>
 <translation id="1124772482545689468">பயனர்</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -36,32 +46,38 @@
 <translation id="1164939766849482256">டான் டூ டார்க் ஸ்கிரீன் சேவர்</translation>
 <translation id="1167755866710282443">விசைகளைப் பிரத்தியேகமாக்க மெனுவைத் திறக்கவும். நகர்த்த மெனுவை இழுக்கவும்.</translation>
 <translation id="1171349345463658120">மணல் லகூன்</translation>
-<translation id="1173894706177603556">பெயர் மாற்று</translation>
 <translation id="1174073918202301297">”Shortcut added to”</translation>
 <translation id="11743817593307477">இந்தக் கன்ட்ரோலை நீங்கள் விரும்பும் கேம் ஆக்ஷனுக்கு நகர்த்த அம்புக்குறிகளைப் பயன்படுத்தவும். கன்ட்ரோலை அமைக்க Enter பட்டனைப் பயன்படுத்தவும். ரத்துசெய்ய Escape பட்டனைப் பயன்படுத்தவும்.</translation>
 <translation id="1175697296044146566">இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது.</translation>
 <translation id="1175951029573070619">சுமாராக உள்ளது (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">இடைநிறுத்து</translation>
 <translation id="1180621378971766337">இதமான பாணியில்</translation>
 <translation id="1181037720776840403">அகற்று</translation>
 <translation id="1191518099344003522">APN இயக்கப்பட்டுள்ளது.</translation>
 <translation id="1195447618553298278">தெரியாத பிழை.</translation>
+<translation id="1196264380943975940">சுருக்க முடியவில்லை. நீளமான டிரான்ஸ்கிரிப்ட்டைப் பயன்படுத்துங்கள்.</translation>
 <translation id="1196959502276349371">பதிப்பு <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">இயக்கும்/இடைநிறுத்தும்</translation>
 <translation id="1201402288615127009">அடுத்து</translation>
 <translation id="1204296502688602597">DNS தாமதம்</translation>
 <translation id="1207734034680156868">உங்கள் விளக்கத்தின் அடிப்படையில் பரிந்துரைகள் காட்டப்படுகின்றன</translation>
 <translation id="121090498480012229">மீடியாவைப் பிளே செய்வதற்கான அல்லது இடைநிறுத்துவதற்கான ஐகான்</translation>
+<translation id="1216675364136048456">மூடும்</translation>
 <translation id="1223498995510244364">சுருக்கு</translation>
 <translation id="123124571410524056">போர்டல் இருப்பதுபோல் தெரிகிறது</translation>
 <translation id="1232610416724362657">நீர்வீழ்ச்சி</translation>
+<translation id="1238163879850290856">தரவைப் பிறர் அணுகுவதைத் தடுக்க மீட்டமைக்கவும். நம்பகமான உள்ளீட்டு முறைகளை மட்டும் பயன்படுத்தவும்.</translation>
 <translation id="1238612778414822719">HTTPS தாமதம்</translation>
 <translation id="1252766349417594414">ஜாய்ஸ்டிக்</translation>
+<translation id="1261045951892393759">பின்னணியில் மின்னல் மின்ன யூனிகார்னில் பயணித்தபடி ஃப்ளையிங் வீ கிட்டாரை வாசிக்கும் பூனை</translation>
 <translation id="1270369111467284986">கேப்டிவ் போர்டல் இருப்பது போல் தெரிகிறது</translation>
 <translation id="1274654146705270731">ஆரஞ்சுகள்</translation>
 <translation id="1275718070701477396">தேர்ந்தெடுக்கப்பட்டது</translation>
 <translation id="1290331692326790741">வலுவற்ற சிக்னல்</translation>
+<translation id="1292474106138697109">வகுப்புக் கருவிகள் காட்சி</translation>
 <translation id="1300115153046603471">இந்த APN இயல்பு மற்றும் <ph name="ATTACH" /> வகையைச் சேர்ந்தது.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301340234286078471">மாற்றம்</translation>
 <translation id="1304014921944666344">உருவாக்கிய தேதி</translation>
 <translation id="1308754910631152188">புதுப்பிப்பிக்கிறது (<ph name="PERCENTAGE_VALUE" />% நிறைவடைந்துள்ளது)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> நிமிடங்கள்</translation>
@@ -71,22 +87,31 @@
 <translation id="131461803491198646">உள்ளூர் நெட்வொர்க், ரோமிங் இல்லை</translation>
 <translation id="1327977588028644528">கேட்வே</translation>
 <translation id="1328223165223065150">வால்பேப்பரின் நிறம்</translation>
+<translation id="1329478709358066995">டிரான்ஸ்கிரிப்ட்:</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">ஸ்கேன் செய்யும் பகுதிக்கு ஏற்பப் பொருத்து</translation>
 <translation id="1343442362630695901">உப்பு ஏரி</translation>
+<translation id="1348657754632799065">ரெக்கார்டிங் பட்டி</translation>
+<translation id="1350909945461913813">உங்கள் பணிகளைச் சேமித்திடுங்கள்</translation>
 <translation id="1367951781824006909">ஃபைலைத் தேர்வுசெய்க</translation>
 <translation id="1371650399987522809">Google AI உருவாக்கிய வால்பேப்பருக்கான கருத்து</translation>
+<translation id="1374385338586507108">வரையறை</translation>
+<translation id="1376064675713230088">டி-ரெக்ஸ்</translation>
+<translation id="1383876407941801731">தேடுக</translation>
 <translation id="1387854245479784695">அனைத்துக் கோர்களுக்குமானது</translation>
+<translation id="1388919980490622894">கலர் கிரேடிங் உள்ளது</translation>
 <translation id="1393206549145430405">கோட்டை</translation>
 <translation id="1394661041439318933">சாதனத்தின் கேஸ் பேட்டரி நிலை <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">கேட்வேயிற்குப் பிங் செய்வது</translation>
 <translation id="1398634363027580500">HTTPS கோரிக்கைகள் மிகவும் அதிக நேரம் எடுக்கின்றன</translation>
+<translation id="1406389211945506521">உங்கள் அனுபவத்தைப் பகிர்ந்ததற்கு நன்றி. மிகவும் துல்லியமான மற்றும் பயனளிக்கக்கூடிய உள்ளடக்கத்தை உருவாக்க உங்கள் கருத்து எங்களுக்கு உதவும்.</translation>
 <translation id="1407069428457324124">டார்க் தீம்</translation>
 <translation id="1413240736185167732">ஃபில்டர் வேலை செய்யாததால் அச்சிட முடியவில்லை</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">ஆர்க்கிட்</translation>
 <translation id="142205161612889714">WEBM</translation>
 <translation id="142228117786570094">என்னிடம் குறியீட்டு இணை உள்ளது</translation>
+<translation id="1422912431241997307">தலைப்பு மாற்றப்பட்டது</translation>
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> பட்டன் அழுத்தப்படவில்லை</translation>
 <translation id="1432110487435300883">தோராயமான முடிவுக்கு <ph name="CATEGORY_TEXT" /> மதிப்பை <ph name="CONVERSION_RATE" /> ஆல் வகுக்கவும்</translation>
 <translation id="1435763214710588005">தேர்ந்தெடுத்த நாளில் ஒவ்வொரு மாதமும் டேட்டா உபயோகத்தைத் தானாக ரீசெட் செய்யும்</translation>
@@ -95,6 +120,7 @@
 <translation id="1449035143498573192">Google Searchசில் திற</translation>
 <translation id="1451536289672181509">சாதனம் ஒரு கீபோர்டு.</translation>
 <translation id="1452939186874918380">குடைகள்</translation>
+<translation id="145402479967797468">பிளேபேக் கட்டுப்பாடுகள்</translation>
 <translation id="1459693405370120464">வானிலை</translation>
 <translation id="1463084054301832672">காட்டேஜ்</translation>
 <translation id="1468664791493211953">ஆஃபர்கள்</translation>
@@ -106,11 +132,21 @@
 <translation id="1499900233129743732">இந்தப் பயனரை <ph name="MANAGER" /> நிர்வகிக்கிறது. இது தொலைநிலையிலிருந்து அமைப்புகளை நிர்வகிக்கலாம், அத்துடன் பயனர் செயல்பாட்டையும் கண்காணிக்கலாம்.</translation>
 <translation id="150962533380566081">தவறான PUK.</translation>
 <translation id="1510238584712386396">துவக்கி</translation>
+<translation id="1512872158112631650">தத்ரூபமான நிழல்கள்</translation>
 <translation id="1514446283880973949">மிகுந்த நம்பிக்கையுடன் எழுதலாம், உள்ளடக்கத்தைச் சுருக்கலாம், விளக்கங்களைப் பெறலாம், மேலும் பலவற்றைச் செய்யலாம்</translation>
 <translation id="1515129336378114413">உலாவி முகப்பு</translation>
 <translation id="1526389707933164996">ஸ்கிரீன் சேவர் அனிமேஷன்</translation>
 <translation id="152892567002884378">ஒலியளவை அதிகரிக்கும்</translation>
 <translation id="1539864135338521185">கருநீலக் கல்</translation>
+<translation id="1548555207631326346">உங்கள் AI படங்களைப் பிரத்தியேகமாக்க, தீமினைத் தேர்வுசெய்தபின் அடிக்கோடிட்ட வார்த்தைகளைத் தேர்ந்தெடுக்கவும்.<ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          அதிகத் தனித்துவம் வாய்ந்த மற்றும் பலதரப்பட்ட AI பட விருப்பங்களைப் பெற "என்னை ஊக்கப்படுத்து" என்பதைத் தேர்ந்தெடுக்கவும்.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          நீங்கள் AI மூலம் உருவாக்கும்போது, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleளின் தனியுரிமைக் கொள்கைக்கு<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> உட்பட்டு படங்களை உருவாக்கவும் தயாரிப்பை மேம்படுத்தவும் அந்த ப்ராம்ப்ட் Google AI சேவையகங்களுக்கு அனுப்பப்படும்.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ஜெனரேட்டிவ் AI ஆரம்பக்கட்டப் பரிசோதனை நிலையில் உள்ளது, அது இன்னும் பரவலாகக் கிடைப்பதில்லை.</translation>
 <translation id="1555130319947370107">நீலம்</translation>
 <translation id="155865706765934889">டச்பேட்</translation>
 <translation id="1561927818299383735">பேக்லிட் வண்ணம்</translation>
@@ -119,9 +155,11 @@
 <translation id="1567064801249837505">ஆல்பங்கள்</translation>
 <translation id="1572585716423026576">வால்பேப்பராக அமை</translation>
 <translation id="1578784163189013834">ஸ்கிரீன் சேவர் பின்புலத்தைத் தேர்வுசெய்தல்</translation>
+<translation id="1587031308639983732">நேரம் சார்ந்த மாற்றங்கள் துல்லியமற்றதாக இருக்கக்கூடும். உங்கள் நிர்வாகி இந்த அமைப்பை நிர்வகிக்கிறார்.</translation>
 <translation id="1588438908519853928">இயல்பு</translation>
 <translation id="1591562245178063882">இந்த மாதம்</translation>
 <translation id="1593528591614229756">உங்கள் மொபைல் சேவை வழங்குநர் அல்லது நிர்வாகி வழங்கியுள்ள APNகளை மட்டும் தேர்ந்தெடுப்பதை உறுதிசெய்துகொள்ளவும். APNனைத் தேர்ந்தெடுக்கும்போது ஏற்கெனவே இருக்கும் பிரத்தியேக APNகள் முடக்கப்படும். தவறான APNகள் உங்கள் மொபைல் இணைப்பை முடக்கக்கூடும். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" />.</translation>
+<translation id="1604959087182679653">டிரான்ஸ்கிரிப்ட்டை மறைக்கும்</translation>
 <translation id="160633243685262989">படத்தின் மாதிரிக்காட்சி</translation>
 <translation id="1611649489706141841">அடுத்த பக்கம்</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> வரையிலான டேட்டா உபயோகம்</translation>
@@ -135,7 +173,9 @@
 <translation id="1643449475550628585">வால்பேப்பர் படத்தைத் தினமும் மாற்றும்</translation>
 <translation id="1644574205037202324">இதுவரை பார்த்தவை</translation>
 <translation id="1651925268237749928">பகிர்ந்த ஆல்பத்தைத் தேர்ந்தெடுத்துள்ளீர்கள். படங்களைப் பிறர் சேர்க்கலாம் மாற்றலாம். இந்த ஆல்பத்தில் தற்போது இல்லாத படங்களை உங்கள் வால்பேப்பர் பயன்படுத்தக்கூடும்.</translation>
+<translation id="1661512400125589646">இடைநிறுத்தும்</translation>
 <translation id="1661865805917886535">சில கணக்கு மற்றும் சிஸ்டம் தகவல்கள் Googleளுக்கு அனுப்பப்படக்கூடும். தொழில்நுட்பக் கோளாறுகளைச் சரிசெய்யவும் எங்கள் சேவைகளை மேம்படுத்தவும் எங்கள் தனியுரிமைக் கொள்கை (<ph name="PRIVACYPOLICYURL" />), சேவை விதிமுறைகள் (<ph name="TERMSOFSERVICEURL" />) ஆகியவற்றுக்கு உட்பட்டு இந்தத் தகவல்களைப் பயன்படுத்துவோம். உள்ளடக்கத்தில் மாற்றங்களைச் செய்ய, சட்ட உதவிப் பக்கத்திற்கு (<ph name="LEGALHELPPAGEURL" />) செல்லவும்.</translation>
+<translation id="1662699081856352167">சுருக்க விவரம் உருவாக்கப்பட்டது</translation>
 <translation id="1662989795263954667">பிரிண்டரில் மை தீர்ந்துவிட்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> இன் மாதிரிக்காட்சியைக் காட்டும்</translation>
 <translation id="1668469839109562275">உள்ளமைந்த VPN</translation>
@@ -144,6 +184,7 @@
 <translation id="1672499492233627739">வெப்கேம் வீடியோ ஊட்டம்</translation>
 <translation id="1676557873873341166">வீடியோவை எடுக்கிறது</translation>
 <translation id="1684279041537802716">ஆக்ஸண்ட் வண்ணம்</translation>
+<translation id="1697278726914783200">ரெக்கார்டு செய்யும்</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS ரிசால்வர் இருப்பது</translation>
 <translation id="1708602061922134366">Google நீலம்</translation>
@@ -161,10 +202,13 @@
 <translation id="1753496554272155572">வால்பேப்பர் மாதிரிக்காட்சியில் இருந்து வெளியேறும்</translation>
 <translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" /> ஐத் திருத்துவதற்கான பட்டன்.</translation>
 <translation id="1755556344721611131">கண்டறிதல் ஆப்ஸ்</translation>
+<translation id="1756681705074952506">உள்ளீட்டு முறை</translation>
 <translation id="175763766237925754">நன்றாக உள்ளது (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">வகுப்புக் கருவிகளை மட்டுமே உங்களால் தற்போது பயன்படுத்த முடியும்</translation>
+<translation id="1762483337755424125">டிரான்ஸ்கிரிப்ட்</translation>
 <translation id="1765169783255151332">பட்டன்களுக்கு இடையே விரைவாக மாறுதல்</translation>
 <translation id="1768959921651994223">அங்கீகரிப்பு வகை</translation>
 <translation id="1776228893584526149">வால்பேப்பர் நிறம்</translation>
@@ -175,9 +219,13 @@
 <translation id="1801418420130173017">டார்க் தீமினை முடக்குதல்</translation>
 <translation id="1807246157184219062">வெளிச்சம்</translation>
 <translation id="1808803439260407870">கிளாசிக் ஆர்ட்</translation>
+<translation id="181434555916624618">தற்போது, மனிதர்கள் இருக்கும் முடிவுகள் காட்டப்படுவதில்லை. வேறொரு ப்ராம்ப்ட்டைப் பயன்படுத்திப் பார்க்கவும்.</translation>
 <translation id="1815850098929213707">தேர்ந்தெடுக்கப்பட்ட பட்டன்: <ph name="KEYS" />. கன்ட்ரோலை மாற்ற பட்டன் மீது தட்டவும்.</translation>
+<translation id="1818174214124933000">அனுப்பு என்பதைத் தேர்ந்தெடுத்தால் உங்கள் கருத்தும் உள்ளடக்கமும் (கீழே காட்டப்பட்டுள்ளது) Googleளுக்கு அனுப்பப்படும், மதிப்பாய்வாளர்களால் மதிப்பாய்வு செய்யப்படும் மற்றும் <ph name="LINK_POLICY_BEGIN" />தனியுரிமைக் கொள்கை<ph name="LINK_POLICY_END" />, <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google சேவை விதிமுறைகள்<ph name="LINK_TERMS_OF_SERVICE_END" /> ஆகியவற்றுக்கு உட்பட்டு, பயிற்சியளிக்கவும் எங்கள் தயாரிப்புகளையும் சேவைகளையும் மேம்படுத்தவும் பயன்படுத்தப்படும்.</translation>
 <translation id="1823120442877418684">எழுத்துகள்</translation>
 <translation id="1827738518074806965">ஆர்ட் கேலரி</translation>
+<translation id="183287940576828840">மனதைப் புண்படுத்தக்கூடியது/பாதுகாப்பற்றது</translation>
+<translation id="1834032517784994783">டிரான்ஸ்கிரிப்ஷன் மொழியைத் தேர்ந்தெடுங்கள்</translation>
 <translation id="1836553715834333258">சிஸ்டம் வண்ணம்</translation>
 <translation id="183675228220305365">இயல்பியம்</translation>
 <translation id="1838374766361614909">தேடலை அழி</translation>
@@ -189,6 +237,7 @@
 <translation id="1854156910036166007">அசையாக்கரடிகள்</translation>
 <translation id="1856388568474281774">கீழ்நோக்கிய அம்புக்குறி</translation>
 <translation id="1858620243986915808">ஸ்கிரீன்ஷாட்டை இணைக்கும்</translation>
+<translation id="1860654594958086756">3D ரென்டர்</translation>
 <translation id="1871413952174074704">APNனில் <ph name="CHAR_LIMIT" />க்கும் மேற்பட்ட எழுத்துகள் இருக்கக்கூடாது</translation>
 <translation id="1871569928317311284">டார்க் தீமினை முடக்குதல்</translation>
 <translation id="1874612839560830905">MTU</translation>
@@ -202,13 +251,18 @@
 <translation id="1905710495812624430">அனுமதிக்கப்பட்ட அதிகபட்ச முயற்சிகளைக் கடந்துவிட்டீர்கள்.</translation>
 <translation id="1908234395526491708">UDP கோரிக்கையை அனுப்ப முடியவில்லை</translation>
 <translation id="1908394185991500139">இடது அம்புக்குறி ஐகான்</translation>
+<translation id="1914144885717544695">வெள்ளிக்கிழமை அன்று</translation>
+<translation id="1915960750806557358">கருத்தைப் பகிருங்கள் அல்லது சிக்கலை விவரியுங்கள். தனிப்பட்ட, பாதுகாக்கவேண்டிய அல்லது ரகசியத் தகவல்களைச் சேர்க்க வேண்டாம்.</translation>
 <translation id="1923388006036088459">ஆக்ஸண்ட் வண்ணங்கள்</translation>
+<translation id="1926611810597212636">யூனிகார்ன்</translation>
+<translation id="1944321879609775960">சுருக்க விவரத்தை உருவாக்க, உங்கள் <ph name="DEVICE_TYPE" /> ஐ மீண்டும் தொடங்கவும்</translation>
 <translation id="1945403655450283000">ரெக்கார்டர்</translation>
 <translation id="1947737735496445907">அச்சிடப்பட்டது</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954818433534793392">கட்டடம்</translation>
 <translation id="1962550982027027473">இயல்பு APN அவசியம்</translation>
 <translation id="1967860190218310525">புதிய APNனை உருவாக்கு</translation>
+<translation id="1967917622327567355">டிரான்ஸ்கிரிப்ட்டைக் காட்டும்</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977973007732255293">பாரம்பரியமான</translation>
 <translation id="1977994649430373166">Google சுயவிவரப் படம்</translation>
@@ -224,14 +278,13 @@
 <translation id="2045814230297767491">வெட்டும் கருவிகள்</translation>
 <translation id="2047316797244836561">ஸ்கிரீன் சேவரைப் பார்க்க நெட்வொர்க்குடன் இணைத்து, பக்கத்தை ரெஃப்ரெஷ் செய்யவும்.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
+<translation id="2068472557797646626">குரோம் கட்டடக்கலை அம்சங்களின் பின்னணியில் குரோம் உருண்டைகள் மற்றும் உருண்டை வடிவங்களின் 3D ரென்டரிங். இந்த உருவாக்கம் விளம்பரப்படுத்தல், பிராண்டிங் அல்லது விளக்கக்காட்சிக்காக காலி இடங்களுடன் கூடிய மாடர்ன் மினிமலிஸ்டிக் கருத்தாக்கம் ஆகும். மினிமலிஸ ஸ்டைலில் அப்ஸ்ட்ராக்ட் பின்னணியில் நிற்கும் பெரிய வளைவு. ஸ்டுடியோ லைட்டிங். குளோஸ்-அப் காட்சி.</translation>
 <translation id="2073232437457681324">பரந்த பெருங்கடல்</translation>
 <translation id="2080070583977670716">மேலும் அமைப்புகள்</translation>
 <translation id="2082932131694554252">அமைக்கப்பட்ட கீபோர்டு பட்டன்</translation>
 <translation id="2085089206770112532">காட்சி ஒளிர்வைக் குறைக்கும்</translation>
-<translation id="2085876078937250610">சேமி…</translation>
 <translation id="2086091080968010660">நேரம் சார்ந்த மாற்றங்கள் துல்லியமற்றதாக இருக்கக்கூடும். அமைப்புகளுக்குச் சென்று சாதனத்தின் இருப்பிட அணுகலை இயக்கவும்.</translation>
 <translation id="2102231663024125441">வார்த்தைகளைத் திருத்துதல்</translation>
-<translation id="2102648867808308635">இந்தப் பக்கத்தைப் படிக்க எனக்கு உதவு</translation>
 <translation id="2105810540595158374">சாதனம் ஒரு கேம் கண்ட்ரோலர்.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, பதிப்பு <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">தற்போது ஆங்கிலத்தில் (அமெரிக்கா) மட்டுமே கிடைக்கிறது</translation>
@@ -240,8 +293,9 @@
 <translation id="2138109643290557664">மிதக்கும் நினைவுகள்</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2148716181193084225">இன்று</translation>
+<translation id="215206000155329774"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> படங்கள்</translation>
-<translation id="2156072344042480449">உங்களின் மிகச் சமீபத்திய 2 ப்ராம்ப்ட்டுகள். நீங்கள் இந்தப் பக்கத்தில் இருக்கும்போது மட்டுமே இந்தப் ப்ராம்ப்ட்டுகளைப் பயன்படுத்த முடியும்.</translation>
+<translation id="2154460308960858308">தேடலை அழிக்கும்</translation>
 <translation id="2157660087437850958">ஈமோஜி தேர்வுக் கருவி ஐகான்</translation>
 <translation id="2157959690810728433">வரிசையிலுள்ளது</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: மீண்டும் முயலுங்கள்</translation>
@@ -249,9 +303,13 @@
 <translation id="2161394479394250669">அச்சுப் பணியை ரத்துசெய்</translation>
 <translation id="2161656808144014275">உரை</translation>
 <translation id="2163937499206714165">டார்க் பயன்முறையை இயக்குதல்</translation>
+<translation id="2164131940279488868">ஆடியோ ரெக்கார்டிங்கைத் தொடங்க மைக்கை இணைத்திருப்பதை உறுதிசெய்துகொள்ளவும்</translation>
+<translation id="2173302385160625112">உங்கள் இணைய இணைப்பைச் சரிபார்க்கவும்</translation>
+<translation id="2176909213844392588"><ph name="LANGUAGE_NAME" /> டிரான்ஸ்கிரிப்ஷன் மாடலைப் பதிவிறக்க முடியவில்லை. மீண்டும் முயலவும் அல்லது உங்கள்<ph name="DEVICE_TYPE" /> சாதனத்தை மீண்டும் தொடங்கவும்.</translation>
 <translation id="2180197493692062006">ஏதோ தவறாகிவிட்டது. ஆப்ஸை மீண்டும் திறக்கவும்.</translation>
 <translation id="2189104374785738357">APN விவரங்களை மாற்றுதல்</translation>
 <translation id="2195732836444333448">தற்போது அதிகமானோர் பயன்படுத்துகின்றனர். மீண்டும் வந்து பார்க்கவும்.</translation>
+<translation id="2197185031095816179">தேவையற்ற பாப்-அப்களை அகற்றவும், நெட்வொர்க் சிக்கல்களைச் சரிசெய்யவும், பிற எதிர்பாராத சிக்கல்களைத் தீர்க்கவும் பாதுகாப்பு மீட்டமைவு உதவும்.</translation>
 <translation id="2201758491318984023">சைக்கிள்</translation>
 <translation id="2203272733515928691">வெந்நீரூற்று</translation>
 <translation id="2203642483788377106">செங்குத்தான பாறை</translation>
@@ -260,6 +318,7 @@
 <translation id="2212733584906323460">நேம் ரெசல்யூஷன்</translation>
 <translation id="2215920961700443347">இணைய இணைப்பு இல்லை. இணையத்துடன் இணைத்துவிட்டு மீண்டும் முயலவும்.</translation>
 <translation id="2217935453350629363">தற்போதைய வேகம்</translation>
+<translation id="221994303562837085">ரெக்கார்டிங்கை நிறுத்து</translation>
 <translation id="2224337661447660594">இணைய இணைப்பு இல்லை</translation>
 <translation id="222447520299472966">குறைந்தது ஒரு ஆர்ட் கேலரி ஆல்பத்தைத் தேர்ந்தெடுக்க வேண்டும்</translation>
 <translation id="2230005943220647148">செல்சியஸ்</translation>
@@ -267,14 +326,17 @@
 <translation id="2230624078793142213">மேலும் உருவாக்கு</translation>
 <translation id="2236746079896696523">கீபோர்டு பேக்லைட்டை நிலைமாற்றும்</translation>
 <translation id="2240366984605217732">லேஅவுட் ஸ்விட்ச்</translation>
+<translation id="224421911978987610">நீண்டநேர எக்ஸ்போஷர்</translation>
 <translation id="2244834438220057800">பச்சை</translation>
+<translation id="2248689665683494517">கருப்பு பின்னணியில் கண்ணாடிக் குடுவையில் உள்ள பப்பாவர் ரியா பூக்களின் மினிமல் தோற்றப் படம்</translation>
 <translation id="225692081236532131">செயலாக்க நிலை</translation>
 <translation id="2267285889943769271">ஸ்கிரீன்ஷாட்டைச் சேர்</translation>
+<translation id="2268044343513325586">துல்லியமாக்கு</translation>
 <translation id="2271469253353559191">டார்க் பயன்முறையைத் திட்டமிடுதல்</translation>
 <translation id="2276999893457278469">சிறந்த உதவி உள்ளடக்கம்</translation>
 <translation id="2277631741861284101">ஆடியோவை எளிதாக ரெக்கார்டு செய்து பகிருங்கள்</translation>
 <translation id="2279051792571591988">இயல்புநிலைகளை மீட்டெடு</translation>
-<translation id="2286454467119466181">எளிதானது</translation>
+<translation id="2286454467119466181">Simple</translation>
 <translation id="2287186687001756809">படங்கள் எதுவுமில்லை. படங்களைச் சேர்க்க, <ph name="LINK" /> தளத்திற்குச் செல்லவும்</translation>
 <translation id="2294577623958216786">தற்போதைய கால அட்டவணை <ph name="SUNRISE" />-<ph name="SUNSET" /> என்று அமைக்கப்பட்டுள்ளது. சூரிய அஸ்தமனம் மற்றும் சூரிய உதயத்திற்கான கால அட்டவணையைத் தானாக மாற்ற, சாதனத்தின் இருப்பிட அணுகலை இயக்கவும்.</translation>
 <translation id="2305172810646967500">கருப்பு</translation>
@@ -293,15 +355,20 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">கருத்து அறிக்கையை அனுப்பு</translation>
 <translation id="2407209115954268704">சிம் நிலை</translation>
+<translation id="240798792848608143"><ph name="LANGUAGE_NAME" /> மொழியில் டிரான்ஸ்கிரிப்ட்டைப் பெற, உங்கள் <ph name="DEVICE_TYPE" /> ஐ மீண்டும் தொடங்கவும்</translation>
 <translation id="241419523391571119">சோதிக்க ஸ்கிரீனை மீண்டும் திறக்கவும்</translation>
 <translation id="2414660853550118611">வால்பேப்பர் பற்றி</translation>
 <translation id="2414886740292270097">அடர்</translation>
 <translation id="2418150275289244458">அமைப்புகளில் திற</translation>
 <translation id="2421798028054665193">படம்: <ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="242825218556404975">பேச்சு கண்டறியப்படவில்லை</translation>
+<translation id="2438248248625638801">ரெக்கார்டிங் தலைப்புகளை உருவாக்குகிறது</translation>
 <translation id="2446553403094072641">ஃப்லோட்டிங் பாயிண்ட் துல்லியத்தன்மை</translation>
 <translation id="2448312741937722512">வகை</translation>
+<translation id="2448857983905133469">வகுப்புக் கருவிகள்</translation>
+<translation id="2468124392950503650">உருவாக்க ஒரு ப்ராம்ப்ட்டைத் தேர்ந்தெடுங்கள் அல்லது <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ப்ராம்ப்ட் வழிகாட்டியைப்<ph name="END_LINK_PROMPTING_GUIDE" /> பாருங்கள்</translation>
 <translation id="2472215337771558851">Google AI வழங்கும் ‘எழுத எனக்கு உதவு’ கருவி மூலம் வரைவை உருவாக்கலாம், ஏற்கெனவே உள்ளவற்றை மேம்படுத்தலாம்</translation>
+<translation id="2475982808118771221">ஒரு பிழை ஏற்பட்டது</translation>
 <translation id="2480572840229215612">நண்டுகள்</translation>
 <translation id="248546197012830854">சாதனம் ஆஃப்லைனில் உள்ளது. உதவி உள்ளடக்கத்தைப் பார்க்க வைஃபை நெட்வொர்க்குடன் இணைக்கவும்.</translation>
 <translation id="2486301288428798846">மரம்</translation>
@@ -309,7 +376,9 @@
 <translation id="2493126929778606526">தானாகத் தேர்ந்தெடுக்கப்பட்ட உங்களின் சிறந்த படங்கள்</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">அமுதக்கல்</translation>
+<translation id="2501278716633472235">திரும்பிச் செல்</translation>
 <translation id="2505327257735685095">தற்போதைய வால்பேப்பர் படத்தை ரெஃப்ரெஷ் செய்யும்</translation>
+<translation id="2507491234071975894">ஸ்பீக்கர்</translation>
 <translation id="2512979179176933762">சாளரங்களைக் காட்டுவதற்கான ஐகான்</translation>
 <translation id="2513396635448525189">உள்நுழைவுப் படம்</translation>
 <translation id="2521835766824839541">முந்தைய டிராக் ஐகான்</translation>
@@ -320,9 +389,9 @@
 <translation id="2533048460510040082">பரிந்துரைக்கப்படும் உதவி உள்ளடக்கம்</translation>
 <translation id="2536159006530886390">இணையத்துடன் இணைக்க முடியவில்லை.</translation>
 <translation id="2538719227433767804">மேலும் <ph name="NUM_HIDDEN_OPTIONS" /></translation>
+<translation id="2560876255701405320">ஆடியோ ரெக்கார்டிங்குங்கள் பட்டியல்</translation>
 <translation id="2561093647892030937">எலுமிச்சம்பழங்கள்</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> சோதனை இயங்குகிறது...</translation>
-<translation id="2575552334616524665">அமைப்புகளிலோ <ph name="THREE_DOTS_MENU_ICON" /> மெனு மூலமோ இதை நீங்கள் இயக்கலாம்</translation>
 <translation id="2576253868710695442">இது 2 ஜி.பை. சேமிப்பகம் வரை பயன்படுத்தக்கூடும்</translation>
 <translation id="2584547424703650812">குளோஸ்கேப்கள்</translation>
 <translation id="2584559707064218956">அமைக்க, அமைப்புகளுக்குச் செல்லவும்</translation>
@@ -330,6 +399,7 @@
 <translation id="2589921777872778654">மாற்றுதல் மற்றும் நீக்குவதற்கான மெனு</translation>
 <translation id="2597774443162333062">ஃபைல்கள் பிழைதிருத்தத்திற்காக Googleளுக்கு அனுப்பப்படும்</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{ஸ்கேன் செய்யப்பட்டது. ஒரு பக்கம் ஸ்கேன் செய்யப்பட்டது}other{ஸ்கேன் செய்யப்பட்டது. {NUMBER_OF_PAGES} பக்கங்கள் ஸ்கேன் செய்யப்பட்டன}}</translation>
+<translation id="261322795497077164">ஸ்பீக்கர் அடையாளம்</translation>
 <translation id="2617397783536231890">பருத்தி</translation>
 <translation id="2618015542787108131">மணல் மேடு</translation>
 <translation id="2619761439309613843">தினசரிப் புதுப்பிப்பு</translation>
@@ -350,9 +420,12 @@
 <translation id="2713444072780614174">வெள்ளை</translation>
 <translation id="2715723665057727940">ஆறு</translation>
 <translation id="2717139507051041123">அடர் வண்ணப் பயன்முறையை இயக்கும்</translation>
+<translation id="2726755229438917165">திங்கட்கிழமை அன்று</translation>
 <translation id="2728460467788544679">இதுவரையிலான பிரிண்ட் பணிகள் அனைத்தையும் அழிக்கவா?</translation>
+<translation id="2731700343119398978">காத்திருக்கவும்...</translation>
 <translation id="2740531572673183784">சரி</translation>
 <translation id="2744221223678373668">பகிர்ந்தது</translation>
+<translation id="2749164457515831917">பரிந்துரைகள் கலைத்துப் போடப்பட்டன</translation>
 <translation id="2751739896257479635">EAP 2ஆம் கட்ட அங்கீகரிப்பு</translation>
 <translation id="2754757901767760034">விளக்கு</translation>
 <translation id="2780756493585863768">சமீபத்தில் AI உருவாக்கிய பின்புலங்கள்</translation>
@@ -363,22 +436,28 @@
 <translation id="2805756323405976993">ஆப்ஸ்</translation>
 <translation id="28232023175184696">இணையத்துடன் இணைக்க முடியவில்லை. மீண்டும் முயல கிளிக் செய்யுங்கள்.</translation>
 <translation id="2855718259207180827">கம்பளி</translation>
+<translation id="2856429654176718363">பல்வேறு விளக்குகள் எரியும் ஒரு நகரத்தின் மீது மிதந்து செல்லும் பெரிய விண்கலம். முழுக் காட்சியும் ஆயில் பெயிண்ட்டிங் ஸ்டைலிலும் டார்க் டோன்களிலும் இருக்க வேண்டும். அதிநவீன அறிவியல் புனைவு விஷயங்களுடன் மர்மமான சூழலை உருவாக்கும். உயர் தெளிவுத்திறனையும் துல்லியமான விவரங்களையும் காட்ட C4D மென்பொருளையும் OC ரென்டரையும் பயன்படுத்தி இந்த ஆர்ட்வொர்க் உருவாக்கப்பட்டது. மிக அருகில் இடம்பெற்றுள்ள நகர்ப்புறக் கட்டடங்கள் ஆழமான ஃபீல்டு எஃபெக்ட்டைச் சேர்க்கின்றன. இந்தக் காட்சி ஆயில் பெயிண்ட்டிங் ஸ்டைலிலும் அடர் நிறத்திலும் அதிநவீன அறிவியல் புனைவு விஷயங்களுடன் மர்மமான சூழலை உருவாக்கும் வகையில் ரென்டர் செய்யப்பட்டது.</translation>
 <translation id="2859243502336719778">முக்கியப் புதுப்பிப்பு</translation>
 <translation id="2860473693272905224">ஸ்கேனரில் மற்றொரு பக்கத்தை வைக்கவும்</translation>
+<translation id="286265581261662583">விளக்கங்கள், மொழிபெயர்ப்புகள், அலகு மாற்றங்கள் ஆகியவற்றைப் பெற, வலது கிளிக் செய்யவும் அல்லது அழுத்திப் பிடித்திருக்கவும்</translation>
 <translation id="2872961005593481000">நிறுத்து</translation>
 <translation id="2873483161362553159">உலாவி வழிசெலுத்தல்</translation>
 <translation id="2874939134665556319">முந்தைய டிராக்</translation>
 <translation id="2875812231449496375">இந்த வால்பேப்பர் சிறப்பாகக் காட்டப்பட இதை இயக்கவும். இந்த அமைப்பை எப்போது வேண்டுமானாலும் முடக்கலாம்.</translation>
+<translation id="2878126681324394319">சுருக்க விவரம், தலைப்பு உருவாக்கம் ஆகியவற்றின் மாடலைப் பதிவிறக்கும்</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> வினாடிகளில் <ph name="RATE" /> சார்ஜ் இறங்கியது.</translation>
 <translation id="2880569433548999039">கிளவுடு ஃப்ளோ ஸ்கிரீன் சேவர்</translation>
 <translation id="2882230315487799269">AI ப்ராம்ப்ட்டைப் பிரத்தியேகமாக்கும்</translation>
 <translation id="2888298276507578975">"நன்றியுரையை எழுது" போன்ற ப்ராம்ப்ட்டை டைப் செய்யவும்</translation>
 <translation id="2890557891229184386">வெப்பமண்டலத் தீவு</translation>
 <translation id="2895772081848316509">அடர்த்தியான</translation>
+<translation id="2915996080311180594">பின்னர் மீண்டும் தொடங்கு</translation>
 <translation id="2926057806159140518">உங்கள் பயனர்பெயரையும் கடவுச்சொல்லையும் டைப் செய்யவும் அல்லது QR குறியீட்டை ஸ்கேன் செய்யவும்</translation>
+<translation id="2927007463545347013">கடலைப் பார்த்தபடி அமைந்திருக்கும் அனிமே பாதையில் உதிரும் செர்ரி மலர் இலைகள்</translation>
 <translation id="2940811910881150316">சாதனத்தைச் சோதிக்க முடியவில்லை. சோதிக்க ஸ்கிரீனை மீண்டும் திறக்கவும்.</translation>
 <translation id="2941112035454246133">குறைவு</translation>
 <translation id="2956070106555335453">சுருக்கம்</translation>
+<translation id="2968959705684615497">தங்க நிறக் கண்களையும் வரிகளையும் கொண்ட கற்பனையான வெள்ளைப் புலி ஒரு வெள்ளை மணல்மேட்டின் மேல் அமர்ந்திருக்கும் காட்சி</translation>
 <translation id="299385721391037602">பிங்க் மற்றும் மஞ்சள்</translation>
 <translation id="3008341117444806826">புதுப்பி</translation>
 <translation id="3009958530611748826">சேமிப்பதற்கான ஃபோல்டரைத் தேர்ந்தெடுக்கவும்</translation>
@@ -389,7 +468,9 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">எண்ட்பாயிண்ட்</translation>
 <translation id="3060579846059757016">அவுட்லைன்கள்</translation>
+<translation id="3060798442805232711">வகுப்புக் கருவிகள் உங்கள் மைக்ரோஃபோனைப் பயன்படுத்துகின்றன</translation>
 <translation id="3061850252076394168">பேசும் திரையை இயக்கும்</translation>
+<translation id="3066772729299747758">செவ்வாய்க்கிழமை அன்று</translation>
 <translation id="3069085583900247081">சோதனை தோல்வியடைந்தது</translation>
 <translation id="3078740164268491126">அட்டவணை</translation>
 <translation id="3081652522083185657">லைட்</translation>
@@ -397,17 +478,23 @@
 <translation id="3084958266922136097">ஸ்கிரீன் சேவரை முடக்குதல்</translation>
 <translation id="3091839911843451378">பிரிண்டர் நிறுத்தப்பட்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="3102119246920354026">தற்காலிகச் சேமிப்பு</translation>
+<translation id="3103783611481501187">கற்பனை</translation>
+<translation id="3119672627216736407">மொழிபெயர்ப்பு உள்ளது</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">நீச்சல் குளங்கள்</translation>
 <translation id="3122883569442693641">கூடுதல் விவரங்கள்</translation>
 <translation id="3124039320086536031">சாதனம் இணைக்கப்பட்டுள்ளது.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{பக்கத்தை அகற்றவா?}=1{{PAGE_NUMBER}வது பக்கத்தை அகற்றவா?}other{{PAGE_NUMBER}வது பக்கத்தை அகற்றவா?}}</translation>
+<translation id="3134486240968249588">நீங்கள் நினைவில் கொள்ள வேண்டிய சில விஷயங்கள்</translation>
 <translation id="3140130301071865159">பனி</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> சாதனத்திற்குப் பிரத்தியேகமானவை</translation>
 <translation id="315116470104423982">மொபைல் டேட்டா</translation>
+<translation id="3153094818810437149">ரெக்கார்டர் அமைப்புகளில் பிறகு இதை மாற்றிக்கொள்ளலாம்</translation>
+<translation id="3156511682997763015">10 வினாடிகள் ஃபார்வர்டு செய்</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />வது பக்கம் ஸ்கேன் செய்யப்படுகிறது...</translation>
 <translation id="315738237743207937">கேப்டிவ் போர்டல் கண்டறியப்பட்டது</translation>
 <translation id="3160172848211257835"><ph name="BEGIN_LINK1" />சாதனம் மற்றும் ஆப்ஸின் தகவல்<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />அளவீடுகள்<ph name="END_LINK2" /> ஆகியவற்றை அனுப்பு</translation>
+<translation id="3161556797767210144">சுருக்க விவரத்தையும் தலைப்பையும் உருவாக்க, உங்கள் <ph name="DEVICE_TYPE" /> ஐ மீண்டும் தொடங்கவும்</translation>
 <translation id="3170673040743561620">ஆவணத்தை ஸ்கேனர் மீது வைக்கவும்</translation>
 <translation id="3174321110679064523">டான் டூ டார்க் வால்பேப்பர்</translation>
 <translation id="3178532070248519384">அவன்ட்-கார்டு</translation>
@@ -418,23 +505,30 @@
 <translation id="3199982728237701504">டாக்குமெண்ட் ஃபீடர் (இரண்டு பக்கமும்)</translation>
 <translation id="3201315366910775591">பகிர்ந்த ஆல்பங்களில் பிறர் மாற்றங்களைச் செய்யலாம்</translation>
 <translation id="3211671540163313381">டி-பேட் பட்டன் ஒதுக்கீடு</translation>
+<translation id="3217462202230355157">உங்கள் மைக் இணைக்கப்பட்டிருப்பதை உறுதிசெய்துகொள்ளவும் அல்லது உங்கள் <ph name="DEVICE_TYPE" /> சாதனத்தை மீண்டும் தொடங்கவும்</translation>
 <translation id="3226405216343213872">ஸ்கேனர்களைத் தேடுகிறது</translation>
 <translation id="3226657629376379887">தளவமைப்புகளுக்கான செயல்பாட்டு மெனு</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> மதிப்பை <ph name="CONVERSION_RATE" /> ஆல் வகுக்கவும்</translation>
-<translation id="3237710083340813756">மீண்டும் எழுதுதல்</translation>
+<translation id="3242622575335502454">டிஜிட்டல் ஆர்ட்</translation>
 <translation id="3246869037381808805">1 நாளுக்கும் முன்னதாக உள்ள பிரிண்ட்டிங் பணிகள் அகற்றப்படும்</translation>
+<translation id="3248791727258378769">டிரான்ஸ்கிரிப்ட் உருவாக்கப்படாது</translation>
 <translation id="324961752321393509">இந்த ஆப்ஸை மூடுவதை உங்கள் நிர்வாகி அனுமதிக்கவில்லை</translation>
 <translation id="3263941347294171263">புதுப்பிப்பைத் தொடர <ph name="DEVICE_NAME" /> ஐ அகற்றிவிட்டு மீண்டும் செருகவும்</translation>
 <translation id="3268178239013324452">பிரிண்டரின் மூடி திறந்துள்ளதால் அச்சிட முடியவில்லை</translation>
 <translation id="3275729367986477355">தோற்றப் படம்</translation>
 <translation id="3283504360622356314">{0,plural, =1{ஃபைலைத் திருத்துக}other{ஃபைல்களைத் திருத்துக}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
+<translation id="3286538390144397061">இப்போது மறுதொடக்கம் செய்க</translation>
 <translation id="3291996639387199448">குறியீட்டு முறை</translation>
 <translation id="3294437725009624529">கெஸ்ட்</translation>
 <translation id="3303855915957856445">தேடல் முடிவுகள் எதுவுமில்லை</translation>
 <translation id="3305294846493618482">மேலும்</translation>
 <translation id="3310640316857623290">DNSஸில் ஏற்படும் தாமதம் அனுமதிக்கப்படும் வரம்பைவிடக் குறிப்பிடத்தக்க அளவு அதிகமாக உள்ளது</translation>
+<translation id="3316495615885967552">சுருக்க விவரம், தலைப்பு உருவாக்கம் ஆகியவற்றின் மாடல் பதிவிறக்கப்பட்டது</translation>
+<translation id="3321030238473337787">பிளேபேக் வேகம்</translation>
+<translation id="3327613592010997943">நீங்கள் இந்தச் சாதனத்தை <ph name="DAY" /> <ph name="TIME" />க்கு மீண்டும் பயன்படுத்தலாம்.</translation>
 <translation id="3328783797891415197">சோதனை நடைபெறுகிறது</translation>
+<translation id="3332683265015995419">மணல் புயலுக்கிடையே பறந்து செல்லும் ஸ்டீம்பங்க் விண்கலம்</translation>
 <translation id="3340011300870565703">வலதுபக்க இயர்பட் பேட்டரி நிலை <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">அமைப்புகள்</translation>
 <translation id="3347558044552027859">நவீன</translation>
@@ -443,15 +537,18 @@
 <translation id="3361618936611118375">சுஷி</translation>
 <translation id="3368922792935385530">இணைக்கப்பட்டது</translation>
 <translation id="3369013195428705271">இதுவரையிலான அச்சுப் பணிகள் அனைத்தையும் அழிக்கவா? செயல்பாட்டில் இருக்கும் அச்சுப் பணிகள் அழிக்கப்படாது.</translation>
+<translation id="3369632935976756339"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">எர்த் ஃப்ளோ வால்பேப்பர்</translation>
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" /> பின்னணியில் <ph name="LETTERS_LETTER" /></translation>
+<translation id="3382806462014639823"><ph name="TEACHER_NAME" /> உங்கள் ஸ்கிரீனைப் பார்க்கிறார்</translation>
 <translation id="3383623117265110236">பிரத்தியேகமானவை</translation>
 <translation id="3404249063913988450">ஸ்கிரீன் சேவரை இயக்குதல்</translation>
-<translation id="3410165745972100556">டிரான்ஸ்கிரிப்ட் முடக்கப்பட்டுள்ளது</translation>
 <translation id="3413935475507503304">புதுப்பிப்பைத் தொடர, அடுத்து என்பதைக் கிளிக் செய்யவும்.</translation>
+<translation id="3416709353545797224"><ph name="DEVICE_TYPE" /> சாதனத்தின் எல்லா ஆடியோவையும் ரெக்கார்டு செய்கிறது</translation>
 <translation id="3428551088151258685">வெளிப்புற</translation>
 <translation id="3428971106895559033">பேஸ்டல்</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="3434988468785284438">பிரதிபலிப்புகள்</translation>
 <translation id="3435738964857648380">பாதுகாப்பு</translation>
 <translation id="3435896845095436175">இயக்கு</translation>
 <translation id="345256797477978759">திரையின் <ph name="DIRECTION" /> பக்க அகலப் பகுதியிலுள்ள சாளரத்தை டாக் செய்யும்</translation>
@@ -461,6 +558,7 @@
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> ஐப் புதுப்பிக்கிறது</translation>
 <translation id="346423161771747987">மின்னோட்டம்</translation>
 <translation id="346539236881580388">மீண்டும் எடு</translation>
+<translation id="3479552764303398839">இப்பொழுது இல்லை</translation>
 <translation id="3484914941826596830">நிலைபொருளைப் புதுப்பிக்கும்போது இந்த வெளிப்புறச் சாதனத்தின் இணைப்பைத் துண்டிக்கவோ உங்கள் கம்ப்யூட்டரை ஷட் டவுன் செய்யவோ கூடாது. இந்தச் சாளரத்தைச் சிறிதாக்கிக்கொள்ளலாம். இந்தப் புதுப்பிப்பு நிறைவடைய சில நிமிடங்கள் ஆகலாம். அதுவரை உங்கள் வெளிப்புறச் சாதனத்தில் வேறு எதுவும் செய்ய முடியாமல் போகலாம்.</translation>
 <translation id="3486220673238053218">விளக்கம்</translation>
 <translation id="3487866404496702283">Mahi அம்சத்திற்கான கருத்து</translation>
@@ -475,9 +573,11 @@
 <translation id="3532980081107202182">சுமார் <ph name="MIN_REMAINING" /> நிமிடங்கள் மீதமுள்ளன</translation>
 <translation id="3533790840489634638">நீச்சல்குளம்</translation>
 <translation id="3547264467365135390">சூத்திரம்</translation>
+<translation id="3552832331940389362">ஜன்னல் மேடையில் அமர்ந்து மதிய வேளை மழையை ரசிக்கும் பூனையின் ஜாப்பனீஸ் அனிமேஷன் காட்சி</translation>
 <translation id="3557205324756024651">அக அடையாளம் (விருப்பத்தேர்வு)</translation>
 <translation id="3565064564551103223">அனுமதிக்கப்படும் IPகள்</translation>
 <translation id="3569407787324516067">ஸ்கிரீன் சேவர்</translation>
+<translation id="3571184524500629183">தேடலை மூடும்</translation>
 <translation id="3577473026931028326">ஏதோ தவறாகிவிட்டது. மீண்டும் முயலவும்.</translation>
 <translation id="357889014807611375">கட்டண வைஃபை</translation>
 <translation id="3583278742022654445">சிக்னல் மோசமாக உள்ளது. வைஃபை சிக்னலை வழங்கும் சாதனத்திற்கு அருகில் செல்லவும்.</translation>
@@ -490,16 +590,20 @@
 <translation id="3604713164406837697">வால்பேப்பரை மாற்று</translation>
 <translation id="360565022852130722">WEP 802.1x என்னும் வலுவற்ற நெறிமுறை மூலம் வைஃபை நெட்வொர்க் பாதுகாக்கப்படுகிறது</translation>
 <translation id="3606583719724308068">HTTPS இணையதளங்களில் அதிகளவு தாமதம் ஏற்படுகிறது</translation>
+<translation id="3614639364827854748">இந்த மெனுவை இடதுபுறம் நகர்த்தும்</translation>
 <translation id="361575905210396100">உங்கள் கருத்துக்கு நன்றி</translation>
 <translation id="3621072146987826699">யானைகள்</translation>
+<translation id="3628462041319107639">டிரான்ஸ்கிரிப்ஷன் மாடலைப் பதிவிறக்குகிறது…</translation>
 <translation id="3632040286124154621">நல்ல பரிந்துரை</translation>
 <translation id="3632579075709132555">தனிப்பட்ட திரையை இயக்கும்/முடக்கும்</translation>
-<translation id="3639873154908477486">பெயர் (A - Z)</translation>
+<translation id="3634941468757842845">தீமினைத் தேர்வுசெய்யுங்கள்</translation>
 <translation id="3644695927181369554">தவறான பரிந்துரை</translation>
 <translation id="3651050199673793219">வெப்பநிலை அலகைத் தேர்ந்தெடுக்கும்</translation>
 <translation id="3661106764436337772">விரைவாகவும் கூடுதல் நம்பிக்கையுடனும் எழுதுங்கள்</translation>
 <translation id="3662461537616691585">பர்கண்டி மற்றும் கருஞ்சிவப்பு</translation>
+<translation id="3664755900672940272">சாம்பிள் ப்ராம்ப்ட்டுகள் கலைத்துப் போடப்பட்டன</translation>
 <translation id="3668449597372804501">கிளவுடு ஃப்ளோ வால்பேப்பர்</translation>
+<translation id="3668570675727296296">மொழி அமைப்புகள்</translation>
 <translation id="3675132884790542448">பன்றிகள்</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> சோதனை</translation>
 <translation id="370665806235115550">ஏற்றுகிறது…</translation>
@@ -507,14 +611,21 @@
 <translation id="3715651196924935218">மிதக்கும் நிலையிலிருந்து வெளியேறு</translation>
 <translation id="3716250181321371108">கட்டுப்பாட்டை உருவாக்கு</translation>
 <translation id="3716830479327464973">இதை அனுமதித்தால், இவற்றுக்காக உங்கள் ஆடியோ ரெக்கார்டிங்குகளை ரெக்கார்டர் பகுப்பாய்வு செய்யும்:</translation>
+<translation id="3719826155360621982">முகப்புப் பக்கம்</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> மதிப்புரைகள்)</translation>
 <translation id="3748026146096797577">இணைக்கப்படவில்லை</translation>
 <translation id="3749289110408117711">ஃபைல் பெயர்</translation>
+<translation id="3763034084412196440">ஒலியளவை மாற்றலாம்</translation>
+<translation id="3767737419527918477">ரெக்கார்டிங் ஃபைல்களைத் தேடும்</translation>
 <translation id="3771294271822695279">வீடியோ ஃபைல்கள் </translation>
+<translation id="3771694256347217732">Google சேவை விதிமுறைகள்</translation>
+<translation id="3772164567520167489">இந்த டிரான்ஸ்கிரிப்ட் மொழிக்கு ரெக்கார்டிங் தலைப்புகளை உருவாக்க முடியவில்லை</translation>
 <translation id="3780740315729837296">கீபோர்டு பட்டனை அமைக்கவும்</translation>
 <translation id="3784455785234192852">பூட்டு</translation>
 <translation id="3785643128701396311">பிக்சல் ஆர்ட்</translation>
+<translation id="3799381533888781854">முடக்கப்பட்டுள்ளது - உங்கள் நிர்வாகி இந்த அமைப்பை நிர்வகிக்கிறார்.</translation>
 <translation id="380097101658023925">RGB கட்டுப்பாடுகள்</translation>
+<translation id="380493988330050229">இந்த டிரான்ஸ்கிரிப்ட் மொழிக்கு சுருக்கவிவரத்தை உருவாக்க முடியவில்லை</translation>
 <translation id="38114475217616659">அனைத்து வரலாற்றையும் அழி</translation>
 <translation id="3820172043799983114">தவறான பின்.</translation>
 <translation id="382043424867370667">சன்செட் வால்பேப்பர்</translation>
@@ -523,6 +634,7 @@
 <translation id="3845880861638660475">இந்த உரையாடலை மூட <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> பட்டன்களை அழுத்தவும்.</translation>
 <translation id="3848280697030027394">கீபோர்டு ஒளிர்வைக் குறைத்தல்</translation>
 <translation id="385051799172605136">திரும்பு</translation>
+<translation id="3852931845120288955">தலைப்பு (A - Z)</translation>
 <translation id="3858860766373142691">பெயர்</translation>
 <translation id="3862598938296403232">விளக்கம் அவசியம்</translation>
 <translation id="386280020966669610">என்னை ஊக்கப்படுத்து</translation>
@@ -534,12 +646,17 @@
 <translation id="387301095347517405">உங்கள் பேட்டரி முழுமையாகச் சார்ஜ் செய்யப்பட்ட எண்ணிக்கை</translation>
 <translation id="3877066159641251281">மொழிபெயர்ப்பை வாசித்துக் காட்டும்</translation>
 <translation id="3880601782712134623">தனித்துவமான குரல்களைத் தானாகக் கண்டறிந்து ஒவ்வொருவருக்கும் நபர் 1, நபர் 2 என்று பொதுவான லேபிளிடுதல்.</translation>
+<translation id="38811596981744338">சட்டச் சிக்கல்</translation>
 <translation id="3885327323343477505">ஸ்கிரீன் சேவரை மாற்றும்</translation>
 <translation id="3889914174935857450">ரீசெட் தேதி</translation>
+<translation id="3889954687526985291">இருண்ட பின்னணியில் நியான் விளக்குகளுடன் கருப்புக் காகிதத்தால் ஆன அதிநவீன மோட்டார் சைக்கிள்</translation>
 <translation id="3897092660631435901">மெனு</translation>
+<translation id="3902271751020176019">டிரான்ஸ்கிரிப்ஷன் மொழி</translation>
+<translation id="390890062090528082">நட்சத்திரம் நிறைந்த வானம்</translation>
 <translation id="391412459402535266">சாதனத்தைச் சோதிக்க முடியவில்லை. சோதிக்க லேப்டாப் பயன்முறைக்கு மாறவும்.</translation>
 <translation id="3916998944874125962">ஸ்கிரீன்ஷாட் எடுப்பதற்கான ஐகான்</translation>
 <translation id="3923184630988645767">டேட்டா உபயோகம்</translation>
+<translation id="392943705803418306">வகுப்புக் கருவிகள் அமர்வு முடிந்தது</translation>
 <translation id="3932043219784172185">சாதனம் எதுவும் இணைக்கப்படவில்லை</translation>
 <translation id="3934185438132762746">ஒதுக்கப்படாதவை <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">ஹோஸ்ட்டைச் சரிசெய்ய முடியவில்லை</translation>
@@ -554,6 +671,7 @@
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> நாட்களுக்கும் மேலாக இருக்கும் பிரிண்ட்டிங் பணிகள் அகற்றப்படும்</translation>
 <translation id="3993704782688964914">உங்கள் <ph name="DEVICE_NAME" /> இப்போது புதுப்பிக்கப்பட்டது</translation>
 <translation id="3998976413398910035">பிரிண்டர்களை நிர்வகியுங்கள்</translation>
+<translation id="4002066346123236978">தலைப்பு</translation>
 <translation id="4003384961948020559">பிரிண்ட் வெளியே வரும் டிரே நிரம்பி விட்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="401147258241215701">அடர் கருப்புக்கல்</translation>
 <translation id="4021031199988160623">சோதிக்க லேப்டாப் பயன்முறைக்கு மாறவும்</translation>
@@ -564,6 +682,7 @@
 <translation id="4046123991198612571">அடுத்த டிராக்</translation>
 <translation id="404928562651467259">எச்சரிக்கை</translation>
 <translation id="4050208988451295487">சில விருப்பங்கள்:</translation>
+<translation id="405181879009056822">ChromeOS அமைப்புகள்</translation>
 <translation id="4054683689023980771">படத்தைப் பதிவிறக்குகிறது</translation>
 <translation id="4059839844193047929">இந்தப் பக்கத்தை விட்டு வெளியேறினால் தற்போதைய ரெக்கார்டிங் நிறுத்தப்படும்</translation>
 <translation id="4063039537646912479">வெளிர் நீலம்</translation>
@@ -573,14 +692,19 @@
 <translation id="4093865285251893588">சுயவிவரப் படம்</translation>
 <translation id="409427325554347132">பரிசோதனை விவரங்களைச் சேமி</translation>
 <translation id="409469431304488632">பரிசோதனை</translation>
+<translation id="4095155732125588500">சுருக்க விவரம், தலைப்பு உருவாக்கம் ஆகியவற்றின் மாடல் பதிவிறக்கப்படுகிறது</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> ஆல்பத்தைத் தேர்வுசெய்யும்</translation>
 <translation id="4111761024568264522">USB டச்பேட்</translation>
 <translation id="4113067922640381334">இப்போது நீங்கள் புதிய <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />வால்பேப்பர்களை<ph name="END_LINK_WALLPAPER_SUBPAGE" /> அணுகலாம்</translation>
 <translation id="4117637339509843559">டார்க் பயன்முறை</translation>
+<translation id="4126551873361000548">10 விநாடிகள் பின்செல்லும்</translation>
+<translation id="4128271910628504223">"மூடுபனியுடன் இருக்கும் காட்டின் படத்தை வரையவும்" போன்ற ப்ராம்ப்ட்டை டைப் செய்யவும்</translation>
 <translation id="4130035430755296270">கூடுதல் தளவமைப்பு விருப்பங்களுக்கு மவுஸ் பாயிண்ட்டரை மேலே கொண்டு செல்லவும்</translation>
 <translation id="4130750466177569591">நான் ஏற்கிறேன்</translation>
 <translation id="4131410914670010031">கருப்பு வெள்ளை</translation>
+<translation id="4137700675046373159">சனிக்கிழமை அன்று</translation>
+<translation id="4139326893730851150">நிலைபொருள் புதுப்பிப்புகள்</translation>
 <translation id="4143226836069425823">மாற்ற கீபோர்டில் வேறொரு பட்டன் மீது தட்டவும்</translation>
 <translation id="4145784616224233563">HTTP ஃபயர்வால்</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -588,25 +712,41 @@
 <translation id="4155551848414053977">ஸ்கேனர் இயக்கப்பட்டிருப்பதையும் அது உங்கள் நெட்வொர்க் மூலமாகவோ நேரடியாகவோ இணைக்கப்பட்டிருப்பதையும் உறுதிசெய்துகொள்ளவும்</translation>
 <translation id="4159238217853743776">பகுதியளவு</translation>
 <translation id="4159784952369912983">பர்பிள்</translation>
+<translation id="416219735020840807">டிரான்ஸ்கிரிப்ஷன் மாடலைப் பதிவிறக்க முடியவில்லை. மீண்டும் முயலவும் அல்லது உங்கள்<ph name="DEVICE_TYPE" /> சாதனத்தை மீண்டும் தொடங்கவும்.</translation>
 <translation id="4170180284036919717">படமெடு</translation>
 <translation id="4170700058716978431">தோல்வியடைந்தது</translation>
 <translation id="4171077696775491955">ஒளிர்வைக் குறைப்பதற்கான ஐகான்</translation>
 <translation id="4176463684765177261">முடக்கப்பட்டது</translation>
 <translation id="4176659219503619100">கட்டுப்பாட்டுப் பலகம்</translation>
+<translation id="4192913637640303603">ரெக்கார்டிங் தலைப்புகளை உருவாக்க முடியவில்லை</translation>
 <translation id="4193496492959950834">ரெக்கார்டர் அமைப்புகள்</translation>
 <translation id="4198398257084619072">பாண்டா கரடிகள்</translation>
 <translation id="420283545744377356">ஸ்கிரீன் சேவரை முடக்குதல்</translation>
 <translation id="4210636113897977670">சேமித்து வெளியேறு</translation>
 <translation id="4210659479607886331">பனியாறு</translation>
+<translation id="4212169537710712814"><ph name="LANGUAGE_NAME" /> டிரான்ஸ்கிரிப்ஷன் மாடல் பதிவிறக்கப்பட்டது</translation>
 <translation id="42126664696688958">ஏற்றுமதி செய்</translation>
 <translation id="4213104098953699324">USB கீபோர்டு</translation>
 <translation id="4227825898293920515">கடவுச்சொல் காலாவதியாக இன்னும் <ph name="TIME" /></translation>
 <translation id="4238516577297848345">அச்சுப் பணி எதுவும் செயலில் இல்லை</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4249717042534905822">ஞாயிற்றுக்கிழமை அன்று</translation>
 <translation id="4250229828105606438">ஸ்கிரீன்ஷாட்</translation>
 <translation id="4251839292699800785">ஸ்டைலான அலுவலகம்</translation>
+<translation id="4252261480746798874">"சொந்தமாக உருவாக்குங்கள்" என்பதைத் தேர்ந்தெடுப்பதன் மூலம் நீங்களே ஒரு ப்ராம்ப்ட்டை எழுதலாம். "தீமினைத் தேர்வுசெய்யுங்கள்" என்பதைத் தேர்ந்தெடுத்துவிட்டு, அடிக்கோடிட்ட வார்த்தைகளைத் தேர்ந்தெடுப்பதன் மூலமாகவும் உங்கள் AI வால்பேப்பரைப் பிரத்தியேகமாக்கலாம்.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          அதிகத் தனித்துவம் வாய்ந்த மற்றும் பலதரப்பட்ட AI பட விருப்பங்களைப் பெற "என்னை ஊக்கப்படுத்து" என்பதைத் தேர்ந்தெடுக்கவும்.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          நீங்கள் சொந்தமாக வால்பேப்பரை உருவாக்கும்போது, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleளின் சேவை விதிமுறைகள் மற்றும் தனியுரிமைக் கொள்கைக்கு<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> உட்பட்டு, படங்களை உருவாக்கவும் தயாரிப்பை மேம்படுத்தவும் அந்த ப்ராம்ப்ட் Google சேவையகங்களுக்கு அனுப்பப்படும். தனிப்பட்ட, பாதுகாக்கவேண்டிய அல்லது ரகசியத் தகவல்களைச் சேர்க்க வேண்டாம்.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          நபர்களைப் பற்றிய விவரங்கள் உட்பட தவறான பதில்களை ஜெனரேட்டிவ் AI வழங்கக்கூடும் என்பதால் பதில்களைச் சரிபாருங்கள். <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />மேலும் அறிக<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
+<translation id="4253971074682120908">நெகடிவ் ஸ்பேஸ்</translation>
 <translation id="4258281355379922695">HTTP தாமதம்</translation>
 <translation id="4266143281602681663">நூல்</translation>
+<translation id="4269815121975886860">துவக்கத்திற்கான விருப்பத்தேர்வுகள்</translation>
 <translation id="4271957103967917607">முழுத்திரையில் காட்டும்</translation>
 <translation id="4275663329226226506">ஊடகம்</translation>
 <translation id="4278766082079064416">இந்த ஷார்ட்கட் "<ph name="CONFLICT_ACCEL_NAME" />" என்பதற்குப் பயன்படுத்தப்படுகிறது. முரண்பாட்டைச் சரிசெய்ய ஷார்ட்கட்டை மாற்றவும் அல்லது அகற்றவும்.</translation>
@@ -615,19 +755,25 @@
 <translation id="4289849978083912975">ஸ்லைடு ஷோ</translation>
 <translation id="4297501883039923494">அறியப்படாத பிழை காரணமாக அச்சிட முடியவில்லை</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> படங்கள்</translation>
+<translation id="4300272766492248925">பயன்பாட்டைத் திற</translation>
 <translation id="430786093962686457">சிஃபான்</translation>
+<translation id="4309762678330556039">தானாகவே டிரான்ஸ்கிரிப்ஷன்களை உருவாக்கலாம், ஆடியோவைத் தேடலாம். இணைய இணைப்பு இல்லாதபோதும் ரெக்கார்டிங்குகளை உருவாக்கலாம்.</translation>
 <translation id="4310735698903592804">சமீபத்தில் Google AI உருவாக்கிய வால்பேப்பர்கள்</translation>
 <translation id="4320904097188876154">நியான் இளஞ்சிவப்பு</translation>
+<translation id="432961742358282111">விளக்கங்கள், மொழிபெயர்ப்புகள், யூனிட் கன்வெர்ஷன்கள் ஆகியவற்றைப் பெற, வலது கிளிக் செய்யவும் அல்லது அழுத்திப் பிடித்திருக்கவும். இந்த அம்சத்தை நிர்வகிக்க, இடது அல்லது வலது அம்புக்குறி பட்டன்களைப் பயன்படுத்தவும்.</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> பட்டன் அழுத்தப்பட்டது</translation>
 <translation id="4334293042716981313"><ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />உங்கள் சொந்த ப்ராம்ப்ட்டையும் நீங்கள் எழுதலாம்<ph name="END_LINK_FREEFORM_SUBPAGE" /></translation>
 <translation id="4354430579665871434">பட்டன்</translation>
+<translation id="4356100841225547054">ஒலியளவை முடக்கும்</translation>
 <translation id="4361257691546579041">இது ஓர் இயல்பு வகை APN.</translation>
+<translation id="4368101969572512692">பரிந்துரைகளைக் கலைத்துப் போடும்</translation>
 <translation id="437294888293595148">அனைத்து ஷார்ட்கட்களையும் மீட்டமை</translation>
 <translation id="437477383107495720">முயல் குட்டிகள்</translation>
 <translation id="4376423484621194274"><ph name="APP_NAME" /> ஆப்ஸை மூடுவதை உங்கள் நிர்வாகி அனுமதிக்கவில்லை</translation>
 <translation id="4378373042927530923">இயங்கவில்லை</translation>
 <translation id="4378551569595875038">இணைக்கிறது...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4383322413532809099">ரெக்கார்டிங்கிற்கான தலைப்பை உருவாக்க, உங்கள் <ph name="DEVICE_TYPE" /> ஐ மீண்டும் தொடங்கவும்</translation>
 <translation id="4394049700291259645">முடக்கு</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> ஐ மீண்டும் தொடங்குகிறது</translation>
 <translation id="4395835743215824109">கீபோர்டு பிரத்தியேகமாக்கல்</translation>
@@ -637,7 +783,9 @@
 <translation id="4422041425070339732">கீழ்நோக்கிய அம்புக்குறி ஐகான்</translation>
 <translation id="4425149324548788773">எனது இயக்ககம்</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> முடக்கப்பட்டுள்ளது</translation>
+<translation id="4428840632568803690">பேச்சாளர் <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Kerberos டிக்கெட் விரைவில் காலாவதியாகும்</translation>
+<translation id="4430019312045809116">அளவு</translation>
 <translation id="4431821876790500265">அறிக்கையைக் காட்டு</translation>
 <translation id="4443192710976771874">சிவப்பு</translation>
 <translation id="4447592701292766824">இந்த உள்ளடக்கத்திற்கான சுருக்கத்தை உருவாக்க முடியவில்லை</translation>
@@ -650,8 +798,11 @@
 <translation id="4474142134969976028">பொருந்தும் முடிவுகள் இல்லை</translation>
 <translation id="4479639480957787382">ஈத்தர்நெட்</translation>
 <translation id="4483049906298469269">இயல்புநிலையற்ற நெட்வொர்க் கேட்வேயைப் பிங் செய்ய முடியவில்லை</translation>
+<translation id="4483498983731992167">டிரான்ஸ்கிரிப்ட்டை உருவாக்க முடியவில்லை</translation>
+<translation id="4486524074141928967"><ph name="TIME" />க்கு வெளியேற்றப்படுவீர்கள்</translation>
 <translation id="4500722292849917410">ஷார்ட்கட் இல்லை. ஒரு மாற்றி விசையை (ctrl, alt, shift அல்லது <ph name="META_KEY" />) பயன்படுத்தி புதிய ஷார்ட்கட்டை அழுத்தவும்.</translation>
 <translation id="4500966230243561393">இடைமுக வண்ணம்</translation>
+<translation id="4501302804999678844">டிரான்ஸ்கிரிப்ட்டை உருவாக்க, உங்கள் <ph name="DEVICE_TYPE" /> ஐ மீண்டும் தொடங்கவும்</translation>
 <translation id="4503223151711056411">இடது அம்புக்குறி</translation>
 <translation id="4503441351962730761">நவீன ஓவியம்</translation>
 <translation id="4507392511610824664">ஒளிர்வை அதிகரிப்பதற்கான ஐகான்</translation>
@@ -669,10 +820,12 @@
 <translation id="4562494484721939086">சேவை இல்லை</translation>
 <translation id="4570558255126759859">ரெக்கார்டிங்குகளின் சுருக்க விவரத்தைப் பெற Gemini மாடலைப் பதிவிறக்க வேண்டுமா?</translation>
 <translation id="4573777384450697571">தோல்வியடைந்தது - சான்றிதழ் காலாவதியாகிவிட்டது</translation>
+<translation id="4575450106703099687">அணுகல்தன்மை விருப்பங்கள்</translation>
 <translation id="458794348635939462">அனைத்து ஹோஸ்ட்களையும் சரிசெய்ய முடியவில்லை</translation>
 <translation id="4593212453765072419">பிராக்ஸி அங்கீகரிப்பு தேவை</translation>
 <translation id="4594021849294327751">டிரான்ஸ்கிரிப்ட்டை உருவாக்கு</translation>
-<translation id="4607282946861182308">இதன் படங்களை உருவாக்க முடியவில்லை. வேறொரு ப்ராம்ப்ட்டை வழங்கவும்.</translation>
+<translation id="4594541568452132351">டிரான்ஸ்கிரிப்ஷன் மொழியைத் தேர்ந்தெடுத்து மாடலைப் பதிவிறக்குங்கள்</translation>
+<translation id="4600301862817165514">விண்வெளியில் நட்சத்திரங்களிடையே நியான் விளக்குகளுடன் விரைந்து செல்லும் Delorean</translation>
 <translation id="4609350030397390689">கீபோர்டு ஒளிர்வைக் குறைக்கும்</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. அச்சுப் பணியை ரத்துசெய்ய என்ட்டர் விசையை அழுத்தவும்.</translation>
 <translation id="463791356324567266">ஸ்கேன் செய்வதை ரத்துசெய்கிறது...</translation>
@@ -681,20 +834,30 @@
 <translation id="4650608062294027130">வலதுபக்க shift</translation>
 <translation id="4654549501020883054">தினமும் மாற்று</translation>
 <translation id="4655868084888499342">படம் வால்பேப்பராக அமைக்கப்பட்டது</translation>
+<translation id="4660989616054030633">நபர்களைப் பற்றிய விவரங்கள் உள்ளிட்ட துல்லியமற்ற தகவல்களை ஜெனரேட்டிவ் AI வழங்கக்கூடும் என்பதால் அதன் பதில்களைச் சரிபார்த்துக்கொள்ளுங்கள்</translation>
 <translation id="4661249927038176904">கற்பனை</translation>
+<translation id="4661392828086261436">இந்தப் புதுப்பிப்பைச் சாதன உற்பத்தியாளர் வழங்கியிருக்கிறார், இதை Google சரிபார்க்கவில்லை</translation>
 <translation id="4664651912255946953">மென்மயிர்</translation>
 <translation id="4665014895760275686">உற்பத்தியாளர்</translation>
 <translation id="467510802200863975">கடவுச்சொற்கள் பொருந்தவில்லை</translation>
 <translation id="467715984478005772">ஃபயர்வால் இருப்பதுபோல் தெரிகிறது</translation>
+<translation id="4678534708181186163">சுருக்க முடியவில்லை. சிறிய டிரான்ஸ்கிரிப்ட்டைப் பயன்படுத்துங்கள்.</translation>
 <translation id="4683762547447150570">பட்டனை ஒதுக்கீட்டை மையப்படுத்த பட்டன் மீது தட்டவும்</translation>
 <translation id="4691278870498629773">பிரிண்டரில் டிரே இல்லாததால் அச்சிட முடியவில்லை</translation>
 <translation id="469379815867856270">சிக்னலின் வலிமை</translation>
 <translation id="4697260493945012995">கட்டுப்பாட்டு வகையைத் தேர்ந்தெடுக்கவும்</translation>
+<translation id="4712940987669302829">பொக்கே எஃபெக்ட்</translation>
 <translation id="4731797938093519117">பெற்றோர் அணுகல்</translation>
+<translation id="4733200407105375152">வகுப்புக் கருவிகளில் இல்லை</translation>
+<translation id="4734982181169850310">பேஸ்டல் வண்ணங்கள்</translation>
 <translation id="473775607612524610">புதுப்பி</translation>
 <translation id="4744944742468440486">உங்கள் தேர்வுடன் தொடர்புடைய தகவல்கள்</translation>
+<translation id="4750394297954878236">பரிந்துரைகள்</translation>
+<translation id="4763771683769971829">கிடைக்கக்கூடிய மொழிகளின் பட்டியல்</translation>
 <translation id="4771607256327216405">கீபோர்டு ஒளிர்வை அதிகரித்தல்</translation>
+<translation id="4771923071974529837">நாளை</translation>
 <translation id="4773299976671772492">நிறுத்தப்பட்டது</translation>
+<translation id="4777310452073659583">டிரான்ஸ்கிரிப்ட்டைப் பெற, உங்கள் <ph name="DEVICE_TYPE" /> ஐ மீண்டும் தொடங்கவும்</translation>
 <translation id="4778082030331381943">செவ்வந்திக்கல்</translation>
 <translation id="4782311465517282004">வார்த்தையை வலது கிளிக் செய்தோ தொட்டுப் பிடித்தோ அதற்கான வரையறைகள், மொழிபெயர்ப்புகள், அலகு மாற்றங்கள் ஆகியவற்றைத் தெரிந்துகொள்ளலாம்</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> படம்</translation>
@@ -737,28 +900,37 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> வினாடிகளில் <ph name="RATE" /> சார்ஜ் செய்யப்பட்டது.</translation>
 <translation id="4930320165497208503">இணைப்பை அமைக்க அல்லது புதுப்பிக்க, <ph name="BEGIN_LINK" />அமைப்புகளுக்குச்<ph name="END_LINK" /> செல்லவும்.</translation>
 <translation id="4932733599132424254">தேதி</translation>
+<translation id="493637535592633700">பயோலூமினிசெண்ட்</translation>
+<translation id="494102685638938793"><ph name="LINK_TEXT" />, புதிய பக்கத்தில் திறக்கும்</translation>
+<translation id="4946927805998996217">சுருக்க விவரத்தை உருவாக்குகிறது</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> இன் நிலைபொருள் <ph name="VERSION" /> பதிப்பிற்குப் புதுப்பிக்கப்பட்டது</translation>
 <translation id="4950893758552030541">மரச் சுரங்கப்பாதை</translation>
+<translation id="4964806321337443935">4k</translation>
+<translation id="4965661459364092269">பாதுகாப்பு மீட்டமைவு நிறைவடைந்தது</translation>
 <translation id="4965703485264574128">தோராயமான முடிவுக்கு <ph name="CATEGORY_TEXT" /> மதிப்பை <ph name="CONVERSION_RATE" /> ஆல் பெருக்கவும்</translation>
 <translation id="4969079779290789265">பிரி</translation>
 <translation id="4972592110715526173">பயன்முறையை மாற்றுவதற்கான ஐகான்</translation>
+<translation id="497421865427891073">முன் செல்க</translation>
 <translation id="4981003703840817201">நீலம் மற்றும் இளஞ்சிவப்பு</translation>
 <translation id="498186245079027698">ஸ்கேனரைச் சரிபார்த்துவிட்டு மீண்டும் முயலவும். ஸ்கேன் செய்த ஃபைல்களைச் சேமிக்க போதுமான இடம் இருப்பதை உறுதிப்படுத்திக்கொள்ளவும்.</translation>
 <translation id="4982627662315910959">ஷார்ட்கட் இல்லை. shift உடன் மேலும் ஒரு மாற்றி விசையை (ctrl, alt அல்லது <ph name="META_KEY" />) பயன்படுத்தி புதிய ஷார்ட்கட்டை அழுத்தவும்.</translation>
-<translation id="4983216687482551672">Chromebook ஆடியோ</translation>
 <translation id="4985509611418653372">இயக்கு</translation>
 <translation id="4987769320337599931">ஃபயர்வால்</translation>
 <translation id="4988526792673242964">பக்கங்கள்</translation>
 <translation id="4989542687859782284">இல்லை</translation>
+<translation id="4999267570108760491">வெக்டார் ஆர்ட் ஸ்டைல்</translation>
 <translation id="4999333166442584738">அறிக்கையை மறை</translation>
 <translation id="500920857929044050">சோதனையை நிறுத்து</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">தீமின் வண்ணம்</translation>
+<translation id="5037240652947866174">இன்று</translation>
 <translation id="5038292761217083259">கீபோர்டு பலவண்ணம்</translation>
 <translation id="5039804452771397117">அனுமதி</translation>
 <translation id="5049856988445523908">சிம் லாக் செய்யப்பட்டுள்ளது (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">குழுப் பெயர்</translation>
 <translation id="5051044138948155788">இந்தப் பக்கம் மட்டுமே உள்ளது. இது ஸ்கேனிங் தொடங்கும் திரையைக் காட்டும்.</translation>
+<translation id="5053233795640754917">இடைநிறுத்தும்</translation>
+<translation id="5056587122125565772">படத்தை உருவாக்கு</translation>
 <translation id="5078711626843651677">பேச்சுக்குரல்களுக்கு லேபிளிடும் வரை குரல் பதிவுகள் தற்காலிகமாகச் சாதனத்தில் சேமிக்கப்படும். அமைப்புகளில் இதை எப்போது வேண்டுமானாலும் முடக்கலாம்.</translation>
 <translation id="5078983345702708852">அதிநவீன</translation>
 <translation id="5087864757604726239">முந்தைய</translation>
@@ -771,6 +943,8 @@
 <translation id="5108781503443873320">இதைப் போன்றவை:</translation>
 <translation id="5130848777448318809">சிறிய குதிரைகள்</translation>
 <translation id="5137451382116112100">முழுத்திரை</translation>
+<translation id="5139813694804168398">தொந்தரவு செய்ய வேண்டாம் ஐகான்</translation>
+<translation id="5140788690559353412">உங்கள் பள்ளிக் கணக்கிற்கான அணுகலை நீங்கள் இழந்துவிட்டால், அதனுடன் தொடர்புடைய மின்னஞ்சல் மற்றும் Gmail, Docs, Slides போன்ற Google Drive ஃபைல்களுக்கான அணுகல் உங்களுக்கு இருக்காது.</translation>
 <translation id="5142961317498132443">அங்கீகாரம்</translation>
 <translation id="5144311987923128508">உறுதிசெய்வதற்கான பட்டன் இப்போது முடக்கப்பட்டுள்ளது</translation>
 <translation id="5144887194300568405">மொழிபெயர்ப்பை நகலெடுக்கும்</translation>
@@ -782,6 +956,7 @@
 <translation id="5170568018924773124">ஃபோல்டரில் காண்பி</translation>
 <translation id="517075088756846356">புதுப்பிப்பைத் தொடர <ph name="DEVICE_NAME" /> இன் பவர் கேபிளை அகற்றிவிட்டு மீண்டும் செருகவும்</translation>
 <translation id="5180108905184566358">போபாப் மரங்கள்</translation>
+<translation id="5180431943345994173">வகுப்புக் கருவிகளில் இருந்து உள்ளடக்கத்தை உங்கள் ஆசிரியர் அகற்றியுள்ளார்</translation>
 <translation id="5180712487038406644">உணர்வுபூர்வமான வண்ணம்</translation>
 <translation id="5190187232518914472">உங்களின் மனதிற்கினிய நினைவுகளை அசைபோடுங்கள். ஆல்பங்களைச் சேர்க்கவோ திருத்தவோ <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />ஸிற்குச் செல்லுங்கள்.</translation>
 <translation id="5212593641110061691">டேப்லாய்டு</translation>
@@ -791,13 +966,16 @@
 <translation id="5223226274641517059">நீங்கள் ரெக்கார்டிங் செய்யும்போது உடனடி டிரான்ஸ்கிரிப்ட்டுகள் காட்டப்படும். அமைப்புகளில் இதை எப்போது வேண்டுமானாலும் முடக்கலாம்.</translation>
 <translation id="5226879510707344687">டிரான்ஸ்கிரிப்ட்டைப் பதிவிறக்கு</translation>
 <translation id="5227902338748591677">டார்க் தீமினைத் திட்டமிடுதல்</translation>
+<translation id="5229104491259541281">"<ph name="QUERY" />" என்பதை மாற்றுதல்</translation>
 <translation id="5229344016299762883">முழுத்திரையிலிருந்து வெளியேறு</translation>
 <translation id="5234764350956374838">நிராகரி</translation>
+<translation id="5236119614998611749">சுருக்க விவரத்தை உருவாக்க முடியவில்லை</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{ஒவ்வொரு முறை நீங்கள் உள்நுழையும்போதும் "<ph name="APP_NAME" />" ஆப்ஸ் தானாகத் தொடங்கும் வகையில் உங்கள் நிர்வாகி அமைத்துள்ளார்.}=2{ஒவ்வொரு முறை நீங்கள் உள்நுழையும்போதும் "<ph name="APP_NAME" />" மற்றும் வேறு 1 ஆப்ஸ் தானாகத் தொடங்கும் வகையில் உங்கள் நிர்வாகி அமைத்துள்ளார்.}other{ஒவ்வொரு முறை நீங்கள் உள்நுழையும்போதும் "<ph name="APP_NAME" />" மற்றும் வேறு # ஆப்ஸ் தானாகத் தொடங்கும் வகையில் உங்கள் நிர்வாகி அமைத்துள்ளார்.}}</translation>
 <translation id="5248419081947706722">நீலம்</translation>
 <translation id="5252456968953390977">ரோமிங்</translation>
 <translation id="5254600740122644523">ஒரு <ph name="SIMPLE_TONE" /> அறையில் இருக்கும் <ph name="SIMPLE_STYLE" /> புத்தக அலமாரி</translation>
 <translation id="5257811368506016604">வெளிர் வண்ணப் பயன்முறையை இயக்கும்</translation>
+<translation id="5261479807286543505">துவக்கத்திற்கான அமைப்புகள்</translation>
 <translation id="5264277876637023664">CPU சோதனையை இயக்கு</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="527501763019887383">APN முடக்கப்பட்டது.</translation>
@@ -806,20 +984,25 @@
 <translation id="5286263799730375393">பின்னொளி வண்ணம்</translation>
 <translation id="5292579816060236070">சன்ரைஸ் வால்பேப்பர்</translation>
 <translation id="5294769550414936029">பதிப்பு <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300172019534884676">கேமராவிற்கான அணுகலை மாற்றும் பட்டன்</translation>
 <translation id="5300814202279832142">சாளரத்தை டெஸ்கிற்கு நகர்த்து</translation>
+<translation id="5302048478445481009">மொழி</translation>
+<translation id="5303459213631364445">பொலிவு</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> பிரத்தியேக வால்பேப்பர்</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="530883153651464140"><ph name="DEVICE_NAME" /> சாதனத்தை <ph name="VERSION" /> பதிப்பிற்குப் புதுப்பிக்கும்</translation>
 <translation id="5315873049536339193">அடையாளம்</translation>
 <translation id="5317780077021120954">சேமி</translation>
 <translation id="5318334351163689047">TCP கோரிக்கையை அனுப்ப முடியவில்லை</translation>
 <translation id="53196409393069519">டிரான்ஸ்கிரிப்ஷனை இயக்க வேண்டுமா?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
-<translation id="5327248766486351172">பெயர்</translation>
 <translation id="5332948983412042822">புதிய கடவுச்சொல்லை இப்போதே தேர்ந்தெடுக்கவும்</translation>
 <translation id="5333530671332546086">அறியப்படாத போர்டல் நிலை</translation>
 <translation id="5335373365677455232">பிங்க்</translation>
+<translation id="5344619683981067131">தேர்ந்தெடுத்த வார்த்தையைப் பரிந்துரையுடன் மாற்றுகிறது</translation>
 <translation id="5346687412805619883">அக நெட்வொர்க்</translation>
 <translation id="5358174242040570474">ஏதோ தவறாகிவிட்டது. வால்பேப்பரை மீண்டும் தேர்வுசெய்யவும் அல்லது ஆப்ஸை மீண்டும் திறக்கவும்.</translation>
+<translation id="5368228070728130240">சுருக்க விவரம், தலைப்பு உருவாக்கம் ஆகியவற்றின் மாடலைப் பதிவிறக்க முடியவில்லை. மீண்டும் முயலவும் அல்லது உங்கள்<ph name="DEVICE_TYPE" /> சாதனத்தை மீண்டும் தொடங்கவும்.</translation>
 <translation id="5372659122375744710">வைஃபை நெட்வொர்க் பாதுகாப்பாக இல்லை</translation>
 <translation id="5376354385557966694">தானியங்கு லைட் பயன்முறை</translation>
 <translation id="5378184552853359930">IP வகை</translation>
@@ -833,6 +1016,7 @@
 <translation id="5431318178759467895">வண்ணம்</translation>
 <translation id="5457599981699367932">கெஸ்டாக உலாவுங்கள்</translation>
 <translation id="54609108002486618">நிர்வகிக்கப்பட்டது</translation>
+<translation id="5461608756903394951"><ph name="LANGUAGE_NAME" /> டிரான்ஸ்கிரிப்ஷன் மாடல் பதிவிறக்கப்படுகிறது</translation>
 <translation id="5470776029649730099">சணல்</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} முயற்சி மீதமுள்ளது}other{{0} முயற்சிகள் மீதமுள்ளன}}</translation>
 <translation id="5488280942828718790">மெஜந்தா</translation>
@@ -841,8 +1025,11 @@
 <translation id="5499762266711462226">வால்பேப்பரின் வண்ணத்தைப் பொறுத்து கீபோர்டின் வண்ணம் அமையும்</translation>
 <translation id="5502931783115429516">Android இயங்கவில்லை</translation>
 <translation id="550600468576850160">புல்வெளி</translation>
+<translation id="5507504956167780539">அற்புதமான நிழல்களுடன், மின்னும் கருநிற மணல்மேடுகளின் குறைந்தபட்ச தொழில்முறை நேர்த்தியுடன் அமைந்த படம்</translation>
 <translation id="551689408806449779">சாதனம் துண்டிக்கப்பட்டது. சோதனை செய்ய மீண்டும் இணைக்கவும்</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="552644173505433109">சுருக்க விவரம் மற்றும் தலைப்பு உருவாக்கம் குறித்து மேலும் தெரிந்துகொள்ளலாம்</translation>
+<translation id="5527146180235316490">மைக் விருப்பங்கள்</translation>
 <translation id="5534900277405737921">நிலப்பகுதி</translation>
 <translation id="554067135846762198">பவளம் மற்றும் பழுப்பு</translation>
 <translation id="5543701552415191873">பூட்டப்பட்டுள்ளது</translation>
@@ -859,9 +1046,14 @@
 <translation id="5595623927872580850">சாம்பல்</translation>
 <translation id="5596627076506792578">கூடுதல் விருப்பங்கள்</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> பட்டன் சோதனை செய்யப்பட்டது</translation>
+<translation id="5606865426897221650">Tab</translation>
+<translation id="5612205513582918357">வகுப்புக் கருவிகள் உங்கள் திரையை <ph name="RECEIVER_NAME" /> உடன் பகிர்கிறது</translation>
+<translation id="5613201299517339763">வெளியேறிவிட்டீர்கள்</translation>
 <translation id="5620281292257375798">அகப் பயன்பாட்டிற்கானது</translation>
+<translation id="5628106863521633649">கிடைக்கும் மொழிகள்</translation>
 <translation id="5630438231335788050">பௌஹாஸ்</translation>
 <translation id="5631759159893697722">சுருக்கம்</translation>
+<translation id="5655084389678168978">உங்கள் ஆசிரியர் வகுப்புக் கருவிகளில் புதிய உள்ளடக்கத்தைச் சேர்த்துள்ளார்</translation>
 <translation id="5655283760733841251">கீபோர்டு ஒளிர்வை அதிகரிக்கும்</translation>
 <translation id="5655296450510165335">சாதனத்தைப் பதிவுசெய்தல்</translation>
 <translation id="5655776422854483175">அச்சுப் பணிகள் ஏதுமில்லை</translation>
@@ -869,17 +1061,18 @@
 <translation id="5662240986744577912">தனிப்பட்ட திரையை இயக்குவதற்கான அல்லது முடக்குவதற்கான ஐகான்</translation>
 <translation id="5669267381087807207">செயலாக்குகிறது</translation>
 <translation id="5670702108860320605">BSSID</translation>
+<translation id="5674943355143004615">நீங்கள் உருவாக்க விரும்பும் வால்பேப்பரை விவரிக்கவும்</translation>
 <translation id="5680504961595602662"><ph name="SURREAL_SUBJECT" /> இருக்கும் கற்பனை <ph name="SURREAL_LANDSCAPE" /></translation>
 <translation id="5685478548317291523">செர்ரிகள்</translation>
 <translation id="5691511426247308406">குடும்பம்</translation>
-<translation id="5692395212036914927">ரெக்கார்டிங்கின் சுருக்க விவரம் மற்றும் பெயர் உருவாக்கம்</translation>
 <translation id="5695599963893094957">உங்கள் கீபோர்டில் ஏதாவது ஒரு பட்டனை அழுத்தவும். ஒரே நேரத்தில் 4 பட்டன்களை மட்டுமே அழுத்த முடியும்.</translation>
 <translation id="5701381305118179107">மையம்</translation>
 <translation id="5703716265115423771">ஒலியளவைக் குறைக்கும்</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> ஐத் திருத்துவதற்கான பட்டன்.</translation>
-<translation id="5733298426544876109"><ph name="DEVICE_NAME" /> ஐப் புதுப்பிக்கும்</translation>
+<translation id="5736820754189340309">டேட்டா பயன்பாடு மீட்டமைக்கப்பட்டது</translation>
 <translation id="574392208103952083">நடுநிலை</translation>
+<translation id="5744175046705638478">"<ph name="QUERY" />" என்பதை மொழிபெயர்த்தல்</translation>
 <translation id="5757187557809630523">அடுத்த டிராக் ஐகான்</translation>
 <translation id="5760715441271661976">போர்டல் நிலை</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> ஆப்ஸை மீண்டும் தொடங்கி புதுப்பித்தல்</translation>
@@ -900,23 +1093,30 @@
 <translation id="5859969039821714932">ஷார்ட்கட் இல்லை. <ph name="KEY" /> பட்டனை அழுத்தாமல் புதிய ஷார்ட்கட்டை அழுத்தவும்.</translation>
 <translation id="5860033963881614850">ஆஃப்</translation>
 <translation id="5860491529813859533">இயக்கு</translation>
+<translation id="586463370326011345">மின்னல்</translation>
+<translation id="5875913454160982848">டிரான்ஸ்கிரிப்ஷன் மாடலைப் பதிவிறக்கும்</translation>
 <translation id="5876385649737594562">விருப்பங்களைத் தேர்ந்தெடுக்க ஆன் செய்யவும்</translation>
+<translation id="5877503382465267833"><ph name="RECORDING_NAME" /> ஐ இடைநிறுத்தும்</translation>
 <translation id="588258955323874662">முழுத்திரை</translation>
+<translation id="5889539348012432386">வகுப்புக் கருவிகளின் முகப்புப் பக்கம்</translation>
 <translation id="5893975327266416093">கீபோர்டு பட்டனை ஒதுக்க, அதை அழுத்தவும்</translation>
 <translation id="5895138241574237353">மறுதொடக்கம்</translation>
+<translation id="5896602941605730551">பிளே செய்யும்</translation>
 <translation id="5901630391730855834">மஞ்சள்</translation>
 <translation id="5903200662178656908">கீபோர்டும் மவுஸும் இணைந்ததே சாதனமாகும்.</translation>
 <translation id="5904994456462260490">புதிய APNனைச் சேர்த்தல்</translation>
 <translation id="590746845088109442">பூனைகள்</translation>
 <translation id="5907649332524363701">கீபோர்டு வண்ணம்</translation>
+<translation id="5908813850962688338">இந்தப் புதுப்பிப்பை நிறுவ சில நிமிடங்கள் ஆகும். புதுப்பிப்பு பதிவிறக்கப்படும்போது உங்கள் சாதனத்தைப் பவரில் பிளக்-இன் செய்து ஆனில் வைத்திருக்கவும். இந்தச் செயல்பாட்டின்போது உங்கள் சாதனம் சில முறை மறுபடி தொடங்குவதுடன் கருப்புத் திரையையும் காட்டலாம். நிறுவலை நிறைவுசெய்ய உங்கள் சாதனத்தை மீண்டும் தொடங்குமாறு உங்களிடம் கேட்கப்படும்.</translation>
+<translation id="5915794087373112615"><ph name="NUM_SECONDS" /> வினாடிகளில் உங்கள் திரை ஆசிரியருக்குக் காட்டப்படும்</translation>
 <translation id="5916084858004523819">தடைசெய்யப்பட்டது</translation>
 <translation id="5916664084637901428">இயக்கு</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{உங்கள் ஃபைல் ஸ்கேன் செய்யப்பட்டு <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ஃபைல்றையில் சேமிக்கப்பட்டது.}other{உங்கள் ஃபைல்கள்  ஸ்கேன் செய்யப்பட்டு <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ஃபைல்றையில் சேமிக்கப்பட்டன.}}</translation>
 <translation id="5928411637936685857"><ph name="ACCELERATOR_INFO" /> ஐ நீக்குவதற்கான பட்டன்.</translation>
 <translation id="5930669310554144537">Dreamscape</translation>
 <translation id="5931523347251946569">ஃபைல் இல்லை</translation>
-<translation id="5938286923316838007">ரெக்கார்டிங் பெயர்களை இந்த உள்ளடக்கத்திற்கு உருவாக்க முடியவில்லை</translation>
 <translation id="5939518447894949180">மீட்டமை</translation>
+<translation id="5942727615796467094"><ph name="DEVICE_TYPE" /> ஐ எப்போது பயன்படுத்தலாம் என்பதை <ph name="MANAGER" /> நிர்வாகி அமைத்துள்ளார்</translation>
 <translation id="594552776027197022">ரேண்டம் குறியீட்டு இணையை உருவாக்கு</translation>
 <translation id="5946538341867151940">நீங்கள் இன்னும் இணைக்கப்படவில்லை. உங்கள் மொபைல் நிறுவனம் பிரத்தியேக APNனைப் பரிந்துரைத்தால் "+ புதிய APN" என்பதைத் தேர்ந்தெடுத்து APN தகவல்களை டைப் செய்யவும்</translation>
 <translation id="5947266287934282605">மாதத்தின் கடைசி தேதி இந்த நாளுக்கு முன்னதாக இருந்தால், மாதத்தின் கடைசி தேதியில் தரவு மீட்டமைக்கப்படும்.</translation>
@@ -926,8 +1126,10 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5972801171078377748">மீண்டும் காட்டாதே</translation>
 <translation id="5975130252842127517">பவளம்</translation>
+<translation id="5982621672636444458">வரிசைப்படுத்தல் விருப்பங்கள்</translation>
 <translation id="5984145644188835034">இயல்பு வால்பேப்பர்</translation>
 <translation id="5996832681196460718">பட்டு</translation>
+<translation id="6016750809509395299">உருவாக்கப்பட்ட தலைப்புகள்:</translation>
 <translation id="6017514345406065928">பச்சை</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="6034694447310538551">மாதந்தோறும் தானாக ரீசெட் செய்வதை இயக்கு</translation>
@@ -935,16 +1137,18 @@
 <translation id="6040143037577758943">மூடு</translation>
 <translation id="6040852767465482106">அநாமதேய அடையாளம்</translation>
 <translation id="604124094241169006">தானியங்கு</translation>
-<translation id="6042308850641462728">மேலும்</translation>
 <translation id="6048107060512778456">காகிதம் சிக்கிக் கொண்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="6050189528197190982">கிரேஸ்கேல்</translation>
 <translation id="6054711098834486579">வெளிப்பாட்டியம்</translation>
 <translation id="6058625436358447366">நிறைவுசெய்ய தற்போதைய கடவுச்சொல்லையும் புதிய கடவுச்சொல்லையும் உள்ளிடவும்</translation>
 <translation id="6061772781719867950">HTTPS கோரிக்கைகளுக்குப் பதில் கிடைக்கவில்லை</translation>
 <translation id="6073292342939316679">கீபோர்டு ஒளிர்வைக் குறைப்பதற்கான ஐகான்</translation>
-<translation id="6073451960410192870">பதிவுசெய்வதை நிறுத்து</translation>
+<translation id="6074608334942655098">மொழிபெயர்ப்பை நிறுத்து</translation>
+<translation id="6074752328838739425">சுருக்க விவரத்தை மறைக்கும்</translation>
 <translation id="6075872808778243331">(Android) HTTP தாமதம்</translation>
 <translation id="6078323886959318429">ஷார்ட்கட்டைச் சேர்</translation>
+<translation id="6079693086494835199">இயல்பு முகப்புப்பக்கம் ஃபிஷிங் தளம் இல்லை என்பதை உறுதிசெய்துகொள்ள மீட்டமைக்கவும். நம்பகமான இணையதளங்களை மட்டும் பயன்படுத்தவும்.</translation>
+<translation id="6090672065638047175">இரவு நேர வானம் மற்றும் நட்சத்திரக்கூட்டங்களின் பின்னணியில் நட்சத்திரங்களால் ஆன ஒளிரும் மரத்தின் படம்</translation>
 <translation id="6091080061796993741">மஞ்சள்</translation>
 <translation id="6104112872696127344">ஸ்கேன் செய்வது ரத்துசெய்யப்பட்டது</translation>
 <translation id="6106186594183574873">நிறைவுசெய்ய தற்போதைய கடவுச்சொல்லை உள்ளிடவும்</translation>
@@ -963,11 +1167,15 @@
 <translation id="6137767437444130246">பயனர் சான்றிதழ்</translation>
 <translation id="6146993107019042706">நிறைவுசெய்ய புதிய கடவுச்சொல்லை உள்ளிடவும்</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">இணையத்துடன் இணைக்க முடியவில்லை</translation>
 <translation id="6156030503438652198">கருஞ்சிவப்பு மற்றும் இளஞ்சிவப்பு</translation>
+<translation id="6163318050265152852">தலைப்புகளை உருவாக்க முடியவில்லை. சிறிய டிரான்ஸ்கிரிப்ட்டைப் பயன்படுத்திப் பார்க்கவும்.</translation>
 <translation id="6165508094623778733">மேலும் அறிக</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">உங்கள் மைக்ரோஃபோனையும் கேமராவையும் பிறர் பயன்படுத்துவதைத் தடுக்க மீட்டமைக்கவும். நம்பகமான தளங்களுக்கு மட்டும் அனுமதிகளை வழங்கவும்.</translation>
 <translation id="6188737759358894319">உருவாக்கப்பட்டது: <ph name="DATE" /></translation>
 <translation id="6189418609903030344">உபயோகத்தால் பேட்டரியின் திறன் குறைகிறது</translation>
+<translation id="6189987971574353264">பிளே செய்யும்</translation>
 <translation id="6191293864534840972">பெயர் சேவையகங்கள் தவறானவை</translation>
 <translation id="6196607555925437199">மீண்டும் உருவாக்கு</translation>
 <translation id="6205145102504628069">கிளவுடு ஃப்ளோ</translation>
@@ -976,13 +1184,13 @@
 <translation id="6231648282154119906">நீங்கள் தேர்வுசெய்த மேம்பட்ட பாதுகாப்பின் ஒரு பகுதியாக Google பாதுகாப்பு உலாவல் மூலம் சந்தேகத்திற்குரிய ஃபைல்கள் தானாகவே ஸ்கேன் செய்யப்படும்</translation>
 <translation id="6232017090690406397">பேட்டரி</translation>
 <translation id="6234024205316847054">அவுட்லைன்களைக் காட்டு</translation>
-<translation id="6235460611964961764">டேட்டா உபயோகத்தை நீங்களே ரீசெட் செய்யுங்கள்</translation>
 <translation id="6243280677745499710">தற்போது அமைக்கப்பட்டுள்ளது</translation>
 <translation id="6250316632541035980">பன்றிக்கறி உப்புக்கண்டமும் முட்டைகளும்</translation>
 <translation id="6265268291107409527">தேர்ந்தெடுக்கப்பட்ட பட்டன்: <ph name="KEYS" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">வலது அம்புக்குறி</translation>
 <translation id="6278428485366576908">தீம்</translation>
 <translation id="6280912520669706465">ARC</translation>
+<translation id="6281936070694347328">"<ph name="QUERY" />" என்பதை விளக்குதல்</translation>
 <translation id="6283581480003247988">நீலம் மற்றும் ஊதா</translation>
 <translation id="6284632978374966585">டார்க் தீமினை இயக்குதல்</translation>
 <translation id="6285260286443238386">ரெக்கார்டிங்கைப் பதிவிறக்கு</translation>
@@ -991,6 +1199,7 @@
 <translation id="629550705077076970">கீபோர்டு டிம்மிங்</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> சோதனை ரத்துசெய்யப்பட்டது</translation>
 <translation id="631063167932043783">Explore ஆப்ஸ்</translation>
+<translation id="6314333689576767865">உங்கள் Chromebook பாதுகாப்பான இயல்பு அமைப்புகளுக்கு மீட்டமைக்கப்பட்டது. அமைப்புகளுக்குச் சென்று எப்போது வேண்டுமானாலும் மாற்றங்களைச் செய்யலாம்.</translation>
 <translation id="6318437367327684789">எப்போதும்</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> இல் நிலைபொருளைப் புதுப்பியுங்கள்</translation>
 <translation id="6321407676395378991">ஸ்கிரீன் சேவரை இயக்குதல்</translation>
@@ -1022,11 +1231,13 @@
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6419454453018688975">சாதனத்தின் இருப்பிட அணுகலை இயக்கு</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="642713342828771202">சூரிய அஸ்தமனம்</translation>
 <translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">மோசமாக உள்ளது (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">கணக்கு அமைப்புகளுக்குச் செல்லும்</translation>
 <translation id="6462978824459367242">'APNனைச் சேர்' பட்டன் இப்போது இயக்கப்பட்டுள்ளது</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{பக்கத்தை மீண்டும் ஸ்கேன் செய்யவா?}=1{{PAGE_NUMBER}வது பக்கத்தை மீண்டும் ஸ்கேன் செய்யவா?}other{{PAGE_NUMBER}வது பக்கத்தை மீண்டும் ஸ்கேன் செய்யவா?}}</translation>
+<translation id="6468146470109254228">உங்களின் மிகச் சமீபத்திய 3 ப்ராம்ப்ட்டுகள் மற்றும் வெளியீடுகள். வால்பேப்பர் &amp; ஸ்டைல் அம்சத்தைப் பயன்படுத்தும்போது மட்டுமே இவற்றை நீங்கள் அணுகலாம்.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">படகுகள்</translation>
 <translation id="64778964625672495">அடர் சிவப்பு</translation>
@@ -1039,12 +1250,15 @@
 <translation id="6500818810472529210">Google Searchசில் முடிவுகளைப் பார்க்கவும்</translation>
 <translation id="650266656685499220">ஆல்பங்களை உருவாக்க Google Photosஸிற்குச் செல்லலாம்</translation>
 <translation id="6505750420152840539">விடியல் முதல் இரவு வரை</translation>
+<translation id="6515056490985026110">தலைப்புகளை உருவாக்க முடியவில்லை. நீளமான டிரான்ஸ்கிரிப்ட்டைப் பயன்படுத்திப் பார்க்கவும்.</translation>
 <translation id="6516990319416533844">பேட்டரியின் சார்ஜிங் விகிதத்தைப் பரிசோதிக்க, சிறிது நேரத்திற்கு அதன் சார்ஜைக் காலி செய்யவும்</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6526200165918397681">வால்பேப்பருடன் பொருத்தும்</translation>
 <translation id="6527081081771465939">அறியப்படாத வைஃபை பாதுகாப்பு நெறிமுறை</translation>
+<translation id="6531528791584205545">விரைவாகச் சேர்த்தல்</translation>
 <translation id="6535178685492749208">ஆஃப்லைனில் உள்ளீர்கள். உங்களின் கருத்து பின்னர் அனுப்பப்படும்.</translation>
 <translation id="6543412779435705598">டாக்கோஸ்</translation>
+<translation id="6550369542114086980">வியாழக்கிழமை அன்று</translation>
 <translation id="6551839203326557324">ஆப்பிள்கள்</translation>
 <translation id="65526652485742171">உறுதிசெய்வதற்கான பட்டன் இப்போது இயக்கப்பட்டுள்ளது</translation>
 <translation id="6557784757915238407">இந்த APN <ph name="ATTACH" /> வகையைச் சேர்ந்தது.</translation>
@@ -1060,6 +1274,7 @@
 <translation id="6595046262780525922">டிரான்ஸ்கிரிப்ஷனை இயக்கி டிரான்ஸ்கிரிப்ஷன் மாடலைப் பதிவிறக்க வேண்டுமா?</translation>
 <translation id="6596816719288285829">IP முகவரி</translation>
 <translation id="6599673642868607614">கருத்து தெரிவித்ததற்கு நன்றி. Chromebook அனுபவத்தை மேம்படுத்துவதற்கு உங்கள் கருத்துகள் எங்களுக்கு உதவியாக இருக்கும். அவை எங்கள் குழுவால் மதிப்பாய்வு செய்யப்படும். புகார்களின் எண்ணிக்கை அதிகமாக இருப்பதால் எங்களால் பதிலளிக்க முடியாது.</translation>
+<translation id="6608043585557830684">டிரான்ஸ்கிரிப்ஷன் முடக்கப்பட்டுள்ளது. அமைப்புகளிலோ <ph name="THREE_DOTS_MENU_ICON" /> மெனுவிலோ அதை இயக்கவும்.</translation>
 <translation id="660846213831377756">மவுஸ் பட்டன்கள்</translation>
 <translation id="6618744767048954150">சோதனை செய்கிறது</translation>
 <translation id="6620487321149975369">பிரிண்ட்டிங் பணிகளை நீங்களாகவே அகற்றும் வரை அவை வரலாற்றில் காட்டப்படும்</translation>
@@ -1070,11 +1285,13 @@
 <translation id="6650062777702288430">கானா/எண்ணெழுத்து ஸ்விட்ச்</translation>
 <translation id="6657240842932274095">உங்கள் இருப்பிட விவரத்தைப் பயன்படுத்த சிஸ்டம் சேவைகளை அனுமதிக்கவா?</translation>
 <translation id="6657585470893396449">கடவுச்சொல்</translation>
-<translation id="6659594942844771486">உலாவிப் பக்கம்</translation>
 <translation id="66621959568103627">பவள இளஞ்சிவப்பு</translation>
+<translation id="6669485505082792176">இதற்கான படங்களைத் தற்சமயம் உருவாக்க முடியவில்லை. விளக்கத்தை மாற்றியமைக்கவும். பிறரின் படங்கள், தீங்கு விளைவிக்கும் அல்லது வெளிப்படையான உள்ளடக்கம் தொடர்பான படங்களை உங்களால் உருவாக்க முடியாது என்பதை நினைவில்கொள்ளவும். <ph name="BEGIN_LINK_LEARN_MORE" />மேலும் அறிக<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6673898378497337661">கீபோர்டு ஒளிர்வை அதிகரிப்பதற்கான ஐகான்</translation>
 <translation id="6692996468359469499">திரையில் நீங்கள் தேர்ந்தெடுத்தது தொடர்பாக தகவல்களைப் பெறவும்</translation>
 <translation id="6694534975463174713">பூட்டு</translation>
+<translation id="6700703207451721535">இந்த இணைப்பிற்கு அணுகல் அனுமதிக்கப்படவில்லை. உங்களுக்கு அணுகல் தேவையென்றால் உங்கள் ஆசிரியரிடம் கேட்கவும்.</translation>
+<translation id="6703179086771097594">உங்களுக்கு என்ன பிடிக்கவில்லை?</translation>
 <translation id="6704062477274546131">DNS ரெசல்யூஷன்</translation>
 <translation id="6712933881624804031">பள்ளத்தாக்கு</translation>
 <translation id="6716013206176357696">ஸ்ட்ராபெர்ரிகள்</translation>
@@ -1090,33 +1307,47 @@
 <translation id="6747035363363040417">மிதமான</translation>
 <translation id="6747215703636344499">பிரிண்ட் வெளியே வரும் டிரே நிரம்பிவிட்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="6749473226660745022">படங்கள்</translation>
+<translation id="6752960629591143793">டிரான்ஸ்கிரிப்ஷன் மொழியைத் தேர்ந்தெடுத்து அமைப்புகளிலோ <ph name="THREE_DOTS_MENU_ICON" /> மெனுவிலோ பதிவிறக்கவும்</translation>
 <translation id="6753452347192452143">சாதனம் ஒரு கம்ப்யூட்டர்.</translation>
 <translation id="6756731097889387912">ஸ்கேன் செய்வதை ரத்துசெய்ய முடியவில்லை</translation>
 <translation id="6760706756348334449">ஒலியளவைக் குறைக்கும்</translation>
 <translation id="6761537227090937007">உயர் தெளிவுத்திறன் படத்தை உருவாக்குகிறது…</translation>
 <translation id="6766275201586212568">DNS ரெசல்யூஷன்கள் தோல்வி அடைந்தது</translation>
 <translation id="6768237774506518020">DNS ரெசல்யூஷன் தோல்வி விகிதம் அதிகமாக உள்ளது</translation>
+<translation id="6786747875388722282">நீட்டிப்புகள்</translation>
+<translation id="6789891265243243337"><ph name="DEVICE_TYPE" /> சாதனத்தின் ஆடியோ இயக்கப்பட்டிருக்கும்போது, இந்தச் சாதனத்தில் பிளேயாகும் எல்லா ஆடியோவையும் ரெக்கார்டர் ரெக்கார்டு செய்யும்</translation>
 <translation id="6791471867139427246">கீபோர்டு லைட் கலர்</translation>
 <translation id="6796229976413584781">ஷார்ட்கட் நீக்கப்பட்டது</translation>
 <translation id="6798678288485555829">வார்த்தை வழிசெலுத்தல்</translation>
 <translation id="680983167891198932">குறியீடு</translation>
 <translation id="6816797338148849397">நீங்கள் தேர்ந்தெடுத்தவற்றுடன் தொடர்புடைய தகவல்கள். இவற்றை அணுக மேல்நோக்கிய அம்புக்குறி விசையைப் பயன்படுத்துங்கள்.</translation>
+<translation id="6831043979455480757">Translate</translation>
+<translation id="6846843854964504403">பாதுகாப்பு மீட்டமைவு</translation>
 <translation id="6853312040151791195">சார்ஜ் இறங்கும் விகிதம்</translation>
+<translation id="6862228900689076919">உங்கள் நிர்வாகி இந்த அம்சத்தை நிர்வகிக்கிறார்</translation>
+<translation id="6862416241246624313">கருத்து சமர்ப்பிக்கப்பட்டது</translation>
 <translation id="6866732840889595464">டெய்ஸி</translation>
 <translation id="6871256179359663621">வெளிர் ஊதா</translation>
+<translation id="6887967050249348172">அமைப்புகளில் மாற்றம் செய்வதைத் தடுக்க நீட்டிப்புகள் முடக்கப்பட்டுள்ளன. நம்பகமான நீட்டிப்புகளை மட்டும் இயக்கவும்.</translation>
 <translation id="6889786074662672253">மீண்டும் தொடங்கும்போது இந்த வெளிப்புறச் சாதனத்தின் இணைப்பைத் துண்டிக்கவோ உங்கள் கம்ப்யூட்டரை ஷட் டவுன் செய்யவோ கூடாது. இந்தச் சாளரத்தைச் சிறிதாக்கிக்கொள்ளலாம். இந்தச் செயல்பாடு நிறைவடைய சில நிமிடங்கள் ஆகலாம். அதுவரை உங்கள் வெளிப்புறச் சாதனத்தில் வேறு எதுவும் செய்ய முடியாமல் போகலாம்.</translation>
+<translation id="6899460405678814458">சுருக்க விவரத்தைக் காட்டும்</translation>
 <translation id="6900701049656042631">இந்த ஆல்பத்தில் எந்தப் படமும் இல்லை. படங்களைச் சேர்க்க, <ph name="LINK" /> தளத்திற்குச் செல்லவும்</translation>
 <translation id="6902359863093437070">AI மூலம் பின்புலத்தை உருவாக்குங்கள்</translation>
 <translation id="6905163627763043954">பயன்படுத்திப் பாருங்கள்</translation>
+<translation id="6905275015682612674">அழகிய வெளிர் வண்ணங்களில் வானில் நட்சத்திரங்களுடன் பயோலூமினிசெண்ட் கடற்கரையில் சூரியன் மறையும் காட்சியின் நீண்டநேர எக்ஸ்போஷர் 4K படம்</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> பக்கத்திற்குச் செல்லும்</translation>
 <translation id="6910312834584889076">ஸ்கேனரின் கவர் திறந்துள்ளது. கவரை மூடிவிட்டு மீண்டும் முயலவும்.</translation>
 <translation id="6910845598686542904">ரெக்கார்டிங்கில் கண்டறியப்படும் குரல்களின் மாதிரிகளைக் கணித்தல்.</translation>
 <translation id="6911383237894364323">மீடியா சேவையகங்களுடன் இணைக்க முடியவில்லை</translation>
+<translation id="6926069762081461162">ரெக்கார்டிங் தலைப்பு</translation>
 <translation id="6930242544192836755">மொத்த நேரம்</translation>
 <translation id="6930597342185648547">பின்னணி பற்றி</translation>
-<translation id="6939667434404433010">ரெக்கார்டிங்கின் பெயரைத் தேடுங்கள்</translation>
+<translation id="6931666215260956151">கேலக்ஸி</translation>
 <translation id="6939766318048400022">கஃபே</translation>
+<translation id="6940212863873359282">கிரீம் பின்னணியுடன் வெள்ளைப் பளிங்கு வளைவின் மேல் அந்தரத்தில் மிதக்கும் ஒரு துண்டு வெள்ளை ஆர்கன்சா</translation>
+<translation id="6942253772720771875">கருத்தைப் பகிருங்கள் அல்லது சிக்கலை விவரியுங்கள்</translation>
 <translation id="6943893908656559156">தொலைநிலை அடையாளம் (விருப்பத்தேர்வு)</translation>
+<translation id="694981048020558038">ரெக்கார்டிங் தலைப்பைத் தேடுங்கள்</translation>
 <translation id="6953137545147683679">பொன்னிற</translation>
 <translation id="6957231940976260713">சேவைப் பெயர்</translation>
 <translation id="695776212669661671">வலது அம்புக்குறி ஐகான்</translation>
@@ -1124,20 +1355,12 @@
 <translation id="6961170852793647506">ஸ்கேன் செய்ய, ஆவணத்தை ஸ்கேனர் மீது வைக்கவும்</translation>
 <translation id="6965382102122355670">சரி</translation>
 <translation id="6965978654500191972">சாதனம்</translation>
+<translation id="6972754398087986839">தொடங்குக</translation>
 <translation id="6975620886940770104">ஒளிரும் <ph name="GLOWSCAPES_FEATURE" /> இருக்கும் <ph name="GLOWSCAPES_LANDSCAPE" /></translation>
 <translation id="6975981640379148271">கோலா கரடிகள்</translation>
 <translation id="6977381486153291903">நிலைபொருள் பதிப்பு</translation>
+<translation id="6978396562261420054">உருவாக்கப்பட்ட படம்</translation>
 <translation id="6981982820502123353">அணுகல் தன்மை</translation>
-<translation id="698242338298293034">உங்கள் AI படங்களைப் பிரத்தியேகமாக்க, தீமினைத் தேர்வுசெய்தபின் அடிக்கோடிட்ட வார்த்தைகளைத் தேர்ந்தெடுக்கவும்.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          அதிகத் தனித்துவம் வாய்ந்த மற்றும் பலதரப்பட்ட AI பட விருப்பங்களைப் பெற "என்னை ஊக்கப்படுத்து" என்பதைத் தேர்ந்தெடுக்கவும்.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          நீங்கள் AI மூலம் உருவாக்கும்போது, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleளின் தனியுரிமைக் கொள்கைக்கு<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> உட்பட்டு படங்களை உருவாக்கவும் தயாரிப்பை மேம்படுத்தவும் அந்த ப்ராம்ப்ட் Google AI சேவையகங்களுக்கு அனுப்பப்படும்.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ஜெனரேட்டிவ் AI ஆரம்பக்கட்டப் பரிசோதனை நிலையில் உள்ளது, அது இன்னும் பரவலாகக் கிடைப்பதில்லை.</translation>
 <translation id="6982462588253070448">மணல் மேடுகள்</translation>
 <translation id="7005833343836210400">சாதனம் ஆஃப்லைனில் உள்ளது</translation>
 <translation id="7028979494427204405">இந்தச் சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது. பார்வையிட்ட இணையப்பக்கங்கள், கடவுச்சொற்கள், மின்னஞ்சல் உட்பட பயனரின் செயல்பாடு அனைத்திற்குமான அணுகலும் இதற்கு உள்ளது.</translation>
@@ -1145,9 +1368,13 @@
 <translation id="7040230719604914234">ஆபரேட்டர்</translation>
 <translation id="7040729769968826896">பேச்சை அடையாளம் காண அனுமதி</translation>
 <translation id="7041549558901442110">சாதனம் இணைக்கப்படவில்லை.</translation>
+<translation id="704183341263526038">ஜூபிட்டர்</translation>
 <translation id="7046522406494308071">அனைத்து ஷார்ட்கட்களையும் இயல்புநிலைக்கு மீட்டமைக்கவா?</translation>
+<translation id="7049916119678019302">டிரான்ஸ்கிரிப்ஷன் மாடலை அமைப்புகளில் பதிவிறக்கவும்</translation>
 <translation id="7058278511608979688">நிறுத்திவிட்டுச் சேமி</translation>
 <translation id="7059230779847288458">சார்ஜ் ஆகிறது, முழுமையாகச் சார்ஜ் ஏற <ph name="TIME_VALUE" /> ஆகும்</translation>
+<translation id="7064209589142995848">உள்ளடக்கப் பரிமாற்றம்</translation>
+<translation id="7065336548231472971"><ph name="LANGUAGE_NAME" /> தேர்ந்தெடுக்கப்பட்டுள்ளது</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> பட்டன்</translation>
 <translation id="7068619307603204412">சாதனத்தைத் தயார்ப்படுத்துதல்</translation>
 <translation id="7076851914315147928">வால்பேப்பரைத் தேர்வுசெய்யுங்கள்</translation>
@@ -1158,14 +1385,18 @@
 <translation id="710028965487274708">தோல்வியடைந்தது - அங்கீகரிக்க முடியவில்லை</translation>
 <translation id="7101959270679078188">புதுப்பிப்பைத் தொடர <ph name="DEVICE_NAME" /> ஐ அன்லாக் செய்யவும்</translation>
 <translation id="7103252855940681301"><ph name="COUNT" /> சாதனங்களில் <ph name="INDEX" />வது சாதனத்தின் பெயர் <ph name="NAME" />.</translation>
+<translation id="7103793063702494489">தேர்ந்தெடுக்கப்பட்டுள்ள மொழி</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> பிரத்தியேக ஆர்ட்வொர்க்கைத் தேர்வுசெய்யும்</translation>
 <translation id="7108668606237948702">உள்ளிடு</translation>
+<translation id="7117228822971127758">பிறகு முயலவும்</translation>
 <translation id="7118522231018231199">உங்கள் மொபைல் சேவை வழங்குநர் அல்லது நிர்வாகி வழங்கியுள்ள APNகளை மட்டும் தேர்ந்தெடுப்பதை உறுதிசெய்துகொள்ளவும். APNனைத் தேர்ந்தெடுக்கும்போது ஏற்கெனவே இருக்கும் பிரத்தியேக APNகள் முடக்கப்படும். தவறான APNகள் உங்கள் மொபைல் இணைப்பை முடக்கக்கூடும்.</translation>
 <translation id="7119389851461848805">பவர்</translation>
 <translation id="7129287270910503851">ஒவ்வொரு மாதமும் இந்தத் தேதியில் டேட்டா பயன்பாடு ரீசெட் செய்யப்படும்</translation>
 <translation id="7130438335435247835">ஆக்சஸ் பாயிண்ட் நேம் (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{நேம் சர்வர்}other{நேம் சர்வர்கள்}}</translation>
 <translation id="7135814714616751706">ஷார்ட்கட்களைத் தேடுக</translation>
+<translation id="7138614237884624401">எளிதாக்கப்பட்ட வார்த்தை</translation>
+<translation id="7138668887584231801">சுருக்க, போதுமான வார்த்தைகள் இல்லை</translation>
 <translation id="7143207342074048698">இணைத்தல்</translation>
 <translation id="7144878232160441200">மீண்டும் முயற்சி செய்க</translation>
 <translation id="7144954474087165241">பகோடா</translation>
@@ -1182,21 +1413,28 @@
 <translation id="7180865173735832675">பிரத்தியேகமாக்கு</translation>
 <translation id="7182063559013288142">உடனடி ஹாட்ஸ்பாட்</translation>
 <translation id="7184043045742675738">பட்டனைப் பிரத்தியேகமாக்க ஏதேனும் ஒரு பட்டன் மீது கிளிக் செய்யவும். மவுஸ் அல்லது அம்புக்குறி பட்டன்களைப் பயன்படுத்தி பட்டனை இடமாற்றவும்.</translation>
+<translation id="7187669805838282391">புதன்கிழமை அன்று</translation>
+<translation id="7205318498545665455">மைக்கைத் தேர்வுசெய்யவும்</translation>
 <translation id="7206979415662233817">சேவை விதிமுறைகள்</translation>
 <translation id="7210635925306941239">சியான்</translation>
 <translation id="7212547870105584639">நெட்வொர்க் APN அமைப்புகளை நிர்வகிக்கலாம். மொபைல் நெட்வொர்க் மற்றும் இணையத்திற்கு இடையில் APNகள் இணைப்பை உருவாக்கும். <ph name="BEGIN_LINK_LEARN_MORE" />மேலும் அறிக<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">வெளிப்புறச் சாதனங்களுக்கான நிலைபொருள் புதுப்பிப்புகள்</translation>
 <translation id="7216409898977639127">செல்லுலார் வழங்குநர்</translation>
+<translation id="7221869452894271364">இந்தப் பக்கத்தை மீண்டும் ஏற்று</translation>
 <translation id="7223952304612664117">இதைச் செய்தால், உங்கள் இருப்பிடத்தைத் தீர்மானிக்க சிஸ்டம் சேவைகள் இருப்பிடத் துல்லியத்தைப் பயன்படுத்தும். சாதனத்தின் இருப்பிடத்தைக் கணிக்க, வயர்லெஸ் சிக்னல்கள் குறித்த தகவல்களையும் சென்சார்களையும் 'இருப்பிடத் துல்லியம்' பயன்படுத்துகிறது.</translation>
 <translation id="7233782086689993269">ஷார்ட்கட் மீட்டெடுக்கப்பட்டது</translation>
+<translation id="723419678599947502">Google AIயைப் பயன்படுத்தி தலைப்புகளை உருவாக்கலாம்</translation>
 <translation id="725133483556299729">மின்னஞ்சல் முகவரியைத் தேர்ந்தெடுக்கும்</translation>
 <translation id="7255187042098209569">இளஞ்சிவப்பு மற்றும் ஊதா</translation>
+<translation id="7267918995585557751">இயல்புத் துவக்கப் பக்கம் ஃபிஷிங் இணையதளம் இல்லை என்பதை உறுதிசெய்துகொள்ள மீட்டமைக்கவும். நம்பகமான இணையதளங்களை மட்டும் பயன்படுத்தவும்.</translation>
 <translation id="7271000785316964275">கிளாசிசிஸ்ட்</translation>
 <translation id="7271040990581020067">ஸ்கேனர் தற்போது உபயோகத்தில் உள்ளது. பிறகு முயலவும்.</translation>
 <translation id="7271932918253517778">மேல் வரிசை பட்டன்கள் இருக்கும் ஷார்ட்கட்டில் <ph name="META_KEY" /> பட்டன் இருக்க வேண்டும்.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7275707758336796649">இளஞ்சிவப்பு பின்னணியில் டால்மேஷன் நாயின் முழு உருவ டைனமிக் போஸ், கலர் கிரேடிங்குடன் மிகவும் தத்ரூபமான பின்னணியில் உயர் தெளிவுத்திறன் ஃபோட்டோகிராஃபியில் எடுக்கப்பட்டது</translation>
 <translation id="7281657306185710294">மனதை வருடும் நினைவுகள்</translation>
 <translation id="7287310195820267359">வால்பேப்பர் தொகுப்புகள்</translation>
+<translation id="7293429513719260019">மொழியைத் தேர்ந்தெடு</translation>
 <translation id="7297226631177386107">HTTPS இணையதளங்களுடன் இணைப்பதை ஃபயர்வால் தடுக்கிறது</translation>
 <translation id="7297726121602187087">அடர் பச்சை</translation>
 <translation id="7301262279595293068">இந்த ஆப்ஸ் புதுப்பிக்கப்படும் வரை காத்திருக்கவும்</translation>
@@ -1220,16 +1458,21 @@
 <translation id="7353413232959255829"><ph name="LIST_POSITION" />/<ph name="LIST_SIZE" /> தேடல் முடிவு: <ph name="SEARCH_RESULT_TEXT" />. ஷார்ட்கட்டிற்குச் செல்ல Enter பட்டனை அழுத்தவும்.</translation>
 <translation id="7359657277149375382">ஃபைல் வகை</translation>
 <translation id="73631062356239394">கண்டறிதல் தரவைப் பகிர்தல்</translation>
+<translation id="7369648056634183167">மழையில் பனித்துளி படர்ந்த குளத்து அல்லியின் நுட்பமான குளோஸ்-அப் காட்சி. மெல்லிய இதழ்கள் மீதும் ஒளியைப் பிரதிபலிக்கும் தண்ணீர்த் துளிகளின் மீதும் ஃபோகஸ் உடன், நீல வண்ணப் பின்னணியில் மென்மையான வெளிர் வண்ணங்கள் வெளிப்பட வேண்டும். இயற்கையான வெளிச்சத்தில் கண் நிலைக்கு நேராக வைத்து எடுக்கப்பட்ட படம்</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378170410161264436">ரெக்கார்டிங் செய்யும்போது அதில் வரும் பேச்சுகளுக்கான டிரான்ஸ்கிரிப்ஷன்களை ரெக்கார்டரால் உருவாக்க முடியும்.
 இந்த டிரான்ஸ்கிரிப்ஷன்களைப் பெற டிரான்ஸ்கிரிப்ஷன் மாடலை (அதிகபட்சம் 100 மெ.பை.) பதிவிறக்குங்கள்.</translation>
 <translation id="7384004438856720753">அரண்மனை</translation>
+<translation id="7388345524791662148"><ph name="RECORDING_NAME" />க்கான கூடுதல் விருப்பங்கள்</translation>
 <translation id="7388959671917308825">உள்ளமைந்த டச்பேட்</translation>
 <translation id="7397270852490618635">லைட் தீமினை முடக்குதல்</translation>
 <translation id="7401543881546089382">ஷார்ட்கட்டை அகற்றவும்</translation>
+<translation id="7405493795721832710"><ph name="DEVICE_NAME" /> புதுப்பிக்கப்படத் தயாராக உள்ளது</translation>
 <translation id="741244894080940828">கன்வெர்ஷன்</translation>
 <translation id="7415801143053185905">HTTP கோரிக்கைகள் மிகவும் அதிக நேரம் எடுத்துக்கொள்கின்றன</translation>
+<translation id="7418738250896500352">சுருக்குவதற்கான வார்த்தைகள் மிகவும் அதிகமாக உள்ளன</translation>
 <translation id="7425037327577270384">எனக்கு எழுத உதவு</translation>
+<translation id="7425832472614771259"><ph name="LANGUAGE_NAME" /> டிரான்ஸ்கிரிப்ஷன் மாடல் <ph name="PROGRESS_PERCENTAGE" />% பதிவிறக்கப்பட்டது</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">இந்த APNனை முடக்கவோ அகற்றவோ முடியவில்லை. <ph name="ATTACH" /> APNகள் இயக்கப்பட்டிருந்தால் அவை முடக்கப்பட்டிருப்பதை அல்லது அகற்றப்பட்டிருப்பதை உறுதிசெய்துகொள்ளவும்.</translation>
 <translation id="7458970041932198923">தோற்றப் படங்களைப் பார்க்க மற்றும் அமைக்க நெட்வொர்க்கில் இணைத்து பக்கத்தை ரெஃப்ரெஷ் செய்யவும்.</translation>
@@ -1237,14 +1480,17 @@
 <translation id="7481312909269577407">அடுத்த பக்கம்</translation>
 <translation id="7487067081878637334">தொழில்நுட்பம்</translation>
 <translation id="7490813197707563893">MAC முகவரி</translation>
+<translation id="7494145938791663804">அழகு</translation>
 <translation id="7497215489070763236">சேவையக CA சான்றிதழ்</translation>
 <translation id="7500205272584643581">பேசுபவர்களைக் கண்டறியவும் லேபிளிடவும் ரெக்கார்டரை அனுமதிக்க வேண்டுமா?</translation>
 <translation id="7501957181231305652">அல்லது</translation>
 <translation id="7502658306369382406">IPv6 முகவரி</translation>
+<translation id="7503342217608032738">சாதனத்தைப் பயன்படுத்த முடியாது</translation>
 <translation id="7507061649493508884">பிரகாசமான <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">கீழ்ப்புறம்</translation>
 <translation id="7514365320538308">பதிவிறக்கு</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519481256236810334"><ph name="RECORDING_NAME" /> ஐப் பிளே செய்யும்</translation>
 <translation id="7525067979554623046">உருவாக்கு</translation>
 <translation id="7528507600602050979">உதவி உள்ளடக்கம் இல்லை</translation>
 <translation id="7535791657097741517">லைட் தீமினை இயக்குதல்</translation>
@@ -1254,14 +1500,18 @@
 <translation id="7551123448725492271">சாதனம் ஒரு ஆடியோ சாதனம்.</translation>
 <translation id="7559239713112547082">ஸ்கிரீன்ஷாட்டின் மாதிரிக்காட்சி</translation>
 <translation id="7561454561030345039">இந்தச் செயல் உங்கள் நிர்வாகியால் நிர்வகிக்கப்படுகிறது</translation>
+<translation id="7561759921596375678">ஒலியளவை இயக்கும்</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB டச்ஸ்கிரீன்</translation>
 <translation id="757747079855995705">கல்</translation>
+<translation id="7590883480672980941">உள்ளீட்டு அமைப்புகள்</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> மீதமுள்ளது</translation>
+<translation id="7600430297804876776"><ph name="DEVICE_TYPE" /> ஐ எப்போது பயன்படுத்தலாம் என்பதை <ph name="MANAGER" /> நிர்வாகி அமைத்துள்ளார்.</translation>
 <translation id="7613724632293948900">மவுஸ் அல்லது அம்புக்குறி பட்டன்கள் மூலம் இடமாற்று.</translation>
+<translation id="7618216277886673749"><ph name="LANGUAGE_NAME" /> ஐத் தேர்ந்தெடுக்கும்</translation>
 <translation id="7618774594543487847">நியூட்ரல்</translation>
 <translation id="7620771111601174153">உதவி மையத்தில் மேலும் அறிக</translation>
-<translation id="7625095758347640998">AI வால்பேப்பர்கள்</translation>
+<translation id="7623327321610992184">OnTask Pod</translation>
 <translation id="763165478673169849">கடைசியாக மீட்டமைத்த நேரம்</translation>
 <translation id="7633068090678117093">பின்புல படம்</translation>
 <translation id="763873111564339966">கருநீலம்</translation>
@@ -1283,9 +1533,12 @@
 <translation id="7746357909584236306">திருத்தக்கூடியது</translation>
 <translation id="7747039790905080783">முன்பே பகிரப்பட்ட குறியீடு</translation>
 <translation id="7752963721013053477">டான் டூ டார்க் - பிரத்தியேகமானது</translation>
+<translation id="7760571082554155847">முகப்புப்பக்க அமைப்புகள்</translation>
 <translation id="7762130827864645708">உங்கள் கடவுச்சொல் மாற்றப்பட்டது. இனி புதிய கடவுச்சொல்லைப் பயன்படுத்தவும்.</translation>
 <translation id="7763470514545477072">டொமைனின் பிற்பாதிக்கான பொருத்தம்</translation>
+<translation id="7764171263909999400">வால்யூமெட்ரிக் லைட்</translation>
 <translation id="7769672763586021400">மாடல் ஐடி</translation>
+<translation id="7774759755755950354">பின்செல்லும்</translation>
 <translation id="7778717409420828014">Chromebook அனுபவத்தை மேம்படுத்துவதற்கு உங்கள் கருத்துகள் எங்களுக்கு உதவியாக இருக்கும். அவை எங்கள் குழுவால் மதிப்பாய்வு செய்யப்படும். புகார்களின் எண்ணிக்கை அதிகமாக இருப்பதால் எங்களால் பதிலளிக்க முடியாது.</translation>
 <translation id="7781829728241885113">நேற்று</translation>
 <translation id="7784116172884276937">DNS சேவையகங்கள் எதுவும் அமைக்கப்படவில்லை</translation>
@@ -1295,12 +1548,14 @@
 <translation id="7802764839223122985">பட்டன் ஒதுக்கப்படவில்லை. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">வேண்டாம்</translation>
 <translation id="7805768142964895445">நிலை</translation>
+<translation id="7811024689617730980">தானாக ரீசெட் செய்வதற்கான தேதியை (1 முதல் 31 வரை) தேர்ந்தெடுங்கள்</translation>
 <translation id="7813073042185856802">மலை</translation>
 <translation id="7819857487979277519">PSK (WPA அல்லது RSN)</translation>
 <translation id="7824219488248240180">பின்-உணர்வுப்பதிவியம்</translation>
 <translation id="7828503206075800057"><ph name="CAFE_STYLE" /> <ph name="CAFE_TYPE" /> கஃபே</translation>
 <translation id="7841134249932030522">டார்க் பயன்முறையை இயக்குதல்</translation>
 <translation id="7846634333498149051">கீபோர்டு</translation>
+<translation id="7847923465436619066">டிரான்ஸ்கிரிப்ஷன் மொழித் தேர்வுப் பட்டியல்</translation>
 <translation id="7849030488395653706">வடதுருவ ஒளிகள்</translation>
 <translation id="7849737607196682401">லேஸ்</translation>
 <translation id="7850320739366109486">தொந்தரவு செய்யாதே</translation>
@@ -1308,19 +1563,26 @@
 <translation id="785170686607360576">ட்யூலிப்</translation>
 <translation id="7856267634822906833">புளூடூத் டச்ஸ்கிரீன்</translation>
 <translation id="7859006200041800233">சப்பாத்திக் கள்ளி</translation>
+<translation id="7865217133132122390">மைக்கை ஆன் செய்யும்</translation>
 <translation id="7869143217755017858">டார்க் பயன்முறையை முடக்குதல்</translation>
+<translation id="7878972877380405573">வாசிப்பு உதவி மூலம் சுருக்க விவரத்தைப் பெறலாம்</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">வழங்குநர் வகை</translation>
 <translation id="7882501334836096755">பொதுக் குறியீடு</translation>
+<translation id="7889966925761734854">நகர்த்து</translation>
 <translation id="78957024357676568">இடது</translation>
 <translation id="7897043345768902965">நடைபாதை</translation>
 <translation id="7902285181767404769">ரெக்கார்டிங் செய்யும்போது அறிவிப்புகளை ஒலியடக்கப்படும்</translation>
 <translation id="7903695460270716054">தேர்ந்தெடுக்கப்பட்ட ஆர்ட்வொர்க்கையும் படங்களையும் தேர்வுசெய்யும்</translation>
+<translation id="7908543555831145677">ரெக்கார்டிங் தலைப்புகள் உருவாக்கப்பட்டன</translation>
+<translation id="7912005977894000746">முதன்மைப் பக்கத்திற்குச் செல்லும்</translation>
 <translation id="7915220255123750251">நெட்வொர்க் APN அமைப்புகளை நிர்வகிக்கலாம். மொபைல் நெட்வொர்க் மற்றும் இணையத்திற்கு இடையில் APNகள் இணைப்பை உருவாக்கும்.</translation>
+<translation id="7915759923880480519">உங்கள் நெட்வொர்க்குகள் வழியாக அனுப்பப்பட்ட தரவைப் பாதுகாக்க மீட்டமைக்கவும். நம்பகமான நெட்வொர்க்குகளை மட்டும் பயன்படுத்தவும்.</translation>
 <translation id="7936303884198020182">பெயர் சேவையகங்கள் எதுவும் இல்லை</translation>
 <translation id="7942349550061667556">சிவப்பு</translation>
 <translation id="7943235353293548836">பெர்சிஸ்டெண்ட் கீப்-அலைவ் இன்டெர்வல்</translation>
 <translation id="7943516765291457328">அருகில் உள்ள ஹாட்ஸ்பாட்களைக் கண்டறிய புளூடூத்தை இயக்கவும்</translation>
+<translation id="7944482598620888754">தள உள்ளடக்கம்</translation>
 <translation id="7944562637040950644">கீபோர்டு பேக்லைட்டை இயக்குவதற்கான அல்லது முடக்குவதற்கான ஐகான்</translation>
 <translation id="7953669802889559161">உள்ளீட்டு முறைகள்</translation>
 <translation id="7955587717700691983">புளூடூத் கீபோர்டு</translation>
@@ -1328,11 +1590,15 @@
 <translation id="7971535376154084247">பொதுவான கட்டுப்பாடுகள்</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> நெட்வொர்க்கில் இணைக்க, அமைப்புகளுக்குச் செல்லவும்</translation>
 <translation id="7978412674231730200">தனிப்பட்ட விசை</translation>
+<translation id="7979468455552394856">மாணவர்களுடன் வகுப்புக் கருவிகள் இணைக்கப்பட்டுள்ளன</translation>
+<translation id="7982789257301363584">நெட்வொர்க்</translation>
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" ஆப்ஸ் தானாகத் தொடங்கப்பட்டது}other{# ஆப்ஸ் தானாகத் தொடங்கப்பட்டன}}</translation>
 <translation id="7994702968232966508">EAP முறை</translation>
 <translation id="8004582292198964060">உலாவி</translation>
+<translation id="8010765388850538088">ஜெனரேட்டிவ் AI குறித்து மேலும் தெரிந்துகொள்ளுங்கள்</translation>
 <translation id="8017679124341497925">ஷார்ட்கட் திருத்தப்பட்டது</translation>
 <translation id="802154636333426148">பதிவிறக்க முடியவில்லை</translation>
+<translation id="8027467664787098346">தேர்ந்தெடுத்த வால்பேப்பர் குறித்து மேலும் தெரிந்துகொள்ளலாம்</translation>
 <translation id="8028993641010258682">அளவு</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">தன்னியக்க வண்ணப் பயன்முறையை இயக்கும்</translation>
@@ -1340,6 +1606,8 @@
 <translation id="8045012663542226664">மைக்ரோஃபோனை ஒலியடக்கும்</translation>
 <translation id="8054112564438735763">வெளிரிய பழுப்பு</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_BACKGROUND" /> பின்னணியில் <ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /></translation>
+<translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
+<translation id="8065371548313750052">ஆடியோ ரெக்கார்டிங்கைத் தொடங்க தொடங்க மைக்கை இணைக்கவும்</translation>
 <translation id="8067126283828232460">APN இணைக்கப்பட்டது.</translation>
 <translation id="8067208048261192356">பழுப்பு</translation>
 <translation id="8067224607978179455"><ph name="ACTION_NAME" /> ஐ நீக்கும்</translation>
@@ -1349,13 +1617,18 @@
 <translation id="8082366717211101304">Android ஆப்ஸில் இருந்து DNS கோரிக்கையைத் தீர்க்க முடியவில்லை</translation>
 <translation id="8082644724189923105">கீபோர்டு பகுதி</translation>
 <translation id="808894953321890993">கடவுச்சொல்லை மாற்று</translation>
+<translation id="8088963492174775412">ரெக்கார்டு செய்ய அழுத்தவும்</translation>
 <translation id="8094062939584182041">இந்தச் சிக்கல் குறித்து எனக்கு மின்னஞ்சல் அனுப்ப Googleளை அனுமதி</translation>
 <translation id="8104083085214006426">பொதுவான, பாதுகாப்பற்ற நெட்வொர்க்கைப் பயன்படுத்துகிறீர்கள்</translation>
+<translation id="8108879170356113798"><ph name="NUM_SECONDS" /> வினாடிகளுக்குப் பிறகுதான் வகுப்புக் கருவிகளை உங்களால் பயன்படுத்த முடியும்</translation>
 <translation id="811820734797650957">(Android) கேட்வேயைத் தொடர்புகொள்வது</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">உறுதிப்படுத்து</translation>
 <translation id="8132480444149501833">டிராஃபிக் கவுண்ட்டர்களைக் கோரு</translation>
+<translation id="8135609423982943441">உங்கள் Chromebook பாதுகாப்பான இயல்பு அமைப்புகளுக்கு மீட்டமைக்கப்பட்டது. இவற்றை எப்போது வேண்டுமானாலும் அமைப்புகளில் மாற்றிக்கொள்ளலாம்.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8140591278915222789">சொந்தமாக உருவாக்குங்கள்</translation>
+<translation id="8142182840415860496">வெள்ளை மற்றும் மஞ்சள் நிறத்தில் சில பூக்கள் இருக்கும் குளோஸ்-அப் காட்சி, அனிமேஷன் படத்தில் இருந்து எடுக்கப்பட்ட ஸ்டில், நீல வானத்தின் பின்னணியில், இலைகள் இல்லாமலோ இலைகளுடனோ இரண்டு பெரிய மஞ்சள் துலிப் மலர்களுக்கு இடையில் வைக்கப்பட்ட, நீண்ட இதழ்கள் மற்றும் பச்சைத் தண்டுடன்கூடிய மென்மையான வெளிர் இளஞ்சிவப்பு மலர், உயர் தெளிவுத்திறனில் நுணுக்கமான விஷயங்களும் தெளிவாகத் தெரியும்படியான சினிமாட்டிக் ஸ்டில், அழகிய ஒளியமைப்பு, ஊடுருவும் ஒளி, உணர்ச்சியைப் பிரதிபலிக்கும் ஒளி ஆகியவற்றுடன் கூடிய ஆக்ட்டேன் ரென்டர்.</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> ஐத் தேர்ந்தெடுங்கள்</translation>
 <translation id="8151185429379586178">டெவெலப்பர் கருவிகள்</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
@@ -1366,11 +1639,11 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">கடற்கரை</translation>
 <translation id="819278132617411009">பணிச் செயல்திறனை அதிகரிக்க Google AIயைப் பயன்படுத்துங்கள்</translation>
+<translation id="8200772114523450471">மீண்டும் தொடங்கு</translation>
 <translation id="8206859287963243715">செல்லுலர்</translation>
 <translation id="8208861521865154048">சலுகைகள்</translation>
 <translation id="8226628635270268143">உங்களுக்குப் பிடித்த படங்களையும் ஆல்பங்களையும் தேர்வுசெய்க</translation>
 <translation id="8227119283605456246">ஃபைலை இணை</translation>
-<translation id="8227488649450500937">இவற்றில் ஒரு ப்ராம்ப்ட்டை முயலவும் அல்லது <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ப்ராம்ப்ட்டிங் வழிகாட்டலைப்<ph name="END_LINK_PROMPTING_GUIDE" /> பார்க்கவும்</translation>
 <translation id="8230672074305416752">இயல்புநிலை நெட்வொர்க் கேட்வேயைப் பிங் செய்ய முடியவில்லை</translation>
 <translation id="8238771987802558562">APNனைத் தேர்வுசெய்தல்</translation>
 <translation id="8246209727385807362">அறியப்படாத தொலைத்தொடர்பு நிறுவனம்</translation>
@@ -1379,13 +1652,15 @@
 <translation id="8261506727792406068">நீக்கு</translation>
 <translation id="8262870577632766028">1 மணிநேரம்</translation>
 <translation id="827422111966801947">இண்டிகோ</translation>
-<translation id="8281886186245836920">தவிர்</translation>
+<translation id="8280687443902283243">தலைப்பை மாற்றலாம்</translation>
 <translation id="8286154143153872371">வால்பேப்பரைப் பார்க்க நெட்வொர்க்குடன் இணைத்து, பக்கத்தை ரெஃப்ரெஷ் செய்யவும்.</translation>
 <translation id="8291967909914612644">உள்நாட்டு மொபைல் சேவை வழங்குநரின் நாடு</translation>
 <translation id="8294431847097064396">மூலம்</translation>
 <translation id="8302368968391049045">HTTPS ஃபயர்வால்</translation>
+<translation id="8308787307410010965">தள உள்ளடக்க அமைப்புகள்</translation>
 <translation id="8312330582793120272">மீடியாவைப் பிளே செய்வதற்கான ஐகான்</translation>
 <translation id="8318753676953949627">படங்கள் இல்லை</translation>
+<translation id="8319809980370328428">ரெக்கார்டிங் சுருக்க விவரம் மற்றும் தலைப்பு உருவாக்கம்</translation>
 <translation id="8320910311642849813">காடு</translation>
 <translation id="8329018942023753850">கால்குலேட்டர் ஆப்ஸ் ஐகான்</translation>
 <translation id="8336739000755212683">சாதனக் கணக்கின் படத்தை மாற்றவும்</translation>
@@ -1407,12 +1682,14 @@
 <translation id="8395584934117017006">இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை நிறுவனம் நிர்வகிக்கிறது</translation>
 <translation id="8398927464629426868">தற்போது சாதனத்தில் சார்ஜ் ஏறும் அல்லது குறையும் வீதம்</translation>
 <translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> ஸ்டைலில் <ph name="ART_FEATURE" /> இன் ஓவியம்</translation>
+<translation id="8409219750150841791">உருவாக்கப்பட்ட சுருக்க விவரம்:</translation>
 <translation id="8410244574650205435">தானாகக் கண்டறியப்பட்டது</translation>
 <translation id="8420955526972171689">வன்பொருள் சிக்கல்களைக் கண்டறிய சோதனைகளை இயக்கலாம், பிழையறிந்து திருத்தலாம்</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">கீழ்</translation>
 <translation id="8428213095426709021">அமைப்புகள்</translation>
 <translation id="8431300646573772016">ChromeOSஸில் புதியவை</translation>
+<translation id="8433186206711564395">நெட்வொர்க் அமைப்புகள்</translation>
 <translation id="843568408673868420">இணைய இணைப்பு</translation>
 <translation id="844521431886043384">DNS அமைக்கப்படவில்லை</translation>
 <translation id="8456200178779628126">படிக்கவும் எழுதவும் உதவியைப் பெற Google AIயைப் பயன்படுத்துங்கள்</translation>
@@ -1423,6 +1700,8 @@
 <translation id="8476942730579767658">சாளரங்களும் டெஸ்க்குகளும்</translation>
 <translation id="8477536061607044749">கிராஃபிக் டிசைன்</translation>
 <translation id="8477551185774834963">DNSஸில் ஏற்படும் தாமதம் அனுமதிக்கப்படும் வரம்பைவிடச் சற்றே அதிகமாக உள்ளது</translation>
+<translation id="8481308460877552925">உண்மையில் சரியானதாக இல்லை</translation>
+<translation id="8482376765267780829">சுருக்க சில வார்த்தைகளைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="8483248364096924578">IP முகவரி</translation>
 <translation id="8491311378305535241">Android ஆப்ஸில் இருந்து HTTPS இணையதளங்களுடன் இணைப்பதை ஃபயர்வால் தடுக்கிறது</translation>
 <translation id="8495070016475833911">ஃபெல்ட்</translation>
@@ -1430,30 +1709,37 @@
 <translation id="8503813439785031346">பயனர்பெயர்</translation>
 <translation id="8503836310948963452">இன்னும் சில நிமிடங்கள் காத்திருக்கவும்...</translation>
 <translation id="8505011850330200833">டிரான்ஸ்கிரிப்ட்டுகளைச் செயலாக்கவும் சுருக்க விவரங்களை உருவாக்கவும் Gemini மாடலுக்கு 2 ஜி.பை. சேமிப்பகம் தேவைப்படுகிறது</translation>
+<translation id="8506063704538210734">ஊதா மற்றும் இளஞ்சிவப்பு வண்ணக்கலவையில் முன்புறம் சில மரங்களுடன் இரவு நேர வானில் எரிகல் பொழியும் படம்</translation>
+<translation id="8506394543220680287">பனியால் மூடப்பட்டுள்ளது</translation>
 <translation id="8508640263392900755">APN விவரங்கள்</translation>
 <translation id="8522687886059337719">இப்போது நீங்கள் புதிய <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />வால்பேப்பர்களையும்<ph name="END_LINK_WALLPAPER_SUBPAGE" /> <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ஸ்கிரீன் சேவரையும்<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> அணுகலாம்</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">தேநீர் விடுதி</translation>
+<translation id="8531692079895415839">பனிமூட்டம்</translation>
 <translation id="8538236298648811558">Google AI வழங்குவது</translation>
 <translation id="8550364285433943656">கீபோர்டு பட்டன்கள் மூலம் விளையாட, கட்டுப்பாட்டை கேம் ஆக்‌ஷன்களுக்கு அமைத்திடுங்கள்</translation>
 <translation id="8557447961879934694">WPA2</translation>
+<translation id="8558521694042102707">நபர்களைப் பற்றிய விவரங்கள் உள்ளிட்ட துல்லியமற்ற தகவல்களை ஜெனரேட்டிவ் AI வழங்கக்கூடும் என்பதால் அதன் பதில்களைச் சரிபார்த்துக்கொள்ளுங்கள்.</translation>
 <translation id="8575298406870537639">சேவை வழங்கும் நிறுவனத்தின் நெட்வொர்க்குடன் இணைக்க இந்த விருப்பத்தை இயக்க வேண்டியிருக்கலாம். விவரங்களுக்கு சேவை வழங்கும் நிறுவனத்தைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="8576249514688522074">ஆரம்பிக்கப்படவில்லை</translation>
+<translation id="8584654835905316966"><ph name="DEVICE_NAME" />க்கான நிலைபொருளின் <ph name="VERSION" /> பதிப்பை நிறுவ சாதனத்தை மீண்டும் தொடங்க வேண்டும். உங்கள் கம்ப்யூட்டர் சில முறை மறுபடி தொடங்கப்படலாம். இது வழக்கமானதே.</translation>
 <translation id="8593058461203131755">மீடியாவை இடைநிறுத்துவதற்கான ஐகான்</translation>
 <translation id="8620617069779373398">ரோமிங் நிலை</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" />க்கான கூடுதல் செயல்கள்</translation>
 <translation id="86356131183441916">வெளிர் ஊதா</translation>
 <translation id="8647595191512746911">ஆடியோ டிரான்ஸ்கிரிப்ஷன்</translation>
+<translation id="8650852232143958317">உங்கள் Gmail மற்றும் Google Drive ஃபைல்களை உங்களுடனே வைத்திருங்கள்</translation>
 <translation id="8651481478098336970">ஒலியை அடக்கும்</translation>
 <translation id="8655295600908251630">சேனல்</translation>
 <translation id="8655828773034788261">இந்த URLலைப் பகிர்:</translation>
 <translation id="8660881923941176839">பவுண்டுகள்</translation>
-<translation id="8670057600920888023">ஜெனரேட்டிவ் AI பரிசோதனைக் கட்டத்தில் உள்ளதால் அது வழங்கும் உள்ளடக்கம் துல்லியமற்றதாகவோ தவறாக வழிநடத்துவதாகவோ மனதைப் புண்படுத்துவதாகவோ இருக்கக்கூடும்.</translation>
+<translation id="8669187096858652220">பக்கங்களைப் பார்க்க கிளிக் செய்யவும்</translation>
 <translation id="8670574982334489519">வலதுபுறம்</translation>
 <translation id="8675354002693747642">முன்பே பகிரப்பட்ட விசை</translation>
 <translation id="8677859815076891398">ஆல்பங்கள் எதுவுமில்லை. <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />ஸில் ஓர் ஆல்பத்தை உருவாக்குங்கள்.</translation>
 <translation id="8682949824227998083">ராமென்</translation>
 <translation id="8689520252402395106">புதுப்பிப்பைத் தொடர <ph name="DEVICE_NAME" /> இன் USB கேபிளை மீண்டும் செருகவும்</translation>
+<translation id="8699053192961439771">பக்கங்களைத் தானாக மறைக்க கிளிக் செய்யவும்</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> இந்த அம்சத்தை நிர்வகிக்க, இடது/வலது அம்புக்குறி விசையைப் பயன்படுத்துங்கள்.</translation>
 <translation id="8712637175834984815">புரிந்தது</translation>
 <translation id="871560550817059752">பிரிண்டரில் மை தீர்ந்துவிட்டதால் அச்சிட முடியவில்லை</translation>
@@ -1466,8 +1752,8 @@
 <translation id="8747900814994928677">மாற்றத்தை உறுதிப்படுத்துங்கள்</translation>
 <translation id="8749478549112817787">கேமராவின் பின்புலம்</translation>
 <translation id="8755946156089753497">கோபுரம்</translation>
-<translation id="8756235582947991808">AI மூலம் உருவாக்குதலும் நினைவில் கொள்ள வேண்டிய சில விஷயங்களும்</translation>
 <translation id="8760616037557661287">முந்தைய ப்ராம்ப்ட்டுகள்</translation>
+<translation id="876280838467039397"><ph name="LANGUAGE_NAME" /> டிரான்ஸ்கிரிப்ஷன் மாடலைத் தேர்ந்தெடுத்துப் பதிவிறக்கும்</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos ஆல்பம்</translation>
 <translation id="8775713578693478175">மோடம் APN</translation>
@@ -1475,6 +1761,8 @@
 <translation id="879568662008399081">இந்த நெட்வொர்க்கில் கேப்டிவ் போர்டல் இருக்கலாம்</translation>
 <translation id="8798099450830957504">இயல்புநிலை</translation>
 <translation id="8798441408945964110">வழங்குநர் பெயர்</translation>
+<translation id="8804164990146287819">தனியுரிமைக் கொள்கை</translation>
+<translation id="8808828119384186784">Chrome அமைப்புகள்</translation>
 <translation id="8814190375133053267">வைஃபை</translation>
 <translation id="8818152010000655963">வால்பேப்பர்</translation>
 <translation id="8820457400746201697">நீல வண்ண டச் பாயிண்ட்டை ஒரு செயலுக்கு நகர்த்தவும். பிரத்தியேகமாக்க, தொடர்புடைய பட்டனைத் தேர்ந்தெடுக்கவும்.</translation>
@@ -1494,6 +1782,7 @@
 <translation id="8876270629542503161">சாதனம் ஒரு டேப்லெட்.</translation>
 <translation id="8881098542468797602">சோதனை நிறைவடைந்தது</translation>
 <translation id="8882789155418924367">ஆந்தைகள்</translation>
+<translation id="8885038613856655272">மைக்கை இணையுங்கள்</translation>
 <translation id="8892443466059986410">ஷார்ட்கட்டைத் திருத்துவதை ரத்துசெய்யும்</translation>
 <translation id="8898840733695078011">சிக்னலின் வலிமை</translation>
 <translation id="8909114361904403025">மேல்நோக்கிய அம்புக்குறி ஐகான்</translation>
@@ -1508,6 +1797,7 @@
 <translation id="8930622219860340959">கம்பியில்லா</translation>
 <translation id="8933650076320258356"><ph name="DIRECTION" />க்குத் தேர்ந்தெடுக்கப்பட்ட பட்டன்: <ph name="KEYS" />. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">கிளையண்ட் IP முகவரி</translation>
+<translation id="8938606491880817721">பதிவிறக்க முடியவில்லை. மீண்டும் முயலவும் அல்லது உங்கள்<ph name="DEVICE_TYPE" /> சாதனத்தை மீண்டும் தொடங்கவும்.</translation>
 <translation id="8944651180182756621">தொடக்கி வண்ணம்</translation>
 <translation id="8945308580158685341">தேனீக்கள்</translation>
 <translation id="894617464444543719">சாதனம் ஒரு மொபைல்.</translation>
@@ -1522,9 +1812,12 @@
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ஸ்கேன் செய்}=1{{NUMBER_OF_PAGES} பக்கங்களை ஸ்கேன் செய்}other{{NUMBER_OF_PAGES} பக்கங்களை ஸ்கேன் செய்}}</translation>
 <translation id="89945434909472341">கிராமம்</translation>
 <translation id="8997710128084572139">சாதனத்தின் பேட்டரி நிலை <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="8998002498898621320">தத்ரூபமான படம்</translation>
 <translation id="8998289560386111590">உங்கள் சாதனத்தில் இல்லை</translation>
+<translation id="9000871120886759611">உங்களுக்கு விருப்பமான மொழியில் தகவலை அணுகுவதை உறுதிசெய்ய மீட்டமைக்கவும். விருப்பமான மொழிகள் மட்டும் பயன்படுத்தப்பட்டுள்ளனவா என்பதைப் பார்க்கவும்.</translation>
 <translation id="9003499805101629690">பீட்சா</translation>
 <translation id="9003704114456258138">அதிர்வெண்</translation>
+<translation id="9017411601860840405">நியான் லைட்டுகள்</translation>
 <translation id="901834265349196618">மின்னஞ்சல்</translation>
 <translation id="9022897536196898720">பூக்கள்</translation>
 <translation id="9024331582947483881">முழுத்திரை</translation>
@@ -1545,10 +1838,13 @@
 <translation id="9082718469794970195">இந்த வீடியோவைப் பயன்படுத்து</translation>
 <translation id="9087578468327036362">இந்த வினவல் குறித்துப் புகாரளிக்கலாம்</translation>
 <translation id="9088306295921699330">தற்போதைய உபயோகம்</translation>
+<translation id="9088994563996376283">சுருக்கு</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">தேதியை மீட்டமைப்பது குறித்த கூடுதல் தகவல்கள்</translation>
 <translation id="9100765901046053179">மேம்பட்ட அமைப்புகள்</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> வலைதளத்திற்கான டிக்கெட்டை ரெஃப்ரெஷ் செய்யவும்</translation>
 <translation id="9106415115617144481">ஸ்கேன் செய்யப்படும் பக்கம்: <ph name="PAGE_NUMBER" /></translation>
+<translation id="9108856746036501072">ரெக்கார்டிங் செய்யும்போது அதில் வரும் பேச்சுகளுக்கான டிரான்ஸ்கிரிப்ஷன்களை ரெக்கார்டரால் உருவாக்க முடியும். அடுத்து, டிரான்ஸ்கிரிப்ஷன் மொழியைத் தேர்ந்தெடுத்து மாடலை நீங்கள் பதிவிறக்க வேண்டும் (அதிகபட்சம் 100MB).</translation>
 <translation id="9111102763498581341">அன்லாக் செய்</translation>
 <translation id="9122492456897874028">உள்ளடக்கத்தைச் சுருக்கலாம், விளங்கங்களைப் பெறலாம், மேலும் பலவற்றைச் செய்யலாம்</translation>
 <translation id="9122602430962285795">மீண்டும் இணைக்க, அமைப்புகளுக்குச் செல்லவும்</translation>
@@ -1566,6 +1862,7 @@
 <translation id="917720651393141712">சோதனை செய்</translation>
 <translation id="9188992814426075118">உங்கள் வால்பேப்பருக்கு ஏற்றவாறு கீபோர்டு வண்ணம் தானாகவே மாறும்</translation>
 <translation id="9189000703457422362">தானாகக் கண்டறியப்பட்ட APNகளைப் பயன்படுத்தி இந்த நெட்வொர்க் உடன் இணைக்க முடியவில்லை. கூடுதல் தகவலுக்கு உங்கள் மொபைல் நிறுவனத்தைத் தொடர்புகொள்ளவும்.</translation>
+<translation id="9190726385682694354"><ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9195918315673527512">தேர்ந்தெடுக்கப்பட்ட ஜாய்ஸ்டிக் பட்டன்கள்: <ph name="KEYS" />. கன்ட்ரோலை மாற்ற பட்டன் மீது தட்டவும்.</translation>
 <translation id="9204237731135241582">Android ஆப்ஸில் இருந்து கேட்வேயைத் தொடர்புகொள்ள முடியவில்லை</translation>
@@ -1579,6 +1876,8 @@
 <translation id="951780398843003443">ஒவ்வொருவரும் என்ன பேசினார்கள், எப்போது பேசினார்கள் என்பதை டிரான்ஸ்கிரிப்ட்டில் காட்ட ரெக்கார்டிங் முழுவதிலும் குரல்களை ஒப்பிடுதல்.</translation>
 <translation id="952992212772159698">செயலாக்கப்படவில்லை</translation>
 <translation id="95718197892796296">களிமண்</translation>
+<translation id="959792926760890141">பாதுகாப்பு மீட்டமைவு Chrome பிரவுசர் நீட்டிப்புகளை முடக்கும், நெட்வொர்க்குகளையும் பிற அமைப்புகளையும் பாதுகாப்பான இயல்பு அமைப்புகளுக்கு மீட்டமைக்கும்.
+          உங்கள் இயல்பான தேடல் இன்ஜின் மீட்டமைக்கப்படும். ஆனால் உங்கள் பக்கங்கள், ஃபைல்கள், குக்கீகள், பதிவு ஆகியவை அப்படியே இருக்கும்.</translation>
 <translation id="960719561871045870">ஆபரேட்டர் குறியீடு</translation>
 <translation id="965918541715156800">மஞ்சள் மற்றும் பசும் நீலம்</translation>
 <translation id="966787709310836684">மெனு</translation>
@@ -1586,5 +1885,6 @@
 <translation id="982713511914535780">டிஸ்சார்ஜ் சோதனையை இயக்கு</translation>
 <translation id="98515147261107953">லேண்ட்ஸ்கேப்</translation>
 <translation id="987264212798334818">பொது</translation>
+<translation id="994473081369871639">மைக்கை ஆஃப் செய்யும்</translation>
 <translation id="995062385528875723">உச்சரிப்பு எழுத்துகள், லத்தீன் அல்லாத எழுத்துகள் அல்லது குறியீடுகளைப் பயன்படுத்த முடியாது</translation>
 </translationbundle>

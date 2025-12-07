@@ -9,7 +9,7 @@
 
 #import "chrome/browser/ui/cocoa/applescript/element_applescript.h"
 
-class Browser;
+class BrowserWindowInterface;
 class Profile;
 @class TabAppleScript;
 
@@ -23,7 +23,7 @@ class Profile;
 - (instancetype)initWithProfile:(Profile*)aProfile;
 
 // Does not create a new window but uses an existing one.
-- (instancetype)initWithBrowser:(Browser*)aBrowser;
+- (instancetype)initWithBrowser:(BrowserWindowInterface*)aBrowser;
 
 // Sets and gets the index of the currently selected tab. 1-based because
 // this is intended for use by AppleScript.

@@ -4,6 +4,7 @@
 
 #include "android_webview/browser/aw_devtools_manager_delegate.h"
 
+#include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/gfx/browser_view_renderer.h"
 #include "android_webview/common/aw_content_client.h"
 #include "base/json/json_writer.h"
@@ -39,9 +40,7 @@ std::string AwDevToolsManagerDelegate::GetTargetDescription(
     description.Set("width", screen_rect.width());
     description.Set("height", screen_rect.height());
   }
-  std::string json;
-  base::JSONWriter::Write(description, &json);
-  return json;
+  return base::WriteJson(description).value_or("");
 }
 
 std::string AwDevToolsManagerDelegate::GetDiscoveryPageHTML() {
@@ -75,5 +74,9 @@ AwDevToolsManagerDelegate::RemoteDebuggingTargets(TargetType target_type) {
     result.push_back(*it);
   }
   return result;
+}
+
+content::BrowserContext* AwDevToolsManagerDelegate::GetDefaultBrowserContext() {
+  return AwBrowserContext::GetDefault();
 }
 }  // namespace android_webview

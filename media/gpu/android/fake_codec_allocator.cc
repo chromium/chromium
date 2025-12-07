@@ -46,8 +46,9 @@ void FakeCodecAllocator::ReleaseMediaCodec(
 MockMediaCodecBridge* FakeCodecAllocator::ProvideMockCodecAsync(
     std::unique_ptr<MockMediaCodecBridge> codec) {
   DCHECK(pending_codec_created_cb_);
-  auto mock_codec = codec ? std::move(codec)
-                          : std::make_unique<NiceMock<MockMediaCodecBridge>>();
+  auto mock_codec =
+      codec ? std::move(codec)
+            : MockMediaCodecBridge::CreateMockVideoDecoder(*most_recent_config);
   auto* raw_codec = mock_codec.get();
   most_recent_codec = raw_codec;
   most_recent_codec_destruction_observer =

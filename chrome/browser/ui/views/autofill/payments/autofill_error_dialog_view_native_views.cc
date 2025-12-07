@@ -5,15 +5,19 @@
 #include "chrome/browser/ui/views/autofill/payments/autofill_error_dialog_view_native_views.h"
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/autofill/payments/view_factory.h"
+#include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
+#include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/autofill/core/browser/ui/payments/autofill_error_dialog_controller.h"
-#include "components/constrained_window/constrained_window_views.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/vector_icon_utils.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -27,9 +31,10 @@ namespace autofill {
 AutofillErrorDialogViewNativeViews::AutofillErrorDialogViewNativeViews(
     AutofillErrorDialogController* controller)
     : controller_(controller->GetWeakPtr()) {
-  SetButtons(ui::DIALOG_BUTTON_CANCEL);
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, controller_->GetButtonLabel());
-  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kCancel));
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
+                 controller_->GetButtonLabel());
+  SetModalType(ui::mojom::ModalType::kChild);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   SetShowCloseButton(false);
@@ -53,8 +58,9 @@ void AutofillErrorDialogViewNativeViews::Dismiss() {
 }
 
 views::View* AutofillErrorDialogViewNativeViews::GetContentsView() {
-  if (!children().empty())
+  if (!children().empty()) {
     return this;
+  }
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
@@ -86,8 +92,9 @@ views::View* AutofillErrorDialogViewNativeViews::GetContentsView() {
 }
 
 void AutofillErrorDialogViewNativeViews::AddedToWidget() {
-  GetBubbleFrameView()->SetTitleView(CreateTitleView(
-      GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
+  GetBubbleFrameView()->SetTitleView(
+      std::make_unique<TitleWithIconAfterLabelView>(
+          GetWindowTitle(), TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
 }
 
 std::u16string AutofillErrorDialogViewNativeViews::GetWindowTitle() const {
@@ -104,7 +111,13 @@ base::WeakPtr<AutofillErrorDialogView> CreateAndShowAutofillErrorDialog(
     content::WebContents* web_contents) {
   AutofillErrorDialogViewNativeViews* dialog_view =
       new AutofillErrorDialogViewNativeViews(controller);
-  constrained_window::ShowWebModalDialogViews(dialog_view, web_contents);
+  tabs::TabInterface* tab_interface =
+      tabs::TabInterface::GetFromContents(web_contents);
+  tab_interface->GetTabFeatures()
+      ->tab_dialog_manager()
+      ->CreateAndShowDialog(dialog_view,
+                            std::make_unique<tabs::TabDialogManager::Params>())
+      .release();
   return dialog_view->GetWeakPtr();
 }
 

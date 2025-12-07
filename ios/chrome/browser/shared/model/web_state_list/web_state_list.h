@@ -19,17 +19,11 @@
 #include "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #include "url/gurl.h"
 
-// TODO(crbug.com/328831758): Remove this once all use cases for
-// MoveWebStateWrapperAt have landed and covered by tests.
-#include "base/gtest_prod_util.h"
-
 class RemovingIndexes;
 class TabGroup;
 class WebStateListDelegate;
+class WebStateListGroupsDelegate;
 class WebStateListObserver;
-// TODO(crbug.com/328831758): Remove this once all use cases for
-// MoveWebStateWrapperAt have landed and covered by tests.
-class WebStateListTest;
 
 namespace tab_groups {
 class TabGroupId;
@@ -129,13 +123,10 @@ class WebStateList {
   };
 
   // Constants used when closing WebStates.
-  enum ClosingFlags {
-    // Used to indicate that nothing special should happen to the closed
-    // WebState.
-    CLOSE_NO_FLAGS = 0,
-
-    // Used to indicate that the WebState was closed due to user action.
-    CLOSE_USER_ACTION = 1 << 0,
+  enum class ClosingReason {
+    kDefault,      // Closed programmatically.
+    kUserAction,   // Closed due to an user action.
+    kTabsCleanup,  // Closed due to tabs cleanup.
   };
 
   // Scoped type representing a batch operation in progress.
@@ -180,7 +171,8 @@ class WebStateList {
     raw_ptr<WebStateList> web_state_list_ = nullptr;
   };
 
-  explicit WebStateList(WebStateListDelegate* delegate);
+  explicit WebStateList(WebStateListDelegate* delegate,
+                        WebStateListGroupsDelegate* groups_delegate = nullptr);
 
   WebStateList(const WebStateList&) = delete;
   WebStateList& operator=(const WebStateList&) = delete;
@@ -275,16 +267,14 @@ class WebStateList {
   // to the caller (abandon ownership of the returned WebState).
   std::unique_ptr<web::WebState> DetachWebStateAt(int index);
 
-  // Closes and destroys the WebState at the specified index. The `close_flags`
-  // is a bitwise combination of ClosingFlags values.
-  void CloseWebStateAt(int index, int close_flags);
+  // Closes and destroys the WebState at the specified index.
+  void CloseWebStateAt(int index, ClosingReason close_reason);
 
   // Makes the WebState at the specified index the active WebState.
   void ActivateWebStateAt(int index);
 
-  // Closes and destroys all WebStates at `removing_indexes`. The `close_flags`
-  // is a bitwise combination of ClosingFlags values.
-  void CloseWebStatesAtIndices(int close_flags,
+  // Closes and destroys all WebStates at `removing_indexes`.
+  void CloseWebStatesAtIndices(ClosingReason close_reason,
                                RemovingIndexes removing_indexes);
 
   // Returns the tab group the WebState belongs to, if any. Otherwise, returns
@@ -509,16 +499,25 @@ class WebStateList {
   // there is no active WebState.
   void OnActiveWebStateChanged();
 
+  // Returns true if a web state insertion is necessary to prevent an
+  // undesirable state. For instance, this function returns true when detaching
+  // the last tab of a shared group, as it avoids accidental group deletion by
+  // inserting a web state.
+  bool ShouldInsertWebState(const TabGroup* group);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // The WebStateList delegate.
   raw_ptr<WebStateListDelegate> delegate_ = nullptr;
 
-  // Wrappers to the WebStates hosted by the WebStateList.
-  std::vector<std::unique_ptr<WebStateWrapper>> web_state_wrappers_;
+  // The WebStateList groups delegate.
+  raw_ptr<WebStateListGroupsDelegate> groups_delegate_ = nullptr;
 
   // The current set of groups.
   std::set<std::unique_ptr<TabGroup>, base::UniquePtrComparator> groups_;
+
+  // Wrappers to the WebStates hosted by the WebStateList.
+  std::vector<std::unique_ptr<WebStateWrapper>> web_state_wrappers_;
 
   // List of observers notified of changes to the model.
   base::ObserverList<WebStateListObserver, true> observers_;
@@ -539,43 +538,32 @@ class WebStateList {
 
   // Weak pointer factory.
   base::WeakPtrFactory<WebStateList> weak_factory_{this};
-
-  // TODO(crbug.com/328831758): Remove this once all use cases for
-  // MoveWebStateWrapperAt have landed and covered by tests.
-  FRIEND_TEST_ALL_PREFIXES(WebStateListTest, MoveToGroup_NoMove_GoToRightGroup);
-  FRIEND_TEST_ALL_PREFIXES(WebStateListTest,
-                           MoveToGroup_NoMove_GoToRightGroup_OldGroupEmpty);
-  FRIEND_TEST_ALL_PREFIXES(WebStateListTest,
-                           MoveToGroup_NoMove_GoToRightGroup_OldGroupNonEmpty);
-  FRIEND_TEST_ALL_PREFIXES(WebStateListTest, MoveToGroup_NoMove_PinnedToGroup);
 };
 
 // Helper function that closes all WebStates in `web_state_list`. The operation
 // is performed as a batch operation and thus cannot be called from another
-// batch operation. The `close_flags` is a bitwise combination of ClosingFlags
-// values.
-void CloseAllWebStates(WebStateList& web_state_list, int close_flags);
+// batch operation.
+void CloseAllWebStates(WebStateList& web_state_list,
+                       WebStateList::ClosingReason close_reason);
 
 // Helper function that closes all regular WebStates in `web_state_list`. The
 // operation is performed as a batch operation and thus cannot be called from
-// another batch operation. The `close_flags` is a bitwise combination of
-// ClosingFlags values.
-void CloseAllNonPinnedWebStates(WebStateList& web_state_list, int close_flags);
+// another batch operation.
+void CloseAllNonPinnedWebStates(WebStateList& web_state_list,
+                                WebStateList::ClosingReason close_reason);
 
 // Helper function that closes all WebStates from `group` in `web_state_list`.
 // The operation is performed as a batch operation and thus cannot be called
-// from another batch operation. The `close_flags` is a bitwise combination of
-// ClosingFlags values.
+// from another batch operation.
 void CloseAllWebStatesInGroup(WebStateList& web_state_list,
                               const TabGroup* group,
-                              int close_flags);
+                              WebStateList::ClosingReason close_reason);
 
 // Helper function that closes all WebStates in `web_state_list` that are not at
 // `index_to_keep`. The operation is performed as a batch operation and thus
-// cannot be called from another batch operation. The `close_flags` is a bitwise
-// combination of ClosingFlags values.
+// cannot be called from another batch operation.
 void CloseOtherWebStates(WebStateList& web_state_list,
                          int index_to_keep,
-                         int close_flags);
+                         WebStateList::ClosingReason close_reason);
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_WEB_STATE_LIST_H_

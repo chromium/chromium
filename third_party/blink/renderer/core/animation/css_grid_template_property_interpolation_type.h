@@ -34,7 +34,7 @@ class CSSGridTemplatePropertyInterpolationType : public CSSInterpolationType {
                  double interpolation_fraction) const final;
 
   static InterpolableValue* CreateInterpolableGridTrackList(
-      const NGGridTrackList& track_list,
+      const GridTrackList& track_list,
       const CSSProperty& property,
       float zoom);
 
@@ -46,7 +46,7 @@ class CSSGridTemplatePropertyInterpolationType : public CSSInterpolationType {
   InterpolationValue MaybeConvertInherit(const StyleResolverState&,
                                          ConversionCheckers&) const final;
   InterpolationValue MaybeConvertValue(const CSSValue&,
-                                       const StyleResolverState*,
+                                       const StyleResolverState&,
                                        ConversionCheckers&) const final;
 
   CSSPropertyID property_id_;

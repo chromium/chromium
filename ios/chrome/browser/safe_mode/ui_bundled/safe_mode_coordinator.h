@@ -5,24 +5,24 @@
 #ifndef IOS_CHROME_BROWSER_SAFE_MODE_UI_BUNDLED_SAFE_MODE_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_SAFE_MODE_UI_BUNDLED_SAFE_MODE_COORDINATOR_H_
 
-#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
-
 #import <UIKit/UIKit.h>
 
-class Browser;
-@class SafeModeCoordinator;
+#import "ios/chrome/browser/shared/coordinator/root_coordinator/root_coordinator.h"
 
-@protocol SafeModeCoordinatorDelegate<NSObject>
+@class SafeModeCoordinator;
+@class SceneState;
+
+@protocol SafeModeCoordinatorDelegate <NSObject>
 - (void)coordinatorDidExitSafeMode:(SafeModeCoordinator*)coordinator;
 @end
 
 // Coordinator to manage the Safe Mode UI. This should be self-contained.
-@interface SafeModeCoordinator : ChromeCoordinator
+@interface SafeModeCoordinator : RootCoordinator
 
-- (instancetype)initWithWindow:(UIWindow*)window NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithSceneState:(SceneState*)sceneState
+    NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
 
 // Delegate for this coordinator.
 @property(nonatomic, weak) id<SafeModeCoordinatorDelegate> delegate;

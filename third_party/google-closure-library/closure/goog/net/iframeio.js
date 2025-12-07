@@ -376,17 +376,6 @@ goog.net.IframeIo.addFormInputs_ = function(form, data) {
 
 
 /**
- * @return {boolean} Whether we can use readyState to monitor iframe loading.
- * @private
- */
-goog.net.IframeIo.useIeReadyStateCodePath_ = function() {
-  'use strict';
-  // ReadyState is only available on iframes up to IE10.
-  return goog.userAgent.IE && !goog.userAgent.isVersionOrHigher('11');
-};
-
-
-/**
  * Reference to a logger for the IframeIo objects
  * @type {goog.log.Logger}
  * @private
@@ -860,162 +849,127 @@ goog.net.IframeIo.prototype.sendFormInternal_ = function() {
   // Make Iframe
   this.createIframe_();
 
-  if (goog.net.IframeIo.useIeReadyStateCodePath_()) {
-    // In IE<11 we simply create the frame, wait until it is ready, then post
-    // the form to the iframe and wait for the readystate to change to
-    // 'complete'
+  // For all other browsers we do some trickery to ensure that there is no
+  // entry on the history stack. Thanks go to jlim for the prototype for this
 
-    // Set the target to the iframe's name
-    this.form_.target = this.iframeName_ || '';
-    this.appendIframe_();
-    if (!this.ignoreResponse_) {
-      goog.events.listen(
-          this.iframe_, goog.events.EventType.READYSTATECHANGE,
-          this.onIeReadyStateChange_, false, this);
-    }
+  goog.log.fine(this.logger_, 'Setting up iframes and cloning form');
 
+  this.appendIframe_();
 
-    try {
-      this.errorHandled_ = false;
-      this.form_.submit();
-    } catch (e) {
-      // If submit threw an exception then it probably means the page that the
-      // code is running on the local file system and the form's action was
-      // pointing to a file that doesn't exist, causing the browser to fire an
-      // exception.  IE also throws an exception when it is working offline and
-      // the URL is not available.
+  const innerFrameName =
+      this.iframeName_ + goog.net.IframeIo.INNER_FRAME_SUFFIX;
 
-      if (!this.ignoreResponse_) {
-        goog.events.unlisten(
-            this.iframe_, goog.events.EventType.READYSTATECHANGE,
-            this.onIeReadyStateChange_, false, this);
-      }
-
-      this.handleError_(goog.net.ErrorCode.ACCESS_DENIED);
-    }
-
+  // Open and document.write another iframe into the iframe
+  const doc = goog.dom.getFrameContentDocument(this.iframe_);
+  let html;
+  if (document.baseURI) {
+    // On Safari 4 and 5 the new iframe doesn't inherit the current baseURI.
+    html = goog.net.IframeIo.createIframeHtmlWithBaseUri_(innerFrameName);
   } else {
-    // For all other browsers we do some trickery to ensure that there is no
-    // entry on the history stack. Thanks go to jlim for the prototype for this
+    html = goog.net.IframeIo.createIframeHtml_(innerFrameName);
+  }
+  goog.dom.safe.documentWrite(doc, html);
 
-    goog.log.fine(this.logger_, 'Setting up iframes and cloning form');
+  // Listen for the iframe's load
+  if (!this.ignoreResponse_) {
+    goog.events.listen(
+        doc.getElementById(innerFrameName), goog.events.EventType.LOAD,
+        this.onIframeLoaded_, false, this);
+  }
 
-    this.appendIframe_();
-
-    const innerFrameName =
-        this.iframeName_ + goog.net.IframeIo.INNER_FRAME_SUFFIX;
-
-    // Open and document.write another iframe into the iframe
-    const doc = goog.dom.getFrameContentDocument(this.iframe_);
-    let html;
-    if (document.baseURI) {
-      // On Safari 4 and 5 the new iframe doesn't inherit the current baseURI.
-      html = goog.net.IframeIo.createIframeHtmlWithBaseUri_(innerFrameName);
-    } else {
-      html = goog.net.IframeIo.createIframeHtml_(innerFrameName);
+  // Fix text areas, since importNode won't clone changes to the value
+  const textareas = goog.dom.getElementsByTagName(
+      goog.dom.TagName.TEXTAREA, goog.asserts.assert(this.form_));
+  for (let i = 0, n = textareas.length; i < n; i++) {
+    // The childnodes represent the initial child nodes for the text area
+    // appending a text node essentially resets the initial value ready for
+    // it to be clones - while maintaining HTML escaping.
+    const value = textareas[i].value;
+    if (goog.dom.getRawTextContent(textareas[i]) != value) {
+      goog.dom.setTextContent(textareas[i], value);
+      textareas[i].value = value;
     }
-    goog.dom.safe.documentWrite(doc, html);
+  }
 
-    // Listen for the iframe's load
+  // Append a cloned form to the iframe
+  let clone = doc.importNode(goog.asserts.assert(this.form_), true);
+  clone.target = innerFrameName;
+  // Work around crbug.com/66987
+  clone.action = this.form_.action;
+  doc.body.appendChild(clone);
+
+  // Fix select boxes, importNode won't override the default value
+  const selects = goog.dom.getElementsByTagName(
+      goog.dom.TagName.SELECT, goog.asserts.assert(this.form_));
+  const clones = goog.dom.getElementsByTagName(
+      goog.dom.TagName.SELECT, /** @type {!Element} */ (clone));
+  for (let i = 0, n = selects.length; i < n; i++) {
+    const selectsOptions =
+        goog.dom.getElementsByTagName(goog.dom.TagName.OPTION, selects[i]);
+    const clonesOptions =
+        goog.dom.getElementsByTagName(goog.dom.TagName.OPTION, clones[i]);
+    for (let j = 0, m = selectsOptions.length; j < m; j++) {
+      clonesOptions[j].selected = selectsOptions[j].selected;
+    }
+  }
+
+  // IE and some versions of Firefox (1.5 - 1.5.07?) fail to clone the value
+  // attribute for <input type="file"> nodes, which results in an empty
+  // upload if the clone is submitted.  Check, and if the clone failed, submit
+  // using the original form instead.
+  const inputs = goog.dom.getElementsByTagName(
+      goog.dom.TagName.INPUT, goog.asserts.assert(this.form_));
+  const inputClones = goog.dom.getElementsByTagName(
+      goog.dom.TagName.INPUT, /** @type {!Element} */ (clone));
+  for (let i = 0, n = inputs.length; i < n; i++) {
+    if (inputs[i].type == goog.dom.InputType.FILE) {
+      if (inputs[i].value != inputClones[i].value) {
+        goog.log.fine(
+            this.logger_,
+            'File input value not cloned properly.  Will ' +
+                'submit using original form.');
+        this.form_.target = innerFrameName;
+        clone = this.form_;
+        break;
+      }
+    }
+  }
+
+  goog.log.fine(this.logger_, 'Submitting form');
+
+
+  try {
+    this.errorHandled_ = false;
+    clone.submit();
+    doc.close();
+
+    if (goog.userAgent.GECKO) {
+      // This tests if firefox silently fails, this can happen, for example,
+      // when the server resets the connection because of a large file upload
+      this.firefoxSilentErrorTimeout_ =
+          goog.Timer.callOnce(this.testForFirefoxSilentError_, 250, this);
+    }
+
+  } catch (e) {
+    // If submit threw an exception then it probably means the page that the
+    // code is running on the local file system and the form's action was
+    // pointing to a file that doesn't exist, causing the browser to fire an
+    // exception.
+
+    goog.log.error(
+        this.logger_,
+        'Error when submitting form: ' +
+            goog.debug.HtmlFormatter.exposeException(e));
+
     if (!this.ignoreResponse_) {
-      goog.events.listen(
+      goog.events.unlisten(
           doc.getElementById(innerFrameName), goog.events.EventType.LOAD,
           this.onIframeLoaded_, false, this);
     }
 
-    // Fix text areas, since importNode won't clone changes to the value
-    const textareas = goog.dom.getElementsByTagName(
-        goog.dom.TagName.TEXTAREA, goog.asserts.assert(this.form_));
-    for (let i = 0, n = textareas.length; i < n; i++) {
-      // The childnodes represent the initial child nodes for the text area
-      // appending a text node essentially resets the initial value ready for
-      // it to be clones - while maintaining HTML escaping.
-      const value = textareas[i].value;
-      if (goog.dom.getRawTextContent(textareas[i]) != value) {
-        goog.dom.setTextContent(textareas[i], value);
-        textareas[i].value = value;
-      }
-    }
+    doc.close();
 
-    // Append a cloned form to the iframe
-    let clone = doc.importNode(goog.asserts.assert(this.form_), true);
-    clone.target = innerFrameName;
-    // Work around crbug.com/66987
-    clone.action = this.form_.action;
-    doc.body.appendChild(clone);
-
-    // Fix select boxes, importNode won't override the default value
-    const selects = goog.dom.getElementsByTagName(
-        goog.dom.TagName.SELECT, goog.asserts.assert(this.form_));
-    const clones = goog.dom.getElementsByTagName(
-        goog.dom.TagName.SELECT, /** @type {!Element} */ (clone));
-    for (let i = 0, n = selects.length; i < n; i++) {
-      const selectsOptions =
-          goog.dom.getElementsByTagName(goog.dom.TagName.OPTION, selects[i]);
-      const clonesOptions =
-          goog.dom.getElementsByTagName(goog.dom.TagName.OPTION, clones[i]);
-      for (let j = 0, m = selectsOptions.length; j < m; j++) {
-        clonesOptions[j].selected = selectsOptions[j].selected;
-      }
-    }
-
-    // IE and some versions of Firefox (1.5 - 1.5.07?) fail to clone the value
-    // attribute for <input type="file"> nodes, which results in an empty
-    // upload if the clone is submitted.  Check, and if the clone failed, submit
-    // using the original form instead.
-    const inputs = goog.dom.getElementsByTagName(
-        goog.dom.TagName.INPUT, goog.asserts.assert(this.form_));
-    const inputClones = goog.dom.getElementsByTagName(
-        goog.dom.TagName.INPUT, /** @type {!Element} */ (clone));
-    for (let i = 0, n = inputs.length; i < n; i++) {
-      if (inputs[i].type == goog.dom.InputType.FILE) {
-        if (inputs[i].value != inputClones[i].value) {
-          goog.log.fine(
-              this.logger_, 'File input value not cloned properly.  Will ' +
-                  'submit using original form.');
-          this.form_.target = innerFrameName;
-          clone = this.form_;
-          break;
-        }
-      }
-    }
-
-    goog.log.fine(this.logger_, 'Submitting form');
-
-
-    try {
-      this.errorHandled_ = false;
-      clone.submit();
-      doc.close();
-
-      if (goog.userAgent.GECKO) {
-        // This tests if firefox silently fails, this can happen, for example,
-        // when the server resets the connection because of a large file upload
-        this.firefoxSilentErrorTimeout_ =
-            goog.Timer.callOnce(this.testForFirefoxSilentError_, 250, this);
-      }
-
-    } catch (e) {
-      // If submit threw an exception then it probably means the page that the
-      // code is running on the local file system and the form's action was
-      // pointing to a file that doesn't exist, causing the browser to fire an
-      // exception.
-
-      goog.log.error(
-          this.logger_,
-          'Error when submitting form: ' +
-              goog.debug.HtmlFormatter.exposeException(e));
-
-      if (!this.ignoreResponse_) {
-        goog.events.unlisten(
-            doc.getElementById(innerFrameName), goog.events.EventType.LOAD,
-            this.onIframeLoaded_, false, this);
-      }
-
-      doc.close();
-
-      this.handleError_(goog.net.ErrorCode.FILE_NOT_FOUND);
-    }
+    this.handleError_(goog.net.ErrorCode.FILE_NOT_FOUND);
   }
 };
 
@@ -1386,18 +1340,16 @@ goog.net.IframeIo.prototype.getContentDocument_ = function() {
 
 
 /**
- * @return {HTMLIFrameElement} The appropriate iframe to use for requests
+ * @return {?HTMLIFrameElement} The appropriate iframe to use for requests
  *     (created in sendForm_).
  */
 goog.net.IframeIo.prototype.getRequestIframe = function() {
   'use strict';
   if (this.iframe_) {
-    return /** @type {HTMLIFrameElement} */ (
-        goog.net.IframeIo.useIeReadyStateCodePath_() ?
-            this.iframe_ :
-            goog.dom.getFrameContentDocument(this.iframe_)
-                .getElementById(
-                    this.iframeName_ + goog.net.IframeIo.INNER_FRAME_SUFFIX));
+    return /** @type {?HTMLIFrameElement} */ (
+        goog.dom.getFrameContentDocument(this.iframe_)
+            .getElementById(
+                this.iframeName_ + goog.net.IframeIo.INNER_FRAME_SUFFIX));
   }
   return null;
 };

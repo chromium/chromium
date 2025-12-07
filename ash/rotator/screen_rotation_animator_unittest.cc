@@ -187,7 +187,7 @@ void ScreenRotationAnimatorSlowAnimationTest::SetUp() {
   Shell::Get()->wallpaper_controller()->set_bypass_decode_for_testing();
   Shell::Get()->wallpaper_controller()->ShowDefaultWallpaperForTesting();
 
-  display_ = display::Screen::GetScreen()->GetPrimaryDisplay();
+  display_ = display::Screen::Get()->GetPrimaryDisplay();
   animator_ = std::make_unique<ScreenRotationAnimator>(
       Shell::GetRootWindowForDisplayId(display_.id()));
   test_api_ = std::make_unique<ScreenRotationAnimatorTestApi>(animator_.get());
@@ -231,7 +231,7 @@ class ScreenRotationAnimatorSmoothAnimationTest
   }
 
   void UpdateDisplayWithParam() {
-    auto current = display::Screen::GetScreen()->GetPrimaryDisplay();
+    auto current = display::Screen::Get()->GetPrimaryDisplay();
     UpdateDisplay(
         GetDisplaySpec(current.size().width(), current.size().height()));
   }
@@ -274,7 +274,7 @@ void ScreenRotationAnimatorSmoothAnimationTest::SetUp() {
   Shell::Get()->wallpaper_controller()->set_bypass_decode_for_testing();
   Shell::Get()->wallpaper_controller()->ShowDefaultWallpaperForTesting();
 
-  display_ = display::Screen::GetScreen()->GetPrimaryDisplay();
+  display_ = display::Screen::Get()->GetPrimaryDisplay();
   run_loop_ = std::make_unique<base::RunLoop>();
   SetScreenRotationAnimator(Shell::GetRootWindowForDisplayId(display_.id()),
                             run_loop_->QuitWhenIdleClosure(),

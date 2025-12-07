@@ -19,7 +19,7 @@ namespace views {
 
 class TableView;
 
-VIEWS_EXPORT extern const int kUnspecifiedColumnWidth;
+inline constexpr int kUnspecifiedColumnWidth = 90;
 
 // Returns the width needed to display the contents of the specified column.
 // This is used internally by CalculateTableColumnSizes() and generally not

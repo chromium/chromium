@@ -7,12 +7,13 @@ package org.chromium.components.webxr;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
+import org.chromium.build.annotations.NullMarked;
 
 /**
- * Interface used by ArOverlayDelegate to communicate with the underlying
- * compositor. Used to implement WebXR's DOM Overlay mode correctly.
+ * Interface used by ArOverlayDelegate to communicate with the underlying compositor. Used to
+ * implement WebXR's DOM Overlay mode correctly.
  */
+@NullMarked
 public interface ArCompositorDelegate {
     /** Enables/disables immersive AR mode in the compositor. */
     void setOverlayImmersiveArMode(boolean enabled, boolean domSurfaceNeedsConfiguring);
@@ -25,13 +26,11 @@ public interface ArCompositorDelegate {
     void dispatchTouchEvent(MotionEvent ev);
 
     /**
-     * Returns the ViewGroup that the AR SurfaceView should be parented to. Note
-     * that it should *not* be under the same ViewGroup as |dispatchTouchEvent|
-     * sends its events to, as an infinite loop can occur. It should however,
-     * be positioned under the elements that would cause infobars/prompts to
-     * appear, but over any default (e.g. DOM) content.
+     * Returns the ViewGroup that the AR SurfaceView should be parented to. Note that it should
+     * *not* be under the same ViewGroup as |dispatchTouchEvent| sends its events to, as an infinite
+     * loop can occur. It should however, be positioned under the elements that would cause
+     * infobars/prompts to appear, but over any default (e.g. DOM) content.
      */
-    @NonNull
     ViewGroup getArSurfaceParent();
 
     /**

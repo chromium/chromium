@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "build/build_config.h"
+#include "ui/gl/gpu_preference.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -35,6 +36,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/trace_event/trace_event.h"
 #include "gpu/config/device_perf_info.h"
 #include "gpu/config/gpu_blocklist.h"
 #include "gpu/config/gpu_crash_keys.h"
@@ -114,32 +116,10 @@ inline D3D11FeatureLevel ConvertToHistogramD3D11FeatureLevel(
     case D3D_FEATURE_LEVEL_12_2:
       return D3D11FeatureLevel::k12_2;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return D3D11FeatureLevel::kUnknown;
+      NOTREACHED();
   }
 }
 #endif  // BUILDFLAG(IS_WIN)
-
-GpuFeatureStatus GetAndroidSurfaceControlFeatureStatus(
-    const std::set<int>& blocklisted_features,
-    const GpuPreferences& gpu_preferences) {
-#if !BUILDFLAG(IS_ANDROID)
-  return kGpuFeatureStatusDisabled;
-#else
-  if (!gpu_preferences.enable_android_surface_control)
-    return kGpuFeatureStatusDisabled;
-
-  // SurfaceControl as used by Chrome requires using GpuFence for
-  // synchronization, this is based on Android native fence sync
-  // support. If that is unavailable, i.e. on emulator or SwiftShader,
-  // don't claim SurfaceControl support.
-  if (!gl::GetDefaultDisplayEGL()->IsAndroidNativeFenceSyncSupported())
-    return kGpuFeatureStatusDisabled;
-
-  DCHECK(gfx::SurfaceControl::IsSupported());
-  return kGpuFeatureStatusEnabled;
-#endif
-}
 
 GpuFeatureStatus GetVulkanFeatureStatus(
     const std::set<int>& blocklisted_features,
@@ -221,6 +201,26 @@ GpuFeatureStatus GetWebGPUFeatureStatus(
   return kGpuFeatureStatusEnabled;
 }
 
+GpuFeatureStatus GetWebGPUOnVulkanViaGLInterop(
+    const std::set<int>& blocklisted_features,
+    const GpuPreferences& gpu_preferences,
+    bool use_swift_shader) {
+  if (use_swift_shader ||
+      gpu_preferences.gr_context_type != GrContextType::kGL) {
+    return kGpuFeatureStatusDisabled;
+  }
+
+  if (blocklisted_features.count(
+          GPU_FEATURE_TYPE_WEBGPU_ON_VK_VIA_GL_INTEROP)) {
+    return kGpuFeatureStatusDisabled;
+  }
+#if BUILDFLAG(USE_WEBGPU_ON_VULKAN_VIA_GL_INTEROP)
+  return kGpuFeatureStatusEnabled;
+#else
+  return kGpuFeatureStatusDisabled;
+#endif
+}
+
 GpuFeatureStatus Get2DCanvasFeatureStatus(
     const std::set<int>& blocklisted_features,
     bool use_swift_shader) {
@@ -231,55 +231,6 @@ GpuFeatureStatus Get2DCanvasFeatureStatus(
   }
   if (blocklisted_features.count(GPU_FEATURE_TYPE_ACCELERATED_2D_CANVAS))
     return kGpuFeatureStatusSoftware;
-  return kGpuFeatureStatusEnabled;
-}
-
-GpuFeatureStatus GetCanvasOopRasterizationFeatureStatus(
-    const std::set<int>& blocklisted_features,
-    const base::CommandLine& command_line,
-    const GpuPreferences& gpu_preferences,
-    bool use_swift_shader,
-    bool blocklist_needs_more_info) {
-  if (GetGpuRasterizationFeatureStatus(blocklisted_features, command_line,
-                                       use_swift_shader) !=
-      kGpuFeatureStatusEnabled) {
-    // Originally OOP-C required GPU tile raster to be enabled. There are
-    // different GPU blocklist entries for gpu_tile_rasterization vs
-    // accelerated_2d_canvas. Devices with gpu_tile_rasterization blocked but
-    // not accelerated_2d_canvas would end up using the deprecated GL
-    // accelerated path.
-    // NOTE: Don't check `kCanvasOopWithoutGpuTileRaster` if the blocklist still
-    // needs more GPU info. The value returned by
-    // GetGpuRasterizationFeatureStatus() might be wrong until GL is initialized
-    // and we'll enroll clients in the CanvasOopWithoutGpuTileRaster finch study
-    // that don't have GPU tile raster blocklisted.
-    if (blocklist_needs_more_info ||
-        !base::FeatureList::IsEnabled(
-            features::kCanvasOopWithoutGpuTileRaster)) {
-      return kGpuFeatureStatusDisabled;
-    }
-  }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Disable OOP-C if explicitly turned off from the command line.
-  base::FeatureList* feature_list = base::FeatureList::GetInstance();
-  if (feature_list && feature_list->IsFeatureOverriddenFromCommandLine(
-                          features::kCanvasOopRasterization.name,
-                          base::FeatureList::OVERRIDE_DISABLE_FEATURE))
-    return kGpuFeatureStatusDisabled;
-
-  // On certain ChromeOS devices, using Vulkan without OOP-C results in video
-  // encode artifacts (b/318721705).
-  if (gpu_preferences.use_vulkan != VulkanImplementationName::kNone)
-    return kGpuFeatureStatusEnabled;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // Canvas OOP Rasterization on platforms that are not fully enabled is
-  // controlled by a finch experiment.
-  if (!features::IsCanvasOopRasterizationEnabled()) {
-    return kGpuFeatureStatusDisabled;
-  }
-
   return kGpuFeatureStatusEnabled;
 }
 
@@ -352,6 +303,25 @@ GpuFeatureStatus GetWebNNFeatureStatus(
   return kGpuFeatureStatusEnabled;
 }
 
+GpuFeatureStatus GetDrDCFeatureStatus(const std::set<int>& blocklisted_features,
+                                      GpuFeatureStatus graphite_status) {
+  if (blocklisted_features.count(
+          GPU_FEATURE_TYPE_DIRECT_RENDERING_DISPLAY_COMPOSITOR)) {
+    return kGpuFeatureStatusDisabled;
+  }
+
+#if BUILDFLAG(IS_MAC)
+  // GetSkiaGraphiteFeatureStatus should be called before reaching here.
+  DCHECK_NE(kGpuFeatureStatusUndefined, graphite_status);
+  if (graphite_status != gpu::kGpuFeatureStatusEnabled) {
+    return kGpuFeatureStatusDisabled;
+  }
+#endif
+
+  return features::ShouldEnableDrDc() ? kGpuFeatureStatusEnabled
+                                      : kGpuFeatureStatusDisabled;
+}
+
 void SetProcessGlWorkaroundsFromGpuFeatures(
     const GpuFeatureInfo& gpu_feature_info) {
   const auto is_enabled =
@@ -362,9 +332,7 @@ void SetProcessGlWorkaroundsFromGpuFeatures(
   gl::GlWorkarounds workarounds = {
       .disable_d3d11 = is_enabled(DISABLE_D3D11),
       .disable_metal = is_enabled(DISABLE_METAL),
-      .disable_es3gl_context = is_enabled(DISABLE_ES3_GL_CONTEXT),
 #if BUILDFLAG(IS_WIN)
-      .disable_direct_composition = is_enabled(DISABLE_DIRECT_COMPOSITION),
       .disable_direct_composition_video_overlays =
           is_enabled(DISABLE_DIRECT_COMPOSITION_VIDEO_OVERLAYS),
       .disable_vp_auto_hdr = is_enabled(DISABLE_VP_AUTO_HDR),
@@ -377,13 +345,8 @@ void SetProcessGlWorkaroundsFromGpuFeatures(
 // Adjust gpu feature status based on enabled gpu driver bug workarounds.
 void AdjustGpuFeatureStatusToWorkarounds(GpuFeatureInfo* gpu_feature_info,
                                          const GPUInfo& gpu_info) {
-  if (gpu_feature_info->IsWorkaroundEnabled(DISABLE_D3D11) ||
-      gpu_feature_info->IsWorkaroundEnabled(DISABLE_ES3_GL_CONTEXT)) {
+  if (gpu_feature_info->IsWorkaroundEnabled(DISABLE_D3D11)) {
     gpu_feature_info->status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGL2] =
-        kGpuFeatureStatusBlocklisted;
-  }
-  if (gpu_feature_info->IsWorkaroundEnabled(DISABLE_CANVAS_OOP_RASTERIZATION)) {
-    gpu_feature_info->status_values[GPU_FEATURE_TYPE_CANVAS_OOP_RASTERIZATION] =
         kGpuFeatureStatusBlocklisted;
   }
   // If disable_webnn_for_gpu workaround is enabled for the GPU device, we need
@@ -418,9 +381,10 @@ uint32_t EstimateAmountOfTotalDiskSpaceMB() {
     base::FilePath path;
     if (base::PathService::Get(path_key, &path)) {
       uint32_t total_space = static_cast<uint32_t>(
-          base::SysInfo::AmountOfTotalDiskSpace(path) / 1024 / 1024);
+          base::SysInfo::AmountOfTotalDiskSpace(path).value_or(0) / 1024 /
+          1024);
       uint32_t free_space = static_cast<uint32_t>(
-          base::SysInfo::AmountOfFreeDiskSpace(path) / 1024 / 1024);
+          base::SysInfo::AmountOfFreeDiskSpace(path).value_or(0) / 1024 / 1024);
       bool duplicated = false;
       for (size_t ii = 0; ii < total_space_vector.size(); ++ii) {
         if (total_space == total_space_vector[ii] &&
@@ -458,6 +422,20 @@ void RecordGpuHistogram(uint32_t vendor_id, uint32_t device_id) {
   }
 }
 
+// Only record Intel NPU.
+void RecordNpuHistogram(uint32_t vendor_id, uint32_t device_id) {
+  switch (vendor_id) {
+    case 0x8086:
+      base::SparseHistogram::FactoryGet(
+          "NPU.Intel.DeviceId", base::HistogramBase::kUmaTargetedHistogramFlag)
+          ->Add(device_id);
+      break;
+    default:
+      // Do nothing if vendor is not recognized.
+      break;
+  }
+}
+
 #if BUILDFLAG(IS_WIN)
 uint32_t GetSystemCommitLimitMb() {
   PERFORMANCE_INFORMATION perf_info = {sizeof(perf_info)};
@@ -476,6 +454,27 @@ GPUInfo* g_gpu_info_cache = nullptr;
 GpuFeatureInfo* g_gpu_feature_info_cache = nullptr;
 #endif  // BUILDFLAG(IS_ANDROID)
 
+void SetKeysForCrashLoggingForNpu(const GPUInfo& gpu_info) {
+  if (gpu_info.npus.empty()) {
+    return;
+  }
+
+  // For now, only log the first NPU device.
+  const GPUInfo::GPUDevice& npu = gpu_info.npus[0];
+  if (npu.vendor_id) {
+    crash_keys::npu_vendor_id.Set(base::StringPrintf("0x%04x", npu.vendor_id));
+  }
+  if (npu.device_id) {
+    crash_keys::npu_device_id.Set(base::StringPrintf("0x%04x", npu.device_id));
+  }
+
+#if !BUILDFLAG(IS_ANDROID)
+  crash_keys::npu_count.Set(base::StringPrintf("%d", gpu_info.npus.size()));
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  crash_keys::npu_driver_version.Set(npu.driver_version);
+}
+
 }  // namespace
 
 GpuFeatureInfo ComputeGpuFeatureInfoWithNoGpu() {
@@ -492,13 +491,9 @@ GpuFeatureInfo ComputeGpuFeatureInfoWithNoGpu() {
       kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGL2] =
       kGpuFeatureStatusDisabled;
-  gpu_feature_info.status_values[GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] =
-      kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_GL] =
       kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_VULKAN] =
-      kGpuFeatureStatusDisabled;
-  gpu_feature_info.status_values[GPU_FEATURE_TYPE_CANVAS_OOP_RASTERIZATION] =
       kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGPU] =
       kGpuFeatureStatusSoftware;
@@ -506,6 +501,11 @@ GpuFeatureInfo ComputeGpuFeatureInfoWithNoGpu() {
       kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_WEBNN] =
       kGpuFeatureStatusSoftware;
+  gpu_feature_info
+      .status_values[GPU_FEATURE_TYPE_DIRECT_RENDERING_DISPLAY_COMPOSITOR] =
+      kGpuFeatureStatusDisabled;
+  gpu_feature_info.status_values[GPU_FEATURE_TYPE_WEBGPU_ON_VK_VIA_GL_INTEROP] =
+      kGpuFeatureStatusDisabled;
 #if DCHECK_IS_ON()
   for (int ii = 0; ii < NUMBER_OF_GPU_FEATURE_TYPES; ++ii) {
     DCHECK_NE(kGpuFeatureStatusUndefined, gpu_feature_info.status_values[ii]);
@@ -514,7 +514,7 @@ GpuFeatureInfo ComputeGpuFeatureInfoWithNoGpu() {
   return gpu_feature_info;
 }
 
-GpuFeatureInfo ComputeGpuFeatureInfoForSwiftShader() {
+GpuFeatureInfo ComputeGpuFeatureInfoForSoftwareGL() {
   GpuFeatureInfo gpu_feature_info;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_2D_CANVAS] =
       kGpuFeatureStatusSoftware;
@@ -528,13 +528,9 @@ GpuFeatureInfo ComputeGpuFeatureInfoForSwiftShader() {
       kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGL2] =
       kGpuFeatureStatusSoftware;
-  gpu_feature_info.status_values[GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] =
-      kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_GL] =
       kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_VULKAN] =
-      kGpuFeatureStatusDisabled;
-  gpu_feature_info.status_values[GPU_FEATURE_TYPE_CANVAS_OOP_RASTERIZATION] =
       kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGPU] =
       kGpuFeatureStatusSoftware;
@@ -542,6 +538,11 @@ GpuFeatureInfo ComputeGpuFeatureInfoForSwiftShader() {
       kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_WEBNN] =
       kGpuFeatureStatusSoftware;
+  gpu_feature_info
+      .status_values[GPU_FEATURE_TYPE_DIRECT_RENDERING_DISPLAY_COMPOSITOR] =
+      kGpuFeatureStatusDisabled;
+  gpu_feature_info.status_values[GPU_FEATURE_TYPE_WEBGPU_ON_VK_VIA_GL_INTEROP] =
+      kGpuFeatureStatusDisabled;
 #if DCHECK_IS_ON()
   for (int ii = 0; ii < NUMBER_OF_GPU_FEATURE_TYPES; ++ii) {
     DCHECK_NE(kGpuFeatureStatusUndefined, gpu_feature_info.status_values[ii]);
@@ -554,7 +555,8 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
                                      const GpuPreferences& gpu_preferences,
                                      base::CommandLine* command_line,
                                      bool* needs_more_info) {
-  bool use_swift_shader = false;
+  TRACE_EVENT("gpu,startup", "gpu_util::ComputeGpuFeatureInfo");
+  bool use_software_gl = false;
   bool blocklist_needs_more_info = false;
 
   std::optional<gl::GLImplementationParts> requested_impl =
@@ -563,20 +565,21 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
     if (*requested_impl == gl::kGLImplementationNone)
       return ComputeGpuFeatureInfoWithNoGpu();
 
-    use_swift_shader = gl::IsSoftwareGLImplementation(*requested_impl);
-    if (use_swift_shader) {
+    use_software_gl = gl::IsSoftwareGLImplementation(*requested_impl);
+    if (use_software_gl) {
       std::string use_gl = command_line->GetSwitchValueASCII(switches::kUseGL);
       std::string use_angle =
           command_line->GetSwitchValueASCII(switches::kUseANGLE);
-      if (use_angle == gl::kANGLEImplementationSwiftShaderForWebGLName) {
-        return ComputeGpuFeatureInfoForSwiftShader();
+      if (use_angle == gl::kANGLEImplementationSwiftShaderForWebGLName ||
+          use_angle == gl::kANGLEImplementationD3D11WarpForWebGLName) {
+        return ComputeGpuFeatureInfoForSoftwareGL();
       }
     }
   }
 
   if (gpu_preferences.use_vulkan ==
       gpu::VulkanImplementationName::kSwiftshader) {
-    use_swift_shader = true;
+    use_software_gl = true;
   }
 
   GpuFeatureInfo gpu_feature_info;
@@ -592,6 +595,9 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
           command_line->GetSwitchValueASCII(switches::kGpuBlocklistTestGroup);
       if (!base::StringToUint(test_group_string, &target_test_group))
         target_test_group = 0u;
+    } else if (base::FeatureList::IsEnabled(
+                   ::features::kGPUBlockListTestGroup)) {
+      target_test_group = ::features::kGPUBlockListTestGroupId.Get();
     }
     blocklisted_features = list->MakeDecision(
         GpuControlList::kOsAny, std::string(), gpu_info, target_test_group);
@@ -606,52 +612,46 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
 #if !BUILDFLAG(IS_CHROMEOS)
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
       GetGpuRasterizationFeatureStatus(blocklisted_features, *command_line,
-                                       use_swift_shader);
+                                       use_software_gl);
 #else
   // TODO(penghuang): call GetGpuRasterizationFeatureStatus() with
-  // |use_swift_shader|.
+  // |use_software_gl|.
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
       GetGpuRasterizationFeatureStatus(blocklisted_features, *command_line,
-                                       /*use_swift_shader=*/false);
+                                       /*use_software_gl=*/false);
 #endif
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGL] =
-      GetWebGLFeatureStatus(blocklisted_features, use_swift_shader);
+      GetWebGLFeatureStatus(blocklisted_features, use_software_gl);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGL2] =
-      GetWebGL2FeatureStatus(blocklisted_features, use_swift_shader);
+      GetWebGL2FeatureStatus(blocklisted_features, use_software_gl);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGPU] =
-      GetWebGPUFeatureStatus(blocklisted_features, use_swift_shader);
+      GetWebGPUFeatureStatus(blocklisted_features, use_software_gl);
+
+  gpu_feature_info.status_values[GPU_FEATURE_TYPE_WEBGPU_ON_VK_VIA_GL_INTEROP] =
+      GetWebGPUOnVulkanViaGLInterop(blocklisted_features, gpu_preferences,
+                                    use_software_gl);
+
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_2D_CANVAS] =
-      Get2DCanvasFeatureStatus(blocklisted_features, use_swift_shader);
-#if !BUILDFLAG(IS_CHROMEOS)
-  gpu_feature_info.status_values[GPU_FEATURE_TYPE_CANVAS_OOP_RASTERIZATION] =
-      GetCanvasOopRasterizationFeatureStatus(
-          blocklisted_features, *command_line, gpu_preferences,
-          use_swift_shader, blocklist_needs_more_info);
-#else
-  // TODO(penghuang): call GetCanvasOopRasterizationFeatureStatus with
-  // |use_swift_shader|.
-  gpu_feature_info.status_values[GPU_FEATURE_TYPE_CANVAS_OOP_RASTERIZATION] =
-      GetCanvasOopRasterizationFeatureStatus(
-          blocklisted_features, *command_line, gpu_preferences,
-          /*use_swift_shader=*/false, blocklist_needs_more_info);
-#endif
+      Get2DCanvasFeatureStatus(blocklisted_features, use_software_gl);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE] =
       GetAcceleratedVideoDecodeFeatureStatus(blocklisted_features,
-                                             use_swift_shader);
+                                             use_software_gl);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_VIDEO_ENCODE] =
       GetAcceleratedVideoEncodeFeatureStatus(blocklisted_features,
-                                             use_swift_shader);
-  gpu_feature_info.status_values[GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] =
-      GetAndroidSurfaceControlFeatureStatus(blocklisted_features,
-                                            gpu_preferences);
+                                             use_software_gl);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_GL] =
-      GetGLFeatureStatus(blocklisted_features, use_swift_shader);
+      GetGLFeatureStatus(blocklisted_features, use_software_gl);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_VULKAN] =
       GetVulkanFeatureStatus(blocklisted_features, gpu_preferences);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] =
       GetSkiaGraphiteFeatureStatus(blocklisted_features, gpu_preferences);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_WEBNN] =
       GetWebNNFeatureStatus(blocklisted_features);
+  gpu_feature_info
+      .status_values[GPU_FEATURE_TYPE_DIRECT_RENDERING_DISPLAY_COMPOSITOR] =
+      GetDrDCFeatureStatus(
+          blocklisted_features,
+          gpu_feature_info.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE]);
 #if DCHECK_IS_ON()
   for (int ii = 0; ii < NUMBER_OF_GPU_FEATURE_TYPES; ++ii) {
     DCHECK_NE(kGpuFeatureStatusUndefined, gpu_feature_info.status_values[ii]);
@@ -680,6 +680,9 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
           switches::kGpuDriverBugListTestGroup);
       if (!base::StringToUint(test_group_string, &target_test_group))
         target_test_group = 0u;
+    } else if (base::FeatureList::IsEnabled(
+                   ::features::kGPUDriverBugListTestGroup)) {
+      target_test_group = ::features::kGPUDriverBugListTestGroupId.Get();
     }
     enabled_driver_bug_workarounds = list->MakeDecision(
         GpuControlList::kOsAny, std::string(), gpu_info, target_test_group);
@@ -721,12 +724,21 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
 }
 
 void SetKeysForCrashLogging(const GPUInfo& gpu_info) {
+  SetKeysForCrashLoggingForNpu(gpu_info);
+
   const GPUInfo::GPUDevice& active_gpu = gpu_info.active_gpu();
+
+  // Don't record vendor/device ids on Android when running with GL.
+  constexpr bool record_zero_ids = !BUILDFLAG(IS_ANDROID);
+  if (record_zero_ids || active_gpu.vendor_id) {
+    crash_keys::gpu_vendor_id.Set(
+        base::StringPrintf("0x%04x", active_gpu.vendor_id));
+  }
+  if (record_zero_ids || active_gpu.device_id) {
+    crash_keys::gpu_device_id.Set(
+        base::StringPrintf("0x%04x", active_gpu.device_id));
+  }
 #if !BUILDFLAG(IS_ANDROID)
-  crash_keys::gpu_vendor_id.Set(
-      base::StringPrintf("0x%04x", active_gpu.vendor_id));
-  crash_keys::gpu_device_id.Set(
-      base::StringPrintf("0x%04x", active_gpu.device_id));
   crash_keys::gpu_count.Set(base::StringPrintf("%d", gpu_info.GpuCount()));
 #endif  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_WIN)
@@ -829,12 +841,20 @@ bool EnableSwiftShaderIfNeeded(base::CommandLine* command_line,
                                const GpuFeatureInfo& gpu_feature_info,
                                bool disable_software_rasterizer,
                                bool blocklist_needs_more_info) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  if (gpu_feature_info.IsWorkaroundEnabled(FORCE_PHYSICAL_GPU_FOR_TESTING)) {
+    return false;
+  }
+#endif  // IS_WIN || IS_MAC
+
 #if BUILDFLAG(ENABLE_SWIFTSHADER)
   if (disable_software_rasterizer || blocklist_needs_more_info)
     return false;
   // Don't overwrite user preference.
-  if (command_line->HasSwitch(switches::kUseGL))
+  if (gl::GetRequestedGLImplementationFromCommandLine(command_line)
+          .has_value()) {
     return false;
+  }
   if (gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGL] !=
           kGpuFeatureStatusEnabled ||
       gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_GL] !=
@@ -939,8 +959,9 @@ IntelGpuSeriesType GetIntelGpuSeriesType(uint32_t vendor_id,
       case 0xA700:
         return IntelGpuSeriesType::kRaptorlake;
       case 0x7D00:
+      case 0xB600:
         if (device_id == 0x7D41 || device_id == 0x7D51 || device_id == 0x7D67 ||
-            device_id == 0x7DD1) {
+            device_id == 0x7DD1 || device_id == 0xB640) {
           return IntelGpuSeriesType::kArrowlake;
         }
         return IntelGpuSeriesType::kMeteorlake;
@@ -948,6 +969,8 @@ IntelGpuSeriesType GetIntelGpuSeriesType(uint32_t vendor_id,
         return IntelGpuSeriesType::kLunarlake;
       case 0xE200:
         return IntelGpuSeriesType::kBattlemage;
+      case 0xB000:
+        return IntelGpuSeriesType::kPantherlake;
       default:
         break;
     }
@@ -955,24 +978,25 @@ IntelGpuSeriesType GetIntelGpuSeriesType(uint32_t vendor_id,
   return IntelGpuSeriesType::kUnknown;
 }
 
-std::string GetIntelGpuGeneration(uint32_t vendor_id, uint32_t device_id) {
+IntelGpuGeneration GetIntelGpuGeneration(uint32_t vendor_id,
+                                         uint32_t device_id) {
   if (vendor_id == 0x8086) {
     IntelGpuSeriesType gpu_series = GetIntelGpuSeriesType(vendor_id, device_id);
     switch (gpu_series) {
       case IntelGpuSeriesType::kBroadwater:
       case IntelGpuSeriesType::kEaglelake:
-        return "4";
+        return IntelGpuGeneration::kGen4;
       case IntelGpuSeriesType::kIronlake:
-        return "5";
+        return IntelGpuGeneration::kGen5;
       case IntelGpuSeriesType::kSandybridge:
-        return "6";
+        return IntelGpuGeneration::kGen6;
       case IntelGpuSeriesType::kBaytrail:
       case IntelGpuSeriesType::kIvybridge:
       case IntelGpuSeriesType::kHaswell:
-        return "7";
+        return IntelGpuGeneration::kGen7;
       case IntelGpuSeriesType::kCherrytrail:
       case IntelGpuSeriesType::kBroadwell:
-        return "8";
+        return IntelGpuGeneration::kGen8;
       case IntelGpuSeriesType::kApollolake:
       case IntelGpuSeriesType::kSkylake:
       case IntelGpuSeriesType::kGeminilake:
@@ -981,13 +1005,13 @@ std::string GetIntelGpuGeneration(uint32_t vendor_id, uint32_t device_id) {
       case IntelGpuSeriesType::kCoffeelake:
       case IntelGpuSeriesType::kWhiskeylake:
       case IntelGpuSeriesType::kCometlake:
-        return "9";
+        return IntelGpuGeneration::kGen9;
       case IntelGpuSeriesType::kCannonlake:
-        return "10";
+        return IntelGpuGeneration::kGen10;
       case IntelGpuSeriesType::kIcelake:
       case IntelGpuSeriesType::kElkhartlake:
       case IntelGpuSeriesType::kJasperlake:
-        return "11";
+        return IntelGpuGeneration::kGen11;
       case IntelGpuSeriesType::kTigerlake:
       case IntelGpuSeriesType::kRocketlake:
       case IntelGpuSeriesType::kDG1:
@@ -996,15 +1020,17 @@ std::string GetIntelGpuGeneration(uint32_t vendor_id, uint32_t device_id) {
       case IntelGpuSeriesType::kRaptorlake:
       case IntelGpuSeriesType::kMeteorlake:
       case IntelGpuSeriesType::kArrowlake:
-        return "12";
+        return IntelGpuGeneration::kXe;
       case IntelGpuSeriesType::kLunarlake:
       case IntelGpuSeriesType::kBattlemage:
-        return "13";
+        return IntelGpuGeneration::kXe2;
+      case IntelGpuSeriesType::kPantherlake:
+        return IntelGpuGeneration::kXe3;
       default:
-        break;
+        return IntelGpuGeneration::kUnknownIntel;
     }
   }
-  return "";
+  return IntelGpuGeneration::kNonIntel;
 }
 
 IntelGpuGeneration GetIntelGpuGeneration(const GPUInfo& gpu_info) {
@@ -1021,14 +1047,11 @@ IntelGpuGeneration GetIntelGpuGeneration(const GPUInfo& gpu_info) {
     return latest;
   latest = IntelGpuGeneration::kUnknownIntel;
   for (uint32_t device_id : intel_device_ids) {
-    std::string gen_str = gpu::GetIntelGpuGeneration(kIntelVendorId, device_id);
-    int gen_int = 0;
-    if (gen_str.empty() || !base::StringToInt(gen_str, &gen_int))
-      continue;
-    DCHECK_GE(gen_int, static_cast<int>(IntelGpuGeneration::kUnknownIntel));
-    DCHECK_LE(gen_int, static_cast<int>(IntelGpuGeneration::kMaxValue));
-    if (gen_int > static_cast<int>(latest))
-      latest = static_cast<IntelGpuGeneration>(gen_int);
+    IntelGpuGeneration gen =
+        gpu::GetIntelGpuGeneration(kIntelVendorId, device_id);
+    if (gen > latest) {
+      latest = gen;
+    }
   }
   return latest;
 }
@@ -1037,7 +1060,7 @@ void CollectDevicePerfInfo(DevicePerfInfo* device_perf_info,
                            bool in_browser_process) {
   DCHECK(device_perf_info);
   device_perf_info->total_physical_memory_mb =
-      static_cast<uint32_t>(base::SysInfo::AmountOfPhysicalMemoryMB());
+      static_cast<uint32_t>(base::SysInfo::AmountOfPhysicalMemory().InMiB());
   if (!in_browser_process)
     device_perf_info->total_disk_space_mb = EstimateAmountOfTotalDiskSpaceMB();
   device_perf_info->hardware_concurrency =
@@ -1088,6 +1111,12 @@ void RecordDiscreteGpuHistograms(const GPUInfo& gpu_info) {
     RecordGpuHistogram(gpu.vendor_id, gpu.device_id);
 }
 
+void RecordNpuHistograms(const GPUInfo& gpu_info) {
+  for (const auto& npu : gpu_info.npus) {
+    RecordNpuHistogram(npu.vendor_id, npu.device_id);
+  }
+}
+
 #if BUILDFLAG(IS_WIN)
 std::string DirectMLFeatureLevelToString(uint32_t directml_feature_level) {
   if (directml_feature_level == 0) {
@@ -1119,4 +1148,39 @@ std::string VulkanVersionToString(uint32_t vulkan_version) {
   }
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+// GPU picking is only effective with ANGLE/Metal backend on Mac and
+// on Windows with EGL.
+void TrySetNonSoftwareDevicePreferenceForTesting(
+    gl::GpuPreference gpu_preference) {
+  // `SetGpuPreferenceEGL` fails when a preference was previously already set.
+  if (GetSystemDeviceIdEGLForTesting(gpu_preference) != 0) {  // IN-TEST
+    return;
+  }
+
+  GPUInfo gpu_info;
+  CHECK(CollectBasicGraphicsInfo(&gpu_info));
+
+  uint64_t non_software_renderer_device_id = 0;
+  if (!gpu_info.active_gpu().IsSoftwareRenderer()) {
+    non_software_renderer_device_id = gpu_info.active_gpu().system_device_id;
+  } else if (auto it =
+                 std::ranges::find_if(gpu_info.secondary_gpus,
+                                      [](const GPUInfo::GPUDevice& device) {
+                                        return !device.IsSoftwareRenderer();
+                                      });
+             it != gpu_info.secondary_gpus.end()) {
+    non_software_renderer_device_id = it->system_device_id;
+  }
+
+  if (non_software_renderer_device_id != 0) {
+    SetGpuPreferenceEGL(gpu_preference, non_software_renderer_device_id);
+  } else {
+    LOG(WARNING) << "No hardware renderer device available. Tests that require "
+                    "one may fail.";
+  }
+}
+#endif
+
 }  // namespace gpu

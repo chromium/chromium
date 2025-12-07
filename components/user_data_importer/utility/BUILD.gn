@@ -1,0 +1,222 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/zip.gni")
+import("//build/rust/rust_static_library.gni")
+
+source_set("utility") {
+  sources = [
+    "history_callback_from_rust.h",
+    "importer_metrics_recorder.cc",
+    "importer_metrics_recorder.h",
+  ]
+  deps = [
+    ":bookmarks",
+    "//base",
+    "//components/user_data_importer/common",
+  ]
+}
+
+source_set("bookmarks") {
+  sources = [
+    "bookmark_parser.cc",
+    "bookmark_parser.h",
+    "bookmark_util.cc",
+    "bookmark_util.h",
+  ]
+  deps = [
+    "//base",
+    "//components/bookmarks/browser",
+    "//components/favicon_base",
+    "//components/reading_list/core",
+    "//components/user_data_importer/common",
+  ]
+}
+
+source_set("safari_data_importer") {
+  sources = [
+    "safari_data_import_client.h",
+    "safari_data_importer.cc",
+    "safari_data_importer.h",
+  ]
+
+  deps = [
+    ":bookmarks",
+    ":utility",
+    ":zip_ffi_glue",
+    "//base",
+    "//components/autofill/core/common",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/common",
+    "//components/history/core/browser",
+    "//components/history/core/common",
+    "//components/password_manager/core/browser/features:utils",
+    "//components/password_manager/core/browser/import:importer",
+    "//components/password_manager/core/browser/ui",
+    "//components/password_manager/core/common",
+    "//components/reading_list/core",
+    "//components/strings",
+    "//components/user_data_importer/common",
+  ]
+}
+
+rust_static_library("zip_ffi_glue") {
+  allow_unsafe = true
+  crate_root = "parsing_ffi/lib.rs"
+  sources = [
+    "parsing_ffi/history.rs",
+    "parsing_ffi/json.rs",
+    "parsing_ffi/lib.rs",
+    "parsing_ffi/models.rs",
+    "parsing_ffi/utils.rs",
+    "parsing_ffi/zip_archive.rs",
+  ]
+  cxx_bindings = [ "parsing_ffi/lib.rs" ]
+  visibility = [
+    ":safari_data_importer",
+    "//components/user_data_importer/content",
+    "//components/user_data_importer/content:unit_tests",
+  ]
+  deps = [
+    "//third_party/rust/anyhow/v1:lib",
+    "//third_party/rust/serde/v1:lib",
+    "//third_party/rust/serde_json_lenient/v0_2:lib",
+    "//third_party/rust/zip/v6:lib",
+  ]
+}
+
+copy("valid_test_archive_files") {
+  sources = [
+    "//components/test/data/user_data_importer/valid/Bookmarks.html",
+    "//components/test/data/user_data_importer/valid/History - Profile 2.json",
+    "//components/test/data/user_data_importer/valid/History.json",
+    "//components/test/data/user_data_importer/valid/Passwords.csv",
+    "//components/test/data/user_data_importer/valid/PaymentCards.json",
+  ]
+  outputs = [ "$target_out_dir/valid/{{source_file_part}}" ]
+}
+
+zip("valid_test_archive") {
+  testonly = true
+  output = "$root_out_dir/valid_test_archive.zip"
+  inputs = [
+    "$target_out_dir/valid/Bookmarks.html",
+    "$target_out_dir/valid/History.json",
+    "$target_out_dir/valid/History - Profile 2.json",
+    "$target_out_dir/valid/Passwords.csv",
+    "$target_out_dir/valid/PaymentCards.json",
+  ]
+  deps = [ ":valid_test_archive_files" ]
+}
+
+copy("garbage_test_archive_files") {
+  sources = [
+    "//components/test/data/user_data_importer/garbage/Bookmarks.html",
+    "//components/test/data/user_data_importer/garbage/History.json",
+    "//components/test/data/user_data_importer/garbage/Passwords.csv",
+    "//components/test/data/user_data_importer/garbage/PaymentCards.json",
+  ]
+  outputs = [ "$target_out_dir/garbage/{{source_file_part}}" ]
+}
+
+zip("garbage_test_archive") {
+  testonly = true
+  output = "$root_out_dir/garbage_test_archive.zip"
+  inputs = [
+    "$target_out_dir/garbage/Bookmarks.html",
+    "$target_out_dir/garbage/History.json",
+    "$target_out_dir/garbage/Passwords.csv",
+    "$target_out_dir/garbage/PaymentCards.json",
+  ]
+  deps = [ ":garbage_test_archive_files" ]
+}
+
+copy("non_ascii_valid_test_archive") {
+  testonly = true
+  sources = [ "//components/test/data/user_data_importer/non_ascii_valid_test_archive.zip" ]
+  outputs = [ "$root_out_dir/non_ascii测试文件.zip" ]
+}
+
+zip("empty_test_archive") {
+  testonly = true
+  inputs = []
+  output = "$root_out_dir/empty_test_archive.zip"
+}
+
+if (is_ios) {
+  bundle_data("test_archive_bundle_data") {
+    testonly = true
+    public_deps = [
+      ":empty_test_archive",
+      ":garbage_test_archive",
+      ":non_ascii_valid_test_archive",
+      ":valid_test_archive",
+    ]
+    sources = [
+      "$root_out_dir/empty_test_archive.zip",
+      "$root_out_dir/garbage_test_archive.zip",
+      "$root_out_dir/non_ascii测试文件.zip",
+      "$root_out_dir/valid_test_archive.zip",
+    ]
+    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "safari_data_importer_unittest.cc" ]
+  deps = [
+    ":bookmarks",
+    ":safari_data_importer",
+    ":utility",
+    "//base",
+    "//base/test:test_support",
+    "//components/affiliations/core/browser:test_support",
+    "//components/autofill/core/browser:test_support",
+    "//components/autofill/core/common",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/common",
+    "//components/bookmarks/test",
+    "//components/history/core/browser",
+    "//components/history/core/common",
+    "//components/history/core/test",
+    "//components/password_manager/core/browser/features:utils",
+    "//components/password_manager/core/browser/import:csv",
+    "//components/password_manager/core/browser/import:importer",
+    "//components/password_manager/core/browser/password_store:test_support",
+    "//components/password_manager/core/browser/ui",
+    "//components/password_manager/core/browser/ui:credential_ui_entry",
+    "//components/password_manager/core/common",
+    "//components/prefs:test_support",
+    "//components/reading_list/core:test_support",
+    "//components/sync:test_support",
+    "//components/user_data_importer/mojom",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  if (is_ios) {
+    public_deps = [ "//components/user_data_importer/ios" ]
+    deps += [
+      ":test_archive_bundle_data",
+      "//components/password_manager/services/csv_password/ios:fake_password_parser_service",
+    ]
+  } else {
+    data_deps = [
+      ":garbage_test_archive",
+      ":valid_test_archive",
+    ]
+    deps += [
+      "//components/password_manager/services/csv_password:fake_password_parser_service",
+      "//components/user_data_importer/content",
+      "//components/user_data_importer/content:test_support",
+      "//content/test:test_support",
+    ]
+  }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}

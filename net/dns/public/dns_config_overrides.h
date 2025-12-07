@@ -29,8 +29,8 @@ struct NET_EXPORT DnsConfigOverrides {
   DnsConfigOverrides& operator=(const DnsConfigOverrides& other);
   DnsConfigOverrides& operator=(DnsConfigOverrides&& other);
 
-  bool operator==(const DnsConfigOverrides& other) const;
-  bool operator!=(const DnsConfigOverrides& other) const;
+  friend bool operator==(const DnsConfigOverrides&,
+                         const DnsConfigOverrides&) = default;
 
   // Creation method that initializes all values with the defaults from
   // DnsConfig. Guarantees the result of OverridesEverything() will be |true|.
@@ -61,6 +61,7 @@ struct NET_EXPORT DnsConfigOverrides {
   std::optional<DnsOverHttpsConfig> dns_over_https_config;
   std::optional<SecureDnsMode> secure_dns_mode;
   std::optional<bool> allow_dns_over_https_upgrade;
+  std::optional<std::vector<IPEndPoint>> fallback_doh_nameservers;
 
   // |hosts| is not supported for overriding except to clear it.
   bool clear_hosts = false;

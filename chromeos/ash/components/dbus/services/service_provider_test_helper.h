@@ -80,7 +80,7 @@ class ServiceProviderTestHelper {
       const std::string& interface_name,
       const std::string& signal_name,
       dbus::ObjectProxy::SignalCallback signal_callback,
-      dbus::ObjectProxy::OnConnectedCallback* connected_callback);
+      dbus::ObjectProxy::OnConnectedCallback connected_callback);
 
   // Behaves as |mock_exported_object_|'s SendSignal().
   void MockSendSignal(dbus::Signal* signal);

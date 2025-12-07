@@ -4,11 +4,13 @@
 
 #include "content/browser/speech/soda_speech_recognition_engine_impl.h"
 
-#include <string.h>
-
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "content/browser/speech/speech_recognition_engine.h"
 #include "content/browser/speech/speech_recognition_manager_impl.h"
 #include "content/public/browser/speech_recognition_manager_delegate.h"
@@ -78,6 +80,8 @@ bool SodaSpeechRecognitionEngineImpl::Initialize() {
   options->recognizer_client_type =
       media::mojom::RecognizerClientType::kLiveCaption;
   options->skip_continuously_empty_audio = true;
+  options->language = config_.language;
+  options->recognition_context = config_.recognition_context;
 
   speech_recognition_context_->BindRecognizer(
       speech_recognition_recognizer_.BindNewPipeAndPassReceiver(),
@@ -88,7 +92,7 @@ bool SodaSpeechRecognitionEngineImpl::Initialize() {
                          weak_factory_.GetWeakPtr())));
 
   speech_recognition_mgr_delegate->BindSpeechRecognitionContext(
-      std::move(speech_recognition_context_receiver));
+      std::move(speech_recognition_context_receiver), config_.language);
 
   speech_recognition_context_.set_disconnect_handler(
       base::BindPostTaskToCurrentDefault(base::BindOnce(
@@ -101,6 +105,14 @@ void SodaSpeechRecognitionEngineImpl::StartRecognition() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
 
   is_start_recognition_ = true;
+}
+
+void SodaSpeechRecognitionEngineImpl::UpdateRecognitionContext(
+    const media::SpeechRecognitionRecognitionContext& recognition_context) {
+  if (speech_recognition_recognizer_.is_bound()) {
+    speech_recognition_recognizer_->UpdateRecognitionContext(
+        recognition_context);
+  }
 }
 
 void SodaSpeechRecognitionEngineImpl::EndRecognition() {
@@ -156,14 +168,16 @@ void SodaSpeechRecognitionEngineImpl::OnSpeechRecognitionRecognitionEvent(
 }
 
 void SodaSpeechRecognitionEngineImpl::OnSpeechRecognitionError() {
-  Abort(media::mojom::SpeechRecognitionErrorCode::kNoSpeech);
+  Abort(media::mojom::SpeechRecognitionErrorCode::kAborted);
 }
 
 void SodaSpeechRecognitionEngineImpl::OnLanguageIdentificationEvent(
     media::mojom::LanguageIdentificationEventPtr event) {}
 
 void SodaSpeechRecognitionEngineImpl::OnSpeechRecognitionStopped() {
-  Abort(media::mojom::SpeechRecognitionErrorCode::kAborted);
+  delegate_->OnSpeechRecognitionEngineResults(
+      std::vector<media::mojom::WebSpeechRecognitionResultPtr>());
+  Abort(media::mojom::SpeechRecognitionErrorCode::kNone);
 }
 
 void SodaSpeechRecognitionEngineImpl::
@@ -201,7 +215,7 @@ void SodaSpeechRecognitionEngineImpl::SendAudioToSpeechRecognitionService(
   DCHECK(audio_data);
   if (speech_recognition_recognizer_.is_bound()) {
     speech_recognition_recognizer_->SendAudioToSpeechRecognitionService(
-        std::move(audio_data));
+        std::move(audio_data), std::nullopt);
   }
 }
 
@@ -237,9 +251,10 @@ SodaSpeechRecognitionEngineImpl::ConvertToAudioDataS16(
   signed_buffer->data.resize(audio_data.NumSamples() *
                              audio_parameters_.channels());
 
-  size_t audio_byte_size =
-      audio_data.NumSamples() * audio_data.bytes_per_sample();
-  memcpy(&signed_buffer->data[0], audio_data.SamplesData16(), audio_byte_size);
+  auto source_bytes = base::as_bytes(base::span(audio_data.AsString()));
+  auto dest_bytes = base::as_writable_bytes(base::span(signed_buffer->data));
+  CHECK_EQ(source_bytes.size(), dest_bytes.size());
+  dest_bytes.copy_from(source_bytes);
 
   return signed_buffer;
 }

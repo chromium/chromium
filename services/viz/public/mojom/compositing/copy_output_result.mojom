@@ -20,7 +20,7 @@ enum CopyOutputResultFormat {
 // See components/viz/common/frame_sinks/copy_output_result.h.
 enum CopyOutputResultDestination {
   kSystemMemory,
-  kNativeTextures,
+  kSharedImage,
 };
 
 // See components/viz/common/frame_sinks/copy_output_result.h.
@@ -32,10 +32,10 @@ struct CopyOutputResult {
   // Present when the destination is kSystemMemory.
   BitmapInSharedMemory? bitmap;
 
-  // Present when the destination is kNativeTextures.
+  // Present when the destination is kSharedImage.
   // If the result is empty, then the |mailbox| will be present but empty.
   gpu.mojom.Mailbox? mailbox;
   gfx.mojom.ColorSpace? color_space;
-  // Present when the destination is kNativeTextures and |mailbox| is non-empty.
+  // Present when the destination is kSharedImage and |mailbox| is non-empty.
   pending_remote<TextureReleaser>? releaser;
 };

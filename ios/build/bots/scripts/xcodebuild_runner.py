@@ -14,6 +14,7 @@ import sys
 import time
 from typing import Tuple, List, Optional
 
+import constants
 import iossim_util
 import test_apps
 import test_runner_errors
@@ -21,7 +22,7 @@ import shard_util
 import test_runner_errors
 from test_result_util import ResultCollection, TestResult, TestStatus
 import test_runner
-from xcode_log_parser import XcodeLogParser
+from xcode_log_parser import XcodeLogParser, Xcode16LogParser
 import xcode_util
 
 # if the current directory is in scripts, then we need to add plugin
@@ -31,6 +32,12 @@ if os.path.split(os.path.dirname(__file__))[1] != 'plugin':
       os.path.join(os.path.abspath(os.path.dirname(__file__)), 'plugin'))
 from plugin_utils import init_plugins_from_args
 from test_plugin_service import TestPluginServicerWrapper, TestPluginServicer
+
+THIS_DIR = os.path.abspath(os.path.dirname(__file__))
+CHROMIUM_SRC_DIR = os.path.abspath(os.path.join(THIS_DIR, '../../../..'))
+sys.path.append(
+    os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/lib/proto')))
+import measures
 
 LOGGER = logging.getLogger(__name__)
 MAXIMUM_TESTS_PER_SHARD_FOR_RERUN = 20
@@ -115,6 +122,7 @@ class LaunchCommand(object):
                clones,
                retries,
                readline_timeout,
+               exception_checker,
                out_dir=os.path.basename(os.getcwd()),
                use_clang_coverage=False,
                env=None,
@@ -129,6 +137,8 @@ class LaunchCommand(object):
       clones: (int) A number of simulator clones to run test cases against.
       readline_timeout: (int) Timeout to kill a test process when it doesn't
         have output (in seconds).
+      exception_checker: (ExceptionChecker) Checks logs for possible infra
+        issues and raises them as exceptions.
       retries: (int) A number of retries.
       out_dir: (str) A folder in which xcodebuild will generate test output.
         By default it is a current directory.
@@ -154,6 +164,7 @@ class LaunchCommand(object):
     self.test_plugin_service = test_plugin_service
     self.cert_path = cert_path
     self.erase_simulators = erase_simulators
+    self.exception_checker = exception_checker
 
   def launch_attempt(self, cmd):
     """Launch a process and do logging simultaneously.
@@ -170,15 +181,20 @@ class LaunchCommand(object):
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
     )
-    return test_runner.print_process_output(proc, timeout=self.readline_timeout)
+    return test_runner.print_process_output(
+        proc,
+        timeout=self.readline_timeout,
+        exception_checker=self.exception_checker)
 
   def launch(self):
     """Launches tests using xcodebuild."""
     overall_launch_command_result = ResultCollection()
     clones = self.clones
     running_tests = set(self.egtests_app.get_all_tests())
+    attempt_count = measures.count('test_attempts', 'eg')
     # total number of attempts is self.retries+1
     for attempt in range(self.retries + 1):
+      attempt_count.record()
       # Cleanup any running plugin process before each attempt
       if self.test_plugin_service:
         self.test_plugin_service.reset()
@@ -213,8 +229,11 @@ class LaunchCommand(object):
                   (attempt, ' '.join(cmd_list)))
       output = self.launch_attempt(cmd_list)
 
-      result = XcodeLogParser.collect_test_results(outdir_attempt, output,
-                                                   clones > 1)
+      if xcode_util.using_xcode_16_or_higher():
+        result = Xcode16LogParser.collect_test_results(outdir_attempt, output)
+      else:
+        result = XcodeLogParser.collect_test_results(outdir_attempt, output,
+                                                     clones > 1)
 
       tests_selected_at_runtime = _tests_decided_at_runtime(
           self.egtests_app.test_app_path)
@@ -239,6 +258,11 @@ class LaunchCommand(object):
       tests_to_include = (
           tests_to_include
           | overall_launch_command_result.never_expected_tests())
+      # Do not retry ASan failures
+      asan_failures = overall_launch_command_result.asan_failed_tests()
+      if asan_failures:
+        LOGGER.info('Skipping retrying ASan failures.')
+        tests_to_include = tests_to_include - asan_failures
       self.egtests_app.included_tests = list(tests_to_include)
 
       # Nothing to run in retry.
@@ -367,7 +391,10 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
           stdout=subprocess.PIPE,
           stderr=subprocess.STDOUT,
       )
-      test_runner.print_process_output(proc, timeout=self.readline_timeout)
+      test_runner.print_process_output(
+          proc,
+          timeout=self.readline_timeout,
+          exception_checker=self.exception_checker)
       end = time.perf_counter()
       elapsed = end - start
       LOGGER.info(f'xcodebuild -enumerate-tests (attempt {attempt + 1} of '
@@ -401,7 +428,7 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
     all_test_names = []
     for test_class in all_test_classes:
       test_class_name = test_class['name']
-      test_methods = test_class['children']
+      test_methods = test_class.get('children', [])
 
       for test_method in test_methods:
         all_test_names.append((test_class_name, test_method['name']))
@@ -437,6 +464,7 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
     return test_apps.EgtestsApp(
         self.app_path,
         self.all_eg_test_names,
+        self.platform_type,
         included_tests=self.test_cases,
         env_vars=self.env_vars,
         test_args=self.test_args,
@@ -460,7 +488,8 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
         use_clang_coverage=(hasattr(self, 'use_clang_coverage') and
                             self.use_clang_coverage),
         env=self.get_launch_env(),
-        test_plugin_service=self.test_plugin_service)
+        test_plugin_service=self.test_plugin_service,
+        exception_checker=self.exception_checker)
 
     try:
       overall_result = launch_command.launch()
@@ -557,6 +586,13 @@ class DeviceXcodeTestRunner(SimulatorParallelTestRunner,
       XCTestPlugInNotFoundError: If the .xctest PlugIn does not exist.
     """
     test_runner.DeviceTestRunner.__init__(self, app_path, out_dir, **kwargs)
+
+    # SimulatorParallelTestRunner.get_launch_test_app() needs
+    # self.platform_type, which is set in its constructor, but it is not
+    # called by this constructor. Since device tests are only supported on iOS
+    # at the moment, just hardcode its value here.
+    self.platform_type = constants.IOSPlatformType.IPHONEOS
+
     self.clones = 1  # For tests on real devices clones=1
     self.version = None
     self.platform = None

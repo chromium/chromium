@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_SVG_ROOT_PAINTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_SVG_ROOT_PAINTER_H_
 
+#include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace gfx {
@@ -16,7 +17,6 @@ namespace blink {
 class AffineTransform;
 class LayoutSVGRoot;
 struct PaintInfo;
-struct PhysicalOffset;
 
 class SVGRootPainter {
   STACK_ALLOCATED();

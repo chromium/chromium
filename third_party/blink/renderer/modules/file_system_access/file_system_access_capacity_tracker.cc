@@ -8,6 +8,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_modification_host.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -64,9 +65,9 @@ void FileSystemAccessCapacityTracker::RequestFileCapacityChange(
   }
   file_modification_host_->RequestCapacityChange(
       capacity_delta,
-      WTF::BindOnce(&FileSystemAccessCapacityTracker::DidRequestCapacityChange,
-                    WrapPersistent(this), required_capacity,
-                    std::move(callback)));
+      blink::BindOnce(
+          &FileSystemAccessCapacityTracker::DidRequestCapacityChange,
+          WrapPersistent(this), required_capacity, std::move(callback)));
 }
 
 bool FileSystemAccessCapacityTracker::RequestFileCapacityChangeSync(

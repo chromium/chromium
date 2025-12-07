@@ -17,34 +17,18 @@ import org.junit.runners.model.Statement;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.util.InMemorySharedPreferences;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 import java.util.Map;
 
 /** Util class for survey related testing. */
 public class TestSurveyUtils {
-    /**
-     * Template for trigger Id override for command line. Usage:
-     *
-     * <pre>
-     *  &#64;Features.Add({MySurveyFeature + "&#60Study"})
-     *  &#64;CommandlineFlags.Add({
-     *      "force-fieldtrials=Study/Group",
-     *      "force-fieldtrial-param=Study.Group:" +
-     *          TestSurveyUtils.TEST_SURVEY_TRIGGER_ID_OVERRIDE_TEMPLATE + &#60triggerId&#62})
-     *  public class MySurveyTest {
-     *      // ...
-     *  }
-     * </pre>
-     */
-    public static final String TEST_SURVEY_TRIGGER_ID_OVERRIDE_TEMPLATE =
-            "probability/1.0/en_site_id/";
-
+    public static final String TRIGGER_ID_PARAM_NAME = "en_site_id";
     public static final String TEST_TRIGGER_ID_FOO = "test_trigger_id_foo";
 
     /**
@@ -55,7 +39,19 @@ public class TestSurveyUtils {
             String trigger, String[] psdBitFields, String[] psdStringFields) {
         SurveyConfig.setSurveyConfigForTesting(
                 new SurveyConfig(
-                        trigger, TEST_TRIGGER_ID_FOO, 1.0f, false, psdBitFields, psdStringFields));
+                        trigger,
+                        TEST_TRIGGER_ID_FOO,
+                        1.0f,
+                        false,
+                        psdBitFields,
+                        psdStringFields,
+                        null,
+                        SurveyConfig.RequestedBrowserType.REGULAR));
+    }
+
+    /** Sets the flag that determines if we should forcefully use the testing configuration. */
+    public static void setSurveyConfigForceUsingTestingConfig(boolean shouldForce) {
+        SurveyConfig.setSurveyConfigForceUsingTestingConfig(shouldForce);
     }
 
     /**
@@ -118,13 +114,11 @@ public class TestSurveyUtils {
     /** Test impl of factory that generate SurveyClient using test set up. */
     static class TestSurveyFactory extends SurveyClientFactory {
         private final AlwaysSucceedSurveyController mTestController;
-        private final ObservableSupplierImpl<Boolean> mCrashUploadPermissionSupplier;
         private final SharedPreferences mMetadata;
 
         TestSurveyFactory() {
             super(null);
             mTestController = new AlwaysSucceedSurveyController();
-            mCrashUploadPermissionSupplier = new ObservableSupplierImpl<>();
             mCrashUploadPermissionSupplier.set(true);
 
             mMetadata = new InMemorySharedPreferences();
@@ -150,13 +144,19 @@ public class TestSurveyUtils {
         public SurveyClient createClient(
                 @NonNull SurveyConfig config,
                 @NonNull SurveyUiDelegate uiDelegate,
-                Profile profile) {
+                Profile profile,
+                TabModelSelector tabModelSelector) {
             return new SurveyClientImpl(
-                    config, uiDelegate, mTestController, mCrashUploadPermissionSupplier, profile);
+                    config,
+                    uiDelegate,
+                    mTestController,
+                    mCrashUploadPermissionSupplier,
+                    profile,
+                    tabModelSelector);
         }
 
         @Override
-        public Supplier<Boolean> getCrashUploadPermissionSupplier() {
+        public ObservableSupplier<Boolean> getCrashUploadPermissionSupplier() {
             return mCrashUploadPermissionSupplier;
         }
     }
@@ -259,9 +259,9 @@ public class TestSurveyUtils {
         }
 
         private static class SurveyEntry {
-            public String triggerId;
-            public Runnable onSuccessRunnable;
-            public Runnable onFailureRunnable;
+            public final String triggerId;
+            public final Runnable onSuccessRunnable;
+            public final Runnable onFailureRunnable;
 
             public boolean isShown;
             public boolean isExpired;

@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "cc/base/math_util.h"
@@ -120,12 +119,6 @@ class PropertyTreeBuilderContext {
 };
 
 // Methods to query state from the AnimationHost ----------------------
-bool OpacityIsAnimating(const MutatorHost& host, Layer* layer) {
-  return host.IsAnimatingProperty(layer->element_id(),
-                                  layer->GetElementTypeForAnimation(),
-                                  TargetProperty::OPACITY);
-}
-
 bool HasPotentiallyRunningOpacityAnimation(const MutatorHost& host,
                                            Layer* layer) {
   return host.HasPotentiallyRunningAnimationForProperty(
@@ -136,12 +129,6 @@ bool HasPotentiallyRunningOpacityAnimation(const MutatorHost& host,
 bool HasPotentialOpacityAnimation(const MutatorHost& host, Layer* layer) {
   return HasPotentiallyRunningOpacityAnimation(host, layer) ||
          layer->OpacityCanAnimateOnImplThread();
-}
-
-bool FilterIsAnimating(const MutatorHost& host, Layer* layer) {
-  return host.IsAnimatingProperty(layer->element_id(),
-                                  layer->GetElementTypeForAnimation(),
-                                  TargetProperty::FILTER);
 }
 
 bool HasPotentiallyRunningFilterAnimation(const MutatorHost& host,
@@ -334,7 +321,7 @@ bool PropertyTreeBuilderContext::AddTransformNodeIfNeeded(
   node->is_currently_animating = TransformIsAnimating(*mutator_host_, layer);
   node->maximum_animation_scale = MaximumAnimationScale(*mutator_host_, layer);
 
-  node->scroll_offset = layer->scroll_offset();
+  node->SetScrollOffset(layer->scroll_offset(), DamageReason::kUntracked);
 
   node->needs_local_transform_update = true;
   transform_tree_->UpdateTransforms(node->id);
@@ -526,7 +513,6 @@ bool PropertyTreeBuilderContext::AddEffectNodeIfNeeded(
         layer->bounds(), layer_tree_host_->device_scale_factor());
   }
   node->cache_render_surface = layer->cache_render_surface();
-  node->has_copy_request = layer->HasCopyRequest();
   node->filters = layer->filters();
   node->backdrop_filters = layer->backdrop_filters();
   node->backdrop_filter_bounds = layer->backdrop_filter_bounds();
@@ -540,10 +526,6 @@ bool PropertyTreeBuilderContext::AddEffectNodeIfNeeded(
   node->has_potential_opacity_animation = has_potential_opacity_animation;
   node->has_potential_filter_animation = has_potential_filter_animation;
   node->subtree_hidden = layer->hide_layer_and_subtree();
-  node->is_currently_animating_opacity =
-      OpacityIsAnimating(*mutator_host_, layer);
-  node->is_currently_animating_filter =
-      FilterIsAnimating(*mutator_host_, layer);
   node->effect_changed = layer->subtree_property_changed();
   node->subtree_has_copy_request = layer->subtree_has_copy_request();
   node->render_surface_reason = render_surface_reason;
@@ -717,7 +699,7 @@ void PropertyTreeBuilderContext::AddScrollNodeIfNeeded(
 
   bool is_root = !layer->parent();
   bool scrollable = layer->scrollable();
-  CHECK(layer->non_fast_scrollable_region().IsEmpty());
+  CHECK(layer->main_thread_scroll_hit_test_region().IsEmpty());
   bool requires_node = is_root || scrollable;
 
   int node_id;

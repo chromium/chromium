@@ -22,18 +22,16 @@
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/base/themed_vector_icon.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/view.h"
-
-#if BUILDFLAG(IS_WIN)
-#include <windows.h>
-#endif
 
 namespace gfx {
 class FontList;
@@ -137,10 +135,12 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   ~MenuItemView() override;
 
   // Overridden from View:
-  std::u16string GetTooltipText(const gfx::Point& p) const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  std::u16string GetRenderedTooltipText(const gfx::Point& p) const override;
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
   FocusBehavior GetFocusBehavior() const override;
+
+  // To update the custom tooltip, call this method with the new text.
+  void UpdateTooltipText(std::optional<std::u16string> new_text = std::nullopt);
 
   // Returns if a given |anchor| is a bubble or not.
   static bool IsBubble(MenuAnchorPosition anchor);
@@ -213,6 +213,7 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
                                const ui::ImageModel& icon = ui::ImageModel());
 
   MenuItemView* AppendTitle(const std::u16string& label);
+  MenuItemView* AddTitleAt(const std::u16string& label, size_t index);
 
   // Append a submenu to this menu.
   // The returned pointer is owned by this menu.
@@ -309,7 +310,7 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   gfx::Size GetIconPreferredSize() const;
 
   // Sets the command id of this menu item.
-  void SetCommand(int command) { command_ = command; }
+  void SetCommand(int command);
 
   // Returns the command id of this item.
   int GetCommand() const { return command_; }
@@ -395,10 +396,14 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   // there's no way to unset it for this MenuItemView!
   void SetForcedVisualSelection(bool selected);
 
-  // For items of type HIGHLIGHTED only: sets the radius of the item's
+  // For items of type HIGHLIGHTED only: sets the corner radius of the item's
   // background. This makes the menu item's background fit its container's
-  // border radius, if they are both the same value.
-  void SetCornerRadius(int radius);
+  // border radii, if they are both the same value.
+  void SetBottomCornersRadius(int lower_left_radius, int lower_right_radius);
+
+  // Sets or removes the expanded/collapsed state of the menu item if it's a
+  // submenu.
+  void UpdateAccessibleExpandedCollapsedState();
 
   // Shows an alert on this menu item. An alerted menu item is rendered
   // differently to draw attention to it. This must be called before the menu is
@@ -415,6 +420,8 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
 
   // Returns the corresponding border padding from the `MenuConfig`.
   int GetItemHorizontalBorder() const;
+
+  virtual void UpdateAccessibleCheckedState();
 
   void SetTriggerActionWithNonIconChildViews(
       bool trigger_action_with_non_icon_child_views) {
@@ -586,6 +593,9 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   // could interact with model state.
   bool IsScheduledForDeletion() const;
 
+  // Calculates the X coordinate of the icon.
+  int CalculateIconX(const ImageView* icon_view) const;
+
   void SetForegroundColorId(std::optional<ui::ColorId> foreground_color_id) {
     foreground_color_id_ = foreground_color_id;
   }
@@ -594,8 +604,13 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   // `vertical_margin_` is not set.
   int GetVerticalMargin() const;
 
-  void UpdateAccessibleKeyShortcuts();
+  ViewAccessibility* GetSubmenuViewAccessibility();
+  ViewAccessibility* GetScrollViewContainerViewAccessibility();
+  void UpdateAccessibleRole();
+  void UpdateAccessibleHasPopup();
+  void UpdateAccessibleName();
   void UpdateAccessibleSelection();
+  void UpdateAccessibleKeyShortcuts();
 
   // The delegate. This is only valid for the root menu item. You shouldn't
   // use this directly, instead use GetDelegate() which walks the tree as
@@ -653,9 +668,10 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
 
   // Pointer to a view with a menu icon.
   raw_ptr<ImageView> icon_view_ = nullptr;
+  std::optional<ui::ColorVariant> icon_color_;
 
   // The tooltip to show on hover for this menu item.
-  std::u16string tooltip_;
+  std::u16string custom_tooltip_;
 
   // Cached dimensions. This is cached as text sizing calculations are quite
   // costly.
@@ -666,8 +682,8 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
 
   std::optional<int> vertical_margin_;
 
-  // Corner radius in pixels, for HIGHLIGHTED items placed at the end of a menu.
-  int corner_radius_ = 0;
+  // Corners radii in pixels, for HIGHLIGHTED items placed at the end of a menu.
+  gfx::RoundedCornersF bottom_rounded_corners_;
 
   // |menu_position_| is the requested position with respect to the bounds.
   // |actual_menu_position_| is used by the controller to cache the

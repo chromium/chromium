@@ -15,6 +15,7 @@
 
 class Browser;
 struct UrlLoadParams;
+class UrlLoadingBrowserAgent;
 
 // Objective-C delegate for SceneUrlLoadingService.
 @protocol SceneURLLoadingServiceDelegate
@@ -49,9 +50,8 @@ struct UrlLoadParams;
                      focusOmnibox:(BOOL)focusOmnibox
                     inheritOpener:(BOOL)inheritOpener;
 
-// Informs the BVC that a new foreground tab is about to be opened in given
-// `targetMode`.
-- (void)expectNewForegroundTabForMode:(ApplicationMode)targetMode;
+// Returns the URL Loading browser agent to load a tab in `incognito` or not.
+- (UrlLoadingBrowserAgent*)browserAgentForIncognito:(BOOL)incognito;
 
 // TODO(crbug.com/41427539): refactor to remove this and most methods above.
 @property(nonatomic, readonly) Browser* currentBrowserForURLLoading;
@@ -71,6 +71,9 @@ class SceneUrlLoadingService {
 
   // Returns the current active browser in the scene owning this object.
   virtual Browser* GetCurrentBrowser();
+
+  // Returns the URL Loading browser agent to load a tab in `incognito` or not.
+  virtual UrlLoadingBrowserAgent* GetBrowserAgent(bool incognito);
 
  private:
   __weak id<SceneURLLoadingServiceDelegate> delegate_;

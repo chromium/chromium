@@ -11,7 +11,6 @@
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/hash/md5.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -56,13 +55,13 @@ base::expected<SkBitmap, std::string> LoadIcon(
   if (!base::PathExists(icon_path)) {
     return base::unexpected("Icon path does not exist.");
   }
-  std::string icon_data;
-  if (!base::ReadFileToString(icon_path, &icon_data)) {
+  std::optional<std::vector<uint8_t>> icon_data =
+      base::ReadFileToBytes(icon_path);
+  if (!icon_data) {
     return base::unexpected("Could not read icon file.");
   }
-  base::span<const uint8_t> bytes = base::as_byte_span(icon_data);
-  SkBitmap icon;
-  if (!gfx::PNGCodec::Decode(bytes.data(), bytes.size(), &icon)) {
+  SkBitmap icon = gfx::PNGCodec::Decode(icon_data.value());
+  if (icon.isNull()) {
     return base::unexpected("Could not decode icon file.");
   }
   return base::ok(icon);
@@ -71,9 +70,10 @@ base::expected<SkBitmap, std::string> LoadIcon(
 class ShortcutCreatorLinuxTest : public testing::Test {
  protected:
   const GURL kUrl = GURL("https://example.com/test?query=1s&basdf");
-  // The hash is the result of applying MD5 to the kUrl above.
+  // The hash is the result of applying SHA-256 to the kUrl above.
   const std::string kShortcutBaseName =
-      "shortcut-c0439743e18462397982265de7846820.png";
+      "shortcut-"
+      "19ac64003b6046f6ff0528fca09135468f5f86b3b4835ae39a9c4aa18751e9d8.png";
 
   base::FilePath GetShortcutIconDir() {
     return profile_path_.GetPath().AppendASCII("Web Shortcut Icons");

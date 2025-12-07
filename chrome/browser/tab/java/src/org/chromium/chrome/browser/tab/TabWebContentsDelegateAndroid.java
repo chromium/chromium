@@ -6,33 +6,56 @@ package org.chromium.chrome.browser.tab;
 
 import android.graphics.Rect;
 
+import org.chromium.base.lifetime.Destroyable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
+
+import java.util.List;
 
 /** A basic {@link WebContentsDelegateAndroid} that proxies methods into Tab. */
-public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateAndroid {
+@NullMarked
+public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateAndroid
+        implements Destroyable {
     /**
-     * Returns whether the page should resume accepting requests for the new window. This is
-     * used when window creation is asynchronous and the navigations need to be delayed.
+     * Returns whether the page should resume accepting requests for the new window. This is used
+     * when window creation is asynchronous and the navigations need to be delayed.
      */
     protected abstract boolean shouldResumeRequestsForCreatedWindow();
 
     /**
-     * Creates a new tab with the already-created WebContents. The tab for the added
-     * contents should be reparented correctly when this method returns.
+     * Creates a new tab with the already-created WebContents. The tab for the added contents should
+     * be reparented correctly when this method returns.
+     *
      * @param sourceWebContents Source WebContents from which the new one is created.
      * @param webContents Newly created WebContents object.
+     * @param targetUrl URL that was used to create the new WebContents object.
      * @param disposition WindowOpenDisposition indicating how the tab should be created.
-     * @param initialPosition Initial position of the content to be created.
+     * @param windowFeatures Initial window features to be used for the new tab.
      * @param userGesture {@code true} if opened by user gesture.
-     * @return {@code true} if new tab was created successfully with a give WebContents.
+     * @return {@code true} if new tab was created successfully with a given WebContents.
      */
     protected abstract boolean addNewContents(
             WebContents sourceWebContents,
             WebContents webContents,
+            GURL targetUrl,
             int disposition,
-            Rect initialPosition,
+            WindowFeatures windowFeatures,
             boolean userGesture);
+
+    /**
+     * Repositions the window containing this tab to given bounds. Applicable
+     * only for multi-window mode in Android.
+     *
+     * @param source Source WebContents which requested the repositioning.
+     * @param bounds Rectangle specifying desired bounds in global work area coordinate system.
+     */
+    protected void setContentsBounds(WebContents source, Rect bounds) {
+        // Do nothing.
+    }
 
     /**
      * Sets the overlay mode.
@@ -83,15 +106,25 @@ public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateA
      * @return the WebAPK manifest scope. This gives frames within the scope increased privileges
      * such as autoplaying media unmuted.
      */
-    protected String getManifestScope() {
+    protected @Nullable String getManifestScope() {
         return null;
     }
 
     /**
      * Checks if the associated tab is currently presented in the context of custom tabs.
+     *
      * @return true if this is currently a custom tab.
      */
     protected boolean isCustomTab() {
+        return false;
+    }
+
+    /**
+     * Checks if the associated tab is currently presented as a contextual popup.
+     *
+     * @return true if this is currently a contextual popup.
+     */
+    protected boolean isPopup() {
         return false;
     }
 
@@ -118,4 +151,16 @@ public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateA
     public boolean isTrustedWebActivity(WebContents webContents) {
         return false;
     }
+
+    /** Return if dynamically change safe area insets as browser controls scroll. */
+    protected boolean isDynamicSafeAreaInsetsEnabled() {
+        return false;
+    }
+
+    protected boolean openInAppOrChromeFromCct(GURL gurl) {
+        return false;
+    }
+
+    /** Called when WebContents reports a change to the non-draggable regions in header content. */
+    protected void nonDraggableRegionsChanged(List<Rect> regions) {}
 }

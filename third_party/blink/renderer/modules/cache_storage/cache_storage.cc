@@ -6,9 +6,12 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "third_party/blink/public/common/cache_storage/cache_storage_utils.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
@@ -64,10 +67,238 @@ struct TypeConverter<MultiCacheQueryOptionsPtr,
 
 namespace blink {
 
+// Controls whether we apply an artificial delay to priming the CacheStorage
+// data for all APIs. There are 2 parameters for each API that influence how
+// long the delay is, `factor` and `offset`. If the actual time taken is
+// `elapse` then the delay will be `elapse * factor + offset`.
+BASE_FEATURE(kCacheStorageAblation, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls the ablation delay time per each API call.
+BASE_FEATURE_PARAM(double,
+                   kCacheStorageAblationOpenFactor,
+                   &kCacheStorageAblation,
+                   "open_factor",
+                   0);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kCacheStorageAblationOpenOffset,
+                   &kCacheStorageAblation,
+                   "open_offset",
+                   base::Milliseconds(0));
+
+BASE_FEATURE_PARAM(double,
+                   kCacheStorageAblationHasFactor,
+                   &kCacheStorageAblation,
+                   "has_factor",
+                   0);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kCacheStorageAblationHasOffset,
+                   &kCacheStorageAblation,
+                   "has_offset",
+                   base::Milliseconds(0));
+
+BASE_FEATURE_PARAM(double,
+                   kCacheStorageAblationDeleteFactor,
+                   &kCacheStorageAblation,
+                   "delete_factor",
+                   0);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kCacheStorageAblationDeleteOffset,
+                   &kCacheStorageAblation,
+                   "delete_offset",
+                   base::Milliseconds(0));
+
+BASE_FEATURE_PARAM(double,
+                   kCacheStorageAblationMatchFactor,
+                   &kCacheStorageAblation,
+                   "match_factor",
+                   0);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kCacheStorageAblationMatchOffset,
+                   &kCacheStorageAblation,
+                   "match_offset",
+                   base::Milliseconds(0));
+
+BASE_FEATURE_PARAM(double,
+                   kCacheStorageAblationKeysFactor,
+                   &kCacheStorageAblation,
+                   "keys_factor",
+                   0);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kCacheStorageAblationKeysOffset,
+                   &kCacheStorageAblation,
+                   "keys_offset",
+                   base::Milliseconds(0));
+
 namespace {
+
 const char kSecurityErrorMessage[] =
     "An attempt was made to break through the security policy of the user "
     "agent.";
+
+void OpenComplete(GlobalFetch::ScopedFetcher* fetcher,
+                  CacheStorageBlobClientList* blob_client_list,
+                  int64_t trace_id,
+                  mojom::blink::CacheStorage::OpenResult result,
+                  ScriptPromiseResolver<Cache>* resolver) {
+  if (!result.has_value()) {
+    TRACE_EVENT_WITH_FLOW1("CacheStorage", "CacheStorage::Open::Callback",
+                           TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN,
+                           "status", CacheStorageTracedValue(result.error()));
+    RejectCacheStorageWithError(resolver, result.error());
+  } else {
+    TRACE_EVENT_WITH_FLOW1("CacheStorage", "CacheStorage::Open::Callback",
+                           TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN,
+                           "status", "success");
+    // See https://bit.ly/2S0zRAS for task types.
+    resolver->Resolve(MakeGarbageCollected<Cache>(
+        fetcher, blob_client_list, std::move(result.value()),
+        resolver->GetExecutionContext(), blink::TaskType::kMiscPlatformAPI));
+  }
+}
+
+void HasComplete(mojom::blink::CacheStorageError result,
+                 ScriptPromiseResolver<IDLBoolean>* resolver) {
+  switch (result) {
+    case mojom::blink::CacheStorageError::kSuccess:
+      resolver->Resolve(true);
+      break;
+    case mojom::blink::CacheStorageError::kErrorNotFound:
+      resolver->Resolve(false);
+      break;
+    default:
+      RejectCacheStorageWithError(resolver, result);
+      break;
+  }
+}
+
+void DeleteComplete(mojom::blink::CacheStorageError result,
+                    ScriptPromiseResolver<IDLBoolean>* resolver) {
+  switch (result) {
+    case mojom::blink::CacheStorageError::kSuccess:
+      resolver->Resolve(true);
+      break;
+    case mojom::blink::CacheStorageError::kErrorStorage:
+    case mojom::blink::CacheStorageError::kErrorNotFound:
+      resolver->Resolve(false);
+      break;
+    default:
+      RejectCacheStorageWithError(resolver, result);
+      break;
+  }
+}
+
+void MatchComplete(int64_t trace_id,
+                   mojom::blink::CacheStorage::MatchResult result,
+                   CacheStorageBlobClientList* blob_client_list,
+                   ScriptPromiseResolver<Response>* resolver) {
+  if (!result.has_value()) {
+    TRACE_EVENT_WITH_FLOW1("CacheStorage", "CacheStorage::MatchImpl::Callback",
+                           TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN,
+                           "status", CacheStorageTracedValue(result.error()));
+    switch (result.error()) {
+      case mojom::CacheStorageError::kErrorNotFound:
+      case mojom::CacheStorageError::kErrorStorage:
+      case mojom::CacheStorageError::kErrorCacheNameNotFound:
+        resolver->Resolve();
+        break;
+      default:
+        RejectCacheStorageWithError(resolver, result.error());
+        break;
+    }
+  } else {
+    ScriptState::Scope scope(resolver->GetScriptState());
+    auto& match_response = result.value();
+    if (match_response->is_eager_response()) {
+      TRACE_EVENT_WITH_FLOW1(
+          "CacheStorage", "CacheStorage::MatchImpl::Callback",
+          TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN, "eager_response",
+          CacheStorageTracedValue(
+              match_response->get_eager_response()->response));
+      resolver->Resolve(CreateEagerResponse(
+          resolver->GetScriptState(),
+          std::move(match_response->get_eager_response()), blob_client_list));
+    } else {
+      TRACE_EVENT_WITH_FLOW1(
+          "CacheStorage", "CacheStorage::MatchImpl::Callback",
+          TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN, "response",
+          CacheStorageTracedValue(match_response->get_response()));
+      resolver->Resolve(Response::Create(resolver->GetScriptState(),
+                                         *match_response->get_response()));
+    }
+  }
+}
+
+int GetAblationFactor(std::string_view operation_name) {
+  if (operation_name == "Open") {
+    return kCacheStorageAblationOpenFactor.Get();
+  } else if (operation_name == "Has") {
+    return kCacheStorageAblationHasFactor.Get();
+  } else if (operation_name == "Delete") {
+    return kCacheStorageAblationDeleteFactor.Get();
+  } else if (operation_name == "Match") {
+    return kCacheStorageAblationMatchFactor.Get();
+  } else if (operation_name == "Keys") {
+    return kCacheStorageAblationKeysFactor.Get();
+  } else {
+    NOTREACHED();
+  }
+}
+
+base::TimeDelta GetAblationOffset(std::string_view operation_name) {
+  if (operation_name == "Open") {
+    return kCacheStorageAblationOpenOffset.Get();
+  } else if (operation_name == "Has") {
+    return kCacheStorageAblationHasOffset.Get();
+  } else if (operation_name == "Delete") {
+    return kCacheStorageAblationDeleteOffset.Get();
+  } else if (operation_name == "Match") {
+    return kCacheStorageAblationMatchOffset.Get();
+  } else if (operation_name == "Keys") {
+    return kCacheStorageAblationKeysOffset.Get();
+  } else {
+    NOTREACHED();
+  }
+}
+
+void ProcessCompletion(base::OnceCallback<void()> complete,
+                       base::TimeTicks start_time,
+                       ExecutionContext* context,
+                       const std::string& operation_name) {
+  // Run `complete` immediately if kCacheStorageAblation feature is disabled.
+  if (!base::FeatureList::IsEnabled(kCacheStorageAblation)) {
+    std::move(complete).Run();
+    return;
+  }
+
+  // Run `complete` with delay if kCacheStorageAblation feature is enabled to
+  // run the ablation test.
+  base::TimeDelta delay_to_schedule = (base::TimeTicks::Now() - start_time) *
+                                          GetAblationFactor(operation_name) +
+                                      GetAblationOffset(operation_name);
+
+  if (delay_to_schedule.is_positive()) {
+    context->GetTaskRunner(blink::TaskType::kMiscPlatformAPI)
+        ->PostDelayedTask(FROM_HERE,
+                          blink::BindOnce(
+                              [](base::TimeTicks start_time,
+                                 const std::string& operation_name) {
+                                // Measure actual delay to record as metrics.
+                                base::TimeDelta actual_delay =
+                                    base::TimeTicks::Now() - start_time;
+                                base::UmaHistogramTimes(
+                                    "ServiceWorkerCache.CacheStorage."
+                                    "Renderer." +
+                                        operation_name + ".AblationDelay",
+                                    actual_delay);
+                              },
+                              start_time, operation_name)
+                              .Then(std::move(complete)),
+                          delay_to_schedule);
+  } else {
+    std::move(complete).Run();
+  }
+}
+
 }  // namespace
 
 void CacheStorage::IsCacheStorageAllowed(ExecutionContext* context,
@@ -75,7 +306,7 @@ void CacheStorage::IsCacheStorageAllowed(ExecutionContext* context,
                                          base::OnceCallback<void()> callback) {
   DCHECK(context->IsWindow() || context->IsWorkerGlobalScope());
 
-  auto wrapped_callback = WTF::BindOnce(
+  auto wrapped_callback = blink::BindOnce(
       &CacheStorage::OnCacheStorageAllowed, WrapWeakPersistent(this),
       std::move(callback), WrapPersistent(resolver));
 
@@ -143,7 +374,7 @@ ScriptPromise<Cache> CacheStorage::open(ScriptState* script_state,
   DCHECK(context->IsContextThread());
 
   IsCacheStorageAllowed(context, resolver,
-                        resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+                        resolver->WrapCallbackInScriptScope(BindOnce(
                             &CacheStorage::OpenImpl, WrapWeakPersistent(this),
                             cache_name, trace_id)));
 
@@ -167,32 +398,21 @@ void CacheStorage::OpenImpl(const String& cache_name,
   // callback from ever being executed.
   cache_storage_remote_->Open(
       cache_name, trace_id,
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+      resolver->WrapCallbackInScriptScope(blink::BindOnce(
           [](GlobalFetch::ScopedFetcher* fetcher,
              CacheStorageBlobClientList* blob_client_list,
              base::TimeTicks start_time, int64_t trace_id,
              ScriptPromiseResolver<Cache>* resolver,
-             mojom::blink::OpenResultPtr result) {
+             mojom::blink::CacheStorage::OpenResult result) {
             base::UmaHistogramTimes(
                 "ServiceWorkerCache.CacheStorage.Renderer.Open",
                 base::TimeTicks::Now() - start_time);
-            if (result->is_status()) {
-              TRACE_EVENT_WITH_FLOW1(
-                  "CacheStorage", "CacheStorage::Open::Callback",
-                  TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN, "status",
-                  CacheStorageTracedValue(result->get_status()));
-              RejectCacheStorageWithError(resolver, result->get_status());
-            } else {
-              TRACE_EVENT_WITH_FLOW1(
-                  "CacheStorage", "CacheStorage::Open::Callback",
-                  TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN, "status",
-                  "success");
-              // See https://bit.ly/2S0zRAS for task types.
-              resolver->Resolve(MakeGarbageCollected<Cache>(
-                  fetcher, blob_client_list, std::move(result->get_cache()),
-                  resolver->GetExecutionContext(),
-                  blink::TaskType::kMiscPlatformAPI));
-            }
+
+            auto complete = resolver->WrapCallbackInScriptScope(blink::BindOnce(
+                &OpenComplete, WrapPersistent(fetcher),
+                WrapPersistent(blob_client_list), trace_id, std::move(result)));
+            ProcessCompletion(std::move(complete), start_time,
+                              resolver->GetExecutionContext(), "Open");
           },
           WrapPersistent(scoped_fetcher_.Get()),
           WrapPersistent(blob_client_list_.Get()), base::TimeTicks::Now(),
@@ -215,7 +435,7 @@ ScriptPromise<IDLBoolean> CacheStorage::has(ScriptState* script_state,
   DCHECK(context->IsContextThread());
 
   IsCacheStorageAllowed(context, resolver,
-                        resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+                        resolver->WrapCallbackInScriptScope(BindOnce(
                             &CacheStorage::HasImpl, WrapWeakPersistent(this),
                             cache_name, trace_id)));
 
@@ -240,7 +460,7 @@ void CacheStorage::HasImpl(const String& cache_name,
   // callback from ever being executed.
   cache_storage_remote_->Has(
       cache_name, trace_id,
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+      resolver->WrapCallbackInScriptScope(blink::BindOnce(
           [](base::TimeTicks start_time, int64_t trace_id,
              ScriptPromiseResolver<IDLBoolean>* resolver,
              mojom::blink::CacheStorageError result) {
@@ -251,17 +471,11 @@ void CacheStorage::HasImpl(const String& cache_name,
                 "CacheStorage", "CacheStorage::Has::Callback",
                 TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN, "status",
                 CacheStorageTracedValue(result));
-            switch (result) {
-              case mojom::blink::CacheStorageError::kSuccess:
-                resolver->Resolve(true);
-                break;
-              case mojom::blink::CacheStorageError::kErrorNotFound:
-                resolver->Resolve(false);
-                break;
-              default:
-                RejectCacheStorageWithError(resolver, result);
-                break;
-            }
+
+            auto complete = resolver->WrapCallbackInScriptScope(
+                BindOnce(&HasComplete, result));
+            ProcessCompletion(std::move(complete), start_time,
+                              resolver->GetExecutionContext(), "Has");
           },
           base::TimeTicks::Now(), trace_id)));
 }
@@ -283,7 +497,7 @@ ScriptPromise<IDLBoolean> CacheStorage::Delete(
   DCHECK(context->IsContextThread());
 
   IsCacheStorageAllowed(context, resolver,
-                        resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+                        resolver->WrapCallbackInScriptScope(BindOnce(
                             &CacheStorage::DeleteImpl, WrapWeakPersistent(this),
                             cache_name, trace_id)));
 
@@ -308,7 +522,7 @@ void CacheStorage::DeleteImpl(const String& cache_name,
   // callback from ever being executed.
   cache_storage_remote_->Delete(
       cache_name, trace_id,
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+      resolver->WrapCallbackInScriptScope(blink::BindOnce(
           [](base::TimeTicks start_time, int64_t trace_id,
              ScriptPromiseResolver<IDLBoolean>* resolver,
              mojom::blink::CacheStorageError result) {
@@ -319,18 +533,11 @@ void CacheStorage::DeleteImpl(const String& cache_name,
                 "CacheStorage", "CacheStorage::Delete::Callback",
                 TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN, "status",
                 CacheStorageTracedValue(result));
-            switch (result) {
-              case mojom::blink::CacheStorageError::kSuccess:
-                resolver->Resolve(true);
-                break;
-              case mojom::blink::CacheStorageError::kErrorStorage:
-              case mojom::blink::CacheStorageError::kErrorNotFound:
-                resolver->Resolve(false);
-                break;
-              default:
-                RejectCacheStorageWithError(resolver, result);
-                break;
-            }
+
+            auto complete = resolver->WrapCallbackInScriptScope(
+                BindOnce(&DeleteComplete, result));
+            ProcessCompletion(std::move(complete), start_time,
+                              resolver->GetExecutionContext(), "Delete");
           },
           base::TimeTicks::Now(), trace_id)));
 }
@@ -352,7 +559,7 @@ ScriptPromise<IDLSequence<IDLString>> CacheStorage::keys(
 
   IsCacheStorageAllowed(
       context, resolver,
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+      resolver->WrapCallbackInScriptScope(BindOnce(
           &CacheStorage::KeysImpl, WrapWeakPersistent(this), trace_id)));
 
   return promise;
@@ -376,7 +583,7 @@ void CacheStorage::KeysImpl(
   // callback from ever being executed.
   cache_storage_remote_->Keys(
       trace_id,
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+      resolver->WrapCallbackInScriptScope(blink::BindOnce(
           [](base::TimeTicks start_time, int64_t trace_id,
              ScriptPromiseResolver<IDLSequence<IDLString>>* resolver,
              const Vector<String>& keys) {
@@ -387,7 +594,15 @@ void CacheStorage::KeysImpl(
                 "CacheStorage", "CacheStorage::Keys::Callback",
                 TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN, "key_list",
                 CacheStorageTracedValue(keys));
-            resolver->Resolve(keys);
+
+            auto complete = resolver->WrapCallbackInScriptScope(BindOnce(
+                [](const Vector<String>& keys,
+                   ScriptPromiseResolver<IDLSequence<IDLString>>* resolver) {
+                  resolver->Resolve(keys);
+                },
+                keys));
+            ProcessCompletion(std::move(complete), start_time,
+                              resolver->GetExecutionContext(), "Keys");
           },
           base::TimeTicks::Now(), trace_id)));
 }
@@ -449,11 +664,11 @@ ScriptPromise<Response> CacheStorage::MatchImpl(
 
   IsCacheStorageAllowed(
       context, resolver,
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
-          &CacheStorage::MatchImplHelper, WrapWeakPersistent(this),
-          WrapPersistent(options), std::move(mojo_request),
-          std::move(mojo_options), in_related_fetch_event, in_range_fetch_event,
-          trace_id)));
+      resolver->WrapCallbackInScriptScope(
+          BindOnce(&CacheStorage::MatchImplHelper, WrapWeakPersistent(this),
+                   WrapPersistent(options), std::move(mojo_request),
+                   std::move(mojo_options), in_related_fetch_event,
+                   in_range_fetch_event, trace_id)));
 
   return promise;
 }
@@ -482,11 +697,11 @@ void CacheStorage::MatchImplHelper(
   cache_storage_remote_->Match(
       std::move(mojo_request), std::move(mojo_options), in_related_fetch_event,
       in_range_fetch_event, trace_id,
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+      resolver->WrapCallbackInScriptScope(blink::BindOnce(
           [](base::TimeTicks start_time, const MultiCacheQueryOptions* options,
              int64_t trace_id, CacheStorage* self,
              ScriptPromiseResolver<Response>* resolver,
-             mojom::blink::MatchResultPtr result) {
+             mojom::blink::CacheStorage::MatchResult result) {
             base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
             if (!options->hasCacheName() || options->cacheName().empty()) {
               base::UmaHistogramLongTimes(
@@ -497,44 +712,12 @@ void CacheStorage::MatchImplHelper(
                   "ServiceWorkerCache.CacheStorage.Renderer.MatchOneCache",
                   elapsed);
             }
-            if (result->is_status()) {
-              TRACE_EVENT_WITH_FLOW1(
-                  "CacheStorage", "CacheStorage::MatchImpl::Callback",
-                  TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN, "status",
-                  CacheStorageTracedValue(result->get_status()));
-              switch (result->get_status()) {
-                case mojom::CacheStorageError::kErrorNotFound:
-                case mojom::CacheStorageError::kErrorStorage:
-                case mojom::CacheStorageError::kErrorCacheNameNotFound:
-                  resolver->Resolve();
-                  break;
-                default:
-                  RejectCacheStorageWithError(resolver, result->get_status());
-                  break;
-              }
-            } else {
-              ScriptState::Scope scope(resolver->GetScriptState());
-              if (result->is_eager_response()) {
-                TRACE_EVENT_WITH_FLOW1(
-                    "CacheStorage", "CacheStorage::MatchImpl::Callback",
-                    TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN,
-                    "eager_response",
-                    CacheStorageTracedValue(
-                        result->get_eager_response()->response));
-                resolver->Resolve(
-                    CreateEagerResponse(resolver->GetScriptState(),
-                                        std::move(result->get_eager_response()),
-                                        self->blob_client_list_));
-              } else {
-                TRACE_EVENT_WITH_FLOW1(
-                    "CacheStorage", "CacheStorage::MatchImpl::Callback",
-                    TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN,
-                    "response",
-                    CacheStorageTracedValue(result->get_response()));
-                resolver->Resolve(Response::Create(resolver->GetScriptState(),
-                                                   *result->get_response()));
-              }
-            }
+
+            auto complete = resolver->WrapCallbackInScriptScope(
+                blink::BindOnce(&MatchComplete, trace_id, std::move(result),
+                                WrapPersistent(self->blob_client_list_.Get())));
+            ProcessCompletion(std::move(complete), start_time,
+                              resolver->GetExecutionContext(), "Match");
           },
           base::TimeTicks::Now(), WrapPersistent(options), trace_id,
           WrapPersistent(this))));

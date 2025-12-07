@@ -8,10 +8,13 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 import org.chromium.ui.resources.dynamics.ViewResourceInflater;
 
 /** A helper class for inflating Overlay Panel Views. */
+@NullMarked
 public abstract class OverlayPanelInflater extends ViewResourceInflater {
 
     /** The panel used to get information about the panel layout. */
@@ -37,14 +40,15 @@ public abstract class OverlayPanelInflater extends ViewResourceInflater {
             int layoutId,
             int viewId,
             Context context,
-            ViewGroup container,
-            DynamicResourceLoader resourceLoader) {
+            @Nullable ViewGroup container,
+            @Nullable DynamicResourceLoader resourceLoader) {
         super(layoutId, viewId, context, container, resourceLoader);
 
         mOverlayPanel = panel;
     }
 
     @Override
+    @SuppressWarnings("NullAway")
     public void destroy() {
         super.destroy();
 
@@ -62,7 +66,7 @@ public abstract class OverlayPanelInflater extends ViewResourceInflater {
      * @param text The text to be sanitized.
      * @return The sanitized text.
      */
-    public static String sanitizeText(String text) {
+    public static @Nullable String sanitizeText(@Nullable String text) {
         if (text == null) return null;
         return text.replace(OBJ_CHARACTER, " ").trim();
     }

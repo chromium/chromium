@@ -7,7 +7,6 @@
 
 #include "base/component_export.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
-#include "components/optimization_guide/proto/model_execution.pb.h"
 
 class PrefRegistrySimple;
 
@@ -18,10 +17,6 @@ namespace prefs {
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kHintsFetcherLastFetchAttempt[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kModelAndFeaturesLastFetchAttempt[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kModelLastFetchSuccess[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kHintsFetcherHostsSuccessfullyFetched[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kPendingHintsProcessingVersion[];
@@ -29,8 +24,6 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kPreviouslyRegisteredOptimizationTypes[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kStoreFilePathsToDelete[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kModelExecutionMainToggleSettingState[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kPreviousOptimizationTypesWithFilter[];
 
@@ -54,6 +47,10 @@ std::string GetSettingEnabledPrefName(UserVisibleFeatureKey feature);
 namespace localstate {
 
 // Local state prefs.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kModelLastFetchAttempt[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kModelLastFetchSuccess[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kModelStoreMetadata[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)

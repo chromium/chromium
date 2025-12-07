@@ -30,6 +30,8 @@
 
 namespace blink {
 
+class ExecutionContext;
+
 class KHRParallelShaderCompile final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -39,7 +41,7 @@ class KHRParallelShaderCompile final : public WebGLExtension {
 
   WebGLExtensionName GetName() const override;
 
-  explicit KHRParallelShaderCompile(WebGLRenderingContextBase*);
+  KHRParallelShaderCompile(WebGLRenderingContextBase*, ExecutionContext*);
 };
 
 }  // namespace blink

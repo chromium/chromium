@@ -36,7 +36,12 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
   RecordPaintCanvas(const RecordPaintCanvas&) = delete;
   RecordPaintCanvas& operator=(const RecordPaintCanvas&) = delete;
 
+  // Returns the set of paint ops recorded so far and clears it from the
+  // internal buffer maintained by the canvas.
   virtual PaintRecord ReleaseAsRecord();
+  // Returns the set of paint ops recorded so far without clearing it from the
+  // internal buffer.
+  virtual PaintRecord CopyAsRecord();
 
   // See comments around `maybe_draw_lines_as_paths_` for details.
   void DisableLineDrawingAsPaths();
@@ -57,7 +62,7 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
   int saveLayer(const SkRect& bounds, const PaintFlags& flags) override;
   int saveLayerAlphaf(float alpha) override;
   int saveLayerAlphaf(const SkRect& bounds, float alpha) override;
-  int saveLayerFilters(base::span<sk_sp<PaintFilter>> filters,
+  int saveLayerFilters(base::span<const sk_sp<PaintFilter>> filters,
                        const PaintFlags& flags) override;
   void restore() override;
   int getSaveCount() const final;
@@ -237,7 +242,7 @@ class CC_PAINT_EXPORT InspectableRecordPaintCanvas : public RecordPaintCanvas {
   int saveLayer(const SkRect& bounds, const PaintFlags& flags) override;
   int saveLayerAlphaf(float alpha) override;
   int saveLayerAlphaf(const SkRect& bounds, float alpha) override;
-  int saveLayerFilters(base::span<sk_sp<PaintFilter>> filters,
+  int saveLayerFilters(base::span<const sk_sp<PaintFilter>> filters,
                        const PaintFlags& flags) override;
   void restore() override;
 

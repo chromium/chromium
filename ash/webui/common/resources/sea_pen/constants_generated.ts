@@ -7,7 +7,7 @@
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {SeaPenTemplate} from './constants.js';
+import type {SeaPenTemplate} from './constants.js';
 import {SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from './sea_pen_generated.mojom-webui.js';
 
 

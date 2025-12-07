@@ -2,11 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/gfx/image/image_util.h"
+
 #import <UIKit/UIKit.h>
 
+#include <optional>
+
+#include "base/apple/foundation_util.h"
+#include "base/containers/to_vector.h"
 #include "build/blink_buildflags.h"
 #include "ui/gfx/image/image.h"
-#include "ui/gfx/image/image_util.h"
 #include "ui/gfx/image/resize_image_dimensions.h"
 
 #if BUILDFLAG(USE_BLINK)
@@ -85,18 +90,16 @@ UIImage* ResizeUIImage(UIImage* image,
 
 namespace gfx {
 
-bool JPEG1xEncodedDataFromImage(const Image& image,
-                                int quality,
-                                std::vector<unsigned char>* dst) {
+std::optional<std::vector<uint8_t>> JPEG1xEncodedDataFromImage(
+    const Image& image,
+    int quality) {
   NSData* data = UIImageJPEGRepresentation(image.ToUIImage(), quality / 100.0);
 
   if (data.length == 0) {
-    return false;
+    return std::nullopt;
   }
 
-  dst->resize(data.length);
-  [data getBytes:&dst->at(0) length:data.length];
-  return true;
+  return base::ToVector(base::apple::NSDataToSpan(data));
 }
 
 Image ResizedImageForSearchByImage(const Image& image) {
@@ -118,14 +121,8 @@ Image ResizedImageForSearchByImage(const Image& image) {
 }
 
 #if BUILDFLAG(USE_BLINK)
-Image ImageFrom1xJPEGEncodedData(const unsigned char* input,
-                                 size_t input_size) {
-  std::unique_ptr<SkBitmap> bitmap(gfx::JPEGCodec::Decode(input, input_size));
-  if (bitmap.get()) {
-    return Image::CreateFrom1xBitmap(*bitmap);
-  }
-
-  return Image();
+Image ImageFrom1xJPEGEncodedData(base::span<const uint8_t> input) {
+  return Image::CreateFrom1xBitmap(gfx::JPEGCodec::Decode(input));
 }
 #endif  // BUILDFLAG(USE_BLINK)
 

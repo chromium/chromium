@@ -15,11 +15,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_unique_receiver_set.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
-
-namespace WTF {
-class String;
-}
 
 namespace blink {
 
@@ -32,13 +27,13 @@ class SecurityOrigin;
 // running in the browser process. It is owned by ExecutionContext, and
 // instances are created lazily by calling FileSystemDispatcher::From().
 class FileSystemDispatcher : public GarbageCollected<FileSystemDispatcher>,
-                             public Supplement<ExecutionContext> {
+                             public GarbageCollectedMixin {
  public:
   using StatusCallback = base::OnceCallback<void(base::File::Error error)>;
   using WriteCallback =
       base::RepeatingCallback<void(int64_t bytes, bool complete)>;
 
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   static FileSystemDispatcher& From(ExecutionContext* context);
 
@@ -197,6 +192,7 @@ class FileSystemDispatcher : public GarbageCollected<FileSystemDispatcher>,
 
   void RemoveOperationRemote(int operation_id);
 
+  Member<ExecutionContext> execution_context_;
   HeapMojoRemote<mojom::blink::FileSystemManager> file_system_manager_;
   using OperationsMap =
       HeapHashMap<int,

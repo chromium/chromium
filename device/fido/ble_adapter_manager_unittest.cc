@@ -22,7 +22,7 @@
 #include "device/fido/fake_fido_discovery.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_request_handler_base.h"
-#include "device/fido/fido_transport_protocol.h"
+#include "device/fido/public/fido_transport_protocol.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -46,6 +46,8 @@ class MockObserver : public FidoRequestHandlerBase::Observer {
 
   ~MockObserver() override = default;
 
+  void StartObserving(FidoRequestHandlerBase* request_handler) override {}
+  void StopObserving(FidoRequestHandlerBase* request_handler) override {}
   MOCK_METHOD1(OnTransportAvailabilityEnumerated,
                void(FidoRequestHandlerBase::TransportAvailabilityInfo data));
   MOCK_METHOD1(EmbedderControlsAuthenticatorDispatch,
@@ -73,7 +75,7 @@ class FakeFidoRequestHandlerBase : public FidoRequestHandlerBase {
                              FidoDiscoveryFactory* fido_discovery_factory)
       : FidoRequestHandlerBase(fido_discovery_factory,
                                {FidoTransportProtocol::kHybrid}) {
-    set_observer(observer);
+    SetObserver(observer);
     Start();
   }
 

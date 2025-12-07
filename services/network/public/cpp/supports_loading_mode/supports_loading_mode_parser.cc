@@ -4,10 +4,10 @@
 
 #include "services/network/public/cpp/supports_loading_mode/supports_loading_mode_parser.h"
 
+#include <algorithm>
 #include <optional>
 #include <ranges>
 
-#include "base/ranges/algorithm.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/mojom/supports_loading_mode.mojom.h"
@@ -26,6 +26,8 @@ constexpr struct KnownLoadingMode {
     {"uncredentialed-prerender", mojom::LoadingMode::kUncredentialedPrerender},
     {"credentialed-prerender", mojom::LoadingMode::kCredentialedPrerender},
     {"fenced-frame", mojom::LoadingMode::kFencedFrame},
+    {"prerender-cross-origin-frames",
+     mojom::LoadingMode::kPrerenderCrossOriginFrames},
 };
 
 }  // namespace
@@ -56,7 +58,7 @@ mojom::SupportsLoadingModePtr ParseSupportsLoadingMode(
     // Each supported token maps 1:1 to an enumerator.
     const auto& token = item.item.GetString();
     const auto* it =
-        base::ranges::find(kKnownLoadingModes, token, &KnownLoadingMode::token);
+        std::ranges::find(kKnownLoadingModes, token, &KnownLoadingMode::token);
     if (it == std::ranges::end(kKnownLoadingModes)) {
       continue;
     }
@@ -66,17 +68,20 @@ mojom::SupportsLoadingModePtr ParseSupportsLoadingMode(
 
   // Order and repetition are not significant.
   // Canonicalize by making the vector sorted and unique.
-  base::ranges::sort(modes);
-  modes.erase(base::ranges::unique(modes), modes.end());
+  std::ranges::sort(modes);
+  auto repeated = std::ranges::unique(modes);
+  modes.erase(repeated.begin(), repeated.end());
   return mojom::SupportsLoadingMode::New(std::move(modes));
 }
 
 mojom::SupportsLoadingModePtr ParseSupportsLoadingMode(
     const net::HttpResponseHeaders& headers) {
-  std::string header_value;
-  if (!headers.GetNormalizedHeader(kSupportsLoadingMode, &header_value))
+  std::optional<std::string> header_value =
+      headers.GetNormalizedHeader(kSupportsLoadingMode);
+  if (!header_value) {
     return nullptr;
-  return ParseSupportsLoadingMode(header_value);
+  }
+  return ParseSupportsLoadingMode(*header_value);
 }
 
 }  // namespace network

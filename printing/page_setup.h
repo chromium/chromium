@@ -20,6 +20,10 @@ class COMPONENT_EXPORT(PRINTING_SETTINGS) PageMargins {
 
   void Clear();
 
+  std::string ToString() const;
+
+  bool IsEmpty() const;
+
   // Vertical space for the overlay from the top of the sheet.
   int header;
   // Vertical space for the overlay from the bottom of the sheet.

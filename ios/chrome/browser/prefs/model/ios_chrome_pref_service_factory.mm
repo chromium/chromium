@@ -8,6 +8,7 @@
 
 #import "base/check.h"
 #import "base/feature_list.h"
+#import "base/files/file_util.h"
 #import "base/functional/bind.h"
 #import "base/memory/ptr_util.h"
 #import "base/metrics/histogram_macros.h"
@@ -20,7 +21,9 @@
 #import "components/prefs/pref_service.h"
 #import "components/prefs/pref_store.h"
 #import "components/prefs/pref_value_store.h"
+#import "components/prefs/wrap_with_prefix_pref_store.h"
 #import "components/proxy_config/proxy_config_pref_names.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/supervised_user/core/browser/supervised_user_pref_store.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/sync/base/features.h"
@@ -30,12 +33,10 @@
 
 namespace {
 
-const char kPreferencesFilename[] = "Preferences";
-const char kAccountPreferencesFilename[] = "AccountPreferences";
+const char kAccountPreferencesPrefix[] = "account_values";
 
 void PrepareFactory(sync_preferences::PrefServiceSyncableFactory* factory,
-                    const base::FilePath& pref_filename,
-                    base::SequencedTaskRunner* pref_io_task_runner,
+                    scoped_refptr<JsonPrefStore> user_pref_store,
                     policy::PolicyService* policy_service,
                     policy::BrowserPolicyConnector* policy_connector,
                     const scoped_refptr<PrefStore>& supervised_user_prefs) {
@@ -49,14 +50,18 @@ void PrepareFactory(sync_preferences::PrefServiceSyncableFactory* factory,
     factory->set_supervised_user_prefs(supervised_user_prefs);
   }
 
-  factory->set_user_prefs(base::MakeRefCounted<JsonPrefStore>(
-      pref_filename, std::unique_ptr<PrefFilter>(), pref_io_task_runner));
+  factory->set_user_prefs(std::move(user_pref_store));
 
   factory->SetPrefModelAssociatorClient(
       base::MakeRefCounted<IOSChromePrefModelAssociatorClient>());
 }
 
 }  // namespace
+
+const base::FilePath::CharType kPreferencesFilename[] =
+    FILE_PATH_LITERAL("Preferences");
+const base::FilePath::CharType kAccountPreferencesFilename[] =
+    FILE_PATH_LITERAL("AccountPreferences");
 
 std::unique_ptr<PrefService> CreateLocalState(
     const base::FilePath& pref_filename,
@@ -65,13 +70,16 @@ std::unique_ptr<PrefService> CreateLocalState(
     policy::PolicyService* policy_service,
     policy::BrowserPolicyConnector* policy_connector) {
   sync_preferences::PrefServiceSyncableFactory factory;
-  PrepareFactory(&factory, pref_filename, pref_io_task_runner, policy_service,
-                 policy_connector, /*supervised_user_prefs=*/nullptr);
+  PrepareFactory(
+      &factory,
+      base::MakeRefCounted<JsonPrefStore>(
+          pref_filename, std::unique_ptr<PrefFilter>(), pref_io_task_runner),
+      policy_service, policy_connector, /*supervised_user_prefs=*/nullptr);
   return factory.Create(pref_registry.get());
 }
 
-std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateBrowserStatePrefs(
-    const base::FilePath& browser_state_path,
+std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefs(
+    const base::FilePath& profile_path,
     base::SequencedTaskRunner* pref_io_task_runner,
     const scoped_refptr<user_prefs::PrefRegistrySyncable>& pref_registry,
     policy::PolicyService* policy_service,
@@ -83,14 +91,29 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateBrowserStatePrefs(
   // preference modifications (as applications are sand-boxed), it can use a
   // simple JsonPrefStore to store them (which is what PrefStoreManager uses
   // on platforms that do not track preference modifications).
+  scoped_refptr<JsonPrefStore> local_pref_store =
+      base::MakeRefCounted<JsonPrefStore>(
+          profile_path.Append(kPreferencesFilename),
+          std::unique_ptr<PrefFilter>(), pref_io_task_runner);
   sync_preferences::PrefServiceSyncableFactory factory;
-  PrepareFactory(&factory, browser_state_path.Append(kPreferencesFilename),
-                 pref_io_task_runner, policy_service, policy_connector,
+  PrepareFactory(&factory, local_pref_store, policy_service, policy_connector,
                  supervised_user_prefs);
-  if (base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage)) {
-    factory.SetAccountPrefStore(base::MakeRefCounted<JsonPrefStore>(
-        browser_state_path.Append(kAccountPreferencesFilename), nullptr,
-        pref_io_task_runner));
+  if (base::FeatureList::IsEnabled(
+          switches::kEnablePreferencesAccountStorage)) {
+    base::FilePath account_prefs_filepath =
+        profile_path.Append(kAccountPreferencesFilename);
+    if (base::FeatureList::IsEnabled(syncer::kMigrateAccountPrefs)) {
+      // Post task to remove the account preferences file. This is done on the
+      // IO thread.
+      pref_io_task_runner->PostTask(
+          FROM_HERE, base::BindOnce(IgnoreResult(&base::DeleteFile),
+                                    account_prefs_filepath));
+      factory.SetAccountPrefStore(base::MakeRefCounted<WrapWithPrefixPrefStore>(
+          local_pref_store, kAccountPreferencesPrefix));
+    } else {
+      factory.SetAccountPrefStore(base::MakeRefCounted<JsonPrefStore>(
+          account_prefs_filepath, nullptr, pref_io_task_runner));
+    }
   }
   factory.set_async(async);
   std::unique_ptr<sync_preferences::PrefServiceSyncable> pref_service =
@@ -99,7 +122,7 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateBrowserStatePrefs(
 }
 
 std::unique_ptr<sync_preferences::PrefServiceSyncable>
-CreateIncognitoBrowserStatePrefs(
+CreateIncognitoProfilePrefs(
     sync_preferences::PrefServiceSyncable* pref_service) {
   // List of keys that cannot be changed in the user prefs file by the incognito
   // browser state. All preferences that store information about the browsing

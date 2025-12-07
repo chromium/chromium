@@ -10,7 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -140,6 +140,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_METRICS) LoginEventRecorder {
                                const std::string uma_prefix);
   // Immediately execute the task to write login times.
   void RunScheduledWriteLoginTimes();
+
+  // Returns the duration between given markers.
+  std::optional<base::TimeDelta> GetDuration(
+      const std::string& begin_marker_name,
+      const std::string& end_marker_name);
 
   // Write logout times to logs.
   void WriteLogoutTimes(const std::string base_name,

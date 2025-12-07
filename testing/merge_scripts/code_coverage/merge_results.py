@@ -15,6 +15,7 @@ import argparse
 import json
 import logging
 import os
+import shutil
 import subprocess
 import sys
 
@@ -83,7 +84,7 @@ def _MergeAPIArgumentParser(*args, **kwargs):
 
 
 def main():
-  desc = "Merge profraw files in <--task-output-dir> into a single profdata."
+  desc = 'Merge profraw files in <--task-output-dir> into a single profdata.'
   parser = _MergeAPIArgumentParser(description=desc)
   params = parser.parse_args()
 
@@ -122,7 +123,29 @@ def main():
     rc = subprocess.call(args)
     if rc != 0:
       failed = True
-      logging.warning('%s exited with %s' % (merge_js_results_script, rc))
+      logging.warning('%s exited with %s', merge_js_results_script, rc)
+
+  # The orderfile bot outputs only one orderfile that needs to be copied over
+  # to the profdata dir, no additional merging necessary.
+  if 'orderfile' in params.profdata_dir:
+    logging.info('Detected orderfile bot in %s', params.profdata_dir)
+    orderfiles = []
+    for dir_path, _sub_dirs, file_names in os.walk(params.task_output_dir):
+      logging.info('Found orderfile dir: %s', dir_path)
+      for fn in file_names:
+        if 'unpatched' in fn:
+          logging.info('Ignoring %s as it is unpatched.', fn)
+        else:
+          logging.info('Found orderfile: %s', fn)
+          orderfiles.append(os.path.join(dir_path, fn))
+    assert len(orderfiles) == 1, f'More than one orderfile found: {orderfiles}'
+    source_path = orderfiles[0]
+    # It is important to copy the file to the root profile dir with a
+    # predictable name for the bot to find it reliably.
+    dest_path = os.path.join(os.path.dirname(params.profdata_dir),
+                             'orderfile.out')
+    logging.info('Copying orderfile from %s to %s', source_path, dest_path)
+    shutil.copyfile(source_path, dest_path)
 
   # Name the output profdata file name as {test_target}.profdata or
   # default.profdata.
@@ -177,10 +200,10 @@ def main():
     rc = subprocess.call(args)
     if rc != 0:
       failed = True
-      logging.warning('Additional merge script %s exited with %s' %
-                      (params.additional_merge_script, rc))
+      logging.warning('Additional merge script %s exited with %s',
+                      params.additional_merge_script, rc)
   elif len(params.jsons_to_merge) == 1:
-    logging.info("Only one output needs to be merged; directly copying it.")
+    logging.info('Only one output needs to be merged; directly copying it.')
     with open(params.jsons_to_merge[0]) as f_read:
       with open(params.output_json, 'w') as f_write:
         f_write.write(f_read.read())

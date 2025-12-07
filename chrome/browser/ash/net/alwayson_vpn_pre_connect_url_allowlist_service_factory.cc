@@ -10,6 +10,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/policy/policy_blocklist_service/ash_policy_blocklist_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/user_manager/user_manager.h"
 #include "components/variations/service/variations_service.h"
@@ -43,12 +44,12 @@ AlwaysOnVpnPreConnectUrlAllowlistServiceFactory::
     : ProfileKeyedServiceFactory(
           "AlwaysOnVpnPreConnectUrlAllowlistService",
           ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOriginalOnly)
-              .WithGuest(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/41488885): Check if this service is needed for
-              // Ash Internals.
-              .WithAshInternals(ProfileSelection::kOriginalOnly)
-              .Build()) {}
+              .WithRegular(ProfileSelection::kOwnInstance)
+              .Build()) {
+  // LINT.IfChange(Deps)
+  DependsOn(AshPolicyBlocklistServiceFactory::GetInstance());
+  // LINT.ThenChange(//chrome/browser/ash/net/alwayson_vpn_pre_connect_url_allowlist_service.h:Deps)
+}
 
 AlwaysOnVpnPreConnectUrlAllowlistServiceFactory::
     ~AlwaysOnVpnPreConnectUrlAllowlistServiceFactory() = default;
@@ -56,13 +57,10 @@ AlwaysOnVpnPreConnectUrlAllowlistServiceFactory::
 std::unique_ptr<KeyedService> AlwaysOnVpnPreConnectUrlAllowlistServiceFactory::
     BuildServiceInstanceForBrowserContext(
         content::BrowserContext* context) const {
-  Profile* profile = Profile::FromBrowserContext(context);
-  if (!user_manager::UserManager::Get()->IsPrimaryUser(
-          ash::BrowserContextHelper::Get()->GetUserByBrowserContext(context)) ||
-      !profile->GetProfilePolicyConnector()->IsManaged()) {
-    return nullptr;
-  }
-  return std::make_unique<AlwaysOnVpnPreConnectUrlAllowlistService>(profile);
+  auto* profile = Profile::FromBrowserContext(context);
+  return std::make_unique<AlwaysOnVpnPreConnectUrlAllowlistService>(
+      profile->GetPrefs(),
+      AshPolicyBlocklistServiceFactory::GetForBrowserContext(profile));
 }
 
 bool AlwaysOnVpnPreConnectUrlAllowlistServiceFactory::

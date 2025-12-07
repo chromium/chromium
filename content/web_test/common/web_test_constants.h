@@ -7,9 +7,8 @@
 
 namespace content {
 
-constexpr int kDefaultDatabaseQuota = -1;
-
-extern const char kDictKeyWorkQueueHasItems[];
+// DictValue key to show if the work queue has something to do.
+inline constexpr char kDictKeyWorkQueueHasItems[] = "has_items";
 
 }  // namespace content
 

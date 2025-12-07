@@ -6,6 +6,9 @@
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_INSTALL_PROMPT_TEST_HELPER_H_
 
 #include "chrome/browser/extensions/extension_install_prompt.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 // A helper class to be used with ExtensionInstallPrompt that keeps track of the
 // payload. Note that this class does no lifetime management.
@@ -24,13 +27,13 @@ class ExtensionInstallPromptTestHelper {
   // Returns a callback to be used with the ExtensionInstallPrompt.
   ExtensionInstallPrompt::DoneCallback GetCallback();
 
-  // Note: This causes |ADD_FAILURE()| if |payload_| has not been set.
+  // Note: This causes `ADD_FAILURE()` if `payload_` has not been set.
   ExtensionInstallPrompt::DoneCallbackPayload payload() const;
 
-  // Note: This causes |ADD_FAILURE()| if |payload_| has not been set.
+  // Note: This causes `ADD_FAILURE()` if `payload_` has not been set.
   ExtensionInstallPrompt::Result result() const;
 
-  // Note: This causes |ADD_FAILURE()| if |payload_| has not been set.
+  // Note: This causes `ADD_FAILURE()` if `payload_` has not been set.
   std::string justification() const;
 
   bool has_payload() const { return payload_ != nullptr; }

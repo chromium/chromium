@@ -7,6 +7,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "ash/shell.h"
 #include "base/command_line.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/reset_screen.h"
@@ -18,8 +19,9 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/test/oobe_window_visibility_waiter.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
 #include "chrome/common/pref_names.h"
@@ -31,12 +33,14 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
+#include "google_apis/gaia/gaia_id.h"
+#include "ui/events/test/event_generator.h"
 
 namespace ash {
 namespace {
 
 constexpr char kTestUser1[] = "test-user1@gmail.com";
-constexpr char kTestUser1GaiaId[] = "test-user1@gmail.com";
+constexpr GaiaId::Literal kTestUser1GaiaId("test-user1@gmail.com");
 
 // HTML Elements
 constexpr char kResetScreen[] = "reset";
@@ -51,8 +55,9 @@ constexpr char kCancelPowerwashButton[] = "cancelButton";
 constexpr char kRestartButton[] = "restart";
 
 void InvokeResetAccelerator() {
-  ASSERT_TRUE(LoginScreenTestApi::SendAcceleratorNatively(ui::Accelerator(
-      ui::VKEY_R, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN)));
+  ui::test::EventGenerator event_generator(ash::Shell::GetPrimaryRootWindow());
+  event_generator.PressKeyAndModifierKeys(
+      ui::VKEY_R, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN);
 }
 
 void ClickCancelButton() {
@@ -119,6 +124,10 @@ class ResetTest : public OobeBaseTest, public LocalStateMixin::Delegate {
   ResetTest& operator=(const ResetTest&) = delete;
 
   ~ResetTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    OobeBaseTest::SetUpCommandLine(command_line);
+  }
 
   // Simulates reset screen request from views based login.
   void InvokeResetScreen() {
@@ -472,7 +481,9 @@ IN_PROC_BROWSER_TEST_F(ResetFirstAfterBootTestWithRollback,
 
   InvokeResetAccelerator();
   ClickToConfirmButton();
+  WaitForConfirmationDialogToOpen();
   ClickResetButton();
+  WaitForConfirmationDialogToClose();
 
   EXPECT_EQ(
       0, chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());

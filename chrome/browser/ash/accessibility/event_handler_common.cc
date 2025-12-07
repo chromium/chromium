@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
+#include "extensions/browser/api/offscreen/offscreen_document_manager.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_manager.h"
@@ -34,6 +35,36 @@ extensions::ExtensionHost* GetAccessibilityExtensionHost(
   extensions::ExtensionHost* host =
       extensions::ProcessManager::Get(context)->GetBackgroundHostForExtension(
           extension->id());
+  return host;
+}
+
+extensions::OffscreenDocumentHost* GetAccessibilityOffscreenDocumentHost(
+    const std::string& extension_id) {
+  if (!AccessibilityManager::Get()) {
+    return nullptr;
+  }
+
+  content::BrowserContext* context = ProfileManager::GetActiveUserProfile();
+  if (!context) {
+    return nullptr;
+  }
+
+  const extensions::Extension* extension =
+      extensions::ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
+          extension_id);
+  if (!extension) {
+    return nullptr;
+  }
+
+  extensions::OffscreenDocumentManager* manager =
+      extensions::OffscreenDocumentManager::Get(context);
+  if (!manager) {
+    return nullptr;
+  }
+
+  extensions::OffscreenDocumentHost* host =
+      manager->GetOffscreenDocumentForExtension(*extension);
+
   return host;
 }
 

@@ -114,6 +114,10 @@ void FakeBluetoothDelegate::RevokeDevicePermissionWebInitiated(
                 [device_id](auto& entry) { return entry.second == device_id; });
 }
 
+bool FakeBluetoothDelegate::MayUseBluetooth(RenderFrameHost* rfh) {
+  return true;
+}
+
 bool FakeBluetoothDelegate::IsAllowedToAccessService(
     RenderFrameHost* frame,
     const WebBluetoothDeviceId& device_id,

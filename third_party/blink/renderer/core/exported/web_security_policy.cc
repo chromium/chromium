@@ -149,6 +149,11 @@ void WebSecurityPolicy::RegisterURLSchemeAsExtension(const WebString& scheme) {
   CommonSchemeRegistry::RegisterURLSchemeAsExtension(scheme.Ascii());
 }
 
+void WebSecurityPolicy::RegisterURLSchemeAsIsolatedApp(
+    const WebString& scheme) {
+  CommonSchemeRegistry::RegisterURLSchemeAsIsolatedApp(scheme.Ascii());
+}
+
 void WebSecurityPolicy::RegisterURLSchemeAsWebUI(const WebString& scheme) {
   SchemeRegistry::RegisterURLSchemeAsWebUI(scheme);
 }
@@ -156,6 +161,11 @@ void WebSecurityPolicy::RegisterURLSchemeAsWebUI(const WebString& scheme) {
 void WebSecurityPolicy::RegisterURLSchemeAsCodeCacheWithHashing(
     const WebString& scheme) {
   SchemeRegistry::RegisterURLSchemeAsCodeCacheWithHashing(scheme);
+}
+
+void WebSecurityPolicy::RegisterURLSchemeAsWebUIBundledBytecode(
+    const WebString& scheme) {
+  SchemeRegistry::RegisterURLSchemeAsWebUIBundledBytecode(scheme);
 }
 
 }  // namespace blink

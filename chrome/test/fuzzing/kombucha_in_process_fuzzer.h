@@ -22,7 +22,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interactive_test.h"
 class KombuchaInProcessFuzzer
-    : virtual public InteractiveBrowserTestT<InProcessFuzzer> {
+    : virtual public InteractiveBrowserTestMixin<InProcessFuzzer> {
  public:
   KombuchaInProcessFuzzer();
   ~KombuchaInProcessFuzzer() override;
@@ -99,7 +99,7 @@ class KombuchaInProcessFuzzer
   }
 
   auto SaveGroupAndCloseEditorBubble(tab_groups::TabGroupId group_id) {
-    return Steps(SaveGroupLeaveEditorBubbleOpen(group_id), FlushEvents(),
+    return Steps(SaveGroupLeaveEditorBubbleOpen(group_id),
                  ClickTabGroupHeader(group_id, false));
   }
 
@@ -115,8 +115,6 @@ class KombuchaInProcessFuzzer
   // Cleans the browser once the fuzzing iteration is over. This helps
   // determinism when trying to reproduce.
   void CleanInProcessBrowserState();
-  // List that enables browser startup with custom features
-  base::test::ScopedFeatureList scoped_feature_list_;
 
 #if BUILDFLAG(IS_WIN)
   std::unique_ptr<base::win::ScopedCOMInitializer> com_initializer_;

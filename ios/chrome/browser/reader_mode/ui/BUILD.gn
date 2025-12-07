@@ -1,0 +1,108 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "reader_mode_blur_overlay_view_controller.h",
+    "reader_mode_blur_overlay_view_controller.mm",
+    "reader_mode_consumer.h",
+    "reader_mode_mutator.h",
+    "reader_mode_view_controller.h",
+    "reader_mode_view_controller.mm",
+  ]
+  deps = [
+    ":constants",
+    "//components/dom_distiller/core/mojom",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/overscroll_actions/ui_bundled",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/animations:radial_wipe_animation",
+    "//ios/chrome/common/ui/util",
+  ]
+}
+
+source_set("constants") {
+  sources = [
+    "constants.h",
+    "constants.mm",
+  ]
+}
+
+source_set("chip") {
+  sources = [
+    "reader_mode_chip_view_controller.h",
+    "reader_mode_chip_view_controller.mm",
+    "reader_mode_chip_visibility_delegate.h",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/fullscreen/ui_bundled:ui",
+    "//ios/chrome/browser/location_bar/ui_bundled:constants",
+    "//ios/chrome/browser/reader_mode/model:constants",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+  ]
+}
+
+source_set("options") {
+  sources = [
+    "reader_mode_options_consumer.h",
+    "reader_mode_options_controls_view.h",
+    "reader_mode_options_controls_view.mm",
+    "reader_mode_options_mutator.h",
+    "reader_mode_options_view_controller.h",
+    "reader_mode_options_view_controller.mm",
+  ]
+  deps = [
+    ":constants",
+    "//components/dom_distiller/core/mojom",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "reader_mode_egtest.mm" ]
+  deps = [
+    ":constants",
+    "//components/dom_distiller/core:dom_distiller_features",
+    "//components/dom_distiller/core:prefs",
+    "//components/dom_distiller/core/mojom",
+    "//components/signin/internal/identity_manager:capabilities",
+    "//components/translate/core/browser:translate_pref_names",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
+    "//ios/chrome/browser/badges/ui_bundled:public",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/intelligence/page_action_menu/utils",
+    "//ios/chrome/browser/location_bar/badge/ui:constants",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
+    "//ios/chrome/browser/popup_menu/ui_bundled:constants",
+    "//ios/chrome/browser/reader_mode/model:constants",
+    "//ios/chrome/browser/reader_mode/model:features",
+    "//ios/chrome/browser/reader_mode/test:eg_test_support+eg2",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/text_zoom/ui_bundled:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+    "//ui/base",
+    "//ui/strings",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

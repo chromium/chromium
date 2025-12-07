@@ -1,0 +1,35 @@
+{
+  "metadata" : {
+    "browser_name" : "Safari",
+    "browser_version" : "18.4",
+    "data_type" : "payment_cards",
+    "export_time_usec" : 1747418368726516,
+    "schema_version" : 1
+  },
+  "payment_cards" : [
+    {
+      "card_number" : "4417123456789113",
+      "card_name" : "Barack Obama’s Visa",
+      "cardholder_name" : "Barack Obama",
+      "card_expiration_month" : 12,
+      "card_expiration_year" : 2032,
+      "card_last_used_time_usec" : 1747418330080245
+    },
+    {
+      "card_number" : "4000444444444444",
+      "card_name" : "Superman’s Visa",
+      "cardholder_name" : "Superman",
+      "card_expiration_month" : 1,
+      "card_expiration_year" : 2031,
+      "card_last_used_time_usec" : 1747418321139717
+    },
+    {
+      "card_number" : "4408041234567893",
+      "card_name" : "Homer Simpson’s Visa",
+      "cardholder_name" : "Homer Simpson",
+      "card_expiration_month" : 6,
+      "card_expiration_year" : 2028,
+      "card_last_used_time_usec" : 1747418311611172
+    }
+  ]
+}

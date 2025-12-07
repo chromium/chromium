@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/parser/css_proto_converter.h"
+
 #include <string>
 
 // TODO(metzman): Figure out how to remove this include and use DCHECK.
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/css/parser/css.pb.h"
@@ -48,6 +45,8 @@ const std::string Converter::kPseudoLookupTable[] = {
     "-internal-is-html",
     "-internal-list-box",
     "-internal-media-controls-overlay-cast-button",
+    "-internal-menulist-popover-with-menubar-anchor",
+    "-internal-menulist-popover-with-menulist-anchor",
     "-internal-multi-select-focus",
     "-internal-popover-in-top-layer",
     "-internal-shadow-host-has-non-auto-appearance",
@@ -95,12 +94,15 @@ const std::string Converter::kPseudoLookupTable[] = {
     "focus-within",
     "fullscreen",
     "future",
+    "has-slotted",
     "horizontal",
     "host",
     "hover",
     "in-range",
     "increment",
     "indeterminate",
+    "interest-source",
+    "interest-target",
     "invalid",
     "last-child",
     "last-of-type",
@@ -374,7 +376,7 @@ void Converter::Visit(const Length& length) {
   } else if (length.unit() == Length::PC) {
     string_ += "pc";
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -387,7 +389,7 @@ void Converter::Visit(const Angle& angle) {
   } else if (angle.unit() == Angle::GRAD) {
     string_ += "grad";
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -398,7 +400,7 @@ void Converter::Visit(const Time& time) {
   } else if (time.unit() == Time::S) {
     string_ += "s";
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -410,7 +412,7 @@ void Converter::Visit(const Freq& freq) {
   } else if (freq.unit() == Freq::KHZ) {
     string_ += "kHz";
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -950,7 +952,8 @@ void Converter::AppendTableValue(int id,
   static_assert(EnumSize == TableSize,
                 "Enum used as index should not overflow lookup table");
   CHECK(id > 0 && static_cast<size_t>(id) < TableSize);
-  string_ += lookup_table[id];
+  // SAFTEY: check above plus compiler deduced TableSize.
+  UNSAFE_BUFFERS(string_ += lookup_table[id]);
 }
 
 template <size_t EnumSize, class T, size_t TableSize>

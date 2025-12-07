@@ -43,14 +43,13 @@ CSSPositionAxisListInterpolationType::ConvertPositionAxisCSSValue(
     case CSSValueID::kCenter:
       return InterpolationValue(InterpolableLength::CreatePercent(50));
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
 InterpolationValue CSSPositionAxisListInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState&,
     ConversionCheckers&) const {
   if (!value.IsBaseValueList()) {
     return ListInterpolationFunctions::CreateList(

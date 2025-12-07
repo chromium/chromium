@@ -53,7 +53,7 @@ void IOSCaptivePortalBlockingPage::PopulateInterstitialStrings(
 
   std::u16string paragraph;
   if (landing_url_.spec() ==
-      captive_portal::CaptivePortalDetector::kDefaultURL) {
+      captive_portal::CaptivePortalDetector::GetDefaultUrl()) {
     // Captive portal may intercept requests without HTTP redirects, in which
     // case the login url would be the same as the captive portal detection url.
     // Don't show the login url in that case.
@@ -63,9 +63,10 @@ void IOSCaptivePortalBlockingPage::PopulateInterstitialStrings(
     // Portal redirection was done with HTTP redirects, so show the login URL.
     // If `languages` is empty, punycode in `login_host` will always be decoded.
     std::u16string login_host =
-        url_formatter::IDNToUnicode(landing_url_.host());
-    if (base::i18n::IsRTL())
+        url_formatter::IDNToUnicode(landing_url_.GetHost());
+    if (base::i18n::IsRTL()) {
       base::i18n::WrapStringWithLTRFormatting(&login_host);
+    }
 
     paragraph = l10n_util::GetStringFUTF16(
         IDS_CAPTIVE_PORTAL_PRIMARY_PARAGRAPH_WIFI, login_host);
@@ -76,10 +77,8 @@ void IOSCaptivePortalBlockingPage::PopulateInterstitialStrings(
   load_time_data.Set("closeDetails", "");
   load_time_data.Set("explanationParagraph", "");
   load_time_data.Set("finalParagraph", "");
-  load_time_data.Set("recurrentErrorParagraph", "");
   load_time_data.Set("optInLink", "");
   load_time_data.Set("enhancedProtectionMessage", "");
-  load_time_data.Set("show_recurrent_error_paragraph", false);
 }
 
 void IOSCaptivePortalBlockingPage::HandleCommand(

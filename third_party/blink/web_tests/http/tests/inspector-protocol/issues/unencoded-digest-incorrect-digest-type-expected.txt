@@ -1,0 +1,16 @@
+Verifies issue creation for an `Unencoded-Digest` header with an incorrect digest type.
+Issue reported: {
+    issue : {
+        code : UnencodedDigestIssue
+        details : {
+            unencodedDigestIssueDetails : {
+                error : IncorrectDigestType
+                request : {
+                    requestId : <string>
+                    url : http://127.0.0.1:8000/inspector-protocol/resources/unencoded-digest-test.php?digest=sha-256%3D1
+                }
+            }
+        }
+    }
+}
+

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
@@ -47,8 +48,9 @@ class EyeDropperBrowserTest : public UiBrowserTest,
 
   bool VerifyUi() override {
 #if BUILDFLAG(IS_WIN)
-    if (!eye_dropper_)
+    if (!eye_dropper_) {
       return false;
+    }
 
     views::Widget* widget =
         static_cast<eye_dropper::EyeDropperView*>(eye_dropper_.get())
@@ -75,7 +77,8 @@ class EyeDropperBrowserTest : public UiBrowserTest,
 };
 
 // Invokes the eye dropper.
-IN_PROC_BROWSER_TEST_P(EyeDropperBrowserTest, InvokeUi_default) {
+// Flaky: https://crbug.com/40150152, https://crbug.com/402170536
+IN_PROC_BROWSER_TEST_P(EyeDropperBrowserTest, DISABLED_InvokeUi_default) {
   ShowAndVerifyUi();
 }
 

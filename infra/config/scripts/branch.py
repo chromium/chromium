@@ -89,6 +89,7 @@ def initial_settings(
       project_title=f'Chromium M{milestone}',
       ref=f'refs/branch-heads/{branch}',
       chrome_project=chrome_project,
+      dawn_ref=f'refs/heads/chromium/{branch}',
       is_main=False,
       platforms={
           p: {

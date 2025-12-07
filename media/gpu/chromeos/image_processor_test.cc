@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+
 #include "media/gpu/chromeos/image_processor.h"
 
 #include <sys/mman.h>
@@ -15,15 +16,13 @@
 #include "base/bits.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/hash/md5.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -35,7 +34,6 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_types.h"
-#include "media/gpu/chromeos/chromeos_compressed_gpu_memory_buffer_video_frame_utils.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/gl_image_processor_backend.h"
 #include "media/gpu/chromeos/image_processor_backend.h"
@@ -232,12 +230,11 @@ YuvSubsampling ToYuvSubsampling(VideoPixelFormat format) {
     case PIXEL_FORMAT_YUY2:
       return YuvSubsampling::kYuv422;
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid format " << format;
-      return YuvSubsampling::kYuv444;
+      NOTREACHED() << "Invalid format " << format;
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool IsFormatTestedForDmabufAndGbm(VideoPixelFormat format) {
   switch (format) {
     case PIXEL_FORMAT_NV12:
@@ -247,7 +244,7 @@ bool IsFormatTestedForDmabufAndGbm(VideoPixelFormat format) {
       return false;
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(USE_V4L2_CODEC)
 bool SupportsNecessaryGLExtension() {
@@ -275,14 +272,16 @@ bool SupportsNecessaryGLExtension() {
   return ret;
 }
 
-scoped_refptr<VideoFrame> CreateNV12Frame(const gfx::Size& size,
-                                          VideoFrame::StorageType type) {
+scoped_refptr<VideoFrame> CreateNV12Frame(
+    const gfx::Size& size,
+    VideoFrame::StorageType type,
+    gpu::TestSharedImageInterface* test_sii) {
   const gfx::Rect visible_rect(size);
   constexpr base::TimeDelta kNullTimestamp;
-  if (type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-    return CreateGpuMemoryBufferVideoFrame(
+  if (type == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
+    return CreateMappableVideoFrame(
         VideoPixelFormat::PIXEL_FORMAT_NV12, size, visible_rect, size,
-        kNullTimestamp, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+        kNullTimestamp, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE, test_sii);
   } else {
     DCHECK(type == VideoFrame::STORAGE_DMABUFS);
     return CreatePlatformVideoFrame(VideoPixelFormat::PIXEL_FORMAT_NV12, size,
@@ -300,20 +299,17 @@ scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
             base::bits::AlignUp(static_cast<unsigned int>(size.height()),
                                 MM21_TILE_HEIGHT));
 
-  scoped_refptr<VideoFrame> ret = CreateNV12Frame(size, type);
+  scoped_refptr<VideoFrame> ret =
+      CreateNV12Frame(size, type, /*test_sii=*/nullptr);
   if (!ret) {
     LOG(ERROR) << "Failed to create MM21 frame";
     return nullptr;
   }
 
-  // The MM21 path only makes sense for V4L2, so we should never get an Intel
-  // media compressed buffer here.
-  CHECK(!IsIntelMediaCompressedModifier(ret->layout().modifier()));
   std::unique_ptr<VideoFrameMapper> frame_mapper =
       VideoFrameMapperFactory::CreateMapper(
           VideoPixelFormat::PIXEL_FORMAT_NV12, type,
-          /*force_linear_buffer_mapper=*/true,
-          /*must_support_intel_media_compressed_buffers=*/false);
+          /*force_linear_buffer_mapper=*/true);
   if (!frame_mapper) {
     LOG(ERROR) << "Unable to create a VideoFrameMapper";
     return nullptr;
@@ -325,9 +321,10 @@ scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
     return nullptr;
   }
 
-  uint8_t* y_plane = mapped_ret->GetWritableVisibleData(VideoFrame::Plane::kY);
-  uint8_t* uv_plane =
-      mapped_ret->GetWritableVisibleData(VideoFrame::Plane::kUV);
+  base::span<uint8_t> y_plane =
+      mapped_ret->GetWritableVisiblePlaneData(VideoFrame::Plane::kY);
+  base::span<uint8_t> uv_plane =
+      mapped_ret->GetWritableVisiblePlaneData(VideoFrame::Plane::kUV);
   for (int row = 0; row < size.height(); row++) {
     for (int col = 0; col < size.width(); col++) {
       y_plane[col] = base::RandInt(/*min=*/0, /*max=*/255);
@@ -335,9 +332,9 @@ scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
         uv_plane[col] = base::RandInt(/*min=*/0, /*max=*/255);
       }
     }
-    y_plane += mapped_ret->stride(VideoFrame::Plane::kY);
+    y_plane = y_plane.subspan(mapped_ret->stride(VideoFrame::Plane::kY));
     if (row % 2 == 0) {
-      uv_plane += mapped_ret->stride(VideoFrame::Plane::kUV);
+      uv_plane = uv_plane.subspan(mapped_ret->stride(VideoFrame::Plane::kUV));
     }
   }
 
@@ -353,24 +350,17 @@ bool CompareNV12VideoFrames(scoped_refptr<VideoFrame> test_frame,
     return false;
   }
 
-  // We run this test for the V4L2 path only, so we should never get Intel media
-  // compressed frames here.
-  CHECK(!IsIntelMediaCompressedModifier(test_frame->layout().modifier()));
-  CHECK(!IsIntelMediaCompressedModifier(golden_frame->layout().modifier()));
-
   std::unique_ptr<VideoFrameMapper> test_frame_mapper =
       VideoFrameMapperFactory::CreateMapper(
           VideoPixelFormat::PIXEL_FORMAT_NV12, test_frame->storage_type(),
-          /*force_linear_buffer_mapper=*/true,
-          /*must_support_intel_media_compressed_buffers=*/false);
+          /*force_linear_buffer_mapper=*/true);
   if (!test_frame_mapper) {
     return false;
   }
   std::unique_ptr<VideoFrameMapper> golden_frame_mapper =
       VideoFrameMapperFactory::CreateMapper(
           VideoPixelFormat::PIXEL_FORMAT_NV12, golden_frame->storage_type(),
-          /*force_linear_buffer_mapper=*/true,
-          /*must_support_intel_media_compressed_buffers=*/false);
+          /*force_linear_buffer_mapper=*/true);
   if (!golden_frame_mapper) {
     return false;
   }
@@ -387,14 +377,14 @@ bool CompareNV12VideoFrames(scoped_refptr<VideoFrame> test_frame,
     return false;
   }
 
-  const uint8_t* test_y_plane =
-      mapped_test_frame->visible_data(VideoFrame::Plane::kY);
-  const uint8_t* test_uv_plane =
-      mapped_test_frame->visible_data(VideoFrame::Plane::kUV);
-  const uint8_t* golden_y_plane =
-      mapped_golden_frame->visible_data(VideoFrame::Plane::kY);
-  const uint8_t* golden_uv_plane =
-      mapped_golden_frame->visible_data(VideoFrame::Plane::kUV);
+  base::span<const uint8_t> test_y_plane =
+      mapped_test_frame->GetVisiblePlaneData(VideoFrame::Plane::kY);
+  base::span<const uint8_t> test_uv_plane =
+      mapped_test_frame->GetVisiblePlaneData(VideoFrame::Plane::kUV);
+  base::span<const uint8_t> golden_y_plane =
+      mapped_golden_frame->GetVisiblePlaneData(VideoFrame::Plane::kY);
+  base::span<const uint8_t> golden_uv_plane =
+      mapped_golden_frame->GetVisiblePlaneData(VideoFrame::Plane::kUV);
   for (int y = 0; y < test_frame->coded_size().height(); y++) {
     for (int x = 0; x < test_frame->coded_size().width(); x++) {
       if (test_y_plane[x] != golden_y_plane[x]) {
@@ -407,11 +397,15 @@ bool CompareNV12VideoFrames(scoped_refptr<VideoFrame> test_frame,
         }
       }
     }
-    test_y_plane += mapped_test_frame->stride(VideoFrame::Plane::kY);
-    golden_y_plane += mapped_golden_frame->stride(VideoFrame::Plane::kY);
+    test_y_plane =
+        test_y_plane.subspan(mapped_test_frame->stride(VideoFrame::Plane::kY));
+    golden_y_plane = golden_y_plane.subspan(
+        mapped_golden_frame->stride(VideoFrame::Plane::kY));
     if (y % 2 == 0) {
-      test_uv_plane += mapped_test_frame->stride(VideoFrame::Plane::kUV);
-      golden_uv_plane += mapped_golden_frame->stride(VideoFrame::Plane::kUV);
+      test_uv_plane = test_uv_plane.subspan(
+          mapped_test_frame->stride(VideoFrame::Plane::kUV));
+      golden_uv_plane = golden_uv_plane.subspan(
+          mapped_golden_frame->stride(VideoFrame::Plane::kUV));
     }
   }
 
@@ -530,7 +524,7 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_MemToMem) {
 
   const bool is_scaling = (input_image.PixelFormat() == PIXEL_FORMAT_NV12 &&
                            output_image.PixelFormat() == PIXEL_FORMAT_NV12);
-  const auto storage = is_scaling ? VideoFrame::STORAGE_GPU_MEMORY_BUFFER
+  const auto storage = is_scaling ? VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE
                                   : VideoFrame::STORAGE_OWNED_MEMORY;
   auto ip_client =
       CreateImageProcessorClient(input_image, storage, &output_image, storage);
@@ -548,7 +542,7 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_MemToMem) {
   EXPECT_TRUE(ip_client->WaitForFrameProcessors());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // We don't yet have the function to create Dmabuf-backed VideoFrame on
 // platforms except ChromeOS. So MemToDmabuf test is limited on ChromeOS.
 TEST_P(ImageProcessorParamTest, ConvertOneTime_DmabufToMem) {
@@ -562,7 +556,7 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_DmabufToMem) {
     GTEST_SKIP() << "Skipping Dmabuf format " << input_image.PixelFormat();
   const bool is_scaling = (input_image.PixelFormat() == PIXEL_FORMAT_NV12 &&
                            output_image.PixelFormat() == PIXEL_FORMAT_NV12);
-  const auto storage = is_scaling ? VideoFrame::STORAGE_GPU_MEMORY_BUFFER
+  const auto storage = is_scaling ? VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE
                                   : VideoFrame::STORAGE_OWNED_MEMORY;
   auto ip_client =
       CreateImageProcessorClient(input_image, storage, &output_image, storage);
@@ -627,8 +621,8 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_GmbToGmb) {
   }
 
   auto ip_client = CreateImageProcessorClient(
-      input_image, VideoFrame::STORAGE_GPU_MEMORY_BUFFER, &output_image,
-      VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+      input_image, VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE, &output_image,
+      VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE);
   if (!ip_client && g_backend_type.has_value()) {
     GTEST_SKIP() << "Forced backend " << ToString(*g_backend_type)
                  << " does not support this test";
@@ -641,7 +635,7 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_GmbToGmb) {
   EXPECT_EQ(ip_client->GetNumOfProcessedImages(), 1u);
   EXPECT_TRUE(ip_client->WaitForFrameProcessors());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 INSTANTIATE_TEST_SUITE_P(
     PixelFormatConversionToNV12,
@@ -696,7 +690,7 @@ INSTANTIATE_TEST_SUITE_P(NV12CroppingAndScaling,
                          ::testing::Values(std::make_tuple(kNV12Image360PIn480P,
                                                            kNV12Image270P)));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // TODO(hiroh): Add more tests.
 // MEM->DMABUF (V4L2VideoEncodeAccelerator),
 #endif
@@ -750,11 +744,15 @@ TEST(ImageProcessorBackendTest, CompareLibYUVAndGLBackendsForMM21Image) {
   scoped_refptr<VideoFrame> input_frame =
       CreateRandomMM21Frame(kTestImageSize, VideoFrame::STORAGE_DMABUFS);
   ASSERT_TRUE(input_frame) << "Error creating input frame";
+
+  auto test_sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
   scoped_refptr<VideoFrame> gl_output_frame =
-      CreateNV12Frame(kTestImageSize, VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+      CreateNV12Frame(kTestImageSize, VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE,
+                      test_sii.get());
   ASSERT_TRUE(gl_output_frame) << "Error creating GL output frame";
   scoped_refptr<VideoFrame> libyuv_output_frame =
-      CreateNV12Frame(kTestImageSize, VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+      CreateNV12Frame(kTestImageSize, VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE,
+                      test_sii.get());
   ASSERT_TRUE(libyuv_output_frame) << "Error creating LibYUV output frame";
 
   int outstanding_processors = 2;

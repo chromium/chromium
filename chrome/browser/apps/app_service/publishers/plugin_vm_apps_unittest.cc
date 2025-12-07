@@ -196,11 +196,11 @@ TEST_F(PluginVmAppsTest, LaunchAppWithIntent) {
   // Retrieve the callback object when we reach the end of LaunchPluginVmApp().
   plugin_vm::PluginVmManager::LaunchPluginVmCallback launch_plugin_vm_callback;
   EXPECT_CALL(*plugin_vm_manager(), LaunchPluginVm(testing::_))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](plugin_vm::PluginVmManager::LaunchPluginVmCallback callback) {
             EXPECT_TRUE(launch_plugin_vm_callback.is_null());
             launch_plugin_vm_callback = std::move(callback);
-          }));
+          });
 
   app_service_proxy()->LaunchAppWithIntent(
       app_id, /*event_flags=*/0, std::move(intent), LaunchSource::kUnknown,

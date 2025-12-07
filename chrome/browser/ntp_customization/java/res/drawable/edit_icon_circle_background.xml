@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<shape
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <size
+        android:width="@dimen/ntp_customization_edit_icon_background_size"
+        android:height="@dimen/ntp_customization_edit_icon_background_size" />
+    <solid android:color="@color/ntp_customization_edit_icon_background_color"/>
+</shape>

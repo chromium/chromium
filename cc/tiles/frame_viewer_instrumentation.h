@@ -8,6 +8,7 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/cc_export.h"
 #include "cc/tiles/tile_priority.h"
+#include "components/viz/common/traced_value.h"
 
 namespace cc {
 namespace frame_viewer_instrumentation {
@@ -19,21 +20,9 @@ constexpr const char* CategoryLayerTree() {
       "viz.quads") "," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.layers");
 }
 
-class ScopedAnalyzeTask {
- public:
-  ScopedAnalyzeTask(const void* tile_id,
-                    TileResolution tile_resolution,
-                    int source_frame_number,
-                    int layer_id);
-  ScopedAnalyzeTask(const ScopedAnalyzeTask&) = delete;
-  ~ScopedAnalyzeTask();
-
-  ScopedAnalyzeTask& operator=(const ScopedAnalyzeTask&) = delete;
-};
-
 class ScopedRasterTask {
  public:
-  ScopedRasterTask(const void* tile_id,
+  ScopedRasterTask(viz::TracedValue::Id tile_id,
                    TileResolution tile_resolution,
                    int source_frame_number,
                    int layer_id);

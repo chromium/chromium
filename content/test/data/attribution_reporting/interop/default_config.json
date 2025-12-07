@@ -76,6 +76,14 @@
   // sources.
   "max_event_level_channel_capacity_event": "6.5",
 
+  // Positive double that controls the max channel capacity in bits for
+  // navigation sources with attribution scopes set.
+  "max_event_level_channel_capacity_scopes_navigation": "11.55",
+
+  // Positive double that controls the max channel capacity in bits for
+  // event sources with attribution scopes set.
+  "max_event_level_channel_capacity_scopes_event": "6.5",
+
   // Positive integer that controls the max trigger state cardinality per
   // source. Defaulted to `UINT32_MAX`.
   "max_trigger_state_cardinality": "4294967295",
@@ -99,6 +107,9 @@
   // Positive integer that controls the max number of aggregatable debug
   // reports per source.
   "max_aggregatable_debug_reports_per_source": "5",
+
+  // Positive integer that controls the max number of aggregatable reports per source.
+  "max_aggregatable_reports_per_source": "20",
 
   // Non-empty list that controls which origins are allowed as aggregation
   // coordinators. The first value is used as the default if a trigger omits

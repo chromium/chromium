@@ -4,23 +4,18 @@
       "win",
       "linux",
       "mac",
-      "chromeos_ash",
-      "chromeos_lacros",
+      "chromeos",
       "android",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "IntensiveWakeUpThrottlingEnabled": true
-        },
-        "prefs": {
-          "policy.intensive_wake_up_throttling_enabled": {
-            "location": "local_state",
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "policy.intensive_wake_up_throttling_enabled",
+      "pref_location": "local_state",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

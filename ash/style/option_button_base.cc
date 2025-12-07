@@ -41,6 +41,9 @@ OptionButtonBase::OptionButtonBase(int button_width,
   focus_ring->SetColorId(ui::kColorAshFocusRing);
 
   SetAndUpdateAccessibleDefaultActionVerb();
+  GetViewAccessibility().SetCheckedState(selected_
+                                             ? ax::mojom::CheckedState::kTrue
+                                             : ax::mojom::CheckedState::kFalse);
 }
 
 OptionButtonBase::~OptionButtonBase() = default;
@@ -51,14 +54,16 @@ void OptionButtonBase::SetSelected(bool selected) {
   }
 
   selected_ = selected;
+  GetViewAccessibility().SetCheckedState(selected_
+                                             ? ax::mojom::CheckedState::kTrue
+                                             : ax::mojom::CheckedState::kFalse);
   UpdateImage();
 
   if (delegate_) {
     delegate_->OnButtonSelected(this);
   }
   SetAndUpdateAccessibleDefaultActionVerb();
-  NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged,
-                           /*send_native_event=*/true);
+  OnSelectedChanged();
 }
 
 void OptionButtonBase::SetLabelStyle(TypographyToken token) {
@@ -80,12 +85,8 @@ gfx::Size OptionButtonBase::GetMinimumSize() const {
   return gfx::Size(min_width_, kButtonHeight);
 }
 
-int OptionButtonBase::GetHeightForWidth(int width) const {
-  return kButtonHeight;
-}
-
 void OptionButtonBase::SetLabelColorId(ui::ColorId color_id) {
-  label()->SetEnabledColorId(color_id);
+  label()->SetEnabledColor(color_id);
 }
 
 void OptionButtonBase::Layout(PassKey) {
@@ -131,14 +132,6 @@ void OptionButtonBase::NotifyClick(const ui::Event& event) {
   views::LabelButton::NotifyClick(event);
 }
 
-void OptionButtonBase::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  LabelButton::GetAccessibleNodeData(node_data);
-  const ax::mojom::CheckedState checked_state =
-      selected_ ? ax::mojom::CheckedState::kTrue
-                : ax::mojom::CheckedState::kFalse;
-  node_data->SetCheckedState(checked_state);
-}
-
 SkColor OptionButtonBase::GetIconImageColor() const {
   SkColor active_color =
       GetColorProvider()->GetColor(selected_ ? cros_tokens::kCrosSysPrimary
@@ -150,8 +143,8 @@ SkColor OptionButtonBase::GetIconImageColor() const {
 }
 
 void OptionButtonBase::UpdateTextColor() {
-  SetEnabledTextColorIds(cros_tokens::kCrosSysOnSurface);
-  SetTextColorId(ButtonState::STATE_DISABLED, KColorAshTextDisabledColor);
+  SetEnabledTextColors(cros_tokens::kCrosSysOnSurface);
+  SetTextColor(ButtonState::STATE_DISABLED, KColorAshTextDisabledColor);
 }
 
 void OptionButtonBase::SetAndUpdateAccessibleDefaultActionVerb() {

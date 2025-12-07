@@ -203,7 +203,7 @@ class D3D11VideoDecoderTest : public ::testing::Test {
             gpu_preferences_, gpu_workarounds_,
             base::BindRepeating(&D3D11VideoDecoderTest::GetCommandBufferHelper,
                                 base::Unretained(this)),
-            get_device_cb, *supported_configs, system_hdr_enabled_));
+            get_device_cb, *supported_configs));
   }
 
   void InitializeDecoder(const VideoDecoderConfig& config,
@@ -241,9 +241,6 @@ class D3D11VideoDecoderTest : public ::testing::Test {
   Microsoft::WRL::ComPtr<D3D11VideoContextMock> mock_d3d11_video_context_;
   Microsoft::WRL::ComPtr<DXGIDeviceMock> mock_dxgi_device_;
   Microsoft::WRL::ComPtr<DXGIAdapterMock> mock_dxgi_adapter_;
-
-  // Used by CreateDecoder() to tell D3D11VideoDecoder about if HDR is enabled.
-  bool system_hdr_enabled_ = true;
 
   DXGI_ADAPTER_DESC mock_adapter_desc_;
 
@@ -288,7 +285,7 @@ TEST_F(D3D11VideoDecoderTest, DoesNotSupportsH264HIGH10Profile) {
 
   // When the codec is built in this should fail without H264 decoding being
   // attempted. If H264 isn't built-in, we should at least attempt initialize.
-  const bool expect_success = !IsBuiltInVideoCodec(VideoCodec::kH264);
+  const bool expect_success = !IsDecoderBuiltInVideoCodec(VideoCodec::kH264);
   InitializeDecoder(high10, expect_success);
 }
 
@@ -318,7 +315,7 @@ TEST_F(D3D11VideoDecoderTest, DoesNotSupportH264IfNoSupportedConfig) {
 
   // When the codec is built in this should fail without H264 decoding being
   // attempted. If H264 isn't built-in, we should at least attempt initialize.
-  const bool expect_success = !IsBuiltInVideoCodec(VideoCodec::kH264);
+  const bool expect_success = !IsDecoderBuiltInVideoCodec(VideoCodec::kH264);
   InitializeDecoder(normal, expect_success);
 }
 

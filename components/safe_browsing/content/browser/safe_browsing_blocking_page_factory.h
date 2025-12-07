@@ -31,10 +31,8 @@ class SafeBrowsingBlockingPageFactory {
       content::WebContents* web_contents,
       const GURL& main_frame_url,
       const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources,
-      bool should_trigger_reporting,
       std::optional<base::TimeTicks> blocked_page_shown_timestamp) = 0;
 
-#if !BUILDFLAG(IS_ANDROID)
   virtual security_interstitials::SecurityInterstitialPage*
   CreateEnterpriseWarnPage(
       BaseUIManager* ui_manager,
@@ -48,7 +46,6 @@ class SafeBrowsingBlockingPageFactory {
       content::WebContents* web_contents,
       const GURL& main_frame_url,
       const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources) = 0;
-#endif
 };
 
 }  // namespace safe_browsing

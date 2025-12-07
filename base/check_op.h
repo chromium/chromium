@@ -12,10 +12,12 @@
 
 #include "base/base_export.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "base/strings/to_string.h"
+#include "base/types/is_arc_pointer.h"
 #include "base/types/supports_ostream_operator.h"
+#include "base/types/supports_to_string.h"
 
 // This header defines the (DP)CHECK_EQ etc. macros.
 //
@@ -79,7 +81,7 @@ BASE_EXPORT char* StreamValToStr(const void* v,
 
 template <typename T>
   requires(base::internal::SupportsOstreamOperator<const T&> &&
-           !std::is_function_v<std::remove_pointer_t<T>>)
+           !std::is_function_v<T> && !std::is_pointer_v<T>)
 inline char* CheckOpValueStr(const T& v) {
   auto f = [](std::ostream& s, const void* p) {
     s << *reinterpret_cast<const T*>(p);
@@ -100,12 +102,33 @@ inline char* CheckOpValueStr(const T& v) {
 
 #undef SUPPORTS_BUILTIN_ADDRESSOF
 
+// Even if the pointer type supports operator<<, print the pointer by
+// value. This is especially useful for `char*` and `unsigned char*`,
+// which would otherwise print the pointed-to data.
+template <typename T>
+  requires(std::is_pointer_v<T> &&
+           !std::is_function_v<std::remove_pointer_t<T>>)
+inline char* CheckOpValueStr(const T& v) {
+#if defined(__OBJC__)
+  const void* vp;
+  if constexpr (base::IsArcPointer<T>) {
+    vp = const_cast<const void*>((__bridge const volatile void*)(v));
+  } else {
+    vp = const_cast<const void*>(reinterpret_cast<const volatile void*>(v));
+  }
+#else
+  const void* vp =
+      const_cast<const void*>(reinterpret_cast<const volatile void*>(v));
+#endif
+  return CheckOpValueStr(vp);
+}
+
 // Overload for types that have no operator<< but do have .ToString() defined.
 template <typename T>
   requires(!base::internal::SupportsOstreamOperator<const T&> &&
            base::internal::SupportsToString<const T&>)
 inline char* CheckOpValueStr(const T& v) {
-  // .ToString() may not return a std::string, e.g. blink::WTF::String.
+  // .ToString() may not return a std::string, e.g. blink::String.
   return CheckOpValueStr(v.ToString());
 }
 
@@ -133,8 +156,6 @@ inline char* CheckOpValueStr(const T& v) {
 // use with CheckOpValueStr() which allocates these strings using strdup().
 // Returns allocated string (with strdup) for passing into
 // ::logging::CheckError::(D)CheckOp methods.
-// TODO(pbos): Annotate this ABSL_ATTRIBUTE_RETURNS_NONNULL after solving
-// compile failure.
 BASE_EXPORT char* CreateCheckOpLogMessageString(const char* expr_str,
                                                 char* v1_str,
                                                 char* v2_str);
@@ -144,53 +165,64 @@ BASE_EXPORT char* CreateCheckOpLogMessageString(const char* expr_str,
 // macro is used in an 'if' clause such as:
 // if (a == 1)
 //   CHECK_EQ(2, a);
-#define CHECK_OP_FUNCTION_IMPL(check_failure_function, name, op, val1, val2, \
-                               ...)                                          \
-  switch (0)                                                                 \
-  case 0:                                                                    \
-  default:                                                                   \
-    if (char* const message_on_fail = ::logging::Check##name##Impl(          \
-            (val1), (val2), #val1 " " #op " " #val2);                        \
-        !message_on_fail)                                                    \
-      ;                                                                      \
-    else                                                                     \
-      check_failure_function(message_on_fail __VA_OPT__(, ) __VA_ARGS__)
+#define CHECK_OP_FUNCTION_IMPL(check_failure_type, check_log_message_function, \
+                               name, op, val1, val2, ...)                      \
+  switch (0)                                                                   \
+  case 0:                                                                      \
+  default:                                                                     \
+    if (::logging::LogMessage *const message_on_fail =                         \
+            ::logging::Check##name##Impl(                                      \
+                (val1), (val2),                                                \
+                [](char* str1, char* str2) {                                   \
+                  return check_log_message_function(                           \
+                      ::logging::CreateCheckOpLogMessageString(                \
+                          #val1 " " #op " " #val2, str1, str2) __VA_OPT__(, )  \
+                          __VA_ARGS__);                                        \
+                });                                                            \
+        !message_on_fail)                                                      \
+      ;                                                                        \
+    else                                                                       \
+      (check_failure_type)(message_on_fail)
 
 #if !CHECK_WILL_STREAM()
 
 // Discard log strings to reduce code bloat.
-#define CHECK_OP(name, op, val1, val2, ...)                                \
-  BASE_IF(BASE_IS_EMPTY(__VA_ARGS__), CHECK((val1)op(val2)),               \
-          CHECK_OP_FUNCTION_IMPL(::logging::CheckError::CheckOp, name, op, \
-                                 val1, val2, __VA_ARGS__))
+#define CHECK_OP_INTERNAL_IMPL(name, op, val1, val2) CHECK((val1)op(val2))
 
 #else
 
-#define CHECK_OP(name, op, val1, val2, ...)                              \
-  CHECK_OP_FUNCTION_IMPL(::logging::CheckError::CheckOp, name, op, val1, \
-                         val2 __VA_OPT__(, ) __VA_ARGS__)
+#define CHECK_OP_INTERNAL_IMPL(name, op, val1, val2)                       \
+  CHECK_OP_FUNCTION_IMPL(::logging::CheckNoreturnError,                    \
+                         ::logging::CheckNoreturnError::CheckOp, name, op, \
+                         val1, val2)
 
 #endif
 
+#define CHECK_OP(name, op, val1, val2, ...)                                \
+  BASE_IF(BASE_IS_EMPTY(__VA_ARGS__),                                      \
+          CHECK_OP_INTERNAL_IMPL(name, op, val1, val2),                    \
+          CHECK_OP_FUNCTION_IMPL(::logging::CheckError,                    \
+                                 ::logging::CheckError::CheckOp, name, op, \
+                                 val1, val2, __VA_ARGS__))
+
 // The second overload avoids address-taking of static members for
 // fundamental types.
-#define DEFINE_CHECK_OP_IMPL(name, op)                                  \
-  template <typename T, typename U>                                     \
-    requires(!std::is_fundamental_v<T> || !std::is_fundamental_v<U>)    \
-  constexpr char* Check##name##Impl(const T& v1, const U& v2,           \
-                                    const char* expr_str) {             \
-    if (ANALYZER_ASSUME_TRUE(v1 op v2)) [[likely]]                      \
-      return nullptr;                                                   \
-    return CreateCheckOpLogMessageString(expr_str, CheckOpValueStr(v1), \
-                                         CheckOpValueStr(v2));          \
-  }                                                                     \
-  template <typename T, typename U>                                     \
-    requires(std::is_fundamental_v<T> && std::is_fundamental_v<U>)      \
-  constexpr char* Check##name##Impl(T v1, U v2, const char* expr_str) { \
-    if (ANALYZER_ASSUME_TRUE(v1 op v2)) [[likely]]                      \
-      return nullptr;                                                   \
-    return CreateCheckOpLogMessageString(expr_str, CheckOpValueStr(v1), \
-                                         CheckOpValueStr(v2));          \
+#define DEFINE_CHECK_OP_IMPL(name, op)                                         \
+  template <typename T, typename U, typename F>                                \
+    requires(!std::is_fundamental_v<T> || !std::is_fundamental_v<U>)           \
+  constexpr ::logging::LogMessage* Check##name##Impl(const T& v1, const U& v2, \
+                                                     F on_failure) {           \
+    if (ANALYZER_ASSUME_TRUE(v1 op v2)) [[likely]]                             \
+      return nullptr;                                                          \
+    return on_failure(CheckOpValueStr(v1), CheckOpValueStr(v2));               \
+  }                                                                            \
+  template <typename T, typename U, typename F>                                \
+    requires(std::is_fundamental_v<T> && std::is_fundamental_v<U>)             \
+  constexpr ::logging::LogMessage* Check##name##Impl(T v1, U v2,               \
+                                                     F on_failure) {           \
+    if (ANALYZER_ASSUME_TRUE(v1 op v2)) [[likely]]                             \
+      return nullptr;                                                          \
+    return on_failure(CheckOpValueStr(v1), CheckOpValueStr(v2));               \
   }
 
 // clang-format off
@@ -217,8 +249,10 @@ DEFINE_CHECK_OP_IMPL(GT, > )
 
 #if DCHECK_IS_ON()
 
-#define DCHECK_OP(name, op, val1, val2) \
-  CHECK_OP_FUNCTION_IMPL(::logging::CheckError::DCheckOp, name, op, val1, val2)
+#define DCHECK_OP(name, op, val1, val2)                                   \
+  CHECK_OP_FUNCTION_IMPL(::logging::CheckError,                           \
+                         ::logging::CheckError::DCheckOp, name, op, val1, \
+                         val2)
 
 #else
 
@@ -239,7 +273,8 @@ DEFINE_CHECK_OP_IMPL(GT, > )
 // clang-format on
 
 #define DUMP_WILL_BE_CHECK_OP(name, op, val1, val2)                          \
-  CHECK_OP_FUNCTION_IMPL(::logging::CheckError::DumpWillBeCheckOp, name, op, \
+  CHECK_OP_FUNCTION_IMPL(::logging::CheckError,                              \
+                         ::logging::CheckError::DumpWillBeCheckOp, name, op, \
                          val1, val2)
 
 #define DUMP_WILL_BE_CHECK_EQ(val1, val2) \

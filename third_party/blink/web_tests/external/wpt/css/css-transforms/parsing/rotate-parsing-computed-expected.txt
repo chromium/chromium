@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] Property rotate value '-0.5 0 0 400grad'
+  assert_equals: expected "x -360deg" but got "-0.5 0 0 360deg"
+[FAIL] Property rotate value '-1 0 0 400grad'
+  assert_equals: expected "x -360deg" but got "-1 0 0 360deg"
+[FAIL] Property rotate value '0 -0.5 0 400grad'
+  assert_equals: expected "y -360deg" but got "0 -0.5 0 360deg"
+[FAIL] Property rotate value '0 -1 0 400grad'
+  assert_equals: expected "y -360deg" but got "0 -1 0 360deg"
+[FAIL] Property rotate value '0 0 -0.5 400grad'
+  assert_equals: expected "-360deg" but got "0 0 -0.5 360deg"
+[FAIL] Property rotate value '0 0 -1 400grad'
+  assert_equals: expected "-360deg" but got "0 0 -1 360deg"
+Harness: the test ran to completion.
+

@@ -21,9 +21,7 @@ class AutofillCrowdsourcingManagerTestApi {
   static std::unique_ptr<AutofillCrowdsourcingManager> CreateManagerForApiKey(
       AutofillClient* client,
       const std::string& api_key) {
-    return base::WrapUnique(
-        new AutofillCrowdsourcingManager(client, api_key,
-                                         /*log_manager=*/nullptr));
+    return base::WrapUnique(new AutofillCrowdsourcingManager(client, api_key));
   }
 
   explicit AutofillCrowdsourcingManagerTestApi(
@@ -39,6 +37,16 @@ class AutofillCrowdsourcingManagerTestApi {
 
   void set_max_form_cache_size(size_t max_form_cache_size) {
     manager_->max_form_cache_size_ = max_form_cache_size;
+  }
+
+  // Clear recent statistics of query and upload requests
+  void reset_request_timestamps() {
+    manager_
+        ->GetRecentRequestTimestamps(CrowdsourcingRequestType::kRequestQuery)
+        .clear();
+    manager_
+        ->GetRecentRequestTimestamps(CrowdsourcingRequestType::kRequestUpload)
+        .clear();
   }
 
  private:

@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_MODEL_CREDENTIAL_PROVIDER_SERVICE_H_
 
 #import "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
@@ -47,7 +47,9 @@ class CredentialProviderService
  public:
   // Initializes the service.
   CredentialProviderService(
+      const std::string& profile_name,
       PrefService* prefs,
+      PrefService* local_state,
       scoped_refptr<password_manager::PasswordStoreInterface>
           profile_password_store,
       scoped_refptr<password_manager::PasswordStoreInterface>
@@ -93,6 +95,12 @@ class CredentialProviderService
   // Syncs the credential store to disk.
   void SyncStore();
 
+  // Helper function for asynchronous portion of `SyncStore`.
+  void CompleteSync(NSArray<id<Credential>>* credentials);
+
+  // Returns the primary account's gaia id.
+  NSString* PrimaryAccountId() const;
+
   // Add credentials from `forms`. Currently simply calls either the legacy or
   // refactored version of this function.
   void AddCredentials(MemoryCredentialStore* store,
@@ -129,6 +137,22 @@ class CredentialProviderService
   // syncing passwords.
   void UpdateUserEmail();
 
+  // Syncs whether or not the user is currently syncing passwords. (This
+  // includes account storage.)
+  void UpdatePasswordSyncSetting();
+
+  // Syncs whether or not automatic passkey upgrade is enabled.
+  void UpdateAutomaticPasskeyUpgradeSetting();
+
+  // Syncs whether or not PRF is enabled.
+  void UpdatePasskeyPRFSetting();
+
+  // Syncs whether or not Large Blob is enabled.
+  void UpdatePasskeyLargeBlobSetting();
+
+  // Syncs whether or not signal API is enabled.
+  void UpdateSignalAPISetting();
+
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResultsOrErrorFrom(
       password_manager::PasswordStoreInterface* store,
@@ -145,12 +169,15 @@ class CredentialProviderService
   void OnPasskeysChanged(
       const std::vector<webauthn::PasskeyModelChange>& changes) override;
   void OnPasskeyModelShuttingDown() override;
+  void OnPasskeyModelIsReady(bool is_ready) override;
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
-  // Observer for when `saving_passwords_enabled_` changes.
-  void OnSavingPasswordsEnabledChanged();
+  // Observer for change in enabled or managed state of prefs that govern the
+  // CPE.
+  void OnPrefOrPolicyStatusChanged();
 
   // For each of the 2 PasswordStoreInterfaces (profile and account), returns
   // the corresponding in-memory store used for password deduplication. See
@@ -158,8 +185,16 @@ class CredentialProviderService
   MemoryCredentialStore* GetCredentialStore(
       password_manager::PasswordStoreInterface* store) const;
 
-  // The pref service.
-  const raw_ptr<PrefService> prefs_;
+  // Returns whether the profile used to create this CredentialProviderService
+  // is the last used profile. Always return true if the user isn't using multi
+  // profile.
+  bool IsLastUsedProfile() const;
+
+  // The name of the profile used to create this CredentialProviderService.
+  const std::string profile_name_;
+
+  // The local state. Used to query the last used profile.
+  const raw_ptr<PrefService> local_state_;
 
   // The interfaces for getting and manipulating a user's saved passwords.
   const scoped_refptr<password_manager::PasswordStoreInterface>
@@ -168,7 +203,7 @@ class CredentialProviderService
       account_password_store_;
 
   // Passkey store.
-  webauthn::PasskeyModel* passkey_model_;
+  raw_ptr<webauthn::PasskeyModel> passkey_model_;
 
   // Identity manager to observe.
   const raw_ptr<signin::IdentityManager> identity_manager_;
@@ -186,7 +221,7 @@ class CredentialProviderService
 
   // In-memory stores used to dedupe entries from `profile_password_store_` and
   // `account_password_store_` before persisting via `dual_credential_store_`.
-  // TODO(crbug.com/40260886): This is super hacky. Refactor this class to use
+  // TODO(crbug.com/40910279): This is super hacky. Refactor this class to use
   // SavedPasswordsPresenter, which deduplicates internally.
   MemoryCredentialStore* const profile_credential_store_ =
       [[MemoryCredentialStore alloc] init];
@@ -200,6 +235,16 @@ class CredentialProviderService
   // The preference associated with
   // password_manager::prefs::kCredentialsEnableService.
   BooleanPrefMember saving_passwords_enabled_;
+
+  // The preference associated with
+  // password_manager::prefs::kCredentialsEnablePasskeys. See
+  // `AppGroupUserDefaultsCredentialProviderSavingPasskeysEnabled` documentation
+  // for important caveats.
+  BooleanPrefMember saving_passkeys_enabled_;
+
+  // The preference associated with
+  // password_manager::prefs::kAutomaticPasskeyUpgrades.
+  BooleanPrefMember automatic_passkey_upgrades_enabled_;
 
   // Weak pointer factory.
   base::WeakPtrFactory<CredentialProviderService> weak_ptr_factory_{this};

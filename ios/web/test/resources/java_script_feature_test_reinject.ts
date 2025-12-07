@@ -10,5 +10,10 @@ import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
  */
 
 window.addEventListener('error', () => {
-  gCrWeb.javaScriptFeatureTest.errorReceivedCount++;
+  const javaScriptFeatureTestApi =
+      gCrWeb.getRegisteredApi('javaScriptFeatureTest');
+  let errorReceivedCount =
+      javaScriptFeatureTestApi.getProperty('errorReceivedCount') as number;
+  javaScriptFeatureTestApi.addProperty(
+      'errorReceivedCount', ++errorReceivedCount);
 });

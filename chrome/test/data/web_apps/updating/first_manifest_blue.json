@@ -1,0 +1,13 @@
+{
+  "id": "/web_apps/updating/",
+  "name": "Web app for updating",
+  "icons": [
+    {
+      "src": "blue-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "index_blue.html",
+  "display": "standalone"
+}

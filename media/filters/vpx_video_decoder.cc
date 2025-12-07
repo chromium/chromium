@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/filters/vpx_video_decoder.h"
 
 #include <stddef.h>
@@ -26,6 +21,7 @@
 #include "base/numerics/byte_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
+#include "media/base/agtm.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
@@ -34,7 +30,6 @@
 #include "third_party/libvpx/source/libvpx/vpx/vp8dx.h"
 #include "third_party/libvpx/source/libvpx/vpx/vpx_decoder.h"
 #include "third_party/libvpx/source/libvpx/vpx/vpx_frame_buffer.h"
-
 #include "third_party/libyuv/include/libyuv/convert.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 
@@ -87,8 +82,9 @@ static int32_t GetVP9FrameBuffer(void* user_priv,
   DCHECK(user_priv);
   DCHECK(fb);
   FrameBufferPool* pool = static_cast<FrameBufferPool*>(user_priv);
-  fb->data = pool->GetFrameBuffer(min_size, &fb->priv);
-  fb->size = min_size;
+  auto buffer = pool->GetFrameBuffer(min_size, &fb->priv);
+  fb->data = buffer.data();
+  fb->size = buffer.size();
   return fb->data ? 0 : VPX_CODEC_MEM_ERROR;
 }
 
@@ -184,7 +180,7 @@ void VpxVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                       : std::move(decode_cb);
 
   if (state_ == DecoderState::kError) {
-    std::move(bound_decode_cb).Run(DecoderStatus::Codes::kFailed);
+    std::move(bound_decode_cb).Run(error_status_);
     return;
   }
 
@@ -202,7 +198,7 @@ void VpxVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   scoped_refptr<VideoFrame> video_frame;
   if (!VpxDecode(buffer.get(), &video_frame)) {
     state_ = DecoderState::kError;
-    std::move(bound_decode_cb).Run(DecoderStatus::Codes::kFailed);
+    std::move(bound_decode_cb).Run(error_status_);
     return;
   }
 
@@ -220,6 +216,7 @@ void VpxVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 void VpxVideoDecoder::Reset(base::OnceClosure reset_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   state_ = DecoderState::kNormal;
+  error_status_ = DecoderStatus::Codes::kFailed;
 
   if (bind_callbacks_)
     base::BindPostTaskToCurrentDefault(std::move(reset_cb)).Run();
@@ -313,10 +310,14 @@ bool VpxVideoDecoder::VpxDecode(const DecoderBuffer* buffer,
   {
     TRACE_EVENT1("media", "vpx_codec_decode", "buffer",
                  buffer->AsHumanReadableString());
-    vpx_codec_err_t status =
-        vpx_codec_decode(vpx_codec_.get(), buffer->data(), buffer->size(),
-                         nullptr /* user_priv */, 0 /* deadline */);
+    auto buffer_span = base::span(*buffer);
+    vpx_codec_err_t status = vpx_codec_decode(
+        vpx_codec_.get(), buffer_span.data(), buffer_span.size(),
+        nullptr /* user_priv */, 0 /* deadline */);
     if (status != VPX_CODEC_OK) {
+      if (status == VPX_CODEC_MEM_ERROR) {
+        error_status_ = DecoderStatus::Codes::kOutOfMemory;
+      }
       DLOG(ERROR) << "vpx_codec_decode() error: "
                   << vpx_codec_err_to_string(status);
       return false;
@@ -324,11 +325,30 @@ bool VpxVideoDecoder::VpxDecode(const DecoderBuffer* buffer,
   }
 
   // Gets pointer to decoded data.
-  vpx_codec_iter_t iter = NULL;
+  vpx_codec_iter_t iter = nullptr;
   const vpx_image_t* vpx_image = vpx_codec_get_frame(vpx_codec_.get(), &iter);
   if (!vpx_image) {
     *video_frame = nullptr;
     return true;
+  }
+
+  static constexpr size_t kItut35HeaderSize = 7;
+  if (buffer->side_data() &&
+      buffer->side_data()->itu_t35_data.size() >= kItut35HeaderSize) {
+    auto side_data = buffer->side_data()->itu_t35_data.as_span();
+    static constexpr uint8_t kItut35CountryCodeExtensionMarker = 0xFF;
+    if (side_data.data()[0] == kItut35CountryCodeExtensionMarker) {
+      side_data = side_data.subspan(1u);
+    }
+    auto [country_code, payload] = side_data.split_at<1u>();
+    const std::optional<gfx::HdrMetadataAgtm> agtm =
+        GetHdrMetadataAgtmFromItutT35(country_code.data()[0], payload);
+    if (agtm.has_value()) {
+      gfx::HDRMetadata hdr_metadata =
+          config_.hdr_metadata().value_or(gfx::HDRMetadata());
+      hdr_metadata.agtm = agtm;
+      config_.set_hdr_metadata(hdr_metadata);
+    }
   }
 
   const vpx_image_t* vpx_image_alpha = nullptr;
@@ -419,35 +439,31 @@ VpxVideoDecoder::AlphaDecodeStatus VpxVideoDecoder::DecodeAlphaPlane(
     const struct vpx_image** vpx_image_alpha,
     const DecoderBuffer* buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!vpx_codec_alpha_ || !buffer->has_side_data() ||
-      buffer->side_data()->alpha_data.size() < 8) {
+  if (!vpx_codec_alpha_ || !buffer->side_data() ||
+      buffer->side_data()->alpha_data.empty()) {
     return kAlphaPlaneProcessed;
   }
 
-  // First 8 bytes of side data is |side_data_id| in big endian.
-  const uint64_t side_data_id = base::U64FromBigEndian(
-      base::span(buffer->side_data()->alpha_data).first<8u>());
-  if (side_data_id != 1) {
-    return kAlphaPlaneProcessed;
-  }
-
+  auto& alpha_data = buffer->side_data()->alpha_data;
   // Try and decode buffer->raw_side_data() minus the first 8 bytes as a full
   // frame.
   {
     TRACE_EVENT1("media", "vpx_codec_decode_alpha", "buffer",
                  buffer->AsHumanReadableString());
     vpx_codec_err_t status = vpx_codec_decode(
-        vpx_codec_alpha_.get(), buffer->side_data()->alpha_data.data() + 8,
-        buffer->side_data()->alpha_data.size() - 8, nullptr /* user_priv */,
-        0 /* deadline */);
+        vpx_codec_alpha_.get(), alpha_data.data(), alpha_data.size(),
+        /*user_priv=*/nullptr, /*deadline=*/0);
     if (status != VPX_CODEC_OK) {
+      if (status == VPX_CODEC_MEM_ERROR) {
+        error_status_ = DecoderStatus::Codes::kOutOfMemory;
+      }
       DLOG(ERROR) << "vpx_codec_decode() failed for the alpha: "
-                  << vpx_codec_error(vpx_codec_.get());
+                  << vpx_codec_error(vpx_codec_alpha_.get());
       return kAlphaPlaneError;
     }
   }
 
-  vpx_codec_iter_t iter_alpha = NULL;
+  vpx_codec_iter_t iter_alpha = nullptr;
   *vpx_image_alpha = vpx_codec_get_frame(vpx_codec_alpha_.get(), &iter_alpha);
   if (!(*vpx_image_alpha)) {
     return kNoAlphaPlaneData;
@@ -545,31 +561,48 @@ bool VpxVideoDecoder::CopyVpxImageToVideoFrame(
   const gfx::Size natural_size =
       config_.aspect_ratio().GetNaturalSize(gfx::Rect(visible_size));
 
+  size_t luma_rows = coded_size.height();
+  size_t chroma_rows = VideoFrame::PlaneSizeInSamples(
+                           codec_format, VideoFrame::Plane::kU, coded_size)
+                           .height();
+  // SAFETY: libvpx only exposes buffer pointers for each plane, we have to
+  // calculate size from our knowledge of strides and chrome subsampling shift.
+  auto y_plane = UNSAFE_BUFFERS(
+      base::span<uint8_t>(vpx_image->planes[VPX_PLANE_Y],
+                          vpx_image->stride[VPX_PLANE_Y] * luma_rows));
+  auto u_plane = UNSAFE_BUFFERS(
+      base::span<uint8_t>(vpx_image->planes[VPX_PLANE_U],
+                          vpx_image->stride[VPX_PLANE_U] * chroma_rows));
+  auto v_plane = UNSAFE_BUFFERS(
+      base::span<uint8_t>(vpx_image->planes[VPX_PLANE_V],
+                          vpx_image->stride[VPX_PLANE_V] * chroma_rows));
   if (memory_pool_) {
     DCHECK_EQ(VideoCodec::kVP9, config_.codec());
     if (vpx_image_alpha) {
       size_t alpha_plane_size =
           vpx_image_alpha->stride[VPX_PLANE_Y] * vpx_image_alpha->d_h;
-      uint8_t* alpha_plane = memory_pool_->AllocateAlphaPlaneForFrameBuffer(
+      auto alpha_plane = memory_pool_->AllocateAlphaPlaneForFrameBuffer(
           alpha_plane_size, vpx_image->fb_priv);
-      if (!alpha_plane)  // In case of OOM, abort copy.
+      if (alpha_plane.empty()) {
+        error_status_ = DecoderStatus::Codes::kOutOfMemory;
+        // In case of OOM, abort copy.
         return false;
+      }
       libyuv::CopyPlane(vpx_image_alpha->planes[VPX_PLANE_Y],
-                        vpx_image_alpha->stride[VPX_PLANE_Y], alpha_plane,
+                        vpx_image_alpha->stride[VPX_PLANE_Y],
+                        alpha_plane.data(),
                         vpx_image_alpha->stride[VPX_PLANE_Y],
                         vpx_image_alpha->d_w, vpx_image_alpha->d_h);
       *video_frame = VideoFrame::WrapExternalYuvaData(
           codec_format, coded_size, gfx::Rect(visible_size), natural_size,
           vpx_image->stride[VPX_PLANE_Y], vpx_image->stride[VPX_PLANE_U],
           vpx_image->stride[VPX_PLANE_V], vpx_image_alpha->stride[VPX_PLANE_Y],
-          vpx_image->planes[VPX_PLANE_Y], vpx_image->planes[VPX_PLANE_U],
-          vpx_image->planes[VPX_PLANE_V], alpha_plane, kNoTimestamp);
+          y_plane, u_plane, v_plane, alpha_plane, kNoTimestamp);
     } else {
       *video_frame = VideoFrame::WrapExternalYuvData(
           codec_format, coded_size, gfx::Rect(visible_size), natural_size,
           vpx_image->stride[VPX_PLANE_Y], vpx_image->stride[VPX_PLANE_U],
-          vpx_image->stride[VPX_PLANE_V], vpx_image->planes[VPX_PLANE_Y],
-          vpx_image->planes[VPX_PLANE_U], vpx_image->planes[VPX_PLANE_V],
+          vpx_image->stride[VPX_PLANE_V], y_plane, u_plane, v_plane,
           kNoTimestamp);
     }
     if (!(*video_frame))
@@ -583,15 +616,24 @@ bool VpxVideoDecoder::CopyVpxImageToVideoFrame(
   *video_frame = frame_pool_.CreateFrame(codec_format, visible_size,
                                          gfx::Rect(visible_size), natural_size,
                                          kNoTimestamp);
-  if (!(*video_frame))
-    return false;
+  if (!(*video_frame)) {
+    if (VideoFrame::IsValidConfig(
+            codec_format, VideoFrame::STORAGE_OWNED_MEMORY, visible_size,
+            gfx::Rect(visible_size), natural_size)) {
+      error_status_ = DecoderStatus::Codes::kOutOfMemory;
+    }
 
+    return false;
+  }
+
+  auto planes = base::span(vpx_image->planes);
+  auto strides = base::span(vpx_image->stride);
   for (int plane = 0; plane < 3; plane++) {
-    libyuv::CopyPlane(vpx_image->planes[plane], vpx_image->stride[plane],
+    libyuv::CopyPlane(planes[plane], strides[plane],
                       (*video_frame)->GetWritableVisibleData(plane),
                       (*video_frame)->stride(plane),
-                      (*video_frame)->row_bytes(plane),
-                      (*video_frame)->rows(plane));
+                      (*video_frame)->GetVisibleRowBytes(plane),
+                      (*video_frame)->GetVisibleRows(plane));
   }
 
   return true;

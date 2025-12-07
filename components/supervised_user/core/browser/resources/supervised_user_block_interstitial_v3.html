@@ -1,0 +1,78 @@
+<!doctype html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+    content="initial-scale=1, minimum-scale=1, width=device-width">
+<title>$i18n{blockPageTitle}</title>
+<link rel="stylesheet" href="../../../../../components/security_interstitials/core/common/resources/interstitial_core.css">
+<link rel="stylesheet" href="supervised_user_block_interstitial_v3.css">
+<if expr="not optimize_webui">
+  <script src="%ROOT_GEN_DIR%/components/supervised_user/core/browser/resources/preprocessed/supervised_user_block_interstitial_v3.js"></script>
+</if>
+<if expr="optimize_webui">
+  <script src="%ROOT_GEN_DIR%/components/supervised_user/core/browser/resources/minified/supervised_user_block_interstitial_v3.js"></script>
+</if>
+</head>
+<body class="supervised-user-block" <if expr="is_ios">style="font-size: $i18n{fontsize}"</if>>
+<div class="frame-blocked" id="frame-blocked" tabindex="-1">
+  <div class="message-container">
+    <picture id="error-page-illustration">
+      <source
+        srcset="error_page_illustration_dark_theme.svg"
+        media="(prefers-color-scheme: dark)"
+        alt="">
+      <img class="illustration"
+        src="error_page_illustration_light_theme.svg"
+        alt="">
+    </picture>
+    <picture id="waiting-for-approval-illustration" hidden>
+      <source
+        srcset="waiting_for_approval_dark_theme.svg"
+        media="(prefers-color-scheme: dark)"
+        alt="">
+      <img class="illustration"
+        src="waiting_for_approval_light_theme.svg"
+        alt="">
+    </picture>
+    <div id="main-message">
+      <h1 id="block-page-header" tabindex="-1">$i18n{blockPageHeader}</h1>
+      <p id="block-page-message" tabindex="-1">$i18n{blockPageMessage}</p>
+      <h1 id="request-failed-message" tabindex="-1" aria-live="assertive" aria-atomic="true" hidden>$i18n{requestFailedMessage}</h1>
+      <h1 id="request-sent-message" tabindex="-1" aria-live="assertive" aria-atomic="true" hidden>$i18n{requestSentMessage}</h1>
+      <p id="request-sent-description" tabindex="-1" hidden>$i18n{requestSentDescription}</p>
+    </div>
+    <div id="custodians-information" hidden>
+      <div id="custodian-information" class="custodian-information">
+        <img id="custodian-avatar-img" class="avatar-img" alt="">
+        <div id="custodian-contact" class="custodian-contact">
+          <div id="custodian-name" tabindex="-1" class="custodian-name"></div>
+          <div id="custodian-email" tabindex="-1" class="custodian-email"></div>
+        </div>
+      </div>
+      <div id="second-custodian-information" class="custodian-information" hidden>
+        <img id="second-custodian-avatar-img" class="avatar-img" hidden alt="">
+        <div id="second-custodian-contact" class="custodian-contact">
+          <div id="second-custodian-name" tabindex="-1" class="custodian-name"></div>
+          <div id="second-custodian-email"  tabindex="-1" class="custodian-email"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="button-container">
+    <button id="back-button" class="go-back-button" hidden>
+      $i18n{backButton}
+    </button>
+    <button id="local-approvals-button" class="local-approvals-button" hidden>
+      $i18n{localApprovalsButton}
+    </button>
+    <button id="local-approvals-remote-request-sent-button" class="local-approvals-button" hidden>
+      $i18n{localApprovalsRemoteRequestSentButton}
+    </button>
+    <button id="remote-approvals-button" class="remote-approvals-button" hidden>
+      $i18n{remoteApprovalsButton}
+    </button>
+  </div>
+</div>
+</body>
+</html>

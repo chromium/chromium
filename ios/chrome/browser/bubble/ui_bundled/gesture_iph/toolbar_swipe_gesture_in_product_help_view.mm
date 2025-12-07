@@ -6,12 +6,12 @@
 
 #import "base/notreached.h"
 #import "base/time/time.h"
-#import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
-#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view.h"
 #import "ios/chrome/browser/bubble/ui_bundled/gesture_iph/gesture_in_product_help_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/gesture_iph/gesture_in_product_help_view+subclassing.h"
+#import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -55,24 +55,11 @@ const int kBidirectionalAnimationRepeatCount = 4;
       _bidirectional = NO;
       _animationRepeatCount = [super animationRepeatCount];
     }
+    [self registerForTraitChanges:TraitCollectionSetForTraits(
+                                      @[ UITraitVerticalSizeClass.class ])
+                       withAction:@selector(updateUIOnTraitChange)];
   }
   return self;
-}
-
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  if (self.traitCollection.verticalSizeClass !=
-      previousTraitCollection.verticalSizeClass) {
-    [self.bubbleView removeFromSuperview];
-    [self setInitialBubbleViewWithDirection:
-              (BubbleArrowDirection)0 /* this value is not used */
-                               boundingSize:self.bounds.size];
-    [NSLayoutConstraint deactivateConstraints:_dismissButtonConstraints];
-    _dismissButtonConstraints = [self dismissButtonConstraints];
-    [NSLayoutConstraint activateConstraints:_dismissButtonConstraints];
-    self.topConstraintForBottomEdgeSwipe.active = [self shouldSwipeBottomEdge];
-    self.topConstraintForTopEdgeSwipe.active = ![self shouldSwipeBottomEdge];
-  }
-  [super traitCollectionDidChange:previousTraitCollection];
 }
 
 - (void)setInitialBubbleViewWithDirection:(BubbleArrowDirection)direction
@@ -90,8 +77,7 @@ const int kBidirectionalAnimationRepeatCount = 4;
   switch (self.animatingDirection) {
     case UISwipeGestureRecognizerDirectionUp:
     case UISwipeGestureRecognizerDirectionDown:
-      NOTREACHED_IN_MIGRATION();
-      return nil;
+      NOTREACHED();
     case UISwipeGestureRecognizerDirectionLeft:
     case UISwipeGestureRecognizerDirectionRight:
     default:
@@ -154,6 +140,20 @@ const int kBidirectionalAnimationRepeatCount = 4;
 // Whether the use should swipe the bottom edge, instead of the top.
 - (BOOL)shouldSwipeBottomEdge {
   return IsSplitToolbarMode(self.traitCollection);
+}
+
+// Updates the view's constraints and resets the `bubbleView`.
+- (void)updateUIOnTraitChange {
+  [self.bubbleView removeFromSuperview];
+  [self
+      setInitialBubbleViewWithDirection:(BubbleArrowDirection)0 /* this value is
+                                                                   not used */
+                           boundingSize:self.bounds.size];
+  [NSLayoutConstraint deactivateConstraints:_dismissButtonConstraints];
+  _dismissButtonConstraints = [self dismissButtonConstraints];
+  [NSLayoutConstraint activateConstraints:_dismissButtonConstraints];
+  self.topConstraintForBottomEdgeSwipe.active = [self shouldSwipeBottomEdge];
+  self.topConstraintForTopEdgeSwipe.active = ![self shouldSwipeBottomEdge];
 }
 
 @end

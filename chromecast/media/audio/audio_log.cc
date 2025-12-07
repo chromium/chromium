@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -33,7 +34,7 @@ class AudioLogMessage::StreamBuf : public std::streambuf {
     file_ = file;
     line_ = line;
     severity_ = severity;
-    setp(buffer_, buffer_ + kBufferSize);
+    setp(buffer_, UNSAFE_TODO(buffer_ + kBufferSize));
   }
 
   void Log() {
@@ -73,7 +74,7 @@ class AudioLogMessage::BufferManager {
         &BufferManager::HandleDisposedBuffers, base::Unretained(this));
 
     for (int i = 0; i < kMaxBuffers; ++i) {
-      free_buffers_[i] = &buffers_[i];
+      UNSAFE_TODO(free_buffers_[i]) = &UNSAFE_TODO(buffers_[i]);
     }
     num_free_buffers_ = kMaxBuffers;
     ready_ = true;
@@ -95,7 +96,7 @@ class AudioLogMessage::BufferManager {
       }
 
       --num_free_buffers_;
-      buffer = free_buffers_[num_free_buffers_];
+      buffer = UNSAFE_TODO(free_buffers_[num_free_buffers_]);
     }
     buffer->Initialize(file, line, severity);
     return buffer;
@@ -113,7 +114,7 @@ class AudioLogMessage::BufferManager {
     {
       base::AutoLock lock(lock_);
       DCHECK_LT(num_disposed_buffers_, kMaxBuffers);
-      disposed_buffers_[num_disposed_buffers_] = buffer;
+      UNSAFE_TODO(disposed_buffers_[num_disposed_buffers_]) = buffer;
       ++num_disposed_buffers_;
     }
     DCHECK(task_runner_);
@@ -136,10 +137,10 @@ class AudioLogMessage::BufferManager {
     }
 
     for (int i = 0; i < num_buffers; ++i) {
-      buffers[i]->Log();
+      UNSAFE_TODO(buffers[i]->Log());
       {
         base::AutoLock lock(lock_);
-        free_buffers_[num_free_buffers_] = buffers[i];
+        UNSAFE_TODO(free_buffers_[num_free_buffers_]) = UNSAFE_TODO(buffers[i]);
         ++num_free_buffers_;
       }
     }

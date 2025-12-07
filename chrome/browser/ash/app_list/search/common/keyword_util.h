@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_COMMON_KEYWORD_UTIL_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_COMMON_KEYWORD_UTIL_H_
 
-#include <map>
 #include <string>
 #include <vector>
 
@@ -54,7 +53,7 @@ using KeywordExtractedInfoList = std::vector<KeywordInfo>;
 KeywordExtractedInfoList ExtractKeywords(const std::u16string& query);
 
 // Strips the user query from the keyword.
-const std::u16string StripQuery(const std::u16string query);
+const std::u16string StripQuery(const std::u16string& query);
 
 }  // namespace app_list
 

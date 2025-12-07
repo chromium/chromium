@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -40,18 +41,10 @@ bool IsSupportedMediaMimeType(const std::string& mime_type) {
                           base::CompareCase::INSENSITIVE_ASCII);
 }
 
-void OnRequestOverlayInfo(bool decoder_requires_restart_for_overlay,
-                          media::ProvideOverlayInfoCB overlay_info_cb) {
+void OnRequestOverlayInfo(media::ProvideOverlayInfoCB overlay_info_cb) {
   // No android overlay associated with video thumbnail.
   if (overlay_info_cb)
     std::move(overlay_info_cb).Run(media::OverlayInfo());
-}
-
-int64_t GetFileSize(const base::FilePath& file_path) {
-  int64_t size = 0;
-  if (!base::GetFileSize(file_path, &size))
-    return -1;
-  return size;
 }
 
 }  // namespace
@@ -83,18 +76,19 @@ void ThumbnailMediaParserImpl::Start(ParseCompleteCB parse_complete_cb) {
 
   // Get the size of the file if needed.
   file_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&GetFileSize, file_path_),
+      FROM_HERE, base::GetFileSizeCallback(file_path_),
       base::BindOnce(&ThumbnailMediaParserImpl::OnReadFileSize,
                      weak_factory_.GetWeakPtr()));
 }
 
-void ThumbnailMediaParserImpl::OnReadFileSize(int64_t file_size) {
-  if (file_size < 0) {
+void ThumbnailMediaParserImpl::OnReadFileSize(
+    std::optional<int64_t> file_size) {
+  if (!file_size.has_value()) {
     OnError(MediaParserEvent::kReadFileError);
     return;
   }
 
-  size_ = file_size;
+  size_ = file_size.value();
   RetrieveMediaParser();
 }
 
@@ -239,7 +233,7 @@ void ThumbnailMediaParserImpl::OnVideoFrameDecoded(
     return;
   }
 
-  DCHECK(frame->HasTextures());
+  DCHECK(frame->HasSharedImage());
   decode_done_ = true;
 
   RenderVideoFrame(std::move(frame));

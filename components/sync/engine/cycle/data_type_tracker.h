@@ -129,20 +129,20 @@ class DataTypeTracker {
   // Returns the last backoff interval.
   base::TimeDelta GetLastBackoffInterval() const;
 
-  // Throttles the type from |now| until |now| + |duration|.
+  // Throttles the type from `now` until `now` + `duration`.
   void ThrottleType(base::TimeDelta duration, base::TimeTicks now);
 
-  // Backs off the type from |now| until |now| + |duration|.
+  // Backs off the type from `now` until `now` + `duration`.
   void BackOffType(base::TimeDelta duration, base::TimeTicks now);
 
-  // Unblocks the type if base::TimeTicks::Now() >= |unblock_time_| expiry time.
+  // Unblocks the type if base::TimeTicks::Now() >= `unblock_time_` expiry time.
   void UpdateThrottleOrBackoffState();
 
-  // Update |has_pending_invalidations_| flag.
+  // Update `has_pending_invalidations_` flag.
   void SetHasPendingInvalidations(bool has_pending_invalidations);
 
   // Update the local change nudge delay for this type.
-  // No update happens if |delay| is too small (less than the smallest default
+  // No update happens if `delay` is too small (less than the smallest default
   // delay).
   void UpdateLocalChangeNudgeDelay(base::TimeDelta delay);
 
@@ -192,12 +192,12 @@ class DataTypeTracker {
   bool has_pending_invalidations_ = false;
 
   // If !unblock_time_.is_null(), this type is throttled or backed off, check
-  // |wait_interval_->mode| for specific reason. Now the datatype may not
+  // `wait_interval_->mode` for specific reason. Now the datatype may not
   // download or commit data until the specified time.
   base::TimeTicks unblock_time_;
 
-  // Current wait state.  Null if we're not in backoff or throttling.
-  std::unique_ptr<WaitInterval> wait_interval_;
+  // Current wait state. `Nullopt` if we're not in backoff or throttling.
+  std::optional<WaitInterval> wait_interval_;
 
   // The amount of time to delay a sync cycle by when a local change for this
   // type occurs.

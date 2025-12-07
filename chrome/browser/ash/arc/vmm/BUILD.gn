@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("vmm") {
   sources = [
@@ -22,18 +22,23 @@ static_library("vmm") {
     "vmm_metrics_provider.h",
   ]
 
+  # We should keep this because of the circular dependencies on:
+  # - //chrome/browser/ash/arc/session
+  # - //chrome/browser/ash/arc/instance_throttle
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
     "//ash",
-    "//ash/components/arc",
-    "//ash/components/arc/mojom",
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_list/arc",
-    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ash/arc/session",
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/concierge:concierge_proto",
+    "//chromeos/ash/components/throttle",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_app_constants",
+    "//chromeos/ash/experiences/arc/mojom",
     "//components/keyed_service/core",
     "//components/metrics",
     "//content/public/browser",
@@ -56,17 +61,17 @@ source_set("unit_tests") {
 
   deps = [
     ":vmm",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/app_list/arc:test_support",
     "//chrome/browser/ash/arc/idle_manager",
     "//chrome/browser/ash/arc/instance_throttle",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/arc/test:arc_test_support",
     "//chrome/test:test_support",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_app_constants",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//content/test:test_support",
     "//testing/gtest",
   ]
@@ -82,16 +87,17 @@ source_set("browser_tests") {
   deps = [
     ":vmm",
     "//ash",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
     "//ash/constants",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ui",
     "//chrome/test:test_support",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//content/test:test_support",
     "//testing/gtest",
   ]

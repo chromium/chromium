@@ -70,16 +70,16 @@ void WebSubThread::Run(base::RunLoop* run_loop) {
       IOThreadRun(run_loop);
       return;
     case WebThread::ID_COUNT:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
 void WebSubThread::CleanUp() {
   DCHECK_CALLED_ON_VALID_THREAD(web_thread_checker_);
 
-  if (identifier_ == WebThread::IO && g_io_thread_delegate)
+  if (identifier_ == WebThread::IO && g_io_thread_delegate) {
     g_io_thread_delegate->CleanUp();
+  }
 
   web_thread_.reset();
 }

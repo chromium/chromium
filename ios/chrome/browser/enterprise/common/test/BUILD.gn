@@ -1,0 +1,20 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("test") {
+  testonly = true
+  sources = [
+    "mock_reporting_event_router.h",
+    "mock_reporting_event_router.mm",
+  ]
+  deps = [
+    "//components/enterprise/connectors/core",
+    "//components/enterprise/data_controls/core/browser",
+    "//components/safe_browsing/core/common/proto:csd_proto_gen",
+    "//components/safe_browsing/core/common/proto:realtimeapi_proto_gen",
+    "//ios/chrome/browser/enterprise/connectors/reporting",
+    "//ios/chrome/browser/shared/model/profile",
+    "//testing/gmock",
+  ]
+}

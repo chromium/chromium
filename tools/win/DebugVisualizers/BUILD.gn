@@ -17,6 +17,12 @@ import("//build/config/compiler/compiler.gni")
 
 assert(is_win)
 
+config("absl") {
+  # absl.natvis listed as an input in //third_party/abseil-cpp/BUILD.gn to
+  # guarantee relinking on changes.
+  ldflags = [ "/NATVIS:" + rebase_path("absl.natvis", root_build_dir) ]
+}
+
 config("chrome") {
   # chrome.natvis listed as an input in //base:base to guarantee relinking on
   # changes.

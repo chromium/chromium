@@ -4,6 +4,8 @@
 
 #include "ash/system/focus_mode/focus_mode_tasks_model.h"
 
+#include <absl/cleanup/cleanup.h>
+
 #include <algorithm>
 
 #include "base/functional/bind.h"
@@ -20,7 +22,7 @@ namespace {
 // nullptr if a matching task does not exist in `tasks`.
 FocusModeTask* FindTaskById(const TaskId& task_id,
                             std::vector<FocusModeTask>& tasks) {
-  auto iter = base::ranges::find(tasks, task_id, &FocusModeTask::task_id);
+  auto iter = std::ranges::find(tasks, task_id, &FocusModeTask::task_id);
   return (iter == tasks.end()) ? nullptr : &(*iter);
 }
 
@@ -109,13 +111,23 @@ void FocusModeTasksModel::RequestUpdate() {
   }
 
   if (delegate_) {
+    // If there is a currently selected task, we fetch the task to see if the
+    // title was updated or if it has been completed.
+    if (selected_task_ && selected_task_->task_id.IsValid()) {
+      delegate_->FetchTask(
+          selected_task_->task_id,
+          base::BindOnce(&FocusModeTasksModel::OnSelectedTaskFetched,
+                         weak_ptr_factory_.GetWeakPtr()));
+      return;
+    }
+
     delegate_->FetchTasks();
   }
 }
 
 bool FocusModeTasksModel::SetSelectedTask(const TaskId& task_id) {
   CHECK(!task_id.empty());
-  auto iter = base::ranges::find(tasks_, task_id, &FocusModeTask::task_id);
+  auto iter = std::ranges::find(tasks_, task_id, &FocusModeTask::task_id);
 
   if (iter == tasks_.end()) {
     // 'task_id' was not found in the task list. Task cannot be selected.
@@ -172,6 +184,26 @@ void FocusModeTasksModel::ClearSelectedTask() {
     selected_task_ = nullptr;
     NotifySelectedTask(observers_, nullptr);
   }
+
+  // If there is still a pending task, we clear it and also remove it from
+  // `tasks_` in order to prevent potentially having multiple pending tasks.
+  if (pending_task_) {
+    auto iter = std::ranges::find(tasks_, pending_task_->task_id,
+                                  &FocusModeTask::task_id);
+    CHECK(iter != tasks_.end());
+    pending_task_ = nullptr;
+    tasks_.erase(iter);
+    NotifyTaskListChanged(observers_, tasks_);
+  }
+}
+
+void FocusModeTasksModel::Reset() {
+  NotifySelectedTask(observers_, nullptr);
+  NotifyTaskListChanged(observers_, {});
+  selected_task_ = nullptr;
+  pending_task_ = nullptr;
+  pref_task_id_.reset();
+  tasks_.clear();
 }
 
 void FocusModeTasksModel::SetSelectedTaskFromPrefs(const TaskId& task_id) {
@@ -191,7 +223,7 @@ void FocusModeTasksModel::SetSelectedTaskFromPrefs(const TaskId& task_id) {
   pref_task_id_ = task_id;
   FocusModeTasksModel::Delegate::FetchTaskCallback callback = base::BindOnce(
       &FocusModeTasksModel::OnPrefTaskFetched, weak_ptr_factory_.GetWeakPtr());
-  if (delegate_) {
+  if (delegate_ && pref_task_id_->IsValid()) {
     delegate_->FetchTask(*pref_task_id_, std::move(callback));
   }
 }
@@ -272,7 +304,7 @@ void FocusModeTasksModel::UpdateTask(const TaskUpdate& task_update) {
   if (task_update.completed.has_value()) {
     CHECK(task_update.task_id);
     const TaskId& id = *task_update.task_id;
-    auto iter = base::ranges::find(tasks_, id, &FocusModeTask::task_id);
+    auto iter = std::ranges::find(tasks_, id, &FocusModeTask::task_id);
     CHECK(iter != tasks_.end());
 
     NotifyCompletedTask(observers_, *iter);
@@ -310,6 +342,10 @@ const FocusModeTask* FocusModeTasksModel::selected_task() const {
   return selected_task_;
 }
 
+const FocusModeTask* FocusModeTasksModel::PendingTaskForTesting() const {
+  return pending_task_;
+}
+
 const TaskId& FocusModeTasksModel::PrefTaskIdForTesting() const {
   return *pref_task_id_;
 }
@@ -337,8 +373,12 @@ void FocusModeTasksModel::OnTaskAdded(
     NotifySelectedTask(observers_, selected_task_);
   }
 
-  // Clear the pending task.
+  // The pending task has now been successfully added, so we can clear
+  // `pending_task_` since it's updated in `tasks_`.
   pending_task_ = nullptr;
+
+  // Update the UI with the newly added task data.
+  NotifyTaskListChanged(observers_, tasks_);
 }
 
 void FocusModeTasksModel::OnPrefTaskFetched(
@@ -363,7 +403,7 @@ void FocusModeTasksModel::OnPrefTaskFetched(
   // Controls if the list update is emitted.
   bool list_updated = true;
 
-  auto iter = base::ranges::find(tasks_, task_id, &FocusModeTask::task_id);
+  auto iter = std::ranges::find(tasks_, task_id, &FocusModeTask::task_id);
   if (iter != tasks_.end()) {
     if (fetched_task->completed) {
       tasks_.erase(iter);
@@ -384,6 +424,43 @@ void FocusModeTasksModel::OnPrefTaskFetched(
     NotifyTaskListChanged(observers_, tasks_);
   }
   NotifySelectedTask(observers_, selected_task_);
+}
+
+void FocusModeTasksModel::OnSelectedTaskFetched(
+    const std::optional<FocusModeTask>& fetched_task) {
+  CHECK(delegate_);
+
+  if (!fetched_task) {
+    LOG(WARNING) << "Fetching Selected task failed. Try again later";
+    return;
+  }
+
+  // Ensure that `FetchTasks` is called afterwards. This will trigger a
+  // `NotifyTaskListChanged`.
+  absl::Cleanup fetch_tasks = [this] { delegate_->FetchTasks(); };
+
+  const TaskId& task_id = fetched_task->task_id;
+  FocusModeTask* task = FindTaskById(task_id, tasks_);
+  if (task == nullptr) {
+    // 'task_id' was not found in the task list. Nothing to update.
+    return;
+  }
+
+  // Update the title if it has changed.
+  bool has_task_title_changed = task->title != fetched_task->title;
+  if (has_task_title_changed) {
+    task->title = fetched_task->title;
+  }
+
+  if (fetched_task->completed) {
+    UpdateTask(TaskUpdate::CompletedUpdate(task_id));
+    return;
+  }
+
+  if (has_task_title_changed && selected_task_ &&
+      selected_task_->task_id == task_id) {
+    NotifySelectedTask(observers_, selected_task_);
+  }
 }
 
 FocusModeTask* FocusModeTasksModel::InsertTaskIntoTaskList(

@@ -51,6 +51,14 @@ extern GuideName* const kFeedIPHNamedGuide;
 // A guide that is constrained to match the frame of the bottom toolbar in the
 // tab grid.
 extern GuideName* const kTabGridBottomToolbarGuide;
+// A guide that is constrained to match the frame of the Tab Grid page control.
+extern GuideName* const kTabGridPageControlGuide;
+// A guide that is constrained to match the frame of the incognito page of the
+// Tab Grid page control.
+extern GuideName* const kTabGridPageControlIncognitoGuide;
+// A guide that is constrained to match the frame of the tab groups page of the
+// Tab Grid page control.
+extern GuideName* const kTabGridPageControlTabGroupsGuide;
 // A guide that is constrained to match the frame of the first Autofill result.
 extern GuideName* const kAutofillFirstSuggestionGuide;
 // A guide that is constrained to match the frame of the Lens button in the
@@ -58,5 +66,30 @@ extern GuideName* const kAutofillFirstSuggestionGuide;
 extern GuideName* const kLensKeyboardButtonGuide;
 // A guide that is constrained to match the frame of the Magic Stack on the NTP.
 extern GuideName* const kMagicStackGuide;
+// A guide that is constrained to match the frame of the Contextual Panel's
+// entrypoint when it is large, otherwise this stays nil.
+extern GuideName* const kContextualPanelLargeEntrypointGuide;
+// A guide that is constrained to match the frame of the Lens icon in the NTP's
+// Fakebox.
+extern GuideName* const kFakeboxLensIconGuide;
+// A guide that is constrained to match the frame of the lens overlay
+// entrypoint.
+extern GuideName* const kLensOverlayEntrypointGuide;
+// A guide that is constrained to match the frame of the PageActionMenu
+// entrypoint.
+extern GuideName* const kPageActionMenuEntrypointGuide;
+// A guide that is constrained to match the frame of the Reader Mode options.
+extern GuideName* const kReaderModeOptionsEntrypointGuide;
+// A guide that is constrained to match the frame of the identity disc button on
+// the New Tab page.
+extern GuideName* const kNTPIdentityDiscButtonGuide;
+// A guide that is constrained to match the frame of the current active regular
+// tab. It is not registered if the selected cell is not visible.
+extern GuideName* const kSelectedRegularCellGuide;
+// A guide that is constrained to match the frame of the Location Bar Badge when
+// it is large, otherwise this stays nil.
+extern GuideName* const kLocationBarBadgeLargeEntrypointGuide;
+// A guide tracking the input accessory view being presented.
+extern GuideName* const kInputAccessoryViewLayoutGuide;
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_UTIL_LAYOUT_GUIDE_NAMES_H_

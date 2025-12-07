@@ -5,6 +5,7 @@
 #include "components/visited_url_ranking/internal/visited_url_ranking_service_impl.h"
 
 #include <array>
+#include <cmath>
 #include <map>
 #include <memory>
 #include <queue>
@@ -16,6 +17,7 @@
 #include "base/barrier_callback.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -37,6 +39,7 @@
 #include "components/url_deduplication/url_deduplication_helper.h"
 #include "components/visited_url_ranking/internal/history_url_visit_data_fetcher.h"
 #include "components/visited_url_ranking/internal/session_url_visit_data_fetcher.h"
+#include "components/visited_url_ranking/public/decoration.h"
 #include "components/visited_url_ranking/public/features.h"
 #include "components/visited_url_ranking/public/fetch_options.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
@@ -46,6 +49,7 @@
 #include "components/visited_url_ranking/public/url_visit_schema.h"
 #include "components/visited_url_ranking/public/url_visit_util.h"
 #include "components/visited_url_ranking/public/visited_url_ranking_service.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 using segmentation_platform::AnnotatedNumericResult;
 using segmentation_platform::InputContext;
@@ -98,6 +102,8 @@ const char* URLVisitAggregatesTransformTypeName(
       return "SegmentationMetricsData";
     case URLVisitAggregatesTransformType::kHistoryBrowserTypeFilter:
       return "HistoryBrowserTypeFilter";
+    case URLVisitAggregatesTransformType::kTabEventsData:
+      return "TabEventsData";
   }
 }
 
@@ -115,7 +121,8 @@ const char* URLVisitAggregatesFetcherName(Fetcher fetcher) {
 // Combines `URLVisitVariant` data obtained from various fetchers into
 // `URLVisitAggregate` objects. Leverages the `URLMergeKey` in order to
 // reconcile what data belongs to the same aggregate object.
-std::vector<URLVisitAggregate> ComputeURLVisitAggregates(
+std::pair<std::vector<URLVisitAggregate>, URLVisitsMetadata>
+ComputeURLVisitAggregates(
     std::vector<std::pair<Fetcher, FetchResult>> fetcher_results) {
   std::map<URLMergeKey, URLVisitAggregate> url_visit_map = {};
   for (auto& result_pair : fetcher_results) {
@@ -143,7 +150,7 @@ std::vector<URLVisitAggregate> ComputeURLVisitAggregates(
 
       URLVisitAggregate& aggregate = url_visit_map.at(url_data.first);
       std::visit(
-          URLVisitVariantHelper{
+          absl::Overload{
               [&aggregate](URLVisitAggregate::TabData& tab_data) {
                 aggregate.fetcher_data_map.emplace(
                     tab_data.last_active_tab.session_name.has_value()
@@ -160,19 +167,27 @@ std::vector<URLVisitAggregate> ComputeURLVisitAggregates(
   }
 
   std::vector<URLVisitAggregate> url_visits;
+  URLVisitsMetadata url_visits_metadata;
+  url_visits_metadata.aggregates_count_before_transforms = url_visit_map.size();
   url_visits.reserve(url_visit_map.size());
   for (auto& url_visit_pair : url_visit_map) {
+    if (!url_visits_metadata.most_recent_timestamp.has_value() ||
+        url_visits_metadata.most_recent_timestamp <
+            url_visit_pair.second.GetLastVisitTime()) {
+      url_visits_metadata.most_recent_timestamp =
+          url_visit_pair.second.GetLastVisitTime();
+    }
     url_visits.push_back(std::move(url_visit_pair.second));
   }
   url_visit_map.clear();
 
-  return url_visits;
+  return std::make_pair(std::move(url_visits), url_visits_metadata);
 }
 
 void SortScoredAggregatesAndCallback(
     std::vector<URLVisitAggregate> scored_visits,
     VisitedURLRankingService::RankURLVisitAggregatesCallback callback) {
-  base::ranges::stable_sort(scored_visits, [](const auto& c1, const auto& c2) {
+  std::ranges::stable_sort(scored_visits, [](const auto& c1, const auto& c2) {
     // Sort such that higher scored entries precede lower scored entries.
     return c1.score > c2.score;
   });
@@ -189,6 +204,71 @@ void SortScoredAggregatesAndCallback(
   base::UmaHistogramCounts100("VisitedURLRanking.Rank.NumVisits",
                               scored_visits.size());
   std::move(callback).Run(ResultStatus::kSuccess, std::move(scored_visits));
+}
+
+void AddMostRecentDecoration(URLVisitAggregate& url_visit_aggregate,
+                             base::Time most_recent_timestamp) {
+  if (url_visit_aggregate.GetLastVisitTime() == most_recent_timestamp) {
+    url_visit_aggregate.decorations.emplace_back(
+        DecorationType::kMostRecent,
+        GetStringForDecoration(DecorationType::kMostRecent));
+  }
+}
+
+void AddFrequentlyVisitedDecoration(URLVisitAggregate& url_visit_aggregate) {
+  int total_visits = 0;
+  for (const auto& fetcher_entry : url_visit_aggregate.fetcher_data_map) {
+    switch (fetcher_entry.first) {
+      case Fetcher::kTabModel:
+        total_visits += static_cast<int>(
+            std::get<URLVisitAggregate::TabData>(fetcher_entry.second)
+                .tab_count);
+        break;
+      case Fetcher::kSession:
+        total_visits += static_cast<int>(
+            std::get<URLVisitAggregate::TabData>(fetcher_entry.second)
+                .tab_count);
+        break;
+      case Fetcher::kHistory:
+        total_visits += static_cast<int>(
+            std::get<URLVisitAggregate::HistoryData>(fetcher_entry.second)
+                .visit_count);
+        break;
+    }
+  }
+  if (total_visits >
+      features::kVisitedURLRankingFrequentlyVisitedThreshold.Get()) {
+    url_visit_aggregate.decorations.emplace_back(
+        DecorationType::kFrequentlyVisited,
+        GetStringForDecoration(DecorationType::kFrequentlyVisited));
+  }
+}
+
+void AddFrequentlyVisitedAtTimeDecoration(
+    URLVisitAggregate& url_visit_aggregate) {
+  const auto& fetcher_data_map = url_visit_aggregate.fetcher_data_map;
+  if (fetcher_data_map.find(Fetcher::kHistory) != fetcher_data_map.end()) {
+    const URLVisitAggregate::HistoryData* history_data =
+        std::get_if<URLVisitAggregate::HistoryData>(
+            &fetcher_data_map.at(Fetcher::kHistory));
+    if (history_data) {
+      if (static_cast<int>(history_data->same_time_group_visit_count) >
+          features::kVisitedURLRankingDecorationTimeOfDay.Get()) {
+        url_visit_aggregate.decorations.emplace_back(
+            DecorationType::kFrequentlyVisitedAtTime,
+            GetStringForDecoration(DecorationType::kFrequentlyVisitedAtTime));
+      }
+    }
+  }
+}
+
+void AddVisitedXAgoDecoration(
+    URLVisitAggregate& url_visit_aggregate,
+    base::TimeDelta recently_visited_minutes_threshold) {
+  url_visit_aggregate.decorations.emplace_back(
+      DecorationType::kVisitedXAgo, GetStringForRecencyDecorationWithTime(
+                                        url_visit_aggregate.GetLastVisitTime(),
+                                        recently_visited_minutes_threshold));
 }
 
 }  // namespace
@@ -212,6 +292,20 @@ VisitedURLRankingServiceImpl::VisitedURLRankingServiceImpl(
           features::kVisitedURLRankingService,
           "seen_record_action_sampling_rate",
           kSeenRecordsSamplingRate)),
+      recently_visited_minutes_threshold_(base::Minutes(
+          features::kVisitedURLRankingDecorationRecentlyVisitedMinutesThreshold
+              .Get())),
+      score_thresholds_(
+          {{URLVisitAggregate::URLType::kActiveLocalTab,
+            features::kVisitedURLRankingScoreThresholdActiveLocalTab.Get()},
+           {URLVisitAggregate::URLType::kActiveRemoteTab,
+            features::kVisitedURLRankingScoreThresholdActiveRemoteTab.Get()},
+           {URLVisitAggregate::URLType::kLocalVisit,
+            features::kVisitedURLRankingScoreThresholdLocalVisit.Get()},
+           {URLVisitAggregate::URLType::kRemoteVisit,
+            features::kVisitedURLRankingScoreThresholdRemoteVisit.Get()},
+           {URLVisitAggregate::URLType::kCCTVisit,
+            features::kVisitedURLRankingScoreThresholdCCTVisit.Get()}}),
       deduplication_helper_(std::move(deduplication_helper)) {}
 
 VisitedURLRankingServiceImpl::~VisitedURLRankingServiceImpl() = default;
@@ -282,6 +376,44 @@ void VisitedURLRankingServiceImpl::RankURLVisitAggregates(
   GetNextResult(config.key, std::move(visits_queue), {}, std::move(callback));
 }
 
+void VisitedURLRankingServiceImpl::DecorateURLVisitAggregates(
+    const Config& config,
+    visited_url_ranking::URLVisitsMetadata url_visits_metadata,
+    std::vector<URLVisitAggregate> visit_aggregates,
+    DecorateURLVisitAggregatesCallback callback) {
+  if (visit_aggregates.empty()) {
+    std::move(callback).Run(ResultStatus::kSuccess, {});
+    return;
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          visited_url_ranking::features::kVisitedURLRankingDecorations)) {
+    std::move(callback).Run(ResultStatus::kSuccess,
+                            std::move(visit_aggregates));
+    return;
+  }
+
+  for (size_t i = 0; i < visit_aggregates.size(); i++) {
+    auto& url_visit_aggregate = visit_aggregates[i];
+
+    if (url_visits_metadata.most_recent_timestamp.has_value()) {
+      AddMostRecentDecoration(
+          url_visit_aggregate,
+          url_visits_metadata.most_recent_timestamp.value());
+    }
+
+    AddFrequentlyVisitedDecoration(url_visit_aggregate);
+
+    AddFrequentlyVisitedAtTimeDecoration(url_visit_aggregate);
+
+    // Default decoration
+    AddVisitedXAgoDecoration(url_visit_aggregate,
+                             recently_visited_minutes_threshold_);
+  }
+
+  std::move(callback).Run(ResultStatus::kSuccess, std::move(visit_aggregates));
+}
+
 void VisitedURLRankingServiceImpl::RecordAction(
     ScoredURLUserAction action,
     const std::string& visit_id,
@@ -290,6 +422,9 @@ void VisitedURLRankingServiceImpl::RecordAction(
   VLOG(2) << "visited_url_ranking: RecordAction for " << visit_id << " "
           << static_cast<int>(action);
   base::UmaHistogramEnumeration("VisitedURLRanking.ScoredURLAction", action);
+  if (!visited_url_ranking::features::kVisitedURLRankingRecordActions.Get()) {
+    return;
+  }
 
   const char* event_name = EventNameForAction(action);
   segmentation_platform::DatabaseClient::StructuredEvent visit_event = {
@@ -302,9 +437,9 @@ void VisitedURLRankingServiceImpl::RecordAction(
 
   base::TimeDelta wait_for_activation = base::TimeDelta();
   // If the action is kSeen, then wait for some time before recording this as
-  // result, in case the user clicks on the suggestion. Effectively, this would
-  // assume if the user clicks on first 5 mins, then it's a success, otherwise
-  // failure.
+  // result, in case the user clicks on the suggestion. Effectively, this
+  // would assume if the user clicks on first 5 mins, then it's a success,
+  // otherwise failure.
   if (action == ScoredURLUserAction::kSeen) {
     if (base::RandInt(1, seen_records_sampling_rate_) > 1) {
       return;
@@ -317,6 +452,15 @@ void VisitedURLRankingServiceImpl::RecordAction(
                      weak_ptr_factory_.GetWeakPtr(), action, visit_id,
                      visit_request_id),
       wait_for_activation);
+}
+
+void VisitedURLRankingServiceImpl::RegisterTransformer(
+    URLVisitAggregatesTransformType type,
+    std::unique_ptr<URLVisitAggregatesTransformer> transformer) {
+  if (transformers_.count(type)) {
+    return;
+  }
+  transformers_.emplace(type, std::move(transformer));
 }
 
 void VisitedURLRankingServiceImpl::TriggerTrainingData(
@@ -342,12 +486,16 @@ void VisitedURLRankingServiceImpl::MergeVisitsAndCallback(
     transform_type_queue.push(transform_type);
   }
 
+  auto url_visit_aggregates_data =
+      ComputeURLVisitAggregates(std::move(fetcher_results));
+
   TransformVisitsAndCallback(
       std::move(callback), options, std::move(transform_type_queue),
       URLVisitAggregatesTransformType::kUnspecified,
-      /*previous_aggregates_count=*/0, base::Time::Now(),
+      /*previous_aggregates_count=*/0,
+      std::move(url_visit_aggregates_data.second), base::Time::Now(),
       URLVisitAggregatesTransformer::Status::kSuccess,
-      ComputeURLVisitAggregates(std::move(fetcher_results)));
+      std::move(url_visit_aggregates_data.first));
 }
 
 void VisitedURLRankingServiceImpl::TransformVisitsAndCallback(
@@ -356,6 +504,7 @@ void VisitedURLRankingServiceImpl::TransformVisitsAndCallback(
     std::queue<URLVisitAggregatesTransformType> transform_type_queue,
     URLVisitAggregatesTransformType transform_type,
     size_t previous_aggregates_count,
+    URLVisitsMetadata url_visits_metadata,
     base::Time start_time,
     URLVisitAggregatesTransformer::Status status,
     std::vector<URLVisitAggregate> aggregates) {
@@ -372,7 +521,8 @@ void VisitedURLRankingServiceImpl::TransformVisitsAndCallback(
   }
 
   if (status == URLVisitAggregatesTransformer::Status::kError) {
-    std::move(callback).Run(ResultStatus::kError, {});
+    std::move(callback).Run(ResultStatus::kError,
+                            std::move(url_visits_metadata), {});
     return;
   }
 
@@ -380,7 +530,10 @@ void VisitedURLRankingServiceImpl::TransformVisitsAndCallback(
     base::UmaHistogramCustomCounts(
         base::StringPrintf("VisitedURLRanking.TransformType.%s.InOutPercentage",
                            URLVisitAggregatesTransformTypeName(transform_type)),
-        (aggregates.size() / previous_aggregates_count) * 100, 1, 100, 100);
+        std::round((static_cast<float>(aggregates.size()) /
+                    previous_aggregates_count) *
+                   100),
+        1, 100, 100);
 
     base::UmaHistogramMediumTimes(
         base::StringPrintf("VisitedURLRanking.TransformType.%s.Latency",
@@ -389,7 +542,8 @@ void VisitedURLRankingServiceImpl::TransformVisitsAndCallback(
   }
 
   if (transform_type_queue.empty() || aggregates.empty()) {
-    std::move(callback).Run(ResultStatus::kSuccess, std::move(aggregates));
+    std::move(callback).Run(ResultStatus::kSuccess, url_visits_metadata,
+                            std::move(aggregates));
     return;
   }
 
@@ -404,7 +558,7 @@ void VisitedURLRankingServiceImpl::TransformVisitsAndCallback(
         base::StringPrintf("VisitedURLRanking.TransformType.%s.Success",
                            URLVisitAggregatesTransformTypeName(transform_type)),
         false);
-    std::move(callback).Run(ResultStatus::kError, {});
+    std::move(callback).Run(ResultStatus::kError, url_visits_metadata, {});
     return;
   }
 
@@ -414,7 +568,20 @@ void VisitedURLRankingServiceImpl::TransformVisitsAndCallback(
       base::BindOnce(&VisitedURLRankingServiceImpl::TransformVisitsAndCallback,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      options, std::move(transform_type_queue), transform_type,
-                     aggregates_count, base::Time::Now()));
+                     aggregates_count, url_visits_metadata, base::Time::Now()));
+}
+
+bool VisitedURLRankingServiceImpl::ShouldDiscardVisit(
+    const URLVisitAggregate& visit) {
+  URLVisitAggregate::URLTypeSet types = visit.GetURLTypes();
+  if (visit.score.has_value()) {
+    for (URLVisitAggregate::URLType current_url_type : types) {
+      if (visit.score.value() < score_thresholds_[current_url_type]) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 void VisitedURLRankingServiceImpl::GetNextResult(
@@ -423,6 +590,9 @@ void VisitedURLRankingServiceImpl::GetNextResult(
     std::vector<URLVisitAggregate> scored_visits,
     RankURLVisitAggregatesCallback callback) {
   if (visit_aggregates.empty()) {
+    std::erase_if(scored_visits, [&](const auto& url_visit_aggregate) {
+      return ShouldDiscardVisit(url_visit_aggregate);
+    });
     SortScoredAggregatesAndCallback(std::move(scored_visits),
                                     std::move(callback));
     return;

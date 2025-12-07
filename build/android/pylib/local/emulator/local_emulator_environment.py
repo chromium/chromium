@@ -57,7 +57,6 @@ class LocalEmulatorEnvironment(local_device_environment.LocalDeviceEnvironment):
                    writable_system=self._writable_system,
                    debug_tags=self._emulator_debug_tags,
                    enable_network=self._emulator_enable_network,
-                   require_fast_start=True,
                    retries=2)
       except avd.AvdStartException as e:
         exception_recorder.register(e)

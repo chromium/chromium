@@ -10,11 +10,13 @@
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
+#include "base/strings/string_view_util.h"
 
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  if (size < 2)
+  if (size < 2) {
     return 0;
+  }
 
   // SAFETY: required from fuzzer.
   auto all_input = UNSAFE_BUFFERS(base::span<const uint8_t>(data, size));

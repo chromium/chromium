@@ -39,7 +39,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 // https://github.com/include-what-you-use/include-what-you-use/issues/1546
-// IWYU pragma: no_forward_declare WTF::internal::__thisIsHereToForceASemicolonAfterThisMacro
+// IWYU pragma: no_forward_declare internal::__thisIsHereToForceASemicolonAfterThisMacro
 
 // IWYU pragma: no_include "third_party/blink/renderer/platform/heap/visitor.h"
 
@@ -149,8 +149,9 @@ enum class ColorParseResult {
   // The string identified the current color.
   kCurrentColor,
 
-  // The string contains a color-mix function, which may contain current color.
-  kColorMix,
+  // The string contains a color-mix or relative color function, which may
+  // contain currentcolor.
+  kColorFunction,
 
   // Parsing failed.
   kParseFailed
@@ -158,11 +159,11 @@ enum class ColorParseResult {
 
 // Parses the canvas color string and returns the result. If the result is
 // `kParsedColor`, `parsed_color` is set appropriately.
-ColorParseResult ParseCanvasColorString(
-    const String& color_string,
-    mojom::blink::ColorScheme color_scheme,
-    Color& parsed_color,
-    const ui::ColorProvider* color_provider);
+ColorParseResult ParseCanvasColorString(const String& color_string,
+                                        mojom::blink::ColorScheme color_scheme,
+                                        Color& parsed_color,
+                                        const ui::ColorProvider* color_provider,
+                                        bool is_in_web_app_scope);
 
 // Parses the canvas color string, returning true on success. If `color_string`
 // indicates the current color should be used, `parsed_color` is set to black.

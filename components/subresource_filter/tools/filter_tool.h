@@ -53,9 +53,8 @@ class FilterTool {
 
   // Like Match, but instead of writing the result of each request, it writes
   // the set of matched rules and their match counts (in descending order) to
-  // |output_|. Use |min_match_count| to filter the list of written rules to
-  // those that were matched at least |min_match_count| times.
-  void MatchRules(std::istream* request_stream, int min_match_count);
+  // |output_|.
+  void MatchRules(std::istream* request_stream);
 
  private:
   void PrintResult(bool blocked,
@@ -70,9 +69,7 @@ class FilterTool {
       std::string_view type,
       bool* blocked);
 
-  void MatchBatchImpl(std::istream* request_stream,
-                      bool print_each_request,
-                      int min_match_count);
+  void MatchBatchImpl(std::istream* request_stream, bool print_each_request);
 
   scoped_refptr<const subresource_filter::MemoryMappedRuleset> ruleset_;
   std::ostream* output_;

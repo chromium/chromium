@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './strings.m.js';
+import '/strings.m.js';
 import './unguessable_token.mojom-lite.js';
 import './file_system_access_transfer_token.mojom-lite.js';
 import './url.mojom-lite.js';
@@ -11,7 +11,8 @@ import {assertCast, MessagePipe} from '//system_apps/message_pipe.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
 import * as error_reporter from './error_reporter.js';
-import {DeleteFileMessage, EditInPhotosMessage, FileContext, IsFileArcWritableMessage, IsFileBrowserWritableMessage, LoadFilesMessage, Message, NavigateMessage, NotifyCurrentFileMessage, OpenAllowedFileMessage, OpenAllowedFileResponse, OpenFilesWithPickerMessage, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileMessage, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.js';
+import type {DeleteFileMessage, EditInPhotosMessage, FileContext, IsFileArcWritableMessage, IsFileBrowserWritableMessage, LoadFilesMessage, NavigateMessage, NotifyCurrentFileMessage, OpenAllowedFileMessage, OpenAllowedFileResponse, OpenFilesWithPickerMessage, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileMessage, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.js';
+import {Message, RenameResult} from './message_types.js';
 import {mediaAppPageHandler} from './mojo_api_bootstrap.js';
 
 // TODO(b/319570394): Replace these.
@@ -122,10 +123,9 @@ let appTitle: string|undefined;
 
 /**
  * The current sort order.
- * TODO(crbug.com/40384768): Match the file manager order when launched that way.
  * Note currently this is reassigned in tests.
  */
-// eslint-disable-next-line prefer-const
+
 let sortOrder = SortOrder.A_FIRST;
 
 /**

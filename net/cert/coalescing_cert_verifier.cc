@@ -4,14 +4,14 @@
 
 #include "net/cert/coalescing_cert_verifier.h"
 
+#include <algorithm>
+
 #include "base/containers/linked_list.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "net/base/net_errors.h"
@@ -77,11 +77,12 @@ base::Value::Dict CertVerifierParams(
   dict.Set("certificates",
            NetLogX509CertificateList(params.certificate().get()));
   if (!params.ocsp_response().empty()) {
-    dict.Set("ocsp_response",
+    dict.Set("stapled_ocsp_response",
              bssl::PEMEncode(params.ocsp_response(), "NETLOG OCSP RESPONSE"));
   }
   if (!params.sct_list().empty()) {
-    dict.Set("sct_list", bssl::PEMEncode(params.sct_list(), "NETLOG SCT LIST"));
+    dict.Set("tls_sct_list",
+             bssl::PEMEncode(params.sct_list(), "NETLOG SCT LIST"));
   }
   dict.Set("host", NetLogStringValue(params.hostname()));
   dict.Set("verifier_flags", params.flags());
@@ -437,6 +438,19 @@ int CoalescingCertVerifier::Verify(
   return ERR_IO_PENDING;
 }
 
+void CoalescingCertVerifier::Verify2QwacBinding(
+    const std::string& binding,
+    const std::string& hostname,
+    const scoped_refptr<X509Certificate>& tls_cert,
+    base::OnceCallback<void(const scoped_refptr<X509Certificate>&)> callback,
+    const NetLogWithSource& net_log) {
+  // 2-QWAC binding verification isn't coalesced.  This isn't performance
+  // critical and if we wanted to coalesce, it would make more sense to do at
+  // the 2-QWAC link header processing layer.
+  verifier_->Verify2QwacBinding(binding, hostname, tls_cert,
+                                std::move(callback), net_log);
+}
+
 void CoalescingCertVerifier::SetConfig(const CertVerifier::Config& config) {
   verifier_->SetConfig(config);
 
@@ -471,8 +485,8 @@ void CoalescingCertVerifier::RemoveJob(Job* job) {
 
   // Otherwise, it MUST have been a job from a previous generation.
   auto inflight_it =
-      base::ranges::find_if(inflight_jobs_, base::MatchesUniquePtr(job));
-  CHECK(inflight_it != inflight_jobs_.end(), base::NotFatalUntil::M130);
+      std::ranges::find_if(inflight_jobs_, base::MatchesUniquePtr(job));
+  CHECK(inflight_it != inflight_jobs_.end());
   inflight_jobs_.erase(inflight_it);
   return;
 }

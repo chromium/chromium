@@ -85,16 +85,24 @@ class RequestHandler:
         # Put the import map before the first script tag.
         html = html.replace('<script', IMPORT_MAP + '<script')
 
+        strings = self._load_grd_strings()
+
+        def i18n_replace(m: re.Match):
+            return strings.get(m.group(1), '')
+
+        # Replace the i18n title that is used.
+        html = re.sub(r'\$i18n\{(\w+)\}', i18n_replace, html)
+
         return html
 
     def _transform_js(self, request_path: _RequestPath, js: str) -> str:
         return _stub_chrome_url(request_path, js)
 
-    def _transform_init_js(self, request_path: _RequestPath, js: str) -> str:
+    def _transform_platforms_index_js(self, request_path: _RequestPath,
+                                      js: str) -> str:
         # TODO(pihsun): The inline source would still be wrong, have some hacky
         # way to fix that too.
-        js = js.replace("'./platforms/swa/handler.js'",
-                        "'./platforms/dev/handler.js'")
+        js = js.replace("'./swa/handler.js'", "'./dev/handler.js'")
         return self._transform_js(request_path, js)
 
     def _load_grd_strings(self) -> dict[str, str]:
@@ -209,13 +217,14 @@ class RequestHandler:
             _Route(re.compile(r"static/.*"), self._handle_static_file),
             # images.js are dynamically generated from images.
             _Route(_RequestPath("images/images.js"), self._handle_images_js),
-            # init.js needs special transform to change the platform used.
+            # platforms/index.js needs special transform to change the platform
+            # used.
             _Route(
-                _RequestPath("init.js"),
+                _RequestPath("platforms/index.js"),
                 functools.partial(
                     self._handle_static_file,
                     root=self._tsc_root,
-                    transform=self._transform_init_js,
+                    transform=self._transform_platforms_index_js,
                 ),
             ),
             # platforms/dev/strings.js is for strings in dev server.

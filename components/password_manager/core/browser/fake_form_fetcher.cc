@@ -89,7 +89,7 @@ base::span<const PasswordForm> FakeFormFetcher::GetAllRelevantMatches() const {
 }
 
 base::span<const PasswordForm> FakeFormFetcher::GetBestMatches() const {
-  return base::make_span(best_matches_);
+  return base::span(best_matches_);
 }
 
 const PasswordForm* FakeFormFetcher::GetPreferredMatch() const {
@@ -105,12 +105,15 @@ FakeFormFetcher::GetPreferredOrPotentialMatchedFormType() const {
 }
 
 std::unique_ptr<FormFetcher> FakeFormFetcher::Clone() {
-  return std::make_unique<FakeFormFetcher>();
+  auto fetcher = std::make_unique<FakeFormFetcher>();
+  fetcher->SetBestMatches(best_matches_);
+  fetcher->SetNonFederated(non_federated_);
+  return fetcher;
 }
 
 void FakeFormFetcher::SetNonFederated(
     const std::vector<PasswordForm>& non_federated) {
-  CHECK(base::ranges::all_of(
+  CHECK(std::ranges::all_of(
       non_federated, [this](auto& form) { return form.scheme == scheme_; }));
   SetNonFederated(non_federated, non_federated);
 }
@@ -128,6 +131,10 @@ void FakeFormFetcher::SetBestMatches(
 }
 void FakeFormFetcher::SetBlocklisted(bool is_blocklisted) {
   is_blocklisted_ = is_blocklisted;
+}
+
+bool FakeFormFetcher::HasConsumers() {
+  return !consumers_.empty();
 }
 
 void FakeFormFetcher::NotifyFetchCompleted() {

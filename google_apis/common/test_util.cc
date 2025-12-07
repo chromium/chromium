@@ -55,7 +55,7 @@ void RunAndQuit(base::RunLoop* run_loop, base::OnceClosure closure) {
 }
 
 bool WriteStringToFile(const base::FilePath& file_path,
-                       const std::string& content) {
+                       std::string_view content) {
   return base::WriteFile(file_path, content);
 }
 
@@ -116,8 +116,9 @@ std::unique_ptr<net::test_server::HttpResponse> HandleDownloadFileRequest(
 
   GURL absolute_url = base_url.Resolve(request.relative_url);
   std::string remaining_path;
-  if (!RemovePrefix(absolute_url.path(), "/files/", &remaining_path))
+  if (!RemovePrefix(absolute_url.GetPath(), "/files/", &remaining_path)) {
     return nullptr;
+  }
   return CreateHttpResponseFromFile(GetTestFilePath(remaining_path));
 }
 

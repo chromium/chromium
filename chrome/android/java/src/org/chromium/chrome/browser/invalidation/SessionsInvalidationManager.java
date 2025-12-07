@@ -11,15 +11,17 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper;
 
 /**
- * Class responsible for managing registration for invalidations for noisy sync
- * data types such as SESSIONS on Android. It keeps track of how many recent
- * pages tab open and register/unregister for SESSIONS invalidation accordingly.
- * It should be used only from the UI thread.
+ * Class responsible for managing registration for invalidations for noisy sync data types such as
+ * SESSIONS on Android. It keeps track of how many recent pages tab open and register/unregister for
+ * SESSIONS invalidation accordingly. It should be used only from the UI thread.
  */
+@NullMarked
 public class SessionsInvalidationManager implements ApplicationStatus.ApplicationStateListener {
     /**
      * The amount of time after the RecentTabsPage is opened to register for session sync
@@ -36,7 +38,7 @@ public class SessionsInvalidationManager implements ApplicationStatus.Applicatio
     /** Used to call native code that enables and disables session invalidations. */
     private final Profile mProfile;
 
-    private static SessionsInvalidationManager sInstance;
+    private static @MonotonicNonNull SessionsInvalidationManager sInstance;
 
     /** Whether session sync invalidations are enabled. */
     private boolean mIsSessionInvalidationsEnabled;

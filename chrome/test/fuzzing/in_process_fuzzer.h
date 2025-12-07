@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/test/base/in_process_browser_test.h"
 
 enum class RunLoopTimeoutBehavior {
@@ -88,6 +89,11 @@ class InProcessFuzzer : virtual public InProcessBrowserTest {
   // prepended automatically.
   virtual base::CommandLine::StringVector GetChromiumCommandLineArguments();
 
+  // Override if (unusually) your fuzzer should use Chromium in multi-
+  // process mode. This can make results more realistic, but impedes
+  // collection of coverage from the renderer.
+  virtual bool UseSingleProcessMode();
+
  protected:
   // Callback to actually do your fuzzing. This is called from the UI thread,
   // so you should take care not to block the thread too long. If you need
@@ -112,6 +118,10 @@ class InProcessFuzzer : virtual public InProcessBrowserTest {
   // cause a UaF, so this pattern can probably be improved in future.
   void DeclareInfiniteLoop() { exit_after_fuzz_case_ = true; }
 
+  // Whether we're in corpus merging mode. Some fuzzers behave specially
+  // in this mode for efficiency reasons.
+  bool InMergeMode() const;
+
  private:
   int DoFuzz(const uint8_t* data, size_t size);
 
@@ -127,6 +137,8 @@ class InProcessFuzzer : virtual public InProcessBrowserTest {
   std::vector<std::string> libfuzzer_command_line_;
   bool exit_after_fuzz_case_ = false;
   InProcessFuzzerOptions options_;
+  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
 };
 
 class InProcessFuzzerFactoryBase {

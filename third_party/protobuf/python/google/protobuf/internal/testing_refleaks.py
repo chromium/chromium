@@ -1,32 +1,9 @@
 # Protocol Buffers - Google's data interchange format
 # Copyright 2008 Google Inc.  All rights reserved.
-# https://developers.google.com/protocol-buffers/
 #
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are
-# met:
-#
-#     * Redistributions of source code must retain the above copyright
-# notice, this list of conditions and the following disclaimer.
-#     * Redistributions in binary form must reproduce the above
-# copyright notice, this list of conditions and the following disclaimer
-# in the documentation and/or other materials provided with the
-# distribution.
-#     * Neither the name of Google Inc. nor the names of its
-# contributors may be used to endorse or promote products derived from
-# this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-# OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file or at
+# https://developers.google.com/open-source/licenses/bsd
 
 """A subclass of unittest.TestCase which checks for reference leaks.
 
@@ -60,6 +37,9 @@ class LocalTestResult(unittest.TestResult):
   def addSkip(self, test, reason):
     pass
 
+  def addDuration(self, test, duration):
+    pass
+
 
 class ReferenceLeakCheckerMixin(object):
   """A mixin class for TestCase, which checks reference counts."""
@@ -82,11 +62,13 @@ class ReferenceLeakCheckerMixin(object):
     super(ReferenceLeakCheckerMixin, self).run(result=result)
     super(ReferenceLeakCheckerMixin, self).run(result=result)
 
-    oldrefcount = 0
     local_result = LocalTestResult(result)
     num_flakes = 0
-
     refcount_deltas = []
+
+    # Observe the refcount, then create oldrefcount which actually makes the
+    # refcount 1 higher than the recorded value immediately
+    oldrefcount = self._getRefcounts()
     while len(refcount_deltas) < self.NB_RUNS:
       oldrefcount = self._getRefcounts()
       super(ReferenceLeakCheckerMixin, self).run(result=local_result)
@@ -110,6 +92,10 @@ class ReferenceLeakCheckerMixin(object):
       result.addError(self, sys.exc_info())
 
   def _getRefcounts(self):
+    if hasattr(sys, "_clear_internal_caches"):  # Since 3.13
+      sys._clear_internal_caches()  # pylint: disable=protected-access
+    else:
+      sys._clear_type_cache()  # pylint: disable=protected-access
     copyreg.dispatch_table.clear()
     copyreg.dispatch_table.update(self._saved_pickle_registry)
     # It is sometimes necessary to gc.collect() multiple times, to ensure

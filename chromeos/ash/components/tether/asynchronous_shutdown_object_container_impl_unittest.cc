@@ -22,7 +22,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::Invoke;
 using testing::NiceMock;
 using testing::Return;
 
@@ -40,7 +39,6 @@ class FakeRemoteDeviceProviderFactory
 
   // device_sync::RemoteDeviceProviderImpl::Factory:
   std::unique_ptr<device_sync::RemoteDeviceProvider> CreateInstance(
-      device_sync::CryptAuthDeviceManager* device_manager,
       device_sync::CryptAuthV2DeviceManager* v2_device_manager,
       const std::string& user_email,
       const std::string& user_private_key) override {

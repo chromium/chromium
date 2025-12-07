@@ -13,13 +13,17 @@
               "builder_group": "chromium.gpu.fyi",
               "execution_mode": "TEST",
               "legacy_android_config": {
-                "config": "arm64_builder_rel_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
                 "apply_configs": [
+                  "mb",
                   "download_xr_test_apks"
                 ],
-                "config": "android",
+                "build_config": "Release",
+                "config": "main_builder",
+                "target_arch": "arm",
+                "target_bits": 64,
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
@@ -46,13 +50,17 @@
               "builder_group": "chromium.gpu.fyi",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
-                "config": "arm64_builder_rel_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
                 "apply_configs": [
+                  "mb",
                   "download_xr_test_apks"
                 ],
-                "config": "android",
+                "build_config": "Release",
+                "config": "main_builder",
+                "target_arch": "arm",
+                "target_bits": 64,
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
@@ -81,7 +89,8 @@
           "builder": "gpu-fyi-try-android-pixel-6-64",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Android FYI Release (Pixel 6)/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

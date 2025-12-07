@@ -5,17 +5,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_VIDEO_RENDERER_SINK_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_VIDEO_RENDERER_SINK_H_
 
-#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
-#include "third_party/blink/public/common/media/video_capture.h"
-#include "third_party/blink/public/platform/modules/mediastream/web_media_stream_video_renderer.h"
+#include "third_party/blink/public/platform/media/video_capture.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_video_renderer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
-#include "ui/gfx/geometry/size.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -23,7 +21,7 @@ class SingleThreadTaskRunner;
 
 namespace blink {
 
-// MediaStreamVideoRendererSink is a WebMediaStreamVideoRenderer designed
+// MediaStreamVideoRendererSink is a MediaStreamVideoRenderer designed
 // for rendering Video MediaStreamTracks [1], MediaStreamVideoRendererSink
 // implements MediaStreamVideoSink in order to render video frames provided from
 // a MediaStreamVideoTrack, to which it connects itself when the
@@ -36,12 +34,12 @@ namespace blink {
 // https://src.chromium.org/viewvc/chrome/trunk/src/content/renderer/media/rtc_
 // video_decoder_unittest.cc?revision=180591&view=markup
 class MODULES_EXPORT MediaStreamVideoRendererSink
-    : public WebMediaStreamVideoRenderer,
+    : public MediaStreamVideoRenderer,
       public MediaStreamVideoSink {
  public:
   MediaStreamVideoRendererSink(
       MediaStreamComponent* video_component,
-      const WebMediaStreamVideoRenderer::RepaintCB& repaint_cb,
+      const MediaStreamVideoRenderer::RepaintCB& repaint_cb,
       scoped_refptr<base::SequencedTaskRunner> video_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> main_render_task_runner);
 
@@ -49,7 +47,7 @@ class MODULES_EXPORT MediaStreamVideoRendererSink
   MediaStreamVideoRendererSink& operator=(const MediaStreamVideoRendererSink&) =
       delete;
 
-  // WebMediaStreamVideoRenderer implementation. Called on the main
+  // MediaStreamVideoRenderer implementation. Called on the main
   // thread.
   void Start() override;
   void Stop() override;

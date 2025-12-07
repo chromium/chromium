@@ -5,20 +5,28 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_GLOBAL_INDEXED_DB_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_GLOBAL_INDEXED_DB_H_
 
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
+class ExecutionContext;
 class IDBFactory;
-class LocalDOMWindow;
-class WorkerGlobalScope;
 
-class GlobalIndexedDB {
-  STATIC_ONLY(GlobalIndexedDB);
-
+class GlobalIndexedDB final : public GarbageCollected<GlobalIndexedDB>,
+                              public GarbageCollectedMixin {
  public:
-  static IDBFactory* indexedDB(LocalDOMWindow&);
-  static IDBFactory* indexedDB(WorkerGlobalScope&);
+  static IDBFactory* indexedDB(ExecutionContext&);
+  IDBFactory* IdbFactory(ExecutionContext&);
+
+  GlobalIndexedDB() = default;
+
+  void Trace(Visitor* visitor) const override;
+
+ private:
+  static GlobalIndexedDB& From(ExecutionContext&);
+
+  Member<IDBFactory> idb_factory_;
 };
 
 }  // namespace blink

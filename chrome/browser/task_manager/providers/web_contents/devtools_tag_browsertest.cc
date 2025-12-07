@@ -6,6 +6,7 @@
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/task_manager/mock_web_contents_task_manager.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tags_manager.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -37,7 +38,7 @@ class DevToolsTagTest : public InProcessBrowserTest {
 
   DevToolsTagTest(const DevToolsTagTest&) = delete;
   DevToolsTagTest& operator=(const DevToolsTagTest&) = delete;
-  ~DevToolsTagTest() override {}
+  ~DevToolsTagTest() override = default;
 
   void LoadTestPage(const std::string& test_page) {
     GURL url = embedded_test_server()->GetURL(test_page);
@@ -58,6 +59,10 @@ class DevToolsTagTest : public InProcessBrowserTest {
   }
 
  private:
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
   raw_ptr<DevToolsWindow, AcrossTasksDanglingUntriaged> devtools_window_;
 };
 

@@ -24,7 +24,6 @@ struct BLINK_COMMON_EXPORT AdSize {
   AdSize& operator=(const AdSize&);
   AdSize& operator=(AdSize&&);
   bool operator==(const AdSize& other) const;
-  bool operator!=(const AdSize& other) const;
   bool operator<(const AdSize& other) const;
   ~AdSize();
 
@@ -43,8 +42,9 @@ struct BLINK_COMMON_EXPORT AdDescriptor {
   AdDescriptor& operator=(const AdDescriptor&);
   AdDescriptor& operator=(AdDescriptor&&);
   bool operator==(const AdDescriptor&) const;
-  bool operator!=(const AdDescriptor&) const;
   ~AdDescriptor();
+
+  bool operator<(const AdDescriptor& other) const;
 
   GURL url;
   std::optional<AdSize> size;

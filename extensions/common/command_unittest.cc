@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/common/command.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -19,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -98,6 +95,7 @@ void CheckParse(const ConstCommandsTestData& data,
   }
 }
 
+// Tests parsing of various valid and invalid command shortcuts.
 TEST(CommandTest, ExtensionCommandParsing) {
   const ui::Accelerator none = ui::Accelerator();
   const ui::Accelerator shift_f =
@@ -136,7 +134,7 @@ TEST(CommandTest, ExtensionCommandParsing) {
   const ui::Accelerator stop =
       ui::Accelerator(ui::VKEY_MEDIA_STOP, ui::EF_NONE);
 
-  ConstCommandsTestData kTests[] = {
+  static const auto kTests = std::to_array<ConstCommandsTestData>({
       // Negative test (one or more missing required fields). We don't need to
       // test |command_name| being blank as it is used as a key in the manifest,
       // so it can't be blank (and we CHECK() when it is). A blank shortcut is
@@ -194,18 +192,20 @@ TEST(CommandTest, ExtensionCommandParsing) {
       {false, none, "_execute_browser_action", "MediaNextTrack", ""},
       {false, none, "_execute_page_action", "MediaPrevTrack", ""},
       {false, none, "command", "Ctrl+Shift+MediaPrevTrack", "description"},
-  };
+  });
   std::vector<std::string> all_platforms;
   all_platforms.push_back("default");
   all_platforms.push_back("chromeos");
   all_platforms.push_back("linux");
   all_platforms.push_back("mac");
   all_platforms.push_back("windows");
-
-  for (size_t i = 0; i < std::size(kTests); ++i)
+  for (size_t i = 0; i < std::size(kTests); ++i) {
     CheckParse(kTests[i], i, false, all_platforms);
+  }
 }
 
+// Tests that commands correctly fall back to the "default" suggested key
+// if no platform-specific key is provided.
 TEST(CommandTest, ExtensionCommandParsingFallback) {
   std::string description = "desc";
   std::string command_name = "foo";
@@ -239,12 +239,9 @@ TEST(CommandTest, ExtensionCommandParsingFallback) {
 #elif BUILDFLAG(IS_CHROMEOS)
   ui::Accelerator accelerator(ui::VKEY_C,
                               ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
-#elif BUILDFLAG(IS_LINUX)
-  ui::Accelerator accelerator(ui::VKEY_L,
-                              ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
-#elif BUILDFLAG(IS_FUCHSIA)
-  // TODO(crbug.com/40220501): Change this once we decide on a unique platform
-  // key for Fuchsia.
+  // TODO(https://crbug.com/356905053): Should this be ChromeOS keybindings?
+
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_DESKTOP_ANDROID)
   ui::Accelerator accelerator(ui::VKEY_L,
                               ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
 #else
@@ -299,33 +296,174 @@ TEST(CommandTest, ExtensionCommandParsingFallback) {
 }
 
 TEST(CommandTest, ExtensionCommandParsingPlatformSpecific) {
+  // Tests that platform-specific keys such as "Search" (Chrome OS) and
+  // "Option" (Mac) are correctly parsed for their respective platforms
+  // and rejected on others.
   ui::Accelerator search_a(ui::VKEY_A, ui::EF_COMMAND_DOWN);
   ui::Accelerator search_shift_z(ui::VKEY_Z,
                                  ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN);
 
-  ConstCommandsTestData kChromeOsTests[] = {
+  const auto kChromeOsTests = std::to_array<ConstCommandsTestData>({
       {true, search_shift_z, "command", "Search+Shift+Z", "description"},
       {true, search_a, "command", "Search+A", "description"},
       // Command is not valid on Chrome OS.
       {false, search_shift_z, "command", "Command+Shift+Z", "description"},
-  };
+  });
 
   std::vector<std::string> chromeos;
   chromeos.push_back("chromeos");
-  for (size_t i = 0; i < std::size(kChromeOsTests); ++i)
+  for (size_t i = 0; i < std::size(kChromeOsTests); ++i) {
     CheckParse(kChromeOsTests[i], i, true, chromeos);
+  }
 
-  ConstCommandsTestData kNonChromeOsSearchTests[] = {
+  const auto kNonChromeOsSearchTests = std::to_array<ConstCommandsTestData>({
       {false, search_shift_z, "command", "Search+Shift+Z", "description"},
-  };
+  });
   std::vector<std::string> non_chromeos;
   non_chromeos.push_back("default");
   non_chromeos.push_back("windows");
   non_chromeos.push_back("mac");
   non_chromeos.push_back("linux");
 
-  for (size_t i = 0; i < std::size(kNonChromeOsSearchTests); ++i)
+  for (size_t i = 0; i < kNonChromeOsSearchTests.size(); ++i) {
     CheckParse(kNonChromeOsSearchTests[i], i, true, non_chromeos);
+  }
+#if BUILDFLAG(IS_MAC)
+  ui::Accelerator alt_g(ui::VKEY_G, ui::EF_ALT_DOWN);
+  ui::Accelerator mac_ctrl_h(ui::VKEY_H, ui::EF_CONTROL_DOWN);
+  const auto kMacTests = std::to_array<ConstCommandsTestData>({
+      // Test that Option is considered the same as Alt on Mac.
+      {true, alt_g, "command", "Option+G", "description"},
+      // Test that MacCtrl is correctly parsed as Ctrl.
+      {true, mac_ctrl_h, "command", "MacCtrl+H", "description"},
+  });
+
+  std::vector<std::string> mac;
+  mac.push_back("mac");
+
+  for (size_t i = 0; i < std::size(kMacTests); ++i) {
+    CheckParse(kMacTests[i], i, true, mac);
+  }
+#endif  // BUILDFLAG(IS_MAC)
 }
+
+#if !BUILDFLAG(IS_MAC)
+
+// Tests that Command and Option keys are rejected on non-Mac platforms when
+// specified for platform-specific keys.
+TEST(CommandTest, ExtensionCommandParsingInvalidPlatformForCommandOption) {
+  extensions::Command command;
+  base::Value::Dict input;
+  std::u16string error;
+  std::string description = "desc";
+  std::string command_name = "foo";
+  std::string platform = extensions::Command::CommandPlatform();
+
+  input.Set("description", description);
+
+  error.clear();
+  base::Value::Dict key_dict_cmd;
+  key_dict_cmd.Set(platform, "Command+G");
+  input.Set("suggested_key", key_dict_cmd.Clone());
+  EXPECT_FALSE(command.Parse(input, command_name, 0, &error));
+  EXPECT_TRUE(base::Contains(error, u"Command key is not supported"));
+
+  error.clear();
+  base::Value::Dict key_dict_opt;
+  key_dict_opt.Set(platform, "Option+H");
+  input.Set("suggested_key", key_dict_opt.Clone());
+  EXPECT_FALSE(command.Parse(input, command_name, 0, &error));
+  EXPECT_TRUE(base::Contains(error, u"Option key is not supported"));
+}
+
+// Tests that Command and Option keys are rejected on non-Mac platforms when
+// specified for the "default" platform key.
+TEST(CommandTest, ExtensionCommandParsingDefaultNonMacForCommandOption) {
+  extensions::Command command;
+  base::Value::Dict input;
+  std::u16string error;
+  std::string description = "desc";
+  std::string command_name = "foo";
+
+  input.Set("description", description);
+
+  error.clear();
+  base::Value::Dict key_dict_cmd_default;
+  key_dict_cmd_default.Set("default", "Command+G");
+  input.Set("suggested_key", key_dict_cmd_default.Clone());
+  EXPECT_FALSE(command.Parse(input, command_name, 0, &error));
+  EXPECT_TRUE(base::Contains(error, u"Command key is not supported"));
+
+  error.clear();
+  base::Value::Dict key_dict_opt_default;
+  key_dict_opt_default.Set("default", "Option+H");
+  input.Set("suggested_key", key_dict_opt_default.Clone());
+  EXPECT_FALSE(command.Parse(input, command_name, 0, &error));
+  EXPECT_TRUE(base::Contains(error, u"Option key is not supported"));
+}
+
+// Tests that Command and Option keys as substrings are not rejected on non-Mac
+// platforms.
+TEST(CommandTest, ExtensionCommandParsingSubstringCommandOption) {
+  extensions::Command command;
+  base::Value::Dict input;
+  std::u16string error;
+  std::string description = "desc";
+  std::string command_name = "foo";
+
+  input.Set("description", description);
+
+  // Fails because "NotACommand" is not a valid key. This is the expected
+  // behavior.
+  error.clear();
+  base::Value::Dict key_dict_cmd_default;
+  key_dict_cmd_default.Set("default", "Ctrl+NotACommand");
+  input.Set("suggested_key", key_dict_cmd_default.Clone());
+  EXPECT_FALSE(command.Parse(input, command_name, 0, &error));
+  EXPECT_FALSE(base::Contains(error, u"Command key is not supported"));
+
+  // Fails because "NotAnOption" is not a valid key. This is the expected
+  // behavior.
+  error.clear();
+  base::Value::Dict key_dict_opt_default;
+  key_dict_opt_default.Set("default", "Ctrl+NotAnOption");
+  input.Set("suggested_key", key_dict_opt_default.Clone());
+  EXPECT_FALSE(command.Parse(input, command_name, 0, &error));
+  EXPECT_FALSE(base::Contains(error, u"Option key is not supported"));
+}
+#endif  // !BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_MAC)
+
+// Tests that when normalization occurs on Mac, the error message contains the
+// original value provided by the developer, not the normalized value.
+TEST(CommandTest, ExtensionCommandParsingNormalizedError) {
+  extensions::Command command;
+  base::Value::Dict input;
+  std::u16string error;
+  std::string description = "desc";
+  std::string command_name = "foo";
+
+  input.Set("description", description);
+
+  base::Value::Dict key_dict;
+  // This is an intentional invalid shortcut for Mac, and is used to test that
+  // the error message contains the original, non-normalized values.
+  std::string invalid_shortcut = "Command+Option+Z";
+  key_dict.Set("mac", invalid_shortcut);
+  // Add a default to ensure that parsing continues to other platforms on
+  // non-Mac builds.
+  key_dict.Set("default", "Ctrl+Shift+F");
+  input.Set("suggested_key", std::move(key_dict));
+
+  EXPECT_FALSE(command.Parse(input, command_name, 0, &error));
+
+  // The error message should contain the original, un-normalized string.
+  EXPECT_TRUE(base::Contains(error, base::ASCIIToUTF16(invalid_shortcut)))
+      << " expected error to contain '" << invalid_shortcut << "', but was '"
+      << base::UTF16ToASCII(error) << "'";
+  EXPECT_FALSE(base::Contains(error, u"Command+Alt+Z"));
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace extensions

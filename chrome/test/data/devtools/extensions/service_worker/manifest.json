@@ -4,5 +4,8 @@
     "manifest_version": 3,
     "background": {
         "service_worker": "service_worker.js"
-    }
+    },
+    "permissions": [
+        "storage"
+    ]
 }

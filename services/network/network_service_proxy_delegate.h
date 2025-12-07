@@ -5,12 +5,13 @@
 #ifndef SERVICES_NETWORK_NETWORK_SERVICE_PROXY_DELEGATE_H_
 #define SERVICES_NETWORK_NETWORK_SERVICE_PROXY_DELEGATE_H_
 
-#include <deque>
-
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/expected.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/completion_once_callback.h"
+#include "net/base/net_errors.h"
 #include "net/base/proxy_delegate.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -52,16 +53,21 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
   void OnSuccessfulRequestAfterFailures(
       const net::ProxyRetryInfoMap& proxy_retry_info) override;
   void OnFallback(const net::ProxyChain& bad_chain, int net_error) override;
-  net::Error OnBeforeTunnelRequest(
+  base::expected<net::HttpRequestHeaders, net::Error> OnBeforeTunnelRequest(
       const net::ProxyChain& proxy_chain,
       size_t chain_index,
-      net::HttpRequestHeaders* extra_headers) override;
+      OnBeforeTunnelRequestCallback callback) override;
   net::Error OnTunnelHeadersReceived(
       const net::ProxyChain& proxy_chain,
       size_t chain_index,
-      const net::HttpResponseHeaders& response_headers) override;
+      const net::HttpResponseHeaders& response_headers,
+      net::CompletionOnceCallback callback) override;
   void SetProxyResolutionService(
       net::ProxyResolutionService* proxy_resolution_service) override;
+  bool AliasRequiresProxyOverride(
+      const std::string scheme,
+      const std::vector<std::string>& dns_aliases,
+      const net::NetworkAnonymizationKey& network_anonymization_key) override;
 
  private:
   friend class NetworkServiceProxyDelegateTest;

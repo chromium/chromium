@@ -4,13 +4,13 @@
 
 #include "media/mojo/services/watch_time_recorder.h"
 
+#include <algorithm>
 #include <cmath>
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "media/base/limits.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_decoder.h"
@@ -30,8 +30,7 @@ static void RecordWatchTimeInternal(
     base::TimeDelta value,
     base::TimeDelta minimum = kMinimumElapsedWatchTime) {
   DCHECK(!key.empty());
-  base::UmaHistogramCustomTimes(std::string(key), value, minimum,
-                                base::Hours(10), 50);
+  base::UmaHistogramCustomTimes(key, value, minimum, base::Hours(10), 50);
 }
 
 static void RecordMeanTimeBetweenRebuffers(std::string_view key,
@@ -46,13 +45,13 @@ static void RecordMeanTimeBetweenRebuffers(std::string_view key,
 static void RecordDiscardedWatchTime(std::string_view key,
                                      base::TimeDelta value) {
   DCHECK(!key.empty());
-  base::UmaHistogramCustomTimes(std::string(key), value, base::TimeDelta(),
+  base::UmaHistogramCustomTimes(key, value, base::TimeDelta(),
                                 kMinimumElapsedWatchTime, 50);
 }
 
 static void RecordRebuffersCount(std::string_view key, int underflow_count) {
   DCHECK(!key.empty());
-  base::UmaHistogramCounts100(std::string(key), underflow_count);
+  base::UmaHistogramCounts100(key, underflow_count);
 }
 
 WatchTimeRecorder::WatchTimeUkmRecord::WatchTimeUkmRecord(
@@ -64,11 +63,14 @@ WatchTimeRecorder::WatchTimeUkmRecord::WatchTimeUkmRecord(
 
 WatchTimeRecorder::WatchTimeUkmRecord::~WatchTimeUkmRecord() = default;
 
-WatchTimeRecorder::WatchTimeRecorder(mojom::PlaybackPropertiesPtr properties,
-                                     ukm::SourceId source_id,
-                                     bool is_top_frame,
-                                     uint64_t player_id)
-    : properties_(std::move(properties)),
+WatchTimeRecorder::WatchTimeRecorder(
+    PictureInPictureEventsInfo::AutoPipReasonCallback auto_pip_reason_cb,
+    mojom::PlaybackPropertiesPtr properties,
+    ukm::SourceId source_id,
+    bool is_top_frame,
+    MediaPlayerUkmId player_id)
+    : auto_pip_reason_cb_(std::move(auto_pip_reason_cb)),
+      properties_(std::move(properties)),
       source_id_(source_id),
       is_top_frame_(is_top_frame),
       player_id_(player_id),
@@ -79,6 +81,8 @@ WatchTimeRecorder::WatchTimeRecorder(mojom::PlaybackPropertiesPtr properties,
             kRebuffersCountAudioMse, kDiscardedWatchTimeAudioMse},
            {WatchTimeKey::kAudioEme, kMeanTimeBetweenRebuffersAudioEme,
             kRebuffersCountAudioEme, kDiscardedWatchTimeAudioEme},
+           {WatchTimeKey::kAudioHls, kMeanTimeBetweenRebuffersAudioHls,
+            kRebuffersCountAudioHls, kDiscardedWatchTimeAudioHls},
            {WatchTimeKey::kAudioVideoSrc,
             kMeanTimeBetweenRebuffersAudioVideoSrc,
             kRebuffersCountAudioVideoSrc, kDiscardedWatchTimeAudioVideoSrc},
@@ -87,7 +91,10 @@ WatchTimeRecorder::WatchTimeRecorder(mojom::PlaybackPropertiesPtr properties,
             kRebuffersCountAudioVideoMse, kDiscardedWatchTimeAudioVideoMse},
            {WatchTimeKey::kAudioVideoEme,
             kMeanTimeBetweenRebuffersAudioVideoEme,
-            kRebuffersCountAudioVideoEme, kDiscardedWatchTimeAudioVideoEme}}) {}
+            kRebuffersCountAudioVideoEme, kDiscardedWatchTimeAudioVideoEme},
+           {WatchTimeKey::kAudioVideoHls,
+            kMeanTimeBetweenRebuffersAudioVideoHls,
+            kRebuffersCountAudioVideoHls, kDiscardedWatchTimeAudioVideoHls}}) {}
 
 WatchTimeRecorder::~WatchTimeRecorder() {
   FinalizeWatchTime({});
@@ -97,6 +104,7 @@ WatchTimeRecorder::~WatchTimeRecorder() {
 void WatchTimeRecorder::RecordWatchTime(WatchTimeKey key,
                                         base::TimeDelta watch_time) {
   watch_time_info_[key] = watch_time;
+  MaybeRecordWatchTimeForAutoPipReason(key, watch_time);
 }
 
 void WatchTimeRecorder::FinalizeWatchTime(
@@ -114,15 +122,15 @@ void WatchTimeRecorder::FinalizeWatchTime(
     }
 
     // Report only certain keys to UMA and only if they have at met the minimum
-    // watch time requirement. Otherwise, for SRC/MSE/EME keys, log them to the
-    // discard metric.
+    // watch time requirement. Otherwise, for SRC/MSE/EME/HLS keys, log them to
+    // the discard metric.
     std::string_view key_str = ConvertWatchTimeKeyToStringForUma(kv.first);
     if (ShouldRecordUma() && !key_str.empty()) {
       if (kv.second >= kMinimumElapsedWatchTime) {
         RecordWatchTimeInternal(key_str, kv.second);
       } else if (kv.second.is_positive()) {
-        auto it = base::ranges::find(extended_metrics_keys_, kv.first,
-                                     &ExtendedMetricsKeyMap::watch_time_key);
+        auto it = std::ranges::find(extended_metrics_keys_, kv.first,
+                                    &ExtendedMetricsKeyMap::watch_time_key);
         if (it != extended_metrics_keys_.end())
           RecordDiscardedWatchTime(it->discard_key, kv.second);
       }
@@ -173,6 +181,7 @@ void WatchTimeRecorder::FinalizeWatchTime(
   underflow_count_ = completed_underflow_count_ = 0;
   underflow_duration_ = base::TimeDelta();
   watch_time_info_.clear();
+  current_auto_pip_reason_ = std::nullopt;
 }
 
 void WatchTimeRecorder::OnError(const PipelineStatus& status) {
@@ -338,7 +347,8 @@ void WatchTimeRecorder::RecordUkmPlaybackData() {
     builder.SetIsTopFrame(is_top_frame_);
     builder.SetIsBackground(properties_->is_background);
     builder.SetIsMuted(properties_->is_muted);
-    builder.SetPlayerID(player_id_);
+    builder.SetPlayerID(player_id_.value());
+    builder.SetRendererType(static_cast<int64_t>(properties_->renderer_type));
     if (clamped_duration_ms.has_value())
       builder.SetDuration(*clamped_duration_ms);
 
@@ -402,6 +412,9 @@ void WatchTimeRecorder::RecordUkmPlaybackData() {
                  kv.first == WatchTimeKey::kVideoDisplayPictureInPicture) {
         builder.SetWatchTime_DisplayPictureInPicture(
             kv.second.InMilliseconds());
+      } else if (kv.first == WatchTimeKey::kAudioVideoAutoPipMediaPlayback ||
+                 kv.first == WatchTimeKey::kAudioAutoPipMediaPlayback) {
+        builder.SetWatchTime_AutoPip(kv.second.InMilliseconds());
       }
     }
 
@@ -429,7 +442,7 @@ void WatchTimeRecorder::RecordUkmPlaybackData() {
     builder.SetVideoEncryptionScheme(static_cast<int64_t>(
         ukm_record.secondary_properties->video_encryption_scheme));
     builder.SetIsEME(properties_->is_eme);
-    builder.SetIsMSE(properties_->is_mse);
+    builder.SetIsMSE(properties_->demuxer_type == DemuxerType::kChunkDemuxer);
     builder.SetMediaStreamType(
         static_cast<int64_t>(properties_->media_stream_type));
     builder.SetLastPipelineStatus(pipeline_status_);
@@ -458,6 +471,43 @@ void WatchTimeRecorder::RecordUkmPlaybackData() {
 
 bool WatchTimeRecorder::ShouldRecordUma() const {
   return properties_->media_stream_type == mojom::MediaStreamType::kNone;
+}
+
+void WatchTimeRecorder::MaybeRecordWatchTimeForAutoPipReason(
+    WatchTimeKey key,
+    base::TimeDelta watch_time) {
+  if (key != WatchTimeKey::kAudioDisplayPictureInPicture &&
+      key != WatchTimeKey::kAudioVideoDisplayPictureInPicture) {
+    return;
+  }
+
+  if (!current_auto_pip_reason_.has_value()) {
+    // Note that the reason retrieved by `auto_pip_reason_cb_` may have changed
+    // from the time the `WatchTimeReporter` requests to record watch time and
+    // the time `this` receives the request. This can lead to sometimes
+    // under/overeporting Auto Picture in Picture watch time. For more details
+    // see the `WatchTimeRecorder::MaybeRecordWatchTimeForAutoPipReason` method
+    // description.
+    current_auto_pip_reason_ = auto_pip_reason_cb_.Run();
+  }
+
+  if ((current_auto_pip_reason_ !=
+       PictureInPictureEventsInfo::AutoPipReason::kMediaPlayback) &&
+      (current_auto_pip_reason_ !=
+       PictureInPictureEventsInfo::AutoPipReason::kBrowserInitiated)) {
+    return;
+  }
+
+  if (key == WatchTimeKey::kAudioVideoDisplayPictureInPicture) {
+    watch_time_info_[WatchTimeKey::kAudioVideoAutoPipMediaPlayback] =
+        watch_time;
+    return;
+  }
+
+  if (key == WatchTimeKey::kAudioDisplayPictureInPicture) {
+    watch_time_info_[WatchTimeKey::kAudioAutoPipMediaPlayback] = watch_time;
+    return;
+  }
 }
 
 WatchTimeRecorder::ExtendedMetricsKeyMap::ExtendedMetricsKeyMap(

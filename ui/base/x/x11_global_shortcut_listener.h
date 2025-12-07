@@ -9,6 +9,7 @@
 
 #include <set>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/platform/platform_event_dispatcher.h"

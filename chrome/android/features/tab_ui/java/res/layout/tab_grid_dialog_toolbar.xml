@@ -42,6 +42,7 @@ found in the LICENSE file.
             tools:ignore="Autofill,LabelFor"
             android:id="@+id/title"
             android:cursorVisible="false"
+            android:hint="@string/title"
             android:layout_height="@dimen/bottom_sheet_peek_height"
             android:layout_width="0dp"
             android:layout_weight="1"

@@ -7,11 +7,12 @@
 #include <string_view>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_reuse_detector_impl.h"
@@ -19,7 +20,6 @@
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/stub_credentials_filter.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -31,9 +31,11 @@ namespace password_manager {
 namespace {
 
 using ::testing::_;
+using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::IsEmpty;
 using ::testing::Return;
+using ::testing::UnorderedElementsAre;
 using ::testing::UnorderedElementsAreArray;
 
 PasswordForm CreateForm(
@@ -44,6 +46,7 @@ PasswordForm CreateForm(
   PasswordForm form;
   form.scheme = PasswordForm::Scheme::kHtml;
   form.signon_realm = std::string(signon_realm);
+  form.url = GURL(signon_realm);
   form.username_value = std::u16string(username);
   form.password_value = std::u16string(password);
   form.url = GURL(signon_realm);
@@ -56,11 +59,13 @@ PasswordForm CreateForm(
 }
 
 std::optional<PasswordHashData> GetPasswordFromPref(
+    os_crypt_async::Encryptor encryptor,
     const std::string& username,
     bool is_gaia_password,
     TestingPrefServiceSimple& prefs) {
-  HashPasswordManager hash_password_manager;
+  HashPasswordManager hash_password_manager(std::move(encryptor));
   hash_password_manager.set_prefs(&prefs);
+  hash_password_manager.set_local_prefs(&prefs);
 
   return hash_password_manager.RetrievePasswordHash(username, is_gaia_password);
 }
@@ -149,17 +154,14 @@ class MockPasswordReuseDetector : public PasswordReuseDetector {
 
 class PasswordReuseManagerImplTest : public testing::Test {
  public:
-  PasswordReuseManagerImplTest() = default;
+  PasswordReuseManagerImplTest()
+      : os_crypt_async_(os_crypt_async::GetTestOSCryptAsyncForTesting(
+            /*is_sync_for_unittests=*/true)),
+        reuse_manager_(os_crypt_async_.get()) {}
+
   ~PasswordReuseManagerImplTest() override = default;
 
   void SetUp() override {
-    // Mock OSCrypt. There is a call to OSCrypt on initializling
-    // PasswordReuseDetector, so it should be mocked.
-    OSCryptMocker::SetUp();
-
-    feature_list_.InitWithFeatures({features::kPasswordReuseDetectionEnabled},
-                                   {});
-
     prefs_.registry()->RegisterBooleanPref(prefs::kWereOldGoogleLoginsRemoved,
                                            false);
     prefs_.registry()->RegisterListPref(prefs::kPasswordHashDataList,
@@ -168,10 +170,10 @@ class PasswordReuseManagerImplTest : public testing::Test {
         prefs::kLocalPasswordHashDataList, PrefRegistry::NO_REGISTRATION_FLAGS);
     profile_store_ =
         base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
-    profile_store_->Init(&prefs_, /*affiliated_match_helper=*/nullptr);
+    profile_store_->Init(/*affiliated_match_helper=*/nullptr);
     account_store_ =
         base::MakeRefCounted<TestPasswordStore>(IsAccountStore(true));
-    account_store_->Init(&prefs_, /*affiliated_match_helper=*/nullptr);
+    account_store_->Init(/*affiliated_match_helper=*/nullptr);
   }
 
   void Initialize(bool should_mock_password_reuse_detector = false) {
@@ -203,7 +205,6 @@ class PasswordReuseManagerImplTest : public testing::Test {
   }
 
   void TearDown() override {
-    OSCryptMocker::TearDown();
     reuse_manager_.Shutdown();
     profile_store_->ShutdownOnUIThread();
     account_store_->ShutdownOnUIThread();
@@ -229,10 +230,27 @@ class PasswordReuseManagerImplTest : public testing::Test {
     return password_reuse_detector_;
   }
 
+  os_crypt_async::Encryptor CreateTestEncryptor() const {
+    // os_crypt_async::Encryptor doesn't have a public constructor, so use an
+    // optional to hold the null value until GetInstance() finishes.
+    std::optional<os_crypt_async::Encryptor> encryptor;
+    os_crypt_async_->GetInstance(base::BindLambdaForTesting(
+        [&](os_crypt_async::Encryptor new_encryptor) {
+          encryptor = std::move(new_encryptor);
+        }));
+    return std::move(*encryptor);
+  }
+
+  std::optional<PasswordHashData> ConvertToPasswordHashData(
+      const base::Value& dict) const {
+    HashPasswordManager hash_password_manager(CreateTestEncryptor());
+    return hash_password_manager.ConvertToPasswordHashData(dict);
+  }
+
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
   TestingPrefServiceSimple prefs_;
   TestingPrefServiceSimple local_prefs_;
   scoped_refptr<TestPasswordStore> profile_store_;
@@ -267,13 +285,11 @@ TEST_F(PasswordReuseManagerImplTest, CheckPasswordReuse) {
   for (const auto& test_data : kReuseTestData) {
     MockPasswordReuseDetectorConsumer mock_consumer;
     if (test_data.reused_password_len != 0) {
-      const std::vector<MatchingReusedCredential> credentials = {
-          {"https://www.google.com", u"username1",
-           PasswordForm::Store::kProfileStore}};
-      EXPECT_CALL(mock_consumer,
-                  OnReuseCheckDone(true, test_data.reused_password_len,
-                                   Matches(std::nullopt),
-                                   ElementsAreArray(credentials), 2, _, _));
+      EXPECT_CALL(
+          mock_consumer,
+          OnReuseCheckDone(
+              true, test_data.reused_password_len, Matches(std::nullopt),
+              ElementsAre(MatchingReusedCredential(forms[0])), 2, _, _));
     } else {
       EXPECT_CALL(mock_consumer, OnReuseCheckDone(false, _, _, _, _, _, _));
     }
@@ -286,8 +302,8 @@ TEST_F(PasswordReuseManagerImplTest, CheckPasswordReuse) {
 }
 
 TEST_F(PasswordReuseManagerImplTest, BasicSynced) {
+  ASSERT_FALSE(prefs().HasPrefPath(prefs::kPasswordHashDataList));
   Initialize();
-  ASSERT_FALSE(prefs().HasPrefPath(prefs::kSyncPasswordHash));
 
   const std::u16string sync_password = u"password";
   const std::u16string input = u"123password";
@@ -299,7 +315,8 @@ TEST_F(PasswordReuseManagerImplTest, BasicSynced) {
 
   EXPECT_TRUE(prefs().HasPrefPath(prefs::kPasswordHashDataList));
   std::optional<PasswordHashData> sync_password_hash =
-      GetPasswordFromPref("sync_username", /*is_gaia_password=*/true, prefs());
+      GetPasswordFromPref(CreateTestEncryptor(), "sync_username",
+                          /*is_gaia_password=*/true, prefs());
   EXPECT_TRUE(sync_password_hash.has_value());
 
   // Check that sync password reuse is found.
@@ -313,7 +330,6 @@ TEST_F(PasswordReuseManagerImplTest, BasicSynced) {
 
 TEST_F(PasswordReuseManagerImplTest, BasicUnsynced) {
   Initialize();
-  ASSERT_FALSE(prefs().HasPrefPath(prefs::kSyncPasswordHash));
 
   const std::u16string gaia_password = u"3password";
   const std::u16string input = u"123password";
@@ -322,8 +338,9 @@ TEST_F(PasswordReuseManagerImplTest, BasicUnsynced) {
       "other_gaia_username", gaia_password,
       /*is_primary_account=*/false,
       GaiaPasswordHashChange::NOT_SYNC_PASSWORD_CHANGE);
-  std::optional<PasswordHashData> gaia_password_hash = GetPasswordFromPref(
-      "other_gaia_username", /*is_gaia_password=*/true, prefs());
+  std::optional<PasswordHashData> gaia_password_hash =
+      GetPasswordFromPref(CreateTestEncryptor(), "other_gaia_username",
+                          /*is_gaia_password=*/true, prefs());
   ASSERT_TRUE(gaia_password_hash.has_value());
 
   // Check that Gaia password reuse is found.
@@ -337,7 +354,6 @@ TEST_F(PasswordReuseManagerImplTest, BasicUnsynced) {
 
 TEST_F(PasswordReuseManagerImplTest, ClearGaiaPasswordHash) {
   Initialize();
-  ASSERT_FALSE(prefs().HasPrefPath(prefs::kSyncPasswordHash));
 
   const std::u16string gaia_password = u"3password";
   const std::u16string input = u"123password";
@@ -347,7 +363,8 @@ TEST_F(PasswordReuseManagerImplTest, ClearGaiaPasswordHash) {
       /*is_primary_account=*/true,
       metrics_util::GaiaPasswordHashChange::SAVED_ON_CHROME_SIGNIN);
   std::optional<PasswordHashData> gaia_password_hash =
-      GetPasswordFromPref("sync_username", /*is_gaia_password=*/true, prefs());
+      GetPasswordFromPref(CreateTestEncryptor(), "sync_username",
+                          /*is_gaia_password=*/true, prefs());
   ASSERT_TRUE(gaia_password_hash.has_value());
 
   // Check that no sync password reuse is found after clearing the password
@@ -361,8 +378,8 @@ TEST_F(PasswordReuseManagerImplTest, ClearGaiaPasswordHash) {
 }
 
 TEST_F(PasswordReuseManagerImplTest, ClearAllGaiaPasswordHash) {
+  ASSERT_FALSE(prefs().HasPrefPath(prefs::kPasswordHashDataList));
   Initialize();
-  ASSERT_FALSE(prefs().HasPrefPath(prefs::kSyncPasswordHash));
 
   const std::u16string gaia_password = u"3password";
   const std::u16string input = u"123password";
@@ -371,8 +388,9 @@ TEST_F(PasswordReuseManagerImplTest, ClearAllGaiaPasswordHash) {
       "other_gaia_username", gaia_password,
       /*is_primary_account=*/false,
       GaiaPasswordHashChange::NOT_SYNC_PASSWORD_CHANGE);
-  std::optional<PasswordHashData> gaia_password_hash = GetPasswordFromPref(
-      "other_gaia_username", /*is_gaia_password=*/true, prefs());
+  std::optional<PasswordHashData> gaia_password_hash =
+      GetPasswordFromPref(CreateTestEncryptor(), "other_gaia_username",
+                          /*is_gaia_password=*/true, prefs());
   ASSERT_TRUE(gaia_password_hash.has_value());
 
   reuse_manager()->ClearAllGaiaPasswordHash();
@@ -388,15 +406,14 @@ TEST_F(PasswordReuseManagerImplTest, ClearAllGaiaPasswordHash) {
 
 TEST_F(PasswordReuseManagerImplTest, SaveEnterprisePasswordHash) {
   Initialize();
-  ASSERT_FALSE(prefs().HasPrefPath(prefs::kSyncPasswordHash));
 
   const std::u16string input = u"123password";
   const std::u16string enterprise_password = u"23password";
   reuse_manager()->SaveEnterprisePasswordHash("enterprise_username",
                                               enterprise_password);
   std::optional<PasswordHashData> enterprise_password_hash =
-      GetPasswordFromPref("enterprise_username", /*is_gaia_password=*/false,
-                          prefs());
+      GetPasswordFromPref(CreateTestEncryptor(), "enterprise_username",
+                          /*is_gaia_password=*/false, local_prefs());
   ASSERT_TRUE(enterprise_password_hash.has_value());
 
   // Check that enterprise password reuse is found.
@@ -409,16 +426,16 @@ TEST_F(PasswordReuseManagerImplTest, SaveEnterprisePasswordHash) {
 }
 
 TEST_F(PasswordReuseManagerImplTest, ClearAllEnterprisePasswordHash) {
+  ASSERT_FALSE(prefs().HasPrefPath(prefs::kPasswordHashDataList));
   Initialize();
-  ASSERT_FALSE(prefs().HasPrefPath(prefs::kSyncPasswordHash));
 
   const std::u16string input = u"123password";
   const std::u16string enterprise_password = u"23password";
   reuse_manager()->SaveEnterprisePasswordHash("enterprise_username",
                                               enterprise_password);
   std::optional<PasswordHashData> enterprise_password_hash =
-      GetPasswordFromPref("enterprise_username", /*is_gaia_password=*/false,
-                          prefs());
+      GetPasswordFromPref(CreateTestEncryptor(), "enterprise_username",
+                          /*is_gaia_password=*/false, local_prefs());
   ASSERT_TRUE(enterprise_password_hash.has_value());
 
   // Check that no enterprise password reuse is found after clearing the
@@ -432,6 +449,7 @@ TEST_F(PasswordReuseManagerImplTest, ClearAllEnterprisePasswordHash) {
 }
 
 TEST_F(PasswordReuseManagerImplTest, ClearAllNonGmailPasswordHash) {
+  ASSERT_FALSE(prefs().HasPrefPath(prefs::kPasswordHashDataList));
   Initialize();
   const std::u16string non_sync_gaia_password = u"3password";
   const std::u16string gmail_password = u"gmailpass";
@@ -442,7 +460,8 @@ TEST_F(PasswordReuseManagerImplTest, ClearAllNonGmailPasswordHash) {
       /*is_primary_account=*/false,
       GaiaPasswordHashChange::NOT_SYNC_PASSWORD_CHANGE);
   std::optional<PasswordHashData> non_sync_gaia_password_hash =
-      GetPasswordFromPref("non_sync_gaia_password@gsuite.com",
+      GetPasswordFromPref(CreateTestEncryptor(),
+                          "non_sync_gaia_password@gsuite.com",
                           /*is_gaia_password=*/true, prefs());
   ASSERT_TRUE(non_sync_gaia_password_hash.has_value());
 
@@ -453,8 +472,9 @@ TEST_F(PasswordReuseManagerImplTest, ClearAllNonGmailPasswordHash) {
       GaiaPasswordHashChange::NOT_SYNC_PASSWORD_CHANGE);
   RunUntilIdle();
   EXPECT_TRUE(prefs().HasPrefPath(prefs::kPasswordHashDataList));
-  std::optional<PasswordHashData> gmail_password_hash = GetPasswordFromPref(
-      "username@gmail.com", /*is_gaia_password=*/true, prefs());
+  std::optional<PasswordHashData> gmail_password_hash =
+      GetPasswordFromPref(CreateTestEncryptor(), "username@gmail.com",
+                          /*is_gaia_password=*/true, prefs());
   ASSERT_TRUE(gmail_password_hash.has_value());
 
   EXPECT_EQ(2u, prefs().GetList(prefs::kPasswordHashDataList).size());
@@ -538,17 +558,13 @@ TEST_F(PasswordReuseManagerImplTest,
   RunUntilIdle();
 
   MockPasswordReuseDetectorConsumer mock_consumer;
-  EXPECT_CALL(
-      mock_consumer,
-      OnReuseCheckDone(
-          /* is_reuse_found=*/true, /*password_length=*/8,
-          Matches(std::nullopt),
-          UnorderedElementsAreArray(std::vector<MatchingReusedCredential>{
-              {"https://www.google.com", u"username1",
-               PasswordForm::Store::kProfileStore},
-              {"https://www.facebook.com", u"username3",
-               PasswordForm::Store::kAccountStore}}),
-          /*saved_passwords=*/3, _, _));
+  EXPECT_CALL(mock_consumer, OnReuseCheckDone(
+                                 /* is_reuse_found=*/true,
+                                 /*password_length=*/8, Matches(std::nullopt),
+                                 UnorderedElementsAre(
+                                     MatchingReusedCredential(profile_forms[0]),
+                                     MatchingReusedCredential(account_form)),
+                                 /*saved_passwords=*/3, _, _));
   reuse_manager()->CheckReuse(u"12345password", "https://evil.com",
                               &mock_consumer);
   RunUntilIdle();
@@ -623,7 +639,7 @@ TEST_F(PasswordReuseManagerImplTest, MaybeSavePasswordHashEnterpriseHashSaved) {
   // Check that right pref has been saved.
   PasswordHashData password_hash_data =
       ConvertToPasswordHashData(
-          prefs().GetList(prefs::kPasswordHashDataList)[0])
+          local_prefs().GetList(prefs::kLocalPasswordHashDataList)[0])
           .value();
   EXPECT_FALSE(password_hash_data.is_gaia_password);
 }

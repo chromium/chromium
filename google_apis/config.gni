@@ -1,0 +1,22 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+declare_args() {
+  # Set the variable 'use_official_google_api_keys' to true
+  # to use the Google-internal file containing official API keys
+  # even in a developer build.  Setting this variable explicitly to
+  # true will cause the build to fail if the internal file is missing.
+  #
+  # Set the variable to false to not use the internal file, even for
+  # Chrome-branded builds or when it exists in your checkout.
+  #
+  # Leave it set to "" to have the variable implicitly set to true for
+  # Chrome-branded builds or if
+  # //src/google_apis/internal/google_chrome_api_keys.h is present and false
+  # otherwise.
+  # This does not apply to iOS builds, which use different mechanisms and always
+  # evaluate to use_official_google_api_keys=false.
+  # See https://crbug.com/1183709.
+  use_official_google_api_keys = ""
+}

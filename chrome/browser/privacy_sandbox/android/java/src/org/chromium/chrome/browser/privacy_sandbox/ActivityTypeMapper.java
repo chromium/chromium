@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.flags.ActivityType;
 
@@ -14,6 +15,7 @@ import org.chromium.chrome.browser.flags.ActivityType;
  * activities (tabs, WebAPKs, etc.) and the more specific {@link PrivacySandboxStorageActivityType}
  * used for tracking privacy-related data.
  */
+@NullMarked
 public class ActivityTypeMapper {
     /** Used for non browser app and non agsa cct surface types. */
     public static final int OTHER_SURFACE_TYPE = -1;

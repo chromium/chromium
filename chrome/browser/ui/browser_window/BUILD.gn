@@ -2,17 +2,69 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_desktop_android)
+
 # This is the public interface for a browser window. Most features in
 # //chrome/browser depend on this interface, and thus to prevent circular
 # dependencies this interface should not depend on anything else in //chrome.
 source_set("browser_window") {
   sources = [
-    "public/browser_window_features.h",
+    "public/browser_collection_observer.h",
     "public/browser_window_interface.h",
+    "public/browser_window_interface_iterator.h",
+    "public/global_browser_collection.h",
+    "public/profile_browser_collection.h",
   ]
+  public_deps = [ "//content/public/browser" ]
+  deps = [ "//ui/base/unowned_user_data" ]
+
+  if (!is_android) {
+    sources += [
+      "public/browser_collection.h",
+      "public/browser_window_features.h",
+      "public/desktop_browser_window_capabilities.h",
+      "public/desktop_browser_window_capabilities_delegate.h",
+      "public/embedder_browser_window_features.h",
+    ]
+    public_deps += [
+      "//base",
+      "//chrome/common:buildflags",
+      "//extensions/buildflags",
+      "//ui/base:types",
+    ]
+  }
+}
+
+source_set("create_browser_window") {
+  sources = [ "public/create_browser_window.h" ]
+
   public_deps = [
-    "//base",
-    "//content/public/browser",
-    "//ui/base:types",
+    "//chrome/browser/ui/browser_window",
+    "//ui/base/mojom:ui_base_types",
   ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    sources = [
+      "internal/create_browser_window_browsertest.cc",
+      "internal/global_browser_collection_browsertest.cc",
+      "internal/profile_browser_collection_browsertest.cc",
+      "public/browser_window_interface_iterator_browsertest.cc",
+    ]
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    deps = [
+      ":browser_window",
+      ":create_browser_window",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support",
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
+  }
 }

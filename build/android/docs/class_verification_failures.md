@@ -8,6 +8,9 @@ While class verification failures still exist, our Java optimizer, R8, has
 solved this problem for us. Developers should not have to worry about this
 problem unless there is a bug in R8. See [this bug](http://b/138781768) for where
 they implemented this solution for us.
+The one exception is the `GlueApiHelperFor...` classes in
+`//android_webview/glue`, R8 is not yet able to fix the issue for system APIs
+(see [this bug](https://b/254522150)).
 
 ## What's this all about?
 

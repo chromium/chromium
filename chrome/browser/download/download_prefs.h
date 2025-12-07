@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
 
@@ -38,15 +39,6 @@ class PrefRegistrySyncable;
 // Stores all download-related preferences.
 class DownloadPrefs {
  public:
-  enum class DownloadRestriction {
-    NONE = 0,
-    DANGEROUS_FILES = 1,
-    POTENTIALLY_DANGEROUS_FILES = 2,
-    ALL_FILES = 3,
-    // MALICIOUS_FILES has a stricter definition of harmful file than
-    // DANGEROUS_FILES and does not block based on file extension.
-    MALICIOUS_FILES = 4,
-  };
   explicit DownloadPrefs(Profile* profile);
 
   DownloadPrefs(const DownloadPrefs&) = delete;
@@ -78,8 +70,8 @@ class DownloadPrefs {
   void SetSaveFilePath(const base::FilePath& path);
   int save_file_type() const { return *save_file_type_; }
   void SetSaveFileType(int type);
-  DownloadRestriction download_restriction() const {
-    return static_cast<DownloadRestriction>(*download_restriction_);
+  policy::DownloadRestriction download_restriction() const {
+    return static_cast<policy::DownloadRestriction>(*download_restriction_);
   }
   bool safebrowsing_for_trusted_sources_enabled() const {
     return *safebrowsing_for_trusted_sources_enabled_;

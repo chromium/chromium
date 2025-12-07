@@ -9,12 +9,12 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_export.h"
 
 namespace media {
 
+class AudioBus;
 class AudioProcessorControls;
 struct AudioGlitchInfo;
 
@@ -28,6 +28,8 @@ struct AudioGlitchInfo;
 class AudioCapturerSource
     : public base::RefCountedThreadSafe<media::AudioCapturerSource> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   enum class ErrorCode {
     kUnknown = 0,
     kSystemPermissions = 1,
@@ -50,8 +52,7 @@ class AudioCapturerSource
     virtual void Capture(const AudioBus* audio_source,
                          base::TimeTicks audio_capture_time,
                          const AudioGlitchInfo& glitch_info,
-                         double volume,
-                         bool key_pressed) = 0;
+                         double volume) = 0;
 
     // Signals an error has occurred.
     virtual void OnCaptureError(ErrorCode code, const std::string& message) = 0;
@@ -93,7 +94,7 @@ class AudioCapturerSource
 
  protected:
   friend class base::RefCountedThreadSafe<AudioCapturerSource>;
-  virtual ~AudioCapturerSource() {}
+  virtual ~AudioCapturerSource() = default;
 };
 
 }  // namespace media

@@ -16,17 +16,11 @@ namespace {
 
 class CardUnmaskHeaderItemTest : public PlatformTest {
  public:
-  CardUnmaskHeaderItemTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        autofill::features::kAutofillEnableVirtualCards);
-  }
+  CardUnmaskHeaderItemTest() {}
 
   CardUnmaskHeaderItemTest(const CardUnmaskHeaderItemTest&) = delete;
   CardUnmaskHeaderItemTest& operator=(const CardUnmaskHeaderItemTest&) = delete;
   ~CardUnmaskHeaderItemTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that the header subviews are set properly after a call to
@@ -37,8 +31,8 @@ TEST_F(CardUnmaskHeaderItemTest, ConfigureHeaderFooterView) {
 
   CardUnmaskHeaderItem* header_item =
       [[CardUnmaskHeaderItem alloc] initWithType:0
-                                titleText:title_text
-                         instructionsText:instructions_text];
+                                       titleText:title_text
+                                instructionsText:instructions_text];
 
   id view = [[[header_item cellClass] alloc] init];
   ASSERT_TRUE([view isMemberOfClass:[CardUnmaskHeaderView class]]);

@@ -8,16 +8,11 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "content/public/test/browser_test.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/test/base/android/android_browser_test.h"
-#else
-#include "chrome/test/base/in_process_browser_test.h"
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
 #include "base/test/test_reg_util_win.h"
@@ -39,8 +34,10 @@ bool ChangeMetricsReporting(bool enabled) {
   bool value_after_change;
   base::RunLoop run_loop;
   ChangeMetricsReportingStateWithReply(
-      enabled, base::BindOnce(OnMetricsReportingStateChanged,
-                              &value_after_change, run_loop.QuitClosure()));
+      enabled,
+      base::BindOnce(OnMetricsReportingStateChanged, &value_after_change,
+                     run_loop.QuitClosure()),
+      ChangeMetricsReportingStateCalledFrom::kUiSettings);
   run_loop.Run();
   return value_after_change;
 }
@@ -119,8 +116,6 @@ IN_PROC_BROWSER_TEST_F(SampledOutClientIdSavedBrowserTest, ClientIdSaved) {
   ASSERT_TRUE(metrics_service()->GetClientId().empty());
   ASSERT_TRUE(
       local_state()->GetString(metrics::prefs::kMetricsClientID).empty());
-  // TODO(crbug.com/40225372): Re-enable this test
-
 #if BUILDFLAG(IS_ANDROID)
   // On Android Chrome, since we have not yet consented to metrics reporting,
   // the new sampling trial should be used to verify sampling.

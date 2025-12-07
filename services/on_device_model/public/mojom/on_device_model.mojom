@@ -5,13 +5,21 @@
 module on_device_model.mojom;
 
 import "mojo/public/mojom/base/file.mojom";
-import "mojo/public/mojom/base/read_only_file.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
+import "skia/public/mojom/bitmap.mojom";
 
 // Opened file resources needed to define an adaptation.
 [Stable]
 struct AdaptationAssets {
+  // Model weights could be passed as an opened file or a file path.
+  // The backend type will decide which one should be used, or
+  // which one is preferred if both are passed. If both are unset,
+  // usually the operation should fail.
+  // APU backend: weights_path should be used.
+  // GPU backend: weights should be used.
   // TODO(b/313919363): This should also be a ReadOnlyFile.
   mojo_base.mojom.File? weights;
+  mojo_base.mojom.FilePath? weights_path;
 };
 
 // Conveys the result of a language detection attempt on output text.
@@ -53,10 +61,13 @@ struct ResponseChunk {
 struct ResponseSummary {
   // Optional safety information computed against the full response.
   SafetyInfo? safety_info;
+
+  // The total number of output tokens for this response.
+  uint32 output_token_count;
 };
 
 // Streams a response from a call to execute a model. Close this pipe to cancel
-// the call to |Execute()|.
+// the call to |Generate()|.
 [Stable]
 interface StreamingResponder {
   // This is called each time a new chunk of text is available.
@@ -84,60 +95,155 @@ struct LoadAdaptationParams {
   AdaptationAssets assets;
 };
 
-// Options to control how the model handles input.
+// A set of capabilities that a model can have.
 [Stable]
-struct InputOptions {
-  // The text for this input.
-  string text;
+struct Capabilities {
+  // Whether this model will handle InputPieces containing images.
+  bool image_input = false;
 
-  // The maximum number of tokens that should be processed. If not set, will
-  // process all tokens from this input.
-  uint32? max_tokens;
+  // Whether this model will handle InputPieces containing audio.
+  bool audio_input = false;
+};
 
-  // After text is tokenized, the offset into that vector to start processing.
-  // If not set, will start at the first token.
-  uint32? token_offset;
+// Params to describe a new session.
+[Stable]
+struct SessionParams {
+  // The maximum number of input+output tokens the session can handle. This is
+  // needed when initializing the session. Currently this is only supported by
+  // the APU backend. When set to 0, the original `max_tokens` set by the base
+  // model will be used.
+  uint32 max_tokens = 0;
 
-  // If this is true, indicates this is a one-off call that wants to ignore the
-  // context for this input. Note that this is less efficient than running on
-  // top of the current context, so only use when necessary.
-  bool ignore_context;
-
-  // The maximum number of tokens that should be output from a call to
-  // Execute(). If not set, will output tokens until an end token or the maximum
-  // sequence length.
-  uint32? max_output_tokens;
-
-  // DEPRECATED: No longer does anything.
-  uint32? unused_safety_interval;
+  // The capabilities to enable for this session.
+  Capabilities capabilities;
 
   // These params control the output sampling. Higher `top_k` means more tokens
   // are considered, higher `temperature` means less likely tokens are more
   // probable.
   // `top_k` should be a value from 1 to the max top K value the model was
   // initialized with.
-  uint32? top_k;
+  [MinVersion=1]
+  uint32 top_k;
   // `temperature` should be a value greater than 0.0. Values above 1.0 may give
   // poor results.
-  float? temperature;
+  [MinVersion=1]
+  float temperature;
+};
+
+// The set of tokens that can be added as part of an input.
+[Stable, Extensible]
+enum Token {
+  // Prefix for system text.
+  kSystem,
+  // Prefix for model text.
+  kModel,
+  // Prefix for user text.
+  kUser,
+  // End a system/model/user section.
+  [Default] kEnd,
+  // Prefix for tool call (function invocation by the model).
+  [MinVersion=1] kToolCall,
+  // Prefix for tool response (results from tool execution).
+  [MinVersion=1] kToolResponse,
+};
+
+// Holds the possible input types to the model. Note that if any of these input
+// types include cross-origin data, such as a screenshot, any of the origins may
+// be able to control the model output.
+[Stable, Extensible]
+union InputPiece {
+  // A token which may have different internal representations depending on the
+  // loaded model.
+  Token token;
+  // Text to be provided as input.
+  string text;
+  // Bitmap provided as input. This is not ImageSkia because there is no desire
+  // to support multiple scale factors.
+  skia.mojom.BitmapWithArbitraryBpp bitmap;
+
+  // Used to handle version skew.
+  [Default]
+  bool unknown_type;
+
+  // Audio provided as input.
+  [MinVersion=1]
+  AudioData audio;
+};
+
+[Stable]
+struct Input {
+  // A list of tokens and text that the model will use to construct the final
+  // input.
+  array<InputPiece> pieces;
+};
+
+[Stable]
+struct AppendOptions {
+  // The input for the model.
+  Input input;
+
+  // The maximum number of tokens that should be processed. If zero, will
+  // process all tokens from this input.
+  uint32 max_tokens = 0;
+};
+
+[Stable, Extensible]
+union ResponseConstraint {
+  // A JSON schema defining structured output requirements for the response.
+  // Passed as an opaque JSON blob to llguidance.
+  string json_schema;
+
+  // A regex string specifying the output constraints.
+  string regex;
+
+  // Used to handle version skew.
+  [Default]
+  bool unknown_type;
+};
+
+[Stable]
+struct GenerateOptions {
+  // The maximum number of tokens that should be output from a call to
+  // Generate(). If zero, will output tokens until an end token or the maximum
+  // sequence length.
+  uint32 max_output_tokens = 0;
+
+  // Specifies any constraints on the output for this Generate() call. Note that
+  // only one of the JSON schema or regex constraints should be provided.
+  [MinVersion=2]
+  ResponseConstraint? constraint;
+};
+
+// Priorities which determine how requests to a session are scheduled.
+[Stable, Extensible]
+enum Priority {
+  // Requests should be treated as high priority, the user may be actively
+  // waiting for a response.
+  [Default] kForeground,
+  // Requests are not urgent and may be queued. Background requests will only
+  // run if there are no active foreground requests.
+  kBackground,
 };
 
 // A session for a model that allows adding context and then executing an input
 // with that context.
 [Stable]
 interface Session {
-  // Adds context to this session. Any context added here will build off of
-  // previous calls to |AddContext()|.
-  AddContext@0(InputOptions input, pending_remote<ContextClient>? client);
+  // Appends input to this session. Any input added here will build off of
+  // previous calls to |Append()|. To cancel, close the |client| pipe.
+  [MinVersion=1]
+  Append@6(AppendOptions options, pending_remote<ContextClient>? client);
 
-  // Executes model on the given input. The input will be added on top of the
-  // context provided by |AddContext()|. The response will be streamed to
-  // |response|. To cancel the request, close the |response| pipe.
-  Execute@1(InputOptions input, pending_remote<StreamingResponder> response);
+  // Generates output from the model on top of any input added from Append().
+  // The response will be streamed to |response|. To cancel the request, close
+  // the |response| pipe.
+  [MinVersion=1]
+  Generate@7(
+      GenerateOptions options, pending_remote<StreamingResponder> responder);
 
   // Gets the size of the given text in tokens. Will return 0 if the text is
   // empty or error occurred.
-  GetSizeInTokens@2(string text) => (uint32 size);
+  GetSizeInTokens@5(Input input) => (uint32 size);
 
   // Gets the probability score of the first token in `text` on top of the
   // current context.
@@ -145,23 +251,53 @@ interface Session {
 
   // Clones the current session. The cloned session will have the same context
   // as the current session.
-  [MinVersion=1]
   Clone@4(pending_receiver<Session> session);
+
+  // Gets the probability for a series of tokens on top of the current
+  // context. Capabilities.probabilities_output must be specified to use this.
+  // Note that this is implemented as a blocking method on the service side
+  // and should only be used in debugging/testing.
+  [MinVersion=3]
+  GetProbabilitiesBlocking@8(string text) => (array<float> probabilities);
+
+  // Sets the priority for currently queued requests to this session and future
+  // requests. Any clones made of this session will inherit the current
+  // priority. Priority for new sessions defaults to kForeground.
+  [MinVersion=4]
+  SetPriority@9(Priority priority);
+
+  // Stream audio and response for Automatic Speech Recognition.
+  [MinVersion=5]
+  AsrStream@10(AsrStreamOptions options,
+               pending_receiver<AsrStreamInput> stream,
+               pending_remote<AsrStreamResponder> responder);
 };
 
 // A loaded model which can be queried. This interface must be controlled by the
 // browser and consumers must take care to sanitize inputs.
 [Stable]
 interface OnDeviceModel {
-  // Starts a session with this model. If a session starts before the previous
-  // one has completed and the multiple sessions support is not enabled for
-  // this model, the previous session will be canceled, the mojo connection
-  // for the previous session will also be closed, and the ongoing connections
-  // of StreamingResponder & ContextClient will also be closed.
-  // When the multiple sessions support is enabled, nothing will be
-  // disconnected, and the further requests will be queued.
-  StartSession@0(pending_receiver<Session> session);
+  // Starts a session with this model. Sessions are logically independent,
+  // but requests may block progress of other sessions.
+  StartSession@0(pending_receiver<Session> session,
+                 [MinVersion=1] SessionParams? params);
 
+  // DEPRECATED: Does nothing
+  ClassifyTextSafety@1(string text) => (SafetyInfo? safety_info);
+
+  // DEPRECATED: Does nothing
+  DetectLanguage@2(string text) => (LanguageDetectionResult? result);
+
+  // Loads an adaptation with the specified params. This will always load the
+  // adaptation on top of the base model.
+  LoadAdaptation@3(
+      LoadAdaptationParams params, pending_receiver<OnDeviceModel> model)
+      => (LoadModelResult result);
+};
+
+// A connection to a text safety model, that can be used to score arbitrary
+// text in a set of safety categories.
+interface TextSafetySession {
   // Infers multiclass safety scores for the given `text` using this model's
   // underlying safety classifier, if any. Returns null if classification fails
   // or there is no classifier available.
@@ -171,11 +307,16 @@ interface OnDeviceModel {
   // null if there is no classifier available.
   DetectLanguage@2(string text) => (LanguageDetectionResult? result);
 
-  // Loads an adaptation with the specified params. This will always load the
-  // adaptation on top of the base model.
-  LoadAdaptation@3(
-      LoadAdaptationParams params,
-      pending_receiver<OnDeviceModel> model) => (LoadModelResult result);
+  // Clones the session and any configuration.
+  Clone@3(pending_receiver<TextSafetySession> session);
+};
+
+// A loaded text safety model, that can be shared by multiple features.
+// This remote of this interface is held by the browser, and manages the
+// resource.
+interface TextSafetyModel {
+  // Starts a session with this model.
+  StartSession@0(pending_receiver<TextSafetySession> session);
 };
 
 // Classifies the device based on how fast it is estimated to be able to run a
@@ -203,4 +344,64 @@ enum LoadModelResult {
   kSuccess,
   kGpuBlocked,
   [Default] kFailedToLoadLibrary,
+  [MinVersion=1, EnableIf=is_chromeos] kCrosNeedReboot,
+};
+
+[Stable]
+struct AudioData {
+  // Number of channels.
+  int32 channel_count;
+
+  // Sample rate of the buffer.
+  int32 sample_rate;
+
+  // Number of frames in the buffer.
+  int32 frame_count;
+
+  // Channel data.
+  array<float> data;
+};
+
+[Stable]
+struct SpeechRecognitionResult {
+  string transcript;
+  bool is_final;
+};
+
+// Interface used for listening for ASR transcription results.
+[Stable]
+interface AsrStreamResponder {
+  // This is called each time a list of transcription results is available.
+  OnResponse@0(array<SpeechRecognitionResult> result);
+};
+
+[Stable]
+struct AsrStreamOptions {
+  uint32 sample_rate_hz = 0;
+};
+
+// Used to feed audio into an ASR stream.
+[Stable]
+interface AsrStreamInput {
+  // Add an audio chunk to the session.
+  AddAudioChunk@0(AudioData data);
+};
+
+struct DevicePerformanceInfo {
+  // Performance class of the device.
+  PerformanceClass performance_class;
+  // Detected VRAM for the device, in MiB.
+  uint64 vram_mb;
+};
+
+struct DeviceInfo {
+  // Numeric vendor id for the GPU.
+  int32 vendor_id;
+  // Numeric device id for the GPU.
+  int32 device_id;
+  // GPU adapter description string
+  // (e.g., "NVIDIA GeForce RTX 3080"), including driver version
+  string driver_version;
+  // Whether the device supports FP16 operations.
+  bool supports_fp16;
 };

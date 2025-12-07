@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 
 namespace content {
@@ -73,10 +74,6 @@ void AppendRequiredAndOptionalAndroidPermissionsForContentSettings(
 // level notification permission.
 bool DoesAppLevelSettingsAllowSiteNotifications();
 
-// Called to check whether Chrome has enabled app-level Notifications
-// permission.
-bool AreAppLevelNotificationsEnabled();
-
 // Checks if Chrome needs Location permission for using Bluetooth.
 bool NeedsLocationPermissionForBluetooth(content::WebContents* web_contents);
 
@@ -92,11 +89,22 @@ bool NeedsLocationServicesForBluetooth();
 bool CanRequestSystemPermissionsForBluetooth(
     content::WebContents* web_contents);
 
+// Checks if Chrome has system permission for `content_settings_type`
+bool HasSystemPermission(ContentSettingsType type,
+                         content::WebContents* web_contents);
+
+// Checks if Chrome can request system permissions for `content_settings_type`
+bool CanRequestSystemPermission(ContentSettingsType type,
+                                content::WebContents* web_contents);
+
 // Request the needed system permissions for using Bluetooth.
 void RequestSystemPermissionsForBluetooth(content::WebContents* web_contents);
 
 // Starts an activity for showing the Location Services setting page.
 void RequestLocationServices(content::WebContents* web_contents);
+
+// Called from tests to temporarily set system location settings enabled.
+base::AutoReset<bool> EnableSystemLocationSettingForTesting();
 
 }  // namespace permissions
 

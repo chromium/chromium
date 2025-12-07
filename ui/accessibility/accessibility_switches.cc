@@ -41,6 +41,10 @@ const char kEnableExperimentalAccessibilitySwitchAccessText[] =
 // zooming in.
 const char kEnableMagnifierDebugDrawRect[] = "enable-magnifier-debug-draw-rect";
 
+// Enables the switchover to the newer NSAccessibility property-based API.
+const char kEnableMacAccessibilityAPIMigration[] =
+    "enable-mac-accessibility-api-migration";
+
 bool IsExperimentalAccessibilityLanguageDetectionEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ::switches::kEnableExperimentalAccessibilityLanguageDetection);

@@ -7,20 +7,21 @@ package org.chromium.chrome.browser.toolbar;
 import android.os.Handler;
 import android.os.Looper;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 
 /**
- * Watches a constraints supplier for the next time the browser controls are unlocked,
- * and then tells the {@link ViewResourceAdapter} to generate a resource.
+ * Watches a constraints supplier for the next time the browser controls are unlocked, and then
+ * tells the {@link ViewResourceAdapter} to generate a resource.
  */
-public class ConstraintsChecker implements Callback<Integer> {
-    @NonNull private final ViewResourceAdapter mViewResourceAdapter;
-    @NonNull private final ObservableSupplier<Integer> mConstraintsSupplier;
-    @NonNull private final Handler mHandler;
+@NullMarked
+public class ConstraintsChecker implements Callback<@Nullable Integer> {
+    private final ViewResourceAdapter mViewResourceAdapter;
+    private final ObservableSupplier<@Nullable Integer> mConstraintsSupplier;
+    private final Handler mHandler;
 
     /**
      * @param viewResourceAdapter The target to notify when a capture is needed.
@@ -28,9 +29,9 @@ public class ConstraintsChecker implements Callback<Integer> {
      * @param looper Message loop to post deferred tasks to.
      */
     public ConstraintsChecker(
-            @NonNull ViewResourceAdapter viewResourceAdapter,
-            @NonNull ObservableSupplier<Integer> constraintsSupplier,
-            @NonNull Looper looper) {
+            ViewResourceAdapter viewResourceAdapter,
+            ObservableSupplier<@Nullable Integer> constraintsSupplier,
+            Looper looper) {
         mViewResourceAdapter = viewResourceAdapter;
         mConstraintsSupplier = constraintsSupplier;
         mHandler = new Handler(looper);
@@ -60,7 +61,7 @@ public class ConstraintsChecker implements Callback<Integer> {
     }
 
     @Override
-    public void onResult(Integer result) {
+    public void onResult(@Nullable Integer result) {
         if (!areControlsLocked()) {
             mConstraintsSupplier.removeObserver(this);
             mHandler.post(mViewResourceAdapter::onResourceRequested);

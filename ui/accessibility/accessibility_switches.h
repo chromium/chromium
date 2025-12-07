@@ -21,6 +21,7 @@ AX_BASE_EXPORT extern const char
 AX_BASE_EXPORT extern const char kEnableExperimentalAccessibilityManifestV3[];
 AX_BASE_EXPORT extern const char
     kEnableExperimentalAccessibilitySwitchAccessText[];
+AX_BASE_EXPORT extern const char kEnableMacAccessibilityAPIMigration[];
 
 // Returns true if experimental accessibility language detection is enabled.
 AX_BASE_EXPORT bool IsExperimentalAccessibilityLanguageDetectionEnabled();

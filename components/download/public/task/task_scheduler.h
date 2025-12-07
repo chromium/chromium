@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/component_export.h"
 #include "components/download/public/task/download_task_types.h"
 
 namespace download {
@@ -15,7 +16,7 @@ namespace download {
 // tasks can run independently of each other as long as they have different
 // |task_type|. Scheduling another task of same |task_type| before the task is
 // fired will cancel the previous task.
-class TaskScheduler {
+class COMPONENT_EXPORT(COMPONENTS_DOWNLOAD_PUBLIC_TASK) TaskScheduler {
  public:
   // Schedules a task with the operating system. The system has the liberty of
   // firing the task any time between |window_start_time_seconds| and
@@ -31,7 +32,7 @@ class TaskScheduler {
   // Cancels a pre-scheduled task of type |task_type|.
   virtual void CancelTask(DownloadTaskType task_type) = 0;
 
-  virtual ~TaskScheduler() {}
+  virtual ~TaskScheduler() = default;
 };
 
 }  // namespace download

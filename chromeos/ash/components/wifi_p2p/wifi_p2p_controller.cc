@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/components/wifi_p2p/wifi_p2p_controller.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "chromeos/ash/components/dbus/patchpanel/patchpanel_client.h"
@@ -138,8 +137,7 @@ WifiP2PController::~WifiP2PController() {
 
 void WifiP2PController::Init() {
   ShillManagerClient::Get()->SetProperty(
-      shill::kP2PAllowedProperty,
-      base::Value(ash::features::IsWifiDirectEnabled()), base::DoNothing(),
+      shill::kP2PAllowedProperty, base::Value(true), base::DoNothing(),
       base::BindOnce(&WifiP2PController::OnSetManagerPropertyFailure,
                      weak_ptr_factory_.GetWeakPtr(),
                      shill::kP2PAllowedProperty));

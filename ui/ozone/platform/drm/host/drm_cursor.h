@@ -16,6 +16,8 @@
 #include "ui/events/ozone/evdev/cursor_delegate_evdev.h"
 #include "ui/gfx/geometry/rect.h"
 
+class SkBitmap;
+
 namespace base {
 class TimeDelta;
 }
@@ -99,6 +101,9 @@ class DrmCursor : public CursorDelegateEvdev {
                            const std::optional<gfx::Point>& point,
                            base::TimeDelta frame_delay);
   void MoveLockTested(gfx::AcceleratedWidget window, const gfx::Point& point);
+
+  gfx::PointF GetLocationWithoutLock();
+
   // The mutex synchronizing this object.
   base::Lock lock_;
 

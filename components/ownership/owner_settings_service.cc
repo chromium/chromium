@@ -46,7 +46,7 @@ crypto::ScopedSECItem SignPolicy(
       algorithm = SEC_OID_PKCS1_SHA256_WITH_RSA_ENCRYPTION;
       break;
     case em::PolicyFetchRequest::NONE:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   crypto::ScopedSECItem sign_result(SECITEM_AllocItem(nullptr, nullptr, 0));
@@ -96,8 +96,7 @@ std::unique_ptr<em::PolicyFetchResponse> AssembleAndSignPolicy(
   do {
     ++attempt_counter;
     signature_item = SignPolicy(
-        private_key,
-        base::as_bytes(base::make_span(policy_response->policy_data())),
+        private_key, base::as_byte_span(policy_response->policy_data()),
         signature_type);
   } while (!signature_item && attempt_counter < kMaxSignatureAttempts);
 
@@ -116,9 +115,7 @@ std::unique_ptr<em::PolicyFetchResponse> AssembleAndSignPolicy(
 
 }  // namespace
 
-BASE_FEATURE(kOwnerSettingsWithSha256,
-             "OwnerSettingsWithSha256",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOwnerSettingsWithSha256, base::FEATURE_ENABLED_BY_DEFAULT);
 
 OwnerSettingsService::OwnerSettingsService(
     const scoped_refptr<ownership::OwnerKeyUtil>& owner_key_util)
@@ -199,6 +196,12 @@ void OwnerSettingsService::RunPendingIsOwnerCallbacksForTesting(bool is_owner) {
   is_owner_callbacks.swap(pending_is_owner_callbacks_);
   for (auto& callback : is_owner_callbacks)
     std::move(callback).Run(is_owner);
+}
+
+void OwnerSettingsService::Shutdown() {
+  for (auto& observer : observers_) {
+    observer.OnServiceShutdown();
+  }
 }
 
 bool OwnerSettingsService::SetString(const std::string& setting,

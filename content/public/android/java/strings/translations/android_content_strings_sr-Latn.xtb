@@ -10,11 +10,12 @@
 <translation id="2520230379124234395">Program za optimizaciju je pokrenut</translation>
 <translation id="2732718972699418926">AM</translation>
 <translation id="2841013758207633010">Vreme</translation>
+<translation id="3252174836838062892">Da bi se prikazao kursor, pritisnite ESC</translation>
 <translation id="376869769528291915">:</translation>
 <translation id="3845599764535987402">Sat</translation>
 <translation id="4247305538398689241">Podesite nedelju</translation>
 <translation id="4768459022382175196">Sekund</translation>
-<translation id="4859501799452851758">Program za optimizaciju je završio. Rezultati su u datoteci <ph name="FILENAME" />.</translation>
+<translation id="4859501799452851758">Program za optimizaciju je završio. Rezultati su u fajlu <ph name="FILENAME" />.</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="5659744962989939577">Dodaj u rečnik</translation>
 <translation id="5789643057113097023">,</translation>
@@ -29,6 +30,7 @@
 <translation id="7102218676258945610">Minut</translation>
 <translation id="7138678301420049075">Drugo</translation>
 <translation id="7575803462290353686">Podesite vreme</translation>
+<translation id="7648133459447652947">Da bi se prikazao kursor, promenite aplikaciju, ponovo učitajte stranicu ili se vratite</translation>
 <translation id="7781164152564914424">Podesite mesec</translation>
 <translation id="7821540960913969614">Podesite datum</translation>
 <translation id="8261506727792406068">Izbriši</translation>

@@ -4,17 +4,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import argparse
 import collections
 from datetime import date
 import re
-import optparse
-import os
 from string import Template
 import sys
 import textwrap
 import zipfile
 
-from util import build_utils
+from util import build_utils  # pylint: disable=unused-import
 from util import java_cpp_utils
 import action_helpers  # build_utils adds //build to sys.path.
 import zip_helpers
@@ -32,8 +31,33 @@ ENUM_FIXED_TYPE_ALLOWLIST = [
 
 
 class EnumDefinition:
-  def __init__(self, original_enum_name=None, class_name_override=None,
-               enum_package=None, entries=None, comments=None, fixed_type=None):
+
+  def __init__(self,
+               original_enum_name=None,
+               class_name_override=None,
+               enum_package=None,
+               entries=None,
+               comments=None,
+               fixed_type=None,
+               is_flag=False):
+    """Represents a C++ enum that must be converted to java.
+
+    Args:
+      original_enum_name: The name of the enum itself, without its package.
+        If every entry starts with this value, this prefix is removed.
+      class_name_override: the name for the enum in java.
+        If None, the original enum name is used.
+      enum_package: The java package in which this enum must be defined
+      entries: A list of pairs. Each pair contains an enum entry, followed by
+        either None or the value of this entry. The definition could be, for
+        example, an integer, an expression `2 << 5`, or another enun entry.
+      comments: A list of pairs. Each pair contains an entry and a comment
+        associated to this entry.
+      fixed_type: The type encoding this enum. Should belong to
+        `ENUM_FIXED_TYPE_ALLOWLIST`.
+      is_flag: Whether this value is used as a boolean flag whose entries can
+        be xored together.
+    """
     self.original_enum_name = original_enum_name
     self.class_name_override = class_name_override
     self.enum_package = enum_package
@@ -41,6 +65,7 @@ class EnumDefinition:
     self.comments = collections.OrderedDict(comments or [])
     self.prefix_to_strip = None
     self.fixed_type = fixed_type
+    self.is_flag = is_flag
 
   def AppendEntry(self, key, value):
     if key in self.entries:
@@ -98,8 +123,13 @@ class EnumDefinition:
       prefixes = [shout_case, self.original_enum_name,
                   'k' + self.original_enum_name]
 
+      # "kMaxValue" is a special enum entry representing the last value of an
+      # histogram enum. It is not expected to have prefix even when other values
+      # have a prefix.
+      standard_keys = [key for key in self.entries.keys() if key != "kMaxValue"]
+
       for prefix in prefixes:
-        if all(w.startswith(prefix) for w in self.entries.keys()):
+        if all(w.startswith(prefix) for w in standard_keys):
           prefix_to_strip = prefix
           break
       else:
@@ -148,8 +178,11 @@ class DirectiveSet:
   class_name_override_key = 'CLASS_NAME_OVERRIDE'
   enum_package_key = 'ENUM_PACKAGE'
   prefix_to_strip_key = 'PREFIX_TO_STRIP'
+  is_flag = 'IS_FLAG'
 
-  known_keys = [class_name_override_key, enum_package_key, prefix_to_strip_key]
+  known_keys = [
+      class_name_override_key, enum_package_key, prefix_to_strip_key, is_flag
+  ]
 
   def __init__(self):
     self._directives = {}
@@ -170,6 +203,8 @@ class DirectiveSet:
         DirectiveSet.enum_package_key)
     definition.prefix_to_strip = self._directives.get(
         DirectiveSet.prefix_to_strip_key)
+    definition.is_flag = self._directives.get(
+        DirectiveSet.is_flag) not in [None, 'false', '0']
 
 
 class HeaderParser:
@@ -177,11 +212,6 @@ class HeaderParser:
   multi_line_comment_start_re = re.compile(r'\s*/\*')
   enum_line_re = re.compile(r'^\s*(\w+)(\s*\=\s*([^,\n]+))?,?')
   enum_end_re = re.compile(r'^\s*}\s*;\.*$')
-  # Note: For now we only support a very specific `#if` statement to prevent the
-  # possibility of miscalculating whether lines should be ignored when building
-  # for Android.
-  if_buildflag_re = re.compile(r'^#if BUILDFLAG\((\w+)\)$')
-  if_buildflag_end_re = re.compile(r'^#endif.*$')
   generator_error_re = re.compile(r'^\s*//\s+GENERATED_JAVA_(\w+)\s*:\s*$')
   generator_directive_re = re.compile(
       r'^\s*//\s+GENERATED_JAVA_(\w+)\s*:\s*([\.\w]+)$')
@@ -201,25 +231,15 @@ class HeaderParser:
       r'^\s*(?:\[cpp.*\])?\s*enum.*{(?P<enum_entries>.*)}.*$')
 
   def __init__(self, lines, path=''):
-    self._lines = lines
+    self._lines = java_cpp_utils.PreprocessIfBlocks(lines)
     self._path = path
     self._enum_definitions = []
     self._in_enum = False
-    # Indicates whether an #if block was encountered on a previous line (until
-    # an #endif block was seen). When True, `_in_buildflag_android` indicates
-    # whether the block was `#if BUILDFLAG(IS_ANDROID)` or not.
-    # Note: Currently only statements like `#if BUILDFLAG(IS_<PLATFORM>)` are
-    # supported.
-    self._in_preprocessor_block = False
-    self._in_buildflag_android = False
     self._current_definition = None
     self._current_comments = []
     self._generator_directives = DirectiveSet()
     self._multi_line_generator_directive = None
     self._current_enum_entry = ''
-
-  def _ShouldIgnoreLine(self):
-    return self._in_preprocessor_block and not self._in_buildflag_android
 
   def _ApplyGeneratorDirectives(self):
     self._generator_directives.UpdateDefinition(self._current_definition)
@@ -231,20 +251,6 @@ class HeaderParser:
     return self._enum_definitions
 
   def _ParseLine(self, line):
-    if m := HeaderParser.if_buildflag_re.match(line):
-      if self._in_preprocessor_block:
-        raise Exception('Nested #if statements not supported. Found: ' + line)
-      self._in_preprocessor_block = True
-      self._in_buildflag_android = m.group(1) == "IS_ANDROID"
-      return
-    if HeaderParser.if_buildflag_end_re.match(line):
-      self._in_preprocessor_block = False
-      self._in_buildflag_android = False
-      return
-
-    if self._ShouldIgnoreLine():
-      return
-
     if self._multi_line_generator_directive:
       self._ParseMultiLineDirectiveLine(line)
       return
@@ -301,7 +307,8 @@ class HeaderParser:
     self._current_enum_entry += ' ' + line.strip()
 
   def _FinalizeCurrentEnumDefinition(self):
-    if self._current_enum_entry:
+    # It has a space as a prefix so strip is needed.
+    if self._current_enum_entry.strip():
       self._ParseCurrentEnumEntry()
     self._ApplyGeneratorDirectives()
     self._current_definition.Finalize()
@@ -376,7 +383,7 @@ def DoGenerate(source_paths):
 
 
 def DoParseHeaderFile(path):
-  with open(path) as f:
+  with open(path, encoding='utf-8') as f:
     return HeaderParser(f.readlines(), path).ParseDefinitions()
 
 
@@ -395,12 +402,15 @@ package ${PACKAGE};
 
 import androidx.annotation.IntDef;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-@IntDef({
+@IntDef(${FLAG_DEF}{
 ${INT_DEF}
 })
+@Target(ElementType.TYPE_USE)
 @Retention(RetentionPolicy.SOURCE)
 public @interface ${CLASS_NAME} {
 ${ENUM_ENTRIES}
@@ -441,31 +451,30 @@ ${ENUM_ENTRIES}
       'CLASS_NAME': enum_definition.class_name,
       'ENUM_ENTRIES': enum_entries_string,
       'PACKAGE': enum_definition.enum_package,
+      'FLAG_DEF': 'flag = true, value = ' if enum_definition.is_flag else '',
       'INT_DEF': enum_names_string,
       'SCRIPT_NAME': java_cpp_utils.GetScriptName(),
       'SOURCE_PATH': source_path,
-      'YEAR': str(date.today().year)
+      'YEAR': str(date.today().year),
   }
   return template.substitute(values)
 
 
 def DoMain(argv):
-  usage = 'usage: %prog [options] [output_dir] input_file(s)...'
-  parser = optparse.OptionParser(usage=usage)
+  parser = argparse.ArgumentParser()
 
-  parser.add_option('--srcjar',
-                    help='When specified, a .srcjar at the given path is '
-                    'created instead of individual .java files.')
+  parser.add_argument('--srcjar',
+                      help='When specified, a .srcjar at the given path is '
+                      'created instead of individual .java files.')
+  parser.add_argument('input_paths',
+                      nargs='+',
+                      help='Path to at least one input file.')
 
-  options, args = parser.parse_args(argv)
-
-  if not args:
-    parser.error('Need to specify at least one input file')
-  input_paths = args
+  options = parser.parse_args(argv)
 
   with action_helpers.atomic_output(options.srcjar) as f:
     with zipfile.ZipFile(f, 'w', zipfile.ZIP_STORED) as srcjar:
-      for output_path, data in DoGenerate(input_paths):
+      for output_path, data in DoGenerate(options.input_paths):
         zip_helpers.add_to_zip_hermetic(srcjar, output_path, data=data)
 
 

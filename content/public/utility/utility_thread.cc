@@ -4,7 +4,6 @@
 
 #include "content/public/utility/utility_thread.h"
 
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace content {
 
@@ -12,7 +11,7 @@ namespace {
 
 // Keep the global UtilityThread in a TLS slot so it is impossible to access
 // incorrectly from the wrong thread.
-ABSL_CONST_INIT thread_local UtilityThread* utility_thread = nullptr;
+constinit thread_local UtilityThread* utility_thread = nullptr;
 
 }  // namespace
 

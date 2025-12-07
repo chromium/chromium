@@ -24,6 +24,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_LENGTH_FUNCTIONS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_LENGTH_FUNCTIONS_H_
 
+#include "third_party/blink/renderer/platform/geometry/evaluation_input.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -43,27 +44,25 @@ struct LengthPoint;
 PLATFORM_EXPORT int IntValueForLength(const Length&, int maximum_value);
 PLATFORM_EXPORT float FloatValueForLength(const Length&,
                                           float maximum_value,
-                                          const Length::EvaluationInput& = {});
+                                          const EvaluationInput& = {});
 PLATFORM_EXPORT LayoutUnit
 MinimumValueForLengthInternal(const Length&,
                               LayoutUnit maximum_value,
-                              const Length::EvaluationInput&);
+                              const EvaluationInput&);
 
-inline LayoutUnit MinimumValueForLength(
-    const Length& length,
-    LayoutUnit maximum_value,
-    const Length::EvaluationInput& input = {}) {
+inline LayoutUnit MinimumValueForLength(const Length& length,
+                                        LayoutUnit maximum_value,
+                                        const EvaluationInput& input = {}) {
   if (length.IsFixed()) [[likely]] {
-    return LayoutUnit(length.Value());
+    return LayoutUnit(length.Pixels());
   }
 
   return MinimumValueForLengthInternal(length, maximum_value, input);
 }
 
-PLATFORM_EXPORT LayoutUnit
-ValueForLength(const Length&,
-               LayoutUnit maximum_value,
-               const Length::EvaluationInput& input = {});
+PLATFORM_EXPORT LayoutUnit ValueForLength(const Length&,
+                                          LayoutUnit maximum_value,
+                                          const EvaluationInput& input = {});
 PLATFORM_EXPORT gfx::SizeF SizeForLengthSize(const LengthSize&,
                                              const gfx::SizeF& box_size);
 PLATFORM_EXPORT gfx::PointF PointForLengthPoint(const LengthPoint&,

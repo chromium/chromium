@@ -65,7 +65,7 @@ void TpcdMetadataDevtoolsObserver::EmitMetadataGrantDevtoolsIssue(
   auto metadata_issue_details =
       blink::mojom::CookieDeprecationMetadataIssueDetails::New();
 
-  metadata_issue_details->allowed_sites.push_back(third_party_url.host());
+  metadata_issue_details->allowed_sites.push_back(third_party_url.GetHost());
   metadata_issue_details->operation =
       cookie_access_type == content::CookieAccessDetails::Type::kRead
           ? blink::mojom::CookieOperation::kReadCookie

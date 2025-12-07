@@ -9,6 +9,7 @@
 
 #include "base/time/time.h"
 #include "components/attribution_reporting/constants.h"
+#include "components/attribution_reporting/privacy_math.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -69,11 +70,6 @@ struct CONTENT_EXPORT AttributionConfig {
     // Controls how many reports can be in the storage per attribution
     // destination.
     int max_reports_per_destination = 1024;
-
-    // Controls the max number bits of information that can be associated with
-    // a single a source.
-    double max_navigation_info_gain = 11.5;
-    double max_event_info_gain = 6.5;
 
     friend bool operator==(const EventLevelLimit&,
                            const EventLevelLimit&) = default;
@@ -172,6 +168,7 @@ struct CONTENT_EXPORT AttributionConfig {
   AggregateLimit aggregate_limit;
   DestinationRateLimit destination_rate_limit;
   AggregatableDebugRateLimit aggregatable_debug_rate_limit;
+  attribution_reporting::PrivacyMathConfig privacy_math_config;
 
   friend bool operator==(const AttributionConfig&,
                          const AttributionConfig&) = default;

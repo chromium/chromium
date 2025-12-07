@@ -1,0 +1,8 @@
+include_rules = [
+  "+components/browser_ui/bottomsheet/android",
+  "+components/browser_ui/widget",  # Needed for on-device unit tests (unit_device_javatests).
+  "+components/payments/content/android/ui",
+  "+ui/android",  # Needed for on-device unit tests (unit_device_javatests).
+  "+chrome/browser/ui/android/night_mode", # Needed for integration tests (javatests).
+  "+chrome/test/android", # Needed for integration tests (javatests).
+]

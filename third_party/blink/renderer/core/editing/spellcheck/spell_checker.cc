@@ -24,13 +24,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 
+#include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/platform/web_spell_check_panel_host_client.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_text_check_client.h"
@@ -76,7 +72,7 @@ bool CheckingRangeCovers(int checking_range_length, int location, int length) {
 }
 
 bool IsWhiteSpaceOrPunctuation(UChar c) {
-  return IsSpaceOrNewline(c) || WTF::unicode::IsPunct(c);
+  return unicode::IsSpaceOrNewline(c) || unicode::IsPunct(c);
 }
 
 }  // namespace
@@ -183,6 +179,8 @@ void SpellChecker::AdvanceToNextMisspelling(bool start_before_selection) {
 
   // topNode defines the whole range we want to operate on
   ContainerNode* top_node = HighestEditableRoot(position);
+  if (!top_node)
+    return;
   // TODO(yosin): |lastOffsetForEditing()| is wrong here if
   // |editingIgnoresContent(highestEditableRoot())| returns true, e.g. <table>
   spelling_search_end = Position::EditingPositionOf(
@@ -268,7 +266,8 @@ static void AddMarker(Document* document,
                       DocumentMarker::MarkerType type,
                       int location,
                       int length,
-                      const Vector<String>& descriptions) {
+                      const Vector<String>& descriptions,
+                      bool should_hide_suggestion_menu) {
   DCHECK(type == DocumentMarker::kSpelling || type == DocumentMarker::kGrammar)
       << type;
   DCHECK_GT(length, 0);
@@ -288,13 +287,14 @@ static void AddMarker(Document* document,
   }
 
   if (type == DocumentMarker::kSpelling) {
-    document->Markers().AddSpellingMarker(range_to_mark,
-                                          description.ToString());
+    document->Markers().AddSpellingMarker(range_to_mark, description.ToString(),
+                                          should_hide_suggestion_menu);
     return;
   }
 
   DCHECK_EQ(type, DocumentMarker::kGrammar);
-  document->Markers().AddGrammarMarker(range_to_mark, description.ToString());
+  document->Markers().AddGrammarMarker(range_to_mark, description.ToString(),
+                                       should_hide_suggestion_menu);
 }
 
 void SpellChecker::MarkAndReplaceFor(
@@ -351,7 +351,7 @@ void SpellChecker::MarkAndReplaceFor(
           continue;
         AddMarker(GetFrame().GetDocument(), checking_range,
                   DocumentMarker::kSpelling, result_location, result_length,
-                  result.replacements);
+                  result.replacements, result.should_hide_suggestion_menu);
         continue;
 
       case kTextDecorationTypeGrammar:
@@ -371,11 +371,12 @@ void SpellChecker::MarkAndReplaceFor(
           }
           AddMarker(GetFrame().GetDocument(), checking_range,
                     DocumentMarker::kGrammar, result_location + detail.location,
-                    detail.length, result.replacements);
+                    detail.length, result.replacements,
+                    result.should_hide_suggestion_menu);
         }
         continue;
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -493,7 +494,6 @@ void SpellChecker::RemoveSpellingMarkersUnderWords(
   DocumentMarkerController& marker_controller =
       GetFrame().GetDocument()->Markers();
   marker_controller.RemoveSpellingMarkersUnderWords(words);
-  marker_controller.RepaintMarkers();
 }
 
 static Node* FindFirstMarkable(Node* node) {
@@ -575,14 +575,15 @@ Vector<TextCheckingResult> SpellChecker::FindMisspellings(const String& text) {
     int word_end = iterator->next();
     if (word_end < 0)
       break;
-    size_t word_length = word_end - word_start;
+    auto word_length = static_cast<size_t>(word_end - word_start);
     size_t misspelling_location = 0;
     size_t misspelling_length = 0;
     if (WebTextCheckClient* text_checker_client = GetTextCheckerClient()) {
       // SpellCheckWord will write (0, 0) into the output vars, which is what
       // our caller expects if the word is spelled correctly.
       text_checker_client->CheckSpelling(
-          String(characters.data() + word_start, word_length),
+          String(base::span(characters)
+                     .subspan(static_cast<size_t>(word_start), word_length)),
           misspelling_location, misspelling_length, nullptr);
     } else {
       misspelling_location = 0;
@@ -681,8 +682,14 @@ std::pair<String, int> SpellChecker::FindFirstMisspelling(const Position& start,
     Position new_paragraph_start =
         StartOfNextParagraph(CreateVisiblePosition(paragraph_end))
             .DeepEquivalent();
-    if (new_paragraph_start.IsNull())
+    // To prevent an infinite loop, break when `new_paragraph_start` is
+    // non-editable.
+    if (new_paragraph_start.IsNull() ||
+        (RuntimeEnabledFeatures::
+             FindFirstMisspellingEndWhenNonEditableEnabled() &&
+         !IsEditablePosition(new_paragraph_start))) {
       break;
+    }
 
     paragraph_range = ExpandToParagraphBoundary(
         EphemeralRange(new_paragraph_start, new_paragraph_start));

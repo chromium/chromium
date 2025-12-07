@@ -53,7 +53,6 @@ class RootFrameSink::ChildCompositorFrameSink
   }
   void OnBeginFrame(const viz::BeginFrameArgs& args,
                     const viz::FrameTimingDetailsMap& feedbacks,
-                    bool frame_ack,
                     std::vector<viz::ReturnedResource> resources) override {}
   void OnBeginFramePausedChanged(bool paused) override {}
   void ReclaimResources(std::vector<viz::ReturnedResource> resources) override {
@@ -124,7 +123,7 @@ RootFrameSink::~RootFrameSink() {
   GetFrameSinkManager()->UnregisterBeginFrameSource(begin_frame_source_.get());
   begin_frame_source_.reset();
   support_.reset();
-  GetFrameSinkManager()->InvalidateFrameSinkId(root_frame_sink_id_);
+  GetFrameSinkManager()->InvalidateFrameSinkId(root_frame_sink_id_, {});
 }
 
 viz::FrameSinkManagerImpl* RootFrameSink::GetFrameSinkManager() {
@@ -409,17 +408,17 @@ void RootFrameSink::SubmitChildCompositorFrame(ChildFrame* child_frame) {
     child_sink_support_ = std::make_unique<ChildCompositorFrameSink>(
         this, child_frame->layer_tree_frame_sink_id,
         child_frame->frame_sink_id);
-    child_frame_renderer_thread_ids_ = {};
+    child_frame_renderer_threads_ = {};
   }
-  if (child_frame_renderer_thread_ids_ != child_frame->renderer_thread_ids) {
-    child_frame_renderer_thread_ids_ = child_frame->renderer_thread_ids;
+  if (child_frame_renderer_threads_ != child_frame->renderer_threads) {
+    child_frame_renderer_threads_ = child_frame->renderer_threads;
     // Thread IDs from a sandboxed renderer process, thus untrusted and
     // require verification.
-    // child_frame_renderer_thread_ids_ are used only to avoid unnessary
+    // child_frame_renderer_threads_ are used only to avoid unnessary
     // reverification, they shouldn't be used a source of truth in
     // GetChildFrameRendererThreadIds.
-    child_sink_support_->support()->SetThreadIds(
-        /*from_untrusted_client=*/true, child_frame->renderer_thread_ids);
+    child_sink_support_->support()->SetThreads(
+        /*from_untrusted_client=*/true, child_frame->renderer_threads);
   }
 
   // Root renderer frame MUST be presented synchronously with UI, so we can't
@@ -457,7 +456,13 @@ gfx::Size RootFrameSink::GetChildFrameSize() {
 base::flat_set<base::PlatformThreadId>
 RootFrameSink::GetChildFrameRendererThreadIds() {
   if (child_sink_support_) {
-    return child_sink_support_->support()->GetThreadIds();
+    base::flat_set<base::PlatformThreadId> thread_ids;
+    std::vector<viz::Thread> support_threads =
+        child_sink_support_->support()->GetThreads();
+    for (const auto& thread : support_threads) {
+      thread_ids.insert(thread.id);
+    }
+    return thread_ids;
   }
   return {};
 }

@@ -1,0 +1,8 @@
+android.webkit.WebView focusable focused
+++android.widget.Button clickable focusable interesting content_description='button supports naming with child content'
+++android.view.View role_description='link' clickable focusable link interesting name='aria-label-with-visual-content' content_description='link supports naming with child content'
+++++android.widget.TextView name='This is a link'
+++android.widget.TextView interesting name='div does not support naming with child content'
+++android.widget.TextView interesting name='span does not support naming with child content'
+++android.widget.TextView name=' '
+++android.widget.TextView interesting name='region does not support naming with child content'

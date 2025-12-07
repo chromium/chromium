@@ -1,0 +1,10 @@
+colheader-unsorted-implicit.accessibilitySortDirection=0
+colheader-unsorted-explicit.accessibilitySortDirection=0
+colheader-ascending.accessibilitySortDirection=1
+colheader-descending.accessibilitySortDirection=2
+colheader-other.accessibilitySortDirection=0
+rowheader-unsorted-implicit.accessibilitySortDirection=0
+rowheader-unsorted-explicit.accessibilitySortDirection=0
+rowheader-ascending.accessibilitySortDirection=1
+rowheader-descending.accessibilitySortDirection=2
+rowheader-other.accessibilitySortDirection=0

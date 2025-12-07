@@ -363,9 +363,6 @@ TEST_F(ProximityAuthProximityMonitorImplTest,
   monitor_->RecordProximityMetricsOnAuthSuccess();
   histogram_tester.ExpectUniqueSample("EasyUnlock.AuthProximity.RollingRssi",
                                       -6, 1);
-  histogram_tester.ExpectUniqueSample(
-      "EasyUnlock.AuthProximity.RemoteDeviceModelHash",
-      1881443083 /* hash of "LGE Nexus 5" */, 1);
 }
 
 TEST_F(ProximityAuthProximityMonitorImplTest,
@@ -401,9 +398,6 @@ TEST_F(ProximityAuthProximityMonitorImplTest,
   monitor.RecordProximityMetricsOnAuthSuccess();
   histogram_tester.ExpectUniqueSample("EasyUnlock.AuthProximity.RollingRssi",
                                       127, 1);
-  histogram_tester.ExpectUniqueSample(
-      "EasyUnlock.AuthProximity.RemoteDeviceModelHash",
-      -1808066424 /* hash of "Unknown" */, 1);
 }
 
 }  // namespace proximity_auth

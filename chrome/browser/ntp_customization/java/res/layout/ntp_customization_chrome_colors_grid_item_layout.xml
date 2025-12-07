@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/ntp_customization_chrome_colors_selector_size"
+    android:layout_height="@dimen/ntp_customization_chrome_colors_selector_size"
+    android:layout_margin="@dimen/ntp_customization_chrome_colors_grid_half_spacing"
+    android:background="@drawable/chrome_color_icon_list_selector"
+    android:clickable="true"
+    android:focusable="true" >
+
+    <ImageView
+        android:id="@+id/color_circle"
+        android:layout_width="@dimen/ntp_customization_back_button_clickable_size"
+        android:layout_height="@dimen/ntp_customization_back_button_clickable_size"
+        android:layout_gravity="center"
+        android:importantForAccessibility="no" />
+</FrameLayout>

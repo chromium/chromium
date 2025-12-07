@@ -18,9 +18,9 @@ class TestMediaRouterFactory : public MediaRouterFactory {
   TestMediaRouterFactory() = default;
   ~TestMediaRouterFactory() override = default;
 
-  MOCK_METHOD(KeyedService*,
-              BuildServiceInstanceFor,
-              (content::BrowserContext* context),
+  MOCK_METHOD(std::unique_ptr<KeyedService>,
+              BuildServiceInstanceForBrowserContext,
+              (content::BrowserContext * context),
               (const));
 };
 
@@ -38,7 +38,7 @@ TEST_F(MediaRouterFactoryTest, NullMediaRouterForNullBrowserContext) {
 TEST_F(MediaRouterFactoryTest, NullMediaRouterWhenInstanceDoesntExist) {
   // If a MediaRouter instance doesn't exist, GetApiForBrowserContextIfExists()
   // shouldn't result in an instance getting created or returned.
-  EXPECT_CALL(factory_, BuildServiceInstanceFor(_)).Times(0);
+  EXPECT_CALL(factory_, BuildServiceInstanceForBrowserContext(_)).Times(0);
   EXPECT_EQ(nullptr, factory_.GetApiForBrowserContextIfExists(&context_));
 }
 

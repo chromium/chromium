@@ -37,7 +37,7 @@
 namespace blink {
 
 RTCCertificate::RTCCertificate(
-    rtc::scoped_refptr<rtc::RTCCertificate> certificate)
+    webrtc::scoped_refptr<webrtc::RTCCertificate> certificate)
     : certificate_(std::move(certificate)) {}
 
 DOMTimeStamp RTCCertificate::expires() const {
@@ -45,18 +45,18 @@ DOMTimeStamp RTCCertificate::expires() const {
 }
 
 HeapVector<Member<RTCDtlsFingerprint>> RTCCertificate::getFingerprints() {
-  std::unique_ptr<rtc::SSLCertificateStats> first_certificate_stats =
+  std::unique_ptr<webrtc::SSLCertificateStats> first_certificate_stats =
       certificate_->GetSSLCertificate().GetStats();
 
   HeapVector<Member<RTCDtlsFingerprint>> fingerprints;
-  for (rtc::SSLCertificateStats* certificate_stats =
+  for (webrtc::SSLCertificateStats* certificate_stats =
            first_certificate_stats.get();
        certificate_stats; certificate_stats = certificate_stats->issuer.get()) {
     RTCDtlsFingerprint* fingerprint = RTCDtlsFingerprint::Create();
     fingerprint->setAlgorithm(
-        WTF::String::FromUTF8(certificate_stats->fingerprint_algorithm));
+        String::FromUTF8(certificate_stats->fingerprint_algorithm));
     fingerprint->setValue(
-        WTF::String::FromUTF8(certificate_stats->fingerprint).LowerASCII());
+        String::FromUTF8(certificate_stats->fingerprint).LowerASCII());
     fingerprints.push_back(fingerprint);
   }
 

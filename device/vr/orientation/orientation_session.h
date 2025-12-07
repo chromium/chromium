@@ -11,7 +11,6 @@
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -57,4 +56,4 @@ class COMPONENT_EXPORT(VR_ORIENTATION) VROrientationSession
 
 }  // namespace device
 
-#endif  //  DEVICE_VR_ORIENTATION_ORIENTATION_SESSION_H_
+#endif  // DEVICE_VR_ORIENTATION_ORIENTATION_SESSION_H_

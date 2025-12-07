@@ -32,6 +32,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_util.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/widget/root_view.h"
@@ -47,7 +48,7 @@ constexpr gfx::Size kIconImageSize(56, 56);
 // Returns true if a bubble app list should be used under the current mode.
 bool ShouldUseBubbleAppList() {
   // A bubble app list should be used only when ot is in clamshell mode.
-  return !Shell::Get()->IsInTabletMode();
+  return !display::Screen::Get()->InTabletMode();
 }
 
 }  // namespace
@@ -65,6 +66,7 @@ AppListTestHelper::AppListTestHelper() {
   // Disable app list nudge as default.
   DisableAppListNudge(true);
   AppListNudgeController::SetPrivacyNoticeAcceptedForTest(true);
+  AppListControllerImpl::SetSunfishNudgeDisabledForTest(true);
 }
 
 AppListTestHelper::~AppListTestHelper() {
@@ -256,7 +258,7 @@ AppListView* AppListTestHelper::GetAppListView() {
 
 SearchBoxView* AppListTestHelper::GetSearchBoxView() {
   if (ShouldUseBubbleAppList())
-    return GetBubbleView()->search_box_view_for_test();
+    return GetBubbleView()->search_box_view();
 
   return GetAppListView()->search_box_view();
 }
@@ -365,11 +367,6 @@ SearchResultPageAnchoredDialog* AppListTestHelper::GetBubbleSearchPageDialog() {
   return app_list_controller_->bubble_presenter_for_test()
       ->bubble_view_for_test()
       ->search_page_dialog_controller_->dialog();
-}
-AppListBubbleAssistantPage* AppListTestHelper::GetBubbleAssistantPage() {
-  return app_list_controller_->bubble_presenter_for_test()
-      ->bubble_view_for_test()
-      ->assistant_page_;
 }
 
 SearchModel::SearchResults* AppListTestHelper::GetSearchResults() {

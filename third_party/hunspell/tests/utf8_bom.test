@@ -1,4 +1,0 @@
-#!/bin/sh
-DIR="`dirname $0`"
-NAME="`basename $0 .test`"
-$DIR/test.sh $NAME -i utf-8 -1

@@ -90,6 +90,9 @@ std::string TestAccessibilityControllerClient::GetDictationDefaultLocale(
   return "";
 }
 
+void TestAccessibilityControllerClient::
+    SendFaceGazeDisableDialogResultToSettings(bool accepted) {}
+
 std::optional<Sound>
 TestAccessibilityControllerClient::GetPlayedEarconAndReset() {
   return std::exchange(sound_key_, std::nullopt);

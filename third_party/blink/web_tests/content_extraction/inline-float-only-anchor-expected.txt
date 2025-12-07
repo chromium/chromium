@@ -1,0 +1,5 @@
+<Root> [box: 0,0 800x600]
+  <Container> [box: 0,0 0x0]
+    <Anchor> [box: 0,0 20x10]
+      <Container> [box: 0,0 20x10]
+

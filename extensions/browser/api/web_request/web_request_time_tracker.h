@@ -11,6 +11,9 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 // This class monitors how much delay extensions add to network requests
 // by using the webRequest API.
@@ -25,9 +28,9 @@ class ExtensionWebRequestTimeTracker {
 
   ~ExtensionWebRequestTimeTracker();
 
-  // Records the time that a request was created.  |has_listener| will be true
+  // Records the time that a request was created.  `has_listener` will be true
   // if there is at least one webRequest listener registered.
-  // |has_extra_headers_listener| will be true if there is at least one listener
+  // `has_extra_headers_listener` will be true if there is at least one listener
   // with 'extraHeaders' in the extraInfoSpec.
   void LogRequestStartTime(int64_t request_id,
                            const base::TimeTicks& start_time,

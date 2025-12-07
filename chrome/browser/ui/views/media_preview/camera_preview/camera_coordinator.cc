@@ -11,6 +11,9 @@
 #include "chrome/browser/media/prefs/capture_device_ranking.h"
 #include "chrome/browser/ui/views/media_preview/camera_preview/camera_mediator.h"
 #include "chrome/browser/ui/views/media_preview/media_view.h"
+#include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/browser_context.h"
+#include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/video_capture/public/mojom/video_source.mojom.h"
 
@@ -18,16 +21,17 @@ CameraCoordinator::CameraCoordinator(
     views::View& parent_view,
     bool needs_borders,
     const std::vector<std::string>& eligible_camera_ids,
-    PrefService& prefs,
     bool allow_device_selection,
+    base::WeakPtr<content::BrowserContext> browser_context,
     const media_preview_metrics::Context& metrics_context)
-    : camera_mediator_(
-          prefs,
+    : prefs_(user_prefs::UserPrefs::Get(browser_context.get())),
+      combobox_model_({}),
+      camera_mediator_(
+          *prefs_,
           base::BindRepeating(&CameraCoordinator::OnVideoSourceInfosReceived,
                               base::Unretained(this))),
-      combobox_model_({}),
       eligible_camera_ids_(eligible_camera_ids),
-      prefs_(&prefs),
+      browser_context_(browser_context),
       allow_device_selection_(allow_device_selection),
       metrics_context_(metrics_context.ui_location,
                        media_preview_metrics::PreviewType::kCamera) {
@@ -45,7 +49,6 @@ CameraCoordinator::CameraCoordinator(
       base::BindRepeating(&CameraCoordinator::OnVideoSourceChanged,
                           base::Unretained(this)),
       metrics_context_);
-
   video_stream_coordinator_.emplace(
       camera_view_controller_->GetLiveFeedContainer(), metrics_context_);
 

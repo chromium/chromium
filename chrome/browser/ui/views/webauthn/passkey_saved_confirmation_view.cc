@@ -4,28 +4,39 @@
 
 #include "chrome/browser/ui/views/webauthn/passkey_saved_confirmation_view.h"
 
+#include <cstddef>
+#include <memory>
+#include <string>
+#include <utility>
+
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/browser/ui/webauthn/passkey_saved_confirmation_controller.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/color/color_id.h"
+#include "ui/gfx/range/range.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/view.h"
 
-// TODO(rgod): Clean up leftover code for passing username from
-// PasswordsModelDelegate once it's confirmed it's not needed anymore.
 PasskeySavedConfirmationView::PasskeySavedConfirmationView(
     content::WebContents* web_contents,
-    views::View* anchor_view)
+    views::BubbleAnchor anchor_view,
+    std::string passkey_rp_id)
     : PasswordBubbleViewBase(web_contents,
                              anchor_view,
                              /*easily_dismissable=*/true),
-      controller_(PasswordsModelDelegateFromWebContents(web_contents)) {
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+      controller_(PasswordsModelDelegateFromWebContents(web_contents),
+                  std::move(passkey_rp_id)) {
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetShowIcon(true);
   SetTitle(controller_.GetTitle());
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -70,3 +81,6 @@ void PasskeySavedConfirmationView::OnGooglePasswordManagerLinkClicked() {
   controller_.OnGooglePasswordManagerLinkClicked();
   CloseBubble();
 }
+
+BEGIN_METADATA(PasskeySavedConfirmationView)
+END_METADATA

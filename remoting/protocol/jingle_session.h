@@ -6,16 +6,19 @@
 #define REMOTING_PROTOCOL_JINGLE_SESSION_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
-#include "crypto/rsa_private_key.h"
+#include "remoting/base/source_location.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/datagram_channel_factory.h"
+#include "remoting/protocol/errors.h"
 #include "remoting/protocol/jingle_messages.h"
 #include "remoting/protocol/session.h"
 #include "remoting/protocol/session_config.h"
@@ -43,7 +46,9 @@ class JingleSession : public Session {
   const SessionConfig& config() override;
   const Authenticator& authenticator() const override;
   void SetTransport(Transport* transport) override;
-  void Close(protocol::ErrorCode error) override;
+  void Close(protocol::ErrorCode error,
+             std::string_view error_details,
+             const SourceLocation& error_location) override;
   void AddPlugin(SessionPlugin* plugin) override;
 
  private:
@@ -106,8 +111,12 @@ class JingleSession : public Session {
                    ReplyCallback reply_callback);
   void OnAuthenticatorStateChangeAfterAccepted();
 
-  // Called from OnAccept() to initialize session config.
-  bool InitializeConfigFromDescription(const ContentDescription* description);
+  // Called from OnAccept() to initialize session config. If initialization
+  // fails, |error_*| will be updated.
+  bool InitializeConfigFromDescription(const ContentDescription* description,
+                                       ErrorCode& error_code,
+                                       std::string& error_details,
+                                       base::Location& error_location);
 
   // Called after the initial incoming authenticator message is processed.
   void ContinueAcceptIncomingConnection();

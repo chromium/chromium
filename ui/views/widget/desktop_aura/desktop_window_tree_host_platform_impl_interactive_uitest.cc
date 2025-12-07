@@ -12,26 +12,22 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/linux/linux_ui.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/wm/wm_move_resize_handler.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/test/configurable_test_native_frame_view.h"
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
-#include "ui/views/widget/widget_delegate.h"
-#include "ui/views/window/native_frame_view.h"
-
-#if BUILDFLAG(IS_LINUX)
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
 #include "ui/views/widget/desktop_aura/window_event_filter_linux.h"
+#include "ui/views/widget/widget_delegate.h"
+
+// TODO(crbug.com/c/373971535): remove this and apply renaming.
 using DesktopWindowTreeHostPlatformImpl = views::DesktopWindowTreeHostLinux;
-#else
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_lacros.h"
-#include "ui/views/widget/desktop_aura/window_event_filter_lacros.h"
-using DesktopWindowTreeHostPlatformImpl = views::DesktopWindowTreeHostLacros;
-#endif
 
 namespace views {
 
@@ -116,11 +112,11 @@ class FakeWmMoveResizeHandler : public ui::WmMoveResizeHandler {
   ~FakeWmMoveResizeHandler() override = default;
 
   void Reset() {
-    hittest_ = -1;
+    hittest_.reset();
     pointer_location_in_px_ = gfx::Point();
   }
 
-  int hittest() const { return hittest_; }
+  std::optional<int> hittest() const { return hittest_; }
   gfx::Point pointer_location_in_px() const { return pointer_location_in_px_; }
 
   void set_bounds(const gfx::Rect& bounds) { bounds_ = bounds; }
@@ -143,7 +139,7 @@ class FakeWmMoveResizeHandler : public ui::WmMoveResizeHandler {
   raw_ptr<ui::PlatformWindow> platform_window_;
   gfx::Rect bounds_;
 
-  int hittest_ = -1;
+  std::optional<int> hittest_;
   gfx::Point pointer_location_in_px_;
 };
 
@@ -156,38 +152,16 @@ void SetExpectationBasedOnHittestValue(
     // fake move/resize handler.
     EXPECT_EQ(handler.pointer_location_in_px().ToString(),
               pointer_location_in_px.ToString());
-    EXPECT_EQ(handler.hittest(), hittest);
+    ASSERT_TRUE(handler.hittest().has_value());
+    EXPECT_EQ(*handler.hittest(), hittest);
     return;
   }
 
   // Ensure the handler does not receive the hittest value or the pointer
   // location.
   EXPECT_TRUE(handler.pointer_location_in_px().IsOrigin());
-  EXPECT_NE(handler.hittest(), hittest);
+  EXPECT_FALSE(handler.hittest().has_value());
 }
-
-// This is used to return a customized result to NonClientHitTest.
-class HitTestNonClientFrameView : public NativeFrameView {
- public:
-  explicit HitTestNonClientFrameView(Widget* widget)
-      : NativeFrameView(widget) {}
-
-  HitTestNonClientFrameView(const HitTestNonClientFrameView&) = delete;
-  HitTestNonClientFrameView& operator=(const HitTestNonClientFrameView&) =
-      delete;
-
-  ~HitTestNonClientFrameView() override = default;
-
-  void set_hit_test_result(int component) { hit_test_result_ = component; }
-
-  // NonClientFrameView overrides:
-  int NonClientHitTest(const gfx::Point& point) override {
-    return hit_test_result_;
-  }
-
- private:
-  int hit_test_result_ = HTNOWHERE;
-};
 
 // This is used to return HitTestNonClientFrameView on create call.
 class HitTestWidgetDelegate : public WidgetDelegate {
@@ -199,19 +173,20 @@ class HitTestWidgetDelegate : public WidgetDelegate {
 
   ~HitTestWidgetDelegate() override = default;
 
-  HitTestNonClientFrameView* frame_view() { return frame_view_; }
+  test::ConfigurableTestNativeFrameView* frame_view() { return frame_view_; }
 
   // WidgetDelegate:
-  std::unique_ptr<NonClientFrameView> CreateNonClientFrameView(
-      Widget* widget) override {
+  std::unique_ptr<FrameView> CreateFrameView(Widget* widget) override {
     DCHECK(!frame_view_);
-    auto frame_view = std::make_unique<HitTestNonClientFrameView>(widget);
+    auto frame_view =
+        std::make_unique<test::ConfigurableTestNativeFrameView>(widget);
     frame_view_ = frame_view.get();
     return frame_view;
   }
 
  private:
-  raw_ptr<HitTestNonClientFrameView, DanglingUntriaged> frame_view_ = nullptr;
+  raw_ptr<test::ConfigurableTestNativeFrameView, DanglingUntriaged>
+      frame_view_ = nullptr;
 };
 
 // Test host that can intercept calls to the real host.
@@ -270,7 +245,7 @@ class DesktopWindowTreeHostPlatformImplTest
     Widget* toplevel = new Widget;
     delegate_ = std::make_unique<HitTestWidgetDelegate>();
     Widget::InitParams toplevel_params =
-        CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
                      Widget::InitParams::TYPE_WINDOW);
     auto* native_widget = new DesktopNativeWidgetAura(toplevel);
     toplevel_params.native_widget = native_widget;
@@ -342,14 +317,7 @@ class DesktopWindowTreeHostPlatformImplTestWithTouch
   bool use_touch_event() const { return GetParam(); }
 };
 
-// On Lacros, the resize and drag operations are handled by compositor,
-// so this test does not make much sense.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_HitTest DISABLED_HitTest
-#else
-#define MAYBE_HitTest HitTest
-#endif
-TEST_P(DesktopWindowTreeHostPlatformImplTestWithTouch, MAYBE_HitTest) {
+TEST_P(DesktopWindowTreeHostPlatformImplTestWithTouch, HitTest) {
   gfx::Rect widget_bounds(0, 0, 100, 100);
   std::unique_ptr<Widget> widget(BuildTopLevelDesktopWidget(widget_bounds));
   widget->Show();
@@ -358,13 +326,8 @@ TEST_P(DesktopWindowTreeHostPlatformImplTestWithTouch, MAYBE_HitTest) {
   auto handler =
       std::make_unique<FakeWmMoveResizeHandler>(host_->platform_window());
   host_->DestroyNonClientEventFilter();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  host_->non_client_window_event_filter_ =
-      std::make_unique<WindowEventFilterLacros>(host_, handler.get());
-#else
   host_->non_client_window_event_filter_ =
       std::make_unique<WindowEventFilterLinux>(host_, handler.get());
-#endif
 
   // It is not important to use pointer locations corresponding to the hittests
   // values used in the browser itself, because we fake the hit test results,
@@ -415,7 +378,6 @@ TEST_P(DesktopWindowTreeHostPlatformImplTestWithTouch, MAYBE_HitTest) {
     // Send mouse/touch down event and make sure the WindowEventFilter calls
     // the move/resize handler to start interactive move/resize with the
     // |hittest| value we specified.
-
     if (use_touch_event()) {
       ui::GestureEventDetails gesture_details(
           ui::EventType::kGestureScrollBegin);
@@ -425,6 +387,18 @@ TEST_P(DesktopWindowTreeHostPlatformImplTestWithTouch, MAYBE_HitTest) {
       DispatchEvent(GenerateMouseEvent(ui::EventType::kMousePressed,
                                        pointer_location_in_px,
                                        ui::EF_LEFT_MOUSE_BUTTON));
+
+      if (hittest == HTCAPTION) {
+        // Window drag begins on drag (not press) after a mouse move threshold.
+        auto* linux_ui = ui::LinuxUi::instance();
+        const int threshold = linux_ui
+                                  ? linux_ui->GetWindowDragThresholdPx()
+                                  : ui::LinuxUi::kDefaultWindowDragThreshold;
+        expected_pointer_location_in_px.Offset(threshold, threshold);
+        DispatchEvent(GenerateMouseEvent(ui::EventType::kMouseDragged,
+                                         expected_pointer_location_in_px,
+                                         ui::EF_LEFT_MOUSE_BUTTON));
+      }
     }
 
     // The test expectation is based on the hit test component. If it is a
@@ -449,7 +423,7 @@ TEST_P(DesktopWindowTreeHostPlatformImplTestWithTouch, MAYBE_HitTest) {
     }
   }
   handler->set_platform_window(nullptr);
-  widget.reset();
+  widget->CloseNow();
 }
 
 // Tests that the window is maximized in response to a double click event.
@@ -683,7 +657,7 @@ TEST_F(DesktopWindowTreeHostPlatformImplTest, InputMethodFocus) {
   // Provide an accessible name so that accessibility paint checks pass.
   textfield->GetViewAccessibility().SetName(u"test");
   textfield->SetBounds(0, 0, 200, 20);
-  widget->GetRootView()->AddChildView(textfield.get());
+  widget->GetRootView()->AddChildViewRaw(textfield.get());
   widget->ShowInactive();
   textfield->RequestFocus();
 

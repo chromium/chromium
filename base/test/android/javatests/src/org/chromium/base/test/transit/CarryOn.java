@@ -4,24 +4,46 @@
 
 package org.chromium.base.test.transit;
 
-import androidx.annotation.Nullable;
+import android.app.Activity;
 
-import org.chromium.base.test.transit.Transition.TransitionOptions;
-import org.chromium.base.test.transit.Transition.Trigger;
-
-import java.util.Collections;
-import java.util.List;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** CarryOn is a lightweight, stand-alone ConditionalState not tied to any Station. */
-public abstract class CarryOn extends ConditionalState {
+@NullMarked
+public class CarryOn extends ConditionalState {
 
     private final int mId;
-    private String mName;
+    private final String mName;
     private static int sLastCarryOnId = 2000;
+    private @Nullable ActivityElement<?> mUntypedActivityElement;
 
+    /**
+     * Constructor for named subclasses.
+     *
+     * <p>Named subclasses should let name default to the simple class name, e.g. "<C1:
+     * SubclassNameCarryOn>".
+     */
     protected CarryOn() {
+        this(/* name= */ null);
+    }
+
+    /**
+     * Create an empty CarryOn. Elements can be declared after creation.
+     *
+     * @param name Direct instantiations should provide a name which will be displayed as "<C1:
+     *     ProvidedName>",
+     */
+    public CarryOn(@Nullable String name) {
         mId = ++sLastCarryOnId;
-        mName = String.format("<C%d: %s>", mId, getClass().getSimpleName());
+        if (name == null) {
+            name = getClass().getSimpleName();
+        }
+
+        mName =
+                name.isBlank()
+                        ? String.format("<C%d>", mId)
+                        : String.format("<C%d: %s>", mId, name);
     }
 
     @Override
@@ -29,67 +51,18 @@ public abstract class CarryOn extends ConditionalState {
         return mName;
     }
 
-    /** Transitions into a CarryOn: runs |trigger| and waits for its ENTER Conditions. */
-    public static <T extends CarryOn> T pickUp(T carryOn, @Nullable Trigger trigger) {
-        return pickUp(carryOn, TransitionOptions.DEFAULT, trigger);
+    @Override
+    @Nullable ActivityElement<?> determineActivityElement() {
+        return mUntypedActivityElement;
     }
 
-    /** Version of {@link #pickUp(CarryOn, Trigger)} with {@link TransitionOptions}. */
-    public static <T extends CarryOn> T pickUp(
-            T carryOn, TransitionOptions options, @Nullable Trigger trigger) {
-        PickUp pickUp = new PickUp(carryOn, options, trigger);
-        pickUp.transitionSync();
-        return carryOn;
-    }
-
-    /** Transitions out of a CarryOn: runs |trigger| and waits for its EXIT Conditions. */
-    public void drop(@Nullable Trigger trigger) {
-        drop(TransitionOptions.DEFAULT, trigger);
-    }
-
-    /** Version of {@link #drop(Trigger)} with {@link TransitionOptions}. */
-    public void drop(TransitionOptions options, @Nullable Trigger trigger) {
-        Drop drop = new Drop(this, options, trigger);
-        drop.transitionSync();
-    }
-
-    /** Convenience method to create a CarryOn from one or more Conditions. */
-    public static CarryOn fromConditions(Condition... conditions) {
-        return new CarryOn() {
-            @Override
-            public void declareElements(Elements.Builder elements) {
-                for (Condition condition : conditions) {
-                    elements.declareEnterCondition(condition);
-                }
-            }
-        };
-    }
-
-    private static class Drop extends Transition {
-        private final CarryOn mCarryOn;
-
-        private Drop(CarryOn carryOn, TransitionOptions options, @Nullable Trigger trigger) {
-            super(options, List.of(carryOn), Collections.emptyList(), trigger);
-            mCarryOn = carryOn;
-        }
-
-        @Override
-        public String toDebugString() {
-            return "Drop " + mCarryOn.getName();
-        }
-    }
-
-    private static class PickUp extends Transition {
-        private final CarryOn mCarryOn;
-
-        private PickUp(CarryOn carryOn, TransitionOptions options, @Nullable Trigger trigger) {
-            super(options, Collections.EMPTY_LIST, List.of(carryOn), trigger);
-            mCarryOn = carryOn;
-        }
-
-        @Override
-        public String toDebugString() {
-            return "PickUp " + mCarryOn.getName();
-        }
+    @Override
+    <T extends Activity> void onDeclaredActivityElement(ActivityElement<T> element) {
+        ActivityElement<?> existingActivityElement = determineActivityElement();
+        assert existingActivityElement == null
+                : String.format(
+                        "%s already declared an ActivityElement with id %s",
+                        getName(), existingActivityElement.getId());
+        mUntypedActivityElement = element;
     }
 }

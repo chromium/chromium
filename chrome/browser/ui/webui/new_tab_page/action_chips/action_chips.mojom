@@ -1,0 +1,60 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module action_chips.mojom;
+
+import "url/mojom/url.mojom";
+import "mojo/public/mojom/base/time.mojom";
+
+// Information about a tab to be sent to the WebUI.
+struct TabInfo {
+  int32 tab_id;
+  string title;
+  url.mojom.Url url;
+  mojo_base.mojom.Time last_active_time;
+};
+
+/**
+ * The types of action chips in NTP. This enum must match the numbering for
+ * ChipType in enums.xml. These values are persisted to logs. Entries
+ * should not be renumbered, removed or reused.
+ */
+// LINT.IfChange(ChipType)
+enum ChipType {
+  kImage = 0,
+  kDeepSearch = 1,
+  kRecentTab = 2,
+  kDeepDive = 3,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:ChipType)
+
+// The information representing a single action chip.
+struct ActionChip {
+  string title;
+  string suggestion;
+  ChipType type;
+  // the tab associated with this chip.
+  TabInfo? tab;
+};
+
+// Interface for the browser-side handler.
+interface ActionChipsHandler {
+  // Start retrieving the information needed for action chips.
+  // Once the retrieval is complete, Page::OnActionChipsChanged is called to
+  // notify the UI.
+  StartActionChipsRetrieval();
+};
+
+// Interface for the page-side handler receiving information from the browser.
+interface Page {
+  // Notifies the page that a new set of action chips is ready.
+  OnActionChipsChanged(array<ActionChip> action_chips);
+};
+
+// Factory to create the ActionChipsHandler.
+interface ActionChipsHandlerFactory {
+  // The WebUI component calls this method when the page is first initialized.
+  CreateActionChipsHandler(pending_receiver<ActionChipsHandler> handler,
+                           pending_remote<Page> page);
+};

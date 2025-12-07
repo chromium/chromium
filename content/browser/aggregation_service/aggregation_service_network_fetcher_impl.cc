@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -15,6 +16,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "content/browser/aggregation_service/public_key_parsing_utils.h"
@@ -148,13 +150,14 @@ void AggregationServiceNetworkFetcherImpl::OnSimpleLoaderComplete(
     UrlLoaderList::iterator it,
     const GURL& url,
     NetworkFetchCallback callback,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   std::unique_ptr<network::SimpleURLLoader> loader = std::move(*it);
   loaders_in_progress_.erase(it);
 
   std::optional<int> http_response_code;
-  if (loader->ResponseInfo() && loader->ResponseInfo()->headers)
+  if (loader->ResponseInfo() && loader->ResponseInfo()->headers) {
     http_response_code = loader->ResponseInfo()->headers->response_code();
+  }
 
   // Since net errors are always negative and HTTP errors are always positive,
   // it is fine to combine these in a single histogram.
@@ -249,7 +252,7 @@ void AggregationServiceNetworkFetcherImpl::OnError(
     const GURL& url,
     NetworkFetchCallback callback,
     FetchStatus error,
-    const std::string& error_msg) {
+    std::string_view error_msg) {
   CHECK_NE(error, FetchStatus::kSuccess);
   RecordFetchStatus(error);
 

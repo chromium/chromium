@@ -119,7 +119,7 @@ class InfobarBadgeTabHelper
     void OnInfoBarRemoved(infobars::InfoBar* infobar, bool animate) override;
     void OnInfoBarReplaced(infobars::InfoBar* old_infobar,
                            infobars::InfoBar* new_infobar) override;
-    void OnManagerShuttingDown(infobars::InfoBarManager* manager) override;
+    void OnManagerWillBeDestroyed(infobars::InfoBarManager* manager) override;
 
     // The owning tab helper.
     raw_ptr<InfobarBadgeTabHelper> tab_helper_ = nullptr;
@@ -148,8 +148,6 @@ class InfobarBadgeTabHelper
   // List of observers to be notified when the infobar badges are updated.
   base::ObserverList<InfobarBadgeTabHelperObserver, true>
       badge_updates_observers_;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_INFOBARS_MODEL_INFOBAR_BADGE_TAB_HELPER_H_

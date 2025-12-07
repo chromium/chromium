@@ -6,13 +6,14 @@ package org.chromium.chrome.browser.tab.state;
 
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.PRICE_TRACKING_IDS_FOR_TABS_WITH_PRICE_DROP;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.Contract;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -31,15 +32,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  * This service should be moved out of current folder when we finish the ShoppingPersistedTabData
  * refactor that will move it out of current folder.
  */
+@NullMarked
 public class ShoppingPersistedTabDataService {
-    public static final BooleanCachedFieldTrialParameter
-            SKIP_SHOPPING_PERSISTED_TAB_DATA_DELAYED_INITIALIZATION =
-                    ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                            ChromeFeatureList.PRICE_CHANGE_MODULE,
-                            "skip_shopping_persisted_tab_data_delayed_initialization",
-                            true);
-    private static ProfileKeyedMap<ShoppingPersistedTabDataService> sProfileToPriceDropService;
-    private static ShoppingPersistedTabDataService sServiceForTesting;
+    private static @Nullable ProfileKeyedMap<ShoppingPersistedTabDataService>
+            sProfileToPriceDropService;
+    private static @Nullable ShoppingPersistedTabDataService sServiceForTesting;
 
     private Set<Tab> mTabsWithPriceDrop;
     private boolean mInitialized;
@@ -50,8 +47,8 @@ public class ShoppingPersistedTabDataService {
      * service.
      */
     public static class PriceChangeItem {
-        private Tab mTab;
-        private ShoppingPersistedTabData mData;
+        private final Tab mTab;
+        private final ShoppingPersistedTabData mData;
 
         public PriceChangeItem(Tab tab, ShoppingPersistedTabData data) {
             mTab = tab;
@@ -74,7 +71,7 @@ public class ShoppingPersistedTabDataService {
     }
 
     /** Creates a new instance. */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     protected ShoppingPersistedTabDataService() {
         mTabsWithPriceDrop = new HashSet<>();
         mSharedPreferencesManager = ChromeSharedPreferences.getInstance();
@@ -190,7 +187,8 @@ public class ShoppingPersistedTabDataService {
                             callback.onResult(sortShoppingPersistedTabDataWithPriceDrops(results));
                         }
                     },
-                    SKIP_SHOPPING_PERSISTED_TAB_DATA_DELAYED_INITIALIZATION.getValue());
+                    ChromeFeatureList.sPriceChangeModuleSkipShoppingPersistedTabDataDelayedInit
+                            .getValue());
         }
     }
 
@@ -212,6 +210,7 @@ public class ShoppingPersistedTabDataService {
      * @param data the {@link ShoppingPersistedTabData} to check.
      * @return whether the data is eligible.
      */
+    @Contract("null -> false")
     protected static boolean isDataEligibleForPriceDrop(@Nullable ShoppingPersistedTabData data) {
         return data != null
                 && data.getPriceDrop() != null

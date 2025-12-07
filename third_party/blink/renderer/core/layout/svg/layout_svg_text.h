@@ -52,10 +52,14 @@ class LayoutSVGText final : public LayoutSVGBlock {
   gfx::RectF StrokeBoundingBox() const override;
   gfx::RectF DecoratedBoundingBox() const override;
   gfx::RectF VisualRectInLocalSVGCoordinates() const override;
-  void AbsoluteQuads(Vector<gfx::QuadF>& quads,
-                     MapCoordinatesFlags mode) const override;
-  gfx::RectF LocalBoundingBoxRectForAccessibility() const override;
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+  void QuadsInAncestorInternal(Vector<gfx::QuadF>&,
+                               const LayoutBoxModelObject* ancestor,
+                               MapCoordinatesFlags) const override;
+  gfx::RectF LocalBoundingBoxRectForAccessibility(
+      IncludeDescendants include_descendants) const override;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) override;
   void WillBeDestroyed() override;
   bool NodeAtPoint(HitTestResult& result,
                    const HitTestLocation& hit_test_location,
@@ -73,6 +77,7 @@ class LayoutSVGText final : public LayoutSVGBlock {
 
   void UpdateFont();
   void UpdateTransformAffectsVectorEffect();
+  void InvalidateDescendantObjectBoundingBoxes();
 
   // bounding_box_* are mutable for on-demand computation in a const method.
   mutable gfx::RectF bounding_box_;

@@ -29,8 +29,7 @@ class XrActivityListener : public device::XrActivityStateHandler {
   void SetResumedHandler(base::RepeatingClosure resumed_handler) override;
 
   // XrActivityListener JNI interface.
-  void OnActivityResumed(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& obj);
+  void OnActivityResumed(JNIEnv* env);
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> j_xr_activity_listener_;

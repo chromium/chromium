@@ -11,7 +11,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 (async function() {
   TestRunner.addResult(`Tests conversion of Inspector's resource representation into HAR format.\n`);
 
-  await TestRunner.NetworkAgent.setCacheDisabled(true);
+  await TestRunner.NetworkAgent.invoke_setCacheDisabled({cacheDisabled: true});
   await TestRunner.reloadPagePromise();
   await TestRunner.evaluateInPagePromise(`
       var xhr = new XMLHttpRequest();
@@ -52,11 +52,21 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     request.setServiceWorkerResponseSource('cache-storage');
   }
 
-  const test_url = findRequestByURL(/inspected-page\.html$/);
-  addCookieHeadersToRequest(test_url);
-  addServiceWorkerInfoToRequest(test_url);
+  function addServiceWorkerRoutingInfoToRequest(request) {
+    const routerInfo = {
+      ruleIdMatched: 3,
+      matchedSourceType: Protocol.Network.ServiceWorkerRouterSource.Cache,
+      actualSourceType: Protocol.Network.ServiceWorkerRouterSource.Cache,
+    };
+    request.serviceWorkerRouterInfo = routerInfo;
+  }
+
+  const request = findRequestByURL(/inspected-page\.html$/);
+  addCookieHeadersToRequest(request);
+  addServiceWorkerInfoToRequest(request);
+  addServiceWorkerRoutingInfoToRequest(request);
   const requests = NetworkTestRunner.networkRequests();
-  var log = await NetworkTestRunner.buildHARLog(requests);
+  var log = await NetworkTestRunner.buildHARLog(requests, {sanitize: false});
   // Filter out favicon.ico requests that only appear on certain platforms.
   log.entries = log.entries.filter(function(entry) {
     return !/favicon\.ico$/.test(entry.request.url);

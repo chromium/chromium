@@ -9,6 +9,8 @@
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/resource/resource_bundle.h"
+#include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
@@ -28,22 +30,24 @@ scoped_refptr<base::RefCountedBytes> UserImage::Encode(
     ImageFormat image_format) {
   TRACE_EVENT2("oobe", "UserImage::Encode",
                "width", bitmap.width(), "height", bitmap.height());
-  std::vector<unsigned char> output;
   if (image_format == FORMAT_JPEG) {
-    if (gfx::JPEGCodec::Encode(bitmap, kDefaultEncodingQuality, &output)) {
-      return base::RefCountedBytes::TakeVector(&output);
+    std::optional<std::vector<uint8_t>> output =
+        gfx::JPEGCodec::Encode(bitmap, kDefaultEncodingQuality);
+    if (output) {
+      return base::MakeRefCounted<base::RefCountedBytes>(
+          std::move(output.value()));
     }
   } else if (image_format == FORMAT_PNG) {
     auto* bitmap_data =
         reinterpret_cast<unsigned char*>(bitmap.getAddr32(0, 0));
-    if (gfx::PNGCodec::Encode(
-            bitmap_data,
-            gfx::PNGCodec::FORMAT_SkBitmap,
-            gfx::Size(bitmap.width(), bitmap.height()),
-            bitmap.width() * bitmap.bytesPerPixel(),
-            false,  // discard_transparency
-            std::vector<gfx::PNGCodec::Comment>(), &output)) {
-      return base::RefCountedBytes::TakeVector(&output);
+    std::optional<std::vector<uint8_t>> output = gfx::PNGCodec::Encode(
+        bitmap_data, gfx::PNGCodec::FORMAT_SkBitmap,
+        gfx::Size(bitmap.width(), bitmap.height()),
+        bitmap.width() * bitmap.bytesPerPixel(),
+        /*discard_transparency=*/false, std::vector<gfx::PNGCodec::Comment>());
+    if (output) {
+      return base::MakeRefCounted<base::RefCountedBytes>(
+          std::move(output).value());
     }
   } else {
     LOG(FATAL) << "Invalid image format: " << image_format;
@@ -70,6 +74,13 @@ std::unique_ptr<UserImage> UserImage::CreateAndEncode(
 }
 
 // static
+std::unique_ptr<UserImage> UserImage::CreateStub() {
+  return std::make_unique<user_manager::UserImage>(
+      *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+          IDR_LOGIN_DEFAULT_USER));
+}
+
+// static
 UserImage::ImageFormat UserImage::ChooseImageFormat(const SkBitmap& bitmap) {
   return SkBitmap::ComputeIsOpaque(bitmap) ? FORMAT_JPEG : FORMAT_PNG;
 }
@@ -89,7 +100,7 @@ UserImage::UserImage(const gfx::ImageSkia& image,
       image_format_(image_format) {
 }
 
-UserImage::~UserImage() {}
+UserImage::~UserImage() = default;
 
 void UserImage::MarkAsSafe() {
   is_safe_format_ = true;

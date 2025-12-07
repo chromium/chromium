@@ -68,8 +68,8 @@ TEST_F(WeakCellTest, Callback) {
   // Verify that `WeakCell<T>` can be used as a callback receiver.
   TestClass* tester = MakeGarbageCollected<TestClass>();
 
-  auto callback =
-      WTF::BindOnce(&TestClass::Method, WrapPersistent(tester->GetWeakCell()));
+  auto callback = blink::BindOnce(&TestClass::Method,
+                                  WrapPersistent(tester->GetWeakCell()));
   bool did_run = false;
   std::move(callback).Run([&] { did_run = true; });
   EXPECT_TRUE(did_run);
@@ -78,8 +78,8 @@ TEST_F(WeakCellTest, Callback) {
 TEST_F(WeakCellTest, FinalizationCancelsCallback) {
   TestClass* tester = MakeGarbageCollected<TestClass>();
 
-  auto callback =
-      WTF::BindOnce(&TestClass::Method, WrapPersistent(tester->GetWeakCell()));
+  auto callback = blink::BindOnce(&TestClass::Method,
+                                  WrapPersistent(tester->GetWeakCell()));
   tester = nullptr;
   PreciselyCollectGarbage();
 
@@ -91,8 +91,8 @@ TEST_F(WeakCellTest, FinalizationCancelsCallback) {
 TEST_F(WeakCellTest, InvalidationCancelsCallback) {
   TestClass* tester = MakeGarbageCollected<TestClass>();
 
-  auto callback =
-      WTF::BindOnce(&TestClass::Method, WrapPersistent(tester->GetWeakCell()));
+  auto callback = blink::BindOnce(&TestClass::Method,
+                                  WrapPersistent(tester->GetWeakCell()));
   tester->InvalidateCell();
 
   bool did_run = false;

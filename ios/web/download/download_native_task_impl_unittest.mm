@@ -20,6 +20,7 @@ namespace web {
 namespace {
 
 const char kUrl[] = "chromium://download.test/";
+NSString* const kOriginatingHost = @"host.test";
 const char kContentDisposition[] = "attachment; filename=file.test";
 const char kMimeType[] = "application/pdf";
 const char kIdentifier[] = "testIdentifier";
@@ -38,7 +39,8 @@ class DownloadNativeTaskImplTest : public PlatformTest {
         [[FakeNativeTaskBridge alloc] initWithDownload:fake_download_
                                               delegate:fake_delegate_];
     task_ = std::make_unique<DownloadNativeTaskImpl>(
-        &web_state_, GURL(kUrl), kHttpMethod, kContentDisposition,
+        &web_state_, GURL(kUrl), kOriginatingHost, kHttpMethod,
+        kContentDisposition,
         /*total_bytes=*/-1, kMimeType, @(kIdentifier),
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::USER_BLOCKING}),
@@ -59,6 +61,7 @@ TEST_F(DownloadNativeTaskImplTest, DefaultState) {
   EXPECT_EQ(DownloadTask::State::kNotStarted, task_->GetState());
   EXPECT_NSEQ(@(kIdentifier), task_->GetIdentifier());
   EXPECT_EQ(kUrl, task_->GetOriginalUrl());
+  EXPECT_NSEQ(kOriginatingHost, task_->GetOriginatingHost());
   EXPECT_FALSE(task_->IsDone());
   EXPECT_EQ(0, task_->GetErrorCode());
   EXPECT_EQ(-1, task_->GetHttpCode());

@@ -70,7 +70,7 @@ suggest that the EV UI does not belong in Chrome’s most visible UI surface.
 	surveys participants about IE 7’s EV UI and concludes that it did not help
     	users identify two types of phishing attacks, even after participants
     	received education about the UI.
-*   [Exploring User Reactions to New Browser Cues for Extended Validation Certificates](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.543.2117&rep=rep1&type=pdf):
+*   [Exploring User Reactions to New Browser Cues for Extended Validation Certificates](https://www.ccsl.carleton.ca/paper-archive/sobey-esorics-08.pdf):
 	studies Firefox 3’s EV UI and found
 	that users did not notice it. The researchers presented a re-designed
 	indicator which some users did notice but did not use in their decision-
@@ -86,13 +86,13 @@ suggest that the EV UI does not belong in Chrome’s most visible UI surface.
 
 ### Chrome Research:
 
-*   [The Web’s Identity Crisis: Understanding the Effectiveness of Website Identity Indicators](https://storage.googleapis.com/pub-tools-public-publication-data/pdf/400599205ab5a1c9efa03e2a7c127eb8200bf288.pdf):
+*   [The Web’s Identity Crisis: Understanding the Effectiveness of Website Identity Indicators](https://www.usenix.org/conference/usenixsecurity19/presentation/thompson):
 	a large-scale field experiment in which the EV UI was removed for a random
 	subset of users, and a wide variety of user behavior metrics did not change,
 	suggesting that the EV UI is not having its intended effect. Survey
 	experiments also confirm that users do not react as intended to positive or
 	neutral security UI.
-*   [Rethinking Connection Security Indicators](https://storage.googleapis.com/pub-tools-public-publication-data/pdf/45366.pdf):
+*   [Rethinking Connection Security Indicators](https://www.usenix.org/conference/soups2016/technical-sessions/presentation/porter-felt):
 	does not study EV specifically, but studies users’ reaction to other
 	connection security indicators like the lock icon via survey, and finds that
 	users are widely confused about their meaning. Informs Chrome’s overall

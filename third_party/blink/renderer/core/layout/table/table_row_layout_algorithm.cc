@@ -258,15 +258,13 @@ const LayoutResult* TableRowLayoutAlgorithm::Layout() {
   }
 
   if (InvolvedInBlockFragmentation(container_builder_)) [[unlikely]] {
-    BreakStatus status = FinishFragmentation(
-        /*trailing_border_padding=*/LayoutUnit(), &container_builder_);
+    BreakStatus status = FinishFragmentation(&container_builder_);
 
     // TODO(mstensho): Deal with early-breaks.
     DCHECK_EQ(status, BreakStatus::kContinue);
 
     container_builder_.SetBreakTokenData(
         MakeGarbageCollected<TableRowBreakTokenData>(
-            container_builder_.GetBreakTokenData(),
             previous_consumed_row_block_size +
                 container_builder_.FragmentBlockSize()));
   }

@@ -8,8 +8,11 @@
 #import "base/path_service.h"
 #import "components/metrics/persistent_histograms.h"
 #import "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
+#import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_store.h"
+#import "ios/chrome/common/channel_info.h"
 
 void IOSChromeFieldTrials::OnVariationsSetupComplete() {
   // Persistent histograms must be enabled ASAP, but depends on Features.
@@ -17,7 +20,7 @@ void IOSChromeFieldTrials::OnVariationsSetupComplete() {
   if (base::PathService::Get(ios::DIR_USER_DATA, &user_data_dir)) {
     InstantiatePersistentHistogramsWithFeaturesAndCleanup(user_data_dir);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   if (used_seed_) {
     [IOSChromeVariationsSeedStore notifySeedApplication];

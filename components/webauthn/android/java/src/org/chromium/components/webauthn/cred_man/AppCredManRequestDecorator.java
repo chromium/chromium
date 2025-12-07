@@ -7,8 +7,12 @@ package org.chromium.components.webauthn.cred_man;
 import android.credentials.CreateCredentialRequest.Builder;
 import android.os.Bundle;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
+@NullMarked
 public class AppCredManRequestDecorator implements CredManRequestDecorator {
-    private static AppCredManRequestDecorator sInstance;
+    private static @Nullable AppCredManRequestDecorator sInstance;
 
     public static AppCredManRequestDecorator getInstance() {
         if (sInstance == null) {

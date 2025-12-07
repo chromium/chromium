@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.history;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.history.HistoryManagerToolbar.InfoHeaderPref;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -13,6 +14,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
  * the first time user opens the history page. From the next time, the UI opens with the info text
  * hidden, visible by the info toggle button.
  */
+@NullMarked
 class AppHistoryInfoHeaderPref implements InfoHeaderPref {
     @Override
     public boolean isVisible() {

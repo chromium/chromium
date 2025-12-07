@@ -1,0 +1,9 @@
+# crbug.com/329482486
+-TranslatorVariants/EXTBlendFuncExtendedDrawTest.ESSL1FragColor/0
+-TranslatorVariants/EXTBlendFuncExtendedDrawTest.ESSL1FragColor/1
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ES3Getters/0
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ES3Getters/1
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ESSL3BindSimpleVarAsArrayNoBind/0
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ESSL3BindSimpleVarAsArrayNoBind/1
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ESSL3Var/0
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ESSL3Var/1

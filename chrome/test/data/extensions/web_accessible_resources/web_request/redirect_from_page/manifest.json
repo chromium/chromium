@@ -1,0 +1,9 @@
+{
+  "name": "Test",
+  "version": "0.0.1",
+  "manifest_version": 2,
+  "description": "Test",
+  "background": {"scripts": ["background.js"]},
+  "web_accessible_resources": ["war.js"],
+  "permissions": ["webRequest", "webRequestBlocking", "<all_urls>"]
+}

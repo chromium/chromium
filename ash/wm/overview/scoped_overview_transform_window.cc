@@ -5,6 +5,7 @@
 #include "ash/wm/overview/scoped_overview_transform_window.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -12,6 +13,7 @@
 #include "ash/shell.h"
 #include "ash/style/system_shadow.h"
 #include "ash/wm/float/float_controller.h"
+#include "ash/wm/layer_tree_synchronizer.h"
 #include "ash/wm/overview/delayed_animation_observer_impl.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -20,7 +22,6 @@
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/overview/scoped_overview_animation_settings.h"
-#include "ash/wm/scoped_layer_tree_synchronizer.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -34,13 +35,11 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/transient_window_client.h"
-#include "ui/aura/scoped_window_event_targeting_blocker.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -54,6 +53,7 @@
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/shadow_controller.h"
@@ -146,6 +146,32 @@ class ScopedOverviewTransformWindow::LayerCachingAndFilteringObserver
   raw_ptr<ui::Layer> layer_;
 };
 
+ScopedOverviewTransformWindow::TransientInfo::TransientInfo(
+    aura::Window* transient)
+    : event_targeting_blocker(transient) {
+  auto* widget = views::Widget::GetTopLevelWidgetForNativeView(transient);
+  auto* bubble_dialog_delegate =
+      widget && widget->widget_delegate()
+          ? widget->widget_delegate()->AsBubbleDialogDelegate()
+          : nullptr;
+  if (bubble_dialog_delegate) {
+    adjust_if_offscreen = bubble_dialog_delegate->adjust_if_offscreen();
+    bubble_dialog_delegate->set_adjust_if_offscreen(false);
+  }
+}
+
+ScopedOverviewTransformWindow::TransientInfo::~TransientInfo() {
+  auto* widget = views::Widget::GetTopLevelWidgetForNativeView(
+      event_targeting_blocker.window());
+  auto* bubble_dialog_delegate =
+      widget && widget->widget_delegate()
+          ? widget->widget_delegate()->AsBubbleDialogDelegate()
+          : nullptr;
+  if (bubble_dialog_delegate) {
+    bubble_dialog_delegate->set_adjust_if_offscreen(adjust_if_offscreen);
+  }
+}
+
 ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(
     OverviewItem* overview_item,
     aura::Window* window)
@@ -153,26 +179,18 @@ ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(
       window_(window),
       original_opacity_(window->layer()->GetTargetOpacity()),
       original_clip_rect_(window_->layer()->GetTargetClipRect()) {
-  raster_scale_observer_lock_.emplace(
-      (new RasterScaleLayerObserver(window_, window_->layer(), window_))
-          ->Lock());
-
   fill_mode_ = GetOverviewItemFillModeForWindow(window);
 
   std::vector<raw_ptr<aura::Window, VectorExperimental>>
       transient_children_to_hide;
   for (auto* transient : GetTransientTreeIterator(window)) {
-    event_targeting_blocker_map_[transient] =
-        std::make_unique<aura::ScopedWindowEventTargetingBlocker>(transient);
+    transient_windows_info_map_.emplace(
+        transient, std::make_unique<TransientInfo>(transient));
 
-    if (window_util::AsBubbleDialogDelegate(transient)) {
-      transient->SetProperty(kHideInOverviewKey, true);
-    } else {
-      transient->SetProperty(chromeos::kIsShowingInOverviewKey, true);
-      // Add this as `aura::WindowObserver` for observing `kHideInOverviewKey`
-      // property changes.
-      window_observations_.AddObservation(transient);
-    }
+    transient->SetProperty(chromeos::kIsShowingInOverviewKey, true);
+    // Add this as `aura::WindowObserver` for observing `kHideInOverviewKey`
+    // property changes.
+    window_observations_.AddObservation(transient);
 
     // Hide transient children which have been specified to be hidden in
     // overview mode.
@@ -191,8 +209,8 @@ ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(
   // scrolls, they get scrolled underneath the split view window. The window
   // will be returned to its proper z-order on exiting overview if it is
   // activated.
-  // TODO(sammiequon): This does not handle the case if either the snapped
-  // window or this window is an always on top window.
+  // TODO: This does not handle the case if either the snapped window or this
+  // window is an always on top window.
   if (auto* split_view_controller =
           SplitViewController::Get(Shell::GetPrimaryRootWindow());
       ShouldUseTabletModeGridLayout() &&
@@ -206,8 +224,7 @@ ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(
           if (window == window->parent()->children()[i])
             return i;
         }
-        NOTREACHED_IN_MIGRATION();
-        return 0u;
+        NOTREACHED();
       };
 
       if (get_z_order(window_) > get_z_order(snapped_window))
@@ -220,8 +237,8 @@ ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(
   // Note: windows in the overview belong to different containers. For instance,
   // normal windows belong to a desk container, floated windows to a float
   // container, and always-on-top windows to their respective container.
-  window_tree_synchronizer_ = std::make_unique<ScopedWindowTreeSynchronizer>(
-      window_->GetRootWindow(), /*restore_tree=*/true);
+  window_tree_synchronizer_ =
+      std::make_unique<WindowTreeSynchronizer>(/*restore_tree=*/true);
 }
 
 ScopedOverviewTransformWindow::~ScopedOverviewTransformWindow() {
@@ -235,10 +252,11 @@ ScopedOverviewTransformWindow::~ScopedOverviewTransformWindow() {
 
   for (auto* transient : GetTransientTreeIterator(window_)) {
     ClearWindowProperties(transient);
-    DCHECK(event_targeting_blocker_map_.contains(transient));
-    event_targeting_blocker_map_.erase(transient);
+    DCHECK(transient_windows_info_map_.contains(transient));
+    transient_windows_info_map_.erase(transient);
   }
 
+  RestoreWindowTree();
   UpdateRoundedCorners(/*show=*/false);
   aura::client::GetTransientWindowClient()->RemoveObserver(this);
 }
@@ -312,7 +330,7 @@ void ScopedOverviewTransformWindow::RestoreWindow(bool reset_transform,
     SetClipping(gfx::Rect(original_clip_rect_.size()));
   }
 
-  window_tree_synchronizer_->Restore();
+  RestoreWindowTree();
 }
 
 void ScopedOverviewTransformWindow::BeginScopedAnimation(
@@ -390,8 +408,7 @@ void ScopedOverviewTransformWindow::SetClipping(const gfx::Rect& clip_rect) {
   }
 
   ui::Layer* layer = window_->layer();
-  // TODO(sammiequon): Investigate why we cannot use
-  // `ui::Layer::GetTargetClipRect()` here.
+  // TODO: Investigate why we cannot use `ui::Layer::GetTargetClipRect()` here.
   if (layer->GetAnimator()->GetTargetClipRect() == clip_rect) {
     return;
   }
@@ -551,18 +568,27 @@ void ScopedOverviewTransformWindow::UpdateRoundedCorners(bool show) {
                          window(), /*include_header_rounding=*/false, scale)
                    : gfx::RoundedCornersF(0));
 
-  if (!chromeos::features::IsRoundedWindowsEnabled()) {
-    return;
-  }
-
   gfx::RectF contents_bounds_in_root(contents_bounds_in_screen);
   wm::TranslateRectFromScreen(window_->GetRootWindow(),
                               &contents_bounds_in_root);
 
-  const gfx::RRectF rounded_contents_bounds(
-      contents_bounds_in_root,
+  const gfx::RoundedCornersF contents_rounded_corners =
       window_util::GetMiniWindowRoundedCorners(
-          window(), /*include_header_rounding=*/false));
+          window(), /*include_header_rounding=*/false);
+
+  const gfx::RRectF rounded_contents_bounds(contents_bounds_in_root,
+                                            contents_rounded_corners);
+  const gfx::RRectF rounded_contents_bounds_at_origin(
+      gfx::RectF(contents_bounds_in_root.size()), contents_rounded_corners);
+  if (synchronized_bounds_at_origin_ == rounded_contents_bounds_at_origin) {
+    return;
+  }
+
+  const bool is_being_dragged = !!window_tree_synchronizer_during_drag_;
+  auto window_tree_synchronizer([&]() {
+    return is_being_dragged ? window_tree_synchronizer_during_drag_.get()
+                            : window_tree_synchronizer_.get();
+  });
 
   // Synchronizing the rounded corners of a window and its transient hierarchy
   // against `rounded_contents_bounds` yields two outcomes:
@@ -570,13 +596,23 @@ void ScopedOverviewTransformWindow::UpdateRoundedCorners(bool show) {
   //   surface.
   // * It ensures that the transient windows' corners are correctly rounded,
   //   ensuring that all four corners of the WindowMiniView appear rounded.
-  //   See b/325635179.
-  window_tree_synchronizer_->SynchronizeRoundedCorners(
-      window(), /*consider_curvature=*/false, rounded_contents_bounds,
+  //   See b:325635179.
+  //
+  // Note: Disable layer curvature considerations during window dragging to
+  // prevent synchronization issues with reference bounds. This problem arises
+  // in edge cases where extreme downscaling (at the top edges of display) leads
+  // to exaggerated rounded corners, causing excessive layer curvature and
+  // hindering proper syncing, ultimately resulting in visual artifacts. See
+  // b:419292910.
+  window_tree_synchronizer()->SynchronizeRoundedCorners(
+      window(), window()->GetRootWindow(), rounded_contents_bounds,
+      /*consider_curvature=*/!is_being_dragged,
       /*ignore_predicate=*/base::BindRepeating([](aura::Window* window) {
         return window->GetProperty(kHideInOverviewKey) ||
                window->GetProperty(kExcludeFromTransientTreeTransformKey);
       }));
+
+  synchronized_bounds_at_origin_ = rounded_contents_bounds_at_origin;
 }
 
 void ScopedOverviewTransformWindow::OnTransientChildWindowAdded(
@@ -585,10 +621,9 @@ void ScopedOverviewTransformWindow::OnTransientChildWindowAdded(
   if (parent != window_ && !::wm::HasTransientAncestor(parent, window_))
     return;
 
-  DCHECK(!event_targeting_blocker_map_.contains(transient_child));
-  event_targeting_blocker_map_[transient_child] =
-      std::make_unique<aura::ScopedWindowEventTargetingBlocker>(
-          transient_child);
+  DCHECK(!transient_windows_info_map_.contains(transient_child));
+  transient_windows_info_map_.emplace(
+      transient_child, std::make_unique<TransientInfo>(transient_child));
   transient_child->SetProperty(chromeos::kIsShowingInOverviewKey, true);
 
   // Hide transient children which have been specified to be hidden in
@@ -610,8 +645,8 @@ void ScopedOverviewTransformWindow::OnTransientChildWindowRemoved(
     return;
 
   ClearWindowProperties(transient_child);
-  DCHECK(event_targeting_blocker_map_.contains(transient_child));
-  event_targeting_blocker_map_.erase(transient_child);
+  DCHECK(transient_windows_info_map_.contains(transient_child));
+  transient_windows_info_map_.erase(transient_child);
 
   if (window_observations_.IsObservingSource(transient_child))
     window_observations_.RemoveObservation(transient_child);
@@ -621,24 +656,6 @@ void ScopedOverviewTransformWindow::OnWindowPropertyChanged(
     aura::Window* window,
     const void* key,
     intptr_t old) {
-  if (window == window_ && key == chromeos::kWindowStateTypeKey) {
-    const auto old_window_state = static_cast<chromeos::WindowStateType>(old);
-
-    // During the restore process, the synchronizer attempts to restore the
-    // rounded corners of the window's layer tree to the state it was in just
-    // before entering overview.
-    // However, this is not always be desirable. For instance, if an overview
-    // item is dragged into a snapped state, the synchronizer may hold an
-    // outdated original state. While the original state was for a
-    // rounded window, the window is now square in the snapped state.
-    if (chromeos::ShouldWindowHaveRoundedCorners(window) !=
-        chromeos::ShouldWindowStateHaveRoundedCorners(old_window_state)) {
-      window_tree_synchronizer_->ResetCachedLayerInfo();
-    }
-
-    return;
-  }
-
   if (key != kHideInOverviewKey)
     return;
 
@@ -678,6 +695,20 @@ void ScopedOverviewTransformWindow::OnWindowDestroying(aura::Window* window) {
   window_observations_.RemoveObservation(window);
 }
 
+void ScopedOverviewTransformWindow::OnDragStarted() {
+  window_tree_synchronizer_during_drag_ =
+      std::make_unique<WindowTreeSynchronizer>(/*restore_tree=*/true);
+}
+
+void ScopedOverviewTransformWindow::OnDragEnded() {
+  if (!window_tree_synchronizer_during_drag_) {
+    return;
+  }
+
+  window_tree_synchronizer_during_drag_->Restore();
+  window_tree_synchronizer_during_drag_.reset();
+}
+
 // static
 void ScopedOverviewTransformWindow::SetImmediateCloseForTests(bool immediate) {
   immediate_close_for_tests = immediate;
@@ -700,6 +731,17 @@ void ScopedOverviewTransformWindow::AddHiddenTransientWindows(
       hidden_transient_children_->AddWindow(window);
     }
   }
+}
+
+void ScopedOverviewTransformWindow::RestoreWindowTree() {
+  // In some instances, a drag is stated but never ended. Therefore restore the
+  // window tree to pre-drag state before restoring it to the original state.
+  // (See b:416789348)
+  if (window_tree_synchronizer_during_drag_) {
+    window_tree_synchronizer_during_drag_->Restore();
+  }
+
+  window_tree_synchronizer_->Restore();
 }
 
 }  // namespace ash

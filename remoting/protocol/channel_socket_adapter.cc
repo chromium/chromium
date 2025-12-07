@@ -6,6 +6,7 @@
 
 #include <limits>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "net/base/io_buffer.h"
@@ -14,19 +15,19 @@
 namespace remoting::protocol {
 
 TransportChannelSocketAdapter::TransportChannelSocketAdapter(
-    cricket::IceTransportInternal* ice_transport)
+    webrtc::IceTransportInternal* ice_transport)
     : channel_(ice_transport) {
   DCHECK(channel_);
 
   channel_->RegisterReceivedPacketCallback(
-      this, [&](rtc::PacketTransportInternal* transport,
-                const rtc::ReceivedPacket& packet) {
+      this, [&](webrtc::PacketTransportInternal* transport,
+                const webrtc::ReceivedIpPacket& packet) {
         OnNewPacket(transport, packet);
       });
-  channel_->SignalWritableState.connect(
-      this, &TransportChannelSocketAdapter::OnWritableState);
-  channel_->SignalDestroyed.connect(
-      this, &TransportChannelSocketAdapter::OnChannelDestroyed);
+  channel_->SubscribeWritableState(
+      this, [this](webrtc::PacketTransportInternal* transport) {
+        OnWritableState(transport);
+      });
 }
 
 TransportChannelSocketAdapter::~TransportChannelSocketAdapter() {
@@ -82,7 +83,7 @@ int TransportChannelSocketAdapter::Send(
   }
 
   int result;
-  rtc::PacketOptions options;
+  webrtc::AsyncSocketPacketOptions options;
   if (channel_->writable()) {
     result = channel_->SendPacket(buffer->data(), buffer_size, options);
     if (result < 0) {
@@ -116,7 +117,6 @@ void TransportChannelSocketAdapter::Close(int error_code) {
   DCHECK(error_code != net::OK);
   closed_error_code_ = error_code;
   channel_->DeregisterReceivedPacketCallback(this);
-  channel_->SignalDestroyed.disconnect(this);
   channel_ = nullptr;
 
   if (!read_callback_.is_null()) {
@@ -135,8 +135,8 @@ void TransportChannelSocketAdapter::Close(int error_code) {
 }
 
 void TransportChannelSocketAdapter::OnNewPacket(
-    rtc::PacketTransportInternal* transport,
-    const rtc::ReceivedPacket& packet) {
+    webrtc::PacketTransportInternal* transport,
+    const webrtc::ReceivedIpPacket& packet) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_EQ(transport, channel_);
   if (!read_callback_.is_null()) {
@@ -150,7 +150,8 @@ void TransportChannelSocketAdapter::OnNewPacket(
       data_size = read_buffer_size_;
     }
 
-    memcpy(read_buffer_->data(), packet.payload().data(), data_size);
+    UNSAFE_TODO(
+        memcpy(read_buffer_->data(), packet.payload().data(), data_size));
 
     net::CompletionRepeatingCallback callback = read_callback_;
     read_callback_.Reset();
@@ -163,11 +164,11 @@ void TransportChannelSocketAdapter::OnNewPacket(
 }
 
 void TransportChannelSocketAdapter::OnWritableState(
-    rtc::PacketTransportInternal* transport) {
+    webrtc::PacketTransportInternal* transport) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Try to send the packet if there is a pending write.
   if (!write_callback_.is_null()) {
-    rtc::PacketOptions options;
+    webrtc::AsyncSocketPacketOptions options;
     int result = channel_->SendPacket(write_buffer_->data(), write_buffer_size_,
                                       options);
     if (result < 0) {
@@ -181,13 +182,6 @@ void TransportChannelSocketAdapter::OnWritableState(
       callback.Run(result);
     }
   }
-}
-
-void TransportChannelSocketAdapter::OnChannelDestroyed(
-    cricket::IceTransportInternal* channel) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK_EQ(channel, channel_);
-  Close(net::ERR_CONNECTION_ABORTED);
 }
 
 }  // namespace remoting::protocol

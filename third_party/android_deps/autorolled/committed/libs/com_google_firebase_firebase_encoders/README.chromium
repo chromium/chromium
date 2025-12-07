@@ -1,0 +1,16 @@
+Name: firebase-encoders
+Short Name: firebase-encoders
+URL: https://dl.google.com/dl/android/maven2/com/google/firebase/firebase-encoders/17.0.0/firebase-encoders-17.0.0.jar
+Version: 17.0.0
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+Commonly used encoders for Firebase SKDs.
+
+Local Modifications:
+No modifications.

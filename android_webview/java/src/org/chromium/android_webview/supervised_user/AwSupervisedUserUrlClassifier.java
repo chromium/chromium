@@ -4,18 +4,19 @@
 
 package org.chromium.android_webview.supervised_user;
 
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.android_webview.AwFeatureMap;
-import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSupervisedUserUrlClassifierDelegate;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.JniOnceCallback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 /**
@@ -32,6 +33,7 @@ import org.chromium.url.GURL;
  * <p>Lifetime: Singleton
  */
 @JNINamespace("android_webview")
+@NullMarked
 public class AwSupervisedUserUrlClassifier {
     private static @Nullable AwSupervisedUserUrlClassifier sInstance;
     private static final Object sInstanceLock = new Object();
@@ -43,20 +45,17 @@ public class AwSupervisedUserUrlClassifier {
         mDelegate = delegate;
     }
 
-    public static AwSupervisedUserUrlClassifier getInstance() {
+    public static @Nullable AwSupervisedUserUrlClassifier getInstance() {
         // Supervised user filters currently do not function in the SDK sandbox.
         // See https://crbug.com/1523530.
         if (ContextUtils.isSdkSandboxProcess()) return null;
 
         synchronized (sInstanceLock) {
             if (!sInitialized) {
-                if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_DETECTION)
-                        || AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK)) {
-                    AwSupervisedUserUrlClassifierDelegate delegate =
-                            PlatformServiceBridge.getInstance().getUrlClassifierDelegate();
-                    if (delegate != null) {
-                        sInstance = new AwSupervisedUserUrlClassifier(delegate);
-                    }
+                AwSupervisedUserUrlClassifierDelegate delegate =
+                        PlatformServiceBridge.getInstance().getUrlClassifierDelegate();
+                if (delegate != null) {
+                    sInstance = new AwSupervisedUserUrlClassifier(delegate);
                 }
                 sInitialized = true;
             }
@@ -65,29 +64,43 @@ public class AwSupervisedUserUrlClassifier {
         }
     }
 
+    public static void resetInstanceForTesting() {
+        synchronized (sInstanceLock) {
+            sInstance = null;
+            sInitialized = false;
+        }
+    }
+
+    public void checkIfNeedRestrictedContentBlocking() {
+        mDelegate.needsRestrictedContentBlocking(
+                result -> {
+                    ThreadUtils.postOnUiThread(
+                            () -> {
+                                AwSupervisedUserUrlClassifierJni.get()
+                                        .setUserRequiresUrlChecks(result);
+                            });
+                });
+    }
+
     @CalledByNative
     public static boolean shouldCreateThrottle() {
         return (getInstance() != null);
     }
 
     @CalledByNative
-    public static void shouldBlockUrl(GURL requestUrl, long nativeCallbackPtr) {
-        getInstance()
+    public static void shouldBlockUrl(GURL requestUrl, JniOnceCallback<Boolean> callback) {
+        // This should only be called if shouldCreateThrottle returns true.
+        assumeNonNull(getInstance())
                 .mDelegate
                 .shouldBlockUrl(
                         requestUrl,
                         shouldBlockUrl -> {
-                            ThreadUtils.postOnUiThread(
-                                    () -> {
-                                        AwSupervisedUserUrlClassifierJni.get()
-                                                .onShouldBlockUrlResult(
-                                                        nativeCallbackPtr, shouldBlockUrl);
-                                    });
+                            ThreadUtils.postOnUiThread(() -> callback.onResult(shouldBlockUrl));
                         });
     }
 
     @NativeMethods
     interface Natives {
-        void onShouldBlockUrlResult(long callbackPtr, boolean shouldBlock);
+        void setUserRequiresUrlChecks(boolean userRequiresUrlChecks);
     }
 }

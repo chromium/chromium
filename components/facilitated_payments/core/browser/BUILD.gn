@@ -4,13 +4,15 @@
 
 static_library("browser") {
   sources = [
+    "device_delegate.h",
     "facilitated_payments_api_client.h",
+    "facilitated_payments_app_info_list.h",
     "facilitated_payments_client.cc",
     "facilitated_payments_client.h",
     "facilitated_payments_driver.cc",
     "facilitated_payments_driver.h",
-    "facilitated_payments_manager.cc",
-    "facilitated_payments_manager.h",
+    "model/secure_payload.cc",
+    "model/secure_payload.h",
     "network_api/facilitated_payments_initiate_payment_request.cc",
     "network_api/facilitated_payments_initiate_payment_request.h",
     "network_api/facilitated_payments_initiate_payment_request_details.cc",
@@ -19,8 +21,15 @@ static_library("browser") {
     "network_api/facilitated_payments_initiate_payment_response_details.h",
     "network_api/facilitated_payments_network_interface.cc",
     "network_api/facilitated_payments_network_interface.h",
-    "payment_link_handler_impl.cc",
-    "payment_link_handler_impl.h",
+    "network_api/get_details_for_pix_account_linking_request.cc",
+    "network_api/get_details_for_pix_account_linking_request.h",
+    "payment_link_manager.cc",
+    "payment_link_manager.h",
+    "pix_account_linking_manager.cc",
+    "pix_account_linking_manager.h",
+    "pix_manager.cc",
+    "pix_manager.h",
+    "strike_databases/payment_link_suggestion_strike_database.h",
   ]
 
   public_deps = [
@@ -28,13 +37,13 @@ static_library("browser") {
     "//components/autofill/core/browser",
     "//components/facilitated_payments/core/features",
     "//components/facilitated_payments/core/metrics",
-    "//components/facilitated_payments/core/mojom:facilitated_payments_agent_mojom",
-    "//components/facilitated_payments/core/util",
+    "//components/facilitated_payments/core/mojom:pix_code_validator_mojom",
+    "//components/facilitated_payments/core/utils",
+    "//components/facilitated_payments/core/validation",
     "//components/optimization_guide/core",
     "//components/signin/public/identity_manager",
     "//services/data_decoder/public/cpp",
     "//services/metrics/public/cpp:metrics_cpp",
-    "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
     "//url",
   ]
@@ -43,22 +52,54 @@ static_library("browser") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "facilitated_payments_manager_unittest.cc",
+    "facilitated_payments_driver_unittest.cc",
     "network_api/facilitated_payments_initiate_payment_request_details_unittest.cc",
     "network_api/facilitated_payments_initiate_payment_request_unittest.cc",
     "network_api/facilitated_payments_network_interface_unittest.cc",
+    "network_api/get_details_for_pix_account_linking_request_unittest.cc",
+    "payment_link_manager_unittest.cc",
+    "pix_account_linking_manager_unittest.cc",
+    "pix_manager_unittest.cc",
   ]
 
   deps = [
     ":browser",
+    ":test_support",
     "//components/autofill/core/browser:test_support",
     "//components/autofill/core/common",
+    "//components/facilitated_payments/core/utils",
     "//components/optimization_guide/core",
+    "//components/optimization_guide/core:test_support",
     "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
     "//components/ukm:test_support",
     "//content/test:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//testing/gtest",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "mock_device_delegate.cc",
+    "mock_device_delegate.h",
+    "mock_facilitated_payments_api_client.cc",
+    "mock_facilitated_payments_api_client.h",
+    "mock_facilitated_payments_app_info_list.cc",
+    "mock_facilitated_payments_app_info_list.h",
+    "mock_facilitated_payments_client.cc",
+    "mock_facilitated_payments_client.h",
+    "network_api/mock_facilitated_payments_network_interface.cc",
+    "network_api/mock_facilitated_payments_network_interface.h",
+    "payment_link_manager_test_api.h",
+    "pix_account_linking_manager_test_api.h",
+  ]
+
+  deps = [
+    ":browser",
+    "//components/facilitated_payments/core/utils",
+    "//testing/gmock",
   ]
 }

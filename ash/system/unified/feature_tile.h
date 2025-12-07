@@ -76,8 +76,6 @@ class ASH_EXPORT FeatureTile : public views::Button {
 
   // The possible states the download progress UI can be in. The download
   // progress UI is currently only supported for compact tiles.
-  //
-  // TODO(b/315188874): Add full support for all download states.
   enum class DownloadState {
     kNone,         // The default state, e.g. this tile is not associated
                    // with a download. If this tile is of type

@@ -31,9 +31,13 @@ namespace web_app {
 
 class AppLock;
 class WebAppDataRetriever;
+// The result of checking if a URL is installable.
 enum class InstallableCheckResult {
+  // The URL is not installable as a web app.
   kNotInstallable,
+  // The URL is installable as a web app.
   kInstallable,
+  // A web app for the given URL is already installed.
   kAlreadyInstalled,
 };
 
@@ -64,7 +68,7 @@ class FetchInstallabilityForChromeManagement
   void OnWebAppInstallabilityChecked(blink::mojom::ManifestPtr opt_manifest,
                                      bool valid_manifest_for_web_app,
                                      webapps::InstallableStatusCode error_code);
-  void OnAppLockGranted(std::unique_ptr<AppLock> app_lock);
+  void OnAppLockGranted();
 
   bool IsWebContentsDestroyed();
 

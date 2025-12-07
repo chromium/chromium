@@ -38,10 +38,10 @@ public class WebViewSyncWrapper {
 
     private final WebView mWebView;
 
-    private CallbackHelper mPageCallback = new CallbackHelper();
-    private CallbackHelper mJsCallback = new CallbackHelper();
+    private final CallbackHelper mPageCallback = new CallbackHelper();
+    private final CallbackHelper mJsCallback = new CallbackHelper();
 
-    private List<ConsoleMessage> mErrorMessageList =
+    private final List<ConsoleMessage> mErrorMessageList =
             Collections.synchronizedList(new ArrayList<ConsoleMessage>());
 
     public WebViewSyncWrapper(WebView wv) {

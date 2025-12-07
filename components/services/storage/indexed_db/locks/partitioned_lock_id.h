@@ -8,26 +8,21 @@
 #include <iosfwd>
 #include <string>
 
-#include "base/component_export.h"
+namespace content::indexed_db {
 
-namespace content {
-
-struct COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLockId {
+struct PartitionedLockId {
   int partition;
   std::string key;
+
+  friend auto operator<=>(const PartitionedLockId&,
+                          const PartitionedLockId&) = default;
+  friend bool operator==(const PartitionedLockId&,
+                         const PartitionedLockId&) = default;
 };
 
 // Logging support.
-COMPONENT_EXPORT(LOCK_MANAGER)
 std::ostream& operator<<(std::ostream& out, const PartitionedLockId& range);
 
-COMPONENT_EXPORT(LOCK_MANAGER)
-bool operator<(const PartitionedLockId& x, const PartitionedLockId& y);
-COMPONENT_EXPORT(LOCK_MANAGER)
-bool operator==(const PartitionedLockId& x, const PartitionedLockId& y);
-COMPONENT_EXPORT(LOCK_MANAGER)
-bool operator!=(const PartitionedLockId& x, const PartitionedLockId& y);
-
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LOCKS_PARTITIONED_LOCK_ID_H_

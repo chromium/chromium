@@ -28,7 +28,7 @@ class ONCPolicyValueValidatorBase : public PolicyValueValidator<PayloadProto> {
   ONCPolicyValueValidatorBase& operator=(const ONCPolicyValueValidatorBase&) =
       delete;
 
-  virtual ~ONCPolicyValueValidatorBase() {}
+  virtual ~ONCPolicyValueValidatorBase() = default;
 
   // PolicyValueValidator:
   bool ValidateValues(

@@ -1,9 +1,9 @@
 {
   "name": "incognito no script",
   "version": "0.1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description": "Checks that content scripts do not inject js into incognito browsers.",
-  "permissions": ["http://*/*", "https://*/*"],
+  "host_permissions": ["http://*/*", "https://*/*"],
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*"],

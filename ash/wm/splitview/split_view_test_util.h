@@ -34,11 +34,11 @@ ASH_EXPORT const gfx::Rect GetWorkAreaBounds();
 
 const gfx::Rect GetWorkAreaBoundsForWindow(aura::Window* window);
 
-void SnapOneTestWindow(
-    aura::Window* window,
-    chromeos::WindowStateType state_type,
-    float snap_ratio,
-    WindowSnapActionSource snap_action_source = WindowSnapActionSource::kTest);
+void SnapOneTestWindow(aura::Window* window,
+                       chromeos::WindowStateType state_type,
+                       float snap_ratio,
+                       WindowSnapActionSource snap_action_source =
+                           WindowSnapActionSource::kSnapByWindowLayoutMenu);
 
 // Verifies that `window` is in split view overview, where `window` is
 // excluded from overview, and overview occupies the work area opposite of

@@ -6,12 +6,9 @@
     </title>
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
-    <script src="../resources/audit.js"></script>
   </head>
   <body>
-    <script id="layout-test-code">
-      const audit = Audit.createTaskRunner();
-
+    <script>
       // The common sample rate.
       const sampleRate = 48000;
 
@@ -23,55 +20,31 @@
       // Linux. (See: crbug.com/1092145, crbug.com/741699)
       const maxNumberOfContexts = 500;
 
-      let contexts = [];
+      // Create and sequentially render multiple OfflineAudioContexts to verify
+      // that no out-of-thread errors or crashes occur.
+      promise_test(async () => {
+        const contexts = [];
 
-      // For recursive and sequential rendering of multiple context.
-      function recurseContextRendering(index, oncomplete) {
-        if (index < maxNumberOfContexts) {
-          contexts[index].startRendering().then(() => {
-            recurseContextRendering(index + 1, oncomplete);
-          });
-        } else {
-          oncomplete(index);
+        // Phase 1: Create all contexts.
+        for (let i = 0; i < maxNumberOfContexts; ++i) {
+          contexts.push(new OfflineAudioContext(
+              numberOfChannels, renderLength, sampleRate));
         }
-      }
+        assert_equals(
+            contexts.length, maxNumberOfContexts,
+            'The correct number of contexts should be created without a crash');
 
-      // Create contexts up front, but do not start rendering. Based on
-      // crbug.com/716800, this caused a crash with out-of-threads error.
-      audit.define(
-          {
-            label: 'context-creation-smoketest',
-            description:
-                'Creating ' + maxNumberOfContexts + ' contexts up front.'
-          },
-          (task, should) => {
-            let i;
-            for (i = 0; i < maxNumberOfContexts; ++i) {
-              contexts.push(new OfflineAudioContext(
-                  numberOfChannels, renderLength, sampleRate));
-            }
-            should(i, 'The number of created contexts without a crash')
-                .beEqualTo(maxNumberOfContexts);
-            task.done();
-          });
-
-      // Create contexts, render and drop them sequentially. This should not
-      // crash the browser with out-of-threads error.
-      audit.define(
-          {
-            label: 'rendering-thread-smoketest',
-            description:
-                'Rendering ' + maxNumberOfContexts + ' contexts sequentially.'
-          },
-          (task, should) => {
-            recurseContextRendering(0, (counter) => {
-              should(counter, 'The number of contexts rendered without a crash')
-                  .beEqualTo(maxNumberOfContexts);
-              task.done();
-            });
-          });
-
-      audit.run();
+        // Phase 2: Render all contexts sequentially.
+        let renderedContexts = 0;
+        for (const context of contexts) {
+          await context.startRendering();
+          renderedContexts++;
+        }
+        assert_equals(
+            renderedContexts, maxNumberOfContexts,
+            'All created contexts should render sequentially without a crash');
+      }, `Create and sequentially render ${maxNumberOfContexts} ` +
+          `OfflineAudioContexts.`);
     </script>
   </body>
 </html>

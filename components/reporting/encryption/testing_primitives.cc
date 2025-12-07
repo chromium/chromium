@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/reporting/encryption/testing_primitives.h"
 
 #include <cstddef>
@@ -14,6 +9,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/check_op.h"
 #include "components/reporting/encryption/primitives.h"
 #include "crypto/aead.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -30,18 +26,20 @@ using ::testing::Ne;
 namespace reporting {
 namespace test {
 
-void GenerateEncryptionKeyPair(uint8_t private_key[kKeySize],
-                               uint8_t public_value[kKeySize]) {
-  X25519_keypair(public_value, private_key);
+void GenerateEncryptionKeyPair(base::span<uint8_t, kKeySize> private_key,
+                               base::span<uint8_t, kKeySize> public_value) {
+  X25519_keypair(public_value.data(), private_key.data());
 }
 
-void RestoreSharedSecret(const uint8_t private_key[kKeySize],
-                         const uint8_t peer_public_value[kKeySize],
-                         uint8_t shared_secret[kKeySize]) {
-  ASSERT_TRUE(X25519(shared_secret, private_key, peer_public_value));
+// TODO(https://issues.chromium.org/issues/431824286): use crypto/keyexchange
+void RestoreSharedSecret(base::span<const uint8_t, kKeySize> private_key,
+                         base::span<const uint8_t, kKeySize> peer_public_value,
+                         base::span<uint8_t, kKeySize> shared_secret) {
+  ASSERT_TRUE(X25519(shared_secret.data(), private_key.data(),
+                     peer_public_value.data()));
 }
 
-void PerformSymmetricDecryption(const uint8_t symmetric_key[kKeySize],
+void PerformSymmetricDecryption(base::span<const uint8_t, kKeySize> key,
                                 std::string_view input_data,
                                 std::string* output_data) {
   // Decrypt the data with symmetric key using AEAD interface.
@@ -49,7 +47,7 @@ void PerformSymmetricDecryption(const uint8_t symmetric_key[kKeySize],
   CHECK_EQ(aead.KeyLength(), kKeySize);
 
   // Use the symmetric key for data decryption.
-  aead.Init(base::make_span(symmetric_key, kKeySize));
+  aead.Init(key);
 
   // Get nonce at the head of input_data.
   CHECK_EQ(aead.NonceLength(), kNonceSize);
@@ -61,18 +59,18 @@ void PerformSymmetricDecryption(const uint8_t symmetric_key[kKeySize],
                         output_data));
 }
 
-void GenerateSigningKeyPair(uint8_t private_key[kSignKeySize],
-                            uint8_t public_value[kKeySize]) {
-  ED25519_keypair(public_value, private_key);
+void GenerateSigningKeyPair(base::span<uint8_t, kSignKeySize> private_key,
+                            base::span<uint8_t, kKeySize> public_value) {
+  ED25519_keypair(public_value.data(), private_key.data());
 }
 
-void SignMessage(const uint8_t signing_key[kSignKeySize],
+void SignMessage(base::span<const uint8_t, kSignKeySize> signing_key,
                  std::string_view message,
-                 uint8_t signature[kSignatureSize]) {
-  ASSERT_THAT(
-      ED25519_sign(signature, reinterpret_cast<const uint8_t*>(message.data()),
-                   message.size(), signing_key),
-      Eq(1));
+                 base::span<uint8_t, kSignatureSize> signature) {
+  ASSERT_THAT(ED25519_sign(signature.data(),
+                           reinterpret_cast<const uint8_t*>(message.data()),
+                           message.size(), signing_key.data()),
+              Eq(1));
 }
 
 }  // namespace test

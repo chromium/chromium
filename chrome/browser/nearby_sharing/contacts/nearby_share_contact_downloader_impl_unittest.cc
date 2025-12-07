@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/no_destructor.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -259,23 +258,4 @@ TEST_F(NearbyShareContactDownloaderImplTest, Timeout_ListContactPeople) {
       /*expected_page_token=*/kTestPageToken);
 
   VerifyFailure();
-}
-
-TEST_F(NearbyShareContactDownloaderImplTest, Success_FilterOutDeviceContacts) {
-  // Disable use of device contacts.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kNearbySharingDeviceContacts);
-
-  RunDownload();
-
-  SucceedListContactPeopleRequest(
-      /*expected_page_token=*/std::nullopt,
-      CreateListContactPeopleResponse(TestContactRecordList(),
-                                      /*next_page_token=*/std::nullopt));
-
-  // The device contact is filtered out.
-  VerifySuccess(/*expected_contacts=*/{TestContactRecordList()[0],
-                                       TestContactRecordList()[2]},
-                /*expected_num_unreachable_contacts_filtered_out=*/2);
 }

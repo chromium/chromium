@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"

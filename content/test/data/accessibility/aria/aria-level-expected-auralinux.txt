@@ -19,7 +19,7 @@
 ++++++[panel]
 ++++++++[tree item] name='Tree item at level 2' selectable level:2
 ++++++++++[static] name='Tree item at level 2'
-++++++++[tree item] name='Tree item at level 2, aria-level is 0' selectable level:2
+++++++++[tree item] name='Tree item at level 2, aria-level is 0' selectable level:1
 ++++++++++[static] name='Tree item at level 2, aria-level is 0'
 ++++[tree item] name='Tree item at level 3' selectable level:3
 ++++++[static] name='Tree item at level 3'

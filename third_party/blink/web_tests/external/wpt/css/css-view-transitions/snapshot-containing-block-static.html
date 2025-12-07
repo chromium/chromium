@@ -10,7 +10,8 @@
 <style>
 :root {
   view-transition-name: none;
-  background-color: red;
+  background-color: limegreen;
+  box-shadow: 0 0 0 10px inset red;
 }
 
 body {
@@ -33,8 +34,11 @@ div {
   view-transition-name: target;
 }
 
-::view-transition-group(target) {
-  animation-duration: 50s;
+::view-transition-group(target),
+::view-transition-image-pair(target),
+::view-transition-old(target),
+::view-transition-new(target) {
+  animation-play-state: paused;
 }
 
 ::view-transition {

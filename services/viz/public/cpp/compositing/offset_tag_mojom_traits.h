@@ -19,13 +19,16 @@ struct StructTraits<viz::mojom::OffsetTagDataView, viz::OffsetTag> {
     return input.token_;
   }
 
-  static bool Read(viz::mojom::OffsetTagDataView data, viz::OffsetTag* out);
+  static inline bool Read(viz::mojom::OffsetTagDataView data,
+                          viz::OffsetTag* out) {
+    return data.ReadToken(&out->token_);
+  }
 };
 
 template <>
 struct StructTraits<viz::mojom::OffsetTagValueDataView, viz::OffsetTagValue> {
   static const viz::OffsetTag& tag(const viz::OffsetTagValue& input) {
-    CHECK(input.IsValid());
+    DCHECK(input.IsValid());
     return input.tag;
   }
 
@@ -33,8 +36,11 @@ struct StructTraits<viz::mojom::OffsetTagValueDataView, viz::OffsetTagValue> {
     return input.offset;
   }
 
-  static bool Read(viz::mojom::OffsetTagValueDataView data,
-                   viz::OffsetTagValue* out);
+  static inline bool Read(viz::mojom::OffsetTagValueDataView data,
+                          viz::OffsetTagValue* out) {
+    return data.ReadTag(&out->tag) && data.ReadOffset(&out->offset) &&
+           out->IsValid();
+  }
 };
 
 template <>
@@ -60,8 +66,12 @@ struct StructTraits<viz::mojom::OffsetTagDefinitionDataView,
     return input.constraints.max_offset;
   }
 
-  static bool Read(viz::mojom::OffsetTagDefinitionDataView data,
-                   viz::OffsetTagDefinition* out);
+  static inline bool Read(viz::mojom::OffsetTagDefinitionDataView data,
+                          viz::OffsetTagDefinition* out) {
+    return data.ReadTag(&out->tag) && data.ReadProvider(&out->provider) &&
+           data.ReadMinOffset(&out->constraints.min_offset) &&
+           data.ReadMaxOffset(&out->constraints.max_offset) && out->IsValid();
+  }
 };
 
 }  // namespace mojo

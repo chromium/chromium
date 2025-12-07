@@ -1,0 +1,96 @@
+{
+  "$build/chromium_tests_builder_config": {
+    "builder_config": {
+      "builder_db": {
+        "entries": [
+          {
+            "builder_id": {
+              "bucket": "webrtc",
+              "builder": "WebRTC Chromium Win Builder",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.webrtc",
+              "execution_mode": "COMPILE_AND_TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "dcheck",
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "win"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "webrtc_test_resources"
+                ],
+                "config": "chromium_webrtc"
+              }
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "webrtc",
+              "builder": "WebRTC Chromium Win Tester",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.webrtc",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "dcheck",
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "win"
+              },
+              "legacy_gclient_config": {
+                "config": "chromium_webrtc"
+              },
+              "parent": {
+                "bucket": "webrtc",
+                "builder": "WebRTC Chromium Win Builder",
+                "project": "chromium"
+              }
+            }
+          }
+        ]
+      },
+      "builder_ids": [
+        {
+          "bucket": "webrtc",
+          "builder": "WebRTC Chromium Win Tester",
+          "project": "chromium"
+        }
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/webrtc/WebRTC Chromium Win Tester/targets"
+    }
+  },
+  "$build/siso": {
+    "configs": [
+      "builder"
+    ],
+    "enable_cloud_monitoring": true,
+    "enable_cloud_profiler": true,
+    "enable_cloud_trace": true,
+    "experiments": [],
+    "metrics_project": "chromium-reclient-metrics",
+    "project": "rbe-chromium-trusted",
+    "remote_jobs": 250
+  },
+  "$recipe_engine/resultdb/test_presentation": {
+    "column_keys": [],
+    "grouping_keys": [
+      "status",
+      "v.test_suite"
+    ]
+  },
+  "builder_group": "chromium.webrtc",
+  "perf_dashboard_machine_group": "ChromiumWebRTC",
+  "recipe": "chromium"
+}

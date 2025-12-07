@@ -1,13 +1,14 @@
 # META: timeout=long
 
 import pytest
-
 from webdriver.bidi.modules.input import Actions, get_element_origin
 
+from tests.support.sync import AsyncPoll
 from .. import get_events
 from . import get_element_rect, get_inview_center_bidi
 
 pytestmark = pytest.mark.asyncio
+
 
 @pytest.mark.parametrize("drag_duration", [0, 300, 800])
 @pytest.mark.parametrize(
@@ -54,12 +55,18 @@ async def test_drag_and_drop(
     assert e["type"] == "mouseup"
     assert e["pageX"] == pytest.approx(initial_center["x"] + dx, abs=1.0)
     assert e["pageY"] == pytest.approx(initial_center["y"] + dy, abs=1.0)
-    # check resulting location of the dragged element
-    final_rect = await get_element_rect(
-        bidi_session, context=top_context, element=drag_target
-    )
-    assert initial_rect["x"] + dx == final_rect["x"]
-    assert initial_rect["y"] + dy == final_rect["y"]
+
+    async def check_final_position(_):
+        final_rect = await get_element_rect(
+            bidi_session, context=top_context, element=drag_target
+        )
+        assert final_rect["x"] == pytest.approx(
+            initial_rect["x"] + dx, abs=1.0), "Dragged element did not reach final x position"
+        assert final_rect["y"] == pytest.approx(
+            initial_rect["y"] + dy, abs=1.0), "Dragged element did not reach final y position"
+
+    wait = AsyncPoll(bidi_session)
+    await wait.until(check_final_position)
 
 
 @pytest.mark.parametrize("drag_duration", [0, 300, 800])

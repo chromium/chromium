@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_education/webui/whats_new_storage_service.h"
@@ -26,30 +25,27 @@ class WhatsNewStorageServiceImpl : public WhatsNewStorageService {
   // Read-only access into prefs.
   const base::Value::List& ReadModuleData() const override;
   const base::Value::Dict& ReadEditionData() const override;
+  std::optional<int> ReadVersionData() const override;
 
-  int GetModuleQueuePosition(const std::string_view module_name) const override;
+  int GetModuleQueuePosition(std::string_view module_name) const override;
   std::optional<int> GetUsedVersion(
-      const std::string_view edition_name) const override;
+      std::string_view edition_name) const override;
   std::optional<std::string_view> FindEditionForCurrentVersion() const override;
-  bool IsUsedEdition(const std::string_view edition_name) const override;
+  bool IsUsedEdition(std::string_view edition_name) const override;
+  bool WasVersionPageUsedForCurrentMilestone() const override;
 
-  void SetModuleEnabled(const std::string_view module_name) override;
-  void ClearModule(const std::string_view module_name) override;
+  void SetModuleEnabled(std::string_view module_name) override;
+  void SetEditionUsed(std::string_view edition_name) override;
+  void SetVersionUsed() override;
 
-  void SetEditionUsed(const std::string_view edition_name) override;
-  void ClearEdition(const std::string_view edition_name) override;
+  void ClearModules(std::set<std::string_view> modules_to_clear) override;
+  void ClearEditions(std::set<std::string_view> editions_to_clear) override;
 
   void Reset() override;
 
  private:
-  ScopedListPrefUpdate enabled_order_() {
-    return ScopedListPrefUpdate(g_browser_process->local_state(),
-                                prefs::kWhatsNewFirstEnabledOrder);
-  }
-  ScopedDictPrefUpdate used_editions_() {
-    return ScopedDictPrefUpdate(g_browser_process->local_state(),
-                                prefs::kWhatsNewEditionUsed);
-  }
+  ScopedListPrefUpdate GetEnabledOrder();
+  ScopedDictPrefUpdate GetUsedEditions();
 };
 }  // namespace whats_new
 

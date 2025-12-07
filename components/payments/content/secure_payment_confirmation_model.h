@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/payments/content/payment_app.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace payments {
@@ -27,15 +28,18 @@ class SecurePaymentConfirmationModel {
   SecurePaymentConfirmationModel& operator=(
       const SecurePaymentConfirmationModel& other) = delete;
 
+  // Header logos.
+  const std::vector<PaymentApp::PaymentEntityLogo*> header_logos() const {
+    return header_logos_;
+  }
+  void set_header_logos(
+      const std::vector<PaymentApp::PaymentEntityLogo*> header_logos) {
+    header_logos_ = header_logos;
+  }
+
   // Title, e.g. "Use TouchID to verify and complete your purchase?"
   const std::u16string& title() const { return title_; }
   void set_title(const std::u16string& title) { title_ = title; }
-
-  // Descriptive text that goes under the title.
-  const std::u16string& description() const { return description_; }
-  void set_description(const std::u16string& description) {
-    description_ = description;
-  }
 
   // Label for the merchant row, e.g. "Store".
   const std::u16string& merchant_label() const { return merchant_label_; }
@@ -66,52 +70,25 @@ class SecurePaymentConfirmationModel {
     instrument_label_ = instrument_label;
   }
 
-  // Label for the instrument row value, e.g. "****4444"
+  // Label for the instrument row value, e.g. "Chase Card"
   const std::u16string& instrument_value() const { return instrument_value_; }
   void set_instrument_value(const std::u16string& instrument_value) {
     instrument_value_ = instrument_value;
+  }
+
+  // Sub-label for the instrument row value, e.g. "****4444"
+  const std::u16string& instrument_details_value() const {
+    return instrument_details_value_;
+  }
+  void set_instrument_details_value(
+      const std::u16string& instrument_details_value) {
+    instrument_details_value_ = instrument_details_value;
   }
 
   // Instrument icon.
   const SkBitmap* instrument_icon() const { return instrument_icon_; }
   void set_instrument_icon(const SkBitmap* instrument_icon) {
     instrument_icon_ = instrument_icon;
-  }
-
-  // Label for the network row, e.g. "Network".
-  const std::u16string& network_label() const { return network_label_; }
-  void set_network_label(const std::u16string& network_label) {
-    network_label_ = network_label;
-  }
-
-  // Label for the network row value, e.g. "Mastercard"
-  const std::u16string& network_value() const { return network_value_; }
-  void set_network_value(const std::u16string& network_value) {
-    network_value_ = network_value;
-  }
-
-  // Network icon.
-  const SkBitmap* network_icon() const { return &network_icon_; }
-  void set_network_icon(const SkBitmap& network_icon) {
-    network_icon_ = network_icon;
-  }
-
-  // Label for the issuer row, e.g. "Issuer".
-  const std::u16string& issuer_label() const { return issuer_label_; }
-  void set_issuer_label(const std::u16string& issuer_label) {
-    issuer_label_ = issuer_label;
-  }
-
-  // Label for the issuer row value, e.g. "CitiBank"
-  const std::u16string& issuer_value() const { return issuer_value_; }
-  void set_issuer_value(const std::u16string& issuer_value) {
-    issuer_value_ = issuer_value;
-  }
-
-  // Issuer icon.
-  const SkBitmap* issuer_icon() const { return &issuer_icon_; }
-  void set_issuer_icon(const SkBitmap& issuer_icon) {
-    issuer_icon_ = issuer_icon;
   }
 
   // Label for the total row, e.g. "Total".
@@ -187,10 +164,6 @@ class SecurePaymentConfirmationModel {
   void set_opt_out_link_label(const std::u16string& opt_out_link_label) {
     opt_out_link_label_ = opt_out_link_label;
   }
-  bool opt_out_clicked() const { return opt_out_clicked_; }
-  void set_opt_out_clicked(const bool opt_out_clicked) {
-    opt_out_clicked_ = opt_out_clicked;
-  }
 
   // Relying Party id (origin); used in the opt out dialog.
   const std::u16string& relying_party_id() const { return relying_party_id_; }
@@ -201,6 +174,8 @@ class SecurePaymentConfirmationModel {
   base::WeakPtr<SecurePaymentConfirmationModel> GetWeakPtr();
 
  private:
+  std::vector<PaymentApp::PaymentEntityLogo*> header_logos_;
+
   std::u16string title_;
   std::u16string description_;
 
@@ -210,15 +185,8 @@ class SecurePaymentConfirmationModel {
 
   std::u16string instrument_label_;
   std::u16string instrument_value_;
-  raw_ptr<const SkBitmap, DanglingUntriaged> instrument_icon_ = nullptr;
-
-  std::u16string network_label_;
-  std::u16string network_value_;
-  SkBitmap network_icon_;
-
-  std::u16string issuer_label_;
-  std::u16string issuer_value_;
-  SkBitmap issuer_icon_;
+  std::u16string instrument_details_value_;
+  raw_ptr<const SkBitmap> instrument_icon_ = nullptr;
 
   std::u16string total_label_;
   std::u16string total_value_;
@@ -237,7 +205,6 @@ class SecurePaymentConfirmationModel {
   bool opt_out_visible_ = false;
   std::u16string opt_out_label_;
   std::u16string opt_out_link_label_;
-  bool opt_out_clicked_ = false;
 
   std::u16string relying_party_id_;
 

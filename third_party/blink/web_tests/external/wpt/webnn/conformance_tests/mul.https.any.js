@@ -1,5 +1,5 @@
 // META: title=test WebNN API element-wise mul operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -11,14 +11,6 @@
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-binary
 // Compute the element-wise binary multiplication of the two input tensors.
 // MLOperand mul(MLOperand a, MLOperand b);
-
-
-const getMulPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 1, float16: 1};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
 
 const mulTests = [
   {
@@ -36,7 +28,7 @@ const mulTests = [
             -84.02171325683594,  -94.06755828857422,   58.807273864746094,
             -63.059783935546875, 3.3092827796936035,   9.884003639221191
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'},
+          'descriptor': {shape: [24], dataType: 'float32'},
           'constant': true
         },
         'inputB': {
@@ -50,7 +42,7 @@ const mulTests = [
             -26.158620834350586, -18.935443878173828, 34.6467170715332,
             -60.95826721191406,  -11.119653701782227, 77.50324249267578
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'},
+          'descriptor': {shape: [24], dataType: 'float32'},
           'constant': true
         }
       },
@@ -71,7 +63,7 @@ const mulTests = [
             2197.89208984375,   1781.2109375,        2037.47900390625,
             3844.01513671875,   -36.79807662963867,  766.0423583984375
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -91,7 +83,7 @@ const mulTests = [
             -84.02171325683594,  -94.06755828857422,   58.807273864746094,
             -63.059783935546875, 3.3092827796936035,   9.884003639221191
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -104,7 +96,7 @@ const mulTests = [
             -26.158620834350586, -18.935443878173828, 34.6467170715332,
             -60.95826721191406,  -11.119653701782227, 77.50324249267578
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -124,7 +116,7 @@ const mulTests = [
             2197.89208984375,   1781.2109375,        2037.47900390625,
             3844.01513671875,   -36.79807662963867,  766.0423583984375
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -144,7 +136,7 @@ const mulTests = [
             -84.02171325683594,  -94.06755828857422,   58.807273864746094,
             -63.059783935546875, 3.3092827796936035,   9.884003639221191
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -157,7 +149,7 @@ const mulTests = [
             -26.158620834350586, -18.935443878173828, 34.6467170715332,
             -60.95826721191406,  -11.119653701782227, 77.50324249267578
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -177,7 +169,7 @@ const mulTests = [
             2197.89208984375,   1781.2109375,        2037.47900390625,
             3844.01513671875,   -36.79807662963867,  766.0423583984375
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       }
     }
@@ -197,7 +189,7 @@ const mulTests = [
             -84.02171325683594,  -94.06755828857422,   58.807273864746094,
             -63.059783935546875, 3.3092827796936035,   9.884003639221191
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -210,7 +202,7 @@ const mulTests = [
             -26.158620834350586, -18.935443878173828, 34.6467170715332,
             -60.95826721191406,  -11.119653701782227, 77.50324249267578
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -230,7 +222,7 @@ const mulTests = [
             2197.89208984375,   1781.2109375,        2037.47900390625,
             3844.01513671875,   -36.79807662963867,  766.0423583984375
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -250,7 +242,7 @@ const mulTests = [
             -84.02171325683594,  -94.06755828857422,   58.807273864746094,
             -63.059783935546875, 3.3092827796936035,   9.884003639221191
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -263,7 +255,7 @@ const mulTests = [
             -26.158620834350586, -18.935443878173828, 34.6467170715332,
             -60.95826721191406,  -11.119653701782227, 77.50324249267578
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -283,7 +275,7 @@ const mulTests = [
             2197.89208984375,   1781.2109375,        2037.47900390625,
             3844.01513671875,   -36.79807662963867,  766.0423583984375
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -303,7 +295,7 @@ const mulTests = [
             -84.02171325683594,  -94.06755828857422,   58.807273864746094,
             -63.059783935546875, 3.3092827796936035,   9.884003639221191
           ],
-          'descriptor': {'dimensions': [2, 2, 1, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 1, 2, 3], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -316,7 +308,7 @@ const mulTests = [
             -26.158620834350586, -18.935443878173828, 34.6467170715332,
             -60.95826721191406,  -11.119653701782227, 77.50324249267578
           ],
-          'descriptor': {'dimensions': [2, 2, 1, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 1, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -336,7 +328,7 @@ const mulTests = [
             2197.89208984375,   1781.2109375,        2037.47900390625,
             3844.01513671875,   -36.79807662963867,  766.0423583984375
           ],
-          'descriptor': {'dimensions': [2, 2, 1, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 1, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -347,7 +339,7 @@ const mulTests = [
       'inputs': {
         'inputA': {
           'data': [67.50372314453125],
-          'descriptor': {'dimensions': [1], 'dataType': 'float32'}
+          'descriptor': {shape: [1], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -360,7 +352,7 @@ const mulTests = [
             -84.02171325683594,  -94.06755828857422,   58.807273864746094,
             -63.059783935546875, 3.3092827796936035,   9.884003639221191
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -380,7 +372,7 @@ const mulTests = [
             -5671.7783203125,   -6349.91064453125,   3969.7099609375,
             -4256.77001953125,  223.388916015625,    667.20703125
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -400,14 +392,14 @@ const mulTests = [
             -84.02171325683594,  -94.06755828857422,   58.807273864746094,
             -63.059783935546875, 3.3092827796936035,   9.884003639221191
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         },
         'inputB': {
           'data': [
             -97.29339599609375, -81.70872497558594, -63.859336853027344,
             -25.192203521728516, 94.61557006835938, -20.381790161132812
           ],
-          'descriptor': {'dimensions': [2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -431,7 +423,7 @@ const mulTests = [
             -3755.3935546875,    1588.6148681640625,
             313.10968017578125,  -201.4536895751953
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -451,14 +443,14 @@ const mulTests = [
             -84.02171325683594,  -94.06755828857422,   58.807273864746094,
             -63.059783935546875, 3.3092827796936035,   9.884003639221191
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         },
         'inputB': {
           'data': [
             8.696772575378418, 48.377689361572266, 97.7515869140625,
             62.21574783325195
           ],
-          'descriptor': {'dimensions': [2, 2, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 1], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -478,7 +470,7 @@ const mulTests = [
             -8213.255859375,     -9195.2529296875,   5748.50439453125,
             -3923.3115234375,    205.88949584960938, 614.940673828125
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -489,7 +481,7 @@ const mulTests = [
       'inputs': {
         'inputA': {
           'data': [67.50372314453125],
-          'descriptor': {'dimensions': [1, 1, 1, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 1, 1, 1], dataType: 'float32'}
         },
         'inputB': {
           'data': [
@@ -502,7 +494,7 @@ const mulTests = [
             -84.02171325683594,  -94.06755828857422,   58.807273864746094,
             -63.059783935546875, 3.3092827796936035,   9.884003639221191
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -522,18 +514,404 @@ const mulTests = [
             -5671.7783203125,   -6349.91064453125,   3969.7099609375,
             -4256.77001953125,  223.388916015625,    667.20703125
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
+        }
+      }
+    }
+  },
+
+  // float16 tests
+  {
+    'name': 'mul float16 1D constant tensors',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            49.125,            11.90625,   -21.109375,  70.75,    -94.5,
+            -93.8125,          11.1796875, -32.8125,    83.3125,  91.125,
+            -0.11236572265625, 15.3984375, -13.4609375, -50.625,  -31.171875,
+            -6.6171875,        21.734375,  22.03125,    -84,      -94.0625,
+            58.8125,           -63.0625,   3.30859375,  9.8828125
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'},
+          'constant': true
+        },
+        'inputB': {
+          'data': [
+            74.9375,   -34.53125, -33.3125, 53.90625,  -83.6875,    19.78125,
+            36.28125,  -34.3125,  49.09375, -54.53125, 70.75,       -55.1875,
+            -93.9375,  60.09375,  -92.75,   87.625,    -8.8828125,  71.8125,
+            -26.15625, -18.9375,  34.65625, -60.96875, -11.1171875, 77.5
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'mul',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            3682, -411.25, 703,         3814, 7908, -1856, 405.5,     1126,
+            4090, -4968,   -7.94921875, -850, 1264, -3042, 2892,      -580,
+            -193, 1582,    2198,        1781, 2038, 3844,  -36.78125, 766
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'mul float16 1D tensors',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            49.125,            11.90625,   -21.109375,  70.75,    -94.5,
+            -93.8125,          11.1796875, -32.8125,    83.3125,  91.125,
+            -0.11236572265625, 15.3984375, -13.4609375, -50.625,  -31.171875,
+            -6.6171875,        21.734375,  22.03125,    -84,      -94.0625,
+            58.8125,           -63.0625,   3.30859375,  9.8828125
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        },
+        'inputB': {
+          'data': [
+            74.9375,   -34.53125, -33.3125, 53.90625,  -83.6875,    19.78125,
+            36.28125,  -34.3125,  49.09375, -54.53125, 70.75,       -55.1875,
+            -93.9375,  60.09375,  -92.75,   87.625,    -8.8828125,  71.8125,
+            -26.15625, -18.9375,  34.65625, -60.96875, -11.1171875, 77.5
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'mul',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            3682, -411.25, 703,         3814, 7908, -1856, 405.5,     1126,
+            4090, -4968,   -7.94921875, -850, 1264, -3042, 2892,      -580,
+            -193, 1582,    2198,        1781, 2038, 3844,  -36.78125, 766
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'mul float16 2D tensors',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            49.125,            11.90625,   -21.109375,  70.75,    -94.5,
+            -93.8125,          11.1796875, -32.8125,    83.3125,  91.125,
+            -0.11236572265625, 15.3984375, -13.4609375, -50.625,  -31.171875,
+            -6.6171875,        21.734375,  22.03125,    -84,      -94.0625,
+            58.8125,           -63.0625,   3.30859375,  9.8828125
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        },
+        'inputB': {
+          'data': [
+            74.9375,   -34.53125, -33.3125, 53.90625,  -83.6875,    19.78125,
+            36.28125,  -34.3125,  49.09375, -54.53125, 70.75,       -55.1875,
+            -93.9375,  60.09375,  -92.75,   87.625,    -8.8828125,  71.8125,
+            -26.15625, -18.9375,  34.65625, -60.96875, -11.1171875, 77.5
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'mul',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            3682, -411.25, 703,         3814, 7908, -1856, 405.5,     1126,
+            4090, -4968,   -7.94921875, -850, 1264, -3042, 2892,      -580,
+            -193, 1582,    2198,        1781, 2038, 3844,  -36.78125, 766
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'mul float16 3D tensors',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            49.125,            11.90625,   -21.109375,  70.75,    -94.5,
+            -93.8125,          11.1796875, -32.8125,    83.3125,  91.125,
+            -0.11236572265625, 15.3984375, -13.4609375, -50.625,  -31.171875,
+            -6.6171875,        21.734375,  22.03125,    -84,      -94.0625,
+            58.8125,           -63.0625,   3.30859375,  9.8828125
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        },
+        'inputB': {
+          'data': [
+            74.9375,   -34.53125, -33.3125, 53.90625,  -83.6875,    19.78125,
+            36.28125,  -34.3125,  49.09375, -54.53125, 70.75,       -55.1875,
+            -93.9375,  60.09375,  -92.75,   87.625,    -8.8828125,  71.8125,
+            -26.15625, -18.9375,  34.65625, -60.96875, -11.1171875, 77.5
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'mul',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            3682, -411.25, 703,         3814, 7908, -1856, 405.5,     1126,
+            4090, -4968,   -7.94921875, -850, 1264, -3042, 2892,      -580,
+            -193, 1582,    2198,        1781, 2038, 3844,  -36.78125, 766
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'mul float16 4D tensors',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            49.125,            11.90625,   -21.109375,  70.75,    -94.5,
+            -93.8125,          11.1796875, -32.8125,    83.3125,  91.125,
+            -0.11236572265625, 15.3984375, -13.4609375, -50.625,  -31.171875,
+            -6.6171875,        21.734375,  22.03125,    -84,      -94.0625,
+            58.8125,           -63.0625,   3.30859375,  9.8828125
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        },
+        'inputB': {
+          'data': [
+            74.9375,   -34.53125, -33.3125, 53.90625,  -83.6875,    19.78125,
+            36.28125,  -34.3125,  49.09375, -54.53125, 70.75,       -55.1875,
+            -93.9375,  60.09375,  -92.75,   87.625,    -8.8828125,  71.8125,
+            -26.15625, -18.9375,  34.65625, -60.96875, -11.1171875, 77.5
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'mul',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            3682, -411.25, 703,         3814, 7908, -1856, 405.5,     1126,
+            4090, -4968,   -7.94921875, -850, 1264, -3042, 2892,      -580,
+            -193, 1582,    2198,        1781, 2038, 3844,  -36.78125, 766
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'mul float16 5D tensors',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            49.125,            11.90625,   -21.109375,  70.75,    -94.5,
+            -93.8125,          11.1796875, -32.8125,    83.3125,  91.125,
+            -0.11236572265625, 15.3984375, -13.4609375, -50.625,  -31.171875,
+            -6.6171875,        21.734375,  22.03125,    -84,      -94.0625,
+            58.8125,           -63.0625,   3.30859375,  9.8828125
+          ],
+          'descriptor': {shape: [2, 2, 1, 2, 3], dataType: 'float16'}
+        },
+        'inputB': {
+          'data': [
+            74.9375,   -34.53125, -33.3125, 53.90625,  -83.6875,    19.78125,
+            36.28125,  -34.3125,  49.09375, -54.53125, 70.75,       -55.1875,
+            -93.9375,  60.09375,  -92.75,   87.625,    -8.8828125,  71.8125,
+            -26.15625, -18.9375,  34.65625, -60.96875, -11.1171875, 77.5
+          ],
+          'descriptor': {shape: [2, 2, 1, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'mul',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            3682, -411.25, 703,         3814, 7908, -1856, 405.5,     1126,
+            4090, -4968,   -7.94921875, -850, 1264, -3042, 2892,      -580,
+            -193, 1582,    2198,        1781, 2038, 3844,  -36.78125, 766
+          ],
+          'descriptor': {shape: [2, 2, 1, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'mul float16 broadcast 1D to 4D',
+    'graph': {
+      'inputs': {
+        'inputA':
+            {'data': [67.5], 'descriptor': {shape: [1], dataType: 'float16'}},
+        'inputB': {
+          'data': [
+            49.125,            11.90625,   -21.109375,  70.75,    -94.5,
+            -93.8125,          11.1796875, -32.8125,    83.3125,  91.125,
+            -0.11236572265625, 15.3984375, -13.4609375, -50.625,  -31.171875,
+            -6.6171875,        21.734375,  22.03125,    -84,      -94.0625,
+            58.8125,           -63.0625,   3.30859375,  9.8828125
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'mul',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            3316, 803.5, -1425,      4776,  -6380,  -6332, 754.5,   -2214,
+            5624, 6152,  -7.5859375, 1039,  -908.5, -3418, -2104,   -446.75,
+            1467, 1487,  -5672,      -6348, 3970,   -4256, 223.375, 667
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'mul float16 broadcast 2D to 4D',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            49.125,            11.90625,   -21.109375,  70.75,    -94.5,
+            -93.8125,          11.1796875, -32.8125,    83.3125,  91.125,
+            -0.11236572265625, 15.3984375, -13.4609375, -50.625,  -31.171875,
+            -6.6171875,        21.734375,  22.03125,    -84,      -94.0625,
+            58.8125,           -63.0625,   3.30859375,  9.8828125
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        },
+        'inputB': {
+          'data': [-97.3125, -81.6875, -63.84375, -25.1875, 94.625, -20.375],
+          'descriptor': {shape: [2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'mul',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            -4780, -972.5, 1348,        -1782,   -8944, 1911, -1088, 2680,
+            -5320, -2296,  -10.6328125, -313.75, 1310,  4136, 1990,  166.625,
+            2056,  -449,   8176,        7684,    -3754, 1588, 313,   -201.375
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'mul float16 broadcast 3D to 4D',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [
+            49.125,            11.90625,   -21.109375,  70.75,    -94.5,
+            -93.8125,          11.1796875, -32.8125,    83.3125,  91.125,
+            -0.11236572265625, 15.3984375, -13.4609375, -50.625,  -31.171875,
+            -6.6171875,        21.734375,  22.03125,    -84,      -94.0625,
+            58.8125,           -63.0625,   3.30859375,  9.8828125
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        },
+        'inputB': {
+          'data': [8.6953125, 48.375, 97.75, 62.21875],
+          'descriptor': {shape: [2, 2, 1], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'mul',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            427.25,    103.5,   -183.5, 3422,  -4572,      -4540,
+            1093,      -3208,   8144,   5668,  -6.9921875, 958,
+            -117.0625, -440.25, -271,   -320,  1051,       1066,
+            -8208,     -9192,   5748,   -3924, 205.875,    615
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'mul float16 broadcast 4D to 4D',
+    'graph': {
+      'inputs': {
+        'inputA': {
+          'data': [67.5],
+          'descriptor': {shape: [1, 1, 1, 1], dataType: 'float16'}
+        },
+        'inputB': {
+          'data': [
+            49.125,            11.90625,   -21.109375,  70.75,    -94.5,
+            -93.8125,          11.1796875, -32.8125,    83.3125,  91.125,
+            -0.11236572265625, 15.3984375, -13.4609375, -50.625,  -31.171875,
+            -6.6171875,        21.734375,  22.03125,    -84,      -94.0625,
+            58.8125,           -63.0625,   3.30859375,  9.8828125
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'mul',
+        'arguments': [{'a': 'inputA'}, {'b': 'inputB'}],
+        'outputs': 'output'
+      }],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            3316, 803.5, -1425,      4776,  -6380,  -6332, 754.5,   -2214,
+            5624, 6152,  -7.5859375, 1039,  -908.5, -3418, -2104,   -446.75,
+            1467, 1487,  -5672,      -6348, 3970,   -4256, 223.375, 667
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
         }
       }
     }
   }
 ];
 
-if (navigator.ml) {
-  mulTests.forEach((test) => {
-    webnn_conformance_test(
-        buildGraphAndCompute, getMulPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(mulTests, buildAndExecuteGraph, getPrecisionTolerance);

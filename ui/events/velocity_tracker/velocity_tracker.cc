@@ -2,19 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/events/velocity_tracker/velocity_tracker.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <cmath>
 #include <ostream>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "ui/events/velocity_tracker/motion_event.h"
@@ -32,7 +30,7 @@ class VelocityTrackerStrategy {
   virtual void ClearPointers(BitSet32 id_bits) = 0;
   virtual void AddMovement(const base::TimeTicks& event_time,
                            BitSet32 id_bits,
-                           const Position* positions) = 0;
+                           base::span<const Position> positions) = 0;
   virtual bool GetEstimator(uint32_t id, Estimator* out_estimator) const = 0;
 
  protected:
@@ -81,8 +79,8 @@ struct Estimator {
     degree = 0;
     confidence = 0;
     for (size_t i = 0; i <= kMaxDegree; i++) {
-      xcoeff[i] = 0;
-      ycoeff[i] = 0;
+      UNSAFE_TODO(xcoeff[i]) = 0;
+      UNSAFE_TODO(ycoeff[i]) = 0;
     }
   }
 };
@@ -90,7 +88,7 @@ struct Estimator {
 float VectorDot(const float* a, const float* b, uint32_t m) {
   float r = 0;
   while (m--) {
-    r += *(a++) * *(b++);
+    r += *(UNSAFE_TODO(a++)) * *(UNSAFE_TODO(b++));
   }
   return r;
 }
@@ -98,7 +96,7 @@ float VectorDot(const float* a, const float* b, uint32_t m) {
 float VectorNorm(const float* a, uint32_t m) {
   float r = 0;
   while (m--) {
-    float t = *(a++);
+    float t = *(UNSAFE_TODO(a++));
     r += t * t;
   }
   return sqrtf(r);
@@ -146,7 +144,7 @@ class LeastSquaresVelocityTrackerStrategy : public VelocityTrackerStrategy {
   void ClearPointers(BitSet32 id_bits) override;
   void AddMovement(const TimeTicks& event_time,
                    BitSet32 id_bits,
-                   const Position* positions) override;
+                   base::span<const Position> positions) override;
   bool GetEstimator(uint32_t id, Estimator* out_estimator) const override;
 
  private:
@@ -158,7 +156,7 @@ class LeastSquaresVelocityTrackerStrategy : public VelocityTrackerStrategy {
   struct Movement {
     TimeTicks event_time;
     BitSet32 id_bits;
-    Position positions[VelocityTracker::MAX_POINTERS];
+    std::array<Position, VelocityTracker::MAX_POINTERS> positions;
 
     inline const Position& GetPosition(uint32_t id) const {
       return positions[id_bits.get_index_of_bit(id)];
@@ -171,7 +169,7 @@ class LeastSquaresVelocityTrackerStrategy : public VelocityTrackerStrategy {
   const Weighting weighting_;
   const Restriction restriction_;
   uint32_t index_;
-  Movement movements_[kHistorySize];
+  std::array<Movement, kHistorySize> movements_;
 };
 
 // Velocity tracker algorithm that uses an IIR filter.
@@ -185,7 +183,7 @@ class IntegratingVelocityTrackerStrategy : public VelocityTrackerStrategy {
   void ClearPointers(BitSet32 id_bits) override;
   void AddMovement(const TimeTicks& event_time,
                    BitSet32 id_bits,
-                   const Position* positions) override;
+                   base::span<const Position> positions) override;
   bool GetEstimator(uint32_t id, Estimator* out_estimator) const override;
 
  private:
@@ -200,7 +198,7 @@ class IntegratingVelocityTrackerStrategy : public VelocityTrackerStrategy {
 
   const uint32_t degree_;
   BitSet32 pointer_id_bits_;
-  State mPointerState[MotionEvent::MAX_POINTER_ID + 1];
+  std::array<State, MotionEvent::MAX_POINTER_ID + 1> mPointerState;
 
   void InitState(State& state,
                  const TimeTicks& event_time,
@@ -246,10 +244,7 @@ VelocityTrackerStrategy* CreateStrategy(VelocityTracker::Strategy strategy) {
     case VelocityTracker::INT2:
       return new IntegratingVelocityTrackerStrategy(2);
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Unrecognized velocity tracker strategy: " << strategy;
-  // Quadratic regression is a safe default.
-  return CreateStrategy(VelocityTracker::STRATEGY_DEFAULT);
+  NOTREACHED() << "Unrecognized velocity tracker strategy: " << strategy;
 }
 
 }  // namespace
@@ -284,7 +279,7 @@ void VelocityTracker::ClearPointers(BitSet32 id_bits) {
 
 void VelocityTracker::AddMovement(const TimeTicks& event_time,
                                   BitSet32 id_bits,
-                                  const Position* positions) {
+                                  base::span<const Position> positions) {
   while (id_bits.count() > MAX_POINTERS)
     id_bits.clear_last_marked_bit();
 
@@ -355,12 +350,12 @@ void VelocityTracker::AddMovement(const MotionEvent& event) {
     id_bits.mark_bit(event.GetPointerId(i));
   }
 
-  uint32_t pointer_index[MAX_POINTERS];
+  std::array<uint32_t, MAX_POINTERS> pointer_index;
   for (size_t i = 0; i < pointer_count; i++) {
     pointer_index[i] = id_bits.get_index_of_bit(event.GetPointerId(i));
   }
 
-  Position positions[MAX_POINTERS];
+  std::array<Position, MAX_POINTERS> positions;
   size_t historySize = event.GetHistorySize();
   for (size_t h = 0; h < historySize; h++) {
     for (size_t i = 0; i < pointer_count; i++) {
@@ -371,12 +366,14 @@ void VelocityTracker::AddMovement(const MotionEvent& event) {
     AddMovement(event.GetHistoricalEventTime(h), id_bits, positions);
   }
 
-  for (size_t i = 0; i < pointer_count; i++) {
-    uint32_t index = pointer_index[i];
-    positions[index].x = event.GetX(i);
-    positions[index].y = event.GetY(i);
+  if (!event.IsLatestEventTimeResampled()) {
+    for (size_t i = 0; i < pointer_count; i++) {
+      uint32_t index = pointer_index[i];
+      positions[index].x = event.GetX(i);
+      positions[index].y = event.GetY(i);
+    }
+    AddMovement(event.GetLatestEventTime(), id_bits, positions);
   }
-  AddMovement(event.GetLatestEventTime(), id_bits, positions);
 }
 
 bool VelocityTracker::GetVelocity(uint32_t id,
@@ -396,7 +393,7 @@ bool VelocityTracker::GetVelocity(uint32_t id,
 void LeastSquaresVelocityTrackerStrategy::AddMovement(
     const TimeTicks& event_time,
     BitSet32 id_bits,
-    const Position* positions) {
+    base::span<const Position> positions) {
   if (++index_ == kHistorySize) {
     index_ = 0;
   }
@@ -488,9 +485,9 @@ void LeastSquaresVelocityTrackerStrategy::Clear() {
  * http://en.wikipedia.org/wiki/Numerical_methods_for_linear_least_squares
  * http://en.wikipedia.org/wiki/Gram-Schmidt
  */
-static bool SolveLeastSquares(const float* x,
-                              const float* y,
-                              const float* w,
+static bool SolveLeastSquares(base::span<const float> x,
+                              base::span<const float> y,
+                              base::span<const float> w,
                               uint32_t m,
                               uint32_t n,
                               float* out_b,
@@ -502,7 +499,8 @@ static bool SolveLeastSquares(const float* x,
   DCHECK_LE(n, N_ARRAY_LENGTH);
 
   // Expand the X vector to a matrix A, pre-multiplied by the weights.
-  float a[N_ARRAY_LENGTH][M_ARRAY_LENGTH];  // column-major order
+  std::array<std::array<float, M_ARRAY_LENGTH>, N_ARRAY_LENGTH>
+      a;  // column-major order
   for (uint32_t h = 0; h < m; h++) {
     a[0][h] = w[h];
     for (uint32_t i = 1; i < n; i++) {
@@ -513,9 +511,9 @@ static bool SolveLeastSquares(const float* x,
   // Apply the Gram-Schmidt process to A to obtain its QR decomposition.
 
   // Orthonormal basis, column-major order.
-  float q[N_ARRAY_LENGTH][M_ARRAY_LENGTH];
+  std::array<std::array<float, M_ARRAY_LENGTH>, N_ARRAY_LENGTH> q;
   // Upper triangular matrix, row-major order.
-  float r[N_ARRAY_LENGTH][N_ARRAY_LENGTH];
+  std::array<std::array<float, N_ARRAY_LENGTH>, N_ARRAY_LENGTH> r;
   for (uint32_t j = 0; j < n; j++) {
     for (uint32_t h = 0; h < m; h++) {
       q[j][h] = a[j][h];
@@ -546,14 +544,14 @@ static bool SolveLeastSquares(const float* x,
   // We just work from bottom-right to top-left calculating B's coefficients.
   float wy[M_ARRAY_LENGTH];
   for (uint32_t h = 0; h < m; h++) {
-    wy[h] = y[h] * w[h];
+    UNSAFE_TODO(wy[h]) = y[h] * w[h];
   }
   for (uint32_t i = n; i-- != 0;) {
-    out_b[i] = VectorDot(&q[i][0], wy, m);
+    UNSAFE_TODO(out_b[i]) = VectorDot(&q[i][0], wy, m);
     for (uint32_t j = n - 1; j > i; j--) {
-      out_b[i] -= r[i][j] * out_b[j];
+      UNSAFE_TODO(out_b[i]) -= r[i][j] * UNSAFE_TODO(out_b[j]);
     }
-    out_b[i] /= r[i][i];
+    UNSAFE_TODO(out_b[i]) /= r[i][i];
   }
 
   // Calculate the coefficient of determination as 1 - (SSerr / SStot) where
@@ -573,7 +571,7 @@ static bool SolveLeastSquares(const float* x,
     float term = 1;
     for (uint32_t i = 1; i < n; i++) {
       term *= x[h];
-      err -= term * out_b[i];
+      err -= term * UNSAFE_TODO(out_b[i]);
     }
     sserr += w[h] * w[h] * err * err;
     float var = y[h] - ymean;
@@ -594,10 +592,10 @@ bool LeastSquaresVelocityTrackerStrategy::GetEstimator(
   out_estimator->Clear();
 
   // Iterate over movement samples in reverse time order and collect samples.
-  float x[kHistorySize];
-  float y[kHistorySize];
-  float w[kHistorySize];
-  float time[kHistorySize];
+  std::array<float, kHistorySize> x;
+  std::array<float, kHistorySize> y;
+  std::array<float, kHistorySize> w;
+  std::array<float, kHistorySize> time;
   uint32_t m = 0;
   uint32_t index = index_;
   const base::TimeDelta horizon = base::Milliseconds(kHorizonMS);
@@ -751,7 +749,7 @@ void IntegratingVelocityTrackerStrategy::ClearPointers(BitSet32 id_bits) {
 void IntegratingVelocityTrackerStrategy::AddMovement(
     const TimeTicks& event_time,
     BitSet32 id_bits,
-    const Position* positions) {
+    base::span<const Position> positions) {
   uint32_t index = 0;
   for (BitSet32 iter_id_bits(id_bits); !iter_id_bits.is_empty();) {
     uint32_t id = iter_id_bits.clear_first_marked_bit();

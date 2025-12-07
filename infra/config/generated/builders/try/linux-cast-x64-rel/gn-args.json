@@ -1,0 +1,16 @@
+{
+  "args_file": "//chromecast/build/args/config/linux.gni",
+  "gn_args": {
+    "cast_is_debug": false,
+    "dcheck_always_on": false,
+    "enable_cast_receiver": true,
+    "is_component_build": false,
+    "is_debug": false,
+    "symbol_level": 1,
+    "target_cpu": "x64",
+    "target_os": "linux",
+    "use_reclient": false,
+    "use_remoteexec": true,
+    "use_siso": true
+  }
+}

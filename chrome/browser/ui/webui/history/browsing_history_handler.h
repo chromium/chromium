@@ -16,47 +16,64 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/values.h"
 #include "chrome/browser/history/profile_based_browsing_history_driver.h"
-#include "content/public/browser/web_ui_message_handler.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "ui/webui/resources/cr_components/history/history.mojom.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 // The handler for Javascript messages related to the "history" view.
-class BrowsingHistoryHandler : public content::WebUIMessageHandler,
-                               public ProfileBasedBrowsingHistoryDriver {
+class BrowsingHistoryHandler : public history::mojom::PageHandler,
+                               public ProfileBasedBrowsingHistoryDriver,
+                               public signin::IdentityManager::Observer {
  public:
-  BrowsingHistoryHandler();
+  BrowsingHistoryHandler(
+      mojo::PendingReceiver<history::mojom::PageHandler> pending_page_handler,
+      Profile* profile,
+      content::WebContents* web_contents);
 
   BrowsingHistoryHandler(const BrowsingHistoryHandler&) = delete;
   BrowsingHistoryHandler& operator=(const BrowsingHistoryHandler&) = delete;
 
   ~BrowsingHistoryHandler() override;
 
-  // WebUIMessageHandler implementation.
-  void OnJavascriptAllowed() override;
-  void OnJavascriptDisallowed() override;
-  void RegisterMessages() override;
+  void SetSidePanelUIEmbedder(
+      base::WeakPtr<TopChromeWebUIController::Embedder> side_panel_embedder);
 
   void StartQueryHistory();
 
-  // Handler for the "queryHistory" message.
-  void HandleQueryHistory(const base::Value::List& args);
+  void SetPage(mojo::PendingRemote<history::mojom::Page> pending_page) override;
 
-  // Handler for the "queryHistoryContinuation" message.
-  void HandleQueryHistoryContinuation(const base::Value::List& args);
+  void ShowSidePanelUI() override;
 
-  // Handler for the "removeVisits" message.
-  void HandleRemoveVisits(const base::Value::List& args);
+  void QueryHistory(const std::string& query,
+                    int max_count,
+                    std::optional<double> begin_timestamp,
+                    QueryHistoryCallback callback) override;
 
-  // Handler for "clearBrowsingData" message.
-  void HandleClearBrowsingData(const base::Value::List& args);
+  void QueryHistoryContinuation(
+      QueryHistoryContinuationCallback callback) override;
 
-  // Handler for "removeBookmark" message.
-  void HandleRemoveBookmark(const base::Value::List& args);
+  void RemoveVisits(const std::vector<history::mojom::RemovalItemPtr> items,
+                    RemoveVisitsCallback callback) override;
 
-  // Handler for "setLastSelectedTab" message.
-  void HandleSetLastSelectedTab(const base::Value::List& args);
+  void OpenClearBrowsingDataDialog() override;
+
+  void RemoveBookmark(const std::string& url) override;
+
+  void SetLastSelectedTab(const int last_tab) override;
 
   // BrowsingHistoryDriver implementation.
   void OnQueryComplete(
@@ -73,6 +90,15 @@ class BrowsingHistoryHandler : public content::WebUIMessageHandler,
   // ProfileBasedBrowsingHistoryDriver implementation.
   Profile* GetProfile() override;
 
+  // history::mojom::PageHandler:
+  void RequestAccountInfo(RequestAccountInfoCallback callback) override;
+  void TurnOnHistorySync() override;
+#if !BUILDFLAG(IS_CHROMEOS)
+  void ShouldShowHistoryPageHistorySyncPromo(
+      ShouldShowHistoryPageHistorySyncPromoCallback callback) override;
+  void IncrementHistoryPageHistorySyncPromoShownCount() override;
+#endif
+
   // For tests. This does not take the ownership of the clock. |clock| must
   // outlive the BrowsingHistoryHandler instance.
   void set_clock(base::Clock* clock) { clock_ = clock; }
@@ -82,14 +108,41 @@ class BrowsingHistoryHandler : public content::WebUIMessageHandler,
     browsing_history_service_ = std::move(service);
   }
 
+  history::BrowsingHistoryService* get_browsing_history_service_for_testing() {
+    return browsing_history_service_.get();
+  }
+
+#if defined(UNIT_TEST)
+  bool is_observing_identity_manager_for_testing() const {
+    return identity_manager_observation_.IsObserving();
+  }
+#endif
+
  protected:
-  virtual void SendHistoryQuery(int count, const std::u16string& query,
+  virtual void SendHistoryQuery(int count,
+                                const std::string& query,
                                 std::optional<double> begin_timestamp);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowsingHistoryHandlerTest,
                            ObservingWebHistoryDeletions);
   FRIEND_TEST_ALL_PREFIXES(BrowsingHistoryHandlerTest, MdTruncatesTitles);
+
+  base::WeakPtr<TopChromeWebUIController::Embedder> side_panel_embedder_;
+
+  // signin::IdentityManager::Observer:
+  void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
+
+  raw_ptr<Profile> profile_;
+  raw_ptr<content::WebContents> web_contents_;
+  // Interface to send information to the web ui page.
+  mojo::Remote<history::mojom::Page> page_;
+  // Allows handling received messages from the web ui page.
+  mojo::Receiver<history::mojom::PageHandler> page_handler_;
+  const base::raw_ref<signin::IdentityManager> identity_manager_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   // The clock used to vend times.
   raw_ptr<base::Clock> clock_;
@@ -98,13 +151,11 @@ class BrowsingHistoryHandler : public content::WebUIMessageHandler,
 
   std::vector<base::OnceClosure> deferred_callbacks_;
 
-  std::optional<base::Value::Dict> initial_results_;
-
-  std::string query_history_callback_id_;
+  QueryHistoryCallback query_history_callback_;
 
   base::OnceClosure query_history_continuation_;
 
-  std::queue<std::string> remove_visits_callbacks_;
+  std::queue<RemoveVisitsCallback> remove_visits_callbacks_;
 
   base::WeakPtrFactory<BrowsingHistoryHandler> weak_factory_{this};
 };

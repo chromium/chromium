@@ -16,8 +16,15 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
+ConnectivityDiagnosticsSystemAppDelegate::
+    ConnectivityDiagnosticsSystemAppDelegate(Profile* profile)
+    : ash::SystemWebAppDelegate(ash::SystemWebAppType::CONNECTIVITY_DIAGNOSTICS,
+                                "ConnectivityDiagnostics",
+                                GURL(ash::kChromeUIConnectivityDiagnosticsUrl),
+                                profile) {}
+
 std::unique_ptr<web_app::WebAppInstallInfo>
-CreateWebAppInfoForConnectivityDiagnosticsSystemWebApp() {
+ConnectivityDiagnosticsSystemAppDelegate::GetWebAppInfo() const {
   GURL start_url = GURL(ash::kChromeUIConnectivityDiagnosticsUrl);
   auto info =
       web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
@@ -33,20 +40,7 @@ CreateWebAppInfoForConnectivityDiagnosticsSystemWebApp() {
   info->background_color = 0xFFFFFFFF;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
-
   return info;
-}
-
-ConnectivityDiagnosticsSystemAppDelegate::
-    ConnectivityDiagnosticsSystemAppDelegate(Profile* profile)
-    : ash::SystemWebAppDelegate(ash::SystemWebAppType::CONNECTIVITY_DIAGNOSTICS,
-                                "ConnectivityDiagnostics",
-                                GURL(ash::kChromeUIConnectivityDiagnosticsUrl),
-                                profile) {}
-
-std::unique_ptr<web_app::WebAppInstallInfo>
-ConnectivityDiagnosticsSystemAppDelegate::GetWebAppInfo() const {
-  return CreateWebAppInfoForConnectivityDiagnosticsSystemWebApp();
 }
 
 bool ConnectivityDiagnosticsSystemAppDelegate::ShouldShowInLauncher() const {

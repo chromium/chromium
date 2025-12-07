@@ -201,10 +201,11 @@ public class Model {
         interpreterOptions.setUseNNAPI(true);
         break;
       case GPU:
-        gpuDelegateProxy = GpuDelegateProxy.maybeNewInstance();
+        gpuDelegateProxy = GpuDelegateProxy.maybeNewInstance(options.tfLiteRuntime);
         SupportPreconditions.checkArgument(
             gpuDelegateProxy != null,
-            "Cannot inference with GPU. Did you add \"tensorflow-lite-gpu\" as dependency?");
+            "Cannot inference with GPU. Did you add \"tensorflow-lite-gpu\" or "
+                + "\"play-services-tflite-gpu\" as dependency?");
         interpreterOptions.addDelegate(gpuDelegateProxy);
         break;
       case CPU:

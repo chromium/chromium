@@ -9,11 +9,13 @@
 #include <string>
 #include <utility>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/syslog_logging.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/oobe_mojo_binder.h"
 #include "chrome/browser/ash/login/screens/osauth/base_osauth_setup_screen.h"
@@ -23,7 +25,6 @@
 #include "chromeos/ash/components/login/auth/mount_performer.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
-#include "components/crash/core/app/crashpad.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/user_manager/user_manager.h"
 
@@ -35,7 +36,7 @@ bool isOwner(const AccountId& account_id) {
 
   if (!user) {
     LOG(ERROR) << "Could not find user for owner check";
-    crash_reporter::DumpWithoutCrashing();
+    base::debug::DumpWithoutCrashing();
     return false;
   }
 
@@ -116,8 +117,7 @@ void LocalDataLossWarningScreen::OnBack() {
   }
   switch (context()->knowledge_factor_setup.data_loss_back_option) {
     case WizardContext::DataLossBackOptions::kNone:
-      NOTREACHED_IN_MIGRATION() << "Back button should not be shown";
-      return;
+      NOTREACHED() << "Back button should not be shown";
     case WizardContext::DataLossBackOptions::kBackToOnlineAuth:
       exit_callback_.Run(Result::kBackToOnlineAuth);
       return;
@@ -133,6 +133,7 @@ void LocalDataLossWarningScreen::OnRemovedUserDirectory(
   context()->user_context = std::move(user_context);
   if (error.has_value()) {
     LOGIN_LOG(ERROR) << "Failed to remove user home directory";
+    SYSLOG(INFO) << "(LOGIN) Failed to remove user home directory";
     context()->osauth_error = WizardContext::OSAuthErrorKind::kFatal;
     exit_callback_.Run(Result::kCryptohomeError);
     return;
@@ -152,6 +153,8 @@ void LocalDataLossWarningScreen::OnRemovedUserDirectory(
   context()->user_context->ClearAuthFactorsConfiguration();
   context()->knowledge_factor_setup.auth_setup_flow =
       WizardContext::AuthChangeFlow::kInitialSetup;
+  SYSLOG(INFO) << "(LOGIN) LocalDataLossWarningScreen::OnRemovedUserDirectory, "
+               << "setting auth_setup_flow to kInitialSetup.";
 
   // Move online password back so that it can be used as key.
   // See `ShowImpl()` to see where it was stored.

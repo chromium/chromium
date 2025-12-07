@@ -41,10 +41,10 @@ class MODULES_EXPORT TransceiverStateSurfacer {
 
   // Must be invoked on the signaling thread.
   void Initialize(
-      rtc::scoped_refptr<webrtc::PeerConnectionInterface>
+      webrtc::scoped_refptr<webrtc::PeerConnectionInterface>
           native_peer_connection,
       scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_adapter_map,
-      std::vector<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>>
+      std::vector<webrtc::scoped_refptr<webrtc::RtpTransceiverInterface>>
           transceivers);
 
   // Must be invoked on the main thread.

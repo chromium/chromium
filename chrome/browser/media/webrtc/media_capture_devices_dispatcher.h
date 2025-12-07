@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_MEDIA_WEBRTC_MEDIA_CAPTURE_DEVICES_DISPATCHER_H_
 #define CHROME_BROWSER_MEDIA_WEBRTC_MEDIA_CAPTURE_DEVICES_DISPATCHER_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -13,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
+#include "chrome/browser/media/webrtc/select_audio_output_picker.h"
 #include "components/webrtc/media_stream_device_enumerator_impl.h"
 #include "content/public/browser/media_observer.h"
 #include "content/public/browser/media_stream_request.h"
@@ -20,6 +20,7 @@
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
+class Browser;
 class MediaAccessHandler;
 class MediaStreamCaptureIndicator;
 
@@ -59,7 +60,7 @@ class MediaCaptureDevicesDispatcher
     virtual void OnCreatingAudioStream(int render_process_id,
                                        int render_frame_id) {}
 
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   static MediaCaptureDevicesDispatcher* GetInstance();
@@ -87,6 +88,13 @@ class MediaCaptureDevicesDispatcher
                                  const content::MediaStreamRequest& request,
                                  content::MediaResponseCallback callback,
                                  const extensions::Extension* extension);
+
+#if defined(TOOLKIT_VIEWS)
+  void ProcessSelectAudioOutputRequest(
+      Browser* browser,
+      const content::SelectAudioOutputRequest& request,
+      content::SelectAudioOutputCallback callback);
+#endif
 
   // Method called from WebCapturerDelegate implementations to check media
   // access permission. Note that this does not query the user.
@@ -182,6 +190,8 @@ class MediaCaptureDevicesDispatcher
 
   // Flag used by unittests to disable device enumeration.
   bool is_device_enumeration_disabled_;
+
+  std::unique_ptr<SelectAudioOutputPicker> picker_views_;
 
   scoped_refptr<MediaStreamCaptureIndicator> media_stream_capture_indicator_;
 

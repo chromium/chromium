@@ -6,6 +6,7 @@
 #define EXTENSIONS_COMMON_MANIFEST_HANDLER_REGISTRY_H_
 
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "extensions/common/manifest_handler.h"
 
 namespace extensions {
@@ -20,7 +21,7 @@ class ManifestHandlerRegistry {
   static ManifestHandlerRegistry* Get();
 
   // Registers a ManifestHandler, associating it with its keys. If there is
-  // already a handler registered for any key |handler| manages, this method
+  // already a handler registered for any key `handler` manages, this method
   // will DCHECK.
   void RegisterHandler(std::unique_ptr<ManifestHandler> handler);
 
@@ -55,7 +56,7 @@ class ManifestHandlerRegistry {
   static void ResetForTesting();
 
   // Overrides the current global ManifestHandlerRegistry with
-  // |registry|, returning the current one.
+  // `registry`, returning the current one.
   static ManifestHandlerRegistry* SetForTesting(
       ManifestHandlerRegistry* new_registry);
 
@@ -72,7 +73,8 @@ class ManifestHandlerRegistry {
   // to the backup base::flat_map, which we don't want, as that would
   // defeat the optimization of using small_map.
   static constexpr size_t kHandlerMax = 87;
-  using FallbackMap = base::flat_map<std::string, ManifestHandler*>;
+  using FallbackMap =
+      base::flat_map<std::string, raw_ptr<ManifestHandler, CtnExperimental>>;
   using ManifestHandlerMap = base::small_map<FallbackMap, kHandlerMax>;
   using FallbackPriorityMap = base::flat_map<ManifestHandler*, int>;
   using ManifestHandlerPriorityMap =

@@ -18,9 +18,7 @@ message HashFile {
   // of the store path.
   optional string extension = 2;
 
-  // A list of offsets into the hash prefix file which can be used to optimize
-  // checks.
-  repeated uint32 offsets = 3;
+  reserved 3;
 
   // The total size of the file.
   optional uint64 file_size = 4;
@@ -42,7 +40,5 @@ message V4StoreFileFormat {
       list_update_response = 3;
 
   // Information on hashes stored in separate files.
-  // TODO(crbug.com/40061554): If this launches, consider moving the data from
-  // list_update_response here.
   repeated HashFile hash_files = 4;
 }

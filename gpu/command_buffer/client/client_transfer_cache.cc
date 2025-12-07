@@ -10,19 +10,20 @@ ClientTransferCache::ClientTransferCache(Client* client) : client_(client) {}
 
 ClientTransferCache::~ClientTransferCache() = default;
 
-void* ClientTransferCache::MapEntry(MappedMemoryManager* mapped_memory,
-                                    uint32_t size) {
+base::span<uint8_t> ClientTransferCache::MapEntry(
+    MappedMemoryManager* mapped_memory,
+    uint32_t size) {
   DCHECK(!mapped_ptr_);
   DCHECK(!transfer_buffer_ptr_);
   mapped_ptr_.emplace(size, client_->cmd_buffer_helper(), mapped_memory);
   if (!mapped_ptr_->valid()) {
     mapped_ptr_ = std::nullopt;
-    return nullptr;
+    return {};
   }
-  return mapped_ptr_->address();
+  return mapped_ptr_->as_byte_span();
 }
 
-void* ClientTransferCache::MapTransferBufferEntry(
+base::span<uint8_t> ClientTransferCache::MapTransferBufferEntry(
     TransferBufferInterface* transfer_buffer,
     uint32_t size) {
   DCHECK(!mapped_ptr_);
@@ -31,9 +32,9 @@ void* ClientTransferCache::MapTransferBufferEntry(
                                transfer_buffer);
   if (!transfer_buffer_ptr_->valid()) {
     transfer_buffer_ptr_ = std::nullopt;
-    return nullptr;
+    return {};
   }
-  return transfer_buffer_ptr_->address();
+  return transfer_buffer_ptr_->as_byte_span();
 }
 
 void ClientTransferCache::UnmapAndCreateEntry(uint32_t type, uint32_t id) {

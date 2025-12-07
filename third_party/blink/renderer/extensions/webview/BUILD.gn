@@ -29,8 +29,8 @@ blink_extensions_webview_sources("webview_extension") {
     "media_integrity/media_integrity_error.h",
     "media_integrity/media_integrity_token_provider.cc",
     "media_integrity/media_integrity_token_provider.h",
-    "web_view.cc",
-    "web_view.h",
+    "web_view_android.cc",
+    "web_view_android.h",
     "webview_extensions.cc",
     "webview_extensions.h",
   ]

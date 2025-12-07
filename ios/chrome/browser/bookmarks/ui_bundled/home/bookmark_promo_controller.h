@@ -12,10 +12,13 @@ class Browser;
 @protocol AccountSettingsPresenter;
 @class SigninPromoViewConfigurator;
 @class SigninPromoViewMediator;
-
+@protocol SigninPromoViewMediatorDelegate;
+namespace signin {
+enum class Tribool;
+}  // namespace signin
 namespace syncer {
 class SyncService;
-}
+}  // namespace syncer
 
 @protocol BookmarkPromoControllerDelegate
 
@@ -45,24 +48,25 @@ class SyncService;
 
 @property(nonatomic, readonly) SigninPromoViewMediator* signinPromoViewMediator;
 
+@property(nonatomic, readonly) signin::Tribool signinInProgress;
+
 // See `-[BookmarkPromoController initWithBrowser:delegate:presenter:
 // baseViewController:]`.
 - (instancetype)init NS_UNAVAILABLE;
 // Designated initializer.
 // `baseViewController` is the view to present UI for sign-in.
 - (instancetype)initWithBrowser:(Browser*)browser
-                    syncService:(syncer::SyncService*)syncService
-                       delegate:(id<BookmarkPromoControllerDelegate>)delegate
-                signinPresenter:(id<SigninPresenter>)signinPresenter
-       accountSettingsPresenter:
-           (id<AccountSettingsPresenter>)accountSettingsPresenter
+                        syncService:(syncer::SyncService*)syncService
+                           delegate:
+                               (id<BookmarkPromoControllerDelegate>)delegate
+    signinPromoViewMediatorDelegate:
+        (id<SigninPromoViewMediatorDelegate>)signinPromoViewMediatorDelegate
+           accountSettingsPresenter:
+               (id<AccountSettingsPresenter>)accountSettingsPresenter
     NS_DESIGNATED_INITIALIZER;
 
 // Called before the instance is deallocated.
 - (void)shutdown;
-
-// Hides the promo cell. It won't be presented again on this profile.
-- (void)hidePromoCell;
 
 // Updates `shouldShowSigninPromo` based on the sign-in state of the user.
 - (void)updateShouldShowSigninPromo;

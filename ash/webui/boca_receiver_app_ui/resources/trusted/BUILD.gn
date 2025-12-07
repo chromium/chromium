@@ -1,0 +1,19 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//tools/grit/grit_rule.gni")
+
+assert(is_chromeos)
+
+grit("resources") {
+  source = "//ash/webui/boca_receiver_app_ui/resources/trusted/boca_receiver_trusted_resources.grd"
+
+  outputs = [
+    "grit/ash_boca_receiver_ui_resources.h",
+    "grit/ash_boca_receiver_ui_resources_map.cc",
+    "grit/ash_boca_receiver_ui_resources_map.h",
+    "ash_boca_receiver_ui_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/ash/webui"
+}

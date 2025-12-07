@@ -1,0 +1,46 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  sources = [ "bookmark_html_parser.mojom" ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//sandbox/policy/mojom",
+    "//url/mojom:url_mojom_gurl",
+  ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "user_data_importer.mojom.ImportedBookmarkEntry"
+          cpp = "::user_data_importer::ImportedBookmarkEntry"
+          move_only = true
+        },
+        {
+          mojom = "user_data_importer.mojom.SearchEngineInfo"
+          cpp = "::user_data_importer::SearchEngineInfo"
+          move_only = true
+        },
+        {
+          mojom = "user_data_importer.mojom.FaviconUsageData"
+          cpp = "::favicon_base::FaviconUsageData"
+          move_only = true
+        },
+        {
+          mojom = "user_data_importer.mojom.ParsedBookmarks"
+          cpp = "::user_data_importer::BookmarkParser::ParsedBookmarks"
+          move_only = true
+        },
+      ]
+      traits_headers = [ "bookmark_html_parser_traits.h" ]
+      traits_sources = [ "bookmark_html_parser_traits.cc" ]
+      traits_public_deps = [
+        "//components/favicon_base",
+        "//components/user_data_importer/utility:safari_data_importer",
+      ]
+    },
+  ]
+}

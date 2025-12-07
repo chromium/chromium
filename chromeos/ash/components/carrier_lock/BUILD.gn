@@ -2,10 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 
 component("carrier_lock") {
   output_name = "ash_carrier_lock"
@@ -13,16 +12,16 @@ component("carrier_lock") {
 
   deps = [
     ":carrier_lock_proto",
-    "//ash/constants:constants",
+    "//ash/constants",
     "//base",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/system",
     "//components/gcm_driver",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//components/session_manager/core",
     "//google_apis",
     "//services/network/public/cpp",
-    "//third_party/private_membership:private_membership",
+    "//third_party/private_membership",
     "//third_party/private_membership:private_membership_proto",
     "//url",
   ]
@@ -67,7 +66,7 @@ source_set("unit_tests") {
   deps = [
     ":carrier_lock",
     ":carrier_lock_proto",
-    "//ash/constants:constants",
+    "//ash/constants",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/network",
@@ -78,7 +77,7 @@ source_set("unit_tests") {
     "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/private_membership:private_membership",
+    "//third_party/private_membership",
     "//third_party/private_membership:private_membership_proto",
     "//url",
   ]

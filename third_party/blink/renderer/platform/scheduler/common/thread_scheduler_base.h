@@ -61,7 +61,7 @@ class PLATFORM_EXPORT ThreadSchedulerBase : public VirtualTimeController,
   void SetMaxVirtualTimeTaskStarvationCount(
       int max_task_starvation_count) override;
   WebScopedVirtualTimePauser CreateWebScopedVirtualTimePauser(
-      const WTF::String& name,
+      const String& name,
       WebScopedVirtualTimePauser::VirtualTaskDuration) override;
 
   bool IsVirtualTimeEnabled() const;
@@ -78,7 +78,7 @@ class PLATFORM_EXPORT ThreadSchedulerBase : public VirtualTimeController,
   ~ThreadSchedulerBase() override;
 
   // Returns the list of callbacks to execute after the current task.
-  virtual WTF::Vector<base::OnceClosure>& GetOnTaskCompletionCallbacks() = 0;
+  virtual Vector<base::OnceClosure>& GetOnTaskCompletionCallbacks() = 0;
 
   // Returns instance of specific helper instantiated by a subclass.
   virtual SchedulerHelper& GetHelper() = 0;
@@ -93,8 +93,7 @@ class PLATFORM_EXPORT ThreadSchedulerBase : public VirtualTimeController,
   // virtual time control tasks (when VT budget is exhausted, callback will be
   // posted there).
   virtual base::SequencedTaskRunner* GetVirtualTimeTaskRunner() {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
   virtual void OnVirtualTimeEnabled() {}
   virtual void OnVirtualTimeDisabled() {}

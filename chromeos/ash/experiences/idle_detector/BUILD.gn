@@ -1,0 +1,19 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+component("idle_detector") {
+  sources = [
+    "idle_detector.cc",
+    "idle_detector.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//ui/base",
+  ]
+
+  defines = [ "IS_CHROMEOS_ASH_EXPERIENCES_IDLE_DETECTOR_IMPL" ]
+}

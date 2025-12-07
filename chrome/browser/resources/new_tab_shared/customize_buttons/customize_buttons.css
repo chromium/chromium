@@ -1,0 +1,163 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #scheme=relative
+ * #include=cr-shared-style-lit cr-icons-lit
+ * #css_wrapper_metadata_end */
+
+#customizeButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+#wallpaperSearchButton {
+  --cr-hover-background-color:
+      var(--color-new-tab-page-wallpaper-search-button-background-hovered);
+  --cr-button-text-color:
+      var(--color-new-tab-page-wallpaper-search-button-foreground);
+  --cr-button-background-color:
+      var(--color-new-tab-page-wallpaper-search-button-background);
+}
+
+#customizeButton {
+  --cr-hover-background-color:
+      var(--color-new-tab-page-button-background-hovered);
+  --cr-button-text-color: var(--color-new-tab-page-button-foreground);
+  --cr-button-background-color: var(--color-new-tab-page-button-background);
+}
+
+:host([show-background-image]) #customizeButton,
+:host([show-background-image]) #wallpaperSearchButton {
+  --cr-hover-background-color:
+      var(--ntp-protected-icon-background-color-hovered);
+  --cr-button-text-color: white;
+  --cr-button-background-color: var(--ntp-protected-icon-background-color);
+}
+
+#customizeButton:has(help-bubble) {
+  /* help-bubble parent needs z-index to overlay ntp-iframe */
+  z-index: 1001;
+}
+
+.customize-button {
+  --cr-button-height: 32px;
+  border: none;
+  border-radius: calc(.5 * var(--cr-button-height));
+  box-shadow: 0 3px 6px rgba(0, 0, 0, .16), 0 1px 2px rgba(0, 0, 0, .23);
+  font-weight: 400;
+  min-width: 32px;
+  padding-inline-end: 16px;
+  padding-inline-start: 16px;
+}
+
+:host(:not([show-shadow])) .customize-button {
+  box-shadow: none;
+}
+
+:host([show-background-image]) #customizeButton,
+:host([show-wallpaper-search-button]) #customizeButton,
+:host([show-wallpaper-search]) #wallpaperSearchButton {
+  box-shadow: none;
+  padding-inline-end: 0;
+  padding-inline-start: 8px;
+}
+
+:host-context(.focus-outline-visible) .customize-button:focus {
+  box-shadow: var(--ntp-focus-shadow);
+}
+
+.customize-icon {
+  --cr-icon-button-margin-start: 0;
+  --cr-icon-color: var(--cr-button-text-color);
+  --cr-icon-ripple-margin: 0;
+  --cr-icon-ripple-size: 16px;
+  --cr-icon-size: 100%;
+  --iron-icon-width: 16px;
+  --iron-icon-height: 16px;
+}
+
+@media (max-width: 550px) {
+  .customize-button {
+    padding-inline-end: 0;
+    padding-inline-start: 8px;
+  }
+
+  .customize-text {
+    display: none;
+  }
+}
+
+@media (max-width: 1110px) {
+  :host([modules-shown-to-user]) .customize-text {
+    display: none;
+  }
+
+  :host([modules-shown-to-user]) .customize-button {
+    padding-inline-end: 0;
+    padding-inline-start: 8px;
+  }
+}
+
+@media (max-width: 970px) {
+  :host([modules-shown-to-user]) .customize-button {
+    padding-inline-end: 0;
+    padding-inline-start: 8px;
+  }
+
+  :host([modules-shown-to-user]) .customize-text {
+    display: none;
+  }
+}
+
+@media (max-width: 920px) {
+  :host([info-shown-to-user]) .customize-button {
+    padding-inline-end: 0;
+    padding-inline-start: 8px;
+  }
+
+  :host([info-shown-to-user]) .customize-text {
+    display: none;
+  }
+}
+
+:host([wallpaper-search-button-animation-enabled])
+    #wallpaperSearchButton {
+  animation: 750ms forwards grow-container, 500ms forwards 300ms color-text;
+  color: rgba(0,0,0,0);
+  opacity: 0;
+  transform-origin: right;
+}
+
+@keyframes grow-container {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 100%;
+    transform: scale(1);
+  }
+}
+
+/* The text inherits the color of the button,
+while the icon has a color rule of it's own. */
+@keyframes color-text {
+  from { color: rgba(0,0,0,0); }
+  to { color: var(--cr-button-text-color); }
+}
+
+:host([wallpaper-search-button-animation-enabled])
+    #wallpaperSearchIcon {
+  animation: 2.5s 350ms spin-icon;
+}
+
+@keyframes spin-icon {
+  from { transform:rotate(0deg); }
+  to { transform:rotate(720deg); }
+}

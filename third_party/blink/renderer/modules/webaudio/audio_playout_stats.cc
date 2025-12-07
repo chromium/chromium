@@ -18,47 +18,48 @@ AudioPlayoutStats::AudioPlayoutStats(AudioContext* context)
 DOMHighResTimeStamp AudioPlayoutStats::fallbackFramesDuration(
     ScriptState* script_state) {
   MaybeUpdateStats(script_state);
-  return stats_.FallbackFramesDuration().InMillisecondsF();
+  return stats_.glitch_frames_duration().InMillisecondsF();
 }
 
 uint32_t AudioPlayoutStats::fallbackFramesEvents(ScriptState* script_state) {
   MaybeUpdateStats(script_state);
-  return base::saturated_cast<uint32_t>(stats_.FallbackFramesEvents());
+  return base::saturated_cast<uint32_t>(stats_.glitch_event_count());
 }
 
 DOMHighResTimeStamp AudioPlayoutStats::totalFramesDuration(
     ScriptState* script_state) {
   MaybeUpdateStats(script_state);
-  return stats_.TotalFramesDuration().InMillisecondsF();
+  return (stats_.glitch_frames_duration() + stats_.observed_frames_duration())
+      .InMillisecondsF();
 }
 
 DOMHighResTimeStamp AudioPlayoutStats::averageLatency(
     ScriptState* script_state) {
   MaybeUpdateStats(script_state);
-  return stats_.AverageLatency().InMillisecondsF();
+  return stats_.average_latency().InMillisecondsF();
 }
 
 DOMHighResTimeStamp AudioPlayoutStats::minimumLatency(
     ScriptState* script_state) {
   MaybeUpdateStats(script_state);
-  return stats_.MinimumLatency().InMillisecondsF();
+  return stats_.min_latency().InMillisecondsF();
 }
 
 DOMHighResTimeStamp AudioPlayoutStats::maximumLatency(
     ScriptState* script_state) {
   MaybeUpdateStats(script_state);
-  return stats_.MaximumLatency().InMillisecondsF();
+  return stats_.max_latency().InMillisecondsF();
 }
 
 void AudioPlayoutStats::resetLatency(ScriptState* script_state) {
   MaybeUpdateStats(script_state);
   // Reset the latency stats correctly by having a temporary stats object absorb
   // them.
-  AudioContext::AudioFrameStats temp_stats;
+  AudioFrameStatsAccumulator temp_stats;
   temp_stats.Absorb(stats_);
 }
 
-ScriptValue AudioPlayoutStats::toJSON(ScriptState* script_state) {
+ScriptObject AudioPlayoutStats::toJSON(ScriptState* script_state) {
   V8ObjectBuilder result(script_state);
   result.AddNumber("fallbackFramesDuration",
                    fallbackFramesDuration(script_state));
@@ -67,7 +68,7 @@ ScriptValue AudioPlayoutStats::toJSON(ScriptState* script_state) {
   result.AddNumber("averageLatency", averageLatency(script_state));
   result.AddNumber("minimumLatency", minimumLatency(script_state));
   result.AddNumber("maximumLatency", maximumLatency(script_state));
-  return result.GetScriptValue();
+  return result.ToScriptObject();
 }
 
 void AudioPlayoutStats::Trace(Visitor* visitor) const {
@@ -90,8 +91,8 @@ void AudioPlayoutStats::MaybeUpdateStats(ScriptState* script_state) {
   // Queue a microtask to let us know when we are on a new task again, ensuring
   // that we get fresh stats in the next task execution cycle.
   ToEventLoop(script_state)
-      .EnqueueMicrotask(WTF::BindOnce(&AudioPlayoutStats::OnMicrotask,
-                                      WrapWeakPersistent(this)));
+      .EnqueueMicrotask(
+          BindOnce(&AudioPlayoutStats::OnMicrotask, WrapWeakPersistent(this)));
 }
 
 void AudioPlayoutStats::OnMicrotask() {

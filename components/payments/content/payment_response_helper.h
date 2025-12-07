@@ -11,8 +11,8 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/country_type.h"
-#include "components/autofill/core/browser/data_model/autofill_i18n_api.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/payments/content/payment_app.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 
@@ -26,7 +26,7 @@ class PaymentResponseHelper final : public PaymentApp::Delegate {
  public:
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     virtual void OnPaymentResponseReady(
         mojom::PaymentResponsePtr payment_response) = 0;

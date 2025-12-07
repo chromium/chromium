@@ -48,6 +48,26 @@ TEST(BlinkStorageKeyTest, EqualityWithNonce) {
   EXPECT_NE(key1, key3);
 }
 
+TEST(BlinkStorageKeyTest, NoncedKeyForbidsUnpartitionedAccess) {
+  scoped_refptr<const SecurityOrigin> origin =
+      SecurityOrigin::CreateFromString("https://example.com");
+  const BlinkSchemefulSite site(origin);
+  base::UnguessableToken nonce = base::UnguessableToken::Create();
+
+  for (const bool toggle : {false, true}) {
+    base::test::ScopedFeatureList scope_feature_list;
+    scope_feature_list.InitWithFeatureState(
+        net::features::kThirdPartyStoragePartitioning, toggle);
+
+    BlinkStorageKey key = BlinkStorageKey::Create(
+        origin, site, mojom::AncestorChainBit::kSameSite);
+    EXPECT_FALSE(key.ForbidsUnpartitionedStorageAccess());
+
+    key = BlinkStorageKey::CreateWithNonce(origin, nonce);
+    EXPECT_TRUE(key.ForbidsUnpartitionedStorageAccess());
+  }
+}
+
 TEST(BlinkStorageKeyTest, OpaqueOriginRetained) {
   // Test that a StorageKey made from an opaque origin retains the origin.
   scoped_refptr<const SecurityOrigin> opaque_origin =
@@ -169,13 +189,12 @@ TEST(BlinkStorageKeyTest, StorageKeyRoundTripConversion) {
 
 // Test that string -> StorageKey test function performs as expected.
 TEST(BlinkStorageKeyTest, CreateFromStringForTesting) {
-  WTF::String example = "https://example.com/";
-  WTF::String wrong = "I'm not a valid URL.";
+  String example = "https://example.com/";
+  String wrong = "I'm not a valid URL.";
 
   BlinkStorageKey key1 = BlinkStorageKey::CreateFromStringForTesting(example);
   BlinkStorageKey key2 = BlinkStorageKey::CreateFromStringForTesting(wrong);
-  BlinkStorageKey key3 =
-      BlinkStorageKey::CreateFromStringForTesting(WTF::String());
+  BlinkStorageKey key3 = BlinkStorageKey::CreateFromStringForTesting(String());
 
   EXPECT_FALSE(key1.GetSecurityOrigin()->IsOpaque());
   EXPECT_EQ(key1, BlinkStorageKey::CreateFirstParty(

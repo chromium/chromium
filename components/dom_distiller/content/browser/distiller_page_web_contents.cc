@@ -9,13 +9,18 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/dom_distiller/content/browser/distiller_javascript_utils.h"
 #include "components/dom_distiller/core/distiller_page.h"
 #include "components/dom_distiller/core/dom_distiller_constants.h"
+#include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/dom_distiller_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_throttle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
@@ -25,6 +30,37 @@
 #include "url/gurl.h"
 
 namespace dom_distiller {
+
+namespace {
+
+// UserData key to identify DistillerPageWebContents.
+const char kDistillerPageWebContentsUserDataTag[] =
+    "DistillerPageWebContentsUserDataTag";
+
+// Trivial SupportsUserData::Data implementation.
+class DistillerPageWebContentsUserData : public base::SupportsUserData::Data {
+ public:
+  explicit DistillerPageWebContentsUserData() = default;
+};
+
+// Blocks redirects for the web contents created for distillation viewing.
+class RedirectBlockingNavigationThrottle : public content::NavigationThrottle {
+ public:
+  explicit RedirectBlockingNavigationThrottle(
+      content::NavigationThrottleRegistry& registry)
+      : content::NavigationThrottle(registry) {}
+  ~RedirectBlockingNavigationThrottle() override = default;
+
+  // content::NavigationThrottle:
+  ThrottleCheckResult WillRedirectRequest() override {
+    return content::NavigationThrottle::CANCEL;
+  }
+  const char* GetNameForLogging() override {
+    return "DistillerViewerSourceNavigationThrottle";
+  }
+};
+
+}  // namespace
 
 SourcePageHandleWebContents::SourcePageHandleWebContents(
     content::WebContents* web_contents,
@@ -61,6 +97,16 @@ DistillerPageWebContentsFactory::CreateDistillerPageWithHandle(
       browser_context_, gfx::Size(), std::move(web_contents_handle)));
 }
 
+// static
+void DistillerPageWebContents::MaybeCreateAndAddNavigationThrottle(
+    content::NavigationThrottleRegistry& registry) {
+  auto* web_contents = registry.GetNavigationHandle().GetWebContents();
+  if (web_contents->GetUserData(kDistillerPageWebContentsUserDataTag)) {
+    registry.AddThrottle(
+        std::make_unique<RedirectBlockingNavigationThrottle>(registry));
+  }
+}
+
 DistillerPageWebContents::DistillerPageWebContents(
     content::BrowserContext* browser_context,
     const gfx::Size& render_view_size,
@@ -79,8 +125,13 @@ DistillerPageWebContents::DistillerPageWebContents(
 
 DistillerPageWebContents::~DistillerPageWebContents() = default;
 
-bool DistillerPageWebContents::StringifyOutput() {
+bool DistillerPageWebContents::ShouldFetchOfflineData() {
   return false;
+}
+
+DistillerType DistillerPageWebContents::GetDistillerType() {
+  return ShouldUseReadabilityDistiller() ? DistillerType::kReadability
+                                         : DistillerType::kDOMDistiller;
 }
 
 void DistillerPageWebContents::DistillPageImpl(const GURL& url,
@@ -116,6 +167,11 @@ void DistillerPageWebContents::CreateNewWebContents(const GURL& url) {
       content::WebContents::Create(create_params);
   DCHECK(web_contents);
 
+  // Add a tag to the WebContents so that we can identify it later.
+  web_contents->SetUserData(
+      kDistillerPageWebContentsUserDataTag,
+      std::make_unique<DistillerPageWebContentsUserData>());
+
   web_contents->SetDelegate(this);
 
   // Start observing WebContents and load the requested URL.
@@ -137,7 +193,7 @@ gfx::Size DistillerPageWebContents::GetSizeForNewRenderView(
   // in the executed domdistiller.js won't be 0.
   if (size.IsEmpty()) {
     DVLOG(1) << "Using fullscreen as default RenderView size";
-    size = display::Screen::GetScreen()->GetPrimaryDisplay().size();
+    size = display::Screen::Get()->GetPrimaryDisplay().size();
   }
   return size;
 }
@@ -149,11 +205,9 @@ void DistillerPageWebContents::DOMContentLoaded(
   }
 }
 
-void DistillerPageWebContents::DidFailLoad(
-    content::RenderFrameHost* render_frame_host,
-    const GURL& validated_url,
-    int error_code) {
-  if (render_frame_host->IsInPrimaryMainFrame()) {
+void DistillerPageWebContents::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->HasCommitted()) {
     content::WebContentsObserver::Observe(nullptr);
     DCHECK(state_ == LOADING_PAGE || state_ == EXECUTING_JAVASCRIPT);
     state_ = PAGELOAD_FAILED;
@@ -168,7 +222,6 @@ void DistillerPageWebContents::ExecuteJavaScript() {
   // Stop any pending navigation since the intent is to distill the current
   // page.
   source_page_handle_->web_contents()->Stop();
-  DVLOG(1) << "Beginning distillation";
   RunIsolatedJavaScript(
       &TargetRenderFrameHost(), script_,
       base::BindOnce(&DistillerPageWebContents::OnWebContentsDistillationDone,
@@ -187,7 +240,8 @@ void DistillerPageWebContents::OnWebContentsDistillationDone(
 
   if (!javascript_start.is_null()) {
     base::TimeDelta javascript_time = base::TimeTicks::Now() - javascript_start;
-    DVLOG(1) << "DomDistiller.Time.RunJavaScript = " << javascript_time;
+    base::UmaHistogramTimes("DomDistiller.Time.RunDistillationJavaScript",
+                            javascript_time);
   }
 
   DistillerPage::OnDistillationDone(page_url, &value);
@@ -202,6 +256,12 @@ content::RenderFrameHost& DistillerPageWebContents::TargetRenderFrameHost() {
   return source_page_handle_->web_contents()
       ->GetPrimaryPage()
       .GetMainDocument();
+}
+
+base::SupportsUserData::Data*
+DistillerPageWebContents::GetUserDataForTesting() {
+  return source_page_handle_->web_contents()->GetUserData(
+      kDistillerPageWebContentsUserDataTag);
 }
 
 }  // namespace dom_distiller

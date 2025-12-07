@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/hash/sha1.h"
@@ -18,6 +19,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "crypto/hash.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/pdf_render_settings.h"
 #include "printing/pwg_raster_settings.h"
@@ -55,7 +57,7 @@ void GetPdfData(const char* file_name,
 }
 
 std::string HashData(base::span<const uint8_t> data) {
-  return base::HexEncode(base::SHA1Hash(data));
+  return base::HexEncode(crypto::hash::Sha256(data));
 }
 
 void ComparePwgOutput(const base::FilePath& expected_file,
@@ -75,7 +77,7 @@ class PdfToPwgRasterBrowserTest : public InProcessBrowserTest {
  public:
   PdfToPwgRasterBrowserTest()
       : converter_(PwgRasterConverter::CreateDefault()) {}
-  ~PdfToPwgRasterBrowserTest() override {}
+  ~PdfToPwgRasterBrowserTest() override = default;
 
   void Convert(const base::RefCountedMemory* pdf_data,
                const PdfRenderSettings& conversion_settings,
@@ -101,7 +103,8 @@ class PdfToPwgRasterBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(PdfToPwgRasterBrowserTest, TestFailure) {
   scoped_refptr<base::RefCountedStaticMemory> bad_pdf_data =
-      base::MakeRefCounted<base::RefCountedStaticMemory>("0123456789", 10);
+      base::MakeRefCounted<base::RefCountedStaticMemory>(
+          base::byte_span_from_cstring("0123456789"));
   base::ReadOnlySharedMemoryRegion pwg_region;
   Convert(bad_pdf_data.get(), PdfRenderSettings(), PwgRasterSettings(),
           /*expect_success=*/false, &pwg_region);

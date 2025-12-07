@@ -9,9 +9,11 @@ import './base_page.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {createCustomEvent, FatalHardwareEvent, FATAL_HARDWARE_ERROR} from './events.js';
+import type {FatalHardwareEvent} from './events.js';
+import {createCustomEvent, FATAL_HARDWARE_ERROR} from './events.js';
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {FinalizationError, FinalizationObserverReceiver, FinalizationStatus, RmadErrorCode, ShimlessRmaServiceInterface} from './shimless_rma.mojom-webui.js';
+import type {FinalizationError, ShimlessRmaServiceInterface} from './shimless_rma.mojom-webui.js';
+import {FinalizationObserverReceiver, FinalizationStatus, RmadErrorCode} from './shimless_rma.mojom-webui.js';
 import {executeThenTransitionState, focusPageTitle} from './shimless_rma_util.js';
 import {getTemplate} from './wrapup_finalize_page.html.js';
 

@@ -17,8 +17,8 @@ suite('PrintPreviewCrosApp', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     resetDataManagersAndProviders();
-    element = document.createElement(PrintPreviewCrosAppElement.is) as
-        PrintPreviewCrosAppElement;
+    element = document.createElement(PrintPreviewCrosAppElement.is);
+    PrintPreviewCrosAppElement;
     assertTrue(!!element);
     document.body.append(element);
   });
@@ -35,7 +35,7 @@ suite('PrintPreviewCrosApp', () => {
   });
 
   // Verify print-preview-cros element has a controller configured.
-  test('has element controller', async () => {
+  test('has element controller', () => {
     const controller = element.getControllerForTesting();
     assertTrue(
         !!controller,

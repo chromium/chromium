@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/screen_details/screen_details_test_utils.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -14,6 +16,7 @@
 #include "content/shell/browser/shell.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/display/screen_base.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -33,7 +36,7 @@ IN_PROC_BROWSER_TEST_F(ScreenDetailsTest, DISABLED_GetScreensBasic) {
   ASSERT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "empty.html")));
   ASSERT_EQ(true, EvalJs(shell(), "'getScreenDetails' in self"));
   auto result = EvalJs(shell(), content::test::kGetScreenDetailsScript);
-  EXPECT_EQ(content::test::GetExpectedScreenDetails(), result.value);
+  EXPECT_EQ(content::test::GetExpectedScreenDetails(), result);
 }
 
 // Test that screen.isExtended matches the availability of multiple displays.
@@ -41,7 +44,7 @@ IN_PROC_BROWSER_TEST_F(ScreenDetailsTest, IsExtendedBasic) {
   ASSERT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "empty.html")));
   ASSERT_EQ(true, EvalJs(shell(), "'isExtended' in screen"));
   EXPECT_EQ("boolean", EvalJs(shell(), "typeof screen.isExtended"));
-  EXPECT_EQ(display::Screen::GetScreen()->GetNumDisplays() > 1,
+  EXPECT_EQ(display::Screen::Get()->GetNumDisplays() > 1,
             EvalJs(shell(), "screen.isExtended"));
 }
 
@@ -101,9 +104,16 @@ IN_PROC_BROWSER_TEST_F(FakeScreenDetailsTest, MAYBE_GetScreensFaked) {
   PermissionControllerImpl* permission_controller =
       PermissionControllerImpl::FromBrowserContext(
           contents->GetBrowserContext());
+
+  base::test::TestFuture<PermissionControllerImpl::OverrideStatus> future;
+
+  url::Origin origin =
+      contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   permission_controller->GrantPermissionOverrides(
-      contents->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
-      {blink::PermissionType::WINDOW_MANAGEMENT});
+      origin, origin, {blink::PermissionType::WINDOW_MANAGEMENT},
+      future.GetCallback());
+  ASSERT_EQ(future.Get(),
+            PermissionControllerImpl::OverrideStatus::kOverrideSet);
 
   screen()->display_list().AddDisplay({1, gfx::Rect(100, 100, 801, 802)},
                                       display::DisplayList::Type::NOT_PRIMARY);
@@ -115,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(FakeScreenDetailsTest, MAYBE_GetScreensFaked) {
 
   EvalJsResult result =
       EvalJs(test_shell(), content::test::kGetScreenDetailsScript);
-  EXPECT_EQ(content::test::GetExpectedScreenDetails(), result.value);
+  EXPECT_EQ(content::test::GetExpectedScreenDetails(), result);
 }
 
 // TODO(crbug.com/40115071): Windows crashes static casting to ScreenWin.

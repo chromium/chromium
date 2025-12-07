@@ -5,6 +5,8 @@
 #ifndef ASH_USER_EDUCATION_USER_EDUCATION_DELEGATE_H_
 #define ASH_USER_EDUCATION_USER_EDUCATION_DELEGATE_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <string>

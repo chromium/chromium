@@ -4,8 +4,9 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {KerberosAccount, KerberosAccountsBrowserProxyImpl, KerberosAddAccountDialogElement, KerberosConfigErrorCode, KerberosErrorType} from 'chrome://os-settings/lazy_load.js';
-import {CrButtonElement, CrCheckboxElement, CrDialogElement, CrInputElement, CrTextareaElement} from 'chrome://os-settings/os_settings.js';
+import type {KerberosAccount, KerberosAddAccountDialogElement} from 'chrome://os-settings/lazy_load.js';
+import {KerberosAccountsBrowserProxyImpl, KerberosConfigErrorCode, KerberosErrorType} from 'chrome://os-settings/lazy_load.js';
+import type {CrButtonElement, CrCheckboxElement, CrDialogElement, CrInputElement, CrTextareaElement} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -41,7 +42,6 @@ suite('<kerberos-add-account-dialog>', () => {
     KerberosAccountsBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
     loadTimeData.overrideValues({
-      kerberosRememberPasswordByDefault: true,
       kerberosRememberPasswordEnabled: true,
       isGuest: false,
       kerberosDomainAutocomplete: '',
@@ -157,11 +157,8 @@ suite('<kerberos-add-account-dialog>', () => {
     flush();
   }
 
-  // Verifies expected states if no account is preset and password should be
-  // remembered by default.
+  // Verifies expected states if no account is preset.
   test('State without preset account and remember password check', async () => {
-    assertTrue(loadTimeData.getBoolean('kerberosRememberPasswordByDefault'));
-
     assertTrue(title.startsWith('Add'));
     assertEquals('Add', actionButton.innerText);
     assertFalse(username.disabled);
@@ -169,15 +166,6 @@ suite('<kerberos-add-account-dialog>', () => {
     assertEquals('', password.value);
     await assertConfig(loadTimeData.getString('defaultKerberosConfig'));
     assertTrue(rememberPassword.checked);
-  });
-
-  // Verifies the rememberPassword state if no account is preset and password
-  // should not be remembered by default.
-  test('State without preset account and password not remembered', () => {
-    loadTimeData.overrideValues({kerberosRememberPasswordByDefault: false});
-    createDialog(null);
-
-    assertFalse(rememberPassword.checked);
   });
 
   // Verifies expected state if an account is preset.
@@ -195,10 +183,8 @@ suite('<kerberos-add-account-dialog>', () => {
   });
 
   // The password input field is empty and 'Remember password' is checked if
-  // |passwordWasRemembered| is false and the password should be remembered by
-  // default.
+  // |passwordWasRemembered| is false.
   test('Password not preset if password was not remembered', () => {
-    assertTrue(loadTimeData.getBoolean('kerberosRememberPasswordByDefault'));
     const testAccount = TEST_KERBEROS_ACCOUNTS[0];
     assertTrue(!!testAccount);
     assertFalse(testAccount.passwordWasRemembered);
@@ -207,23 +193,6 @@ suite('<kerberos-add-account-dialog>', () => {
     assertEquals('', password.value);
     assertTrue(rememberPassword.checked);
   });
-
-  // The password input field is empty and 'Remember password' is not checked if
-  // |passwordWasRemembered| is false and the password should not be remembered
-  // by default.
-  test(
-      'Checkbox unchecked if password was not remembered and feature disabled',
-      () => {
-        loadTimeData.overrideValues({kerberosRememberPasswordByDefault: false});
-        createDialog(null);
-
-        const testAccount = TEST_KERBEROS_ACCOUNTS[AccountIndex.FIRST];
-        assertTrue(!!testAccount);
-        assertFalse(testAccount.passwordWasRemembered);
-        createDialog(testAccount);
-        assertEquals('', password.value);
-        assertFalse(rememberPassword.checked);
-      });
 
   // The password input field is not empty and 'Remember password' is checked
   // if |passwordWasRemembered| is true.

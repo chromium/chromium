@@ -1,59 +1,9 @@
 {
-  "lacros-amd64-generic-chrome": {
-    "args_file": "//build/args/chromeos/amd64-generic-crostoolchain.gni",
-    "gn_args": {
-      "chromeos_is_browser_only": true,
-      "dcheck_always_on": false,
-      "is_cfi": true,
-      "is_chrome_branded": true,
-      "is_chromeos_device": true,
-      "is_official_build": true,
-      "is_skylab": true,
-      "ozone_platform_headless": true,
-      "symbol_level": 1,
-      "target_os": "chromeos",
-      "use_remoteexec": true,
-      "use_thin_lto": true
-    }
-  },
-  "lacros-arm-generic-chrome": {
-    "args_file": "//build/args/chromeos/arm-generic-crostoolchain.gni",
-    "gn_args": {
-      "chromeos_is_browser_only": true,
-      "dcheck_always_on": false,
-      "is_cfi": true,
-      "is_chrome_branded": true,
-      "is_chromeos_device": true,
-      "is_official_build": true,
-      "is_skylab": true,
-      "ozone_platform_headless": true,
-      "symbol_level": 1,
-      "target_os": "chromeos",
-      "use_remoteexec": true,
-      "use_thin_lto": true
-    }
-  },
-  "lacros-arm64-generic-chrome": {
-    "args_file": "//build/args/chromeos/arm64-generic-crostoolchain.gni",
-    "gn_args": {
-      "chromeos_is_browser_only": true,
-      "dcheck_always_on": false,
-      "is_cfi": true,
-      "is_chrome_branded": true,
-      "is_chromeos_device": true,
-      "is_official_build": true,
-      "is_skylab": true,
-      "ozone_platform_headless": true,
-      "symbol_level": 1,
-      "target_os": "chromeos",
-      "use_remoteexec": true,
-      "use_thin_lto": true
-    }
-  },
   "linux-chrome": {
     "gn_args": {
       "is_chrome_branded": true,
       "is_official_build": true,
+      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -61,18 +11,7 @@
     "gn_args": {
       "is_chrome_branded": true,
       "is_official_build": true,
-      "use_remoteexec": true
-    }
-  },
-  "linux-lacros-chrome": {
-    "gn_args": {
-      "also_build_ash_chrome": true,
-      "chromeos_is_browser_only": true,
-      "exclude_unwind_tables": false,
-      "is_chrome_branded": true,
-      "is_official_build": true,
-      "symbol_level": 1,
-      "target_os": "chromeos",
+      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -82,6 +21,7 @@
       "is_chrome_branded": true,
       "is_official_build": true,
       "target_cpu": "arm64",
+      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -90,6 +30,8 @@
       "ignore_missing_widevine_signing_cert": true,
       "is_chrome_branded": true,
       "is_official_build": true,
+      "target_cpu": "x64",
+      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -100,6 +42,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
+      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -111,6 +54,7 @@
       "is_debug": false,
       "is_official_build": true,
       "symbol_level": 1,
+      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -118,7 +62,9 @@
     "gn_args": {
       "is_chrome_branded": true,
       "is_official_build": true,
+      "symbol_level": 1,
       "target_cpu": "x86",
+      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -126,6 +72,7 @@
     "gn_args": {
       "is_chrome_branded": true,
       "is_official_build": true,
+      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -133,7 +80,9 @@
     "gn_args": {
       "is_chrome_branded": true,
       "is_official_build": true,
+      "symbol_level": 1,
       "target_cpu": "x64",
+      "use_reclient": false,
       "use_remoteexec": true
     }
   }

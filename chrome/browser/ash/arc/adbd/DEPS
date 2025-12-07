@@ -21,3 +21,9 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "arc_adbd_monitor_bridge_unittest\.cc": [
+    "+chrome/browser/ash/settings/scoped_cros_settings_test_helper.h",
+  ],
+}

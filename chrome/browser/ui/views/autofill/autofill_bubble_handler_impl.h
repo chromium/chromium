@@ -9,11 +9,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
-#include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
+#include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 #include "components/autofill/core/browser/ui/payments/save_payment_method_and_virtual_card_enroll_confirmation_ui_params.h"
+#include "components/signin/public/base/signin_buildflags.h"
 
-class Browser;
-class PageActionIconView;
 class ToolbarButtonProvider;
 
 namespace content {
@@ -22,19 +21,20 @@ class WebContents;
 
 namespace views {
 class View;
+class Button;
 }
 
 namespace autofill {
 class AutofillBubbleBase;
-class LocalCardMigrationBubbleController;
+class FilledCardInformationBubbleController;
 class SaveCardBubbleController;
 class IbanBubbleController;
 enum class IbanBubbleType;
 
 class AutofillBubbleHandlerImpl : public AutofillBubbleHandler {
  public:
-  AutofillBubbleHandlerImpl(Browser* browser,
-                            ToolbarButtonProvider* toolbar_button_provider);
+  explicit AutofillBubbleHandlerImpl(
+      ToolbarButtonProvider* toolbar_button_provider);
 
   AutofillBubbleHandlerImpl(const AutofillBubbleHandlerImpl&) = delete;
   AutofillBubbleHandlerImpl& operator=(const AutofillBubbleHandlerImpl&) =
@@ -52,29 +52,29 @@ class AutofillBubbleHandlerImpl : public AutofillBubbleHandler {
                                      bool is_user_gesture,
                                      IbanBubbleType bubble_type) override;
 
-  AutofillBubbleBase* ShowLocalCardMigrationBubble(
-      content::WebContents* web_contents,
-      LocalCardMigrationBubbleController* controller,
-      bool is_user_gesture) override;
   AutofillBubbleBase* ShowOfferNotificationBubble(
       content::WebContents* contents,
       OfferNotificationBubbleController* controller,
       bool is_user_gesture) override;
+  AutofillBubbleBase* ShowSaveAutofillAiDataBubble(
+      content::WebContents* web_contents,
+      AutofillAiImportDataController* controller) override;
   AutofillBubbleBase* ShowSaveAddressProfileBubble(
       content::WebContents* web_contents,
       std::unique_ptr<SaveAddressBubbleController> controller,
       bool is_user_gesture) override;
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  AutofillBubbleBase* ShowAddressSignInPromo(
+      content::WebContents* web_contents,
+      const AutofillProfile& autofill_profile) override;
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   AutofillBubbleBase* ShowUpdateAddressProfileBubble(
       content::WebContents* web_contents,
       std::unique_ptr<UpdateAddressBubbleController> controller,
       bool is_user_gesture) override;
-  AutofillBubbleBase* ShowAddNewAddressProfileBubble(
+  AutofillBubbleBase* ShowFilledCardInformationBubble(
       content::WebContents* web_contents,
-      std::unique_ptr<AddNewAddressBubbleController> controller,
-      bool is_user_gesture) override;
-  AutofillBubbleBase* ShowVirtualCardManualFallbackBubble(
-      content::WebContents* web_contents,
-      VirtualCardManualFallbackBubbleController* controller,
+      FilledCardInformationBubbleController* controller,
       bool is_user_gesture) override;
   AutofillBubbleBase* ShowVirtualCardEnrollBubble(
       content::WebContents* web_contents,
@@ -91,18 +91,18 @@ class AutofillBubbleHandlerImpl : public AutofillBubbleHandler {
   AutofillBubbleBase* ShowSaveCardConfirmationBubble(
       content::WebContents* web_contents,
       SaveCardBubbleController* controller) override;
+  AutofillBubbleBase* ShowSaveIbanConfirmationBubble(
+      content::WebContents* web_contents,
+      IbanBubbleController* controller) override;
 
  private:
   // Show the save card and virtual card enrollment confirmation bubble.
   AutofillBubbleBase* ShowSaveCardAndVirtualCardEnrollConfirmationBubble(
       views::View* anchor_view,
       content::WebContents* web_contents,
-      base::OnceCallback<void(PaymentsBubbleClosedReason)>
-          controller_hide_callback,
-      PageActionIconView* icon_view,
+      base::OnceCallback<void(PaymentsUiClosedReason)> controller_hide_callback,
+      views::Button* icon_view,
       SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params);
-
-  raw_ptr<Browser> browser_ = nullptr;
 
   raw_ptr<ToolbarButtonProvider> toolbar_button_provider_ = nullptr;
 };

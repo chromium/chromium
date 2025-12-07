@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 // This command-line program generates the set of files needed for the crash-
 // cache unit tests (DiskCacheTest,CacheBackend_Recover*). This program only
 // works properly on debug mode, because the crash functionality is not compiled
@@ -17,6 +12,7 @@
 #include "base/at_exit.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
@@ -97,31 +93,29 @@ const char kCrashEntryName[] = "the first key";
 // Creates the destinaton folder for this run, and returns it on full_path.
 bool CreateTargetFolder(const base::FilePath& path, RankCrashes action,
                         base::FilePath* full_path) {
-  const char* const folders[] = {
-    "",
-    "insert_empty1",
-    "insert_empty2",
-    "insert_empty3",
-    "insert_one1",
-    "insert_one2",
-    "insert_one3",
-    "insert_load1",
-    "insert_load2",
-    "remove_one1",
-    "remove_one2",
-    "remove_one3",
-    "remove_one4",
-    "remove_head1",
-    "remove_head2",
-    "remove_head3",
-    "remove_head4",
-    "remove_tail1",
-    "remove_tail2",
-    "remove_tail3",
-    "remove_load1",
-    "remove_load2",
-    "remove_load3"
-  };
+  auto folders = std::to_array({"",
+                                "insert_empty1",
+                                "insert_empty2",
+                                "insert_empty3",
+                                "insert_one1",
+                                "insert_one2",
+                                "insert_one3",
+                                "insert_load1",
+                                "insert_load2",
+                                "remove_one1",
+                                "remove_one2",
+                                "remove_one3",
+                                "remove_one4",
+                                "remove_head1",
+                                "remove_head2",
+                                "remove_head3",
+                                "remove_head4",
+                                "remove_tail1",
+                                "remove_tail2",
+                                "remove_tail3",
+                                "remove_load1",
+                                "remove_load2",
+                                "remove_load3"});
   static_assert(std::size(folders) == disk_cache::MAX_CRASH, "sync folders");
   DCHECK(action > disk_cache::NO_CRASH && action < disk_cache::MAX_CRASH);
 
@@ -142,6 +136,11 @@ void FlushQueue(disk_cache::Backend* cache) {
   cb.GetResult(rv);  // Ignore the result;
 }
 
+int32_t GetCacheEntryCount(disk_cache::Backend* cache) {
+  net::TestInt32CompletionCallback cb;
+  return cb.GetResult(cache->GetEntryCount(cb.callback()));
+}
+
 bool CreateCache(const base::FilePath& path,
                  base::Thread* thread,
                  disk_cache::Backend** cache,
@@ -154,7 +153,7 @@ bool CreateCache(const base::FilePath& path,
   backend->SetFlags(disk_cache::kNoRandom);
   backend->Init(cb->callback());
   *cache = backend;
-  return (cb->WaitForResult() == net::OK && !(*cache)->GetEntryCount());
+  return (cb->WaitForResult() == net::OK && !GetCacheEntryCount(*cache));
 }
 
 // Generates the files for an empty and one item cache.
@@ -284,7 +283,8 @@ int LoadOperations(const base::FilePath& path, RankCrashes action,
 
   // Work with a tiny index table (16 entries).
   disk_cache::BackendImpl* cache = new disk_cache::BackendImpl(
-      path, 0xf, cache_thread->task_runner().get(), net::DISK_CACHE, nullptr);
+      path, 0xf, /*cleanup_tracker=*/nullptr, cache_thread->task_runner().get(),
+      net::DISK_CACHE, nullptr);
   if (!cache->SetMaxSize(0x100000))
     return GENERIC;
 
@@ -292,8 +292,9 @@ int LoadOperations(const base::FilePath& path, RankCrashes action,
   cache->SetFlags(disk_cache::kNoRandom);
   net::TestCompletionCallback cb;
   cache->Init(cb.callback());
-  if (cb.WaitForResult() != net::OK || cache->GetEntryCount())
+  if (cb.WaitForResult() != net::OK || GetCacheEntryCount(cache)) {
     return GENERIC;
+  }
 
   int seed = static_cast<int>(Time::Now().ToInternalValue());
   srand(seed);
@@ -387,12 +388,14 @@ int main(int argc, const char* argv[]) {
   if (argc < 2)
     return MasterCode();
 
-  char* end;
-  RankCrashes action = static_cast<RankCrashes>(strtol(argv[1], &end, 0));
-  if (action <= disk_cache::NO_CRASH || action >= disk_cache::MAX_CRASH) {
+  int action_in = 0;
+  // SAFETY: We check that argc >= 2 above, so argv[1] is fine.
+  if (!base::StringToInt(UNSAFE_BUFFERS(argv[1]), &action_in) ||
+      action_in <= disk_cache::NO_CRASH || action_in >= disk_cache::MAX_CRASH) {
     printf("Invalid action\n");
     return INVALID_ARGUMENT;
   }
+  RankCrashes action = static_cast<RankCrashes>(action_in);
 
   base::FilePath path;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);

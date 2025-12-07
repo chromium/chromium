@@ -5,19 +5,25 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_multi_draw.h"
 
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
-WebGLMultiDraw::WebGLMultiDraw(WebGLRenderingContextBase* context)
+WebGLMultiDraw::WebGLMultiDraw(WebGLRenderingContextBase* context,
+                               ExecutionContext* execution_context)
     : WebGLExtension(context) {
+  UseCounter::CountWebDXFeature(execution_context,
+                                WebDXFeature::kWebglMultiDraw);
   context->ExtensionsUtil()->EnsureExtensionEnabled("GL_WEBGL_multi_draw");
   context->ExtensionsUtil()->EnsureExtensionEnabled("GL_ANGLE_multi_draw");
 
   // Spec requires ANGLE_instanced_arrays to be implicitly turned on
   // here in WebGL 1.0 contexts.
   if (!context->IsWebGL2()) {
-    context->EnableExtensionIfSupported("ANGLE_instanced_arrays");
+    context->EnableExtensionIfSupported("ANGLE_instanced_arrays",
+                                        execution_context);
   }
 }
 
@@ -36,13 +42,12 @@ const char* WebGLMultiDraw::ExtensionName() {
   return "WEBGL_multi_draw";
 }
 
-void WebGLMultiDraw::multiDrawArraysImpl(
-    GLenum mode,
-    const base::span<const int32_t>& firsts,
-    GLuint firstsOffset,
-    const base::span<const int32_t>& counts,
-    GLuint countsOffset,
-    GLsizei drawcount) {
+void WebGLMultiDraw::multiDrawArraysWEBGL(GLenum mode,
+                                          base::span<const int32_t> firsts,
+                                          GLuint firstsOffset,
+                                          base::span<const int32_t> counts,
+                                          GLuint countsOffset,
+                                          GLsizei drawcount) {
   WebGLExtensionScopedContext scoped(this);
   if (scoped.IsLost() ||
       !ValidateDrawcount(&scoped, "multiDrawArraysWEBGL", drawcount) ||
@@ -63,14 +68,13 @@ void WebGLMultiDraw::multiDrawArraysImpl(
       });
 }
 
-void WebGLMultiDraw::multiDrawElementsImpl(
-    GLenum mode,
-    const base::span<const int32_t>& counts,
-    GLuint countsOffset,
-    GLenum type,
-    const base::span<const int32_t>& offsets,
-    GLuint offsetsOffset,
-    GLsizei drawcount) {
+void WebGLMultiDraw::multiDrawElementsWEBGL(GLenum mode,
+                                            base::span<const int32_t> counts,
+                                            GLuint countsOffset,
+                                            GLenum type,
+                                            base::span<const int32_t> offsets,
+                                            GLuint offsetsOffset,
+                                            GLsizei drawcount) {
   WebGLExtensionScopedContext scoped(this);
   if (scoped.IsLost() ||
       !ValidateDrawcount(&scoped, "multiDrawElementsWEBGL", drawcount) ||
@@ -92,13 +96,13 @@ void WebGLMultiDraw::multiDrawElementsImpl(
       });
 }
 
-void WebGLMultiDraw::multiDrawArraysInstancedImpl(
+void WebGLMultiDraw::multiDrawArraysInstancedWEBGL(
     GLenum mode,
-    const base::span<const int32_t>& firsts,
+    base::span<const int32_t> firsts,
     GLuint firstsOffset,
-    const base::span<const int32_t>& counts,
+    base::span<const int32_t> counts,
     GLuint countsOffset,
-    const base::span<const int32_t>& instanceCounts,
+    base::span<const int32_t> instanceCounts,
     GLuint instanceCountsOffset,
     GLsizei drawcount) {
   WebGLExtensionScopedContext scoped(this);
@@ -125,14 +129,14 @@ void WebGLMultiDraw::multiDrawArraysInstancedImpl(
       });
 }
 
-void WebGLMultiDraw::multiDrawElementsInstancedImpl(
+void WebGLMultiDraw::multiDrawElementsInstancedWEBGL(
     GLenum mode,
-    const base::span<const int32_t>& counts,
+    base::span<const int32_t> counts,
     GLuint countsOffset,
     GLenum type,
-    const base::span<const int32_t>& offsets,
+    base::span<const int32_t> offsets,
     GLuint offsetsOffset,
-    const base::span<const int32_t>& instanceCounts,
+    base::span<const int32_t> instanceCounts,
     GLuint instanceCountsOffset,
     GLsizei drawcount) {
   WebGLExtensionScopedContext scoped(this);

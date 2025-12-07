@@ -4,10 +4,18 @@
 
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_bottom_sheet_bridge.h"
 
+#include <vector>
+
 #include "base/android/jni_android.h"
+#include "base/android/jni_array.h"
+#include "base/containers/span.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/autofill/core/browser/data_model/payments/bank_account.h"
+#include "components/autofill/core/browser/data_model/payments/ewallet.h"
+#include "components/facilitated_payments/android/facilitated_payments_app_info_list_android.h"
+#include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
 #include "content/public/browser/web_contents.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -23,10 +31,20 @@ FacilitatedPaymentsBottomSheetBridge::FacilitatedPaymentsBottomSheetBridge(
 FacilitatedPaymentsBottomSheetBridge::~FacilitatedPaymentsBottomSheetBridge() =
     default;
 
-bool FacilitatedPaymentsBottomSheetBridge::RequestShowContent(
-    base::span<const autofill::BankAccount> bank_account_suggestions) {
+bool FacilitatedPaymentsBottomSheetBridge::IsInLandscapeMode() {
   if (!GetJavaBridge()) {
     return false;
+  }
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_FacilitatedPaymentsPaymentMethodsViewBridge_isInLandscapeMode(
+      env, GetJavaBridge());
+}
+
+void FacilitatedPaymentsBottomSheetBridge::RequestShowContent(
+    base::span<const autofill::BankAccount> bank_account_suggestions) {
+  if (!GetJavaBridge()) {
+    return;
   }
 
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -37,8 +55,36 @@ bool FacilitatedPaymentsBottomSheetBridge::RequestShowContent(
         autofill::PersonalDataManagerAndroid::CreateJavaBankAccountFromNative(
             env, bank_account));
   }
-  return Java_FacilitatedPaymentsPaymentMethodsViewBridge_requestShowContent(
+  Java_FacilitatedPaymentsPaymentMethodsViewBridge_requestShowContent(
       env, GetJavaBridge(), std::move(bank_accounts_array));
+}
+
+void FacilitatedPaymentsBottomSheetBridge::RequestShowContentForPaymentLink(
+    base::span<const autofill::Ewallet> ewallet_suggestions,
+    std::unique_ptr<FacilitatedPaymentsAppInfoList> app_suggestions) {
+  if (!GetJavaBridge()) {
+    return;
+  }
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> ewallet_vector;
+  ewallet_vector.reserve(ewallet_suggestions.size());
+  for (const autofill::Ewallet& ewallet : ewallet_suggestions) {
+    ewallet_vector.push_back(
+        autofill::PersonalDataManagerAndroid::CreateJavaEwalletFromNative(
+            env, ewallet));
+  }
+
+  base::android::ScopedJavaLocalRef<jobjectArray> j_app_array;
+
+  if (app_suggestions) {
+    j_app_array = static_cast<FacilitatedPaymentsAppInfoListAndroid*>(
+                      app_suggestions.get())
+                      ->GetJavaArray();
+  }
+
+  Java_FacilitatedPaymentsPaymentMethodsViewBridge_requestShowContentForPaymentLink(
+      env, GetJavaBridge(), std::move(ewallet_vector), j_app_array);
 }
 
 void FacilitatedPaymentsBottomSheetBridge::ShowProgressScreen() {
@@ -69,6 +115,16 @@ void FacilitatedPaymentsBottomSheetBridge::Dismiss() {
 
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_FacilitatedPaymentsPaymentMethodsViewBridge_dismiss(env, java_bridge_);
+}
+
+void FacilitatedPaymentsBottomSheetBridge::ShowPixAccountLinkingPrompt() {
+  if (!GetJavaBridge()) {
+    return;
+  }
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_FacilitatedPaymentsPaymentMethodsViewBridge_showPixAccountLinkingPrompt(
+      env, GetJavaBridge());
 }
 
 base::android::ScopedJavaLocalRef<jobject>
@@ -106,3 +162,5 @@ void FacilitatedPaymentsBottomSheetBridge::OnDismissed() {
 }
 
 }  // namespace payments::facilitated
+
+DEFINE_JNI(FacilitatedPaymentsPaymentMethodsViewBridge)

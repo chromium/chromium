@@ -1,4 +1,3 @@
-#!/usr/bin/env vpython3
 # Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -6,12 +5,13 @@
 
 import argparse
 import contextlib
-import sys
-
+import json
+import logging
 from typing import Iterator, Optional
 
-from common import REPO_ALIAS, catch_sigterm, register_device_args, \
-                   run_ffx_command, wait_for_sigterm
+import monitors
+
+from common import run_ffx_command, REPO_ALIAS
 
 _REPO_NAME = 'chromium-test-package-server'
 
@@ -20,12 +20,15 @@ def _stop_serving(repo_name: str, target: Optional[str]) -> None:
     """Stop serving a repository."""
 
     # Attempt to clean up.
-    run_ffx_command(
-        cmd=['target', 'repository', 'deregister', '-r', repo_name],
-        target_id=target,
-        check=False)
-    run_ffx_command(cmd=['repository', 'remove', repo_name], check=False)
-    run_ffx_command(cmd=['repository', 'server', 'stop'], check=False)
+    with monitors.time_consumption('repository', 'deregister'):
+        run_ffx_command(
+            cmd=['target', 'repository', 'deregister', '-r', repo_name],
+            target_id=target,
+            check=False)
+
+    with monitors.time_consumption('repository', 'stop'):
+        run_ffx_command(cmd=['repository', 'server', 'stop', repo_name],
+                        check=False)
 
 
 def _start_serving(repo_dir: str, repo_name: str,
@@ -38,17 +41,55 @@ def _start_serving(repo_dir: str, repo_name: str,
         target: Fuchsia device the repository is served to.
     """
 
-    run_ffx_command(cmd=('config', 'set', 'repository.server.mode', '\"ffx\"'))
+    cmd = [
+        'repository', 'server', 'start', '--background',
+        '--address', '[::]:0',
+        '--repository', repo_name, '--repo-path', repo_dir, '--no-device'
+    ]
 
-    run_ffx_command(cmd=['repository', 'server', 'start'])
-    run_ffx_command(
-        cmd=['repository', 'add-from-pm', repo_dir, '-r', repo_name])
-    run_ffx_command(cmd=[
+    with monitors.time_consumption('repository', 'start'):
+        start_cmd = run_ffx_command(cmd=cmd, check=False)
+
+    logging.warning('ffx repository server start returns %d: %s %s',
+                          start_cmd.returncode,
+                          start_cmd.stderr, start_cmd.stdout)
+
+    _assert_server_running(repo_name)
+
+    cmd = [
         'target', 'repository', 'register', '-r', repo_name, '--alias',
         REPO_ALIAS
-    ],
-                    target_id=target)
+    ]
+    with monitors.time_consumption('repository', 'register'):
+        run_ffx_command(cmd=cmd, target_id=target)
 
+
+def _assert_server_running(repo_name: str) -> None:
+    """Raises RuntimeError if the repository server is not running."""
+
+    with monitors.time_consumption('repository', 'list'):
+        list_cmd = run_ffx_command(cmd=[
+            '--machine', 'json', 'repository', 'server', 'list', '--name',
+            repo_name
+        ],
+                                   check=False,
+                                   capture_output=True)
+    try:
+        response = json.loads(list_cmd.stdout.strip())
+        if 'ok' in response and response['ok']['data']:
+            if response['ok']['data'][0]['name'] != repo_name:
+                raise RuntimeError(
+                    'Repository server %s is not running. Output: %s stderr: %s'
+                    % (repo_name, list_cmd.stdout, list_cmd.stderr))
+            return
+    except json.decoder.JSONDecodeError as error:
+        # Log the json parsing error, but don't raise an exception since it
+        # does not have the full context of the error.
+        logging.error('Unexpected json string: %s, exception: %s, stderr: %s',
+                list_cmd.stdout, error, list_cmd.stderr)
+    raise RuntimeError(
+        'Repository server %s is not running. Output: %s stderr: %s'
+        % (repo_name, list_cmd.stdout, list_cmd.stderr))
 
 def register_serve_args(arg_parser: argparse.ArgumentParser) -> None:
     """Register common arguments for repository serving."""
@@ -62,53 +103,11 @@ def register_serve_args(arg_parser: argparse.ArgumentParser) -> None:
                             default=_REPO_NAME,
                             help='Name of the repository.')
 
-
-def run_serve_cmd(cmd: str, args: argparse.Namespace) -> None:
-    """Helper for running serve commands."""
-
-    if cmd == 'start':
-        _start_serving(args.repo, args.repo_name, args.target_id)
-    elif cmd == 'stop':
-        _stop_serving(args.repo_name, args.target_id)
-    else:
-        assert cmd == 'run'
-        catch_sigterm()
-        with serve_repository(args):
-            # Clients can assume the repo is up and running once the repo-name
-            # is printed out.
-            print(args.repo_name, flush=True)
-            wait_for_sigterm('shutting down the repo server.')
-
-
 @contextlib.contextmanager
 def serve_repository(args: argparse.Namespace) -> Iterator[None]:
     """Context manager for serving a repository."""
-    run_serve_cmd('start', args)
+    _start_serving(args.repo, args.repo_name, args.target_id)
     try:
         yield None
     finally:
-        run_serve_cmd('stop', args)
-
-
-def main():
-    """Stand-alone function for serving a repository."""
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument('cmd',
-                        choices=['start', 'stop', 'run'],
-                        help='Choose to start|stop|run repository serving. ' \
-                             '"start" command will start the repo and exit; ' \
-                             '"run" command will start the repo and wait ' \
-                             'until ctrl-c or sigterm.')
-    register_device_args(parser)
-    register_serve_args(parser)
-    args = parser.parse_args()
-    if (args.cmd == 'start' or args.cmd == 'run') and not args.repo:
-        raise ValueError('Directory the repository is serving from needs '
-                         'to be specified.')
-
-    run_serve_cmd(args.cmd, args)
-
-
-if __name__ == '__main__':
-    sys.exit(main())
+        _stop_serving(args.repo_name, args.target_id)

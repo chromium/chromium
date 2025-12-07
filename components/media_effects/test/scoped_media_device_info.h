@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_MEDIA_EFFECTS_TEST_SCOPED_MEDIA_DEVICE_INFO_H_
 #define COMPONENTS_MEDIA_EFFECTS_TEST_SCOPED_MEDIA_DEVICE_INFO_H_
 
+#include "base/auto_reset.h"
 #include "components/media_effects/media_device_info.h"
 
 namespace media_effects {

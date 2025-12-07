@@ -7,8 +7,10 @@ package org.chromium.base.test.transit;
 import androidx.annotation.CallSuper;
 
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.build.annotations.NullMarked;
 
 /** A {@link Condition} that checks if a single callback was received. */
+@NullMarked
 public class CallbackCondition extends Condition {
     protected final CallbackHelper mCallbackHelper;
     protected final String mCallbackDescription;

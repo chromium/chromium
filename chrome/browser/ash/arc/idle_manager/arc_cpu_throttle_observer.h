@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_ARC_IDLE_MANAGER_ARC_CPU_THROTTLE_OBSERVER_H_
 #define CHROME_BROWSER_ASH_ARC_IDLE_MANAGER_ARC_CPU_THROTTLE_OBSERVER_H_
 
-#include "chrome/browser/ash/throttle_observer.h"
-#include "chrome/browser/ash/throttle_service.h"
+#include "chromeos/ash/components/throttle/throttle_observer.h"
+#include "chromeos/ash/components/throttle/throttle_service.h"
 
 namespace arc {
 
-constexpr char kArcCpuThrottleObserverName[] = "ArcCpuThrottleObserver";
+inline constexpr char kArcCpuThrottleObserverName[] = "ArcCpuThrottleObserver";
 
 // This class observes ARCVM's instance throttle and sets the state to active
 // whenever ARCVM is NOT being throttled.

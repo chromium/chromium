@@ -23,6 +23,7 @@
 #include "services/viz/public/cpp/compositing/surface_id_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/compositor_frame.mojom.h"
 #include "testing/perf/perf_result_reporter.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "ui/gfx/mojom/selection_bound_mojom_traits.h"
 #include "ui/latency/mojom/latency_info_mojom_traits.h"
@@ -161,8 +162,6 @@ class VizSerializationPerfTest : public testing::Test {
     gfx::Rect arbitrary_rect1_inside_rect2(44, 23, 4, 2);
     gfx::Rect arbitrary_rect3(7, -53, 22, 19);
     gfx::Rect arbitrary_rect2_inside_rect3(12, -51, 5, 12);
-    gfx::Size arbitrary_size1(15, 19);
-    gfx::Size arbitrary_size2(3, 99);
     gfx::RectF arbitrary_rectf1(4.2f, -922.1f, 15.6f, 29.5f);
     gfx::RRectF arbitrary_rrectf1(4.2f, -922.1f, 15.6f, 29.5f, 1.2f, 2.3f, 3.4f,
                                   4.5f, 5.6f, 6.7f, 7.8f, 8.9f);
@@ -176,7 +175,6 @@ class VizSerializationPerfTest : public testing::Test {
     bool arbitrary_bool1 = true;
     bool arbitrary_bool2 = false;
     bool arbitrary_bool3 = true;
-    bool arbitrary_bool4 = true;
     bool arbitrary_bool5 = false;
     bool arbitrary_bool6 = true;
     bool arbitrary_bool7 = false;
@@ -211,10 +209,11 @@ class VizSerializationPerfTest : public testing::Test {
     auto pass_in = CompositorRenderPass::Create();
     pass_in->SetAll(root_id, arbitrary_rect1, arbitrary_rect2,
                     arbitrary_matrix1, arbitrary_filters2, arbitrary_filters1,
-                    arbitrary_rrectf1, SubtreeCaptureId(),
-                    arbitrary_rect1.size(), ViewTransitionElementResourceId(),
+                    SkPath::RRect(SkRRect(arbitrary_rrectf1)),
+                    SubtreeCaptureId(), arbitrary_rect1.size(),
+                    ViewTransitionElementResourceId(), arbitrary_bool1,
                     arbitrary_bool1, arbitrary_bool1, arbitrary_bool1,
-                    arbitrary_bool1, arbitrary_bool7);
+                    arbitrary_bool7);
 
     // Texture quads
     for (uint32_t i = 0; i < 10; ++i) {
@@ -230,33 +229,29 @@ class VizSerializationPerfTest : public testing::Test {
       auto* texture_in = pass_in->CreateAndAppendDrawQuad<TextureDrawQuad>();
       texture_in->SetAll(shared_state1_in, arbitrary_rect2,
                          arbitrary_rect1_inside_rect2, arbitrary_bool1,
-                         arbitrary_resourceid1, arbitrary_size1,
-                         arbitrary_bool1, arbitrary_pointf1, arbitrary_pointf2,
-                         arbitrary_color, arbitrary_bool4, arbitrary_bool5,
+                         arbitrary_resourceid1, arbitrary_pointf1,
+                         arbitrary_pointf2, arbitrary_color, arbitrary_bool5,
                          arbitrary_bool6, arbitrary_protected_video_type);
 
       auto* texture_in2 = pass_in->CreateAndAppendDrawQuad<TextureDrawQuad>();
       texture_in2->SetAll(shared_state1_in, arbitrary_rect2,
                           arbitrary_rect1_inside_rect2, arbitrary_bool1,
-                          arbitrary_resourceid2, arbitrary_size1,
-                          arbitrary_bool3, arbitrary_pointf1, arbitrary_pointf2,
-                          arbitrary_color, arbitrary_bool4, arbitrary_bool5,
+                          arbitrary_resourceid2, arbitrary_pointf1,
+                          arbitrary_pointf2, arbitrary_color, arbitrary_bool5,
                           arbitrary_bool6, arbitrary_protected_video_type);
 
       auto* texture_in3 = pass_in->CreateAndAppendDrawQuad<TextureDrawQuad>();
       texture_in3->SetAll(shared_state1_in, arbitrary_rect2,
                           arbitrary_rect1_inside_rect2, arbitrary_bool1,
-                          arbitrary_resourceid3, arbitrary_size1,
-                          arbitrary_bool2, arbitrary_pointf1, arbitrary_pointf2,
-                          arbitrary_color, arbitrary_bool4, arbitrary_bool6,
+                          arbitrary_resourceid3, arbitrary_pointf1,
+                          arbitrary_pointf2, arbitrary_color, arbitrary_bool6,
                           arbitrary_bool6, arbitrary_protected_video_type);
 
       auto* texture_in4 = pass_in->CreateAndAppendDrawQuad<TextureDrawQuad>();
       texture_in4->SetAll(shared_state1_in, arbitrary_rect2,
                           arbitrary_rect1_inside_rect2, arbitrary_bool1,
-                          arbitrary_resourceid4, arbitrary_size2,
-                          arbitrary_bool4, arbitrary_pointf1, arbitrary_pointf2,
-                          arbitrary_color, arbitrary_bool4, arbitrary_bool5,
+                          arbitrary_resourceid4, arbitrary_pointf1,
+                          arbitrary_pointf2, arbitrary_color, arbitrary_bool5,
                           arbitrary_bool6, arbitrary_protected_video_type);
     }
 
@@ -272,10 +267,10 @@ class VizSerializationPerfTest : public testing::Test {
           /*fast_rounded_corner=*/false);
       for (uint32_t j = 0; j < 6; ++j) {
         auto* tile_in = pass_in->CreateAndAppendDrawQuad<TileDrawQuad>();
-        tile_in->SetAll(
-            shared_state2_in, arbitrary_rect2, arbitrary_rect1_inside_rect2,
-            arbitrary_bool1, arbitrary_resourceid3, arbitrary_rectf1,
-            arbitrary_size1, arbitrary_bool2, arbitrary_bool3, arbitrary_bool4);
+        tile_in->SetAll(shared_state2_in, arbitrary_rect2,
+                        arbitrary_rect1_inside_rect2, arbitrary_bool1,
+                        arbitrary_resourceid3, arbitrary_rectf1,
+                        arbitrary_bool2, arbitrary_bool3);
       }
     }
 

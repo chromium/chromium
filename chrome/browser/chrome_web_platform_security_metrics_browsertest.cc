@@ -10,10 +10,10 @@
 #include "base/threading/platform_thread.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/policy/policy_constants.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
@@ -25,11 +25,12 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/test/spawned_test_server/spawned_test_server.h"
+#include "net/test/embedded_test_server/install_default_websocket_handlers.h"
 #include "net/test/test_data_directory.h"
 #include "pdf/buildflags.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/cross_origin_opener_policy.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
@@ -143,10 +144,6 @@ class ChromeWebPlatformSecurityMetricsBrowserTest : public policy::PolicyTest {
         network::features::kCrossOriginOpenerPolicy,
         // SharedArrayBuffer is needed for these tests.
         features::kSharedArrayBuffer,
-        // Some PNA worker feature relies on this.
-        // TODO(crbug.com/40263073): Remove this once PNA for workers
-        // metric logging doesn't rely on kPlzDedicatedWorker
-        blink::features::kPlzDedicatedWorker,
     };
   }
 
@@ -156,6 +153,13 @@ class ChromeWebPlatformSecurityMetricsBrowserTest : public policy::PolicyTest {
         // feature flags prevent that:
         blink::features::kOriginAgentClusterDefaultEnabled,
         features::kOriginKeyedProcessesByDefault,
+        // Subsampling metrics recording makes the test observing the metrics
+        // fail almost every time. Disable subsampling.
+        blink::features::kSubSampleWindowProxyUsageMetrics,
+        // PNA metrics may not record correctly if LNA checks are enabled.
+        network::features::kLocalNetworkAccessChecks,
+        // Disabling this flag just to test that the flag is working.
+        blink::features::kRemoveCharsetAutoDetectionForISO2022JP,
     };
   }
 
@@ -170,7 +174,18 @@ class ChromeWebPlatformSecurityMetricsBrowserTest : public policy::PolicyTest {
     https_server_.ServeFilesFromSourceDirectory("content/test/data");
     http_server_.ServeFilesFromSourceDirectory("content/test/data");
 
-    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+    https_server_.SetCertHostnames({
+        "a.com",
+        "*.a.com",
+        "b.com",
+        "c.com",
+        "a.test",
+        "*.a.test",
+        "b.test",
+        "c.test",
+        // For PrivateNetworkAccess tests.
+        "b.local",
+    });
     ASSERT_TRUE(https_server_.Start());
     ASSERT_TRUE(http_server_.Start());
     EXPECT_TRUE(content::NavigateToURL(web_contents(), GURL("about:blank")));
@@ -178,8 +193,10 @@ class ChromeWebPlatformSecurityMetricsBrowserTest : public policy::PolicyTest {
 
  private:
   void SetUpCommandLine(base::CommandLine* command_line) final {
-    // For https_server()
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+    // Clear default from InProcessBrowserTest as test doesn't want 127.0.0.1 in
+    // the public address space
+    command_line->AppendSwitchASCII(network::switches::kIpAddressSpaceOverrides,
+                                    "");
   }
 
   net::EmbeddedTestServer https_server_;
@@ -193,11 +210,9 @@ class ChromeWebPlatformSecurityMetricsBrowserTest : public policy::PolicyTest {
 class PrivateNetworkAccessWebSocketMetricBrowserTest
     : public ChromeWebPlatformSecurityMetricsBrowserTest {
  public:
-  PrivateNetworkAccessWebSocketMetricBrowserTest()
-      : ws_server_(net::SpawnedTestServer::TYPE_WS,
-                   net::GetWebSocketTestDataDirectory()) {}
+  PrivateNetworkAccessWebSocketMetricBrowserTest() = default;
 
-  net::SpawnedTestServer& ws_server() { return ws_server_; }
+  net::EmbeddedTestServer& ws_server() { return ws_server_; }
 
   std::string WaitAndGetTitle() {
     return base::UTF16ToUTF8(watcher_->WaitAndGetTitle());
@@ -205,6 +220,9 @@ class PrivateNetworkAccessWebSocketMetricBrowserTest
 
  private:
   void SetUpOnMainThread() override {
+    net::test_server::InstallDefaultWebSocketHandlers(&ws_server_);
+    ASSERT_TRUE(ws_server_.Start());
+
     ChromeWebPlatformSecurityMetricsBrowserTest::SetUpOnMainThread();
 
     watcher_ = std::make_unique<content::TitleWatcher>(
@@ -214,7 +232,7 @@ class PrivateNetworkAccessWebSocketMetricBrowserTest
 
   void TearDownOnMainThread() override { watcher_.reset(); }
 
-  net::SpawnedTestServer ws_server_;
+  net::EmbeddedTestServer ws_server_{net::EmbeddedTestServer::Type::TYPE_HTTP};
   std::unique_ptr<content::TitleWatcher> watcher_;
 };
 
@@ -242,80 +260,16 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   ExpectHistogramIncreasedBy(0);
 }
 
-IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
-                       PrivateNetworkAccessIgnoredCrossSitePreflightError) {
-  ASSERT_TRUE(content::NavigateToURL(
-      web_contents(),
-      https_server().GetURL(
-          "a.com",
-          "/private_network_access/no-favicon-treat-as-public-address.html")));
-
-  ASSERT_EQ(true, content::EvalJs(
-                      web_contents(),
-                      content::JsReplace(
-                          "fetch($1).then(response => response.ok)",
-                          https_server().GetURL("b.com", "/cors-ok.txt"))));
-
-  CheckCounter(WebFeature::kPrivateNetworkAccessPreflightWarning, 1);
-  CheckCounter(
-      WebFeature::kPrivateNetworkAccessIgnoredCrossOriginPreflightError, 1);
-  CheckCounter(WebFeature::kPrivateNetworkAccessIgnoredCrossSitePreflightError,
-               1);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ChromeWebPlatformSecurityMetricsBrowserTest,
-    PrivateNetworkAccessIgnoredCrossOriginSameSitePreflightError) {
-  ASSERT_TRUE(content::NavigateToURL(
-      web_contents(),
-      https_server().GetURL(
-          "a.com",
-          "/private_network_access/no-favicon-treat-as-public-address.html")));
-
-  ASSERT_EQ(true, content::EvalJs(web_contents(),
-                                  content::JsReplace(
-                                      "fetch($1).then(response => response.ok)",
-                                      https_server().GetURL("subdomain.a.com",
-                                                            "/cors-ok.txt"))));
-
-  CheckCounter(WebFeature::kPrivateNetworkAccessPreflightWarning, 1);
-  CheckCounter(
-      WebFeature::kPrivateNetworkAccessIgnoredCrossOriginPreflightError, 1);
-  CheckCounter(WebFeature::kPrivateNetworkAccessIgnoredCrossSitePreflightError,
-               0);
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
-                       PrivateNetworkAccessSameOriginNoIgnoredPreflightError) {
-  ASSERT_TRUE(content::NavigateToURL(
-      web_contents(),
-      https_server().GetURL(
-          "a.com",
-          "/private_network_access/no-favicon-treat-as-public-address.html")));
-
-  ASSERT_EQ(true, content::EvalJs(
-                      web_contents(),
-                      content::JsReplace(
-                          "fetch($1).then(response => response.ok)",
-                          https_server().GetURL("a.com", "/cors-ok.txt"))));
-
-  CheckCounter(WebFeature::kPrivateNetworkAccessPreflightWarning, 0);
-  CheckCounter(
-      WebFeature::kPrivateNetworkAccessIgnoredCrossOriginPreflightError, 0);
-  CheckCounter(WebFeature::kPrivateNetworkAccessIgnoredCrossSitePreflightError,
-               0);
-}
-
 // This test verifies that when a secure context served from the public address
 // space loads a resource from the private network, the correct WebFeature is
 // use-counted.
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
-                       PrivateNetworkAccessFetchWithPreflight) {
+                       PrivateNetworkAccessFetch) {
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(),
       https_server().GetURL(
           "a.com",
-          "/private_network_access/no-favicon-treat-as-public-address.html")));
+          "/local_network_access/no-favicon-treat-as-public-address.html")));
 
   ASSERT_EQ(true,
             content::EvalJs(
@@ -323,86 +277,106 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                 content::JsReplace("fetch($1).then(response => response.ok)",
                                    https_server().GetURL("b.com", kPnaPath))));
 
-  CheckCounter(WebFeature::kAddressSpacePublicSecureContextEmbeddedLocal, 1);
-  CheckCounter(WebFeature::kPrivateNetworkAccessPreflightSuccess, 1);
+  CheckCounter(WebFeature::kAddressSpacePublicSecureContextEmbeddedLoopbackV2,
+               1);
 }
 
-// This test verifies that when a preflight request is sent ahead of a private
-// network request, the server replies with Access-Control-Allow-Origin but
-// without Access-Control-Allow-Private-Network, and enforcement is not enabled,
-// the correct WebFeature is use-counted to reflect the suppressed error.
-IN_PROC_BROWSER_TEST_F(
-    ChromeWebPlatformSecurityMetricsBrowserTest,
-    PrivateNetworkAccessFetchWithPreflightRepliedWithoutPNAHeaders) {
-  ASSERT_EQ(true, content::NavigateToURL(
-                      web_contents(),
-                      https_server().GetURL(
-                          "a.com",
-                          "/private_network_access/"
-                          "no-favicon-treat-as-public-address.html")));
-
-  // The server does not reply with valid CORS headers, so the preflight fails.
-  // The enforcement feature is not enabled however, so the error is suppressed.
-  // Instead, a warning is shown in DevTools and a WebFeature use-counted.
-  ASSERT_EQ(true, content::EvalJs(
-                      web_contents(),
-                      content::JsReplace(
-                          "fetch($1).then(response => response.ok)",
-                          https_server().GetURL("b.com", "/cors-ok.txt"))));
-
-  CheckCounter(WebFeature::kAddressSpacePublicSecureContextEmbeddedLocal, 1);
-  CheckCounter(WebFeature::kPrivateNetworkAccessPreflightWarning, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ChromeWebPlatformSecurityMetricsBrowserTest,
-    PrivateNetworkAccessPolicyEnabledFetchWithPreflightRepliedWithoutPNAHeaders) {
-  policy::PolicyMap policies;
-  SetPolicy(&policies, policy::key::kPrivateNetworkAccessRestrictionsEnabled,
-            base::Value(true));
-  UpdateProviderPolicy(policies);
-
-  ASSERT_EQ(true, content::NavigateToURL(
-                      web_contents(),
-                      https_server().GetURL(
-                          "a.com",
-                          "/private_network_access/"
-                          "no-favicon-treat-as-public-address.html")));
-
-  // The server does not reply with valid CORS headers, so the preflight fails.
-  // The enforcement feature is not enabled however, so the error is suppressed.
-  // Instead, a warning is shown in DevTools and a WebFeature use-counted.
-  ASSERT_EQ(false,
-            content::EvalJs(
-                web_contents(),
-                content::JsReplace(
-                    "fetch($1).then(response => response.ok, error => false)",
-                    https_server().GetURL("b.com", "/cors-ok.txt"))));
-}
-
+// This test verifies that the PNA 2.0 breakage UseCounter
+// (kPrivateNetworkAccessInsecureResourceNotKnownPrivate) is correctly logged.
+//
+// TODO(crbug.com/438315223): Re-enable once test flakiness is addressed.
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
-                       PrivateNetworkAccessPolicyEnabledFetchWithPreflight) {
-  policy::PolicyMap policies;
-  SetPolicy(&policies, policy::key::kPrivateNetworkAccessRestrictionsEnabled,
-            base::Value(true));
-  UpdateProviderPolicy(policies);
+                       DISABLED_PrivateNetworkAccessV2BreakageUseCounter) {
+  // A top-level navigation request to a site with a private address should not
+  // trigger the UseCounter.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      http_server().GetURL("a.com", "/local_network_access/no-favicon.html")));
+  CheckCounter(WebFeature::kPrivateNetworkAccessInsecureResourceNotKnownPrivate,
+               0);
 
-  ASSERT_EQ(true, content::NavigateToURL(
-                      web_contents(),
-                      https_server().GetURL(
-                          "a.com",
-                          "/private_network_access/"
-                          "no-favicon-treat-as-public-address.html")));
+  // Navigate to an HTTPS site with a public address. Requests to HTTPS
+  // resources should work but not log the UseCounter. Requests to HTTP
+  // resources should be blocked as mixed content.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      https_server().GetURL("a.com",
+                            "/local_network_access/"
+                            "no-favicon-treat-as-public-address.html")));
+  EXPECT_EQ(true, content::EvalJs(web_contents(),
+                                  content::JsReplace(
+                                      "fetch($1).then(response => response.ok)",
+                                      https_server().GetURL(kPnaPath))));
+  CheckCounter(WebFeature::kPrivateNetworkAccessInsecureResourceNotKnownPrivate,
+               0);
+  EXPECT_THAT(content::EvalJs(
+                  web_contents(),
+                  content::JsReplace("fetch($1).then(response => response.ok)",
+                                     http_server().GetURL("b.com", kPnaPath))),
+              content::EvalJsResult::IsError());
+  CheckCounter(WebFeature::kPrivateNetworkAccessInsecureResourceNotKnownPrivate,
+               0);
 
-  // The server does not reply with valid CORS headers, so the preflight fails.
-  // The enforcement feature is not enabled however, so the error is suppressed.
-  // Instead, a warning is shown in DevTools and a WebFeature use-counted.
-  ASSERT_EQ(true,
+  // Navigate to an HTTP site with a public address, and then trigger various
+  // fetch requests and check whether the UseCounter has been logged.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      http_server().GetURL("a.com",
+                           "/local_network_access/"
+                           "no-favicon-treat-as-public-address.html")));
+
+  // Trigger a request to a localhost HTTP site via 127.0.0.1.
+  EXPECT_EQ(true, content::EvalJs(web_contents(),
+                                  content::JsReplace(
+                                      "fetch($1).then(response => response.ok)",
+                                      http_server().GetURL(kPnaPath))));
+  CheckCounter(WebFeature::kPrivateNetworkAccessInsecureResourceNotKnownPrivate,
+               0);
+
+  // Trigger a request to a private HTTPS site with a public domain. This should
+  // not trigger the UseCounter.
+  EXPECT_EQ(true,
             content::EvalJs(
                 web_contents(),
-                content::JsReplace(
-                    "fetch($1).then(response => response.ok, error => false)",
-                    https_server().GetURL("b.com", kPnaPath))));
+                content::JsReplace("fetch($1).then(response => response.ok)",
+                                   https_server().GetURL("b.com", kPnaPath))));
+
+  // TODO(cthomp): Add a case for triggering a request to an  HTTP site via a
+  // private IP literal hostname. This should succeed and not cause the
+  // UseCounter to be triggered. This may not be feasible to test if the test
+  // server only listens on 127.0.0.1. (We also can't use URLLoaderInterceptor
+  // for this, because we need to trigger the real URLLoader in order to reach
+  // the UseCounter collection code path.)
+
+  // Trigger a request to a private HTTP site via a .local hostname.
+  EXPECT_EQ(true,
+            content::EvalJs(
+                web_contents(),
+                content::JsReplace("fetch($1).then(response => response.ok)",
+                                   http_server().GetURL("b.local", kPnaPath))));
+  CheckCounter(WebFeature::kPrivateNetworkAccessInsecureResourceNotKnownPrivate,
+               0);
+
+  // Trigger a request to a private HTTP site with a public domain, but the
+  // fetch() call is tagged with `targetAddressSpace: 'local'` making it a
+  // priori known local.
+  EXPECT_EQ(true,
+            content::EvalJs(
+                web_contents(),
+                content::JsReplace("fetch($1, { targetAddressSpace: "
+                                   "'local'}).then(response => response.ok)",
+                                   http_server().GetURL("b.com", kPnaPath))));
+
+  // Trigger a request to a private HTTP site, that is not a priori known to be
+  // private. Post-PNA 2.0 this would be blocked as mixed content and would not
+  // trigger the PNA prompt. This should cause the UseCounter to be triggered.
+  EXPECT_EQ(true,
+            content::EvalJs(
+                web_contents(),
+                content::JsReplace("fetch($1).then(response => response.ok)",
+                                   http_server().GetURL("b.com", kPnaPath))));
+  CheckCounter(WebFeature::kPrivateNetworkAccessInsecureResourceNotKnownPrivate,
+               1);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
@@ -410,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   ASSERT_EQ(true,
             content::NavigateToURL(
                 web_contents(), https_server().GetURL("a.com",
-                                                      "/private_network_access/"
+                                                      "/local_network_access/"
                                                       "no-favicon.html")));
 
   std::string_view kScriptTemplate = R"(
@@ -440,7 +414,6 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                                                    "b.com", "/cors-ok.txt"))));
 
   CheckCounter(WebFeature::kPrivateNetworkAccessWithinWorker, 1);
-  CheckCounter(WebFeature::kPrivateNetworkAccessPreflightWarning, 1);
 }
 
 // When WebSocket is connected to a more-private ip address space, log a use
@@ -456,19 +429,44 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     PrivateNetworkAccessWebSocketMetricBrowserTest,
     MAYBE_PrivateNetworkAccessWebSocketConnectedPublicToLocal) {
-  // Launch a WebSocket server.
-  ASSERT_TRUE(ws_server().Start());
-
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), http_server().GetURL(
-                     "a.com",
-                     "/private_network_access/"
-                     "websocket-treat-as-public-address.html"
-                     "?url=" +
-                         ws_server().GetURL("echo-with-no-extension").spec())));
+      browser(),
+      http_server().GetURL(
+          "a.com",
+          "/local_network_access/"
+          "websocket-treat-as-public-address.html"
+          "?url=" +
+              ws_server().GetURL("/echo-with-no-extension").spec())));
 
   EXPECT_EQ("PASS", WaitAndGetTitle());
   CheckCounter(WebFeature::kPrivateNetworkAccessWebSocketConnected, 1);
+  CheckCounter(WebFeature::kLocalNetworkAccessWebSocketResourceNotKnownPrivate,
+               0);
+}
+
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_PrivateNetworkAccessWebSocketConnectedPublicToLocalNonLocalHost \
+  DISABLED_PrivateNetworkAccessWebSocketConnectedPublicToLocalNonLocalHost
+#else
+#define MAYBE_PrivateNetworkAccessWebSocketConnectedPublicToLocalNonLocalHost \
+  PrivateNetworkAccessWebSocketConnectedPublicToLocalNonLocalHost
+#endif
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessWebSocketMetricBrowserTest,
+    MAYBE_PrivateNetworkAccessWebSocketConnectedPublicToLocalNonLocalHost) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      http_server().GetURL(
+          "a.com",
+          "/local_network_access/"
+          "websocket-treat-as-public-address.html"
+          "?url=" +
+              ws_server().GetURL("b.com", "/echo-with-no-extension").spec())));
+
+  EXPECT_EQ("PASS", WaitAndGetTitle());
+  CheckCounter(WebFeature::kPrivateNetworkAccessWebSocketConnected, 1);
+  CheckCounter(WebFeature::kLocalNetworkAccessWebSocketResourceNotKnownPrivate,
+               1);
 }
 
 // When WebSocket is connected to the same ip address space, do not log a use
@@ -483,19 +481,19 @@ IN_PROC_BROWSER_TEST_F(
 #endif
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWebSocketMetricBrowserTest,
                        MAYBE_PrivateNetworkAccessWebSocketConnectedLocalToLocal) {
-  // Launch a WebSocket server.
-  ASSERT_TRUE(ws_server().Start());
-
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), http_server().GetURL(
-                     "a.com",
-                     "/private_network_access/"
-                     "websocket.html"
-                     "?url=" +
-                         ws_server().GetURL("echo-with-no-extension").spec())));
+      browser(),
+      http_server().GetURL(
+          "a.com",
+          "/local_network_access/"
+          "websocket.html"
+          "?url=" +
+              ws_server().GetURL("/echo-with-no-extension").spec())));
 
   EXPECT_EQ("PASS", WaitAndGetTitle());
   CheckCounter(WebFeature::kPrivateNetworkAccessWebSocketConnected, 0);
+  CheckCounter(WebFeature::kLocalNetworkAccessWebSocketResourceNotKnownPrivate,
+               0);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
@@ -503,7 +501,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   ASSERT_EQ(true,
             content::NavigateToURL(
                 web_contents(), https_server().GetURL("a.com",
-                                                      "/private_network_access/"
+                                                      "/local_network_access/"
                                                       "no-favicon.html")));
 
   std::string_view kScriptTemplate = R"(
@@ -538,7 +536,6 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                                                    "b.com", "/cors-ok.txt"))));
 
   CheckCounter(WebFeature::kPrivateNetworkAccessWithinWorker, 1);
-  CheckCounter(WebFeature::kPrivateNetworkAccessPreflightWarning, 1);
 }
 
 // Check the kCrossOriginOpenerPolicyReporting feature usage. COOP-Report-Only +
@@ -670,28 +667,16 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
     const char* csp_frame_src;
     const char* sub_document_url;
     int expected_kCspWouldBlockIfWildcardDoesNotMatchWs;
-    int expected_kCspWouldBlockIfWildcardDoesNotMatchFtp;
   } test_cases[] = {
-      {"*", "http://example.com", 0, 0},
+      {"*", "http://example.com", 0},
       // Feature shouldn't be logged if matches explicitly.
-      {"ftp:*", "ftp://example.com", 0, 0},
-      {"ws:*", "ws://example.com", 0, 0},
-      {"wss:*", "wss://example.com", 0, 0},
-      // Feature should be logged if matched with wildcard.
-      {
-          "*",
-          "ftp://example.com",
-          0,
-          base::FeatureList::IsEnabled(
-              network::features::kCspStopMatchingWildcardDirectivesToFtp)
-              ? 0
-              : 1,
-      },
-      {"*", "ws://example.com", 1, 0},
-      {"*", "wss://example.com", 1, 0},
+      {"ftp:*", "ftp://example.com", 0},
+      {"ws:*", "ws://example.com", 0},
+      {"wss:*", "wss://example.com", 0},
+      {"*", "ws://example.com", 1},
+      {"*", "wss://example.com", 1},
   };
   int total_kCspWouldBlockIfWildcardDoesNotMatchWs = 0;
-  int total_kCspWouldBlockIfWildcardDoesNotMatchFtp = 0;
   for (const auto& test_case : test_cases) {
     GURL main_document_url = https_server().GetURL(
         "a.com",
@@ -714,9 +699,6 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
     CheckCounter(WebFeature::kCspWouldBlockIfWildcardDoesNotMatchWs,
                  total_kCspWouldBlockIfWildcardDoesNotMatchWs +=
                  test_case.expected_kCspWouldBlockIfWildcardDoesNotMatchWs);
-    CheckCounter(WebFeature::kCspWouldBlockIfWildcardDoesNotMatchFtp,
-                 total_kCspWouldBlockIfWildcardDoesNotMatchFtp +=
-                 test_case.expected_kCspWouldBlockIfWildcardDoesNotMatchFtp);
   }
 }
 
@@ -1820,43 +1802,47 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 
   for (auto test : cases) {
     SCOPED_TRACE(test.name);
-    std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder =
-        std::make_unique<ukm::TestAutoSetUkmRecorder>();
 
-    // Check that a same-origin access does not register use counters.
-    EXPECT_TRUE(content::ExecJs(same_origin_subframe, test.property));
-    CheckCounter(test.property_access, 0);
-    CheckCounter(test.property_access_from_other_page, 0);
+    // Check that same-origin access does not register use counters.
+    {
+      std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder =
+          std::make_unique<ukm::TestAutoSetUkmRecorder>();
+      EXPECT_TRUE(content::ExecJs(same_origin_subframe, test.property));
+      CheckCounter(test.property_access, 0);
+      CheckCounter(test.property_access_from_other_page, 0);
+      const auto& entries =
+          test_ukm_recorder->GetEntriesByName("WindowProxyUsage");
+      ASSERT_EQ(entries.size(), 0u);
+    }
 
-    // Check that a cross-origin access register use counters.
-    EXPECT_TRUE(content::ExecJs(cross_origin_subframe, test.property));
-    CheckCounter(test.property_access, 1);
-    CheckCounter(test.property_access_from_other_page, 0);
-    const auto& entries =
-        test_ukm_recorder->GetEntriesByName("WindowProxyUsage");
-    ASSERT_EQ(
-        entries.size(),
-        test.access_type == blink::mojom::WindowProxyAccessType::kPostMessage
-            ? 2u
-            : 1u);
-    const auto& entry = entries.back();
-    test_ukm_recorder->ExpectEntryMetric(entry, "AccessType",
-                                         (int)test.access_type);
-    test_ukm_recorder->ExpectEntryMetric(entry, "IsSamePage", 1);
-    test_ukm_recorder->ExpectEntryMetric(entry, "LocalFrameContext",
-                                         2 /*SubFrameCrossSite*/);
-    test_ukm_recorder->ExpectEntryMetric(entry, "LocalPageContext",
-                                         0 /*Window*/);
-    test_ukm_recorder->ExpectEntryMetric(entry, "LocalUserActivationState",
-                                         0 /*IsActive*/);
-    test_ukm_recorder->ExpectEntryMetric(entry, "RemoteFrameContext",
-                                         0 /*TopFrame*/);
-    test_ukm_recorder->ExpectEntryMetric(entry, "RemotePageContext",
-                                         0 /*Window*/);
-    test_ukm_recorder->ExpectEntryMetric(entry, "RemoteUserActivationState",
-                                         0 /*IsActive*/);
-    test_ukm_recorder->ExpectEntryMetric(entry, "StorageKeyComparison",
-                                         1 /*SameTopSiteCrossOrigin*/);
+    // Check that cross-origin access does register use counters.
+    {
+      std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder =
+          std::make_unique<ukm::TestAutoSetUkmRecorder>();
+      EXPECT_TRUE(content::ExecJs(cross_origin_subframe, test.property));
+      CheckCounter(test.property_access, 1);
+      CheckCounter(test.property_access_from_other_page, 0);
+      auto entries = test_ukm_recorder->GetEntriesByName("WindowProxyUsage");
+      ASSERT_EQ(entries.size(), 1u);
+      auto entry = entries.back();
+      test_ukm_recorder->ExpectEntryMetric(entry, "AccessType",
+                                           (int)test.access_type);
+      test_ukm_recorder->ExpectEntryMetric(entry, "IsSamePage", 1);
+      test_ukm_recorder->ExpectEntryMetric(entry, "LocalFrameContext",
+                                           2 /*SubFrameCrossSite*/);
+      test_ukm_recorder->ExpectEntryMetric(entry, "LocalPageContext",
+                                           0 /*Window*/);
+      test_ukm_recorder->ExpectEntryMetric(entry, "LocalUserActivationState",
+                                           0 /*IsActive*/);
+      test_ukm_recorder->ExpectEntryMetric(entry, "RemoteFrameContext",
+                                           0 /*TopFrame*/);
+      test_ukm_recorder->ExpectEntryMetric(entry, "RemotePageContext",
+                                           0 /*Window*/);
+      test_ukm_recorder->ExpectEntryMetric(entry, "RemoteUserActivationState",
+                                           0 /*IsActive*/);
+      test_ukm_recorder->ExpectEntryMetric(entry, "StorageKeyComparison",
+                                           1 /*SameTopSiteCrossOrigin*/);
+    }
   }
 }
 
@@ -2107,43 +2093,47 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 
   for (auto test : cases) {
     SCOPED_TRACE(test.name);
-    std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder =
-        std::make_unique<ukm::TestAutoSetUkmRecorder>();
 
-    // Check that a same-origin access does not register use counters.
-    EXPECT_TRUE(content::ExecJs(same_origin_popup, test.property));
-    CheckCounter(test.property_access, 0);
-    CheckCounter(test.property_access_from_other_page, 0);
+    // Check that same-origin access does not register use counters.
+    {
+      std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder =
+          std::make_unique<ukm::TestAutoSetUkmRecorder>();
+      EXPECT_TRUE(content::ExecJs(same_origin_popup, test.property));
+      CheckCounter(test.property_access, 0);
+      CheckCounter(test.property_access_from_other_page, 0);
+      const auto& entries =
+          test_ukm_recorder->GetEntriesByName("WindowProxyUsage");
+      ASSERT_EQ(entries.size(), 0u);
+    }
 
-    // Check that a cross-origin access register use counters.
-    EXPECT_TRUE(content::ExecJs(cross_origin_popup, test.property));
-    CheckCounter(test.property_access, 1);
-    CheckCounter(test.property_access_from_other_page, 1);
-    const auto& entries =
-        test_ukm_recorder->GetEntriesByName("WindowProxyUsage");
-    ASSERT_EQ(
-        entries.size(),
-        test.access_type == blink::mojom::WindowProxyAccessType::kPostMessage
-            ? 2u
-            : 1u);
-    const auto& entry = entries.back();
-    test_ukm_recorder->ExpectEntryMetric(entry, "AccessType",
-                                         (int)test.access_type);
-    test_ukm_recorder->ExpectEntryMetric(entry, "IsSamePage", 0);
-    test_ukm_recorder->ExpectEntryMetric(entry, "LocalFrameContext",
-                                         0 /*TopFrame*/);
-    test_ukm_recorder->ExpectEntryMetric(entry, "LocalPageContext",
-                                         1 /*Popup*/);
-    test_ukm_recorder->ExpectEntryMetric(entry, "LocalUserActivationState",
-                                         0 /*IsActive*/);
-    test_ukm_recorder->ExpectEntryMetric(entry, "RemoteFrameContext",
-                                         0 /*TopFrame*/);
-    test_ukm_recorder->ExpectEntryMetric(entry, "RemotePageContext",
-                                         0 /*Window*/);
-    test_ukm_recorder->ExpectEntryMetric(entry, "RemoteUserActivationState",
-                                         1 /*HasBeenActive*/);
-    test_ukm_recorder->ExpectEntryMetric(entry, "StorageKeyComparison",
-                                         3 /*CrossKey*/);
+    // Check that cross-origin access does register use counters.
+    {
+      std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder =
+          std::make_unique<ukm::TestAutoSetUkmRecorder>();
+      EXPECT_TRUE(content::ExecJs(cross_origin_popup, test.property));
+      CheckCounter(test.property_access, 1);
+      CheckCounter(test.property_access_from_other_page, 1);
+      auto entries = test_ukm_recorder->GetEntriesByName("WindowProxyUsage");
+      ASSERT_EQ(entries.size(), 1u);
+      auto entry = entries.back();
+      test_ukm_recorder->ExpectEntryMetric(entry, "AccessType",
+                                           (int)test.access_type);
+      test_ukm_recorder->ExpectEntryMetric(entry, "IsSamePage", 0);
+      test_ukm_recorder->ExpectEntryMetric(entry, "LocalFrameContext",
+                                           0 /*TopFrame*/);
+      test_ukm_recorder->ExpectEntryMetric(entry, "LocalPageContext",
+                                           1 /*Popup*/);
+      test_ukm_recorder->ExpectEntryMetric(entry, "LocalUserActivationState",
+                                           0 /*IsActive*/);
+      test_ukm_recorder->ExpectEntryMetric(entry, "RemoteFrameContext",
+                                           0 /*TopFrame*/);
+      test_ukm_recorder->ExpectEntryMetric(entry, "RemotePageContext",
+                                           0 /*Window*/);
+      test_ukm_recorder->ExpectEntryMetric(entry, "RemoteUserActivationState",
+                                           1 /*HasBeenActive*/);
+      test_ukm_recorder->ExpectEntryMetric(entry, "StorageKeyComparison",
+                                           3 /*CrossKey*/);
+    }
   }
 }
 
@@ -2860,6 +2850,30 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   )",
                                                                  url)));
   CheckCounter(WebFeature::kCSPEESameOriginBlanketEnforcement, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       NoCharsetAutoDetection) {
+  EXPECT_TRUE(content::NavigateToURL(
+      web_contents(), https_server().GetURL("/security/utf8.html")));
+  CheckCounter(WebFeature::kCharsetAutoDetection, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       CharsetAutoDetection) {
+  EXPECT_TRUE(content::NavigateToURL(
+      web_contents(), https_server().GetURL("/security/no_charset.html")));
+  CheckCounter(WebFeature::kCharsetAutoDetection, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       ISO2022JPDetection) {
+  EXPECT_TRUE(content::NavigateToURL(
+      web_contents(), https_server().GetURL("/security/iso_2022_jp.html")));
+  // Given RemoveCharsetAutoDetectionForISO2022JP is disabled in
+  // ChromeWebPlatformSecurityMetricsBrowserTest, this should pass.
+  EXPECT_EQ("ISO-2022-JP",
+            content::EvalJs(web_contents(), "document.characterSet"));
 }
 
 // TODO(arthursonzogni): Add basic test(s) for the WebFeatures:

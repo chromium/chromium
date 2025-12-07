@@ -3,27 +3,21 @@
 // found in the LICENSE file.
 
 #include "services/metrics/public/cpp/delegating_ukm_recorder.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 
 #include "base/functional/bind.h"
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "services/metrics/public/cpp/ukm_recorder_client_interface_registry.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace ukm {
-
-namespace {
-
-base::LazyInstance<DelegatingUkmRecorder>::Leaky g_ukm_recorder =
-    LAZY_INSTANCE_INITIALIZER;
-
-}  // namespace
 
 DelegatingUkmRecorder::DelegatingUkmRecorder() = default;
 DelegatingUkmRecorder::~DelegatingUkmRecorder() = default;
 
 // static
 DelegatingUkmRecorder* DelegatingUkmRecorder::Get() {
-  return &g_ukm_recorder.Get();
+  static base::NoDestructor<DelegatingUkmRecorder> instance;
+  return instance.get();
 }
 
 void DelegatingUkmRecorder::AddDelegate(base::WeakPtr<UkmRecorder> delegate) {

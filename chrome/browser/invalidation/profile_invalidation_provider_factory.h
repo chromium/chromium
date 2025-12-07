@@ -10,10 +10,6 @@
 
 class Profile;
 
-namespace policy {
-class AffiliatedInvalidationServiceProviderImplTest;
-}
-
 namespace invalidation {
 
 class ProfileInvalidationProvider;
@@ -49,7 +45,6 @@ class ProfileInvalidationProviderFactory : public ProfileKeyedServiceFactory {
 
  private:
   friend class ProfileInvalidationProviderFactoryTestBase;
-  friend class policy::AffiliatedInvalidationServiceProviderImplTest;
   friend base::NoDestructor<ProfileInvalidationProviderFactory>;
 
   ProfileInvalidationProviderFactory();
@@ -58,8 +53,6 @@ class ProfileInvalidationProviderFactory : public ProfileKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
-  void RegisterProfilePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
 
   GlobalTestingFactory testing_factory_;
 };

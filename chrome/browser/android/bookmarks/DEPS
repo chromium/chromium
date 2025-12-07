@@ -1,4 +1,0 @@
-include_rules = [
-    "+components/bookmarks",
-    "+components/power_bookmarks",
-]

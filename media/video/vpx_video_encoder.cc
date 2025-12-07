@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/video/vpx_video_encoder.h"
 
 #include <algorithm>
@@ -14,6 +9,7 @@
 #include <optional>
 
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
@@ -98,6 +94,12 @@ EncoderStatus SetUpVpxConfig(const VideoEncoder::Options& opts,
     config->rc_min_quantizer = 12;
   }
   config->rc_resize_allowed = 0;
+  config->rc_undershoot_pct = 50;
+  config->rc_overshoot_pct = 50;
+  config->rc_buf_initial_sz = 600;
+  config->rc_buf_optimal_sz = 600;
+  config->rc_buf_sz = 1000;
+
   // Only if latency_mode is real time, a frame might be dropped.
   config->rc_dropframe_thresh =
       opts.latency_mode == VideoEncoder::LatencyMode::Realtime
@@ -135,7 +137,7 @@ EncoderStatus SetUpVpxConfig(const VideoEncoder::Options& opts,
         // quantizer. Instead we just set CBR and set
         // VP9E_SET_QUANTIZER_ONE_PASS before each frame.
         config->rc_end_usage = VPX_CBR;
-        // Let the whole AV1 quantizer range to be used.
+        // Allow the whole VP8/VP9 quantizer range to be used.
         config->rc_max_quantizer = 63;
         config->rc_min_quantizer = 0;
         break;
@@ -151,6 +153,10 @@ EncoderStatus SetUpVpxConfig(const VideoEncoder::Options& opts,
   if (!opts.scalability_mode)
     return EncoderStatus::Codes::kOk;
 
+  auto ts_layer_id = base::span(config->ts_layer_id);
+  auto ts_rate_decimator = base::span(config->ts_rate_decimator);
+  auto layer_target_bitrate = base::span(config->layer_target_bitrate);
+  auto ts_target_bitrate = base::span(config->ts_target_bitrate);
   switch (opts.scalability_mode.value()) {
     case SVCScalabilityMode::kL1T1:
       // Nothing to do
@@ -164,14 +170,14 @@ EncoderStatus SetUpVpxConfig(const VideoEncoder::Options& opts,
       DCHECK_EQ(config->ts_periodicity,
                 sizeof(vp8_2layers_temporal_flags) /
                     sizeof(vp8_2layers_temporal_flags[0]));
-      config->ts_layer_id[0] = 0;
-      config->ts_layer_id[1] = 1;
-      config->ts_rate_decimator[0] = 2;
-      config->ts_rate_decimator[1] = 1;
+      ts_layer_id[0] = 0;
+      ts_layer_id[1] = 1;
+      ts_rate_decimator[0] = 2;
+      ts_rate_decimator[1] = 1;
       // Bitrate allocation L0: 60% L1: 40%
-      config->layer_target_bitrate[0] = config->ts_target_bitrate[0] =
+      layer_target_bitrate[0] = ts_target_bitrate[0] =
           60 * config->rc_target_bitrate / 100;
-      config->layer_target_bitrate[1] = config->ts_target_bitrate[1] =
+      layer_target_bitrate[1] = ts_target_bitrate[1] =
           config->rc_target_bitrate;
       config->temporal_layering_mode = VP9E_TEMPORAL_LAYERING_MODE_0101;
       config->g_error_resilient = VPX_ERROR_RESILIENT_DEFAULT;
@@ -186,19 +192,19 @@ EncoderStatus SetUpVpxConfig(const VideoEncoder::Options& opts,
       DCHECK_EQ(config->ts_periodicity,
                 sizeof(vp8_3layers_temporal_flags) /
                     sizeof(vp8_3layers_temporal_flags[0]));
-      config->ts_layer_id[0] = 0;
-      config->ts_layer_id[1] = 2;
-      config->ts_layer_id[2] = 1;
-      config->ts_layer_id[3] = 2;
-      config->ts_rate_decimator[0] = 4;
-      config->ts_rate_decimator[1] = 2;
-      config->ts_rate_decimator[2] = 1;
+      ts_layer_id[0] = 0;
+      ts_layer_id[1] = 2;
+      ts_layer_id[2] = 1;
+      ts_layer_id[3] = 2;
+      ts_rate_decimator[0] = 4;
+      ts_rate_decimator[1] = 2;
+      ts_rate_decimator[2] = 1;
       // Bitrate allocation L0: 50% L1: 20% L2: 30%
-      config->layer_target_bitrate[0] = config->ts_target_bitrate[0] =
+      layer_target_bitrate[0] = ts_target_bitrate[0] =
           50 * config->rc_target_bitrate / 100;
-      config->layer_target_bitrate[1] = config->ts_target_bitrate[1] =
+      layer_target_bitrate[1] = ts_target_bitrate[1] =
           70 * config->rc_target_bitrate / 100;
-      config->layer_target_bitrate[2] = config->ts_target_bitrate[2] =
+      layer_target_bitrate[2] = ts_target_bitrate[2] =
           config->rc_target_bitrate;
       config->temporal_layering_mode = VP9E_TEMPORAL_LAYERING_MODE_0212;
       config->g_error_resilient = VPX_ERROR_RESILIENT_DEFAULT;
@@ -215,11 +221,15 @@ EncoderStatus SetUpVpxConfig(const VideoEncoder::Options& opts,
 vpx_svc_extra_cfg_t MakeSvcExtraConfig(const vpx_codec_enc_cfg_t& config) {
   vpx_svc_extra_cfg_t result = {};
   result.temporal_layering_mode = config.temporal_layering_mode;
+  auto scaling_factor_num = base::span(result.scaling_factor_num);
+  auto scaling_factor_den = base::span(result.scaling_factor_den);
+  auto max_quantizers = base::span(result.max_quantizers);
+  auto min_quantizers = base::span(result.min_quantizers);
   for (size_t i = 0; i < config.ts_number_layers; ++i) {
-    result.scaling_factor_num[i] = 1;
-    result.scaling_factor_den[i] = 1;
-    result.max_quantizers[i] = config.rc_max_quantizer;
-    result.min_quantizers[i] = config.rc_min_quantizer;
+    scaling_factor_num[i] = 1;
+    scaling_factor_den[i] = 1;
+    max_quantizers[i] = config.rc_max_quantizer;
+    min_quantizers[i] = config.rc_min_quantizer;
   }
   return result;
 }
@@ -277,7 +287,7 @@ std::optional<VideoPixelFormat> GetConversionFormat(VideoCodecProfile profile,
       }
       break;
     default:
-      NOTREACHED_NORETURN();  // Checked during Initialize().
+      NOTREACHED();  // Checked during Initialize().
   }
   return std::nullopt;
 }
@@ -285,24 +295,27 @@ std::optional<VideoPixelFormat> GetConversionFormat(VideoCodecProfile profile,
 // Sets up a standard 3-plane vpx_image_t from `frame`.
 void SetupStandardYuvPlanes(const VideoFrame& frame, vpx_image_t* vpx_image) {
   DCHECK_EQ(VideoFrame::NumPlanes(frame.format()), 3u);
-  vpx_image->planes[VPX_PLANE_Y] =
+  auto planes = base::span(vpx_image->planes);
+  auto stride = base::span(vpx_image->stride);
+  planes[VPX_PLANE_Y] =
       const_cast<uint8_t*>(frame.visible_data(VideoFrame::Plane::kY));
-  vpx_image->planes[VPX_PLANE_U] =
+  planes[VPX_PLANE_U] =
       const_cast<uint8_t*>(frame.visible_data(VideoFrame::Plane::kU));
-  vpx_image->planes[VPX_PLANE_V] =
+  planes[VPX_PLANE_V] =
       const_cast<uint8_t*>(frame.visible_data(VideoFrame::Plane::kV));
-  vpx_image->stride[VPX_PLANE_Y] = frame.stride(VideoFrame::Plane::kY);
-  vpx_image->stride[VPX_PLANE_U] = frame.stride(VideoFrame::Plane::kU);
-  vpx_image->stride[VPX_PLANE_V] = frame.stride(VideoFrame::Plane::kV);
+  stride[VPX_PLANE_Y] = frame.stride(VideoFrame::Plane::kY);
+  stride[VPX_PLANE_U] = frame.stride(VideoFrame::Plane::kU);
+  stride[VPX_PLANE_V] = frame.stride(VideoFrame::Plane::kV);
 }
 
 void I444ToI410(const VideoFrame& frame, vpx_image_t* vpx_image) {
   DCHECK_EQ(frame.format(), PIXEL_FORMAT_I444);
+  auto planes = base::span(vpx_image->planes);
+  auto stride = base::span(vpx_image->stride);
   for (size_t i = 0; i < VideoFrame::NumPlanes(frame.format()); ++i) {
     libyuv::Convert8To16Plane(
         frame.visible_data(i), frame.stride(i),
-        reinterpret_cast<uint16_t*>(vpx_image->planes[i]),
-        vpx_image->stride[i] / 2, 1024,
+        reinterpret_cast<uint16_t*>(planes[i]), stride[i] / 2, 1024,
         VideoFrame::Columns(i, frame.format(),
                             frame.visible_rect().size().width()),
         VideoFrame::Rows(i, frame.format(),
@@ -420,7 +433,7 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
       codec_config_.g_input_bit_depth = 10;
       break;
     default:
-      NOTREACHED_NORETURN();  // Enforced via a profile check above.
+      NOTREACHED();  // Enforced via a profile check above.
   }
 
   auto status = SetUpVpxConfig(options, profile_, &codec_config_);
@@ -529,6 +542,7 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
     }
   }
   vpx_codec_control(codec.get(), VP8E_SET_STATIC_THRESHOLD, static_thresh);
+  vpx_codec_control(codec.get(), VP8E_SET_MAX_INTRA_BITRATE_PCT, 600);
 
   options_ = options;
   originally_configured_size_ = options.frame_size;
@@ -563,7 +577,7 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     return;
   }
 
-  if (frame->format() == PIXEL_FORMAT_NV12 && frame->HasMappableGpuBuffer()) {
+  if (frame->format() == PIXEL_FORMAT_NV12 && frame->HasMappableSharedImage()) {
     frame = ConvertToMemoryMappedFrame(frame);
     if (!frame) {
       std::move(done_cb).Run(
@@ -610,6 +624,8 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
 
   // Resizing should have been taken care of above.
   DCHECK_EQ(frame->visible_rect().size(), options_.frame_size);
+  auto planes = base::span(vpx_image_.planes);
+  auto stride = base::span(vpx_image_.stride);
   switch (profile_) {
     case VP8PROFILE_ANY:
     case VP9PROFILE_PROFILE0: {
@@ -617,17 +633,17 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
              frame->format() == PIXEL_FORMAT_I420);
       if (frame->format() == PIXEL_FORMAT_NV12) {
         RecreateVpxImageIfNeeded(VPX_IMG_FMT_NV12, /*needs_memory=*/false);
-        vpx_image_.planes[VPX_PLANE_Y] =
+        planes[VPX_PLANE_Y] =
             const_cast<uint8_t*>(frame->visible_data(VideoFrame::Plane::kY));
-        vpx_image_.planes[VPX_PLANE_U] =
+        planes[VPX_PLANE_U] =
             const_cast<uint8_t*>(frame->visible_data(VideoFrame::Plane::kUV));
-        // In NV12 U and V samples are combined in one plane (bytes go UVUVUV),
-        // but libvpx treats them as two planes with the same stride but shifted
-        // by one byte.
-        vpx_image_.planes[VPX_PLANE_V] = vpx_image_.planes[VPX_PLANE_U] + 1;
-        vpx_image_.stride[VPX_PLANE_Y] = frame->stride(VideoFrame::Plane::kY);
-        vpx_image_.stride[VPX_PLANE_U] = frame->stride(VideoFrame::Plane::kUV);
-        vpx_image_.stride[VPX_PLANE_V] = frame->stride(VideoFrame::Plane::kUV);
+        // SAFETY: In NV12 U and V samples are combined in one
+        // plane (bytes go UVUVUV), but libvpx treats them as two planes with
+        // the same stride but shifted by one byte.
+        planes[VPX_PLANE_V] = UNSAFE_BUFFERS(planes[VPX_PLANE_U] + 1);
+        stride[VPX_PLANE_Y] = frame->stride(VideoFrame::Plane::kY);
+        stride[VPX_PLANE_U] = frame->stride(VideoFrame::Plane::kUV);
+        stride[VPX_PLANE_V] = frame->stride(VideoFrame::Plane::kUV);
       } else {
         RecreateVpxImageIfNeeded(VPX_IMG_FMT_I420, /*needs_memory=*/false);
         SetupStandardYuvPlanes(*frame, &vpx_image_);
@@ -643,20 +659,19 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
         break;
       }
       RecreateVpxImageIfNeeded(VPX_IMG_FMT_I42016, /*needs_memory=*/true);
-      libyuv::I420ToI010(
-          frame->visible_data(VideoFrame::Plane::kY),
-          frame->stride(VideoFrame::Plane::kY),
-          frame->visible_data(VideoFrame::Plane::kU),
-          frame->stride(VideoFrame::Plane::kU),
-          frame->visible_data(VideoFrame::Plane::kV),
-          frame->stride(VideoFrame::Plane::kV),
-          reinterpret_cast<uint16_t*>(vpx_image_.planes[VPX_PLANE_Y]),
-          vpx_image_.stride[VPX_PLANE_Y] / 2,
-          reinterpret_cast<uint16_t*>(vpx_image_.planes[VPX_PLANE_U]),
-          vpx_image_.stride[VPX_PLANE_U] / 2,
-          reinterpret_cast<uint16_t*>(vpx_image_.planes[VPX_PLANE_V]),
-          vpx_image_.stride[VPX_PLANE_V] / 2, frame->visible_rect().width(),
-          frame->visible_rect().height());
+      libyuv::I420ToI010(frame->visible_data(VideoFrame::Plane::kY),
+                         frame->stride(VideoFrame::Plane::kY),
+                         frame->visible_data(VideoFrame::Plane::kU),
+                         frame->stride(VideoFrame::Plane::kU),
+                         frame->visible_data(VideoFrame::Plane::kV),
+                         frame->stride(VideoFrame::Plane::kV),
+                         reinterpret_cast<uint16_t*>(planes[VPX_PLANE_Y]),
+                         stride[VPX_PLANE_Y] / 2,
+                         reinterpret_cast<uint16_t*>(planes[VPX_PLANE_U]),
+                         stride[VPX_PLANE_U] / 2,
+                         reinterpret_cast<uint16_t*>(planes[VPX_PLANE_V]),
+                         stride[VPX_PLANE_V] / 2, frame->visible_rect().width(),
+                         frame->visible_rect().height());
       break;
 
     case VP9PROFILE_PROFILE1:
@@ -678,7 +693,7 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
       break;
 
     default:
-      NOTREACHED_NORETURN();  // Checked during Initialize().
+      NOTREACHED();  // Checked during Initialize().
   }
 
   // Use zero as a timestamp, so encoder will not use it for rate control.
@@ -701,11 +716,12 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
       temporal_svc_frame_index_ = 0;
     unsigned int index_in_temp_cycle =
         temporal_svc_frame_index_ % codec_config_.ts_periodicity;
-    temporal_id = codec_config_.ts_layer_id[index_in_temp_cycle];
+    temporal_id = base::span(codec_config_.ts_layer_id)[index_in_temp_cycle];
     if (profile_ == VP8PROFILE_ANY) {
-      auto* vp8_layers_flags = codec_config_.ts_number_layers == 2
-                                   ? vp8_2layers_temporal_flags
-                                   : vp8_3layers_temporal_flags;
+      auto vp8_layers_flags =
+          codec_config_.ts_number_layers == 2
+              ? base::span<vpx_enc_frame_flags_t>(vp8_2layers_temporal_flags)
+              : base::span<vpx_enc_frame_flags_t>(vp8_3layers_temporal_flags);
       flags |= vp8_layers_flags[index_in_temp_cycle];
       vpx_codec_control(codec_.get(), VP8E_SET_TEMPORAL_LAYER_ID, temporal_id);
     }
@@ -715,6 +731,10 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     DCHECK_EQ(options_.bitrate->mode(), Bitrate::Mode::kExternal);
     // Convert double quantizer to an integer within codec's supported range.
     int qp = static_cast<int>(std::lround(encode_options.quantizer.value()));
+    if (base::FeatureList::IsEnabled(kStandardizeVP9AndAV1Quantizer)) {
+      // VP9 uses the same quantization range (0-63) as AV1.
+      qp = QIndexToQuantizer(VideoCodec::kVP9, qp);
+    }
     qp = std::clamp(qp, static_cast<int>(codec_config_.rc_min_quantizer),
                     static_cast<int>(codec_config_.rc_max_quantizer));
     vpx_codec_control(codec_.get(), VP9E_SET_QUANTIZER_ONE_PASS, qp);
@@ -815,13 +835,18 @@ void VpxVideoEncoder::ChangeOptions(const Options& options,
 }
 
 base::TimeDelta VpxVideoEncoder::GetFrameDuration(const VideoFrame& frame) {
-  // Frame has duration in metadata, use it.
-  if (frame.metadata().frame_duration.has_value())
-    return frame.metadata().frame_duration.value();
-
-  // Options have framerate specified, use it.
-  if (options_.framerate.has_value())
+  // Video encoder config has the framerate specified,
+  // since framerate's main purpose is rate control, we use it to
+  // calculate frame's duration used for rate control.
+  if (options_.framerate.has_value() && options_.framerate.value() > 0.0) {
     return base::Seconds(1.0 / options_.framerate.value());
+  }
+
+  // Frame has duration in metadata, use it.
+  if (frame.metadata().frame_duration.has_value() &&
+      !frame.metadata().frame_duration->is_zero()) {
+    return frame.metadata().frame_duration.value();
+  }
 
   // No real way to figure out duration, use time passed since the last frame
   // as an educated guess, but clamp it within a reasonable limits.
@@ -869,9 +894,11 @@ VideoEncoderOutput VpxVideoEncoder::GetEncoderOutput(
     if (pkt->kind == VPX_CODEC_CX_FRAME_PKT) {
       // The encoder is operating synchronously. There should be exactly one
       // encoded packet, or the frame is dropped.
+      // SAFETY: It's libvpx documented behaviour that pkt->data.frame.buf
+      // has size of pkt->data.frame.sz.
       output.data = base::HeapArray<uint8_t>::CopiedFrom(
-          {reinterpret_cast<uint8_t*>(pkt->data.frame.buf),
-           pkt->data.frame.sz});
+          UNSAFE_BUFFERS({reinterpret_cast<uint8_t*>(pkt->data.frame.buf),
+                          pkt->data.frame.sz}));
       output.key_frame = (pkt->data.frame.flags & VPX_FRAME_IS_KEY) != 0;
       output.temporal_id = output.key_frame ? 0 : temporal_id;
       output.color_space = color_space;

@@ -7,7 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "ui/events/event.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gtk/gtk_compat.h"
 
 using GtkWindow = struct _GtkWindow;
@@ -27,20 +27,8 @@ class GtkUiPlatform {
  public:
   virtual ~GtkUiPlatform() = default;
 
-  // Called when the GtkUi instance initialization process finished. |widget| is
-  // a dummy window passed in for context.
-  virtual void OnInitialized(GtkWidget* widget) = 0;
-
-  // Gets the GdkKeymap instance, which is used to translate KeyEvents into
-  // GdkEvents before filtering them through GtkIM API.
-  virtual GdkKeymap* GetGdkKeymap() = 0;
-
-  // Gets the GDK key event state for a KeyEvent.
-  virtual GdkModifierType GetGdkKeyEventState(
-      const ui::KeyEvent& key_event) = 0;
-
-  // Gets the GDK key event group for a KeyEvent.
-  virtual int GetGdkKeyEventGroup(const ui::KeyEvent& key_event) = 0;
+  // Called when the GtkUi instance initialization process finished.
+  virtual void OnInitialized() = 0;
 
   // Creates/Gets a GdkWindow out of a Aura window id. Caller owns the returned
   // object. This function is meant to be used in GtkIM-based IME implementation
@@ -49,7 +37,7 @@ class GtkUiPlatform {
 
   // Gtk dialog windows must be set transient for the browser window. This
   // function abstracts away such functionality.
-  virtual bool SetGtkWidgetTransientFor(GtkWidget* widget,
+  virtual void SetGtkWidgetTransientFor(GtkWidget* widget,
                                         gfx::AcceleratedWidget parent) = 0;
   virtual void ClearTransientFor(gfx::AcceleratedWidget parent) = 0;
 
@@ -64,6 +52,9 @@ class GtkUiPlatform {
   // If true, the device scale factor should be multiplied by the font scale. If
   // false, the font size should be multiplied by the font scale.
   virtual bool IncludeFontScaleInDeviceScale() const = 0;
+
+  // Returns true if the cursor size should be multiplied by the scale factor.
+  virtual bool IncludeScaleInCursorSize() const = 0;
 };
 
 }  // namespace gtk

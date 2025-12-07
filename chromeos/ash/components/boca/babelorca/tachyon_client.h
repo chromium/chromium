@@ -6,9 +6,14 @@
 #define CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_TACHYON_CLIENT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
+
+namespace network {
+class SimpleURLLoader;
+}  // namespace network
 
 namespace ash::babelorca {
 
@@ -18,6 +23,15 @@ class TachyonClient {
  public:
   using AuthFailureCallback =
       base::OnceCallback<void(std::unique_ptr<RequestDataWrapper>)>;
+
+  static void HandleResponse(
+      std::unique_ptr<network::SimpleURLLoader> url_loader,
+      std::unique_ptr<RequestDataWrapper> request_data,
+      AuthFailureCallback auth_failure_cb,
+      std::optional<std::string> response_body);
+
+  static void MaybeRecordUma(const network::SimpleURLLoader* url_loader,
+                             const RequestDataWrapper* request_data);
 
   TachyonClient(const TachyonClient&) = delete;
   TachyonClient& operator=(const TachyonClient&) = delete;

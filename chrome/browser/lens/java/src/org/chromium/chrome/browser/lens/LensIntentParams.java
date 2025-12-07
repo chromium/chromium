@@ -6,30 +6,34 @@ package org.chromium.chrome.browser.lens;
 
 import android.net.Uri;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * A wrapper class for the Lens intent params (e.g. used in LensController.startLens)
  * to provide a more consistent and extensible API.
  */
+@NullMarked
 public class LensIntentParams {
-    private Uri mImageUri;
-    private String mSrcUrl;
-    private String mImageTitleOrAltText;
-    private String mPageUrl;
+    private @Nullable Uri mImageUri;
+    private @Nullable String mSrcUrl;
+    private @Nullable String mImageTitleOrAltText;
+    private @Nullable String mPageUrl;
     private boolean mIsIncognito;
     private int mIntentType;
-    private String mProactiveSessionId;
+    private @Nullable String mProactiveSessionId;
     private int mProactiveQueryId;
     private @LensEntryPoint int mLensEntryPoint;
 
     /** Builder class for LensIntentParams. */
     public static class Builder {
         private Uri mImageUri = Uri.EMPTY;
-        private String mSrcUrl;
-        private String mImageTitleOrAltText;
-        private String mPageUrl;
+        private @Nullable String mSrcUrl;
+        private @Nullable String mImageTitleOrAltText;
+        private @Nullable String mPageUrl;
         private boolean mIsIncognito;
         private int mIntentType;
-        private String mProactiveSessionId;
+        private @Nullable String mProactiveSessionId;
         private int mProactiveQueryId;
         private @LensEntryPoint int mLensEntryPoint;
 
@@ -139,22 +143,22 @@ public class LensIntentParams {
     }
 
     /** Returns the imageUri for this set of params. */
-    public Uri getImageUri() {
+    public @Nullable Uri getImageUri() {
         return mImageUri;
     }
 
     /** Returns the pageUrl for this set of params. */
-    public String getPageUrl() {
+    public @Nullable String getPageUrl() {
         return mPageUrl;
     }
 
     /** Returns the srcUrl for this set of params. */
-    public String getSrcUrl() {
+    public @Nullable String getSrcUrl() {
         return mSrcUrl;
     }
 
     /** Returns the imageTitleOrAltText for this set of params. */
-    public String getImageTitleOrAltText() {
+    public @Nullable String getImageTitleOrAltText() {
         return mImageTitleOrAltText;
     }
 
@@ -169,7 +173,7 @@ public class LensIntentParams {
     }
 
     /** Returns the sessionId for this set of params. */
-    public String getProactiveSessionId() {
+    public @Nullable String getProactiveSessionId() {
         return mProactiveSessionId;
     }
 

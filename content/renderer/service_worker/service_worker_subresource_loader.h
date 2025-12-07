@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
@@ -29,7 +29,6 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
-#include "third_party/blink/public/mojom/blob/blob.mojom-forward.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_fetch_response_callback.mojom.h"
@@ -88,8 +87,6 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
     kStarted,
     // A redirect happened, waiting for FollowRedirect().
     kSentRedirect,
-    // The response head has been sent to |url_loader_client_|.
-    kSentHeader,
     // The data pipe for the response body has been sent to
     // |url_loader_client_|. The body is being written to the pipe.
     kSentBody,
@@ -100,7 +97,7 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
 
   void OnMojoDisconnect();
 
-  void StartRequest(const network::ResourceRequest& resource_request);
+  void StartRequest();
   void DispatchFetchEvent();
   void DispatchFetchEventForSubresource();
   void OnFetchEventFinished(blink::mojom::ServiceWorkerEventStatus status);
@@ -135,8 +132,6 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
       const std::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int intra_priority_value) override;
-  void PauseReadingBodyFromNet() override;
-  void ResumeReadingBodyFromNet() override;
 
   int StartBlobReading(mojo::ScopedDataPipeConsumerHandle* body_pipe);
   void OnSideDataReadingComplete(mojo::ScopedDataPipeConsumerHandle data_pipe,
@@ -146,9 +141,6 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
   void SetCommitResponsibility(FetchResponseFrom fetch_response_from) override;
 
   // ServiceWorkerResourceLoader overrides:
-  void CommitResponseHeaders(
-      const network::mojom::URLResponseHeadPtr&) override;
-
   // Calls url_loader_client_->OnReceiveResponse() with given |response_head|,
   // |response_body|, and |cached_metadata|.
   void CommitResponseBody(
@@ -214,10 +206,6 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
 
   void TransitionToStatus(Status new_status);
 
-  // If eligible, dispatch the network request which races the ServiceWorker
-  // fetch handler.
-  bool MaybeStartRaceNetworkRequest();
-
   // Returns false if fails to start race network request.
   // A caller should handle the case.
   bool StartRaceNetworkRequest();
@@ -228,10 +216,13 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
   bool MaybeStartAutoPreload();
 
   void DidCacheStorageMatch(base::TimeTicks event_dispatch_time,
-                            blink::mojom::MatchResultPtr result);
+                            blink::mojom::CacheStorage::MatchResult result);
 
   void MaybeDeleteThis();
   bool IsResponseAlreadyCommittedByRaceNetworkRequest();
+
+  // TODO(crbug.com/463388771): Remove after fixing the issue.
+  void ValidateResponseSentToClient();
 
   network::mojom::URLResponseHeadPtr response_head_;
   std::optional<net::RedirectInfo> redirect_info_;
@@ -295,6 +286,10 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
       forwarded_race_network_request_url_loader_factory_;
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
       remote_forwarded_race_network_request_url_loader_factory_;
+
+  // OnReceivedResponse() can be called at most once. This check is added to
+  // debug crbug.com/463388771.
+  bool response_sent_to_client_ = false;
 
   base::WeakPtrFactory<ServiceWorkerSubresourceLoader> weak_factory_{this};
 };

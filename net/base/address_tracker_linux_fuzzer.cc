@@ -18,8 +18,9 @@ class AddressTrackerLinuxTest {
     std::unordered_set<std::string> ignored_interfaces;
     AddressTrackerLinux tracker(base::DoNothing(), base::DoNothing(),
                                 base::DoNothing(), ignored_interfaces);
-    bool address_changed, link_changed, tunnel_changed;
-    tracker.HandleMessage(buffer, length, &address_changed, &link_changed,
+    NetworkChangeNotifier::IPAddressChangeType address_change_type;
+    bool link_changed, tunnel_changed;
+    tracker.HandleMessage(buffer, length, &address_change_type, &link_changed,
                           &tunnel_changed);
   }
 };

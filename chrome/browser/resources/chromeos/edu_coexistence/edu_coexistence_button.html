@@ -5,7 +5,7 @@
     border-radius: 20px;
   }
 </style>
-<cr-button class$="[[buttonClasses]]" on-click="onClick"
+<cr-button class$="[[getClass(buttonType)]]" on-click="onClick"
     disabled="[[disabled]]">
   <template is="dom-if" if="[[hasIconBeforeText(buttonType)]]">
     <iron-icon icon="[[getIcon(buttonType)]]"></iron-icon>

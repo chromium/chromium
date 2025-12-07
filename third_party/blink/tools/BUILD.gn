@@ -22,7 +22,6 @@ group("wpt_tests_isolate") {
     "//third_party/blink/web_tests/wpt_internal/",
 
     # Configuration files
-    "//third_party/blink/web_tests/wptrunner.blink.ini",
     "//third_party/blink/web_tests/FlagSpecificConfig",
     "//third_party/blink/web_tests/VirtualTestSuites",
     "//third_party/blink/web_tests/TestLists/",
@@ -35,7 +34,7 @@ group("wpt_tests_isolate") {
   ]
   data_deps = [
     "//testing:test_scripts_shared",
-    "//third_party/catapult/third_party/typ:typ",
+    "//third_party/catapult/third_party/typ",
     "//tools/imagediff",
   ]
   if (!is_ios) {
@@ -53,15 +52,18 @@ if (is_android) {
       # Emulator
       "//build/android/pylib/",
 
-      # Android-specific expectations
-      "//third_party/blink/web_tests/android/AndroidWPTNeverFixTests",
-      "//third_party/blink/web_tests/android/WPTSmokeTestCases",
+      # Common expectation
+      "//third_party/blink/web_tests/LeakExpectations",
+      "//third_party/blink/web_tests/NeverFixTests",
+      "//third_party/blink/web_tests/SlowTests",
+      "//third_party/blink/web_tests/StaleTestExpectations",
+      "//third_party/blink/web_tests/TestExpectations",
     ]
     data_deps = [
       ":wpt_tests_isolate",
       "//build/android:devil_chromium_py",
       "//build/android:test_runner_py",
-      "//third_party/catapult/devil:devil",
+      "//third_party/catapult/devil",
     ]
   }
 }

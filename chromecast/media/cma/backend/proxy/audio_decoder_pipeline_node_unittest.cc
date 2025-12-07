@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/test_simple_task_runner.h"
 #include "chromecast/base/task_runner_impl.h"
@@ -50,14 +51,14 @@ TEST_F(AudioDecoderPipelineNodeTests, TestAudioDecoderCalls) {
   scoped_refptr<CastDecoderBufferImpl> buffer(
       new CastDecoderBufferImpl(3, StreamId::kPrimary));
   buffer->writable_data()[0] = 1;
-  buffer->writable_data()[1] = 2;
-  buffer->writable_data()[2] = 3;
+  UNSAFE_TODO(buffer->writable_data()[1]) = 2;
+  UNSAFE_TODO(buffer->writable_data()[2]) = 3;
   EXPECT_CALL(*child_node_, PushBuffer(testing::_))
-      .WillOnce(testing::Invoke([ptr = buffer.get()](auto result)
-                                    -> CmaBackend::Decoder::BufferStatus {
+      .WillOnce([ptr = buffer.get()](
+                    auto result) -> CmaBackend::Decoder::BufferStatus {
         EXPECT_EQ(ptr, result.get());
         return CmaBackend::Decoder::BufferStatus::kBufferSuccess;
-      }));
+      });
   EXPECT_EQ(test_node.PushBuffer(buffer),
             CmaBackend::Decoder::BufferStatus::kBufferSuccess);
   testing::Mock::VerifyAndClearExpectations(child_node_.get());

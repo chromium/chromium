@@ -6,6 +6,7 @@
 # some enhancements since the commands on Mac are slightly different than on
 # Linux.
 
+import("//build/config/apple/arch.gni")
 import("//build/config/apple/symbols.gni")
 import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
@@ -21,7 +22,7 @@ import("//build_overrides/build.gni")
 # swift compiler (as it does not include support for catalyst). Remove it
 # once the support is available.
 if (is_ios) {
-  import("//build/config/ios/config.gni")
+  import("//build/config/apple/mobile_config.gni")
   import("//build/config/ios/ios_sdk.gni")
 }
 
@@ -82,14 +83,15 @@ if (swift_whole_module_optimization == -1) {
 # would be to have inputs to tools (https://crbug.com/621119).
 tool_versions = exec_script(
         "get_tool_mtime.py",
-        rebase_path([
-                      "//build/toolchain/apple/filter_libtool.py",
-                      "//build/toolchain/apple/linker_driver.py",
-                      "//build/toolchain/ios/compile_xcassets.py",
-                      "//build/toolchain/ios/const_extract_protocols.json",
-                      "//build/toolchain/apple/swiftc.py",
-                    ],
-                    root_build_dir),
+        rebase_path(
+            [
+              "//build/toolchain/apple/compile_xcassets.py",
+              "//build/toolchain/apple/filter_libtool.py",
+              "//build/toolchain/apple/linker_driver.py",
+              "//build/toolchain/apple/swift_const_gather_protocols.json",
+              "//build/toolchain/apple/swiftc.py",
+            ],
+            root_build_dir),
         "trim scope")
 
 # Shared toolchain definition. Invocations should set current_os to set the
@@ -113,6 +115,9 @@ template("single_apple_toolchain") {
       # set on those toolchains.
       host_toolchain = host_toolchain
     }
+
+    # bin_path is only used in some builds.
+    not_needed(invoker, [ "bin_path" ])
 
     # When the invoker has explicitly overridden cc_wrapper in the
     # toolchain args, use those values, otherwise default to the global one.
@@ -184,6 +189,7 @@ template("single_apple_toolchain") {
       ld += " -B " + invoker.bin_path
     }
 
+    coverage_wrapper = ""
     if (defined(toolchain_args.coverage_instrumentation_input_file)) {
       toolchain_coverage_instrumentation_input_file =
           toolchain_args.coverage_instrumentation_input_file
@@ -199,8 +205,7 @@ template("single_apple_toolchain") {
                       root_build_dir) + " --files-to-instrument=" +
           rebase_path(toolchain_coverage_instrumentation_input_file,
                       root_build_dir) + " --target-os=" + target_os
-      cc = "$python_path $_coverage_wrapper ${cc}"
-      cxx = "$python_path $_coverage_wrapper ${cxx}"
+      coverage_wrapper = "\"$python_path\" ${_coverage_wrapper} "
     }
 
     linker_driver_env = "TOOL_VERSION=${tool_versions.linker_driver}"
@@ -209,7 +214,7 @@ template("single_apple_toolchain") {
     linker_driver_args = "-Wcrl,driver,$ld"
 
     # Specify an explicit path for the strip binary.
-    _strippath = invoker.bin_path + "strip"
+    _strippath = "${prefix}llvm-strip"
     _installnametoolpath = "${prefix}llvm-install-name-tool"
     linker_driver_args += " -Wcrl,strippath,${_strippath} -Wcrl,installnametoolpath,${_installnametoolpath}"
     _enable_dsyms = enable_dsyms
@@ -231,12 +236,33 @@ template("single_apple_toolchain") {
                      rebase_path("//tools/clang/dsymutil/bin/dsymutil",
                                  root_build_dir) + " "
 
+      # All the toolchains are defined in the context of the default toolchain,
+      # this means that the global variable `current_cpu` is not correct, it
+      # will be the one for the default toolchain.
+      #
+      # This means that the code cannot use the variable `dsym_arch` defined in
+      # build/config/apple/symbols.gni since it is defined from `current_cpu`.
+      #
+      # Instead declare another local variable `_dsym_arch` based from the
+      # toolchain `toolchain_args.current_cpu` which will be used when targets
+      # are evaluated in the context of the current toolchain.
+      _archs_mapping_os = archs_mapping[toolchain_args.current_os]
+      if (defined(_archs_mapping_os[toolchain_args.current_cpu])) {
+        _archs_mapping_os_cpu = _archs_mapping_os[toolchain_args.current_cpu]
+        _dsym_arch = _archs_mapping_os_cpu.dsym_arch
+      } else {
+        not_needed([ "_archs_mapping_os" ])
+        assert("cpu unsupported ${toolchain_args.current_cpu}")
+      }
+
       dsym_output_dir =
           "{{root_out_dir}}/{{target_output_name}}{{output_extension}}.dSYM"
       dsym_output = [
         "$dsym_output_dir/Contents/Info.plist",
         "$dsym_output_dir/Contents/Resources/DWARF/" +
             "{{target_output_name}}{{output_extension}}",
+        "$dsym_output_dir/Contents/Resources/Relocations/" +
+            "$_dsym_arch/{{target_output_name}}{{output_extension}}.yml",
       ]
     } else {
       dsym_switch = ""
@@ -244,6 +270,12 @@ template("single_apple_toolchain") {
 
     if (_save_unstripped_output) {
       _unstripped_output = "{{root_out_dir}}/{{target_output_name}}{{output_extension}}.unstripped"
+    }
+
+    if (system_headers_in_deps) {
+      md = "-MD"
+    } else {
+      md = "-MMD"
     }
 
     if (toolchain_has_rust) {
@@ -254,7 +286,7 @@ template("single_apple_toolchain") {
       rustc_bin = "$rust_sysroot_relative/bin/rustc"
       rustc = "$rust_compiler_prefix${rustc_bin}"
       rustc_wrapper =
-          rebase_path("//build/rust/rustc_wrapper.py", root_build_dir)
+          rebase_path("//build/rust/gni_impl/rustc_wrapper.py", root_build_dir)
 
       tool("rust_staticlib") {
         libname = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
@@ -394,7 +426,7 @@ template("single_apple_toolchain") {
     tool("cc") {
       depfile = "{{output}}.d"
       precompiled_header_type = "gcc"
-      command = "$cc -MMD -MF $depfile {{defines}} {{include_dirs}} {{cflags}} {{cflags_c}} -c {{source}} -o {{output}}"
+      command = "$coverage_wrapper$cc $md -MF $depfile {{defines}} {{include_dirs}} {{cflags}} {{cflags_c}} -c {{source}} -o {{output}}"
       depsformat = "gcc"
       description = "CC {{output}}"
       outputs = [ "$object_subdir/{{source_name_part}}.o" ]
@@ -403,16 +435,28 @@ template("single_apple_toolchain") {
     tool("cxx") {
       depfile = "{{output}}.d"
       precompiled_header_type = "gcc"
-      command = "$cxx -MMD -MF $depfile {{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}} -c {{source}} -o {{output}}"
+      command = "$coverage_wrapper$cxx $md -MF $depfile {{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}} {{module_deps_no_self}} -c {{source}} -o {{output}}"
       depsformat = "gcc"
       description = "CXX {{output}}"
       outputs = [ "$object_subdir/{{source_name_part}}.o" ]
     }
 
+    tool("cxx_module") {
+      depfile = "{{output}}.d"
+      precompiled_header_type = "gcc"
+
+      # Module file doesn't need coverage instrumentation because module files
+      # represent interfaces rather than implementations.
+      command = "$cxx -MD -MF $depfile {{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}} {{module_deps_no_self}} -fmodule-name={{label_name}} -c -x c++ -Xclang -emit-module {{source}} -o {{output}}"
+      depsformat = "gcc"
+      description = "CXX_MODULE {{output}}"
+      outputs = [ "$object_subdir/{{source_name_part}}.pcm" ]
+    }
+
     tool("asm") {
       # For GCC we can just use the C compiler to compile assembly.
       depfile = "{{output}}.d"
-      command = "$cc -MMD -MF $depfile {{defines}} {{include_dirs}} {{asmflags}} -c {{source}} -o {{output}}"
+      command = "$cc $md -MF $depfile {{defines}} {{include_dirs}} {{asmflags}} -c {{source}} -o {{output}}"
       depsformat = "gcc"
       description = "ASM {{output}}"
       outputs = [ "$object_subdir/{{source_name_part}}.o" ]
@@ -421,7 +465,7 @@ template("single_apple_toolchain") {
     tool("objc") {
       depfile = "{{output}}.d"
       precompiled_header_type = "gcc"
-      command = "$cc -MMD -MF $depfile {{defines}} {{include_dirs}} {{framework_dirs}} {{cflags}} {{cflags_objc}} -c {{source}} -o {{output}}"
+      command = "$coverage_wrapper$cc $md -MF $depfile {{defines}} {{include_dirs}} {{framework_dirs}} {{cflags}} {{cflags_objc}} -c {{source}} -o {{output}}"
       depsformat = "gcc"
       description = "OBJC {{output}}"
       outputs = [ "$object_subdir/{{source_name_part}}.o" ]
@@ -430,7 +474,7 @@ template("single_apple_toolchain") {
     tool("objcxx") {
       depfile = "{{output}}.d"
       precompiled_header_type = "gcc"
-      command = "$cxx -MMD -MF $depfile {{defines}} {{include_dirs}} {{framework_dirs}} {{cflags}} {{cflags_objcc}} -c {{source}} -o {{output}}"
+      command = "$coverage_wrapper$cxx $md -MF $depfile {{defines}} {{include_dirs}} {{framework_dirs}} {{cflags}} {{cflags_objcc}} -c {{source}} -o {{output}}"
       depsformat = "gcc"
       description = "OBJCXX {{output}}"
       outputs = [ "$object_subdir/{{source_name_part}}.o" ]
@@ -478,34 +522,25 @@ template("single_apple_toolchain") {
       # libraries, we always update the .TOC and skip the temporary file and
       # diffing steps, since that library always needs to be re-linked.
       tocname = dylib + ".TOC"
-      temporary_tocname = dylib + ".tmp"
 
       # Use explicit paths to binaries. The binaries present on the default
       # search path in /usr/bin are thin wrappers around xcrun, which requires a
       # full CommandLineTools or Xcode install, and still may not choose the
       # appropriate binary if there are multiple installs.
-      if (host_os == "mac") {
-        nm = invoker.bin_path + "nm"
-        otool = invoker.bin_path + "otool"
-      } else {
-        nm = "${prefix}llvm-nm"
-        otool = "${prefix}llvm-otool"
-      }
+      nm = "${prefix}llvm-nm"
+      otool = "${prefix}llvm-otool"
 
-      does_reexport_command = "[ ! -e \"$dylib\" -o ! -e \"$tocname\" ] || $otool -l \"$dylib\" | grep -q LC_REEXPORT_DYLIB"
-
-      link_command =
-          "$linker_driver_env $linker_driver $linker_driver_args -shared "
+      link_command = "$linker_driver_env $linker_driver"
+      link_command += " -Wcrl,otoolpath,$otool -Wcrl,nmpath,$nm"
+      link_command += " -Wcrl,tocname,\"$tocname\""
+      link_command += " $linker_driver_args -shared "
       if (toolchain_is_component_build) {
         link_command += " -Wl,-install_name,@rpath/\"{{target_output_name}}{{output_extension}}\" "
       }
       link_command += dsym_switch
       link_command += "{{ldflags}} -o \"$dylib\" \"@$rspfile\" {{rlibs}}"
 
-      replace_command = "if ! cmp -s \"$temporary_tocname\" \"$tocname\"; then mv \"$temporary_tocname\" \"$tocname\""
-      extract_toc_command = "{ $otool -l \"$dylib\" | grep LC_ID_DYLIB -A 5; $nm -gPp \"$dylib\" | cut -f1-2 -d' ' | grep -v U\$\$; true; }"
-
-      command = "if $does_reexport_command ; then $link_command && $extract_toc_command > \"$tocname\"; else $link_command && $extract_toc_command > \"$temporary_tocname\" && $replace_command ; fi; fi"
+      command = "$link_command"
 
       rspfile_content =
           "{{inputs}} {{frameworks}} {{swiftmodules}} {{solibs}} {{libs}}"
@@ -654,10 +689,14 @@ template("single_apple_toolchain") {
         # The list of outputs and partial_outputs change whether the whole
         # module optimization is enabled or not.
         if (swift_whole_module_optimization) {
-          outputs += [
-            "$_output_dir/{{module_name}}.swiftconstvalues",
-            "$_output_dir/{{module_name}}.swiftdeps",
-          ]
+          outputs += [ "$_output_dir/{{module_name}}.swiftconstvalues" ]
+
+          # This seems broken in Xcode 26 beta 1. The OutputFileMap.json
+          # confirms the file should be there, but when
+          # whole-module-optimization is enabled it's not there.
+          if (xcode_version_int < 2600) {
+            outputs += [ "$_output_dir/{{module_name}}.swiftdeps" ]
+          }
         } else {
           outputs += [ "$_output_dir/{{module_name}}.priors" ]
           partial_outputs += [
@@ -685,7 +724,7 @@ template("single_apple_toolchain") {
         # be considered dirty if they change) without having to be parsed
         # by the script.
         _env_vars = "TOOL_VERSION=${tool_versions.swiftc} " +
-                    "JSON_VERSION=${tool_versions.const_extract_protocols}"
+                    "JSON_VERSION=${tool_versions.swift_const_gather_protocols}"
 
         # Include the version of the compiler on the command-line. This causes
         # `ninja` to consider all the compilation output to be dirty when the
@@ -721,7 +760,8 @@ template("single_apple_toolchain") {
         }
 
         if (swift_keep_intermediate_files) {
-          _extra_flags += " --derived-data-dir $_derived_data_dir"
+          _extra_flags += " --swift-keep-intermediate-files" +
+                          " --derived-data-dir $_derived_data_dir"
         }
 
         # The Swift compiler assumes that the generated header will be used by
@@ -744,9 +784,9 @@ template("single_apple_toolchain") {
 
         _src_dir = rebase_path("//", root_build_dir)
         _gen_dir = rebase_path(root_gen_dir, root_build_dir)
-        _const_gather_protocols_file =
-            rebase_path("//build/toolchain/ios/const_extract_protocols.json",
-                        root_build_dir)
+        _const_gather_protocols_file = rebase_path(
+                "//build/toolchain/apple/swift_const_gather_protocols.json",
+                root_build_dir)
 
         command =
             "$_env_vars $python_path $_tool --module-name {{module_name}} " +
@@ -765,7 +805,7 @@ template("single_apple_toolchain") {
     # disallow future uses of xcassets on macOS. https://crbug.com/965663.
     if (toolchain_args.current_os == "ios") {
       tool("compile_xcassets") {
-        _tool = rebase_path("//build/toolchain/ios/compile_xcassets.py",
+        _tool = rebase_path("//build/toolchain/apple/compile_xcassets.py",
                             root_build_dir)
 
         _env_vars = "TOOL_VERSION=${tool_versions.compile_xcassets}"
@@ -773,13 +813,14 @@ template("single_apple_toolchain") {
           _env_vars += " DEVELOPER_DIR=${toolchain_args.sdk_developer_dir}"
         }
 
-        command =
-            "$_env_vars $python_path $_tool " +
-            "-p '${toolchain_args.current_os}' " +
-            "-e '${invoker.target_environment}' " +
-            "-t '${invoker.deployment_target}' " +
-            "-T '{{bundle_product_type}}' " +
-            "-P '{{bundle_partial_info_plist}}' " + "-o {{output}} {{inputs}}"
+        command = "$_env_vars $python_path $_tool " +
+                  "-O '${toolchain_args.current_os}' " +
+                  "-p '${invoker.target_platform}' " +
+                  "-e '${invoker.target_environment}' " +
+                  "-t '${invoker.deployment_target}' " +
+                  "-T '{{bundle_product_type}}' " +
+                  "-P '{{bundle_partial_info_plist}}' " +
+                  " {{xcasset_compiler_flags}} " + "-o {{output}} {{inputs}}"
 
         description = "COMPILE_XCASSETS {{output}}"
         pool = "//build/toolchain/apple:bundle_pool($default_toolchain)"

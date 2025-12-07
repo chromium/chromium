@@ -1,0 +1,25 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("features") {
+  output_name = "plus_addresses_features"
+  defines = [ "IS_PLUS_ADDRESSES_FEATURES_IMPL" ]
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+  public_deps = [ "//base" ]
+}
+
+source_set("prefs") {
+  sources = [
+    "plus_address_prefs.cc",
+    "plus_address_prefs.h",
+  ]
+  deps = [
+    "//base",
+    "//components/pref_registry",
+    "//components/prefs",
+  ]
+}

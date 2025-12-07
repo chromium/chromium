@@ -1,0 +1,18 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package google.internal.remoting.cloud.v1alpha;
+
+// Information about the operating system of the host machine.
+message OperatingSystemInfo {
+  // The name of the operating system running on the host machine.
+  string name = 1;
+
+  // The version of the operating system running on the host machine.
+  string version = 2;
+}

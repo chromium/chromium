@@ -13,7 +13,6 @@
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
-#include "components/prefs/testing_pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 
@@ -43,8 +42,6 @@ class WifiToggleNotificationControllerTest : public AshTestBase {
 
  private:
   network_config::CrosNetworkConfigTestHelper network_config_helper_;
-  TestingPrefServiceSimple profile_prefs_;
-  TestingPrefServiceSimple local_state_;
 };
 
 // Verifies that toggling Wi-Fi (usually via keyboard) shows a notification.

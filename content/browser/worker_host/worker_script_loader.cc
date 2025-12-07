@@ -91,18 +91,21 @@ void WorkerScriptLoader::Start() {
         resource_request_, browser_context,
         base::BindOnce(&WorkerScriptLoader::MaybeStartLoader,
                        weak_factory_.GetWeakPtr(), interceptor_.get()),
-        base::BindOnce(
-            [](base::WeakPtr<WorkerScriptLoader> self,
-               ResponseHeadUpdateParams) {
-              if (self) {
-                self->LoadFromNetwork();
-              }
-            },
-            weak_factory_.GetWeakPtr()));
+        base::BindOnce(&WorkerScriptLoader::Fallback,
+                       weak_factory_.GetWeakPtr()));
     return;
   }
 
   LoadFromNetwork();
+}
+
+network::mojom::URLLoaderFactory* WorkerScriptLoader::Fallback(
+    base::WeakPtr<WorkerScriptLoader> self,
+    ResponseHeadUpdateParams) {
+  if (!self) {
+    return nullptr;
+  }
+  return self->default_loader_factory_.get();
 }
 
 void WorkerScriptLoader::MaybeStartLoader(
@@ -199,18 +202,6 @@ void WorkerScriptLoader::SetPriority(net::RequestPriority priority,
   if (url_loader_)
     url_loader_->SetPriority(priority, intra_priority_value);
 }
-
-void WorkerScriptLoader::PauseReadingBodyFromNet() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (url_loader_)
-    url_loader_->PauseReadingBodyFromNet();
-}
-
-void WorkerScriptLoader::ResumeReadingBodyFromNet() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (url_loader_)
-    url_loader_->ResumeReadingBodyFromNet();
-}
 // URLLoader end --------------------------------------------------------------
 
 // URLLoaderClient ------------------------------------------------------------
@@ -280,7 +271,7 @@ void WorkerScriptLoader::OnComplete(
       break;
     case State::kOnCompleteCalled:
     case State::kCompleted:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   CommitCompleted();
 }
@@ -302,7 +293,7 @@ void WorkerScriptLoader::OnFetcherCallbackCalled() {
       // ignore the fetcher callback notification.
       break;
     case State::kFetcherCallbackCalled:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

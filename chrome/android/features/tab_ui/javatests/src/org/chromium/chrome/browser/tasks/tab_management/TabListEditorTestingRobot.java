@@ -29,6 +29,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.RecyclerViewMatch
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.annotation.IdRes;
 import androidx.recyclerview.widget.RecyclerView;
@@ -65,7 +66,7 @@ public class TabListEditorTestingRobot {
      * @return A view matcher that matches the item is selected.
      */
     public static Matcher<View> itemIsSelected() {
-        return new BoundedMatcher<View, TabGridView>(TabGridView.class) {
+        return new BoundedMatcher<>(TabGridView.class) {
             private TabGridView mSelectableTabGridView;
 
             @Override
@@ -98,7 +99,7 @@ public class TabListEditorTestingRobot {
      * @return A view matcher that matches a divider view.
      */
     public static Matcher<View> isDivider() {
-        return new TypeSafeMatcher<View>() {
+        return new TypeSafeMatcher<>() {
             @Override
             protected boolean matchesSafely(View view) {
                 return view.getId() == R.id.divider_view;
@@ -380,6 +381,18 @@ public class TabListEditorTestingRobot {
                                     atPositionWithViewHolder(
                                             position, withItemType(targetItemViewType))))
                     .check(matches(isDisplayed()));
+            return this;
+        }
+
+        public Result verifyTabListEditorHasTopMargin(int topMargin) {
+            onView(withId(R.id.selectable_list))
+                    .check(
+                            (v, noMatchException) -> {
+                                if (noMatchException != null) throw noMatchException;
+                                Assert.assertEquals(
+                                        topMargin,
+                                        ((MarginLayoutParams) v.getLayoutParams()).topMargin);
+                            });
             return this;
         }
     }

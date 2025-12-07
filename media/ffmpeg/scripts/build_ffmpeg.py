@@ -42,7 +42,7 @@ BRANDINGS = [
 
 ARCH_MAP = {
     'android': ['ia32', 'x64', 'arm-neon', 'arm64'],
-    'linux': ['ia32', 'x64', 'noasm-x64', 'arm', 'arm-neon', 'arm64'],
+    'linux': ['ia32', 'x64', 'noasm-x64', 'arm', 'arm-neon', 'arm64', 'riscv64'],
     'mac': ['x64', 'arm64'],
     'win': ['ia32', 'x64', 'arm64'],
 }
@@ -65,12 +65,14 @@ Platform specific build notes:
   linux ia32/x64:
     Script can run on a normal Ubuntu box.
 
-  linux arm/arm-neon/arm64/mipsel/mips64el:
-    Script can run on a normal Ubuntu with ARM/ARM64 or MIPS32/MIPS64 ready Chromium checkout:
+  linux arm/arm-neon/arm64/mipsel/mips64el/riscv64:
+    Script can run on a normal Ubuntu with ARM/ARM64 or MIPS32/MIPS64 or RISCV64
+    ready Chromium checkout:
       build/linux/sysroot_scripts/install-sysroot.py --arch=arm
       build/linux/sysroot_scripts/install-sysroot.py --arch=arm64
       build/linux/sysroot_scripts/install-sysroot.py --arch=mips
       build/linux/sysroot_scripts/install-sysroot.py --arch=mips64el
+      build/linux/sysroot_scripts/install-sysroot.py --arch=riscv64
 
   mac:
     Script must be run on Linux or macOS.  Additionally, ensure the Chromium
@@ -182,15 +184,13 @@ class AndroidApiLevels:
         print('removing temp dir ' + tmp_dir)
         shutil.rmtree(tmp_dir, ignore_errors=False)
 
-        api64_match = re.search(r'android64_ndk_api_level\s*=\s*(\d{2})',
+        api_match = re.search(r'android_ndk_api_level\s*=\s*(\d{2})',
                                 config_output)
-        api32_match = re.search(r'android32_ndk_api_level\s*=\s*(\d{2})',
-                                config_output)
-        if not api32_match or not api64_match:
+        if not api_match:
             raise Exception('Failed to find the android api levels')
 
-        self.api32 = api32_match.group(1)
-        self.api64 = api64_match.group(1)
+        self.api32 = api_match.group(1)
+        self.api64 = api_match.group(1)
 
     def ApiLevels(self):
         return (self.api32, self.api64)
@@ -363,7 +363,7 @@ def SetupWindowsCrossCompileToolchain(target_arch):
 
 def SetupMacCrossCompileToolchain(target_arch):
     # First compute the various SDK paths.
-    mac_min_ver = '10.10'
+    mac_min_ver = '12.0'
     developer_dir = os.path.join(CHROMIUM_ROOT_DIR, 'build', 'mac_files',
                                  'xcode_binaries', 'Contents', 'Developer')
     sdk_dir = os.path.join(developer_dir, 'Platforms', 'MacOSX.platform',
@@ -896,6 +896,20 @@ def ConfigureAndBuild(target_arch, target_os, host_os, host_arch,
                     '--extra-cflags=-mcpu=mips64r2',
                     '--extra-cflags=--target=mips64el-linux-gnuabi64',
                     '--extra-ldflags=--target=mips64el-linux-gnuabi64',
+                ])
+        elif target_arch == "riscv64":
+            configure_flags['Common'].extend([
+              '--arch=riscv64',
+              '--extra-cflags=-march=rv64gc',
+            ])
+            if target_os == 'linux':
+                configure_flags['Common'].extend([
+                    '--enable-cross-compile',
+                    '--target-os=linux',
+                    '--sysroot=' + os.path.join(
+                        CHROMIUM_ROOT_DIR, 'build/linux/debian_trixie_riscv64-sysroot'),
+                    '--extra-cflags=--target=riscv64-linux-gnu',
+                    '--extra-ldflags=--target=riscv64-linux-gnu',
                 ])
         else:
             print('Error: Unknown target arch %r for target OS %r!' %

@@ -1,0 +1,107 @@
+// Copyright 2024 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Writer API
+// https://github.com/explainers-by-googlers/writing-assistance-apis
+
+enum WriterTone { "formal", "neutral", "casual" };
+enum WriterFormat { "plain-text", "markdown" };
+enum WriterLength { "short", "medium", "long" };
+
+dictionary WriterCreateCoreOptions {
+  WriterTone tone = "neutral";
+  WriterFormat format = "plain-text";
+  WriterLength length = "short";
+
+  sequence<DOMString> expectedInputLanguages;
+  sequence<DOMString> expectedContextLanguages;
+  DOMString outputLanguage;
+};
+
+dictionary WriterCreateOptions : WriterCreateCoreOptions {
+  AbortSignal signal;
+  CreateMonitorCallback monitor;
+  DOMString sharedContext;
+};
+
+dictionary WriterWriteOptions {
+  DOMString context;
+  AbortSignal signal;
+};
+
+[
+  Exposed(Window AIWriterAPI, Worker AIWriterAPIForWorkers),
+  RuntimeEnabled=AIWriterAPI,
+  SecureContext
+]
+interface Writer {
+  [
+    MeasureAs=Writer_Availability,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<Availability> availability(
+    optional WriterCreateCoreOptions options = {}
+  );
+
+  [
+    MeasureAs=Writer_Create,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<Writer> create(optional WriterCreateOptions options = {});
+
+  [
+    MeasureAs=Writer_Write,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<DOMString> write(
+    DOMString writingTask,
+    optional WriterWriteOptions options = {});
+
+  [
+    MeasureAs=Writer_WriteStreaming,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  ReadableStream writeStreaming(
+    DOMString writingTask,
+    optional WriterWriteOptions options = {}
+  );
+
+  [
+    MeasureAs=Writer_MeasureInputUsage,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<double> measureInputUsage(
+    DOMString writingTask,
+    optional WriterWriteOptions options = {}
+  );
+
+  [
+    MeasureAs=Writer_Destroy,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  void destroy();
+
+  [MeasureAs=Writer_SharedContext]
+  readonly attribute DOMString sharedContext;
+  [MeasureAs=Writer_Tone]
+  readonly attribute WriterTone tone;
+  [MeasureAs=Writer_Format]
+  readonly attribute WriterFormat format;
+  [MeasureAs=Writer_Length]
+  readonly attribute WriterLength length;
+  [MeasureAs=Writer_ExpectedInputLanguages]
+  readonly attribute FrozenArray<DOMString>? expectedInputLanguages;
+  [MeasureAs=Writer_ExpectedContextLanguages]
+  readonly attribute FrozenArray<DOMString>? expectedContextLanguages;
+  [MeasureAs=Writer_OutputLanguage]
+  readonly attribute DOMString? outputLanguage;
+  [MeasureAs=Writer_InputQuota]
+  readonly attribute unrestricted double inputQuota;
+};

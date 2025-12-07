@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/android/build_info.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
@@ -25,7 +24,6 @@
 #include "components/favicon_base/favicon_types.h"
 #include "components/webapps/browser/android/webapps_icon_utils.h"
 #include "components/webapps/browser/android/webapps_utils.h"
-#include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/common/constants.h"
 #include "components/webapps/common/web_page_metadata.mojom.h"
@@ -36,6 +34,7 @@
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/favicon_size.h"
@@ -63,8 +62,7 @@ InstallableParams ParamsToFetchInstallableData() {
 InstallableParams ParamsToFetchPrimaryIcon() {
   InstallableParams params;
   params.valid_primary_icon = true;
-  params.prefer_maskable_icon =
-      WebappsIconUtils::DoesAndroidSupportMaskableIcons();
+  params.prefer_maskable_icon = true;
   params.fetch_favicon = true;
   return params;
 }
@@ -72,12 +70,7 @@ InstallableParams ParamsToFetchPrimaryIcon() {
 InstallableParams ParamsToPerformInstallableCheck() {
   InstallableParams params;
   params.check_eligibility = true;
-  params.installable_criteria =
-      InstallableCriteria::kImplicitManifestFieldsHTML;
-  if (base::FeatureList::IsEnabled(
-          features::kUniversalInstallRootScopeNoManifest)) {
     params.installable_criteria = InstallableCriteria::kNoManifestAtRootScope;
-  }
   return params;
 }
 
@@ -226,8 +219,8 @@ void AddToHomescreenDataFetcher::OnDidPerformInstallableCheck(
   shortcut_info_.UpdateDisplayMode(webapk_compatible);
 
   AddToHomescreenParams::AppType app_type =
-      data.manifest_url->is_empty() ? AddToHomescreenParams::AppType::WEBAPK_DIY
-                                    : AddToHomescreenParams::AppType::WEBAPK;
+      AddToHomescreenParams::GetWebAppInstallType(
+          /*has_manifest=*/!data.manifest_url->is_empty());
 
   observer_->OnUserTitleAvailable(
       webapk_compatible ? shortcut_info_.name : shortcut_info_.user_title,

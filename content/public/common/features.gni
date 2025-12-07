@@ -1,0 +1,23 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/cast.gni")
+import("//build/config/features.gni")
+
+declare_args() {
+  # Whether or not to use external popup menu.
+  use_external_popup_menu = is_android || (is_apple && use_blink)
+
+  # Enables basic plugin support. This enables support for registering and
+  # looking up plugins.
+  #
+  # In particular, the Desktop PDF viewer (enable_pdf) requires plugin support.
+  enable_plugins = !is_android && !is_ios && !is_castos && !is_fuchsia
+}
+
+# Screen capture is enabled on most platforms. Currently, screen capture
+# is only enabled for desktop Android, but should be enabled on all Android
+# at some point once the feature is stable. See crbug.com/40418135.
+enable_screen_capture = is_linux || is_chromeos || (is_apple && use_blink) ||
+                        is_win || is_android || is_fuchsia

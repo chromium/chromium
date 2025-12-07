@@ -4,23 +4,23 @@
 
 #include "chrome/browser/apps/browser_instance/web_contents_instance_id_utils.h"
 
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/web_applications/app_service/publisher_helper.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_system.h"
+#include "extensions/browser/launch_util.h"
 #include "extensions/common/extension.h"
 
 namespace apps {
@@ -30,9 +30,9 @@ namespace {
 const extensions::Extension* GetExtensionForWebContents(
     Profile* profile,
     content::WebContents* tab) {
-  extensions::ExtensionService* extension_service =
-      extensions::ExtensionSystem::Get(profile)->extension_service();
-  if (!extension_service || !extension_service->extensions_enabled()) {
+  extensions::ExtensionRegistrar* extension_registrar =
+      extensions::ExtensionRegistrar::Get(profile);
+  if (!extension_registrar || !extension_registrar->extensions_enabled()) {
     return nullptr;
   }
 
@@ -68,16 +68,15 @@ std::optional<std::string> GetInstanceAppIdForWebContents(
     }
 
     std::optional<webapps::AppId> app_id =
-        provider->registrar_unsafe().FindAppWithUrlInScope(
-            tab->GetVisibleURL());
+        provider->registrar_unsafe().FindBestAppWithUrlInScope(
+            tab->GetVisibleURL(), web_app::WebAppFilter::OpensInBrowserTab());
     if (app_id) {
       const web_app::WebApp* web_app =
           provider->registrar_unsafe().GetAppById(*app_id);
       DCHECK(web_app);
       if (web_app->user_display_mode() ==
               web_app::mojom::UserDisplayMode::kBrowser &&
-          !web_app->is_uninstalling() &&
-          !web_app::IsAppServiceShortcut(web_app->app_id(), *provider)) {
+          !web_app->is_uninstalling()) {
         return app_id;
       }
     }

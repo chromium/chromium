@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_CONTENT_CAPTURE_BROWSER_CONTENT_CAPTURE_TEST_HELPER_H_
 #define COMPONENTS_CONTENT_CAPTURE_BROWSER_CONTENT_CAPTURE_TEST_HELPER_H_
 
+#include <vector>
+
 #include "components/content_capture/browser/content_capture_consumer.h"
 #include "components/content_capture/browser/content_capture_receiver.h"
 #include "components/content_capture/browser/onscreen_content_provider.h"
@@ -18,6 +20,8 @@ class FakeContentCaptureSender {
   virtual ~FakeContentCaptureSender();
 
   void Bind(content::RenderFrameHost* frame);
+
+  void DidCompleteBatchCaptureContent();
 
   void DidCaptureContent(const ContentCaptureData& captured_content,
                          bool first_data);
@@ -58,6 +62,9 @@ class ContentCaptureConsumerHelper : public ContentCaptureConsumer {
   ~ContentCaptureConsumerHelper() override;
 
   // ContentCaptureConsumer
+  void FlushCaptureContent(const ContentCaptureSession& session,
+                           const ContentCaptureFrame& data) override;
+
   void DidCaptureContent(const ContentCaptureSession& parent_session,
                          const ContentCaptureFrame& data) override;
 
@@ -72,6 +79,9 @@ class ContentCaptureConsumerHelper : public ContentCaptureConsumer {
   void DidUpdateTitle(const ContentCaptureFrame& main_frame) override;
 
   void DidUpdateFavicon(const ContentCaptureFrame& main_frame) override;
+
+  void DidUpdateSensitivityScore(const GURL& url,
+                                 float sensitivity_score) override;
 
   bool ShouldCapture(const GURL& url) override;
 

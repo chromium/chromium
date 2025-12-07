@@ -4,6 +4,8 @@
 
 #include "ui/base/ime/mojom/text_edit_command_mojom_traits.h"
 
+#include "base/notreached.h"
+
 namespace mojo {
 
 // These functions use text_edit_commands.inc to generate the code required to
@@ -24,7 +26,7 @@ EnumTraits<ui::mojom::TextEditCommand, ui::TextEditCommand>::ToMojom(
 #undef TEXT_EDIT_COMMAND
 
   // Failure to convert should never occur.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static

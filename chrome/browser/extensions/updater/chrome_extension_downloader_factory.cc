@@ -19,8 +19,11 @@
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/updater/extension_downloader.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/verifier_formats.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::ExtensionDownloader;
 using extensions::ExtensionDownloaderDelegate;
@@ -67,9 +70,9 @@ ChromeExtensionDownloaderFactory::CreateForProfile(
   // service and identity manager here. The logic is as follows:
   // ExtensionDownloader is owned by ExtensionUpdater.
   // ExtensionUpdater is owned by ExtensionService.
-  // ExtensionService is owned by ExtensionSystemImpl::Shared.
-  // ExtensionSystemImpl::Shared is a KeyedService. Its factory
-  // (ExtensionSystemSharedFactory) specifies that it depends on
+  // ExtensionService is owned by ChromeExtensionSystem::Shared.
+  // ChromeExtensionSystem::Shared is a KeyedService. Its factory
+  // (ChromeExtensionSystemSharedFactory) specifies that it depends on
   // IdentityManager. Hence, the IdentityManager instance is guaranteed to
   // outlive |downloader|.
   // TODO(crbug.com/41389279): Make this lifetime relationship more

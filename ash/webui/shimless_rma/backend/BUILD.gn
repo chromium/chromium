@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //ash")
 
 static_library("backend") {
   sources = [
@@ -18,11 +16,11 @@ static_library("backend") {
     "version_updater.h",
   ]
 
-  public_deps = [ "//components/web_package:web_package" ]
+  public_deps = [ "//components/web_package" ]
 
   deps = [
     "//ash",
-    "//ash/public/cpp:cpp",
+    "//ash/public/cpp",
     "//ash/webui/shimless_rma/mojom",
     "//base",
     "//chromeos/ash/components/dbus",
@@ -38,7 +36,7 @@ static_library("backend") {
     "//chromeos/services/network_config/public/mojom",
     "//chromeos/version",
     "//components/input",
-    "//components/permissions:permissions",
+    "//components/permissions",
     "//components/qr_code_generator",
     "//content/public/browser",
     "//ui/display",
@@ -48,6 +46,10 @@ static_library("backend") {
     "//ui/web_dialogs",
     "//url",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("unit_tests") {
@@ -65,7 +67,7 @@ source_set("unit_tests") {
     ":backend",
     "//ash",
     "//ash:test_support",
-    "//ash/public/cpp:cpp",
+    "//ash/public/cpp",
     "//ash/webui/shimless_rma/mojom",
     "//base",
     "//base/test:test_support",
@@ -73,8 +75,8 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus:test_support",
     "//chromeos/ash/components/dbus/rmad",
     "//chromeos/ash/components/dbus/rmad:rmad_proto",
-    "//chromeos/ash/components/dbus/update_engine:update_engine",
-    "//chromeos/ash/components/login/login_state:login_state",
+    "//chromeos/ash/components/dbus/update_engine",
+    "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/mojo_service_manager:test_support",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network:test_support",
@@ -84,9 +86,9 @@ source_set("unit_tests") {
     "//chromeos/dbus/power",
     "//chromeos/services/network_config/public/mojom",
     "//chromeos/services/network_config/public/mojom:network_types_shared_cpp_sources",
-    "//components/onc:onc",
+    "//components/onc",
     "//components/prefs:test_support",
-    "//components/proxy_config:proxy_config",
+    "//components/proxy_config",
     "//components/qr_code_generator",
     "//components/sync_preferences:test_support",
     "//components/user_manager:test_support",

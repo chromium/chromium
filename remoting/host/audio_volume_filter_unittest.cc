@@ -4,6 +4,7 @@
 
 #include "remoting/host/audio_volume_filter.h"
 
+#include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
@@ -28,51 +29,51 @@ class FakeAudioVolumeFilter : public AudioVolumeFilter {
 }  // namespace
 
 TEST(AudioVolumeFilterTest, TwoChannels) {
-  int16_t samples[] = {1, 1, 2, 2, 3, 3, 4, 4, 5,  5,
-                       6, 6, 7, 7, 8, 8, 9, 9, 10, 10};
+  auto samples = std::to_array<int16_t>(
+      {1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10});
   FakeAudioVolumeFilter filter(0);
   filter.set_audio_level(0.5f);
   filter.Initialize(9, 2);
   // After applying the audio volume, the |samples| should still pass the
   // AudioSilenceDetector, AudioVolumeFilter::Apply() returns true under this
   // condition. Ditto.
-  ASSERT_TRUE(filter.Apply(samples, std::size(samples) / 2));
+  ASSERT_TRUE(filter.Apply(samples));
 }
 
 TEST(AudioVolumeFilterTest, ThreeChannels) {
-  int16_t samples[] = {1, 1, 2, 2, 3, 3, 4, 4,  5,  5, 6,
-                       6, 7, 7, 8, 8, 9, 9, 10, 10, 11};
+  auto samples = std::to_array<int16_t>(
+      {1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11});
   FakeAudioVolumeFilter filter(0);
   filter.set_audio_level(0.5f);
   filter.Initialize(6, 3);
-  ASSERT_TRUE(filter.Apply(samples, std::size(samples) / 3));
+  ASSERT_TRUE(filter.Apply(samples));
 }
 
 TEST(AudioVolumeFilterTest, SilentSamples) {
-  int16_t samples[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                       0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  auto samples = std::to_array<int16_t>(
+      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
   FakeAudioVolumeFilter filter(0);
   filter.set_audio_level(0.5f);
   filter.Initialize(9, 2);
-  ASSERT_FALSE(filter.Apply(samples, std::size(samples) / 2));
+  ASSERT_FALSE(filter.Apply(samples));
 }
 
 TEST(AudioVolumeFilterTest, AudioLevel0) {
-  int16_t samples[] = {1, 1, 2, 2, 3, 3, 4, 4, 5,  5,
-                       6, 6, 7, 7, 8, 8, 9, 9, 10, 10};
+  auto samples = std::to_array<int16_t>(
+      {1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10});
   FakeAudioVolumeFilter filter(0);
   filter.set_audio_level(0);
   filter.Initialize(9, 2);
-  ASSERT_FALSE(filter.Apply(samples, std::size(samples) / 2));
+  ASSERT_FALSE(filter.Apply(samples));
 }
 
 TEST(AudioVolumeFilterTest, SilentAfterApplying) {
-  int16_t samples[] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                       1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+  auto samples = std::to_array<int16_t>(
+      {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1});
   FakeAudioVolumeFilter filter(0);
   filter.set_audio_level(0.9f);
   filter.Initialize(9, 2);
-  ASSERT_TRUE(filter.Apply(samples, std::size(samples) / 2));
+  ASSERT_TRUE(filter.Apply(samples));
 }
 
 }  // namespace remoting

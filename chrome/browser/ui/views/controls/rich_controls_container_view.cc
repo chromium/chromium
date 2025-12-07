@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
 
+#include <string_view>
+
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -22,7 +25,7 @@ namespace {
 
 using Util = ::content_settings::CookieControlsUtil;
 
-// TODO(crbug.com/40064612): Consider moving this method to a Factory class
+// TODO(crbug.com/436861952): Consider moving this method to a Factory class
 // and refactor PageInfoViewFactory::CreateLabelWrapper.
 std::unique_ptr<views::View> CreateLabelWrapper() {
   const int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -33,9 +36,9 @@ std::unique_ptr<views::View> CreateLabelWrapper() {
                              gfx::Insets::VH(0, icon_label_spacing));
   label_wrapper->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded,
-                               /*adjust_height_for_width =*/true)
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded)
           .WithWeight(1));
   return label_wrapper;
 }
@@ -63,7 +66,7 @@ RichControlsContainerView::RichControlsContainerView() {
 
   // Calculate difference between label height and icon size to align icons
   // and label in the first row.
-  // TODO(crbug.com/40064612): Refactor the view and use a TableLayout instead.
+  // TODO(crbug.com/436861952): Refactor the view and use a TableLayout instead.
   const int label_height =
       title_->GetPreferredSize(views::SizeBounds(title_->width(), {})).height();
   const int margin = (label_height - icon_size) / 2;
@@ -94,20 +97,21 @@ int RichControlsContainerView::GetFirstLineHeight() {
   return title_->GetLineHeight();
 }
 
+void RichControlsContainerView::SetIconImageSizeAndMargins(
+    gfx::Size image_size,
+    gfx::Insets margin_insets) {
+  icon_->SetProperty(views::kMarginsKey, margin_insets);
+  icon_->SetImageSize(image_size);
+}
+
 views::Label* RichControlsContainerView::AddSecondaryLabel(
     std::u16string text) {
   auto secondary_label = std::make_unique<views::Label>(
-      text, views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY);
+      text, views::style::CONTEXT_LABEL, views::style::STYLE_BODY_4);
   secondary_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   secondary_label->SetMultiLine(true);
-  secondary_label->SetProperty(
-      views::kBoxLayoutFlexKey,
-      views::BoxLayoutFlexSpecification().WithWeight(1));
+  secondary_label->SetEnabledColor(kColorPageInfoSubtitleForeground);
 
-  // TODO(https://crbug.com/326376201): Consider using
-  // views::style::STYLE_BODY_5 when CR2023 is enabled to
-  // be consistent with AddSecondaryStyledLabel, as most uses of this method
-  // already change the text style to that anyway.
   return labels_wrapper_->AddChildView(std::move(secondary_label));
 }
 
@@ -116,14 +120,9 @@ views::StyledLabel* RichControlsContainerView::AddSecondaryStyledLabel(
   auto secondary_label = std::make_unique<views::StyledLabel>();
   secondary_label->SetText(text);
   secondary_label->SetTextContext(views::style::CONTEXT_LABEL);
-  secondary_label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
   secondary_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  secondary_label->SetProperty(
-      views::kBoxLayoutFlexKey,
-      views::BoxLayoutFlexSpecification().WithWeight(1));
-
-  secondary_label->SetDefaultTextStyle(views::style::STYLE_BODY_5);
-  secondary_label->SetDefaultEnabledColorId(ui::kColorLabelForegroundSecondary);
+  secondary_label->SetDefaultTextStyle(views::style::STYLE_BODY_4);
+  secondary_label->SetDefaultEnabledColorId(kColorPageInfoSubtitleForeground);
   return labels_wrapper_->AddChildView(std::move(secondary_label));
 }
 
@@ -154,7 +153,14 @@ gfx::Size RichControlsContainerView::CalculatePreferredSize(
                    GetLayoutManager()->GetPreferredHeightForWidth(this, width));
 }
 
-const std::u16string& RichControlsContainerView::GetTitleForTesting() {
+void RichControlsContainerView::SetTitleTextStyleAndColor(
+    int style,
+    ui::ColorId color_id) {
+  title_->SetTextStyle(style);
+  title_->SetEnabledColor(color_id);
+}
+
+std::u16string_view RichControlsContainerView::GetTitleForTesting() const {
   return title_->GetText();
 }
 

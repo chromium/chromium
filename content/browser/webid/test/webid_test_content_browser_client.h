@@ -8,13 +8,13 @@
 #include <memory>
 
 #include "content/browser/webid/identity_registry.h"
-#include "content/public/browser/identity_request_dialog_controller.h"
+#include "content/public/browser/webid/identity_request_dialog_controller.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 
 namespace content {
 
 class DigitalIdentityProvider;
-class FederatedIdentityModalDialogViewDelegate;
+class IdentityRegistryDelegate;
 
 // Implements ContentBrowserClient to allow calls out to the Chrome layer to
 // be stubbed for tests.
@@ -42,10 +42,9 @@ class WebIdTestContentBrowserClient
   void SetDigitalIdentityProvider(
       std::unique_ptr<DigitalIdentityProvider> provider);
 
-  void SetIdentityRegistry(
-      WebContents* web_contents,
-      base::WeakPtr<FederatedIdentityModalDialogViewDelegate> delegate,
-      const GURL& config_url);
+  void SetIdentityRegistry(WebContents* web_contents,
+                           base::WeakPtr<IdentityRegistryDelegate> delegate,
+                           const GURL& config_url);
 
   IdentityRequestDialogController*
   GetIdentityRequestDialogControllerForTests() {

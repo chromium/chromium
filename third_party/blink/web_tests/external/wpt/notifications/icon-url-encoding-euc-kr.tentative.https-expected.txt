@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] icon-url-encoding-euc-kr
+  assert_equals: icon encoded with utf-8 expected "?icon=%EC%95%84%EC%9D%84%EC%BD%98" but got "?icon=%BE%C6%C0%BB%C4%DC"
+Harness: the test ran to completion.
+

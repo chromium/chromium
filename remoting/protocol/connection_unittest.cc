@@ -6,6 +6,7 @@
 #include <numbers>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -27,6 +28,7 @@
 #include "remoting/protocol/fake_video_renderer.h"
 #include "remoting/protocol/ice_connection_to_client.h"
 #include "remoting/protocol/ice_connection_to_host.h"
+#include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/protocol_mock_objects.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/protocol/video_stream.h"
@@ -91,10 +93,10 @@ class TestScreenCapturer : public DesktopCapturer {
     }
 
     // Return black 100x100 frame.
-    std::unique_ptr<webrtc::DesktopFrame> frame(
-        new webrtc::BasicDesktopFrame(webrtc::DesktopSize(100, 100)));
-    memset(frame->data(), frame_index_,
-           frame->stride() * frame->size().height());
+    auto frame = std::make_unique<webrtc::BasicDesktopFrame>(
+        webrtc::DesktopSize(100, 100), webrtc::FOURCC_ARGB);
+    UNSAFE_TODO(memset(frame->data(), frame_index_,
+                       frame->stride() * frame->size().height()));
     frame_index_++;
     frame->mutable_updated_region()->SetRect(
         webrtc::DesktopRect::MakeSize(frame->size()));
@@ -211,7 +213,8 @@ class FakeAudioPlayer : public AudioStub {
   }
 
   void Verify() {
-    const int16_t* data = reinterpret_cast<const int16_t*>(data_.data());
+    const int16_t* data =
+        UNSAFE_TODO(reinterpret_cast<const int16_t*>(data_.data()));
     int num_samples = data_.size() / kAudioChannels / sizeof(int16_t);
 
     // Skip the first 200 ms as these samples are more likely to be affected by
@@ -225,11 +228,12 @@ class FakeAudioPlayer : public AudioStub {
     int left = 0;
     int right = 0;
     for (int i = kSkippedSamples; i < num_samples; ++i) {
-      if (data[(i - 1) * kAudioChannels] < 0 && data[i * kAudioChannels] >= 0) {
+      if (UNSAFE_TODO(data[(i - 1) * kAudioChannels]) < 0 &&
+          UNSAFE_TODO(data[i * kAudioChannels]) >= 0) {
         ++left;
       }
-      if (data[(i - 1) * kAudioChannels + 1] < 0 &&
-          data[i * kAudioChannels + 1] >= 0) {
+      if (UNSAFE_TODO(data[(i - 1) * kAudioChannels + 1]) < 0 &&
+          UNSAFE_TODO(data[i * kAudioChannels + 1]) >= 0) {
         ++right;
       }
     }
@@ -324,7 +328,7 @@ class ConnectionTest : public testing::Test,
     {
       testing::InSequence sequence;
       EXPECT_CALL(host_event_handler_, OnConnectionAuthenticating());
-      EXPECT_CALL(host_event_handler_, OnConnectionAuthenticated());
+      EXPECT_CALL(host_event_handler_, OnConnectionAuthenticated(nullptr));
     }
     EXPECT_CALL(host_event_handler_, OnConnectionChannelsConnected())
         .WillOnce(InvokeWithoutArgs(this, &ConnectionTest::OnHostConnected));
@@ -347,10 +351,15 @@ class ConnectionTest : public testing::Test,
     EXPECT_CALL(client_event_handler_, OnRouteChanged(_, _))
         .Times(testing::AnyNumber());
 
+    NetworkSettings network_settings(NetworkSettings::NAT_TRAVERSAL_OUTGOING);
+
+    host_connection_->ApplyNetworkSettings(network_settings);
+
     client_connection_->Connect(
         std::move(owned_client_session_),
         TransportContext::ForTests(protocol::TransportRole::CLIENT),
         &client_event_handler_);
+    client_connection_->ApplyNetworkSettings(network_settings);
     client_session_->SimulateConnection(host_session_);
 
     run_loop_ = std::make_unique<base::RunLoop>();
@@ -497,7 +506,7 @@ TEST_P(ConnectionTest, MAYBE_Disconnect) {
               OnConnectionState(ConnectionToHost::CLOSED, ErrorCode::OK));
   EXPECT_CALL(host_event_handler_, OnConnectionClosed(ErrorCode::OK));
 
-  client_session_->Close(ErrorCode::OK);
+  client_session_->Close(ErrorCode::OK, /* error_details= */ {}, FROM_HERE);
   base::RunLoop().RunUntilIdle();
 }
 

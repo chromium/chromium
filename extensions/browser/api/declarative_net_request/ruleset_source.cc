@@ -56,8 +56,9 @@ ParseInfo RulesetSource::IndexRules(
       int rule_id = rule.id;
       bool inserted = id_set.insert(rule_id).second;
       if (!inserted) {
-        if (parse_flags & ParseFlags::kRaiseErrorOnInvalidRules)
+        if (parse_flags & ParseFlags::kRaiseErrorOnInvalidRules) {
           return ParseInfo(ParseResult::ERROR_DUPLICATE_IDS, rule_id);
+        }
 
         if (parse_flags & ParseFlags::kRaiseWarningOnInvalidRules) {
           rule_warnings.push_back(
@@ -84,8 +85,9 @@ ParseInfo RulesetSource::IndexRules(
           std::move(rule), base_url, id(), &indexed_rule);
 
       if (parse_result == ParseResult::ERROR_REGEX_TOO_LARGE) {
-        if (parse_flags & ParseFlags::kRaiseErrorOnLargeRegexRules)
+        if (parse_flags & ParseFlags::kRaiseErrorOnLargeRegexRules) {
           return ParseInfo(parse_result, rule_id);
+        }
 
         if (parse_flags & ParseFlags::kRaiseWarningOnLargeRegexRules) {
           rule_warnings.push_back(
@@ -95,8 +97,9 @@ ParseInfo RulesetSource::IndexRules(
       }
 
       if (parse_result != ParseResult::SUCCESS) {
-        if (parse_flags & ParseFlags::kRaiseErrorOnInvalidRules)
+        if (parse_flags & ParseFlags::kRaiseErrorOnInvalidRules) {
           return ParseInfo(parse_result, rule_id);
+        }
 
         if (parse_flags & ParseFlags::kRaiseWarningOnInvalidRules) {
           rule_warnings.push_back(
@@ -132,8 +135,9 @@ LoadRulesetResult RulesetSource::CreateVerifiedMatcher(
   // TODO(karandeepb): This should use a different LoadRulesetResult since it's
   // not a checksum mismatch.
   // This guarantees that no memory access will end up outside the buffer.
-  if (!flat::VerifyExtensionIndexedRulesetBuffer(verifier))
+  if (!flat::VerifyExtensionIndexedRulesetBuffer(verifier)) {
     return LoadRulesetResult::kErrorChecksumMismatch;
+  }
 
   *matcher =
       std::make_unique<RulesetMatcher>(std::move(data), id(), extension_id());

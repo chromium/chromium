@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_result.h"
 
 #include <memory>
@@ -18,17 +13,16 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
-#include "chrome/browser/ash/app_list/search/search_features.h"
+#include "chrome/browser/ash/app_list/search/omnibox/omnibox_util.h"
 #include "chrome/browser/ash/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "chrome/browser/chromeos/launcher_search/search_util.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -136,8 +130,8 @@ bool IsSingletonTextVector(const std::vector<ash::SearchResultTextItem>& v,
     return false;
 
   for (int i = 0; i < ArraySize; ++i) {
-    if (result_tags[i].styles != tags[i].styles ||
-        result_tags[i].range != tags[i].range) {
+    if (result_tags[i].styles != UNSAFE_TODO(tags[i]).styles ||
+        result_tags[i].range != UNSAFE_TODO(tags[i]).range) {
       return false;
     }
   }
@@ -210,8 +204,8 @@ class OmniboxResultTest : public testing::Test {
 
     return std::make_unique<OmniboxResult>(
         profile_.get(), app_list_controller_delegate_.get(),
-        crosapi::CreateResult(match, /*controller=*/nullptr,
-                              favicon_cache_.get(), bookmark_model_, input_),
+        CreateResult(match, /*controller=*/nullptr, favicon_cache_.get(),
+                     bookmark_model_, input_),
         /*query=*/query);
   }
 
@@ -234,7 +228,6 @@ class OmniboxResultTest : public testing::Test {
 
  protected:
   network::TestURLLoaderFactory test_url_loader_factory_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingProfile> profile_;
 
   testing::NiceMock<favicon::MockFaviconService> favicon_service_;
@@ -474,7 +467,6 @@ TEST_F(OmniboxResultTest, SearchResultText) {
 }
 
 TEST_F(OmniboxResultTest, RelevanceWithFuzzyMatchCutoff) {
-  scoped_feature_list_.InitAndEnableFeature(search_features::kLauncherFuzzyMatchForOmnibox);
   std::unique_ptr<OmniboxResult> result_high_fuzzy_relevance =
       CreateOmniboxResult(kExampleUrl, AutocompleteMatchType::HISTORY_URL,
                           GURL(), kExampleDescription);

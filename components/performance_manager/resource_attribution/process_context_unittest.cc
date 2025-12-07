@@ -13,7 +13,6 @@
 #include "components/performance_manager/public/render_process_host_id.h"
 #include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
-#include "components/performance_manager/test_support/run_in_graph.h"
 #include "components/performance_manager/test_support/test_browser_child_process.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/render_frame_host.h"
@@ -24,6 +23,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
 
 namespace resource_attribution {
@@ -55,27 +55,28 @@ TEST_F(ResourceAttrProcessContextTest, BrowserProcessContext) {
       process_context->GetWeakProcessNode();
   base::WeakPtr<ProcessNode> process_node_from_pm =
       PerformanceManager::GetProcessNodeForBrowserProcess();
-  performance_manager::RunInGraph([&] {
-    ASSERT_TRUE(process_node);
-    ASSERT_TRUE(process_node_from_pm);
-    EXPECT_EQ(process_node.get(), process_node_from_pm.get());
 
-    EXPECT_EQ(process_node.get(), process_context->GetProcessNode());
-    EXPECT_EQ(process_context.value(), process_node->GetResourceContext());
-    EXPECT_EQ(process_context.value(),
-              ProcessContext::FromProcessNode(process_node.get()));
-    EXPECT_EQ(process_context.value(),
-              ProcessContext::FromWeakProcessNode(process_node));
-  });
+  ASSERT_TRUE(process_node);
+  ASSERT_TRUE(process_node_from_pm);
+  EXPECT_EQ(process_node.get(), process_node_from_pm.get());
+
+  EXPECT_EQ(process_node.get(), process_context->GetProcessNode());
+  EXPECT_EQ(process_context.value(), process_node->GetResourceContext());
+  EXPECT_EQ(process_context.value(),
+            ProcessContext::FromProcessNode(process_node.get()));
+  EXPECT_EQ(process_context.value(),
+            ProcessContext::FromWeakProcessNode(process_node));
+
+  // Put context in an absl set to make sure it can be hashed.
+  absl::flat_hash_set<ProcessContext> context_set{process_context.value()};
+  EXPECT_EQ(context_set.size(), 1u);
 
   performance_manager::DeleteBrowserProcessNodeForTesting();
 
   EXPECT_TRUE(process_context->IsBrowserProcessContext());
-  performance_manager::RunInGraph([&] {
-    EXPECT_FALSE(process_node);
-    EXPECT_EQ(nullptr, process_context->GetProcessNode());
-    EXPECT_EQ(std::nullopt, ProcessContext::FromWeakProcessNode(process_node));
-  });
+  EXPECT_FALSE(process_node);
+  EXPECT_EQ(nullptr, process_context->GetProcessNode());
+  EXPECT_EQ(std::nullopt, ProcessContext::FromWeakProcessNode(process_node));
 }
 
 TEST_F(ResourceAttrProcessContextTest, RenderProcessContext) {
@@ -88,8 +89,7 @@ TEST_F(ResourceAttrProcessContextTest, RenderProcessContext) {
   ASSERT_TRUE(rfh);
   content::RenderProcessHost* rph = rfh->GetProcess();
   ASSERT_TRUE(rph);
-  const auto rph_id = RenderProcessHostId(rph->GetID());
-
+  const RenderProcessHostId rph_id = rph->GetID();
   std::optional<ProcessContext> process_context =
       ProcessContext::FromRenderProcessHost(rph);
   ASSERT_TRUE(process_context.has_value());
@@ -106,18 +106,17 @@ TEST_F(ResourceAttrProcessContextTest, RenderProcessContext) {
       process_context->GetWeakProcessNode();
   base::WeakPtr<ProcessNode> process_node_from_pm =
       PerformanceManager::GetProcessNodeForRenderProcessHost(rph);
-  performance_manager::RunInGraph([&] {
-    ASSERT_TRUE(process_node);
-    ASSERT_TRUE(process_node_from_pm);
-    EXPECT_EQ(process_node.get(), process_node_from_pm.get());
 
-    EXPECT_EQ(process_node.get(), process_context->GetProcessNode());
-    EXPECT_EQ(process_context.value(), process_node->GetResourceContext());
-    EXPECT_EQ(process_context.value(),
-              ProcessContext::FromProcessNode(process_node.get()));
-    EXPECT_EQ(process_context.value(),
-              ProcessContext::FromWeakProcessNode(process_node));
-  });
+  ASSERT_TRUE(process_node);
+  ASSERT_TRUE(process_node_from_pm);
+  EXPECT_EQ(process_node.get(), process_node_from_pm.get());
+
+  EXPECT_EQ(process_node.get(), process_context->GetProcessNode());
+  EXPECT_EQ(process_context.value(), process_node->GetResourceContext());
+  EXPECT_EQ(process_context.value(),
+            ProcessContext::FromProcessNode(process_node.get()));
+  EXPECT_EQ(process_context.value(),
+            ProcessContext::FromWeakProcessNode(process_node));
 
   // Make sure a second process gets a different context.
   std::unique_ptr<content::WebContents> web_contents2 = CreateTestWebContents();
@@ -133,6 +132,11 @@ TEST_F(ResourceAttrProcessContextTest, RenderProcessContext) {
   EXPECT_TRUE(process_context2.has_value());
   EXPECT_NE(process_context2, process_context);
 
+  // Put contexts in an absl set to make sure they can be hashed.
+  absl::flat_hash_set<ProcessContext> context_set{process_context.value(),
+                                                  process_context2.value()};
+  EXPECT_EQ(context_set.size(), 2u);
+
   web_contents.reset();
 
   EXPECT_EQ(std::nullopt, ProcessContext::FromRenderProcessHost(rph));
@@ -140,11 +144,9 @@ TEST_F(ResourceAttrProcessContextTest, RenderProcessContext) {
   EXPECT_EQ(nullptr, process_context->GetRenderProcessHost());
   EXPECT_EQ(rph_id, process_context->GetRenderProcessHostId());
 
-  performance_manager::RunInGraph([&] {
-    EXPECT_FALSE(process_node);
-    EXPECT_EQ(nullptr, process_context->GetProcessNode());
-    EXPECT_EQ(std::nullopt, ProcessContext::FromWeakProcessNode(process_node));
-  });
+  EXPECT_FALSE(process_node);
+  EXPECT_EQ(nullptr, process_context->GetProcessNode());
+  EXPECT_EQ(std::nullopt, ProcessContext::FromWeakProcessNode(process_node));
 }
 
 TEST_F(ResourceAttrProcessContextTest, BrowserChildProcessContext) {
@@ -171,18 +173,17 @@ TEST_F(ResourceAttrProcessContextTest, BrowserChildProcessContext) {
   base::WeakPtr<ProcessNode> process_node_from_pm =
       PerformanceManager::GetProcessNodeForBrowserChildProcessHost(
           utility_process->host());
-  performance_manager::RunInGraph([&] {
-    ASSERT_TRUE(process_node);
-    ASSERT_TRUE(process_node_from_pm);
-    EXPECT_EQ(process_node.get(), process_node_from_pm.get());
 
-    EXPECT_EQ(process_node.get(), process_context->GetProcessNode());
-    EXPECT_EQ(process_context.value(), process_node->GetResourceContext());
-    EXPECT_EQ(process_context.value(),
-              ProcessContext::FromProcessNode(process_node.get()));
-    EXPECT_EQ(process_context.value(),
-              ProcessContext::FromWeakProcessNode(process_node));
-  });
+  ASSERT_TRUE(process_node);
+  ASSERT_TRUE(process_node_from_pm);
+  EXPECT_EQ(process_node.get(), process_node_from_pm.get());
+
+  EXPECT_EQ(process_node.get(), process_context->GetProcessNode());
+  EXPECT_EQ(process_context.value(), process_node->GetResourceContext());
+  EXPECT_EQ(process_context.value(),
+            ProcessContext::FromProcessNode(process_node.get()));
+  EXPECT_EQ(process_context.value(),
+            ProcessContext::FromWeakProcessNode(process_node));
 
   // Make sure a second process gets a different context.
   TestBrowserChildProcess gpu_process(content::PROCESS_TYPE_GPU);
@@ -192,6 +193,11 @@ TEST_F(ResourceAttrProcessContextTest, BrowserChildProcessContext) {
   EXPECT_TRUE(process_context2.has_value());
   EXPECT_NE(process_context2, process_context);
 
+  // Put contexts in an absl set to make sure they can be hashed.
+  absl::flat_hash_set<ProcessContext> context_set{process_context.value(),
+                                                  process_context2.value()};
+  EXPECT_EQ(context_set.size(), 2u);
+
   const BrowserChildProcessHostId utility_id = utility_process->GetId();
   utility_process.reset();
 
@@ -199,11 +205,9 @@ TEST_F(ResourceAttrProcessContextTest, BrowserChildProcessContext) {
   EXPECT_EQ(nullptr, process_context->GetBrowserChildProcessHost());
   EXPECT_EQ(utility_id, process_context->GetBrowserChildProcessHostId());
 
-  performance_manager::RunInGraph([&] {
-    EXPECT_FALSE(process_node);
-    EXPECT_EQ(nullptr, process_context->GetProcessNode());
-    EXPECT_EQ(std::nullopt, ProcessContext::FromWeakProcessNode(process_node));
-  });
+  EXPECT_FALSE(process_node);
+  EXPECT_EQ(nullptr, process_context->GetProcessNode());
+  EXPECT_EQ(std::nullopt, ProcessContext::FromWeakProcessNode(process_node));
 }
 
 TEST_F(ResourceAttrProcessContextNoPMTest, ProcessContextWithoutPM) {

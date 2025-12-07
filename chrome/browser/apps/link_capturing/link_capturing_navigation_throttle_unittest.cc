@@ -8,7 +8,12 @@
 #include <string>
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/common/chrome_features.h"
+#include "chrome/test/base/testing_profile.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/mock_navigation_throttle_registry.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -280,7 +285,7 @@ class LinkCapturingNavThrottleReimplTest
     std::map<std::string, std::string> parameters;
     parameters["link_capturing_state"] = FlagBoolToReimpl();
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kDesktopPWAsLinkCapturing, parameters);
+        features::kPwaNavigationCapturing, parameters);
   }
 
   std::string FlagBoolToReimpl() {
@@ -291,11 +296,20 @@ class LinkCapturingNavThrottleReimplTest
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 TEST_P(LinkCapturingNavThrottleReimplTest, NotCreated) {
-  EXPECT_EQ(nullptr, LinkCapturingNavigationThrottle::MaybeCreate(
-                         /*handle=*/nullptr, /*delegate=*/nullptr));
+  TestingProfile profile;
+  auto web_contents = content::WebContents::Create(
+      content::WebContents::CreateParams(&profile));
+  content::MockNavigationHandle handle(web_contents.get());
+  content::MockNavigationThrottleRegistry registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+
+  EXPECT_FALSE(LinkCapturingNavigationThrottle::MaybeCreateAndAdd(
+      registry, /*delegate=*/nullptr));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

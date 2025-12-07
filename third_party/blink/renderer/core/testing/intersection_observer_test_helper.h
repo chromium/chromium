@@ -26,9 +26,6 @@ class TestIntersectionObserverDelegate : public IntersectionObserverDelegate {
     call_count_++;
     entries_.AppendVector(entries);
   }
-  bool NeedsInitialObservationWithDetachedTarget() const override {
-    return true;
-  }
   ExecutionContext* GetExecutionContext() const override {
     return document_->GetExecutionContext();
   }

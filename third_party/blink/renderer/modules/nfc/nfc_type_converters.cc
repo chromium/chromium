@@ -40,7 +40,7 @@ NDEFMessagePtr TypeConverter<NDEFMessagePtr, blink::NDEFMessage*>::Convert(
     return nullptr;
   NDEFMessagePtr message_ptr = NDEFMessage::New();
   message_ptr->data.resize(message->records().size());
-  for (wtf_size_t i = 0; i < message->records().size(); ++i) {
+  for (blink::wtf_size_t i = 0; i < message->records().size(); ++i) {
     NDEFRecordPtr record = NDEFRecord::From(message->records()[i].Get());
     DCHECK(record);
     message_ptr->data[i] = std::move(record);

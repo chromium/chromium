@@ -9,6 +9,7 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/native_app_window.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom-forward.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 
 namespace gfx {
 class RoundedCornersF;
@@ -34,7 +35,7 @@ class ShellNativeAppWindow : public NativeAppWindow {
   bool IsMinimized() const override;
   bool IsFullscreen() const override;
   gfx::Rect GetRestoredBounds() const override;
-  ui::WindowShowState GetRestoredState() const override;
+  ui::mojom::WindowShowState GetRestoredState() const override;
   void ShowInactive() override;
   void Close() override;
   void Maximize() override;

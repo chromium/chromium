@@ -11,21 +11,24 @@ goog.setTestOnly();
 
 const Box = goog.require('goog.math.Box');
 const BrowserEvent = goog.require('goog.events.BrowserEvent');
+const Const = goog.require('goog.string.Const');
 const Coordinate = goog.require('goog.math.Coordinate');
 const ExpectedFailures = goog.require('goog.testing.ExpectedFailures');
 const GoogRect = goog.require('goog.math.Rect');
 const MockUserAgent = goog.require('goog.testing.MockUserAgent');
 const Size = goog.require('goog.math.Size');
 const TagName = goog.require('goog.dom.TagName');
+const TrustedResourceUrl = goog.require('goog.html.TrustedResourceUrl');
 const UserAgents = goog.require('goog.userAgentTestUtil.UserAgents');
-const asserts = goog.require('goog.testing.asserts');
 const color = goog.require('goog.color');
 const dispose = goog.require('goog.dispose');
 const googArray = goog.require('goog.array');
 const googDom = goog.require('goog.dom');
 const googObject = goog.require('goog.object');
 const googStyle = goog.require('goog.style');
+const isSafari = goog.require('goog.labs.userAgent.browser');
 const jsunit = goog.require('goog.testing.jsunit');
+const safe = goog.require('goog.dom.safe');
 const testSuite = goog.require('goog.testing.testSuite');
 const testing = goog.require('goog.html.testing');
 const userAgent = goog.require('goog.userAgent');
@@ -243,19 +246,13 @@ testSuite({
 
   /** @suppress {checkTypes} suppression added to enable type checking */
   testGetComputedBoxSizing() {
-    if (!userAgent.IE || userAgent.isVersionOrHigher(8)) {
-      const defaultBoxSizing =
-          googDom.isCss1CompatMode() ? 'content-box' : 'border-box';
-      let el = googDom.getElement('box-sizing-unset');
-      assertEquals(defaultBoxSizing, googStyle.getComputedBoxSizing(el));
+    const defaultBoxSizing =
+        googDom.isCss1CompatMode() ? 'content-box' : 'border-box';
+    let el = googDom.getElement('box-sizing-unset');
+    assertEquals(defaultBoxSizing, googStyle.getComputedBoxSizing(el));
 
-      el = googDom.getElement('box-sizing-border-box');
-      assertEquals('border-box', googStyle.getComputedBoxSizing(el));
-    } else {
-      // IE7 and below don't support box-sizing.
-      assertNull(googStyle.getComputedBoxSizing(
-          googDom.getElement('box-sizing-border-box')));
-    }
+    el = googDom.getElement('box-sizing-border-box');
+    assertEquals('border-box', googStyle.getComputedBoxSizing(el));
   },
 
   testGetComputedPosition() {
@@ -265,16 +262,9 @@ testSuite({
     assertEquals(
         'position:relative in style attribute', 'relative',
         googStyle.getComputedPosition($('style-position-relative')));
-    if (userAgent.IE && !googDom.isCss1CompatMode() &&
-        !userAgent.isVersionOrHigher(10)) {
-      assertEquals(
-          'position:fixed in style attribute', 'static',
-          googStyle.getComputedPosition($('style-position-fixed')));
-    } else {
-      assertEquals(
-          'position:fixed in style attribute', 'fixed',
-          googStyle.getComputedPosition($('style-position-fixed')));
-    }
+    assertEquals(
+        'position:fixed in style attribute', 'fixed',
+        googStyle.getComputedPosition($('style-position-fixed')));
     assertEquals(
         'position:absolute in css', 'absolute',
         googStyle.getComputedPosition($('css-position-absolute')));
@@ -671,10 +661,7 @@ testSuite({
       document.body.appendChild(div);
 
       // Test all major positioning methods.
-      // Disabled for IE9 and below - IE8 returns dimensions multiplied by 100.
-      // IE9 is flaky. See b/22873770.
-      expectedFailures.expectFailureFor(
-          userAgent.IE && !userAgent.isVersionOrHigher(10));
+
       try {
         // Test all major positioning methods.
         const pos = googStyle.getClientPosition(div);
@@ -985,8 +972,11 @@ testSuite({
 
   /** @suppress {visibility} suppression added to enable type checking */
   testInstallSafeStyleSheetWithNonce() {
-    // IE < 11 doesn't support nonce-based CSP
-    if (userAgent.IE && !userAgent.isVersionOrHigher(11)) {
+    if (isSafari) {
+      // Safari has a quirk where dynamically installed stylesheets lose
+      // their nonce attribute. This causes this test to fail, but is
+      // not a reliability concern (since we don't yet use CSP to restrict
+      // CSS loading).
       return;
     }
     const result =
@@ -994,7 +984,12 @@ testSuite({
 
     const styles = document.head.querySelectorAll('style[nonce]');
     assert(styles.length > 1);
-    assertEquals('NONCE', styles[styles.length - 1].getAttribute('nonce'));
+    const lastStyleSheet = styles[styles.length - 1];
+    // Some browsers don't expose the nonce via getAttribute so try and retrieve
+    // it as a normal property first.
+    assertEquals(
+        'NONCE', /** @type {?} */ (lastStyleSheet).nonce ||
+            lastStyleSheet.getAttribute('nonce'));
 
     googStyle.uninstallStyles(result);
   },
@@ -1718,79 +1713,94 @@ testSuite({
 
   testFramedPageOffset() {
     // Set up a complicated iframe ancestor chain.
-    const iframe = googDom.getElement('test-frame-offset');
-    const iframeDoc = googDom.getFrameContentDocument(iframe);
-    const iframeWindow = googDom.getWindow(iframeDoc);
+    const iframe = createTestFrame();
+    iframe.id = 'test-frame-offset';
+    try {
+      document.body.appendChild(iframe);
+      const iframeDoc = googDom.getFrameContentDocument(iframe);
+      const iframeWindow = googDom.getWindow(iframeDoc);
 
-    const iframePos = 'style="display:block;position:absolute;' +
-        'top:50px;left:50px;width:50px;height:50px;"';
-    iframeDoc.write(
-        `<iframe id="test-frame-offset-2" ${iframePos}></iframe>` +
-        '<div id="test-element-2" ' +
-        ' style="position:absolute;left:300px;top:300px">hi mom!</div>');
-    iframeDoc.close();
-    const iframe2 = iframeDoc.getElementById('test-frame-offset-2');
-    const testElement2 = iframeDoc.getElementById('test-element-2');
-    const iframeDoc2 = googDom.getFrameContentDocument(iframe2);
-    const iframeWindow2 = googDom.getWindow(iframeDoc2);
+      const iframePos = 'style="display:block;position:absolute;' +
+          'top:50px;left:50px;width:50px;height:50px;"';
+      iframeDoc.write(
+          `<iframe id="test-frame-offset-2" ${iframePos}></iframe>` +
+          '<div id="test-element-2" ' +
+          ' style="position:absolute;left:300px;top:300px">hi mom!</div>');
+      iframeDoc.close();
+      const iframe2 = iframeDoc.getElementById('test-frame-offset-2');
+      const testElement2 = iframeDoc.getElementById('test-element-2');
+      const iframeDoc2 = googDom.getFrameContentDocument(iframe2);
+      const iframeWindow2 = googDom.getWindow(iframeDoc2);
 
-    iframeDoc2.write(
-        '<div id="test-element-3" ' +
-        ' style="position:absolute;left:500px;top:500px">hi mom!</div>');
-    iframeDoc2.close();
-    const testElement3 = iframeDoc2.getElementById('test-element-3');
+      iframeDoc2.write(
+          '<div id="test-element-3" ' +
+          ' style="position:absolute;left:500px;top:500px">hi mom!</div>');
+      iframeDoc2.close();
+      const testElement3 = iframeDoc2.getElementById('test-element-3');
 
-    assertCoordinateApprox(300, 300, 0, googStyle.getPageOffset(testElement2));
-    assertCoordinateApprox(500, 500, 0, googStyle.getPageOffset(testElement3));
+      assertCoordinateApprox(
+          300, 300, 0, googStyle.getPageOffset(testElement2));
+      assertCoordinateApprox(
+          500, 500, 0, googStyle.getPageOffset(testElement3));
 
-    assertCoordinateApprox(
-        350, 350, 0, googStyle.getFramedPageOffset(testElement2, window));
-    assertCoordinateApprox(
-        300, 300, 0, googStyle.getFramedPageOffset(testElement2, iframeWindow));
+      assertCoordinateApprox(
+          350, 350, 0, googStyle.getFramedPageOffset(testElement2, window));
+      assertCoordinateApprox(
+          300, 300, 0,
+          googStyle.getFramedPageOffset(testElement2, iframeWindow));
 
-    assertCoordinateApprox(
-        600, 600, 0, googStyle.getFramedPageOffset(testElement3, window));
-    assertCoordinateApprox(
-        550, 550, 0, googStyle.getFramedPageOffset(testElement3, iframeWindow));
-    assertCoordinateApprox(
-        500, 500, 0,
-        googStyle.getFramedPageOffset(testElement3, iframeWindow2));
+      assertCoordinateApprox(
+          600, 600, 0, googStyle.getFramedPageOffset(testElement3, window));
+      assertCoordinateApprox(
+          550, 550, 0,
+          googStyle.getFramedPageOffset(testElement3, iframeWindow));
+      assertCoordinateApprox(
+          500, 500, 0,
+          googStyle.getFramedPageOffset(testElement3, iframeWindow2));
 
-    // Scroll the iframes a bit.
-    window.scrollBy(0, 5);
-    iframeWindow.scrollBy(0, 11);
-    iframeWindow2.scrollBy(0, 18);
+      // Scroll the iframes a bit.
+      window.scrollBy(0, 5);
+      iframeWindow.scrollBy(0, 11);
+      iframeWindow2.scrollBy(0, 18);
 
-    // On Firefox 2, scrolling inner iframes causes off by one errors
-    // in the page position, because we're using screen coords to compute them.
-    assertCoordinateApprox(300, 300, 2, googStyle.getPageOffset(testElement2));
-    assertCoordinateApprox(500, 500, 2, googStyle.getPageOffset(testElement3));
+      // On Firefox 2, scrolling inner iframes causes off by one errors
+      // in the page position, because we're using screen coords to compute
+      // them.
+      assertCoordinateApprox(
+          300, 300, 2, googStyle.getPageOffset(testElement2));
+      assertCoordinateApprox(
+          500, 500, 2, googStyle.getPageOffset(testElement3));
 
-    assertCoordinateApprox(
-        350, 350 - 11, 2, googStyle.getFramedPageOffset(testElement2, window));
-    assertCoordinateApprox(
-        300, 300, 2, googStyle.getFramedPageOffset(testElement2, iframeWindow));
+      assertCoordinateApprox(
+          350, 350 - 11, 2,
+          googStyle.getFramedPageOffset(testElement2, window));
+      assertCoordinateApprox(
+          300, 300, 2,
+          googStyle.getFramedPageOffset(testElement2, iframeWindow));
 
-    assertCoordinateApprox(
-        600, 600 - 18 - 11, 2,
-        googStyle.getFramedPageOffset(testElement3, window));
-    assertCoordinateApprox(
-        550, 550 - 18, 2,
-        googStyle.getFramedPageOffset(testElement3, iframeWindow));
-    assertCoordinateApprox(
-        500, 500, 2,
-        googStyle.getFramedPageOffset(testElement3, iframeWindow2));
+      assertCoordinateApprox(
+          600, 600 - 18 - 11, 2,
+          googStyle.getFramedPageOffset(testElement3, window));
+      assertCoordinateApprox(
+          550, 550 - 18, 2,
+          googStyle.getFramedPageOffset(testElement3, iframeWindow));
+      assertCoordinateApprox(
+          500, 500, 2,
+          googStyle.getFramedPageOffset(testElement3, iframeWindow2));
 
-    // In IE, if the element is in a frame that's been removed from the DOM and
-    // relativeWin is not that frame's contentWindow, the contentWindow's parent
-    // reference points to itself. We want to guarantee that we don't fall into
-    // an infinite loop.
-    const iframeParent = iframe.parentElement;
-    iframeParent.removeChild(iframe);
-    // We don't check the value returned as it differs by browser. 0,0 for
-    // Chrome and FF. IE returns 30000 or 30198 for x in IE8-9 and 300 in
-    // IE10-11
-    googStyle.getFramedPageOffset(testElement2, window);
+      // In IE, if the element is in a frame that's been removed from the DOM
+      // and relativeWin is not that frame's contentWindow, the contentWindow's
+      // parent reference points to itself. We want to guarantee that we don't
+      // fall into an infinite loop.
+      const iframeParent = iframe.parentElement;
+      iframeParent.removeChild(iframe);
+      // We don't check the value returned as it differs by browser. 0,0 for
+      // Chrome and FF. IE returns 30000 or 30198 for x in IE8-9 and 300 in
+      // IE10-11
+      googStyle.getFramedPageOffset(testElement2, window);
+    } finally {
+      googDom.removeNode(iframe);
+    }
   },
 
   testTranslateRectForAnotherFrame() {
@@ -2599,3 +2609,13 @@ testSuite({
         cssObj.MsFilter);
   },
 });
+
+/**
+ * @return {!HTMLIFrameElement}
+ */
+function createTestFrame() {
+  const frame = googDom.createDom(TagName.IFRAME);
+  safe.setIframeSrc(
+      frame, TrustedResourceUrl.fromConstant(Const.from('about:blank')));
+  return frame;
+}

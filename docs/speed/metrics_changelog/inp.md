@@ -2,6 +2,16 @@
 
 This is a list of changes to [Interaction to Next Paint](https://web.dev/inp).
 
+* Chrome 133
+  * Launch feature: [Enable EventTimingSelectionAutoScrollNoInteractionId by default](2025_02_inp.md)
+* Chrome 130
+  * Launch feature: [Enable EventTimingTapStopScrollNoInteractionId by default](2024_10_inp.md)
+  * Launch feature: [Enable EventTimingHandleKeyboardEventSimulatedClick by default](2024_10_inp.md)
+  * Launch feature: [Enable ReportEventTimingAtVisibilityChange by default](2024_10_inp.md)
+* Chrome 129
+  * Launch feature: [Enable ContinueEventTimingRecordingWhenBufferIsFull by default](2024_09_inp.md)
+* Chrome 128
+  * Metric bug fix: [Enable EventTimingHandleOrphanPointerup by default](2024_08_inp.md)
 * Chrome 127
   * Launch feature: [Enable EventTimingKeypressAndCompositionInteractionId by default](2024_07_inp.md)
   * Launch feature: [Enable EventTimingFallbackToModalDialogStart by default](2024_07_inp.md)

@@ -1,0 +1,8 @@
+team_email: "chrome-autofill-team@google.com"
+os: ANDROID
+monorail: {
+    component: "UI>Browser>Autofill"
+}
+buganizer_public: {
+    component_id: 1456764
+}

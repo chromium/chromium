@@ -19,10 +19,10 @@ namespace extensions {
 namespace {
 
 // Resources there are a quota for.
-enum Resource {
-  QUOTA_BYTES,
-  QUOTA_BYTES_PER_ITEM,
-  MAX_ITEMS
+enum class Resource {
+  kQuotaBytes,
+  kQuotaBytesPerItem,
+  kMaxItems,
 };
 
 // Allocates a setting in a record of total and per-setting usage.
@@ -35,8 +35,7 @@ void Allocate(
   // TODO(kalman): Does this work with different encodings?
   // TODO(kalman): This is duplicating work that the leveldb delegate
   // implementation is about to do, and it would be nice to avoid this.
-  std::string value_as_json;
-  base::JSONWriter::Write(value, &value_as_json);
+  std::string value_as_json = base::WriteJson(value).value_or("");
   size_t new_size = key.size() + value_as_json.size();
   size_t existing_size = (*used_per_setting)[key];
 
@@ -47,14 +46,14 @@ void Allocate(
 ValueStore::Status QuotaExceededError(Resource resource) {
   const char* name = nullptr;
   switch (resource) {
-    case QUOTA_BYTES:
-      name = "QUOTA_BYTES";
+    case Resource::kQuotaBytes:
+      name = "Resource::kQuotaBytes";
       break;
-    case QUOTA_BYTES_PER_ITEM:
-      name = "QUOTA_BYTES_PER_ITEM";
+    case Resource::kQuotaBytesPerItem:
+      name = "Resource::kQuotaBytesPerItem";
       break;
-    case MAX_ITEMS:
-      name = "MAX_ITEMS";
+    case Resource::kMaxItems:
+      name = "Resource::kMaxItems";
       break;
   }
   CHECK(name);
@@ -95,6 +94,10 @@ size_t SettingsStorageQuotaEnforcer::GetBytesInUse() {
   return used_total_;
 }
 
+ValueStore::ReadResult SettingsStorageQuotaEnforcer::GetKeys() {
+  return HandleResult(delegate_->GetKeys());
+}
+
 ValueStore::ReadResult SettingsStorageQuotaEnforcer::Get(
     const std::string& key) {
   return HandleResult(delegate_->Get(key));
@@ -118,11 +121,11 @@ ValueStore::WriteResult SettingsStorageQuotaEnforcer::Set(
 
   if (!(options & IGNORE_QUOTA)) {
     if (new_used_total > limits_.quota_bytes)
-      return WriteResult(QuotaExceededError(QUOTA_BYTES));
+      return WriteResult(QuotaExceededError(Resource::kQuotaBytes));
     if (new_used_per_setting[key] > limits_.quota_bytes_per_item)
-      return WriteResult(QuotaExceededError(QUOTA_BYTES_PER_ITEM));
+      return WriteResult(QuotaExceededError(Resource::kQuotaBytesPerItem));
     if (new_used_per_setting.size() > limits_.max_items)
-      return WriteResult(QuotaExceededError(MAX_ITEMS));
+      return WriteResult(QuotaExceededError(Resource::kMaxItems));
   }
 
   WriteResult result = HandleResult(delegate_->Set(options, key, value));
@@ -147,15 +150,15 @@ ValueStore::WriteResult SettingsStorageQuotaEnforcer::Set(
 
     if (!(options & IGNORE_QUOTA) &&
         new_used_per_setting[key] > limits_.quota_bytes_per_item) {
-      return WriteResult(QuotaExceededError(QUOTA_BYTES_PER_ITEM));
+      return WriteResult(QuotaExceededError(Resource::kQuotaBytesPerItem));
     }
   }
 
   if (!(options & IGNORE_QUOTA)) {
     if (new_used_total > limits_.quota_bytes)
-      return WriteResult(QuotaExceededError(QUOTA_BYTES));
+      return WriteResult(QuotaExceededError(Resource::kQuotaBytes));
     if (new_used_per_setting.size() > limits_.max_items)
-      return WriteResult(QuotaExceededError(MAX_ITEMS));
+      return WriteResult(QuotaExceededError(Resource::kMaxItems));
   }
 
   WriteResult result = HandleResult(delegate_->Set(options, values));

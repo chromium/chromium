@@ -59,7 +59,7 @@ std::string SerialTracker::ToString(EventType type) {
 SerialTracker::SerialTracker(struct wl_display* display)
     : display_(display), events_(kMaxEventsTracked) {}
 
-SerialTracker::~SerialTracker() {}
+SerialTracker::~SerialTracker() = default;
 
 void SerialTracker::Shutdown() {
   display_ = nullptr;

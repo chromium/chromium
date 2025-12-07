@@ -1,0 +1,178 @@
+This is a testharness.js-based test.
+Found 87 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] createElementNS test in HTML document: null,"ெfoo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('ெfoo') contains the invalid name-start character 'ெ'.
+[FAIL] createElementNS test in XML document: null,"ெfoo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('ெfoo') contains the invalid name-start character 'ெ'.
+[FAIL] createElementNS test in XHTML document: null,"ெfoo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('ெfoo') contains the invalid name-start character 'ெ'.
+[FAIL] createElementNS test in HTML document: null,";foo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided (';foo') contains the invalid name-start character ';'.
+[FAIL] createElementNS test in XML document: null,";foo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided (';foo') contains the invalid name-start character ';'.
+[FAIL] createElementNS test in XHTML document: null,";foo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided (';foo') contains the invalid name-start character ';'.
+[FAIL] createElementNS test in HTML document: null,"f}oo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('f}oo') contains the invalid character '}'.
+[FAIL] createElementNS test in XML document: null,"f}oo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('f}oo') contains the invalid character '}'.
+[FAIL] createElementNS test in XHTML document: null,"f}oo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('f}oo') contains the invalid character '}'.
+[FAIL] createElementNS test in HTML document: null,"foo}",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('foo}') contains the invalid character '}'.
+[FAIL] createElementNS test in XML document: null,"foo}",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('foo}') contains the invalid character '}'.
+[FAIL] createElementNS test in XHTML document: null,"foo}",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('foo}') contains the invalid character '}'.
+[FAIL] createElementNS test in HTML document: null,"\\ufffffoo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('￿foo') contains the invalid name-start character '￿'.
+[FAIL] createElementNS test in XML document: null,"\\ufffffoo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('￿foo') contains the invalid name-start character '￿'.
+[FAIL] createElementNS test in XHTML document: null,"\\ufffffoo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('￿foo') contains the invalid name-start character '￿'.
+[FAIL] createElementNS test in HTML document: null,"f\\uffffoo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('f￿oo') contains the invalid character '￿'.
+[FAIL] createElementNS test in XML document: null,"f\\uffffoo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('f￿oo') contains the invalid character '￿'.
+[FAIL] createElementNS test in XHTML document: null,"f\\uffffoo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('f￿oo') contains the invalid character '￿'.
+[FAIL] createElementNS test in HTML document: null,"foo\\uffff",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('foo￿') contains the invalid character '￿'.
+[FAIL] createElementNS test in XML document: null,"foo\\uffff",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('foo￿') contains the invalid character '￿'.
+[FAIL] createElementNS test in XHTML document: null,"foo\\uffff",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('foo￿') contains the invalid character '￿'.
+[FAIL] createElementNS test in HTML document: null,"f<oo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('f<oo') contains the invalid character '<'.
+[FAIL] createElementNS test in XML document: null,"f<oo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('f<oo') contains the invalid character '<'.
+[FAIL] createElementNS test in XHTML document: null,"f<oo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('f<oo') contains the invalid character '<'.
+[FAIL] createElementNS test in HTML document: null,":foo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided (':foo') has an empty namespace prefix.
+[FAIL] createElementNS test in XML document: null,":foo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided (':foo') has an empty namespace prefix.
+[FAIL] createElementNS test in XHTML document: null,":foo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided (':foo') has an empty namespace prefix.
+[FAIL] createElementNS test in HTML document: null,"f:o:o","NAMESPACE_ERR"
+  assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "InvalidCharacterError: Failed to execute 'createElementNS' on 'Document': The qualified name provided ('f:o:o') contains multiple colons." that is not a DOMException NAMESPACE_ERR: property "code" is equal to 5, expected 14
+[FAIL] createElementNS test in XML document: null,"f:o:o","NAMESPACE_ERR"
+  assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "InvalidCharacterError: Failed to execute 'createElementNS' on 'Document': The qualified name provided ('f:o:o') contains multiple colons." that is not a DOMException NAMESPACE_ERR: property "code" is equal to 5, expected 14
+[FAIL] createElementNS test in XHTML document: null,"f:o:o","NAMESPACE_ERR"
+  assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "InvalidCharacterError: Failed to execute 'createElementNS' on 'Document': The qualified name provided ('f:o:o') contains multiple colons." that is not a DOMException NAMESPACE_ERR: property "code" is equal to 5, expected 14
+[FAIL] createElementNS test in HTML document: "",":foo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided (':foo') has an empty namespace prefix.
+[FAIL] createElementNS test in XML document: "",":foo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided (':foo') has an empty namespace prefix.
+[FAIL] createElementNS test in XHTML document: "",":foo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided (':foo') has an empty namespace prefix.
+[FAIL] createElementNS test in HTML document: undefined,":foo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided (':foo') has an empty namespace prefix.
+[FAIL] createElementNS test in XML document: undefined,":foo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided (':foo') has an empty namespace prefix.
+[FAIL] createElementNS test in XHTML document: undefined,":foo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided (':foo') has an empty namespace prefix.
+[FAIL] createElementNS test in HTML document: undefined,"f::oo","NAMESPACE_ERR"
+  assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "InvalidCharacterError: Failed to execute 'createElementNS' on 'Document': The qualified name provided ('f::oo') contains multiple colons." that is not a DOMException NAMESPACE_ERR: property "code" is equal to 5, expected 14
+[FAIL] createElementNS test in XML document: undefined,"f::oo","NAMESPACE_ERR"
+  assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "InvalidCharacterError: Failed to execute 'createElementNS' on 'Document': The qualified name provided ('f::oo') contains multiple colons." that is not a DOMException NAMESPACE_ERR: property "code" is equal to 5, expected 14
+[FAIL] createElementNS test in XHTML document: undefined,"f::oo","NAMESPACE_ERR"
+  assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "InvalidCharacterError: Failed to execute 'createElementNS' on 'Document': The qualified name provided ('f::oo') contains multiple colons." that is not a DOMException NAMESPACE_ERR: property "code" is equal to 5, expected 14
+[FAIL] createElementNS test in HTML document: "http://example.com/","fo<o",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('fo<o') contains the invalid character '<'.
+[FAIL] createElementNS test in XML document: "http://example.com/","fo<o",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('fo<o') contains the invalid character '<'.
+[FAIL] createElementNS test in XHTML document: "http://example.com/","fo<o",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('fo<o') contains the invalid character '<'.
+[FAIL] createElementNS test in HTML document: "http://example.com/",":foo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided (':foo') has an empty namespace prefix.
+[FAIL] createElementNS test in XML document: "http://example.com/",":foo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided (':foo') has an empty namespace prefix.
+[FAIL] createElementNS test in XHTML document: "http://example.com/",":foo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided (':foo') has an empty namespace prefix.
+[FAIL] createElementNS test in HTML document: "http://example.com/","f:o:o",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('f:o:o') contains multiple colons.
+[FAIL] createElementNS test in XML document: "http://example.com/","f:o:o",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('f:o:o') contains multiple colons.
+[FAIL] createElementNS test in XHTML document: "http://example.com/","f:o:o",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('f:o:o') contains multiple colons.
+[FAIL] createElementNS test in HTML document: "http://example.com/","f::oo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('f::oo') contains multiple colons.
+[FAIL] createElementNS test in XML document: "http://example.com/","f::oo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('f::oo') contains multiple colons.
+[FAIL] createElementNS test in XHTML document: "http://example.com/","f::oo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('f::oo') contains multiple colons.
+[FAIL] createElementNS test in HTML document: "http://example.com/","0:a",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('0:a') contains the invalid name-start character '0'.
+[FAIL] createElementNS test in XML document: "http://example.com/","0:a",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('0:a') contains the invalid name-start character '0'.
+[FAIL] createElementNS test in XHTML document: "http://example.com/","0:a",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('0:a') contains the invalid name-start character '0'.
+[FAIL] createElementNS test in HTML document: "http://example.com/","a:ெ",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('a:ெ') contains the invalid name-start character 'ெ'.
+[FAIL] createElementNS test in XML document: "http://example.com/","a:ெ",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('a:ெ') contains the invalid name-start character 'ெ'.
+[FAIL] createElementNS test in XHTML document: "http://example.com/","a:ெ",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('a:ெ') contains the invalid name-start character 'ெ'.
+[FAIL] createElementNS test in HTML document: "http://example.com/","a:;",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('a:;') contains the invalid name-start character ';'.
+[FAIL] createElementNS test in XML document: "http://example.com/","a:;",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('a:;') contains the invalid name-start character ';'.
+[FAIL] createElementNS test in XHTML document: "http://example.com/","a:;",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('a:;') contains the invalid name-start character ';'.
+[FAIL] createElementNS test in HTML document: "http://example.com/","a:̀",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('a:̀') contains the invalid name-start character '̀'.
+[FAIL] createElementNS test in XML document: "http://example.com/","a:̀",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('a:̀') contains the invalid name-start character '̀'.
+[FAIL] createElementNS test in XHTML document: "http://example.com/","a:̀",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('a:̀') contains the invalid name-start character '̀'.
+[FAIL] createElementNS test in HTML document: "http://example.com/","ெ:a",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('ெ:a') contains the invalid name-start character 'ெ'.
+[FAIL] createElementNS test in XML document: "http://example.com/","ெ:a",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('ெ:a') contains the invalid name-start character 'ெ'.
+[FAIL] createElementNS test in XHTML document: "http://example.com/","ெ:a",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('ெ:a') contains the invalid name-start character 'ெ'.
+[FAIL] createElementNS test in HTML document: "http://example.com/","̀:a",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('̀:a') contains the invalid name-start character '̀'.
+[FAIL] createElementNS test in XML document: "http://example.com/","̀:a",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('̀:a') contains the invalid name-start character '̀'.
+[FAIL] createElementNS test in XHTML document: "http://example.com/","̀:a",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('̀:a') contains the invalid name-start character '̀'.
+[FAIL] createElementNS test in HTML document: "http://example.com/",";:a",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided (';:a') contains the invalid name-start character ';'.
+[FAIL] createElementNS test in XML document: "http://example.com/",";:a",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided (';:a') contains the invalid name-start character ';'.
+[FAIL] createElementNS test in XHTML document: "http://example.com/",";:a",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided (';:a') contains the invalid name-start character ';'.
+[FAIL] createElementNS test in HTML document: "http://example.com/","prefix::local",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('prefix::local') contains multiple colons.
+[FAIL] createElementNS test in XML document: "http://example.com/","prefix::local",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('prefix::local') contains multiple colons.
+[FAIL] createElementNS test in XHTML document: "http://example.com/","prefix::local",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided ('prefix::local') contains multiple colons.
+[FAIL] createElementNS test in HTML document: "/",":foo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided (':foo') has an empty namespace prefix.
+[FAIL] createElementNS test in XML document: "/",":foo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided (':foo') has an empty namespace prefix.
+[FAIL] createElementNS test in XHTML document: "/",":foo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided (':foo') has an empty namespace prefix.
+[FAIL] createElementNS test in HTML document: "http://www.w3.org/XML/1998/namespace",":foo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided (':foo') has an empty namespace prefix.
+[FAIL] createElementNS test in XML document: "http://www.w3.org/XML/1998/namespace",":foo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided (':foo') has an empty namespace prefix.
+[FAIL] createElementNS test in XHTML document: "http://www.w3.org/XML/1998/namespace",":foo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided (':foo') has an empty namespace prefix.
+[FAIL] createElementNS test in HTML document: "http://www.w3.org/2000/xmlns/",":foo","NAMESPACE_ERR"
+  assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "InvalidCharacterError: Failed to execute 'createElementNS' on 'Document': The qualified name provided (':foo') has an empty namespace prefix." that is not a DOMException NAMESPACE_ERR: property "code" is equal to 5, expected 14
+[FAIL] createElementNS test in XML document: "http://www.w3.org/2000/xmlns/",":foo","NAMESPACE_ERR"
+  assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "InvalidCharacterError: Failed to execute 'createElementNS' on 'Document': The qualified name provided (':foo') has an empty namespace prefix." that is not a DOMException NAMESPACE_ERR: property "code" is equal to 5, expected 14
+[FAIL] createElementNS test in XHTML document: "http://www.w3.org/2000/xmlns/",":foo","NAMESPACE_ERR"
+  assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "InvalidCharacterError: Failed to execute 'createElementNS' on 'Document': The qualified name provided (':foo') has an empty namespace prefix." that is not a DOMException NAMESPACE_ERR: property "code" is equal to 5, expected 14
+[FAIL] createElementNS test in HTML document: "foo:",":foo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided (':foo') has an empty namespace prefix.
+[FAIL] createElementNS test in XML document: "foo:",":foo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided (':foo') has an empty namespace prefix.
+[FAIL] createElementNS test in XHTML document: "foo:",":foo",null
+  Failed to execute 'createElementNS' on 'Document': The qualified name provided (':foo') has an empty namespace prefix.
+Harness: the test ran to completion.
+

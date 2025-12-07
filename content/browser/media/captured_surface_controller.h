@@ -14,11 +14,12 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_media_capture_id.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 namespace content {
+
+class WebContents;
 
 // Encapsulates the permission state and logic associated with the Captured
 // Surface Control API. Objects of this class live on the IO thread.
@@ -57,13 +58,20 @@ class CONTENT_EXPORT CapturedSurfaceController {
   virtual void UpdateCaptureTarget(WebContentsMediaCaptureId captured_wc_id);
 
   // Produce a wheel event on the captured surface.
+  //
+  // * `action` represents the wheel event that should be forwarded to the
+  //   captured surface.
+  // * `reply_callback` reports success/failure back to the caller.
   virtual void SendWheel(
       blink::mojom::CapturedWheelActionPtr action,
       base::OnceCallback<void(CapturedSurfaceControlResult)> reply_callback);
 
-  // Set the zoom level of the captured tab.
-  virtual void SetZoomLevel(
-      int zoom_level,
+  // Updates the zoom level of the captured tab.
+  virtual void UpdateZoomLevel(
+      blink::mojom::ZoomLevelAction action,
+      base::OnceCallback<void(CapturedSurfaceControlResult)> reply_callback);
+
+  virtual void RequestPermission(
       base::OnceCallback<void(CapturedSurfaceControlResult)> reply_callback);
 
   struct CapturedSurfaceInfo final {
@@ -86,8 +94,9 @@ class CONTENT_EXPORT CapturedSurfaceController {
   };
 
  private:
-  using PermissionResult =
-      CapturedSurfaceControlPermissionManager::PermissionResult;
+  using CapturedSurfaceControlPermissionStatus =
+      CapturedSurfaceControlPermissionManager::
+          CapturedSurfaceControlPermissionStatus;
 
   void OnZoomLevelChange(int subscription_version, int zoom_level);
 
@@ -153,7 +162,6 @@ class CONTENT_EXPORT CapturedSurfaceController {
       zoom_level_subscription_;
   int subscription_version_ = 0;
 
-  std::optional<int> current_zoom_level_;
   const base::RepeatingCallback<void(int)> on_zoom_level_change_callback_;
 
   base::WeakPtrFactory<CapturedSurfaceController> weak_factory_{this};

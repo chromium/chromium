@@ -5,30 +5,34 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/values_test_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
-#include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
+#include "chrome/browser/extensions/api/developer_private/developer_private_functions.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
+#include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/service_worker_test_helpers.h"
 #include "extensions/browser/api_test_utils.h"
-#include "extensions/browser/app_window/app_window.h"
-#include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/offscreen_document_host.h"
-#include "extensions/browser/process_manager.h"
+#include "extensions/buildflags/buildflags.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/test/result_catcher.h"
@@ -36,8 +40,20 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+#include "extensions/browser/app_window/app_window.h"
+#include "extensions/browser/app_window/app_window_registry.h"
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
+
+// TODO(crbug.com/439447971): Enable on desktop android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/ui/browser.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/dialog_delegate.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -64,6 +80,7 @@ class DeveloperPrivateApiTest : public ExtensionApiTest {
   }
 };
 
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
 // Tests opening the developer tools for an app window.
 IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectAppWindowView) {
   base::FilePath dir;
@@ -107,6 +124,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectAppWindowView) {
   EXPECT_TRUE(DevToolsWindow::GetInstanceForInspectedWebContents(
       (*app_windows.begin())->web_contents()));
 }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
 IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectEmbeddedOptionsPage) {
   base::FilePath dir;
@@ -118,9 +136,19 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectEmbeddedOptionsPage) {
   ASSERT_TRUE(extension);
 
   // Open the embedded options page.
-  ASSERT_TRUE(ExtensionTabUtil::OpenOptionsPage(extension, browser()));
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(ExtensionTabUtil::OpenOptionsPageFromWebContents(extension,
+                                                               web_contents));
   WaitForExtensionNotIdle(extension->id());
 
+  // On Android, the option page will be opened in a new tab as the guest view
+  // is not enabled on Android yet.
+#if BUILDFLAG(IS_ANDROID)
+  web_contents = chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_EQ("chrome-extension://" + extension->id() + "/popup.html",
+            web_contents->GetURL());
+#else
   // Get the info about the extension, including the inspectable views.
   auto info = GetExtensionInfo(*extension);
 
@@ -147,6 +175,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectEmbeddedOptionsPage) {
       content::WebContents::FromRenderFrameHost(render_frame_host);
   ASSERT_TRUE(wc);
   EXPECT_TRUE(DevToolsWindow::GetInstanceForInspectedWebContents(wc));
+#endif
 }
 
 // TODO(crbug.com/40273479): Test is flaky on MSan builders.
@@ -211,8 +240,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
   for (const scoped_refptr<content::DevToolsAgentHost>& host : targets) {
     if (host->GetType() == content::DevToolsAgentHost::kTypeServiceWorker &&
         host->GetURL() ==
-            extension->GetResourceURL(
-                BackgroundInfo::GetBackgroundServiceWorkerScript(extension))) {
+            BackgroundInfo::GetBackgroundServiceWorkerScriptURL(extension)) {
       EXPECT_FALSE(service_worker_host);
       service_worker_host = host;
     }
@@ -264,8 +292,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
   for (const scoped_refptr<content::DevToolsAgentHost>& host : targets) {
     if (host->GetType() == content::DevToolsAgentHost::kTypeServiceWorker &&
         host->GetURL() ==
-            extension->GetResourceURL(
-                BackgroundInfo::GetBackgroundServiceWorkerScript(extension))) {
+            BackgroundInfo::GetBackgroundServiceWorkerScriptURL(extension)) {
       EXPECT_FALSE(service_worker_host);
       service_worker_host = host;
     }
@@ -326,8 +353,9 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
   // Now open up an incognito browser window page and check the inspectable
   // views again. Waiting for the result catcher will wait for the incognito
   // service worker to have become active.
-  Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
-  ASSERT_TRUE(incognito_browser);
+  content::WebContents* const incognito_window =
+      PlatformOpenURLOffTheRecord(profile(), GURL("about:blank"));
+  ASSERT_TRUE(incognito_window);
   ASSERT_TRUE(result_catcher.GetNextResult());
   info = GetExtensionInfo(*extension);
   // The views should now have 2 entries, one for the main worker which will be
@@ -414,10 +442,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectOffscreenDocument) {
     offscreen_waiter.RestrictToType(mojom::ViewType::kOffscreenDocument);
     offscreen_document = std::make_unique<OffscreenDocumentHost>(
         *extension,
-        ProcessManager::Get(profile())
-            ->GetSiteInstanceForURL(offscreen_url)
-            .get(),
-        offscreen_url);
+        profile(), offscreen_url);
     offscreen_document->CreateRendererSoon();
     offscreen_waiter.WaitForHostCompletedFirstLoad();
   }
@@ -433,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectOffscreenDocument) {
   content::WebContents* offscreen_contents =
       offscreen_document->host_contents();
   EXPECT_EQ(offscreen_url.spec(), view.url);
-  EXPECT_EQ(offscreen_document->render_process_host()->GetID(),
+  EXPECT_EQ(offscreen_document->render_process_host()->GetDeprecatedID(),
             view.render_process_id);
   EXPECT_EQ(offscreen_contents->GetPrimaryMainFrame()->GetRoutingID(),
             view.render_view_id);
@@ -466,6 +491,8 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectOffscreenDocument) {
   DevToolsWindowTesting::CloseDevToolsWindowSync(dev_tools_window);
 }
 
+// TODO(crbug.com/439447971): Enable on desktop android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, UninstallMultipleExtensions) {
   // Load first extension.
   static constexpr char kManifest_0[] =
@@ -520,5 +547,151 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, UninstallMultipleExtensions) {
   EXPECT_FALSE(extension_registry()->GetExtensionById(
       extension_1_id, ExtensionRegistry::EVERYTHING));
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+class DeveloperPrivateApiWithMV2DeprecationApiTest
+    : public DeveloperPrivateApiTest,
+      public testing::WithParamInterface<MV2ExperimentStage> {
+ public:
+  DeveloperPrivateApiWithMV2DeprecationApiTest() {
+    experiment_stage_ = GetParam();
+
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    switch (experiment_stage_) {
+      case MV2ExperimentStage::kWarning:
+        disabled_features.push_back(
+            extensions_features::kExtensionManifestV2Disabled);
+        disabled_features.push_back(
+            extensions_features::kExtensionManifestV2Unsupported);
+        break;
+      case MV2ExperimentStage::kDisableWithReEnable:
+        enabled_features.push_back(
+            extensions_features::kExtensionManifestV2Disabled);
+        disabled_features.push_back(
+            extensions_features::kExtensionManifestV2Unsupported);
+        break;
+      case MV2ExperimentStage::kUnsupported:
+        enabled_features.push_back(
+            extensions_features::kExtensionManifestV2Unsupported);
+        disabled_features.push_back(
+            extensions_features::kExtensionManifestV2Disabled);
+    }
+
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  MV2ExperimentStage experiment_stage() const { return experiment_stage_; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  MV2ExperimentStage experiment_stage_;
+};
+
+// Manefiest Version 2 is not allowed in Android.
+#if !BUILDFLAG(IS_ANDROID)
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    DeveloperPrivateApiWithMV2DeprecationApiTest,
+    testing::Values(MV2ExperimentStage::kWarning,
+                    MV2ExperimentStage::kDisableWithReEnable,
+                    MV2ExperimentStage::kUnsupported),
+    [](const testing::TestParamInfo<MV2ExperimentStage>& info) {
+      switch (info.param) {
+        case MV2ExperimentStage::kWarning:
+          return "WarningExperiment";
+        case MV2ExperimentStage::kDisableWithReEnable:
+          return "DisableExperiment";
+        case MV2ExperimentStage::kUnsupported:
+          return "UnsupportedExperiment";
+      }
+    });
+
+// Tests that an extension's MV2 deprecation notice is marked as deprecated when
+// the function is called and by accepting the dialog, if necessary.
+// Note: we don't test cancelling the dialog since that's done extensively in
+// unit tests.
+IN_PROC_BROWSER_TEST_P(DeveloperPrivateApiWithMV2DeprecationApiTest,
+                       DismissMv2DeprecationNotice) {
+  // Load MV2 extension.
+  static constexpr char kManifest[] =
+      R"({
+           "name": "MV2 extension",
+           "manifest_version": 2,
+           "version": "0.1"
+         })";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Verify extension is affected by the MV2 deprecation and its notice hasn't
+  // been marked as acknowledged.
+  ManifestV2ExperimentManager* experiment_manager =
+      ManifestV2ExperimentManager::Get(profile());
+  EXPECT_TRUE(experiment_manager->IsExtensionAffected(*extension));
+  EXPECT_FALSE(experiment_manager->DidUserAcknowledgeNotice(extension->id()));
+
+  // Create the dismiss notice function.
+  auto dismiss_notice_function = base::MakeRefCounted<
+      api::DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction>();
+  std::string args = base::StringPrintf(R"(["%s"])", extension->id().c_str());
+
+  switch (experiment_stage()) {
+    case MV2ExperimentStage::kWarning:
+      api_test_utils::RunFunction(dismiss_notice_function.get(), args,
+                                  profile());
+
+      // Extension's notice should be marked as acknowledged.
+      EXPECT_TRUE(experiment_manager->IsExtensionAffected(*extension));
+      EXPECT_TRUE(
+          experiment_manager->DidUserAcknowledgeNotice(extension->id()));
+      break;
+
+    case MV2ExperimentStage::kDisableWithReEnable: {
+      // The function will trigger a dialog for this stage. Add a waiter for the
+      // dialog.
+      views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                           "Mv2DeprecationKeepDialog");
+      api_test_utils::SendResponseHelper response_helper(
+          dismiss_notice_function.get());
+
+      // Add a dispatcher to wait for the response since the function won't
+      // return till the dialog is accepted/canceled.
+      std::unique_ptr<ExtensionFunctionDispatcher> dispatcher(
+          new ExtensionFunctionDispatcher(profile()));
+      dismiss_notice_function->SetDispatcher(dispatcher->AsWeakPtr());
+      dismiss_notice_function->SetArgs(base::test::ParseJsonList(args));
+      dismiss_notice_function->RunWithValidation().Execute();
+
+      // Wait for the dialog and accept it.
+      auto* widget = waiter.WaitIfNeededAndGet();
+      widget->widget_delegate()->AsDialogDelegate()->AcceptDialog();
+      response_helper.WaitForResponse();
+
+      // Extension's notice should be marked as acknowledged.
+      EXPECT_TRUE(experiment_manager->IsExtensionAffected(*extension));
+      EXPECT_TRUE(
+          experiment_manager->DidUserAcknowledgeNotice(extension->id()));
+      break;
+    }
+
+    case MV2ExperimentStage::kUnsupported: {
+      std::string error = api_test_utils::RunFunctionAndReturnError(
+          dismiss_notice_function.get(), args, profile());
+      EXPECT_EQ(error, base::StringPrintf(
+                           "Cannot dismiss the MV2 deprecation notice for "
+                           "extension with ID '%s' on the unsupported stage.",
+                           extension->id().c_str()));
+
+      // Extension's notice should not be marked as acknowledged.
+      EXPECT_TRUE(experiment_manager->IsExtensionAffected(*extension));
+      EXPECT_FALSE(
+          experiment_manager->DidUserAcknowledgeNotice(extension->id()));
+      break;
+    }
+  }
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions

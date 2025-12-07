@@ -31,7 +31,7 @@ size_t GetFormatPlaneCount(DXGI_FORMAT format) {
     case DXGI_FORMAT_R16G16B16A16_FLOAT:
       return 1;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -58,6 +58,55 @@ const char* DxgiFormatToString(DXGI_FORMAT format) {
     default:
       return "UNKNOWN";
   }
+}
+
+DXGI_FORMAT VideoPixelFormatToDxgiFormat(VideoPixelFormat format) {
+  switch (format) {
+    case PIXEL_FORMAT_I420:
+      return DXGI_FORMAT_420_OPAQUE;
+    case PIXEL_FORMAT_NV12:
+      return DXGI_FORMAT_NV12;
+    case PIXEL_FORMAT_ARGB:
+      return DXGI_FORMAT_B8G8R8A8_UNORM;
+    case PIXEL_FORMAT_P010LE:
+      return DXGI_FORMAT_P010;
+    default:
+      return DXGI_FORMAT_UNKNOWN;
+  }
+}
+
+bool IsRec709(const gfx::ColorSpace& color_space) {
+  return color_space.GetPrimaryID() == gfx::ColorSpace::PrimaryID::BT709 &&
+         color_space.GetTransferID() == gfx::ColorSpace::TransferID::BT709 &&
+         color_space.GetMatrixID() == gfx::ColorSpace::MatrixID::BT709;
+}
+
+bool IsRec601(const gfx::ColorSpace& color_space) {
+  return color_space.GetPrimaryID() == gfx::ColorSpace::PrimaryID::SMPTE170M &&
+         color_space.GetTransferID() ==
+             gfx::ColorSpace::TransferID::SMPTE170M &&
+         color_space.GetMatrixID() == gfx::ColorSpace::MatrixID::SMPTE170M;
+}
+
+gfx::ColorSpace GetEncoderOutputColorSpaceFromInputColorSpace(
+    const gfx::ColorSpace& input_color_space) {
+  gfx::ColorSpace output_color_space = input_color_space;
+  if (input_color_space.GetMatrixID() == gfx::ColorSpace::MatrixID::RGB) {
+    if (input_color_space.GetPrimaryID() ==
+        gfx::ColorSpace::PrimaryID::SMPTE170M) {
+      output_color_space = input_color_space.GetWithMatrixAndRange(
+          gfx::ColorSpace::MatrixID::SMPTE170M, input_color_space.GetRangeID());
+    } else if (input_color_space.GetPrimaryID() ==
+               gfx::ColorSpace::PrimaryID::BT2020) {
+      output_color_space = input_color_space.GetWithMatrixAndRange(
+          gfx::ColorSpace::MatrixID::BT2020_NCL,
+          input_color_space.GetRangeID());
+    } else {
+      output_color_space = input_color_space.GetWithMatrixAndRange(
+          gfx::ColorSpace::MatrixID::BT709, input_color_space.GetRangeID());
+    }
+  }
+  return output_color_space;
 }
 
 }  // namespace media

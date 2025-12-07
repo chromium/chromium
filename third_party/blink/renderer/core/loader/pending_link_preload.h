@@ -38,7 +38,7 @@ class PendingLinkPreload final : public SingleModuleClient {
   class FinishObserver;
 
   // SingleModuleClient implementation
-  void NotifyModuleLoadFinished(ModuleScript*) override;
+  void NotifyModuleLoadFinished(ModuleScript*, v8::ModuleImportPhase) override;
 
   void NotifyFinished();
 

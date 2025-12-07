@@ -10,25 +10,42 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/shared_memory_mapping.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/optional_ref.h"
 #include "cc/base/completion_event.h"
 #include "cc/base/delayed_unique_notifier.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/input/browser_controls_state.h"
+#include "cc/paint/draw_image.h"
 #include "cc/scheduler/scheduler.h"
-#include "cc/trees/layer_tree_host_impl.h"
+#include "cc/trees/layer_tree_host_impl_client.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
+
+class GURL;
 
 namespace viz {
-struct FrameTimingDetails;
+class FrameTimingDetails;
+class LocalSurfaceId;
 }
 
 namespace cc {
+
+struct CommitState;
+struct CommitTimestamps;
+struct BrowserControlsOffsetTagModifications;
+class LayerTreeFrameSink;
 class LayerTreeHost;
+class LayerTreeHostImpl;
+class LayerTreeMutator;
+class LayerTreeSettings;
+class PaintWorkletLayerPainter;
 class ProxyMain;
 class RenderFrameMetadataObserver;
 class ScopedCommitCompletionEvent;
+class SwapPromise;
+class TaskRunnerProvider;
+struct ThreadUnsafeCommitState;
 
 // This class aggregates all the interactions that the main side of the
 // compositor needs to have with the impl side.
@@ -40,7 +57,6 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
             LayerTreeHost* layer_tree_host,
             int id,
             const LayerTreeSettings* settings,
-            RenderingStatsInstrumentation* rendering_stats_instrumentation,
             TaskRunnerProvider* task_runner_provider);
   ProxyImpl(const ProxyImpl&) = delete;
   ~ProxyImpl() override;
@@ -51,7 +67,8 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
       BrowserControlsState constraints,
       BrowserControlsState current,
       bool animate,
-      base::optional_ref<const BrowserControlsOffsetTagsInfo> offset_tags_info);
+      base::optional_ref<const BrowserControlsOffsetTagModifications>
+          offset_tag_modifications);
   void InitializeLayerTreeFrameSinkOnImpl(
       LayerTreeFrameSink* layer_tree_frame_sink,
       base::WeakPtr<ProxyMain> proxy_main_frame_sink_bound_weak_ptr);
@@ -61,7 +78,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   void SetDeferBeginMainFrameFromMain(bool defer_begin_main_frame);
   void SetPauseRendering(bool pause_rendering);
   void SetNeedsRedrawOnImpl(const gfx::Rect& damage_rect);
-  void SetNeedsCommitOnImpl();
+  void SetNeedsCommitOnImpl(bool urgent);
   void SetTargetLocalSurfaceIdOnImpl(
       const viz::LocalSurfaceId& target_local_surface_id);
   void BeginMainFrameAbortedOnImpl(
@@ -77,15 +94,15 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
                                  std::unique_ptr<CommitState> commit_state,
                                  const ThreadUnsafeCommitState* unsafe_state,
                                  base::TimeTicks main_thread_start_time,
-                                 const viz::BeginFrameArgs& commit_args,
                                  bool scroll_and_viewport_changes_synced,
                                  CommitTimestamps* commit_timestamps,
                                  bool commit_timeout = false);
   void QueueImageDecodeOnImpl(int request_id,
-                              std::unique_ptr<PaintImage> image);
+                              std::unique_ptr<DrawImage> image,
+                              bool speculative);
   void SetSourceURL(ukm::SourceId source_id, const GURL& url);
-  void SetUkmSmoothnessDestination(
-      base::WritableSharedMemoryMapping ukm_smoothness_data);
+  void SetUkmDroppedFramesDestination(
+      base::WritableSharedMemoryMapping ukm_dropped_frames_data);
   void SetRenderFrameObserver(
       std::unique_ptr<RenderFrameMetadataObserver> observer);
   void DetachInputDelegateAndRenderFrameObserver(
@@ -101,6 +118,9 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
       const {
     return smoothness_priority_expiration_notifier_;
   }
+  void SetShouldThrottleFrameRate(bool flag);
+
+  void NotifyNewLocalSurfaceIdExpectedWhilePaused();
 
  private:
   // LayerTreeHostImplClient implementation
@@ -113,12 +133,12 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   void NotifyReadyToDraw() override;
   // Please call these 2 functions through
   // LayerTreeHostImpl's SetNeedsRedraw() and SetNeedsOneBeginImplFrame().
-  void SetNeedsRedrawOnImplThread(RedrawReason reason) override;
+  void SetNeedsRedrawOnImplThread() override;
   void SetNeedsOneBeginImplFrameOnImplThread() override;
-  void SetNeedsUpdateDisplayTreeOnImplThread() override;
   void SetNeedsPrepareTilesOnImplThread() override;
-  void SetNeedsCommitOnImplThread() override;
+  void SetNeedsCommitOnImplThread(bool urgent) override;
   void SetVideoNeedsBeginFrames(bool needs_begin_frames) override;
+  void DidChangeBeginFrameSourcePaused(bool paused) override;
   void SetDeferBeginMainFrameFromImpl(bool defer_begin_main_frame) override;
   bool IsInsideDraw() override;
   void RenewTreePriority() override;
@@ -129,11 +149,14 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   void DidCompletePageScaleAnimationOnImplThread() override;
   void OnDrawForLayerTreeFrameSink(bool resourceless_software_draw,
                                    bool skip_draw) override;
-  void SetNeedsImplSideInvalidation(bool needs_first_draw_on_activation,
-                                    RedrawReason reason) override;
+  void SetNeedsImplSideInvalidation(
+      bool needs_first_draw_on_activation) override;
   void NotifyImageDecodeRequestFinished(int request_id,
+                                        bool speculative,
                                         bool decode_succeeded) override;
-  void NotifyTransitionRequestFinished(uint32_t sequence_id) override;
+  void NotifyTransitionRequestFinished(
+      uint32_t sequence_id,
+      const viz::ViewTransitionElementResourceRects&) override;
   void DidPresentCompositorFrameOnImplThread(
       uint32_t frame_token,
       PresentationTimeCallbackBuffer::PendingCallbacks activated,
@@ -143,7 +166,8 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
       ElementListType element_list_type) override;
   void NotifyPaintWorkletStateChange(
       Scheduler::PaintWorkletState state) override;
-  void NotifyThroughputTrackerResults(CustomTrackerResults results) override;
+  void NotifyCompositorMetricsTrackerResults(
+      CustomTrackerResults results) override;
   void DidObserveFirstScrollDelay(
       int source_frame_number,
       base::TimeDelta first_scroll_delay,
@@ -165,7 +189,6 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
       const viz::BeginFrameArgs& args) override;
   DrawResult ScheduledActionDrawIfPossible() override;
   DrawResult ScheduledActionDrawForced() override;
-  void ScheduledActionUpdateDisplayTree() override;
   void ScheduledActionCommit() override;
   void ScheduledActionPostCommit() override;
   void ScheduledActionActivateSyncTree() override;

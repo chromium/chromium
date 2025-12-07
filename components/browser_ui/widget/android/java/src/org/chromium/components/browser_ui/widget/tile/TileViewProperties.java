@@ -7,12 +7,14 @@ import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** TileView properties. */
+@NullMarked
 public final class TileViewProperties {
     /** The title of the tile. */
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
@@ -33,15 +35,19 @@ public final class TileViewProperties {
             new WritableBooleanPropertyKey();
 
     /**
-     * The rounding radius of the presented icon.
-     * Applied only if the small icon is used. Large icons are always rounded to the view size
-     * (circular)
+     * The rounding radius of the presented icon. Applied only if the small icon is used. Large
+     * icons are always rounded to the view size (circular)
      */
     public static final WritableIntPropertyKey SMALL_ICON_ROUNDING_RADIUS =
             new WritableIntPropertyKey();
 
-    /** Badge visibility. */
-    public static final WritableBooleanPropertyKey BADGE_VISIBLE = new WritableBooleanPropertyKey();
+    /** Offline badge visibility. */
+    public static final WritableBooleanPropertyKey OFFLINE_BADGE_VISIBLE =
+            new WritableBooleanPropertyKey();
+
+    /** Pinned shortcut badge visibility. */
+    public static final WritableBooleanPropertyKey PINNED_SHORTCUT_BADGE_VISIBLE =
+            new WritableBooleanPropertyKey();
 
     /** Content description used by Accessibility to announce selection. */
     public static final WritableObjectPropertyKey<CharSequence> CONTENT_DESCRIPTION =
@@ -69,7 +75,8 @@ public final class TileViewProperties {
                 ICON_TINT,
                 TITLE,
                 TITLE_LINES,
-                BADGE_VISIBLE,
+                OFFLINE_BADGE_VISIBLE,
+                PINNED_SHORTCUT_BADGE_VISIBLE,
                 SHOW_LARGE_ICON,
                 SMALL_ICON_ROUNDING_RADIUS,
                 CONTENT_DESCRIPTION,

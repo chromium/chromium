@@ -14,6 +14,8 @@ PreRedirectionURLObserver::PreRedirectionURLObserver(
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<PreRedirectionURLObserver>(*web_contents) {}
 
+PreRedirectionURLObserver::~PreRedirectionURLObserver() = default;
+
 void PreRedirectionURLObserver::DidFinishNavigation(
     content::NavigationHandle* handle) {
   DCHECK(handle);

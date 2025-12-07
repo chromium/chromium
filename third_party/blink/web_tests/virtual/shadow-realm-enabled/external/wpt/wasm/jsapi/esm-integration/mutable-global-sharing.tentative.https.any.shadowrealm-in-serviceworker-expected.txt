@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = TypeError: no access\nTypeError: no access\n    at new Promise (<anonymous>)\n    at https://web-platform.test:8444/resources/testharness-shadowrealm-outer.js:17:10\n    at https://web-platform.test:8444/wasm/jsapi/esm-integration/mutable-global-sharing.tentative.any.serviceworker-shadowrealm.js:10:11
+Harness: the test ran to completion.
+

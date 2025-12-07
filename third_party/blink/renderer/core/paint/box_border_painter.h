@@ -10,13 +10,14 @@
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/style/border_edge.h"
+#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 
 namespace blink {
 
 class ComputedStyle;
-class Path;
+class StyledStrokeData;
 
 typedef unsigned BorderEdgeFlags;
 
@@ -48,6 +49,15 @@ class BoxBorderPainter {
                           Color color,
                           EBorderStyle style,
                           const AutoDarkMode& auto_dark_mode);
+
+  // DrawLineWithStyle() only operates on horizontal or vertical lines and uses
+  // the current stroke color. For dotted or dashed stroke, the line need to be
+  // top-to-down or left-to-right to get correct interval of dots/dashes.
+  static void DrawLineWithStyle(GraphicsContext& context,
+                                const gfx::Point&,
+                                const gfx::Point&,
+                                const StyledStrokeData&,
+                                const AutoDarkMode& auto_dark_mode);
 
  private:
   // For PaintBorder().
@@ -81,41 +91,40 @@ class BoxBorderPainter {
                  BoxSide,
                  float alpha,
                  BorderEdgeFlags) const;
+
+  enum SideType {
+    kStraight,
+    kCurved,
+  };
   void PaintOneBorderSide(const gfx::Rect& side_rect,
                           BoxSide,
                           BoxSide adjacent_side1,
                           BoxSide adjacent_side2,
-                          const Path*,
+                          SideType side_type,
                           Color,
                           BorderEdgeFlags) const;
   bool PaintBorderFastPath() const;
   void DrawDoubleBorder() const;
 
-  void DrawBoxSideFromPath(const Path&,
-                           int thickness,
-                           int draw_thickness,
-                           BoxSide,
-                           Color,
-                           EBorderStyle) const;
-  void DrawDashedDottedBoxSideFromPath(int thickness,
-                                       int draw_thickness,
-                                       Color,
-                                       EBorderStyle) const;
-  void DrawWideDottedBoxSideFromPath(const Path&, int thickness) const;
-  void DrawDoubleBoxSideFromPath(const Path&,
-                                 int thickness,
-                                 int draw_thickness,
-                                 BoxSide,
-                                 Color) const;
-  void DrawRidgeGrooveBoxSideFromPath(const Path&,
-                                      int thickness,
-                                      int draw_thickness,
-                                      BoxSide,
-                                      Color,
-                                      EBorderStyle) const;
+  void DrawCurvedBoxSide(int thickness,
+                         int draw_thickness,
+                         BoxSide,
+                         Color,
+                         EBorderStyle) const;
+  void DrawCurvedDashedDottedBoxSide(int thickness,
+                                     int draw_thickness,
+                                     Color,
+                                     EBorderStyle) const;
+  void DrawCurvedDoubleBoxSide(Color) const;
+  void DrawCurvedRidgeGrooveBoxSide(BoxSide, Color, EBorderStyle) const;
   void ClipBorderSidePolygon(BoxSide, MiterType miter1, MiterType miter2) const;
+  void ClipBorderSidePolygonCloseToEdges(BoxSide,
+                                         MiterType miter1,
+                                         MiterType miter2) const;
   gfx::Rect CalculateSideRectIncludingInner(BoxSide) const;
 
+  void ClipContouredRect(const ContouredRect&) const;
+  void ClipOutContouredRect(const ContouredRect&) const;
   MiterType ComputeMiter(BoxSide, BoxSide adjacent_side, BorderEdgeFlags) const;
   static bool MitersRequireClipping(MiterType miter1,
                                     MiterType miter2,
@@ -147,8 +156,8 @@ class BoxBorderPainter {
   const PhysicalBoxSides sides_to_include_;
 
   // computed attributes
-  FloatRoundedRect outer_;
-  FloatRoundedRect inner_;
+  ContouredRect outer_;
+  ContouredRect inner_;
   BorderEdgeArray edges_;
 
   unsigned visible_edge_count_;

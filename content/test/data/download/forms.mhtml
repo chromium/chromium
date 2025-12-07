@@ -1,0 +1,17 @@
+From: Chromium
+Subject: Forms
+Date: Mon, Nov 21 2011 10:59:06 GMT-0800
+MIME-Version: 1.0
+Content-Type: multipart/related;
+	boundary="----=PART";
+	type="text/html"
+
+------=PART
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Location: http://www.example.com
+
+<html>
+<input></input>
+</html>
+------=PART--

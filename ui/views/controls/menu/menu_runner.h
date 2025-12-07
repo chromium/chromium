@@ -13,9 +13,9 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/views_export.h"
 
@@ -115,6 +115,13 @@ class VIEWS_EXPORT MenuRunner {
 
     // Indicates that the menu should show mnemonics.
     SHOULD_SHOW_MNEMONICS = 1 << 10,
+
+    // Indicates that the menu was invoked from the keyboard.
+    INVOKED_FROM_KEYBOARD = 1 << 11,
+
+    // The menu is a context menu (not necessarily nested) for a menu item, for
+    // example right click on bookmark drop-down.
+    MENU_ITEM_CONTEXT_MENU = 1 << 12,
   };
 
   // Creates a new MenuRunner, which may use a native menu if available.
@@ -155,7 +162,7 @@ class VIEWS_EXPORT MenuRunner {
                  MenuButtonController* button_controller,
                  const gfx::Rect& bounds,
                  MenuAnchorPosition anchor,
-                 ui::MenuSourceType source_type,
+                 ui::mojom::MenuSourceType source_type,
                  gfx::NativeView native_view_for_gestures = gfx::NativeView(),
                  std::optional<gfx::RoundedCornersF> corners = std::nullopt,
                  std::optional<std::string> show_menu_host_duration_histogram =

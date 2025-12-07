@@ -7,20 +7,31 @@
 
 #include <stddef.h>
 
-#include <memory>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "extensions/browser/blocklist_state.h"
+#include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_prefs_observer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace content {
 class BrowserContext;
+}
+
+namespace extensions {
+class CommandService;
 }
 
 namespace gfx {
@@ -28,10 +39,8 @@ class Image;
 }
 
 namespace extensions {
-class CommandService;
 class ErrorConsole;
 class Extension;
-class ExtensionActionAPI;
 class ExtensionPrefs;
 class ExtensionSystem;
 class ImageLoader;
@@ -39,7 +48,7 @@ class WarningService;
 
 // Generates the developerPrivate api's specification for ExtensionInfo.
 // This class is designed to only have one generation running at a time!
-class ExtensionInfoGenerator {
+class ExtensionInfoGenerator : public ProfileObserver {
  public:
   using ExtensionInfoList = std::vector<api::developer_private::ExtensionInfo>;
 
@@ -50,11 +59,17 @@ class ExtensionInfoGenerator {
   ExtensionInfoGenerator(const ExtensionInfoGenerator&) = delete;
   ExtensionInfoGenerator& operator=(const ExtensionInfoGenerator&) = delete;
 
-  ~ExtensionInfoGenerator();
+  ~ExtensionInfoGenerator() override;
+
+  // ProfileObserver implementation.
+  // There's a chance that an instance of this class is owned by a task, which
+  // means it could outlive some of the systems cached that would be destroyed
+  // when the profile associated with the `browser_context_` is destroyed.
+  void OnProfileWillBeDestroyed(Profile* profile) override;
 
   // Creates and asynchronously returns an ExtensionInfo for the given
-  // |extension_id|, if the extension can be found.
-  // If the extension cannot be found, an empty vector is passed to |callback|.
+  // `extension_id`, if the extension can be found.
+  // If the extension cannot be found, an empty vector is passed to `callback`.
   void CreateExtensionInfo(const ExtensionId& id,
                            ExtensionInfosCallback callback);
 
@@ -70,21 +85,15 @@ class ExtensionInfoGenerator {
       const URLPatternSet& patterns);
 
  private:
-  // Creates an ExtensionInfo for the given |extension| and |state|, and
-  // asynchronously adds it to the |list|.
-  void CreateExtensionInfoHelper(const Extension& extension,
-                                 api::developer_private::ExtensionState state);
+  // Fills an ExtensionInfo for the given `extension` and `state`, and
+  // asynchronously adds it to the `list`.
+  void FillExtensionInfo(const Extension& extension,
+                         api::developer_private::ExtensionState state,
+                         api::developer_private::ExtensionInfo info);
 
   // Callback for the asynchronous image loading.
-  void OnImageLoaded(
-      std::unique_ptr<api::developer_private::ExtensionInfo> info,
-      const gfx::Image& image);
-
-  // Returns the icon url for the default icon to use.
-  std::string GetDefaultIconUrl(const std::string& name);
-
-  // Returns an icon url from the given image.
-  std::string GetIconUrlFromImage(const gfx::Image& image);
+  void OnImageLoaded(api::developer_private::ExtensionInfo info,
+                     const gfx::Image& image);
 
   // Construct the needed information for the Extension Safety Check and
   // populate the relevant `extension_info` fields.
@@ -100,19 +109,20 @@ class ExtensionInfoGenerator {
   raw_ptr<CommandService> command_service_;
   raw_ptr<ExtensionSystem> extension_system_;
   raw_ptr<ExtensionPrefs> extension_prefs_;
-  raw_ptr<ExtensionActionAPI> extension_action_api_;
   raw_ptr<WarningService> warning_service_;
   raw_ptr<ErrorConsole> error_console_;
   raw_ptr<ImageLoader> image_loader_;
 
   // The number of pending image loads.
-  size_t pending_image_loads_;
+  size_t pending_image_loads_ = 0;
 
   // The list of extension infos that have been generated.
   ExtensionInfoList list_;
 
   // The callback to run once all infos have been created.
   ExtensionInfosCallback callback_;
+
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
   base::WeakPtrFactory<ExtensionInfoGenerator> weak_factory_{this};
 

@@ -26,7 +26,7 @@ class ControllerDelegate : public DataTypeControllerDelegate {
       : type_(type), dump_stack_(dump_stack) {
     DCHECK(store_factory);
 
-    // The |syncable_service| can be null in some cases (e.g. when the
+    // The `syncable_service` can be null in some cases (e.g. when the
     // underlying service failed to initialize), and in tests.
     if (syncable_service) {
       bridge_ = std::make_unique<SyncableServiceBasedBridge>(
@@ -58,12 +58,13 @@ class ControllerDelegate : public DataTypeControllerDelegate {
     GetBridgeDelegate()->OnSyncStopping(metadata_fate);
   }
 
-  void HasUnsyncedData(base::OnceCallback<void(bool)> callback) override {
+  void GetUnsyncedDataCount(
+      base::OnceCallback<void(size_t)> callback) override {
     if (!bridge_) {
-      std::move(callback).Run(false);
+      std::move(callback).Run(/*count=*/0);
       return;
     }
-    GetBridgeDelegate()->HasUnsyncedData(std::move(callback));
+    GetBridgeDelegate()->GetUnsyncedDataCount(std::move(callback));
   }
 
   void GetAllNodesForDebugging(AllNodesCallback callback) override {
@@ -123,8 +124,9 @@ SyncableServiceBasedDataTypeController::SyncableServiceBasedDataTypeController(
     OnceDataTypeStoreFactory store_factory,
     base::WeakPtr<SyncableService> syncable_service,
     const base::RepeatingClosure& dump_stack,
-    DelegateMode delegate_mode)
-    : DataTypeController(type),
+    DelegateMode delegate_mode,
+    std::unique_ptr<DataTypeLocalDataBatchUploader> batch_uploader)
+    : DataTypeController(type, std::move(batch_uploader)),
       delegate_(std::make_unique<ControllerDelegate>(type,
                                                      std::move(store_factory),
                                                      syncable_service,
@@ -145,10 +147,15 @@ SyncableServiceBasedDataTypeController::SyncableServiceBasedDataTypeController(
   }
 
   InitDataTypeController(std::move(full_sync_delegate),
-                          std::move(transport_delegate));
+                         std::move(transport_delegate));
 }
 
 SyncableServiceBasedDataTypeController::
-    ~SyncableServiceBasedDataTypeController() = default;
+    ~SyncableServiceBasedDataTypeController() {
+  // The constructor passed a forwarding controller delegate referencing
+  // `delegate_` to the base class. They are stored by the base class and need
+  // to be destroyed before `delegate_` to avoid dangling pointers.
+  ClearDelegateMap();
+}
 
 }  // namespace syncer

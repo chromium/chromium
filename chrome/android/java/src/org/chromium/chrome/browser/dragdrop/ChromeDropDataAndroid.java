@@ -4,51 +4,37 @@
 
 package org.chromium.chrome.browser.dragdrop;
 
-import org.chromium.chrome.browser.tab.Tab;
+import android.content.Context;
+
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.dragdrop.DropDataAndroid;
 
-/** */
-public class ChromeDropDataAndroid extends DropDataAndroid {
-    public final Tab tab;
-    public final boolean allowTabDragToCreateInstance;
+/** Chrome-specific drop data. */
+@NullMarked
+public abstract class ChromeDropDataAndroid extends DropDataAndroid {
+    public final boolean allowDragToCreateInstance;
+    public final int windowId;
 
     /** Not generated from java */
     ChromeDropDataAndroid(Builder builder) {
         super(null, null, null, null, null);
-        tab = builder.mTab;
-        allowTabDragToCreateInstance = builder.mAllowTabDragToCreateInstance;
+        allowDragToCreateInstance = builder.mAllowDragToCreateInstance;
+        windowId = builder.mWindowId;
     }
 
-    public boolean hasTab() {
-        return tab != null;
-    }
-
-    @Override
-    public boolean hasBrowserContent() {
-        return hasTab();
-    }
+    /** Returns true if the associated browser content is Incognito. */
+    public abstract boolean isIncognito();
 
     /** Build clip data text with tab info. */
-    public String buildTabClipDataText() {
-        if (hasTab()) {
-            return tab.getUrl().getSpec();
-        }
-        return null;
-    }
+    public abstract String buildTabClipDataText(Context context);
+
+    /** Get supported MimeTypes for the associated browser content. */
+    public abstract String[] getSupportedMimeTypes();
 
     /** Builder for @{@link ChromeDropDataAndroid} instance. */
-    public static class Builder {
-        private Tab mTab;
-        private boolean mAllowTabDragToCreateInstance;
-
-        /**
-         * @param tab to be set in clip data.
-         * @return {@link ChromeDropDataAndroid.Builder} instance.
-         */
-        public Builder withTab(Tab tab) {
-            mTab = tab;
-            return this;
-        }
+    public abstract static class Builder {
+        private boolean mAllowDragToCreateInstance;
+        private int mWindowId;
 
         /**
          * @param allowDragToCreateInstance Whether tab drag to create new instance should be
@@ -56,15 +42,22 @@ public class ChromeDropDataAndroid extends DropDataAndroid {
          * @return {@link ChromeDropDataAndroid.Builder} instance.
          */
         public Builder withAllowDragToCreateInstance(boolean allowDragToCreateInstance) {
-            mAllowTabDragToCreateInstance = allowDragToCreateInstance;
+            mAllowDragToCreateInstance = allowDragToCreateInstance;
+            return this;
+        }
+
+        /**
+         * @param windowId The ID of the window where drag starts.
+         * @return {@link ChromeDropDataAndroid.Builder} instance.
+         */
+        public Builder withWindowId(int windowId) {
+            mWindowId = windowId;
             return this;
         }
 
         /**
          * @return new @{@link ChromeDropDataAndroid} instance.
          */
-        public ChromeDropDataAndroid build() {
-            return new ChromeDropDataAndroid(this);
-        }
+        public abstract ChromeDropDataAndroid build();
     }
 }

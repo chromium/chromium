@@ -7,16 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/memory/weak_ptr.h"
-
 struct ContextualPanelItemConfiguration;
 
 // Consumer for the ContextualPanelEntrypointViewController.
 @protocol ContextualPanelEntrypointConsumer
 
 // Update the consumer with the image to be shown on the entrypoint badge.
-- (void)setEntrypointConfig:
-    (base::WeakPtr<ContextualPanelItemConfiguration>)config;
+- (void)setEntrypointConfig:(ContextualPanelItemConfiguration*)config;
 
 // Sets whether there are infobar badges currently being shown.
 - (void)setInfobarBadgesCurrentlyShown:(BOOL)infobarBadgesCurrentlyShown;
@@ -42,6 +39,9 @@ struct ContextualPanelItemConfiguration;
 // `colored` is YES, the entrypoint animates to blue, otherwise it animates back
 // to its default color.
 - (void)setEntrypointColored:(BOOL)colored;
+
+// Asks the consumer to update its accessibility status.
+- (void)updateAccessibilityStatus;
 
 @end
 

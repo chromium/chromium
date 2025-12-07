@@ -4,9 +4,12 @@
 
 #include "remoting/protocol/webrtc_audio_source_adapter.h"
 
+#include <algorithm>
 #include <utility>
+#include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
@@ -18,11 +21,27 @@
 
 namespace remoting::protocol {
 
+namespace {
+
 static const int kChannels = 2;
 static const int kBytesPerSample = 2;
 
 // Frame size expected by webrtc::AudioTrackSinkInterface.
 static constexpr base::TimeDelta kAudioFrameDuration = base::Milliseconds(10);
+
+// Notify all audio sinks about a new audio frame.
+void NotifyAudioSinks(
+    base::ObserverList<webrtc::AudioTrackSinkInterface>::Unchecked& audio_sinks,
+    base::span<const uint8_t> frame,
+    int sampling_rate,
+    size_t samples_per_frame) {
+  for (auto& observer : audio_sinks) {
+    observer.OnData(frame.data(), kBytesPerSample * 8, sampling_rate, kChannels,
+                    samples_per_frame);
+  }
+}
+
+}  // namespace
 
 class WebrtcAudioSourceAdapter::Core {
  public:
@@ -107,44 +126,43 @@ void WebrtcAudioSourceAdapter::Core::OnAudioPacket(
     partial_frame_.clear();
   }
 
-  size_t samples_per_frame = (kAudioFrameDuration * sampling_rate_).InSeconds();
-  size_t bytes_per_frame = kBytesPerSample * kChannels * samples_per_frame;
+  const size_t samples_per_frame =
+      (kAudioFrameDuration * sampling_rate_).InSeconds();
+  const size_t bytes_per_frame =
+      kBytesPerSample * kChannels * samples_per_frame;
 
-  const std::string& data = packet->data(0);
-
-  size_t position = 0;
+  base::span<const uint8_t> input_data = base::as_byte_span(packet->data(0));
 
   base::AutoLock lock(audio_sinks_lock_);
 
+  // Stage 1: Fill and send |partial_frame_|.
   if (!partial_frame_.empty()) {
-    size_t bytes_to_append =
-        std::min(bytes_per_frame - partial_frame_.size(), data.size());
-    position += bytes_to_append;
-    partial_frame_.insert(partial_frame_.end(), data.data(),
-                          data.data() + bytes_to_append);
-    if (partial_frame_.size() < bytes_per_frame) {
-      // Still don't have full frame.
-      return;
-    }
+    const size_t needed_bytes = bytes_per_frame - partial_frame_.size();
+    const size_t copy_bytes = std::min(needed_bytes, input_data.size());
 
-    // Here |partial_frame_| always contains a full frame.
-    DCHECK_EQ(partial_frame_.size(), bytes_per_frame);
+    partial_frame_.insert(partial_frame_.end(), input_data.begin(),
+                          input_data.begin() + copy_bytes);
+    input_data = input_data.subspan(copy_bytes);
 
-    for (auto& observer : audio_sinks_) {
-      observer.OnData(&partial_frame_.front(), kBytesPerSample * 8,
-                      sampling_rate_, kChannels, samples_per_frame);
+    if (partial_frame_.size() == bytes_per_frame) {
+      NotifyAudioSinks(audio_sinks_, base::span<const uint8_t>(partial_frame_),
+                       sampling_rate_, samples_per_frame);
+      partial_frame_.clear();
     }
   }
 
-  while (position + bytes_per_frame <= data.size()) {
-    for (auto& observer : audio_sinks_) {
-      observer.OnData(data.data() + position, kBytesPerSample * 8,
-                      sampling_rate_, kChannels, samples_per_frame);
-    }
-    position += bytes_per_frame;
+  // Stage 2: Processing of |full_frames|.
+  const size_t full_frames = input_data.size() / bytes_per_frame;
+  for (size_t i = 0; i < full_frames; ++i) {
+    const auto frame = input_data.subspan(i * bytes_per_frame, bytes_per_frame);
+    NotifyAudioSinks(audio_sinks_, frame, sampling_rate_, samples_per_frame);
   }
 
-  partial_frame_.assign(data.data() + position, data.data() + data.size());
+  // Stage 3: Save remaining data.
+  const size_t processed_bytes = full_frames * bytes_per_frame;
+  const auto remaining = input_data.subspan(processed_bytes);
+  partial_frame_.insert(partial_frame_.end(), remaining.begin(),
+                        remaining.end());
 }
 
 WebrtcAudioSourceAdapter::WebrtcAudioSourceAdapter(

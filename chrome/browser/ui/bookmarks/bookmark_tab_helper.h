@@ -17,7 +17,7 @@ class BookmarkTabHelperObserver;
 namespace bookmarks {
 class BookmarkModel;
 struct BookmarkNodeData;
-}
+}  // namespace bookmarks
 
 namespace content {
 class WebContents;
@@ -38,7 +38,7 @@ class BookmarkTabHelper
     virtual void OnDrop(const bookmarks::BookmarkNodeData& data) = 0;
 
    protected:
-    virtual ~BookmarkDrag() {}
+    virtual ~BookmarkDrag() = default;
   };
 
   BookmarkTabHelper(const BookmarkTabHelper&) = delete;
@@ -55,8 +55,6 @@ class BookmarkTabHelper
   BookmarkDrag* bookmark_drag_delegate() { return bookmark_drag_; }
 
   bool is_starred() const { return is_starred_; }
-
-  bool ShouldShowBookmarkBar() const;
 
   void AddObserver(BookmarkTabHelperObserver* observer);
   void RemoveObserver(BookmarkTabHelperObserver* observer);

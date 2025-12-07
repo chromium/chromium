@@ -4,19 +4,25 @@
 
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 
-#import "components/saved_tab_groups/saved_tab_group.h"
-#import "components/saved_tab_groups/saved_tab_group_tab.h"
-#import "components/saved_tab_groups/tab_group_sync_delegate.h"
-#import "components/saved_tab_groups/tab_group_sync_service.h"
-#import "components/saved_tab_groups/types.h"
+#import "base/debug/dump_without_crashing.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/collaboration/public/collaboration_service.h"
+#import "components/saved_tab_groups/delegate/tab_group_sync_delegate.h"
+#import "components/saved_tab_groups/public/saved_tab_group.h"
+#import "components/saved_tab_groups/public/saved_tab_group_tab.h"
+#import "components/saved_tab_groups/public/tab_group_sync_service.h"
+#import "components/saved_tab_groups/public/types.h"
+#import "components/saved_tab_groups/public/utils.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/browser_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/web/public/navigation/navigation_context.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 
 using tab_groups::SavedTabGroupTab;
 
@@ -89,10 +95,11 @@ void CloseTabGroupLocally(const TabGroup* tab_group,
                           TabGroupSyncService* sync_service) {
   // `sync_service` is nullptr in incognito.
   if (sync_service && sync_service->GetGroup(tab_group->tab_group_id())) {
-    sync_service->RemoveLocalTabGroupMapping(tab_group->tab_group_id());
+    sync_service->RemoveLocalTabGroupMapping(tab_group->tab_group_id(),
+                                             ClosingSource::kClosedByUser);
   }
   CloseAllWebStatesInGroup(*web_state_list, tab_group,
-                           WebStateList::CLOSE_USER_ACTION);
+                           WebStateList::ClosingReason::kUserAction);
 }
 
 // Moves tab group across browsers.
@@ -152,19 +159,17 @@ void MoveTabGroupAcrossBrowsers(const TabGroup* source_tab_group,
       destination_tab_group));
   // Check that the source browser has one less group.
   CHECK_EQ(source_group_count,
-           source_browser->GetWebStateList()->GetGroups().size() + 1,
-           base::NotFatalUntil::M128);
+           source_browser->GetWebStateList()->GetGroups().size() + 1);
 }
 
 void MoveTabGroupToBrowser(const TabGroup* source_tab_group,
                            Browser* destination_browser,
                            int destination_tab_group_index) {
-  ChromeBrowserState* browser_state = destination_browser->GetBrowserState();
-  BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(browser_state);
+  ProfileIOS* profile = destination_browser->GetProfile();
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
   const BrowserList::BrowserType browser_types =
-      browser_state->IsOffTheRecord() ? BrowserList::BrowserType::kIncognito
-                                      : BrowserList::BrowserType::kRegular;
+      profile->IsOffTheRecord() ? BrowserList::BrowserType::kIncognito
+                                : BrowserList::BrowserType::kRegular;
   std::set<Browser*> browsers = browser_list->BrowsersOfType(browser_types);
 
   // Retrieve the `source_browser`.
@@ -192,23 +197,143 @@ void MoveTabGroupToBrowser(const TabGroup* source_tab_group,
     return;
   }
 
-  if (!IsTabGroupSyncEnabled()) {
-    MoveTabGroupAcrossBrowsers(source_tab_group, source_browser,
-                               destination_browser,
-                               destination_tab_group_index);
-    return;
-  }
-
   // Lock tab group sync service observer.
-  CHECK_EQ(source_browser->GetBrowserState(),
-           destination_browser->GetBrowserState());
-  auto* sync_service =
-      tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
-          source_browser->GetBrowserState());
-  auto lock = sync_service->CreateScopedLocalObserverPauser();
-
+  CHECK_EQ(source_browser->GetProfile(), destination_browser->GetProfile());
+  auto* sync_service = tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+      source_browser->GetProfile());
+  std::unique_ptr<ScopedLocalObservationPauser> lock;
+  if (sync_service) {
+    lock = sync_service->CreateScopedLocalObserverPauser();
+  }
   MoveTabGroupAcrossBrowsers(source_tab_group, source_browser,
                              destination_browser, destination_tab_group_index);
+}
+
+bool ShouldUpdateHistory(web::NavigationContext* navigation_context) {
+  web::WebState* web_state = navigation_context->GetWebState();
+
+  if (!web_state || web_state->GetBrowserState()->IsOffTheRecord()) {
+    return false;
+  }
+
+  // Failed navigations and 404 errors are not saved to history.
+  if (navigation_context->GetError()) {
+    return false;
+  }
+
+  if (navigation_context->GetResponseHeaders() &&
+      navigation_context->GetResponseHeaders()->response_code() == 404) {
+    return false;
+  }
+
+  if (!navigation_context->HasCommitted() ||
+      !web_state->GetNavigationManager()->GetLastCommittedItem()) {
+    // Navigation was replaced or aborted.
+    return false;
+  }
+
+  web::NavigationItem* last_committed_item =
+      web_state->GetNavigationManager()->GetLastCommittedItem();
+
+  // Back/forward navigations do not update history.
+  const ui::PageTransition transition =
+      last_committed_item->GetTransitionType();
+  if (transition & ui::PAGE_TRANSITION_FORWARD_BACK) {
+    return false;
+  }
+
+  return true;
+}
+
+bool IsSaveableNavigation(web::NavigationContext* navigation_context) {
+  // Please keep this in sync with TabGroupSyncUtils::IsSaveableNavigation as a
+  // best effort.
+
+  ui::PageTransition page_transition = navigation_context->GetPageTransition();
+
+  // TODO(crbug.com/359726089): Check all methods other than GET.
+  if (navigation_context->IsPost()) {
+    return false;
+  }
+  if (!ui::IsValidPageTransitionType(page_transition)) {
+    return false;
+  }
+  if (ui::PageTransitionIsRedirect(page_transition)) {
+    return false;
+  }
+
+  if (!ui::PageTransitionIsMainFrame(page_transition)) {
+    return false;
+  }
+
+  if (!navigation_context->HasCommitted()) {
+    return false;
+  }
+
+  if (!ShouldUpdateHistory(navigation_context)) {
+    return false;
+  }
+
+  // For renderer initiated navigation, in most cases these navigations will be
+  // auto triggered on restoration. So there is no need to save them.
+  if (navigation_context->IsRendererInitiated() &&
+      !navigation_context->HasUserGesture()) {
+    return false;
+  }
+
+  return IsURLValidForSavedTabGroups(navigation_context->GetUrl());
+}
+
+bool IsTabGroupShared(const TabGroup* tab_group,
+                      TabGroupSyncService* sync_service) {
+  if (!sync_service || !tab_group) {
+    return false;
+  }
+
+  std::optional<tab_groups::SavedTabGroup> saved_group =
+      sync_service->GetGroup(tab_group->tab_group_id());
+  return saved_group.has_value() && saved_group->collaboration_id().has_value();
+}
+
+data_sharing::MemberRole GetUserRoleForGroup(
+    const TabGroup* tab_group,
+    TabGroupSyncService* tab_group_sync_service,
+    collaboration::CollaborationService* collaboration_service) {
+  if (!collaboration_service) {
+    return data_sharing::MemberRole::kUnknown;
+  }
+
+  syncer::CollaborationId collab_id =
+      GetTabGroupCollabID(tab_group, tab_group_sync_service);
+  if (collab_id == syncer::CollaborationId()) {
+    return data_sharing::MemberRole::kUnknown;
+  }
+
+  data_sharing::GroupId group_id = data_sharing::GroupId(collab_id.value());
+  return collaboration_service->GetCurrentUserRoleForGroup(group_id);
+}
+
+syncer::CollaborationId GetTabGroupCollabID(
+    const TabGroup* tab_group,
+    TabGroupSyncService* tab_group_sync_service) {
+  if (!tab_group) {
+    return syncer::CollaborationId();
+  }
+  return GetTabGroupCollabID(tab_group->tab_group_id(), tab_group_sync_service);
+}
+
+syncer::CollaborationId GetTabGroupCollabID(
+    const tab_groups::EitherGroupID& tab_group_id,
+    TabGroupSyncService* tab_group_sync_service) {
+  if (tab_group_sync_service) {
+    std::optional<tab_groups::SavedTabGroup> saved_group =
+        tab_group_sync_service->GetGroup(tab_group_id);
+    if (saved_group.has_value() &&
+        saved_group->collaboration_id().has_value()) {
+      return saved_group->collaboration_id().value();
+    }
+  }
+  return syncer::CollaborationId();
 }
 
 }  // namespace utils

@@ -10,8 +10,13 @@
 // Protocol to communicate price insights actions to the mediator.
 @protocol PriceInsightsMutator <NSObject>
 
+// Try to price tracking the `item`.
+- (void)tryPriceInsightsTrackItem:(PriceInsightsItem*)item;
+
 // Begins price tracking the `item`.
-- (void)priceInsightsTrackItem:(PriceInsightsItem*)item;
+- (void)priceInsightsTrackItem:(PriceInsightsItem*)item
+          notificationsGranted:(BOOL)granted
+                showCompletion:(BOOL)showCompletion;
 
 // Stops price tracking the `item`.
 - (void)priceInsightsStopTrackingItem:(PriceInsightsItem*)item;

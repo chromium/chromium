@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_SHUTDOWN_SIGNAL_HANDLERS_POSIX_H_
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace base {
 class SingleThreadTaskRunner;

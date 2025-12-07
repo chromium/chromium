@@ -13,6 +13,7 @@
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/unique_position.pb.h"
 
 namespace syncer {
 
@@ -47,7 +48,7 @@ bool DataTypeSyncBridge::SupportsUniquePositions() const {
 sync_pb::UniquePosition DataTypeSyncBridge::GetUniquePosition(
     const sync_pb::EntitySpecifics& specifics) const {
   CHECK(SupportsUniquePositions());
-  NOTREACHED_NORETURN()
+  NOTREACHED()
       << "GetUniquePosition() must be implemented to support unique positions.";
 }
 
@@ -91,16 +92,12 @@ DataTypeSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
   return sync_pb::EntitySpecifics();
 }
 
-bool DataTypeSyncBridge::IsEntityDataValid(
-    const EntityData& entity_data) const {
-  return true;
-}
-
 DataTypeLocalChangeProcessor* DataTypeSyncBridge::change_processor() {
   return change_processor_.get();
 }
 
-const DataTypeLocalChangeProcessor* DataTypeSyncBridge::change_processor() const {
+const DataTypeLocalChangeProcessor* DataTypeSyncBridge::change_processor()
+    const {
   return change_processor_.get();
 }
 

@@ -6,10 +6,10 @@
 #define COMPONENTS_SECURITY_STATE_CORE_SECURITY_STATE_H_
 
 #include <stdint.h>
+
 #include <memory>
 #include <string>
 
-#include "base/feature_list.h"
 #include "net/base/url_util.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/sct_status_flags.h"
@@ -61,11 +61,8 @@ enum SecurityLevel {
   // HTTPS, but a certificate chain anchored to a root certificate installed
   // by the system administrator has been observed in this profile, suggesting
   // a MITM was present.
-  //
-  // Used only on ChromeOS, this status is unreached on other platforms.
-  // TODO(crbug.com/40928765): make this work on all platforms when the
-  // non-chromeos-specific policies are added.
-  SECURE_WITH_POLICY_INSTALLED_CERT = 4,
+  // DEPRECATED: This behaviour no longer exists.
+  // SECURE_WITH_POLICY_INSTALLED_CERT = 4,
 
   // Attempted HTTPS and failed, page not authenticated, HTTPS with
   // insecure active content on the page, malware, phishing, or any other
@@ -94,6 +91,10 @@ enum ContentStatus {
 
 // Describes whether the page contains malicious resources such as
 // malware or phishing attacks.
+//
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.security_state
+// GENERATED_JAVA_CLASS_NAME_OVERRIDE: ConnectionMaliciousContentStatus
 enum MaliciousContentStatus {
   MALICIOUS_CONTENT_STATUS_NONE,
   MALICIOUS_CONTENT_STATUS_MALWARE,
@@ -175,6 +176,7 @@ struct VisibleSecurityState {
   // The following fields contain information about the connection
   // used to load the page or request.
   scoped_refptr<net::X509Certificate> certificate;
+  scoped_refptr<net::X509Certificate> two_qwac;
   net::CertStatus cert_status;
   int connection_status;
   // The ID of the (EC)DH group used by the key exchange. The value is zero if
@@ -221,11 +223,8 @@ constexpr SecurityLevel kRanInsecureContentLevel = DANGEROUS;
 
 // Returns a SecurityLevel to describe the current page.
 // |visible_security_state| contains the relevant security state.
-// |used_policy_installed_certificate| indicates whether the page or request
-// is known to be loaded with a certificate installed by the system admin.
 SecurityLevel GetSecurityLevel(
-    const VisibleSecurityState& visible_security_state,
-    bool used_policy_installed_certificate);
+    const VisibleSecurityState& visible_security_state);
 
 // Returns true if the current page was loaded using a cryptographic protocol
 // and its certificate has any major errors.
@@ -238,8 +237,8 @@ bool IsSchemeCryptographic(const GURL& url);
 // Returns true for a valid |url| with localhost or file:// scheme origin.
 bool IsOriginLocalhostOrFile(const GURL& url);
 
-// Returns true if the page has a valid SSL certificate. Only SECURE and
-// SECURE_WITH_POLICY_INSTALLED_CERT are considered valid.
+// Returns true if the page has a valid SSL certificate. Only SECURE is
+// considered valid.
 bool IsSslCertificateValid(security_state::SecurityLevel security_level);
 
 // Returns the given prefix suffixed with a dot and the current security level.

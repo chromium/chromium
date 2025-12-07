@@ -7,28 +7,30 @@
  */
 
 // Semantically extends `HTMLElement` to allow using `Symbol` as property index.
-class HTMLElementWithSymbolIndex extends HTMLElement {
+// Disable ESLint rule to follow native HTML elements naming convention.
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export class HTMLElementWithSymbolIndex extends HTMLElement {
   [key: symbol|string]: any
 }
 
 // Semantically extends `Element` to allow using `Symbol` as property index.
-class ElementWithSymbolIndex extends HTMLElement {
+export class ElementWithSymbolIndex extends HTMLElement {
   [key: symbol|string]: any
 }
 
 // Semantically extends `Node` to allow using `Symbol` as property index.
-class NodeWithSymbolIndex extends Node {
+export class NodeWithSymbolIndex extends Node {
   [key: symbol|string]: any
 }
 
 // Semantically extends `Text` to allow using `Symbol` as property index.
-class TextWithSymbolIndex extends Text {
+export class TextWithSymbolIndex extends Text {
   [key: symbol|string]: any
 }
 
 // Interface for exportable part of a `DOMRect` (`x`, `y`, `width` and
 // `height`).
-interface Rect {
+export interface Rect {
   height?: number;
   width?: number;
   x?: number;
@@ -48,10 +50,10 @@ const IGNORE_NODE_NAMES = new Set([
 
 // Gets the content of a meta tag by httpEquiv for `httpEquiv`. The function is
 // case insensitive.
-function getMetaContentByHttpEquiv(httpEquiv: string): string {
+export function getMetaContentByHttpEquiv(httpEquiv: string): string {
   const metas = document.getElementsByTagName('meta');
   for (const meta of metas) {
-    if (meta.httpEquiv.toLowerCase() === httpEquiv) {
+    if (meta.httpEquiv && meta.httpEquiv.toLowerCase() === httpEquiv) {
       return meta.content;
     }
   }
@@ -60,19 +62,22 @@ function getMetaContentByHttpEquiv(httpEquiv: string): string {
 
 // Returns all types in meta tags 'format-detection', where the type is
 // assigned 'no'.
-function noFormatDetectionTypes(): Set<string> {
+export function noFormatDetectionTypes(): Set<string> {
   const metas = document.getElementsByTagName('meta');
-  let types = new Set<string>();
+  const types = new Set<string>();
   for (const meta of metas) {
-    if (meta.getAttribute('name') !== 'format-detection')
+    if (meta.getAttribute('name') !== 'format-detection') {
       continue;
-    let content = meta.getAttribute('content');
-    if (!content)
+    }
+    const content = meta.getAttribute('content');
+    if (!content) {
       continue;
-    let matches = content.toLowerCase().matchAll(/([a-z]+)\s*=\s*([a-z]+)/gi);
-    if (!matches)
+    }
+    const matches = content.toLowerCase().matchAll(/([a-z]+)\s*=\s*([a-z]+)/gi);
+    if (!matches) {
       continue;
-    for (let match of matches) {
+    }
+    for (const match of matches) {
       if (match && match[2] === 'no' && match[1]) {
         types.add(match[1]);
       }
@@ -83,7 +88,7 @@ function noFormatDetectionTypes(): Set<string> {
 
 // Searches page elements for "nointentdetection" meta tag. Returns true if
 // "nointentdetection" meta tag is defined.
-function hasNoIntentDetection(): boolean {
+export function hasNoIntentDetection(): boolean {
   const metas = document.getElementsByTagName('meta');
   for (const meta of metas) {
     if (meta.getAttribute('name') === 'chrome' &&
@@ -95,12 +100,12 @@ function hasNoIntentDetection(): boolean {
 }
 
 // Returns whether an annotation of type `annotationType` can be across element.
-function annotationCanBeCrossElement(annotationType: String) {
+export function annotationCanBeCrossElement(annotationType: string) {
   return ['address', 'email'].includes(annotationType.toLowerCase());
 }
 
 // Returns the client rectangle for the given `element` {x, y, width, height}.
-function rectFromElement(element: Element): Rect {
+export function rectFromElement(element: Element): Rect {
   const domRect = element.getClientRects()[0];
   if (!domRect) {
     // TODO(crbug.com/40936184): modify pipeline for returning null here and make
@@ -111,13 +116,13 @@ function rectFromElement(element: Element): Rect {
     x: domRect.x,
     y: domRect.y,
     width: domRect.width,
-    height: domRect.height
+    height: domRect.height,
   };
 }
 
 // Returns whether the given node is valid. An invalid node is one in
 // `IGNORE_NODE_NAMES` or if it is a contenteditable element.
-function isValidNode(node: Node): boolean {
+export function isValidNode(node: Node): boolean {
   if (node instanceof Element && node.getAttribute('contenteditable')) {
     return false;
   }
@@ -128,7 +133,7 @@ function isValidNode(node: Node): boolean {
 // If `breakAtInvalid` null will be return if an invalid node is found during
 // traversal. Note the case where `node` is a descendant of an invalid node
 // is not detected by this code. Note also that ShadowRoots are not followed.
-function previousLeaf(node: Node|null, breakAtInvalid = false): Node|null {
+export function previousLeaf(node: Node|null, breakAtInvalid = false): Node|null {
   while (node) {
     // Find somewhere we can go left, by moving up the tree if needed.
     while (node && !node.previousSibling) {
@@ -153,7 +158,7 @@ function previousLeaf(node: Node|null, breakAtInvalid = false): Node|null {
 
 // Returns next leaf `Node` in the DOM tree, starting from given `node`.
 // See `previousLeaf` for more information.
-function nextLeaf(node: Node|null, breakAtInvalid = false): Node|null {
+export function nextLeaf(node: Node|null, breakAtInvalid = false): Node|null {
   while (node) {
     // Find somewhere we can go right, by moving up the tree if needed.
     while (node && !node.nextSibling) {
@@ -174,20 +179,4 @@ function nextLeaf(node: Node|null, breakAtInvalid = false): Node|null {
     }
   }
   return null;
-}
-
-export {
-  HTMLElementWithSymbolIndex,
-  ElementWithSymbolIndex,
-  NodeWithSymbolIndex,
-  TextWithSymbolIndex,
-  Rect,
-  annotationCanBeCrossElement,
-  getMetaContentByHttpEquiv,
-  noFormatDetectionTypes,
-  hasNoIntentDetection,
-  rectFromElement,
-  isValidNode,
-  previousLeaf,
-  nextLeaf,
 }

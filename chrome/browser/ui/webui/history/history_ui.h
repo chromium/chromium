@@ -15,8 +15,8 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/webui/mojo_web_ui_controller.h"
-#include "ui/webui/resources/cr_components/commerce/shopping_service.mojom.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
+#include "ui/webui/resources/cr_components/history/history.mojom-forward.h"
 #include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom-forward.h"
 #include "ui/webui/resources/cr_components/history_embeddings/history_embeddings.mojom.h"
 
@@ -24,15 +24,13 @@ namespace base {
 class RefCountedMemory;
 }
 
+class BrowsingHistoryHandler;
+
 namespace history_clusters {
 class HistoryClustersHandler;
 }
 
 class HistoryEmbeddingsHandler;
-
-namespace commerce {
-class ShoppingServiceHandler;
-}  // namespace commerce
 
 namespace page_image_service {
 class ImageServiceHandler;
@@ -50,7 +48,6 @@ class HistoryUIConfig : public content::WebUIConfig {
 };
 
 class HistoryUI : public ui::MojoWebUIController,
-                  public shopping_service::mojom::ShoppingServiceHandlerFactory,
                   public help_bubble::mojom::HelpBubbleHandlerFactory {
  public:
   explicit HistoryUI(content::WebUI* web_ui);
@@ -65,14 +62,13 @@ class HistoryUI : public ui::MojoWebUIController,
   void BindInterface(
       mojo::PendingReceiver<history_embeddings::mojom::PageHandler>
           pending_page_handler);
+  void BindInterface(
+      mojo::PendingReceiver<history::mojom::PageHandler> pending_page_handler);
   void BindInterface(mojo::PendingReceiver<history_clusters::mojom::PageHandler>
                          pending_page_handler);
   void BindInterface(
       mojo::PendingReceiver<page_image_service::mojom::PageImageServiceHandler>
           pending_page_handler);
-  void BindInterface(
-      mojo::PendingReceiver<
-          shopping_service::mojom::ShoppingServiceHandlerFactory> receiver);
   void BindInterface(
       mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
           pending_receiver);
@@ -83,11 +79,11 @@ class HistoryUI : public ui::MojoWebUIController,
     return history_clusters_handler_.get();
   }
 
+  BrowsingHistoryHandler* GetBrowsingHistoryHandlerForTesting() {
+    return browsing_history_handler_.get();
+  }
+
  private:
-  void CreateShoppingServiceHandler(
-      mojo::PendingRemote<shopping_service::mojom::Page> page,
-      mojo::PendingReceiver<shopping_service::mojom::ShoppingServiceHandler>
-          receiver) override;
   // help_bubble::mojom::HelpBubbleHandlerFactory:
   void CreateHelpBubbleHandler(
       mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
@@ -96,12 +92,10 @@ class HistoryUI : public ui::MojoWebUIController,
   std::unique_ptr<HistoryEmbeddingsHandler> history_embeddings_handler_;
   std::unique_ptr<history_clusters::HistoryClustersHandler>
       history_clusters_handler_;
+  std::unique_ptr<BrowsingHistoryHandler> browsing_history_handler_;
   std::unique_ptr<page_image_service::ImageServiceHandler>
       image_service_handler_;
   PrefChangeRegistrar pref_change_registrar_;
-  std::unique_ptr<commerce::ShoppingServiceHandler> shopping_service_handler_;
-  mojo::Receiver<shopping_service::mojom::ShoppingServiceHandlerFactory>
-      shopping_service_factory_receiver_{this};
   std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
   mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>
       help_bubble_handler_factory_receiver_{this};

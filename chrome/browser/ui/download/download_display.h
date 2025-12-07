@@ -38,8 +38,7 @@ class DownloadDisplay {
     // Whether we know the final size of all downloads.
     bool progress_certain = true;
 
-    bool operator==(const ProgressInfo& other) const;
-    bool operator!=(const ProgressInfo& other) const;
+    friend bool operator==(const ProgressInfo&, const ProgressInfo&) = default;
 
     // Compares all fields except the percentage.
     bool FieldsEqualExceptPercentage(const ProgressInfo& other) const;
@@ -105,12 +104,6 @@ class DownloadDisplay {
   // Open the security subpage for the download with `id`, if it exists.
   virtual void OpenSecuritySubpage(
       const offline_items_collection::ContentId& id) = 0;
-
-  // Opens the primary dialog to the item and scrolls to the item, and opens
-  // the security dialog if the item has a security warning. Returns whether
-  // bubble was opened to the requested item.
-  virtual bool OpenMostSpecificDialog(
-      const offline_items_collection::ContentId& content_id) = 0;
 
   // Gets the current icon state.
   virtual IconState GetIconState() const = 0;

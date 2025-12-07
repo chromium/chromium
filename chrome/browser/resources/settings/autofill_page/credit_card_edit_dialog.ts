@@ -179,36 +179,25 @@ export class SettingsCreditCardEditDialogElement extends
           return loadTimeData.getBoolean('cvcStorageAvailable');
         },
       },
-
-      /**
-       * Checks if card numbers must be validated based on the feature flag.
-       */
-      requireValidLocalCardsEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('requireValidLocalCards');
-        },
-      },
     };
   }
 
-  prefs: {[key: string]: any};
-  creditCard: chrome.autofillPrivate.CreditCardEntry;
-  private title_: string;
-  private monthList_: string[];
-  private yearList_: string[];
-  private name_?: string;
-  private rawCardNumber_: string;
-  private cvc_?: string;
-  private nickname_?: string;
-  private expirationYear_?: string;
-  private expirationMonth_?: string;
-  private sanitizedCardNumber_: string;
-  private nicknameInvalid_: boolean;
-  private cardNumberValidationState_: CardNumberValidationState;
-  private expired_: boolean;
-  private cvcStorageAvailable_: boolean;
-  private requireValidLocalCardsEnabled_: boolean;
+  declare prefs: {[key: string]: any};
+  declare creditCard: chrome.autofillPrivate.CreditCardEntry;
+  declare private title_: string;
+  declare private monthList_: string[];
+  declare private yearList_: string[];
+  declare private name_?: string;
+  declare private rawCardNumber_: string;
+  declare private cvc_?: string;
+  declare private nickname_?: string;
+  declare private expirationYear_?: string;
+  declare private expirationMonth_?: string;
+  declare private sanitizedCardNumber_: string;
+  declare private nicknameInvalid_: boolean;
+  declare private cardNumberValidationState_: CardNumberValidationState;
+  declare private expired_: boolean;
+  declare private cvcStorageAvailable_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -275,12 +264,7 @@ export class SettingsCreditCardEditDialogElement extends
     this.creditCard.expirationYear = this.expirationYear_;
     this.creditCard.expirationMonth = this.expirationMonth_;
     this.creditCard.name = this.name_;
-    if (this.requireValidLocalCardsEnabled_) {
-      this.creditCard.cardNumber = this.sanitizedCardNumber_;
-    } else {
-      // To preserve legacy behavior, save the raw card number directly.
-      this.creditCard.cardNumber = this.rawCardNumber_;
-    }
+    this.creditCard.cardNumber = this.sanitizedCardNumber_;
     this.creditCard.nickname = this.nickname_;
     // Take the user entered CVC input as-is. This is due to PCI compliance.
     this.creditCard.cvc = this.cvc_;
@@ -387,33 +371,11 @@ export class SettingsCreditCardEditDialogElement extends
   }
 
   private saveEnabled_() {
-    if (this.requireValidLocalCardsEnabled_ &&
-        this.cardNumberValidationState_ !== CardNumberValidationState.VALID) {
+    if (this.cardNumberValidationState_ !== CardNumberValidationState.VALID) {
       return false;
     }
 
-    // Either the card name or card number must be non-empty to save.
-    //
-    // TODO(crbug.com/40285360): Once `this.requireValidLocalCardsEnabled_` is
-    // enabled, this block can be removed, as this.rawCardNumber_ will always be
-    // non-empty if we pass the above check.
-    const nameMissing = !this.name_ || !this.name_.trim();
-    // To preserve legacy behavior, check the raw card directly.
-    const cardNumberMissing =
-        !this.rawCardNumber_ || !this.rawCardNumber_.trim();
-    if (nameMissing && cardNumberMissing) {
-      return false;
-    }
-
-    if (this.expired_) {
-      return false;
-    }
-
-    if (this.nicknameInvalid_) {
-      return false;
-    }
-
-    return true;
+    return !this.expired_ && !this.nicknameInvalid_;
   }
 
   /**
@@ -450,9 +412,7 @@ export class SettingsCreditCardEditDialogElement extends
   }
 
   private isCardAmex_(): boolean {
-    const cardNumber = this.requireValidLocalCardsEnabled_ ?
-        this.sanitizedCardNumber_ :
-        this.rawCardNumber_;
+    const cardNumber = this.sanitizedCardNumber_;
     return !!cardNumber && cardNumber.length >= 2 &&
         !!cardNumber.match('^(34|37)');
   }
@@ -473,10 +433,6 @@ export class SettingsCreditCardEditDialogElement extends
   private computeCardNumberValidationState_(
       sanitizedCardNumber: string,
       isBlur: boolean = false): CardNumberValidationState {
-    if (!this.requireValidLocalCardsEnabled_) {
-      return CardNumberValidationState.VALID;
-    }
-
     // The card number field must only contain digits.
     if (/[^\d]/.test(sanitizedCardNumber)) {
       return CardNumberValidationState.INVALID_WITH_ERROR;

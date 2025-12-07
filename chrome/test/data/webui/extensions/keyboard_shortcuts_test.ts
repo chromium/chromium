@@ -4,11 +4,12 @@
 
 /** @fileoverview Suite of tests for extension-keyboard-shortcuts. */
 
+import 'chrome://extensions/extensions.js';
+
 import type {ExtensionsKeyboardShortcutsElement} from 'chrome://extensions/extensions.js';
-import {isValidKeyCode, Key, keystrokeToString} from 'chrome://extensions/extensions.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isChildVisible} from 'chrome://webui-test/test_util.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {keyDownOn, keyUpOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
+import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
 import {createExtensionInfo} from './test_util.js';
@@ -60,11 +61,9 @@ suite('ExtensionShortcutTest', function() {
       ],
     });
 
-    keyboardShortcuts.set('items', [noCommands, oneCommand, twoCommands]);
+    keyboardShortcuts.items = [noCommands, oneCommand, twoCommands];
 
     document.body.appendChild(keyboardShortcuts);
-
-    flush();
   });
 
   test('Layout', function() {
@@ -73,14 +72,14 @@ suite('ExtensionShortcutTest', function() {
       // rather than a fancy-schmancy custom element.
       return isChildVisible(e, s, true);
     }
-    const cards = keyboardShortcuts.shadowRoot!.querySelector('#container')!
+    const cards = keyboardShortcuts.shadowRoot.querySelector('#container')!
                       .querySelectorAll('.shortcut-card');
     assertEquals(2, cards.length);
 
     const card1 = cards[0]!;
     assertEquals(
         oneCommand.name,
-        card1.querySelector<HTMLElement>('.card-title span')!.textContent!);
+        card1.querySelector<HTMLElement>('.card-title span')!.textContent);
     let commands = card1.querySelectorAll<HTMLElement>('.command-entry');
     assertEquals(1, commands.length);
     assertTrue(isVisibleOnCard(commands[0]!, '.command-name'));
@@ -91,36 +90,8 @@ suite('ExtensionShortcutTest', function() {
     assertEquals(2, commands.length);
   });
 
-  test('IsValidKeyCode', function() {
-    assertTrue(isValidKeyCode('A'.charCodeAt(0)));
-    assertTrue(isValidKeyCode('F'.charCodeAt(0)));
-    assertTrue(isValidKeyCode('Z'.charCodeAt(0)));
-    assertTrue(isValidKeyCode('4'.charCodeAt(0)));
-    assertTrue(isValidKeyCode(Key.PAGE_UP));
-    assertTrue(isValidKeyCode(Key.MEDIA_PLAY_PAUSE));
-    assertTrue(isValidKeyCode(Key.DOWN));
-    assertFalse(isValidKeyCode(16));   // Shift
-    assertFalse(isValidKeyCode(17));   // Ctrl
-    assertFalse(isValidKeyCode(18));   // Alt
-    assertFalse(isValidKeyCode(113));  // F2
-    assertFalse(isValidKeyCode(144));  // Num Lock
-    assertFalse(isValidKeyCode(43));   // +
-    assertFalse(isValidKeyCode(27));   // Escape
-  });
-
-  test('KeyStrokeToString', function() {
-    const charCodeA = 'A'.charCodeAt(0);
-    let e = new KeyboardEvent('keydown', {keyCode: charCodeA});
-    assertEquals('A', keystrokeToString(e));
-    e = new KeyboardEvent('keydown', {keyCode: charCodeA, ctrlKey: true});
-    assertEquals('Ctrl+A', keystrokeToString(e));
-    e = new KeyboardEvent(
-        'keydown', {keyCode: charCodeA, ctrlKey: true, shiftKey: true});
-    assertEquals('Ctrl+Shift+A', keystrokeToString(e));
-  });
-
   test('ScopeChange', async function() {
-    const selectElement = keyboardShortcuts.shadowRoot!.querySelector('select');
+    const selectElement = keyboardShortcuts.shadowRoot.querySelector('select');
     assertTrue(!!selectElement);
     selectElement.value = 'GLOBAL';
     selectElement.dispatchEvent(
@@ -128,6 +99,102 @@ suite('ExtensionShortcutTest', function() {
     const params = await testDelegate.whenCalled('updateExtensionCommandScope');
     assertEquals(oneCommand.id, params[0]);
     assertEquals(oneCommand.commands[0]!.name, params[1]);
+    await microtasksFinished();
     assertEquals(selectElement.value, params[2]);
+  });
+
+
+  test('UpdateShortcut', async function() {
+    const shortcutInput =
+        keyboardShortcuts.shadowRoot.querySelector('cr-shortcut-input');
+    assertTrue(!!shortcutInput);
+    const field = shortcutInput.$.input;
+    assertEquals('Ctrl + W', field.value);
+
+    // Click the edit button. Capture should start.
+    shortcutInput.$.edit.click();
+    let arg = await testDelegate.whenCalled('setShortcutHandlingSuspended');
+
+    assertTrue(arg);
+    testDelegate.reset();
+    await microtasksFinished();
+    assertEquals('', field.value);
+
+    // Press character.
+    keyDownOn(field, 65, []);
+    await microtasksFinished();
+    assertEquals('', field.value);
+    assertTrue(field.errorMessage.startsWith('Include'));
+    // Add shift to character.
+    keyDownOn(field, 65, ['shift']);
+    await microtasksFinished();
+    assertEquals('', field.value);
+    assertTrue(field.errorMessage.startsWith('Include'));
+    // Press ctrl.
+    keyDownOn(field, 17, ['ctrl']);
+    await microtasksFinished();
+    assertEquals('', field.value);
+    assertEquals('Type a letter', field.errorMessage);
+    // Add shift.
+    keyDownOn(field, 16, ['ctrl', 'shift']);
+    await microtasksFinished();
+    assertEquals('', field.value);
+    assertEquals('Type a letter', field.errorMessage);
+    // Remove shift.
+    keyUpOn(field, 16, ['ctrl']);
+    await microtasksFinished();
+    assertEquals('', field.value);
+    assertEquals('Type a letter', field.errorMessage);
+    // Add alt (ctrl + alt is invalid).
+    keyDownOn(field, 18, ['ctrl', 'alt']);
+    await microtasksFinished();
+    assertEquals('', field.value);
+    // Remove alt.
+    keyUpOn(field, 18, ['ctrl']);
+    await microtasksFinished();
+    assertEquals('', field.value);
+    assertEquals('Type a letter', field.errorMessage);
+
+    // Add 'A'. Once a valid shortcut is typed (like Ctrl + A), it is
+    // committed.
+    keyDownOn(field, 65, ['ctrl']);
+    arg = await testDelegate.whenCalled('updateExtensionCommandKeybinding');
+    testDelegate.reset();
+
+    assertDeepEquals(
+        [oneCommand.id, oneCommand.commands[0]!.name, 'Ctrl+A'], arg);
+    await microtasksFinished();
+    assertEquals('Ctrl + A', field.value);
+    assertEquals('Ctrl+A', shortcutInput.shortcut);
+
+    // Test clearing the shortcut.
+    shortcutInput.$.edit.click();
+    assertEquals(shortcutInput.$.input, shortcutInput.shadowRoot.activeElement);
+    arg = await testDelegate.whenCalled('updateExtensionCommandKeybinding');
+    await microtasksFinished();
+
+    field.blur();
+    testDelegate.reset();
+    assertDeepEquals([oneCommand.id, oneCommand.commands[0]!.name, ''], arg);
+    assertEquals('', shortcutInput.shortcut);
+
+    // The click event causes the input element to lose focus on mouse down
+    // but regains focus on mouse up after triggering the edit button on mouse
+    // up. This should ultimately result in shortcuts being suspended.
+    shortcutInput.$.edit.click();
+    await testDelegate.whenCalled('setShortcutHandlingSuspended');
+    await microtasksFinished();
+    const shortcutSuspendedArgs =
+        testDelegate.getArgs('setShortcutHandlingSuspended');
+    assertEquals(2, testDelegate.getCallCount('setShortcutHandlingSuspended'));
+    assertFalse(shortcutSuspendedArgs[0]);
+    assertTrue(shortcutSuspendedArgs[1]);
+    testDelegate.reset();
+
+    // Test ending capture using the escape key.
+    shortcutInput.$.edit.click();
+    keyDownOn(field, 27);  // Escape key.
+    arg = await testDelegate.whenCalled('setShortcutHandlingSuspended');
+    assertFalse(arg);
   });
 });

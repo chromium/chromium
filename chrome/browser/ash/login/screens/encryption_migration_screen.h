@@ -52,7 +52,7 @@ class EncryptionMigrationScreen
     virtual ~EncryptionMigrationScreenTestDelegate() = default;
 
     // Returns free disk space for testing.
-    virtual int64_t GetFreeSpace() const = 0;
+    virtual std::optional<int64_t> GetFreeSpace() const = 0;
   };
 
   explicit EncryptionMigrationScreen(
@@ -108,7 +108,7 @@ class EncryptionMigrationScreen
       screens_login::mojom::EncryptionMigrationPage::UIState state);
 
   void CheckAvailableStorage();
-  void OnGetAvailableStorage(int64_t size);
+  void OnGetAvailableStorage(std::optional<int64_t> size);
   void WaitBatteryAndMigrate();
   void StartMigration();
   // Removes cryptohome and shows the error screen after the removal finishes.

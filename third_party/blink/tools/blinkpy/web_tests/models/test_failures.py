@@ -25,14 +25,13 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+import pickle
 import re
-import six
-from six.moves import cPickle
 from typing import ClassVar
 
 from blinkpy.web_tests.controllers import repaint_overlay
-from blinkpy.web_tests.models.typ_types import ResultType
-from blinkpy.web_tests.models.failure_reason import FailureReason
+from blinkpy.web_tests.models.typ_types import FailureReason, ResultType
 from blinkpy.common.html_diff import html_diff
 from blinkpy.common.unified_diff import unified_diff
 
@@ -137,8 +136,7 @@ class AbstractTestResultType(object):
                 and self.actual_driver_output.error is not None):
             # Even when running under py3, some clients pass a str
             # to error instead of bytes. We must handle both.
-            if (six.PY3
-                    and not isinstance(self.actual_driver_output.error, str)):
+            if not isinstance(self.actual_driver_output.error, str):
                 return self.actual_driver_output.error.decode(
                     'utf8', 'replace')
             else:
@@ -148,7 +146,7 @@ class AbstractTestResultType(object):
     @staticmethod
     def loads(s):
         """Creates a AbstractTestResultType object from the specified string."""
-        return cPickle.loads(s)
+        return pickle.loads(s)
 
     def message(self):
         """Returns a string describing the failure in more detail."""
@@ -189,7 +187,7 @@ class AbstractTestResultType(object):
 
     def dumps(self):
         """Returns the string/JSON representation of a AbstractTestResultType."""
-        return cPickle.dumps(self)
+        return pickle.dumps(self)
 
     def driver_needs_restart(self):
         """Returns True if we should kill the driver before the next test."""
@@ -337,30 +335,13 @@ class FailureText(ActualAndBaselineArtifacts):
     def _actual_text(self):
         if (self.actual_driver_output
                 and self.actual_driver_output.text is not None):
-            if six.PY3:
-                # TODO(crbug/1197331): We should not decode here looks like.
-                # html_diff expects it to be bytes for comparing to account
-                # various types of encodings.
-                # html_diff.py and unified_diff.py use str types during
-                # diff fixup. Will handle it later.
-                return self.actual_driver_output.text.decode('utf8', 'replace')
-            else:
-                return self.actual_driver_output.text
+            return self.actual_driver_output.text.decode('utf8', 'replace')
         return ''
 
     def _expected_text(self):
         if (self.expected_driver_output
                 and self.expected_driver_output.text is not None):
-            if six.PY3:
-                # TODO(crbug/1197331): We should not decode here looks like.
-                # html_diff expects it to be bytes for comparing to account
-                # various types of encodings.
-                # html_diff.py and unified_diff.py use str types during
-                # diff fixup. Will handle it later.
-                return self.expected_driver_output.text.decode(
-                    'utf8', 'replace')
-            else:
-                return self.expected_driver_output.text
+            return self.expected_driver_output.text.decode('utf8', 'replace')
         return ''
 
     def create_artifacts(self, typ_artifacts, force_overwrite=False):
@@ -386,10 +367,9 @@ class FailureText(ActualAndBaselineArtifacts):
         html_diff_filename = self.port.output_filename(
             self.test_name, FILENAME_SUFFIX_HTML_DIFF, '.html')
 
-        # TODO(crbug/1197331): Revisit while handling the diff modules.
-        if diff_content and six.PY3:
+        if diff_content:
             diff_content = diff_content.encode('utf8', 'replace')
-        if html_diff_content and six.PY3:
+        if html_diff_content:
             html_diff_content = html_diff_content.encode('utf8', 'replace')
 
         self._write_to_artifacts(typ_artifacts, 'text_diff', diff_filename,
@@ -485,15 +465,10 @@ class FailureTextMismatch(FailureText):
     def create_artifacts(self, typ_artifacts, force_overwrite=False):
         super(FailureTextMismatch, self).create_artifacts(
             typ_artifacts, force_overwrite)
-        if six.PY2:
-            html = repaint_overlay.generate_repaint_overlay_html(
-                self.test_name, self.actual_driver_output.text,
-                self.expected_driver_output.text)
-        else:
-            html = repaint_overlay.generate_repaint_overlay_html(
-                self.test_name,
-                self.actual_driver_output.text.decode('utf8', 'replace'),
-                self.expected_driver_output.text.decode('utf8', 'replace'))
+        html = repaint_overlay.generate_repaint_overlay_html(
+            self.test_name,
+            self.actual_driver_output.text.decode('utf8', 'replace'),
+            self.expected_driver_output.text.decode('utf8', 'replace'))
         if html:
             overlay_filename = self.port.output_filename(
                 self.test_name, FILENAME_SUFFIX_OVERLAY, '.html')

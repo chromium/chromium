@@ -13,7 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "google/protobuf/io/zero_copy_stream.h"
 #include "google_apis/gcm/base/gcm_export.h"

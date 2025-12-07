@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
+#include <array>
 #include <initializer_list>
 #include <memory>
 #include <string>
@@ -33,7 +29,6 @@
 #include "base/files/safe_base_name.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -84,8 +79,8 @@ void NotifyControllerForFinalSpeechResult(ProjectorControllerImpl* controller) {
   result.timing_information->audio_end_time = base::Milliseconds(3000);
 
   std::vector<media::HypothesisParts> hypothesis_parts;
-  std::string hypothesis_text[3] = {"transcript", "text", "1"};
-  int hypothesis_time[3] = {1000, 2000, 2500};
+  std::array<std::string, 3> hypothesis_text = {"transcript", "text", "1"};
+  std::array<int, 3> hypothesis_time = {1000, 2000, 2500};
   for (int i = 0; i < 3; i++) {
     hypothesis_parts.emplace_back(
         std::vector<std::string>({hypothesis_text[i]}),
@@ -336,10 +331,9 @@ TEST_F(ProjectorControllerTest, RecordingEnded) {
                 NewScreencastPreconditionState::kEnabled,
                 {NewScreencastPreconditionReason::kEnabledBySoda})))
             .Times(0);
-        EXPECT_CALL(mock_client_, StopSpeechRecognition())
-            .WillOnce(testing::Invoke([&]() {
-              controller_->OnSpeechRecognitionStopped(/*forced=*/false);
-            }));
+        EXPECT_CALL(mock_client_, StopSpeechRecognition()).WillOnce([&]() {
+          controller_->OnSpeechRecognitionStopped(/*forced=*/false);
+        });
         EXPECT_CALL(*mock_metadata_controller_, SaveMetadata(_)).Times(0);
 
         controller_->OnRecordingEnded();
@@ -493,9 +487,9 @@ TEST_P(ProjectorOnDlpRestrictionCheckedAtVideoEndTest, WrapUpRecordingOnce) {
           } else {
             EXPECT_CALL(mock_client_, ForceEndSpeechRecognition())
                 .Times(1)
-                .WillOnce(testing::Invoke([&]() {
+                .WillOnce([&]() {
                   controller_->OnSpeechRecognitionStopped(/*forced=*/true);
-                }));
+                });
 
             // Simulate that the timer has fired.
             EXPECT_TRUE(controller_->get_timer_for_testing()->IsRunning());
@@ -708,10 +702,9 @@ TEST_P(ProjectorSpeechRecognitionEndTest, SpeechRecognitionEndMetric) {
       /*expected_count=*/1);
 
   // Tests speech recognition successfully stopping.
-  ON_CALL(mock_client_, StopSpeechRecognition)
-      .WillByDefault(testing::Invoke([&]() {
-        controller_->OnSpeechRecognitionStopped(/*forced=*/false);
-      }));
+  ON_CALL(mock_client_, StopSpeechRecognition).WillByDefault([&]() {
+    controller_->OnSpeechRecognitionStopped(/*forced=*/false);
+  });
   controller_->OnRecordingStarted(root);
   controller_->OnRecordingEnded();
   histogram_tester_.ExpectBucketCount(
@@ -723,8 +716,8 @@ TEST_P(ProjectorSpeechRecognitionEndTest, SpeechRecognitionEndMetric) {
   ON_CALL(mock_client_, StopSpeechRecognition).WillByDefault(testing::Return());
   EXPECT_CALL(mock_client_, ForceEndSpeechRecognition())
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&]() { controller_->OnSpeechRecognitionStopped(/*forced=*/true); }));
+      .WillOnce(
+          [&]() { controller_->OnSpeechRecognitionStopped(/*forced=*/true); });
   controller_->OnRecordingStarted(root);
   controller_->OnRecordingEnded();
   controller_->get_timer_for_testing()->FireNow();

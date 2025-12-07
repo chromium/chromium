@@ -10,4 +10,7 @@
 // Feature flag to enable new snapshot system written in Swift.
 BASE_DECLARE_FEATURE(kSnapshotInSwift);
 
+// Feature flag to remove the grey snapshots.
+BASE_DECLARE_FEATURE(kRemoveGreySnapshot);
+
 #endif  // IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_FEATURES_H_

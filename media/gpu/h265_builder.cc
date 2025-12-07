@@ -1,7 +1,6 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 #include "media/gpu/h265_builder.h"
 #include "media/filters/h26x_annex_b_bitstream_builder.h"
 
@@ -145,7 +144,30 @@ void BuildPackedH265SPS(H26xAnnexBBitstreamBuilder& builder,
 
   builder.AppendBits(1, sps.sps_temporal_mvp_enabled_flag);
   builder.AppendBits(1, sps.strong_intra_smoothing_enabled_flag);
-  builder.AppendBits(1, 0);  // vui_parameters_present_flag
+  builder.AppendBits(1, sps.vui_parameters_present_flag);
+  // The assumption here is that for now, only for Rec.601 and Rec.709 that
+  // VEA will set vui_parameters_present_flag & colour_description_present_flag
+  // to true.
+  if (sps.vui_parameters_present_flag &&
+      sps.vui_parameters.colour_description_present_flag) {
+    // E.2.1 VUI parameters syntax
+    builder.AppendBits(1, 0);  // aspect_ratio_info_present_flag
+    builder.AppendBits(1, 0);  // overscan_info_present_flag
+    builder.AppendBits(1, 1);  // video_signal_type_present_flag
+    builder.AppendBits(3, 5);  // video_format = Unspecified.
+    builder.AppendBits(1, sps.vui_parameters.video_full_range_flag);
+    builder.AppendBits(1, 1);  // colour_description_present_flag
+    builder.AppendBits(8, sps.vui_parameters.colour_primaries);
+    builder.AppendBits(8, sps.vui_parameters.transfer_characteristics);
+    builder.AppendBits(8, sps.vui_parameters.matrix_coeffs);
+    builder.AppendBits(1, 0);  // chroma_loc_info_present_flag
+    builder.AppendBits(1, 0);  // neutral_chroma_indication_flag
+    builder.AppendBits(1, 0);  // field_seq_flag
+    builder.AppendBits(1, 0);  // frame_field_info_present_flag
+    builder.AppendBits(1, 0);  // default_display_window_flag
+    builder.AppendBits(1, 0);  // vui_timing_info_present_flag
+    builder.AppendBits(1, 0);  // bitstream_restriction_flag
+  }
   builder.AppendBits(1, 0);  // sps_extension_present_flag
 
   builder.FinishNALU();

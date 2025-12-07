@@ -23,7 +23,6 @@
 #include "components/payments/core/payments_profile_comparator.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/payment_app_provider.h"
-#include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 #include "url/origin.h"
 
@@ -36,6 +35,7 @@ class RegionDataLoader;
 
 namespace content {
 class RenderFrameHost;
+class WebContents;
 }  // namespace content
 
 namespace payments {
@@ -68,7 +68,7 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
     virtual void OnSelectedInformationChanged() = 0;
 
    protected:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   class Delegate {
@@ -90,7 +90,7 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
     virtual void OnPayerInfoSelected(mojom::PayerDetailPtr payer_info) = 0;
 
    protected:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   using StatusCallback = base::OnceCallback<void(bool)>;
@@ -135,9 +135,10 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
       const override;
   std::unique_ptr<webauthn::InternalAuthenticator> CreateInternalAuthenticator()
       const override;
-  scoped_refptr<PaymentManifestWebDataService>
-  GetPaymentManifestWebDataService() const override;
+  scoped_refptr<WebPaymentsWebDataService> GetWebPaymentsWebDataService()
+      const override;
   bool IsOffTheRecord() const override;
+  bool PrefsCanMakePayment() const override;
   void OnPaymentAppCreated(std::unique_ptr<PaymentApp> app) override;
   void OnPaymentAppCreationError(
       const std::string& error_message,

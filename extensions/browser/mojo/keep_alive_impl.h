@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_MOJO_KEEP_ALIVE_IMPL_H_
 #define EXTENSIONS_BROWSER_MOJO_KEEP_ALIVE_IMPL_H_
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/extension_registry.h"
@@ -34,8 +33,8 @@ class KeepAliveImpl : public KeepAlive,
   KeepAliveImpl(const KeepAliveImpl&) = delete;
   KeepAliveImpl& operator=(const KeepAliveImpl&) = delete;
 
-  // Create a keep alive for |extension| running in |context| and connect it to
-  // |receiver|. When the receiver closes its pipe, the keep alive ends.
+  // Create a keep alive for `extension` running in `context` and connect it to
+  // `receiver`. When the receiver closes its pipe, the keep alive ends.
   static void Create(content::BrowserContext* browser_context,
                      const Extension* extension,
                      content::RenderFrameHost* render_frame_host,

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/version.h"
@@ -57,9 +56,6 @@ class ScreenAIInstallState {
   // Returns true if the library is used recently and we need to keep it on
   // device and updated.
   static bool ShouldInstall(PrefService* local_state);
-
-  // Records an UMA metric on component install/uninstall result.
-  static void RecordComponentInstallationResult(bool install, bool successful);
 
   // Stores current time in a local state preference as the last time that the
   // service is used.

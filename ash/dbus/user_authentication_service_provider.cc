@@ -6,10 +6,13 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/auth/active_session_auth_controller.h"
 #include "ash/public/cpp/webauthn_dialog_controller.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "chromeos/ash/components/osauth/impl/request/webauthn_auth_request.h"
 #include "chromeos/components/webauthn/webauthn_request_registrar.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -64,8 +67,8 @@ void UserAuthenticationServiceProvider::ShowAuthDialog(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
   dbus::MessageReader reader(method_call);
-  std::string origin_name;
-  if (!reader.PopString(&origin_name)) {
+  std::string rp_id;
+  if (!reader.PopString(&rp_id)) {
     LOG(ERROR) << "Unable to parse origin name";
     OnAuthFlowComplete(method_call, std::move(response_sender), false);
     return;
@@ -93,9 +96,21 @@ void UserAuthenticationServiceProvider::ShowAuthDialog(
     return;
   }
 
+  if (ash::features::IsWebAuthNAuthDialogMergeEnabled()) {
+    auto* active_session_auth_controller = ActiveSessionAuthController::Get();
+    auto webauthn_auth_request = std::make_unique<WebAuthNAuthRequest>(
+        rp_id,
+        base::BindOnce(&UserAuthenticationServiceProvider::OnAuthFlowComplete,
+                       weak_ptr_factory_.GetWeakPtr(), method_call,
+                       std::move(response_sender)));
+    active_session_auth_controller->ShowAuthDialog(
+        std::move(webauthn_auth_request));
+    return;
+  }
+
   auto* webauthn_dialog_controller = WebAuthNDialogController::Get();
   webauthn_dialog_controller->ShowAuthenticationDialog(
-      source_window, origin_name,
+      source_window, rp_id,
       base::BindOnce(&UserAuthenticationServiceProvider::OnAuthFlowComplete,
                      weak_ptr_factory_.GetWeakPtr(), method_call,
                      std::move(response_sender)));

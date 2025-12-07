@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_ENABLE_EPHEMERAL_BROWSING;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -21,8 +22,9 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.View;
 
 import androidx.browser.customtabs.CustomTabsCallback;
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -38,11 +40,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.RuleChain;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -57,17 +58,11 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.PackageManagerWrapper;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
-import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
-import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandler;
-import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityModule;
-import org.chromium.chrome.browser.dependency_injection.ModuleOverridesRule;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -75,18 +70,17 @@ import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthSettingUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.translate.TranslateBridgeJni;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.webapps.WebappsUtils;
+import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.DeviceRestriction;
@@ -104,58 +98,37 @@ public class CustomTabActivityAppMenuTest {
     private static final int NUM_CHROME_MENU_ITEMS_WITH_DIVIDER = 7;
     private static final String TEST_PAGE = "/chrome/test/data/android/google.html";
     private static final String TEST_MENU_TITLE = "testMenuTitle";
-
-    @Rule public JniMocker jniMocker = new JniMocker();
     @Mock private TranslateBridge.Natives mTranslateBridgeJniMock;
 
-    public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
-
-    private final TestRule mModuleOverridesRule =
-            new ModuleOverridesRule()
-                    .setOverride(
-                            BaseCustomTabActivityModule.Factory.class,
-                            (BrowserServicesIntentDataProvider intentDataProvider,
-                                    CustomTabNightModeStateController nightModeController,
-                                    CustomTabIntentHandler.IntentIgnoringCriterion
-                                            intentIgnoringCriterion,
-                                    TopUiThemeColorProvider topUiThemeColorProvider,
-                                    DefaultBrowserProviderImpl customTabDefaultBrowserProvider) ->
-                                    new BaseCustomTabActivityModule(
-                                            intentDataProvider,
-                                            nightModeController,
-                                            intentIgnoringCriterion,
-                                            topUiThemeColorProvider,
-                                            new FakeDefaultBrowserProviderImpl()));
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public RuleChain mRuleChain =
-            RuleChain.emptyRuleChain()
-                    .around(mCustomTabActivityTestRule)
-                    .around(mModuleOverridesRule);
+    public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
 
     private String mTestPage;
 
-    private class TestContext extends ContextWrapper {
+    private static class TestContext extends ContextWrapper {
         public TestContext(Context baseContext) {
             super(baseContext);
         }
 
         @Override
         public PackageManager getPackageManager() {
-            return new PackageManagerWrapper(super.getPackageManager()) {
-                @Override
-                public List<ResolveInfo> queryBroadcastReceivers(Intent intent, int filters) {
-                    return new ArrayList<ResolveInfo>();
-                }
-            };
+            return CustomTabsTestUtils.getDefaultBrowserOverridingPackageManager(
+                    getPackageName(),
+                    new PackageManagerWrapper(super.getPackageManager()) {
+                        @Override
+                        public List<ResolveInfo> queryBroadcastReceivers(
+                                Intent intent, int filters) {
+                            return new ArrayList<>();
+                        }
+                    });
         }
 
         @Override
         public Object getSystemService(String name) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-                if (name.equals(Context.SHORTCUT_SERVICE)) {
-                    return null;
-                }
+            if (name.equals(Context.SHORTCUT_SERVICE)) {
+                return null;
             }
             return super.getSystemService(name);
         }
@@ -163,18 +136,19 @@ public class CustomTabActivityAppMenuTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
 
         // Mock translate bridge so "Translate..." menu item doesn't unexpectedly show up.
-        jniMocker.mock(
-                org.chromium.chrome.browser.translate.TranslateBridgeJni.TEST_HOOKS,
+        org.chromium.chrome.browser.translate.TranslateBridgeJni.setInstanceForTesting(
                 mTranslateBridgeJniMock);
-        jniMocker.mock(TranslateBridgeJni.TEST_HOOKS, mTranslateBridgeJniMock);
+        TranslateBridgeJni.setInstanceForTesting(mTranslateBridgeJniMock);
 
         ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
         mTestPage = mCustomTabActivityTestRule.getTestServer().getURL(TEST_PAGE);
         WebappsUtils.setAddToHomeIntentSupportedForTesting(true);
         LibraryLoader.getInstance().ensureInitialized();
+
+        TestContext testContext = new TestContext(ContextUtils.getApplicationContext());
+        ContextUtils.initApplicationContextForTests(testContext);
     }
 
     @After
@@ -291,17 +265,14 @@ public class CustomTabActivityAppMenuTest {
         Assert.assertNotNull(
                 AppMenuTestSupport.getMenuItemPropertyModel(
                         mCustomTabActivityTestRule.getAppMenuCoordinator(),
-                        ChromeFeatureList.isEnabled(ChromeFeatureList.PWA_UNIVERSAL_INSTALL_UI)
-                                ? R.id.universal_install
-                                : R.id.add_to_homescreen_id));
+                        R.id.universal_install));
         Assert.assertNotNull(
                 AppMenuTestSupport.getMenuItemPropertyModel(
                         mCustomTabActivityTestRule.getAppMenuCoordinator(),
-                        R.id.request_desktop_site_row_menu_id));
+                        R.id.request_desktop_site_id));
         Assert.assertNull(
                 AppMenuTestSupport.getMenuItemPropertyModel(
-                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
-                        R.id.share_row_menu_id));
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.share_menu_id));
 
         assertHistoryMenuVisibility();
 
@@ -418,13 +389,13 @@ public class CustomTabActivityAppMenuTest {
         Assert.assertNotNull(
                 AppMenuTestSupport.getMenuItemPropertyModel(
                         mCustomTabActivityTestRule.getAppMenuCoordinator(),
-                        R.id.request_desktop_site_row_menu_id));
+                        R.id.request_desktop_site_id));
 
         ModelList iconRowModelList =
                 AppMenuTestSupport.getMenuItemPropertyModel(
                                 mCustomTabActivityTestRule.getAppMenuCoordinator(),
                                 R.id.icon_row_menu_id)
-                        .get(AppMenuItemProperties.SUBMENU);
+                        .get(AppMenuItemProperties.ADDITIONAL_ICONS);
         final int expectedIconMenuSize = 4;
         assertEquals(expectedIconMenuSize, iconRowModelList.size());
         Assert.assertNotNull(
@@ -485,7 +456,7 @@ public class CustomTabActivityAppMenuTest {
         Assert.assertNotNull(
                 AppMenuTestSupport.getMenuItemPropertyModel(
                         mCustomTabActivityTestRule.getAppMenuCoordinator(),
-                        R.id.request_desktop_site_row_menu_id));
+                        R.id.request_desktop_site_id));
         Assert.assertNull(
                 AppMenuTestSupport.getMenuItemPropertyModel(
                         mCustomTabActivityTestRule.getAppMenuCoordinator(),
@@ -493,7 +464,7 @@ public class CustomTabActivityAppMenuTest {
         Assert.assertNull(
                 AppMenuTestSupport.getMenuItemPropertyModel(
                         mCustomTabActivityTestRule.getAppMenuCoordinator(),
-                        R.id.add_to_homescreen_id));
+                        R.id.universal_install));
         Assert.assertNull(
                 AppMenuTestSupport.getMenuItemPropertyModel(
                         mCustomTabActivityTestRule.getAppMenuCoordinator(),
@@ -529,21 +500,15 @@ public class CustomTabActivityAppMenuTest {
     public void testAddToHomeScreenMenuItemNoHomeScreen() throws Exception {
         // Clear default setting from #setUp.
         WebappsUtils.setAddToHomeIntentSupportedForTesting(null);
-        Context contextToRestore = ContextUtils.getApplicationContext();
-        TestContext testContext = new TestContext(contextToRestore);
-        ContextUtils.initApplicationContextForTests(testContext);
         Intent intent = createMinimalCustomTabIntent();
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
         openAppMenuAndAssertMenuShown();
         PropertyModel addToHomeScreenPropertyModel =
                 AppMenuTestSupport.getMenuItemPropertyModel(
-                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
-                        R.id.add_to_homescreen_id);
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.universal_install);
 
         Assert.assertNull(addToHomeScreenPropertyModel);
-
-        ContextUtils.initApplicationContextForTests(contextToRestore);
     }
 
     /** Test that only up to 7 entries are added to the custom menu. */
@@ -596,13 +561,22 @@ public class CustomTabActivityAppMenuTest {
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    int itemId =
+                    ModelList menuModelList =
                             ((CustomTabAppMenuPropertiesDelegate)
                                             AppMenuTestSupport.getAppMenuPropertiesDelegate(
                                                     mCustomTabActivityTestRule
                                                             .getAppMenuCoordinator()))
-                                    .getItemIdForTitle(TEST_MENU_TITLE);
-                    Assert.assertNotEquals(AppMenuPropertiesDelegate.INVALID_ITEM_ID, itemId);
+                                    .getModelList();
+                    int itemId = View.NO_ID;
+                    for (MVCListAdapter.ListItem menuItem : menuModelList) {
+                        if (menuItem.model.containsKey(AppMenuItemProperties.TITLE)
+                                && TextUtils.equals(
+                                        TEST_MENU_TITLE,
+                                        menuItem.model.get(AppMenuItemProperties.TITLE))) {
+                            itemId = menuItem.model.get(AppMenuItemProperties.MENU_ITEM_ID);
+                        }
+                    }
+                    Assert.assertNotEquals(View.NO_ID, itemId);
                     AppMenuTestSupport.onOptionsItemSelected(
                             mCustomTabActivityTestRule.getAppMenuCoordinator(), itemId);
                 });
@@ -622,6 +596,7 @@ public class CustomTabActivityAppMenuTest {
      */
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/361629264")
     public void testOpenInBrowser() throws Exception {
         // Augment the CustomTabsSession to catch the callback.
         CallbackHelper callbackTriggered = new CallbackHelper();
@@ -694,7 +669,6 @@ public class CustomTabActivityAppMenuTest {
      */
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.CCT_EPHEMERAL_MODE)
     public void testOpenInIncognitoBrowser() throws Exception {
         IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(false);
         // Augment the CustomTabsSession to catch the callback.
@@ -714,7 +688,7 @@ public class CustomTabActivityAppMenuTest {
 
         Intent intent = new CustomTabsIntent.Builder(session).build().intent;
         // Set up an OTR custom tab to trigger "Open in Chrome Incognito".
-        intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_EPHEMERAL_TAB, true);
+        intent.putExtra(EXTRA_ENABLE_EPHEMERAL_BROWSING, true);
         intent.setData(Uri.parse(mTestPage));
         intent.setComponent(
                 new ComponentName(
@@ -750,7 +724,7 @@ public class CustomTabActivityAppMenuTest {
 
         callbackTriggered.waitForCallback(0);
 
-        CriteriaHelper.pollInstrumentationThread(
+        CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
                             RecordHistogram.getHistogramValueCountForTesting(

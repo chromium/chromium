@@ -5,12 +5,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_PAGE_CONTAINER_LAYOUT_ALGORITHM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_PAGE_CONTAINER_LAYOUT_ALGORITHM_H_
 
+#include <array>
+
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/counters_attachment_context.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
-#include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
 #include "third_party/blink/renderer/core/layout/layout_algorithm.h"
+#include "third_party/blink/renderer/platform/geometry/physical_size.h"
 
 namespace blink {
 
@@ -47,6 +50,7 @@ class CORE_EXPORT PageContainerLayoutAlgorithm
       wtf_size_t total_page_count,
       const AtomicString& page_name,
       const BlockNode& content_node,
+      const CountersAttachmentContext&,
       const PageAreaLayoutParams&,
       bool ignore_author_page_style,
       const PhysicalBoxFragment* existing_page_container);
@@ -54,12 +58,16 @@ class CORE_EXPORT PageContainerLayoutAlgorithm
   const LayoutResult* Layout();
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Return the outgoing break token from the fragmentainer (page area).
   const BlockBreakToken* FragmentainerBreakToken() const {
     return fragmentainer_break_token_;
+  }
+
+  const CountersAttachmentContext& GetCountersContext() const {
+    return counters_context_;
   }
 
   bool NeedsTotalPageCount() const { return needs_total_page_count_; }
@@ -182,16 +190,17 @@ class CORE_EXPORT PageContainerLayoutAlgorithm
   // Based on available size, size properties and intrinsic sizes, calculate the
   // main-axis size for each of the (up to) three page margin boxes along one of
   // the four edges, and place the result in `final_main_axis_sizes`.
-  void CalculateEdgeMarginBoxSizes(PhysicalSize available_physical_size,
-                                   const BlockNode nodes[3],
-                                   ProgressionDirection,
-                                   LayoutUnit final_main_axis_sizes[3]) const;
+  void CalculateEdgeMarginBoxSizes(
+      PhysicalSize available_physical_size,
+      const std::array<BlockNode, 3>& nodes,
+      ProgressionDirection,
+      std::array<LayoutUnit, 3>& final_main_axis_sizes) const;
 
   // Resolve at most two auto size values. The first and last entry in
   // preferred_main_axis_sizes may be auto. The one in the middle is required to
   // be non-auto.
   static void ResolveTwoEdgeMarginBoxLengths(
-      const PreferredSizeInfo preferred_main_axis_sizes[3],
+      const std::array<PreferredSizeInfo, 3>& preferred_main_axis_sizes,
       LayoutUnit available_main_axis_size,
       LayoutUnit* first_main_axis_size,
       LayoutUnit* second_main_axis_size);
@@ -228,6 +237,7 @@ class CORE_EXPORT PageContainerLayoutAlgorithm
 
   const AtomicString& page_name_;
   const BlockNode& content_node_;
+  CountersAttachmentContext counters_context_;
   const PageAreaLayoutParams& page_area_params_;
   bool ignore_author_page_style_;
   bool needs_total_page_count_ = false;

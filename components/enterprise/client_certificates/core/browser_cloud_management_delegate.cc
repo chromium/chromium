@@ -18,11 +18,8 @@
 namespace enterprise_attestation {
 
 BrowserCloudManagementDelegate::BrowserCloudManagementDelegate(
-    policy::BrowserDMTokenStorage* dm_token_storage,
     std::unique_ptr<DMServerClient> dm_server_client)
-    : dm_token_storage_(dm_token_storage),
-      dm_server_client_(std::move(dm_server_client)) {
-  DCHECK(dm_token_storage_);
+    : dm_server_client_(std::move(dm_server_client)) {
   CHECK(dm_server_client_);
 }
 
@@ -32,13 +29,14 @@ void BrowserCloudManagementDelegate::UploadBrowserPublicKey(
     const enterprise_management::DeviceManagementRequest& upload_request,
     policy::DMServerJobConfiguration::Callback callback) {
   dm_server_client_->UploadBrowserPublicKey(
-      dm_token_storage_->RetrieveClientId(), GetDMToken().value_or(""),
+      policy::BrowserDMTokenStorage::Get()->RetrieveClientId(),
+      GetDMToken().value_or(""),
       /*profile_id=*/std::nullopt, std::move(upload_request),
       std::move(callback));
 }
 
 std::optional<std::string> BrowserCloudManagementDelegate::GetDMToken() const {
-  auto dm_token = dm_token_storage_->RetrieveDMToken();
+  auto dm_token = policy::BrowserDMTokenStorage::Get()->RetrieveDMToken();
   if (dm_token.is_valid()) {
     return dm_token.value();
   }

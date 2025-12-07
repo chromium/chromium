@@ -64,8 +64,8 @@ class DlpContentRestrictionSet {
 
   ~DlpContentRestrictionSet();
 
-  bool operator==(const DlpContentRestrictionSet& other) const;
-  bool operator!=(const DlpContentRestrictionSet& other) const;
+  friend bool operator==(const DlpContentRestrictionSet&,
+                         const DlpContentRestrictionSet&) = default;
 
   // Sets the |restriction| to the |level| if not set to a higher one yet and
   // remembers the |url| in this case.

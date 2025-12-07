@@ -9,7 +9,10 @@
 
 import codecs
 import os
+import re
 import sys
+import tempfile
+import zipfile
 if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 
@@ -17,6 +20,9 @@ import unittest
 
 from grit import util
 from grit.tool import build
+
+
+ZIP_ENTRY_PATH_TRIMMED_RE = re.compile(r'^values-\w{2}/components_strings.xml$')
 
 
 class BuildUnittest(unittest.TestCase):
@@ -44,7 +50,13 @@ class BuildUnittest(unittest.TestCase):
     builder.Run(DummyOpts(), ['-o', output_dir.GetPath()])
     output_dir.CleanUp()
 
-  def testGenerateDepFile(self):
+  def testGenerateDepFileWithoutGenderSupport(self):
+    self._testGenerateDepFileInternal(False)
+
+  def testGenerateDepFileWithGenderSupport(self):
+    self._testGenerateDepFileInternal(True)
+
+  def _testGenerateDepFileInternal(self, translate_genders):
     output_dir = util.TempDir({})
     builder = build.RcBuilder()
     class DummyOpts:
@@ -53,9 +65,16 @@ class BuildUnittest(unittest.TestCase):
         self.verbose = False
         self.extra_verbose = False
     expected_dep_file = output_dir.GetPath('substitute.grd.d')
-    builder.Run(DummyOpts(), ['-o', output_dir.GetPath(),
-                              '--depdir', output_dir.GetPath(),
-                              '--depfile', expected_dep_file])
+
+    args = [
+        '-o',
+        output_dir.GetPath(), '--depdir',
+        output_dir.GetPath(), '--depfile', expected_dep_file
+    ]
+    if translate_genders:
+      args.append('--translate-genders')
+
+    builder.Run(DummyOpts(), args)
 
     self.assertTrue(os.path.isfile(expected_dep_file))
     with open(expected_dep_file) as f:
@@ -155,6 +174,231 @@ class BuildUnittest(unittest.TestCase):
             '-a', os.path.abspath(output_dir.GetPath('resource.h'))]))
     output_dir.CleanUp()
 
+  def testAssertZippedAndroidOutputs(self):
+    output_dir = util.TempDir({})
+
+    class DummyOpts:
+
+      def __init__(self):
+        self.input = util.PathFromRoot('grit/testdata/substitute_android.grd')
+        self.verbose = False
+        self.extra_verbose = False
+
+    # Incomplete output file list (without zipping XMLs) should fail.
+    builder_fail = build.RcBuilder()
+    self.assertEqual(
+        2,
+        builder_fail.Run(DummyOpts(), [
+            '-o',
+            output_dir.GetPath(),
+            '-a',
+            os.path.abspath(output_dir.GetPath('en_generated_resources.rc')),
+        ]))
+
+    # Complete output file list  (without zipping XMLs) should succeed.
+    builder_ok = build.RcBuilder()
+    self.assertEqual(
+        0,
+        builder_ok.Run(DummyOpts(), [
+            '-o',
+            output_dir.GetPath(),
+            '-a',
+            os.path.abspath(output_dir.GetPath('en_generated_resources.rc')),
+            '-a',
+            os.path.abspath(output_dir.GetPath('sv_generated_resources.rc')),
+            '-a',
+            os.path.abspath(output_dir.GetPath('resource.h')),
+            '-a',
+            os.path.abspath(
+                output_dir.GetPath(
+                    'java/res/values-af/components_strings.xml')),
+            '-a',
+            os.path.abspath(
+                output_dir.GetPath(
+                    'java/res/values-am/components_strings.xml')),
+            '-a',
+            os.path.abspath(
+                output_dir.GetPath('values-ar/components_strings.xml')),
+        ]))
+
+    # Incomplete output file list (while zipping XMLs) should fail.
+    builder_fail = build.RcBuilder()
+    self.assertEqual(
+        2,
+        builder_fail.Run(DummyOpts(), [
+            '-o',
+            output_dir.GetPath(),
+            '-a',
+            os.path.abspath(output_dir.GetPath('en_generated_resources.rc')),
+            '--android-output-zip',
+            os.path.abspath(output_dir.GetPath('android_resources.zip')),
+        ]))
+
+    # Complete output file list (while zipping XMLs) should succeed.
+    builder_ok = build.RcBuilder()
+    self.assertEqual(
+        0,
+        builder_ok.Run(DummyOpts(), [
+            '-o',
+            output_dir.GetPath(),
+            '-a',
+            os.path.abspath(output_dir.GetPath('en_generated_resources.rc')),
+            '-a',
+            os.path.abspath(output_dir.GetPath('sv_generated_resources.rc')),
+            '-a',
+            os.path.abspath(output_dir.GetPath('resource.h')),
+            '-a',
+            os.path.abspath(output_dir.GetPath('android_resources.zip')),
+            '--android-output-zip',
+            os.path.abspath(output_dir.GetPath('android_resources.zip')),
+        ]))
+
+    # Complete output file list (while zipping XMLs) should succeed, even when
+    # --android-output-zip is a relative path.
+    builder_ok = build.RcBuilder()
+    self.assertEqual(
+        0,
+        builder_ok.Run(DummyOpts(), [
+            '-o',
+            output_dir.GetPath(),
+            '-a',
+            os.path.abspath(output_dir.GetPath('en_generated_resources.rc')),
+            '-a',
+            os.path.abspath(output_dir.GetPath('sv_generated_resources.rc')),
+            '-a',
+            os.path.abspath(output_dir.GetPath('resource.h')),
+            '-a',
+            os.path.abspath(output_dir.GetPath('android_resources.zip')),
+            '--android-output-zip',
+            os.path.relpath(output_dir.GetPath('android_resources.zip')),
+        ]))
+
+    output_dir.CleanUp()
+
+  def testZippedAndroidOutputs(self):
+
+    class DummyOpts:
+
+      def __init__(self):
+        self.input = util.PathFromRoot('grit/testdata/substitute_android.grd')
+        self.verbose = False
+        self.extra_verbose = False
+
+    # Don't supply a '--android-output-zip' path: each of the 3 xml outputs gets
+    # its own file.
+    output_dir = util.TempDir({})
+
+    builder_ok = build.RcBuilder()
+    builder_ok.Run(DummyOpts(), [
+        '-o',
+        output_dir.GetPath(),
+    ])
+
+    self.assertTrue(
+        os.path.exists(
+            os.path.abspath(
+                output_dir.GetPath(
+                    'java/res/values-af/components_strings.xml'))))
+    self.assertTrue(
+        os.path.exists(
+            os.path.abspath(
+                output_dir.GetPath(
+                    'java/res/values-am/components_strings.xml'))))
+    self.assertTrue(
+        os.path.exists(
+            os.path.abspath(
+                output_dir.GetPath('values-ar/components_strings.xml'))))
+
+    output_dir.CleanUp()
+
+    def getZipPath():
+      return os.path.abspath(output_dir.GetPath('android_resources.zip'))
+
+    # Supply a '--android-output-zip' xml files don't exist, but zip file does.
+    # Zip file has trimmed paths.
+    output_dir = util.TempDir({})
+    zip_path = getZipPath()
+
+    builder_ok = build.RcBuilder()
+    builder_ok.Run(
+        DummyOpts(),
+        ['-o', output_dir.GetPath(), '--android-output-zip', zip_path])
+
+    self.assertTrue(os.path.exists(zip_path))
+    self.assertFalse(
+        os.path.exists(
+            os.path.abspath(
+                output_dir.GetPath(
+                    'java/res/values-af/components_strings.xml'))))
+    self.assertFalse(
+        os.path.exists(
+            os.path.abspath(
+                output_dir.GetPath(
+                    'java/res/values-am/components_strings.xml'))))
+    self.assertFalse(
+        os.path.exists(
+            os.path.abspath(
+                output_dir.GetPath('values-ar/components_strings.xml'))))
+
+    with zipfile.ZipFile(zip_path, 'r') as zip_file:
+      for info in zip_file.infolist():
+        self.assertIsNotNone(ZIP_ENTRY_PATH_TRIMMED_RE.match(info.filename))
+        self.assertEqual(info.date_time, (2001, 1, 1, 0, 0, 0))
+        self.assertGreater(info.file_size, 0)
+
+    output_dir.CleanUp()
+
+  def testGetTempAndroidOutputPath(self):
+    builder_ok = build.RcBuilder()
+    builder_ok.android_output_tmp_dir = tempfile.TemporaryDirectory(
+        ignore_cleanup_errors=True)
+
+    # easy case: an absolute path will just get the root removed and be joined
+    # to the tmp dir.
+    self.assertEqual(
+        builder_ok.GetTempAndroidOutputPath('/absolute/path.zip'),
+        os.path.join(builder_ok.android_output_tmp_dir.name,
+                     os.path.join('absolute', 'path.zip')))
+
+    # relative paths are more complicated to test, because they depend on the
+    # cwd. os.path.splitdrive() removes the drive from the path in a different
+    # way from the GetTempAndroidOutputPath() implementation, so it should
+    # verify the behaviour we want.
+    #
+    # Note: it would be better to use os.path.splitroot() here, but our vpython3
+    # environment is currently too old for that function (it was added in 3.12).
+    #
+    # For example, assuming the cwd is 'C:/chromium/src/out/Debug',
+    # |expected_abspath| should evaluate to
+    # (f'{builder_ok.android_output_tmp_dir}/chromium/src/out/Debug/relative/'
+    #   'path.zip').
+    original_abspath = os.path.abspath(
+        'relative/path.zip'
+    )  # eg, 'C:/chromium/src/out/Debug/relative/path.zip'
+    (_, tail) = os.path.splitdrive(
+        original_abspath)  # eg, '/chromium/src/out/Debug/relative/path.zip'
+    expected_abspath = os.path.join(builder_ok.android_output_tmp_dir.name,
+                                    tail[1:])
+    self.assertEqual(builder_ok.GetTempAndroidOutputPath('relative/path.zip'),
+                     expected_abspath)
+
+    # similar, but ensures that '..' elements work in relative paths.
+    #
+    # again assuming the cwd is '/chromium/src/out/Debug',
+    # |expected_abspath| should evaluate to
+    # f'{builder_ok.android_output_tmp_dir}/chromium/src/relative/path.zip'.
+    #
+    # eg, '/chromium/src/relative/path.zip' (derived from
+    # 'chromium/src/out/Debug/../../relative/path.zip')
+    original_abspath = os.path.abspath('../../relative/path.zip')
+    (_, tail) = os.path.splitdrive(
+        original_abspath)  # eg, '/chromium/src/relative/path.zip'
+    expected_abspath = os.path.join(builder_ok.android_output_tmp_dir.name,
+                                    tail[1:])
+    self.assertEqual(
+        builder_ok.GetTempAndroidOutputPath('../../relative/path.zip'),
+        expected_abspath)
+
   def _verifyAllowlistedOutput(self,
                                filename,
                                allowlisted_ids,
@@ -212,7 +456,13 @@ class BuildUnittest(unittest.TestCase):
                                   encoding='utf16')
     output_dir.CleanUp()
 
-  def testAllowlistResources(self):
+  def testAllowlistResourcesWithoutGenderSupport(self):
+    self._testAllowlistResourcesInternal(False)
+
+  def testAllowlistResourcesWithGenderSupport(self):
+    self._testAllowlistResourcesInternal(True)
+
+  def _testAllowlistResourcesInternal(self, translate_genders):
     output_dir = util.TempDir({})
     builder = build.RcBuilder()
     class DummyOpts:
@@ -222,7 +472,12 @@ class BuildUnittest(unittest.TestCase):
         self.extra_verbose = False
 
     allowlist_file = util.PathFromRoot('grit/testdata/allowlist.txt')
-    builder.Run(DummyOpts(), ['-o', output_dir.GetPath(), '-w', allowlist_file])
+
+    args = ['-o', output_dir.GetPath(), '-w', allowlist_file]
+    if translate_genders:
+      args.append('--translate-genders')
+    builder.Run(DummyOpts(), args)
+
     header = output_dir.GetPath('allowlist_test_resources.h')
     map_cc = output_dir.GetPath('allowlist_test_resources_map.cc')
     map_h = output_dir.GetPath('allowlist_test_resources_map.h')

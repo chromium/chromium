@@ -17,9 +17,8 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/aligned_memory.h"
-#include "base/memory/raw_ptr.h"
-#include "media/base/audio_sample_types.h"
-#include "media/base/media_shmem_export.h"
+#include "base/memory/raw_ptr_exclusion.h"
+#include "media/base/media_export.h"
 
 namespace media {
 class AudioParameters;
@@ -31,8 +30,13 @@ class AudioParameters;
 // methods. AudioBus guarantees that it allocates memory such that float array
 // for each channel is aligned by AudioBus::kChannelAlignment bytes and it
 // requires the same for memory passed to its Wrap...() factory methods.
-class MEDIA_SHMEM_EXPORT AudioBus {
+class MEDIA_EXPORT AudioBus {
  public:
+  using BitstreamData = base::span<uint8_t>;
+  using Channel = base::span<float>;
+  using ConstChannel = base::span<const float>;
+  using ChannelVector = std::vector<Channel>;
+
   // Guaranteed alignment of each channel's data; use 16-byte alignment for easy
   // SSE optimizations.
   static constexpr size_t kChannelAlignment = 16;
@@ -47,43 +51,37 @@ class MEDIA_SHMEM_EXPORT AudioBus {
   // to wrap externally allocated memory.
   static std::unique_ptr<AudioBus> CreateWrapper(int channels);
 
-  // Creates a new AudioBus from an existing channel vector.  Does not transfer
-  // ownership of |channel_data| to AudioBus; i.e., |channel_data| must outlive
-  // the returned AudioBus.  Each channel must be aligned by kChannelAlignment.
-  static std::unique_ptr<AudioBus> WrapVector(
-      int frames,
-      const std::vector<float*>& channel_data);
-
   // Creates a new AudioBus by wrapping an existing block of memory.  Block must
   // be at least CalculateMemorySize() bytes in size.  |data| must outlive the
   // returned AudioBus.  |data| must be aligned by kChannelAlignment.
   static std::unique_ptr<AudioBus> WrapMemory(int channels,
                                               int frames,
-                                              void* data);
+                                              base::span<float> data);
   static std::unique_ptr<AudioBus> WrapMemory(const AudioParameters& params,
-                                              void* data);
-  static std::unique_ptr<const AudioBus> WrapReadOnlyMemory(int channels,
-                                                            int frames,
-                                                            const void* data);
-  static std::unique_ptr<const AudioBus> WrapReadOnlyMemory(
-      const AudioParameters& params,
-      const void* data);
+                                              base::span<uint8_t> data);
+  static std::unique_ptr<AudioBus> WrapMemory(const AudioParameters& params,
+                                              base::span<float> data);
 
   // Based on the given number of channels and frames, calculates the minimum
   // required size in bytes of a contiguous block of memory to be passed to
   // AudioBus for storage of the audio data.
   // Uses channels() and frames_per_buffer() from AudioParameters if given.
-  static int CalculateMemorySize(int channels, int frames);
-  static int CalculateMemorySize(const AudioParameters& params);
+  static size_t CalculateMemorySize(int channels, int frames);
+  static size_t CalculateMemorySize(const AudioParameters& params);
 
   // Checks if buffer is properly aligned to be used in `SetChannelData()`
   static bool IsAligned(void* ptr);
+  static bool IsAligned(base::span<float> span);
 
   // Methods that are expected to be called after AudioBus::CreateWrapper() in
-  // order to wrap externally allocated memory. Note: It is illegal to call
-  // these methods when using a factory method other than CreateWrapper().
-  void SetChannelData(int channel, float* data);
+  // order to wrap externally allocated memory.
+  // To avoid cases where channel sizes and number of frames don't match,
+  // `set_frames()` must be called before setting channel data.
+  // Note: It is illegal to call these methods when using a factory method other
+  // than CreateWrapper().
   void set_frames(int frames);
+  void SetChannelData(int channel, Channel data);
+  void SetAllChannels(const ChannelVector& channel_data);
 
   // Method optionally called after AudioBus::CreateWrapper().
   // Runs |deleter| when on |this|' destruction, freeing external data
@@ -98,12 +96,19 @@ class MEDIA_SHMEM_EXPORT AudioBus {
   // data size and frame count for bitstream formats.
   bool is_bitstream_format() const { return is_bitstream_format_; }
   void set_is_bitstream_format(bool is_bitstream_format) {
+    if (is_bitstream_format) {
+      // Don't allow bitstreams if we don't have a continuous chunk of memory.
+      // This happens for busses created by CreateWrapper() and WrapVector().
+      CHECK(!reserved_memory_.empty());
+    }
     is_bitstream_format_ = is_bitstream_format;
   }
-  size_t GetBitstreamDataSize() const;
-  void SetBitstreamDataSize(size_t data_size);
+  void SetBitstreamSize(size_t data_size);
   int GetBitstreamFrames() const;
-  void SetBitstreamFrames(int frames);
+  void SetBitstreamFrames(size_t frames);
+
+  // Returns the currently used bitstream data.
+  BitstreamData bitstream_data() const { return bitstream_data_; }
 
   // Overwrites the sample values stored in this AudioBus instance with values
   // from a given interleaved |source_buffer| with expected layout
@@ -166,12 +171,29 @@ class MEDIA_SHMEM_EXPORT AudioBus {
   // Returns a raw pointer to the requested channel.  Pointer is guaranteed to
   // have a 16-byte alignment.  Warning: Do not rely on having sane (i.e. not
   // inf, nan, or between [-1.0, 1.0]) values in the channel data.
-  float* channel(int channel) { return channel_data_[channel]; }
-  const float* channel(int channel) const { return channel_data_[channel]; }
+  // TODO(crbug.com/373960632): Rename `channel_span` to `channel`.
+  Channel channel_span(int channel) {
+    CHECK(!is_bitstream_format_);
+    return channel_data_[channel];
+  }
+  ConstChannel channel_span(int channel) const {
+    CHECK(!is_bitstream_format_);
+    return channel_data_[channel];
+  }
+
+  // Convenience function to allow range-based for-loops.
+  const ChannelVector& AllChannels() const;
+
+  // Returns a copy of `channels_`, with `subspan()` applied to each channel.
+  // Note: The returned channels might not be aligned, depending on `offset`.
+  ChannelVector AllChannelsSubspan(size_t offset, size_t count) const;
 
   // Returns the number of channels.
   int channels() const { return static_cast<int>(channel_data_.size()); }
   // Returns the number of frames.
+  // Note: for bitstream formats, use GetBitstreamFrames() to get the actual
+  // number of encoded frames. However, `frames()` remains useful in determining
+  // the amount of `reserved_memory_` this bus has.
   int frames() const { return frames_; }
 
   // Helper method for zeroing out all channels of audio data.
@@ -197,14 +219,15 @@ class MEDIA_SHMEM_EXPORT AudioBus {
 
  protected:
   AudioBus(int channels, int frames);
-  AudioBus(int channels, int frames, float* data);
-  AudioBus(int frames, const std::vector<float*>& channel_data);
+  AudioBus(int channels, int frames, base::span<float> data);
   explicit AudioBus(int channels);
 
  private:
+  void ZeroBitstream();
+
   // Helper method for building |channel_data_| from a block of memory.  |data|
   // must be at least CalculateMemorySize(...) bytes in size.
-  void BuildChannelData(int channels, int aligned_frame, float* data);
+  void BuildChannelData(int channels, base::span<float> data);
 
   static void CheckOverflow(int start_frame, int frames, int total_frames);
 
@@ -223,26 +246,35 @@ class MEDIA_SHMEM_EXPORT AudioBus {
       typename TargetSampleTypeTraits::ValueType* dest_buffer);
 
   // Contiguous block of channel memory.
-  std::unique_ptr<float, base::AlignedFreeDeleter> data_;
+  base::AlignedHeapArray<float> data_;
+
+  // Chunk of binary data for bitstream formats.
+  // This might point towards external memory, or `data_`.
+  // TODO(crbug.com/385028986): Convert to `base::raw_span`
+  RAW_PTR_EXCLUSION base::span<uint8_t> reserved_memory_;
+
+  // View over `reserved_memory_`, which represents the chunk of memory which
+  // is actively reserved to hold bitstream data. The size of this memory can
+  // be adjusted using SetBitstreamDataSize().
+  RAW_PTR_EXCLUSION BitstreamData bitstream_data_;
 
   // Whether the data is compressed bitstream or not.
   bool is_bitstream_format_ = false;
-  // The data size for a compressed bitstream.
-  size_t bitstream_data_size_ = 0;
   // The PCM frame count for a compressed bitstream.
-  int bitstream_frames_ = 0;
+  size_t bitstream_frames_ = 0;
 
   // One float pointer per channel pointing to a contiguous block of memory for
   // that channel. If the memory is owned by this instance, this will
   // point to the memory in |data_|. Otherwise, it may point to memory provided
   // by the client.
-  // FIELD excluded due to ptr arithmetic in audio_buss.cc channel_data_[i][j]
-  RAW_PTR_EXCLUSION std::vector<float*> channel_data_;
-  int frames_;
+  // TODO(crbug.com/385028986): Convert to `base::raw_span`
+  RAW_PTR_EXCLUSION ChannelVector channel_data_;
+
+  size_t frames_ = 0u;
 
   // Protect SetChannelData(), set_frames() and SetWrappedDataDeleter() for use
   // by CreateWrapper().
-  bool is_wrapper_;
+  const bool is_wrapper_ = false;
 
   // Run on destruction. Frees memory to the data set via SetChannelData().
   // Only used with CreateWrapper().
@@ -299,7 +331,7 @@ void AudioBus::CopyConvertFromInterleavedSourceToAudioBus(
     AudioBus* dest) {
   const int channels = dest->channels();
   for (int ch = 0; ch < channels; ++ch) {
-    float* channel_data = dest->channel(ch);
+    AudioBus::Channel channel_data = dest->channel_span(ch);
     for (int target_frame_index = write_offset_in_frames,
              read_pos_in_source = ch;
          target_frame_index < write_offset_in_frames + num_frames_to_write;
@@ -321,7 +353,7 @@ void AudioBus::CopyConvertFromAudioBusToInterleavedTarget(
     typename TargetSampleTypeTraits::ValueType* dest_buffer) {
   const int channels = source->channels();
   for (int ch = 0; ch < channels; ++ch) {
-    const float* channel_data = source->channel(ch);
+    AudioBus::ConstChannel channel_data = source->channel_span(ch);
     for (int source_frame_index = read_offset_in_frames, write_pos_in_dest = ch;
          source_frame_index < read_offset_in_frames + num_frames_to_read;
          ++source_frame_index, write_pos_in_dest += channels) {

@@ -8,7 +8,6 @@
 
 #include "base/command_line.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/gfx/animation/animation_container.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/tween.h"
@@ -110,6 +109,10 @@ bool Animation::ShouldRenderRichAnimation() {
     return ShouldRenderRichAnimationImpl();
   return rich_animation_rendering_mode_ ==
          RichAnimationRenderMode::FORCE_ENABLED;
+}
+
+base::TimeDelta Animation::RichAnimationDuration(base::TimeDelta duration) {
+  return ShouldRenderRichAnimation() ? duration : base::TimeDelta();
 }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)

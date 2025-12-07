@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/webui/support_tool/support_tool_ui.h"
+
 #include <string>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/webui/support_tool/support_tool_ui.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -48,9 +49,7 @@ class SupportToolUIBrowserTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<OpenSupportToolTestParam> {
  public:
-  SupportToolUIBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kSupportTool);
-  }
+  SupportToolUIBrowserTest() = default;
 
  protected:
   base::HistogramTester histogram_tester_;

@@ -91,6 +91,14 @@ table EmbedderConditions {
   tab_ids_included: [int];
   tab_ids_excluded: [int];
 
+  // The list of top-level frame domains to be included/excluded from the
+  // filter's affected set. Each should either be null or have at least a single
+  // element. The domains should be in lower-case and kept sorted as defined by
+  // url_pattern_index::CompareDomains. The entries must consist of only ASCII
+  // characters. Use punycode encoding for internationalized domains.
+  top_domains_included : [string];
+  top_domains_excluded : [string];
+
   /// Headers to include/exclude. Note that `excluded_response_headers` will
   /// only match on header names.
   /// TODO(crbug.com/41482616): Consider relocating these header conditions as
@@ -119,6 +127,16 @@ enum IndexType : ubyte {
   count
 }
 
+/// Options for regex filters and substitutions for headers. Corresponds to
+/// extensions::api::declarative_net_request::HeaderRegexOptions.
+table RegexFilterOptions {
+  /// Whether the regex should match all groups for the value. This is only
+  /// relevant if a regex substitution is present and would thus need to be
+  /// applied onto all matching groups. Equivalent to the "g" flag.
+  /// Defaults to false.
+  match_all: bool = false;
+}
+
 /// The type of header operation for modifyHeaders rules. Corresponds to
 /// extensions::api::declarative_net_request::HeaderOperation.
 enum HeaderOperation : ubyte {
@@ -135,9 +153,23 @@ table ModifyHeaderInfo {
   /// case-insensitive, the header name is normalized by converting it to
   /// lowercase.
   header: string;
+
   /// The value of the header to be set/appended. Should be specified only if
   /// |operation| is append or set.
   value: string;
+
+  /// A regular expression to match against the header value. This follows the
+  /// RE2 syntax for consistency with the rest of the API.
+  regex_filter: string;
+
+  /// Substitution pattern for the response header. `regexFilter` must be
+  /// specified for this to be valid. Takes precedence over `value` and
+  /// `operation` if specified and valid.
+  regex_substitution: string;
+
+  /// Options for the regex filter. If not specified, all options will be
+  /// default.
+  regex_options: RegexFilterOptions;
 }
 
 /// Describes the matching condition for a header, Corresponds to

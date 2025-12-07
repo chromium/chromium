@@ -98,7 +98,7 @@ TEST(ServiceWorkerRouterTypeConverterTest, Basic) {
     auto parse_result = liburlpattern::Parse(
         kFakeUrlPattern,
         [](std::string_view input) { return std::string(input); });
-    ASSERT_TRUE(parse_result.ok());
+    ASSERT_TRUE(parse_result.has_value());
     expected_url_pattern.pathname = parse_result.value().PartList();
   }
   expected_rule.condition =
@@ -146,21 +146,21 @@ TEST(ServiceWorkerRouterTypeConverterTest, BasicURLPatternInit) {
     auto parse_result = liburlpattern::Parse(
         kFakeProtoPattern,
         [](std::string_view input) { return std::string(input); });
-    ASSERT_TRUE(parse_result.ok());
+    ASSERT_TRUE(parse_result.has_value());
     expected_url_pattern.protocol = parse_result.value().PartList();
   }
   {
     auto parse_result = liburlpattern::Parse(
         kFakeHostPattern,
         [](std::string_view input) { return std::string(input); });
-    ASSERT_TRUE(parse_result.ok());
+    ASSERT_TRUE(parse_result.has_value());
     expected_url_pattern.hostname = parse_result.value().PartList();
   }
   {
     auto parse_result = liburlpattern::Parse(
         kFakePathPattern,
         [](std::string_view input) { return std::string(input); });
-    ASSERT_TRUE(parse_result.ok());
+    ASSERT_TRUE(parse_result.has_value());
     expected_url_pattern.pathname = parse_result.value().PartList();
   }
   expected_rule.condition =
@@ -211,14 +211,14 @@ TEST(ServiceWorkerRouterTypeConverterTest, URLPatternInitWithEmptyProtocol) {
     auto parse_result = liburlpattern::Parse(
         kFakeHostPattern,
         [](std::string_view input) { return std::string(input); });
-    ASSERT_TRUE(parse_result.ok());
+    ASSERT_TRUE(parse_result.has_value());
     expected_url_pattern.hostname = parse_result.value().PartList();
   }
   {
     auto parse_result = liburlpattern::Parse(
         kFakePathPattern,
         [](std::string_view input) { return std::string(input); });
-    ASSERT_TRUE(parse_result.ok());
+    ASSERT_TRUE(parse_result.has_value());
     expected_url_pattern.pathname = parse_result.value().PartList();
   }
   expected_rule.condition =
@@ -267,14 +267,14 @@ TEST(ServiceWorkerRouterTypeConverterTest, URLPatternInitWithEmptyPathname) {
     auto parse_result = liburlpattern::Parse(
         kFakeProtoPattern,
         [](std::string_view input) { return std::string(input); });
-    ASSERT_TRUE(parse_result.ok());
+    ASSERT_TRUE(parse_result.has_value());
     expected_url_pattern.protocol = parse_result.value().PartList();
   }
   {
     auto parse_result = liburlpattern::Parse(
         kFakeHostPattern,
         [](std::string_view input) { return std::string(input); });
-    ASSERT_TRUE(parse_result.ok());
+    ASSERT_TRUE(parse_result.has_value());
     expected_url_pattern.hostname = parse_result.value().PartList();
   }
   {
@@ -284,7 +284,7 @@ TEST(ServiceWorkerRouterTypeConverterTest, URLPatternInitWithEmptyPathname) {
     auto parse_result = liburlpattern::Parse(
         kFakeBaseURLPathname,
         [](std::string_view input) { return std::string(input); });
-    ASSERT_TRUE(parse_result.ok());
+    ASSERT_TRUE(parse_result.has_value());
     expected_url_pattern.pathname = parse_result.value().PartList();
   }
   expected_rule.condition =
@@ -366,7 +366,7 @@ TEST(ServiceWorkerRouterTypeConverterTest,
 
 TEST(ServiceWorkerRouterTypeConverterTest, RegexpUrlPatternShouldBeNullopt) {
   test::TaskEnvironment task_environment;
-  auto verify = [](const WTF::String& test_url_pattern) {
+  auto verify = [](const blink::String& test_url_pattern) {
     auto* idl_rule = blink::RouterRule::Create();
     auto* idl_condition = blink::RouterCondition::Create();
     idl_condition->setUrlPattern(
@@ -411,14 +411,15 @@ TEST(ServiceWorkerRouterTypeConverterTest, Race) {
     auto parse_result = liburlpattern::Parse(
         kFakeUrlPattern,
         [](std::string_view input) { return std::string(input); });
-    ASSERT_TRUE(parse_result.ok());
+    ASSERT_TRUE(parse_result.has_value());
     expected_url_pattern.pathname = parse_result.value().PartList();
   }
   expected_rule.condition =
       blink::ServiceWorkerRouterCondition::WithUrlPattern(expected_url_pattern);
   blink::ServiceWorkerRouterSource expected_source;
-  expected_source.type = network::mojom::ServiceWorkerRouterSourceType::kRace;
-  expected_source.race_source.emplace();
+  expected_source.type =
+      network::mojom::ServiceWorkerRouterSourceType::kRaceNetworkAndFetchEvent;
+  expected_source.race_network_and_fetch_event_source.emplace();
   expected_rule.sources.emplace_back(expected_source);
 
   V8TestingScope scope;
@@ -451,7 +452,7 @@ TEST(ServiceWorkerRouterTypeConverterTest, FetchEvent) {
     auto parse_result = liburlpattern::Parse(
         kFakeUrlPattern,
         [](std::string_view input) { return std::string(input); });
-    ASSERT_TRUE(parse_result.ok());
+    ASSERT_TRUE(parse_result.has_value());
     expected_url_pattern.pathname = parse_result.value().PartList();
   }
   expected_rule.condition =
@@ -493,7 +494,7 @@ TEST(ServiceWorkerRouterTypeConverterTest,
     auto parse_result = liburlpattern::Parse(
         kFakeUrlPattern,
         [](std::string_view input) { return std::string(input); });
-    ASSERT_TRUE(parse_result.ok());
+    ASSERT_TRUE(parse_result.has_value());
     expected_url_pattern.pathname = parse_result.value().PartList();
   }
   expected_rule.condition =
@@ -551,7 +552,7 @@ TEST(ServiceWorkerRouterTypeConverterTest, Request) {
 
 TEST(ServiceWorkerRouterTypeConverterTest, RequestMethodNormalize) {
   test::TaskEnvironment task_environment;
-  auto validate_normalize = [](const WTF::String& input,
+  auto validate_normalize = [](const blink::String& input,
                                const std::string& expected) {
     auto* idl_rule = blink::RouterRule::Create();
     auto* idl_condition = blink::RouterCondition::Create();
@@ -801,9 +802,6 @@ TEST(ServiceWorkerRouterTypeConverterTest,
 // TODO(crbug.com/1490445): Add tests to limit depth of condition nests
 
 TEST(ServiceWorkerRouterTypeConverterTest, NotCondition) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {blink::features::kServiceWorkerStaticRouterNotConditionEnabled}, {});
   test::TaskEnvironment task_environment;
   auto* idl_rule = blink::RouterRule::Create();
   auto* idl_condition = blink::RouterCondition::Create();
@@ -845,9 +843,6 @@ TEST(ServiceWorkerRouterTypeConverterTest, NotCondition) {
 }
 
 TEST(ServiceWorkerRouterTypeConverterTest, NestedNotCondition) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {blink::features::kServiceWorkerStaticRouterNotConditionEnabled}, {});
   test::TaskEnvironment task_environment;
   auto* idl_rule = blink::RouterRule::Create();
   auto* idl_condition = blink::RouterCondition::Create();
@@ -913,7 +908,7 @@ TEST(ServiceWorkerRouterTypeConverterTest, Cache) {
     auto parse_result = liburlpattern::Parse(
         kFakeUrlPattern,
         [](std::string_view input) { return std::string(input); });
-    ASSERT_TRUE(parse_result.ok());
+    ASSERT_TRUE(parse_result.has_value());
     expected_url_pattern.pathname = parse_result.value().PartList();
   }
   expected_rule.condition =
@@ -954,7 +949,7 @@ TEST(ServiceWorkerRouterTypeConverterTest, CacheName) {
     auto parse_result = liburlpattern::Parse(
         kFakeUrlPattern,
         [](std::string_view input) { return std::string(input); });
-    ASSERT_TRUE(parse_result.ok());
+    ASSERT_TRUE(parse_result.has_value());
     expected_url_pattern.pathname = parse_result.value().PartList();
   }
   expected_rule.condition =

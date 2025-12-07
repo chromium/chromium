@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <mfidl.h>
+#include "media/capture/video/win/gpu_memory_buffer_tracker_win.h"
 
 #include <dxgi1_2.h>
 #include <mfapi.h>
 #include <mferror.h>
+#include <mfidl.h>
 #include <wrl.h>
 #include <wrl/client.h>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
+#include "media/base/win/test_utils.h"
 #include "media/capture/video/win/d3d_capture_test_utils.h"
-#include "media/capture/video/win/gpu_memory_buffer_tracker_win.h"
 #include "media/capture/video/win/video_capture_device_factory_win.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,7 +22,6 @@
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::Field;
-using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::Pointee;
 
@@ -32,14 +32,15 @@ namespace {
 class MockDXGIDeviceManager : public DXGIDeviceManager {
  public:
   MockDXGIDeviceManager()
-      : DXGIDeviceManager(nullptr, 0, CHROME_LUID{.LowPart = 0, .HighPart = 0}),
-        mock_d3d_device_(new MockD3D11Device()) {}
+      : DXGIDeviceManager(nullptr,
+                          0,
+                          CHROME_LUID{.LowPart = 0, .HighPart = 0}) {}
 
   // Associates a new D3D device with the DXGI Device Manager
   // returns it in the parameter, which can't be nullptr.
   HRESULT ResetDevice(
       Microsoft::WRL::ComPtr<ID3D11Device>& d3d_device) override {
-    mock_d3d_device_ = new MockD3D11Device();
+    mock_d3d_device_ = MakeComPtrFromRefCounted<MockD3D11Device>();
     d3d_device = mock_d3d_device_;
     return S_OK;
   }
@@ -55,9 +56,10 @@ class MockDXGIDeviceManager : public DXGIDeviceManager {
     return mock_d3d_device_;
   }
 
- protected:
-  ~MockDXGIDeviceManager() override {}
-  Microsoft::WRL::ComPtr<MockD3D11Device> mock_d3d_device_;
+ private:
+  ~MockDXGIDeviceManager() override = default;
+  Microsoft::WRL::ComPtr<MockD3D11Device> mock_d3d_device_ =
+      MakeComPtrFromRefCounted<MockD3D11Device>();
 };
 
 }  // namespace
@@ -72,8 +74,7 @@ class GpuMemoryBufferTrackerWinTest : public ::testing::Test {
           << "Media foundation is not supported by the current platform.";
     }
 
-    dxgi_device_manager_ =
-        scoped_refptr<MockDXGIDeviceManager>(new MockDXGIDeviceManager());
+    dxgi_device_manager_ = base::MakeRefCounted<MockDXGIDeviceManager>();
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -126,7 +127,7 @@ TEST_F(GpuMemoryBufferTrackerWinTest, InvalidateOnDeviceLoss) {
   // Mock device loss.
   EXPECT_CALL(*(dxgi_device_manager_->GetMockDevice().Get()),
               OnGetDeviceRemovedReason())
-      .WillOnce(Invoke([]() { return DXGI_ERROR_DEVICE_REMOVED; }));
+      .WillOnce([]() { return DXGI_ERROR_DEVICE_REMOVED; });
   // Create and init tracker (causes initial texture creation)
   std::unique_ptr<VideoCaptureBufferTracker> tracker =
       std::make_unique<GpuMemoryBufferTrackerWin>(dxgi_device_manager_);
@@ -136,7 +137,7 @@ TEST_F(GpuMemoryBufferTrackerWinTest, InvalidateOnDeviceLoss) {
   EXPECT_FALSE(tracker->IsReusableForFormat(expected_buffer_size,
                                             PIXEL_FORMAT_NV12, nullptr));
   gfx::GpuMemoryBufferHandle gmb = tracker->GetGpuMemoryBufferHandle();
-  EXPECT_FALSE(gmb.dxgi_handle.IsValid());
+  EXPECT_TRUE(gmb.is_null());
 }
 
 TEST_F(GpuMemoryBufferTrackerWinTest, GetMemorySizeInBytes) {
@@ -169,9 +170,9 @@ TEST_F(GpuMemoryBufferTrackerWinTest, DuplicateAsUnsafeRegion) {
   mock_desc.Height = expected_buffer_size.height();
 
   Microsoft::WRL::ComPtr<ID3D11Texture2D> mock_dxgi_texture;
-  Microsoft::WRL::ComPtr<MockD3D11Texture2D> dxgi_texture(
-      new MockD3D11Texture2D(mock_desc,
-                             dxgi_device_manager_->GetMockDevice().Get()));
+  Microsoft::WRL::ComPtr<MockD3D11Texture2D> dxgi_texture =
+      MakeComPtrFromRefCounted<MockD3D11Texture2D>(
+          mock_desc, dxgi_device_manager_->GetMockDevice().Get());
   EXPECT_TRUE(SUCCEEDED(dxgi_texture.CopyTo(IID_PPV_ARGS(&mock_dxgi_texture))));
 
   // One call for creating DXGI texture by the tracker.
@@ -198,11 +199,10 @@ TEST_F(GpuMemoryBufferTrackerWinTest, DuplicateAsUnsafeRegion) {
   // DXGI texture should be opened as a shared resource.
   EXPECT_CALL(*(dxgi_device_manager_->GetMockDevice().Get()),
               DoOpenSharedResource1)
-      .WillOnce(
-          Invoke([&dxgi_texture](HANDLE resource, REFIID returned_interface,
-                                 void** resource_out) {
-            return dxgi_texture.CopyTo(returned_interface, resource_out);
-          }));
+      .WillOnce([&dxgi_texture](HANDLE resource, REFIID returned_interface,
+                                void** resource_out) {
+        return dxgi_texture.CopyTo(returned_interface, resource_out);
+      });
 
   // Expect creation of a staging texture.
   EXPECT_CALL(
@@ -235,7 +235,7 @@ TEST_F(GpuMemoryBufferTrackerWinTest, DuplicateAsUnsafeRegion) {
   EXPECT_CALL(
       *dxgi_device_manager_->GetMockDevice()->mock_immediate_context_.Get(),
       OnMap(_, _, _, _, _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&tmp_mapped_resource](ID3D11Resource* resource, UINT subresource,
                                  D3D11_MAP MapType, UINT MapFlags,
                                  D3D11_MAPPED_SUBRESOURCE* mapped_resource) {
@@ -245,14 +245,14 @@ TEST_F(GpuMemoryBufferTrackerWinTest, DuplicateAsUnsafeRegion) {
             mapped_resource->RowPitch = 1920;
             mapped_resource->DepthPitch = buffer_size;
             return S_OK;
-          }));
+          });
   EXPECT_CALL(
       *dxgi_device_manager_->GetMockDevice()->mock_immediate_context_.Get(),
       OnUnmap(_, _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&tmp_mapped_resource](ID3D11Resource* resource, UINT subresource) {
             delete[] tmp_mapped_resource;
-          }));
+          });
 
   auto memory_region = tracker->DuplicateAsUnsafeRegion();
   EXPECT_TRUE(memory_region.IsValid());

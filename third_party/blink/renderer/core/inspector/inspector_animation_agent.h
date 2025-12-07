@@ -5,12 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_ANIMATION_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_ANIMATION_AGENT_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_animation_play_state.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
 #include "third_party/blink/renderer/core/animation/scroll_snapshot_timeline.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
 #include "third_party/blink/renderer/core/inspector/protocol/animation.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -91,7 +91,7 @@ class CORE_EXPORT InspectorAnimationAgent final
     HeapVector<Member<AnimationKeyframeSnapshot>> keyframes;
     std::optional<double> start_offset;
     std::optional<double> end_offset;
-    blink::Animation::AnimationPlayState play_state;
+    V8AnimationPlayState::Enum play_state;
 
     void Trace(Visitor* visitor) const { visitor->Trace(keyframes); }
   };
@@ -120,7 +120,7 @@ class CORE_EXPORT InspectorAnimationAgent final
   // when a blink::Animation instance is updated.
   HeapHashMap<String, Member<AnimationSnapshot>> id_to_animation_snapshot_;
   // Keeps track of the blink::Animation instances by their ids.
-  HeapHashMap<String, Member<blink::Animation>> id_to_animation_;
+  HeapHashMap<String, WeakMember<blink::Animation>> id_to_animation_;
   bool is_cloning_;
   HashSet<String> cleared_animations_;
   InspectorAgentState::Boolean enabled_;

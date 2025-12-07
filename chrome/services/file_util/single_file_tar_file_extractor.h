@@ -7,7 +7,6 @@
 
 #include "base/files/file.h"
 #include "chrome/services/file_util/public/mojom/single_file_extractor.mojom.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 class SingleFileTarFileExtractor : public chrome::mojom::SingleFileExtractor {
  public:

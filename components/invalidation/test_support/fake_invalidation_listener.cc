@@ -6,6 +6,12 @@
 
 namespace invalidation {
 
+FakeInvalidationListener::FakeInvalidationListener()
+    : FakeInvalidationListener(kFakeProjectNumber) {}
+
+FakeInvalidationListener::FakeInvalidationListener(int64_t project_number)
+    : project_number_(project_number) {}
+
 void FakeInvalidationListener::Shutdown() {
   invalidations_state_ = invalidation::InvalidationsExpected::kMaybe;
   if (observer_) {
@@ -38,6 +44,10 @@ void FakeInvalidationListener::Start(invalidation::RegistrationTokenHandler*) {
   if (observer_) {
     observer_->OnExpectationChanged(invalidations_state_);
   }
+}
+
+int64_t FakeInvalidationListener::project_number() const {
+  return project_number_;
 }
 
 }  // namespace invalidation

@@ -18,13 +18,21 @@ goog.provide('goog.i18n.NumberFormat.Format');
 goog.require('goog.asserts');
 goog.require('goog.i18n.CompactNumberFormatSymbols');
 
+goog.require('goog.i18n.LocaleFeature');
+goog.require('goog.i18n.NativeLocaleDigits');
+
 goog.require('goog.i18n.NumberFormatSymbols');
 goog.require('goog.i18n.NumberFormatSymbolsType');
 goog.require('goog.i18n.NumberFormatSymbols_u_nu_latn');
 goog.require('goog.i18n.currency');
-goog.require('goog.i18n.currency.CurrencyInfo');
 goog.require('goog.math');
 goog.require('goog.string');
+
+goog.scope(function() {
+
+// For referencing modules
+const LocaleFeature = goog.module.get('goog.i18n.LocaleFeature');
+const NativeLocaleDigits = goog.module.get('goog.i18n.NativeLocaleDigits');
 
 /**
  * Constructor of NumberFormat.
@@ -58,6 +66,8 @@ goog.i18n.NumberFormat = function(
   this.resetSignificantDigits_ = false;
   /** @private {boolean} */
   this.resetFractionDigits_ = false;
+  /** @private {boolean} */
+  this.resetShowTrailingZeros_ = false;
 
   /** @const @private {?string} */
   this.intlCurrencyCode_ = opt_currency ? opt_currency.toUpperCase() : null;
@@ -116,6 +126,7 @@ goog.i18n.NumberFormat = function(
    * goog.i18n.NumberFormat('#,##,###') should have [3,2] where 2 is the
    * repeated number group following a fixed number grouping of size 3.
    * @private {!Array<number>}
+   * @const
    */
   this.groupingArray_ = [];
 
@@ -135,14 +146,18 @@ goog.i18n.NumberFormat = function(
   this.baseFormattingNumber_ = null;
 
   // Original numeric pattern. Needed because JS modifies this.pattern_*/
-  /** @private {number} */
+  /** @const @private {number} */
   this.inputPattern_ = (typeof pattern === 'number') ? pattern : -1;
 
   /** @private {string} */
   this.pattern_ = (typeof pattern === 'string') ? pattern : '';
 
   if (goog.i18n.NumberFormat.USE_ECMASCRIPT_I18N_NUMFORMAT &&
-      (typeof pattern === 'number')) {
+      (typeof pattern === 'number')
+      // COMPACT formats re: BUG b/209630094 for Firefox 94.
+      // Do not use ECMAScript mode for compact formatting.
+      && pattern != goog.i18n.NumberFormat.Format.COMPACT_SHORT &&
+      pattern != goog.i18n.NumberFormat.Format.COMPACT_LONG) {
     // Use Native mode for regular patterns
     this.SetUpIntlFormatter_(this.inputPattern_);
   } else {
@@ -196,28 +211,19 @@ goog.i18n.NumberFormat.CompactStyle = {
 
 
 /**
+ * Records if global enforcement of ASCII digits has changed.
+ * type {boolean}
+ * @private
+ */
+goog.i18n.NumberFormat.resetEnforceAsciiDigits_ = false;
+
+/**
  * If the usage of Ascii digits should be enforced.
  * @type {boolean}
  * @private
  */
 goog.i18n.NumberFormat.enforceAsciiDigits_ = false;
 
-
-/**
- * Native digit codes in EMACScript Intl objects for locales
- * where native digits are prescribed and Intl data is
- * generally available.
- * @private
- */
-goog.i18n.NumberFormat.NativeLocaleDigits_ = {
-  'ar': 'latn',
-  'ar-EG': 'arab',
-  'bn': 'beng',
-  'fa': 'arabext',
-  'mr': 'deva',
-  'my': 'mymr',
-  'ne': 'deva'
-};
 /**
  * Set if the usage of Ascii digits in formatting should be enforced.
  * NOTE: This function must be called before constructing NumberFormat.
@@ -227,6 +233,8 @@ goog.i18n.NumberFormat.NativeLocaleDigits_ = {
  */
 goog.i18n.NumberFormat.setEnforceAsciiDigits = function(doEnforce) {
   'use strict';
+  goog.i18n.NumberFormat.resetEnforceAsciiDigits_ =
+      (doEnforce != goog.i18n.NumberFormat.enforceAsciiDigits_);
   goog.i18n.NumberFormat.enforceAsciiDigits_ = doEnforce;
 };
 
@@ -279,7 +287,8 @@ goog.i18n.NumberFormat.prototype.setMinimumFractionDigits = function(min) {
         'Can\'t combine significant digits and minimum fraction digits');
   }
   // Even if it's the same value, remember the intention to reset the value.
-  this.resetFractionDigits_ = true;
+  this.resetFractionDigits_ =
+      this.resetFractionDigits_ || (min != this.minimumFractionDigits_);
   this.minimumFractionDigits_ = min;
   return this;
 };
@@ -307,7 +316,8 @@ goog.i18n.NumberFormat.prototype.setMaximumFractionDigits = function(max) {
     throw new Error('Unsupported maximum fraction digits: ' + max);
   }
   // Even if it's the same value, remember the intention to reset the value.
-  this.resetFractionDigits_ = true;
+  this.resetFractionDigits_ =
+      this.resetFractionDigits_ || (max != this.maximumFractionDigits_);
   this.maximumFractionDigits_ = max;
   return this;
 };
@@ -336,9 +346,8 @@ goog.i18n.NumberFormat.prototype.setSignificantDigits = function(number) {
     throw new Error(
         'Can\'t combine significant digits and minimum fraction digits');
   }
-  if (number !== this.significantDigits_) {
-    this.resetSignificantDigits_ = true;
-  }
+  this.resetSignificantDigits_ = (number !== this.significantDigits_);
+
   this.significantDigits_ = number;
   return this;
 };
@@ -364,7 +373,7 @@ goog.i18n.NumberFormat.prototype.getSignificantDigits = function() {
 goog.i18n.NumberFormat.prototype.setShowTrailingZeros = function(
     showTrailingZeros) {
   'use strict';
-  this.showTrailingZeros_ = showTrailingZeros;
+  this.showTrailingZeros_ = (showTrailingZeros != this.resetShowTrailingZeros_);
   return this;
 };
 
@@ -701,12 +710,13 @@ goog.i18n.NumberFormat.prototype.SetUpIntlFormatter_ = function(inputPattern) {
     options.signDisplay = 'always';
   }
 
-  if (goog.i18n.NumberFormat.isEnforceAsciiDigits()) {
+  if (goog.i18n.NumberFormat.enforceAsciiDigits_) {
     options.numberingSystem = 'latn';
   }
 
   // If changed from defaults, specify significant or fraction digits.
   if (this.resetSignificantDigits_) {
+    // !!! Should we also set this minimum. No!
     options.minimumSignificantDigits = 1;
     options.maximumSignificantDigits =
         Math.max(1, Math.min(21, this.significantDigits_));
@@ -765,7 +775,7 @@ goog.i18n.NumberFormat.prototype.SetUpIntlFormatter_ = function(inputPattern) {
           options.currencyDisplay = 'code';
           break;
         case goog.i18n.NumberFormat.CurrencyStyle.LOCAL:
-          options.currencyDisplay = 'narrowSymbol';
+          options.currencyDisplay = 'symbol';
       }
       break;
     case goog.i18n.NumberFormat.Format.COMPACT_SHORT:
@@ -790,11 +800,11 @@ goog.i18n.NumberFormat.prototype.SetUpIntlFormatter_ = function(inputPattern) {
     if (goog.LOCALE) {
       locale = goog.LOCALE.replace('_', '-');
     }
-    if (!goog.i18n.NumberFormat.enforceAsciiDigits_ &&
-        locale in goog.i18n.NumberFormat.NativeLocaleDigits_) {
+    if (locale && !goog.i18n.NumberFormat.enforceAsciiDigits_ &&
+        (locale in NativeLocaleDigits.FormatWithLocaleDigits)) {
       // Sets native digits for same locales as polyfill.
       options.numberingSystem =
-          goog.i18n.NumberFormat.NativeLocaleDigits_[locale];
+          NativeLocaleDigits.FormatWithLocaleDigits[locale];
     }
     // This works with undefined locale or empty string.
     this.intlFormatter_ = new Intl.NumberFormat(locale, options);
@@ -802,8 +812,10 @@ goog.i18n.NumberFormat.prototype.SetUpIntlFormatter_ = function(inputPattern) {
     this.intlFormatter_ = null;
     throw new Error('ECMAScript NumberFormat error: ' + error);
   }
-  this.resetSignificantDigits_ = false;
-  this.resetFractionDigits_ = false;
+  // Keep track of state.
+  this.resetShowTrailingZeros_ = this.resetSignificantDigits_ =
+      this.resetFractionDigits_ = false;
+  goog.i18n.NumberFormat.resetEnforceAsciiDigits_ = false;
 };
 
 /**
@@ -814,7 +826,8 @@ goog.i18n.NumberFormat.prototype.SetUpIntlFormatter_ = function(inputPattern) {
 goog.i18n.NumberFormat.prototype.NativeOptionsChanged_ = function() {
   return (
       this.resetSignificantDigits_ || this.resetFractionDigits_ ||
-      goog.i18n.NumberFormat.enforceAsciiDigits_);
+      this.resetShowTrailingZeros_ ||
+      goog.i18n.NumberFormat.resetEnforceAsciiDigits_);
 };
 
 /**
@@ -1467,6 +1480,7 @@ goog.i18n.NumberFormat.prototype.getDigit_ = function(ch) {
  * A zero digit character.
  * @type {string}
  * @private
+ * @const
  */
 goog.i18n.NumberFormat.PATTERN_ZERO_DIGIT_ = '0';
 
@@ -1475,6 +1489,7 @@ goog.i18n.NumberFormat.PATTERN_ZERO_DIGIT_ = '0';
  * A grouping separator character.
  * @type {string}
  * @private
+ * @const
  */
 goog.i18n.NumberFormat.PATTERN_GROUPING_SEPARATOR_ = ',';
 
@@ -1483,6 +1498,7 @@ goog.i18n.NumberFormat.PATTERN_GROUPING_SEPARATOR_ = ',';
  * A decimal separator character.
  * @type {string}
  * @private
+ * @const
  */
 goog.i18n.NumberFormat.PATTERN_DECIMAL_SEPARATOR_ = '.';
 
@@ -1491,6 +1507,7 @@ goog.i18n.NumberFormat.PATTERN_DECIMAL_SEPARATOR_ = '.';
  * A per mille character.
  * @type {string}
  * @private
+ * @const
  */
 goog.i18n.NumberFormat.PATTERN_PER_MILLE_ = '\u2030';
 
@@ -1499,6 +1516,7 @@ goog.i18n.NumberFormat.PATTERN_PER_MILLE_ = '\u2030';
  * A percent character.
  * @type {string}
  * @private
+ * @const
  */
 goog.i18n.NumberFormat.PATTERN_PERCENT_ = '%';
 
@@ -1507,6 +1525,7 @@ goog.i18n.NumberFormat.PATTERN_PERCENT_ = '%';
  * A digit character.
  * @type {string}
  * @private
+ * @const
  */
 goog.i18n.NumberFormat.PATTERN_DIGIT_ = '#';
 
@@ -1515,6 +1534,7 @@ goog.i18n.NumberFormat.PATTERN_DIGIT_ = '#';
  * A separator character.
  * @type {string}
  * @private
+ * @const
  */
 goog.i18n.NumberFormat.PATTERN_SEPARATOR_ = ';';
 
@@ -1523,6 +1543,7 @@ goog.i18n.NumberFormat.PATTERN_SEPARATOR_ = ';';
  * An exponent character.
  * @type {string}
  * @private
+ * @const
  */
 goog.i18n.NumberFormat.PATTERN_EXPONENT_ = 'E';
 
@@ -1531,6 +1552,7 @@ goog.i18n.NumberFormat.PATTERN_EXPONENT_ = 'E';
  * A plus character.
  * @type {string}
  * @private
+ * @const
  */
 goog.i18n.NumberFormat.PATTERN_PLUS_ = '+';
 
@@ -1539,6 +1561,7 @@ goog.i18n.NumberFormat.PATTERN_PLUS_ = '+';
  * A generic currency sign character.
  * @type {string}
  * @private
+ * @const
  */
 goog.i18n.NumberFormat.PATTERN_CURRENCY_SIGN_ = '\u00A4';
 
@@ -1547,6 +1570,7 @@ goog.i18n.NumberFormat.PATTERN_CURRENCY_SIGN_ = '\u00A4';
  * A quote character.
  * @type {string}
  * @private
+ * @const
  */
 goog.i18n.NumberFormat.QUOTE_ = '\'';
 
@@ -1833,6 +1857,7 @@ goog.i18n.NumberFormat.FormattedPart;
 /**
  * The empty unit, corresponding to a base of 0.
  * @private {!goog.i18n.NumberFormat.CompactNumberUnit}
+ * @const
  */
 goog.i18n.NumberFormat.NULL_UNIT_ = {
   divisorBase: 0,
@@ -1852,11 +1877,19 @@ goog.i18n.NumberFormat.NULL_UNIT_ = {
  */
 goog.i18n.NumberFormat.prototype.getUnitFor_ = function(base, plurality) {
   'use strict';
+  /**
+   * @suppress {missingProperties} Auto-added to unblock check_level=STRICT
+   * migration
+   */
   let table = this.compactStyle_ == goog.i18n.NumberFormat.CompactStyle.SHORT ?
       goog.i18n.CompactNumberFormatSymbols.COMPACT_DECIMAL_SHORT_PATTERN :
       goog.i18n.CompactNumberFormatSymbols.COMPACT_DECIMAL_LONG_PATTERN;
 
   if (table == null) {
+    /**
+     * @suppress {missingProperties} Auto-added to unblock check_level=STRICT
+     * migration
+     */
     table = goog.i18n.CompactNumberFormatSymbols.COMPACT_DECIMAL_SHORT_PATTERN;
   }
 
@@ -2138,3 +2171,4 @@ goog.i18n.NumberFormat.prototype.isCurrencyCodeBeforeValue = function() {
   // If not, we have bigger problems than this.
   return posCurrSymbol < posCurrValue;
 };
+});  // End of scope for module data

@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.browser_ui.settings.SearchUtils.handleSearchNavigation;
 
 import android.content.Context;
@@ -23,18 +25,23 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SearchUtils;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
@@ -56,19 +63,20 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Shows a list of all sites. When the user selects a site, SingleWebsiteSettings
- * is launched to allow the user to see or modify the settings for that particular website.
+ * Shows a list of all sites. When the user selects a site, SingleWebsiteSettings is launched to
+ * allow the user to see or modify the settings for that particular website.
  */
 @UsedByReflection("all_site_preferences.xml")
+@NullMarked
 public class AllSiteSettings extends BaseSiteSettingsFragment
-        implements PreferenceManager.OnPreferenceTreeClickListener,
+        implements EmbeddableSettingsPage,
+                PreferenceManager.OnPreferenceTreeClickListener,
                 View.OnClickListener,
                 CustomDividerFragment {
     // The key to use to pass which category this preference should display,
     // should only be All Sites or Storage.
     public static final String EXTRA_CATEGORY = "category";
     public static final String EXTRA_TITLE = "title";
-    public static final String EXTRA_SEARCH = "search";
 
     /**
      * If present, the list of websites will be filtered by domain using {@link
@@ -77,27 +85,27 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
     public static final String EXTRA_SELECTED_DOMAINS = "selected_domains";
 
     public static final String PREF_CLEAR_BROWSING_DATA = "clear_browsing_data_link";
-    // Prefix for Related Website Sets search filter (mobile-desktop feature parity)
-    public static final String RWS_SEARCH_PREFIX = "related:";
 
     // The clear button displayed in the Storage view.
-    private Button mClearButton;
+    private @Nullable Button mClearButton;
     // The list that contains preferences.
     private RecyclerView mListView;
     // The view to show when the list is empty.
-    private TextView mEmptyView;
+    private @Nullable TextView mEmptyView;
     // The item for searching the list of items.
-    private MenuItem mSearchItem;
+    private @Nullable MenuItem mSearchItem;
     // The Site Settings Category we are showing.
     private SiteSettingsCategory mCategory;
     // If not blank, represents a substring to use to search for site names.
-    private String mSearch;
+    private @Nullable String mSearch;
     // The websites that are currently displayed to the user.
-    private List<WebsitePreference> mWebsites;
+    private @Nullable List<WebsitePreference> mWebsites;
     private PropertyModel mDialogModel;
     private ModalDialogManager mDialogManager;
 
-    @Nullable private Set<String> mSelectedDomains;
+    private @Nullable Set<String> mSelectedDomains;
+
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     private class ResultsPopulator implements WebsitePermissionsFetcher.WebsitePermissionsCallback {
         @Override
@@ -114,6 +122,7 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
             if (mEmptyView == null) return;
 
             mEmptyView.setVisibility(hasEntries ? View.GONE : View.VISIBLE);
+            notifyPreferencesUpdated();
         }
     }
 
@@ -125,20 +134,24 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         // Read which category we should be showing.
         BrowserContextHandle browserContextHandle =
                 getSiteSettingsDelegate().getBrowserContextHandle();
+        SiteSettingsCategory category = null;
         if (getArguments() != null) {
-            mCategory =
+            category =
                     SiteSettingsCategory.createFromPreferenceKey(
                             browserContextHandle, getArguments().getString(EXTRA_CATEGORY, ""));
         }
-        if (mCategory == null) {
-            mCategory =
+        if (category == null) {
+            category =
                     SiteSettingsCategory.createFromType(
                             browserContextHandle, SiteSettingsCategory.Type.ALL_SITES);
         }
+        mCategory = category;
         if (mCategory.getType() == SiteSettingsCategory.Type.ZOOM) {
             mCategory =
                     SiteSettingsCategory.createFromType(
@@ -208,6 +221,7 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
 
     /** This resets the zooms for all websites to the default zoom set in Chrome Site Settings. */
     public void clearZooms() {
+        assumeNonNull(mWebsites);
         BrowserContextHandle browserContextHandle =
                 getSiteSettingsDelegate().getBrowserContextHandle();
         double defaultZoomFactor =
@@ -216,14 +230,15 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
             // Propagate the change through HostZoomMap.
             HostZoomMap.setZoomLevelForHost(
                     browserContextHandle,
-                    preference.site().getAddress().getHost(),
+                    assumeNonNull(preference.site().getAddress().getHost()),
                     defaultZoomFactor);
         }
         // Refresh this fragment to trigger UI change.
         getInfoForOrigins();
     }
 
-    /** OnClickListener for the zoom button **/
+    /** OnClickListener for the zoom button */
+    @Initializer
     public void handleZoomClearAll(View v) {
         Resources resources = getContext().getResources();
         mDialogModel =
@@ -239,7 +254,10 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
                                         .getString(
                                                 R.string
                                                         .site_settings_clear_all_zoom_levels_warning))
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources, R.string.clear)
+                        .with(
+                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                resources,
+                                R.string.delete)
                         .with(
                                 ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                                 resources,
@@ -326,31 +344,31 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
     }
 
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         // Handled in onActivityCreated. Moving the addPreferencesFromResource call up to here
         // causes animation jank (crbug.com/985734).
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         addPreferencesFromXml();
 
         String title = getArguments().getString(EXTRA_TITLE);
-        if (title != null) getActivity().setTitle(title);
+        if (title != null) mPageTitle.set(title);
 
         mSelectedDomains =
                 getArguments().containsKey(EXTRA_SELECTED_DOMAINS)
                         ? new HashSet<>(getArguments().getStringArrayList(EXTRA_SELECTED_DOMAINS))
                         : null;
 
-        mSearch =
-                getArguments().containsKey(EXTRA_SEARCH)
-                        ? RWS_SEARCH_PREFIX + getArguments().getString(EXTRA_SEARCH)
-                        : mSearch;
-
         setHasOptionsMenu(true);
 
         super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override
@@ -389,6 +407,7 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        assumeNonNull(mSearchItem);
         if (item.getItemId() == R.id.menu_id_site_settings_help) {
             getSiteSettingsDelegate().launchSettingsHelpAndFeedbackActivity(getActivity());
 
@@ -421,8 +440,8 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
 
         if (mSearch == null && mSearchItem != null) {
             SearchUtils.clearSearch(mSearchItem, getActivity());
@@ -443,7 +462,15 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
     private void addPreferencesFromXml() {
         if (mCategory.getType() == SiteSettingsCategory.Type.ALL_SITES) {
             SettingsUtils.addPreferencesFromResource(this, R.xml.all_site_preferences_v2);
+            // TODO(crbug.com/439911511): Remove the divider directly form the layout.
+            if (getSiteSettingsDelegate().isSettingsContainmentEnabled()) {
+                Preference divider = findPreference("clear_browsing_divider");
+                if (divider != null) {
+                    getPreferenceScreen().removePreference(divider);
+                }
+            }
             ChromeBasePreference clearBrowsingDataLink = findPreference(PREF_CLEAR_BROWSING_DATA);
+            assertNonNull(clearBrowsingDataLink);
             if (!getSiteSettingsDelegate().canLaunchClearBrowsingDataDialog()) {
                 getPreferenceScreen().removePreference(clearBrowsingDataLink);
                 return;
@@ -475,13 +502,14 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
             List<WebsiteRowPreference> preferences = new ArrayList<>();
             // Find entries matching the current search.
             for (WebsiteEntry entry : entries) {
-                if (filterSearchResult(entry)) {
+                if (mSearch == null || mSearch.isEmpty() || entry.matches(mSearch)) {
                     WebsiteRowPreference preference =
                             new WebsiteRowPreference(
                                     getStyledContext(),
                                     getSiteSettingsDelegate(),
                                     entry,
-                                    getActivity().getLayoutInflater());
+                                    getActivity().getLayoutInflater(),
+                                    /* isClickable= */ true);
                     preference.setOnDeleteCallback(
                             () -> {
                                 getInfoForOrigins();
@@ -515,21 +543,6 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
         }
     }
 
-    private boolean filterSearchResult(WebsiteEntry entry) {
-        if (getSiteSettingsDelegate().shouldShowPrivacySandboxRwsUi()
-                && mSearch != null
-                && mSearch.startsWith(RWS_SEARCH_PREFIX)) {
-            return entry.isPartOfRws()
-                    && entry.getRwsOwner()
-                            .contains(
-                                    mSearch.replace(
-                                            RWS_SEARCH_PREFIX,
-                                            "")); // no need to check empty and null
-        } else {
-            return mSearch == null || mSearch.isEmpty() || entry.matches(mSearch);
-        }
-    }
-
     private Context getStyledContext() {
         return getPreferenceManager().getContext();
     }
@@ -545,5 +558,10 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
                 it.remove();
             }
         }
+    }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
     }
 }

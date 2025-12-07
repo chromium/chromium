@@ -41,7 +41,7 @@ std::string LogTypeToString(MetricsLog::LogType log_type) {
     case MetricsLog::LogType::ONGOING_LOG:
       return "Ongoing";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::string EventToString(MetricsLogsEventManager::LogEvent event) {
@@ -59,7 +59,7 @@ std::string EventToString(MetricsLogsEventManager::LogEvent event) {
     case MetricsLogsEventManager::LogEvent::kLogCreated:
       return "Created";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::string CreateReasonToString(
@@ -87,6 +87,10 @@ std::string CreateReasonToString(
       // TODO(crbug.com/40238818): Give more insight here (e.g. "independent log
       // generated from pma file").
       return "Reason: Independent log";
+    case MetricsLogsEventManager::CreateReason::kOutOfBand:
+      return "Reason: Manually triggered by client";
+    case MetricsLogsEventManager::CreateReason::kFlush:
+      return "Reason: Flush";
   }
 }
 
@@ -145,8 +149,9 @@ void MetricsServiceObserver::OnLogEvent(MetricsLogsEventManager::LogEvent event,
   // If this observer is not aware of any logs with the given |log_hash|, do
   // nothing. This may happen if this observer started observing after a log
   // was already created.
-  if (!log)
+  if (!log) {
     return;
+  }
 
   log->events.push_back(CreateEventStruct(event, message));
 
@@ -184,8 +189,9 @@ bool MetricsServiceObserver::ExportLogsAsJson(bool include_log_proto_data,
       base::Value::Dict log_event_dict;
       log_event_dict.Set("event", EventToString(event.event));
       log_event_dict.Set("timestampMs", event.timestampMs);
-      if (event.message.has_value())
+      if (event.message.has_value()) {
         log_event_dict.Set("message", event.message.value());
+      }
       log_events_list.Append(std::move(log_event_dict));
     }
     log_dict.Set("events", std::move(log_events_list));

@@ -9,6 +9,7 @@
 #include <memory>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted_memory.h"
@@ -23,7 +24,6 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/component_extension_resources_map.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/image_loader.h"
@@ -46,9 +46,14 @@ namespace extensions {
 namespace {
 
 scoped_refptr<base::RefCountedMemory> BitmapToMemory(const SkBitmap* image) {
-  auto image_bytes = base::MakeRefCounted<base::RefCountedBytes>();
-  gfx::PNGCodec::EncodeBGRASkBitmap(*image, false, &image_bytes->as_vector());
-  return image_bytes;
+  std::optional<std::vector<uint8_t>> encoded =
+      gfx::PNGCodec::EncodeBGRASkBitmap(*image, /*discard_transparency=*/false);
+  if (!encoded) {
+    return base::MakeRefCounted<base::RefCountedBytes>();
+  }
+
+  return base::MakeRefCounted<base::RefCountedBytes>(
+      std::move(encoded.value()));
 }
 
 SkBitmap DesaturateImage(const SkBitmap* image) {
@@ -56,17 +61,17 @@ SkBitmap DesaturateImage(const SkBitmap* image) {
   return SkBitmapOperations::CreateHSLShiftedBitmap(*image, shift);
 }
 
-SkBitmap* ToBitmap(const unsigned char* data, size_t size) {
-  SkBitmap* decoded = new SkBitmap();
-  bool success = gfx::PNGCodec::Decode(data, size, decoded);
-  DCHECK(success);
-  return decoded;
+std::unique_ptr<SkBitmap> ToBitmap(base::span<const uint8_t> data) {
+  auto result = std::make_unique<SkBitmap>();
+  *result = gfx::PNGCodec::Decode(data);
+  DCHECK(!result->isNull());
+  return result;
 }
 
 }  // namespace
 
-ExtensionIconSource::ExtensionIconSource(Profile* profile) : profile_(profile) {
-}
+ExtensionIconSource::ExtensionIconSource(Profile* profile)
+    : profile_(profile) {}
 
 struct ExtensionIconSource::ExtensionIconRequest {
   content::URLDataSource::GotDataCallback callback;
@@ -97,15 +102,13 @@ GURL ExtensionIconSource::GetIconURL(const std::string& extension_id,
 }
 
 // static
-SkBitmap* ExtensionIconSource::LoadImageByResourceId(int resource_id) {
+std::unique_ptr<SkBitmap> ExtensionIconSource::LoadImageByResourceId(
+    int resource_id) {
   std::string_view contents =
       ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(
           resource_id, ui::k100Percent);
 
-  // Convert and return it.
-  const unsigned char* data =
-      reinterpret_cast<const unsigned char*>(contents.data());
-  return ToBitmap(data, contents.length());
+  return ToBitmap(base::as_byte_span(contents));
 }
 
 std::string ExtensionIconSource::GetSource() {
@@ -152,33 +155,32 @@ bool ExtensionIconSource::AllowCaching() {
   return false;
 }
 
-ExtensionIconSource::~ExtensionIconSource() {
-}
+ExtensionIconSource::~ExtensionIconSource() = default;
 
 const SkBitmap* ExtensionIconSource::GetDefaultAppImage() {
-  if (!default_app_data_.get())
-    default_app_data_.reset(LoadImageByResourceId(IDR_APP_DEFAULT_ICON));
+  if (!default_app_data_.get()) {
+    default_app_data_ = LoadImageByResourceId(IDR_APP_DEFAULT_ICON);
+  }
 
   return default_app_data_.get();
 }
 
 const SkBitmap* ExtensionIconSource::GetDefaultExtensionImage() {
   if (!default_extension_data_.get()) {
-    default_extension_data_.reset(
-        LoadImageByResourceId(IDR_EXTENSION_DEFAULT_ICON));
+    default_extension_data_ = LoadImageByResourceId(IDR_EXTENSION_DEFAULT_ICON);
   }
 
   return default_extension_data_.get();
 }
 
-void ExtensionIconSource::FinalizeImage(const SkBitmap* image,
-                                        int request_id) {
+void ExtensionIconSource::FinalizeImage(const SkBitmap* image, int request_id) {
   SkBitmap bitmap;
   ExtensionIconRequest* request = GetData(request_id);
-  if (request->grayscale)
+  if (request->grayscale) {
     bitmap = DesaturateImage(image);
-  else
+  } else {
     bitmap = *image;
+  }
 
   std::move(request->callback).Run(BitmapToMemory(&bitmap).get());
   ClearData(request_id);
@@ -188,20 +190,22 @@ void ExtensionIconSource::LoadDefaultImage(int request_id) {
   ExtensionIconRequest* request = GetData(request_id);
   const SkBitmap* default_image = nullptr;
 
-  if (request->extension->is_app())
+  if (request->extension->is_app()) {
     default_image = GetDefaultAppImage();
-  else
+  } else {
     default_image = GetDefaultExtensionImage();
+  }
 
   SkBitmap resized_image(skia::ImageOperations::Resize(
-      *default_image, skia::ImageOperations::RESIZE_LANCZOS3,
-      request->size, request->size));
+      *default_image, skia::ImageOperations::RESIZE_LANCZOS3, request->size,
+      request->size));
 
   // There are cases where Resize returns an empty bitmap, for example if you
   // ask for an image too large. In this case it is better to return the default
   // image than returning nothing at all.
-  if (resized_image.empty())
+  if (resized_image.empty()) {
     resized_image = *default_image;
+  }
 
   FinalizeImage(&resized_image, request_id);
 }
@@ -252,18 +256,17 @@ void ExtensionIconSource::OnFaviconDataAvailable(
     std::move(request->callback).Run(bitmap_result.bitmap_data.get());
     ClearData(request_id);
   } else {
-    FinalizeImage(ToBitmap(bitmap_result.bitmap_data->data(),
-                           bitmap_result.bitmap_data->size()),
-                  request_id);
+    FinalizeImage(ToBitmap(*bitmap_result.bitmap_data).get(), request_id);
   }
 }
 
 void ExtensionIconSource::OnImageLoaded(int request_id,
                                         const gfx::Image& image) {
-  if (image.IsEmpty())
+  if (image.IsEmpty()) {
     LoadIconFailed(request_id);
-  else
+  } else {
     FinalizeImage(image.ToSkBitmap(), request_id);
+  }
 }
 
 void ExtensionIconSource::LoadIconFailed(int request_id) {
@@ -271,10 +274,11 @@ void ExtensionIconSource::LoadIconFailed(int request_id) {
   ExtensionResource icon = IconsInfo::GetIconResource(
       request->extension.get(), request->size, request->match);
 
-  if (request->size == extension_misc::EXTENSION_ICON_BITTY)
+  if (request->size == extension_misc::EXTENSION_ICON_BITTY) {
     LoadFaviconImage(request_id);
-  else
+  } else {
     LoadDefaultImage(request_id);
+  }
 }
 
 bool ExtensionIconSource::ParseData(
@@ -285,23 +289,27 @@ bool ExtensionIconSource::ParseData(
   std::string path_lower = base::ToLowerASCII(path);
   std::vector<std::string> path_parts = base::SplitString(
       path_lower, "/", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  if (path_lower.empty() || path_parts.size() < 3)
+  if (path_lower.empty() || path_parts.size() < 3) {
     return false;
+  }
 
   std::string size_param = path_parts.at(1);
   std::string match_param = path_parts.at(2);
   match_param = match_param.substr(0, match_param.find('?'));
 
   int size;
-  if (!base::StringToInt(size_param, &size))
+  if (!base::StringToInt(size_param, &size)) {
     return false;
-  if (size <= 0 || size > extension_misc::EXTENSION_ICON_GIGANTOR)
+  }
+  if (size <= 0 || size > extension_misc::EXTENSION_ICON_GIGANTOR) {
     return false;
+  }
 
   ExtensionIconSet::Match match_type;
   int match_num;
-  if (!base::StringToInt(match_param, &match_num))
+  if (!base::StringToInt(match_param, &match_num)) {
     return false;
+  }
   match_type = static_cast<ExtensionIconSet::Match>(match_num);
   if (!(match_type == ExtensionIconSet::Match::kExactly ||
         match_type == ExtensionIconSet::Match::kSmaller ||
@@ -312,8 +320,9 @@ bool ExtensionIconSource::ParseData(
   std::string extension_id = path_parts.at(0);
   const Extension* extension =
       ExtensionRegistry::Get(profile_)->GetInstalledExtension(extension_id);
-  if (!extension)
+  if (!extension) {
     return false;
+  }
 
   bool grayscale = path_lower.find("grayscale=true") != std::string::npos;
 

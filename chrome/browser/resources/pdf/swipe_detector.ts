@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.js';
+
 /**
  * The longest period of time in milliseconds for a horizontal touch movement to
  * be considered as a swipe.
@@ -121,7 +123,9 @@ export class SwipeDetector {
         this.elapsedTimeForTesting_ :
         event.timeStamp - this.swipeStartEvent_.timeStamp;
     const swipeStartObj = this.swipeStartEvent_.changedTouches[0];
+    assert(swipeStartObj);
     const swipeEndObj = event.changedTouches[0];
+    assert(swipeEndObj);
     const distX = swipeEndObj.pageX - swipeStartObj.pageX;
     const distY = swipeEndObj.pageY - swipeStartObj.pageY;
 

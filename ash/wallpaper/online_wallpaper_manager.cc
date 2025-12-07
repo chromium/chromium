@@ -14,7 +14,6 @@
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resolution.h"
 #include "base/barrier_closure.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "components/account_id/account_id.h"
 #include "ui/gfx/image/image.h"

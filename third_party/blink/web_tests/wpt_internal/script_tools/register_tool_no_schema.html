@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<title>Script Tools: register tool with no schema</title>
+<link rel="author" href="mailto:khushalsagar@chromium.org">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+promise_test(async () => {
+  async function empty() {
+    return "empty";
+  }
+
+  const modelContext = navigator.modelContext;
+
+  modelContext.registerTool({
+    execute: empty,
+    name: "empty",
+    description: "echo empty",
+  });
+
+  modelContext.unregisterTool("empty");
+}, "register tool with only required params");
+</script>

@@ -40,40 +40,45 @@
 
 namespace blink {
 
-MatchedProperties::MatchedProperties() {
-  memset(&types_, 0, sizeof(types_));
-}
-
 void MatchedProperties::Trace(Visitor* visitor) const {
   visitor->Trace(properties);
+  visitor->Trace(mixin_parameter_bindings);
 }
 
 void MatchResult::AddMatchedProperties(
     const CSSPropertyValueSet* properties,
-    CascadeOrigin origin,
-    const AddMatchedPropertiesOptions& options) {
-  CHECK_NE(origin, CascadeOrigin::kNone);
-  matched_properties_.Grow(matched_properties_.size() + 1);
-  MatchedProperties& new_properties = matched_properties_.back();
-  new_properties.properties = const_cast<CSSPropertyValueSet*>(properties);
-  new_properties.types_.link_match_type = options.link_match_type;
-  new_properties.types_.valid_property_filter =
-      static_cast<std::underlying_type_t<ValidPropertyFilter>>(
-          options.valid_property_filter);
-  new_properties.types_.signal = static_cast<unsigned>(options.signal);
-  new_properties.types_.layer_order = ClampTo<uint16_t>(options.layer_order);
-  new_properties.types_.is_inline_style = options.is_inline_style;
-  new_properties.types_.is_try_style = options.is_try_style;
-  new_properties.types_.is_try_tactics_style = options.is_try_tactics_style;
-  new_properties.types_.is_invisible = options.is_invisible;
-  new_properties.types_.origin = origin;
-  new_properties.types_.tree_order = current_tree_order_;
-#if DCHECK_IS_ON()
-  DCHECK_GE(origin, last_origin_);
-  if (!tree_scopes_.empty()) {
-    DCHECK_EQ(origin, CascadeOrigin::kAuthor);
+    const MixinParameterBindings* mixin_parameter_bindings,
+    MatchedProperties::Data data) {
+  unsigned mixin_parameter_bindings_hash =
+      mixin_parameter_bindings ? mixin_parameter_bindings->GetHash() : 0;
+
+  data.tree_order = current_tree_order_;
+  matched_properties_.emplace_back(const_cast<CSSPropertyValueSet*>(properties),
+                                   mixin_parameter_bindings, data);
+  matched_properties_hashes_.emplace_back(
+      properties->GetHash() ^ mixin_parameter_bindings_hash, data);
+
+  if (properties->ModifiedSinceHashing()) {
+    // These properties were mutated as some point after original
+    // insertion, so it is not safe to use them in the MPC.
+    // In particular, the hash is wrong, but also, it's probably
+    // not a good idea performance-wise, since if something has
+    // been modified once, it might keep being modified, making
+    // it less useful for caching.
+    //
+    // There is a separate check for the case where we insert
+    // something into the MPC and then the properties used in the key
+    // change afterwards; see CachedMatchedProperties::CorrespondsTo().
+    is_cacheable_ = false;
   }
-  last_origin_ = origin;
+
+#if DCHECK_IS_ON()
+  DCHECK_NE(data.origin, CascadeOrigin::kNone);
+  DCHECK_GE(data.origin, last_origin_);
+  if (!tree_scopes_.empty()) {
+    DCHECK_EQ(data.origin, CascadeOrigin::kAuthor);
+  }
+  last_origin_ = data.origin;
 #endif
 }
 
@@ -86,6 +91,7 @@ void MatchResult::BeginAddingAuthorRulesForTreeScope(
 
 void MatchResult::Reset() {
   matched_properties_.clear();
+  matched_properties_hashes_.clear();
   is_cacheable_ = true;
   depends_on_size_container_queries_ = false;
 #if DCHECK_IS_ON()

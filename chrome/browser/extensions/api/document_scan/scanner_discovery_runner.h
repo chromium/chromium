@@ -11,9 +11,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
-#include "chromeos/crosapi/mojom/document_scan.mojom.h"
+#include "chrome/common/extensions/api/document_scan.h"
+#include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
 #include "extensions/common/extension_id.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace content {
 class BrowserContext;
@@ -23,9 +24,9 @@ namespace gfx {
 class Image;
 }  // namespace gfx
 
-namespace views {
+namespace ui {
 class NativeWindowTracker;
-}  // namespace views
+}  // namespace ui
 
 namespace extensions {
 
@@ -36,13 +37,11 @@ class Extension;
 class ScannerDiscoveryRunner {
  public:
   using GetScannerListCallback =
-      base::OnceCallback<void(crosapi::mojom::GetScannerListResponsePtr)>;
+      base::OnceCallback<void(api::document_scan::GetScannerListResponse)>;
 
   ScannerDiscoveryRunner(gfx::NativeWindow native_window,
                          content::BrowserContext* browser_context,
-                         scoped_refptr<const Extension> extension,
-                         crosapi::mojom::DocumentScan* document_scan);
-
+                         scoped_refptr<const Extension> extension);
   ~ScannerDiscoveryRunner();
 
   static void SetDiscoveryConfirmationResultForTesting(bool result);
@@ -52,7 +51,7 @@ class ScannerDiscoveryRunner {
   // `callback`. If `approved` is true, this request is already approved and any
   // confirmation dialogs are skipped.
   void Start(bool approved,
-             crosapi::mojom::ScannerEnumFilterPtr filter,
+             api::document_scan::DeviceFilter filter,
              GetScannerListCallback callback);
 
   const ExtensionId& extension_id() const;
@@ -62,20 +61,18 @@ class ScannerDiscoveryRunner {
   void SendGetScannerListRequest();
   void OnConfirmationDialogClosed(bool approved);
   void OnScannerListReceived(
-      crosapi::mojom::GetScannerListResponsePtr response);
+      const std::optional<lorgnette::ListScannersResponse>& response);
 
   gfx::NativeWindow native_window_;
   const raw_ptr<content::BrowserContext> browser_context_;
 
   // Tracks whether |native_window_| got destroyed.
-  std::unique_ptr<views::NativeWindowTracker> native_window_tracker_;
+  std::unique_ptr<ui::NativeWindowTracker> native_window_tracker_;
 
   scoped_refptr<const Extension> extension_;
 
-  const raw_ptr<crosapi::mojom::DocumentScan> document_scan_;
-
   // Parameters for the in-progress call.
-  crosapi::mojom::ScannerEnumFilterPtr filter_;
+  std::optional<api::document_scan::DeviceFilter> filter_;
   GetScannerListCallback callback_;
 
   base::WeakPtrFactory<ScannerDiscoveryRunner> weak_ptr_factory_{this};

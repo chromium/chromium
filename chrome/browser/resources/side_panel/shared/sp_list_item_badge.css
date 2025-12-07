@@ -1,0 +1,44 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  height: 20px;
+  align-items: center;
+  background: var(--color-side-panel-badge-background);
+  border-radius: 100px;
+  box-sizing: border-box;
+  color: var(--color-side-panel-badge-foreground);
+  display: inline-flex;
+  flex-direction: row;
+  font-size: 11px;
+  gap: 0;
+  line-height: normal;
+  padding: 4px 8px 4px 6px;
+}
+
+:host([was-updated]) {
+  background: var(--color-side-panel-badge-background-updated);
+  color: var(--color-side-panel-badge-foreground-updated);
+  font-weight: 400;
+}
+
+::slotted(iron-icon) {
+  color: inherit;
+  height: 12px;
+  width: 12px;
+  padding-inline-end: 4px;
+}
+
+::slotted([slot=previous-badge]) {
+  color: var(--color-side-panel-badge-foreground);
+  font-weight: 400;
+  text-decoration: line-through;
+  padding-inline-start: 2px;
+}

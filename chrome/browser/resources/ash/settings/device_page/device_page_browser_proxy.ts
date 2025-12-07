@@ -67,6 +67,14 @@ export enum LidClosedBehavior {
   DO_NOTHING = 3,
 }
 
+/**
+ * Mirrors chromeos::PowerPolicyController::OptimizedChargingStrategy
+ */
+export enum OptimizedChargingStrategy {
+  STRATEGY_ADAPTIVE_CHARGING = 0,
+  STRATEGY_CHARGE_LIMIT = 1,
+}
+
 export interface PowerManagementSettings {
   possibleAcIdleBehaviors: IdleBehavior[];
   possibleBatteryIdleBehaviors: IdleBehavior[];
@@ -79,25 +87,15 @@ export interface PowerManagementSettings {
   hasLid: boolean;
   adaptiveCharging: boolean;
   adaptiveChargingManaged: boolean;
+  chargeLimit: boolean;
+  optimizedChargingStrategy: OptimizedChargingStrategy;
   batterySaverFeatureEnabled: boolean;
-}
-
-/**
- * A note app's availability for running as note handler app from lock screen.
- * Mirrors `ash::LockScreenAppSupport`.
- */
-export enum NoteAppLockScreenSupport {
-  NOT_SUPPORTED = 0,
-  NOT_ALLOWED_BY_POLICY = 1,
-  SUPPORTED = 2,
-  ENABLED = 3,
 }
 
 export interface NoteAppInfo {
   name: string;
   value: string;
   preferred: boolean;
-  lockScreenSupport: NoteAppLockScreenSupport;
 }
 
 export interface ExternalStorage {
@@ -153,6 +151,13 @@ export interface DevicePageBrowserProxy {
   setAdaptiveCharging(enabled: boolean): void;
 
   /**
+   * Makes a call to C++ which sets the `strategy` to `enabled`, and disables
+   * the other strategy if already active.
+   */
+  setOptimizedCharging(strategy: OptimizedChargingStrategy, enabled: boolean):
+      void;
+
+  /**
    * |callback| is run when there is new note-taking app information
    * available or after |requestNoteTakingApps| has been called.
    */
@@ -177,12 +182,6 @@ export interface DevicePageBrowserProxy {
    *     |onNoteTakingAppsUpdated| callback.
    */
   setPreferredNoteTakingApp(appId: string): void;
-
-  /**
-   * Sets whether the preferred note taking app should be enabled to run as a
-   * lock screen note action handler.
-   */
-  setPreferredNoteTakingAppEnabledOnLockScreen(enabled: boolean): void;
 
   /** Requests an external storage list update. */
   updateExternalStorages(): void;
@@ -271,6 +270,11 @@ export class DevicePageBrowserProxyImpl implements DevicePageBrowserProxy {
     chrome.send('setAdaptiveCharging', [enabled]);
   }
 
+  setOptimizedCharging(strategy: OptimizedChargingStrategy, enabled: boolean):
+      void {
+    chrome.send('setOptimizedCharging', [strategy, enabled]);
+  }
+
   setLidClosedBehavior(behavior: LidClosedBehavior): void {
     chrome.send('setLidClosedBehavior', [behavior]);
   }
@@ -291,10 +295,6 @@ export class DevicePageBrowserProxyImpl implements DevicePageBrowserProxy {
 
   setPreferredNoteTakingApp(appId: string): void {
     chrome.send('setPreferredNoteTakingApp', [appId]);
-  }
-
-  setPreferredNoteTakingAppEnabledOnLockScreen(enabled: boolean): void {
-    chrome.send('setPreferredNoteTakingAppEnabledOnLockScreen', [enabled]);
   }
 
   updateExternalStorages(): void {

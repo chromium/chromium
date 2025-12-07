@@ -14,18 +14,22 @@ include_rules = [
   # Files residing in certain directories (e.g., //chrome/browser) are listed
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
-  "+chrome/browser/ash/authpolicy",
   "+chrome/browser/ash/login/session",
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/notifications",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/chrome_pages.h",
   "+chrome/browser/ui/settings_window_manager_chromeos.h",
   "+chrome/common/pref_names.h",
   "+chrome/common/webui_url_constants.h",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  # Allow including browser_process.h only for KeyedService factory class.
+  "kerberos_credentials_manager_factory\.cc": [
+    "+chrome/browser/browser_process.h",
+  ]
+}

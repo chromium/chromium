@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "components/search_engines/template_url_fetcher.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
@@ -22,7 +20,6 @@
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/search_engines/template_url.h"
-#include "components/search_engines/template_url_fetcher.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -59,7 +56,7 @@ class TestTemplateUrlFetcher : public TemplateURLFetcher {
   TestTemplateUrlFetcher(const TestTemplateUrlFetcher&) = delete;
   TestTemplateUrlFetcher& operator=(const TestTemplateUrlFetcher&) = delete;
 
-  ~TestTemplateUrlFetcher() override {}
+  ~TestTemplateUrlFetcher() override = default;
 
  protected:
   void RequestCompleted(RequestDelegate* request) override {
@@ -225,16 +222,17 @@ TEST_F(TemplateURLFetcherTest, DuplicatesThrownAway) {
   StartDownload(keyword, osdd_file_name, true);
   EXPECT_EQ(0, requests_completed());
 
-  struct {
+  struct TestCases {
     std::string description;
     std::string osdd_file_name;
     std::u16string keyword;
-  } test_cases[] = {
+  };
+  auto test_cases = std::to_array<TestCases>({
       {"Duplicate osdd url with autodetected provider.", osdd_file_name,
        keyword + u"1"},
       {"Duplicate keyword with autodetected provider.", osdd_file_name + "1",
        keyword},
-  };
+  });
 
   for (size_t i = 0; i < std::size(test_cases); ++i) {
     StartDownload(test_cases[i].keyword, test_cases[i].osdd_file_name, false);

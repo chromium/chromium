@@ -4,12 +4,12 @@
 
 #include "extensions/browser/media_capture_util.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 
 #include "base/check.h"
 #include "base/functional/callback.h"
-#include "base/ranges/algorithm.h"
 #include "content/public/browser/media_capture_devices.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -36,8 +36,8 @@ const MediaStreamDevice* GetRequestedDeviceOrDefault(
       continue;
     }
 
-    auto it = base::ranges::find(devices, requested_device_id,
-                                 &MediaStreamDevice::id);
+    auto it =
+        std::ranges::find(devices, requested_device_id, &MediaStreamDevice::id);
     if (it != devices.end()) {
       return &(*it);
     }
@@ -77,8 +77,9 @@ void GrantMediaStreamRequest(content::WebContents* web_contents,
     const MediaStreamDevice* device = GetRequestedDeviceOrDefault(
         MediaCaptureDevices::GetInstance()->GetAudioCaptureDevices(),
         request.requested_audio_device_ids);
-    if (device)
+    if (device) {
       devices.audio_device = *device;
+    }
   }
 
   if (request.video_type ==
@@ -87,8 +88,9 @@ void GrantMediaStreamRequest(content::WebContents* web_contents,
     const MediaStreamDevice* device = GetRequestedDeviceOrDefault(
         MediaCaptureDevices::GetInstance()->GetVideoCaptureDevices(),
         request.requested_video_device_ids);
-    if (device)
+    if (device) {
       devices.video_device = *device;
+    }
   }
 
   // TODO(jamescook): Should we show a recording icon somewhere? If so, where?

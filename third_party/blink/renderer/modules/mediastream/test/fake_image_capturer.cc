@@ -14,8 +14,8 @@ void FakeImageCapture::RegisterBinding(ExecutionContext* context) {
   DynamicTo<LocalDOMWindow>(context)
       ->GetBrowserInterfaceBroker()
       .SetBinderForTesting(media::mojom::blink::ImageCapture::Name_,
-                           WTF::BindRepeating(&FakeImageCapture::Bind,
-                                              weak_factory_.GetWeakPtr()));
+                           blink::BindRepeating(&FakeImageCapture::Bind,
+                                                weak_factory_.GetWeakPtr()));
 }
 
 void FakeImageCapture::Bind(mojo::ScopedMessagePipeHandle handle) {
@@ -23,7 +23,7 @@ void FakeImageCapture::Bind(mojo::ScopedMessagePipeHandle handle) {
                            std::move(handle)));
 }
 
-void FakeImageCapture::GetPhotoState(const WTF::String& source_id,
+void FakeImageCapture::GetPhotoState(const String& source_id,
                                      GetPhotoStateCallback callback) {
   media::mojom::blink::PhotoStatePtr photo_capabilities =
       media::mojom::blink::PhotoState::New();
@@ -47,6 +47,7 @@ void FakeImageCapture::GetPhotoState(const WTF::String& source_id,
   photo_capabilities->supported_background_blur_modes = {};
   photo_capabilities->supported_eye_gaze_correction_modes = {};
   photo_capabilities->supported_face_framing_modes = {};
+  photo_capabilities->supported_background_segmentation_mask_states = {};
   std::move(callback).Run(std::move(photo_capabilities));
 }
 

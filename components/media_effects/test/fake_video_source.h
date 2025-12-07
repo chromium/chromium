@@ -26,10 +26,6 @@ class FakeVideoSource : public video_capture::mojom::VideoSource {
           subscription,
       CreatePushSubscriptionCallback callback) override;
 
-  void RegisterVideoEffectsProcessor(
-      mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
-          processor) override {}
-
   [[nodiscard]] bool WaitForCreatePushSubscription();
 
   [[nodiscard]] bool WaitForPushSubscriptionActivated();

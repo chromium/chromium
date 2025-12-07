@@ -13,15 +13,17 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-android-desktop-archive",
               "builder_group": "chromium.android.desktop",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
-                "config": "x64_builder_mb"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
                 "build_config": "Release",
-                "config": "android",
+                "config": "main_builder",
                 "target_arch": "intel",
                 "target_bits": 64,
                 "target_platform": "android"
@@ -31,6 +33,41 @@
                   "android"
                 ],
                 "config": "chromium"
+              }
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "android-desktop-x64-rel-15-tests",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.android.desktop",
+              "execution_mode": "TEST",
+              "legacy_android_config": {
+                "config": "base_config"
+              },
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "main_builder",
+                "target_arch": "intel",
+                "target_bits": 64,
+                "target_platform": "android"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "android"
+                ],
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "android-desktop-x64-compile-rel",
+                "project": "chromium"
               }
             }
           }
@@ -43,27 +80,33 @@
           "project": "chromium"
         }
       ],
+      "builder_ids_in_scope_for_testing": [
+        {
+          "bucket": "ci",
+          "builder": "android-desktop-x64-rel-15-tests",
+          "project": "chromium"
+        }
+      ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "android-desktop-x64-compile-rel",
+          "builder": "android-desktop-x64-rel",
           "group": "tryserver.chromium.android"
         }
       ],
+      "retry_failed_shards": true,
+      "retry_invalid_shards": true,
       "targets_spec_directory": "src/infra/config/generated/builders/ci/android-desktop-x64-compile-rel/targets"
     }
-  },
-  "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "metrics_project": "chromium-reclient-metrics",
-    "scandeps_server": true
   },
   "$build/siso": {
     "configs": [
       "builder"
     ],
+    "enable_cloud_monitoring": true,
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
+    "metrics_project": "chromium-reclient-metrics",
     "project": "rbe-chromium-trusted",
     "remote_jobs": 250
   },
@@ -75,5 +118,11 @@
     ]
   },
   "builder_group": "chromium.android.desktop",
-  "recipe": "chromium"
+  "gardener_rotations": [
+    "android"
+  ],
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "android"
+  ]
 }

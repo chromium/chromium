@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/cr_elements/cr_toolbar/cr_toolbar.js';
 
@@ -43,15 +44,14 @@ export class PrivateStateTokensToolbarElement extends CrLitElement {
     };
   }
 
-  protected autoFocus_: boolean = true;
-  protected alwaysShowLogo_: boolean = true;
-  protected clearLabel_: string = 'Clear search';
-  protected menuLabel_: string = 'Menu';
-  protected narrow: boolean = false;
-  narrowThreshold: number = 0;
-  protected pageName: string = '';
-  protected searchPrompt_: string = 'Search site';
-
+  protected accessor autoFocus_: boolean = true;
+  protected accessor alwaysShowLogo_: boolean = true;
+  protected accessor clearLabel_: string = 'Clear search';
+  protected accessor menuLabel_: string = 'Menu';
+  protected accessor narrow: boolean = false;
+  accessor narrowThreshold: number = 0;
+  protected accessor pageName: string = '';
+  protected accessor searchPrompt_: string = 'Search site';
 }
 
 declare global {

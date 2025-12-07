@@ -20,8 +20,11 @@ items:
   name: None
   value: 2
 owners:
-- file://components/policy/OWNERS
-- poromov@chromium.org
+- dadrian@chromium.org
+- davidben@chromium.org
+- hchao@chromium.org
+- mattm@chromium.org
+- chrome-secure-web-and-net@chromium.org
 schema:
   enum:
   - 0
@@ -30,5 +33,6 @@ schema:
   type: integer
 supported_on:
 - chrome_os:78-
+- chrome.*:132-
 tags: []
 type: int-enum

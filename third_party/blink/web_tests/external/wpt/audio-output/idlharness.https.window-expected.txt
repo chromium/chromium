@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] MediaDevices interface: operation selectAudioOutput(optional AudioOutputOptions)
-  assert_own_property: interface prototype object missing non-static operation expected property "selectAudioOutput" missing
-[FAIL] MediaDevices interface: navigator.mediaDevices must inherit property "selectAudioOutput(optional AudioOutputOptions)" with the proper type
-  assert_inherits: property "selectAudioOutput" not found in prototype chain
-[FAIL] MediaDevices interface: calling selectAudioOutput(optional AudioOutputOptions) on navigator.mediaDevices with too few arguments must throw TypeError
-  assert_inherits: property "selectAudioOutput" not found in prototype chain
-Harness: the test ran to completion.
-

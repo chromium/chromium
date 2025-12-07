@@ -33,7 +33,6 @@ using CertStatus = EnrollmentCertificateUploader::Status;
 using CertCallback = AttestationFlow::CertificateCallback;
 using ::testing::_;
 using ::testing::InSequence;
-using ::testing::Invoke;
 using ::testing::StrictMock;
 using ::testing::WithArgs;
 
@@ -125,7 +124,7 @@ TEST_F(EnrollmentCertificateUploaderTest, GetCertificateUnspecifiedFailure) {
               GetCertificate(PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
                              /*force_new_key=*/true, _, _, _, _))
       .Times(total_attempts)
-      .WillRepeatedly(WithArgs<7>(Invoke(CertCallbackUnspecifiedFailure)));
+      .WillRepeatedly(WithArgs<7>(CertCallbackUnspecifiedFailure));
 
   Run(/*expected_status=*/CertStatus::kFailedToFetch);
 }
@@ -138,7 +137,7 @@ TEST_F(EnrollmentCertificateUploaderTest, GetCertificateBadRequestFailure) {
               GetCertificate(PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
                              /*force_new_key=*/true, _, _, _, _))
       .Times(1)
-      .WillOnce(WithArgs<7>(Invoke(CertCallbackBadRequestFailure)));
+      .WillOnce(WithArgs<7>(CertCallbackBadRequestFailure));
 
   Run(/*expected_status=*/CertStatus::kFailedToFetch);
 }
@@ -152,10 +151,10 @@ TEST_F(EnrollmentCertificateUploaderTest,
               GetCertificate(PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
                              /*force_new_key=*/true, _, _, _, _))
       .Times(1)
-      .WillOnce(WithArgs<7>(Invoke([this](CertCallback callback) {
+      .WillOnce(WithArgs<7>([this](CertCallback callback) {
         policy_client_.SetDMToken("");
         CertCallbackUnspecifiedFailure(std::move(callback));
-      })));
+      }));
 
   EXPECT_CALL(attestation_flow_, GetCertificate(_, _, _, _, _, _, _, _))
       .Times(0);
@@ -175,14 +174,13 @@ TEST_F(EnrollmentCertificateUploaderTest, UploadCertificateFailure) {
                 GetCertificate(PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
                                /*force_new_key=*/true, _, _, _, _))
         .Times(1)
-        .WillOnce(
-            WithArgs<7>(Invoke([valid_certificate](CertCallback callback) {
-              CertCallbackSuccess(std::move(callback), valid_certificate);
-            })));
+        .WillOnce(WithArgs<7>([valid_certificate](CertCallback callback) {
+          CertCallbackSuccess(std::move(callback), valid_certificate);
+        }));
     EXPECT_CALL(policy_client_,
                 UploadEnterpriseEnrollmentCertificate(valid_certificate, _))
         .Times(1)
-        .WillOnce(WithArgs<1>(Invoke(ResultCallbackFailure)));
+        .WillOnce(WithArgs<1>(ResultCallbackFailure));
   }
 
   Run(/*expected_status=*/CertStatus::kFailedToUpload);
@@ -199,17 +197,17 @@ TEST_F(EnrollmentCertificateUploaderTest,
               GetCertificate(PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
                              /*force_new_key=*/true, _, _, _, _))
       .Times(1)
-      .WillOnce(WithArgs<7>(Invoke([valid_certificate](CertCallback callback) {
+      .WillOnce(WithArgs<7>([valid_certificate](CertCallback callback) {
         CertCallbackSuccess(std::move(callback), valid_certificate);
-      })));
+      }));
   EXPECT_CALL(policy_client_,
               UploadEnterpriseEnrollmentCertificate(valid_certificate, _))
       .Times(1)
       .WillOnce(WithArgs<1>(
-          Invoke([this](policy::CloudPolicyClient::ResultCallback callback) {
+          [this](policy::CloudPolicyClient::ResultCallback callback) {
             policy_client_.SetDMToken("");
             ResultCallbackFailure(std::move(callback));
-          })));
+          }));
 
   EXPECT_CALL(attestation_flow_,
               GetCertificate(PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
@@ -229,11 +227,10 @@ TEST_F(EnrollmentCertificateUploaderTest,
   EXPECT_CALL(attestation_flow_,
               GetCertificate(PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
                              /*force_new_key=*/true, _, _, _, _))
-      .WillOnce(
-          WithArgs<7>(Invoke([this, valid_certificate](CertCallback callback) {
-            policy_client_.SetDMToken("");
-            CertCallbackSuccess(std::move(callback), valid_certificate);
-          })));
+      .WillOnce(WithArgs<7>([this, valid_certificate](CertCallback callback) {
+        policy_client_.SetDMToken("");
+        CertCallbackSuccess(std::move(callback), valid_certificate);
+      }));
 
   EXPECT_CALL(policy_client_, UploadEnterpriseEnrollmentCertificate(_, _))
       .Times(0);
@@ -256,13 +253,13 @@ TEST_F(EnrollmentCertificateUploaderTest, UploadValidRsaCertificate) {
                              /*force_new_key=*/true,
                              ::attestation::KEY_TYPE_RSA, _, _, _))
       .Times(1)
-      .WillOnce(WithArgs<7>(Invoke([valid_certificate](CertCallback callback) {
+      .WillOnce(WithArgs<7>([valid_certificate](CertCallback callback) {
         CertCallbackSuccess(std::move(callback), valid_certificate);
-      })));
+      }));
   EXPECT_CALL(policy_client_,
               UploadEnterpriseEnrollmentCertificate(valid_certificate, _))
       .Times(1)
-      .WillOnce(WithArgs<1>(Invoke(ResultCallbackSuccess)));
+      .WillOnce(WithArgs<1>(ResultCallbackSuccess));
 
   Run(/*expected_status=*/CertStatus::kSuccess);
 }
@@ -282,13 +279,13 @@ TEST_F(EnrollmentCertificateUploaderTest, UploadValidEccCertificate) {
                              /*force_new_key=*/true,
                              ::attestation::KEY_TYPE_ECC, _, _, _))
       .Times(1)
-      .WillOnce(WithArgs<7>(Invoke([valid_certificate](CertCallback callback) {
+      .WillOnce(WithArgs<7>([valid_certificate](CertCallback callback) {
         CertCallbackSuccess(std::move(callback), valid_certificate);
-      })));
+      }));
   EXPECT_CALL(policy_client_,
               UploadEnterpriseEnrollmentCertificate(valid_certificate, _))
       .Times(1)
-      .WillOnce(WithArgs<1>(Invoke(ResultCallbackSuccess)));
+      .WillOnce(WithArgs<1>(ResultCallbackSuccess));
 
   Run(/*expected_status=*/CertStatus::kSuccess);
 }
@@ -326,13 +323,13 @@ TEST_F(EnrollmentCertificateUploaderTest, UploadValidCertificateOnlyOnce) {
               GetCertificate(PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
                              /*force_new_key=*/true, _, _, _, _))
       .Times(1)
-      .WillOnce(WithArgs<7>(Invoke([valid_certificate](CertCallback callback) {
+      .WillOnce(WithArgs<7>([valid_certificate](CertCallback callback) {
         CertCallbackSuccess(std::move(callback), valid_certificate);
-      })));
+      }));
   EXPECT_CALL(policy_client_,
               UploadEnterpriseEnrollmentCertificate(valid_certificate, _))
       .Times(1)
-      .WillOnce(WithArgs<1>(Invoke(ResultCallbackSuccess)));
+      .WillOnce(WithArgs<1>(ResultCallbackSuccess));
 
   Run(/*expected_status=*/CertStatus::kSuccess);
 
@@ -342,9 +339,9 @@ TEST_F(EnrollmentCertificateUploaderTest, UploadValidCertificateOnlyOnce) {
               GetCertificate(PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
                              /*force_new_key=*/true, _, _, _, _))
       .Times(1)
-      .WillOnce(WithArgs<7>(Invoke([valid_certificate](CertCallback callback) {
+      .WillOnce(WithArgs<7>([valid_certificate](CertCallback callback) {
         CertCallbackSuccess(std::move(callback), valid_certificate);
-      })));
+      }));
   Run(/*expected_status=*/CertStatus::kSuccess);
 }
 

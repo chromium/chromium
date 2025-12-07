@@ -5,7 +5,6 @@
 <translation id="1140871961407805696">Kamera belakang</translation>
 <translation id="1196338895211115272">Gagal mengekspor kunci pribadi.</translation>
 <translation id="132960226125594336">Tidak dapat memuat file '<ph name="RELATIVE_PATH" />' untuk skrip konten karena akan melebihi ukuran maksimum skrip atau ukuran total maksimum skrip konten ekstensi.</translation>
-<translation id="1420684932347524586">Wah! Gagal membuat kunci pribadi RSA acak.</translation>
 <translation id="1445572445564823378">Ekstensi ini memperlambat <ph name="PRODUCT_NAME" />. Anda harus menonaktifkannya agar dapat memulihkan kinerja <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL tidak didukung.</translation>
 <translation id="1610570795592207282">Tidak dapat memuat CSS '<ph name="RELATIVE_PATH" />' untuk skrip.</translation>
@@ -19,13 +18,11 @@
 <translation id="3115238746683532089">Produk <ph name="PRODUCT_ID" /> tak dikenal dari vendor <ph name="VENDOR_ID" /> (nomor seri <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Gagal mengganti file crx. Cek apakah file sedang digunakan.</translation>
 <translation id="3163201441334626963">Produk <ph name="PRODUCT_ID" /> tak dikenal dari vendor <ph name="VENDOR_ID" /></translation>
-<translation id="3369521687965833290">Tidak dapat membuka paket ekstensi. Untuk membuka paket ekstensi dengan aman, harus tersedia jalur ke direktori profil Anda yang mulai dengan sebuah huruf drive dan tidak berisi junction point, mount point, atau link simbolik. Tidak ada jalur yang seperti itu untuk profil Anda.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (nomor seri <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> dari vendor <ph name="VENDOR_ID" /> (nomor seri <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Nilai masukan untuk kunci pribadi harus jalur yang valid.</translation>
 <translation id="388442998277590542">Tidak dapat memuat halaman opsi '<ph name="OPTIONS_PAGE" />'.</translation>
 <translation id="3984413272403535372">Kesalahan ketika menandai ekstensi.</translation>
-<translation id="4115165561519362854">Administrator perangkat ini mewajibkan <ph name="EXTENSION_NAME" /> untuk menjalankan versi minimum <ph name="EXTENSION_VERSION" />. Ekstensi tidak dapat diaktifkan sampai diperbarui ke versi tersebut (atau yang lebih tinggi).</translation>
 <translation id="4233778200880751280">Tidak dapat memuat halaman tentang '<ph name="ABOUT_PAGE" />'.</translation>
 <translation id="471800408830181311">Gagal mengeluarkan kunci pribadi.</translation>
 <translation id="4811956658694082538">Tidak dapat memasang paket karena proses utilitas mogok. Mulai ulang Chrome dan coba lagi.</translation>
@@ -39,7 +36,6 @@
 <translation id="5972529113578162692">Administrator komputer ini mewajibkan agar <ph name="EXTENSION_NAME" /> dipasang. Ekstensi tersebut tidak dapat di-uninstal.</translation>
 <translation id="6027032947578871493">Produk <ph name="PRODUCT_ID" /> tak dikenal dari <ph name="VENDOR_NAME" /> (nomor seri <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> dari vendor <ph name="VENDOR_ID" /></translation>
-<translation id="6143635259298204954">Tidak dapat membuka paket ekstensi. Untuk membuka paket ekstensi dengan aman, harus tersedia jalur ke direktori profil Anda yang tidak berisi link simbolik. Tidak ada jalur yang seperti itu untuk profil Anda.</translation>
 <translation id="6322279351188361895">Gagal membaca kunci pribadi.</translation>
 <translation id="6391538222494443604">Direktori masukan harus ada.</translation>
 <translation id="641087317769093025">Tidak dapat mengekstrak ekstensi</translation>
@@ -52,12 +48,14 @@
 <translation id="7068383018033524534">File manifes tidak valid</translation>
 <translation id="7217838517480956708">Administrator mesin ini membutuhkan <ph name="EXTENSION_NAME" /> untuk dipasang. Persyaratan ini tidak dapat dihapus atau dimodifikasi.</translation>
 <translation id="7612608473764576263">Nilai masukan untuk kunci pribadi harus dalam format yang valid (kunci RSA dengan enkode PEM format PKCS#8).</translation>
+<translation id="7876803335449432072">Tidak dapat memuat file '<ph name="RELATIVE_PATH" />' untuk skrip konten. Lembar gaya skrip konten hanya dapat dimuat dari file lembar gaya yang didukung seperti file .css.</translation>
 <translation id="7939686037314084444">Ekstensi gagal dimuat dengan benar. Ekstensi mungkin tidak dapat menghalangi permintaan jaringan.</translation>
 <translation id="7972881773422714442">Opsi: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Kamera depan</translation>
 <translation id="8047248493720652249">Ekstensi ini gagal memberi nama download "<ph name="ATTEMPTED_FILENAME" />" karena ekstensi lain (<ph name="EXTENSION_NAME" />) menentukan nama file yang berbeda "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> dari <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">File manifes tidak ada atau tidak dapat dibaca</translation>
+<translation id="8621383749470166852">Tidak dapat memuat file '<ph name="RELATIVE_PATH" />' untuk skrip konten. Skrip konten hanya dapat dimuat dari file JavaScript yang didukung seperti file .js.</translation>
 <translation id="8636666366616799973">Paket tidak valid. Detail: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" meminta akses ke salah satu perangkat Anda:</translation>
 <translation id="8885905466771744233">Kunci pribadi untuk ekstensi yang ditentukan sudah ada. Gunakan kembali kunci itu atau hapus terlebih dulu.</translation>

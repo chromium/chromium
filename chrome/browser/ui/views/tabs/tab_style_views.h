@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/glow_hover_controller.h"
 #include "ui/base/metadata/base_type_conversion.h"
@@ -28,6 +29,12 @@ namespace gfx {
 class Canvas;
 }
 
+struct TabPathFlags {
+  bool force_active = false;
+  TabStyle::RenderUnits render_units = TabStyle::RenderUnits::kPixels;
+  bool should_paint_extension = true;
+};
+
 // Holds Views-specific logic for rendering and sizing tabs.
 class TabStyleViews {
  public:
@@ -38,15 +45,13 @@ class TabStyleViews {
   TabStyleViews();
   virtual ~TabStyleViews();
 
-  // Gets the specific |path_type| associated with the specific |tab|.
-  // If |force_active| is true, applies an active appearance on the tab (usually
+  // Gets the specific `path_type` associated with the specific `tab`.
+  // If `force_active` is true, applies an active appearance on the tab (usually
   // involving painting an optional stroke) even if the tab is not the active
   //  tab.
   virtual SkPath GetPath(TabStyle::PathType path_type,
                          float scale,
-                         bool force_active = false,
-                         TabStyle::RenderUnits render_units =
-                             TabStyle::RenderUnits::kPixels) const = 0;
+                         const TabPathFlags& flags) const = 0;
 
   // Paints the tab.
   virtual void PaintTab(gfx::Canvas* canvas) const = 0;
@@ -59,22 +64,15 @@ class TabStyleViews {
   // TabStyle::GetMaximumZValue()).
   virtual float GetZValue() const = 0;
 
-  // Returns whichever of (active, inactive) the tab appears more like given the
-  // active opacity.
-  virtual TabActive GetApparentActiveState() const = 0;
-
-  // Returns the target opacity of the "active" portion of the tab's state. The
-  // current opacity may be animating towards this value.
-  virtual float GetTargetActiveOpacity() const = 0;
+  // Returns whether the tab appears more like the active opacity than the
+  // inactive opacity.
+  virtual bool IsApparentlyActive() const = 0;
 
   // Returns the current opacity of the "active" portion of the tab's state.
   virtual float GetCurrentActiveOpacity() const = 0;
 
   // Derives and returns colors for the tab. See TabColors, above.
   virtual TabStyle::TabColors CalculateTargetColors() const = 0;
-
-  // Sets the center of the radial highlight in the hover animation.
-  virtual void SetHoverLocation(const gfx::Point& location) = 0;
 
   // Shows the hover animation.
   virtual void ShowHover(TabStyle::ShowHoverStyle style) = 0;
@@ -84,6 +82,8 @@ class TabStyleViews {
 
   // Returns the progress (0 to 1) of the hover animation.
   virtual double GetHoverAnimationValue() const = 0;
+
+  virtual GlowHoverController* GetHoverControllerForTesting() = 0;
 
   const TabStyle* tab_style() const { return tab_style_; }
 

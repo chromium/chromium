@@ -13,17 +13,19 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
-#include <optional>
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/win/access_control_list.h"
 #include "base/win/access_token.h"
 #include "base/win/sid.h"
 #include "base/win/win_util.h"
+#include "base/win/windows_handle_util.h"
 #include "base/win/windows_version.h"
 #include "sandbox/features.h"
 #include "sandbox/win/src/acl.h"
@@ -73,10 +75,12 @@ sandbox::PolicyGlobal* MakeBrokerPolicyMemory() {
 }
 
 bool IsInheritableHandle(HANDLE handle) {
-  if (!handle)
+  if (!handle) {
     return false;
-  if (handle == INVALID_HANDLE_VALUE)
+  }
+  if (base::win::IsPseudoHandle(handle)) {
     return false;
+  }
   // File handles (FILE_TYPE_DISK) and pipe handles are known to be
   // inheritable.  Console handles (FILE_TYPE_CHAR) are not
   // inheritable via PROC_THREAD_ATTRIBUTE_HANDLE_LIST.
@@ -167,8 +171,7 @@ bool ConfigBase::IsOnCreatingThread() const {
 #if DCHECK_IS_ON()
   return GetCurrentThreadId() == creating_thread_id_;
 #else  // DCHECK_IS_ON()
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 #endif
 }
 
@@ -235,7 +238,9 @@ ConfigBase::~ConfigBase() {
   // `policy_maker_` holds a raw_ptr on `policy_`, so we need to make sure it
   // gets destroyed first.
   policy_maker_.reset();
-  policy_.ClearAndDelete();  // Allocated by MakeBrokerPolicyMemory.
+  sandbox::PolicyGlobal* policy = policy_.get();
+  policy_ = nullptr;
+  ::operator delete(policy);
 }
 
 sandbox::LowLevelPolicy* ConfigBase::PolicyMaker() {
@@ -252,7 +257,6 @@ sandbox::LowLevelPolicy* ConfigBase::PolicyMaker() {
 ResultCode ConfigBase::AllowFileAccess(FileSemantics semantics,
                                        const wchar_t* pattern) {
   if (!FileSystemPolicy::GenerateRules(pattern, semantics, PolicyMaker())) {
-    NOTREACHED_IN_MIGRATION();
     return SBOX_ERROR_BAD_PARAMS;
   }
   return SBOX_ALL_OK;
@@ -263,13 +267,12 @@ ResultCode ConfigBase::SetFakeGdiInit() {
       << "Enable MITIGATION_WIN32K_DISABLE before adding win32k policy "
          "rules.";
   if (!ProcessMitigationsWin32KLockdownPolicy::GenerateRules(PolicyMaker())) {
-    NOTREACHED_IN_MIGRATION();
     return SBOX_ERROR_BAD_PARAMS;
   }
   return SBOX_ALL_OK;
 }
 
-ResultCode ConfigBase::AllowExtraDlls(const wchar_t* pattern) {
+ResultCode ConfigBase::AllowExtraDll(const wchar_t* path) {
   // Signed intercept rules only supported on Windows 10 TH2 and above. This
   // must match the version checks in process_mitigations.cc for
   // consistency.
@@ -278,8 +281,7 @@ ResultCode ConfigBase::AllowExtraDlls(const wchar_t* pattern) {
               mitigations_ & MITIGATION_FORCE_MS_SIGNED_BINS)
         << "Enable MITIGATION_FORCE_MS_SIGNED_BINS before adding signed "
            "policy rules.";
-    if (!SignedPolicy::GenerateRules(pattern, PolicyMaker())) {
-      NOTREACHED_IN_MIGRATION();
+    if (!SignedPolicy::GenerateRules(base::FilePath(path), PolicyMaker())) {
       return SBOX_ERROR_BAD_PARAMS;
     }
   }
@@ -357,9 +359,7 @@ void ConfigBase::SetLockdownDefaultDacl() {
   lockdown_default_dacl_ = true;
 }
 
-ResultCode ConfigBase::AddAppContainerProfile(
-    const wchar_t* package_name,
-    ACProfileRegistration registration) {
+ResultCode ConfigBase::AddAppContainerProfile(const wchar_t* package_name) {
   if (!features::IsAppContainerSandboxSupported())
     return SBOX_ERROR_UNSUPPORTED;
 
@@ -368,17 +368,8 @@ ResultCode ConfigBase::AddAppContainerProfile(
   if (app_container_ || integrity_level_ != INTEGRITY_LEVEL_LAST) {
     return SBOX_ERROR_BAD_PARAMS;
   }
-
-  switch (registration) {
-    case ACProfileRegistration::kDefault:
-      app_container_ = AppContainerBase::CreateProfile(
-          package_name, L"Chrome Sandbox", L"Profile for Chrome Sandbox");
-      break;
-    case ACProfileRegistration::kNoFirewall:
-      app_container_ = AppContainerBase::CreateProfileNoFirewall(
-          package_name, L"Chrome Sandbox");
-      break;
-  }
+  app_container_ =
+      AppContainerBase::CreateProfile(package_name, L"Chrome Sandbox");
 
   if (!app_container_)
     return SBOX_ERROR_CREATE_APPCONTAINER;
@@ -441,17 +432,18 @@ void ConfigBase::AddKernelObjectToClose(HandleToClose handle_info) {
   switch (handle_info) {
     case HandleToClose::kWindowsShellGlobalCounters:
       handle_closer_.section_windows_global_shell_counters = true;
-      break;
+      return;
     case HandleToClose::kDeviceApi:
       handle_closer_.file_device_api = true;
-      break;
+      return;
     case HandleToClose::kKsecDD:
       handle_closer_.file_ksecdd = true;
-      break;
+      return;
     case HandleToClose::kDisconnectCsrss:
       handle_closer_.disconnect_csrss = true;
-      break;
+      return;
   }
+  NOTREACHED();
 }
 
 void ConfigBase::SetDisconnectCsrss() {
@@ -484,8 +476,8 @@ PolicyBase::PolicyBase(std::string_view tag)
     : tag_(tag),
       config_(),
       config_ptr_(nullptr),
-      stdout_handle_(INVALID_HANDLE_VALUE),
-      stderr_handle_(INVALID_HANDLE_VALUE),
+      stdout_handle_(nullptr),
+      stderr_handle_(nullptr),
       delegate_data_(nullptr),
       dispatcher_(nullptr),
       job_() {}
@@ -543,7 +535,7 @@ ResultCode PolicyBase::SetStderrHandle(HANDLE handle) {
 
 void PolicyBase::AddHandleToShare(HANDLE handle) {
   CHECK(handle);
-  CHECK_NE(handle, INVALID_HANDLE_VALUE);
+  CHECK(!base::win::IsPseudoHandle(handle));
 
   // Ensure the handle can be inherited.
   bool result =
@@ -734,8 +726,7 @@ EvalResult PolicyBase::EvalPolicy(IpcTag service,
     }
     for (size_t i = 0; i < params->count; i++) {
       if (!params->parameters[i].IsValid()) {
-        NOTREACHED_IN_MIGRATION();
-        return SIGNAL_ALARM;
+        NOTREACHED();
       }
     }
     PolicyProcessor pol_evaluator(policy->entry[static_cast<size_t>(service)]);
@@ -803,7 +794,7 @@ bool PolicyBase::SetupHandleCloser(TargetProcess& target) {
 
 std::optional<base::span<const uint8_t>> PolicyBase::delegate_data_span() {
   if (delegate_data_) {
-    return base::make_span(*delegate_data_);
+    return base::span(*delegate_data_);
   }
   return std::nullopt;
 }

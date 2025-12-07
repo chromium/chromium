@@ -14,6 +14,7 @@
 #include "media/base/mime_util.h"
 #include "media/formats/hls/items.h"
 #include "media/formats/hls/parse_status.h"
+#include "media/formats/hls/quirks.h"
 #include "media/formats/hls/variable_dictionary.h"
 
 namespace media::hls {
@@ -24,7 +25,7 @@ template <typename T>
 ParseStatus::Or<T> ParseEmptyTag(TagItem tag) {
   DCHECK(tag.GetName() == ToTagName(T::kName));
   if (tag.GetContent().has_value()) {
-    return ParseStatusCode::kMalformedTag;
+    return ParseStatusCode::kNoTagBody;
   }
 
   return T{};
@@ -35,14 +36,13 @@ ParseStatus::Or<T> ParseDecimalIntegerTag(TagItem tag,
                                           types::DecimalInteger T::*field) {
   DCHECK(tag.GetName() == ToTagName(T::kName));
   if (!tag.GetContent().has_value()) {
-    return ParseStatusCode::kMalformedTag;
+    return ParseStatusCode::kNoTagBody;
   }
 
   auto value =
       types::ParseDecimalInteger(tag.GetContent()->SkipVariableSubstitution());
   if (!value.has_value()) {
-    return ParseStatus(ParseStatusCode::kMalformedTag)
-        .AddCause(std::move(value).error());
+    return std::move(value).error();
   }
 
   T out;
@@ -54,7 +54,7 @@ template <typename T>
 ParseStatus::Or<T> ParseISO8601DateTimeTag(TagItem tag, base::Time T::*field) {
   CHECK(tag.GetName() == ToTagName(T::kName));
   if (!tag.GetContent().has_value()) {
-    return ParseStatusCode::kMalformedTag;
+    return ParseStatusCode::kNoTagBody;
   }
   const auto content = tag.GetContent()->SkipVariableSubstitution().Str();
   std::string content_nullterm = std::string(content);
@@ -63,7 +63,7 @@ ParseStatus::Or<T> ParseISO8601DateTimeTag(TagItem tag, base::Time T::*field) {
   if (base::Time::FromString(content_nullterm.c_str(), &time)) {
     out.*field = time;
   } else {
-    return ParseStatusCode::kMalformedTag;
+    return ParseStatusCode::kMalformedDate;
   }
   return out;
 }
@@ -87,7 +87,7 @@ constexpr std::string_view GetAttributeName(XDefineTagAttribute attribute) {
       return "VALUE";
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Attributes expected in `EXT-X-MEDIA` tag contents.
@@ -139,7 +139,7 @@ constexpr std::string_view GetAttributeName(XMediaTagAttribute attribute) {
       return "URI";
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Attributes expected in `EXT-X-STREAM-INF` tag contents.
@@ -179,7 +179,7 @@ constexpr std::string_view GetAttributeName(XStreamInfTagAttribute attribute) {
       return "SCORE";
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Attributes expected in `EXT-X-SKIP` tag contents.
@@ -197,7 +197,7 @@ constexpr std::string_view GetAttributeName(XSkipTagAttribute attribute) {
     case XSkipTagAttribute::kSkippedSegments:
       return "SKIPPED-SEGMENTS";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 enum class XRenditionReportTagAttribute {
@@ -216,7 +216,7 @@ constexpr std::string_view GetAttributeName(XRenditionReportTagAttribute attr) {
     case XRenditionReportTagAttribute::kLastPart:
       return "LAST-PART";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Attributes expected in `EXT-X-MAP` tag contents.
@@ -235,7 +235,7 @@ constexpr std::string_view GetAttributeName(XMapTagAttribute attribute) {
       return "URI";
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Attributes expected in `EXT-X-PART` tag contents.
@@ -277,7 +277,7 @@ constexpr std::string_view GetAttributeName(XPartInfTagAttribute attribute) {
       return "PART-TARGET";
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Attributes expected in `EXT-X-SERVER-CONTROL` tag contents.
@@ -306,7 +306,7 @@ constexpr std::string_view GetAttributeName(
       return "PART-HOLD-BACK";
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 enum class XKeyTagAttribute {
@@ -331,7 +331,169 @@ constexpr std::string_view GetAttributeName(XKeyTagAttribute attribute) {
     case XKeyTagAttribute::kUri:
       return "URI";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
+}
+
+enum class XPreloadHintTagAttribute {
+  kByterangeLength,
+  kByterangeStart,
+  kType,
+  kUri,
+  kMaxValue = kUri,
+};
+
+constexpr std::string_view GetAttributeName(
+    XPreloadHintTagAttribute attribute) {
+  switch (attribute) {
+    case XPreloadHintTagAttribute::kByterangeLength:
+      return "BYTERANGE-LENGTH";
+    case XPreloadHintTagAttribute::kByterangeStart:
+      return "BYTERANGE-START";
+    case XPreloadHintTagAttribute::kType:
+      return "TYPE";
+    case XPreloadHintTagAttribute::kUri:
+      return "URI";
+  };
+  NOTREACHED();
+}
+
+enum class XDateRangeTagAttribute {
+  kClass,
+  kCue,
+  kDuration,
+  kEndDate,
+  kEndOnNext,
+  kId,
+  kPlannedDuration,
+  kSCTE35cmd,
+  kSCTE35in,
+  kSCTE35out,
+  kStartDate,
+  kMaxValue = kStartDate,
+};
+
+constexpr std::string_view GetAttributeName(XDateRangeTagAttribute attribute) {
+  switch (attribute) {
+    case XDateRangeTagAttribute::kClass:
+      return "CLASS";
+    case XDateRangeTagAttribute::kCue:
+      return "CUE";
+    case XDateRangeTagAttribute::kDuration:
+      return "DURATION";
+    case XDateRangeTagAttribute::kEndDate:
+      return "END-DATE";
+    case XDateRangeTagAttribute::kEndOnNext:
+      return "END-ON-NEXT";
+    case XDateRangeTagAttribute::kId:
+      return "ID";
+    case XDateRangeTagAttribute::kPlannedDuration:
+      return "PLANNED-DURATION";
+    case XDateRangeTagAttribute::kSCTE35cmd:
+      return "SCTE35-CMD";
+    case XDateRangeTagAttribute::kSCTE35in:
+      return "SCTE35-IN";
+    case XDateRangeTagAttribute::kSCTE35out:
+      return "SCTE35-OUT";
+    case XDateRangeTagAttribute::kStartDate:
+      return "START-DATE";
+  };
+
+  NOTREACHED();
+}
+
+enum class XSessionDataTagAttribute {
+  kDataId,
+  kFormat,
+  kLanguage,
+  kUri,
+  kValue,
+  kMaxValue = kValue,
+};
+
+constexpr std::string_view GetAttributeName(
+    XSessionDataTagAttribute attribute) {
+  switch (attribute) {
+    case XSessionDataTagAttribute::kDataId:
+      return "DATA-ID";
+    case XSessionDataTagAttribute::kFormat:
+      return "FORMAT";
+    case XSessionDataTagAttribute::kLanguage:
+      return "LANGUAGE";
+    case XSessionDataTagAttribute::kUri:
+      return "URI";
+    case XSessionDataTagAttribute::kValue:
+      return "VALUE";
+  };
+
+  NOTREACHED();
+}
+
+enum class XIFrameStreamInfTagAttribute {
+  kAverageBandwidth,
+  kBandwidth,
+  kCodecs,
+  kResolution,
+  kScore,
+  kUri,
+  kVideo,
+  kMaxValue = kVideo,
+};
+
+constexpr std::string_view GetAttributeName(
+    XIFrameStreamInfTagAttribute attribute) {
+  switch (attribute) {
+    case XIFrameStreamInfTagAttribute::kAverageBandwidth:
+      return "AVERAGE-BANDWIDTH";
+    case XIFrameStreamInfTagAttribute::kBandwidth:
+      return "BANDWIDTH";
+    case XIFrameStreamInfTagAttribute::kCodecs:
+      return "CODECS";
+    case XIFrameStreamInfTagAttribute::kResolution:
+      return "RESOLUTION";
+    case XIFrameStreamInfTagAttribute::kScore:
+      return "SCORE";
+    case XIFrameStreamInfTagAttribute::kUri:
+      return "URI";
+    case XIFrameStreamInfTagAttribute::kVideo:
+      return "VIDEO";
+  }
+
+  NOTREACHED();
+}
+
+enum class XStartTagAttribute {
+  kPrecise,
+  kTimeOffset,
+  kMaxValue = kTimeOffset,
+};
+
+constexpr std::string_view GetAttributeName(XStartTagAttribute attribute) {
+  switch (attribute) {
+    case XStartTagAttribute::kPrecise:
+      return "PRECISE";
+    case XStartTagAttribute::kTimeOffset:
+      return "TIME-OFFSET";
+  }
+
+  NOTREACHED();
+}
+
+enum class XContentSteeringTagAttribute {
+  kPathwayId,
+  kServerUri,
+  kMaxValue = kServerUri,
+};
+
+constexpr std::string_view GetAttributeName(
+    XContentSteeringTagAttribute attribute) {
+  switch (attribute) {
+    case XContentSteeringTagAttribute::kServerUri:
+      return "SERVER-URI";
+    case XContentSteeringTagAttribute::kPathwayId:
+      return "PATHWAY-ID";
+  }
+
+  NOTREACHED();
 }
 
 template <typename T, size_t kLast>
@@ -426,7 +588,8 @@ struct is_specialization_of<SpecifiedContainer, SpecifiedContainer<Types...>>
 // a ParseStatus if `field_name` is not found in map.
 // A function pointer must also be provided which does the parsing from
 // SourceString => Result, provided that the `field_name` key is present.
-template <typename Result,
+template <typename Tag,
+          typename Result,
           typename AttrEnum,
           typename ParseFn,
           typename... ParseFnArgs>
@@ -438,15 +601,14 @@ ParseStatus::Or<Result> ParseField(AttrEnum field_name,
     auto maybe =
         parser(map.GetValue(field_name), std::forward<ParseFnArgs>(args)...);
     if (!maybe.has_value()) {
-      ParseStatus result = ParseStatusCode::kMalformedTag;
-      return std::move(result).AddCause(std::move(maybe).error());
+      return std::move(maybe).error().AddHere();
     }
     return Result(std::move(maybe).value());
   }
   if constexpr (is_specialization_of<std::optional, Result>::value) {
     return Result(std::nullopt);
   }
-  return ParseStatusCode::kMalformedTag;
+  return Tag::kMissingAttributeError;
 }
 
 }  // namespace
@@ -472,7 +634,7 @@ ParseStatus::Or<XDefineTag> XDefineTag::Parse(TagItem tag) {
   DCHECK(tag.GetName() == ToTagName(XDefineTag::kName));
 
   if (!tag.GetContent().has_value()) {
-    return ParseStatusCode::kMalformedTag;
+    return ParseStatusCode::kNoTagBody;
   }
 
   // Parse the attribute-list.
@@ -484,14 +646,13 @@ ParseStatus::Or<XDefineTag> XDefineTag::Parse(TagItem tag) {
   auto result = map.FillUntilError(&iter);
 
   if (result.code() != ParseStatusCode::kReachedEOF) {
-    return ParseStatus(ParseStatusCode::kMalformedTag)
-        .AddCause(std::move(result));
+    return std::move(result).AddHere();
   }
 
   // "NAME" and "IMPORT" are mutually exclusive
   if (map.HasValue(XDefineTagAttribute::kName) &&
       map.HasValue(XDefineTagAttribute::kImport)) {
-    return ParseStatusCode::kMalformedTag;
+    return ParseStatusCode::kConflictingDefineTags;
   }
 
   if (map.HasValue(XDefineTagAttribute::kName)) {
@@ -499,19 +660,18 @@ ParseStatus::Or<XDefineTag> XDefineTag::Parse(TagItem tag) {
                         map.GetValue(XDefineTagAttribute::kName))
                         .MapValue(types::VariableName::Parse);
     if (!var_name.has_value()) {
-      return ParseStatus(ParseStatusCode::kMalformedTag)
-          .AddCause(std::move(var_name).error());
+      return std::move(var_name).error().AddHere();
     }
 
     // If "NAME" is defined, "VALUE" must also be defined
     if (!map.HasValue(XDefineTagAttribute::kValue)) {
-      return ParseStatusCode::kMalformedTag;
+      return ParseStatusCode::kMissingDefineAttribute;
     }
 
     auto value = types::ParseQuotedStringWithoutSubstitution(
         map.GetValue(XDefineTagAttribute::kValue), /*allow_empty*/ true);
     if (!value.has_value()) {
-      return ParseStatus(ParseStatusCode::kMalformedTag);
+      return std::move(value).error().AddHere();
     }
 
     return XDefineTag::CreateDefinition(std::move(var_name).value(),
@@ -523,8 +683,7 @@ ParseStatus::Or<XDefineTag> XDefineTag::Parse(TagItem tag) {
                         map.GetValue(XDefineTagAttribute::kImport))
                         .MapValue(types::VariableName::Parse);
     if (!var_name.has_value()) {
-      return ParseStatus(ParseStatusCode::kMalformedTag)
-          .AddCause(std::move(var_name).error());
+      return std::move(var_name).error().AddHere();
     }
 
     // "VALUE" doesn't make any sense here, but the spec doesn't explicitly
@@ -534,7 +693,7 @@ ParseStatus::Or<XDefineTag> XDefineTag::Parse(TagItem tag) {
   }
 
   // Without "NAME" or "IMPORT", the tag is malformed
-  return ParseStatusCode::kMalformedTag;
+  return ParseStatusCode::kMissingDefineAttribute;
 }
 
 // static
@@ -608,7 +767,7 @@ ParseStatus::Or<XMediaTag> XMediaTag::Parse(
     VariableDictionary::SubstitutionBuffer& sub_buffer) {
   DCHECK(tag.GetName() == ToTagName(XMediaTag::kName));
   if (!tag.GetContent().has_value()) {
-    return ParseStatusCode::kMalformedTag;
+    return ParseStatusCode::kNoTagBody;
   }
 
   // Parse the attribute-list
@@ -617,8 +776,7 @@ ParseStatus::Or<XMediaTag> XMediaTag::Parse(
   auto map_result = map.FillUntilError(&iter);
 
   if (map_result.code() != ParseStatusCode::kReachedEOF) {
-    return ParseStatus(ParseStatusCode::kMalformedTag)
-        .AddCause(std::move(map_result));
+    return std::move(map_result).AddHere();
   }
 
   // Parse the 'TYPE' attribute
@@ -634,10 +792,10 @@ ParseStatus::Or<XMediaTag> XMediaTag::Parse(
     } else if (str.Str() == "CLOSED-CAPTIONS") {
       type = MediaType::kClosedCaptions;
     } else {
-      return ParseStatusCode::kMalformedTag;
+      return ParseStatusCode::kInvalidMediaAttribute;
     }
   } else {
-    return ParseStatusCode::kMalformedTag;
+    return ParseStatusCode::kMissingMediaAttribute;
   }
 
   // Parse the 'URI' attribute
@@ -645,22 +803,19 @@ ParseStatus::Or<XMediaTag> XMediaTag::Parse(
   if (map.HasValue(XMediaTagAttribute::kUri)) {
     // This attribute MUST NOT be defined for closed-captions renditions
     if (type == MediaType::kClosedCaptions) {
-      return ParseStatusCode::kMalformedTag;
+      return ParseStatusCode::kMissingMediaAttribute;
     }
 
     auto result = types::ParseQuotedString(
         map.GetValue(XMediaTagAttribute::kUri), variable_dict, sub_buffer);
     if (!result.has_value()) {
-      return ParseStatus(ParseStatusCode::kMalformedTag)
-          .AddCause(std::move(result).error());
+      return std::move(result).error().AddHere();
     }
 
     uri = std::move(result).value();
-  } else {
+  } else if (type == MediaType::kSubtitles) {
     // URI MUST be defined for subtitle renditions
-    if (type == MediaType::kSubtitles) {
-      return ParseStatusCode::kMalformedTag;
-    }
+    return ParseStatusCode::kMissingMediaAttribute;
   }
 
   // Parse the 'GROUP-ID' attribute
@@ -669,13 +824,11 @@ ParseStatus::Or<XMediaTag> XMediaTag::Parse(
     auto result = types::ParseQuotedString(
         map.GetValue(XMediaTagAttribute::kGroupId), variable_dict, sub_buffer);
     if (!result.has_value()) {
-      return ParseStatus(ParseStatusCode::kMalformedTag)
-          .AddCause(std::move(result).error());
+      return std::move(result).error().AddHere();
     }
-
     group_id = std::move(result).value();
   } else {
-    return ParseStatusCode::kMalformedTag;
+    return ParseStatusCode::kMissingMediaAttribute;
   }
 
   // Parse the 'LANGUAGE' attribute
@@ -684,10 +837,8 @@ ParseStatus::Or<XMediaTag> XMediaTag::Parse(
     auto result = types::ParseQuotedString(
         map.GetValue(XMediaTagAttribute::kLanguage), variable_dict, sub_buffer);
     if (!result.has_value()) {
-      return ParseStatus(ParseStatusCode::kMalformedTag)
-          .AddCause(std::move(result).error());
+      return std::move(result).error().AddHere();
     }
-
     language = std::move(result).value();
   }
 
@@ -698,10 +849,8 @@ ParseStatus::Or<XMediaTag> XMediaTag::Parse(
         map.GetValue(XMediaTagAttribute::kAssocLanguage), variable_dict,
         sub_buffer);
     if (!result.has_value()) {
-      return ParseStatus(ParseStatusCode::kMalformedTag)
-          .AddCause(std::move(result).error());
+      return std::move(result).error().AddHere();
     }
-
     assoc_language = std::move(result).value();
   }
 
@@ -711,13 +860,11 @@ ParseStatus::Or<XMediaTag> XMediaTag::Parse(
     auto result = types::ParseQuotedString(
         map.GetValue(XMediaTagAttribute::kName), variable_dict, sub_buffer);
     if (!result.has_value()) {
-      return ParseStatus(ParseStatusCode::kMalformedTag)
-          .AddCause(std::move(result).error());
+      return std::move(result).error().AddHere();
     }
-
     name = std::move(result).value();
   } else {
-    return ParseStatusCode::kMalformedTag;
+    return ParseStatusCode::kMissingMediaAttribute;
   }
 
   // Parse the 'STABLE-RENDITION-ID' attribute
@@ -728,8 +875,7 @@ ParseStatus::Or<XMediaTag> XMediaTag::Parse(
                       variable_dict, sub_buffer)
                       .MapValue(types::StableId::Parse);
     if (!result.has_value()) {
-      return ParseStatus(ParseStatusCode::kMalformedTag)
-          .AddCause(std::move(result).error());
+      return std::move(result).error().AddHere();
     }
     stable_rendition_id = std::move(result).value();
   }
@@ -750,7 +896,7 @@ ParseStatus::Or<XMediaTag> XMediaTag::Parse(
     } else if (is_default) {
       // If the 'DEFAULT' attribute is 'YES', then the value of this attribute
       // must also be 'YES', if present.
-      return ParseStatusCode::kMalformedTag;
+      return ParseStatusCode::kConflictingMediaAttributes;
     }
   }
 
@@ -759,7 +905,7 @@ ParseStatus::Or<XMediaTag> XMediaTag::Parse(
   if (map.HasValue(XMediaTagAttribute::kForced)) {
     // The FORCED attribute MUST NOT be present unless TYPE=SUBTITLES
     if (type != MediaType::kSubtitles) {
-      return ParseStatusCode::kMalformedTag;
+      return ParseStatusCode::kConflictingMediaAttributes;
     }
 
     if (map.GetValue(XMediaTagAttribute::kForced).Str() == "YES") {
@@ -772,7 +918,7 @@ ParseStatus::Or<XMediaTag> XMediaTag::Parse(
   if (map.HasValue(XMediaTagAttribute::kInstreamId)) {
     // The INSTREAM-ID attribute MUST NOT be present unless TYPE=CLOSED-CAPTIONS
     if (type != MediaType::kClosedCaptions) {
-      return ParseStatusCode::kMalformedTag;
+      return ParseStatusCode::kConflictingMediaAttributes;
     }
 
     auto result =
@@ -780,15 +926,14 @@ ParseStatus::Or<XMediaTag> XMediaTag::Parse(
                                  variable_dict, sub_buffer)
             .MapValue(types::InstreamId::Parse);
     if (!result.has_value()) {
-      return ParseStatus(ParseStatusCode::kMalformedTag)
-          .AddCause(std::move(result).error());
+      return std::move(result).error().AddHere();
     }
 
     instream_id = std::move(result).value();
   }
   // This attribute is REQUIRED if TYPE=CLOSED-CAPTIONS
   else if (type == MediaType::kClosedCaptions) {
-    return ParseStatusCode::kMalformedTag;
+    return ParseStatusCode::kMissingMediaAttribute;
   }
 
   // Parse the 'CHARACTERISTICS' attribute
@@ -798,15 +943,14 @@ ParseStatus::Or<XMediaTag> XMediaTag::Parse(
         map.GetValue(XMediaTagAttribute::kCharacteristics), variable_dict,
         sub_buffer);
     if (!result.has_value()) {
-      return ParseStatus(ParseStatusCode::kMalformedTag)
-          .AddCause(std::move(result).error());
+      return std::move(result).error().AddHere();
     }
     auto value = std::move(result).value();
 
     while (!value.Empty()) {
       const auto mct = value.ConsumeDelimiter(',');
       if (mct.Empty()) {
-        return ParseStatusCode::kMalformedTag;
+        return ParseStatusCode::kInvalidMediaAttribute;
       }
 
       characteristics.emplace_back(mct.Str());
@@ -823,8 +967,7 @@ ParseStatus::Or<XMediaTag> XMediaTag::Parse(
                                    variable_dict, sub_buffer)
               .MapValue(types::AudioChannels::Parse);
       if (!result.has_value()) {
-        return ParseStatus(ParseStatusCode::kMalformedTag)
-            .AddCause(std::move(result).error());
+        return std::move(result).error().AddHere();
       }
 
       channels = std::move(result).value();
@@ -869,7 +1012,7 @@ ParseStatus::Or<XStreamInfTag> XStreamInfTag::Parse(
   XStreamInfTag out;
 
   if (!tag.GetContent().has_value()) {
-    return ParseStatusCode::kMalformedTag;
+    return ParseStatusCode::kNoTagBody;
   }
 
   // Parse the attribute-list
@@ -878,8 +1021,7 @@ ParseStatus::Or<XStreamInfTag> XStreamInfTag::Parse(
   auto map_result = map.FillUntilError(&iter);
 
   if (map_result.code() != ParseStatusCode::kReachedEOF) {
-    return ParseStatus(ParseStatusCode::kMalformedTag)
-        .AddCause(std::move(map_result));
+    return std::move(map_result).AddHere();
   }
 
   // Extract the 'BANDWIDTH' attribute
@@ -888,13 +1030,12 @@ ParseStatus::Or<XStreamInfTag> XStreamInfTag::Parse(
         map.GetValue(XStreamInfTagAttribute::kBandwidth)
             .SkipVariableSubstitution());
     if (!bandwidth.has_value()) {
-      return ParseStatus(ParseStatusCode::kMalformedTag)
-          .AddCause(std::move(bandwidth).error());
+      return std::move(bandwidth).error().AddHere();
     }
 
     out.bandwidth = std::move(bandwidth).value();
   } else {
-    return ParseStatusCode::kMalformedTag;
+    return ParseStatusCode::kMissingStreamInfAttribute;
   }
 
   // Extract the 'AVERAGE-BANDWIDTH' attribute
@@ -903,8 +1044,7 @@ ParseStatus::Or<XStreamInfTag> XStreamInfTag::Parse(
         map.GetValue(XStreamInfTagAttribute::kAverageBandwidth)
             .SkipVariableSubstitution());
     if (!average_bandwidth.has_value()) {
-      return ParseStatus(ParseStatusCode::kMalformedTag)
-          .AddCause(std::move(average_bandwidth).error());
+      return std::move(average_bandwidth).error().AddHere();
     }
 
     out.average_bandwidth = std::move(average_bandwidth).value();
@@ -916,8 +1056,7 @@ ParseStatus::Or<XStreamInfTag> XStreamInfTag::Parse(
         map.GetValue(XStreamInfTagAttribute::kScore)
             .SkipVariableSubstitution());
     if (!score.has_value()) {
-      return ParseStatus(ParseStatusCode::kMalformedTag)
-          .AddCause(std::move(score).error());
+      return std::move(score).error().AddHere();
     }
 
     out.score = std::move(score).value();
@@ -929,8 +1068,7 @@ ParseStatus::Or<XStreamInfTag> XStreamInfTag::Parse(
         types::ParseQuotedString(map.GetValue(XStreamInfTagAttribute::kCodecs),
                                  variable_dict, sub_buffer);
     if (!codecs_string.has_value()) {
-      return ParseStatus(ParseStatusCode::kMalformedTag)
-          .AddCause(std::move(codecs_string).error());
+      return std::move(codecs_string).error().AddHere();
     }
 
     // Split the list of codecs
@@ -945,8 +1083,7 @@ ParseStatus::Or<XStreamInfTag> XStreamInfTag::Parse(
         map.GetValue(XStreamInfTagAttribute::kResolution)
             .SkipVariableSubstitution());
     if (!resolution.has_value()) {
-      return ParseStatus(ParseStatusCode::kMalformedTag)
-          .AddCause(std::move(resolution).error());
+      return std::move(resolution).error().AddHere();
     }
     out.resolution = std::move(resolution).value();
   }
@@ -957,8 +1094,7 @@ ParseStatus::Or<XStreamInfTag> XStreamInfTag::Parse(
         map.GetValue(XStreamInfTagAttribute::kFrameRate)
             .SkipVariableSubstitution());
     if (!frame_rate.has_value()) {
-      return ParseStatus(ParseStatusCode::kMalformedTag)
-          .AddCause(std::move(frame_rate).error());
+      return std::move(frame_rate).error().AddHere();
     }
     out.frame_rate = std::move(frame_rate).value();
   }
@@ -969,8 +1105,7 @@ ParseStatus::Or<XStreamInfTag> XStreamInfTag::Parse(
         types::ParseQuotedString(map.GetValue(XStreamInfTagAttribute::kAudio),
                                  variable_dict, sub_buffer);
     if (!audio.has_value()) {
-      return ParseStatus(ParseStatusCode::kMalformedTag)
-          .AddCause(std::move(audio).error());
+      return std::move(audio).error().AddHere();
     }
     out.audio = std::move(audio).value();
   }
@@ -981,8 +1116,7 @@ ParseStatus::Or<XStreamInfTag> XStreamInfTag::Parse(
         types::ParseQuotedString(map.GetValue(XStreamInfTagAttribute::kVideo),
                                  variable_dict, sub_buffer);
     if (!video.has_value()) {
-      return ParseStatus(ParseStatusCode::kMalformedTag)
-          .AddCause(std::move(video).error());
+      return std::move(video).error().AddHere();
     }
     out.video = std::move(video).value();
   }
@@ -995,7 +1129,7 @@ ParseStatus::Or<InfTag> InfTag::Parse(TagItem tag) {
   DCHECK(tag.GetName() == ToTagName(InfTag::kName));
 
   if (!tag.GetContent()) {
-    return ParseStatusCode::kMalformedTag;
+    return ParseStatusCode::kNoTagBody;
   }
   auto content = *tag.GetContent();
 
@@ -1005,16 +1139,16 @@ ParseStatus::Or<InfTag> InfTag::Parse(TagItem tag) {
   SourceString duration_str = content;
   SourceString title_str = content;
   if (comma == std::string_view::npos) {
+    if (!HLSQuirks::AllowMissingSegmentInfCommas()) {
+      return ParseStatusCode::kMissingRequiredSegmentInfoTrailingComma;
+    }
     // While the HLS spec does require commas at the end of inf tags, it's
     // incredibly common for sites to elide the comma if there is no title
     // attribute present. In this case, we should assert that there is at least
     // a trailing newline, and then strip it to generate a nameless tag.
     title_str = content.Substr(0, 0);
-    if (*content.Str().end() != '\n') {
-      duration_str = content;
-    } else {
-      duration_str = content.Substr(0, content.Str().length() - 1);
-    }
+    duration_str = content;
+    duration_str.TrimEnd();
   } else {
     duration_str = content.Substr(0, comma);
     title_str = content.Substr(comma + 1);
@@ -1026,8 +1160,7 @@ ParseStatus::Or<InfTag> InfTag::Parse(TagItem tag) {
   auto duration_result =
       types::ParseDecimalFloatingPoint(duration_str.SkipVariableSubstitution());
   if (!duration_result.has_value()) {
-    return ParseStatus(ParseStatusCode::kMalformedTag)
-        .AddCause(std::move(duration_result).error());
+    return std::move(duration_result).error().AddHere();
   }
   const auto duration = base::Seconds(std::move(duration_result).value());
 
@@ -1047,17 +1180,16 @@ ParseStatus::Or<XBitrateTag> XBitrateTag::Parse(TagItem tag) {
 ParseStatus::Or<XByteRangeTag> XByteRangeTag::Parse(TagItem tag) {
   DCHECK(tag.GetName() == ToTagName(XByteRangeTag::kName));
   if (!tag.GetContent().has_value()) {
-    return ParseStatusCode::kMalformedTag;
+    return ParseStatusCode::kNoTagBody;
   }
 
   auto range = types::parsing::ByteRangeExpression::Parse(
       tag.GetContent()->SkipVariableSubstitution());
   if (!range.has_value()) {
-    return ParseStatus(ParseStatusCode::kMalformedTag)
-        .AddCause(std::move(range).error());
+    return std::move(range).error().AddHere();
   }
 
-  return XByteRangeTag{.range = std::move(range).value()};
+  return XByteRangeTag(std::move(range).value());
 }
 
 // static
@@ -1093,7 +1225,7 @@ ParseStatus::Or<XMapTag> XMapTag::Parse(
     VariableDictionary::SubstitutionBuffer& sub_buffer) {
   DCHECK(tag.GetName() == ToTagName(XMapTag::kName));
   if (!tag.GetContent().has_value()) {
-    return ParseStatusCode::kMalformedTag;
+    return ParseStatusCode::kNoTagBody;
   }
 
   // Parse the attribute-list
@@ -1102,8 +1234,7 @@ ParseStatus::Or<XMapTag> XMapTag::Parse(
   auto map_result = map.FillUntilError(&iter);
 
   if (map_result.code() != ParseStatusCode::kReachedEOF) {
-    return ParseStatus(ParseStatusCode::kMalformedTag)
-        .AddCause(std::move(map_result));
+    return std::move(map_result).AddHere();
   }
 
   std::optional<ResolvedSourceString> uri;
@@ -1111,13 +1242,12 @@ ParseStatus::Or<XMapTag> XMapTag::Parse(
     auto result = types::ParseQuotedString(map.GetValue(XMapTagAttribute::kUri),
                                            variable_dict, sub_buffer);
     if (!result.has_value()) {
-      return ParseStatus(ParseStatusCode::kMalformedTag)
-          .AddCause(std::move(result).error());
+      return std::move(result).error().AddHere();
     }
 
     uri = std::move(result).value();
   } else {
-    return ParseStatusCode::kMalformedTag;
+    return ParseStatusCode::kMissingMapAttribute;
   }
 
   std::optional<types::parsing::ByteRangeExpression> byte_range;
@@ -1127,8 +1257,7 @@ ParseStatus::Or<XMapTag> XMapTag::Parse(
                                  variable_dict, sub_buffer)
             .MapValue(types::parsing::ByteRangeExpression::Parse);
     if (!result.has_value()) {
-      return ParseStatus(ParseStatusCode::kMalformedTag)
-          .AddCause(std::move(result).error());
+      return std::move(result).error().AddHere();
     }
 
     byte_range = std::move(result).value();
@@ -1149,7 +1278,7 @@ ParseStatus::Or<XPartTag> XPartTag::Parse(
     VariableDictionary::SubstitutionBuffer& subs) {
   DCHECK(tag.GetName() == ToTagName(XPartTag::kName));
   if (!tag.GetContent().has_value()) {
-    return ParseStatusCode::kMalformedTag;
+    return ParseStatusCode::kNoTagBody;
   }
 
   TypedAttributeMap<XPartTagAttribute> map;
@@ -1157,35 +1286,34 @@ ParseStatus::Or<XPartTag> XPartTag::Parse(
   auto map_result = map.FillUntilError(&iter);
 
   if (map_result.code() != ParseStatusCode::kReachedEOF) {
-    return ParseStatus(ParseStatusCode::kMalformedTag)
-        .AddCause(std::move(map_result));
+    return std::move(map_result).AddHere();
   }
 
-  auto uri = ParseField<ResolvedSourceString>(
+  auto uri = ParseField<XPartTag, ResolvedSourceString>(
       XPartTagAttribute::kUri, map,
       &types::parsing::Quoted<types::parsing::RawStr>::ParseWithSubstitution,
       vars, subs);
   RETURN_IF_ERROR(uri);
 
-  auto duration = ParseField<base::TimeDelta>(
+  auto duration = ParseField<XPartTag, base::TimeDelta>(
       XPartTagAttribute::kDuration, map,
       &types::parsing::TimeDelta::ParseWithoutSubstitution);
   RETURN_IF_ERROR(duration);
 
   auto byte_range =
-      ParseField<std::optional<types::parsing::ByteRangeExpression>>(
+      ParseField<XPartTag, std::optional<types::parsing::ByteRangeExpression>>(
           XPartTagAttribute::kByteRange, map,
           &types::parsing::Quoted<
               types::parsing::ByteRangeExpression>::ParseWithSubstitution,
           vars, subs);
   RETURN_IF_ERROR(byte_range);
 
-  auto independent = ParseField<std::optional<bool>>(
+  auto independent = ParseField<XPartTag, std::optional<bool>>(
       XPartTagAttribute::kIndependent, map,
       &types::parsing::YesOrNo::ParseWithoutSubstitution);
   RETURN_IF_ERROR(independent);
 
-  auto gap = ParseField<std::optional<bool>>(
+  auto gap = ParseField<XPartTag, std::optional<bool>>(
       XPartTagAttribute::kGap, map,
       &types::parsing::YesOrNo::ParseWithoutSubstitution);
   RETURN_IF_ERROR(gap);
@@ -1201,7 +1329,7 @@ ParseStatus::Or<XPartTag> XPartTag::Parse(
 ParseStatus::Or<XPartInfTag> XPartInfTag::Parse(TagItem tag) {
   DCHECK(tag.GetName() == ToTagName(XPartInfTag::kName));
   if (!tag.GetContent().has_value()) {
-    return ParseStatusCode::kMalformedTag;
+    return ParseStatusCode::kNoTagBody;
   }
 
   // Parse the attribute-list
@@ -1210,8 +1338,7 @@ ParseStatus::Or<XPartInfTag> XPartInfTag::Parse(TagItem tag) {
   auto map_result = map.FillUntilError(&iter);
 
   if (map_result.code() != ParseStatusCode::kReachedEOF) {
-    return ParseStatus(ParseStatusCode::kMalformedTag)
-        .AddCause(std::move(map_result));
+    return std::move(map_result).AddHere();
   }
 
   // Extract the 'PART-TARGET' attribute
@@ -1222,8 +1349,7 @@ ParseStatus::Or<XPartInfTag> XPartInfTag::Parse(TagItem tag) {
             .SkipVariableSubstitution());
 
     if (!result.has_value()) {
-      return ParseStatus(ParseStatusCode::kMalformedTag)
-          .AddCause(std::move(result).error());
+      return std::move(result).error().AddHere();
     }
 
     part_target = base::Seconds(std::move(result).value());
@@ -1232,7 +1358,7 @@ ParseStatus::Or<XPartInfTag> XPartInfTag::Parse(TagItem tag) {
       return ParseStatusCode::kValueOverflowsTimeDelta;
     }
   } else {
-    return ParseStatusCode::kMalformedTag;
+    return ParseStatusCode::kMissingPartInfAttribute;
   }
 
   return XPartInfTag{.target_duration = part_target};
@@ -1244,7 +1370,7 @@ ParseStatus::Or<XPlaylistTypeTag> XPlaylistTypeTag::Parse(TagItem tag) {
 
   // This tag requires content
   if (!tag.GetContent().has_value() || tag.GetContent()->Empty()) {
-    return ParseStatusCode::kMalformedTag;
+    return ParseStatusCode::kNoTagBody;
   }
 
   if (tag.GetContent()->Str() == "EVENT") {
@@ -1261,7 +1387,7 @@ ParseStatus::Or<XPlaylistTypeTag> XPlaylistTypeTag::Parse(TagItem tag) {
 ParseStatus::Or<XServerControlTag> XServerControlTag::Parse(TagItem tag) {
   DCHECK(tag.GetName() == ToTagName(XServerControlTag::kName));
   if (!tag.GetContent().has_value()) {
-    return ParseStatusCode::kMalformedTag;
+    return ParseStatusCode::kNoTagBody;
   }
 
   // Parse the attribute-list
@@ -1270,8 +1396,7 @@ ParseStatus::Or<XServerControlTag> XServerControlTag::Parse(TagItem tag) {
   auto map_result = map.FillUntilError(&iter);
 
   if (map_result.code() != ParseStatusCode::kReachedEOF) {
-    return ParseStatus(ParseStatusCode::kMalformedTag)
-        .AddCause(std::move(map_result));
+    return std::move(map_result).AddHere();
   }
 
   // Extract the 'CAN-SKIP-UNTIL' attribute
@@ -1282,8 +1407,7 @@ ParseStatus::Or<XServerControlTag> XServerControlTag::Parse(TagItem tag) {
             .SkipVariableSubstitution());
 
     if (!result.has_value()) {
-      return ParseStatus(ParseStatusCode::kMalformedTag)
-          .AddCause(std::move(result).error());
+      return std::move(result).error().AddHere();
     }
 
     can_skip_until = base::Seconds(std::move(result).value());
@@ -1301,7 +1425,7 @@ ParseStatus::Or<XServerControlTag> XServerControlTag::Parse(TagItem tag) {
       // The existence of this attribute requires the 'CAN-SKIP-UNTIL'
       // attribute.
       if (!can_skip_until.has_value()) {
-        return ParseStatusCode::kMalformedTag;
+        return ParseStatusCode::kConflictingServerControlAttributes;
       }
 
       can_skip_dateranges = true;
@@ -1316,8 +1440,7 @@ ParseStatus::Or<XServerControlTag> XServerControlTag::Parse(TagItem tag) {
             .SkipVariableSubstitution());
 
     if (!result.has_value()) {
-      return ParseStatus(ParseStatusCode::kMalformedTag)
-          .AddCause(std::move(result).error());
+      return std::move(result).error().AddHere();
     }
 
     hold_back = base::Seconds(std::move(result).value());
@@ -1335,8 +1458,7 @@ ParseStatus::Or<XServerControlTag> XServerControlTag::Parse(TagItem tag) {
             .SkipVariableSubstitution());
 
     if (!result.has_value()) {
-      return ParseStatus(ParseStatusCode::kMalformedTag)
-          .AddCause(std::move(result).error());
+      return std::move(result).error().AddHere();
     }
 
     part_hold_back = base::Seconds(std::move(result).value());
@@ -1368,14 +1490,13 @@ ParseStatus::Or<XServerControlTag> XServerControlTag::Parse(TagItem tag) {
 ParseStatus::Or<XTargetDurationTag> XTargetDurationTag::Parse(TagItem tag) {
   DCHECK(tag.GetName() == ToTagName(XTargetDurationTag::kName));
   if (!tag.GetContent().has_value()) {
-    return ParseStatusCode::kMalformedTag;
+    return ParseStatusCode::kNoTagBody;
   }
 
   auto duration_result = types::ParseDecimalInteger(
       tag.GetContent().value().SkipVariableSubstitution());
   if (!duration_result.has_value()) {
-    return ParseStatus(ParseStatusCode::kMalformedTag)
-        .AddCause(std::move(duration_result).error());
+    return std::move(duration_result).error().AddHere();
   }
 
   auto duration = base::Seconds(std::move(duration_result).value());
@@ -1397,7 +1518,7 @@ ParseStatus::Or<XSkipTag> XSkipTag::Parse(
     VariableDictionary::SubstitutionBuffer& sub_buffer) {
   DCHECK(tag.GetName() == ToTagName(XSkipTag::kName));
   if (!tag.GetContent().has_value()) {
-    return ParseStatusCode::kMalformedTag;
+    return ParseStatusCode::kNoTagBody;
   }
 
   XSkipTag out;
@@ -1406,12 +1527,11 @@ ParseStatus::Or<XSkipTag> XSkipTag::Parse(
   auto map_result = map.FillUntilError(&iter);
 
   if (map_result.code() != ParseStatusCode::kReachedEOF) {
-    return ParseStatus(ParseStatusCode::kMalformedTag)
-        .AddCause(std::move(map_result));
+    return std::move(map_result).AddHere();
   }
 
   if (!map.HasValue(XSkipTagAttribute::kSkippedSegments)) {
-    return ParseStatusCode::kMalformedTag;
+    return ParseStatusCode::kMissingSkipAttribute;
   }
 
   auto skip_result = types::ParseDecimalInteger(
@@ -1419,8 +1539,7 @@ ParseStatus::Or<XSkipTag> XSkipTag::Parse(
           .SkipVariableSubstitution());
 
   if (!skip_result.has_value()) {
-    return ParseStatus(ParseStatusCode::kMalformedTag)
-        .AddCause(std::move(skip_result).error());
+    return std::move(skip_result).error().AddHere();
   }
 
   out.skipped_segments = std::move(skip_result).value();
@@ -1431,8 +1550,7 @@ ParseStatus::Or<XSkipTag> XSkipTag::Parse(
         map.GetValue(XSkipTagAttribute::kRecentlyRemovedDateranges),
         variable_dict, sub_buffer, /*allow_empty=*/true);
     if (!removed_result.has_value()) {
-      return ParseStatus(ParseStatusCode::kMalformedTag)
-          .AddCause(std::move(removed_result).error());
+      return std::move(removed_result).error().AddHere();
     }
 
     auto tab_joined_daterange_ids = std::move(removed_result).value();
@@ -1441,7 +1559,7 @@ ParseStatus::Or<XSkipTag> XSkipTag::Parse(
     while (!tab_joined_daterange_ids.Empty()) {
       const auto daterange_id = tab_joined_daterange_ids.ConsumeDelimiter('\t');
       if (daterange_id.Empty()) {
-        return ParseStatusCode::kMalformedTag;
+        return ParseStatusCode::kMalformedDateRange;
       }
       // TODO(bug/314833987): What type should this be parsed into?
       removed_dateranges.emplace_back(daterange_id.Str());
@@ -1458,7 +1576,7 @@ ParseStatus::Or<XRenditionReportTag> XRenditionReportTag::Parse(
     VariableDictionary::SubstitutionBuffer& sub_buffer) {
   CHECK(tag.GetName() == ToTagName(XRenditionReportTag::kName));
   if (!tag.GetContent().has_value()) {
-    return ParseStatusCode::kMalformedTag;
+    return ParseStatusCode::kNoTagBody;
   }
   XRenditionReportTag out;
   TypedAttributeMap<XRenditionReportTagAttribute> map;
@@ -1506,11 +1624,11 @@ ParseStatus::Or<XProgramDateTimeTag> XProgramDateTimeTag::Parse(TagItem tag) {
   return ParseISO8601DateTimeTag(tag, &XProgramDateTimeTag::time);
 }
 
-template <typename Attrs>
+template <typename Tag, typename Attrs>
 ParseStatus::Or<TypedAttributeMap<Attrs>> RequireNonEmptyMap(
     std::optional<SourceString> content) {
   if (!content.has_value()) {
-    return ParseStatusCode::kMalformedTag;
+    return Tag::kMissingAttributeError;
   }
 
   TypedAttributeMap<Attrs> map;
@@ -1518,8 +1636,8 @@ ParseStatus::Or<TypedAttributeMap<Attrs>> RequireNonEmptyMap(
   auto map_result = map.FillUntilError(&iter);
 
   if (map_result.code() != ParseStatusCode::kReachedEOF) {
-    return ParseStatus(ParseStatusCode::kMalformedTag)
-        .AddCause(std::move(map_result));
+    ParseStatus error = Tag::kInvalidAttributeError;
+    return std::move(error).AddCause(std::move(map_result));
   }
 
   return map;
@@ -1591,7 +1709,7 @@ ParseStatus::Or<T> ValidateKeyTag(
       case XKeyTagMethod::kSampleAESCTR:
       case XKeyTagMethod::kSampleAESCENC:
       case XKeyTagMethod::kISO230017:
-        return ParseStatusCode::kMalformedTag;
+        return ParseStatusCode::kConflictingKeyTagAttributes;
       default:
         break;
     }
@@ -1611,7 +1729,7 @@ ParseStatus::Or<T> ValidateKeyTag(
         case XKeyTagMethod::kNone:
         case XKeyTagMethod::kAES128:
         case XKeyTagMethod::kAES256:
-          return ParseStatusCode::kMalformedTag;
+          return ParseStatusCode::kConflictingKeyTagAttributes;
       }
       break;
   }
@@ -1627,35 +1745,36 @@ template <typename T>
 ParseStatus::Or<T> ParseKeyTag(TagItem tag,
                                const VariableDictionary& vars,
                                VariableDictionary::SubstitutionBuffer& subs) {
-  return RequireNonEmptyMap<XKeyTagAttribute>(tag.GetContent())
+  return RequireNonEmptyMap<XKeyTag, XKeyTagAttribute>(tag.GetContent())
       .MapValue([&](auto map) -> ParseStatus::Or<T> {
-        auto enc_method = ParseField<XKeyTagMethod>(XKeyTagAttribute::kMethod,
-                                                    map, &RecognizeMethod);
+        auto enc_method = ParseField<XKeyTag, XKeyTagMethod>(
+            XKeyTagAttribute::kMethod, map, &RecognizeMethod);
         RETURN_IF_ERROR(enc_method);
 
         if constexpr (T::kAllowEmptyMethod) {
           if (*enc_method == XKeyTagMethod::kNone) {
             if (map.Size() != 1) {
-              return ParseStatusCode::kMalformedTag;
+              return ParseStatusCode::kConflictingKeyTagAttributes;
             }
             return T{.method = *enc_method};
           }
         }
 
-        auto enc_uri = ParseField<ResolvedSourceString>(
+        auto enc_uri = ParseField<XKeyTag, ResolvedSourceString>(
             XKeyTagAttribute::kUri, map,
             &types::parsing::Quoted<
                 types::parsing::RawStr>::ParseWithSubstitution,
             vars, subs);
         RETURN_IF_ERROR(enc_uri);
 
-        auto enc_iv = ParseField<std::optional<XKeyTag::IVHex::Container>>(
-            XKeyTagAttribute::kIv, map,
-            &XKeyTag::IVHex::ParseWithoutSubstitution);
+        auto enc_iv =
+            ParseField<XKeyTag, std::optional<XKeyTag::IVHex::Container>>(
+                XKeyTagAttribute::kIv, map,
+                &XKeyTag::IVHex::ParseWithoutSubstitution);
         RETURN_IF_ERROR(enc_iv);
 
         auto enc_keyformat =
-            ParseField<std::optional<ResolvedSourceString>>(
+            ParseField<XKeyTag, std::optional<ResolvedSourceString>>(
                 XKeyTagAttribute::kKeyFormat, map,
                 &types::parsing::Quoted<
                     types::parsing::RawStr>::ParseWithoutSubstitution)
@@ -1663,7 +1782,7 @@ ParseStatus::Or<T> ParseKeyTag(TagItem tag,
         RETURN_IF_ERROR(enc_keyformat);
 
         auto enc_keyformat_versions =
-            ParseField<std::optional<ResolvedSourceString>>(
+            ParseField<XKeyTag, std::optional<ResolvedSourceString>>(
                 XKeyTagAttribute::kKeyFormatVersions, map,
                 &types::parsing::RawStr::ParseWithoutSubstitution);
         RETURN_IF_ERROR(enc_keyformat_versions);
@@ -1689,6 +1808,417 @@ ParseStatus::Or<XSessionKeyTag> XSessionKeyTag::Parse(
     VariableDictionary::SubstitutionBuffer& subs) {
   DCHECK(tag.GetName() == ToTagName(XSessionKeyTag::kName));
   return ParseKeyTag<XSessionKeyTag>(tag, vars, subs);
+}
+
+ParseStatus::Or<XPreloadHintType> RecognizePreloadHintType(
+    SourceString content) {
+  if (content.Str() == "PART") {
+    return XPreloadHintType::kPart;
+  } else if (content.Str() == "MAP") {
+    return XPreloadHintType::kMap;
+  } else {
+    return ParseStatusCode::kInvalidPreloadHintType;
+  }
+}
+
+// static
+ParseStatus::Or<XPreloadHintTag> XPreloadHintTag::Parse(
+    TagItem tag,
+    const VariableDictionary& vars,
+    VariableDictionary::SubstitutionBuffer& subs) {
+  DCHECK(tag.GetName() == ToTagName(XPreloadHintTag::kName));
+
+  return RequireNonEmptyMap<XPreloadHintTag, XPreloadHintTagAttribute>(
+             tag.GetContent())
+      .MapValue([&vars, &subs](auto map) -> ParseStatus::Or<XPreloadHintTag> {
+        auto uri = ParseField<XPreloadHintTag, ResolvedSourceString>(
+            XPreloadHintTagAttribute::kUri, map,
+            &types::parsing::Quoted<
+                types::parsing::RawStr>::ParseWithSubstitution,
+            vars, subs);
+        RETURN_IF_ERROR(uri);
+
+        auto type = ParseField<XPreloadHintTag, XPreloadHintType>(
+            XPreloadHintTagAttribute::kType, map, &RecognizePreloadHintType);
+        RETURN_IF_ERROR(type);
+
+        auto byterange_start =
+            ParseField<XPreloadHintTag, std::optional<types::DecimalInteger>>(
+                XPreloadHintTagAttribute::kByterangeStart, map,
+                &types::parsing::RawInt::ParseWithoutSubstitution);
+        RETURN_IF_ERROR(byterange_start);
+
+        auto byterange_length =
+            ParseField<XPreloadHintTag, std::optional<types::DecimalInteger>>(
+                XPreloadHintTagAttribute::kByterangeLength, map,
+                &types::parsing::RawInt::ParseWithoutSubstitution);
+        RETURN_IF_ERROR(byterange_length);
+
+        return XPreloadHintTag{
+            .type = std::move(type).value(),
+            .uri = std::move(uri).value(),
+            .byterange_start = std::move(byterange_start).value(),
+            .byterange_length = std::move(byterange_length).value()};
+      });
+}
+
+struct XDateRangeTag::CtorArgs {
+  decltype(XDateRangeTag::id) id;
+  decltype(XDateRangeTag::client_class) client_class;
+  decltype(XDateRangeTag::start_date) start_date;
+  decltype(XDateRangeTag::cue) cue;
+  decltype(XDateRangeTag::end_date) end_date;
+  decltype(XDateRangeTag::duration) duration;
+  decltype(XDateRangeTag::planned_duration) planned_duration;
+  decltype(XDateRangeTag::end_on_next) end_on_next;
+};
+
+XDateRangeTag::XDateRangeTag(CtorArgs args)
+    : id(std::move(args.id)),
+      client_class(std::move(args.client_class)),
+      start_date(std::move(args.start_date)),
+      cue(std::move(args.cue)),
+      end_date(std::move(args.end_date)),
+      duration(std::move(args.duration)),
+      planned_duration(std::move(args.planned_duration)),
+      end_on_next(std::move(args.end_on_next)) {}
+
+XDateRangeTag::~XDateRangeTag() = default;
+XDateRangeTag::XDateRangeTag(const XDateRangeTag&) = default;
+
+struct CueImpl
+    : types::parsing::SubstitutingParser<CueImpl, XDateRangeTag::Cue> {
+  static ParseStatus::Or<XDateRangeTag::Cue> Parse(
+      ResolvedSourceString content) {
+    if (content.Str() == "PRE") {
+      return XDateRangeTag::Cue::kPre;
+    } else if (content.Str() == "POST") {
+      return XDateRangeTag::Cue::kPost;
+    } else if (content.Str() == "ONCE") {
+      return XDateRangeTag::Cue::kOnce;
+    } else {
+      return ParseStatusCode::kInvalidDateRangeAttribute;
+    }
+  }
+};
+
+ParseStatus::Or<XDateRangeTag> XDateRangeTag::Parse(
+    TagItem tag,
+    const VariableDictionary& vars,
+    VariableDictionary::SubstitutionBuffer& subs) {
+  DCHECK(tag.GetName() == ToTagName(XDateRangeTag::kName));
+  return RequireNonEmptyMap<XDateRangeTag, XDateRangeTagAttribute>(
+             tag.GetContent())
+      .MapValue([&vars, &subs](auto map) -> ParseStatus::Or<XDateRangeTag> {
+        auto id = ParseField<XDateRangeTag, ResolvedSourceString>(
+            XDateRangeTagAttribute::kId, map,
+            &types::parsing::Quoted<
+                types::parsing::RawStr>::ParseWithoutSubstitution);
+        RETURN_IF_ERROR(id);
+
+        auto client_class =
+            ParseField<XDateRangeTag, std::optional<ResolvedSourceString>>(
+                XDateRangeTagAttribute::kClass, map,
+                &types::parsing::Quoted<
+                    types::parsing::RawStr>::ParseWithoutSubstitution);
+        RETURN_IF_ERROR(client_class);
+
+        auto maybe_cue =
+            ParseField<XDateRangeTag,
+                       std::optional<std::vector<XDateRangeTag::Cue>>>(
+                XDateRangeTagAttribute::kCue, map,
+                &types::parsing::EnumeratedStringList<
+                    CueImpl>::ParseWithoutSubstitution);
+        RETURN_IF_ERROR(maybe_cue);
+        std::optional<std::vector<XDateRangeTag::Cue>> cue =
+            std::move(maybe_cue).value();
+
+        auto start_date = ParseField<XDateRangeTag, base::Time>(
+            XDateRangeTagAttribute::kStartDate, map,
+            &types::parsing::Quoted<
+                types::parsing::ISO8601Date>::ParseWithSubstitution,
+            vars, subs);
+        RETURN_IF_ERROR(start_date);
+
+        auto end_date = ParseField<XDateRangeTag, std::optional<base::Time>>(
+            XDateRangeTagAttribute::kEndDate, map,
+            &types::parsing::Quoted<
+                types::parsing::ISO8601Date>::ParseWithSubstitution,
+            vars, subs);
+        RETURN_IF_ERROR(end_date);
+
+        auto maybe_duration =
+            ParseField<XDateRangeTag, std::optional<types::DecimalInteger>>(
+                XDateRangeTagAttribute::kDuration, map,
+                &types::parsing::RawInt::ParseWithoutSubstitution);
+        RETURN_IF_ERROR(maybe_duration);
+        auto duration = std::move(maybe_duration).value();
+
+        auto maybe_planned_duration =
+            ParseField<XDateRangeTag, std::optional<types::DecimalInteger>>(
+                XDateRangeTagAttribute::kPlannedDuration, map,
+                &types::parsing::RawInt::ParseWithoutSubstitution);
+        RETURN_IF_ERROR(maybe_planned_duration);
+        auto planned_duration = std::move(maybe_planned_duration).value();
+
+        auto maybe_end_on_next = ParseField<XDateRangeTag, std::optional<bool>>(
+            XDateRangeTagAttribute::kEndOnNext, map,
+            &types::parsing::YesOrNo::ParseWithoutSubstitution);
+        RETURN_IF_ERROR(maybe_end_on_next);
+        auto end_on_next = std::move(maybe_end_on_next).value();
+        if (!end_on_next.value_or(true)) {
+          // END-ON-NEXT is required to be absent or have a value of YES.
+          return ParseStatus::Codes::kInvalidDateRangeAttribute;
+        }
+
+        // the Cue list must not contain PRE and POST
+        if (cue.has_value()) {
+          auto pre = std::find(cue->begin(), cue->end(), Cue::kPre);
+          auto post = std::find(cue->begin(), cue->end(), Cue::kPost);
+          if (pre != cue->end() && post != cue->end()) {
+            return ParseStatus::Codes::kInvalidDateRangeAttribute;
+          }
+        }
+
+        // A tag with an END_ON_NEXT attribute must have a class
+        if (end_on_next.value_or(false) && !(*client_class).has_value()) {
+          return ParseStatus::Codes::kInvalidDateRangeAttribute;
+        }
+
+        return XDateRangeTag(XDateRangeTag::CtorArgs{
+            .id = std::move(id).value(),
+            .client_class = std::move(client_class).value(),
+            .start_date = std::move(start_date).value(),
+            .cue = cue,
+            .end_date = std::move(end_date).value(),
+            .duration = duration,
+            .planned_duration = planned_duration,
+            .end_on_next = end_on_next.value_or(false)});
+      });
+}
+
+ParseStatus::Or<XSessionDataTag> XSessionDataTag::Parse(
+    TagItem tag,
+    const VariableDictionary& vars,
+    VariableDictionary::SubstitutionBuffer& subs) {
+  DCHECK(tag.GetName() == ToTagName(XSessionDataTag::kName));
+  return RequireNonEmptyMap<XSessionDataTag, XSessionDataTagAttribute>(
+             tag.GetContent())
+      .MapValue([&vars, &subs](auto map) -> ParseStatus::Or<XSessionDataTag> {
+        auto id = ParseField<XSessionDataTag, ResolvedSourceString>(
+            XSessionDataTagAttribute::kDataId, map,
+            &types::parsing::Quoted<
+                types::parsing::RawStr>::ParseWithoutSubstitution);
+        RETURN_IF_ERROR(id);
+
+        auto value =
+            ParseField<XSessionDataTag, std::optional<ResolvedSourceString>>(
+                XSessionDataTagAttribute::kValue, map,
+                &types::parsing::Quoted<
+                    types::parsing::RawStr>::ParseWithSubstitution,
+                vars, subs);
+        RETURN_IF_ERROR(value);
+
+        auto language =
+            ParseField<XSessionDataTag, std::optional<ResolvedSourceString>>(
+                XSessionDataTagAttribute::kLanguage, map,
+                &types::parsing::Quoted<
+                    types::parsing::RawStr>::ParseWithSubstitution,
+                vars, subs);
+        RETURN_IF_ERROR(language);
+
+        auto uri =
+            ParseField<XSessionDataTag, std::optional<ResolvedSourceString>>(
+                XSessionDataTagAttribute::kUri, map,
+                &types::parsing::Quoted<
+                    types::parsing::RawStr>::ParseWithSubstitution,
+                vars, subs);
+        RETURN_IF_ERROR(uri);
+
+        auto maybe_format =
+            ParseField<XSessionDataTag, std::optional<ResolvedSourceString>>(
+                XSessionDataTagAttribute::kFormat, map,
+                &types::parsing::RawStr::ParseWithSubstitution, vars, subs);
+        RETURN_IF_ERROR(maybe_format);
+        auto fmt = std::move(maybe_format).value();
+
+        if ((*value).has_value() && (*uri).has_value()) {
+          return ParseStatus::Codes::kInvalidSessionDateAttribute;
+        }
+
+        if ((*language).has_value() && !(*value).has_value()) {
+          return ParseStatus::Codes::kInvalidSessionDateAttribute;
+        }
+
+        return XSessionDataTag{
+            .data_id = std::move(id).value(),
+            .value = std::move(value).value(),
+            .language = std::move(language).value(),
+            .uri = std::move(uri).value(),
+            .format_is_json = fmt.has_value() && fmt.value().Str() == "JSON",
+        };
+      });
+}
+
+struct XIFrameStreamInfTag::CtorArgs {
+  decltype(XIFrameStreamInfTag::uri) uri;
+  decltype(XIFrameStreamInfTag::bandwidth) bandwidth;
+  decltype(XIFrameStreamInfTag::average_bandwidth) average_bandwidth;
+  decltype(XIFrameStreamInfTag::score) score;
+  decltype(XIFrameStreamInfTag::codecs) codecs;
+  decltype(XIFrameStreamInfTag::resolution) resolution;
+  decltype(XIFrameStreamInfTag::video) video;
+};
+
+XIFrameStreamInfTag::XIFrameStreamInfTag(CtorArgs args)
+    : uri(std::move(args.uri)),
+      bandwidth(std::move(args.bandwidth)),
+      average_bandwidth(std::move(args.average_bandwidth)),
+      score(std::move(args.score)),
+      codecs(std::move(args.codecs)),
+      resolution(std::move(args.resolution)),
+      video(std::move(args.video)) {}
+
+XIFrameStreamInfTag::~XIFrameStreamInfTag() = default;
+XIFrameStreamInfTag::XIFrameStreamInfTag(const XIFrameStreamInfTag&) = default;
+
+ParseStatus::Or<XIFrameStreamInfTag> XIFrameStreamInfTag::Parse(
+    TagItem tag,
+    const VariableDictionary& vars,
+    VariableDictionary::SubstitutionBuffer& subs) {
+  DCHECK(tag.GetName() == ToTagName(XIFrameStreamInfTag::kName));
+  return RequireNonEmptyMap<XIFrameStreamInfTag, XIFrameStreamInfTagAttribute>(
+             tag.GetContent())
+      .MapValue([&vars,
+                 &subs](auto map) -> ParseStatus::Or<XIFrameStreamInfTag> {
+        auto uri = ParseField<XIFrameStreamInfTag, ResolvedSourceString>(
+            XIFrameStreamInfTagAttribute::kUri, map,
+            &types::parsing::Quoted<
+                types::parsing::RawStr>::ParseWithSubstitution,
+            vars, subs);
+        RETURN_IF_ERROR(uri);
+
+        auto bandwidth = ParseField<XIFrameStreamInfTag, types::DecimalInteger>(
+            XIFrameStreamInfTagAttribute::kBandwidth, map,
+            &types::parsing::RawInt::ParseWithoutSubstitution);
+        RETURN_IF_ERROR(bandwidth);
+
+        auto average_bandwidth =
+            ParseField<XIFrameStreamInfTag,
+                       std::optional<types::DecimalInteger>>(
+                XIFrameStreamInfTagAttribute::kAverageBandwidth, map,
+                &types::parsing::RawInt::ParseWithoutSubstitution);
+        RETURN_IF_ERROR(average_bandwidth);
+
+        auto score = ParseField<XIFrameStreamInfTag,
+                                std::optional<types::DecimalFloatingPoint>>(
+            XIFrameStreamInfTagAttribute::kScore, map,
+            &types::parsing::RawFloat::ParseWithoutSubstitution);
+        RETURN_IF_ERROR(score);
+
+        auto maybe_codecs_csv = ParseField<XIFrameStreamInfTag,
+                                           std::optional<ResolvedSourceString>>(
+            XIFrameStreamInfTagAttribute::kCodecs, map,
+            &types::parsing::Quoted<
+                types::parsing::RawStr>::ParseWithSubstitution,
+            vars, subs);
+        RETURN_IF_ERROR(maybe_codecs_csv);
+        auto codecs_csv = std::move(maybe_codecs_csv).value();
+        std::optional<std::vector<std::string>> codecs;
+        if (codecs_csv.has_value()) {
+          std::vector<std::string> codecs_vec;
+          SplitCodecs(std::move(codecs_csv).value().Str(), &codecs_vec);
+          codecs = std::move(codecs_vec);
+        }
+
+        auto resolution = ParseField<XIFrameStreamInfTag,
+                                     std::optional<types::DecimalResolution>>(
+            XIFrameStreamInfTagAttribute::kResolution, map,
+            &types::parsing::DecimalResolution::ParseWithoutSubstitution);
+        RETURN_IF_ERROR(resolution);
+
+        auto video = ParseField<XIFrameStreamInfTag,
+                                std::optional<ResolvedSourceString>>(
+            XIFrameStreamInfTagAttribute::kVideo, map,
+            &types::parsing::Quoted<
+                types::parsing::RawStr>::ParseWithSubstitution,
+            vars, subs);
+        RETURN_IF_ERROR(video);
+
+        return XIFrameStreamInfTag(XIFrameStreamInfTag::CtorArgs{
+            .uri = std::move(uri).value(),
+            .bandwidth = std::move(bandwidth).value(),
+            .average_bandwidth = std::move(average_bandwidth).value(),
+            .score = std::move(score).value(),
+            .codecs = std::move(codecs),
+            .resolution = std::move(resolution).value(),
+            .video = std::move(video).value(),
+        });
+      });
+}
+
+ParseStatus::Or<XStartTag> XStartTag::Parse(
+    TagItem tag,
+    const VariableDictionary& vars,
+    VariableDictionary::SubstitutionBuffer& subs) {
+  DCHECK(tag.GetName() == ToTagName(XStartTag::kName));
+  return RequireNonEmptyMap<XStartTag, XStartTagAttribute>(tag.GetContent())
+      .MapValue([&vars, &subs](auto map) -> ParseStatus::Or<XStartTag> {
+        auto time_offset = ParseField<XStartTag, types::DecimalFloatingPoint>(
+            XStartTagAttribute::kTimeOffset, map,
+            &types::parsing::RawFloat::ParseWithoutSubstitution);
+        RETURN_IF_ERROR(time_offset);
+
+        auto maybe_precise =
+            ParseField<XStartTag, std::optional<ResolvedSourceString>>(
+                XStartTagAttribute::kPrecise, map,
+                &types::parsing::RawStr::ParseWithSubstitution, vars, subs);
+        RETURN_IF_ERROR(maybe_precise);
+        auto precise = std::move(maybe_precise).value();
+        if (precise.has_value()) {
+          if (precise.value().Str() != "YES" && precise.value().Str() != "NO") {
+            return ParseStatus::Codes::kInvalidStartAttribute;
+          }
+        }
+
+        return XStartTag{
+            .time_offset = std::move(time_offset).value(),
+            .precise = precise.has_value() && precise.value().Str() == "YES",
+        };
+      });
+}
+
+ParseStatus::Or<XContentSteeringTag> XContentSteeringTag::Parse(
+    TagItem tag,
+    const VariableDictionary& vars,
+    VariableDictionary::SubstitutionBuffer& subs) {
+  DCHECK(tag.GetName() == ToTagName(XContentSteeringTag::kName));
+  return RequireNonEmptyMap<XContentSteeringTag, XContentSteeringTagAttribute>(
+             tag.GetContent())
+      .MapValue(
+          [&vars, &subs](auto map) -> ParseStatus::Or<XContentSteeringTag> {
+            auto server_uri =
+                ParseField<XContentSteeringTag, ResolvedSourceString>(
+                    XContentSteeringTagAttribute::kServerUri, map,
+                    &types::parsing::Quoted<
+                        types::parsing::RawStr>::ParseWithSubstitution,
+                    vars, subs);
+            RETURN_IF_ERROR(server_uri);
+
+            auto pathway_id = ParseField<XContentSteeringTag,
+                                         std::optional<ResolvedSourceString>>(
+                XContentSteeringTagAttribute::kPathwayId, map,
+                &types::parsing::Quoted<
+                    types::parsing::RawStr>::ParseWithSubstitution,
+                vars, subs);
+            RETURN_IF_ERROR(pathway_id);
+
+            // Create and return the XContentSteeringTag object
+            return XContentSteeringTag{
+                .server_uri = std::move(server_uri).value(),
+                .pathway_id = std::move(pathway_id).value(),
+            };
+          });
 }
 
 #undef RETURN_IF_ERROR

@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.download;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -18,6 +20,7 @@ import java.lang.annotation.RetentionPolicy;
     DownloadStatus.INTERRUPTED
 })
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 public @interface DownloadStatus {
     int IN_PROGRESS = 0;
     int COMPLETE = 1;

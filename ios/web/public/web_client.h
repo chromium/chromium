@@ -5,6 +5,8 @@
 #ifndef IOS_WEB_PUBLIC_WEB_CLIENT_H_
 #define IOS_WEB_PUBLIC_WEB_CLIENT_H_
 
+#import <Foundation/Foundation.h>
+
 #include <map>
 #include <memory>
 #include <optional>
@@ -28,7 +30,10 @@ class GURL;
 @protocol UITraitEnvironment;
 @class NSString;
 @class NSData;
+@protocol UIMenuBuilder;
 @class UIView;
+@class WKFrameInfo;
+@class WKOpenPanelParameters;
 
 namespace net {
 class SSLInfo;
@@ -57,6 +62,10 @@ class WebClient {
   // Allows the embedder to set a custom WebMainParts implementation for the
   // browser startup code.
   virtual std::unique_ptr<WebMainParts> CreateWebMainParts();
+
+  // Allows the embedder to initialize the field trial and features list
+  // early.
+  virtual void InitializeFieldTrialAndFeatureList() {}
 
   // Gives the embedder a chance to perform tasks before a web view is created.
   virtual void PreWebViewCreation() const {}
@@ -88,6 +97,11 @@ class WebClient {
 
   // Returns the user agent string for the specified type.
   virtual std::string GetUserAgent(UserAgentType type) const;
+
+  // Returns the name of the main thread. If the returned string is empty,
+  // the main thread name will not be set. The default implementation returns
+  // an empty string and does not rename the main thread.
+  virtual std::string GetMainThreadName() const;
 
   // Returns a string resource given its id.
   virtual std::u16string GetLocalizedString(int message_id) const;
@@ -179,15 +193,32 @@ class WebClient {
 
   // Returns true if browser lockdown mode is enabled. Default return value is
   // false.
-  virtual bool IsBrowserLockdownModeEnabled(web::BrowserState* browser_state);
+  virtual bool IsBrowserLockdownModeEnabled();
 
   // Sets OS lockdown mode preference value. By default, no preference value is
   // set.
-  virtual void SetOSLockdownModeEnabled(web::BrowserState* browser_state,
-                                        bool enabled);
+  virtual void SetOSLockdownModeEnabled(bool enabled);
 
   virtual bool IsInsecureFormWarningEnabled(
       web::BrowserState* browser_state) const;
+
+  virtual void BuildEditMenu(web::WebState* web_state, id<UIMenuBuilder>) const;
+
+  // Whether the embedder implements `RunOpenPanel()` for `web_state`.
+  // If this returns `false`, then the native open panel will run instead.
+  // The value returned for a `web_state` cannot change during its lifetime.
+  virtual bool CanRunOpenPanel(web::WebState* web_state) const
+      API_AVAILABLE(ios(18.4));
+  // Displays a file upload panel and calls `completion` with file URLs selected
+  // by the user. `parameters` describe the file upload control which initiated
+  // the call from `frame`. This is not called if `CanRunOpenPanel()` returns
+  // false for `web_state`.
+  virtual void RunOpenPanel(
+      web::WebState* web_state,
+      WKOpenPanelParameters* parameters,
+      WKFrameInfo* frame,
+      base::OnceCallback<void(NSArray<NSURL*>*)> completion) const
+      API_AVAILABLE(ios(18.4));
 };
 
 }  // namespace web

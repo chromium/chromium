@@ -49,6 +49,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -120,11 +121,11 @@ void VerticalDateView::UpdateText() {
   if (text_label_->GetText() == new_text)
     return;
   text_label_->SetText(new_text);
-  text_label_->SetTooltipText(base::TimeFormatFriendlyDate(time_to_show));
+  text_label_->SetCustomTooltipText(base::TimeFormatFriendlyDate(time_to_show));
 }
 
 void VerticalDateView::UpdateIconAndLabelColorId(ui::ColorId color_id) {
-  text_label_->SetEnabledColorId(color_id);
+  text_label_->SetEnabledColor(color_id);
   icon_->SetImage(
       ui::ImageModel::FromVectorIcon(kCalendarBackgroundIcon, color_id));
 }
@@ -147,6 +148,10 @@ TimeView::TimeView(ClockLayout clock_layout, ClockModel* model, Type type)
       SetupDateviews(clock_layout);
       break;
   }
+  // Set role before updating text to ensure that AccessibilityPaintChecks don't
+  // fail.
+  GetViewAccessibility().SetRole(ax::mojom::Role::kTime);
+
   UpdateTextInternal(GetTimeToShow());
 }
 
@@ -193,7 +198,7 @@ void TimeView::UpdateClockLayout(ClockLayout clock_layout) {
 void TimeView::SetTextColorId(ui::ColorId color_id,
                               bool auto_color_readability_enabled) {
   auto set_color_id = [&](views::Label* label) {
-    label->SetEnabledColorId(color_id);
+    label->SetEnabledColor(color_id);
     label->SetAutoColorReadabilityEnabled(auto_color_readability_enabled);
   };
 
@@ -274,11 +279,6 @@ base::HourClockType TimeView::GetHourTypeForTesting() const {
   return model_->hour_clock_type();
 }
 
-void TimeView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  views::View::GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kTime;
-}
-
 void TimeView::ChildPreferredSizeChanged(views::View* child) {
   PreferredSizeChanged();
 }
@@ -335,7 +335,7 @@ void TimeView::UpdateTextInternal(const base::Time& now) {
       const bool label_length_changed =
           horizontal_time_label_->GetText().length() != current_time.length();
       horizontal_time_label_->SetText(current_time);
-      horizontal_time_label_->SetTooltipText(friendly_format_date);
+      horizontal_time_label_->SetCustomTooltipText(friendly_format_date);
 
       // Calculate vertical clock layout labels.
       std::u16string current_hours =
@@ -359,7 +359,7 @@ void TimeView::UpdateTextInternal(const base::Time& now) {
     case kDate: {
       const std::u16string current_date = FormatDate(now);
       horizontal_date_label_->SetText(current_date);
-      horizontal_date_label_->SetTooltipText(friendly_format_date);
+      horizontal_date_label_->SetCustomTooltipText(friendly_format_date);
       vertical_date_view_->UpdateText();
     }
   }

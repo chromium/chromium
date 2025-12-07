@@ -10,15 +10,15 @@
 #include "net/net_jni_headers/HttpUtil_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace net {
 
-jboolean JNI_HttpUtil_IsAllowedHeader(
+static jboolean JNI_HttpUtil_IsAllowedHeader(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_header_name,
-    const JavaParamRef<jstring>& j_header_value) {
+    const JavaRef<jstring>& j_header_name,
+    const JavaRef<jstring>& j_header_value) {
   std::string header_name(ConvertJavaStringToUTF8(env, j_header_name));
   std::string header_value(ConvertJavaStringToUTF8(env, j_header_value));
 
@@ -28,3 +28,5 @@ jboolean JNI_HttpUtil_IsAllowedHeader(
 }
 
 }  // namespace net
+
+DEFINE_JNI(HttpUtil)

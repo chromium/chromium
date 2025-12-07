@@ -11,7 +11,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/one_shot_event.h"
 #include "base/scoped_observation.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -46,8 +45,10 @@
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/clear_site_data_utils.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/ui_util.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_urls.h"
@@ -152,7 +153,7 @@ AppPtr ExtensionAppsBase::CreateAppImpl(const extensions::Extension* extension,
       app->last_launch_time = prefs->GetLastLaunchTime(extension->id());
       // TODO(anunoy): Determine if this value should be set to the extension's
       // first install time vs last update time.
-      app->install_time = prefs->GetLastUpdateTime(extension->id());
+      app->install_time = GetLastUpdateTime(prefs, extension->id());
     }
   }
 
@@ -162,7 +163,6 @@ AppPtr ExtensionAppsBase::CreateAppImpl(const extensions::Extension* extension,
 
   const extensions::ManagementPolicy* policy =
       extensions::ExtensionSystem::Get(profile())->management_policy();
-  DCHECK(policy);
   app->allow_uninstall = policy->UserMayModifySettings(extension, nullptr) &&
                          !policy->MustRemainInstalled(extension, nullptr);
   app->allow_close = true;
@@ -357,6 +357,8 @@ void ExtensionAppsBase::Launch(const std::string& app_id,
     case apps::LaunchSource::kFromWelcomeTour:
     case apps::LaunchSource::kFromFocusMode:
     case apps::LaunchSource::kFromSparky:
+    case apps::LaunchSource::kFromNavigationCapturing:
+    case apps::LaunchSource::kFromWebInstallApi:
       break;
   }
 
@@ -432,10 +434,8 @@ void ExtensionAppsBase::Uninstall(const std::string& app_id,
   }
 
   std::u16string error;
-  extensions::ExtensionSystem::Get(profile())
-      ->extension_service()
-      ->UninstallExtension(
-          app_id, GetExtensionUninstallReason(uninstall_source), &error);
+  extensions::ExtensionRegistrar::Get(profile())->UninstallExtension(
+      app_id, GetExtensionUninstallReason(uninstall_source), &error);
 
   if (!report_abuse) {
     return;

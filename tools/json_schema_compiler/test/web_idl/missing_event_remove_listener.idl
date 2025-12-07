@@ -1,0 +1,32 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Example WebIDL schema which is invalid due to an event interface definition
+// not including the required removeListener Operation. This should raise a
+// SchemaCompilerError.
+interface TestWebIdl {
+  // This event is correctly defined in the file.
+  static attribute OnTestOneEvent onTestOne;
+  // This event is missing the removeListener Operation in the definition.
+  static attribute OnMissingRemoveListenerEvent onTestTwo;
+};
+
+callback OnTestOneListener = undefined (DOMString argument);
+callback OnMissingRemoveListenerListener = undefined (DOMString argument);
+
+interface OnTestOneEvent : ExtensionEvent {
+  static void addListener(OnTestOneListener listener);
+  static void removeListener(OnTestOneListener listener);
+  static void hasListener(OnTestOneListener listener);
+};
+
+interface OnMissingRemoveListenerEvent : ExtensionEvent {
+  static void addListener(OnMissingRemoveListenerListener listener);
+  static void hasListener(OnMissingRemoveListenerListener listener);
+};
+
+
+partial interface Browser {
+  static attribute TestWebIdl testWebIdl;
+};

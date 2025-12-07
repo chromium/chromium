@@ -7,16 +7,20 @@
 
 #include <memory>
 
-#include "base/callback_list.h"
+#include "base/containers/flat_map.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/task_manager/providers/task_provider.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/spare_render_process_host_manager.h"
 
 namespace task_manager {
 
 class ChildProcessTask;
 
-// This provides a task that represents the spare RenderProcessHost process.
-class SpareRenderProcessHostTaskProvider : public TaskProvider {
+// This provides tasks that represent spare RenderProcessHost processes.
+class SpareRenderProcessHostTaskProvider
+    : public TaskProvider,
+      public content::SpareRenderProcessHostManager::Observer {
  public:
   SpareRenderProcessHostTaskProvider();
   ~SpareRenderProcessHostTaskProvider() override;
@@ -35,14 +39,17 @@ class SpareRenderProcessHostTaskProvider : public TaskProvider {
   void StartUpdating() override;
   void StopUpdating() override;
 
-  void SpareRenderProcessHostTaskChanged(content::RenderProcessHost* host);
+  // content::SpareRenderProcessHostManager::Observer:
+  void OnSpareRenderProcessHostReady(content::RenderProcessHost* host) override;
+  void OnSpareRenderProcessHostRemoved(
+      content::RenderProcessHost* host) override;
 
-  // The one task representing the spare render process host. If null, there is
-  // no current spare render process host.
-  std::unique_ptr<ChildProcessTask> task_;
+  base::flat_map<int, std::unique_ptr<ChildProcessTask>> tasks_by_rph_id_;
 
   // The subscription for the notifications of the spare host changing.
-  base::CallbackListSubscription subscription_;
+  base::ScopedObservation<content::SpareRenderProcessHostManager,
+                          content::SpareRenderProcessHostManager::Observer>
+      scoped_observation_{this};
 };
 
 }  // namespace task_manager

@@ -11,6 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_read_result.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -28,7 +29,7 @@ class RTCEncodedVideoUnderlyingSourceTest : public testing::Test {
  public:
   RTCEncodedVideoUnderlyingSource* CreateSource(ScriptState* script_state) {
     return MakeGarbageCollected<RTCEncodedVideoUnderlyingSource>(
-        script_state, WTF::CrossThreadBindOnce(disconnect_callback_.Get()));
+        script_state, CrossThreadBindOnce(disconnect_callback_.Get()));
   }
 
  protected:

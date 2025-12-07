@@ -11,30 +11,11 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
 namespace blink {
-
-namespace {
-// The list of eligible event types should match with
-// the corresponding blink event types in IsEventTypeForInteractionId
-// (window_performance.cc) and EventTiming::IsEventTypeForEventTiming
-// (event_timing.cc)
-bool IsWebInteractionEvent(WebInputEvent::Type event_type) {
-  return event_type == WebInputEvent::Type::kMouseDown ||
-         event_type == WebInputEvent::Type::kMouseUp ||
-         event_type == WebInputEvent::Type::kKeyDown ||
-         event_type == WebInputEvent::Type::kRawKeyDown ||
-         event_type == WebInputEvent::Type::kKeyUp ||
-         event_type == WebInputEvent::Type::kChar ||
-         event_type == WebInputEvent::Type::kGestureTapDown ||
-         event_type == WebInputEvent::Type::kGestureTap ||
-         event_type == WebInputEvent::Type::kPointerDown ||
-         event_type == WebInputEvent::Type::kPointerUp;
-}
-}  // namespace
 
 WebInputEventResult WidgetEventHandler::HandleInputEvent(
     const WebCoalescedInputEvent& coalesced_event,
@@ -45,12 +26,10 @@ WebInputEventResult WidgetEventHandler::HandleInputEvent(
     DCHECK(document);
     if (LocalFrameView* view = document->View())
       view->GetLayoutShiftTracker().NotifyInput(event);
-    if (IsWebInteractionEvent(event.GetType())) {
-      WindowPerformance* performance =
-          DOMWindowPerformance::performance(*root->DomWindow());
-      performance->GetResponsivenessMetrics()
-          .SetCurrentInteractionEventQueuedTimestamp(event.QueuedTimeStamp());
-    }
+    WindowPerformance* performance =
+        GlobalPerformance::performance(*root->DomWindow());
+    performance->GetResponsivenessMetrics()
+        .SetCurrentInteractionEventQueuedTimestamp(event.QueuedTimeStamp());
   }
 
   if (event.GetModifiers() & WebInputEvent::kIsTouchAccessibility &&
@@ -150,8 +129,7 @@ WebInputEventResult WidgetEventHandler::HandleInputEvent(
     case WebInputEvent::Type::kTouchEnd:
     case WebInputEvent::Type::kTouchCancel:
     case WebInputEvent::Type::kTouchScrollStarted:
-      NOTREACHED_IN_MIGRATION();
-      return WebInputEventResult::kNotHandled;
+      NOTREACHED();
 
     case WebInputEvent::Type::kGesturePinchBegin:
       // Gesture pinch events are handled entirely on the compositor.

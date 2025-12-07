@@ -17,22 +17,19 @@
 #include "ash/api/tasks/tasks_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/glanceables/glanceables_metrics.h"
 #include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
-#include "components/policy/content/policy_blocklist_service.h"
-#include "components/policy/core/browser/url_blocklist_manager.h"
+#include "components/policy/core/browser/url_list/policy_blocklist_service.h"
+#include "components/policy/core/browser/url_list/url_blocklist_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "google_apis/common/api_error_codes.h"
@@ -134,11 +131,15 @@ TasksClientImpl::TasksFetchState::TasksFetchState() = default;
 TasksClientImpl::TasksFetchState::~TasksFetchState() = default;
 
 TasksClientImpl::TasksClientImpl(
-    Profile* profile,
+    PrefService* pref_service,
+    apps::AppServiceProxy* app_service_proxy,
+    PolicyBlocklistService* policy_blocklist_service,
     const TasksClientImpl::CreateRequestSenderCallback&
         create_request_sender_callback,
     net::NetworkTrafficAnnotationTag traffic_annotation_tag)
-    : profile_(profile),
+    : pref_service_(pref_service),
+      app_service_proxy_(app_service_proxy),
+      policy_blocklist_service_(policy_blocklist_service),
       create_request_sender_callback_(create_request_sender_callback),
       traffic_annotation_tag_(traffic_annotation_tag) {}
 
@@ -146,9 +147,8 @@ TasksClientImpl::~TasksClientImpl() = default;
 
 bool TasksClientImpl::IsDisabledByAdmin() const {
   // 1) Check the pref.
-  const auto* const pref_service = profile_->GetPrefs();
-  if (!pref_service ||
-      !base::Contains(pref_service->GetList(
+  if (!pref_service_ ||
+      !base::Contains(pref_service_->GetList(
                           prefs::kContextualGoogleIntegrationsConfiguration),
                       prefs::kGoogleTasksIntegrationName)) {
     RecordContextualGoogleIntegrationStatus(
@@ -158,17 +158,15 @@ bool TasksClientImpl::IsDisabledByAdmin() const {
   }
 
   // 2) Check if the Calendar app (home app for Tasks) is disabled by policy.
-  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
-          profile_)) {
+  if (!app_service_proxy_) {
     return true;
   }
   auto calendar_app_readiness = apps::Readiness::kUnknown;
-  apps::AppServiceProxyFactory::GetForProfile(profile_)
-      ->AppRegistryCache()
-      .ForOneApp(web_app::kGoogleCalendarAppId,
-                 [&calendar_app_readiness](const apps::AppUpdate& update) {
-                   calendar_app_readiness = update.Readiness();
-                 });
+  app_service_proxy_->AppRegistryCache().ForOneApp(
+      ash::kGoogleCalendarAppId,
+      [&calendar_app_readiness](const apps::AppUpdate& update) {
+        calendar_app_readiness = update.Readiness();
+      });
   if (calendar_app_readiness == apps::Readiness::kDisabledByPolicy) {
     RecordContextualGoogleIntegrationStatus(
         prefs::kGoogleTasksIntegrationName,
@@ -177,10 +175,8 @@ bool TasksClientImpl::IsDisabledByAdmin() const {
   }
 
   // 3) Check if the Tasks URL is blocked by policy.
-  const auto* const policy_blocklist_service =
-      PolicyBlocklistFactory::GetForBrowserContext(profile_);
-  if (!policy_blocklist_service ||
-      policy_blocklist_service->GetURLBlocklistState(GURL(kTasksUrl)) ==
+  if (!policy_blocklist_service_ ||
+      policy_blocklist_service_->GetURLBlocklistState(GURL(kTasksUrl)) ==
           policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
     RecordContextualGoogleIntegrationStatus(
         prefs::kGoogleTasksIntegrationName,
@@ -207,7 +203,9 @@ const ui::ListModel<api::TaskList>* TasksClientImpl::GetCachedTaskLists() {
 void TasksClientImpl::GetTaskLists(bool force_fetch,
                                    TasksClient::GetTaskListsCallback callback) {
   if (task_lists_fetch_state_.status == FetchStatus::kFresh && !force_fetch) {
-    std::move(callback).Run(/*success=*/true, &task_lists_);
+    // The http error code should be null here since we use the cached fresh
+    // data instead of fetching from the Google Task API.
+    std::move(callback).Run(/*success=*/true, std::nullopt, &task_lists_);
     return;
   }
 
@@ -252,7 +250,9 @@ void TasksClientImpl::GetTasks(const std::string& task_list_id,
   }
   TasksFetchState& fetch_state = *status_it->second;
   if (fetch_state.status == FetchStatus::kFresh && !force_fetch) {
-    std::move(callback).Run(/*success=*/true, &iter->second);
+    // The http error code should be null here since we use the cached fresh
+    // data instead of fetching from the Google Task API.
+    std::move(callback).Run(/*success=*/true, std::nullopt, &iter->second);
     return;
   }
 
@@ -274,8 +274,9 @@ void TasksClientImpl::MarkAsCompleted(const std::string& task_list_id,
   if (completed) {
     pending_completed_tasks_[task_list_id].insert(task_id);
   } else {
-    if (pending_completed_tasks_.contains(task_list_id)) {
-      pending_completed_tasks_[task_list_id].erase(task_id);
+    if (auto it = pending_completed_tasks_.find(task_list_id);
+        it != pending_completed_tasks_.end()) {
+      it->second.erase(task_id);
     }
   }
 }
@@ -329,6 +330,7 @@ void TasksClientImpl::InvalidateCache() {
   for (auto& task_list_state : tasks_fetch_state_) {
     if (task_list_state.second->status == FetchStatus::kRefreshing) {
       RunGetTasksCallbacks(task_list_state.first, FetchStatus::kNotFresh,
+                           std::nullopt,
                            /*accumulated_raw_tasks=*/{});
     } else {
       task_list_state.second->status = FetchStatus::kNotFresh;
@@ -336,7 +338,7 @@ void TasksClientImpl::InvalidateCache() {
   }
 
   if (task_lists_fetch_state_.status == FetchStatus::kRefreshing) {
-    RunGetTaskListsCallbacks(FetchStatus::kNotFresh,
+    RunGetTaskListsCallbacks(FetchStatus::kNotFresh, std::nullopt,
                              /*accumulated_raw_task_lists=*/{});
   } else {
     task_lists_fetch_state_.status = FetchStatus::kNotFresh;
@@ -411,7 +413,7 @@ void TasksClientImpl::OnTaskListsPageFetched(
                            result.error_or(ApiErrorCode::HTTP_SUCCESS));
 
   if (!result.has_value()) {
-    RunGetTaskListsCallbacks(FetchStatus::kNotFresh,
+    RunGetTaskListsCallbacks(FetchStatus::kNotFresh, result.error(),
                              /*accumulated_raw_task_lists=*/{});
     return;
   }
@@ -427,7 +429,8 @@ void TasksClientImpl::OnTaskListsPageFetched(
         "Ash.Glanceables.Api.Tasks.GetTaskLists.PagesCount", page_number);
     base::UmaHistogramCounts100("Ash.Glanceables.Api.Tasks.TaskListsCount",
                                 accumulated_raw_task_lists.size());
-    RunGetTaskListsCallbacks(FetchStatus::kFresh,
+    // Get the fresh data from the Google Task API request successfully.
+    RunGetTaskListsCallbacks(FetchStatus::kFresh, ApiErrorCode::HTTP_SUCCESS,
                              std::move(accumulated_raw_task_lists));
   } else {
     FetchTaskListsPage(result.value()->next_page_token(), page_number + 1,
@@ -470,7 +473,7 @@ void TasksClientImpl::OnTasksPageFetched(
                            result.error_or(ApiErrorCode::HTTP_SUCCESS));
 
   if (!result.has_value()) {
-    RunGetTasksCallbacks(task_list_id, FetchStatus::kNotFresh,
+    RunGetTasksCallbacks(task_list_id, FetchStatus::kNotFresh, result.error(),
                          /*accumulated_raw_tasks=*/{});
     return;
   }
@@ -486,7 +489,9 @@ void TasksClientImpl::OnTasksPageFetched(
                                 page_number);
     base::UmaHistogramCounts100("Ash.Glanceables.Api.Tasks.RawTasksCount",
                                 accumulated_raw_tasks.size());
+    // Get the fresh data from the Google Task API request successfully.
     RunGetTasksCallbacks(task_list_id, FetchStatus::kFresh,
+                         ApiErrorCode::HTTP_SUCCESS,
                          std::move(accumulated_raw_tasks));
   } else {
     FetchTasksPage(task_list_id, result.value()->next_page_token(),
@@ -496,6 +501,7 @@ void TasksClientImpl::OnTasksPageFetched(
 
 void TasksClientImpl::RunGetTaskListsCallbacks(
     FetchStatus final_fetch_status,
+    std::optional<google_apis::ApiErrorCode> http_error,
     std::vector<std::unique_ptr<google_apis::tasks::TaskList>>
         accumulated_raw_task_lists) {
   task_lists_fetch_state_.status = final_fetch_status;
@@ -529,13 +535,15 @@ void TasksClientImpl::RunGetTaskListsCallbacks(
 
   for (auto& callback : callbacks) {
     std::move(callback).Run(
-        /*success=*/final_fetch_status == FetchStatus::kFresh, &task_lists_);
+        /*success=*/final_fetch_status == FetchStatus::kFresh, http_error,
+        &task_lists_);
   }
 }
 
 void TasksClientImpl::RunGetTasksCallbacks(
     const std::string& task_list_id,
     FetchStatus final_fetch_status,
+    std::optional<google_apis::ApiErrorCode> http_error,
     std::vector<std::unique_ptr<google_apis::tasks::Task>>
         accumulated_raw_tasks) {
   auto fetch_state_it = tasks_fetch_state_.find(task_list_id);
@@ -569,7 +577,8 @@ void TasksClientImpl::RunGetTasksCallbacks(
       iter != tasks_in_task_lists_.end() ? &iter->second : &stub_task_list_;
   for (auto& callback : callbacks) {
     std::move(callback).Run(
-        /*success=*/final_fetch_status == FetchStatus::kFresh, task_list);
+        /*success=*/final_fetch_status == FetchStatus::kFresh, http_error,
+        task_list);
   }
 }
 
@@ -599,13 +608,14 @@ void TasksClientImpl::OnTaskAdded(
                            result.error_or(ApiErrorCode::HTTP_SUCCESS));
 
   if (!result.has_value()) {
-    std::move(callback).Run(/*task=*/nullptr);
+    std::move(callback).Run(/*http_error=*/result.error(), /*task=*/nullptr);
     return;
   }
 
   const auto iter = tasks_in_task_lists_.find(task_list_id);
   if (iter == tasks_in_task_lists_.end()) {
-    std::move(callback).Run(/*task=*/nullptr);
+    std::move(callback).Run(/*http_error=*/ApiErrorCode::HTTP_SUCCESS,
+                            /*task=*/nullptr);
     return;
   }
 
@@ -618,7 +628,8 @@ void TasksClientImpl::OnTaskAdded(
                              result.value()->updated(),
                              result.value()->web_view_link(),
                              Task::OriginSurfaceType::kRegular));
-  std::move(callback).Run(/*task=*/task);
+  std::move(callback).Run(/*http_error=*/ApiErrorCode::HTTP_SUCCESS,
+                          /*task=*/task);
 }
 
 void TasksClientImpl::OnTaskUpdated(
@@ -634,13 +645,14 @@ void TasksClientImpl::OnTaskUpdated(
                            result.error_or(ApiErrorCode::HTTP_SUCCESS));
 
   if (!result.has_value()) {
-    std::move(callback).Run(/*task=*/nullptr);
+    std::move(callback).Run(/*http_error=*/result.error(), /*task=*/nullptr);
     return;
   }
 
   const auto tasks_iter = tasks_in_task_lists_.find(task_list_id);
   if (tasks_iter == tasks_in_task_lists_.end()) {
-    std::move(callback).Run(/*task=*/nullptr);
+    std::move(callback).Run(/*http_error=*/ApiErrorCode::HTTP_SUCCESS,
+                            /*task=*/nullptr);
     return;
   }
 
@@ -651,7 +663,8 @@ void TasksClientImpl::OnTaskUpdated(
                      return task->id == result_data->id();
                    });
   if (task_iter == tasks_iter->second.end()) {
-    std::move(callback).Run(/*task=*/nullptr);
+    std::move(callback).Run(/*http_error=*/ApiErrorCode::HTTP_SUCCESS,
+                            /*task=*/nullptr);
     return;
   }
 
@@ -659,15 +672,15 @@ void TasksClientImpl::OnTaskUpdated(
   task->title = result_data->title();
   task->completed = result_data->status() == TaskStatus::kCompleted;
   task->updated = result_data->updated();
-  std::move(callback).Run(/*task=*/task);
+  std::move(callback).Run(/*http_error=*/ApiErrorCode::HTTP_SUCCESS,
+                          /*task=*/task);
 }
 
 google_apis::RequestSender* TasksClientImpl::GetRequestSender() {
   if (!request_sender_) {
     CHECK(create_request_sender_callback_);
     request_sender_ = std::move(create_request_sender_callback_)
-                          .Run({GaiaConstants::kTasksReadOnlyOAuth2Scope,
-                                GaiaConstants::kTasksOAuth2Scope},
+                          .Run(signin::OAuthConsumerId::kAuthServiceTasksClient,
                                traffic_annotation_tag_);
     CHECK(request_sender_);
   }

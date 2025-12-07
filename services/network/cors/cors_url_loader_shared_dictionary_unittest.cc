@@ -9,6 +9,7 @@
 #include "services/network/cors/cors_url_loader_test_util.h"
 #include "services/network/network_context.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/loading_params.h"
 #include "services/network/shared_dictionary/shared_dictionary_constants.h"
 #include "services/network/shared_dictionary/shared_dictionary_in_memory.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager.h"
@@ -84,9 +85,8 @@ class CorsURLLoaderSharedDictionaryTest : public CorsURLLoaderTestBase {
     options.struct_size = sizeof(MojoCreateDataPipeOptions);
     options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
     options.element_num_bytes = 1;
-    options.capacity_num_bytes =
-        network::features::GetDataPipeDefaultAllocationSize(
-            features::DataPipeAllocationSize::kLargerSizeIfPossible);
+    options.capacity_num_bytes = network::GetDataPipeDefaultAllocationSize(
+        network::DataPipeAllocationSize::kLargerSizeIfPossible);
     ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(&options, producer_handle_,
                                                    consumer_handle_));
   }
@@ -139,15 +139,11 @@ class CorsURLLoaderSharedDictionaryTest : public CorsURLLoaderTestBase {
     const auto& dictionary_info =
         dictionary_map.begin()->second.begin()->second;
     EXPECT_EQ(dictionary_url, dictionary_info.url());
-    EXPECT_EQ(base::FeatureList::IsEnabled(
-                  network::features::kCompressionDictionaryTransport)
-                  ? base::Seconds(2592000)
-                  : shared_dictionary::kMaxExpirationForOriginTrial,
-              dictionary_info.expiration());
+    EXPECT_EQ(base::Seconds(2592000), dictionary_info.expiration());
     EXPECT_EQ("/path*", dictionary_info.match());
     EXPECT_EQ(kTestData.size(), dictionary_info.size());
     EXPECT_EQ(net::OK, dictionary_info.dictionary()->ReadAll(
-                           base::BindOnce([](int) { NOTREACHED_NORETURN(); })));
+                           base::BindOnce([](int) { NOTREACHED(); })));
     EXPECT_EQ(kTestData,
               std::string(dictionary_info.dictionary()->data()->data(),
                           dictionary_info.size()));
@@ -289,9 +285,9 @@ TEST_F(CorsURLLoaderSharedDictionaryTest, SameOriginUrlNavigateModeRequest) {
   RunUntilComplete();
   EXPECT_EQ(net::OK, client().completion_status().error_code);
 
-  // The response of Navigation mode request should not be stored to the
+  // The response of Navigation mode request should be stored to the
   // dictionary storage.
-  CheckDictionaryInStorage(/*expect_exists=*/false);
+  CheckDictionaryInStorage(/*expect_exists=*/true);
 }
 
 TEST_F(CorsURLLoaderSharedDictionaryTest,

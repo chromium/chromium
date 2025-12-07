@@ -33,15 +33,17 @@ class WinSignalsCollector : public BaseSignalsCollector {
   // signal does not require parameters. `response` will be passed along and the
   // signal values will be set on it when available. `done_closure` will be
   // invoked when signal collection is complete.
-  void GetAntiVirusSignal(const SignalsAggregationRequest& request,
+  void GetAntiVirusSignal(UserPermission permission,
+                          const SignalsAggregationRequest& request,
                           SignalsAggregationResponse& response,
                           base::OnceClosure done_closure);
 
   // Invoked when the SystemSignalsService returns the collected AV signals as
   // `av_products`. Will update `response` with the signal collection outcome,
-  // and invoke `done_closure` to asynchronously notify the caller of the
-  // completion of this request.
+  // and uses the `callback_id` to invoke a done_closure to asynchronously
+  // notify the caller of the completion of this request.
   void OnAntiVirusSignalCollected(SignalsAggregationResponse& response,
+                                  int callback_id,
                                   base::OnceClosure done_closure,
                                   const std::vector<AvProduct>& av_products);
 
@@ -49,20 +51,19 @@ class WinSignalsCollector : public BaseSignalsCollector {
   // Hotfix signal does not require parameters. `response` will be passed along
   // and the signal values will be set on it when available. `done_closure` will
   // be invoked when signal collection is complete.
-  void GetHotfixSignal(const SignalsAggregationRequest& request,
+  void GetHotfixSignal(UserPermission permission,
+                       const SignalsAggregationRequest& request,
                        SignalsAggregationResponse& response,
                        base::OnceClosure done_closure);
 
   // Invoked when the SystemSignalsService returns the collected Hotfix signals
   // as `hotfixes`. Will update `response` with the signal collection outcome,
-  // and invoke `done_closure` to asynchronously notify the caller of the
-  // completion of this request.
+  // and uses the `callback_id` to invoke a done_closure to asynchronously
+  // notify the caller of the completion of this request.
   void OnHotfixSignalCollected(SignalsAggregationResponse& response,
+                               int callback_id,
                                base::OnceClosure done_closure,
                                const std::vector<InstalledHotfix>& hotfixes);
-
-  // Instance used to retrieve a pointer to a SystemSignalsService instance.
-  raw_ptr<SystemSignalsServiceHost> system_service_host_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<WinSignalsCollector> weak_factory_{this};

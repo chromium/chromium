@@ -4,12 +4,12 @@
 
 // Custom bindings for the notifications API.
 //
-var exceptionHandler = require('uncaught_exception_handler');
-var imageUtil = require('imageUtil');
-var notificationsPrivate = requireNative('notifications_private');
+const exceptionHandler = require('uncaught_exception_handler');
+const imageUtil = require('imageUtil');
+const notificationsPrivate = requireNative('notifications_private');
 
 function imageDataSetter(context, key) {
-  var f = function(val) {
+  const f = function(val) {
     this[key] = val;
   };
   return $Function.bind(f, context);
@@ -25,7 +25,7 @@ function imageDataSetter(context, key) {
 //    should accept an ImageData object and set the appropriate
 //    field in |notificationDetails|.
 function getUrlSpecs(imageSizes, notificationDetails) {
-  var urlSpecs = [];
+  const urlSpecs = [];
 
   // |iconUrl| might be optional for notification updates.
   if (notificationDetails.iconUrl) {
@@ -33,7 +33,7 @@ function getUrlSpecs(imageSizes, notificationDetails) {
       path: notificationDetails.iconUrl,
       width: imageSizes.icon.width * imageSizes.scaleFactor,
       height: imageSizes.icon.height * imageSizes.scaleFactor,
-      callback: imageDataSetter(notificationDetails, 'iconBitmap')
+      callback: imageDataSetter(notificationDetails, 'iconBitmap'),
     });
   }
 
@@ -43,7 +43,7 @@ function getUrlSpecs(imageSizes, notificationDetails) {
       path: notificationDetails.appIconMaskUrl,
       width: imageSizes.appIconMask.width * imageSizes.scaleFactor,
       height: imageSizes.appIconMask.height * imageSizes.scaleFactor,
-      callback: imageDataSetter(notificationDetails, 'appIconMaskBitmap')
+      callback: imageDataSetter(notificationDetails, 'appIconMaskBitmap'),
     });
   }
 
@@ -53,21 +53,21 @@ function getUrlSpecs(imageSizes, notificationDetails) {
       path: notificationDetails.imageUrl,
       width: imageSizes.image.width * imageSizes.scaleFactor,
       height: imageSizes.image.height * imageSizes.scaleFactor,
-      callback: imageDataSetter(notificationDetails, 'imageBitmap')
+      callback: imageDataSetter(notificationDetails, 'imageBitmap'),
     });
   }
 
   // Each button has an optional icon.
-  var buttonList = notificationDetails.buttons;
+  const buttonList = notificationDetails.buttons;
   if (buttonList && typeof buttonList.length === 'number') {
-    var numButtons = buttonList.length;
-    for (var i = 0; i < numButtons; i++) {
+    const numButtons = buttonList.length;
+    for (let i = 0; i < numButtons; i++) {
       if (buttonList[i].iconUrl) {
         $Array.push(urlSpecs, {
           path: buttonList[i].iconUrl,
           width: imageSizes.buttonIcon.width * imageSizes.scaleFactor,
           height: imageSizes.buttonIcon.height * imageSizes.scaleFactor,
-          callback: imageDataSetter(buttonList[i], 'iconBitmap')
+          callback: imageDataSetter(buttonList[i], 'iconBitmap'),
         });
       }
     }
@@ -77,14 +77,14 @@ function getUrlSpecs(imageSizes, notificationDetails) {
 }
 
 function replaceNotificationOptionURLs(notification_details, callback) {
-  var imageSizes = notificationsPrivate.GetNotificationImageSizes();
-  var url_specs = getUrlSpecs(imageSizes, notification_details);
+  const imageSizes = notificationsPrivate.GetNotificationImageSizes();
+  const url_specs = getUrlSpecs(imageSizes, notification_details);
   if (!url_specs.length) {
     callback(true);
     return;
   }
 
-  var errors = 0;
+  let errors = 0;
 
   imageUtil.loadAllImages(url_specs, {
     onerror: function(index) {
@@ -95,12 +95,12 @@ function replaceNotificationOptionURLs(notification_details, callback) {
         callback(false);
         return;
       }
-      for (var index = 0; index < url_specs.length; index++) {
-        var url_spec = url_specs[index];
+      for (let index = 0; index < url_specs.length; index++) {
+        const url_spec = url_specs[index];
         url_spec.callback(imageData[index]);
       }
       callback(true);
-    }
+    },
   });
 }
 
@@ -111,8 +111,8 @@ function generateHandler(name) {
     // changes also being made to the object on the caller's side.
     // TODO(dewittj): Remove this hack. This is used as a way to deep
     // copy a complex JSON object.
-    var notification_details_copy = $JSON.parse(
-        $JSON.stringify(notification_details));
+    const notification_details_copy =
+        $JSON.parse($JSON.stringify(notification_details));
     replaceNotificationOptionURLs(notification_details_copy, function(success) {
       if (success) {
         bindingUtil.sendRequest(
@@ -124,8 +124,8 @@ function generateHandler(name) {
   };
 }
 
-apiBridge.registerCustomHook( function(bindingsAPI) {
-  var apiFunctions = bindingsAPI.apiFunctions;
+apiBridge.registerCustomHook(function(bindingsAPI) {
+  const apiFunctions = bindingsAPI.apiFunctions;
 
   apiFunctions.setHandleRequest(
       'create', generateHandler('notifications.create'));

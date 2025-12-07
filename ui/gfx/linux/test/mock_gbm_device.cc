@@ -5,6 +5,7 @@
 #include "ui/gfx/linux/test/mock_gbm_device.h"
 
 #include <xf86drm.h>
+
 #include <memory>
 #include <utility>
 
@@ -12,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_math.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -56,8 +58,8 @@ class MockGbmBuffer final : public ui::GbmBuffer {
   uint64_t GetFormatModifier() const override { return format_modifier_; }
   uint32_t GetFlags() const override { return flags_; }
   gfx::Size GetSize() const override { return size_; }
-  gfx::BufferFormat GetBufferFormat() const override {
-    return ui::GetBufferFormatFromFourCCFormat(format_);
+  viz::SharedImageFormat GetSharedImageFormat() const override {
+    return ui::GetSharedImageFormatFromFourCCFormat(format_);
   }
   bool AreFdsValid() const override {
     if (planes_.empty())
@@ -155,8 +157,7 @@ std::unique_ptr<GbmBuffer> MockGbmDevice::CreateBufferWithModifiers(
       bytes_per_pixel = 2;
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unsupported format: " << format;
-      return nullptr;
+      NOTREACHED() << "Unsupported format: " << format;
   }
 
   uint64_t format_modifier =
@@ -187,8 +188,7 @@ std::unique_ptr<GbmBuffer> MockGbmDevice::CreateBufferFromHandle(
     uint32_t format,
     const gfx::Size& size,
     gfx::NativePixmapHandle handle) {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 bool MockGbmDevice::CanCreateBufferForFormat(uint32_t format) {

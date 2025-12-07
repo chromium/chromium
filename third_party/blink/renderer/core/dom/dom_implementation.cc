@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/dom/dom_implementation.h"
 
+#include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
@@ -47,6 +48,22 @@
 
 namespace blink {
 
+namespace {
+template <typename CharType>
+bool IsValidDoctypeName(const base::span<const CharType>& characters) {
+  // https://github.com/whatwg/dom/pull/1079
+  // A string is a valid doctype name if it does not contain ASCII whitespace,
+  // U+0000 NULL, or U+003E (>).
+  for (unsigned i = 0; i < characters.size(); i++) {
+    if (!characters[i] || characters[i] == '>' ||
+        IsASCIISpaceWHATWG(characters[i])) {
+      return false;
+    }
+  }
+  return true;
+}
+}  // namespace
+
 DOMImplementation::DOMImplementation(Document& document)
     : document_(document) {}
 
@@ -56,9 +73,23 @@ DocumentType* DOMImplementation::createDocumentType(
     const String& system_id,
     ExceptionState& exception_state) {
   AtomicString prefix, local_name;
-  if (!Document::ParseQualifiedName(qualified_name, prefix, local_name,
-                                    exception_state))
+  if (RuntimeEnabledFeatures::RelaxDOMValidNamesEnabled()) {
+    if (!VisitCharacters(qualified_name, [](auto chars) {
+          return IsValidDoctypeName(chars);
+        })) {
+      StringBuilder message;
+      message.Append("The provided doctype name ('");
+      message.Append(qualified_name);
+      message.Append("') contains an invalid character.");
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidCharacterError, message.ReleaseString());
+      return nullptr;
+    }
+  } else if (!Document::ParseQualifiedName(
+                 qualified_name, prefix, local_name, exception_state,
+                 Document::QualifiedNameParsingMode::kParsingAttribute)) {
     return nullptr;
+  }
   if (!document_->GetExecutionContext())
     return nullptr;
 
@@ -101,6 +132,7 @@ XMLDocument* DOMImplementation::createDocument(
 }
 
 Document* DOMImplementation::createHTMLDocument(const String& title) {
+  TRACE_EVENT("blink", "DOMImplementation::createHTMLDocument");
   DocumentInit init =
       DocumentInit::Create()
           .WithExecutionContext(document_->GetExecutionContext())

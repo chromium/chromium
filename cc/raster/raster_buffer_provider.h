@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "cc/raster/raster_buffer.h"
 #include "cc/raster/raster_source.h"
 #include "cc/raster/task_graph_runner.h"
 #include "cc/raster/tile_task.h"
@@ -17,11 +16,9 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace base {
-class WaitableEvent;
-}
-
 namespace cc {
+
+class RasterBuffer;
 
 class CC_EXPORT RasterBufferProvider {
  public:
@@ -34,9 +31,6 @@ class CC_EXPORT RasterBufferProvider {
   // that will cover the resulting |memory|. The |canvas_playback_rect| can be a
   // smaller contained rect inside the |canvas_bitmap_rect| if the |memory| is
   // already partially complete, and only the subrect needs to be played back.
-  // Set |gpu_compositing| to true if the compositor is using gpu, as we respect
-  // the format more accurately, vs in software compositing where the format is
-  // a placeholder for the skia native format.
   static void PlaybackToMemory(
       void* memory,
       viz::SharedImageFormat format,
@@ -47,23 +41,13 @@ class CC_EXPORT RasterBufferProvider {
       const gfx::Rect& canvas_playback_rect,
       const gfx::AxisTransform2d& transform,
       const gfx::ColorSpace& target_color_space,
-      bool gpu_compositing,
       const RasterSource::PlaybackSettings& playback_settings);
 
   // Acquire raster buffer.
   virtual std::unique_ptr<RasterBuffer> AcquireBufferForRaster(
       const ResourcePool::InUsePoolResource& resource,
       uint64_t resource_content_id,
-      uint64_t previous_content_id,
-      bool depends_on_at_raster_decodes,
-      bool depends_on_hardware_accelerated_jpeg_candidates,
-      bool depends_on_hardware_accelerated_webp_candidates) = 0;
-
-  // Returns the format to use for the tiles.
-  virtual viz::SharedImageFormat GetFormat() const = 0;
-
-  // Determines if the resource is premultiplied.
-  virtual bool IsResourcePremultiplied() const = 0;
+      uint64_t previous_content_id) = 0;
 
   // Determine if the RasterBufferProvider can handle partial raster into
   // the Resource provided in AcquireBufferForRaster.
@@ -83,12 +67,6 @@ class CC_EXPORT RasterBufferProvider {
       const std::vector<const ResourcePool::InUsePoolResource*>& resources,
       base::OnceClosure callback,
       uint64_t pending_callback_id) = 0;
-
-  // Sets an event, guaranteed to live past this object's lifetime, that is
-  // signalled when the TileManger is cancelling tasks. Subclasses can use
-  // this as an argument to GpuMemoryBufferManager::CreateGpuMemoryBuffer to
-  // avoid deadlocks when TileManager is cancelling tasks.
-  virtual void SetShutdownEvent(base::WaitableEvent* shutdown_event) {}
 
   // Shutdown for doing cleanup.
   virtual void Shutdown() = 0;

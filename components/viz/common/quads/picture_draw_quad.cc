@@ -25,17 +25,15 @@ void PictureDrawQuad::SetNew(
     const gfx::Rect& visible_rect,
     bool needs_blending,
     const gfx::RectF& tex_coord_rect,
-    const gfx::Size& texture_size,
     bool nearest_neighbor,
     const gfx::Rect& content,
     float scale,
     ImageAnimationMap animation_map,
     scoped_refptr<const cc::DisplayItemList> display_items,
     cc::ScrollOffsetMap raster_inducing_scrolls) {
-  ContentDrawQuadBase::SetNew(shared_quad_state,
-                              DrawQuad::Material::kPictureContent, rect,
-                              visible_rect, needs_blending, tex_coord_rect,
-                              texture_size, false, nearest_neighbor, false);
+  ContentDrawQuadBase::SetNew(
+      shared_quad_state, DrawQuad::Material::kPictureContent, rect,
+      visible_rect, needs_blending, tex_coord_rect, nearest_neighbor, false);
   content_rect = content;
   contents_scale = scale;
   image_animation_map = std::move(animation_map);
@@ -52,7 +50,10 @@ void PictureDrawQuad::ExtendValue(base::trace_event::TracedValue* value) const {
   ContentDrawQuadBase::ExtendValue(value);
   cc::MathUtil::AddToTracedValue("content_rect", content_rect, value);
   value->SetDouble("contents_scale", contents_scale);
-  // TODO(piman): display_item_list?
+  // TODO(zmo):
+  //   * image_animation_map
+  //   * display_item_list
+  //   * raster_inducing_scroll_offsets
 }
 
 }  // namespace viz

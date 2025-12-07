@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "ui/base/mojom/window_show_state.mojom-blink.h"
 
 namespace blink {
 
@@ -281,7 +282,7 @@ blink::mojom::DisplayMode MediaValuesCached::DisplayMode() const {
   return data_.display_mode;
 }
 
-ui::WindowShowState MediaValuesCached::WindowShowState() const {
+ui::mojom::blink::WindowShowState MediaValuesCached::WindowShowState() const {
   return data_.window_show_state;
 }
 

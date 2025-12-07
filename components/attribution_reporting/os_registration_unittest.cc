@@ -15,6 +15,7 @@
 #include "components/attribution_reporting/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 #include "url/gurl.h"
 
 namespace attribution_reporting {
@@ -25,7 +26,7 @@ using ::base::test::ErrorIs;
 using ::base::test::ValueIs;
 using ::testing::ElementsAre;
 
-TEST(OsRegistration, ParseOsSourceOrTriggerHeader) {
+TEST(OsRegistrationTest, ParseOsSourceOrTriggerHeader) {
   const struct {
     const char* description;
     std::string_view header;
@@ -106,7 +107,7 @@ TEST(OsRegistration, ParseOsSourceOrTriggerHeader) {
   }
 }
 
-TEST(OsRegistration, EmitItemsPerHeaderHistogram) {
+TEST(OsRegistrationTest, EmitItemsPerHeaderHistogram) {
   base::HistogramTester histogram;
 
   std::ignore = ParseOsSourceOrTriggerHeader(
@@ -115,6 +116,13 @@ TEST(OsRegistration, EmitItemsPerHeaderHistogram) {
   histogram.ExpectUniqueSample("Conversions.OsRegistrationItemsPerHeader", 2,
                                1);
 }
+
+void Parses(std::string_view input) {
+  std::ignore = ParseOsSourceOrTriggerHeader(input);
+}
+
+FUZZ_TEST(OsRegistrationTest, Parses)
+    .WithDomains(fuzztest::Arbitrary<std::string>());
 
 }  // namespace
 }  // namespace attribution_reporting

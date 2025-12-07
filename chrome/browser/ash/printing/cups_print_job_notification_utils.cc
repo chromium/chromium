@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/printing/cups_print_job_notification_utils.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -177,8 +178,7 @@ void UpdateNotificationTitle(message_center::Notification* notification,
       notification->set_title(GetNotificationTitleForError(job));
       break;
     case CupsPrintJob::State::STATE_CANCELLED:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     default:
       break;
   }
@@ -205,8 +205,7 @@ void UpdateNotificationIcon(message_center::Notification* notification,
       notification->set_vector_small_image(kNotificationPrintingWarningIcon);
       break;
     case CupsPrintJob::State::STATE_CANCELLED:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case CupsPrintJob::State::STATE_NONE:
       break;
   }
@@ -240,8 +239,7 @@ void UpdateNotificationBodyMessage(message_center::Notification* notification,
           GetNotificationBodyMessageForInterruptedJob(job, profile));
       return;
     case CupsPrintJob::State::STATE_CANCELLED:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     case CupsPrintJob::State::STATE_NONE:
       return;
   }

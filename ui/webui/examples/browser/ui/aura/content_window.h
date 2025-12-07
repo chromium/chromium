@@ -7,7 +7,6 @@
 
 #include "base/functional/callback.h"
 #include "ui/webui/examples/browser/ui/aura/aura_context.h"
-#include "url/gurl.h"
 
 namespace content {
 class WebContents;

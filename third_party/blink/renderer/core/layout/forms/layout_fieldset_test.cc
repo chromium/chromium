@@ -20,8 +20,7 @@ TEST_F(LayoutFieldsetTest, AddChildWhitespaceCrash) {
 </fieldset>)HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Node* text =
-      GetDocument().QuerySelector(AtomicString("small"))->nextSibling();
+  Node* text = QuerySelector("small")->nextSibling();
   ASSERT_TRUE(IsA<Text>(text));
   text->remove();
   UpdateAllLifecyclePhasesForTest();

@@ -39,6 +39,11 @@ void FakePersonalizationAppAmbientProvider::
   std::move(callback).Run(geolocation_enabled_for_system);
 }
 
+void FakePersonalizationAppAmbientProvider::IsGeolocationUserModifiable(
+    IsGeolocationUserModifiableCallback callback) {
+  std::move(callback).Run(is_geolocation_user_modifiable);
+}
+
 void FakePersonalizationAppAmbientProvider::
     EnableGeolocationForSystemServices() {
   geolocation_enabled_for_system = true;

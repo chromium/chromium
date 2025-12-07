@@ -143,6 +143,7 @@ goog.ui.KeyboardEventData.prototype.getStopPropagationFn = function() {
 /**
  * @param {!goog.events.BrowserEvent} event
  * @return {!goog.ui.KeyboardEventData}
+ * @suppress {strictMissingProperties} path is a union type
  */
 goog.ui.KeyboardEventData.fromBrowserEvent = function(event) {
   'use strict';

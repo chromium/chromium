@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/quic/web_transport_error.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/web_transport_fingerprint_proof_verifier.h"
@@ -22,6 +23,7 @@ namespace net {
 
 class HttpResponseHeaders;
 class URLRequestContext;
+class IPEndPoint;
 
 // Diagram of allowed state transitions:
 //
@@ -73,8 +75,15 @@ class NET_EXPORT WebTransportClientVisitor {
  public:
   virtual ~WebTransportClientVisitor();
 
+  // Delegating the Local Network Access check to the visitor.
+  //
+  // See https://wicg.github.io/local-network-access/
+  virtual void OnLocalNetworkAccessCheck(const IPEndPoint& server_address,
+                                         CompletionOnceCallback callback) = 0;
+
   // State change notifiers.
   // CONNECTING -> CONNECTED
+  virtual void OnBeforeConnect(const IPEndPoint& server_address) = 0;
   virtual void OnConnected(
       scoped_refptr<HttpResponseHeaders> response_headers) = 0;
   // CONNECTING -> FAILED
@@ -91,7 +100,7 @@ class NET_EXPORT WebTransportClientVisitor {
   virtual void OnCanCreateNewOutgoingBidirectionalStream() = 0;
   virtual void OnCanCreateNewOutgoingUnidirectionalStream() = 0;
   virtual void OnDatagramProcessed(
-      std::optional<quic::MessageStatus> status) = 0;
+      std::optional<quic::DatagramStatus> status) = 0;
 };
 
 // Parameters that determine the way WebTransport session is established.
@@ -106,9 +115,13 @@ struct NET_EXPORT WebTransportParameters {
   bool enable_web_transport_http3 = false;
 
   // A vector of fingerprints for expected server certificates, as described in
-  // https://wicg.github.io/web-transport/#dom-quictransportconfiguration-server_certificate_fingerprints
+  // https://w3c.github.io/webtransport/#dom-webtransportoptions-servercertificatehashes
   // When empty, Web PKI is used.
   std::vector<quic::CertificateFingerprint> server_certificate_fingerprints;
+
+  // A vector of strings offered by client as a list of potential subprotocols.
+  // https://w3c.github.io/webtransport/#dom-webtransportoptions-protocols
+  std::vector<std::string> application_protocols;
 };
 
 // An abstract base for a WebTransport client.  Most of the useful operations
@@ -127,6 +140,8 @@ class NET_EXPORT WebTransportClient {
   // OnClosed or OnError to be called.
   virtual void Close(
       const std::optional<WebTransportCloseInfo>& close_info) = 0;
+
+  virtual void CloseIfNonceMatches(base::UnguessableToken nonce) = 0;
 
   // session() can be nullptr in states other than CONNECTED.
   virtual quic::WebTransportSession* session() = 0;

@@ -1,0 +1,18 @@
+=== Accessibility tree before go() pass 1 ===
+rootWebArea htmlTag='#document'
+++genericContainer ignored
+++++genericContainer ignored
+++++++checkBox htmlTag='input' name='My Checkbox' checkedState=false
+++++++treeItem htmlTag='div' name='Treeitem' checkedState=false selected=false
+++++++++staticText name='Treeitem'
+++++++++++inlineTextBox name='Treeitem'
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 1 ===
+rootWebArea htmlTag='#document'
+++genericContainer ignored
+++++genericContainer ignored
+++++++checkBox htmlTag='input' name='My Checkbox' checkedState=true <<<<<< CHANGED
+++++++treeItem htmlTag='div' name='Treeitem' checkedState=true selected=false <<<<<< CHANGED
+++++++++staticText name='Treeitem'
+++++++++++inlineTextBox name='Treeitem'
+=== End accessibility tree ===

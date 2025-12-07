@@ -21,6 +21,7 @@
 #include "chromecast/public/volume_control.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_sample_types.h"
 
 namespace chromecast {
 namespace media {
@@ -120,7 +121,7 @@ void CmaAudioOutputStream::Start(
 void CmaAudioOutputStream::Stop(base::WaitableEvent* finished) {
   DCHECK_CALLED_ON_VALID_THREAD(media_thread_checker_);
   // Prevent further pushes to the audio buffer after stopping.
-  push_timer_.AbandonAndStop();
+  push_timer_.Stop();
   // Don't actually stop the backend.  Stop() gets called when the stream is
   // paused.  We rely on Flush() to stop the backend.
   if (output_) {
@@ -134,7 +135,7 @@ void CmaAudioOutputStream::Stop(base::WaitableEvent* finished) {
 void CmaAudioOutputStream::Flush(base::WaitableEvent* finished) {
   DCHECK_CALLED_ON_VALID_THREAD(media_thread_checker_);
   // Prevent further pushes to the audio buffer after stopping.
-  push_timer_.AbandonAndStop();
+  push_timer_.Stop();
 
   if (output_ && (cma_backend_state_ == CmaBackendState::kPaused ||
                   cma_backend_state_ == CmaBackendState::kStarted)) {
@@ -149,7 +150,7 @@ void CmaAudioOutputStream::Flush(base::WaitableEvent* finished) {
 void CmaAudioOutputStream::Close(base::OnceClosure closure) {
   DCHECK_CALLED_ON_VALID_THREAD(media_thread_checker_);
   // Prevent further pushes to the audio buffer after stopping.
-  push_timer_.AbandonAndStop();
+  push_timer_.Stop();
   // Only stop the backend if it was started.
   if (output_ && cma_backend_state_ != CmaBackendState::kStopped) {
     output_->Stop();

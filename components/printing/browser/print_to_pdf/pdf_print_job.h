@@ -11,7 +11,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "components/printing/browser/print_to_pdf/pdf_print_result.h"
-#include "components/printing/common/print.mojom-forward.h"
+#include "components/printing/common/print.mojom.h"
 #include "components/services/print_compositor/public/mojom/print_compositor.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -56,7 +56,8 @@ class PdfPrintJob : public content::WebContentsObserver {
   // WebContentsObserver overrides:
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
 
-  void OnDidPrintWithParams(printing::mojom::PrintWithParamsResultPtr result);
+  void OnDidPrintWithParams(
+      printing::mojom::PrintRenderFrame::PrintWithParamsResult result);
   void OnCompositeDocumentToPdfDone(
       printing::mojom::PrintCompositor::Status status,
       base::ReadOnlySharedMemoryRegion region);

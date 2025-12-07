@@ -4,13 +4,14 @@
 
 package org.chromium.chrome.browser.browserservices.intents;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.blink.mojom.DisplayMode;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.device.mojom.ScreenOrientationLockType;
 
 /** Stores webapp specific information on behalf of {@link BrowserServicesIntentDataProvider}. */
+@NullMarked
 public class WebappExtras {
     public final String id;
 
@@ -21,13 +22,13 @@ public class WebappExtras {
     public final String scopeUrl;
 
     /** The webapp's launcher icon. */
-    @NonNull public final WebappIcon icon;
+    public final WebappIcon icon;
 
     /** The webapp's name as it is usually displayed to the user. */
-    public final String name;
+    public final @Nullable String name;
 
     /** Short version of the webapp's name. */
-    public final String shortName;
+    public final @Nullable String shortName;
 
     public final @DisplayMode.EnumType int displayMode;
 
@@ -42,10 +43,10 @@ public class WebappExtras {
     public final @ShortcutSource int source;
 
     /** Background color for webapp's splash screen. */
-    public final Integer backgroundColor;
+    public final @Nullable Integer backgroundColor;
 
     /** Dark background color for webapp's splash screen. */
-    public final Integer darkBackgroundColor;
+    public final @Nullable Integer darkBackgroundColor;
 
     /** Background color to use if the Web Manifest does not provide a background color. */
     public final int defaultBackgroundColor;
@@ -63,14 +64,14 @@ public class WebappExtras {
             String id,
             String url,
             String scopeUrl,
-            @NonNull WebappIcon icon,
-            String name,
-            String shortName,
+            WebappIcon icon,
+            @Nullable String name,
+            @Nullable String shortName,
             @DisplayMode.EnumType int displayMode,
             int orientation,
             int source,
-            Integer backgroundColor,
-            Integer darkBackgroundColor,
+            @Nullable Integer backgroundColor,
+            @Nullable Integer darkBackgroundColor,
             int defaultBackgroundColor,
             boolean isIconGenerated,
             boolean isIconAdaptive,

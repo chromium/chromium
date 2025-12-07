@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_VIEW_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_VIEW_H_
 
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/glyph_data.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/glyph_data_range.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/glyph_offset_iterator.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
@@ -116,17 +113,13 @@ class PLATFORM_EXPORT ShapeResultView final
   ShapeResultView& operator=(const ShapeResultView&) = delete;
   ~ShapeResultView() = default;
 
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(parts_);
-    visitor->Trace(primary_font_);
-  }
+  void Trace(Visitor* visitor) const { visitor->Trace(parts_); }
 
   ShapeResult* CreateShapeResult() const;
 
   unsigned StartIndex() const { return start_index_ + char_index_offset_; }
   unsigned EndIndex() const { return StartIndex() + num_characters_; }
   unsigned NumCharacters() const { return num_characters_; }
-  unsigned NumGlyphs() const { return num_glyphs_; }
   float Width() const { return width_; }
   LayoutUnit SnappedWidth() const { return LayoutUnit::FromFloatCeil(width_); }
   TextDirection Direction() const {
@@ -135,7 +128,9 @@ class PLATFORM_EXPORT ShapeResultView final
   bool IsLtr() const { return blink::IsLtr(Direction()); }
   bool IsRtl() const { return blink::IsRtl(Direction()); }
   bool HasVerticalOffsets() const { return has_vertical_offsets_; }
-  void FallbackFonts(HeapHashSet<Member<const SimpleFontData>>* fallback) const;
+
+  unsigned NumGlyphs() const;
+  HeapHashSet<Member<const SimpleFontData>> UsedFonts() const;
 
   unsigned PreviousSafeToBreakOffset(unsigned index) const;
 
@@ -160,7 +155,6 @@ class PLATFORM_EXPORT ShapeResultView final
   // bounds.
   gfx::RectF ComputeInkBounds() const;
 
-  const SimpleFontData* PrimaryFont() const { return primary_font_.Get(); }
   void GetRunFontData(HeapVector<ShapeResult::RunFontData>*) const;
 
   void ExpandRangeToIncludePartialGlyphs(unsigned* from, unsigned* to) const;
@@ -169,7 +163,7 @@ class PLATFORM_EXPORT ShapeResultView final
     DISALLOW_NEW();
 
    public:
-    RunInfoPart(const ShapeResult::RunInfo* run,
+    RunInfoPart(const ShapeResultRun* run,
                 GlyphDataRange range,
                 unsigned start_index,
                 unsigned offset,
@@ -179,8 +173,8 @@ class PLATFORM_EXPORT ShapeResultView final
     PLATFORM_EXPORT void Trace(Visitor*) const;
 
     using const_iterator = const HarfBuzzRunGlyphData*;
-    const_iterator begin() const { return range_.begin; }
-    const_iterator end() const { return range_.end; }
+    const_iterator begin() const { return range_.begin(); }
+    const_iterator end() const { return range_.end(); }
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
     const_reverse_iterator rbegin() const {
       return const_reverse_iterator(end());
@@ -189,14 +183,13 @@ class PLATFORM_EXPORT ShapeResultView final
       return const_reverse_iterator(begin());
     }
     const HarfBuzzRunGlyphData& GlyphAt(unsigned index) const {
-      return *(range_.begin + index);
+      return range_.Glyphs()[index];
     }
     template <bool has_non_zero_glyph_offsets>
-    GlyphOffsetArray::iterator<has_non_zero_glyph_offsets> GetGlyphOffsets()
-        const {
-      return GlyphOffsetArray::iterator<has_non_zero_glyph_offsets>(range_);
+    GlyphOffsetIterator<has_non_zero_glyph_offsets> GetGlyphOffsets() const {
+      return GlyphOffsetIterator<has_non_zero_glyph_offsets>(range_);
     }
-    bool HasGlyphOffsets() const { return range_.offsets; }
+    bool HasGlyphOffsets() const { return range_.HasOffsets(); }
     // The end character index of |this| without considering offsets in
     // |ShapeResultView|. This is analogous to:
     //   GlyphAt(IsRtl() ? -1 : NumGlyphs()).character_index
@@ -212,7 +205,7 @@ class PLATFORM_EXPORT ShapeResultView final
     unsigned PreviousSafeToBreakOffset(unsigned offset) const;
 
     // Common signatures with RunInfo, to templatize algorithms.
-    const ShapeResult::RunInfo* GetRunInfo() const { return run_.Get(); }
+    const ShapeResultRun* GetRunInfo() const { return run_.Get(); }
     const GlyphDataRange& GetGlyphDataRange() const { return range_; }
     GlyphDataRange FindGlyphDataRange(unsigned start_character_index,
                                       unsigned end_character_index) const;
@@ -259,7 +252,7 @@ class PLATFORM_EXPORT ShapeResultView final
       return {{part_start, part_end}};
     }
 
-    Member<const ShapeResult::RunInfo> run_;
+    Member<const ShapeResultRun> run_;
     GlyphDataRange range_;
 
     // Start index for partial run, adjusted to ensure that runs are continuous.
@@ -275,8 +268,8 @@ class PLATFORM_EXPORT ShapeResultView final
  private:
   void PopulateRunInfoParts(const Segment& segment);
 
-  // Populates |parts_[]| and accumulates |num_characters_|, |num_glyphs_| and
-  // |width_| from runs in |result|.
+  // Populates `parts_` and accumulates `num_characters_`, and `width_` from
+  // runs in `result`.
   template <class ShapeResultType>
   void PopulateRunInfoParts(const ShapeResultType& result,
                             const Segment& segment);
@@ -288,21 +281,29 @@ class PLATFORM_EXPORT ShapeResultView final
                             float run_advance,
                             gfx::RectF* ink_bounds) const;
 
+  template <bool is_horizontal_run, bool has_glyph_offsets>
+  void ComputePartInkBoundsScalar(const ShapeResultView::RunInfoPart&,
+                                  float run_advance,
+                                  gfx::RectF* ink_bounds) const;
+#if defined(USE_SIMD_FOR_COMPUTING_GLYPH_BOUNDS)
+  template <bool is_horizontal_run, bool has_non_zero_glyph_offsets>
+  void ComputePartInkBoundsVectorized(const ShapeResultView::RunInfoPart&,
+                                      float run_advance,
+                                      gfx::RectF* ink_bounds) const;
+#endif  // defined(USE_SIMD_FOR_COMPUTING_GLYPH_BOUNDS)
+
   // Common signatures with ShapeResult, to templatize algorithms.
   base::span<const RunInfoPart> RunsOrParts() const { return parts_; }
 
   unsigned StartIndexOffsetForRun() const { return char_index_offset_; }
 
   HeapVector<RunInfoPart, 1> parts_;
-  Member<const SimpleFontData> const primary_font_;
 
   const unsigned start_index_;
 
-  // Note: Once |RunInfoPart| populated, |num_characters_|, |num_glyphs_| and
-  // |width_| are immutable.
+  // Once `parts_` is populated `width_` and `num_characters_` are immutable.
   float width_ = 0;
-  unsigned num_characters_ = 0;
-  unsigned num_glyphs_ : 30;
+  unsigned num_characters_ : 30 = 0;
 
   // Overall direction for the TextRun, dictates which order each individual
   // sub run (represented by RunInfo structs in the m_runs vector) can

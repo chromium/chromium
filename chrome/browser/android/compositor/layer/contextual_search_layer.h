@@ -63,6 +63,7 @@ class ContextualSearchLayer : public OverlayPanelLayer {
                      float search_panel_height,
                      float search_bar_margin_side,
                      float search_bar_margin_top,
+                     float search_bar_margin_bottom,
                      float search_bar_height,
                      float search_context_opacity,
                      float search_text_layer_min_height,
@@ -87,7 +88,9 @@ class ContextualSearchLayer : public OverlayPanelLayer {
                      float touch_highlight_x_offset,
                      float touch_highlight_width,
                      int rounded_bar_top_resource_id,
-                     int separator_line_color);
+                     int separator_line_color,
+                     int callout_resource_id,
+                     float callout_opacity);
 
   void SetThumbnail(const SkBitmap* thumbnail);
 
@@ -139,6 +142,7 @@ class ContextualSearchLayer : public OverlayPanelLayer {
   scoped_refptr<cc::slim::UIResourceLayer> search_caption_;
   scoped_refptr<cc::slim::UIResourceLayer> text_layer_;
   scoped_refptr<cc::slim::SolidColorLayer> touch_highlight_layer_;
+  scoped_refptr<cc::slim::UIResourceLayer> callout_layer_;
 };
 
 }  //  namespace android

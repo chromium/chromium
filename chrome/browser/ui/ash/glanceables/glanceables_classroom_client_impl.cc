@@ -15,6 +15,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
 #include "ash/glanceables/glanceables_metrics.h"
 #include "base/barrier_closure.h"
@@ -22,7 +23,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -31,12 +31,9 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/glanceables/glanceables_classroom_course_work_item.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
-#include "components/policy/content/policy_blocklist_service.h"
-#include "components/policy/core/browser/url_blocklist_manager.h"
+#include "components/policy/core/browser/url_list/policy_blocklist_service.h"
+#include "components/policy/core/browser/url_list/url_blocklist_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "google_apis/classroom/classroom_api_course_work_response_types.h"
@@ -145,8 +142,7 @@ void GlanceablesClassroomClientImpl::CourseListState::FinalizeFetch(
       case FetchStatus::kNotFetched:
       case FetchStatus::kFetched:
       case FetchStatus::kFetchingInvalidated:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case FetchStatus::kFetching:
         fetch_status_ = FetchStatus::kFetched;
         break;
@@ -206,11 +202,15 @@ bool GlanceablesClassroomClientImpl::CourseWorkRequest::RespondIfComplete() {
 }
 
 GlanceablesClassroomClientImpl::GlanceablesClassroomClientImpl(
-    Profile* profile,
+    PrefService* pref_service,
+    apps::AppServiceProxy* app_service_proxy,
+    PolicyBlocklistService* policy_blocklist_service,
     base::Clock* clock,
     const GlanceablesClassroomClientImpl::CreateRequestSenderCallback&
         create_request_sender_callback)
-    : profile_(profile),
+    : pref_service_(pref_service),
+      app_service_proxy_(app_service_proxy),
+      policy_blocklist_service_(policy_blocklist_service),
       clock_(clock),
       create_request_sender_callback_(create_request_sender_callback),
       student_courses_(CourseListState(clock_)) {}
@@ -219,9 +219,8 @@ GlanceablesClassroomClientImpl::~GlanceablesClassroomClientImpl() = default;
 
 bool GlanceablesClassroomClientImpl::IsDisabledByAdmin() const {
   // 1) Check the pref.
-  const auto* const pref_service = profile_->GetPrefs();
-  if (!pref_service ||
-      !base::Contains(pref_service->GetList(
+  if (!pref_service_ ||
+      !base::Contains(pref_service_->GetList(
                           prefs::kContextualGoogleIntegrationsConfiguration),
                       prefs::kGoogleClassroomIntegrationName)) {
     RecordContextualGoogleIntegrationStatus(
@@ -231,17 +230,15 @@ bool GlanceablesClassroomClientImpl::IsDisabledByAdmin() const {
   }
 
   // 2) Check if the Classroom app is disabled by policy.
-  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
-          profile_)) {
+  if (!app_service_proxy_) {
     return true;
   }
   auto classroom_app_readiness = apps::Readiness::kUnknown;
-  apps::AppServiceProxyFactory::GetForProfile(profile_)
-      ->AppRegistryCache()
-      .ForOneApp(web_app::kGoogleClassroomAppId,
-                 [&classroom_app_readiness](const apps::AppUpdate& update) {
-                   classroom_app_readiness = update.Readiness();
-                 });
+  app_service_proxy_->AppRegistryCache().ForOneApp(
+      ash::kGoogleClassroomAppId,
+      [&classroom_app_readiness](const apps::AppUpdate& update) {
+        classroom_app_readiness = update.Readiness();
+      });
   if (classroom_app_readiness == apps::Readiness::kDisabledByPolicy) {
     RecordContextualGoogleIntegrationStatus(
         prefs::kGoogleClassroomIntegrationName,
@@ -250,10 +247,8 @@ bool GlanceablesClassroomClientImpl::IsDisabledByAdmin() const {
   }
 
   // 3) Check if the Classroom URL is blocked by policy.
-  const auto* const policy_blocklist_service =
-      PolicyBlocklistFactory::GetForBrowserContext(profile_);
-  if (!policy_blocklist_service ||
-      policy_blocklist_service->GetURLBlocklistState(GURL(kClassroomUrl)) ==
+  if (!policy_blocklist_service_ ||
+      policy_blocklist_service_->GetURLBlocklistState(GURL(kClassroomUrl)) ==
           policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
     RecordContextualGoogleIntegrationStatus(
         prefs::kGoogleClassroomIntegrationName,
@@ -819,8 +814,7 @@ void GlanceablesClassroomClientImpl::OnStudentDataFetched(
     switch (student_data_fetch_status_) {
       case FetchStatus::kNotFetched:
       case FetchStatus::kFetched:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case FetchStatus::kFetching:
         student_data_fetch_status_ = FetchStatus::kFetched;
         break;
@@ -938,13 +932,7 @@ RequestSender* GlanceablesClassroomClientImpl::GetRequestSender() {
     CHECK(create_request_sender_callback_);
     request_sender_ =
         std::move(create_request_sender_callback_)
-            .Run(/*scopes=*/
-                 {
-                     GaiaConstants::kClassroomReadOnlyCoursesOAuth2Scope,
-                     GaiaConstants::kClassroomReadOnlyCourseWorkSelfOAuth2Scope,
-                     GaiaConstants::
-                         kClassroomReadOnlyStudentSubmissionsSelfOAuth2Scope,
-                 },
+            .Run(signin::OAuthConsumerId::kAuthServiceGlanceablesClassroom,
                  kTrafficAnnotationTag);
     CHECK(request_sender_);
   }

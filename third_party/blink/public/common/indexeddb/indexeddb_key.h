@@ -25,17 +25,25 @@ class BLINK_COMMON_EXPORT IndexedDBKey {
   static constexpr size_t kMaximumDepth = 2000;
   static constexpr size_t kMaximumArraySize = 1000000;
 
-  IndexedDBKey();  // Defaults to mojom::IDBKeyType::Invalid.
-  explicit IndexedDBKey(mojom::IDBKeyType);  // must be Null or Invalid
+  IndexedDBKey();  // Defaults to mojom::IDBKeyType::None.
+  explicit IndexedDBKey(mojom::IDBKeyType);  // must be None or Invalid
   explicit IndexedDBKey(KeyArray array);
   explicit IndexedDBKey(std::string binary);
   explicit IndexedDBKey(std::u16string string);
   IndexedDBKey(double number,
                mojom::IDBKeyType type);  // must be date or number
-  IndexedDBKey(const IndexedDBKey& other);
-  IndexedDBKey(IndexedDBKey&& other);
   ~IndexedDBKey();
-  IndexedDBKey& operator=(const IndexedDBKey& other);
+
+  // Move allowed.
+  IndexedDBKey(IndexedDBKey&& other);
+  IndexedDBKey& operator=(IndexedDBKey&& other);
+
+  // "Subtle" copy not allowed, as it's most often a mistake.
+  IndexedDBKey(const IndexedDBKey& other) = delete;
+  IndexedDBKey& operator=(const IndexedDBKey& other) = delete;
+
+  // Explicit copy OK.
+  IndexedDBKey Clone() const;
 
   bool IsValid() const;
 

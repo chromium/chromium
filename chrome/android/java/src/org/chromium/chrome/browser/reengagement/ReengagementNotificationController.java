@@ -14,13 +14,15 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.DefaultBrowserInfo2;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNotificationType;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
+import org.chromium.chrome.browser.util.DefaultBrowserInfo;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
@@ -34,15 +36,14 @@ import org.chromium.components.feature_engagement.Tracker;
  * Controller to manage when and how we show re-engagement notifications to users.
  * TODO(crbug.com/40140907): Modularize this file.
  */
+@NullMarked
 public class ReengagementNotificationController {
     /** An {@link Intent} action to open Chrome to the NTP. */
     public static final String LAUNCH_NTP_ACTION = "launch_ntp";
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    protected static final String NOTIFICATION_TAG = "reengagement_notification";
+    @VisibleForTesting protected static final String NOTIFICATION_TAG = "reengagement_notification";
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    protected static final int NOTIFICATION_ID = 200;
+    @VisibleForTesting protected static final int NOTIFICATION_ID = 200;
 
     private final Context mContext;
     private final Tracker mTracker;
@@ -83,9 +84,10 @@ public class ReengagementNotificationController {
                 });
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    protected void getDefaultBrowserInfo(Callback<DefaultBrowserInfo2.DefaultInfo> callback) {
-        DefaultBrowserInfo2.getDefaultBrowserInfo(callback);
+    @VisibleForTesting
+    protected void getDefaultBrowserInfo(
+            Callback<DefaultBrowserInfo.@Nullable DefaultInfo> callback) {
+        DefaultBrowserInfo.getDefaultBrowserInfo(callback);
     }
 
     private boolean showNotification(String feature) {
@@ -112,7 +114,7 @@ public class ReengagementNotificationController {
             return false;
         }
 
-        if (!mTracker.shouldTriggerHelpUI(feature)) return false;
+        if (!mTracker.shouldTriggerHelpUi(feature)) return false;
         mTracker.dismissed(feature);
 
         NotificationMetadata metadata =
@@ -136,7 +138,7 @@ public class ReengagementNotificationController {
                 .setAutoCancel(true);
 
         BaseNotificationManagerProxy notificationManager =
-                BaseNotificationManagerProxyFactory.create(mContext);
+                BaseNotificationManagerProxyFactory.create();
         NotificationWrapper notification = builder.buildNotificationWrapper();
         notificationManager.notify(notification);
 

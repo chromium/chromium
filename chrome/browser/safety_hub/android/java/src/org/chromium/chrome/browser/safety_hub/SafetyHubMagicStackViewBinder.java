@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.safety_hub;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** ViewBinder for the Safety Hub Magic Stack module. */
+@NullMarked
 class SafetyHubMagicStackViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         SafetyHubMagicStackView moduleView = (SafetyHubMagicStackView) view;
@@ -23,6 +25,9 @@ class SafetyHubMagicStackViewBinder {
             moduleView.setIconDrawable(model.get(SafetyHubMagicStackViewProperties.ICON_DRAWABLE));
         } else if (SafetyHubMagicStackViewProperties.BUTTON_TEXT == propertyKey) {
             moduleView.setButtonText(model.get(SafetyHubMagicStackViewProperties.BUTTON_TEXT));
+        } else if (SafetyHubMagicStackViewProperties.BUTTON_CONTENT_DESCRIPTION == propertyKey) {
+            moduleView.setButtonContentDescription(
+                    model.get(SafetyHubMagicStackViewProperties.BUTTON_CONTENT_DESCRIPTION));
         } else if (SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER == propertyKey) {
             moduleView.setButtonOnClickListener(
                     model.get(SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER));

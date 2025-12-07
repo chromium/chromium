@@ -80,6 +80,20 @@ bool IsMicrosoftOfficeOneDriveIntegrationAllowed(const Profile* profile) {
   return true;
 }
 
+bool IsMicrosoftOfficeOneDriveIntegrationAutomated(const Profile* profile) {
+  if (!IsEligibleAndEnabledUploadOfficeToCloud(profile)) {
+    return false;
+  }
+
+  if (profile->GetProfilePolicyConnector()->IsManaged()) {
+    return chromeos::features::
+               IsMicrosoftOneDriveIntegrationForEnterpriseEnabled() &&
+           chromeos::cloud_storage::GetMicrosoftOneDriveMount(profile) ==
+               Mount::kAutomated;
+  }
+  return true;
+}
+
 bool IsMicrosoftOfficeCloudUploadAllowed(Profile* profile) {
   if (!chromeos::features::IsUploadOfficeToCloudForEnterpriseEnabled()) {
     return IsEligibleAndEnabledUploadOfficeToCloud(profile);

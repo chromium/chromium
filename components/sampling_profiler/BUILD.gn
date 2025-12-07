@@ -1,0 +1,32 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("sampling_profiler") {
+  public = [
+    "thread_profiler.h",
+    "thread_profiler_client.h",
+  ]
+
+  sources = [ "thread_profiler.cc" ]
+
+  public_deps = [ ":profile_params" ]
+
+  deps = [
+    "//base",
+    "//build:blink_buildflags",
+    "//components/metrics:child_call_stack_profile_builder",
+  ]
+}
+
+# Exposes the profile params separately, including enums for process/thread
+# type. Intended for other components that don't need a dependency on the full
+# profiler.
+source_set("profile_params") {
+  public = [
+    "call_stack_profile_params.h",
+    "process_type.h",
+  ]
+
+  deps = [ "//base" ]
+}

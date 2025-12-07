@@ -6,11 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_FRAGMENT_PAINTER_H_
 
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+#include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 
 namespace blink {
 
 struct PaintInfo;
-struct PhysicalOffset;
 
 // Generic fragment painter for paint logic shared between all types of
 // fragments. LayoutNG version of ObjectPainter.

@@ -4,13 +4,23 @@
 
 #include "media/base/win/mf_initializer.h"
 
+#include <windows.h>
+
 #include <mfapi.h>
 #include <synchapi.h>
 
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/native_library.h"
+#include "base/no_destructor.h"
+#include "base/threading/scoped_thread_priority.h"
+#include "base/threading/thread_restrictions.h"
+#include "base/win/delayload_helpers.h"
 #include "base/win/scoped_handle.h"
 #include "media/base/win/media_foundation_package_runtime_locator.h"
+
+class ScopedAllowBlockingForMediaFoundation : public base::ScopedAllowBlocking {
+};
 
 namespace {
 
@@ -27,8 +37,11 @@ static const char kMediaFoundationLoadFailedMessage[] =
 // sandbox initialization or it will always fail.
 bool LoadMediaFoundationLibraries() {
   static const bool kDidLoadSucceed = []() {
+    ScopedAllowBlockingForMediaFoundation allow_io_to_load_library;
     for (const wchar_t* mfdll : {L"mf.dll", L"mfplat.dll"}) {
-      if (!::LoadLibrary(mfdll)) {
+      base::NativeLibraryLoadError error;
+      if (!base::LoadSystemLibrary(mfdll, &error)) {
+        ::SetLastError(error.code);
         PLOG(ERROR) << kMediaFoundationLoadFailedMessage << "Could not load "
                     << mfdll;
         return false;
@@ -53,28 +66,6 @@ bool LoadMediaFoundationLibraries() {
   }();
   return kDidLoadSucceed;
 }
-
-// This is a helper for creating a global D3D mutex prior to sandbox startup,
-// ensures Intel hardware encoding MFTs will successfully reuse the existing
-// mutex instead of getting denied by the system and leads to fail to activate
-// encoders. See https://crbug.com/1491893
-class MediaFoundationCreateMutexHelper {
- public:
-  static MediaFoundationCreateMutexHelper* GetInstance() {
-    return base::Singleton<MediaFoundationCreateMutexHelper,
-                           base::StaticMemorySingletonTraits<
-                               MediaFoundationCreateMutexHelper>>::get();
-  }
-  ~MediaFoundationCreateMutexHelper() = default;
-
- private:
-  friend struct base::StaticMemorySingletonTraits<
-      MediaFoundationCreateMutexHelper>;
-  MediaFoundationCreateMutexHelper()
-      : mutex_handle_(CreateMutex(nullptr, false, L"mfx_d3d_mutex")) {}
-
-  base::win::ScopedHandle mutex_handle_;
-};
 
 // MFShutdown() is sometimes very expensive if it's the last instance and
 // shouldn't result in excessive memory usage to leave around, so only start it
@@ -103,8 +94,9 @@ class MediaFoundationSession {
   ~MediaFoundationSession() {
     // The public documentation stating that it needs to have a corresponding
     // shutdown for all startups (even failed ones) is wrong.
-    if (has_media_foundation_)
+    if (has_media_foundation_) {
       MFShutdown();
+    }
   }
 
   bool has_media_foundation() const { return has_media_foundation_; }
@@ -113,12 +105,42 @@ class MediaFoundationSession {
   friend struct base::StaticMemorySingletonTraits<MediaFoundationSession>;
 
   MediaFoundationSession() {
-    const auto hr = MFStartup(MF_VERSION, MFSTARTUP_LITE);
-    has_media_foundation_ = hr == S_OK;
+    HRESULT hr = E_FAIL;
+    if (ResolveMediaFoundationDelayloads()) {
+      hr = MFStartup(MF_VERSION, MFSTARTUP_LITE);
+      has_media_foundation_ = hr == S_OK;
+    }
 
     LOG_IF(ERROR, !has_media_foundation_)
         << kMediaFoundationLoadFailedMessage
         << logging::SystemErrorCodeToString(hr);
+  }
+
+  bool ResolveMediaFoundationDelayloads() {
+    // Mitigate the issues caused by loading DLLs on a background thread; see
+    // https://crbug.com/41464781. The DLLs should already be loaded on account
+    // of `LoadMediaFoundationLibraries()`, but it is possible that resolving
+    // the imports could lead to hard faults to page in the DLLs.
+    SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
+
+    // LoadAllImportsForDll() makes a case-sensitive comparison to the module
+    // names in the dll's delayloaded dependent module list.
+    // LINT.IfChange
+    static constexpr base::cstring_view kDlls[] = {"MF.dll", "MFPlat.DLL"};
+    // LINT.ThenChange(//chrome/common/win/delay_load_failure_hook.cc)
+    for (const auto& mfdll : kDlls) {
+      // In tests the DLLs might not be direct deps of this module, so only
+      // report errors encountered when the DLLs are found but not loaded.
+      auto loaded = base::win::LoadAllImportsForDll(mfdll);
+      if (!loaded.has_value()) {
+        // Set error for PLOG.
+        ::SetLastError(HRESULT_CODE(loaded.error()));
+        PLOG(ERROR) << kMediaFoundationLoadFailedMessage
+                    << "Could not resolve imports for " << mfdll;
+        return false;
+      }
+    }
+    return true;
   }
 
   bool has_media_foundation_ = false;
@@ -134,7 +156,14 @@ bool InitializeMediaFoundation() {
 }
 
 bool PreSandboxMediaFoundationInitialization() {
-  MediaFoundationCreateMutexHelper::GetInstance();
+  // Create the global D3D mutex prior to sandbox startup, thereby ensuring
+  // Intel hardware encoding MFTs will successfully reuse the existing mutex
+  // instead of getting denied by the system, which leads to a failure to
+  // activate encoders; see https://crbug.com/1491893.
+  static const base::NoDestructor<base::win::ScopedHandle> mutex_handle(
+      ::CreateMutex(/*lpMutexAttributes=*/nullptr, /*bInitialOwner=*/false,
+                    L"mfx_d3d_mutex"));
+
   return LoadMediaFoundationLibraries();
 }
 

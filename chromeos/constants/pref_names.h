@@ -46,6 +46,26 @@ inline constexpr char kCaptivePortalSignin[] = "captive_portal_signin";
 inline constexpr char kDeviceRestrictionSchedule[] =
     "device_restriction_schedule";
 
+// A boolean pref that signals whether a post-logout notification should be
+// shown on the login screen after entering the restriction schedule.
+inline constexpr char kDeviceRestrictionScheduleShowPostLogoutNotification[] =
+    "device_restriction_schedule_show_post_logout_notification";
+
+// Boolean value for the FloatingWorkspaceV2Enabled policy
+inline constexpr char kFloatingWorkspaceV2Enabled[] =
+    "ash.floating_workspace_v2_enabled";
+
+// Boolean pref specifying if the the Floating SSO Service is enabled. The
+// service restores the user's web service authentication state by moving
+// cookies from the previous device onto another, on ChromeOS.
+inline constexpr char kFloatingSsoEnabled[] = "floating_sso_enabled";
+
+// Boolean pref that determines whether signing in on a new ChromeOS device
+// automatically signs the user out of their previous session. If the pref is
+// set to false, the automatic sign-out functionality could still be enabled if
+// either `kFloatingSsoEnabled` or `kFloatingWorkspaceV2Enabled` pref is enabled.
+inline constexpr char kAutoSignOutEnabled[] = "auto_sign_out_enabled";
+
 }  // namespace chromeos::prefs
 
 #endif  // CHROMEOS_CONSTANTS_PREF_NAMES_H_

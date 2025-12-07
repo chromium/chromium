@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "ash/in_session_auth/authentication_dialog.h"
 #include "ash/in_session_auth/in_session_auth_dialog_contents_view.h"
 #include "ash/public/cpp/auth/active_session_auth_controller.h"
 #include "ash/public/cpp/in_session_auth_dialog_controller.h"
@@ -22,6 +21,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/auth_panel/impl/auth_factor_store.h"
 #include "chromeos/ash/components/auth_panel/impl/auth_panel.h"
@@ -30,10 +30,14 @@
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/osauth/impl/legacy_auth_surface_registry.h"
+#include "chromeos/ash/components/osauth/impl/request/password_manager_auth_request.h"
+#include "chromeos/ash/components/osauth/impl/request/settings_auth_request.h"
 #include "chromeos/ash/components/osauth/public/auth_factor_status_consumer.h"
 #include "chromeos/ash/components/osauth/public/auth_hub.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 #include "chromeos/components/webauthn/webauthn_request_registrar.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -52,34 +56,12 @@ AuthPurpose InSessionAuthReasonToAuthPurpose(
   }
 }
 
-std::unique_ptr<views::Widget> CreateAuthDialogWidget(
-    std::unique_ptr<views::View> contents_view) {
-  views::Widget::InitParams params(
-      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.delegate = new views::WidgetDelegate();
-  params.show_state = ui::SHOW_STATE_NORMAL;
-  params.parent = nullptr;
-  params.name = "AuthDialogWidget";
-
-  params.delegate->SetInitiallyFocusedView(contents_view.get());
-  params.delegate->SetModalType(ui::MODAL_TYPE_SYSTEM);
-  params.delegate->SetOwnedByWidget(true);
-
-  std::unique_ptr<views::Widget> widget = std::make_unique<views::Widget>();
-  widget->Init(std::move(params));
-  widget->SetVisibilityAnimationTransition(views::Widget::ANIMATE_NONE);
-  widget->SetContentsView(std::move(contents_view));
-  return widget;
-}
-
 // TODO(b/271248452): Subscribe to primary display changes, so that the
 // authentication dialog correctly changes its location to center on new
 // primary displays. We will need to also listen to `work_area` changes and
 // reposition the dialog accordingly when that changes.
 void CenterWidgetOnPrimaryDisplay(views::Widget* widget) {
-  auto bounds = display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  auto bounds = display::Screen::Get()->GetPrimaryDisplay().work_area();
   bounds.ClampToCenteredSize(widget->GetContentsView()->GetPreferredSize());
   widget->SetBounds(bounds);
 }
@@ -126,29 +108,14 @@ void InSessionAuthDialogControllerImpl::ShowAuthDialog(
   DCHECK(account_id.is_valid());
   DCHECK_NE(auth_token_provider_, nullptr);
 
-  if (reason == Reason::kAccessPasswordManager &&
-      features::IsUseAuthPanelInSessionEnabled()) {
-    // CreateAndShowAuthPanel(prompt, std::move(on_auth_complete), reason,
-    //                        account_id);
+  if (reason == Reason::kAccessPasswordManager) {
     Shell::Get()->active_session_auth_controller()->ShowAuthDialog(
-        ActiveSessionAuthController::Reason::kPasswordManager,
-        std::move(on_auth_complete));
-  } else if (reason == Reason::kAccessAuthenticationSettings &&
-             features::IsUseAuthPanelInSessionEnabled()) {
-    // CreateAndShowAuthPanel(prompt, std::move(on_auth_complete), reason,
-    //                        account_id);
+        std::make_unique<PasswordManagerAuthRequest>(
+            base::UTF8ToUTF16(prompt.value_or("")),
+            std::move(on_auth_complete)));
+  } else if (reason == Reason::kAccessAuthenticationSettings) {
     Shell::Get()->active_session_auth_controller()->ShowAuthDialog(
-        ActiveSessionAuthController::Reason::kSettings,
-        std::move(on_auth_complete));
-  } else {
-    // We don't manage the lifetime of `AuthenticationDialog` here.
-    // `AuthenticatonDialog` is-a View and it is instead owned by it's widget,
-    // which would properly delete it when the widget is closed.
-    (new AuthenticationDialog(
-         std::move(on_auth_complete), auth_token_provider_,
-         std::make_unique<AuthPerformer>(UserDataAuthClient::Get()),
-         account_id))
-        ->Show();
+        std::make_unique<SettingsAuthRequest>(std::move(on_auth_complete)));
   }
 }
 
@@ -194,8 +161,27 @@ void InSessionAuthDialogControllerImpl::OnUserAuthAttemptConfirmed(
 
   contents_view_ = contents_view.get();
   out_consumer = contents_view->GetAuthPanel();
-  dialog_ = CreateAuthDialogWidget(std::move(contents_view));
+
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+  params.delegate = new views::WidgetDelegate();
+  params.show_state = ui::mojom::WindowShowState::kNormal;
+  params.parent = nullptr;
+  params.name = "AuthDialogWidget";
+
+  params.delegate->SetInitiallyFocusedView(contents_view.get());
+  params.delegate->SetModalType(ui::mojom::ModalType::kSystem);
+  params.delegate->SetOwnedByWidget(
+      views::WidgetDelegate::OwnedByWidgetPassKey());
+
+  dialog_ = std::make_unique<views::Widget>();
+  dialog_->Init(std::move(params));
+  dialog_->SetVisibilityAnimationTransition(views::Widget::ANIMATE_NONE);
+  dialog_->SetContentsView(std::move(contents_view));
   dialog_->Show();
+
   state_ = State::kShown;
   AuthParts::Get()
       ->GetLegacyAuthSurfaceRegistry()

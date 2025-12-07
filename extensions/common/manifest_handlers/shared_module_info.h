@@ -33,7 +33,7 @@ class SharedModuleInfo : public Extension::ManifestData {
   // Functions relating to exporting resources.
   static bool IsSharedModule(const Extension* extension);
 
-  // Check against the shared module's allowlist to see if |other_id| can import
+  // Check against the shared module's allowlist to see if `other_id` can import
   // its resources. If no allowlist is specified, all extensions can import this
   // extension.
   static bool IsExportAllowedByAllowlist(const Extension* extension,
@@ -68,7 +68,7 @@ class SharedModuleHandler : public ManifestHandler {
   ~SharedModuleHandler() override;
 
   bool Parse(Extension* extension, std::u16string* error) override;
-  bool Validate(const Extension* extension,
+  bool Validate(const Extension& extension,
                 std::string* error,
                 std::vector<InstallWarning>* warnings) const override;
 

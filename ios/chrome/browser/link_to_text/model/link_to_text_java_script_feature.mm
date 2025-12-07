@@ -4,9 +4,10 @@
 
 #import "ios/chrome/browser/link_to_text/model/link_to_text_java_script_feature.h"
 
+#import <algorithm>
+
 #import "base/barrier_callback.h"
 #import "base/no_destructor.h"
-#import "base/ranges/algorithm.h"
 #import "base/timer/elapsed_timer.h"
 #import "components/shared_highlighting/core/common/disabled_sites.h"
 #import "components/shared_highlighting/core/common/shared_highlighting_features.h"
@@ -21,7 +22,7 @@ const char kScriptName[] = "link_to_text";
 const char kGetLinkToTextFunction[] = "linkToText.getLinkToText";
 
 bool IsKnownAmpCache(web::WebFrame* frame) {
-  GURL origin = frame->GetSecurityOrigin();
+  url::Origin origin = frame->GetSecurityOrigin();
 
   // Source:
   // https://github.com/ampproject/amphtml/blob/main/build-system/global-configs/caches.json
@@ -80,16 +81,7 @@ void LinkToTextJavaScriptFeature::RunGenerationJS(
 bool LinkToTextJavaScriptFeature::ShouldAttemptIframeGeneration(
     std::optional<shared_highlighting::LinkGenerationError> error,
     const GURL& main_frame_url) {
-  if (!base::FeatureList::IsEnabled(
-          shared_highlighting::kSharedHighlightingAmp)) {
-    return false;
-  }
-  if (!error ||
-      error.value() !=
-          shared_highlighting::LinkGenerationError::kIncorrectSelector) {
-    return false;
-  }
-  return shared_highlighting::SupportsLinkGenerationInIframe(main_frame_url);
+  return false;
 }
 
 void LinkToTextJavaScriptFeature::HandleResponse(
@@ -107,7 +99,7 @@ void LinkToTextJavaScriptFeature::HandleResponse(
   std::vector<web::WebFrame*> amp_frames;
   if (web_state &&
       ShouldAttemptIframeGeneration(error, web_state->GetLastCommittedURL())) {
-    base::ranges::copy_if(
+    std::ranges::copy_if(
         web_state->GetPageWorldWebFramesManager()->GetAllWebFrames(),
         std::back_inserter(amp_frames), IsKnownAmpCache);
   }
@@ -144,7 +136,7 @@ void LinkToTextJavaScriptFeature::HandleResponseFromSubframe(
   DCHECK(!parsed_responses.empty());
 
   // First, see if we succeeded in any frame.
-  auto success_response = base::ranges::find_if_not(
+  auto success_response = std::ranges::find_if_not(
       parsed_responses,
       [](LinkToTextResponse* response) { return response.payload == nil; });
   if (success_response != parsed_responses.end()) {
@@ -155,7 +147,7 @@ void LinkToTextJavaScriptFeature::HandleResponseFromSubframe(
   // If not, look for a frame where we failed with an error other than Incorrect
   // Selector. There should be at most one of these (since every frame with no
   // user selection should return Incorrect Selector).
-  auto error_response = base::ranges::find_if_not(
+  auto error_response = std::ranges::find_if_not(
       parsed_responses, [](LinkToTextResponse* response) {
         return [response error].value() ==
                shared_highlighting::LinkGenerationError::kIncorrectSelector;

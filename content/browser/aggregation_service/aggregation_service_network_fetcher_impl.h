@@ -7,7 +7,9 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -90,7 +92,7 @@ class CONTENT_EXPORT AggregationServiceNetworkFetcherImpl
   void OnSimpleLoaderComplete(UrlLoaderList::iterator it,
                               const GURL& url,
                               NetworkFetchCallback callback,
-                              std::unique_ptr<std::string> response_body);
+                              std::optional<std::string> response_body);
 
   // Callback for DataDecoder. `expiry_time` will be null if the freshness
   // lifetime is zero.
@@ -103,7 +105,7 @@ class CONTENT_EXPORT AggregationServiceNetworkFetcherImpl
   void OnError(const GURL& url,
                NetworkFetchCallback callback,
                FetchStatus status,
-               const std::string& error_msg);
+               std::string_view error_msg);
 
   void RecordFetchStatus(FetchStatus status) const;
 

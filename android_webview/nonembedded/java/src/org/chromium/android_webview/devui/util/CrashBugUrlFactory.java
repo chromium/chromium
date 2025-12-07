@@ -21,7 +21,6 @@ import java.util.Locale;
 /** Factory class to build bug URI for a crash report. */
 public class CrashBugUrlFactory {
     // There is a limit on the length of this query string, see https://crbug.com/1015923
-    // TODO(crbug.com/40674230): add assert statement to check the length of this String.
     @VisibleForTesting
     public static final String CRASH_REPORT_TEMPLATE =
             """
@@ -43,14 +42,13 @@ public class CrashBugUrlFactory {
             Expected result:
             (What should have happened?)
 
-            <Any additional comments, you want to share>"
+            <Any additional comments, you want to share>
 
             ---
 
             **DO NOT CHANGE BELOW THIS LINE**
 
             * Crash ID: http://crash/%s
-            * Instructions for triaging this report (Chromium members only): https://bit.ly/2SM1Y9t
             """;
 
     private final CrashInfo mCrashInfo;
@@ -68,6 +66,9 @@ public class CrashBugUrlFactory {
      * Build a report uri to open an issue on
      * https://issues.chromium.org/issues/new?component=1456456&template=1923373. It uses WebView
      * Bugs Template and overrides labels and description fields.
+     *
+     * <p>For instructions on the query parameters we support, see this Google-internal document:
+     * http://shortn/_GvVo3hts09.
      */
     public Uri getReportUri() {
         var builder =
@@ -79,6 +80,7 @@ public class CrashBugUrlFactory {
                                 "component", BugTrackerConstants.COMPONENT_MOBILE_WEBVIEW)
                         .appendQueryParameter(
                                 "template", BugTrackerConstants.DEFAULT_WEBVIEW_TEMPLATE)
+                        .appendQueryParameter("title", "User reported crash")
                         .appendQueryParameter("description", getDescription())
                         .appendQueryParameter("priority", "P3")
                         .appendQueryParameter("type", "BUG")
@@ -129,6 +131,6 @@ public class CrashBugUrlFactory {
         String name = mCrashInfo.getCrashKeyOrDefault(CrashInfo.APP_PACKAGE_NAME_KEY, "");
         String versionCode =
                 mCrashInfo.getCrashKeyOrDefault(CrashInfo.APP_PACKAGE_VERSION_CODE_KEY, "");
-        return String.format(Locale.US, "%s (%s)", name, versionCode);
+        return String.format(Locale.US, "%s (versionCode=%s)", name, versionCode);
     }
 }

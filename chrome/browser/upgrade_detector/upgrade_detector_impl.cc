@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/upgrade_detector/upgrade_detector_impl.h"
 
 #include <stdint.h>
 
+#include <algorithm>
+#include <array>
+#include <functional>
 #include <optional>
 #include <string>
 
@@ -18,10 +16,10 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
@@ -118,7 +116,12 @@ UpgradeDetectorImpl::UpgradeDetectorImpl(const base::Clock* clock,
       is_auto_update_enabled_(true),
       simulating_outdated_(SimulatingOutdated()),
       is_testing_(simulating_outdated_ || IsTesting()),
-      build_date_(base::GetBuildTime()) {}
+      build_date_(base::GetBuildTime()) {
+  if (base::features::IsReducePPMsEnabled()) {
+    upgrade_notification_timer_.SetTaskRunner(
+        content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT}));
+  }
+}
 
 UpgradeDetectorImpl::~UpgradeDetectorImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -163,8 +166,9 @@ void UpgradeDetectorImpl::DoCalculateThresholds() {
   base::TimeDelta notification_period = GetRelaunchNotificationPeriod();
   const std::optional<RelaunchWindow> relaunch_window =
       GetRelaunchWindowPolicyValue();
+  bool fast_relaunch = ShouldRelaunchFast();
 
-  if (notification_period.is_zero() && !relaunch_window) {
+  if (notification_period.is_zero() && !relaunch_window && !fast_relaunch) {
     // Use the default values when no override is set and we don't expect to
     // adjust the levels according to the relaunch time interval.
     stages_[kStagesIndexHigh] = kDefaultHighThreshold;
@@ -177,8 +181,13 @@ void UpgradeDetectorImpl::DoCalculateThresholds() {
     // fall within the relaunch time interval. The adjusted "high" level is
     // divided evenly to set the 'low' and 'elevated' levels.
     base::TimeDelta effective_notification_period = notification_period;
-    if (notification_period.is_zero())
+    if (notification_period.is_zero()) {
       effective_notification_period = kDefaultHighThreshold;
+    }
+    if (fast_relaunch) {
+      effective_notification_period =
+          std::min(effective_notification_period, base::Hours(2));
+    }
 
     const RelaunchWindow effective_relaunch_window =
         relaunch_window.value_or(GetDefaultRelaunchWindow());
@@ -247,18 +256,8 @@ void UpgradeDetectorImpl::StartOutdatedBuildDetector() {
 void UpgradeDetectorImpl::DetectOutdatedInstall() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Time current_time;
-  base::TimeDelta uncertainty;
-  bool is_network_time = true;
-  if (g_browser_process->network_time_tracker()->GetNetworkTime(&current_time,
-                                                                &uncertainty) !=
-      network_time::NetworkTimeTracker::NETWORK_TIME_AVAILABLE) {
-    // When network time has not been initialized yet, simply rely on the
-    // machine's current time.
-    is_network_time = false;
-    current_time = base::Time::Now();
-  }
+  bool is_network_time = GetNetworkTimeWithFallback(current_time);
 
-  CHECK(!current_time.is_null());
   CHECK(!build_date_.is_null());
 
   if (!simulating_outdated_ && is_network_time && build_date_ > current_time) {
@@ -288,6 +287,11 @@ void UpgradeDetectorImpl::UpgradeDetected(UpgradeAvailable upgrade_available) {
   if (upgrade_available != UPGRADE_AVAILABLE_NONE ||
       critical_experiment_updates_available()) {
     StartUpgradeNotificationTimer();
+    if (ShouldFetchLastServedDate()) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(&UpgradeDetectorImpl::FetchLastServedDate,
+                                    weak_factory_.GetWeakPtr()));
+    }
   } else {
     // There is no longer anything to notify the user about, so stop the timer
     // and reset state.
@@ -322,8 +326,7 @@ void UpgradeDetectorImpl::NotifyOnUpgradeWithTimePassed(
   } else {
     // |stages_| must be sorted by decreasing TimeDelta.
     std::array<base::TimeDelta, kNumStages>::iterator it =
-        base::ranges::lower_bound(stages_, time_passed,
-                                  base::ranges::greater());
+        std::ranges::lower_bound(stages_, time_passed, std::ranges::greater());
     if (it != stages_.end())
       new_stage = StageIndexToAnnoyanceLevel(it - stages_.begin());
     if (it != stages_.begin())
@@ -388,18 +391,20 @@ UpgradeDetectorImpl::AnnoyanceLevelToStagesIndex(
 // static
 UpgradeDetector::UpgradeNotificationAnnoyanceLevel
 UpgradeDetectorImpl::StageIndexToAnnoyanceLevel(size_t index) {
-  static constexpr UpgradeNotificationAnnoyanceLevel kIndexToLevel[] = {
-      UpgradeDetector::UPGRADE_ANNOYANCE_HIGH,
-      UpgradeDetector::UPGRADE_ANNOYANCE_GRACE,
-      UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED,
-      UpgradeDetector::UPGRADE_ANNOYANCE_LOW,
-      UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW};
+  constexpr static const auto kIndexToLevel =
+      std::to_array<UpgradeNotificationAnnoyanceLevel>({
+          UpgradeDetector::UPGRADE_ANNOYANCE_HIGH,
+          UpgradeDetector::UPGRADE_ANNOYANCE_GRACE,
+          UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED,
+          UpgradeDetector::UPGRADE_ANNOYANCE_LOW,
+          UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW,
+      });
   static_assert(std::size(kIndexToLevel) == kNumStages, "mismatch");
   DCHECK_LT(index, std::size(kIndexToLevel));
   return kIndexToLevel[index];
 }
 
-void UpgradeDetectorImpl::OnMonitoredPrefsChanged() {
+void UpgradeDetectorImpl::RecomputeSchedule() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Broadcast the appropriate notification if an upgrade has been detected.

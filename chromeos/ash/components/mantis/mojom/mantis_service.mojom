@@ -1,0 +1,61 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file is copied from
+// https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform2/odml/mojom/mantis_service.mojom
+// Doc: go/mantis-bl-dd
+module mantis.mojom;
+
+import "chromeos/ash/components/mantis/mojom/mantis_processor.mojom";
+import "chromeos/services/machine_learning/public/mojom/text_classifier.mojom";
+import "mojo/public/mojom/base/uuid.mojom";
+
+// The feature status used to restrict Mantis functionality if applicable.
+[Stable, Extensible]
+enum MantisFeatureStatus {
+  [Default] kDeviceNotSupported,
+  kARCVMDisabled,
+  kAvailable,
+};
+
+// The model initialization result.
+[Stable, Extensible]
+enum InitializeResult {
+  kSuccess,
+  kGpuBlocked,
+  [Default] kFailedToLoadLibrary,
+  [MinVersion=2] kFailedToLoadSafetyService,
+};
+
+// An observer to report the current platform model loading progress.
+[Stable]
+interface PlatformModelProgressObserver {
+  // The progress value is between 0.0 and 1.0.
+  Progress@0(double progress);
+};
+
+// Interface for checking Mantis feature availability and initialize it if
+// available.
+// The availability is based on device type, user account, and others.
+//
+// This interface is served by `odmld` process in CrOS to be used by image
+// editing UI (e.g. Media App WebUI).
+[Stable]
+interface MantisService {
+  // Gets Mantis feature status which can be used to restrict Mantis
+  // functionality by returning a status other than kAvailable.
+  [MinVersion=1]
+  GetMantisFeatureStatus@1() => (MantisFeatureStatus status);
+
+  // Loads the assets from DLC and initializes the processor for subsequent
+  // queries. The model loading progress can be observed by `progress_observer`.
+  // The `dlc_uuid` is used to fetch the specific ML model assets.
+  Initialize@0(
+      pending_remote<PlatformModelProgressObserver>? progress_observer,
+      pending_receiver<MantisProcessor> processor,
+      [MinVersion=3] mojo_base.mojom.Uuid? dlc_uuid,
+      [MinVersion=4]
+          pending_remote<chromeos.machine_learning.mojom.TextClassifier>?
+              text_classifier) => (InitializeResult result);
+};

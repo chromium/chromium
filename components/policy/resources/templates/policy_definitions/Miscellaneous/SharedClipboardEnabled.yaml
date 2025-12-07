@@ -11,6 +11,7 @@ desc: |-
             If this policy is left unset, the shared clipboard feature is enabled by default.
 
             It is up to the admins to set policies in all platforms they care about. It's recommended to set this policy to one value in all platforms.
+default: true
 example_value: true
 features:
   dynamic_refresh: true

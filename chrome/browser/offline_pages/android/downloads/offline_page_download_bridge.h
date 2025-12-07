@@ -20,7 +20,7 @@ namespace android {
 class OfflinePageDownloadBridge {
  public:
   OfflinePageDownloadBridge(JNIEnv* env,
-                            const base::android::JavaParamRef<jobject>& obj);
+                            const base::android::JavaRef<jobject>& obj);
 
   OfflinePageDownloadBridge(const OfflinePageDownloadBridge&) = delete;
   OfflinePageDownloadBridge& operator=(const OfflinePageDownloadBridge&) =
@@ -28,7 +28,7 @@ class OfflinePageDownloadBridge {
 
   ~OfflinePageDownloadBridge();
 
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
 
   static void ShowDownloadingToast();
 

@@ -19,13 +19,13 @@ class ExtensionCreatorFilter : public base::RefCounted<ExtensionCreatorFilter> {
   ExtensionCreatorFilter(const ExtensionCreatorFilter&) = delete;
   ExtensionCreatorFilter& operator=(const ExtensionCreatorFilter&) = delete;
 
-  // Returns true if the given |file_path| should be included in a packed
+  // Returns true if the given `file_path` should be included in a packed
   // extension.
   bool ShouldPackageFile(const base::FilePath& file_path);
 
  private:
   friend class base::RefCounted<ExtensionCreatorFilter>;
-  ~ExtensionCreatorFilter() {}
+  ~ExtensionCreatorFilter();
 
   const base::FilePath reserved_metadata_dir_;
 };

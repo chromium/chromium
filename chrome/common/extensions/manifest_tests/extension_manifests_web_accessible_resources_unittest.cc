@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
-
 #include "base/strings/stringprintf.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/buildflags/buildflags.h"
+#include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using extensions::Extension;
-using extensions::WebAccessibleResourcesInfo;
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
+namespace extensions {
+namespace {
 
 class WebAccessibleResourcesManifestTest : public ChromeManifestTest {
  protected:
@@ -482,3 +484,6 @@ TEST_F(WebAccessibleResourcesManifestTest, ShouldUseDynamicUrl) {
   EXPECT_EQ(false, WebAccessibleResourcesInfo::ShouldUseDynamicUrl(
                        extension.get(), "resource.html"));
 }
+
+}  // namespace
+}  // namespace extensions

@@ -16,8 +16,7 @@
 #include "apps/saved_files_service_factory.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/file_system/saved_file_entry.h"
 #include "extensions/browser/extension_host.h"
@@ -180,7 +179,7 @@ class SavedFilesService::SavedFiles {
   // The queue of file entries that have been retained, keyed by
   // sequence_number. Values are a subset of values in registered_file_entries_.
   // This should be kept in sync with file entries stored in extension prefs.
-  std::map<int, SavedFileEntry*> saved_file_lru_;
+  std::map<int, raw_ptr<SavedFileEntry, CtnExperimental>> saved_file_lru_;
 };
 
 // static
@@ -309,12 +308,12 @@ void SavedFilesService::SavedFiles::RegisterFileEntry(
 
 void SavedFilesService::SavedFiles::EnqueueFileEntry(const std::string& id) {
   auto id_it = registered_file_entries_.find(id);
-  CHECK(id_it != registered_file_entries_.end(), base::NotFatalUntil::M130);
+  CHECK(id_it != registered_file_entries_.end());
 
   SavedFileEntry* file_entry = id_it->second.get();
   int old_sequence_number = file_entry->sequence_number;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // crbug.com/983844 Convert path from legacy Download/ to MyFiles/Downloads/
   // so entries saved before MyFiles don't fail. TODO(lucmult): Remove this
   // after M-83.
@@ -327,8 +326,8 @@ void SavedFilesService::SavedFiles::EnqueueFileEntry(const std::string& id) {
 
   if (!saved_file_lru_.empty()) {
     // Get the sequence number after the last file entry in the LRU.
-    std::map<int, SavedFileEntry*>::reverse_iterator it =
-        saved_file_lru_.rbegin();
+    std::map<int, raw_ptr<SavedFileEntry, CtnExperimental>>::reverse_iterator
+        it = saved_file_lru_.rbegin();
     if (it->second == file_entry)
       return;
 
@@ -346,7 +345,8 @@ void SavedFilesService::SavedFiles::EnqueueFileEntry(const std::string& id) {
   } else {
     AddSavedFileEntry(prefs, extension_id_, *file_entry);
     if (saved_file_lru_.size() > g_max_saved_file_entries) {
-      std::map<int, SavedFileEntry*>::iterator it = saved_file_lru_.begin();
+      std::map<int, raw_ptr<SavedFileEntry, CtnExperimental>>::iterator it =
+          saved_file_lru_.begin();
       it->second->sequence_number = 0;
       RemoveSavedFileEntry(prefs, extension_id_, it->second->id);
       saved_file_lru_.erase(it);
@@ -383,8 +383,8 @@ void SavedFilesService::SavedFiles::MaybeCompactSequenceNumbers() {
   DCHECK_GE(g_max_sequence_number, 0);
   DCHECK_GE(static_cast<size_t>(g_max_sequence_number),
             g_max_saved_file_entries);
-  std::map<int, SavedFileEntry*>::reverse_iterator last_it =
-      saved_file_lru_.rbegin();
+  std::map<int, raw_ptr<SavedFileEntry, CtnExperimental>>::reverse_iterator
+      last_it = saved_file_lru_.rbegin();
   if (last_it == saved_file_lru_.rend())
     return;
 
@@ -395,9 +395,9 @@ void SavedFilesService::SavedFiles::MaybeCompactSequenceNumbers() {
 
   int sequence_number = 0;
   ExtensionPrefs* prefs = ExtensionPrefs::Get(context_);
-  for (std::map<int, SavedFileEntry*>::iterator it = saved_file_lru_.begin();
-       it != saved_file_lru_.end();
-       ++it) {
+  for (std::map<int, raw_ptr<SavedFileEntry, CtnExperimental>>::iterator it =
+           saved_file_lru_.begin();
+       it != saved_file_lru_.end(); ++it) {
     sequence_number++;
     if (it->second->sequence_number == sequence_number)
       continue;

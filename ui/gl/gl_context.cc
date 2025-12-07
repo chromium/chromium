@@ -13,12 +13,11 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notimplemented.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface.h"
@@ -47,8 +46,8 @@ enum class MaximumGLESVersion {
 };
 #endif
 
-ABSL_CONST_INIT thread_local GLContext* current_context = nullptr;
-ABSL_CONST_INIT thread_local GLContext* current_real_context = nullptr;
+constinit thread_local GLContext* current_context = nullptr;
+constinit thread_local GLContext* current_real_context = nullptr;
 
 }  // namespace
 
@@ -87,11 +86,7 @@ GLContext::GLContext(GLShareGroup* share_group) : share_group_(share_group) {
 }
 
 GLContext::~GLContext() {
-  DCHECK(has_called_on_destory_);
-
-#if BUILDFLAG(IS_APPLE)
-  DCHECK(!HasBackpressureFences());
-#endif
+  DCHECK(has_called_on_destroy_);
   share_group_->RemoveContext(this);
   if (GetCurrent() == this) {
     SetCurrent(nullptr);
@@ -133,7 +128,42 @@ bool GLContext::MakeCurrent(GLSurface* surface) {
     LOG(ERROR) << "Failed to make current since context is marked as lost";
     return false;
   }
-  return MakeCurrentImpl(surface);
+  if (!MakeCurrentImpl(surface)) {
+    return false;
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  // Record the maximum GLES version supported for metrics if not using ANGLE
+  // (we don't record this for ANGLE currently because ANGLE reports the exact
+  // version recorded by the client, which is always <= 3.0 for Chrome).
+  static bool recorded_max_gles_version_if_feasible = false;
+  if (!recorded_max_gles_version_if_feasible) {
+    const GLVersionInfo* version_info = GetVersionInfo();
+    DCHECK(version_info);
+    if (!version_info->is_angle) {
+      MaximumGLESVersion max_gles_version = MaximumGLESVersion::kGLES2_0;
+      if (current_gl_->Version->IsAtLeastGLES(3, 2)) {
+        max_gles_version = MaximumGLESVersion::kGLES3_2;
+      } else if (current_gl_->Version->IsAtLeastGLES(3, 1)) {
+        max_gles_version = MaximumGLESVersion::kGLES3_1;
+      } else if (current_gl_->Version->IsAtLeastGLES(3, 0)) {
+        max_gles_version = MaximumGLESVersion::kGLES3_0;
+      }
+      base::UmaHistogramEnumeration("GPU.MaximumGLESVersion", max_gles_version);
+    }
+    recorded_max_gles_version_if_feasible = true;
+  }
+#elif (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+       BUILDFLAG(IS_WIN))
+  static bool recorded_emulated_gles_version = false;
+  if (!recorded_emulated_gles_version) {
+    base::UmaHistogramBoolean("GPU.ANGLECanEmulateGLES3",
+                              current_gl_->Version->IsAtLeastGLES(3, 0));
+    recorded_emulated_gles_version = true;
+  }
+#endif
+
+  return true;
 }
 
 bool GLContext::MakeCurrentDefault() {
@@ -199,7 +229,7 @@ std::string GLContext::GetGLRenderer() {
 CurrentGL* GLContext::GetCurrentGL() {
   if (!static_bindings_initialized_) {
     driver_gl_ = std::make_unique<DriverGL>();
-    driver_gl_->InitializeStaticBindings();
+    driver_gl_->InitializeStaticBindings(GetGLProcAddress);
 
     auto gl_api = base::WrapUnique<GLApi>(CreateGLApi(driver_gl_.get()));
     gl_api_wrapper_ =
@@ -209,27 +239,6 @@ CurrentGL* GLContext::GetCurrentGL() {
     current_gl_->Driver = driver_gl_.get();
     current_gl_->Api = gl_api_wrapper_->api();
     current_gl_->Version = version_info_.get();
-
-#if BUILDFLAG(IS_ANDROID)
-    // Record the maximum GLES version supported for metrics if not using ANGLE
-    // (we don't record this for ANGLE currently because ANGLE reports the exact
-    // version recorded by the client, which is always <= 3.0 for Chrome).
-    static bool recorded_max_gles_version_if_feasible = false;
-    if (!recorded_max_gles_version_if_feasible &&
-        GetGLImplementation() == kGLImplementationEGLGLES2 &&
-        current_gl_->Version) {
-      MaximumGLESVersion max_gles_version = MaximumGLESVersion::kGLES2_0;
-      if (current_gl_->Version->IsAtLeastGLES(3, 2)) {
-        max_gles_version = MaximumGLESVersion::kGLES3_2;
-      } else if (current_gl_->Version->IsAtLeastGLES(3, 1)) {
-        max_gles_version = MaximumGLESVersion::kGLES3_1;
-      } else if (current_gl_->Version->IsAtLeastGLES(3, 0)) {
-        max_gles_version = MaximumGLESVersion::kGLES3_0;
-      }
-      base::UmaHistogramEnumeration("GPU.MaximumGLESVersion", max_gles_version);
-    }
-    recorded_max_gles_version_if_feasible = true;
-#endif
 
     static_bindings_initialized_ = true;
   }
@@ -245,7 +254,7 @@ void GLContext::ReinitializeDynamicBindings() {
 }
 
 void GLContext::ForceReleaseVirtuallyCurrent() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void GLContext::DirtyVirtualContextState() {
@@ -259,88 +268,6 @@ GLDisplayEGL* GLContext::GetGLDisplayEGL() {
 GLContextEGL* GLContext::AsGLContextEGL() {
   return nullptr;
 }
-
-#if BUILDFLAG(IS_APPLE)
-constexpr uint64_t kInvalidFenceId = 0;
-
-void GLContext::AddMetalSharedEventsForBackpressure(
-    std::vector<std::unique_ptr<gpu::BackpressureMetalSharedEvent>> events) {
-  // Only enqueue events if fences are supported since they are only consumed
-  // along with fences.
-  if (gl::GLFence::IsSupported()) {
-    for (auto& e : events) {
-      next_backpressure_events_.push_back(std::move(e));
-    }
-  }
-}
-
-uint64_t GLContext::BackpressureFenceCreate() {
-  TRACE_EVENT0("gpu", "GLContext::BackpressureFenceCreate");
-
-  // This flush will trigger a crash if FlushForDriverCrashWorkaround is not
-  // called sufficiently frequently.
-  glFlush();
-
-  if (gl::GLFence::IsSupported()) {
-    next_backpressure_fence_ += 1;
-    backpressure_fences_[next_backpressure_fence_] = {
-        GLFence::Create(), std::move(next_backpressure_events_)};
-    return next_backpressure_fence_;
-  }
-  glFinish();
-  return kInvalidFenceId;
-}
-
-void GLContext::BackpressureFenceWait(uint64_t fence_id) {
-  TRACE_EVENT0("gpu", "GLContext::BackpressureFenceWait");
-  if (fence_id == kInvalidFenceId) {
-    return;
-  }
-
-  // If a fence is not found, then it has already been waited on.
-  auto found = backpressure_fences_.find(fence_id);
-  if (found == backpressure_fences_.end())
-    return;
-  auto [fence, events] = std::move(found->second);
-  backpressure_fences_.erase(found);
-
-  // Poll for all Metal shared events to be signaled with a 1ms delay.
-  bool events_complete = false;
-  while (!events_complete) {
-    events_complete = true;
-    {
-      TRACE_EVENT0("gpu", "BackpressureMetalSharedEvent::HasCompleted");
-      for (const auto& e : events) {
-        if (!e->HasCompleted()) {
-          events_complete = false;
-          break;
-        }
-      }
-    }
-    if (!events_complete) {
-      base::PlatformThread::Sleep(base::Milliseconds(1));
-    }
-  }
-
-  fence->ClientWait();
-  fence.reset();
-
-  // Waiting on |fence_id| has implicitly waited on all previous fences, so
-  // remove them.
-  while (!backpressure_fences_.empty() &&
-         backpressure_fences_.begin()->first < fence_id) {
-    backpressure_fences_.erase(backpressure_fences_.begin());
-  }
-}
-
-bool GLContext::HasBackpressureFences() const {
-  return !backpressure_fences_.empty();
-}
-
-void GLContext::DestroyBackpressureFences() {
-  backpressure_fences_.clear();
-}
-#endif
 
 #if BUILDFLAG(IS_MAC)
 void GLContext::FlushForDriverCrashWorkaround() {
@@ -384,8 +311,7 @@ bool GLContext::LosesAllContextsOnContextLost() {
     case kGLImplementationStubGL:
       return false;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return true;
+      NOTREACHED();
   }
 }
 
@@ -398,12 +324,10 @@ GLContext* GLContext::GetRealCurrent() {
 }
 
 void GLContext::OnContextWillDestroy() {
-  DCHECK(!has_called_on_destory_);
-  has_called_on_destory_ = true;
+  DCHECK(!has_called_on_destroy_);
+  has_called_on_destroy_ = true;
 
-  for (auto& obs : observer_list_) {
-    obs.OnGLContextWillDestroy(this);
-  }
+  observer_list_.Notify(&GLContextObserver::OnGLContextWillDestroy, this);
 }
 
 std::unique_ptr<gl::GLVersionInfo> GLContext::GenerateGLVersionInfo() {
@@ -414,9 +338,7 @@ std::unique_ptr<gl::GLVersionInfo> GLContext::GenerateGLVersionInfo() {
 void GLContext::MarkContextLost() {
   context_lost_ = true;
 
-  for (auto& obs : observer_list_) {
-    obs.OnGLContextLost(this);
-  }
+  observer_list_.Notify(&GLContextObserver::OnGLContextLost, this);
 }
 
 void GLContext::SetCurrent(GLSurface* surface) {
@@ -477,7 +399,8 @@ void GLContext::InitializeDynamicBindings() {
       real_gl_api_->set_version(GenerateGLVersionInfo());
     }
 
-    driver_gl_->InitializeDynamicBindings(GetVersionInfo(), GetExtensions());
+    driver_gl_->InitializeDynamicBindings(GetGLProcAddress, GetVersionInfo(),
+                                          GetExtensions());
     dynamic_bindings_initialized_ = true;
   }
 }
@@ -523,7 +446,7 @@ bool GLContext::MakeVirtuallyCurrent(
     if (virtual_context->GetGLStateRestorer()->IsInitialized()) {
       GLStateRestorer* virtual_state = virtual_context->GetGLStateRestorer();
       GLStateRestorer* current_state =
-          current_virtual_context_
+          current_virtual_context_ && !current_virtual_context_->context_lost_
               ? current_virtual_context_->GetGLStateRestorer()
               : nullptr;
       if (current_state)

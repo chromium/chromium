@@ -1,0 +1,62 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+
+// TODO(editing): After outdent, the ending selection is no longer after the "b".
+test(() => assert_selection(
+    [
+      '<div contenteditable="true">',
+        '^a',
+        '<ol>',
+          '<li></li>',
+          '<li></li>',
+          '<li></li>',
+          '<li></li>',
+        '</ol>',
+        'b|',
+      '</div>',
+    ].join(''),
+    'Outdent',
+    [
+      '<div contenteditable="true">',
+        '^a',
+        '<br>',
+        '<br>',
+        '|',
+        '<br>',
+        '<br>',
+        'b',
+      '</div>'
+    ].join('')),
+    'Outdenting a list with all empty items.');
+
+// TODO(editing): After outdent, the ending selection is no longer after the "b".
+test(() => assert_selection(
+    [
+      '<div contenteditable="true">',
+        '^a',
+        '<ol>',
+          '<li>  </li>',
+          '<li>  </li>',
+          '<li>  </li>',
+          '<li>  </li>',
+        '</ol>',
+        'b|',
+      '</div>',
+    ].join(''),
+    'Outdent',
+    [
+      '<div contenteditable="true">',
+        '^a',
+        '<br>',
+        '<br>',
+        '|',
+        '<br>',
+        '<br>',
+        'b',
+      '</div>'
+    ].join('')),
+    'Outdenting a list with all whitespace-only items.');
+</script>

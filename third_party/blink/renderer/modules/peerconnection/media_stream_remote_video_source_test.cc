@@ -37,6 +37,7 @@
 #include "third_party/webrtc/api/rtp_packet_infos.h"
 #include "third_party/webrtc/api/video/color_space.h"
 #include "third_party/webrtc/api/video/i420_buffer.h"
+#include "third_party/webrtc/rtc_base/time_utils.h"
 #include "third_party/webrtc/system_wrappers/include/clock.h"
 #include "ui/gfx/color_space.h"
 
@@ -51,7 +52,7 @@ using ::testing::Sequence;
 }  // namespace
 
 webrtc::VideoFrame::Builder CreateBlackFrameBuilder() {
-  rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+  webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
       webrtc::I420Buffer::Create(8, 8);
   webrtc::I420Buffer::SetBlack(buffer.get());
   return webrtc::VideoFrame::Builder().set_video_frame_buffer(buffer);
@@ -168,10 +169,11 @@ class MediaStreamRemoteVideoSourceTest : public ::testing::Test {
                       blink::mojom::MediaStreamRequestResult result,
                       const blink::WebString& result_name) {
     ASSERT_EQ(source, remote_source_);
-    if (result == blink::mojom::MediaStreamRequestResult::OK)
+    if (result == blink::mojom::MediaStreamRequestResult::OK) {
       ++number_of_successful_track_starts_;
-    else
+    } else {
       ++number_of_failed_track_starts_;
+    }
   }
 
   test::TaskEnvironment task_environment_;
@@ -201,8 +203,8 @@ TEST_F(MediaStreamRemoteVideoSourceTest, StartTrack) {
   base::RepeatingClosure quit_closure = run_loop.QuitClosure();
   EXPECT_CALL(sink, OnVideoFrame)
       .WillOnce(RunOnceClosure(std::move(quit_closure)));
-  rtc::scoped_refptr<webrtc::I420Buffer> buffer(
-      new rtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
+  webrtc::scoped_refptr<webrtc::I420Buffer> buffer(
+      new webrtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
 
   webrtc::I420Buffer::SetBlack(buffer.get());
 
@@ -268,8 +270,8 @@ TEST_F(MediaStreamRemoteVideoSourceTest, PreservesColorSpace) {
   base::RunLoop run_loop;
   EXPECT_CALL(sink, OnVideoFrame)
       .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
-  rtc::scoped_refptr<webrtc::I420Buffer> buffer(
-      new rtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
+  webrtc::scoped_refptr<webrtc::I420Buffer> buffer(
+      new webrtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
   webrtc::ColorSpace kColorSpace(webrtc::ColorSpace::PrimaryID::kSMPTE240M,
                                  webrtc::ColorSpace::TransferID::kSMPTE240M,
                                  webrtc::ColorSpace::MatrixID::kSMPTE240M,
@@ -303,8 +305,8 @@ TEST_F(MediaStreamRemoteVideoSourceTest,
   base::RunLoop run_loop;
   EXPECT_CALL(sink, OnVideoFrame)
       .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
-  rtc::scoped_refptr<webrtc::I420Buffer> buffer(
-      new rtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
+  webrtc::scoped_refptr<webrtc::I420Buffer> buffer(
+      new webrtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
   webrtc::ColorSpace kColorSpace(webrtc::ColorSpace::PrimaryID::kUnspecified,
                                  webrtc::ColorSpace::TransferID::kUnspecified,
                                  webrtc::ColorSpace::MatrixID::kUnspecified,
@@ -340,8 +342,8 @@ TEST_F(MediaStreamRemoteVideoSourceTest, UnspecifiedColorSpaceIsIgnored) {
   base::RunLoop run_loop;
   EXPECT_CALL(sink, OnVideoFrame)
       .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
-  rtc::scoped_refptr<webrtc::I420Buffer> buffer(
-      new rtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
+  webrtc::scoped_refptr<webrtc::I420Buffer> buffer(
+      new webrtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
   webrtc::ColorSpace kColorSpace(webrtc::ColorSpace::PrimaryID::kUnspecified,
                                  webrtc::ColorSpace::TransferID::kUnspecified,
                                  webrtc::ColorSpace::MatrixID::kUnspecified,
@@ -364,6 +366,62 @@ TEST_F(MediaStreamRemoteVideoSourceTest, UnspecifiedColorSpaceIsIgnored) {
   track->RemoveSink(&sink);
 }
 
+TEST_F(MediaStreamRemoteVideoSourceTest, PreservesRotation) {
+  std::unique_ptr<blink::MediaStreamVideoTrack> track(CreateTrack());
+  blink::MockMediaStreamVideoSink sink;
+  track->AddSink(&sink, sink.GetDeliverFrameCB(),
+                 MediaStreamVideoSink::IsSecure::kNo,
+                 MediaStreamVideoSink::UsesAlpha::kDefault);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(sink, OnVideoFrame)
+      .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
+  webrtc::scoped_refptr<webrtc::I420Buffer> buffer(
+      new webrtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
+  webrtc::VideoRotation kRotation = webrtc::VideoRotation::kVideoRotation_90;
+  const webrtc::VideoFrame& input_frame = webrtc::VideoFrame::Builder()
+                                              .set_video_frame_buffer(buffer)
+                                              .set_rotation(kRotation)
+                                              .build();
+  source()->SinkInterfaceForTesting()->OnFrame(input_frame);
+  run_loop.Run();
+
+  EXPECT_EQ(1, sink.number_of_frames());
+  scoped_refptr<media::VideoFrame> output_frame = sink.last_frame();
+  EXPECT_TRUE(output_frame);
+  EXPECT_EQ(output_frame->metadata().transformation,
+            media::VideoTransformation(media::VideoRotation::VIDEO_ROTATION_90,
+                                       false));
+  track->RemoveSink(&sink);
+}
+
+TEST_F(MediaStreamRemoteVideoSourceTest, UnspecifiedRotationIsIgnored) {
+  base::test::ScopedFeatureList scoped_feauture_list;
+  scoped_feauture_list.InitAndEnableFeature(
+      blink::features::kWebRtcIgnoreUnspecifiedColorSpace);
+  std::unique_ptr<blink::MediaStreamVideoTrack> track(CreateTrack());
+  blink::MockMediaStreamVideoSink sink;
+  track->AddSink(&sink, sink.GetDeliverFrameCB(),
+                 MediaStreamVideoSink::IsSecure::kNo,
+                 MediaStreamVideoSink::UsesAlpha::kDefault);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(sink, OnVideoFrame)
+      .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
+  webrtc::scoped_refptr<webrtc::I420Buffer> buffer(
+      new webrtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
+  const webrtc::VideoFrame& input_frame =
+      webrtc::VideoFrame::Builder().set_video_frame_buffer(buffer).build();
+  source()->SinkInterfaceForTesting()->OnFrame(input_frame);
+  run_loop.Run();
+
+  EXPECT_EQ(1, sink.number_of_frames());
+  scoped_refptr<media::VideoFrame> output_frame = sink.last_frame();
+  EXPECT_TRUE(output_frame);
+  EXPECT_FALSE(output_frame->metadata().transformation.has_value());
+  track->RemoveSink(&sink);
+}
+
 TEST_F(MediaStreamRemoteVideoSourceTest,
        PopulateRequestAnimationFrameMetadata) {
   std::unique_ptr<blink::MediaStreamVideoTrack> track(CreateTrack());
@@ -375,8 +433,8 @@ TEST_F(MediaStreamRemoteVideoSourceTest,
   base::RunLoop run_loop;
   EXPECT_CALL(sink, OnVideoFrame)
       .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
-  rtc::scoped_refptr<webrtc::I420Buffer> buffer(
-      new rtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
+  webrtc::scoped_refptr<webrtc::I420Buffer> buffer(
+      new webrtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
 
   uint32_t kSsrc = 0;
   const std::vector<uint32_t> kCsrcs;
@@ -384,7 +442,7 @@ TEST_F(MediaStreamRemoteVideoSourceTest,
   float kProcessingTime = 0.014;
 
   const webrtc::Timestamp kProcessingFinish =
-      webrtc::Timestamp::Millis(rtc::TimeMillis());
+      webrtc::Timestamp::Millis(webrtc::TimeMillis());
   const webrtc::Timestamp kProcessingStart =
       kProcessingFinish - webrtc::TimeDelta::Millis(1.0e3 * kProcessingTime);
   const webrtc::Timestamp kCaptureTime =
@@ -460,10 +518,10 @@ TEST_F(MediaStreamRemoteVideoSourceTest, ReferenceTimeEqualsTimestampUs) {
   base::RunLoop run_loop;
   EXPECT_CALL(sink, OnVideoFrame)
       .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
-  rtc::scoped_refptr<webrtc::I420Buffer> buffer(
-      new rtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
+  webrtc::scoped_refptr<webrtc::I420Buffer> buffer(
+      new webrtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
 
-  int64_t kTimestampUs = rtc::TimeMicros();
+  int64_t kTimestampUs = webrtc::TimeMicros();
   webrtc::VideoFrame input_frame = webrtc::VideoFrame::Builder()
                                        .set_video_frame_buffer(buffer)
                                        .set_timestamp_us(kTimestampUs)
@@ -486,7 +544,7 @@ TEST_F(MediaStreamRemoteVideoSourceTest, ReferenceTimeEqualsTimestampUs) {
 TEST_F(MediaStreamRemoteVideoSourceTest, BaseTimeTicksAndRtcMicrosAreTheSame) {
   base::TimeTicks first_chromium_timestamp = base::TimeTicks::Now();
   base::TimeTicks webrtc_timestamp =
-      base::TimeTicks() + base::Microseconds(rtc::TimeMicros());
+      base::TimeTicks() + base::Microseconds(webrtc::TimeMicros());
   base::TimeTicks second_chromium_timestamp = base::TimeTicks::Now();
 
   // Test that the timestamps are correctly ordered, which they can only be if
@@ -509,8 +567,8 @@ TEST_F(MediaStreamRemoteVideoSourceTest, NoTimestampUsMeansNoReferenceTime) {
   base::RunLoop run_loop;
   EXPECT_CALL(sink, OnVideoFrame)
       .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
-  rtc::scoped_refptr<webrtc::I420Buffer> buffer(
-      new rtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
+  webrtc::scoped_refptr<webrtc::I420Buffer> buffer(
+      new webrtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
 
   webrtc::VideoFrame input_frame =
       webrtc::VideoFrame::Builder().set_video_frame_buffer(buffer).build();
@@ -533,11 +591,14 @@ class TestEncodedVideoFrame : public webrtc::RecordableEncodedFrame {
   explicit TestEncodedVideoFrame(webrtc::Timestamp timestamp)
       : timestamp_(timestamp) {}
 
-  rtc::scoped_refptr<const webrtc::EncodedImageBufferInterface> encoded_buffer()
-      const override {
+  webrtc::scoped_refptr<const webrtc::EncodedImageBufferInterface>
+  encoded_buffer() const override {
     return nullptr;
   }
   std::optional<webrtc::ColorSpace> color_space() const override {
+    return std::nullopt;
+  }
+  std::optional<webrtc::VideoRotation> video_rotation() const override {
     return std::nullopt;
   }
   webrtc::VideoCodecType codec() const override {

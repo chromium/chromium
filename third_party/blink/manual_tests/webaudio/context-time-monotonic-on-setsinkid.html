@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Manual Test: AudioContext.currentTime and
+  getOutputTimestamp().contextTime upon device change</title>
+<style>
+  body {
+    font-family: sans-serif;
+    padding: 1em;
+  }
+  button {
+    padding: 0.5em 1em;
+    margin: 0.5em;
+  }
+  select {
+    padding: 0.5em;
+    margin: 0.5em;
+  }
+  #log {
+    margin-top: 1em;
+    padding: 1em;
+    border: 1px solid #ccc;
+    background-color: #f8f8f8;
+    font-family: monospace;
+    white-space: pre-wrap;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+</style>
+</head>
+<body>
+  <h1>Manual Test: AudioContext.currentTime and getOutputTimestamp().contextTime
+    upon device change</h1>
+  <p>
+    This test verifies that <code>AudioContext.currentTime</code> and
+    <code>getOutputTimestamp().contextTime</code> remain monotonic when the
+    output device is changed using <code>setSinkId()</code>.
+  </p>
+  <ol>
+    <li>Click "START TEST". This will ask for microphone permission to enumerate
+    audio output devices.</li>
+    <li>Once the device list is populated, select a different audio output from
+    the dropdown.</li>
+    <li>Click "Change Device".</li>
+    <li>Observe the log. The <code>currentTime</code> and
+    <code>getOutputTimestamp().contextTime</code> values should always increase.
+    An error will be logged if they ever decrease.</li>
+    <li>Repeat with different devices.</li>
+  </ol>
+
+  <button id="start-test">START TEST</button>
+  <select id="device-dropdown" disabled>
+    <option>Preparing...</option>
+  </select>
+  <button id="change-device" disabled>Change Device</button>
+
+  <div id="log"></div>
+
+<script>
+const startButton = document.getElementById('start-test');
+const dropdown = document.getElementById('device-dropdown');
+const changeButton = document.getElementById('change-device');
+const logDiv = document.getElementById('log');
+
+let audioContext;
+let lastCurrentTime = -1;
+let lastContextTime = -1;
+
+function logMessage(message) {
+  console.log(message);
+  // Using innerHTML to render the red span for errors.
+  logDiv.innerHTML += message + '<br>';
+  logDiv.scrollTop = logDiv.scrollHeight;
+}
+
+startButton.addEventListener('click', async () => {
+  startButton.disabled = true;
+  logMessage('Starting test...');
+
+  // Phase 2, Step 1: Create an AudioContext and ensure it is running
+  try {
+    audioContext = new AudioContext();
+    if (audioContext.state === 'suspended') {
+      await audioContext.resume();
+    }
+    logMessage(`AudioContext is '${audioContext.state}'.`);
+    logMessage(`Sample Rate: ${audioContext.sampleRate} Hz`);
+
+    // Play a silent buffer to keep the context running and time advancing.
+    const buffer = audioContext.createBuffer(1, 1, audioContext.sampleRate);
+    const source = audioContext.createBufferSource();
+    source.buffer = buffer;
+    source.loop = true;
+    source.connect(audioContext.destination);
+    source.start();
+
+  } catch (e) {
+    logMessage(`<span style="color: red;"><b>ERROR:</b> Could not create ` +
+        `AudioContext: ${e}</span>`);
+    startButton.disabled = false;
+    return;
+  }
+
+  // Phase 2, Step 2: Get user permission with getUserMedia
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+    // Phase 2, Step 3.1: When the permission is granted, enumerate devices.
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const audioOutputDevices = devices.filter(d => d.kind === 'audiooutput');
+
+    // Phase 2, Step 4: Create a dropdown menu with the enumerated device list.
+    dropdown.innerHTML = '';
+    if (audioOutputDevices.length > 0) {
+      audioOutputDevices.forEach(device => {
+        const option = document.createElement('option');
+        option.value = device.deviceId;
+        option.textContent = device.label ||
+            `Device ${dropdown.options.length + 1} ` +
+                `(${device.deviceId.substring(0, 8)}...)`;
+        dropdown.appendChild(option);
+      });
+      dropdown.disabled = false;
+      changeButton.disabled = false;
+    } else {
+      logMessage('No audio output devices found.');
+    }
+
+    // Phase 2, Step 5: Inform user the test is ready.
+    logMessage('Test is ready. Select a device and click "Change Device".');
+    logMessage(`The log will be checked for any non-monotonic currentTime ` +
+        `values.`);
+
+  } catch (err) {
+    // Phase 2, Step 3.2: When the permission is rejected, print an error
+    // message.
+    logMessage(`<span style="color: red;"><b>ERROR:</b> ${err.message}. ` +
+        `Test aborted.</span>`);
+    startButton.disabled = false;
+  }
+});
+
+changeButton.addEventListener('click', async () => {
+  if (!audioContext) return;
+  const deviceId = dropdown.value;
+  const deviceLabel = dropdown.options[dropdown.selectedIndex].text;
+
+  const preCurrentTime = audioContext.currentTime;
+  const preContextTime = audioContext.getOutputTimestamp().contextTime;
+  // Check if the timestamp from the last click is going back in time.
+  logMessage(`---<br>Clicked to change device.</b>`);
+  if (lastCurrentTime > 0 && lastCurrentTime > preCurrentTime) {
+    logMessage(`<span style="color: red;"><b>ERROR (on click):</b> ` +
+        `currentTime is not monotonic! Went from ` +
+        `${lastCurrentTime.toFixed(5)} to ` +
+        `${preCurrentTime.toFixed(5)}</span>`);
+  }
+  if (lastContextTime > 0 && lastContextTime > preContextTime) {
+    logMessage(`<span style="color: red;"><b>ERROR (on click):</b> ` +
+        `currentTime is not monotonic! Went from ` +
+        `${lastContextTime.toFixed(5)} to ` +
+        `${preContextTime.toFixed(5)}</span>`);
+  }
+
+  logMessage(`---<br>Changing sink to: <b>${deviceLabel}</b>`);
+  logMessage(`currentTime before setSinkId(): ${preCurrentTime.toFixed(5)}`);
+  logMessage(`getOutputTimestamp().contextTime before setSinkId(): ` +
+      `${preContextTime.toFixed(5)}`);
+  try {
+    await audioContext.setSinkId(deviceId);
+    logMessage(`setSinkId() successful.`);
+    logMessage(`New sinkId: ${audioContext.sinkId}`);
+    logMessage(`New sink sample rate: ${audioContext.sampleRate}`);
+
+    const postCurrentTime = audioContext.currentTime;
+    const postContextTime = audioContext.getOutputTimestamp().contextTime;
+    logMessage(`currentTime after setSinkId(): ` +
+        `${postCurrentTime.toFixed(5)}`);
+    logMessage(`getOutputTimestamp().contextTime after setSinkId(): ` +
+        `${postContextTime.toFixed(5)}`);
+
+    // Check if the pre/post timestamp are monotonic.
+    if (preCurrentTime > postCurrentTime) {
+      logMessage(`<span style="color: red;"><b>ERROR (after setSinkId):</b> ` +
+          `currentTime is not monotonic! Went from ` +
+          `${preCurrentTime.toFixed(5)} to ` +
+          `${postCurrentTime.toFixed(5)}</span>`);
+    }
+    if (preContextTime > postContextTime) {
+      logMessage(`<span style="color: red;"><b>ERROR (after setSinkId):</b> ` +
+          `currentTime is not monotonic! Went from ` +
+          `${preContextTime.toFixed(5)} to ` +
+          `${postContextTime.toFixed(5)}</span>`);
+    }
+    lastCurrentTime = postCurrentTime;
+    lastContextTime = postContextTime;
+  } catch (error) {
+    logMessage(`<span style="color: red;"><b>ERROR:</b> setSinkId() ` +
+        `failed: ${error}</span>`);
+  }
+});
+</script>
+</body>
+</html>

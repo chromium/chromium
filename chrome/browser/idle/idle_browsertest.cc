@@ -10,7 +10,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/storage_partition.h"
@@ -56,7 +55,6 @@ class IdleBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
   }
@@ -64,7 +62,7 @@ class IdleBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     https_server()->ServeFilesFromSourceDirectory("content/test/data");
-    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+    https_server()->SetCertHostnames({"a.com", "b.com"});
     ASSERT_TRUE(https_server()->Start());
     // The default 15s polling interval causes tests to time out.
     ui::IdlePollingService::GetInstance()->SetPollIntervalForTest(
@@ -75,7 +73,9 @@ class IdleBrowserTest : public InProcessBrowserTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  net::EmbeddedTestServer* https_server() { return &https_server_; }
+  net::EmbeddedTestServer* https_server() {
+    return &embedded_https_test_server();
+  }
 
   void TestSubframePermissionPolicy(bool positive_test) {
     GURL subframe_url = https_server()->GetURL("b.com", "/simple_page.html");

@@ -3,6 +3,11 @@
         white-space: nowrap;
       }
 
+      :host-context([dir=rtl]) cr-input.phone-number-input::part(input) {
+        direction: ltr;
+        text-align: end;
+      }
+
       .address-row {
         display: flex;
       }
@@ -74,6 +79,9 @@
           <select id="country" class="md-select" aria-labelledby="select-label"
               value="[[countryCode_]]" on-change="onCountryCodeSelectChange_"
               autofocus>
+            <!-- TODO(crbug.com/403312087): Use
+                 $i18n{autofillDropdownNoOptionSelected} as a text for this
+                 option once the string is approved. -->
             <option value="" hidden="[[isAccountAddress_]]"></option>
             <template is="dom-repeat" items="[[countries_]]">
               <option value="[[getCode_(item)]]"
@@ -100,7 +108,8 @@
                 <cr-input type="text" label="[[item.label]]"
                     value="{{item.value}}" spellcheck="false"
                     maxlength="1000"
-                    class$="address-column [[item.additionalClassName]]"
+                    class$="address-column [[item.additionalClassName]]
+                    [[getPhoneNumberInputClass_(item.fieldType)]]"
                     required="[[item.isRequired]]"
                     invalid="[[isVisuallyInvalid_(item.isValidatable,
                                                   item.isValid)]]">
@@ -110,11 +119,12 @@
           </div>
         </template>
         <div id="notices" hidden="[[!isAccountAddress_]]">
-          <div id="validationError">
-            [[validationError_]]<wbr>
+          <div id="validationError" hidden="[[!validationError_]]">
+            [[validationError_]]
           </div>
-          <div id="accountSourceNotice">
-            [[accountAddressSourceNotice_]]
+          <div id="accountRecordTypeNotice"
+              hidden="[[!accountAddressRecordTypeNotice_]]">
+            [[accountAddressRecordTypeNotice_]]
           </div>
         </div>
       </div>

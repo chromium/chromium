@@ -7,12 +7,16 @@ package org.chromium.net.impl;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.net.RequestFinishedInfo;
 
 import java.util.Date;
 
 /** Implementation of {@link RequestFinishedInfo.Metrics}. */
 @VisibleForTesting
+@JNINamespace("cronet")
 public final class CronetMetrics extends RequestFinishedInfo.Metrics {
     private final long mRequestStartMs;
     private final long mDnsStartMs;
@@ -44,6 +48,11 @@ public final class CronetMetrics extends RequestFinishedInfo.Metrics {
         return null;
     }
 
+    static long getDateDeltaMillisOrDefault(Date before, Date after, long defaultValue) {
+        if (before == null || after == null) return defaultValue;
+        return after.getTime() - before.getTime();
+    }
+
     private static boolean checkOrder(long start, long end) {
         // If end doesn't exist, start can be anything, including also not existing
         // If end exists, start must also exist and be before end
@@ -51,37 +60,17 @@ public final class CronetMetrics extends RequestFinishedInfo.Metrics {
     }
 
     /**
-     * Old-style constructor
-     * TODO(mgersh): Delete after the switch to the new API http://crbug.com/629194
+     * Returns a metrics object populated with empty values.
+     *
+     * <p>Ideally we should just provide Cronet users with a null Metrics object instead, but sadly,
+     * for historical reasons not all users handle a null object properly.
      */
-    public CronetMetrics(
-            @Nullable Long ttfbMs,
-            @Nullable Long totalTimeMs,
-            @Nullable Long sentByteCount,
-            @Nullable Long receivedByteCount) {
-        mTtfbMs = ttfbMs;
-        mTotalTimeMs = totalTimeMs;
-        mSentByteCount = sentByteCount;
-        mReceivedByteCount = receivedByteCount;
-
-        // Everything else is -1 (translates to null) for now
-        mRequestStartMs = -1;
-        mDnsStartMs = -1;
-        mDnsEndMs = -1;
-        mConnectStartMs = -1;
-        mConnectEndMs = -1;
-        mSslStartMs = -1;
-        mSslEndMs = -1;
-        mSendingStartMs = -1;
-        mSendingEndMs = -1;
-        mPushStartMs = -1;
-        mPushEndMs = -1;
-        mResponseStartMs = -1;
-        mRequestEndMs = -1;
-        mSocketReused = false;
+    public static CronetMetrics empty() {
+        return new CronetMetrics(-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, false, 0, 0);
     }
 
     /** New-style constructor */
+    @CalledByNative
     public CronetMetrics(
             long requestStartMs,
             long dnsStartMs,

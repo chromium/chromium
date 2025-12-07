@@ -6,8 +6,9 @@
 #define UI_GFX_GEOMETRY_INSETS_OUTSETS_F_BASE_H_
 
 #include <string>
+#include <utility>
 
-#include "base/strings/stringprintf.h"
+#include "base/component_export.h"
 
 namespace gfx {
 
@@ -34,6 +35,13 @@ class InsetsOutsetsFBase {
 
   // Returns true if the insets/outsets are empty.
   bool IsEmpty() const { return width() == 0.f && height() == 0.f; }
+
+  // Flips x- and y-axes.
+  void Transpose() {
+    using std::swap;
+    swap(top_, left_);
+    swap(bottom_, right_);
+  }
 
   // These setters can be used together with the default constructor and the
   // single-parameter constructor to construct InsetsF instances, for example:
@@ -90,14 +98,8 @@ class InsetsOutsetsFBase {
   }
   void Scale(float scale) { Scale(scale, scale); }
 
-  bool operator==(const InsetsOutsetsFBase<T>& other) const {
-    return top_ == other.top_ && left_ == other.left_ &&
-           bottom_ == other.bottom_ && right_ == other.right_;
-  }
-
-  bool operator!=(const InsetsOutsetsFBase<T>& other) const {
-    return !(*this == other);
-  }
+  friend bool operator==(const InsetsOutsetsFBase<T>&,
+                         const InsetsOutsetsFBase<T>&) = default;
 
   void operator+=(const T& other) {
     top_ += other.top_;
@@ -119,9 +121,7 @@ class InsetsOutsetsFBase {
   }
 
   // Returns a string representation of the insets/outsets.
-  std::string ToString() const {
-    return base::StringPrintf("x:%g,%g y:%g,%g", left_, right_, top_, bottom_);
-  }
+  COMPONENT_EXPORT(GEOMETRY) std::string ToString() const;
 
  private:
   float top_ = 0.f;

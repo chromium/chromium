@@ -1,0 +1,3 @@
+# Binder changes require security review
+per-file binders.h=set noparent
+per-file binders.h=file://ipc/SECURITY_OWNERS

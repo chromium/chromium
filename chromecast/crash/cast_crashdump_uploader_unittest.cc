@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chromecast/crash/cast_crashdump_uploader.h"
+
 #include <string>
 
-#include "base/files/file_util.h"
 #include "chromecast/base/scoped_temp_file.h"
-#include "chromecast/crash/cast_crashdump_uploader.h"
 #include "chromecast/crash/libcurl_wrapper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

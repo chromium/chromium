@@ -10,6 +10,7 @@
 
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -30,7 +31,7 @@ bool CreateCacheTestFile(const base::FilePath& name);
 bool DeleteCache(const base::FilePath& path);
 
 // Fills buffer with random values (may contain nulls unless no_nulls is true).
-void CacheTestFillBuffer(char* buffer, size_t len, bool no_nulls);
+void CacheTestFillBuffer(base::span<uint8_t> buffer, bool no_nulls);
 
 // Creates a buffer of size `len`, and fills in with random values, which
 // may contain 0 unless `no_nulls` is true.
@@ -151,23 +152,11 @@ class MessageLoopHelper {
   // Report that a callback was called. Each callback that will be waited on
   // via WaitUntilCacheIoFinished() is expected to call this method to
   // indicate when it has been executed.
-  void CallbackWasCalled() { ++callbacks_called_; }
+  void CallbackWasCalled();
 
  private:
-  // Sets the number of callbacks that can be received so far.
-  void ExpectCallbacks(int num_callbacks) {
-    num_callbacks_ = num_callbacks;
-    num_iterations_ = last_ = 0;
-    completed_ = false;
-  }
-
-  // Called periodically to test if WaitUntilCacheIoFinished should return.
-  void TimerExpired();
-
   std::unique_ptr<base::RunLoop> run_loop_;
-  int num_callbacks_ = 0;
-  int num_iterations_ = 0;
-  int last_ = 0;
+  int expected_num_callbacks_ = 0;
   bool completed_ = false;
 
   // True if a callback was called/reused more than expected.

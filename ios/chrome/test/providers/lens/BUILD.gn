@@ -4,10 +4,15 @@
 
 source_set("lens") {
   testonly = true
-  sources = [ "test_lens.mm" ]
+  sources = [
+    "test_lens.mm",
+    "test_lens_overlay_controller.h",
+    "test_lens_overlay_controller.mm",
+  ]
   deps = [
     "//base",
     "//ios/public/provider/chrome/browser/lens:lens_api",
+    "//ios/public/provider/chrome/browser/lens:lens_overlay_api",
     "//ios/web/public/navigation",
   ]
 }

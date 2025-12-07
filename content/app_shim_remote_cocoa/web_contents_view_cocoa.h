@@ -65,8 +65,6 @@ CONTENT_EXPORT
 // immediately or in the near future.
 - (void)updateWebContentsVisibility:(remote_cocoa::mojom::Visibility)visibility;
 
-- (void)updateWindowControlsOverlay:(const gfx::Rect&)boundingRect;
-
 @end
 
 @interface NSWindow (WebContentsViewCocoa)

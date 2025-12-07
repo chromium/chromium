@@ -4,14 +4,20 @@
 
 package org.chromium.components.webauthn.cred_man;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.credentials.CreateCredentialRequest.Builder;
 import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.RequiresApi;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
+@NullMarked
 public class BrowserCredManRequestDecorator implements CredManRequestDecorator {
-    private static BrowserCredManRequestDecorator sInstance;
+    private static @Nullable BrowserCredManRequestDecorator sInstance;
 
     public static BrowserCredManRequestDecorator getInstance() {
         if (sInstance == null) {
@@ -28,6 +34,7 @@ public class BrowserCredManRequestDecorator implements CredManRequestDecorator {
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void updateCreateCredentialRequestBuilder(
             Builder builder, CredManCreateCredentialRequestHelper helper) {
+        assertNonNull(helper.getOrigin());
         builder.setOrigin(helper.getOrigin());
     }
 
@@ -40,6 +47,7 @@ public class BrowserCredManRequestDecorator implements CredManRequestDecorator {
     public void updateGetCredentialRequestBuilder(
             android.credentials.GetCredentialRequest.Builder builder,
             CredManGetCredentialRequestHelper helper) {
+        assertNonNull(helper.getOrigin());
         builder.setOrigin(helper.getOrigin());
     }
 

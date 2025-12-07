@@ -9,8 +9,13 @@
 
 #include <string_view>
 
-#include "services/network/public/cpp/resource_request.h"
-#include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
+namespace network {
+struct ResourceRequest;
+}
 
 namespace extensions {
 
@@ -38,10 +43,10 @@ WebRequestResourceType ToWebRequestResourceType(
     const network::ResourceRequest& request,
     bool is_download);
 
-// Returns a string representation of |type|.
+// Returns a string representation of `type`.
 const char* WebRequestResourceTypeToString(WebRequestResourceType type);
 
-// Finds a |type| such that its string representation equals to |text|. Returns
+// Finds a `type` such that its string representation equals to `text`. Returns
 // true iff the type is found.
 bool ParseWebRequestResourceType(std::string_view text,
                                  WebRequestResourceType* type);

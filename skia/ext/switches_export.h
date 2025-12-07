@@ -15,11 +15,7 @@
 #endif  // defined(SKIA_SWITCHES_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(SKIA_SWITCHES_IMPLEMENTATION)
 #define SKIA_SWITCHES_EXPORT __attribute__((visibility("default")))
-#else
-#define SKIA_SWITCHES_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

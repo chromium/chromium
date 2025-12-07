@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/ui/ash/ash_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/display/display.h"
@@ -44,18 +43,19 @@ OobeDisplayChooser::OobeDisplayChooser() {
       cros_display_config_.BindNewPipeAndPassReceiver());
 }
 
-OobeDisplayChooser::~OobeDisplayChooser() {}
+OobeDisplayChooser::~OobeDisplayChooser() = default;
 
 void OobeDisplayChooser::TryToPlaceUiOnTouchDisplay() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Don't (potentially) queue a second task to run MoveToTouchDisplay if one
   // already is queued.
-  if (weak_ptr_factory_.HasWeakPtrs())
+  if (weak_ptr_factory_.HasWeakPtrs()) {
     return;
+  }
 
   display::Display primary_display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+      display::Screen::Get()->GetPrimaryDisplay();
 
   if (primary_display.is_valid() && !TouchSupportAvailable(primary_display)) {
     content::GetUIThreadTaskRunner({})->PostTask(

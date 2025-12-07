@@ -6,15 +6,16 @@ package org.chromium.chrome.browser.customtabs;
 
 import android.app.Activity;
 
-import androidx.annotation.NonNull;
-
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.incognito.IncognitoSnapshotController;
+
+import java.util.function.Supplier;
 
 /**
  * This is the controller that prevents incognito tabs from being visible in Android Recents for
  * {@link CustomTabActivity}.
  */
+@NullMarked
 public class IncognitoCustomTabSnapshotController extends IncognitoSnapshotController {
     /**
      * @param activity The {@link Activity} on which the snapshot capability needs to be controlled.
@@ -22,7 +23,7 @@ public class IncognitoCustomTabSnapshotController extends IncognitoSnapshotContr
      *     showing Incognito or not currently.
      */
     IncognitoCustomTabSnapshotController(
-            @NonNull Activity activity, @NonNull Supplier<Boolean> isShowingIncognitoSupplier) {
+            Activity activity, Supplier<Boolean> isShowingIncognitoSupplier) {
         super(activity, isShowingIncognitoSupplier);
         updateIncognitoTabSnapshotState();
     }

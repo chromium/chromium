@@ -11,7 +11,6 @@
 #include <type_traits>
 #include <vector>
 
-#include "base/atomicops.h"
 #include "base/auto_reset.h"
 #include "base/base_export.h"
 #include "base/bits.h"
@@ -105,7 +104,8 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] WatchHangsInScope {
 // HangWatchStates for deadline overruns. This happens at a regular interval on
 // a separate thread. Only one instance of HangWatcher can exist at a time
 // within a single process. This instance must outlive all monitored threads.
-class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
+class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate,
+                                public base::MemoryPressureListener {
  public:
   // Describes the type of a process for logging purposes.
   enum class ProcessType {
@@ -122,13 +122,14 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
     kIOThread = 0,
     kMainThread = 1,
     kThreadPoolThread = 2,
-    kMax = kThreadPoolThread
+    kCompositorThread = 3,
+    kMax = kCompositorThread
   };
 
   // Notes on lifetime:
   //   1) The first invocation of the constructor will set the global instance
   //      accessible through GetInstance().
-  //   2) In production HangWatcher is always purposefuly leaked.
+  //   2) In production HangWatcher is always purposefully leaked.
   //   3) If not leaked HangWatcher is always constructed and destructed from
   //      the same thread.
   //   4) There can never be more than one instance of HangWatcher at a time.
@@ -150,19 +151,19 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   // Initializes HangWatcher. Must be called once on the main thread during
   // startup while single-threaded.
   static void InitializeOnMainThread(ProcessType process_type,
-                                     bool is_zygote_child,
                                      bool emit_crashes);
 
   // Returns the values that were set through InitializeOnMainThread() to their
   // default value. Used for testing since in prod initialization should happen
   // only once.
-  static void UnitializeOnMainThreadForTesting();
+  static void UninitializeOnMainThreadForTesting();
 
   // Thread safe functions to verify if hang watching is activated. If called
   // before InitializeOnMainThread returns the default value which is false.
   static bool IsEnabled();
   static bool IsThreadPoolHangWatchingEnabled();
   static bool IsIOThreadHangWatchingEnabled();
+  static bool IsCompositorThreadHangWatchingEnabled();
 
   // Returns true if crash dump reporting is configured for any thread type.
   static bool IsCrashReportingEnabled();
@@ -241,6 +242,14 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   // sleeping. Use only for testing.
   void SetTickClockForTesting(const base::TickClock* tick_clock);
 
+  // Grabs a watch state snapshot and returns the hung thread IDs, as produced
+  // by `PrepareHungThreadListCrashKey()`.
+  // NO_THREAD_SAFETY_ANALYSIS is needed because the analyzer can't figure out
+  // that calls to this function done from |on_hang_closure_| are properly
+  // locked.
+  std::string GetHungThreadListCrashKeyForTesting() const
+      NO_THREAD_SAFETY_ANALYSIS;
+
   // Use to block until the hang is recorded. Allows the caller to halt
   // execution so it does not overshoot the hang watch target and result in a
   // non-actionable stack trace in the crash recorded.
@@ -249,9 +258,15 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   // Begin executing the monitoring loop on the HangWatcher thread.
   void Start();
 
+  // Stop all monitoring and join the HangWatcher thread.
+  void Stop();
+
   // Returns true if Start() has been called and Stop() has not been called
   // since.
   bool IsStarted() const { return thread_started_; }
+
+  // Returns `true` if this HangWatcher watches threads.
+  bool IsWatchingThreads() LOCKS_EXCLUDED(watch_state_lock_);
 
   // Returns the value of the crash key with the time since last system power
   // resume.
@@ -269,15 +284,12 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   THREAD_CHECKER(constructing_thread_checker_);
 
   // Invoked on memory pressure signal.
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+  void OnMemoryPressure(MemoryPressureLevel memory_pressure_level) override;
 
-#if !BUILDFLAG(IS_NACL)
   // Returns a ScopedCrashKeyString that sets the crash key with the time since
   // last critical memory pressure signal.
   [[nodiscard]] debug::ScopedCrashKeyString
   GetTimeSinceLastCriticalMemoryPressureCrashKey();
-#endif
 
   // Invoke base::debug::DumpWithoutCrashing() insuring that the stack frame
   // right under it in the trace belongs to HangWatcher for easier attribution.
@@ -338,13 +350,6 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
     std::vector<WatchStateCopy> hung_watch_state_copies_;
   };
 
-  // Return a watch state snapshot taken Now() to be inspected in tests.
-  // NO_THREAD_SAFETY_ANALYSIS is needed because the analyzer can't figure out
-  // that calls to this function done from |on_hang_closure_| are properly
-  // locked.
-  WatchStateSnapShot GrabWatchStateSnapshotForTesting() const
-      NO_THREAD_SAFETY_ANALYSIS;
-
   // Inspects the state of all registered threads to check if they are hung and
   // invokes the appropriate closure if so.
   void Monitor() LOCKS_EXCLUDED(watch_state_lock_);
@@ -353,9 +358,6 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   // and after.
   void DoDumpWithoutCrashing(const WatchStateSnapShot& watch_state_snapshot)
       EXCLUSIVE_LOCKS_REQUIRED(watch_state_lock_) LOCKS_EXCLUDED(capture_lock_);
-
-  // Stop all monitoring and join the HangWatcher thread.
-  void Stop();
 
   // Wait until it's time to monitor.
   void Wait();
@@ -369,8 +371,6 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   // Use to make the HangWatcher thread wake or sleep to schedule the
   // appropriate monitoring frequency.
   WaitableEvent should_monitor_;
-
-  bool IsWatchListEmpty() LOCKS_EXCLUDED(watch_state_lock_);
 
   // Stops hang watching on the calling thread by removing the entry from the
   // watch list.
@@ -399,7 +399,8 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   raw_ptr<const base::TickClock> tick_clock_;
 
   // Registration to receive memory pressure signals.
-  base::MemoryPressureListener memory_pressure_listener_;
+  base::MemoryPressureListenerRegistration
+      memory_pressure_listener_registration_;
 
   // The last time at which a critical memory pressure signal was received, or
   // null if no signal was ever received. Atomic because it's set and read from
@@ -410,10 +411,6 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   // The time after which all deadlines in |watch_states_| need to be for a hang
   // to be reported.
   base::TimeTicks deadline_ignore_threshold_;
-
-  FRIEND_TEST_ALL_PREFIXES(HangWatcherTest, NestedScopes);
-  FRIEND_TEST_ALL_PREFIXES(HangWatcherSnapshotTest, HungThreadIDs);
-  FRIEND_TEST_ALL_PREFIXES(HangWatcherSnapshotTest, NonActionableReport);
 };
 
 // Classes here are exposed in the header only for testing. They are not
@@ -513,10 +510,10 @@ class BASE_EXPORT HangWatchDeadline {
   // |switch_bits_callback_for_testing_| is installed.
   uint64_t SwitchBitsForTesting();
 
-  // Atomically sets persitent flag |flag|. Cannot fail.
+  // Atomically sets persistent flag |flag|. Cannot fail.
   void SetPersistentFlag(Flag flag);
 
-  // Atomically clears persitent flag |flag|. Cannot fail.
+  // Atomically clears persistent flag |flag|. Cannot fail.
   void ClearPersistentFlag(Flag flag);
 
   // Converts bits to TimeTicks with some sanity checks. Use to return the
@@ -660,12 +657,12 @@ class BASE_EXPORT HangWatchState {
   const AutoReset<HangWatchState*> resetter_;
 
   // If the deadline fails to be updated before TimeTicks::Now() ever
-  // reaches the value contained in it this constistutes a hang.
+  // reaches the value contained in it this constitutes a hang.
   HangWatchDeadline deadline_;
 
   // A unique ID of the thread under watch. Used for logging in crash reports
   // only.
-  PlatformThreadId thread_id_;
+  PlatformThreadId thread_id_ = kInvalidThreadId;
 
   // Number of active HangWatchScopeEnables on this thread.
   int nesting_level_ = 0;

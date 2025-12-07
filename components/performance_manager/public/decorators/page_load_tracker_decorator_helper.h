@@ -6,14 +6,13 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_DECORATORS_PAGE_LOAD_TRACKER_DECORATOR_HELPER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "components/performance_manager/public/performance_manager_main_thread_observer.h"
+#include "components/performance_manager/public/performance_manager_observer.h"
 
 namespace performance_manager {
 
 // This class must be instantiated on the UI thread in order to maintain the
 // PageLoadTracker decorator of PageNodes.
-class PageLoadTrackerDecoratorHelper
-    : public PerformanceManagerMainThreadObserverDefaultImpl {
+class PageLoadTrackerDecoratorHelper : public PerformanceManagerObserver {
  public:
   PageLoadTrackerDecoratorHelper();
   ~PageLoadTrackerDecoratorHelper() override;
@@ -22,7 +21,7 @@ class PageLoadTrackerDecoratorHelper
   PageLoadTrackerDecoratorHelper& operator=(
       const PageLoadTrackerDecoratorHelper&) = delete;
 
-  // PerformanceManagerMainThreadObserver:
+  // PerformanceManagerObserver:
   void OnPageNodeCreatedForWebContents(
       content::WebContents* web_contents) override;
 

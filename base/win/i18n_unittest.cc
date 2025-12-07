@@ -9,6 +9,7 @@
 #include <stddef.h>
 #include <string.h>
 
+#include "base/compiler_specific.h"
 #include "base/strings/string_util.h"
 #include "base/win/windows_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,7 +26,7 @@ TEST(I18NTest, GetUserPreferredUILanguageList) {
   for (const auto& language : languages) {
     EXPECT_FALSE(language.empty());
     // Ensure there's no extra trailing 0 characters.
-    EXPECT_EQ(language.size(), wcslen(language.c_str()));
+    EXPECT_EQ(language.size(), UNSAFE_TODO(wcslen(language.c_str())));
   }
 }
 
@@ -36,7 +37,7 @@ TEST(I18NTest, GetThreadPreferredUILanguageList) {
   EXPECT_FALSE(languages.empty());
   for (const auto& language : languages) {
     EXPECT_FALSE(language.empty());
-    EXPECT_EQ(language.size(), wcslen(language.c_str()));
+    EXPECT_EQ(language.size(), UNSAFE_TODO(wcslen(language.c_str())));
   }
 }
 

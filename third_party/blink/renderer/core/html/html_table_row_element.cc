@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -90,8 +91,9 @@ HTMLElement* HTMLTableRowElement::insertCell(int index,
   if (index < -1 || index > num_cells) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        "The value provided (" + String::Number(index) +
-            ") is outside the range [-1, " + String::Number(num_cells) + "].");
+        StrCat({"The value provided (", String::Number(index),
+                ") is outside the range [-1, ", String::Number(num_cells),
+                "]."}));
     return nullptr;
   }
 
@@ -113,8 +115,9 @@ void HTMLTableRowElement::deleteCell(int index,
   if (index < -1 || index >= num_cells) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        "The value provided (" + String::Number(index) +
-            ") is outside the range [0, " + String::Number(num_cells) + ").");
+        StrCat({"The value provided (", String::Number(index),
+                ") is outside the range [0, ", String::Number(num_cells),
+                ")."}));
     return;
   }
   // 2. If index is −1, remove the last element in the cells collection

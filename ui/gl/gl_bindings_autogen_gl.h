@@ -113,6 +113,10 @@ typedef void(GL_BINDING_CALL* glBlitFramebufferProc)(GLint srcX0,
                                                      GLint dstY1,
                                                      GLbitfield mask,
                                                      GLenum filter);
+typedef void(GL_BINDING_CALL* glBlobCacheCallbacksANGLEProc)(
+    GLSETBLOBPROCANGLE set,
+    GLGETBLOBPROCANGLE get,
+    const void* userData);
 typedef void(GL_BINDING_CALL* glBufferDataProc)(GLenum target,
                                                 GLsizeiptr size,
                                                 const void* data,
@@ -1898,6 +1902,7 @@ typedef void(GL_BINDING_CALL* glWindowRectanglesEXTProc)(GLenum mode,
 struct ExtensionsGL {
   bool b_GL_AMD_framebuffer_multisample_advanced;
   bool b_GL_ANGLE_base_vertex_base_instance;
+  bool b_GL_ANGLE_blob_cache;
   bool b_GL_ANGLE_framebuffer_blit;
   bool b_GL_ANGLE_framebuffer_multisample;
   bool b_GL_ANGLE_get_tex_level_parameter;
@@ -1955,6 +1960,7 @@ struct ExtensionsGL {
   bool b_GL_KHR_parallel_shader_compile;
   bool b_GL_KHR_robustness;
   bool b_GL_MESA_framebuffer_flip_y;
+  bool b_GL_MESA_sampler_objects;
   bool b_GL_NV_blend_equation_advanced;
   bool b_GL_NV_fence;
   bool b_GL_NV_framebuffer_blit;
@@ -2006,6 +2012,7 @@ struct ProcsGL {
   glBlendFuncSeparateProc glBlendFuncSeparateFn;
   glBlendFuncSeparateiOESProc glBlendFuncSeparateiOESFn;
   glBlitFramebufferProc glBlitFramebufferFn;
+  glBlobCacheCallbacksANGLEProc glBlobCacheCallbacksANGLEFn;
   glBufferDataProc glBufferDataFn;
   glBufferSubDataProc glBufferSubDataFn;
   glCheckFramebufferStatusEXTProc glCheckFramebufferStatusEXTFn;
@@ -2580,6 +2587,9 @@ class GL_EXPORT GLApi {
                                    GLint dstY1,
                                    GLbitfield mask,
                                    GLenum filter) = 0;
+  virtual void glBlobCacheCallbacksANGLEFn(GLSETBLOBPROCANGLE set,
+                                           GLGETBLOBPROCANGLE get,
+                                           const void* userData) = 0;
   virtual void glBufferDataFn(GLenum target,
                               GLsizeiptr size,
                               const void* data,
@@ -4176,6 +4186,7 @@ class GL_EXPORT GLApi {
 
 }  // namespace gl
 
+#if BINDINGS_GL_PROTOTYPES
 #define glAcquireTexturesANGLE \
   ::gl::g_current_gl_context->glAcquireTexturesANGLEFn
 #define glActiveShaderProgram \
@@ -4224,6 +4235,8 @@ class GL_EXPORT GLApi {
 #define glBlendFuncSeparateiOES \
   ::gl::g_current_gl_context->glBlendFuncSeparateiOESFn
 #define glBlitFramebuffer ::gl::g_current_gl_context->glBlitFramebufferFn
+#define glBlobCacheCallbacksANGLE \
+  ::gl::g_current_gl_context->glBlobCacheCallbacksANGLEFn
 #define glBufferData ::gl::g_current_gl_context->glBufferDataFn
 #define glBufferSubData ::gl::g_current_gl_context->glBufferSubDataFn
 #define glCheckFramebufferStatusEXT \
@@ -4885,5 +4898,6 @@ class GL_EXPORT GLApi {
 #define glWaitSync ::gl::g_current_gl_context->glWaitSyncFn
 #define glWindowRectanglesEXT \
   ::gl::g_current_gl_context->glWindowRectanglesEXTFn
+#endif  // BINDINGS_GL_PROTOTYPES
 
 #endif  // UI_GL_GL_BINDINGS_AUTOGEN_GL_H_

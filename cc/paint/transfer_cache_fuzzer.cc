@@ -15,7 +15,7 @@
 #include "cc/test/transfer_cache_test_helper.h"
 #include "components/viz/test/test_context_provider.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 
 struct Environment {
   Environment() { logging::SetMinLogLevel(logging::LOGGING_FATAL); }
@@ -64,7 +64,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   base::span<const uint8_t> span(unaligned_data, size - unaligned_gap);
 #endif
 
-  if (!entry->Deserialize(context_provider->GrContext(),
+  if (!entry->Deserialize(/*gr_context=*/nullptr,
                           /*graphite_recorder=*/nullptr, span)) {
     return 0;
   }

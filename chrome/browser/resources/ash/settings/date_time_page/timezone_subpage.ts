@@ -6,7 +6,6 @@
  * @fileoverview 'timezone-subpage' is the collapsible section containing
  * time zone settings.
  */
-import '/shared/settings/prefs/prefs.js';
 import '../controls/controlled_radio_button.js';
 import '../controls/settings_dropdown_menu.js';
 import '../controls/settings_radio_group.js';
@@ -23,14 +22,14 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {isChild} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
-import {SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu.js';
+import type {SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {GeolocationAccessLevel} from '../os_privacy_page/privacy_hub_geolocation_subpage.js';
-import {Route, routes} from '../router.js';
+import {type Route, routes} from '../router.js';
 
-import {DateTimeBrowserProxy, DateTimePageCallbackRouter, DateTimePageHandlerRemote} from './date_time_browser_proxy.js';
+import {DateTimeBrowserProxy, type DateTimePageCallbackRouter, type DateTimePageHandlerRemote} from './date_time_browser_proxy.js';
 import {TimeZoneAutoDetectMethod} from './date_time_types.js';
-import {TimezoneSelectorElement} from './timezone_selector.js';
+import type {TimezoneSelectorElement} from './timezone_selector.js';
 import {getTemplate} from './timezone_subpage.html.js';
 
 export interface TimezoneSubpageElement {
@@ -69,17 +68,10 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
         },
       },
 
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([Setting.kChangeTimeZone]),
-      },
-
       geolocationWarningText_: {
         type: String,
-        computed: 'computedGeolocationWarningText(activeTimeZoneDisplayName)',
+        computed: 'computedGeolocationWarningText(activeTimeZoneDisplayName,' +
+            'prefs.ash.user.geolocation_access_level.enforcement)',
       },
 
       shouldShowGeolocationWarningText_: {
@@ -97,8 +89,15 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
   }
 
   activeTimeZoneDisplayName: string;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kChangeTimeZone,
+  ]);
+
   private canSetSystemTimezone_: boolean;
   private browserProxy_: DateTimeBrowserProxy;
+  private geolocationWarningText_: string;
   private showEnableSystemGeolocationDialog_: boolean;
   private shouldShowGeolocationWarningText_: boolean;
 
@@ -153,8 +152,19 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
   }
 
   private computedGeolocationWarningText(): string {
-    return loadTimeData.getStringF(
-        'timeZoneGeolocationWarningText', this.activeTimeZoneDisplayName);
+    if (!this.prefs) {
+      return '';
+    }
+
+    if (this.prefs.ash.user.geolocation_access_level.enforcement ===
+        chrome.settingsPrivate.Enforcement.ENFORCED) {
+      return loadTimeData.getStringF(
+          'timeZoneGeolocationManagedWarningText',
+          this.activeTimeZoneDisplayName);
+    } else {
+      return loadTimeData.getStringF(
+          'timeZoneGeolocationWarningText', this.activeTimeZoneDisplayName);
+    }
   }
 
   private computeShouldShowGeolocationWarningText_(): boolean {

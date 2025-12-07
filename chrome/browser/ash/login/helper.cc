@@ -13,14 +13,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/ash/login/ui/webui_login_view.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_broker.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/password_manager/password_reuse_manager_factory.h"
+#include "chrome/browser/password_manager/factories/password_reuse_manager_factory.h"
 #include "chrome/browser/policy/networking/user_network_configuration_updater_ash.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
+#include "chrome/browser/ui/ash/login/webui_login_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -95,7 +95,7 @@ bool PolicyHasWebTrustedAuthorityCertificate(
 }  // namespace
 
 gfx::Rect CalculateScreenBounds(const gfx::Size& size) {
-  gfx::Rect bounds = display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+  gfx::Rect bounds = display::Screen::Get()->GetPrimaryDisplay().bounds();
   if (!size.IsEmpty()) {
     int horizontal_diff = bounds.width() - size.width();
     int vertical_diff = bounds.height() - size.height();
@@ -117,8 +117,8 @@ int GetCurrentUserImageSize() {
 
 namespace login {
 
-NetworkStateHelper::NetworkStateHelper() {}
-NetworkStateHelper::~NetworkStateHelper() {}
+NetworkStateHelper::NetworkStateHelper() = default;
+NetworkStateHelper::~NetworkStateHelper() = default;
 
 std::u16string NetworkStateHelper::GetCurrentNetworkName() const {
   NetworkStateHandler* nsh = NetworkHandler::Get()->network_state_handler();
@@ -238,6 +238,36 @@ bool IsFullManagementDisclosureNeeded(
          local_state->GetBoolean(::prefs::kManagedSessionUseFullLoginWarning) ||
          PolicyHasWebTrustedAuthorityCertificate(broker) ||
          IsProxyUsed(local_state);
+}
+
+void SetAuthFactorsForUser(const AccountId& user,
+                           const SessionAuthFactors& auth_factors,
+                           bool is_pin_disabled_by_policy,
+                           LoginScreenModel* login_screen) {
+  cryptohome::AuthFactorsSet available_factors;
+  cryptohome::PinLockAvailability pin_available_at = std::nullopt;
+
+  if (auth_factors.FindSmartCardFactor()) {
+    available_factors.Put(cryptohome::AuthFactorType::kSmartCard);
+  } else {
+    auto* password_factor = auth_factors.FindAnyPasswordFactor();
+    if (password_factor) {
+      available_factors.Put(cryptohome::AuthFactorType::kPassword);
+    }
+    auto* pin_factor = auth_factors.FindPinFactor();
+    if (pin_factor && !pin_factor->GetPinStatus().IsLockedFactor()) {
+      // If we end up with pin as the only auth factor and it is still disabled
+      // by policy, we will show the pin.
+      if (!is_pin_disabled_by_policy || !password_factor) {
+        available_factors.Put(cryptohome::AuthFactorType::kPin);
+      }
+    }
+    if (pin_factor && pin_factor->GetPinStatus().IsLockedFactor()) {
+      pin_available_at = pin_factor->GetPinStatus().AvailableAt();
+    }
+  }
+  login_screen->SetAuthFactorsForUser(user, available_factors,
+                                      pin_available_at);
 }
 
 }  // namespace login

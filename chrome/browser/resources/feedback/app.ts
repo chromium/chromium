@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../../strings.m.js';
+import '/strings.m.js';
 import './feedback_shared_styles.css.js';
-// <if expr="chromeos_ash">
+// <if expr="is_chromeos">
 import './js/jelly_colors.js';
 
 // </if>
@@ -134,7 +134,7 @@ export class AppElement extends CrLitElement {
               'input', (e: Event) => this.checkForShowQuestionnaire(e));
     }
 
-    if (this.shadowRoot!.querySelector<HTMLElement>(
+    if (this.shadowRoot.querySelector<HTMLElement>(
             '#autofill-checkbox-container') != null &&
         feedbackInfo.flow ===
             chrome.feedbackPrivate.FeedbackFlow.GOOGLE_INTERNAL &&
@@ -244,7 +244,7 @@ export class AppElement extends CrLitElement {
     }
 
     const autofillMetadataUrlElement =
-        this.shadowRoot!.querySelector<HTMLElement>('#autofill-metadata-url');
+        this.shadowRoot.querySelector<HTMLElement>('#autofill-metadata-url');
 
     if (autofillMetadataUrlElement) {
       // Opens a new window showing the full anonymized autofill metadata.
@@ -261,7 +261,7 @@ export class AppElement extends CrLitElement {
     }
 
     const sysInfoUrlElement =
-        this.shadowRoot!.querySelector<HTMLElement>('#sys-info-url');
+        this.shadowRoot.querySelector<HTMLElement>('#sys-info-url');
     if (sysInfoUrlElement) {
       // Opens a new window showing the full anonymized system+app
       // information.
@@ -277,7 +277,7 @@ export class AppElement extends CrLitElement {
     }
 
     const histogramUrlElement =
-        this.shadowRoot!.querySelector<HTMLElement>('#histograms-url');
+        this.shadowRoot.querySelector<HTMLElement>('#histograms-url');
     if (histogramUrlElement) {
       histogramUrlElement.onclick = (e: Event) => {
         e.preventDefault();
@@ -296,7 +296,7 @@ export class AppElement extends CrLitElement {
     // screen now. But to limit the scope of this CL, they are still hidden.
     if (feedbackInfo.flow !== chrome.feedbackPrivate.FeedbackFlow.LOGIN) {
       const legalHelpPageUrlElement =
-          this.shadowRoot!.querySelector<HTMLElement>('#legal-help-page-url');
+          this.shadowRoot.querySelector<HTMLElement>('#legal-help-page-url');
       if (legalHelpPageUrlElement) {
         this.setupLinkHandlers(
             legalHelpPageUrlElement, FEEDBACK_LEGAL_HELP_URL,
@@ -304,7 +304,7 @@ export class AppElement extends CrLitElement {
       }
 
       const privacyPolicyUrlElement =
-          this.shadowRoot!.querySelector<HTMLElement>('#privacy-policy-url');
+          this.shadowRoot.querySelector<HTMLElement>('#privacy-policy-url');
       if (privacyPolicyUrlElement) {
         this.setupLinkHandlers(
             privacyPolicyUrlElement, FEEDBACK_PRIVACY_POLICY_URL,
@@ -312,7 +312,7 @@ export class AppElement extends CrLitElement {
       }
 
       const termsOfServiceUrlElement =
-          this.shadowRoot!.querySelector<HTMLElement>('#terms-of-service-url');
+          this.shadowRoot.querySelector<HTMLElement>('#terms-of-service-url');
       if (termsOfServiceUrlElement) {
         this.setupLinkHandlers(
             termsOfServiceUrlElement, FEEDBACK_TERM_OF_SERVICE_URL,
@@ -357,7 +357,7 @@ export class AppElement extends CrLitElement {
    * @param fileSelectedEvent The onChanged event for the file input box.
    */
   private onFileSelected(fileSelectedEvent: Event) {
-    // <if expr="chromeos_ash">
+    // <if expr="is_chromeos">
     // This is needed on CrOS. Otherwise, the feedback window will stay behind
     // the Chrome window.
     FeedbackBrowserProxyImpl.getInstance().showDialog();
@@ -600,7 +600,7 @@ export class AppElement extends CrLitElement {
     let useSystemInfo = false;
     let useHistograms = false;
     const checkbox =
-        this.shadowRoot!.querySelector<HTMLInputElement>('#sys-info-checkbox');
+        this.shadowRoot.querySelector<HTMLInputElement>('#sys-info-checkbox');
     // SeaPen flow doesn't collect system info data.
     if (checkbox != null && checkbox.checked && !isSeaPenFlow) {
       // Send histograms along with system info.
@@ -608,7 +608,7 @@ export class AppElement extends CrLitElement {
       useSystemInfo = true;
     }
 
-    const autofillCheckbox = this.shadowRoot!.querySelector<HTMLInputElement>(
+    const autofillCheckbox = this.shadowRoot.querySelector<HTMLInputElement>(
         '#autofill-metadata-checkbox');
     if (autofillCheckbox != null && autofillCheckbox.checked &&
         !this.getRequiredElement('#autofill-checkbox-container').hidden) {
@@ -669,7 +669,7 @@ export class AppElement extends CrLitElement {
    * replaced by polymer's $ helper dictionary.
    */
   getRequiredElement<T extends HTMLElement = HTMLElement>(query: string): T {
-    const el = this.shadowRoot!.querySelector<T>(query);
+    const el = this.shadowRoot.querySelector<T>(query);
     assert(el);
     assert(el instanceof HTMLElement);
     return el;

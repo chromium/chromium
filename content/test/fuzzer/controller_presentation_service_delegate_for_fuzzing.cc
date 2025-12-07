@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/test/fuzzer/controller_presentation_service_delegate_for_fuzzing.h"
+
 #include <memory>
 #include <string>
 #include <utility>
 
-#include "content/test/fuzzer/controller_presentation_service_delegate_for_fuzzing.h"
-
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom-mojolpm.h"

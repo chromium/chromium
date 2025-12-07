@@ -1,7 +1,7 @@
 #ifndef _RAR_OPTIONS_
 #define _RAR_OPTIONS_
 
-#define DEFAULT_RECOVERY     -3
+#define DEFAULT_RECOVERY      3
 
 #define DEFAULT_RECVOLUMES  -10
 
@@ -15,10 +15,18 @@ enum PATH_EXCL_MODE {
   EXCL_ABSPATH         // -ep3 (the full path with the disk letter)
 };
 
-enum {SOLID_NONE=0,SOLID_NORMAL=1,SOLID_COUNT=2,SOLID_FILEEXT=4,
-      SOLID_VOLUME_DEPENDENT=8,SOLID_VOLUME_INDEPENDENT=16};
+enum {
+  SOLID_NONE=0,    // Non-solid mode.
+  SOLID_NORMAL=1,  // Standard solid mode.
+  SOLID_COUNT=2,   // Reset the solid data after specified file count.
+  SOLID_FILEEXT=4, // Reset the solid data for every new file extension.
+  SOLID_VOLUME_DEPENDENT=8,    // Preserve solid data in all volumes.
+  SOLID_VOLUME_INDEPENDENT=16, // Reset solid data in all volumes.
+  SOLID_RESET=32,              // Reset solid data for newly added files.
+  SOLID_BLOCK_SIZE=64          // Reset solid data after the specified size.
+};
 
-enum {ARCTIME_NONE=0,ARCTIME_KEEP,ARCTIME_LATEST};
+enum ARCTIME_MODE {ARCTIME_NONE=0,ARCTIME_KEEP,ARCTIME_LATEST,ARCTIME_SPECIFIED};
 
 enum EXTTIME_MODE {
   EXTTIME_NONE=0,EXTTIME_1S,EXTTIME_MAX
@@ -52,7 +60,7 @@ enum ARC_METADATA
   ARCMETA_RESTORE  // -amr
 };
 
-enum QOPEN_MODE { QOPEN_NONE, QOPEN_AUTO, QOPEN_ALWAYS };
+enum QOPEN_MODE { QOPEN_NONE=0, QOPEN_AUTO, QOPEN_ALWAYS };
 
 enum RAR_CHARSET { RCH_DEFAULT=0,RCH_ANSI,RCH_OEM,RCH_UNICODE,RCH_UTF8 };
 
@@ -137,7 +145,7 @@ class RAROptions
     OVERWRITE_MODE Overwrite;
     int Method;
     HASH_TYPE HashType;
-    int Recovery;
+    uint Recovery;
     int RecVolNumber;
     ARC_METADATA ArcMetadata;
     bool DisablePercentage;
@@ -145,8 +153,9 @@ class RAROptions
     bool DisableDone;
     bool DisableNames;
     bool PrintVersion;
-    int Solid;
-    int SolidCount;
+    uint Solid;
+    uint SolidCount;
+    uint64 SolidBlockSize;
     bool ClearArc;
     bool AddArcOnly;
     bool DisableComment;
@@ -159,7 +168,6 @@ class RAROptions
     bool AllYes;
     bool VerboseOutput; // -iv, display verbose output, used only in "WinRAR t" now.
     bool DisableSortSolid;
-    int ArcTime;
     int ConvertNames;
     bool ProcessOwners;
     bool SaveSymLinks;
@@ -168,6 +176,14 @@ class RAROptions
     bool SkipSymLinks;
     int Priority;
     int SleepTime;
+
+    bool UseLargePages;
+
+    // Quit after processing some system integration related switch,
+    // like enabling the large memory pages privilege.
+    // menu for non-admin user and quit.
+    bool SetupComplete;
+
     bool KeepBroken;
     bool OpenShared;
     bool DeleteFiles;
@@ -185,6 +201,9 @@ class RAROptions
     bool SyncFiles;
     bool ProcessEA;
     bool SaveStreams;
+#ifdef PROPAGATE_MOTW
+    bool MotwAllFields;
+#endif
     bool SetCompressedAttr;
     bool IgnoreGeneralAttr;
     RarTime FileMtimeBefore,FileCtimeBefore,FileAtimeBefore;

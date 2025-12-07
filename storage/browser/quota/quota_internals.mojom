@@ -12,7 +12,6 @@ import "third_party/blink/public/mojom/quota/quota_types.mojom";
 struct BucketTableEntry {
     int64 bucket_id;
     string storage_key;
-    blink.mojom.StorageType type;
     string name;
     int64 usage = -1;
     int64 use_count;
@@ -41,8 +40,8 @@ interface QuotaInternalsHandler {
     // Returns an array of Storage Bucket entries stored in the QuotaDatabase.
     RetrieveBucketsTable() => (array<BucketTableEntry> entries);
 
-    // Returns the global usage and unlimited usage for a given storage type.
-    GetGlobalUsageForInternals(blink.mojom.StorageType storage_type) =>
+    // Returns the global usage and unlimited usage.
+    GetGlobalUsageForInternals() =>
         (int64 usage, int64 unlimited_usage);
 
     // Returns whether simulate storage pressure is available.

@@ -6,14 +6,14 @@
 #define CONTENT_TEST_RENDER_WIDGET_HOST_VISIBILITY_OBSERVER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "content/public/browser/render_widget_host_observer.h"
-
 #include "base/scoped_observation.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
-#include "content/browser/renderer_host/render_widget_host_impl.h"
+#include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/test/test_utils.h"
 
 namespace content {
+
+class RenderWidgetHostImpl;
 
 using CrashVisibility = CrossProcessFrameConnector::CrashVisibility;
 

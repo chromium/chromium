@@ -33,6 +33,118 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Irrecoverable"/>
 </enum>
 
+<!-- LINT.IfChange(RecoveryKeyStoreCertificatesFetchStatus) -->
+
+<enum name="RecoveryKeyStoreCertificatesFetchStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Network error"/>
+  <int value="2" label="Failed to parse or validate certificates"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:RecoveryKeyStoreCertificatesFetchStatus) -->
+
+<!-- LINT.IfChange(TrustedVaultDownloadKeysStatus) -->
+
+<enum name="TrustedVaultDownloadKeysStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Member not found or corrupted (deprecated)"/>
+  <int value="2" label="No new keys"/>
+  <int value="3" label="Key proof verification failed"/>
+  <int value="4" label="Access token fetching failed"/>
+  <int value="5" label="Other error"/>
+  <int value="6" label="Member not found"/>
+  <int value="7" label="Membership not found"/>
+  <int value="8" label="Membership corrupted"/>
+  <int value="9" label="Membership empty"/>
+  <int value="10" label="No primary account"/>
+  <int value="11" label="Device not registered"/>
+  <int value="12" label="Throttled client side"/>
+  <int value="13" label="Corrupted local device registration"/>
+  <int value="14" label="Aborted"/>
+  <int value="15" label="Network error"/>
+  <int value="16" label="Key proof verification is not supported"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultDownloadKeysStatus) -->
+
+<!-- LINT.IfChange(TrustedVaultFileReadStatus) -->
+
+<enum name="TrustedVaultFileReadStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="File not found"/>
+  <int value="2" label="File read failed"/>
+  <int value="3" label="MD5 digest mismatch"/>
+  <int value="4" label="File proto deserialization failed"/>
+  <int value="5" label="Data proto deserialization failed"/>
+  <int value="6" label="SHA256 digest mismatch"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultFileReadStatus) -->
+
+<!-- LINT.IfChange(TrustedVaultListSecurityDomainMembersPinStatus) -->
+
+<enum name="TrustedVaultListSecurityDomainMembersPinStatus">
+  <int value="0" label="The PIN is present and usable for recovery"/>
+  <int value="1" label="The PIN is present but not usable for recovery"/>
+  <int value="2" label="The PIN is not present"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultListSecurityDomainMembersPinStatus) -->
+
+<!-- LINT.IfChange(TrustedVaultRecoverabilityStatus) -->
+
+<enum name="TrustedVaultRecoverabilityStatus">
+  <int value="0" label="Not degraded"/>
+  <int value="1" label="Degraded"/>
+  <int value="2" label="Error"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_connection.h:TrustedVaultRecoverabilityStatus) -->
+
+<!-- LINT.IfChange(TrustedVaultRecoverKeysOutcome) -->
+
+<enum name="TrustedVaultRecoverKeysOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="No new keys"/>
+  <int value="2" label="Failure"/>
+  <int value="3" label="No primary account"/>
+  <int value="4" label="Aborted"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultRecoverKeysOutcome) -->
+
+<!-- LINT.IfChange(TrustedVaultRecoveryFactorRegistrationOutcome) -->
+
+<enum name="TrustedVaultRecoveryFactorRegistrationOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="Already registered"/>
+  <int value="2" label="Local data obsolete"/>
+  <int value="3" label="Transient access token fetching error"/>
+  <int value="4" label="Persistent access token fetching error"/>
+  <int value="5" label="Primary account changed access token fetching error"/>
+  <int value="6" label="Network error"/>
+  <int value="7" label="Other error"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultRecoveryFactorRegistrationOutcome) -->
+
+<!-- LINT.IfChange(TrustedVaultRecoveryFactorRegistrationState) -->
+
+<enum name="TrustedVaultRecoveryFactorRegistrationState">
+  <int value="0" label="Already registered V0. Removed on Desktop in 11/2024"/>
+  <int value="1" label="Local keys are stale"/>
+  <int value="2" label="Throttled client side"/>
+  <int value="3" label="Attempting registration with newly generated keys"/>
+  <int value="4" label="Attempting registration with preexisting keys"/>
+  <int value="5"
+      label="Attempting registration while having persistent authentication
+             error (deprecated)"/>
+  <int value="6" label="Already registered V1"/>
+  <int value="7" label="Registration with constant key isn't supported"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultRecoveryFactorRegistrationState) -->
+
 </enums>
 
 </histogram-configuration>

@@ -1,0 +1,12 @@
+boujane@google.com
+chrstne@google.com
+kmg@google.com
+
+# For horizontal changes, usually related to the WebUI toolchain. For any
+# changes that have to do with business logic direct to Actor OWNERS above.
+file://ui/webui/PLATFORM_OWNERS
+
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS
+
+per-file *handoff_button_controller*=michelleabreo@google.com

@@ -1,4 +1,5 @@
 include_rules = [
+    "+media/base/audio_bus.h",
     "+media/base/media_log.h",
     "+net/base/ip_endpoint.h",
     "+net/base/load_flags.h",
@@ -12,3 +13,8 @@ specific_include_rules = {
     ],
 }
 
+specific_include_rules = {
+    "web_string.cc": [
+        "+base/strings/latin1_string_conversions.h",
+    ],
+}

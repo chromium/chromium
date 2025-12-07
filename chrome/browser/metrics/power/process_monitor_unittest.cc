@@ -18,14 +18,14 @@ TEST(ProcessMonitorTest, MonitoredProcessType) {
   };
 
   for (const auto& [process_type, expectation] : kExpectations) {
-    content::ChildProcessData data(process_type);
-    // data.process_type = process_type;
+    content::ChildProcessData data(process_type, content::ChildProcessId());
     EXPECT_EQ(GetMonitoredProcessTypeForNonRendererChildProcessForTesting(data),
               expectation);
   }
 
   // Special case for network process.
-  content::ChildProcessData data(content::PROCESS_TYPE_UTILITY);
+  content::ChildProcessData data(content::PROCESS_TYPE_UTILITY,
+                                 content::ChildProcessId());
   data.metrics_name = network::mojom::NetworkService::Name_;
   EXPECT_EQ(GetMonitoredProcessTypeForNonRendererChildProcessForTesting(data),
             MonitoredProcessType::kNetwork);

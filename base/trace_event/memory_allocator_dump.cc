@@ -6,6 +6,7 @@
 
 #include <string.h>
 
+#include "base/compiler_specific.h"
 #include "base/format_macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
@@ -18,8 +19,7 @@
 #include "third_party/perfetto/protos/perfetto/trace/memory_graph.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pbzero.h"
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 const char MemoryAllocatorDump::kNameSize[] = "size";
 const char MemoryAllocatorDump::kNameObjectCount[] = "object_count";
@@ -35,7 +35,7 @@ MemoryAllocatorDump::MemoryAllocatorDump(
     : absolute_name_(absolute_name),
       guid_(guid),
       level_of_detail_(level_of_detail),
-      flags_(Flags::DEFAULT) {
+      flags_(Flags::kDefault) {
   // The |absolute_name| cannot be empty.
   DCHECK(!absolute_name.empty());
 
@@ -57,8 +57,7 @@ void MemoryAllocatorDump::AddString(const char* name,
                                     const std::string& value) {
   // String attributes are disabled in background mode.
   if (level_of_detail_ == MemoryDumpLevelOfDetail::kBackground) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   entries_.emplace_back(name, units, value);
 }
@@ -85,8 +84,9 @@ void MemoryAllocatorDump::AsValueInto(TracedValue* value) const {
     value->EndDictionary();
   }
   value->EndDictionary();  // "attrs": { ... }
-  if (flags_)
+  if (flags_) {
     value->SetInteger("flags", flags_);
+  }
   value->EndDictionary();  // "allocator_name/heap_subheap": { ... }
 }
 
@@ -95,7 +95,7 @@ void MemoryAllocatorDump::AsProtoInto(
         MemoryNode* memory_node) const {
   memory_node->set_id(guid_.ToUint64());
   memory_node->set_absolute_name(absolute_name_);
-  if (flags() & WEAK) {
+  if (flags() & kWeak) {
     memory_node->set_weak(true);
   }
 
@@ -137,11 +137,12 @@ void MemoryAllocatorDump::AsProtoInto(
 }
 
 uint64_t MemoryAllocatorDump::GetSizeInternal() const {
-  if (cached_size_.has_value())
+  if (cached_size_.has_value()) {
     return *cached_size_;
+  }
   for (const auto& entry : entries_) {
     if (entry.entry_type == Entry::kUint64 && entry.units == kUnitsBytes &&
-        strcmp(entry.name.c_str(), kNameSize) == 0) {
+        UNSAFE_TODO(strcmp(entry.name.c_str(), kNameSize)) == 0) {
       cached_size_ = entry.value_uint64;
       return entry.value_uint64;
     }
@@ -164,16 +165,17 @@ MemoryAllocatorDump::Entry::Entry(std::string name,
     : name(name), units(units), entry_type(kString), value_string(value) {}
 
 bool MemoryAllocatorDump::Entry::operator==(const Entry& rhs) const {
-  if (!(name == rhs.name && units == rhs.units && entry_type == rhs.entry_type))
+  if (!(name == rhs.name && units == rhs.units &&
+        entry_type == rhs.entry_type)) {
     return false;
+  }
   switch (entry_type) {
     case EntryType::kUint64:
       return value_uint64 == rhs.value_uint64;
     case EntryType::kString:
       return value_string == rhs.value_string;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void PrintTo(const MemoryAllocatorDump::Entry& entry, std::ostream* out) {
@@ -187,8 +189,7 @@ void PrintTo(const MemoryAllocatorDump::Entry& entry, std::ostream* out) {
            << entry.value_string << "\")>";
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

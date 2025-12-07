@@ -23,11 +23,10 @@ static_library("javascript_dialogs") {
 
   deps = [
     "//base",
-    "//base:i18n",
+    "//components/javascript_dialogs/core:util",
     "//components/navigation_metrics/",
     "//components/strings",
     "//components/ukm/content",
-    "//components/url_formatter",
     "//content/public/browser",
     "//content/public/common",
     "//net",
@@ -36,7 +35,6 @@ static_library("javascript_dialogs") {
     "//skia",
     "//ui/base",
     "//ui/gfx",
-    "//url:url",
   ]
 
   if (use_aura) {
@@ -49,17 +47,7 @@ static_library("javascript_dialogs") {
       "views/app_modal_dialog_view_views.h",
     ]
 
-    if (is_chromeos_lacros) {
-      sources += [
-        "views/layer_dimmer.cc",
-        "views/layer_dimmer.h",
-      ]
-    }
-
-    deps += [
-      "//build:chromeos_buildflags",
-      "//ui/views",
-    ]
+    deps += [ "//ui/views" ]
   }
 
   if (is_android) {
@@ -75,6 +63,15 @@ static_library("javascript_dialogs") {
       "//ui/android",
     ]
   }
+
+  if (is_ios) {
+    sources += [
+      "ios/javascript_dialog_view_coordinator.h",
+      "ios/javascript_dialog_view_coordinator.mm",
+      "ios/tab_modal_dialog_view_ios.h",
+      "ios/tab_modal_dialog_view_ios.mm",
+    ]
+  }
 }
 
 source_set("unit_tests") {
@@ -85,19 +82,7 @@ source_set("unit_tests") {
   deps = [
     ":javascript_dialogs",
     "//base",
-    "//skia",
-    "//testing/gmock",
     "//testing/gtest",
-    "//url:url",
+    "//url",
   ]
-
-  if (is_chromeos_lacros) {
-    sources += [ "views/layer_dimmer_unittest.cc" ]
-
-    deps += [
-      "//ui/aura",
-      "//ui/compositor",
-      "//ui/gfx/geometry",
-    ]
-  }
 }

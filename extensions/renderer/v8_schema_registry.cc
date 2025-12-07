@@ -42,7 +42,7 @@ void DeepFreeze(const v8::Local<v8::Object>& object,
                 const v8::Local<v8::Context>& context) {
   // Don't let the object trace upwards via the prototype.
   v8::Maybe<bool> maybe =
-      object->SetPrototype(context, v8::Null(context->GetIsolate()));
+      object->SetPrototypeV2(context, v8::Null(v8::Isolate::GetCurrent()));
   CHECK(maybe.IsJust() && maybe.FromJust());
   v8::Local<v8::Array> property_names =
       object->GetOwnPropertyNames(context).ToLocalChecked();
@@ -103,10 +103,14 @@ class SchemaRegistryNativeHandler : public ObjectBackedNativeHandler {
 
 }  // namespace
 
-V8SchemaRegistry::V8SchemaRegistry() {
-}
+V8SchemaRegistry::V8SchemaRegistry() = default;
 
 V8SchemaRegistry::~V8SchemaRegistry() {
+  if (!context_holder_) {
+    return;
+  }
+  v8::HandleScope handle_scope(context_holder_->isolate());
+  context_holder_.reset();
 }
 
 std::unique_ptr<NativeHandler> V8SchemaRegistry::AsNativeHandler(

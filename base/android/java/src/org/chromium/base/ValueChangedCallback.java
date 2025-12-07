@@ -4,10 +4,9 @@
 
 package org.chromium.base;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -21,7 +20,8 @@ import java.util.Objects;
  *
  * @param <T> The type to observe.
  */
-public class ValueChangedCallback<T> implements Callback<T> {
+@NullMarked
+public class ValueChangedCallback<T extends @Nullable Object> implements Callback<T> {
     /**
      * Interface for observers that care about monitoring both the old and new values when a
      * callback is invoked.
@@ -29,7 +29,7 @@ public class ValueChangedCallback<T> implements Callback<T> {
      * @param <T> The type to observe.
      */
     @FunctionalInterface
-    public interface ValueChangedObserver<T> {
+    public interface ValueChangedObserver<T extends @Nullable Object> {
         /**
          * Called when the {@link Callback} is invoked with both new and old values.
          *
@@ -37,16 +37,16 @@ public class ValueChangedCallback<T> implements Callback<T> {
          * @param oldValue The previous value. Depending on what is being observed this might not be
          *     valid to use anymore.
          */
-        public void onValueChanged(@Nullable T newValue, @Nullable T oldValue);
+        void onValueChanged(T newValue, @Nullable T oldValue);
     }
 
-    private final @NonNull ValueChangedObserver<T> mValueChangedObserver;
+    private final ValueChangedObserver<T> mValueChangedObserver;
     private @Nullable T mLastValue;
 
     /**
      * @param onValueChangedObserver The {@link ValueChangedObserver} that receives updates.
      */
-    public ValueChangedCallback(@NonNull ValueChangedObserver<T> onValueChangedObserver) {
+    public ValueChangedCallback(ValueChangedObserver<T> onValueChangedObserver) {
         mValueChangedObserver = onValueChangedObserver;
     }
 

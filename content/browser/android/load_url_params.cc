@@ -12,14 +12,16 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_jni_headers/LoadUrlParams_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace content {
 
-jboolean JNI_LoadUrlParams_IsDataScheme(JNIEnv* env,
-                                        const JavaParamRef<jstring>& jurl) {
+static jboolean JNI_LoadUrlParams_IsDataScheme(JNIEnv* env,
+                                               const JavaRef<jstring>& jurl) {
   GURL url(base::android::ConvertJavaStringToUTF8(env, jurl));
   return url.SchemeIs(url::kDataScheme);
 }
 
 }  // namespace content
+
+DEFINE_JNI(LoadUrlParams)

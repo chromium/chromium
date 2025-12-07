@@ -4,6 +4,8 @@
 
 package org.chromium.components.permissions;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -30,6 +32,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.MathUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.content_public.browser.bluetooth_scanning.Event;
@@ -46,6 +49,7 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
  * The dialog is shown by create(), and always runs finishDialog() as it's closing.
  */
 @JNINamespace("permissions")
+@NullMarked
 public class BluetoothScanningPermissionDialog {
     // How much of the height of the screen should be taken up by the listview.
     private static final float LISTVIEW_HEIGHT_PERCENT = 0.30f;
@@ -55,9 +59,6 @@ public class BluetoothScanningPermissionDialog {
     private static final int MIN_HEIGHT_DP = (int) (LIST_ROW_HEIGHT_DP * 1.5);
     // The maximum height of the listview in the dialog (in dp).
     private static final int MAX_HEIGHT_DP = (int) (LIST_ROW_HEIGHT_DP * 8.5);
-
-    // The window that owns this dialog.
-    private final WindowAndroid mWindowAndroid;
 
     // Always equal to mWindowAndroid.getActivity().get(), but stored separately to make sure it's
     // not GC'ed.
@@ -91,24 +92,24 @@ public class BluetoothScanningPermissionDialog {
      *
      * @param windowAndroid The window that owns this dialog.
      * @param origin The origin for the site wanting to do Bluetooth scanning.
-     * @param securityLevel The security level of the connection to the site wanting to do
-     *                      Bluetooth scanning. For valid values see
-     *                      SecurityStateModel::SecurityLevel.
+     * @param securityLevel The security level of the connection to the site wanting to do Bluetooth
+     *     scanning. For valid values see SecurityStateModel::SecurityLevel.
      * @param nativeBluetoothScanningPermissionDialogPtr A pointer back to the native part of the
-     *                                                   implementation for this dialog.
+     *     implementation for this dialog.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public BluetoothScanningPermissionDialog(
             WindowAndroid windowAndroid,
             String origin,
             int securityLevel,
             BluetoothScanningPromptAndroidDelegate delegate,
             long nativeBluetoothScanningPermissionDialogPtr) {
-        mWindowAndroid = windowAndroid;
-        mActivity = windowAndroid.getActivity().get();
-        assert mActivity != null;
-        mContext = windowAndroid.getContext().get();
-        assert mContext != null;
+        Activity activity = windowAndroid.getActivity().get();
+        assert activity != null;
+        mActivity = activity;
+        Context context = windowAndroid.getContext().get();
+        assert context != null;
+        mContext = context;
         mDelegate = delegate;
         mNativeBluetoothScanningPermissionDialogPtr = nativeBluetoothScanningPermissionDialogPtr;
 
@@ -237,7 +238,7 @@ public class BluetoothScanningPermissionDialog {
         return dialog;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     @CalledByNative
     public void addOrUpdateDevice(String deviceId, String deviceName) {
         if (TextUtils.isEmpty(deviceName)) {
@@ -283,7 +284,7 @@ public class BluetoothScanningPermissionDialog {
                         LinearLayout.LayoutParams.MATCH_PARENT));
         mDialog.setOnCancelListener(dialog -> finishDialog(Event.CANCELED));
 
-        Window window = mDialog.getWindow();
+        Window window = assumeNonNull(mDialog.getWindow());
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
             // On smaller screens, make the dialog fill the width of the screen,
             // and appear at the top.

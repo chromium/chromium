@@ -1,0 +1,11 @@
+include_rules = [
+  "+base",
+  "+crypto",
+  "+ui/gfx/skia_span_util.h",
+]
+
+specific_include_rules = {
+  "noise_helper_unittest.cc": [
+    "+url",
+  ]
+}

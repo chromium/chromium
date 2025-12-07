@@ -5,19 +5,29 @@
 package org.chromium.chrome.browser.autofill.vcn;
 
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 
+import androidx.annotation.DrawableRes;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.url.GURL;
 
-import java.util.LinkedList;
+import java.util.List;
+import java.util.function.Function;
 
 /** The model of the autofill virtual card number (VCN) enrollment bottom sheet UI. */
+@NullMarked
 /*package*/ abstract class AutofillVcnEnrollBottomSheetProperties {
     /** Opens links. */
-    static interface LinkOpener {
+    interface LinkOpener {
         /**
          * Opens a link and records the metric for opening it.
          *
@@ -72,7 +82,7 @@ import java.util.LinkedList;
     /** Legal messages. */
     static class LegalMessages {
         /** Legal message lines. */
-        final LinkedList<LegalMessageLine> mLines;
+        final List<LegalMessageLine> mLines;
 
         /** The type of link to record in metrics when a link is tapped. */
         @VirtualCardEnrollmentLinkType final int mLinkType;
@@ -87,7 +97,7 @@ import java.util.LinkedList;
          * @param linkType the type of link to record in metrics when link is tapped.
          */
         LegalMessages(
-                LinkedList<LegalMessageLine> lines,
+                List<LegalMessageLine> lines,
                 @VirtualCardEnrollmentLinkType int linkType,
                 LinkOpener linkOpener) {
             mLines = lines;
@@ -99,7 +109,13 @@ import java.util.LinkedList;
     /** Issuer icon. */
     static class IssuerIcon {
         /** The bitmap for the issuer icon. */
-        final Bitmap mBitmap;
+        final @Nullable Bitmap mBitmap;
+
+        /** The resource id for the issuer icon. */
+        final @DrawableRes int mIconResource;
+
+        /** The url for an issuer icon. */
+        final @Nullable GURL mIconUrl;
 
         /** The width of the issuer icon. */
         final int mWidth;
@@ -109,11 +125,35 @@ import java.util.LinkedList;
 
         /** Constructs an issuer icon. */
         IssuerIcon(Bitmap bitmap, int width, int height) {
+            assert !ChromeFeatureList.isEnabled(
+                    AutofillFeatures.AUTOFILL_ENABLE_VIRTUAL_CARD_JAVA_PAYMENTS_DATA_MANAGER);
             mBitmap = bitmap;
+            mIconResource = 0;
+            mIconUrl = null;
             mWidth = width;
             mHeight = height;
         }
+
+        /* Constructs an issuer icon given a default icon resource and an optional custom url. */
+        IssuerIcon(@DrawableRes int iconResource, GURL iconUrl) {
+            assert ChromeFeatureList.isEnabled(
+                    AutofillFeatures.AUTOFILL_ENABLE_VIRTUAL_CARD_JAVA_PAYMENTS_DATA_MANAGER);
+            mBitmap = null;
+            mIconResource = iconResource;
+            mIconUrl = iconUrl;
+            mWidth = 0;
+            mHeight = 0;
+        }
     }
+
+    /**
+     * A call back to retrieve the drawable for the given issuer icon when the issuer icon.
+     *
+     * <p>This callback does not apply to IssuerIcons initialized with a bitmap, constructed via
+     * {@link IssuerIcon#IssuerIcon(Bitmap, int, int)}.
+     */
+    static final ReadableObjectPropertyKey<Function<IssuerIcon, Drawable>>
+            ISSUER_ICON_FETCH_CALLBACK = new ReadableObjectPropertyKey<>();
 
     /** The prompt message for the bottom sheet. */
     static final ReadableObjectPropertyKey<String> MESSAGE_TEXT = new ReadableObjectPropertyKey<>();
@@ -122,23 +162,12 @@ import java.util.LinkedList;
     static final ReadableObjectPropertyKey<Description> DESCRIPTION =
             new ReadableObjectPropertyKey<>();
 
-    /**
-     * The accessibility description for the container that displays the issuer icon, card label,
-     * and card description.
-     */
-    static final ReadableObjectPropertyKey<String> CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION =
-            new ReadableObjectPropertyKey<>();
-
     /** The icon for the card. */
     static final ReadableObjectPropertyKey<IssuerIcon> ISSUER_ICON =
             new ReadableObjectPropertyKey<>();
 
     /** The label for the card. */
     static final ReadableObjectPropertyKey<String> CARD_LABEL = new ReadableObjectPropertyKey<>();
-
-    /** The description for the card. */
-    static final ReadableObjectPropertyKey<String> CARD_DESCRIPTION =
-            new ReadableObjectPropertyKey<>();
 
     /** Legal messages from Google Pay. */
     static final ReadableObjectPropertyKey<LegalMessages> GOOGLE_LEGAL_MESSAGES =
@@ -159,23 +188,17 @@ import java.util.LinkedList;
     /** Indicates whether the bottom sheet is in a loading state. */
     static final WritableBooleanPropertyKey SHOW_LOADING_STATE = new WritableBooleanPropertyKey();
 
-    /** The description for the loading view. */
-    static final ReadableObjectPropertyKey<String> LOADING_DESCRIPTION =
-            new ReadableObjectPropertyKey<>();
-
     static final PropertyKey[] ALL_KEYS = {
         MESSAGE_TEXT,
         DESCRIPTION,
-        CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION,
         ISSUER_ICON,
+        ISSUER_ICON_FETCH_CALLBACK,
         CARD_LABEL,
-        CARD_DESCRIPTION,
         GOOGLE_LEGAL_MESSAGES,
         ISSUER_LEGAL_MESSAGES,
         ACCEPT_BUTTON_LABEL,
         CANCEL_BUTTON_LABEL,
-        SHOW_LOADING_STATE,
-        LOADING_DESCRIPTION
+        SHOW_LOADING_STATE
     };
 
     /** Do not instantiate. */

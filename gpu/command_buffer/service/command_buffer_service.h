@@ -15,13 +15,14 @@
 #include "gpu/command_buffer/common/command_buffer.h"
 #include "gpu/command_buffer/common/command_buffer_shared.h"
 #include "gpu/command_buffer/service/async_api_interface.h"
+#include "gpu/command_buffer/service/gpu_command_buffer_service_export.h"
 
 namespace gpu {
 
 class MemoryTracker;
 class TransferBufferManager;
 
-class GPU_EXPORT CommandBufferServiceBase {
+class GPU_COMMAND_BUFFER_SERVICE_EXPORT CommandBufferServiceBase {
  public:
   virtual ~CommandBufferServiceBase() = default;
 
@@ -47,7 +48,7 @@ class GPU_EXPORT CommandBufferServiceBase {
   virtual void SetContextLostReason(error::ContextLostReason) = 0;
 };
 
-class GPU_EXPORT CommandBufferServiceClient {
+class GPU_COMMAND_BUFFER_SERVICE_EXPORT CommandBufferServiceClient {
  public:
   enum CommandBatchProcessedResult {
     kContinueExecution,
@@ -69,13 +70,14 @@ union CommandBufferEntry;
 
 // An object that implements a shared memory command buffer and a synchronous
 // API to manage the put and get pointers.
-class GPU_EXPORT CommandBufferService : public CommandBufferServiceBase {
+class GPU_COMMAND_BUFFER_SERVICE_EXPORT CommandBufferService
+    : public CommandBufferServiceBase {
  public:
   static const int kParseCommandsSliceSmall = 20;
   static const int kParseCommandsSliceLarge = 100;
 
   CommandBufferService(CommandBufferServiceClient* client,
-                       MemoryTracker* memory_tracker);
+                       scoped_refptr<MemoryTracker> memory_tracker);
 
   CommandBufferService(const CommandBufferService&) = delete;
   CommandBufferService& operator=(const CommandBufferService&) = delete;
@@ -134,6 +136,8 @@ class GPU_EXPORT CommandBufferService : public CommandBufferServiceBase {
   }
 
   size_t GetSharedMemoryBytesAllocated() const;
+
+  bool ShouldYield();
 
  private:
   raw_ptr<CommandBufferServiceClient> client_;

@@ -19,8 +19,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/sqlite_proto/key_value_table.h"
@@ -157,7 +158,7 @@ void KeyValueData<T, Compare>::InitializeOnDBSequence() {
   if (!keys_to_delete.empty()) {
     manager_->ExecuteDBTaskOnDBSequence(
         base::BindOnce(&KeyValueTable<T>::DeleteData, backend_table_,
-                       std::vector<std::string>(keys_to_delete)));
+                       std::move(keys_to_delete)));
   }
 
   data_cache_ = std::move(data_map);
@@ -260,7 +261,7 @@ void KeyValueData<T, Compare>::FlushDataToDisk() {
   if (!keys_to_delete.empty()) {
     manager_->ScheduleDBTask(
         FROM_HERE, base::BindOnce(&KeyValueTable<T>::DeleteData, backend_table_,
-                                  keys_to_delete));
+                                  std::move(keys_to_delete)));
   }
 
   deferred_updates_.clear();

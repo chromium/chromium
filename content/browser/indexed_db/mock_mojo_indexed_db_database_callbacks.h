@@ -12,19 +12,17 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
-namespace content {
+namespace content::indexed_db {
 
-class MockMojoIndexedDBDatabaseCallbacks
-    : public blink::mojom::IDBDatabaseCallbacks {
+class MockMojoDatabaseCallbacks : public blink::mojom::IDBDatabaseCallbacks {
  public:
-  MockMojoIndexedDBDatabaseCallbacks();
+  MockMojoDatabaseCallbacks();
 
-  MockMojoIndexedDBDatabaseCallbacks(
-      const MockMojoIndexedDBDatabaseCallbacks&) = delete;
-  MockMojoIndexedDBDatabaseCallbacks& operator=(
-      const MockMojoIndexedDBDatabaseCallbacks&) = delete;
+  MockMojoDatabaseCallbacks(const MockMojoDatabaseCallbacks&) = delete;
+  MockMojoDatabaseCallbacks& operator=(const MockMojoDatabaseCallbacks&) =
+      delete;
 
-  ~MockMojoIndexedDBDatabaseCallbacks() override;
+  ~MockMojoDatabaseCallbacks() override;
 
   // Creates a remote that must be passed over another mojo pipe before it's
   // used.
@@ -49,6 +47,6 @@ class MockMojoIndexedDBDatabaseCallbacks
   mojo::AssociatedReceiver<blink::mojom::IDBDatabaseCallbacks> receiver_{this};
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_MOCK_MOJO_INDEXED_DB_DATABASE_CALLBACKS_H_

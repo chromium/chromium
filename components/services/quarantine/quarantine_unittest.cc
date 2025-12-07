@@ -64,7 +64,8 @@ class QuarantineTest : public testing::Test {
 TEST_F(QuarantineTest, FileCanBeOpenedForReadAfterAnnotation) {
   base::FilePath test_file = GetTestFilePath();
   QuarantineFile(
-      test_file, GURL(kInternetURL), GURL(kInternetReferrerURL), kTestGUID,
+      test_file, GURL(kInternetURL), GURL(kInternetReferrerURL),
+      /*request_initiator=*/std::nullopt, kTestGUID,
       base::BindOnce(&CheckQuarantineResult, QuarantineFileResult::OK));
   base::RunLoop().RunUntilIdle();
 
@@ -76,7 +77,7 @@ TEST_F(QuarantineTest, FileCanBeOpenedForReadAfterAnnotation) {
 TEST_F(QuarantineTest, FileCanBeAnnotatedWithNoGUID) {
   QuarantineFile(
       GetTestFilePath(), GURL(kInternetURL), GURL(kInternetReferrerURL),
-      std::string(),
+      /*request_initiator=*/std::nullopt, std::string(),
       base::BindOnce(&CheckQuarantineResult, QuarantineFileResult::OK));
   base::RunLoop().RunUntilIdle();
 }

@@ -9,15 +9,16 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_focus_cycler.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -34,24 +35,23 @@ BackButton::BackButton(Shelf* shelf) : ShelfControlButton(shelf, this) {
 BackButton::~BackButton() {}
 
 void BackButton::HandleLocaleChange() {
+  ax_name_change_subscription_ =
+      GetViewAccessibility().AddStringAttributeChangedCallback(
+          ax::mojom::StringAttribute::kName,
+          base::BindRepeating(&BackButton::OnAXNameChanged,
+                              base::Unretained(this)));
+
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ASH_SHELF_BACK_BUTTON_TITLE));
-  TooltipTextChanged();
 }
 
 void BackButton::PaintButtonContents(gfx::Canvas* canvas) {
   // Use PaintButtonContents instead of SetImage so the icon gets drawn at
   // |GetCenterPoint| coordinates instead of always in the center.
   gfx::ImageSkia img = CreateVectorIcon(
-      kShelfBackIcon,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kButtonIconColor));
+      kShelfBackIcon, GetColorProvider()->GetColor(cros_tokens::kColorPrimary));
   canvas->DrawImageInt(img, GetCenterPoint().x() - img.width() / 2,
                        GetCenterPoint().y() - img.height() / 2);
-}
-
-std::u16string BackButton::GetTooltipText(const gfx::Point& p) const {
-  return GetViewAccessibility().GetCachedName();
 }
 
 void BackButton::OnShelfButtonAboutToRequestFocusFromTabTraversal(
@@ -88,6 +88,11 @@ void BackButton::ButtonPressed(views::Button* sender,
 void BackButton::OnThemeChanged() {
   ShelfControlButton::OnThemeChanged();
   SchedulePaint();
+}
+
+void BackButton::OnAXNameChanged(ax::mojom::StringAttribute attribute,
+                                 const std::optional<std::string>& name) {
+  SetTooltipText(GetViewAccessibility().GetCachedName());
 }
 
 BEGIN_METADATA(BackButton)

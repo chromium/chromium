@@ -206,17 +206,18 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
     ];
   }
 
-  private website_: string;
-  private username_: string;
-  private password_: string;
-  private note_: string;
-  private usernamesBySignonRealm_: Map<string, Set<string>>;
-  private websiteErrorMessage_: string|null;
-  private usernameErrorMessage_: string|null;
-  private isPasswordInvalid_: boolean;
-  private urlCollection_: chrome.passwordsPrivate.UrlCollection|null;
-  private readonly storeOptionAccountValue_: string;
-  private readonly storeOptionDeviceValue_: string;
+  declare private website_: string;
+  declare private username_: string;
+  declare private password_: string;
+  declare private note_: string;
+  declare private usernamesBySignonRealm_: Map<string, Set<string>>;
+  declare private websiteErrorMessage_: string|null;
+  declare private usernameErrorMessage_: string|null;
+  declare private canAddPassword_: boolean;
+  declare private isPasswordInvalid_: boolean;
+  declare private urlCollection_: chrome.passwordsPrivate.UrlCollection|null;
+  declare private readonly storeOptionAccountValue_: string;
+  declare private readonly storeOptionDeviceValue_: string;
 
   private setSavedPasswordsListener_: (
       (entries: chrome.passwordsPrivate.PasswordUiEntry[]) => void)|null = null;
@@ -245,12 +246,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
 
   private updateDefaultStore_() {
     if (this.isAccountStoreUser) {
-      PasswordManagerImpl.getInstance().isAccountStoreDefault().then(
-          isAccountStoreDefault => {
-            this.$.storePicker.value = isAccountStoreDefault ?
-                this.storeOptionAccountValue_ :
-                this.storeOptionDeviceValue_;
-          });
+      this.$.storePicker.value = this.storeOptionAccountValue_;
     }
   }
 
@@ -263,7 +259,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
   /**
    * Helper function that checks whether the entered url is valid.
    */
-  private async validateWebsite_() {
+  private validateWebsite_() {
     if (this.website_.length === 0) {
       this.websiteErrorMessage_ = null;
       return;
@@ -292,7 +288,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
   }
 
   private showWebsiteError_(): boolean {
-    return !!this.websiteErrorMessage_ && this.websiteErrorMessage_!.length > 0;
+    return !!this.websiteErrorMessage_ && this.websiteErrorMessage_.length > 0;
   }
 
   private computeUsernameErrorMessage_(): string|null {
@@ -360,11 +356,6 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
         AddCredentialFromSettingsUserInteractions.CREDENTIAL_ADDED);
     const useAccountStore = this.isAccountStoreUser &&
         (this.$.storePicker.value === this.storeOptionAccountValue_);
-    if (!this.$.storePicker.hidden) {
-      chrome.metricsPrivate.recordBoolean(
-          'PasswordManager.AddCredentialFromSettings.AccountStoreUsed2',
-          useAccountStore);
-    }
     if (this.note_.trim()) {
       recordPasswordNoteAction(PasswordNoteAction.NOTE_ADDED_IN_ADD_DIALOG);
     }

@@ -8,10 +8,15 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/shell.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "ui/aura/window_tree_host.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/compositor/compositor.h"
 #include "ui/display/display_features.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_snapshot.h"
@@ -113,12 +118,6 @@ void RefreshRateController::StopObservingPowerStatusForTest() {
 }
 
 void RefreshRateController::UpdateSeamlessRefreshRates(int64_t display_id) {
-  // Don't attempt dynamic refresh rate adjustment with hardware mirroring
-  // enabled.
-  if (display::features::IsHardwareMirrorModeEnabled()) {
-    return;
-  }
-
   auto callback =
       base::BindOnce(&RefreshRateController::OnSeamlessRefreshRatesReceived,
                      weak_ptr_factory_.GetWeakPtr(), display_id);
@@ -139,6 +138,7 @@ void RefreshRateController::OnSeamlessRefreshRatesReceived(
     // rates and some display topology change such as removing or disabling a
     // display.
     display_refresh_rates_.erase(display_id);
+    refresh_rate_preferences_.erase(display_id);
     return;
   }
 
@@ -155,8 +155,15 @@ void RefreshRateController::OnSeamlessRefreshRatesReceived(
 
   // Insert the new refresh rates, possibly replacing the old ones.
   display_refresh_rates_[display_id] = std::move(refresh_rates);
+  refresh_rate_preferences_.erase(display_id);
 
-  RefreshThrottleState();
+  RefreshOverrideState();
+
+  aura::Window* window = Shell::GetRootWindowForDisplayId(display_id);
+  if (window) {
+    window->GetHost()->compositor()->SetSeamlessRefreshRates(
+        display_refresh_rates_[display_id]);
+  }
 }
 
 void RefreshRateController::OnDisplayMetricsChanged(
@@ -177,29 +184,35 @@ void RefreshRateController::OnDisplayPerformanceModeChanged(
 }
 
 void RefreshRateController::UpdateStates() {
-  RefreshThrottleState();
+  RefreshOverrideState();
   RefreshVrrState();
 }
 
-void RefreshRateController::RefreshThrottleState() {
+void RefreshRateController::RefreshOverrideState() {
   if (!base::FeatureList::IsEnabled(
           ash::features::kSeamlessRefreshRateSwitching)) {
     return;
   }
 
-  // Don't attempt dynamic refresh rate adjustment with hardware mirroring
-  // enabled.
-  if (display::features::IsHardwareMirrorModeEnabled()) {
-    return;
+  RefreshRateOverrideMap refresh_rate_overrides = GetThrottleOverrides();
+
+  // Use preferred refresh rates instead of throttled refresh rates if present.
+  for (const auto& it : refresh_rate_preferences_) {
+    if (display_refresh_rates_.contains(it.first)) {
+      refresh_rate_overrides[it.first] = it.second;
+    }
   }
 
+  display_configurator_->SetRefreshRateOverrides(refresh_rate_overrides);
+}
+
+RefreshRateOverrideMap RefreshRateController::GetThrottleOverrides() {
   const ThrottleState throttle_state = GetDesiredThrottleState();
   if (throttle_state == ThrottleState::kDisabled) {
-    display_configurator_->SetRefreshRateOverrides({});
-    return;
+    return {};
   }
 
-  // Update the throttle state for each display.
+  // Update the override state for each display.
   RefreshRateOverrideMap refresh_rate_overrides;
   for (const auto& it : display_refresh_rates_) {
     // Only throttle the internal display.
@@ -225,7 +238,7 @@ void RefreshRateController::RefreshThrottleState() {
             << refresh_rate_overrides[it.first];
   }
 
-  display_configurator_->SetRefreshRateOverrides(refresh_rate_overrides);
+  return refresh_rate_overrides;
 }
 
 void RefreshRateController::RefreshVrrState() {
@@ -242,7 +255,7 @@ void RefreshRateController::RefreshVrrState() {
   if (game_window_observer_.IsObserving() &&
       current_performance_mode_ != ModeState::kPowerSaver) {
     display_configurator_->SetVrrEnabled(
-        {display::Screen::GetScreen()
+        {display::Screen::Get()
              ->GetDisplayNearestWindow(game_window_observer_.GetSource())
              .id()});
   } else {
@@ -264,8 +277,7 @@ RefreshRateController::GetDesiredThrottleState() {
     case ModeState::kIntelligent:
       return GetDynamicThrottleState();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return ThrottleState::kEnabled;
+      NOTREACHED();
   }
 }
 
@@ -273,7 +285,7 @@ RefreshRateController::ThrottleState
 RefreshRateController::GetDynamicThrottleState() {
   // Do not throttle when Borealis is active on the internal display.
   if (game_window_observer_.IsObserving() &&
-      display::Screen::GetScreen()
+      display::Screen::Get()
               ->GetDisplayNearestWindow(game_window_observer_.GetSource())
               .id() == display::Display::InternalDisplayId()) {
     return ThrottleState::kDisabled;
@@ -284,6 +296,39 @@ RefreshRateController::GetDynamicThrottleState() {
   }
 
   return ThrottleState::kEnabled;
+}
+
+void RefreshRateController::OnSetPreferredRefreshRate(
+    aura::WindowTreeHost* host,
+    float preferred_refresh_rate) {
+  CHECK(display::Screen::HasScreen());
+  const int64_t display_id =
+      display::Screen::Get()->GetDisplayNearestWindow(host->window()).id();
+
+  // Only honor preferences for the internal display.
+  if (!display::IsInternalDisplayId(display_id)) {
+    return;
+  }
+
+  // No change.
+  const auto& it = refresh_rate_preferences_.find(display_id);
+  if (it != refresh_rate_preferences_.end() &&
+      it->second == preferred_refresh_rate) {
+    return;
+  }
+
+  if (preferred_refresh_rate) {
+    refresh_rate_preferences_[display_id] = preferred_refresh_rate;
+  } else {
+    refresh_rate_preferences_.erase(display_id);
+  }
+
+  RefreshOverrideState();
+}
+
+void RefreshRateController::OnWindowTreeHostCreated(
+    aura::WindowTreeHost* host) {
+  host->AddObserver(this);
 }
 
 }  // namespace ash

@@ -53,10 +53,11 @@ size_t FileManager::GetSizeOfArtifacts(const DirectoryKey& key) const {
           root_directory_.AppendASCII(key.AsciiDirname()));
     }
     case kZip: {
-      int64_t file_size = 0;
-      if (!base::GetFileSize(path, &file_size) || file_size < 0)
+      std::optional<int64_t> file_size = base::GetFileSize(path);
+      if (!file_size.has_value() || file_size.value() < 0) {
         return 0;
-      return file_size;
+      }
+      return file_size.value();
     }
     case kNone:  // fallthrough
     default:

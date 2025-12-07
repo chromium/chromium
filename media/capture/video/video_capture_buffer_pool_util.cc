@@ -5,10 +5,8 @@
 #include "media/capture/video/video_capture_buffer_pool_util.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/base/media_switches.h"
 #include "media/capture/capture_switches.h"
-#include "services/video_effects/public/cpp/buildflags.h"
 
 namespace media {
 
@@ -24,7 +22,7 @@ int DeviceVideoCaptureMaxBufferPoolSize() {
   // Also, this must be greater than the frame delay of VideoToolbox encoder
   // for AVC High Profile.
   max_buffer_count = 15;
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
   // On Chrome OS with MIPI cameras running on HAL v3, there can be four
   // concurrent streams of camera pipeline depth ~6. We allow at most 36 buffers
   // here to take into account the delay caused by the consumer (e.g. display or
@@ -43,15 +41,6 @@ int DeviceVideoCaptureMaxBufferPoolSize() {
   // micro-freeze in the renderer or the gpu service.
   if (switches::IsVideoCaptureUseGpuMemoryBufferEnabled()) {
     max_buffer_count = 10;
-  }
-#endif
-
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-  if (base::FeatureList::IsEnabled(media::kCameraMicEffects)) {
-    // We may need 2x as many buffers if video effects are going to be applied
-    // to account for the fact that each captured video frame will have
-    // additional buffer allocated for post-processing result.
-    max_buffer_count = max_buffer_count * 2;
   }
 #endif
 

@@ -49,9 +49,6 @@ void DecryptingRenderer::Initialize(MediaResource* media_resource,
   DCHECK(media_resource);
   DCHECK(client);
 
-  // Using |this| with a MediaResource::Type::URL will result in a crash.
-  DCHECK_EQ(media_resource->GetType(), MediaResource::Type::kStream);
-
   media_resource_ = media_resource;
   client_ = client;
   init_cb_ = std::move(init_cb);
@@ -116,9 +113,10 @@ void DecryptingRenderer::SetPreservesPitch(bool preserves_pitch) {
   renderer_->SetPreservesPitch(preserves_pitch);
 }
 
-void DecryptingRenderer::SetWasPlayedWithUserActivation(
-    bool was_played_with_user_activation) {
-  renderer_->SetWasPlayedWithUserActivation(was_played_with_user_activation);
+void DecryptingRenderer::SetWasPlayedWithUserActivationAndHighMediaEngagement(
+    bool was_played_with_user_activation_and_high_media_engagement) {
+  renderer_->SetWasPlayedWithUserActivationAndHighMediaEngagement(
+      was_played_with_user_activation_and_high_media_engagement);
 }
 
 void DecryptingRenderer::Flush(base::OnceClosure flush_cb) {
@@ -141,18 +139,12 @@ base::TimeDelta DecryptingRenderer::GetMediaTime() {
   return renderer_->GetMediaTime();
 }
 
-void DecryptingRenderer::OnSelectedVideoTracksChanged(
-    const std::vector<DemuxerStream*>& enabled_tracks,
+void DecryptingRenderer::OnTracksChanged(
+    DemuxerStream::Type track_type,
+    DemuxerStream* enabled_track,
     base::OnceClosure change_completed_cb) {
-  renderer_->OnSelectedVideoTracksChanged(enabled_tracks,
-                                          std::move(change_completed_cb));
-}
-
-void DecryptingRenderer::OnEnabledAudioTracksChanged(
-    const std::vector<DemuxerStream*>& enabled_tracks,
-    base::OnceClosure change_completed_cb) {
-  renderer_->OnEnabledAudioTracksChanged(enabled_tracks,
-                                         std::move(change_completed_cb));
+  renderer_->OnTracksChanged(track_type, enabled_track,
+                             std::move(change_completed_cb));
 }
 
 RendererType DecryptingRenderer::GetRendererType() {

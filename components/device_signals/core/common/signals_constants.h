@@ -16,6 +16,7 @@ namespace names {
 
 extern const char kAgentId[];
 extern const char kAllowScreenLock[];
+extern const char kAntivirusState[];
 extern const char kBrowserVersion[];
 extern const char kBuiltInDnsClientEnabled[];
 extern const char kChromeRemoteDesktopAppBlocked[];
@@ -43,7 +44,6 @@ extern const char kSecureBootEnabled[];
 extern const char kSerialNumber[];
 extern const char kSiteIsolationEnabled[];
 extern const char kSystemDnsServers[];
-extern const char kThirdPartyBlockingEnabled[];
 extern const char kTrigger[];
 extern const char kUserEnrollmentDomain[];
 extern const char kWindowsMachineDomain[];

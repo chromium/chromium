@@ -57,8 +57,8 @@ class PLATFORM_EXPORT FETurbulence final : public FilterEffect {
   bool StitchTiles() const;
   bool SetStitchTiles(bool);
 
-  WTF::TextStream& ExternalRepresentation(WTF::TextStream&,
-                                          int indention) const override;
+  StringBuilder& ExternalRepresentation(StringBuilder&,
+                                        wtf_size_t indent) const override;
 
  private:
   sk_sp<PaintFilter> CreateImageFilter() override;

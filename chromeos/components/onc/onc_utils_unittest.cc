@@ -28,14 +28,14 @@
 #include "onc_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using testing::Pointee;
 namespace chromeos::onc {
 
 TEST(ONCDecrypterTest, BrokenEncryptionIterations) {
   base::Value::Dict encrypted_onc =
       test_utils::ReadTestDictionary("broken-encrypted-iterations.onc");
 
-  std::optional<base::Value::Dict> decrypted_onc =
-      Decrypt("test0000", encrypted_onc);
+  std::optional<base::Value::Dict> decrypted_onc = Decrypt(encrypted_onc);
 
   EXPECT_FALSE(decrypted_onc.has_value());
 }
@@ -44,8 +44,7 @@ TEST(ONCDecrypterTest, BrokenEncryptionZeroIterations) {
   base::Value::Dict encrypted_onc =
       test_utils::ReadTestDictionary("broken-encrypted-zero-iterations.onc");
 
-  std::optional<base::Value::Dict> decrypted_onc =
-      Decrypt("test0000", encrypted_onc);
+  std::optional<base::Value::Dict> decrypted_onc = Decrypt(encrypted_onc);
 
   EXPECT_FALSE(decrypted_onc.has_value());
 }
@@ -58,8 +57,9 @@ TEST(ONCDecrypterTest, LoadEncryptedOnc) {
 
   std::string error;
   std::optional<base::Value::Dict> actual_decrypted_onc =
-      Decrypt("test0000", encrypted_onc);
+      Decrypt(encrypted_onc);
 
+  ASSERT_TRUE(actual_decrypted_onc.has_value());
   EXPECT_TRUE(test_utils::Equals(&expected_decrypted_onc,
                                  &actual_decrypted_onc.value()));
 }
@@ -68,6 +68,7 @@ namespace {
 
 const char* kLoginId = "hans";
 const char* kLoginEmail = "hans@my.domain.com";
+const char* kDeviceSerialNumber = "ABC123DEF456";
 
 const std::vector<std::string> kValidApnTypes = {
     ::onc::cellular_apn::kIpTypeAutomatic,
@@ -85,6 +86,7 @@ base::flat_map<std::string, std::string> GetTestStringSubstitutions() {
   base::flat_map<std::string, std::string> substitutions;
   substitutions[::onc::substitutes::kLoginID] = kLoginId;
   substitutions[::onc::substitutes::kLoginEmail] = kLoginEmail;
+  substitutions[::onc::substitutes::kDeviceSerialNumber] = kDeviceSerialNumber;
   return substitutions;
 }
 
@@ -104,7 +106,7 @@ TEST(ONCStringExpansion, OpenVPN) {
   EXPECT_EQ(*actual_expanded, std::string("abc ") + kLoginEmail + " def");
 }
 
-TEST(ONCStringExpansion, WiFi_EAP) {
+TEST(ONCStringExpansion, WiFiEap) {
   base::Value::Dict wifi_onc =
       test_utils::ReadTestDictionary("wifi_clientcert_with_cert_pems.onc");
 
@@ -117,6 +119,71 @@ TEST(ONCStringExpansion, WiFi_EAP) {
   ASSERT_TRUE(actual_expanded);
   EXPECT_EQ(*actual_expanded,
             std::string("abc ") + kLoginId + "@my.domain.com");
+}
+
+// Test that placeholders are being expanded in the ClientCertPattern fields.
+TEST(ONCStringExpansion, WiFiEapPlaceholdersAreReplaced) {
+  base::Value::Dict wifi_onc = test_utils::ReadTestDictionary(
+      "wifi_clientcert_with_cert_placeholders.onc");
+
+  VariableExpander variable_expander(GetTestStringSubstitutions());
+  ExpandStringsInOncObject(kNetworkConfigurationSignature, variable_expander,
+                           &wifi_onc);
+
+  base::Value::Dict* expanded_issuer =
+      wifi_onc.FindDictByDottedPath("WiFi.EAP.ClientCertPattern.Issuer");
+  ASSERT_TRUE(expanded_issuer);
+  EXPECT_EQ(*expanded_issuer,
+            base::Value::Dict()
+                .Set("CommonName", kDeviceSerialNumber)
+                .Set("Locality", kDeviceSerialNumber)
+                .Set("Organization", kDeviceSerialNumber)
+                .Set("OrganizationalUnit", kDeviceSerialNumber));
+
+  base::Value::Dict* expanded_subject =
+      wifi_onc.FindDictByDottedPath("WiFi.EAP.ClientCertPattern.Subject");
+  ASSERT_TRUE(expanded_subject);
+  EXPECT_EQ(*expanded_subject,
+            base::Value::Dict()
+                .Set("CommonName", kDeviceSerialNumber)
+                .Set("Locality", kDeviceSerialNumber)
+                .Set("Organization", kDeviceSerialNumber)
+                .Set("OrganizationalUnit", kDeviceSerialNumber));
+}
+
+// Test that strings that contain names of placeholders, but don't have the ${}
+// brackets around them are treated like normal strings and are not replaced.
+TEST(ONCStringExpansion, WiFiEapAlmostPlaceholdersAreNotReplaced) {
+  base::Value::Dict wifi_onc = test_utils::ReadTestDictionary(
+      "wifi_clientcert_with_almost_placeholders.onc");
+
+  VariableExpander variable_expander(GetTestStringSubstitutions());
+  ExpandStringsInOncObject(kNetworkConfigurationSignature, variable_expander,
+                           &wifi_onc);
+
+  std::string* name = wifi_onc.FindStringByDottedPath("Name");
+  ASSERT_TRUE(name);
+  EXPECT_EQ(*name, "DEVICE_SERIAL_NUMBER_placeholder_test");
+
+  constexpr char kExpectedValue[] = "DEVICE_SERIAL_NUMBER";
+
+  base::Value::Dict* expanded_issuer =
+      wifi_onc.FindDictByDottedPath("WiFi.EAP.ClientCertPattern.Issuer");
+  ASSERT_TRUE(expanded_issuer);
+  EXPECT_EQ(*expanded_issuer, base::Value::Dict()
+                                  .Set("CommonName", kExpectedValue)
+                                  .Set("Locality", kExpectedValue)
+                                  .Set("Organization", kExpectedValue)
+                                  .Set("OrganizationalUnit", kExpectedValue));
+
+  base::Value::Dict* expanded_subject =
+      wifi_onc.FindDictByDottedPath("WiFi.EAP.ClientCertPattern.Subject");
+  ASSERT_TRUE(expanded_subject);
+  EXPECT_EQ(*expanded_subject, base::Value::Dict()
+                                   .Set("CommonName", kExpectedValue)
+                                   .Set("Locality", kExpectedValue)
+                                   .Set("Organization", kExpectedValue)
+                                   .Set("OrganizationalUnit", kExpectedValue));
 }
 
 TEST(ONCResolveServerCertRefs, ResolveServerCertRefs) {
@@ -195,8 +262,8 @@ TEST(ONCUtils, ParseAndValidateOncForImport_ApnProvided) {
   base::Value::List certificates;
 
   ASSERT_TRUE(ParseAndValidateOncForImport(
-      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
-      &network_configs, &global_network_config, &certificates));
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
+      &global_network_config, &certificates));
 
   base::Value::Dict expected;
   expected.Set(::onc::cellular_apn::kAccessPointName, "test-apn");
@@ -206,8 +273,8 @@ TEST(ONCUtils, ParseAndValidateOncForImport_ApnProvided) {
 
   const auto* cellular_apn =
       network_configs[0].GetDict().FindByDottedPath("Cellular.APN");
-  EXPECT_THAT(cellular_apn->GetDict(),
-              base::test::DictionaryHasValues(std::move(expected)));
+  EXPECT_THAT(cellular_apn,
+              Pointee(base::test::DictionaryHasValues(std::move(expected))));
 }
 
 TEST(ONCUtils, ParseAndValidateOncForImport_NoApnProvided) {
@@ -217,8 +284,8 @@ TEST(ONCUtils, ParseAndValidateOncForImport_NoApnProvided) {
   base::Value::List certificates;
 
   ASSERT_TRUE(ParseAndValidateOncForImport(
-      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
-      &network_configs, &global_network_config, &certificates));
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
+      &global_network_config, &certificates));
 
   const auto* cellular_apn =
       network_configs[0].GetDict().FindByDottedPath("Cellular.APN");
@@ -235,8 +302,8 @@ TEST(ONCUtils, ParseAndValidateOncForImport_NoApnProvided) {
 
   base::Value::Dict expected;
   expected.Set(::onc::kRecommended, std::move(recommended));
-  EXPECT_THAT(cellular_apn->GetDict(),
-              base::test::DictionaryHasValues(std::move(expected)));
+  EXPECT_THAT(cellular_apn,
+              Pointee(base::test::DictionaryHasValues(std::move(expected))));
 }
 
 TEST(ONCUtils, ParseAndValidateOncForImport_APNAccessPointName) {
@@ -250,22 +317,22 @@ TEST(ONCUtils, ParseAndValidateOncForImport_APNAccessPointName) {
   std::string onc_blob =
       test_utils::GenerateTopLevelWithCellularWithAPNAsJSON(apn_data);
   ASSERT_TRUE(ParseAndValidateOncForImport(
-      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
-      &network_configs, &global_network_config, &certificates));
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
+      &global_network_config, &certificates));
 
   // Failure if APN has empty Access Point Name
   apn_data.access_point_name = "";
   onc_blob = test_utils::GenerateTopLevelWithCellularWithAPNAsJSON(apn_data);
   ASSERT_FALSE(ParseAndValidateOncForImport(
-      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
-      &network_configs, &global_network_config, &certificates));
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
+      &global_network_config, &certificates));
 
   //  Failure if APN has no AccessPointName field.
   apn_data.access_point_name = std::nullopt;
   onc_blob = test_utils::GenerateTopLevelWithCellularWithAPNAsJSON(apn_data);
   ASSERT_FALSE(ParseAndValidateOncForImport(
-      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
-      &network_configs, &global_network_config, &certificates));
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
+      &global_network_config, &certificates));
 }
 
 TEST(ONCUtils, ParseAndValidateOncForImport_APNApnType) {
@@ -279,8 +346,8 @@ TEST(ONCUtils, ParseAndValidateOncForImport_APNApnType) {
   std::string onc_blob =
       test_utils::GenerateTopLevelWithCellularWithAPNAsJSON(apn_data);
   ASSERT_TRUE(ParseAndValidateOncForImport(
-      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
-      &network_configs, &global_network_config, &certificates));
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
+      &global_network_config, &certificates));
 
   // Test valid APN types
   apn_data.apn_types = {
@@ -290,22 +357,22 @@ TEST(ONCUtils, ParseAndValidateOncForImport_APNApnType) {
   };
   onc_blob = test_utils::GenerateTopLevelWithCellularWithAPNAsJSON(apn_data);
   ASSERT_TRUE(ParseAndValidateOncForImport(
-      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
-      &network_configs, &global_network_config, &certificates));
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
+      &global_network_config, &certificates));
 
   // Test invalid APN types
   apn_data.apn_types = {"invalidApn", ::onc::cellular_apn::kApnTypeDefault};
   onc_blob = test_utils::GenerateTopLevelWithCellularWithAPNAsJSON(apn_data);
   ASSERT_FALSE(ParseAndValidateOncForImport(
-      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
-      &network_configs, &global_network_config, &certificates));
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
+      &global_network_config, &certificates));
 
   // Test empty APN types array
   apn_data.apn_types->clear();
   onc_blob = test_utils::GenerateTopLevelWithCellularWithAPNAsJSON(apn_data);
   ASSERT_FALSE(ParseAndValidateOncForImport(
-      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
-      &network_configs, &global_network_config, &certificates));
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
+      &global_network_config, &certificates));
 }
 
 TEST(ONCUtils, ParseAndValidateOncForImport_APNIpType) {
@@ -318,8 +385,8 @@ TEST(ONCUtils, ParseAndValidateOncForImport_APNIpType) {
   std::string onc_blob =
       test_utils::GenerateTopLevelWithCellularWithAPNAsJSON(apn_data);
   ASSERT_TRUE(ParseAndValidateOncForImport(
-      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
-      &network_configs, &global_network_config, &certificates));
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
+      &global_network_config, &certificates));
 
   // Test valid IpTypes
   for (const std::string& ip_type : kValidApnTypes) {
@@ -327,16 +394,16 @@ TEST(ONCUtils, ParseAndValidateOncForImport_APNIpType) {
     onc_blob = test_utils::GenerateTopLevelWithCellularWithAPNAsJSON(apn_data);
 
     ASSERT_TRUE(ParseAndValidateOncForImport(
-        onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
-        &network_configs, &global_network_config, &certificates));
+        onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
+        &global_network_config, &certificates));
   }
 
   // Failure if Invalid IP type
   apn_data.ip_type = "InvalidApnType";
   onc_blob = test_utils::GenerateTopLevelWithCellularWithAPNAsJSON(apn_data);
   ASSERT_FALSE(ParseAndValidateOncForImport(
-      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
-      &network_configs, &global_network_config, &certificates));
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
+      &global_network_config, &certificates));
 }
 
 TEST(ONCUtils, ParseAndValidateOncForImport_AdminAPNsExistForAdminAPNIds) {
@@ -350,29 +417,29 @@ TEST(ONCUtils, ParseAndValidateOncForImport_AdminAPNsExistForAdminAPNIds) {
   std::string onc_blob =
       test_utils::GenerateTopLevelWithCellularWithAPNAsJSON(apn_data);
   ASSERT_TRUE(ParseAndValidateOncForImport(
-      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
-      &network_configs, &global_network_config, &certificates));
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
+      &global_network_config, &certificates));
 
   apn_data.psim_admin_assigned_apn_ids = kTestAdminApnListSubsetIds;
   apn_data.admin_assigned_apn_ids = std::vector<std::string>();
   onc_blob = test_utils::GenerateTopLevelWithCellularWithAPNAsJSON(apn_data);
   ASSERT_TRUE(ParseAndValidateOncForImport(
-      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
-      &network_configs, &global_network_config, &certificates));
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
+      &global_network_config, &certificates));
 
   apn_data.psim_admin_assigned_apn_ids = std::vector<std::string>();
   apn_data.admin_assigned_apn_ids = kTestAdminApnListSubsetIds;
   onc_blob = test_utils::GenerateTopLevelWithCellularWithAPNAsJSON(apn_data);
   ASSERT_TRUE(ParseAndValidateOncForImport(
-      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
-      &network_configs, &global_network_config, &certificates));
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
+      &global_network_config, &certificates));
 
   apn_data.psim_admin_assigned_apn_ids = kTestAdminApnListSubsetIds;
   apn_data.admin_assigned_apn_ids = kTestAdminApnListSubsetIds;
   onc_blob = test_utils::GenerateTopLevelWithCellularWithAPNAsJSON(apn_data);
   ASSERT_TRUE(ParseAndValidateOncForImport(
-      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
-      &network_configs, &global_network_config, &certificates));
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
+      &global_network_config, &certificates));
 }
 
 TEST(ONCUtils, ParseAndValidateOncForImport_AdminAPNsDoNotExistForAdminAPNIds) {
@@ -387,43 +454,43 @@ TEST(ONCUtils, ParseAndValidateOncForImport_AdminAPNsDoNotExistForAdminAPNIds) {
   std::string onc_blob =
       test_utils::GenerateTopLevelWithCellularWithAPNAsJSON(apn_data);
   ASSERT_FALSE(ParseAndValidateOncForImport(
-      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
-      &network_configs, &global_network_config, &certificates));
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
+      &global_network_config, &certificates));
 
   apn_data.psim_admin_assigned_apn_ids = std::nullopt;
   apn_data.admin_assigned_apn_ids = kTestNonAdminApnListIds;
   onc_blob = test_utils::GenerateTopLevelWithCellularWithAPNAsJSON(apn_data);
   ASSERT_FALSE(ParseAndValidateOncForImport(
-      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
-      &network_configs, &global_network_config, &certificates));
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
+      &global_network_config, &certificates));
 
   apn_data.psim_admin_assigned_apn_ids = kTestNonAdminApnListIds;
   apn_data.admin_assigned_apn_ids = std::vector<std::string>();
   onc_blob = test_utils::GenerateTopLevelWithCellularWithAPNAsJSON(apn_data);
   ASSERT_FALSE(ParseAndValidateOncForImport(
-      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
-      &network_configs, &global_network_config, &certificates));
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
+      &global_network_config, &certificates));
 
   apn_data.psim_admin_assigned_apn_ids = std::vector<std::string>();
   apn_data.admin_assigned_apn_ids = kTestNonAdminApnListIds;
   onc_blob = test_utils::GenerateTopLevelWithCellularWithAPNAsJSON(apn_data);
   ASSERT_FALSE(ParseAndValidateOncForImport(
-      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
-      &network_configs, &global_network_config, &certificates));
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
+      &global_network_config, &certificates));
 
   apn_data.psim_admin_assigned_apn_ids = kTestAdminApnListAllIds;
   apn_data.admin_assigned_apn_ids = kTestNonAdminApnListIds;
   onc_blob = test_utils::GenerateTopLevelWithCellularWithAPNAsJSON(apn_data);
   ASSERT_FALSE(ParseAndValidateOncForImport(
-      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
-      &network_configs, &global_network_config, &certificates));
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
+      &global_network_config, &certificates));
 
   apn_data.psim_admin_assigned_apn_ids = kTestNonAdminApnListIds;
   apn_data.admin_assigned_apn_ids = kTestAdminApnListAllIds;
   onc_blob = test_utils::GenerateTopLevelWithCellularWithAPNAsJSON(apn_data);
   ASSERT_FALSE(ParseAndValidateOncForImport(
-      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
-      &network_configs, &global_network_config, &certificates));
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
+      &global_network_config, &certificates));
 }
 
 TEST(ONCUtils, ParseAndValidateOncForImport_CustomApnListRecommendedByDefault) {
@@ -434,8 +501,8 @@ TEST(ONCUtils, ParseAndValidateOncForImport_CustomApnListRecommendedByDefault) {
   base::Value::List certificates;
 
   ASSERT_TRUE(ParseAndValidateOncForImport(
-      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
-      &network_configs, &global_network_config, &certificates));
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
+      &global_network_config, &certificates));
 
   const auto* recommended =
       network_configs[0].GetDict().FindByDottedPath("Cellular.Recommended");
@@ -458,8 +525,8 @@ TEST(
   base::Value::List certificates;
 
   ASSERT_TRUE(ParseAndValidateOncForImport(
-      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
-      &network_configs, &global_network_config, &certificates));
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
+      &global_network_config, &certificates));
 
   const auto* recommended =
       network_configs[0].GetDict().FindByDottedPath("Cellular.Recommended");
@@ -481,8 +548,8 @@ TEST(
   base::Value::List certificates;
 
   ASSERT_TRUE(ParseAndValidateOncForImport(
-      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
-      &network_configs, &global_network_config, &certificates));
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
+      &global_network_config, &certificates));
 
   const auto* recommended =
       network_configs[0].GetDict().FindByDottedPath("Cellular.Recommended");
@@ -504,8 +571,8 @@ TEST(
   base::Value::List certificates;
 
   ASSERT_TRUE(ParseAndValidateOncForImport(
-      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
-      &network_configs, &global_network_config, &certificates));
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
+      &global_network_config, &certificates));
 
   const auto* recommended =
       network_configs[0].GetDict().FindByDottedPath("Cellular.Recommended");
@@ -520,8 +587,8 @@ TEST(ONCUtils, ParseAndValidateOncForImport_AdminApnProvided) {
   base::Value::List certificates;
 
   ASSERT_TRUE(ParseAndValidateOncForImport(
-      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
-      &network_configs, &global_network_config, &certificates));
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
+      &global_network_config, &certificates));
 
   // Expected custom APN list for the first network configuration
   base::Value::List expected_custom_apns;
@@ -652,8 +719,8 @@ TEST(ONCUtils,
   base::Value::List certificates;
 
   ASSERT_FALSE(ParseAndValidateOncForImport(
-      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
-      &network_configs, &global_network_config, &certificates));
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
+      &global_network_config, &certificates));
 }
 
 TEST(ONCUtils, ParseAndValidateOncForImport_PSIMAdminAssignedApnIdsProvided) {
@@ -664,8 +731,8 @@ TEST(ONCUtils, ParseAndValidateOncForImport_PSIMAdminAssignedApnIdsProvided) {
   base::Value::List certificates;
 
   ASSERT_TRUE(ParseAndValidateOncForImport(
-      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
-      &network_configs, &global_network_config, &certificates));
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
+      &global_network_config, &certificates));
 
   // Expected PSIM Admin APN list
   base::Value::List expected_psim_admin_assigned_apns;
@@ -721,8 +788,8 @@ TEST(ONCUtils, ParseAndValidateOncForImport_AdminApnProvidedWithDuplicateIds) {
   base::Value::List certificates;
 
   ASSERT_FALSE(ParseAndValidateOncForImport(
-      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
-      &network_configs, &global_network_config, &certificates));
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
+      &global_network_config, &certificates));
 }
 
 TEST(ONCUtils, ParseAndValidateOncForImport_WithAdvancedOpenVPNSettings) {
@@ -751,7 +818,7 @@ TEST(ONCUtils, ParseAndValidateOncForImport_WithAdvancedOpenVPNSettings) {
   base::Value::List certificates;
 
   ASSERT_TRUE(ParseAndValidateOncForImport(
-      onc_blob, ::onc::ONCSource::ONC_SOURCE_USER_POLICY, "", &network_configs,
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_USER_POLICY, &network_configs,
       &global_network_config, &certificates));
 
   const auto* open_vpn =
@@ -764,12 +831,13 @@ TEST(ONCUtils, ParseAndValidateOncForImport_WithAdvancedOpenVPNSettings) {
                ::onc::openvpn_compression_algorithm::kLzo);
   expected.Set(::onc::openvpn::kTLSAuthContents, auth_key);
   expected.Set(::onc::openvpn::kKeyDirection, "1");
-  EXPECT_THAT(open_vpn->GetDict(),
-              base::test::DictionaryHasValues(std::move(expected)));
+  EXPECT_THAT(open_vpn,
+              Pointee(base::test::DictionaryHasValues(std::move(expected))));
 }
 
 struct MaskCredentialsTestCase {
-  // RAW_PTR_EXCLUSION: #global-scope
+  // This field is not a raw_ptr<> because it only ever points to statically-
+  // allocated memory that is never freed, so it can't possibly dangle.
   RAW_PTR_EXCLUSION const OncValueSignature* onc_signature;
   const char* onc;
   const char* expected_after_masking;
@@ -779,10 +847,12 @@ using ONCUtilsMaskCredentialsTest =
     testing::TestWithParam<MaskCredentialsTestCase>;
 
 TEST_P(ONCUtilsMaskCredentialsTest, Test) {
-  std::optional<base::Value> onc_value = base::JSONReader::Read(GetParam().onc);
+  std::optional<base::Value> onc_value = base::JSONReader::Read(
+      GetParam().onc, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(onc_value) << "Could not parse " << GetParam().onc;
   std::optional<base::Value> expected_after_masking_value =
-      base::JSONReader::Read(GetParam().expected_after_masking);
+      base::JSONReader::Read(GetParam().expected_after_masking,
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(expected_after_masking_value)
       << "Could not parse " << GetParam().expected_after_masking;
 

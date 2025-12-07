@@ -2,22 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/public/cpp/bindings/sync_handle_registry.h"
 
-#include <algorithm>
-#include <map>
 #include <utility>
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/not_fatal_until.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_local_storage_slot.h"
@@ -44,8 +37,8 @@ scoped_refptr<SyncHandleRegistry> SyncHandleRegistry::current() {
   static base::SequenceLocalStorageSlot<scoped_refptr<SyncHandleRegistry>>
       g_current_sync_handle_watcher;
 
-  // SyncMessageFilter can be used on threads without sequence-local storage
-  // being available. Those receive a unique, standalone SyncHandleRegistry.
+  // Threads without sequence-local storage receive a unique, standalone
+  // SyncHandleRegistry.
   if (!base::SequencedTaskRunner::HasCurrentDefault()) {
     return base::MakeRefCounted<SyncHandleRegistry>(
         base::PassKey<SyncHandleRegistry>());
@@ -126,7 +119,7 @@ SyncHandleRegistry::EventCallbackSubscription SyncHandleRegistry::RegisterEvent(
       it->second.get(), std::move(callback));
 }
 
-bool SyncHandleRegistry::Wait(const bool* should_stop[], size_t count) {
+bool SyncHandleRegistry::Wait(base::span<const bool*> should_stop) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   size_t num_ready_handles;
@@ -135,17 +128,19 @@ bool SyncHandleRegistry::Wait(const bool* should_stop[], size_t count) {
 
   scoped_refptr<SyncHandleRegistry> preserver(this);
   while (true) {
-    for (size_t i = 0; i < count; ++i) {
-      if (*should_stop[i])
+    for (const bool* flag : should_stop) {
+      if (*flag) {
         return true;
+      }
     }
 
     // TODO(yzshen): Theoretically it can reduce sync call re-entrancy if we
     // give priority to the handle that is waiting for sync response.
     base::WaitableEvent* ready_event = nullptr;
     num_ready_handles = 1;
-    wait_set_.Wait(&ready_event, &num_ready_handles, &ready_handle,
-                   &ready_handle_result);
+    wait_set_.Wait(&ready_event, &num_ready_handles,
+                   base::span_from_ref(ready_handle),
+                   base::span_from_ref(ready_handle_result));
     if (num_ready_handles) {
       DCHECK_EQ(1u, num_ready_handles);
       const auto iter = handles_.find(ready_handle);
@@ -154,7 +149,7 @@ bool SyncHandleRegistry::Wait(const bool* should_stop[], size_t count) {
 
     if (ready_event) {
       const auto iter = events_.find(ready_event);
-      CHECK(iter != events_.end(), base::NotFatalUntil::M130);
+      CHECK(iter != events_.end());
 
       {
         base::AutoReset<bool> in_nested_wait(&in_nested_wait_, true);

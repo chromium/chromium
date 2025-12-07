@@ -32,11 +32,11 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoProcessorAccelerator {
   struct MEDIA_GPU_EXPORT Config {
     VideoPixelFormat input_format;
     gfx::Size input_visible_size;
-    VideoColorSpace input_color_space;
+    gfx::ColorSpace input_color_space;
 
     VideoPixelFormat output_format;
     gfx::Size output_visible_size;
-    VideoColorSpace output_color_space;
+    gfx::ColorSpace output_color_space;
   };
 
   explicit MediaFoundationVideoProcessorAccelerator(
@@ -54,11 +54,15 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoProcessorAccelerator {
                   std::unique_ptr<MediaLog> media_log);
 
   HRESULT Convert(scoped_refptr<VideoFrame> frame, IMFSample** sample_out);
-  HRESULT Convert(IMFSample* sample, IMFSample** sample_out);
+  HRESULT Convert(IMFSample* sample,
+                  VideoPixelFormat input_format,
+                  IMFSample** sample_out);
+  HRESULT UpdateOutputSize(gfx::Size output_visible_size);
 
  private:
   bool InitializeVideoProcessor(const Config& config);
-  HRESULT AdjustInputSizeIfNeeded(IMFSample* sample);
+  HRESULT AdjustInputTypeIfNeeded(IMFSample* sample,
+                                  VideoPixelFormat input_format);
 
   std::unique_ptr<MediaLog> media_log_;
 

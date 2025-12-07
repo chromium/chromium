@@ -5,18 +5,24 @@
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_show_system_prompt_view.h"
 
 #include "base/memory/weak_ptr.h"
-
 #include "chrome/browser/ui/url_identity.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/permissions/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+    EmbeddedPermissionPromptShowSystemPromptView,
+    kMainViewId);
+
 EmbeddedPermissionPromptShowSystemPromptView::
     EmbeddedPermissionPromptShowSystemPromptView(
         Browser* browser,
         base::WeakPtr<EmbeddedPermissionPromptViewDelegate> delegate)
-    : EmbeddedPermissionPromptBaseView(browser, delegate) {}
+    : EmbeddedPermissionPromptBaseView(browser, delegate) {
+  SetProperty(views::kElementIdentifierKey, kMainViewId);
+}
 
 EmbeddedPermissionPromptShowSystemPromptView::
     ~EmbeddedPermissionPromptShowSystemPromptView() = default;
@@ -39,15 +45,15 @@ std::u16string EmbeddedPermissionPromptShowSystemPromptView::GetWindowTitle()
     permission_name = requests[0]->GetPermissionNameTextFragment();
   }
 
-  return l10n_util::GetStringFUTF16(IDS_PERMISSION_CHROME_NEEDS_PERMISSION,
-                                    permission_name);
+  return l10n_util::GetStringFUTF16(
+      IDS_PERMISSION_CHROME_NEEDS_PERMISSION,
+      l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME), permission_name);
 }
 
 void EmbeddedPermissionPromptShowSystemPromptView::RunButtonCallback(
     int button_id) {
   // This view has no buttons.
-  NOTREACHED_IN_MIGRATION();
-  return;
+  NOTREACHED();
 }
 
 std::vector<

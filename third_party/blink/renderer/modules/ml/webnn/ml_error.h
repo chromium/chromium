@@ -17,7 +17,7 @@ DOMExceptionCode WebNNErrorCodeToDOMExceptionCode(
 template <typename MojoResultType>
 mojo::StructPtr<MojoResultType> ToError(
     const webnn::mojom::blink::Error::Code& error_code,
-    const WTF::String& error_message) {
+    const String& error_message) {
   return MojoResultType::NewError(
       webnn::mojom::blink::Error::New(error_code, error_message));
 }

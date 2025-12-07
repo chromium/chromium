@@ -4,10 +4,14 @@
 
 package org.chromium.chrome.browser;
 
-import android.os.Build;
 import android.os.Bundle;
-import android.view.WindowManager;
+import android.view.View;
+import android.view.ViewGroup;
 
+import androidx.annotation.CallSuper;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 
@@ -18,19 +22,36 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.Snackbar
  * For heavier Activities that show web content, use ChromeActivity instead to get asynchronous
  * loading of the native libraries.
  */
+@NullMarked
 public abstract class SnackbarActivity extends SynchronousInitializationActivity
         implements SnackbarManageable {
 
     private SnackbarManager mSnackbarManager;
 
+    @CallSuper
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreateInternal(@Nullable Bundle savedInstanceState) {
+        super.onCreateInternal(savedInstanceState);
+        // TODO(crbug.com/399495650): Add render tests for snackbar padding in edge-to-edge mode.
+        mSnackbarManager = new SnackbarManager(this, getContentView(), null);
+    }
 
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O) {
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        }
-        mSnackbarManager = new SnackbarManager(this, findViewById(android.R.id.content), null);
+    @Override
+    public void setContentView(int layoutResId) {
+        super.setContentView(layoutResId);
+        mSnackbarManager.pushParentViewToOverrideStack(getContentView());
+    }
+
+    @Override
+    public void setContentView(View view) {
+        super.setContentView(view);
+        mSnackbarManager.pushParentViewToOverrideStack(getContentView());
+    }
+
+    @Override
+    public void setContentView(View view, ViewGroup.LayoutParams params) {
+        super.setContentView(view, params);
+        mSnackbarManager.pushParentViewToOverrideStack(getContentView());
     }
 
     @Override

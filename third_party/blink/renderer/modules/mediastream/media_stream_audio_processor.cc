@@ -52,12 +52,13 @@ MediaStreamAudioProcessor::MediaStreamAudioProcessor(
     : audio_processor_(media::AudioProcessor::Create(
           std::move(deliver_processed_audio_callback),
           /*log_callback=*/
-          WTF::BindRepeating(&WebRtcLogStringPiece),
+          BindRepeating(&WebRtcLogStringPiece),
           settings,
           capture_data_source_params,
           media::AudioProcessor::GetDefaultOutputFormat(
               capture_data_source_params,
-              settings))),
+              settings),
+          /*neural_residual_echo_estimator_model=*/nullptr)),
       main_thread_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       aec_dump_agent_impl_(AecDumpAgentImpl::Create(this)),
       stopped_(false) {
@@ -81,12 +82,10 @@ void MediaStreamAudioProcessor::ProcessCapturedAudio(
     const media::AudioBus& audio_source,
     base::TimeTicks audio_capture_time,
     int num_preferred_channels,
-    double volume,
-    bool key_pressed) {
+    double volume) {
   DCHECK_CALLED_ON_VALID_THREAD(capture_thread_checker_);
   audio_processor_->ProcessCapturedAudio(audio_source, audio_capture_time,
-                                         num_preferred_channels, volume,
-                                         key_pressed);
+                                         num_preferred_channels, volume);
 }
 
 void MediaStreamAudioProcessor::Stop() {
@@ -113,33 +112,6 @@ void MediaStreamAudioProcessor::OnStartDump(base::File dump_file) {
 void MediaStreamAudioProcessor::OnStopDump() {
   DCHECK(main_thread_runner_->BelongsToCurrentThread());
   audio_processor_->OnStopDump();
-}
-
-// static
-// TODO(https://crbug.com/1269364): This logic should be moved to
-// ProcessedLocalAudioSource and verified/fixed; The decision should be
-// "hardware effects are required or software audio mofidications are needed
-// (AudioProcessingSettings.NeedAudioModification())".
-bool MediaStreamAudioProcessor::WouldModifyAudio(
-    const AudioProcessingProperties& properties) {
-  if (properties
-          .ToAudioProcessingSettings(
-              /*multi_channel_capture_processing - does not matter here*/ false)
-          .NeedAudioModification()) {
-    return true;
-  }
-
-#if !BUILDFLAG(IS_IOS)
-  if (properties.goog_auto_gain_control) {
-    return true;
-  }
-#endif
-
-  if (properties.goog_noise_suppression) {
-    return true;
-  }
-
-  return false;
 }
 
 void MediaStreamAudioProcessor::OnPlayoutData(media::AudioBus* audio_bus,

@@ -19,18 +19,16 @@ namespace chromecast {
 class CastCdmOriginProvider;
 }  // namespace chromecast
 
+namespace chromeos {
+class ChromeOsCdmFactory;
+}  // namespace chromeos
+
 namespace content {
 class AndroidOverlaySyncHelper;
-class DesktopCapturerLacros;
-class StreamTextureFactory;
 #if BUILDFLAG(IS_WIN)
 class DCOMPTextureFactory;
 #endif
 }  // namespace content
-
-namespace crosapi {
-class ScopedAllowSyncCall;
-}  // namespace crosapi
 
 namespace gpu {
 class CommandBufferProxyImpl;
@@ -47,6 +45,12 @@ class GpuHostImpl;
 class HostFrameSinkManager;
 class HostGpuMemoryBufferManager;
 }  // namespace viz
+
+#if BUILDFLAG(IS_MAC)
+namespace web_app {
+class WebAppShortcutCopierSyncCallHelper;
+}  // namespace web_app
+#endif
 
 namespace mojo {
 class ScopedAllowSyncCallForTesting;
@@ -106,10 +110,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncCallRestrictions {
   // BEGIN ALLOWED USAGE.
   // SynchronousCompositorHost is used for Android webview.
   friend class content::SynchronousCompositorHost;
-  // Lacros-chrome is allowed to make sync calls to ash-chrome to mimic
-  // cross-platform sync APIs.
-  friend class content::DesktopCapturerLacros;
-  friend class crosapi::ScopedAllowSyncCall;
   friend class mojo::ScopedAllowSyncCallForTesting;
   friend class viz::GpuHostImpl;
   // For destroying the GL context/surface that draw to a platform window before
@@ -119,6 +119,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncCallRestrictions {
   // For preventing frame swaps of wrong size during resize on Windows.
   // (https://crbug.com/811945)
   friend class ui::Compositor;
+  // For calling sync mojo API to get cdm origin in the ChromeOS GPU process.
+  // Migrating to async is non-trivial and has not been prioritized.
+  // (http://crbug.com/368792274)
+  friend class chromeos::ChromeOsCdmFactory;
   // For calling sync mojo API to get cdm origin. The service and the client are
   // running in the same process, so it won't block anything.
   // TODO(159346933) Remove once the origin isolation logic is moved outside of
@@ -131,9 +135,11 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncCallRestrictions {
   friend class gpu::GpuChannelHost;
   friend class gpu::CommandBufferProxyImpl;
   friend class gpu::SharedImageInterfaceProxy;
-  friend class content::StreamTextureFactory;
 #if BUILDFLAG(IS_WIN)
   friend class content::DCOMPTextureFactory;
+#endif
+#if BUILDFLAG(IS_MAC)
+  friend class web_app::WebAppShortcutCopierSyncCallHelper;
 #endif
   // END ALLOWED USAGE.
 
@@ -160,9 +166,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncCallRestrictions {
     ~ScopedAllowSyncCall() { DecreaseScopedAllowCount(); }
 
    private:
-#if ENABLE_SYNC_CALL_RESTRICTIONS
     base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait_;
-#endif
   };
 };
 

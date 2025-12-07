@@ -51,7 +51,6 @@ struct CORE_EXPORT MarginStrut {
   bool IsEmpty() const;
 
   bool operator==(const MarginStrut& other) const;
-  bool operator!=(const MarginStrut& other) const { return !(*this == other); }
 };
 
 }  // namespace blink

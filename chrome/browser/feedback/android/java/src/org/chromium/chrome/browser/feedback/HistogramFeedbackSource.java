@@ -9,12 +9,15 @@ import android.util.Pair;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.JSONVerbosityLevel;
 import org.chromium.base.metrics.StatisticsRecorderAndroid;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 
 /** Grabs feedback about the UMA histograms. */
 // TODO(dtrainor): Make this class protected and HISTOGRAMS_KEY private once grabbing specific log
 // sources is no longer required.
+@NullMarked
 public class HistogramFeedbackSource implements FeedbackSource {
     public static final String HISTOGRAMS_KEY = "histograms";
 
@@ -30,7 +33,7 @@ public class HistogramFeedbackSource implements FeedbackSource {
     }
 
     @Override
-    public Pair<String, String> getLogs() {
+    public @Nullable Pair<String, String> getLogs() {
         if (mIsOffTheRecord) return null;
         int jsonVerbosityLevel = JSONVerbosityLevel.JSON_VERBOSITY_LEVEL_FULL;
 

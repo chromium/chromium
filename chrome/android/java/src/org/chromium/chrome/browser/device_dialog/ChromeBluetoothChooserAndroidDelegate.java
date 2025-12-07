@@ -6,14 +6,16 @@ package org.chromium.chrome.browser.device_dialog;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
 import org.chromium.components.permissions.BluetoothChooserAndroidDelegate;
 
 /** The implementation of {@link BluetoothChooserAndroidDelegate} for Chrome. */
+@NullMarked
 public class ChromeBluetoothChooserAndroidDelegate implements BluetoothChooserAndroidDelegate {
-    private Profile mProfile;
+    private final Profile mProfile;
 
     @CalledByNative
     ChromeBluetoothChooserAndroidDelegate(Profile profile) {

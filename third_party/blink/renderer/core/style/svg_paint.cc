@@ -45,6 +45,18 @@ bool SVGPaint::operator==(const SVGPaint& other) const {
          base::ValuesEquivalent(resource, other.resource);
 }
 
+SVGPaint SVGPaint::CreateInitial() {
+  SVGPaint result;
+  result.is_initial_value = true;
+  return result;
+}
+
+SVGPaint SVGPaint::CreateInitialBlack() {
+  SVGPaint result(Color::kBlack);
+  result.is_initial_value = true;
+  return result;
+}
+
 const AtomicString& SVGPaint::GetUrl() const {
   return Resource()->Url();
 }

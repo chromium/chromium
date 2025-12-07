@@ -4,5 +4,12 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/bottom_sheet_constants.h"
 
+#import "base/time/time.h"
+
 NSString* const kEditProfileBottomSheetCancelButton =
     @"EditProfileBottomSheetCancelButton";
+
+NSString* const kEditProfileBottomSheetViewIdentfier =
+    @"EditProfileBottomSheetViewIdentfier";
+
+base::TimeDelta const kConfirmationDismissDelay = base::Seconds(1.5);

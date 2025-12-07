@@ -4,10 +4,10 @@
 
 #include "components/favicon/ios/favicon_url_util.h"
 
+#include <algorithm>
 #include <iterator>
 
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "components/favicon/core/favicon_url.h"
 #include "components/favicon_base/favicon_types.h"
 #include "ios/web/public/favicon/favicon_url.h"
@@ -29,8 +29,7 @@ favicon_base::IconType IconTypeFromWebIconType(
     case web::FaviconURL::IconType::kInvalid:
       return favicon_base::IconType::kInvalid;
   }
-  NOTREACHED_IN_MIGRATION();
-  return favicon_base::IconType::kInvalid;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -46,8 +45,8 @@ std::vector<FaviconURL> FaviconURLsFromWebFaviconURLs(
     const std::vector<web::FaviconURL>& favicon_urls) {
   std::vector<FaviconURL> result;
   result.reserve(favicon_urls.size());
-  base::ranges::transform(favicon_urls, std::back_inserter(result),
-                          FaviconURLFromWebFaviconURL);
+  std::ranges::transform(favicon_urls, std::back_inserter(result),
+                         FaviconURLFromWebFaviconURL);
   return result;
 }
 

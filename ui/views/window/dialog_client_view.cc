@@ -9,23 +9,26 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/metadata/view_factory.h"
@@ -38,6 +41,12 @@
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
+
+namespace features {
+// Gates the ability of the Dialog to use a vertical button layout, if other
+// conditions permit. This is a killswitch and is on by default.
+BASE_FEATURE(kDialogVerticalButtonFallback, base::FEATURE_ENABLED_BY_DEFAULT);
+}  // namespace features
 
 namespace {
 
@@ -61,11 +70,11 @@ gfx::Size GetBoundingSizeForVerticalStack(const gfx::Size& size1,
 
 constexpr ui::ElementIdentifier kNoElementId;
 
-ui::ElementIdentifier GetButtonId(ui::DialogButton type) {
+ui::ElementIdentifier GetButtonId(ui::mojom::DialogButton type) {
   switch (type) {
-    case ui::DialogButton::DIALOG_BUTTON_OK:
+    case ui::mojom::DialogButton::kOk:
       return DialogClientView::kOkButtonElementId;
-    case ui::DialogButton::DIALOG_BUTTON_CANCEL:
+    case ui::mojom::DialogButton::kCancel:
       return DialogClientView::kCancelButtonElementId;
     default:
       return kNoElementId;
@@ -184,21 +193,22 @@ void DialogClientView::VisibilityChanged(View* starting_from, bool is_visible) {
   input_protector_->VisibilityChanged(is_visible);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
-void DialogClientView::UpdateWindowRoundedCorners(int corner_radius) {
+void DialogClientView::UpdateWindowRoundedCorners(
+    const gfx::RoundedCornersF& window_radii) {
   DCHECK(GetWidget());
 
-  const gfx::RoundedCornersF radii(0, 0, corner_radius, corner_radius);
-
-  // Chromeos has rounded windows. A dialog can use native frame i.e look like
-  // a top-level window. For ChromeOS, dialogs use `NonClientFrameViewAsh`
+  // ChromeOS has rounded windows. A dialog can use native frame i.e look like
+  // a top-level window. For ChromeOS, dialogs use `FrameViewAsh`
   // as native frame. The top corners will be rounded by the frame_view and
   // client-view is responsible for rounding the bottom corners.
-  SetBackgroundRadii(radii);
+  const gfx::RoundedCornersF background_radii(0, 0, window_radii.lower_right(),
+                                              window_radii.lower_left());
+  SetBackgroundRadii(background_radii);
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 ProposedLayout DialogClientView::CalculateProposedLayout(
     const SizeBounds& size_bounds) const {
@@ -221,6 +231,15 @@ ProposedLayout DialogClientView::CalculateProposedLayout(
   layouts.host_size =
       gfx::Size(size_bounds.width().value(), size_bounds.height().value());
   return layouts;
+}
+
+void DialogClientView::SetBackgroundColor(ui::ColorId background_color_id) {
+  if (background_color_id_ == background_color_id) {
+    return;
+  }
+
+  background_color_id_ = background_color_id;
+  UpdateBackground();
 }
 
 bool DialogClientView::AcceleratorPressed(const ui::Accelerator& accelerator) {
@@ -286,12 +305,18 @@ void DialogClientView::ResetViewShownTimeStampForTesting() {
   input_protector_->ResetForTesting();  // IN-TEST
 }
 
-bool DialogClientView::IsPossiblyUnintendedInteraction(const ui::Event& event) {
-  return input_protector_->IsPossiblyUnintendedInteraction(event);
+bool DialogClientView::IsPossiblyUnintendedInteraction(const ui::Event& event,
+                                                       bool allow_key_events) {
+  return input_protector_->IsPossiblyUnintendedInteraction(event,
+                                                           allow_key_events);
 }
 
 DialogDelegate* DialogClientView::GetDialogDelegate() const {
-  return GetWidget()->widget_delegate()->AsDialogDelegate();
+  // TODO(crbug.com/443163515): investigate which dialog is crashing due to
+  // widget delegate being null.
+  return GetWidget()->widget_delegate()
+             ? GetWidget()->widget_delegate()->AsDialogDelegate()
+             : nullptr;
 }
 
 void DialogClientView::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {
@@ -310,8 +335,7 @@ void DialogClientView::UpdateBackground() {
 
   if (dialog && !dialog->use_custom_frame()) {
     SetBackground(views::CreateRoundedRectBackground(
-        GetColorProvider()->GetColor(ui::kColorDialogBackground),
-        background_radii_));
+        GetColorProvider()->GetColor(background_color_id_), background_radii_));
   }
 }
 
@@ -337,9 +361,9 @@ void DialogClientView::UpdateDialogButtons() {
 }
 
 void DialogClientView::UpdateDialogButton(raw_ptr<MdTextButton>* member,
-                                          ui::DialogButton type) {
+                                          ui::mojom::DialogButton type) {
   DialogDelegate* const delegate = GetDialogDelegate();
-  if (!(delegate->buttons() & type)) {
+  if (!(delegate->buttons() & static_cast<int>(type))) {
     if (*member) {
       button_row_container_->RemoveChildViewT(std::exchange(*member, nullptr));
     }
@@ -378,20 +402,24 @@ void DialogClientView::UpdateDialogButton(raw_ptr<MdTextButton>* member,
       .BuildChildren();
 }
 
-void DialogClientView::ButtonPressed(ui::DialogButton type,
+void DialogClientView::ButtonPressed(ui::mojom::DialogButton type,
                                      const ui::Event& event) {
   DialogDelegate* const delegate = GetDialogDelegate();
-  if (!delegate || input_protector_->IsPossiblyUnintendedInteraction(event)) {
+  if (!delegate ||
+      input_protector_->IsPossiblyUnintendedInteraction(
+          event, /*allow_key_events=*/delegate
+                     ->ShouldAllowKeyEventsDuringInputProtection())) {
     return;
   }
 
-  DCHECK(type == ui::DIALOG_BUTTON_OK || type == ui::DIALOG_BUTTON_CANCEL);
-  if (type == ui::DIALOG_BUTTON_OK &&
+  DCHECK(type == ui::mojom::DialogButton::kOk ||
+         type == ui::mojom::DialogButton::kCancel);
+  if (type == ui::mojom::DialogButton::kOk &&
       !delegate->ShouldIgnoreButtonPressedEventHandling(ok_button_, event)) {
     delegate->AcceptDialog();
   }
 
-  if (type == ui::DIALOG_BUTTON_CANCEL &&
+  if (type == ui::mojom::DialogButton::kCancel &&
       !delegate->ShouldIgnoreButtonPressedEventHandling(cancel_button_,
                                                         event)) {
     delegate->CancelDialog();
@@ -416,6 +444,22 @@ DialogClientView::GetButtonRowViews() {
     std::swap(second, third);
   }
   return {{first, second, third}};
+}
+
+std::vector<View*> DialogClientView::GetButtonColumnViews() const {
+  // Note: Unlike the horizontal layout, the Okay button is always at the
+  // bottom, independent of platform-specific style.
+  std::vector<View*> views;
+  if (ShouldShow(extra_view_)) {
+    views.push_back(extra_view_.get());
+  }
+  if (cancel_button_) {
+    views.push_back(cancel_button_);
+  }
+  if (ok_button_) {
+    views.push_back(ok_button_);
+  }
+  return views;
 }
 
 void DialogClientView::UpdateExtraViewFromDelegate() {
@@ -456,16 +500,9 @@ void DialogClientView::SetupLayout() {
   UpdateExtraViewFromDelegate();
 
   std::array<View*, kNumButtons> views = GetButtonRowViews();
-
-  if (base::ranges::count(views, nullptr) == kNumButtons) {
+  if (std::ranges::count(views, nullptr) == kNumButtons) {
     return;
   }
-
-  // This will also clobber any existing layout manager and clear any settings
-  // it may already have.
-  auto* layout = button_row_container_->SetLayoutManager(
-      std::make_unique<views::TableLayout>());
-  layout->SetMinimumSize(minimum_size_);
   if (extra_view_) {
     // TableLayout will force its child views to be visible if they aren't
     // explicitly ignored, which will cause the extra view the client supplied
@@ -474,6 +511,36 @@ void DialogClientView::SetupLayout() {
     extra_view_->SetProperty(kViewIgnoredByLayoutKey,
                              !extra_view_->GetVisible());
   }
+
+  // Attempt to lay out the buttons horizontally. If the width of the resulting
+  // layout exceeds the specified fixed width of the dialog, conditionally
+  // use a vertical button layout instead, to minimize horizontal growth.
+  SetupHorizontalLayout();
+  const int fixed_width = GetDialogDelegate()->fixed_width();
+  if (GetDialogDelegate()->allow_vertical_buttons() &&
+      base::FeatureList::IsEnabled(
+          views::features::kDialogVerticalButtonFallback) &&
+      ShouldShow(extra_view_) && fixed_width &&
+      button_row_container_->GetPreferredSize({}).width() > fixed_width) {
+    SetupVerticalLayout();
+  }
+
+  // The default focus is lost when child views are added back into the
+  // dialog. This restores focus if the button is still available.
+  View* previously_focused_view = view_tracker.view();
+  if (previously_focused_view && !focus_manager->GetFocusedView() &&
+      Contains(previously_focused_view)) {
+    previously_focused_view->RequestFocus();
+  }
+}
+
+void DialogClientView::SetupHorizontalLayout() {
+  std::array<View*, kNumButtons> views = GetButtonRowViews();
+  CHECK(std::ranges::count(views, nullptr) != kNumButtons);
+
+  auto* layout = button_row_container_->SetLayoutManager(
+      std::make_unique<views::TableLayout>());
+  layout->SetMinimumSize(minimum_size_);
 
   // The |resize_percent| constants. There's only one stretchy column (padding
   // to the left of ok/cancel buttons).
@@ -535,23 +602,35 @@ void DialogClientView::SetupLayout() {
     }
     layout->LinkColumnSizes(cols);
   }
+}
 
-  // The default focus is lost when child views are added back into the dialog.
-  // This restores focus if the button is still available.
-  View* previously_focused_view = view_tracker.view();
-  if (previously_focused_view && !focus_manager->GetFocusedView() &&
-      Contains(previously_focused_view)) {
-    previously_focused_view->RequestFocus();
+void DialogClientView::SetupVerticalLayout() {
+  auto views = GetButtonColumnViews();
+  CHECK_GT(views.size(), 0u);
+
+  for (size_t i = 0; i < views.size(); ++i) {
+    button_row_container_->ReorderChildView(views[i], i);
   }
+
+  button_row_container_->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
+      .SetInteriorMargin(button_row_insets_)
+      .SetCollapseMargins(true)
+      .SetDefault(kMarginsKey,
+                  gfx::Insets::VH(LayoutProvider::Get()->GetDistanceMetric(
+                                      DISTANCE_RELATED_CONTROL_VERTICAL),
+                                  0));
 }
 
 void DialogClientView::UpdateButtonsFromModel() {
-  if (PlatformStyle::kIsOkButtonLeading) {
-    UpdateDialogButton(&ok_button_, ui::DIALOG_BUTTON_OK);
-    UpdateDialogButton(&cancel_button_, ui::DIALOG_BUTTON_CANCEL);
+  if constexpr (PlatformStyle::kIsOkButtonLeading) {
+    UpdateDialogButton(&ok_button_, ui::mojom::DialogButton::kOk);
+    UpdateDialogButton(&cancel_button_, ui::mojom::DialogButton::kCancel);
   } else {
-    UpdateDialogButton(&cancel_button_, ui::DIALOG_BUTTON_CANCEL);
-    UpdateDialogButton(&ok_button_, ui::DIALOG_BUTTON_OK);
+    UpdateDialogButton(&cancel_button_, ui::mojom::DialogButton::kCancel);
+    UpdateDialogButton(&ok_button_, ui::mojom::DialogButton::kOk);
   }
 }
 

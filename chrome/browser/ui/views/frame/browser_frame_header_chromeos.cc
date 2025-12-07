@@ -5,9 +5,10 @@
 #include "chrome/browser/ui/views/frame/browser_frame_header_chromeos.h"
 
 #include "base/check.h"
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view_chromeos.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/frame_utils.h"
@@ -15,6 +16,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/display/screen.h"
@@ -28,10 +30,6 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/caption_button_layout_constants.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -72,29 +70,25 @@ void PaintThemedFrame(gfx::Canvas* canvas,
                          bounds.width(), bounds.height(), 1.0f,
                          SkTileMode::kRepeat, SkTileMode::kMirror);
   }
-  if (!frame_overlay_image.isNull())
+  if (!frame_overlay_image.isNull()) {
     canvas->DrawImageInt(frame_overlay_image, 0, 0);
+  }
 
-  if (blending_required)
+  if (blending_required) {
     canvas->Restore();
+  }
 }
 
 // Returns the frame path with the given |bounds| and |corner_radius|
 // for the rounded corner of the frame header.
 SkPath GetFrameHeaderPath(const gfx::Rect& bounds, int corner_radius) {
   const SkScalar sk_corner_radius = SkIntToScalar(corner_radius);
-  const SkScalar radii[8] = {sk_corner_radius,
-                             sk_corner_radius,  // top-left
-                             sk_corner_radius,
-                             sk_corner_radius,  // top-right
-                             0,
-                             0,  // bottom-right
-                             0,
-                             0};  // bottom-left
-  SkPath frame_path;
-  frame_path.addRoundRect(gfx::RectToSkRect(bounds), radii,
-                          SkPathDirection::kCW);
-  return frame_path;
+  const SkVector radii[4] = {{sk_corner_radius, sk_corner_radius},  // top-left
+                             {sk_corner_radius, sk_corner_radius},  // top-right
+                             {0, 0},   // bottom-right
+                             {0, 0}};  // bottom-left
+  return SkPath::RRect(
+      SkRRect::MakeRectRadii(gfx::RectToSkRect(bounds), radii));
 }
 
 // Tiles |frame_image| and |frame_overlay_image| into an area, rounding the top
@@ -146,7 +140,7 @@ void BrowserFrameHeaderChromeOS::DoPaintHeader(gfx::Canvas* canvas) {
 
 views::CaptionButtonLayoutSize BrowserFrameHeaderChromeOS::GetButtonLayoutSize()
     const {
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     return views::CaptionButtonLayoutSize::kBrowserCaptionMaximized;
   }
 
@@ -167,14 +161,10 @@ void BrowserFrameHeaderChromeOS::UpdateFrameColors() {
   SetPaintAsActive(target_widget()->ShouldPaintAsActive());
   std::optional<ui::ColorId> button_colors;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto* browser_non_client_frame_view =
-      static_cast<BrowserNonClientFrameViewChromeOS*>(view());
+  auto* browser_frame_view = static_cast<BrowserFrameViewChromeOS*>(view());
 
   web_app::AppBrowserController* app_browser_controller =
-      browser_non_client_frame_view->browser_view()
-          ->browser()
-          ->app_controller();
+      browser_frame_view->GetBrowserView()->browser()->app_controller();
 
   // Please note, `app_browser_controller` may be null for non-PWA windows.
   if (!app_browser_controller ||
@@ -184,14 +174,9 @@ void BrowserFrameHeaderChromeOS::UpdateFrameColors() {
                         ? ui::kColorSysPrimary
                         : ui::kColorFrameCaptionButtonUnfocused;
   }
-#endif
+
   UpdateCaptionButtonColors(button_colors);
   view()->SchedulePaint();
-}
-
-SkPath BrowserFrameHeaderChromeOS::GetWindowMaskForFrameHeader(
-    const gfx::Size& size) {
-  return GetFrameHeaderPath(gfx::Rect(size), header_corner_radius());
 }
 
 ///////////////////////////////////////////////////////////////////////////////

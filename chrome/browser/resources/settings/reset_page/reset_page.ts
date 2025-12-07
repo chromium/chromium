@@ -8,26 +8,20 @@
  * settings.
  */
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import '../settings_page/settings_animated_pages.js';
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import '../settings_page/settings_section.js';
 import '../settings_shared.css.js';
 import './reset_profile_dialog.js';
-// <if expr="_google_chrome and is_win">
-import '../incompatible_applications_page/incompatible_applications_page.js';
-
-// </if>
 
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BaseMixin} from '../base_mixin.js';
-// <if expr="_google_chrome and is_win">
-import {loadTimeData} from '../i18n_setup.js';
-// </if>
-
 import {routes} from '../route.js';
 import type {Route} from '../router.js';
 import {RouteObserverMixin, Router} from '../router.js';
+import {getSearchManager} from '../search_settings.js';
+import type {SettingsPlugin} from '../settings_main/settings_plugin.js';
 
 import {getTemplate} from './reset_page.html.js';
 import type {SettingsResetProfileDialogElement} from './reset_profile_dialog.js';
@@ -39,10 +33,10 @@ export interface SettingsResetPageElement {
   };
 }
 
-const SettingsResetPageElementBase =
-    RouteObserverMixin(BaseMixin(PolymerElement));
+const SettingsResetPageElementBase = RouteObserverMixin(PolymerElement);
 
-export class SettingsResetPageElement extends SettingsResetPageElementBase {
+export class SettingsResetPageElement extends SettingsResetPageElementBase
+    implements SettingsPlugin {
   static get is() {
     return 'settings-reset-page';
   }
@@ -50,26 +44,6 @@ export class SettingsResetPageElement extends SettingsResetPageElementBase {
   static get template() {
     return getTemplate();
   }
-
-  static get properties() {
-    return {
-      /** Preferences state. */
-      prefs: Object,
-
-      // <if expr="_google_chrome and is_win">
-      showIncompatibleApplications_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('showIncompatibleApplications');
-        },
-      },
-      // </if>
-    };
-  }
-
-  // <if expr="_google_chrome and is_win">
-  private showIncompatibleApplications_: boolean;
-  // </if>
 
   /**
    * RouteObserverMixin
@@ -98,15 +72,11 @@ export class SettingsResetPageElement extends SettingsResetPageElementBase {
     focusWithoutInk(this.$.resetProfile);
   }
 
-  // <if expr="_google_chrome and is_win">
-  private onChromeCleanupClick_() {
-    Router.getInstance().navigateTo(routes.CHROME_CLEANUP);
+  // SettingsPlugin implementation
+  async searchContents(query: string) {
+    const searchRequest = await getSearchManager().search(query, this);
+    return searchRequest.getSearchResult();
   }
-
-  private onIncompatibleApplicationsClick_() {
-    Router.getInstance().navigateTo(routes.INCOMPATIBLE_APPLICATIONS);
-  }
-  // </if>
 }
 
 declare global {

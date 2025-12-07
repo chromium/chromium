@@ -18,7 +18,7 @@ const CGFloat kToolBarHeight = 44;
 // number of month. Otherwise, it's in milliseconds.
 @property(nonatomic, assign) NSInteger initTime;
 // Updated with the selected date in the date picker
-@property(nonatomic, assign) NSDate* selectedDate;
+@property(nonatomic, strong) NSDate* selectedDate;
 @end
 
 @implementation DateTimeChooserViewController
@@ -71,8 +71,7 @@ const CGFloat kToolBarHeight = 44;
       style = UIDatePickerStyleInline;
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid type for a DateTimeChooser.";
-      break;
+      NOTREACHED() << "Invalid type for a DateTimeChooser.";
   }
 
   datePicker.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];

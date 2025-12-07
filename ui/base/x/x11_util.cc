@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // This file defines utility functions for X11 (Linux only). This code has been
 // ported from XCB since we can't use XCB on Ubuntu while its 32-bit support
 // remains woefully incomplete.
@@ -22,7 +17,9 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
@@ -34,7 +31,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
@@ -138,7 +134,7 @@ void DrawPixmap(x11::Connection* connection,
   for (int row = 0; row < height; row += rows_per_request) {
     size_t n_rows = std::min<size_t>(rows_per_request, height - row);
     auto data = base::MakeRefCounted<base::RefCountedStaticMemory>(
-        vec.data() + row * row_bytes, n_rows * row_bytes);
+        base::span(vec).subspan(row * row_bytes, n_rows * row_bytes));
     connection->PutImage({
         .format = x11::ImageFormat::ZPixmap,
         .drawable = drawable,
@@ -252,15 +248,14 @@ void SetUseOSWindowFrame(x11::Window window, bool use_os_window_frame) {
     uint32_t status;
   } MotifWmHints;
 
-  MotifWmHints motif_hints;
-  memset(&motif_hints, 0, sizeof(motif_hints));
+  MotifWmHints motif_hints = {};
   // Signals that the reader of the _MOTIF_WM_HINTS property should pay
   // attention to the value of |decorations|.
   motif_hints.flags = (1u << 1);
   motif_hints.decorations = use_os_window_frame ? 1 : 0;
 
   std::vector<uint32_t> hints(sizeof(MotifWmHints) / sizeof(uint32_t));
-  memcpy(hints.data(), &motif_hints, sizeof(MotifWmHints));
+  UNSAFE_TODO(memcpy(hints.data(), &motif_hints, sizeof(MotifWmHints)));
   x11::Atom hint_atom = x11::GetAtom("_MOTIF_WM_HINTS");
   x11::Connection::Get()->SetArrayProperty(window, hint_atom, hint_atom, hints);
 }
@@ -316,7 +311,7 @@ void SetWindowClassHint(x11::Connection* connection,
                         const std::string& res_class) {
   auto str =
       base::StringPrintf("%s%c%s", res_name.c_str(), '\0', res_class.c_str());
-  std::vector<char> data(str.data(), str.data() + str.size() + 1);
+  std::vector<char> data(str.data(), UNSAFE_TODO(str.data() + str.size() + 1));
   x11::Connection::Get()->SetArrayProperty(window, x11::Atom::WM_CLASS,
                                            x11::Atom::STRING, data);
 }
@@ -448,7 +443,7 @@ WindowManagerName GuessWindowManager() {
   if (name == "i3") {
     return WM_I3;
   }
-  if (base::StartsWith(name, "IceWM", base::CompareCase::SENSITIVE)) {
+  if (name.starts_with("IceWM")) {
     return WM_ICE_WM;
   }
   if (name == "ion3") {
@@ -699,7 +694,7 @@ gfx::ImageSkia GetNativeWindowIcon(intptr_t target_window_id) {
 
   for (long y = 0; y < height; ++y) {
     for (long x = 0; x < width; ++x) {
-      pixels_data[result.rowBytesAsPixels() * y + x] =
+      UNSAFE_TODO(pixels_data[result.rowBytesAsPixels() * y + x]) =
           static_cast<uint32_t>(data[start + width * y + x]);
     }
   }

@@ -10,6 +10,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
@@ -17,7 +18,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -27,8 +27,6 @@
 #include "components/permissions/object_permission_context_base.h"
 #include "components/prefs/pref_store.h"
 #include "content/public/browser/host_zoom_map.h"
-#include "ppapi/buildflags/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/origin.h"
 
 class BrowsingDataModel;
@@ -73,12 +71,12 @@ class SiteSettingsHandler
     bool operator<(const GroupingKey& other) const;
 
    private:
-    explicit GroupingKey(const absl::variant<std::string, url::Origin>& value);
+    explicit GroupingKey(const std::variant<std::string, url::Origin>& value);
 
     url::Origin ToOrigin() const;
 
     // eTLD+1 or Origin
-    absl::variant<std::string, url::Origin> value_;
+    std::variant<std::string, url::Origin> value_;
   };
 
   using AllSitesMap =
@@ -128,8 +126,8 @@ class SiteSettingsHandler
   // OnGetUsageInfo above.
   void HandleFetchUsageTotal(const base::Value::List& args);
 
-  // Asynchronously fetches the fps membership information label.
-  void HandleGetFpsMembershipLabel(const base::Value::List& args);
+  // Asynchronously fetches the rws membership information label.
+  void HandleGetRwsMembershipLabel(const base::Value::List& args);
 
   // Deletes the storage being used for a given host.
   void HandleClearUnpartitionedUsage(const base::Value::List& args);
@@ -219,8 +217,11 @@ class SiteSettingsHandler
   // Clear web storage data and cookies for a site group.
   void HandleClearSiteGroupDataAndCookies(const base::Value::List& args);
 
-  // Gets warning strings for content types that are blocked at the OS level.
-  void HandleGetOSGlobalPermissionStatus(const base::Value::List& args);
+  // Gets the list of content types that are blocked at the OS level.
+  void HandleGetSystemDeniedPermissions(const base::Value::List& args);
+
+  // Attempts to open the the OS permission settings.
+  void HandleOpenSystemPermissionSettings(const base::Value::List& args);
 
   void ClearAllSitesMapForTesting();
 
@@ -235,6 +236,7 @@ class SiteSettingsHandler
   // TODO(crbug.com/40101962): Remove this friend class when the Persistent
   // Permissions feature flag is removed.
   friend class PersistentPermissionsSiteSettingsHandlerTest;
+  friend class SmartCardReaderPermissionsSiteSettingsHandlerTest;
 
   // Rebuilds the BrowsingDataModel. Pending requests are serviced when the
   // browsing data model is built.
@@ -260,7 +262,7 @@ class SiteSettingsHandler
   // Returns a list of content settings types that are controlled via a standard
   // permissions UI and should be made visible to the user. There is a single
   // nullable string argument, which represents an associated origin. See
-  // `SiteSettingsPrefsBrowserProxy#getCategoryList`.
+  // `SiteSettingsBrowserProxy#getCategoryList`.
   void HandleGetCategoryList(const base::Value::List& args);
 
   // Returns a list of sites, grouped by their effective top level domain plus
@@ -299,8 +301,8 @@ class SiteSettingsHandler
   // Sends the list of notification permissions to review to the WebUI.
   void SendNotificationPermissionReviewList();
 
-  // Fetches the OS global permission status.
-  base::Value GetOSGlobalPermissionStatus();
+  // Returns the list of permissions blocked at the system level.
+  base::Value GetSystemDeniedPermissions();
 
   const raw_ptr<Profile, DanglingUntriaged> profile_;
 

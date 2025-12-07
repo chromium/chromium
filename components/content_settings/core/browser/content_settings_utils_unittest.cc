@@ -2,22 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/content_settings/core/browser/content_settings_utils.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <string>
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,14 +25,13 @@ namespace content_settings {
 namespace {
 
 // clang-format off
-const char* const kContentSettingNames[] = {
+constexpr auto kContentSettingNames = std::to_array<const char *>({
   "default",
   "allow",
   "block",
   "ask",
   "session_only",
-  "detect_important_content",
-};
+});
 // clang-format on
 
 static_assert(std::size(kContentSettingNames) == CONTENT_SETTING_NUM_SETTINGS,
@@ -96,8 +93,6 @@ TEST(ContentSettingsUtilsTest, ContentSettingsStringMap) {
 TEST(ContentSettingsUtilsTest, IsMorePermissive) {
   EXPECT_TRUE(IsMorePermissive(CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK));
   EXPECT_TRUE(IsMorePermissive(CONTENT_SETTING_ALLOW, CONTENT_SETTING_ASK));
-  EXPECT_TRUE(IsMorePermissive(CONTENT_SETTING_ALLOW,
-                               CONTENT_SETTING_DETECT_IMPORTANT_CONTENT));
   EXPECT_TRUE(
       IsMorePermissive(CONTENT_SETTING_ALLOW, CONTENT_SETTING_SESSION_ONLY));
 
@@ -106,16 +101,9 @@ TEST(ContentSettingsUtilsTest, IsMorePermissive) {
   EXPECT_TRUE(
       IsMorePermissive(CONTENT_SETTING_SESSION_ONLY, CONTENT_SETTING_BLOCK));
 
-  EXPECT_TRUE(IsMorePermissive(CONTENT_SETTING_DETECT_IMPORTANT_CONTENT,
-                               CONTENT_SETTING_ASK));
-  EXPECT_TRUE(IsMorePermissive(CONTENT_SETTING_DETECT_IMPORTANT_CONTENT,
-                               CONTENT_SETTING_BLOCK));
-
   EXPECT_TRUE(IsMorePermissive(CONTENT_SETTING_ASK, CONTENT_SETTING_BLOCK));
 
   EXPECT_FALSE(IsMorePermissive(CONTENT_SETTING_BLOCK, CONTENT_SETTING_ALLOW));
-  EXPECT_FALSE(IsMorePermissive(CONTENT_SETTING_BLOCK,
-                                CONTENT_SETTING_DETECT_IMPORTANT_CONTENT));
   EXPECT_FALSE(
       IsMorePermissive(CONTENT_SETTING_BLOCK, CONTENT_SETTING_SESSION_ONLY));
   EXPECT_FALSE(IsMorePermissive(CONTENT_SETTING_BLOCK, CONTENT_SETTING_ASK));
@@ -123,13 +111,9 @@ TEST(ContentSettingsUtilsTest, IsMorePermissive) {
   EXPECT_FALSE(IsMorePermissive(CONTENT_SETTING_ASK, CONTENT_SETTING_ALLOW));
   EXPECT_FALSE(
       IsMorePermissive(CONTENT_SETTING_ASK, CONTENT_SETTING_SESSION_ONLY));
-  EXPECT_FALSE(IsMorePermissive(CONTENT_SETTING_ASK,
-                                CONTENT_SETTING_DETECT_IMPORTANT_CONTENT));
 
   EXPECT_FALSE(
       IsMorePermissive(CONTENT_SETTING_SESSION_ONLY, CONTENT_SETTING_ALLOW));
-  EXPECT_FALSE(IsMorePermissive(CONTENT_SETTING_DETECT_IMPORTANT_CONTENT,
-                                CONTENT_SETTING_ALLOW));
 
   EXPECT_FALSE(IsMorePermissive(CONTENT_SETTING_ALLOW, CONTENT_SETTING_ALLOW));
 
@@ -142,50 +126,65 @@ TEST(ContentSettingsUtilsTest, IsMorePermissive) {
 }
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-TEST(ContentSettingsUtilsTest, CanBeAutoRevoked) {
-  EXPECT_TRUE(CanBeAutoRevoked(ContentSettingsType::GEOLOCATION,
-                               ContentSetting::CONTENT_SETTING_ALLOW));
+TEST(ContentSettingsUtilsTest, CanBeAutoRevokedAsUnusedPermission) {
+  ContentSettingsRegistry::GetInstance();
+  EXPECT_TRUE(
+      IsPermissionEligibleForAutoRevocation(ContentSettingsType::GEOLOCATION));
+  EXPECT_TRUE(CanBeAutoRevokedAsUnusedPermission(
+      ContentSettingsType::GEOLOCATION,
+      ContentSettingToValue(CONTENT_SETTING_ALLOW)));
 
   // One-time grants should not be auto revoked.
-  EXPECT_FALSE(CanBeAutoRevoked(ContentSettingsType::GEOLOCATION,
-                                ContentSetting::CONTENT_SETTING_ALLOW, true));
+  EXPECT_FALSE(CanBeAutoRevokedAsUnusedPermission(
+      ContentSettingsType::GEOLOCATION,
+      ContentSettingToValue(CONTENT_SETTING_ALLOW), true));
 
   // Only allowed permissions should be auto revoked.
-  EXPECT_FALSE(CanBeAutoRevoked(ContentSettingsType::GEOLOCATION,
-                                ContentSetting::CONTENT_SETTING_DEFAULT));
+  EXPECT_FALSE(CanBeAutoRevokedAsUnusedPermission(
+      ContentSettingsType::GEOLOCATION,
+      ContentSettingToValue(CONTENT_SETTING_ASK)));
 
-  EXPECT_FALSE(CanBeAutoRevoked(ContentSettingsType::GEOLOCATION,
-                                ContentSetting::CONTENT_SETTING_ASK));
-
-  EXPECT_FALSE(CanBeAutoRevoked(ContentSettingsType::GEOLOCATION,
-                                ContentSetting::CONTENT_SETTING_BLOCK));
+  EXPECT_FALSE(CanBeAutoRevokedAsUnusedPermission(
+      ContentSettingsType::GEOLOCATION,
+      ContentSettingToValue(CONTENT_SETTING_BLOCK)));
 
   // Notification permissions should not be auto revoked.
-  EXPECT_FALSE(CanBeAutoRevoked(ContentSettingsType::NOTIFICATIONS,
-                                ContentSetting::CONTENT_SETTING_ALLOW));
+  EXPECT_FALSE(IsPermissionEligibleForAutoRevocation(
+      ContentSettingsType::NOTIFICATION_INTERACTIONS));
+  EXPECT_FALSE(CanBeAutoRevokedAsUnusedPermission(
+      ContentSettingsType::NOTIFICATION_INTERACTIONS,
+      ContentSettingToValue(CONTENT_SETTING_ALLOW)));
 
   // Permissions that are not ask by default should not be auto revoked. IMAGES
   // permission is allowed by default, and ADS  permission is blocked by
   // default.
-  EXPECT_FALSE(CanBeAutoRevoked(ContentSettingsType::IMAGES,
-                                ContentSetting::CONTENT_SETTING_ALLOW));
+  EXPECT_FALSE(
+      IsPermissionEligibleForAutoRevocation(ContentSettingsType::IMAGES));
+  EXPECT_FALSE(CanBeAutoRevokedAsUnusedPermission(
+      ContentSettingsType::IMAGES,
+      ContentSettingToValue(CONTENT_SETTING_ALLOW)));
 
-  EXPECT_FALSE(CanBeAutoRevoked(ContentSettingsType::ADS,
-                                ContentSetting::CONTENT_SETTING_ALLOW));
+  EXPECT_FALSE(IsPermissionEligibleForAutoRevocation(ContentSettingsType::ADS));
+  EXPECT_FALSE(CanBeAutoRevokedAsUnusedPermission(
+      ContentSettingsType::ADS, ContentSettingToValue(CONTENT_SETTING_ALLOW)));
 
   // Chooser permissions that are allowlisted should be auto-revoked.
-  EXPECT_TRUE(
-      CanBeAutoRevoked(ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA,
-                       base::Value("foo")));
+  EXPECT_TRUE(IsPermissionEligibleForAutoRevocation(
+      ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA));
+  EXPECT_TRUE(CanBeAutoRevokedAsUnusedPermission(
+      ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA,
+      base::Value("foo")));
 
   // Chooser permissions that are allowlisted but without any value
   // should not be auto-revoked.
-  EXPECT_FALSE(CanBeAutoRevoked(
+  EXPECT_FALSE(CanBeAutoRevokedAsUnusedPermission(
       ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA, base::Value()));
 
   // Chooser permissions that are not allowlisted should not be auto-revoked.
-  EXPECT_FALSE(CanBeAutoRevoked(ContentSettingsType::USB_CHOOSER_DATA,
-                                base::Value("foo")));
+  EXPECT_FALSE(IsPermissionEligibleForAutoRevocation(
+      ContentSettingsType::USB_CHOOSER_DATA));
+  EXPECT_FALSE(CanBeAutoRevokedAsUnusedPermission(
+      ContentSettingsType::USB_CHOOSER_DATA, base::Value("foo")));
 }
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 

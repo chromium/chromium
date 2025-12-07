@@ -23,8 +23,10 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_processor.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_processor_definition.h"
 #include "third_party/blink/renderer/modules/webaudio/cross_thread_audio_worklet_processor_info.h"
+#include "third_party/blink/renderer/platform/audio/denormal_disabler.h"
 #include "third_party/blink/renderer/platform/bindings/callback_method_retriever.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -34,6 +36,9 @@ AudioWorkletGlobalScope::AudioWorkletGlobalScope(
     : WorkletGlobalScope(std::move(creation_params),
                          thread->GetWorkerReportingProxy(),
                          thread) {
+  // Disable denormals for performance.
+  DenormalModifier::DisableDenormals();
+
   // Audio is prone to jank introduced by e.g. the garbage collector. Workers
   // are generally put in a background mode (as they are non-visible). Audio is
   // an exception here, requiring low-latency behavior similar to any visible
@@ -66,9 +71,10 @@ void AudioWorkletGlobalScope::registerProcessor(
   // 2. If name already exists as a key in the node name to processor
   //    constructor map, throw a NotSupportedError.
   if (processor_definition_map_.Contains(name)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      "An AudioWorkletProcessor with name:\"" +
-                                          name + "\" is already registered.");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        StrCat({"An AudioWorkletProcessor with name:\"", name,
+                "\" is already registered."}));
     return;
   }
 
@@ -76,8 +82,8 @@ void AudioWorkletGlobalScope::registerProcessor(
   //    a TypeError .
   if (!processor_ctor->IsConstructor()) {
     exception_state.ThrowTypeError(
-        "The provided class definition of \"" + name +
-        "\" AudioWorkletProcessor is not a constructor.");
+        StrCat({"The provided class definition of \"", name,
+                "\" AudioWorkletProcessor is not a constructor."}));
     return;
   }
 
@@ -90,33 +96,23 @@ void AudioWorkletGlobalScope::registerProcessor(
     return;
   }
 
-  // TODO(crbug.com/1077911): Do not extract process() function at the
-  // registration step.
-  v8::Local<v8::Function> v8_process =
-      retriever.GetMethodOrThrow("process", exception_state);
-  if (exception_state.HadException()) {
-    return;
-  }
-  V8BlinkAudioWorkletProcessCallback* process =
-      V8BlinkAudioWorkletProcessCallback::Create(v8_process);
-
   // The sufficient information to build a AudioWorkletProcessorDefinition
   // is collected. The rest of registration process is optional.
   // (i.e. parameterDescriptors)
   AudioWorkletProcessorDefinition* definition =
-      AudioWorkletProcessorDefinition::Create(name, processor_ctor, process);
+      AudioWorkletProcessorDefinition::Create(name, processor_ctor);
 
+  // 6. Let parameterDescriptorsValue be the result of Get(O=processorCtor,
+  //    P="parameterDescriptors").
   v8::Isolate* isolate = processor_ctor->GetIsolate();
   v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
-
   v8::Local<v8::Value> v8_parameter_descriptors;
   {
-    v8::TryCatch try_catch(isolate);
+    TryRethrowScope rethrow_scope(isolate, exception_state);
     if (!processor_ctor->CallbackObject()
              ->Get(current_context,
                    V8AtomicString(isolate, "parameterDescriptors"))
              .ToLocal(&v8_parameter_descriptors)) {
-      exception_state.RethrowV8Exception(try_catch.Exception());
       return;
     }
   }
@@ -144,13 +140,29 @@ void AudioWorkletGlobalScope::registerProcessor(
       if (!sanitized_names.insert(new_param_name).is_new_entry) {
         exception_state.ThrowDOMException(
             DOMExceptionCode::kNotSupportedError,
-            "Found a duplicate name \"" + new_param_name +
-                "\" in parameterDescriptors() from the AudioWorkletProcessor " +
-                "definition of \"" + name + "\".");
+            StrCat(
+                {"Found a duplicate name \"", new_param_name,
+                 "\" in parameterDescriptors() from the AudioWorkletProcessor "
+                 "definition of \"",
+                 name, "\"."}));
         return;
       }
 
-      // TODO(crbug.com/1078546): The steps 7.3.3 ~ 7.3.6 are missing.
+      // 7.3.3 - 7.3.6. Inspect default value range within [minValue, maxValue].
+      float default_value = given_descriptor->defaultValue();
+      float min_value = given_descriptor->minValue();
+      float max_value = given_descriptor->maxValue();
+      if ((default_value < min_value) || (default_value > max_value)) {
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kInvalidStateError,
+            StrCat({"The default value, ", String::Number(default_value),
+                    ", in \"", new_param_name,
+                    "\" parameterDescriptors() from the AudioWorkletProcessor "
+                    "is out of the range [",
+                    String::Number(min_value), ", ", String::Number(max_value),
+                    "]."}));
+        return;
+      }
 
       sanitized_param_descriptors.push_back(given_descriptor);
     }
@@ -237,7 +249,7 @@ AudioWorkletProcessor* AudioWorkletGlobalScope::CreateProcessor(
 }
 
 AudioWorkletProcessorDefinition* AudioWorkletGlobalScope::FindDefinition(
-    const String& name) {
+    const String& name) const {
   const auto it = processor_definition_map_.find(name);
   if (it == processor_definition_map_.end()) {
     return nullptr;
@@ -245,7 +257,7 @@ AudioWorkletProcessorDefinition* AudioWorkletGlobalScope::FindDefinition(
   return it->value.Get();
 }
 
-unsigned AudioWorkletGlobalScope::NumberOfRegisteredDefinitions() {
+unsigned AudioWorkletGlobalScope::NumberOfRegisteredDefinitions() const {
   return processor_definition_map_.size();
 }
 
@@ -253,10 +265,10 @@ std::unique_ptr<Vector<CrossThreadAudioWorkletProcessorInfo>>
 AudioWorkletGlobalScope::WorkletProcessorInfoListForSynchronization() {
   auto processor_info_list =
       std::make_unique<Vector<CrossThreadAudioWorkletProcessorInfo>>();
-  for (auto definition_entry : processor_definition_map_) {
-    if (!definition_entry.value->IsSynchronized()) {
-      definition_entry.value->MarkAsSynchronized();
-      processor_info_list->emplace_back(*definition_entry.value);
+  for (auto definition : processor_definition_map_.Values()) {
+    if (!definition->IsSynchronized()) {
+      definition->MarkAsSynchronized();
+      processor_info_list->emplace_back(*definition);
     }
   }
   return processor_info_list;
@@ -273,6 +285,11 @@ void AudioWorkletGlobalScope::SetCurrentFrame(size_t current_frame) {
 
 void AudioWorkletGlobalScope::SetSampleRate(float sample_rate) {
   sample_rate_ = sample_rate;
+}
+
+void AudioWorkletGlobalScope::SetRenderQuantumSize(
+    uint32_t render_quantum_size) {
+  render_quantum_size_ = render_quantum_size;
 }
 
 double AudioWorkletGlobalScope::currentTime() const {

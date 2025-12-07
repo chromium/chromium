@@ -5,6 +5,8 @@
 # This header file defines the "sysroot" variable which is the absolute path
 # of the sysroot. If no sysroot applies, the variable will be an empty string.
 
+import("//build/toolchain/sysroot.gni")
+
 declare_args() {
   # The path of the sysroot that is applied when compiling using the target
   # toolchain.
@@ -16,13 +18,6 @@ declare_args() {
   # The path of the sysroot for the current toolchain. If empty, default
   # sysroot is used.
   sysroot = ""
-
-  # Controls default is_linux sysroot. If set to true, and sysroot
-  # is empty, default sysroot is calculated.
-  use_sysroot =
-      current_cpu == "x86" || current_cpu == "x64" || current_cpu == "arm" ||
-      current_cpu == "arm64" || current_cpu == "mipsel" ||
-      current_cpu == "mips64el" || (current_cpu == "riscv64" && is_android)
 }
 
 if (sysroot == "") {
@@ -49,6 +44,8 @@ if (sysroot == "") {
       sysroot = "$target_sysroot_dir/debian_bullseye_armhf-sysroot"
     } else if (current_cpu == "arm64") {
       sysroot = "$target_sysroot_dir/debian_bullseye_arm64-sysroot"
+    } else if (current_cpu == "riscv64") {
+      sysroot = "$target_sysroot_dir/debian_trixie_riscv64-sysroot"
     } else {
       assert(false, "No linux sysroot for cpu: $target_cpu")
     }
@@ -61,9 +58,7 @@ if (sysroot == "") {
         _script_arch = "amd64"
       }
       assert(
-          exec_script("//build/dir_exists.py",
-                      [ rebase_path(sysroot) ],
-                      "string") == "True",
+          path_exists(sysroot),
           "Missing sysroot ($sysroot). To fix, run: build/linux/sysroot_scripts/install-sysroot.py --arch=$_script_arch")
     }
   } else if (is_mac) {

@@ -7,17 +7,19 @@
 #include <gbm.h>
 #include <stdlib.h>
 #include <xf86drm.h>
+
 #include <memory>
 #include <utility>
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
-#include "build/chromeos_buildflags.h"
+#include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/base/buildflags.h"
@@ -26,7 +28,8 @@
 #include "ui/events/ozone/evdev/event_factory_evdev.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/gfx/linux/client_native_pixmap_dmabuf.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
+#include "ui/ozone/common/base_keyboard_hook.h"
 #include "ui/ozone/common/bitmap_cursor_factory.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
 #include "ui/ozone/platform/drm/gpu/drm_device_generator.h"
@@ -57,11 +60,7 @@
 #include "ui/events/ozone/layout/stub/stub_keyboard_layout_engine.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/base/ime/ash/input_method_ash.h"
-#else
-#include "ui/base/ime/input_method_minimal.h"
-#endif
 
 namespace ui {
 
@@ -84,13 +83,8 @@ class OzonePlatformDrm : public OzonePlatform {
     return event_factory_ozone_->input_controller();
   }
 
-  std::unique_ptr<PlatformScreen> CreateScreen() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
-  void InitScreen(PlatformScreen* screen) override {
-    NOTREACHED_IN_MIGRATION();
-  }
+  std::unique_ptr<PlatformScreen> CreateScreen() override { NOTREACHED(); }
+  void InitScreen(PlatformScreen* screen) override { NOTREACHED(); }
 
   GpuPlatformSupportHost* GetGpuPlatformSupportHost() override {
     return drm_device_connector_.get();
@@ -176,11 +170,7 @@ class OzonePlatformDrm : public OzonePlatform {
   std::unique_ptr<InputMethod> CreateInputMethod(
       ImeKeyEventDispatcher* ime_key_event_dispatcher,
       gfx::AcceleratedWidget) override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     return std::make_unique<ash::InputMethodAsh>(ime_key_event_dispatcher);
-#else
-    return std::make_unique<InputMethodMinimal>(ime_key_event_dispatcher);
-#endif
   }
 
   bool IsNativePixmapConfigSupported(gfx::BufferFormat format,
@@ -298,6 +288,20 @@ class OzonePlatformDrm : public OzonePlatform {
 
     const bool block_for_drm_thread = false;
     StartDrmThread(block_for_drm_thread);
+  }
+
+  std::unique_ptr<PlatformKeyboardHook> CreateKeyboardHook(
+      PlatformKeyboardHookTypes type,
+      base::RepeatingCallback<void(KeyEvent* event)> callback,
+      std::optional<base::flat_set<DomCode>> dom_codes,
+      gfx::AcceleratedWidget accelerated_widget) override {
+    switch (type) {
+      case PlatformKeyboardHookTypes::kModifier:
+        return std::make_unique<BaseKeyboardHook>(std::move(dom_codes),
+                                                  std::move(callback));
+      case PlatformKeyboardHookTypes::kMedia:
+        return nullptr;
+    }
   }
 
  private:

@@ -1,0 +1,213 @@
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="AdaptiveToolbarSegmentSwitch">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="None to new tab"/>
+  <int value="2" label="None to share"/>
+  <int value="3" label="None to voice"/>
+  <int value="4" label="New tab to none"/>
+  <int value="5" label="Share to none"/>
+  <int value="6" label="Voice to none"/>
+  <int value="7" label="New tab to share"/>
+  <int value="8" label="New tab to voice"/>
+  <int value="9" label="Share to new tab"/>
+  <int value="10" label="Share to voice"/>
+  <int value="11" label="Voice to new tab"/>
+  <int value="12" label="Voice to share"/>
+</enum>
+
+<enum name="SegmentationBooleanSegmentSwitch">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="None to enabled"/>
+  <int value="2" label="Enabled to none"/>
+</enum>
+
+<enum name="SegmentationModelAvailability">
+  <int value="0" label="Model handler created"/>
+  <int value="1" label="Model available"/>
+  <int value="2" label="Model metadata invalid"/>
+  <int value="3" label="Model not available"/>
+</enum>
+
+<enum name="SegmentationPlatformFeatureProcessingError">
+  <int value="0" label="UkmEngineDisabled"/>
+  <int value="1" label="UmaValidationError"/>
+  <int value="2" label="SqlValidationError"/>
+  <int value="3" label="CustomInputError"/>
+  <int value="4" label="SqlBindValuesError"/>
+  <int value="5" label="SqlQueryRunError"/>
+  <int value="6" label="ResultTensorError"/>
+  <int value="7" label="Success"/>
+</enum>
+
+<enum name="SegmentationPlatformModelExecutionStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="ExecutionError"/>
+  <int value="2" label="InvalidMetadata"/>
+  <int value="3" label="SkippedModelNotReady"/>
+  <int value="4" label="SkippedHasFreshResults"/>
+  <int value="5" label="SkippedNotEnoughSignals"/>
+  <int value="6" label="SkippedResultNotExpired"/>
+  <int value="7" label="FailedToSaveResultAfterSuccess"/>
+</enum>
+
+<enum name="SegmentationPlatformSegmentationModel">
+  <int value="0" label="Unknown"/>
+  <int value="4" label="NewTab"/>
+  <int value="5" label="Share"/>
+  <int value="6" label="Voice"/>
+  <int value="10" label="Dummy"/>
+  <int value="11" label="ClankStart"/>
+  <int value="12" label="QueryTiles"/>
+  <int value="16" label="ChromeLowUserEngagement"/>
+  <int value="17" label="FeedUserSegment"/>
+  <int value="18" label="ContextualPageActions"/>
+  <int value="21" label="ShoppingUser"/>
+  <int value="22" label="ChromeAndroidStartUserV2"/>
+  <int value="23" label="SearchUserSegment"/>
+  <int value="27" label="DeviceSwitcher"/>
+  <int value="28" label="AdaptiveToolbar"/>
+  <int value="29" label="TabletProductivityUser"/>
+  <int value="32" label="WebAppInstallationPromo"/>
+  <int value="35" label="BottomToolbar"/>
+  <int value="37" label="IosModuleRanker"/>
+  <int value="38" label="DesktopNtpModule"/>
+  <int value="41" label="AndroidHomeModuleRanker"/>
+  <int value="45" label="ComposePromotion"/>
+  <int value="46" label="UrlVisitResumptionRanker"/>
+  <int value="50" label="MetricsClustering"/>
+  <int value="58" label="FedCmUser"/>
+  <int value="63" label="IosDefaultBrowserPromo"/>
+</enum>
+
+<enum name="SegmentationPlatformTrainingDataCollectionEvent">
+  <int value="0" label="Immediate collection start"/>
+  <int value="1" label="Immediate collection success"/>
+  <int value="2" label="Model info missing"/>
+  <int value="3" label="Metadata validation failure"/>
+  <int value="4" label="Get input tensors failure"/>
+  <int value="5" label="Not enough data collection time"/>
+  <int value="6" label="UKM reporting failure"/>
+  <int value="7" label="Partial Data not allowed to upload"/>
+  <int value="8" label="Continuous collection start"/>
+  <int value="9" label="Continuous collection success"/>
+  <int value="10" label="Collect and store inputs success"/>
+  <int value="11" label="Observation time reached"/>
+  <int value="12" label="Delayed task posted"/>
+  <int value="13" label="Immediate observation posted"/>
+  <int value="14" label="Waiting for non delayed trigger"/>
+  <int value="15" label="Histogram trigger hit"/>
+  <int value="16" label="No segment info found failure"/>
+  <int value="17" label="Disallowed for recording"/>
+  <int value="18" label="Observation disallowed for recording"/>
+  <int value="19" label="Training data missing"/>
+  <int value="20" label="Decision type mismatch failure"/>
+  <int value="21" label="Delay trigger sampled"/>
+  <int value="22" label="Continuous exact prediction time collection start"/>
+  <int value="23" label="Continuous exact prediction time collection success"/>
+</enum>
+
+<enum name="SegmentationPlatformValidationResult">
+  <int value="0" label="ValidationSuccess"/>
+  <int value="1" label="SegmentIDNotFound"/>
+  <int value="2" label="MetadataNotFound"/>
+  <int value="3" label="TimeUnitInvald"/>
+  <int value="4" label="SignalTypeInvalid"/>
+  <int value="5" label="FeatureNameNotFound"/>
+  <int value="6" label="FeatureNameHashNotFound"/>
+  <int value="7" label="FeatureAggregationNotFound"/>
+  <int value="8" label="FeatureTensorLengthInvalid"/>
+  <int value="9" label="FeatureNameHashDoesNotMatchName"/>
+  <int value="10" label="VersionNotSupported"/>
+  <int value="11" label="FeatureListInvalid"/>
+  <int value="12" label="CustomInputInvalid"/>
+  <int value="13" label="FeatureSqlQueryEmpty"/>
+  <int value="14" label="FeatureBindValuesInvalid"/>
+  <int value="15" label="IndexedTensorsInvalid"/>
+  <int value="16" label="MultiClassClassifierHasNoLabels"/>
+  <int value="17" label="MultiClassClassifierUsesBothThresholdTypes"/>
+  <int value="18" label="MultiClassClassifierClassAndThresholdCountMismatch"/>
+  <int value="19" label="DefaultTtlIsMissing"/>
+  <int value="20" label="PredictionTtlTimeUnitInvalid"/>
+  <int value="21" label="GenericPredictorMissingLabels"/>
+  <int value="22" label="BinaryClassifierEmptyLabels"/>
+  <int value="23" label="BinnedClassifierEmptyLabels"/>
+  <int value="24" label="BinnedClassifierBinsUnsorted"/>
+  <int value="25" label="PredictorTypeMissing"/>
+  <int value="26" label="DiscreteMappingAndOutputConfigFound"/>
+</enum>
+
+<enum name="SegmentationSelectionFailureReason">
+  <int value="0" label="DEPRECATED: Segmentation platform is disabled"/>
+  <int value="1" label="Segment selection available in prefs"/>
+  <int value="2" label="Score from database for server model is not ready"/>
+  <int value="3" label="Signal collection for server model is not complete"/>
+  <int value="4" label="Segment selection TTL has not expired"/>
+  <int value="5"
+      label="Deprecated since M101. At least one model failed to execute"/>
+  <int value="6"
+      label="Deprecated since M101. At least one model needs more signals"/>
+  <int value="7"
+      label="Deprecated since M101. At least one model has invalid metadata"/>
+  <int value="8" label="Failed to write model result to DB"/>
+  <int value="9" label="Invalid selection result found in prefs"/>
+  <int value="10" label="Database initialization failed"/>
+  <int value="11" label="SegmentInfo is not available for server model"/>
+  <int value="12" label="Signal collection for default model is not complete"/>
+  <int value="13" label="Default model execution failed"/>
+  <int value="14" label="SegmentInfo is not available for default model"/>
+  <int value="15" label="Server model execution failed"/>
+  <int value="16" label="Segment selection available in proto prefs"/>
+  <int value="17" label="Invalid selection result found in proto prefs"/>
+  <int value="18"
+      label="Proto prefs result is valid and doesn't require update"/>
+  <int value="19" label="Proto prefs result is updated"/>
+  <int value="20"
+      label="Model execution score for server model is obtained from database"/>
+  <int value="21"
+      label="Model execution score is obtained from executing default model"/>
+  <int value="22"
+      label="Model execution score is obtained from executing server model"/>
+  <int value="23" label="Multi output is not supported by the config"/>
+  <int value="24" label="Ondemand model not executed or failed."/>
+  <int value="25" label="Classification API result returned from prefs."/>
+  <int value="26" label="Classification API result not available in prefs."/>
+  <int value="27"
+      label="Model execution score for default model is obtained from
+             database"/>
+  <int value="28" label="Score from database for default model is not ready"/>
+  <int value="29"
+      label="Cached result is unavailable, execute the model ondemand."/>
+  <int value="30"
+      label="Ondemand model execution failed, returned cached results."/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

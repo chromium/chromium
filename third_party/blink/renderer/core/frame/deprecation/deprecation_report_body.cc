@@ -6,17 +6,14 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/platform/text/date_components.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
-ScriptValue DeprecationReportBody::anticipatedRemoval(
+ScriptObject DeprecationReportBody::anticipatedRemoval(
     ScriptState* script_state) const {
-  v8::Isolate* isolate = script_state->GetIsolate();
-  if (!anticipated_removal_)
-    return ScriptValue::CreateNull(isolate);
-  return ScriptValue(isolate, ToV8Traits<IDLNullable<IDLDate>>::ToV8(
-                                  script_state, *anticipated_removal_));
+  return ToV8FromDate(script_state, anticipated_removal_);
 }
 
 std::optional<base::Time> DeprecationReportBody::AnticipatedRemoval() const {
@@ -41,9 +38,10 @@ void DeprecationReportBody::BuildJSONValue(V8ObjectBuilder& builder) const {
       // Adding extra 'Z' here to ensure that the string gives the same result
       // as JSON.stringify(anticipatedRemoval) in javascript. Note here
       // anticipatedRemoval will become a Date object in javascript.
-      String iso8601_date = anticipated_removal_date.ToString(
-                                DateComponents::SecondFormat::kMillisecond) +
-                            "Z";
+      String iso8601_date =
+          StrCat({anticipated_removal_date.ToString(
+                      DateComponents::SecondFormat::kMillisecond),
+                  "Z"});
       builder.AddString("anticipatedRemoval", iso8601_date);
     }
   }

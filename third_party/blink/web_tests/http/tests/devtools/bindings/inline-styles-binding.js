@@ -16,7 +16,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
   await TestRunner.navigatePromise('./resources/inline-style.html');
   const uiSourceCode = await TestRunner.waitForUISourceCode('inline-style.html', Workspace.Workspace.projectTypes.Network);
 
-  await uiSourceCode.requestContent(); // prefetch content to fix flakiness
+  await uiSourceCode.requestContentData(); // prefetch content to fix flakiness
   const headers = TestRunner.cssModel.headersForSourceURL(uiSourceCode.url());
   // Sort headers in the order they appear in the file to avoid flakiness.
   headers.sort((a, b) => a.startLine - b.startLine);

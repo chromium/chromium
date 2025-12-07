@@ -28,8 +28,8 @@ class TestMediaRouterFactory : public MediaRouterFactory {
     BrowserContextDestroyed(context);
   }
 
-  MOCK_METHOD(KeyedService*,
-              BuildServiceInstanceFor,
+  MOCK_METHOD(std::unique_ptr<KeyedService>,
+              BuildServiceInstanceForBrowserContext,
               (content::BrowserContext * context),
               (const));
 };
@@ -97,7 +97,7 @@ class MirroringToFlingingSwitcherTest : public testing::Test {
         presentation_manager_.get());
   }
 
-  int GetNewTabSource() {
+  content::FrameTreeNodeId GetNewTabSource() {
     return web_contents_->GetPrimaryMainFrame()->GetFrameTreeNodeId();
   }
 

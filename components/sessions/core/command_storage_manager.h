@@ -7,16 +7,21 @@
 
 #include <stddef.h>
 
+#include <list>
 #include <memory>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/sessions/core/sessions_export.h"
+
+namespace base {
+class Value;
+}
 
 namespace sessions {
 class CommandStorageManagerDelegate;
@@ -41,9 +46,8 @@ class SESSIONS_EXPORT CommandStorageManager {
   // Identifies the type of session service this is. This is used by the
   // backend to determine the name of the files.
   // TODO(sky): this enum is purely for legacy reasons, and should be replaced
-  // with consumers building the path (similar to weblayer). Remove in
-  // approximately a year (1/2022), when we shouldn't need to worry too much
-  // about migrating older data.
+  // with consumers building the path. Remove in approximately a year (1/2022),
+  // when we shouldn't need to worry too much about migrating older data.
   enum SessionType { kAppRestore, kSessionRestore, kTabRestore, kOther };
 
   // Creates a new CommandStorageManager. After creation you need to invoke
@@ -130,6 +134,14 @@ class SESSIONS_EXPORT CommandStorageManager {
   // deleted.
   void GetLastSessionCommands(GetCommandsCallback callback);
 
+#if DCHECK_IS_ON()
+  // Returns the state of this class and logs for the
+  // chrome://internals/session-service debug page. The logs are in reverse
+  // order for truncation ease. This value is NOT STABLE - do not rely on it's
+  // contents for anything.
+  base::Value ToDebugValue() const;
+#endif  // DCHECK_IS_ON()
+
  private:
   friend class CommandStorageManagerTestHelper;
 
@@ -159,6 +171,12 @@ class SESSIONS_EXPORT CommandStorageManager {
   // TaskRunner all backend tasks are run on. This is a SequencedTaskRunner as
   // all tasks *must* be processed in the order they are scheduled.
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
+
+#if DCHECK_IS_ON()
+  // Used to store debug log entries for this command manager.
+  constexpr static int kMaxLogSize = 100;
+  std::list<base::Value> written_commands_reverse_debug_log_;
+#endif  // DCHECK_IS_ON()
 
   base::WeakPtrFactory<CommandStorageManager> weak_factory_{this};
 

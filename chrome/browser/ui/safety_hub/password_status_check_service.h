@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_UI_SAFETY_HUB_PASSWORD_STATUS_CHECK_SERVICE_H_
 #define CHROME_BROWSER_UI_SAFETY_HUB_PASSWORD_STATUS_CHECK_SERVICE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/password_manager/bulk_leak_check_service_factory.h"
+#include "base/timer/timer.h"
+#include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/safety_hub/safety_hub_service.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check_service_interface.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
@@ -48,7 +50,7 @@ class PasswordStatusCheckService
 
   bool is_password_check_running() const;
 
-  bool no_passwords_saved() const { return no_passwords_saved_; }
+  bool no_passwords_saved() const { return saved_credential_count_ == 0; }
 
   // Returns the time at which the password check is currently scheduled to run.
   base::Time GetScheduledPasswordCheckTime() const;
@@ -63,12 +65,15 @@ class PasswordStatusCheckService
   // Bring cached credential issues up to date with data from Password Manager.
   void UpdateInsecureCredentialCountAsync();
 
-  // Helper function for displaying the current status in the UI.
+  // Helper function for displaying the status in UI given the sign-in state.
   base::Value::Dict GetPasswordCardData(bool signed_in);
 
+  // Helper function for displaying the current status in the UI.
+  base::Value::Dict GetPasswordCardData();
+
   // Returns the latest PasswordStatusCheckResult that is available in memory.
-  // TODO(crbug.com/40267370): This will be a SafetyHubService implementation.
-  std::optional<std::unique_ptr<SafetyHubService::Result>> GetCachedResult();
+  // TODO(crbug.com/40267370): This will be a SafetyHubResult implementation.
+  std::optional<std::unique_ptr<SafetyHubResult>> GetCachedResult();
 
   // Returns if there is any ongoing password check or insecure credential
   // check. Returns true if is_update_credential_count_pending() or
@@ -229,15 +234,16 @@ class PasswordStatusCheckService
   size_t compromised_credential_count_ = 0;
   size_t weak_credential_count_ = 0;
   size_t reused_credential_count_ = 0;
-
-  // True when password stores are empty and there are no saved passwords.
-  bool no_passwords_saved_ = true;
+  size_t saved_credential_count_ = 0;
 
   // Indicates whether weak reause check is currently running.
   bool running_weak_reused_check_ = false;
 
   // Timer to schedule the run of the password check after some time has passed.
   base::OneShotTimer password_check_timer_;
+
+  // Timer to schedule the weak and reuse checks to run every day.
+  base::RepeatingTimer weak_and_reuse_check_timer_;
 
   // The latest available result, which is initialized when the service is
   // started and whenever insecure credentials are changed.

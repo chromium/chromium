@@ -21,20 +21,25 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.h"
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_utils.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
+#include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers_metric_utils.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
+#include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/feedback/feedback_constants.h"
-#include "components/manta/features.h"
 #include "components/manta/manta_status.h"
 #include "content/public/browser/web_ui.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -45,7 +50,7 @@ namespace ash::personalization_app {
 namespace {
 
 constexpr int kSeaPenImageThumbnailSizeDip = 512;
-constexpr int kMaxTextQueryHistoryItemNum = 2;
+constexpr int kMaxTextQueryHistoryItemNum = 3;
 
 void AppendTextQueryHistory(
     std::map<uint32_t, const SeaPenImage> images,
@@ -81,7 +86,6 @@ PersonalizationAppSeaPenProviderBase::~PersonalizationAppSeaPenProviderBase() =
 void PersonalizationAppSeaPenProviderBase::BindInterface(
     mojo::PendingReceiver<::ash::personalization_app::mojom::SeaPenProvider>
         receiver) {
-  CHECK(manta::features::IsMantaServiceEnabled());
   CHECK(::ash::features::IsSeaPenEnabled() ||
         ::ash::features::IsVcBackgroundReplaceEnabled());
   sea_pen_receiver_.reset();
@@ -94,6 +98,33 @@ bool PersonalizationAppSeaPenProviderBase::IsEligibleForSeaPen() {
 
 bool PersonalizationAppSeaPenProviderBase::IsEligibleForSeaPenTextInput() {
   return ::ash::personalization_app::IsEligibleForSeaPenTextInput(profile_);
+}
+
+bool PersonalizationAppSeaPenProviderBase::IsManagedSeaPenEnabled() {
+  return IsManagedSeaPenEnabledInternal();
+}
+
+bool PersonalizationAppSeaPenProviderBase::IsManagedSeaPenFeedbackEnabled() {
+  if (!profile_->GetProfilePolicyConnector()->IsManaged()) {
+    return true;
+  }
+
+  // Allow internal Google accounts to see and provide feedback.
+  if (gaia::IsGoogleInternalAccountEmail(profile_->GetProfileUserName())) {
+    DVLOG(1) << __func__ << " Google internal account";
+    return true;
+  }
+
+  // Allow Demo Mode public accounts to see and provide feedback.
+  if (features::IsSeaPenDemoModeEnabled() &&
+      ash::demo_mode::IsDeviceInDemoMode()) {
+    DVLOG(1) << __func__ << " demo mode";
+    const auto* user = GetUser(profile_);
+    return DemoSession::Get() && user &&
+           user->GetType() == user_manager::UserType::kPublicAccount;
+  }
+
+  return IsManagedSeaPenFeedbackEnabledInternal();
 }
 
 void PersonalizationAppSeaPenProviderBase::SetSeaPenObserver(
@@ -126,6 +157,7 @@ void PersonalizationAppSeaPenProviderBase::GetSeaPenThumbnails(
 
 void PersonalizationAppSeaPenProviderBase::SelectSeaPenThumbnail(
     uint32_t id,
+    const bool preview_mode,
     SelectSeaPenThumbnailCallback callback) {
   // Get high resolution image.
   const auto query_and_thumbnail = FindImageThumbnail(id);
@@ -137,7 +169,7 @@ void PersonalizationAppSeaPenProviderBase::SelectSeaPenThumbnail(
   // In case of CHROMEOS_VC_BACKGROUNDS, we use image stored already.
   if (feature_name_ == manta::proto::FeatureName::CHROMEOS_VC_BACKGROUNDS) {
     OnFetchWallpaperDone(
-        std::move(callback), query_and_thumbnail->first,
+        std::move(callback), query_and_thumbnail->first, /*preview_mode=*/false,
         SeaPenImage(query_and_thumbnail->second->second.jpg_bytes,
                     query_and_thumbnail->second->second.id));
     return;
@@ -153,7 +185,7 @@ void PersonalizationAppSeaPenProviderBase::SelectSeaPenThumbnail(
       base::BindOnce(
           &PersonalizationAppSeaPenProviderBase::OnFetchWallpaperDone,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-          query_and_thumbnail->first->Clone()));
+          query_and_thumbnail->first->Clone(), preview_mode));
 }
 
 void PersonalizationAppSeaPenProviderBase::SelectRecentSeaPenImage(
@@ -216,6 +248,8 @@ void PersonalizationAppSeaPenProviderBase::OnFetchThumbnailsDone(
     const mojom::SeaPenQueryPtr& query,
     std::optional<std::vector<SeaPenImage>> images,
     manta::MantaStatusCode status_code) {
+  RecordSeaPenMantaStatusCode(query->which(), status_code,
+                              wallpaper_handlers::SeaPenApiType::kThumbnails);
   if (!images) {
     std::move(callback).Run(std::nullopt, status_code);
     return;
@@ -243,6 +277,7 @@ void PersonalizationAppSeaPenProviderBase::OnFetchThumbnailsDone(
 void PersonalizationAppSeaPenProviderBase::OnFetchWallpaperDone(
     SelectSeaPenThumbnailCallback callback,
     const mojom::SeaPenQueryPtr& query,
+    const bool preview_mode,
     std::optional<SeaPenImage> image) {
   if (!image) {
     std::move(callback).Run(/*success=*/false);
@@ -250,7 +285,8 @@ void PersonalizationAppSeaPenProviderBase::OnFetchWallpaperDone(
   }
 
   CHECK(query);
-  OnFetchWallpaperDoneInternal(*image, query, std::move(callback));
+  OnFetchWallpaperDoneInternal(*image, query, preview_mode,
+                               std::move(callback));
 }
 
 void PersonalizationAppSeaPenProviderBase::OnRecentSeaPenImageSelected(
@@ -368,9 +404,30 @@ void PersonalizationAppSeaPenProviderBase::
   HandleSeaPenIntroductionDialogClosedInternal();
 }
 
+void PersonalizationAppSeaPenProviderBase::
+    ShouldShowSeaPenFreeformIntroductionDialog(
+        ShouldShowSeaPenFreeformIntroductionDialogCallback callback) {
+  if (!features::IsSeaPenEnabled() &&
+      !features::IsVcBackgroundReplaceEnabled() &&
+      !features::IsSeaPenTextInputEnabled()) {
+    sea_pen_receiver_.ReportBadMessage(
+        "Cannot call `ShouldShowSeaPenFreeformIntroductionDialog()` without "
+        "Sea Pen freeform "
+        "feature enabled");
+    return;
+  }
+
+  ShouldShowSeaPenFreeformIntroductionDialogInternal(std::move(callback));
+}
+
+void PersonalizationAppSeaPenProviderBase::
+    HandleSeaPenFreeformIntroductionDialogClosed() {
+  HandleSeaPenFreeformIntroductionDialogClosedInternal();
+}
+
 void PersonalizationAppSeaPenProviderBase::IsInTabletMode(
     IsInTabletModeCallback callback) {
-  std::move(callback).Run(display::Screen::GetScreen()->InTabletMode());
+  std::move(callback).Run(display::Screen::Get()->InTabletMode());
 }
 
 void PersonalizationAppSeaPenProviderBase::MakeTransparent() {

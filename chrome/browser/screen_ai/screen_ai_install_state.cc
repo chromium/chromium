@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/check_is_test.h"
+#include "base/cpu.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -17,29 +18,26 @@
 #include "services/screen_ai/public/cpp/utilities.h"
 #include "ui/accessibility/accessibility_features.h"
 
-#if BUILDFLAG(IS_LINUX)
-#include "base/cpu.h"
-#include "base/files/file_util.h"
-#endif
-
 namespace {
+// From 140.3, the proto has the new `whitespace_bounding_box` field.
+const char kMinExpectedVersion[] = "140.3";
 const int kScreenAICleanUpDelayInDays = 30;
-const char kMinExpectedVersion[] = "124.2";
 
 bool IsDeviceCompatible() {
-#if BUILDFLAG(IS_LINUX)
 #if defined(ARCH_CPU_X86_FAMILY)
   // Check if the CPU has the required instruction set to run the Screen AI
   // library.
-  static const bool has_sse41 = base::CPU().has_sse41();
+  // TODO(crbug.com/381256355): Update when ScreenAI library is compatible with
+  // older CPUs.
+  static const bool device_compatible = base::CPU().has_sse42();
+#elif BUILDFLAG(IS_LINUX)
+  // On Linux, the library is only built for X86 CPUs.
+  static constexpr bool device_compatible = false;
 #else
-  static constexpr bool has_sse41 = false;
-#endif  // defined(ARCH_CPU_X86_FAMILY)
-  if (!has_sse41) {
-    return false;
-  }
-#endif  // BUILDFLAG(IS_LINUX)
-  return true;
+  static constexpr bool device_compatible = true;
+#endif
+
+  return device_compatible;
 }
 
 }  // namespace
@@ -92,7 +90,10 @@ ScreenAIInstallState::~ScreenAIInstallState() {
 
 // static
 bool ScreenAIInstallState::ShouldInstall(PrefService* local_state) {
-  if (!IsDeviceCompatible()) {
+  bool device_compatible = IsDeviceCompatible();
+  base::UmaHistogramBoolean("Accessibility.ScreenAI.DeviceCompatible",
+                            device_compatible);
+  if (!device_compatible) {
     return false;
   }
 
@@ -110,18 +111,6 @@ bool ScreenAIInstallState::ShouldInstall(PrefService* local_state) {
   }
 
   return true;
-}
-
-// static
-void ScreenAIInstallState::RecordComponentInstallationResult(bool install,
-                                                             bool successful) {
-  if (install) {
-    base::UmaHistogramBoolean("Accessibility.ScreenAI.Component.Install",
-                              successful);
-  } else {
-    base::UmaHistogramBoolean("Accessibility.ScreenAI.Component.Uninstall",
-                              successful);
-  }
 }
 
 void ScreenAIInstallState::AddObserver(

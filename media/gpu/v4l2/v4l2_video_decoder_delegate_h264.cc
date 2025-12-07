@@ -2,29 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_h264.h"
 
 #include <linux/v4l2-controls.h>
 #include <linux/videodev2.h>
 
 #include <algorithm>
+#include <tuple>
 #include <type_traits>
 
 #include "base/containers/heap_array.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
-#include "build/chromeos_buildflags.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_decode_surface.h"
 #include "media/gpu/v4l2/v4l2_decode_surface_handler.h"
 #include "media/gpu/v4l2/v4l2_device.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // gn check does not account for BUILDFLAG(), so including this header will
-// make gn check fail for builds other than ash-chrome. See gn help nogncheck
+// make gn check fail for builds other than ChromeOS. See gn help nogncheck
 // for more information.
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_context.h"  // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace media {
 
@@ -119,7 +125,7 @@ scoped_refptr<H264Picture> V4L2VideoDecoderDelegateH264::CreateH264Picture() {
     return nullptr;
   }
 
-  return new V4L2H264Picture(dec_surface);
+  return base::MakeRefCounted<V4L2H264Picture>(dec_surface);
 }
 
 scoped_refptr<H264Picture>
@@ -129,7 +135,7 @@ V4L2VideoDecoderDelegateH264::CreateH264PictureSecure(uint64_t secure_handle) {
   if (!dec_surface)
     return nullptr;
 
-  return new V4L2H264Picture(dec_surface);
+  return base::MakeRefCounted<V4L2H264Picture>(dec_surface);
 }
 
 void V4L2VideoDecoderDelegateH264::ProcessSPS(
@@ -245,8 +251,7 @@ V4L2VideoDecoderDelegateH264::SubmitFrameMetadata(
   SPS_TO_V4L2SPS(num_ref_frames_in_pic_order_cnt_cycle);
 
   static_assert(std::extent<decltype(v4l2_sps.offset_for_ref_frame)>() ==
-                    std::extent<decltype(sps->offset_for_ref_frame)>(),
-                "offset_for_ref_frame arrays must be same size");
+                std::tuple_size<decltype(sps->offset_for_ref_frame)>::value);
   for (size_t i = 0; i < std::size(v4l2_sps.offset_for_ref_frame); ++i) {
     v4l2_sps.offset_for_ref_frame[i] = sps->offset_for_ref_frame[i];
   }
@@ -322,23 +327,31 @@ V4L2VideoDecoderDelegateH264::SubmitFrameMetadata(
 
   static_assert(
       std::extent<decltype(v4l2_scaling_matrix.scaling_list_4x4)>() <=
-              std::extent<decltype(pps->scaling_list4x4)>() &&
+              std::tuple_size<std::remove_reference_t<
+                  decltype(pps->scaling_list4x4)>>::value &&
           std::extent<decltype(v4l2_scaling_matrix.scaling_list_4x4[0])>() <=
-              std::extent<decltype(pps->scaling_list4x4[0])>() &&
+              std::tuple_size<std::remove_reference_t<
+                  decltype(pps->scaling_list4x4[0])>>::value &&
           std::extent<decltype(v4l2_scaling_matrix.scaling_list_8x8)>() <=
-              std::extent<decltype(pps->scaling_list8x8)>() &&
+              std::tuple_size<std::remove_reference_t<
+                  decltype(pps->scaling_list8x8)>>::value &&
           std::extent<decltype(v4l2_scaling_matrix.scaling_list_8x8[0])>() <=
-              std::extent<decltype(pps->scaling_list8x8[0])>(),
+              std::tuple_size<std::remove_reference_t<
+                  decltype(pps->scaling_list8x8[0])>>::value,
       "PPS scaling_lists must be of correct size");
   static_assert(
       std::extent<decltype(v4l2_scaling_matrix.scaling_list_4x4)>() <=
-              std::extent<decltype(sps->scaling_list4x4)>() &&
+              std::tuple_size<std::remove_reference_t<
+                  decltype(sps->scaling_list4x4)>>::value &&
           std::extent<decltype(v4l2_scaling_matrix.scaling_list_4x4[0])>() <=
-              std::extent<decltype(sps->scaling_list4x4[0])>() &&
+              std::tuple_size<std::remove_reference_t<
+                  decltype(sps->scaling_list4x4[0])>>::value &&
           std::extent<decltype(v4l2_scaling_matrix.scaling_list_8x8)>() <=
-              std::extent<decltype(sps->scaling_list8x8)>() &&
+              std::tuple_size<std::remove_reference_t<
+                  decltype(sps->scaling_list8x8)>>::value &&
           std::extent<decltype(v4l2_scaling_matrix.scaling_list_8x8[0])>() <=
-              std::extent<decltype(sps->scaling_list8x8[0])>(),
+              std::tuple_size<std::remove_reference_t<
+                  decltype(sps->scaling_list8x8[0])>>::value,
       "SPS scaling_lists must be of correct size");
 
   const auto* scaling_list4x4 = &sps->scaling_list4x4[0];
@@ -386,7 +399,6 @@ V4L2VideoDecoderDelegateH264::SubmitFrameMetadata(
   ext_ctrls.controls = &ctrls[0];
   dec_surface->PrepareSetCtrls(&ext_ctrls);
   if (device_->Ioctl(VIDIOC_S_EXT_CTRLS, &ext_ctrls) != 0) {
-    RecordVidiocIoctlErrorUMA(VidiocIoctlRequests::kVidiocSExtCtrls);
     VPLOGF(1) << "ioctl() failed: VIDIOC_S_EXT_CTRLS";
     return Status::kFail;
   }
@@ -403,7 +415,7 @@ V4L2VideoDecoderDelegateH264::ParseEncryptedSliceHeader(
     const std::vector<SubsampleEntry>& /*subsamples*/,
     uint64_t secure_handle,
     H264SliceHeader* slice_header_out) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!cdm_context_ || !cdm_context_->GetChromeOsCdmContext()) {
     LOG(ERROR) << "Missing ChromeOSCdmContext";
     return Status::kFail;
@@ -412,6 +424,11 @@ V4L2VideoDecoderDelegateH264::ParseEncryptedSliceHeader(
     LOG(ERROR) << "Invalid secure buffer";
     return Status::kFail;
   }
+
+  if (encrypted_slice_header_parsing_active_) {
+    return Status::kTryAgain;
+  }
+
   if (encrypted_slice_header_parsing_failed_) {
     encrypted_slice_header_parsing_failed_ = false;
     last_parsed_encrypted_slice_header_.clear();
@@ -425,6 +442,7 @@ V4L2VideoDecoderDelegateH264::ParseEncryptedSliceHeader(
 
   // Send the request for the slice header if we don't have a pending result.
   if (last_parsed_encrypted_slice_header_.empty()) {
+    encrypted_slice_header_parsing_active_ = true;
     cdm_context_->GetChromeOsCdmContext()->ParseEncryptedSliceHeader(
         secure_handle,
         base::checked_cast<uint32_t>(encrypted_slice_header_offset_),
@@ -491,7 +509,7 @@ V4L2VideoDecoderDelegateH264::ParseEncryptedSliceHeader(
   return Status::kOk;
 #else
   return Status::kFail;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 H264Decoder::H264Accelerator::Status V4L2VideoDecoderDelegateH264::SubmitSlice(
@@ -524,7 +542,7 @@ H264Decoder::H264Accelerator::Status V4L2VideoDecoderDelegateH264::SubmitSlice(
   const size_t data_copy_size = size + 3;
   if (dec_surface->secure_handle()) {
     // If this is multi-slice CENCv1, then we need to increase this offset.
-    encrypted_slice_header_offset_ += size;
+    encrypted_slice_header_offset_ += data_copy_size;
     // The secure world already post-processed the secure buffer so that all of
     // the slice NALUs w/ 3 byte start codes are the only contents.
     return surface_handler_->SubmitSlice(dec_surface.get(), nullptr,
@@ -587,7 +605,6 @@ H264Decoder::H264Accelerator::Status V4L2VideoDecoderDelegateH264::SubmitDecode(
   ext_ctrls.controls = &ctrls[0];
   dec_surface->PrepareSetCtrls(&ext_ctrls);
   if (device_->Ioctl(VIDIOC_S_EXT_CTRLS, &ext_ctrls) != 0) {
-    RecordVidiocIoctlErrorUMA(VidiocIoctlRequests::kVidiocSExtCtrls);
     VPLOGF(1) << "ioctl() failed: VIDIOC_S_EXT_CTRLS";
     return Status::kFail;
   }
@@ -612,6 +629,7 @@ void V4L2VideoDecoderDelegateH264::Reset() {
   encrypted_slice_header_offset_ = 0;
   last_parsed_encrypted_slice_header_.clear();
   encrypted_slice_header_parsing_failed_ = false;
+  encrypted_slice_header_parsing_active_ = false;
 }
 
 scoped_refptr<V4L2DecodeSurface>
@@ -626,6 +644,7 @@ void V4L2VideoDecoderDelegateH264::OnEncryptedSliceHeaderParsed(
     const std::vector<uint8_t>& parsed_headers) {
   encrypted_slice_header_parsing_failed_ = !status;
   last_parsed_encrypted_slice_header_ = parsed_headers;
+  encrypted_slice_header_parsing_active_ = false;
   surface_handler_->ResumeDecoding();
 }
 

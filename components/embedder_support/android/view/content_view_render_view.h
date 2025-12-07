@@ -7,49 +7,47 @@
 
 #include <memory>
 
+#include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
 #include "content/public/browser/android/compositor_client.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace content {
 class Compositor;
 }  // namespace content
+   //
 
 namespace embedder_support {
 
 class ContentViewRenderView : public content::CompositorClient {
  public:
   ContentViewRenderView(JNIEnv* env,
-                        jobject obj,
+                        const base::android::JavaRef<jobject>& obj,
                         gfx::NativeWindow root_window);
 
   ContentViewRenderView(const ContentViewRenderView&) = delete;
   ContentViewRenderView& operator=(const ContentViewRenderView&) = delete;
 
   // Methods called from Java via JNI -----------------------------------------
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
   void SetCurrentWebContents(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jobject>& jweb_contents);
+      const base::android::JavaRef<jobject>& jweb_contents);
   void OnPhysicalBackingSizeChanged(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jobject>& jweb_contents,
+      const base::android::JavaRef<jobject>& jweb_contents,
       jint width,
       jint height);
-  void SurfaceCreated(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& obj);
-  void SurfaceDestroyed(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& obj);
-  void SurfaceChanged(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& obj,
-                      jint format,
-                      jint width,
-                      jint height,
-                      const base::android::JavaParamRef<jobject>& surface);
+  void SurfaceCreated(JNIEnv* env);
+  void SurfaceDestroyed(JNIEnv* env);
+  std::optional<int> SurfaceChanged(
+      JNIEnv* env,
+      jint format,
+      jint width,
+      jint height,
+      const base::android::JavaRef<jobject>& surface,
+      const base::android::JavaRef<jobject>& browser_input_token);
   void SetOverlayVideoMode(JNIEnv* env,
-                           const base::android::JavaParamRef<jobject>& obj,
                            bool enabled);
 
   // CompositorClient implementation

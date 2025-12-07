@@ -27,7 +27,7 @@ void HistoryURLVisitAggregatesBrowserTypeTransformer::Transform(
 
     // Entries from AuthView are for authentication, and should be filtered out.
     return history->last_visited.context_annotations.on_visit.browser_type ==
-           history::VisitContextAnnotations::BrowserType::kAuthView;
+           history::VisitContextAnnotations::BrowserType::kAuthTab;
   });
 
   std::move(callback).Run(Status::kSuccess, std::move(aggregates));

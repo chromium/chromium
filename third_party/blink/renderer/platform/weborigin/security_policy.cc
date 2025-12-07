@@ -26,11 +26,6 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
 #include <memory>
@@ -152,8 +147,7 @@ Referrer SecurityPolicy::GenerateReferrer(
     case network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade:
       break;
     case network::mojom::ReferrerPolicy::kDefault:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   return Referrer(ShouldHideReferrer(url, referrer_url) ? Referrer::NoReferrer()
@@ -296,8 +290,7 @@ String SecurityPolicy::ReferrerPolicyAsString(
     case network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin:
       return "strict-origin-when-cross-origin";
   }
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 namespace {
@@ -328,11 +321,10 @@ bool SecurityPolicy::ReferrerPolicyFromHeaderValue(
     } else {
       Vector<UChar> characters;
       stripped_token.AppendTo(characters);
-      const UChar* position = characters.data();
-      UChar* end = characters.data() + characters.size();
-      SkipWhile<UChar, IsASCIIAlphaOrHyphen>(position, end);
-      if (position != end)
+      if (SkipWhile<UChar, IsASCIIAlphaOrHyphen>(characters, 0) !=
+          characters.size()) {
         return false;
+      }
     }
   }
 
@@ -341,47 +333,6 @@ bool SecurityPolicy::ReferrerPolicyFromHeaderValue(
 
   *result = referrer_policy;
   return true;
-}
-
-#if BUILDFLAG(IS_FUCHSIA)
-namespace {
-std::vector<url::Origin> GetSharedArrayBufferOrigins() {
-  std::string switch_value =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kSharedArrayBufferAllowedOrigins);
-  std::vector<std::string> list =
-      SplitString(switch_value, ",", base::WhitespaceHandling::TRIM_WHITESPACE,
-                  base::SplitResult::SPLIT_WANT_NONEMPTY);
-  std::vector<url::Origin> result;
-  for (auto& origin : list) {
-    GURL url(origin);
-    if (!url.is_valid() || url.scheme() != url::kHttpsScheme) {
-      LOG(FATAL) << "Invalid --" << switches::kSharedArrayBufferAllowedOrigins
-                 << " specified: " << switch_value;
-    }
-    result.push_back(url::Origin::Create(url));
-  }
-  return result;
-}
-}  // namespace
-#endif  // BUILDFLAG(IS_FUCHSIA)
-
-// static
-bool SecurityPolicy::IsSharedArrayBufferAlwaysAllowedForOrigin(
-    const SecurityOrigin* security_origin) {
-#if BUILDFLAG(IS_FUCHSIA)
-  static base::NoDestructor<std::vector<url::Origin>> allowed_origins(
-      GetSharedArrayBufferOrigins());
-  url::Origin origin = security_origin->ToUrlOrigin();
-  for (const url::Origin& allowed_origin : *allowed_origins) {
-    if (origin.scheme() == allowed_origin.scheme() &&
-        origin.DomainIs(allowed_origin.host()) &&
-        origin.port() == allowed_origin.port()) {
-      return true;
-    }
-  }
-#endif
-  return false;
 }
 
 }  // namespace blink

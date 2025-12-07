@@ -92,20 +92,6 @@ void BrowserContextKeyedServiceFactory::BrowserContextDestroyed(
 }
 
 std::unique_ptr<KeyedService>
-BrowserContextKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
-    content::BrowserContext* context) const {
-  // TODO(tsepez): fully deprecate the form below.
-  return base::WrapUnique(BuildServiceInstanceFor(context));
-}
-
-KeyedService* BrowserContextKeyedServiceFactory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
-  // Stub to prevent converted sub-classes from needing to implement this form.
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
-}
-
-std::unique_ptr<KeyedService>
 BrowserContextKeyedServiceFactory::BuildServiceInstanceFor(
     void* context) const {
   return BuildServiceInstanceForBrowserContext(

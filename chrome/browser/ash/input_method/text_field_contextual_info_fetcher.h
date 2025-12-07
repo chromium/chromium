@@ -8,7 +8,6 @@
 #include <optional>
 #include <string>
 
-#include "base/functional/callback.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chromeos/ui/base/app_types.h"
 #include "url/gurl.h"
@@ -32,20 +31,11 @@ struct TextFieldContextualInfo {
 // hosted. This is a lightweight and synced call.
 void GetTextFieldAppTypeAndKey(TextFieldContextualInfo& info);
 
-using TextFieldContextualInfoCallback =
-    base::OnceCallback<void(const TextFieldContextualInfo& info)>;
-// Get the contextual info of the current text filed.
-// Its sub queries may go over IPCs.
-void GetTextFieldContextualInfo(TextFieldContextualInfoCallback cb);
+// Gets the contextual info of the currently focused text field.
+TextFieldContextualInfo GetTextFieldContextualInfo();
 
 // Get the current tab url if the text field is hosted by a tab.
 std::optional<GURL> GetUrlForTextFieldOnAshChrome();
-
-using TextFieldTabUrlCallback =
-    base::OnceCallback<void(const std::optional<GURL>& url)>;
-// Get the current tab url if the text field is hosted by a tab from Lacros.
-// This query requires a further call over IPC.
-void GetUrlForTextFieldOnLacros(TextFieldTabUrlCallback cb);
 
 }  // namespace input_method
 }  // namespace ash

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 
+#include <array>
 #include <locale>
 #include <memory>
 #include <string>
@@ -20,6 +16,7 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -40,7 +37,6 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/test/chromedriver/constants/version.h"
 #include "chrome/test/chromedriver/keycode_text_conversion.h"
 #include "chrome/test/chromedriver/logging.h"
@@ -51,13 +47,10 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/log/net_log_source.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace {
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 // Ensure that there is a writable shared memory directory. We use
 // network::SimpleURLLoader to connect to Chrome, and it calls
 // base::subtle::PlatformSharedMemoryRegion::Create to get a shared memory
@@ -120,8 +113,8 @@ void HandleRequestOnIOThread(
                               send_response_func)));
 }
 
-ABSL_CONST_INIT thread_local HttpServer* server_ipv4 = nullptr;
-ABSL_CONST_INIT thread_local HttpServer* server_ipv6 = nullptr;
+constinit thread_local HttpServer* server_ipv4 = nullptr;
+constinit thread_local HttpServer* server_ipv6 = nullptr;
 
 void StopServerOnIOThread() {
   delete server_ipv4;
@@ -251,8 +244,8 @@ void StartServerOnIOThread(
   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   if (!cmd_line->HasSwitch("silent") &&
       cmd_line->GetSwitchValueASCII("log-level") != "OFF") {
-    printf("%s was started successfully on port %u.\n",
-           kChromeDriverProductShortName, port);
+    UNSAFE_TODO(printf("%s was started successfully on port %u.\n",
+                       kChromeDriverProductShortName, port));
   }
   if (cmd_line->HasSwitch("log-path")) {
     VLOG(0) << kChromeDriverProductShortName
@@ -323,7 +316,7 @@ int main(int argc, char *argv[]) {
   std::string url_base;
   if (cmd_line->HasSwitch("h") || cmd_line->HasSwitch("help")) {
     std::string options;
-    const char* const kOptionAndDescriptions[] = {
+    const auto kOptionAndDescriptions = std::to_array<const char*>({
         "port=PORT",
         "port to listen on",
         "adb-port=PORT",
@@ -350,11 +343,9 @@ int main(int argc, char *argv[]) {
         "add readable timestamps to log",
         "enable-chrome-logs",
         "show logs from the browser (overrides other logging options)",
-        "bidi-mapper-path",
+        "bidi-mapper-path=PATH",
         "custom bidi mapper path",
-    // TODO(crbug.com/40118868): Revisit the macro expression once build flag
-    // switch of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
         "disable-dev-shm-usage",
         "do not use /dev/shm "
         "(add this switch if seeing errors related to shared memory)",
@@ -365,7 +356,7 @@ int main(int argc, char *argv[]) {
         "ignore-explicit-port",
         "(experimental) ignore the port specified explicitly, "
         "find a free port instead",
-    };
+    });
     for (size_t i = 0; i < std::size(kOptionAndDescriptions) - 1; i += 2) {
       options += base::StringPrintf(
           "  --%-30s%s\n",
@@ -384,12 +375,14 @@ int main(int argc, char *argv[]) {
         "dangerous!\n",
         "allowed-origins=LIST", kChromeDriverProductShortName);
 
-    printf("Usage: %s [OPTIONS]\n\nOptions\n%s", argv[0], options.c_str());
+    UNSAFE_TODO(
+        printf("Usage: %s [OPTIONS]\n\nOptions\n%s", argv[0], options.c_str()));
     return 0;
   }
   bool early_exit = false;
   if (cmd_line->HasSwitch("v") || cmd_line->HasSwitch("version")) {
-    printf("%s %s\n", kChromeDriverProductFullName, kChromeDriverVersion);
+    UNSAFE_TODO(
+        printf("%s %s\n", kChromeDriverProductFullName, kChromeDriverVersion));
     early_exit = true;
   }
   if (early_exit)
@@ -466,8 +459,9 @@ int main(int argc, char *argv[]) {
 
   if (!cmd_line->HasSwitch("silent") &&
       cmd_line->GetSwitchValueASCII("log-level") != "OFF") {
-    printf("Starting %s %s on port %u\n", kChromeDriverProductShortName,
-           kChromeDriverVersion, port);
+    UNSAFE_TODO(printf("Starting %s %s on port %u\n",
+                       kChromeDriverProductShortName, kChromeDriverVersion,
+                       port));
     if (!allow_remote) {
       printf("Only local connections are allowed.\n");
     } else if (!allowed_ips.empty()) {
@@ -476,7 +470,7 @@ int main(int argc, char *argv[]) {
     } else {
       printf("All remote connections are allowed. Use an allowlist instead!\n");
     }
-    printf("%s\n", GetPortProtectionMessage());
+    UNSAFE_TODO(printf("%s\n", GetPortProtectionMessage()));
     fflush(stdout);
   }
 
@@ -491,9 +485,7 @@ int main(int argc, char *argv[]) {
     VLOG(0) << GetPortProtectionMessage();
   }
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   EnsureSharedMemory(cmd_line);
 #endif
 

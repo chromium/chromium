@@ -16,12 +16,13 @@
 namespace content {
 
 void ExposeGpuInterfacesToBrowser(
+    viz::GpuServiceImpl* gpu_service,
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     mojo::BinderMap* binders) {
   if (GetContentClient()->gpu()) {  // May be null in tests.
     GetContentClient()->gpu()->ExposeInterfacesToBrowser(
-        gpu_preferences, gpu_workarounds, binders);
+        gpu_service, gpu_preferences, gpu_workarounds, binders);
   }
 
 #if BUILDFLAG(IS_OZONE)

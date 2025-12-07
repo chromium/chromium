@@ -8,13 +8,11 @@
 #include <memory>
 #include <vector>
 
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-
-class Browser;
 
 namespace web_app {
 struct WebAppInstallInfo;
@@ -28,23 +26,17 @@ class HelpAppSystemAppDelegate : public SystemWebAppDelegate {
 
   // SystemWebAppDelegate overrides:
   std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInfo() const override;
-  gfx::Rect GetDefaultBounds(Browser*) const override;
+  gfx::Rect GetDefaultBounds(BrowserDelegate*) const override;
   gfx::Size GetMinimumWindowSize() const override;
   std::vector<int> GetAdditionalSearchTerms() const override;
   std::optional<SystemWebAppBackgroundTaskInfo> GetTimerInfo() const override;
   bool ShouldCaptureNavigations() const override;
-  Browser* LaunchAndNavigateSystemWebApp(
+  BrowserDelegate* LaunchAndNavigateSystemWebApp(
       Profile* profile,
       web_app::WebAppProvider* provider,
       const GURL& url,
       const apps::AppLaunchParams& params) const override;
 };
-
-// Return a WebAppInstallInfo used to install the app.
-std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForHelpWebApp();
-
-// Returns the default bounds.
-gfx::Rect GetDefaultBoundsForHelpApp(Browser*);
 
 }  // namespace ash
 

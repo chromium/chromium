@@ -39,10 +39,11 @@ class AppShimHostBootstrap : public chrome::mojom::AppShimHostBootstrap {
 
   // Creates a new server-side mojo channel at |endpoint|, which contains a
   // a Mach port for a channel created by an MachBootstrapAcceptor, and
-  // begins listening for messages on it. The PID of the sender of |endpoint|
-  // is stored in |peer_pid|.
-  static void CreateForChannelAndPeerID(mojo::PlatformChannelEndpoint endpoint,
-                                        base::ProcessId peer_pid);
+  // begins listening for messages on it. The audit token of the sender of
+  // |endpoint| is stored in |audit_token|.
+  static void CreateForChannelAndPeerAuditToken(
+      mojo::PlatformChannelEndpoint endpoint,
+      audit_token_t audit_token);
 
   AppShimHostBootstrap(const AppShimHostBootstrap&) = delete;
   AppShimHostBootstrap& operator=(const AppShimHostBootstrap&) = delete;
@@ -54,7 +55,8 @@ class AppShimHostBootstrap : public chrome::mojom::AppShimHostBootstrap {
       mojo::PendingReceiver<chrome::mojom::AppShim> app_shim_receiver);
   void OnFailedToConnectToHost(chrome::mojom::AppShimLaunchResult result);
 
-  base::ProcessId GetAppShimPid() const { return pid_; }
+  base::ProcessId GetAppShimPid() const;
+  audit_token_t GetAppShimAuditToken() const { return audit_token_; }
 
   mojo::PendingReceiver<chrome::mojom::AppShimHost> GetAppShimHostReceiver();
   const std::string& GetAppId() const;
@@ -84,7 +86,7 @@ class AppShimHostBootstrap : public chrome::mojom::AppShimHostBootstrap {
   bool IsMultiProfile() const;
 
  protected:
-  explicit AppShimHostBootstrap(base::ProcessId peer_pid);
+  explicit AppShimHostBootstrap(audit_token_t audit_token);
   void ServeChannel(mojo::PlatformChannelEndpoint endpoint);
   void ChannelError(uint32_t custom_reason, const std::string& description);
 
@@ -101,7 +103,7 @@ class AppShimHostBootstrap : public chrome::mojom::AppShimHostBootstrap {
   // The arguments from the OnShimConnected call, and whether or not it has
   // happened yet. The |app_shim_info_| is non-null if and only if a shim has
   // connected.
-  base::ProcessId pid_ = 0;
+  audit_token_t audit_token_;
   mojo::PendingReceiver<chrome::mojom::AppShimHost> app_shim_host_receiver_;
   chrome::mojom::AppShimInfoPtr app_shim_info_;
   OnShimConnectedCallback shim_connected_callback_;

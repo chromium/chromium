@@ -28,7 +28,7 @@ constexpr char kImageData[] = "data";
 
 class CachedImageFetcherImageDataStoreDiskTest : public testing::Test {
  public:
-  CachedImageFetcherImageDataStoreDiskTest() {}
+  CachedImageFetcherImageDataStoreDiskTest() = default;
 
   CachedImageFetcherImageDataStoreDiskTest(
       const CachedImageFetcherImageDataStoreDiskTest&) = delete;
@@ -89,9 +89,9 @@ class CachedImageFetcherImageDataStoreDiskTest : public testing::Test {
   void RunUntilIdle() { base::RunLoop().RunUntilIdle(); }
   ImageDataStore* data_store() { return data_store_.get(); }
 
-  MOCK_METHOD0(OnInitialized, void());
-  MOCK_METHOD2(DataCallback, void(bool, std::string));
-  MOCK_METHOD1(KeysCallback, void(std::vector<std::string>));
+  MOCK_METHOD(void, OnInitialized, (), ());
+  MOCK_METHOD(void, DataCallback, (bool, std::string), ());
+  MOCK_METHOD(void, KeysCallback, (std::vector<std::string>), ());
 
  private:
   std::unique_ptr<ImageDataStoreDisk> data_store_;

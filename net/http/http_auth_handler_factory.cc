@@ -4,8 +4,10 @@
 
 #include "net/http/http_auth_handler_factory.h"
 
+#include <array>
 #include <optional>
 #include <set>
+#include <string_view>
 
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
@@ -34,8 +36,8 @@ namespace net {
 namespace {
 
 base::Value::Dict NetLogParamsForCreateAuth(
-    const std::string& scheme,
-    const std::string& challenge,
+    std::string_view scheme,
+    std::string_view challenge,
     const int net_error,
     const url::SchemeHostPort& scheme_host_port,
     const std::optional<bool>& allows_default_credentials,
@@ -53,10 +55,19 @@ base::Value::Dict NetLogParamsForCreateAuth(
   return dict;
 }
 
+// Since there are at most 4 schemes, a linear search is faster than a binary
+// search because it can cheaply discard strings when the length doesn't match.
+constexpr auto kDefaultAuthSchemes =
+    std::to_array<std::string_view>({kBasicAuthScheme, kDigestAuthScheme,
+#if BUILDFLAG(USE_KERBEROS) && !BUILDFLAG(IS_ANDROID)
+                                     kNegotiateAuthScheme,
+#endif
+                                     kNtlmAuthScheme});
+
 }  // namespace
 
 int HttpAuthHandlerFactory::CreateAuthHandlerFromString(
-    const std::string& challenge,
+    std::string_view challenge,
     HttpAuth::Target target,
     const SSLInfo& ssl_info,
     const NetworkAnonymizationKey& network_anonymization_key,
@@ -64,7 +75,7 @@ int HttpAuthHandlerFactory::CreateAuthHandlerFromString(
     const NetLogWithSource& net_log,
     HostResolver* host_resolver,
     std::unique_ptr<HttpAuthHandler>* handler) {
-  HttpAuthChallengeTokenizer props(challenge.begin(), challenge.end());
+  HttpAuthChallengeTokenizer props(challenge);
   return CreateAuthHandler(&props, target, ssl_info, network_anonymization_key,
                            scheme_host_port, CREATE_CHALLENGE, 1, net_log,
                            host_resolver, handler);
@@ -79,7 +90,7 @@ int HttpAuthHandlerFactory::CreatePreemptiveAuthHandlerFromString(
     const NetLogWithSource& net_log,
     HostResolver* host_resolver,
     std::unique_ptr<HttpAuthHandler>* handler) {
-  HttpAuthChallengeTokenizer props(challenge.begin(), challenge.end());
+  HttpAuthChallengeTokenizer props(challenge);
   SSLInfo null_ssl_info;
   return CreateAuthHandler(&props, target, null_ssl_info,
                            network_anonymization_key, scheme_host_port,
@@ -248,11 +259,10 @@ bool HttpAuthHandlerRegistryFactory::IsSchemeAllowedForTesting(
 
 bool HttpAuthHandlerRegistryFactory::IsSchemeAllowed(
     const std::string& scheme) const {
-  const std::set<std::string>& allowed_schemes =
-      http_auth_preferences() && http_auth_preferences()->allowed_schemes()
-          ? *http_auth_preferences()->allowed_schemes()
-          : default_auth_schemes_;
-  return allowed_schemes.find(scheme) != allowed_schemes.end();
+  if (http_auth_preferences() && http_auth_preferences()->allowed_schemes()) {
+    return base::Contains(*http_auth_preferences()->allowed_schemes(), scheme);
+  }
+  return base::Contains(kDefaultAuthSchemes, scheme);
 }
 
 #if BUILDFLAG(USE_KERBEROS) && !BUILDFLAG(IS_ANDROID) && BUILDFLAG(IS_POSIX)

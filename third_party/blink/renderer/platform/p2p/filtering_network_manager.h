@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/platform/p2p/network_manager_uma.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/webrtc/rtc_base/network.h"
-#include "third_party/webrtc/rtc_base/third_party/sigslot/sigslot.h"
 
 namespace media {
 class MediaPermission;
@@ -23,7 +22,7 @@ namespace blink {
 class FilteringNetworkManagerTest;
 class IpcNetworkManager;
 
-// FilteringNetworkManager exposes rtc::NetworkManager to
+// FilteringNetworkManager exposes webrtc::NetworkManager to
 // PeerConnectionDependencyFactory and wraps the IpcNetworkManager. It only
 // handles the case where multiple_routes is requested. It checks at least one
 // of mic/camera permissions is granted before allowing WebRTC to use the local
@@ -33,11 +32,10 @@ class IpcNetworkManager;
 // ready. It is designed to fire the network change event at the earliest time
 // to reduce any extra call setup delay. This class is not thread safe and
 // should only be used by WebRTC's network thread. It inherits from
-// rtc::NetworkManagerBase to have the same implementation of
+// webrtc::NetworkManagerBase to have the same implementation of
 // GetAnyAddressNetworks(). We can't mark the whole class PLATFORM_EXPORT
 // as it requires all super classes to be PLATFORM_EXPORT as well.
-class FilteringNetworkManager : public rtc::NetworkManagerBase,
-                                public sigslot::has_slots<> {
+class FilteringNetworkManager : public webrtc::NetworkManagerBase {
  public:
   // This class is created by WebRTC's main thread but used by WebRTC's
   // worker thread |task_runner|.
@@ -50,11 +48,11 @@ class FilteringNetworkManager : public rtc::NetworkManagerBase,
 
   PLATFORM_EXPORT ~FilteringNetworkManager() override;
 
-  // rtc::NetworkManager:
+  // webrtc::NetworkManager:
   void Initialize() override;
   void StartUpdating() override;
   void StopUpdating() override;
-  std::vector<const rtc::Network*> GetNetworks() const override;
+  std::vector<const webrtc::Network*> GetNetworks() const override;
 
   webrtc::MdnsResponderInterface* GetMdnsResponder() const override;
 
@@ -62,7 +60,8 @@ class FilteringNetworkManager : public rtc::NetworkManagerBase,
   friend class FilteringNetworkManagerTest;
 
   PLATFORM_EXPORT FilteringNetworkManager(
-      base::WeakPtr<rtc::NetworkManager> network_manager_for_signaling_thread,
+      base::WeakPtr<webrtc::NetworkManager>
+          network_manager_for_signaling_thread,
       media::MediaPermission* media_permission,
       bool allow_mdns_obfuscation);
 
@@ -93,7 +92,7 @@ class FilteringNetworkManager : public rtc::NetworkManagerBase,
   // detached.
   // TODO(crbug.com/1191914): Clarify the lifetime of
   // `network_manager_for_signaling_thread_` and `this`.
-  base::WeakPtr<rtc::NetworkManager> network_manager_for_signaling_thread_;
+  base::WeakPtr<webrtc::NetworkManager> network_manager_for_signaling_thread_;
 
   // The class is created by the main thread but used by the worker thread.
   THREAD_CHECKER(thread_checker_);

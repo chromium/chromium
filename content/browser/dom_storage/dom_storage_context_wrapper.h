@@ -36,9 +36,6 @@ class StorageKey;
 
 namespace storage {
 class SpecialStoragePolicy;
-namespace mojom {
-class Partition;
-}  // namespace mojom
 }  // namespace storage
 
 namespace content {
@@ -52,7 +49,8 @@ class StoragePartitionImpl;
 // RemoveNamespace methods.
 class CONTENT_EXPORT DOMStorageContextWrapper
     : public DOMStorageContext,
-      public base::RefCountedThreadSafe<DOMStorageContextWrapper> {
+      public base::RefCountedThreadSafe<DOMStorageContextWrapper>,
+      public base::MemoryPressureListener {
  public:
   // Option for PurgeMemory.
   enum PurgeOption {
@@ -130,7 +128,9 @@ class CONTENT_EXPORT DOMStorageContextWrapper
   // Pushes information about known Session Storage namespaces down to the
   // Storage Service instance after a crash. This in turn allows renderer
   // clients to re-establish working connections.
-  void RecoverFromStorageServiceCrash();
+  void OnSessionStorageDisconnected();
+  // Resets LocalStorage related StorageAreas after disconnection.
+  void OnLocalStorageDisconnected();
 
  private:
   friend class DOMStorageContextWrapperTest;
@@ -153,7 +153,7 @@ class CONTENT_EXPORT DOMStorageContextWrapper
 
   // Called on UI thread when the system is under memory pressure.
   void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+      base::MemoryPressureLevel memory_pressure_level) override;
 
   void PurgeMemory(PurgeOption purge_option);
 
@@ -183,8 +183,8 @@ class CONTENT_EXPORT DOMStorageContextWrapper
   // Profile wasn't destructed. This map allows the restored session to re-use
   // the SessionStorageNamespaceImpl objects that are still alive thanks to the
   // sessions component.
-  std::map<std::string, SessionStorageNamespaceImpl*> alive_namespaces_
-      GUARDED_BY(alive_namespaces_lock_);
+  std::map<std::string, raw_ptr<SessionStorageNamespaceImpl, CtnExperimental>>
+      alive_namespaces_ GUARDED_BY(alive_namespaces_lock_);
   mutable base::Lock alive_namespaces_lock_;
 
   // Unowned reference to our owning partition. This is always valid until it's
@@ -193,7 +193,8 @@ class CONTENT_EXPORT DOMStorageContextWrapper
   raw_ptr<StoragePartitionImpl> partition_;
 
   // To receive memory pressure signals.
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+  std::unique_ptr<base::MemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
 
   // Connections to the partition's Session and Local Storage control interfaces
   // within the Storage Service.

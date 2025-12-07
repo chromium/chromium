@@ -4,12 +4,13 @@
 
 #include "chrome/browser/ash/crostini/crostini_disk.h"
 
+#include <algorithm>
 #include <cmath>
 #include <utility>
 
+#include "base/byte_count.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
@@ -26,10 +27,6 @@ using DiskImageStatus = vm_tools::concierge::DiskImageStatus;
 namespace {
 ash::ConciergeClient* GetConciergeClient() {
   return ash::ConciergeClient::Get();
-}
-
-std::string FormatBytes(const int64_t value) {
-  return base::UTF16ToUTF8(ui::FormatBytes(value));
 }
 
 void EmitResizeResultMetric(DiskImageStatus status) {
@@ -139,8 +136,8 @@ void OnListVmDisks(
     return;
   }
   auto disk_info = std::make_unique<CrostiniDiskInfo>();
-  auto image = base::ranges::find(response->images(), vm_name,
-                                  &vm_tools::concierge::VmDiskInfo::name);
+  auto image = std::ranges::find(response->images(), vm_name,
+                                 &vm_tools::concierge::VmDiskInfo::name);
   if (image == response->images().end()) {
     // No match found for the VM:
     LOG(ERROR) << "No VM found with name " << vm_name;
@@ -220,7 +217,8 @@ GetTicks(int64_t min, int64_t current, int64_t max, int* out_default_index) {
   std::vector<crostini::mojom::DiskSliderTickPtr> ticks;
   ticks.reserve(values.size());
   for (const auto& val : values) {
-    std::string formatted_val = FormatBytes(val);
+    std::string formatted_val =
+        base::UTF16ToUTF8(ui::FormatBytes(base::ByteCount(val)));
     ticks.emplace_back(crostini::mojom::DiskSliderTick::New(val, formatted_val,
                                                             formatted_val));
   }

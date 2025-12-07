@@ -28,7 +28,7 @@ class DesktopPaymentsWindowManagerTestApi {
 
   void OnVcn3dsAuthenticationResponseReceived(
       PaymentsAutofillClient::PaymentsRpcResult result,
-      const PaymentsNetworkInterface::UnmaskResponseDetails& response_details) {
+      const UnmaskResponseDetails& response_details) {
     window_manager_->OnVcn3dsAuthenticationResponseReceived(result,
                                                             response_details);
   }
@@ -39,12 +39,16 @@ class DesktopPaymentsWindowManagerTestApi {
 
   const std::optional<PaymentsWindowManager::Vcn3dsContext>&
   GetVcn3dsContext() {
-    return window_manager_->vcn_3ds_context_;
+    CHECK(window_manager_->flow_state_);
+    return window_manager_->flow_state_->vcn_3ds_context;
   }
 
-  bool NoOngoingFlow() {
-    return window_manager_->flow_type_ ==
-           DesktopPaymentsWindowManager::FlowType::kNoFlow;
+  const std::optional<DesktopPaymentsWindowManager::FlowState>& GetFlowState() {
+    return window_manager_->flow_state_;
+  }
+
+  void SetPopupClosedClosure(base::RepeatingClosure popup_closed_closure) {
+    window_manager_->popup_closed_closure_for_testing_ = popup_closed_closure;
   }
 
  private:

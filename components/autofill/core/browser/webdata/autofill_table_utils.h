@@ -9,6 +9,7 @@
 #include <initializer_list>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 namespace sql {
@@ -162,16 +163,6 @@ bool SelectByGuid(sql::Database* db,
                   std::string_view table_name,
                   std::initializer_list<std::string_view> columns,
                   std::string_view guid);
-
-// Wrapper around `SelectBuilder()` that restricts it to the half-open interval
-// [low, high[ of `column_between`.
-void SelectBetween(sql::Database* db,
-                   sql::Statement& statement,
-                   std::string_view table_name,
-                   std::initializer_list<std::string_view> columns,
-                   std::string_view column_between,
-                   int64_t low,
-                   int64_t high);
 
 }  // namespace autofill
 

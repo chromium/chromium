@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 
 namespace blink {
 
@@ -81,6 +80,12 @@ void PostStyleUpdateScope::ApplyAnimations() {
       continue;
     }
     element_animations->CssAnimations().MaybeApplyPendingUpdate(element.Get());
+  }
+
+  // NOTE(crbug.com/446159591): With AnimationTrigger enabled, we see renderer
+  // hang reports. This hang should be fixed before enabling AnimationTrigger.
+  if (RuntimeEnabledFeatures::AnimationTriggerEnabled()) {
+    document_.GetDocumentAnimations().UpdateAnimationTriggerAttachments();
   }
 
   DCHECK(animation_data_.elements_with_pending_updates_.empty())

@@ -15,6 +15,8 @@
 #include "ash/shell.h"
 #include "ash/style/rounded_container.h"
 #include "ash/style/switch.h"
+#include "ash/system/model/enterprise_domain_model.h"
+#include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/fake_detailed_view_delegate.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/test/ash_test_base.h"
@@ -160,8 +162,7 @@ class AccessibilityDetailedViewTest : public AshTestBase,
  public:
   AccessibilityDetailedViewTest() {
     scoped_feature_list_.InitWithFeatures(
-        {media::kLiveCaption, ash::features::kOnDeviceSpeechRecognition,
-         ::features::kAccessibilityFaceGaze,
+        {ash::features::kOnDeviceSpeechRecognition,
          ::features::kAccessibilityReducedAnimationsInKiosk},
         {});
   }
@@ -491,16 +492,17 @@ class AccessibilityDetailedViewTest : public AshTestBase,
                                  detailed_menu_->color_correction_view_);
   }
 
-  const char* GetDetailedViewClassName() {
-    return detailed_menu_->GetClassName();
-  }
-
   void SetUpKioskSession() {
     auto* session_controller = Shell::Get()->session_controller();
     SessionInfo info;
     info.state = session_controller->GetSessionState();
     info.is_running_in_app_mode = true;
     session_controller->SetSessionInfo(info);
+
+    UserSession session;
+    session.session_id = 1;
+    session.user_info.type = user_manager::UserType::kKioskChromeApp;
+    session_controller->UpdateUserSession(session);
   }
 
   AccessibilityController* controller() { return controller_; }
@@ -1387,6 +1389,25 @@ TEST_F(AccessibilityDetailedViewTest, KioskModeClickReducedAnimations) {
   EXPECT_FALSE(accessibility_controller->reduced_animations().enabled());
 }
 
+TEST_F(AccessibilityDetailedViewTest, FaceGazeKiosk) {
+  SetUpKioskSession();
+  CreateDetailedMenu();
+  EXPECT_TRUE(IsFaceGazeShownOnDetailMenu());
+}
+
+TEST_F(AccessibilityDetailedViewTest, FaceGazeEnterpriseKiosk) {
+  // Pretend that the device is an enterprise managed device that is in a kiosk
+  // session.
+  Shell::Get()
+      ->system_tray_model()
+      ->enterprise_domain()
+      ->SetDeviceEnterpriseInfo(DeviceEnterpriseInfo(
+          "info", ManagementDeviceMode::kChromeEnterprise));
+  SetUpKioskSession();
+  CreateDetailedMenu();
+  EXPECT_FALSE(IsFaceGazeShownOnDetailMenu());
+}
+
 class AccessibilityDetailedViewSodaTest
     : public AccessibilityDetailedViewTest,
       public testing::WithParamInterface<SodaFeature> {
@@ -1406,9 +1427,6 @@ class AccessibilityDetailedViewSodaTest
     // calling speech::SodaInstaller::GetInstance() returns a valid instance.
     std::vector<base::test::FeatureRef> enabled_features(
         {ash::features::kOnDeviceSpeechRecognition});
-    if (GetParam() == SodaFeature::kLiveCaption) {
-      enabled_features.push_back(media::kLiveCaptionMultiLanguage);
-    }
     scoped_feature_list_.InitWithFeatures(enabled_features, {});
     soda_installer_impl_ =
         std::make_unique<speech::SodaInstallerImplChromeOS>();
@@ -1463,7 +1481,7 @@ class AccessibilityDetailedViewSodaTest
     }
   }
 
-  std::u16string GetFeatureViewSubtitleText() {
+  std::u16string_view GetFeatureViewSubtitleText() {
     switch (GetParam()) {
       case SodaFeature::kDictation:
         return detailed_menu()->dictation_view_->sub_text_label()->GetText();
@@ -2666,6 +2684,19 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, FaceGaze) {
   // Reduced animations not available from the login screen.
   EXPECT_FALSE(IsReducedAnimationsShownOnDetailMenu());
   CloseDetailMenu();
+}
+
+TEST_F(AccessibilityDetailedViewLoginScreenTest, FaceGazeEnterprise) {
+  // Pretend that the device is an enterprise managed device.
+  // In this case, the FaceGaze quick settings option should be hidden on the
+  // login screen.
+  Shell::Get()
+      ->system_tray_model()
+      ->enterprise_domain()
+      ->SetDeviceEnterpriseInfo(DeviceEnterpriseInfo(
+          "info", ManagementDeviceMode::kChromeEnterprise));
+  CreateDetailedMenu();
+  EXPECT_FALSE(IsFaceGazeShownOnDetailMenu());
 }
 
 }  // namespace ash

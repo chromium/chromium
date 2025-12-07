@@ -8,8 +8,6 @@
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
 
-namespace chrome {
-
 class NonTabPageLoadMetricsObserverTest
     : public page_load_metrics::PageLoadMetricsObserverTestHarness {
  protected:
@@ -84,46 +82,3 @@ TEST_F(NonTabPageLoadMetricsObserverTest,
   tester()->histogram_tester().ExpectTotalCount(
       "PageLoad.PaintTiming.NavigationToLargestContenfulPaint2", 0);
 }
-
-class NonTabPageLoadMetricsObserverNonWebUITest
-    : public NonTabPageLoadMetricsObserverTest {
- protected:
-  bool IsNonTabWebUI() const override { return false; }
-};
-
-TEST_F(NonTabPageLoadMetricsObserverNonWebUITest,
-       DoesntRecordHistogramsIfEmbedderIsNotWebUI) {
-  page_load_metrics::mojom::PageLoadTiming timing;
-  page_load_metrics::InitPageLoadTimingForTest(&timing);
-  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
-  timing.parse_timing->parse_start = base::Milliseconds(1);
-  timing.paint_timing->first_contentful_paint = base::Milliseconds(10);
-  timing.paint_timing->largest_contentful_paint->largest_text_paint =
-      base::Milliseconds(100);
-  timing.paint_timing->largest_contentful_paint->largest_text_paint_size = 20u;
-  PopulateRequiredTimingFields(&timing);
-  NavigateAndCommit(GURL("chrome://version"));
-
-  tester()->SimulateTimingUpdate(timing);
-  tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.PaintTiming.NavigationToFirstContentfulPaint.NonTabWebUI."
-      "Test",
-      0);
-  tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.PaintTiming.NavigationToFirstContentfulPaint.NonTabWebUI", 0);
-
-  // Navigate again to force logging.
-  tester()->NavigateToUntrackedUrl();
-  tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.NonTabWebUI."
-      "Test",
-      0);
-  tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.NonTabWebUI",
-      0);
-  // The regular LCP histogram shouldn't be logged from this path.
-  tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.PaintTiming.NavigationToLargestContenfulPaint2", 0);
-}
-
-}  // namespace chrome

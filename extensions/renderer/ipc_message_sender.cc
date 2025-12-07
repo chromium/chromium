@@ -184,7 +184,6 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
           switch (script_context->context_type()) {
             case mojom::ContextType::kPrivilegedExtension:
             case mojom::ContextType::kUnprivilegedExtension:
-            case mojom::ContextType::kLockscreenExtension:
             case mojom::ContextType::kOffscreenExtension:
               info->source_endpoint =
                   MessagingEndpoint::ForExtension(extension->id());
@@ -202,8 +201,8 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
             case mojom::ContextType::kPrivilegedWebPage:
             case mojom::ContextType::kWebUi:
             case mojom::ContextType::kUntrustedWebUi:
-              NOTREACHED_NORETURN() << "Unexpected Context Encountered: "
-                                    << script_context->GetDebugString();
+              NOTREACHED() << "Unexpected Context Encountered: "
+                           << script_context->GetDebugString();
           }
         } else {
           info->source_endpoint = MessagingEndpoint::ForWebPage();
@@ -249,14 +248,18 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
                           const std::string& call_name,
                           base::Value::List args,
                           const std::string& extra) override {
+    std::optional<ExtensionId> optional_extension_id;
+    if (!extension_id.empty()) {
+      optional_extension_id = extension_id;
+    }
     switch (call_type) {
       case ActivityLogCallType::APICALL:
         GetRendererHost(context)->AddAPIActionToActivityLog(
-            extension_id, call_name, std::move(args), extra);
+            optional_extension_id, call_name, std::move(args), extra);
         break;
       case ActivityLogCallType::EVENT:
-        GetRendererHost(context)->AddEventToActivityLog(extension_id, call_name,
-                                                        std::move(args), extra);
+        GetRendererHost(context)->AddEventToActivityLog(
+            optional_extension_id, call_name, std::move(args), extra);
         break;
     }
   }
@@ -268,7 +271,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
                   const std::string& error,
                   mojom::ExtraResponseDataPtr response_data) {
     ExtensionsRendererClient::Get()
-        ->GetDispatcher()
+        ->dispatcher()
         ->bindings_system()
         ->HandleResponse(request_id, success, std::move(response), error,
                          std::move(response_data));
@@ -533,14 +536,18 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
                           const std::string& call_name,
                           base::Value::List args,
                           const std::string& extra) override {
+    std::optional<ExtensionId> optional_extension_id;
+    if (!extension_id.empty()) {
+      optional_extension_id = extension_id;
+    }
     switch (call_type) {
       case ActivityLogCallType::APICALL:
-        GetRendererHost()->AddAPIActionToActivityLog(extension_id, call_name,
-                                                     std::move(args), extra);
+        GetRendererHost()->AddAPIActionToActivityLog(
+            optional_extension_id, call_name, std::move(args), extra);
         break;
       case ActivityLogCallType::EVENT:
-        GetRendererHost()->AddEventToActivityLog(extension_id, call_name,
-                                                 std::move(args), extra);
+        GetRendererHost()->AddEventToActivityLog(
+            optional_extension_id, call_name, std::move(args), extra);
         break;
     }
   }
@@ -550,11 +557,6 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
     if (!extension_id_)
       extension_id_ = dispatcher_->GetScriptContext()->extension()->id();
     return *extension_id_;
-  }
-
-  PortContext PortContextForCurrentWorker() {
-    return PortContext::ForWorker(content::WorkerThread::GetCurrentId(),
-                                  service_worker_version_id_, GetExtensionId());
   }
 
   mojom::RendererHost* GetRendererHost() {

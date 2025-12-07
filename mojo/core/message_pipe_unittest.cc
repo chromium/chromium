@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "mojo/public/cpp/system/message_pipe.h"
 
 #include <stdint.h>
 #include <string.h>
@@ -15,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "build/blink_buildflags.h"
@@ -23,7 +21,6 @@
 #include "mojo/core/test/mojo_test_base.h"
 #include "mojo/public/c/system/core.h"
 #include "mojo/public/c/system/types.h"
-#include "mojo/public/cpp/system/message_pipe.h"
 
 namespace mojo {
 namespace core {
@@ -81,7 +78,7 @@ class MessagePipeTest : public test::MojoTestBase {
       CHECK_EQ(MOJO_RESULT_OK, rv);
       CHECK_GE(expected_num_bytes, *num_bytes);
       CHECK(bytes);
-      memcpy(bytes, buffer, *num_bytes);
+      UNSAFE_TODO(memcpy(bytes, buffer, *num_bytes));
     }
     CHECK_EQ(MOJO_RESULT_OK, MojoDestroyMessage(message_handle));
     return rv;
@@ -342,7 +339,8 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(HandlePingPong, MessagePipeTest, h) {
 TEST_F(MessagePipeTest, DataPipeConsumerHandlePingPong) {
   MojoHandle p, c[kPingPongHandlesPerIteration];
   for (size_t i = 0; i < kPingPongHandlesPerIteration; ++i) {
-    EXPECT_EQ(MOJO_RESULT_OK, MojoCreateDataPipe(nullptr, &p, &c[i]));
+    UNSAFE_TODO(
+        EXPECT_EQ(MOJO_RESULT_OK, MojoCreateDataPipe(nullptr, &p, &c[i])));
     MojoClose(p);
   }
 
@@ -354,13 +352,14 @@ TEST_F(MessagePipeTest, DataPipeConsumerHandlePingPong) {
     WriteMessage(h, "quit", 4);
   });
   for (size_t i = 0; i < kPingPongHandlesPerIteration; ++i)
-    MojoClose(c[i]);
+    MojoClose(UNSAFE_TODO(c[i]));
 }
 
 TEST_F(MessagePipeTest, DataPipeProducerHandlePingPong) {
   MojoHandle p[kPingPongHandlesPerIteration], c;
   for (size_t i = 0; i < kPingPongHandlesPerIteration; ++i) {
-    EXPECT_EQ(MOJO_RESULT_OK, MojoCreateDataPipe(nullptr, &p[i], &c));
+    UNSAFE_TODO(
+        EXPECT_EQ(MOJO_RESULT_OK, MojoCreateDataPipe(nullptr, &p[i], &c)));
     MojoClose(c);
   }
 
@@ -372,7 +371,7 @@ TEST_F(MessagePipeTest, DataPipeProducerHandlePingPong) {
     WriteMessage(h, "quit", 4);
   });
   for (size_t i = 0; i < kPingPongHandlesPerIteration; ++i)
-    MojoClose(p[i]);
+    MojoClose(UNSAFE_TODO(p[i]));
 }
 
 #if BUILDFLAG(IS_IOS)
@@ -384,7 +383,8 @@ TEST_F(MessagePipeTest, DataPipeProducerHandlePingPong) {
 TEST_F(MessagePipeTest, MAYBE_SharedBufferHandlePingPong) {
   MojoHandle buffers[kPingPongHandlesPerIteration];
   for (size_t i = 0; i < kPingPongHandlesPerIteration; ++i)
-    EXPECT_EQ(MOJO_RESULT_OK, MojoCreateSharedBuffer(1, nullptr, &buffers[i]));
+    UNSAFE_TODO(EXPECT_EQ(MOJO_RESULT_OK,
+                          MojoCreateSharedBuffer(1, nullptr, &buffers[i])));
 
   RunTestClient("HandlePingPong", [&](MojoHandle h) {
     for (size_t i = 0; i < kPingPongIterations; i++) {
@@ -394,7 +394,7 @@ TEST_F(MessagePipeTest, MAYBE_SharedBufferHandlePingPong) {
     WriteMessage(h, "quit", 4);
   });
   for (size_t i = 0; i < kPingPongHandlesPerIteration; ++i)
-    MojoClose(buffers[i]);
+    MojoClose(UNSAFE_TODO(buffers[i]));
 }
 
 #endif  // BUILDFLAG(USE_BLINK)

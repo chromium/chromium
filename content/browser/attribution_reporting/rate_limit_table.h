@@ -11,7 +11,7 @@
 #include <set>
 #include <vector>
 
-#include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -114,7 +114,7 @@ class CONTENT_EXPORT RateLimitTable {
 
   [[nodiscard]] bool DeactivateSourcesForDestinationLimit(
       sql::Database* db,
-      const std::vector<StoredSource::Id>&);
+      base::span<const StoredSource::Id>);
 
   [[nodiscard]] DestinationRateLimitResult SourceAllowedForDestinationRateLimit(
       sql::Database* db,
@@ -137,6 +137,20 @@ class CONTENT_EXPORT RateLimitTable {
       const StoredSource&,
       Scope scope);
 
+  // Returns a negative value on failure.
+  int64_t CountUniqueDailyReportingOriginsPerReportingSiteForSource(
+      sql::Database* db,
+      const net::SchemefulSite& reporting_site,
+      base::Time source_time);
+
+  // Returns a negative value on failure.
+  int64_t
+  CountUniqueDailyReportingOriginsPerDestinationAndReportingSiteForSource(
+      sql::Database* db,
+      const net::SchemefulSite& destination_site,
+      const net::SchemefulSite& reporting_site,
+      base::Time source_time);
+
   [[nodiscard]] bool DeleteAttributionRateLimit(sql::Database* db,
                                                 Scope scope,
                                                 AttributionReport::Id);
@@ -151,9 +165,8 @@ class CONTENT_EXPORT RateLimitTable {
       base::Time delete_end,
       StoragePartition::StorageKeyMatcherFunction filter);
   // Returns false on failure.
-  [[nodiscard]] bool ClearDataForSourceIds(
-      sql::Database* db,
-      const std::vector<StoredSource::Id>& source_ids);
+  [[nodiscard]] bool ClearDataForSourceIds(sql::Database* db,
+                                           base::span<const StoredSource::Id>);
 
   void AppendRateLimitDataKeys(sql::Database* db,
                                std::set<AttributionDataModel::DataKey>& keys);
@@ -178,7 +191,7 @@ class CONTENT_EXPORT RateLimitTable {
       bool is_source,
       const CommonSourceInfo& common_info,
       base::Time time,
-      const base::flat_set<net::SchemefulSite>& destination_sites)
+      base::span<const net::SchemefulSite> destination_sites)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Returns false on failure.

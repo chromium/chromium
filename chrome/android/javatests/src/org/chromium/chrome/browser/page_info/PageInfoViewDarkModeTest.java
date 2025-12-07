@@ -35,12 +35,15 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServerRule;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.RenderTestRule;
-import org.chromium.ui.test.util.UiDisableIf;
 
 import java.io.IOException;
 
@@ -56,12 +59,13 @@ import java.io.IOException;
     ChromeSwitches.DISABLE_STARTUP_PROMOS,
     ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
 })
+@DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/338978357, crbug.com/384775466
 public class PageInfoViewDarkModeTest {
     private static final String sSimpleHtml = "/chrome/test/data/android/simple.html";
 
     @Rule
-    public final ChromeTabbedActivityTestRule mActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public final FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule public EmbeddedTestServerRule mTestServerRule = new EmbeddedTestServerRule();
 
@@ -72,6 +76,8 @@ public class PageInfoViewDarkModeTest {
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_BUBBLES_PAGE_INFO)
                     .build();
 
+    private WebPageStation mStartingPage;
+
     private void loadUrlAndOpenPageInfo(String url) {
         mActivityTestRule.loadUrl(url);
         openPageInfo();
@@ -79,7 +85,7 @@ public class PageInfoViewDarkModeTest {
 
     private void openPageInfo() {
         ChromeActivity activity = mActivityTestRule.getActivity();
-        Tab tab = activity.getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     new ChromePageInfo(
@@ -98,9 +104,9 @@ public class PageInfoViewDarkModeTest {
     }
 
     private View getPageInfoView() {
-        PageInfoController controller = PageInfoController.getLastPageInfoControllerForTesting();
+        PageInfoController controller = PageInfoController.getLastPageInfoController();
         assertNotNull(controller);
-        View view = controller.getPageInfoViewForTesting();
+        View view = controller.getPageInfoView();
         assertNotNull(view);
         return view;
     }
@@ -116,7 +122,7 @@ public class PageInfoViewDarkModeTest {
                     ChromeNightModeTestUtils.setUpNightModeForChromeActivity(
                             /* nightModeEnabled= */ true);
                 });
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mStartingPage = mActivityTestRule.startOnBlankPage();
     }
 
     @After
@@ -141,7 +147,6 @@ public class PageInfoViewDarkModeTest {
     /** Tests PageInfo on internal page. */
     @Test
     @MediumTest
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338978357
     @Feature({"RenderTest"})
     public void testChromePage() throws IOException {
         loadUrlAndOpenPageInfo("chrome://version/");

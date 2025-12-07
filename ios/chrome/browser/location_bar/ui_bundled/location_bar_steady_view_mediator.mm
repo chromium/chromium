@@ -5,8 +5,11 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_steady_view_mediator.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/omnibox/browser/location_bar_model.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_steady_view_consumer.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_util.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter_observer_bridge.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
@@ -14,9 +17,8 @@
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
-#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_steady_view_consumer.h"
-#import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -109,8 +111,9 @@
 }
 
 - (void)setWebContentAreaShowingOverlay:(BOOL)webContentAreaShowingOverlay {
-  if (_webContentAreaShowingOverlay == webContentAreaShowingOverlay)
+  if (_webContentAreaShowingOverlay == webContentAreaShowingOverlay) {
     return;
+  }
   _webContentAreaShowingOverlay = webContentAreaShowingOverlay;
   [self.consumer updateLocationShareable:[self isSharingEnabled]];
 }
@@ -128,13 +131,15 @@
 
 - (void)setWebContentAreaOverlayPresenter:
     (OverlayPresenter*)webContentAreaOverlayPresenter {
-  if (_webContentAreaOverlayPresenter)
+  if (_webContentAreaOverlayPresenter) {
     _webContentAreaOverlayPresenter->RemoveObserver(_overlayObserver.get());
+  }
 
   _webContentAreaOverlayPresenter = webContentAreaOverlayPresenter;
 
-  if (_webContentAreaOverlayPresenter)
+  if (_webContentAreaOverlayPresenter) {
     _webContentAreaOverlayPresenter->AddObserver(_overlayObserver.get());
+  }
 }
 
 #pragma mark - CRWWebStateObserver
@@ -153,6 +158,20 @@
     didFinishNavigation:(web::NavigationContext*)navigation {
   [self notifyConsumerOfChangedLocation];
   [self notifyConsumerOfChangedSecurityIcon];
+  __weak __typeof(self) weakSelf = self;
+
+  self.tracker->AddOnInitializedCallback(base::BindRepeating(^(bool success) {
+    if (!success) {
+      return;
+    }
+    [weakSelf.consumer attemptShowingLensOverlayIPH];
+  }));
+  // Records the leading icon type when the document changes to avoid too many
+  // recording. Don't record on NTP as the leading icon is not visible.
+  if (navigation && !navigation->IsSameDocument() &&
+      !IsURLNewTabPage(navigation->GetUrl())) {
+    [self.consumer recordLensOverlayAvailability];
+  }
 }
 
 - (void)webStateDidStartLoading:(web::WebState*)webState {
@@ -233,8 +252,9 @@
 #pragma mark Location helpers
 
 - (NSString*)currentLocationString {
-  if (self.webContentAreaShowingHTTPAuthDialog)
+  if (self.webContentAreaShowingHTTPAuthDialog) {
     return l10n_util::GetNSString(IDS_IOS_LOCATION_BAR_SIGN_IN);
+  }
   std::u16string string = self.locationBarModel->GetURLForDisplay();
   return base::SysUTF16ToNSString(string);
 }
@@ -242,8 +262,9 @@
 // Data URLs (data://) should have their tail clipped when presented; while for
 // others (http://) it would be more appropriate to clip the head.
 - (BOOL)locationShouldClipTail {
-  if (self.webContentAreaShowingHTTPAuthDialog)
+  if (self.webContentAreaShowingHTTPAuthDialog) {
     return YES;
+  }
   GURL url = self.locationBarModel->GetURL();
   return url.SchemeIs(url::kDataScheme);
 }
@@ -271,8 +292,9 @@
 
 // The status text associated with the current location icon.
 - (NSString*)securityStatusText {
-  if (self.webContentAreaShowingHTTPAuthDialog)
+  if (self.webContentAreaShowingHTTPAuthDialog) {
     return nil;
+  }
   return base::SysUTF16ToNSString(
       self.locationBarModel->GetSecureAccessibilityText());
 }
@@ -282,8 +304,9 @@
 - (BOOL)isSharingEnabled {
   // Page sharing requires JavaScript execution, which is paused while overlays
   // are displayed over the web content area.
-  if (self.webContentAreaShowingOverlay)
+  if (self.webContentAreaShowingOverlay) {
     return NO;
+  }
 
   if (!self.currentWebState) {
     return NO;

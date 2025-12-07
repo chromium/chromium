@@ -23,28 +23,29 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/graphics/color.h"
 
 #include <math.h>
 
+#include <array>
 #include <optional>
 #include <tuple>
 
 #include "base/check_op.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
+#include "base/strings/string_view_util.h"
 #include "build/build_config.h"
+#include "skia/ext/skcms_ext.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/geometry/blend.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/gfx/color_conversions.h"
 
 namespace blink {
@@ -58,12 +59,11 @@ const Color Color::kTransparent = Color(0x00000000);
 
 namespace {
 
-const RGBA32 kLightenedBlack = 0xFF545454;
-const RGBA32 kDarkenedWhite = 0xFFABABAB;
 // For lch/oklch colors, the value of chroma underneath which the color is
 // considered to be "achromatic", relevant for color conversions.
 // https://www.w3.org/TR/css-color-4/#lab-to-lch
-const float kAchromaticChromaThreshold = 1e-6;
+// This is set to be slightly higher than white's chroma value of 0.0188.
+const float kAchromaticChromaThreshold = 0.02;
 
 const int kCStartAlpha = 153;     // 60%
 const int kCEndAlpha = 204;       // 80%;
@@ -79,32 +79,34 @@ int BlendComponent(int c, int a) {
 
 // originally moved here from the CSS parser
 template <typename CharacterType>
-inline bool ParseHexColorInternal(const CharacterType* name,
-                                  unsigned length,
+inline bool ParseHexColorInternal(base::span<const CharacterType> name,
                                   Color& color) {
-  if (length != 3 && length != 4 && length != 6 && length != 8)
+  if (name.size() != 3 && name.size() != 4 && name.size() != 6 &&
+      name.size() != 8) {
     return false;
-  if ((length == 8 || length == 4) &&
-      !RuntimeEnabledFeatures::CSSHexAlphaColorEnabled())
+  }
+  if ((name.size() == 8 || name.size() == 4) &&
+      !RuntimeEnabledFeatures::CSSHexAlphaColorEnabled()) {
     return false;
-  unsigned value = 0;
-  for (unsigned i = 0; i < length; ++i) {
+  }
+  uint32_t value = 0;
+  for (unsigned i = 0; i < name.size(); ++i) {
     if (!IsASCIIHexDigit(name[i]))
       return false;
     value <<= 4;
     value |= ToASCIIHexValue(name[i]);
   }
-  if (length == 6) {
+  if (name.size() == 6) {
     color = Color::FromRGBA32(0xFF000000 | value);
     return true;
   }
-  if (length == 8) {
+  if (name.size() == 8) {
     // We parsed the values into RGBA order, but the RGBA32 type
     // expects them to be in ARGB order, so we right rotate eight bits.
     color = Color::FromRGBA32(value << 24 | value >> 8);
     return true;
   }
-  if (length == 4) {
+  if (name.size() == 4) {
     // #abcd converts to ddaabbcc in RGBA32.
     color = Color::FromRGBA32((value & 0xF) << 28 | (value & 0xF) << 24 |
                               (value & 0xF000) << 8 | (value & 0xF000) << 4 |
@@ -121,18 +123,18 @@ inline bool ParseHexColorInternal(const CharacterType* name,
 }
 
 inline const NamedColor* FindNamedColor(const String& name) {
-  char buffer[64];  // easily big enough for the longest color name
-  unsigned length = name.length();
-  if (length > sizeof(buffer) - 1)
+  std::array<char, 64> buffer;  // easily big enough for the longest color name
+  wtf_size_t length = name.length();
+  if (length > buffer.size() - 1) {
     return nullptr;
-  for (unsigned i = 0; i < length; ++i) {
-    UChar c = name[i];
+  }
+  for (wtf_size_t i = 0; i < length; ++i) {
+    const UChar c = name[i];
     if (!c || c > 0x7F)
       return nullptr;
     buffer[i] = ToASCIILower(static_cast<char>(c));
   }
-  buffer[length] = '\0';
-  return FindColor(buffer, length);
+  return FindColor(base::as_string_view(base::span(buffer).first(length)));
 }
 
 constexpr int RedChannel(RGBA32 color) {
@@ -147,22 +149,83 @@ constexpr int BlueChannel(RGBA32 color) {
   return color & 0xFF;
 }
 
-constexpr int AlphaChannel(RGBA32 color) {
-  return (color >> 24) & 0xFF;
-}
-
 float AngleToUnitCircleDegrees(float angle) {
   return fmod(fmod(angle, 360.f) + 360.f, 360.f);
 }
+
+float QuantizeTo8Bit(float v) {
+  const float scale_factor = nextafterf(256.0f, 0.0f);
+  return static_cast<int>(v * scale_factor) / 255.0f;
+}
+
+// Many of the Color::ColorSpaces can be represented by an SkColorSpace. This
+// function will return the matrix and transfer function for those spaces, and
+// will CHECK for all other spaces.
+void GetSkColorSpaceParams(Color::ColorSpace color_space,
+                           skcms_Matrix3x3& m,
+                           skcms_TransferFunction& t) {
+  switch (color_space) {
+    case Color::ColorSpace::kSRGB:
+      m = SkNamedGamut::kSRGB;
+      t = SkNamedTransferFn::kSRGB;
+      return;
+    case Color::ColorSpace::kSRGBLinear:
+      m = SkNamedGamut::kSRGB;
+      t = SkNamedTransferFn::kLinear;
+      return;
+    case Color::ColorSpace::kDisplayP3:
+      m = SkNamedGamut::kDisplayP3;
+      t = SkNamedTransferFn::kSRGB;
+      return;
+    case Color::ColorSpace::kDisplayP3Linear:
+      m = SkNamedGamut::kDisplayP3;
+      t = SkNamedTransferFn::kLinear;
+      return;
+    case Color::ColorSpace::kA98RGB:
+      m = SkNamedGamut::kAdobeRGB;
+      t = SkNamedTransferFn::k2Dot2;
+      return;
+    case Color::ColorSpace::kProPhotoRGB: {
+      SkNamedPrimaries::kProPhotoRGB.toXYZD50(&m);
+      t = SkNamedTransferFn::kProPhotoRGB;
+      return;
+    }
+    case Color::ColorSpace::kRec2020:
+      m = SkNamedGamut::kRec2020;
+      t = SkNamedTransferFn::kRec2020;
+      return;
+    case Color::ColorSpace::kRec2100Linear:
+      m = SkNamedGamut::kRec2020;
+      t = SkNamedTransferFn::kLinear;
+      return;
+    case Color::ColorSpace::kXYZD50:
+      m = SkNamedGamut::kXYZ;
+      t = SkNamedTransferFn::kLinear;
+      return;
+    case Color::ColorSpace::kXYZD65: {
+      constexpr float kD65_x = 0.3127f;
+      constexpr float kD65_y = 0.3290f;
+      skcms_AdaptToXYZD50(kD65_x, kD65_y, &m);
+      t = SkNamedTransferFn::kLinear;
+      return;
+    }
+    case Color::ColorSpace::kSRGBLegacy:
+    case Color::ColorSpace::kLab:
+    case Color::ColorSpace::kOklab:
+    case Color::ColorSpace::kLch:
+    case Color::ColorSpace::kOklch:
+    case Color::ColorSpace::kHSL:
+    case Color::ColorSpace::kHWB:
+    case Color::ColorSpace::kNone:
+      NOTREACHED();
+  }
+}
+
 }  // namespace
 
 // The color parameters will use 16 bytes (for 4 floats). Ensure that the
-// remaining parameters fit into another 4 bytes (or 8 bytes, on Windows)
-#if BUILDFLAG(IS_WIN)
-static_assert(sizeof(Color) <= 24, "blink::Color should be <= 24 bytes.");
-#else
+// remaining parameters fit into another 4 bytes.
 static_assert(sizeof(Color) <= 20, "blink::Color should be <= 20 bytes.");
-#endif
 
 Color::Color(int r, int g, int b) {
   *this = FromRGB(r, g, b);
@@ -170,22 +233,6 @@ Color::Color(int r, int g, int b) {
 
 Color::Color(int r, int g, int b, int a) {
   *this = FromRGBA(r, g, b, a);
-}
-
-// static
-Color Color::FromRGBALegacy(std::optional<int> r,
-                            std::optional<int> g,
-                            std::optional<int> b,
-                            std::optional<int> a) {
-  Color result = Color(
-      ClampInt255(a.value_or(0.f)) << 24 | ClampInt255(r.value_or(0.f)) << 16 |
-      ClampInt255(g.value_or(0.f)) << 8 | ClampInt255(b.value_or(0.f)));
-  result.param0_is_none_ = !r;
-  result.param1_is_none_ = !g;
-  result.param2_is_none_ = !b;
-  result.alpha_is_none_ = !a;
-  result.color_space_ = ColorSpace::kSRGBLegacy;
-  return result;
 }
 
 // static
@@ -308,53 +355,129 @@ float Color::HueInterpolation(float value1,
   return AngleToUnitCircleDegrees(blink::Blend(value1, value2, percentage));
 }
 
-namespace {}  // namespace
+std::array<bool, 3> Color::GetAnalogousMissingComponents(
+    Color::ColorSpace interpolation_space) const {
+  DCHECK_NE(color_space_, interpolation_space);
 
-void Color::CarryForwardAnalogousMissingComponents(
-    Color color,
-    Color::ColorSpace prev_color_space) {
-  auto HasRGBOrXYZComponents = [](Color::ColorSpace color_space) {
-    return color_space == Color::ColorSpace::kSRGB ||
-           color_space == Color::ColorSpace::kSRGBLinear ||
-           color_space == Color::ColorSpace::kDisplayP3 ||
-           color_space == Color::ColorSpace::kA98RGB ||
-           color_space == Color::ColorSpace::kProPhotoRGB ||
-           color_space == Color::ColorSpace::kRec2020 ||
-           color_space == Color::ColorSpace::kXYZD50 ||
-           color_space == Color::ColorSpace::kXYZD65 ||
-           color_space == Color::ColorSpace::kSRGBLegacy;
+  auto is_rgb_or_xyz = [](ColorSpace color_space) {
+    return color_space == ColorSpace::kSRGB ||
+           color_space == ColorSpace::kSRGBLinear ||
+           color_space == ColorSpace::kDisplayP3 ||
+           color_space == ColorSpace::kDisplayP3Linear ||
+           color_space == ColorSpace::kA98RGB ||
+           color_space == ColorSpace::kProPhotoRGB ||
+           color_space == ColorSpace::kRec2020 ||
+           color_space == ColorSpace::kRec2100Linear ||
+           color_space == ColorSpace::kXYZD50 ||
+           color_space == ColorSpace::kXYZD65 ||
+           color_space == ColorSpace::kSRGBLegacy;
+  };
+  auto is_lab = [](ColorSpace color_space) {
+    return color_space == ColorSpace::kLab || color_space == ColorSpace::kOklab;
+  };
+  auto is_lch = [](ColorSpace color_space) {
+    return color_space == ColorSpace::kLch || color_space == ColorSpace::kOklch;
   };
 
-  const auto cur_color_space = color.GetColorSpace();
-  if (cur_color_space == prev_color_space) {
-    return;
+  const bool param0_is_none = Param0IsNone();
+  const bool param1_is_none = Param1IsNone();
+  const bool param2_is_none = Param2IsNone();
+
+  switch (color_space_) {
+    case ColorSpace::kSRGB:
+    case ColorSpace::kSRGBLinear:
+    case ColorSpace::kDisplayP3:
+    case ColorSpace::kDisplayP3Linear:
+    case ColorSpace::kA98RGB:
+    case ColorSpace::kProPhotoRGB:
+    case ColorSpace::kRec2020:
+    case ColorSpace::kRec2100Linear:
+    case ColorSpace::kXYZD50:
+    case ColorSpace::kXYZD65:
+    case ColorSpace::kSRGBLegacy:
+      // Between RGB/XYZ spaces all components are analogous and in the same
+      // order.
+      if (is_rgb_or_xyz(interpolation_space)) {
+        return {param0_is_none, param1_is_none, param2_is_none};
+      }
+      break;
+    case ColorSpace::kLab:
+    case ColorSpace::kOklab:
+      // *Lab -> *Lab
+      if (is_lab(interpolation_space)) {
+        return {param0_is_none, param1_is_none, param2_is_none};
+      }
+      // Lightness carries forward to *lch (component 0).
+      if (is_lch(interpolation_space)) {
+        return {param0_is_none, false, false};
+      }
+      // Lightness carries forward to hsl (component 2).
+      if (interpolation_space == ColorSpace::kHSL) {
+        return {false, false, param0_is_none};
+      }
+      break;
+    case ColorSpace::kLch:
+    case ColorSpace::kOklch:
+      // *Lch -> *Lch
+      if (is_lch(interpolation_space)) {
+        return {param0_is_none, param1_is_none, param2_is_none};
+      }
+      // All components carry forward to hsl, swapping component 0 with
+      // component 2.
+      if (interpolation_space == ColorSpace::kHSL) {
+        return {param2_is_none, param1_is_none, param0_is_none};
+      }
+      // Lightness carries forward to *Lab (component 0).
+      if (is_lab(interpolation_space)) {
+        return {param0_is_none, false, false};
+      }
+      break;
+    case ColorSpace::kHSL:
+      // All components carry forward to *Lch, swapping component 0 with
+      // component 2.
+      if (is_lch(interpolation_space)) {
+        return {param2_is_none, param1_is_none, param0_is_none};
+      }
+      // Lightness carries forward to *Lab (component 0).
+      if (is_lab(interpolation_space)) {
+        return {param2_is_none, false, false};
+      }
+      // Hue carries forward to hwb (component 0).
+      if (interpolation_space == ColorSpace::kHWB) {
+        return {param0_is_none, false, false};
+      }
+      break;
+    case ColorSpace::kHWB:
+      // Hue carries forward to hsl (component 0).
+      if (interpolation_space == ColorSpace::kHSL) {
+        return {param0_is_none, false, false};
+      }
+      // Hue carries forward to *Lch (component 2).
+      if (is_lch(interpolation_space)) {
+        return {false, false, param0_is_none};
+      }
+      break;
+    case ColorSpace::kNone:
+      break;
   }
-  if (HasRGBOrXYZComponents(cur_color_space) &&
-      HasRGBOrXYZComponents(prev_color_space)) {
-    return;
+  // There are no analogous components.
+  return {};
+}
+
+void Color::CarryForwardAnalogousMissingComponents(
+    const std::array<bool, 3>& missing_components) {
+  if (missing_components[0]) {
+    param0_ = 0;
+    param0_is_none_ = true;
   }
-  if (IsLightnessFirstComponent(cur_color_space) &&
-      IsLightnessFirstComponent(prev_color_space)) {
-    color.param1_is_none_ = false;
-    color.param2_is_none_ = false;
-    return;
+  if (missing_components[1]) {
+    param1_ = 0;
+    param1_is_none_ = true;
   }
-  if (IsLightnessFirstComponent(prev_color_space) &&
-      cur_color_space == ColorSpace::kHSL) {
-    color.param2_is_none_ = color.param0_is_none_;
-    color.param0_is_none_ = false;
-    if (prev_color_space != ColorSpace::kLch &&
-        prev_color_space != ColorSpace::kOklch) {
-      DCHECK(prev_color_space == ColorSpace::kLab ||
-             prev_color_space == ColorSpace::kOklab);
-      color.param1_is_none_ = false;
-    }
-    return;
+  if (missing_components[2]) {
+    param2_ = 0;
+    param2_is_none_ = true;
   }
-  // There are no analogous missing components.
-  color.param0_is_none_ = false;
-  color.param1_is_none_ = false;
-  color.param2_is_none_ = false;
 }
 
 // static
@@ -404,22 +527,11 @@ Color Color::InterpolateColors(Color::ColorSpace interpolation_space,
                                Color color1,
                                Color color2,
                                float percentage) {
-  // https://www.w3.org/TR/css-color-4/#missing:
-  // When interpolating colors, missing components do not behave as zero values
-  // for color space conversions.
-  const auto color1_prev_color_space = color1.GetColorSpace();
-  color1.ConvertToColorSpace(interpolation_space,
-                             false /* resolve_missing_components */);
-  const auto color2_prev_color_space = color2.GetColorSpace();
-  color2.ConvertToColorSpace(interpolation_space,
-                             false /* resolve_missing_components */);
-
-  CarryForwardAnalogousMissingComponents(color1, color1_prev_color_space);
-  CarryForwardAnalogousMissingComponents(color2, color2_prev_color_space);
+  color1.ConvertToColorSpaceForInterpolation(interpolation_space);
+  color2.ConvertToColorSpaceForInterpolation(interpolation_space);
 
   if (!SubstituteMissingParameters(color1, color2)) {
-    NOTREACHED_IN_MIGRATION();
-    return Color();
+    NOTREACHED();
   }
 
   float alpha1 = color1.PremultiplyColor();
@@ -465,43 +577,84 @@ Color Color::InterpolateColors(Color::ColorSpace interpolation_space,
 
   return result;
 }
+std::tuple<float, float, float> Color::ToSRGB(bool gamut_map) const {
+  switch (color_space_) {
+    case ColorSpace::kSRGB:
+      return std::make_tuple(param0_, param1_, param2_);
+    case ColorSpace::kSRGBLegacy:
+      return gfx::SRGBLegacyToSRGB(param0_, param1_, param2_);
+    case ColorSpace::kSRGBLinear: {
+      // Several SVG rendering tests expect the inaccurate results from this
+      // formulation and need to be rebaselined.
+      // https://crbug.com/450045076
+      skcms_TransferFunction tf_inv;
+      skcms_TransferFunction_invert(&SkNamedTransferFn::kSRGB, &tf_inv);
+      return std::make_tuple(skcms_TransferFunction_eval(&tf_inv, param0_),
+                             skcms_TransferFunction_eval(&tf_inv, param1_),
+                             skcms_TransferFunction_eval(&tf_inv, param2_));
+    }
+    case ColorSpace::kHSL:
+      return gfx::HSLToSRGB(param0_, param1_, param2_);
+    case ColorSpace::kHWB:
+      return gfx::HWBToSRGB(param0_, param1_, param2_);
 
-std::tuple<float, float, float> Color::ExportAsXYZD50Floats() const {
+    case ColorSpace::kDisplayP3:
+    case ColorSpace::kDisplayP3Linear:
+    case ColorSpace::kA98RGB:
+    case ColorSpace::kProPhotoRGB:
+    case ColorSpace::kRec2020:
+    case ColorSpace::kRec2100Linear:
+    case ColorSpace::kXYZD50:
+    case ColorSpace::kXYZD65:
+    case ColorSpace::kLab:
+    case ColorSpace::kOklab:
+    case ColorSpace::kLch:
+    case ColorSpace::kOklch: {
+      // All remaining spaces go through XYZD50.
+      auto [x, y, z] = ToXYZD50(gamut_map);
+      return gfx::XYZD50ToSRGB(x, y, z);
+    }
+    case ColorSpace::kNone:
+      NOTIMPLEMENTED();
+      return std::make_tuple(0.f, 0.f, 0.f);
+  }
+}
+
+std::tuple<float, float, float> Color::ToXYZD50(bool gamut_map) const {
   switch (color_space_) {
     case ColorSpace::kSRGBLegacy: {
       auto [r, g, b] = gfx::SRGBLegacyToSRGB(param0_, param1_, param2_);
       return gfx::SRGBToXYZD50(r, g, b);
     }
     case ColorSpace::kSRGB:
-      return gfx::SRGBToXYZD50(param0_, param1_, param2_);
     case ColorSpace::kSRGBLinear:
-      return gfx::SRGBLinearToXYZD50(param0_, param1_, param2_);
     case ColorSpace::kDisplayP3:
-      return gfx::DisplayP3ToXYZD50(param0_, param1_, param2_);
+    case ColorSpace::kDisplayP3Linear:
     case ColorSpace::kA98RGB:
-      return gfx::AdobeRGBToXYZD50(param0_, param1_, param2_);
     case ColorSpace::kProPhotoRGB:
-      return gfx::ProPhotoToXYZD50(param0_, param1_, param2_);
     case ColorSpace::kRec2020:
-      return gfx::Rec2020ToXYZD50(param0_, param1_, param2_);
+    case ColorSpace::kRec2100Linear:
     case ColorSpace::kXYZD50:
-      return {param0_, param1_, param2_};
-    case ColorSpace::kXYZD65:
-      return gfx::XYZD65ToD50(param0_, param1_, param2_);
+    case ColorSpace::kXYZD65: {
+      skcms_Matrix3x3 m;
+      skcms_TransferFunction t;
+      GetSkColorSpaceParams(color_space_, m, t);
+      skcms::Vector3 c{{param0_, param1_, param2_}};
+      c = skcms::TransferFunction_apply(t, c);
+      c = skcms::Matrix3x3_apply(m, c);
+      return std::make_tuple(c.vals[0], c.vals[1], c.vals[2]);
+    }
     case ColorSpace::kLab:
       return gfx::LabToXYZD50(param0_, param1_, param2_);
-    case ColorSpace::kOklab: {
-      auto [x, y, z] = gfx::OklabToXYZD65(param0_, param1_, param2_);
-      return gfx::XYZD65ToD50(x, y, z);
-    }
+    case ColorSpace::kOklab:
+      return gfx::OklabToXYZD50(param0_, param1_, param2_, gamut_map);
     case ColorSpace::kLch: {
       auto [l, a, b] = gfx::LchToLab(param0_, param1_, param2_);
       return gfx::LabToXYZD50(l, a, b);
     }
     case ColorSpace::kOklch: {
       auto [l, a, b] = gfx::LchToLab(param0_, param1_, param2_);
-      auto [x, y, z] = gfx::OklabToXYZD65(l, a, b);
-      return gfx::XYZD65ToD50(x, y, z);
+      return gfx::OklabToXYZD50(l, a, b, gamut_map);
     }
     case ColorSpace::kHSL: {
       auto [r, g, b] = gfx::HSLToSRGB(param0_, param1_, param2_);
@@ -512,9 +665,12 @@ std::tuple<float, float, float> Color::ExportAsXYZD50Floats() const {
       return gfx::SRGBToXYZD50(r, g, b);
     }
     case ColorSpace::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return std::tuple<float, float, float>();
+      NOTREACHED();
   }
+}
+
+std::tuple<float, float, float> Color::ExportAsXYZD50Floats() const {
+  return ToXYZD50(/*gamut_map=*/false);
 }
 
 // https://www.w3.org/TR/css-color-4/#missing:
@@ -550,53 +706,28 @@ void Color::ConvertToColorSpace(ColorSpace destination_color_space,
   }
 
   switch (destination_color_space) {
-    case ColorSpace::kXYZD65: {
-      if (color_space_ == ColorSpace::kOklab) {
-        std::tie(param0_, param1_, param2_) =
-            gfx::OklabToXYZD65(param0_, param1_, param2_);
-      } else {
-        auto [x, y, z] = ExportAsXYZD50Floats();
-        std::tie(param0_, param1_, param2_) = gfx::XYZD50ToD65(x, y, z);
-      }
-      color_space_ = ColorSpace::kXYZD65;
-      return;
-    }
-    case ColorSpace::kXYZD50: {
-      std::tie(param0_, param1_, param2_) = ExportAsXYZD50Floats();
-      color_space_ = ColorSpace::kXYZD50;
-      return;
-    }
-    case ColorSpace::kSRGBLinear: {
+    case ColorSpace::kXYZD65:
+    case ColorSpace::kXYZD50:
+    case ColorSpace::kSRGBLinear:
+    case ColorSpace::kDisplayP3:
+    case ColorSpace::kDisplayP3Linear:
+    case ColorSpace::kA98RGB:
+    case ColorSpace::kProPhotoRGB:
+    case ColorSpace::kRec2020:
+    case ColorSpace::kRec2100Linear: {
+      skcms_Matrix3x3 m;
+      skcms_TransferFunction t;
+      GetSkColorSpaceParams(destination_color_space, m, t);
       auto [x, y, z] = ExportAsXYZD50Floats();
-      std::tie(param0_, param1_, param2_) = gfx::XYZD50TosRGBLinear(x, y, z);
-      color_space_ = ColorSpace::kSRGBLinear;
-      return;
+      skcms::Vector3 c({x, y, z});
+      c = skcms::Matrix3x3_apply_inverse(m, c);
+      c = skcms::TransferFunction_apply_inverse(t, c);
+      param0_ = c.vals[0];
+      param1_ = c.vals[1];
+      param2_ = c.vals[2];
+      break;
     }
-    case ColorSpace::kDisplayP3: {
-      auto [x, y, z] = ExportAsXYZD50Floats();
-      std::tie(param0_, param1_, param2_) = gfx::XYZD50ToDisplayP3(x, y, z);
-      color_space_ = ColorSpace::kDisplayP3;
-      return;
-    }
-    case ColorSpace::kA98RGB: {
-      auto [x, y, z] = ExportAsXYZD50Floats();
-      std::tie(param0_, param1_, param2_) = gfx::XYZD50ToAdobeRGB(x, y, z);
-      color_space_ = ColorSpace::kA98RGB;
-      return;
-    }
-    case ColorSpace::kProPhotoRGB: {
-      auto [x, y, z] = ExportAsXYZD50Floats();
-      std::tie(param0_, param1_, param2_) = gfx::XYZD50ToProPhoto(x, y, z);
-      color_space_ = ColorSpace::kProPhotoRGB;
-      return;
-    }
-    case ColorSpace::kRec2020: {
-      auto [x, y, z] = ExportAsXYZD50Floats();
-      std::tie(param0_, param1_, param2_) = gfx::XYZD50ToRec2020(x, y, z);
-      color_space_ = ColorSpace::kRec2020;
-      return;
-    }
-    case ColorSpace::kLab: {
+    case ColorSpace::kLab:
       if (color_space_ == ColorSpace::kLch) {
         std::tie(param0_, param1_, param2_) =
             gfx::LchToLab(param0_, param1_, param2_);
@@ -604,187 +735,123 @@ void Color::ConvertToColorSpace(ColorSpace destination_color_space,
         auto [x, y, z] = ExportAsXYZD50Floats();
         std::tie(param0_, param1_, param2_) = gfx::XYZD50ToLab(x, y, z);
       }
-      color_space_ = ColorSpace::kLab;
-      return;
-    }
+      break;
     case ColorSpace::kOklab:
     // As per CSS Color 4 Spec, "If the host syntax does not define what color
     // space interpolation should take place in, it defaults to OKLab".
     // (https://www.w3.org/TR/css-color-4/#interpolation-space)
-    case ColorSpace::kNone: {
-      if (color_space_ == ColorSpace::kOklab) {
-        return;
-      }
+    case ColorSpace::kNone:
       if (color_space_ == ColorSpace::kOklch) {
         std::tie(param0_, param1_, param2_) =
             gfx::LchToLab(param0_, param1_, param2_);
-        color_space_ = ColorSpace::kOklab;
-        return;
+      } else if (color_space_ != ColorSpace::kOklab) {
+        auto [x, y, z] = ExportAsXYZD50Floats();
+        std::tie(param0_, param1_, param2_) = gfx::XYZD50ToOklab(x, y, z);
       }
-      // Conversion to Oklab is done through XYZD65.
-      auto [xd65, yd65, zd65] = [&]() {
-        if (color_space_ == ColorSpace::kXYZD65) {
-          return std::make_tuple(param0_, param1_, param2_);
-        } else {
-          auto [xd50, yd50, zd50] = ExportAsXYZD50Floats();
-          return gfx::XYZD50ToD65(xd50, yd50, zd50);
-        }
-      }();
-
-      std::tie(param0_, param1_, param2_) =
-          gfx::XYZD65ToOklab(xd65, yd65, zd65);
-      color_space_ = ColorSpace::kOklab;
-      return;
-    }
-    case ColorSpace::kLch: {
+      break;
+    case ColorSpace::kLch:
       // Conversion to lch is done through lab.
       // https://www.w3.org/TR/css-color-4/#lab-to-lch
-      auto [l, a, b] = [&]() {
-        if (color_space_ == ColorSpace::kLab) {
-          return std::make_tuple(param0_, param1_, param2_);
-        } else {
-          auto [xd50, yd50, zd50] = ExportAsXYZD50Floats();
-          return gfx::XYZD50ToLab(xd50, yd50, zd50);
-        }
-      }();
-
-      std::tie(param0_, param1_, param2_) = gfx::LabToLch(l, a, b);
+      if (color_space_ == ColorSpace::kLab) {
+        std::tie(param0_, param1_, param2_) =
+            gfx::LabToLch(param0_, param1_, param2_);
+      } else {
+        auto [x, y, z] = ExportAsXYZD50Floats();
+        auto [l, a, b] = gfx::XYZD50ToLab(x, y, z);
+        std::tie(param0_, param1_, param2_) = gfx::LabToLch(l, a, b);
+      }
       param2_ = AngleToUnitCircleDegrees(param2_);
 
-      // Hue component is powerless for fully transparent or achromatic colors.
-      if (IsFullyTransparent() || param1_ <= kAchromaticChromaThreshold) {
+      // Hue component is powerless for achromatic colors.
+      if (param1_ <= kAchromaticChromaThreshold) {
         param2_is_none_ = true;
       }
-
-      color_space_ = ColorSpace::kLch;
-      return;
-    }
-    case ColorSpace::kOklch: {
+      break;
+    case ColorSpace::kOklch:
       if (color_space_ == ColorSpace::kOklab) {
         std::tie(param0_, param1_, param2_) =
             gfx::LabToLch(param0_, param1_, param2_);
       } else {
-        // Conversion to Oklch is done through XYZD65.
-        auto [xd65, yd65, zd65] = [&]() {
-          if (color_space_ == ColorSpace::kXYZD65) {
-            return std::make_tuple(param0_, param1_, param2_);
-          } else {
-            auto [xd50, yd50, zd50] = ExportAsXYZD50Floats();
-            return gfx::XYZD50ToD65(xd50, yd50, zd50);
-          }
-        }();
-
-        auto [l, a, b] = gfx::XYZD65ToOklab(xd65, yd65, zd65);
+        auto [x, y, z] = ExportAsXYZD50Floats();
+        auto [l, a, b] = gfx::XYZD50ToOklab(x, y, z);
         std::tie(param0_, param1_, param2_) = gfx::LabToLch(l, a, b);
         param2_ = AngleToUnitCircleDegrees(param2_);
       }
 
-      // Hue component is powerless for fully transparent or archromatic colors.
-      if (IsFullyTransparent() || param1_ <= kAchromaticChromaThreshold) {
+      // Hue component is powerless for archromatic colors.
+      if (param1_ <= kAchromaticChromaThreshold) {
         param2_is_none_ = true;
       }
-
-      color_space_ = ColorSpace::kOklch;
-      return;
-    }
+      break;
     case ColorSpace::kSRGB:
-    case ColorSpace::kSRGBLegacy: {
-      if (color_space_ == ColorSpace::kHSL) {
-        std::tie(param0_, param1_, param2_) =
-            gfx::HSLToSRGB(param0_, param1_, param2_);
-      } else if (color_space_ == ColorSpace::kHWB) {
-        std::tie(param0_, param1_, param2_) =
-            gfx::HWBToSRGB(param0_, param1_, param2_);
-      } else if (color_space_ == ColorSpace::kSRGBLegacy) {
-        std::tie(param0_, param1_, param2_) =
-            gfx::SRGBLegacyToSRGB(param0_, param1_, param2_);
-      } else if (color_space_ != ColorSpace::kSRGB) {
-        // Don't go through the whole conversion to xyz for srgb to avoid
-        // rounding issues.
-        auto [x, y, z] = ExportAsXYZD50Floats();
-        std::tie(param0_, param1_, param2_) = gfx::XYZD50TosRGB(x, y, z);
-      }
+      std::tie(param0_, param1_, param2_) = ToSRGB();
+      break;
+    case ColorSpace::kSRGBLegacy:
+      std::tie(param0_, param1_, param2_) = ToSRGB();
+      std::tie(param0_, param1_, param2_) =
+          gfx::SRGBToSRGBLegacy(param0_, param1_, param2_);
+      break;
+    case ColorSpace::kHSL:
+      std::tie(param0_, param1_, param2_) = ToSRGB();
+      std::tie(param0_, param1_, param2_) =
+          gfx::SRGBToHSL(param0_, param1_, param2_);
 
-      // All the above conversions result in non-legacy srgb.
-      if (destination_color_space == ColorSpace::kSRGBLegacy) {
-        std::tie(param0_, param1_, param2_) =
-            gfx::SRGBToSRGBLegacy(param0_, param1_, param2_);
-      }
-
-      color_space_ = destination_color_space;
-      return;
-    }
-    case ColorSpace::kHSL: {
-      if (color_space_ == ColorSpace::kSRGBLegacy) {
-        std::tie(param0_, param1_, param2_) =
-            gfx::SRGBLegacyToSRGB(param0_, param1_, param2_);
-      }
-      if (color_space_ == ColorSpace::kSRGB ||
-          color_space_ == ColorSpace::kSRGBLegacy) {
-        std::tie(param0_, param1_, param2_) =
-            gfx::SRGBToHSL(param0_, param1_, param2_);
-      } else if (color_space_ == ColorSpace::kHWB) {
-        std::tie(param0_, param1_, param2_) =
-            gfx::HWBToSRGB(param0_, param1_, param2_);
-        std::tie(param0_, param1_, param2_) =
-            gfx::SRGBToHSL(param0_, param1_, param2_);
-      } else {
-        auto [x, y, z] = ExportAsXYZD50Floats();
-        std::tie(param0_, param1_, param2_) = gfx::XYZD50TosRGB(x, y, z);
-        std::tie(param0_, param1_, param2_) =
-            gfx::SRGBToHSL(param0_, param1_, param2_);
-      }
-
-      // Hue component is powerless for fully transparent or achromatic (s==0)
-      // colors.
-      if (IsFullyTransparent() || param1_ == 0) {
+      // Hue component is powerless for achromatic (s==0) colors.
+      if (param1_ == 0) {
         param0_is_none_ = true;
       }
+      break;
+    case ColorSpace::kHWB:
+      std::tie(param0_, param1_, param2_) = ToSRGB();
+      std::tie(param0_, param1_, param2_) =
+          gfx::SRGBToHWB(param0_, param1_, param2_);
 
-      color_space_ = ColorSpace::kHSL;
-      return;
-    }
-    case ColorSpace::kHWB: {
-      if (color_space_ == ColorSpace::kSRGBLegacy) {
-        std::tie(param0_, param1_, param2_) =
-            gfx::SRGBLegacyToSRGB(param0_, param1_, param2_);
-      }
-      if (color_space_ == ColorSpace::kSRGB ||
-          color_space_ == ColorSpace::kSRGBLegacy) {
-        std::tie(param0_, param1_, param2_) =
-            gfx::SRGBToHWB(param0_, param1_, param2_);
-      } else if (color_space_ == ColorSpace::kHSL) {
-        std::tie(param0_, param1_, param2_) =
-            gfx::HSLToSRGB(param0_, param1_, param2_);
-        std::tie(param0_, param1_, param2_) =
-            gfx::SRGBToHWB(param0_, param1_, param2_);
-      } else {
-        auto [x, y, z] = ExportAsXYZD50Floats();
-        std::tie(param0_, param1_, param2_) = gfx::XYZD50TosRGB(x, y, z);
-        std::tie(param0_, param1_, param2_) =
-            gfx::SRGBToHWB(param0_, param1_, param2_);
-      }
-
-      // Hue component is powerless for fully transparent or achromatic colors.
-      if (IsFullyTransparent() || param1_ + param2_ >= 1) {
+      // Hue component is powerless for achromatic colors.
+      if (param1_ + param2_ >= 1) {
         param0_is_none_ = true;
       }
+      break;
+  }
 
-      color_space_ = ColorSpace::kHWB;
-      return;
-    }
+  if (destination_color_space == ColorSpace::kNone) {
+    color_space_ = ColorSpace::kOklab;
+  } else {
+    color_space_ = destination_color_space;
   }
 }
 
+void Color::ConvertToColorSpaceForInterpolation(
+    ColorSpace destination_color_space) {
+  if (color_space_ == destination_color_space) {
+    return;
+  }
+
+  // https://www.w3.org/TR/css-color-4/#missing:
+  // When interpolating colors, missing components do not behave as zero values
+  // for color space conversions.
+  // https://www.w3.org/TR/css-color-4/#interpolation:
+  // 1. Checking the two colors for analogous components which will be
+  // carried forward.
+  auto analogous = GetAnalogousMissingComponents(destination_color_space);
+  // 2. Converting them to a given color space which will be referred to as
+  // the interpolation color space below.
+  ConvertToColorSpace(destination_color_space);
+  // 3. (If required) Re-inserting carried-forward values in the converted
+  // colors.
+  CarryForwardAnalogousMissingComponents(analogous);
+}
+
 SkColor4f Color::toSkColor4f() const {
-  return ToSkColor4fInternal(IsBakedGamutMappingEnabled());
+  auto [r, g, b] = ToSRGB(IsBakedGamutMappingEnabled());
+  return SkColor4f{r, g, b, alpha_};
 }
 
 SkColor4f
 Color::ToGradientStopSkColor4f(ColorSpace interpolation_space) const {
   // Do not apply gamut mapping to gradient stops. Skia will perform
   // gamut mapping on a per-pixel basis internally.
-  return ToSkColor4fInternal(/*gamut_map_oklab_oklch=*/false);
+  auto [r, g, b] = ToSRGB(/*gamut_map=*/false);
+  return SkColor4f{r, g, b, alpha_};
 }
 
 // static
@@ -792,54 +859,6 @@ bool Color::IsBakedGamutMappingEnabled() {
   static bool enabled =
       base::FeatureList::IsEnabled(blink::features::kBakedGamutMapping);
   return enabled;
-}
-
-SkColor4f Color::ToSkColor4fInternal(bool gamut_map_oklab_oklch) const {
-  switch (color_space_) {
-    case ColorSpace::kSRGB:
-      return SkColor4f{param0_, param1_, param2_, alpha_};
-    case ColorSpace::kSRGBLegacy: {
-      auto [r, g, b] = gfx::SRGBLegacyToSRGB(param0_, param1_, param2_);
-      return SkColor4f{r, g, b, alpha_};
-    }
-    case ColorSpace::kSRGBLinear:
-      return gfx::SRGBLinearToSkColor4f(param0_, param1_, param2_, alpha_);
-    case ColorSpace::kDisplayP3:
-      return gfx::DisplayP3ToSkColor4f(param0_, param1_, param2_, alpha_);
-    case ColorSpace::kA98RGB:
-      return gfx::AdobeRGBToSkColor4f(param0_, param1_, param2_, alpha_);
-    case ColorSpace::kProPhotoRGB:
-      return gfx::ProPhotoToSkColor4f(param0_, param1_, param2_, alpha_);
-    case ColorSpace::kRec2020:
-      return gfx::Rec2020ToSkColor4f(param0_, param1_, param2_, alpha_);
-    case ColorSpace::kXYZD50:
-      return gfx::XYZD50ToSkColor4f(param0_, param1_, param2_, alpha_);
-    case ColorSpace::kXYZD65:
-      return gfx::XYZD65ToSkColor4f(param0_, param1_, param2_, alpha_);
-    case ColorSpace::kLab:
-      return gfx::LabToSkColor4f(param0_, param1_, param2_, alpha_);
-    case ColorSpace::kOklab:
-      if (gamut_map_oklab_oklch) {
-        return gfx::OklabGamutMapToSkColor4f(param0_, param1_, param2_, alpha_);
-      } else {
-        return gfx::OklabToSkColor4f(param0_, param1_, param2_, alpha_);
-      }
-    case ColorSpace::kLch:
-      return gfx::LchToSkColor4f(param0_, param1_, param2_, alpha_);
-    case ColorSpace::kOklch:
-      if (gamut_map_oklab_oklch) {
-        return gfx::OklchGamutMapToSkColor4f(param0_, param1_, param2_, alpha_);
-      } else {
-        return gfx::OklchToSkColor4f(param0_, param1_, param2_, alpha_);
-      }
-    case ColorSpace::kHSL:
-      return gfx::HSLToSkColor4f(param0_, param1_, param2_, alpha_);
-    case ColorSpace::kHWB:
-      return gfx::HWBToSkColor4f(param0_, param1_, param2_, alpha_);
-    default:
-      NOTIMPLEMENTED();
-      return SkColor4f{0.f, 0.f, 0.f, 0.f};
-  }
 }
 
 float Color::PremultiplyColor() {
@@ -874,25 +893,16 @@ void Color::UnpremultiplyColor() {
   }
 }
 
-// This converts -0.0 to 0.0, so that they have the same hash value. This
-// ensures that equal FontDescription have the same hash value.
-float NormalizeSign(float number) {
-  if (number == 0.0) [[unlikely]] {
-    return 0.0;
-  }
-  return number;
-}
-
 unsigned Color::GetHash() const {
-  unsigned result = WTF::HashInt(static_cast<uint8_t>(color_space_));
-  WTF::AddFloatToHash(result, NormalizeSign(param0_));
-  WTF::AddFloatToHash(result, NormalizeSign(param1_));
-  WTF::AddFloatToHash(result, NormalizeSign(param2_));
-  WTF::AddFloatToHash(result, NormalizeSign(alpha_));
-  WTF::AddIntToHash(result, param0_is_none_);
-  WTF::AddIntToHash(result, param1_is_none_);
-  WTF::AddIntToHash(result, param2_is_none_);
-  WTF::AddIntToHash(result, alpha_is_none_);
+  unsigned result = HashInt(static_cast<uint8_t>(color_space_));
+  AddFloatToHash(result, param0_);
+  AddFloatToHash(result, param1_);
+  AddFloatToHash(result, param2_);
+  AddFloatToHash(result, alpha_);
+  AddIntToHash(result, param0_is_none_);
+  AddIntToHash(result, param1_is_none_);
+  AddIntToHash(result, param2_is_none_);
+  AddIntToHash(result, alpha_is_none_);
   return result;
 }
 
@@ -910,20 +920,20 @@ RGBA32 Color::Rgb() const {
   return toSkColor4f().toSkColor();
 }
 
-bool Color::ParseHexColor(const LChar* name, unsigned length, Color& color) {
-  return ParseHexColorInternal(name, length, color);
+bool Color::ParseHexColor(base::span<const LChar> name, Color& color) {
+  return ParseHexColorInternal(name, color);
 }
 
-bool Color::ParseHexColor(const UChar* name, unsigned length, Color& color) {
-  return ParseHexColorInternal(name, length, color);
+bool Color::ParseHexColor(base::span<const UChar> name, Color& color) {
+  return ParseHexColorInternal(name, color);
 }
 
 bool Color::ParseHexColor(const StringView& name, Color& color) {
   if (name.empty())
     return false;
-  if (name.Is8Bit())
-    return ParseHexColor(name.Characters8(), name.length(), color);
-  return ParseHexColor(name.Characters16(), name.length(), color);
+  return VisitCharacters(name, [&color](auto chars) {
+    return ParseHexColorInternal(chars, color);
+  });
 }
 
 int DifferenceSquared(const Color& c1, const Color& c2) {
@@ -937,9 +947,9 @@ bool Color::SetFromString(const String& name) {
   // TODO(https://crbug.com/1434423): Implement CSS Color level 4 parsing.
   if (name[0] != '#')
     return SetNamedColor(name);
-  if (name.Is8Bit())
-    return ParseHexColor(name.Characters8() + 1, name.length() - 1, *this);
-  return ParseHexColor(name.Characters16() + 1, name.length() - 1, *this);
+  return VisitCharacters(name, [this](auto chars) {
+    return ParseHexColorInternal(chars.template subspan<1>(), *this);
+  });
 }
 
 // static
@@ -951,12 +961,16 @@ String Color::ColorSpaceToString(Color::ColorSpace color_space) {
       return "srgb-linear";
     case Color::ColorSpace::kDisplayP3:
       return "display-p3";
+    case Color::ColorSpace::kDisplayP3Linear:
+      return "display-p3-linear";
     case Color::ColorSpace::kA98RGB:
       return "a98-rgb";
     case Color::ColorSpace::kProPhotoRGB:
       return "prophoto-rgb";
     case Color::ColorSpace::kRec2020:
       return "rec2020";
+    case Color::ColorSpace::kRec2100Linear:
+      return "rec2100-linear";
     case Color::ColorSpace::kXYZD50:
       return "xyz-d50";
     case Color::ColorSpace::kXYZD65:
@@ -970,14 +984,13 @@ String Color::ColorSpaceToString(Color::ColorSpace color_space) {
     case Color::ColorSpace::kOklch:
       return "oklch";
     case Color::ColorSpace::kSRGBLegacy:
-      return "RGB Legacy";
+      return "rgb";
     case Color::ColorSpace::kHSL:
-      return "HSL";
+      return "hsl";
     case Color::ColorSpace::kHWB:
-      return "HWB";
+      return "hwb";
     case ColorSpace::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return "None";
+      NOTREACHED();
   }
 }
 
@@ -1123,49 +1136,64 @@ bool Color::SetNamedColor(const String& name) {
 }
 
 Color Color::Light() const {
+  static constexpr Color kLightenedBlack = Color::FromRGB(84, 84, 84);
+
   // Hardcode this common case for speed.
   if (*this == kBlack) {
-    return Color(kLightenedBlack);
+    return kLightenedBlack;
   }
 
-  const float scale_factor = nextafterf(256.0f, 0.0f);
+  Color srgb_color = *this;
+  srgb_color.ConvertToColorSpace(ColorSpace::kSRGB);
 
-  float r, g, b, a;
-  GetRGBA(r, g, b, a);
-
-  float v = std::max(r, std::max(g, b));
-
+  const float v =
+      std::max({srgb_color.Param0(), srgb_color.Param1(), srgb_color.Param2()});
   if (v == 0.0f) {
     // Lightened black with alpha.
-    return Color(RedChannel(kLightenedBlack), GreenChannel(kLightenedBlack),
-                 BlueChannel(kLightenedBlack), AlphaAsInteger());
+    Color lightened_black_with_alpha = kLightenedBlack;
+    lightened_black_with_alpha.SetAlpha(srgb_color.Alpha());
+    return lightened_black_with_alpha;
   }
 
-  float multiplier = std::min(1.0f, v + 0.33f) / v;
-
-  return Color(static_cast<int>(multiplier * r * scale_factor),
-               static_cast<int>(multiplier * g * scale_factor),
-               static_cast<int>(multiplier * b * scale_factor),
-               AlphaAsInteger());
+  const float multiplier = std::min(1.0f, v + 0.33f) / v;
+  srgb_color.param0_ = QuantizeTo8Bit(srgb_color.param0_ * multiplier);
+  srgb_color.param1_ = QuantizeTo8Bit(srgb_color.param1_ * multiplier);
+  srgb_color.param2_ = QuantizeTo8Bit(srgb_color.param2_ * multiplier);
+  return srgb_color;
 }
 
 Color Color::Dark() const {
   // Hardcode this common case for speed.
-  if (*this == kWhite)
-    return Color(kDarkenedWhite);
+  if (*this == kWhite) {
+    static constexpr Color kDarkenedWhite = Color::FromRGB(171, 171, 171);
+    return kDarkenedWhite;
+  }
 
-  const float scale_factor = nextafterf(256.0f, 0.0f);
+  Color srgb_color = *this;
+  srgb_color.ConvertToColorSpace(ColorSpace::kSRGB);
 
-  float r, g, b, a;
-  GetRGBA(r, g, b, a);
+  const float v =
+      std::max({srgb_color.Param0(), srgb_color.Param1(), srgb_color.Param2()});
+  const float multiplier = (v == 0.0f) ? 0.0f : std::max(0.0f, (v - 0.33f) / v);
+  srgb_color.param0_ = QuantizeTo8Bit(srgb_color.param0_ * multiplier);
+  srgb_color.param1_ = QuantizeTo8Bit(srgb_color.param1_ * multiplier);
+  srgb_color.param2_ = QuantizeTo8Bit(srgb_color.param2_ * multiplier);
+  return srgb_color;
+}
 
-  float v = std::max(r, std::max(g, b));
-  float multiplier = (v == 0.0f) ? 0.0f : std::max(0.0f, (v - 0.33f) / v);
-
-  return Color(static_cast<int>(multiplier * r * scale_factor),
-               static_cast<int>(multiplier * g * scale_factor),
-               static_cast<int>(multiplier * b * scale_factor),
-               AlphaAsInteger());
+float Color::GetLightness(ColorSpace lightness_colorspace) const {
+  DCHECK(lightness_colorspace == ColorSpace::kLab ||
+         lightness_colorspace == ColorSpace::kOklab ||
+         lightness_colorspace == ColorSpace::kLch ||
+         lightness_colorspace == ColorSpace::kOklch ||
+         lightness_colorspace == ColorSpace::kHSL);
+  Color color_with_l = *this;
+  color_with_l.ConvertToColorSpace(lightness_colorspace);
+  if (lightness_colorspace == ColorSpace::kHSL) {
+    return color_with_l.Param2();
+  }
+  DCHECK(IsLightnessFirstComponent(lightness_colorspace));
+  return color_with_l.Param0();
 }
 
 Color Color::Blend(const Color& source) const {
@@ -1179,21 +1207,13 @@ Color Color::Blend(const Color& source) const {
     return *this;
   }
 
-  int source_alpha = source.AlphaAsInteger();
-  int alpha = AlphaAsInteger();
-
-  int d = 255 * (alpha + source_alpha) - alpha * source_alpha;
-  int a = d / 255;
-  int r = (Red() * alpha * (255 - source_alpha) +
-           255 * source_alpha * source.Red()) /
-          d;
-  int g = (Green() * alpha * (255 - source_alpha) +
-           255 * source_alpha * source.Green()) /
-          d;
-  int b = (Blue() * alpha * (255 - source_alpha) +
-           255 * source_alpha * source.Blue()) /
-          d;
-  return Color(r, g, b, a);
+  const SkRGBA4f<kPremul_SkAlphaType> pm_src = source.toSkColor4f().premul();
+  auto pm_result = this->toSkColor4f().premul() * (1.0f - pm_src.fA);
+  pm_result.fA += pm_src.fA;
+  pm_result.fR += pm_src.fR;
+  pm_result.fG += pm_src.fG;
+  pm_result.fB += pm_src.fB;
+  return Color(pm_result.unpremul());
 }
 
 Color Color::BlendWithWhite() const {
@@ -1220,96 +1240,13 @@ Color Color::BlendWithWhite() const {
   return new_color;
 }
 
-void Color::GetRGBA(float& r, float& g, float& b, float& a) const {
-  // TODO(crbug.com/1399566): Check for colorspace.
-  r = Red() / 255.0f;
-  g = Green() / 255.0f;
-  b = Blue() / 255.0f;
-  a = Alpha();
-}
-
-void Color::GetRGBA(double& r, double& g, double& b, double& a) const {
-  // TODO(crbug.com/1399566): Check for colorspace.
-  r = Red() / 255.0;
-  g = Green() / 255.0;
-  b = Blue() / 255.0;
-  a = Alpha();
-}
-
-// Hue, max and min are returned in range of 0.0 to 1.0.
-void Color::GetHueMaxMin(double& hue, double& max, double& min) const {
-  // This is a helper function to calculate intermediate quantities needed
-  // for conversion to HSL or HWB formats. The algorithm contained below
-  // is a copy of http://en.wikipedia.org/wiki/HSL_color_space.
-  double r = static_cast<double>(Red()) / 255.0;
-  double g = static_cast<double>(Green()) / 255.0;
-  double b = static_cast<double>(Blue()) / 255.0;
-  max = std::max(std::max(r, g), b);
-  min = std::min(std::min(r, g), b);
-
-  if (max == min)
-    hue = 0.0;
-  else if (max == r)
-    hue = (60.0 * ((g - b) / (max - min))) + 360.0;
-  else if (max == g)
-    hue = (60.0 * ((b - r) / (max - min))) + 120.0;
-  else
-    hue = (60.0 * ((r - g) / (max - min))) + 240.0;
-
-  // Adjust for rounding errors and scale to interval 0.0 to 1.0.
-  if (hue >= 360.0)
-    hue -= 360.0;
-  hue /= 360.0;
-}
-
-// Hue, saturation and lightness are returned in range of 0.0 to 1.0.
-void Color::GetHSL(double& hue, double& saturation, double& lightness) const {
-  double max, min;
-  GetHueMaxMin(hue, max, min);
-
-  lightness = 0.5 * (max + min);
-  if (max == min)
-    saturation = 0.0;
-  else if (lightness <= 0.5)
-    saturation = ((max - min) / (max + min));
-  else
-    saturation = ((max - min) / (2.0 - (max + min)));
-}
-
-// Output parameters hue, white and black are in the range 0.0 to 1.0.
-void Color::GetHWB(double& hue, double& white, double& black) const {
-  // https://www.w3.org/TR/css-color-4/#the-hwb-notation. This is an
-  // implementation of the algorithm to transform sRGB to HWB.
-  double max;
-  GetHueMaxMin(hue, max, white);
-  black = 1.0 - max;
-}
-
-Color ColorFromPremultipliedARGB(RGBA32 pixel_color) {
-  int alpha = AlphaChannel(pixel_color);
-  if (alpha && alpha < 255) {
-    return Color::FromRGBA(RedChannel(pixel_color) * 255 / alpha,
-                           GreenChannel(pixel_color) * 255 / alpha,
-                           BlueChannel(pixel_color) * 255 / alpha, alpha);
-  } else {
-    return Color::FromRGBA32(pixel_color);
-  }
-}
-
-RGBA32 PremultipliedARGBFromColor(const Color& color) {
-  unsigned pixel_color;
-
-  unsigned alpha = color.AlphaAsInteger();
-  if (alpha < 255) {
-    pixel_color = Color::FromRGBA((color.Red() * alpha + 254) / 255,
-                                  (color.Green() * alpha + 254) / 255,
-                                  (color.Blue() * alpha + 254) / 255, alpha)
-                      .Rgb();
-  } else {
-    pixel_color = color.Rgb();
-  }
-
-  return pixel_color;
+Color Color::InvertSRGB() const {
+  Color inv_color = *this;
+  inv_color.ConvertToColorSpace(ColorSpace::kSRGB);
+  inv_color.param0_ = 1.0f - inv_color.param0_;
+  inv_color.param1_ = 1.0f - inv_color.param1_;
+  inv_color.param2_ = 1.0f - inv_color.param2_;
+  return inv_color;
 }
 
 // From https://www.w3.org/TR/css-color-4/#interpolation
@@ -1319,7 +1256,10 @@ RGBA32 PremultipliedARGBFromColor(const Color& color) {
 // formats (hex colors, named colors, rgb(), hsl() or hwb() and the equivalent
 // alpha-including forms) in gamma-encoded sRGB space.
 Color::ColorSpace Color::GetColorInterpolationSpace() const {
-  if (IsLegacyColorSpace(color_space_)) {
+  // If the color space is legacy and does not contain none, it should be
+  // interpolated in srgb-legacy.
+  if (IsLegacyColorSpace(color_space_) && !param0_is_none_ &&
+      !param1_is_none_ && !param2_is_none_ && !alpha_is_none_) {
     return ColorSpace::kSRGBLegacy;
   }
 
@@ -1369,6 +1309,9 @@ String Color::SerializeInterpolationSpace(
     case ColorSpace::kDisplayP3:
       result.Append("display-p3");
       break;
+    case ColorSpace::kDisplayP3Linear:
+      result.Append("display-p3-linear");
+      break;
     case ColorSpace::kA98RGB:
       result.Append("a98-rgb");
       break;
@@ -1377,6 +1320,9 @@ String Color::SerializeInterpolationSpace(
       break;
     case ColorSpace::kRec2020:
       result.Append("rec2020");
+      break;
+    case ColorSpace::kRec2100Linear:
+      result.Append("rec2100-linear");
       break;
   }
 

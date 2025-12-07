@@ -47,6 +47,9 @@ class BlockedIphFeatures {
 
   static BlockedIphFeatures* GetInstance();
 
+  // Returns whether any features are blocked.
+  bool AreAnyFeaturesBlocked() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
   // Returns whether the given feature is blocked in the current scope.
   bool IsFeatureBlocked(const std::string& feature_name) const
       EXCLUSIVE_LOCKS_REQUIRED(lock_);

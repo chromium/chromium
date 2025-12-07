@@ -12,6 +12,7 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 
 namespace viz {
@@ -47,7 +48,13 @@ void TestContextSupport::GetGpuFence(
     base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)> callback) {}
 
 void TestContextSupport::SetAggressivelyFreeResources(
-    bool aggressively_free_resources) {}
+    bool aggressively_free_resources) {
+  aggressively_free_resources_ = aggressively_free_resources;
+}
+
+bool TestContextSupport::GetAggressivelyFreeResources() const {
+  return aggressively_free_resources_;
+}
 
 void TestContextSupport::CallAllSyncPointCallbacks() {
   size_t size = sync_point_callbacks_.size();
@@ -65,30 +72,13 @@ void TestContextSupport::CallAllSyncPointCallbacks() {
   sync_point_callbacks_.clear();
 }
 
-uint64_t TestContextSupport::ShareGroupTracingGUID() const {
-  NOTIMPLEMENTED();
-  return 0;
-}
-
 void TestContextSupport::SetErrorMessageCallback(
     base::RepeatingCallback<void(const char*, int32_t)> callback) {}
 
-bool TestContextSupport::ThreadSafeShallowLockDiscardableTexture(
-    uint32_t texture_id) {
+base::span<uint8_t> TestContextSupport::MapTransferCacheEntry(
+    uint32_t serialized_size) {
   NOTIMPLEMENTED();
-  return false;
-}
-void TestContextSupport::CompleteLockDiscardableTexureOnContextThread(
-    uint32_t texture_id) {}
-bool TestContextSupport::ThreadsafeDiscardableTextureIsDeletedForTracing(
-    uint32_t texture_id) {
-  NOTIMPLEMENTED();
-  return false;
-}
-
-void* TestContextSupport::MapTransferCacheEntry(uint32_t serialized_size) {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return {};
 }
 
 void TestContextSupport::UnmapAndCreateTransferCacheEntry(uint32_t type,
@@ -113,25 +103,4 @@ unsigned int TestContextSupport::GetTransferBufferFreeSize() const {
   NOTIMPLEMENTED();
   return 0;
 }
-bool TestContextSupport::IsJpegDecodeAccelerationSupported() const {
-  return false;
-}
-bool TestContextSupport::IsWebPDecodeAccelerationSupported() const {
-  return false;
-}
-bool TestContextSupport::CanDecodeWithHardwareAcceleration(
-    const cc::ImageHeaderMetadata* image_metadata) const {
-  return false;
-}
-
-bool TestContextSupport::HasGrContextSupport() const {
-  return true;
-}
-
-void TestContextSupport::SetGrContext(GrDirectContext* gr) {}
-
-void TestContextSupport::WillCallGLFromSkia() {}
-
-void TestContextSupport::DidCallGLFromSkia() {}
-
 }  // namespace viz

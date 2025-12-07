@@ -1,0 +1,261 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host{
+  --cr-hover-background-color:#FFFFFF;
+  --cr-button-height: 32px;
+}
+
+#composeButton {
+  background-color: #F3F5F6;
+  color: #1F1F1F;
+  font-weight: 400;
+  font-family: inherit;
+  font-size: inherit;
+  border: none;
+  position: relative;
+  gap: 3px;
+}
+
+.compose-container {
+  z-index: 100;
+  position: relative;
+  padding-inline-end: 12px;
+  padding-inline-start: 8px;
+}
+
+.compose-icon {
+  filter: invert(1);
+  vertical-align: text-bottom;
+  height: 18px;
+  width: 18px;
+  padding-top: 2px;
+  padding-left: 1px;
+}
+
+#glowAnimationWrapper {
+  --anim-duration: 2s;
+  --glif-angle-start: 99deg;
+  --glif-angle-range: 245deg;
+  --mask-angle-start: -150deg;
+  --mask-angle-range: 355deg;
+
+  --acceleration: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --glif-gradient: conic-gradient(
+    rgba(52, 168, 82, 0) 0deg,
+    rgba(52, 168, 82, 1) 38.9738deg,
+    rgba(255, 211, 20, 1) 62.3678deg,
+    rgba(255, 70, 65, 1) 87.0062deg,
+    rgba(49, 134, 255, 1) 107.428deg,
+    rgba(49, 134, 255, 0.5) 204.48deg,
+    rgba(49, 134, 255, 0) 308.88deg,
+    rgba(52, 168, 82, 0) 360deg
+  );
+
+  --mask-gradient: conic-gradient(
+    transparent,
+    16.56deg,
+    273.24deg,
+    transparent 333.36deg,
+    transparent 360deg
+  );
+}
+
+@keyframes rotate-glif-anim {
+  from {
+    rotate: var(--glif-angle-start);
+  }
+  to {
+    rotate: calc(var(--glif-angle-start) + var(--glif-angle-range));
+  }
+}
+
+@keyframes rotate-mask-anim {
+  from {
+    rotate: var(--mask-angle-start);
+  }
+  to {
+    rotate: calc(var(--mask-angle-start) + var(--mask-angle-range));
+  }
+}
+
+@keyframes rotate-glif-anim-infinite {
+  from {
+    rotate: var(--glif-angle-start);
+  }
+  to {
+    rotate: calc(var(--glif-angle-start) + 360deg);
+  }
+}
+
+@keyframes rotate-mask-anim-infinite {
+  from {
+    rotate: var(--mask-angle-start);
+  }
+  to {
+    rotate: calc(var(--mask-angle-start) + 360deg);
+  }
+}
+
+@keyframes fade-in-out {
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in-out-infinite {
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/**
+ * .glow-container contains both the button and the GLIF gradients used as part
+ * of the animation. There are 2 masked gradients to create the animation: one
+ * outer blurred glow that extends past the button and one conal gradient that
+ * sits on the border of the button.
+ */
+.glow-container {
+  height: 36px;
+  padding: 0 2px;
+  display: flex;
+  align-items: center;
+  border-radius: 100px;
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: var(--cr-searchbox-compose-button-z-index, 100);
+}
+
+:host-context([dir='rtl']) .glow-container {
+  left: 8px;
+  right: unset;
+}
+
+:host-context([ntp-realbox-next-enabled]) {
+  --cr-button-height: 36px;
+}
+
+:host-context([ntp-realbox-next-enabled]) #composeButton {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+:host-context([ntp-realbox-next-enabled]) .glow-container {
+  height: var(--cr-searchbox-icon-size);
+}
+
+:host-context([searchbox-layout-mode^='Tall']) .glow-container {
+  top: var(--cr-searchbox-compose-button-position-top);
+  transform: none;
+}
+
+/* A wrapper class to hold each gradient and its mask. Don't show unless on page
+ * load or on hover. */
+.gradient-and-mask-wrapper {
+  overflow: hidden;
+  position: absolute;
+  inset: 0;
+  border-radius: 100px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.play .gradient-and-mask-wrapper {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#glowAnimationWrapper:hover .gradient-and-mask-wrapper{
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* The outer blurred glow. */
+.outer-glow {
+  filter: blur(40px);
+}
+
+#glowAnimationWrapper:hover .outer-glow{
+  filter: none;
+}
+
+/* Containers used to position the gradient and masks correctly. The gradient
+ * and masks themselves are created using pseudo-elements. */
+ .gradient,
+.mask {
+  position: absolute;
+  inset: 0;
+  transform-origin: center;
+  translate: 0 -50%;
+  top: 50%;
+  scale: 1.1 0.6;
+  border-radius: 50%;
+  aspect-ratio: 1/1;
+}
+
+ .gradient:before,
+.mask:before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform-origin: center;
+}
+
+.gradient:before {
+  background: var(--glif-gradient);
+  rotate: var(--glif-angle-start);
+}
+
+.play .gradient:before {
+  animation: rotate-glif-anim var(--anim-duration) var(--acceleration) forwards,
+             fade-in-out var(--anim-duration) linear forwards;
+}
+
+.mask:before {
+  background: var(--mask-gradient);
+  rotate: var(--mask-angle-start);
+}
+
+.play .mask:before {
+  animation: rotate-mask-anim var(--anim-duration) var(--acceleration) forwards;
+}
+
+
+#glowAnimationWrapper:hover .mask:before {
+  --anim-duration: 8s;
+  animation: rotate-mask-anim-infinite var(--anim-duration) linear infinite,
+             fade-in-out-infinite var(--anim-duration) linear forwards;
+}
+
+#glowAnimationWrapper:hover .gradient:before {
+  --anim-duration: 8s;
+  animation: rotate-glif-anim-infinite var(--anim-duration) linear infinite,
+             fade-in-out-infinite var(--anim-duration) linear forwards;
+}

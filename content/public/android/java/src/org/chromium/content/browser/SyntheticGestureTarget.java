@@ -9,8 +9,11 @@ import android.view.View;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Forwards synthetic events to MotionEventSynthesizer. Owned by its native. */
 @JNINamespace("content")
+@NullMarked
 public class SyntheticGestureTarget {
     private final MotionEventSynthesizerImpl mMotionEventSynthesizer;
 

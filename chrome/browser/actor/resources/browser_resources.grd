@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit latest_public_release="0" current_release="1">
+  <outputs>
+    <output filename="grit/actor_browser_resources.h" type="rc_header">
+      <emit emit_type="prepend"></emit>
+    </output>
+    <output filename="actor_browser_resources.pak" type="data_package" />
+  </outputs>
+  <release seq="1">
+    <structures>
+      <structure name="IDR_ACTOR_TAB_INDICATOR_SPINNER" file="tab_icon_indicator.json" type="lottie" compress="brotli" />
+    </structures>
+
+    <!-- NOTE: file is currently marked as untranslatable in
+      translation_expectations.pyl, so changing the translateable attribute on
+      the following messages will have no effect until that .pyl file is
+      updated.
+    -->
+
+    <messages>
+      <message name="IDR_ACTOR_CHECK_TASK_NUDGE_LABEL" desc="[Placeholder Description]" translateable="false">
+        Check your task
+      </message>
+      <message name="IDR_ACTOR_TASK_COMPLETE_NUDGE_LABEL" desc="[Placeholder Description]" translateable="false">
+        Task complete
+      </message>
+      <message name="IDR_ACTOR_TASK_LIST_BUBBLE_CHECK_TASK_SUBTITLE" desc="[Placeholder Description]" translateable="false">
+        Needs your attention
+      </message>
+      <message name="IDR_ACTOR_TASK_LIST_BUBBLE_TASK_COMPLETE_SUBTITLE" desc="[Placeholder Description]" translateable="false">
+        Task complete
+      </message>
+      <message name="IDS_TAKE_OVER_TASK_LABEL" desc="[Placeholder Description]" translateable="false">
+        Take over task
+      </message>
+      <message name="IDS_GIVE_TASK_BACK_LABEL" desc="[Placeholder Description]" translateable="false">
+        Give task back
+      </message>
+    </messages>
+
+    <includes>
+      <include name="IDR_ACTOR_OVERLAY_MAGIC_CURSOR" file="magic_cursor.svg" type="BINDATA" compress="brotli" />
+    </includes>
+  </release>
+</grit>

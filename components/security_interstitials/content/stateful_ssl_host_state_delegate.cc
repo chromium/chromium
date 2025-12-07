@@ -29,7 +29,6 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/security_interstitials/core/pref_names.h"
 #include "content/public/browser/browser_context.h"
@@ -41,30 +40,8 @@
 
 namespace {
 
-#if BUILDFLAG(IS_ANDROID)
-StatefulSSLHostStateDelegate::RecurrentInterstitialMode
-    kRecurrentInterstitialDefaultMode =
-        StatefulSSLHostStateDelegate::RecurrentInterstitialMode::PREF;
-#else
-StatefulSSLHostStateDelegate::RecurrentInterstitialMode
-    kRecurrentInterstitialDefaultMode =
-        StatefulSSLHostStateDelegate::RecurrentInterstitialMode::IN_MEMORY;
-#endif
-
-// The number of times an error must recur before the recurrent error message is
-// shown.
-constexpr int kRecurrentInterstitialDefaultThreshold = 3;
-
-// If "mode" is "pref", a pref stores the time at which each error most recently
-// occurred, and the recurrent error message is shown if the error has recurred
-// more than the threshold number of times with the most recent instance being
-// less than |kRecurrentInterstitialResetTimeParam| seconds in the past. The
-// default is 3 days.
-constexpr int kRecurrentInterstitialDefaultResetTime =
-    259200;  // 3 days in seconds
-
-// The default expiration for certificate error bypasses is one week.
-const uint64_t kDefaultCertErrorBypassExpirationInSeconds = UINT64_C(604800);
+// Certificate error bypasses are remembered for one week.
+const uint64_t kCertErrorBypassExpirationInSeconds = UINT64_C(604800);
 
 // The expiration for HTTPS-First Mode bypasses is 15 days.
 const uint64_t kHTTPSFirstModeBypassExpirationInSeconds = UINT64_C(1296000);
@@ -76,83 +53,6 @@ const char kSSLCertDecisionExpirationTimeKey[] = "decision_expiration_time";
 const char kSSLCertDecisionVersionKey[] = "version";
 
 const int kDefaultSSLCertDecisionVersion = 1;
-
-// Records a new occurrence of |error|. The occurrence is stored in the
-// recurrent interstitial pref, which keeps track of the most recent timestamps
-// at which each error type occurred (up to the |threshold| most recent
-// instances per error). The list is reset if the clock has gone backwards at
-// any point.
-void UpdateRecurrentInterstitialPref(PrefService* pref_service,
-                                     base::Clock* clock,
-                                     int error,
-                                     int threshold) {
-  double now = clock->Now().InMillisecondsFSinceUnixEpoch();
-
-  ScopedDictPrefUpdate pref_update(pref_service,
-                                   prefs::kRecurrentSSLInterstitial);
-  base::Value::Dict& dict = pref_update.Get();
-  base::Value::List* list = dict.FindList(net::ErrorToShortString(error));
-  if (list) {
-    // Check that the values are in increasing order and wipe out the list if
-    // not (presumably because the clock changed).
-    double previous = 0;
-    for (const auto& error_instance : *list) {
-      double error_time = error_instance.GetDouble();
-      if (error_time < previous) {
-        list = nullptr;
-        break;
-      }
-      previous = error_time;
-    }
-    if (now < previous)
-      list = nullptr;
-  }
-
-  if (!list) {
-    // Either there was no list of occurrences of this error, or it was corrupt
-    // (i.e. out of order). Save a new list composed of just this one error
-    // instance.
-    base::Value::List error_list;
-    error_list.Append(now);
-    dict.Set(net::ErrorToShortString(error), std::move(error_list));
-  } else {
-    // Only up to |threshold| values need to be stored. If the list already
-    // contains |threshold| values, pop one off the front and append the new one
-    // at the end; otherwise just append the new one.
-    while (base::MakeStrictNum(list->size()) >= threshold) {
-      list->erase(list->begin());
-    }
-    list->Append(now);
-  }
-}
-
-bool DoesRecurrentInterstitialPrefMeetThreshold(PrefService* pref_service,
-                                                base::Clock* clock,
-                                                int error,
-                                                int threshold,
-                                                int error_reset_time) {
-  const base::Value::Dict& pref =
-      pref_service->GetDict(prefs::kRecurrentSSLInterstitial);
-  const base::Value::List* list_value =
-      pref.FindList(net::ErrorToShortString(error));
-  if (!list_value)
-    return false;
-
-  base::Time cutoff_time;
-  cutoff_time = clock->Now() - base::Seconds(error_reset_time);
-
-  // Assume that the values in the list are in increasing order;
-  // UpdateRecurrentInterstitialPref() maintains this ordering. Check if there
-  // are more than |threshold| values after the cutoff time.
-  const base::Value::List& error_list = *list_value;
-  for (size_t i = 0; i < error_list.size(); i++) {
-    if (base::Time::FromMillisecondsSinceUnixEpoch(error_list[i].GetDouble()) >=
-        cutoff_time) {
-      return base::MakeStrictNum(error_list.size() - i) >= threshold;
-    }
-  }
-  return false;
-}
 
 // All SSL decisions are per host (and are shared arcoss schemes), so this
 // canonicalizes all hosts into a secure scheme GURL to use with content
@@ -167,7 +67,7 @@ std::string GetKey(const net::X509Certificate& cert, int error) {
   // Since a security decision will be made based on the fingerprint, Chrome
   // should use the SHA-256 fingerprint for the certificate.
   net::SHA256HashValue fingerprint = cert.CalculateChainFingerprint256();
-  std::string base64_fingerprint = base::Base64Encode(fingerprint.data);
+  std::string base64_fingerprint = base::Base64Encode(fingerprint);
   return base::NumberToString(error) + base64_fingerprint;
 }
 
@@ -180,35 +80,25 @@ bool HostFilterToPatternFilter(
   // against its host.
   GURL url = GURL(primary_pattern.ToString());
   DCHECK(url.is_valid());
-  return std::move(host_filter).Run(url.host());
+  return std::move(host_filter).Run(url.GetHost());
 }
 
 }  // namespace
 
 StatefulSSLHostStateDelegate::StatefulSSLHostStateDelegate(
     content::BrowserContext* browser_context,
-    PrefService* pref_service,
     HostContentSettingsMap* host_content_settings_map)
     : clock_(new base::DefaultClock()),
       browser_context_(browser_context),
-      pref_service_(pref_service),
       host_content_settings_map_(host_content_settings_map),
       https_only_mode_allowlist_(
           host_content_settings_map,
           clock_.get(),
           base::Seconds(kHTTPSFirstModeBypassExpirationInSeconds)),
       https_only_mode_enforcelist_(host_content_settings_map_, clock_.get()),
-      recurrent_interstitial_threshold_for_testing(-1),
-      recurrent_interstitial_mode_for_testing(NOT_SET),
-      recurrent_interstitial_reset_time_for_testing(-1),
       https_first_balanced_mode_suppressed_for_testing(false) {}
 
 StatefulSSLHostStateDelegate::~StatefulSSLHostStateDelegate() = default;
-
-void StatefulSSLHostStateDelegate::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterDictionaryPref(prefs::kRecurrentSSLInterstitial);
-}
 
 void StatefulSSLHostStateDelegate::AllowCert(
     const std::string& host,
@@ -327,32 +217,27 @@ StatefulSSLHostStateDelegate::QueryPolicy(
 
 void StatefulSSLHostStateDelegate::HostRanInsecureContent(
     const std::string& host,
-    int child_id,
     InsecureContentType content_type) {
   switch (content_type) {
     case MIXED_CONTENT:
-      ran_mixed_content_hosts_.insert(BrokenHostEntry(host, child_id));
+      ran_mixed_content_hosts_.insert(host);
       return;
     case CERT_ERRORS_CONTENT:
-      ran_content_with_cert_errors_hosts_.insert(
-          BrokenHostEntry(host, child_id));
+      ran_content_with_cert_errors_hosts_.insert(host);
       return;
   }
 }
 
 bool StatefulSSLHostStateDelegate::DidHostRunInsecureContent(
     const std::string& host,
-    int child_id,
     InsecureContentType content_type) {
-  auto entry = BrokenHostEntry(host, child_id);
   switch (content_type) {
     case MIXED_CONTENT:
-      return base::Contains(ran_mixed_content_hosts_, entry);
+      return base::Contains(ran_mixed_content_hosts_, host);
     case CERT_ERRORS_CONTENT:
-      return base::Contains(ran_content_with_cert_errors_hosts_, entry);
+      return base::Contains(ran_content_with_cert_errors_hosts_, host);
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void StatefulSSLHostStateDelegate::AllowHttpForHost(
@@ -488,57 +373,6 @@ void StatefulSSLHostStateDelegate::RevokeUserAllowExceptionsHard(
   network_context->CloseIdleConnections(base::NullCallback());
 }
 
-void StatefulSSLHostStateDelegate::DidDisplayErrorPage(int error) {
-  if (error != net::ERR_CERT_SYMANTEC_LEGACY &&
-      error != net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED) {
-    return;
-  }
-  RecurrentInterstitialMode mode_param = GetRecurrentInterstitialMode();
-  const int threshold = GetRecurrentInterstitialThreshold();
-  if (mode_param ==
-      StatefulSSLHostStateDelegate::RecurrentInterstitialMode::IN_MEMORY) {
-    const auto count_it = recurrent_errors_.find(error);
-    if (count_it == recurrent_errors_.end()) {
-      recurrent_errors_[error] = 1;
-      return;
-    }
-    if (count_it->second >= threshold) {
-      return;
-    }
-    recurrent_errors_[error] = count_it->second + 1;
-  } else if (mode_param ==
-             StatefulSSLHostStateDelegate::RecurrentInterstitialMode::PREF) {
-    UpdateRecurrentInterstitialPref(pref_service_, clock_.get(), error,
-                                    threshold);
-  }
-}
-
-bool StatefulSSLHostStateDelegate::HasSeenRecurrentErrors(int error) const {
-  RecurrentInterstitialMode mode_param = GetRecurrentInterstitialMode();
-  const int threshold = GetRecurrentInterstitialThreshold();
-  if (mode_param ==
-      StatefulSSLHostStateDelegate::RecurrentInterstitialMode::IN_MEMORY) {
-    const auto count_it = recurrent_errors_.find(error);
-    if (count_it == recurrent_errors_.end())
-      return false;
-    return count_it->second >= threshold;
-  } else if (mode_param ==
-             StatefulSSLHostStateDelegate::RecurrentInterstitialMode::PREF) {
-    return DoesRecurrentInterstitialPrefMeetThreshold(
-        pref_service_, clock_.get(), error, threshold,
-        GetRecurrentInterstitialResetTime());
-  }
-
-  return false;
-}
-
-void StatefulSSLHostStateDelegate::ResetRecurrentErrorCountForTesting() {
-  recurrent_errors_.clear();
-  ScopedDictPrefUpdate pref_update(pref_service_,
-                                   prefs::kRecurrentSSLInterstitial);
-  pref_update->clear();
-}
-
 bool StatefulSSLHostStateDelegate::
     HttpsFirstBalancedModeSuppressedForTesting() {
   return https_first_balanced_mode_suppressed_for_testing;
@@ -559,46 +393,6 @@ void StatefulSSLHostStateDelegate::SetClockForTesting(
   clock_ = std::move(clock);
   https_only_mode_allowlist_.SetClockForTesting(clock_.get());    // IN-TEST
   https_only_mode_enforcelist_.SetClockForTesting(clock_.get());  // IN-TEST
-}
-
-void StatefulSSLHostStateDelegate::SetRecurrentInterstitialThresholdForTesting(
-    int threshold) {
-  recurrent_interstitial_threshold_for_testing = threshold;
-}
-
-void StatefulSSLHostStateDelegate::SetRecurrentInterstitialModeForTesting(
-    StatefulSSLHostStateDelegate::RecurrentInterstitialMode mode) {
-  recurrent_interstitial_mode_for_testing = mode;
-}
-
-void StatefulSSLHostStateDelegate::SetRecurrentInterstitialResetTimeForTesting(
-    int reset) {
-  recurrent_interstitial_reset_time_for_testing = reset;
-}
-
-int StatefulSSLHostStateDelegate::GetRecurrentInterstitialThreshold() const {
-  if (recurrent_interstitial_threshold_for_testing == -1) {
-    return kRecurrentInterstitialDefaultThreshold;
-  } else {
-    return recurrent_interstitial_threshold_for_testing;
-  }
-}
-
-int StatefulSSLHostStateDelegate::GetRecurrentInterstitialResetTime() const {
-  if (recurrent_interstitial_reset_time_for_testing == -1) {
-    return kRecurrentInterstitialDefaultResetTime;
-  } else {
-    return recurrent_interstitial_reset_time_for_testing;
-  }
-}
-
-StatefulSSLHostStateDelegate::RecurrentInterstitialMode
-StatefulSSLHostStateDelegate::GetRecurrentInterstitialMode() const {
-  if (recurrent_interstitial_mode_for_testing == NOT_SET) {
-    return kRecurrentInterstitialDefaultMode;
-  } else {
-    return recurrent_interstitial_mode_for_testing;
-  }
 }
 
 bool StatefulSSLHostStateDelegate::HasCertAllowException(
@@ -687,7 +481,7 @@ base::Value::Dict* StatefulSSLHostStateDelegate::GetValidCertDecisionsDict(
 
     expired = true;
     base::Time expiration_time =
-        now + base::Seconds(kDefaultCertErrorBypassExpirationInSeconds);
+        now + base::Seconds(kCertErrorBypassExpirationInSeconds);
     // Unfortunately, JSON (and thus content settings) doesn't support int64_t
     // values, only doubles. Since this mildly depends on precision, it is
     // better to store the value as a string.

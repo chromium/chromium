@@ -13,9 +13,8 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/debug/leak_annotations.h"
-#include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_tokenizer.h"
@@ -25,6 +24,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "gin/array_buffer.h"
 #include "gin/converter.h"
+#include "gin/public/gin_embedders.h"
 #include "gin/public/isolate_holder.h"
 #include "gin/v8_initializer.h"
 #include "net/base/ip_address.h"
@@ -396,14 +396,10 @@ class SharedIsolateFactory {
         v8::V8::SetFlagsFromString(kOptimizeForSize, strlen(kOptimizeForSize));
 
         // Running v8 in jitless mode allows dynamic code to be disabled in the
-        // process.
+        // process. Note that this also disables WebAssembly, further reducing
+        // the potential attack surface.
         static const char kJitless[] = "--jitless";
         v8::V8::SetFlagsFromString(kJitless, strlen(kJitless));
-
-        // WebAssembly isn't encountered during resolution, so reduce the
-        // potential attack surface.
-        static const char kNoExposeWasm[] = "--no-expose-wasm";
-        v8::V8::SetFlagsFromString(kNoExposeWasm, strlen(kNoExposeWasm));
 
         gin::IsolateHolder::Initialize(
             gin::IsolateHolder::kNonStrictMode,
@@ -432,8 +428,10 @@ class SharedIsolateFactory {
   bool has_initialized_v8_;
 };
 
-base::LazyInstance<SharedIsolateFactory>::Leaky g_isolate_factory =
-    LAZY_INSTANCE_INITIALIZER;
+SharedIsolateFactory& GetSharedIsolateFactory() {
+  static base::NoDestructor<SharedIsolateFactory> isolate_factory;
+  return *isolate_factory;
+}
 
 }  // namespace
 
@@ -441,8 +439,7 @@ base::LazyInstance<SharedIsolateFactory>::Leaky g_isolate_factory =
 
 class ProxyResolverV8::Context {
  public:
-  explicit Context(v8::Isolate* isolate)
-      : js_bindings_(nullptr), isolate_(isolate) {
+  explicit Context(v8::Isolate* isolate) : isolate_(isolate) {
     DCHECK(isolate);
   }
 
@@ -460,7 +457,8 @@ class ProxyResolverV8::Context {
                    net::ProxyInfo* results,
                    JSBindings* bindings) {
     DCHECK(bindings);
-    base::AutoReset<JSBindings*> bindings_reset(&js_bindings_, bindings);
+    base::AutoReset<raw_ptr<JSBindings>> bindings_reset(&js_bindings_,
+                                                        bindings);
     v8::Locker locked(isolate_);
     v8::Isolate::Scope isolate_scope(isolate_);
     v8::HandleScope scope(isolate_);
@@ -513,75 +511,77 @@ class ProxyResolverV8::Context {
 
   int InitV8(const scoped_refptr<net::PacFileData>& pac_script,
              JSBindings* bindings) {
-    base::AutoReset<JSBindings*> bindings_reset(&js_bindings_, bindings);
+    base::AutoReset<raw_ptr<JSBindings>> bindings_reset(&js_bindings_,
+                                                        bindings);
     v8::Locker locked(isolate_);
     v8::Isolate::Scope isolate_scope(isolate_);
     v8::HandleScope scope(isolate_);
 
-    v8_this_.Reset(isolate_, v8::External::New(isolate_, this));
+    v8_this_.Reset(
+        isolate_,
+        v8::External::New(isolate_, this, gin::kProxyResolverV8ContextTag));
     v8::Local<v8::External> v8_this =
         v8::Local<v8::External>::New(isolate_, v8_this_);
-    v8::Local<v8::ObjectTemplate> global_template =
-        v8::ObjectTemplate::New(isolate_);
 
-    // Attach the javascript bindings.
-    v8::Local<v8::FunctionTemplate> alert_template =
-        v8::FunctionTemplate::New(isolate_, &AlertCallback, v8_this);
-    alert_template->RemovePrototype();
-    global_template->Set(ASCIILiteralToV8String(isolate_, "alert"),
-                         alert_template);
-
-    v8::Local<v8::FunctionTemplate> my_ip_address_template =
-        v8::FunctionTemplate::New(isolate_, &MyIpAddressCallback, v8_this);
-    my_ip_address_template->RemovePrototype();
-    global_template->Set(ASCIILiteralToV8String(isolate_, "myIpAddress"),
-                         my_ip_address_template);
-
-    v8::Local<v8::FunctionTemplate> dns_resolve_template =
-        v8::FunctionTemplate::New(isolate_, &DnsResolveCallback, v8_this);
-    dns_resolve_template->RemovePrototype();
-    global_template->Set(ASCIILiteralToV8String(isolate_, "dnsResolve"),
-                         dns_resolve_template);
-
-    v8::Local<v8::FunctionTemplate> is_plain_host_name_template =
-        v8::FunctionTemplate::New(isolate_, &IsPlainHostNameCallback, v8_this);
-    is_plain_host_name_template->RemovePrototype();
-    global_template->Set(ASCIILiteralToV8String(isolate_, "isPlainHostName"),
-                         is_plain_host_name_template);
-
-    // Microsoft's PAC extensions:
-
-    v8::Local<v8::FunctionTemplate> dns_resolve_ex_template =
-        v8::FunctionTemplate::New(isolate_, &DnsResolveExCallback, v8_this);
-    dns_resolve_ex_template->RemovePrototype();
-    global_template->Set(ASCIILiteralToV8String(isolate_, "dnsResolveEx"),
-                         dns_resolve_ex_template);
-
-    v8::Local<v8::FunctionTemplate> my_ip_address_ex_template =
-        v8::FunctionTemplate::New(isolate_, &MyIpAddressExCallback, v8_this);
-    my_ip_address_ex_template->RemovePrototype();
-    global_template->Set(ASCIILiteralToV8String(isolate_, "myIpAddressEx"),
-                         my_ip_address_ex_template);
-
-    v8::Local<v8::FunctionTemplate> sort_ip_address_list_template =
-        v8::FunctionTemplate::New(isolate_, &SortIpAddressListCallback,
-                                  v8_this);
-    sort_ip_address_list_template->RemovePrototype();
-    global_template->Set(ASCIILiteralToV8String(isolate_, "sortIpAddressList"),
-                         sort_ip_address_list_template);
-
-    v8::Local<v8::FunctionTemplate> is_in_net_ex_template =
-        v8::FunctionTemplate::New(isolate_, &IsInNetExCallback, v8_this);
-    is_in_net_ex_template->RemovePrototype();
-    global_template->Set(ASCIILiteralToV8String(isolate_, "isInNetEx"),
-                         is_in_net_ex_template);
-
-    v8_context_.Reset(isolate_,
-                      v8::Context::New(isolate_, nullptr, global_template));
+    v8_context_.Reset(isolate_, v8::Context::New(isolate_));
 
     v8::Local<v8::Context> context =
         v8::Local<v8::Context>::New(isolate_, v8_context_);
     v8::Context::Scope ctx(context);
+    v8::Local<v8::Object> global = context->Global();
+
+    // Attach the javascript bindings.
+    global
+        ->Set(context, ASCIILiteralToV8String(isolate_, "alert"),
+              v8::Function::New(context, &AlertCallback, v8_this, 0,
+                                v8::ConstructorBehavior::kThrow)
+                  .ToLocalChecked())
+        .Check();
+    global
+        ->Set(context, ASCIILiteralToV8String(isolate_, "myIpAddress"),
+              v8::Function::New(context, &MyIpAddressCallback, v8_this, 0,
+                                v8::ConstructorBehavior::kThrow)
+                  .ToLocalChecked())
+        .Check();
+    global
+        ->Set(context, ASCIILiteralToV8String(isolate_, "dnsResolve"),
+              v8::Function::New(context, &DnsResolveCallback, v8_this, 0,
+                                v8::ConstructorBehavior::kThrow)
+                  .ToLocalChecked())
+        .Check();
+    global
+        ->Set(context, ASCIILiteralToV8String(isolate_, "isPlainHostName"),
+              v8::Function::New(context, &IsPlainHostNameCallback, v8_this, 0,
+                                v8::ConstructorBehavior::kThrow)
+                  .ToLocalChecked())
+        .Check();
+
+    // Microsoft's PAC extensions:
+    global
+        ->Set(context, ASCIILiteralToV8String(isolate_, "dnsResolveEx"),
+              v8::Function::New(context, &DnsResolveExCallback, v8_this, 0,
+                                v8::ConstructorBehavior::kThrow)
+                  .ToLocalChecked())
+        .Check();
+    global
+        ->Set(context, ASCIILiteralToV8String(isolate_, "myIpAddressEx"),
+              v8::Function::New(context, &MyIpAddressExCallback, v8_this, 0,
+                                v8::ConstructorBehavior::kThrow)
+                  .ToLocalChecked())
+        .Check();
+
+    global
+        ->Set(context, ASCIILiteralToV8String(isolate_, "sortIpAddressList"),
+              v8::Function::New(context, &SortIpAddressListCallback, v8_this, 0,
+                                v8::ConstructorBehavior::kThrow)
+                  .ToLocalChecked())
+        .Check();
+    global
+        ->Set(context, ASCIILiteralToV8String(isolate_, "isInNetEx"),
+              v8::Function::New(context, &IsInNetExCallback, v8_this, 0,
+                                v8::ConstructorBehavior::kThrow)
+                  .ToLocalChecked())
+        .Check();
 
     // Add the PAC utility functions to the environment.
     // (This script should never fail, as it is a string literal!)
@@ -590,8 +590,7 @@ class ProxyResolverV8::Context {
         ASCIILiteralToV8String(isolate_, PAC_JS_LIBRARY PAC_JS_LIBRARY_EX),
         kPacUtilityResourceName);
     if (rv != net::OK) {
-      NOTREACHED_IN_MIGRATION();
-      return rv;
+      NOTREACHED();
     }
 
     // Add the user's PAC code to the environment.
@@ -689,7 +688,8 @@ class ProxyResolverV8::Context {
   // V8 callback for when "alert()" is invoked by the PAC script.
   static void AlertCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
     Context* context =
-        static_cast<Context*>(v8::External::Cast(*args.Data())->Value());
+        static_cast<Context*>(v8::External::Cast(*args.Data())
+                                  ->Value(gin::kProxyResolverV8ContextTag));
 
     // Like firefox we assume "undefined" if no argument was specified, and
     // disregard any arguments beyond the first.
@@ -737,7 +737,8 @@ class ProxyResolverV8::Context {
       const v8::FunctionCallbackInfo<v8::Value>& args,
       net::ProxyResolveDnsOperation op) {
     Context* context =
-        static_cast<Context*>(v8::External::Cast(*args.Data())->Value());
+        static_cast<Context*>(v8::External::Cast(*args.Data())
+                                  ->Value(gin::kProxyResolverV8ContextTag));
 
     std::string hostname;
 
@@ -789,7 +790,7 @@ class ProxyResolverV8::Context {
         return;
     }
 
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   // V8 callback for when "sortIpAddressList()" is invoked by the PAC script.
@@ -854,9 +855,7 @@ class ProxyResolverV8::Context {
   }
 
   mutable base::Lock lock_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION ProxyResolverV8::JSBindings* js_bindings_;
+  raw_ptr<ProxyResolverV8::JSBindings> js_bindings_ = nullptr;
   raw_ptr<v8::Isolate> isolate_;
   v8::Persistent<v8::External> v8_this_;
   v8::Persistent<v8::Context> v8_context_;
@@ -889,7 +888,7 @@ int ProxyResolverV8::Create(const scoped_refptr<net::PacFileData>& script_data,
 
   // Try parsing the PAC script.
   std::unique_ptr<Context> context(
-      new Context(g_isolate_factory.Get().GetSharedIsolate()));
+      new Context(GetSharedIsolateFactory().GetSharedIsolate()));
   int rv = context->InitV8(script_data, js_bindings);
   if (rv == net::OK)
     resolver->reset(new ProxyResolverV8(std::move(context)));
@@ -899,7 +898,7 @@ int ProxyResolverV8::Create(const scoped_refptr<net::PacFileData>& script_data,
 // static
 size_t ProxyResolverV8::GetTotalHeapSize() {
   v8::Isolate* isolate =
-      g_isolate_factory.Get().GetSharedIsolateWithoutCreating();
+      GetSharedIsolateFactory().GetSharedIsolateWithoutCreating();
   if (!isolate)
     return 0;
 
@@ -913,7 +912,7 @@ size_t ProxyResolverV8::GetTotalHeapSize() {
 // static
 size_t ProxyResolverV8::GetUsedHeapSize() {
   v8::Isolate* isolate =
-      g_isolate_factory.Get().GetSharedIsolateWithoutCreating();
+      GetSharedIsolateFactory().GetSharedIsolateWithoutCreating();
   if (!isolate)
     return 0;
 

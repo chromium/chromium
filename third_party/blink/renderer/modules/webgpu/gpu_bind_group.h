@@ -26,7 +26,7 @@ class GPUBindGroup : public DawnObject<wgpu::BindGroup> {
   GPUBindGroup(const GPUBindGroup&) = delete;
   GPUBindGroup& operator=(const GPUBindGroup&) = delete;
 
-  void setLabelImpl(const String& value) override {
+  void SetLabelImpl(const String& value) override {
     std::string utf8_label = value.Utf8();
     GetHandle().SetLabel(utf8_label.c_str());
   }

@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_filter.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -103,7 +104,8 @@ PhysicalRect MapCaretRectToCaretPainter(const LayoutBlock* caret_block,
 
 CaretDisplayItemClient::CaretRectAndPainterBlock
 CaretDisplayItemClient::ComputeCaretRectAndPainterBlock(
-    const PositionWithAffinity& caret_position) {
+    const PositionWithAffinity& caret_position,
+    CaretShape caret_shape) {
   if (caret_position.IsNull())
     return {};
 
@@ -111,8 +113,8 @@ CaretDisplayItemClient::ComputeCaretRectAndPainterBlock(
     return {};
 
   // First compute a rect local to the layoutObject at the selection start.
-  const LocalCaretRect& caret_rect =
-      LocalCaretRectOfPosition(caret_position, kCannotCrossEditingBoundary);
+  const LocalCaretRect& caret_rect = LocalCaretRectOfPosition(
+      caret_position, caret_shape, kCannotCrossEditingBoundary);
   if (!caret_rect.layout_object)
     return {};
 
@@ -171,8 +173,19 @@ void CaretDisplayItemClient::UpdateStyleAndLayoutIfNeeded(
   if (!previous_layout_block_)
     previous_layout_block_ = layout_block_.Get();
 
+  CaretShape caret_shape = CaretShape::kBar;
+  bool is_caret_color_auto = false;
+  if (caret_position.AnchorNode() && IsEditable(*caret_position.AnchorNode())) {
+    const ComputedStyle* style =
+        GetComputedStyleForElementOrLayoutObject(*caret_position.AnchorNode());
+    if (style) {
+      is_caret_color_auto = style->IsCaretColorAuto();
+      caret_shape = GetCaretShapeFromComputedStyle(*style);
+    }
+  }
+
   CaretRectAndPainterBlock rect_and_block =
-      ComputeCaretRectAndPainterBlock(caret_position);
+      ComputeCaretRectAndPainterBlock(caret_position, caret_shape);
   LayoutBlock* new_layout_block = rect_and_block.painter_block;
   if (new_layout_block != layout_block_) {
     if (layout_block_)
@@ -211,6 +224,15 @@ void CaretDisplayItemClient::UpdateStyleAndLayoutIfNeeded(
   if (new_color != color_) {
     needs_paint_invalidation_ = true;
     color_ = new_color;
+  }
+
+  // TODO(https://crbug.com/353713061):
+  // https://drafts.csswg.org/css-ui/#caret-color When caret-shape is block,
+  // ensuring good visibility and contrast is best achieved with a
+  // UA-determined color other than currentColor.
+  if (is_caret_color_auto && caret_shape == CaretShape::kBlock) {
+    // Temporarily set opacity to 0.5.
+    color_.SetAlpha(0.5);
   }
 
   auto new_local_rect = rect_and_block.caret_rect;
@@ -285,6 +307,19 @@ void CaretDisplayItemClient::InvalidatePaintInCurrentLayoutBlock(
       .InvalidateDisplayItemClient(*this, PaintInvalidationReason::kCaret);
 }
 
+void CaretDisplayItemClient::SetNeedsNonCompositedPaintInvalidation() {
+  if (!layout_block_) {
+    return;
+  }
+  // Elements under canvas can only be rendered with `drawElementImage` and do
+  // not support compositing.
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
+      IsA<Element>(layout_block_->GetNode()) &&
+      To<Element>(layout_block_->GetNode())->IsInCanvasSubtree()) {
+    needs_paint_invalidation_ = true;
+  }
+}
+
 void CaretDisplayItemClient::PaintCaret(
     GraphicsContext& context,
     const PhysicalOffset& paint_offset,
@@ -319,7 +354,7 @@ void CaretDisplayItemClient::RecordSelection(GraphicsContext& context,
   // For the caret, the start and end selection bounds are recorded as
   // the same edges, with the type marked as CENTER or HIDDEN.
   PaintedSelectionBound start = {type, paint_rect.origin(),
-                                 paint_rect.bottom_left(), false};
+                                 paint_rect.bottom_left()};
   PaintedSelectionBound end = start;
 
   // Get real world data to help debug crbug.com/1441243.

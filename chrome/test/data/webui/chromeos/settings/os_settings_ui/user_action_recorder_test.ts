@@ -5,10 +5,11 @@
 import 'chrome://os-settings/os_settings.js';
 
 import {AccountManagerBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
-import {CrSettingsPrefs, OsSettingsUiElement, Router, routes, setNearbyShareSettingsForTesting, setUserActionRecorderForTesting} from 'chrome://os-settings/os_settings.js';
+import type {OsSettingsUiElement} from 'chrome://os-settings/os_settings.js';
+import {CrSettingsPrefs, Router, routes, setNearbyShareSettingsForTesting, setUserActionRecorderForTesting} from 'chrome://os-settings/os_settings.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {FakeNearbyShareSettings} from 'chrome://webui-test/nearby_share/shared/fake_nearby_share_settings.js';
+import {FakeNearbyShareSettings} from 'chrome://webui-test/chromeos/nearby_share/shared/fake_nearby_share_settings.js';
 
 import {FakeUserActionRecorder} from '../fake_user_action_recorder.js';
 import {TestAccountManagerBrowserProxy} from '../os_people_page/test_account_manager_browser_proxy.js';

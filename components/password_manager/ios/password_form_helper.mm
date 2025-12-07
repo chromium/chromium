@@ -48,7 +48,7 @@ using password_manager::JsonStringToFormData;
 namespace password_manager {
 
 // The frame id associated with the frame which sent to form message.
-const char kFrameIdKey[] = "frame_id";
+const char kHostFrameKey[] = "host_frame";
 
 }  // namespace password_manager
 
@@ -127,34 +127,22 @@ const char kFrameIdKey[] = "frame_id";
 #pragma mark - FormActivityObserver
 
 - (void)webState:(web::WebState*)webState
-    didSubmitDocumentWithFormNamed:(const std::string&)formName
-                          withData:(const std::string&)formData
-                    hasUserGesture:(BOOL)hasUserGesture
-                           inFrame:(web::WebFrame*)frame {
+    didSubmitDocumentWithFormData:(const FormData&)formData
+                   hasUserGesture:(BOOL)hasUserGesture
+                          inFrame:(web::WebFrame*)frame
+                   perfectFilling:(BOOL)perfectFilling {
   DCHECK_EQ(_webState, webState);
   GURL pageURL = webState->GetLastCommittedURL();
-  if (pageURL.DeprecatedGetOriginAsURL() != frame->GetSecurityOrigin()) {
+  if (!frame->GetSecurityOrigin().IsSameOriginWith(pageURL)) {
     // Passwords is only supported on main frame and iframes with the same
     // origin.
     return;
   }
-  if (!self.delegate || formData.empty()) {
+  if (!self.delegate) {
     return;
   }
 
-  autofill::FieldDataManager* fieldDataManager =
-      autofill::FieldDataManagerFactoryIOS::FromWebFrame(frame);
-
-  std::vector<FormData> forms;
-  NSString* nsFormData = [NSString stringWithUTF8String:formData.c_str()];
-  autofill::ExtractFormsData(nsFormData, false, std::u16string(), pageURL,
-                             pageURL.DeprecatedGetOriginAsURL(),
-                             *fieldDataManager, &forms);
-  if (forms.size() != 1) {
-    return;
-  }
-
-  [self.delegate formHelper:self didSubmitForm:forms[0] inFrame:frame];
+  [self.delegate formHelper:self didSubmitForm:formData inFrame:frame];
 }
 
 #pragma mark - Private methods
@@ -166,13 +154,13 @@ const char kFrameIdKey[] = "frame_id";
   autofill::FieldDataManager* fieldDataManager =
       autofill::FieldDataManagerFactoryIOS::FromWebFrame(frame);
 
-  std::vector<FormData> formsData;
-  if (!autofill::ExtractFormsData(JSONString, false, std::u16string(), pageURL,
-                                  frame->GetSecurityOrigin(), *fieldDataManager,
-                                  &formsData)) {
+  std::optional<std::vector<FormData>> formsData = autofill::ExtractFormsData(
+      JSONString, false, std::u16string(), pageURL, frame->GetSecurityOrigin(),
+      *fieldDataManager, frame->GetFrameId());
+  if (!formsData) {
     return;
   }
-  *forms = std::move(formsData);
+  *forms = *std::move(formsData);
 }
 
 - (void)recordFormFillingSuccessMetrics:(bool)success {
@@ -284,7 +272,7 @@ const char kFrameIdKey[] = "frame_id";
 
     if (*did_fill_username) {
       driver->GetPasswordManager()->UpdateStateOnUserInput(
-          driver, fillData.form_id, fillData.username_element_id,
+          driver, *manager, fillData.form_id, fillData.username_element_id,
           fillData.username_value);
     }
   }
@@ -294,7 +282,7 @@ const char kFrameIdKey[] = "frame_id";
                                 FieldPropertiesFlags::kAutofilledOnUserTrigger);
     if (*did_fill_password) {
       driver->GetPasswordManager()->UpdateStateOnUserInput(
-          driver, fillData.form_id, fillData.password_element_id,
+          driver, *manager, fillData.form_id, fillData.password_element_id,
           fillData.password_value);
     }
   }
@@ -354,20 +342,22 @@ const char kFrameIdKey[] = "frame_id";
     return;
   }
 
+  url::Origin frame_origin = frame->GetSecurityOrigin();
+
   const scoped_refptr<autofill::FieldDataManager> fieldDataManager =
       autofill::FieldDataManagerFactoryIOS::GetRetainable(frame);
 
+  std::string frame_id = frame->GetFrameId();
   password_manager::PasswordManagerJavaScriptFeature::GetInstance()
       ->ExtractForm(
           frame, formIdentifier, base::BindOnce(^(NSString* jsonString) {
-            FormData formData;
-            if (!JsonStringToFormData(jsonString, &formData, *pageURL,
-                                      *fieldDataManager)) {
-              completionHandler(NO, FormData());
+            if (std::optional<FormData> formData =
+                    JsonStringToFormData(jsonString, *pageURL, frame_origin,
+                                         *fieldDataManager, frame_id)) {
+              completionHandler(YES, *formData);
               return;
             }
-
-            completionHandler(YES, formData);
+            completionHandler(NO, FormData());
           }));
 }
 
@@ -407,11 +397,13 @@ const char kFrameIdKey[] = "frame_id";
   }
 
   const auto& dict = body->GetDict();
-  const std::string* frame_id = dict.FindString(password_manager::kFrameIdKey);
-  if (frame_id) {
+  const std::string* host_frame =
+      dict.FindString(password_manager::kHostFrameKey);
+  if (host_frame) {
     password_manager::PasswordManagerJavaScriptFeature* feature =
         password_manager::PasswordManagerJavaScriptFeature::GetInstance();
-    frame = feature->GetWebFramesManager(_webState)->GetFrameWithId(*frame_id);
+    frame =
+        feature->GetWebFramesManager(_webState)->GetFrameWithId(*host_frame);
   }
   if (!frame) {
     return HandleSubmittedFormStatus::kRejectedNoFrameMatchingId;
@@ -420,16 +412,14 @@ const char kFrameIdKey[] = "frame_id";
   autofill::FieldDataManager* fieldDataManager =
       autofill::FieldDataManagerFactoryIOS::FromWebFrame(frame);
 
-  FormData form;
-  if (!autofill::ExtractFormData(dict, false, std::u16string(), *pageURL,
-                                 pageURL->DeprecatedGetOriginAsURL(),
-                                 *fieldDataManager, &form)) {
-    return HandleSubmittedFormStatus::kRejectedCantExtractFormData;
+  if (std::optional<FormData> form = autofill::ExtractFormData(
+          dict, false, std::u16string(), *pageURL,
+          url::Origin::Create(*pageURL), *fieldDataManager, *host_frame)) {
+    [self.delegate formHelper:self didSubmitForm:*form inFrame:frame];
+
+    return HandleSubmittedFormStatus::kHandled;
   }
-
-  [self.delegate formHelper:self didSubmitForm:form inFrame:frame];
-
-  return HandleSubmittedFormStatus::kHandled;
+  return HandleSubmittedFormStatus::kRejectedCantExtractFormData;
 }
 
 @end

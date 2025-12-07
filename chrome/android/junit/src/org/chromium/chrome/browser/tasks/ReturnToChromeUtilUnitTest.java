@@ -9,14 +9,15 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.sStartSurfaceReturnTimeTabletSecs;
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.FAIL_TO_SHOW_HOME_SURFACE_UI_UMA;
-import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.HOME_SURFACE_RETURN_TIME_SECONDS;
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.HOME_SURFACE_SHOWN_AT_STARTUP_UMA;
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.HOME_SURFACE_SHOWN_UMA;
 
@@ -37,10 +38,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.IntentUtils;
@@ -49,7 +50,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -68,42 +69,32 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil.FailToShowHomeSurfaceReason;
-import org.chromium.chrome.browser.tasks.ReturnToChromeUtilUnitTest.ShadowHomepagePolicyManager;
 import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.util.Collections;
+import java.util.List;
+
 /** Unit tests for {@link ReturnToChromeUtil} class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowHomepagePolicyManager.class})
+@Config(manifest = Config.NONE)
 @CommandLineFlags.Add({BaseSwitches.DISABLE_LOW_END_DEVICE_MODE})
 public class ReturnToChromeUtilUnitTest {
-    @Implements(HomepagePolicyManager.class)
-    static class ShadowHomepagePolicyManager {
-        static boolean sIsInitialized;
-
-        @Implementation
-        public static boolean isInitializedWithNative() {
-            return sIsInitialized;
-        }
-    }
-
     private static final int ON_RETURN_THRESHOLD_SECOND = 1000;
     private static final int DELTA_MS = 100;
-
-    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Context mContext;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private ChromeInactivityTracker mInactivityTracker;
     @Mock private Resources mResources;
-    @Mock private TabModel mCurrentTabModel;
+    @Spy private TabModel mCurrentTabModel;
     @Mock private TabCreator mTabCreater;
     @Mock private Tab mTab1;
     @Mock private Tab mNtpTab;
+    @Mock private Profile mProfile;
     @Mock private NewTabPage mNewTabPage;
     @Mock private HomeSurfaceTracker mHomeSurfaceTracker;
     @Mock private Bundle mSaveInstanceState;
@@ -112,16 +103,19 @@ public class ReturnToChromeUtilUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         doReturn(JUnitTestGURLs.NTP_NATIVE_URL).when(mNtpTab).getUrl();
 
         // HomepageManager:
         HomepageManager.setInstanceForTesting(mHomepageManager);
         doReturn(true).when(mHomepageManager).isHomepageEnabled();
-        doReturn(UrlConstants.ntpGurl()).when(mHomepageManager).getHomepageGurl();
+        doReturn(UrlConstants.ntpGurl())
+                .when(mHomepageManager)
+                .getHomepageGurl(/* isIncognito= */ false);
 
-        ShadowHomepagePolicyManager.sIsInitialized = true;
-        assertTrue(HomepagePolicyManager.isInitializedWithNative());
+        doReturn(mProfile).when(mCurrentTabModel).getProfile();
+        doReturn(mCurrentTabModel).when(mTabModelSelector).getCurrentModel();
+
+        HomepagePolicyManager.setIsInitializedWithNativeForTesting(true);
 
         // Low end devices:
         Assert.assertFalse(SysUtils.isLowEndDevice());
@@ -141,11 +135,11 @@ public class ReturnToChromeUtilUnitTest {
     @SmallTest
     public void testShouldShowTabSwitcher() {
         Assert.assertEquals(
-                HOME_SURFACE_RETURN_TIME_SECONDS.getDefaultValue(),
-                HOME_SURFACE_RETURN_TIME_SECONDS.getValue());
+                sStartSurfaceReturnTimeTabletSecs.getDefaultValue(),
+                sStartSurfaceReturnTimeTabletSecs.getValue());
 
         long returnTimeMs =
-                HOME_SURFACE_RETURN_TIME_SECONDS.getValue() * DateUtils.SECOND_IN_MILLIS;
+                sStartSurfaceReturnTimeTabletSecs.getValue() * DateUtils.SECOND_IN_MILLIS;
         // When return time doesn't arrive, return false:
         Assert.assertFalse(
                 ReturnToChromeUtil.shouldShowTabSwitcher(
@@ -167,13 +161,12 @@ public class ReturnToChromeUtilUnitTest {
         ChromeSharedPreferences.getInstance()
                 .addToStringSet(
                         ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF, "0");
-        HOME_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
+        sStartSurfaceReturnTimeTabletSecs.setForTesting(0);
         assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(0));
 
         // Tests the case when there isn't any Tab. Verifies that home surface NTP is shown.
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
         doReturn(0).when(mTabModelSelector).getTotalTabCount();
-        assertTrue(HomepagePolicyManager.isInitializedWithNative());
 
         assertTrue(IntentUtils.isMainIntentFromLauncher(intent));
         assertTrue(
@@ -190,6 +183,7 @@ public class ReturnToChromeUtilUnitTest {
     @Test
     @SmallTest
     public void testShowNtpAsHomeSurfaceAtResumeOnTabletWithExistingNtp() {
+        doAnswer(inv -> List.of(mTab1, mNtpTab).iterator()).when(mCurrentTabModel).iterator();
         doReturn(2).when(mCurrentTabModel).getCount();
         doReturn(JUnitTestGURLs.URL_1).when(mTab1).getUrl();
         doReturn(mTab1).when(mCurrentTabModel).getTabAt(0);
@@ -264,6 +258,7 @@ public class ReturnToChromeUtilUnitTest {
     @Test
     @SmallTest
     public void testShowNtpAsHomeSurfaceAtResumeOnTabletWithoutAnyExistingNtp() {
+        doAnswer(inv -> List.of(mTab1).iterator()).when(mCurrentTabModel).iterator();
         doReturn(1).when(mCurrentTabModel).getCount();
         doReturn(JUnitTestGURLs.URL_1).when(mTab1).getUrl();
         doReturn(mTab1).when(mCurrentTabModel).getTabAt(0);
@@ -322,6 +317,9 @@ public class ReturnToChromeUtilUnitTest {
         doReturn(true).when(activeNtpTab).isNativePage();
         doReturn(activeNtp).when(activeNtpTab).getNativePage();
         doReturn(activeNtpTab).when(mCurrentTabModel).getTabAt(2);
+        doAnswer(inv -> List.of(mTab1, mNtpTab, activeNtpTab).iterator())
+                .when(mCurrentTabModel)
+                .iterator();
 
         // Set the active NTP tab as the last Tab, and has a tracking Tab.
         doReturn(2).when(mCurrentTabModel).index();
@@ -369,6 +367,7 @@ public class ReturnToChromeUtilUnitTest {
     @Test
     @SmallTest
     public void testNoAnyTabCase() {
+        doAnswer(inv -> Collections.emptyList().iterator()).when(mCurrentTabModel).iterator();
         doReturn(0).when(mCurrentTabModel).getCount();
 
         // Verifies that if there isn't any existing Tab, we don't create a home surface NTP.
@@ -422,13 +421,12 @@ public class ReturnToChromeUtilUnitTest {
         ChromeSharedPreferences.getInstance()
                 .addToStringSet(
                         ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF, "0");
-        HOME_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
+        sStartSurfaceReturnTimeTabletSecs.setForTesting(0);
         assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(0));
 
         // There should always be at least 1 tab. Otherwise one will be created regardless.
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
         doReturn(1).when(mTabModelSelector).getTotalTabCount();
-        assertTrue(HomepagePolicyManager.isInitializedWithNative());
 
         assertTrue(IntentUtils.isMainIntentFromLauncher(intent));
         assertTrue(
@@ -452,7 +450,7 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @SmallTest
-    public void testLogFailToShowHomeSurfaceUI() {
+    public void testLogFailToShowHomeSurfaceUi() {
         HistogramWatcher histogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
@@ -477,14 +475,6 @@ public class ReturnToChromeUtilUnitTest {
                         .build();
         ReturnToChromeUtil.showHomeSurfaceUiOnNtp(mNtpTab, mTab1, mHomeSurfaceTracker);
         histogram.assertExpected();
-    }
-
-    private void setupAndVerifyTablets() {
-        doReturn(mResources).when(mContext).getResources();
-        doReturn(DeviceFormFactor.SCREEN_BUCKET_TABLET)
-                .when(mResources)
-                .getInteger(org.chromium.ui.R.integer.min_screen_width_bucket);
-        assertTrue(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext));
     }
 
     private Intent createMainIntentFromLauncher() {

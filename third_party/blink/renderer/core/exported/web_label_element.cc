@@ -37,7 +37,7 @@
 namespace blink {
 
 WebElement WebLabelElement::CorrespondingControl() {
-  return WebElement(Unwrap<HTMLLabelElement>()->control());
+  return WebElement(Unwrap<HTMLLabelElement>()->Control());
 }
 
 WebLabelElement::WebLabelElement(HTMLLabelElement* elem) : WebElement(elem) {}

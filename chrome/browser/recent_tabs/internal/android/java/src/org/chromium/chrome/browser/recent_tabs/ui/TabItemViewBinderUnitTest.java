@@ -25,12 +25,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionTab;
@@ -48,8 +48,8 @@ import org.chromium.url.JUnitTestGURLs;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabItemViewBinderUnitTest {
-    @Rule public JniMocker jniMocker = new JniMocker();
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock FaviconHelper.Natives mFaviconHelperJniMock;
     @Mock Profile mProfile;
 
@@ -62,9 +62,8 @@ public class TabItemViewBinderUnitTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
-        jniMocker.mock(FaviconHelperJni.TEST_HOOKS, mFaviconHelperJniMock);
+        FaviconHelperJni.setInstanceForTesting(mFaviconHelperJniMock);
         when(mFaviconHelperJniMock.init()).thenReturn(1L);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mFaviconHelper = new FaviconHelper();

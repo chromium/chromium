@@ -50,11 +50,10 @@ public class AwDisplayModeControllerTest {
     @Mock private View mView;
     @Mock private View mAnotherView;
 
-    @Mock private ViewGroup mParentView;
     @Mock private ViewGroup mRootView;
 
     private View.OnApplyWindowInsetsListener mListener;
-    private int[] mLocationOnScreen = {0, 0};
+    private final int[] mLocationOnScreen = {0, 0};
     private int mViewWidth;
     private int mViewHeight;
 
@@ -88,7 +87,7 @@ public class AwDisplayModeControllerTest {
                         new Answer<Void>() {
                             @Override
                             public Void answer(InvocationOnMock invocation) throws Throwable {
-                                int[] loc = (int[]) (invocation.getArguments()[0]);
+                                int[] loc = (int[]) invocation.getArguments()[0];
                                 loc[0] = mLocationOnScreen[0];
                                 loc[1] = mLocationOnScreen[1];
                                 return null;
@@ -103,7 +102,7 @@ public class AwDisplayModeControllerTest {
                         new Answer<Void>() {
                             @Override
                             public Void answer(InvocationOnMock invocation) throws Throwable {
-                                Matrix matrix = (Matrix) (invocation.getArguments()[0]);
+                                Matrix matrix = (Matrix) invocation.getArguments()[0];
                                 matrix.set(mGlobalTransformMatrix);
                                 return null;
                             }
@@ -116,7 +115,7 @@ public class AwDisplayModeControllerTest {
                         new Answer<Void>() {
                             @Override
                             public Void answer(InvocationOnMock invocation) throws Throwable {
-                                int[] loc = (int[]) (invocation.getArguments()[0]);
+                                int[] loc = (int[]) invocation.getArguments()[0];
                                 loc[0] = mLocationOnScreen[0];
                                 loc[1] = mLocationOnScreen[1];
                                 return null;

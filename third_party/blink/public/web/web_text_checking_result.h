@@ -31,9 +31,10 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_TEXT_CHECKING_RESULT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_TEXT_CHECKING_RESULT_H_
 
+#include <vector>
+
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_text_decoration_type.h"
 
 namespace blink {
@@ -49,11 +50,13 @@ struct WebTextCheckingResult {
       WebTextDecorationType decoration,
       int location,
       int length,
-      const WebVector<WebString>& replacements = WebVector<WebString>())
+      const std::vector<WebString>& replacements = std::vector<WebString>(),
+      bool should_hide_suggestion_menu = false)
       : decoration(decoration),
         location(location),
         length(length),
-        replacements(replacements) {}
+        replacements(replacements),
+        should_hide_suggestion_menu(should_hide_suggestion_menu) {}
 
 #if INSIDE_BLINK
   operator TextCheckingResult() const;
@@ -62,7 +65,8 @@ struct WebTextCheckingResult {
   WebTextDecorationType decoration;
   int location;
   int length;
-  WebVector<WebString> replacements;
+  std::vector<WebString> replacements;
+  bool should_hide_suggestion_menu;
 };
 
 }  // namespace blink

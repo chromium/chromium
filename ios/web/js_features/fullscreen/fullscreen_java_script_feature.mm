@@ -36,8 +36,7 @@ FullscreenJavaScriptFeature::FullscreenJavaScriptFeature()
               FeatureScript::TargetFrames::kMainFrame,
               FeatureScript::ReinjectionBehavior::
                   kReinjectOnDocumentRecreation)},
-          {web::java_script_features::GetCommonJavaScriptFeature(),
-           web::java_script_features::GetMessageJavaScriptFeature()}) {}
+          {web::java_script_features::GetCommonJavaScriptFeature()}) {}
 FullscreenJavaScriptFeature::~FullscreenJavaScriptFeature() = default;
 
 std::optional<std::string>

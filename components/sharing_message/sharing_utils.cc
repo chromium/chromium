@@ -30,11 +30,6 @@ bool CanListDevices(syncer::SyncService* sync_service) {
 
 }  // namespace
 
-bool CanSendViaVapid(syncer::SyncService* sync_service) {
-  // Can send using VAPID key in sharing.vapid_key preferences.
-  return sync_service->GetActiveDataTypes().Has(syncer::PREFERENCES);
-}
-
 bool CanSendViaSenderID(syncer::SyncService* sync_service) {
   return sync_service->GetActiveDataTypes().Has(syncer::SHARING_MESSAGE);
 }
@@ -53,7 +48,7 @@ bool IsSyncEnabledForSharing(syncer::SyncService* sync_service) {
     return false;
   }
 
-  if (!CanSendViaVapid(sync_service) && !CanSendViaSenderID(sync_service)) {
+  if (!CanSendViaSenderID(sync_service)) {
     return false;
   }
 
@@ -83,7 +78,7 @@ bool IsSyncDisabledForSharing(syncer::SyncService* sync_service) {
     return true;
   }
 
-  if (!CanSendViaVapid(sync_service) && !CanSendViaSenderID(sync_service)) {
+  if (!CanSendViaSenderID(sync_service)) {
     return true;
   }
 
@@ -97,12 +92,8 @@ GetFCMChannel(const syncer::DeviceInfo& device_info) {
   }
 
   components_sharing_message::FCMChannelConfiguration fcm_configuration;
-  auto& vapid_target_info = device_info.sharing_info()->vapid_target_info;
-  auto& sender_id_target_info =
+  const syncer::DeviceInfo::SharingTargetInfo& sender_id_target_info =
       device_info.sharing_info()->sender_id_target_info;
-  fcm_configuration.set_vapid_fcm_token(vapid_target_info.fcm_token);
-  fcm_configuration.set_vapid_p256dh(vapid_target_info.p256dh);
-  fcm_configuration.set_vapid_auth_secret(vapid_target_info.auth_secret);
   fcm_configuration.set_sender_id_fcm_token(sender_id_target_info.fcm_token);
   fcm_configuration.set_sender_id_p256dh(sender_id_target_info.p256dh);
   fcm_configuration.set_sender_id_auth_secret(

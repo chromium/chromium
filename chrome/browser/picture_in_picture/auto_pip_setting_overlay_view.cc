@@ -16,6 +16,7 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace {
 
@@ -29,7 +30,6 @@ constexpr int kFadeInDurationMs = 500;
 AutoPipSettingOverlayView::AutoPipSettingOverlayView(
     ResultCb result_cb,
     const GURL& origin,
-    const gfx::Rect& browser_view_overridden_bounds,
     views::View* anchor_view,
     views::BubbleBorder::Arrow arrow)
     : show_timer_(std::make_unique<base::OneShotTimer>()) {
@@ -39,19 +39,18 @@ AutoPipSettingOverlayView::AutoPipSettingOverlayView(
       std::move(result_cb),
       base::BindOnce(&AutoPipSettingOverlayView::OnHideView,
                      weak_factory_.GetWeakPtr()),
-      origin, browser_view_overridden_bounds, anchor_view, arrow);
+      origin, anchor_view, arrow);
   // Create the content setting UI.
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
   // Add the semi-opaque background layer.
-  background_ =
-      AddChildView(views::Builder<views::View>()
-                       .SetPaintToLayer()
-                       .SetBackground(views::CreateThemedSolidBackground(
-                           kColorPipWindowBackground))
-                       .Build());
+  background_ = AddChildView(views::Builder<views::View>()
+                                 .SetPaintToLayer()
+                                 .SetBackground(views::CreateSolidBackground(
+                                     kColorPipWindowBackground))
+                                 .Build());
   background_->layer()->SetOpacity(0.0f);
 
   // TODO(crbug.com/356210387): Apply blur directly to `background_` layer.

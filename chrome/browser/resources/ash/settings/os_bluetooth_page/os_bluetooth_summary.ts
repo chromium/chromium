@@ -13,19 +13,21 @@ import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.
 import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 
 import {getDeviceNameUnsafe} from 'chrome://resources/ash/common/bluetooth/bluetooth_utils.js';
-import {getBluetoothConfig} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
 import {getHidPreservingController} from 'chrome://resources/ash/common/bluetooth/hid_preserving_bluetooth_state_controller.js';
 import {HidWarningDialogSource} from 'chrome://resources/ash/common/bluetooth/hid_preserving_bluetooth_state_controller.mojom-webui.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {BluetoothSystemProperties, BluetoothSystemState, DeviceConnectionState, PairedBluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+import type {BluetoothSystemProperties, PairedBluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+import {BluetoothSystemState, DeviceConnectionState} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
-import {Route, Router, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
-import {OsBluetoothDevicesSubpageBrowserProxy, OsBluetoothDevicesSubpageBrowserProxyImpl} from './os_bluetooth_devices_subpage_browser_proxy.js';
+import type {OsBluetoothDevicesSubpageBrowserProxy} from './os_bluetooth_devices_subpage_browser_proxy.js';
+import {OsBluetoothDevicesSubpageBrowserProxyImpl} from './os_bluetooth_devices_subpage_browser_proxy.js';
 import {getTemplate} from './os_bluetooth_summary.html.js';
 
 /**
@@ -67,7 +69,7 @@ export class SettingsBluetoothSummaryElement extends
         observer: 'onIsBluetoothToggleOnChanged_',
       },
 
-      LabelType: {
+      LabelTypeEnum_: {
         type: Object,
         value: LabelType,
       },
@@ -94,24 +96,14 @@ export class SettingsBluetoothSummaryElement extends
         readOnly: true,
       },
 
-      isBluetoothDisconnectWarningEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('bluetoothDisconnectWarningFlag');
-        },
-        readOnly: true,
-      },
     };
   }
 
-  /* eslint-disable-next-line @typescript-eslint/naming-convention */
-  LabelType: LabelType;
   systemProperties: BluetoothSystemProperties;
   private browserProxy_: OsBluetoothDevicesSubpageBrowserProxy;
   private isBluetoothToggleOn_: boolean;
   private isSecondaryUser_: boolean;
   private primaryUserEmail_: string;
-  private isBluetoothDisconnectWarningEnabled_: boolean;
 
   constructor() {
     super();
@@ -285,15 +277,11 @@ export class SettingsBluetoothSummaryElement extends
   }
 
   private updateBluetoothState_(enabled: boolean): void {
-    if (this.isBluetoothDisconnectWarningEnabled_) {
       // Reset Bluetooth toggle state to previous state. Toggle should only be
       // updated when System properties changes.
       this.isBluetoothToggleOn_ = !enabled;
       getHidPreservingController().tryToSetBluetoothEnabledState(
           enabled, HidWarningDialogSource.kOsSettings);
-    } else {
-      getBluetoothConfig().setBluetoothEnabledState(enabled);
-    }
 
     this.browserProxy_.showBluetoothRevampHatsSurvey();
   }

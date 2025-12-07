@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PROFILES_KEEP_ALIVE_PROFILE_KEEP_ALIVE_WAITER_H_
 #define CHROME_BROWSER_PROFILES_KEEP_ALIVE_PROFILE_KEEP_ALIVE_WAITER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"

@@ -10,30 +10,32 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/RevenueStats_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace chrome {
 namespace android {
 
 static void JNI_RevenueStats_SetSearchClient(JNIEnv* env, std::string& client) {
-  SearchTermsDataAndroid::search_client_.Get() = client;
+  SearchTermsDataAndroid::GetSearchClient() = client;
 }
 
 static void JNI_RevenueStats_SetCustomTabSearchClient(
     JNIEnv* env,
-    const jni_zero::JavaParamRef<jstring>& j_client) {
+    const jni_zero::JavaRef<jstring>& j_client) {
   if (j_client.is_null()) {
-    SearchTermsDataAndroid::custom_tab_search_client_.Get().reset();
+    SearchTermsDataAndroid::GetCustomTabSearchClient().reset();
   } else {
-    SearchTermsDataAndroid::custom_tab_search_client_.Get().emplace(
+    SearchTermsDataAndroid::GetCustomTabSearchClient().emplace(
         base::android::ConvertJavaStringToUTF8(j_client));
   }
 }
 
 static void JNI_RevenueStats_SetRlzParameterValue(JNIEnv* env,
                                                   std::u16string& rlz) {
-  SearchTermsDataAndroid::rlz_parameter_value_.Get() = rlz;
+  SearchTermsDataAndroid::GetRlzParameterValue() = rlz;
 }
 
 }  // namespace android
 }  // namespace chrome
+
+DEFINE_JNI(RevenueStats)

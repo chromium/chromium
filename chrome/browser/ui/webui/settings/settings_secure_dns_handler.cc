@@ -12,6 +12,8 @@
 #include "base/functional/bind.h"
 #include "base/rand_util.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/net/default_dns_over_https_config_source.h"
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/browser/net/secure_dns_util.h"
 #include "chrome/browser/net/stub_resolver_config_reader.h"
@@ -29,13 +31,21 @@
 #include "net/dns/public/util.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/net/ash_dns_over_https_config_source.h"
+#include "chrome/browser/ash/net/secure_dns_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#endif
+
 namespace secure_dns = chrome_browser_net::secure_dns;
 
 namespace settings {
 
 namespace {
 
-base::Value::Dict CreateSecureDnsSettingDict() {
+base::Value::Dict CreateSecureDnsSettingDict(
+    content::BrowserContext* browser_context) {
   // Fetch the current host resolver configuration. It is not sufficient to read
   // the secure DNS prefs directly since the host resolver configuration takes
   // other factors into account such as whether a managed environment or
@@ -48,14 +58,19 @@ base::Value::Dict CreateSecureDnsSettingDict() {
   base::Value::Dict dict;
   dict.Set("mode", SecureDnsConfig::ModeToString(config.mode()));
   dict.Set("config", config.doh_servers().ToString());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+  ash::SecureDnsManager* secure_dns_manager =
+      g_browser_process->platform_part()->secure_dns_manager();
+  dict.Set("osMode",
+           SecureDnsConfig::ModeToString(secure_dns_manager->GetOsDohMode()));
+  dict.Set("osConfig", secure_dns_manager->GetOsDohConfig().ToString());
   std::optional<std::string> doh_with_identifiers_servers_for_display =
-      SystemNetworkContextManager::GetStubResolverConfigReader()
-          ->GetDohWithIdentifiersDisplayServers();
+      secure_dns_manager->GetDohWithIdentifiersDisplayServers();
   dict.Set("dohWithIdentifiersActive",
            doh_with_identifiers_servers_for_display.has_value());
   dict.Set("configForDisplay",
            doh_with_identifiers_servers_for_display.value_or(std::string()));
+  dict.Set("dohDomainConfigSet", secure_dns_manager->IsDohDomainConfigSet());
 #endif
   dict.Set("managementMode", static_cast<int>(config.management_mode()));
   return dict;
@@ -91,28 +106,21 @@ void SecureDnsHandler::OnJavascriptAllowed() {
   // Register for updates to the underlying secure DNS prefs so that the
   // secure DNS setting can be updated to reflect the current host resolver
   // configuration.
-  pref_registrar_.Init(g_browser_process->local_state());
-  pref_registrar_.Add(
-      prefs::kDnsOverHttpsMode,
-      base::BindRepeating(
-          &SecureDnsHandler::SendSecureDnsSettingUpdatesToJavascript,
-          base::Unretained(this)));
-  pref_registrar_.Add(
-      prefs::kDnsOverHttpsTemplates,
-      base::BindRepeating(
-          &SecureDnsHandler::SendSecureDnsSettingUpdatesToJavascript,
-          base::Unretained(this)));
 #if BUILDFLAG(IS_CHROMEOS)
-  pref_registrar_.Add(
-      prefs::kDnsOverHttpsEffectiveTemplatesChromeOS,
-      base::BindRepeating(
-          &SecureDnsHandler::SendSecureDnsSettingUpdatesToJavascript,
-          base::Unretained(this)));
+  doh_source_ = std::make_unique<ash::AshDnsOverHttpsConfigSource>(
+      g_browser_process->platform_part()->secure_dns_manager(),
+      g_browser_process->local_state());
+#else
+  doh_source_ = std::make_unique<DefaultDnsOverHttpsConfigSource>(
+      g_browser_process->local_state(), /*set_up_pref_defaults=*/false);
 #endif
+  doh_source_->SetDohChangeCallback(base::BindRepeating(
+      &SecureDnsHandler::SendSecureDnsSettingUpdatesToJavascript,
+      base::Unretained(this)));
 }
 
 void SecureDnsHandler::OnJavascriptDisallowed() {
-  pref_registrar_.RemoveAll();
+  doh_source_.reset();
 }
 
 base::Value::List SecureDnsHandler::GetSecureDnsResolverList() {
@@ -155,7 +163,7 @@ void SecureDnsHandler::SetProvidersForTesting(
 void SecureDnsHandler::HandleGetSecureDnsResolverList(
     const base::Value::List& args) {
   AllowJavascript();
-  std::string callback_id = args[0].GetString();
+  const std::string& callback_id = args[0].GetString();
 
   ResolveJavascriptCallback(base::Value(callback_id),
                             GetSecureDnsResolverList());
@@ -166,7 +174,9 @@ void SecureDnsHandler::HandleGetSecureDnsSetting(
   AllowJavascript();
   CHECK_EQ(1u, args.size());
   const base::Value& callback_id = args[0];
-  ResolveJavascriptCallback(callback_id, CreateSecureDnsSettingDict());
+  ResolveJavascriptCallback(
+      callback_id, CreateSecureDnsSettingDict(
+                       web_ui()->GetWebContents()->GetBrowserContext()));
 }
 
 void SecureDnsHandler::HandleIsValidConfig(const base::Value::List& args) {
@@ -214,7 +224,9 @@ void SecureDnsHandler::OnProbeComplete() {
 }
 
 void SecureDnsHandler::SendSecureDnsSettingUpdatesToJavascript() {
-  FireWebUIListener("secure-dns-setting-changed", CreateSecureDnsSettingDict());
+  FireWebUIListener("secure-dns-setting-changed",
+                    CreateSecureDnsSettingDict(
+                        web_ui()->GetWebContents()->GetBrowserContext()));
 }
 
 // static

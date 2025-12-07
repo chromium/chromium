@@ -68,7 +68,7 @@ void PolicyBundle::MergeFrom(const PolicyBundle& other) {
       policy_bundle_[it_other->first] = it_other->second.Clone();
       ++it_other;
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 

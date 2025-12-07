@@ -4,8 +4,9 @@
 
 package org.chromium.chrome.browser.download.home;
 
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.home.filter.OfflineItemFilterObserver;
 import org.chromium.chrome.browser.download.home.filter.OfflineItemFilterSource;
 import org.chromium.components.offline_items_collection.ContentId;
@@ -25,6 +26,7 @@ import java.util.Set;
  * The source of {@link OfflineItem} for the rest of the download home UI.  This will pull items
  * from a {@link OfflineContentProvider} for the rest of the UI to filter and act on.
  */
+@NullMarked
 public class OfflineItemSource implements OfflineItemFilterSource, OfflineContentProvider.Observer {
     private final OfflineContentProvider mProvider;
 
@@ -96,7 +98,7 @@ public class OfflineItemSource implements OfflineItemFilterSource, OfflineConten
     // OfflineContentProvider.Observer implementation.
     @Override
     public void onItemsAdded(List<OfflineItem> items) {
-        Set<OfflineItem> addedItems = new HashSet<OfflineItem>();
+        Set<OfflineItem> addedItems = new HashSet<>();
         for (OfflineItem item : items) {
             if (mItems.containsKey(item.id)) {
                 onItemUpdated(item, null);
@@ -116,12 +118,12 @@ public class OfflineItemSource implements OfflineItemFilterSource, OfflineConten
         OfflineItem item = mItems.remove(id);
         if (item == null) return;
 
-        Set<OfflineItem> removedSet = CollectionUtil.newHashSet(item);
+        Set<OfflineItem> removedSet = Set.of(item);
         for (OfflineItemFilterObserver observer : mObservers) observer.onItemsRemoved(removedSet);
     }
 
     @Override
-    public void onItemUpdated(OfflineItem item, UpdateDelta updateDelta) {
+    public void onItemUpdated(OfflineItem item, @Nullable UpdateDelta updateDelta) {
         OfflineItem oldItem = mItems.get(item.id);
         if (oldItem == null) {
             onItemsAdded(Collections.singletonList(item));

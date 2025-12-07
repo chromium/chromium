@@ -27,8 +27,18 @@ include_rules = [
   "+components/app_launch_prefetch",
   "+components/attribution_reporting",
   "+components/browsing_topics/common",
+  "+components/content_settings/core/common",
+  "+components/history/core/browser/features.h",
   "+components/input",
   "+components/memory_pressure",
+  "+components/optimization_guide/public/mojom",
+  "+components/origin_matcher",
+  # components/performance_manager sits between chrome/ and content/, except for
+  # the mojo interfaces it exposes to content/ and third_party/blink/.
+  "+components/performance_manager/public/mojom",
+  # components/performance_manager/scenario_api is a subcomponent that can
+  # query performance_manager scenarios from content/ and third_party/blink/.
+  "+components/performance_manager/scenario_api",
   "+components/services/filesystem",
   "+components/services/font/public",
   "+components/services/font_data/public",
@@ -45,7 +55,6 @@ include_rules = [
   "+mojo/core/embedder",
   "+mojo/public",
   "+net",
-  "+ppapi",
   "+printing",
   "+sandbox",
   "+services/proxy_resolver/public/mojom",
@@ -97,13 +106,12 @@ include_rules = [
   "+ui/latency",
   "+ui/native_theme",
   "+ui/resources/grit/ui_resources.h",
-  "+ui/resources/grit/webui_resources.h",
-  "+ui/resources/grit/webui_resources_map.h",
   "+ui/shell_dialogs",
   "+ui/snapshot",
   "+ui/strings/grit/ui_strings.h",
-  "+ui/surface",
   "+ui/touch_selection",
+  "+ui/webui/resources/grit/webui_resources.h",
+  "+ui/webui/resources/grit/webui_resources_map.h",
   "+ui/wm",
   # Content knows about grd files, but the specifics of how to get a resource
   # given its id is left to the embedder.
@@ -139,4 +147,11 @@ specific_include_rules = {
     # content -> tools dependency is disallowed, except buildflags for switches.
     "+tools/v8_context_snapshot/buildflags.h",
   ],
+  ".*_unittest\.(cc|h|m)": [
+    # unittests can now embed fuzzing tests, and this dependency is needed to
+    # access FUZZ_TEST macro and various domain generators.
+    "+third_party/fuzztest",
+  ],
 }
+
+new_usages_require_review = True

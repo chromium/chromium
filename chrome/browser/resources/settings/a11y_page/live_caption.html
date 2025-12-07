@@ -1,0 +1,118 @@
+<style include="cr-shared-style settings-shared">
+  /* Override the default padding of a cr-row to 0. The template inside has
+     left and right padding. */
+  .cr-row-with-template {
+    padding: 0;
+  }
+
+  /* Ensure the toggle button stretches the width of its container despite
+     removing its parent's padding. */
+  #liveCaptionToggleButton {
+    width: 100%;
+  }
+
+  .language-dropdown {
+    margin-inline-start: auto;
+  }
+
+  #defaultLanguageLabel {
+    color: var(--cr-secondary-text-color);
+  }
+</style>
+<template is="dom-if" if="[[!enableLiveCaptionMultiLanguage_]]">
+  <div class="cr-row cr-row-with-template first">
+    <settings-toggle-button id="liveCaptionToggleButton"
+        pref="{{prefs.accessibility.captions.live_caption_enabled}}"
+        on-change="onLiveCaptionEnabledChanged_"
+        label="$i18n{captionsEnableLiveCaptionTitle}"
+        sub-label="[[enableLiveCaptionSubtitle_]]">
+    </settings-toggle-button>
+  </div>
+  <cr-collapse
+      opened="[[prefs.accessibility.captions.live_caption_enabled.value]]">
+    <settings-toggle-button id="maskOffensiveWordsToggleButton"
+        pref="{{prefs.accessibility.captions.live_caption_mask_offensive_words}}"
+        on-change="onLiveCaptionMaskOffensiveWordsChanged_"
+        label="$i18n{captionsMaskOffensiveWordsTitle}">
+    </settings-toggle-button>
+  </cr-collapse>
+</template>
+<if expr="not is_chromeos">
+<template is="dom-if" if="[[enableLiveCaptionMultiLanguage_]]">
+  <div class="cr-row cr-row-with-template first">
+    <settings-toggle-button id="liveCaptionToggleButton"
+        pref="{{prefs.accessibility.captions.live_caption_enabled}}"
+        on-change="onLiveCaptionEnabledChanged_"
+        label="$i18n{captionsEnableLiveCaptionTitle}"
+        sub-label="$i18n{captionsEnableLiveCaptionSubtitle}">
+    </settings-toggle-button>
+  </div>
+  <cr-collapse
+      opened="[[prefs.accessibility.captions.live_caption_enabled.value]]">
+    <div class="cr-row continuation">
+      <div class="flex settings-box-text">
+        $i18n{captionsManageLanguagesTitle}
+        <div class="secondary">$i18n{captionsManageLanguagesSubtitle}</div>
+      </div>
+      <cr-button id="addLanguage" on-click="onAddLanguagesClick_">
+        $i18n{addLanguages}
+      </cr-button>
+    </div>
+    <div class="list-frame">
+      <div id="languageList" class="vertical-list" role="list">
+        <template is="dom-repeat" items="[[installedLanguagePacks_]]">
+          <div class="list-item" role="listitem">
+            <div class="start cr-padded-text">[[item.displayName]]
+              <span id="defaultLanguageLabel"
+                  hidden$="[[!isDefaultLanguage_(item.code,
+                 prefs.accessibility.captions.live_caption_language.value)]]">
+                $i18n{defaultLanguageLabel}
+              </span>
+            </div>
+            <span aria-live="polite" role="region"
+                class="cr-secondary-text cr-row-gap">
+              [[item.downloadProgress]]
+            </span>
+            <cr-icon-button class="icon-more-vert" title="$i18n{moreActions}"
+                id="more-[[item.language.code]]" on-click="onDotsClick_"
+                aria-label="[[computeMoreButtonAriaLabel_(item.displayName,
+              item.code,
+              prefs.accessibility.captions.live_caption_language.value)]]">
+            </cr-icon-button>
+          </div>
+        </template>
+      </div>
+    </div>
+    <settings-toggle-button id="maskOffensiveWordsToggleButton"
+        pref="{{prefs.accessibility.captions.live_caption_mask_offensive_words}}"
+        on-change="onLiveCaptionMaskOffensiveWordsChanged_"
+        label="$i18n{captionsMaskOffensiveWordsTitle}">
+    </settings-toggle-button>
+  </cr-collapse>
+  <template is="dom-if" if="[[enableLiveTranslate_]]">
+    <settings-live-translate prefs="{{prefs}}"></settings-live-translate>
+  </template>
+</template>
+<template is="dom-if" if="[[showAddLanguagesDialog_]]" restamp>
+  <settings-add-languages-dialog id="addLanguagesDialog"
+      languages="[[filterAvailableLanguagePacks_(availableLanguagePacks_,
+                   installedLanguagePacks_)]]"
+      on-close="onAddLanguagesDialogClose_"
+      on-languages-added="onLanguagesAdded_">
+  </settings-add-languages-dialog>
+</template>
+<cr-lazy-render id="menu">
+  <template>
+    <cr-action-menu role-description="$i18n{menu}">
+      <button class="dropdown-item" role="menuitem" id="make-default-button"
+          on-click="onMakeDefaultClick_">
+        $i18n{makeDefaultLanguageLabel}
+      </button>
+      <button class="dropdown-item" role="menuitem" id="remove-button"
+          on-click="onRemoveLanguageClick_">
+        $i18n{removeLanguageLabel}
+      </button>
+    </cr-action-menu>
+  </template>
+</cr-lazy-render>
+</if>

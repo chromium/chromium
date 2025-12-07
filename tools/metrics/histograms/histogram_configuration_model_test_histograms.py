@@ -67,7 +67,7 @@ PRETTY_XML = """
 
 <histograms>
 
-<histogram base="true" name="hist.a" expires_after="2019-11-02">
+<histogram name="hist.a" expires_after="2019-11-02">
 <!-- Comment in histogram -->
 
   <owner>owner1@chromium.org</owner>
@@ -100,7 +100,7 @@ XML_WRONG_ATTRIBUTE_ORDER = """
 
 <histograms>
 
-<histogram expires_after="2019-11-02" name="hist.a" base="true" >
+<histogram expires_after="2019-11-02" name="hist.a" >
 <!-- Comment in histogram -->
 
   <owner>owner1@chromium.org</owner>
@@ -133,7 +133,7 @@ XML_MISSING_SEPARATOR = """
 
 <histograms>
 
-<histogram base="true" name="hist.a" expires_after="2019-11-02">
+<histogram name="hist.a" expires_after="2019-11-02">
 <!-- Comment in histogram -->
 
   <owner>owner1@chromium.org</owner>
@@ -165,7 +165,7 @@ XML_WRONG_INDENT = """
 
   <histograms>
 
-  <histogram base="true" name="hist.a" expires_after="2019-11-02">
+  <histogram name="hist.a" expires_after="2019-11-02">
   <!-- Comment in histogram -->
 
       <owner>owner1@chromium.org</owner>
@@ -198,7 +198,7 @@ XML_WRONG_SINGLELINE = """
 
 <histograms>
 
-<histogram base="true" name="hist.a" expires_after="2019-11-02">
+<histogram name="hist.a" expires_after="2019-11-02">
 <!-- Comment in histogram -->
 
   <owner>
@@ -236,7 +236,7 @@ XML_WRONG_LINEBREAK = """
 <!-- Histogram definitions -->
 <histograms>
 
-<histogram base="true" name="hist.a" expires_after="2019-11-02">
+<histogram name="hist.a" expires_after="2019-11-02">
 <!-- Comment in histogram -->
   <owner>owner1@chromium.org</owner>
   <owner>owner2@chromium.org</owner>
@@ -266,7 +266,7 @@ XML_WRONG_CHILDREN_ORDER = """
 
 <histograms>
 
-<histogram base="true" name="hist.a" expires_after="2019-11-02">
+<histogram name="hist.a" expires_after="2019-11-02">
 <!-- Comment in histogram -->
 
   <owner>owner1@chromium.org</owner>

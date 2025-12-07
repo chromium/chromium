@@ -6,6 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
@@ -40,7 +41,7 @@ std::unique_ptr<net::test_server::HttpResponse> InterceptMockHttp(
   base::FilePath test_data_dir;
   base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
   // Remove the leading '/'.
-  std::string relative_manifest_path = request.GetURL().path().substr(1);
+  std::string relative_manifest_path = request.GetURL().GetPath().substr(1);
   std::string manifest_response;
   CHECK(base::ReadFileToString(test_data_dir.Append(relative_manifest_path),
                                &manifest_response));

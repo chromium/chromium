@@ -5,24 +5,25 @@
 import 'chrome://compare/product_selection_menu.js';
 
 import type {ProductSelectionMenuElement} from 'chrome://compare/product_selection_menu.js';
-import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
+import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import type {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {$$, assertNotStyle, assertStyle} from './test_support.js';
 
 suite('ProductSelectionMenuTest', () => {
-  const shoppingServiceApi = TestMock.fromClass(BrowserProxyImpl);
+  const shoppingServiceApi =
+      TestMock.fromClass(ShoppingServiceBrowserProxyImpl);
 
   async function createMenu(): Promise<ProductSelectionMenuElement> {
     const menu = document.createElement('product-selection-menu');
     menu.selectedUrl = 'https://current-selection.com';
     document.body.appendChild(menu);
-    await flushTasks();
+    await microtasksFinished();
     return menu;
   }
 
@@ -49,10 +50,10 @@ suite('ProductSelectionMenuTest', () => {
         Promise.resolve({urlInfos: recentlyViewedTabs}));
   }
 
-  setup(async () => {
+  setup(() => {
     shoppingServiceApi.reset();
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    BrowserProxyImpl.setInstance(shoppingServiceApi);
+    ShoppingServiceBrowserProxyImpl.setInstance(shoppingServiceApi);
     loadTimeData.overrideValues({
       suggestedTabs: 'suggestions',
       recentlyViewedTabs: 'recently viewed tabs',
@@ -65,7 +66,7 @@ suite('ProductSelectionMenuTest', () => {
 
     const menu = await createMenu();
     menu.showAt(document.body);
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(0, menu.sections.length);
     assertNotStyle($$(menu, '#empty')!, 'display', 'none');
@@ -84,10 +85,10 @@ suite('ProductSelectionMenuTest', () => {
 
     const menu = await createMenu();
     menu.showAt(document.body);
-    await flushTasks();
+    await microtasksFinished();
 
     assertStyle($$(menu, '#empty')!, 'display', 'none');
-    const sectionTitles = menu.shadowRoot!.querySelectorAll('.section-title');
+    const sectionTitles = menu.shadowRoot.querySelectorAll('.section-title');
     assertEquals(1, sectionTitles.length);
     assertEquals('suggestions', sectionTitles[0]!.textContent);
     // Ensure the number of open tab list items is equal to the number of open
@@ -111,10 +112,10 @@ suite('ProductSelectionMenuTest', () => {
 
     const menu = await createMenu();
     menu.showAt(document.body);
-    await flushTasks();
+    await microtasksFinished();
 
     assertStyle($$(menu, '#empty')!, 'display', 'none');
-    const sectionTitles = menu.shadowRoot!.querySelectorAll('.section-title');
+    const sectionTitles = menu.shadowRoot.querySelectorAll('.section-title');
     assertEquals(1, sectionTitles.length);
     assertEquals('recently viewed tabs', sectionTitles[0]!.textContent);
     // Ensure the number of recently viewed list items is equal to the number
@@ -143,10 +144,10 @@ suite('ProductSelectionMenuTest', () => {
 
     const menu = await createMenu();
     menu.showAt(document.body);
-    await flushTasks();
+    await microtasksFinished();
 
     assertStyle($$(menu, '#empty')!, 'display', 'none');
-    const sectionTitles = menu.shadowRoot!.querySelectorAll('.section-title');
+    const sectionTitles = menu.shadowRoot.querySelectorAll('.section-title');
     assertEquals(2, sectionTitles.length);
     assertEquals('suggestions', sectionTitles[0]!.textContent);
     assertEquals('recently viewed tabs', sectionTitles[1]!.textContent);
@@ -165,14 +166,14 @@ suite('ProductSelectionMenuTest', () => {
     initUrlInfos();
     const menu = await createMenu();
     menu.showAt(document.body);
-    await flushTasks();
+    await microtasksFinished();
 
     const listElement =
-        menu.$.menu.get().querySelector<HTMLElement>('.dropdown-item');
+        menu.$.menu.get().querySelector<CrLitElement>('.dropdown-item');
     assertTrue(!!listElement);
 
     const tabUrl =
-        listElement.shadowRoot!.querySelector<HTMLElement>('.description-text');
+        listElement.shadowRoot.querySelector<HTMLElement>('.description-text');
     assertTrue(!!tabUrl);
     assertEquals('example.com', tabUrl.textContent);
   });
@@ -195,13 +196,13 @@ suite('ProductSelectionMenuTest', () => {
     const menu = await createMenu();
     menu.selectedUrl = 'https://current-selection.com';
     menu.showAt(document.body);
-    await flushTasks();
+    await microtasksFinished();
 
     const listElements =
-        menu.$.menu.get().querySelectorAll<HTMLElement>('.dropdown-item');
+        menu.$.menu.get().querySelectorAll<CrLitElement>('.dropdown-item');
     assertEquals(2, listElements.length);
 
-    const tabUrl = listElements[0]!.shadowRoot!.querySelector<HTMLElement>(
+    const tabUrl = listElements[0]!.shadowRoot.querySelector<HTMLElement>(
         '.description-text');
     assertTrue(!!tabUrl);
     assertEquals('example.com', tabUrl.textContent);
@@ -233,23 +234,84 @@ suite('ProductSelectionMenuTest', () => {
     const menu = await createMenu();
     menu.excludedUrls = [excludedUrlString1, excludedUrlString2];
     menu.showAt(document.body);
-    await flushTasks();
+    await microtasksFinished();
 
     const listElements =
-        menu.$.menu.get().querySelectorAll<HTMLElement>('.dropdown-item');
+        menu.$.menu.get().querySelectorAll<CrLitElement>('.dropdown-item');
     assertEquals(2, listElements.length);
 
-    const tabUrl = listElements[0]!.shadowRoot!.querySelector<HTMLElement>(
+    const tabUrl = listElements[0]!.shadowRoot.querySelector<HTMLElement>(
         '.description-text');
     assertTrue(!!tabUrl);
     assertEquals('example.com', tabUrl.textContent);
   });
 
+  test('shows table too large message on new column only', async () => {
+    initUrlInfos();
+    const menu = await createMenu();
+    menu.selectedUrl = '';
+    menu.excludedUrls = [];
+    menu.forNewColumn = true;
+    menu.isTableFull = true;
+    menu.showAt(document.body);
+    await microtasksFinished();
+
+    const crActionMenu = menu.$.menu.get();
+    assertTrue(crActionMenu.open);
+
+    const tableFullMessage =
+        crActionMenu.querySelector<HTMLElement>('#tableFullMessage');
+    assertTrue(isVisible(tableFullMessage));
+
+    const emptyMessage = crActionMenu.querySelector<HTMLElement>('#empty');
+    assertFalse(isVisible(emptyMessage));
+
+    const removeColumnButton =
+        crActionMenu.querySelector<HTMLElement>('#remove');
+    assertFalse(isVisible(removeColumnButton));
+
+    // In this state, no URL options should be shown, even if they're available.
+    const listElements =
+        crActionMenu.querySelectorAll<HTMLElement>('.dropdown-item');
+    assertEquals(0, listElements.length);
+  });
+
+  test(
+      'shows table too large message not shown for normal column', async () => {
+        initUrlInfos();
+        const menu = await createMenu();
+        menu.selectedUrl = 'https://example.com';
+        menu.excludedUrls = ['https://example.com'];
+        menu.forNewColumn = false;
+        menu.isTableFull = true;
+        menu.showAt(document.body);
+        await microtasksFinished();
+
+        const crActionMenu = menu.$.menu.get();
+        assertTrue(crActionMenu.open);
+
+        const tableFullMessage =
+            crActionMenu.querySelector<HTMLElement>('#tableFullMessage');
+        assertFalse(isVisible(tableFullMessage));
+
+        const emptyMessage = crActionMenu.querySelector<HTMLElement>('#empty');
+        assertFalse(isVisible(emptyMessage));
+
+        const removeColumnButton =
+            crActionMenu.querySelector<HTMLElement>('#remove');
+        assertTrue(isVisible(removeColumnButton));
+
+        // In this state, URL options should be shown even if the table is full.
+        const listElements =
+            crActionMenu.querySelectorAll<HTMLElement>('.dropdown-item');
+        assertNotEquals(0, listElements.length);
+      });
+
   test('fires selector event', async () => {
     initUrlInfos();
     const menu = await createMenu();
     menu.showAt(document.body);
-    await flushTasks();
+    await microtasksFinished();
 
     const crActionMenu = menu.$.menu.get();
     assertTrue(crActionMenu.open);
@@ -269,7 +331,7 @@ suite('ProductSelectionMenuTest', () => {
     initUrlInfos();
     const menu = await createMenu();
     menu.showAt(document.body);
-    await flushTasks();
+    await microtasksFinished();
 
     const crActionMenu = menu.$.menu.get();
     assertTrue(crActionMenu.open);
@@ -289,7 +351,7 @@ suite('ProductSelectionMenuTest', () => {
 
     const menu = await createMenu();
     menu.showAt(document.body);
-    await flushTasks();
+    await microtasksFinished();
 
     assertFalse(!!$$(menu, '.section-title'));
 
@@ -302,9 +364,9 @@ suite('ProductSelectionMenuTest', () => {
     initProductTabUrlInfos(productTabs);
 
     menu.showAt(document.body);
-    await flushTasks();
+    await microtasksFinished();
 
-    const sectionTitles = menu.shadowRoot!.querySelectorAll('.section-title');
+    const sectionTitles = menu.shadowRoot.querySelectorAll('.section-title');
     assertEquals(1, sectionTitles.length);
     assertEquals('suggestions', sectionTitles[0]!.textContent);
     const menuOpenTabEntries = menu.sections[0]!.entries;

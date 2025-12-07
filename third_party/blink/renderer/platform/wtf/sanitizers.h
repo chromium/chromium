@@ -5,9 +5,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_SANITIZERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_SANITIZERS_H_
 
-// TODO(sof): Add SyZyASan support?
+#include "base/memory/asan_interface.h"
+
 #if defined(ADDRESS_SANITIZER)
 #include <sanitizer/asan_interface.h>
+#endif
+
+namespace blink {
+
+#if defined(ADDRESS_SANITIZER)
 #define ASAN_REGION_IS_POISONED(addr, size) \
   __asan_region_is_poisoned(addr, size)
 #define NO_SANITIZE_ADDRESS __attribute__((no_sanitize_address))
@@ -31,8 +37,6 @@ class AsanUnpoisonScope {
   bool was_poisoned_;
 };
 #else
-#define ASAN_POISON_MEMORY_REGION(addr, size) ((void)(addr), (void)(size))
-#define ASAN_UNPOISON_MEMORY_REGION(addr, size) ((void)(addr), (void)(size))
 #define ASAN_REGION_IS_POISONED(addr, size) \
   ((void)(addr), (void)(size), (void*)nullptr)
 #define NO_SANITIZE_ADDRESS
@@ -42,6 +46,8 @@ class AsanUnpoisonScope {
   ~AsanUnpoisonScope() {}
 };
 #endif
+
+}  // namespace blink
 
 #if defined(LEAK_SANITIZER)
 #include <sanitizer/lsan_interface.h>

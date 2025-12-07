@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "pdf/loader/document_loader.h"
 
@@ -68,7 +69,9 @@ class PDFiumDocument::FileAccess : public FPDF_FILEACCESS {
                           unsigned char* buffer,
                           unsigned long size) {
     auto* file_access = static_cast<FileAccess*>(param);
-    return file_access->doc_loader_->GetBlock(position, size, buffer);
+    // SAFETY: Required from caller across PDFium public API.
+    return file_access->doc_loader_->GetBlock(
+        position, UNSAFE_BUFFERS(base::span(buffer, size)));
   }
 
   raw_ptr<DocumentLoader> doc_loader_;

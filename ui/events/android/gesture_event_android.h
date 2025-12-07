@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ui/events/event_constants.h"
 #include "ui/events/events_export.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -22,6 +23,7 @@ class EVENTS_EXPORT GestureEventAndroid {
                       const gfx::PointF& location,
                       const gfx::PointF& screen_location,
                       long time_ms,
+                      GestureDeviceType source,
                       float scale,
                       float delta_x,
                       float delta_y,
@@ -40,6 +42,7 @@ class EVENTS_EXPORT GestureEventAndroid {
   const gfx::PointF& location() const { return location_; }
   const gfx::PointF& screen_location() const { return screen_location_; }
   long time() const { return time_ms_; }
+  GestureDeviceType source() const { return source_; }
   float scale() const { return scale_; }
   float delta_x() const { return delta_x_; }
   float delta_y() const { return delta_y_; }
@@ -60,6 +63,7 @@ class EVENTS_EXPORT GestureEventAndroid {
   gfx::PointF screen_location_;
   long time_ms_;
 
+  GestureDeviceType source_;
   float scale_;
   float delta_x_;
   float delta_y_;

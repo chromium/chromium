@@ -18,8 +18,8 @@ constexpr webrtc::AudioProcessing::Config kDefaultApmConfig{};
 
 webrtc::AudioProcessing::Config CreateApmGetConfig(
     const AudioProcessingSettings& settings) {
-  rtc::scoped_refptr<webrtc::AudioProcessing> apm =
-      CreateWebRtcAudioProcessingModule(settings);
+  auto [apm, added_delay] = CreateWebRtcAudioProcessingModule(
+      settings, /*residual_echo_estimator_model=*/nullptr);
   DCHECK(!!apm);
   return apm->GetConfig();
 }
@@ -34,9 +34,6 @@ TEST(CreateWebRtcAudioProcessingModuleTest, CheckDefaultAudioProcessingConfig) {
 
   EXPECT_TRUE(config.pipeline.multi_channel_render);
   EXPECT_TRUE(config.pipeline.multi_channel_capture);
-  EXPECT_EQ(config.pipeline.maximum_internal_processing_rate, 48000);
-  EXPECT_TRUE(config.high_pass_filter.enabled);
-  EXPECT_FALSE(config.pre_amplifier.enabled);
   EXPECT_TRUE(config.echo_canceller.enabled);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -56,13 +53,6 @@ TEST(CreateWebRtcAudioProcessingModuleTest, CheckDefaultAudioProcessingConfig) {
   EXPECT_TRUE(config.noise_suppression.enabled);
   EXPECT_EQ(config.noise_suppression.level,
             webrtc::AudioProcessing::Config::NoiseSuppression::kHigh);
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  // Android and iOS use echo cancellation optimized for mobiles.
-  EXPECT_TRUE(config.echo_canceller.mobile_mode);
-#else
-  EXPECT_FALSE(config.echo_canceller.mobile_mode);
-#endif
 }
 
 TEST(CreateWebRtcAudioProcessingModuleTest,
@@ -149,8 +139,21 @@ TEST(CreateWebRtcAudioProcessingModuleTest,
 TEST(CreateWebRtcAudioProcessingModuleTest, VerifyNoiseSuppressionSettings) {
   for (bool noise_suppressor_enabled : {true, false}) {
     SCOPED_TRACE(noise_suppressor_enabled);
-    auto config = CreateApmGetConfig(
-        /*settings=*/{.noise_suppression = noise_suppressor_enabled});
+
+    const auto settings =
+        AudioProcessingSettings{.noise_suppression = noise_suppressor_enabled};
+
+    // On iOS-blink and tvOS, AudioProcessingModule is only created when
+    // noise_suppression is enabled. Attempting to create or configure APM when
+    // noise_suppression is false leads to a crash on these platforms.
+    //
+    // This check ensures we only run the test when APM is expected to be
+    // created.
+    if (!settings.NeedWebrtcAudioProcessing()) {
+      continue;
+    }
+
+    auto config = CreateApmGetConfig(settings);
 
     EXPECT_EQ(config.noise_suppression.enabled, noise_suppressor_enabled);
     EXPECT_EQ(config.noise_suppression.level,
@@ -165,21 +168,6 @@ TEST(CreateWebRtcAudioProcessingModuleTest, VerifyEchoCancellerSettings) {
         /*settings=*/{.echo_cancellation = echo_canceller_enabled});
 
     EXPECT_EQ(config.echo_canceller.enabled, echo_canceller_enabled);
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    EXPECT_TRUE(config.echo_canceller.mobile_mode);
-#else
-    EXPECT_FALSE(config.echo_canceller.mobile_mode);
-#endif
-  }
-}
-
-TEST(CreateWebRtcAudioProcessingModuleTest, ToggleHighPassFilter) {
-  for (bool high_pass_filter_enabled : {true, false}) {
-    SCOPED_TRACE(high_pass_filter_enabled);
-    auto config = CreateApmGetConfig(
-        /*settings=*/{.high_pass_filter = high_pass_filter_enabled});
-
-    EXPECT_EQ(config.high_pass_filter.enabled, high_pass_filter_enabled);
   }
 }
 

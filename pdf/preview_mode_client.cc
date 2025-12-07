@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "pdf/buildflags.h"
 #include "pdf/document_layout.h"
 #include "pdf/loader/url_loader.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -30,51 +31,53 @@ void PreviewModeClient::ProposeDocumentLayout(const DocumentLayout& layout) {
 }
 
 void PreviewModeClient::Invalidate(const gfx::Rect& rect) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void PreviewModeClient::DidScroll(const gfx::Vector2d& point) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
-void PreviewModeClient::ScrollToX(int x_in_screen_coords) {
-  NOTREACHED_IN_MIGRATION();
+void PreviewModeClient::ScrollToX(int x_in_screen_coords,
+                                  bool force_smooth_scroll) {
+  NOTREACHED();
 }
 
-void PreviewModeClient::ScrollToY(int y_in_screen_coords) {
-  NOTREACHED_IN_MIGRATION();
+void PreviewModeClient::ScrollToY(int y_in_screen_coords,
+                                  bool force_smooth_scroll) {
+  NOTREACHED();
 }
 
 void PreviewModeClient::ScrollBy(const gfx::Vector2d& scroll_delta) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void PreviewModeClient::ScrollToPage(int page) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void PreviewModeClient::NavigateTo(const std::string& url,
                                    WindowOpenDisposition disposition) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void PreviewModeClient::UpdateCursor(ui::mojom::CursorType cursor_type) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void PreviewModeClient::UpdateTickMarks(
     const std::vector<gfx::Rect>& tickmarks) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void PreviewModeClient::NotifyNumberOfFindResultsChanged(int total,
                                                          bool final_result) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void PreviewModeClient::NotifySelectedFindResultChanged(int current_find_index,
                                                         bool final_result) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void PreviewModeClient::GetDocumentPassword(
@@ -83,23 +86,20 @@ void PreviewModeClient::GetDocumentPassword(
 }
 
 void PreviewModeClient::Alert(const std::string& message) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool PreviewModeClient::Confirm(const std::string& message) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 std::string PreviewModeClient::Prompt(const std::string& question,
                                       const std::string& default_answer) {
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 std::string PreviewModeClient::GetURL() {
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 void PreviewModeClient::Email(const std::string& to,
@@ -107,34 +107,32 @@ void PreviewModeClient::Email(const std::string& to,
                               const std::string& bcc,
                               const std::string& subject,
                               const std::string& body) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void PreviewModeClient::Print() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void PreviewModeClient::SubmitForm(const std::string& url,
                                    const void* data,
                                    int length) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::unique_ptr<UrlLoader> PreviewModeClient::CreateUrlLoader() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 v8::Isolate* PreviewModeClient::GetIsolate() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::vector<PDFiumEngineClient::SearchStringResult>
-PreviewModeClient::SearchString(const char16_t* string,
-                                const char16_t* term,
+PreviewModeClient::SearchString(const std::u16string& needle,
+                                const std::u16string& haystack,
                                 bool case_sensitive) {
-  NOTREACHED_IN_MIGRATION();
-  return std::vector<SearchStringResult>();
+  NOTREACHED();
 }
 
 void PreviewModeClient::DocumentLoadComplete() {
@@ -147,12 +145,12 @@ void PreviewModeClient::DocumentLoadFailed() {
 
 void PreviewModeClient::DocumentHasUnsupportedFeature(
     const std::string& feature) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void PreviewModeClient::FormFieldFocusChange(
     PDFiumEngineClient::FocusFieldType type) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool PreviewModeClient::IsPrintPreview() const {
@@ -160,22 +158,44 @@ bool PreviewModeClient::IsPrintPreview() const {
 }
 
 SkColor PreviewModeClient::GetBackgroundColor() const {
-  NOTREACHED_IN_MIGRATION();
-  return SK_ColorTRANSPARENT;
+  NOTREACHED();
 }
 
 void PreviewModeClient::SetSelectedText(const std::string& selected_text) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void PreviewModeClient::SetLinkUnderCursor(
     const std::string& link_under_cursor) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool PreviewModeClient::IsValidLink(const std::string& url) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
+
+void PreviewModeClient::OnNewTextFragmentsSearchStarted() {
+  NOTREACHED();
+}
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+bool PreviewModeClient::IsInAnnotationMode() const {
+  NOTREACHED();
+}
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+void PreviewModeClient::OnSearchifyStateChange(bool busy) {
+  NOTREACHED();
+}
+
+void PreviewModeClient::OnHasSearchifyText() {
+  NOTREACHED();
+}
+
+void PreviewModeClient::MaybeShowSearchifyInProgress() {
+  NOTREACHED();
+}
+#endif
 
 }  // namespace chrome_pdf

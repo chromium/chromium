@@ -27,30 +27,22 @@ using ::testing::ElementsAre;
 // transition to LoadingState::kLoadedIdle. Collects all intermediate states
 // observed in-between. Generates an error if transitions are observed for
 // another PageNode than |page_node|.
-class PageLoadingStateObserver : public PageNode::ObserverDefaultImpl,
+class PageLoadingStateObserver : public PageNodeObserver,
                                  public GraphOwnedDefaultImpl {
  public:
   PageLoadingStateObserver(base::WeakPtr<PageNode> page_node,
                            bool exit_if_already_loaded_idle)
       : page_node_(page_node) {
     DCHECK(PerformanceManagerImpl::IsAvailable());
-    PerformanceManagerImpl::CallOnGraphImpl(
-        FROM_HERE,
-        // |exit_if_already_loaded_idle| is captured by copy because the lambda
-        // can be executed after the constructor returns.
-        base::BindLambdaForTesting([&, exit_if_already_loaded_idle](
-                                       performance_manager::GraphImpl* graph) {
-          EXPECT_TRUE(page_node_);
+    EXPECT_TRUE(page_node_);
 
-          if (exit_if_already_loaded_idle &&
-              page_node_->GetLoadingState() ==
-                  PageNode::LoadingState::kLoadedIdle) {
-            QuitRunLoop();
-          } else {
-            graph_ = graph;
-            graph_->AddPageNodeObserver(this);
-          }
-        }));
+    if (exit_if_already_loaded_idle &&
+        page_node_->GetLoadingState() == PageNode::LoadingState::kLoadedIdle) {
+      QuitRunLoop();
+    } else {
+      graph_ = PerformanceManagerImpl::GetGraphImpl();
+      graph_->AddPageNodeObserver(this);
+    }
   }
 
   ~PageLoadingStateObserver() override = default;

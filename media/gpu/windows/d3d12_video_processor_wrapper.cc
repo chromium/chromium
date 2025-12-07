@@ -4,6 +4,7 @@
 
 #include "media/gpu/windows/d3d12_video_processor_wrapper.h"
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "media/gpu/windows/d3d12_helpers.h"
@@ -95,10 +96,11 @@ bool D3D12VideoProcessorWrapper::ProcessFrames(
   };
 
   HRESULT hr;
-  if (memcmp(&input_stream_desc, &input_stream_desc_,
-             sizeof(D3D12_VIDEO_PROCESS_INPUT_STREAM_DESC)) != 0 ||
-      memcmp(&output_stream_desc, &output_stream_desc_,
-             sizeof(D3D12_VIDEO_PROCESS_OUTPUT_STREAM_DESC)) != 0) {
+  if (UNSAFE_TODO(memcmp(&input_stream_desc, &input_stream_desc_,
+                         sizeof(D3D12_VIDEO_PROCESS_INPUT_STREAM_DESC))) != 0 ||
+      UNSAFE_TODO(memcmp(&output_stream_desc, &output_stream_desc_,
+                         sizeof(D3D12_VIDEO_PROCESS_OUTPUT_STREAM_DESC))) !=
+          0) {
     D3D12_FEATURE_DATA_VIDEO_PROCESS_SUPPORT support{
         .InputSample = {.Width = static_cast<UINT>(input_texture_desc.Width),
                         .Height = input_texture_desc.Height,
@@ -167,8 +169,9 @@ bool D3D12VideoProcessorWrapper::ProcessFrames(
       .Transform = {.SourceRectangle = input_rectangle.ToRECT(),
                     .DestinationRectangle = output_rectangle.ToRECT()}};
   D3D12_VIDEO_PROCESS_OUTPUT_STREAM_ARGUMENTS output_stream_arguments{
-      .OutputStream = {
-          {.pTexture2D = output_texture, .Subresource = output_subresource}}};
+      .OutputStream = {{.pTexture2D = output_texture,
+                        .Subresource = output_subresource}},
+      .TargetRectangle = output_rectangle.ToRECT()};
   command_list_->ProcessFrames(video_processor_.Get(), &output_stream_arguments,
                                1, &input_stream_arguments);
 
@@ -188,7 +191,8 @@ bool D3D12VideoProcessorWrapper::ProcessFrames(
   ID3D12CommandList* command_list = command_list_.Get();
   command_queue_->ExecuteCommandLists(1, &command_list);
 
-  return fence_->SignalAndWait(*command_queue_.Get()) == D3D11StatusCode::kOk;
+  return fence_->SignalAndWaitCPU(*command_queue_.Get()) ==
+         D3D11StatusCode::kOk;
 }
 
 }  // namespace media

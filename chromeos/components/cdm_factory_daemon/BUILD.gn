@@ -2,44 +2,28 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
+import("//media/media_options.gni")
+
 assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
 
 component("cdm_factory_daemon_browser") {
   sources = [
     "cdm_factory_daemon_proxy.cc",
     "cdm_factory_daemon_proxy.h",
+    "cdm_factory_daemon_proxy_ash.cc",
+    "cdm_factory_daemon_proxy_ash.h",
+    "output_protection_impl.cc",
+    "output_protection_impl.h",
   ]
   public_deps = [ "//chromeos/components/cdm_factory_daemon/mojom" ]
   deps = [
+    "//ash",
     "//base",
-    "//build:chromeos_buildflags",
+    "//chromeos/ash/components/dbus/cdm_factory_daemon",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
+    "//ui/display/manager",
   ]
-  if (is_chromeos_lacros) {
-    sources += [
-      "cdm_factory_daemon_proxy_lacros.cc",
-      "cdm_factory_daemon_proxy_lacros.h",
-    ]
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-    ]
-  }
-  if (is_chromeos_ash) {
-    sources += [
-      "cdm_factory_daemon_proxy_ash.cc",
-      "cdm_factory_daemon_proxy_ash.h",
-      "output_protection_impl.cc",
-      "output_protection_impl.h",
-    ]
-    deps += [
-      "//ash",
-      "//chromeos/ash/components/dbus/cdm_factory_daemon",
-      "//ui/display/manager",
-    ]
-  }
   defines = [ "IS_CDM_FACTORY_DAEMON_IMPL" ]
 }
 
@@ -52,10 +36,6 @@ component("cdm_factory_daemon_gpu") {
     "chromeos_cdm_factory.h",
     "content_decryption_module_adapter.cc",
     "content_decryption_module_adapter.h",
-    "remote_cdm_context.cc",
-    "remote_cdm_context.h",
-    "stable_cdm_context_impl.cc",
-    "stable_cdm_context_impl.h",
   ]
   public_deps = [
     "//chromeos/components/cdm_factory_daemon/mojom",
@@ -63,9 +43,17 @@ component("cdm_factory_daemon_gpu") {
   ]
   deps = [
     "//base",
-    "//media/mojo/mojom/stable:stable_video_decoder",
     "//mojo/public/cpp/bindings",
   ]
+  if (allow_oop_video_decoder) {
+    sources += [
+      "cdm_context_for_oopvd_impl.cc",
+      "cdm_context_for_oopvd_impl.h",
+      "remote_cdm_context.cc",
+      "remote_cdm_context.h",
+    ]
+    deps += [ "//media/mojo/common" ]
+  }
   defines = [ "IS_CDM_FACTORY_DAEMON_IMPL" ]
 }
 
@@ -91,4 +79,8 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/display:test_support",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

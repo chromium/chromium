@@ -31,16 +31,15 @@
 #include <memory>
 
 #include "base/notreached.h"
-#include "base/task/single_thread_task_runner.h"
 #include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink-forward.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
+#include "third_party/blink/public/common/fingerprinting_protection/noise_token.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
-#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_disposition.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
@@ -48,21 +47,20 @@
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature_forward.h"
 #include "third_party/blink/renderer/platform/feature_context.h"
+#include "third_party/blink/renderer/platform/forward_declared_member.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
-#include "third_party/blink/renderer/platform/heap_observer_set.h"
-#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/loader/fetch/console_logger.h"
+#include "third_party/blink/renderer/platform/heap_observer_list.h"
 #include "third_party/blink/renderer/platform/loader/fetch/https_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
+#include "third_party/blink/renderer/platform/use_counter_and_console_logger.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "v8/include/v8-callbacks.h"
 #include "v8/include/v8-forward.h"
 
 namespace base {
+class SingleThreadTaskRunner;
 class UnguessableToken;
 }  // namespace base
 
@@ -74,35 +72,64 @@ namespace v8 {
 class MicrotaskQueue;
 }  // namespace v8
 
-namespace perfetto::protos::pbzero {
-class BlinkExecutionContext;
-}  // namespace perfetto::protos::pbzero
-
 namespace blink {
 
+class AbortSignalRegistry;
 class Agent;
+class AIInterfaceProxy;
 class AuditsIssue;
+class BackgroundReadback;
+class BarcodeDetectorStatics;
+class CachedVideoFramePool;
+class CanvasResourceProviderCache;
 class CodeCacheHost;
+class CodecPressureManagerProvider;
 class ConsoleMessage;
 class ContentSecurityPolicy;
 class ContentSecurityPolicyDelegate;
+class ContextFeatureSettings;
 class ContextLifecycleObserver;
 class CoreProbeSink;
+class CrosKiosk;
+class DOMScheduler;
+class DOMTimerCoordinator;
 class DOMWrapperWorld;
 class ErrorEvent;
 class EventTarget;
+class ExecutionContextClipboardEventState;
+class FileBackedBlobFactoryDispatcher;
+class FileSystemAccessManager;
+class FileSystemDispatcher;
+class FileSystemObservationCollection;
 class FrameOrWorkerScheduler;
+class GlobalIndexedDB;
+class IdleManager;
+class ImageBitmapFactories;
 class KURL;
-class LocalDOMWindow;
+class LocalFileSystem;
+class MediaInspectorContextImpl;
+class NavigatorBadge;
+class NotificationManager;
 class OriginTrialContext;
-class RuntimeFeatureStateOverrideContext;
+class ParsedFeaturePolicies;
+class PeerConnectionDependencyFactory;
 class PolicyContainer;
+class PressureObserverManager;
 class PublicURLManager;
+class ReportingContext;
 class ResourceFetcher;
-class SecurityOrigin;
+class RtcTransportDependencies;
+class RuntimeFeatureStateOverrideContext;
+class ScriptedIdleTaskController;
 class ScriptState;
 class ScriptWrappable;
+class SecurityOrigin;
+class ServiceWorkerContainer;
+class ThrottlingController;
 class TrustedTypePolicyFactory;
+class WebCodecsLogger;
+class WebPrintingManager;
+class WebViewAndroid;
 
 enum ReasonForCallingCanExecuteScripts {
   kAboutToExecuteScript,
@@ -133,10 +160,8 @@ enum ReferrerPolicySource { kPolicySourceHttpHeader, kPolicySourceMetaTag };
 // script written by a web author and an "isolated world" content script written
 // by an extension developer, but these share an ExecutionContext (the window)
 // in common.
-class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
-                                     public MojoBindingContext,
-                                     public ConsoleLogger,
-                                     public UseCounter,
+class CORE_EXPORT ExecutionContext : public MojoBindingContext,
+                                     public UseCounterAndConsoleLogger,
                                      public FeatureContext {
  public:
   ExecutionContext(const ExecutionContext&) = delete;
@@ -180,6 +205,8 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   virtual bool IsContextThread() const { return true; }
 
   virtual bool ShouldInstallV8Extensions() const { return false; }
+
+  virtual void MaybeRecordNetworkRequestUrlForPushEvents(const KURL& url) {}
 
   virtual void CountUseOnlyInCrossSiteIframe(mojom::blink::WebFeature feature) {
   }
@@ -258,12 +285,6 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   void SetLifecycleState(mojom::FrameLifecycleState);
   virtual void NotifyContextDestroyed();
 
-  using ConsoleLogger::AddConsoleMessage;
-
-  void AddConsoleMessage(ConsoleMessage* message,
-                         bool discard_duplicates = false) {
-    AddConsoleMessageImpl(message, discard_duplicates);
-  }
   virtual void AddInspectorIssue(AuditsIssue) = 0;
 
   void CountDeprecation(WebFeature feature) override;
@@ -352,9 +373,9 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   // Report-To endpoints, via ReportPermissionsPolicyViolation(), if the feature
   // is disabled. The optional ConsoleMessage will be sent to the console if
   // present, or else a default message will be used instead.
-  bool IsFeatureEnabled(mojom::blink::PermissionsPolicyFeature) const;
+  bool IsFeatureEnabled(network::mojom::PermissionsPolicyFeature) const;
   bool IsFeatureEnabled(
-      mojom::blink::PermissionsPolicyFeature,
+      network::mojom::PermissionsPolicyFeature,
       ReportOptions report_option = ReportOptions::kDoNotReport,
       const String& message = g_empty_string);
 
@@ -377,17 +398,24 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   // to both remain const qualified and output console message, needs
   // to call |frame_->Console().AddMessage()| directly.
   virtual void ReportPermissionsPolicyViolation(
-      mojom::blink::PermissionsPolicyFeature,
+      network::mojom::PermissionsPolicyFeature,
       mojom::blink::PolicyDisposition,
-      const std::optional<String>& reporting_endpoint,
+      const String& reporting_endpoint,
       const String& message = g_empty_string) const {}
+  virtual void ReportPotentialPermissionsPolicyViolation(
+      network::mojom::PermissionsPolicyFeature,
+      mojom::blink::PolicyDisposition,
+      const String& reporting_endpoint,
+      const String& message = g_empty_string,
+      const String& allow_attribute = g_empty_string,
+      const String& src_attribute = g_empty_string) const {}
   virtual void ReportDocumentPolicyViolation(
       mojom::blink::DocumentPolicyFeature,
       mojom::blink::PolicyDisposition,
       const String& message = g_empty_string,
       const String& source_file = g_empty_string) const {}
 
-  HeapObserverSet<ContextLifecycleObserver>& ContextLifecycleObserverSet();
+  HeapObserverList<ContextLifecycleObserver>& ContextLifecycleObserverSet();
   unsigned ContextLifecycleStateObserverCountForTesting() const;
 
   // Implementation of WindowOrWorkerGlobalScope.crossOriginIsolated.
@@ -439,10 +467,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   // ExecutionContext subclasses are usually the V8 global object, which means
   // they are also a ScriptWrappable. This casts the ExecutionContext to a
   // ScriptWrappable if possible.
-  virtual ScriptWrappable* ToScriptWrappable() {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  virtual ScriptWrappable* ToScriptWrappable() { NOTREACHED(); }
 
   bool has_filed_shared_array_buffer_creation_issue() const {
     return has_filed_shared_array_buffer_creation_issue_;
@@ -453,10 +478,6 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   bool IsInRequestAnimationFrame() const {
     return is_in_request_animation_frame_;
   }
-
-  // Write a representation of this object into a trace.
-  using Proto = perfetto::protos::pbzero::BlinkExecutionContext;
-  void WriteIntoTrace(perfetto::TracedProto<Proto> proto) const;
 
   // For use by FrameRequestCallbackCollection::ExecuteFrameCallbacks();
   // IsInRequestAnimationFrame() for the corresponding ExecutionContext will
@@ -481,6 +502,293 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   // Returns the context's Storage Access API status.
   virtual net::StorageAccessApiStatus GetStorageAccessApiStatus() const {
     return net::StorageAccessApiStatus::kNone;
+  }
+
+  const std::optional<NoiseToken>& CanvasNoiseToken() const {
+    return canvas_noise_token_;
+  }
+
+  void SetCanvasNoiseToken(std::optional<NoiseToken> token) {
+    canvas_noise_token_ = token;
+  }
+
+  ForwardDeclaredMember<GlobalIndexedDB> GetGlobalIndexedDB() const {
+    return global_indexed_db_;
+  }
+  void SetGlobalIndexedDB(
+      ForwardDeclaredMember<GlobalIndexedDB> global_indexed_db) {
+    global_indexed_db_ = global_indexed_db;
+  }
+
+  AbortSignalRegistry* GetAbortSignalRegistry() const {
+    return abort_signal_registry_;
+  }
+  void SetAbortSignalRegistry(AbortSignalRegistry* abort_signal_registry) {
+    abort_signal_registry_ = abort_signal_registry;
+  }
+
+  ContextFeatureSettings* GetContextFeatureSettings() const {
+    return context_feature_settings_;
+  }
+  void SetContextFeatureSettings(
+      ContextFeatureSettings* context_feature_settings) {
+    context_feature_settings_ = context_feature_settings;
+  }
+
+  DOMScheduler* GetDOMScheduler() const { return dom_scheduler_; }
+  void SetDOMScheduler(DOMScheduler* dom_scheduler) {
+    dom_scheduler_ = dom_scheduler;
+  }
+
+  FileBackedBlobFactoryDispatcher* GetFileBackedBlobFactoryDispatcher() const {
+    return file_backed_blob_factory_dispatcher_;
+  }
+  void SetFileBackedBlobFactoryDispatcher(
+      FileBackedBlobFactoryDispatcher* file_backed_blob_factory_dispatcher) {
+    file_backed_blob_factory_dispatcher_ = file_backed_blob_factory_dispatcher;
+  }
+
+  MediaInspectorContextImpl* GetMediaInspectorContextImpl() const {
+    return media_inspector_context_impl_;
+  }
+  void SetMediaInspectorContextImpl(
+      MediaInspectorContextImpl* media_inspector_context_impl) {
+    media_inspector_context_impl_ = media_inspector_context_impl;
+  }
+
+  ReportingContext* GetReportingContext() const { return reporting_context_; }
+  void SetReportingContext(ReportingContext* reporting_context) {
+    reporting_context_ = reporting_context;
+  }
+
+  ScriptedIdleTaskController* GetScriptedIdleTaskController() const {
+    return scripted_idle_task_controller_;
+  }
+  void SetScriptedIdleTaskController(
+      ScriptedIdleTaskController* scripted_idle_task_controller) {
+    scripted_idle_task_controller_ = scripted_idle_task_controller;
+  }
+
+  ForwardDeclaredMember<AIInterfaceProxy> GetAIInterfaceProxy() const {
+    return ai_interface_proxy_;
+  }
+  void SetAIInterfaceProxy(
+      ForwardDeclaredMember<AIInterfaceProxy> ai_interface_proxy) {
+    ai_interface_proxy_ = ai_interface_proxy;
+  }
+
+  ForwardDeclaredMember<BackgroundReadback> GetBackgroundReadback() const {
+    return background_readback_;
+  }
+  void SetBackgroundReadback(
+      ForwardDeclaredMember<BackgroundReadback> background_readback) {
+    background_readback_ = background_readback;
+  }
+
+  ForwardDeclaredMember<BarcodeDetectorStatics> GetBarcodeDetectorStatics()
+      const {
+    return barcode_detector_statics_;
+  }
+  void SetBarcodeDetectorStatics(
+      ForwardDeclaredMember<BarcodeDetectorStatics> barcode_detector_statics) {
+    barcode_detector_statics_ = barcode_detector_statics;
+  }
+
+  ForwardDeclaredMember<CachedVideoFramePool> GetCachedVideoFramePool() const {
+    return cached_video_frame_pool_;
+  }
+  void SetCachedVideoFramePool(
+      ForwardDeclaredMember<CachedVideoFramePool> cached_video_frame_pool) {
+    cached_video_frame_pool_ = cached_video_frame_pool;
+  }
+
+  ForwardDeclaredMember<CanvasResourceProviderCache>
+  GetCanvasResourceProviderCache() const {
+    return canvas_resource_provider_cache_;
+  }
+  void SetCanvasResourceProviderCache(
+      ForwardDeclaredMember<CanvasResourceProviderCache>
+          canvas_resource_provider_cache) {
+    canvas_resource_provider_cache_ = canvas_resource_provider_cache;
+  }
+
+  ForwardDeclaredMember<CodecPressureManagerProvider>
+  GetCodecPressureManagerProvider() const {
+    return codec_pressure_manager_provider_;
+  }
+  void SetCodecPressureManagerProvider(
+      ForwardDeclaredMember<CodecPressureManagerProvider>
+          codec_pressure_manager_provider) {
+    codec_pressure_manager_provider_ = codec_pressure_manager_provider;
+  }
+
+  ForwardDeclaredMember<CrosKiosk> GetCrosKiosk() const { return cros_kiosk_; }
+  void SetCrosKiosk(ForwardDeclaredMember<CrosKiosk> cros_kiosk) {
+    cros_kiosk_ = cros_kiosk;
+  }
+
+  ForwardDeclaredMember<DOMTimerCoordinator> GetDOMTimerCoordinator() const {
+    return dom_timer_coordinator_;
+  }
+  void SetDOMTimerCoordinator(
+      ForwardDeclaredMember<DOMTimerCoordinator> dom_timer_coordinator) {
+    dom_timer_coordinator_ = dom_timer_coordinator;
+  }
+
+  ForwardDeclaredMember<ExecutionContextClipboardEventState>
+  GetExecutionContextClipboardEventState() const {
+    return execution_context_clipboard_event_state_;
+  }
+  void SetExecutionContextClipboardEventState(
+      ForwardDeclaredMember<ExecutionContextClipboardEventState>
+          execution_context_clipboard_event_state) {
+    execution_context_clipboard_event_state_ =
+        execution_context_clipboard_event_state;
+  }
+
+  ForwardDeclaredMember<FileSystemAccessManager> GetFileSystemAccessManager()
+      const {
+    return file_system_access_manager_;
+  }
+  void SetFileSystemAccessManager(ForwardDeclaredMember<FileSystemAccessManager>
+                                      file_system_access_manager) {
+    file_system_access_manager_ = file_system_access_manager;
+  }
+
+  ForwardDeclaredMember<FileSystemDispatcher> GetFileSystemDispatcher() const {
+    return file_system_dispatcher_;
+  }
+  void SetFileSystemDispatcher(
+      ForwardDeclaredMember<FileSystemDispatcher> file_system_dispatcher) {
+    file_system_dispatcher_ = file_system_dispatcher;
+  }
+
+  ForwardDeclaredMember<FileSystemObservationCollection>
+  GetFileSystemObservationCollection() const {
+    return file_system_observation_collection_;
+  }
+  void SetFileSystemObservationCollection(
+      ForwardDeclaredMember<FileSystemObservationCollection>
+          file_system_observation_collection) {
+    file_system_observation_collection_ = file_system_observation_collection;
+  }
+
+  ForwardDeclaredMember<IdleManager> GetIdleManager() const {
+    return idle_manager_;
+  }
+  void SetIdleManager(ForwardDeclaredMember<IdleManager> idle_manager) {
+    idle_manager_ = idle_manager;
+  }
+
+  ForwardDeclaredMember<ImageBitmapFactories> GetImageBitmapFactories() const {
+    return image_bitmap_factories_;
+  }
+  void SetImageBitmapFactories(
+      ForwardDeclaredMember<ImageBitmapFactories> image_bitmap_factories) {
+    image_bitmap_factories_ = image_bitmap_factories;
+  }
+
+  ForwardDeclaredMember<LocalFileSystem> GetLocalFileSystem() const {
+    return local_file_system_;
+  }
+  void SetLocalFileSystem(
+      ForwardDeclaredMember<LocalFileSystem> local_file_system) {
+    local_file_system_ = local_file_system;
+  }
+
+  ForwardDeclaredMember<NavigatorBadge> GetNavigatorBadge() const {
+    return navigator_badge_;
+  }
+  void SetNavigatorBadge(
+      ForwardDeclaredMember<NavigatorBadge> navigator_badge) {
+    navigator_badge_ = navigator_badge;
+  }
+
+  ForwardDeclaredMember<NotificationManager> GetNotificationManager() const {
+    return notification_manager_;
+  }
+  void SetNotificationManager(
+      ForwardDeclaredMember<NotificationManager> notification_manager) {
+    notification_manager_ = notification_manager;
+  }
+
+  ForwardDeclaredMember<ParsedFeaturePolicies> GetParsedFeaturePolicies()
+      const {
+    return parsed_feature_policies_;
+  }
+  void SetParsedFeaturePolicies(
+      ForwardDeclaredMember<ParsedFeaturePolicies> parsed_feature_policies) {
+    parsed_feature_policies_ = parsed_feature_policies;
+  }
+
+  ForwardDeclaredMember<PeerConnectionDependencyFactory>
+  GetPeerConnectionDependencyFactory() const {
+    return peer_connection_dependency_factory_;
+  }
+  void SetPeerConnectionDependencyFactory(
+      ForwardDeclaredMember<PeerConnectionDependencyFactory>
+          peer_connection_dependency_factory) {
+    peer_connection_dependency_factory_ = peer_connection_dependency_factory;
+  }
+
+  ForwardDeclaredMember<PressureObserverManager> GetPressureObserverManager()
+      const {
+    return pressure_observer_manager_;
+  }
+  void SetPressureObserverManager(ForwardDeclaredMember<PressureObserverManager>
+                                      pressure_observer_manager) {
+    pressure_observer_manager_ = pressure_observer_manager;
+  }
+
+  ForwardDeclaredMember<RtcTransportDependencies> GetRtcTransportDependencies()
+      const {
+    return rtc_transport_dependencies_;
+  }
+  void SetRtcTransportDependencies(
+      ForwardDeclaredMember<RtcTransportDependencies>
+          rtc_transport_dependencies) {
+    rtc_transport_dependencies_ = rtc_transport_dependencies;
+  }
+
+  ForwardDeclaredMember<ServiceWorkerContainer> GetServiceWorkerContainer()
+      const {
+    return service_worker_container_;
+  }
+  void SetServiceWorkerContainer(
+      ForwardDeclaredMember<ServiceWorkerContainer> service_worker_container) {
+    service_worker_container_ = service_worker_container;
+  }
+
+  ForwardDeclaredMember<ThrottlingController> GetThrottlingController() const {
+    return throttling_controller_;
+  }
+  void SetThrottlingController(
+      ForwardDeclaredMember<ThrottlingController> throttling_controller) {
+    throttling_controller_ = throttling_controller;
+  }
+
+  ForwardDeclaredMember<WebCodecsLogger> GetWebCodecsLogger() const {
+    return web_codecs_logger_;
+  }
+  void SetWebCodecsLogger(
+      ForwardDeclaredMember<WebCodecsLogger> web_codecs_logger) {
+    web_codecs_logger_ = web_codecs_logger;
+  }
+
+  ForwardDeclaredMember<WebPrintingManager> GetWebPrintingManager() const {
+    return web_printing_manager_;
+  }
+  void SetWebPrintingManager(
+      ForwardDeclaredMember<WebPrintingManager> web_printing_manager) {
+    web_printing_manager_ = web_printing_manager;
+  }
+
+  ForwardDeclaredMember<WebViewAndroid> GetWebViewAndroid() const {
+    return web_view_android_;
+  }
+  void SetWebViewAndroid(
+      ForwardDeclaredMember<WebViewAndroid> web_view_android) {
+    web_view_android_ = web_view_android;
   }
 
  protected:
@@ -545,7 +853,50 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   Member<RuntimeFeatureStateOverrideContext>
       runtime_feature_state_override_context_;
 
-  bool require_safe_types_ = false;
+  bool require_trusted_types_ = false;
+
+  std::optional<NoiseToken> canvas_noise_token_;
+
+  ForwardDeclaredMember<GlobalIndexedDB> global_indexed_db_;
+
+  Member<AbortSignalRegistry> abort_signal_registry_;
+  Member<ContextFeatureSettings> context_feature_settings_;
+  Member<DOMScheduler> dom_scheduler_;
+  Member<FileBackedBlobFactoryDispatcher> file_backed_blob_factory_dispatcher_;
+  Member<MediaInspectorContextImpl> media_inspector_context_impl_;
+  Member<ReportingContext> reporting_context_;
+  Member<ScriptedIdleTaskController> scripted_idle_task_controller_;
+  ForwardDeclaredMember<AIInterfaceProxy> ai_interface_proxy_;
+  ForwardDeclaredMember<BackgroundReadback> background_readback_;
+  ForwardDeclaredMember<BarcodeDetectorStatics> barcode_detector_statics_;
+  ForwardDeclaredMember<CachedVideoFramePool> cached_video_frame_pool_;
+  ForwardDeclaredMember<CanvasResourceProviderCache>
+      canvas_resource_provider_cache_;
+  ForwardDeclaredMember<CodecPressureManagerProvider>
+      codec_pressure_manager_provider_;
+  ForwardDeclaredMember<CrosKiosk> cros_kiosk_;
+  ForwardDeclaredMember<DOMTimerCoordinator> dom_timer_coordinator_;
+  ForwardDeclaredMember<ExecutionContextClipboardEventState>
+      execution_context_clipboard_event_state_;
+  ForwardDeclaredMember<FileSystemAccessManager> file_system_access_manager_;
+  ForwardDeclaredMember<FileSystemDispatcher> file_system_dispatcher_;
+  ForwardDeclaredMember<FileSystemObservationCollection>
+      file_system_observation_collection_;
+  ForwardDeclaredMember<IdleManager> idle_manager_;
+  ForwardDeclaredMember<ImageBitmapFactories> image_bitmap_factories_;
+  ForwardDeclaredMember<LocalFileSystem> local_file_system_;
+  ForwardDeclaredMember<NavigatorBadge> navigator_badge_;
+  ForwardDeclaredMember<NotificationManager> notification_manager_;
+  ForwardDeclaredMember<ParsedFeaturePolicies> parsed_feature_policies_;
+  ForwardDeclaredMember<PeerConnectionDependencyFactory>
+      peer_connection_dependency_factory_;
+  ForwardDeclaredMember<PressureObserverManager> pressure_observer_manager_;
+  ForwardDeclaredMember<RtcTransportDependencies> rtc_transport_dependencies_;
+  ForwardDeclaredMember<ServiceWorkerContainer> service_worker_container_;
+  ForwardDeclaredMember<ThrottlingController> throttling_controller_;
+  ForwardDeclaredMember<WebCodecsLogger> web_codecs_logger_;
+  ForwardDeclaredMember<WebPrintingManager> web_printing_manager_;
+  ForwardDeclaredMember<WebViewAndroid> web_view_android_;
 };
 
 }  // namespace blink

@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -25,7 +24,6 @@ component("account_manager_core") {
     "chromeos/access_token_fetcher.h",
     "chromeos/account_manager.cc",
     "chromeos/account_manager.h",
-    "chromeos/account_manager_facade_factory.h",
     "chromeos/account_manager_mojo_service.cc",
     "chromeos/account_manager_mojo_service.h",
     "chromeos/account_manager_ui.cc",
@@ -36,18 +34,12 @@ component("account_manager_core") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//chromeos/crosapi/mojom",
-    "//components/prefs:prefs",
-    "//google_apis:google_apis",
+    "//components/prefs",
+    "//google_apis",
     "//mojo/public/cpp/bindings",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
   ]
-
-  if (is_chromeos_lacros) {
-    sources += [ "chromeos/account_manager_facade_factory_lacros.cc" ]
-    deps += [ "//chromeos/lacros:lacros" ]
-  }
 
   public_deps = [
     ":account_manager_proto",
@@ -94,11 +86,15 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chromeos/crosapi/mojom",
     "//components/prefs:test_support",
-    "//google_apis:google_apis",
+    "//google_apis",
     "//services/network:test_support",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//testing/gtest",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 proto_library("account_manager_proto") {

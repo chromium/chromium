@@ -41,10 +41,10 @@ suite('HistogramsInternals', () => {
     getRequiredElement('refresh').click();
     await histogramsUpdated();
     const histogramHeader = 'Histogram: HTMLOut recorded 5 samples';
-    const indexOfHeader = document.body.textContent!.indexOf(histogramHeader);
+    const indexOfHeader = document.body.textContent.indexOf(histogramHeader);
     assertNotEquals(-1, indexOfHeader);
     assertEquals(
-        indexOfHeader, document.body.textContent!.lastIndexOf(histogramHeader),
+        indexOfHeader, document.body.textContent.lastIndexOf(histogramHeader),
         'refresh should replace existing histograms');
   });
 

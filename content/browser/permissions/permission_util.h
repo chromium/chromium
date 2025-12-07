@@ -35,18 +35,24 @@ class PermissionUtil {
   CONTENT_EXPORT static const url::Origin& ExtractDomainOverride(
       const blink::mojom::PermissionDescriptorPtr& descriptor);
 
-  // Determine whether the domain override mechanism is enabled by features. The
-  // override mechanism is currently only used by one permission type,
-  // specifically storage access requests on behalf of another domain.
-  CONTENT_EXPORT static bool IsDomainOverrideEnabled();
-
   // For a domain override, determines whether it is valid. The override
   // mechanism is currently only used by one permission type, specifically
   // storage access requests on behalf of another domain.
   CONTENT_EXPORT static bool ValidateDomainOverride(
-      const std::vector<blink::PermissionType>& types,
+      const std::vector<blink::mojom::PermissionDescriptorPtr>& types,
       RenderFrameHost* rfh,
       const blink::mojom::PermissionDescriptorPtr& descriptor);
+
+  // Returns true if the given descriptor is a capability that combines the
+  // browser's permission status with a device-level status (and, therefore,
+  // can be retrieved through `GetCombinedPermissionAndDeviceStatus(...)`).
+  CONTENT_EXPORT static bool IsDevicePermission(
+      const blink::mojom::PermissionDescriptorPtr&);
+
+  // Returns true if the given descriptor is a capability that can be accessed
+  // through an embedded permission element.
+  CONTENT_EXPORT static bool IsEmbeddablePermission(
+      const blink::mojom::PermissionDescriptorPtr&);
 };
 
 }  // namespace content

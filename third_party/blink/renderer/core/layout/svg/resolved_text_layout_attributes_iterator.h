@@ -51,10 +51,10 @@ class ResolvedTextLayoutAttributesIterator final {
       return resolved_[index_].second;
     }
     auto resolved_range = base::span(resolved_).subspan(index_);
-    auto it = base::ranges::find_if(resolved_range,
-                                    [addressable_index](const auto& pair) {
-                                      return addressable_index <= pair.first;
-                                    });
+    auto it = std::ranges::find_if(resolved_range,
+                                   [addressable_index](const auto& pair) {
+                                     return addressable_index <= pair.first;
+                                   });
     index_ +=
         static_cast<wtf_size_t>(std::distance(resolved_range.begin(), it));
     return AdvanceTo(addressable_index);

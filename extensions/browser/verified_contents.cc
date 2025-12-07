@@ -52,12 +52,14 @@ const base::Value::Dict* FindDictionaryWithValue(const base::Value::List& list,
                                                  const std::string& key,
                                                  const std::string& value) {
   for (const base::Value& item : list) {
-    if (!item.is_dict())
+    if (!item.is_dict()) {
       continue;
+    }
     // Finds a path because the |key| may include '.'.
     const std::string* found_value = item.GetDict().FindStringByDottedPath(key);
-    if (found_value && *found_value == value)
+    if (found_value && *found_value == value) {
       return &item.GetDict();
+    }
   }
   return nullptr;
 }
@@ -112,7 +114,8 @@ std::unique_ptr<VerifiedContents> VerifiedContents::Create(
   if (!verified_contents->GetPayload(contents, &payload))
     return nullptr;
 
-  std::optional<base::Value> dictionary_value = base::JSONReader::Read(payload);
+  std::optional<base::Value> dictionary_value =
+      base::JSONReader::Read(payload, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!dictionary_value || !dictionary_value->is_dict()) {
     return nullptr;
   }
@@ -251,7 +254,8 @@ bool VerifiedContents::TreeHashRootEquals(const base::FilePath& relative_path,
 // enterprise installs).
 bool VerifiedContents::GetPayload(std::string_view contents,
                                   std::string* payload) {
-  std::optional<base::Value> top_list = base::JSONReader::Read(contents);
+  std::optional<base::Value> top_list =
+      base::JSONReader::Read(contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!top_list || !top_list->is_list())
     return false;
 
@@ -319,18 +323,17 @@ bool VerifiedContents::VerifySignature(const std::string& protected_value,
   crypto::SignatureVerifier signature_verifier;
   if (!signature_verifier.VerifyInit(
           crypto::SignatureVerifier::RSA_PKCS1_SHA256,
-          base::as_bytes(base::make_span(signature_bytes)), public_key_)) {
+          base::as_byte_span(signature_bytes), public_key_)) {
     VLOG(1) << "Could not verify signature - VerifyInit failure";
     return false;
   }
 
-  signature_verifier.VerifyUpdate(
-      base::as_bytes(base::make_span(protected_value)));
+  signature_verifier.VerifyUpdate(base::as_byte_span(protected_value));
 
   std::string dot(".");
-  signature_verifier.VerifyUpdate(base::as_bytes(base::make_span(dot)));
+  signature_verifier.VerifyUpdate(base::as_byte_span(dot));
 
-  signature_verifier.VerifyUpdate(base::as_bytes(base::make_span(payload)));
+  signature_verifier.VerifyUpdate(base::as_byte_span(payload));
 
   if (!signature_verifier.VerifyFinal()) {
     VLOG(1) << "Could not verify signature - VerifyFinal failure";

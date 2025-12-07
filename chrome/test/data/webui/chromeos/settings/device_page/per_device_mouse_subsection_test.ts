@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://os-settings/os_settings.js';
+import 'chrome://os-settings/lazy_load.js';
 import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
-import {CrLinkRowElement, CrToggleElement, FakeInputDeviceSettingsProvider, fakeMice, fakeMice2, Mouse, PerDeviceSubsectionHeaderElement, PolicyStatus, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsDropdownMenuElement, SettingsPerDeviceMouseSubsectionElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import type {SettingsPerDeviceMouseSubsectionElement} from 'chrome://os-settings/lazy_load.js';
+import {PerDeviceSubsectionHeaderElement} from 'chrome://os-settings/lazy_load.js';
+import type {CrLinkRowElement, CrToggleElement, Mouse, SettingsDropdownMenuElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {FakeInputDeviceSettingsProvider, fakeMice, fakeMice2, PolicyStatus, Router, routes, setInputDeviceSettingsProviderForTesting} from 'chrome://os-settings/os_settings.js';
 import type {BluetoothBatteryIconPercentageElement} from 'chrome://resources/ash/common/bluetooth/bluetooth_battery_icon_percentage.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
@@ -37,15 +40,12 @@ suite('<settings-per-device-mouse-subsection>', function() {
     subsection = document.createElement('settings-per-device-mouse-subsection');
     assert(subsection);
     subsection.set('mouse', {...fakeMice[0]});
-    subsection.set('allowScrollSettings_', true);
     document.body.appendChild(subsection);
     return flushTasks();
   }
 
-  function changeMouseSubsectionState(
-      mouse: Mouse, allowScrollSettings: boolean): Promise<void> {
+  function changeMouseSubsectionState(mouse: Mouse): Promise<void> {
     subsection.set('mouse', mouse);
-    subsection.set('allowScrollSettings_', allowScrollSettings);
     return flushTasks();
   }
 
@@ -103,7 +103,7 @@ suite('<settings-per-device-mouse-subsection>', function() {
     await flushTasks();
     updatedMice = await provider.getConnectedMouseSettings();
     assertEquals(
-        updatedMice[0]!.settings.sensitivity, mouseSpeedSlider.pref!.value);
+        updatedMice[0]!.settings.sensitivity, mouseSpeedSlider.pref.value);
 
     const mouseReverseScrollToggleButton =
         subsection.shadowRoot!.querySelector<CrToggleElement>(
@@ -137,7 +137,7 @@ suite('<settings-per-device-mouse-subsection>', function() {
     updatedMice = await provider.getConnectedMouseSettings();
     assertEquals(
         updatedMice[0]!.settings.scrollSensitivity,
-        mouseScrollSpeedSlider.pref!.value);
+        mouseScrollSpeedSlider.pref.value);
   });
 
   /**
@@ -166,17 +166,17 @@ suite('<settings-per-device-mouse-subsection>', function() {
         subsection.shadowRoot!.querySelector<CrLinkRowElement>(
             '#customizeMouseButtons');
     assertTrue(!!mouseSwapToggleButton);
-    assertTrue(mouseSwapToggleButton!.pref!.value);
+    assertTrue(mouseSwapToggleButton.pref!.value);
     assertEquals(
-        fakeMice2[0]!.settings.swapRight, mouseSwapToggleButton!.pref!.value);
+        fakeMice2[0]!.settings.swapRight, mouseSwapToggleButton.pref!.value);
     assertFalse(!!customizeButtonsRow);
 
     // Click mouse swap toggle button will update the pref value.
     mouseSwapToggleButton.click();
     await flushTasks();
-    assertFalse(mouseSwapToggleButton!.pref!.value);
+    assertFalse(mouseSwapToggleButton.pref!.value);
     assertEquals(
-        fakeMice2[0]!.settings.swapRight, mouseSwapToggleButton!.pref!.value);
+        fakeMice2[0]!.settings.swapRight, mouseSwapToggleButton.pref!.value);
 
     // Turn off the feature flag, the mouse swap toggle button disappear.
     setPeripheralCustomizationEnabled(false);
@@ -233,7 +233,7 @@ suite('<settings-per-device-mouse-subsection>', function() {
         subsection.shadowRoot!.querySelector<SettingsSliderElement>(
             '#mouseSpeedSlider');
     assertEquals(
-        fakeMice[0]!.settings.sensitivity, mouseSpeedSlider!.pref!.value);
+        fakeMice[0]!.settings.sensitivity, mouseSpeedSlider!.pref.value);
     assertEquals(
         fakeMice[0]!.settings.reverseScrolling,
         subsection.get('reverseScrollValue'));
@@ -251,32 +251,41 @@ suite('<settings-per-device-mouse-subsection>', function() {
     assertTrue(isVisible(mouseScrollSpeedSlider));
     assertEquals(
         fakeMice[0]!.settings.scrollSensitivity,
-        mouseScrollSpeedSlider.pref!.value);
+        mouseScrollSpeedSlider.pref.value);
 
     assert(fakeMice[1]);
-    await changeMouseSubsectionState(fakeMice[1], false);
+    await changeMouseSubsectionState(fakeMice[1]);
     mouseSwapButtonDropdown =
         subsection.shadowRoot!.querySelector('#mouseSwapButtonDropdown');
     assertEquals(
-        fakeMice[1]!.settings.swapRight, mouseSwapButtonDropdown!.pref!.value);
+        fakeMice[1].settings.swapRight, mouseSwapButtonDropdown!.pref!.value);
     mouseAccelerationToggleButton =
         subsection.shadowRoot!.querySelector('#mouseAcceleration');
     assertEquals(
-        fakeMice[1]!.settings.accelerationEnabled,
+        fakeMice[1].settings.accelerationEnabled,
         mouseAccelerationToggleButton!.pref!.value);
     mouseSpeedSlider =
         subsection.shadowRoot!.querySelector('#mouseSpeedSlider');
     assertEquals(
-        fakeMice[1]!.settings.sensitivity, mouseSpeedSlider!.pref!.value);
+        fakeMice[1].settings.sensitivity, mouseSpeedSlider!.pref.value);
     assertEquals(
-        fakeMice[1]!.settings.reverseScrolling,
+        fakeMice[1].settings.reverseScrolling,
         subsection.get('reverseScrollValue'));
     mouseControlledScrollingToggleButton =
-        subsection.shadowRoot!.querySelector('#mouseControlledScrolling');
-    assertFalse(isVisible(mouseControlledScrollingToggleButton));
+        subsection.shadowRoot!.querySelector<CrToggleElement>(
+            '#mouseControlledScrolling');
+    assertTrue(isVisible(mouseControlledScrollingToggleButton));
+    assertEquals(
+        fakeMice[1].settings.scrollAcceleration,
+        !mouseControlledScrollingToggleButton!.checked);
+
     mouseScrollSpeedSlider =
-        subsection.shadowRoot!.querySelector('#mouseScrollSpeedSlider');
-    assertFalse(isVisible(mouseScrollSpeedSlider));
+        subsection.shadowRoot!.querySelector<SettingsSliderElement>(
+            '#mouseScrollSpeedSlider');
+    assertTrue(isVisible(mouseScrollSpeedSlider));
+    assertEquals(
+        fakeMice[1].settings.scrollSensitivity,
+        mouseScrollSpeedSlider!.pref.value);
   });
 
   /**

@@ -17,6 +17,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"  // IWYU pragma: export
 #include "base/values.h"
 #include "net/base/address_family.h"
 #include "net/base/load_states.h"
@@ -32,6 +33,7 @@
 #include "net/http/http_cache.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_server_properties.h"
+#include "net/http/http_stream_pool.h"
 #include "net/http/http_transaction_factory.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_entry.h"
@@ -133,7 +135,7 @@ base::Value GetActiveFieldTrialList() {
 
 }  // namespace
 
-base::Value::Dict GetNetConstants() {
+base::Value::Dict GetNetConstants(NetConstantsRequestMode request_mode) {
   base::Value::Dict constants_dict;
 
   // Version of the file format.
@@ -156,15 +158,22 @@ base::Value::Dict GetNetConstants() {
 
   // Add a dictionary with information about the relationship between
   // CertVerifier::VerifyFlags and their symbolic names.
+  // LINT.IfChange(CertVerifier.VerifyFlags)
   {
-    static_assert(CertVerifier::VERIFY_FLAGS_LAST == (1 << 0),
+    static_assert(CertVerifier::VERIFY_FLAGS_LAST == (1 << 1),
                   "Update with new flags");
-    constants_dict.Set(
-        "certVerifierFlags",
-        base::Value::Dict().Set("VERIFY_DISABLE_NETWORK_FETCHES",
-                                CertVerifier::VERIFY_DISABLE_NETWORK_FETCHES));
-  }
+    constants_dict.Set("certVerifierFlags",
+                       base::Value::Dict()
+                           .Set("VERIFY_DISABLE_NETWORK_FETCHES",
+                                CertVerifier::VERIFY_DISABLE_NETWORK_FETCHES)
+                           .Set("VERIFY_SXG_CT_REQUIREMENTS",
+                                CertVerifier::VERIFY_SXG_CT_REQUIREMENTS)
 
+    );
+  }
+  // LINT.ThenChange(/net/cert/cert_verifier.h:CertVerifier.VerifyFlags)
+
+  // LINT.IfChange(CertVerifyProc.VerifyFlags)
   {
     static_assert(CertVerifyProc::VERIFY_FLAGS_LAST == (1 << 4),
                   "Update with new flags");
@@ -177,11 +186,12 @@ base::Value::Dict GetNetConstants() {
                  CertVerifyProc::VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS)
             .Set("VERIFY_ENABLE_SHA1_LOCAL_ANCHORS",
                  CertVerifyProc::VERIFY_ENABLE_SHA1_LOCAL_ANCHORS)
-            .Set("VERIFY_DISABLE_SYMANTEC_ENFORCEMENT",
-                 CertVerifyProc::VERIFY_DISABLE_SYMANTEC_ENFORCEMENT)
             .Set("VERIFY_DISABLE_NETWORK_FETCHES",
-                 CertVerifyProc::VERIFY_DISABLE_NETWORK_FETCHES));
+                 CertVerifyProc::VERIFY_DISABLE_NETWORK_FETCHES)
+            .Set("VERIFY_SXG_CT_REQUIREMENTS",
+                 CertVerifyProc::VERIFY_SXG_CT_REQUIREMENTS));
   }
+  // LINT.ThenChange(/net/cert/cert_verify_proc.h:CertVerifyProc.VerifyFlags)
 
   {
     static_assert(
@@ -227,8 +237,11 @@ base::Value::Dict GetNetConstants() {
   {
     base::Value::Dict dict;
 
-    for (const auto& error : kNetErrors)
+    // Zero represents OK.
+    dict.Set("net::OK", 0);
+    for (const auto& error : kNetErrors) {
       dict.Set(ErrorToShortString(error), error);
+    }
 
     constants_dict.Set("netError", std::move(dict));
   }
@@ -333,6 +346,10 @@ base::Value::Dict GetNetConstants() {
   // value for compatibility.
   constants_dict.Set("clientInfo", base::Value::Dict());
 
+  if (request_mode == NetConstantsRequestMode::kTracing) {
+    return constants_dict;
+  }
+
   // Add a list of field experiments active at the start of the capture.
   // Additional trials may be enabled later in the browser session.
   constants_dict.Set(kNetInfoFieldTrials, GetActiveFieldTrialList());
@@ -387,6 +404,13 @@ NET_EXPORT base::Value::Dict GetNetInfo(URLRequestContext* context) {
   {
     net_info_dict.Set(kNetInfoSocketPool,
                       http_network_session->SocketPoolInfoToValue());
+  }
+
+  // Log HttpStreamPool info.
+  if (http_network_session->http_stream_pool()) {
+    net_info_dict.Set(
+        kNetInfoHttpStreamPool,
+        http_network_session->http_stream_pool()->GetInfoAsValue());
   }
 
   // Log SPDY Sessions.
@@ -513,11 +537,24 @@ NET_EXPORT void CreateNetLogEntriesForActiveObjects(
 
   // Create fake events.
   for (auto* request : requests) {
+    // Use default capture mode for simplicity. Can't call capture_mode() on
+    // `observer` because this method is typically called just before it starts
+    // observing, so it would CHECK. The capture mode only affects inlined
+    // credentials in the URL, which are pretty rare, so simplest to always
+    // redact them here. Can change later if needed.
     NetLogEntry entry(NetLogEventType::REQUEST_ALIVE,
                       request->net_log().source(), NetLogEventPhase::BEGIN,
-                      request->creation_time(), request->GetStateAsValue());
+                      request->creation_time(),
+                      request->GetStateAsValue(NetLogCaptureMode::kDefault));
     observer->OnAddEntry(entry);
   }
+}
+
+perfetto::Flow NetLogWithSourceToFlow(const NetLogWithSource& net_log) {
+  const uint64_t flow_id =
+      (reinterpret_cast<uint64_t>(net_log.net_log()) << 32) |
+      net_log.source().id;
+  return perfetto::Flow::ProcessScoped(flow_id);
 }
 
 }  // namespace net

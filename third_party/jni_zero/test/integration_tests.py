@@ -17,6 +17,7 @@ import glob
 import logging
 import os
 import pathlib
+import re
 import shlex
 import subprocess
 import sys
@@ -26,8 +27,10 @@ import zipfile
 
 _SCRIPT_DIR = os.path.normpath(os.path.dirname(__file__))
 _GOLDENS_DIR = os.path.join(_SCRIPT_DIR, 'golden')
-_EXTRA_INCLUDES = 'third_party/jni_zero/jni_zero_helper.h'
+_EXTRA_INCLUDES = 'extra_include.h'
 _JAVA_SRC_DIR = os.path.join(_SCRIPT_DIR, 'java', 'src', 'org', 'jni_zero')
+_JAVA_BIN_DIR = os.path.join(_SCRIPT_DIR, os.pardir, os.pardir, 'jdk',
+                             'current', 'bin')
 
 # Set this environment variable in order to regenerate the golden text
 # files.
@@ -51,24 +54,33 @@ class CliOptions:
     self.output_files = None if is_final else []
     self.header_path = None
     self.enable_jni_multiplexing = False
+    self.enable_definition_macros = False
     self.package_prefix = None
+    self.package_prefix_filter = None
     self.use_proxy_hash = False
     self.extra_include = None if is_final else _EXTRA_INCLUDES
     self.module_name = None
     self.add_stubs_for_missing_native = False
-    self.enable_proxy_mocks = False
     self.include_test_only = False
     self.manual_jni_registration = False
     self.remove_uncalled_methods = False
-    self.require_mocks = False
     self.__dict__.update(kwargs)
 
   def to_args(self):
-    ret = [os.path.join(_SCRIPT_DIR, os.pardir, 'jni_zero.py'), self.action]
+    ret = [
+        os.path.join(_SCRIPT_DIR, os.pardir, 'jni_zero.py'),
+        self.action,
+        '--include-path-prefix=overridden/',
+        '--enable-legacy-natives',
+    ]
     if self.enable_jni_multiplexing:
       ret.append('--enable-jni-multiplexing')
+    if self.enable_definition_macros:
+      ret.append('--enable-definition-macros')
     if self.package_prefix:
       ret += ['--package-prefix', self.package_prefix]
+    if self.package_prefix_filter:
+      ret += ['--package-prefix-filter', self.package_prefix_filter]
     if self.use_proxy_hash:
       ret.append('--use-proxy-hash')
     if self.output_dir:
@@ -85,8 +97,6 @@ class CliOptions:
       ret += ['--extra-include', self.extra_include]
     if self.add_stubs_for_missing_native:
       ret.append('--add-stubs-for-missing-native')
-    if self.enable_proxy_mocks:
-      ret.append('--enable-proxy-mocks')
     if self.header_path:
       ret += ['--header-path', self.header_path]
     if self.include_test_only:
@@ -97,8 +107,6 @@ class CliOptions:
       ret += ['--module-name', self.module_name]
     if self.remove_uncalled_methods:
       ret.append('--remove-uncalled-methods')
-    if self.require_mocks:
-      ret.append('--require-mocks')
     return ret
 
 
@@ -140,6 +148,7 @@ class BaseTest(unittest.TestCase):
                               *,
                               srcjar=False,
                               generate_placeholders=False,
+                              enable_jni_multiplexing=False,
                               per_file_natives=False,
                               **kwargs):
     is_javap = input_files[0].endswith('.class')
@@ -177,6 +186,7 @@ class BaseTest(unittest.TestCase):
 
       options.output_dir = tdir
       cmd = options.to_args()
+      cmd += ['--allow-private-called-by-natives']
 
       if srcjar:
         srcjar_path = os.path.join(tdir, 'srcjar.jar')
@@ -184,12 +194,17 @@ class BaseTest(unittest.TestCase):
       if generate_placeholders:
         placeholder_srcjar_path = os.path.join(tdir, 'placeholders.srcjar')
         cmd += ['--placeholder-srcjar-path', placeholder_srcjar_path]
+      if enable_jni_multiplexing:
+        cmd += ['--enable-jni-multiplexing']
       if per_file_natives:
         cmd += ['--per-file-natives']
 
-      logging.info('Running: %s', shlex.join(cmd))
-      subprocess.check_call(cmd)
+      env = os.environ.copy()
+      if _JAVA_BIN_DIR not in env['PATH']:
+        env['PATH'] = os.pathsep.join([_JAVA_BIN_DIR, env['PATH']])
 
+      logging.info('Running: %s', shlex.join(cmd))
+      subprocess.check_call(cmd, env=env)
       for o in options.output_files:
         output_path = os.path.join(tdir, o)
         with open(output_path, 'r') as f:
@@ -207,10 +222,12 @@ class BaseTest(unittest.TestCase):
 
   def _TestEndToEndRegistration(self,
                                 input_files,
+                                golden_name=None,
                                 src_files_for_asserts_and_stubs=None,
                                 priority_java_files=None,
+                                inspection_func=None,
                                 **kwargs):
-    golden_name = self._testMethodName
+    golden_name = golden_name or self._testMethodName
     options = CliOptions(is_final=True, **kwargs)
     dir_prefix, file_prefix = _MakePrefixes(options)
     name_to_goldens = {
@@ -251,6 +268,8 @@ class BaseTest(unittest.TestCase):
         priority_java_file = pathlib.Path(tdir) / 'java_priority_sources.txt'
         priority_java_file.write_text('\n'.join(priority_java_sources))
         cmd += ['--priority-java-sources-file', str(priority_java_file)]
+      if priority_java_files is not None:
+        cmd += ['--never-omit-switch-num']
 
       srcjar_path = os.path.join(tdir, 'srcjar.jar')
       cmd += ['--srcjar-path', srcjar_path]
@@ -270,6 +289,8 @@ class BaseTest(unittest.TestCase):
           contents = f.read().replace(
               tdir.replace('/', '_').upper(), 'TEMP_DIR')
           self.AssertGoldenTextEquals(contents, header_golden)
+      if inspection_func:
+        inspection_func(tdir)
 
   def _TestParseError(self, error_snippet, input_data):
     with tempfile.TemporaryDirectory() as tdir:
@@ -347,7 +368,8 @@ class Tests(BaseTest):
     self._TestEndToEndGeneration(['SampleNonProxy.java'])
 
   def testBirectionalNonProxy(self):
-    self._TestEndToEndGeneration(['SampleBidirectionalNonProxy.java'])
+    self._TestEndToEndGeneration(['SampleBidirectionalNonProxy.java'],
+                                 enable_definition_macros=True)
 
   def testBidirectionalClass(self):
     self._TestEndToEndGeneration(['SampleForTests.java'], srcjar=True)
@@ -413,10 +435,30 @@ class Tests(BaseTest):
     input_java_files = [
         'TinySample2.java', 'TinySample.java', 'SampleProxyEdgeCases.java'
     ]
-    priority_java_files = ['TinySample2.java']
+    # Add an entry not in input_java_files to simulate one that is in native
+    # sources but not java source (e.g. contains only @CalledByNative)
+    priority_java_files = ['TinySample2.java', 'SampleModule.java']
+
+    hash_holder = []
+
+    def inspection_func(tdir):
+      header_path = os.path.join(tdir, 'header.h')
+      header_text = pathlib.Path(header_path).read_text()
+      whole = re.findall(r'HashWhole.*?= (.*?);', header_text)[0]
+      priority = re.findall(r'HashPriority.*?= (.*?);', header_text)[0]
+      hash_holder.append((whole, priority))
+
     self._TestEndToEndRegistration(input_java_files,
                                    priority_java_files=priority_java_files,
+                                   inspection_func=inspection_func,
                                    enable_jni_multiplexing=True)
+
+    self._TestEndToEndRegistration(priority_java_files,
+                                   golden_name='testPriorityRegistrationPart2',
+                                   priority_java_files=[],
+                                   inspection_func=inspection_func,
+                                   enable_jni_multiplexing=True)
+    self.assertEqual(hash_holder[0][1], hash_holder[1][0])
 
   def testFullStubs(self):
     self._TestEndToEndRegistration(
@@ -438,7 +480,7 @@ class Tests(BaseTest):
 
   def testForTestingKeptMultiplexing(self):
     input_java_file = 'SampleProxyEdgeCases.java'
-    self._TestEndToEndGeneration([input_java_file], srcjar=True)
+    self._TestEndToEndGeneration([input_java_file], enable_jni_multiplexing=True, srcjar=True)
     self._TestEndToEndRegistration([input_java_file],
                                    enable_jni_multiplexing=True,
                                    include_test_only=True)
@@ -448,18 +490,17 @@ class Tests(BaseTest):
                                    enable_jni_multiplexing=True,
                                    include_test_only=False)
 
-  def testProxyMocks(self):
-    self._TestEndToEndRegistration(['TinySample.java'], enable_proxy_mocks=True)
-
-  def testRequireProxyMocks(self):
-    self._TestEndToEndRegistration(['TinySample.java'],
-                                   enable_proxy_mocks=True,
-                                   require_mocks=True)
-
   def testPackagePrefixGenerator(self):
     self._TestEndToEndGeneration(['SampleForTests.java'],
                                  srcjar=True,
-                                 package_prefix='this.is.a.package.prefix')
+                                 package_prefix='this.is.a.package.prefix',
+                                 generate_placeholders=True)
+
+  def testPackagePrefixWithFilter(self):
+    self._TestEndToEndGeneration(['SampleForTests.java'],
+                                 srcjar=True,
+                                 package_prefix='this.is.a.package.prefix',
+                                 package_prefix_filter='org.jni_zero')
 
   def testPackagePrefixWithManualRegistration(self):
     self._TestEndToEndRegistration(['SampleForAnnotationProcessor.java'],

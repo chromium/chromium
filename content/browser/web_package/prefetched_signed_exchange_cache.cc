@@ -4,10 +4,12 @@
 
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
 
+#include <optional>
 #include <string_view>
 #include <utility>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
@@ -29,6 +31,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
+#include "ipc/constants.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -100,19 +103,11 @@ class RedirectResponseURLLoader : public network::mojom::URLLoader {
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
       const std::optional<GURL>& new_url) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void SetPriority(net::RequestPriority priority,
                    int intra_priority_value) override {
     // There is nothing to do, because this class just calls OnReceiveRedirect.
-  }
-  void PauseReadingBodyFromNet() override {
-    // There is nothing to do, because we don't fetch the resource from the
-    // network.
-  }
-  void ResumeReadingBodyFromNet() override {
-    // There is nothing to do, because we don't fetch the resource from the
-    // network.
   }
 
   mojo::Remote<network::mojom::URLLoaderClient> client_;
@@ -197,6 +192,7 @@ class PrefetchedNavigationLoaderInterceptor
         *request.trusted_params->isolation_info.top_frame_origin(),
         request.storage_access_api_status, std::move(match_options),
         request.is_ad_tagged,
+        /*apply_devtools_overrides=*/false,
         /*force_disable_third_party_cookies=*/false,
         base::BindOnce(&PrefetchedNavigationLoaderInterceptor::OnGetCookies,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -295,11 +291,12 @@ bool CanStoreEntry(const PrefetchedSignedExchangeCacheEntry& entry) {
   // by the network layer and PrefetchedSignedExchangeCache stores decoded
   // response bodies, so we can safely ignore varying on the "Accept-Encoding"
   // header.
-  std::string value;
+  std::optional<std::string_view> value;
   size_t iter = 0;
-  while (outer_headers->EnumerateHeader(&iter, "vary", &value)) {
-    if (!base::EqualsCaseInsensitiveASCII(value, "accept-encoding"))
+  while ((value = outer_headers->EnumerateHeader(&iter, "vary"))) {
+    if (!base::EqualsCaseInsensitiveASCII(*value, "accept-encoding")) {
       return false;
+    }
   }
   return true;
 }
@@ -330,17 +327,17 @@ bool CanUseEntry(const PrefetchedSignedExchangeCacheEntry& entry,
 
 // Deserializes a SHA256HashValue from a string. On error, returns false.
 // This method support the form of "sha256-<base64-hash-value>".
-bool ExtractSHA256HashValueFromString(const std::string_view value,
+bool ExtractSHA256HashValueFromString(std::string_view value,
                                       net::SHA256HashValue* out) {
   if (!base::StartsWith(value, "sha256-"))
     return false;
   const std::string_view base64_str = value.substr(7);
   std::string decoded;
   if (!base::Base64Decode(base64_str, &decoded) ||
-      decoded.size() != sizeof(out->data)) {
+      decoded.size() != out->size()) {
     return false;
   }
-  memcpy(out->data, decoded.data(), sizeof(out->data));
+  base::span(*out).copy_from(base::as_byte_span(decoded));
   return true;
 }
 
@@ -349,17 +346,17 @@ bool ExtractSHA256HashValueFromString(const std::string_view value,
 std::map<GURL, net::SHA256HashValue> GetAllowedAltSXG(
     const PrefetchedSignedExchangeCacheEntry& main_exchange) {
   std::map<GURL, net::SHA256HashValue> result;
-  std::string link_header;
-  main_exchange.inner_response()->headers->GetNormalizedHeader("link",
-                                                               &link_header);
+  std::string link_header = main_exchange.inner_response()
+                                ->headers->GetNormalizedHeader("link")
+                                .value_or(std::string());
   if (link_header.empty())
     return result;
 
   for (const auto& value : link_header_util::SplitLinkHeader(link_header)) {
-    std::string link_url;
     std::unordered_map<std::string, std::optional<std::string>> link_params;
-    if (!link_header_util::ParseLinkHeaderValue(value.first, value.second,
-                                                &link_url, &link_params)) {
+    std::optional<std::string> link_url =
+        link_header_util::ParseLinkHeaderValue(value, link_params);
+    if (!link_url) {
       continue;
     }
 
@@ -373,7 +370,7 @@ std::map<GURL, net::SHA256HashValue> GetAllowedAltSXG(
             &header_integrity_value)) {
       continue;
     }
-    result[main_exchange.inner_url().Resolve(link_url)] =
+    result[main_exchange.inner_url().Resolve(*link_url)] =
         header_integrity_value;
   }
   return result;
@@ -414,7 +411,7 @@ void PrefetchedSignedExchangeCache::Clear() {
 std::unique_ptr<NavigationLoaderInterceptor>
 PrefetchedSignedExchangeCache::MaybeCreateInterceptor(
     const GURL& outer_url,
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     const net::IsolationInfo& isolation_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const auto it = exchanges_.find(outer_url);
@@ -447,13 +444,18 @@ PrefetchedSignedExchangeCache::MaybeCreateInterceptor(
             network::mojom::RestrictedCookieManagerRole::NETWORK,
             inner_url_origin, inner_url_isolation_info,
             /* is_service_worker = */ false,
-            render_frame_host ? render_frame_host->GetProcess()->GetID() : -1,
+            render_frame_host
+                ? render_frame_host->GetProcess()->GetDeprecatedID()
+                : -1,
             render_frame_host ? render_frame_host->GetRoutingID()
-                              : MSG_ROUTING_NONE,
+                              : IPC::mojom::kRoutingIdNone,
+            /*cookie_setting_overrides=*/
             render_frame_host ? render_frame_host->GetCookieSettingOverrides()
                               : net::CookieSettingOverrides(),
+            /*devtools_cookie_setting_overrides=*/net::CookieSettingOverrides(),
             cookie_manager.BindNewPipeAndPassReceiver(),
-            render_frame_host ? render_frame_host->CreateCookieAccessObserver()
+            render_frame_host ? render_frame_host->CreateCookieAccessObserver(
+                                    CookieAccessDetails::Source::kNonNavigation)
                               : mojo::NullRemote());
   }
 
@@ -479,7 +481,7 @@ std::vector<blink::mojom::PrefetchedSignedExchangeInfoPtr>
 PrefetchedSignedExchangeCache::GetInfoListForNavigation(
     const PrefetchedSignedExchangeCacheEntry& main_exchange,
     const base::Time& verification_time,
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     const net::NetworkAnonymizationKey& network_anonymization_key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

@@ -30,6 +30,8 @@ class BASE_EXPORT PooledSequencedTaskRunner
   PooledSequencedTaskRunner& operator=(const PooledSequencedTaskRunner&) =
       delete;
 
+  scoped_refptr<Sequence> sequence() { return sequence_; }
+
   // UpdateableSequencedTaskRunner:
   bool PostDelayedTask(const Location& from_here,
                        OnceClosure closure,

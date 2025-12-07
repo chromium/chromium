@@ -65,6 +65,7 @@ void ContextualSearchLayer::SetProperties(
     float search_panel_height,
     float search_bar_margin_side,
     float search_bar_margin_top,
+    float search_bar_margin_bottom,
     float search_bar_height,
     float search_context_opacity,
     float search_text_layer_min_height,
@@ -89,7 +90,9 @@ void ContextualSearchLayer::SetProperties(
     float touch_highlight_x_offset,
     float touch_highlight_width,
     int rounded_bar_top_resource_id,
-    int separator_line_color) {
+    int separator_line_color,
+    int callout_resource_id,
+    float callout_opacity) {
   // Round values to avoid pixel gap between layers.
   search_bar_height = floor(search_bar_height);
 
@@ -115,16 +118,18 @@ void ContextualSearchLayer::SetProperties(
   OverlayPanelLayer::SetProperties(
       dp_to_px, content_layer, content_view_top, search_panel_x, search_panel_y,
       search_panel_width, search_panel_height, search_bar_background_color,
-      search_bar_margin_side, search_bar_margin_top, search_bar_height,
-      search_bar_top, search_term_opacity, should_render_bar_border,
-      search_bar_border_height, icon_color, drag_handlebar_color,
-      close_icon_opacity, separator_line_color, related_searches_in_bar_height);
+      search_bar_margin_side, search_bar_margin_top, search_bar_margin_bottom,
+      search_bar_height, search_bar_top, search_term_opacity,
+      should_render_bar_border, search_bar_border_height, icon_color,
+      drag_handlebar_color, close_icon_opacity, separator_line_color,
+      related_searches_in_bar_height);
 
   // -----------------------------------------------------------------
   // Content setup, to center in space below drag handle.
   // -----------------------------------------------------------------
   int content_height = search_bar_height - search_bar_margin_top -
-                       related_searches_in_bar_height;
+                       related_searches_in_bar_height -
+                       search_bar_margin_bottom;
   int content_top = search_bar_top + search_bar_margin_top;
 
   // ---------------------------------------------------------------------------
@@ -139,6 +144,28 @@ void ContextualSearchLayer::SetProperties(
 
   // Tracks the top of the next section to draw.
   int next_section_top = search_bar_bottom;
+
+  // ---------------------------------------------------------------------------
+  // Callout Control
+  // ---------------------------------------------------------------------------
+  if (callout_opacity > 0) {
+    ui::Resource* callout_resource = resource_manager_->GetResource(
+        ui::ANDROID_RESOURCE_TYPE_DYNAMIC, callout_resource_id);
+    if (callout_resource) {
+      if (callout_layer_->parent() != layer_) {
+        layer_->AddChild(callout_layer_);
+      }
+
+      float callout_position_top = content_top + content_height / 2 -
+                                   callout_resource->size().height() / 2;
+      callout_layer_->SetUIResourceId(callout_resource->ui_resource()->id());
+      callout_layer_->SetBounds(callout_resource->size());
+      callout_layer_->SetPosition(gfx::PointF(0.f, callout_position_top));
+      callout_layer_->SetOpacity(callout_opacity);
+    }
+  } else if (callout_layer_->parent()) {
+    callout_layer_->RemoveFromParent();
+  }
 
   // ---------------------------------------------------------------------------
   // Related Searches In-Bar Control
@@ -157,9 +184,11 @@ void ContextualSearchLayer::SetProperties(
       related_searches_in_bar_->SetUIResourceId(
           related_searches_resource->ui_resource()->id());
       related_searches_in_bar_->SetBounds(related_searches_size);
+      int related_searches_top =
+          search_bar_bottom - related_searches_in_bar_height -
+          related_searches_in_bar_redundant_padding - search_bar_margin_bottom;
       related_searches_in_bar_->SetPosition(
-          gfx::PointF(0.f, search_bar_bottom - related_searches_in_bar_height -
-                               related_searches_in_bar_redundant_padding));
+          gfx::PointF(0.f, related_searches_top));
     }
   } else if (related_searches_in_bar_.get() &&
              related_searches_in_bar_->parent()) {
@@ -568,7 +597,8 @@ ContextualSearchLayer::ContextualSearchLayer(
       related_searches_in_bar_(cc::slim::UIResourceLayer::Create()),
       search_caption_(cc::slim::UIResourceLayer::Create()),
       text_layer_(cc::slim::UIResourceLayer::Create()),
-      touch_highlight_layer_(cc::slim::SolidColorLayer::Create()) {
+      touch_highlight_layer_(cc::slim::SolidColorLayer::Create()),
+      callout_layer_(cc::slim::UIResourceLayer::Create()) {
   // Search Bar Text
   search_context_->SetIsDrawable(true);
 
@@ -607,9 +637,11 @@ ContextualSearchLayer::ContextualSearchLayer(
   touch_highlight_layer_->SetIsDrawable(true);
   touch_highlight_layer_->SetBackgroundColor(
       SkColor4f::FromColor(kTouchHighlightColor));
+
+  // Callout Layer
+  callout_layer_->SetIsDrawable(true);
 }
 
-ContextualSearchLayer::~ContextualSearchLayer() {
-}
+ContextualSearchLayer::~ContextualSearchLayer() = default;
 
 }  //  namespace android

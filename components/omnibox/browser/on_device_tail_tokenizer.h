@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_ON_DEVICE_TAIL_TOKENIZER_H_
 #define COMPONENTS_OMNIBOX_BROWSER_ON_DEVICE_TAIL_TOKENIZER_H_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <utility>

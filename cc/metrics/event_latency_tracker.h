@@ -5,12 +5,16 @@
 #ifndef CC_METRICS_EVENT_LATENCY_TRACKER_H_
 #define CC_METRICS_EVENT_LATENCY_TRACKER_H_
 
+#include <variant>
 #include <vector>
 
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+
+namespace viz {
+struct BeginFrameArgs;
+}
 
 namespace cc {
 
@@ -33,9 +37,9 @@ class CC_EXPORT EventLatencyTracker {
     base::TimeDelta total_latency;
 
     // Type of the input device if the event is a scroll or a pinch event.
-    absl::variant<absl::monostate,
-                  ScrollEventMetrics::ScrollType,
-                  PinchEventMetrics::PinchType>
+    std::variant<std::monostate,
+                 ScrollEventMetrics::ScrollType,
+                 PinchEventMetrics::PinchType>
         input_type;
   };
 
@@ -46,7 +50,8 @@ class CC_EXPORT EventLatencyTracker {
   EventLatencyTracker& operator=(const EventLatencyTracker&) = delete;
 
   // Called every time a frame has latency metrics to report for events.
-  virtual void ReportEventLatency(std::vector<LatencyData> latencies) = 0;
+  virtual void ReportEventLatency(const viz::BeginFrameArgs& args,
+                                  std::vector<LatencyData> latencies) = 0;
 };
 
 }  // namespace cc

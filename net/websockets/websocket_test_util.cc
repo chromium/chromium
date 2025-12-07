@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/websockets/websocket_test_util.h"
 
 #include <stddef.h>
@@ -25,7 +20,7 @@
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/socket/socket_test_util.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
+#include "net/third_party/quiche/src/quiche/http2/core/spdy_protocol.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
@@ -99,19 +94,20 @@ std::string WebSocketStandardRequestWithCookies(
   std::stringstream request_headers;
 
   request_headers << base::StringPrintf("GET %s HTTP/1.1\r\n", path.c_str());
-  headers.SetHeader("Host", host);
-  headers.SetHeader("Connection", "Upgrade");
-  headers.SetHeader("Pragma", "no-cache");
-  headers.SetHeader("Cache-Control", "no-cache");
+  headers.SetHeader(net::HttpRequestHeaders::kHost, host);
+  headers.SetHeader(net::HttpRequestHeaders::kConnection, "Upgrade");
+  headers.SetHeader(net::HttpRequestHeaders::kPragma, "no-cache");
+  headers.SetHeader(net::HttpRequestHeaders::kCacheControl, "no-cache");
   for (const auto& [key, value] : send_additional_request_headers)
     headers.SetHeader(key, value);
   headers.SetHeader("Upgrade", "websocket");
-  headers.SetHeader("Origin", origin.Serialize());
+  headers.SetHeader(net::HttpRequestHeaders::kOrigin, origin.Serialize());
   headers.SetHeader("Sec-WebSocket-Version", "13");
-  if (!headers.HasHeader("User-Agent"))
-    headers.SetHeader("User-Agent", "");
-  headers.SetHeader("Accept-Encoding", "gzip, deflate");
-  headers.SetHeader("Accept-Language", "en-us,fr");
+  if (!headers.HasHeader(net::HttpRequestHeaders::kUserAgent)) {
+    headers.SetHeader(net::HttpRequestHeaders::kUserAgent, "");
+  }
+  headers.SetHeader(net::HttpRequestHeaders::kAcceptEncoding, "gzip, deflate");
+  headers.SetHeader(net::HttpRequestHeaders::kAcceptLanguage, "en-us,fr");
   for (const auto& [key, value] : cookies)
     headers.SetHeader(key, value);
   headers.SetHeader("Sec-WebSocket-Key", "dGhlIHNhbXBsZSBub25jZQ==");
@@ -135,16 +131,19 @@ std::string WebSocketStandardResponse(const std::string& extra_headers) {
 
 HttpRequestHeaders WebSocketCommonTestHeaders() {
   HttpRequestHeaders request_headers;
-  request_headers.SetHeader("Host", "www.example.org");
-  request_headers.SetHeader("Connection", "Upgrade");
-  request_headers.SetHeader("Pragma", "no-cache");
-  request_headers.SetHeader("Cache-Control", "no-cache");
+  request_headers.SetHeader(net::HttpRequestHeaders::kHost, "www.example.org");
+  request_headers.SetHeader(net::HttpRequestHeaders::kConnection, "Upgrade");
+  request_headers.SetHeader(net::HttpRequestHeaders::kPragma, "no-cache");
+  request_headers.SetHeader(net::HttpRequestHeaders::kCacheControl, "no-cache");
   request_headers.SetHeader("Upgrade", "websocket");
-  request_headers.SetHeader("Origin", "http://origin.example.org");
+  request_headers.SetHeader(net::HttpRequestHeaders::kOrigin,
+                            "http://origin.example.org");
   request_headers.SetHeader("Sec-WebSocket-Version", "13");
-  request_headers.SetHeader("User-Agent", "");
-  request_headers.SetHeader("Accept-Encoding", "gzip, deflate");
-  request_headers.SetHeader("Accept-Language", "en-us,fr");
+  request_headers.SetHeader(net::HttpRequestHeaders::kUserAgent, "");
+  request_headers.SetHeader(net::HttpRequestHeaders::kAcceptEncoding,
+                            "gzip, deflate");
+  request_headers.SetHeader(net::HttpRequestHeaders::kAcceptLanguage,
+                            "en-us,fr");
   return request_headers;
 }
 
@@ -212,22 +211,19 @@ void WebSocketMockClientSocketFactoryMaker::SetExpectations(
   detail_->expect_written = expect_written;
   detail_->return_to_read = return_to_read;
   int sequence = 0;
-  detail_->write = MockWrite(SYNCHRONOUS,
-                             detail_->expect_written.data(),
-                             detail_->expect_written.size(),
-                             sequence++);
+  detail_->write = MockWrite(SYNCHRONOUS, sequence++, detail_->expect_written);
   // HttpStreamParser reads 4KB at a time. We need to take this implementation
   // detail into account if |return_to_read| is big enough.
-  for (size_t place = 0; place < detail_->return_to_read.size();
+  std::string_view to_read(detail_->return_to_read);
+  for (size_t place = 0; place < to_read.size();
        place += kHttpStreamParserBufferSize) {
-    detail_->reads.emplace_back(SYNCHRONOUS,
-                                detail_->return_to_read.data() + place,
-                                std::min(detail_->return_to_read.size() - place,
-                                         kHttpStreamParserBufferSize),
-                                sequence++);
+    detail_->reads.emplace_back(
+        SYNCHRONOUS, sequence++,
+        to_read.substr(place, std::min(to_read.size() - place,
+                                       kHttpStreamParserBufferSize)));
   }
   auto socket_data = std::make_unique<SequencedSocketData>(
-      detail_->reads, base::make_span(&detail_->write, 1u));
+      detail_->reads, base::span_from_ref(detail_->write));
   socket_data->set_connect_data(MockConnect(SYNCHRONOUS, OK));
   AddRawExpectations(std::move(socket_data));
 }
@@ -278,8 +274,12 @@ void WebSocketTestURLRequestContextHost::SetProxyConfig(
       std::move(proxy_resolution_service));
 }
 
-void DummyConnectDelegate::OnURLRequestConnected(URLRequest* request,
-                                                 const TransportInfo& info) {}
+int DummyConnectDelegate::OnURLRequestConnected(
+    URLRequest* request,
+    const TransportInfo& info,
+    CompletionOnceCallback callback) {
+  return OK;
+}
 
 int DummyConnectDelegate::OnAuthRequired(
     const AuthChallengeInfo& auth_info,

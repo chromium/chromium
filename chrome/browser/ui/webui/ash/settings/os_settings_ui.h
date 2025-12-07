@@ -12,8 +12,6 @@
 #include "ash/webui/common/mojom/shortcut_input_provider.mojom.h"
 #include "ash/webui/personalization_app/search/search.mojom-forward.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/webui/app_management/app_management_page_handler_base.h"
-#include "chrome/browser/ui/webui/app_management/app_management_page_handler_factory.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/apps/mojom/app_notification_handler.mojom-forward.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/apps/mojom/app_parental_controls_handler.mojom-forward.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/date_time/date_time_handler_factory.h"
@@ -24,7 +22,10 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/files/mojom/google_drive_handler.mojom-forward.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/files/mojom/one_drive_handler.mojom-forward.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/files/one_drive_page_handler_factory.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/people/mojom/graduation_handler.mojom-forward.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/mojom/app_permission_handler.mojom-forward.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/search/magic_boost_notice_page_handler_factory.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/search/mojom/magic_boost_handler.mojom-forward.h"
 #include "chrome/browser/ui/webui/ash/settings/search/mojom/user_action_recorder.mojom-forward.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
@@ -46,15 +47,12 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom-forward.h"
-#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
 
-namespace ui {
-class ColorChangeHandler;
-}  // namespace ui
+class AppManagementPageHandlerFactory;
 
 namespace ash::settings {
 
@@ -141,6 +139,11 @@ class OSSettingsUI : public ui::MojoWebUIController {
       mojo::PendingReceiver<app_permission::mojom::AppPermissionsHandler>
           receiver);
 
+  // Instantiates implementor of the mojom::GraduationHandler mojo
+  // interface passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<graduation::mojom::GraduationHandler> receiver);
+
   // Instantiates implementor of the mojom::InputDeviceSettingsProvider mojo
   // interface passing the pending receiver that will be internally bound.
   void BindInterface(
@@ -208,11 +211,6 @@ class OSSettingsUI : public ui::MojoWebUIController {
   void BindInterface(
       mojo::PendingReceiver<chromeos::auth::mojom::InSessionAuth> receiver);
 
-  // Binds to the Jelly dynamic color Mojo
-  void BindInterface(
-      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-          receiver);
-
   // Binds to the Google Drive page handler mojo.
   void BindInterface(
       mojo::PendingReceiver<google_drive::mojom::PageHandlerFactory> receiver);
@@ -240,6 +238,11 @@ class OSSettingsUI : public ui::MojoWebUIController {
   void BindInterface(
       mojo::PendingReceiver<date_time::mojom::PageHandlerFactory> receiver);
 
+  // Binds to the MagicBoostNoticePageHandler mojo.
+  void BindInterface(
+      mojo::PendingReceiver<magic_boost_handler::mojom::PageHandlerFactory>
+          receiver);
+
  private:
   base::TimeTicks time_when_opened_;
 
@@ -252,9 +255,8 @@ class OSSettingsUI : public ui::MojoWebUIController {
       google_drive_page_handler_factory_;
   std::unique_ptr<OneDrivePageHandlerFactory> one_drive_page_handler_factory_;
   std::unique_ptr<DateTimeHandlerFactory> date_time_handler_factory_;
-
-  // This handler notifies the WebUI when the color provider changes.
-  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
+  std::unique_ptr<MagicBoostNoticePageHandlerFactory>
+      magic_boost_notice_page_handler_factory_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

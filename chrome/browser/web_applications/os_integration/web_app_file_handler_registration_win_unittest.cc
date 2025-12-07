@@ -56,7 +56,7 @@ constexpr char kAppName[] = "app name";
 
 class WebAppFileHandlerRegistrationWinTest : public testing::Test {
  protected:
-  WebAppFileHandlerRegistrationWinTest() {}
+  WebAppFileHandlerRegistrationWinTest() = default;
 
   void SetUp() override {
     // Set up fake windows registry

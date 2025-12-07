@@ -82,7 +82,7 @@ Supported platforms are:
 * `auralinux-xenial` -- expected Linux ATK output (Version Specific Expected File)
 * `blink` -- representation of internal accessibility tree
 * `blink-cros` -- representation of internal accessibility tree
-  (Version Specific Expected File for Chrome OS and Lacros)
+  (Version Specific Expected File for Chrome OS)
 * `mac` -- expected Mac NSAccessibility output
 * `win` -- expected Win IAccessible/IAccessible2 output
 * `uia-win` -- expected Win UIA output
@@ -131,12 +131,12 @@ needed. However, if the `foo.html` test passes on the Linux release build
 At the present time there is no version-specific support for Bionic Beaver,
 which is the current version run on "linux-rel".
 
-The need for a version-specific expectations file on Chrome OS / Lacros is
-extremely rare. However, there can be occasional differences in the internal
-accessibility tree. For instance, the SVG `g` element is always included
-in order to support select-to-speak functionality. If `foo.html` has a
-`foo-expected-blink.txt` file which works on all platforms except the Chrome OS
-and Lacros bots, create `foo-expected-blink-cros.txt`.
+The need for a version-specific expectations file on Chrome OS is extremely
+rare. However, there can be occasional differences in the internal accessibility
+tree. For instance, the SVG `g` element is always included in order to support
+select-to-speak functionality. If `foo.html` has a `foo-expected-blink.txt` file
+which works on all platforms except the Chrome OS bots, create
+`foo-expected-blink-cros.txt`.
 
 ## Directives
 
@@ -309,7 +309,7 @@ finish loading. For example the test would not wait for a url containing
 
 #### @WAIT-FOR
 
-Delays a test unitl a string defined by the directive is present in the dump.
+Delays a test until a string defined by the directive is present in the dump.
 
 Occasionally you may need to write a dump tree test that makes some changes to
 the document before it runs the test. In that case you can use a special
@@ -337,6 +337,13 @@ Example: `@EXECUTE-AND-WAIT-FOR: foo()`
 #### @DEFAULT-ACTION-ON
 
 Invokes default action on an accessible object defined by the directive.
+
+#### @EVENTS-TREE-DUMP
+
+Enables accessibility tree dumping in `DumpAccessibilityEventsTest` tests. When
+this directive is present in an events test, the test will dump the accessibility
+tree before and after each `go()` pass, with markers(`<<<<<< CHANGED`) highlighting
+lines that changed between dumps.
 
 #### @NO_DUMP and @NO_CHILDREN_DUMP
 
@@ -414,7 +421,7 @@ events that are fired.
 
 To write a test for accessibility events, your document must contain a
 JavaScript function called `go()`. This function will be called when the
-document is loaded (or when the `@WAIT_FOR` directive passes), and any
+document is loaded (or when the `@WAIT-FOR` directive passes), and any
 subsequent events will be dumped. Filters apply to events just like in tree
 dumps.
 
@@ -423,6 +430,11 @@ accessibility event - one you're unlikely to generate in your test. It uses
 that event to know when to "stop" dumping events. There isn't currently a
 way to test events that occur after some delay, just ones that happen as
 a direct result of calling `go()`.
+
+### Tree Dumping in Events Tests
+
+Events tests can optionally include accessibility tree dumps by adding the
+`@EVENTS-TREE-DUMP` directive to the HTML file.
 
 ### Duplicate Events on UIA
 Windows will "translate" some IA2 events to UIA, and it is not

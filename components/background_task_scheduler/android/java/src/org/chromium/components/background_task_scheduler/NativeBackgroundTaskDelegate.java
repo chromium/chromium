@@ -4,10 +4,13 @@
 
 package org.chromium.components.background_task_scheduler;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Delegate for {@link NativeBackgroundTask} that handles native initialization, and runs the task
  * after Chrome is successfully started.
  */
+@NullMarked
 public interface NativeBackgroundTaskDelegate {
     /**
      * Initializes native and runs the task.

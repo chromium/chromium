@@ -11,6 +11,7 @@
 #include "ui/color/color_id.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 namespace gfx {
@@ -58,7 +59,7 @@ class VIEWS_EXPORT ProgressBar : public View, public gfx::AnimationDelegate {
   void SetBackgroundColorId(std::optional<ui::ColorId> color_id);
 
   int GetPreferredHeight() const;
-  void SetPreferredHeight(const int preferred_height);
+  void SetPreferredHeight(int preferred_height);
 
   // Calculates the rounded corners of the view based on
   // `preferred_corner_radii_`. If `preferred_corner_radii_` was not provided,
@@ -68,7 +69,7 @@ class VIEWS_EXPORT ProgressBar : public View, public gfx::AnimationDelegate {
   gfx::RoundedCornersF GetPreferredCornerRadii() const;
 
   void SetPreferredCornerRadii(
-      const std::optional<gfx::RoundedCornersF> preferred_corner_radii);
+      std::optional<gfx::RoundedCornersF> preferred_corner_radii);
 
  protected:
   int preferred_height() const { return preferred_height_; }
@@ -111,6 +112,19 @@ class VIEWS_EXPORT ProgressBar : public View, public gfx::AnimationDelegate {
   int last_announced_percentage_ = -1;
 };
 
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, ProgressBar, View)
+VIEW_BUILDER_PROPERTY(double, Value)
+VIEW_BUILDER_PROPERTY(bool, Paused)
+VIEW_BUILDER_PROPERTY(SkColor, ForegroundColor)
+VIEW_BUILDER_PROPERTY(std::optional<ui::ColorId>, ForegroundColorId)
+VIEW_BUILDER_PROPERTY(SkColor, BackgroundColor)
+VIEW_BUILDER_PROPERTY(std::optional<ui::ColorId>, BackgroundColorId)
+VIEW_BUILDER_PROPERTY(int, PreferredHeight)
+VIEW_BUILDER_PROPERTY(std::optional<gfx::RoundedCornersF>, PreferredCornerRadii)
+END_VIEW_BUILDER
+
 }  // namespace views
+
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, ProgressBar)
 
 #endif  // UI_VIEWS_CONTROLS_PROGRESS_BAR_H_

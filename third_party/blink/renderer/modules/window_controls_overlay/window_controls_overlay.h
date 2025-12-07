@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -19,12 +18,10 @@ class Navigator;
 
 class WindowControlsOverlay final
     : public EventTarget,
-      public Supplement<Navigator>,
       public WindowControlsOverlayChangedDelegate {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
   // Web Exposed as navigator.windowControlsOverlay
   static WindowControlsOverlay* windowControlsOverlay(Navigator& navigator);
 
@@ -48,6 +45,9 @@ class WindowControlsOverlay final
   void WindowControlsOverlayChanged(const gfx::Rect&) final;
 
   void Trace(Visitor*) const override;
+
+ private:
+  Member<Navigator> navigator_;
 };
 
 }  // namespace blink

@@ -85,4 +85,32 @@ TEST(AXInspectScenarioTest, Script) {
             "textarea.AXSelectedText");
 }
 
+TEST(AXInspectScenarioTest, EventsTreeDump) {
+  AXInspectScenario scenario =
+      AXInspectScenario::From("@MAC-", {"@EVENTS-TREE-DUMP"});
+  EXPECT_TRUE(scenario.events_tree_dump_enabled);
+}
+
+TEST(AXInspectScenarioTest, EventsTreeDumpDefault) {
+  AXInspectScenario scenario = AXInspectScenario::From("@MAC-", {});
+  EXPECT_FALSE(scenario.events_tree_dump_enabled);
+}
+
+TEST(AXInspectScenarioTest, DirectiveParsingWithColon) {
+  AXInspectScenario scenario =
+      AXInspectScenario::From("@MAC-", {"@WAIT-FOR:Ready"});
+  EXPECT_THAT(scenario.wait_for, testing::ElementsAre("Ready"));
+}
+
+TEST(AXInspectScenarioTest, DirectiveParsingWithoutColon) {
+  AXInspectScenario scenario =
+      AXInspectScenario::From("@MAC-", {"@EVENTS-TREE-DUMP"});
+  EXPECT_TRUE(scenario.events_tree_dump_enabled);
+}
+
+TEST(AXInspectScenarioTest, DirectiveParsingWithEmptyValue) {
+  AXInspectScenario scenario = AXInspectScenario::From("@MAC-", {"@WAIT-FOR:"});
+  EXPECT_TRUE(scenario.wait_for.empty());
+}
+
 }  // namespace ui

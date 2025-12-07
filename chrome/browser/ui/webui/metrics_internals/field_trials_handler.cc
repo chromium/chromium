@@ -127,11 +127,12 @@ void FieldTrialsHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void FieldTrialsHandler::InitializeFieldTrials() {
-  if (initialized_field_trials_) {
+void FieldTrialsHandler::InitializeFieldTrials(
+    base::OnceCallback<void(base::ValueView)> done_callback) {
+  if (studies_.has_value()) {
+    std::move(done_callback).Run(GetFieldTrialStateValue());
     return;
   }
-  initialized_field_trials_ = true;
 
   bool always_show_names =
 #if defined(OFFICIAL_BUILD)
@@ -146,16 +147,24 @@ void FieldTrialsHandler::InitializeFieldTrials() {
                         ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
                         .email);
 
-  studies_ =
-      g_browser_process->variations_service()->GetStudiesAvailableToForce();
+  g_browser_process->variations_service()->GetStudiesAvailableToForce(
+      base::BindOnce(&FieldTrialsHandler::RefreshFieldTrialOverrides,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(done_callback)));
+}
 
+void FieldTrialsHandler::RefreshFieldTrialOverrides(
+    base::OnceCallback<void(base::ValueView)> done_callback,
+    std::vector<variations::StudyGroupNames> studies) {
+  studies_ = std::move(studies);
   overrides_ = RefreshAndGetFieldTrialOverrides(
-      studies_, *g_browser_process->local_state(), restart_required_);
+      studies_.value(), *g_browser_process->local_state(), restart_required_);
+  std::move(done_callback).Run(GetFieldTrialStateValue());
 }
 
 base::Value::Dict FieldTrialsHandler::GetFieldTrialStateValue() {
+  CHECK(studies_.has_value()) << "Field trials not initialized.";
   base::Value::List trials;
-  for (const auto& study : studies_) {
+  for (const auto& study : studies_.value()) {
     trials.Append(ToTrialValue(show_names_, overrides_, study));
   }
   return base::Value::Dict()
@@ -169,9 +178,12 @@ void FieldTrialsHandler::HandleFetchState(const base::Value::List& args) {
     return;
   }
   AllowJavascript();
-  InitializeFieldTrials();
 
-  ResolveJavascriptCallback(args[0], GetFieldTrialStateValue());
+  base::OnceCallback<void(base::ValueView)> resolve_js_callback =
+      base::BindOnce(&FieldTrialsHandler::ResolveJavascriptCallback,
+                     weak_ptr_factory_.GetWeakPtr(), args[0].Clone());
+
+  InitializeFieldTrials(std::move(resolve_js_callback));
 }
 
 void FieldTrialsHandler::HandleSetEnrollState(const base::Value::List& args) {
@@ -188,8 +200,9 @@ void FieldTrialsHandler::HandleSetEnrollState(const base::Value::List& args) {
 
 bool FieldTrialsHandler::SetOverride(const ExperimentOverride& override,
                                      bool enabled) {
-  TrialGroup group = FindExperimentFromHashes(studies_, override.trial_hash,
-                                              override.group_hash);
+  CHECK(studies_.has_value()) << "Field trials not initialized.";
+  TrialGroup group = FindExperimentFromHashes(
+      studies_.value(), override.trial_hash, override.group_hash);
   if (group.first.empty()) {
     return false;
   }
@@ -202,8 +215,8 @@ bool FieldTrialsHandler::SetOverride(const ExperimentOverride& override,
 
   std::vector<TrialGroup> states;
   for (const TrialGroup& override_hashes : overrides_) {
-    TrialGroup names = FindExperimentFromHashes(studies_, override_hashes.first,
-                                                override_hashes.second);
+    TrialGroup names = FindExperimentFromHashes(
+        studies_.value(), override_hashes.first, override_hashes.second);
     CHECK(!names.first.empty())
         << "Didn't find experiment: " << override_hashes.first << "."
         << override_hashes.second;
@@ -222,6 +235,7 @@ void FieldTrialsHandler::HandleRestart(const base::Value::List& args) {
 
 void FieldTrialsHandler::HandleLookupTrialOrGroupName(
     const base::Value::List& args) {
+  CHECK(studies_.has_value()) << "Field trials not initialized.";
   if (args.size() != 2) {
     DLOG(ERROR) << "Wrong number of arguments";
     return;
@@ -238,7 +252,7 @@ void FieldTrialsHandler::HandleLookupTrialOrGroupName(
     names.push_back(study_and_group.second);
   }
   for (std::string& name : names) {
-    for (const auto& study : studies_) {
+    for (const auto& study : studies_.value()) {
       if (study.name == name) {
         name_hashes.Set(HashNameAsHexString(name), name);
         for (const std::string& group : study.groups) {

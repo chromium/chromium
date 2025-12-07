@@ -9,6 +9,7 @@ Usage:
               is-confirm-step="{{isConfirmStep_}}"
               on-pin-submit="onPinSubmit_"
               on-set-pin-done="onSetPinDone_"
+              enable-visibility-icon
               auth-token="[[authToken]]">
           </setup-pin-keyboard>
 
@@ -27,6 +28,8 @@ Where:
   * on-set-pin-done - Event handler for the "set pin done" event, which should
         normally close the pin setup UI. This object state is reset before
         sending this event.
+  * enable-visibility-icon - Whether to show an icon that can show/hide the
+        user's PIN.
 
 -->
 
@@ -60,6 +63,7 @@ Where:
     on-submit="onPinSubmit_" value="{{pinKeyboardValue_}}"
     has-error="[[hasError_(problemMessageId_, problemClass_)]]"
     disabled="[[isSetPinCallPending_]]"
+    enable-visibility-icon="[[enableVisibilityIcon]]"
     enable-placeholder="[[enablePlaceholder]]">
   <!-- Warning/error; only shown if title is hidden. -->
   <div id="problemDiv" class$="[[problemClass_]]"

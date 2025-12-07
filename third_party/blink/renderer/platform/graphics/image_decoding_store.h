@@ -71,15 +71,10 @@ static inline bool operator==(const DecoderCacheKey& a,
          a.alpha_option_ == b.alpha_option_ && a.client_id_ == b.client_id_;
 }
 
-static inline bool operator!=(const DecoderCacheKey& a,
-                              const DecoderCacheKey& b) {
-  return !(a == b);
-}
-
 // Base class for all cache entries.
 class CacheEntry : public DoublyLinkedListNode<CacheEntry> {
   USING_FAST_MALLOC(CacheEntry);
-  friend class WTF::DoublyLinkedListNode<CacheEntry>;
+  friend class DoublyLinkedListNode<CacheEntry>;
 
  public:
   enum CacheType {
@@ -172,41 +167,31 @@ class DecoderCacheEntry final : public CacheEntry {
   cc::PaintImage::GeneratorClientId client_id_;
 };
 
-}  // namespace blink
-
-namespace WTF {
-
 template <>
-struct HashTraits<blink::DecoderCacheKey>
-    : GenericHashTraits<blink::DecoderCacheKey> {
+struct HashTraits<DecoderCacheKey> : GenericHashTraits<DecoderCacheKey> {
   STATIC_ONLY(HashTraits);
-  static unsigned GetHash(const blink::DecoderCacheKey& p) {
-    auto first = HashInts(
-        WTF::GetHash(const_cast<blink::ImageFrameGenerator*>(p.gen_.get())),
-        WTF::GetHash(p.size_));
-    auto second = HashInts(WTF::GetHash(static_cast<uint8_t>(p.alpha_option_)),
-                           p.client_id_);
+  static unsigned GetHash(const DecoderCacheKey& p) {
+    auto first =
+        HashInts(blink::GetHash(const_cast<ImageFrameGenerator*>(p.gen_.get())),
+                 blink::GetHash(p.size_));
+    auto second = HashInts(
+        blink::GetHash(static_cast<uint8_t>(p.alpha_option_)), p.client_id_);
     return HashInts(first, second);
   }
 
   static const bool kEmptyValueIsZero = true;
-  static blink::DecoderCacheKey EmptyValue() {
-    return blink::DecoderCacheEntry::MakeCacheKey(
-        nullptr, SkISize::Make(0, 0),
-        static_cast<blink::ImageDecoder::AlphaOption>(0),
+  static DecoderCacheKey EmptyValue() {
+    return DecoderCacheEntry::MakeCacheKey(
+        nullptr, SkISize::Make(0, 0), static_cast<ImageDecoder::AlphaOption>(0),
         cc::PaintImage::kDefaultGeneratorClientId);
   }
-  static blink::DecoderCacheKey DeletedValue() {
-    return blink::DecoderCacheEntry::MakeCacheKey(
+  static DecoderCacheKey DeletedValue() {
+    return DecoderCacheEntry::MakeCacheKey(
         nullptr, SkISize::Make(-1, -1),
-        static_cast<blink::ImageDecoder::AlphaOption>(0),
+        static_cast<ImageDecoder::AlphaOption>(0),
         cc::PaintImage::kDefaultGeneratorClientId);
   }
 };
-
-}  // namespace WTF
-
-namespace blink {
 
 // FUNCTION
 //
@@ -227,14 +212,15 @@ namespace blink {
 //
 // All public methods can be used on any thread.
 
-class PLATFORM_EXPORT ImageDecodingStore final {
+class PLATFORM_EXPORT ImageDecodingStore final
+    : public base::MemoryPressureListener {
   USING_FAST_MALLOC(ImageDecodingStore);
 
  public:
   ImageDecodingStore();
   ImageDecodingStore(const ImageDecodingStore&) = delete;
   ImageDecodingStore& operator=(const ImageDecodingStore&) = delete;
-  ~ImageDecodingStore();
+  ~ImageDecodingStore() override;
 
   static ImageDecodingStore& Instance();
 
@@ -269,8 +255,7 @@ class PLATFORM_EXPORT ImageDecodingStore final {
   void Prune();
 
   // Called by the memory pressure listener when the memory pressure rises.
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel level);
+  void OnMemoryPressure(base::MemoryPressureLevel) override;
 
   // These helper methods are called while |lock_| is held.
   template <class T, class U, class V>
@@ -334,7 +319,8 @@ class PLATFORM_EXPORT ImageDecodingStore final {
   size_t heap_memory_usage_in_bytes_ GUARDED_BY(lock_);
 
   // A listener to global memory pressure events.
-  base::MemoryPressureListener memory_pressure_listener_;
+  base::AsyncMemoryPressureListenerRegistration
+      memory_pressure_listener_registration_;
 
   // Also protects:
   // - the CacheEntry in |decoder_cache_map_|.

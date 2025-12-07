@@ -39,6 +39,7 @@ class CrossThreadMediaSourceAttachment;
 class SameThreadMediaSourceAttachment;
 class SourceBufferConfig;
 class TrackBase;
+class V8EndOfStreamError;
 class WebSourceBuffer;
 
 // Media Source Extensions (MSE) API's MediaSource object implementation (see
@@ -66,6 +67,8 @@ class MediaSource final : public EventTarget,
   static void LogAndThrowDOMException(ExceptionState&,
                                       DOMExceptionCode error,
                                       const String& message);
+  static void LogAndThrowQuotaExceededError(ExceptionState&,
+                                            const String& message);
   static void LogAndThrowTypeError(ExceptionState&, const String&);
 
   // Web-exposed methods from media_source.idl
@@ -90,9 +93,9 @@ class MediaSource final : public EventTarget,
   DEFINE_ATTRIBUTE_EVENT_LISTENER(sourceclose, kSourceclose)
 
   AtomicString readyState() const;
-  void endOfStream(const AtomicString& error, ExceptionState&)
-      LOCKS_EXCLUDED(attachment_link_lock_);
   void endOfStream(ExceptionState&) LOCKS_EXCLUDED(attachment_link_lock_);
+  void endOfStream(std::optional<V8EndOfStreamError> error, ExceptionState&)
+      LOCKS_EXCLUDED(attachment_link_lock_);
   void setLiveSeekableRange(double start, double end, ExceptionState&)
       LOCKS_EXCLUDED(attachment_link_lock_);
   void clearLiveSeekableRange(ExceptionState&)
@@ -238,9 +241,6 @@ class MediaSource final : public EventTarget,
       std::unique_ptr<media::VideoDecoderConfig> video_config,
       ExceptionState&) LOCKS_EXCLUDED(attachment_link_lock_);
   void ScheduleEvent(const AtomicString& event_name);
-  static void RecordIdentifiabilityMetric(ExecutionContext* context,
-                                          const String& type,
-                                          bool result);
 
   // Implements the duration change algorithm.
   // http://w3c.github.io/media-source/#duration-change-algorithm

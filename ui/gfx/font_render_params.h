@@ -8,16 +8,16 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "build/build_config.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
 #include "ui/gfx/font.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 
 // A collection of parameters describing how text should be rendered on Linux.
-struct GFX_EXPORT FontRenderParams {
+struct COMPONENT_EXPORT(GFX) FontRenderParams {
   bool operator==(const FontRenderParams& other) const {
     return antialiasing == other.antialiasing &&
            text_contrast == other.text_contrast &&
@@ -82,7 +82,7 @@ struct GFX_EXPORT FontRenderParams {
 };
 
 // A query used to determine the appropriate FontRenderParams.
-struct GFX_EXPORT FontRenderParamsQuery {
+struct COMPONENT_EXPORT(GFX) FontRenderParamsQuery {
   FontRenderParamsQuery();
   FontRenderParamsQuery(const FontRenderParamsQuery& other);
   ~FontRenderParamsQuery();
@@ -111,25 +111,25 @@ struct GFX_EXPORT FontRenderParamsQuery {
 // Returns the appropriate parameters for rendering the font described by
 // |query|. If |family_out| is non-NULL, it will be updated to contain the
 // recommended font family from |query.families|.
-GFX_EXPORT FontRenderParams GetFontRenderParams(
-    const FontRenderParamsQuery& query,
-    std::string* family_out);
+COMPONENT_EXPORT(GFX)
+FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
+                                     std::string* family_out);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 // Clears GetFontRenderParams()'s cache. Intended to be called by tests that are
 // changing Fontconfig's configuration.
-GFX_EXPORT void ClearFontRenderParamsCacheForTest();
+COMPONENT_EXPORT(GFX) void ClearFontRenderParamsCacheForTest();
 #endif
 
 // Gets the device scale factor to query the FontRenderParams.
-GFX_EXPORT float GetFontRenderParamsDeviceScaleFactor();
+COMPONENT_EXPORT(GFX) float GetFontRenderParamsDeviceScaleFactor();
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 // Sets the device scale factor for FontRenderParams to decide
 // if it should enable subpixel positioning.
-GFX_EXPORT void SetFontRenderParamsDeviceScaleFactor(
-    float device_scale_factor);
+COMPONENT_EXPORT(GFX)
+void SetFontRenderParamsDeviceScaleFactor(float device_scale_factor);
 #endif
 
 }  // namespace gfx

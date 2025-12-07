@@ -12,7 +12,9 @@
 #include "gin/function_template.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "v8/include/cppgc/allocation.h"
 #include "v8/include/v8-context.h"
+#include "v8/include/v8-cppgc.h"
 #include "v8/include/v8-function.h"
 #include "v8/include/v8-local-handle.h"
 
@@ -27,22 +29,22 @@ GinJavaBridgeObject* GinJavaBridgeObject::InjectNamed(
   v8::Isolate* isolate = frame->GetAgentGroupScheduler()->Isolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = frame->MainWorldScriptContext();
-  if (context.IsEmpty())
-    return NULL;
+  if (context.IsEmpty()) {
+    return nullptr;
+  }
 
-  GinJavaBridgeObject* object =
-      new GinJavaBridgeObject(isolate, dispatcher, object_id);
+  auto* object = cppgc::MakeGarbageCollected<GinJavaBridgeObject>(
+      isolate->GetCppHeap()->GetAllocationHandle(), isolate, dispatcher,
+      object_id);
 
   v8::Context::Scope context_scope(context);
   v8::Local<v8::Object> global = context->Global();
-  gin::Handle<GinJavaBridgeObject> controller =
-      gin::CreateHandle(isolate, object);
-  // WrappableBase instance deletes itself in case of a wrapper
-  // creation failure, thus there is no need to delete |object|.
-  if (controller.IsEmpty())
-    return NULL;
+  v8::Local<v8::Value> controller;
+  if (!object->GetWrapper(isolate).ToLocal(&controller)) {
+    return nullptr;
+  }
 
-  global->Set(context, gin::StringToV8(isolate, object_name), controller.ToV8())
+  global->Set(context, gin::StringToV8(isolate, object_name), controller)
       .Check();
 
   return object;
@@ -53,32 +55,38 @@ GinJavaBridgeObject* GinJavaBridgeObject::InjectAnonymous(
     blink::WebLocalFrame* frame,
     const base::WeakPtr<GinJavaBridgeDispatcher>& dispatcher,
     GinJavaBridgeDispatcher::ObjectID object_id) {
-  return new GinJavaBridgeObject(frame->GetAgentGroupScheduler()->Isolate(),
-                                 dispatcher, object_id);
+  v8::Isolate* isolate = frame->GetAgentGroupScheduler()->Isolate();
+  return cppgc::MakeGarbageCollected<GinJavaBridgeObject>(
+      isolate->GetCppHeap()->GetAllocationHandle(), isolate, dispatcher,
+      object_id);
 }
 
 GinJavaBridgeObject::GinJavaBridgeObject(
     v8::Isolate* isolate,
     const base::WeakPtr<GinJavaBridgeDispatcher>& dispatcher,
     GinJavaBridgeDispatcher::ObjectID object_id)
-    : gin::NamedPropertyInterceptor(isolate, this),
-      dispatcher_(dispatcher),
-      object_id_(object_id),
-      template_cache_(isolate) {
+    : dispatcher_(dispatcher), object_id_(object_id), template_cache_(isolate) {
   dispatcher_->GetRemoteObjectHost()->GetObject(
       object_id, remote_.BindNewPipeAndPassReceiver());
 }
 
-GinJavaBridgeObject::~GinJavaBridgeObject() {
+GinJavaBridgeObject::~GinJavaBridgeObject() = default;
+
+void GinJavaBridgeObject::Dispose() {
   if (dispatcher_) {
     dispatcher_->OnGinJavaBridgeObjectDeleted(this);
   }
 }
 
+const gin::WrapperInfo* GinJavaBridgeObject::wrapper_info() const {
+  return &kWrapperInfo;
+}
+
 gin::ObjectTemplateBuilder GinJavaBridgeObject::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::Wrappable<GinJavaBridgeObject>::GetObjectTemplateBuilder(isolate)
-      .AddNamedPropertyInterceptor();
+  return gin::WrappableWithNamedPropertyInterceptor<
+             GinJavaBridgeObject>::GetObjectTemplateBuilder(isolate)
+      .template AddNamedPropertyInterceptor<kWrapperInfo.pointer_tag>();
 }
 
 v8::Local<v8::Value> GinJavaBridgeObject::GetNamedProperty(
@@ -116,8 +124,9 @@ v8::Local<v8::FunctionTemplate> GinJavaBridgeObject::GetFunctionTemplate(
     v8::Isolate* isolate,
     const std::string& name) {
   v8::Local<v8::FunctionTemplate> function_template = template_cache_.Get(name);
-  if (!function_template.IsEmpty())
+  if (!function_template.IsEmpty()) {
     return function_template;
+  }
   function_template = gin::CreateFunctionTemplate(
       isolate,
       base::BindRepeating(
@@ -134,7 +143,5 @@ mojom::GinJavaBridgeRemoteObject* GinJavaBridgeObject::GetRemote() {
   }
   return remote_.get();
 }
-
-gin::WrapperInfo GinJavaBridgeObject::kWrapperInfo = {gin::kEmbedderNativeGin};
 
 }  // namespace content

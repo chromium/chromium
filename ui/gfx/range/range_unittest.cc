@@ -540,3 +540,13 @@ TEST(RangeTest, ToString) {
   expected << "{" << range.start() << "," << range.end() << "}";
   EXPECT_EQ(expected.str(), range.ToString());
 }
+
+TEST(RangeTest, ToIntVector) {
+  gfx::Range range(4, 7);
+  std::vector<int> indices{4, 5, 6};
+  EXPECT_EQ(indices, range.ToIntVector());
+
+  gfx::Range reverse_range(5, 2);
+  std::vector<int> reverse_indices{4, 3, 2};
+  EXPECT_EQ(reverse_indices, reverse_range.ToIntVector());
+}

@@ -8,37 +8,35 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.app.Activity;
-
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.robolectric.Robolectric;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ActionDelegate;
-import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /** Unit tests for {@link TabListEditorRestoreArchivedTabsAction}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabListEditorRestoreArchivedTabsActionUnitTest {
-    @Mock private TabGroupModelFilter mTabModelFilter;
-    @Mock private SelectionDelegate<Integer> mSelectionDelegate;
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private TabGroupModelFilter mTabGroupModelFilter;
+    @Mock private SelectionDelegate<TabListEditorItemSelectionId> mSelectionDelegate;
     @Mock private ActionDelegate mDelegate;
     @Mock private Profile mProfile;
 
@@ -46,23 +44,18 @@ public class TabListEditorRestoreArchivedTabsActionUnitTest {
 
     private MockTabModel mTabModel;
     private TabListEditorRestoreArchivedTabsAction mAction;
-    private Activity mActivity;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        mActivity = Robolectric.buildActivity(Activity.class).get();
         mAction =
                 (TabListEditorRestoreArchivedTabsAction)
-                        TabListEditorRestoreArchivedTabsAction.createAction(
-                                mActivity, mArchiveDelegate);
+                        TabListEditorRestoreArchivedTabsAction.createAction(mArchiveDelegate);
         mTabModel = spy(new MockTabModel(mProfile, null));
-        when(mTabModelFilter.getTabModel()).thenReturn(mTabModel);
-        mAction.configure(() -> mTabModelFilter, mSelectionDelegate, mDelegate, false);
+        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
+        mAction.configure(() -> mTabGroupModelFilter, mSelectionDelegate, mDelegate, false);
     }
 
     @Test
-    @SmallTest
     public void testInherentActionProperties() {
         Assert.assertEquals(
                 R.id.tab_list_editor_restore_archived_tabs_menu_item,
@@ -73,17 +66,19 @@ public class TabListEditorRestoreArchivedTabsActionUnitTest {
         Assert.assertEquals(
                 true,
                 mAction.getPropertyModel().get(TabListEditorActionProperties.TITLE_IS_PLURAL));
-        Assert.assertNull(
+        Assert.assertEquals(
+                R.plurals.accessibility_archived_tabs_dialog_restore_action,
                 mAction.getPropertyModel()
-                        .get(TabListEditorActionProperties.CONTENT_DESCRIPTION_RESOURCE_ID));
+                        .get(TabListEditorActionProperties.CONTENT_DESCRIPTION_RESOURCE_ID)
+                        .intValue());
         Assert.assertNull(mAction.getPropertyModel().get(TabListEditorActionProperties.ICON));
     }
 
     @Test
-    @SmallTest
     public void testPerformAction() {
-        List<Tab> tabs = new ArrayList<>();
-        mAction.performAction(tabs);
-        verify(mArchiveDelegate).restoreArchivedTabs(tabs);
+        List<Tab> tabs = Collections.emptyList();
+        List<String> tabGroupSyncIds = Collections.emptyList();
+        mAction.performAction(tabs, tabGroupSyncIds);
+        verify(mArchiveDelegate).restoreArchivedTabs(tabs, tabGroupSyncIds);
     }
 }

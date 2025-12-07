@@ -10,8 +10,10 @@
 #import "base/test/ios/wait_util.h"
 #import "components/shared_highlighting/core/common/fragment_directives_utils.h"
 #import "components/shared_highlighting/core/common/text_fragment.h"
+#import "ios/chrome/browser/browser_container/ui_bundled/edit_menu_app_interface.h"
+#import "ios/chrome/browser/browser_container/ui_bundled/edit_menu_matchers.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/browser_container/edit_menu_app_interface.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_actions_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -27,21 +29,19 @@
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
 #import "net/test/embedded_test_server/request_handler_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 using shared_highlighting::TextFragment;
 
 namespace {
 
-const char kFirstFragmentText[] = "Hello foo!";
-const char kSecondFragmentText[] = "bar";
 const char kTestPageTextSample[] = "Lorem ipsum";
-const char kNoTextTestPageTextSample[] = "only boundary";
+const char kNoTextTestPageTextSample[] = ".!,";
 const char kInputTestPageTextSample[] = "has an input";
 const char kSimpleTextElementId[] = "toBeSelected";
 const char kToBeSelectedText[] = "VeryUniqueWord";
 
 const char kTestURL[] = "/testPage";
-const char kURLWithTwoFragments[] = "/testPage/#:~:text=Hello%20foo!&text=bar";
 const char kHTMLOfTestPage[] =
     "<html><body>"
     "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do "
@@ -54,8 +54,6 @@ const char kHTMLOfTestPage[] =
     "</body></html>";
 
 const char kTestLongPageURL[] = "/longTestPage";
-const char kLongPageURLWithOneFragment[] =
-    "/longTestPage/#:~:text=Hello%20foo!";
 const char kHTMLOfLongTestPage[] =
     "<html><body>"
     "<div style=\"background:blue; height: 4000px; width: 250px;\"></div>"
@@ -71,8 +69,7 @@ const char kHTMLOfLongTestPage[] =
 const char kNoTextTestURL[] = "/noTextPage";
 const char kHTMLOfNoTextTestPage[] =
     "<html><body>"
-    "This page has a paragraph with only boundary characters"
-    "<p id=\"toBeSelected\"> .!, \t</p>"
+    "<div><p id=\"toBeSelected\">.!, \t</p></div>"
     "</body></html>";
 
 const char kInputTestURL[] = "/inputTextPage";
@@ -81,50 +78,6 @@ const char kHTMLOfInputTestPage[] =
     "This page has an input"
     "<input type=\"text\" id=\"toBeSelected\"></p>"
     "</body></html>";
-
-NSArray<NSString*>* GetMarkedText() {
-  NSString* js = @"(function() {"
-                  "  const marks = document.getElementsByTagName('mark');"
-                  "  const markedText = [];"
-                  "  for (const mark of marks) {"
-                  "    if (mark && mark.innerText) {"
-                  "      markedText.push(mark.innerText);"
-                  "    }"
-                  "  }"
-                  "  return markedText;"
-                  "})();";
-  base::Value result = [ChromeEarlGrey evaluateJavaScript:js];
-  GREYAssertTrue(result.is_list(), @"Result is not iterable.");
-
-  NSMutableArray<NSString*>* marked_texts = [NSMutableArray array];
-  for (const auto& element : result.GetList()) {
-    if (element.is_string()) {
-      NSString* ns_element = base::SysUTF8ToNSString(element.GetString());
-      [marked_texts addObject:ns_element];
-    }
-  }
-
-  return [marked_texts copy];
-}
-
-NSString* GetFirstVisibleMarkedText() {
-  NSString* js =
-      @"(function () {"
-       "  const firstMark = document.getElementsByTagName('mark')[0];"
-       "  if (!firstMark) {"
-       "    return '';"
-       "  }"
-       "  const rect = firstMark.getBoundingClientRect();"
-       "  const isVisible = rect.top >= 0 &&"
-       "    rect.bottom <= window.innerHeight &&"
-       "    rect.left >= 0 &&"
-       "    rect.right <= window.innerWidth;"
-       "  return isVisible ? firstMark.innerText : '';"
-       "})();";
-  base::Value result = [ChromeEarlGrey evaluateJavaScript:js];
-  GREYAssertTrue(result.is_string(), @"Result is not a string.");
-  return base::SysUTF8ToNSString(result.GetString());
-}
 
 std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
     const std::string& html,
@@ -138,7 +91,7 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
 
 }  // namespace
 
-// Test class for the scroll-to-text and link-to-text features.
+// Test class for the link-to-text feature.
 @interface LinkToTextTestCase : ChromeTestCase
 @end
 
@@ -170,49 +123,6 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 }
 
-// Tests that navigating to a URL with text fragments will highlight all
-// fragments.
-- (void)testHighlightAllFragments {
-  [ChromeEarlGrey loadURL:self.testServer->GetURL(kURLWithTwoFragments)];
-  [ChromeEarlGrey waitForWebStateContainingText:kTestPageTextSample];
-
-  NSArray<NSString*>* markedText = GetMarkedText();
-
-  GREYAssertEqual(2, markedText.count,
-                  @"Did not get the expected number of marked text.");
-  GREYAssertEqualObjects(@(kFirstFragmentText), markedText[0],
-                         @"First marked text is not valid.");
-  GREYAssertEqualObjects(@(kSecondFragmentText), markedText[1],
-                         @"Second marked text is not valid.");
-}
-
-// Tests that a fragment will be scrolled to if it's lower on the page.
-- (void)testScrollToHighlight {
-  [ChromeEarlGrey loadURL:self.testServer->GetURL(kLongPageURLWithOneFragment)];
-  [ChromeEarlGrey waitForWebStateContainingText:kTestPageTextSample];
-
-  __block NSString* firstVisibleMark;
-  GREYCondition* scrolledToText = [GREYCondition
-      conditionWithName:@"Did not scroll to marked text."
-                  block:^{
-                    NSString* visibleMarkedText = GetFirstVisibleMarkedText();
-                    if (visibleMarkedText &&
-                        visibleMarkedText != [NSString string]) {
-                      firstVisibleMark = visibleMarkedText;
-                      return YES;
-                    }
-                    return NO;
-                  }];
-
-  GREYAssert([scrolledToText
-                 waitWithTimeout:base::test::ios::kWaitForJSCompletionTimeout
-                                     .InSecondsF()],
-             @"Could not find visible marked element.");
-
-  GREYAssertEqualObjects(@(kFirstFragmentText), firstVisibleMark,
-                         @"Visible marked text is not valid.");
-}
-
 // Tests that a link can be generated for a simple text selection.
 // crbug.com/1403831 Disable flaky test
 - (void)DISABLED_testGenerateLinkForSimpleText {
@@ -236,13 +146,10 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
 
   // The link to text button may be in the overflow, so use a search action to
   // find it, if necessary.
-  id<GREYMatcher> linkToTextMatcher =
-      grey_allOf(chrome_test_util::SystemSelectionCalloutLinkToTextButton(),
-                 grey_sufficientlyVisible(), nil);
-  [[[EarlGrey selectElementWithMatcher:linkToTextMatcher]
-         usingSearchAction:grey_tap()
-      onElementWithMatcher:chrome_test_util::
-                               SystemSelectionCalloutOverflowButton()]
+  id<GREYMatcher> linkToTextMatcher = FindEditMenuActionWithAccessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_SHARE_LINK_TO_TEXT));
+
+  [[EarlGrey selectElementWithMatcher:linkToTextMatcher]
       performAction:grey_tap()];
 
   // Make sure the Edit menu is gone.
@@ -289,18 +196,15 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
       waitForSufficientlyVisibleElementWithMatcher:[EditMenuAppInterface
                                                        editMenuMatcher]];
 
-  // Make sure the Link to Text button is not visible.
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::SystemSelectionCalloutLinkToTextButton()]
-      assertWithMatcher:grey_notVisible()];
+  id<GREYMatcher> linkToTextMatcher = FindEditMenuActionWithAccessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_SHARE_LINK_TO_TEXT));
 
-  // TODO(crbug.com/40191349): Tap to dismiss the system selection callout
-  // buttons so tearDown doesn't hang when `disabler` goes out of scope.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:grey_tap()];
+  GREYAssertEqual(linkToTextMatcher, nil, @"Link to text button visible");
+
 }
 
-- (void)testInputDisablesGenerateLink {
+// TODO(crbug.com/386205292): Test is flaky.
+- (void)FLAKY_testInputDisablesGenerateLink {
   // In order to make the menu show up later in the test, the pasteboard can't
   // be empty.
   UIPasteboard* pasteboard = [UIPasteboard generalPasteboard];
@@ -321,11 +225,6 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
                             selectorWithElementID:kSimpleTextElementId],
                         true)];
 
-  // TODO(crbug.com/40191349): Xcode 13 gesture recognizers seem to get stuck
-  // when the user longs presses on plain text.  For this test, disable EG
-  // synchronization.
-  ScopedSynchronizationDisabler disabler;
-
   // Ensure the menu is visible by finding the Paste button.
   // TODO(crbug.com/328271981): either remove call to selectElementWithMatcher
   // or do something with its return value
@@ -333,14 +232,10 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
   // [EarlGrey selectElementWithMatcher:menu];
 
   // Make sure the Link to Text button is not visible.
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::SystemSelectionCalloutLinkToTextButton()]
-      assertWithMatcher:grey_notVisible()];
+  id<GREYMatcher> linkToTextMatcher = FindEditMenuActionWithAccessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_SHARE_LINK_TO_TEXT));
 
-  // TODO(crbug.com/40191349): Tap to dismiss the system selection callout
-  // buttons so tearDown doesn't hang when `disabler` goes out of scope.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:grey_tap()];
+  GREYAssertEqual(linkToTextMatcher, nil, @"Link to text button visible");
 }
 
 @end

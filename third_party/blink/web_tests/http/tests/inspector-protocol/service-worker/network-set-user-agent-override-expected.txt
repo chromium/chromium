@@ -1,0 +1,18 @@
+Tests that Network.setUserAgentOverride correctly affects navigator.userAgentData in a service worker context.
+Test started.
+Target auto-attach enabled.
+Service worker installation initiated.
+Attached to service worker target.
+Network.setUserAgentOverride sent to the service worker target.
+Service worker navigator.userAgentData.brands:
+[
+    [0] : {
+        brand : TestBrand
+        version : 123
+    }
+    [1] : {
+        brand :  Not A;Brand
+        version : 99
+    }
+]
+

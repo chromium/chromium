@@ -29,12 +29,22 @@ class BASE_EXPORT MessagePumpDefault : public MessagePump {
   void ScheduleDelayedWork(
       const Delegate::NextWorkInfo& next_work_info) override;
 
+  // Visible for testing.
+  void RecordWaitTime(base::TimeDelta wait_time);
+  bool ShouldBusyLoop() const;
+
  private:
+  // Returns whether the event was signaled.
+  bool BusyWaitOnEvent(base::TimeTicks before);
+
   // This flag is set to false when Run should return.
   bool keep_running_;
 
   // Used to sleep until there is more work to do.
   WaitableEvent event_;
+
+  base::TimeDelta last_wait_time_;
+  base::TimeDelta wait_time_exponential_moving_average_;
 };
 
 }  // namespace base

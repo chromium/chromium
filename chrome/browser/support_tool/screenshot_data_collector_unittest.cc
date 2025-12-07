@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted_memory.h"
@@ -54,15 +55,13 @@ class ScreenshotDataCollectorTest : public ::testing::Test {
     const GURL url(kTestImageBase64);
     std::string mime_type, charset, data;
     EXPECT_TRUE(net::DataURL::Parse(url, &mime_type, &charset, &data));
-    bitmap_ = *gfx::JPEGCodec::Decode(
-                   reinterpret_cast<const unsigned char*>(data.c_str()),
-                   data.length())
-                   .get();
+    bitmap_ = gfx::JPEGCodec::Decode(base::as_byte_span(data));
 
     webrtc::DesktopSize size(bitmap_.width(), bitmap_.height());
-    frame_ = std::make_unique<webrtc::BasicDesktopFrame>(std::move(size));
-    std::memcpy(frame_->data(), bitmap_.getAddr32(0, 0),
-                bitmap_.rowBytes() * bitmap_.height());
+    frame_ = std::make_unique<webrtc::BasicDesktopFrame>(std::move(size),
+                                                         webrtc::FOURCC_ARGB);
+    UNSAFE_TODO(std::memcpy(frame_->data(), bitmap_.getAddr32(0, 0),
+                            bitmap_.rowBytes() * bitmap_.height()));
     jpeg_data_ = base::MakeRefCounted<base::RefCountedString>(std::move(data));
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());

@@ -125,7 +125,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       let gl = null;
       let renderer = null;
       let scene = new Scene();
-      scene.enableStats(false);
 
       useReticle.addEventListener('change', (ev) => {
         if (!xrSession) return;
@@ -267,6 +266,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         }).then(transient_input_hit_test_source => {
           console.debug("Hit test source for generic touchscreen created!");
           xrTransientInputHitTestSource = transient_input_hit_test_source;
+        }).catch(error => {
+          console.error("Error when requesting transient hit test source", error);
         });
 
         if (debugSources) debugSources.startSession(session);

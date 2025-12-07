@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "media/base/video_frame.h"
@@ -22,9 +23,11 @@
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 using ::testing::_;
 using ::testing::AtLeast;
@@ -50,13 +53,14 @@ class MediaStreamVideoRendererSinkTest : public testing::Test {
     mock_source_->StartMockedSource();
     base::RunLoop().RunUntilIdle();
 
-    media_stream_video_renderer_sink_ = new MediaStreamVideoRendererSink(
-        media_stream_component_,
-        ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-            &MediaStreamVideoRendererSinkTest::RepaintCallback,
-            CrossThreadUnretained(this))),
-        Platform::Current()->GetIOTaskRunner(),
-        scheduler::GetSingleThreadTaskRunnerForTesting());
+    media_stream_video_renderer_sink_ =
+        base::MakeRefCounted<MediaStreamVideoRendererSink>(
+            media_stream_component_,
+            ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+                &MediaStreamVideoRendererSinkTest::RepaintCallback,
+                CrossThreadUnretained(this))),
+            Platform::Current()->GetIOTaskRunner(),
+            scheduler::GetSingleThreadTaskRunnerForTesting());
     base::RunLoop().RunUntilIdle();
 
     EXPECT_TRUE(IsInStoppedState());
@@ -115,8 +119,9 @@ class MediaStreamVideoRendererSinkTest : public testing::Test {
     // |media_stream_component_| uses video task runner to send frames to sinks.
     // Make sure that tasks on video task runner are completed before moving on.
     base::RunLoop run_loop;
-    Platform::Current()->GetIOTaskRunner()->PostTaskAndReply(
-        FROM_HERE, base::BindOnce([] {}), run_loop.QuitClosure());
+    PostCrossThreadTaskAndReply(*Platform::Current()->GetIOTaskRunner(),
+                                FROM_HERE, CrossThreadBindOnce([] {}),
+                                CrossThreadOnceClosure(run_loop.QuitClosure()));
     run_loop.Run();
     base::RunLoop().RunUntilIdle();
   }
@@ -160,14 +165,15 @@ class MediaStreamVideoRendererSinkTransparencyTest
     : public MediaStreamVideoRendererSinkTest {
  public:
   MediaStreamVideoRendererSinkTransparencyTest() {
-    media_stream_video_renderer_sink_ = new MediaStreamVideoRendererSink(
-        media_stream_component_,
-        ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-            &MediaStreamVideoRendererSinkTransparencyTest::
-                VerifyTransparentFrame,
-            CrossThreadUnretained(this))),
-        Platform::Current()->GetIOTaskRunner(),
-        scheduler::GetSingleThreadTaskRunnerForTesting());
+    media_stream_video_renderer_sink_ =
+        base::MakeRefCounted<MediaStreamVideoRendererSink>(
+            media_stream_component_,
+            ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+                &MediaStreamVideoRendererSinkTransparencyTest::
+                    VerifyTransparentFrame,
+                CrossThreadUnretained(this))),
+            Platform::Current()->GetIOTaskRunner(),
+            scheduler::GetSingleThreadTaskRunnerForTesting());
   }
 
   void VerifyTransparentFrame(scoped_refptr<media::VideoFrame> frame) {

@@ -39,6 +39,9 @@ source_set("qt_interface") {
   # target instead.
   public = [ "qt_interface.h" ]
   sources = [ "qt_interface.cc" ]
+
+  # Don't use libc++ modules as this depends on libstdc++.
+  use_libcxx_modules = false
 }
 
 template("qt_shim") {
@@ -99,12 +102,19 @@ template("qt_shim") {
       sources += get_target_outputs(":generate_moc" + invoker.qt_version)
       deps += [ ":generate_moc" + invoker.qt_version ]
     }
+
+    # Don't depend on libcxx modules. This binary doesn't depend on the standard
+    # library in libcxx. Instead it depends on the libcxx in the sysroot, so
+    # using libcxx will just confuse it with duplicate definitions.
+    use_libcxx_modules = false
   }
 }
-qt_shim("qt5_shim") {
-  qt_version = "5"
-  if (!use_sysroot) {
-    moc_qt_path = "$moc_qt5_path"
+if (use_qt5) {
+  qt_shim("qt5_shim") {
+    qt_version = "5"
+    if (!use_sysroot) {
+      moc_qt_path = "$moc_qt5_path"
+    }
   }
 }
 if (use_qt6) {
@@ -122,13 +132,17 @@ component("qt") {
   defines = [ "IS_QT_IMPL" ]
 
   # qt_shim is in data_deps since we want to load it manually.
-  data_deps = [ ":qt5_shim" ]
+  data_deps = []
+  if (use_qt5) {
+    data_deps += [ ":qt5_shim" ]
+  }
   if (use_qt6) {
     data_deps += [ ":qt6_shim" ]
   }
   deps = [
     ":qt_interface",
     "//base",
+    "//cc/paint",
     "//printing/buildflags",
     "//ui/base/ime/linux",
     "//ui/color",
@@ -145,6 +159,10 @@ component("qt") {
   }
 
   sources = [
+    "native_theme_qt.cc",
+    "native_theme_qt.h",
+    "os_settings_provider_qt.cc",
+    "os_settings_provider_qt.h",
     "qt_ui.cc",
     "qt_ui.h",
   ]

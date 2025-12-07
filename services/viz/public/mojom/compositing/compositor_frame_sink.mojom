@@ -4,6 +4,7 @@
 
 module viz.mojom;
 
+import "cc/mojom/scrollbar_animator.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "services/viz/public/mojom/compositing/begin_frame_args.mojom";
@@ -12,15 +13,43 @@ import "services/viz/public/mojom/compositing/layer_context.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 import "services/viz/public/mojom/compositing/frame_timing_details.mojom";
 import "services/viz/public/mojom/compositing/returned_resource.mojom";
-import "services/viz/public/mojom/compositing/shared_bitmap_id.mojom";
+import "services/viz/public/mojom/compositing/thread.mojom";
 import "services/viz/public/mojom/hit_test/hit_test_region_list.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
-// Tags the frame sink with the type of source producing its content.
-enum CompositorFrameSinkType {
-  kUnspecified,
-  kVideo,
-  kMediaStream,
-  kLayerTree,
+struct LayerContextSettings {
+  bool draw_mode_is_gpu;
+
+  // The following fields are part of LayerTreeSettings.
+  // See cc/trees/layer_tree_settings.h for each field's usage.
+  bool enable_early_damage_check;
+  int32 damaged_frame_limit;
+  cc.mojom.ScrollbarAnimator scrollbar_animator;
+  mojo_base.mojom.TimeDelta scrollbar_fade_delay;
+  mojo_base.mojom.TimeDelta scrollbar_fade_duration;
+  mojo_base.mojom.TimeDelta scrollbar_thinning_duration;
+  float idle_thickness_scale;
+  float top_controls_show_threshold;
+  float top_controls_hide_threshold;
+  gfx.mojom.Size minimum_occlusion_tracking_size;
+  bool enable_edge_anti_aliasing;
+  bool enable_backface_visibility_interop;
+  bool enable_fluent_scrollbar;
+  bool enable_fluent_overlay_scrollbar;
+};
+
+struct CompositorFrameSinkParams {
+  // If true, the client also wants to receive BeginFrames with the
+  // animate_only flag set. Only clients that opt in will receive such
+  // BeginFrames.
+  bool wants_animate_only_begin_frames;
+  // If true, the client wants to use unsolicited compositor frame submission to
+  // indicate that it wants to receive subsequent BeginFrame events, as if
+  // SetNeedsBeginFrame(true) is called.
+  bool auto_needs_begin_frame;
+  // If true, the client will not receive DidReceiveCompositorFrameAck() and
+  // should not wait for it before submitting another CompositorFrame.
+  bool no_compositor_frame_acks;
 };
 
 // A CompositorFrameSink is an interface for receiving CompositorFrame
@@ -28,26 +57,14 @@ enum CompositorFrameSinkType {
 // Each time a client has a graphical update, and receives an OnBeginFrame, it
 // is responsible for creating a CompositorFrame to update its portion of the
 // screen.
+[DirectReceiver]
 interface CompositorFrameSink {
+  // Sets parameters for the CompositorFrameSink.
+  SetParams(CompositorFrameSinkParams params);
+
   // Lets the display compositor know that the client wishes to receive the next
   // BeginFrame event.
   SetNeedsBeginFrame(bool needs_begin_frame);
-
-  // Lets the display compositor know that the client also wants to receive
-  // BeginFrames with the animate_only flag set. Only clients that opt in
-  // will receive such BeginFrames.
-  SetWantsAnimateOnlyBeginFrames();
-
-  // Lets the display compositor know that the client wants merged OnBeginFrame,
-  // DidReceiveCompositorFrameAck, and ReclaimResources. Only supported when
-  // features::OnBeginFrameAcks is enabled. Only clients that opt in will
-  // receive such BeginFrames, others will still receive the signals separately.
-  SetWantsBeginFrameAcks();
-
-  // Lets the display compositor know that the client wants to use unsolicited
-  // compositor frame submission to indicate that it wants to receive subsequent
-  // BeginFrame events, as if SetNeedsBeginFrame(true) is called.
-  SetAutoNeedsBeginFrame();
 
   // Submits a CompositorFrame to the display compositor that will be presented
   // to screen the next time frames from all CompositorFrameSinks are aggregated
@@ -73,50 +90,32 @@ interface CompositorFrameSink {
                         CompositorFrame frame,
                         HitTestRegionList? hit_test_region_list,
                         uint64 submit_time);
-  // Same as above, submits a CompositorFrame to the display compositor. The
-  // implementation only returns when it's ready to receive another frame.
-  // We also return the list of resources that would be returned by
-  // DidReceiveCompositorFrameAck.
-  [Sync] SubmitCompositorFrameSync(LocalSurfaceId local_surface_id,
-                        CompositorFrame frame,
-                        HitTestRegionList? hit_test_region_list,
-                        uint64 submit_time)
-                        => (array<ReturnedResource> resources);
 
   // Notifies the frame sink that a BeginFrame was completed, but that no
   // CompositorFrame was produced as a result of it.
   DidNotProduceFrame(BeginFrameAck ack);
 
-  // Informs the display compositor that the client allocated a shared bitmap.
-  // The |id| can then be used in subsequent CompositorFrames given to
-  // SubmitCompositorFrame. The |id| is a SharedBitmapId.
-  DidAllocateSharedBitmap(mojo_base.mojom.ReadOnlySharedMemoryRegion region,
-                          SharedBitmapId id);
-
-  // Informs the display compositor that the client deleted a shared bitmap. This
-  // allows the service to free the shared memory that was previously given to it
-  // via DidAllocateSharedBitmap(). The |id| is a SharedBitmapId.
-  DidDeleteSharedBitmap(SharedBitmapId id);
-
-  // This should be called atmost once for the lifetime of this frame sink. Once
-  // the value has been set to anything other than kUnspecified, subsequent calls
-  // are silently ignored.
-  InitializeCompositorFrameSinkType(CompositorFrameSinkType type);
+  // Notifies the frame sink that although a frame may not come soon, we
+  // are expecting a new local surface id. This can be used to clean up
+  // copy requests that would have been cancelled by a compositor frame with a
+  // new local surface id.
+  NotifyNewLocalSurfaceIdExpectedWhilePaused();
 
   // Binds to the LayerContext interface for this frame sink. Once this is bound
   // the frame sink is permanently in LayerContext mode and the client should no
   // longer submit frames through the CompositorFrameSink interface. Instead
   // frames will automtaically be submitted by Viz based on the state of a
   // GPU-side layer tree which can be manipulated through this LayerContext.
-  BindLayerContext(PendingLayerContext context);
+  BindLayerContext(PendingLayerContext context, LayerContextSettings settings);
 
   // Informs the display compositor the IDs of the thread involved in frame
   // production. This is used on Android PerformanceHint API to dynamically
   // adjust performance to allow power saving.
   [EnableIf=is_android]
-  SetThreadIds(array<int32> thread_ids);
+  SetThreads(array<Thread> threads);
 };
 
+[DirectReceiver]
 interface CompositorFrameSinkClient {
   // Notification that the previous CompositorFrame given to
   // SubmitCompositorFrame() has been processed and that another frame
@@ -130,13 +129,10 @@ interface CompositorFrameSinkClient {
   // Notification for the client to generate a CompositorFrame. The client is
   // required to respond with either SubmitCompositorFrame() or
   // DidNotProduceFrame(). If the client is unresponsive then begin frames will
-  // be throttled and eventually stopped entirely. We also return whether this
-  // OnBeginFrame is to act as DidReceiveCompositorFrameAck. We also return a
-  // list of resources, previously sent to SubmitCompositorFrame, to be reused
-  // or freed.
+  // be throttled and eventually stopped entirely. We also return a list of
+  // resources, previously sent to SubmitCompositorFrame, to be reused or freed.
   OnBeginFrame(BeginFrameArgs args,
                map<uint32, FrameTimingDetails> details,
-               bool frame_ack,
                array<ReturnedResource> resources);
 
   // Inform the client that OnBeginFrame may not be called for some time.

@@ -12,8 +12,7 @@
 #include "chromeos/ash/components/phonehub/notification.h"
 #include "chromeos/ash/components/phonehub/phone_status_model.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 // Fake data for phone status.
 extern const char16_t kFakeMobileProviderName[];
@@ -47,7 +46,6 @@ extern const char16_t kFakeNotificationText[];
 const Notification::AppMetadata& CreateFakeAppMetadata();
 const Notification& CreateFakeNotification();
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_PHONE_MODEL_TEST_UTIL_H_

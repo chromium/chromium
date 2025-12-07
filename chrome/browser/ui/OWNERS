@@ -10,14 +10,14 @@
 # an owner.
 #
 dfried@chromium.org
+dljames@chromium.org
 dpenning@chromium.org
 ellyjones@chromium.org
 estalin@chromium.org
 jkeitel@google.com
 msw@chromium.org
-pbos@chromium.org
-pkasting@chromium.org
-sky@chromium.org
+tluk@chromium.org
+
 # NOTE: Do not use the above owners when you're in a subdirectory that has
 # OWNERS file. Prefer these instead as these OWNERS will be more familiar, and
 # to load balance. Only use the above for subdirectories when doing refactorings
@@ -33,8 +33,8 @@ per-file tab_helpers.*=avi@chromium.org
 per-file browser_instant_controller*=file://chrome/browser/search/OWNERS
 
 # Signin and avatars.
-per-file avatar_*=file://components/signin/OWNERS
-per-file signin_*=file://components/signin/OWNERS
+per-file avatar_*=file://components/signin/DESKTOP_OWNERS
+per-file signin_*=file://components/signin/DESKTOP_OWNERS
 
 # Profiles
 per-file profile_*=file://chrome/browser/profiles/OWNERS

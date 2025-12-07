@@ -121,9 +121,6 @@ class SMILTime {
     return time_ == other.time_;
   }
   explicit operator bool() const { return IsFinite() && !time_.is_zero(); }
-  constexpr bool operator!=(SMILTime other) const {
-    return time_ != other.time_;
-  }
 
   // Ordering of SMILTimes has to follow: finite < indefinite < unresolved. We
   // set this up by assigning consecutive sentinel values for the two latter
@@ -213,20 +210,11 @@ inline bool operator==(const SMILInterval& a, const SMILInterval& b) {
   return a.begin == b.begin && a.end == b.end;
 }
 
-inline bool operator!=(const SMILInterval& a, const SMILInterval& b) {
-  return !(a == b);
-}
+template <>
+struct HashTraits<SMILInterval> : GenericHashTraits<SMILInterval> {
+  static SMILInterval EmptyValue() { return SMILInterval::Unresolved(); }
+};
 
 }  // namespace blink
-
-namespace WTF {
-template <>
-struct HashTraits<blink::SMILInterval>
-    : GenericHashTraits<blink::SMILInterval> {
-  static blink::SMILInterval EmptyValue() {
-    return blink::SMILInterval::Unresolved();
-  }
-};
-}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SVG_ANIMATION_SMIL_TIME_H_

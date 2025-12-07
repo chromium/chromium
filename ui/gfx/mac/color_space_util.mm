@@ -6,7 +6,9 @@
 
 #include <CoreMedia/CoreMedia.h>
 #include <CoreVideo/CoreVideo.h>
+
 #include <optional>
+#include <vector>
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
@@ -33,9 +35,9 @@ bool GetImageBufferProperty(CFTypeRef value_untyped,
 
   for (const auto& p : cfstr_id_pairs) {
     if (p.cfstr_cm) {
-      DCHECK(!CFStringCompare(p.cfstr_cv, p.cfstr_cm, 0));
+      DCHECK_EQ(CFStringCompare(p.cfstr_cv, p.cfstr_cm, 0), kCFCompareEqualTo);
     }
-    if (!CFStringCompare(value_as_string, p.cfstr_cv, 0)) {
+    if (CFStringCompare(value_as_string, p.cfstr_cv, 0) == kCFCompareEqualTo) {
       *value_as_id = p.id;
       return true;
     }
@@ -62,9 +64,17 @@ const std::vector<CVImagePrimary>& GetSupportedImagePrimaries() {
              kCMFormatDescriptionColorPrimaries_EBU_3213,
              gfx::ColorSpace::PrimaryID::BT470BG});
         supported_primaries.push_back(
+            {kCVImageBufferColorPrimaries_EBU_3213,
+             kCMFormatDescriptionColorPrimaries_EBU_3213,
+             gfx::ColorSpace::PrimaryID::EBU_3213_E});
+        supported_primaries.push_back(
             {kCVImageBufferColorPrimaries_SMPTE_C,
              kCMFormatDescriptionColorPrimaries_SMPTE_C,
              gfx::ColorSpace::PrimaryID::SMPTE170M});
+        supported_primaries.push_back(
+            {kCVImageBufferColorPrimaries_SMPTE_C,
+             kCMFormatDescriptionColorPrimaries_SMPTE_C,
+             gfx::ColorSpace::PrimaryID::SMPTE240M});
         supported_primaries.push_back(
             {kCVImageBufferColorPrimaries_ITU_R_2020,
              kCMFormatDescriptionColorPrimaries_ITU_R_2020,
@@ -125,6 +135,10 @@ const std::vector<CVImageTransferFn>& GetSupportedImageTransferFn() {
             {kCVImageBufferTransferFunction_ITU_R_2020,
              kCMFormatDescriptionTransferFunction_ITU_R_2020,
              gfx::ColorSpace::TransferID::BT2020_10});
+        supported_transfer_funcs.push_back(
+            {kCVImageBufferTransferFunction_ITU_R_2020,
+             kCMFormatDescriptionTransferFunction_ITU_R_2020,
+             gfx::ColorSpace::TransferID::BT2020_12});
         supported_transfer_funcs.push_back(
             {kCVImageBufferTransferFunction_SMPTE_ST_428_1,
              kCMFormatDescriptionTransferFunction_SMPTE_ST_428_1,
@@ -211,6 +225,10 @@ const std::vector<CVImageMatrix>& GetSupportedImageMatrix() {
              kCMFormatDescriptionYCbCrMatrix_ITU_R_601_4,
              gfx::ColorSpace::MatrixID::SMPTE170M});
         supported_matrices.push_back(
+            {kCVImageBufferYCbCrMatrix_ITU_R_601_4,
+             kCMFormatDescriptionYCbCrMatrix_ITU_R_601_4,
+             gfx::ColorSpace::MatrixID::BT470BG});
+        supported_matrices.push_back(
             {kCVImageBufferYCbCrMatrix_SMPTE_240M_1995,
              kCMFormatDescriptionYCbCrMatrix_SMPTE_240M_1995,
              gfx::ColorSpace::MatrixID::SMPTE240M});
@@ -227,8 +245,36 @@ gfx::ColorSpace::MatrixID GetCoreVideoMatrix(CFTypeRef matrix_untyped) {
   auto matrix_id = gfx::ColorSpace::MatrixID::INVALID;
   if (!GetImageBufferProperty(matrix_untyped, GetSupportedImageMatrix(),
                               &matrix_id)) {
-    DLOG(ERROR) << "Failed to find CVImageBufferRef YUV matrix: "
-                << matrix_untyped;
+    CFStringRef value_as_string =
+        base::apple::CFCast<CFStringRef>(matrix_untyped);
+    if (value_as_string) {
+      // For matrices that macOS doesn't recognize it'll return a value of the
+      // form "YCbCrMatrix#n" where n seems to correspond to the ISO
+      // 23001-8:2016 id; see VideoColorSpace::MatrixID. Here we only add
+      // `BT470BG` because it is technically the same matrix as `SMPTE170M`, and
+      // both can be mapped to `kCVImageBufferYCbCrMatrix_ITU_R_601_4`. This
+      // mapping ensures that `IOSurfaceSetColorSpace()` correctly configures
+      // the underlying color space.
+      //
+      // We should not add generalized code to handle this in the future, since
+      // `media/gpu/mac/video_toolbox_frame_converter.cc` will use the result
+      // from this function to determine if the overlay should be promoted or
+      // not. For color spaces that macOS doesn't support, overlays should
+      // always be disabled to ensure correct color space transform.
+      //
+      // Note: We don't include this value in GetSupportedImageMatrix() since
+      // we only want to translate this value when it comes from macOS.
+      if (CFStringCompare(value_as_string, CFSTR("YCbCrMatrix#5"), 0) ==
+          kCFCompareEqualTo) {
+        return gfx::ColorSpace::MatrixID::BT470BG;
+      }
+
+      DLOG(ERROR) << "Failed to find CVImageBufferRef YUV matrix: \""
+                  << value_as_string << "\"";
+    } else {
+      DLOG(ERROR) << "Failed to find CVImageBufferRef YUV matrix: "
+                  << matrix_untyped;
+    }
   }
   return matrix_id;
 }

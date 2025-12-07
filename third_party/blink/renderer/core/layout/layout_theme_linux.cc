@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/layout_theme_linux.h"
 
 #include "third_party/blink/public/resources/grit/blink_resources.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/platform/data_resource_helper.h"
 
 namespace blink {
@@ -19,13 +20,9 @@ LayoutTheme& LayoutTheme::NativeTheme() {
 }
 
 String LayoutThemeLinux::ExtraDefaultStyleSheet() {
-  String stylesheet =
-      LayoutThemeDefault::ExtraDefaultStyleSheet() +
-      UncompressResourceAsASCIIString(IDR_UASTYLE_THEME_CHROMIUM_LINUX_CSS);
-  if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
-    stylesheet = stylesheet + UncompressResourceAsASCIIString(
-                                  IDR_UASTYLE_STYLABLE_SELECT_LINUX_CSS);
-  }
+  String stylesheet = StrCat(
+      {LayoutThemeDefault::ExtraDefaultStyleSheet(),
+       UncompressResourceAsASCIIString(IDR_UASTYLE_THEME_CHROMIUM_LINUX_CSS)});
   return stylesheet;
 }
 

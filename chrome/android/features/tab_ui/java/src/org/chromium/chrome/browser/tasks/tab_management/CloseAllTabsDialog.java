@@ -6,12 +6,11 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -19,23 +18,27 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.function.Supplier;
+
 /** Manages the close all tabs modal dialog. */
+@NullMarked
 public class CloseAllTabsDialog {
     private CloseAllTabsDialog() {}
 
     /**
      * Shows a modal dialog to confirm or cancel the close all tabs action.
+     *
      * @param modalDialogManagerSupplier Provides access to the modal dialog manager.
-     * @param tabModelSelector {@link TabModelSelector} to get the Incognito tab count to
-     *         show in the regular mode dialog.
+     * @param tabModelSelector {@link TabModelSelector} to get the Incognito tab count to show in
+     *     the regular mode dialog.
      * @param onCloseAll Invoked on a positive button input.
      */
     public static void show(
             Context context,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            @NonNull TabModelSelector tabModelSelector,
+            TabModelSelector tabModelSelector,
             Runnable onCloseAll) {
-        assert modalDialogManagerSupplier.hasValue();
+        assert modalDialogManagerSupplier.get() != null;
         final ModalDialogManager manager = modalDialogManagerSupplier.get();
         final boolean isIncognito = tabModelSelector.getCurrentModel().isIncognito();
 
@@ -103,8 +106,7 @@ public class CloseAllTabsDialog {
     }
 
     @VisibleForTesting
-    static String getDialogDescriptionString(
-            @NonNull Context context, @NonNull TabModelSelector tabModelSelector) {
+    static String getDialogDescriptionString(Context context, TabModelSelector tabModelSelector) {
         boolean isIncognito = tabModelSelector.getCurrentModel().isIncognito();
         int incognitoCount = tabModelSelector.getModel(/* incognito= */ true).getCount();
 

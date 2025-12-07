@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -19,10 +18,8 @@ class CodecPressureManager;
 // or decoders, per ExecutionContext.
 class MODULES_EXPORT CodecPressureManagerProvider
     : public GarbageCollected<CodecPressureManagerProvider>,
-      public Supplement<ExecutionContext> {
+      public GarbageCollectedMixin {
  public:
-  static const char kSupplementName[];
-
   // Gets or creates the CodecPressureManagerProvider.
   static CodecPressureManagerProvider& From(ExecutionContext&);
   explicit CodecPressureManagerProvider(ExecutionContext&);
@@ -40,6 +37,7 @@ class MODULES_EXPORT CodecPressureManagerProvider
  private:
   scoped_refptr<base::SequencedTaskRunner> GetTaskRunner();
 
+  Member<ExecutionContext> execution_context_;
   Member<CodecPressureManager> decoder_pressure_manager_;
   Member<CodecPressureManager> encoder_pressure_manager_;
 };

@@ -31,7 +31,7 @@ class MODULES_EXPORT CanvasFilterOperationResolver {
 
  public:
   static FilterOperations CreateFilterOperationsFromList(
-      const HeapVector<ScriptValue>& filters,
+      const HeapVector<ScriptObject>& filters,
       ExecutionContext& execution_context,
       ExceptionState& exception_state);
 
@@ -43,7 +43,7 @@ class MODULES_EXPORT CanvasFilterOperationResolver {
       const String& filter_string,
       const ExecutionContext& execution_context,
       Element* style_resolution_host,
-      const Font& font);
+      const Font* font);
 };
 
 }  // namespace blink

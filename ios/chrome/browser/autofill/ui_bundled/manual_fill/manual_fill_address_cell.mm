@@ -4,14 +4,14 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_address_cell.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_cell_utils.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_content_injector.h"
+#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -31,11 +31,14 @@
 
 // The cell's accessibility label. Indicates the index at which the address
 // represented by this item is positioned in the list of addresses to show.
-@property(nonatomic, strong) NSString* cellIndexAccessibilityLabel;
+@property(nonatomic, copy) NSString* cellIndexAccessibilityLabel;
 
 @end
 
 @implementation ManualFillAddressItem {
+  // The 0-based index at which the address is in the list of addresses to show.
+  NSInteger _cellIndex;
+
   // If `YES`, autofill button is shown for the item.
   BOOL _showAutofillFormButton;
 }
@@ -43,6 +46,7 @@
 - (instancetype)initWithAddress:(ManualFillAddress*)address
                 contentInjector:(id<ManualFillContentInjector>)contentInjector
                     menuActions:(NSArray<UIAction*>*)menuActions
+                      cellIndex:(NSInteger)cellIndex
     cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
          showAutofillFormButton:(BOOL)showAutofillFormButton {
   self = [super initWithType:kItemTypeEnumZero];
@@ -50,7 +54,8 @@
     _contentInjector = contentInjector;
     _address = address;
     _menuActions = menuActions;
-    _cellIndexAccessibilityLabel = cellIndexAccessibilityLabel;
+    _cellIndex = cellIndex;
+    _cellIndexAccessibilityLabel = [cellIndexAccessibilityLabel copy];
     _showAutofillFormButton = showAutofillFormButton;
     self.cellClass = [ManualFillAddressCell class];
   }
@@ -63,18 +68,13 @@
   [cell setUpWithAddress:self.address
                   contentInjector:self.contentInjector
                       menuActions:self.menuActions
+                        cellIndex:_cellIndex
       cellIndexAccessibilityLabel:self.cellIndexAccessibilityLabel
            showAutofillFormButton:_showAutofillFormButton];
 }
-
 @end
 
 @interface ManualFillAddressCell ()
-
-// The label with the line1 -- line2.
-// TODO(crbug.com/326398845): Remove property once the Keyboard Accessory
-// Upgrade feature has launched both on iPhone and iPad.
-@property(nonatomic, strong) UILabel* addressLabel;
 
 // The dynamic constraints for all the lines (i.e. not set in createView).
 @property(nonatomic, strong)
@@ -142,6 +142,9 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
 }  // namespace
 
 @implementation ManualFillAddressCell {
+  // The 0-based index at which the address is in the list of addresses to show.
+  NSInteger _cellIndex;
+
   // If `YES`, autofill button is shown for the cell.
   BOOL _showAutofillFormButton;
 
@@ -162,7 +165,6 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
   [super prepareForReuse];
   [self resetDynamicContraints];
 
-  self.addressLabel.text = @"";
   [self.firstNameButton setTitle:@"" forState:UIControlStateNormal];
   [self.middleNameButton setTitle:@"" forState:UIControlStateNormal];
   [self.lastNameButton setTitle:@"" forState:UIControlStateNormal];
@@ -183,8 +185,10 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
 - (void)setUpWithAddress:(ManualFillAddress*)address
                 contentInjector:(id<ManualFillContentInjector>)contentInjector
                     menuActions:(NSArray<UIAction*>*)menuActions
+                      cellIndex:(NSInteger)cellIndex
     cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
          showAutofillFormButton:(BOOL)showAutofillFormButton {
+  _cellIndex = cellIndex;
   _showAutofillFormButton = showAutofillFormButton;
   if (self.contentView.subviews.count == 0) {
     [self createViewHierarchy];
@@ -199,9 +203,9 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
     self.overflowMenuButton.hidden = YES;
   }
 
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    self.accessibilityLabel = cellIndexAccessibilityLabel;
-  }
+  GiveAccessibilityContextToCellAndButton(self, self.overflowMenuButton,
+                                          self.autofillFormButton,
+                                          cellIndexAccessibilityLabel);
 
   [self populateViewsWithAddress:address];
   [self arrangeViewsWithAddress:address];
@@ -226,32 +230,20 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
 
 // Creates and sets up the view hierarchy.
 - (void)createViewHierarchy {
-  self.layoutGuide = AddLayoutGuideToContentView(
-      self.contentView,
-      /*cell_has_header=*/!IsKeyboardAccessoryUpgradeEnabled());
+  self.layoutGuide =
+      AddLayoutGuideToContentView(self.contentView, /*cell_has_header=*/NO);
 
   self.selectionStyle = UITableViewCellSelectionStyleNone;
-
-  if (!IsKeyboardAccessoryUpgradeEnabled()) {
-    CreateGraySeparatorForContainer(self.contentView);
-  }
 
   NSMutableArray<NSLayoutConstraint*>* staticConstraints =
       [[NSMutableArray alloc] init];
 
-  if (!IsKeyboardAccessoryUpgradeEnabled()) {
-    self.addressLabel = CreateLabel();
-    [self.contentView addSubview:self.addressLabel];
-    AppendHorizontalConstraintsForViews(
-        staticConstraints, @[ self.addressLabel ], self.layoutGuide);
-  } else {
-    self.overflowMenuButton = CreateOverflowMenuButton();
-    [self.contentView addSubview:self.overflowMenuButton];
-    [staticConstraints
-        addObject:[self.overflowMenuButton.topAnchor
-                      constraintEqualToAnchor:self.contentView.topAnchor
-                                     constant:kOverflowMenuButtonTopSpacing]];
-  }
+  self.overflowMenuButton = CreateOverflowMenuButton(_cellIndex);
+  [self.contentView addSubview:self.overflowMenuButton];
+  [staticConstraints
+      addObject:[self.overflowMenuButton.topAnchor
+                    constraintEqualToAnchor:self.contentView.topAnchor
+                                   constant:kOverflowMenuButtonTopSpacing]];
 
   self.firstNameButton =
       CreateChipWithSelectorAndTarget(@selector(userDidTapAddressInfo:), self);
@@ -270,7 +262,6 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
   [self.contentView addSubview:self.companyButton];
   AppendHorizontalConstraintsForViews(
       staticConstraints, @[ self.companyButton ], self.layoutGuide,
-      kChipsHorizontalMargin,
       AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 
   self.line1Button =
@@ -278,7 +269,6 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
   [self.contentView addSubview:self.line1Button];
   AppendHorizontalConstraintsForViews(
       staticConstraints, @[ self.line1Button ], self.layoutGuide,
-      kChipsHorizontalMargin,
       AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 
   self.line2Button =
@@ -286,7 +276,6 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
   [self.contentView addSubview:self.line2Button];
   AppendHorizontalConstraintsForViews(
       staticConstraints, @[ self.line2Button ], self.layoutGuide,
-      kChipsHorizontalMargin,
       AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 
   self.zipButton =
@@ -310,7 +299,6 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
   [self.contentView addSubview:self.phoneNumberButton];
   AppendHorizontalConstraintsForViews(
       staticConstraints, @[ self.phoneNumberButton ], self.layoutGuide,
-      kChipsHorizontalMargin,
       AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 
   self.emailAddressButton =
@@ -318,18 +306,15 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
   [self.contentView addSubview:self.emailAddressButton];
   AppendHorizontalConstraintsForViews(
       staticConstraints, @[ self.emailAddressButton ], self.layoutGuide,
-      kChipsHorizontalMargin,
       AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 
-  if (ShouldCreateAutofillFormButton(_showAutofillFormButton)) {
-    self.autofillFormButton = CreateAutofillFormButton();
-    [self.contentView addSubview:self.autofillFormButton];
-    [self.autofillFormButton addTarget:self
-                                action:@selector(onAutofillFormButtonTapped)
-                      forControlEvents:UIControlEventTouchUpInside];
-    AppendHorizontalConstraintsForViews(
-        staticConstraints, @[ self.autofillFormButton ], self.layoutGuide);
-  }
+  self.autofillFormButton = CreateAutofillFormButton();
+  [self.contentView addSubview:self.autofillFormButton];
+  [self.autofillFormButton addTarget:self
+                              action:@selector(onAutofillFormButtonTapped)
+                    forControlEvents:UIControlEventTouchUpInside];
+  AppendHorizontalConstraintsForViews(
+      staticConstraints, @[ self.autofillFormButton ], self.layoutGuide);
 
   // Without this set, Voice Over will read the content vertically instead of
   // horizontally.
@@ -343,53 +328,6 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
 // view. Once populated, the views need to be layed out with the
 // `arrangeViewsWithAddress` method.
 - (void)populateViewsWithAddress:(ManualFillAddress*)address {
-  if (!IsKeyboardAccessoryUpgradeEnabled()) {
-    NSString* blackText = nil;
-    NSString* grayText = nil;
-
-    // Top label is the address summary and fallbacks on city and email.
-    if (address.line1.length) {
-      blackText = address.line1;
-      grayText = address.line2.length ? address.line2 : nil;
-    } else if (address.line2.length) {
-      blackText = address.line2;
-    } else if (address.city.length) {
-      blackText = address.city;
-    } else if (address.emailAddress.length) {
-      blackText = address.emailAddress;
-    }
-
-    NSMutableAttributedString* attributedString = nil;
-    if (blackText.length) {
-      attributedString = [[NSMutableAttributedString alloc]
-          initWithString:blackText
-              attributes:@{
-                NSForegroundColorAttributeName :
-                    [UIColor colorNamed:kTextPrimaryColor],
-                NSFontAttributeName :
-                    [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]
-              }];
-      if (grayText.length) {
-        NSString* formattedGrayText =
-            [NSString stringWithFormat:@" –– %@", grayText];
-        NSDictionary* attributes = @{
-          NSForegroundColorAttributeName :
-              [UIColor colorNamed:kTextSecondaryColor],
-          NSFontAttributeName :
-              [UIFont preferredFontForTextStyle:UIFontTextStyleBody]
-        };
-        NSAttributedString* grayAttributedString =
-            [[NSAttributedString alloc] initWithString:formattedGrayText
-                                            attributes:attributes];
-        [attributedString appendAttributedString:grayAttributedString];
-      }
-    }
-
-    if (attributedString) {
-      self.addressLabel.attributedText = attributedString;
-    }
-  }
-
   bool showFirstName = address.firstName.length;
   bool showMiddleName = address.middleNameOrInitial.length;
   bool showLastName = address.lastName.length;
@@ -510,13 +448,6 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
   // leading anchor.
   std::vector<ManualFillCellView> verticalLeadViews;
 
-  if (!IsKeyboardAccessoryUpgradeEnabled() &&
-      self.addressLabel.attributedText.length) {
-    AddViewToVerticalLeadViews(self.addressLabel,
-                               ManualFillCellView::ElementType::kOther,
-                               verticalLeadViews);
-  }
-
   self.dynamicConstraints = [[NSMutableArray alloc] init];
 
   _firstChipRowHasBeenLaidOut = NO;
@@ -570,55 +501,32 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
   }
 
   // City, state, ZIP code and country are presented on the same line when
-  // possible. Used when the Keyboard Accessory Upgrade feature is enabled.
+  // possible.
   NSMutableArray<UIView*>* cityStateZipCountryLineViews =
-      [[NSMutableArray alloc] init];
-
-  // ZIP code and city are presented on the same line when possible. Used when
-  // the Keyboard Accessory Upgrade feature is disabled.
-  NSMutableArray<UIView*>* zipCityLineViews = [[NSMutableArray alloc] init];
-  // State and country are presented on the same line when possible. Used when
-  // the Keyboard Accessory Upgrade feature is disabled.
-  NSMutableArray<UIView*>* stateCountryLineViews =
       [[NSMutableArray alloc] init];
 
   // City chip button.
   if (address.city.length) {
-    [IsKeyboardAccessoryUpgradeEnabled()
-            ? cityStateZipCountryLineViews
-            : zipCityLineViews addObject:self.cityButton];
+    [cityStateZipCountryLineViews addObject:self.cityButton];
   }
 
   // State chip button.
   if (address.state.length) {
-    [IsKeyboardAccessoryUpgradeEnabled()
-            ? cityStateZipCountryLineViews
-            : stateCountryLineViews addObject:self.stateButton];
+    [cityStateZipCountryLineViews addObject:self.stateButton];
   }
 
   // ZIP code chip button.
   if (address.zip.length) {
-    IsKeyboardAccessoryUpgradeEnabled()
-        ? [cityStateZipCountryLineViews addObject:self.zipButton]
-        : [zipCityLineViews insertObject:self.zipButton atIndex:0];
+    [cityStateZipCountryLineViews addObject:self.zipButton];
   }
 
   // Country chip button.
   if (address.country.length) {
-    [IsKeyboardAccessoryUpgradeEnabled()
-            ? cityStateZipCountryLineViews
-            : stateCountryLineViews addObject:self.countryButton];
+    [cityStateZipCountryLineViews addObject:self.countryButton];
   }
 
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    [self layViewsHorizontally:cityStateZipCountryLineViews
-             verticalLeadViews:addressGroupVerticalLeadChips];
-  } else {
-    [self layViewsHorizontally:zipCityLineViews
-             verticalLeadViews:addressGroupVerticalLeadChips];
-    [self layViewsHorizontally:stateCountryLineViews
-             verticalLeadViews:addressGroupVerticalLeadChips];
-  }
+  [self layViewsHorizontally:cityStateZipCountryLineViews
+           verticalLeadViews:addressGroupVerticalLeadChips];
 
   // Holds the chip buttons related to the contact info that are vertical leads.
   NSMutableArray<UIView*>* contactInfoGroupVerticalLeadChips =
@@ -641,10 +549,13 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
       ],
       verticalLeadViews);
 
-  if (ShouldCreateAutofillFormButton(_showAutofillFormButton)) {
+  if (_showAutofillFormButton) {
     AddViewToVerticalLeadViews(self.autofillFormButton,
                                ManualFillCellView::ElementType::kOther,
                                verticalLeadViews);
+    self.autofillFormButton.hidden = NO;
+  } else {
+    self.autofillFormButton.hidden = YES;
   }
 
   // Set and activate constraints.
@@ -663,8 +574,7 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
 
   UIView* trailingView;
   if (!_firstChipRowHasBeenLaidOut) {
-    trailingView =
-        IsKeyboardAccessoryUpgradeEnabled() ? self.overflowMenuButton : nil;
+    trailingView = self.overflowMenuButton;
     _firstChipRowHasBeenLaidOut = YES;
   }
 
@@ -717,19 +627,30 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
 // Called when the "Autofill Form" button is tapped. Fills the current form with
 // the address' data.
 - (void)onAutofillFormButtonTapped {
-  FormSuggestion* suggestion = [FormSuggestion
-             suggestionWithValue:nil
-                      minorValue:nil
-              displayDescription:nil
-                            icon:nil
-                            type:autofill::SuggestionType::kAddressEntry
-               backendIdentifier:[self.address GUID]
-                  requiresReauth:NO
-      acceptanceA11yAnnouncement:
-          base::SysUTF16ToNSString(l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM))];
+  base::UmaHistogramSparse(
+      "Autofill.UserAcceptedSuggestionAtIndex.Address.ManualFallback",
+      _cellIndex);
+  base::RecordAction(
+      base::UserMetricsAction("ManualFallback_Profiles_SuggestionAccepted"));
 
-  [self.contentInjector autofillFormWithSuggestion:suggestion];
+  FormSuggestion* suggestion = [FormSuggestion
+              suggestionWithValue:nil
+                       minorValue:nil
+               displayDescription:nil
+                             icon:nil
+                             type:autofill::SuggestionType::kAddressEntry
+                          payload:autofill::Suggestion::AutofillProfilePayload(
+                                      autofill::Suggestion::Guid(
+                                          base::SysNSStringToUTF8(
+                                              [self.address GUID])))
+      fieldByFieldFillingTypeUsed:autofill::EMPTY_TYPE
+                   requiresReauth:NO
+       acceptanceA11yAnnouncement:
+           base::SysUTF16ToNSString(l10n_util::GetStringUTF16(
+               IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM))];
+
+  [self.contentInjector autofillFormWithSuggestion:suggestion
+                                           atIndex:_cellIndex];
 }
 
 // Sets the title and accessbility label of the given `chipButton` using the
@@ -737,11 +658,9 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
 - (void)setTitleAndAccessibilityLabelOfChip:(UIButton*)chipButton
                                   withValue:(NSString*)value {
   [chipButton setTitle:value forState:UIControlStateNormal];
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    chipButton.accessibilityLabel = l10n_util::GetNSStringF(
-        IDS_IOS_MANUAL_FALLBACK_CHIP_ACCESSIBILITY_LABEL,
-        base::SysNSStringToUTF16(value));
-  }
+  chipButton.accessibilityLabel =
+      l10n_util::GetNSStringF(IDS_IOS_MANUAL_FALLBACK_CHIP_ACCESSIBILITY_LABEL,
+                              base::SysNSStringToUTF16(value));
 }
 
 @end

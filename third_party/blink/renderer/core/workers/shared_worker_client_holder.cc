@@ -58,24 +58,19 @@
 
 namespace blink {
 
-const char SharedWorkerClientHolder::kSupplementName[] =
-    "SharedWorkerClientHolder";
-
 SharedWorkerClientHolder* SharedWorkerClientHolder::From(
     LocalDOMWindow& window) {
   DCHECK(IsMainThread());
-  SharedWorkerClientHolder* holder =
-      Supplement<LocalDOMWindow>::From<SharedWorkerClientHolder>(window);
+  SharedWorkerClientHolder* holder = window.GetSharedWorkerClientHolder();
   if (!holder) {
     holder = MakeGarbageCollected<SharedWorkerClientHolder>(window);
-    Supplement<LocalDOMWindow>::ProvideTo(window, holder);
+    window.SetSharedWorkerClientHolder(holder);
   }
   return holder;
 }
 
 SharedWorkerClientHolder::SharedWorkerClientHolder(LocalDOMWindow& window)
-    : Supplement(window),
-      connector_(&window),
+    : connector_(&window),
       client_receivers_(&window),
       task_runner_(window.GetTaskRunner(blink::TaskType::kDOMManipulation)) {
   DCHECK(IsMainThread());
@@ -90,9 +85,9 @@ void SharedWorkerClientHolder::Connect(
     mojo::PendingRemote<mojom::blink::BlobURLToken> blob_url_token,
     mojom::blink::WorkerOptionsPtr options,
     mojom::blink::SharedWorkerSameSiteCookies same_site_cookies,
-    ukm::SourceId client_ukm_source_id,
     const HeapMojoRemote<mojom::blink::SharedWorkerConnector>*
-        connector_override) {
+        connector_override,
+    bool extended_lifetime) {
   DCHECK(IsMainThread());
   DCHECK(options);
 
@@ -123,7 +118,7 @@ void SharedWorkerClientHolder::Connect(
           outside_fetch_client_settings_object->GetReferrerPolicy(),
           KURL(outside_fetch_client_settings_object->GetOutgoingReferrer()),
           insecure_requests_policy),
-      same_site_cookies);
+      same_site_cookies, extended_lifetime);
 
   const HeapMojoRemote<mojom::blink::SharedWorkerConnector>& connector =
       connector_override ? *connector_override : connector_;
@@ -132,13 +127,12 @@ void SharedWorkerClientHolder::Connect(
       worker->GetExecutionContext()->IsSecureContext()
           ? mojom::blink::SharedWorkerCreationContextType::kSecure
           : mojom::blink::SharedWorkerCreationContextType::kNonsecure,
-      port.ReleaseHandle(), std::move(blob_url_token), client_ukm_source_id);
+      port.ReleaseHandle(), std::move(blob_url_token));
 }
 
 void SharedWorkerClientHolder::Trace(Visitor* visitor) const {
   visitor->Trace(connector_);
   visitor->Trace(client_receivers_);
-  Supplement<LocalDOMWindow>::Trace(visitor);
 }
 
 }  // namespace blink

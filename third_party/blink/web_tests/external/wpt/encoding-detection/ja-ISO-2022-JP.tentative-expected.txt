@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Check detection result
+  assert_equals: Expected ISO-2022-JP expected "ISO-2022-JP" but got "windows-1252"
+Harness: the test ran to completion.

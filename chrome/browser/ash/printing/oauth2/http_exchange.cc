@@ -14,6 +14,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -35,9 +36,8 @@ std::string ToString(ContentFormat format) {
     case ContentFormat::kXWwwFormUrlencoded:
       return "application/x-www-form-urlencoded";
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return "";
 }
 
 }  // namespace
@@ -46,7 +46,7 @@ HttpExchange::HttpExchange(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : url_loader_factory_(url_loader_factory) {}
 
-HttpExchange::~HttpExchange() {}
+HttpExchange::~HttpExchange() = default;
 
 void HttpExchange::Clear() {
   content_.clear();
@@ -160,7 +160,7 @@ void HttpExchange::OnURLLoaderCompleted(
     int success_http_status,
     int error_http_status,
     OnExchangeCompletedCallback callback,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   // Checks for connection errors.
   const int net_error = url_loader_->NetError();
   if (!(net_error == net::OK && url_loader_->ResponseInfo() &&
@@ -188,15 +188,14 @@ void HttpExchange::OnURLLoaderCompleted(
     return;
   }
 
-  // Checks if response body (payload) exists. It cannot be empty since we
-  // expect a JSON object.
+  // Checks if response body (payload) exists.
   if (!response_body || response_body->empty()) {
     error_msg_ = "Missing payload.";
     std::move(callback).Run(StatusCode::kInvalidResponse);
     return;
   }
 
-  // Checks if the payload of the response contains a JSON object.
+  // Checks if the payload contains a JSON dictionary.
   std::string mime_type;
   std::string charset;
   url_loader_->ResponseInfo()->headers->GetMimeTypeAndCharset(&mime_type,
@@ -211,18 +210,14 @@ void HttpExchange::OnURLLoaderCompleted(
     std::move(callback).Run(StatusCode::kInvalidResponse);
     return;
   }
-  auto parsed = base::JSONReader::Read(*response_body);
+  auto parsed = base::JSONReader::ReadDict(
+      *response_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed) {
     error_msg_ = "Cannot parse JSON payload.";
     std::move(callback).Run(StatusCode::kInvalidResponse);
     return;
   }
-  if (!parsed->is_dict()) {
-    error_msg_ = "JSON payload is not a dictionary.";
-    std::move(callback).Run(StatusCode::kInvalidResponse);
-    return;
-  }
-  content_ = std::move(parsed).value().TakeDict();
+  content_ = std::move(parsed).value();
 
   // Exits if success.
   if (http_status == success_http_status) {
@@ -378,7 +373,7 @@ bool HttpExchange::ParamURLGet(const std::string& name,
     return false;
   }
   GURL gurl(node->GetString());
-  if (gurl.is_valid() && gurl.IsStandard() && gurl.scheme() == "https") {
+  if (gurl.is_valid() && gurl.IsStandard() && gurl.GetScheme() == "https") {
     // Success!
     if (value) {
       *value = gurl;

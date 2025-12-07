@@ -76,7 +76,7 @@ class IdentityTestEnvironmentProfileAdaptor {
   IdentityTestEnvironmentProfileAdaptor& operator=(
       const IdentityTestEnvironmentProfileAdaptor&) = delete;
 
-  ~IdentityTestEnvironmentProfileAdaptor() {}
+  ~IdentityTestEnvironmentProfileAdaptor() = default;
 
   // Returns the IdentityTestEnvironment associated with this object (and
   // implicitly with the Profile passed to this object's constructor).

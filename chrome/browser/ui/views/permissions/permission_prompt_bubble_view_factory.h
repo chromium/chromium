@@ -12,7 +12,6 @@
 raw_ptr<PermissionPromptBubbleBaseView> CreatePermissionPromptBubbleView(
     Browser* browser,
     base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate,
-    base::TimeTicks permission_requested_time,
     PermissionPromptStyle prompt_style);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_BUBBLE_VIEW_FACTORY_H_

@@ -1,0 +1,210 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+source_set("build_state_observer") {
+  public = [ "build_state_observer.h" ]
+
+  public_deps = [ "//base" ]
+}
+
+source_set("upgrade_detector") {
+  sources = [ "upgrade_observer.h" ]
+  public_deps = []
+
+  if (!is_android) {
+    sources += [
+      "build_state.h",
+      "upgrade_detector.h",
+      "version_history_client.h",
+    ]
+    public_deps = [
+      "//base",
+      "//components/prefs",
+      "//url",
+    ]
+
+    if (!is_chromeos) {
+      sources += [
+        "get_installed_version.h",
+        "installed_version_monitor.h",
+        "installed_version_poller.h",
+        "upgrade_detector_impl.h",
+      ]
+      public_deps += [
+        ":build_state_observer",
+        "//components/variations/service",
+      ]
+    } else {
+      sources += [
+        "installed_version_updater_chromeos.h",
+        "upgrade_detector_chromeos.h",
+      ]
+      public_deps += [
+        ":build_state_observer",
+        "//chromeos/ash/components/dbus/update_engine",
+      ]
+    }
+  }
+
+  if (is_win) {
+    sources += [ "registry_monitor.h" ]
+  }
+
+  if (is_mac) {
+    sources += [ "directory_monitor.h" ]
+  }
+
+  if (is_linux) {
+    sources += [ "directory_monitor.h" ]
+  }
+}
+
+source_set("impl") {
+  sources = []
+  deps = [ ":upgrade_detector" ]
+
+  if (!is_android) {
+    sources += [
+      "build_state.cc",
+      "upgrade_detector.cc",
+      "version_history_client.cc",
+    ]
+    deps += [
+      ":build_state_observer",
+      ":upgrade_detector",
+      "//base",
+      "//base/version_info",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_list",
+      "//chrome/common:channel_info",
+      "//chrome/common:constants",
+      "//chrome/common:non_code_constants",
+      "//components/network_time",
+      "//components/prefs",
+      "//components/version_info",
+      "//net",
+      "//services/network/public/cpp",
+      "//ui/base/idle",
+    ]
+    if (!is_chromeos) {
+      sources += [
+        "get_installed_version.cc",
+        "installed_version_poller.cc",
+        "upgrade_detector_impl.cc",
+      ]
+      deps += [
+        "//base:build_time",
+        "//chrome/browser:buildflags",
+        "//chrome/browser/google",
+        "//content/public/browser",
+      ]
+    } else {
+      sources += [
+        "installed_version_updater_chromeos.cc",
+        "upgrade_detector_chromeos.cc",
+      ]
+      deps += [ "//chromeos/crosapi/cpp:crosapi_constants" ]
+    }
+  }
+
+  if (is_win) {
+    sources += [
+      "get_installed_version_win.cc",
+      "registry_monitor.cc",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "directory_monitor.cc",
+      "get_installed_version_mac.mm",
+    ]
+    deps += [ "//chrome/browser/updater:browser_updater_client" ]
+  }
+
+  if (is_linux) {
+    sources += [
+      "directory_monitor.cc",
+      "get_installed_version_linux.cc",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = []
+  deps = [
+    ":upgrade_detector",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//components/prefs:test_support",
+    "//services/network:test_support",
+  ]
+
+  if (!is_android) {
+    sources += [
+      "build_state_unittest.cc",
+      "mock_build_state_observer.cc",
+      "mock_build_state_observer.h",
+      "upgrade_detector_unittest.cc",
+      "version_history_client_unittest.cc",
+    ]
+
+    public_deps = [ ":build_state_observer" ]
+    deps += [ "//components/prefs" ]
+  }
+
+  if (is_win) {
+    assert(toolkit_views)
+    sources += [
+      "get_installed_version_win_unittest.cc",
+      "registry_monitor_unittest.cc",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [ "directory_monitor_unittest.cc" ]
+  }
+
+  if (is_chromeos) {
+    sources += [
+      "installed_version_updater_chromeos_unittest.cc",
+      "upgrade_detector_chromeos_unittest.cc",
+    ]
+
+    deps += [
+      "//chromeos/ash/components/dbus/update_engine",
+      "//chromeos/ash/components/dbus/update_engine:proto",
+      "//components/network_time",
+      "//components/version_info",
+    ]
+  }
+
+  if (is_linux) {
+    sources += [
+      "directory_monitor_unittest.cc",
+      "get_installed_version_linux_unittest.cc",
+    ]
+
+    deps += [ "//base:base_static" ]
+  }
+
+  if (!is_android && !is_chromeos) {
+    sources += [
+      "installed_version_poller_unittest.cc",
+      "upgrade_detector_impl_unittest.cc",
+    ]
+
+    deps += [
+      "//base:i18n",
+      "//chrome/browser/google",
+      "//components/enterprise:test_support",
+      "//components/network_time",
+      "//content/test:test_support",
+    ]
+  }
+}

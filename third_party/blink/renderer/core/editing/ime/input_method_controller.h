@@ -60,8 +60,6 @@ class CORE_EXPORT InputMethodController final
     kKeepSelection,
   };
 
-  enum class MoveCaretBehavior { kDoNotMove, kMoveCaretAfterText };
-
   explicit InputMethodController(LocalDOMWindow&, LocalFrame&);
   InputMethodController(const InputMethodController&) = delete;
   InputMethodController& operator=(const InputMethodController&) = delete;
@@ -91,11 +89,14 @@ class CORE_EXPORT InputMethodController final
                   const Vector<ImeTextSpan>& ime_text_spans,
                   int relative_caret_position);
 
-  // Replaces the text in the specified range and possibly changes the selection
-  // or the caret position.
+  // Replaces the text in the specified range and keep the current selection.
+  bool ReplaceTextAndKeepSelection(const String& text, PlainTextRange range);
+
+  // Replaces the text in the specified range and move the caret position. The
+  // relative_caret_position is relative to the end of the text being replaced.
   bool ReplaceTextAndMoveCaret(const String&,
                                PlainTextRange,
-                               MoveCaretBehavior);
+                               int relative_caret_position);
 
   // Inserts ongoing composing text; changes the selection to the end of
   // the inserting text if DoNotKeepSelection, or holds the selection if
@@ -111,7 +112,9 @@ class CORE_EXPORT InputMethodController final
 
   PlainTextRange GetSelectionOffsets() const;
   // Returns true if setting selection to specified offsets, otherwise false.
-  bool SetEditableSelectionOffsets(const PlainTextRange&);
+  bool SetEditableSelectionOffsets(const PlainTextRange&,
+                                   bool show_handle = false,
+                                   bool show_context_menu = false);
   void ExtendSelectionAndDelete(int before, int after);
   void ExtendSelectionAndReplace(int before,
                                  int after,
@@ -241,10 +244,16 @@ class CORE_EXPORT InputMethodController final
   enum class TypingContinuation;
 
   // Returns true if setting selection to specified offsets, otherwise false.
-  bool SetEditableSelectionOffsets(const PlainTextRange&, TypingContinuation);
+  bool SetEditableSelectionOffsets(const PlainTextRange&,
+                                   TypingContinuation,
+                                   bool show_handle = false,
+                                   bool show_context_menu = false);
 
   // Returns true if selection offsets were successfully set.
-  bool SetSelectionOffsets(const PlainTextRange&, TypingContinuation);
+  bool SetSelectionOffsets(const PlainTextRange&,
+                           TypingContinuation,
+                           bool show_handle = false,
+                           bool show_context_menu = false);
 
   // There are few cases we need to remove suggestion markers which are also in
   // composing range. (SuggestionSpan with FLAG_AUTO_CORRECTION and
@@ -265,7 +274,7 @@ class CORE_EXPORT InputMethodController final
       TypingCommand::TextCompositionType composition_type);
   void DispatchCompositionEndEvent(LocalFrame& frame, const String& text);
 
-  WebVector<ui::ImeTextSpan> GetImeTextSpans() const;
+  std::vector<ui::ImeTextSpan> GetImeTextSpans() const;
 
   FRIEND_TEST_ALL_PREFIXES(InputMethodControllerTest,
                            InputModeOfFocusedElement);

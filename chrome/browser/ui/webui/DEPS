@@ -1,9 +1,8 @@
 include_rules = [
   "+components/browser_ui/share/android",
+  "+components/webapps/isolated_web_apps",
   "+extensions/strings/grit/extensions_strings.h",
-  "+components/device_reauth",
   "+third_party/boringssl/src/include/openssl",
-  "+third_party/lens_server_proto",
 ]
 
 specific_include_rules = {

@@ -1,6 +1,6 @@
 {
   "name": "__MSG_HIGHCONTRAST_APPNAME__",
-  "version": "0.9.6",
+  "version": "1.0.0",
   "description": "__MSG_HIGHCONTRAST_APPDESC__",
   "manifest_version": 3,
   "permissions": [
@@ -10,7 +10,7 @@
   ],
   "host_permissions": ["<all_urls>"],
   "background": {
-      "service_worker": "background.js"
+      "service_worker": "service_worker.js"
   },
   "action": {
     "default_icon": "highcontrast-19.png",
@@ -21,7 +21,6 @@
     {
       "all_frames": true,
       "js": [
-        "common.js",
         "highcontrast.js"
       ],
       "matches": [
@@ -35,5 +34,8 @@
     "48": "highcontrast-48.png",
     "128": "highcontrast-128.png"
   },
-  "default_locale": "en"
+  "default_locale": "en",
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
 }

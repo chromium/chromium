@@ -22,10 +22,10 @@
 #include "ash/wm/desks/desks_test_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -50,8 +50,23 @@ class ShelfTooltipManagerTest : public AshTestBase {
     tooltip_manager_->set_timer_delay_for_test(0);
   }
 
+  void TearDown() override {
+    tooltip_manager_ = nullptr;
+    test_api_.reset();
+    shelf_view_ = nullptr;
+    AshTestBase::TearDown();
+  }
+
   bool IsTimerRunning() { return tooltip_manager_->timer_.IsRunning(); }
   views::Widget* GetTooltip() { return tooltip_manager_->bubble_->GetWidget(); }
+
+  void FireTimerNow() { tooltip_manager_->timer_.FireNow(); }
+
+  void RemoveItemAt(int index) {
+    test_api_->SetAnimationDuration(base::Milliseconds(0));
+    test_api_->RemoveItemAt(index);
+    test_api_->SetAnimationDuration(base::Milliseconds(1));
+  }
 
   void ShowTooltipForFirstAppIcon() {
     EXPECT_GE(shelf_view_->number_of_visible_apps(), 1u);
@@ -60,8 +75,8 @@ class ShelfTooltipManagerTest : public AshTestBase {
   }
 
  protected:
-  raw_ptr<ShelfView, DanglingUntriaged> shelf_view_;
-  raw_ptr<ShelfTooltipManager, DanglingUntriaged> tooltip_manager_;
+  raw_ptr<ShelfView> shelf_view_;
+  raw_ptr<ShelfTooltipManager> tooltip_manager_;
   std::unique_ptr<ShelfViewTestAPI> test_api_;
 };
 
@@ -78,6 +93,25 @@ TEST_F(ShelfTooltipManagerTest, ShowTooltipWithDelay) {
   EXPECT_FALSE(tooltip_manager_->IsVisible());
   EXPECT_TRUE(IsTimerRunning());
   // TODO: Test that the delayed tooltip is shown, without flaky failures.
+}
+
+TEST_F(ShelfTooltipManagerTest, ShowTooltipWithDelayAndAsyncViewDestruction) {
+  views::ViewTracker view_tracker(
+      shelf_view_->first_visible_button_for_testing());
+
+  // Show tooltip for view with delay.
+  tooltip_manager_->ShowTooltipWithDelay(view_tracker.view());
+  EXPECT_FALSE(tooltip_manager_->IsVisible());
+  EXPECT_TRUE(IsTimerRunning());
+
+  // Destroy view before delay completes.
+  RemoveItemAt(0);
+  EXPECT_FALSE(view_tracker.view());
+
+  // Verify that `tooltip_manager_` no-ops gracefully.
+  FireTimerNow();
+  EXPECT_FALSE(IsTimerRunning());
+  EXPECT_FALSE(tooltip_manager_->IsVisible());
 }
 
 TEST_F(ShelfTooltipManagerTest, DoNotShowForInvalidView) {
@@ -254,7 +288,7 @@ TEST_F(ShelfTooltipManagerTest, ShelfTooltipDoesNotAffectPipWindow) {
   ShowTooltipForFirstAppIcon();
   EXPECT_TRUE(tooltip_manager_->IsVisible());
 
-  auto display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  auto display = display::Screen::Get()->GetPrimaryDisplay();
   auto tooltip_bounds = GetTooltip()->GetWindowBoundsInScreen();
   tooltip_bounds.Intersect(CollisionDetectionUtils::GetMovementArea(display));
   EXPECT_FALSE(tooltip_bounds.IsEmpty());
@@ -270,7 +304,7 @@ TEST_F(ShelfTooltipManagerTest, ShelfTooltipClosesIfScroll) {
   ShowTooltipForFirstAppIcon();
   ASSERT_TRUE(tooltip_manager_->IsVisible());
   gfx::Point cursor_position_in_screen =
-      display::Screen::GetScreen()->GetCursorScreenPoint();
+      display::Screen::Get()->GetCursorScreenPoint();
   generator->ScrollSequence(cursor_position_in_screen, base::TimeDelta(), 0, 3,
                             10, 1);
   EXPECT_FALSE(tooltip_manager_->IsVisible());
@@ -292,13 +326,9 @@ class ShelfTooltipManagerDeskButtonTest
   ~ShelfTooltipManagerDeskButtonTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kDeskButton);
     ShelfTooltipManagerTest::SetUp();
     Shelf::ForWindow(Shell::GetPrimaryRootWindow())->SetAlignment(GetParam());
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

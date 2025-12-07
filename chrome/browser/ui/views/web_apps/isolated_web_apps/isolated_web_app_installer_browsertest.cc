@@ -4,8 +4,8 @@
 
 #include <optional>
 #include <string_view>
+#include <variant>
 
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -19,7 +19,7 @@
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/test_isolated_web_app_installer_model_observer.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
-#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
@@ -31,7 +31,6 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/test/dialog_test.h"
@@ -100,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppInstallerBrowserTest,
   AcceptDialogAndContinue(main_widget);
 
   ASSERT_TRUE(model->has_dialog());
-  ASSERT_TRUE(absl::holds_alternative<
+  ASSERT_TRUE(std::holds_alternative<
               IsolatedWebAppInstallerModel::ConfirmInstallationDialog>(
       model->dialog()));
 
@@ -108,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppInstallerBrowserTest,
   ASSERT_TRUE(child_widget);
 
   // App is not installed.
-  ASSERT_FALSE(provider().registrar_unsafe().IsInstalled(app_id));
+  ASSERT_FALSE(provider().registrar_unsafe().IsInRegistrar(app_id));
 
   AcceptDialogAndAwaitDestruction(child_widget);
 
@@ -118,7 +117,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppInstallerBrowserTest,
       IsolatedWebAppInstallerModel::Step::kInstallSuccess);
 
   // App is installed.
-  ASSERT_TRUE(provider().registrar_unsafe().IsInstalled(app_id));
+  ASSERT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+            provider().registrar_unsafe().GetInstallState(app_id));
 
   AcceptDialogAndContinue(main_widget);
 

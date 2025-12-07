@@ -5,16 +5,18 @@
 #include "components/translate/core/language_detection/language_detection_model.h"
 
 #include <memory>
+#include <string>
 
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/path_service.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
+#include "components/language_detection/core/constants.h"
 #include "components/language_detection/core/language_detection_model.h"
 #include "components/language_detection/testing/language_detection_test_utils.h"
-#include "components/translate/core/common/translate_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace translate {
@@ -22,13 +24,12 @@ namespace translate {
 class LanguageDetectionModelValidTest : public testing::Test {
  public:
   LanguageDetectionModelValidTest()
-      : tflite_model_(language_detection::GetValidLanguageModel()),
-        language_detection_model_(
-            std::make_unique<LanguageDetectionModel>(tflite_model_.get())) {}
+      : language_detection_model_(std::make_unique<LanguageDetectionModel>(
+            language_detection::GetValidLanguageModel())) {}
 
  protected:
+  base::test::TaskEnvironment environment_;
   base::HistogramTester histogram_tester_;
-  std::unique_ptr<language_detection::LanguageDetectionModel> tflite_model_;
   std::unique_ptr<LanguageDetectionModel> language_detection_model_;
 };
 
@@ -47,6 +48,13 @@ TEST_F(LanguageDetectionModelValidTest, DetectLanguageMetrics) {
       contents.length(), 1);
 }
 
+// Pads out `s` with spaces until it is `len` long.
+void pad(std::u16string& s, size_t len) {
+  while (s.length() < len) {
+    s += u" ";
+  }
+}
+
 TEST_F(LanguageDetectionModelValidTest, ReliableLanguageDetermination) {
   bool is_prediction_reliable;
   float model_reliability_score = 0.0;
@@ -57,7 +65,7 @@ TEST_F(LanguageDetectionModelValidTest, ReliableLanguageDetermination) {
       &is_prediction_reliable, model_reliability_score);
   EXPECT_TRUE(is_prediction_reliable);
   EXPECT_EQ("en", predicted_language);
-  EXPECT_EQ(translate::kUnknownLanguageCode, language);
+  EXPECT_EQ(language_detection::kUnknownLanguageCode, language);
   histogram_tester_.ExpectUniqueSample(
       "LanguageDetection.TFLite.DidAttemptDetection", true, 1);
 }
@@ -108,7 +116,7 @@ TEST_F(LanguageDetectionModelValidTest, UnreliableLanguageDetermination) {
       std::string("ja"), std::string(), contents, &predicted_language,
       &is_prediction_reliable, model_reliability_score);
   EXPECT_FALSE(is_prediction_reliable);
-  EXPECT_EQ(translate::kUnknownLanguageCode, predicted_language);
+  EXPECT_EQ(language_detection::kUnknownLanguageCode, predicted_language);
   // Rely on the provided language code if the mode is unreliable.
   EXPECT_EQ("ja", language);
   histogram_tester_.ExpectUniqueSample(
@@ -168,7 +176,7 @@ TEST_F(LanguageDetectionModelValidTest, LongTextLanguageDetemination) {
       &is_prediction_reliable, model_reliability_score);
   EXPECT_TRUE(is_prediction_reliable);
   EXPECT_EQ("zh-CN", predicted_language);
-  EXPECT_EQ(translate::kUnknownLanguageCode, language);
+  EXPECT_EQ(language_detection::kUnknownLanguageCode, language);
   histogram_tester_.ExpectUniqueSample(
       "LanguageDetection.TFLite.DidAttemptDetection", true, 1);
 }

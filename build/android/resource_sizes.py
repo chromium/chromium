@@ -67,7 +67,8 @@ _RC_HEADER_RE = re.compile(r'^#define (?P<name>\w+).* (?P<id>\d+)\)?$')
 _RE_NON_LANGUAGE_PAK = re.compile(r'^assets/.*(resources|percent)\.pak$')
 _READELF_SIZES_METRICS = {
     'text': ['.text'],
-    'data': ['.data', '.rodata', '.data.rel.ro', '.data.rel.ro.local'],
+    'data':
+    ['.data', '.rodata', '.data.rel.ro', '.data.rel.ro.local', '.tdata'],
     'relocations':
     ['.rel.dyn', '.rel.plt', '.rela.dyn', '.rela.plt', '.relr.dyn'],
     'unwind': [
@@ -205,26 +206,25 @@ def _CreateSectionNameSizeMap(so_path):
 
 
 def _ParseManifestAttributes(apk_path):
-  # Check if the manifest specifies whether or not to extract native libs.
+  # Parses minSdkVersion and on-demand module attributes from the manifest.
   output = cmd_helper.GetCmdOutput([
       _AAPT_PATH.read(), 'd', 'xmltree', apk_path, 'AndroidManifest.xml'])
 
-  def parse_attr(namespace, name):
-    # android:extractNativeLibs(0x010104ea)=(type 0x12)0x0
-    # android:extractNativeLibs(0x010104ea)=(type 0x12)0xffffffff
+  def parse_attr(namespace, name, default=None):
     # dist:onDemand=(type 0x12)0xffffffff
     m = re.search(
         f'(?:{namespace}:)?{name}' + r'(?:\(.*?\))?=\(type .*?\)(\w+)', output)
-    return m and int(m.group(1), 16)
+    if m is None:
+      return default
+    return int(m.group(1), 16)
 
-  skip_extract_lib = bool(parse_attr('android', 'extractNativeLibs'))
   sdk_version = parse_attr('android', 'minSdkVersion')
   is_feature_split = parse_attr('android', 'isFeatureSplit')
   # Can use <dist:on-demand>, or <module dist:onDemand="true">.
   on_demand = parse_attr('dist', 'onDemand') or 'on-demand' in output
   on_demand = bool(on_demand and is_feature_split)
 
-  return sdk_version, skip_extract_lib, on_demand
+  return sdk_version, on_demand
 
 
 def _NormalizeLanguagePaks(translations, factor):
@@ -264,7 +264,7 @@ def _NormalizeResourcesArsc(apk_path, num_arsc_files, num_translations,
 
   size = 0
   for res_id, string_val in en_strings.items():
-    if string_val == fr_strings[res_id]:
+    if string_val == fr_strings.get(res_id):
       string_size = len(string_val)
       # 7 bytes is the per-entry overhead (not specific to any string). See
       # https://android.googlesource.com/platform/frameworks/base.git/+/android-4.2.2_r1/tools/aapt/StringPool.cpp#414.
@@ -368,9 +368,10 @@ def _AnalyzeInternal(apk_path,
   res_directory = make_group('Non-compiled Android resources')
   arsc = make_group('Compiled Android resources')
   metadata = make_group('Package metadata')
-  unknown = make_group('Unknown files')
   notices = make_group('licenses.notice file')
   unwind_cfi = make_group('unwind_cfi (dev and canary only)')
+  assets = make_group('Other Android Assets')
+  unknown = make_group('Unknown files')
 
   with zipfile.ZipFile(apk_path, 'r') as apk:
     apk_contents = apk.infolist()
@@ -383,8 +384,6 @@ def _AnalyzeInternal(apk_path,
     zipalign_overhead += sum(len(i.extra) for i in apk_contents)
     signing_block_size = _MeasureApkSignatureBlock(apk)
 
-  _, skip_extract_lib, _ = _ParseManifestAttributes(apk_path)
-
   # Pre-L: Dalvik - .odex file is simply decompressed/optimized dex file (~1x).
   # L, M: ART - .odex file is compiled version of the dex file (~4x).
   # N: ART - Uses Dalvik-like JIT for normal apps (~1x), full compilation for
@@ -394,7 +393,7 @@ def _AnalyzeInternal(apk_path,
   # E.g. with obfuscation, the 4.04 changes to 4.46.
   speed_profile_dex_multiplier = 1.17
   orig_filename = apks_path or apk_path
-  is_webview = 'WebView' in orig_filename
+  is_webview = 'WebView' in orig_filename or 'Webview' in orig_filename
   is_monochrome = 'Monochrome' in orig_filename
   is_library = 'Library' in orig_filename
   is_trichrome = 'TrichromeChrome' in orig_filename
@@ -421,11 +420,17 @@ def _AnalyzeInternal(apk_path,
   total_apk_size = os.path.getsize(apk_path)
   for member in apk_contents:
     filename = member.filename
+    # Undo asset path suffixing. https://crbug.com/357131361
+    if filename.endswith('+'):
+      suffix_idx = filename.rfind('+', 0, len(filename) - 1)
+      if suffix_idx != -1:
+        filename = filename[:suffix_idx]
+
     if filename.endswith('/'):
       continue
     if filename.endswith('.so'):
       basename = posixpath.basename(filename)
-      should_extract_lib = not skip_extract_lib and basename.startswith('lib')
+      should_extract_lib = basename.startswith('lib')
       native_code.AddZipInfo(
           member, extracted_multiplier=int(should_extract_lib))
     elif filename.startswith('classes') and filename.endswith('.dex'):
@@ -465,6 +470,8 @@ def _AnalyzeInternal(apk_path,
       notices.AddZipInfo(member)
     elif filename.startswith('assets/unwind_cfi'):
       unwind_cfi.AddZipInfo(member)
+    elif filename.startswith('assets/'):
+      assets.AddZipInfo(member)
     else:
       unknown.AddZipInfo(member)
 
@@ -476,7 +483,8 @@ def _AnalyzeInternal(apk_path,
       if subpath in z.namelist():
         hindi_apk_info = z.getinfo(subpath)
         total_apk_size += hindi_apk_info.file_size
-      else:
+      elif not is_shared_apk:
+        # In Chrome, splits should always be enabled.
         assert split_name != 'base', 'splits/base-hi.apk should always exist'
 
   total_install_size = total_apk_size
@@ -548,7 +556,7 @@ def _AnalyzeInternal(apk_path,
       continue
     section_sizes = _ExtractLibSectionSizesFromApk(apk_path, lib_info.filename)
     native_code_unaligned_size += sum(v for k, v in section_sizes.items()
-                                      if k != 'bss')
+                                      if k not in ('bss', 'tbss'))
     # Size of main .so vs remaining.
     if lib_info == main_lib_info:
       main_lib_size = lib_info.file_size
@@ -706,7 +714,7 @@ def _AnalyzeApkOrApks(report_func, apk_path, out_dir):
   dex_stats_collector = method_count.DexStatsCollector()
 
   if apk_path.endswith('.apk'):
-    sdk_version, _, _ = _ParseManifestAttributes(apk_path)
+    sdk_version, _ = _ParseManifestAttributes(apk_path)
     _AnalyzeInternal(apk_path, sdk_version, report_func, dex_stats_collector,
                      out_dir)
   elif apk_path.endswith('.apks'):
@@ -720,7 +728,7 @@ def _AnalyzeApkOrApks(report_func, apk_path, out_dir):
         except KeyError:
           info = z.getinfo('splits/base-master.apk')
         _ExtractToTempFile(z, info.filename, f)
-        sdk_version, _, _ = _ParseManifestAttributes(f.name)
+        sdk_version, _ = _ParseManifestAttributes(f.name)
 
         orig_report_func = report_func
         report_func = _AccumulatingReporter()
@@ -749,7 +757,7 @@ def _AnalyzeApkOrApks(report_func, apk_path, out_dir):
         for subpath, split_name in _IterSplits(z.namelist()):
           if split_name != 'base':
             _ExtractToTempFile(z, subpath, f)
-            _, _, on_demand = _ParseManifestAttributes(f.name)
+            _, on_demand = _ParseManifestAttributes(f.name)
             do_measure(split_name, on_demand=on_demand)
 
         report_func.DumpReports(orig_report_func)
@@ -929,7 +937,19 @@ def main():
         status = result_types.UNKNOWN
       elif isolated_script_output['failures']:
         status = result_types.FAIL
-      result_sink_client.Post(test_name, status, None, None, None)
+
+      struct_test_dict = {
+          'coarseName': None,  # Not used for single tests.
+          'fineName': None,  # Not used for single tests.
+          'caseNameComponents': ['*fixture'],
+      }
+      result_sink_client.Post(
+          test_name,
+          status,
+          None,  # duration
+          None,  # test_log
+          None,  # test file
+          test_id_structured=struct_test_dict)
 
 
 if __name__ == '__main__':

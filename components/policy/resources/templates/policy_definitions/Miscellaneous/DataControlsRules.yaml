@@ -10,7 +10,7 @@ desc: |-
         - Control the clipboard data shared between the sources and the destinations.
         - Control blocking screenshots based on the source tabs.
 
-        If <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR">OnSecurityEventEnterpriseConnector</ph> policy is set to True, triggered rules be reported to the admin.
+        If <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR">OnSecurityEventEnterpriseConnector</ph> policy is set to True, triggered rules are reported to the admin.
         The restriction level can be set to BLOCK, WARN, or REPORT.
         - If the restriction level is set to BLOCK, the action won't be allowed.
         - If the restriction level is set to WARN, a user will be warned and may choose to proceed with or cancel the action.
@@ -21,6 +21,8 @@ desc: |-
         - For data leak prevention rules specific to <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>, see also the <ph name="DATA_LEAK_PREVENTION_RULES_LIST">DataLeakPreventionRulesList</ph> policy.
 
         If the policy is left not set, no restrictions will be applied.
+
+        This policy is available only to users who have an assigned Chrome Enterprise Premium license.
 example_value:
 - description: Block copying from internal sites to the OS clipboard
   name: Block copying from corp sites to OS
@@ -123,7 +125,7 @@ features:
 owners:
 - file://chrome/browser/enterprise/data_controls/OWNERS
 - domfc@chromium.org
-- dpr-eng@google.com
+- cbe-cep-eng@google.com
 schema:
   items:
     properties:
@@ -187,10 +189,10 @@ schema:
         type: object
     type: object
   type: array
-future_on:
-- android
 supported_on:
+- android:140-
 - chrome.*:128-
 - chrome_os:128-
+- ios:144-
 tags: []
 type: dict

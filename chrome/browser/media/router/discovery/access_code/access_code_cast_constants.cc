@@ -14,8 +14,9 @@ bool command_line_enabled_for_testing = false;
 namespace media_router {
 
 bool IsCommandLineSwitchSupported() {
-  if (command_line_enabled_for_testing)
+  if (command_line_enabled_for_testing) {
     return true;
+  }
   version_info::Channel channel = chrome::GetChannel();
   return channel != version_info::Channel::STABLE &&
          channel != version_info::Channel::BETA;
@@ -27,14 +28,11 @@ void EnableCommandLineSupportForTesting() {
 
 constexpr char kGetMethod[] = "GET";
 constexpr char kContentType[] = "application/json; charset=UTF-8";
-constexpr char kDiscoveryOAuth2Scope[] =
-    "https://www.googleapis.com/auth/cast-edu-messaging";
 
 constexpr char kDefaultDiscoveryEndpoint[] =
     "https://castedumessaging-pa.googleapis.com";
 
 constexpr char kDiscoveryServicePath[] = "/v1/receivers";
-constexpr char kDiscoveryOAuthConsumerName[] = "access_code_cast_discovery";
 constexpr char kEmptyPostData[] = "";
 
 constexpr char kJsonDevice[] = "device";

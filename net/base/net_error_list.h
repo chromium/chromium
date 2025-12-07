@@ -21,6 +21,9 @@
 //   600-699 <Obsolete: FTP errors>
 //   700-799 Certificate manager errors
 //   800-899 DNS resolver errors
+//   900-999 Blob errors
+
+// LINT.IfChange
 
 // An asynchronous IO operation is not yet complete.  This usually does not
 // indicate a fatal error.  Typically this error will be generated as a
@@ -121,8 +124,8 @@ NET_ERROR(CLEARTEXT_NOT_PERMITTED, -29)
 // The request was blocked by a Content Security Policy
 NET_ERROR(BLOCKED_BY_CSP, -30)
 
+// NET_ERROR(H2_OR_QUIC_REQUIRED, -31) was removed. It was:
 // The request was blocked because of no H/2 or QUIC session.
-NET_ERROR(H2_OR_QUIC_REQUIRED, -31)
 
 // The request was blocked by CORB or ORB.
 NET_ERROR(BLOCKED_BY_ORB, -32)
@@ -130,6 +133,9 @@ NET_ERROR(BLOCKED_BY_ORB, -32)
 // The request was blocked because it originated from a frame that has disabled
 // network access.
 NET_ERROR(NETWORK_ACCESS_REVOKED, -33)
+
+// The request was blocked by fingerprinting protections.
+NET_ERROR(BLOCKED_BY_FINGERPRINTING_PROTECTION, -34)
 
 // A connection was closed (corresponding to a TCP FIN).
 NET_ERROR(CONNECTION_CLOSED, -100)
@@ -167,11 +173,12 @@ NET_ERROR(ADDRESS_UNREACHABLE, -109)
 // The server requested a client certificate for SSL client authentication.
 NET_ERROR(SSL_CLIENT_AUTH_CERT_NEEDED, -110)
 
-// A tunnel connection through the proxy could not be established.
+// A tunnel connection through the proxy could not be established. For more info
+// see the comment on PROXY_UNABLE_TO_CONNECT_TO_DESTINATION.
 NET_ERROR(TUNNEL_CONNECTION_FAILED, -111)
 
-// No SSL protocol versions are enabled.
-NET_ERROR(NO_SSL_VERSIONS_ENABLED, -112)
+// Obsolete:
+// NET_ERROR(NO_SSL_VERSIONS_ENABLED, -112)
 
 // The client and server don't support a common SSL protocol version or
 // cipher suite.
@@ -263,13 +270,9 @@ NET_ERROR(NETWORK_ACCESS_DENIED, -138)
 // The request throttler module cancelled this request to avoid DDOS.
 NET_ERROR(TEMPORARILY_THROTTLED, -139)
 
-// A request to create an SSL tunnel connection through the HTTPS proxy
-// received a 302 (temporary redirect) response.  The response body might
-// include a description of why the request failed.
-//
-// TODO(crbug.com/40093955): This is deprecated and should not be used by
-// new code.
-NET_ERROR(HTTPS_PROXY_TUNNEL_RESPONSE_REDIRECT, -140)
+// Obsolete, since we now use the catch-all ERR_TUNNEL_CONNECTION_FAILED when a
+// proxy tried to redirect a request.
+// NET_ERROR(HTTPS_PROXY_TUNNEL_RESPONSE_REDIRECT, -140)
 
 // We were unable to sign the CertificateVerify data of an SSL client auth
 // handshake with the client certificate's private key.
@@ -297,11 +300,9 @@ NET_ERROR(WS_PROTOCOL_ERROR, -145)
 // Returned when attempting to bind an address that is already in use.
 NET_ERROR(ADDRESS_IN_USE, -147)
 
-// An operation failed because the SSL handshake has not completed.
-NET_ERROR(SSL_HANDSHAKE_NOT_COMPLETED, -148)
-
-// SSL peer's public key is invalid.
-NET_ERROR(SSL_BAD_PEER_PUBLIC_KEY, -149)
+// Obsolete:
+// NET_ERROR(SSL_HANDSHAKE_NOT_COMPLETED, -148)
+// NET_ERROR(SSL_BAD_PEER_PUBLIC_KEY, -149)
 
 // The certificate didn't match the built-in public key pins for the host name.
 // The pins are set in net/http/transport_security_state.cc and require that
@@ -440,6 +441,32 @@ NET_ERROR(ECH_NOT_NEGOTIATED, -183)
 // and additionally did not present a certificate valid for the public name.
 NET_ERROR(ECH_FALLBACK_CERTIFICATE_INVALID, -184)
 
+// Error -185 was removed (PROXY_TUNNEL_REQUEST_FAILED).
+
+// An attempt to proxy a request failed because the proxy wasn't able to
+// successfully connect to the destination. This likely indicates an issue with
+// the request itself (for instance, the hostname failed to resolve to an IP
+// address or the destination server refused the connection). This error code
+// is used to indicate that the error is outside the control of the proxy server
+// and thus the proxy chain should not be marked as bad. This is in contrast to
+// ERR_TUNNEL_CONNECTION_FAILED which is used for general purpose errors
+// connecting to the proxy and by the proxy request response handling when a
+// proxy delegate doesn't indicate via a different error code whether proxy
+// fallback should occur. Note that for IP Protection proxies this error code
+// causes the proxy to be marked as bad since the preference is to fail open for
+// general purpose errors, but for other proxies this error does not cause the
+// proxy to be marked as bad.
+NET_ERROR(PROXY_UNABLE_TO_CONNECT_TO_DESTINATION, -186)
+
+// Some implementations of ProxyDelegate query a separate entity to know whether
+// it should cancel tunnel prior to:
+// - The HTTP CONNECT requests being sent out
+// - The HTTP CONNECT response being parsed by //net
+// An example is CronetProxyDelegate: Cronet allows developers to decide whether
+// the tunnel being established should be canceled.
+NET_ERROR(PROXY_DELEGATE_CANCELED_CONNECT_REQUEST, -187)
+NET_ERROR(PROXY_DELEGATE_CANCELED_CONNECT_RESPONSE, -188)
+
 // Certificate error codes
 //
 // The values of certificate error codes must be consecutive.
@@ -547,9 +574,7 @@ NET_ERROR(CERT_VALIDITY_TOO_LONG, -213)
 // did not provide CT information that complied with the policy.
 NET_ERROR(CERTIFICATE_TRANSPARENCY_REQUIRED, -214)
 
-// The certificate chained to a legacy Symantec root that is no longer trusted.
-// https://g.co/chrome/symantecpkicerts
-NET_ERROR(CERT_SYMANTEC_LEGACY, -215)
+// Error -215 was removed (CERT_SYMANTEC_LEGACY)
 
 // -216 was QUIC_CERT_ROOT_NOT_KNOWN which has been renumbered to not be in the
 // certificate error range.
@@ -561,13 +586,17 @@ NET_ERROR(CERT_KNOWN_INTERCEPTION_BLOCKED, -217)
 // -218 was SSL_OBSOLETE_VERSION which is not longer used. TLS 1.0/1.1 instead
 // cause SSL_VERSION_OR_CIPHER_MISMATCH now.
 
+// The certificate is self signed and it's being used for either an RFC1918 IP
+// literal URL, or a url ending in .local.
+NET_ERROR(CERT_SELF_SIGNED_LOCAL_NETWORK, -219)
+
 // Add new certificate error codes here.
 //
 // Update the value of CERT_END whenever you add a new certificate error
 // code.
 
 // The value immediately past the last certificate error code.
-NET_ERROR(CERT_END, -219)
+NET_ERROR(CERT_END, -220)
 
 // The URL is invalid.
 NET_ERROR(INVALID_URL, -300)
@@ -632,16 +661,14 @@ NET_ERROR(CONTENT_DECODING_FAILED, -330)
 // is suspended.
 NET_ERROR(NETWORK_IO_SUSPENDED, -331)
 
-// FLIP data received without receiving a SYN_REPLY on the stream.
-NET_ERROR(SYN_REPLY_NOT_RECEIVED, -332)
+// Obsolete. This was in earlier SPDY implementations.
+// NET_ERROR(SYN_REPLY_NOT_RECEIVED, -332)
 
-// Converting the response to target encoding failed.
-NET_ERROR(ENCODING_CONVERSION_FAILED, -333)
+// Obsolete. These were both used for FTP, which is no longer supported.
+// NET_ERROR(ENCODING_CONVERSION_FAILED, -333)
+// NET_ERROR(UNRECOGNIZED_FTP_DIRECTORY_LISTING_FORMAT, -334)
 
-// The server sent an FTP directory listing in a format we do not understand.
-NET_ERROR(UNRECOGNIZED_FTP_DIRECTORY_LISTING_FORMAT, -334)
-
-// Obsolete.  Was only logged in NetLog when an HTTP/2 pushed stream expired.
+// Obsolete. Was only logged in NetLog when an HTTP/2 pushed stream expired.
 // NET_ERROR(INVALID_SPDY_STREAM, -335)
 
 // There are no supported proxies in the provided list.
@@ -754,6 +781,9 @@ NET_ERROR(PROXY_HTTP_1_1_REQUIRED, -366)
 // The PAC script terminated fatally and must be reloaded.
 NET_ERROR(PAC_SCRIPT_TERMINATED, -367)
 
+// Signals that the request requires the IPP proxy.
+NET_ERROR(PROXY_REQUIRED, -368)
+
 // Obsolete. Kept here to avoid reuse.
 // Request is throttled because of a Backoff header.
 // See: crbug.com/486891.
@@ -818,11 +848,10 @@ NET_ERROR(INCONSISTENT_IP_ADDRESS_SPACE, -383)
 
 // The IP address space of the cached remote endpoint is blocked by private
 // network access check.
-NET_ERROR(CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_POLICY,
-          -384)
+NET_ERROR(CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_LOCAL_NETWORK_ACCESS_POLICY, -384)
 
 // The connection is blocked by private network access checks.
-NET_ERROR(BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS, -385)
+NET_ERROR(BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS, -385)
 
 // Content decoding failed due to the zstd window size being too big (over 8MB).
 NET_ERROR(ZSTD_WINDOW_SIZE_TOO_BIG, -386)
@@ -912,6 +941,29 @@ NET_ERROR(TRUST_TOKEN_OPERATION_FAILED, -506)
 // in a local cache (for redemption) or the operation could have been diverted
 // to a local provider (for "platform-provided" issuance).
 NET_ERROR(TRUST_TOKEN_OPERATION_SUCCESS_WITHOUT_SENDING_REQUEST, -507)
+
+// This is a placeholder value that should never be used within //net.
+//
+// When Cronet APIs are being backed by HttpEngine (i.e., HttpEngineProvider is
+// being used), org.chromium.net.NetworkException#getCronetInternalErrorCode is
+// not supported (android.net.http.NetworkException#getCronetInternalErrorCode
+// does not exist). In this scenario, getCronetInternalErrorCode will always
+// return this error. This is a first step towards the deprecation of
+// getCronetInternalErrorCode.
+//
+// Temporarily terminate, then restart, ITTT to avoid unsupported nesting.
+// LINT.ThenChange(
+//      //tools/metrics/histograms/enums.xml:HTTPResponseAndNetErrorCodes,
+//      //tools/metrics/histograms/enums.xml:NetErrorCodes,
+// )
+// LINT.IfChange(HTTPENGINE_PROVIDER_IN_USE)
+NET_ERROR(HTTPENGINE_PROVIDER_IN_USE, -508)
+// LINT.ThenChange(
+//      //components/cronet/android/java/src/org/chromium/net/impl/AndroidNetworkExceptionWrapper.java:HTTPENGINE_PROVIDER_IN_USE,
+//      //tools/metrics/histograms/enums.xml:HTTPResponseAndNetErrorCodes,
+//      //tools/metrics/histograms/enums.xml:NetErrorCodes,
+// )
+// LINT.IfChange
 
 // *** Code -600 is reserved (was FTP_PASV_COMMAND_FAILED). ***
 // *** Code -601 is reserved (was FTP_FAILED). ***
@@ -1028,5 +1080,43 @@ NET_ERROR(DNS_NO_MATCHING_SUPPORTED_ALPN, -811)
 // requested probe record either had no answer or was invalid.
 NET_ERROR(DNS_SECURE_PROBE_RECORD_INVALID, -814)
 
+// Returned when DNS cache invalidation is in progress. This is a
+// transient error. Callers may want to retry later.
+NET_ERROR(DNS_CACHE_INVALIDATION_IN_PROGRESS, -815)
+
+// The following errors are for mapped from a subset of invalid
+// storage::BlobStatus.
+
+// The construction arguments are invalid. This is considered a bad IPC.
+NET_ERROR(BLOB_INVALID_CONSTRUCTION_ARGUMENTS, -900)
+
+// We don't have enough memory for the blob.
+NET_ERROR(BLOB_OUT_OF_MEMORY, -901)
+
+// We couldn't create or write to a file. File system error, like a full disk.
+NET_ERROR(BLOB_FILE_WRITE_FAILED, -902)
+
+// The renderer was destroyed while data was in transit.
+NET_ERROR(BLOB_SOURCE_DIED_IN_TRANSIT, -903)
+
+// The renderer destructed the blob before it was done transferring, and there
+// were no outstanding references (no one is waiting to read) to keep the
+// blob alive.
+NET_ERROR(BLOB_DEREFERENCED_WHILE_BUILDING, -904)
+
+// A blob that we referenced during construction is broken, or a browser-side
+// builder tries to build a blob with a blob reference that isn't finished
+// constructing.
+NET_ERROR(BLOB_REFERENCED_BLOB_BROKEN, -905)
+
+// A file that we referenced during construction is not accessible to the
+// renderer trying to create the blob.
+NET_ERROR(BLOB_REFERENCED_FILE_UNAVAILABLE, -906)
+
 // CAUTION: Before adding errors here, please check the ranges of errors written
 // in the top of this file.
+
+// LINT.ThenChange(
+//      //tools/metrics/histograms/enums.xml:HTTPResponseAndNetErrorCodes,
+//      //tools/metrics/histograms/enums.xml:NetErrorCodes,
+// )

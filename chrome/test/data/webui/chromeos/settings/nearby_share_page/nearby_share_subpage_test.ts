@@ -4,16 +4,16 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {SettingsNearbyShareSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {CrInputElement, CrRadioButtonElement, CrToggleElement, NearbyAccountManagerBrowserProxyImpl, nearbyShareMojom, Router, routes, setContactManagerForTesting, setNearbyShareSettingsForTesting, setReceiveManagerForTesting, settingMojom, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {DeviceNameValidationResult, FastInitiationNotificationState, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
+import type {SettingsNearbyShareSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import type {CrToggleElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {NearbyAccountManagerBrowserProxyImpl, nearbyShareMojom, Router, routes, setContactManagerForTesting, setNearbyShareSettingsForTesting, setReceiveManagerForTesting, settingMojom} from 'chrome://os-settings/os_settings.js';
+import {DeviceNameValidationResult, FastInitiationNotificationState} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {FakeContactManager} from 'chrome://webui-test/nearby_share/shared/fake_nearby_contact_manager.js';
-import {FakeNearbyShareSettings} from 'chrome://webui-test/nearby_share/shared/fake_nearby_share_settings.js';
+import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {FakeContactManager} from 'chrome://webui-test/chromeos/nearby_share/shared/fake_nearby_contact_manager.js';
+import {FakeNearbyShareSettings} from 'chrome://webui-test/chromeos/nearby_share/shared/fake_nearby_share_settings.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {FakeReceiveManager} from '../fake_receive_manager.js';
 
@@ -104,16 +104,6 @@ suite('<settings-nearby-share-subpage>', () => {
     await flushTasks();
   }
 
-  /**
-   * Sets up Quick Share v2 tests which require the QuickShareV2 flag to be
-   * enabled on page load.
-   */
-  async function setupQuickShareV2() {
-    subpage.remove();
-    loadTimeData.overrideValues({'isQuickShareV2Enabled': true});
-    await init();
-  }
-
   setup(async () => {
     await init();
   });
@@ -122,7 +112,6 @@ suite('<settings-nearby-share-subpage>', () => {
     subpage.remove();
     // TODO(b/350547931): Permanently enable QSv2, remove flag and need to
     // override it.
-    loadTimeData.overrideValues({'isQuickShareV2Enabled': false});
     accountManagerBrowserProxy.reset();
     Router.getInstance().resetRouteForTesting();
   });
@@ -280,7 +269,7 @@ suite('<settings-nearby-share-subpage>', () => {
     const dialog =
         subpage.shadowRoot!.querySelector('nearby-share-device-name-dialog');
     assertTrue(!!dialog);
-    const input = dialog.shadowRoot!.querySelector<CrInputElement>('cr-input');
+    const input = dialog.shadowRoot!.querySelector('cr-input');
     assertTrue(!!input);
     const doneButton =
         dialog.shadowRoot!.querySelector<HTMLButtonElement>('#doneButton');
@@ -442,10 +431,10 @@ suite('<settings-nearby-share-subpage>', () => {
 
     const profileName = subpage.shadowRoot!.querySelector('#profileName');
     assertTrue(!!profileName);
-    assertEquals('Primary Account', profileName.textContent!.trim());
+    assertEquals('Primary Account', profileName.textContent.trim());
     const profileLabel = subpage.shadowRoot!.querySelector('#profileLabel');
     assertTrue(!!profileLabel);
-    assertEquals('primary@gmail.com', profileLabel.textContent!.trim());
+    assertEquals('primary@gmail.com', profileLabel.textContent.trim());
   });
 
   test('show receive dialog', () => {
@@ -736,114 +725,4 @@ suite('<settings-nearby-share-subpage>', () => {
     assertFalse(subpage.prefs.nearby_sharing.enabled.value);
     subpageControlsHidden(true);
   });
-
-  test(
-      'Subpage shows no Quick Share on/off toggle on QuickShareV2 enabled',
-      async () => {
-        setupQuickShareV2();
-        const enableQuickShareToggle =
-            subpage.shadowRoot!.querySelector('#featureToggleButton');
-        assertFalse(!!enableQuickShareToggle);
-      });
-
-  test('QuickShareV2: Visibility sublabel hidden when QS enabled', async () => {
-    setupQuickShareV2();
-    subpage.set('settings.visibility', Visibility.kAllContacts);
-    await waitAfterNextRender(subpage);
-    assertFalse(
-        isChildVisible(subpage, '#visibilityBoxTitle .secondary', false));
   });
-
-  test(
-      'QuickShareV2: Visibility sublabel visible when QS disabled',
-      async () => {
-        setupQuickShareV2();
-        subpage.set('settings.visibility', Visibility.kNoOne);
-        await waitAfterNextRender(subpage);
-        assertTrue(
-            isChildVisible(subpage, '#visibilityBoxTitle .secondary', false));
-      });
-
-  test(
-      'QuickShareV2: Visibility buttons disabled when QS disabled',
-      async () => {
-        setupQuickShareV2();
-        subpage.set('settings.visibility', Visibility.kNoOne);
-        await waitAfterNextRender(subpage);
-        const visibilityButtonGroup =
-            subpage.shadowRoot!.querySelector('cr-radio-group');
-        assertTrue(!!visibilityButtonGroup);
-        assertTrue(visibilityButtonGroup.disabled);
-      });
-
-  test(
-      'QuickShareV2: Visibility change to Your devices on user click Your devices label',
-      async () => {
-        setupQuickShareV2();
-        subpage.set('settings.visibility', Visibility.kAllContacts);
-        await waitAfterNextRender(subpage);
-        assertNotEquals(subpage.settings.visibility, Visibility.kYourDevices);
-
-        const yourDevicesButton =
-            subpage.shadowRoot!.querySelector<CrRadioButtonElement>(
-                '#yourDevicesVisibility');
-        assertTrue(!!yourDevicesButton);
-        yourDevicesButton.click();
-
-        await waitAfterNextRender(subpage);
-        assertEquals(subpage.settings.visibility, Visibility.kYourDevices);
-      });
-
-  test(
-      'QuickShareV2: Visibility change to Contacts on user click Contacts label',
-      async () => {
-        setupQuickShareV2();
-        subpage.set('settings.visibility', Visibility.kYourDevices);
-        await waitAfterNextRender(subpage);
-        assertNotEquals(subpage.settings.visibility, Visibility.kAllContacts);
-
-        const contactsButton =
-            subpage.shadowRoot!.querySelector<CrRadioButtonElement>(
-                '#contactsVisibility');
-        assertTrue(!!contactsButton);
-        contactsButton.click();
-
-        await waitAfterNextRender(subpage);
-        assertEquals(subpage.settings.visibility, Visibility.kAllContacts);
-      });
-
-  test(
-      'QuickShareV2: Visibility defaulted to Your devices on Selected contacts visibility setting detected',
-      async () => {
-        setupQuickShareV2();
-        subpage.set('settings.visibility', Visibility.kSelectedContacts);
-        await waitAfterNextRender(subpage);
-        assertEquals(subpage.settings.visibility, Visibility.kYourDevices);
-      });
-
-  test(
-      'QuickShareV2: Previously set Visibility reset on device visibility toggled off then on',
-      async () => {
-        setupQuickShareV2();
-        subpage.set('settings.visibility', Visibility.kAllContacts);
-        await waitAfterNextRender(subpage);
-
-        let deviceVisibleToggle =
-            subpage.shadowRoot!.querySelector<CrToggleElement>(
-                '#visibilityBoxTitle cr-toggle');
-        assertTrue(!!deviceVisibleToggle);
-        deviceVisibleToggle.click();
-        await waitAfterNextRender(subpage);
-
-        assertEquals(subpage.settings.visibility, Visibility.kNoOne);
-
-        deviceVisibleToggle =
-            subpage.shadowRoot!.querySelector<CrToggleElement>(
-                '#visibilityBoxTitle cr-toggle');
-        assertTrue(!!deviceVisibleToggle);
-        deviceVisibleToggle.click();
-        await waitAfterNextRender(subpage);
-
-        assertEquals(subpage.settings.visibility, Visibility.kAllContacts);
-      });
-});

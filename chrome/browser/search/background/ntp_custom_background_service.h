@@ -11,18 +11,18 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/search/background/ntp_background_service.h"
-#include "chrome/browser/search/background/ntp_background_service_observer.h"
-#include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/themes/theme_service_observer.h"
+#include "chrome/browser/search/background/theme_delegate.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/themes/ntp_background_service.h"
+#include "components/themes/ntp_background_service_observer.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/color_utils.h"
 
 class NtpCustomBackgroundServiceObserver;
+class NtpCustomBackgroundService;
 class PrefRegistrySimple;
 class PrefService;
 class Profile;
@@ -34,8 +34,7 @@ class FilePath;
 
 // Manages custom backgrounds on the new tab page.
 class NtpCustomBackgroundService : public KeyedService,
-                                   public NtpBackgroundServiceObserver,
-                                   public ThemeServiceObserver {
+                                   public NtpBackgroundServiceObserver {
  public:
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
   static void ResetNtpTheme(Profile* profile);
@@ -49,10 +48,6 @@ class NtpCustomBackgroundService : public KeyedService,
   void OnCollectionImagesAvailable() override;
   void OnNextCollectionImageAvailable() override;
   void OnNtpBackgroundServiceShuttingDown() override;
-
-  // ThemeServiceObserver:
-  void OnThemeChanged() override;
-  void OnCustomNtpBackgroundObsolete() override;
 
   // Invoked when a background pref update is received via sync, triggering
   // an update of theme info.
@@ -82,18 +77,15 @@ class NtpCustomBackgroundService : public KeyedService,
   // Virtual for testing.
   virtual void RefreshBackgroundIfNeeded();
 
-  // Reverts any changes to the background when a background preview
-  // is cancelled.
-  void RevertBackgroundChanges();
-  // Confirms that background has been changed.
-  void ConfirmBackgroundChanges();
-
   // Virtual for testing.
   virtual std::optional<CustomBackground> GetCustomBackground();
 
   // Adds/Removes NtpCustomBackgroundServiceObserver observers.
   virtual void AddObserver(NtpCustomBackgroundServiceObserver* observer);
   void RemoveObserver(NtpCustomBackgroundServiceObserver* observer);
+
+  void SetThemeDelegate(ThemeDelegate* delegate);
+  void RemoveThemeDelegate();
 
   // Returns whether having a custom background is disabled by policy.
   virtual bool IsCustomBackgroundDisabledByPolicy();
@@ -158,23 +150,16 @@ class NtpCustomBackgroundService : public KeyedService,
 
   const raw_ptr<Profile> profile_;
   raw_ptr<PrefService, DanglingUntriaged> pref_service_;
-  raw_ptr<ThemeService, DanglingUntriaged> theme_service_;
   std::unique_ptr<network::SimpleURLLoader> custom_background_image_url_loader_;
   PrefChangeRegistrar pref_change_registrar_;
   raw_ptr<NtpBackgroundService, DanglingUntriaged> background_service_;
   base::ScopedObservation<NtpBackgroundService, NtpBackgroundServiceObserver>
       background_service_observation_{this};
-  base::ScopedObservation<ThemeService, ThemeServiceObserver>
-      theme_service_observation_{this};
   raw_ptr<base::Clock> clock_;
   base::TimeTicks background_updated_timestamp_;
   base::ObserverList<NtpCustomBackgroundServiceObserver> observers_;
+  raw_ptr<ThemeDelegate> theme_delegate_ = nullptr;
   std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
-
-  // Used to track information for previous background when a background is
-  // being previewed.
-  std::optional<base::Value> previous_background_info_;
-  bool previous_local_background_ = false;
 
   base::WeakPtrFactory<NtpCustomBackgroundService> weak_ptr_factory_{this};
 };

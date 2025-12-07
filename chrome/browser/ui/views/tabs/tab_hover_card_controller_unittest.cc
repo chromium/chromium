@@ -7,6 +7,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_chip_tab_helper.h"
+#include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -24,8 +25,7 @@ class TabHoverCardControllerTest : public TestWithBrowserView {
     feature_list_.InitAndEnableFeature(features::kTabHoverCardImages);
   }
 
-  void SimulateMemoryPressure(
-      base::MemoryPressureMonitor::MemoryPressureLevel level) {
+  void SimulateMemoryPressure(base::MemoryPressureLevel level) {
     fake_memory_monitor_.SetAndNotifyMemoryPressure(level);
   }
 
@@ -131,7 +131,7 @@ TEST_F(TabHoverCardControllerTest, DisableMemoryUsageForTab) {
   Tab* const target_tab = browser_view()->tabstrip()->tab_at(1);
   TabRendererData data;
   auto tab_resource_usage = base::MakeRefCounted<TabResourceUsage>();
-  tab_resource_usage->SetMemoryUsageInBytes(100);
+  tab_resource_usage->SetMemoryUsage(base::ByteCount(100));
   data.tab_resource_usage = std::move(tab_resource_usage);
   target_tab->SetData(std::move(data));
   controller->target_tab_ = target_tab;
@@ -200,8 +200,7 @@ TEST_F(TabHoverCardControllerTest, DontCaptureUnderCriticalMemoryPressure) {
   target_tab->SetData(std::move(data));
   controller->target_tab_ = target_tab;
 
-  SimulateMemoryPressure(base::MemoryPressureMonitor::MemoryPressureLevel::
-                             MEMORY_PRESSURE_LEVEL_CRITICAL);
+  SimulateMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   controller->ShowHoverCard(true, target_tab);
 
   EXPECT_EQ(controller->thumbnail_observer_.get()->current_image(), nullptr);

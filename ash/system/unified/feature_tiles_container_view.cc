@@ -284,9 +284,6 @@ void FeatureTilesContainerView::RemovedFromWidget() {
   GetFocusManager()->RemoveFocusChangeListener(this);
 }
 
-void FeatureTilesContainerView::OnWillChangeFocus(views::View* before,
-                                                  views::View* now) {}
-
 void FeatureTilesContainerView::OnDidChangeFocus(views::View* before,
                                                  views::View* now) {
   if (!now || !views::IsViewClass<FeatureTile>(now) || !Contains(now)) {

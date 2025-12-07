@@ -9,12 +9,10 @@
 
 namespace shell_dialog_linux {
 
-// TODO(thomasanderson): Remove Initialize() and Finalize().
+// TODO(thomasanderson): Remove Initialize().
 
 // Should be called before the first call to CreateSelectFileDialog.
 SHELL_DIALOGS_EXPORT void Initialize();
-
-SHELL_DIALOGS_EXPORT void Finalize();
 
 }  // namespace shell_dialog_linux
 

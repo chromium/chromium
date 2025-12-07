@@ -8,13 +8,9 @@
 //    clang-format -i -style=chromium filename
 // DO NOT EDIT!
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
@@ -25,248 +21,254 @@
 
 namespace gl {
 
-DriverEGL g_driver_egl;  // Exists in .bss
+DriverEGL g_driver_egl = {};
 
-void DriverEGL::InitializeStaticBindings() {
-  // Ensure struct has been zero-initialized.
-  char* this_bytes = reinterpret_cast<char*>(this);
-  DCHECK(this_bytes[0] == 0);
-  DCHECK(memcmp(this_bytes, this_bytes + 1, sizeof(*this) - 1) == 0);
-
+void DriverEGL::InitializeStaticBindings(
+    GLGetProcAddressProc get_proc_address) {
+  TRACE_EVENT("gpu,startup", "DriverEGL::InitializeStaticBindings");
   fn.eglAcquireExternalContextANGLEFn =
       reinterpret_cast<eglAcquireExternalContextANGLEProc>(
-          GetGLProcAddress("eglAcquireExternalContextANGLE"));
+          get_proc_address("eglAcquireExternalContextANGLE"));
   fn.eglBindAPIFn =
-      reinterpret_cast<eglBindAPIProc>(GetGLProcAddress("eglBindAPI"));
+      reinterpret_cast<eglBindAPIProc>(get_proc_address("eglBindAPI"));
   fn.eglBindTexImageFn = reinterpret_cast<eglBindTexImageProc>(
-      GetGLProcAddress("eglBindTexImage"));
+      get_proc_address("eglBindTexImage"));
   fn.eglChooseConfigFn = reinterpret_cast<eglChooseConfigProc>(
-      GetGLProcAddress("eglChooseConfig"));
+      get_proc_address("eglChooseConfig"));
   fn.eglClientWaitSyncFn = reinterpret_cast<eglClientWaitSyncProc>(
-      GetGLProcAddress("eglClientWaitSync"));
+      get_proc_address("eglClientWaitSync"));
   fn.eglClientWaitSyncKHRFn = reinterpret_cast<eglClientWaitSyncKHRProc>(
-      GetGLProcAddress("eglClientWaitSyncKHR"));
+      get_proc_address("eglClientWaitSyncKHR"));
   fn.eglCopyBuffersFn =
-      reinterpret_cast<eglCopyBuffersProc>(GetGLProcAddress("eglCopyBuffers"));
+      reinterpret_cast<eglCopyBuffersProc>(get_proc_address("eglCopyBuffers"));
   fn.eglCopyMetalSharedEventANGLEFn =
       reinterpret_cast<eglCopyMetalSharedEventANGLEProc>(
-          GetGLProcAddress("eglCopyMetalSharedEventANGLE"));
+          get_proc_address("eglCopyMetalSharedEventANGLE"));
   fn.eglCreateContextFn = reinterpret_cast<eglCreateContextProc>(
-      GetGLProcAddress("eglCreateContext"));
+      get_proc_address("eglCreateContext"));
   fn.eglCreateImageFn =
-      reinterpret_cast<eglCreateImageProc>(GetGLProcAddress("eglCreateImage"));
+      reinterpret_cast<eglCreateImageProc>(get_proc_address("eglCreateImage"));
   fn.eglCreateImageKHRFn = reinterpret_cast<eglCreateImageKHRProc>(
-      GetGLProcAddress("eglCreateImageKHR"));
+      get_proc_address("eglCreateImageKHR"));
   fn.eglCreatePbufferFromClientBufferFn =
       reinterpret_cast<eglCreatePbufferFromClientBufferProc>(
-          GetGLProcAddress("eglCreatePbufferFromClientBuffer"));
+          get_proc_address("eglCreatePbufferFromClientBuffer"));
   fn.eglCreatePbufferSurfaceFn = reinterpret_cast<eglCreatePbufferSurfaceProc>(
-      GetGLProcAddress("eglCreatePbufferSurface"));
+      get_proc_address("eglCreatePbufferSurface"));
   fn.eglCreatePixmapSurfaceFn = reinterpret_cast<eglCreatePixmapSurfaceProc>(
-      GetGLProcAddress("eglCreatePixmapSurface"));
+      get_proc_address("eglCreatePixmapSurface"));
   fn.eglCreatePlatformPixmapSurfaceFn =
       reinterpret_cast<eglCreatePlatformPixmapSurfaceProc>(
-          GetGLProcAddress("eglCreatePlatformPixmapSurface"));
+          get_proc_address("eglCreatePlatformPixmapSurface"));
   fn.eglCreatePlatformWindowSurfaceFn =
       reinterpret_cast<eglCreatePlatformWindowSurfaceProc>(
-          GetGLProcAddress("eglCreatePlatformWindowSurface"));
+          get_proc_address("eglCreatePlatformWindowSurface"));
   fn.eglCreateStreamKHRFn = reinterpret_cast<eglCreateStreamKHRProc>(
-      GetGLProcAddress("eglCreateStreamKHR"));
+      get_proc_address("eglCreateStreamKHR"));
   fn.eglCreateStreamProducerD3DTextureANGLEFn =
       reinterpret_cast<eglCreateStreamProducerD3DTextureANGLEProc>(
-          GetGLProcAddress("eglCreateStreamProducerD3DTextureANGLE"));
+          get_proc_address("eglCreateStreamProducerD3DTextureANGLE"));
   fn.eglCreateSyncFn =
-      reinterpret_cast<eglCreateSyncProc>(GetGLProcAddress("eglCreateSync"));
+      reinterpret_cast<eglCreateSyncProc>(get_proc_address("eglCreateSync"));
   fn.eglCreateSyncKHRFn = reinterpret_cast<eglCreateSyncKHRProc>(
-      GetGLProcAddress("eglCreateSyncKHR"));
+      get_proc_address("eglCreateSyncKHR"));
   fn.eglCreateWindowSurfaceFn = reinterpret_cast<eglCreateWindowSurfaceProc>(
-      GetGLProcAddress("eglCreateWindowSurface"));
+      get_proc_address("eglCreateWindowSurface"));
   fn.eglDebugMessageControlKHRFn =
       reinterpret_cast<eglDebugMessageControlKHRProc>(
-          GetGLProcAddress("eglDebugMessageControlKHR"));
+          get_proc_address("eglDebugMessageControlKHR"));
   fn.eglDestroyContextFn = reinterpret_cast<eglDestroyContextProc>(
-      GetGLProcAddress("eglDestroyContext"));
+      get_proc_address("eglDestroyContext"));
   fn.eglDestroyImageFn = reinterpret_cast<eglDestroyImageProc>(
-      GetGLProcAddress("eglDestroyImage"));
+      get_proc_address("eglDestroyImage"));
   fn.eglDestroyImageKHRFn = reinterpret_cast<eglDestroyImageKHRProc>(
-      GetGLProcAddress("eglDestroyImageKHR"));
+      get_proc_address("eglDestroyImageKHR"));
   fn.eglDestroyStreamKHRFn = reinterpret_cast<eglDestroyStreamKHRProc>(
-      GetGLProcAddress("eglDestroyStreamKHR"));
+      get_proc_address("eglDestroyStreamKHR"));
   fn.eglDestroySurfaceFn = reinterpret_cast<eglDestroySurfaceProc>(
-      GetGLProcAddress("eglDestroySurface"));
+      get_proc_address("eglDestroySurface"));
   fn.eglDestroySyncFn =
-      reinterpret_cast<eglDestroySyncProc>(GetGLProcAddress("eglDestroySync"));
+      reinterpret_cast<eglDestroySyncProc>(get_proc_address("eglDestroySync"));
   fn.eglDestroySyncKHRFn = reinterpret_cast<eglDestroySyncKHRProc>(
-      GetGLProcAddress("eglDestroySyncKHR"));
+      get_proc_address("eglDestroySyncKHR"));
   fn.eglDupNativeFenceFDANDROIDFn =
       reinterpret_cast<eglDupNativeFenceFDANDROIDProc>(
-          GetGLProcAddress("eglDupNativeFenceFDANDROID"));
+          get_proc_address("eglDupNativeFenceFDANDROID"));
   fn.eglExportDMABUFImageMESAFn =
       reinterpret_cast<eglExportDMABUFImageMESAProc>(
-          GetGLProcAddress("eglExportDMABUFImageMESA"));
+          get_proc_address("eglExportDMABUFImageMESA"));
   fn.eglExportDMABUFImageQueryMESAFn =
       reinterpret_cast<eglExportDMABUFImageQueryMESAProc>(
-          GetGLProcAddress("eglExportDMABUFImageQueryMESA"));
+          get_proc_address("eglExportDMABUFImageQueryMESA"));
   fn.eglExportVkImageANGLEFn = reinterpret_cast<eglExportVkImageANGLEProc>(
-      GetGLProcAddress("eglExportVkImageANGLE"));
+      get_proc_address("eglExportVkImageANGLE"));
   fn.eglGetCompositorTimingANDROIDFn =
       reinterpret_cast<eglGetCompositorTimingANDROIDProc>(
-          GetGLProcAddress("eglGetCompositorTimingANDROID"));
+          get_proc_address("eglGetCompositorTimingANDROID"));
   fn.eglGetCompositorTimingSupportedANDROIDFn =
       reinterpret_cast<eglGetCompositorTimingSupportedANDROIDProc>(
-          GetGLProcAddress("eglGetCompositorTimingSupportedANDROID"));
+          get_proc_address("eglGetCompositorTimingSupportedANDROID"));
   fn.eglGetConfigAttribFn = reinterpret_cast<eglGetConfigAttribProc>(
-      GetGLProcAddress("eglGetConfigAttrib"));
+      get_proc_address("eglGetConfigAttrib"));
   fn.eglGetConfigsFn =
-      reinterpret_cast<eglGetConfigsProc>(GetGLProcAddress("eglGetConfigs"));
+      reinterpret_cast<eglGetConfigsProc>(get_proc_address("eglGetConfigs"));
   fn.eglGetCurrentContextFn = reinterpret_cast<eglGetCurrentContextProc>(
-      GetGLProcAddress("eglGetCurrentContext"));
+      get_proc_address("eglGetCurrentContext"));
   fn.eglGetCurrentDisplayFn = reinterpret_cast<eglGetCurrentDisplayProc>(
-      GetGLProcAddress("eglGetCurrentDisplay"));
+      get_proc_address("eglGetCurrentDisplay"));
   fn.eglGetCurrentSurfaceFn = reinterpret_cast<eglGetCurrentSurfaceProc>(
-      GetGLProcAddress("eglGetCurrentSurface"));
+      get_proc_address("eglGetCurrentSurface"));
   fn.eglGetDisplayFn =
-      reinterpret_cast<eglGetDisplayProc>(GetGLProcAddress("eglGetDisplay"));
+      reinterpret_cast<eglGetDisplayProc>(get_proc_address("eglGetDisplay"));
   fn.eglGetErrorFn =
-      reinterpret_cast<eglGetErrorProc>(GetGLProcAddress("eglGetError"));
+      reinterpret_cast<eglGetErrorProc>(get_proc_address("eglGetError"));
   fn.eglGetFrameTimestampsANDROIDFn =
       reinterpret_cast<eglGetFrameTimestampsANDROIDProc>(
-          GetGLProcAddress("eglGetFrameTimestampsANDROID"));
+          get_proc_address("eglGetFrameTimestampsANDROID"));
   fn.eglGetFrameTimestampSupportedANDROIDFn =
       reinterpret_cast<eglGetFrameTimestampSupportedANDROIDProc>(
-          GetGLProcAddress("eglGetFrameTimestampSupportedANDROID"));
+          get_proc_address("eglGetFrameTimestampSupportedANDROID"));
   fn.eglGetMscRateANGLEFn = reinterpret_cast<eglGetMscRateANGLEProc>(
-      GetGLProcAddress("eglGetMscRateANGLE"));
+      get_proc_address("eglGetMscRateANGLE"));
   fn.eglGetNativeClientBufferANDROIDFn =
       reinterpret_cast<eglGetNativeClientBufferANDROIDProc>(
-          GetGLProcAddress("eglGetNativeClientBufferANDROID"));
+          get_proc_address("eglGetNativeClientBufferANDROID"));
   fn.eglGetNextFrameIdANDROIDFn =
       reinterpret_cast<eglGetNextFrameIdANDROIDProc>(
-          GetGLProcAddress("eglGetNextFrameIdANDROID"));
+          get_proc_address("eglGetNextFrameIdANDROID"));
   fn.eglGetPlatformDisplayFn = reinterpret_cast<eglGetPlatformDisplayProc>(
-      GetGLProcAddress("eglGetPlatformDisplay"));
+      get_proc_address("eglGetPlatformDisplay"));
   fn.eglGetProcAddressFn = reinterpret_cast<eglGetProcAddressProc>(
-      GetGLProcAddress("eglGetProcAddress"));
+      get_proc_address("eglGetProcAddress"));
   fn.eglGetSyncAttribFn = reinterpret_cast<eglGetSyncAttribProc>(
-      GetGLProcAddress("eglGetSyncAttrib"));
+      get_proc_address("eglGetSyncAttrib"));
   fn.eglGetSyncAttribKHRFn = reinterpret_cast<eglGetSyncAttribKHRProc>(
-      GetGLProcAddress("eglGetSyncAttribKHR"));
+      get_proc_address("eglGetSyncAttribKHR"));
   fn.eglGetSyncValuesCHROMIUMFn =
       reinterpret_cast<eglGetSyncValuesCHROMIUMProc>(
-          GetGLProcAddress("eglGetSyncValuesCHROMIUM"));
+          get_proc_address("eglGetSyncValuesCHROMIUM"));
   fn.eglHandleGPUSwitchANGLEFn = reinterpret_cast<eglHandleGPUSwitchANGLEProc>(
-      GetGLProcAddress("eglHandleGPUSwitchANGLE"));
+      get_proc_address("eglHandleGPUSwitchANGLE"));
   fn.eglImageFlushExternalEXTFn =
       reinterpret_cast<eglImageFlushExternalEXTProc>(
-          GetGLProcAddress("eglImageFlushExternalEXT"));
+          get_proc_address("eglImageFlushExternalEXT"));
   fn.eglInitializeFn =
-      reinterpret_cast<eglInitializeProc>(GetGLProcAddress("eglInitialize"));
+      reinterpret_cast<eglInitializeProc>(get_proc_address("eglInitialize"));
   fn.eglLabelObjectKHRFn = reinterpret_cast<eglLabelObjectKHRProc>(
-      GetGLProcAddress("eglLabelObjectKHR"));
+      get_proc_address("eglLabelObjectKHR"));
+  fn.eglLockVulkanQueueANGLEFn = reinterpret_cast<eglLockVulkanQueueANGLEProc>(
+      get_proc_address("eglLockVulkanQueueANGLE"));
   fn.eglMakeCurrentFn =
-      reinterpret_cast<eglMakeCurrentProc>(GetGLProcAddress("eglMakeCurrent"));
+      reinterpret_cast<eglMakeCurrentProc>(get_proc_address("eglMakeCurrent"));
   fn.eglPostSubBufferNVFn = reinterpret_cast<eglPostSubBufferNVProc>(
-      GetGLProcAddress("eglPostSubBufferNV"));
+      get_proc_address("eglPostSubBufferNV"));
+  fn.eglPresentationTimeANDROIDFn =
+      reinterpret_cast<eglPresentationTimeANDROIDProc>(
+          get_proc_address("eglPresentationTimeANDROID"));
   fn.eglQueryAPIFn =
-      reinterpret_cast<eglQueryAPIProc>(GetGLProcAddress("eglQueryAPI"));
+      reinterpret_cast<eglQueryAPIProc>(get_proc_address("eglQueryAPI"));
   fn.eglQueryContextFn = reinterpret_cast<eglQueryContextProc>(
-      GetGLProcAddress("eglQueryContext"));
+      get_proc_address("eglQueryContext"));
   fn.eglQueryDebugKHRFn = reinterpret_cast<eglQueryDebugKHRProc>(
-      GetGLProcAddress("eglQueryDebugKHR"));
+      get_proc_address("eglQueryDebugKHR"));
   fn.eglQueryDeviceAttribEXTFn = reinterpret_cast<eglQueryDeviceAttribEXTProc>(
-      GetGLProcAddress("eglQueryDeviceAttribEXT"));
+      get_proc_address("eglQueryDeviceAttribEXT"));
   fn.eglQueryDevicesEXTFn = reinterpret_cast<eglQueryDevicesEXTProc>(
-      GetGLProcAddress("eglQueryDevicesEXT"));
+      get_proc_address("eglQueryDevicesEXT"));
   fn.eglQueryDeviceStringEXTFn = reinterpret_cast<eglQueryDeviceStringEXTProc>(
-      GetGLProcAddress("eglQueryDeviceStringEXT"));
+      get_proc_address("eglQueryDeviceStringEXT"));
   fn.eglQueryDisplayAttribANGLEFn =
       reinterpret_cast<eglQueryDisplayAttribANGLEProc>(
-          GetGLProcAddress("eglQueryDisplayAttribANGLE"));
+          get_proc_address("eglQueryDisplayAttribANGLE"));
   fn.eglQueryDisplayAttribEXTFn =
       reinterpret_cast<eglQueryDisplayAttribEXTProc>(
-          GetGLProcAddress("eglQueryDisplayAttribEXT"));
+          get_proc_address("eglQueryDisplayAttribEXT"));
   fn.eglQueryDmaBufFormatsEXTFn =
       reinterpret_cast<eglQueryDmaBufFormatsEXTProc>(
-          GetGLProcAddress("eglQueryDmaBufFormatsEXT"));
+          get_proc_address("eglQueryDmaBufFormatsEXT"));
   fn.eglQueryDmaBufModifiersEXTFn =
       reinterpret_cast<eglQueryDmaBufModifiersEXTProc>(
-          GetGLProcAddress("eglQueryDmaBufModifiersEXT"));
+          get_proc_address("eglQueryDmaBufModifiersEXT"));
   fn.eglQueryStreamKHRFn = reinterpret_cast<eglQueryStreamKHRProc>(
-      GetGLProcAddress("eglQueryStreamKHR"));
+      get_proc_address("eglQueryStreamKHR"));
   fn.eglQueryStreamu64KHRFn = reinterpret_cast<eglQueryStreamu64KHRProc>(
-      GetGLProcAddress("eglQueryStreamu64KHR"));
+      get_proc_address("eglQueryStreamu64KHR"));
   fn.eglQueryStringFn =
-      reinterpret_cast<eglQueryStringProc>(GetGLProcAddress("eglQueryString"));
+      reinterpret_cast<eglQueryStringProc>(get_proc_address("eglQueryString"));
   fn.eglQueryStringiANGLEFn = reinterpret_cast<eglQueryStringiANGLEProc>(
-      GetGLProcAddress("eglQueryStringiANGLE"));
+      get_proc_address("eglQueryStringiANGLE"));
   fn.eglQuerySurfaceFn = reinterpret_cast<eglQuerySurfaceProc>(
-      GetGLProcAddress("eglQuerySurface"));
+      get_proc_address("eglQuerySurface"));
   fn.eglQuerySurfacePointerANGLEFn =
       reinterpret_cast<eglQuerySurfacePointerANGLEProc>(
-          GetGLProcAddress("eglQuerySurfacePointerANGLE"));
+          get_proc_address("eglQuerySurfacePointerANGLE"));
   fn.eglReacquireHighPowerGPUANGLEFn =
       reinterpret_cast<eglReacquireHighPowerGPUANGLEProc>(
-          GetGLProcAddress("eglReacquireHighPowerGPUANGLE"));
+          get_proc_address("eglReacquireHighPowerGPUANGLE"));
   fn.eglReleaseExternalContextANGLEFn =
       reinterpret_cast<eglReleaseExternalContextANGLEProc>(
-          GetGLProcAddress("eglReleaseExternalContextANGLE"));
+          get_proc_address("eglReleaseExternalContextANGLE"));
   fn.eglReleaseHighPowerGPUANGLEFn =
       reinterpret_cast<eglReleaseHighPowerGPUANGLEProc>(
-          GetGLProcAddress("eglReleaseHighPowerGPUANGLE"));
+          get_proc_address("eglReleaseHighPowerGPUANGLE"));
   fn.eglReleaseTexImageFn = reinterpret_cast<eglReleaseTexImageProc>(
-      GetGLProcAddress("eglReleaseTexImage"));
+      get_proc_address("eglReleaseTexImage"));
   fn.eglReleaseThreadFn = reinterpret_cast<eglReleaseThreadProc>(
-      GetGLProcAddress("eglReleaseThread"));
+      get_proc_address("eglReleaseThread"));
   fn.eglSetBlobCacheFuncsANDROIDFn =
       reinterpret_cast<eglSetBlobCacheFuncsANDROIDProc>(
-          GetGLProcAddress("eglSetBlobCacheFuncsANDROID"));
+          get_proc_address("eglSetBlobCacheFuncsANDROID"));
   fn.eglSetValidationEnabledANGLEFn =
       reinterpret_cast<eglSetValidationEnabledANGLEProc>(
-          GetGLProcAddress("eglSetValidationEnabledANGLE"));
+          get_proc_address("eglSetValidationEnabledANGLE"));
   fn.eglStreamAttribKHRFn = reinterpret_cast<eglStreamAttribKHRProc>(
-      GetGLProcAddress("eglStreamAttribKHR"));
+      get_proc_address("eglStreamAttribKHR"));
   fn.eglStreamConsumerAcquireKHRFn =
       reinterpret_cast<eglStreamConsumerAcquireKHRProc>(
-          GetGLProcAddress("eglStreamConsumerAcquireKHR"));
+          get_proc_address("eglStreamConsumerAcquireKHR"));
   fn.eglStreamConsumerGLTextureExternalAttribsNVFn =
       reinterpret_cast<eglStreamConsumerGLTextureExternalAttribsNVProc>(
-          GetGLProcAddress("eglStreamConsumerGLTextureExternalAttribsNV"));
+          get_proc_address("eglStreamConsumerGLTextureExternalAttribsNV"));
   fn.eglStreamConsumerGLTextureExternalKHRFn =
       reinterpret_cast<eglStreamConsumerGLTextureExternalKHRProc>(
-          GetGLProcAddress("eglStreamConsumerGLTextureExternalKHR"));
+          get_proc_address("eglStreamConsumerGLTextureExternalKHR"));
   fn.eglStreamConsumerReleaseKHRFn =
       reinterpret_cast<eglStreamConsumerReleaseKHRProc>(
-          GetGLProcAddress("eglStreamConsumerReleaseKHR"));
+          get_proc_address("eglStreamConsumerReleaseKHR"));
   fn.eglStreamPostD3DTextureANGLEFn =
       reinterpret_cast<eglStreamPostD3DTextureANGLEProc>(
-          GetGLProcAddress("eglStreamPostD3DTextureANGLE"));
+          get_proc_address("eglStreamPostD3DTextureANGLE"));
   fn.eglSurfaceAttribFn = reinterpret_cast<eglSurfaceAttribProc>(
-      GetGLProcAddress("eglSurfaceAttrib"));
+      get_proc_address("eglSurfaceAttrib"));
   fn.eglSwapBuffersFn =
-      reinterpret_cast<eglSwapBuffersProc>(GetGLProcAddress("eglSwapBuffers"));
+      reinterpret_cast<eglSwapBuffersProc>(get_proc_address("eglSwapBuffers"));
   fn.eglSwapBuffersWithDamageKHRFn =
       reinterpret_cast<eglSwapBuffersWithDamageKHRProc>(
-          GetGLProcAddress("eglSwapBuffersWithDamageKHR"));
+          get_proc_address("eglSwapBuffersWithDamageKHR"));
   fn.eglSwapIntervalFn = reinterpret_cast<eglSwapIntervalProc>(
-      GetGLProcAddress("eglSwapInterval"));
+      get_proc_address("eglSwapInterval"));
   fn.eglTerminateFn =
-      reinterpret_cast<eglTerminateProc>(GetGLProcAddress("eglTerminate"));
+      reinterpret_cast<eglTerminateProc>(get_proc_address("eglTerminate"));
+  fn.eglUnlockVulkanQueueANGLEFn =
+      reinterpret_cast<eglUnlockVulkanQueueANGLEProc>(
+          get_proc_address("eglUnlockVulkanQueueANGLE"));
   fn.eglWaitClientFn =
-      reinterpret_cast<eglWaitClientProc>(GetGLProcAddress("eglWaitClient"));
+      reinterpret_cast<eglWaitClientProc>(get_proc_address("eglWaitClient"));
   fn.eglWaitGLFn =
-      reinterpret_cast<eglWaitGLProc>(GetGLProcAddress("eglWaitGL"));
+      reinterpret_cast<eglWaitGLProc>(get_proc_address("eglWaitGL"));
   fn.eglWaitNativeFn =
-      reinterpret_cast<eglWaitNativeProc>(GetGLProcAddress("eglWaitNative"));
+      reinterpret_cast<eglWaitNativeProc>(get_proc_address("eglWaitNative"));
   fn.eglWaitSyncFn =
-      reinterpret_cast<eglWaitSyncProc>(GetGLProcAddress("eglWaitSync"));
+      reinterpret_cast<eglWaitSyncProc>(get_proc_address("eglWaitSync"));
   fn.eglWaitSyncKHRFn =
-      reinterpret_cast<eglWaitSyncKHRProc>(GetGLProcAddress("eglWaitSyncKHR"));
+      reinterpret_cast<eglWaitSyncKHRProc>(get_proc_address("eglWaitSyncKHR"));
   fn.eglWaitUntilWorkScheduledANGLEFn =
       reinterpret_cast<eglWaitUntilWorkScheduledANGLEProc>(
-          GetGLProcAddress("eglWaitUntilWorkScheduledANGLE"));
+          get_proc_address("eglWaitUntilWorkScheduledANGLE"));
 }
 
 void ClientExtensionsEGL::InitializeClientExtensionSettings() {
+  TRACE_EVENT("gpu,startup", "DriverEGL::InitializeClientExtensionSettings");
   std::string client_extensions(GetClientExtensions());
   [[maybe_unused]] gfx::ExtensionSet extensions(
       gfx::MakeExtensionSet(client_extensions));
@@ -299,14 +301,19 @@ void ClientExtensionsEGL::InitializeClientExtensionSettings() {
       gfx::HasExtension(extensions, "EGL_EXT_device_enumeration");
   b_EGL_EXT_device_query =
       gfx::HasExtension(extensions, "EGL_EXT_device_query");
+  b_EGL_EXT_platform_base =
+      gfx::HasExtension(extensions, "EGL_EXT_platform_base");
   b_EGL_EXT_platform_device =
       gfx::HasExtension(extensions, "EGL_EXT_platform_device");
   b_EGL_KHR_debug = gfx::HasExtension(extensions, "EGL_KHR_debug");
+  b_EGL_KHR_platform_gbm =
+      gfx::HasExtension(extensions, "EGL_KHR_platform_gbm");
   b_EGL_MESA_platform_surfaceless =
       gfx::HasExtension(extensions, "EGL_MESA_platform_surfaceless");
 }
 
 void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
+  TRACE_EVENT("gpu,startup", "DriverEGL::InitializeExtensionSettings");
   std::string platform_extensions(GetPlatformExtensions(display));
   [[maybe_unused]] gfx::ExtensionSet extensions(
       gfx::MakeExtensionSet(platform_extensions));
@@ -323,16 +330,22 @@ void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
       gfx::HasExtension(extensions, "EGL_ANDROID_get_native_client_buffer");
   b_EGL_ANDROID_native_fence_sync =
       gfx::HasExtension(extensions, "EGL_ANDROID_native_fence_sync");
+  b_EGL_ANDROID_presentation_time =
+      gfx::HasExtension(extensions, "EGL_ANDROID_presentation_time");
   b_EGL_ANGLE_context_virtualization =
       gfx::HasExtension(extensions, "EGL_ANGLE_context_virtualization");
   b_EGL_ANGLE_create_context_backwards_compatible = gfx::HasExtension(
       extensions, "EGL_ANGLE_create_context_backwards_compatible");
   b_EGL_ANGLE_create_context_client_arrays =
       gfx::HasExtension(extensions, "EGL_ANGLE_create_context_client_arrays");
+  b_EGL_ANGLE_create_context_passthrough_shaders = gfx::HasExtension(
+      extensions, "EGL_ANGLE_create_context_passthrough_shaders");
   b_EGL_ANGLE_create_context_webgl_compatibility = gfx::HasExtension(
       extensions, "EGL_ANGLE_create_context_webgl_compatibility");
   b_EGL_ANGLE_d3d_share_handle_client_buffer =
       gfx::HasExtension(extensions, "EGL_ANGLE_d3d_share_handle_client_buffer");
+  b_EGL_ANGLE_device_vulkan =
+      gfx::HasExtension(extensions, "EGL_ANGLE_device_vulkan");
   b_EGL_ANGLE_display_semaphore_share_group =
       gfx::HasExtension(extensions, "EGL_ANGLE_display_semaphore_share_group");
   b_EGL_ANGLE_display_texture_share_group =
@@ -426,7 +439,7 @@ void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
 }
 
 void DriverEGL::ClearBindings() {
-  memset(this, 0, sizeof(*this));
+  *this = {};
 }
 
 void EGLApiBase::eglAcquireExternalContextANGLEFn(EGLDisplay dpy,
@@ -786,6 +799,10 @@ EGLint EGLApiBase::eglLabelObjectKHRFn(EGLDisplay display,
   return driver_->fn.eglLabelObjectKHRFn(display, objectType, object, label);
 }
 
+void EGLApiBase::eglLockVulkanQueueANGLEFn(EGLDisplay dpy) {
+  driver_->fn.eglLockVulkanQueueANGLEFn(dpy);
+}
+
 EGLBoolean EGLApiBase::eglMakeCurrentFn(EGLDisplay dpy,
                                         EGLSurface draw,
                                         EGLSurface read,
@@ -800,6 +817,12 @@ EGLBoolean EGLApiBase::eglPostSubBufferNVFn(EGLDisplay dpy,
                                             EGLint width,
                                             EGLint height) {
   return driver_->fn.eglPostSubBufferNVFn(dpy, surface, x, y, width, height);
+}
+
+EGLBoolean EGLApiBase::eglPresentationTimeANDROIDFn(EGLDisplay dpy,
+                                                    EGLSurface surface,
+                                                    EGLnsecsANDROID time) {
+  return driver_->fn.eglPresentationTimeANDROIDFn(dpy, surface, time);
 }
 
 EGLenum EGLApiBase::eglQueryAPIFn(void) {
@@ -1001,6 +1024,10 @@ EGLBoolean EGLApiBase::eglSwapIntervalFn(EGLDisplay dpy, EGLint interval) {
 
 EGLBoolean EGLApiBase::eglTerminateFn(EGLDisplay dpy) {
   return driver_->fn.eglTerminateFn(dpy);
+}
+
+void EGLApiBase::eglUnlockVulkanQueueANGLEFn(EGLDisplay dpy) {
+  driver_->fn.eglUnlockVulkanQueueANGLEFn(dpy);
 }
 
 EGLBoolean EGLApiBase::eglWaitClientFn(void) {
@@ -1459,6 +1486,11 @@ EGLint TraceEGLApi::eglLabelObjectKHRFn(EGLDisplay display,
   return egl_api_->eglLabelObjectKHRFn(display, objectType, object, label);
 }
 
+void TraceEGLApi::eglLockVulkanQueueANGLEFn(EGLDisplay dpy) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceEGLAPI::eglLockVulkanQueueANGLE");
+  egl_api_->eglLockVulkanQueueANGLEFn(dpy);
+}
+
 EGLBoolean TraceEGLApi::eglMakeCurrentFn(EGLDisplay dpy,
                                          EGLSurface draw,
                                          EGLSurface read,
@@ -1475,6 +1507,14 @@ EGLBoolean TraceEGLApi::eglPostSubBufferNVFn(EGLDisplay dpy,
                                              EGLint height) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceEGLAPI::eglPostSubBufferNV");
   return egl_api_->eglPostSubBufferNVFn(dpy, surface, x, y, width, height);
+}
+
+EGLBoolean TraceEGLApi::eglPresentationTimeANDROIDFn(EGLDisplay dpy,
+                                                     EGLSurface surface,
+                                                     EGLnsecsANDROID time) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
+                                "TraceEGLAPI::eglPresentationTimeANDROID");
+  return egl_api_->eglPresentationTimeANDROIDFn(dpy, surface, time);
 }
 
 EGLenum TraceEGLApi::eglQueryAPIFn(void) {
@@ -1724,6 +1764,12 @@ EGLBoolean TraceEGLApi::eglSwapIntervalFn(EGLDisplay dpy, EGLint interval) {
 EGLBoolean TraceEGLApi::eglTerminateFn(EGLDisplay dpy) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceEGLAPI::eglTerminate");
   return egl_api_->eglTerminateFn(dpy);
+}
+
+void TraceEGLApi::eglUnlockVulkanQueueANGLEFn(EGLDisplay dpy) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
+                                "TraceEGLAPI::eglUnlockVulkanQueueANGLE");
+  egl_api_->eglUnlockVulkanQueueANGLEFn(dpy);
 }
 
 EGLBoolean TraceEGLApi::eglWaitClientFn(void) {
@@ -2384,6 +2430,11 @@ EGLint LogEGLApi::eglLabelObjectKHRFn(EGLDisplay display,
   return result;
 }
 
+void LogEGLApi::eglLockVulkanQueueANGLEFn(EGLDisplay dpy) {
+  GL_SERVICE_LOG("eglLockVulkanQueueANGLE" << "(" << dpy << ")");
+  egl_api_->eglLockVulkanQueueANGLEFn(dpy);
+}
+
 EGLBoolean LogEGLApi::eglMakeCurrentFn(EGLDisplay dpy,
                                        EGLSurface draw,
                                        EGLSurface read,
@@ -2406,6 +2457,17 @@ EGLBoolean LogEGLApi::eglPostSubBufferNVFn(EGLDisplay dpy,
                                       << height << ")");
   EGLBoolean result =
       egl_api_->eglPostSubBufferNVFn(dpy, surface, x, y, width, height);
+  GL_SERVICE_LOG("GL_RESULT: " << result);
+  return result;
+}
+
+EGLBoolean LogEGLApi::eglPresentationTimeANDROIDFn(EGLDisplay dpy,
+                                                   EGLSurface surface,
+                                                   EGLnsecsANDROID time) {
+  GL_SERVICE_LOG("eglPresentationTimeANDROID" << "(" << dpy << ", " << surface
+                                              << ", " << time << ")");
+  EGLBoolean result =
+      egl_api_->eglPresentationTimeANDROIDFn(dpy, surface, time);
   GL_SERVICE_LOG("GL_RESULT: " << result);
   return result;
 }
@@ -2758,6 +2820,11 @@ EGLBoolean LogEGLApi::eglTerminateFn(EGLDisplay dpy) {
   EGLBoolean result = egl_api_->eglTerminateFn(dpy);
   GL_SERVICE_LOG("GL_RESULT: " << result);
   return result;
+}
+
+void LogEGLApi::eglUnlockVulkanQueueANGLEFn(EGLDisplay dpy) {
+  GL_SERVICE_LOG("eglUnlockVulkanQueueANGLE" << "(" << dpy << ")");
+  egl_api_->eglUnlockVulkanQueueANGLEFn(dpy);
 }
 
 EGLBoolean LogEGLApi::eglWaitClientFn(void) {

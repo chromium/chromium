@@ -7,10 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
-#include "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/browser/password_form.h"
 
-class ChromeBrowserState;
 class FaviconLoader;
+class ProfileIOS;
 
 extern const char kSyncStoreHistogramName[];
 
@@ -30,9 +30,8 @@ void FetchFaviconForURLToPath(FaviconLoader* favicon_loader,
 NSString* GetFaviconFileKey(const GURL& url);
 
 // Update favicons in the Chrome app group storage.
-void UpdateFaviconsStorageForBrowserState(
-    base::WeakPtr<ChromeBrowserState> weak_browser_state,
-    bool fallback_to_google_server);
+void UpdateFaviconsStorageForProfile(base::WeakPtr<ProfileIOS> weak_profile,
+                                     bool fallback_to_google_server);
 
 // Returns a dictionary where the keys are favicon file names (they are hashes
 // of the associated URL) and their creation date.

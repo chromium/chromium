@@ -21,11 +21,11 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/manifest_handlers/background_info.h"
@@ -44,7 +44,7 @@ namespace {
 
 constexpr char kChangeBackgroundScriptTypeExtensionId[] =
     "ldnnhddmnhbkjipkidpdiheffobcpfmf";
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class ExtensionLoadingTest : public ExtensionBrowserTest {
 };
@@ -79,17 +79,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
   ASSERT_TRUE(new_tab_extension);
 
   // Visit the New Tab Page to get a renderer using the extension into history.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("chrome://newtab")));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), GURL("chrome://newtab")));
 
   // Navigate that tab to a non-extension URL to swap out the extension's
   // renderer.
-  const GURL test_link_from_NTP =
-      embedded_test_server()->GetURL("/README.chromium");
-  EXPECT_THAT(test_link_from_NTP.spec(), testing::EndsWith("/README.chromium"))
+  const GURL test_link_from_NTP = embedded_test_server()->GetURL("/README.md");
+  EXPECT_THAT(test_link_from_NTP.spec(), testing::EndsWith("/README.md"))
       << "Check that the test server started.";
-  EXPECT_TRUE(
-      NavigateInRenderer(browser()->tab_strip_model()->GetActiveWebContents(),
-                         test_link_from_NTP));
+  EXPECT_TRUE(NavigateInRenderer(GetActiveWebContents(), test_link_from_NTP));
 
   // Increase the extension's version.
   extension_dir.WriteManifest(base::StringPrintf(kManifestTemplate, 2));
@@ -139,13 +136,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
 
   // Navigate that tab to a non-extension URL to swap out the extension's
   // renderer.
-  const GURL test_link_from_ntp =
-      embedded_test_server()->GetURL("/README.chromium");
-  EXPECT_THAT(test_link_from_ntp.spec(), testing::EndsWith("/README.chromium"))
+  const GURL test_link_from_ntp = embedded_test_server()->GetURL("/README.md");
+  EXPECT_THAT(test_link_from_ntp.spec(), testing::EndsWith("/README.md"))
       << "Check that the test server started.";
-  EXPECT_TRUE(
-      NavigateInRenderer(browser()->tab_strip_model()->GetActiveWebContents(),
-                         test_link_from_ntp));
+  EXPECT_TRUE(NavigateInRenderer(GetActiveWebContents(), test_link_from_ntp));
 
   // Increase the extension's version and add the NTP url override which will
   // add the kNewTabPageOverride permission.
@@ -215,8 +209,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
   // It bumps them each time it sees a DevToolsAgentHost associated to an
   // extension, and in case of the tab target mode, there's one agent host for
   // the WebContents and one for the render frame.
-  const int expected_keepalive_count =
-      base::FeatureList::IsEnabled(::features::kDevToolsTabTarget) ? 2 : 1;
+  const int expected_keepalive_count = 2;
 
   EXPECT_EQ(expected_keepalive_count,
             process_manager->GetLazyKeepaliveCount(extension));
@@ -334,9 +327,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
 
   // Tidy up.
   scoped_refptr<content::DevToolsAgentHost> agent_host(
-      base::FeatureList::IsEnabled(::features::kDevToolsTabTarget)
-          ? content::DevToolsAgentHost::GetOrCreateForTab(bg_contents)
-          : content::DevToolsAgentHost::GetOrCreateFor(bg_contents));
+      content::DevToolsAgentHost::GetOrCreateForTab(bg_contents));
   DevToolsWindowTesting::CloseDevToolsWindowSync(
       DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 }

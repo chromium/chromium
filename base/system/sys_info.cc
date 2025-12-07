@@ -18,16 +18,13 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/sys_utils.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace base {
 namespace {
-uint64_t GetLowMemoryDeviceThresholdMB() {
-  static const uint64_t threshold = base::saturated_cast<uint64_t>(
-      features::kLowMemoryDeviceThresholdMB.Get());
-  return threshold;
-}
-
-std::optional<uint64_t> g_amount_of_physical_memory_mb_for_testing;
+std::optional<ByteCount> g_amount_of_physical_memory_for_testing;
 }  // namespace
 
 // static
@@ -37,35 +34,33 @@ int SysInfo::NumberOfEfficientProcessors() {
 }
 
 // static
-uint64_t SysInfo::AmountOfPhysicalMemory() {
-  constexpr uint64_t kMB = 1024 * 1024;
-
+ByteCount SysInfo::AmountOfPhysicalMemory() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableLowEndDeviceMode)) {
     // Keep using 512MB as the simulated RAM amount for when users or tests have
     // manually enabled low-end device mode. Note this value is different from
     // the threshold used for low end devices.
-    constexpr uint64_t kSimulatedMemoryForEnableLowEndDeviceMode = 512 * kMB;
+    constexpr ByteCount kSimulatedMemoryForEnableLowEndDeviceMode = MiB(512);
     return std::min(kSimulatedMemoryForEnableLowEndDeviceMode,
                     AmountOfPhysicalMemoryImpl());
   }
 
-  if (g_amount_of_physical_memory_mb_for_testing) {
-    return g_amount_of_physical_memory_mb_for_testing.value() * kMB;
+  if (g_amount_of_physical_memory_for_testing) {
+    return *g_amount_of_physical_memory_for_testing;
   }
 
   return AmountOfPhysicalMemoryImpl();
 }
 
 // static
-uint64_t SysInfo::AmountOfAvailablePhysicalMemory() {
+ByteCount SysInfo::AmountOfAvailablePhysicalMemory() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableLowEndDeviceMode)) {
     // Estimate the available memory by subtracting our memory used estimate
     // from the fake |kLowMemoryDeviceThresholdMB| limit.
-    uint64_t memory_used =
+    ByteCount memory_used =
         AmountOfPhysicalMemoryImpl() - AmountOfAvailablePhysicalMemoryImpl();
-    uint64_t memory_limit = GetLowMemoryDeviceThresholdMB() * 1024 * 1024;
+    ByteCount memory_limit = MiB(features::kLowMemoryDeviceThresholdMB.Get());
     // std::min ensures no underflow, as |memory_used| can be > |memory_limit|.
     return memory_limit - std::min(memory_used, memory_limit);
   }
@@ -95,32 +90,32 @@ enum class BucketizedSize {
 };
 
 BucketizedSize GetSystemRamBucketizedSize() {
-  int physical_memory = base::SysInfo::AmountOfPhysicalMemoryMB();
+  ByteCount physical_memory = SysInfo::AmountOfPhysicalMemory();
 
   // Because of Android carveouts, AmountOfPhysicalMemory() returns smaller
   // than the actual memory size, So we will use a small lowerbound than "X"GB
   // to discriminate real "X"GB devices from lower memory ones.
   // Addendum: This logic should also work for ChromeOS.
 
-  constexpr int kUpperBound2GB = 2 * 1024;  // inclusive
+  constexpr ByteCount kUpperBound2GB = GiB(2);  // inclusive
   if (physical_memory <= kUpperBound2GB) {
     return BucketizedSize::k2GbOrLess;
   }
 
-  constexpr int kLowerBound3GB = kUpperBound2GB;  // exclusive
-  constexpr int kUpperBound3GB = 3.2 * 1024;      // inclusive
+  constexpr ByteCount kLowerBound3GB = kUpperBound2GB;  // exclusive
+  constexpr ByteCount kUpperBound3GB = GiB(3.2);        // inclusive
   if (kLowerBound3GB < physical_memory && physical_memory <= kUpperBound3GB) {
     return BucketizedSize::k3Gb;
   }
 
-  constexpr int kLowerBound4GB = kUpperBound3GB;  // exclusive
-  constexpr int kUpperBound4GB = 4 * 1024;        // inclusive
+  constexpr ByteCount kLowerBound4GB = kUpperBound3GB;  // exclusive
+  constexpr ByteCount kUpperBound4GB = GiB(4);          // inclusive
   if (kLowerBound4GB < physical_memory && physical_memory <= kUpperBound4GB) {
     return BucketizedSize::k4Gb;
   }
 
-  constexpr int kLowerBound6GB = kUpperBound4GB;  // exclusive
-  constexpr int kUpperBound6GB = 6.5 * 1024 - 1;  // inclusive
+  constexpr ByteCount kLowerBound6GB = kUpperBound4GB;     // exclusive
+  constexpr ByteCount kUpperBound6GB = GiB(6.5) - MiB(1);  // inclusive
   if (kLowerBound6GB < physical_memory && physical_memory <= kUpperBound6GB) {
     return BucketizedSize::k6Gb;
   }
@@ -193,19 +188,29 @@ bool SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled(
 #endif
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-// The Android equivalent of this lives in `detectLowEndDevice()` at:
-// base/android/java/src/org/chromium/base/SysUtils.java
 bool DetectLowEndDevice() {
+  // Keep in sync with the Android implementation of this function.
+  // LINT.IfChange
   CommandLine* command_line = CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kEnableLowEndDeviceMode))
+  if (command_line->HasSwitch(switches::kEnableLowEndDeviceMode)) {
     return true;
-  if (command_line->HasSwitch(switches::kDisableLowEndDeviceMode))
+  }
+  if (command_line->HasSwitch(switches::kDisableLowEndDeviceMode)) {
     return false;
+  }
 
-  int ram_size_mb = SysInfo::AmountOfPhysicalMemoryMB();
-  return ram_size_mb > 0 &&
-         static_cast<uint64_t>(ram_size_mb) <= GetLowMemoryDeviceThresholdMB();
+  ByteCount ram_size = SysInfo::AmountOfPhysicalMemory();
+#if BUILDFLAG(IS_ANDROID)
+  if (FeatureList::GetInstance() == nullptr) {
+    int threshold_mb = base::android::GetCachedLowMemoryDeviceThresholdMb();
+    if (threshold_mb > 0) {
+      return ram_size > ByteCount(0) && ram_size <= MiB(threshold_mb);
+    }
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+  return ram_size > ByteCount(0) &&
+         ram_size <= MiB(features::kLowMemoryDeviceThresholdMB.Get());
+  // LINT.ThenChange(//base/android/java/src/org/chromium/base/SysUtils.java)
 }
 
 // static
@@ -213,11 +218,16 @@ bool SysInfo::IsLowEndDeviceImpl() {
   static internal::LazySysInfoValue<bool, DetectLowEndDevice> instance;
   return instance.value();
 }
-#endif
 
 #if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN) && \
     !BUILDFLAG(IS_CHROMEOS)
 std::string SysInfo::HardwareModelName() {
+  return std::string();
+}
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+std::string SysInfo::SocManufacturer() {
   return std::string();
 }
 #endif
@@ -261,16 +271,16 @@ std::string SysInfo::ProcessCPUArchitecture() {
 }
 
 // static
-std::optional<uint64_t> SysInfo::SetAmountOfPhysicalMemoryMbForTesting(
-    const uint64_t amount_of_memory_mb) {
-  std::optional<uint64_t> current = g_amount_of_physical_memory_mb_for_testing;
-  g_amount_of_physical_memory_mb_for_testing.emplace(amount_of_memory_mb);
+std::optional<ByteCount> SysInfo::SetAmountOfPhysicalMemoryForTesting(
+    ByteCount amount_of_memory) {
+  std::optional<ByteCount> current = g_amount_of_physical_memory_for_testing;
+  g_amount_of_physical_memory_for_testing.emplace(amount_of_memory);
   return current;
 }
 
 // static
-void SysInfo::ClearAmountOfPhysicalMemoryMbForTesting() {
-  g_amount_of_physical_memory_mb_for_testing.reset();
+void SysInfo::ClearAmountOfPhysicalMemoryForTesting() {
+  g_amount_of_physical_memory_for_testing.reset();
 }
 
 }  // namespace base

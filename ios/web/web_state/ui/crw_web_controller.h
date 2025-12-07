@@ -34,7 +34,7 @@ class NavigationItem;
 class NavigationItemImpl;
 class WebState;
 class WebStateImpl;
-}
+}  // namespace web
 
 // Manages a view that can be used either for rendering web content in a web
 // view. CRWWebController also transparently evicts and restores the internal
@@ -79,6 +79,9 @@ class WebStateImpl;
 // A Boolean value indicating whether horizontal swipe gestures will trigger
 // back-forward list navigations.
 @property(nonatomic) BOOL allowsBackForwardNavigationGestures;
+
+// Whether or not long pressing a link in the web view renders a link preview.
+@property(nonatomic) BOOL allowsLinkPreview;
 
 // Whether the WebController should attempt to keep the render process alive.
 @property(nonatomic, assign, getter=shouldKeepRenderProcessAlive)
@@ -173,10 +176,12 @@ class WebStateImpl;
        navigationInitiationType:(web::NavigationInitiationType)type
                  hasUserGesture:(BOOL)hasUserGesture;
 
-// Takes snapshot of web view with `rect`. `rect` should be in self.view's
-// coordinate system.  `completion` is always called, but `snapshot` may be nil.
-// Prior to iOS 11, `completion` is called with a nil
-// snapshot. `completion` may be called more than once.
+// Takes snapshot of web view with `rect`. `rect` is converted to the
+// self.view's coordinate system. If the height of the content in WKWebView is
+// smaller than `rect`, `rect` will be adjusted because the snapshot outside the
+// content will be black (see crbug.com/399702753). `completion` is always
+// called, but `snapshot` may be nil. Prior to iOS 11, `completion` is called
+// with a nil snapshot. `completion` may be called more than once.
 - (void)takeSnapshotWithRect:(CGRect)rect
                   completion:(void (^)(UIImage* snapshot))completion;
 
@@ -189,6 +194,9 @@ class WebStateImpl;
 // Picture).
 - (void)closeMediaPresentations;
 
+// Updates the SSL status of the current navigation item.
+- (void)updateSSLStatusForCurrentNavigationItem;
+
 // Creates a web view if it's not yet created. Returns the web view.
 - (WKWebView*)ensureWebViewCreated;
 
@@ -197,10 +205,6 @@ class WebStateImpl;
 - (void)removeWebViewFromViewHierarchyForShutdown:(BOOL)shutdown;
 // Adds the webView back in the view hierarchy.
 - (void)addWebViewToViewHierarchy;
-
-// Notifies this controller that the surface size has changed due to
-// multiwindow action or orientation change.
-- (void)surfaceSizeChanged;
 
 // Injects an opaque NSData block into a WKWebView to restore or serialize. Only
 // supported on iOS15+. On earlier iOS versions, `setSessionStateData` is

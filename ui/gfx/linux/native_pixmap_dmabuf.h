@@ -17,10 +17,10 @@
 namespace gfx {
 
 // This class converts a gfx::NativePixmapHandle to a gfx::NativePixmap.
-class GFX_EXPORT NativePixmapDmaBuf : public gfx::NativePixmap {
+class COMPONENT_EXPORT(GFX) NativePixmapDmaBuf : public gfx::NativePixmap {
  public:
   NativePixmapDmaBuf(const gfx::Size& size,
-                     gfx::BufferFormat format,
+                     viz::SharedImageFormat format,
                      gfx::NativePixmapHandle handle);
 
   NativePixmapDmaBuf(const NativePixmapDmaBuf&) = delete;
@@ -33,7 +33,7 @@ class GFX_EXPORT NativePixmapDmaBuf : public gfx::NativePixmap {
   size_t GetDmaBufOffset(size_t plane) const override;
   size_t GetDmaBufPlaneSize(size_t plane) const override;
   uint64_t GetBufferFormatModifier() const override;
-  gfx::BufferFormat GetBufferFormat() const override;
+  viz::SharedImageFormat GetSharedImageFormat() const override;
   size_t GetNumberOfPlanes() const override;
   bool SupportsZeroCopyWebGPUImport() const override;
   gfx::Size GetBufferSize() const override;
@@ -49,7 +49,7 @@ class GFX_EXPORT NativePixmapDmaBuf : public gfx::NativePixmap {
 
  private:
   gfx::Size size_;
-  gfx::BufferFormat format_;
+  viz::SharedImageFormat format_;
   gfx::NativePixmapHandle handle_;
 };
 

@@ -11,6 +11,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <utility>
 #include <vector>
@@ -18,15 +19,15 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/ranges/ranges.h"
 #include "base/strings/utf_offset_string_conversions.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/buildflags.h"
 #include "components/omnibox/browser/suggestion_answer.h"
-#include "components/query_tiles/tile.h"
+#include "components/saved_tab_groups/public/types.h"
 #include "components/search_engines/template_url.h"
 #include "components/url_formatter/url_formatter.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -35,6 +36,7 @@
 #include "third_party/omnibox_proto/groups.pb.h"
 #include "third_party/omnibox_proto/navigational_intent.pb.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
+#include "third_party/omnibox_proto/suggest_template_info.pb.h"
 #include "third_party/omnibox_proto/types.pb.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/page_transition_types.h"
@@ -48,7 +50,6 @@
 
 class AutocompleteProvider;
 class OmniboxAction;
-class SuggestionAnswer;
 class TemplateURL;
 class TemplateURLService;
 
@@ -79,29 +80,95 @@ struct RichAutocompletionParams {
   static RichAutocompletionParams& GetParams();
   static void ClearParamsForTesting();
   bool enabled;
-  bool autocomplete_titles;
-  bool autocomplete_titles_shortcut_provider;
-  int autocomplete_titles_min_char;
-  bool autocomplete_non_prefix_all;
-  bool autocomplete_non_prefix_shortcut_provider;
-  int autocomplete_non_prefix_min_char;
-  bool autocomplete_shortcut_text;
-  int autocomplete_shortcut_text_min_char;
-  bool counterfactual;
-  bool autocomplete_prefer_urls_over_prefixes;
+  size_t autocomplete_titles_min_char;
+  size_t autocomplete_shortcut_text_min_char;
+};
+
+struct SessionData {
+  SessionData();
+  SessionData(const SessionData& session_data);
+  ~SessionData();
+
+  SessionData& operator=(const SessionData& match);
+
+  // Whether zero-prefix suggestions could have been shown in the session.
+  bool zero_prefix_enabled = false;
+
+  // The number of zero-prefix suggestions shown in the session.
+  size_t num_zero_prefix_suggestions_shown = 0u;
+
+  // Whether at least one zero-prefix suggestion was shown in the
+  // session.
+  bool zero_prefix_suggestions_shown_in_session = false;
+
+  // Whether at least one typed suggestion was shown in the session.
+  bool typed_suggestions_shown_in_session = false;
+
+  // List of GWS event ID hashes accumulated during the course of the session.
+  std::vector<int64_t> gws_event_id_hashes;
+
+  // Whether at least one zero-prefix Search/URL suggestion was
+  // shown in the session. This is used in order to ensure that the relevant
+  // client-side metrics logging code emits the proper values.
+  bool zero_prefix_search_suggestions_shown_in_session = false;
+  bool zero_prefix_url_suggestions_shown_in_session = false;
+
+  // Whether at least one typed Search/URL suggestion was shown in
+  // the session. This is used in order to ensure that the relevant client-side
+  // metrics logging code emits the proper values.
+  bool typed_search_suggestions_shown_in_session = false;
+  bool typed_url_suggestions_shown_in_session = false;
+
+  // Whether at least one contextual search suggestion was shown in the
+  // session.
+  bool contextual_search_suggestions_shown_in_session = false;
+
+  // Whether the "Ask Google Lens about this page" action was shown at least
+  // once in the session.
+  bool lens_action_shown_in_session = false;
 };
 
 enum class IphType {
   kNone,
+  // '@gemini' promo; shown in zero state.
   kGemini,
-  kFeaturedEnterpriseSearch,
+  // Enterprise search aggregator promo; shown in zero state.
+  kEnterpriseSearchAggregator,
+  // Featured enterprise site search promo; shown in zero state.
+  kFeaturedEnterpriseSiteSearch,
+  // Embeddings' setting promo when embeddings are disabled; shown in '@history'
+  // scope.
   kHistoryEmbeddingsSettingsPromo,
+  // Disclaimer when embeddings are enabled; shown in '@history' scope.
+  kHistoryEmbeddingsDisclaimer,
+  // '@history' promo when embeddings are disabled; shown in zero state.
+  kHistoryScopePromo,
+  // '@history' promo when embeddings are enabled; shown in zero state.
+  kHistoryEmbeddingsScopePromo,
 };
 
 enum class FeedbackType {
   kNone,
   kThumbsUp,
   kThumbsDown,
+};
+
+// Used with `stripped_destination_url` to dedupe matches. Matches with the same
+// URL but different types won't be deduped. This'll allow showing e.g. both a
+// "1+1" normal query and a "1+1 = 2" calculator suggestion simultaneously.
+enum class AutocompleteMatchDedupeType {
+  kNormal,
+  kCalculator,        // E.g. "1+1 = 2" matches.
+  kVerbatimProvider,  // Matches that come from the verbatim provider, which
+                      // does not include the verbatim SWYT match.
+  kHistoryEmbeddingAnswer,  // Matches with type `HISTORY_EMBEDDINGS_ANSWER`.
+  kAiMode,  // Matches that activate the DSE's AI Mode. AIM suggestions' URLs
+            // are discerned by a query param `udm=50`. But deduping doesn't
+            // consider extra query params; `google.com/?q=query&udm=50` and
+            // `google.com/?q=query` would usually be deduped. `kAiMode` allows
+            // matches with `udm=50` in their suggest template to not be deduped
+            // with matches without it. But this does not apply to `udm=50` in
+            // the actual match URL; nor to udm values other than 50.
 };
 
 // AutocompleteMatch ----------------------------------------------------------
@@ -143,25 +210,22 @@ struct AutocompleteMatch {
       URL       = 1 << 0,  // A URL
       MATCH     = 1 << 1,  // A match for the user's search term
       DIM       = 1 << 2,  // "Helper text"
+      TOOLBELT  = 1 << 3,  // Toolbelt label
     };
     // clang-format on
 
+    ACMatchClassification() = default;
     ACMatchClassification(size_t offset, int style)
         : offset(offset), style(style) {}
 
-    bool operator==(const ACMatchClassification& other) const {
-      return offset == other.offset && style == other.style;
-    }
-
-    bool operator!=(const ACMatchClassification& other) const {
-      return offset != other.offset || style != other.style;
-    }
+    friend bool operator==(const ACMatchClassification&,
+                           const ACMatchClassification&) = default;
 
     // Offset within the string that this classification starts
-    size_t offset;
+    size_t offset = 0;
 
     // Contains a bitmask of flags defined in enum Style.
-    int style;
+    int style = 0;
   };
 
   // SuggestTiles are used specifically with TILE_NAVSUGGEST matches.
@@ -203,13 +267,22 @@ struct AutocompleteMatch {
     DOCUMENT_TYPE_SIZE
   };
 
+  // Enterprise search aggregator subtype, for suggestions from the
+  // EnterpriseSearchAggregatorProvider provider.
+  enum class EnterpriseSearchAggregatorType {
+    NONE = 0,
+    QUERY,
+    PEOPLE,
+    CONTENT,
+  };
+
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class RichAutocompletionType {
     kNone = 0,
-    kUrlNonPrefix = 1,
+    // kUrlNonPrefix = 1, // deprecated
     kTitlePrefix = 2,
-    kTitleNonPrefix = 3,
+    // kTitleNonPrefix = 3, // deprecated
     kShortcutTextPrefix = 4,
     kMaxValue = kShortcutTextPrefix,
   };
@@ -267,7 +340,7 @@ struct AutocompleteMatch {
   // Update the clipboard match with the current clipboard data.
   void UpdateWithClipboardContent(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_callback);
+      const base::android::JavaRef<jobject>& j_callback);
 
   // Called when the match is updated with the clipboard content.
   void OnClipboardSuggestionContentUpdated(
@@ -276,20 +349,17 @@ struct AutocompleteMatch {
   // Update the Java object with clipboard content.
   void UpdateClipboardContent(JNIEnv* env);
   // Update the Java object with new destination URL.
-  void UpdateJavaDestinationUrl();
+  void UpdateJavaNavigationDetails();
   // Update the Java object with new Answer-in-Suggest.
   void UpdateJavaAnswer();
   // Update the Java object description.
   void UpdateJavaDescription();
-  // Update the pointer to corresponding Java tab object.
-  void UpdateMatchingJavaTab(const JavaObjectWeakGlobalRef& tab);
-  // Get the matching Java Tab object.
-  JavaObjectWeakGlobalRef GetMatchingJavaTab() const;
 #endif
 
 #if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
-  // Converts SuggestionAnswer::AnswerType to an answer vector icon.
-  static const gfx::VectorIcon& AnswerTypeToAnswerIcon(int type);
+  // Converts omnibox::AnswerType to an answer vector icon.
+  static const gfx::VectorIcon& AnswerTypeToAnswerIcon(
+      omnibox::AnswerType type);
 
   // Gets the vector icon identifier for the icon to be shown for this match. If
   // `is_bookmark` is true, returns a bookmark icon rather than what the type
@@ -350,6 +420,15 @@ struct AutocompleteMatch {
   // Convenience function to check if `type` is featured search type, e.g.
   // starter pack and featured site search engines created by policy.
   static bool IsFeaturedSearchType(Type type);
+
+  // Convenience function to check if `type` is preconnectable.
+  // Preconnecting allows connecting to an origin before requesting any
+  // resources from that origin, effectively "warming up" the connection. When a
+  // resource from that origin is requested, we can immediately use the
+  // established connection, saving valuable round-trips. This differs from
+  // preloading and prefetching in that it does not actually fetch any resources
+  // from the origin, it just establishes the connection to the origin earlier.
+  static bool IsPreconnectableType(Type type);
 
   // Convenience function to check if |type| is a search (as opposed to a URL or
   // an extension).
@@ -423,15 +502,11 @@ struct AutocompleteMatch {
   // - If the match's keyword is known, it can be provided in `keyword`.
   //   Otherwise, it can be left empty and the template URL (if any) is
   //   determined from the destination's hostname.
-  // - If `normalize_search_terms` is true, the search terms in the final URL
-  //   will be converted to lowercase with extra whitespace characters
-  //   collapsed.
   static GURL GURLToStrippedGURL(const GURL& url,
                                  const AutocompleteInput& input,
                                  const TemplateURLService* template_url_service,
                                  const std::u16string& keyword,
-                                 const bool keep_search_intent_params,
-                                 const bool normalize_search_terms);
+                                 const bool keep_search_intent_params);
 
   // Sets the |match_in_scheme| and |match_in_subdomain| flags based on the
   // provided |url| and list of substring |match_positions|. |match_positions|
@@ -474,7 +549,24 @@ struct AutocompleteMatch {
 
   // Checks if this match is an informational IPH suggestion based on the match
   // and provider type.
-  bool IsIPHSuggestion() const;
+  bool IsIphSuggestion() const;
+
+  // Checks if this match has an attached action with the given `action_id`.
+  bool HasAction(OmniboxActionId action_id) const;
+
+  // Checks if this match is a contextual search suggestion to be fulfilled
+  // by lens in the side panel.
+  bool IsContextualSearchSuggestion() const;
+
+  // Checks if this match is a specialized toolbelt match with actions on
+  // a button row.
+  bool IsToolbelt() const;
+
+  // Checks if this match is a AI mode suggestion.
+  bool IsSearchAimSuggestion() const;
+
+  // Checks if this match has a Lens search action.
+  bool HasLensSearchAction() const;
 
   // Returns true if this match may attach one or more `actions`.
   // This method is used to keep actions off of matches with types that don't
@@ -484,22 +576,37 @@ struct AutocompleteMatch {
   // Returns true if this match has a keyword that puts the omnibox instantly
   // into keyword mode when the match is focused via keyboard, instead of
   // the usual waiting for activation of a visible keyword button.
-  bool HasInstantKeyword(TemplateURLService* template_url_service) const;
+  bool HasInstantKeyword(const TemplateURLService* template_url_service) const;
+
+  // Returns whether or not the row for this match should be hidden in the UI,
+  // based on its starter pack. This is currently used to hide suggestions in
+  // the 'Gemini' scope when the starter pack expansion feature is enabled.
+  //
+  // The match must remain in the `AutocompleteResult` set to maintain correct
+  // match indexing and focus tracking required by keyword features and
+  // `OmniboxEditModel::OpenMatch()`.
+  bool ShouldHideBasedOnStarterPack(
+      const TemplateURLService* template_url_service) const;
 
   // Gets data relevant to whether there should be any special keyword-related
-  // UI shown for this match.  If this match represents a selected keyword, i.e.
-  // the UI should be "in keyword mode", |keyword_out| will be set to the
-  // keyword and |is_keyword_hint| will be set to false.  If this match has a
-  // non-null |associated_keyword|, i.e. we should show a "Press [tab] to search
-  // ___" hint and allow the user to toggle into keyword mode, |keyword_out|
-  // will be set to the associated keyword and |is_keyword_hint| will be set to
-  // true.  Note that only one of these states can be in effect at once.  In all
-  // other cases, |keyword_out| will be cleared, even when our member variable
-  // |keyword| is non-empty -- such as with non-substituting keywords or matches
-  // that represent searches using the default search engine.  See also
-  // GetSubstitutingExplicitlyInvokedKeyword().
+  // UI shown for this match. If this match represents a selected keyword, i.e.
+  // the UI should be "in keyword mode", `keyword_out` will be set to the
+  // keyword and `is_keyword_hint` will be set to false. If this match has a
+  // non-null `associated_keyword`, i.e. we should show a "Press [tab] to search
+  // ___" hint and allow the user to toggle into keyword mode, `keyword_out`
+  // will be set to the associated keyword and `is_keyword_hint` will be set to
+  // true. Note that only one of these states can be in effect at once. In all
+  // other cases, `keyword_out` will be cleared, even when our member variable
+  // `keyword` is non-empty -- such as with non-substituting keywords or matches
+  // that represent searches using the default search engine. See also
+  // `GetSubstitutingExplicitlyInvokedKeyword()`. `keyword_placeholder_out` will
+  // be set to any placeholder text the keyword wants to display. Set for both
+  // hint and non-hint keyword modes. `is_history_embeddings_enabled` will
+  // affect the placeholder text for the @history keyword.
   void GetKeywordUIState(TemplateURLService* template_url_service,
+                         bool is_history_embeddings_enabled,
                          std::u16string* keyword_out,
+                         std::u16string* keyword_placeholder_out,
                          bool* is_keyword_hint) const;
 
   // Returns |keyword|, but only if it represents a substituting keyword that
@@ -511,14 +618,18 @@ struct AutocompleteMatch {
   std::u16string GetSubstitutingExplicitlyInvokedKeyword(
       TemplateURLService* template_url_service) const;
 
-  // Returns the TemplateURL associated with this match.  This may be NULL if
-  // the match has no keyword OR if the keyword no longer corresponds to a valid
-  // TemplateURL.  See comments on |keyword| below.
-  // If |allow_fallback_to_destination_host| is true and the keyword does
-  // not map to a valid TemplateURL, we'll then check for a TemplateURL that
-  // corresponds to the destination_url's hostname.
-  TemplateURL* GetTemplateURL(TemplateURLService* template_url_service,
-                              bool allow_fallback_to_destination_host) const;
+  // Returns the placeholder text to display for the given starter pack keyword
+  // TemplateURL, returned for both hint and non-hint keyword modes.
+  // The `template_url` may be nullptr and this method often defaults to
+  // returning the empty string.
+  static std::u16string GetKeywordPlaceholder(
+      const TemplateURL* template_url,
+      bool is_history_embeddings_enabled);
+
+  // Returns the `TemplateURL` associated with this match. This may be nullptr
+  // if the match has no keyword OR if the keyword no longer corresponds to a
+  // valid `TemplateURL`. See comments on `keyword` below.
+  TemplateURL* GetTemplateURL(TemplateURLService* template_url_service) const;
 
   // Gets the URL for the match image (whether it be an answer or entity). If
   // there isn't an image URL, returns an empty GURL (test with is_empty()).
@@ -564,6 +675,9 @@ struct AutocompleteMatch {
   // shown.
   bool IsVerbatimType() const;
 
+  // Returns whether this match is a "verbatim URL" suggestion.
+  bool IsVerbatimUrlSuggestion() const;
+
   // Returns whether this match is a search suggestion provided by search
   // provider.
   bool IsSearchProviderSearchSuggestion() const;
@@ -577,8 +691,14 @@ struct AutocompleteMatch {
   // next.
   int GetSortingOrder() const;
 
-  // Returns true if the match is eligible to be re-scored by ML Url scoring.
-  bool IsUrlScoringEligible() const;
+  // Whether this autocomplete match supports custom descriptions.
+  bool HasCustomDescription() const;
+
+  // Returns true if the match is eligible for ML scoring signal logging.
+  bool IsMlSignalLoggingEligible() const;
+
+  // Returns true if the match is eligible to be re-scored by ML scoring.
+  bool IsMlScoringEligible() const;
 
   // Filter OmniboxActions based on the supplied qualifiers.
   // The order of the supplied qualifiers determines the preference.
@@ -652,13 +772,10 @@ struct AutocompleteMatch {
   // - Split autocomplete |secondary_text|
   // Returns false if none of the autocompletions were appropriate (or the
   // features were disabled).
-  bool TryRichAutocompletion(const std::u16string& primary_text,
+  bool TryRichAutocompletion(const AutocompleteInput& input,
+                             const std::u16string& primary_text,
                              const std::u16string& secondary_text,
-                             const AutocompleteInput& input,
                              const std::u16string& shortcut_text = u"");
-
-  // True if `inline_autocompletion` and `prefix_autocompletion` are both empty.
-  bool IsEmptyAutocompletion() const;
 
   // Serialise this object into a trace.
   void WriteIntoTrace(perfetto::TracedValue context) const;
@@ -670,7 +787,7 @@ struct AutocompleteMatch {
   template <typename UnaryPredicate>
   bool MatchOrDuplicateMeets(UnaryPredicate predicate) const {
     return predicate(*this) ||
-           base::ranges::any_of(duplicate_matches, std::move(predicate));
+           std::ranges::any_of(duplicate_matches, std::move(predicate));
   }
 
   // Finds first action where `predicate` returns true. This is a special use
@@ -678,9 +795,12 @@ struct AutocompleteMatch {
   // need to be selected. If no such action is found, returns nullptr.
   template <typename UnaryPredicate>
   OmniboxAction* GetActionWhere(UnaryPredicate predicate) const {
-    auto it = base::ranges::find_if(actions, std::move(predicate));
+    auto it = std::ranges::find_if(actions, std::move(predicate));
     return it != actions.end() ? it->get() : nullptr;
   }
+
+  // Returns true if this match has a `takeover_action` with given `id`.
+  bool HasTakeoverAction(OmniboxActionId id) const;
 
   // Create a new match from scratch based on this match and its action at
   // given `action_index`. The content and takeover match on the returned
@@ -693,9 +813,9 @@ struct AutocompleteMatch {
   // no provider (or memory of the user's selection).
   raw_ptr<AutocompleteProvider> provider = nullptr;
 
-  // The relevance of this match. See table in autocomplete_provider.h for scores
-  // returned by various providers. This is used to rank matches among all
-  // responding providers, so different providers must be carefully tuned to
+  // The relevance of this match. See table in autocomplete_provider.h for
+  // scores returned by various providers. This is used to rank matches among
+  // all responding providers, so different providers must be carefully tuned to
   // supply matches with appropriate relevance.
   int relevance = 0;
 
@@ -727,20 +847,11 @@ struct AutocompleteMatch {
   // omnibox, if this match becomes the default match.  It may be empty.
   std::u16string inline_autocompletion;
   // Whether rich autocompletion triggered; i.e. this suggestion *is or could
-  // have been* rich autocompleted. This is usually redundant and checking
-  // whether `prefix_autocompletion` is non-empty should be used instead to
-  // determine if this suggestion *is* rich autocompleted. But for
-  // counterfactual variations, `prefix_autocompletion` isn't copied when
-  // deduping matches to avoid showing rich autocompletion and so can't be used
-  // to trigger logging.
+  // have been* rich autocompleted.
   // TODO(manukh): remove `rich_autocompletion_triggered` when counterfactual
   //  experiments end.
   RichAutocompletionType rich_autocompletion_triggered =
       RichAutocompletionType::kNone;
-  // The inline autocompletion to display before the user's input in the
-  // omnibox, if this match becomes the default match. Always empty if
-  // non-prefix autocompletion is disabled.
-  std::u16string prefix_autocompletion;
 
   // If false, the omnibox should prevent this match from being the
   // default match.  Providers should set this to true only if the
@@ -766,14 +877,22 @@ struct AutocompleteMatch {
   // `ComputeStrippedDestinationURL()` computation.
   GURL stripped_destination_url;
 
-  // Extra headers to add to the navigation. See `NavigateParams::extra_headers`
-  // for how headers should be represented.
-  std::string extra_headers;
+  // Extra headers to add to the navigation. Keys of the map represent the
+  // header name, and values represent header value, e.g.
+  //   extra_headers["Content-Type"] = "application/json";
+  std::map<std::string, std::string> extra_headers;
 
-  // Optional image information. Used for entity suggestions. The dominant color
-  // can be used to paint the image placeholder while fetching the image.
+  // Optional image information. Used for some types of suggestions, such as
+  // entity suggestions, that want to display an associated image, which will be
+  // rendered larger than a regular suggestion icon.
+  // The dominant color can be used to paint an image placeholder while fetching
+  // the image. The value is a hex string (for example, "#424242").
   std::string image_dominant_color;
   GURL image_url;
+
+  // Optional icon URL. Providers may set this to override the default icon for
+  // the match.
+  GURL icon_url;
 
   // Optional entity id for entity suggestions. Empty string means no entity ID.
   // This is not meant for display, but internal use only. The actual UI display
@@ -784,8 +903,12 @@ struct AutocompleteMatch {
   // URI.
   std::string website_uri;
 
-  // Optional override to use for types that specify an icon sub-type.
+  // Used for document suggestions to show the mime-corresponding icons.
   DocumentType document_type = DocumentType::NONE;
+
+  // Used for enterprise search aggregator suggestions for grouping.
+  EnterpriseSearchAggregatorType enterprise_search_aggregator_type =
+      EnterpriseSearchAggregatorType::NONE;
 
   // Holds the common part of tail suggestion. Used to indent the contents.
   // Can't simply store the character length of the string, as different
@@ -825,10 +948,9 @@ struct AutocompleteMatch {
   // before displaying.
   bool swap_contents_and_description = false;
 
-  // A rich-format version of the display for the dropdown.
-  std::optional<SuggestionAnswer> answer;
-
   std::optional<omnibox::RichAnswerTemplate> answer_template;
+
+  std::optional<omnibox::SuggestTemplateInfo> suggest_template;
 
   // AnswerType for answer verticals, including rich answers.
   omnibox::AnswerType answer_type{omnibox::ANSWER_TYPE_UNSPECIFIED};
@@ -872,15 +994,11 @@ struct AutocompleteMatch {
   // Unset if it has not been computed yet.
   std::optional<bool> has_tab_match;
 
-  // Set with a keyword provider match if this match can show a keyword hint.
-  // For example, if this is a SearchProvider match for "www.amazon.com",
-  // |associated_keyword| could be a KeywordProvider match for "amazon.com".
-  //
-  // When this is set, the popup will show a ">" symbol at the right edge of the
-  // line for this match, and tab/shift-tab will toggle in and out of keyword
-  // mode without disturbing the rest of the popup.  See also
-  // OmniboxPopupModel::SetSelectedLineState().
-  std::unique_ptr<AutocompleteMatch> associated_keyword;
+  // Set to a `TemplateURL`'s keyword; e.g. 'youtube.com' or '@bookmarks'. Set
+  // by the `AutocompleteController`, not individual providers. This determines
+  // which keyword to activate if the user focuses this instant-keyword (e.g.
+  // '@bookmarks') or this match's keyword chip (e.g. 'youtube.com').
+  std::u16string associated_keyword;
 
   // The keyword of the TemplateURL the match originated from.  This is nonempty
   // for both explicit "keyword mode" matches as well as matches for the default
@@ -895,7 +1013,14 @@ struct AutocompleteMatch {
   // it!
   std::u16string keyword;
 
-  // Set in matches originating from keyword results.
+  // Set in matches originating in keyword mode. `from_keyword` can be true even
+  // if `keyword` is empty and vice versa. `from_keyword` basically means the
+  // user input is in keyword mode. `!keyword.empty()` basically means the match
+  // was generated using a template URL.
+  //
+  // CAUTION: Not consistently set by all providers. That's fine-ish since this
+  // field isn't used much. But code relying on this feature to be correctly set
+  // should take care.
   bool from_keyword = false;
 
   // The visible actions relevant to this match.
@@ -908,6 +1033,10 @@ struct AutocompleteMatch {
 
   // True if this match is from a previous result.
   bool from_previous = false;
+
+  // Session-based metrics struct that tracks various bits of info during the
+  // course of a single Omnibox session (e.g. number of ZPS shown, etc.).
+  std::optional<SessionData> session;
 
   // Optional search terms args.  If present,
   // AutocompleteController::UpdateSearchboxStats() will incorporate this data
@@ -933,21 +1062,12 @@ struct AutocompleteMatch {
   // Entity vs. plain Search suggestions.
   std::vector<AutocompleteMatch> duplicate_matches;
 
-  // A list of query tiles to be shown as part of this match.
-  std::vector<query_tiles::Tile> query_tiles;
-
   // A list of navsuggest tiles to be shown as part of this match.
   // This object is only populated for TILE_NAVSUGGEST AutocompleteMatches.
   std::vector<SuggestTile> suggest_tiles;
 
   // Signals for ML scoring.
   std::optional<ScoringSignals> scoring_signals;
-
-  // A flag that's set during the de-duplication process in order to forcibly
-  // exclude this match from ML scoring (e.g. this match is ML-eligible, but one
-  // of the matches in `duplicate_matches` is not). Furthermore, when this flag
-  // is set, ML scoring signals will NOT be logged for this particular match.
-  bool force_skip_ml_scoring = false;
 
   // A flag to mark whether this would've been excluded from the "original" list
   // of matches. Traditionally, providers limit the number of suggestions they
@@ -974,8 +1094,17 @@ struct AutocompleteMatch {
   std::u16string iph_link_text;
   GURL iph_link_url;
 
+  // The text to show above the match contents & description for
+  // `HISTORY_EMBEDDINGS_ANSWER` matches.
+  std::u16string history_embeddings_answer_header_text;
+  // Whether the answer is still loading and should therefore show a throbber.
+  bool history_embeddings_answer_header_loading = false;
+
   // The user feedback on the match.
   FeedbackType feedback_type = FeedbackType::kNone;
+
+  // Stores the matching tab group uuid for this suggestion.
+  std::optional<base::Uuid> matching_tab_group_uuid = std::nullopt;
 
   // So users of AutocompleteMatch can use the same ellipsis that it uses.
   static const char16_t kEllipsis[];
@@ -1004,9 +1133,6 @@ struct AutocompleteMatch {
   // See AutocompleteControllerAndroid for more details.
   mutable std::unique_ptr<base::android::ScopedJavaGlobalRef<jobject>>
       java_match_;
-
-  // When set, holds a weak reference to Java Tab object.
-  JavaObjectWeakGlobalRef matching_java_tab_{};
 
   base::WeakPtrFactory<AutocompleteMatch> weak_ptr_factory_{this};
 #endif

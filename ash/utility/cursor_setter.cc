@@ -37,7 +37,7 @@ void CursorSetter::UpdateCursor(aura::Window* root_window,
 
   base::AutoReset<bool> auto_reset_in_cursor_update(&in_cursor_update_, true);
   const ui::mojom::CursorType new_cursor_type = cursor.type();
-  const float device_scale_factor = display::Screen::GetScreen()
+  const float device_scale_factor = display::Screen::Get()
                                         ->GetDisplayNearestWindow(root_window)
                                         .device_scale_factor();
   const chromeos::OrientationType orientation = GetCurrentScreenOrientation();

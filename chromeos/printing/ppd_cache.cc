@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/printing/ppd_cache.h"
 
 #include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -74,12 +70,14 @@ PpdCache::FindResult FindImpl(const base::FilePath& cache_dir,
   }
 
   std::vector<char> buf(info.size);
-  if (file.ReadAtCurrentPos(buf.data(), info.size) != info.size)
+  if (UNSAFE_TODO(file.ReadAtCurrentPos(buf.data(), info.size)) != info.size) {
     return result;
+  }
 
   std::string_view contents(buf.data(), info.size - crypto::kSHA256Length);
-  std::string_view checksum(buf.data() + info.size - crypto::kSHA256Length,
-                            crypto::kSHA256Length);
+  std::string_view checksum(
+      UNSAFE_TODO(buf.data() + info.size - crypto::kSHA256Length),
+      crypto::kSHA256Length);
   if (crypto::SHA256HashString(contents) != checksum) {
     LOG(ERROR) << "Bad checksum for cache key " << key;
     return result;
@@ -103,28 +101,28 @@ void StoreImpl(const base::FilePath& cache_dir,
   MaybeCreateCache(cache_dir);
   if (contents.size() > kMaxPpdSizeBytes) {
     LOG(ERROR) << "Ignoring attempt to cache large object";
-  } else {
-    auto path = FilePathForKey(cache_dir, key);
-    base::File file(path,
-                    base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-    std::string checksum = crypto::SHA256HashString(contents);
-    if (!file.IsValid() ||
-        file.WriteAtCurrentPos(contents.data(), contents.size()) !=
-            static_cast<int>(contents.size()) ||
-        file.WriteAtCurrentPos(checksum.data(), checksum.size()) !=
-            static_cast<int>(checksum.size())) {
-      LOG(ERROR) << "Failed to create ppd cache file";
-      file.Close();
-      if (!base::DeleteFile(path)) {
-        LOG(ERROR) << "Failed to cleanup failed creation.";
-      }
-    } else {
-      // Successfully wrote the file, adjust the age if requested.
-      if (!age.is_zero()) {
-        base::Time mod_time = base::Time::Now() - age;
-        file.SetTimes(mod_time, mod_time);
-      }
+    return;
+  }
+
+  auto path = FilePathForKey(cache_dir, key);
+  base::File file(path,
+                  base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+  std::string checksum = crypto::SHA256HashString(contents);
+  if (!file.IsValid() ||
+      !file.WriteAtCurrentPosAndCheck(base::as_byte_span(contents)) ||
+      !file.WriteAtCurrentPosAndCheck(base::as_byte_span(checksum))) {
+    LOG(ERROR) << "Failed to create ppd cache file";
+    file.Close();
+    if (!base::DeleteFile(path)) {
+      LOG(ERROR) << "Failed to cleanup failed creation.";
     }
+    return;
+  }
+
+  // Successfully wrote the file, adjust the age if requested.
+  if (!age.is_zero()) {
+    base::Time mod_time = base::Time::Now() - age;
+    file.SetTimes(mod_time, mod_time);
   }
 }
 

@@ -7,9 +7,13 @@
 #include <optional>
 #include <string>
 
+#include "base/check.h"
+#include "base/debug/stack_trace.h"
 #include "base/immediate_crash.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "build/build_config.h"
+#include "build/chromecast_buildflags.h"
+#include "components/os_crypt/sync/os_crypt.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -45,6 +49,10 @@ void EchoService::Quit() {
 }
 
 void EchoService::Crash() {
+#if BUILDFLAG(IS_WIN)
+  // Avoid symbolizing a stack we won't use.
+  base::debug::DisableInProcessStackDumpingForTesting();
+#endif
   base::ImmediateCrash();
 }
 
@@ -94,6 +102,20 @@ void EchoService::LoadNativeLibrary(const ::base::FilePath& library,
 void EchoService::DecryptEncrypt(os_crypt_async::Encryptor encryptor,
                                  const std::vector<uint8_t>& input,
                                  DecryptEncryptCallback callback) {
+// OSCrypt sync services are not available because they are not initialized in
+// a child process, except on POSIX platforms where encryption is always
+// available.
+#if !(BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) &&         \
+          !(BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)) || \
+      BUILDFLAG(IS_FUCHSIA))
+  CHECK(!OSCrypt::IsEncryptionAvailable());
+#else
+  CHECK(OSCrypt::IsEncryptionAvailable());
+#endif  // !(BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) &&
+        // !(BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)) ||
+        // BUILDFLAG(IS_FUCHSIA))
+
+  CHECK(encryptor.IsDecryptionAvailable());
   // Take the input, which was encrypted in the caller process, and decrypt it.
   const auto plaintext = encryptor.DecryptData(input);
   if (!plaintext.has_value()) {
@@ -101,6 +123,7 @@ void EchoService::DecryptEncrypt(os_crypt_async::Encryptor encryptor,
     return;
   }
 
+  CHECK(encryptor.IsEncryptionAvailable());
   // Encrypt it again using the key inside this process, and return the
   // encrypted ciphertext to the caller.
   std::move(callback).Run(encryptor.EncryptString(*plaintext));

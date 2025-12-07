@@ -5,6 +5,9 @@
 #ifndef CHROMECAST_STARBOARD_MEDIA_MEDIA_STARBOARD_VIDEO_PLANE_H_
 #define CHROMECAST_STARBOARD_MEDIA_MEDIA_STARBOARD_VIDEO_PLANE_H_
 
+#include <optional>
+#include <utility>
+
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -39,6 +42,10 @@ class StarboardVideoPlane : public VideoPlane {
 
   // Registers a callback that will be run when the geometry changes. Returns an
   // opaque token that can be used to remove the callback later.
+  //
+  // If this plane's geometry has already been set, `callback` will be run with
+  // that geometry. This means that `callback` may be run before this function
+  // returns.
   int64_t RegisterCallback(GeometryChangedCallback callback);
 
   // Unregisters a callback from the list of callbacks that are run when the
@@ -60,6 +67,11 @@ class StarboardVideoPlane : public VideoPlane {
   base::Lock current_token_lock_;
   // This must only be accessed while current_token_lock_ is held.
   int64_t current_token_ = 0;
+
+  // The rectangle and transform representing the current video plane. If this
+  // is set when a new callback is registered, we will call the callback with
+  // this info.
+  std::optional<std::pair<RectF, Transform>> current_plane_;
 
   // This must be destructed first.
   base::WeakPtrFactory<StarboardVideoPlane> weak_factory_{this};

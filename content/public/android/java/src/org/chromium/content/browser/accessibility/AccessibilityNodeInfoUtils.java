@@ -35,6 +35,8 @@ import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.Acces
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SET_SELECTION;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SET_TEXT;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SHOW_ON_SCREEN;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.CollectionInfoCompat.SELECTION_MODE_MULTIPLE;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.CollectionInfoCompat.SELECTION_MODE_NONE;
 
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_CSS_DISPLAY;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_OFFSCREEN;
@@ -52,15 +54,58 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.view.accessibility.AccessibilityNodeInfo;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /** Utility class for common actions involving AccessibilityNodeInfo objects. */
-public class AccessibilityNodeInfoUtils {
+@JNINamespace("content")
+@NullMarked
+public final class AccessibilityNodeInfoUtils {
+    private AccessibilityNodeInfoUtils() {}
+
+    @CalledByNative
+    public static <K> Map<K, int[][]> createTextAttributeRangesMap() {
+        return new HashMap<K, int[][]>();
+    }
+
+    @CalledByNative
+    public static void setTextAttributeRangesMapFloatValue(
+            Map<Float, int[][]> map, float value, int[] starts, int[] ends) {
+        setTextAttributeRangesMapValue(map, value, starts, ends);
+    }
+
+    @CalledByNative
+    public static void setTextAttributeRangesMapIntValue(
+            Map<Integer, int[][]> map, int value, int[] starts, int[] ends) {
+        setTextAttributeRangesMapValue(map, value, starts, ends);
+    }
+
+    @CalledByNative
+    public static void setTextAttributeRangesMapStringValue(
+            Map<String, int[][]> map, String value, int[] starts, int[] ends) {
+        setTextAttributeRangesMapValue(map, value, starts, ends);
+    }
+
+    public static <T> void setTextAttributeRangesMapValue(
+            Map<T, int[][]> map, T value, int[] starts, int[] ends) {
+        if (map == null || value == null || starts == null || ends == null) {
+            return;
+        }
+        map.put(value, new int[][] {starts, ends});
+    }
+
     /**
      * Helper method to perform a custom toString on a given AccessibilityNodeInfo object.
      *
@@ -68,7 +113,8 @@ public class AccessibilityNodeInfoUtils {
      * @return String Custom toString result for the given object
      */
     public static String toString(
-            AccessibilityNodeInfoCompat node, boolean includeScreenSizeDependentAttributes) {
+            @Nullable AccessibilityNodeInfoCompat node,
+            boolean includeScreenSizeDependentAttributes) {
         if (node == null) return "";
 
         StringBuilder builder = new StringBuilder();
@@ -92,6 +138,11 @@ public class AccessibilityNodeInfoUtils {
             builder.append(" hint:\"").append(node.getHintText()).append("\"");
         }
 
+        // Print tooltip text unless it is null or empty.
+        if (node.getTooltipText() != null && !node.getTooltipText().toString().isEmpty()) {
+            builder.append(" tooltipText:\"").append(node.getTooltipText()).append("\"");
+        }
+
         // Text properties - Only print when non-null.
         if (node.getContentDescription() != null) {
             builder.append(" contentDescription:\"")
@@ -111,6 +162,15 @@ public class AccessibilityNodeInfoUtils {
                 && !node.getStateDescription().toString().isEmpty()) {
             builder.append(" stateDescription:\"").append(node.getStateDescription()).append("\"");
         }
+        if (node.getContainerTitle() != null && !node.getContainerTitle().toString().isEmpty()) {
+            builder.append(" containerTitle:\"").append(node.getContainerTitle()).append("\"");
+        }
+        if (node.getSupplementalDescription() != null
+                && !node.getSupplementalDescription().toString().isEmpty()) {
+            builder.append(" supplementalDescription:\"")
+                    .append(node.getSupplementalDescription())
+                    .append("\"");
+        }
 
         // Boolean properties - Only print when set to true except for enabled and visibleToUser,
         // which are both mostly true, so only print when they are false.
@@ -119,9 +179,6 @@ public class AccessibilityNodeInfoUtils {
         }
         if (node.isCheckable()) {
             builder.append(" checkable");
-        }
-        if (node.isChecked()) {
-            builder.append(" checked");
         }
         if (node.isClickable()) {
             builder.append(" clickable");
@@ -160,6 +217,16 @@ public class AccessibilityNodeInfoUtils {
             builder.append(" notVisibleToUser");
         }
 
+        if (node.isFieldRequired()) {
+            // Use "required" rather than "fieldRequired" to match the chromium side naming:
+            // ax::mojom::State::kRequired.
+            builder.append(" required");
+        }
+
+        if (node.isHeading()) {
+            builder.append(" heading");
+        }
+
         // Integer properties - Only print when not default values.
         if (node.getInputType() != InputType.TYPE_NULL) {
             builder.append(" inputType:").append(node.getInputType());
@@ -173,13 +240,27 @@ public class AccessibilityNodeInfoUtils {
         if (node.getMaxTextLength() != -1) {
             builder.append(" maxTextLength:").append(node.getMaxTextLength());
         }
+        if (node.getLiveRegion() != 0) {
+            builder.append(" liveRegion:").append(node.getLiveRegion());
+        }
+        if (node.getExpandedState() != AccessibilityNodeInfo.EXPANDED_STATE_UNDEFINED) {
+            builder.append(" expandedState:").append(node.getExpandedState());
+        }
+        if (node.getChecked() == AccessibilityNodeInfo.CHECKED_STATE_TRUE) {
+            builder.append(" checked");
+        } else if (node.getChecked() == AccessibilityNodeInfo.CHECKED_STATE_PARTIAL) {
+            builder.append(" partiallyChecked");
+        }
+
+        // TODO(crbug.com/443078007): Add extended selection to the expected text.
 
         // Child objects - print for non-null cases.
         if (node.getCollectionInfo() != null) {
             builder.append(" CollectionInfo:").append(toString(node.getCollectionInfo()));
         }
         if (node.getCollectionItemInfo() != null) {
-            builder.append(" CollectionItemInfo:").append(toString(node.getCollectionItemInfo()));
+            builder.append(" CollectionItemInfo:")
+                    .append(toString(node, node.getCollectionItemInfo()));
         }
         if (node.getRangeInfo() != null) {
             builder.append(" RangeInfo:").append(toString(node.getRangeInfo()));
@@ -229,28 +310,44 @@ public class AccessibilityNodeInfoUtils {
         if (info.isHierarchical()) {
             prefix += "hierarchical, ";
         }
+        if (info.getSelectionMode() != SELECTION_MODE_NONE) {
+            prefix +=
+                    (info.getSelectionMode() == SELECTION_MODE_MULTIPLE
+                            ? "selection_mode_multiple, "
+                            : "selection_mode_single, ");
+        }
         return String.format(
                 "%srows=%s, cols=%s]", prefix, info.getRowCount(), info.getColumnCount());
     }
 
-    private static String toString(AccessibilityNodeInfoCompat.CollectionItemInfoCompat info) {
+    private static String toString(
+            AccessibilityNodeInfoCompat info,
+            AccessibilityNodeInfoCompat.CollectionItemInfoCompat collectionItemInfo) {
         // Only include isHeading and isSelected if true, since both are more often false.
         String prefix = "[";
         if (info.isHeading()) {
-            prefix += "heading, ";
+            // Clank does not set CollectionItemInfo.isHeading because it is deprecated. However, we
+            // Name it as "tableHeader" here to differentiate the "heading" string in
+            // AccessibilityNodeInfo level for debugging.
+            // Note that in Android, CollectionItemInfo.isHeading API was deprecated and moved to
+            // AccessibilityNodeInfo.isHeading API. CollectionItemInfoCompat.isHeading is also
+            // deprecated.
+            prefix += "tableHeader, ";
         }
-        if (info.isSelected()) {
+        if (collectionItemInfo.isSelected()) {
             prefix += "selected, ";
         }
         // Only include row/col span if not equal to 1, the default value.
-        if (info.getRowSpan() != 1) {
-            prefix += String.format("rowSpan=%s, ", info.getRowSpan());
+        if (collectionItemInfo.getRowSpan() != 1) {
+            prefix += String.format("rowSpan=%s, ", collectionItemInfo.getRowSpan());
         }
-        if (info.getColumnSpan() != 1) {
-            prefix += String.format("colSpan=%s, ", info.getColumnSpan());
+        if (collectionItemInfo.getColumnSpan() != 1) {
+            prefix += String.format("colSpan=%s, ", collectionItemInfo.getColumnSpan());
         }
+        // TODO(crbug.com/458146866): Print sort direction in AccessibilityNodeInfoUtils.
         return String.format(
-                "%srowIndex=%s, colIndex=%s]", prefix, info.getRowIndex(), info.getColumnIndex());
+                "%srowIndex=%s, colIndex=%s]",
+                prefix, collectionItemInfo.getRowIndex(), collectionItemInfo.getColumnIndex());
     }
 
     private static String toString(AccessibilityNodeInfoCompat.RangeInfoCompat info) {
@@ -263,7 +360,7 @@ public class AccessibilityNodeInfoUtils {
             List<AccessibilityNodeInfoCompat.AccessibilityActionCompat> actionList,
             boolean includeScreenSizeDependentAttributes) {
         // Sort actions list to ensure consistent output of tests.
-        Collections.sort(actionList, (a1, b2) -> Integer.compare(a1.getId(), b2.getId()));
+        actionList.sort((a1, b2) -> Integer.compare(a1.getId(), b2.getId()));
 
         List<String> actionStrings = new ArrayList<String>();
         StringBuilder builder = new StringBuilder();
@@ -364,6 +461,12 @@ public class AccessibilityNodeInfoUtils {
             return "SET_PROGRESS";
         } else if (action == ACTION_LONG_CLICK.getId()) {
             return "LONG_CLICK";
+        } else if (action == ACTION_NEXT_HTML_ELEMENT.getId()) {
+            return "NEXT_HTML_ELEMENT";
+        } else if (action == ACTION_PREVIOUS_HTML_ELEMENT.getId()) {
+            return "PREVIOUS_HTML_ELEMENT";
+        } else if (action == ACTION_SHOW_ON_SCREEN.getId()) {
+            return "SHOW_ON_SCREEN";
         } else {
             return "NOT_IMPLEMENTED";
         }
@@ -378,8 +481,7 @@ public class AccessibilityNodeInfoUtils {
     private static String toString(Bundle extras, boolean includeScreenSizeDependentAttributes) {
         // Sort keys to ensure consistent output of tests.
         List<String> sortedKeySet = new ArrayList<String>(extras.keySet());
-        Collections.sort(sortedKeySet, CASE_INSENSITIVE_ORDER);
-
+        sortedKeySet.sort(CASE_INSENSITIVE_ORDER);
         List<String> bundleStrings = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
         builder.append("[");
@@ -399,7 +501,8 @@ public class AccessibilityNodeInfoUtils {
 
             // Since every node has a few Bundle extras, and some are often empty, we will only
             // print non-null and not empty values.
-            if (extras.get(key) == null || extras.get(key).toString().isEmpty()) {
+            Object value = extras.get(key);
+            if (value == null || value.toString().isEmpty()) {
                 continue;
             }
 
@@ -428,11 +531,7 @@ public class AccessibilityNodeInfoUtils {
             }
 
             // Simplify the key String before printing to make test outputs easier to read.
-            bundleStrings.add(
-                    key.replace("AccessibilityNodeInfo.", "")
-                            + "=\""
-                            + extras.get(key).toString()
-                            + "\"");
+            bundleStrings.add(key.replace("AccessibilityNodeInfo.", "") + "=\"" + value + "\"");
         }
         builder.append(TextUtils.join(", ", bundleStrings)).append("]");
 

@@ -77,7 +77,7 @@ ColorMatrixFilterOperation* ResolveColorMatrix(
   }
 
   return MakeGarbageCollected<ColorMatrixFilterOperation>(
-      *values, FilterOperation::OperationType::kColorMatrix);
+      *std::move(values), FilterOperation::OperationType::kColorMatrix);
 }
 
 struct KernelMatrix {
@@ -233,25 +233,25 @@ base::expected<gfx::PointF, String> ResolveFloatOrVec2f(
     const String property_name,
     const Dictionary& dict,
     ExceptionState& exception_state) {
-  // First try to get stdDeviation as a float.
-  std::optional<float> single_float =
-      dict.Get<IDLFloat>(property_name, exception_state);
-  if (!exception_state.HadException() && single_float.has_value()) {
-    return gfx::PointF(*single_float, *single_float);
-  } else {
-    // Clear the exception if it exists in order to try again as a vector.
-    exception_state.ClearException();
-
-    std::optional<Vector<float>> two_floats =
-        dict.Get<IDLSequence<IDLFloat>>(property_name, exception_state);
-    if (exception_state.HadException() || !two_floats.has_value() ||
-        two_floats->size() != 2) {
-      return base::unexpected(String::Format(
-          "\"%s\" must either be a number or an array of two numbers",
-          property_name.Ascii().c_str()));
+  {
+    v8::TryCatch try_catch(dict.GetIsolate());
+    // First try to get stdDeviation as a float.
+    std::optional<float> single_float = dict.Get<IDLFloat>(
+        property_name, PassThroughException(dict.GetIsolate()));
+    if (!try_catch.HasCaught() && single_float.has_value()) {
+      return gfx::PointF(*single_float, *single_float);
     }
-    return gfx::PointF(two_floats->at(0), two_floats->at(1));
   }
+  // Try again as a vector.
+  std::optional<Vector<float>> two_floats =
+      dict.Get<IDLSequence<IDLFloat>>(property_name, exception_state);
+  if (exception_state.HadException() || !two_floats.has_value() ||
+      two_floats->size() != 2) {
+    return base::unexpected(String::Format(
+        "\"%s\" must either be a number or an array of two numbers",
+        property_name.Ascii().c_str()));
+  }
+  return gfx::PointF(two_floats->at(0), two_floats->at(1));
 }
 
 BlurFilterOperation* ResolveBlur(const Dictionary& blur_dict,
@@ -438,11 +438,11 @@ TurbulenceFilterOperation* ResolveTurbulence(const Dictionary& dict,
 }  // namespace
 
 FilterOperations CanvasFilterOperationResolver::CreateFilterOperationsFromList(
-    const HeapVector<ScriptValue>& filters,
+    const HeapVector<ScriptObject>& filters,
     ExecutionContext& execution_context,
     ExceptionState& exception_state) {
   FilterOperations operations;
-  for (auto filter : filters) {
+  for (const auto& filter : filters) {
     Dictionary filter_dict = Dictionary(filter);
     std::optional<String> name =
         filter_dict.Get<IDLString>("name", exception_state);
@@ -529,7 +529,7 @@ CanvasFilterOperationResolver::CreateFilterOperationsFromCSSFilter(
     const String& filter_string,
     const ExecutionContext& execution_context,
     Element* style_resolution_host,
-    const Font& font) {
+    const Font* font) {
   FilterOperations operations;
   const CSSValue* css_value = CSSParser::ParseSingleValue(
       CSSPropertyID::kFilter, filter_string,
@@ -543,7 +543,7 @@ CanvasFilterOperationResolver::CreateFilterOperationsFromCSSFilter(
       style_resolution_host->GetDocument().GetFrame() != nullptr) {
     return style_resolution_host->GetDocument()
         .GetStyleResolver()
-        .ComputeFilterOperations(style_resolution_host, font, *css_value);
+        .ComputeFilterOperations(style_resolution_host, *font, *css_value);
   } else {
     return FilterOperationResolver::CreateOffscreenFilterOperations(*css_value,
                                                                     font);

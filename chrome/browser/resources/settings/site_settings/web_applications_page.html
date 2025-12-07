@@ -1,0 +1,23 @@
+<style include="settings-shared site-settings-shared"></style>
+<settings-subpage page-title="$i18n{siteSettingsWebAppInstallation}"
+    search-label="$i18n{siteSettingsAllSitesSearch}"
+    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+  <div class="content-settings-header secondary">
+    $i18n{siteSettingsWebAppInstallationDescription}
+  </div>
+  <settings-category-default-radio-group
+      category="[[contentSettingsTypesEnum_.WEB_APP_INSTALLATION]]"
+      allow-option-label="$i18n{siteSettingsWebAppInstallationAsk}"
+      allow-option-icon="settings:install-desktop"
+      block-option-label="$i18n{siteSettingsWebAppInstallationBlock}"
+      block-option-icon="settings:install-desktop-off">
+  </settings-category-default-radio-group>
+  <category-setting-exceptions
+      category="[[contentSettingsTypesEnum_.WEB_APP_INSTALLATION]]"
+      block-header=
+          "$i18n{siteSettingsWebAppInstallationBlockedExceptions}"
+      allow-header=
+          "$i18n{siteSettingsWebAppInstallationAllowedExceptions}"
+      search-filter="[[searchTerm]]">
+  </category-setting-exceptions>
+</settings-subpage>

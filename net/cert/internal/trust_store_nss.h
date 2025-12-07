@@ -8,13 +8,13 @@
 #include <cert.h>
 #include <certt.h>
 
+#include <variant>
 #include <vector>
 
 #include "crypto/scoped_nss_types.h"
 #include "net/base/net_export.h"
 #include "net/cert/internal/platform_trust_store.h"
 #include "net/cert/scoped_nss_types.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/boringssl/src/pki/trust_store.h"
 
 namespace net {
@@ -23,9 +23,9 @@ namespace net {
 // trust anchors for path building. This bssl::TrustStore is thread-safe.
 class NET_EXPORT TrustStoreNSS : public PlatformTrustStore {
  public:
-  struct UseTrustFromAllUserSlots : absl::monostate {};
+  struct UseTrustFromAllUserSlots : std::monostate {};
   using UserSlotTrustSetting =
-      absl::variant<UseTrustFromAllUserSlots, crypto::ScopedPK11Slot>;
+      std::variant<UseTrustFromAllUserSlots, crypto::ScopedPK11Slot>;
 
   // Creates a TrustStoreNSS which will find anchors that are trusted for
   // SSL server auth. (Trust settings from the builtin roots slot with the
@@ -34,6 +34,10 @@ class NET_EXPORT TrustStoreNSS : public PlatformTrustStore {
   // |user_slot_trust_setting| configures the use of trust from user slots:
   //  * UseTrustFromAllUserSlots: all user slots will be allowed.
   //  * PK11Slot: the specified slot will be allowed. Must not be nullptr.
+  //
+  // TODO(crbug.com/390333881): The PK11Slot variant is no longer used except
+  // by ServerCertificateDatabaseNSSMigrator. Once the migration code is
+  // removed, remove the |user_slot_trust_setting| option.
   explicit TrustStoreNSS(UserSlotTrustSetting user_slot_trust_setting);
 
   TrustStoreNSS(const TrustStoreNSS&) = delete;
@@ -52,6 +56,7 @@ class NET_EXPORT TrustStoreNSS : public PlatformTrustStore {
   std::vector<net::PlatformTrustStore::CertWithTrust> GetAllUserAddedCerts()
       override;
 
+ private:
   struct ListCertsResult {
     ListCertsResult(ScopedCERTCertificate cert, bssl::CertificateTrust trust);
     ~ListCertsResult();
@@ -61,9 +66,9 @@ class NET_EXPORT TrustStoreNSS : public PlatformTrustStore {
     ScopedCERTCertificate cert;
     bssl::CertificateTrust trust;
   };
-  std::vector<ListCertsResult> ListCertsIgnoringNSSRoots();
+  std::vector<ListCertsResult> ListCertsIgnoringNSSRootsImpl(
+      bool ignore_chaps_module);
 
- private:
   bssl::CertificateTrust GetTrustForNSSTrust(const CERTCertTrust& trust) const;
 
   bssl::CertificateTrust GetTrustIgnoringSystemTrust(

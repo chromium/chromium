@@ -1,0 +1,34 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #include=cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  align-items: center;
+  display: flex;
+  touch-action: none;
+}
+
+input {
+  display: none;
+}
+
+label {
+  box-sizing: border-box;
+  cursor: pointer;
+  flex: 1;
+}
+
+cr-toggle {
+  display: inline-block;
+}
+
+:host ::slotted(*) {
+  flex: 1;
+  margin-inline-end: 20px;
+}

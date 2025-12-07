@@ -72,9 +72,6 @@ class PowerButtonTestBase : public AshTestBase {
   // Simulates a mouse move event.
   void GenerateMouseMoveEvent();
 
-  // Initializes login status and sets power button type.
-  void Initialize(ButtonType button_type, LoginStatus status);
-
   // Triggers a lock screen operation.
   void LockScreen();
 

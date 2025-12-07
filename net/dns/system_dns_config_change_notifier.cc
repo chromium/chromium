@@ -13,12 +13,12 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/not_fatal_until.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/thread_annotations.h"
 #include "net/dns/dns_config_service.h"
 
 namespace net {
@@ -88,7 +88,7 @@ class SystemDnsConfigChangeNotifier::Core {
     DCHECK(wrapped_observers_.empty());
   }
 
-  void AddObserver(Observer* observer) {
+  void AddObserver(Observer* observer) LOCKS_EXCLUDED(lock_) {
     // Create wrapped observer outside locking in case construction requires
     // complex side effects.
     auto wrapped_observer = std::make_unique<WrappedObserver>(observer);
@@ -108,7 +108,7 @@ class SystemDnsConfigChangeNotifier::Core {
     }
   }
 
-  void RemoveObserver(Observer* observer) {
+  void RemoveObserver(Observer* observer) LOCKS_EXCLUDED(lock_) {
     // Destroy wrapped observer outside locking in case destruction requires
     // complex side effects.
     std::unique_ptr<WrappedObserver> removed_wrapped_observer;
@@ -116,7 +116,7 @@ class SystemDnsConfigChangeNotifier::Core {
     {
       base::AutoLock lock(lock_);
       auto it = wrapped_observers_.find(observer);
-      CHECK(it != wrapped_observers_.end(), base::NotFatalUntil::M130);
+      CHECK(it != wrapped_observers_.end());
       removed_wrapped_observer = std::move(it->second);
       wrapped_observers_.erase(it);
     }
@@ -155,7 +155,7 @@ class SystemDnsConfigChangeNotifier::Core {
         &Core::OnConfigChanged, weak_ptr_factory_.GetWeakPtr()));
   }
 
-  void OnConfigChanged(const DnsConfig& config) {
+  void OnConfigChanged(const DnsConfig& config) LOCKS_EXCLUDED(lock_) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     base::AutoLock lock(lock_);
 
@@ -186,8 +186,9 @@ class SystemDnsConfigChangeNotifier::Core {
   mutable base::Lock lock_;
   // Only stores valid configs. |std::nullopt| if most recent config was
   // invalid (or no valid config has yet been read).
-  std::optional<DnsConfig> config_;
-  std::map<Observer*, std::unique_ptr<WrappedObserver>> wrapped_observers_;
+  std::optional<DnsConfig> config_ GUARDED_BY(lock_);
+  std::map<Observer*, std::unique_ptr<WrappedObserver>> wrapped_observers_
+      GUARDED_BY(lock_);
 
   // Fields valid only on |task_runner_|.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

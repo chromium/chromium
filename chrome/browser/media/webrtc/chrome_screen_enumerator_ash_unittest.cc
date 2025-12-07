@@ -18,7 +18,7 @@
 
 class ChromeScreenEnumeratorTest : public ChromeAshTestBase {
  public:
-  ChromeScreenEnumeratorTest() {}
+  ChromeScreenEnumeratorTest() = default;
 
   explicit ChromeScreenEnumeratorTest(const ChromeScreenEnumerator&) = delete;
   ChromeScreenEnumeratorTest& operator=(const ChromeScreenEnumerator&) = delete;
@@ -78,7 +78,6 @@ TEST_F(ChromeScreenEnumeratorTest, NoScreen) {
   EXPECT_EQ(blink::mojom::MediaStreamRequestResult::NO_HARDWARE, actual_result);
 }
 
-// TODO(crbug.com/40247902): Fix these tests for lacros.
 TEST_F(ChromeScreenEnumeratorTest, SingleScreen) {
   ChromeScreenEnumerator::SetRootWindowsForTesting(
       GenerateScreensList(/*number_of_screens=*/1u));

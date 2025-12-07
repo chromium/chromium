@@ -144,11 +144,10 @@ void ProfileAuthDataTest::Transfer(
     bool transfer_auth_cookies_on_first_login,
     bool transfer_saml_auth_cookies_on_subsequent_login) {
   base::RunLoop run_loop;
-  ProfileAuthData::Transfer(login_browser_context_.GetDefaultStoragePartition(),
-                            user_browser_context_.GetDefaultStoragePartition(),
-                            transfer_auth_cookies_on_first_login,
-                            transfer_saml_auth_cookies_on_subsequent_login,
-                            run_loop.QuitClosure());
+  ProfileAuthData::Transfer(
+      login_browser_context_.GetDefaultStoragePartition(),
+      &user_browser_context_, transfer_auth_cookies_on_first_login,
+      transfer_saml_auth_cookies_on_subsequent_login, run_loop.QuitClosure());
   run_loop.Run();
   if (!transfer_auth_cookies_on_first_login &&
       !transfer_saml_auth_cookies_on_subsequent_login) {

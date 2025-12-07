@@ -94,23 +94,31 @@ and registration process.
 
 #### CRURegistration library
 
-An Objective-C library to perform these operations is in development. When
-available, applications will be able to initialize
 [`CRURegistration`](https://chromium.googlesource.com/chromium/src/+/main/chrome/updater/mac/client_lib)
-with their product IDs, then use `installUpdaterWithReply:` and
+is an Objective-C library that simplifies interactions with the updater. macOS
+applications can use CRURegistration by bundling an updater ZIP archive in their
+app's `Resources` folder and then using `installUpdaterWithReply:` and
 `registerVersion:existenceCheckerPath:serverURLString:reply:` to install the
-updater (if needed) and register. These methods operate asynchronously using
-[`dispatch/dispatch.h`](https://developer.apple.com/documentation/dispatch/dispatch_queue)
-mechanisms. `CRURegistration` maintains an internal task queue, so clients can
-call `register...` immediately after `install...` without waiting for a result.
+updater and register. It's normal to call `install...` and then immediately
+`register...` (before waiting for a result) every time the application starts.
+The library will use its internal mechanisms to sequence the tasks and avoid
+unnecessary work.
 
-`CRURegistration` uses the helpers and command line binaries documented above.
-To install the updater using `CRURegistration`, the updater must be embedded
-as a Helper as documented above.
+**Googlers** can find [CRURegistration here](http://go/cruregistration) and a
+ready-to-bundle [GoogleUpdater.zip here](http://go/googleupdatermacoszip).
 
-`CRURegistration` is designed to depend only on APIs published in macOS SDKs
-and compile as pure Objective-C (without requiring C++ support) so it can be
-dropped into projects without incurring Chromium dependencies.
+## Updating Applications
+
+Serving updates to your application depends on your server integration.
+Googlers should consult the [guide here](go/omaharelease-getting-started).
+
+Updates are delivered as CRX archives containing your application's installer
+executables. When run, the executables should emplace the new version of your
+software on the disk.
+
+More details are available:
+[Windows details](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/win/installer_api.h),
+[macOS details](install_api_mac.md).
 
 ## Uninstalling Applications and the Updater
 
@@ -156,7 +164,7 @@ Windows tagged metainstallers support a number of dynamic install parameters:
 
 `needsadmin` is one of the install parameters that can be specified for
 first installs via the
-[metainstaller tag](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/tools/tag.py).
+[metainstaller tag](https://crsrc.org/c/chrome/updater/tools/tag_main.cc).
 `needsadmin` is used to indicate whether the application needs admin rights to
 install.
 
@@ -178,6 +186,36 @@ user refuses the
 however, the application is then only installed for the current user. The
 application installer needs to be able to support the installation as system, or
 per-user, or both modes.
+
+### `lang`
+
+`lang` is one of the install parameters that can be specified for
+installs via the
+[metainstaller tag](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/tools/tag.py).
+`lang` is used to indicate the language that the updater installation UI is
+displayed in.
+
+For example, here is a command line for the Updater on Windows that includes
+`lang` Arabic:
+```
+UpdaterSetup.exe --install="appguid=YourAppID&lang=ar"
+```
+
+The full list of supported languages for Chromium and Google Chrome respectively are listed in
+[chromium_strings.grd](https://source.chromium.org/chromium/chromium/src/+/main:chrome/app/chromium_strings.grd)
+and
+[google_chrome_strings.grd](https://source.chromium.org/chromium/chromium/src/+/main:chrome/app/google_chrome_strings.grd)
+under `<translations>`.
+
+For example:
+
+```
+<translations>
+    <file path="resources/chromium_strings_af.xtb" lang="af" />
+    ...
+```
+
+indicates that `lang=af` is a valid tag fragment.
 
 ### `installdataindex`
 
@@ -250,3 +288,19 @@ installed. Note that there are two possible product directories (one for
 system scope and one for user scope), and so there are often two log files.
 
 See [the functional spec](functional_spec.md#logging) for more details.
+
+## Force updates to all apps
+
+Updates can be force-triggered by running the updater as follows for Windows:
+* Run the following from a medium `cmd` prompt for `user` installs, and from an
+  elevated prompt with the `--system` switch for `system` installs:
+  `Start /w {%LocalAppData%|%programfiles(x86)%}\{Company}\{Company}Updater\{latest version}\updater.exe --update-apps {--system}`.
+* For example, using "Google" as the `Company`:
+  `Start /w {%LocalAppData%|%programfiles(x86)%}\Google\GoogleUpdater\142.0.7416.0\updater.exe --update-apps {--system}`.
+
+Similar steps apply for macOS. The example below is using "Google" as the
+`Company`:
+* (macOS, per-user):
+`~/Library/Application\ Support/Google/GoogleUpdater/*/GoogleUpdater.app/Contents/MacOS/GoogleUpdater --update-apps`
+* (macOS, system-wide):
+`sudo /Library/Application\ Support/Google/GoogleUpdater/*/GoogleUpdater.app/Contents/MacOS/GoogleUpdater --update-apps --system`

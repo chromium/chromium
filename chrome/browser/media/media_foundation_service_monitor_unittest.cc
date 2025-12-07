@@ -111,7 +111,7 @@ class MediaFoundationServiceMonitorTest
     auto* user_prefs =
         profile_manager_->profile_manager()->GetLastUsedProfile()->GetPrefs();
     ScopedDictPrefUpdate update(user_prefs, prefs::kMediaCdmOriginData);
-    profile_manager_->local_state()->Get()->ClearPref(
+    TestingBrowserProcess::GetGlobal()->local_state()->ClearPref(
         prefs::kGlobalHardwareSecureDecryptionDisabledTimes);
   }
 

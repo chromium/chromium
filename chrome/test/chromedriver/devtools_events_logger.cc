@@ -11,7 +11,7 @@
 DevToolsEventsLogger::DevToolsEventsLogger(Log* log, const base::Value& prefs)
     : log_(log), prefs_(prefs) {}
 
-inline DevToolsEventsLogger::~DevToolsEventsLogger() {}
+inline DevToolsEventsLogger::~DevToolsEventsLogger() = default;
 
 Status DevToolsEventsLogger::OnConnected(DevToolsClient* client) {
   for (const auto& entry : prefs_->GetList())
@@ -27,10 +27,7 @@ Status DevToolsEventsLogger::OnEvent(DevToolsClient* client,
     base::Value::Dict log_message_dict;
     log_message_dict.Set("method", method);
     log_message_dict.Set("params", params.Clone());
-    std::string log_message_json;
-    base::JSONWriter::Write(log_message_dict, &log_message_json);
-
-    log_->AddEntry(Log::kInfo, log_message_json);
+    log_->AddEntry(Log::kInfo, base::WriteJson(log_message_dict).value_or(""));
   }
   return Status(kOk);
 }

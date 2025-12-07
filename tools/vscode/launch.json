@@ -13,20 +13,31 @@
       "cwd": "${workspaceFolder}/out/Debug/",
       "environment": [],
       "externalConsole": true,
-      "setupCommands": [
-        {
-          "description": "Enable pretty printing for gdb",
-          "text": "-enable-pretty-printing"
-        },
-        {
-          "description": "Load Chromium gdb configuration",
-          "text": "-interpreter-exec console \"source -v ${workspaceFolder}/tools/gdb/gdbinit\""
-        },
-        {
-          "description": "Load Blink gdb configuration",
-          "text": "-interpreter-exec console \"python import sys; sys.path.insert(0, '${workspaceFolder}/third_party/blink/tools/gdb'); import blink\""
-        }
-      ]
+      "linux": {
+        "setupCommands": [
+          {
+            "description": "Enable pretty printing for gdb",
+            "text": "-enable-pretty-printing"
+          },
+          {
+            "description": "Load Chromium gdb configuration",
+            "text": "-interpreter-exec console \"source -v ${workspaceFolder}/tools/gdb/gdbinit\""
+          },
+          {
+            "description": "Load Blink gdb configuration",
+            "text": "-interpreter-exec console \"python import sys; sys.path.insert(0, '${workspaceFolder}/third_party/blink/tools/gdb'); import blink\""
+          }
+        ]
+      },
+      "osx": {
+        "MIMode": "lldb",
+        "setupCommands": [
+          {
+            "description": "Load lldbinit configuration",
+            "text": "command source ${env:HOME}/.lldbinit"
+          }
+        ]
+      }
     },
     {
       "name": "Chrome Release",

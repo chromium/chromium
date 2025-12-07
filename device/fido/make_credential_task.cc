@@ -4,15 +4,17 @@
 
 #include "device/fido/make_credential_task.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "device/base/features.h"
 #include "device/fido/ctap2_device_operation.h"
 #include "device/fido/ctap_make_credential_request.h"
+#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/pin.h"
+#include "device/fido/public/fido_constants.h"
 #include "device/fido/u2f_command_constructor.h"
 #include "device/fido/u2f_register_operation.h"
 
@@ -89,7 +91,7 @@ std::optional<AuthenticatorMakeCredentialResponse> ConvertCTAPResponse(
     const base::flat_set<Ctap2Version>& ctap2_versions =
         device->device_info()->ctap2_versions;
     DCHECK(!ctap2_versions.empty());
-    const bool is_at_least_ctap2_1 = base::ranges::any_of(
+    const bool is_at_least_ctap2_1 = std::ranges::any_of(
         ctap2_versions,
         [](Ctap2Version v) { return v > Ctap2Version::kCtap2_0; });
     if (!resident_key_supported || is_at_least_ctap2_1) {
@@ -102,6 +104,17 @@ std::optional<AuthenticatorMakeCredentialResponse> ConvertCTAPResponse(
   }
 
   return response;
+}
+
+cbor::Value RedactCtapMakeCredentialResponse(const cbor::Value& cbor) {
+  using fido_parsing_utils::ToCborVector;
+  constexpr int kSignature = 0x03;
+  constexpr int kLargeBlobKey = 0x05;
+  constexpr int kExtension = 0x06;
+  return fido_parsing_utils::RedactCbor(
+      cbor, std::array{ToCborVector(kSignature), ToCborVector(kLargeBlobKey),
+                       ToCborVector(kExtension, kExtensionPRF, "results"),
+                       ToCborVector(kExtension, kExtensionLargeBlob)});
 }
 
 }  // namespace
@@ -237,7 +250,8 @@ void MakeCredentialTask::MakeCredential() {
         device(), std::move(request), std::move(callback_),
         base::BindOnce(&ConvertCTAPResponse, device(),
                        request_.resident_key_required),
-        /*string_fixup_predicate=*/nullptr);
+        /*string_fixup_predicate=*/nullptr,
+        base::BindOnce(RedactCtapMakeCredentialResponse));
     register_operation_->Start();
     return;
   }
@@ -252,7 +266,8 @@ void MakeCredentialTask::MakeCredential() {
                          weak_factory_.GetWeakPtr()),
           base::BindOnce(&ReadCTAPGetAssertionResponse,
                          device()->DeviceTransport()),
-          /*string_fixup_predicate=*/nullptr);
+          /*string_fixup_predicate=*/nullptr,
+          base::BindOnce(RedactCtapGetAssertionResponse));
   silent_sign_operation_->Start();
 }
 
@@ -275,7 +290,8 @@ void MakeCredentialTask::HandleResponseToSilentSignRequest(
         device(), std::move(request), std::move(callback_),
         base::BindOnce(&ConvertCTAPResponse, device(),
                        request_.resident_key_required),
-        /*string_fixup_predicate=*/nullptr);
+        /*string_fixup_predicate=*/nullptr,
+        base::BindOnce(RedactCtapMakeCredentialResponse));
     register_operation_->Start();
     return;
   }
@@ -290,7 +306,8 @@ void MakeCredentialTask::HandleResponseToSilentSignRequest(
                        weak_factory_.GetWeakPtr()),
         base::BindOnce(&ConvertCTAPResponse, device(),
                        /*resident_key_required=*/false),
-        /*string_fixup_predicate=*/nullptr);
+        /*string_fixup_predicate=*/nullptr,
+        base::BindOnce(RedactCtapMakeCredentialResponse));
     register_operation_->Start();
     return;
   }
@@ -307,7 +324,8 @@ void MakeCredentialTask::HandleResponseToSilentSignRequest(
                        weak_factory_.GetWeakPtr()),
         base::BindOnce(&ReadCTAPGetAssertionResponse,
                        device()->DeviceTransport()),
-        /*string_fixup_predicate=*/nullptr);
+        /*string_fixup_predicate=*/nullptr,
+        base::BindOnce(RedactCtapGetAssertionResponse));
     silent_sign_operation_->Start();
     return;
   }
@@ -322,7 +340,8 @@ void MakeCredentialTask::HandleResponseToSilentSignRequest(
       device(), std::move(request), std::move(callback_),
       base::BindOnce(&ConvertCTAPResponse, device(),
                      request_.resident_key_required),
-      /*string_fixup_predicate=*/nullptr);
+      /*string_fixup_predicate=*/nullptr,
+      base::BindOnce(RedactCtapMakeCredentialResponse));
   register_operation_->Start();
 }
 

@@ -52,10 +52,11 @@ class SublevelManagerTest : public ViewsTestBase,
   // Call Show() or ShowInactive() depending on WidgetShowType.
   void ShowWidget(const std::unique_ptr<Widget>& widget) {
     WidgetShowType show_type = std::get<WidgetShowType>(GetParam());
-    if (show_type == WidgetShowType::kShowActive)
+    if (show_type == WidgetShowType::kShowActive) {
       widget->Show();
-    else
+    } else {
       widget->ShowInactive();
+    }
     test::WidgetVisibleWaiter(widget.get()).Wait();
   }
 
@@ -88,7 +89,7 @@ class SublevelManagerTest : public ViewsTestBase,
         test_name += "Activatable";
         break;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
     return test_name;
   }
@@ -306,8 +307,9 @@ TEST_P(SublevelManagerTest, SkipInvisibleWidget) {
     ShowWidget(children[i]);
 
     // Hide the second widget.
-    if (i == 1)
+    if (i == 1) {
       children[i]->Hide();
+    }
   }
 
   EXPECT_TRUE(test::WidgetTest::IsWindowStackedAbove(children[2].get(),

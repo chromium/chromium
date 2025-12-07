@@ -10,10 +10,15 @@ import android.view.MotionEvent;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.util.MotionEventUtils;
+
 /**
  * A {@link AreaMotionEventFilter} intercepts all events that start in a specific Rect on the
  * screen.
  */
+@NullMarked
 public class AreaMotionEventFilter extends MotionEventFilter {
     private final RectF mTriggerRect = new RectF();
 
@@ -26,51 +31,33 @@ public class AreaMotionEventFilter extends MotionEventFilter {
     /** Whether a hover exit event has occurred from the specified area. */
     private boolean mHoverExitedArea;
 
-    /**
-     * Creates a {@link AreaMotionEventFilter}.
-     * @param context       The context to build the gesture handler under.
-     * @param handler       The handler to be notified of gesture events.
-     * @param triggerRect   The area that events should be stolen from in dp.
-     */
-    public AreaMotionEventFilter(Context context, MotionEventHandler handler, RectF triggerRect) {
-        this(context, handler, triggerRect, true);
-    }
+    /** The handler for this instance that is used to notify owner of events/actions. */
+    private final AreaMotionEventHandler mHandler;
 
     /**
      * Creates a {@link AreaMotionEventFilter}.
-     * @param context       The context to build the gesture handler under.
-     * @param handler       The handler to be notified of gesture events.
-     * @param triggerRect   The area that events should be stolen from in dp.
-     * @param autoOffset    Whether or not to offset touch events.
-     */
-    public AreaMotionEventFilter(
-            Context context, MotionEventHandler handler, RectF triggerRect, boolean autoOffset) {
-        super(context, handler, autoOffset);
-        setEventArea(triggerRect);
-    }
-
-    /**
-     * Creates a {@link AreaMotionEventFilter}.
-     * @param context               The context to build the gesture handler under.
-     * @param handler               The handler to be notified of gesture events.
-     * @param triggerRect           The area that events should be stolen from in dp.
-     * @param autoOffset            Whether or not to offset touch events.
-     * @param useDefaultLongPress   Whether or not to use the default long press behavior.
+     *
+     * @param context The context to build the gesture handler under.
+     * @param handler The handler to be notified of gesture events.
+     * @param triggerRect The area that events should be stolen from in dp.
+     * @param autoOffset Whether or not to offset touch events.
+     * @param useDefaultLongPress Whether or not to use the default long press behavior.
      */
     public AreaMotionEventFilter(
             Context context,
-            MotionEventHandler handler,
-            RectF triggerRect,
+            AreaMotionEventHandler handler,
+            @Nullable RectF triggerRect,
             boolean autoOffset,
             boolean useDefaultLongPress) {
         super(context, handler, autoOffset, useDefaultLongPress);
+        this.mHandler = handler;
         setEventArea(triggerRect);
     }
 
     /**
      * @param rect The area that events should be stolen from in dp.
      */
-    public void setEventArea(RectF rect) {
+    public void setEventArea(@Nullable RectF rect) {
         if (rect == null) {
             mTriggerRect.setEmpty();
         } else {
@@ -108,17 +95,28 @@ public class AreaMotionEventFilter extends MotionEventFilter {
 
     @Override
     public boolean onHoverEventInternal(MotionEvent e) {
+        MotionEvent eventToHandle;
+
         // |mHoverExitedArea| determines whether a hover event within the parent view in which
         // |mTriggerRect| is present causes a hover out of this rect; in this case, we will process
         // this action as an ACTION_HOVER_EXIT from the rect area.
         if (mHoverExitedArea) {
             mHoverExitedArea = false;
-            MotionEvent exitEvent = MotionEvent.obtain(e);
-            exitEvent.setAction(MotionEvent.ACTION_HOVER_EXIT);
-            exitEvent.recycle();
-            return super.onHoverEventInternal(exitEvent);
+            eventToHandle = MotionEvent.obtain(e);
+            eventToHandle.setAction(MotionEvent.ACTION_HOVER_EXIT);
+            eventToHandle.recycle();
+        } else {
+            eventToHandle = e;
         }
-        return super.onHoverEventInternal(e);
+
+        // If handling a hover exit, include whether or not the event occurred in the trigger area.
+        if (eventToHandle.getActionMasked() == MotionEvent.ACTION_HOVER_EXIT) {
+            mHandler.onHoverExit(isMotionEventInArea(eventToHandle));
+            return true;
+        }
+
+        // Otherwise, fallback to default implementation.
+        return super.onHoverEventInternal(eventToHandle);
     }
 
     @Override
@@ -146,6 +144,35 @@ public class AreaMotionEventFilter extends MotionEventFilter {
                 mHoverExitedArea = true;
                 return super.onInterceptHoverEventInternal(e);
             }
+        }
+        return false;
+    }
+
+    @Override
+    protected boolean onGenericMotionEventInternal(MotionEvent e) {
+        // Do not consume events that do not happen within this area.
+        if (!isMotionEventInArea(e)) {
+            return false;
+        }
+
+        // This filter is currently only interested in acting on mouse and trackpad events.
+        if (!MotionEventUtils.isPointerEvent(e)) {
+            return false;
+        }
+
+        // For scrolls, we will call the handler's scroll method to allow the MotionEventHandler
+        // to handle the event as needed (e.g. scroll the tab strip). For other actions generating
+        // motion events, we will intercept them to prevent them from leaking to underlying layers,
+        // e.g. preventing clicks from leaking through the tab strip to the web contents behind it.
+        int action = e.getActionMasked();
+        if (action == MotionEvent.ACTION_SCROLL) {
+            mHandler.onScroll(
+                    e.getAxisValue(MotionEvent.AXIS_HSCROLL),
+                    e.getAxisValue(MotionEvent.AXIS_VSCROLL));
+            return true;
+        } else if (action == MotionEvent.ACTION_BUTTON_PRESS
+                || action == MotionEvent.ACTION_BUTTON_RELEASE) {
+            return true;
         }
         return false;
     }

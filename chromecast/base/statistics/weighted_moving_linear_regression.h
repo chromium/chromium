@@ -6,7 +6,8 @@
 #define CHROMECAST_BASE_STATISTICS_WEIGHTED_MOVING_LINEAR_REGRESSION_H_
 
 #include <stdint.h>
-#include <queue>
+
+#include <deque>
 
 #include "chromecast/base/statistics/weighted_mean.h"
 

@@ -17,7 +17,6 @@
 #include "net/proxy_resolution/proxy_retry_info.h"
 
 namespace base {
-class TimeDelta;
 class Value;
 }
 
@@ -43,21 +42,24 @@ class NET_EXPORT_PRIVATE ProxyList {
   void Set(const std::string& proxy_uri_list);
 
   // Set the proxy list to a single entry, |proxy_chain|.
-  void SetSingleProxyChain(const ProxyChain& proxy_chain);
+  void SetSingleProxyChain(ProxyChain proxy_chain);
 
   // Set the proxy list to a single entry, a chain containing |proxy_server|.
-  void SetSingleProxyServer(const ProxyServer& proxy_server);
+  void SetSingleProxyServer(ProxyServer proxy_server);
 
   // Append a single proxy chain to the end of the proxy list.
-  void AddProxyChain(const ProxyChain& proxy_chain);
+  void AddProxyChain(ProxyChain proxy_chain);
 
   // Append a single proxy chain containing the given server to the end of the
   // proxy list.
-  void AddProxyServer(const ProxyServer& proxy_server);
+  void AddProxyServer(ProxyServer proxy_server);
 
   // De-prioritizes the proxy chains that are cached as not working but are
   // allowed to be reconsidered, by moving them to the end of the fallback list.
-  void DeprioritizeBadProxyChains(const ProxyRetryInfoMap& proxy_retry_info);
+  // If `remove_bad_proxy_chains` is true, bad proxy chains are removed
+  // from the list rather than just moved to the end.
+  void DeprioritizeBadProxyChains(const ProxyRetryInfoMap& proxy_retry_info,
+                                  bool remove_bad_proxy_chains = false);
 
   // Deletes all chains which don't exclusively consist of proxy servers with
   // the specified schemes. `scheme_bit_field` is a bunch of
@@ -113,40 +115,14 @@ class NET_EXPORT_PRIVATE ProxyList {
   // tried, if any. If this fallback is not because of a network error, then
   // |OK| should be passed in (eg. for reasons such as local policy). Returns
   // true if there is another chain available in the list.
+  //
+  // When a proxy chain is marked as bad, it will be deprioritized by calls to
+  // `DeprioritizeBadProxyChains()` for five minutes.
   bool Fallback(ProxyRetryInfoMap* proxy_retry_info,
                 int net_error,
                 const NetLogWithSource& net_log);
 
-  // Updates |proxy_retry_info| to indicate that the first proxy chain in the
-  // list is bad. This is distinct from Fallback(), above, to allow updating
-  // proxy retry information without modifying a given transction's proxy list.
-  // Will retry after |retry_delay| if positive, and will use the default proxy
-  // retry duration otherwise. It may reconsider the proxy beforehand if
-  // |reconsider| is true. Additionally updates |proxy_retry_info| with
-  // |additional_proxies_to_bypass|. |net_error| should contain the network
-  // error countered when this proxy chain was tried, or OK if the proxy retry
-  // info is being updated for a non-network related reason (e.g. local policy).
-  void UpdateRetryInfoOnFallback(
-      ProxyRetryInfoMap* proxy_retry_info,
-      base::TimeDelta retry_delay,
-      bool reconsider,
-      const std::vector<ProxyChain>& additional_proxies_to_bypass,
-      int net_error,
-      const NetLogWithSource& net_log) const;
-
  private:
-  // Updates |proxy_retry_info| to indicate that the |proxy_to_retry| in
-  // |proxies_| is bad for |retry_delay|, but may be reconsidered earlier if
-  // |try_while_bad| is true. |net_error| should contain the network error
-  // countered when this proxy was tried, or OK if the proxy retry info is
-  // being updated for a non-network related reason (e.g. local policy).
-  void AddProxyChainToRetryList(ProxyRetryInfoMap* proxy_retry_info,
-                                base::TimeDelta retry_delay,
-                                bool try_while_bad,
-                                const ProxyChain& proxy_chain_to_retry,
-                                int net_error,
-                                const NetLogWithSource& net_log) const;
-
   // List of proxy chains.
   std::vector<ProxyChain> proxy_chains_;
 };

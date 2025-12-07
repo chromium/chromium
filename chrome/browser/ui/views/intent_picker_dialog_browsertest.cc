@@ -15,10 +15,12 @@
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
+#include "chrome/browser/ui/views/location_bar/intent_chip_button_test_base.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "content/public/test/browser_test.h"
@@ -79,11 +81,24 @@ IN_PROC_BROWSER_TEST_F(IntentPickerDialogTest, MAYBE_InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
-class IntentPickerDialogGridViewTest : public IntentPickerDialogTest {
+class IntentPickerDialogGridViewTest
+    : public IntentPickerDialogTest,
+      public testing::WithParamInterface<
+          std::tuple<apps::test::LinkCapturingFeatureVersion, bool>>,
+      public IntentChipButtonTestBase {
  public:
   IntentPickerDialogGridViewTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        apps::test::GetFeaturesToEnableLinkCapturingUX(), {});
+    std::vector<base::test::FeatureRefAndParams> features_to_enable =
+        apps::test::GetFeaturesToEnableLinkCapturingUX(
+            std::get<apps::test::LinkCapturingFeatureVersion>(GetParam()));
+
+    if (IsMigrationEnabled()) {
+      features_to_enable.push_back(
+          {::features::kPageActionsMigration,
+           {{::features::kPageActionsMigrationIntentPicker.name, "true"}}});
+    }
+
+    feature_list_.InitWithFeaturesAndParameters(features_to_enable, {});
   }
 
   void ShowUi(const std::string& name) override {
@@ -100,18 +115,32 @@ class IntentPickerDialogGridViewTest : public IntentPickerDialogTest {
     event_generator.MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
     event_generator.ClickLeftButton();
   }
+  bool IsMigrationEnabled() const { return std::get<bool>(GetParam()); }
 
  private:
-  views::Button* GetAnchorButton() override {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->toolbar_button_provider()
-        ->GetIntentChipButton();
-  }
+  views::Button* GetAnchorButton() override { return GetIntentChip(browser()); }
 
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(IntentPickerDialogGridViewTest, InvokeUi_default) {
+IN_PROC_BROWSER_TEST_P(IntentPickerDialogGridViewTest, InvokeUi_default) {
   set_baseline("5428271");
   ShowAndVerifyUi();
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    IntentPickerDialogGridViewTest,
+    testing::Combine(
+#if BUILDFLAG(IS_CHROMEOS)
+        testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff,
+                        apps::test::LinkCapturingFeatureVersion::kV2DefaultOff),
+#else
+        testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
+                        apps::test::LinkCapturingFeatureVersion::kV2DefaultOn),
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        testing::Bool()),
+    [](const testing::TestParamInfo<
+        std::tuple<apps::test::LinkCapturingFeatureVersion, bool>>& info) {
+      return IntentChipButtonTestBase::GenerateIntentChipTestName(info);
+    });

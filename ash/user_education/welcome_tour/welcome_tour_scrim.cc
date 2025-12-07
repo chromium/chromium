@@ -7,6 +7,7 @@
 #include <array>
 #include <vector>
 
+#include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
@@ -16,6 +17,7 @@
 #include "base/callback_list.h"
 #include "base/check.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/aura/window.h"
@@ -96,8 +98,8 @@ class MaskLayerOwner : public ui::LayerOwner, public ui::LayerDelegate {
     // In the absence of help bubble anchor views, the scrim should be fully
     // visible. As such, the mask layer for the scrim should be fully opaque.
     gfx::SizeF size(layer()->size());
-    SkPath path(SkPath::Rect(gfx::RectFToSkRect(gfx::RectF(size)),
-                             SkPathDirection::kCW));
+    SkPathBuilder path;
+    path.addRect(gfx::RectFToSkRect(gfx::RectF(size)), SkPathDirection::kCW);
 
     // Clip the otherwise fully opaque mask layer around help bubble anchor
     // views so that they are emphasized by the scrim and not obstructed by it.
@@ -119,7 +121,7 @@ class MaskLayerOwner : public ui::LayerOwner, public ui::LayerDelegate {
     flags.setStyle(cc::PaintFlags::kFill_Style);
 
     // Draw `path`.
-    canvas->DrawPath(path, flags);
+    canvas->DrawPath(path.detach(), flags);
   }
 
   // Invoked once to initialize `this`.
@@ -207,7 +209,6 @@ class WelcomeTourScrim::Scrim : public aura::WindowObserver,
   // Invoked once to initialize `this` scrim.
   void Init() {
     // Configure static scrim layer properties.
-    layer_owner_.layer()->SetFillsBoundsOpaquely(false);
     layer_owner_.layer()->SetMaskLayer(mask_layer_owner_.layer());
     layer_owner_.layer()->SetName(WelcomeTourScrim::kLayerName);
 
@@ -306,10 +307,6 @@ WelcomeTourScrim::WelcomeTourScrim() {
   // Observe `shell` so that scrims can be dynamically created/destroyed when
   // root windows are added/removed.
   shell_observation_.Observe(shell);
-
-  // Observe the window tree host manager so that scrims can be destroyed when
-  // the window tree host manager is shutdown.
-  window_tree_host_manager_observation_.Observe(window_tree_host_mgr);
 }
 
 WelcomeTourScrim::~WelcomeTourScrim() {
@@ -325,22 +322,16 @@ void WelcomeTourScrim::OnRootWindowWillShutdown(aura::Window* root_window) {
   Reset(root_window);
 }
 
-void WelcomeTourScrim::OnWindowTreeHostManagerShutdown() {
-  // Cache `shell` and associated window tree host manager.
-  auto* shell = Shell::Get();
-  CHECK(shell);
-  auto* window_tree_host_mgr = shell->window_tree_host_manager();
+void WelcomeTourScrim::OnShellDestroying() {
+  auto* window_tree_host_mgr = Shell::Get()->window_tree_host_manager();
   CHECK(window_tree_host_mgr);
-
-  // Reset observation.
-  CHECK(window_tree_host_manager_observation_.IsObservingSource(
-      window_tree_host_mgr));
-  window_tree_host_manager_observation_.Reset();
 
   // Destroy scrims for every root window.
   for (aura::Window* root_window : window_tree_host_mgr->GetAllRootWindows()) {
     Reset(root_window);
   }
+
+  shell_observation_.Reset();
 }
 
 void WelcomeTourScrim::Init(aura::Window* root_window) {

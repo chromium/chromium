@@ -1,0 +1,46 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("row") {
+  sources = [
+    "omnibox_popup_row_content_configuration.h",
+    "omnibox_popup_row_content_configuration.mm",
+    "omnibox_popup_row_content_view.h",
+    "omnibox_popup_row_content_view.mm",
+    "omnibox_popup_row_delegate.h",
+    "omnibox_popup_row_trailing_button.h",
+    "omnibox_popup_row_trailing_button.mm",
+    "omnibox_popup_row_util.h",
+    "omnibox_popup_row_util.mm",
+  ]
+  deps = [
+    ":icon_retriever",
+    "//base",
+    "//components/omnibox/common",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/app/theme",
+    "//ios/chrome/browser/omnibox/model/suggestions:ui_interface",
+    "//ios/chrome/browser/omnibox/public",
+    "//ios/chrome/browser/omnibox/public:features",
+    "//ios/chrome/browser/omnibox/ui/popup:popup_icon",
+    "//ios/chrome/browser/omnibox/ui/popup:popup_ui_protocols",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements",
+    "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("icon_retriever") {
+  sources = [
+    "favicon_retriever.h",
+    "image_retriever.h",
+  ]
+}

@@ -13,6 +13,7 @@ import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../settings_shared.css.js';
 import '../site_favicon.js';
+import '/shared/settings/controls/cr_policy_pref_indicator.js';
 
 import type {CrCollapseElement} from 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -31,8 +32,8 @@ import {Router} from '../router.js';
 
 import {AllSitesAction2, SortMethod} from './constants.js';
 import {getTemplate} from './site_entry.html.js';
+import type {OriginInfo, SiteGroup} from './site_settings_browser_proxy.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
-import type {OriginInfo, SiteGroup} from './site_settings_prefs_browser_proxy.js';
 
 
 export interface SiteEntryElement {
@@ -40,7 +41,7 @@ export interface SiteEntryElement {
     expandIcon: CrIconButtonElement,
     collapseParent: HTMLElement,
     cookies: HTMLElement,
-    fpsMembership: HTMLElement,
+    rwsMembership: HTMLElement,
     displayName: HTMLElement,
     originList: CrLazyRenderElement<CrCollapseElement>,
     toggleButton: HTMLElement,
@@ -84,22 +85,24 @@ export class SiteEntryElement extends SiteEntryElementBase {
       cookieString_: String,
 
       /**
-       * The first party set info for a site including owner and members count.
+       * The related website set info for a site including owner and members
+       * count.
        */
-      fpsMembershipLabel_: {
+      rwsMembershipLabel_: {
         type: String,
         value: '',
       },
 
       /**
-       * Mock preference used to power managed policy icon for first party sets.
+       * Mock preference used to power managed policy icon for related website
+       * sets.
        */
-      fpsEnterprisePref_: Object,
+      rwsEnterprisePref_: Object,
 
       /**
-       * Whether site entry is shown with a first party set filter search.
+       * Whether site entry is shown with a related website set filter search.
        */
-      isFpsFiltered: Boolean,
+      isRwsFiltered: Boolean,
 
       /**
        * The position of this site-entry in its parent list.
@@ -145,23 +148,23 @@ export class SiteEntryElement extends SiteEntryElementBase {
 
   static get observers() {
     return [
-      'updateFpsMembershipLabel_(siteGroup.fpsNumMembers, siteGroup.fpsOwner)',
-      'updatePolicyPref_(siteGroup.fpsEnterpriseManaged)',
-      'updateFocus_(siteGroup.fpsOwner)',
+      'updateRwsMembershipLabel_(siteGroup.rwsNumMembers, siteGroup.rwsOwner)',
+      'updatePolicyPref_(siteGroup.rwsEnterpriseManaged)',
+      'updateFocus_(siteGroup.rwsOwner)',
     ];
   }
 
-  siteGroup: SiteGroup;
-  private displayName_: string;
-  private cookieString_: string;
-  private fpsMembershipLabel_: string;
-  isFpsFiltered: boolean;
-  listIndex: number;
-  private overallUsageString_: string;
-  private originUsages_: string[];
-  private cookiesNum_: string[];
-  sortMethod?: SortMethod;
-  private fpsEnterprisePref_: chrome.settingsPrivate.PrefObject;
+  declare siteGroup: SiteGroup;
+  declare private displayName_: string;
+  declare private cookieString_: string;
+  declare private rwsMembershipLabel_: string;
+  declare isRwsFiltered: boolean;
+  declare listIndex: number;
+  declare private overallUsageString_: string;
+  declare private originUsages_: string[];
+  declare private cookiesNum_: string[];
+  declare sortMethod?: SortMethod;
+  declare private rwsEnterprisePref_: chrome.settingsPrivate.PrefObject;
 
   private button_: Element|null = null;
   private eventTracker_: EventTracker = new EventTracker();
@@ -319,17 +322,17 @@ export class SiteEntryElement extends SiteEntryElementBase {
     });
   }
 
-  private isFpsMember_(): boolean {
-    return !!this.siteGroup && this.siteGroup.fpsOwner !== undefined;
+  private isRwsMember_(): boolean {
+    return !!this.siteGroup && this.siteGroup.rwsOwner !== undefined;
   }
 
   /**
    * Evaluates whether the three dot menu should be shown for the site entry.
-   * @returns True if site group is a first party set member and filter by
-   * first party set owner is not applied.
+   * @returns True if site group is a related website set member and filter by
+   * related website set owner is not applied.
    */
   private shouldShowOverflowMenu(): boolean {
-    return this.isFpsMember_() && !this.isFpsFiltered;
+    return this.isRwsMember_() && !this.isRwsFiltered;
   }
 
   /**
@@ -343,35 +346,35 @@ export class SiteEntryElement extends SiteEntryElementBase {
   }
 
   /**
-   * Updates the display string for FPS information of owner and member count.
-   * @param fpsNumMembers The number of members in the first party set.
-   * @param fpsOwner The eTLD+1 for the first party set owner.
+   * Updates the display string for RWS information of owner and member count.
+   * @param rwsNumMembers The number of members in the related website set.
+   * @param rwsOwner The eTLD+1 for the related website set owner.
    */
-  private updateFpsMembershipLabel_() {
-    if (!this.siteGroup.fpsOwner) {
-      this.fpsMembershipLabel_ = '';
+  private updateRwsMembershipLabel_() {
+    if (!this.siteGroup.rwsOwner) {
+      this.rwsMembershipLabel_ = '';
     } else {
       this.browserProxy
-          .getFpsMembershipLabel(
-              this.siteGroup.fpsNumMembers!, this.siteGroup.fpsOwner!)
-          .then(label => this.fpsMembershipLabel_ = label);
+          .getRwsMembershipLabel(
+              this.siteGroup.rwsNumMembers!, this.siteGroup.rwsOwner)
+          .then(label => this.rwsMembershipLabel_ = label);
     }
   }
 
   /**
    * Evaluates whether the policy icon should be shown.
-   * @returns True when `this.siteGroup.fpsEnterpriseManaged` is true,
+   * @returns True when `this.siteGroup.rwsEnterpriseManaged` is true,
    * otherwise false.
    */
   private shouldShowPolicyPrefIndicator_(): boolean {
-    return !!this.siteGroup.fpsEnterpriseManaged;
+    return !!this.siteGroup.rwsEnterpriseManaged;
   }
 
   /**
-   * Updates `fpsEnterprisePref_` based on `siteGroup.fpsEnterpriseManaged`.
+   * Updates `rwsEnterprisePref_` based on `siteGroup.rwsEnterpriseManaged`.
    */
   private updatePolicyPref_() {
-    this.fpsEnterprisePref_ = this.siteGroup.fpsEnterpriseManaged ?
+    this.rwsEnterprisePref_ = this.siteGroup.rwsEnterpriseManaged ?
         Object.assign({
           enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
           controlledBy: chrome.settingsPrivate.ControlledBy.DEVICE_POLICY,
@@ -392,7 +395,7 @@ export class SiteEntryElement extends SiteEntryElementBase {
     afterNextRender(this, () => {
       if (isCurrentlyFocused) {
         (this.shouldShowOverflowMenu() ?
-             this.$$<CrIconButtonElement>('#fpsOverflowMenuButton') :
+             this.$$<CrIconButtonElement>('#rwsOverflowMenuButton') :
              this.$$<CrIconButtonElement>('#removeSiteButton'))!.focus();
       }
     });
@@ -514,6 +517,10 @@ export class SiteEntryElement extends SiteEntryElementBase {
         'siteSettingsSiteDetailsSubpageAccessibilityLabel', target);
   }
 
+  private getOriginSubpageLabel_(origin: string): string {
+    return this.getSubpageLabel_(this.originRepresentation(origin));
+  }
+
   private getRemoveOriginButtonTitle_(origin: string): string {
     return this.i18n(
         'siteSettingsCookieRemoveSite', this.originRepresentation(origin));
@@ -521,7 +528,7 @@ export class SiteEntryElement extends SiteEntryElementBase {
 
   private getMoreActionsLabel_(): string {
     return this.i18n(
-        'firstPartySetsMoreActionsTitle', this.siteGroup.displayName);
+        'relatedWebsiteSetsMoreActionsTitle', this.siteGroup.displayName);
   }
   /**
    * Update the order and data display text for origins.

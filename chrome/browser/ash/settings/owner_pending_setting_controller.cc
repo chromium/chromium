@@ -29,8 +29,7 @@ OwnerPendingSettingController::OwnerPendingSettingController(
   value_notified_to_observers_ = GetValue();
 }
 
-void OwnerPendingSettingController::Set(Profile* profile,
-                                        const base::Value& value) {
+void OwnerPendingSettingController::Set(Profile* profile, base::Value value) {
   DCHECK(profile);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -39,7 +38,7 @@ void OwnerPendingSettingController::Set(Profile* profile,
     // The device has an owner. If the current profile is that owner, we will
     // write the value on their behalf, otherwise no action is taken.
     VLOG(1) << "Already has owner";
-    SetWithServiceAsync(GetOwnerSettingsService(profile), value);
+    SetWithServiceAsync(GetOwnerSettingsService(profile), std::move(value));
   } else {
     // The device has no owner, or we do not know yet whether the device has an
     // owner. We write a pending value that will be persisted when ownership is
@@ -79,11 +78,10 @@ void OwnerPendingSettingController::OnOwnershipTaken(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "OnOwnershipTaken";
 
-  std::optional<base::Value> pending_value = GetPendingValue();
-  if (pending_value.has_value()) {
+  if (std::optional<base::Value> pending_value = GetPendingValue()) {
     // At the time ownership is taken, there is a value waiting to be written.
     // Use the OwnerSettingsService of the new owner to write the setting.
-    SetWithServiceAsync(service, pending_value.value());
+    SetWithServiceAsync(service, *std::move(pending_value));
   }
 }
 
@@ -108,6 +106,10 @@ void OwnerPendingSettingController::OnSignedPolicyStored(bool success) {
   }
 }
 
+void OwnerPendingSettingController::OnServiceShutdown() {
+  owner_settings_service_observation_.Reset();
+}
+
 void OwnerPendingSettingController::SetOnDeviceSettingsStoredCallBack(
     base::OnceClosure callback) {
   CHECK(!on_device_settings_stored_callback_);
@@ -116,7 +118,7 @@ void OwnerPendingSettingController::SetOnDeviceSettingsStoredCallBack(
 
 void OwnerPendingSettingController::SetWithServiceAsync(
     ownership::OwnerSettingsService* service,  // Can be null for non-owners.
-    const base::Value& value) {
+    base::Value value) {
   bool not_yet_ready = service && !service->IsReady();
   if (not_yet_ready) {
     VLOG(1) << "Service not yet ready. Adding listener.";
@@ -125,7 +127,7 @@ void OwnerPendingSettingController::SetWithServiceAsync(
     // is shutdown and deleted in the meantime, this callback isn't run.
     service->IsOwnerAsync(base::BindOnce(
         &OwnerPendingSettingController::SetWithServiceCallback,
-        this->as_weak_ptr(), service->as_weak_ptr(), value.Clone()));
+        this->as_weak_ptr(), service->as_weak_ptr(), std::move(value)));
   } else {
     // Service is either null, or ready - use it right now.
     SetWithService(service, value);
@@ -134,7 +136,7 @@ void OwnerPendingSettingController::SetWithServiceAsync(
 
 void OwnerPendingSettingController::SetWithServiceCallback(
     const base::WeakPtr<ownership::OwnerSettingsService>& service,
-    const base::Value value,
+    const base::Value& value,
     bool is_owner) {
   if (service)  // Make sure service wasn't deleted in the meantime.
     SetWithService(service.get(), value);

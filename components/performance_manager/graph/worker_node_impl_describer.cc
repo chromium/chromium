@@ -57,9 +57,10 @@ base::Value::Dict WorkerNodeImplDescriber::DescribeWorkerNodeData(
 
   base::Value::Dict metrics;
   metrics.Set("resident_set",
-              base::NumberToString(impl->GetResidentSetKbEstimate()));
-  metrics.Set("private_footprint",
-              base::NumberToString(impl->GetPrivateFootprintKbEstimate()));
+              base::NumberToString(impl->GetResidentSetEstimate().InKiB()));
+  metrics.Set(
+      "private_footprint",
+      base::NumberToString(impl->GetPrivateFootprintEstimate().InKiB()));
   ret.Set("metrics_estimates", std::move(metrics));
 
   return ret;

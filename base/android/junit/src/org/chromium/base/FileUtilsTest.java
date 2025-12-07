@@ -129,20 +129,6 @@ public class FileUtilsTest {
     }
 
     /**
-     * Helper to get the absolute path strings of multiple temp paths created for testing.
-     *
-     * @param relPathnames Relative names of temp files or directories (does not need to exist).
-     */
-    private ArrayList<String> getPathNames(String... relPathNames) {
-        Path rootDir = temporaryFolder.getRoot().toPath();
-        ArrayList<String> ret = new ArrayList<String>();
-        for (String relPathName : relPathNames) {
-            ret.add(rootDir.resolve(relPathName).toString());
-        }
-        return ret;
-    }
-
-    /**
      * Helper to get the {@link File} object of a temp paths created for testing.
      *
      * @param relPathname The relative name of a temp file or directory (does not need to exist).
@@ -260,27 +246,10 @@ public class FileUtilsTest {
     }
 
     @Test
-    public void testBatchDeleteFiles() throws IOException {
-        // Batch delete files specified as path names.
-        prepareMixedFilesTestCase();
-        assertFileList("a1/; a1/b1/; a1/b1/c; a1/b1/c2; a1/b2/; a1/b2/c/; a1/b3; a2/; c");
-        FileUtils.batchDeleteFiles(getPathNames("a1/b1", "c", "nonexistent"), null);
-        assertFileList("a1/; a1/b2/; a1/b2/c/; a1/b3; a2/");
-        // Note that "b2" is not "a1/b2".
-        FileUtils.batchDeleteFiles(getPathNames("b2", "a1/b2/c"), null);
-        assertFileList("a1/; a1/b2/; a1/b3; a2/");
-        FileUtils.batchDeleteFiles(getPathNames("a1/b3", "a1", "a2", "a2", "a1", "a1/b2"), null);
-        assertFileList("");
-
-        // Omit testing content URL deletion.
-    }
-
-    @Test
     public void testGetFileSize() throws IOException {
         Function<byte[], Boolean> runCase =
                 (byte[] inputBytes) -> {
                     ByteArrayInputStream inputStream = new ByteArrayInputStream(inputBytes);
-                    byte[] fileBytes;
                     long size;
                     try {
                         File tempFile = temporaryFolder.newFile();
@@ -341,7 +310,6 @@ public class FileUtilsTest {
                 (byte[] inputBytes) -> {
                     ByteArrayInputStream inputStream = new ByteArrayInputStream(inputBytes);
                     ByteArrayOutputStream verifyStream = new ByteArrayOutputStream();
-                    byte[] fileBytes;
                     try {
                         File tempFile = temporaryFolder.newFile();
                         FileUtils.copyStreamToFile(inputStream, tempFile);
@@ -389,10 +357,10 @@ public class FileUtilsTest {
 
     @Test
     public void testGetUriForFileWithContentUri() {
-        // ContentUriUtils needs to be initialized for "content://" URL to work. Use a fake
+        // FileProviderUtils needs to be initialized for "content://" URL to work. Use a fake
         // version to avoid dealing with Android innards, and to provide consistent results.
-        ContentUriUtils.setFileProviderUtil(
-                new ContentUriUtils.FileProviderUtil() {
+        FileProviderUtils.setFileProviderUtil(
+                new FileProviderUtils.FileProviderUtil() {
                     @Override
                     public Uri getContentUriFromFile(File file) {
                         Uri.Builder builder = new Uri.Builder();
@@ -423,7 +391,7 @@ public class FileUtilsTest {
 
     @Test
     public void testGetUriForFileWithoutContentUri() {
-        // Assumes contentUriUtils.setFileProviderUtil() is not called yet.
+        // Assumes FileProviderUtils.setFileProviderUtil() is not called yet.
         // Only test using absolute path. Otherwise cwd would be included into results.
         assertEquals("file:///", FileUtils.getUriForFile(new File("/")).toString());
         assertEquals("file:///foo.bar", FileUtils.getUriForFile(new File("/foo.bar")).toString());
@@ -471,7 +439,7 @@ public class FileUtilsTest {
     }
 
     private static class TestContentProvider extends ContentProvider {
-        private HashMap<String, String> mUriToFilename;
+        private final HashMap<String, String> mUriToFilename;
 
         public TestContentProvider() {
             mUriToFilename = new HashMap<String, String>();

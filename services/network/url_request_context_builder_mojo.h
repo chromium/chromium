@@ -9,18 +9,17 @@
 
 #include "base/component_export.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "services/network/url_request_context_owner.h"
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "services/network/public/mojom/dhcp_wpad_url_client.mojom.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
-#include "services/proxy_resolver_win/public/mojom/proxy_resolver_win.mojom.h"
+#include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 #endif
 
 namespace net {
@@ -39,7 +38,7 @@ namespace network {
 // WindowsSystemProxyResolutionService that may mojo all proxy resolutions to a
 // utility process if enabled. The consumer is responsible for providing either
 // the proxy_resolver::mojom::ProxyResolverFactory or
-// proxy_resolver_win::mojom::WindowsSystemProxyResolver respectively. If a
+// proxy_resolver::mojom::SystemProxyResolver respectively. If a
 // ProxyResolutionService is set directly via the URLRequestContextBuilder API,
 // it will be used instead either of the ProxyResolutionService implementations
 // mentioned here.
@@ -62,15 +61,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLRequestContextBuilderMojo
 
 #if BUILDFLAG(IS_WIN)
   void SetMojoWindowsSystemProxyResolver(
-      mojo::PendingRemote<proxy_resolver_win::mojom::WindowsSystemProxyResolver>
+      mojo::PendingRemote<proxy_resolver::mojom::SystemProxyResolver>
           mojo_windows_system_proxy_resolver);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void SetDhcpWpadUrlClient(
       mojo::PendingRemote<network::mojom::DhcpWpadUrlClient>
           dhcp_wpad_url_client);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
   std::unique_ptr<net::ProxyResolutionService> CreateProxyResolutionService(
@@ -84,17 +83,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLRequestContextBuilderMojo
   std::unique_ptr<net::DhcpPacFileFetcher> CreateDhcpPacFileFetcher(
       net::URLRequestContext* context);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // If set, handles calls to get the PAC script URL from the browser process.
   // Only used if |mojo_proxy_resolver_factory_| is set.
   mojo::PendingRemote<network::mojom::DhcpWpadUrlClient> dhcp_wpad_url_client_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   mojo::PendingRemote<proxy_resolver::mojom::ProxyResolverFactory>
       mojo_proxy_resolver_factory_;
 
 #if BUILDFLAG(IS_WIN)
-  mojo::PendingRemote<proxy_resolver_win::mojom::WindowsSystemProxyResolver>
+  mojo::PendingRemote<proxy_resolver::mojom::SystemProxyResolver>
       mojo_windows_system_proxy_resolver_;
 #endif
 };

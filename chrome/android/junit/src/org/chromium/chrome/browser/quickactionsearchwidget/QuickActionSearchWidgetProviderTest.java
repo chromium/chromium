@@ -184,7 +184,7 @@ public class QuickActionSearchWidgetProviderTest {
         updateReportedWidgetSizes(mOptionsWidgetA, new SizeF(80, 80), new SizeF(400, 40));
         // Lastly, set the empty array of sizes.
         mOptionsWidgetA.putParcelableArrayList(
-                AppWidgetManager.OPTION_APPWIDGET_SIZES, new ArrayList<SizeF>());
+                AppWidgetManager.OPTION_APPWIDGET_SIZES, new ArrayList<>());
         mWidgetProvider.getRemoteViews(mContext, mPreferences, mOptionsWidgetA);
 
         // There are 2 fake widgets that we work with, so expect both being evaluated
@@ -203,7 +203,7 @@ public class QuickActionSearchWidgetProviderTest {
         // Lastly, set a different array of sizes and confirm it is used instead.
         mOptionsWidgetA.putParcelableArrayList(
                 AppWidgetManager.OPTION_APPWIDGET_SIZES,
-                new ArrayList<SizeF>(Arrays.asList(new SizeF(50, 50))));
+                new ArrayList<>(Arrays.asList(new SizeF(50, 50))));
         mWidgetProvider.getRemoteViews(mContext, mPreferences, mOptionsWidgetA);
 
         // Only one call is expected here, because we declare only one size in our list.
@@ -220,7 +220,7 @@ public class QuickActionSearchWidgetProviderTest {
         // supported.
         mOptionsWidgetA.putParcelableArrayList(
                 AppWidgetManager.OPTION_APPWIDGET_SIZES,
-                new ArrayList<SizeF>(Arrays.asList(new SizeF(50, 50))));
+                new ArrayList<>(Arrays.asList(new SizeF(50, 50))));
         mWidgetProvider.getRemoteViews(mContext, mPreferences, mOptionsWidgetA);
 
         // There are 2 fake widgets that we work with, so expect both being evaluated

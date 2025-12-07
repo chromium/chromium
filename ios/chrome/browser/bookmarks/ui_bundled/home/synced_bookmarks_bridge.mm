@@ -7,7 +7,7 @@
 #import "base/memory/weak_ptr.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/service/sync_service.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
@@ -17,21 +17,19 @@ namespace sync_bookmarks {
 
 SyncedBookmarksObserverBridge::SyncedBookmarksObserverBridge(
     id<SyncObserverModelBridge> delegate,
-    ChromeBrowserState* browserState)
-    : SyncObserverBridge(delegate,
-                         SyncServiceFactory::GetForBrowserState(browserState)),
-      identity_manager_(
-          IdentityManagerFactory::GetForBrowserState(browserState)),
-      browser_state_(browserState->AsWeakPtr()) {}
+    ProfileIOS* profile)
+    : SyncObserverBridge(delegate, SyncServiceFactory::GetForProfile(profile)),
+      identity_manager_(IdentityManagerFactory::GetForProfile(profile)),
+      profile_(profile->AsWeakPtr()) {}
 
 SyncedBookmarksObserverBridge::~SyncedBookmarksObserverBridge() {}
 
 #pragma mark - Signin and syncing status
 
 bool SyncedBookmarksObserverBridge::IsPerformingInitialSync() {
-  CHECK(browser_state_.get());
+  CHECK(profile_.get());
   syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForBrowserState(browser_state_.get());
+      SyncServiceFactory::GetForProfile(profile_.get());
 
   return sync_service->GetTypesWithPendingDownloadForInitialSync().Has(
       syncer::BOOKMARKS);

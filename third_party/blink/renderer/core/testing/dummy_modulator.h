@@ -46,6 +46,7 @@ class DummyModulator : public Modulator {
                  const ScriptFetchOptions&,
                  ModuleScriptCustomFetchType,
                  ModuleTreeClient*,
+                 v8::ModuleImportPhase,
                  String referrer) override;
   void FetchSingle(const ModuleScriptFetchRequest&,
                    ResourceFetcher*,
@@ -66,6 +67,9 @@ class DummyModulator : public Modulator {
   void ResolveDynamically(const ModuleRequest& module_request,
                           const ReferrerScriptInfo&,
                           ScriptPromiseResolver<IDLAny>*) override;
+  void AddEntryToModuleMap(const KURL& url,
+                           ModuleType type,
+                           ModuleScript* script) override;
   ModuleImportMeta HostGetImportMetaProperties(
       v8::Local<v8::Module>) const override;
   ModuleType ModuleTypeFromRequest(

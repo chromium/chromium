@@ -1,0 +1,27 @@
+=== Accessibility tree before go() pass 1 ===
+[document web] name='Material Web Dialog Events' focused
+++[section] name='Ready'
+++++[section]
+=== End accessibility tree ===
+FOCUS-EVENT:FALSE role=ROLE_DOCUMENT_WEB name='Material Web Dialog Events' ENABLED,FOCUSABLE,SENSITIVE,SHOWING,VISIBLE
+FOCUS-EVENT:TRUE role=ROLE_PUSH_BUTTON name='OK' ENABLED,FOCUSABLE,FOCUSED,SENSITIVE,SHOWING,VISIBLE
+STATE-CHANGE:FOCUSED:FALSE role=ROLE_DOCUMENT_WEB name='Material Web Dialog Events' ENABLED,FOCUSABLE,SENSITIVE,SHOWING,VISIBLE
+STATE-CHANGE:FOCUSED:TRUE role=ROLE_PUSH_BUTTON name='OK' ENABLED,FOCUSABLE,FOCUSED,SENSITIVE,SHOWING,VISIBLE
+=== Accessibility tree after go() pass 1 ===
+[document web] name='Material Web Dialog Events'
+++[dialog] name='Test' labelled-by=[heading]
+++++[section]
+++++++[section]
+++++++++[heading] name='Test' label-for=[dialog]
+++++++++++[static] name='Test'
+++++++[section]
+++++++++[section]
+++++++++[section]
+++++++++++[paragraph]
+++++++++++++[static] name='Test'
+++++++++[section]
+++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++[push button] name='OK' focused
+=== End accessibility tree ===

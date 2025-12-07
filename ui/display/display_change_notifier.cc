@@ -6,17 +6,19 @@
 
 #include <stdint.h>
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
+#include "build/buildflag.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
 
 namespace display {
 
-DisplayChangeNotifier::DisplayChangeNotifier() {}
+DisplayChangeNotifier::DisplayChangeNotifier() = default;
 
-DisplayChangeNotifier::~DisplayChangeNotifier() {}
+DisplayChangeNotifier::~DisplayChangeNotifier() = default;
 
 void DisplayChangeNotifier::AddObserver(DisplayObserver* obs) {
   observer_list_.AddObserver(obs);
@@ -39,21 +41,18 @@ void DisplayChangeNotifier::NotifyDisplaysChanged(
   }
 
   if (!removed_displays.empty()) {
-    for (DisplayObserver& observer : observer_list_) {
-      observer.OnDisplaysRemoved(removed_displays);
-    }
+    observer_list_.Notify(&DisplayObserver::OnDisplaysRemoved,
+                          removed_displays);
   }
 
   // Display present in new_displays but not in old_displays has been added.
   // Display present in both might have been modified.
   for (auto new_it = new_displays.begin(); new_it != new_displays.end();
        ++new_it) {
-    auto old_it = base::ranges::find(old_displays, new_it->id(), &Display::id);
+    auto old_it = std::ranges::find(old_displays, new_it->id(), &Display::id);
 
     if (old_it == old_displays.end()) {
-      for (DisplayObserver& observer : observer_list_) {
-        observer.OnDisplayAdded(*new_it);
-      }
+      observer_list_.Notify(&DisplayObserver::OnDisplayAdded, *new_it);
       continue;
     }
 
@@ -80,18 +79,21 @@ void DisplayChangeNotifier::NotifyDisplaysChanged(
     }
 
     if (metrics != DisplayObserver::DISPLAY_METRIC_NONE) {
-      for (DisplayObserver& observer : observer_list_) {
-        observer.OnDisplayMetricsChanged(*new_it, metrics);
-      }
+      observer_list_.Notify(&DisplayObserver::OnDisplayMetricsChanged, *new_it,
+                            metrics);
     }
   }
 }
 
 void DisplayChangeNotifier::NotifyCurrentWorkspaceChanged(
     const std::string& workspace) {
-  for (DisplayObserver& observer : observer_list_) {
-    observer.OnCurrentWorkspaceChanged(workspace);
-  }
+  observer_list_.Notify(&DisplayObserver::OnCurrentWorkspaceChanged, workspace);
 }
+
+#if BUILDFLAG(IS_MAC)
+void DisplayChangeNotifier::NotifyPrimaryDisplayChanged() {
+  observer_list_.Notify(&DisplayObserver::OnPrimaryDisplayChanged);
+}
+#endif
 
 }  // namespace display

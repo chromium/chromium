@@ -22,8 +22,8 @@ namespace sessions {
 // Chrome.
 class SESSIONS_EXPORT ExtendedInfoHandler {
  public:
-  ExtendedInfoHandler() {}
-  virtual ~ExtendedInfoHandler() {}
+  ExtendedInfoHandler() = default;
+  virtual ~ExtendedInfoHandler() = default;
 
   // Returns the data to write to disk for the specified NavigationEntry.
   virtual std::string GetExtendedInfo(

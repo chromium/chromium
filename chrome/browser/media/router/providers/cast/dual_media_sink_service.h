@@ -28,7 +28,6 @@ class CastMediaSinkService;
 class CastMediaSinkServiceImpl;
 class DialMediaSinkService;
 class DialMediaSinkServiceImpl;
-class MediaSinkServiceBase;
 
 // This class uses DialMediaSinkService and CastMediaSinkService to discover
 // sinks used by the Cast MediaRouteProvider. It also encapsulates the setup
@@ -60,8 +59,6 @@ class DualMediaSinkService {
   DialMediaSinkServiceImpl* GetDialMediaSinkServiceImpl();
 
   // Used by CastMediaRouteProvider only.
-  MediaSinkServiceBase* GetCastMediaSinkServiceBase();
-
   CastMediaSinkServiceImpl* GetCastMediaSinkServiceImpl();
 
   CastAppDiscoveryService* cast_app_discovery_service() {
@@ -74,6 +71,9 @@ class DualMediaSinkService {
   // receive updates.
   base::CallbackListSubscription AddSinksDiscoveredCallback(
       const OnSinksDiscoveredProviderCallback& callback);
+
+  void SetDiscoveryPermissionRejectedCallback(
+      base::RepeatingClosure discovery_permission_rejected_cb);
 
   void AddLogger(LoggerImpl* logger_impl);
 
@@ -112,6 +112,8 @@ class DualMediaSinkService {
                            AddSinksDiscoveredCallback);
   FRIEND_TEST_ALL_PREFIXES(DualMediaSinkServiceTest,
                            AddSinksDiscoveredCallbackAfterDiscovery);
+  FRIEND_TEST_ALL_PREFIXES(DualMediaSinkServiceTest,
+                           SetPermissionRejectedCallback);
 
   friend struct std::default_delete<DualMediaSinkService>;
 
@@ -119,6 +121,7 @@ class DualMediaSinkService {
 
   void OnSinksDiscovered(const std::string& provider_name,
                          std::vector<MediaSinkInternal> sinks);
+  void OnDiscoveryPermissionRejected();
 
   // Note: Dual discovery logic assumes |dial_media_sink_service_| outlives
   // |cast_media_sink_service_|.
@@ -127,6 +130,7 @@ class DualMediaSinkService {
   std::unique_ptr<CastAppDiscoveryService> cast_app_discovery_service_;
 
   OnSinksDiscoveredProviderCallbackList sinks_discovered_callbacks_;
+  base::RepeatingClosure discovery_permission_rejected_cb_;
   base::flat_map<std::string, std::vector<MediaSinkInternal>> current_sinks_;
 
   SEQUENCE_CHECKER(sequence_checker_);

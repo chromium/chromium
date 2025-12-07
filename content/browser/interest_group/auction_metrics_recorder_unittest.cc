@@ -16,8 +16,8 @@
 #include "base/time/time.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/interest_group/additional_bid_result.h"
-#include "content/browser/interest_group/auction_result.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
+#include "content/public/browser/auction_result.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-shared.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -282,9 +282,11 @@ TEST_F(AuctionMetricsRecorderTest, NumBidderWorklets) {
           /*wasm_url=*/std::nullopt,
           /*signals_url=*/std::nullopt,
           /*needs_cors_for_additional_bid=*/false,
+          /*send_creative_scanning_metadata=*/std::nullopt,
           /*experiment_group_id=*/std::nullopt,
           /*trusted_bidding_signals_slot_size_param=*/"",
-          /*trusted_signals_coordinator=*/std::nullopt);
+          /*trusted_signals_coordinator=*/std::nullopt,
+          /*contextual_data=*/std::nullopt);
       recorder().ReportBidderWorkletKey(worklet_key);
     }
   }

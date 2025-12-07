@@ -16,14 +16,10 @@
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
-#include "components/viz/service/display/shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/surface_resource_holder.h"
 #include "components/viz/service/surfaces/surface_saved_frame.h"
 #include "components/viz/service/transitions/transferable_resource_tracker.h"
 #include "components/viz/service/viz_service_export.h"
-#include "ui/gfx/animation/keyframe/animation_curve.h"
-#include "ui/gfx/animation/keyframe/keyframe_effect.h"
-#include "ui/gfx/animation/keyframe/keyframe_model.h"
 
 namespace gpu {
 class SharedImageInterface;
@@ -46,14 +42,17 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager
  public:
   using SaveDirectiveCompleteCallback =
       base::OnceCallback<void(const CompositorFrameTransitionDirective&)>;
+  using ViewTransitionResourcesCapturedCallback =
+      base::OnceCallback<void(const blink::ViewTransitionToken&)>;
 
   static std::unique_ptr<SurfaceAnimationManager> CreateWithSave(
       const CompositorFrameTransitionDirective& directive,
       Surface* surface,
-      SharedBitmapManager* shared_bitmap_manager,
       gpu::SharedImageInterface* shared_image_interface,
       ReservedResourceIdTracker* id_tracker,
-      SaveDirectiveCompleteCallback sequence_id_finished_callback);
+      SaveDirectiveCompleteCallback sequence_id_finished_callback,
+      ViewTransitionResourcesCapturedCallback
+          view_transition_resources_captured_callback);
 
   // Replaces ViewTransitionElementResourceIds with corresponding ResourceIds if
   // necessary.
@@ -85,16 +84,18 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager
       const base::flat_map<blink::ViewTransitionToken,
                            std::unique_ptr<SurfaceAnimationManager>>*
           token_to_animation_manager,
+      base::flat_set<SurfaceId>* original_surfaces,
       const DrawQuad& quad,
       CompositorRenderPass& copy_pass);
 
   SurfaceAnimationManager(
       const CompositorFrameTransitionDirective& directive,
       Surface* surface,
-      SharedBitmapManager* shared_bitmap_manager,
       gpu::SharedImageInterface* shared_image_interface,
       ReservedResourceIdTracker* id_tracker,
-      SaveDirectiveCompleteCallback sequence_id_finished_callback);
+      SaveDirectiveCompleteCallback sequence_id_finished_callback,
+      ViewTransitionResourcesCapturedCallback
+          view_transition_resources_captured_callback);
 
   void OnSaveDirectiveProcessed(
       SaveDirectiveCompleteCallback callback,
@@ -111,6 +112,7 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager
   TransferableResourceTracker transferable_resource_tracker_;
 
   SurfaceSavedFrame saved_frame_;
+  SurfaceId surface_id_;
   base::flat_set<ViewTransitionElementResourceId> empty_resource_ids_;
 
   std::optional<TransferableResourceTracker::ResourceFrame> saved_textures_;

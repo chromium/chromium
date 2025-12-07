@@ -7,10 +7,8 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "extensions/browser/api/power/activity_reporter_delegate_ash.h"
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "extensions/browser/api/power/activity_reporter_delegate_lacros.h"
 #endif
 
 namespace extensions {
@@ -18,10 +16,8 @@ namespace extensions {
 // static
 std::unique_ptr<ActivityReporterDelegate>
 ActivityReporterDelegate::GetDelegate() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return std::make_unique<ActivityReporterDelegateAsh>();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return std::make_unique<ActivityReporterDelegateLacros>();
 #else
 #error Unsupported platform
 #endif

@@ -17,22 +17,19 @@ using blink::WebDocument;
 
 namespace {
 
-// Time after which an idle connection to Screen AI service is disconnected.
-// TODO(b/353718857): Remove this when ScreenAI service is set to auto shut down
-// on idle.
-constexpr base::TimeDelta kScreenAIIdleDisconnectDelay = base::Minutes(5);
-
 const char kHistogramsName[] =
     "Accessibility.MainNodeAnnotations.AnnotationResult";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(MainNodeAnnotationResult)
 enum class MainNodeAnnotationResult {
   kSuccess = 0,
   kInvalid = 1,
   kDuplicate = 2,
   kMaxValue = kDuplicate,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:MainNodeAnnotationResult)
 
 }  // namespace
 
@@ -66,7 +63,7 @@ bool AXMainNodeAnnotator::HasAXActionToEnableAnnotations() {
 }
 
 ax::mojom::Action AXMainNodeAnnotator::GetAXActionToEnableAnnotations() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void AXMainNodeAnnotator::Annotate(const WebDocument& document,
@@ -122,7 +119,8 @@ void AXMainNodeAnnotator::Annotate(const WebDocument& document,
         .GetInterface(annotator.InitWithNewPipeAndPassReceiver());
     annotator_remote_.Bind(std::move(annotator));
     annotator_remote_.reset_on_disconnect();
-    annotator_remote_.reset_on_idle_timeout(kScreenAIIdleDisconnectDelay);
+    annotator_remote_->SetClientType(
+        screen_ai::mojom::MceClientType::kMainNode);
   }
 
   // Identify the main node using Screen2x.
@@ -162,7 +160,7 @@ void AXMainNodeAnnotator::ComputeAuthorStatus(ui::AXTreeUpdate* update) {
   if (author_status_ != AXMainNodeAnnotatorAuthorStatus::kUnconfirmed) {
     return;
   }
-  for (ui::AXNodeData node : update->nodes) {
+  for (ui::AXNodeData& node : update->nodes) {
     if (node.role == ax::mojom::Role::kMain) {
       author_status_ = AXMainNodeAnnotatorAuthorStatus::kAuthorProvidedMain;
       return;

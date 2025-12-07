@@ -1,0 +1,65 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android)
+
+static_library("waap") {
+  sources = [
+    "waap_ui_metrics_recorder.cc",
+    "waap_ui_metrics_recorder.h",
+    "waap_ui_metrics_service.cc",
+    "waap_ui_metrics_service.h",
+    "waap_ui_metrics_service_factory.cc",
+    "waap_ui_metrics_service_factory.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/sessions",
+    "//chrome/common:constants",
+    "//components/keyed_service/core",
+    "//components/startup_metric_utils",
+    "//content/public/browser",
+    "//ui/views",
+  ]
+}
+
+source_set("waap_utils") {
+  sources = [
+    "waap_utils.cc",
+    "waap_utils.h",
+  ]
+  deps = [
+    ":waap",
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chrome/common:chrome_features",
+    "//content/public/common",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "waap_ui_metrics_recorder_unittest.cc",
+    "waap_ui_metrics_service_unittest.cc",
+    "waap_utils_unittest.cc",
+  ]
+  deps = [
+    ":waap",
+    ":waap_utils",
+    "//base/test:test_support",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//components/startup_metric_utils",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/events",
+    "//ui/events:test_support",
+    "//ui/views",
+  ]
+}

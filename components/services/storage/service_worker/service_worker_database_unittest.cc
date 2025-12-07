@@ -49,7 +49,7 @@ struct AvailableIds {
   int64_t ver_id;
 
   AvailableIds() : reg_id(-1), res_id(-1), ver_id(-1) {}
-  ~AvailableIds() {}
+  ~AvailableIds() = default;
 };
 
 GURL URL(const GURL& origin, const std::string& path) {
@@ -3090,7 +3090,7 @@ TEST(ServiceWorkerDatabaseTest, InvalidWebFeature) {
       static_cast<uint32_t>(blink::mojom::WebFeature::kBackgroundSync));
   // Add an out of range feature.
   data.add_used_features(
-      static_cast<uint32_t>(blink::mojom::WebFeature::kNumberOfFeatures) + 11);
+      static_cast<uint32_t>(blink::mojom::WebFeature::kMaxValue) + 12);
   data.add_used_features(
       static_cast<uint32_t>(blink::mojom::WebFeature::kNetInfoType));
 
@@ -3246,11 +3246,12 @@ const network::mojom::WebSandboxFlags kWebSandboxFlags[] = {
     network::mojom::WebSandboxFlags::kDownloads,
     network::mojom::WebSandboxFlags::kStorageAccessByUserActivation,
     network::mojom::WebSandboxFlags::kTopNavigationToCustomProtocols,
+    network::mojom::WebSandboxFlags::kAllowSameSiteNoneCookies,
     network::mojom::WebSandboxFlags::kAll,
 };
 
 static_assert(
-    network::mojom::WebSandboxFlags::kTopNavigationToCustomProtocols ==
+    network::mojom::WebSandboxFlags::kAllowSameSiteNoneCookies ==
         network::mojom::WebSandboxFlags::kMaxValue,
     "The array should contain all the flags");
 
@@ -3346,8 +3347,8 @@ TEST(ServiceWorkerDatabaseTest, PolicyContainerPoliciesStoreRestore) {
     auto policies = blink::mojom::PolicyContainerPolicies::New();
 
     for (auto ip_address_space : {
+             network::mojom::IPAddressSpace::kLoopback,
              network::mojom::IPAddressSpace::kLocal,
-             network::mojom::IPAddressSpace::kPrivate,
              network::mojom::IPAddressSpace::kPublic,
              network::mojom::IPAddressSpace::kUnknown,
          }) {
@@ -3826,8 +3827,9 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = network::mojom::ServiceWorkerRouterSourceType::kRace;
-      source.race_source.emplace();
+      source.type = network::mojom::ServiceWorkerRouterSourceType::
+          kRaceNetworkAndFetchEvent;
+      source.race_network_and_fetch_event_source.emplace();
       rule.sources.push_back(source);
     }
     {
@@ -3848,6 +3850,31 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
       blink::ServiceWorkerRouterCacheSource cache_source;
       cache_source.cache_name = "example_cache_name";
       source.cache_source = cache_source;
+      rule.sources.push_back(source);
+    }
+    {
+      // Race network and cache without cache_name.
+      blink::ServiceWorkerRouterSource source;
+      source.type =
+          network::mojom::ServiceWorkerRouterSourceType::kRaceNetworkAndCache;
+      source.race_network_and_cache_source.emplace();
+
+      blink::ServiceWorkerRouterCacheSource cache_source;
+      source.race_network_and_cache_source->cache_source = cache_source;
+
+      rule.sources.push_back(source);
+    }
+    {
+      // Race network and cache with cache_name.
+      blink::ServiceWorkerRouterSource source;
+      source.type =
+          network::mojom::ServiceWorkerRouterSourceType::kRaceNetworkAndCache;
+      source.race_network_and_cache_source.emplace();
+
+      blink::ServiceWorkerRouterCacheSource cache_source;
+      cache_source.cache_name = "example_cache_name";
+      source.race_network_and_cache_source->cache_source = cache_source;
+
       rule.sources.push_back(source);
     }
     router_rules.rules.emplace_back(rule);
@@ -3950,6 +3977,80 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesLegacyPathname) {
             registration->router_rules->rules[0].condition.get());
     EXPECT_EQ(url_pattern, registered_url_pattern);
   }
+}
+
+// Ensure that all chrome-extension service workers have an address space of
+// kLoopback regardless of the IP address space in the database.
+//
+// Regression test for crbug.com/456078996
+TEST(ServiceWorkerDatabaseTest, ExtensionStoreRestore) {
+  base::HistogramTester histogram_tester;
+  auto store_and_restore = [](blink::mojom::PolicyContainerPoliciesPtr
+                                  policies) {
+    // Build the minimal RegistrationData with the given |policy|.
+    GURL origin("chrome-extension://fdafdafdadfa");
+    RegistrationData data;
+    data.registration_id = 123;
+    data.scope = URL(origin, "");
+    data.key =
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(data.scope));
+    data.script = URL(origin, "/script.js");
+    data.version_id = 456;
+    data.resources_total_size_bytes = 100;
+    data.policy_container_policies = std::move(policies);
+    std::vector<ResourceRecordPtr> resources;
+    resources.push_back(CreateResource(1, data.script, 100));
+
+    // Store.
+    std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
+    ServiceWorkerDatabase::DeletedVersion deleted_version;
+    ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+              database->WriteRegistration(data, resources, &deleted_version));
+
+    // Restore.
+    std::vector<mojom::ServiceWorkerRegistrationDataPtr> registrations;
+    std::vector<std::vector<ResourceRecordPtr>> resources_list;
+    EXPECT_EQ(
+        ServiceWorkerDatabase::Status::kOk,
+        database->GetRegistrationsForStorageKey(
+            blink::StorageKey::CreateFirstParty(url::Origin::Create(origin)),
+            &registrations, &resources_list));
+
+    // The data must not have been altered, except for the address space,
+    // which should always be kLoopback.
+    data.policy_container_policies->ip_address_space =
+        network::mojom::IPAddressSpace::kLoopback;
+    VerifyRegistrationData(data, *registrations[0]);
+  };
+
+  {
+    auto policies = blink::mojom::PolicyContainerPolicies::New();
+
+    for (auto ip_address_space : {
+             network::mojom::IPAddressSpace::kLoopback,
+             network::mojom::IPAddressSpace::kLocal,
+             network::mojom::IPAddressSpace::kPublic,
+             network::mojom::IPAddressSpace::kUnknown,
+         }) {
+      policies->ip_address_space = ip_address_space;
+      store_and_restore(policies->Clone());
+    }
+  }
+
+  histogram_tester.ExpectTotalCount(
+      "ServiceWorker.ChromeExtensionUpdateIPAddressSpace", 3);
+  // network::mojom::IPAddressSpace::kLoopback
+  histogram_tester.ExpectBucketCount(
+      "ServiceWorker.ChromeExtensionUpdateIPAddressSpace", 0, 0);
+  // network::mojom::IPAddressSpace::kLocal
+  histogram_tester.ExpectBucketCount(
+      "ServiceWorker.ChromeExtensionUpdateIPAddressSpace", 1, 1);
+  // network::mojom::IPAddressSpace::kPublic
+  histogram_tester.ExpectBucketCount(
+      "ServiceWorker.ChromeExtensionUpdateIPAddressSpace", 2, 1);
+  // network::mojom::IPAddressSpace::kUnknown
+  histogram_tester.ExpectBucketCount(
+      "ServiceWorker.ChromeExtensionUpdateIPAddressSpace", 3, 1);
 }
 
 }  // namespace storage

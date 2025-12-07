@@ -1,6 +1,8 @@
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
+ * Copyright (C) 2002-2022 Németh László
+ *
  * The contents of this file are subject to the Mozilla Public License Version
  * 1.1 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -11,12 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is Hunspell, based on MySpell.
- *
- * The Initial Developers of the Original Code are
- * Kevin Hendricks (MySpell) and Németh László (Hunspell).
- * Portions created by the Initial Developers are Copyright (C) 2002-2005
- * the Initial Developers. All Rights Reserved.
+ * Hunspell is based on MySpell which is Copyright (C) 2002 Kevin Hendricks.
  *
  * Contributor(s): David Einstein, Davide Prina, Giuseppe Modugno,
  * Gianluca Turconi, Simon Brouwer, Noll János, Bíró Árpád,
@@ -71,16 +68,20 @@
  * SUCH DAMAGE.
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <ctype.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+#include <cctype>
 #include <limits>
 #include <sstream>
+#if __cplusplus >= 202002L
+#include <bit>
+#endif
 
 #include "hashmgr.hxx"
 #include "csutil.hxx"
 #include "atypes.hxx"
+#include "langnum.hxx"
 
 // build a hash table from a munched word list
 
@@ -91,84 +92,62 @@ HashMgr::HashMgr(hunspell::BDictReader* reader)
 HashMgr::HashMgr(const char* tpath, const char* apath, const char* key)
     :
 #endif
-      tablesize(0),
-      tableptr(NULL),
       flag_mode(FLAG_CHAR),
       complexprefixes(0),
       utf8(0),
-      forbiddenword(FORBIDDENWORD)  // forbidden word signing flag
-      ,
-      numaliasf(0),
-      aliasf(NULL),
-      aliasflen(0),
-      numaliasm(0),
-      aliasm(NULL) {
-  langnum = 0;
-  csconv = 0;
+      forbiddenword(FORBIDDENWORD), // forbidden word signing flag
+      langnum(0),
+      csconv(NULL)
+{
 #ifdef HUNSPELL_CHROME_CLIENT
   // No tables to load, just the AF lines.
   load_config(NULL, NULL);
   int ec = LoadAFLines();
 #else
   load_config(apath, key);
+  if (!csconv)
+    csconv = get_current_cs(SPELL_ENCODING);
   int ec = load_tables(tpath, key);
 #endif
   if (ec) {
     /* error condition - what should we do here */
     HUNSPELL_WARNING(stderr, "Hash Manager Error : %d\n", ec);
-    free(tableptr);
-    //keep tablesize to 1 to fix possible division with zero
-    tablesize = 1;
-    tableptr = (struct hentry**)calloc(tablesize, sizeof(struct hentry*));
-    if (!tableptr) {
-      tablesize = 0;
-    }
+    free_table();
+    //keep table size to 1 to fix possible division with zero
+    tableptr.resize(1, nullptr);
   }
 }
 
+void HashMgr::free_flag(unsigned short* astr, int alen) {
+  if (astr && (aliasf.empty() || TESTAFF(astr, ONLYUPCASEFLAG, alen)))
+    delete[] astr;
+}
+
+void HashMgr::free_table() {
+  // now pass through hash table freeing up everything
+  // go through column by column of the table
+  for (auto ptr : tableptr) {
+    hentry* nt = NULL;
+    while (ptr) {
+      nt = ptr->next;
+      free_flag(ptr->astr, ptr->alen);
+      free(ptr);
+      ptr = nt;
+    }
+  }
+  tableptr.clear();
+}
+
 HashMgr::~HashMgr() {
-  if (tableptr) {
-    // now pass through hash table freeing up everything
-    // go through column by column of the table
-    for (int i = 0; i < tablesize; i++) {
-      struct hentry* pt = tableptr[i];
-      struct hentry* nt = NULL;
-      while (pt) {
-        nt = pt->next;
-        if (pt->astr &&
-            (!aliasf || TESTAFF(pt->astr, ONLYUPCASEFLAG, pt->alen)))
-          free(pt->astr);
-        free(pt);
-        pt = nt;
-      }
-    }
-    free(tableptr);
-  }
-  tablesize = 0;
+  free_table();
 
-  if (aliasf) {
-    for (int j = 0; j < (numaliasf); j++)
-      free(aliasf[j]);
-    free(aliasf);
-    aliasf = NULL;
-    if (aliasflen) {
-      free(aliasflen);
-      aliasflen = NULL;
-    }
-  }
-  if (aliasm) {
-    for (int j = 0; j < (numaliasm); j++)
-      free(aliasm[j]);
-    free(aliasm);
-    aliasm = NULL;
-  }
+  for (auto& j : aliasf)
+    delete[] j;
+  aliasf.clear();
 
-#ifndef OPENOFFICEORG
-#ifndef MOZILLA_CLIENT
-  if (utf8)
-    free_utf_tbl();
-#endif
-#endif
+  for (auto& j : aliasm)
+    delete[] j;
+  aliasm.clear();
 
 #ifdef HUNSPELL_CHROME_CLIENT
   EmptyHentryCache();
@@ -201,7 +180,7 @@ void HashMgr::EmptyHentryCache() {
 
 // lookup a root word in the hashtable
 
-struct hentry* HashMgr::lookup(const char* word) const {
+struct hentry* HashMgr::lookup(const char* word, size_t len) const {
 #ifdef HUNSPELL_CHROME_CLIENT
   int affix_ids[hunspell::BDict::MAX_AFFIXES_PER_WORD];
   int affix_count = bdict_reader->FindWord(word, affix_ids);
@@ -221,15 +200,12 @@ struct hentry* HashMgr::lookup(const char* word) const {
 
   return AffixIDsToHentry(word_buf, affix_ids, affix_count);
 #else
-  struct hentry* dp;
-  if (tableptr) {
-    dp = tableptr[hash(word)];
-    if (!dp)
-      return NULL;
-    for (; dp != NULL; dp = dp->next) {
-      if (strcmp(word, dp->word) == 0)
-        return dp;
-    }
+  struct hentry* dp = tableptr[hash(word, len)];
+  if (!dp)
+    return NULL;
+  for (; dp != NULL; dp = dp->next) {
+    if (strcmp(word, dp->word) == 0)
+      return dp;
   }
   return NULL;
 #endif
@@ -241,7 +217,15 @@ int HashMgr::add_word(const std::string& in_word,
                       unsigned short* aff,
                       int al,
                       const std::string* in_desc,
-                      bool onlyupcase) {
+                      bool onlyupcase,
+                      int captype) {
+
+  if (al > std::numeric_limits<short>::max()) {
+    HUNSPELL_WARNING(stderr, "error: affix len %d is over max limit\n", al);
+    free_flag(aff, al);
+    return 1;
+  }
+
 // TODO: The following 40 lines or so are actually new. Should they be included?
 #ifndef HUNSPELL_CHROME_CLIENT
   const std::string* word = &in_word;
@@ -249,7 +233,7 @@ int HashMgr::add_word(const std::string& in_word,
 
   std::string *word_copy = NULL;
   std::string *desc_copy = NULL;
-  if (!ignorechars.empty() || complexprefixes) {
+  if ((!ignorechars.empty() && !has_no_ignored_chars(in_word, ignorechars)) || complexprefixes) {
     word_copy = new std::string(in_word);
 
     if (!ignorechars.empty()) {
@@ -266,7 +250,7 @@ int HashMgr::add_word(const std::string& in_word,
       else
         reverseword(*word_copy);
 
-      if (in_desc && !aliasm) {
+      if (in_desc && aliasm.empty()) {
         desc_copy = new std::string(*in_desc);
 
         if (complexprefixes) {
@@ -282,42 +266,152 @@ int HashMgr::add_word(const std::string& in_word,
     word = word_copy;
   }
 
+  // limit of hp->blen
+  if (word->size() > std::numeric_limits<unsigned short>::max()) {
+    HUNSPELL_WARNING(stderr, "error: word len %ld is over max limit\n", word->size());
+    delete desc_copy;
+    delete word_copy;
+    free_flag(aff, al);
+    return 1;
+  }
+
   bool upcasehomonym = false;
-  int descl = desc ? (aliasm ? sizeof(char*) : desc->size() + 1) : 0;
+  int descl = desc ? (!aliasm.empty() ? sizeof(char*) : desc->size() + 1) : 0;
   // variable-length hash record with word and optional fields
-  struct hentry* hp =
+  auto hp =
       (struct hentry*)malloc(sizeof(struct hentry) + word->size() + descl);
   if (!hp) {
     delete desc_copy;
     delete word_copy;
+    free_flag(aff, al);
     return 1;
   }
 
   char* hpw = hp->word;
-  strcpy(hpw, word->c_str());
+  memcpy(hpw, word->data(), word->size());
+  hpw[word->size()] = 0;
 
-  int i = hash(hpw);
+  int i = hash(hpw, word->size());
 
-  hp->blen = (unsigned char)word->size();
-  hp->clen = (unsigned char)wcl;
+  hp->blen = (unsigned short)word->size();
+  hp->clen = (unsigned short)wcl;
   hp->alen = (short)al;
   hp->astr = aff;
   hp->next = NULL;
   hp->next_homonym = NULL;
+  hp->var = (captype == INITCAP) ? H_OPT_INITCAP : 0;
 
   // store the description string or its pointer
   if (desc) {
-    hp->var = H_OPT;
-    if (aliasm) {
-      hp->var += H_OPT_ALIASM;
+    hp->var |= H_OPT;
+    if (!aliasm.empty()) {
+      hp->var |= H_OPT_ALIASM;
       store_pointer(hpw + word->size() + 1, get_aliasm(atoi(desc->c_str())));
     } else {
       strcpy(hpw + word->size() + 1, desc->c_str());
     }
-    if (strstr(HENTRY_DATA(hp), MORPH_PHON))
-      hp->var += H_OPT_PHON;
-  } else
-    hp->var = 0;
+    if (HENTRY_FIND(hp, MORPH_PHON)) {
+      hp->var |= H_OPT_PHON;
+      // store ph: fields (pronounciation, misspellings, old orthography etc.)
+      // of a morphological description in reptable to use in REP replacements.
+      size_t predicted = tableptr.size() / MORPH_PHON_RATIO;
+      if (reptable.capacity() < predicted)
+          reptable.reserve(predicted);
+      std::string fields = HENTRY_DATA(hp);
+      std::string::const_iterator iter = fields.begin(), start_piece = mystrsep(fields, iter);
+      while (start_piece != fields.end()) {
+        if (std::string(start_piece, iter).find(MORPH_PHON) == 0) {
+          std::string ph = std::string(start_piece, iter).substr(sizeof MORPH_PHON - 1);
+          if (!ph.empty()) {
+            std::vector<w_char> w;
+            size_t strippatt;
+            std::string wordpart;
+            // dictionary based REP replacement, separated by "->"
+            // for example "pretty ph:prity ph:priti->pretti" to handle
+            // both prity -> pretty and pritier -> prettiest suggestions.
+            if (((strippatt = ph.find("->")) != std::string::npos) &&
+                    (strippatt > 0) && (strippatt < ph.size() - 2)) {
+                wordpart = ph.substr(strippatt + 2);
+                ph.erase(ph.begin() + strippatt, ph.end());
+            } else
+                wordpart = in_word;
+            // when the ph: field ends with the character *,
+            // strip last character of the pattern and the replacement
+            // to match in REP suggestions also at character changes,
+            // for example, "pretty ph:prity*" results "prit->prett"
+            // REP replacement instead of "prity->pretty", to get
+            // prity->pretty and pritiest->prettiest suggestions.
+            if (ph.at(ph.size()-1) == '*') {
+              strippatt = 1;
+              size_t stripword = 0;
+              if (utf8) {
+                while ((strippatt < ph.size()) &&
+                  ((ph.at(ph.size()-strippatt-1) & 0xc0) == 0x80))
+                     ++strippatt;
+                while ((stripword < wordpart.size()) &&
+                  ((wordpart.at(wordpart.size()-stripword-1) & 0xc0) == 0x80))
+                     ++stripword;
+              }
+              ++strippatt;
+              ++stripword;
+              if ((ph.size() > strippatt) && (wordpart.size() > stripword)) {
+                ph.erase(ph.size()-strippatt, strippatt);
+                wordpart.erase(wordpart.size()-stripword, stripword);
+              }
+            }
+            // capitalize lowercase pattern for capitalized words to support
+            // good suggestions also for capitalized misspellings, eg.
+            // Wednesday ph:wendsay
+            // results wendsay -> Wednesday and Wendsay -> Wednesday, too.
+            if (captype == INITCAP) {
+              std::string ph_capitalized;
+              if (utf8) {
+                u8_u16(w, ph);
+                if (get_captype_utf8(w, langnum) == NOCAP) {
+                  mkinitcap_utf(w, langnum);
+                  u16_u8(ph_capitalized, w);
+                }
+              } else if (get_captype(ph, csconv) == NOCAP)
+                  mkinitcap(ph_capitalized, csconv);
+
+              if (!ph_capitalized.empty()) {
+                // add also lowercase word in the case of German or
+                // Hungarian to support lowercase suggestions lowercased by
+                // compound word generation or derivational suffixes
+                // (for example by adjectival suffix "-i" of geographical
+                // names in Hungarian:
+                // Massachusetts ph:messzecsuzec
+                // messzecsuzeci -> massachusettsi (adjective)
+                // For lowercasing by conditional PFX rules, see
+                // tests/germancompounding test example or the
+                // Hungarian dictionary.)
+                if (langnum == LANG_de || langnum == LANG_hu) {
+                  std::string wordpart_lower(wordpart);
+                  if (utf8) {
+                    u8_u16(w, wordpart_lower);
+                    mkallsmall_utf(w, langnum);
+                    u16_u8(wordpart_lower, w);
+                  } else {
+                    mkallsmall(wordpart_lower, csconv);
+                  }
+                  reptable.emplace_back();
+                  reptable.back().pattern.assign(ph);
+                  reptable.back().outstrings[0].assign(wordpart_lower);
+                }
+                reptable.emplace_back();
+                reptable.back().pattern.assign(ph_capitalized);
+                reptable.back().outstrings[0].assign(wordpart);
+              }
+            }
+            reptable.emplace_back();
+            reptable.back().pattern.assign(ph);
+            reptable.back().outstrings[0].assign(wordpart);
+          }
+        }
+        start_piece = mystrsep(fields, iter);
+      }
+    }
+  }
 
   struct hentry* dp = tableptr[i];
   if (!dp) {
@@ -331,7 +425,7 @@ int HashMgr::add_word(const std::string& in_word,
       // remove hidden onlyupcase homonym
       if (!onlyupcase) {
         if ((dp->astr) && TESTAFF(dp->astr, ONLYUPCASEFLAG, dp->alen)) {
-          free(dp->astr);
+          delete[] dp->astr;
           dp->astr = hp->astr;
           dp->alen = hp->alen;
           free(hp);
@@ -351,7 +445,7 @@ int HashMgr::add_word(const std::string& in_word,
     // remove hidden onlyupcase homonym
     if (!onlyupcase) {
       if ((dp->astr) && TESTAFF(dp->astr, ONLYUPCASEFLAG, dp->alen)) {
-        free(dp->astr);
+        delete[] dp->astr;
         dp->astr = hp->astr;
         dp->alen = hp->alen;
         free(hp);
@@ -369,8 +463,7 @@ int HashMgr::add_word(const std::string& in_word,
     dp->next = hp;
   } else {
     // remove hidden onlyupcase homonym
-    if (hp->astr)
-      free(hp->astr);
+    delete[] hp->astr;
     free(hp);
   }
 
@@ -405,13 +498,12 @@ int HashMgr::add_hidden_capitalized_word(const std::string& word,
   if (((captype == HUHCAP) || (captype == HUHINITCAP) ||
        ((captype == ALLCAP) && (flagslen != 0))) &&
       !((flagslen != 0) && TESTAFF(flags, forbiddenword, flagslen))) {
-    unsigned short* flags2 =
-        (unsigned short*)malloc(sizeof(unsigned short) * (flagslen + 1));
-    if (!flags2)
-      return 1;
-    if (flagslen)
-      memcpy(flags2, flags, flagslen * sizeof(unsigned short));
+    unsigned short* flags2 = new unsigned short[flagslen + 1];
     flags2[flagslen] = ONLYUPCASEFLAG;
+    if (flagslen) {
+      memcpy(flags2, flags, flagslen * sizeof(unsigned short));
+      std::sort(flags2, flags2 + flagslen + 1);
+    }
     if (utf8) {
       std::string st;
       std::vector<w_char> w;
@@ -419,12 +511,12 @@ int HashMgr::add_hidden_capitalized_word(const std::string& word,
       mkallsmall_utf(w, langnum);
       mkinitcap_utf(w, langnum);
       u16_u8(st, w);
-      return add_word(st, wcl, flags2, flagslen + 1, dp, true);
+      return add_word(st, wcl, flags2, flagslen + 1, dp, true, INITCAP);
     } else {
       std::string new_word(word);
       mkallsmall(new_word, csconv);
       mkinitcap(new_word, csconv);
-      int ret = add_word(new_word, wcl, flags2, flagslen + 1, dp, true);
+      int ret = add_word(new_word, wcl, flags2, flagslen + 1, dp, true, INITCAP);
       return ret;
     }
   }
@@ -432,17 +524,21 @@ int HashMgr::add_hidden_capitalized_word(const std::string& word,
 }
 
 // detect captype and modify word length for UTF-8 encoding
-int HashMgr::get_clen_and_captype(const std::string& word, int* captype) {
+int HashMgr::get_clen_and_captype(const std::string& word, int* captype, std::vector<w_char> &workbuf) {
   int len;
   if (utf8) {
-    std::vector<w_char> dest_utf;
-    len = u8_u16(dest_utf, word);
-    *captype = get_captype_utf8(dest_utf, langnum);
+    len = u8_u16(workbuf, word);
+    *captype = get_captype_utf8(workbuf, langnum);
   } else {
     len = word.size();
     *captype = get_captype(word, csconv);
   }
   return len;
+}
+
+int HashMgr::get_clen_and_captype(const std::string& word, int* captype) {
+  std::vector<w_char> workbuf;
+  return get_clen_and_captype(word, captype, workbuf);
 }
 
 // remove word (personal dictionary function for standalone applications)
@@ -453,17 +549,14 @@ int HashMgr::remove(const std::string& word) {
   if (iter != custom_word_to_affix_id_map_.end())
       custom_word_to_affix_id_map_.erase(iter);
 #else
-  struct hentry* dp = lookup(word.c_str());
+  struct hentry* dp = lookup(word.c_str(), word.size());
   while (dp) {
     if (dp->alen == 0 || !TESTAFF(dp->astr, forbiddenword, dp->alen)) {
-      unsigned short* flags =
-          (unsigned short*)malloc(sizeof(unsigned short) * (dp->alen + 1));
-      if (!flags)
-        return 1;
+      auto flags = new unsigned short[dp->alen + 1];
       for (int i = 0; i < dp->alen; i++)
         flags[i] = dp->astr[i];
       flags[dp->alen] = forbiddenword;
-      free(dp->astr);
+      delete[] dp->astr;
       dp->astr = flags;
       dp->alen++;
       std::sort(flags, flags + dp->alen);
@@ -475,66 +568,51 @@ int HashMgr::remove(const std::string& word) {
 }
 
 /* remove forbidden flag to add a personal word to the hash */
-int HashMgr::remove_forbidden_flag(const std::string& word) {
-  struct hentry* dp = lookup(word.c_str());
+void HashMgr::remove_forbidden_flag(const std::string& word) {
+  struct hentry* dp = lookup(word.c_str(), word.size());
   if (!dp)
-    return 1;
+    return;
   while (dp) {
-    if (dp->astr && TESTAFF(dp->astr, forbiddenword, dp->alen)) {
-      if (dp->alen == 1)
-        dp->alen = 0;  // XXX forbidden words of personal dic.
-      else {
-        unsigned short* flags2 =
-            (unsigned short*)malloc(sizeof(unsigned short) * (dp->alen - 1));
-        if (!flags2)
-          return 1;
-        int i, j = 0;
-        for (i = 0; i < dp->alen; i++) {
-          if (dp->astr[i] != forbiddenword)
-            flags2[j++] = dp->astr[i];
-        }
-        dp->alen--;
-        free(dp->astr);
-        dp->astr = flags2;  // XXX allowed forbidden words
-      }
-    }
+    if (dp->astr && TESTAFF(dp->astr, forbiddenword, dp->alen))
+      dp->alen = 0;  // XXX forbidden words of personal dic.
     dp = dp->next_homonym;
   }
-  return 0;
 }
 
 // add a custom dic. word to the hash table (public)
 int HashMgr::add(const std::string& word) {
-  if (remove_forbidden_flag(word)) {
-    int captype;
-    int al = 0;
-    unsigned short* flags = NULL;
-    int wcl = get_clen_and_captype(word, &captype);
-    add_word(word, wcl, flags, al, NULL, false);
-    return add_hidden_capitalized_word(word, wcl, flags, al, NULL,
-                                       captype);
-  }
-  return 0;
+  remove_forbidden_flag(word);
+  int captype, al = 0;
+  unsigned short* flags = NULL;
+  int wcl = get_clen_and_captype(word, &captype);
+  add_word(word, wcl, flags, al, NULL, false, captype);
+  return add_hidden_capitalized_word(word, wcl, flags, al, NULL,
+                                     captype);
+}
+
+int HashMgr::add_with_flags(const std::string& word, const std::string& flags, const std::string& desc) {
+  remove_forbidden_flag(word);
+  int captype;
+  unsigned short *df;
+  int al = decode_flags(&df, flags, NULL);
+  int wcl = get_clen_and_captype(word, &captype);
+  add_word(word, wcl, df, al, &desc, false, captype);
+  return add_hidden_capitalized_word(word, wcl, df, al, &desc, captype);
 }
 
 int HashMgr::add_with_affix(const std::string& word, const std::string& example) {
   // detect captype and modify word length for UTF-8 encoding
-  struct hentry* dp = lookup(example.c_str());
+  struct hentry* dp = lookup(example.c_str(), example.size());
   remove_forbidden_flag(word);
   if (dp && dp->astr) {
     int captype;
     int wcl = get_clen_and_captype(word, &captype);
-    if (aliasf) {
-      add_word(word, wcl, dp->astr, dp->alen, NULL, false);
+    if (!aliasf.empty()) {
+      add_word(word, wcl, dp->astr, dp->alen, NULL, false, captype);
     } else {
-      unsigned short* flags =
-          (unsigned short*)malloc(dp->alen * sizeof(unsigned short));
-      if (flags) {
-        memcpy((void*)flags, (void*)dp->astr,
-               dp->alen * sizeof(unsigned short));
-        add_word(word, wcl, flags, dp->alen, NULL, false);
-      } else
-        return 1;
+      auto flags = new unsigned short[dp->alen];
+      memcpy(flags, dp->astr, dp->alen * sizeof(unsigned short));
+      add_word(word, wcl, flags, dp->alen, NULL, false, captype);
     }
     return add_hidden_capitalized_word(word, wcl, dp->astr,
                                        dp->alen, NULL, captype);
@@ -585,7 +663,7 @@ struct hentry* HashMgr::walk_hashtable(int& col, struct hentry* hp) const {
 #else
   if (hp && hp->next != NULL)
     return hp->next;
-  for (col++; col < tablesize; col++) {
+  for (col++; col < (int)tableptr.size(); ++col) {
     if (tableptr[col])
       return tableptr[col];
   }
@@ -603,7 +681,7 @@ int HashMgr::load_tables(const char* tpath, const char* key) {
   if (dict == NULL)
     return 1;
 
-  // first read the first line of file to get hash table size */
+  // first read the first line of file to get hash table size
   std::string ts;
   if (!dict->getline(ts)) {
     HUNSPELL_WARNING(stderr, "error: empty dic file %s\n", tpath);
@@ -617,33 +695,36 @@ int HashMgr::load_tables(const char* tpath, const char* key) {
     ts.erase(0, 3);
   }
 
-  tablesize = atoi(ts.c_str());
+  int tablesize = atoi(ts.c_str());
 
-  int nExtra = 5 + USERWORD;
+  const int nExtra = 5 + USERWORD;
+#if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
+  const int max_allowed = (std::numeric_limits<int>::max() - 1 - nExtra) / int(sizeof(struct hentry*));
+#else
+  const int max_allowed = (100000 - 1 - nExtra) / int(sizeof(struct hentry*));
+#endif
 
-  if (tablesize <= 0 ||
-      (tablesize >= (std::numeric_limits<int>::max() - 1 - nExtra) /
-                        int(sizeof(struct hentry*)))) {
+  if (tablesize <= 0 || tablesize >= max_allowed) {
     HUNSPELL_WARNING(
         stderr, "error: line 1: missing or bad word count in the dic file\n");
     delete dict;
     return 4;
   }
   tablesize += nExtra;
-  if ((tablesize % 2) == 0)
+  if ((tablesize & 1) == 0)
     tablesize++;
 
   // allocate the hash table
-  tableptr = (struct hentry**)calloc(tablesize, sizeof(struct hentry*));
-  if (!tableptr) {
-    delete dict;
-    return 3;
-  }
+  tableptr.resize(tablesize, nullptr);
 
   // loop through all words on much list and add to hash
   // table and create word and affix strings
 
+  std::vector<w_char> workbuf;
+
+  int nLineCount(0);
   while (dict->getline(ts)) {
+    ++nLineCount;
     mychomp(ts);
     // split each line into word and morphological description
     size_t dp_pos = 0;
@@ -693,7 +774,7 @@ int HashMgr::load_tables(const char* tpath, const char* key) {
     if (ap_pos != std::string::npos && ap_pos != ts.size()) {
       std::string ap(ts.substr(ap_pos + 1));
       ts.resize(ap_pos);
-      if (aliasf) {
+      if (!aliasf.empty()) {
         int index = atoi(ap.c_str());
         al = get_aliasf(index, &flags, dict);
         if (!al) {
@@ -701,7 +782,7 @@ int HashMgr::load_tables(const char* tpath, const char* key) {
                            dict->getlinenum());
         }
       } else {
-        al = decode_flags(&flags, ap.c_str(), dict);
+        al = decode_flags(&flags, ap, dict);
         if (al == -1) {
           HUNSPELL_WARNING(stderr, "Can't allocate memory.\n");
           delete dict;
@@ -715,35 +796,46 @@ int HashMgr::load_tables(const char* tpath, const char* key) {
     }
 
     int captype;
-    int wcl = get_clen_and_captype(ts, &captype);
+    int wcl = get_clen_and_captype(ts, &captype, workbuf);
     const std::string *dp_str = dp.empty() ? NULL : &dp;
     // add the word and its index plus its capitalized form optionally
-    if (add_word(ts, wcl, flags, al, dp_str, false) ||
+    if (add_word(ts, wcl, flags, al, dp_str, false, captype) ||
         add_hidden_capitalized_word(ts, wcl, flags, al, dp_str, captype)) {
       delete dict;
       return 5;
     }
   }
 
+  int ret(0);
+
+  // reject ludicrous tablesizes
+  if (tablesize > 8192 + nExtra && tablesize > nLineCount * 10 + nExtra) {
+    HUNSPELL_WARNING(stderr, ".dic initial approximate word count line value of %d is too large for %d lines\n", tablesize, nLineCount);
+    ret = 3;
+  }
+
   delete dict;
-#endif
+  return ret;
+#else
   return 0;
+#endif
 }
 
 // the hash function is a simple load and rotate
 // algorithm borrowed
-int HashMgr::hash(const char* word) const {
+int HashMgr::hash(const char* word, size_t len) const {
 #ifdef HUNSPELL_CHROME_CLIENT
     return 0;
 #else
   unsigned long hv = 0;
-  for (int i = 0; i < 4 && *word != 0; i++)
-    hv = (hv << 8) | (*word++);
-  while (*word != 0) {
+  size_t i = 0;
+  while (i < 4 && i < len)
+    hv = (hv << 8) | word[i++];
+  while (i < len) {
     ROTATE(hv, ROTATE_LEN);
-    hv ^= (*word++);
+    hv ^= word[i++];
   }
-  return (unsigned long)hv % tablesize;
+  return (unsigned long)hv % tableptr.size();
 #endif
 }
 
@@ -756,52 +848,56 @@ int HashMgr::decode_flags(unsigned short** result, const std::string& flags, Fil
   switch (flag_mode) {
     case FLAG_LONG: {  // two-character flags (1x2yZz -> 1x 2y Zz)
       len = flags.size();
-      if (len % 2 == 1)
+      if ((len & 1) == 1 && af != NULL)
         HUNSPELL_WARNING(stderr, "error: line %d: bad flagvector\n",
                          af->getlinenum());
-      len /= 2;
-      *result = (unsigned short*)malloc(len * sizeof(unsigned short));
-      if (!*result)
-        return -1;
+      len >>= 1;
+      *result = new unsigned short[len];
       for (int i = 0; i < len; i++) {
-        (*result)[i] = ((unsigned short)((unsigned char)flags[i * 2]) << 8) +
-                       (unsigned char)flags[i * 2 + 1];
+        unsigned short flag = ((unsigned short)((unsigned char)flags[i << 1]) << 8) |
+                              ((unsigned short)((unsigned char)flags[(i << 1) | 1]));
+
+        if (flag >= DEFAULTFLAGS && af != NULL) {
+          HUNSPELL_WARNING(stderr,
+                           "error: line %d: flag id %d is too large (max: %d)\n",
+                           af->getlinenum(), flag, DEFAULTFLAGS - 1);
+          flag = 0;
+        }
+
+        (*result)[i] = flag;
       }
       break;
     }
     case FLAG_NUM: {  // decimal numbers separated by comma (4521,23,233 -> 4521
                       // 23 233)
-      len = 1;
-      unsigned short* dest;
-      for (size_t i = 0; i < flags.size(); ++i) {
-        if (flags[i] == ',')
-          len++;
-      }
-      *result = (unsigned short*)malloc(len * sizeof(unsigned short));
-      if (!*result)
-        return -1;
-      dest = *result;
+      len = int(1 + std::count_if(flags.begin(), flags.end(), [](char c) { return c == ','; }));
+      *result = new unsigned short[len];
+      unsigned short* dest = *result;
       const char* src = flags.c_str();
-      for (const char* p = src; *p; p++) {
-        if (*p == ',') {
+      for (size_t p = 0; p < flags.size(); ++p) {
+        if (flags[p] == ',') {
           int i = atoi(src);
-          if (i >= DEFAULTFLAGS)
+          if ((i >= DEFAULTFLAGS || i < 0) && af != NULL) {
             HUNSPELL_WARNING(
                 stderr, "error: line %d: flag id %d is too large (max: %d)\n",
                 af->getlinenum(), i, DEFAULTFLAGS - 1);
+             i = 0;
+	  }
           *dest = (unsigned short)i;
-          if (*dest == 0)
+          if (*dest == 0 && af != NULL)
             HUNSPELL_WARNING(stderr, "error: line %d: 0 is wrong flag id\n",
                              af->getlinenum());
-          src = p + 1;
+          src = flags.c_str() + p + 1;
           dest++;
         }
       }
       int i = atoi(src);
-      if (i >= DEFAULTFLAGS)
+      if (i >= DEFAULTFLAGS || i < 0) {
         HUNSPELL_WARNING(stderr,
                          "error: line %d: flag id %d is too large (max: %d)\n",
                          af->getlinenum(), i, DEFAULTFLAGS - 1);
+        i = 0;
+      }
       *dest = (unsigned short)i;
       if (*dest == 0)
         HUNSPELL_WARNING(stderr, "error: line %d: 0 is wrong flag id\n",
@@ -812,21 +908,24 @@ int HashMgr::decode_flags(unsigned short** result, const std::string& flags, Fil
       std::vector<w_char> w;
       u8_u16(w, flags);
       len = w.size();
-      *result = (unsigned short*)malloc(len * sizeof(unsigned short));
-      if (!*result)
-        return -1;
-      memcpy(*result, &w[0], len * sizeof(short));
+      *result = new unsigned short[len];
+#if defined(__i386__) || defined(_M_IX86) || defined(_M_X64)
+      memcpy(*result, w.data(), len * sizeof(unsigned short));
+#else
+      unsigned short* dest = *result;
+      for (const w_char wc : w) {
+        *dest = (unsigned short)wc;
+        dest++;
+      }
+#endif
       break;
     }
     default: {  // Ispell's one-character flags (erfg -> e r f g)
-      unsigned short* dest;
       len = flags.size();
-      *result = (unsigned short*)malloc(len * sizeof(unsigned short));
-      if (!*result)
-        return -1;
-      dest = *result;
-      for (size_t i = 0; i < flags.size(); ++i) {
-        *dest = (unsigned char)flags[i];
+      *result = new unsigned short[len];
+      unsigned short* dest = *result;
+      for (const char flag : flags) {
+        *dest = (unsigned char)flag;
         dest++;
       }
     }
@@ -841,14 +940,14 @@ bool HashMgr::decode_flags(std::vector<unsigned short>& result, const std::strin
   switch (flag_mode) {
     case FLAG_LONG: {  // two-character flags (1x2yZz -> 1x 2y Zz)
       size_t len = flags.size();
-      if (len % 2 == 1)
+      if ((len & 1) == 1)
         HUNSPELL_WARNING(stderr, "error: line %d: bad flagvector\n",
                          af->getlinenum());
-      len /= 2;
+      len >>= 1;
       result.reserve(result.size() + len);
       for (size_t i = 0; i < len; ++i) {
-        result.push_back(((unsigned short)((unsigned char)flags[i * 2]) << 8) +
-                         (unsigned char)flags[i * 2 + 1]);
+        result.push_back(((unsigned short)((unsigned char)flags[i << 1]) << 8) |
+		                 ((unsigned short)((unsigned char)flags[(i << 1) | 1])));
       }
       break;
     }
@@ -858,10 +957,12 @@ bool HashMgr::decode_flags(std::vector<unsigned short>& result, const std::strin
       for (const char* p = src; *p; p++) {
         if (*p == ',') {
           int i = atoi(src);
-          if (i >= DEFAULTFLAGS)
+          if (i >= DEFAULTFLAGS) {
             HUNSPELL_WARNING(
                 stderr, "error: line %d: flag id %d is too large (max: %d)\n",
                 af->getlinenum(), i, DEFAULTFLAGS - 1);
+            i = 0;
+	  }
           result.push_back((unsigned short)i);
           if (result.back() == 0)
             HUNSPELL_WARNING(stderr, "error: line %d: 0 is wrong flag id\n",
@@ -870,10 +971,12 @@ bool HashMgr::decode_flags(std::vector<unsigned short>& result, const std::strin
         }
       }
       int i = atoi(src);
-      if (i >= DEFAULTFLAGS)
+      if (i >= DEFAULTFLAGS) {
         HUNSPELL_WARNING(stderr,
                          "error: line %d: flag id %d is too large (max: %d)\n",
                          af->getlinenum(), i, DEFAULTFLAGS - 1);
+        i = 0;
+      }
       result.push_back((unsigned short)i);
       if (result.back() == 0)
         HUNSPELL_WARNING(stderr, "error: line %d: 0 is wrong flag id\n",
@@ -883,70 +986,90 @@ bool HashMgr::decode_flags(std::vector<unsigned short>& result, const std::strin
     case FLAG_UNI: {  // UTF-8 characters
       std::vector<w_char> w;
       u8_u16(w, flags);
-      size_t len = w.size();
-      size_t origsize = result.size();
+      size_t len = w.size(), origsize = result.size();
+#if defined(__i386__) || defined(_M_IX86) || defined(_M_X64)
       result.resize(origsize + len);
-      memcpy(&result[origsize], &w[0], len * sizeof(short));
+      memcpy(result.data() + origsize, w.data(), len * sizeof(short));
+#else
+      result.reserve(origsize + len);
+      for (const w_char wc : w) result.push_back((unsigned short)wc);
+#endif
       break;
     }
     default: {  // Ispell's one-character flags (erfg -> e r f g)
       result.reserve(flags.size());
-      for (size_t i = 0; i < flags.size(); ++i) {
-        result.push_back((unsigned char)flags[i]);
+      for (const char flag : flags) {
+        result.push_back((unsigned char)flag);
       }
     }
   }
   return true;
 }
 
-unsigned short HashMgr::decode_flag(const char* f) const {
+unsigned short HashMgr::decode_flag(const std::string& f) const {
   unsigned short s = 0;
   int i;
   switch (flag_mode) {
     case FLAG_LONG:
-      s = ((unsigned short)((unsigned char)f[0]) << 8) + (unsigned char)f[1];
+      if (f.size() >= 2)
+        s = ((unsigned short)((unsigned char)f[0]) << 8) | ((unsigned short)((unsigned char)f[1]));
       break;
     case FLAG_NUM:
-      i = atoi(f);
-      if (i >= DEFAULTFLAGS)
+      i = atoi(f.c_str());
+      if (i >= DEFAULTFLAGS) {
         HUNSPELL_WARNING(stderr, "error: flag id %d is too large (max: %d)\n",
                          i, DEFAULTFLAGS - 1);
+        i = 0;
+      }
       s = (unsigned short)i;
       break;
     case FLAG_UNI: {
       std::vector<w_char> w;
       u8_u16(w, f);
       if (!w.empty())
-          memcpy(&s, &w[0], 1 * sizeof(short));
+        s = (unsigned short)w[0];
       break;
     }
     default:
-      s = *(unsigned char*)f;
+      if (!f.empty())
+        s = (unsigned char)f[0];
   }
   if (s == 0)
     HUNSPELL_WARNING(stderr, "error: 0 is wrong flag id\n");
   return s;
 }
 
-char* HashMgr::encode_flag(unsigned short f) const {
+std::string HashMgr::encode_flag(unsigned short f) const {
   if (f == 0)
-    return mystrdup("(NULL)");
+    return "(NULL)";
   std::string ch;
   if (flag_mode == FLAG_LONG) {
     ch.push_back((unsigned char)(f >> 8));
     ch.push_back((unsigned char)(f - ((f >> 8) << 8)));
   } else if (flag_mode == FLAG_NUM) {
-    std::ostringstream stream;
-    stream << f;
-    ch = stream.str();
+    ch = std::to_string(f); 
   } else if (flag_mode == FLAG_UNI) {
-    const w_char* w_c = (const w_char*)&f;
-    std::vector<w_char> w(w_c, w_c + 1);
+
+#if defined(__i386__) || defined(_M_IX86) || defined(_M_X64)
+
+#if __cplusplus >= 202002L
+    auto wc = std::bit_cast<w_char>(f);
+#else
+    w_char wc;
+    memcpy(&wc, &f, sizeof(unsigned short));
+#endif
+
+#else
+    w_char wc;
+    wc.h = (unsigned char)(f >> 8);
+    wc.l = (unsigned char)(f & 0xff);
+#endif
+    const std::vector<w_char> w = { wc };
     u16_u8(ch, w);
   } else {
     ch.push_back((unsigned char)(f));
   }
-  return mystrdup(ch.c_str());
+  return ch;
 }
 
 // read in aff file and set flag mode
@@ -1009,7 +1132,7 @@ int HashMgr::load_config(const char* affpath, const char* key) {
         delete afflst;
         return 1;
       }
-      forbiddenword = decode_flag(st.c_str());
+      forbiddenword = decode_flag(st);
     }
 
     if (line.compare(0, 3, "SET", 3) == 0) {
@@ -1019,11 +1142,6 @@ int HashMgr::load_config(const char* affpath, const char* key) {
       }
       if (enc == "UTF-8") {
         utf8 = 1;
-#ifndef OPENOFFICEORG
-#ifndef MOZILLA_CLIENT
-        initialize_utf_tbl();
-#endif
-#endif
       } else
         csconv = get_current_cs(enc);
     }
@@ -1063,28 +1181,35 @@ int HashMgr::load_config(const char* affpath, const char* key) {
     if (line.compare(0, 15, "COMPLEXPREFIXES", 15) == 0)
       complexprefixes = 1;
 
+    /* parse in the typical fault correcting table */
+    if (line.compare(0, 3, "REP", 3) == 0) {
+      if (!parse_reptable(line, afflst)) {
+        delete afflst;
+        return 1;
+      }
+    }
+
+    // don't check the full affix file, yet
     if (((line.compare(0, 3, "SFX", 3) == 0) ||
-         (line.compare(0, 3, "PFX", 3) == 0)) && line.size() > 3 && isspace(line[3]))
+         (line.compare(0, 3, "PFX", 3) == 0)) &&
+            line.size() > 3 && isspace(line[3]) &&
+            !reptable.empty()) // (REP table is in the end of Afrikaans aff file)
       break;
   }
 
-  if (csconv == NULL)
-    csconv = get_current_cs(SPELL_ENCODING);
   delete afflst;
   return 0;
 }
 
 /* parse in the ALIAS table */
 bool HashMgr::parse_aliasf(const std::string& line, FileMgr* af) {
-  if (numaliasf != 0) {
+  if (!aliasf.empty()) {
     HUNSPELL_WARNING(stderr, "error: line %d: multiple table definitions\n",
                      af->getlinenum());
     return false;
   }
-  int i = 0;
-  int np = 0;
-  std::string::const_iterator iter = line.begin();
-  std::string::const_iterator start_piece = mystrsep(line, iter);
+  int i = 0, np = 0, numaliasf = 0;
+  auto iter = line.begin(), start_piece = mystrsep(line, iter);
   while (start_piece != line.end()) {
     switch (i) {
       case 0: {
@@ -1094,27 +1219,14 @@ bool HashMgr::parse_aliasf(const std::string& line, FileMgr* af) {
       case 1: {
         numaliasf = atoi(std::string(start_piece, iter).c_str());
         if (numaliasf < 1) {
-          numaliasf = 0;
-          aliasf = NULL;
-          aliasflen = NULL;
+          aliasf.clear();
+          aliasflen.clear();
           HUNSPELL_WARNING(stderr, "error: line %d: bad entry number\n",
                            af->getlinenum());
           return false;
         }
-        aliasf =
-            (unsigned short**)malloc(numaliasf * sizeof(unsigned short*));
-        aliasflen =
-            (unsigned short*)malloc(numaliasf * sizeof(unsigned short));
-        if (!aliasf || !aliasflen) {
-          numaliasf = 0;
-          if (aliasf)
-            free(aliasf);
-          if (aliasflen)
-            free(aliasflen);
-          aliasf = NULL;
-          aliasflen = NULL;
-          return false;
-        }
+        aliasf.reserve(std::min(numaliasf, 16384));
+        aliasflen.reserve(std::min(numaliasf, 16384));
         np++;
         break;
       }
@@ -1125,65 +1237,60 @@ bool HashMgr::parse_aliasf(const std::string& line, FileMgr* af) {
     start_piece = mystrsep(line, iter);
   }
   if (np != 2) {
-    numaliasf = 0;
-    free(aliasf);
-    free(aliasflen);
-    aliasf = NULL;
-    aliasflen = NULL;
+    aliasf.clear();
+    aliasflen.clear();
     HUNSPELL_WARNING(stderr, "error: line %d: missing data\n",
                      af->getlinenum());
     return false;
   }
 
   /* now parse the numaliasf lines to read in the remainder of the table */
-  for (int j = 0; j < numaliasf; j++) {
+  for (int j = 0; j < numaliasf; ++j) {
     std::string nl;
-    if (!af->getline(nl))
-      return false;
-    mychomp(nl);
+    unsigned short* alias = NULL;
+    unsigned aliaslen = 0;
     i = 0;
-    aliasf[j] = NULL;
-    aliasflen[j] = 0;
-    iter = nl.begin();
-    start_piece = mystrsep(nl, iter);
-    while (start_piece != nl.end()) {
-      switch (i) {
-        case 0: {
-          if (nl.compare(start_piece - nl.begin(), 2, "AF", 2) != 0) {
-            numaliasf = 0;
-            free(aliasf);
-            free(aliasflen);
-            aliasf = NULL;
-            aliasflen = NULL;
-            HUNSPELL_WARNING(stderr, "error: line %d: table is corrupt\n",
-                             af->getlinenum());
-            return false;
-          }
-          break;
-        }
-        case 1: {
-          std::string piece(start_piece, iter);
-          aliasflen[j] =
-              (unsigned short)decode_flags(&(aliasf[j]), piece, af);
-          std::sort(aliasf[j], aliasf[j] + aliasflen[j]);
-          break;
-        }
-        default:
-          break;
-      }
-      ++i;
+    if (af->getline(nl)) {
+      mychomp(nl);
+      iter = nl.begin();
       start_piece = mystrsep(nl, iter);
+      bool errored = false;
+      while (!errored && start_piece != nl.end()) {
+        switch (i) {
+          case 0: {
+            if (nl.compare(start_piece - nl.begin(), 2, "AF", 2) != 0) {
+              errored = true;
+              break;
+            }
+            break;
+          }
+          case 1: {
+            std::string piece(start_piece, iter);
+            aliaslen =
+                (unsigned short)decode_flags(&alias, piece, af);
+            std::sort(alias, alias + aliaslen);
+            break;
+          }
+          default:
+            break;
+        }
+        ++i;
+        start_piece = mystrsep(nl, iter);
+      }
     }
-    if (!aliasf[j]) {
-      free(aliasf);
-      free(aliasflen);
-      aliasf = NULL;
-      aliasflen = NULL;
-      numaliasf = 0;
+    if (!alias) {
+      for (int k = 0; k < j; ++k) {
+        delete[] aliasf[k];
+      }
+      aliasf.clear();
+      aliasflen.clear();
       HUNSPELL_WARNING(stderr, "error: line %d: table is corrupt\n",
                        af->getlinenum());
       return false;
     }
+
+    aliasf.push_back(alias);
+    aliasflen.push_back(aliaslen);
   }
   return true;
 }
@@ -1236,6 +1343,8 @@ hentry* HashMgr::InitHashEntry(hentry* entry,
   entry->alen = static_cast<short>(const_cast<HashMgr*>(this)->get_aliasf(
       affix_index, &entry->astr, &dummyDictionaryFile));
   entry->blen = static_cast<unsigned char>(word_length);
+  std::vector<w_char> w;
+  entry->clen = u8_u16(w, word);
   memcpy(&entry->word, word, word_length);
 
   return entry;
@@ -1313,11 +1422,11 @@ hentry* HashMgr::GetHentryFromHEntryCache(char* word) {
 #endif
 
 int HashMgr::is_aliasf() const {
-  return (aliasf != NULL);
+  return !aliasf.empty();
 }
 
 int HashMgr::get_aliasf(int index, unsigned short** fvec, FileMgr* af) const {
-  if ((index > 0) && (index <= numaliasf)) {
+  if (index > 0 && static_cast<size_t>(index) <= aliasflen.size()) {
     *fvec = aliasf[index - 1];
     return aliasflen[index - 1];
   }
@@ -1329,15 +1438,13 @@ int HashMgr::get_aliasf(int index, unsigned short** fvec, FileMgr* af) const {
 
 /* parse morph alias definitions */
 bool HashMgr::parse_aliasm(const std::string& line, FileMgr* af) {
-  if (numaliasm != 0) {
+  if (!aliasm.empty()) {
     HUNSPELL_WARNING(stderr, "error: line %d: multiple table definitions\n",
                      af->getlinenum());
     return false;
   }
-  int i = 0;
-  int np = 0;
-  std::string::const_iterator iter = line.begin();
-  std::string::const_iterator start_piece = mystrsep(line, iter);
+  int i = 0, np = 0, numaliasm = 0;
+  auto iter = line.begin(), start_piece = mystrsep(line, iter);
   while (start_piece != line.end()) {
     switch (i) {
       case 0: {
@@ -1351,11 +1458,7 @@ bool HashMgr::parse_aliasm(const std::string& line, FileMgr* af) {
                            af->getlinenum());
           return false;
         }
-        aliasm = (char**)malloc(numaliasm * sizeof(char*));
-        if (!aliasm) {
-          numaliasm = 0;
-          return false;
-        }
+        aliasm.reserve(std::min(numaliasm, 16384));
         np++;
         break;
       }
@@ -1366,75 +1469,170 @@ bool HashMgr::parse_aliasm(const std::string& line, FileMgr* af) {
     start_piece = mystrsep(line, iter);
   }
   if (np != 2) {
-    numaliasm = 0;
-    free(aliasm);
-    aliasm = NULL;
+    aliasm.clear();
     HUNSPELL_WARNING(stderr, "error: line %d: missing data\n",
                      af->getlinenum());
     return false;
   }
 
   /* now parse the numaliasm lines to read in the remainder of the table */
-  for (int j = 0; j < numaliasm; j++) {
+  for (int j = 0; j < numaliasm; ++j) {
     std::string nl;
-    if (!af->getline(nl))
-      return false;
-    mychomp(nl);
-    aliasm[j] = NULL;
-    iter = nl.begin();
-    i = 0;
-    start_piece = mystrsep(nl, iter);
-    while (start_piece != nl.end()) {
-      switch (i) {
-        case 0: {
-          if (nl.compare(start_piece - nl.begin(), 2, "AM", 2) != 0) {
-            HUNSPELL_WARNING(stderr, "error: line %d: table is corrupt\n",
-                             af->getlinenum());
-            numaliasm = 0;
-            free(aliasm);
-            aliasm = NULL;
-            return false;
-          }
-          break;
-        }
-        case 1: {
-          // add the remaining of the line
-          std::string::const_iterator end = nl.end();
-          std::string chunk(start_piece, end);
-          if (complexprefixes) {
-            if (utf8)
-              reverseword_utf(chunk);
-            else
-              reverseword(chunk);
-          }
-          aliasm[j] = mystrdup(chunk.c_str());
-          break;
-        }
-        default:
-          break;
-      }
-      ++i;
+    char* alias = NULL;
+    if (af->getline(nl)) {
+      mychomp(nl);
+      iter = nl.begin();
+      i = 0;
       start_piece = mystrsep(nl, iter);
+      bool errored = false;
+      while (!errored && start_piece != nl.end()) {
+        switch (i) {
+          case 0: {
+            if (nl.compare(start_piece - nl.begin(), 2, "AM", 2) != 0) {
+              errored = true;
+              break;
+            }
+            break;
+          }
+          case 1: {
+            // add the remaining of the line
+            std::string::const_iterator end = nl.end();
+            std::string chunk(start_piece, end);
+            if (complexprefixes) {
+              if (utf8)
+                reverseword_utf(chunk);
+              else
+                reverseword(chunk);
+            }
+            size_t sl = chunk.size() + 1;
+            alias = new char[sl];
+            memcpy(alias, chunk.c_str(), sl);
+            break;
+          }
+          default:
+            break;
+        }
+        ++i;
+        start_piece = mystrsep(nl, iter);
+      }
     }
-    if (!aliasm[j]) {
-      numaliasm = 0;
-      free(aliasm);
-      aliasm = NULL;
+    if (!alias) {
+      for (int k = 0; k < j; ++k) {
+        delete[] aliasm[k];
+      }
+      aliasm.clear();
       HUNSPELL_WARNING(stderr, "error: line %d: table is corrupt\n",
                        af->getlinenum());
+      return false;
+    }
+    aliasm.push_back(alias);
+  }
+  return true;
+}
+
+int HashMgr::is_aliasm() const {
+  return !aliasm.empty();
+}
+
+char* HashMgr::get_aliasm(int index) const {
+  if (index > 0 && static_cast<size_t>(index) <= aliasm.size())
+    return aliasm[index - 1];
+  HUNSPELL_WARNING(stderr, "error: bad morph. alias index: %d\n", index);
+  return NULL;
+}
+
+/* parse in the typical fault correcting table */
+bool HashMgr::parse_reptable(const std::string& line, FileMgr* af) {
+  if (!reptable.empty()) {
+    HUNSPELL_WARNING(stderr, "error: line %d: multiple table definitions\n",
+                     af->getlinenum());
+    return false;
+  }
+  int numrep = -1, i = 0, np = 0;
+  auto iter = line.begin(), start_piece = mystrsep(line, iter);
+  while (start_piece != line.end()) {
+    switch (i) {
+      case 0: {
+        np++;
+        break;
+      }
+      case 1: {
+        numrep = atoi(std::string(start_piece, iter).c_str());
+        if (numrep < 1) {
+          HUNSPELL_WARNING(stderr, "error: line %d: incorrect entry number\n",
+                           af->getlinenum());
+          return false;
+        }
+        reptable.reserve(std::min(numrep, 16384));
+        np++;
+        break;
+      }
+      default:
+        break;
+    }
+    ++i;
+    start_piece = mystrsep(line, iter);
+  }
+  if (np != 2) {
+    HUNSPELL_WARNING(stderr, "error: line %d: missing data\n",
+                     af->getlinenum());
+    return false;
+  }
+
+  /* now parse the numrep lines to read in the remainder of the table */
+  for (int j = 0; j < numrep; ++j) {
+    std::string nl;
+    reptable.emplace_back();
+    int type = 0;
+    if (af->getline(nl)) {
+      mychomp(nl);
+      iter = nl.begin();
+      i = 0;
+      start_piece = mystrsep(nl, iter);
+      bool errored = false;
+      while (!errored && start_piece != nl.end()) {
+        switch (i) {
+          case 0: {
+            if (nl.compare(start_piece - nl.begin(), 3, "REP", 3) != 0) {
+              errored = true;
+              break;
+            }
+            break;
+          }
+          case 1: {
+            if (*start_piece == '^')
+              type = 1;
+            reptable.back().pattern.assign(start_piece + type, iter);
+            mystrrep(reptable.back().pattern, "_", " ");
+            if (!reptable.back().pattern.empty() && reptable.back().pattern[reptable.back().pattern.size() - 1] == '$') {
+              type += 2;
+              reptable.back().pattern.resize(reptable.back().pattern.size() - 1);
+            }
+            break;
+          }
+          case 2: {
+            reptable.back().outstrings[type].assign(start_piece, iter);
+            mystrrep(reptable.back().outstrings[type], "_", " ");
+            break;
+          }
+          default:
+            break;
+        }
+        ++i;
+        start_piece = mystrsep(nl, iter);
+      }
+    }
+    if (reptable.back().pattern.empty() || reptable.back().outstrings[type].empty()) {
+      HUNSPELL_WARNING(stderr, "error: line %d: table is corrupt\n",
+                       af->getlinenum());
+      reptable.clear();
       return false;
     }
   }
   return true;
 }
 
-int HashMgr::is_aliasm() const {
-  return (aliasm != NULL);
-}
-
-char* HashMgr::get_aliasm(int index) const {
-  if ((index > 0) && (index <= numaliasm))
-    return aliasm[index - 1];
-  HUNSPELL_WARNING(stderr, "error: bad morph. alias index: %d\n", index);
-  return NULL;
+// return replacing table
+const std::vector<replentry>& HashMgr::get_reptable() const {
+  return reptable;
 }

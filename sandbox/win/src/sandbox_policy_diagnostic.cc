@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/win/src/sandbox_policy_diagnostic.h"
 
 #include <windows.h>
@@ -15,12 +10,14 @@
 
 #include <cinttypes>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/compiler_specific.h"
+#include "base/json/json_writer.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -84,6 +81,7 @@ std::string GetTokenLevelInEnglish(TokenLevel token) {
       DCHECK(false) << "Unknown TokenType";
       return "Unknown";
   }
+  NOTREACHED();
 }
 
 std::string GetJobLevelInEnglish(JobLevel job) {
@@ -97,6 +95,7 @@ std::string GetJobLevelInEnglish(JobLevel job) {
     case JobLevel::kUnprotected:
       return "Unprotected";
   }
+  NOTREACHED();
 }
 
 std::string GetIntegrityLevelInEnglish(IntegrityLevel integrity) {
@@ -118,6 +117,7 @@ std::string GetIntegrityLevelInEnglish(IntegrityLevel integrity) {
     case INTEGRITY_LEVEL_LAST:
       return "Default";
   }
+  NOTREACHED();
 }
 
 std::wstring GetSidAsString(const base::win::Sid& sid) {
@@ -135,7 +135,7 @@ std::string GetMitigationsAsHex(MitigationFlags mitigations) {
 }
 
 std::string GetPlatformMitigationsAsHex(MitigationFlags mitigations) {
-  DWORD64 platform_flags[2] = {0};
+  DWORD64 platform_flags[2] = {};
   size_t flags_size = 0;
   sandbox::ConvertProcessMitigationsToPolicy(mitigations, &(platform_flags[0]),
                                              &flags_size);
@@ -187,6 +187,7 @@ std::string GetIpcTagAsString(IpcTag service) {
     case IpcTag::NTCREATESECTION:
       return "NtCreateSection";
   }
+  NOTREACHED();
 }
 
 std::string GetOpcodeAction(EvalResult action) {
@@ -208,6 +209,7 @@ std::string GetOpcodeAction(EvalResult action) {
     case FAKE_ACCESS_DENIED:
       return "fakeDenied";
   }
+  NOTREACHED();
 }
 
 std::string GetStringMatchOperation(int pos, uint32_t options) {
@@ -297,15 +299,16 @@ base::Value::List GetPolicyOpcodes(const PolicyGlobal* policy_rules,
                                    IpcTag service) {
   base::Value::List entry;
   PolicyBuffer* policy_buffer =
-      policy_rules->entry[static_cast<size_t>(service)];
+      UNSAFE_TODO(policy_rules->entry[static_cast<size_t>(service)]);
   // Build up rules and emit when we hit an action.
   std::string cur_rule;
   for (size_t i = 0; i < policy_buffer->opcode_count; i++) {
-    const PolicyOpcode* opcode = &policy_buffer->opcodes[i];
+    const PolicyOpcode* opcode = &UNSAFE_TODO(policy_buffer->opcodes[i]);
     if (opcode->GetID() != OP_ACTION) {
       DCHECK(i + 1 < policy_buffer->opcode_count)
           << "Non-actions should not terminate rules";
-      bool peak = policy_buffer->opcodes[i + 1].GetID() != OP_ACTION;
+      bool peak =
+          UNSAFE_TODO(policy_buffer->opcodes[i + 1]).GetID() != OP_ACTION;
       cur_rule += GetPolicyOpcode(opcode, peak);
     } else {
       cur_rule += " -> ";
@@ -323,7 +326,8 @@ base::Value::Dict GetPolicyRules(const std::vector<IpcTag>& ipcs,
   base::Value::Dict results;
 
   for (auto ipc : ipcs) {
-    if (policy_rules && policy_rules->entry[static_cast<size_t>(ipc)]) {
+    if (policy_rules &&
+        UNSAFE_TODO(policy_rules->entry[static_cast<size_t>(ipc)])) {
       results.Set(GetIpcTagAsString(ipc), GetPolicyOpcodes(policy_rules, ipc));
     } else {
       results.Set(GetIpcTagAsString(ipc), base::Value::List());
@@ -335,7 +339,7 @@ base::Value::Dict GetPolicyRules(const std::vector<IpcTag>& ipcs,
 
 // `handle_config` is a set of configuration bools - only output things
 // if they are enabled.
-base::Value::List GetHandlesToClose(HandleCloserConfig& handle_config) {
+base::Value::List GetHandlesToClose(const HandleCloserConfig& handle_config) {
   base::Value::List results;
   if (!handle_config.handle_closer_enabled) {
     return results;
@@ -401,16 +405,16 @@ PolicyDiagnostic::PolicyDiagnostic(PolicyBase* policy) {
     size_t policy_mem_size = original_rules->data_size + sizeof(PolicyGlobal);
     policy_rules_.reset(
         static_cast<sandbox::PolicyGlobal*>(::operator new(policy_mem_size)));
-    memcpy(policy_rules_.get(), original_rules, policy_mem_size);
+    UNSAFE_TODO(memcpy(policy_rules_.get(), original_rules, policy_mem_size));
     // Fixup pointers (see |PolicyGlobal| in policy_low_level.h).
     PolicyBuffer** original_entries = original_rules->entry;
     PolicyBuffer** copy_base = policy_rules_->entry;
     for (size_t i = 0; i < kSandboxIpcCount; i++) {
-      if (policy_rules_->entry[i]) {
-        policy_rules_->entry[i] = reinterpret_cast<PolicyBuffer*>(
-            reinterpret_cast<char*>(copy_base) +
-            (reinterpret_cast<char*>(original_entries[i]) -
-             reinterpret_cast<char*>(original_entries)));
+      if (UNSAFE_TODO(policy_rules_->entry[i])) {
+        UNSAFE_TODO(policy_rules_->entry[i]) = reinterpret_cast<PolicyBuffer*>(
+            UNSAFE_TODO(reinterpret_cast<char*>(copy_base) +
+                        (reinterpret_cast<char*>(original_entries[i]) -
+                         reinterpret_cast<char*>(original_entries))));
       }
     }
   }
@@ -421,10 +425,10 @@ PolicyDiagnostic::PolicyDiagnostic(PolicyBase* policy) {
 
 PolicyDiagnostic::~PolicyDiagnostic() = default;
 
-const char* PolicyDiagnostic::JsonString() {
+const std::string& PolicyDiagnostic::JsonString() const {
   // Lazily constructs json_string_.
   if (json_string_)
-    return json_string_->c_str();
+    return *json_string_;
 
   base::Value::Dict dict;
   dict.Set(kProcessId, base::strict_cast<double>(process_id_));
@@ -473,11 +477,10 @@ const char* PolicyDiagnostic::JsonString() {
   dict.Set(kZeroAppShim, zero_appshim_);
   dict.Set(kHandlesToClose, GetHandlesToClose(handles_to_close_));
 
-  auto json_string = std::make_unique<std::string>();
-  JSONStringValueSerializer to_json(json_string.get());
-  CHECK(to_json.Serialize(dict));
+  std::optional<std::string> json_string = base::WriteJson(dict);
+  CHECK(json_string);
   json_string_ = std::move(json_string);
-  return json_string_->c_str();
+  return *json_string_;
 }
 
 }  // namespace sandbox

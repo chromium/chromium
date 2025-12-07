@@ -4,17 +4,19 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
- * A piece of conditional behavior that supports experimentation and logging.
- * This is used for Tap suppression and each heuristic feeds a datum into
- * the ML algorithm for suppression.
+ * A piece of conditional behavior that supports experimentation and logging. This is used for Tap
+ * suppression and each heuristic feeds a datum into the ML algorithm for suppression.
  */
+@NullMarked
 abstract class ContextualSearchHeuristic {
     /**
-     * Gets whether this heuristic's condition was satisfied or not if it is enabled.
-     * In the case of a Tap heuristic, if the condition is satisfied the Tap is suppressed.
-     * This heuristic may be called in logResultsSeen regardless of whether the condition was
-     * satisfied.
+     * Gets whether this heuristic's condition was satisfied or not if it is enabled. In the case of
+     * a Tap heuristic, if the condition is satisfied the Tap is suppressed. This heuristic may be
+     * called in logResultsSeen regardless of whether the condition was satisfied.
+     *
      * @return True if this heuristic is enabled and its condition is satisfied, otherwise false.
      */
     protected abstract boolean isConditionSatisfiedAndEnabled();

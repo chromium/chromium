@@ -38,10 +38,10 @@
 #include "chrome/browser/updater/browser_updater_client.h"
 #include "chrome/browser/updater/browser_updater_client_util.h"
 #include "chrome/browser/updater/browser_updater_helper_client_mac.h"
-#include "chrome/common/chrome_version.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -161,11 +161,11 @@ void RegisterBrowser(base::OnceClosure complete) {
 }
 
 // Only works in kUser scope.
-void InstallUpdaterAndRegisterBrowser(base::OnceClosure complete) {
+void InstallUpdaterAndRegisterBrowser(base::TaskPriority priority,
+                                      base::OnceClosure complete) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::MayBlock(), base::WithBaseSyncPrimitives(),
-       base::TaskPriority::BEST_EFFORT,
+      {base::MayBlock(), base::WithBaseSyncPrimitives(), priority,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce([]() {
         // The updater executable should be in
@@ -206,7 +206,7 @@ void SetActive() {
       base::GetHomeDir()
           .AppendASCII("Library")
           .Append(FILE_PATH_LITERAL(COMPANY_SHORTNAME_STRING))
-          .Append(FILE_PATH_LITERAL(COMPANY_SHORTNAME_STRING "SoftwareUpdate"))
+          .Append(FILE_PATH_LITERAL(KEYSTONE_NAME))
           .AppendASCII("Actives");
   if (!CreateDirectory(actives_dir)) {
     return;
@@ -232,32 +232,34 @@ std::string CurrentlyInstalledVersion() {
       info_plist[@"CFBundleShortVersionString"]));
 }
 
-updater::UpdaterScope GetUpdaterScope() {
+updater::UpdaterScope GetBrowserUpdaterScope() {
   std::optional<uid_t> owner = GetBundleOwner();
   return owner && (*owner == 0 || *owner != geteuid())
              ? updater::UpdaterScope::kSystem
              : updater::UpdaterScope::kUser;
 }
 
-void EnsureUpdater(base::OnceClosure prompt, base::OnceClosure complete) {
+void EnsureUpdater(base::TaskPriority priority,
+                   base::OnceClosure prompt,
+                   base::OnceClosure complete) {
   base::ThreadPool::PostTask(FROM_HERE,
-                             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+                             {base::MayBlock(), priority,
                               base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
                              base::BindOnce(&SetActive));
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      {base::MayBlock(), priority,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&GetUpdaterScope),
+      base::BindOnce(&GetBrowserUpdaterScope),
       base::BindOnce(
-          [](base::OnceClosure prompt, base::OnceClosure complete,
-             updater::UpdaterScope scope) {
+          [](base::TaskPriority priority, base::OnceClosure prompt,
+             base::OnceClosure complete, updater::UpdaterScope scope) {
             scoped_refptr<BrowserUpdaterClient> client =
                 BrowserUpdaterClient::Create(scope);
             client->IsBrowserRegistered(base::BindOnce(
                 [](scoped_refptr<BrowserUpdaterClient> client,
-                   base::OnceClosure prompt, base::OnceClosure complete,
-                   bool registered) {
+                   base::TaskPriority priority, base::OnceClosure prompt,
+                   base::OnceClosure complete, bool registered) {
                   if (registered) {
                     std::move(complete).Run();
                     return;
@@ -267,6 +269,7 @@ void EnsureUpdater(base::OnceClosure prompt, base::OnceClosure complete) {
                       base::BindOnce(&ShouldPromoteUpdater),
                       base::BindOnce(
                           [](scoped_refptr<BrowserUpdaterClient> client,
+                             base::TaskPriority priority,
                              base::OnceClosure prompt,
                              base::OnceClosure complete, bool promote) {
                             if (promote) {
@@ -277,22 +280,24 @@ void EnsureUpdater(base::OnceClosure prompt, base::OnceClosure complete) {
                             }
                             // Check whether an updater exists.
                             client->GetUpdaterVersion(base::BindOnce(
-                                [](base::OnceClosure complete,
+                                [](base::TaskPriority priority,
+                                   base::OnceClosure complete,
                                    const base::Version& version) {
                                   if (!version.IsValid()) {
                                     InstallUpdaterAndRegisterBrowser(
-                                        std::move(complete));
+                                        priority, std::move(complete));
                                   } else {
                                     RegisterBrowser(std::move(complete));
                                   }
                                 },
-                                std::move(complete)));
+                                priority, std::move(complete)));
                           },
-                          client, std::move(prompt), std::move(complete)));
+                          client, priority, std::move(prompt),
+                          std::move(complete)));
                 },
-                client, std::move(prompt), std::move(complete)));
+                client, priority, std::move(prompt), std::move(complete)));
           },
-          std::move(prompt), std::move(complete)));
+          priority, std::move(prompt), std::move(complete)));
 }
 
 void SetupSystemUpdater() {
@@ -317,6 +322,7 @@ void SetupSystemUpdater() {
         CFErrorCopyDescription(error.get()));
     VLOG(0) << "Could not bless the privileged helper. Resulting error: "
             << base::SysCFStringRefToUTF8(desc.get());
+    return;
   }
 
   base::MakeRefCounted<BrowserUpdaterHelperClientMac>()->SetupSystemUpdater(

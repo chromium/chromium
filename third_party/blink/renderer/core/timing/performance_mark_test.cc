@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_performance_mark_options.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
@@ -54,16 +55,21 @@ TEST_F(PerformanceMarkTest, Construction) {
   ScriptState* script_state = scope.GetScriptState();
   v8::Isolate* isolate = scope.GetIsolate();
 
+  auto* window = LocalDOMWindow::From(script_state);
+  ASSERT_TRUE(window);
+  auto* performance = GlobalPerformance::performance(*window);
+  ASSERT_TRUE(performance);
+
   PerformanceMark* pm = MakeGarbageCollected<PerformanceMark>(
       AtomicString("mark-name"), 0, base::TimeTicks(),
-      SerializedScriptValue::NullValue(), exception_state,
-      LocalDOMWindow::From(script_state));
+      SerializedScriptValue::NullValue(), exception_state, window,
+      performance->NavigationId());
   ASSERT_EQ(pm->entryType(), performance_entry_names::kMark);
   ASSERT_EQ(pm->EntryTypeEnum(), PerformanceEntry::EntryType::kMark);
 
   ASSERT_EQ(SerializedScriptValue::NullValue()->Deserialize(isolate),
             pm->detail(script_state).V8Value());
-  ASSERT_TRUE(WTF::IsValidUUID(pm->navigationId()));
+  ASSERT_NE(0, pm->navigationId());
 }
 
 TEST_F(PerformanceMarkTest, ConstructionWithDetail) {
@@ -75,9 +81,14 @@ TEST_F(PerformanceMarkTest, ConstructionWithDetail) {
   scoped_refptr<SerializedScriptValue> payload_string =
       SerializedScriptValue::Create(String("some-payload"));
 
+  auto* window = LocalDOMWindow::From(script_state);
+  ASSERT_TRUE(window);
+  auto* performance = GlobalPerformance::performance(*window);
+  ASSERT_TRUE(performance);
+
   PerformanceMark* pm = MakeGarbageCollected<PerformanceMark>(
       AtomicString("mark-name"), 0, base::TimeTicks(), payload_string,
-      exception_state, LocalDOMWindow::From(script_state));
+      exception_state, window, performance->NavigationId());
   ASSERT_EQ(pm->entryType(), performance_entry_names::kMark);
   ASSERT_EQ(pm->EntryTypeEnum(), PerformanceEntry::EntryType::kMark);
 
@@ -95,10 +106,16 @@ TEST_F(PerformanceMarkTest, BuildJSONValue) {
   const double expected_start_time = 0;
   const double expected_duration = 0;
   const AtomicString expected_entry_type("mark");
+
+  auto* window = LocalDOMWindow::From(script_state);
+  ASSERT_TRUE(window);
+  auto* performance = GlobalPerformance::performance(*window);
+  ASSERT_TRUE(performance);
+
   PerformanceMark* pm = MakeGarbageCollected<PerformanceMark>(
       expected_name, expected_start_time, base::TimeTicks(),
-      SerializedScriptValue::NullValue(), exception_state,
-      LocalDOMWindow::From(script_state));
+      SerializedScriptValue::NullValue(), exception_state, window,
+      performance->NavigationId());
 
   ScriptValue json_object = pm->toJSONForBinding(script_state);
   EXPECT_TRUE(json_object.IsObject());
@@ -110,8 +127,8 @@ TEST_F(PerformanceMarkTest, BuildJSONValue) {
           .ToLocalChecked(),
       kDoNotExternalize);
 
-  auto parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(json_string.Utf8());
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      json_string.Utf8(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(parsed_json->is_dict());
 
   EXPECT_EQ(expected_name, parsed_json->GetDict().FindString("name")->c_str());

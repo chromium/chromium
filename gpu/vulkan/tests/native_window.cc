@@ -5,7 +5,7 @@
 #include "gpu/vulkan/tests/native_window.h"
 
 #include "base/containers/flat_map.h"
-#include "base/not_fatal_until.h"
+#include "base/notimplemented.h"
 #include "build/build_config.h"
 #include "ui/platform_window/platform_window_delegate.h"
 #include "ui/platform_window/platform_window_init_properties.h"
@@ -54,7 +54,7 @@ class Window : public ui::PlatformWindowDelegate {
   void OnWillDestroyAcceleratedWidget() override {}
   void OnAcceleratedWidgetDestroyed() override {}
   void OnActivationChanged(bool active) override {}
-  void OnMouseEnter() override {}
+  void OnCursorUpdate() override {}
 
   std::unique_ptr<ui::PlatformWindow> platform_window_;
   gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
@@ -75,7 +75,7 @@ gfx::AcceleratedWidget CreateNativeWindow(const gfx::Rect& bounds) {
 
 void DestroyNativeWindow(gfx::AcceleratedWidget window) {
   auto it = g_windows_.find(window);
-  CHECK(it != g_windows_.end(), base::NotFatalUntil::M130);
+  CHECK(it != g_windows_.end());
   g_windows_.erase(it);
 }
 

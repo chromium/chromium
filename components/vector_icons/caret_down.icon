@@ -5,16 +5,16 @@
 // A variant of ic_expand_more with rounded corners.
 CANVAS_DIMENSIONS, 32,
 STROKE, 3,
-MOVE_TO, 8.5f, 12.5f,
-R_LINE_TO, 7.5f, 8,
-R_LINE_TO, 7.5f, -8,
+MOVE_TO, 8.5, 12.5,
+R_LINE_TO, 7.5, 8,
+R_LINE_TO, 7.5, -8,
 // Hard clip at path points +- half the stroke.
 CLIP, 7, 11, 18, 11,
 
 // A variant of ic_expand_more with rounded corners and optimized for 1x
 // scale factor devices.
 CANVAS_DIMENSIONS, 16,
-STROKE, 1.765f,
+STROKE, 1.765,
 MOVE_TO, 4, 6,
 R_LINE_TO, 4, 4,
 R_LINE_TO, 4, -4,

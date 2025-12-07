@@ -65,8 +65,8 @@ std::optional<SafeUrlPattern> RouterUrlPatternConditionToBlink(
     const V8URLPatternCompatible* url_pattern_compatible,
     const KURL& url_pattern_base_url,
     ExceptionState& exception_state) {
-  // If |url_pattern_compatible| is not a constructed URLPattern,
-  // |url_pattern_base_url| as baseURL will give additional information to
+  // If `url_pattern_compatible` is not a constructed URLPattern,
+  // `url_pattern_base_url` as baseURL will give additional information to
   // appropriately complement missing fields. For more details, see
   // https://urlpattern.spec.whatwg.org/#other-specs-javascript.
   //
@@ -90,6 +90,8 @@ std::optional<SafeUrlPattern> RouterUrlPatternConditionToBlink(
   return safe_url_pattern;
 }
 
+// Follows requestMethod, requestMode, requestDestination handling in
+// https://w3c.github.io/ServiceWorker/#verify-router-rule-algorithm
 std::optional<ServiceWorkerRouterRequestCondition>
 RouterRequestConditionToBlink(RouterCondition* v8_condition,
                               ExceptionState& exception_state) {
@@ -97,10 +99,23 @@ RouterRequestConditionToBlink(RouterCondition* v8_condition,
   bool request_condition_exist = false;
   ServiceWorkerRouterRequestCondition request;
   if (v8_condition->hasRequestMethod()) {
+    const auto& method = v8_condition->requestMethod();
+    // "If |method| is not a [=/method=], then return false."
+    // i.e. throw TypeError.
+    if (!IsValidHTTPToken(method)) {
+      exception_state.ThrowTypeError(
+          StrCat({"'", method, "' is not a valid HTTP method."}));
+      return std::nullopt;
+    }
+    // "If |method| is a [=forbidden method=], then return false."
+    // i.e. throw TypeError.
+    if (FetchUtils::IsForbiddenMethod(method)) {
+      exception_state.ThrowTypeError(
+          StrCat({"'", method, "' HTTP method is unsupported."}));
+      return std::nullopt;
+    }
     request_condition_exist = true;
-    request.method =
-        FetchUtils::NormalizeMethod(AtomicString(v8_condition->requestMethod()))
-            .Latin1();
+    request.method = FetchUtils::NormalizeMethod(AtomicString(method)).Latin1();
   }
   if (v8_condition->hasRequestMode()) {
     request_condition_exist = true;
@@ -226,11 +241,6 @@ std::optional<ServiceWorkerRouterCondition> RouterConditionToBlink(
   }
   std::optional<ServiceWorkerRouterNotCondition> not_condition;
   if (v8_condition->hasNotCondition()) {
-    if (!base::FeatureList::IsEnabled(
-            features::kServiceWorkerStaticRouterNotConditionEnabled)) {
-      exception_state.ThrowTypeError("The 'not' condition is not enabled.");
-      return std::nullopt;
-    }
     // Not checking here for the `not` is actually exclusive.
     not_condition = RouterNotConditionToBlink(
         isolate, v8_condition, url_pattern_base_url, exception_state);
@@ -275,9 +285,17 @@ std::optional<ServiceWorkerRouterSource> RouterSourceEnumToBlink(
       return source;
     }
     case V8RouterSourceEnum::Enum::kRaceNetworkAndFetchHandler: {
+      if (fetch_handler_type ==
+          mojom::blink::ServiceWorkerFetchHandlerType::kNoHandler) {
+        exception_state.ThrowTypeError(
+            "race-network-and-fetch-event source is specified without a fetch"
+            " handler");
+        return std::nullopt;
+      }
       ServiceWorkerRouterSource source;
-      source.type = network::mojom::ServiceWorkerRouterSourceType::kRace;
-      source.race_source.emplace();
+      source.type = network::mojom::ServiceWorkerRouterSourceType::
+          kRaceNetworkAndFetchEvent;
+      source.race_network_and_fetch_event_source.emplace();
       return source;
     }
     case V8RouterSourceEnum::Enum::kFetchEvent: {

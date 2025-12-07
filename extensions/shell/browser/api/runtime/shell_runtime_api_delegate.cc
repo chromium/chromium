@@ -7,9 +7,10 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/common/api/runtime.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/shell/browser/shell_extension_system.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/dbus/power/power_manager_client.h"
 #endif
 
@@ -29,12 +30,12 @@ void ShellRuntimeAPIDelegate::AddUpdateObserver(UpdateObserver* observer) {}
 
 void ShellRuntimeAPIDelegate::RemoveUpdateObserver(UpdateObserver* observer) {}
 
-void ShellRuntimeAPIDelegate::ReloadExtension(const std::string& extension_id) {
+void ShellRuntimeAPIDelegate::ReloadExtension(const ExtensionId& extension_id) {
   static_cast<ShellExtensionSystem*>(ExtensionSystem::Get(browser_context_))
       ->ReloadExtension(extension_id);
 }
 
-bool ShellRuntimeAPIDelegate::CheckForUpdates(const std::string& extension_id,
+bool ShellRuntimeAPIDelegate::CheckForUpdates(const ExtensionId& extension_id,
                                               UpdateCheckCallback callback) {
   return false;
 }
@@ -42,9 +43,9 @@ bool ShellRuntimeAPIDelegate::CheckForUpdates(const std::string& extension_id,
 void ShellRuntimeAPIDelegate::OpenURL(const GURL& uninstall_url) {}
 
 bool ShellRuntimeAPIDelegate::GetPlatformInfo(PlatformInfo* info) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   info->os = api::runtime::PlatformOs::kCros;
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX)
   info->os = api::runtime::PlatformOs::kLinux;
 #endif
   return true;
@@ -52,7 +53,7 @@ bool ShellRuntimeAPIDelegate::GetPlatformInfo(PlatformInfo* info) {
 
 bool ShellRuntimeAPIDelegate::RestartDevice(std::string* error_message) {
 // We allow chrome.runtime.restart() to request a device restart on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   chromeos::PowerManagerClient::Get()->RequestRestart(
       power_manager::REQUEST_RESTART_API, "AppShell chrome.runtime API");
   return true;

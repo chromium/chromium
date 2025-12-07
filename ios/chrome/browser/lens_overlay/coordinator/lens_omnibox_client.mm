@@ -7,8 +7,6 @@
 #import "base/feature_list.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/string_util.h"
-#import "base/strings/sys_string_conversions.h"
-#import "base/strings/utf_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/feature_engagement/public/event_constants.h"
@@ -30,9 +28,9 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client_delegate.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_web_provider.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#import "ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -42,14 +40,15 @@
 #import "url/gurl.h"
 
 LensOmniboxClient::LensOmniboxClient(
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
     feature_engagement::Tracker* tracker,
     id<LensWebProvider> web_provider,
     id<LensOmniboxClientDelegate> omnibox_delegate)
-    : browser_state_(browser_state),
+    : profile_(profile),
       engagement_tracker_(tracker),
       web_provider_(web_provider),
-      delegate_(omnibox_delegate) {
+      delegate_(omnibox_delegate),
+      text_clobbered_in_session_(NO) {
   CHECK(engagement_tracker_);
 }
 
@@ -57,7 +56,7 @@ LensOmniboxClient::~LensOmniboxClient() = default;
 
 std::unique_ptr<AutocompleteProviderClient>
 LensOmniboxClient::CreateAutocompleteProviderClient() {
-  return std::make_unique<AutocompleteProviderClientImpl>(browser_state_);
+  return std::make_unique<AutocompleteProviderClientImpl>(profile_);
 }
 
 bool LensOmniboxClient::CurrentPageExists() const {
@@ -88,17 +87,21 @@ bool LensOmniboxClient::IsDefaultSearchProviderEnabled() const {
 
 SessionID LensOmniboxClient::GetSessionID() const {
   if (web::WebState* web_state = web_provider_.webState) {
-    return IOSChromeSessionTabHelper::FromWebState(web_state)->session_id();
+    return web_state->GetUniqueIdentifier().ToSessionID();
   }
   return SessionID::InvalidValue();
 }
 
 PrefService* LensOmniboxClient::GetPrefs() {
-  return browser_state_->GetPrefs();
+  return profile_->GetPrefs();
+}
+
+const PrefService* LensOmniboxClient::GetPrefs() const {
+  return profile_->GetPrefs();
 }
 
 bookmarks::BookmarkModel* LensOmniboxClient::GetBookmarkModel() {
-  return ios::BookmarkModelFactory::GetForBrowserState(browser_state_);
+  return ios::BookmarkModelFactory::GetForProfile(profile_);
 }
 
 AutocompleteControllerEmitter*
@@ -107,7 +110,7 @@ LensOmniboxClient::GetAutocompleteControllerEmitter() {
 }
 
 TemplateURLService* LensOmniboxClient::GetTemplateURLService() {
-  return ios::TemplateURLServiceFactory::GetForBrowserState(browser_state_);
+  return ios::TemplateURLServiceFactory::GetForProfile(profile_);
 }
 
 const AutocompleteSchemeClassifier& LensOmniboxClient::GetSchemeClassifier()
@@ -116,7 +119,7 @@ const AutocompleteSchemeClassifier& LensOmniboxClient::GetSchemeClassifier()
 }
 
 AutocompleteClassifier* LensOmniboxClient::GetAutocompleteClassifier() {
-  return ios::AutocompleteClassifierFactory::GetForBrowserState(browser_state_);
+  return ios::AutocompleteClassifierFactory::GetForProfile(profile_);
 }
 
 bool LensOmniboxClient::ShouldDefaultTypedNavigationsToHttps() const {
@@ -124,27 +127,24 @@ bool LensOmniboxClient::ShouldDefaultTypedNavigationsToHttps() const {
 }
 
 int LensOmniboxClient::GetHttpsPortForTesting() const {
-  return HttpsUpgradeServiceFactory::GetForBrowserState(browser_state_)
+  return HttpsUpgradeServiceFactory::GetForProfile(profile_)
       ->GetHttpsPortForTesting();
 }
 
 bool LensOmniboxClient::IsUsingFakeHttpsForHttpsUpgradeTesting() const {
-  return HttpsUpgradeServiceFactory::GetForBrowserState(browser_state_)
+  return HttpsUpgradeServiceFactory::GetForProfile(profile_)
       ->IsUsingFakeHttpsForTesting();
 }
 
-gfx::Image LensOmniboxClient::GetIconIfExtensionMatch(
-    const AutocompleteMatch& match) const {
+gfx::Image LensOmniboxClient::GetExtensionIcon(
+    const TemplateURL* template_url) const {
   // Extensions are not supported on iOS.
   return gfx::Image();
 }
 
 std::u16string LensOmniboxClient::GetFormattedFullURL() const {
-  std::optional<TemplateURLService::SearchMetadata> metadata =
-      ios::TemplateURLServiceFactory::GetForBrowserState(browser_state_)
-          ->ExtractSearchMetadata(GetURL());
-  if (metadata) {
-    return metadata->search_terms;
+  if (omnibox_steady_state_text_) {
+    return omnibox_steady_state_text_.cr_UTF16String;
   }
   return u"";
 }
@@ -158,9 +158,11 @@ GURL LensOmniboxClient::GetNavigationEntryURL() const {
 }
 
 metrics::OmniboxEventProto::PageClassification
-LensOmniboxClient::GetPageClassification(OmniboxFocusSource focus_source,
-                                         bool is_prefetch) {
-  return metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX;
+LensOmniboxClient::GetPageClassification(bool is_prefetch) const {
+  if (lens_result_has_thumbnail_) {
+    return metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX;
+  }
+  return metrics::OmniboxEventProto::SEARCH_SIDE_PANEL_SEARCHBOX;
 }
 
 security_state::SecurityLevel LensOmniboxClient::GetSecurityLevel() const {
@@ -175,17 +177,20 @@ net::CertStatus LensOmniboxClient::GetCertStatus() const {
 }
 
 const gfx::VectorIcon& LensOmniboxClient::GetVectorIcon() const {
-  static const gfx::VectorIcon kEmptyVectorIcon = {};
-  return kEmptyVectorIcon;
+  return gfx::VectorIcon::EmptyIcon();
 }
 
-bool LensOmniboxClient::ProcessExtensionKeyword(
+std::optional<lens::proto::LensOverlaySuggestInputs>
+LensOmniboxClient::GetLensOverlaySuggestInputs() const {
+  return lens_overlay_suggest_inputs_;
+}
+
+void LensOmniboxClient::ProcessExtensionMatch(
     const std::u16string& text,
     const TemplateURL* template_url,
     const AutocompleteMatch& match,
     WindowOpenDisposition disposition) {
   // Extensions are not supported on iOS.
-  return false;
 }
 
 void LensOmniboxClient::DiscardNonCommittedNavigations() {
@@ -206,6 +211,25 @@ gfx::Image LensOmniboxClient::GetFavicon() const {
   return gfx::Image();
 }
 
+void LensOmniboxClient::OnTextChanged(const AutocompleteMatch& current_match,
+                                      bool user_input_in_progress,
+                                      const std::u16string& user_text,
+                                      const AutocompleteResult& result,
+                                      bool has_focus) {
+  if (user_input_in_progress && user_text.empty()) {
+    text_clobbered_in_session_ = YES;
+  }
+}
+
+void LensOmniboxClient::OnThumbnailRemoved() {
+  [delegate_ omniboxDidRemoveThumbnail];
+}
+
+void LensOmniboxClient::OnFocusChanged(OmniboxFocusState state,
+                                       OmniboxFocusChangeReason reason) {
+  text_clobbered_in_session_ = NO;
+}
+
 void LensOmniboxClient::OnAutocompleteAccept(
     const GURL& destination_url,
     TemplateURLRef::PostContent* post_content,
@@ -217,9 +241,15 @@ void LensOmniboxClient::OnAutocompleteAccept(
     bool destination_url_entered_with_http_scheme,
     const std::u16string& text,
     const AutocompleteMatch& match,
-    const AutocompleteMatch& alternative_nav_match,
-    IDNA2008DeviationCharacter deviation_char_in_hostname) {
-  [delegate_ omniboxDidAcceptText:text destinationURL:destination_url];
+    const AutocompleteMatch& alternative_nav_match) {
+  [delegate_ omniboxDidAcceptText:match.fill_into_edit
+                   destinationURL:destination_url
+                    textClobbered:text_clobbered_in_session_];
+}
+
+void LensOmniboxClient::OnThumbnailOnlyAccept() {
+  // The destinationURL is not used for multimodal suggestions.
+  [delegate_ omniboxDidAcceptText:u"" destinationURL:GURL() textClobbered:NO];
 }
 
 base::WeakPtr<OmniboxClient> LensOmniboxClient::AsWeakPtr() {

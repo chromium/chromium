@@ -38,12 +38,14 @@
 #include "third_party/blink/renderer/core/frame/remote_dom_window.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
+#include "third_party/blink/renderer/core/url/dom_origin.h"
 #include "third_party/blink/renderer/core/url/dom_url_utils_read_only.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_activity_logger.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -156,7 +158,7 @@ void Location::setProtocol(v8::Isolate* isolate,
   if (!url.SetProtocol(protocol)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        "'" + protocol + "' is an invalid protocol.");
+        StrCat({"'", protocol, "' is an invalid protocol."}));
     return;
   }
 
@@ -213,7 +215,7 @@ void Location::setHash(v8::Isolate* isolate,
                        const String& hash,
                        ExceptionState& exception_state) {
   KURL url = GetDocument()->Url();
-  String old_fragment_identifier = url.FragmentIdentifier();
+  String old_fragment_identifier = url.FragmentIdentifier().ToString();
   String new_fragment_identifier = hash;
   if (hash[0] == '#')
     new_fragment_identifier = hash.Substring(1);
@@ -221,8 +223,10 @@ void Location::setHash(v8::Isolate* isolate,
   // Note that by parsing the URL and *then* comparing fragments, we are
   // comparing fragments post-canonicalization, and so this handles the
   // cases where fragment identifiers are ignored or invalid.
-  if (EqualIgnoringNullity(old_fragment_identifier, url.FragmentIdentifier()))
+  if (EqualIgnoringNullity(old_fragment_identifier,
+                           url.FragmentIdentifier().ToString())) {
     return;
+  }
   SetLocation(url.GetString(), IncumbentDOMWindow(isolate),
               EnteredDOMWindow(isolate), &exception_state);
 }
@@ -279,15 +283,16 @@ void Location::SetLocation(const String& url,
                                                  completed_url)) {
     if (exception_state) {
       exception_state->ThrowSecurityError(
-          "The current window does not have permission to navigate the target "
-          "frame to '" +
-          url + "'.");
+          StrCat({"The current window does not have permission to navigate the "
+                  "target frame to '",
+                  completed_url.GetString(), "'."}));
     }
     return;
   }
   if (exception_state && !completed_url.IsValid()) {
-    exception_state->ThrowDOMException(DOMExceptionCode::kSyntaxError,
-                                       "'" + url + "' is not a valid URL.");
+    exception_state->ThrowDOMException(
+        DOMExceptionCode::kSyntaxError,
+        StrCat({"'", completed_url.GetString(), "' is not a valid URL."}));
     return;
   }
 
@@ -302,7 +307,7 @@ void Location::SetLocation(const String& url,
     argv.push_back(completed_url);
     // We use the CurrentDOMWindow here. `dom_window` might be remote here.
     activity_logger->LogEvent(CurrentDOMWindow(incumbent_window->GetIsolate()),
-                              "blinkSetAttribute", argv.size(), argv.data());
+                              "blinkSetAttribute", argv);
   }
 
   ResourceRequestHead resource_request(completed_url);

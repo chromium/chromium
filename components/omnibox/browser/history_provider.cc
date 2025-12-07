@@ -47,7 +47,7 @@ HistoryProvider::HistoryProvider(AutocompleteProvider::Type type,
                                  AutocompleteProviderClient* client)
     : AutocompleteProvider(type), client_(client) {}
 
-HistoryProvider::~HistoryProvider() {}
+HistoryProvider::~HistoryProvider() = default;
 
 void HistoryProvider::DeleteMatchFromMatches(const AutocompleteMatch& match) {
   bool found = false;

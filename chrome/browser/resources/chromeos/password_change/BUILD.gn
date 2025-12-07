@@ -78,6 +78,7 @@ html_to_wrapper("html_wrapper_files") {
     "password_change.html",
     "urgent_password_expiry_notification_app.html",
   ]
+  template = "polymer"
   use_js = true
 }
 

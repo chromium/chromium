@@ -8,3 +8,39 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++ROLE_SYSTEM_MENUITEM name='Open'
 ++++ROLE_SYSTEM_MENUITEM name='Save'
 ++++ROLE_SYSTEM_MENUITEM name='Quit'
+++ROLE_SYSTEM_MENUPOPUP name='Non-menu container'
+++++ROLE_SYSTEM_PUSHBUTTON name='Action 1'
+++++ROLE_SYSTEM_PUSHBUTTON name='Action 2'
+++++IA2_ROLE_SECTION
+++++++ROLE_SYSTEM_STATICTEXT name='Regular text'
+++ROLE_SYSTEM_MENUPOPUP name='Menu with grouped items'
+++++ROLE_SYSTEM_GROUPING name='File operations'
+++++++ROLE_SYSTEM_MENUITEM name='New File'
+++++++IA2_ROLE_CHECK_MENU_ITEM name='Auto Save' IA2_STATE_CHECKABLE checkable:true
+++++++IA2_ROLE_RADIO_MENU_ITEM name='Text Format' CHECKED IA2_STATE_CHECKABLE checkable:true
+++++ROLE_SYSTEM_GROUPING name='Edit operations'
+++++++ROLE_SYSTEM_MENUITEM name='Cut'
+++++++ROLE_SYSTEM_MENUITEM name='Copy'
+++++++ROLE_SYSTEM_MENUITEM name='Paste'
+++ROLE_SYSTEM_MENUPOPUP name='Menu with non-menuitem group'
+++++ROLE_SYSTEM_GROUPING name='Toolbar actions'
+++++++ROLE_SYSTEM_PUSHBUTTON name='Bold'
+++++++ROLE_SYSTEM_PUSHBUTTON name='Italic'
+++++++ROLE_SYSTEM_LINK name='Help'
+++++++++ROLE_SYSTEM_STATICTEXT name='Help'
+++++ROLE_SYSTEM_SEPARATOR IA2_STATE_HORIZONTAL
+++++IA2_ROLE_SECTION
+++++++ROLE_SYSTEM_STATICTEXT name='Plain text'
+++ROLE_SYSTEM_MENUPOPUP name='Mixed content menu'
+++++ROLE_SYSTEM_MENUITEM name='Direct menu item'
+++++ROLE_SYSTEM_GROUPING name='Grouped items'
+++++++ROLE_SYSTEM_MENUITEM name='Grouped menu item'
+++++++ROLE_SYSTEM_PUSHBUTTON name='Non-menu button'
+++++ROLE_SYSTEM_SEPARATOR IA2_STATE_HORIZONTAL
+++ROLE_SYSTEM_MENUPOPUP name='Group with non-menuitems'
+++++ROLE_SYSTEM_GROUPING name='Control group'
+++++++ROLE_SYSTEM_CHECKBUTTON name='Option 1' IA2_STATE_CHECKABLE checkable:true
+++++++IA2_ROLE_SECTION
+++++++++ROLE_SYSTEM_STATICTEXT name='Choice A'
+++++++ROLE_SYSTEM_TEXT value='Input field'
+++++++++ROLE_SYSTEM_STATICTEXT name='Input field'

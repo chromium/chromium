@@ -1,4 +1,5 @@
 // META: script=resources/support.js
+'use strict';
 
 indexeddb_test(
   (t, db) => {
@@ -7,8 +8,8 @@ indexeddb_test(
 
   (t, db) => {
     // Create in order tx1, tx2.
-    const tx1 = db.transaction('store', 'readwrite', { durability: 'relaxed' });
-    const tx2 = db.transaction('store', 'readwrite', { durability: 'relaxed' });
+    const tx1 = db.transaction('store', 'readwrite');
+    const tx2 = db.transaction('store', 'readwrite');
 
     // Use in order tx2, tx1.
     tx2.objectStore('store').get(0);

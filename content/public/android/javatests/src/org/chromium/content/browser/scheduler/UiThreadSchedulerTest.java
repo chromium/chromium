@@ -24,6 +24,7 @@ import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.task.SchedulerTestHelpers;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content.app.ContentMain;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.UiThreadSchedulerTestUtils;
@@ -34,6 +35,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Test class for scheduling on the UI Thread. */
 @RunWith(BaseJUnit4ClassRunner.class)
+@NullMarked
 public class UiThreadSchedulerTest {
     @Before
     public void setUp() {
@@ -57,8 +59,7 @@ public class UiThreadSchedulerTest {
     @Test
     @MediumTest
     public void testSimpleUiThreadPostingBeforeNativeLoaded() {
-        TaskRunner uiThreadTaskRunner =
-                PostTask.createSingleThreadTaskRunner(TaskTraits.UI_DEFAULT);
+        TaskRunner uiThreadTaskRunner = PostTask.getTaskRunner(TaskTraits.UI_DEFAULT);
         List<Integer> orderList = new ArrayList<>();
         SchedulerTestHelpers.postRecordOrderTask(uiThreadTaskRunner, orderList, 1);
         SchedulerTestHelpers.postRecordOrderTask(uiThreadTaskRunner, orderList, 2);
@@ -71,8 +72,7 @@ public class UiThreadSchedulerTest {
     @Test
     @MediumTest
     public void testUiThreadTaskRunnerMigrationToNative() {
-        TaskRunner uiThreadTaskRunner =
-                PostTask.createSingleThreadTaskRunner(TaskTraits.UI_DEFAULT);
+        TaskRunner uiThreadTaskRunner = PostTask.getTaskRunner(TaskTraits.UI_DEFAULT);
         List<Integer> orderList = new ArrayList<>();
         SchedulerTestHelpers.postRecordOrderTask(uiThreadTaskRunner, orderList, 1);
 
@@ -90,11 +90,10 @@ public class UiThreadSchedulerTest {
     @Test
     @MediumTest
     public void testSimpleUiThreadPostingAfterNativeLoaded() {
-        TaskRunner uiThreadTaskRunner =
-                PostTask.createSingleThreadTaskRunner(TaskTraits.UI_DEFAULT);
+        TaskRunner uiThreadTaskRunner = PostTask.getTaskRunner(TaskTraits.UI_DEFAULT);
         startContentMainOnUiThread();
 
-        uiThreadTaskRunner.postTask(
+        uiThreadTaskRunner.execute(
                 new Runnable() {
                     @Override
                     public void run() {
@@ -107,13 +106,12 @@ public class UiThreadSchedulerTest {
     @Test
     @MediumTest
     public void testTaskNotRunOnUiThreadWithoutUiThreadTaskTraits() {
-        TaskRunner uiThreadTaskRunner =
-                PostTask.createSingleThreadTaskRunner(TaskTraits.USER_BLOCKING);
+        TaskRunner uiThreadTaskRunner = PostTask.getTaskRunner(TaskTraits.USER_BLOCKING);
         // Test times out without this.
         UiThreadSchedulerTestUtils.postBrowserMainLoopStartupTasks(true);
         startContentMainOnUiThread();
 
-        uiThreadTaskRunner.postTask(
+        uiThreadTaskRunner.execute(
                 new Runnable() {
                     @Override
                     public void run() {
@@ -164,7 +162,6 @@ public class UiThreadSchedulerTest {
     @Test
     @MediumTest
     public void testRunSynchronously() {
-        final Object lock = new Object();
         final AtomicBoolean taskExecuted = new AtomicBoolean();
 
         PostTask.runSynchronously(
@@ -219,7 +216,7 @@ public class UiThreadSchedulerTest {
 
         // Post a task that reposts itself until nativeSchedulerStarted is set to true.  This tests
         // that tasks posted before the native library is loaded still run afterwards.
-        taskQueue.postTask(
+        taskQueue.execute(
                 new Runnable() {
                     @Override
                     public void run() {
@@ -230,7 +227,7 @@ public class UiThreadSchedulerTest {
                                 lock.notify();
                             }
                         } else {
-                            taskQueue.postTask(this);
+                            taskQueue.execute(this);
                         }
                     }
                 });

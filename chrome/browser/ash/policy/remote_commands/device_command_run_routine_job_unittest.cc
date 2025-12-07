@@ -104,21 +104,17 @@ em::RemoteCommand GenerateCommandProto(
   if (params.has_value()) {
     root_dict.Set(kParamsFieldName, std::move(params).value());
   }
-  std::string payload;
-  base::JSONWriter::Write(root_dict, &payload);
-  command_proto.set_payload(payload);
+  command_proto.set_payload(base::WriteJson(root_dict).value_or(""));
   return command_proto;
 }
 
 std::string CreateSuccessPayload(
     uint32_t id,
     ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum status) {
-  std::string payload;
   auto root_dict = base::Value::Dict()
                        .Set(kIdFieldName, static_cast<int>(id))
                        .Set(kStatusFieldName, static_cast<int>(status));
-  base::JSONWriter::Write(root_dict, &payload);
-  return payload;
+  return base::WriteJson(root_dict).value_or("");
 }
 
 std::string CreateInvalidParametersFailurePayload() {
@@ -131,8 +127,7 @@ std::string CreateInvalidParametersFailurePayload() {
                static_cast<int>(
                    ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::
                        kFailedToStart));
-  base::JSONWriter::Write(root_dict, &payload);
-  return payload;
+  return base::WriteJson(root_dict).value_or("");
 }
 
 }  // namespace

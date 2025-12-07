@@ -5,11 +5,13 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_MEDIA_VIDEO_CAPTURE_PROVIDER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_MEDIA_VIDEO_CAPTURE_PROVIDER_H_
 
+#include "content/public/browser/desktop_media_id.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_capture_device_info.h"
 #include "media/capture/video/video_frame_receiver.h"
 #include "media/capture/video_capture_types.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 
 namespace content {
 
@@ -31,6 +33,18 @@ class VideoCaptureProvider {
 
   virtual std::unique_ptr<VideoCaptureDeviceLauncher>
   CreateDeviceLauncher() = 0;
+
+  // Opens a native screen capture picker on platforms where
+  // NativeScreenCapturePicker is available. It is an error to call this method
+  // on platforms where NativeScreenCapturePicker is not available.
+  virtual void OpenNativeScreenCapturePicker(
+      DesktopMediaID::Type type,
+      base::OnceCallback<void(DesktopMediaID::Id)> created_callback,
+      base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback,
+      base::OnceCallback<void()> cancel_callback,
+      base::OnceCallback<void()> error_callback) = 0;
+
+  virtual void CloseNativeScreenCapturePicker(DesktopMediaID device_id) = 0;
 };
 
 }  // namespace content

@@ -6,6 +6,10 @@
 
 #include <stddef.h>
 
+#include <functional>
+#include <optional>
+#include <string>
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace printing {

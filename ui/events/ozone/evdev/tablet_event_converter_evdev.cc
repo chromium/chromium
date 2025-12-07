@@ -2,23 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/events/ozone/evdev/tablet_event_converter_evdev.h"
 
 #include <errno.h>
 #include <linux/input.h>
 #include <stddef.h>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/events/event.h"
 #include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #endif
 
@@ -129,7 +125,7 @@ std::ostream& TabletEventConverterEvdev::DescribeForLog(
 void TabletEventConverterEvdev::ProcessEvents(const input_event* inputs,
                                               int count) {
   for (int i = 0; i < count; ++i) {
-    const input_event& input = inputs[i];
+    const input_event& input = UNSAFE_TODO(inputs[i]);
     switch (input.type) {
       case EV_KEY:
         ConvertKeyEvent(input);
@@ -162,7 +158,7 @@ void TabletEventConverterEvdev::ConvertKeyEvent(const input_event& input) {
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!ash::features::IsPeripheralCustomizationEnabled()) {
     return;
   }
@@ -200,7 +196,7 @@ void TabletEventConverterEvdev::ConvertAbsEvent(const input_event& input) {
       abs_value_dirty_ = true;
       break;
     case ABS_PRESSURE:
-      pressure_ = (float)input.value / pressure_max_;
+      pressure_ = static_cast<float>(input.value) / pressure_max_;
       abs_value_dirty_ = true;
       break;
   }
@@ -208,11 +204,10 @@ void TabletEventConverterEvdev::ConvertAbsEvent(const input_event& input) {
 
 void TabletEventConverterEvdev::UpdateCursor() {
   gfx::Rect confined_bounds = cursor_->GetCursorConfinedBounds();
-
-  int x =
-      ((x_abs_location_ - x_abs_min_) * confined_bounds.width()) / x_abs_range_;
-  int y = ((y_abs_location_ - y_abs_min_) * confined_bounds.height()) /
-          y_abs_range_;
+  float x = ((x_abs_location_ - x_abs_min_) * confined_bounds.width()) /
+            static_cast<float>(x_abs_range_);
+  float y = ((y_abs_location_ - y_abs_min_) * confined_bounds.height()) /
+            static_cast<float>(y_abs_range_);
 
   x += confined_bounds.x();
   y += confined_bounds.y();

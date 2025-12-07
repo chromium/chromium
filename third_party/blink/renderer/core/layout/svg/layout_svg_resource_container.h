@@ -157,7 +157,9 @@ class LayoutSVGResourceContainer : public LayoutSVGHiddenContainer {
   static bool FindCycleInResources(const LayoutObject& object);
   static bool FindCycleInSubtree(const LayoutObject& root);
 
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) override;
   void WillBeDestroyed() override;
 
  private:

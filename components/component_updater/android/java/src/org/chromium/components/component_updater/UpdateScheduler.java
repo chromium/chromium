@@ -9,6 +9,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.background_task_scheduler.BackgroundTask.TaskFinishedCallback;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.TaskIds;
@@ -16,9 +18,10 @@ import org.chromium.components.background_task_scheduler.TaskInfo;
 
 /** Java-side implementation of the component update scheduler using the BackgroundTaskScheduler. */
 @JNINamespace("component_updater")
+@NullMarked
 public class UpdateScheduler {
-    private static UpdateScheduler sInstance;
-    private TaskFinishedCallback mTaskFinishedCallback;
+    private static @Nullable UpdateScheduler sInstance;
+    private @Nullable TaskFinishedCallback mTaskFinishedCallback;
     private long mNativeScheduler;
     private long mDelayMs;
 
@@ -36,12 +39,12 @@ public class UpdateScheduler {
 
     /* package */ void onStartTaskWithNative() {
         assert mNativeScheduler != 0;
-        UpdateSchedulerJni.get().onStartTask(mNativeScheduler, UpdateScheduler.this);
+        UpdateSchedulerJni.get().onStartTask(mNativeScheduler);
     }
 
     /* package */ void onStopTask() {
         if (mNativeScheduler != 0) {
-            UpdateSchedulerJni.get().onStopTask(mNativeScheduler, UpdateScheduler.this);
+            UpdateSchedulerJni.get().onStopTask(mNativeScheduler);
         }
         mTaskFinishedCallback = null;
         scheduleInternal(mDelayMs);
@@ -94,8 +97,8 @@ public class UpdateScheduler {
 
     @NativeMethods
     interface Natives {
-        void onStartTask(long nativeBackgroundTaskUpdateScheduler, UpdateScheduler caller);
+        void onStartTask(long nativeBackgroundTaskUpdateScheduler);
 
-        void onStopTask(long nativeBackgroundTaskUpdateScheduler, UpdateScheduler caller);
+        void onStopTask(long nativeBackgroundTaskUpdateScheduler);
     }
 }

@@ -84,7 +84,7 @@ ThemeColorPickerHandler::ThemeColorPickerHandler(
       ntp_custom_background_service_.get());
 }
 
-ThemeColorPickerHandler::~ThemeColorPickerHandler() {}
+ThemeColorPickerHandler::~ThemeColorPickerHandler() = default;
 
 // static
 void ThemeColorPickerHandler::RegisterProfilePrefs(
@@ -195,17 +195,7 @@ void ThemeColorPickerHandler::UpdateTheme() {
   }
   theme->has_third_party_theme = theme_service_->UsingExtensionTheme();
 
-  // If BrowserColorScheme is not set to follow the system, use
-  // BrowserColorScheme for deciding dark mode boolean. Otherwise, use the
-  // system value.
-  ThemeService::BrowserColorScheme colorScheme =
-      theme_service_->GetBrowserColorScheme();
-  if (colorScheme != ThemeService::BrowserColorScheme::kSystem) {
-    theme->is_dark_mode =
-        colorScheme == ThemeService::BrowserColorScheme::kDark;
-  } else {
-    theme->is_dark_mode = native_theme->ShouldUseDarkColors();
-  }
+  theme->is_dark_mode = theme_service_->BrowserUsesDarkColors();
   client_->SetTheme(std::move(theme));
 }
 

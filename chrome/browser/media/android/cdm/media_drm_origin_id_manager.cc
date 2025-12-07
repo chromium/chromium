@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -16,11 +16,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -133,8 +135,8 @@ void RemoveExpirableToken(base::Value::Dict& origin_id_dict) {
 // TODO(b/253295050): Remove this workaround if Android R patched to fix this.
 
 bool IsAndroidR() {
-  return base::android::BuildInfo::GetInstance()->sdk_int() ==
-         base::android::SDK_VERSION_R;
+  return base::android::android_info::sdk_int() ==
+         base::android::android_info::SDK_VERSION_R;
 }
 
 bool ShouldAttemptProvisioning(base::Value::Dict& origin_id_dict) {
@@ -275,16 +277,19 @@ class MediaDrmProvisionHelper {
     origin_id_ = base::UnguessableToken::Create();
 
     // Try provisioning for L3 first.
-    media_drm_bridge_ = media::MediaDrmBridge::CreateWithoutSessionSupport(
+    auto result = media::MediaDrmBridge::CreateWithoutSessionSupport(
         kWidevineKeySystem, origin_id_.ToString(),
         media::MediaDrmBridge::SECURITY_LEVEL_3, "L3 provisioning",
         create_fetcher_cb_);
-    if (!media_drm_bridge_) {
+    if (!result.has_value()) {
       // Unable to create mediaDrm for L3, so try L1.
-      DVLOG(1) << "Unable to create MediaDrmBridge for L3.";
+      DVLOG(1) << "Unable to create MediaDrmBridge for L3, CreateCdmStatus: "
+               << (media::StatusCodeType)result.code();
       ProvisionLevel1(false);
       return;
     }
+
+    media_drm_bridge_ = std::move(result).value();
 
     // Use of base::Unretained() is safe as ProvisionLevel1() eventually calls
     // ProvisionDone() which destructs this object.
@@ -303,17 +308,20 @@ class MediaDrmProvisionHelper {
     // Try L1. This replaces the previous |media_drm_bridge_| as it is no longer
     // needed.
     media_drm_bridge_.reset();
-    media_drm_bridge_ = media::MediaDrmBridge::CreateWithoutSessionSupport(
+    auto result = media::MediaDrmBridge::CreateWithoutSessionSupport(
         kWidevineKeySystem, origin_id_.ToString(),
         media::MediaDrmBridge::SECURITY_LEVEL_1, "L1 provisioning",
         create_fetcher_cb_);
-    if (!media_drm_bridge_) {
+    if (!result.has_value()) {
       // Unable to create MediaDrm for L1, so quit. Note that L3 provisioning
       // may or may not have worked.
-      DVLOG(1) << "Unable to create MediaDrmBridge for L1.";
+      DVLOG(1) << "Unable to create MediaDrmBridge for L1, CreateCdmStatus: "
+               << (media::StatusCodeType)result.code();
       ProvisionDone(L3_success, false);
       return;
     }
+
+    media_drm_bridge_ = std::move(result).value();
 
     // Use of base::Unretained() is safe as ProvisionDone() destructs this
     // object.
@@ -417,7 +425,9 @@ void MediaDrmOriginIdManager::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(kMediaDrmOriginIds);
 }
 
-MediaDrmOriginIdManager::MediaDrmOriginIdManager(PrefService* pref_service)
+MediaDrmOriginIdManager::MediaDrmOriginIdManager(
+    PrefService* pref_service,
+    base::PassKey<MediaDrmOriginIdManagerFactory>)
     : pref_service_(pref_service) {
   DVLOG(1) << __func__;
   DCHECK(pref_service_);

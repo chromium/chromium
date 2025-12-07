@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/editing/ime/cached_text_input_info.h"
 
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
@@ -48,8 +48,7 @@ LayoutObject* FindLayoutObject(const ContainerNode& container) {
   }
   // Because |LayoutView| is derived from |LayoutBlockFlow|, |layout_object_|
   // should not be null.
-  NOTREACHED_IN_MIGRATION() << container;
-  return nullptr;
+  NOTREACHED() << container;
 }
 
 }  // namespace
@@ -91,6 +90,13 @@ void CachedTextInputInfo::DidLayoutSubtree(const LayoutObject& layout_object) {
     return;
   }
 
+#if DCHECK_IS_ON()
+  // TODO(crbug.com/375143253): To investigate flaky failures.
+  if (layout_object_->is_destroyed_) [[unlikely]] {
+    DCHECK(false) << layout_object_;
+  }
+#endif  // DCHECK_IS_ON()
+
   if (layout_object_->IsDescendantOf(&layout_object)) {
     // `<span contenteditable>...</span>` reaches here.
     return Clear();
@@ -123,6 +129,19 @@ void CachedTextInputInfo::EnsureCached(const ContainerNode& container) const {
     // Because we use |layout_object_| as a cache key, |layout_object_| can
     // not be null.
     DCHECK(layout_object_) << container;
+  }
+
+  if (const auto* text_control = EnclosingTextControl(&container)) {
+    text_control->AnalyzeInnerEditorValue(&offset_map_);
+    if (IsEditable(*container_)) {
+      // We assume this function is called after `TextControlElement::
+      // SubtreeHasChanged()`. So we can avoid the slow
+      // SerializeInnerEditorValue().
+      text_ = text_control->InnerEditorValue();
+      DCHECK(EqualIgnoringNullity(text_,
+                                  text_control->SerializeInnerEditorValue()));
+    }
+    return;
   }
 
   TextIteratorAlgorithm<EditingStrategy> it(ComputeWholeContentRange(container),
@@ -197,7 +216,7 @@ PlainTextRange CachedTextInputInfo::GetPlainTextRange(
           ? start_offset
           : RangeLength(EphemeralRange(container_start, range.EndPosition()));
 // TODO(crbug.com/1256635): This DCHECK is triggered by Crostini on CrOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   DCHECK_EQ(
       static_cast<unsigned>(TextIterator::RangeLength(
           EphemeralRange(container_start, range.EndPosition()), Behavior())),
@@ -242,7 +261,7 @@ unsigned CachedTextInputInfo::RangeLength(const EphemeralRange& range) const {
               Behavior());
 // TODO(crbug.com/1256635): Revert https://crrev.com/c/3221041 to re-enable this
 // DCHECK on CrOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
       DCHECK_EQ(
           static_cast<unsigned>(TextIterator::RangeLength(range, Behavior())),
           length)

@@ -4,8 +4,8 @@
 
 import {html, nothing} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {ClientTraceReport} from './trace_report.mojom-webui.js';
 import type {TraceReportListElement} from './trace_report_list.js';
+import type {ClientTraceReport} from './traces_internals.mojom-webui.js';
 
 function getReportHtml(this: TraceReportListElement) {
   // clang-format off
@@ -17,8 +17,14 @@ function getReportHtml(this: TraceReportListElement) {
     </div>`;
   }
 
-  return html`${this.traces_.map((traceReport: ClientTraceReport) => html`
-    <trace-report .trace="${traceReport}"></trace-report>`)}`;
+  return html`
+      <trace-report .isHeader="${true}"></trace-report>
+    ${this.traces_.map((traceReport: ClientTraceReport) => html`
+      <trace-report
+          .trace="${traceReport}"
+          @show-toast="${this.showToastHandler_}"
+          @refresh-traces-request="${this.onRefreshTracesClick_}">
+      </trace-report>`)}`;
   // clang-format on
 }
 
@@ -31,14 +37,19 @@ export function getHtml(this: TraceReportListElement) {
         ${this.traces_.length}
       </span>
     </h1>
-    ${this.hasTraces_() ? html`
     <div class="utility-bar">
+      <cr-button class="tonal-button"
+          @click="${this.onRefreshTracesClick_}">
+        <cr-icon icon="cr:sync" slot="prefix-icon"></cr-icon>
+        Refresh
+      </cr-button>
+    ${this.hasTraces_() ? html`
       <cr-button class="tonal-button" ?disabled="${!this.hasTraces_()}"
           @click="${this.onDeleteAllTracesClick_}">
         <cr-icon icon="cr:delete" slot="prefix-icon"></cr-icon>
         Delete All Traces
-      </cr-button>
-    </div>` : nothing}
+      </cr-button>` : nothing}
+    </div>
   </div>
   ${this.isLoading_ ? html`
   <div class="loading-spinner"><div class="spinner"></div></div>` :

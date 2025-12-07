@@ -1,7 +1,11 @@
 [
   {
     "os": [
-      "chromeos_ash"
+      "chromeos",
+      "linux",
+      "mac",
+      "desktop_android",
+      "win"
     ],
     "policy_pref_mapping_tests": [
       {

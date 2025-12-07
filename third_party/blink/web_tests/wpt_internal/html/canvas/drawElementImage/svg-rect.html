@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<title>Canvas.drawElementImage: SVG green rect</title>
+<link rel="help" href="https://github.com/WICG/html-in-canvas">
+<link rel="author" href="mailto:schenney@chromium.org">
+<link rel="match" href="basic-rect-ref.html">
+<style>
+#canvas {
+  background: grey;
+}
+</style>
+
+<canvas id=canvas width="200" height="200" layoutsubtree>
+  <svg id=child width="200px" height="200px">
+    <rect fill="green" x="0" y="0" width="100" height="100"/>
+  </svg>
+</canvas>
+
+<script>
+function runTest() {
+  canvas.getContext("2d").drawElementImage(child, 20, 30);
+}
+
+onload = () => runTest();
+
+</script>
+</html>

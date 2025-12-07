@@ -7,38 +7,43 @@
 
 namespace ui {
 
-BASE_FEATURE(kAndroidHDR, "AndroidHDR", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidHDR, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kConvertTrackpadEventsToMouse,
-             "ConvertTrackpadEventsToMouse",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidUseCorrectDisplayWorkArea,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidUseCorrectWindowBounds, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidUseDisplayTopology, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidWindowOcclusion, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCheckIntentCallerPermission, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDeprecatedExternalPickerFunction,
-             "DeprecatedExternalPickerFunction",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kMirrorBackForwardGesturesInRTL,
-             "MirrorBackForwardGesturesInRTL",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kReportAllAvailablePointerTypes,
-             "ReportAllAvailablePointerTypes",
+BASE_FEATURE(kDisablePhotoPickerForVideoCapture,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kReportBottomOverscrolls,
-             "ReportBottomOverscrolls",
+BASE_FEATURE(kRefactorMinWidthContextOverride,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kReportBottomOverscrolls, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRequireLeadingInTextViewWithLeading,
-             "RequireLeadingInTextViewWithLeading",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSelectFileOpenDocument,
-             "SelectFileOpenDocument",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSelectFileOpenDocument, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSendTouchMovesToEventForwarderObservers,
-             "SendTouchMovesToEventForwarderObservers",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kUseNewEtc1Encoder, base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCheckHitEligibility, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidTouchpadOverscrollHistoryNavigation,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace ui

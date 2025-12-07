@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] HIDInputReportEvent interface object length
+  assert_equals: wrong value for HIDInputReportEvent.length expected 2 but got 0
+Harness: the test ran to completion.
+

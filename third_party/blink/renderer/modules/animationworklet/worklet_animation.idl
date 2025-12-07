@@ -24,6 +24,6 @@
 
   [CallWith=ScriptState] attribute double playbackRate;
   [RaisesException] void play();
-  [RaisesException] void pause();
+  void pause();
   void cancel();
 };

@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_METRICS_FIELD_TRIALS_PROVIDER_H_
 #define COMPONENTS_METRICS_FIELD_TRIALS_PROVIDER_H_
 
+#include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -31,6 +33,12 @@ class FieldTrialsProvider : public metrics::MetricsProvider {
   FieldTrialsProvider& operator=(const FieldTrialsProvider&) = delete;
 
   ~FieldTrialsProvider() override;
+
+  // Updates a global variable denoting whether the variations seed applied by
+  // the client has a limited layer that is referenced by any studies in which
+  // the client is eligible to participate based on their channel, platform,
+  // version, and form factor.
+  static void UpdateAppliedSeedHasActiveLimitedLayer(bool has_limited_layer);
 
   // metrics::MetricsProvider:
   void ProvideSystemProfileMetrics(

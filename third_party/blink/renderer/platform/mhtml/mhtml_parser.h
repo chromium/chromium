@@ -37,10 +37,7 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/mhtml/shared_buffer_chunk_reader.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-
-namespace WTF {
-class String;
-}
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 

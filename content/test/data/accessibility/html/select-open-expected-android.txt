@@ -1,0 +1,12 @@
+android.webkit.WebView focusable
+++android.view.View
+++++android.view.View role_description='menu pop up button' clickable collapsed focusable interesting name='Eggplant' hint='Animal collapsed' expanded_state=1
+++++++android.view.View collection invisible item_count=3 row_count=3 column_count=1 selection_mode=1
+++++++++android.view.View clickable collection_item focusable selected interesting name='Eggplant'
+++++++++android.view.View clickable collection_item focusable invisible name='Broccolini' item_index=1 row_index=1
+++++++++android.view.View clickable collection_item focusable invisible name='Rutabaga' item_index=2 row_index=2
+++++android.view.View role_description='menu pop up button' clickable expanded focusable interesting name='Mango' hint='Fruit expanded' expanded_state=3
+++++++android.view.View collection item_count=3 row_count=3 column_count=1 selection_mode=1
+++++++++android.view.View clickable collection_item focusable interesting name='Orange'
+++++++++android.view.View clickable collection_item focusable focused selected interesting name='Mango' item_index=1 row_index=1
+++++++++android.view.View clickable collection_item focusable interesting name='Star fruit' item_index=2 row_index=2

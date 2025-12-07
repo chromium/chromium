@@ -37,20 +37,16 @@ void CredentialLeakDialogViewAndroid::Show(ui::WindowAndroid* window_android) {
           : nullptr);
 }
 
-void CredentialLeakDialogViewAndroid::Accepted(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+void CredentialLeakDialogViewAndroid::Accepted(JNIEnv* env) {
   controller_->OnAcceptDialog();
 }
 
-void CredentialLeakDialogViewAndroid::Cancelled(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+void CredentialLeakDialogViewAndroid::Cancelled(JNIEnv* env) {
   controller_->OnCancelDialog();
 }
 
-void CredentialLeakDialogViewAndroid::Closed(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+void CredentialLeakDialogViewAndroid::Closed(JNIEnv* env) {
   controller_->OnCloseDialog();
 }
+
+DEFINE_JNI(CredentialLeakDialogBridge)

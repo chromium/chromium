@@ -14,10 +14,10 @@
 #include <string>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
@@ -77,9 +77,7 @@ void ExitHandler::ExitWhenPossibleOnUIThread(int signal) {
     // ExitHandler takes care of deleting itself.
     new ExitHandler();
   } else {
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
     switch (signal) {
       case SIGINT:
       case SIGHUP:
@@ -100,7 +98,7 @@ void ExitHandler::ExitWhenPossibleOnUIThread(int signal) {
         chrome::SessionEnding();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 #else
     Exit();
@@ -114,8 +112,7 @@ ExitHandler::ExitHandler() {
           &ExitHandler::OnSessionRestoreDone, base::Unretained(this)));
 }
 
-ExitHandler::~ExitHandler() {
-}
+ExitHandler::~ExitHandler() = default;
 
 void ExitHandler::OnSessionRestoreDone(Profile* profile, int /* num_tabs */) {
   if (!SessionRestore::IsRestoringSynchronously()) {
@@ -130,7 +127,7 @@ void ExitHandler::OnSessionRestoreDone(Profile* profile, int /* num_tabs */) {
 
 // static
 void ExitHandler::Exit() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS, exiting on signal should be always clean.
   chrome::ExitIgnoreUnloadHandlers();
 #else
@@ -154,8 +151,7 @@ int ChromeBrowserMainPartsPosix::PreEarlyInitialization() {
 
   // We need to accept SIGCHLD, even though our handler is a no-op because
   // otherwise we cannot wait on children. (According to POSIX 2001.)
-  struct sigaction action;
-  memset(&action, 0, sizeof(action));
+  struct sigaction action = {};
   action.sa_handler = SIGCHLDHandler;
   CHECK_EQ(0, sigaction(SIGCHLD, &action, nullptr));
 
@@ -172,15 +168,15 @@ void ChromeBrowserMainPartsPosix::PostCreateMainMessageLoop() {
 }
 
 void ChromeBrowserMainPartsPosix::ShowMissingLocaleMessageBox() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  NOTREACHED_IN_MIGRATION();  // Should not ever happen on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+  NOTREACHED();  // Should not ever happen on ChromeOS.
 #elif BUILDFLAG(IS_MAC)
   // Not called on Mac because we load the locale files differently.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #elif defined(USE_AURA)
   // TODO(port): We may want a views based message dialog here eventually, but
   // for now, crash.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #else
 #error "Need MessageBox implementation."
 #endif

@@ -76,11 +76,6 @@ bool operator==(C p1, const scoped_nsprotocol<C>& p2) {
   return p1 == p2.get();
 }
 
-template <class C>
-bool operator!=(C p1, const scoped_nsprotocol<C>& p2) {
-  return p1 != p2.get();
-}
-
 template <typename NST>
 class scoped_nsobject : public scoped_nsprotocol<NST*> {
  public:

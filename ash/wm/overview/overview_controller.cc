@@ -4,6 +4,7 @@
 
 #include "ash/wm/overview/overview_controller.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -13,6 +14,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/overview_desk_bar_view.h"
 #include "ash/wm/gestures/wm_gesture_handler.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/delayed_animation_observer_impl.h"
@@ -31,12 +33,10 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
-#include "chromeos/constants/chromeos_features.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/display/screen.h"
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
@@ -58,8 +58,6 @@ constexpr base::TimeDelta kOcclusionPauseDurationForStart =
 constexpr base::TimeDelta kOcclusionPauseDurationForEnd =
     base::Milliseconds(500);
 
-constexpr base::TimeDelta kEnterExitPresentationMaxLatency = base::Seconds(2);
-
 // Returns the enter/exit type that should be used if `kNormal` enter/exit type
 // was originally requested. Used in two cases:
 // 1) If the overview is expected to transition to/from the home screen, the
@@ -77,13 +75,12 @@ OverviewEnterExitType MaybeOverrideEnterExitType(
     return original_type;
   }
 
-  if (features::IsForestFeatureEnabled() &&
-      !!Shell::Get()->informed_restore_controller()->contents_data()) {
+  if (!!Shell::Get()->informed_restore_controller()->contents_data()) {
     return OverviewEnterExitType::kInformedRestore;
   }
 
   // Use normal type if home launcher is not available.
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     return original_type;
   }
 
@@ -101,30 +98,6 @@ OverviewEnterExitType MaybeOverrideEnterExitType(
   return enter ? OverviewEnterExitType::kFadeInEnter
                : OverviewEnterExitType::kFadeOutExit;
 }
-
-// Defines an observer that can be used to monitor overview mode ending and dump
-// without crashing when that happens. This is needed to investigate a crash
-// where resetting the occlusion tracker seemingly closes overview.
-// TODO(http://b/334908991): Remove this once the root cause of the crash is
-// found and fixed.
-class OverviewEndingDumper : public OverviewObserver {
- public:
-  OverviewEndingDumper() {
-    observation_.Observe(Shell::Get()->overview_controller());
-  }
-  OverviewEndingDumper(const OverviewEndingDumper&) = delete;
-  OverviewEndingDumper& operator=(const OverviewEndingDumper&) = delete;
-  ~OverviewEndingDumper() override = default;
-
-  void OnOverviewModeEnding(OverviewSession* overview_session) override {
-    observation_.Reset();
-    base::debug::DumpWithoutCrashing();
-  }
-
- private:
-  base::ScopedObservation<OverviewController, OverviewObserver> observation_{
-      this};
-};
 
 }  // namespace
 
@@ -148,14 +121,8 @@ OverviewController::ScopedOcclusionPauser::ScopedOcclusionPauser(
 }
 
 OverviewController::OverviewController()
-    : occlusion_pause_duration_for_start_(kOcclusionPauseDurationForStart),
-      occlusion_pause_duration_for_end_(kOcclusionPauseDurationForEnd),
+    : occlusion_pause_duration_for_end_(kOcclusionPauseDurationForEnd),
       delayed_animation_task_delay_(kTransition),
-      // TODO(crbug.com/40208263): Lacros windows now have a snapshot, but their
-      // behavior may be a bit worse than ash windows. Keep this snapshot code
-      // until we confirm it is fine to show lacros snapshotted windows all the
-      // time.
-      windows_have_snapshot_(true),
       overview_window_occlusion_calculator_(this) {
   Shell::Get()->activation_client()->AddObserver(this);
   CHECK_EQ(g_instance, nullptr);
@@ -201,8 +168,8 @@ bool OverviewController::StartOverview(OverviewStartAction start_action,
   if (!CanEnterOverview())
     return false;
 
+  session_metrics_recorder_.emplace(start_action, this);
   ToggleOverview(type);
-  RecordOverviewStartAction(start_action);
   return true;
 }
 
@@ -217,7 +184,6 @@ bool OverviewController::EndOverview(OverviewEndAction end_action,
 
   overview_session_->set_overview_end_action(end_action);
   ToggleOverview(type);
-  RecordOverviewEndAction(end_action);
 
   // If there is an undo toast active and the toast was created when ChromeVox
   // was enabled, then we need to close the toast when overview closes.
@@ -235,7 +201,8 @@ bool OverviewController::CanEnterOverview() const {
   // is running in kiosk app session.
   Shell* shell = Shell::Get();
   if (Shell::IsSystemModalWindowOpen() ||
-      shell->screen_pinning_controller()->IsPinned()) {
+      shell->screen_pinning_controller()->IsPinned() ||
+      chromeos::IsKioskSession()) {
     return false;
   }
 
@@ -265,6 +232,8 @@ bool OverviewController::HandleContinuousScroll(float y_offset,
       type != OverviewEnterExitType::kNormal;
 
   if (!overview_session_) {
+    session_metrics_recorder_.emplace(
+        OverviewStartAction::k3FingerVerticalScroll, this);
     ToggleOverview(type);
     return true;
   }
@@ -355,12 +324,7 @@ base::AutoReset<bool> OverviewController::SetDisableAppIdCheckForTests() {
 }
 
 void OverviewController::ToggleOverview(OverviewEnterExitType type) {
-  // Pause raster scale updates while the overview is being toggled. This is to
-  // handle the case where a mirror view is deleted then recreated when
-  // cancelling an overview exit animation, for example.
   aura::WindowOcclusionTracker::ScopedPause scoped_pause_occlusion;
-  auto scoped_pause_raster =
-      std::make_optional<ScopedPauseRasterScaleUpdates>();
 
   // Hide the virtual keyboard as it obstructs the overview mode.
   // Don't need to hide if it's the a11y keyboard, as overview mode
@@ -387,8 +351,9 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
   };
   std::vector<raw_ptr<aura::Window, VectorExperimental>> hide_windows(
       windows.size());
-  auto end = base::ranges::copy_if(windows, hide_windows.begin(),
-                                   should_hide_for_overview);
+  auto end = std::ranges::copy_if(windows, hide_windows.begin(),
+                                  should_hide_for_overview)
+                 .out;
   hide_windows.resize(end - hide_windows.begin());
   std::erase_if(windows, window_util::ShouldExcludeForOverview);
   // Overview windows will handle showing their transient related windows, so if
@@ -404,15 +369,8 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
 
   if (InOverviewSession()) {
     DCHECK(CanEndOverview(type));
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("ui", "OverviewController::ExitOverview",
-                                      this);
-
-    auto presentation_time_recorder = CreatePresentationTimeHistogramRecorder(
-        Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
-        kExitOverviewPresentationHistogram, "",
-        kEnterExitPresentationMaxLatency);
-    presentation_time_recorder->RequestNext();
-
+    CHECK(session_metrics_recorder_);
+    session_metrics_recorder_->OnOverviewSessionEnding();
     // Suspend occlusion tracker until the exit animation is complete.
     exit_pauser_ = PauseOcclusionTracker(occlusion_pause_duration_for_end_);
 
@@ -429,6 +387,10 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
       OnStartingAnimationComplete(/*canceled=*/true);
     start_animations_.clear();
 
+    for (auto& observer : observers_) {
+      observer.OnOverviewModeEnding(overview_session_.get());
+    }
+
     if (type == OverviewEnterExitType::kFadeOutExit) {
       // FadeOutExit is used for transition to the home launcher. Minimize the
       // windows without animations to prevent them from getting maximized
@@ -436,10 +398,12 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
       // place, and those widgets will fade out of overview.
       std::vector<raw_ptr<aura::Window, VectorExperimental>>
           windows_to_minimize(windows.size());
-      auto it = base::ranges::copy_if(
-          windows, windows_to_minimize.begin(), [](aura::Window* window) {
-            return !WindowState::Get(window)->IsMinimized();
-          });
+      auto it = std::ranges::copy_if(
+                    windows, windows_to_minimize.begin(),
+                    [](aura::Window* window) {
+                      return !WindowState::Get(window)->IsMinimized();
+                    })
+                    .out;
       windows_to_minimize.resize(
           std::distance(windows_to_minimize.begin(), it));
       window_util::MinimizeAndHideWithoutAnimation(windows_to_minimize);
@@ -448,8 +412,6 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     // Do not show rounded corners or shadow during overview shutdown.
     overview_session_->UpdateRoundedCornersAndShadow();
 
-    for (auto& observer : observers_)
-      observer.OnOverviewModeEnding(overview_session_.get());
     overview_session_->Shutdown();
 
     const bool should_end_immediately =
@@ -472,15 +434,8 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
       OnEndingAnimationComplete(/*canceled=*/false);
   } else {
     DCHECK(CanEnterOverview());
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("ui", "OverviewController::EnterOverview",
-                                      this);
-
-    auto presentation_time_recorder = CreatePresentationTimeHistogramRecorder(
-        Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
-        kEnterOverviewPresentationHistogram, "",
-        kEnterExitPresentationMaxLatency);
-    presentation_time_recorder->RequestNext();
-
+    CHECK(session_metrics_recorder_);
+    session_metrics_recorder_->OnOverviewSessionInitializing();
     if (auto* active_window = window_util::GetActiveWindow(); active_window) {
       auto* active_widget =
           views::Widget::GetWidgetForNativeView(active_window);
@@ -536,10 +491,7 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     // If we don't need to force windows to be visible to get showable content
     // (i.e. they have a snapshot), suspend occlusion tracker until the enter
     // animation is complete.
-    if (windows_have_snapshot_) {
-      enter_pauser_ =
-          PauseOcclusionTracker(occlusion_pause_duration_for_start_);
-    }
+    enter_pauser_ = PauseOcclusionTracker(kOcclusionPauseDurationForStart);
 
     overview_session_ = std::make_unique<OverviewSession>(this);
     // We may want to slide in the overview grid in some cases, even if not
@@ -572,19 +524,13 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     if (start_animations_.empty())
       OnStartingAnimationComplete(/*canceled=*/false);
 
+    session_metrics_recorder_->OnOverviewSessionInitialized(
+        overview_session_.get());
+
     if (!last_overview_session_time_.is_null()) {
       UMA_HISTOGRAM_LONG_TIMES("Ash.Overview.TimeBetweenUse",
                                base::Time::Now() - last_overview_session_time_);
     }
-  }
-
-  // Let immediate raster scale updates take effect. If we are pausing the
-  // occlusion tracker, defer any additional raster scale updates until after
-  // occlusion pausing is done to ensure raster scale updates come after
-  // occlusion updates on exit.
-  scoped_pause_raster.reset();
-  if (occlusion_tracker_pauser_) {
-    raster_scale_pauser_.emplace();
   }
 }
 
@@ -617,8 +563,6 @@ void OverviewController::OnStartingAnimationComplete(bool canceled) {
   }
 
   enter_pauser_.reset();
-  TRACE_EVENT_NESTABLE_ASYNC_END1("ui", "OverviewController::EnterOverview",
-                                  this, "canceled", canceled);
 }
 
 void OverviewController::OnEndingAnimationComplete(bool canceled) {
@@ -634,9 +578,6 @@ void OverviewController::OnEndingAnimationComplete(bool canceled) {
 
   // Ends the manual frame throttling at the end of overview exit.
   Shell::Get()->frame_throttling_controller()->EndThrottling();
-
-  TRACE_EVENT_NESTABLE_ASYNC_END1("ui", "OverviewController::ExitOverview",
-                                  this, "canceled", canceled);
 }
 
 void OverviewController::MaybePauseOcclusionTracker() {
@@ -666,19 +607,16 @@ void OverviewController::ResetPauser() {
   CHECK_EQ(pause_count_, 0);
   if (!overview_session_) {
     occlusion_tracker_pauser_.reset();
-    raster_scale_pauser_.reset();
     return;
   }
-
-  // Unpausing the occlusion tracker may trigger window activations. Even though
-  // window activations are paused, it seems overview might still exit. See
-  // http://b/334908991 for more details.
-  OverviewEndingDumper dumper;
 
   const bool ignore_activations = overview_session_->ignore_activations();
   overview_session_->set_ignore_activations(true);
   occlusion_tracker_pauser_.reset();
-  raster_scale_pauser_.reset();
+
+  // Unpausing the occlusion tracker may trigger window activations. Even though
+  // window activations are paused, overview might still exit. See
+  // http://b/334908991 for more details.
   if (overview_session_) {
     overview_session_->set_ignore_activations(ignore_activations);
   }

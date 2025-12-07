@@ -23,6 +23,7 @@ class CORE_EXPORT CSSStringValue : public CSSValue {
   bool Equals(const CSSStringValue& other) const {
     return string_ == other.string_;
   }
+  unsigned CustomHash() const { return string_.Impl()->GetHash(); }
 
   void TraceAfterDispatch(blink::Visitor*) const;
 

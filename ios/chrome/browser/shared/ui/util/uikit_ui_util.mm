@@ -53,6 +53,40 @@ void MaybeSetUILabelScaledFont(BOOL maybe, UILabel* label, UIFont* font) {
   }
 }
 
+UIFont* PreferredFontForTextStyle(UIFontTextStyle style,
+                                  std::optional<UIFontWeight> weight,
+                                  std::optional<CGFloat> max_size) {
+  // Fallback to using the simpler method if no weight or max_size was given.
+  if (!weight.has_value() && !max_size.has_value()) {
+    return [UIFont preferredFontForTextStyle:style];
+  }
+
+  // Get a "base font", with the given style and weight.
+  UITraitCollection* default_traits =
+      [UITraitCollection traitCollectionWithPreferredContentSizeCategory:
+                             UIContentSizeCategoryLarge];
+  UIFont* base_font;
+  if (weight.has_value()) {
+    UIFontDescriptor* descriptor =
+        [UIFontDescriptor preferredFontDescriptorWithTextStyle:style
+                                 compatibleWithTraitCollection:default_traits];
+    base_font = [UIFont systemFontOfSize:descriptor.pointSize
+                                  weight:weight.value()];
+  } else {
+    base_font = [UIFont preferredFontForTextStyle:style
+                    compatibleWithTraitCollection:default_traits];
+  }
+
+  // Return a scaled version of the base font, that can be adjusted
+  // automatically by setting adjustsFontForContentSizeCategory.
+  UIFontMetrics* metrics = [UIFontMetrics metricsForTextStyle:style];
+  if (max_size.has_value()) {
+    return [metrics scaledFontForFont:base_font
+                     maximumPointSize:max_size.value()];
+  }
+  return [metrics scaledFontForFont:base_font];
+}
+
 void SetUITextFieldScaledFont(UITextField* textField, UIFont* font) {
   textField.font = [[UIFontMetrics defaultMetrics] scaledFontForFont:font];
   textField.adjustsFontForContentSizeCategory = YES;
@@ -202,6 +236,21 @@ bool IsPortrait(UIWindow* window) {
 
 bool IsLandscape(UIWindow* window) {
   return UIInterfaceOrientationIsLandscape(GetInterfaceOrientation(window));
+}
+
+bool CanShowTabStrip(UITraitCollection* traitCollection) {
+  if (IsRegularXRegularSizeClass(traitCollection)) {
+    return true;
+  }
+  if (@available(iOS 26, *)) {
+    return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
+  }
+
+  return false;
+}
+
+bool CanShowTabStrip(id<UITraitEnvironment> environment) {
+  return CanShowTabStrip(environment.traitCollection);
 }
 
 bool IsCompactWidth(id<UITraitEnvironment> environment) {
@@ -359,7 +408,9 @@ NSAttributedString* TextForTabGroupCount(int count, CGFloat font_size) {
   if (count <= 0) {
     string = @"";
   } else if (count < 100) {
-    string = [NSString stringWithFormat:@"+%d", count];
+    string = IsTabGridEmptyThumbnailUIEnabled()
+                 ? [NSString stringWithFormat:@"%d", count]
+                 : [NSString stringWithFormat:@"+%d", count];
   } else {
     string = @"99+";
   }
@@ -373,23 +424,6 @@ NSAttributedString* TextForTabGroupCount(int count, CGFloat font_size) {
       [[NSAttributedString alloc] initWithString:string
                                       attributes:@{NSFontAttributeName : font}];
 }
-
-#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
-void RegisterEditMenuItem(UIMenuItem* item) {
-  UIMenuController* menu = [UIMenuController sharedMenuController];
-  NSArray<UIMenuItem*>* items = [menu menuItems];
-
-  for (UIMenuItem* existingItem in items) {
-    if ([existingItem action] == [item action]) {
-      return;
-    }
-  }
-
-  items = items ? [items arrayByAddingObject:item] : @[ item ];
-
-  [menu setMenuItems:items];
-}
-#endif
 
 UIView* ViewHierarchyRootForView(UIView* view) {
   if (view.window) {
@@ -428,11 +462,55 @@ CGFloat DeviceCornerRadius() {
     }
   }
 
-  const BOOL isRoundedDevice =
-      (idiom == UIUserInterfaceIdiomPhone && window.safeAreaInsets.bottom);
-  return isRoundedDevice ? 40.0 : 0.0;
+  // Estimated iPhone rounded corners radii.
+  if (window.safeAreaInsets.bottom && idiom == UIUserInterfaceIdiomPhone) {
+    return 50.0;
+  }
+
+  // Estimated iPad rounded corners radii.
+  if (window.safeAreaInsets.bottom && idiom == UIUserInterfaceIdiomPad) {
+    return 18.0;
+  }
+
+  // Device has square corners.
+  return 0.0;
 }
 
 bool IsBottomOmniboxAvailable() {
   return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
+}
+
+NSArray<UITrait>* TraitCollectionSetForTraits(NSArray<UITrait>* traits) {
+  if (base::FeatureList::IsEnabled(kEnableTraitCollectionRegistration) &&
+      traits) {
+    return traits;
+  }
+
+  static dispatch_once_t once;
+  static NSArray<UITrait>* everyUIMutableTrait = nil;
+  dispatch_once(&once, ^{
+    // This is a list of all the UITraits provided by iOS. This was generated
+    // from Apple's documentation on UIMutableTraits and is subject to change
+    // with subsequent releases of iOS. See
+    // https://developer.apple.com/documentation/uikit/uimutabletraits?language=objc
+    NSMutableArray<UITrait>* mutableTraits = [@[
+      UITraitAccessibilityContrast.class, UITraitActiveAppearance.class,
+      UITraitDisplayGamut.class, UITraitDisplayScale.class,
+      UITraitForceTouchCapability.class, UITraitHorizontalSizeClass.class,
+      UITraitImageDynamicRange.class, UITraitLayoutDirection.class,
+      UITraitLegibilityWeight.class, UITraitPreferredContentSizeCategory.class,
+      UITraitSceneCaptureState.class, UITraitToolbarItemPresentationSize.class,
+      UITraitTypesettingLanguage.class, UITraitUserInterfaceIdiom.class,
+      UITraitUserInterfaceLevel.class, UITraitUserInterfaceStyle.class,
+      UITraitVerticalSizeClass.class
+    ] mutableCopy];
+
+    if (@available(iOS 18, *)) {
+      [mutableTraits addObject:UITraitListEnvironment.class];
+    }
+
+    everyUIMutableTrait = [NSArray arrayWithArray:mutableTraits];
+  });
+
+  return everyUIMutableTrait;
 }

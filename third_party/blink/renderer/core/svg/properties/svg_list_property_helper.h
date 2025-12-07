@@ -28,20 +28,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_PROPERTIES_SVG_LIST_PROPERTY_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_PROPERTIES_SVG_LIST_PROPERTY_HELPER_H_
 
+#include "base/compiler_specific.h"
+#include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/core/svg/properties/svg_list_property.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
 
 namespace blink {
 
@@ -55,19 +48,19 @@ class SVGListPropertyHelper : public SVGListPropertyBase {
   ~SVGListPropertyHelper() override = default;
 
   class const_iterator {
+    STACK_ALLOCATED();
+
    public:
     explicit const_iterator(SVGListPropertyBase::const_iterator wrapped)
         : wrapped_(wrapped) {}
 
-    const_iterator& operator++() {
-      ++wrapped_;
+    UNSAFE_BUFFER_USAGE const_iterator& operator++() {
+      // SAFETY: This function exposes this unsafety.
+      UNSAFE_BUFFERS(++wrapped_);
       return *this;
     }
     bool operator==(const const_iterator& other) const {
       return wrapped_ == other.wrapped_;
-    }
-    bool operator!=(const const_iterator& other) const {
-      return !operator==(other);
     }
     const ItemPropertyType* operator->() const {
       return To<ItemPropertyType>(wrapped_->Get());
@@ -113,12 +106,6 @@ class SVGListPropertyHelper : public SVGListPropertyBase {
     auto* svg_list = MakeGarbageCollected<Derived>();
     svg_list->DeepCopy(To<Derived>(this));
     return svg_list;
-  }
-
-  SVGPropertyBase* CloneForAnimation(const WTF::String& value) const override {
-    auto* property = MakeGarbageCollected<Derived>();
-    property->SetValueAsString(value);
-    return property;
   }
 
   AnimatedPropertyType GetType() const override { return Derived::ClassType(); }

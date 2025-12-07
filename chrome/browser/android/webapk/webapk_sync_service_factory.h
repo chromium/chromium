@@ -16,19 +16,19 @@ class WebApkSyncService;
 
 class WebApkSyncServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
-  WebApkSyncServiceFactory(const WebApkSyncServiceFactory&) = delete;
-  WebApkSyncServiceFactory& operator=(const WebApkSyncServiceFactory&) = delete;
+  static WebApkSyncService* GetForProfile(Profile* profile);
 
   static WebApkSyncServiceFactory* GetInstance();
 
+  WebApkSyncServiceFactory(const WebApkSyncServiceFactory&) = delete;
+  WebApkSyncServiceFactory& operator=(const WebApkSyncServiceFactory&) = delete;
+
+
  private:
   friend base::NoDestructor<WebApkSyncServiceFactory>;
-  friend class WebApkSyncService;
 
   WebApkSyncServiceFactory();
   ~WebApkSyncServiceFactory() override;
-
-  static WebApkSyncService* GetForProfile(Profile* profile);
 
   // BrowserContextKeyedServiceFactory
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(

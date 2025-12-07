@@ -1,0 +1,15 @@
+diff --git a/node_modules/@lit/reactive-element/reactive-element.d.ts b/node_modules/@lit/reactive-element/reactive-element.bak.d.ts
+index 13df13f..45142bc 100644
+--- a/node_modules/@lit/reactive-element/reactive-element.d.ts
++++ b/node_modules/@lit/reactive-element/reactive-element.bak.d.ts
+@@ -57,7 +57,9 @@ type AttributeConverter<Type = unknown, TypeHint = unknown> = ComplexAttributeCo
+ /**
+  * Defines options for a property accessor.
+  */
+-export interface PropertyDeclaration<Type = unknown, TypeHint = unknown> {
++// Chromium patch to only allow one of [String, Number, Boolean, Array, Object]
++// in 'type' fields, since these are the only actual valid values.
++export interface PropertyDeclaration<Type = unknown, TypeHint = typeof String|typeof Number|typeof Boolean|typeof Array|typeof Object> {
+     /**
+      * When set to `true`, indicates the property is internal private state. The
+      * property should not be set by users. When using TypeScript, this property

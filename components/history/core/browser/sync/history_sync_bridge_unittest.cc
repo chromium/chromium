@@ -13,8 +13,11 @@
 
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/sync/history_sync_metadata_database.h"
 #include "components/history/core/browser/sync/test_history_backend_for_sync.h"
@@ -28,15 +31,17 @@
 #include "components/sync/protocol/history_specifics.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/test/forwarding_data_type_local_change_processor.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
+#include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace history {
 
-const std::string kTestAppId = "org.chromium.dino.stegosaurus";
-const std::string kTestAppId2 = "org.chromium.dino.velociraptor";
+constexpr char kTestAppId[] = "org.chromium.dino.stegosaurus";
+constexpr char kTestAppId2[] = "org.chromium.dino.velociraptor";
 
 namespace {
 
@@ -149,14 +154,14 @@ class FakeDataTypeLocalChangeProcessor
   void Delete(const std::string& storage_key,
               const syncer::DeletionOrigin& origin,
               syncer::MetadataChangeList* metadata_change_list) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void UpdateStorageKey(
       const syncer::EntityData& entity_data,
       const std::string& storage_key,
       syncer::MetadataChangeList* metadata_change_list) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void UntrackEntityForStorageKey(const std::string& storage_key) override {
@@ -195,14 +200,12 @@ class FakeDataTypeLocalChangeProcessor
 
   base::Time GetEntityCreationTime(
       const std::string& storage_key) const override {
-    NOTREACHED_IN_MIGRATION();
-    return base::Time();
+    NOTREACHED();
   }
 
   base::Time GetEntityModificationTime(
       const std::string& storage_key) const override {
-    NOTREACHED_IN_MIGRATION();
-    return base::Time();
+    NOTREACHED();
   }
 
   void OnModelStarting(syncer::DataTypeSyncBridge* bridge) override {}
@@ -212,11 +215,11 @@ class FakeDataTypeLocalChangeProcessor
 
   bool IsTrackingMetadata() const override { return is_tracking_metadata_; }
 
-  std::string TrackedAccountId() const override {
+  GaiaId TrackedGaiaId() const override {
     if (!IsTrackingMetadata()) {
-      return "";
+      return GaiaId();
     }
-    return "account_id";
+    return GaiaId("gaia_id");
   }
 
   std::string TrackedCacheGuid() const override {
@@ -236,39 +239,37 @@ class FakeDataTypeLocalChangeProcessor
 
   base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   const sync_pb::EntitySpecifics& GetPossiblyTrimmedRemoteSpecifics(
       const std::string& storage_key) const override {
-    NOTREACHED_IN_MIGRATION();
-    return sync_pb::EntitySpecifics::default_instance();
+    NOTREACHED();
   }
 
   sync_pb::UniquePosition UniquePositionAfter(
       const std::string& storage_key_before,
       const syncer::ClientTagHash& target_client_tag_hash) const override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   sync_pb::UniquePosition UniquePositionBefore(
       const std::string& storage_key_after,
       const syncer::ClientTagHash& target_client_tag_hash) const override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   sync_pb::UniquePosition UniquePositionBetween(
       const std::string& storage_key_before,
       const std::string& storage_key_after,
       const syncer::ClientTagHash& target_client_tag_hash) const override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   sync_pb::UniquePosition UniquePositionForInitialEntity(
       const syncer::ClientTagHash& target_client_tag_hash) const override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   sync_pb::UniquePosition GetUniquePositionForStorageKey(
       const std::string& storage_key) const override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   base::WeakPtr<syncer::DataTypeLocalChangeProcessor> GetWeakPtr() override {
@@ -487,7 +488,7 @@ class HistorySyncBridgeTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  sql::Database db_;
+  sql::Database db_{sql::test::kTestTag};
   sql::MetaTable meta_table_;
   HistorySyncMetadataDatabase metadata_db_;
 
@@ -616,6 +617,52 @@ TEST_F(HistorySyncBridgeTest, DoesNotApplyUnsyncableRemoteChanges) {
   // Since all remote URLs were invalid, they should not have been added to the
   // backend.
   EXPECT_TRUE(backend()->GetURLs().empty());
+}
+
+TEST_F(HistorySyncBridgeTest, DoesNotApply404sWhen404sNotEligibleForHistory) {
+  // Make 404s ineligible for history.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(history::kVisitedLinksOn404);
+
+  // Make a 404 visit.
+  const GURL remote_url("https://remote.com");
+  sync_pb::HistorySpecifics remote_entity =
+      CreateSpecifics(base::Time::Now() - base::Minutes(1), "remote_cache_guid",
+                      remote_url, {}, kTestAppId);
+  remote_entity.set_http_response_code(404);
+
+  // Sync the 404 visit.
+  ApplyInitialSyncChanges({remote_entity});
+
+  // The visit should not be saved locally.
+  EXPECT_EQ(backend()->GetURLs().size(), 0u);
+  EXPECT_EQ(backend()->GetVisits().size(), 0u);
+}
+
+TEST_F(HistorySyncBridgeTest, Applies404sWhen404sEligibleForHistory) {
+  // Make 404s eligible for history.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(history::kVisitedLinksOn404);
+
+  // Make a 404 visit.
+  const GURL remote_url("https://remote.com");
+  sync_pb::HistorySpecifics remote_entity =
+      CreateSpecifics(base::Time::Now() - base::Minutes(1), "remote_cache_guid",
+                      remote_url, {}, kTestAppId);
+  remote_entity.set_http_response_code(404);
+  // Set a cluster ID. In practice, 404s shouldn't be in clusters, but we want
+  // to make sure that if a 404 visit gets into a foreign cluster, it doesn't
+  // get added to a local cluster.
+  remote_entity.set_originator_cluster_id(12345);
+
+  // Sync the 404 visit.
+  ApplyInitialSyncChanges({remote_entity});
+
+  // The visit should be saved locally.
+  EXPECT_EQ(backend()->GetURLs().size(), 1u);
+  EXPECT_EQ(backend()->GetVisits().size(), 1u);
+  // But the visit shouldn't get added to any local clusters.
+  EXPECT_EQ(backend()->add_visit_to_synced_cluster_count(), 0);
 }
 
 TEST_F(HistorySyncBridgeTest, ClearsDataWhenSyncStopped) {
@@ -1903,6 +1950,48 @@ TEST_F(HistorySyncBridgeTest, AddsCluster) {
 
   // Should be called once per visit.
   EXPECT_EQ(backend()->add_visit_to_synced_cluster_count(), 3);
+}
+
+TEST_F(HistorySyncBridgeTest, ActorInitiatedVisitsNotSynced) {
+  // Start syncing (with no data yet).
+  ApplyInitialSyncChanges({});
+
+  // Visit a URL.
+  auto [url_row, visit_row] = AddVisitToBackendAndAdvanceClock(
+      GURL("https://www.url.com"), ui::PAGE_TRANSITION_TYPED);
+  backend()->AddOrReplaceVisitSource(visit_row.visit_id,
+                                     VisitSource::SOURCE_ACTOR);
+
+  // Notify the bridge about the visit - it should be sent to the processor.
+  bridge()->OnURLVisited(
+      /*history_backend=*/nullptr, url_row, visit_row);
+
+  // The data should *not* have been uploaded to Sync.
+  EXPECT_TRUE(processor()->GetEntities().empty());
+}
+
+TEST_F(HistorySyncBridgeTest, NonActorInitiatedVisitsAreSynced) {
+  // Start syncing (with no data yet).
+  ApplyInitialSyncChanges({});
+
+  // Visit a URL with SOURCE_BROWSED.
+  auto [url_row1, visit_row1] = AddVisitToBackendAndAdvanceClock(
+      GURL("https://www.url.com"), ui::PAGE_TRANSITION_TYPED);
+  backend()->AddOrReplaceVisitSource(visit_row1.visit_id,
+                                     VisitSource::SOURCE_BROWSED);
+  bridge()->OnURLVisited(
+      /*history_backend=*/nullptr, url_row1, visit_row1);
+
+  // Visit a second URL, with SOURCE_EXTENSION.
+  auto [url_row2, visit_row2] = AddVisitToBackendAndAdvanceClock(
+      GURL("https://www.url.com"), ui::PAGE_TRANSITION_TYPED);
+  backend()->AddOrReplaceVisitSource(visit_row2.visit_id,
+                                     VisitSource::SOURCE_EXTENSION);
+  bridge()->OnURLVisited(
+      /*history_backend=*/nullptr, url_row2, visit_row2);
+
+  // The data should be uploaded to Sync.
+  EXPECT_EQ(processor()->GetEntities().size(), 2u);
 }
 
 }  // namespace

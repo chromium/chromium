@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "ash/login/ui/views_utils.h"
-#include "ash/style/ash_color_provider.h"
 #include "base/functional/bind.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"

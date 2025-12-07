@@ -2,32 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
-import './shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_infinite_list/cr_infinite_list.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import './history_item.js';
 
+import type {HistoryEntry, HistoryQuery, PageCallbackRouter, PageHandlerRemote, QueryState} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import type {CrInfiniteListElement} from 'chrome://resources/cr_elements/cr_infinite_list/cr_infinite_list.js';
+import type {CrLazyRenderLitElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import type {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import type {BrowserService} from './browser_service.js';
 import {BrowserServiceImpl} from './browser_service.js';
-import {BROWSING_GAP_TIME} from './constants.js';
-import type {HistoryEntry, HistoryQuery, QueryState} from './externs.js';
+import {BROWSING_GAP_TIME, VisitContextMenuAction} from './constants.js';
 import type {HistoryItemElement} from './history_item.js';
-import {searchResultsTitle} from './history_item.js';
-import {getTemplate} from './history_list.html.js';
+import {getCss} from './history_list.css.js';
+import {getHtml} from './history_list.html.js';
 
 export interface ActionMenuModel {
   index: number;
@@ -44,11 +43,10 @@ type HistoryCheckboxSelectEvent = CustomEvent<{
 
 export interface HistoryListElement {
   $: {
-    'infinite-list': IronListElement,
-    'scroll-threshold': IronScrollThresholdElement,
-    'dialog': CrLazyRenderElement<CrDialogElement>,
-    'no-results': HTMLElement,
-    'sharedMenu': CrLazyRenderElement<CrActionMenuElement>,
+    infiniteList: CrInfiniteListElement,
+    dialog: CrLazyRenderLitElement<CrDialogElement>,
+    noResults: HTMLElement,
+    sharedMenu: CrLazyRenderLitElement<CrActionMenuElement>,
   };
 }
 
@@ -60,90 +58,113 @@ declare global {
   }
 }
 
-const HistoryListElementBase = WebUiListenerMixin(I18nMixin(PolymerElement));
+const HistoryListElementBase = I18nMixinLit(CrLitElement);
 
 export class HistoryListElement extends HistoryListElementBase {
   static get is() {
     return 'history-list';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       // The search term for the current query. Set when the query returns.
-      searchedTerm: String,
+      searchedTerm: {type: String},
 
-      resultLoadingDisabled_: Boolean,
+      resultLoadingDisabled_: {type: Boolean},
 
       /**
        * Indexes into historyData_ of selected items.
        */
-      selectedItems: Object,
+      selectedItems: {type: Object},
 
-      canDeleteHistory_: Boolean,
+      canDeleteHistory_: {type: Boolean},
 
       // An array of history entries in reverse chronological order.
-      historyData_: {
-        type: Array,
-        observer: 'onHistoryDataChanged_',
-      },
+      historyData_: {type: Array},
 
-      lastFocused_: Object,
+      lastFocused_: {type: Object},
 
-      listBlurred_: Boolean,
+      listBlurred_: {type: Boolean},
 
-      lastSelectedIndex: Number,
+      lastSelectedIndex: {type: Number},
 
       pendingDelete: {
         notify: true,
         type: Boolean,
       },
 
-      queryState: Object,
+      queryState: {type: Object},
 
-      actionMenuModel_: Object,
+      actionMenuModel_: {type: Object},
 
-      scrollTarget: {
-        type: Object,
-        observer: 'onScrollTargetChanged_',
-      },
-      scrollOffset: Number,
+      scrollTarget: {type: Object},
+      scrollOffset: {type: Number},
+
+      // Whether this element is active, i.e. visible to the user.
+      isActive: {type: Boolean},
 
       isEmpty: {
         type: Boolean,
-        reflectToAttribute: true,
-        computed: 'computeIsEmpty_(historyData_.length)',
+        reflect: true,
       },
     };
   }
 
-  private historyData_: HistoryEntry[];
-  private canDeleteHistory_: boolean =
+  protected accessor historyData_: HistoryEntry[] = [];
+  private browserService_: BrowserService = BrowserServiceImpl.getInstance();
+  private callbackRouter_: PageCallbackRouter =
+      BrowserServiceImpl.getInstance().callbackRouter;
+  protected accessor canDeleteHistory_: boolean =
       loadTimeData.getBoolean('allowDeletingHistory');
-  private actionMenuModel_: ActionMenuModel|null = null;
-  private resultLoadingDisabled_: boolean = false;
-  isEmpty: boolean;
-  searchedTerm: string = '';
-  selectedItems: Set<number> = new Set();
-  pendingDelete: boolean = false;
-  lastSelectedIndex: number;
-  queryState: QueryState;
-  scrollTarget: HTMLElement = document.documentElement;
-  scrollOffset: number = 0;
+  protected accessor actionMenuModel_: ActionMenuModel|null = null;
+  private lastOffsetHeight_: number = 0;
+  private pageHandler_: PageHandlerRemote =
+      BrowserServiceImpl.getInstance().handler;
+  private resizeObserver_: ResizeObserver = new ResizeObserver(() => {
+    if (this.lastOffsetHeight_ === 0) {
+      this.lastOffsetHeight_ = this.scrollTarget.offsetHeight;
+      return;
+    }
+    if (this.scrollTarget.offsetHeight > this.lastOffsetHeight_) {
+      this.lastOffsetHeight_ = this.scrollTarget.offsetHeight;
+      this.onScrollOrResize_();
+    }
+  });
+  private accessor resultLoadingDisabled_: boolean = false;
+  private scrollDebounce_: number = 200;
+  private scrollListener_: EventListener = () => this.onScrollOrResize_();
+  private scrollTimeout_: number|null = null;
+  accessor isActive: boolean = true;
+  accessor isEmpty: boolean = false;
+  accessor searchedTerm: string = '';
+  accessor selectedItems: Set<number> = new Set();
+  accessor pendingDelete: boolean = false;
+  protected accessor lastFocused_: HTMLElement|null;
+  protected accessor listBlurred_: boolean;
+  accessor lastSelectedIndex: number = -1;
+  accessor queryState: QueryState;
+  accessor scrollTarget: HTMLElement = document.documentElement;
+  accessor scrollOffset: number = 0;
+  private onHistoryDeletedListenerId_: number|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
-    this.setAttribute('aria-roledescription', this.i18n('ariaRoleDescription'));
-    this.addWebUiListener('history-deleted', () => this.onHistoryDeleted_());
+    this.onHistoryDeletedListenerId_ =
+        this.callbackRouter_.onHistoryDeleted.addListener(
+            this.onHistoryDeleted_.bind(this));
   }
 
-  override ready() {
-    super.ready();
-
+  override firstUpdated() {
     this.setAttribute('role', 'application');
+    this.setAttribute('aria-roledescription', this.i18n('ariaRoleDescription'));
 
     this.addEventListener('history-checkbox-select', this.onItemSelected_);
     this.addEventListener('open-menu', this.onOpenMenu_);
@@ -151,9 +172,31 @@ export class HistoryListElement extends HistoryListElementBase {
         'remove-bookmark-stars', e => this.onRemoveBookmarkStars_(e));
   }
 
-  private fire_(eventName: string, detail?: any) {
-    this.dispatchEvent(
-        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('historyData_')) {
+      this.isEmpty = this.historyData_.length === 0;
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    if (changedProperties.has('isActive')) {
+      this.onIsActiveChanged_();
+    }
+
+    if (changedProperties.has('scrollTarget')) {
+      this.onScrollTargetChanged_(changedProperties.get('scrollTarget'));
+    }
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    assert(this.onHistoryDeletedListenerId_);
+    this.callbackRouter_.removeListener(this.onHistoryDeletedListenerId_);
+    this.onHistoryDeletedListenerId_ = null;
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -164,12 +207,30 @@ export class HistoryListElement extends HistoryListElementBase {
    * @param results A list of results.
    */
   historyResult(info: HistoryQuery, results: HistoryEntry[]) {
+    if (!info) {
+      // Canceled results for an outdated query has null query info.
+      return;
+    }
+
     this.initializeResults_(info, results);
     this.closeMenu_();
 
     if (info.term && !this.queryState.incremental) {
-      getAnnouncerInstance().announce(
-          searchResultsTitle(results.length, info.term));
+      let resultsLabelId;
+      if (loadTimeData.getBoolean('enableHistoryEmbeddings')) {
+        // Differentiate screen reader messages if embeddings are enabled so
+        // that the messages specify these are results for exact matches not
+        // embeddings results.
+        resultsLabelId = results.length === 1 ? 'searchResultExactMatch' :
+                                                'searchResultExactMatches';
+      } else {
+        resultsLabelId =
+            results.length === 1 ? 'searchResult' : 'searchResults';
+      }
+      const message = loadTimeData.getStringF(
+          'foundSearchResults', results.length,
+          loadTimeData.getString(resultsLabelId), info.term);
+      getAnnouncerInstance().announce(message);
     }
 
     this.addNewResults(results, this.queryState.incremental, info.finished);
@@ -187,28 +248,31 @@ export class HistoryListElement extends HistoryListElementBase {
   addNewResults(
       historyResults: HistoryEntry[], incremental: boolean, finished: boolean) {
     const results = historyResults.slice();
-    this.$['scroll-threshold'].clearTriggers();
+    if (this.scrollTimeout_) {
+      clearTimeout(this.scrollTimeout_);
+    }
 
     if (!incremental) {
       this.resultLoadingDisabled_ = false;
-      if (this.historyData_) {
-        this.splice('historyData_', 0, this.historyData_.length);
-      }
-      this.fire_('unselect-all');
-      this.scrollTop = 0;
+      this.historyData_ = [];
+      this.fire('unselect-all');
+      this.scrollTarget.scrollTop = 0;
     }
 
-    if (this.historyData_) {
-      // If we have previously received data, push the new items onto the
-      // existing array.
-      this.push('historyData_', ...results);
-    } else {
-      // The first time we receive data, use set() to ensure the iron-list is
-      // initialized correctly.
-      this.set('historyData_', results);
-    }
-
+    this.historyData_ = [...this.historyData_, ...results];
     this.resultLoadingDisabled_ = finished;
+
+    if (loadTimeData.getBoolean('enableBrowsingHistoryActorIntegrationM1')) {
+      this.recordActorVisitShown_(results);
+    }
+  }
+
+  private recordActorVisitShown_(historyResults: HistoryEntry[]) {
+    const historyResultsContainActorVisit =
+        historyResults.some((result) => result.isActorVisit);
+
+    this.browserService_.recordBooleanHistogram(
+        'HistoryPage.ActorItemsShown', historyResultsContainActorVisit);
   }
 
   private onHistoryDeleted_() {
@@ -218,7 +282,7 @@ export class HistoryListElement extends HistoryListElementBase {
     }
 
     // Reload the list with current search state.
-    this.fire_('query-history', false);
+    this.fire('query-history', false);
   }
 
   selectOrUnselectAll() {
@@ -237,24 +301,19 @@ export class HistoryListElement extends HistoryListElementBase {
       return;
     }
 
-    this.historyData_.forEach((_item, index) => {
-      this.changeSelection_(index, true);
-    });
+    const indices = this.historyData_.map((_, index) => index);
+    this.changeSelections_(indices, true);
   }
 
   /**
    * Deselect each item in |selectedItems|.
    */
   unselectAllItems() {
-    this.selectedItems.forEach((index) => {
-      this.changeSelection_(index, false);
-    });
-
+    this.changeSelections_(Array.from(this.selectedItems), false);
     assert(this.selectedItems.size === 0);
   }
 
-  /** @return {number} */
-  getSelectedItemCount() {
+  getSelectedItemCount(): number {
     return this.selectedItems.size;
   }
 
@@ -267,38 +326,49 @@ export class HistoryListElement extends HistoryListElementBase {
       return;
     }
 
-    const browserService = BrowserServiceImpl.getInstance();
-    browserService.recordAction('RemoveSelected');
+    this.browserService_.recordAction('RemoveSelected');
     if (this.queryState.searchTerm !== '') {
-      browserService.recordAction('SearchResultRemove');
+      this.browserService_.recordAction('SearchResultRemove');
     }
     this.$.dialog.get().showModal();
 
     // TODO(dbeam): remove focus flicker caused by showModal() + focus().
-    const button =
-        this.shadowRoot!.querySelector<HTMLElement>('.action-button');
+    const button = this.shadowRoot.querySelector<HTMLElement>('.action-button');
     assert(button);
     button.focus();
   }
 
-  // Notifies the iron-list of this element being potentially resized.
-  notifyResize() {
-    this.$['infinite-list'].notifyResize();
+  fillCurrentViewport() {
+    this.$.infiniteList.fillCurrentViewport();
+  }
+
+  openSelected() {
+    const selected = this.getSelectedEntries_();
+
+    for (const entry of selected) {
+      window.open(entry.url, '_blank');
+    }
   }
 
   /////////////////////////////////////////////////////////////////////////////
   // Private methods:
 
   /**
-   * Set the selection status for an item at a particular index.
+   * Set the selection status for a set of items by their indices.
    */
-  private changeSelection_(index: number, selected: boolean) {
-    this.set(`historyData_.${index}.selected`, selected);
-    if (selected) {
-      this.selectedItems.add(index);
-    } else {
-      this.selectedItems.delete(index);
-    }
+  private changeSelections_(indices: number[], selected: boolean) {
+    indices.forEach(index => {
+      if (this.historyData_[index]) {
+        this.historyData_[index].selected = selected;
+      }
+
+      if (selected) {
+        this.selectedItems.add(index);
+      } else {
+        this.selectedItems.delete(index);
+      }
+    });
+    this.requestUpdate();
   }
 
   /**
@@ -310,46 +380,26 @@ export class HistoryListElement extends HistoryListElementBase {
   private deleteSelected_() {
     assert(!this.pendingDelete);
 
-    const toBeRemoved = Array.from(this.selectedItems.values())
-                            .map((index) => this.get(`historyData_.${index}`));
+    const toBeRemoved = this.getSelectedEntries_();
 
     this.deleteItems_(toBeRemoved).then(() => {
       this.pendingDelete = false;
       this.removeItemsByIndex_(Array.from(this.selectedItems));
-      this.fire_('unselect-all');
+      this.fire('unselect-all');
       if (this.historyData_.length === 0) {
         // Try reloading if nothing is rendered.
-        this.fire_('query-history', false);
+        this.fire('query-history', false);
       }
     });
   }
 
-  removeItemsForTest(indices: number[]) {
-    this.removeItemsByIndex_(indices);
-  }
-
   /**
-   * Remove all |indices| from the history list. Uses notifySplices to send a
-   * single large notification to Polymer, rather than many small notifications,
-   * which greatly improves performance.
+   * Remove all |indices| from the history list.
    */
   private removeItemsByIndex_(indices: number[]) {
-    const splices: any[] = [];
-    indices.sort(function(a, b) {
-      // Sort in reverse numerical order.
-      return b - a;
-    });
-    indices.forEach((index) => {
-      const item = this.historyData_.splice(index, 1);
-      splices.push({
-        index: index,
-        removed: [item],
-        addedCount: 0,
-        object: this.historyData_,
-        type: 'splice',
-      });
-    });
-    this.notifySplices('historyData_', splices);
+    const indicesSet = new Set(indices);
+    this.historyData_ =
+        this.historyData_.filter((_, index) => !indicesSet.has(index));
   }
 
   removeItemsByIndexForTesting(indices: number[]) {
@@ -370,8 +420,8 @@ export class HistoryListElement extends HistoryListElementBase {
   /////////////////////////////////////////////////////////////////////////////
   // Event listeners:
 
-  private onDialogConfirmClick_() {
-    BrowserServiceImpl.getInstance().recordAction('ConfirmRemoveSelected');
+  protected onDialogConfirmClick_() {
+    this.browserService_.recordAction('ConfirmRemoveSelected');
 
     this.deleteSelected_();
     const dialog = this.$.dialog.getIfExists();
@@ -379,8 +429,8 @@ export class HistoryListElement extends HistoryListElementBase {
     dialog.close();
   }
 
-  private onDialogCancelClick_() {
-    BrowserServiceImpl.getInstance().recordAction('CancelRemoveSelected');
+  protected onDialogCancelClick_() {
+    this.browserService_.recordAction('CancelRemoveSelected');
 
     const dialog = this.$.dialog.getIfExists();
     assert(dialog);
@@ -397,11 +447,12 @@ export class HistoryListElement extends HistoryListElementBase {
       return;
     }
 
-    for (let i = 0; i < this.historyData_.length; i++) {
-      if (this.historyData_[i].url === url) {
-        this.set(`historyData_.${i}.starred`, false);
+    this.historyData_.forEach(data => {
+      if (data.url === url) {
+        data.starred = false;
       }
-    }
+    });
+    this.requestUpdate();
   }
 
   /**
@@ -412,34 +463,13 @@ export class HistoryListElement extends HistoryListElementBase {
       return;
     }
 
-    this.fire_('query-history', true);
+    this.fire('query-history', true);
   }
 
-  /**
-   * Open the overflow menu and ensure that the item is visible in the scroll
-   * pane when its menu is opened (it is possible to open off-screen items using
-   * keyboard shortcuts).
-   */
   private onOpenMenu_(e: OpenMenuEvent) {
-    const index = e.detail.index;
-    const list = this.$['infinite-list'];
-    if (index < list.firstVisibleIndex || index > list.lastVisibleIndex) {
-      list.scrollToIndex(index);
-    }
-
     const target = e.detail.target;
     this.actionMenuModel_ = e.detail;
     this.$.sharedMenu.get().showAt(target);
-  }
-
-  private onMoreFromSiteClick_() {
-    BrowserServiceImpl.getInstance().recordAction('EntryMenuShowMoreFromSite');
-
-    assert(this.$.sharedMenu.getIfExists());
-    this.fire_(
-        'change-query', {search: 'host:' + this.actionMenuModel_!.item.domain});
-    this.actionMenuModel_ = null;
-    this.closeMenu_();
   }
 
   private deleteItems_(items: HistoryEntry[]): Promise<void> {
@@ -449,19 +479,47 @@ export class HistoryListElement extends HistoryListElementBase {
                                   }));
 
     this.pendingDelete = true;
-    return BrowserServiceImpl.getInstance().removeVisits(removalList);
+    return this.pageHandler_.removeVisits(removalList);
   }
 
-  private onRemoveBookmarkClick_() {
-    const browserService = BrowserServiceImpl.getInstance();
-    browserService.removeBookmark(this.actionMenuModel_!.item.url);
-    this.fire_('remove-bookmark-stars', this.actionMenuModel_!.item.url);
+  private recordContextMenuActionsHistogram_(action: VisitContextMenuAction) {
+    if (!loadTimeData.getBoolean('enableBrowsingHistoryActorIntegrationM1')) {
+      return;
+    }
+
+    this.browserService_.recordHistogram(
+        this.actionMenuModel_!.item.isActorVisit ?
+            'HistoryPage.ActorContextMenuActions' :
+            'HistoryPage.NonActorContextMenuActions',
+        action, VisitContextMenuAction.MAX_VALUE);
+  }
+
+  protected onMoreFromSiteClick_() {
+    this.browserService_.recordAction('EntryMenuShowMoreFromSite');
+    this.recordContextMenuActionsHistogram_(
+        VisitContextMenuAction.MORE_FROM_THIS_SITE_CLICKED);
+
+
+    assert(this.$.sharedMenu.getIfExists());
+    this.fire(
+        'change-query', {search: 'host:' + this.actionMenuModel_!.item.domain});
+    this.actionMenuModel_ = null;
     this.closeMenu_();
   }
 
-  private onRemoveFromHistoryClick_() {
-    const browserService = BrowserServiceImpl.getInstance();
-    browserService.recordAction('EntryMenuRemoveFromHistory');
+  protected onRemoveBookmarkClick_() {
+    this.recordContextMenuActionsHistogram_(
+        VisitContextMenuAction.REMOVE_BOOKMARK_CLICKED);
+
+    this.pageHandler_.removeBookmark(this.actionMenuModel_!.item.url);
+    this.fire('remove-bookmark-stars', this.actionMenuModel_!.item.url);
+    this.closeMenu_();
+  }
+
+  protected onRemoveFromHistoryClick_() {
+    this.browserService_.recordAction('EntryMenuRemoveFromHistory');
+    this.recordContextMenuActionsHistogram_(
+        VisitContextMenuAction.REMOVE_FROM_HISTORY_CLICKED);
 
     assert(!this.pendingDelete);
     assert(this.$.sharedMenu.getIfExists());
@@ -477,7 +535,7 @@ export class HistoryListElement extends HistoryListElementBase {
       // TODO(tsergeant): Make this automatic based on observing list
       // modifications.
       this.pendingDelete = false;
-      this.fire_('unselect-all');
+      this.fire('unselect-all');
       this.removeItemsByIndex_([itemData.index]);
 
       const index = itemData.index;
@@ -486,13 +544,11 @@ export class HistoryListElement extends HistoryListElementBase {
       }
 
       if (this.historyData_.length > 0) {
-        setTimeout(() => {
-          this.$['infinite-list'].focusItem(
-              Math.min(this.historyData_.length - 1, index));
-          const item = getDeepActiveElement() as HistoryItemElement;
-          if (item && item.focusOnMenuButton) {
-            item.focusOnMenuButton();
-          }
+        setTimeout(async () => {
+          const item = await this.$.infiniteList.ensureItemRendered(
+                           Math.min(this.historyData_.length - 1, index)) as
+              HistoryItemElement;
+          item.focusOnMenuButton();
         }, 1);
       }
     });
@@ -517,11 +573,7 @@ export class HistoryListElement extends HistoryListElementBase {
     }
 
     const selected = !this.selectedItems.has(index);
-
-    indices.forEach((index) => {
-      this.changeSelection_(index, selected);
-    });
-
+    this.changeSelections_(indices, selected);
     this.lastSelectedIndex = index;
   }
 
@@ -532,7 +584,7 @@ export class HistoryListElement extends HistoryListElementBase {
    * Check whether the time difference between the given history item and the
    * next one is large enough for a spacer to be required.
    */
-  private needsTimeGap_(_item: HistoryEntry, index: number): boolean {
+  protected needsTimeGap_(_item: HistoryEntry, index: number): boolean {
     const length = this.historyData_.length;
     if (index === undefined || index >= length - 1 || length === 0) {
       return false;
@@ -553,7 +605,7 @@ export class HistoryListElement extends HistoryListElementBase {
    * True if the given item is the beginning of a new card.
    * @param i Index of |item| within |historyData_|.
    */
-  private isCardStart_(_item: HistoryEntry, i: number): boolean {
+  protected isCardStart_(_item: HistoryEntry, i: number): boolean {
     const length = this.historyData_.length;
     if (i === undefined || length === 0 || i > length - 1) {
       return false;
@@ -567,7 +619,7 @@ export class HistoryListElement extends HistoryListElementBase {
    * True if the given item is the end of a card.
    * @param i Index of |item| within |historyData_|.
    */
-  private isCardEnd_(_item: HistoryEntry, i: number): boolean {
+  protected isCardEnd_(_item: HistoryEntry, i: number): boolean {
     const length = this.historyData_.length;
     if (i === undefined || length === 0 || i > length - 1) {
       return false;
@@ -577,18 +629,19 @@ export class HistoryListElement extends HistoryListElementBase {
         this.historyData_[i + 1].dateRelativeDay;
   }
 
-  private hasResults_(): boolean {
+  protected hasResults_(): boolean {
     return this.historyData_.length > 0;
   }
 
-  private noResultsMessage_(searchedTerm: string): string {
-    const messageId = searchedTerm !== '' ? 'noSearchResults' : 'noResults';
+  protected noResultsMessage_(): string {
+    const messageId =
+        this.searchedTerm !== '' ? 'noSearchResults' : 'noResults';
     return loadTimeData.getString(messageId);
   }
 
-  private canSearchMoreFromSite_(searchedTerm: string, domain: string):
-      boolean {
-    return searchedTerm === '' || searchedTerm !== domain;
+  protected canSearchMoreFromSite_(): boolean {
+    return this.searchedTerm === '' ||
+        this.searchedTerm !== this.actionMenuModel_?.item.domain;
   }
 
   private initializeResults_(info: HistoryQuery, results: HistoryEntry[]) {
@@ -610,15 +663,6 @@ export class HistoryListElement extends HistoryListElementBase {
     }
   }
 
-  /**
-   * Adding in order to address an issue with a flaky test. After the list is
-   * updated, the test would not see the updated elements when using Polymer 2.
-   * This has yet to be reproduced in manual testing.
-   */
-  private onHistoryDataChanged_() {
-    this.$['infinite-list'].fire('iron-resize');
-  }
-
   private getHistoryEmbeddingsMatches_(): HistoryEntry[] {
     return this.historyData_.slice(0, 3);
   }
@@ -628,15 +672,62 @@ export class HistoryListElement extends HistoryListElementBase {
         !!this.searchedTerm && this.historyData_?.length > 0;
   }
 
-  private onScrollTargetChanged_() {
-    // It is possible (eg, when middle clicking the reload button) for all other
-    // resize events to fire before the list is attached and can be measured.
-    // Adding another resize here ensures it will get sized correctly.
-    this.$['infinite-list'].notifyResize();
+  private onIsActiveChanged_() {
+    if (this.isActive) {
+      // Active changed from false to true. Add the scroll observer.
+      this.scrollTarget.addEventListener('scroll', this.scrollListener_);
+    } else {
+      // Active changed from true to false. Remove scroll observer.
+      this.scrollTarget.removeEventListener('scroll', this.scrollListener_);
+    }
   }
 
-  private computeIsEmpty_() {
-    return this.historyData_.length === 0;
+  private onScrollTargetChanged_(oldTarget?: HTMLElement) {
+    if (oldTarget) {
+      this.resizeObserver_.disconnect();
+      oldTarget.removeEventListener('scroll', this.scrollListener_);
+    }
+    if (this.scrollTarget) {
+      this.resizeObserver_.observe(this.scrollTarget);
+      this.scrollTarget.addEventListener('scroll', this.scrollListener_);
+      this.fillCurrentViewport();
+    }
+  }
+
+  setScrollDebounceForTest(debounce: number) {
+    this.scrollDebounce_ = debounce;
+  }
+
+  private onScrollOrResize_() {
+    // Debounce by 200ms.
+    if (this.scrollTimeout_) {
+      clearTimeout(this.scrollTimeout_);
+    }
+    this.scrollTimeout_ =
+        setTimeout(() => this.onScrollTimeout_(), this.scrollDebounce_);
+  }
+
+  private onScrollTimeout_() {
+    this.scrollTimeout_ = null;
+    const lowerScroll = this.scrollTarget.scrollHeight -
+        this.scrollTarget.scrollTop - this.scrollTarget.offsetHeight;
+    if (lowerScroll < 500) {
+      this.onScrollToBottom_();
+    }
+    this.fire('scroll-timeout-for-test');
+  }
+
+  protected onLastFocusedChanged_(e: CustomEvent<{value: HTMLElement | null}>) {
+    this.lastFocused_ = e.detail.value;
+  }
+
+  protected onListBlurredChanged_(e: CustomEvent<{value: boolean}>) {
+    this.listBlurred_ = e.detail.value;
+  }
+
+  private getSelectedEntries_(): HistoryEntry[] {
+    // `selectedItems` is a Set<number> of row-indexes.
+    return Array.from(this.selectedItems, idx => this.historyData_[idx]);
   }
 }
 

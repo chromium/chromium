@@ -7,18 +7,18 @@ package org.chromium.chrome.browser.autofill.settings;
 import android.text.Editable;
 import android.text.TextUtils;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.ui.text.EmptyTextWatcher;
 
 /**
- * Watch a TextView and if a credit card number is entered, it will format the number.
- * Disable formatting when user:
- * 1. Inputs dashes or spaces.
- * 2. Removes separators in the middle of the string
- * 3. Enters a number longer than 16 digits.
+ * Watch a TextView and if a credit card number is entered, it will format the number. Disable
+ * formatting when user: 1. Inputs dashes or spaces. 2. Removes separators in the middle of the
+ * string 3. Enters a number longer than 16 digits.
  *
- * Formatting will be re-enabled once text is cleared.
+ * <p>Formatting will be re-enabled once text is cleared.
  */
+@NullMarked
 public class CreditCardNumberFormattingTextWatcher implements EmptyTextWatcher {
     /** Character for card number section separator. */
     private static final String SEPARATOR = " ";

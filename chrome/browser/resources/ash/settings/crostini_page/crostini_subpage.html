@@ -52,15 +52,6 @@
       role-description="$i18n{subpageArrowRoleDescription}">
   </cr-link-row>
 </template>
-<template is="dom-if" if="[[showArcAdbSideloading_]]">
-  <cr-link-row
-      id="crostiniEnableArcAdbRow"
-      class="hr"
-      label="$i18n{crostiniArcAdbTitle}"
-      on-click="onEnableArcAdbClick_"
-      role-description="$i18n{subpageArrowRoleDescription}">
-  </cr-link-row>
-</template>
 <template is="dom-if" if="[[showCrostiniPortForwarding_]]">
   <cr-link-row
       id="crostiniPortForwardingRow"

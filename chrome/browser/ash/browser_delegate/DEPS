@@ -1,0 +1,5 @@
+include_rules = [
+    "-chrome",
+    "+chrome/app/chrome_command_ids.h",
+    "+chrome/browser",
+]

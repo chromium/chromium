@@ -69,10 +69,10 @@ class NET_EXPORT HttpResponseInfo {
   // Initializes from the representation stored in the given pickle.
   bool InitFromPickle(const base::Pickle& pickle, bool* response_truncated);
 
-  // Call this method to persist the response info.
-  void Persist(base::Pickle* pickle,
-               bool skip_transient_headers,
-               bool response_truncated) const;
+  // Call this method to persist the response info. Can't fail. Returns a
+  // unique_ptr because base::Pickle doesn't support std::move().
+  std::unique_ptr<base::Pickle> MakePickle(bool skip_transient_headers,
+                                           bool response_truncated) const;
 
   // Whether QUIC is used or not.
   bool DidUseQuic() const;
@@ -115,8 +115,8 @@ class NET_EXPORT HttpResponseInfo {
   // `InitFromPickle()`.
   bool was_mdl_match = false;
 
-  // Whether the request use http proxy or server authentication.
-  bool did_use_http_auth = false;
+  // Whether the request uses server authentication.
+  bool did_use_server_http_auth = false;
 
   // True if the resource was originally fetched for a prefetch and has not been
   // used since.
@@ -165,6 +165,9 @@ class NET_EXPORT HttpResponseInfo {
   // this is the last time the cache entry was validated.
   base::Time response_time;
 
+  // Like response_time, but ignoring revalidations.
+  base::Time original_response_time;
+
   // Host resolution error info.
   ResolveErrorInfo resolve_error_info;
 
@@ -201,6 +204,8 @@ class NET_EXPORT HttpResponseInfo {
   std::optional<int64_t> browser_run_id;
 
   // True if the response used a shared dictionary for decoding its body.
+  // This is always false for resources served from cache (where
+  // dictionary-compressed responses are stored uncompressed).
   bool did_use_shared_dictionary = false;
 };
 

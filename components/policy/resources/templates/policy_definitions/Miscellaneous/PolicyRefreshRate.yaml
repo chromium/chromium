@@ -5,6 +5,7 @@ desc: |-
         Leaving the policy unset uses the default value of 3 hours.
 
         Note: Policy notifications force a refresh when the policy changes, making frequent refreshes unnecessary. So, if the platform supports these notifications, the refresh delay is 24 hours (ignoring defaults and the value of this policy).
+default: 10800000
 example_value: 3600000
 features:
   dynamic_refresh: true

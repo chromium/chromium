@@ -1,0 +1,27 @@
+This is a wdspec test.
+[FAIL] test_page[None-portrait-expected_dimensions0]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('Page.printToPDF' wasn't found)
+[FAIL] test_page[page1-portrait-expected_dimensions1]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('Page.printToPDF' wasn't found)
+[FAIL] test_page[page2-portrait-expected_dimensions2]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('Page.printToPDF' wasn't found)
+[FAIL] test_page[page3-portrait-expected_dimensions3]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('Page.printToPDF' wasn't found)
+[FAIL] test_page[page4-portrait-expected_dimensions4]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('Page.printToPDF' wasn't found)
+[FAIL] test_page[page5-portrait-expected_dimensions5]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('Page.printToPDF' wasn't found)
+[FAIL] test_page[None-landscape-expected_dimensions6]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('Page.printToPDF' wasn't found)
+[FAIL] test_page[page7-landscape-expected_dimensions7]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('Page.printToPDF' wasn't found)
+[FAIL] test_page[page8-landscape-expected_dimensions8]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('Page.printToPDF' wasn't found)
+[FAIL] test_page[page9-landscape-expected_dimensions9]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('Page.printToPDF' wasn't found)
+[FAIL] test_page[page10-landscape-expected_dimensions10]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('Page.printToPDF' wasn't found)
+[FAIL] test_page[page11-landscape-expected_dimensions11]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('Page.printToPDF' wasn't found)
+Harness: the test ran to completion.
+

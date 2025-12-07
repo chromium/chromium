@@ -9,15 +9,17 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/media_stream_request.h"
+#include "content/public/browser/select_audio_output_request.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace content {
 
@@ -51,6 +53,12 @@ class CONTENT_EXPORT MediaStreamUIProxy {
   // denies request.
   virtual void RequestAccess(std::unique_ptr<MediaStreamRequest> request,
                              ResponseCallback response_callback);
+
+  // Forwards the request to select an audio output device to the
+  // RenderFrameHostDelegate associated with the given render frame.
+  virtual void RequestSelectAudioOutput(
+      std::unique_ptr<SelectAudioOutputRequest> request,
+      SelectAudioOutputCallback callback);
 
   // Notifies the UI that the MediaStream has started. Must be called after
   // access has been approved using RequestAccess().
@@ -92,7 +100,6 @@ class CONTENT_EXPORT MediaStreamUIProxy {
   virtual void OnRegionCaptureRectChanged(
       const std::optional<gfx::Rect>& region_capture_rect);
 
-#if !BUILDFLAG(IS_ANDROID)
   // Determines whether the captured display surface represented by |media_id|
   // should be focused or not.
   // Only the first call to this method on a given object has an effect; the
@@ -107,7 +114,6 @@ class CONTENT_EXPORT MediaStreamUIProxy {
                         bool focus,
                         bool is_from_microtask,
                         bool is_from_timer);
-#endif
 
  protected:
   explicit MediaStreamUIProxy(RenderFrameHostDelegate* test_render_delegate);
@@ -149,7 +155,7 @@ class CONTENT_EXPORT FakeMediaStreamUIProxy : public MediaStreamUIProxy {
 
   ~FakeMediaStreamUIProxy() override;
 
-  void SetAvailableDevices(const blink::MediaStreamDevices& devices);
+  void AddAvailableDevices(const blink::MediaStreamDevices& devices);
   void SetMicAccess(bool access);
   void SetCameraAccess(bool access);
   void SetAudioShare(bool audio_share);
@@ -157,6 +163,11 @@ class CONTENT_EXPORT FakeMediaStreamUIProxy : public MediaStreamUIProxy {
   // MediaStreamUIProxy overrides.
   void RequestAccess(std::unique_ptr<MediaStreamRequest> request,
                      ResponseCallback response_callback) override;
+
+  void RequestSelectAudioOutput(
+      std::unique_ptr<SelectAudioOutputRequest> request,
+      SelectAudioOutputCallback callback) override;
+
   void OnStarted(
       base::OnceClosure stop_callback,
       MediaStreamUI::SourceCallback source_callback,

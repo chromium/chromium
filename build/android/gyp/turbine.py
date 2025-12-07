@@ -7,21 +7,15 @@
 import argparse
 import functools
 import logging
+import os
 import sys
 import time
 import zipfile
 
-import compile_java
 import javac_output_processor
 from util import build_utils
 import action_helpers  # build_utils adds //build to sys.path.
 import zip_helpers
-
-
-def ProcessJavacOutput(output, target_name):
-  output_processor = javac_output_processor.JavacOutputProcessor(target_name)
-  lines = output_processor.Process(output.split('\n'))
-  return '\n'.join(lines)
 
 
 def main(argv):
@@ -35,7 +29,6 @@ def main(argv):
   parser.add_argument(
       '--java-srcjars',
       action='append',
-      default=[],
       help='List of srcjars to include in compilation.')
   parser.add_argument('--classpath', action='append', help='Classpath to use.')
   parser.add_argument(
@@ -73,6 +66,19 @@ def main(argv):
     # Interpret a path prefixed with @ as a file containing a list of sources.
     if arg.startswith('@'):
       files.extend(build_utils.ReadSourcesList(arg[1:]))
+    elif arg.startswith('-'):
+      parser.error('Unknown flag: ' + arg)
+    else:
+      files.append(arg)
+
+  # Turbine does not complain about missing classpath files. Missing files can
+  # result in misleading compile errors though, so do an upfront check.
+  classpath_jars = options.classpath + options.processorpath
+  missing_jars = [p for p in classpath_jars if not os.path.exists(p)]
+  if missing_jars:
+    sys.stderr.write('One or more classpath .jar files does not exist:\n')
+    sys.stderr.write('\n'.join(missing_jars) + '\n')
+    sys.exit(1)
 
   # The target's .sources file contains both Java and Kotlin files. We use
   # compile_kt.py to compile the Kotlin files to .class and header jars.
@@ -110,7 +116,7 @@ def main(argv):
   if java_files:
     # Use jar_path to ensure paths are relative (needed for rbe).
     files_rsp_path = options.jar_path + '.java_files_list.txt'
-    with open(files_rsp_path, 'w') as f:
+    with open(files_rsp_path, 'w', encoding='utf-8') as f:
       f.write('\n'.join(java_files))
     # Pass source paths as response files to avoid extremely long command
     # lines that are tedius to debug.
@@ -127,7 +133,7 @@ def main(argv):
       action_helpers.atomic_output(options.generated_jar_path) as gensrc_jar:
     cmd += ['--output', output_jar.name, '--gensrc_output', gensrc_jar.name]
     process_javac_output_partial = functools.partial(
-        ProcessJavacOutput, target_name=options.target_name)
+        javac_output_processor.Process, options.target_name)
 
     logging.debug('Command: %s', cmd)
     start = time.time()
@@ -154,10 +160,8 @@ def main(argv):
   if options.depfile:
     # GN already knows of the java files, so avoid listing individual java files
     # in the depfile.
-    depfile_deps = (options.classpath + options.processorpath +
-                    options.java_srcjars)
     action_helpers.write_depfile(options.depfile, options.jar_path,
-                                 depfile_deps)
+                                 classpath_jars)
 
 
 if __name__ == '__main__':

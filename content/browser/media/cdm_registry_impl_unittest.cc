@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "content/browser/media/cdm_registry_impl.h"
 
@@ -26,8 +22,8 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/expected.h"
 #include "base/version.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/public/common/cdm_info.h"
 #include "content/public/test/browser_task_environment.h"
@@ -147,21 +143,22 @@ class CdmRegistryImplTest : public testing::Test {
         {media::AudioCodec::kVorbis},
         {{media::VideoCodec::kVP8, {}}, {media::VideoCodec::kVP9, {}}},
         {EncryptionScheme::kCenc},
-        {CdmSessionType::kTemporary, CdmSessionType::kPersistentLicense});
+        {CdmSessionType::kTemporary, CdmSessionType::kPersistentLicense},
+        base::Version(kVersion1));
   }
 
   media::CdmCapability GetOtherCdmCapability() {
     return media::CdmCapability(
         {media::AudioCodec::kVorbis}, {{media::VideoCodec::kVP9, {}}},
-        {EncryptionScheme::kCbcs}, {CdmSessionType::kTemporary});
+        {EncryptionScheme::kCbcs}, {CdmSessionType::kTemporary},
+        base::Version(kVersion1));
   }
 
   CdmInfo GetTestCdmInfo() {
     return CdmInfo(kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure,
                    GetTestCdmCapability(),
                    /*supports_sub_key_systems=*/true, kTestCdmName,
-                   kTestCdmType, base::Version(kVersion1),
-                   base::FilePath::FromUTF8Unsafe(kTestPath));
+                   kTestCdmType, base::FilePath::FromUTF8Unsafe(kTestPath));
   }
 
   void Register(CdmInfo cdm_info) {
@@ -173,8 +170,7 @@ class CdmRegistryImplTest : public testing::Test {
                 Robustness robustness = Robustness::kSoftwareSecure) {
     Register(CdmInfo(key_system, robustness, std::move(capability),
                      /*supports_sub_key_systems=*/true, kTestCdmName,
-                     kTestCdmType, base::Version(kVersion1),
-                     base::FilePath::FromUTF8Unsafe(kTestPath)));
+                     kTestCdmType, base::FilePath::FromUTF8Unsafe(kTestPath)));
   }
 
   void RegisterForLazySoftwareSecureInitialization() {
@@ -199,7 +195,7 @@ class CdmRegistryImplTest : public testing::Test {
 
   bool IsRegistered(const std::string& name, const std::string& version) {
     for (const auto& cdm : cdm_registry_.GetRegisteredCdms()) {
-      if (cdm.name == name && cdm.version.GetString() == version) {
+      if (cdm.name == name && cdm.capability->version.GetString() == version) {
         return true;
       }
     }
@@ -210,7 +206,7 @@ class CdmRegistryImplTest : public testing::Test {
     std::vector<std::string> versions;
     for (const auto& cdm : cdm_registry_.GetRegisteredCdms()) {
       if (cdm.type == cdm_type) {
-        versions.push_back(cdm.version.GetString());
+        versions.push_back(cdm.capability->version.GetString());
       }
     }
     return versions;
@@ -239,15 +235,6 @@ class CdmRegistryImplTest : public testing::Test {
   }
 
   void SelectHardwareSecureDecryption(bool enabled) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    if (enabled) {
-      base::CommandLine::ForCurrentProcess()->AppendSwitch(
-          switches::kLacrosUseChromeosProtectedMedia);
-    } else {
-      base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-          switches::kLacrosUseChromeosProtectedMedia);
-    }
-#else
     const std::vector<base::test::FeatureRef> kHardwareSecureFeatures = {
         media::kHardwareSecureDecryption,
         media::kHardwareSecureDecryptionExperiment};
@@ -256,15 +243,14 @@ class CdmRegistryImplTest : public testing::Test {
     auto enabled_features = enabled ? kHardwareSecureFeatures : kNoFeatures;
     auto disabled_features = enabled ? kNoFeatures : kHardwareSecureFeatures;
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
-#endif
   }
 
 #if BUILDFLAG(IS_ANDROID)
   // On Android checking for key system support can be run on a separate
   // thread. Disable this for testing.
-  void DisableMediaCodecCallsInSeparateThread() {
+  void DisableMediaDrmQueryInSeparateProcess() {
     scoped_feature_list_.InitAndDisableFeature(
-        media::kAllowMediaCodecCallsInSeparateProcess);
+        media::kMediaDrmQueryInSeparateProcess);
   }
 #endif
 
@@ -290,7 +276,7 @@ TEST_F(CdmRegistryImplTest, Register) {
   ASSERT_EQ(1u, cdms.size());
   CdmInfo cdm = cdms[0];
   EXPECT_EQ(kTestCdmName, cdm.name);
-  EXPECT_EQ(kVersion1, cdm.version.GetString());
+  EXPECT_EQ(kVersion1, cdm.capability->version.GetString());
   EXPECT_EQ(kTestPath, cdm.path.MaybeAsASCII());
   EXPECT_EQ(kTestCdmType, cdm.type);
   EXPECT_AUDIO_CODECS(AudioCodec::kVorbis);
@@ -318,7 +304,7 @@ TEST_F(CdmRegistryImplTest, ReRegister) {
 TEST_F(CdmRegistryImplTest, MultipleVersions) {
   auto cdm_info = GetTestCdmInfo();
   Register(cdm_info);
-  cdm_info.version = base::Version(kVersion2);
+  cdm_info.capability->version = base::Version(kVersion2);
   Register(cdm_info);
 
   EXPECT_TRUE(IsRegistered(kTestCdmName, kVersion1));
@@ -327,13 +313,13 @@ TEST_F(CdmRegistryImplTest, MultipleVersions) {
   // The first inserted CdmInfo takes effect.
   auto result = cdm_registry_.GetCdmInfo(kTestKeySystem,
                                          CdmInfo::Robustness::kSoftwareSecure);
-  ASSERT_EQ(result->version, base::Version(kVersion1));
+  ASSERT_EQ(result->capability->version, base::Version(kVersion1));
 }
 
 TEST_F(CdmRegistryImplTest, NewVersionInsertedLast) {
   auto cdm_info = GetTestCdmInfo();
   Register(cdm_info);
-  cdm_info.version = base::Version(kVersion2);
+  cdm_info.capability->version = base::Version(kVersion2);
   Register(cdm_info);
 
   const std::vector<std::string> versions = GetVersions(kTestCdmType);
@@ -359,7 +345,8 @@ TEST_F(CdmRegistryImplTest, Profiles) {
                {{VideoCodec::kVP9,
                  media::VideoCodecInfo({media::VP9PROFILE_PROFILE0,
                                         media::VP9PROFILE_PROFILE2})}},
-               {EncryptionScheme::kCenc}, {CdmSessionType::kTemporary}));
+               {EncryptionScheme::kCenc}, {CdmSessionType::kTemporary},
+               base::Version(kVersion1)));
   auto cdm_info = cdm_registry_.GetCdmInfo(
       kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure);
   CdmInfo& cdm = *cdm_info;
@@ -395,7 +382,7 @@ TEST_F(CdmRegistryImplTest, GetCdmInfo_Success) {
   const CdmInfo& cdm = *cdm_info;
 
   EXPECT_EQ(kTestCdmName, cdm.name);
-  EXPECT_EQ(kVersion1, cdm.version.GetString());
+  EXPECT_EQ(kVersion1, cdm.capability->version.GetString());
   EXPECT_EQ(kTestPath, cdm.path.MaybeAsASCII());
   EXPECT_EQ(kTestCdmType, cdm.type);
   EXPECT_VIDEO_CODECS(VideoCodec::kVP8, VideoCodec::kVP9);
@@ -424,8 +411,9 @@ TEST_F(CdmRegistryImplTest, KeySystemCapabilities_SoftwareSecure) {
   ASSERT_EQ(key_system_capabilities.size(), 1u);
   ASSERT_TRUE(key_system_capabilities.count(kTestKeySystem));
   const auto& support = key_system_capabilities[kTestKeySystem];
-  ASSERT_EQ(support.sw_secure_capability.value(), GetTestCdmCapability());
-  ASSERT_FALSE(support.hw_secure_capability);
+  ASSERT_EQ(support.sw_cdm_capability_or_status.value(),
+            GetTestCdmCapability());
+  ASSERT_FALSE(support.hw_cdm_capability_or_status.has_value());
 }
 
 TEST_F(CdmRegistryImplTest, KeySystemCapabilities_HardwareSecure) {
@@ -440,8 +428,9 @@ TEST_F(CdmRegistryImplTest, KeySystemCapabilities_HardwareSecure) {
   ASSERT_EQ(key_system_capabilities.size(), 1u);
   ASSERT_TRUE(key_system_capabilities.count(kTestKeySystem));
   const auto& support = key_system_capabilities[kTestKeySystem];
-  ASSERT_FALSE(support.sw_secure_capability);
-  ASSERT_EQ(support.hw_secure_capability.value(), GetTestCdmCapability());
+  ASSERT_FALSE(support.sw_cdm_capability_or_status.has_value());
+  ASSERT_EQ(support.hw_cdm_capability_or_status.value(),
+            GetTestCdmCapability());
 }
 
 TEST_F(CdmRegistryImplTest,
@@ -460,8 +449,9 @@ TEST_F(CdmRegistryImplTest,
   ASSERT_EQ(key_system_capabilities.size(), 1u);
   ASSERT_TRUE(key_system_capabilities.count(kTestKeySystem));
   const auto& support = key_system_capabilities[kTestKeySystem];
-  ASSERT_EQ(support.sw_secure_capability.value(), GetTestCdmCapability());
-  ASSERT_FALSE(support.hw_secure_capability);
+  ASSERT_EQ(support.sw_cdm_capability_or_status.value(),
+            GetTestCdmCapability());
+  ASSERT_FALSE(support.hw_cdm_capability_or_status.has_value());
 }
 
 TEST_F(CdmRegistryImplTest,
@@ -480,8 +470,9 @@ TEST_F(CdmRegistryImplTest,
   ASSERT_EQ(key_system_capabilities.size(), 1u);
   ASSERT_TRUE(key_system_capabilities.count(kTestKeySystem));
   const auto& support = key_system_capabilities[kTestKeySystem];
-  ASSERT_FALSE(support.sw_secure_capability);
-  ASSERT_EQ(support.hw_secure_capability.value(), GetTestCdmCapability());
+  ASSERT_FALSE(support.sw_cdm_capability_or_status.has_value());
+  ASSERT_EQ(support.hw_cdm_capability_or_status.value(),
+            GetTestCdmCapability());
 }
 
 TEST_F(CdmRegistryImplTest,
@@ -491,7 +482,8 @@ TEST_F(CdmRegistryImplTest,
 
   EXPECT_CALL(capability_cb_,
               Run(kTestKeySystem, Robustness::kSoftwareSecure, _))
-      .WillOnce(RunOnceCallback<2>(std::nullopt));
+      .WillOnce(RunOnceCallback<2>(
+          base::unexpected(media::CdmCapabilityQueryStatus::kUnknown)));
   GetKeySystemCapabilities();
 
   ASSERT_TRUE(results_.count(kObserver1));
@@ -512,7 +504,8 @@ TEST_F(CdmRegistryImplTest,
 
   EXPECT_CALL(capability_cb_,
               Run(kTestKeySystem, Robustness::kHardwareSecure, _))
-      .WillOnce(RunOnceCallback<2>(std::nullopt));
+      .WillOnce(RunOnceCallback<2>(
+          base::unexpected(media::CdmCapabilityQueryStatus::kUnknown)));
   GetKeySystemCapabilities();
 
   ASSERT_TRUE(results_.count(kObserver1));
@@ -562,8 +555,10 @@ TEST_F(CdmRegistryImplTest, KeySystemCapabilities_SoftwareAndHardwareSecure) {
   ASSERT_EQ(key_system_capabilities.size(), 1u);
   ASSERT_TRUE(key_system_capabilities.count(kTestKeySystem));
   const auto& support = key_system_capabilities[kTestKeySystem];
-  ASSERT_EQ(support.sw_secure_capability.value(), GetTestCdmCapability());
-  ASSERT_EQ(support.hw_secure_capability.value(), GetOtherCdmCapability());
+  ASSERT_EQ(support.sw_cdm_capability_or_status.value(),
+            GetTestCdmCapability());
+  ASSERT_EQ(support.hw_cdm_capability_or_status.value(),
+            GetOtherCdmCapability());
 }
 
 TEST_F(CdmRegistryImplTest, KeySystemCapabilities_MultipleObservers) {
@@ -588,7 +583,8 @@ TEST_F(CdmRegistryImplTest, KeySystemCapabilities_MultipleObservers) {
   ASSERT_EQ(key_system_capabilities.size(), 1u);
   ASSERT_TRUE(key_system_capabilities.count(kTestKeySystem));
   const auto& support = key_system_capabilities[kTestKeySystem];
-  ASSERT_EQ(support.sw_secure_capability.value(), GetTestCdmCapability());
+  ASSERT_EQ(support.sw_cdm_capability_or_status.value(),
+            GetTestCdmCapability());
 
   ASSERT_TRUE(results_.count(kObserver2));
   ASSERT_EQ(results_[kObserver2].size(), 1u);
@@ -624,8 +620,9 @@ TEST_F(
   ASSERT_EQ(key_system_capabilities.size(), 1u);
   ASSERT_TRUE(key_system_capabilities.count(kTestKeySystem));
   const auto& support = key_system_capabilities[kTestKeySystem];
-  ASSERT_EQ(support.sw_secure_capability.value(), GetTestCdmCapability());
-  ASSERT_FALSE(support.hw_secure_capability);
+  ASSERT_EQ(support.sw_cdm_capability_or_status.value(),
+            GetTestCdmCapability());
+  ASSERT_FALSE(support.hw_cdm_capability_or_status.has_value());
 
   ASSERT_TRUE(results_.count(kObserver2));
   ASSERT_EQ(results_[kObserver2].size(), 1u);
@@ -662,8 +659,10 @@ TEST_F(
   ASSERT_EQ(key_system_capabilities.size(), 1u);
   ASSERT_TRUE(key_system_capabilities.count(kTestKeySystem));
   const auto& support = key_system_capabilities[kTestKeySystem];
-  ASSERT_EQ(support.sw_secure_capability.value(), GetTestCdmCapability());
-  ASSERT_EQ(support.hw_secure_capability.value(), GetTestCdmCapability());
+  ASSERT_EQ(support.sw_cdm_capability_or_status.value(),
+            GetTestCdmCapability());
+  ASSERT_EQ(support.hw_cdm_capability_or_status.value(),
+            GetTestCdmCapability());
 
   ASSERT_TRUE(results_.count(kObserver2));
   ASSERT_EQ(results_[kObserver2].size(), 1u);
@@ -708,8 +707,10 @@ TEST_F(
   ASSERT_EQ(key_system_capabilities.size(), 1u);
   ASSERT_TRUE(key_system_capabilities.count(kTestKeySystem));
   const auto& support = key_system_capabilities[kTestKeySystem];
-  ASSERT_EQ(support.sw_secure_capability.value(), GetTestCdmCapability());
-  ASSERT_EQ(support.hw_secure_capability.value(), GetTestCdmCapability());
+  ASSERT_EQ(support.sw_cdm_capability_or_status.value(),
+            GetTestCdmCapability());
+  ASSERT_EQ(support.hw_cdm_capability_or_status.value(),
+            GetTestCdmCapability());
 
   ASSERT_TRUE(results_.count(kObserver2));
   ASSERT_EQ(results_[kObserver2].size(), 1u);
@@ -738,8 +739,9 @@ TEST_F(CdmRegistryImplTest, KeySystemCapabilities_RegisterCdmAfterObserving) {
   ASSERT_EQ(key_system_capabilities_1.size(), 1u);
   ASSERT_TRUE(key_system_capabilities_1.count(kTestKeySystem));
   const auto& support_1 = key_system_capabilities_1[kTestKeySystem];
-  ASSERT_EQ(support_1.sw_secure_capability.value(), GetTestCdmCapability());
-  ASSERT_FALSE(support_1.hw_secure_capability);
+  ASSERT_EQ(support_1.sw_cdm_capability_or_status.value(),
+            GetTestCdmCapability());
+  ASSERT_FALSE(support_1.hw_cdm_capability_or_status.has_value());
 
   {
     base::RunLoop run_loop;
@@ -757,8 +759,10 @@ TEST_F(CdmRegistryImplTest, KeySystemCapabilities_RegisterCdmAfterObserving) {
   ASSERT_EQ(key_system_capabilities_2.size(), 1u);
   ASSERT_TRUE(key_system_capabilities_2.count(kTestKeySystem));
   const auto& support_2 = key_system_capabilities_2[kTestKeySystem];
-  ASSERT_EQ(support_2.sw_secure_capability.value(), GetTestCdmCapability());
-  ASSERT_EQ(support_2.hw_secure_capability.value(), GetOtherCdmCapability());
+  ASSERT_EQ(support_2.sw_cdm_capability_or_status.value(),
+            GetTestCdmCapability());
+  ASSERT_EQ(support_2.hw_cdm_capability_or_status.value(),
+            GetOtherCdmCapability());
 }
 
 TEST_F(CdmRegistryImplTest,
@@ -766,8 +770,8 @@ TEST_F(CdmRegistryImplTest,
   SelectHardwareSecureDecryption(true);
 
   // Save the callbacks so we can control when and how they are fired.
-  base::OnceCallback<void(std::optional<media::CdmCapability>)> callback_1,
-      callback_2, callback_3;
+  base::OnceCallback<void(media::CdmCapabilityOrStatus)> callback_1, callback_2,
+      callback_3;
   EXPECT_CALL(capability_cb_,
               Run(kTestKeySystem, Robustness::kHardwareSecure, _))
       .WillOnce(MoveArg<2>(&callback_1))
@@ -813,13 +817,14 @@ TEST_F(CdmRegistryImplTest,
 
   ASSERT_TRUE(key_system_capabilities.count(kTestKeySystem));
   const auto& support = key_system_capabilities[kTestKeySystem];
-  ASSERT_FALSE(support.sw_secure_capability.has_value());
-  ASSERT_EQ(support.hw_secure_capability.value(), GetTestCdmCapability());
+  ASSERT_FALSE(support.sw_cdm_capability_or_status.has_value());
+  ASSERT_EQ(support.hw_cdm_capability_or_status.value(),
+            GetTestCdmCapability());
 
   ASSERT_TRUE(key_system_capabilities.count(kOtherKeySystem));
   const auto& other_support = key_system_capabilities[kOtherKeySystem];
-  ASSERT_FALSE(other_support.sw_secure_capability.has_value());
-  ASSERT_EQ(other_support.hw_secure_capability.value(),
+  ASSERT_FALSE(other_support.sw_cdm_capability_or_status.has_value());
+  ASSERT_EQ(other_support.hw_cdm_capability_or_status.value(),
             GetOtherCdmCapability());
 }
 
@@ -837,8 +842,10 @@ TEST_F(CdmRegistryImplTest, KeySystemCapabilities_DisableHardwareSecureCdms) {
   ASSERT_EQ(key_system_capabilities_1.size(), 1u);
   ASSERT_TRUE(key_system_capabilities_1.count(kTestKeySystem));
   const auto& support_1 = key_system_capabilities_1[kTestKeySystem];
-  ASSERT_EQ(support_1.sw_secure_capability.value(), GetTestCdmCapability());
-  ASSERT_EQ(support_1.hw_secure_capability.value(), GetTestCdmCapability());
+  ASSERT_EQ(support_1.sw_cdm_capability_or_status.value(),
+            GetTestCdmCapability());
+  ASSERT_EQ(support_1.hw_cdm_capability_or_status.value(),
+            GetTestCdmCapability());
 
   {
     base::RunLoop run_loop;
@@ -854,8 +861,9 @@ TEST_F(CdmRegistryImplTest, KeySystemCapabilities_DisableHardwareSecureCdms) {
   ASSERT_EQ(key_system_capabilities_2.size(), 1u);
   ASSERT_TRUE(key_system_capabilities_2.count(kTestKeySystem));
   const auto& support_2 = key_system_capabilities_2[kTestKeySystem];
-  ASSERT_EQ(support_2.sw_secure_capability.value(), GetTestCdmCapability());
-  ASSERT_FALSE(support_2.hw_secure_capability);
+  ASSERT_EQ(support_2.sw_cdm_capability_or_status.value(),
+            GetTestCdmCapability());
+  ASSERT_FALSE(support_2.hw_cdm_capability_or_status.has_value());
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -1010,7 +1018,8 @@ TEST_F(CdmRegistryImplTest,
   ASSERT_EQ(results_[kObserver2].size(), 1u);
   auto& key_system_capabilities2 = results_[kObserver2][0];
   const auto& support = key_system_capabilities2[kTestKeySystem];
-  ASSERT_EQ(support.hw_secure_capability.value(), GetTestCdmCapability());
+  ASSERT_EQ(support.hw_cdm_capability_or_status.value(),
+            GetTestCdmCapability());
 }
 
 TEST_F(
@@ -1051,8 +1060,10 @@ TEST_F(
   ASSERT_EQ(key_system_capabilities.size(), 1u);
   ASSERT_TRUE(key_system_capabilities.count(kTestKeySystem));
   const auto& support = key_system_capabilities[kTestKeySystem];
-  ASSERT_EQ(support.sw_secure_capability.value(), GetTestCdmCapability());
-  ASSERT_EQ(support.hw_secure_capability.value(), GetTestCdmCapability());
+  ASSERT_EQ(support.sw_cdm_capability_or_status.value(),
+            GetTestCdmCapability());
+  ASSERT_EQ(support.hw_cdm_capability_or_status.value(),
+            GetTestCdmCapability());
 
   ASSERT_TRUE(results_.count(kObserver2));
   ASSERT_EQ(results_[kObserver2].size(), 1u);
@@ -1061,7 +1072,7 @@ TEST_F(
 
 TEST_F(CdmRegistryImplTest, KeySystemCapabilities_NoOverride) {
 #if BUILDFLAG(IS_ANDROID)
-  DisableMediaCodecCallsInSeparateThread();
+  DisableMediaDrmQueryInSeparateProcess();
 #endif
 
   // kTestKeySystem doesn't exist on any platform, but this should at least

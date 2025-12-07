@@ -86,7 +86,7 @@ class CORE_EXPORT DisplayLockDocumentState final
   // Notify the display locks that selection was removed.
   void NotifySelectionRemoved();
 
-  // Notify the display locks that view transition pseudo elements have
+  // Notify the display locks that view transition pseudo-elements have
   // changed.
   void NotifyViewTransitionPseudoTreeChanged();
 

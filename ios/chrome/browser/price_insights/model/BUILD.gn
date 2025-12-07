@@ -17,13 +17,13 @@ source_set("model") {
     "//components/commerce/core/subscriptions",
     "//components/feature_engagement/public",
     "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/strings",
     "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/contextual_panel/model:public",
-    "//ios/chrome/browser/price_insights/resources",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/web/public",
     "//ui/base",
   ]
 }
@@ -44,13 +44,17 @@ source_set("unit_tests") {
     "//components/strings",
     "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/contextual_panel/model:public",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/web/public/test",
     "//testing/gtest",
     "//ui/base",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("feature") {
@@ -60,9 +64,13 @@ source_set("feature") {
   ]
   deps = [
     "//base",
+    "//components/application_locale_storage",
     "//components/commerce/core:feature_list",
     "//components/commerce/core:shopping_service",
+    "//components/variations/service",
     "//ios/chrome/browser/commerce/model:shopping_service",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features",
   ]
 }

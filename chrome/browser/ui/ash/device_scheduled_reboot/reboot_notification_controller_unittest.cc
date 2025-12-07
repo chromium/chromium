@@ -17,15 +17,16 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::message_center::Notification;
 
 namespace {
 constexpr char kEmailId[] = "test@example.com";
-constexpr char kGaiaId[] = "12345";
+constexpr GaiaId::Literal kGaiaId("12345");
 constexpr char kKioskEmailId[] = "test-kiosk@example.com";
-constexpr char kKioskGaiaId[] = "6789";
+constexpr GaiaId::Literal kKioskGaiaId("6789");
 constexpr base::Time::Exploded kRebootTime2022Feb2At1520 = {.year = 2022,
                                                             .month = 2,
                                                             .day_of_week = 4,
@@ -85,7 +86,7 @@ class RebootNotificationControllerTest : public testing::Test {
 
   void CreateFakeKioskUser(AccountId account_id) {
     profile_ = profile_manager_.CreateTestingProfile(account_id.GetUserEmail());
-    fake_user_manager_->AddKioskAppUser(account_id);
+    fake_user_manager_->AddKioskChromeAppUser(account_id);
     display_service_tester_ =
         std::make_unique<NotificationDisplayServiceTester>(profile_);
   }

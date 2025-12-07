@@ -6,7 +6,6 @@ package org.chromium.content.browser.input;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.Build;
 import android.os.IBinder;
 import android.os.ResultReceiver;
 import android.os.StrictMode;
@@ -19,8 +18,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Log;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.content_public.browser.ContentFeatureMap;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
@@ -28,32 +27,29 @@ import org.chromium.ui.display.DisplayAndroid;
 import java.lang.ref.WeakReference;
 
 /** Wrapper around Android's InputMethodManager */
+@NullMarked
 public class InputMethodManagerWrapperImpl implements InputMethodManagerWrapper {
     private static final boolean DEBUG_LOGS = false;
     private static final String TAG = "IMM";
 
     private final Context mContext;
 
-    private WindowAndroid mWindowAndroid;
+    private @Nullable WindowAndroid mWindowAndroid;
 
-    private Delegate mDelegate;
+    private @Nullable final Delegate mDelegate;
 
-    private Runnable mPendingRunnableOnInputConnection;
-
-    private boolean mOptimizeImmHideCalls;
+    private @Nullable Runnable mPendingRunnableOnInputConnection;
 
     public InputMethodManagerWrapperImpl(
-            Context context, WindowAndroid windowAndroid, Delegate delegate) {
+            Context context, @Nullable WindowAndroid windowAndroid, @Nullable Delegate delegate) {
         if (DEBUG_LOGS) Log.i(TAG, "Constructor");
         mContext = context;
         mWindowAndroid = windowAndroid;
         mDelegate = delegate;
-        mOptimizeImmHideCalls =
-                ContentFeatureMap.isEnabled(ContentFeatureList.OPTIMIZE_IMM_HIDE_CALLS);
     }
 
     @Override
-    public void onWindowAndroidChanged(WindowAndroid windowAndroid) {
+    public void onWindowAndroidChanged(@Nullable WindowAndroid windowAndroid) {
         mWindowAndroid = windowAndroid;
     }
 
@@ -68,10 +64,10 @@ public class InputMethodManagerWrapperImpl implements InputMethodManagerWrapper 
     /**
      * Get an Activity from WindowAndroid.
      *
-     * @param windowAndroid
      * @return The Activity. May return null if it fails.
      */
-    private static Activity getActivityFromWindowAndroid(WindowAndroid windowAndroid) {
+    private static @Nullable Activity getActivityFromWindowAndroid(
+            @Nullable WindowAndroid windowAndroid) {
         if (windowAndroid == null) return null;
         // Unwrap this when we actually need it.
         WeakReference<Activity> weakRef = windowAndroid.getActivity();
@@ -99,9 +95,6 @@ public class InputMethodManagerWrapperImpl implements InputMethodManagerWrapper 
 
     @VisibleForTesting
     protected boolean hasCorrectDisplayId(Context context, Activity activity) {
-        // We did not support multi-display before O.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return true;
-
         int contextDisplayId = getDisplayId(context);
         int activityDisplayId = getDisplayId(activity);
         if (activityDisplayId != contextDisplayId) {
@@ -160,7 +153,7 @@ public class InputMethodManagerWrapperImpl implements InputMethodManagerWrapper 
     }
 
     @Override
-    public boolean isActive(View view) {
+    public boolean isActive(@Nullable View view) {
         InputMethodManager manager = getInputMethodManager();
         final boolean active = manager != null && manager.isActive(view);
         if (DEBUG_LOGS) Log.i(TAG, "isActive: " + active);
@@ -169,11 +162,11 @@ public class InputMethodManagerWrapperImpl implements InputMethodManagerWrapper 
 
     @Override
     public boolean hideSoftInputFromWindow(
-            IBinder windowToken, int flags, ResultReceiver resultReceiver) {
+            IBinder windowToken, int flags, @Nullable ResultReceiver resultReceiver) {
         if (DEBUG_LOGS) Log.i(TAG, "hideSoftInputFromWindow");
         mPendingRunnableOnInputConnection = null;
         InputMethodManager manager = getInputMethodManager();
-        if (manager == null || mOptimizeImmHideCalls && !manager.isAcceptingText()) return false;
+        if (manager == null || !manager.isAcceptingText()) return false;
         StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites(); // crbug.com/616283
         try {
             return manager.hideSoftInputFromWindow(windowToken, flags, resultReceiver);
@@ -209,7 +202,7 @@ public class InputMethodManagerWrapperImpl implements InputMethodManagerWrapper 
 
     @Override
     public void updateExtractedText(
-            View view, int token, android.view.inputmethod.ExtractedText text) {
+            View view, int token, android.view.inputmethod.@Nullable ExtractedText text) {
         if (DEBUG_LOGS) Log.d(TAG, "updateExtractedText");
         InputMethodManager manager = getInputMethodManager();
         if (manager == null) return;

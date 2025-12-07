@@ -18,41 +18,39 @@ import '../os_settings_page/os_settings_subpage.js';
 import '../os_settings_page/settings_card.js';
 import '../settings_shared.css.js';
 import '../settings_shared.css.js';
-import '../guest_os/guest_os_shared_usb_devices.js';
-import '../guest_os/guest_os_shared_paths.js';
-import './android_apps_subpage.js';
-import './app_notifications_page/app_notifications_subpage.js';
-import './app_management_page/app_management_page.js';
-import './app_management_page/app_detail_view.js';
+import './app_management_page/app_management_cros_shared_vars.css.js';
 import './app_management_page/uninstall_button.js';
 import './app_parental_controls/app_setup_pin_dialog.js';
 import './app_parental_controls/app_verify_pin_dialog.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
+import type {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName} from 'chrome://resources/cr_components/app_management/constants.js';
 import {getAppIcon, getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AppManagementStoreMixin} from '../common/app_management/store_mixin.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {androidAppsVisible, isAppParentalControlsFeatureAvailable, isArcVmEnabled, isPlayStoreAvailable, isPluginVmAvailable, isRevampWayfindingEnabled, shouldShowStartup} from '../common/load_time_booleans.js';
+import {androidAppsVisible, isAppParentalControlsFeatureAvailable, isArcVmEnabled, isPlayStoreAvailable, isPluginVmAvailable} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
-import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
-import {App as AppWithNotifications, AppNotificationsHandlerInterface, AppNotificationsObserverReceiver, Readiness} from '../mojom-webui/app_notification_handler.mojom-webui.js';
-import {AppParentalControlsHandlerInterface} from '../mojom-webui/app_parental_controls_handler.mojom-webui.js';
+import type {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
+import type {App as AppWithNotifications, AppNotificationsHandlerInterface} from '../mojom-webui/app_notification_handler.mojom-webui.js';
+import {AppNotificationsObserverReceiver, Readiness} from '../mojom-webui/app_notification_handler.mojom-webui.js';
+import type {AppParentalControlsHandlerInterface} from '../mojom-webui/app_parental_controls_handler.mojom-webui.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, Router, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
-import {AndroidAppsBrowserProxyImpl, AndroidAppsInfo} from './android_apps_browser_proxy.js';
+import type {AndroidAppsInfo} from './android_apps_browser_proxy.js';
+import {AndroidAppsBrowserProxyImpl} from './android_apps_browser_proxy.js';
 import {getAppNotificationProvider} from './app_notifications_page/mojo_interface_provider.js';
-import {getAppParentalControlsProvider} from './app_parental_controls/mojo_interface_provider.js';
 import {ParentalControlsDialogType, recordParentalControlsDialogFlowCompleted, recordParentalControlsDialogOpened} from './app_parental_controls/metrics_utils.js';
+import {getAppParentalControlsProvider} from './app_parental_controls/mojo_interface_provider.js';
 import {getTemplate} from './os_apps_page.html.js';
 
 export function isAppInstalled(app: AppWithNotifications): boolean {
@@ -69,6 +67,8 @@ export function isAppInstalled(app: AppWithNotifications): boolean {
     case Readiness.kRemoved:
     case Readiness.kUnknown:
       return false;
+    default:
+      assertNotReached();
   }
 }
 
@@ -118,16 +118,6 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
         type: Boolean,
         value: () => {
           return isArcVmEnabled();
-        },
-      },
-
-      /**
-       * Whether the App Notifications page should be shown.
-       */
-      showAppNotificationsRow_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('showOsSettingsAppNotificationsRow');
         },
       },
 
@@ -186,17 +176,6 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
         readOnly: true,
       },
 
-      /**
-       * Show On startup settings and sub-page.
-       */
-      shouldShowStartup_: {
-        type: Boolean,
-        value: () => {
-          return shouldShowStartup();
-        },
-        readOnly: true,
-      },
-
       app_: Object,
 
       appsWithNotifications_: {
@@ -228,80 +207,38 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
         type: Boolean,
         value: false,
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kManageAndroidPreferences,
-          Setting.kTurnOnPlayStore,
-          Setting.kRestoreAppsAndPages,
-          Setting.kAppParentalControls,
-        ]),
-      },
-
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value() {
-          return isRevampWayfindingEnabled();
-        },
-        readOnly: true,
-      },
-
-      rowIcons_: {
-        type: Object,
-        value() {
-          if (isRevampWayfindingEnabled()) {
-            return {
-              manageApps: 'os-settings:apps',
-              notifications: 'os-settings:apps-notifications',
-              googlePlayPreferences: 'os-settings:google-play-revamp',
-              androidSettings: 'os-settings:apps-android-settings',
-              manageIsolatedWebApps:
-                  'os-settings:apps-manage-isolated-web-apps',
-              parentalControls: 'os-settings:apps-parental-controls',
-            };
-          }
-
-          return {
-            manageApps: '',
-            notifications: '',
-            googlePlayPreferences: '',
-            androidSettings: '',
-            manageIsolatedWebApps: '',
-            parentalControls: '',
-          };
-        },
-      },
     };
   }
 
   androidAppsInfo: AndroidAppsInfo;
   searchTerm: string;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kManageAndroidPreferences,
+    Setting.kTurnOnPlayStore,
+    Setting.kAppParentalControls,
+  ]);
+
   private app_: App;
   private appNotificationsObserverReceiver_: AppNotificationsObserverReceiver;
   private appsWithNotifications_: AppWithNotifications[];
+  private readonly isAppParentalControlsFeatureAvailable_: boolean;
   private isArcVmManageUsbAvailable_: boolean;
   private isDndEnabled_: boolean;
   private isPinVerified_: boolean;
   private readonly isPlayStoreAvailable_: boolean;
   private isPluginVmAvailable_: boolean;
-  private isRevampWayfindingEnabled_: boolean;
   private mojoInterfaceProvider_: AppNotificationsHandlerInterface;
   private parentalControlsHandler_: AppParentalControlsHandlerInterface;
   private onStartupOptions_: DropdownMenuOptionList;
-  private rowIcons_: Record<string, string>;
   private section_: Section;
   private readonly showAndroidApps_: boolean;
-  private showAppNotificationsRow_: boolean;
   private showManageIsolatedWebAppsRow_: boolean;
   private showParentalControlsDisablePinDialog_: boolean;
   private showParentalControlsSetupPinDialog_: boolean;
   private showParentalControlsVerifyPinDialog_: boolean;
   private isParentalControlsSetupCompleted_: boolean;
-  private readonly shouldShowStartup_: boolean;
 
   constructor() {
     super();
@@ -511,18 +448,6 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
   /** Override ash.settings.appNotification.onQuietModeChanged */
   onQuietModeChanged(enabled: boolean): void {
     this.isDndEnabled_ = enabled;
-  }
-
-  private getAppNotificationsRowSublabel_(): string {
-    if (this.isRevampWayfindingEnabled_) {
-      return this.i18n('appNotificationsRowSublabel');
-    }
-
-    return this.isDndEnabled_ ?
-        this.i18n('appNotificationsDoNotDisturbEnabledDescription') :
-        this.i18n(
-            'appNotificationsCountDescription',
-            this.appsWithNotifications_.length);
   }
 
   private navigateToParentalControls_(): void {

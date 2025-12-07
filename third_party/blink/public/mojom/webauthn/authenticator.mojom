@@ -6,7 +6,7 @@ module blink.mojom;
 
 import "components/payments/mojom/payment_request_data.mojom";
 import "mojo/public/mojom/base/time.mojom";
-import "third_party/blink/public/mojom/payments/payment_credential.mojom";
+import "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
@@ -54,6 +54,10 @@ enum AuthenticatorStatus {
   // ERROR_WITH_DOM_EXCEPTION_DETAILS indicates that the error will be
   // described in a `WebAuthnDOMExceptionDetails` structure.
   ERROR_WITH_DOM_EXCEPTION_DETAILS,
+
+  // IMMEDIATE_NOT_FOUND indicates that no immediate discoverable
+  // credentials are found for a `get()` request.
+  IMMEDIATE_NOT_FOUND,
 
   UNKNOWN_ERROR,
 };
@@ -106,6 +110,13 @@ struct UvmEntry {
 // The output for the `supplementalPubKeys` extension.
 struct SupplementalPubKeysResponse {
   array<array<uint8>> signatures;
+};
+
+// The `payment` extension response.
+struct AuthenticationExtensionsPaymentResponse {
+  // The signature of the browser bound key corresponding to the public key in
+  // the payment portion of the clientDataJson.
+  array<uint8> browser_bound_signature;
 };
 
 // The public key and attestation returned by Authenticator::MakeCredential.
@@ -165,6 +176,9 @@ struct MakeCredentialAuthenticatorResponse {
   bool supports_large_blob;
 
   SupplementalPubKeysResponse? supplemental_pub_keys;
+
+  // The response for the payment extension.
+  AuthenticationExtensionsPaymentResponse? payment;
 };
 
 struct GetAssertionAuthenticatorResponse {
@@ -230,6 +244,9 @@ struct AuthenticationExtensionsClientOutputs {
   array<uint8>? get_cred_blob;
 
   SupplementalPubKeysResponse? supplemental_pub_keys;
+
+  // The response for the payment extension.
+  AuthenticationExtensionsPaymentResponse? payment;
 };
 
 // Information about the relying party. These fields take arbitrary input.
@@ -306,8 +323,7 @@ struct PRFValues {
   // IDs match. In the other direction, id will always be null.
   array<uint8>? id;
   // The WebAuthn spec says that inputs are hashed with a "WebAuthn PRF\x00"
-  // prefix before being used. These values may, or may not be, hashed when used
-  // as inputs. See the `prf_inputs_hashed` flag.
+  // prefix before being used. These are unhashed values when used as inputs.
   array<uint8> first;
   array<uint8>? second;
 };
@@ -321,6 +337,8 @@ struct PaymentOptions {
   PaymentCredentialInstrument instrument;
   string? payee_name;
   url.mojom.Origin? payee_origin;
+  array<ShownPaymentEntityLogo>? payment_entities_logos;
+  array<uint8>? browser_bound_public_key;
 };
 
 // TODO(https://crbug.com/1239249): Move to payment_request.mojom after this
@@ -335,8 +353,28 @@ struct PaymentCredentialInstrument {
 
   // Whether the icon is required to be shown in the UI.
   bool iconMustBeShown;
+
+  // An additional detail string for displaying this instrument to the user.
+  // For example, "**** 1234 | 01/29" (for a credit card instrument). The
+  // browser validates this to be valid UTF8 and at most 4K characters.
+  string? details;
 };
 
+// TODO(https://crbug.com/40193778): Convert to a non-mojo struct when
+// PaymentOptions is converted to a non-mojo struct.
+struct ShownPaymentEntityLogo {
+  url.mojom.Url url;
+  string label;
+};
+
+// RemoteDesktopClientOverride allows an allowlisted origin to perform WebAuthn
+// operations on behalf of another origin. This enables remote desktop clients
+// to proxy WebAuthn requests from a remote machine.
+//
+// SECURITY: This field comes from the renderer process and MUST NOT be trusted
+// without validation. The browser process will only honor this override if the
+// "caller origin" is explicitly allowlisted via an enterprise policy.
+//
 // https://github.com/w3c/webauthn/wiki/Explainer:-WebAuthn-Remote-Desktop-Support
 struct RemoteDesktopClientOverride {
   url.mojom.Origin origin;
@@ -350,16 +388,31 @@ struct SupplementalPubKeysRequest {
   array<string> attestation_formats;
 };
 
-// Parameters passed into calls to GetAssertion.
-struct PublicKeyCredentialRequestOptions {
-  // If true, indicates that this request should prioritize showing a UI only if
+// TODO(https://crbug.com/459517287): With `IMMEDIATE` reflecting `uiMode`,
+// this no longer maps to the `mediation` field of `CredentialRequestOptions`,
+// and should be renamed to avoid confusion.
+enum Mediation {
+  MODAL,
+  // Indicates that this request should prioritize showing a UI only if
   // there are discoverable credentials available in this device's platform
   // authenticator.
-  bool is_conditional;
+  CONDITIONAL,
+  // Indicates that this request should fail with `NotFoundError` if there are
+  // no discoverable credentials available. Otherwise it should handle the
+  // request like a `MODAL` request.
+  IMMEDIATE,
+};
 
-  // An indefinite-length blob passed from the the relying party server,
+// Parameters passed into calls to GetAssertion.
+struct PublicKeyCredentialRequestOptions {
+  // An indefinite-length blob passed from the relying party server,
   // to be sent to an authenticator for signing.
-  array<uint8> challenge;
+  // This value is exclusive with `challenge_url`.
+  array<uint8>? challenge;
+
+  // A URL from which the challenge can be fetched.
+  // This value is exclusive with `challenge`.
+  url.mojom.Url? challenge_url;
 
   // Time to wait for an authenticator to complete an operation provided by the
   // relying party.
@@ -412,10 +465,6 @@ struct AuthenticationExtensionsClientInputs {
   // must be sorted lexicographically by it.
   array<PRFValues> prf_inputs;
 
-  // prf_inputs_hashed is true if the `first` and `second` members of
-  // `prf_inputs` have already been hashed.
-  bool prf_inputs_hashed;
-
   // If true, attempt to read the large blob associated to the credential.
   // https://w3c.github.io/webauthn/#dom-authenticationextensionslargeblobinputs-read
   bool large_blob_read;
@@ -435,6 +484,22 @@ struct AuthenticationExtensionsClientInputs {
   // If present, reflects the contents of the "supplementalPubKeys" extension.
   // https://github.com/w3c/webauthn/pull/1663
   SupplementalPubKeysRequest? supplemental_pub_keys;
+
+  // Parameters defining the type of browser bound keys that the relying party
+  // would accept.
+  array<PublicKeyCredentialParameters>? payment_browser_bound_key_parameters;
+};
+
+struct GetCredentialOptions {
+  Mediation mediation;
+
+  // Null for password-only requests. If present, the
+  // response can be a public-key credential assertion.
+  PublicKeyCredentialRequestOptions? public_key;
+
+  // false for public-key only requests. If true, the response can be a password
+  // credential.
+  bool password = false;
 };
 
 // https://w3c.github.io/webauthn/#enum-residentKeyRequirement
@@ -446,24 +511,24 @@ enum ResidentKeyRequirement {
 
 // https://w3c.github.io/webauthn/#enumdef-authenticatorattachment.
 enum AuthenticatorAttachment {
-    NO_PREFERENCE,
-    PLATFORM,
-    CROSS_PLATFORM,
+  NO_PREFERENCE,
+  PLATFORM,
+  CROSS_PLATFORM,
 };
 
 enum ProtectionPolicy {
-    // UNSPECIFIED means that no value was given at the Javascript level.
-    UNSPECIFIED,
-    NONE,
-    UV_OR_CRED_ID_REQUIRED,
-    UV_REQUIRED,
+  // UNSPECIFIED means that no value was given at the Javascript level.
+  UNSPECIFIED,
+  NONE,
+  UV_OR_CRED_ID_REQUIRED,
+  UV_REQUIRED,
 };
 
 // https://w3c.github.io/webauthn#enumdef-largeblobsupport
 enum LargeBlobSupport {
-    NOT_REQUESTED,
-    REQUIRED,
-    PREFERRED,
+  NOT_REQUESTED,
+  REQUIRED,
+  PREFERRED,
 };
 
 // See https://w3c.github.io/webauthn/#dictdef-authenticatorselectioncriteria.
@@ -562,6 +627,15 @@ struct PublicKeyCredentialCreationOptions {
   // If present, reflects the contents of the "supplementalPubKeys" extension.
   // https://github.com/w3c/webauthn/pull/1663
   SupplementalPubKeysRequest? supplemental_pub_keys;
+
+  // Parameters defining the type of browser bound keys that the relying party
+  // would accept.
+  array<PublicKeyCredentialParameters>? payment_browser_bound_key_parameters;
+
+  // https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptionsjson-attestationformats
+  array<string> attestation_formats;
+
+  bool is_conditional = false;
 };
 
 // See https://w3c.github.io/webauthn/#enumdef-attestationconveyancepreference
@@ -599,9 +673,46 @@ struct WebAuthnDOMExceptionDetails {
 };
 
 // Parameters passed into calls to Report.
-struct PublicKeyCredentialReportOptions{
+struct PublicKeyCredentialReportOptions {
   string relying_party_id;
-  array<uint8> unknown_credential_id;
+  array<uint8>? unknown_credential_id;
+  AllAcceptedCredentialsOptions? all_accepted_credentials;
+  CurrentUserDetailsOptions? current_user_details;
+};
+
+// Parameters passed into calls to report all accepted credentials.
+struct AllAcceptedCredentialsOptions {
+  array<uint8> user_id;
+  array<array<uint8>> all_accepted_credentials_ids;
+};
+
+// Parameters passed into calls to report current user details.
+struct CurrentUserDetailsOptions {
+  array<uint8> user_id;
+  string name;
+  string display_name;
+};
+
+// Describes a single WebAuthn client capability and its support status.
+struct WebAuthnClientCapability {
+  string name;
+  bool supported;
+};
+
+// Describes a response for a publicKey credential request.
+// `credential` will be set if and only if status == SUCCESS.
+// `WebAuthnDOMExceptionDetails` will be set if and only if status ==
+// ERROR_WITH_DOM_EXCEPTION_DETAILS.
+struct GetAssertionResponse {
+  AuthenticatorStatus status;
+  GetAssertionAuthenticatorResponse? credential;
+  WebAuthnDOMExceptionDetails? dom_exception_details;
+};
+
+// `GetCredentialResponse` is the response for a `GetCredential` request.
+union GetCredentialResponse {
+  GetAssertionResponse get_assertion_response;
+  CredentialInfo password_response;
 };
 
 // Interface to direct authenticators to create or use a public key credential.
@@ -616,15 +727,12 @@ interface Authenticator {
           MakeCredentialAuthenticatorResponse? credential,
           WebAuthnDOMExceptionDetails? dom_exception_details);
 
-  // Uses an existing credential to produce an assertion for the given
-  // |PublicKeyCredentialRequestOptions|.
-  // |GetAssertionResponse| will be set if and only if status == SUCCESS.
-  // [WebAuthnDOMExceptionDetails] will be set if and only if
-  // status == ERROR_WITH_DOM_EXCEPTION_DETAILS.
-  GetAssertion(PublicKeyCredentialRequestOptions options)
-      => (AuthenticatorStatus status,
-          GetAssertionAuthenticatorResponse? credential,
-          WebAuthnDOMExceptionDetails? dom_exception_details);
+  // Uses an existing credential to produce a response for the given
+  // `GetCredentialOptions`. If the `password` field is true, the response
+  // can be a `CredentialInfo` or `GetAssertionResponse`. Otherwise it will be
+  // always `GetAssertionResponse`.
+  GetCredential(GetCredentialOptions options)
+      => (GetCredentialResponse response);
 
   // Returns true if the user platform provides an authenticator. Relying
   // Parties use this method to determine whether they can create a new
@@ -643,6 +751,9 @@ interface Authenticator {
   Report(PublicKeyCredentialReportOptions options)
       => (AuthenticatorStatus status,
           WebAuthnDOMExceptionDetails? dom_exception_details);
+
+  // Returns an array of supported WebAuthn client capabilities.
+  GetClientCapabilities() => (array<WebAuthnClientCapability> capabilities);
 
   // Cancel an ongoing MakeCredential or GetAssertion request
   // Only one MakeCredential or GetAssertion call at a time is allowed,

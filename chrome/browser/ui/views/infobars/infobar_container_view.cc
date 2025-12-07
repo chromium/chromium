@@ -40,6 +40,7 @@ class ContentShadow : public views::View {
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   void OnPaint(gfx::Canvas* canvas) override;
+  void OnThemeChanged() override;
 };
 
 ContentShadow::ContentShadow() {
@@ -63,6 +64,13 @@ void ContentShadow::OnPaint(gfx::Canvas* canvas) {
                                            canvas, GetColorProvider());
 }
 
+void ContentShadow::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  // ContentShadow is a layer, it needs to be manually marked for redraw when
+  // the theme changes.
+  SchedulePaint();
+}
+
 BEGIN_METADATA(ContentShadow)
 END_METADATA
 
@@ -71,14 +79,18 @@ END_METADATA
 constexpr int kSeparatorHeightDip = 1;
 
 InfoBarContainerView::InfoBarContainerView(Delegate* delegate)
-    : infobars::InfoBarContainer(delegate),
+    : infobars::InfoBarContainerWithPriority(delegate),
       content_shadow_(new ContentShadow()) {
   SetID(VIEW_ID_INFO_BAR_CONTAINER);
-  AddChildView(content_shadow_.get());
+  AddChildViewRaw(content_shadow_.get());
   views::SetCascadingColorProviderColor(this, views::kCascadingBackgroundColor,
                                         kColorToolbar);
   SetBackground(
-      views::CreateThemedSolidBackground(kColorInfoBarContentAreaSeparator));
+      views::CreateSolidBackground(kColorInfoBarContentAreaSeparator));
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF8(IDS_ACCNAME_INFOBAR_CONTAINER));
 }
 
 InfoBarContainerView::~InfoBarContainerView() {
@@ -110,12 +122,6 @@ void InfoBarContainerView::Layout(PassKey) {
   // shadow is drawn outside the container bounds).
   content_shadow_->SetBounds(0, top, width(),
                              content_shadow_->GetPreferredSize().height());
-}
-
-void InfoBarContainerView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kGroup;
-  node_data->SetNameChecked(
-      l10n_util::GetStringUTF8(IDS_ACCNAME_INFOBAR_CONTAINER));
 }
 
 gfx::Size InfoBarContainerView::CalculatePreferredSize(

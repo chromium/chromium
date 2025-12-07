@@ -8,9 +8,10 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/badges/ui_bundled/badge_consumer.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_element.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
 
 @class BadgeButtonFactory;
+@protocol BadgeViewVisibilityDelegate;
 @class LayoutGuideCenter;
 
 // Manages badges to display that are received through BadgeConsumer. Currently
@@ -20,6 +21,9 @@
 
 // The layout guide center to use to reference the displayed badge.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
+
+// The badge view visibility delegate.
+@property(nonatomic, weak) id<BadgeViewVisibilityDelegate> visibilityDelegate;
 
 // `buttonFactory` must be non-nil.
 - (instancetype)initWithButtonFactory:(BadgeButtonFactory*)buttonFactory

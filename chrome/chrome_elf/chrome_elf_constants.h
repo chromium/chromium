@@ -7,12 +7,8 @@
 #ifndef CHROME_CHROME_ELF_CHROME_ELF_CONSTANTS_H_
 #define CHROME_CHROME_ELF_CHROME_ELF_CONSTANTS_H_
 
-namespace chrome {
-
 // Needed to register the WER helper DLL.
 extern const wchar_t kWerDll[];
-
-}  // namespace chrome
 
 namespace elf_sec {
 

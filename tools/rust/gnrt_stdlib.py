@@ -19,17 +19,15 @@ from update import (CHROMIUM_DIR)
 
 sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'crates'))
-from run_cargo import RunCargo
+from run_gnrt import RunGnrt
 
-from build_bindgen import (EXE, RUST_BETA_SYSROOT_DIR, InstallRustBetaSysroot)
-from build_rust import (RustTargetTriple, RUST_SRC_DIR)
+from build_bindgen import (EXE)
+from build_rust import (RustTargetTriple, RUST_SRC_DIR, RUST_BETA_SYSROOT_DIR,
+                        InstallRustBetaSysroot)
 from update_rust import (RUST_REVISION)
 
 BUILD_RUST_PY_PATH = os.path.join(CHROMIUM_DIR, 'tools', 'rust',
                                   'build_rust.py')
-GNRT_CARGO_TOML_PATH = os.path.join(CHROMIUM_DIR, 'tools', 'crates', 'gnrt',
-                                    'Cargo.toml')
-
 
 def main():
     parser = argparse.ArgumentParser(
@@ -50,9 +48,6 @@ def main():
         # Get a Rust sysroot to build gnrt with.
         InstallRustBetaSysroot(RUST_REVISION, [RustTargetTriple()])
 
-    cargo_bin = os.path.join(RUST_BETA_SYSROOT_DIR, 'bin', f'cargo{EXE}')
-    rustc_bin = os.path.join(RUST_BETA_SYSROOT_DIR, 'bin', f'rustc{EXE}')
-
     # Build and run gnrt to update the stdlib GN rules.
     if args.out_dir:
         run_gnrt(RUST_BETA_SYSROOT_DIR, args.out_dir)
@@ -62,13 +57,10 @@ def main():
 
 
 def run_gnrt(sysroot_dir, out_dir):
-    target_dir = os.path.abspath(os.path.join(out_dir, 'target'))
-    home_dir = os.path.join(target_dir, 'cargo_home')
-    RunCargo(sysroot_dir, home_dir, [
-        '--quiet', '--locked', 'run', '--release', '--manifest-path',
-        GNRT_CARGO_TOML_PATH, f'--target-dir={target_dir}', '--', 'gen',
-        f'--for-std={os.path.relpath(RUST_SRC_DIR, CHROMIUM_DIR)}'
-    ])
+    gnrt_args = [
+        'gen', f'--for-std={os.path.relpath(RUST_SRC_DIR, CHROMIUM_DIR)}'
+    ]
+    RunGnrt(sysroot_dir, out_dir, gnrt_args)
 
 
 if __name__ == '__main__':

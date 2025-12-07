@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include <stdint.h>
 
@@ -18,6 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/test/values_test_util.h"
 #include "build/build_config.h"
 #include "content/browser/direct_sockets/direct_sockets_service_impl.h"
 #include "content/browser/direct_sockets/direct_sockets_test_utils.h"
@@ -41,17 +38,19 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/dbus/permission_broker/fake_permission_broker_client.h"  // nogncheck
+#include "content/browser/direct_sockets/firewall_hole_delegate.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // The tests in this file use the Network Service implementation of
@@ -213,8 +212,6 @@ class ReadWriteWaiter {
 
 class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
  public:
-  ~DirectSocketsTcpBrowserTest() override = default;
-
   GURL GetTestOpenPageURL() {
     return embedded_test_server()->GetURL("/direct_sockets/open.html");
   }
@@ -260,8 +257,8 @@ class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
         )",
         kLocalhostAddress, port);
 
-    ASSERT_TRUE(
-        EvalJs(shell(), content::test::WrapAsync(open_socket)).value.is_none());
+    ASSERT_EQ(EvalJs(shell(), content::test::WrapAsync(open_socket)),
+              base::Value());
   }
 
  protected:
@@ -292,7 +289,6 @@ class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{blink::features::kDirectSockets};
   mojo::Remote<network::mojom::TCPServerSocket> tcp_server_socket_;
 
   std::unique_ptr<ContentBrowserClient> client_;
@@ -459,7 +455,8 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, ReadTcpOnReadError) {
 
   const std::string async_script =
       "readTcpOnError(socket, /*expected_read_success=*/false);";
-  auto future = GetAsyncJsRunner()->RunScript(async_script);
+  base::test::TestFuture<std::string> future =
+      GetAsyncJsRunner()->RunScript(async_script);
 
   {
     // Simulate pipe shutdown on read error. Read requests must reject.
@@ -467,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, ReadTcpOnReadError) {
     mock_network_context.get_consumer_complement().reset();
   }
 
-  EXPECT_THAT(future->Get(), ::testing::HasSubstr("readTcpOnError succeeded."));
+  EXPECT_THAT(future.Get(), ::testing::HasSubstr("readTcpOnError succeeded."));
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, ReadTcpOnPeerClosed) {
@@ -478,7 +475,8 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, ReadTcpOnPeerClosed) {
 
   const std::string async_script =
       "readTcpOnError(socket, /*expected_read_success=*/true);";
-  auto future = GetAsyncJsRunner()->RunScript(async_script);
+  base::test::TestFuture<std::string> future =
+      GetAsyncJsRunner()->RunScript(async_script);
 
   {
     // Simulate pipe shutdown on peer closed. Read requests must resolve with
@@ -487,7 +485,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, ReadTcpOnPeerClosed) {
     mock_network_context.get_consumer_complement().reset();
   }
 
-  EXPECT_THAT(future->Get(), ::testing::HasSubstr("readTcpOnError succeeded."));
+  EXPECT_THAT(future.Get(), ::testing::HasSubstr("readTcpOnError succeeded."));
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, WriteTcpOnWriteError) {
@@ -497,7 +495,8 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, WriteTcpOnWriteError) {
   ConnectJsSocket();
 
   const std::string async_script = "writeTcpOnError(socket);";
-  auto future = GetAsyncJsRunner()->RunScript(async_script);
+  base::test::TestFuture<std::string> future =
+      GetAsyncJsRunner()->RunScript(async_script);
 
   {
     // Simulate pipe shutdown on write error.
@@ -505,8 +504,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, WriteTcpOnWriteError) {
     mock_network_context.get_producer_complement().reset();
   }
 
-  EXPECT_THAT(future->Get(),
-              ::testing::HasSubstr("writeTcpOnError succeeded."));
+  EXPECT_THAT(future.Get(), ::testing::HasSubstr("writeTcpOnError succeeded."));
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest,
@@ -517,13 +515,14 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest,
   ConnectJsSocket();
 
   const std::string async_script = "readWriteTcpOnError(socket);";
-  auto future = GetAsyncJsRunner()->RunScript(async_script);
+  base::test::TestFuture<std::string> future =
+      GetAsyncJsRunner()->RunScript(async_script);
 
   mock_network_context.get_observer().reset();
   mock_network_context.get_consumer_complement().reset();
   mock_network_context.get_producer_complement().reset();
 
-  EXPECT_THAT(future->Get(),
+  EXPECT_THAT(future.Get(),
               ::testing::HasSubstr("readWriteTcpOnError succeeded."));
 }
 
@@ -536,7 +535,8 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest,
 
   const std::string async_script =
       "waitForClosedPromise(socket, /*expected_closed_result=*/false);";
-  auto future = GetAsyncJsRunner()->RunScript(async_script);
+  base::test::TestFuture<std::string> future =
+      GetAsyncJsRunner()->RunScript(async_script);
 
   {
     mock_network_context.get_observer()->OnReadError(net::ERR_UNEXPECTED);
@@ -545,7 +545,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest,
     mock_network_context.get_observer()->OnWriteError(net::ERR_UNEXPECTED);
   }
 
-  EXPECT_THAT(future->Get(),
+  EXPECT_THAT(future.Get(),
               ::testing::HasSubstr("waitForClosedPromise succeeded."));
 }
 
@@ -559,9 +559,10 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest,
   const std::string async_script =
       "waitForClosedPromise(socket, /*expected_closed_result=*/true, "
       "/*cancel_reader=*/true, /*close_writer=*/true);";
-  auto future = GetAsyncJsRunner()->RunScript(async_script);
+  base::test::TestFuture<std::string> future =
+      GetAsyncJsRunner()->RunScript(async_script);
 
-  EXPECT_THAT(future->Get(),
+  EXPECT_THAT(future.Get(),
               ::testing::HasSubstr("waitForClosedPromise succeeded."));
 }
 
@@ -575,14 +576,53 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest,
   const std::string async_script =
       "waitForClosedPromise(socket, /*expected_closed_result=*/true, "
       "/*cancel_reader=*/false, /*close_writer=*/true);";
-  auto future = GetAsyncJsRunner()->RunScript(async_script);
+  base::test::TestFuture<std::string> future =
+      GetAsyncJsRunner()->RunScript(async_script);
 
   // Simulate peer closed event.
   mock_network_context.get_observer()->OnReadError(net::OK);
   mock_network_context.get_consumer_complement().reset();
 
-  EXPECT_THAT(future->Get(),
+  EXPECT_THAT(future.Get(),
               ::testing::HasSubstr("waitForClosedPromise succeeded."));
+}
+
+// Test reentrancy issue, the complete details are here crbug.com/453147449.
+IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest,
+                       NoCrashWithReaderCancelWhileReading) {
+  // 1. Write data to tcp server socket first.
+  constexpr int32_t kRequiredBytes = 10000;
+  const int listening_port = StartTcpServer();
+  ReadWriteWaiter waiter(/*required_receive_bytes=*/0,
+                         /*required_send_bytes=*/kRequiredBytes,
+                         tcp_server_socket());
+
+  // 2. Read the data.
+  const std::string read_script = JsReplace(
+      R"(
+      (async() => {
+        const socket = new TCPSocket($1, $2);
+        const { readable } = await socket.opened;
+        const reader = readable.getReader()
+
+        // ScriptPromiseResolver::Resolve executes Object.prototype.then getter synchronously according to
+        // step 9 of 27.2.1.3.2 Promise Resolve Functions in ECMAScript spec
+        // https://tc39.es/ecma262/#sec-promise-resolve-functions.
+        Object.prototype.__defineGetter__('then', () => {
+
+          // This will synchronously call TCPReadableStreamWrapper::ResetPipe()
+          // and invalidate the data_pipe_ handle.
+          reader.cancel();
+        });
+
+        await reader.read();
+      })();
+    )",
+      kLocalhostAddress, listening_port);
+
+  ASSERT_TRUE(ExecJs(shell(), read_script));
+
+  waiter.Await();
 }
 
 class DirectSocketsTcpServerBrowserTest : public DirectSocketsTcpBrowserTest {
@@ -590,11 +630,14 @@ class DirectSocketsTcpServerBrowserTest : public DirectSocketsTcpBrowserTest {
 #if BUILDFLAG(IS_CHROMEOS)
   DirectSocketsTcpServerBrowserTest() {
     chromeos::PermissionBrokerClient::InitializeFake();
-    DirectSocketsServiceImpl::SetAlwaysOpenFirewallHoleForTesting();
+    FirewallHoleDelegate::SetAlwaysOpenFirewallHoleForTesting(true);
   }
 
   ~DirectSocketsTcpServerBrowserTest() override {
     chromeos::PermissionBrokerClient::Shutdown();
+    // Need to reset the flag because there are other tests that
+    // use FirewallHoleDelegate.
+    FirewallHoleDelegate::SetAlwaysOpenFirewallHoleForTesting(false);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 };
@@ -644,8 +687,8 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpServerBrowserTest, HasFirewallHole) {
       std::make_unique<DelegateImpl>(local_port, run_loop.QuitClosure());
   client->AttachDelegate(delegate.get());
 
-  EXPECT_TRUE(EvalJs(shell(), content::test::WrapAsync("socket.close()"))
-                  .error.empty());
+  EXPECT_TRUE(
+      EvalJs(shell(), content::test::WrapAsync("socket.close()")).is_ok());
   run_loop.Run();
 }
 
@@ -709,11 +752,11 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpServerBrowserTest, ErrorOnRemoteReset) {
     })();
   )"));
 
-  auto future = GetAsyncJsRunner()->RunScript(
+  base::test::TestFuture<std::string> future = GetAsyncJsRunner()->RunScript(
       test::WrapAsync("return socket.closed.catch(() => 'ok')"));
   mock_network_context.ResetSocketReceiver();
 
-  ASSERT_EQ("ok", future->Get());
+  ASSERT_EQ("ok", future.Get());
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsTcpServerBrowserTest, Ipv6Only) {
@@ -745,12 +788,12 @@ class NoCoiPermissionIsolatedWebAppContentBrowserClient
       const url::Origin& isolated_app_origin)
       : IsolatedWebAppContentBrowserClient(isolated_app_origin) {}
 
-  std::optional<blink::ParsedPermissionsPolicy>
+  std::optional<network::ParsedPermissionsPolicy>
   GetPermissionsPolicyForIsolatedWebApp(
       WebContents* web_contents,
       const url::Origin& app_origin) override {
-    return {{blink::ParsedPermissionsPolicyDeclaration(
-        blink::mojom::PermissionsPolicyFeature::kDirectSockets,
+    return {{network::ParsedPermissionsPolicyDeclaration(
+        network::mojom::PermissionsPolicyFeature::kDirectSockets,
         /*allowed_origins=*/{},
         /*self_if_matches=*/app_origin,
         /*matches_all_origins=*/false, /*matches_opaque_src=*/false)}};

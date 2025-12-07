@@ -6,16 +6,13 @@
 
 #include <memory>
 
-#include "ash/components/arc/arc_prefs.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/policy/reporting/app_install_event_log_manager_wrapper.h"
 #include "chrome/browser/ash/policy/reporting/arc_app_install_event_log.h"
 #include "chrome/browser/ash/policy/reporting/arc_app_install_event_log_manager.h"
@@ -27,6 +24,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -53,15 +51,11 @@ class AppInstallEventEncryptedReporterTest : public testing::Test {
 
   void SetUp() override {
     ash::system::StatisticsProvider::SetTestProvider(&statistics_provider_);
-
-    RegisterLocalState(pref_service_.registry());
-    TestingBrowserProcess::GetGlobal()->SetLocalState(&pref_service_);
     chromeos::PowerManagerClient::InitializeFake();
   }
 
   void TearDown() override {
     task_environment_.RunUntilIdle();
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
     chromeos::PowerManagerClient::Shutdown();
   }
 
@@ -73,7 +67,6 @@ class AppInstallEventEncryptedReporterTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  TestingPrefServiceSimple pref_service_;
   TestingProfile profile_;
   ash::system::FakeStatisticsProvider statistics_provider_;
 };

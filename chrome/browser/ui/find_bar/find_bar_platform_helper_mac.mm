@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "chrome/browser/ui/find_bar/find_bar_platform_helper.h"
+
 #import <Foundation/Foundation.h>
 
-#include <string>
+#include <string_view>
 
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
-#import "chrome/browser/ui/find_bar/find_bar_platform_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/find_in_page/find_types.h"
@@ -42,7 +43,7 @@ class FindBarPlatformHelperMac : public FindBarPlatformHelper {
         removeObserver:find_pasteboard_notification_observer_];
   }
 
-  void OnUserChangedFindText(std::u16string text) override {
+  void OnUserChangedFindText(std::u16string_view text) override {
     if (find_bar_controller_->web_contents()
             ->GetBrowserContext()
             ->IsOffTheRecord()) {
@@ -71,8 +72,9 @@ class FindBarPlatformHelperMac : public FindBarPlatformHelper {
       for (int i = 0; i < tab_strip_model->count(); ++i) {
         content::WebContents* web_contents =
             tab_strip_model->GetWebContentsAt(i);
-        if (active_web_contents == web_contents)
+        if (active_web_contents == web_contents) {
           continue;
+        }
         find_in_page::FindTabHelper* find_tab_helper =
             find_in_page::FindTabHelper::FromWebContents(web_contents);
         find_tab_helper->StopFinding(find_in_page::SelectionAction::kClear);

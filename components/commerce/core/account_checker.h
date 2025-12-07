@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_COMMERCE_CORE_ACCOUNT_CHECKER_H_
 #define COMPONENTS_COMMERCE_CORE_ACCOUNT_CHECKER_H_
 
+#include <memory>
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
@@ -14,8 +15,6 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 class GURL;
 class PrefService;
@@ -24,6 +23,10 @@ class PrefChangeRegistrar;
 namespace base {
 class TimeDelta;
 }  // namespace base
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace commerce {
 
@@ -37,19 +40,20 @@ class AccountChecker {
 
   virtual bool IsSignedIn();
 
-  // Returns whether bookmarks is currently syncing. This will return true in
-  // cases where sync is still initializing, but the sync feature itself is
-  // enabled.
-  virtual bool IsSyncingBookmarks();
-
   // Check whether a specific sync entity is enabled by the user. This means
   // the user has chosen to sync the provided model type and does not
   // necessarily mean sync is active.
   virtual bool IsSyncTypeEnabled(syncer::UserSelectableType type);
 
+  // Check whether sync is available for the user.
+  virtual bool IsSyncAvailable();
+
   virtual bool IsAnonymizedUrlDataCollectionEnabled();
 
   virtual bool IsSubjectToParentalControls();
+
+  // Whether a user is allowed to use model execution features.
+  virtual bool CanUseModelExecutionFeatures();
 
   // Gets the user's country as determined at startup.
   virtual std::string GetCountry();
@@ -76,15 +80,14 @@ class AccountChecker {
   void FetchPriceEmailPref();
 
   // This method could be overridden in tests.
-  virtual std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
-      const std::string& oauth_consumer_name,
-      const GURL& url,
-      const std::string& http_method,
-      const std::string& content_type,
-      const std::vector<std::string>& scopes,
-      const base::TimeDelta& timeout,
-      const std::string& post_data,
-      const net::NetworkTrafficAnnotationTag& annotation_tag);
+  virtual std::unique_ptr<endpoint_fetcher::EndpointFetcher>
+  CreateEndpointFetcher(signin::OAuthConsumerId oauth_consumer_id,
+                        const GURL& url,
+                        const endpoint_fetcher::HttpMethod http_method,
+                        const std::string& content_type,
+                        const base::TimeDelta& timeout,
+                        const std::string& post_data,
+                        const net::NetworkTrafficAnnotationTag& annotation_tag);
 
  private:
   // Called when the pref value on whether to receive price tracking emails
@@ -97,22 +100,16 @@ class AccountChecker {
       // lifetime extends to the callback and is not destroyed
       // prematurely (which would result in cancellation of the request).
       // TODO(crbug.com/40238190): Avoid passing this fetcher.
-      std::unique_ptr<EndpointFetcher> endpoint_fetcher,
-      std::unique_ptr<EndpointResponse> responses);
-
-  void OnSendPriceEmailPrefJsonParsed(
-      data_decoder::DataDecoder::ValueOrError result);
+      std::unique_ptr<endpoint_fetcher::EndpointFetcher> endpoint_fetcher,
+      std::unique_ptr<endpoint_fetcher::EndpointResponse> responses);
 
   void HandleFetchPriceEmailPrefResponse(
       // Passing the endpoint_fetcher ensures the endpoint_fetcher's
       // lifetime extends to the callback and is not destroyed
       // prematurely (which would result in cancellation of the request).
       // TODO(crbug.com/40238190): Avoid passing this fetcher.
-      std::unique_ptr<EndpointFetcher> endpoint_fetcher,
-      std::unique_ptr<EndpointResponse> responses);
-
-  void OnFetchPriceEmailPrefJsonParsed(
-      data_decoder::DataDecoder::ValueOrError result);
+      std::unique_ptr<endpoint_fetcher::EndpointFetcher> endpoint_fetcher,
+      std::unique_ptr<endpoint_fetcher::EndpointResponse> responses);
 
   std::string country_;
 

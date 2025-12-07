@@ -30,9 +30,12 @@ def main(raw_args):
   if mount_rel_path is None:
     mount_rel_path = 'cache/%s' % args.cache
 
-  clobber_cache_utils.clobber_caches(args.swarming_server, args.pool,
-                                     args.realm, args.cache, mount_rel_path,
-                                     args.dry_run, args.bot_id)
+  bots_state = clobber_cache_utils.confirm_and_trigger_clobber_bots(
+      args.swarming_server, args.pool, args.realm, args.cache, mount_rel_path,
+      args.dry_run, args.bot_id)
+
+  if not bots_state:
+    return 1
 
   return 0
 

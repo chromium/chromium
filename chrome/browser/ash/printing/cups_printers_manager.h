@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation_traits.h"
 #include "chrome/browser/ash/printing/print_servers_manager.h"
@@ -153,7 +153,8 @@ class CupsPrintersManager : public PrinterInstallationManager,
   // Performs an IPP query on `printer` for autoconf compatibility.
   virtual void QueryPrinterForAutoConf(
       const chromeos::Printer& printer,
-      base::OnceCallback<void(bool)> callback) = 0;
+      base::OnceCallback<void(bool, const chromeos::IppPrinterInfo&)>
+          callback) = 0;
 };
 
 }  // namespace ash

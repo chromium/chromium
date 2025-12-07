@@ -17,6 +17,75 @@ namespace blink {
 
 class EditingStyleTest : public EditingTestBase {};
 
+TEST_F(EditingStyleTest, MergeStyleFromRulesForSerialization) {
+  const char* html = R"HTML(
+    <style>
+      :root {
+            --font-size-header: 18px;
+            --cell-padding: 12px;
+            --font-family-header: Calibri, sans-serif;
+            --header-bg-color: unset;
+        }
+        th {
+            background-color: var(--header-bg-color);
+            color: var(--header-text-color);
+            font-size: var(--font-size-header);
+            padding: var(--cell-padding);
+            text-align: left;
+            font-family: var(--font-family-header);
+            --custom-prop: /*Tests a possible crash*/ var(--undefined-value);
+        }
+    </style>
+    <table id=tableid>
+        <thead>
+            <tr>
+                <th id=headid>Column 1</th>
+                <th>Column 2</th>
+            </tr>
+        </thead>
+    </table>
+  )HTML";
+
+  SetBodyContent(html);
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* element = To<HTMLElement>(GetElementById("headid"));
+  EditingStyle* editing_style = MakeGarbageCollected<EditingStyle>(element);
+  editing_style->MergeStyleFromRulesForSerialization(element);
+
+  auto* style = editing_style->Style();
+  auto expected_property_count = 0;
+
+  struct ExpectedProperty {
+    const String name;
+    const String expected_value;
+  };
+
+  const ExpectedProperty expected_properties[] = {
+      {"background-color", "rgba(0, 0, 0, 0)"},
+      {"font-size", "18px"},
+      {"font-family", "Calibri, sans-serif"},
+      {"text-align", "left"},
+      {"padding-top", "12px"},
+      {"padding-bottom", "12px"},
+      {"padding-left", "12px"},
+      {"padding-right", "12px"}};
+
+  for (const auto& property : style->Properties()) {
+    auto name = property.Name().ToAtomicString();
+    const auto& value = property.Value().CssText();
+
+    for (const auto& expected : expected_properties) {
+      if (name == expected.name) {
+        expected_property_count++;
+        EXPECT_EQ(expected.expected_value, value);
+      }
+    }
+  }
+
+  EXPECT_EQ(std::size(expected_properties), expected_property_count);
+}
+
 TEST_F(EditingStyleTest, mergeInlineStyleOfElement) {
   SetBodyContent(
       "<span id=s1 style='--A:var(---B)'>1</span>"

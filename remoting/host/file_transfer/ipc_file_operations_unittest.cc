@@ -19,6 +19,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "remoting/host/file_transfer/directory_helpers.h"
 #include "remoting/host/file_transfer/ensure_user.h"
 #include "remoting/host/file_transfer/fake_file_chooser.h"
@@ -151,6 +152,7 @@ class FakeDesktopSessionAgent : public mojom::DesktopSessionControl {
   void BeginFileRead(BeginFileReadCallback callback) override;
   void BeginFileWrite(const base::FilePath& file_path,
                       BeginFileWriteCallback callback) override;
+  void SetHostCursorRenderedByClient() override;
 
   // Binds the pending DesktopSessionControl receiver to |receiver_|.
   void Bind(
@@ -243,6 +245,8 @@ void FakeDesktopSessionAgent::BeginFileWrite(const base::FilePath& file_path,
   session_file_operations_handler_.BeginFileWrite(file_path,
                                                   std::move(callback));
 }
+
+void FakeDesktopSessionAgent::SetHostCursorRenderedByClient() {}
 
 void FakeDesktopSessionAgent::Bind(
     mojo::PendingAssociatedReceiver<mojom::DesktopSessionControl> receiver) {

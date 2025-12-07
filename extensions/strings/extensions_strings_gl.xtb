@@ -5,7 +5,6 @@
 <translation id="1140871961407805696">Cámara traseira</translation>
 <translation id="1196338895211115272">Erro ao exportar a clave privada.</translation>
 <translation id="132960226125594336">Non se puido cargar o ficheiro "<ph name="RELATIVE_PATH" />" para o script de contido porque superaría o tamaño máximo do script ou o tamaño máximo total do script de contido da extensión.</translation>
-<translation id="1420684932347524586">Non se puido xerar a clave privada RSA aleatoria.</translation>
 <translation id="1445572445564823378">Esta extensión está reducindo a velocidade de <ph name="PRODUCT_NAME" />. Debes desactivala para restablecer o rendemento de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL non é compatible.</translation>
 <translation id="1610570795592207282">Non se puido cargar o CSS <ph name="RELATIVE_PATH" /> para o script.</translation>
@@ -19,13 +18,11 @@
 <translation id="3115238746683532089">Produto descoñecido <ph name="PRODUCT_ID" /> do provedor <ph name="VENDOR_ID" /> (número de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Non se puido substituír o ficheiro crx. Comproba se se está utilizando o ficheiro.</translation>
 <translation id="3163201441334626963">Produto descoñecido <ph name="PRODUCT_ID" /> do provedor <ph name="VENDOR_ID" /></translation>
-<translation id="3369521687965833290">Non se pode descomprimir a extensión. Para descomprimir unha extensión de xeito seguro, debe haber unha ruta ao directorio do teu perfil que empece pola letra dunha unidade e non conteña unha unión, un punto de montaxe ou unha ligazón simbólica. Non existe ningunha ruta deste tipo para o teu perfil.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (número de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> do provedor <ph name="VENDOR_ID" /> (número de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">O valor de entrada da clave privada debe ser unha ruta válida.</translation>
 <translation id="388442998277590542">Non se puido cargar a páxina de opcións "<ph name="OPTIONS_PAGE" />".</translation>
 <translation id="3984413272403535372">Erro ao asinar a extensión.</translation>
-<translation id="4115165561519362854">O administrador deste dispositivo require que <ph name="EXTENSION_NAME" /> teña como mínimo a versión <ph name="EXTENSION_VERSION" />. Non se pode activar ata que se actualice a esa versión ou a unha superior.</translation>
 <translation id="4233778200880751280">Non se puido cargar a páxina de información <ph name="ABOUT_PAGE" />.</translation>
 <translation id="471800408830181311">Erro ao emitir a clave privada.</translation>
 <translation id="4811956658694082538">Non se puido instalar o paquete porque se produciu un fallo no proceso de execución dunha utilidade. Proba a reiniciar Chrome e téntao de novo.</translation>
@@ -39,7 +36,6 @@
 <translation id="5972529113578162692">O administrador deste equipo necesita que se instale <ph name="EXTENSION_NAME" />. Non se pode instalar.</translation>
 <translation id="6027032947578871493">Produto descoñecido <ph name="PRODUCT_ID" /> de <ph name="VENDOR_NAME" /> (número de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> do provedor <ph name="VENDOR_ID" /></translation>
-<translation id="6143635259298204954">Non se pode descomprimir a extensión. Para descomprimir unha extensión de xeito seguro, debe haber unha ruta ao directorio do teu perfil que non conteña ningunha ligazón simbólica. Non existe ningunha ruta deste tipo para o teu perfil.</translation>
 <translation id="6322279351188361895">Non se puido ler a clave privada.</translation>
 <translation id="6391538222494443604">Debe existir o directorio de entrada.</translation>
 <translation id="641087317769093025">Erro ao descomprimir a extensión</translation>
@@ -52,12 +48,14 @@
 <translation id="7068383018033524534">O ficheiro de manifesto non é válido</translation>
 <translation id="7217838517480956708">O administrador deste equipo require a instalación de <ph name="EXTENSION_NAME" />. Non se pode eliminar nin modificar.</translation>
 <translation id="7612608473764576263">O valor de entrada da clave privada debe ter un formato válido (clave RSA en formato PKCS #8 e con codificación PEM).</translation>
+<translation id="7876803335449432072">Non se puido cargar o ficheiro "<ph name="RELATIVE_PATH" />" para o script de contido porque as follas de estilo dos script de contido só se poden cargar desde ficheiros de follas de estilo admitidos, como os .css.</translation>
 <translation id="7939686037314084444">Produciuse un erro ao cargar a extensión, polo que podería non interceptar solicitudes de rede.</translation>
 <translation id="7972881773422714442">Opcións: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Cámara dianteira</translation>
 <translation id="8047248493720652249">Esta extensión non logrou asignar un nome á descarga "<ph name="ATTEMPTED_FILENAME" />" porque outra extensión (<ph name="EXTENSION_NAME" />) determinou un nome de ficheiro diferente "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> de <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Falta o ficheiro de manifesto ou non se pode ler</translation>
+<translation id="8621383749470166852">Non se puido cargar o ficheiro "<ph name="RELATIVE_PATH" />" para o script de contido porque os script de contido só se poden cargar desde ficheiros JavaScript admitidos, como os .js.</translation>
 <translation id="8636666366616799973">O paquete non é válido. Detalles: "<ph name="ERROR_MESSAGE" />".</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" solicita acceso a un dos teus dispositivos:</translation>
 <translation id="8885905466771744233">Xa existe unha clave privada para a extensión especificada. Volve utilizar esa clave ou elimínaa primeiro.</translation>

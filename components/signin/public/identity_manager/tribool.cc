@@ -17,6 +17,17 @@ bool TriboolToBoolOrDie(Tribool tribool) {
   return tribool == Tribool::kTrue;
 }
 
+bool TriboolToBoolOr(signin::Tribool tribool, bool default_value) {
+  switch (tribool) {
+    case signin::Tribool::kTrue:
+      return true;
+    case signin::Tribool::kFalse:
+      return false;
+    case signin::Tribool::kUnknown:
+      return default_value;
+  }
+}
+
 std::string TriboolToString(Tribool tribool) {
   switch (tribool) {
     case Tribool::kUnknown:

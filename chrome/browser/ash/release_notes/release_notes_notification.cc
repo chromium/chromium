@@ -35,12 +35,13 @@ namespace ash {
 ReleaseNotesNotification::ReleaseNotesNotification(Profile* profile)
     : profile_(profile), weak_ptr_factory_(this) {}
 
-ReleaseNotesNotification::~ReleaseNotesNotification() {}
+ReleaseNotesNotification::~ReleaseNotesNotification() = default;
 
 void ReleaseNotesNotification::MaybeShowReleaseNotes() {
   release_notes_storage_ = std::make_unique<ReleaseNotesStorage>(profile_);
   if (!release_notes_storage_->ShouldNotify() ||
-      features::IsForestFeatureEnabled()) {
+      !base::FeatureList::IsEnabled(
+          features::kReleaseNotesNotificationAlwaysEligible)) {
     return;
   }
   ShowReleaseNotesNotification();

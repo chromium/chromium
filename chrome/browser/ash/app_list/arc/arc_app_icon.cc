@@ -4,30 +4,31 @@
 
 #include "chrome/browser/ash/app_list/arc/arc_app_icon.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ref.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_icon_descriptor.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/browser/ui/ash/shelf/arc_app_shelf_id.h"
 #include "chrome/grit/component_extension_resources.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/grit/extensions_browser_resources.h"
+#include "ipc/constants.mojom.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "services/data_decoder/public/cpp/decode_image.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -103,8 +104,7 @@ ArcAppIcon::Source::Source(const base::WeakPtr<ArcAppIcon>& host,
       resource_size_in_dip_(resource_size_in_dip) {
 }
 
-ArcAppIcon::Source::~Source() {
-}
+ArcAppIcon::Source::~Source() = default;
 
 gfx::ImageSkiaRep ArcAppIcon::Source::GetImageForScale(float scale) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -144,7 +144,7 @@ gfx::ImageSkiaRep ArcAppIcon::Source::GetImageForScale(float scale) {
   return resized_image.GetRepresentation(scale);
 }
 
-class ArcAppIcon::DecodeRequest : public ImageDecoder::ImageRequest {
+class ArcAppIcon::DecodeRequest {
  public:
   DecodeRequest(
       ArcAppIcon& host,
@@ -157,11 +157,10 @@ class ArcAppIcon::DecodeRequest : public ImageDecoder::ImageRequest {
   DecodeRequest(const DecodeRequest&) = delete;
   DecodeRequest& operator=(const DecodeRequest&) = delete;
 
-  ~DecodeRequest() override;
+  ~DecodeRequest();
 
-  // ImageDecoder::ImageRequest
-  void OnImageDecoded(const SkBitmap& bitmap) override;
-  void OnDecodeImageFailed() override;
+  void OnImageDecoded(const SkBitmap& bitmap);
+  void OnDecodeImageFailed();
 
  private:
   const raw_ref<ArcAppIcon> host_;
@@ -183,17 +182,14 @@ ArcAppIcon::DecodeRequest::DecodeRequest(
     bool retain_padding,
     gfx::ImageSkia& image_skia,
     std::map<ui::ResourceScaleFactor, base::Time>& incomplete_scale_factors)
-    : ImageRequest(&GetDataDecoder()),
-      host_(host),
+    : host_(host),
       descriptor_(descriptor),
       resize_allowed_(resize_allowed),
       retain_padding_(retain_padding),
       image_skia_(image_skia),
       incomplete_scale_factors_(incomplete_scale_factors) {}
 
-ArcAppIcon::DecodeRequest::~DecodeRequest() {
-  ImageDecoder::Cancel(this);
-}
+ArcAppIcon::DecodeRequest::~DecodeRequest() = default;
 
 void ArcAppIcon::DecodeRequest::OnImageDecoded(const SkBitmap& bitmap) {
   DCHECK(!bitmap.isNull() && !bitmap.empty());
@@ -220,14 +216,11 @@ void ArcAppIcon::DecodeRequest::OnImageDecoded(const SkBitmap& bitmap) {
     host_->UpdateImageSkia(descriptor_.scale_factor, bitmap, *image_skia_,
                            *incomplete_scale_factors_);
   }
-
-  host_->DiscardDecodeRequest(this, true /* bool is_decode_success */);
 }
 
 void ArcAppIcon::DecodeRequest::OnDecodeImageFailed() {
   VLOG(2) << "Failed to decode ARC icon.";
   host_->MaybeRequestIcon(descriptor_.scale_factor);
-  host_->DiscardDecodeRequest(this, false /* bool is_decode_success*/);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -720,19 +713,29 @@ void ArcAppIcon::DecodeImage(
   decode_requests_.emplace_back(std::make_unique<DecodeRequest>(
       *this, descriptor, resize_allowed, retain_padding, image_skia,
       incomplete_scale_factors));
+  DecodeRequest* request = decode_requests_.back().get();
+
   if (disable_safe_decoding_for_testing) {
-    SkBitmap bitmap;
-    if (!unsafe_icon_data.empty() &&
-        gfx::PNGCodec::Decode(
-            reinterpret_cast<const unsigned char*>(&unsafe_icon_data.front()),
-            unsafe_icon_data.length(), &bitmap)) {
-      decode_requests_.back()->OnImageDecoded(bitmap);
+    if (unsafe_icon_data.empty()) {
+      request->OnDecodeImageFailed();
     } else {
-      decode_requests_.back()->OnDecodeImageFailed();
+      SkBitmap bitmap =
+          gfx::PNGCodec::Decode(base::as_byte_span(unsafe_icon_data));
+      if (bitmap.isNull()) {
+        request->OnDecodeImageFailed();
+      } else {
+        request->OnImageDecoded(bitmap);
+      }
     }
   } else {
-    ImageDecoder::Start(decode_requests_.back().get(),
-                        std::move(unsafe_icon_data));
+    data_decoder::DecodeImage(
+        &GetDataDecoder(), base::as_byte_span(unsafe_icon_data),
+        data_decoder::mojom::ImageCodec::kDefault,
+        /*shrink_to_fit=*/false,
+        static_cast<int64_t>(IPC::mojom::kChannelMaximumMessageSize),
+        /*desired_image_frame_size=*/gfx::Size(),
+        base::BindOnce(&ArcAppIcon::OnImageDecoded,
+                       weak_ptr_factory_.GetWeakPtr(), request));
   }
 }
 
@@ -750,17 +753,6 @@ void ArcAppIcon::UpdateImageSkia(
   image_skia.AddRepresentation(image_rep);
   image_skia.RemoveUnsupportedRepresentationsForScale(image_rep.scale());
 
-  // TODO(crbug.com/40131344): Track the adaptive icon load time in a separate
-  // UMA.
-  if (icon_loaded_count_++ < 5) {
-    base::UmaHistogramTimes(
-        "Arc.IconLoadFromFileTime.uncompressedFirst5",
-        base::Time::Now() - incomplete_scale_factors[scale_factor]);
-  } else {
-    base::UmaHistogramTimes(
-        "Arc.IconLoadFromFileTime.uncompressedOthers",
-        base::Time::Now() - incomplete_scale_factors[scale_factor]);
-  }
   incomplete_scale_factors.erase(scale_factor);
   observer_->OnIconUpdated(this);
 }
@@ -770,28 +762,28 @@ void ArcAppIcon::UpdateCompressed(ui::ResourceScaleFactor scale_factor,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   compressed_images_[scale_factor] = std::move(data);
 
-  if (icon_loaded_count_++ < 5) {
-    base::UmaHistogramTimes(
-        "Arc.IconLoadFromFileTime.compressedFirst5",
-        base::Time::Now() - incomplete_scale_factors_[scale_factor]);
-  } else {
-    base::UmaHistogramTimes(
-        "Arc.IconLoadFromFileTime.compressedOthers",
-        base::Time::Now() - incomplete_scale_factors_[scale_factor]);
-  }
   incomplete_scale_factors_.erase(scale_factor);
   observer_->OnIconUpdated(this);
 }
 
-void ArcAppIcon::DiscardDecodeRequest(DecodeRequest* request,
-                                      bool is_decode_success) {
+void ArcAppIcon::OnImageDecoded(DecodeRequest* request,
+                                const SkBitmap& bitmap) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  auto it = base::ranges::find(decode_requests_, request,
-                               &std::unique_ptr<DecodeRequest>::get);
-  DCHECK(it != decode_requests_.end());
+  const bool is_decode_success = !bitmap.isNull() && !bitmap.empty();
+
+  if (is_decode_success) {
+    request->OnImageDecoded(bitmap);
+  } else {
+    request->OnDecodeImageFailed();
+  }
+
+  auto it = std::ranges::find(decode_requests_, request,
+                              &std::unique_ptr<DecodeRequest>::get);
+  CHECK(it != decode_requests_.end());
   decode_requests_.erase(it);
 
-  if (!is_decode_success)
+  if (!is_decode_success) {
     observer_->OnIconFailed(this);
+  }
 }

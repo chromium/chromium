@@ -7,6 +7,7 @@ package org.chromium.components.crash;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 
 import java.io.BufferedInputStream;
@@ -22,8 +23,10 @@ import java.io.IOException;
 import java.util.List;
 
 /** Prepends a logcat file to a minidump file for upload. */
+@NullMarked
 public class MinidumpLogcatPrepender {
     private static final String TAG = "LogcatPrepender";
+    private static final String CRLF = "\r\n";
 
     @VisibleForTesting
     public static final String LOGCAT_CONTENT_DISPOSITION =
@@ -71,17 +74,17 @@ public class MinidumpLogcatPrepender {
         try {
             writer = new BufferedWriter(new FileWriter(targetFile, false));
             writer.write(boundary);
-            writer.newLine();
+            writer.write(CRLF);
             // Next we write the logcat data in a MIME block.
             writer.write(LOGCAT_CONTENT_DISPOSITION);
-            writer.newLine();
+            writer.write(CRLF);
             writer.write(LOGCAT_CONTENT_TYPE);
-            writer.newLine();
-            writer.newLine();
+            writer.write(CRLF);
+            writer.write(CRLF);
             // Emits the contents of the buffer into the output file.
             for (String ln : logcat) {
                 writer.write(ln);
-                writer.newLine();
+                writer.write(CRLF);
             }
         } finally {
             if (writer != null) {

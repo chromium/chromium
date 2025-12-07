@@ -7,24 +7,23 @@
 #include <string>
 
 #include "base/test/metrics/histogram_tester.h"
-#include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/autofill_form_test_utils.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::autofill_metrics {
 namespace {
 
-class SuggestionsListMetricsTest
-    : public autofill_metrics::AutofillMetricsBaseTest,
-      public testing::Test {
+class SuggestionsListMetricsTest : public AutofillMetricsBaseTest,
+                                   public testing::Test {
  public:
   void SetUp() override {
     SetUpHelper();
@@ -74,8 +73,7 @@ TEST_F(SuggestionsListMetricsTest, AcceptedSuggestionIndex) {
                    .autocomplete_attribute = "cc-number"}}});
   autofill_manager().OnFormsSeen({form}, {});
   {
-    Suggestion address_suggestion;
-    address_suggestion.type = SuggestionType::kAddressEntry;
+    Suggestion address_suggestion(SuggestionType::kAddressEntry);
     autofill_manager().OnAskForValuesToFillTest(
         form, form.fields().front().global_id());
     base::HistogramTester histogram_tester;
@@ -84,8 +82,7 @@ TEST_F(SuggestionsListMetricsTest, AcceptedSuggestionIndex) {
         "Autofill.SuggestionAcceptedIndex.Profile", 1, 1);
   }
   {
-    Suggestion credit_card_suggestion;
-    credit_card_suggestion.type = SuggestionType::kCreditCardEntry;
+    Suggestion credit_card_suggestion(SuggestionType::kCreditCardEntry);
     autofill_manager().OnAskForValuesToFillTest(
         form, form.fields().back().global_id());
     base::HistogramTester histogram_tester;
@@ -107,8 +104,7 @@ TEST_F(SuggestionsListMetricsTest, AcceptanceFieldValueLength) {
   test_api(form).field(-1).set_value(std::u16string(2, 'a'));
   autofill_manager().OnFormsSeen({form}, {});
   {
-    Suggestion address_suggestion;
-    address_suggestion.type = SuggestionType::kAddressEntry;
+    Suggestion address_suggestion(SuggestionType::kAddressEntry);
     autofill_manager().OnAskForValuesToFillTest(
         form, form.fields().front().global_id());
     base::HistogramTester histogram_tester;
@@ -118,8 +114,7 @@ TEST_F(SuggestionsListMetricsTest, AcceptanceFieldValueLength) {
         "Autofill.Suggestion.AcceptanceFieldValueLength.Address", 3, 1);
   }
   {
-    Suggestion credit_card_suggestion;
-    credit_card_suggestion.type = SuggestionType::kCreditCardEntry;
+    Suggestion credit_card_suggestion(SuggestionType::kCreditCardEntry);
     autofill_manager().OnAskForValuesToFillTest(
         form, form.fields().back().global_id());
     base::HistogramTester histogram_tester;

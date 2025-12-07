@@ -25,19 +25,16 @@ ScopedAppGLStateRestore* ScopedAppGLStateRestore::Current() {
   return g_current_instance;
 }
 
-ScopedAppGLStateRestore::ScopedAppGLStateRestore(CallMode mode,
-                                                 bool save_restore) {
+ScopedAppGLStateRestore::ScopedAppGLStateRestore(CallMode mode) {
   DCHECK(!g_current_instance);
   g_current_instance = this;
 
   TRACE_EVENT0("android_webview", "AppGLStateSave");
   if (gl::GLSurfaceEGL::GetGLDisplayEGL()
           ->ext->b_EGL_ANGLE_external_context_and_surface) {
-    impl_ = std::make_unique<internal::ScopedAppGLStateRestoreImplAngle>(
-        mode, save_restore);
+    impl_ = std::make_unique<internal::ScopedAppGLStateRestoreImplAngle>(mode);
   } else {
-    impl_ = std::make_unique<internal::ScopedAppGLStateRestoreImpl>(
-        mode, save_restore);
+    impl_ = std::make_unique<internal::ScopedAppGLStateRestoreImpl>(mode);
   }
 }
 

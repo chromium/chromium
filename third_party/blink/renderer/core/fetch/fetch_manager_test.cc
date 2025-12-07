@@ -5,6 +5,9 @@
 #include "third_party/blink/renderer/core/fetch/fetch_manager.h"
 
 #include <optional>
+#include <string>
+#include <string_view>
+#include <utility>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
@@ -29,6 +32,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_request_init.h"
 #include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/core/fetch/fetch_later_result.h"
+#include "third_party/blink/renderer/core/fetch/fetch_later_test_util.h"
 #include "third_party/blink/renderer/core/fetch/fetch_request_data.h"
 #include "third_party/blink/renderer/core/fetch/request.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
@@ -55,43 +59,43 @@ using ::testing::Eq;
 using ::testing::IsNull;
 using ::testing::Not;
 
-MATCHER_P(HasRangeError,
-          expected_message,
-          base::StrCat({"has ", negation ? "no " : "", "RangeError('",
-                        expected_message, "')"})) {
-  const ExceptionState& exception_state = arg;
+MATCHER_P2(HasException,
+           error_name,
+           expected_message,
+           base::StrCat({"has ", negation ? "no " : "", error_name, "('",
+                         expected_message, "')"})) {
+  const DummyExceptionStateForTesting& exception_state = arg;
   if (!exception_state.HadException()) {
     *result_listener << "no exception";
     return false;
   }
-  if (exception_state.CodeAs<ESErrorType>() != ESErrorType::kRangeError) {
-    *result_listener << "exception is not RangeError";
-    return false;
-  }
-  if (exception_state.Message() != expected_message) {
-    *result_listener << "unexpected message from RangeError: "
-                     << exception_state.Message();
-    return false;
-  }
-  return true;
-}
 
-MATCHER_P(HasAbortError,
-          expected_message,
-          base::StrCat({"has ", negation ? "no " : "", "AbortError('",
-                        expected_message, "')"})) {
-  const ExceptionState& exception_state = arg;
-  if (!exception_state.HadException()) {
-    *result_listener << "no exception";
+  bool type_matches = false;
+  const std::string_view err(error_name);
+  if (err == "RangeError") {
+    type_matches =
+        exception_state.CodeAs<ESErrorType>() == ESErrorType::kRangeError;
+  } else if (err == "AbortError") {
+    type_matches = exception_state.CodeAs<DOMExceptionCode>() ==
+                   DOMExceptionCode::kAbortError;
+  } else if (err == "TypeError") {
+    type_matches =
+        exception_state.CodeAs<ESErrorType>() == ESErrorType::kTypeError;
+  } else if (err == "SecurityError") {
+    type_matches = exception_state.CodeAs<DOMExceptionCode>() ==
+                   DOMExceptionCode::kSecurityError;
+  } else {
+    *result_listener << "unsupported error name in matcher: " << error_name;
     return false;
   }
-  if (exception_state.CodeAs<DOMExceptionCode>() !=
-      DOMExceptionCode::kAbortError) {
-    *result_listener << "exception is not AbortError";
+
+  if (!type_matches) {
+    *result_listener << "exception is not " << error_name;
     return false;
   }
+
   if (exception_state.Message() != expected_message) {
-    *result_listener << "unexpected message from AbortError: "
+    *result_listener << "unexpected message from " << error_name << ": "
                      << exception_state.Message();
     return false;
   }
@@ -183,65 +187,17 @@ MATCHER_P(MatchNetworkResourceRequest,
   return true;
 }
 
-class MockFetchLaterLoaderFactory
-    : public blink::mojom::FetchLaterLoaderFactory {
- public:
-  MockFetchLaterLoaderFactory() = default;
-
-  mojo::PendingAssociatedRemote<blink::mojom::FetchLaterLoaderFactory>
-  BindNewEndpointAndPassDedicatedRemote() {
-    return receiver_.BindNewEndpointAndPassDedicatedRemote();
-  }
-
-  void FlushForTesting() { receiver_.FlushForTesting(); }
-
-  // blink::mojom::FetchLaterLoaderFactory overrides:
-  MOCK_METHOD(void,
-              CreateLoader,
-              (mojo::PendingAssociatedReceiver<blink::mojom::FetchLaterLoader>,
-               int32_t,
-               uint32_t,
-               const network::ResourceRequest&,
-               const net::MutableNetworkTrafficAnnotationTag&),
-              (override));
-  MOCK_METHOD(
-      void,
-      Clone,
-      (mojo::PendingAssociatedReceiver<blink::mojom::FetchLaterLoaderFactory>),
-      (override));
-
- private:
-  mojo::AssociatedReceiver<blink::mojom::FetchLaterLoaderFactory> receiver_{
-      this};
-};
-
-// A fake LocalFrameClient that provides non-null ChildURLLoaderFactoryBundle.
-class FakeLocalFrameClient : public EmptyLocalFrameClient {
- public:
-  FakeLocalFrameClient()
-      : loader_factory_bundle_(
-            base::MakeRefCounted<blink::ChildURLLoaderFactoryBundle>()) {}
-
-  // EmptyLocalFrameClient overrides:
-  blink::ChildURLLoaderFactoryBundle* GetLoaderFactoryBundle() override {
-    return loader_factory_bundle_.get();
-  }
-
- private:
-  scoped_refptr<blink::ChildURLLoaderFactoryBundle> loader_factory_bundle_;
-};
-
 }  // namespace
 
-class FetchLaterTest : public testing::Test {
+class FetchLaterTestBase : public testing::Test {
  public:
-  FetchLaterTest()
+  FetchLaterTestBase()
       : task_runner_(base::MakeRefCounted<base::TestMockTimeTaskRunner>()) {
     feature_list_.InitAndEnableFeature(blink::features::kFetchLaterAPI);
   }
 
   // FetchLater only supports secure context.
-  static const WTF::String GetSourcePageURL() {
+  static const String GetSourcePageURL() {
     return AtomicString("https://example.com");
   }
 
@@ -256,7 +212,7 @@ class FetchLaterTest : public testing::Test {
   }
 
   Request* CreateFetchLaterRequest(V8TestingScope& scope,
-                                   const WTF::String& url,
+                                   const String& url,
                                    AbortSignal* signal) const {
     auto* request_init = RequestInit::Create();
     request_init->setMethod("GET");
@@ -308,21 +264,11 @@ class FetchLaterTest : public testing::Test {
   base::HistogramTester histogram_;
 };
 
-class FetchLaterTestingScope : public V8TestingScope {
-  STACK_ALLOCATED();
-
- public:
-  explicit FetchLaterTestingScope(LocalFrameClient* frame_client)
-      : V8TestingScope(DummyPageHolder::CreateAndCommitNavigation(
-            KURL(FetchLaterTest::GetSourcePageURL()),
-            /*initial_view_size=*/gfx::Size(),
-            /*chrome_client=*/nullptr,
-            frame_client)) {}
-};
+class FetchLaterTest : public FetchLaterTestBase {};
 
 // A FetchLater request where its URL has same-origin as its execution context.
 TEST_F(FetchLaterTest, CreateSameOriginFetchLaterRequest) {
-  FetchLaterTestingScope scope(FrameClient());
+  FetchLaterTestingScope scope(FrameClient(), GetSourcePageURL());
   auto& exception_state = scope.GetExceptionState();
   auto target_url = AtomicString("/");
   url_test_helpers::RegisterMockedURLLoad(KURL(GetSourcePageURL() + target_url),
@@ -356,7 +302,7 @@ TEST_F(FetchLaterTest, CreateSameOriginFetchLaterRequest) {
 }
 
 TEST_F(FetchLaterTest, NegativeActivateAfterThrowRangeError) {
-  FetchLaterTestingScope scope(FrameClient());
+  FetchLaterTestingScope scope(FrameClient(), GetSourcePageURL());
   auto& exception_state = scope.GetExceptionState();
   auto target_url = AtomicString("/");
   url_test_helpers::RegisterMockedURLLoad(KURL(GetSourcePageURL() + target_url),
@@ -376,7 +322,8 @@ TEST_F(FetchLaterTest, NegativeActivateAfterThrowRangeError) {
 
   EXPECT_THAT(result, IsNull());
   EXPECT_THAT(exception_state,
-              HasRangeError("fetchLater's activateAfter cannot be negative."));
+              HasException("RangeError",
+                           "fetchLater's activateAfter cannot be negative."));
   EXPECT_EQ(fetch_later_manager->NumLoadersForTesting(), 0u);
   Histogram().ExpectTotalCount("FetchLater.Renderer.Total", 0);
 }
@@ -384,7 +331,7 @@ TEST_F(FetchLaterTest, NegativeActivateAfterThrowRangeError) {
 // Test to cover when a FetchLaterManager::FetchLater() call is provided with an
 // AbortSignal that has been aborted.
 TEST_F(FetchLaterTest, AbortBeforeFetchLater) {
-  FetchLaterTestingScope scope(FrameClient());
+  FetchLaterTestingScope scope(FrameClient(), GetSourcePageURL());
   auto& exception_state = scope.GetExceptionState();
   auto target_url = AtomicString("/");
   url_test_helpers::RegisterMockedURLLoad(KURL(GetSourcePageURL() + target_url),
@@ -404,8 +351,9 @@ TEST_F(FetchLaterTest, AbortBeforeFetchLater) {
       request->signal(), /*activate_after_ms=*/std::nullopt, exception_state);
 
   EXPECT_THAT(result, IsNull());
-  EXPECT_THAT(exception_state,
-              HasAbortError("The user aborted a fetchLater request."));
+  EXPECT_THAT(
+      exception_state,
+      HasException("AbortError", "The user aborted a fetchLater request."));
   EXPECT_EQ(fetch_later_manager->NumLoadersForTesting(), 0u);
   Histogram().ExpectTotalCount("FetchLater.Renderer.Total", 0);
 }
@@ -413,7 +361,7 @@ TEST_F(FetchLaterTest, AbortBeforeFetchLater) {
 // Test to cover when a FetchLaterManager::FetchLater() is aborted after being
 // called.
 TEST_F(FetchLaterTest, AbortAfterFetchLater) {
-  FetchLaterTestingScope scope(FrameClient());
+  FetchLaterTestingScope scope(FrameClient(), GetSourcePageURL());
   auto& exception_state = scope.GetExceptionState();
   auto target_url = AtomicString("/");
   url_test_helpers::RegisterMockedURLLoad(KURL(GetSourcePageURL() + target_url),
@@ -447,7 +395,7 @@ TEST_F(FetchLaterTest, AbortAfterFetchLater) {
 
 // Test to cover a FetchLaterManager::FetchLater() with custom activateAfter.
 TEST_F(FetchLaterTest, ActivateAfter) {
-  FetchLaterTestingScope scope(FrameClient());
+  FetchLaterTestingScope scope(FrameClient(), GetSourcePageURL());
   DOMHighResTimeStamp activate_after_ms = 3000;
   auto& exception_state = scope.GetExceptionState();
   auto target_url = AtomicString("/");
@@ -486,7 +434,7 @@ TEST_F(FetchLaterTest, ActivateAfter) {
 // Test to cover when a FetchLaterManager::FetchLater()'s execution context is
 // destroyed.
 TEST_F(FetchLaterTest, ContextDestroyed) {
-  FetchLaterTestingScope scope(FrameClient());
+  FetchLaterTestingScope scope(FrameClient(), GetSourcePageURL());
   auto& exception_state = scope.GetExceptionState();
   auto target_url = AtomicString("/");
   url_test_helpers::RegisterMockedURLLoad(KURL(GetSourcePageURL() + target_url),
@@ -521,7 +469,7 @@ TEST_F(FetchLaterTest, ContextDestroyed) {
 // method when its context enters BackForwardCache with BackgroundSync
 // permission off.
 TEST_F(FetchLaterTest, ForcedSendingWithBackgroundSyncOff) {
-  FetchLaterTestingScope scope(FrameClient());
+  FetchLaterTestingScope scope(FrameClient(), GetSourcePageURL());
   auto& exception_state = scope.GetExceptionState();
   auto target_url = AtomicString("/");
   url_test_helpers::RegisterMockedURLLoad(KURL(GetSourcePageURL() + target_url),
@@ -554,73 +502,120 @@ TEST_F(FetchLaterTest, ForcedSendingWithBackgroundSyncOff) {
                                  3 /*kActivatedOnEnteredBackForwardCache*/, 1);
 }
 
-// The default priority for FetchLater request without FetchPriorityHint or
-// RenderBlockingBehavior should be kHigh.
-TEST(FetchLaterLoadPriorityTest, DefaultHigh) {
-  test::TaskEnvironment task_environment;
-  V8TestingScope scope;
-  ResourceLoaderOptions options(scope.GetExecutionContext()->GetCurrentWorld());
+// Base class for fetchLater() URL validation tests.
+class FetchLaterUrlTestBase : public FetchLaterTestBase {
+ protected:
+  std::pair<Persistent<FetchLaterManager>, Persistent<FetchLaterResult>>
+  CallFetchLater(V8TestingScope& scope, const std::string& url) {
+    auto* manager =
+        MakeGarbageCollected<FetchLaterManager>(scope.GetExecutionContext());
+    auto* controller = AbortController::Create(scope.GetScriptState());
+    auto& exception_state = scope.GetExceptionState();
+    auto* request = CreateFetchLaterRequest(scope, String::FromUTF8(url),
+                                            controller->signal());
+    auto* result = manager->FetchLater(
+        scope.GetScriptState(),
+        request->PassRequestData(scope.GetScriptState(), exception_state),
+        controller->signal(), /*activate_after=*/std::nullopt, exception_state);
+    return {manager, result};
+  }
+};
 
-  ResourceRequest request(
-      KURL(FetchLaterTest::GetSourcePageURL() + "/fetch-later"));
-  FetchParameters params(std::move(request), options);
+struct UrlTestParam {
+  const std::string test_name;
+  const std::string url;
+};
 
-  auto computed_priority =
-      FetchLaterManager::ComputeLoadPriorityForTesting(params);
-  EXPECT_EQ(computed_priority, ResourceLoadPriority::kHigh);
+// This test verifies that fetchLater() only accepts URLs with HTTP or HTTPS
+// schemes. It covers various valid and invalid URL schemes, including http(s),
+// localhost, IP addresses, and non-http schemes like data:, file:, etc.
+class FetchLaterWithValidUrlTest
+    : public FetchLaterUrlTestBase,
+      public testing::WithParamInterface<UrlTestParam> {};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         FetchLaterWithValidUrlTest,
+                         testing::ValuesIn(std::vector<UrlTestParam>{
+                             {"https_example", "https://example.com/"},
+                             {"http_localhost", "http://localhost/"},
+                             {"https_localhost", "https://localhost/"},
+                             {"http_127_0_0_1", "http://127.0.0.1/"},
+                             {"https_127_0_0_1", "https://127.0.0.1/"},
+                             {"http_ipv6_localhost", "http://[::1]/"},
+                             {"https_ipv6_localhost", "https://[::1]/"},
+                         }),
+                         [](const testing::TestParamInfo<UrlTestParam>& info) {
+                           return info.param.test_name;
+                         });
+
+// Verifies that fetchLater() succeeds with valid URLs, including HTTPS URLs and
+// potentially trustworthy HTTP URLs like localhost.
+TEST_P(FetchLaterWithValidUrlTest, Succeeds) {
+  FetchLaterTestingScope scope(FrameClient(), GetSourcePageURL());
+
+  auto [manager, result] = CallFetchLater(scope, GetParam().url);
+
+  EXPECT_THAT(result, Not(IsNull()));
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(manager->NumLoadersForTesting(), 1u);
 }
 
-// The priority for FetchLater request with FetchPriorityHint::kAuto should be
-// kHigh.
-TEST(FetchLaterLoadPriorityTest, WithFetchPriorityHintAuto) {
-  test::TaskEnvironment task_environment;
-  V8TestingScope scope;
-  ResourceLoaderOptions options(scope.GetExecutionContext()->GetCurrentWorld());
+class FetchLaterWithInsecureUrlTest
+    : public FetchLaterUrlTestBase,
+      public testing::WithParamInterface<UrlTestParam> {};
 
-  ResourceRequest request(
-      KURL(FetchLaterTest::GetSourcePageURL() + "/fetch-later"));
-  request.SetFetchPriorityHint(mojom::blink::FetchPriorityHint::kAuto);
-  FetchParameters params(std::move(request), options);
+INSTANTIATE_TEST_SUITE_P(All,
+                         FetchLaterWithInsecureUrlTest,
+                         testing::ValuesIn(std::vector<UrlTestParam>{
+                             {"http_example", "http://example.com/"},
+                         }),
+                         [](const testing::TestParamInfo<UrlTestParam>& info) {
+                           return info.param.test_name;
+                         });
 
-  auto computed_priority =
-      FetchLaterManager::ComputeLoadPriorityForTesting(params);
-  EXPECT_EQ(computed_priority, ResourceLoadPriority::kHigh);
+// Verifies that fetchLater() throws a SecurityError for insecure URLs, such as
+// an HTTP URL that is not localhost.
+TEST_P(FetchLaterWithInsecureUrlTest, FailsWithSecurityError) {
+  FetchLaterTestingScope scope(FrameClient(), GetSourcePageURL());
+
+  auto [manager, result] = CallFetchLater(scope, GetParam().url);
+
+  EXPECT_THAT(result, IsNull());
+  EXPECT_THAT(
+      scope.GetExceptionState(),
+      HasException("SecurityError", "fetchLater was passed an insecure URL."));
+  EXPECT_EQ(manager->NumLoadersForTesting(), 0u);
 }
 
-// The priority for FetchLater request with FetchPriorityHint::kLow should be
-// kLow.
-TEST(FetchLaterLoadPriorityTest, WithFetchPriorityHintLow) {
-  test::TaskEnvironment task_environment;
-  V8TestingScope scope;
-  ResourceLoaderOptions options(scope.GetExecutionContext()->GetCurrentWorld());
+class FetchLaterWithInvalidSchemeUrlTest
+    : public FetchLaterUrlTestBase,
+      public testing::WithParamInterface<UrlTestParam> {};
 
-  ResourceRequest request(
-      KURL(FetchLaterTest::GetSourcePageURL() + "/fetch-later"));
-  request.SetFetchPriorityHint(mojom::blink::FetchPriorityHint::kLow);
-  FetchParameters params(std::move(request), options);
+INSTANTIATE_TEST_SUITE_P(All,
+                         FetchLaterWithInvalidSchemeUrlTest,
+                         testing::ValuesIn(std::vector<UrlTestParam>{
+                             {"data", "data:text/plain,Hello"},
+                             {"file", "file:///etc/passwd"},
+                             {"ftp", "ftp://example.com/"},
+                             {"javascript", "javascript:alert(1)"},
+                             {"blob", "blob:https://example.com/some-uuid"},
+                         }),
+                         [](const testing::TestParamInfo<UrlTestParam>& info) {
+                           return info.param.test_name;
+                         });
 
-  auto computed_priority =
-      FetchLaterManager::ComputeLoadPriorityForTesting(params);
-  EXPECT_EQ(computed_priority, ResourceLoadPriority::kLow);
-}
+// Verifies that fetchLater() throws a TypeError for URLs with schemes other
+// than HTTP or HTTPS.
+TEST_P(FetchLaterWithInvalidSchemeUrlTest, FailsWithTypeError) {
+  FetchLaterTestingScope scope(FrameClient(), GetSourcePageURL());
 
-// The priority for FetchLater request with RenderBlockingBehavior::kBlocking
-// should be kHigh.
-TEST(FetchLaterLoadPriorityTest,
-     WithFetchPriorityHintLowAndRenderBlockingBehaviorBlocking) {
-  test::TaskEnvironment task_environment;
-  V8TestingScope scope;
-  ResourceLoaderOptions options(scope.GetExecutionContext()->GetCurrentWorld());
+  auto [manager, result] = CallFetchLater(scope, GetParam().url);
 
-  ResourceRequest request(
-      KURL(FetchLaterTest::GetSourcePageURL() + "/fetch-later"));
-  request.SetFetchPriorityHint(mojom::blink::FetchPriorityHint::kLow);
-  FetchParameters params(std::move(request), options);
-  params.SetRenderBlockingBehavior(RenderBlockingBehavior::kBlocking);
-
-  auto computed_priority =
-      FetchLaterManager::ComputeLoadPriorityForTesting(params);
-  EXPECT_EQ(computed_priority, ResourceLoadPriority::kHigh);
+  EXPECT_THAT(result, IsNull());
+  EXPECT_THAT(
+      scope.GetExceptionState(),
+      HasException("TypeError", "fetchLater is only supported over HTTP(S)."));
+  EXPECT_EQ(manager->NumLoadersForTesting(), 0u);
 }
 
 }  // namespace blink

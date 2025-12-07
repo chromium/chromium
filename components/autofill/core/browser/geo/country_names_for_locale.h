@@ -8,28 +8,29 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "third_party/icu/source/i18n/unicode/coll.h"
 
 namespace autofill {
 
-class CountryNamesForLocale {
+class CountryNamesForLocale final {
  public:
-  // Create |CountryNamesForLocale| for the supplied |locale_name|.
-  explicit CountryNamesForLocale(const std::string& locale_name);
+  // Create `CountryNamesForLocale` for the supplied `locale_name`.
+  explicit CountryNamesForLocale(std::string locale_name);
 
   CountryNamesForLocale(CountryNamesForLocale&& source);
 
   ~CountryNamesForLocale();
 
-  // Returns the country code corresponding to the |country_name| localized to
-  // |locale_name_|. Returns an empty string if no matching country code can be
+  // Returns the country code corresponding to the `country_name` localized to
+  // `locale_name_`. Returns an empty string if no matching country code can be
   // found.
-  const std::string GetCountryCode(const std::u16string& country_name) const;
+  const std::string& GetCountryCode(std::u16string_view country_name) const;
 
  private:
   // Returns an ICU collator -- i.e. string comparator -- appropriate for the
-  // given |locale|, or null if no collator is available.
+  // given `locale`, or null if no collator is available.
   const icu::Collator* GetCollatorForLocale(const icu::Locale& locale);
 
   // The name of the locale the instance was constructed for.

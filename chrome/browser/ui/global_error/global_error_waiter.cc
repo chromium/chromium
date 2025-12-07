@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/global_error/global_error_waiter.h"
+
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 
 namespace test {
@@ -15,15 +16,17 @@ GlobalErrorWaiter::GlobalErrorWaiter(Profile* profile) {
 GlobalErrorWaiter::~GlobalErrorWaiter() = default;
 
 void GlobalErrorWaiter::OnGlobalErrorsChanged() {
-  if (run_loop_.running())
+  if (run_loop_.running()) {
     run_loop_.Quit();
-  else
+  } else {
     errors_changed_ = true;
+  }
 }
 
 void GlobalErrorWaiter::Wait() {
-  if (!errors_changed_)
+  if (!errors_changed_) {
     run_loop_.Run();
+  }
 }
 
 }  // namespace test

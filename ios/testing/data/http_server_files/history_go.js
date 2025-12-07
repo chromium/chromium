@@ -2,90 +2,90 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Adds event listeners and populates on-load-div.
-window.onload = function() {
-  window.addEventListener('popstate', onPopstate);
-  window.addEventListener('hashchange', onHashChange);
-  updateOnLoadText('OnLoadText');
-};
-
 // Populates pop-state-received-div and state-object-div upon a popstate event.
-var onPopstate = function(e) {
+function onPopstate(e) {
   updatePopStateReceivedText(true);
-  var stateText = e.state ? e.state : '(NO STATE OBJECT)';
+  const stateText = e.state ? e.state : '(NO STATE OBJECT)';
   updateStateObjectText(stateText);
-};
+}
 
 // Populates hash-change-received-div upon receiving of a hashchange event.
-var onHashChange = function(e) {
+function onHashChange(e) {
   updateHashChangeReceivedText(true);
 }
 
-var updateOnLoadText = function(text) {
+function updateOnLoadText(text) {
   document.getElementById('on-load-div').innerHTML = text;
 }
 
-var updateNoOpText = function(text) {
+function updateNoOpText(text) {
   document.getElementById('no-op-div').innerHTML = text;
 }
 
-var updatePopStateReceivedText = function(received) {
-  var text = received ? 'PopStateReceived' : '';
+function updatePopStateReceivedText(received) {
+  const text = received ? 'PopStateReceived' : '';
   document.getElementById('pop-state-received-div').innerHTML = text;
 }
 
-var updateStateObjectText = function(state) {
+function updateStateObjectText(state) {
   document.getElementById('state-object-div').innerHTML = state;
 }
 
-var updateHashChangeReceivedText = function(received) {
-  var text = received ? 'HashChangeReceived' : '';
+function updateHashChangeReceivedText(received) {
+  const text = received ? 'HashChangeReceived' : '';
   document.getElementById('hash-change-received-div').innerHTML = text;
 }
 
 // Clears all div text an starts a timer that updates no-op-div with "NoOpText"
 // after 1s.  This allows tests to verify that no navigations occur after a
 // no-op JavaScript call.
-var onButtonTapped = function() {
+function onButtonTapped() {
   updateOnLoadText('');
   updateNoOpText('');
   updatePopStateReceivedText(false);
   updateStateObjectText('');
   updateHashChangeReceivedText(false);
-  setTimeout("updateNoOpText('NoOpText')", 1000);
+  setTimeout('updateNoOpText(\'NoOpText\')', 1000);
 }
 
-var goNoParameter = function() {
+function goNoParameter() {
   onButtonTapped();
   window.history.go();
 }
 
-var goZero = function() {
+function goZero() {
   onButtonTapped();
   window.history.go(0);
 }
 
-var goBack = function() {
+function goBack() {
   onButtonTapped();
   window.history.back();
 }
 
-var goForward = function() {
+function goForward() {
   onButtonTapped();
   window.history.forward();
 }
 
-var go2 = function() {
+function go2() {
   onButtonTapped();
   window.history.go(2);
 }
 
-var goBack2 = function() {
+function goBack2() {
   onButtonTapped();
   window.history.go(-2);
 }
 
-var pushStateWithHash = function() {
+function pushStateWithHash() {
   onButtonTapped();
   window.history.pushState('STATE_OBJECT', 'Title', '#hash');
 }
+
+// Adds event listeners and populates on-load-div.
+window.onload = function() {
+  window.addEventListener('popstate', onPopstate);
+  window.addEventListener('hashchange', onHashChange);
+  updateOnLoadText('OnLoadText');
+};

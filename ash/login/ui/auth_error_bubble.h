@@ -31,7 +31,7 @@ class ASH_EXPORT AuthErrorBubble : public LoginErrorBubble {
 
   void ShowAuthError(base::WeakPtr<views::View> anchor_view,
                      int unlock_attempt,
-                     bool show_pin,
+                     bool authenticated_by_pin,
                      bool is_login_screen);
 
  private:

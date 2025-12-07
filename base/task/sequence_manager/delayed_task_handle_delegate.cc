@@ -4,11 +4,10 @@
 
 #include "base/task/sequence_manager/delayed_task_handle_delegate.h"
 
+#include "base/features.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
 
-namespace base {
-namespace sequence_manager {
-namespace internal {
+namespace base::sequence_manager::internal {
 
 DelayedTaskHandleDelegate::DelayedTaskHandleDelegate(TaskQueueImpl* outer)
     : outer_(outer) {}
@@ -30,14 +29,20 @@ bool DelayedTaskHandleDelegate::IsValid() const {
 
 void DelayedTaskHandleDelegate::CancelTask() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsValid())
+  if (!IsValid()) {
     return;
+  }
 
-  weak_ptr_factory_.InvalidateWeakPtrs();
+  if (features::IsReducePPMsEnabled()) {
+    weak_ptr_factory_.InvalidateWeakPtrsAndDoom();
+  } else {
+    weak_ptr_factory_.InvalidateWeakPtrs();
+  }
 
   // If the task is still inside the heap, then it can be removed directly.
-  if (heap_handle_.IsValid())
+  if (heap_handle_.IsValid()) {
     outer_->RemoveCancelableTask(heap_handle_);
+  }
 }
 
 void DelayedTaskHandleDelegate::SetHeapHandle(HeapHandle heap_handle) {
@@ -61,9 +66,12 @@ void DelayedTaskHandleDelegate::WillRunTask() {
   DCHECK(IsValid());
   // The task must be removed from the heap before running it.
   DCHECK(!heap_handle_.IsValid());
-  weak_ptr_factory_.InvalidateWeakPtrs();
+
+  if (features::IsReducePPMsEnabled()) {
+    weak_ptr_factory_.InvalidateWeakPtrsAndDoom();
+  } else {
+    weak_ptr_factory_.InvalidateWeakPtrs();
+  }
 }
 
-}  // namespace internal
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager::internal

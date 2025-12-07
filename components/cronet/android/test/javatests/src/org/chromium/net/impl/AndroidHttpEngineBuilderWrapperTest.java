@@ -89,6 +89,7 @@ public class AndroidHttpEngineBuilderWrapperTest {
         MockCronetBuilderImpl mockBuilderImpl = MockCronetBuilderImpl.withoutNativeSetterSupport();
         AndroidHttpEngineBuilderWrapper httpEngineBuilder =
                 new AndroidHttpEngineBuilderWrapper(
+                        ApplicationProvider.getApplicationContext(),
                         new ApiHelper.MockHttpEngineBuilder(
                                 ApplicationProvider.getApplicationContext(),
                                 new CronetEngine.Builder(mockBuilderImpl)));
@@ -109,6 +110,7 @@ public class AndroidHttpEngineBuilderWrapperTest {
         MockCronetBuilderImpl mockBuilderImpl = MockCronetBuilderImpl.withoutNativeSetterSupport();
         AndroidHttpEngineBuilderWrapper httpEngineBuilder =
                 new AndroidHttpEngineBuilderWrapper(
+                        ApplicationProvider.getApplicationContext(),
                         new ApiHelper.MockHttpEngineBuilder(
                                 ApplicationProvider.getApplicationContext(),
                                 new CronetEngine.Builder(mockBuilderImpl)));
@@ -130,6 +132,7 @@ public class AndroidHttpEngineBuilderWrapperTest {
         MockCronetBuilderImpl mockBuilderImpl = MockCronetBuilderImpl.withoutNativeSetterSupport();
         AndroidHttpEngineBuilderWrapper httpEngineBuilder =
                 new AndroidHttpEngineBuilderWrapper(
+                        ApplicationProvider.getApplicationContext(),
                         new ApiHelper.MockHttpEngineBuilder(
                                 ApplicationProvider.getApplicationContext(),
                                 new CronetEngine.Builder(mockBuilderImpl)));
@@ -151,6 +154,7 @@ public class AndroidHttpEngineBuilderWrapperTest {
         MockCronetBuilderImpl mockBuilderImpl = MockCronetBuilderImpl.withoutNativeSetterSupport();
         AndroidHttpEngineBuilderWrapper httpEngineBuilder =
                 new AndroidHttpEngineBuilderWrapper(
+                        ApplicationProvider.getApplicationContext(),
                         new ApiHelper.MockHttpEngineBuilder(
                                 ApplicationProvider.getApplicationContext(),
                                 new CronetEngine.Builder(mockBuilderImpl)));
@@ -172,6 +176,7 @@ public class AndroidHttpEngineBuilderWrapperTest {
         MockCronetBuilderImpl mockBuilderImpl = MockCronetBuilderImpl.withoutNativeSetterSupport();
         AndroidHttpEngineBuilderWrapper httpEngineBuilder =
                 new AndroidHttpEngineBuilderWrapper(
+                        ApplicationProvider.getApplicationContext(),
                         new ApiHelper.MockHttpEngineBuilder(
                                 ApplicationProvider.getApplicationContext(),
                                 new CronetEngine.Builder(mockBuilderImpl)));
@@ -313,7 +318,8 @@ public class AndroidHttpEngineBuilderWrapperTest {
         // guard to prevent breaking this feature if we change how set*Options is implemented.
         CronetEngine.Builder builder =
                 new CronetEngine.Builder(
-                        new AndroidHttpEngineBuilderWrapper(null) {
+                        new AndroidHttpEngineBuilderWrapper(
+                                ApplicationProvider.getApplicationContext(), null) {
                             @Override
                             public ICronetEngineBuilder setExperimentalOptions(String options) {
                                 setExperimentalOptionsCalled.set(true);
@@ -344,7 +350,8 @@ public class AndroidHttpEngineBuilderWrapperTest {
         // guard to prevent breaking this feature if we change how set*Options is implemented.
         CronetEngine.Builder builder =
                 new CronetEngine.Builder(
-                        new AndroidHttpEngineBuilderWrapper(null) {
+                        new AndroidHttpEngineBuilderWrapper(
+                                ApplicationProvider.getApplicationContext(), null) {
                             @Override
                             public ICronetEngineBuilder setExperimentalOptions(String options) {
                                 setExperimentalOptionsCalled.set(true);
@@ -376,7 +383,8 @@ public class AndroidHttpEngineBuilderWrapperTest {
         // guard to prevent breaking this feature if we change how set*Options is implemented.
         CronetEngine.Builder builder =
                 new CronetEngine.Builder(
-                        new AndroidHttpEngineBuilderWrapper(null) {
+                        new AndroidHttpEngineBuilderWrapper(
+                                ApplicationProvider.getApplicationContext(), null) {
                             @Override
                             public ICronetEngineBuilder setExperimentalOptions(String options) {
                                 setExperimentalOptionsCalled.set(true);
@@ -407,7 +415,8 @@ public class AndroidHttpEngineBuilderWrapperTest {
         // guard to prevent breaking this feature if we change how set*Options is implemented.
         CronetEngine.Builder builder =
                 new CronetEngine.Builder(
-                        new AndroidHttpEngineBuilderWrapper(null) {
+                        new AndroidHttpEngineBuilderWrapper(
+                                ApplicationProvider.getApplicationContext(), null) {
                             @Override
                             public ICronetEngineBuilder setExperimentalOptions(String options) {
                                 fail();

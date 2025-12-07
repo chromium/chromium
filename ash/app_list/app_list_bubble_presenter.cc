@@ -15,12 +15,13 @@
 #include "ash/app_list/views/app_list_bubble_apps_collections_page.h"
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
-#include "ash/app_list/views/app_list_drag_and_drop_host.h"
+#include "ash/app_list/views/search_box_view.h"
+#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/scanner/scanner_metrics.h"
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_navigation_widget.h"
@@ -35,7 +36,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -48,8 +48,6 @@
 
 namespace ash {
 namespace {
-
-using assistant::AssistantExitPoint;
 
 // Maximum amount of time to spend refreshing zero state search results before
 // opening the launcher.
@@ -64,7 +62,7 @@ constexpr int kExtraTopOfScreenSpacing = 16;
 
 gfx::Rect GetWorkAreaForBubble(aura::Window* root_window) {
   display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_window);
+      display::Screen::Get()->GetDisplayNearestWindow(root_window);
   gfx::RectF work_area(display.work_area());
 
   // Subtract the shelf's bounds from the work area, since the shelf should
@@ -221,8 +219,6 @@ void AppListBubblePresenter::OnZeroStateSearchDone(int64_t display_id) {
     return;
 
   Shelf* shelf = Shelf::ForWindow(root_window);
-  ApplicationDragAndDropHost* drag_and_drop_host =
-      shelf->shelf_widget()->GetDragAndDropHostForAppList();
   HomeButton* home_button = shelf->navigation_widget()->GetHomeButton();
 
   if (!bubble_widget_) {
@@ -235,10 +231,7 @@ void AppListBubblePresenter::OnZeroStateSearchDone(int64_t display_id) {
     bubble_widget_->GetNativeWindow()->SetEventTargeter(
         std::make_unique<AppListEventTargeter>(controller_));
     bubble_view_ = bubble_widget_->SetContentsView(
-        std::make_unique<AppListBubbleView>(controller_, drag_and_drop_host));
-    // Some of Assistant UIs have to be initialized explicitly. See details in
-    // the comment of AppListBubbleView::InitializeUIForBubbleView.
-    bubble_view_->InitializeUIForBubbleView();
+        std::make_unique<AppListBubbleView>(controller_));
     // Arrow left/right and up/down triggers the same focus movement as
     // tab/shift+tab.
     bubble_widget_->widget_delegate()->SetEnableArrowKeyTraversal(true);
@@ -257,9 +250,6 @@ void AppListBubblePresenter::OnZeroStateSearchDone(int64_t display_id) {
                       base::TimeTicks::Now() - time_shown);
   } else {
     DCHECK(bubble_view_);
-    // The bubble widget is cached, but it may change displays. Update pointers
-    // that are tied to the display.
-    bubble_view_->SetDragAndDropHostOfCurrentAppList(drag_and_drop_host);
     // Refresh suggestions now that zero-state search data is updated.
     bubble_view_->UpdateSuggestions();
     bubble_event_filter_->SetButton(home_button);
@@ -274,9 +264,6 @@ void AppListBubblePresenter::OnZeroStateSearchDone(int64_t display_id) {
   // we are coming out of tablet mode.
   controller_->SetKeyboardTraversalMode(true);
 
-  shelf_observer_.Reset();
-  shelf_observer_.Observe(shelf);
-
   bubble_widget_->Show();
   // The page must be set before triggering the show animation so the correct
   // animations are triggered.
@@ -284,6 +271,15 @@ void AppListBubblePresenter::OnZeroStateSearchDone(int64_t display_id) {
   const bool is_side_shelf = !shelf->IsHorizontalAlignment();
   bubble_view_->StartShowAnimation(is_side_shelf);
   controller_->OnVisibilityChanged(/*visible=*/true, display_id);
+
+  // Show the sunfish nudge after the widget is shown, so the anchor view is
+  // visible.
+  views::ImageButton* sunfish_button =
+      bubble_view_->search_box_view()->sunfish_button();
+  // `sunfish_button` is always initialised in `SearchBoxView`'s
+  // constructor.
+  CHECK(sunfish_button);
+  controller_->MaybeShowSunfishLauncherNudge(sunfish_button);
 }
 
 ShelfAction AppListBubblePresenter::Toggle(int64_t display_id) {
@@ -328,13 +324,6 @@ void AppListBubblePresenter::Dismiss() {
                        weak_factory_.GetWeakPtr()));
   }
   controller_->OnVisibilityChanged(/*visible=*/false, display_id);
-
-  // Clean up assistant if it is showing.
-  controller_->ScheduleCloseAssistant();
-
-  shelf_observer_.Reset();
-  if (bubble_view_)
-    bubble_view_->SetDragAndDropHostOfCurrentAppList(nullptr);
 }
 
 aura::Window* AppListBubblePresenter::GetWindow() const {
@@ -345,19 +334,6 @@ aura::Window* AppListBubblePresenter::GetWindow() const {
 
 bool AppListBubblePresenter::IsShowing() const {
   return is_target_visibility_show_;
-}
-
-bool AppListBubblePresenter::IsShowingEmbeddedAssistantUI() const {
-  if (!is_target_visibility_show_)
-    return false;
-
-  // Bubble view is null while the bubble widget is being initialized for show.
-  // In this case, return true iff the app list will show the assistant page
-  // when initialized.
-  if (!bubble_view_)
-    return target_page_ == AppListBubblePage::kAssistant;
-
-  return bubble_view_->IsShowingEmbeddedAssistantUI();
 }
 
 void AppListBubblePresenter::UpdateContinueSectionVisibility() {
@@ -380,17 +356,6 @@ void AppListBubblePresenter::UpdateForNewSortingOrder(
 
   bubble_view_->UpdateForNewSortingOrder(new_order, animate,
                                          std::move(update_position_closure));
-}
-
-void AppListBubblePresenter::ShowEmbeddedAssistantUI() {
-  DVLOG(1) << __PRETTY_FUNCTION__;
-  target_page_ = AppListBubblePage::kAssistant;
-  // `bubble_view_` does not exist while waiting for zero-state results.
-  // OnZeroStateSearchDone() sets the page in that case.
-  if (bubble_view_) {
-    DCHECK(bubble_widget_);
-    bubble_view_->ShowEmbeddedAssistantUI();
-  }
 }
 
 void AppListBubblePresenter::OnWidgetDestroying(views::Widget* widget) {
@@ -458,12 +423,6 @@ void AppListBubblePresenter::OnDisplayMetricsChanged(
   bubble_widget_->SetBounds(ComputeBubbleBounds(root_window, bubble_view_));
 }
 
-void AppListBubblePresenter::OnShelfShuttingDown() {
-  shelf_observer_.Reset();
-  if (bubble_view_)
-    bubble_view_->SetDragAndDropHostOfCurrentAppList(nullptr);
-}
-
 void AppListBubblePresenter::OnPressOutsideBubble(
     const ui::LocatedEvent& event) {
   // Presses outside the bubble could be activating a shelf item. Record the
@@ -482,7 +441,7 @@ void AppListBubblePresenter::OnPressOutsideBubble(
 int64_t AppListBubblePresenter::GetDisplayId() const {
   if (!is_target_visibility_show_ || !bubble_widget_)
     return display::kInvalidDisplayId;
-  return display::Screen::GetScreen()
+  return display::Screen::Get()
       ->GetDisplayNearestView(bubble_widget_->GetNativeView())
       .id();
 }
@@ -493,8 +452,6 @@ void AppListBubblePresenter::OnHideAnimationEnded() {
   // close the bubble in response.
   auto lock = TrayBackgroundView::DisableCloseBubbleOnWindowActivated();
   bubble_widget_->Hide();
-
-  controller_->MaybeCloseAssistant();
 }
 
 int AppListBubblePresenter::GetPreferredBubbleWidth(

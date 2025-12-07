@@ -8,7 +8,6 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 
 namespace blink {
 
@@ -20,7 +19,7 @@ constexpr const mojom::blink::DocumentPolicyFeature kDoubleFeature =
     static_cast<mojom::blink::DocumentPolicyFeature>(2);
 
 // This is the test version of |PolicyParserMessageBuffer::Message| as
-// WTF::String cannot be statically allocated.
+// blink::String cannot be statically allocated.
 struct MessageForTest {
   mojom::ConsoleMessageLevel level;
   const char* content;

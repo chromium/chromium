@@ -52,7 +52,6 @@ CrostiniLowDiskNotification::~CrostiniLowDiskNotification() {
 void CrostiniLowDiskNotification::OnLowDiskSpaceTriggered(
     const vm_tools::cicerone::LowDiskSpaceTriggeredSignal& signal) {
   if (signal.vm_name() != kCrostiniDefaultVmName) {
-    // TODO(crbug.com/40755190): Support VMs with different names
     return;
   }
   ShowNotificationIfAppropriate(signal.free_bytes());
@@ -76,7 +75,7 @@ void CrostiniLowDiskNotification::ShowNotificationIfAppropriate(
   // We suppress the low-space notifications when there are multiple users on an
   // enterprise managed device based on policy configuration.
   if (!show_low_disk_space_notification &&
-      user_manager::UserManager::Get()->GetUsers().size() > 1) {
+      user_manager::UserManager::Get()->GetPersistedUsers().size() > 1) {
     LOG(WARNING) << "Crostini is low on disk space, but the notification was "
                  << "suppressed on a managed device.";
     return;

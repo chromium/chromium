@@ -34,12 +34,12 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/tablet_state.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/proposed_layout.h"
@@ -271,11 +271,11 @@ class HoldingSpaceTrayBubble::ChildBubbleContainer
     // the use of a throughput tracker to record layout animation smoothness.
     layout_animation_ = std::make_unique<gfx::SlideAnimation>(this);
     layout_animation_->SetSlideDuration(
-        ui::ScopedAnimationDurationScaleMode::duration_multiplier() *
+        gfx::ScopedAnimationDurationScaleMode::duration_multiplier() *
         kAnimationDuration);
     layout_animation_->SetTweenType(gfx::Tween::Type::FAST_OUT_SLOW_IN);
     layout_animation_throughput_tracker_ =
-        GetWidget()->GetCompositor()->RequestNewThroughputTracker();
+        GetWidget()->GetCompositor()->RequestNewCompositorMetricsTracker();
     layout_animation_throughput_tracker_->Start(
         metrics_util::ForSmoothnessV3(base::BindRepeating(
             holding_space_metrics::RecordBubbleResizeAnimationSmoothness)));

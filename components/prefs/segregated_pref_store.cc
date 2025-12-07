@@ -230,3 +230,11 @@ const PersistentPrefStore* SegregatedPrefStore::StoreForKey(
 bool SegregatedPrefStore::HasReadErrorDelegate() const {
   return read_error_delegate_.has_value();
 }
+
+PrefFilter* SegregatedPrefStore::GetDefaultStoreFilter() {
+  return default_pref_store_->GetFilter();
+}
+
+PrefFilter* SegregatedPrefStore::GetSelectedStoreFilter() {
+  return selected_pref_store_ ? selected_pref_store_->GetFilter() : nullptr;
+}

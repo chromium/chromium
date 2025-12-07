@@ -14,18 +14,24 @@ import androidx.annotation.DrawableRes;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.identitymanager.IdentityManagerImpl;
+import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.widget.ChromeImageView;
 
 import java.io.IOException;
@@ -36,8 +42,14 @@ import java.io.IOException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(ProfileDataCacheRenderTest.PROFILE_DATA_BATCH_NAME)
-public class ProfileDataCacheWithBadgeRenderTest extends BlankUiTestActivityTestCase {
-    private static final String TEST_ACCOUNT_NAME = "test@example.com";
+public class ProfileDataCacheWithBadgeRenderTest {
+    private static final long NATIVE_IDENTITY_MANAGER = 10002L;
+
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
@@ -48,24 +60,34 @@ public class ProfileDataCacheWithBadgeRenderTest extends BlankUiTestActivityTest
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
+    private IdentityManager mIdentityManager;
     private FrameLayout mContentView;
     private ImageView mImageView;
     private ProfileDataCache mProfileDataCache;
 
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
+
     @Before
     public void setUp() {
-        mAccountManagerTestRule.addAccount(TEST_ACCOUNT_NAME);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Activity activity = getActivity();
-                    mContentView = new FrameLayout(activity);
-                    mImageView = new ChromeImageView(activity);
+                    // TODO(crbug.com/374683682): Use a fake IdentityManager as ProfileDataCache
+                    // will be updated to fetch accounts from IdentityManager
+                    mIdentityManager =
+                            IdentityManagerImpl.create(
+                                    NATIVE_IDENTITY_MANAGER, null /* OAuth2TokenService */);
+                    mContentView = new FrameLayout(sActivity);
+                    mImageView = new ChromeImageView(sActivity);
                     mContentView.addView(
                             mImageView,
                             ViewGroup.LayoutParams.WRAP_CONTENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT);
-                    activity.setContentView(mContentView);
+                    sActivity.setContentView(mContentView);
                 });
     }
 
@@ -99,7 +121,7 @@ public class ProfileDataCacheWithBadgeRenderTest extends BlankUiTestActivityTest
     public void testProfileDataWithSettingBadgeDynamically() throws IOException {
         setUpProfileDataCache(0);
         mRenderTestRule.render(mImageView, "profile_data_cache_without_badge");
-        setBadgeConfig(R.drawable.ic_account_child_20dp);
+        setBadge(R.drawable.ic_account_child_20dp);
         mRenderTestRule.render(mImageView, "profile_data_cache_with_child_badge");
     }
 
@@ -109,7 +131,7 @@ public class ProfileDataCacheWithBadgeRenderTest extends BlankUiTestActivityTest
     public void testProfileDataWithRemovingBadgeDynamically() throws IOException {
         setUpProfileDataCache(R.drawable.ic_account_child_20dp);
         mRenderTestRule.render(mImageView, "profile_data_cache_with_child_badge");
-        setBadgeConfig(0);
+        setBadge(0);
         mRenderTestRule.render(mImageView, "profile_data_cache_without_badge");
     }
 
@@ -119,7 +141,7 @@ public class ProfileDataCacheWithBadgeRenderTest extends BlankUiTestActivityTest
     public void testProfileDataWithExistingBadge() throws IOException {
         setUpProfileDataCache(R.drawable.ic_account_child_20dp);
         mRenderTestRule.render(mImageView, "profile_data_cache_with_child_badge");
-        setBadgeConfig(R.drawable.ic_sync_badge_error_20dp);
+        setBadge(R.drawable.ic_sync_badge_error_20dp);
         mRenderTestRule.render(mImageView, "profile_data_cache_with_sync_error_badge");
     }
 
@@ -129,43 +151,48 @@ public class ProfileDataCacheWithBadgeRenderTest extends BlankUiTestActivityTest
                     mProfileDataCache =
                             badgeResId != 0
                                     ? ProfileDataCache.createWithDefaultImageSize(
-                                            getActivity(), badgeResId)
+                                            sActivity, mIdentityManager, badgeResId)
                                     : ProfileDataCache.createWithoutBadge(
-                                            getActivity(), R.dimen.user_picture_size);
+                                            sActivity, mIdentityManager, R.dimen.user_picture_size);
                 });
         CriteriaHelper.pollUiThread(
                 () -> {
                     return !TextUtils.isEmpty(
                             mProfileDataCache
-                                    .getProfileDataOrDefault(TEST_ACCOUNT_NAME)
+                                    .getProfileDataOrDefault(TestAccounts.ACCOUNT1.getEmail())
                                     .getFullName());
                 });
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mImageView.setImageDrawable(
                             mProfileDataCache
-                                    .getProfileDataOrDefault(TEST_ACCOUNT_NAME)
+                                    .getProfileDataOrDefault(TestAccounts.ACCOUNT1.getEmail())
                                     .getImage());
                 });
     }
 
-    private void setBadgeConfig(@DrawableRes int badgeResId) {
+    private void setBadge(@DrawableRes int badgeResId) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mProfileDataCache.setBadge(badgeResId);
+                    mProfileDataCache.setBadge(
+                            TestAccounts.ACCOUNT1.getEmail(),
+                            badgeResId == 0
+                                    ? null
+                                    : ProfileDataCache.createDefaultSizeChildAccountBadgeConfig(
+                                            sActivity, badgeResId));
                 });
         CriteriaHelper.pollUiThread(
                 () -> {
                     return !TextUtils.isEmpty(
                             mProfileDataCache
-                                    .getProfileDataOrDefault(TEST_ACCOUNT_NAME)
+                                    .getProfileDataOrDefault(TestAccounts.ACCOUNT1.getEmail())
                                     .getFullName());
                 });
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mImageView.setImageDrawable(
                             mProfileDataCache
-                                    .getProfileDataOrDefault(TEST_ACCOUNT_NAME)
+                                    .getProfileDataOrDefault(TestAccounts.ACCOUNT1.getEmail())
                                     .getImage());
                 });
     }

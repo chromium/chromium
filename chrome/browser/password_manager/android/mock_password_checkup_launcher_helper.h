@@ -15,12 +15,6 @@ class MockPasswordCheckupLauncherHelper : public PasswordCheckupLauncherHelper {
   MockPasswordCheckupLauncherHelper();
   ~MockPasswordCheckupLauncherHelper() override;
   MOCK_METHOD(void,
-              LaunchCheckupOnlineWithWindowAndroid,
-              (JNIEnv*,
-               const base::android::JavaRef<jstring>&,
-               const base::android::JavaRef<jobject>&),
-              (override));
-  MOCK_METHOD(void,
               LaunchCheckupOnDevice,
               (JNIEnv*,
                Profile*,
@@ -29,15 +23,10 @@ class MockPasswordCheckupLauncherHelper : public PasswordCheckupLauncherHelper {
                std::string account_email),
               (override));
   MOCK_METHOD(void,
-              LaunchCheckupOnlineWithActivity,
-              (JNIEnv*,
-               const base::android::JavaRef<jstring>&,
-               const base::android::JavaRef<jobject>&),
-              (override));
-  MOCK_METHOD(void,
               LaunchSafetyCheck,
               (JNIEnv*, ui::WindowAndroid*),
               (override));
+  MOCK_METHOD(void, LaunchSafetyHub, (JNIEnv*, ui::WindowAndroid*), (override));
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_MOCK_PASSWORD_CHECKUP_LAUNCHER_HELPER_H_

@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/filters/fe_box_reflect.h"
 
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
-#include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
@@ -19,11 +19,10 @@ gfx::RectF FEBoxReflect::MapEffect(const gfx::RectF& rect) const {
   return reflection_.MapRect(rect);
 }
 
-WTF::TextStream& FEBoxReflect::ExternalRepresentation(WTF::TextStream& ts,
-                                                      int indent) const {
+StringBuilder& FEBoxReflect::ExternalRepresentation(StringBuilder& ts,
+                                                    wtf_size_t indent) const {
   // Only called for SVG layout tree printing.
-  NOTREACHED_IN_MIGRATION();
-  return ts;
+  NOTREACHED();
 }
 
 sk_sp<PaintFilter> FEBoxReflect::CreateImageFilter() {

@@ -24,7 +24,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_resource_request_blocked_reason.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/renderer/chrome_render_thread_observer.h"
+#include "chrome/renderer/process_state.h"
 #include "components/error_page/common/error.h"
 #include "components/error_page/common/localized_error.h"
 #include "components/error_page/common/net_error_info.h"
@@ -35,7 +35,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
-#include "content/public/common/url_constants.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
@@ -57,7 +56,6 @@
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_history_item.h"
 #include "third_party/blink/public/web/web_local_frame.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "url/gurl.h"
@@ -66,8 +64,6 @@
 #include "chrome/common/offline_page_auto_fetcher.mojom.h"
 #endif
 
-using base::JSONWriter;
-using content::kUnreachableWebDataURL;
 using content::RenderFrame;
 using content::RenderFrameObserver;
 using content::RenderThread;
@@ -88,25 +84,13 @@ bool IsExtensionExtendedErrorCode(int extended_error_code) {
          static_cast<int>(ChromeResourceRequestBlockedReason::kExtension);
 }
 
-#if BUILDFLAG(IS_ANDROID)
-bool IsOfflineContentOnNetErrorFeatureEnabled() {
-  return  base::FeatureList::IsEnabled(features::kOfflineContentOnNetError);
-}
-#else   // BUILDFLAG(IS_ANDROID)
-bool IsOfflineContentOnNetErrorFeatureEnabled() {
-  return false;
-}
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
 bool IsAutoFetchFeatureEnabled() {
-  return  base::FeatureList::IsEnabled(features::kOfflineAutoFetch);
-}
+#if BUILDFLAG(IS_ANDROID)
+  return base::FeatureList::IsEnabled(features::kOfflineAutoFetch);
 #else   // BUILDFLAG(IS_ANDROID)
-bool IsAutoFetchFeatureEnabled() {
   return false;
-}
 #endif  // BUILDFLAG(IS_ANDROID)
+}
 
 bool IsRunningInForcedAppMode() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -135,25 +119,12 @@ void NetErrorHelper::ButtonPressed(NetErrorHelperCore::Button button) {
   core_->ExecuteButtonPress(button);
 }
 
-void NetErrorHelper::LaunchOfflineItem(const std::string& id,
-                                       const std::string& name_space) {
-  core_->LaunchOfflineItem(id, name_space);
-}
-
-void NetErrorHelper::LaunchDownloadsPage() {
-  core_->LaunchDownloadsPage();
-}
-
 void NetErrorHelper::SavePageForLater() {
   core_->SavePageForLater();
 }
 
 void NetErrorHelper::CancelSavePage() {
   core_->CancelSavePage();
-}
-
-void NetErrorHelper::ListVisibilityChanged(bool is_visible) {
-  core_->ListVisibilityChanged(is_visible);
 }
 
 content::RenderFrame* NetErrorHelper::GetRenderFrame() {
@@ -249,25 +220,20 @@ LocalizedError::PageState NetErrorHelper::GenerateLocalizedErrorPage(
         error.reason(), error.domain(), error.url(), is_failed_post,
         error.resolve_error_info().is_secure_network_error,
         error.stale_copy_in_cache(), can_show_network_diagnostics_dialog,
-        ChromeRenderThreadObserver::is_incognito_process(),
-        IsOfflineContentOnNetErrorFeatureEnabled(), IsAutoFetchFeatureEnabled(),
+        process_state::IsIncognitoProcess(), IsAutoFetchFeatureEnabled(),
         IsRunningInForcedAppMode(), RenderThread::Get()->GetLocale(),
         IsExtensionExtendedErrorCode(error.extended_reason()),
         &error_page_params_);
   }
-  std::string extracted_string =
+  std::string template_html =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           resource_id);
-  std::string_view template_html(extracted_string.data(),
-                                 extracted_string.size());
   DCHECK(!template_html.empty()) << "unable to load template.";
   *error_html = webui::GetLocalizedHtml(template_html, page_state.strings);
   return page_state;
 }
 
 void NetErrorHelper::EnablePageHelperFunctions() {
-  security_interstitials::SecurityInterstitialPageController::Install(
-      render_frame());
   NetErrorPageController::Install(
       render_frame(), weak_controller_delegate_factory_.GetWeakPtr());
 }
@@ -280,14 +246,12 @@ LocalizedError::PageState NetErrorHelper::UpdateErrorPage(
       error.reason(), error.domain(), error.url(), is_failed_post,
       error.resolve_error_info().is_secure_network_error,
       error.stale_copy_in_cache(), can_show_network_diagnostics_dialog,
-      ChromeRenderThreadObserver::is_incognito_process(),
-      IsOfflineContentOnNetErrorFeatureEnabled(), IsAutoFetchFeatureEnabled(),
+      process_state::IsIncognitoProcess(), IsAutoFetchFeatureEnabled(),
       IsRunningInForcedAppMode(), RenderThread::Get()->GetLocale(),
       IsExtensionExtendedErrorCode(error.extended_reason()),
       &error_page_params_);
 
-  std::string json;
-  JSONWriter::Write(page_state.strings, &json);
+  std::string json = base::WriteJson(page_state.strings).value_or("");
 
   std::string js = "if (window.updateForDnsProbe) "
                    "updateForDnsProbe(" + json + ");";
@@ -295,7 +259,7 @@ LocalizedError::PageState NetErrorHelper::UpdateErrorPage(
   if (base::UTF8ToUTF16(js.c_str(), js.length(), &js16)) {
     render_frame()->ExecuteJavaScript(js16);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   return page_state;
 }
@@ -307,8 +271,7 @@ void NetErrorHelper::InitializeErrorPageEasterEggHighScore(int high_score) {
       high_score);
   std::u16string js16;
   if (!base::UTF8ToUTF16(js.c_str(), js.length(), &js16)) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   render_frame()->ExecuteJavaScript(js16);
@@ -354,19 +317,6 @@ void NetErrorHelper::SetIsShowingDownloadButton(bool show) {
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
   GetRemoteNetErrorPageSupport()->SetIsShowingDownloadButtonInErrorPage(show);
 #endif  // BUILDFLAG(ENABLE_OFFLINE_PAGES)
-}
-
-void NetErrorHelper::OfflineContentAvailable(
-    bool list_visible_by_prefs,
-    const std::string& offline_content_json) {
-#if BUILDFLAG(IS_ANDROID)
-  if (!offline_content_json.empty()) {
-    std::string isShownParam(list_visible_by_prefs ? "true" : "false");
-    render_frame()->ExecuteJavaScript(base::UTF8ToUTF16(
-        base::StrCat({"offlineContentAvailable(", isShownParam, ", ",
-                      offline_content_json, ");"})));
-  }
-#endif
 }
 
 #if BUILDFLAG(IS_ANDROID)

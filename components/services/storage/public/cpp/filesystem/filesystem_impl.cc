@@ -161,8 +161,7 @@ void FilesystemImpl::OpenFile(const base::FilePath& path,
       flags |= base::File::FLAG_OPEN_TRUNCATED;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   switch (read_access) {
@@ -172,8 +171,7 @@ void FilesystemImpl::OpenFile(const base::FilePath& path,
       flags |= base::File::FLAG_READ;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   switch (write_access) {
@@ -186,8 +184,7 @@ void FilesystemImpl::OpenFile(const base::FilePath& path,
       flags |= base::File::FLAG_APPEND;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   if (client_type_ == ClientType::kUntrusted) {

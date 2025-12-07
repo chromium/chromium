@@ -4,7 +4,10 @@
 
 package org.chromium.components.webapk.lib.common;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** <meta-data> keys for WebAPK Android Manifest. */
+@NullMarked
 public final class WebApkMetaDataKeys {
     public static final String SHELL_APK_VERSION = "org.chromium.webapk.shell_apk.shellApkVersion";
     public static final String RUNTIME_HOST = "org.chromium.webapk.shell_apk.runtimeHost";
@@ -31,8 +34,7 @@ public final class WebApkMetaDataKeys {
     public static final String SPLASH_ID = "org.chromium.webapk.shell_apk.splashId";
     public static final String IS_SPLASH_ICON_MASKABLE_BOOLEAN_ID =
             "org.chromium.webapk.shell_apk.isSplashIconMaskableBooleanId";
-    public static final String IS_NEW_STYLE_WEBAPK =
-            "org.chromium.webapk.shell_apk.isNewStyleWebApk";
+    public static final String IS_ARC_CHROMEOS = "org.chromium.webapk.shell_apk.isArcChromeOs";
 
     public static final String ICON_URLS_AND_ICON_MURMUR2_HASHES =
             "org.chromium.webapk.shell_apk.iconUrlsAndIconMurmur2Hashes";

@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.header;
 
-
 import androidx.core.view.ViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -14,11 +14,12 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Properties associated with the header suggestion view. */
+@NullMarked
 public interface HeaderViewBinder {
     /**
      * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)
      */
-    public static void bind(PropertyModel model, HeaderView view, PropertyKey propertyKey) {
+    static void bind(PropertyModel model, HeaderView view, PropertyKey propertyKey) {
         if (HeaderViewProperties.TITLE == propertyKey) {
             view.setText(model.get(HeaderViewProperties.TITLE));
         } else if (propertyKey == SuggestionCommonProperties.COLOR_SCHEME) {

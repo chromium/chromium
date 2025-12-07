@@ -45,7 +45,7 @@ suite('InspectUITest', function() {
       elements: Element[], content: string, childSelector: string) {
     return elements.find(element => {
       const child = element.querySelector(childSelector);
-      return !!child && child.textContent!.indexOf(content) >= 0;
+      return !!child && child.textContent.indexOf(content) >= 0;
     });
   }
 
@@ -82,6 +82,79 @@ suite('InspectUITest', function() {
     // assertNativeButtonDisabled directly.
   });
 
+  async function assertRemoteDebuggingCheckbox(
+      expectedChecked: boolean, expectedDisabled: boolean) {
+    const elements = await waitForElements(
+        '#remote-debugging-enabled', 'updateRemoteDebuggingEnabled');
+    assertEquals(1, elements.length);
+    const checkbox = elements[0] as HTMLInputElement;
+    assertEquals(expectedChecked, checkbox.checked);
+    assertEquals(expectedDisabled, checkbox.disabled);
+  }
+
+  async function assertServerAddress(
+      expectAddress: boolean, expectedText?: string) {
+    const elements = await waitForElements(
+        '#remote-debugging-address-container', 'updateRemoteDebuggingEnabled');
+    assertEquals(1, elements.length);
+    const addressContainer = elements[0] as HTMLElement;
+    assertEquals(addressContainer.hidden, !expectAddress);
+    if (expectedText) {
+      const address = addressContainer.querySelector<HTMLElement>(
+          '#remote-debugging-address');
+      assertTrue(!!address);
+      assertEquals(expectedText, address.textContent);
+    }
+  }
+
+  test(
+      'RemoteDebuggingNotAllowed',
+      () => assertRemoteDebuggingCheckbox(false, true));
+
+  test(
+      'RemoteDebuggingAllowedAndDisabled',
+      () => assertRemoteDebuggingCheckbox(false, false));
+
+  test(
+      'RemoteDebuggingAllowedAndEnabled',
+      () => assertRemoteDebuggingCheckbox(true, false));
+
+  function nextUpdateRemoteDebugging(): Promise<void> {
+    return new Promise(resolve => {
+      const windowObj = window as unknown as {[key: string]: Function};
+      const original = windowObj['updateRemoteDebuggingEnabled']!;
+      assertTrue(!!original);
+      windowObj['updateRemoteDebuggingEnabled'] = function() {
+        windowObj['updateRemoteDebuggingEnabled'] = original;
+        original.apply(window, arguments as any);
+        setTimeout(resolve, 0);
+      };
+    });
+  }
+
+  test('ClickRemoteDebuggingCheckboxAndCheckAddress', async () => {
+    await assertRemoteDebuggingCheckbox(
+        /*expectedChecked=*/ false, /*expectedDisabled=*/ false);
+    await assertServerAddress(/*expectAddress=*/ false);
+    const checkbox =
+        document.querySelector<HTMLInputElement>('#remote-debugging-enabled');
+    assertTrue(!!checkbox);
+
+    // Click to enable.
+    let promise = nextUpdateRemoteDebugging();
+    checkbox.click();
+    await promise;
+    // The browser test does not provide an address, so we expect the pending
+    // message.
+    await assertServerAddress(
+        /*expectAddress=*/ true, 'starting…');
+
+    // Click to disable.
+    promise = nextUpdateRemoteDebugging();
+    checkbox.click();
+    await promise;
+    await assertServerAddress(/*expectAddress=*/ false);
+  });
 
   test('AdbTargetsListed', async () => {
     const devices = await waitForElements('.device', 'populateRemoteTargets');

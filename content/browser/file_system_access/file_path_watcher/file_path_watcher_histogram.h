@@ -14,10 +14,13 @@ enum class WatchWithChangeInfoResult {
   kWinReachedRootDirectory = 3,
   kWinCreateIoCompletionPortError = 4,
   kWinReadDirectoryChangesWError = 5,
-  kMaxValue = kWinReadDirectoryChangesWError,
+  kFSEventsResolvedTargetError = 6,
+  kFSEventsEventStreamStartError = 7,
+  kMaxValue = kFSEventsEventStreamStartError,
 };
 
 void RecordWatchWithChangeInfoResultUma(WatchWithChangeInfoResult result);
+void RecordInotifyWatchCountUma(int count);
 
 void RecordCallbackErrorUma(WatchWithChangeInfoResult result);
 

@@ -30,8 +30,7 @@ ResultCode CreateAltWindowStation(HWINSTA* winsta) {
     return SBOX_ERROR_CANNOT_QUERY_WINSTATION_SECURITY;
   }
 
-  SECURITY_DESCRIPTOR sd_absolute;
-  sd->ToAbsolute(sd_absolute);
+  SECURITY_DESCRIPTOR sd_absolute = sd->ToAbsolute();
   SECURITY_ATTRIBUTES attributes = {sizeof(SECURITY_ATTRIBUTES), &sd_absolute,
                                     FALSE};
 
@@ -101,8 +100,7 @@ ResultCode CreateAltDesktop(HWINSTA winsta, HDESK* desktop) {
   sd->SetDaclEntry(base::win::WellKnownSid::kRestricted,
                    base::win::SecurityAccessMode::kDeny, kDesktopDenyMask, 0);
 
-  SECURITY_DESCRIPTOR sd_absolute;
-  sd->ToAbsolute(sd_absolute);
+  SECURITY_DESCRIPTOR sd_absolute = sd->ToAbsolute();
   SECURITY_ATTRIBUTES attributes = {sizeof(SECURITY_ATTRIBUTES), &sd_absolute,
                                     FALSE};
 
@@ -139,8 +137,7 @@ ResultCode CreateAltDesktop(HWINSTA winsta, HDESK* desktop) {
 
 std::wstring GetFullDesktopName(HWINSTA winsta, HDESK desktop) {
   if (!desktop) {
-    NOTREACHED_IN_MIGRATION();
-    return std::wstring();
+    NOTREACHED();
   }
 
   std::wstring name;

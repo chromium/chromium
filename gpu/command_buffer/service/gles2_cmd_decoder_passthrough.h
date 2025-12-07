@@ -8,6 +8,7 @@
 #define GPU_COMMAND_BUFFER_SERVICE_GLES2_CMD_DECODER_PASSTHROUGH_H_
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -16,13 +17,12 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/debug_marker_manager.h"
 #include "gpu/command_buffer/common/discardable_handle.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
-#include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/client_service_map.h"
 #include "gpu/command_buffer/service/context_group.h"
@@ -51,7 +51,7 @@ class ContextGroup;
 class GPUTracer;
 class MultiDrawManager;
 class GLES2DecoderPassthroughImpl;
-class GLES2ExternalFramebuffer;
+class PassthroughProgramCache;
 
 struct MappedBuffer {
   GLsizeiptr size;
@@ -163,12 +163,11 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
 
   base::WeakPtr<DecoderContext> AsWeakPtr() override;
 
-  gpu::ContextResult Initialize(
-      const scoped_refptr<gl::GLSurface>& surface,
-      const scoped_refptr<gl::GLContext>& context,
-      bool offscreen,
-      const DisallowedFeatures& disallowed_features,
-      const ContextCreationAttribs& attrib_helper) override;
+  gpu::ContextResult Initialize(const scoped_refptr<gl::GLSurface>& surface,
+                                const scoped_refptr<gl::GLContext>& context,
+                                bool offscreen,
+                                ContextType context_type,
+                                bool lose_context_when_out_of_memory) override;
 
   // Destroys the graphics context.
   void Destroy(bool have_context) override;
@@ -179,12 +178,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   // Releases the surface associated with the GL context.
   // The decoder should not be used until a new surface is set.
   void ReleaseSurface() override;
-
-  void SetDefaultFramebufferSharedImage(const Mailbox& mailbox,
-                                        int samples,
-                                        bool preserve,
-                                        bool needs_depth,
-                                        bool needs_stencil) override;
 
   // Make this decoder's GL context current.
   bool MakeCurrent() override;
@@ -339,7 +332,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   bool CheckResetStatus() override;
 
   // Implement GpuSwitchingObserver.
-  void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) override;
+  void OnGpuSwitched() override;
 
   Logger* GetLogger() override;
 
@@ -355,6 +348,15 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
                       GLenum severity,
                       GLsizei length,
                       const GLchar* message);
+
+  GLsizeiptr BlobCacheGet(const void* key,
+                          GLsizeiptr key_size,
+                          void* value,
+                          GLsizeiptr value_size);
+  void BlobCacheSet(const void* key,
+                    GLsizeiptr key_size,
+                    const void* value,
+                    GLsizeiptr value_size);
 
   void SetCopyTextureResourceManagerForTest(
       CopyTextureCHROMIUMResourceManager* copy_texture_resource_manager)
@@ -382,10 +384,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   const char* GetCommandName(unsigned int command_id) const;
 
   void SetOptionalExtensionsRequestedForTesting(bool request_extensions);
-
-  void InitializeFeatureInfo(ContextType context_type,
-                             const DisallowedFeatures& disallowed_features,
-                             bool force_reinitialize);
 
   template <typename T, typename GLGetFunction>
   error::Error GetNumericHelper(GLenum pname,
@@ -469,13 +467,9 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
 
   void ExitCommandProcessingEarly() override;
 
-  void CheckSwapBuffersAsyncResult(const char* function_name,
-                                   uint64_t swap_id,
-                                   gfx::SwapCompletionResult result);
-  error::Error CheckSwapBuffersResult(gfx::SwapResult result,
-                                      const char* function_name);
-
   bool OnlyHasPendingProgramCompletionQueries();
+
+  PassthroughProgramCache* get_passthrough_program_cache() const;
 
   int commands_to_process_;
 
@@ -519,11 +513,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   // time. Can be disabled for testing with only specific extensions enabled.
   bool request_optional_extensions_ = true;
 
-  // Some objects may generate resources when they are bound even if they were
-  // not generated yet: texture, buffer, renderbuffer, framebuffer, transform
-  // feedback, vertex array
-  bool bind_generates_resource_;
-
   // Mappings from client side IDs to service side IDs for shared objects
   raw_ptr<PassthroughResources> resources_ = nullptr;
 
@@ -548,8 +537,11 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
     k2DMultisample = 4,
     kExternal = 5,
     kRectangle = 6,
+    kBuffer = 7,
+    kCubeMapArray = 8,
+    k2DMultisampleArray = 9,
 
-    kUnkown = 7,
+    kUnkown = 10,
     kCount = kUnkown,
   };
   static TextureTarget GLenumToTextureTarget(GLenum target);
@@ -603,7 +595,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
 
     std::unique_ptr<gl::GLFence> commands_completed_fence;
     base::TimeDelta commands_issued_time;
-    base::TimeTicks commands_issued_timestamp;
 
     std::vector<base::OnceClosure> callbacks;
     std::unique_ptr<gl::GLFence> buffer_shadow_update_fence;
@@ -709,7 +700,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
 
   GLenum emulated_default_framebuffer_format_;
   std::unique_ptr<EmulatedDefaultFramebuffer> emulated_back_buffer_;
-  std::unique_ptr<GLES2ExternalFramebuffer> external_default_framebuffer_;
 
   // Maximum 2D resource sizes for limiting offscreen framebuffer sizes
   GLint max_renderbuffer_size_ = 0;

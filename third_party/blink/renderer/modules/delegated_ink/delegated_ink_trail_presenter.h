@@ -37,7 +37,6 @@ class MODULES_EXPORT DelegatedInkTrailPresenter : public ScriptWrappable {
                                 PointerEvent* evt,
                                 InkTrailStyle* style,
                                 ExceptionState& exception_state);
-  uint32_t expectedImprovement() const { return expected_improvement_; }
   Element* presentationArea() const { return presentation_area_.Get(); }
 
   void Trace(Visitor* visitor) const override;
@@ -45,7 +44,6 @@ class MODULES_EXPORT DelegatedInkTrailPresenter : public ScriptWrappable {
  private:
   Member<Element> presentation_area_;
   Member<LocalFrame> local_frame_;
-  uint32_t expected_improvement_ = 0;
   base::TimeTicks last_delegated_ink_metadata_timestamp_;
 };
 

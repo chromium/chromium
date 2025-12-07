@@ -7,10 +7,12 @@
 #include <iterator>
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "net/base/does_url_match_filter.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
@@ -72,7 +74,6 @@ void PreflightCache::AppendEntry(
     const url::Origin& origin,
     const GURL& url,
     const net::NetworkIsolationKey& network_isolation_key,
-    mojom::IPAddressSpace target_ip_address_space,
     std::unique_ptr<PreflightResult> preflight_result) {
   DCHECK(preflight_result);
 
@@ -82,8 +83,7 @@ void PreflightCache::AppendEntry(
     return;
   }
 
-  auto key = std::make_tuple(origin, url_spec, network_isolation_key,
-                             target_ip_address_space);
+  auto key = std::make_tuple(origin, url_spec, network_isolation_key);
   const auto existing_entry = cache_.find(key);
   if (existing_entry == cache_.end()) {
     // Since one new entry is always added below, let's purge one cache entry
@@ -98,7 +98,6 @@ bool PreflightCache::CheckIfRequestCanSkipPreflight(
     const url::Origin& origin,
     const GURL& url,
     const net::NetworkIsolationKey& network_isolation_key,
-    mojom::IPAddressSpace target_ip_address_space,
     mojom::CredentialsMode credentials_mode,
     const std::string& method,
     const net::HttpRequestHeaders& request_headers,
@@ -106,8 +105,7 @@ bool PreflightCache::CheckIfRequestCanSkipPreflight(
     const net::NetLogWithSource& net_log,
     bool acam_preflight_spec_conformant) {
   // Check if the entry exists in the cache.
-  auto key = std::make_tuple(origin, url.spec(), network_isolation_key,
-                             target_ip_address_space);
+  auto key = std::make_tuple(origin, url.spec(), network_isolation_key);
   auto cache_entry = cache_.find(key);
   if (cache_entry == cache_.end()) {
     RecordCacheMetricNetLog(CacheMetric::kMiss, net_log);
@@ -164,16 +162,18 @@ void PreflightCache::ClearCache(mojom::ClearDataFilterPtr url_filter) {
         return;
     }
   }
-  std::set<url::Origin> origins(url_filter->origins.begin(),
-                                url_filter->origins.end());
-  std::set<std::string> domains(url_filter->domains.begin(),
-                                url_filter->domains.end());
+  const net::UrlFilterType url_filter_type =
+      ConvertClearDataFilterType(url_filter->type);
+  const base::flat_set<url::Origin> origins(url_filter->origins.begin(),
+                                            url_filter->origins.end());
+  const base::flat_set<std::string> domains(url_filter->domains.begin(),
+                                            url_filter->domains.end());
 
   for (auto it = cache_.begin(); it != cache_.end();) {
     auto next_it = std::next(it);
     auto cached_url = std::get<0>(it->first).GetURL();
-    if (network::DoesUrlMatchFilter(url_filter->type, origins, domains,
-                                    cached_url)) {
+    if (net::DoesUrlMatchFilter(url_filter_type, origins, domains,
+                                cached_url)) {
       cache_.erase(it);
     }
     it = next_it;
@@ -187,12 +187,9 @@ size_t PreflightCache::CountEntriesForTesting() const {
 bool PreflightCache::DoesEntryExistForTesting(
     const url::Origin& origin,
     const std::string& url,
-    const net::NetworkIsolationKey& network_isolation_key,
-    mojom::IPAddressSpace target_ip_address_space) {
-  std::tuple<url::Origin, std::string, net::NetworkIsolationKey,
-             mojom::IPAddressSpace>
-      entry_key = std::make_tuple(origin, url, network_isolation_key,
-                                  target_ip_address_space);
+    const net::NetworkIsolationKey& network_isolation_key) {
+  std::tuple<url::Origin, std::string, net::NetworkIsolationKey> entry_key =
+      std::make_tuple(origin, url, network_isolation_key);
   return cache_.find(entry_key) != cache_.end();
 }
 

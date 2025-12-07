@@ -31,7 +31,7 @@ COMPONENT_EXPORT(UI_BASE) std::string GetBitmapDataUrl(const SkBitmap& bitmap);
 
 // Convenience routine to convert an in-memory PNG to a data url for WebUI use.
 COMPONENT_EXPORT(UI_BASE)
-std::string GetPngDataUrl(const unsigned char* data, size_t size);
+std::string GetPngDataUrl(base::span<const uint8_t> data);
 
 // Extracts a disposition from click event arguments. |args| should contain
 // an integer button and booleans alt key, ctrl key, meta key, and shift key

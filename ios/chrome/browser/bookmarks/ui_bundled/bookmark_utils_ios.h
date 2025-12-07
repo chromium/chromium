@@ -20,9 +20,9 @@
 
 class AuthenticationService;
 enum class BookmarkStorageType;
-class ChromeBrowserState;
 class GURL;
-@class MDCSnackbarMessage;
+@class SnackbarMessage;
+class ProfileIOS;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -80,44 +80,44 @@ bool UpdateBookmark(const bookmarks::BookmarkNode* node,
 // undo the performed action. Returns nil if there's nothing to undo.
 // TODO(crbug.com/40137712): Refactor to include position and replace two
 // functions below.
-MDCSnackbarMessage* UpdateBookmarkWithUndoToast(
+SnackbarMessage* UpdateBookmarkWithUndoSnackbar(
     const bookmarks::BookmarkNode* node,
     NSString* title,
     const GURL& url,
     const bookmarks::BookmarkNode* original_folder,
     const bookmarks::BookmarkNode* folder,
     bookmarks::BookmarkModel* model,
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
     base::WeakPtr<AuthenticationService> authenticationService,
     raw_ptr<syncer::SyncService> syncService);
 
 // Creates a new bookmark with `title`, `url`, at `position` under parent
 // `folder`. Returns a snackbar with an undo action. Returns nil if operation
 // failed or there's nothing to undo.
-MDCSnackbarMessage* CreateBookmarkAtPositionWithUndoToast(
+SnackbarMessage* CreateBookmarkAtPositionWithUndoSnackbar(
     NSString* title,
     const GURL& url,
     const bookmarks::BookmarkNode* folder,
     int position,
     bookmarks::BookmarkModel* model,
-    ChromeBrowserState* browser_state);
+    ProfileIOS* profile);
 
 // Updates a bookmark node position, and returns a snackbar with an undo action.
 // Returns nil if the operation wasn't successful or there's nothing to undo.
-MDCSnackbarMessage* UpdateBookmarkPositionWithUndoToast(
+SnackbarMessage* UpdateBookmarkPositionWithUndoSnackbar(
     const bookmarks::BookmarkNode* node,
     const bookmarks::BookmarkNode* folder,
     size_t position,
     bookmarks::BookmarkModel* model,
-    ChromeBrowserState* browser_state);
+    ProfileIOS* profile);
 
 // Deletes all nodes in `bookmarks` from `bookmark_model` and returns a snackbar
 // with an undo action. Returns nil if the operation wasn't successful or
 // there's nothing to undo.
-MDCSnackbarMessage* DeleteBookmarksWithUndoToast(
+SnackbarMessage* DeleteBookmarksWithUndoSnackbar(
     const std::set<const bookmarks::BookmarkNode*>& bookmarks,
     bookmarks::BookmarkModel* bookmark_model,
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
     const base::Location& location);
 
 // Deletes all nodes in `bookmarks`.
@@ -128,11 +128,11 @@ void DeleteBookmarks(const std::set<const bookmarks::BookmarkNode*>& bookmarks,
 // Move all `bookmarks_to_move` to the given `folder`, and returns a snackbar
 // with an undo action. Returns nil if the operation wasn't successful or
 // there's nothing to undo.
-MDCSnackbarMessage* MoveBookmarksWithUndoToast(
+SnackbarMessage* MoveBookmarksWithUndoSnackbar(
     const std::vector<const bookmarks::BookmarkNode*>& bookmarks_to_move,
     bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* destination_folder,
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
     base::WeakPtr<AuthenticationService> authenticationService,
     raw_ptr<syncer::SyncService> syncService);
 
@@ -144,9 +144,6 @@ bool MoveBookmarks(
     bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* destination_folder);
 
-// Category name for all bookmarks related snackbars.
-extern NSString* const kBookmarksSnackbarCategory;
-
 // Sorts a vector full of folders by title.
 void SortFolders(NodeVector* vector);
 
@@ -154,9 +151,12 @@ void SortFolders(NodeVector* vector);
 // all their descendant folders, except for those included in `obstructions`
 // which are excluded, as well as their descendants. The returned list is
 // sorted depth-first, then alphabetically.
-NodeVector VisibleNonDescendantNodes(const NodeSet& obstructions,
-                                     const bookmarks::BookmarkModel* model,
-                                     BookmarkStorageType type);
+// `search_terms` can be used to filter results.
+NodeVector VisibleNonDescendantNodes(
+    const NodeSet& obstructions,
+    const bookmarks::BookmarkModel* model,
+    BookmarkStorageType type,
+    const std::vector<std::u16string>& search_terms = {});
 
 // Whether `vector1` contains only elements of `vector2` in the same order.
 BOOL IsSubvectorOfNodes(const NodeVector& vector1, const NodeVector& vector2);

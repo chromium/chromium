@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Verify frame gets early messages if setting synchronously message event listener
+  promise_test: Unhandled rejection with value: "with_iframe timed out"
+[FAIL] Verify frame does not get all messages if not setting event listener early
+  promise_test: Unhandled rejection with value: "with_iframe timed out"
+[FAIL] Verify frame does get messages in order
+  promise_test: Unhandled rejection with value: "with_iframe timed out"
+Harness: the test ran to completion.
+

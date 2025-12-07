@@ -22,14 +22,14 @@
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
-#include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager_test_utils.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager_test_utils.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -68,7 +68,8 @@ scoped_refptr<AutofillWebDataService> GetWebDataService(int index) {
       test()->GetProfile(index), ServiceAccessType::EXPLICIT_ACCESS);
 }
 
-void WaitForCurrentTasksToComplete(base::SequencedTaskRunner* task_runner) {
+void WaitForCurrentTasksToComplete(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
   base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
                             base::WaitableEvent::InitialState::NOT_SIGNALED);
   task_runner->PostTask(FROM_HERE, base::BindOnce(&base::WaitableEvent::Signal,
@@ -216,7 +217,7 @@ AutofillProfile CreateAutofillProfile(ProfileType type) {
 }
 
 AutofillProfile CreateUniqueAutofillProfile() {
-  AutofillProfile profile(AddressCountryCode("US"));
+  AutofillProfile profile(autofill::AddressCountryCode("US"));
   autofill::test::SetProfileInfoWithGuid(
       &profile, base::Uuid::GenerateRandomV4().AsLowercaseString().c_str(),
       "First", "Middle", "Last", "email@domain.tld", "Company", "123 Main St",
@@ -304,7 +305,7 @@ void AddProfile(int profile, const AutofillProfile& autofill_profile) {
 void RemoveProfile(int profile, const std::string& guid) {
   PersonalDataManager* pdm = GetPersonalDataManager(profile);
   autofill::PersonalDataChangedWaiter waiter(*pdm);
-  pdm->RemoveByGUID(guid);
+  pdm->address_data_manager().RemoveProfile(guid);
   std::move(waiter).Wait();
 }
 
@@ -406,8 +407,7 @@ AutofillProfileChecker::~AutofillProfileChecker() {
       ->address_data_manager()
       .RemoveObserver(this);
 }
-bool AutofillProfileChecker::Wait() {
-  DLOG(WARNING) << "AutofillProfileChecker::Wait() started";
+void AutofillProfileChecker::WillStartWaiting() {
   PersonalDataManager* pdm_a =
       autofill_helper::GetPersonalDataManager(profile_a_);
   PersonalDataManager* pdm_b =
@@ -427,9 +427,6 @@ bool AutofillProfileChecker::Wait() {
   WaitForCurrentTasksToComplete(
       GetWebDataService(profile_b_)->GetDBTaskRunner());
   std::move(waiter_b).Wait();
-
-  DLOG(WARNING) << "AutofillProfileChecker::Wait() completed";
-  return StatusChangeChecker::Wait();
 }
 
 bool AutofillProfileChecker::IsExitConditionSatisfied(std::ostream* os) {

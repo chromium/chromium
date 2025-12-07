@@ -10,6 +10,8 @@
 #include "base/functional/callback_helpers.h"
 #include "chrome/install_static/install_details.h"
 
+class ScopedLogGrabber;
+
 namespace os_crypt {
 
 namespace switches {
@@ -26,8 +28,13 @@ extern const char kAppBoundTestOutputFilename[];
 class FakeInstallDetails : public install_static::PrimaryInstallDetails {
  public:
   // Copy template from first mode from install modes. Some of the values will
-  // then be overridden.
-  FakeInstallDetails();
+  // then be overridden. If `use_old_elevator_interface` is true then the
+  // IElevator interface will be used otherwise IElevator2 will be used.
+  // Production code uses IElevator2 so IElevator compatibility is only used to
+  // verify interface compatibility for tests.
+  // TODO(crbug.com/383157189): Remove the test calls to IElevator once
+  // IElevator2 has shipped to stable for a few milestones.
+  explicit FakeInstallDetails(bool use_old_elevator_interface = false);
 
   FakeInstallDetails(const FakeInstallDetails&) = delete;
   FakeInstallDetails& operator=(const FakeInstallDetails&) = delete;
@@ -38,8 +45,13 @@ class FakeInstallDetails : public install_static::PrimaryInstallDetails {
 
 // Install the elevation service corresponding to the set of install details for
 // the current process, returns a closure that will uninstall the service when
-// it goes out of scope.
-[[nodiscard]] std::optional<base::ScopedClosureRunner> InstallService();
+// it goes out of scope. Logs from the service will be spooled to the passed
+// `log_grabber` which should outlive the lifetime of the service. If
+// `fake_reencrypt` is true then the elevation service will signal that returned
+// data should be re-encrypted by the client if a DecryptData call is made.
+[[nodiscard]] std::optional<base::ScopedClosureRunner> InstallService(
+    const ScopedLogGrabber& log_grabber,
+    bool fake_reencrypt = false);
 
 }  // namespace os_crypt
 

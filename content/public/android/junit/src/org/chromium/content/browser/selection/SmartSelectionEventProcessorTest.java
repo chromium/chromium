@@ -49,7 +49,7 @@ public class SmartSelectionEventProcessorTest {
 
     // Char index (in 10s)
     // Word index (thou)
-    private static String sText =
+    private static final String sText =
             ""
                     // 0         1         2         3         4
                     // -7-6  -5-4   -3-2        -1   0    1    2

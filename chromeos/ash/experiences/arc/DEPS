@@ -1,0 +1,35 @@
+include_rules = [
+  # Allows to include files in the directory.
+  "+chromeos/ash/experiences/arc",
+
+  "+ash/game_dashboard",
+  "+ash/public/cpp",
+  "+ash/strings",
+  "+ash/style",
+  "+components/guest_os",
+  "+components/exo",
+  "+components/keyed_service",
+  "+components/session_manager/core",
+  "+components/strings/grit",
+  "+components/user_prefs",
+  "+components/vector_icons",
+  "+content/public/browser",
+  "+mojo/core",
+]
+
+specific_include_rules = {
+  "arc_prefs.cc": [
+    "+components/metrics/daily_event.h",
+  ],
+  "arc_util.cc": [
+    "+ash/system/time",
+    "+components/user_manager/user_manager.h"
+  ],
+  ".*_unittest.cc": [
+    "+ash/test/ash_test_base.h",
+    "+components/user_manager",
+    "+components/user_prefs/test/test_browser_context_with_prefs.h",
+    "+content/public/test/browser_task_environment.h",
+  ],
+}
+

@@ -10,14 +10,15 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller.h"
 #include "chrome/browser/touch_to_fill/password_manager/no_passkeys/android/no_passkeys_bottom_sheet_bridge.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_view.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_view_factory.h"
-#include "ui/gfx/native_widget_types.h"
+#include "components/password_manager/core/browser/origin_credential_store.h"
+#include "components/password_manager/core/browser/passkey_credential.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace password_manager {
-class PasskeyCredential;
-class UiCredential;
 class KeyboardReplacingSurfaceVisibilityController;
 class ContentPasswordManagerDriver;
 }  // namespace password_manager
@@ -29,7 +30,7 @@ class WebAuthnCredManDelegate;
 class Profile;
 class TouchToFillControllerDelegate;
 
-class TouchToFillController final {
+class TouchToFillController {
  public:
   // Convenience enum for selecting the correct UI that this controller can
   // display.
@@ -40,23 +41,29 @@ class TouchToFillController final {
     kShowNoPasskeysSheet,
   };
 
-  explicit TouchToFillController(
+  TouchToFillController(
       Profile* profile,
       base::WeakPtr<
           password_manager::KeyboardReplacingSurfaceVisibilityController>
-          visibility_controller);
+          visibility_controller,
+      std::unique_ptr<AcknowledgeGroupedCredentialSheetController>
+          grouped_credential_sheet_controller);
   TouchToFillController(const TouchToFillController&) = delete;
   TouchToFillController& operator=(const TouchToFillController&) = delete;
-  ~TouchToFillController();
+  virtual ~TouchToFillController();
 
-  // Instructs the controller to show the provided |credentials| and
-  // |passkey_credentials| to the user.
-  bool Show(base::span<const password_manager::UiCredential> credentials,
-            base::span<password_manager::PasskeyCredential> passkey_credentials,
-            std::unique_ptr<TouchToFillControllerDelegate> ttf_delegate,
-            webauthn::WebAuthnCredManDelegate* cred_man_delegate,
-            base::WeakPtr<password_manager::ContentPasswordManagerDriver>
-                frame_driver);
+  // Sets the credentials that will be shown in the sheet. Also sets the
+  // `frame_driver` for which TTF is expected to be shown.
+  virtual void InitData(
+      std::vector<TouchToFillView::Credential> credentials,
+      base::WeakPtr<password_manager::ContentPasswordManagerDriver>
+          frame_driver);
+
+  // Instructs the controller to show the provided the bottom sheet.
+  // IMPORTANT: call `InitData` prior to this method to set |credentials| and
+  // |passkey_credentials|, that will be displayed.
+  virtual bool Show(std::unique_ptr<TouchToFillControllerDelegate> ttf_delegate,
+                    webauthn::WebAuthnCredManDelegate* cred_man_delegate);
 
   // Informs the controller that the user has made a selection. Invokes both
   // FillSuggestion() and TouchToFillDismissed() on |driver_|. No-op if invoked
@@ -115,15 +122,18 @@ class TouchToFillController final {
 #endif
 
  private:
+  // Triggered upon user confirmation to fill a grouped credential.
+  void OnAcknowledgementBeforeFillingReceived(
+      const password_manager::UiCredential& credential,
+      AcknowledgeGroupedCredentialSheetBridge::DismissReason dismiss_reason);
+
   // Callback method for the delegate to signal that it has completed its
   // action and is no longer needed. This destroys the delegate.
   void ActionCompleted();
 
   // Helper method to select the display target.
   DisplayTarget GetResponsibleDisplayTarget(
-      base::span<const password_manager::UiCredential> credentials,
-      base::span<password_manager::PasskeyCredential> passkey_credentials)
-      const;
+      base::span<const TouchToFillView::Credential> credentials) const;
 
   // Delegate for interacting with the client that owns this controller.
   // It is provided when Show() is called, and reset when the view is
@@ -143,6 +153,14 @@ class TouchToFillController final {
 
   base::WeakPtr<password_manager::KeyboardReplacingSurfaceVisibilityController>
       visibility_controller_;
+
+  // Used to show the sheet to ask additional user verification before filling
+  // credential with the grouped match type.
+  std::unique_ptr<AcknowledgeGroupedCredentialSheetController>
+      grouped_credential_sheet_controller_;
+
+  std::vector<TouchToFillView::Credential> credentials_;
+  base::WeakPtr<password_manager::ContentPasswordManagerDriver> frame_driver_;
 
   base::WeakPtrFactory<TouchToFillController> weak_ptr_factory_{this};
 };

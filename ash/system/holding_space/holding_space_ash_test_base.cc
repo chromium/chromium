@@ -87,9 +87,7 @@ void HoldingSpaceAshTestBase::SetUp() {
   AshTestBase::SetUp();
 
   // Add and activate a new user.
-  AccountId account_id = AccountId::FromUserEmail(kTestUser);
-  GetSessionControllerClient()->AddUserSession(kTestUser);
-  GetSessionControllerClient()->SwitchActiveUser(account_id);
+  AccountId account_id = SimulateUserLogin({kTestUser});
 
   // Mark the holding space feature as being available to the user.
   holding_space_prefs::MarkTimeOfFirstAvailability(

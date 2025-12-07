@@ -6,12 +6,14 @@ package org.chromium.chrome.browser.ui.fast_checkout.detail_screen;
 
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 
 /** The properties of a footer item on one of the FastCheckout detail screens. */
+@NullMarked
 public class FooterItemProperties {
     /** The resource id of the string to be shown on the footer label. */
     public static final ReadableIntPropertyKey LABEL = new ReadableIntPropertyKey("label");

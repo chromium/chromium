@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -107,12 +108,14 @@ constexpr char16_t kPrintSettingsDeviceName[] = u"device";
 const PrintSettings::RequestedMedia kPrintSettingsRequestedMedia{
     /*size_microns=*/gfx::Size(/*width=*/215900, /*height=*/279400),
     /*vendor_id=*/"vendor"};
-const PageMargins kPrintSettingsCustomMarginsInPoints(/*header=*/10,
-                                                      /*footer=*/15,
-                                                      /*left=*/20,
-                                                      /*right=*/25,
-                                                      /*top=*/30,
-                                                      /*bottom=*/35);
+
+// Converted from points to microns (1 point = 352.7778 microns)
+const PageMargins kPrintSettingsCustomMarginsInMicrons(/*header=*/3528,
+                                                       /*footer=*/5292,
+                                                       /*left=*/7056,
+                                                       /*right=*/8819,
+                                                       /*top=*/10583,
+                                                       /*bottom=*/12347);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 PrintSettings::AdvancedSettings GenerateSampleAdvancedSettings() {
@@ -272,7 +275,7 @@ PrintSettings GenerateSamplePrintSettingsCustomMarginsWithParams(
   settings.set_rasterize_pdf(kPrintSettingsRasterizePdf2);
   settings.SetOrientation(kPrintSettingsLandscape2);
 
-  settings.SetCustomMargins(kPrintSettingsCustomMarginsInPoints);
+  settings.SetCustomMargins(kPrintSettingsCustomMarginsInMicrons);
 
 #if BUILDFLAG(IS_WIN)
   settings.set_printer_language_type(kPrintSettingsPrinterLanguageType2);
@@ -540,7 +543,7 @@ TEST(PrintingContextMojomTraitsTest,
 
   // Since `kPrintSettingsMarginType1` is not `kCustomMargins` then expect the
   // custom margins to be default values.
-  EXPECT_TRUE(PageMarginsEqual(output.requested_custom_margins_in_points(),
+  EXPECT_TRUE(PageMarginsEqual(output.requested_custom_margins_in_microns(),
                                PageMargins()));
 
   EXPECT_EQ(output.pages_per_sheet(), kPrintSettingsPagesPerSheet1);
@@ -594,8 +597,8 @@ TEST(PrintingContextMojomTraitsTest,
 #endif
 
   EXPECT_EQ(output.is_modifiable(), kPrintSettingsModifiable2);
-  EXPECT_TRUE(PageMarginsEqual(output.requested_custom_margins_in_points(),
-                               kPrintSettingsCustomMarginsInPoints));
+  EXPECT_TRUE(PageMarginsEqual(output.requested_custom_margins_in_microns(),
+                               kPrintSettingsCustomMarginsInMicrons));
   EXPECT_EQ(output.pages_per_sheet(), kPrintSettingsPagesPerSheet2);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -608,6 +611,40 @@ TEST(PrintingContextMojomTraitsTest,
   EXPECT_EQ(output.pin_value(), kPrintSettingsPinValue);
 #endif
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST(PrintingContextMojomTraitsTest,
+     TestSerializeAndDeserializePrintSettingsPrecomputedMargins) {
+  constexpr std::array<bool, 2> kApiPrintingMarginsAndScaleEnabled = {false,
+                                                                      true};
+  for (bool enabled : kApiPrintingMarginsAndScaleEnabled) {
+    base::test::ScopedFeatureList feature_list;
+    if (enabled) {
+      feature_list.InitAndEnableFeature(
+          printing::features::kApiPrintingMarginsAndScale);
+    } else {
+      feature_list.InitAndDisableFeature(
+          printing::features::kApiPrintingMarginsAndScale);
+    }
+
+    PrintSettings input = GenerateSamplePrintSettingsCustomMargins();
+    input.SetCustomMarginsForBackend(kPrintSettingsCustomMarginsInMicrons);
+    PrintSettings output;
+
+    if (enabled) {
+      EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::PrintSettings>(
+          input, output));
+      EXPECT_EQ(output.margin_type(),
+                mojom::MarginType::kPrecomputedMarginsForBackend);
+      EXPECT_EQ(output.requested_custom_margins_in_microns(),
+                kPrintSettingsCustomMarginsInMicrons);
+    } else {
+      EXPECT_EQ(output.margin_type(), mojom::MarginType::kDefaultMargins);
+      EXPECT_EQ(output.requested_custom_margins_in_microns(), PageMargins());
+    }
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST(PrintingContextMojomTraitsTest,
      TestSerializeAndDeserializePrintSettingsEmptyPageRanges) {

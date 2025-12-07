@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -16,13 +15,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/notifications/request_system_proxy_credentials_view.h"
 #include "chrome/browser/ash/notifications/system_proxy_notification.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/system_proxy/system_proxy_client.h"
@@ -32,6 +28,7 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/proxy/proxy_config_service_impl.h"
 #include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -46,7 +43,6 @@
 #include "net/http/http_util.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "ui/aura/window.h"
-#include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -69,7 +65,8 @@ class SystemProxyLoginHandler : public content::LoginDelegate {
   void AuthenticateWithCredentials(
       const std::string& username,
       const std::string& password,
-      LoginAuthRequiredCallback auth_required_callback) {
+      content::LoginDelegate::LoginAuthRequiredCallback
+          auth_required_callback) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&SystemProxyLoginHandler::InvokeWithCredentials,
@@ -80,7 +77,8 @@ class SystemProxyLoginHandler : public content::LoginDelegate {
  private:
   void InvokeWithCredentials(const std::string& username,
                              const std::string& password,
-                             LoginAuthRequiredCallback auth_required_callback) {
+                             content::LoginDelegate::LoginAuthRequiredCallback
+                                 auth_required_callback) {
     std::move(auth_required_callback)
         .Run(std::make_optional<net::AuthCredentials>(
             base::UTF8ToUTF16(username), base::UTF8ToUTF16(password)));
@@ -497,7 +495,7 @@ bool SystemProxyManager::CanUsePolicyCredentials(
 }
 
 std::unique_ptr<content::LoginDelegate> SystemProxyManager::CreateLoginDelegate(
-    LoginAuthRequiredCallback auth_required_callback) {
+    content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback) {
   auto login_delegate = std::make_unique<SystemProxyLoginHandler>();
   login_delegate->AuthenticateWithCredentials(
       system_services_username_, system_services_password_,

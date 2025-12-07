@@ -30,7 +30,8 @@ Manifest::ShortcutItem::~ShortcutItem() = default;
 bool Manifest::ShortcutItem::operator==(const ShortcutItem& other) const {
   auto AsTuple = [](const auto& item) {
     return std::tie(item.name, item.short_name, item.description, item.url,
-                    item.icons);
+                    item.icons, item.icons_localized, item.name_localized,
+                    item.short_name_localized, item.description_localized);
   };
   return AsTuple(*this) == AsTuple(other);
 }
@@ -77,20 +78,28 @@ bool Manifest::RelatedApplication::operator==(
   return AsTuple(*this) == AsTuple(other);
 }
 
-Manifest::LaunchHandler::LaunchHandler() : client_mode(ClientMode::kAuto) {}
-Manifest::LaunchHandler::LaunchHandler(ClientMode client_mode)
-    : client_mode(client_mode) {}
+Manifest::LaunchHandler::LaunchHandler() = default;
 
-bool Manifest::LaunchHandler::operator==(const LaunchHandler& other) const {
-  return client_mode == other.client_mode;
+Manifest::LaunchHandler::LaunchHandler(std::optional<ClientMode> client_mode)
+    : client_mode_(client_mode) {}
+
+// See https://wicg.github.io/web-app-launch/#dfn-process-the-client_mode-member
+// for more details.
+Manifest::LaunchHandler::ClientMode
+Manifest::LaunchHandler::parsed_client_mode() const {
+  return client_mode_.value_or(Manifest::LaunchHandler::ClientMode::kAuto);
 }
 
-bool Manifest::LaunchHandler::operator!=(const LaunchHandler& other) const {
-  return !(*this == other);
+bool Manifest::LaunchHandler::client_mode_valid_and_specified() const {
+  return client_mode_.has_value();
+}
+
+bool Manifest::LaunchHandler::operator==(const LaunchHandler& other) const {
+  return parsed_client_mode() == other.parsed_client_mode();
 }
 
 bool Manifest::LaunchHandler::TargetsExistingClients() const {
-  switch (client_mode) {
+  switch (parsed_client_mode()) {
     case ClientMode::kAuto:
     case ClientMode::kNavigateNew:
       return false;
@@ -101,7 +110,7 @@ bool Manifest::LaunchHandler::TargetsExistingClients() const {
 }
 
 bool Manifest::LaunchHandler::NeverNavigateExistingClients() const {
-  switch (client_mode) {
+  switch (parsed_client_mode()) {
     case ClientMode::kAuto:
     case ClientMode::kNavigateNew:
     case ClientMode::kNavigateExisting:

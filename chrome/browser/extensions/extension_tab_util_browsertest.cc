@@ -2,38 +2,188 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/metrics/histogram_tester.h"
-#include "build/build_config.h"
-#include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+
+#include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
+#include "chrome/browser/extensions/chrome_extensions_browser_client.h"
+#include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "components/data_sharing/public/features.h"
+#include "components/saved_tab_groups/public/features.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/sessions/core/session_id.h"
+#include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/ui_test_utils.h"
+#endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
 namespace {
 
-const GURL& GetActiveUrl(Browser* browser) {
-  return browser->tab_strip_model()
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+const GURL& GetActiveUrl(BrowserWindowInterface* browser) {
+  return browser->GetTabStripModel()
       ->GetActiveWebContents()
       ->GetLastCommittedURL();
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
 
 using ExtensionTabUtilBrowserTest = ExtensionBrowserTest;
 
+IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, ForEachTab) {
+  // Browser tests start with 1 tab.
+  EXPECT_EQ(GetTabCount(), 1);
+  // ForEachTab should always supply a non-null WebContents.
+  int count = 0;
+  ExtensionTabUtil::ForEachTab(
+      base::BindLambdaForTesting([&count](content::WebContents* contents) {
+        EXPECT_TRUE(contents) << count;
+        ++count;
+      }));
+  EXPECT_EQ(count, 1);
+}
+
+// Regression test for a crash on Android in ClearBackForwardCache caused by an
+// extension that uses redirects. crbug.com/419143076
+IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
+                       ClearBackForwardCache_NoCrash) {
+  base::RunLoop run_loop;
+  ChromeExtensionsBrowserClient* client =
+      static_cast<ChromeExtensionsBrowserClient*>(
+          ExtensionsBrowserClient::Get());
+  client->set_on_clear_back_forward_cache_for_test(run_loop.QuitClosure());
+  ASSERT_TRUE(InstallExtensionFromWebstore(
+      test_data_dir_.AppendASCII("crash_on_clear_back_forward_cache"),
+      std::nullopt));
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, GetTabById) {
+  // Browser tests start with 1 tab open.
+  content::WebContents* active_contents = GetActiveWebContents();
+  ASSERT_TRUE(active_contents);
+
+  // Get the ID for the active tab.
+  int tab_id = ExtensionTabUtil::GetTabId(active_contents);
+  ASSERT_NE(tab_id, SessionID::InvalidValue().id());
+
+  // Look up the web contents by ID. It should match the active contents.
+  content::WebContents* found_contents = nullptr;
+  EXPECT_TRUE(ExtensionTabUtil::GetTabById(
+      tab_id, profile(), /*include_incognito=*/true, &found_contents));
+  EXPECT_EQ(found_contents, active_contents);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
+                       OpenOptionsPageFromWebContents) {
+  // Load an extension with an options page that opens in a tab.
+  const Extension* options_in_tab =
+      LoadExtension(test_data_dir_.AppendASCII("options_page"));
+  ASSERT_TRUE(options_in_tab);
+  ASSERT_TRUE(OptionsPageInfo::HasOptionsPage(options_in_tab));
+
+  content::WebContents* active_contents = GetActiveWebContents();
+  ASSERT_TRUE(active_contents);
+
+  EXPECT_TRUE(ExtensionTabUtil::OpenOptionsPageFromWebContents(
+      options_in_tab, active_contents));
+
+  EXPECT_EQ(GetActiveWebContents()->GetURL(),
+            OptionsPageInfo::GetOptionsPage(options_in_tab));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
+                       OpenOptionsPageFromWebContentsInView) {
+  // Load an extension with an options page that opens in the
+  // chrome://extensions page in a view.
+  const Extension* options_in_view =
+      LoadExtension(test_data_dir_.AppendASCII("options_page_in_view"));
+  ASSERT_TRUE(options_in_view);
+  ASSERT_TRUE(OptionsPageInfo::HasOptionsPage(options_in_view));
+
+  content::WebContents* active_contents = GetActiveWebContents();
+  ASSERT_TRUE(active_contents);
+
+  EXPECT_TRUE(ExtensionTabUtil::OpenOptionsPageFromWebContents(
+      options_in_view, active_contents));
+
+  GURL expected_url;
+#if BUILDFLAG(IS_ANDROID)
+  expected_url = OptionsPageInfo::GetOptionsPage(options_in_view);
+#else
+  expected_url = GURL("chrome://extensions?options=" + options_in_view->id());
+#endif
+
+  EXPECT_EQ(GetActiveWebContents()->GetURL(), expected_url);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, NavigateToURLNormal) {
+  content::WebContents* web_contents = GetActiveWebContents();
+
+  int initial_tab_count = GetTabCount();
+  ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::CURRENT_TAB,
+                                  web_contents, GURL("chrome://version"));
+  EXPECT_EQ(initial_tab_count, GetTabCount());
+  auto url1 = GetActiveWebContents()->GetURL();
+  EXPECT_THAT(url1, GURL("chrome://version"));
+
+  ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                  web_contents, GURL("chrome://history"));
+
+  EXPECT_EQ(initial_tab_count + 1, GetTabCount());
+  auto url2 = GetActiveWebContents()->GetURL();
+  EXPECT_THAT(url2, GURL("chrome://history"));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, NavigateToURLCheckFailure) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  content::WebContents* web_contents = GetActiveWebContents();
+  ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::NEW_WINDOW,
+                                  web_contents, GURL("chrome://version"));
+  // After opening a new window, the last active browser should be the new
+  // one.
+  BrowserWindowInterface* const new_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  // Ensure it's not the same as the original browser.
+  ASSERT_NE(browser(), new_browser);
+  auto url = new_browser->GetTabStripModel()->GetActiveWebContents()->GetURL();
+  EXPECT_THAT(url, GURL("chrome://version"));
+#else
+  EXPECT_DEATH(ExtensionTabUtil::NavigateToURL(
+                   WindowOpenDisposition::NEW_WINDOW, GetActiveWebContents(),
+                   GURL("chrome://version")),
+               "");
+#endif
+}
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // TODO(crbug.com/41370170): Fix and re-enable.
 IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
                        DISABLED_OpenExtensionsOptionsPage) {
@@ -96,9 +246,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
 
   // If the user navigates to the options page e.g. by typing in the url, it
   // should not override the currently-open tab.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), options_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLInNewTab(options_url);
   EXPECT_EQ(4, browser()->tab_strip_model()->count());
   EXPECT_EQ(options_url, GetActiveUrl(browser()));
 
@@ -240,7 +388,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   // Start a regular browser window with two tabs, one that is non-options,
   // non-newtab and the other that is the options page.
   ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("http://www.google.com/")));
+      ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com/")));
   EXPECT_TRUE(
       ExtensionTabUtil::OpenOptionsPage(options_spanning_extension, browser()));
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
@@ -249,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   EXPECT_EQ(options_url, GetActiveUrl(browser()));
   // Switch to tab containing google.com such that it is the active tab.
   browser()->tab_strip_model()->SelectPreviousTab();
-  EXPECT_EQ(GURL("http://www.google.com/"), GetActiveUrl(browser()));
+  EXPECT_EQ(GURL("https://www.google.com/"), GetActiveUrl(browser()));
 
   // Spanning mode extensions can never open pages in incognito so a regular
   // (non-OTR) profile must be used. If the options page is already opened from
@@ -264,7 +412,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   // There should be two browser windows open, regular and incognito.
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   // Ensure that the regular browser is the foreground browser.
-  EXPECT_EQ(browser(), BrowserList::GetInstance()->GetLastActive());
+  EXPECT_EQ(browser(), GetLastActiveBrowserWindowInterfaceWithAnyProfile());
   // The options page in the regular window should be in focus instead of
   // the tab pointing to www.google.com.
   EXPECT_TRUE(content::WaitForLoadStop(
@@ -276,19 +424,18 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Start at the new tab page in incognito and open the extension options page.
+  auto browser_created_observer =
+      std::make_optional<ui_test_utils::BrowserCreatedObserver>();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito,
                                            GURL(chrome::kChromeUINewTabURL)));
   EXPECT_EQ(1, incognito->tab_strip_model()->count());
   EXPECT_TRUE(ExtensionTabUtil::OpenOptionsPageFromAPI(
       options_spanning_extension, profile()));
+  Browser* regular = browser_created_observer->Wait();
 
   // Opening the options page from an incognito window should open a new regular
   // profile window, which should have one tab open to the options page.
   ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
-  BrowserList* browser_list = BrowserList::GetInstance();
-  Browser* regular = !browser_list->get(0u)->profile()->IsOffTheRecord()
-                         ? browser_list->get(0u)
-                         : browser_list->get(1u);
   EXPECT_EQ(1, regular->tab_strip_model()->count());
   EXPECT_TRUE(content::WaitForLoadStop(
       regular->tab_strip_model()->GetActiveWebContents()));
@@ -301,6 +448,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   // Right-clicking on an extension action icon in the toolbar and selecting
   // options should open the options page in a regular window. In this case, the
   // profile is an OTR profile instead of a non-OTR profile, as described above.
+  browser_created_observer.emplace();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito,
                                            GURL(chrome::kChromeUINewTabURL)));
   EXPECT_EQ(1, incognito->tab_strip_model()->count());
@@ -309,14 +457,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   // OpenOptionsPage() version that takes a Browser* is used.
   EXPECT_TRUE(
       ExtensionTabUtil::OpenOptionsPage(options_spanning_extension, incognito));
+  regular = browser_created_observer->Wait();
   // There should be two browser windows open, regular and incognito.
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
-  browser_list = BrowserList::GetInstance();
-  regular = !browser_list->get(0u)->profile()->IsOffTheRecord()
-                ? browser_list->get(0u)
-                : browser_list->get(1u);
   // Ensure that the regular browser is the foreground browser.
-  EXPECT_EQ(regular, browser_list->GetLastActive());
+  EXPECT_EQ(regular, GetLastActiveBrowserWindowInterfaceWithAnyProfile());
   EXPECT_EQ(1, regular->tab_strip_model()->count());
   EXPECT_TRUE(content::WaitForLoadStop(
       regular->tab_strip_model()->GetActiveWebContents()));
@@ -356,5 +501,64 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, RecordNavigationScheme) {
                                        test_case.expected_bucket, 1);
   }
 }
+
+class SharedTabGroupExtensionsTabUtilTest : public ExtensionTabUtilBrowserTest {
+ public:
+  SharedTabGroupExtensionsTabUtilTest() {
+    feature_list_.InitWithFeatures(
+        {
+            data_sharing::features::kDataSharingFeature,
+        },
+        {});
+  }
+
+  SharedTabGroupExtensionsTabUtilTest(
+      const SharedTabGroupExtensionsTabUtilTest&) = delete;
+  SharedTabGroupExtensionsTabUtilTest& operator=(
+      const SharedTabGroupExtensionsTabUtilTest&) = delete;
+
+  void SetUp() override { ExtensionTabUtilBrowserTest ::SetUp(); }
+
+  // Adds tab navigated to |url| in the given |browser|.
+  tabs::TabInterface* AddTab(const GURL& url) {
+    return browser()->tab_strip_model()->GetTabForWebContents(
+        content::WebContents::FromRenderFrameHost(NavigateToURLInNewTab(url)));
+  }
+
+  tab_groups::TabGroupId CreateTabGroup() {
+    auto* tab_1 = AddTab(GURL("https://www.site1.com"));
+    auto* tab_2 = AddTab(GURL("https://www.site2.com"));
+
+    auto* tsm = browser()->tab_strip_model();
+
+    return tsm->AddToNewGroup(
+        {tsm->GetIndexOfTab(tab_1), tsm->GetIndexOfTab(tab_2)});
+  }
+
+  void ShareTabGroup(const tab_groups::TabGroupId& group_id,
+                     const syncer::CollaborationId& collaboration_id) {
+    tab_groups::TabGroupSyncService* service =
+        static_cast<tab_groups::TabGroupSyncService*>(
+            tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile()));
+    service->MakeTabGroupSharedForTesting(group_id, collaboration_id);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SharedTabGroupExtensionsTabUtilTest,
+                       GetSharedGroupState) {
+  auto group_id = CreateTabGroup();
+
+  EXPECT_FALSE(ExtensionTabUtil::GetSharedStateOfGroup(group_id));
+  EXPECT_FALSE(ExtensionTabUtil::CreateTabGroupObject(group_id)->shared);
+
+  ShareTabGroup(group_id, syncer::CollaborationId("share_id"));
+
+  EXPECT_TRUE(ExtensionTabUtil::GetSharedStateOfGroup(group_id));
+  EXPECT_TRUE(ExtensionTabUtil::CreateTabGroupObject(group_id)->shared);
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace extensions

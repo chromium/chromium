@@ -37,8 +37,6 @@ const char kListSharedCredentialsPath[] = "listSharedCredentials";
 const char kDusi[] = "dusi";
 const char kIdentityType[] = "identity_type";
 
-const char kNearbyPresenceOAthConsumerName[] = "nearby_presence_server_client";
-
 // Creates the full Nearby Presence v1 URL for endpoint to the API with
 // |request_path|.
 GURL CreateV1RequestUrl(const std::string& request_path) {
@@ -257,12 +255,9 @@ void NearbyPresenceServerClientImpl::MakeApiCall(
   request_url_ = request_url;
   error_callback_ = std::move(error_callback);
 
-  OAuth2AccessTokenManager::ScopeSet scopes;
-  scopes.insert(GaiaConstants::kNearbyPresenceOAuth2Scope);
-
   access_token_fetcher_ = std::make_unique<
       signin::PrimaryAccountAccessTokenFetcher>(
-      kNearbyPresenceOAthConsumerName, identity_manager_, scopes,
+      signin::OAuthConsumerId::kNearbyPresenceServerClient, identity_manager_,
       base::BindOnce(
           &NearbyPresenceServerClientImpl::OnAccessTokenFetched<ResponseProto>,
           weak_ptr_factory_.GetWeakPtr(), request_type, serialized_request,

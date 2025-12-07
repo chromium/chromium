@@ -206,6 +206,31 @@ class TopLevelMusicRecommendations {
       top_level_music_recommendations_;
 };
 
+// Artist reference object from the API response. For object details, check
+// below:
+//   https://developers.google.com/youtube/mediaconnect/reference/rest/v1/ArtistReference
+class ArtistReference {
+ public:
+  ArtistReference();
+  ArtistReference(const ArtistReference&) = delete;
+  ArtistReference& operator=(const ArtistReference&) = delete;
+  ~ArtistReference();
+
+  static void RegisterJSONConverter(
+      base::JSONValueConverter<ArtistReference>* converter);
+
+  static std::unique_ptr<ArtistReference> CreateFrom(const base::Value& value);
+
+  const std::string& artist() const { return artist_; }
+  const std::string& title() const { return title_; }
+
+  std::string ToString() const;
+
+ private:
+  std::string artist_;
+  std::string title_;
+};
+
 // Track object from the API response. For object details, check below:
 //   https://developers.google.com/youtube/mediaconnect/reference/rest/v1/tracks#Track
 class Track {
@@ -225,6 +250,13 @@ class Track {
   const std::string& explicit_type() const { return explicit_type_; }
   const std::vector<std::unique_ptr<Image>>& images() const { return images_; }
   std::vector<std::unique_ptr<Image>>* mutable_images() { return &images_; }
+  const std::vector<std::unique_ptr<ArtistReference>>& artist_references()
+      const {
+    return artist_references_;
+  }
+  std::vector<std::unique_ptr<ArtistReference>>* mutable_artist_references() {
+    return &artist_references_;
+  }
 
   std::string ToString() const;
 
@@ -234,6 +266,7 @@ class Track {
   std::string duration_;
   std::string explicit_type_;
   std::vector<std::unique_ptr<Image>> images_;
+  std::vector<std::unique_ptr<ArtistReference>> artist_references_;
 };
 
 // Queue item object from the API response. For object details, check below:

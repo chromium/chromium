@@ -55,8 +55,6 @@ CertStatus MapNetErrorToCertStatus(int error) {
       return CERT_STATUS_NAME_CONSTRAINT_VIOLATION;
     case ERR_CERT_VALIDITY_TOO_LONG:
       return CERT_STATUS_VALIDITY_TOO_LONG;
-    case ERR_CERT_SYMANTEC_LEGACY:
-      return CERT_STATUS_SYMANTEC_LEGACY;
     case ERR_CERT_KNOWN_INTERCEPTION_BLOCKED:
       return (CERT_STATUS_KNOWN_INTERCEPTION_BLOCKED | CERT_STATUS_REVOKED);
     default:
@@ -147,6 +145,17 @@ int MockCertVerifier::Verify(const RequestParams& params,
   request->ReturnResultLater(rv, result);
   *out_req = std::move(request);
   return ERR_IO_PENDING;
+}
+
+void MockCertVerifier::Verify2QwacBinding(
+    const std::string& binding,
+    const std::string& hostname,
+    const scoped_refptr<net::X509Certificate>& tls_cert,
+    base::OnceCallback<void(const scoped_refptr<net::X509Certificate>&)>
+        callback,
+    const net::NetLogWithSource& net_log) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), nullptr));
 }
 
 void MockCertVerifier::AddObserver(Observer* observer) {

@@ -24,8 +24,8 @@ For Googlers, more information available at [go/chrome-apk-size](https://goto.go
  * Sizes are collected by
    [//build/android/resource_sizes.py](https://cs.chromium.org/chromium/src/build/android/resource_sizes.py).
  * How to analyze Android binary size discussed in [apk_size_regressions.md#debugging-apk-size-increase](../apk_size_regressions.md#debugging-apk-size-increase).
- * Sizes for `ChromePublic.apk`, `ChromeModernPublic.apk`, `MonochromePublic.apk`, `SystemWebview.apk` are tracked.
-   * But only `MonochromePublic.apk` is actively monitored.
+ * Sizes for `ChromePublic.apk`, `ChromeModernPublic.apk`, `TrichromeChrome.aab`, `SystemWebview.apk` are tracked.
+   * But only `TrichromeChrome.aab` is actively monitored.
  * We care most about on-disk size (for users with small device storage)
    * But also care about patch size (so that browser updates get applied)
 
@@ -94,8 +94,3 @@ For Googlers, more information available at [go/chrome-apk-size](https://goto.go
  * [Telemetry Graph](https://chromeperf.appspot.com/report?sid=33f59871f4e9fa3d155be3c13a068d35e6e621bcc98d9b7b103e0c8485e21097)
  * Uncompressed size of classes.dex, locale .pak files, etc
  * Reported only for things that are compressed within the .apk
-
-## Metrics for LaCrOS
-
- * Sizes are collected by
-   [//build/lacros/lacros_resource_sizes.py](https://cs.chromium.org/chromium/src/build/lacros/lacros_resource_sizes.py).

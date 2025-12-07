@@ -124,7 +124,7 @@ void ArgumentSpec::InitializeType(const base::Value::Dict& dict) {
   else if (*type_string == "function")
     type_ = ArgumentType::FUNCTION;
   else
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 
   if (std::optional<int> minimum = dict.FindInt("minimum")) {
     minimum_ = *minimum;
@@ -323,8 +323,7 @@ bool ArgumentSpec::ParseArgument(v8::Local<v8::Context> context,
       return ParseArgumentToAny(context, value, out_value, v8_out_value, error);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 const std::string& ArgumentSpec::GetTypeName() const {
@@ -398,7 +397,7 @@ bool ArgumentSpec::ParseArgumentToFundamental(
       if (out_value)
         *out_value = std::make_unique<base::Value>(int_val);
       if (v8_out_value)
-        *v8_out_value = v8::Integer::New(context->GetIsolate(), int_val);
+        *v8_out_value = v8::Integer::New(v8::Isolate::GetCurrent(), int_val);
       return true;
     }
     case ArgumentType::DOUBLE: {
@@ -434,8 +433,8 @@ bool ArgumentSpec::ParseArgumentToFundamental(
       if (!enum_values_.empty() || out_value) {
         std::string str;
         // We already checked that this is a string, so this should never fail.
-        CHECK(gin::Converter<std::string>::FromV8(context->GetIsolate(), value,
-                                                  &str));
+        CHECK(gin::Converter<std::string>::FromV8(v8::Isolate::GetCurrent(),
+                                                  value, &str));
         if (!enum_values_.empty() && enum_values_.count(str) == 0) {
           *error = api_errors::InvalidEnumValue(enum_values_);
           return false;
@@ -462,9 +461,8 @@ bool ArgumentSpec::ParseArgumentToFundamental(
       return true;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return false;
 }
 
 bool ArgumentSpec::ParseArgumentToObject(
@@ -492,7 +490,8 @@ bool ArgumentSpec::ParseArgumentToObject(
   // and allow us to handle the other additional_properties_ cases. But first,
   // we need to track down all the instances that use it.
   bool convert_to_v8 = v8_out_value && !additional_properties_ && !instance_of_;
-  gin::DataObjectBuilder v8_result(context->GetIsolate());
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  gin::DataObjectBuilder v8_result(isolate);
 
   v8::Local<v8::Array> own_property_names;
   if (!object->GetOwnPropertyNames(context).ToLocal(&own_property_names)) {
@@ -515,7 +514,7 @@ bool ArgumentSpec::ParseArgumentToObject(
     // excluded by GetOwnPropertyNames()). If you try to set anything else
     // (e.g. an object), it is converted to a string.
     DCHECK(key->IsString() || key->IsNumber());
-    v8::String::Utf8Value utf8_key(context->GetIsolate(), key);
+    v8::String::Utf8Value utf8_key(isolate, key);
 
     ArgumentSpec* property_spec = nullptr;
     auto iter = properties_.find(*utf8_key);
@@ -614,14 +613,13 @@ bool ArgumentSpec::ParseArgumentToObject(
     v8::Local<v8::Value> next_check = object;
     do {
       v8::Local<v8::Object> current = next_check.As<v8::Object>();
-      v8::String::Utf8Value constructor(context->GetIsolate(),
-                                        current->GetConstructorName());
+      v8::String::Utf8Value constructor(isolate, current->GetConstructorName());
       if (*instance_of_ ==
           std::string_view(*constructor, constructor.length())) {
         found = true;
         break;
       }
-      next_check = current->GetPrototype();
+      next_check = current->GetPrototypeV2();
     } while (next_check->IsObject());
 
     if (!found) {
@@ -638,8 +636,7 @@ bool ArgumentSpec::ParseArgumentToObject(
       v8::Local<v8::Object> converted = v8_result.Build();
       // We set the object's prototype to Null() so that handlers avoid
       // triggering any tricky getters or setters on Object.prototype.
-      CHECK(converted->SetPrototype(context, v8::Null(context->GetIsolate()))
-                .ToChecked());
+      CHECK(converted->SetPrototypeV2(context, v8::Null(isolate)).ToChecked());
       *v8_out_value = converted;
     } else {
       *v8_out_value = object;
@@ -671,7 +668,7 @@ bool ArgumentSpec::ParseArgumentToArray(v8::Local<v8::Context> context,
   base::Value::List result;
   v8::Local<v8::Array> v8_result;
   if (v8_out_value)
-    v8_result = v8::Array::New(context->GetIsolate(), length);
+    v8_result = v8::Array::New(v8::Isolate::GetCurrent(), length);
 
   std::string item_error;
   for (uint32_t i = 0; i < length; ++i) {
@@ -761,7 +758,7 @@ bool ArgumentSpec::ParseArgumentToFunction(
       }
       std::string str;
       // If ToLocal() succeeds, this should always be a string.
-      CHECK(gin::Converter<std::string>::FromV8(context->GetIsolate(),
+      CHECK(gin::Converter<std::string>::FromV8(v8::Isolate::GetCurrent(),
                                                 serialized_function, &str));
       *out_value = std::make_unique<base::Value>(std::move(str));
     } else {  // Not a serializable function.

@@ -130,7 +130,7 @@ class PopupPageLoadMetricsWaiterInitializer : public TabStripModelObserver {
 class DownloadFramePolicyBrowserTest
     : public subresource_filter::SubresourceFilterBrowserTest {
  public:
-  ~DownloadFramePolicyBrowserTest() override {}
+  ~DownloadFramePolicyBrowserTest() override = default;
 
   // Override embedded_test_server() with a variant that uses HTTPS to avoid
   // insecure download warnings.

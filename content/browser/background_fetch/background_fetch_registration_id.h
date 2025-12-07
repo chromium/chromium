@@ -39,10 +39,10 @@ class CONTENT_EXPORT BackgroundFetchRegistrationId {
 
   // Return whether the |other| registration id are identical or different.
   bool operator==(const BackgroundFetchRegistrationId& other) const;
-  bool operator!=(const BackgroundFetchRegistrationId& other) const;
 
   // Enables this type to be used in an std::map and std::set.
-  bool operator<(const BackgroundFetchRegistrationId& other) const;
+  std::weak_ordering operator<=>(
+      const BackgroundFetchRegistrationId& other) const;
 
   // Returns whether this registration id refers to valid data.
   bool is_null() const;

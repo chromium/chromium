@@ -10,8 +10,6 @@
 
 namespace blink {
 
-class ExceptionState;
-
 namespace bindings {
 
 // SyncIteratorBase is the common base class of all sync iterator classes.
@@ -37,16 +35,14 @@ class PLATFORM_EXPORT SyncIteratorBase : public ScriptWrappable {
     IterationSourceBase& operator=(const IterationSourceBase&) = delete;
 
     virtual v8::Local<v8::Object> Next(ScriptState* script_state,
-                                       Kind kind,
-                                       ExceptionState& exception_state) = 0;
+                                       Kind kind) = 0;
 
     virtual void Trace(Visitor* visitor) const {}
   };
 
   ~SyncIteratorBase() override = default;
 
-  v8::Local<v8::Object> next(ScriptState* script_state,
-                             ExceptionState& exception_state);
+  v8::Local<v8::Object> next(ScriptState* script_state);
 
   void Trace(Visitor* visitor) const override;
 

@@ -13,6 +13,7 @@
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_constants.h"
@@ -22,16 +23,22 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/features.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+
+using endpoint_fetcher::EndpointFetcher;
+using endpoint_fetcher::EndpointResponse;
+using endpoint_fetcher::FetchErrorType;
 
 namespace media_router {
 
@@ -114,8 +121,8 @@ void AccessCodeCastDiscoveryInterface::ReportErrorViaCallback(
 }
 
 AddSinkResultCode AccessCodeCastDiscoveryInterface::GetErrorFromResponse(
-    const base::Value& response) {
-  const base::Value::Dict* error = response.GetDict().FindDict(kJsonError);
+    const base::Value::Dict& response) {
+  const base::Value::Dict* error = response.FindDict(kJsonError);
   if (!error) {
     return AddSinkResultCode::OK;
   }
@@ -137,7 +144,7 @@ AddSinkResultCode AccessCodeCastDiscoveryInterface::GetErrorFromResponse(
   switch (*http_code) {
     // 401
     case net::HTTP_UNAUTHORIZED:
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     // 403
     case net::HTTP_FORBIDDEN:
       return AddSinkResultCode::AUTH_ERROR;
@@ -148,14 +155,14 @@ AddSinkResultCode AccessCodeCastDiscoveryInterface::GetErrorFromResponse(
 
     // 408
     case net::HTTP_REQUEST_TIMEOUT:
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     // 502
     case net::HTTP_GATEWAY_TIMEOUT:
       return AddSinkResultCode::SERVER_ERROR;
 
     // 412
     case net::HTTP_PRECONDITION_FAILED:
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     // 417
     case net::HTTP_EXPECTATION_FAILED:
       return AddSinkResultCode::INVALID_ACCESS_CODE;
@@ -173,18 +180,15 @@ AddSinkResultCode AccessCodeCastDiscoveryInterface::GetErrorFromResponse(
       return AddSinkResultCode::SERVICE_NOT_PRESENT;
 
     case net::HTTP_OK:
-      NOTREACHED_IN_MIGRATION();
-      ABSL_FALLTHROUGH_INTENDED;
+      NOTREACHED();
     default:
       return AddSinkResultCode::HTTP_RESPONSE_CODE_ERROR;
   }
 }
 
-// TODO(b/206997996): Add an enum to the EndpointResponse struct so that we can
-// check the enum instead of the string
 AddSinkResultCode AccessCodeCastDiscoveryInterface::IsResponseValid(
-    const std::optional<base::Value>& response) {
-  if (!response || !response->is_dict()) {
+    const std::optional<base::Value::Dict>& response) {
+  if (!response) {
     logger_->LogError(
         mojom::LogCategory::kDiscovery, kLoggerComponent,
         "The response body from the server was of unexpected format.", "", "",
@@ -192,7 +196,7 @@ AddSinkResultCode AccessCodeCastDiscoveryInterface::IsResponseValid(
     return AddSinkResultCode::RESPONSE_MALFORMED;
   }
 
-  if (response->GetDict().empty()) {
+  if (response->empty()) {
     logger_->LogError(mojom::LogCategory::kDiscovery, kLoggerComponent,
                       "The response from the server does not have a value. "
                       "Server response is: " +
@@ -241,18 +245,26 @@ AccessCodeCastDiscoveryInterface::CreateEndpointFetcher(
     const std::string& access_code) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  std::vector<std::string> discovery_scopes;
-  discovery_scopes.push_back(kDiscoveryOAuth2Scope);
-
   // TODO(crbug.com/40067771): ConsentLevel::kSync is deprecated and should be
   //     removed. See ConsentLevel::kSync documentation for details.
+  const signin::ConsentLevel consent_level =
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+          ? signin::ConsentLevel::kSignin
+          : signin::ConsentLevel::kSync;
   return std::make_unique<EndpointFetcher>(
       profile_->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
-      kDiscoveryOAuthConsumerName,
-      GURL(base::StrCat({GetDiscoveryUrl(), "/", access_code})), kGetMethod,
-      kContentType, discovery_scopes, kTimeout, kEmptyPostData,
-      kTrafficAnnotation, identity_manager_, signin::ConsentLevel::kSync);
+      identity_manager_,
+      EndpointFetcher::RequestParams::Builder(
+          endpoint_fetcher::HttpMethod::kGet, kTrafficAnnotation)
+          .SetAuthType(endpoint_fetcher::OAUTH)
+          .SetOAuthConsumerId(signin::OAuthConsumerId::kAccessCodeCastDiscovery)
+          .SetConsentLevel(consent_level)
+          .SetContentType(kContentType)
+          .SetTimeout(kTimeout)
+          .SetUrl(GURL(base::StrCat({GetDiscoveryUrl(), "/", access_code})))
+          .SetPostData(kEmptyPostData)
+          .Build());
 }
 
 void AccessCodeCastDiscoveryInterface::ValidateDiscoveryAccessCode(
@@ -285,8 +297,8 @@ void AccessCodeCastDiscoveryInterface::HandleServerResponse(
     return;
   }
 
-  std::optional<base::Value> response_value =
-      base::JSONReader::Read(response->response);
+  std::optional<base::Value::Dict> response_value = base::JSONReader::ReadDict(
+      response->response, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   AddSinkResultCode result_code = IsResponseValid(response_value);
   if (result_code != AddSinkResultCode::OK) {
@@ -299,7 +311,7 @@ void AccessCodeCastDiscoveryInterface::HandleServerResponse(
 
   std::pair<std::optional<DiscoveryDevice>, AddSinkResultCode>
       construction_result =
-          ConstructDiscoveryDeviceFromJson(std::move(response_value.value()));
+          ConstructDiscoveryDeviceFromJson(std::move(*response_value));
   std::move(callback_).Run(construction_result.first,
                            construction_result.second);
 }
@@ -359,10 +371,10 @@ void AccessCodeCastDiscoveryInterface::HandleServerError(
 std::pair<std::optional<AccessCodeCastDiscoveryInterface::DiscoveryDevice>,
           AccessCodeCastDiscoveryInterface::AddSinkResultCode>
 AccessCodeCastDiscoveryInterface::ConstructDiscoveryDeviceFromJson(
-    base::Value json_response) {
+    base::Value::Dict json_response) {
   DiscoveryDevice discovery_device;
 
-  base::Value::Dict* device = json_response.GetDict().FindDict(kJsonDevice);
+  base::Value::Dict* device = json_response.FindDict(kJsonDevice);
   if (!device) {
     return std::make_pair(std::nullopt, AddSinkResultCode::RESPONSE_MALFORMED);
   }

@@ -15,6 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "ui/base/resource/resource_bundle.h"
+#import "ui/menus/cocoa/menu_controller.h"
 
 class SkBitmap;
 
@@ -38,15 +39,15 @@ TEST_F(StatusIconMacTest, CreateMenu) {
 
   std::unique_ptr<StatusIconMac> icon = std::make_unique<StatusIconMac>();
   icon->UpdatePlatformContextMenu(model.get());
-  EXPECT_EQ(1, icon->item().menu.numberOfItems);
+  ASSERT_EQ(1, icon->item().menu.numberOfItems);
 
   NSMenuItem* menuItem = [icon->item().menu itemAtIndex:0];
   EXPECT_NSEQ(base::SysUTF16ToNSString(menu_title), menuItem.title);
 }
 
 TEST_F(StatusIconMacTest, MenuToolTip) {
-  // Create a menu and set a tool tip. Verify the tool tip is inserted as the
-  // first menu item.
+  // Create a menu and set a tool tip. Verify the tool tip is not inserted as
+  // the first menu item.
   const char16_t menu_title[] = u"Menu Title";
   const char16_t tool_tip[] = u"Tool tip";
   std::unique_ptr<StatusIconMenuModel> model =
@@ -56,10 +57,26 @@ TEST_F(StatusIconMacTest, MenuToolTip) {
   std::unique_ptr<StatusIconMac> icon = std::make_unique<StatusIconMac>();
   icon->UpdatePlatformContextMenu(model.get());
   icon->SetToolTip(tool_tip);
-  EXPECT_EQ(2, icon->item().menu.numberOfItems);
+  ASSERT_EQ(1, icon->item().menu.numberOfItems);
 
-  NSMenuItem* tool_tip_item = [icon->item().menu itemAtIndex:0];
-  EXPECT_NSEQ(base::SysUTF16ToNSString(tool_tip), tool_tip_item.title);
-  NSMenuItem* menu_item = [icon->item().menu itemAtIndex:1];
+  NSMenuItem* menu_item = [icon->item().menu itemAtIndex:0];
   EXPECT_NSEQ(base::SysUTF16ToNSString(menu_title), menu_item.title);
+}
+
+TEST_F(StatusIconMacTest, SecondaryClickMenuNoToolTip) {
+  // Create a status item with a secondary click menu and set a tool tip. Verify
+  // the tool tip is not inserted as the first menu item.
+  const char16_t menu_title[] = u"Menu Title";
+  const char16_t tool_tip[] = u"Tool tip";
+  std::unique_ptr<StatusIconMenuModel> model =
+      std::make_unique<StatusIconMenuModel>(nullptr);
+  model->AddItem(0, menu_title);
+
+  std::unique_ptr<StatusIconMac> icon = std::make_unique<StatusIconMac>();
+  icon->SetToolTip(tool_tip);
+  icon->SetOpenMenuWithSecondaryClick(true);
+  icon->SetContextMenu(std::move(model));
+  ASSERT_EQ(0, icon->menu_.menu.numberOfItems);
+
+  EXPECT_NSEQ(base::SysUTF16ToNSString(tool_tip), icon->item().button.toolTip);
 }

@@ -8,7 +8,7 @@
 #include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/tray_background_view_catalog.h"
-#include "ash/focus_cycler.h"
+#include "ash/focus/focus_cycler.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -37,7 +37,6 @@
 #include "ash/system/unified/date_tray.h"
 #include "ash/system/unified/ime_mode_view.h"
 #include "ash/system/unified/managed_device_tray_item_view.h"
-#include "ash/system/unified/screen_capture_tray_item_view.h"
 #include "ash/system/unified/unified_slider_bubble_controller.h"
 #include "ash/system/unified/unified_slider_view.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
@@ -59,6 +58,7 @@
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/view_class_properties.h"
 
@@ -100,11 +100,8 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
           ShelfConfig::Get()->status_area_hit_region_padding(),
       0);
 
-  time_view_ = AddTrayItemToContainer(
+  time_tray_item_view_ = AddTrayItemToContainer(
       std::make_unique<TimeTrayItemView>(shelf, TimeView::Type::kTime));
-
-
-  AddTrayItemToContainer(std::make_unique<ScreenCaptureTrayItemView>(shelf));
 
   if (features::IsSnoopingProtectionEnabled()) {
     AddTrayItemToContainer(std::make_unique<SnoopingProtectionView>(shelf));
@@ -138,16 +135,22 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
     channel_indicator_view_ =
         AddTrayItemToContainer(std::make_unique<ChannelIndicatorView>(
             shelf, Shell::Get()->shell_delegate()->GetChannel()));
+    channel_indicator_view_->AddObserver(this);
   }
 
   set_separator_visibility(false);
   set_use_bounce_in_animation(false);
 
   ShelfConfig::Get()->AddObserver(this);
+  PowerStatus::Get()->AddObserver(this);
+
+  SubscribeCallbacksForAccessibility();
+  UpdateAccessibleName();
 }
 
 UnifiedSystemTray::~UnifiedSystemTray() {
   ShelfConfig::Get()->RemoveObserver(this);
+  PowerStatus::Get()->RemoveObserver(this);
 
   DestroyBubble();
 }
@@ -177,6 +180,7 @@ void UnifiedSystemTray::OnButtonPressed(const ui::Event& event) {
 
   if (features::IsWelcomeTourEnabled()) {
     welcome_tour_metrics::RecordInteraction(
+        Shell::Get()->session_controller()->GetLastActiveUserPrefService(),
         welcome_tour_metrics::Interaction::kQuickSettings);
   }
 }
@@ -311,6 +315,10 @@ void UnifiedSystemTray::OnShelfConfigUpdated() {
       0);
 }
 
+void UnifiedSystemTray::OnPowerStatusChanged() {
+  UpdateAccessibleName();
+}
+
 void UnifiedSystemTray::OnOpeningCalendarView() {
   SetIsActive(false);
   for (auto& observer : observers_) {
@@ -333,6 +341,13 @@ void UnifiedSystemTray::OnDisplayTabletStateChanged(
   }
 
   UpdateLayout();
+}
+
+void UnifiedSystemTray::OnTrayItemChildViewChanged() {
+  UpdateAccessibleName();
+  if (channel_indicator_view_) {
+    SubscribeChannelIndicatorImageOrLabelCallbacks();
+  }
 }
 
 void UnifiedSystemTray::OnDateTrayActionPerformed(const ui::Event& event) {
@@ -383,7 +398,7 @@ void UnifiedSystemTray::ShowBubble() {
   }
 }
 
-void UnifiedSystemTray::CloseBubble() {
+void UnifiedSystemTray::CloseBubbleInternal() {
   base::UmaHistogramMediumTimes("Ash.QuickSettings.UserJourneyTime",
                                 base::TimeTicks::Now() - time_opened_);
   HideBubbleInternal();
@@ -393,7 +408,7 @@ std::u16string UnifiedSystemTray::GetAccessibleNameForBubble() {
   if (IsBubbleShown()) {
     return GetAccessibleNameForQuickSettingsBubble();
   } else {
-    return GetAccessibleNameForTray();
+    return CalculateAccessibleName();
   }
 }
 
@@ -406,19 +421,116 @@ std::u16string UnifiedSystemTray::GetAccessibleNameForQuickSettingsBubble() {
         IDS_ASH_QUICK_SETTINGS_BUBBLE_ACCESSIBLE_DESCRIPTION);
 }
 
+void UnifiedSystemTray::UpdateAccessibleName() {
+  GetViewAccessibility().SetName(CalculateAccessibleName());
+}
+
 void UnifiedSystemTray::HandleLocaleChange() {
   // Re-adds the child views to force the layer's bounds to be updated
   // (`SetLayerBounds`) for text direction (if needed).
   tray_container()->RemoveAllChildViewsWithoutDeleting();
   for (TrayItemView* item : tray_items_) {
     item->HandleLocaleChange();
-    tray_container()->AddChildView(item);
+    tray_container()->AddChildViewRaw(item);
   }
+
+  // TrayItemView objects can impact the accessible name.
+  UpdateAccessibleName();
 }
 
-std::u16string UnifiedSystemTray::GetAccessibleNameForTray() {
+void UnifiedSystemTray::HideBubble(const TrayBubbleView* bubble_view) {
+  CloseBubble();
+}
+
+void UnifiedSystemTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {}
+
+void UnifiedSystemTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {
+  const gfx::Point event_location =
+      event.target() ? event.target()->GetScreenLocation(event)
+                     : event.root_location();
+
+  // When Quick Settings bubble is opened and the date tray is clicked, the
+  // bubble should not be closed since it will transition to show calendar.
+  if (shelf()->GetStatusAreaWidget()->date_tray()->GetBoundsInScreen().Contains(
+          event_location)) {
+    return;
+  }
+
+  CloseBubble();
+}
+
+void UnifiedSystemTray::UpdateLayout() {
+  TrayBackgroundView::UpdateLayout();
+  time_tray_item_view_->UpdateAlignmentForShelf(shelf());
+}
+
+void UnifiedSystemTray::ShowBubbleInternal() {
+  // Never show System Tray bubble in kiosk app mode.
+  if (Shell::Get()->session_controller()->IsRunningInAppMode()) {
+    return;
+  }
+
+  CloseSecondaryBubbles();
+
+  // Presentation time recorder for opening QuickSettings through
+  // UnifiedSystemTray button.
+  auto presentation_time_recorder = CreatePresentationTimeHistogramRecorder(
+      shelf()->GetStatusAreaWidget()->GetCompositor(),
+      kStatusAreaShowBubbleHistogram);
+  presentation_time_recorder->RequestNext();
+
+  bubble_ = std::make_unique<UnifiedSystemTrayBubble>(this);
+  bubble_->unified_system_tray_controller()->AddObserver(this);
+
+  // crbug/1310675 Add observers in `UnifiedSystemTrayBubble` after both bubbles
+  // have been completely created, without this the bubbles can be destroyed
+  // before their creation is complete resulting in crashes.
+  bubble_->InitializeObservers();
+
+  if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
+    ActivateBubble();
+  }
+
+  first_interaction_recorded_ = false;
+
+  // Do not set the tray as active if the date tray is already active, this
+  // happens if `ShowBubble()` is called through `OnDateTrayActionPerformed()`.
+  if (shelf()->status_area_widget()->date_tray() &&
+      shelf()->status_area_widget()->date_tray()->is_active()) {
+    return;
+  }
+  SetIsActive(true);
+
+  // UnifiedSystemTray::GetAccessibleNameForBubble() changes based on the value
+  // of ShowBubble(), so we need to set the accessible name once the bubble
+  // exists and is shown.
+  bubble_->bubble_view_->UpdateAccessibleName();
+}
+
+void UnifiedSystemTray::HideBubbleInternal() {
+  DestroyBubble();
+  SetIsActive(false);
+}
+
+template <typename T>
+T* UnifiedSystemTray::AddTrayItemToContainer(
+    std::unique_ptr<T> tray_item_view) {
+  T* unowned_tray_item_view =
+      tray_container()->AddChildView(std::move(tray_item_view));
+  tray_items_.push_back(unowned_tray_item_view);
+  return unowned_tray_item_view;
+}
+
+void UnifiedSystemTray::DestroyBubble() {
+  if (bubble_) {
+    bubble_->unified_system_tray_controller()->RemoveObserver(this);
+  }
+  bubble_.reset();
+}
+
+std::u16string UnifiedSystemTray::CalculateAccessibleName() {
   std::u16string time = base::TimeFormatTimeOfDayWithHourClockType(
-      base::Time::Now(),
+      GetTimeNow(),
       Shell::Get()->system_tray_model()->clock()->hour_clock_type(),
       base::kKeepAmPm);
   std::u16string battery = PowerStatus::Get()->GetAccessibleNameString(false);
@@ -462,95 +574,112 @@ std::u16string UnifiedSystemTray::GetAccessibleNameForTray() {
                                     status, nullptr);
 }
 
-void UnifiedSystemTray::HideBubble(const TrayBubbleView* bubble_view) {
-  CloseBubble();
+void UnifiedSystemTray::OnChildViewNameChanged(
+    ax::mojom::StringAttribute attribute,
+    const std::optional<std::string>& name) {
+  UpdateAccessibleName();
 }
 
-void UnifiedSystemTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {}
+void UnifiedSystemTray::SubscribeCallbacksForAccessibility() {
+  time_view_text_changed_subscription_ =
+      time_tray_item_view_->time_view()
+          ->GetViewAccessibility()
+          .AddStringAttributeChangedCallback(
+              ax::mojom::StringAttribute::kName,
+              base::BindRepeating(&UnifiedSystemTray::OnChildViewNameChanged,
+                                  base::Unretained(this)));
 
-void UnifiedSystemTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {
-  const gfx::Point event_location =
-      event.target() ? event.target()->GetScreenLocation(event)
-                     : event.root_location();
-
-  // When Quick Settings bubble is opened and the date tray is clicked, the
-  // bubble should not be closed since it will transition to show calendar.
-  if (shelf()->GetStatusAreaWidget()->date_tray()->GetBoundsInScreen().Contains(
-          event_location)) {
-    return;
+  if (channel_indicator_view_) {
+    channel_indicator_visible_changed_subscription_ =
+        channel_indicator_view_->AddVisibleChangedCallback(base::BindRepeating(
+            &UnifiedSystemTray::UpdateAccessibleName, base::Unretained(this)));
+    SubscribeChannelIndicatorImageOrLabelCallbacks();
   }
 
-  CloseBubble();
+  newtwork_tray_visible_changed_subscription_ =
+      network_tray_view_->AddVisibleChangedCallback(base::BindRepeating(
+          &UnifiedSystemTray::UpdateAccessibleName, base::Unretained(this)));
+
+  network_tray_tooltip_text_changed_subscription_ =
+      network_tray_view_->AddTooltipTextChangedCallback(base::BindRepeating(
+          &UnifiedSystemTray::UpdateAccessibleName, base::Unretained(this)));
+
+  hotspot_tray_visible_changed_subscription_ =
+      hotspot_tray_view_->AddVisibleChangedCallback(base::BindRepeating(
+          &UnifiedSystemTray::UpdateAccessibleName, base::Unretained(this)));
+
+  hotspot_tray_tooltip_text_changed_subscription_ =
+      hotspot_tray_view_->AddTooltipTextChangedCallback(base::BindRepeating(
+          &UnifiedSystemTray::UpdateAccessibleName, base::Unretained(this)));
+
+  managed_device_visible_changed_subscription_ =
+      managed_device_view_->AddVisibleChangedCallback(base::BindRepeating(
+          &UnifiedSystemTray::UpdateAccessibleName, base::Unretained(this)));
+
+  managed_device_image_tooltip_text_changed_subscription_ =
+      managed_device_view_->image_view()->AddTooltipTextChangedCallback(
+          base::BindRepeating(&UnifiedSystemTray::UpdateAccessibleName,
+                              base::Unretained(this)));
+
+  ime_mode_visible_changed_subscription_ =
+      ime_mode_view_->AddVisibleChangedCallback(base::BindRepeating(
+          &UnifiedSystemTray::UpdateAccessibleName, base::Unretained(this)));
+
+  ime_mode_label_name_changed_subscription_ =
+      ime_mode_view_->label()
+          ->GetViewAccessibility()
+          .AddStringAttributeChangedCallback(
+              ax::mojom::StringAttribute::kName,
+              base::BindRepeating(&UnifiedSystemTray::OnChildViewNameChanged,
+                                  base::Unretained(this)));
+
+  current_locale_visible_changed_subscription_ =
+      current_locale_view_->AddVisibleChangedCallback(base::BindRepeating(
+          &UnifiedSystemTray::UpdateAccessibleName, base::Unretained(this)));
+
+  current_locale_label_name_changed_subscription_ =
+      current_locale_view_->label()
+          ->GetViewAccessibility()
+          .AddStringAttributeChangedCallback(
+              ax::mojom::StringAttribute::kName,
+              base::BindRepeating(&UnifiedSystemTray::OnChildViewNameChanged,
+                                  base::Unretained(this)));
 }
 
-void UnifiedSystemTray::UpdateLayout() {
-  TrayBackgroundView::UpdateLayout();
-  time_view_->UpdateAlignmentForShelf(shelf());
-}
-
-void UnifiedSystemTray::ShowBubbleInternal() {
-  // Never show System Tray bubble in kiosk app mode.
-  if (Shell::Get()->session_controller()->IsRunningInAppMode()) {
-    return;
+void UnifiedSystemTray::SubscribeChannelIndicatorImageOrLabelCallbacks() {
+  if (channel_indicator_view_->image_view()) {
+    channel_indicator_image_name_changed_subscription_ =
+        channel_indicator_view_->image_view()
+            ->GetViewAccessibility()
+            .AddStringAttributeChangedCallback(
+                ax::mojom::StringAttribute::kName,
+                base::BindRepeating(&UnifiedSystemTray::OnChildViewNameChanged,
+                                    base::Unretained(this)));
   }
 
-  CloseSecondaryBubbles();
-
-  // Presentation time recorder for opening QuickSettings through
-  // UnifiedSystemTray button.
-  auto presentation_time_recorder = CreatePresentationTimeHistogramRecorder(
-      shelf()->GetStatusAreaWidget()->GetCompositor(),
-      kStatusAreaShowBubbleHistogram);
-  presentation_time_recorder->RequestNext();
-
-  bubble_ = std::make_unique<UnifiedSystemTrayBubble>(this);
-  bubble_->unified_system_tray_controller()->AddObserver(this);
-
-  // crbug/1310675 Add observers in `UnifiedSystemTrayBubble` after both bubbles
-  // have been completely created, without this the bubbles can be destroyed
-  // before their creation is complete resulting in crashes.
-  bubble_->InitializeObservers();
-
-  if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
-    ActivateBubble();
+  if (channel_indicator_view_->label()) {
+    channel_indicator_label_changed_subscription_ =
+        channel_indicator_view_->label()
+            ->GetViewAccessibility()
+            .AddStringAttributeChangedCallback(
+                ax::mojom::StringAttribute::kName,
+                base::BindRepeating(&UnifiedSystemTray::OnChildViewNameChanged,
+                                    base::Unretained(this)));
   }
-
-  first_interaction_recorded_ = false;
-
-  // Do not set the tray as active if the date tray is already active, this
-  // happens if `ShowBubble()` is called through `OnDateTrayActionPerformed()`.
-  if (shelf()->status_area_widget()->date_tray() &&
-      shelf()->status_area_widget()->date_tray()->is_active()) {
-    return;
-  }
-  SetIsActive(true);
-}
-
-void UnifiedSystemTray::HideBubbleInternal() {
-  DestroyBubble();
-  SetIsActive(false);
-}
-
-template <typename T>
-T* UnifiedSystemTray::AddTrayItemToContainer(
-    std::unique_ptr<T> tray_item_view) {
-  T* unowned_tray_item_view =
-      tray_container()->AddChildView(std::move(tray_item_view));
-  tray_items_.push_back(unowned_tray_item_view);
-  return unowned_tray_item_view;
-}
-
-void UnifiedSystemTray::DestroyBubble() {
-  if (bubble_) {
-    bubble_->unified_system_tray_controller()->RemoveObserver(this);
-  }
-  bubble_.reset();
 }
 
 void UnifiedSystemTray::UpdateTrayItemColor(bool is_active) {
   for (TrayItemView* tray_item : tray_items_) {
     tray_item->UpdateLabelOrImageViewColor(is_active);
   }
+}
+
+const base::Time UnifiedSystemTray::GetTimeNow() {
+  return clock_for_testing_ ? clock_for_testing_->Now() : base::Time::Now();
+}
+
+void UnifiedSystemTray::OverrideClockForTesting(base::Clock* test_clock) {
+  clock_for_testing_ = test_clock;
 }
 
 BEGIN_METADATA(UnifiedSystemTray)

@@ -11,6 +11,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
@@ -44,8 +45,7 @@ bool CreateInitProcessReaper(base::OnceClosure post_fork_parent_callback) {
     // The disposition for SIGCHLD cannot be SIG_IGN or wait() will only return
     // once all of our childs are dead. Since we're init we need to reap childs
     // as they come.
-    struct sigaction action;
-    memset(&action, 0, sizeof(action));
+    struct sigaction action = {};
     action.sa_handler = &DoNothingSignalHandler;
     CHECK(sigaction(SIGCHLD, &action, NULL) == 0);
 

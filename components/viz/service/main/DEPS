@@ -2,6 +2,7 @@
 
 include_rules = [
   "+components/discardable_memory/client",
+  "+components/performance_manager/scenario_api/performance_scenarios.h",
   "+components/ui_devtools",
   "+components/viz/common/switches.h",
   "+components/viz/service",

@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_TRIGGER_VALIDATOR_IMPL_H_
 #define CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_TRIGGER_VALIDATOR_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher.h"
 #include "chrome/browser/fast_checkout/fast_checkout_personal_data_helper.h"
 #include "chrome/browser/fast_checkout/fast_checkout_trigger_validator.h"
-#include "components/autofill/core/browser/ui/fast_checkout_enums.h"
+#include "components/autofill/core/browser/integrators/fast_checkout/fast_checkout_enums.h"
 
 class FastCheckoutTriggerValidatorImpl : public FastCheckoutTriggerValidator {
  public:

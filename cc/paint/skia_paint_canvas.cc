@@ -10,7 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_filter.h"
@@ -29,8 +29,8 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/docs/SkPDFDocument.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "third_party/skia/include/gpu/GrRecordingContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrRecordingContext.h"
 #include "third_party/skia/src/core/SkCanvasPriv.h"
 
 namespace cc {
@@ -56,7 +56,10 @@ SkiaPaintCanvas::SkiaPaintCanvas(const SkBitmap& bitmap,
                                  const SkSurfaceProps& props)
     : canvas_(new SkCanvas(bitmap, props)), bitmap_(bitmap), owned_(canvas_) {}
 
-SkiaPaintCanvas::~SkiaPaintCanvas() = default;
+SkiaPaintCanvas::~SkiaPaintCanvas() {
+  canvas_ = nullptr;
+  image_provider_ = nullptr;
+}
 
 SkImageInfo SkiaPaintCanvas::imageInfo() const {
   return canvas_->imageInfo();
@@ -105,8 +108,9 @@ int SkiaPaintCanvas::saveLayerAlphaf(const SkRect& bounds, float alpha) {
   return canvas_->saveLayerAlphaf(&bounds, alpha);
 }
 
-int SkiaPaintCanvas::saveLayerFilters(base::span<sk_sp<PaintFilter>> filters,
-                                      const PaintFlags& flags) {
+int SkiaPaintCanvas::saveLayerFilters(
+    base::span<const sk_sp<PaintFilter>> filters,
+    const PaintFlags& flags) {
   SkPaint paint = flags.ToSkPaint();
   return canvas_->saveLayer(SkCanvasPriv::ScaledBackdropLayer(
       /*bounds=*/nullptr, &paint, /*backdrop=*/nullptr, /*backdropScale=*/1.0f,

@@ -4,8 +4,8 @@
 
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom-shared.h"
@@ -28,22 +28,22 @@ bool UseCounterFeature::SetTypeAndValue(mojom::UseCounterFeatureType type,
 bool UseCounterFeature::IsValid() const {
   switch (type_) {
     case mojom::UseCounterFeatureType::kWebFeature:
-      return value_ < static_cast<UseCounterFeature::EnumValue>(
-                          mojom::WebFeature::kNumberOfFeatures);
+      return value_ <= static_cast<UseCounterFeature::EnumValue>(
+                           mojom::WebFeature::kMaxValue);
     case mojom::UseCounterFeatureType::kWebDXFeature:
-      return value_ < static_cast<UseCounterFeature::EnumValue>(
-                          mojom::WebDXFeature::kNumberOfFeatures);
+      return value_ <= static_cast<UseCounterFeature::EnumValue>(
+                           mojom::WebDXFeature::kMaxValue);
     case mojom::UseCounterFeatureType::kCssProperty:
     case mojom::UseCounterFeatureType::kAnimatedCssProperty:
-      return value_ < static_cast<UseCounterFeature::EnumValue>(
-                          mojom::CSSSampleId::kMaxValue) +
-                          1;
+      return value_ <= static_cast<UseCounterFeature::EnumValue>(
+                           mojom::CSSSampleId::kMaxValue);
     case mojom::UseCounterFeatureType::kPermissionsPolicyViolationEnforce:
     case mojom::UseCounterFeatureType::kPermissionsPolicyHeader:
     case mojom::UseCounterFeatureType::kPermissionsPolicyIframeAttribute:
-      return value_ < static_cast<UseCounterFeature::EnumValue>(
-                          mojom::PermissionsPolicyFeature::kMaxValue) +
-                          1;
+    case mojom::UseCounterFeatureType::
+        kPermissionsPolicyEnabledPrivacySensitive:
+      return value_ <= static_cast<UseCounterFeature::EnumValue>(
+                           network::mojom::PermissionsPolicyFeature::kMaxValue);
   }
 }
 

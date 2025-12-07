@@ -26,8 +26,7 @@
 
 #include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
-#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
-#include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 
 namespace blink {
 
@@ -46,16 +45,15 @@ sk_sp<PaintFilter> FEBlend::CreateImageFilter() {
       InputEffect(0), OperatingInterpolationSpace()));
   sk_sp<PaintFilter> background(paint_filter_builder::Build(
       InputEffect(1), OperatingInterpolationSpace()));
-  SkBlendMode mode =
-      WebCoreCompositeToSkiaComposite(kCompositeSourceOver, mode_);
+  SkBlendMode mode = ToSkBlendMode(mode_);
   std::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
   return sk_make_sp<XfermodePaintFilter>(mode, std::move(background),
                                          std::move(foreground),
                                          base::OptionalToPtr(crop_rect));
 }
 
-WTF::TextStream& FEBlend::ExternalRepresentation(WTF::TextStream& ts,
-                                                 int indent) const {
+StringBuilder& FEBlend::ExternalRepresentation(StringBuilder& ts,
+                                               wtf_size_t indent) const {
   WriteIndent(ts, indent);
   ts << "[feBlend";
   FilterEffect::ExternalRepresentation(ts);

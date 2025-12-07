@@ -51,9 +51,11 @@ void LayoutInlineListItem::UpdateMarkerTextIfNeeded() {
   }
 }
 
-void LayoutInlineListItem::StyleDidChange(StyleDifference diff,
-                                          const ComputedStyle* old_style) {
-  LayoutInline::StyleDidChange(diff, old_style);
+void LayoutInlineListItem::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
+  LayoutInline::StyleDidChange(diff, old_style, style_change_context);
 
   LayoutObject* marker = Marker();
   auto* list_marker = ListMarker::Get(marker);

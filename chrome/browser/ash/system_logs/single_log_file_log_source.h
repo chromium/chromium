@@ -12,10 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 
-namespace base {
-class Time;
-}
-
 namespace system_logs {
 
 // Gathers log data from a single source, possibly incrementally.
@@ -53,11 +49,6 @@ class SingleLogFileLogSource : public SystemLogsSource {
   SingleLogFileLogSource& operator=(const SingleLogFileLogSource&) = delete;
 
   ~SingleLogFileLogSource() override;
-
-  // During testing, use this to set a custom Chrome start time to override the
-  // actual start time. Does not take ownership of |start_time|. Call this again
-  // with |start_time|=nullptr when done with testing.
-  static void SetChromeStartTimeForTesting(const base::Time* start_time);
 
   // system_logs::SystemLogsSource:
   void Fetch(SysLogsSourceCallback callback) override;

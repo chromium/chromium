@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/types/expected.h"
 #include "components/password_manager/core/browser/import/import_results.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -63,11 +64,11 @@ class PasswordImporter {
     // it. In case of new import requests, the user should receive an
     // IMPORT_ALREADY_ACTIVE error.
     kInProgress = 1,
-    // Conflicts were found in the selected file. PasswordImporter is waiting
-    // for the user to select which passwords to replace or to cancel the
-    // import. In case of new import requests the current state should be
-    // returned.
-    kConflicts = 2,
+    // Either user confirmation was requested or conflicts were found in the
+    // selected file. PasswordImporter is waiting for the user to confirm the
+    // import and/or select which passwords to replace or to cancel the import.
+    // In case of new import requests the current state should be returned.
+    kUserInteractionRequired = 2,
     // Import has successufly finished with no errors. PasswordImporter is
     // waiting for the user to decide if they want to delete the file.
     kFinished = 3,
@@ -84,17 +85,32 @@ class PasswordImporter {
   using DeleteFileCallback =
       base::RepeatingCallback<bool(const base::FilePath&)>;
 
-  explicit PasswordImporter(SavedPasswordsPresenter* presenter);
+  explicit PasswordImporter(SavedPasswordsPresenter* presenter,
+                            bool user_confirmation_required = false);
   PasswordImporter(const PasswordImporter&) = delete;
   PasswordImporter& operator=(const PasswordImporter&) = delete;
   ~PasswordImporter();
 
+  // Imports passwords from the |csv_data| string into the |to_store|.
+  // |results_callback| is used to return import summary back to the user.
+  // The only supported data format is CSV.
+  void Import(std::string csv_data,
+              password_manager::PasswordForm::Store to_store,
+              ImportResultsCallback results_callback);
+
   // Imports passwords from the file at |path| into the |to_store|.
   // |results_callback| is used to return import summary back to the user.
-  // |cleanup_callback] is called when current object can be destroyed.
   // The only supported file format is CSV.
   void Import(const base::FilePath& path,
               password_manager::PasswordForm::Store to_store,
+              ImportResultsCallback results_callback);
+
+  // Imports `passwords` into the `to_store`.
+  // `results_callback` is used to return import summary back to the user.
+  // This function should be used when there is no need to parse passwords in a
+  // sandbox process.
+  void Import(const std::vector<CSVPassword>& csv_passwords,
+              PasswordForm::Store to_store,
               ImportResultsCallback results_callback);
 
   // Resumes the import process when user has selected which passwords to
@@ -108,7 +124,7 @@ class PasswordImporter {
 
   // Triggers the deletion of the imported file at `file_path_` when the
   // importer is in the kFinished state.
-  void DeleteFile();
+  void DeleteFile(base::OnceClosure completion = base::DoNothing());
 
   bool IsState(PasswordImporter::State state) const { return state_ == state; }
 
@@ -132,10 +148,31 @@ class PasswordImporter {
       ImportResultsCallback results_callback,
       base::expected<std::string, ImportResults::Status> result);
 
-  // Processes passwords when they've been parsed by ParseCSVPasswordsInSandbox.
+  // Verifies the `seq` returned from `ParseCSVPasswordsInSandbox`. If there
+  // are no errors, proceeds to consuming the passwords. Otherwise, invokes
+  // `results_callback` to inform the user about the error and resets the
+  // importer to the initial state.
+  void OnCSVPasswordsParsed(
+      PasswordForm::Store to_store,
+      ImportResultsCallback results_callback,
+      password_manager::mojom::CSVPasswordSequencePtr seq);
+
+  // Processes `csv_passwords` by identifying errors and conflicts with the
+  // existing password in the store. If there are no errors or user interaction
+  // is not required, proceeds to execute import. Otherwise, runs
+  // `results_callback` informing the user about the status of import.
   void ConsumePasswords(PasswordForm::Store to_store,
-                        ImportResultsCallback results_callback,
-                        password_manager::mojom::CSVPasswordSequencePtr seq);
+                        const std::vector<CSVPassword>& csv_passwords,
+                        ImportResultsCallback results_callback);
+
+  // Caches the import results and triggers the user interaction flow to resolve
+  // conflicts or confirm the import.
+  void ShowImportConflicts(
+      ImportResultsCallback results_callback,
+      ImportResults results,
+      IncomingPasswords incoming_passwords,
+      std::vector<std::vector<password_manager::PasswordForm>> conflicts,
+      base::Time start_time);
 
   // Triggers the processes for adding and updating `incoming_passwords`.
   void ExecuteImport(ImportResultsCallback results_callback,
@@ -161,7 +198,8 @@ class PasswordImporter {
   // Path of the imported file.
   base::FilePath file_path_;
 
-  // Used to cache intermediate results of the import during kConflicts state.
+  // Used to cache intermediate results of the import during
+  // kUserInteractionRequired state.
   std::unique_ptr<ConflictsResolutionCache> conflicts_cache_;
 
   // The function which does the actual deleting of a file. It should wrap
@@ -169,6 +207,10 @@ class PasswordImporter {
   DeleteFileCallback delete_function_;
 
   const raw_ptr<SavedPasswordsPresenter> presenter_;
+
+  // Whether the user must confirm before the imported passwords are added to
+  // the store.
+  const bool user_confirmation_required_;
 
   base::WeakPtrFactory<PasswordImporter> weak_ptr_factory_{this};
 };

@@ -11,25 +11,17 @@
 #include <type_traits>
 
 #include "base/numerics/safe_conversions.h"
-#include "build/build_config.h"
 
-#if BUILDFLAG(IS_ASMJS)
+#if defined(__asmjs__) || defined(__wasm__)
 // Optimized safe math instructions are incompatible with asmjs.
 #define BASE_HAS_OPTIMIZED_SAFE_MATH (0)
-// Where available use builtin math overflow support on Clang and GCC.
-#elif !defined(__native_client__) &&                       \
-    ((defined(__clang__) &&                                \
-      ((__clang_major__ > 3) ||                            \
-       (__clang_major__ == 3 && __clang_minor__ >= 4))) || \
-     (defined(__GNUC__) && __GNUC__ >= 5))
+#else
 #include "base/numerics/safe_math_clang_gcc_impl.h"  // IWYU pragma: export
 #define BASE_HAS_OPTIMIZED_SAFE_MATH (1)
-#else
-#define BASE_HAS_OPTIMIZED_SAFE_MATH (0)
 #endif
 
 namespace base {
-namespace internal {
+namespace numerics_internal {
 
 // These are the non-functioning boilerplate implementations of the optimized
 // safe math routines.
@@ -161,10 +153,13 @@ constexpr T AbsWrapper(T value) {
   return value < 0 ? -value : value;
 }
 
-template <template <typename, typename> class M, typename L, typename R>
+template <template <typename, typename> class M,
+          typename L,
+          typename R,
+          typename Math = M<UnderlyingType<L>, UnderlyingType<R>>>
+  requires requires { typename Math::result_type; }
 struct MathWrapper {
-  using math =
-      M<typename UnderlyingType<L>::type, typename UnderlyingType<R>::type>;
+  using math = Math;
   using type = typename math::result_type;
 };
 
@@ -173,33 +168,32 @@ struct MathWrapper {
 // solution, but it beats rewriting these over and over again.
 #define BASE_NUMERIC_ARITHMETIC_VARIADIC(CLASS, CL_ABBR, OP_NAME)       \
   template <typename L, typename R, typename... Args>                   \
-  constexpr auto CL_ABBR##OP_NAME(const L lhs, const R rhs,             \
-                                  const Args... args) {                 \
+  constexpr auto CL_ABBR##OP_NAME(L lhs, R rhs, Args... args) {         \
     return CL_ABBR##MathOp<CLASS##OP_NAME##Op, L, R, Args...>(lhs, rhs, \
                                                               args...); \
   }
 
 #define BASE_NUMERIC_ARITHMETIC_OPERATORS(CLASS, CL_ABBR, OP_NAME, OP, CMP_OP) \
   /* Binary arithmetic operator for all CLASS##Numeric operations. */          \
-  template <typename L, typename R,                                            \
-            typename = std::enable_if_t<Is##CLASS##Op<L, R>::value>>           \
+  template <typename L, typename R>                                            \
+    requires(Is##CLASS##Op<L, R>)                                              \
   constexpr CLASS##Numeric<                                                    \
       typename MathWrapper<CLASS##OP_NAME##Op, L, R>::type>                    \
-  operator OP(const L lhs, const R rhs) {                                      \
+  operator OP(L lhs, R rhs) {                                                  \
     return decltype(lhs OP rhs)::template MathOp<CLASS##OP_NAME##Op>(lhs,      \
                                                                      rhs);     \
   }                                                                            \
   /* Assignment arithmetic operator implementation from CLASS##Numeric. */     \
   template <typename L>                                                        \
+    requires std::is_arithmetic_v<L>                                           \
   template <typename R>                                                        \
-  constexpr CLASS##Numeric<L>& CLASS##Numeric<L>::operator CMP_OP(             \
-      const R rhs) {                                                           \
+  constexpr CLASS##Numeric<L>& CLASS##Numeric<L>::operator CMP_OP(R rhs) {     \
     return MathOp<CLASS##OP_NAME##Op>(rhs);                                    \
   }                                                                            \
   /* Variadic arithmetic functions that return CLASS##Numeric. */              \
   BASE_NUMERIC_ARITHMETIC_VARIADIC(CLASS, CL_ABBR, OP_NAME)
 
-}  // namespace internal
+}  // namespace numerics_internal
 }  // namespace base
 
 #endif  // BASE_NUMERICS_SAFE_MATH_SHARED_IMPL_H_

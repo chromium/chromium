@@ -21,7 +21,7 @@ namespace task_manager {
 class SubframeTask : public RendererTask {
  public:
   SubframeTask(content::RenderFrameHost* render_frame_host,
-               RendererTask* main_task);
+               base::WeakPtr<RendererTask> main_task);
   SubframeTask(const SubframeTask&) = delete;
   SubframeTask& operator=(const SubframeTask&) = delete;
   ~SubframeTask() override;
@@ -32,7 +32,7 @@ class SubframeTask : public RendererTask {
   void Activate() override;
 
   // task_manager::Task:
-  Task* GetParentTask() const override;
+  base::WeakPtr<Task> GetParentTask() const override;
 
  private:
   std::u16string GetTitle();
@@ -40,7 +40,7 @@ class SubframeTask : public RendererTask {
   raw_ptr<content::SiteInstance, DanglingUntriaged> site_instance_;
 
   // The task for the main frame of this WebContents.
-  raw_ptr<RendererTask, DanglingUntriaged> main_task_;
+  base::WeakPtr<RendererTask> main_task_;
 };
 
 }  // namespace task_manager

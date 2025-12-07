@@ -23,15 +23,11 @@
  * DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/audio/delay.h"
 
 #include <cmath>
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
@@ -54,17 +50,19 @@ void CopyToCircularBuffer(float* buffer,
   // Copy `frames_to_process` values from `source` to the circular buffer that
   // starts at `buffer` of length `buffer_length`.  The copy starts at index
   // `write_index` into the buffer.
-  float* write_pointer = &buffer[write_index];
+  float* write_pointer = &UNSAFE_TODO(buffer[write_index]);
   int remainder = buffer_length - write_index;
 
   // Copy the sames over, carefully handling the case where we need to wrap
   // around to the beginning of the buffer.
-  memcpy(write_pointer, source,
-         sizeof(*write_pointer) *
-             std::min(static_cast<int>(frames_to_process), remainder));
-  memcpy(buffer, source + remainder,
-         sizeof(*write_pointer) *
-             std::max(0, static_cast<int>(frames_to_process) - remainder));
+  UNSAFE_TODO(
+      memcpy(write_pointer, source,
+             sizeof(*write_pointer) *
+                 std::min(static_cast<int>(frames_to_process), remainder)));
+  UNSAFE_TODO(
+      memcpy(buffer, source + remainder,
+             sizeof(*write_pointer) *
+                 std::max(0, static_cast<int>(frames_to_process) - remainder)));
 }
 
 }  // namespace
@@ -140,7 +138,7 @@ int Delay::ProcessARateScalar(unsigned start,
   const float* delay_times = delay_times_.Data();
 
   for (unsigned i = start; i < frames_to_process; ++i) {
-    double delay_time = std::fmax(delay_times[i], 0);
+    double delay_time = std::fmax(UNSAFE_TODO(delay_times[i]), 0);
     double desired_delay_frames = delay_time * sample_rate;
 
     double read_position = w_index + buffer_length - desired_delay_frames;
@@ -161,15 +159,16 @@ int Delay::ProcessARateScalar(unsigned start,
 
     float interpolation_factor = read_position - read_index1;
 
-    float sample1 = buffer[read_index1];
-    float sample2 = buffer[read_index2];
+    float sample1 = UNSAFE_TODO(buffer[read_index1]);
+    float sample2 = UNSAFE_TODO(buffer[read_index2]);
 
     ++w_index;
     if (w_index >= buffer_length) {
       w_index -= buffer_length;
     }
 
-    destination[i] = sample1 + interpolation_factor * (sample2 - sample1);
+    UNSAFE_TODO(destination[i]) =
+        sample1 + interpolation_factor * (sample2 - sample1);
   }
 
   return w_index;
@@ -241,7 +240,7 @@ void Delay::ProcessKRate(const float* source,
   // interpolation.
   int read_index1 = static_cast<int>(read_position);
   float interpolation_factor = read_position - read_index1;
-  float* buffer_end = &buffer[buffer_length];
+  float* buffer_end = &UNSAFE_TODO(buffer[buffer_length]);
   DCHECK_GE(static_cast<unsigned>(buffer_length), frames_to_process);
 
   // sample1 and sample2 hold the current and next samples in the buffer.
@@ -262,14 +261,15 @@ void Delay::ProcessKRate(const float* source,
 
   // Now copy out the samples from the buffer, starting at the read pointer,
   // carefully handling wrapping of the read pointer.
-  float* read_pointer = &buffer[read_index1];
+  float* read_pointer = &UNSAFE_TODO(buffer[read_index1]);
 
   uint32_t remainder = static_cast<uint32_t>(buffer_end - read_pointer);
-  memcpy(sample1, read_pointer,
-         sizeof(*sample1) * std::min(frames_to_process, remainder));
+  UNSAFE_TODO(
+      memcpy(sample1, read_pointer,
+             sizeof(*sample1) * std::min(frames_to_process, remainder)));
   if (frames_to_process > remainder) {
-    memcpy(sample1 + remainder, buffer,
-           sizeof(*sample1) * (frames_to_process - remainder));
+    UNSAFE_TODO(memcpy(sample1 + remainder, buffer,
+                       sizeof(*sample1) * (frames_to_process - remainder)));
   }
 
   // If interpolation_factor = 0, we don't need to do any interpolation and
@@ -280,13 +280,14 @@ void Delay::ProcessKRate(const float* source,
     int read_index2 = (read_index1 + 1) % buffer_length;
     float* sample2 = temp_buffer_.Data();
 
-    read_pointer = &buffer[read_index2];
+    read_pointer = &UNSAFE_TODO(buffer[read_index2]);
     remainder = static_cast<uint32_t>(buffer_end - read_pointer);
-    memcpy(sample2, read_pointer,
-           sizeof(*sample1) * std::min(frames_to_process, remainder));
+    UNSAFE_TODO(
+        memcpy(sample2, read_pointer,
+               sizeof(*sample1) * std::min(frames_to_process, remainder)));
     if (frames_to_process > remainder) {
-      memcpy(sample2 + remainder, buffer,
-             sizeof(*sample1) * (frames_to_process - remainder));
+      UNSAFE_TODO(memcpy(sample2 + remainder, buffer,
+                         sizeof(*sample1) * (frames_to_process - remainder)));
     }
 
     // Interpolate samples, where f = interpolation_factor

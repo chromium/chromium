@@ -14,8 +14,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 
-namespace chrome {
-
 namespace {
 
 class AutoplayMetricsBrowserTest : public InProcessBrowserTest {
@@ -163,5 +161,3 @@ IN_PROC_BROWSER_TEST_F(AutoplayMetricsBrowserTest,
 }
 
 }  // namespace
-
-}  // namespace chrome

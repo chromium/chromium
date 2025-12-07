@@ -21,13 +21,6 @@
   DCHECK([headerFooter class] == self.cellClass);
   headerFooter.accessibilityTraits = self.accessibilityTraits;
   headerFooter.accessibilityIdentifier = self.accessibilityIdentifier;
-  // Use the styler tableViewBackgroundColor (as a performance optimization) if
-  // available.
-  if (styler.tableViewBackgroundColor) {
-    UIView* backgroundView = [[UIView alloc] init];
-    backgroundView.backgroundColor = styler.tableViewBackgroundColor;
-    headerFooter.backgroundView = backgroundView;
-  }
 }
 
 @end

@@ -12,7 +12,7 @@ features:
   dynamic_refresh: true
   per_profile: true
 future_on:
-- fuchsia
+- android
 label: Extension IDs to exempt from the blocklist
 owners:
 - rdevlin.cronin@chromium.org

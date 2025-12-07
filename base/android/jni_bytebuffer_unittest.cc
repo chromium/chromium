@@ -24,11 +24,11 @@ TEST(JniByteBuffer, ConversionDoesNotCopy) {
   uint8_t bytes[] = {0, 1, 2, 3};
   JNIEnv* env = AttachCurrentThread();
 
-  ScopedJavaLocalRef<jobject> jbuffer(
+  auto jbuffer = ScopedJavaLocalRef<jobject>::Adopt(
       env, env->NewDirectByteBuffer(bytes, sizeof(bytes)));
   ASSERT_TRUE(jbuffer);
 
-  base::span<const uint8_t> span = JavaByteBufferToSpan(env, jbuffer.obj());
+  base::span<const uint8_t> span = JavaByteBufferToSpan(env, jbuffer);
   EXPECT_EQ(span.data(), bytes);
   EXPECT_EQ(span.size(), sizeof(bytes));
 }
@@ -46,20 +46,21 @@ TEST(JniByteBuffer, DISABLED_ConversionFromNonBuffer) {
       base::android::MethodID::Get<base::android::MethodID::TYPE_INSTANCE>(
           env, cls, "<init>", "()V");
 
-  ScopedJavaLocalRef<jobject> jnonbuffer(env, env->NewObject(cls, init));
+  auto jnonbuffer =
+      ScopedJavaLocalRef<jobject>::Adopt(env, env->NewObject(cls, init));
 
   std::optional<base::span<const uint8_t>> maybe_span =
-      MaybeJavaByteBufferToSpan(env, jnonbuffer.obj());
+      MaybeJavaByteBufferToSpan(env, jnonbuffer);
   EXPECT_FALSE(maybe_span.has_value());
 }
 
 TEST(JniByteBuffer, ZeroByteConversionSucceeds) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> jbuffer(env,
-                                      env->NewDirectByteBuffer(nullptr, 0));
+  auto jbuffer = ScopedJavaLocalRef<jobject>::Adopt(
+      env, env->NewDirectByteBuffer(nullptr, 0));
   ASSERT_TRUE(jbuffer);
 
-  base::span<const uint8_t> span = JavaByteBufferToSpan(env, jbuffer.obj());
+  base::span<const uint8_t> span = JavaByteBufferToSpan(env, jbuffer);
   EXPECT_EQ(span.data(), nullptr);
   EXPECT_EQ(span.size(), 0u);
 }

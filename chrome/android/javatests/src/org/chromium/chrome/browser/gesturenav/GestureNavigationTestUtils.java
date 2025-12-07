@@ -8,24 +8,22 @@ import android.graphics.Point;
 import android.util.DisplayMetrics;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+
+import java.util.function.Supplier;
 
 /** Utility class providing gesture actions for tests. */
 public final class GestureNavigationTestUtils {
-    private final ChromeTabbedActivityTestRule mActivityTestRule;
+    private final Supplier<ChromeTabbedActivity> mActivitySupplier;
     private final NavigationHandler mNavigationHandler;
     private final HistoryNavigationLayout mNavigationLayout;
-    private float mEdgeWidthPx;
+    private final float mEdgeWidthPx;
 
-    public GestureNavigationTestUtils(ChromeTabbedActivityTestRule rule) {
-        mActivityTestRule = rule;
+    public GestureNavigationTestUtils(Supplier<ChromeTabbedActivity> activitySupplier) {
+        mActivitySupplier = activitySupplier;
         DisplayMetrics displayMetrics = new DisplayMetrics();
-        mActivityTestRule
-                .getActivity()
-                .getWindowManager()
-                .getDefaultDisplay()
-                .getMetrics(displayMetrics);
+        mActivitySupplier.get().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         mEdgeWidthPx = displayMetrics.density * NavigationHandler.EDGE_WIDTH_DP;
 
         HistoryNavigationCoordinator coordinator = getNavigationCoordinator();
@@ -51,29 +49,29 @@ public final class GestureNavigationTestUtils {
 
     public void swipeFromEdge(boolean leftEdge) {
         Point size = new Point();
-        mActivityTestRule.getActivity().getWindowManager().getDefaultDisplay().getSize(size);
+        mActivitySupplier.get().getWindowManager().getDefaultDisplay().getSize(size);
         final float startx = leftEdge ? mEdgeWidthPx / 2 : size.x - mEdgeWidthPx / 2;
-        final float endx = size.x / 2;
-        final float yMiddle = size.y / 2;
+        final float endx = size.x / 2f;
+        final float yMiddle = size.y / 2f;
         swipe(leftEdge, startx, endx, yMiddle);
     }
 
     public void swipeFromEdgeAndHold(boolean leftEdge) {
         Point size = new Point();
-        mActivityTestRule.getActivity().getWindowManager().getDefaultDisplay().getSize(size);
+        mActivitySupplier.get().getWindowManager().getDefaultDisplay().getSize(size);
         final float startx = leftEdge ? mEdgeWidthPx / 2 : size.x - mEdgeWidthPx / 2;
-        final float endx = size.x / 2;
-        final float yMiddle = size.y / 2;
+        final float endx = size.x / 2f;
+        final float yMiddle = size.y / 2f;
         swipeAndHold(leftEdge, startx, endx, yMiddle);
     }
 
     // Make an edge swipe too short to trigger the navigation.
     public void shortSwipeFromEdge(boolean leftEdge) {
         Point size = new Point();
-        mActivityTestRule.getActivity().getWindowManager().getDefaultDisplay().getSize(size);
+        mActivitySupplier.get().getWindowManager().getDefaultDisplay().getSize(size);
         final float startx = leftEdge ? 0 : size.x;
         final float endx = leftEdge ? mEdgeWidthPx : size.x - mEdgeWidthPx;
-        final float yMiddle = size.y / 2;
+        final float yMiddle = size.y / 2f;
         swipe(leftEdge, startx, endx, yMiddle);
     }
 
@@ -81,8 +79,8 @@ public final class GestureNavigationTestUtils {
      * Enables gestural navigation for use in tests. Tests are responsible for manually injecting
      * simulated "back" gesture progress events.
      */
-    public void enableGestureNavigationForTesting() {
-        getNavigationCoordinator().forceFeatureEnabledForTesting();
+    public void enableGestureNavigationForTesting(boolean enable) {
+        getNavigationCoordinator().forceFeatureEnabledForTesting(enable);
     }
 
     private void swipe(boolean leftEdge, float startx, float endx, float y) {
@@ -112,8 +110,7 @@ public final class GestureNavigationTestUtils {
 
     private HistoryNavigationCoordinator getNavigationCoordinator() {
         TabbedRootUiCoordinator uiCoordinator =
-                (TabbedRootUiCoordinator)
-                        mActivityTestRule.getActivity().getRootUiCoordinatorForTesting();
+                (TabbedRootUiCoordinator) mActivitySupplier.get().getRootUiCoordinatorForTesting();
         return uiCoordinator.getHistoryNavigationCoordinatorForTesting();
     }
 }

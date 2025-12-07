@@ -4,9 +4,20 @@
 
 #import "media/capture/video/mac/video_capture_metrics_mac.h"
 
+#include <AVFoundation/AVFoundation.h>
+#include <CoreMediaIO/CoreMediaIO.h>
+#include <Foundation/Foundation.h>
+#import <IOKit/audio/IOAudioTypes.h>
+
+#include "base/apple/bridging.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/metrics/histogram_functions.h"
 #import "media/capture/video/apple/video_capture_device_avfoundation.h"
 #include "media/capture/video/video_capture_device_info.h"
+
+@interface AVCaptureDevice (SPI)
+- (UInt32)connectionID;
+@end
 
 namespace media {
 
@@ -58,6 +69,103 @@ enum class ReactionEffectsGesturesState {
   kMaxValue = kGesturesEnabled,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AVCaptureDeviceClassification {
+  kNonPluginApple = 0,
+  kNonPluginThirdPartyTransportBuiltIn = 1,
+  kNonPluginThirdPartyTransportOther = 2,
+  kNonPluginThirdPartyTransportVirtual = 3,
+  kNonPluginThirdPartyTransportNoneOfTheAbove = 4,
+  kPluginApple = 5,
+  kPluginThirdPartyExtension = 6,
+  kPluginThirdPartyNonExtension = 7,
+  kMaxValue = kPluginThirdPartyNonExtension,
+};
+
+bool HasPrefix(NSString* string, NSString* prefix) {
+  return [string rangeOfString:prefix
+                       options:NSCaseInsensitiveSearch | NSAnchoredSearch]
+             .location != NSNotFound;
+}
+
+// Returns a classification of an AVCaptureDevice not based on its underlying
+// plugin.
+AVCaptureDeviceClassification ClassifyAVCaptureDeviceNonPlugin(
+    AVCaptureDevice* device) {
+  // The docs say that Apple devices return the manufacturer string "Apple Inc."
+  // but in reality, variations are returned, so look for a slightly more broad
+  // result.
+  if (HasPrefix(device.manufacturer, @"apple")) {
+    return AVCaptureDeviceClassification::kNonPluginApple;
+  }
+
+  // For now, it is believed that all old-style DAL plugins use the "built-in"
+  // transport type, but log a few other types for completeness.
+  switch (device.transportType) {
+    case kIOAudioDeviceTransportTypeBuiltIn:
+      return AVCaptureDeviceClassification::
+          kNonPluginThirdPartyTransportBuiltIn;
+    case kIOAudioDeviceTransportTypeOther:
+      return AVCaptureDeviceClassification::kNonPluginThirdPartyTransportOther;
+    case kIOAudioDeviceTransportTypeVirtual:
+      return AVCaptureDeviceClassification::
+          kNonPluginThirdPartyTransportVirtual;
+    default:
+      return AVCaptureDeviceClassification::
+          kNonPluginThirdPartyTransportNoneOfTheAbove;
+  }
+}
+
+AVCaptureDeviceClassification ClassifyAVCaptureDevice(AVCaptureDevice* device) {
+  CMIOObjectID plugin;
+  UInt32 plugin_size = sizeof(plugin);
+  CMIOObjectPropertyAddress plugin_address{
+      .mSelector = kCMIODevicePropertyPlugIn,
+      .mScope = kCMIOObjectPropertyScopeGlobal,
+      .mElement = kCMIOObjectPropertyElementMain};
+  OSStatus err =
+      CMIOObjectGetPropertyData(device.connectionID, &plugin_address, 0,
+                                nullptr, plugin_size, &plugin_size, &plugin);
+  if (err != noErr) {
+    return ClassifyAVCaptureDeviceNonPlugin(device);
+  }
+
+  base::apple::ScopedCFTypeRef<CFStringRef> bundle_id;
+  UInt32 bundle_id_size = sizeof(CFStringRef);
+  CMIOObjectPropertyAddress bundle_id_address{
+      .mSelector = kCMIOPlugInPropertyBundleID,
+      .mScope = kCMIOObjectPropertyScopeGlobal,
+      .mElement = kCMIOObjectPropertyElementMain};
+  err = CMIOObjectGetPropertyData(plugin, &bundle_id_address, 0, nullptr,
+                                  bundle_id_size, &bundle_id_size,
+                                  bundle_id.InitializeInto());
+  if (err != noErr || !bundle_id) {
+    return ClassifyAVCaptureDeviceNonPlugin(device);
+  }
+
+  if (HasPrefix(base::apple::CFToNSPtrCast(bundle_id.get()), @"com.apple")) {
+    return AVCaptureDeviceClassification::kPluginApple;
+  }
+
+  UInt32 is_extension = 0xFFFF'FFFF;
+  UInt32 is_extension_size = sizeof(is_extension);
+  CMIOObjectPropertyAddress is_extension_address{
+      .mSelector = kCMIOPlugInPropertyIsExtension,
+      .mScope = kCMIOObjectPropertyScopeGlobal,
+      .mElement = kCMIOObjectPropertyElementMain};
+  err = CMIOObjectGetPropertyData(plugin, &is_extension_address, 0, nullptr,
+                                  is_extension_size, &is_extension_size,
+                                  &is_extension);
+  if (err != noErr || is_extension == 0xFFFF'FFFF) {
+    return ClassifyAVCaptureDeviceNonPlugin(device);
+  }
+
+  return is_extension
+             ? AVCaptureDeviceClassification::kPluginThirdPartyExtension
+             : AVCaptureDeviceClassification::kPluginThirdPartyNonExtension;
+}
+
 }  // namespace
 
 void LogFirstCapturedVideoFrame(const AVCaptureDeviceFormat* bestCaptureFormat,
@@ -108,6 +216,16 @@ void LogReactionEffectsGesturesState() {
   }
   base::UmaHistogramEnumeration(
       "Media.VideoCapture.Mac.Device.ReactionEffectsGesturesState", state);
+}
+
+// NB: This is for determining if it is safe to remove the plugin helper type;
+// see https://crbug.com/461717105. When removing this code, be sure to do a
+// full revert as to strip references to CoreMediaIO.framework that are no
+// longer needed.
+void LogAVCaptureDeviceInfo(AVCaptureDevice* device) {
+  base::UmaHistogramEnumeration(
+      "Media.VideoCapture.Mac.Device.ImplementationClassification",
+      ClassifyAVCaptureDevice(device));
 }
 
 }  // namespace media

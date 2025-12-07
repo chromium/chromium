@@ -18,12 +18,11 @@ import java.util.HashMap;
  */
 public class WebContentsRegistry {
     private static class WebContentsHolder {
-        public WebContents webContents;
+        public final WebContents webContents;
         public boolean initialized;
 
         public WebContentsHolder(WebContents webContents) {
             this.webContents = webContents;
-            this.initialized = false;
         }
     }
 

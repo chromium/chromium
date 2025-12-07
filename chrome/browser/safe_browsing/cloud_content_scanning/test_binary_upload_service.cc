@@ -4,7 +4,6 @@
 
 #include "chrome/browser/safe_browsing/cloud_content_scanning/test_binary_upload_service.h"
 
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_fcm_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -28,7 +27,7 @@ void TestBinaryUploadService::MaybeUploadForDeepScanning(
 }
 
 void TestBinaryUploadService::SetResponse(
-    Result result,
+    enterprise_connectors::ScanRequestUploadResult result,
     enterprise_connectors::ContentAnalysisResponse response) {
   saved_result_ = result;
   saved_response_ = response;

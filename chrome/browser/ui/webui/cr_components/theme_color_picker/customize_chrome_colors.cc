@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/cr_components/theme_color_picker/customize_chrome_colors.h"
 
 #include <array>
@@ -16,6 +11,7 @@
 #include "chrome/browser/new_tab_page/chrome_colors/selected_colors_info.h"
 #include "ui/base/mojom/themes.mojom.h"
 #include "ui/color/color_provider_utils.h"
+#include "ui/gfx/color_utils.h"
 
 namespace {
 

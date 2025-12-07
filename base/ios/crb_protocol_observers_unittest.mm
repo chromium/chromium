@@ -25,12 +25,12 @@
 @end
 
 // Implements only the required methods in the TestObserver protocol.
-@interface TestPartialObserver : NSObject<TestObserver>
+@interface TestPartialObserver : NSObject <TestObserver>
 @property(nonatomic, readonly) BOOL requiredMethodInvoked;
 @end
 
 // Implements all the methods in the TestObserver protocol.
-@interface TestCompleteObserver : TestPartialObserver<TestObserver>
+@interface TestCompleteObserver : TestPartialObserver <TestObserver>
 @property(nonatomic, readonly) BOOL optionalMethodInvoked;
 @end
 
@@ -44,7 +44,7 @@ namespace {
 
 class CRBProtocolObserversTest : public PlatformTest {
  public:
-  CRBProtocolObserversTest() {}
+  CRBProtocolObserversTest() = default;
 
  protected:
   void SetUp() override {
@@ -283,8 +283,7 @@ TEST_F(CRBProtocolObserversTest, IgnoresDeallocedObservers) {
 }
 
 - (instancetype)init {
-  NOTREACHED_IN_MIGRATION();
-  return nil;
+  NOTREACHED();
 }
 
 - (void)mutateByAddingObserver:(id<TestObserver>)observer {

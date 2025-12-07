@@ -7,6 +7,7 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
 #include "base/synchronization/lock.h"
@@ -53,8 +54,11 @@ class LocationApiAdapterAndroid {
                                      bool has_heading,
                                      double heading,
                                      bool has_speed,
-                                     double speed);
-  static void OnNewErrorAvailable(JNIEnv* env, jstring message);
+                                     double speed,
+                                     bool is_precise);
+  static void OnNewErrorAvailable(
+      JNIEnv* env,
+      const base::android::JavaRef<jstring>& message);
 
   // Returns our singleton.
   static LocationApiAdapterAndroid* GetInstance();

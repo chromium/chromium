@@ -35,7 +35,7 @@ constexpr SkColor kCueColor = SK_ColorGRAY;
 }  // namespace
 
 TabletModeMultitaskCueController::TabletModeMultitaskCueController() {
-  CHECK(Shell::Get()->IsInTabletMode());
+  CHECK(display::Screen::Get()->InTabletMode());
   Shell::Get()->activation_client()->AddObserver(this);
 
   // If an app window is active before switching to tablet mode, show the cue.

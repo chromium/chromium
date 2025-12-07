@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/moving_window.h"
+
+#include <array>
 
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,10 +13,11 @@ namespace base {
 
 namespace {
 
-constexpr int kTestValues[] = {
+constexpr auto kTestValues = std::to_array<int>({
     33, 1, 2, 7, 5, 2, 4, 45, 1000, 1, 100, 2, 200, 2,  2, 2, 300, 4, 1,
     2,  3, 4, 5, 6, 7, 8, 9,  10,   9, 8,   7, 6,   5,  4, 3, 2,   1, 1,
-    2,  1, 4, 2, 1, 8, 1, 2,  1,    4, 1,   2, 1,   16, 1, 2, 1};
+    2,  1, 4, 2, 1, 8, 1, 2,  1,    4, 1,   2, 1,   16, 1, 2, 1,
+});
 
 }  // namespace
 

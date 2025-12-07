@@ -25,6 +25,7 @@ enum class PermissionType;
 namespace permissions {
 class ObjectPermissionContextBase;
 class PermissionDecisionAutoBlocker;
+class PermissionActionsHistory;
 }  // namespace permissions
 
 namespace safe_browsing {
@@ -69,9 +70,9 @@ class PageInfoDelegate {
       const std::optional<url::Origin>& requesting_origin) = 0;
 #if !BUILDFLAG(IS_ANDROID)
   // Returns std::nullopt if `site_url` is not recognised as a member of any
-  // FPS or if FPS functionality is not allowed .
-  virtual std::optional<std::u16string> GetFpsOwner(const GURL& site_url) = 0;
-  virtual bool IsFpsManaged() = 0;
+  // RWS or if RWS functionality is not allowed .
+  virtual std::optional<std::u16string> GetRwsOwner(const GURL& site_url) = 0;
+  virtual bool IsRwsManaged(const GURL& site_url) = 0;
 
   // Creates an infobars::ContentInfoBarManager and an InfoBarDelegate using it,
   // if possible. Returns true if an InfoBarDelegate was created, false
@@ -84,12 +85,14 @@ class PageInfoDelegate {
   virtual bool IsIsolatedWebApp() = 0;
   virtual void ShowSiteSettings(const GURL& site_url) = 0;
   virtual void ShowCookiesSettings() = 0;
-  virtual void ShowAllSitesSettingsFilteredByFpsOwner(
-      const std::u16string& fps_owner) = 0;
+  virtual void ShowAllSitesSettingsFilteredByRwsOwner(
+      const std::u16string& rws_owner) = 0;
+  virtual void ShowSyncSettings() = 0;
   virtual void OpenCookiesDialog() = 0;
   virtual void OpenCertificateDialog(net::X509Certificate* certificate) = 0;
   virtual void OpenConnectionHelpCenterPage(const ui::Event& event) = 0;
   virtual void OpenSafetyTipHelpCenterPage() = 0;
+  virtual void OpenSafeBrowsingHelpCenterPage(const ui::Event& event) = 0;
   virtual void OpenContentSettingsExceptions(
       ContentSettingsType content_settings_type) = 0;
   virtual void OnPageInfoActionOccurred(page_info::PageInfoAction action) = 0;
@@ -100,6 +103,9 @@ class PageInfoDelegate {
 
   virtual permissions::PermissionDecisionAutoBlocker*
   GetPermissionDecisionAutoblocker() = 0;
+
+  virtual permissions::PermissionActionsHistory*
+  GetPermissionActionsHistory() = 0;
 
   // Service for managing SSL error page bypasses. Used to revoke bypass
   // decisions by users.
@@ -129,6 +135,7 @@ class PageInfoDelegate {
   virtual const std::u16string GetClientApplicationName() = 0;
 #endif
   virtual bool IsHttpsFirstModeEnabled() = 0;
+  virtual bool IsIncognitoProfile() = 0;
 };
 
 #endif  // COMPONENTS_PAGE_INFO_PAGE_INFO_DELEGATE_H_

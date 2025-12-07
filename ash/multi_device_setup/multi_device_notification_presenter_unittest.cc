@@ -117,7 +117,8 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
     delegate->SetMultiDeviceSetupBinder(base::BindRepeating(
         &multidevice_setup::MultiDeviceSetupBase::BindReceiver,
         base::Unretained(fake_multidevice_setup_.get())));
-    NoSessionAshTestBase::SetUp(std::move(delegate));
+    set_shell_delegate(std::move(delegate));
+    NoSessionAshTestBase::SetUp();
 
     test_system_tray_client_ = GetSystemTrayClient();
 
@@ -134,15 +135,7 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
   void InvokePendingMojoCalls() { notification_presenter_->FlushForTesting(); }
 
   void SignIntoAccount() {
-    TestSessionControllerClient* test_session_client =
-        GetSessionControllerClient();
-    test_session_client->AddUserSession(
-        kTestUserEmail, user_manager::UserType::kRegular,
-        true /* provide_pref_service */, false /* is_new_profile */);
-    test_session_client->SetSessionState(session_manager::SessionState::ACTIVE);
-    test_session_client->SwitchActiveUser(
-        AccountId::FromUserEmail(kTestUserEmail));
-
+    SimulateUserLogin({kTestUserEmail});
     InvokePendingMojoCalls();
     EXPECT_TRUE(fake_multidevice_setup_->delegate().is_bound());
   }
@@ -346,7 +339,7 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
             kTestDeviceType);
         break;
       case MultiDeviceNotificationPresenter::Status::kNoNotificationVisible:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     EXPECT_EQ(title, kVisibleNotification->title());
     EXPECT_EQ(message, kVisibleNotification->message());

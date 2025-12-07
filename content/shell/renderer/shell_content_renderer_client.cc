@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
+#include "base/immediate_crash.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -34,7 +35,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "net/base/net_errors.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "sandbox/policy/sandbox.h"
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 #include "third_party/blink/public/platform/web_url_error.h"
@@ -44,10 +44,6 @@
 #include "third_party/blink/public/web/web_view.h"
 #include "v8/include/v8-initialization.h"
 #include "v8/include/v8.h"
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-#include "ppapi/shared_impl/ppapi_switches.h"  // nogncheck
-#endif
 
 #if BUILDFLAG(ENABLE_MOJO_CDM)
 #include "base/feature_list.h"
@@ -99,14 +95,14 @@ class TestRendererServiceImpl : public mojom::TestService {
   }
 
   void DoTerminateProcess(DoTerminateProcessCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void DoCrashImmediately(DoCrashImmediatelyCallback callback) override {
     // This intentionally crashes the process and needs to be fatal regardless
-    // of DCHECK level. It's intended to get called. This is unlike the other
-    // NOTREACHED()s which are not expected to get called at all.
-    CHECK(false);
+    // of DCHECK level. This is unlike the other NOTREACHED()s which are not
+    // expected to get called at all.
+    base::ImmediateCrash();
   }
 
   void CreateFolder(CreateFolderCallback callback) override { NOTREACHED(); }
@@ -118,25 +114,25 @@ class TestRendererServiceImpl : public mojom::TestService {
   void CreateReadOnlySharedMemoryRegion(
       const std::string& message,
       CreateReadOnlySharedMemoryRegionCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void CreateWritableSharedMemoryRegion(
       const std::string& message,
       CreateWritableSharedMemoryRegionCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void CreateUnsafeSharedMemoryRegion(
       const std::string& message,
       CreateUnsafeSharedMemoryRegionCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void CloneSharedMemoryContents(
       base::ReadOnlySharedMemoryRegion region,
       CloneSharedMemoryContentsCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void IsProcessSandboxed(IsProcessSandboxedCallback callback) override {
@@ -154,7 +150,7 @@ class TestRendererServiceImpl : public mojom::TestService {
     std::move(callback).Run();
   }
 
-  void WriteToPreloadedPipe() override { NOTREACHED_IN_MIGRATION(); }
+  void WriteToPreloadedPipe() override { NOTREACHED(); }
 
   mojo::Receiver<mojom::TestService> receiver_;
 };
@@ -180,10 +176,10 @@ class ShellContentRendererUrlLoaderThrottleProvider
         base::PassKey<ShellContentRendererUrlLoaderThrottleProvider>());
   }
 
-  blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> CreateThrottles(
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> CreateThrottles(
       base::optional_ref<const blink::LocalFrameToken> local_frame_token,
       const network::ResourceRequest& request) override {
-    blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
+    std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
     if (local_frame_token.has_value()) {
       auto throttle =
           content::MaybeCreateIdentityUrlLoaderThrottle(base::BindRepeating(
@@ -292,13 +288,13 @@ void ShellContentRendererClient::RenderThreadStarted() {
 void ShellContentRendererClient::ExposeInterfacesToBrowser(
     mojo::BinderMap* binders) {
   binders->Add<mojom::TestService>(
-      base::BindRepeating(&CreateRendererTestService),
+      &CreateRendererTestService,
       base::SingleThreadTaskRunner::GetCurrentDefault());
   binders->Add<mojom::PowerMonitorTest>(
-      base::BindRepeating(&PowerMonitorTestImpl::MakeSelfOwnedReceiver),
+      &PowerMonitorTestImpl::MakeSelfOwnedReceiver,
       base::SingleThreadTaskRunner::GetCurrentDefault());
   binders->Add<mojom::MainFrameCounterTest>(
-      base::BindRepeating(&MainFrameCounterTestImpl::Bind),
+      &MainFrameCounterTestImpl::Bind,
       base::SingleThreadTaskRunner::GetCurrentDefault());
   binders->Add<web_cache::mojom::WebCache>(
       base::BindRepeating(&web_cache::WebCacheImpl::BindReceiver,

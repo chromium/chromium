@@ -138,3 +138,30 @@ message TfLiteModelMetadata {
   optional int32 input_width = 3;
   optional int32 input_height = 4;
 }
+
+message EmbeddingList {
+  // The version of this list.
+  //
+  // Format: PYYMMDDRR
+  // P: Platform
+  // YY: Year
+  // MM: Month
+  // DD: Day
+  // RR: Revision
+  optional string version = 1;
+  // The version of the embedder that created the embeddings.
+  optional int32 embedder_version = 2;
+  // An embedding.
+  message Embedding {
+    // The unique identifier for this embedding.
+    optional string id = 1;
+    // The version of the embedder that created this embedding.
+    optional int32 embedder_version = 2;
+    // The n-dimensional embedding.
+    repeated float value = 3;
+    // Dictates whether another embedding is "close" to it.
+    optional float threshold = 4;
+  }
+  // The list of image embeddings.
+  repeated Embedding image_embeddings = 3;
+}

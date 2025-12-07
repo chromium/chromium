@@ -28,13 +28,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/public/web/web_view.h"
 
+#include <array>
 #include <limits>
 #include <memory>
 #include <optional>
@@ -97,7 +93,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
@@ -147,7 +142,7 @@
 #include "third_party/blink/renderer/core/testing/fake_web_plugin.h"
 #include "third_party/blink/renderer/core/testing/mock_clipboard_host.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/testing/web_view_test_helper.h"
 #include "third_party/blink/renderer/core/timing/event_timing.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/cursors.h"
@@ -170,7 +165,7 @@
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-blink.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink.h"
-#include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/menu_source_type.mojom-blink.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -314,8 +309,16 @@ class WebViewTest : public testing::Test {
                      const std::string& html_file);
   void TestInputAction(ui::TextInputAction expected_input_action,
                        const std::string& html_file);
-  bool SimulateGestureAtElement(WebInputEvent::Type, Element*);
-  bool SimulateGestureAtElementById(WebInputEvent::Type, const WebString& id);
+  bool SimulateGestureAtElement(
+      WebInputEvent::Type,
+      Element*,
+      WebPointerProperties::PointerType primary_pointer_type =
+          WebPointerProperties::PointerType::kTouch);
+  bool SimulateGestureAtElementById(
+      WebInputEvent::Type,
+      const WebString& id,
+      WebPointerProperties::PointerType primary_pointer_type =
+          WebPointerProperties::PointerType::kTouch);
   WebGestureEvent BuildTapEvent(WebInputEvent::Type,
                                 int tap_event_count,
                                 const gfx::PointF& position_in_widget);
@@ -325,6 +328,9 @@ class WebViewTest : public testing::Test {
   bool SimulateTapEventAtElementById(WebInputEvent::Type,
                                      int tap_event_count,
                                      const WebString& id);
+  gfx::PointF GetElementCenterPoint(const Element* element_id);
+  gfx::PointF GetElementCenterPointInFrame(const Element* element,
+                                           const WebLocalFrameImpl* frame);
 
   ExternalDateTimeChooser* GetExternalDateTimeChooser(
       WebViewImpl* web_view_impl);
@@ -346,6 +352,16 @@ class WebViewTest : public testing::Test {
   test::TaskEnvironment task_environment_;
   frame_test_helpers::WebViewHelper web_view_helper_;
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
+};
+
+class WebViewTestTouchDragEndContextMenuWithPointerType
+    : public WebViewTest,
+      public testing::WithParamInterface<
+          std::tuple<bool, WebPointerProperties::PointerType>> {};
+
+class WebViewTestWithPointerType
+    : public WebViewTest,
+      public ::testing::WithParamInterface<WebPointerProperties::PointerType> {
 };
 
 static bool HitTestIsContentEditable(WebView* view, int x, int y) {
@@ -489,7 +505,7 @@ TEST_F(WebViewTest, SetBaseBackgroundColor) {
 
   web_view->SetPageBaseBackgroundColor(kTranslucentPutty);
   // Expected: red (50% alpha) blended atop kTranslucentPutty. Note the alpha.
-  EXPECT_EQ(0xBFE93A31, web_view->BackgroundColor());
+  EXPECT_EQ(0xC0EA3B32, web_view->BackgroundColor());
 
   web_view->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
   frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(),
@@ -624,7 +640,8 @@ TEST_F(WebViewTest, SetBaseBackgroundColorWithColorScheme) {
   Color system_background_color = LayoutTheme::GetTheme().SystemColor(
       CSSValueID::kCanvas, color_scheme,
       web_view->GetPage()->GetColorProviderForPainting(
-          color_scheme, /*in_forced_colors=*/true));
+          color_scheme, /*in_forced_colors=*/true),
+      document->IsInWebAppScope());
   EXPECT_EQ(system_background_color, frame_view->BaseBackgroundColor());
 
   color_scheme_helper.SetInForcedColors(*document, /*in_forced_colors=*/false);
@@ -849,14 +866,14 @@ TEST_F(WebViewTest, HitTestResultForTapWithTapArea) {
   // The tap area is 20 by 20 square, centered at 55, 55.
   gfx::Size tap_area(20, 20);
   WebHitTestResult positive_result =
-      web_view->HitTestResultForTap(hit_point, tap_area);
+      HitTestResultForTap(web_view, hit_point, tap_area);
   EXPECT_TRUE(positive_result.GetNode().To<WebElement>().HasHTMLTagName("img"));
   positive_result.Reset();
 
   // Move the hit point the image is just outside the tapped area now.
   hit_point = gfx::Point(61, 61);
   WebHitTestResult negative_result2 =
-      web_view->HitTestResultForTap(hit_point, tap_area);
+      HitTestResultForTap(web_view, hit_point, tap_area);
   EXPECT_FALSE(
       negative_result2.GetNode().To<WebElement>().HasHTMLTagName("img"));
   negative_result2.Reset();
@@ -879,7 +896,7 @@ TEST_F(WebViewTest, HitTestResultForTapWithTapAreaPageScaleAndPan) {
   // The tap area is 20 by 20 square, centered at 55, 55.
   gfx::Size tap_area(20, 20);
   WebHitTestResult positive_result =
-      web_view->HitTestResultForTap(hit_point, tap_area);
+      HitTestResultForTap(web_view, hit_point, tap_area);
   EXPECT_TRUE(positive_result.GetNode().To<WebElement>().HasHTMLTagName("img"));
   positive_result.Reset();
 
@@ -887,7 +904,7 @@ TEST_F(WebViewTest, HitTestResultForTapWithTapAreaPageScaleAndPan) {
   web_view->SetPageScaleFactor(2.0f);
   web_view->SetVisualViewportOffset(gfx::PointF(100, 100));
   WebHitTestResult negative_result2 =
-      web_view->HitTestResultForTap(hit_point, tap_area);
+      HitTestResultForTap(web_view, hit_point, tap_area);
   EXPECT_FALSE(
       negative_result2.GetNode().To<WebElement>().HasHTMLTagName("img"));
   negative_result2.Reset();
@@ -1198,7 +1215,7 @@ TEST_F(WebViewTest, FinishComposingTextDoesNotAssert) {
 
   // The test requires non-empty composition.
   std::string composition_text("hello");
-  WebVector<ui::ImeTextSpan> empty_ime_text_spans;
+  std::vector<ui::ImeTextSpan> empty_ime_text_spans;
   active_input_method_controller->SetComposition(
       WebString::FromUTF8(composition_text), empty_ime_text_spans, WebRange(),
       5, 5);
@@ -1256,7 +1273,7 @@ TEST_F(WebViewTest, FinishComposingTextCursorPositionChange) {
       web_view->MainFrameImpl()
           ->FrameWidget()
           ->GetActiveWebInputMethodController();
-  WebVector<ui::ImeTextSpan> empty_ime_text_spans;
+  std::vector<ui::ImeTextSpan> empty_ime_text_spans;
   active_input_method_controller->SetComposition(
       WebString::FromUTF8(composition_text), empty_ime_text_spans, WebRange(),
       3, 3);
@@ -1305,7 +1322,7 @@ TEST_F(WebViewTest, SetCompositionForNewCaretPositions) {
           ->FrameWidget()
           ->GetActiveWebInputMethodController();
 
-  WebVector<ui::ImeTextSpan> empty_ime_text_spans;
+  std::vector<ui::ImeTextSpan> empty_ime_text_spans;
 
   active_input_method_controller->CommitText("hello", empty_ime_text_spans,
                                              WebRange(), 0);
@@ -1421,7 +1438,7 @@ TEST_F(WebViewTest, SetCompositionWithEmptyText) {
           ->FrameWidget()
           ->GetActiveWebInputMethodController();
 
-  WebVector<ui::ImeTextSpan> empty_ime_text_spans;
+  std::vector<ui::ImeTextSpan> empty_ime_text_spans;
 
   active_input_method_controller->CommitText("hello", empty_ime_text_spans,
                                              WebRange(), 0);
@@ -1462,7 +1479,7 @@ TEST_F(WebViewTest, CommitTextForNewCaretPositions) {
           ->FrameWidget()
           ->GetActiveWebInputMethodController();
 
-  WebVector<ui::ImeTextSpan> empty_ime_text_spans;
+  std::vector<ui::ImeTextSpan> empty_ime_text_spans;
 
   // Caret is on the left of composing text.
   active_input_method_controller->CommitText("ab", empty_ime_text_spans,
@@ -1535,7 +1552,7 @@ TEST_F(WebViewTest, CommitTextWhileComposing) {
           ->FrameWidget()
           ->GetActiveWebInputMethodController();
 
-  WebVector<ui::ImeTextSpan> empty_ime_text_spans;
+  std::vector<ui::ImeTextSpan> empty_ime_text_spans;
   active_input_method_controller->SetComposition(
       WebString::FromUTF8("abc"), empty_ime_text_spans, WebRange(), 0, 0);
   WebTextInputInfo info = active_input_method_controller->TextInputInfo();
@@ -1613,7 +1630,7 @@ TEST_F(WebViewTest, FinishCompositionDoesNotRevealSelection) {
   // Scroll the input field out of the viewport.
   Element* element = static_cast<Element*>(
       web_view->MainFrameImpl()->GetDocument().GetElementById("btn"));
-  element->scrollIntoView();
+  element->scrollIntoViewForTesting();
   float offset_height = web_view->MainFrameImpl()->GetScrollOffset().y();
   EXPECT_EQ(0, web_view->MainFrameImpl()->GetScrollOffset().x());
   EXPECT_LT(0, offset_height);
@@ -1635,7 +1652,7 @@ TEST_F(WebViewTest, InsertNewLinePlacementAfterFinishComposingText) {
       base_url_ + "text_area_populated.html");
   web_view->MainFrameImpl()->GetFrame()->SetInitialFocus(false);
 
-  WebVector<ui::ImeTextSpan> empty_ime_text_spans;
+  std::vector<ui::ImeTextSpan> empty_ime_text_spans;
 
   WebLocalFrameImpl* frame = web_view->MainFrameImpl();
   WebInputMethodController* active_input_method_controller =
@@ -1756,7 +1773,7 @@ TEST_F(WebViewTest, SetCompositionFromExistingText) {
   WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(
       base_url_ + "input_field_populated.html");
   web_view->MainFrameImpl()->GetFrame()->SetInitialFocus(false);
-  WebVector<ui::ImeTextSpan> ime_text_spans(static_cast<size_t>(1));
+  std::vector<ui::ImeTextSpan> ime_text_spans(static_cast<size_t>(1));
   ime_text_spans[0] =
       ui::ImeTextSpan(ui::ImeTextSpan::Type::kComposition, 0, 4,
                       ui::ImeTextSpan::Thickness::kThin,
@@ -1771,7 +1788,7 @@ TEST_F(WebViewTest, SetCompositionFromExistingText) {
   EXPECT_EQ(10, info.selection_end);
   EXPECT_EQ(8, info.composition_start);
   EXPECT_EQ(12, info.composition_end);
-  WebVector<ui::ImeTextSpan> empty_ime_text_spans;
+  std::vector<ui::ImeTextSpan> empty_ime_text_spans;
   frame->SetCompositionFromExistingText(0, 0, empty_ime_text_spans);
   info = active_input_method_controller->TextInputInfo();
   EXPECT_EQ(4, info.selection_start);
@@ -1785,7 +1802,7 @@ TEST_F(WebViewTest, SetCompositionFromExistingTextInTextArea) {
   WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(
       base_url_ + "text_area_populated.html");
   web_view->MainFrameImpl()->GetFrame()->SetInitialFocus(false);
-  WebVector<ui::ImeTextSpan> ime_text_spans(static_cast<size_t>(1));
+  std::vector<ui::ImeTextSpan> ime_text_spans(static_cast<size_t>(1));
   ime_text_spans[0] =
       ui::ImeTextSpan(ui::ImeTextSpan::Type::kComposition, 0, 4,
                       ui::ImeTextSpan::Thickness::kThin,
@@ -1795,7 +1812,7 @@ TEST_F(WebViewTest, SetCompositionFromExistingTextInTextArea) {
       frame->FrameWidget()->GetActiveWebInputMethodController();
   frame->SetEditableSelectionOffsets(27, 27);
   std::string new_line_text("\n");
-  WebVector<ui::ImeTextSpan> empty_ime_text_spans;
+  std::vector<ui::ImeTextSpan> empty_ime_text_spans;
   active_input_method_controller->CommitText(
       WebString::FromUTF8(new_line_text), empty_ime_text_spans, WebRange(), 0);
   WebTextInputInfo info = active_input_method_controller->TextInputInfo();
@@ -1827,7 +1844,7 @@ TEST_F(WebViewTest, SetCompositionFromExistingTextInRichText) {
   WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(
       base_url_ + "content_editable_rich_text.html");
   web_view->MainFrameImpl()->GetFrame()->SetInitialFocus(false);
-  WebVector<ui::ImeTextSpan> ime_text_spans(static_cast<size_t>(1));
+  std::vector<ui::ImeTextSpan> ime_text_spans(static_cast<size_t>(1));
   ime_text_spans[0] =
       ui::ImeTextSpan(ui::ImeTextSpan::Type::kComposition, 0, 4,
                       ui::ImeTextSpan::Thickness::kThin,
@@ -1848,7 +1865,7 @@ TEST_F(WebViewTest, SetEditableSelectionOffsetsKeepsComposition) {
 
   std::string composition_text_first("hello ");
   std::string composition_text_second("world");
-  WebVector<ui::ImeTextSpan> empty_ime_text_spans;
+  std::vector<ui::ImeTextSpan> empty_ime_text_spans;
   WebInputMethodController* active_input_method_controller =
       web_view->MainFrameImpl()
           ->FrameWidget()
@@ -1948,7 +1965,8 @@ TEST_F(
   struct FocusedElement {
     AtomicString element_id;
     int next_previous_flags;
-  } focused_elements[] = {
+  };
+  auto focused_elements = std::to_array<FocusedElement>({
       {AtomicString("input1"),
        default_text_input_flags | kWebTextInputFlagHaveNextFocusableElement},
       {AtomicString("contenteditable1"),
@@ -1966,7 +1984,7 @@ TEST_F(
       {AtomicString("textarea2"),
        default_text_input_flags |
            kWebTextInputFlagHavePreviousFocusableElement},
-  };
+  });
 
   // Forward Navigation in form1 with NEXT
   Element* input1 = document->getElementById(AtomicString("input1"));
@@ -2213,7 +2231,8 @@ TEST_F(
   struct FocusedElement {
     const char* element_id;
     int next_previous_flags;
-  } focused_elements[] = {
+  };
+  auto focused_elements = std::to_array<FocusedElement>({
       {"textarea5",
        default_text_input_flags | kWebTextInputFlagHaveNextFocusableElement},
       {"input4", default_text_input_flags |
@@ -2222,7 +2241,7 @@ TEST_F(
       {"contenteditable3", kWebTextInputFlagHaveNextFocusableElement |
                                kWebTextInputFlagHavePreviousFocusableElement},
       {"input5", kWebTextInputFlagHavePreviousFocusableElement},
-  };
+  });
 
   // Forward Navigation in form2 with NEXT
   Element* text_area5 = document->getElementById(AtomicString("textarea5"));
@@ -2323,7 +2342,8 @@ TEST_F(WebViewTest,
   struct FocusedElement {
     const char* element_id;
     int next_previous_flags;
-  } focused_elements[] = {
+  };
+  auto focused_elements = std::to_array<FocusedElement>({
       {"textarea6",
        default_text_input_flags | kWebTextInputFlagHaveNextFocusableElement},
       {"input5", default_text_input_flags |
@@ -2333,7 +2353,7 @@ TEST_F(WebViewTest,
                                kWebTextInputFlagHavePreviousFocusableElement},
       {"input6", default_text_input_flags |
                      kWebTextInputFlagHavePreviousFocusableElement},
-  };
+  });
 
   // Forward Navigation in form with NEXT which has tabindex attribute
   // which differs visual order.
@@ -2433,10 +2453,11 @@ TEST_F(
   struct FocusedElement {
     const char* element_id;
     int next_previous_flags;
-  } focused_elements[] = {
+  };
+  auto focused_elements = std::to_array<FocusedElement>({
       {"contenteditable6", kWebTextInputFlagHaveNextFocusableElement},
       {"contenteditable7", kWebTextInputFlagHavePreviousFocusableElement},
-  };
+  });
   // Forward Navigation in form with NEXT which has has disabled/enabled
   // elements which will gets skipped during navigation.
   Element* content_editable6 =
@@ -2590,24 +2611,27 @@ TEST_F(WebViewTest, BackForwardRestoreScroll) {
       /*has_transient_user_activation=*/false, /*initiator_origin=*/nullptr,
       /*is_synchronously_committed=*/false, /*source_element=*/nullptr,
       mojom::blink::TriggeringEventInfo::kNotFromEvent,
-      /*is_browser_initiated=*/true,
-      /*soft_navigation_heuristics_task_id=*/std::nullopt);
+      /*is_browser_initiated=*/true, /*has_ua_visual_transition,=*/false,
+      /*soft_navigation_heuristics_task_id=*/std::nullopt,
+      /*should_skip_screenshot=*/false);
   main_frame_local->Loader().GetDocumentLoader()->CommitSameDocumentNavigation(
       item2->Url(), WebFrameLoadType::kBackForward, item2.Get(),
       ClientRedirectPolicy::kNotClientRedirect,
       /*has_transient_user_activation=*/false, /*initiator_origin=*/nullptr,
       /*is_synchronously_committed=*/false, /*source_element=*/nullptr,
       mojom::blink::TriggeringEventInfo::kNotFromEvent,
-      /*is_browser_initiated=*/true,
-      /*soft_navigation_heuristics_task_id=*/std::nullopt);
+      /*is_browser_initiated=*/true, /*has_ua_visual_transition,=*/false,
+      /*soft_navigation_heuristics_task_id=*/std::nullopt,
+      /*should_skip_screenshot=*/false);
   main_frame_local->Loader().GetDocumentLoader()->CommitSameDocumentNavigation(
       item1->Url(), WebFrameLoadType::kBackForward, item1.Get(),
       ClientRedirectPolicy::kNotClientRedirect,
       /*has_transient_user_activation=*/false, /*initiator_origin=*/nullptr,
       /*is_synchronously_committed=*/false, /*source_element=*/nullptr,
       mojom::blink::TriggeringEventInfo::kNotFromEvent,
-      /*is_browser_initiated=*/true,
-      /*soft_navigation_heuristics_task_id=*/std::nullopt);
+      /*is_browser_initiated=*/true, /*has_ua_visual_transition,=*/false,
+      /*soft_navigation_heuristics_task_id=*/std::nullopt,
+      /*should_skip_screenshot=*/false);
   web_view_impl->MainFrameWidget()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);
 
@@ -2629,8 +2653,9 @@ TEST_F(WebViewTest, BackForwardRestoreScroll) {
       /*has_transient_user_activation=*/false, /*initiator_origin=*/nullptr,
       /*is_synchronously_committed=*/false, /*source_element=*/nullptr,
       mojom::blink::TriggeringEventInfo::kNotFromEvent,
-      /*is_browser_initiated=*/true,
-      /*soft_navigation_heuristics_task_id=*/std::nullopt);
+      /*is_browser_initiated=*/true, /*has_ua_visual_transition,=*/false,
+      /*soft_navigation_heuristics_task_id=*/std::nullopt,
+      /*should_skip_screenshot=*/false);
 
   main_frame_local->Loader().GetDocumentLoader()->CommitSameDocumentNavigation(
       item3->Url(), WebFrameLoadType::kBackForward, item3.Get(),
@@ -2638,8 +2663,9 @@ TEST_F(WebViewTest, BackForwardRestoreScroll) {
       /*has_transient_user_activation=*/false, /*initiator_origin=*/nullptr,
       /*is_synchronously_committed=*/false, /*source_element=*/nullptr,
       mojom::blink::TriggeringEventInfo::kNotFromEvent,
-      /*is_browser_initiated=*/true,
-      /*soft_navigation_heuristics_task_id=*/std::nullopt);
+      /*is_browser_initiated=*/true, /*has_ua_visual_transition,=*/false,
+      /*soft_navigation_heuristics_task_id=*/std::nullopt,
+      /*should_skip_screenshot=*/false);
   // The scroll offset is only applied via invoking the anchor via the main
   // lifecycle, or a forced layout.
   // TODO(chrishtr): At the moment, WebLocalFrameImpl::GetScrollOffset() does
@@ -2816,25 +2842,22 @@ TEST_F(WebViewTest, DragDropURL) {
             web_view->MainFrameImpl()->GetDocument().Url().GetString().Utf8());
 }
 
-bool WebViewTest::SimulateGestureAtElement(WebInputEvent::Type type,
-                                           Element* element) {
+bool WebViewTest::SimulateGestureAtElement(
+    WebInputEvent::Type type,
+    Element* element,
+    WebPointerProperties::PointerType primary_pointer_type) {
   if (!element || !element->GetLayoutObject())
     return false;
 
   DCHECK(web_view_helper_.GetWebView());
   element->scrollIntoViewIfNeeded();
 
-  gfx::Point center =
-      web_view_helper_.GetWebView()
-          ->MainFrameImpl()
-          ->GetFrameView()
-          ->FrameToScreen(element->GetLayoutObject()->AbsoluteBoundingBoxRect())
-          .CenterPoint();
-
   WebGestureEvent event(type, WebInputEvent::kNoModifiers,
                         WebInputEvent::GetStaticTimeStampForTests(),
                         WebGestureDevice::kTouchscreen);
-  event.SetPositionInWidget(gfx::PointF(center));
+  event.primary_pointer_type = primary_pointer_type;
+
+  event.SetPositionInWidget(GetElementCenterPoint(element));
 
   web_view_helper_.GetWebView()->MainFrameWidget()->HandleInputEvent(
       WebCoalescedInputEvent(event, ui::LatencyInfo()));
@@ -2842,12 +2865,28 @@ bool WebViewTest::SimulateGestureAtElement(WebInputEvent::Type type,
   return true;
 }
 
-bool WebViewTest::SimulateGestureAtElementById(WebInputEvent::Type type,
-                                               const WebString& id) {
+gfx::PointF WebViewTest::GetElementCenterPoint(const Element* element) {
+  return GetElementCenterPointInFrame(
+      element, web_view_helper_.GetWebView()->MainFrameImpl());
+}
+
+gfx::PointF WebViewTest::GetElementCenterPointInFrame(
+    const Element* element,
+    const WebLocalFrameImpl* frame) {
+  return gfx::PointF(
+      frame->GetFrameView()
+          ->FrameToScreen(element->GetLayoutObject()->AbsoluteBoundingBoxRect())
+          .CenterPoint());
+}
+
+bool WebViewTest::SimulateGestureAtElementById(
+    WebInputEvent::Type type,
+    const WebString& id,
+    WebPointerProperties::PointerType primary_pointer_type) {
   DCHECK(web_view_helper_.GetWebView());
   Element* element = static_cast<Element*>(
       web_view_helper_.LocalMainFrame()->GetDocument().GetElementById(id));
-  return SimulateGestureAtElement(type, element);
+  return SimulateGestureAtElement(type, element, primary_pointer_type);
 }
 
 WebGestureEvent WebViewTest::BuildTapEvent(
@@ -2882,14 +2921,8 @@ bool WebViewTest::SimulateTapEventAtElement(WebInputEvent::Type type,
   DCHECK(web_view_helper_.GetWebView());
   element->scrollIntoViewIfNeeded();
 
-  const gfx::PointF center = gfx::PointF(
-      web_view_helper_.GetWebView()
-          ->MainFrameImpl()
-          ->GetFrameView()
-          ->FrameToScreen(element->GetLayoutObject()->AbsoluteBoundingBoxRect())
-          .CenterPoint());
-
-  const WebGestureEvent event = BuildTapEvent(type, tap_event_count, center);
+  const WebGestureEvent event =
+      BuildTapEvent(type, tap_event_count, GetElementCenterPoint(element));
   web_view_helper_.GetWebView()->MainFrameWidget()->HandleInputEvent(
       WebCoalescedInputEvent(event, ui::LatencyInfo()));
   RunPendingTasks();
@@ -3148,6 +3181,8 @@ TEST_F(WebViewTest, TouchDragContextMenuWithoutDrag) {
 
   web_view->SettingsImpl()->SetTouchDragDropEnabled(true);
   web_view->SettingsImpl()->SetTouchDragEndContextMenu(true);
+  web_view->GetPage()->GetFocusController().SetActive(true);
+  web_view->GetPage()->GetFocusController().SetFocused(true);
   web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
   UpdateAllLifecyclePhases();
   RunPendingTasks();
@@ -3189,6 +3224,8 @@ TEST_F(WebViewTest, TouchDragContextMenuAtDragEnd) {
 
   web_view->SettingsImpl()->SetTouchDragDropEnabled(true);
   web_view->SettingsImpl()->SetTouchDragEndContextMenu(true);
+  web_view->GetPage()->GetFocusController().SetActive(true);
+  web_view->GetPage()->GetFocusController().SetFocused(true);
   web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
   UpdateAllLifecyclePhases();
   RunPendingTasks();
@@ -3222,7 +3259,81 @@ TEST_F(WebViewTest, TouchDragContextMenuAtDragEnd) {
           web_view->MainFrameImpl()->GetFrame()));
 }
 
-TEST_F(WebViewTest, ContextMenuOnLinkAndImageLongPress) {
+// Tests the conditions that make a touch drag not open a context menu, when
+// `TouchDragEndContextMenu` is enabled. The conditions are three:
+// 1) The drop happened far away from the initial drag point.
+// 2) The drop happened in a different window than the browser's.
+// 3) The drop had an effect (move, copy).
+TEST_F(WebViewTest, TouchDragContextMenuConditions) {
+  RegisterMockedHttpURLLoad("long_press_draggable_div.html");
+
+  WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(
+      base_url_ + "long_press_draggable_div.html");
+
+  web_view->SettingsImpl()->SetTouchDragDropEnabled(true);
+  web_view->SettingsImpl()->SetTouchDragEndContextMenu(true);
+  web_view->GetPage()->GetFocusController().SetActive(true);
+  web_view->GetPage()->GetFocusController().SetFocused(true);
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
+  UpdateAllLifecyclePhases();
+  RunPendingTasks();
+
+  WebPointerEvent pointer_down(
+      WebInputEvent::Type::kPointerDown,
+      WebPointerProperties(1, WebPointerProperties::PointerType::kTouch), 5, 5);
+  const WebString target_id = WebString::FromUTF8("target");
+  Element* target_element =
+      web_view->MainFrameImpl()->GetDocument().GetElementById(target_id);
+  const gfx::PointF center = gfx::PointF(
+      web_view->MainFrameImpl()
+          ->GetFrameView()
+          ->FrameToScreen(
+              target_element->GetLayoutObject()->AbsoluteBoundingBoxRect())
+          .CenterPoint());
+  pointer_down.SetPositionInWidget(center.x(), center.y());
+  pointer_down.SetPositionInScreen(center.x(), center.y());
+  web_view->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(pointer_down, ui::LatencyInfo()));
+  web_view->MainFrameWidget()->DispatchBufferedTouchEvents();
+
+  // 1) Initiate drag and drop it far away from the initial drag point.
+  EXPECT_TRUE(SimulateGestureAtElementById(
+      WebInputEvent::Type::kGestureLongPress, target_id));
+  EXPECT_EQ("dragstart", web_view->MainFrameImpl()->GetDocument().Title());
+  web_view->MainFrameViewWidget()->DragSourceEndedAt(
+      center + gfx::Vector2dF(30, 30), center + gfx::Vector2dF(30, 30),
+      ui::mojom::blink::DragOperation::kNone, base::DoNothing());
+  EXPECT_FALSE(
+      web_view->GetPage()->GetContextMenuController().ContextMenuNodeForFrame(
+          web_view->MainFrameImpl()->GetFrame()));
+
+  // 2) Initiate a drag and make it end with an action.
+  EXPECT_TRUE(SimulateGestureAtElementById(
+      WebInputEvent::Type::kGestureLongPress, target_id));
+  EXPECT_EQ("dragstart", web_view->MainFrameImpl()->GetDocument().Title());
+  web_view->MainFrameViewWidget()->DragSourceEndedAt(
+      center, center, ui::mojom::blink::DragOperation::kMove,
+      base::DoNothing());
+  EXPECT_FALSE(
+      web_view->GetPage()->GetContextMenuController().ContextMenuNodeForFrame(
+          web_view->MainFrameImpl()->GetFrame()));
+
+  // 3) Initiate a drag and make it end in a different window.
+  EXPECT_TRUE(SimulateGestureAtElementById(
+      WebInputEvent::Type::kGestureLongPress, target_id));
+  EXPECT_EQ("dragstart", web_view->MainFrameImpl()->GetDocument().Title());
+  web_view->GetPage()->GetFocusController().SetActive(false);
+  web_view->GetPage()->GetFocusController().SetFocused(false);
+  web_view->MainFrameViewWidget()->DragSourceEndedAt(
+      center, center, ui::mojom::blink::DragOperation::kNone,
+      base::DoNothing());
+  EXPECT_FALSE(
+      web_view->GetPage()->GetContextMenuController().ContextMenuNodeForFrame(
+          web_view->MainFrameImpl()->GetFrame()));
+}
+
+TEST_P(WebViewTestTouchDragEndContextMenuWithPointerType,
+       ContextMenuOnLinkAndImageLongPress) {
   ScopedTouchDragAndContextMenuForTest touch_drag_and_context_menu(false);
   RegisterMockedHttpURLLoad("long_press_links_and_images.html");
 
@@ -3233,25 +3344,62 @@ TEST_F(WebViewTest, ContextMenuOnLinkAndImageLongPress) {
       base_url_ + "long_press_links_and_images.html");
 
   web_view->SettingsImpl()->SetTouchDragDropEnabled(true);
+  const bool set_touch_drag_end_context_menu = std::get<0>(GetParam());
+  web_view->SettingsImpl()->SetTouchDragEndContextMenu(
+      set_touch_drag_end_context_menu);
+  web_view->GetPage()->GetFocusController().SetActive(true);
+  web_view->GetPage()->GetFocusController().SetFocused(true);
   web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
   UpdateAllLifecyclePhases();
   RunPendingTasks();
 
   WebString anchor_tag_id = WebString::FromUTF8("anchorTag");
   WebString image_tag_id = WebString::FromUTF8("imageTag");
+  const WebPointerProperties::PointerType primary_pointer_type(
+      std::get<1>(GetParam()));
 
-  EXPECT_TRUE(SimulateGestureAtElementById(
-      WebInputEvent::Type::kGestureLongPress, anchor_tag_id));
-  EXPECT_EQ("contextmenu@a,", web_view->MainFrameImpl()->GetDocument().Title());
+  EXPECT_TRUE(
+      SimulateGestureAtElementById(WebInputEvent::Type::kGestureLongPress,
+                                   anchor_tag_id, primary_pointer_type));
+  if (set_touch_drag_end_context_menu) {
+    EXPECT_EQ("dragstart@a,", web_view->MainFrameImpl()->GetDocument().Title());
+    const Element* element = static_cast<Element*>(
+        web_view_helper_.LocalMainFrame()->GetDocument().GetElementById(
+            anchor_tag_id));
+    const gfx::PointF center = GetElementCenterPoint(element);
+    web_view->MainFrameViewWidget()->DragSourceEndedAt(
+        center, center, ui::mojom::blink::DragOperation::kNone,
+        base::DoNothing());
+    EXPECT_EQ("dragstart@a,contextmenu@a,",
+              web_view->MainFrameImpl()->GetDocument().Title());
+  } else {
+    EXPECT_EQ("contextmenu@a,",
+              web_view->MainFrameImpl()->GetDocument().Title());
+  }
 
   EXPECT_TRUE(SimulateGestureAtElementById(
       WebInputEvent::Type::kGestureLongPress, image_tag_id));
-  EXPECT_EQ("contextmenu@a,contextmenu@img,",
-            web_view->MainFrameImpl()->GetDocument().Title());
+  if (set_touch_drag_end_context_menu) {
+    EXPECT_EQ("dragstart@a,contextmenu@a,dragstart@img,",
+              web_view->MainFrameImpl()->GetDocument().Title());
+    const Element* element = static_cast<Element*>(
+        web_view_helper_.LocalMainFrame()->GetDocument().GetElementById(
+            image_tag_id));
+    const gfx::PointF center = GetElementCenterPoint(element);
+    web_view->MainFrameViewWidget()->DragSourceEndedAt(
+        center, center, ui::mojom::blink::DragOperation::kNone,
+        base::DoNothing());
+    EXPECT_EQ("dragstart@a,contextmenu@a,dragstart@img,contextmenu@img,",
+              web_view->MainFrameImpl()->GetDocument().Title());
+  } else {
+    EXPECT_EQ("contextmenu@a,contextmenu@img,",
+              web_view->MainFrameImpl()->GetDocument().Title());
+  }
 }
 
-TEST_F(WebViewTest, ContextMenuAndDragOnImageLongPress) {
+TEST_P(WebViewTestWithPointerType, ContextMenuAndDragOnImageLongPress) {
   ScopedTouchDragOnShortPressForTest touch_drag_on_short_press(true);
+  ScopedTouchDragAndDropForTest touch_drag_and_drop(true);
   RegisterMockedHttpURLLoad("long_press_links_and_images.html");
 
   url_test_helpers::RegisterMockedURLLoad(
@@ -3267,18 +3415,22 @@ TEST_F(WebViewTest, ContextMenuAndDragOnImageLongPress) {
   RunPendingTasks();
 
   WebString image_tag_id = WebString::FromUTF8("imageTag");
+  const WebPointerProperties::PointerType primary_pointer_type(GetParam());
 
-  EXPECT_TRUE(SimulateGestureAtElementById(
-      WebInputEvent::Type::kGestureShortPress, image_tag_id));
+  EXPECT_TRUE(
+      SimulateGestureAtElementById(WebInputEvent::Type::kGestureShortPress,
+                                   image_tag_id, primary_pointer_type));
   EXPECT_EQ("dragstart@img,",
             web_view->MainFrameImpl()->GetDocument().Title().Ascii());
-  EXPECT_TRUE(SimulateGestureAtElementById(
-      WebInputEvent::Type::kGestureLongPress, image_tag_id));
+  EXPECT_TRUE(
+      SimulateGestureAtElementById(WebInputEvent::Type::kGestureLongPress,
+                                   image_tag_id, primary_pointer_type));
   EXPECT_EQ("dragstart@img,contextmenu@img,",
             web_view->MainFrameImpl()->GetDocument().Title().Ascii());
 }
 
-TEST_F(WebViewTest, ContextMenuAndDragOnLinkLongPress) {
+TEST_P(WebViewTestWithPointerType, ContextMenuAndDragOnLinkLongPress) {
+  ScopedTouchDragAndDropForTest touch_drag_and_drop(true);
   ScopedTouchDragOnShortPressForTest touch_drag_on_short_press(true);
 
   RegisterMockedHttpURLLoad("long_press_links_and_images.html");
@@ -3296,13 +3448,16 @@ TEST_F(WebViewTest, ContextMenuAndDragOnLinkLongPress) {
   RunPendingTasks();
 
   WebString anchor_tag_id = WebString::FromUTF8("anchorTag");
+  const WebPointerProperties::PointerType primary_pointer_type(GetParam());
 
-  EXPECT_TRUE(SimulateGestureAtElementById(
-      WebInputEvent::Type::kGestureShortPress, anchor_tag_id));
+  EXPECT_TRUE(
+      SimulateGestureAtElementById(WebInputEvent::Type::kGestureShortPress,
+                                   anchor_tag_id, primary_pointer_type));
   EXPECT_EQ("dragstart@a,",
             web_view->MainFrameImpl()->GetDocument().Title().Ascii());
-  EXPECT_TRUE(SimulateGestureAtElementById(
-      WebInputEvent::Type::kGestureLongPress, anchor_tag_id));
+  EXPECT_TRUE(
+      SimulateGestureAtElementById(WebInputEvent::Type::kGestureLongPress,
+                                   anchor_tag_id, primary_pointer_type));
   EXPECT_EQ("dragstart@a,contextmenu@a,",
             web_view->MainFrameImpl()->GetDocument().Title().Ascii());
 }
@@ -3474,7 +3629,7 @@ TEST_F(WebViewTest, FinishComposingTextDoesNotDismissHandles) {
       frame->FrameWidget()->GetActiveWebInputMethodController();
   EXPECT_TRUE(
       SimulateGestureAtElementById(WebInputEvent::Type::kGestureTap, target));
-  WebVector<ui::ImeTextSpan> empty_ime_text_spans;
+  std::vector<ui::ImeTextSpan> empty_ime_text_spans;
   frame->SetEditableSelectionOffsets(8, 8);
   EXPECT_TRUE(active_input_method_controller->SetComposition(
       "12345", empty_ime_text_spans, WebRange(), 8, 13));
@@ -3607,7 +3762,7 @@ TEST_F(WebViewTest, BlinkCaretOnClosingContextMenu) {
 
   // Caret blinking is still suspended after showing context menu.
   web_view->MainFrameImpl()->LocalRootFrameWidget()->ShowContextMenu(
-      ui::mojom::MenuSourceType::MOUSE,
+      ui::mojom::blink::MenuSourceType::kMouse,
       web_view->MainFrameImpl()->GetPositionInViewportForTesting());
 
   EXPECT_TRUE(main_frame->GetFrame()->Selection().IsCaretBlinkingSuspended());
@@ -3774,7 +3929,7 @@ class MiddleClickAutoscrollWebFrameWidget
 class MiddleClickWebViewTest : public WebViewTest {
  public:
   MiddleClickWebViewTest()
-      : WebViewTest(WTF::BindRepeating(
+      : WebViewTest(blink::BindRepeating(
             &frame_test_helpers::WebViewHelper::CreateTestWebFrameWidget<
                 MiddleClickAutoscrollWebFrameWidget>)) {}
 };
@@ -3894,18 +4049,10 @@ class MockAutofillClient : public WebAutofillClient {
 
   ~MockAutofillClient() override = default;
 
-  void TextFieldDidChange(const WebFormControlElement&) override {
+  void TextFieldValueChanged(const WebFormControlElement&) override {
     ++text_changes_;
   }
   void UserGestureObserved() override { ++user_gesture_notifications_count_; }
-
-  bool ShouldSuppressKeyboard(const WebFormControlElement&) override {
-    return should_suppress_keyboard_;
-  }
-
-  void SetShouldSuppressKeyboard(bool should_suppress_keyboard) {
-    should_suppress_keyboard_ = should_suppress_keyboard;
-  }
 
   void ClearChangeCounts() { text_changes_ = 0; }
 
@@ -3917,7 +4064,6 @@ class MockAutofillClient : public WebAutofillClient {
  private:
   int text_changes_ = 0;
   int user_gesture_notifications_count_ = 0;
-  bool should_suppress_keyboard_ = false;
 };
 
 TEST_F(WebViewTest, LosingFocusDoesNotTriggerAutofillTextChange) {
@@ -3930,7 +4076,7 @@ TEST_F(WebViewTest, LosingFocusDoesNotTriggerAutofillTextChange) {
   web_view->MainFrameImpl()->GetFrame()->SetInitialFocus(false);
 
   // Set up a composition that needs to be committed.
-  WebVector<ui::ImeTextSpan> empty_ime_text_spans;
+  std::vector<ui::ImeTextSpan> empty_ime_text_spans;
   frame->SetEditableSelectionOffsets(4, 10);
   frame->SetCompositionFromExistingText(8, 12, empty_ime_text_spans);
   WebTextInputInfo info = frame->GetInputMethodController()->TextInputInfo();
@@ -3974,7 +4120,7 @@ TEST_F(WebViewTest, CompositionNotCancelledByBackspace) {
   // Test both input elements.
   for (int i = 0; i < 2; ++i) {
     // Select composition and do sanity check.
-    WebVector<ui::ImeTextSpan> empty_ime_text_spans;
+    std::vector<ui::ImeTextSpan> empty_ime_text_spans;
     frame->SetEditableSelectionOffsets(6, 6);
     WebInputMethodController* active_input_method_controller =
         frame->FrameWidget()->GetActiveWebInputMethodController();
@@ -4028,7 +4174,7 @@ TEST_F(WebViewTest, FinishComposingTextDoesntTriggerAutofillTextChange) {
   // Set up a composition that needs to be committed.
   std::string composition_text("testingtext");
 
-  WebVector<ui::ImeTextSpan> empty_ime_text_spans;
+  std::vector<ui::ImeTextSpan> empty_ime_text_spans;
   active_input_method_controller->SetComposition(
       WebString::FromUTF8(composition_text), empty_ime_text_spans, WebRange(),
       0, static_cast<int>(composition_text.length()));
@@ -4061,7 +4207,7 @@ TEST_F(WebViewTest,
   frame->SetAutofillClient(&client);
   web_view->MainFrameImpl()->GetFrame()->SetInitialFocus(false);
 
-  WebVector<ui::ImeTextSpan> empty_ime_text_spans;
+  std::vector<ui::ImeTextSpan> empty_ime_text_spans;
 
   client.ClearChangeCounts();
   frame->SetCompositionFromExistingText(8, 12, empty_ime_text_spans);
@@ -4088,6 +4234,7 @@ class ViewCreatingWebFrameClient
       const WebURLRequest&,
       const WebWindowFeatures&,
       const WebString& name,
+      const gfx::Rect& requested_screen_rect,
       WebNavigationPolicy,
       network::mojom::blink::WebSandboxFlags,
       const SessionStorageNamespaceId&,
@@ -4187,6 +4334,7 @@ class ViewReusingWebFrameClient
       const WebURLRequest&,
       const WebWindowFeatures&,
       const WebString& name,
+      const gfx::Rect& requested_screen_rect,
       WebNavigationPolicy,
       network::mojom::blink::WebSandboxFlags,
       const SessionStorageNamespaceId&,
@@ -4526,7 +4674,7 @@ class TouchEventConsumersWebFrameWidgetHost
   }
 
  private:
-  int has_touch_event_handler_count_[2]{};
+  std::array<int, 2> has_touch_event_handler_count_ = {};
   bool has_touch_event_handler_ = false;
 };
 
@@ -4551,7 +4699,7 @@ class TouchEventConsumersWebFrameWidget
 class TouchEventConsumersWebViewTest : public WebViewTest {
  public:
   TouchEventConsumersWebViewTest()
-      : WebViewTest(WTF::BindRepeating(
+      : WebViewTest(blink::BindRepeating(
             &frame_test_helpers::WebViewHelper::CreateTestWebFrameWidget<
                 TouchEventConsumersWebFrameWidget>)) {}
 };
@@ -4892,7 +5040,7 @@ TEST_F(WebViewTest, CompositionIsUserGesture) {
   EXPECT_EQ(0, client.TextChanges());
   EXPECT_TRUE(
       frame->FrameWidget()->GetActiveWebInputMethodController()->SetComposition(
-          WebString::FromUTF8("hello"), WebVector<ui::ImeTextSpan>(),
+          WebString::FromUTF8("hello"), std::vector<ui::ImeTextSpan>(),
           WebRange(), 3, 3));
   EXPECT_TRUE(frame->HasTransientUserActivation());
   EXPECT_EQ(1, client.TextChanges());
@@ -5157,10 +5305,9 @@ class ShowUnhandledTapTest : public WebViewTest {
     WebLocalFrameImpl* web_local_frame = web_view_->MainFrameImpl();
     web_local_frame->GetFrame()
         ->GetBrowserInterfaceBroker()
-        .SetBinderForTesting(
-            mojom::blink::UnhandledTapNotifier::Name_,
-            WTF::BindRepeating(&MockUnhandledTapNotifierImpl::Bind,
-                               WTF::Unretained(&mock_notifier_)));
+        .SetBinderForTesting(mojom::blink::UnhandledTapNotifier::Name_,
+                             BindRepeating(&MockUnhandledTapNotifierImpl::Bind,
+                                           Unretained(&mock_notifier_)));
   }
 
   void TearDown() override {
@@ -5287,28 +5434,6 @@ TEST_F(ShowUnhandledTapTest, ShowUnhandledTapUIIfNeededWithNonTriggeringNodes) {
 
 #endif  // BUILDFLAG(ENABLE_UNHANDLED_TAP)
 
-TEST_F(WebViewTest, ShouldSuppressKeyboardForPasswordField) {
-  RegisterMockedHttpURLLoad("input_field_password.html");
-  // Pretend client has fill data for all fields it's queried.
-  MockAutofillClient client;
-  client.SetShouldSuppressKeyboard(true);
-  WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(
-      base_url_ + "input_field_password.html");
-  WebLocalFrameImpl* frame = web_view->MainFrameImpl();
-  frame->SetAutofillClient(&client);
-  // No field is focused.
-  EXPECT_FALSE(frame->ShouldSuppressKeyboardForFocusedElement());
-
-  // Focusing a field should result in treating it autofillable.
-  web_view->MainFrameImpl()->GetFrame()->SetInitialFocus(false);
-  EXPECT_TRUE(frame->ShouldSuppressKeyboardForFocusedElement());
-
-  // Pretend that |client| no longer has autofill data available.
-  client.SetShouldSuppressKeyboard(false);
-  EXPECT_FALSE(frame->ShouldSuppressKeyboardForFocusedElement());
-  frame->SetAutofillClient(nullptr);
-}
-
 TEST_F(WebViewTest, PasswordFieldEditingIsUserGesture) {
   RegisterMockedHttpURLLoad("input_field_password.html");
   MockAutofillClient client;
@@ -5318,7 +5443,7 @@ TEST_F(WebViewTest, PasswordFieldEditingIsUserGesture) {
   frame->SetAutofillClient(&client);
   web_view->MainFrameImpl()->GetFrame()->SetInitialFocus(false);
 
-  WebVector<ui::ImeTextSpan> empty_ime_text_spans;
+  std::vector<ui::ImeTextSpan> empty_ime_text_spans;
 
   EXPECT_EQ(0, client.TextChanges());
   EXPECT_TRUE(
@@ -5421,6 +5546,34 @@ TEST_F(WebViewTest, SubframeBeforeUnloadUseCounter) {
     EXPECT_TRUE(
         child_document->IsUseCounted(WebFeature::kSubFrameBeforeUnloadFired));
   }
+}
+
+TEST_F(WebViewTest, SandboxedIframeBeforeUnloadModal) {
+  RegisterMockedHttpURLLoad("visible_iframe.html");
+  RegisterMockedHttpURLLoad("single_sandboxed_iframe.html");
+  WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(
+      base_url_ + "single_sandboxed_iframe.html");
+
+  LocalFrame* main_frame = To<LocalFrame>(web_view->GetPage()->MainFrame());
+  web_view->MainFrame()->FirstChild()->ToWebLocalFrame()->ExecuteScript(
+      WebScriptSource("addEventListener('beforeunload', function(evt) {"
+                      "  evt.preventDefault();"
+                      "  evt.returnValue = 'confirm';"
+                      "});"));
+
+  To<LocalFrame>(web_view->GetPage()->MainFrame()->Tree().FirstChild())
+      ->SetStickyUserActivationState();
+
+  ScriptState* script_state = ToScriptStateForMainWorld(main_frame);
+  ScriptState::Scope entered_context_scope(script_state);
+  v8::Context::BackupIncumbentScope incumbent_context_scope(
+      script_state->GetContext());
+
+  base::HistogramTester histogram_tester;
+  main_frame->DomWindow()->close(script_state->GetIsolate());
+  histogram_tester.ExpectBucketCount(
+      "Document.BeforeUnloadDialog",
+      Document::BeforeUnloadUse::kNoDialogSandboxedIframe, 1);
 }
 
 // Verify that page loads are deferred until all ScopedPagePausers are
@@ -5579,7 +5732,7 @@ TEST_F(WebViewTest, ViewportOverrideAdaptsToScaleAndScroll) {
   web_view_impl->SetPageScaleFactor(1.5f);
   frame_view->LayoutViewport()->SetScrollOffset(
       ScrollOffset(100, 150), mojom::blink::ScrollType::kProgrammatic,
-      mojom::blink::ScrollBehavior::kInstant);
+      cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kInstant);
 
   DeviceEmulationParams emulation_params;
   emulation_params.viewport_offset = gfx::PointF(50, 55);
@@ -5594,7 +5747,7 @@ TEST_F(WebViewTest, ViewportOverrideAdaptsToScaleAndScroll) {
   // Transform adapts to scroll changes.
   frame_view->LayoutViewport()->SetScrollOffset(
       ScrollOffset(50, 55), mojom::blink::ScrollType::kProgrammatic,
-      mojom::blink::ScrollBehavior::kInstant);
+      cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kInstant);
   expected_matrix = gfx::Transform::MakeScale(2.f);
   expected_matrix.Translate(-50, -55);
   expected_matrix.Translate(50, 55);
@@ -5754,7 +5907,8 @@ TEST_F(WebViewTest, DeviceEmulationResetScrollbars) {
 
   WebLocalFrameImpl* frame = web_view->MainFrameImpl();
   auto* frame_view = frame->GetFrameView();
-  EXPECT_FALSE(frame_view->VisualViewportSuppliesScrollbars());
+  EXPECT_FALSE(
+      frame_view->LayoutViewport()->VisualViewportSuppliesScrollbars());
   EXPECT_NE(nullptr, frame_view->LayoutViewport()->VerticalScrollbar());
 
   DeviceEmulationParams params;
@@ -5765,13 +5919,14 @@ TEST_F(WebViewTest, DeviceEmulationResetScrollbars) {
   web_view->EnableDeviceEmulation(params);
 
   // The visual viewport should now proivde the scrollbars instead of the view.
-  EXPECT_TRUE(frame_view->VisualViewportSuppliesScrollbars());
+  EXPECT_TRUE(frame_view->LayoutViewport()->VisualViewportSuppliesScrollbars());
   EXPECT_EQ(nullptr, frame_view->LayoutViewport()->VerticalScrollbar());
 
   web_view->DisableDeviceEmulation();
 
   // The view should once again provide the scrollbars.
-  EXPECT_FALSE(frame_view->VisualViewportSuppliesScrollbars());
+  EXPECT_FALSE(
+      frame_view->LayoutViewport()->VisualViewportSuppliesScrollbars());
   EXPECT_NE(nullptr, frame_view->LayoutViewport()->VerticalScrollbar());
 }
 
@@ -6200,12 +6355,18 @@ TEST_F(WebViewTest, UpdateTargetURLWithInvalidURL) {
 }
 
 // Regression test for https://crbug.com/1112987
-TEST_F(WebViewTest, LongPressThenLongTapLinkInIframeStartsContextMenu) {
+TEST_P(WebViewTestTouchDragEndContextMenuWithPointerType,
+       LongPressThenLongTapLinkInIframeStartsContextMenu) {
   RegisterMockedHttpURLLoad("long_press_link_in_iframe.html");
 
   WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(
       base_url_ + "long_press_link_in_iframe.html");
   web_view->SettingsImpl()->SetTouchDragDropEnabled(true);
+  const bool set_touch_drag_end_context_menu = std::get<0>(GetParam());
+  web_view->SettingsImpl()->SetTouchDragEndContextMenu(
+      set_touch_drag_end_context_menu);
+  web_view->GetPage()->GetFocusController().SetActive(true);
+  web_view->GetPage()->GetFocusController().SetFocused(true);
   web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
   UpdateAllLifecyclePhases();
   RunPendingTasks();
@@ -6217,18 +6378,18 @@ TEST_F(WebViewTest, LongPressThenLongTapLinkInIframeStartsContextMenu) {
   Document* child_document =
       To<HTMLIFrameElement>(child_frame)->contentDocument();
   Element* anchor = child_document->getElementById(AtomicString("anchorTag"));
-  gfx::Point center =
-      To<WebLocalFrameImpl>(
-          web_view->MainFrame()->FirstChild()->ToWebLocalFrame())
-          ->GetFrameView()
-          ->FrameToScreen(anchor->GetLayoutObject()->AbsoluteBoundingBoxRect())
-          .CenterPoint();
+  const gfx::PointF center = GetElementCenterPointInFrame(
+      anchor, To<WebLocalFrameImpl>(
+                  web_view->MainFrame()->FirstChild()->ToWebLocalFrame()));
+  const WebPointerProperties::PointerType primary_pointer_type(
+      std::get<1>(GetParam()));
 
   WebGestureEvent longpress_event(WebInputEvent::Type::kGestureLongPress,
                                   WebInputEvent::kNoModifiers,
                                   WebInputEvent::GetStaticTimeStampForTests(),
                                   WebGestureDevice::kTouchscreen);
-  longpress_event.SetPositionInWidget(gfx::PointF(center.x(), center.x()));
+  longpress_event.SetPositionInWidget(center);
+  longpress_event.primary_pointer_type = primary_pointer_type;
   EXPECT_EQ(WebInputEventResult::kHandledSystem,
             web_view->MainFrameWidget()->HandleInputEvent(
                 WebCoalescedInputEvent(longpress_event, ui::LatencyInfo())));
@@ -6237,18 +6398,25 @@ TEST_F(WebViewTest, LongPressThenLongTapLinkInIframeStartsContextMenu) {
                             WebInputEvent::kNoModifiers,
                             WebInputEvent::GetStaticTimeStampForTests(),
                             WebGestureDevice::kTouchscreen);
-  tap_event.SetPositionInWidget(gfx::PointF(center.x(), center.x()));
+  tap_event.SetPositionInWidget(center);
+  tap_event.primary_pointer_type = primary_pointer_type;
 
   // If touch-drag-and-context-menu is enabled, we expect an ongoing drag
   // operation at the moment a tap is dispatched.  This changes the outcome of
   // the tap event-handler below to "suppressed".
   WebInputEventResult expected_tap_handling_result =
-      RuntimeEnabledFeatures::TouchDragAndContextMenuEnabled()
+      RuntimeEnabledFeatures::TouchDragAndContextMenuEnabled() ||
+              set_touch_drag_end_context_menu
           ? WebInputEventResult::kHandledSuppressed
           : WebInputEventResult::kNotHandled;
   EXPECT_EQ(expected_tap_handling_result,
             web_view->MainFrameWidget()->HandleInputEvent(
                 WebCoalescedInputEvent(tap_event, ui::LatencyInfo())));
+  if (set_touch_drag_end_context_menu) {
+    web_view->MainFrameViewWidget()->DragSourceEndedAt(
+        center, center, ui::mojom::blink::DragOperation::kNone,
+        base::DoNothing());
+  }
   EXPECT_EQ("anchor contextmenu",
             web_view->MainFrameImpl()->GetDocument().Title());
 }
@@ -6298,8 +6466,8 @@ TEST_F(WebViewTest, EmulatingPopupRect) {
 
   blink::VisualProperties visual_properties;
   visual_properties.screen_infos = display::ScreenInfos(display::ScreenInfo());
-  visual_properties.new_size = gfx::Size(400, 300);
-  visual_properties.visible_viewport_size = gfx::Size(400, 300);
+  visual_properties.new_size_device_px = gfx::Size(400, 300);
+  visual_properties.visible_viewport_size_device_px = gfx::Size(400, 300);
   visual_properties.screen_infos.mutable_current().rect = gfx::Rect(800, 600);
 
   web_view->MainFrameWidget()->ApplyVisualProperties(visual_properties);
@@ -6517,5 +6685,340 @@ TEST_F(WebViewTest, HiddenVisibilityTransitionsDontDispatchEvents) {
                                /*is_initial_state=*/false);
   EXPECT_EQ("visible 4", log_element.TextContent());
 }
+
+// Verifies that the drag controller stores the drag's pointer id to be used
+// by synthetic events.
+TEST_F(WebViewTest, TouchDragSetsDragPointerId) {
+  RegisterMockedHttpURLLoad("long_press_draggable_div.html");
+
+  WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(
+      base_url_ + "long_press_draggable_div.html");
+
+  web_view->SettingsImpl()->SetTouchDragDropEnabled(true);
+  web_view->SettingsImpl()->SetTouchDragEndContextMenu(true);
+  web_view->GetPage()->GetFocusController().SetActive(true);
+  web_view->GetPage()->GetFocusController().SetFocused(true);
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
+  UpdateAllLifecyclePhases();
+  RunPendingTasks();
+
+  WebPointerEvent pointer_down(
+      WebInputEvent::Type::kPointerDown,
+      WebPointerProperties(1, WebPointerProperties::PointerType::kTouch), 5, 5);
+  pointer_down.SetPositionInWidget(250, 8);
+  pointer_down.SetPositionInScreen(250, 8);
+  web_view->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(pointer_down, ui::LatencyInfo()));
+  web_view->MainFrameWidget()->DispatchBufferedTouchEvents();
+
+  WebString target_id = WebString::FromUTF8("target");
+
+  // Simulate long press to start dragging.
+  EXPECT_TRUE(SimulateGestureAtElementById(
+      WebInputEvent::Type::kGestureLongPress, target_id));
+  EXPECT_EQ("dragstart", web_view->MainFrameImpl()->GetDocument().Title());
+  // Starting a drag should make the drag controller cache the pointer id, and
+  // it should be reset after it ends.
+  EXPECT_TRUE(
+      web_view->GetPage()->GetDragController().drag_pointer_id().has_value());
+  web_view->MainFrameViewWidget()->DragSourceEndedAt(
+      gfx::PointF(), gfx::PointF(), ui::mojom::blink::DragOperation::kNone,
+      base::DoNothing());
+  EXPECT_FALSE(
+      web_view->GetPage()->GetDragController().drag_pointer_id().has_value());
+}
+
+// Verifies that the histogram `Event.DragDrop.Tool` gets fired with the
+// correct enum values when a drag is initiated using a finger (touch).
+TEST_F(WebViewTest, DragAndDropTouchHistogramsTest) {
+  base::HistogramTester histogram_tester;
+  RegisterMockedHttpURLLoad("long_press_draggable_div.html");
+
+  WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(
+      base_url_ + "long_press_draggable_div.html");
+
+  web_view->SettingsImpl()->SetTouchDragDropEnabled(true);
+  web_view->SettingsImpl()->SetTouchDragEndContextMenu(true);
+  web_view->SetIsActive(true);
+  web_view->SetPageFocus(true);
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
+  UpdateAllLifecyclePhases();
+  RunPendingTasks();
+
+  WebPointerEvent pointer_down(
+      WebInputEvent::Type::kPointerDown,
+      WebPointerProperties(1, WebPointerProperties::PointerType::kTouch), 5, 5);
+  pointer_down.SetPositionInWidget(250, 8);
+  web_view->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(pointer_down, ui::LatencyInfo()));
+  web_view->MainFrameWidget()->DispatchBufferedTouchEvents();
+  WebString target_id = WebString::FromUTF8("target");
+
+  // Simulate long press to start dragging.
+  EXPECT_TRUE(SimulateGestureAtElementById(
+      WebInputEvent::Type::kGestureLongPress, target_id));
+  EXPECT_EQ("dragstart", web_view->MainFrameImpl()->GetDocument().Title());
+  // DragSourceEndedAt is called when a drag that initiated in the browser was
+  // finished.
+  web_view->MainFrameViewWidget()->DragSourceEndedAt(
+      gfx::PointF(), gfx::PointF(), ui::mojom::blink::DragOperation::kNone,
+      base::DoNothing());
+  histogram_tester.ExpectBucketCount("Event.DragDrop.Tool",
+                                     /*sample=kFinger*/ 2,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("Event.DragDrop.Tool", 1);
+
+  // Simulate a drag and drop that ends outside of the browser and verify that
+  // the correct enum is fired.
+  EXPECT_TRUE(SimulateGestureAtElementById(
+      WebInputEvent::Type::kGestureLongPress, target_id));
+  EXPECT_EQ("dragstart", web_view->MainFrameImpl()->GetDocument().Title());
+  web_view->SetIsActive(false);
+  web_view->SetPageFocus(false);
+  // DragSourceEndedAt is called when a drag that initiated in the browser was
+  // finished.
+  web_view->MainFrameViewWidget()->DragSourceEndedAt(
+      gfx::PointF(), gfx::PointF(), ui::mojom::blink::DragOperation::kNone,
+      base::DoNothing());
+  histogram_tester.ExpectBucketCount("Event.DragDrop.Tool",
+                                     /*sample=kFinger*/ 2,
+                                     /*expected_count=*/2);
+  histogram_tester.ExpectTotalCount("Event.DragDrop.Tool", 2);
+}
+
+// Verifies that the histogram `Event.DragDrop.Tool` gets fired with the
+// correct enum values when the Drag and Drop is started via gesture using the
+// stylus.
+TEST_F(WebViewTest, DragAndDropPenGestureHistogramsTest) {
+  base::HistogramTester histogram_tester;
+  RegisterMockedHttpURLLoad("long_press_draggable_div.html");
+
+  WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(
+      base_url_ + "long_press_draggable_div.html");
+
+  web_view->SettingsImpl()->SetTouchDragDropEnabled(true);
+  web_view->SettingsImpl()->SetTouchDragEndContextMenu(true);
+  web_view->SetIsActive(true);
+  web_view->SetPageFocus(true);
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
+  UpdateAllLifecyclePhases();
+  RunPendingTasks();
+
+  WebPointerEvent pointer_down(
+      WebInputEvent::Type::kPointerDown,
+      WebPointerProperties(1, WebPointerProperties::PointerType::kPen), 5, 5);
+  pointer_down.SetPositionInWidget(250, 8);
+  web_view->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(pointer_down, ui::LatencyInfo()));
+  web_view->MainFrameWidget()->DispatchBufferedTouchEvents();
+  WebString target_id = WebString::FromUTF8("target");
+
+  // Simulate long press to start dragging.
+  EXPECT_TRUE(SimulateGestureAtElementById(
+      WebInputEvent::Type::kGestureLongPress, target_id,
+      WebPointerProperties::PointerType::kPen));
+  EXPECT_EQ("dragstart", web_view->MainFrameImpl()->GetDocument().Title());
+  // DragSourceEndedAt is called when a drag that initiated in the browser was
+  // finished.
+  web_view->MainFrameViewWidget()->DragSourceEndedAt(
+      gfx::PointF(), gfx::PointF(), ui::mojom::blink::DragOperation::kNone,
+      base::DoNothing());
+  histogram_tester.ExpectBucketCount("Event.DragDrop.Tool",
+                                     /*sample=kStylusViaGesture*/ 3,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("Event.DragDrop.Tool", 1);
+
+  // Simulate a drag and drop that ends outside of the browser and verify that
+  // the correct enum is fired.
+  EXPECT_TRUE(SimulateGestureAtElementById(
+      WebInputEvent::Type::kGestureLongPress, target_id,
+      WebPointerProperties::PointerType::kPen));
+  EXPECT_EQ("dragstart", web_view->MainFrameImpl()->GetDocument().Title());
+  web_view->SetIsActive(false);
+  web_view->SetPageFocus(false);
+  // DragSourceEndedAt is called when a drag that initiated in the browser was
+  // finished.
+  web_view->MainFrameViewWidget()->DragSourceEndedAt(
+      gfx::PointF(), gfx::PointF(), ui::mojom::blink::DragOperation::kNone,
+      base::DoNothing());
+  histogram_tester.ExpectBucketCount("Event.DragDrop.Tool",
+                                     /*sample=kStylusViaGesture*/ 3,
+                                     /*expected_count=*/2);
+  histogram_tester.ExpectTotalCount("Event.DragDrop.Tool", 2);
+}
+
+// Verifies that the histogram `Event.DragDrop.Tool` gets fired with the
+// correct enum values when a drag is initiated using the mouse.
+TEST_F(WebViewTest, DragAndDropMouseHistogramsTest) {
+  base::HistogramTester histogram_tester;
+  RegisterMockedHttpURLLoad("long_press_draggable_div.html");
+
+  WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(
+      base_url_ + "long_press_draggable_div.html");
+
+  web_view->SetIsActive(true);
+  web_view->SetPageFocus(true);
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
+  UpdateAllLifecyclePhases();
+  RunPendingTasks();
+
+  WebMouseEvent mouse_event(WebInputEvent::Type::kMouseDown,
+                            WebInputEvent::kNoModifiers,
+                            WebInputEvent::GetStaticTimeStampForTests());
+  mouse_event.SetPositionInWidget(250, 8);
+  mouse_event.button = WebMouseEvent::Button::kLeft;
+  mouse_event.click_count = 1;
+  web_view->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()));
+  RunPendingTasks();
+  WebMouseEvent mouse_drag_event(WebInputEvent::Type::kMouseMove,
+                                 WebInputEvent::Modifiers::kNoModifiers,
+                                 WebInputEvent::GetStaticTimeStampForTests());
+  mouse_drag_event.SetPositionInWidget(300, 8);
+  mouse_drag_event.button = WebMouseEvent::Button::kLeft;
+  web_view->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(mouse_drag_event, ui::LatencyInfo()));
+  EXPECT_EQ("dragstart", web_view->MainFrameImpl()->GetDocument().Title());
+  WebMouseEvent mouse_up_event(WebInputEvent::Type::kMouseUp,
+                               WebInputEvent::Modifiers::kNoModifiers,
+                               WebInputEvent::GetStaticTimeStampForTests());
+  web_view->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(mouse_up_event, ui::LatencyInfo()));
+  web_view->MainFrameViewWidget()->DragSourceEndedAt(
+      gfx::PointF(), gfx::PointF(), ui::mojom::blink::DragOperation::kNone,
+      base::DoNothing());
+  // DragSourceEndedAt is called when a drag that initiated in the browser was
+  // finished.
+  histogram_tester.ExpectBucketCount("Event.DragDrop.Tool",
+                                     /*sample=kMouse*/ 1,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("Event.DragDrop.Tool", 1);
+
+  // Simulate a drag and drop that ends outside of the browser and verify that
+  // the correct enum is fired.
+  web_view->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()));
+  web_view->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(mouse_drag_event, ui::LatencyInfo()));
+  web_view->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(mouse_up_event, ui::LatencyInfo()));
+  web_view->SetIsActive(false);
+  web_view->SetPageFocus(false);
+  web_view->MainFrameViewWidget()->DragSourceEndedAt(
+      gfx::PointF(), gfx::PointF(), ui::mojom::blink::DragOperation::kNone,
+      base::DoNothing());
+  // DragSourceEndedAt is called when a drag that initiated in the browser was
+  // finished.
+  histogram_tester.ExpectBucketCount("Event.DragDrop.Tool",
+                                     /*sample=kMouse*/ 1,
+                                     /*expected_count=*/2);
+  histogram_tester.ExpectTotalCount("Event.DragDrop.Tool", 2);
+}
+
+// Verifies that the histogram `Event.DragDrop.Tool` gets fired with the
+// correct enum values when the drag is started outside of the window.
+TEST_F(WebViewTest, DragAndDropUnknownHistogramsTest) {
+  base::HistogramTester histogram_tester;
+  RegisterMockedHttpURLLoad("foo.html");
+  const std::string foo_url = base_url_ + "foo.html";
+  WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(foo_url);
+  DragAndDropURL(web_view, foo_url);
+  // `DragAndDropURL` uses `DragTargetDragEnter` and `DragTargetDrop` to
+  // simulate a drag and drop, which are the functions called when a drag is
+  // initiated outside of the browser and dropped on top of the browser. In this
+  // scenario, the tool should be `kUnknown`.
+  histogram_tester.ExpectBucketCount("Event.DragDrop.Tool",
+                                     /*sample=kUnknown*/ 0,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("Event.DragDrop.Tool", 1);
+}
+
+#if !BUILDFLAG(IS_WIN)
+// Verifies that the histogram `Event.DragDrop.Tool` gets fired with the
+// correct enum values when the drag and drop is started by pressing the pen's
+// button. This manner of drag and drop is not enabled in Windows.
+TEST_F(WebViewTest, DragAndDropPenButtonHistogramsTest) {
+  base::HistogramTester histogram_tester;
+  RegisterMockedHttpURLLoad("long_press_draggable_div.html");
+
+  WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(
+      base_url_ + "long_press_draggable_div.html");
+
+  web_view->SetIsActive(true);
+  web_view->SetPageFocus(true);
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
+  UpdateAllLifecyclePhases();
+  RunPendingTasks();
+
+  WebMouseEvent pen_event(WebInputEvent::Type::kMouseDown,
+                          WebInputEvent::kNoModifiers,
+                          WebInputEvent::GetStaticTimeStampForTests());
+  pen_event.SetPositionInWidget(250, 8);
+  pen_event.button = WebPointerProperties::Button::kLeft;
+  pen_event.pointer_type = blink::WebPointerProperties::PointerType::kPen;
+  pen_event.click_count = 1;
+  web_view->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(pen_event, ui::LatencyInfo()));
+  RunPendingTasks();
+  WebMouseEvent pen_drag_event(WebInputEvent::Type::kMouseMove,
+                               WebInputEvent::Modifiers::kNoModifiers,
+                               WebInputEvent::GetStaticTimeStampForTests());
+  pen_drag_event.SetPositionInWidget(300, 8);
+  pen_drag_event.button = WebPointerProperties::Button::kLeft;
+  pen_drag_event.pointer_type = blink::WebPointerProperties::PointerType::kPen;
+  web_view->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(pen_drag_event, ui::LatencyInfo()));
+  EXPECT_EQ("dragstart", web_view->MainFrameImpl()->GetDocument().Title());
+  WebMouseEvent pen_up_event(WebInputEvent::Type::kMouseUp,
+                             WebInputEvent::Modifiers::kNoModifiers,
+                             WebInputEvent::GetStaticTimeStampForTests());
+  pen_up_event.SetPositionInWidget(300, 8);
+  pen_up_event.button = WebMouseEvent::Button::kLeft;
+  web_view->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(pen_up_event, ui::LatencyInfo()));
+  web_view->MainFrameViewWidget()->DragSourceEndedAt(
+      gfx::PointF(), gfx::PointF(), ui::mojom::blink::DragOperation::kNone,
+      base::DoNothing());
+  // DragSourceEndedAt is called when a drag that initiated in the browser was
+  // finished.
+  histogram_tester.ExpectBucketCount("Event.DragDrop.Tool",
+                                     /*sample=kStylusViaButton*/ 4,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("Event.DragDrop.Tool", 1);
+
+  // Simulate a drag and drop that ends outside of the browser and verify that
+  // the correct enum is fired.
+  web_view->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(pen_event, ui::LatencyInfo()));
+  web_view->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(pen_drag_event, ui::LatencyInfo()));
+  web_view->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(pen_up_event, ui::LatencyInfo()));
+  web_view->SetIsActive(false);
+  web_view->SetPageFocus(false);
+  web_view->MainFrameViewWidget()->DragSourceEndedAt(
+      gfx::PointF(), gfx::PointF(), ui::mojom::blink::DragOperation::kNone,
+      base::DoNothing());
+  // DragSourceEndedAt is called when a drag that initiated in the browser
+  // was finished.
+  histogram_tester.ExpectBucketCount("Event.DragDrop.Tool",
+                                     /*sample=kStylusViaButton*/ 4,
+                                     /*expected_count=*/2);
+  histogram_tester.ExpectTotalCount("Event.DragDrop.Tool", 2);
+}
+#endif  // BUILDFLAG(IS_WIN)
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    WebViewTestTouchDragEndContextMenuWithPointerType,
+    testing::Combine(testing::Bool(),
+                     testing::Values(WebPointerProperties::PointerType::kTouch,
+                                     WebPointerProperties::PointerType::kPen)));
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    WebViewTestWithPointerType,
+    ::testing::Values(WebPointerProperties::PointerType::kTouch,
+                      WebPointerProperties::PointerType::kPen));
 
 }  // namespace blink

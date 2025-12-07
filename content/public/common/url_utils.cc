@@ -9,12 +9,10 @@
 #include <string_view>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "content/common/url_schemes.h"
-#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
@@ -24,19 +22,22 @@
 
 namespace content {
 
+namespace {
+
+bool IsWebUIScheme(std::string_view scheme) {
+  return scheme == content::kChromeUIScheme ||
+         scheme == content::kChromeUIUntrustedScheme ||
+         scheme == content::kChromeDevToolsScheme;
+}
+
+}  // namespace
+
 bool HasWebUIScheme(const GURL& url) {
-  return HasWebUIOrigin(url::Origin::Create(url));
+  return IsWebUIScheme(url.scheme());
 }
 
 bool HasWebUIOrigin(const url::Origin& origin) {
-  return origin.scheme() == content::kChromeUIScheme ||
-         origin.scheme() == content::kChromeUIUntrustedScheme ||
-         origin.scheme() == content::kChromeDevToolsScheme;
-}
-
-bool IsPdfInternalPluginAllowedOrigin(const url::Origin& origin) {
-  return base::Contains(
-      GetContentClient()->GetPdfInternalPluginAllowedOrigins(), origin);
+  return IsWebUIScheme(origin.scheme());
 }
 
 bool IsSavableURL(const GURL& url) {
@@ -93,8 +94,9 @@ bool IsSafeRedirectTarget(const GURL& from_url, const GURL& to_url) {
       });
   if (HasWebUIScheme(to_url))
     return false;
-  if (!kUnsafeSchemes.contains(to_url.scheme_piece()))
+  if (!kUnsafeSchemes.contains(to_url.scheme())) {
     return true;
+  }
   if (from_url.is_empty())
     return false;
   if (from_url.SchemeIsFile() && to_url.SchemeIsFile())

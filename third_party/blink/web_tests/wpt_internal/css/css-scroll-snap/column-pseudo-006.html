@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<title>Scroll snapping to columns in wrapped multicol container, with column spanner</title>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<link rel="help" href="https://github.com/flackr/carousel/tree/main/fragmentation">
+<link rel="match" href="../reference/ref-filled-green-100px-square.xht">
+<style>
+  #scrollable {
+    overflow: hidden;
+    scroll-snap-type: both mandatory;
+    width: 100px;
+    height: 100px;
+    background: red;
+  }
+  #multicol {
+    columns: 2;
+    column-fill: auto;
+    gap: 70px;
+    width: 270px;
+    column-height: 100px;
+    column-wrap: wrap;
+    background: red;
+  }
+  #multicol::column {
+    scroll-snap-align: start;
+  }
+</style>
+<p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+<div id="scrollable">
+  <div id="multicol">
+    <div style="height:300px;"></div>
+    <div style="column-span:all; height:50px;"></div>
+    <div style="height:300px;"></div>
+    <div style="height:100px; background:green;"></div>
+    <div style="height:300px;"></div>
+  </div>
+</div>
+<script>
+  scrollable.scrollLeft = 121;
+  scrollable.scrollTop = 461;
+</script>

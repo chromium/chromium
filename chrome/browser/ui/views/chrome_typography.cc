@@ -51,21 +51,28 @@ void ApplyCommonFontStyles(int context,
       details.weight = gfx::Font::Weight::BOLD;
       break;
     }
+    case CONTEXT_DEEMPHASIZED:
     case CONTEXT_OMNIBOX_PRIMARY:
     case CONTEXT_OMNIBOX_POPUP:
     case CONTEXT_OMNIBOX_SECTION_HEADER:
-    case CONTEXT_OMNIBOX_DEEMPHASIZED:
-    case CONTEXT_OMNIBOX_POPUP_ROW_CHIP: {
+    case CONTEXT_OMNIBOX_POPUP_ROW_CHIP:
+    case CONTEXT_OMNIBOX_TOOLBELT_BUTTON: {
       const bool is_touch_ui = ui::TouchUiController::Get()->touch_ui();
       int desired_font_size = is_touch_ui ? 15 : 14;
       const int omnibox_primary_delta =
           GetFontSizeDeltaBoundedByAvailableHeight(
               LocationBarView::GetAvailableTextHeight(), desired_font_size);
       details.size_delta = omnibox_primary_delta;
-      if (context == CONTEXT_OMNIBOX_DEEMPHASIZED) {
+      if (context == CONTEXT_DEEMPHASIZED) {
         --details.size_delta;
-      } else if (context == CONTEXT_OMNIBOX_POPUP_ROW_CHIP) {
+      } else if (context == CONTEXT_OMNIBOX_POPUP_ROW_CHIP ||
+                 context == CONTEXT_OMNIBOX_SECTION_HEADER ||
+                 context == CONTEXT_OMNIBOX_TOOLBELT_BUTTON) {
         details.size_delta -= 2;
+      }
+      if (context == CONTEXT_OMNIBOX_TOOLBELT_BUTTON ||
+          context == CONTEXT_OMNIBOX_SECTION_HEADER) {
+        details.weight = gfx::Font::Weight::MEDIUM;
       }
       break;
     }
@@ -79,6 +86,7 @@ void ApplyCommonFontStyles(int context,
           gfx::PlatformFont::GetFontSizeDeltaIgnoringUserOrLocaleSettings(14);
       break;
     case CONTEXT_SIDE_PANEL_TITLE:
+    case CONTEXT_TOAST_BODY_TEXT:
       details.size_delta =
           gfx::PlatformFont::GetFontSizeDeltaIgnoringUserOrLocaleSettings(13);
       break;

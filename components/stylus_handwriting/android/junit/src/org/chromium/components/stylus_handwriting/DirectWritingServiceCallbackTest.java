@@ -71,7 +71,8 @@ public class DirectWritingServiceCallbackTest {
     @Mock private StylusWritingImeCallback mImeCallback;
     @Mock private ViewGroup mContainerView;
 
-    private DirectWritingServiceCallback mDwServiceCallback = new DirectWritingServiceCallback();
+    private final DirectWritingServiceCallback mDwServiceCallback =
+            new DirectWritingServiceCallback();
     private Context mContext;
 
     private static String mojoStringToJavaString(String16 mojoString) {
@@ -128,14 +129,14 @@ public class DirectWritingServiceCallbackTest {
                 .handleStylusWritingGestureAction(anyInt(), gestureDataCaptor.capture());
         StylusWritingGestureData gestureData = gestureDataCaptor.getValue();
         assertEquals(expectedAction, gestureData.action);
-        assertEquals(GESTURE_START_POINT[0], gestureData.startRect.x, /* tolerance= */ 0.1);
-        assertEquals(GESTURE_START_POINT[1], gestureData.startRect.y, /* tolerance= */ 0.1);
+        assertEquals(GESTURE_START_POINT[0], gestureData.startRect.x, /* delta= */ 0.1);
+        assertEquals(GESTURE_START_POINT[1], gestureData.startRect.y, /* delta= */ 0.1);
 
         if (isTwoPointGesture(
                 gestureBundle.getString(
                         DirectWritingServiceCallback.GESTURE_BUNDLE_KEY_GESTURE_TYPE, ""))) {
-            assertEquals(GESTURE_END_POINT[0], gestureData.endRect.x, /* tolerance= */ 0.1);
-            assertEquals(GESTURE_END_POINT[1], gestureData.endRect.y, /* tolerance= */ 0.1);
+            assertEquals(GESTURE_END_POINT[0], gestureData.endRect.x, /* delta= */ 0.1);
+            assertEquals(GESTURE_END_POINT[1], gestureData.endRect.y, /* delta= */ 0.1);
         } else {
             assertNull(gestureData.endRect);
         }

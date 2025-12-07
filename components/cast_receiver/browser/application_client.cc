@@ -71,16 +71,6 @@ ApplicationClient::ApplicationClient(
 
 ApplicationClient::~ApplicationClient() = default;
 
-void ApplicationClient::AddStreamingResolutionObserver(
-    StreamingResolutionObserver* observer) {
-  streaming_resolution_observer_list_.AddObserver(observer);
-}
-
-void ApplicationClient::RemoveStreamingResolutionObserver(
-    StreamingResolutionObserver* observer) {
-  streaming_resolution_observer_list_.RemoveObserver(observer);
-}
-
 void ApplicationClient::AddApplicationStateObserver(
     ApplicationStateObserver* observer) {
   application_state_observer_list_.AddObserver(observer);
@@ -102,10 +92,10 @@ void ApplicationClient::OnWebContentsCreated(
 std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
 ApplicationClient::CreateURLLoaderThrottles(
     const base::RepeatingCallback<content::WebContents*()>& wc_getter,
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     CorsExemptHeaderCallback is_cors_exempt_header_cb) {
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
-  if (frame_tree_node_id == content::RenderFrameHost::kNoFrameTreeNodeId) {
+  if (frame_tree_node_id.is_null()) {
     return throttles;
   }
 
@@ -120,14 +110,6 @@ ApplicationClient::CreateURLLoaderThrottles(
     }
   }
   return throttles;
-}
-
-void ApplicationClient::OnStreamingResolutionChanged(
-    const gfx::Rect& size,
-    const media::VideoTransformation& transformation) {
-  NotifyObservers(streaming_resolution_observer_list_,
-                  &StreamingResolutionObserver::OnStreamingResolutionChanged,
-                  size, transformation);
 }
 
 void ApplicationClient::OnForegroundApplicationChanged(

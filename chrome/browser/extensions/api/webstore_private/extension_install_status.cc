@@ -7,7 +7,8 @@
 #include "base/containers/contains.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_management.h"
+#include "chrome/browser/extensions/managed_installation_mode.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
@@ -16,13 +17,16 @@
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/permission_set.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 namespace {
@@ -34,19 +38,19 @@ namespace {
 // wildcard/update_url but blocked by |manifest type| or |required permissions|.
 bool IsExtensionInstallBlockedByPolicy(
     ExtensionManagement* extension_management,
-    ExtensionManagement::InstallationMode mode,
+    ManagedInstallationMode mode,
     const ExtensionId& extension_id,
     const std::string& update_url,
     Manifest::Type manifest_type,
     const PermissionSet& required_permissions) {
   switch (mode) {
-    case ExtensionManagement::INSTALLATION_BLOCKED:
-    case ExtensionManagement::INSTALLATION_REMOVED:
+    case ManagedInstallationMode::kBlocked:
+    case ManagedInstallationMode::kRemoved:
       return true;
-    case ExtensionManagement::INSTALLATION_FORCED:
-    case ExtensionManagement::INSTALLATION_RECOMMENDED:
+    case ManagedInstallationMode::kForced:
+    case ManagedInstallationMode::kRecommended:
       return false;
-    case ExtensionManagement::INSTALLATION_ALLOWED:
+    case ManagedInstallationMode::kAllowed:
       break;
   }
 
@@ -56,8 +60,6 @@ bool IsExtensionInstallBlockedByPolicy(
 
   // Extension is allowed by wildcard or update_url, checks required permissions
   // and manifest type.
-  // TODO(crbug.com/40133205): Find out the right way to handle extension policy
-  // priority.
   if (manifest_type != Manifest::Type::TYPE_UNKNOWN &&
       !extension_management->IsAllowedManifestType(manifest_type,
                                                    extension_id)) {
@@ -96,22 +98,19 @@ ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
   // function is used by webstore private API only and there may not be any
   // |Extension| instance. Note that we don't handle the case where an offstore
   // extension with an identical ID is installed.
-  ExtensionManagement::InstallationMode mode =
-      extension_management->GetInstallationMode(extension_id,
-                                                update_url.spec());
+  ManagedInstallationMode mode = extension_management->GetInstallationMode(
+      extension_id, update_url.spec());
 
-  if (mode == ExtensionManagement::INSTALLATION_FORCED ||
-      mode == ExtensionManagement::INSTALLATION_RECOMMENDED)
+  if (mode == ManagedInstallationMode::kForced ||
+      mode == ManagedInstallationMode::kRecommended) {
     return kForceInstalled;
+  }
 
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile);
 
   // Check if parent approval is needed for a supervised user to install
   // a new extension.
-  if (base::FeatureList::IsEnabled(
-          supervised_user::
-              kExposedParentalControlNeededForExtensionInstallation) &&
-      !registry->GetInstalledExtension(extension_id) &&
+  if (!registry->GetInstalledExtension(extension_id) &&
       supervised_user::AreExtensionsPermissionsEnabled(profile) &&
       !supervised_user::SupervisedUserCanSkipExtensionParentApprovals(
           profile) &&
@@ -198,7 +197,9 @@ ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
   }
 
   if (registry->disabled_extensions().Contains(extension_id)) {
-    return kDisabled;
+    bool is_corrupted = ExtensionPrefs::Get(profile)->HasDisableReason(
+        extension_id, disable_reason::DISABLE_CORRUPTED);
+    return is_corrupted ? kCorrupted : kDisabled;
   }
 
   return kInstallable;

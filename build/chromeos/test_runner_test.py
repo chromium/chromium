@@ -67,10 +67,7 @@ class TastTests(TestRunnerTest):
          if fetch_cros_hostname else '--device=localhost:2222'),
     ]
 
-  def get_common_tast_expectations(self,
-                                   use_vm,
-                                   fetch_cros_hostname,
-                                   is_lacros=False):
+  def get_common_tast_expectations(self, use_vm, fetch_cros_hostname):
     expectation = [
         test_runner.CROS_RUN_TEST_PATH,
         '--board',
@@ -93,12 +90,11 @@ class TastTests(TestRunnerTest):
     for p in test_runner.SYSTEM_LOG_LOCATIONS:
       expectation.extend(['--results-src', p])
 
-    if not is_lacros:
-      expectation += [
-          '--mount',
-          '--deploy',
-          '--nostrip',
-      ]
+    expectation += [
+        '--mount',
+        '--deploy',
+        '--nostrip',
+    ]
     return expectation
 
   def test_tast_gtest_filter(self):
@@ -144,37 +140,6 @@ class TastTests(TestRunnerTest):
       expected_cmd = self.get_common_tast_expectations(
           use_vm, fetch_cros_hostname) + [
               '--tast=( "group:mainline" && "dep:chrome" && !informational)',
-          ]
-
-      self.safeAssertItemsEqual(expected_cmd, mock_popen.call_args[0][0])
-
-  @parameterized.expand([
-      [True, False],
-      [False, True],
-      [False, False],
-  ])
-  def test_tast_lacros(self, use_vm, fetch_cros_hostname):
-    """Tests running a tast tests for Lacros."""
-    with open(os.path.join(self._tmp_dir, 'streamed_results.jsonl'), 'w') as f:
-      json.dump(_TAST_TEST_RESULTS_JSON, f)
-
-    args = self.get_common_tast_args(use_vm, fetch_cros_hostname) + [
-        '-t=lacros.Basic',
-        '--deploy-lacros',
-    ]
-
-    with mock.patch.object(sys, 'argv', args),\
-         mock.patch.object(test_runner.subprocess, 'Popen') as mock_popen:
-      mock_popen.return_value.returncode = 0
-
-      test_runner.main()
-      expected_cmd = self.get_common_tast_expectations(
-          use_vm, fetch_cros_hostname, is_lacros=True) + [
-              '--tast',
-              'lacros.Basic',
-              '--deploy-lacros',
-              '--lacros-launcher-script',
-              test_runner.LACROS_LAUNCHER_SCRIPT_PATH,
           ]
 
       self.safeAssertItemsEqual(expected_cmd, mock_popen.call_args[0][0])
@@ -415,12 +380,12 @@ class GTestTest(TestRunnerTest):
 class HostCmdTests(TestRunnerTest):
 
   @parameterized.expand([
-      [True, False, True],
-      [False, True, True],
-      [True, True, False],
-      [False, True, False],
+      [False, False],
+      [False, True],
+      [True, False],
+      [True, True],
   ])
-  def test_host_cmd(self, is_lacros, is_ash, strip_chrome):
+  def test_host_cmd(self, deploy_chrome, strip_chrome):
     args = [
         'script_name',
         'host-cmd',
@@ -429,9 +394,7 @@ class HostCmdTests(TestRunnerTest):
         '--path-to-outdir=out/Release',
         '--device=localhost:2222',
     ]
-    if is_lacros:
-      args += ['--deploy-lacros']
-    if is_ash:
+    if deploy_chrome:
       args += ['--deploy-chrome']
     if strip_chrome:
       args += ['--strip-chrome']
@@ -453,20 +416,17 @@ class HostCmdTests(TestRunnerTest):
           '--flash',
           '--device',
           'localhost:2222',
-          '--build-dir',
-          os.path.join(test_runner.CHROMIUM_SRC_PATH, 'out/Release'),
           '--host-cmd',
       ]
-      if is_lacros:
+      if deploy_chrome:
         expected_cmd += [
-            '--deploy-lacros',
-            '--lacros-launcher-script',
-            test_runner.LACROS_LAUNCHER_SCRIPT_PATH,
+            '--mount',
+            '--deploy',
+            '--build-dir',
+            os.path.join(test_runner.CHROMIUM_SRC_PATH, 'out/Release'),
         ]
-      if is_ash:
-        expected_cmd += ['--mount', '--deploy']
-      if not strip_chrome:
-        expected_cmd += ['--nostrip']
+        if not strip_chrome:
+          expected_cmd += ['--nostrip']
 
       expected_cmd += [
           '--',

@@ -2,13 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/files/file_util.h"
-#include "base/files/platform_file.h"
-#include "base/memory/ref_counted.h"
-#include "base/posix/eintr_wrapper.h"
-#include "base/task/thread_pool.h"
-#include "base/types/expected.h"
-#include "build/build_config.h"
+#include "services/tracing/public/cpp/system_tracing_service.h"
 
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -16,9 +10,15 @@
 #include <unistd.h>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
+#include "base/files/platform_file.h"
 #include "base/functional/bind.h"
+#include "base/memory/ref_counted.h"
+#include "base/posix/eintr_wrapper.h"
+#include "base/task/thread_pool.h"
+#include "base/types/expected.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "services/tracing/public/cpp/system_tracing_service.h"
 #include "third_party/perfetto/include/perfetto/tracing/default_socket.h"
 
 namespace tracing {
@@ -68,11 +68,14 @@ class ProducerSocketConnector
     if (socket_fd_.get() == -1) {
       return base::unexpected(errno);
     }
+    if (producer_sock_name.size() > sizeof(sockaddr_un::sun_path) - 1) {
+      DVLOG(3) << "Oversized producer socket name " << producer_sock_name;
+      return base::unexpected(EINVAL);
+    }
 
-    struct sockaddr_un saddr;
-    memset(&saddr, 0, sizeof(saddr));
-    memcpy(saddr.sun_path, producer_sock_name.data(),
-           producer_sock_name.size());
+    struct sockaddr_un saddr = {};
+    UNSAFE_TODO(memcpy(saddr.sun_path, producer_sock_name.data(),
+                       producer_sock_name.size()));
     saddr.sun_family = AF_UNIX;
     auto size =
         static_cast<socklen_t>(__builtin_offsetof(sockaddr_un, sun_path) +

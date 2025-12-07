@@ -22,7 +22,7 @@ crosapi::mojom::PrintSettingsPtr CreatePrintSettings(int preview_id) {
   print_settings->collate = false;
   print_settings->copies = 1;
   print_settings->color = printing::mojom::ColorModel::kColor;
-  print_settings->duplex = printing::mojom::DuplexMode::kDefaultValue;
+  print_settings->duplex = printing::mojom::DuplexMode::kUnknownDuplexMode;
   print_settings->landscape = true;
   print_settings->scale_factor = 1;
   print_settings->rasterize_pdf = false;

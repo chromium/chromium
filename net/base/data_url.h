@@ -18,6 +18,12 @@ namespace net {
 
 class HttpResponseHeaders;
 
+// When enabled, whitespace is removed from non-Base64 data URLs. This was the
+// behavior of older versions of Chrome, and can be set part of an enterprise
+// policy.
+inline constexpr std::string_view kRemoveWhitespaceForDataURLs =
+    "remove-keep-whitespace-for-data-urls";
+
 // See RFC 2397 for a complete description of the 'data' URL scheme.
 //
 // Briefly, a 'data' URL has the form:

@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <array>
 #include <iterator>
 #include <optional>
@@ -17,12 +18,9 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/ranges/algorithm.h"
 #include "components/cbor/values.h"
-#include "crypto/sha2.h"
 
-namespace device {
-namespace fido_parsing_utils {
+namespace device::fido_parsing_utils {
 
 // Comparator object that calls std::lexicographical_compare on the begin and
 // end iterators of the passed in ranges. Useful when comparing sequence
@@ -39,14 +37,6 @@ struct RangeLess {
   using is_transparent = void;
 };
 
-// U2FResponse offsets. The format of a U2F response is defined in
-// https://fidoalliance.org/specs/fido-u2f-v1.2-ps-20170411/fido-u2f-raw-message-formats-v1.2-ps-20170411.html#registration-response-message-success
-COMPONENT_EXPORT(DEVICE_FIDO)
-extern const uint32_t kU2fResponseKeyHandleLengthPos;
-COMPONENT_EXPORT(DEVICE_FIDO)
-extern const uint32_t kU2fResponseKeyHandleStartPos;
-COMPONENT_EXPORT(DEVICE_FIDO) extern const char kEs256[];
-
 // Returns a materialized copy of |span|, that is, a vector with the same
 // elements.
 COMPONENT_EXPORT(DEVICE_FIDO)
@@ -60,7 +50,7 @@ std::optional<std::vector<uint8_t>> MaterializeOrNull(
 template <size_t N>
 std::array<uint8_t, N> Materialize(base::span<const uint8_t, N> span) {
   std::array<uint8_t, N> array;
-  base::ranges::copy(span, array.begin());
+  std::ranges::copy(span, array.begin());
   return array;
 }
 
@@ -99,7 +89,7 @@ bool ExtractArray(base::span<const uint8_t> span,
   if (extracted_span.size() != N)
     return false;
 
-  base::ranges::copy(extracted_span, array->begin());
+  std::ranges::copy(extracted_span, array->begin());
   return true;
 }
 
@@ -110,13 +100,6 @@ bool ExtractArray(base::span<const uint8_t> span,
 COMPONENT_EXPORT(DEVICE_FIDO)
 std::vector<base::span<const uint8_t>> SplitSpan(base::span<const uint8_t> span,
                                                  size_t max_chunk_size);
-
-COMPONENT_EXPORT(DEVICE_FIDO)
-std::array<uint8_t, crypto::kSHA256Length> CreateSHA256Hash(
-    std::string_view data);
-
-COMPONENT_EXPORT(DEVICE_FIDO)
-std::string_view ConvertToStringView(base::span<const uint8_t> data);
 
 // Convert byte array into GUID formatted string as defined by RFC 4122.
 // As we are converting 128 bit UUID, |bytes| must be have length of 16.
@@ -139,19 +122,79 @@ bool CopyCBORBytestring(std::array<uint8_t, N>* out,
   return ExtractArray(bytestring, /*pos=*/0, out);
 }
 
-constexpr std::array<uint8_t, 4> Uint32LittleEndian(uint32_t value) {
-  return {static_cast<uint8_t>(value), static_cast<uint8_t>(value >> 8),
-          static_cast<uint8_t>(value >> 16), static_cast<uint8_t>(value >> 24)};
+// Redacts `paths_to_redact` from `cbor` by finding the corresponding keys and
+// replacing them by the cbor string "redacted". Nested paths should correspond
+// to nested maps under the same key name. The redaction is applied to all array
+// elements for a matching key.
+// If a path is not found, a clone of `cbor` is returned.
+//
+// Example:
+//
+// Given a `cbor` value...
+// {
+//   characters: [
+//     {
+//       name: "Reimu",
+//       occupation: ["Shrine maiden"]
+//     },
+//     {
+//       name: "Marisa",
+//       occupation: ["Witch", "Troublemaker"]
+//     }
+//   ]
+// }
+//
+// ...and a `paths_to_redact` value...
+//
+// [
+//   ["characters", "occupation"],
+//   ["characters", "date-of-birth"],
+// ]
+//
+// ...the returned cbor will be:
+//
+// {
+//   characters: [
+//     {
+//       name: "Reimu",
+//       occupation: "redacted"
+//     },
+//     {
+//       name: "Marisa",
+//       occupation: "redacted"
+//     }
+//   ]
+// }
+COMPONENT_EXPORT(DEVICE_FIDO)
+cbor::Value RedactCbor(
+    const cbor::Value& cbor,
+    base::span<const std::vector<cbor::Value>> paths_to_redact);
+
+namespace internal {
+
+// These helpers allow us to implement `ToCborVector` without needing to prepend
+// values to the vector to satisfy the left recursion, which would be slower.
+template <typename T>
+void AppendToCborVector(std::vector<cbor::Value>* vec, T value) {
+  vec->emplace_back(std::move(value));
+}
+template <typename T, typename... Args>
+void AppendToCborVector(std::vector<cbor::Value>* vec, T first, Args... args) {
+  vec->emplace_back(std::move(first));
+  AppendToCborVector(vec, args...);
 }
 
-constexpr std::array<uint8_t, 8> Uint64LittleEndian(uint64_t value) {
-  return {static_cast<uint8_t>(value),       static_cast<uint8_t>(value >> 8),
-          static_cast<uint8_t>(value >> 16), static_cast<uint8_t>(value >> 24),
-          static_cast<uint8_t>(value >> 32), static_cast<uint8_t>(value >> 40),
-          static_cast<uint8_t>(value >> 48), static_cast<uint8_t>(value >> 56)};
+}  // namespace internal
+
+// This function makes using `RedactCbor` more readable by moving the parameters
+// into a vector of `cbor::Value`s and returning it.
+template <typename... Args>
+std::vector<cbor::Value> ToCborVector(Args... args) {
+  std::vector<cbor::Value> vec;
+  internal::AppendToCborVector(&vec, args...);
+  return vec;
 }
 
-}  // namespace fido_parsing_utils
-}  // namespace device
+}  // namespace device::fido_parsing_utils
 
 #endif  // DEVICE_FIDO_FIDO_PARSING_UTILS_H_

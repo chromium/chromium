@@ -6,6 +6,7 @@
 #define COMPONENTS_METRICS_STRUCTURED_DELEGATING_EVENTS_PROCESSOR_H_
 
 #include <memory>
+#include <vector>
 
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/events_processor_interface.h"

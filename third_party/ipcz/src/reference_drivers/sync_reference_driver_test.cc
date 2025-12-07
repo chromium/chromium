@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "reference_drivers/sync_reference_driver.h"
-
 #include <cstddef>
 #include <functional>
 #include <string>
 #include <vector>
 
 #include "ipcz/api_object.h"
+#include "reference_drivers/sync_reference_driver.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "util/unsafe_buffers.h"
 
 namespace ipcz::reference_drivers {
 namespace {
@@ -43,13 +43,14 @@ class TransportReceiver
 
   IpczHandle handle() const { return reinterpret_cast<IpczHandle>(this); }
 
-  static IpczResult Receive(IpczHandle transport,
-                            const void* data,
-                            size_t num_bytes,
-                            const IpczDriverHandle* driver_handles,
-                            size_t num_driver_handles,
-                            IpczTransportActivityFlags flags,
-                            const void* options) {
+  static IpczResult Receive(
+      IpczHandle transport,
+      const void* data,
+      size_t num_bytes,
+      const IpczDriverHandle* driver_handles,
+      size_t num_driver_handles,
+      IpczTransportActivityFlags flags,
+      const struct IpczTransportActivityOptions* options) {
     const TransportHandlers& handlers =
         TransportReceiver::FromHandle(transport)->handlers_;
     if (flags & IPCZ_TRANSPORT_ACTIVITY_DEACTIVATED) {
@@ -64,7 +65,8 @@ class TransportReceiver
 
     const std::string message(reinterpret_cast<const char*>(data), num_bytes);
     std::vector<IpczDriverHandle> handles(num_driver_handles);
-    std::copy(driver_handles, driver_handles + num_driver_handles,
+    std::copy(driver_handles,
+              IPCZ_UNSAFE_TODO(driver_handles + num_driver_handles),
               handles.begin());
     return handlers.on_message(
         {.data = std::move(message), .handles = std::move(handles)});

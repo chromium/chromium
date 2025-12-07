@@ -25,7 +25,7 @@ class TitledUrlNode {
   virtual const GURL& GetTitledUrlNodeUrl() const = 0;
 
   // Returns the titles of this node's ancestors ordered from child to parent.
-  // If |include_self| is true, will include its own title as well.
+  // If `include_self` is true, will include its own title as well.
   virtual std::vector<std::u16string_view> GetTitledUrlNodeAncestorTitles()
       const = 0;
 

@@ -9,12 +9,13 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
 #include "components/safe_browsing/core/browser/db/hit_report.h"
+#include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
-#include "services/network/public/mojom/fetch_api.mojom.h"
+#include "components/security_interstitials/core/unsafe_resource_locator.h"
 #include "url/gurl.h"
 
 namespace web {
@@ -48,18 +49,13 @@ struct UnsafeResource {
 
   using UrlCheckCallback = base::RepeatingCallback<void(UrlCheckResult)>;
 
-  // TODO(crbug.com/40686246): These are content/ specific ids that need to be
-  // plumbed through this struct.
-  // Equivalent to GlobalRenderFrameHostId.
-  using RenderProcessId = int;
-  using RenderFrameToken = std::optional<base::UnguessableToken>;
-  // See RenderFrameHost::GetFrameTreeNodeId.
-  using FrameTreeNodeId = int;
-  // Copies of the sentinel values used in content/.
-  // Equal to ChildProcessHost::kInvalidUniqueID.
-  static constexpr RenderProcessId kNoRenderProcessId = -1;
-  // Equal to RenderFrameHost::kNoFrameTreeNodeId.
-  static constexpr FrameTreeNodeId kNoFrameTreeNodeId = -1;
+  using RenderProcessId = UnsafeResourceLocator::RenderProcessId;
+  using RenderFrameToken = UnsafeResourceLocator::RenderFrameToken;
+  using FrameTreeNodeId = UnsafeResourceLocator::FrameTreeNodeId;
+  static constexpr RenderProcessId kNoRenderProcessId =
+      UnsafeResourceLocator::kNoRenderProcessId;
+  static constexpr FrameTreeNodeId kNoFrameTreeNodeId =
+      UnsafeResourceLocator::kNoFrameTreeNodeId;
 
   UnsafeResource();
   UnsafeResource(const UnsafeResource& other);
@@ -68,9 +64,10 @@ struct UnsafeResource {
   // Returns true if this UnsafeResource is a main frame load while the
   // navigation is still pending. Note that a main frame hit may not be
   // blocking, eg. client side detection happens after the load is committed.
-  // Note: If kSafeBrowsingAsyncRealTimeCheck is supported, please call
+  // Note: If async check is enabled, please call
   // AsyncCheckTracker::IsMainPageLoadPending instead.
-  bool IsMainPageLoadPendingWithSyncCheck() const;
+  static bool IsMainPageLoadPendingWithSyncCheck(
+      safe_browsing::SBThreatType threat_type);
 
   // Checks if |callback| is not null and posts it to |callback_sequence|.
   void DispatchCallback(const base::Location& from_here,
@@ -84,21 +81,21 @@ struct UnsafeResource {
   GURL referrer_url;
   std::vector<GURL> redirect_urls;
   safe_browsing::SBThreatType threat_type;
+  safe_browsing::ThreatSubtype threat_subtype =
+      safe_browsing::ThreatSubtype::UNKNOWN;
   safe_browsing::ThreatMetadata threat_metadata;
   safe_browsing::RTLookupResponse rt_lookup_response;
-  UrlCheckCallback callback;  // This is called back on |callback_sequence|.
+  // A callback to deliver the |UrlCheckResult| back to the creator of the
+  // object. Setting this field is optional to the creator, depending on whether
+  // it is interested in knowing the result.
+  // This is called back on |callback_sequence|.
+  UrlCheckCallback callback;
   scoped_refptr<base::SequencedTaskRunner> callback_sequence;
-  // TODO(crbug.com/40686246): |weak_web_state| is only used on iOS, and
-  // |render_process_id|, |render_frame_id|, and |frame_tree_node_id| are used
-  // on all other platforms. This struct should be refactored to use only the
-  // common functionality can be shared across platforms.
-  // These content/ specific ids indicate what triggered safe browsing. In the
-  // case of a frame navigating, we should have its FrameTreeNode id and
-  // navigation id. In the case of something triggered by a document (e.g.
-  // subresource loading), we should have the RenderFrameHost's id.
-  RenderProcessId render_process_id = kNoRenderProcessId;
-  RenderFrameToken render_frame_token;
-  FrameTreeNodeId frame_tree_node_id = kNoFrameTreeNodeId;
+  // TODO(crbug.com/40686246): `weak_web_state` is only used on iOS, and
+  // `rfh_locator` is used on all other platforms. This struct should be
+  // refactored to use only the common functionality that can be shared across
+  // platforms.
+  UnsafeResourceLocator rfh_locator;
   std::optional<int64_t> navigation_id;
 
   base::WeakPtr<web::WebState> weak_web_state;

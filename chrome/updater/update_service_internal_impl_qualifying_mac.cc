@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "chrome/updater/updater_scope.h"
@@ -32,9 +33,9 @@ bool CheckLauncherCanLaunchServer(UpdaterScope scope) {
       app_bundle_path->Append("Contents").Append("Helpers").Append("launcher"));
   command_line.AppendSwitch("--test");
   int exit = -1;
-  base::LaunchProcess(command_line, {})
-      .WaitForExitWithTimeout(base::Seconds(10), &exit);
-  if (exit != 0) {
+  const base::Process process = base::LaunchProcess(command_line, {});
+  if (!process.IsValid() ||
+      !process.WaitForExitWithTimeout(base::Seconds(10), &exit) || exit != 0) {
     VLOG(1) << "Launcher test run exited " << exit;
     return false;
   }

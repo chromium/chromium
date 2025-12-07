@@ -1,0 +1,12 @@
+<!--
+  This is a version of histograms.xml file that doesn't contain all the entries
+  that are expected due to their presence in
+  HistogramsAllowlist.java, this file can be used
+  to validate test scenarios that rely on such circumstances.
+-->
+
+<histogram name="RandomHistogramName"
+    units="%" expires_after="M298">
+  <owner>person@chromium.org</owner>
+  <summary>Foo</summary>
+</histogram>

@@ -1,0 +1,49 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/libgudev/visibility.gni")
+
+import("//build/config/linux/pkg_config.gni")
+
+assert(is_linux)
+
+config("gudev_public_config") {
+  include_dirs = [
+    "include",
+    "src",
+    "src/gudev",
+  ]
+}
+
+source_set("libgudev") {
+  testonly = true
+
+  cflags_c = [
+    "-D_FILE_OFFSET_BITS=64",
+    "-Winvalid-pch",
+    "-DHAVE_CONFIG_H",
+    "-D_POSIX_PTHREAD_SEMANTICS",
+    "-D_REENTRANT",
+    "-D_GUDEV_COMPILATION",
+    "-D_GUDEV_WORK_AROUND_DEV_T_BUG",
+    "-DG_LOG_DOMAIN=\"GUdev\"",
+  ]
+
+  sources = [
+    "src/gudev/gudevclient.c",
+    "src/gudev/gudevdevice.c",
+    "src/gudev/gudevenumerator.c",
+
+    # generated sources
+    "gudev/gudevenumtypes.c",
+  ]
+
+  configs += [ "//third_party/libinput:libudev" ]
+  public_configs = [ ":gudev_public_config" ]
+
+  deps = [
+    "//third_party/glib",
+    "//third_party/glib:gobject",
+  ]
+}

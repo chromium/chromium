@@ -8,10 +8,11 @@
 #include <vector>
 
 #include "base/hash/hash.h"
-#include "components/grit/dev_ui_components_resources.h"
+#include "components/grit/signin_internals_resources.h"
+#include "components/grit/signin_internals_resources_map.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #include "ios/chrome/browser/signin/model/about_signin_internals_factory.h"
 #include "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -25,9 +26,8 @@ web::WebUIIOSDataSource* CreateSignInInternalsHTMLSource() {
       web::WebUIIOSDataSource::Create(kChromeUISignInInternalsHost);
 
   source->UseStringsJs();
-  source->AddResourcePath("signin_internals.js", IDR_SIGNIN_INTERNALS_INDEX_JS);
-  source->AddResourcePath("signin_index.css", IDR_SIGNIN_INTERNALS_INDEX_CSS);
-  source->SetDefaultResource(IDR_SIGNIN_INTERNALS_INDEX_HTML);
+  source->AddResourcePaths(kSigninInternalsResources);
+  source->AddResourcePath("", IDR_SIGNIN_INTERNALS_SIGNIN_INDEX_HTML);
 
   return source;
 }
@@ -37,10 +37,9 @@ web::WebUIIOSDataSource* CreateSignInInternalsHTMLSource() {
 SignInInternalsUIIOS::SignInInternalsUIIOS(web::WebUIIOS* web_ui,
                                            const std::string& host)
     : WebUIIOSController(web_ui, host) {
-  ChromeBrowserState* browser_state = ChromeBrowserState::FromWebUIIOS(web_ui);
-  DCHECK(browser_state);
-  web::WebUIIOSDataSource::Add(browser_state,
-                               CreateSignInInternalsHTMLSource());
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui);
+  DCHECK(profile);
+  web::WebUIIOSDataSource::Add(profile, CreateSignInInternalsHTMLSource());
   web_ui->AddMessageHandler(std::make_unique<SignInInternalsHandlerIOS>());
 }
 
@@ -49,9 +48,8 @@ SignInInternalsUIIOS::~SignInInternalsUIIOS() = default;
 SignInInternalsHandlerIOS::SignInInternalsHandlerIOS() {}
 
 SignInInternalsHandlerIOS::~SignInInternalsHandlerIOS() {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromWebUIIOS(web_ui());
-  DCHECK(browser_state);
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui());
+  DCHECK(profile);
 }
 
 void SignInInternalsHandlerIOS::RegisterMessages() {
@@ -64,15 +62,15 @@ void SignInInternalsHandlerIOS::RegisterMessages() {
 void SignInInternalsHandlerIOS::HandleGetSignInInfo(
     const base::Value::List& args) {
   CHECK_GE(args.size(), 1u);
-  std::string callback_id = args[0].GetString();  // CHECKs if non-string.
+  // CHECKs if non-string.
+  const std::string& callback_id = args[0].GetString();
   base::Value callback(callback_id);
   base::Value success(true);
 
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromWebUIIOS(web_ui());
-  DCHECK(browser_state);
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui());
+  DCHECK(profile);
   AboutSigninInternals* about_signin_internals =
-      ios::AboutSigninInternalsFactory::GetForBrowserState(browser_state);
+      ios::AboutSigninInternalsFactory::GetForProfile(profile);
 
   if (!about_signin_internals) {
     base::Value empty;
@@ -90,10 +88,10 @@ void SignInInternalsHandlerIOS::HandleGetSignInInfo(
   base::ValueView return_args[] = {callback, success, status};
   web_ui()->CallJavascriptFunction("cr.webUIResponse", return_args);
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(browser_state);
+      IdentityManagerFactory::GetForProfile(profile);
   signin::AccountsInCookieJarInfo accounts_in_cookie_jar =
       identity_manager->GetAccountsInCookieJar();
-  if (accounts_in_cookie_jar.accounts_are_fresh) {
+  if (accounts_in_cookie_jar.AreAccountsFresh()) {
     about_signin_internals->OnAccountsInCookieUpdated(
         accounts_in_cookie_jar,
         GoogleServiceAuthError(GoogleServiceAuthError::NONE));

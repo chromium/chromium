@@ -7,6 +7,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 using base::TimeTicks;
 
@@ -27,7 +28,8 @@ TimeoutMonitor::~TimeoutMonitor() {
 
 void TimeoutMonitor::Start(base::TimeDelta delay) {
   if (!IsRunning()) {
-    TRACE_EVENT_ASYNC_BEGIN0("renderer_host", "TimeoutMonitor", this);
+    TRACE_EVENT_BEGIN("renderer_host", "TimeoutMonitor",
+                      perfetto::Track::FromPointer(this));
     TRACE_EVENT_INSTANT0("renderer_host", "TimeoutMonitor::Start",
                          TRACE_EVENT_SCOPE_THREAD);
   }
@@ -56,8 +58,9 @@ void TimeoutMonitor::Stop() {
   // started again shortly, which happens to be the common use case.
   TRACE_EVENT_INSTANT0("renderer_host", "TimeoutMonitor::Stop",
                        TRACE_EVENT_SCOPE_THREAD);
-  TRACE_EVENT_ASYNC_END1("renderer_host", "TimeoutMonitor", this,
-                         "result", "stopped");
+  TRACE_EVENT_END("renderer_host",
+                  /* TimeoutMonitor */ perfetto::Track::FromPointer(this),
+                  "result", "stopped");
   time_when_considered_timed_out_ = TimeTicks();
 }
 
@@ -102,8 +105,9 @@ void TimeoutMonitor::CheckTimedOut() {
     return;
   }
 
-  TRACE_EVENT_ASYNC_END1("renderer_host", "TimeoutMonitor", this,
-                         "result", "timed_out");
+  TRACE_EVENT_END("renderer_host",
+                  /* TimeoutMonitor */ perfetto::Track::FromPointer(this),
+                  "result", "timed_out");
   TRACE_EVENT0("renderer_host", "TimeoutMonitor::TimeOutHandler");
   time_when_considered_timed_out_ = TimeTicks();
   timeout_handler_.Run();

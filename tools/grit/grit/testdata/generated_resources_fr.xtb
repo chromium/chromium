@@ -28,7 +28,7 @@
 <translation id="4940047036413029306">Guillemet</translation>
 <translation id="1526811905352917883">Une nouvelle tentative de connexion avec SSL 3.0 a dû être effectuée. Cette opération indique généralement que le serveur utilise un logiciel très ancien et qu'il est susceptible de présenter d'autres problèmes de sécurité.</translation>
 <translation id="1497897566809397301">Autoriser le stockage des données locales (recommandé)</translation>
-<translation id="3275778913554317645">Ouvrir dans une fenêtre</translation>
+<translation id="3872796174552433346">Open in a window</translation>
 <translation id="4553117311324416101">Google pense qu'un logiciel malveillant pourrait être installé sur votre ordinateur si vous continuez. Nous vous conseillons de ne pas continuer, même si vous avez déjà consulté ce site auparavant ou si vous avez confiance en celui-ci. Il se peut qu'il ait été piraté récemment. Réessayez demain ou utilisez un autre site.</translation>
 <translation id="509988127256758334">&amp;Rechercher :</translation>
 <translation id="1420684932347524586">Échec de génération de clé privée RSA aléatoire</translation>
@@ -53,7 +53,7 @@
 <translation id="6156863943908443225">Cache des scripts</translation>
 <translation id="4610656722473172270">Barre d'outils Google</translation>
 <translation id="151501797353681931">Importés depuis Safari</translation>
-<translation id="6706684875496318067">Le plug-in <ph name="PLUGIN_NAME"/> n'est pas autorisé.</translation>
+<translation id="4456805950026190411"><branch variants="variants { grammatical_gender_variant { grammatical_gender_case: OTHER } }">Le plug-in <ph name="PLUGIN_NAME"/> n'est pas autorisé. (OTHER)</branch><branch variants="variants { grammatical_gender_variant { grammatical_gender_case: FEMININE } }">Le plug-in <ph name="PLUGIN_NAME"/> n'est pas autorisé. (FEMININE)</branch><branch variants="variants { grammatical_gender_variant { grammatical_gender_case: MASCULINE } }">Le plug-in <ph name="PLUGIN_NAME"/> n'est pas autorisé. (MASCULINE)</branch><branch variants="variants { grammatical_gender_variant { grammatical_gender_case: NEUTER } }">Le plug-in <ph name="PLUGIN_NAME"/> n'est pas autorisé. (NEUTER)</branch></translation>
 <translation id="586567932979200359">Vous exécutez <ph name="PRODUCT_NAME"/> à partir de son image disque. Si vous l'installez sur votre ordinateur, vous pourrez l'utiliser sans image disque et bénéficierez de mises à jour automatiques.</translation>
 <translation id="3775432569830822555">Certificat du serveur SSL</translation>
 <translation id="1829192082282182671">Z&amp;oom arrière</translation>

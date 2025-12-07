@@ -24,9 +24,13 @@
 
 // PageInfoUI images, used in ConnectionInfoView
 // Good:
-DECLARE_RESOURCE_ID(IDR_PAGEINFO_GOOD, R.drawable.omnibox_https_valid)
+DECLARE_RESOURCE_ID(IDR_PAGEINFO_GOOD, R.drawable.omnibox_https_valid_lock)
+// Good (new version):
+DECLARE_RESOURCE_ID(IDR_PAGEINFO_GOOD_NEW, R.drawable.lock)
 // Bad:
 DECLARE_RESOURCE_ID(IDR_PAGEINFO_BAD, R.drawable.omnibox_not_secure_warning)
+// Internal page:
+DECLARE_RESOURCE_ID(IDR_PAGEINFO_INTERNAL, R.drawable.omnibox_info)
 
 // PageInfoUI colors, used in ConnectionInfoView
 // Good:

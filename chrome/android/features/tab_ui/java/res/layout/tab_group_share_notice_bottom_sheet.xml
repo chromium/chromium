@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+  <ImageView
+      android:importantForAccessibility="no"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_horizontal"
+      android:layout_marginTop="@dimen/tab_group_share_notice_bottom_sheet_drag_handlebar_margin_top"
+      android:src="@drawable/drag_handlebar"
+      app:tint="@macro/drag_handlebar_color" />
+
+  <LinearLayout
+      android:orientation="vertical"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_horizontal"
+      android:paddingHorizontal="@dimen/tab_group_share_notice_bottom_sheet_horizontal_padding"
+      android:layout_marginTop="@dimen/tab_group_share_notice_bottom_sheet_content_margin_top">
+
+    <FrameLayout
+        android:id="@+id/tab_group_share_notice_bottom_sheet_illustration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/tab_group_share_notice_bottom_sheet_illustration_margin_top"
+        android:layout_gravity="center">
+
+      <ImageView
+          android:src="@drawable/tab_group_share_notice_bottom_sheet_illustration_bg"
+          android:layout_width="@dimen/tab_group_share_notice_bottom_sheet_illustration_size"
+          android:layout_height="@dimen/tab_group_share_notice_bottom_sheet_illustration_size"
+          android:contentDescription="@null"
+          app:tint="?attr/colorPrimaryContainer"  />
+
+      <ImageView
+          android:src="@drawable/ic_group_24dp"
+          android:layout_width="@dimen/tab_group_share_notice_bottom_sheet_illustration_icon_size"
+          android:layout_height="@dimen/tab_group_share_notice_bottom_sheet_illustration_icon_size"
+          android:layout_gravity="center"
+          android:contentDescription="@null"
+          app:tint="@color/default_icon_color_accent1_tint_list" />
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/tab_group_share_notice_bottom_sheet_title_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/tab_group_share_notice_bottom_sheet_title_margin_top"
+        android:text="@string/tab_group_share_notice_bottom_sheet_title"
+        tools:text="@string/tab_group_share_notice_bottom_sheet_title"
+        android:textAppearance="@style/TextAppearance.Headline.Primary"
+        android:gravity="center"
+        android:textAlignment="center" />
+
+    <TextView
+        android:id="@+id/tab_group_share_notice_bottom_sheet_subtitle_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/tab_group_share_notice_bottom_sheet_subtitle_margin_top"
+        android:text="@string/tab_group_share_notice_bottom_sheet_subtitle"
+        tools:text="@string/tab_group_share_notice_bottom_sheet_subtitle"
+        android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+        android:gravity="center"
+        android:textAlignment="center" />
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/tab_group_share_notice_bottom_sheet_confirm_button"
+        style="@style/FilledButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/tab_group_share_notice_bottom_sheet_button_margin_vertical"
+        android:minHeight="@dimen/min_touch_target_size"
+        android:text="@string/tab_group_share_notice_bottom_sheet_button_text"
+        tools:text="@string/tab_group_share_notice_bottom_sheet_button_text"
+        android:textAlignment="center" />
+  </LinearLayout>
+</LinearLayout>

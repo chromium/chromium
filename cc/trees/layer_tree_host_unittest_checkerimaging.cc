@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "cc/base/completion_event.h"
+#include "cc/layers/picture_layer_impl.h"
 #include "cc/test/fake_content_layer_client.h"
 #include "cc/test/fake_picture_layer.h"
 #include "cc/test/layer_tree_test.h"
@@ -135,7 +136,7 @@ class LayerTreeHostCheckerImagingTestMergeWithMainFrame
         EndTest();
       } break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

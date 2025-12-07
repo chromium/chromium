@@ -67,7 +67,7 @@ class Server(object):
     if self._process is None:
       raise RuntimeError('ChromeDriver server cannot be started')
 
-    max_time = time.time() + 20
+    max_time = time.time() + 40
     while not self.IsRunning():
       if time.time() > max_time:
         self._process.poll()

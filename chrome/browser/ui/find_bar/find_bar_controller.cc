@@ -5,15 +5,21 @@
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
-#include "chrome/browser/ui/find_bar/find_bar_state.h"
-#include "chrome/browser/ui/find_bar/find_bar_state_factory.h"
+#include "chrome/browser/ui/find_bar/find_bar_platform_helper.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/find_in_page/find_types.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -32,33 +38,40 @@ FindBarController::~FindBarController() {
 }
 
 void FindBarController::Show(bool find_next, bool forward_direction) {
+  // Close any overlapping bubbles before showing the find bar.
+  find_bar_->CloseOverlappingBubbles();
+
   find_in_page::FindTabHelper* find_tab_helper =
       find_in_page::FindTabHelper::FromWebContents(web_contents());
 
-  // Only show the animation if we're not already showing a find bar for the
-  // selected WebContents.
-  if (!find_tab_helper->find_ui_active()) {
+  const bool new_session = !find_tab_helper->find_ui_active();
+  if (new_session) {
     has_user_modified_text_ = false;
     MaybeSetPrepopulateText();
 
     find_tab_helper->set_find_ui_active(true);
-    find_bar_->Show(true);
   }
+
+  // FindBarController::Show() is triggered by users (e.g. Ctrl+F, or F3) so
+  // the find bar should always take focus.
+  find_bar_->Show(/*animate=*/true, /*focus=*/true);
   find_bar_->SetFocusAndSelection();
 
   if (find_next) {
-    find_tab_helper->StartFinding(find_bar_->GetFindText(), forward_direction,
-                                  false /* case_sensitive */,
+    find_tab_helper->StartFinding(std::u16string(find_bar_->GetFindText()),
+                                  forward_direction, false /* case_sensitive */,
                                   true /* find_match */);
     return;
   }
 
-  if (has_user_modified_text_)
+  if (has_user_modified_text_) {
     return;
+  }
 
   std::u16string selected_text = GetSelectedText();
   auto selected_length = selected_text.length();
-  if (selected_length > 0 && selected_length <= 250) {
+  if (selected_length > 0 && selected_length <= 250 &&
+      find_bar_->CanPopulateFromSelectedText()) {
     find_bar_->SetFindTextAndSelectedRange(
         selected_text, gfx::Range(0, selected_text.length()));
   }
@@ -68,10 +81,9 @@ void FindBarController::Show(bool find_next, bool forward_direction) {
   // whatever is prefilled (e.g. the selected text or the global pasteboard).
   // So we set |find_match| to false, which will set up match counts and
   // highlighting, but not jump to any matches.
-  find_tab_helper->StartFinding(find_bar_->GetFindText(),
-                                true /* forward_direction */,
-                                false /* case_sensitive */,
-                                false /* find_match */);
+  find_tab_helper->StartFinding(
+      std::u16string(find_bar_->GetFindText()), true /* forward_direction */,
+      false /* case_sensitive */, false /* find_match */);
 }
 
 void FindBarController::EndFindSession(
@@ -88,10 +100,12 @@ void FindBarController::EndFindSession(
     // When we hide the window, we need to notify the renderer that we are done
     // for now, so that we can abort the scoping effort and clear all the
     // tickmarks and highlighting.
+    find_tab_helper->set_find_ui_focused(false);
     find_tab_helper->StopFinding(selection_action);
 
-    if (result_action == find_in_page::ResultAction::kClear)
+    if (result_action == find_in_page::ResultAction::kClear) {
       find_bar_->ClearResults(find_tab_helper->find_result());
+    }
 
     // When we get dismissed we restore the focus to where it belongs.
     find_bar_->RestoreSavedFocus();
@@ -114,8 +128,9 @@ void FindBarController::ChangeWebContents(WebContents* contents) {
   find_in_page::FindTabHelper* find_tab_helper =
       contents ? find_in_page::FindTabHelper::FromWebContents(contents)
                : nullptr;
-  if (find_tab_helper)
+  if (find_tab_helper) {
     find_tab_observation_.Observe(find_tab_helper);
+  }
 
   // Hide any visible find window from the previous tab if a NULL tab contents
   // is passed in or if the find UI is not active in the new tab.
@@ -139,14 +154,15 @@ void FindBarController::ChangeWebContents(WebContents* contents) {
     // visible state. We also want to reset the window location so that
     // we don't surprise the user by popping up to the left for no apparent
     // reason.
-    find_bar_->Show(false);
+    find_bar_->Show(/*animate=*/false,
+                    /*focus=*/find_tab_helper->find_ui_focused());
     // The condition below can be true on macOS if the global pasteboard changed
     // while this tab was inactive (the find result will have been reset by
     // FindBarPlatformHelperMac). In that case, we need to find the new text to
     // update the results in the findbar. If condition is true due to the find
     // text being empty, the call to StartFinding will be a harmless no-op.
     if (find_tab_helper->find_result().number_of_matches() == -1) {
-      find_tab_helper->StartFinding(find_bar_->GetFindText(),
+      find_tab_helper->StartFinding(std::u16string(find_bar_->GetFindText()),
                                     true /* forward_direction */,
                                     false /* case_sensitive */,
                                     false /* find_match */);
@@ -164,20 +180,42 @@ void FindBarController::SetText(std::u16string text) {
   }
   find_in_page::FindTabHelper* find_tab_helper =
       find_in_page::FindTabHelper::FromWebContents(web_contents());
-  if (!find_tab_helper->find_ui_active())
+  if (!find_tab_helper->find_ui_active()) {
     return;
+  }
 
-  find_tab_helper->StartFinding(text,
-                                true /* forward_direction */,
+  find_tab_helper->StartFinding(text, true /* forward_direction */,
                                 false /* case_sensitive */,
                                 false /* find_match */);
 }
 
-void FindBarController::OnUserChangedFindText(std::u16string text) {
+void FindBarController::OnUserChangedFindText(std::u16string_view text) {
   has_user_modified_text_ = !text.empty();
 
-  if (find_bar_platform_helper_)
+  if (find_bar_platform_helper_) {
     find_bar_platform_helper_->OnUserChangedFindText(text);
+  }
+}
+
+void FindBarController::HandleActiveTabChanged(
+    content::WebContents* new_contents) {
+  ChangeWebContents(new_contents);
+  find_bar()->MoveWindowIfNecessary();
+  find_in_page::FindTabHelper* find_tab_helper =
+      find_in_page::FindTabHelper::FromWebContents(new_contents);
+  if (find_tab_helper && find_tab_helper->find_ui_active()) {
+    if (!find_bar()->HasFocus()) {
+      find_bar()->RestoreSavedFocus();
+    }
+  }
+}
+
+// `FindBarController` should be observing the active tab's contents at all
+// times.
+// On ChromeOS it's possible the active tab's contents are discarded, so the
+// observation must be updated.
+void FindBarController::AboutToBeDiscarded(content::WebContents* new_contents) {
+  ChangeWebContents(new_contents);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -210,8 +248,9 @@ void FindBarController::OnFindResultAvailable(
   // we're only highlighting results (when first opening the find bar).
   // See https://crbug.com/1131780
   if (!find_tab_helper->find_result().final_update() ||
-      !find_tab_helper->should_find_match())
+      !find_tab_helper->should_find_match()) {
     return;
+  }
 
   const std::u16string& current_search = find_tab_helper->find_text();
 
@@ -259,8 +298,9 @@ void FindBarController::MaybeSetPrepopulateText() {
   // pasteboard, so we always have the same find text in all find bars. This is
   // done through the find pasteboard mechanism (see FindBarPlatformHelperMac),
   // so don't set the text here.
-  if (find_bar_->HasGlobalFindPasteboard())
+  if (find_bar_->HasGlobalFindPasteboard()) {
     return;
+  }
 
   // Find out what we should show in the find text box. Usually, this will be
   // the last search in this tab, but if no search has been issued in this tab
@@ -268,8 +308,9 @@ void FindBarController::MaybeSetPrepopulateText() {
   find_in_page::FindTabHelper* find_tab_helper =
       find_in_page::FindTabHelper::FromWebContents(web_contents());
   std::u16string find_string = find_tab_helper->find_text();
-  if (find_string.empty())
+  if (find_string.empty()) {
     find_string = find_tab_helper->GetInitialSearchText();
+  }
 
   // Update the find bar with existing results and search text, regardless of
   // whether or not the find bar is visible, so that if it's subsequently
@@ -282,8 +323,9 @@ void FindBarController::MaybeSetPrepopulateText() {
 
 std::u16string FindBarController::GetSelectedText() {
   auto* host_view = web_contents()->GetRenderWidgetHostView();
-  if (!host_view)
+  if (!host_view) {
     return std::u16string();
+  }
 
   std::u16string selected_text = host_view->GetSelectedText();
   // This should be kept in sync with what TextfieldModel::Paste() does, since
@@ -291,4 +333,28 @@ std::u16string FindBarController::GetSelectedText() {
   // bar.
   base::TrimWhitespace(selected_text, base::TRIM_ALL, &selected_text);
   return selected_text;
+}
+
+void FindBarController::UpdatePageAction() {
+  CHECK(IsPageActionMigrated(PageActionIconType::kFind));
+  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents());
+
+  tabs::TabFeatures* tab_features = tab->GetTabFeatures();
+  if (!tab_features) {
+    return;
+  }
+  // Page actions don't exist for non-normal windows.
+  page_actions::PageActionController* controller =
+      tab_features->page_action_controller();
+  if (!controller) {
+    return;
+  }
+
+  if (!find_bar_->IsFindBarVisible()) {
+    find_bar_page_action_activity_.reset();
+    controller->Hide(kActionFind);
+  } else {
+    controller->Show(kActionFind);
+    find_bar_page_action_activity_ = controller->AddActivity(kActionFind);
+  }
 }

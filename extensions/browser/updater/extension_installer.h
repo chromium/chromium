@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_UPDATER_EXTENSION_INSTALLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -45,8 +46,6 @@ class ExtensionInstaller : public update_client::CrxInstaller {
   ExtensionInstaller& operator=(const ExtensionInstaller&) = delete;
 
   // update_client::CrxInstaller::
-  void OnUpdateError(int error) override;
-
   // This function is executed by the component update client, which runs on a
   // blocking thread with background priority.
   // |update_client_callback| is expected to be called on a UI thread.
@@ -55,8 +54,8 @@ class ExtensionInstaller : public update_client::CrxInstaller {
                std::unique_ptr<InstallParams> install_params,
                ProgressCallback progress_callback,
                UpdateClientCallback update_client_callback) override;
-  bool GetInstalledFile(const std::string& file,
-                        base::FilePath* installed_file) override;
+  std::optional<base::FilePath> GetInstalledFile(
+      const std::string& file) override;
   bool Uninstall() override;
 
   // For unit tests.

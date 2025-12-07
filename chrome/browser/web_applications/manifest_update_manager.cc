@@ -18,16 +18,20 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/commands/manifest_silent_update_command.h"
 #include "chrome/browser/web_applications/manifest_update_utils.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
@@ -35,12 +39,15 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/webapps/browser/features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/content_features.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/web_applications/web_app_system_web_app_delegate_map_utils.h"
 #endif
 
@@ -79,6 +86,8 @@ ManifestUpdateManager::ScopedBypassWindowCloseWaitingForTesting::
 // TODO(crbug.com/40272003): Also handle DidFinishNavigation() and
 // do not start the ManifestUpdateCheckCommand if different origin
 // navigation happens.
+// TODO(https://crbug.com/452053908): Replace this completely with
+// content::PageManifestManager usage in the command.
 class ManifestUpdateManager::PreUpdateWebContentsObserver
     : public content::WebContentsObserver {
  public:
@@ -175,7 +184,7 @@ ManifestUpdateManager::ManifestUpdateManager() = default;
 
 ManifestUpdateManager::~ManifestUpdateManager() = default;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void ManifestUpdateManager::SetSystemWebAppDelegateMap(
     const ash::SystemWebAppDelegateMap* system_web_apps_delegate_map) {
   system_web_apps_delegate_map_ = system_web_apps_delegate_map;
@@ -209,15 +218,21 @@ void ManifestUpdateManager::MaybeUpdate(
     return;
   }
 
-  if (!app_id.has_value() ||
-      !provider_->registrar_unsafe().IsInstallState(
-          *app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-                    proto::INSTALLED_WITH_OS_INTEGRATION})) {
+  if (!app_id.has_value() || !provider_->registrar_unsafe().AppMatches(
+                                 *app_id, WebAppFilter::InstalledInChrome())) {
     NotifyResult(url, app_id, ManifestUpdateResult::kNoAppInScope);
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Skip the cases when the app's scope and the site mismatch e.g. scope
+  // extensions.
+  if (provider_->registrar_unsafe().GetUrlInAppScopeScore(
+          url, app_id.value()) == 0) {
+    NotifyResult(url, app_id, ManifestUpdateResult::kNoAppInScope);
+    return;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
   if (system_web_apps_delegate_map_ &&
       IsSystemWebApp(provider_->registrar_unsafe(),
                      *system_web_apps_delegate_map_, *app_id)) {
@@ -234,7 +249,8 @@ void ManifestUpdateManager::MaybeUpdate(
     return;
   }
 
-  if (provider_->registrar_unsafe().IsIsolated(*app_id)) {
+  if (provider_->registrar_unsafe().AppMatches(*app_id,
+                                               WebAppFilter::IsIsolatedApp())) {
     // Manifests of Isolated Web Apps are only updated when a new version of the
     // app is installed.
     NotifyResult(url, *app_id, ManifestUpdateResult::kAppIsIsolatedWebApp);
@@ -248,7 +264,8 @@ void ManifestUpdateManager::MaybeUpdate(
   base::Time check_time =
       time_override_for_testing_.value_or(base::Time::Now());
 
-  if (!MaybeConsumeUpdateCheck(url.DeprecatedGetOriginAsURL(), *app_id,
+  if (!base::FeatureList::IsEnabled(features::kWebAppPredictableAppUpdating) &&
+      !MaybeConsumeUpdateCheck(url.DeprecatedGetOriginAsURL(), *app_id,
                                check_time)) {
     NotifyResult(url, *app_id, ManifestUpdateResult::kThrottled);
     return;
@@ -288,7 +305,8 @@ void ManifestUpdateManager::StartCheckAfterPageAndManifestUrlLoad(
   // If web_contents have been destroyed before page load,
   // then no need of running the command.
   if (!web_contents || web_contents->IsBeingDestroyed()) {
-    OnUpdateStopped(url, app_id, ManifestUpdateResult::kWebContentsDestroyed);
+    OnUpdateStopped(/*web_contents=*/nullptr, url, app_id,
+                    ManifestUpdateResult::kWebContentsDestroyed);
     return;
   }
 
@@ -298,13 +316,87 @@ void ManifestUpdateManager::StartCheckAfterPageAndManifestUrlLoad(
   update_stage.observer.reset();
   update_stage.stage = UpdateStage::Stage::kCheckingManifestDiff;
 
-  if (load_finished_callback_)
-    std::move(load_finished_callback_).Run();
+  // TODO(crbug.com/442643377): Don't do this here, and instead use a per-page
+  // class to be notified when a valid manifest is attached to a page.
+  if (base::FeatureList::IsEnabled(features::kWebAppPredictableAppUpdating) &&
+      base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon)) {
+    auto update_time_it = update_check_for_silent_updates_.find(app_id);
+    std::optional<base::Time> previous_time_for_silent_icon_update =
+        (update_time_it != update_check_for_silent_updates_.end())
+            ? std::make_optional(update_time_it->second)
+            : std::nullopt;
 
-  provider_->scheduler().ScheduleManifestUpdateCheck(
-      url, app_id, check_time, web_contents,
-      base::BindOnce(&ManifestUpdateManager::OnManifestCheckAwaitAppWindowClose,
-                     weak_factory_.GetWeakPtr(), web_contents, url, app_id));
+    provider_->scheduler().ScheduleManifestSilentUpdate(
+        *web_contents, previous_time_for_silent_icon_update,
+        base::BindOnce(&ManifestUpdateManager::OnManifestSilentUpdateComplete,
+                       weak_factory_.GetWeakPtr(), web_contents, url, app_id));
+  } else {
+    auto app_window_close_await_callback = base::BindOnce(
+        &ManifestUpdateManager::OnManifestCheckAwaitAppWindowClose,
+        weak_factory_.GetWeakPtr(), web_contents, url, app_id);
+    provider_->scheduler().ScheduleManifestUpdateCheck(
+        url, app_id, check_time, web_contents,
+        std::move(app_window_close_await_callback));
+  }
+
+  // Run the `load_finished_callback_` after it is guaranteed that the command
+  // has been scheduled, to prevent flakiness in case the callback runs before
+  // the command is scheduled, and any subsequent
+  // `AwaitAllCommandsCompleteForTesting()` ends instantly.
+  if (load_finished_callback_) {
+    std::move(load_finished_callback_).Run();
+  }
+}
+
+void ManifestUpdateManager::OnManifestSilentUpdateComplete(
+    base::WeakPtr<content::WebContents> contents,
+    const GURL& url,
+    const webapps::AppId& app_id,
+    ManifestSilentUpdateCompletionInfo completion_info) {
+  auto update_stage_it = update_stages_.find(app_id);
+  if (update_stage_it == update_stages_.end()) {
+    // If the web_app has already been uninstalled after the manifest update
+    // data fetch has happened, then we can early exit.
+    return;
+  }
+  update_stages_.erase(update_stage_it);
+  bool update_silent_or_pending;
+  switch (completion_info.result) {
+    case ManifestSilentUpdateCheckResult::kAppUpdateFailedDuringInstall:
+    case ManifestSilentUpdateCheckResult::kSystemShutdown:
+    case ManifestSilentUpdateCheckResult::kAppUpToDate:
+    case ManifestSilentUpdateCheckResult::kIconReadFromDiskFailed:
+    case ManifestSilentUpdateCheckResult::kWebContentsDestroyed:
+    case ManifestSilentUpdateCheckResult::kPendingIconWriteToDiskFailed:
+    case ManifestSilentUpdateCheckResult::kInvalidManifest:
+    case ManifestSilentUpdateCheckResult::kInvalidPendingUpdateInfo:
+    case ManifestSilentUpdateCheckResult::kUserNavigated:
+    case ManifestSilentUpdateCheckResult::kManifestToWebAppInstallInfoError:
+    case ManifestSilentUpdateCheckResult::kAppNotAllowedToUpdate:
+      update_silent_or_pending = false;
+      break;
+    case ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate:
+    case ManifestSilentUpdateCheckResult::kAppSilentlyUpdated:
+    case ManifestSilentUpdateCheckResult::kAppHasNonSecurityAndSecurityChanges:
+    case ManifestSilentUpdateCheckResult::kAppHasSecurityUpdateDueToThrottle:
+      update_silent_or_pending = true;
+      break;
+  }
+
+  // If a manifest update happened successfully, record feature usage of
+  // applying a manifest.
+  if (update_silent_or_pending && contents) {
+    page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
+        contents->GetPrimaryMainFrame(),
+        blink::mojom::WebFeature::kWebAppManifestUpdate);
+  }
+
+  // Track time for throttling future silent icon updates if the current update
+  // triggered a silent icon update.
+  if (completion_info.time_for_icon_diff_check.has_value()) {
+    update_check_for_silent_updates_[app_id] =
+        *completion_info.time_for_icon_diff_check;
+  }
 }
 
 void ManifestUpdateManager::OnManifestCheckAwaitAppWindowClose(
@@ -339,7 +431,7 @@ void ManifestUpdateManager::OnManifestCheckAwaitAppWindowClose(
   CHECK_EQ(update_stage.stage, UpdateStage::Stage::kCheckingManifestDiff);
 
   if (check_result != ManifestUpdateCheckResult::kAppUpdateNeeded) {
-    OnUpdateStopped(url, app_id,
+    OnUpdateStopped(contents, url, app_id,
                     FinalResultFromManifestUpdateCheckResult(check_result));
     return;
   }
@@ -347,19 +439,23 @@ void ManifestUpdateManager::OnManifestCheckAwaitAppWindowClose(
   CHECK(install_info);
 
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
-  auto keep_alive = std::make_unique<ScopedKeepAlive>(
-      KeepAliveOrigin::APP_MANIFEST_UPDATE, KeepAliveRestartOption::DISABLED);
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive;
   if (!profile->IsOffTheRecord()) {
-    profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+    profile_keep_alive = ScopedProfileKeepAlive::TryAcquire(
         profile, ProfileKeepAliveOrigin::kWebAppUpdate);
+    if (!profile_keep_alive) {
+      // Profile is scheduled for destruction, abort.
+      return;
+    }
   }
+  auto keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::APP_MANIFEST_UPDATE, KeepAliveRestartOption::DISABLED);
 
   provider_->scheduler().ScheduleManifestUpdateFinalize(
       url, app_id, std::move(install_info), std::move(keep_alive),
       std::move(profile_keep_alive),
       base::BindOnce(&ManifestUpdateManager::OnUpdateStopped,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), contents));
 }
 
 bool ManifestUpdateManager::IsUpdateConsumed(const webapps::AppId& app_id,
@@ -390,7 +486,10 @@ void ManifestUpdateManager::OnWebAppWillBeUninstalled(
     update_stages_.erase(it);
   }
   CHECK(!base::Contains(update_stages_, app_id));
+
+  // Clear any data necessary for throttling updates for the current web app.
   last_update_check_.erase(app_id);
+  update_check_for_silent_updates_.erase(app_id);
 }
 
 void ManifestUpdateManager::OnWebAppInstallManagerDestroyed() {
@@ -424,15 +523,27 @@ void ManifestUpdateManager::SetLastUpdateCheckTime(const GURL& origin,
   last_update_check_[app_id] = time;
 }
 
-void ManifestUpdateManager::OnUpdateStopped(const GURL& url,
-                                            const webapps::AppId& app_id,
-                                            ManifestUpdateResult result) {
+void ManifestUpdateManager::OnUpdateStopped(
+    base::WeakPtr<content::WebContents> contents,
+    const GURL& url,
+    const webapps::AppId& app_id,
+    ManifestUpdateResult result) {
   auto update_stage_it = update_stages_.find(app_id);
   // If the app has been uninstalled in the middle of the manifest
   // update, a kAppUninstalled has already been fired.
   if (update_stage_it == update_stages_.end())
     return;
   update_stages_.erase(app_id);
+
+  // If a manifest update happened successfully, record feature usage of
+  // applying a manifest, and update the corresponding WebDXFeature counter for
+  // kManifest as well.
+  if (contents && result == ManifestUpdateResult::kAppUpdated) {
+    page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
+        contents->GetPrimaryMainFrame(),
+        blink::mojom::WebFeature::kWebAppManifestUpdate);
+  }
+
   NotifyResult(url, app_id, result);
 }
 
@@ -445,6 +556,7 @@ void ManifestUpdateManager::NotifyResult(
   if (result != ManifestUpdateResult::kNoAppInScope) {
     base::UmaHistogramEnumeration("Webapp.Update.ManifestUpdateResult", result);
   }
+
   if (*GetResultCallbackMutableForTesting()) {
     std::move(*GetResultCallbackMutableForTesting()).Run(url, result);
   }

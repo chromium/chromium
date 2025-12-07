@@ -19,6 +19,7 @@
 #include "base/files/file_util.h"
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -71,7 +72,7 @@ std::unique_ptr<TopDomainEntry> MakeEntry(
   // There might be unicode domains in the list. Store them in punycode in
   // the trie.
   const GURL domain(std::string("http://") + hostname);
-  entry->top_domain = domain.host();
+  entry->top_domain = domain.GetHost();
 
   entry->is_top_bucket = is_top_bucket;
   entry->skeleton_type = skeleton_type;

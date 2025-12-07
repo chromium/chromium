@@ -23,7 +23,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::WithArgs;
 
@@ -83,9 +82,9 @@ TEST_F(ReportQueueManualTestContextTest,
   EXPECT_CALL(*mock_report_queue_, AddRecord(_, _, _))
       .Times(kNumberOfMessagesToEnqueue)
       .WillRepeatedly(
-          WithArgs<2>(Invoke([](ReportQueue::EnqueueCallback enqueue_callback) {
+          WithArgs<2>([](ReportQueue::EnqueueCallback enqueue_callback) {
             std::move(enqueue_callback).Run(Status::StatusOK());
-          })));
+          }));
 
   test::TestEvent<Status> completion_event;
   Start<ReportQueueManualTestContext>(
@@ -108,9 +107,9 @@ TEST_F(ReportQueueManualTestContextTest,
   EXPECT_CALL(*mock_report_queue_, AddRecord(_, _, _))
       .Times(kNumberOfMessagesToEnqueue)
       .WillRepeatedly(
-          WithArgs<2>(Invoke([](ReportQueue::EnqueueCallback enqueue_callback) {
+          WithArgs<2>([](ReportQueue::EnqueueCallback enqueue_callback) {
             std::move(enqueue_callback).Run(Status::StatusOK());
-          })));
+          }));
 
   test::TestEvent<Status> completion_event;
   Start<ReportQueueManualTestContext>(

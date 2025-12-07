@@ -7,12 +7,14 @@ package org.chromium.chrome.browser.policy;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.chrome.browser.AppHooks;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.net.NetError;
 import org.chromium.url.GURL;
 
 /** Provides native with methods to call to audit events during navigations. */
+@NullMarked
 public class PolicyAuditorBridge {
     private static void recordErrorInPolicyAuditor(
             String failingUrl, String description, int errorCode, PolicyAuditor policyAuditor) {
@@ -33,8 +35,8 @@ public class PolicyAuditorBridge {
     }
 
     @CalledByNative
-    public static PolicyAuditor getPolicyAuditor() {
-        return AppHooks.get().getPolicyAuditor();
+    public static @Nullable PolicyAuditor getPolicyAuditor() {
+        return PolicyAuditor.maybeCreate();
     }
 
     @CalledByNative

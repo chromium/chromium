@@ -29,11 +29,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/fonts/win/font_fallback_win.h"
 
 #include <unicode/uchar.h>
@@ -42,6 +37,8 @@
 
 #include "base/check_op.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
+#include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/icu_error.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
@@ -57,28 +54,7 @@ inline bool IsFontPresent(const char* font_name_utf8,
                           const SkFontMgr& font_manager) {
   sk_sp<SkTypeface> tf(
       font_manager.matchFamilyStyle(font_name_utf8, SkFontStyle()));
-  if (!tf)
-    return false;
-
-  if (RuntimeEnabledFeatures::FontPresentWinEnabled()) {
-    return true;
-  }
-
-  const String font_name = String::FromUTF8(font_name_utf8);
-  SkTypeface::LocalizedStrings* actual_families =
-      tf->createFamilyNameIterator();
-  bool matches_requested_family = false;
-  SkTypeface::LocalizedString actual_family;
-  while (actual_families->next(&actual_family)) {
-    if (DeprecatedEqualIgnoringCase(
-            font_name, String::FromUTF8(actual_family.fString.c_str()))) {
-      matches_requested_family = true;
-      break;
-    }
-  }
-  actual_families->unref();
-
-  return matches_requested_family;
+  return !!tf;
 }
 
 const char* FirstAvailableFont(
@@ -117,11 +93,14 @@ class ScriptToFontMap {
  public:
   static constexpr UScriptCode kSize = USCRIPT_CODE_LIMIT;
 
-  FontMapping& operator[](UScriptCode script) { return mappings_[script]; }
+  FontMapping& operator[](UScriptCode script) {
+    return UNSAFE_TODO(mappings_[script]);
+  }
 
   void Set(base::span<const ScriptToFontFamilies> families) {
     for (const auto& family : families) {
-      mappings_[family.script].candidate_family_names = family.families;
+      UNSAFE_TODO(mappings_[family.script]).candidate_family_names =
+          family.families;
     }
   }
 
@@ -180,7 +159,7 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
   static const char* const kGurmukhiFonts[] = {"Nirmala UI", "Raavi"};
   static const char* const kHangulFonts[] = {"Noto Sans KR", "Noto Sans CJK KR",
                                              "Malgun Gothic", "Gulim"};
-  static const char* const kHangulFontsNoNoto[] = {"Malgun Gothic", "Gulim"};
+
   static const char* const kHebrewFonts[] = {"David", "Segoe UI"};
   static const char* const kImperialAramaicFonts[] = {"Segoe UI Historic"};
   static const char* const kInscriptionalPahlaviFonts[] = {"Segoe UI Historic"};
@@ -191,8 +170,7 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
   static const char* const kKatakanaOrHiraganaFonts[] = {
       "Noto Sans JP", "Noto Sans CJK JP", "Meiryo",
       "Yu Gothic",    "MS PGothic",       "Microsoft YaHei"};
-  static const char* const kKatakanaOrHiraganaFontsNoNoto[] = {
-      "Meiryo", "Yu Gothic", "MS PGothic", "Microsoft YaHei"};
+
   static const char* const kKharoshthiFonts[] = {"Segoe UI Historic"};
   // Try Khmer OS before Vista fonts as it goes along better with Latin
   // and looks better/larger for the same size.
@@ -231,8 +209,7 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
   static const char* const kShavianFonts[] = {"Segoe UI Historic"};
   static const char* const kSimplifiedHanFonts[] = {
       "Noto Sans SC", "Noto Sans CJK SC", "Microsoft YaHei", "simsun"};
-  static const char* const kSimplifiedHanFontsNoNoto[] = {"Microsoft YaHei",
-                                                          "simsun"};
+
   static const char* const kSinhalaFonts[] = {"Iskoola Pota", "AksharUnicode",
                                               "Nirmala UI"};
   static const char* const kSoraSompengFonts[] = {"Nirmala UI"};
@@ -250,8 +227,7 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
   static const char* const kTifinaghFonts[] = {"Ebrima"};
   static const char* const kTraditionalHanFonts[] = {
       "Noto Sans TC", "Noto Sans CJK TC", "Microsoft JhengHei", "pmingli"};
-  static const char* const kTraditionalHanFontsNoNoto[] = {"Microsoft JhengHei",
-                                                           "pmingli"};
+
   static const char* const kVaiFonts[] = {"Ebrima"};
   static const char* const kYiFonts[] = {"Microsoft Yi Baiti", "Nuosu SIL",
                                          "Code2000"};
@@ -298,6 +274,7 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
       {USCRIPT_LYCIAN, kLycianFonts},
       {USCRIPT_LYDIAN, kLydianFonts},
       {USCRIPT_MALAYALAM, kMalayalamFonts},
+      {USCRIPT_MEITEI_MAYEK, kSoraSompengFonts},
       {USCRIPT_MEROITIC_CURSIVE, kMeroiticCursiveFonts},
       {USCRIPT_MONGOLIAN, kMongolianFonts},
       {USCRIPT_MYANMAR, kMyanmarFonts},
@@ -327,22 +304,10 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
       {USCRIPT_TIBETAN, kTibetanFonts},
       {USCRIPT_TIFINAGH, kTifinaghFonts},
       {USCRIPT_TRADITIONAL_HAN, kTraditionalHanFonts},
+      {USCRIPT_BOPOMOFO, kTraditionalHanFonts},
       {USCRIPT_VAI, kVaiFonts},
       {USCRIPT_YI, kYiFonts}};
   script_font_map.Set(kScriptToFontFamilies);
-
-  if (!RuntimeEnabledFeatures::FontSystemFallbackNotoCjkEnabled())
-      [[unlikely]] {
-    const ScriptToFontFamilies no_noto[] = {
-        {USCRIPT_HANGUL, kHangulFontsNoNoto},
-        {USCRIPT_HIRAGANA, kKatakanaOrHiraganaFontsNoNoto},
-        {USCRIPT_KATAKANA, kKatakanaOrHiraganaFontsNoNoto},
-        {USCRIPT_KATAKANA_OR_HIRAGANA, kKatakanaOrHiraganaFontsNoNoto},
-        {USCRIPT_SIMPLIFIED_HAN, kSimplifiedHanFontsNoNoto},
-        {USCRIPT_TRADITIONAL_HAN, kTraditionalHanFontsNoNoto},
-    };
-    script_font_map.Set(no_noto);
-  }
 
   // Initialize the locale-dependent mapping from system locale.
   UScriptCode han_script = LayoutLocale::GetSystem().GetScriptForHan();
@@ -354,60 +319,39 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
   }
 }
 
-// There are a lot of characters in USCRIPT_COMMON that can be covered
-// by fonts for scripts closely related to them. See
-// http://unicode.org/cldr/utility/list-unicodeset.jsp?a=[:Script=Common:]
-// FIXME: make this more efficient with a wider coverage
-UScriptCode GetScriptBasedOnUnicodeBlock(int ucs4) {
-  UBlockCode block = ublock_getCode(ucs4);
-  switch (block) {
-    case UBLOCK_CJK_SYMBOLS_AND_PUNCTUATION:
-      return USCRIPT_HAN;
-    case UBLOCK_HIRAGANA:
-    case UBLOCK_KATAKANA:
-      return USCRIPT_KATAKANA_OR_HIRAGANA;
-    case UBLOCK_ARABIC:
-      return USCRIPT_ARABIC;
-    case UBLOCK_THAI:
-      return USCRIPT_THAI;
-    case UBLOCK_GREEK:
-      return USCRIPT_GREEK;
-    case UBLOCK_DEVANAGARI:
-      // For Danda and Double Danda (U+0964, U+0965), use a Devanagari
-      // font for now although they're used by other scripts as well.
-      // Without a context, we can't do any better.
-      return USCRIPT_DEVANAGARI;
-    case UBLOCK_ARMENIAN:
-      return USCRIPT_ARMENIAN;
-    case UBLOCK_GEORGIAN:
-      return USCRIPT_GEORGIAN;
-    case UBLOCK_KANNADA:
-      return USCRIPT_KANNADA;
-    case UBLOCK_GOTHIC:
-      return USCRIPT_GOTHIC;
-    default:
-      return USCRIPT_COMMON;
-  }
-}
-
 UScriptCode GetScript(int ucs4) {
   ICUError err;
   UScriptCode script = uscript_getScript(ucs4, &err);
   // If script is invalid, common or inherited or there's an error,
   // infer a script based on the unicode block of a character.
   if (script <= USCRIPT_INHERITED || U_FAILURE(err))
-    script = GetScriptBasedOnUnicodeBlock(ucs4);
+    script = Character::GetScriptBasedOnUnicodeBlock(ucs4);
   return script;
 }
 
-const char* FirstAvailableEmojiFont(const SkFontMgr& font_manager) {
+const char* AvailableColorEmojiFont(const SkFontMgr& font_manager) {
   static const char* const kEmojiFonts[] = {"Segoe UI Emoji",
                                             "Segoe UI Symbol"};
   static const char* emoji_font = nullptr;
-  static std::once_flag once_flag;
-  std::call_once(once_flag, [&] {
+  // `std::once()` may cause hangs. crbug.com/349456407
+  static bool initialized = false;
+  if (!initialized) {
     emoji_font = FirstAvailableFont(kEmojiFonts, font_manager);
-  });
+    initialized = true;
+  }
+  return emoji_font;
+}
+
+const char* AvailableMonoEmojiFont(const SkFontMgr& font_manager) {
+  static const char* const kEmojiFonts[] = {"Segoe UI Symbol",
+                                            "Segoe UI Emoji"};
+  static const char* emoji_font = nullptr;
+  // `std::once()` may cause hangs. crbug.com/349456407
+  static bool initialized = false;
+  if (!initialized) {
+    emoji_font = FirstAvailableFont(kEmojiFonts, font_manager);
+    initialized = true;
+  }
   return emoji_font;
 }
 
@@ -415,17 +359,46 @@ const char* FirstAvailableMathFont(const SkFontMgr& font_manager) {
   static const char* const kMathFonts[] = {"Cambria Math", "Segoe UI Symbol",
                                            "Code2000"};
   static const char* math_font = nullptr;
-  static std::once_flag once_flag;
-  std::call_once(once_flag, [&] {
+  // `std::once()` may cause hangs. crbug.com/349456407
+  static bool initialized = false;
+  if (!initialized) {
     math_font = FirstAvailableFont(kMathFonts, font_manager);
-  });
+    initialized = true;
+  }
   return math_font;
 }
 
-const AtomicString& GetEmojiFont(const SkFontMgr& font_manager) {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kEmojiFont,
-                                  (FirstAvailableEmojiFont(font_manager)));
-  return kEmojiFont;
+const AtomicString& GetColorEmojiFont(const SkFontMgr& font_manager) {
+  // Calling `AvailableColorEmojiFont()` from `DEFINE_THREAD_SAFE_STATIC_LOCAL`
+  // may cause hangs. crbug.com/349456407
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, emoji_font, (g_empty_atom));
+  if (emoji_font.empty() && !emoji_font.IsNull()) {
+    emoji_font = AtomicString(AvailableColorEmojiFont(font_manager));
+    CHECK(!emoji_font.empty() || emoji_font.IsNull());
+  }
+  return emoji_font;
+}
+
+const AtomicString& GetMonoEmojiFont(const SkFontMgr& font_manager) {
+  // Calling `AvailableMonoEmojiFont()` from `DEFINE_THREAD_SAFE_STATIC_LOCAL`
+  // may cause hangs. crbug.com/349456407
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, emoji_font, (g_empty_atom));
+  if (emoji_font.empty() && !emoji_font.IsNull()) {
+    emoji_font = AtomicString(AvailableMonoEmojiFont(font_manager));
+    CHECK(!emoji_font.empty() || emoji_font.IsNull());
+  }
+  return emoji_font;
+}
+
+const AtomicString& GetMathFont(const SkFontMgr& font_manager) {
+  // Calling `AvailableMonoEmojiFont()` from `DEFINE_THREAD_SAFE_STATIC_LOCAL`
+  // may cause hangs. crbug.com/349456407
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, math_font, (g_empty_atom));
+  if (math_font.empty() && !math_font.IsNull()) {
+    math_font = AtomicString(FirstAvailableMathFont(font_manager));
+    CHECK(!math_font.empty() || math_font.IsNull());
+  }
+  return math_font;
 }
 
 const AtomicString& GetFontBasedOnUnicodeBlock(UBlockCode block_code,
@@ -433,7 +406,9 @@ const AtomicString& GetFontBasedOnUnicodeBlock(UBlockCode block_code,
   switch (block_code) {
     case UBLOCK_EMOTICONS:
     case UBLOCK_ENCLOSED_ALPHANUMERIC_SUPPLEMENT:
-      return GetEmojiFont(font_manager);
+      // We call this function only when FallbackPriority is not kEmojiEmoji or
+      // kEmojiEmojiWithVS, so we need a text presentation of emoji.
+      return GetMonoEmojiFont(font_manager);
     case UBLOCK_PLAYING_CARDS:
     case UBLOCK_MISCELLANEOUS_SYMBOLS:
     case UBLOCK_MISCELLANEOUS_SYMBOLS_AND_ARROWS:
@@ -457,11 +432,8 @@ const AtomicString& GetFontBasedOnUnicodeBlock(UBlockCode block_code,
     case UBLOCK_SUPPLEMENTAL_MATHEMATICAL_OPERATORS:
     case UBLOCK_MATHEMATICAL_ALPHANUMERIC_SYMBOLS:
     case UBLOCK_ARABIC_MATHEMATICAL_ALPHABETIC_SYMBOLS:
-    case UBLOCK_GEOMETRIC_SHAPES_EXTENDED: {
-      DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kMathFont,
-                                      (FirstAvailableMathFont(font_manager)));
-      return kMathFont;
-    }
+    case UBLOCK_GEOMETRIC_SHAPES_EXTENDED:
+      return GetMathFont(font_manager);
     default:
       return g_null_atom;
   }
@@ -504,7 +476,7 @@ const AtomicString& GetFontFamilyForScript(
     std::optional<AtomicString> families[ScriptToFontMap::kSize];
   };
   DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicFamilies, families, ());
-  std::optional<AtomicString>& family = families.families[script];
+  std::optional<AtomicString>& family = UNSAFE_TODO(families.families[script]);
   if (family) {
     return *family;
   }
@@ -532,8 +504,13 @@ const AtomicString& GetFallbackFamily(
     const SkFontMgr& font_manager,
     UScriptCode& script_out) {
   DCHECK(character);
-  if (fallback_priority == FontFallbackPriority::kEmojiEmoji) [[unlikely]] {
-    if (const AtomicString& family = GetEmojiFont(font_manager)) {
+  if (IsEmojiPresentationEmoji(fallback_priority)) [[unlikely]] {
+    if (const AtomicString& family = GetColorEmojiFont(font_manager)) {
+      script_out = USCRIPT_INVALID_CODE;
+      return family;
+    }
+  } else if (IsTextPresentationEmoji(fallback_priority)) [[unlikely]] {
+    if (const AtomicString& family = GetMonoEmojiFont(font_manager)) {
       script_out = USCRIPT_INVALID_CODE;
       return family;
     }
@@ -556,7 +533,7 @@ const AtomicString& GetFallbackFamily(
     script = USCRIPT_HAN;
 
   if (script == USCRIPT_COMMON)
-    script = GetScriptBasedOnUnicodeBlock(character);
+    script = Character::GetScriptBasedOnUnicodeBlock(character);
 
   // For unified-Han scripts, try the lang attribute, system, or
   // accept-languages.
@@ -590,7 +567,15 @@ const AtomicString& GetFallbackFamily(
       DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kPlane1, ("code2001"));
       return kPlane1;
     }
-    case 2:
+    case 2: {
+      // Extension I (category IX) is part of Plane 2: U+2EBF0–U+2EE5F. As per
+      // GB18030-2022, these characters must be rendered using simsun-extg
+      // because simsun-extg supports these newer and extended ideographs.
+      if (character >= 0x2EBF0 && character <= 0x2EE5F) {
+        DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kPlane2exti,
+                                        ("simsun-extg"));
+        return kPlane2exti;
+      }
       // Use a Traditional Chinese ExtB font if in Traditional Chinese locale.
       // Otherwise, use a Simplified Chinese ExtB font. Windows Japanese
       // fonts do support a small subset of ExtB (that are included in JIS X
@@ -604,6 +589,15 @@ const AtomicString& GetFallbackFamily(
       DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kPlane2zhs,
                                       ("simsun-extb"));
       return kPlane2zhs;
+    }
+    case 3:
+      // Plane 3 includes Extension G (category GX): U+30000–U+3134F and
+      // Extension H (category HX): U+31350–U+323AF. Both are required by
+      // GB18030-2022 and must be rendered using simsun-extg because simsun-extg
+      // supports these newer and extended ideographs.
+      DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kPlane3extgh,
+                                      ("simsun-extg"));
+      return kPlane3extgh;
   }
 
   DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kLastResort,

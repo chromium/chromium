@@ -22,8 +22,9 @@ PersistentBackgroundPageState GetPersistentBackgroundPageState(
     content::BrowserContext* browser_context) {
   // If the extension doesn't have a persistent background page, it can never
   // be ready.
-  if (!BackgroundInfo::HasPersistentBackgroundPage(&extension))
+  if (!BackgroundInfo::HasPersistentBackgroundPage(&extension)) {
     return PersistentBackgroundPageState::kInvalid;
+  }
 
   content::BrowserContext* browser_context_to_use = browser_context;
   if (browser_context->IsOffTheRecord()) {
@@ -51,8 +52,9 @@ PersistentBackgroundPageState GetPersistentBackgroundPageState(
   ExtensionHost* background_host =
       process_manager->GetBackgroundHostForExtension(extension.id());
 
-  if (!background_host || !background_host->document_element_available())
+  if (!background_host || !background_host->document_element_available()) {
     return PersistentBackgroundPageState::kNotReady;
+  }
 
   return PersistentBackgroundPageState::kReady;
 }

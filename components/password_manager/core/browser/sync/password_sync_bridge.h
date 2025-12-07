@@ -72,9 +72,12 @@ class PasswordSyncBridge : public syncer::DataTypeSyncBridge {
   std::unique_ptr<syncer::DataBatch> GetDataForCommit(
       StorageKeyList storage_keys) override;
   std::unique_ptr<syncer::DataBatch> GetAllDataForDebugging() override;
-  std::string GetClientTag(const syncer::EntityData& entity_data) override;
-  std::string GetStorageKey(const syncer::EntityData& entity_data) override;
+  std::string GetClientTag(
+      const syncer::EntityData& entity_data) const override;
+  std::string GetStorageKey(
+      const syncer::EntityData& entity_data) const override;
   bool SupportsGetStorageKey() const override;
+  bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
   void ApplyDisableSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
                                    delete_metadata_change_list) override;
   sync_pb::EntitySpecifics TrimAllSupportedFieldsFromRemoteSpecifics(
@@ -91,9 +94,6 @@ class PasswordSyncBridge : public syncer::DataTypeSyncBridge {
   // store. This should be called during MergeFullSyncData().
   std::optional<syncer::ModelError> CleanupPasswordStore();
 
-  // Retrieves the storage keys of all unsynced passwords in the store.
-  std::set<FormPrimaryKey> GetUnsyncedPasswordsStorageKeys();
-
   // If available, returns cached possibly trimmed PasswordSpecificsData for
   // given |storage_key|. By default, empty PasswordSpecificsData is returned.
   const sync_pb::PasswordSpecificsData& GetPossiblyTrimmedPasswordSpecificsData(
@@ -104,12 +104,11 @@ class PasswordSyncBridge : public syncer::DataTypeSyncBridge {
   bool SyncMetadataCacheContainsSupportedFields(
       const syncer::EntityMetadataMap& metadata_map) const;
 
+  const syncer::WipeModelUponSyncDisabledBehavior
+      wipe_model_upon_sync_disabled_behavior_;
+
   // Password store responsible for persistence.
   raw_ptr<PasswordStoreSync> password_store_sync_;
-
-  syncer::WipeModelUponSyncDisabledBehavior
-      wipe_model_upon_sync_disabled_behavior_ =
-          syncer::WipeModelUponSyncDisabledBehavior::kNever;
 
   base::RepeatingClosure sync_enabled_or_disabled_cb_;
 

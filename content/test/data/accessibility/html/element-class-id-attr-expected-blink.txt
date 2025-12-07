@@ -1,0 +1,15 @@
+rootWebArea htmlTag='#document'
+++genericContainer ignored
+++++genericContainer ignored
+++++++heading className='headerClass' htmlTag='h1' name='Image'
+++++++++staticText name='Image'
+++++++++++inlineTextBox name='Image'
+++++++image className='imageClass' htmlTag='img' name='ImageAlt'
+=== Start Continuation ===
+rootWebArea htmlTag='#document' name='changed-class'
+++genericContainer ignored
+++++genericContainer ignored
+++++++heading className='newClass' htmlTag='h1' name='Image'
+++++++++staticText name='Image'
+++++++++++inlineTextBox name='Image'
+++++++image className='imageClass' htmlTag='img' name='ImageAlt'

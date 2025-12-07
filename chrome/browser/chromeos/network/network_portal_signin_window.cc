@@ -13,20 +13,14 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/proxy_config/proxy_prefs.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/ash/components/network/network_handler.h"
-#include "chromeos/ash/components/network/network_state_handler.h"
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/network_change.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif
 
 namespace chromeos {
 
@@ -57,6 +51,34 @@ Profile* GetOTROrActiveProfile() {
 
 }  // namespace
 
+class NetworkPortalSigninWindow::WindowObserver
+    : public content::WebContentsObserver {
+ public:
+  WindowObserver(content::WebContents* web_contents,
+                 NetworkPortalSigninWindow* controller)
+      : content::WebContentsObserver(web_contents), controller_(controller) {}
+  ~WindowObserver() override = default;
+
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    RequestPortalDetection();
+  }
+
+  void WebContentsDestroyed() override { RequestPortalDetection(); }
+
+ private:
+  void RequestPortalDetection() {
+    NET_LOG(EVENT) << "Request portal detection";
+    controller_->portal_detection_requested_for_testing_++;
+    ash::NetworkHandler::Get()
+        ->network_state_handler()
+        ->RequestPortalDetection();
+  }
+
+ private:
+  raw_ptr<NetworkPortalSigninWindow> controller_;
+};
+
 // static
 NetworkPortalSigninWindow* NetworkPortalSigninWindow::Get() {
   static base::NoDestructor<NetworkPortalSigninWindow> instance;
@@ -74,7 +96,7 @@ void NetworkPortalSigninWindow::Show(const GURL& url) {
   if (browser) {
     NET_LOG(EVENT) << "Show existing portal signin window";
     NavigateParams params(browser, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-    params.window_action = NavigateParams::SHOW_WINDOW;
+    params.window_action = NavigateParams::WindowAction::kShowWindow;
     params.user_gesture = true;
     params.trusted_source = false;
     ::Navigate(&params);
@@ -98,7 +120,7 @@ void NetworkPortalSigninWindow::Show(const GURL& url) {
     window_session_id_ = SessionID::InvalidValue();
     return;
   }
-  window_session_id_ = params.browser->session_id();
+  window_session_id_ = params.browser->GetSessionID();
   window_observer_ =
       std::make_unique<WindowObserver>(handle->GetWebContents(), this);
 }
@@ -106,40 +128,6 @@ void NetworkPortalSigninWindow::Show(const GURL& url) {
 Browser* NetworkPortalSigninWindow::GetBrowserForTesting() {
   return chrome::FindBrowserWithID(window_session_id_);
 }
-
-class NetworkPortalSigninWindow::WindowObserver
-    : public content::WebContentsObserver {
- public:
-  WindowObserver(content::WebContents* web_contents,
-                 NetworkPortalSigninWindow* controller)
-      : content::WebContentsObserver(web_contents), controller_(controller) {}
-  ~WindowObserver() override = default;
-
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override {
-    RequestPortalDetection();
-  }
-
-  void WebContentsDestroyed() override { RequestPortalDetection(); }
-
- private:
-  void RequestPortalDetection() {
-    NET_LOG(EVENT) << "Request portal detection";
-    controller_->portal_detection_requested_for_testing_++;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    ash::NetworkHandler::Get()
-        ->network_state_handler()
-        ->RequestPortalDetection();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-    chromeos::LacrosService::Get()
-        ->GetRemote<crosapi::mojom::NetworkChange>()
-        ->RequestPortalDetection();
-#endif
-  }
-
- private:
-  raw_ptr<NetworkPortalSigninWindow> controller_;
-};
 
 content::WebContents* NetworkPortalSigninWindow::GetWebContentsForTesting() {
   if (!window_observer_.get()) {

@@ -1,37 +1,85 @@
 Tests that console properly displays information about ES6 features.
 
 console-format-es6-2.js:17 MapIterator {41, {…}}
+
+
 console-format-es6-2.js:18 [MapIterator]
+
+
 globals[0]
 MapIterator {41, {…}}
+
+
 console-format-es6-2.js:17 MapIterator {42, {…}}
+
+
 console-format-es6-2.js:18 [MapIterator]
+
+
 globals[1]
 MapIterator {42, {…}}
+
+
 console-format-es6-2.js:17 MapIterator {41 => 42, {…} => {…}}
+
+
 console-format-es6-2.js:18 [MapIterator]
+
+
 globals[2]
 MapIterator {41 => 42, {…} => {…}}
+
+
 console-format-es6-2.js:17 SetIterator {41, {…}}
+
+
 console-format-es6-2.js:18 [SetIterator]
+
+
 globals[3]
 SetIterator {41, {…}}
+
+
 console-format-es6-2.js:17 SetIterator {41, {…}}
+
+
 console-format-es6-2.js:18 [SetIterator]
+
+
 globals[4]
 SetIterator {41, {…}}
+
+
 console-format-es6-2.js:17 SetIterator {41 => 41, {…} => {…}}
+
+
 console-format-es6-2.js:18 [SetIterator]
+
+
 globals[5]
 SetIterator {41 => 41, {…} => {…}}
+
+
 console-format-es6-2.js:17 MapIterator {{…}}
+
+
 console-format-es6-2.js:18 [MapIterator]
+
+
 globals[6]
 MapIterator {{…}}
+
+
 console-format-es6-2.js:17 SetIterator {{…}}
+
+
 console-format-es6-2.js:18 [SetIterator]
+
+
 globals[7]
 SetIterator {{…}}
+
+
 Expanded all messages
 console-format-es6-2.js:17 MapIterator {41, {…}}
     [[Entries]]
@@ -42,10 +90,14 @@ console-format-es6-2.js:17 MapIterator {41, {…}}
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
     [[IteratorKind]]: "keys"
+
+
 console-format-es6-2.js:18 [MapIterator]
     0: MapIterator {41, {…}}
     length: 1
     [[Prototype]]: Array(0)
+
+
 globals[0]
 MapIterator {41, {…}}
     [[Entries]]
@@ -56,6 +108,8 @@ MapIterator {41, {…}}
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
     [[IteratorKind]]: "keys"
+
+
 console-format-es6-2.js:17 MapIterator {42, {…}}
     [[Entries]]
         0: 42
@@ -65,10 +119,14 @@ console-format-es6-2.js:17 MapIterator {42, {…}}
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
     [[IteratorKind]]: "values"
+
+
 console-format-es6-2.js:18 [MapIterator]
     0: MapIterator {42, {…}}
     length: 1
     [[Prototype]]: Array(0)
+
+
 globals[1]
 MapIterator {42, {…}}
     [[Entries]]
@@ -79,6 +137,8 @@ MapIterator {42, {…}}
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
     [[IteratorKind]]: "values"
+
+
 console-format-es6-2.js:17 MapIterator {41 => 42, {…} => {…}}
     [[Entries]]
         0: {41 => 42}
@@ -88,10 +148,14 @@ console-format-es6-2.js:17 MapIterator {41 => 42, {…} => {…}}
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
     [[IteratorKind]]: "entries"
+
+
 console-format-es6-2.js:18 [MapIterator]
     0: MapIterator {41 => 42, {…} => {…}}
     length: 1
     [[Prototype]]: Array(0)
+
+
 globals[2]
 MapIterator {41 => 42, {…} => {…}}
     [[Entries]]
@@ -102,6 +166,8 @@ MapIterator {41 => 42, {…} => {…}}
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
     [[IteratorKind]]: "entries"
+
+
 console-format-es6-2.js:17 SetIterator {41, {…}}
     [[Entries]]
         0: 41
@@ -111,10 +177,14 @@ console-format-es6-2.js:17 SetIterator {41, {…}}
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
     [[IteratorKind]]: "values"
+
+
 console-format-es6-2.js:18 [SetIterator]
     0: SetIterator {41, {…}}
     length: 1
     [[Prototype]]: Array(0)
+
+
 globals[3]
 SetIterator {41, {…}}
     [[Entries]]
@@ -125,6 +195,8 @@ SetIterator {41, {…}}
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
     [[IteratorKind]]: "values"
+
+
 console-format-es6-2.js:17 SetIterator {41, {…}}
     [[Entries]]
         0: 41
@@ -134,10 +206,14 @@ console-format-es6-2.js:17 SetIterator {41, {…}}
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
     [[IteratorKind]]: "values"
+
+
 console-format-es6-2.js:18 [SetIterator]
     0: SetIterator {41, {…}}
     length: 1
     [[Prototype]]: Array(0)
+
+
 globals[4]
 SetIterator {41, {…}}
     [[Entries]]
@@ -148,6 +224,8 @@ SetIterator {41, {…}}
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
     [[IteratorKind]]: "values"
+
+
 console-format-es6-2.js:17 SetIterator {41 => 41, {…} => {…}}
     [[Entries]]
         0: {41 => 41}
@@ -157,10 +235,14 @@ console-format-es6-2.js:17 SetIterator {41 => 41, {…} => {…}}
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
     [[IteratorKind]]: "entries"
+
+
 console-format-es6-2.js:18 [SetIterator]
     0: SetIterator {41 => 41, {…} => {…}}
     length: 1
     [[Prototype]]: Array(0)
+
+
 globals[5]
 SetIterator {41 => 41, {…} => {…}}
     [[Entries]]
@@ -171,6 +253,8 @@ SetIterator {41 => 41, {…} => {…}}
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
     [[IteratorKind]]: "entries"
+
+
 console-format-es6-2.js:17 MapIterator {{…}}
     [[Entries]]
         0: Object
@@ -179,10 +263,14 @@ console-format-es6-2.js:17 MapIterator {{…}}
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 1
     [[IteratorKind]]: "values"
+
+
 console-format-es6-2.js:18 [MapIterator]
     0: MapIterator {{…}}
     length: 1
     [[Prototype]]: Array(0)
+
+
 globals[6]
 MapIterator {{…}}
     [[Entries]]
@@ -192,6 +280,8 @@ MapIterator {{…}}
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 1
     [[IteratorKind]]: "values"
+
+
 console-format-es6-2.js:17 SetIterator {{…}}
     [[Entries]]
         0: Object
@@ -200,10 +290,14 @@ console-format-es6-2.js:17 SetIterator {{…}}
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 1
     [[IteratorKind]]: "values"
+
+
 console-format-es6-2.js:18 [SetIterator]
     0: SetIterator {{…}}
     length: 1
     [[Prototype]]: Array(0)
+
+
 globals[7]
 SetIterator {{…}}
     [[Entries]]
@@ -213,4 +307,6 @@ SetIterator {{…}}
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 1
     [[IteratorKind]]: "values"
+
+
 

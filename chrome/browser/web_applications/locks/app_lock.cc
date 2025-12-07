@@ -5,7 +5,7 @@
 #include "chrome/browser/web_applications/locks/app_lock.h"
 
 #include "chrome/browser/web_applications/locks/lock.h"
-#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
+#include "chrome/browser/web_applications/locks/partitioned_lock_manager.h"
 
 namespace web_app {
 
@@ -16,9 +16,12 @@ AppLockDescription::AppLockDescription(base::flat_set<webapps::AppId> app_ids)
 AppLockDescription::AppLockDescription(AppLockDescription&&) = default;
 AppLockDescription::~AppLockDescription() = default;
 
-AppLock::AppLock(base::WeakPtr<WebAppLockManager> lock_manager,
-                 std::unique_ptr<content::PartitionedLockHolder> holder)
-    : Lock(std::move(holder), lock_manager), WithAppResources(lock_manager) {}
+AppLock::AppLock() = default;
 AppLock::~AppLock() = default;
+
+void AppLock::GrantLock(WebAppLockManager& lock_manager) {
+  GrantLockResources(lock_manager);
+  GrantWithAppResources(lock_manager);
+}
 
 }  // namespace web_app

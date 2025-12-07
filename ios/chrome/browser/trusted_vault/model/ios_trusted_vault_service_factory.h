@@ -5,23 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_TRUSTED_VAULT_MODEL_IOS_TRUSTED_VAULT_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_TRUSTED_VAULT_MODEL_IOS_TRUSTED_VAULT_SERVICE_FACTORY_H_
 
-#include <memory>
+#import <memory>
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#include "ios/web/public/browser_state.h"
-
-class ChromeBrowserState;
+#import "base/no_destructor.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace trusted_vault {
 class TrustedVaultService;
 }  // namespace trusted_vault
 
-class IOSTrustedVaultServiceFactory : public BrowserStateKeyedServiceFactory {
+// Owns all TrustedVaultService instances and associates them to profiles.
+class IOSTrustedVaultServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  static trusted_vault::TrustedVaultService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
-
+  static trusted_vault::TrustedVaultService* GetForProfile(ProfileIOS* profile);
   static IOSTrustedVaultServiceFactory* GetInstance();
 
  private:
@@ -30,9 +26,9 @@ class IOSTrustedVaultServiceFactory : public BrowserStateKeyedServiceFactory {
   IOSTrustedVaultServiceFactory();
   ~IOSTrustedVaultServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory.
+  // ProfileKeyedServiceFactoryIOS.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_TRUSTED_VAULT_MODEL_IOS_TRUSTED_VAULT_SERVICE_FACTORY_H_

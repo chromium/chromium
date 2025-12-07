@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.crash;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.crash.MinidumpUploadServiceImpl.ProcessType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -15,6 +16,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
  * These numbers may be recorded even when running in background and the main Chrome Activity does
  * not exist, so they are persisted until the next time it runs.
  */
+@NullMarked
 public class CrashUploadCountStore {
     private static final CrashUploadCountStore INSTANCE = new CrashUploadCountStore();
 

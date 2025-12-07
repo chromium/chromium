@@ -15,7 +15,6 @@
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/fuchsia/test_interface_impl.h"
 #include "base/test/task_environment.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -75,11 +74,7 @@ TEST_F(FilteredServiceDirectoryTest, ServiceBlocked) {
       ComponentContextForProcess()->outgoing().get(), &test_service_);
 
   auto stub = filtered_client_->Connect<testfidl::TestInterface>();
-  // TODO(https://fxbug.dev/293955890): Only check for ZX_ERR_NOT_FOUND once
-  // https://fuchsia-review.git.corp.google.com/c/fuchsia/+/1058032 lands.
-  EXPECT_THAT(VerifyTestInterface(stub),
-              testing::AnyOf(testing::Eq(ZX_ERR_PEER_CLOSED),
-                             testing::Eq(ZX_ERR_NOT_FOUND)));
+  EXPECT_EQ(VerifyTestInterface(stub), ZX_ERR_NOT_FOUND);
 }
 
 // Verify that FilteredServiceDirectory handles the case when the target service
@@ -90,11 +85,7 @@ TEST_F(FilteredServiceDirectoryTest, NoService) {
       ZX_OK);
 
   auto stub = filtered_client_->Connect<testfidl::TestInterface>();
-  // TODO(https://fxbug.dev/293955890): Only check for ZX_ERR_NOT_FOUND once
-  // https://fuchsia-review.git.corp.google.com/c/fuchsia/+/1058032 lands.
-  EXPECT_THAT(VerifyTestInterface(stub),
-              testing::AnyOf(testing::Eq(ZX_ERR_PEER_CLOSED),
-                             testing::Eq(ZX_ERR_NOT_FOUND)));
+  EXPECT_EQ(VerifyTestInterface(stub), ZX_ERR_NOT_FOUND);
 }
 
 // Verify that FilteredServiceDirectory handles the case when the underlying
@@ -116,11 +107,7 @@ TEST_F(FilteredServiceDirectoryTest, NoServiceDir) {
   // handles requests, and verify that connection requests are dropped.
   directory_request = nullptr;
   auto stub = filtered_client_->Connect<testfidl::TestInterface>();
-  // TODO(https://fxbug.dev/293955890): Only check for ZX_ERR_NOT_FOUND once
-  // https://fuchsia-review.git.corp.google.com/c/fuchsia/+/1058032 lands.
-  EXPECT_THAT(VerifyTestInterface(stub),
-              testing::AnyOf(testing::Eq(ZX_ERR_PEER_CLOSED),
-                             testing::Eq(ZX_ERR_NOT_FOUND)));
+  EXPECT_EQ(VerifyTestInterface(stub), ZX_ERR_NOT_FOUND);
 }
 
 // Verify that FilteredServiceDirectory allows extra services to be added.

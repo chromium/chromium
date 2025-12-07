@@ -1,9 +1,0 @@
-features:
-- name: autonomous-custom-elements
-  files:
-  - define.html
-  - per-global.html
-  - upgrade.html
-- name: customized-built-in-elements
-  files:
-  - define-customized-builtins.html

@@ -7,15 +7,17 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace metrics {
+namespace {
 
 TEST(MachineIdProviderWinTest, GetId) {
-  EXPECT_TRUE(MachineIdProvider::HasId());
+  EXPECT_TRUE(MachineIdProvider().HasId());
 
-  const std::string id1 = MachineIdProvider::GetMachineId();
+  const std::string id1 = MachineIdProvider().GetMachineId();
   EXPECT_NE(std::string(), id1);
 
-  const std::string id2 = MachineIdProvider::GetMachineId();
+  const std::string id2 = MachineIdProvider().GetMachineId();
   EXPECT_EQ(id1, id2);
 }
 
+}  // namespace
 }  // namespace metrics

@@ -54,7 +54,7 @@ SyncTaskManager::PendingTask::PendingTask(PendingTask&& other) = default;
 SyncTaskManager::PendingTask& SyncTaskManager::PendingTask::operator=(
     PendingTask&& other) = default;
 
-SyncTaskManager::PendingTask::~PendingTask() {}
+SyncTaskManager::PendingTask::~PendingTask() = default;
 
 bool SyncTaskManager::PendingTaskComparator::operator()(
     const PendingTask& left,

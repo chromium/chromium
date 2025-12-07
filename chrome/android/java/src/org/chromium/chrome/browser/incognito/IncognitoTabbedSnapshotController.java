@@ -6,10 +6,9 @@ package org.chromium.chrome.browser.incognito;
 
 import android.app.Activity;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.layouts.FilterLayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -19,16 +18,19 @@ import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 
+import java.util.function.Supplier;
+
 /**
- * This is the controller that prevents incognito tabs from being visible in Android Recents
- * for {@link ChromeTabbedActivity}.
+ * This is the controller that prevents incognito tabs from being visible in Android Recents for
+ * {@link ChromeTabbedActivity}.
  */
+@NullMarked
 public class IncognitoTabbedSnapshotController extends IncognitoSnapshotController
         implements TabModelSelectorObserver, DestroyObserver {
-    private final @NonNull TabModelSelector mTabModelSelector;
-    private final @NonNull LayoutManagerChrome mLayoutManager;
-    private final @NonNull LayoutStateObserver mLayoutStateObserver;
-    private final @NonNull ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    private final TabModelSelector mTabModelSelector;
+    private final LayoutManagerChrome mLayoutManager;
+    private final LayoutStateObserver mLayoutStateObserver;
+    private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     /**
      * Creates and registers a new {@link IncognitoTabbedSnapshotController}.
@@ -41,10 +43,10 @@ public class IncognitoTabbedSnapshotController extends IncognitoSnapshotControll
      *     to register as {@link DestroyObserver}.
      */
     public static void createIncognitoTabSnapshotController(
-            @NonNull Activity activity,
-            @NonNull LayoutManagerChrome layoutManager,
-            @NonNull TabModelSelector tabModelSelector,
-            @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher) {
+            Activity activity,
+            LayoutManagerChrome layoutManager,
+            TabModelSelector tabModelSelector,
+            ActivityLifecycleDispatcher activityLifecycleDispatcher) {
         Supplier<Boolean> isOverviewModeSupplier =
                 () -> layoutManager.getActiveLayoutType() == LayoutType.TAB_SWITCHER;
         Supplier<Boolean> isShowingIncognitoSupplier =
@@ -60,17 +62,15 @@ public class IncognitoTabbedSnapshotController extends IncognitoSnapshotControll
 
     /**
      * @param tabModelSelector The {@link TabModelSelector} from where tab information will be
-     *         fetched.
+     *     fetched.
      * @param isInOverviewModeSupplier The {@link Supplier<Boolean>} to supply with the information
-     *         whether overview mode is shown or not.
-     *
+     *     whether overview mode is shown or not.
      * @return A {@link Supplier<Boolean>} to supply information about whether incognito is showing
-     *         or not.
+     *     or not.
      */
     @VisibleForTesting
     static Supplier<Boolean> getIsShowingIncognitoSupplier(
-            @NonNull TabModelSelector tabModelSelector,
-            @NonNull Supplier<Boolean> isInOverviewModeSupplier) {
+            TabModelSelector tabModelSelector, Supplier<Boolean> isInOverviewModeSupplier) {
         return () -> {
             return tabModelSelector.getCurrentModel().isIncognito();
         };
@@ -88,11 +88,11 @@ public class IncognitoTabbedSnapshotController extends IncognitoSnapshotControll
      */
     @VisibleForTesting
     IncognitoTabbedSnapshotController(
-            @NonNull Activity activity,
-            @NonNull LayoutManagerChrome layoutManager,
-            @NonNull TabModelSelector tabModelSelector,
-            @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            @NonNull Supplier<Boolean> isShowingIncognitoSupplier) {
+            Activity activity,
+            LayoutManagerChrome layoutManager,
+            TabModelSelector tabModelSelector,
+            ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            Supplier<Boolean> isShowingIncognitoSupplier) {
         super(activity, isShowingIncognitoSupplier);
 
         mLayoutManager = layoutManager;

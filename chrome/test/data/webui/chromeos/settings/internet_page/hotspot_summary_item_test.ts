@@ -4,9 +4,11 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {CrPolicyIndicatorElement, CrToggleElement, HotspotSummaryItemElement, LocalizedLinkElement, Router, routes} from 'chrome://os-settings/os_settings.js';
+import type {CrPolicyIndicatorElement, CrToggleElement, HotspotSummaryItemElement, LocalizedLinkElement} from 'chrome://os-settings/os_settings.js';
+import {Router, routes} from 'chrome://os-settings/os_settings.js';
 import {setHotspotConfigForTesting} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.js';
-import {CrosHotspotConfigInterface, CrosHotspotConfigObserverInterface, CrosHotspotConfigObserverRemote, HotspotAllowStatus, HotspotControlResult, HotspotState, WiFiSecurityMode} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js';
+import type {CrosHotspotConfigInterface, CrosHotspotConfigObserverInterface, CrosHotspotConfigObserverRemote} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js';
+import {HotspotAllowStatus, HotspotControlResult, HotspotState, WiFiSecurityMode} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js';
 import {FakeHotspotConfig} from 'chrome://resources/ash/common/hotspot/fake_hotspot_config.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -125,7 +127,7 @@ suite('<hotspot-summary-item>', () => {
     assertFalse(hotspotStateSublabel.hidden, 'State sublabel should show');
     assertEquals(
         hotspotSummaryItem.i18n('hotspotSummaryStateOff'),
-        hotspotStateSublabel.textContent!.trim());
+        hotspotStateSublabel.textContent.trim());
     assertTrue(
         hotspotDisabledSublabelLink.hidden,
         'Disabled sublabel link should hide');
@@ -155,7 +157,7 @@ suite('<hotspot-summary-item>', () => {
     assertFalse(hotspotStateSublabel.hidden, 'State sublabel should show');
     assertEquals(
         hotspotSummaryItem.i18n('hotspotSummaryStateOn'),
-        hotspotStateSublabel.textContent!.trim());
+        hotspotStateSublabel.textContent.trim());
     assertTrue(
         hotspotDisabledSublabelLink.hidden,
         'Disabled sublabel link should hide');
@@ -168,25 +170,25 @@ suite('<hotspot-summary-item>', () => {
     assertTrue(!!hotspotStateSublabel);
     assertEquals(
         hotspotSummaryItem.i18n('hotspotSummaryStateTurningOn'),
-        hotspotStateSublabel.textContent!.trim());
+        hotspotStateSublabel.textContent.trim());
 
     hotspotConfig.setFakeHotspotState(HotspotState.kEnabled);
     await flushTasks();
     assertEquals(
         hotspotSummaryItem.i18n('hotspotSummaryStateOn'),
-        hotspotStateSublabel.textContent!.trim());
+        hotspotStateSublabel.textContent.trim());
 
     hotspotConfig.setFakeHotspotState(HotspotState.kDisabling);
     await flushTasks();
     assertEquals(
         hotspotSummaryItem.i18n('hotspotSummaryStateTurningOff'),
-        hotspotStateSublabel.textContent!.trim());
+        hotspotStateSublabel.textContent.trim());
 
     hotspotConfig.setFakeHotspotState(HotspotState.kDisabled);
     await flushTasks();
     assertEquals(
         hotspotSummaryItem.i18n('hotspotSummaryStateOff'),
-        hotspotStateSublabel.textContent!.trim());
+        hotspotStateSublabel.textContent.trim());
   });
 
   test('UI state when disallowed by policy', async () => {
@@ -215,7 +217,7 @@ suite('<hotspot-summary-item>', () => {
     assertFalse(hotspotStateSublabel.hidden, 'State sublabel should show');
     assertEquals(
         hotspotSummaryItem.i18n('hotspotSummaryStateOff'),
-        hotspotStateSublabel.textContent!.trim());
+        hotspotStateSublabel.textContent.trim());
     assertTrue(
         hotspotDisabledSublabelLink.hidden,
         'Disabled sublabel link should hide');
@@ -226,7 +228,7 @@ suite('<hotspot-summary-item>', () => {
     await flushTasks();
     assertEquals(
         hotspotSummaryItem.i18n('hotspotSummaryStateOn'),
-        hotspotStateSublabel.textContent!.trim());
+        hotspotStateSublabel.textContent.trim());
     icon = hotspotIcon.shadowRoot!.querySelector<HTMLElement>('#icon');
     assertTrue(!!icon);
     assertTrue(icon.classList.contains('hotspot-on'));
@@ -235,7 +237,7 @@ suite('<hotspot-summary-item>', () => {
     await flushTasks();
     assertEquals(
         hotspotSummaryItem.i18n('hotspotSummaryStateOff'),
-        hotspotStateSublabel.textContent!.trim());
+        hotspotStateSublabel.textContent.trim());
     icon = hotspotIcon.shadowRoot!.querySelector<HTMLElement>('#icon');
     assertTrue(!!icon);
     assertTrue(icon.classList.contains('hotspot-off'));
@@ -325,7 +327,7 @@ suite('<hotspot-summary-item>', () => {
     assertTrue(!!hotspotStateSublabel);
     assertEquals(
         hotspotSummaryItem.i18n('hotspotSummaryStateTurningOn'),
-        hotspotStateSublabel.textContent!.trim());
+        hotspotStateSublabel.textContent.trim());
   });
 
   test('Toggle button state', async () => {

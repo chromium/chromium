@@ -13,9 +13,9 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "components/contextual_search/core/browser/contextual_search_context.h"
-#include "components/contextual_search/core/browser/contextual_search_delegate.h"
-#include "components/contextual_search/core/browser/resolved_search_term.h"
+#include "components/touch_to_search/core/browser/contextual_search_context.h"
+#include "components/touch_to_search/core/browser/contextual_search_delegate.h"
+#include "components/touch_to_search/core/browser/resolved_search_term.h"
 #include "content/public/browser/web_contents.h"
 
 // Structure used to pass context needed to resolve a partial translation.

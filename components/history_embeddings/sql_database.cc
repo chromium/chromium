@@ -4,10 +4,15 @@
 
 #include "components/history_embeddings/sql_database.h"
 
+#include <algorithm>
+
 #include "base/check.h"
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_util.h"
+#include "components/history/core/browser/history_backend.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/passages_util.h"
 #include "components/history_embeddings/proto/history_embeddings.pb.h"
@@ -21,6 +26,12 @@ namespace history_embeddings {
 // These database versions should roll together unless we develop migrations.
 constexpr int kLowestSupportedDatabaseVersion = 1;
 constexpr int kCurrentDatabaseVersion = 1;
+
+// This embeddings data version can be rolled to force recompute of all
+// embeddings, useful when we change how source passages are preprocessed.
+// Rolling this is preferable to rolling `kCurrentDatabaseVersion` in that
+// source passages can be preserved; only the embeddings table will be cleared.
+constexpr int kEmbeddingsDataVersion = 1;
 
 namespace {
 
@@ -81,39 +92,55 @@ namespace {
 
 }  // namespace
 
-SqlDatabase::SqlDatabase(const base::FilePath& storage_dir)
-    : storage_dir_(storage_dir), weak_ptr_factory_(this) {}
+SqlDatabase::SqlDatabase(const base::FilePath& storage_dir,
+                         bool erase_non_ascii_characters,
+                         bool delete_embeddings)
+    : storage_dir_(storage_dir),
+      erase_non_ascii_characters_(erase_non_ascii_characters),
+      delete_embeddings_(delete_embeddings),
+      db_(/*tag=*/"HistoryEmbeddings"),
+      weak_ptr_factory_(this) {}
 
 SqlDatabase::~SqlDatabase() = default;
 
-void SqlDatabase::SetEmbedderMetadata(EmbedderMetadata embedder_metadata,
-                                      os_crypt_async::Encryptor encryptor) {
+void SqlDatabase::SetEmbedderMetadata(
+    passage_embeddings::EmbedderMetadata embedder_metadata,
+    os_crypt_async::Encryptor encryptor) {
   embedder_metadata_ = embedder_metadata;
   CHECK(!encryptor_.has_value()) << "Cannot call SetEmbedderMetadata twice.";
   encryptor_.emplace(std::move(encryptor));
 }
 
-bool SqlDatabase::LazyInit() {
-  // TODO(b/325524013): Decide on a number of retries for initialization.
-  // TODO(b/325524013): Add metrics around lazy initialization success rate.
+bool SqlDatabase::LazyInit(bool force_init_for_deletion) {
+  // Only use `force_init_for_deletion` if normal full initialization fails
+  // and a deletion request is being applied. Never use if normal init succeeds.
+  CHECK(!force_init_for_deletion || !db_init_status_.has_value());
+
   if (!db_init_status_.has_value()) {
-    db_init_status_ = InitInternal(storage_dir_);
+    // Don't attempt initialization until ready, unless forced for the
+    // data deletion flow.
+    if (!embedder_metadata_ && !force_init_for_deletion) {
+      return false;
+    }
+
+    db_init_status_ = InitInternal(storage_dir_, force_init_for_deletion);
+    base::UmaHistogramBoolean("History.Embeddings.DatabaseInitialized",
+                              *db_init_status_ == sql::InitStatus::INIT_OK);
   }
 
   return *db_init_status_ == sql::InitStatus::INIT_OK;
 }
 
-sql::InitStatus SqlDatabase::InitInternal(const base::FilePath& storage_dir) {
+sql::InitStatus SqlDatabase::InitInternal(const base::FilePath& storage_dir,
+                                          bool force_init_for_deletion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  db_.set_histogram_tag("HistoryEmbeddings");
   // base::Unretained is okay because `this` owns and outlives `db_`.
   db_.set_error_callback(base::BindRepeating(
       &SqlDatabase::DatabaseErrorCallback, base::Unretained(this)));
 
   base::FilePath db_file_path = storage_dir.Append(kHistoryEmbeddingsName);
-
-  if (!db_.Open(db_file_path) || !embedder_metadata_) {
+  if (!db_.Open(db_file_path)) {
     return sql::InitStatus::INIT_FAILURE;
   }
 
@@ -151,86 +178,63 @@ sql::InitStatus SqlDatabase::InitInternal(const base::FilePath& storage_dir) {
     return sql::INIT_FAILURE;
   }
 
-  constexpr char kKeyModelVersion[] = "model_version";
-  int model_version = 0;
-  meta_table.GetValue(kKeyModelVersion, &model_version);
-  if (model_version != embedder_metadata_->model_version ||
-      kDeleteEmbeddings.Get()) {
-    // Old version embeddings can't be used with new model. Simply delete them
-    // all and set new version. Passages can be used for reconstruction later.
-    constexpr char kSqlDeleteFromEmbeddings[] = "DELETE FROM embeddings;";
-    if (!db_.Execute(kSqlDeleteFromEmbeddings) ||
-        !meta_table.SetValue(kKeyModelVersion,
-                             embedder_metadata_->model_version)) {
-      return sql::InitStatus::INIT_FAILURE;
+  // Delete passages and embeddings for visits that are beyond the data
+  // retention window. The history system automatically expires data while
+  // Chrome is running, but it's possible to miss events or start Chrome after
+  // some down time, so this prevents long term accidental retention edge cases.
+  DeleteExpiredData(/*expiration_time=*/base::Time::Now() -
+                    base::Days(history::HistoryBackend::kExpireDaysThreshold));
+
+  // It's possible to get here without `embedder_metadata_` if forcing for
+  // data deletion. In that case, don't check or change meta table.
+  if (embedder_metadata_.has_value()) {
+    constexpr char kKeyModelVersion[] = "model_version";
+    constexpr char kKeyEmbeddingsDataVersion[] = "embeddings_data_version";
+
+    int model_version = 0;
+    meta_table.GetValue(kKeyModelVersion, &model_version);
+
+    bool delete_embeddings =
+        model_version != embedder_metadata_->model_version ||
+        delete_embeddings_;
+
+    // TODO(crbug.com/375502129): Remove this guard and the related guard below
+    //  for more complete data version handling.
+    if (erase_non_ascii_characters_) {
+      int embeddings_data_version = 0;
+      meta_table.GetValue(kKeyEmbeddingsDataVersion, &embeddings_data_version);
+      delete_embeddings |= embeddings_data_version != kEmbeddingsDataVersion;
+    }
+
+    if (delete_embeddings) {
+      // Old version embeddings can't be used with new model. Simply delete them
+      // all and set new version. Passages can be used for reconstruction later.
+      constexpr char kSqlDeleteFromEmbeddings[] = "DELETE FROM embeddings;";
+      if (!db_.Execute(kSqlDeleteFromEmbeddings) ||
+          !meta_table.SetValue(kKeyModelVersion,
+                               embedder_metadata_->model_version)) {
+        return sql::InitStatus::INIT_FAILURE;
+      }
+      // Only write the meta table with this first data version change if
+      // doing so will result in the embeddings being rebuilt with the
+      // non-ASCII character changes.
+      // TODO(crbug.com/375502129): See above TODO comment; remove this guard.
+      if (erase_non_ascii_characters_ &&
+          !meta_table.SetValue(kKeyEmbeddingsDataVersion,
+                               kEmbeddingsDataVersion)) {
+        return sql::InitStatus::INIT_FAILURE;
+      }
     }
   }
 
   return sql::InitStatus::INIT_OK;
 }
 
-bool SqlDatabase::InsertOrReplacePassages(const UrlPassages& url_passages) {
+void SqlDatabase::Close() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!LazyInit()) {
-    return false;
-  }
-
-  constexpr char kSqlInsertOrReplacePassages[] =
-      "INSERT OR REPLACE INTO passages "
-      "(url_id, visit_id, visit_time, passages_blob) "
-      "VALUES (?,?,?,?)";
-  DCHECK(db_.IsSQLValid(kSqlInsertOrReplacePassages));
-  sql::Statement statement(
-      db_.GetCachedStatement(SQL_FROM_HERE, kSqlInsertOrReplacePassages));
-  statement.BindInt64(0, url_passages.url_id);
-  statement.BindInt64(1, url_passages.visit_id);
-  statement.BindTime(2, url_passages.visit_time);
-
-  std::vector<uint8_t> blob =
-      PassagesProtoToBlob(url_passages.passages, *encryptor_);
-  if (blob.empty()) {
-    return false;
-  }
-  statement.BindBlob(3, blob);
-
-  return statement.Run();
-}
-
-bool SqlDatabase::InsertOrReplaceEmbeddings(
-    const UrlEmbeddings& url_embeddings) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (url_embeddings.embeddings.size() == 0) {
-    return false;
-  }
-
-  if (!LazyInit()) {
-    return false;
-  }
-
-  constexpr char kSqlInsertOrReplaceEmbeddings[] =
-      "INSERT OR REPLACE INTO embeddings "
-      "(url_id, visit_id, visit_time, embeddings_blob) "
-      "VALUES (?,?,?,?)";
-  DCHECK(db_.IsSQLValid(kSqlInsertOrReplaceEmbeddings));
-  sql::Statement statement(
-      db_.GetCachedStatement(SQL_FROM_HERE, kSqlInsertOrReplaceEmbeddings));
-  statement.BindInt64(0, url_embeddings.url_id);
-  statement.BindInt64(1, url_embeddings.visit_id);
-  statement.BindTime(2, url_embeddings.visit_time);
-
-  proto::EmbeddingsValue value;
-  for (const Embedding& embedding : url_embeddings.embeddings) {
-    CHECK_EQ(GetEmbeddingDimensions(), embedding.Dimensions());
-    proto::EmbeddingVector* vector = value.add_vectors();
-    for (float f : embedding.GetData()) {
-      vector->add_floats(f);
-    }
-    vector->set_passage_word_count(embedding.GetPassageWordCount());
-  }
-  statement.BindBlob(3, value.SerializeAsString());
-
-  return statement.Run();
+  db_.Close();
+  db_.reset_error_callback();
+  db_init_status_.reset();
 }
 
 // Gets the passages associated with `url_id`. Returns nullopt if there's
@@ -257,8 +261,7 @@ std::optional<proto::PassagesValue> SqlDatabase::GetPassages(
   return std::nullopt;
 }
 
-std::optional<UrlPassagesEmbeddings> SqlDatabase::GetUrlData(
-    history::URLID url_id) {
+std::optional<UrlData> SqlDatabase::GetUrlData(history::URLID url_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!LazyInit()) {
@@ -287,8 +290,8 @@ std::optional<UrlPassagesEmbeddings> SqlDatabase::GetUrlData(
     return {};
   }
 
-  UrlPassagesEmbeddings url_data(url_id, visit_id, visit_time);
-  url_data.url_passages.passages = std::move(passages.value());
+  UrlData url_data(url_id, visit_id, visit_time);
+  url_data.passages = std::move(passages.value());
   bool loaded_missized_embedding = false;
   {
     constexpr char kSqlSelectEmbeddings[] =
@@ -307,12 +310,12 @@ std::optional<UrlPassagesEmbeddings> SqlDatabase::GetUrlData(
         return url_data;
       }
       for (const proto::EmbeddingVector& vector : value.vectors()) {
-        url_data.url_embeddings.embeddings.emplace_back(
+        url_data.embeddings.emplace_back(
             std::vector(vector.floats().cbegin(), vector.floats().cend()),
             vector.passage_word_count());
-        if (url_data.url_embeddings.embeddings.back().Dimensions() !=
+        if (url_data.embeddings.back().Dimensions() !=
             GetEmbeddingDimensions()) {
-          url_data.url_embeddings.embeddings.clear();
+          url_data.embeddings.clear();
           loaded_missized_embedding = true;
           break;
         }
@@ -324,7 +327,59 @@ std::optional<UrlPassagesEmbeddings> SqlDatabase::GetUrlData(
   return url_data;
 }
 
-std::vector<UrlPassages> SqlDatabase::GetUrlPassagesWithoutEmbeddings() {
+std::vector<UrlData> SqlDatabase::GetUrlDataInTimeRange(base::Time from_time,
+                                                        base::Time to_time,
+                                                        size_t limit,
+                                                        size_t offset) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!LazyInit()) {
+    return {};
+  }
+
+  constexpr char kSqlSelectOrderedPassagesAndEmbeddingsWithinTimeRange[] =
+      "SELECT passages.url_id, passages.visit_id, passages.visit_time, "
+      "passages.passages_blob, embeddings.embeddings_blob "
+      "FROM passages "
+      "INNER JOIN embeddings ON passages.url_id = embeddings.url_id "
+      "WHERE passages.visit_time >= ? AND passages.visit_time < ? "
+      "ORDER BY passages.visit_time LIMIT ? OFFSET ?";
+  DCHECK(db_.IsSQLValid(kSqlSelectOrderedPassagesAndEmbeddingsWithinTimeRange));
+  sql::Statement statement(db_.GetCachedStatement(
+      SQL_FROM_HERE, kSqlSelectOrderedPassagesAndEmbeddingsWithinTimeRange));
+  statement.BindTime(0, from_time);
+  statement.BindTime(1, to_time);
+  statement.BindInt(2, static_cast<int>(limit));
+  statement.BindInt(3, static_cast<int>(offset));
+
+  std::vector<UrlData> url_datas;
+  while (statement.Step()) {
+    history::URLID url_id = statement.ColumnInt64(0);
+    history::VisitID visit_id = statement.ColumnInt64(1);
+    base::Time visit_time = statement.ColumnTime(2);
+    UrlData& url_data = url_datas.emplace_back(url_id, visit_id, visit_time);
+
+    std::optional<proto::PassagesValue> passages =
+        PassagesBlobToProto(statement.ColumnBlob(3), *encryptor_);
+    if (passages.has_value()) {
+      url_data.passages = std::move(passages.value());
+    }
+
+    proto::EmbeddingsValue value;
+    base::span<const uint8_t> embeddings_blob = statement.ColumnBlob(4);
+    if (value.ParseFromArray(embeddings_blob.data(), embeddings_blob.size())) {
+      for (const proto::EmbeddingVector& vector : value.vectors()) {
+        url_data.embeddings.emplace_back(
+            std::vector(vector.floats().cbegin(), vector.floats().cend()),
+            vector.passage_word_count());
+      }
+    }
+  }
+
+  return url_datas;
+}
+
+std::vector<UrlData> SqlDatabase::GetUrlPassagesWithoutEmbeddings() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!LazyInit()) {
@@ -338,12 +393,12 @@ std::vector<UrlPassages> SqlDatabase::GetUrlPassagesWithoutEmbeddings() {
   sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE, kSqlSelectPassagesWithoutEmbeddings));
 
-  std::vector<UrlPassages> all_url_passages;
+  std::vector<UrlData> all_url_passages;
   while (statement.Step()) {
     std::optional<proto::PassagesValue> passages_value =
         PassagesBlobToProto(statement.ColumnBlob(3), *encryptor_);
     if (passages_value.has_value()) {
-      UrlPassages& url_passages = all_url_passages.emplace_back(
+      UrlData& url_passages = all_url_passages.emplace_back(
           statement.ColumnInt64(0), statement.ColumnInt64(1),
           statement.ColumnTime(2));
       url_passages.passages = std::move(passages_value.value());
@@ -352,13 +407,29 @@ std::vector<UrlPassages> SqlDatabase::GetUrlPassagesWithoutEmbeddings() {
   return all_url_passages;
 }
 
+bool SqlDatabase::AddAnyUrlDataForTesting(UrlData url_data) {
+  if (!LazyInit()) {
+    return false;
+  }
+  return InsertOrReplacePassages(url_data) &&
+         InsertOrReplaceEmbeddings(url_data);
+}
+
 size_t SqlDatabase::GetEmbeddingDimensions() const {
   return embedder_metadata_->output_size;
 }
 
-bool SqlDatabase::AddUrlData(UrlPassagesEmbeddings url_data) {
-  return InsertOrReplacePassages(url_data.url_passages) &&
-         InsertOrReplaceEmbeddings(url_data.url_embeddings);
+bool SqlDatabase::AddUrlData(UrlData url_data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!LazyInit()) {
+    return false;
+  }
+
+  CHECK(static_cast<size_t>(url_data.passages.passages_size()) ==
+        url_data.embeddings.size());
+  sql::Transaction transaction(&db_);
+  return transaction.Begin() && InsertOrReplacePassages(url_data) &&
+         InsertOrReplaceEmbeddings(url_data) && transaction.Commit();
 }
 
 constexpr char kSqlSelectPassagesAndEmbeddings[] =
@@ -405,45 +476,88 @@ SqlDatabase::MakeUrlDataIterator(std::optional<base::Time> time_range_start) {
       if (sql_database) {
         sql_database->iteration_statement_.reset();
       }
+      base::UmaHistogramCounts1000(
+          "History.Embeddings.DatabaseIterationSkippedPassages",
+          skipped_passages);
+      base::UmaHistogramCounts1000(
+          "History.Embeddings.DatabaseIterationSkippedEmbeddings",
+          skipped_embeddings);
+      base::UmaHistogramCounts1000(
+          "History.Embeddings.DatabaseIterationSkippedMismatches",
+          skipped_mismatches);
+      base::UmaHistogramCounts1000(
+          "History.Embeddings.DatabaseIterationSkippedMissizedEmbeddings",
+          skipped_missized);
+      base::UmaHistogramCounts10000(
+          "History.Embeddings.DatabaseIterationYielded", yielded);
     }
 
-    const UrlPassagesEmbeddings* Next() override {
+    const UrlData* Next() override {
       if (!sql_database) {
         return nullptr;
       }
       sql::Statement* statement = sql_database->iteration_statement_.get();
       CHECK(statement);
-      if (statement->Step()) {
-        data = UrlPassagesEmbeddings(/*url_id=*/statement->ColumnInt64(0),
-                                     /*visit_id=*/statement->ColumnInt64(1),
-                                     /*visit_time=*/statement->ColumnTime(2));
+      // Don't expect perfect data; step until we find valid data.
+      while (statement->Step()) {
+        data = UrlData(/*url_id=*/statement->ColumnInt64(0),
+                       /*visit_id=*/statement->ColumnInt64(1),
+                       /*visit_time=*/statement->ColumnTime(2));
         // Passages
         std::optional<proto::PassagesValue> passages_value =
             PassagesBlobToProto(statement->ColumnBlob(3),
                                 *sql_database->encryptor_);
-        if (passages_value.has_value()) {
-          data.url_passages.passages = std::move(passages_value.value());
+        if (!passages_value.has_value()) {
+          skipped_passages++;
+          continue;
         }
+        data.passages = std::move(passages_value.value());
+
         // Embeddings
         base::span<const uint8_t> blob = statement->ColumnBlob(4);
         proto::EmbeddingsValue value;
         if (!value.ParseFromArray(blob.data(), blob.size())) {
-          return nullptr;
+          skipped_embeddings++;
+          continue;
         }
         for (const proto::EmbeddingVector& vector : value.vectors()) {
-          data.url_embeddings.embeddings.emplace_back(
+          data.embeddings.emplace_back(
               std::vector(vector.floats().cbegin(), vector.floats().cend()),
               vector.passage_word_count());
         }
+        const size_t expected_dimensions =
+            sql_database->GetEmbeddingDimensions();
+        if (std::ranges::any_of(
+                data.embeddings,
+                [=](const passage_embeddings::Embedding& embedding) {
+                  return embedding.Dimensions() != expected_dimensions;
+                })) {
+          skipped_missized++;
+          continue;
+        }
 
+        // Confirm embeddings and passages are 1:1.
+        if (data.embeddings.empty() ||
+            data.embeddings.size() !=
+                static_cast<size_t>(data.passages.passages_size())) {
+          skipped_mismatches++;
+          continue;
+        }
+
+        yielded++;
         return &data;
-      } else {
-        return nullptr;
       }
+      return nullptr;
     }
 
     base::WeakPtr<SqlDatabase> sql_database;
-    UrlPassagesEmbeddings data;
+    UrlData data;
+    // Keep stats on any data loading failures, and report histogram in dtor.
+    int skipped_passages = 0;
+    int skipped_embeddings = 0;
+    int skipped_mismatches = 0;
+    int skipped_missized = 0;
+    int yielded = 0;
   };
 
   return std::make_unique<RowDataIterator>(weak_ptr_factory_.GetWeakPtr(),
@@ -453,8 +567,14 @@ SqlDatabase::MakeUrlDataIterator(std::optional<base::Time> time_range_start) {
 bool SqlDatabase::DeleteDataForUrlId(history::URLID url_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  bool close = false;
   if (!LazyInit()) {
-    return false;
+    // Database isn't fully initialized. Attempt to force open it just for
+    // deletion, and then close so it can be initialized normally later.
+    if (!LazyInit(true)) {
+      return false;
+    }
+    close = true;
   }
 
   bool delete_passages_success = false;
@@ -478,14 +598,24 @@ bool SqlDatabase::DeleteDataForUrlId(history::URLID url_id) {
     delete_embeddings_success = statement.Run();
   }
 
+  if (close) {
+    Close();
+  }
+
   return delete_passages_success && delete_embeddings_success;
 }
 
 bool SqlDatabase::DeleteDataForVisitId(history::VisitID visit_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  bool close = false;
   if (!LazyInit()) {
-    return false;
+    // Database isn't fully initialized. Attempt to force open it just for
+    // deletion, and then close so it can be initialized normally later.
+    if (!LazyInit(true)) {
+      return false;
+    }
+    close = true;
   }
 
   bool delete_passages_success = false;
@@ -509,20 +639,34 @@ bool SqlDatabase::DeleteDataForVisitId(history::VisitID visit_id) {
     delete_embeddings_success = statement.Run();
   }
 
+  if (close) {
+    Close();
+  }
+
   return delete_passages_success && delete_embeddings_success;
 }
 
 bool SqlDatabase::DeleteAllData(bool delete_passages, bool delete_embeddings) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  bool close = false;
   if (!LazyInit()) {
-    return false;
+    // Database isn't fully initialized. Attempt to force open it just for
+    // deletion, and then close so it can be initialized normally later.
+    if (!LazyInit(true)) {
+      return false;
+    }
+    close = true;
   }
 
   bool delete_passages_success =
       !delete_passages || db_.Execute("DELETE FROM passages;");
   bool delete_embeddings_success =
       !delete_embeddings || db_.Execute("DELETE FROM embeddings;");
+
+  if (close) {
+    Close();
+  }
 
   return delete_passages_success && delete_embeddings_success;
 }
@@ -531,7 +675,8 @@ void SqlDatabase::DatabaseErrorCallback(int extended_error,
                                         sql::Statement* statement) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(b/325524013): Handle razing the database on catastrophic error.
+  // TODO(crbug.com/325524013): Handle razing the database on catastrophic
+  // error.
 
   // The default handling is to assert on debug and to ignore on release.
   // This is because database errors happen in the wild due to faulty hardware,
@@ -539,6 +684,105 @@ void SqlDatabase::DatabaseErrorCallback(int extended_error,
   if (!sql::Database::IsExpectedSqliteError(extended_error)) {
     DLOG(FATAL) << db_.GetErrorMessage();
   }
+}
+
+void SqlDatabase::DeleteExpiredData(base::Time expiration_time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  constexpr char kSqlDeleteExpiredPassages[] =
+      "DELETE FROM passages WHERE visit_time < ?;";
+  constexpr char kSqlDeleteExpiredEmbeddings[] =
+      "DELETE FROM embeddings WHERE visit_time < ?;";
+  DCHECK(db_.IsSQLValid(kSqlDeleteExpiredPassages));
+  DCHECK(db_.IsSQLValid(kSqlDeleteExpiredEmbeddings));
+
+  sql::Statement expire_passages(
+      db_.GetUniqueStatement(kSqlDeleteExpiredPassages));
+  expire_passages.BindTime(0, expiration_time);
+  expire_passages.Run();
+
+  sql::Statement expire_embeddings(
+      db_.GetUniqueStatement(kSqlDeleteExpiredEmbeddings));
+  expire_embeddings.BindTime(0, expiration_time);
+  expire_embeddings.Run();
+}
+
+bool SqlDatabase::InsertOrReplacePassages(const UrlData& url_passages) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  constexpr char kSqlInsertOrReplacePassages[] =
+      "INSERT OR REPLACE INTO passages "
+      "(url_id, visit_id, visit_time, passages_blob) "
+      "VALUES (?,?,?,?)";
+  DCHECK(db_.IsSQLValid(kSqlInsertOrReplacePassages));
+  sql::Statement statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSqlInsertOrReplacePassages));
+  statement.BindInt64(0, url_passages.url_id);
+  statement.BindInt64(1, url_passages.visit_id);
+  statement.BindTime(2, url_passages.visit_time);
+
+  std::vector<uint8_t> blob =
+      PassagesProtoToBlob(url_passages.passages, *encryptor_);
+  if (blob.empty()) {
+    return false;
+  }
+  statement.BindBlob(3, std::move(blob));
+  bool result = statement.Run();
+
+  if (result) {
+    size_t ascii_passages_count = 0;
+    size_t non_ascii_passages_count = 0;
+    for (const std::string& passage : url_passages.passages.passages()) {
+      if (base::IsStringASCII(passage)) {
+        ascii_passages_count++;
+      } else {
+        non_ascii_passages_count++;
+      }
+    }
+    base::UmaHistogramCounts100(
+        "History.Embeddings.DatabaseStoredAsciiPassages", ascii_passages_count);
+    base::UmaHistogramCounts100(
+        "History.Embeddings.DatabaseStoredNonAsciiPassages",
+        non_ascii_passages_count);
+    base::UmaHistogramPercentage(
+        "History.Embeddings.DatabaseStoredNonAsciiPassageRatio",
+        100 * non_ascii_passages_count /
+            (ascii_passages_count + non_ascii_passages_count));
+  }
+
+  return result;
+}
+
+bool SqlDatabase::InsertOrReplaceEmbeddings(const UrlData& url_embeddings) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (url_embeddings.embeddings.size() == 0) {
+    return false;
+  }
+
+  constexpr char kSqlInsertOrReplaceEmbeddings[] =
+      "INSERT OR REPLACE INTO embeddings "
+      "(url_id, visit_id, visit_time, embeddings_blob) "
+      "VALUES (?,?,?,?)";
+  DCHECK(db_.IsSQLValid(kSqlInsertOrReplaceEmbeddings));
+  sql::Statement statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSqlInsertOrReplaceEmbeddings));
+  statement.BindInt64(0, url_embeddings.url_id);
+  statement.BindInt64(1, url_embeddings.visit_id);
+  statement.BindTime(2, url_embeddings.visit_time);
+
+  proto::EmbeddingsValue value;
+  for (const passage_embeddings::Embedding& embedding :
+       url_embeddings.embeddings) {
+    CHECK_EQ(GetEmbeddingDimensions(), embedding.Dimensions());
+    proto::EmbeddingVector* vector = value.add_vectors();
+    for (float f : embedding.GetData()) {
+      vector->add_floats(f);
+    }
+    vector->set_passage_word_count(embedding.GetPassageWordCount());
+  }
+  statement.BindBlob(3, value.SerializeAsString());
+
+  return statement.Run();
 }
 
 }  // namespace history_embeddings

@@ -13,7 +13,7 @@ namespace metrics {
 // Objects interested in receiving histograms derive from HistogramSubscriber.
 class HistogramSubscriber {
  public:
-  virtual ~HistogramSubscriber() {}
+  virtual ~HistogramSubscriber() = default;
 
   // Send number of pending processes to subscriber. |end| is set to true if it
   // is the last time. This is called on the UI thread.

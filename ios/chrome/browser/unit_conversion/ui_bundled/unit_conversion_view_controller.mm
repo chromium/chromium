@@ -50,8 +50,8 @@ const CGFloat kReportAnIssueButtonPadding = 4;
 const CGFloat kUnitTitlePadding = 4;
 
 // Cells identifiers.
-NSString* kUnitTypeCellIdentifier = @"UnitTypeCell";
-NSString* kUnitTypeFieldCellIdentifier = @"UnitTypeValueFieldCell";
+NSString* const kUnitTypeCellIdentifier = @"UnitTypeCell";
+NSString* const kUnitTypeFieldCellIdentifier = @"UnitTypeValueFieldCell";
 
 // Source and target sections indexes.
 const NSInteger kSourceSection = 0;
@@ -396,7 +396,7 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
     case ios::provider::kUnitTypeVolume:
       return l10n_util::GetNSString(IDS_UNITS_MEASUREMENTS_VOLUME);
     case ios::provider::kUnitTypeUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   return nil;
 }
@@ -502,7 +502,7 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
       cell.unitMenuButton.accessibilityIdentifier =
           kTargetUnitMenuButtonIdentifier;
     } else {
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }
 
     UIButtonConfiguration* unitMenuButtonConfiguration =
@@ -535,11 +535,11 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
                                   action:@selector(targetUnitFieldDidChange:)
                         forControlEvents:UIControlEventEditingChanged];
     } else {
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }
     return cell;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 #pragma mark - UnitConversionConsumer

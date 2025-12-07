@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="@dimen/page_zoom_indicator_popup_width"
+    android:layout_height="@dimen/page_zoom_indicator_popup_height"
+    android:paddingStart="@dimen/page_zoom_indicator_popup_padding_start"
+    android:paddingEnd="@dimen/page_zoom_indicator_popup_padding_end"
+    android:accessibilityPaneTitle="@string/page_zoom_popup_window_content_description"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:background="@drawable/page_zoom_background">
+
+    <TextView
+        android:id="@+id/zoom_percentage"
+        android:accessibilityLiveRegion="polite"
+        android:layout_width="@dimen/zoom_percentage_width"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical | start"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/zoom_out_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/zoom_buttons_margin_outwards"
+        android:layout_marginEnd="@dimen/zoom_buttons_margin_inwards"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/page_zoom_decrease_zoom_button_text"
+        android:padding="@dimen/symbol_padding"
+        android:src="@drawable/ic_remove"
+        android:gravity="center"
+        app:tint="@color/default_icon_color_tint_list" />
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/zoom_in_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/zoom_buttons_margin_inwards"
+        android:layout_marginEnd="@dimen/zoom_buttons_margin_outwards"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/page_zoom_increase_zoom_button_text"
+        android:padding="@dimen/symbol_padding"
+        android:src="@drawable/ic_add"
+        android:gravity="center"
+        app:tint="@color/default_icon_color_tint_list" />
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/reset_zoom_button"
+        style="@style/TextAppearance.PageZoomResetButton"
+        android:layout_width="@dimen/reset_button_width"
+        android:layout_height="@dimen/reset_button_height"
+        android:text="@string/reset"
+        android:paddingTop="@dimen/reset_button_padding"
+        android:paddingBottom="@dimen/reset_button_padding"
+        android:layout_gravity="center" />
+</LinearLayout>

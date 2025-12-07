@@ -18,8 +18,7 @@
 
 using icu::UnicodeString;
 
-namespace base {
-namespace i18n {
+namespace base::i18n {
 namespace {
 UnicodeString UnicodeStringFromStringView(std::string_view str) {
   return UnicodeString::fromUTF8(
@@ -55,9 +54,10 @@ MessageArg::MessageArg(const Time& t)
 MessageArg::~MessageArg() = default;
 
 // Tests if this argument has a value, and if so increments *count.
-bool MessageArg::has_value(int *count) const {
-  if (formattable == nullptr)
+bool MessageArg::has_value(int* count) const {
+  if (formattable == nullptr) {
     return false;
+  }
 
   ++*count;
   return true;
@@ -87,7 +87,7 @@ std::u16string MessageFormatter::FormatWithNumberedArgs(
 
   UnicodeString msg_string(msg.data(), msg.size());
   UErrorCode error = U_ZERO_ERROR;
-  icu::MessageFormat format(msg_string,  error);
+  icu::MessageFormat format(msg_string, error);
   icu::UnicodeString formatted;
   icu::FieldPosition ignore(icu::FieldPosition::DONT_CARE);
   format.format(args, args_count, formatted, ignore, error);
@@ -146,5 +146,4 @@ std::u16string MessageFormatter::FormatWithNamedArgs(
   return i18n::UnicodeStringToString16(formatted);
 }
 
-}  // namespace i18n
-}  // namespace base
+}  // namespace base::i18n

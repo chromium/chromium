@@ -8,12 +8,15 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <compare>
+#include <iosfwd>
 #include <map>
 #include <optional>
 #include <string>
 #include <string_view>
 
 #include "base/base_export.h"
+#include "base/byte_count.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/metrics/field_trial_params.h"
@@ -33,7 +36,7 @@ namespace base {
 BASE_EXPORT BASE_DECLARE_FEATURE(kNumberOfCoresWithCpuSecurityMitigation);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Strings for environment variables.
 BASE_EXPORT extern const char kLsbReleaseKey[];
 BASE_EXPORT extern const char kLsbReleaseTimeKey[];
@@ -48,7 +51,7 @@ class ScopedAmountOfPhysicalMemoryOverride;
 }
 
 class FilePath;
-struct SystemMemoryInfoKB;
+struct SystemMemoryInfo;
 
 class BASE_EXPORT SysInfo {
  public:
@@ -72,38 +75,29 @@ class BASE_EXPORT SysInfo {
   // Return the number of bytes of physical memory on the current machine.
   // If low-end device mode is manually enabled via command line flag, this
   // will return the lesser of the actual physical memory, or 512MB.
-  static uint64_t AmountOfPhysicalMemory();
+  static ByteCount AmountOfPhysicalMemory();
 
   // Return the number of bytes of current available physical memory on the
   // machine.
   // (The amount of memory that can be allocated without any significant
   // impact on the system. It can lead to freeing inactive file-backed
   // and/or speculative file-backed memory).
-  static uint64_t AmountOfAvailablePhysicalMemory();
+  static ByteCount AmountOfAvailablePhysicalMemory();
 
   // Return the number of bytes of virtual memory of this process. A return
   // value of zero means that there is no limit on the available virtual
   // memory.
-  static uint64_t AmountOfVirtualMemory();
-
-  // Return the number of megabytes of physical memory on the current machine.
-  static int AmountOfPhysicalMemoryMB() {
-    return static_cast<int>(AmountOfPhysicalMemory() / 1024 / 1024);
-  }
-
-  // Return the number of megabytes of available virtual memory, or zero if it
-  // is unlimited.
-  static int AmountOfVirtualMemoryMB() {
-    return static_cast<int>(AmountOfVirtualMemory() / 1024 / 1024);
-  }
+  static ByteCount AmountOfVirtualMemory();
 
   // Return the available disk space in bytes on the volume containing |path|,
-  // or -1 on failure.
-  static int64_t AmountOfFreeDiskSpace(const FilePath& path);
+  // or nullopt on failure.
+  // TODO(crbug.com/429140103): Convert the return type to ByteCount.
+  static std::optional<int64_t> AmountOfFreeDiskSpace(const FilePath& path);
 
-  // Return the total disk space in bytes on the volume containing |path|, or -1
-  // on failure.
-  static int64_t AmountOfTotalDiskSpace(const FilePath& path);
+  // Return the total disk space in bytes on the volume containing |path|, or
+  // nullopt on failure.
+  // TODO(crbug.com/429140103): Convert the return type to ByteCount.
+  static std::optional<int64_t> AmountOfTotalDiskSpace(const FilePath& path);
 
 #if BUILDFLAG(IS_FUCHSIA)
   // Sets the total amount of disk space to report under the specified |path|.
@@ -127,6 +121,12 @@ class BASE_EXPORT SysInfo {
   // For iOS, corresponding hardware can be found at
   // https://deviceatlas.com/resources/clientside/ios-hardware-identification
   static std::string HardwareModelName();
+
+  // Returns the SOC manufacturer's name or an empty string if the manufacturer
+  // is unknown or an error occurred.
+  // e.g. "Google" on Pixel 8 Pro. Only implemented on Android, returns an
+  // empty string on other platforms.
+  static std::string SocManufacturer();
 
 #if BUILDFLAG(IS_MAC)
   struct HardwareModelNameSplit {
@@ -188,6 +188,27 @@ class BASE_EXPORT SysInfo {
                                             int32_t* minor_version,
                                             int32_t* bugfix_version);
 
+#if BUILDFLAG(IS_POSIX)
+  // Struct containing the the kernel version number of the host operating
+  // system.
+  struct BASE_EXPORT KernelVersionNumber {
+    // Queries the current kernel version number using uname and parses the
+    // release string to construct the KernelVersionNumber struct. This does not
+    // cache the result.
+    static KernelVersionNumber Current();
+
+    friend bool operator==(const KernelVersionNumber& v1,
+                           const KernelVersionNumber& v2) = default;
+
+    friend auto operator<=>(const KernelVersionNumber& v1,
+                            const KernelVersionNumber& v2) = default;
+
+    int32_t major = 0;
+    int32_t minor = 0;
+    int32_t bugfix = 0;
+  };
+#endif  // BUILDFLAG(IS_POSIX)
+
   // Returns the architecture of the running operating system.
   // Exact return value may differ across platforms.
   // e.g. a 32-bit x86 kernel on a 64-bit capable CPU will return "x86",
@@ -207,7 +228,9 @@ class BASE_EXPORT SysInfo {
   static std::string CPUModelName();
 
   // Return the smallest amount of memory (in bytes) which the VM system will
-  // allocate.
+  // allocate. On some platforms, such as Windows, this may not match the page
+  // size (e.g. x86/x86-64 Windows use a 4KB page size but a 64KB allocation
+  // granularity).
   static size_t VMAllocationGranularity();
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -262,8 +285,17 @@ class BASE_EXPORT SysInfo {
   // Returns the Android build ID.
   static std::string GetAndroidBuildID();
 
+  // Returns the Android hardware system property, equivalent to Java's
+  // Build.HARDWARE.
+  static std::string GetAndroidHardware();
+
   // Returns the Android hardware EGL system property.
   static std::string GetAndroidHardwareEGL();
+
+  // Returns the Android hardware class system property. Unlike individual
+  // component Hardware ID, this is at a device level to capture a class of
+  // devices with similar hardware components.
+  static std::string GetAndroidHardwareClass();
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_IOS)
@@ -283,11 +315,8 @@ class BASE_EXPORT SysInfo {
   // including user-visible changes, for acceptable performance.
   // For general memory optimizations, consider |AmountOfPhysicalMemoryMB|.
   //
-  // On Android this returns:
-  //   true when memory <= 1GB on Android O and later.
-  //   true when memory <= 512MB on Android N and earlier.
-  // This is not the same as "low-memory" and will be false on a large number of
-  // <=1GB pre-O Android devices. See: |detectLowEndDevice| in SysUtils.java.
+  // On Android this returns true when memory <= 1GB on Android O and later.
+  // This is not the same as "low-memory".
   // On Desktop this returns true when memory <= 2GB.
   static bool IsLowEndDevice();
 
@@ -331,23 +360,30 @@ class BASE_EXPORT SysInfo {
   FRIEND_TEST_ALL_PREFIXES(debug::SystemMetricsTest, ParseMeminfo);
 
   static int NumberOfEfficientProcessorsImpl();
-  static uint64_t AmountOfPhysicalMemoryImpl();
-  static uint64_t AmountOfAvailablePhysicalMemoryImpl();
+  static ByteCount AmountOfPhysicalMemoryImpl();
+  static ByteCount AmountOfAvailablePhysicalMemoryImpl();
   static bool IsLowEndDeviceImpl();
   static HardwareInfo GetHardwareInfoSync();
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_AIX)
-  static uint64_t AmountOfAvailablePhysicalMemory(
-      const SystemMemoryInfoKB& meminfo);
+  static ByteCount AmountOfAvailablePhysicalMemory(
+      const SystemMemoryInfo& meminfo);
 #endif
 
-  // Sets the amount of physical memory in MB for testing, thus allowing tests
-  // to run irrespective of the host machine's configuration.
-  static std::optional<uint64_t> SetAmountOfPhysicalMemoryMbForTesting(
-      uint64_t amount_of_memory_mb);
-  static void ClearAmountOfPhysicalMemoryMbForTesting();
+  // Sets the amount of physical memory for testing, thus allowing tests to run
+  // irrespective of the host machine's configuration.
+  static std::optional<ByteCount> SetAmountOfPhysicalMemoryForTesting(
+      ByteCount amount_of_memory);
+  static void ClearAmountOfPhysicalMemoryForTesting();
 };
+
+#if BUILDFLAG(IS_POSIX)
+// Stream operator so that SysInfo::KernelVersionNumber can be logged with a
+// consistent format.
+BASE_EXPORT std::ostream& operator<<(std::ostream& out,
+                                     const SysInfo::KernelVersionNumber& v);
+#endif  // BUILDFLAG(IS_POSIX)
 
 }  // namespace base
 

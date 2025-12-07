@@ -73,10 +73,11 @@ class TestView : public View {
   void OnDidSchedulePaint(const gfx::Rect& r) override {
     ++repaint_count_;
 
-    if (dirty_rect_.IsEmpty())
+    if (dirty_rect_.IsEmpty()) {
       dirty_rect_ = r;
-    else
+    } else {
       dirty_rect_.Union(r);
+    }
   }
 
   const gfx::Rect& dirty_rect() const { return dirty_rect_; }
@@ -191,8 +192,9 @@ class BoundsAnimatorTest : public testing::Test {
 
     // Run the message loop; the delegate exits the loop when the animation is
     // done.
-    if (use_long_duration)
+    if (use_long_duration) {
       task_environment_.FastForwardBy(animation_duration);
+    }
     loop.Run();
 
     // Make sure the bounds match of the view that was animated match and the

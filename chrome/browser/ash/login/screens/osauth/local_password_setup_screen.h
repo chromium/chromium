@@ -50,6 +50,7 @@ class LocalPasswordSetupScreen : public BaseOSAuthSetupScreen {
  private:
   // BaseScreen:
   void ShowImpl() override;
+  void HideImpl() override;
   void DoShow();
   void OnUserAction(const base::Value::List& args) override;
 
@@ -59,6 +60,9 @@ class LocalPasswordSetupScreen : public BaseOSAuthSetupScreen {
   base::WeakPtr<LocalPasswordSetupView> view_;
 
   ScreenExitCallback exit_callback_;
+
+  // Keeps cryptohome authsession alive.
+  std::unique_ptr<ScopedSessionRefresher> session_refresher_;
 
   base::WeakPtrFactory<LocalPasswordSetupScreen> weak_factory_{this};
 };

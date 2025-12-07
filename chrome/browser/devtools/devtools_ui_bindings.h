@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/containers/unique_ptr_adapters.h"
@@ -15,45 +16,63 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/devtools/aida_client.h"
-#include "chrome/browser/devtools/device/devtools_android_bridge.h"
+#include "chrome/browser/devtools/devtools_dispatch_http_request_params.h"
 #include "chrome/browser/devtools/devtools_embedder_message_dispatcher.h"
 #include "chrome/browser/devtools/devtools_file_helper.h"
+#include "chrome/browser/devtools/devtools_file_storage.h"
 #include "chrome/browser/devtools/devtools_file_system_indexer.h"
+#include "chrome/browser/devtools/devtools_http_service_handler.h"
 #include "chrome/browser/devtools/devtools_infobar_delegate.h"
 #include "chrome/browser/devtools/devtools_settings.h"
 #include "chrome/browser/devtools/devtools_targets_ui.h"
 #include "chrome/browser/devtools/visual_logging.h"
-#include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/themes/theme_service_factory.h"
-#include "chrome/browser/themes/theme_service_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_frontend_host.h"
 #include "ui/gfx/geometry/size.h"
 
-class DevToolsAndroidBridge;
-class PortForwardingStatusSerializer;
-class Profile;
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/themes/theme_service_observer.h"
+#endif
 
 namespace content {
 class NavigationHandle;
 class WebContents;
-}
+}  // namespace content
 
 namespace infobars {
 class ContentInfoBarManager;
 }
 
+namespace network {
+class SimpleURLLoader;
+}
+
+namespace permissions {
+enum class PermissionAction;
+}
+
+class DevToolsHttpServiceHandler;
+class DevToolsHttpServiceRegistry;
+class DevToolsUIBindingsDispatchHttpRequestTest;
+class PortForwardingStatusSerializer;
+class Profile;
+
 // Base implementation of DevTools bindings around front-end.
 class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
                            public DevToolsAndroidBridge::DeviceCountListener,
                            public content::DevToolsAgentHostClient,
-                           public DevToolsFileHelper::Delegate,
-                           public ThemeServiceObserver {
+#if !BUILDFLAG(IS_ANDROID)
+                           public ThemeServiceObserver,
+#endif
+                           public DevToolsFileHelper::Delegate {
+  friend class DevToolsUIBindingsDispatchHttpRequestTest;
+
  public:
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
+    virtual content::WebContents* GetInspectedWebContents() = 0;
     virtual void ActivateWindow() = 0;
     virtual void CloseWindow() = 0;
     virtual void Inspect(scoped_refptr<content::DevToolsAgentHost> host) = 0;
@@ -101,6 +120,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
 
   // Takes ownership over the |delegate|.
   void SetDelegate(Delegate* delegate);
+  void TransferDelegate(DevToolsUIBindings& other);
   void CallClientMethod(
       const std::string& object_name,
       const std::string& method_name,
@@ -115,8 +135,13 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void Detach();
   bool IsAttachedTo(content::DevToolsAgentHost* agent_host);
 
+#if !BUILDFLAG(IS_ANDROID)
   // ThemeServiceObserver implementation
   void OnThemeChanged() override;
+#endif
+
+  void SetHttpServiceRegistryForTesting(
+      std::unique_ptr<DevToolsHttpServiceRegistry> service_registry);
 
   static base::Value::Dict GetSyncInformationForProfile(Profile* profile);
 
@@ -157,6 +182,11 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void RemoveFileSystem(const std::string& file_system_path) override;
   void UpgradeDraggedFileSystemPermissions(
       const std::string& file_system_url) override;
+  void ConnectAutomaticFileSystem(DispatchCallback callback,
+                                  const std::string& file_system_path,
+                                  const std::string& file_system_uuid,
+                                  bool add_if_missing) final;
+  void DisconnectAutomaticFileSystem(const std::string& file_system_path) final;
   void IndexPath(int index_request_id,
                  const std::string& file_system_path,
                  const std::string& excluded_folders) override;
@@ -192,6 +222,8 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
                                  int boundary_value) override;
   void RecordPerformanceHistogram(const std::string& name,
                                   double duration) override;
+  void RecordPerformanceHistogramMedium(const std::string& name,
+                                        double duration) override;
   void RecordUserMetricsAction(const std::string& name) override;
   void RecordImpression(const ImpressionEvent& event) override;
   void RecordResize(const ResizeEvent& event) override;
@@ -200,11 +232,11 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void RecordDrag(const DragEvent& event) override;
   void RecordChange(const ChangeEvent& event) override;
   void RecordKeyDown(const KeyDownEvent& event) override;
-  void SendJsonRequest(DispatchCallback callback,
-                       const std::string& browser_id,
-                       const std::string& url) override;
+  void RecordSettingAccess(const SettingAccessEvent& event) override;
+  void RecordFunctionCall(const FunctionCallEvent& event) override;
   void RegisterPreference(const std::string& name,
                           const RegisterOptions& options) override;
+  void RecordNewBadgeUsage(const std::string& feature_name) override;
   void GetPreferences(DispatchCallback callback) override;
   void GetPreference(DispatchCallback callback,
                      const std::string& name) override;
@@ -224,11 +256,55 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
                   const std::string& trigger) override;
   void CanShowSurvey(DispatchCallback callback,
                      const std::string& trigger) override;
+  bool EnsureAidaClientAvailable();
+  void HandleAidaClientUnavailable(DispatchCallback callback);
   void DoAidaConversation(DispatchCallback callback,
                           const std::string& request,
                           int stream_id) override;
+  void AidaCodeComplete(DispatchCallback callback,
+                        const std::string& request) override;
   void RegisterAidaClientEvent(DispatchCallback callback,
                                const std::string& request) override;
+
+  // Dispatches a generic HTTP request to a backend service.
+  // This is a centralized entry point for DevTools frontend to make network
+  // requests to a allow-listed set of backend services.
+  //
+  // Contract with the DevTools frontend:
+  //
+  // Parameters:
+  // - `service`: A string identifier for the target service (e.g.,
+  //   `aidaService`).
+  // - `path`: The specific API path (e.g., `/v1/aida:codeComplete`).
+  // - `method`: The HTTP method (e.g., `POST`).
+  // - `body`: The optional request payload.
+  // - `queryParams`: An optional dictionary of URL query parameters. Keys are
+  //   strings, and values can be either a string or an array of strings.
+  //
+  // Successful Response:
+  // The callback will be invoked with a dictionary containing:
+  // - `response` (string): The response body from the server.
+  // - `statusCode` (int): The HTTP status code.
+  //
+  // Error Responses:
+  // In case of an error, the callback is invoked with a dictionary
+  // containing an `error` key. The value is a string describing the error.
+  // Additional details may be provided.
+  //
+  // Possible error scenarios:
+  // 1. Service not found: `{"error": "Service not found"}`
+  // 2. Disallowed path or method: `{"error": "Disallowed path or method"}`
+  // 3. Pre-request validation failed: `{"error": "Request validation
+  // failed"}`
+  // 4. Token fetch failure: `{"error": "Token fetch error", "detail":
+  // "<error_details>"}`
+  // 5. Network request failure (including non-2xx responses):
+  //    `{"error": "Request failed", "detail": "<response_body>", "netError":
+  //    net::OK, "netErrorName": "net::ERR_FAILED", "statusCode":
+  //    <http_status>}`
+  void DispatchHttpRequest(
+      DispatchCallback callback,
+      const DevToolsDispatchHttpRequestParams& params) override;
 
   void EnableRemoteDeviceCounter(bool enable);
 
@@ -248,9 +324,6 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void PrimaryPageChanged();
   void FrontendLoaded();
 
-  void JsonReceived(DispatchCallback callback,
-                    int result,
-                    const std::string& message);
   void DevicesDiscoveryConfigUpdated();
   void SendPortForwardingStatus(base::Value status);
 
@@ -267,6 +340,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void FileSavedAs(const std::string& url, const std::string& file_system_path);
   void CanceledFileSaveAs(const std::string& url);
   void AppendedTo(const std::string& url);
+  void ConnectAutomaticFileSystemDone(DispatchCallback callback, bool success);
   void IndexingTotalWorkCalculated(int request_id,
                                    const std::string& file_system_path,
                                    int total_work);
@@ -277,35 +351,54 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void SearchCompleted(int request_id,
                        const std::string& file_system_path,
                        const std::vector<std::string>& file_paths);
+  void HandleDirectoryPermissions(const std::string& directory_path,
+                                  const std::u16string& message,
+                                  DevToolsInfoBarDelegate::Callback callback);
   void ShowDevToolsInfoBar(const std::u16string& message,
                            DevToolsInfoBarDelegate::Callback callback);
-  bool MaybeStartLogging();
+  void ShowDirectoryPermissionDialog(
+      const std::string& directory_path,
+      DevToolsInfoBarDelegate::Callback callback);
+  void OnPermissionDialogResult(DevToolsInfoBarDelegate::Callback callback,
+                                permissions::PermissionAction result);
+  void MaybeStartLogging();
   base::TimeDelta GetTimeSinceSessionStart();
+  void HandleAidaRequestError(
+      DispatchCallback callback,
+      std::variant<network::ResourceRequest, std::string>
+          resource_request_or_error);
   void OnAidaConversationRequest(
       DispatchCallback callback,
       int stream_id,
       const std::string& request,
       base::TimeDelta delay,
-      absl::variant<network::ResourceRequest, std::string>
+      std::variant<network::ResourceRequest, std::string>
           resource_request_or_error);
   void OnAidaConversationResponse(
       DispatchCallback callback,
       int stream_id,
-      const std::string& request,
+      const std::string request,
       base::TimeDelta delay,
-      absl::variant<network::ResourceRequest, std::string>
+      std::variant<network::ResourceRequest, std::string>
           resource_request_or_error,
       base::TimeTicks start_time,
       const base::Value* response);
-  void OnRegisterAidaClientEventRequest(
-      DispatchCallback callback,
-      const std::string& request,
-      absl::variant<network::ResourceRequest, std::string>
-          resource_request_or_error);
-  void OnAidaClientResponse(
+  void OnAidaRequest(const GURL& url,
+                     const std::string& response_histogram_name,
+                     DispatchCallback callback,
+                     const std::string& request,
+                     std::variant<network::ResourceRequest, std::string>
+                         resource_request_or_error);
+  void OnAidaResponse(
+      const std::string& histogram_name,
       DispatchCallback callback,
       std::unique_ptr<network::SimpleURLLoader> simple_url_loader,
+      base::TimeTicks start_time,
       std::optional<std::string> response_body);
+
+  void OnHttpRequestPerformed(
+      DispatchCallback callback,
+      std::unique_ptr<DevToolsHttpServiceHandler::Result> result);
 
   // Extensions support.
   void AddDevToolsExtensionsToClient();
@@ -316,12 +409,12 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   std::unique_ptr<FrontendWebContentsObserver> frontend_contents_observer_;
 
   raw_ptr<Profile> profile_;
-  raw_ptr<DevToolsAndroidBridge> android_bridge_;
   raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<Delegate> delegate_;
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
   std::unique_ptr<content::DevToolsFrontendHost> frontend_host_;
-  std::unique_ptr<DevToolsFileHelper> file_helper_;
+  DevToolsFileStorage file_storage_;
+  DevToolsFileHelper file_helper_;
   scoped_refptr<DevToolsFileSystemIndexer> file_system_indexer_;
   typedef std::map<
       int,
@@ -350,6 +443,10 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   base::TimeTicks session_start_time_;
 
   std::unique_ptr<AidaClient> aida_client_;
+  bool can_access_aida_ = false;
+
+  std::unique_ptr<DevToolsHttpServiceRegistry> http_service_registry_;
+
   base::UnguessableToken session_id_for_logging_;
   base::WeakPtrFactory<DevToolsUIBindings> weak_factory_{this};
 };

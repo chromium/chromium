@@ -113,12 +113,9 @@ class InstantService : public KeyedService,
   // Getter for |theme_| that will also initialize it if necessary.
   NtpTheme* GetInitializedNtpTheme();
 
-  // Used for testing.
-  void SetNativeThemeForTesting(ui::NativeTheme* theme);
-
  private:
   friend class InstantExtendedTest;
-  friend class InstantUnitTestBase;
+  friend class InstantBrowserTestBase;
   friend class TestInstantService;
 
   FRIEND_TEST_ALL_PREFIXES(InstantServiceTest, GetNTPTileSuggestion);
@@ -135,6 +132,7 @@ class InstantService : public KeyedService,
 
   // ntp_tiles::MostVisitedSites::Observer implementation.
   void OnURLsAvailable(
+      bool is_user_triggered,
       const std::map<ntp_tiles::SectionType, ntp_tiles::NTPTilesVector>&
           sections) override;
   void OnIconMadeAvailable(const GURL& site_url) override;
@@ -179,8 +177,6 @@ class InstantService : public KeyedService,
 
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       theme_observation_{this};
-
-  raw_ptr<ui::NativeTheme> native_theme_;
 
   base::TimeTicks background_updated_timestamp_;
 

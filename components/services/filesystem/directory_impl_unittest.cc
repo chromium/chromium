@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <map>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/test/task_environment.h"
 #include "components/services/filesystem/directory_test_helper.h"
 #include "components/services/filesystem/public/mojom/directory.mojom.h"
@@ -47,13 +44,15 @@ TEST_F(DirectoryImplTest, Read) {
   base::File::Error error;
 
   // Make some files.
-  const struct {
+  struct FilesToCreate {
     const char* name;
     uint32_t open_flags;
-  } files_to_create[] = {
+  };
+  const auto files_to_create = std::to_array<FilesToCreate>({
       {"my_file1", mojom::kFlagRead | mojom::kFlagWrite | mojom::kFlagCreate},
       {"my_file2", mojom::kFlagWrite | mojom::kFlagCreate},
-      {"my_file3", mojom::kFlagAppend | mojom::kFlagCreate}};
+      {"my_file3", mojom::kFlagAppend | mojom::kFlagCreate},
+  });
   for (size_t i = 0; i < std::size(files_to_create); i++) {
     error = base::File::Error::FILE_ERROR_FAILED;
     base::File tmp_base_file;
@@ -200,7 +199,7 @@ TEST_F(DirectoryImplTest, Clone) {
     // deleted since it has clones.
   }
 
-  std::vector<uint8_t> data(kData, kData + strlen(kData));
+  std::vector<uint8_t> data(kData, UNSAFE_TODO(kData + strlen(kData)));
   {
     bool handled = clone_one->WriteFile("data", data, &error);
     ASSERT_TRUE(handled);
@@ -221,7 +220,7 @@ TEST_F(DirectoryImplTest, WriteFileReadFile) {
   mojo::Remote<mojom::Directory> directory = CreateTempDir();
   base::File::Error error;
 
-  std::vector<uint8_t> data(kData, kData + strlen(kData));
+  std::vector<uint8_t> data(kData, UNSAFE_TODO(kData + strlen(kData)));
   {
     bool handled = directory->WriteFile("data", data, &error);
     ASSERT_TRUE(handled);
@@ -291,7 +290,7 @@ TEST_F(DirectoryImplTest, CantWriteFileOnADirectory) {
   }
 
   {
-    std::vector<uint8_t> data(kData, kData + strlen(kData));
+    std::vector<uint8_t> data(kData, UNSAFE_TODO(kData + strlen(kData)));
     bool handled = directory->WriteFile("my_dir", data, &error);
     ASSERT_TRUE(handled);
     EXPECT_EQ(base::File::Error::FILE_ERROR_NOT_A_FILE, error);

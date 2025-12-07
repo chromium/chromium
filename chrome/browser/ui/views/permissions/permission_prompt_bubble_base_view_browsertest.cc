@@ -2,21 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 
-#include "base/feature_list.h"
+#include <algorithm>
+#include <array>
+
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/download/download_permission_request.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
@@ -32,7 +26,6 @@
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_chip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
@@ -40,12 +33,12 @@
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/custom_handlers/register_protocol_handler_permission_request.h"
 #include "components/permissions/constants.h"
-#include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
-#include "components/permissions/permission_ui_selector.h"
+#include "components/permissions/prediction_service/permission_ui_selector.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_request.h"
+#include "components/permissions/test/mock_permission_ui_selector.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -58,6 +51,7 @@
 #include "content/public/test/cursor_utils.h"
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/animation/animation.h"
@@ -74,34 +68,6 @@
 //
 // Check go/brapp-desktop-pixel-tests for more info.
 
-namespace {
-// Test implementation of PermissionUiSelector that always returns a canned
-// decision.
-class TestQuietNotificationPermissionUiSelector
-    : public permissions::PermissionUiSelector {
- public:
-  explicit TestQuietNotificationPermissionUiSelector(
-      const Decision& canned_decision)
-      : canned_decision_(canned_decision) {}
-  ~TestQuietNotificationPermissionUiSelector() override = default;
-
- protected:
-  // permissions::PermissionUiSelector:
-  void SelectUiToUse(permissions::PermissionRequest* request,
-                     DecisionMadeCallback callback) override {
-    std::move(callback).Run(canned_decision_);
-  }
-
-  bool IsPermissionRequestSupported(
-      permissions::RequestType request_type) override {
-    return request_type == permissions::RequestType::kNotifications;
-  }
-
- private:
-  Decision canned_decision_;
-};
-}  // namespace
-
 class PermissionPromptBubbleBaseViewBrowserTest : public DialogBrowserTest {
  public:
   // DialogBrowserTest:
@@ -117,14 +83,11 @@ class PermissionPromptBubbleBaseViewBrowserTest : public DialogBrowserTest {
 
  protected:
   using QuietUiReason = permissions::PermissionUiSelector::QuietUiReason;
-  using WarningReason = permissions::PermissionUiSelector::WarningReason;
+  using Decision = permissions::PermissionUiSelector::Decision;
 
-  void SetCannedUiDecision(std::optional<QuietUiReason> quiet_ui_reason,
-                           std::optional<WarningReason> warning_reason) {
+  void SetCannedUiDecision(const Decision& decision) {
     GetTestApi().manager()->set_permission_ui_selector_for_testing(
-        std::make_unique<TestQuietNotificationPermissionUiSelector>(
-            permissions::PermissionUiSelector::Decision(quiet_ui_reason,
-                                                        warning_reason)));
+        std::make_unique<MockPermissionUiSelector>(decision));
   }
 
   // DialogBrowserTest:
@@ -154,7 +117,7 @@ class PermissionPromptBubbleBaseViewBrowserTest : public DialogBrowserTest {
       ContentSettingImageModel::ImageType image_type) {
     LocationBarView* location_bar_view =
         BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
-    return **base::ranges::find(
+    return **std::ranges::find(
         location_bar_view->GetContentSettingViewsForTest(), image_type,
         &ContentSettingImageView::GetType);
   }
@@ -163,7 +126,8 @@ class PermissionPromptBubbleBaseViewBrowserTest : public DialogBrowserTest {
   void SetEmbeddingOrigin(const GURL& origin) { embedding_origin_ = origin; }
 
  private:
-  permissions::PermissionRequest* MakeRegisterProtocolHandlerRequest() {
+  std::unique_ptr<custom_handlers::RegisterProtocolHandlerPermissionRequest>
+  MakeRegisterProtocolHandlerRequest() {
     std::string protocol = "mailto";
     custom_handlers::ProtocolHandler handler =
         custom_handlers::ProtocolHandler::CreateProtocolHandler(protocol,
@@ -172,33 +136,30 @@ class PermissionPromptBubbleBaseViewBrowserTest : public DialogBrowserTest {
         ProtocolHandlerRegistryFactory::GetForBrowserContext(
             browser()->profile());
     // Deleted in RegisterProtocolHandlerPermissionRequest::RequestFinished().
-    return new custom_handlers::RegisterProtocolHandlerPermissionRequest(
+    return std::make_unique<
+        custom_handlers::RegisterProtocolHandlerPermissionRequest>(
         registry, handler, GetTestUrl(), base::ScopedClosureRunner());
   }
 
   void AddRequestForContentSetting(const std::string& name) {
     constexpr const char* kMultipleName = "multiple";
-    constexpr struct {
+    struct NameType {
       const char* name;
       ContentSettingsType type;
-    } kNameToType[] = {
-        {"geolocation", ContentSettingsType::GEOLOCATION},
-        {"protected_media", ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER},
-        {"notifications", ContentSettingsType::NOTIFICATIONS},
-        {"mic", ContentSettingsType::MEDIASTREAM_MIC},
-        {"camera", ContentSettingsType::MEDIASTREAM_CAMERA},
-        {"protocol_handlers", ContentSettingsType::PROTOCOL_HANDLERS},
-        {"midi", ContentSettingsType::MIDI_SYSEX},
-        {"storage_access", ContentSettingsType::STORAGE_ACCESS},
-        {"downloads", ContentSettingsType::AUTOMATIC_DOWNLOADS},
-        {kMultipleName, ContentSettingsType::DEFAULT}};
-    const auto* it = std::begin(kNameToType);
-    for (; it != std::end(kNameToType); ++it) {
-      if (name == it->name) {
-        break;
-      }
-    }
-    if (it == std::end(kNameToType)) {
+    };
+    static constexpr auto kNameToType = std::to_array<NameType>(
+        {{"geolocation", ContentSettingsType::GEOLOCATION},
+         {"protected_media", ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER},
+         {"notifications", ContentSettingsType::NOTIFICATIONS},
+         {"mic", ContentSettingsType::MEDIASTREAM_MIC},
+         {"camera", ContentSettingsType::MEDIASTREAM_CAMERA},
+         {"protocol_handlers", ContentSettingsType::PROTOCOL_HANDLERS},
+         {"midi", ContentSettingsType::MIDI_SYSEX},
+         {"storage_access", ContentSettingsType::STORAGE_ACCESS},
+         {"downloads", ContentSettingsType::AUTOMATIC_DOWNLOADS},
+         {kMultipleName, ContentSettingsType::DEFAULT}});
+    const auto it = std::ranges::find(kNameToType, name, &NameType::name);
+    if (it == kNameToType.end()) {
       ADD_FAILURE() << "Unknown: " << name;
       return;
     }
@@ -220,7 +181,7 @@ class PermissionPromptBubbleBaseViewBrowserTest : public DialogBrowserTest {
         break;
       case ContentSettingsType::AUTOMATIC_DOWNLOADS:
         manager->AddRequest(source_frame,
-                            new DownloadPermissionRequest(
+                            std::make_unique<DownloadPermissionRequest>(
                                 nullptr, url::Origin::Create(GetTestUrl())));
         break;
       case ContentSettingsType::DURABLE_STORAGE:
@@ -257,7 +218,6 @@ class PermissionPromptBubbleBaseViewBrowserTest : public DialogBrowserTest {
       gfx::AnimationTestApi::SetRichAnimationRenderMode(
           gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
 
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<test::PermissionRequestManagerTestApi> test_api_;
   GURL embedding_origin_ = GURL("https://www.origin.test.com");
   GURL test_url_ = GURL("https://example.com");
@@ -271,19 +231,13 @@ class PermissionPromptBubbleBaseViewBrowserTest : public DialogBrowserTest {
 #endif
 IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
                        MAYBE_AlertAccessibleEvent) {
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
   ShowUi("geolocation");
 
-  ChipController* chip_controller = GetChipController();
-
-  // If chip UI is used, two notifications will be announced: one that
-  // permission was requested and second when bubble is opened.
-  if (chip_controller->IsPermissionPromptChipVisible()) {
-    EXPECT_EQ(2, counter.GetCount(ax::mojom::Event::kAlert));
-  } else {
-    EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
-  }
+  // Even though chip UI is used, only the event "permission prompt bubble is
+  // opened" will be announced.
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
 }
 
 // Test switching between PermissionChip and PermissionPromptBubbleBaseView and
@@ -451,13 +405,13 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
   GetTestApi().manager()->Accept();
   base::RunLoop().RunUntilIdle();
 
-    histograms.ExpectBucketCount(
-        "Permissions.Prompt.Geolocation.LocationBarLeftChipAutoBubble.Action",
-        static_cast<int>(permissions::PermissionAction::GRANTED), 1);
-    histograms.ExpectTimeBucketCount(
-        "Permissions.Prompt.Geolocation.LocationBarLeftChipAutoBubble.Accepted."
-        "TimeToAction",
-        duration, 1);
+  histograms.ExpectBucketCount(
+      "Permissions.Prompt.Geolocation.LocationBarLeftChipAutoBubble.Action",
+      static_cast<int>(permissions::PermissionAction::GRANTED), 1);
+  histograms.ExpectTimeBucketCount(
+      "Permissions.Prompt.Geolocation.LocationBarLeftChipAutoBubble.Accepted."
+      "TimeToAction",
+      duration, 1);
 
   ShowUi("notifications");
 
@@ -472,14 +426,14 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
   GetTestApi().manager()->Accept();
   base::RunLoop().RunUntilIdle();
 
-    histograms.ExpectBucketCount(
-        "Permissions.Prompt.Notifications.LocationBarLeftChipAutoBubble.Action",
-        static_cast<int>(permissions::PermissionAction::GRANTED), 1);
-    histograms.ExpectTimeBucketCount(
-        "Permissions.Prompt.Notifications.LocationBarLeftChipAutoBubble."
-        "Accepted."
-        "TimeToAction",
-        duration, 1);
+  histograms.ExpectBucketCount(
+      "Permissions.Prompt.Notifications.LocationBarLeftChipAutoBubble.Action",
+      static_cast<int>(permissions::PermissionAction::GRANTED), 1);
+  histograms.ExpectTimeBucketCount(
+      "Permissions.Prompt.Notifications.LocationBarLeftChipAutoBubble."
+      "Accepted."
+      "TimeToAction",
+      duration, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
@@ -499,14 +453,14 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
   GetTestApi().manager()->AcceptThisTime();
   base::RunLoop().RunUntilIdle();
 
-    histograms.ExpectBucketCount(
-        "Permissions.Prompt.Geolocation.LocationBarLeftChipAutoBubble.Action",
-        static_cast<int>(permissions::PermissionAction::GRANTED_ONCE), 1);
-    histograms.ExpectTimeBucketCount(
-        "Permissions.Prompt.Geolocation.LocationBarLeftChipAutoBubble."
-        "AcceptedOnce."
-        "TimeToAction",
-        duration, 1);
+  histograms.ExpectBucketCount(
+      "Permissions.Prompt.Geolocation.LocationBarLeftChipAutoBubble.Action",
+      static_cast<int>(permissions::PermissionAction::GRANTED_ONCE), 1);
+  histograms.ExpectTimeBucketCount(
+      "Permissions.Prompt.Geolocation.LocationBarLeftChipAutoBubble."
+      "AcceptedOnce."
+      "TimeToAction",
+      duration, 1);
 
   ShowUi("notifications");
 
@@ -521,14 +475,14 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
   GetTestApi().manager()->AcceptThisTime();
   base::RunLoop().RunUntilIdle();
 
-    histograms.ExpectBucketCount(
-        "Permissions.Prompt.Notifications.LocationBarLeftChipAutoBubble.Action",
-        static_cast<int>(permissions::PermissionAction::GRANTED_ONCE), 1);
-    histograms.ExpectTimeBucketCount(
-        "Permissions.Prompt.Notifications.LocationBarLeftChipAutoBubble."
-        "AcceptedOnce."
-        "TimeToAction",
-        duration, 1);
+  histograms.ExpectBucketCount(
+      "Permissions.Prompt.Notifications.LocationBarLeftChipAutoBubble.Action",
+      static_cast<int>(permissions::PermissionAction::GRANTED_ONCE), 1);
+  histograms.ExpectTimeBucketCount(
+      "Permissions.Prompt.Notifications.LocationBarLeftChipAutoBubble."
+      "AcceptedOnce."
+      "TimeToAction",
+      duration, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
@@ -571,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
                        LoudChipOrAnchoredBubbleIsShownForNonAbusiveRequests) {
-  SetCannedUiDecision(std::nullopt, std::nullopt);
+  SetCannedUiDecision(Decision::UseNormalUiAndShowNoWarning());
 
   ShowUi("geolocation");
 
@@ -596,7 +550,19 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
   for (QuietUiReason reason : {QuietUiReason::kTriggeredByCrowdDeny,
                                QuietUiReason::kTriggeredDueToAbusiveRequests,
                                QuietUiReason::kTriggeredDueToAbusiveContent}) {
-    SetCannedUiDecision(reason, std::nullopt);
+    SetCannedUiDecision(
+        Decision::UseQuietUi(reason, Decision::ShowNoWarning()));
+
+    ShowUi("camera");
+
+    EXPECT_EQ(GetTestApi()
+                  .manager()
+                  ->current_request_prompt_disposition_for_testing(),
+              permissions::PermissionPromptDisposition::
+                  LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
+
+    GetTestApi().manager()->Accept();
+    base::RunLoop().RunUntilIdle();
 
     ShowUi("geolocation");
 
@@ -604,7 +570,7 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
                   .manager()
                   ->current_request_prompt_disposition_for_testing(),
               permissions::PermissionPromptDisposition::
-                  LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
+                  LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP);
 
     GetTestApi().manager()->Accept();
     base::RunLoop().RunUntilIdle();
@@ -619,46 +585,6 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
               permissions::PermissionPromptDisposition::
                   LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP);
   }
-}
-
-class PermissionPromptBubbleBaseViewAllowAlwaysFirstBrowserTest
-    : public PermissionPromptBubbleBaseViewBrowserTest {
- public:
-  PermissionPromptBubbleBaseViewAllowAlwaysFirstBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        permissions::features::kOneTimePermission,
-        {{"show_allow_always_as_first_button", "true"}});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    PermissionPromptBubbleBaseViewAllowAlwaysFirstBrowserTest,
-    InvokeUi_geolocation) {
-  ShowAndVerifyUi();
-}
-
-class PermissionPromptBubbleBaseViewAllowWhileVisitingFirstBrowserTest
-    : public PermissionPromptBubbleBaseViewBrowserTest {
- public:
-  PermissionPromptBubbleBaseViewAllowWhileVisitingFirstBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        permissions::features::kOneTimePermission,
-        {{"use_stronger_prompt_language", "true"},
-         {"use_while_visiting_language", "true"},
-         {"show_allow_always_as_first_button", "true"}});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    PermissionPromptBubbleBaseViewAllowWhileVisitingFirstBrowserTest,
-    InvokeUi_geolocation) {
-  ShowAndVerifyUi();
 }
 
 class LongOriginPermissionPromptBubbleBaseViewBrowserTest

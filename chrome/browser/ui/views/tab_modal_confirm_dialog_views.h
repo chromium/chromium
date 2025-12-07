@@ -9,7 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
-#include "ui/gfx/native_widget_types.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace content {
@@ -19,7 +18,7 @@ class WebContents;
 namespace views {
 class MessageBoxView;
 class Widget;
-}
+}  // namespace views
 
 // Displays a tab-modal dialog, i.e. a dialog that will block the current page
 // but still allow the user to switch to a different page.

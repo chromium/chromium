@@ -1,0 +1,7 @@
+Document
+++Group IsControlElement=false
+++++ComboBox ExpandCollapse.ExpandCollapseState='Collapsed' Value.Value='1'
+++Image
+++++Text Name='<newline>  '
+++++ComboBox ExpandCollapse.ExpandCollapseState='Collapsed' Value.Value='1'
+++++Text Name='<newline>'

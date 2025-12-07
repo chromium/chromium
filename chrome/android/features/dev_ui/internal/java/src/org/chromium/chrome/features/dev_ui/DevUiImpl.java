@@ -4,5 +4,8 @@
 
 package org.chromium.chrome.features.dev_ui;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Implementation for the DevUI DFM. */
+@NullMarked
 public class DevUiImpl implements DevUi {}

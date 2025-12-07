@@ -9,10 +9,12 @@ namespace ui {
 
 // TextInputType is the enum type representing every type of text input fields.
 // TextInputType should include all types defined in blink::WebTextInputType
-// defined in: third_party/WebKit/public/platform/WebTextInputType.h
+// defined at //third_party/blink/public/platform/web_text_input_type.h
 //
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.ui.base.ime
+//
+// LINT.IfChange(UiTextInputType)
 enum TextInputType {
   // Input caret is not in an editable node, no input method shall be used.
   TEXT_INPUT_TYPE_NONE,
@@ -22,7 +24,12 @@ enum TextInputType {
 
   // Input caret is in a password box, an input method may be used only if
   // it's suitable for password input.
-  TEXT_INPUT_TYPE_PASSWORD,
+  //
+  // On macOS 15+, Apple implemented system autofill functionality by directly
+  // extracting a value of this enum from the Chromium process and comparing it
+  // to the constant "2". Therefore, this specific value is frozen; the value 2
+  // must continue to mean "password field".
+  TEXT_INPUT_TYPE_PASSWORD = 2,
 
   TEXT_INPUT_TYPE_SEARCH,
   TEXT_INPUT_TYPE_EMAIL,
@@ -54,6 +61,7 @@ enum TextInputType {
 
   TEXT_INPUT_TYPE_MAX = TEXT_INPUT_TYPE_NULL,
 };
+// LINT.ThenChange(//third_party/blink/public/platform/web_text_input_type.h:BlinkTextInputType)
 
 }  // namespace ui
 

@@ -52,11 +52,6 @@ void DeviceEventRouter::OnDeviceAdded(const std::string& device_path) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   SetDeviceState(device_path, DEVICE_STATE_USUAL);
-  if (IsExternalStorageDisabled()) {
-    OnDeviceEvent(file_manager_private::DeviceEventType::kDisabled, device_path,
-                  "");
-    return;
-  }
 }
 
 void DeviceEventRouter::OnDeviceRemoved(const std::string& device_path) {
@@ -69,6 +64,12 @@ void DeviceEventRouter::OnDeviceRemoved(const std::string& device_path) {
 void DeviceEventRouter::OnDiskAdded(const ash::disks::Disk& disk,
                                     bool mounting) {
   // Do nothing.
+}
+
+void DeviceEventRouter::OnDiskAddBlockedByPolicy(
+    const std::string& device_path) {
+  OnDeviceEvent(file_manager_private::DeviceEventType::kDisabled, device_path,
+                "");
 }
 
 void DeviceEventRouter::OnDiskRemoved(const ash::disks::Disk& disk) {

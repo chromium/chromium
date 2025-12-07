@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/login/marketing_backend_connector.h"
 
 #include <cstddef>
+#include <optional>
+#include <string>
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
@@ -30,10 +32,6 @@
 
 namespace ash {
 namespace {
-
-// The scope that will be used to access the ChromebookEmailService API.
-const char kChromebookOAuth2Scope[] =
-    "https://www.googleapis.com/auth/chromebook.email";
 
 // API Endpoint
 const char kAccessPointsApiEndpoint[] = "https://accesspoints.googleapis.com/";
@@ -93,8 +91,9 @@ void MarketingBackendConnector::UpdateEmailPreferences(
   }
 
   // No requests without a Gaia account
-  if (profile->IsOffTheRecord())
+  if (profile->IsOffTheRecord()) {
     return;
+  }
 
   scoped_refptr<MarketingBackendConnector> ref =
       new MarketingBackendConnector(profile);
@@ -120,10 +119,8 @@ void MarketingBackendConnector::StartTokenFetch() {
     return;
   }
 
-  signin::ScopeSet chromebook_scope;
-  chromebook_scope.insert(kChromebookOAuth2Scope);
   token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-      "MarketingBackendConnector", identity_manager, chromebook_scope,
+      signin::OAuthConsumerId::kMarketingBackendConnector, identity_manager,
       base::BindOnce(&MarketingBackendConnector::OnAccessTokenRequestCompleted,
                      this),
       signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
@@ -191,7 +188,7 @@ void MarketingBackendConnector::SetTokenAndStartRequest() {
 }
 
 void MarketingBackendConnector::OnSimpleLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   int response_code = -1;
   std::string raw_header;
   if (simple_url_loader_->ResponseInfo() &&
@@ -201,8 +198,9 @@ void MarketingBackendConnector::OnSimpleLoaderComplete(
   }
 
   std::string data;
-  if (response_body)
+  if (response_body) {
     data = std::move(*response_body);
+  }
 
   OnSimpleLoaderCompleteInternal(response_code, data);
 }
@@ -243,9 +241,7 @@ std::string MarketingBackendConnector::GetRequestContent() {
   request_dict.Set("country_code", country_code_);
   request_dict.Set("language", "en");
 
-  std::string request_content;
-  base::JSONWriter::Write(request_dict, &request_content);
-  return request_content;
+  return base::WriteJson(request_dict).value_or("");
 }
 
 MarketingBackendConnector::~MarketingBackendConnector() = default;

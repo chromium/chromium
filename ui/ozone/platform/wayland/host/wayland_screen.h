@@ -13,13 +13,15 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
+#include "build/config/linux/dbus/buildflags.h"
 #include "ui/display/display_list.h"
 #include "ui/display/display_observer.h"
-#include "ui/display/tablet_state.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/linux/device_scale_factor_observer.h"
+#include "ui/linux/linux_ui.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/public/platform_screen.h"
@@ -32,12 +34,13 @@ namespace ui {
 
 class WaylandConnection;
 
-#if defined(USE_DBUS)
+#if BUILDFLAG(USE_DBUS)
 class OrgGnomeMutterIdleMonitor;
 #endif
 
-// A PlatformScreen implementation for Wayland.
-class WaylandScreen : public PlatformScreen {
+// A PlatformScreen implementation for Wayland. Note that this object outlives
+// WaylandConnection.
+class WaylandScreen : public PlatformScreen, public DeviceScaleFactorObserver {
  public:
   explicit WaylandScreen(WaylandConnection* connection);
   WaylandScreen(const WaylandScreen&) = delete;
@@ -80,16 +83,17 @@ class WaylandScreen : public PlatformScreen {
       const gfx::GpuExtraInfo& gpu_extra_info) override;
   std::optional<float> GetPreferredScaleFactorForAcceleratedWidget(
       gfx::AcceleratedWidget widget) const override;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void OnTabletStateChanged(display::TabletState tablet_state) override;
-  display::TabletState GetTabletState() const override;
-#endif
+
+  // DeviceScaleFactorObserver:
+  void OnDeviceScaleFactorChanged() override;
 
   void DumpState(std::ostream& out) const;
 
   // True if the internal representations for output objects is consistent for
   // the screen.
   bool VerifyOutputStateConsistentForTesting() const;
+
+  void ResetConnection();
 
  protected:
   // Suspends or un-suspends the platform-specific screensaver, and returns
@@ -119,28 +123,24 @@ class WaylandScreen : public PlatformScreen {
   };
 
   void AddOrUpdateDisplay(const WaylandOutput::Metrics& metrics);
-  // Dangling on DemoIntegrationTest.NewTab on lacros-amd64-generic-rel-gtest
-  raw_ptr<WaylandConnection, DanglingUntriaged> connection_ = nullptr;
+  raw_ptr<WaylandConnection> connection_ = nullptr;
 
   base::flat_map<WaylandOutput::Id, int64_t> display_id_map_;
   display::DisplayList display_list_;
 
-  base::ObserverList<display::DisplayObserver> observers_;
+  std::optional<viz::SharedImageFormat> image_format_alpha_;
+  std::optional<viz::SharedImageFormat> image_format_no_alpha_;
+  std::optional<viz::SharedImageFormat> image_format_hdr_;
 
-  std::optional<gfx::BufferFormat> image_format_alpha_;
-  std::optional<gfx::BufferFormat> image_format_no_alpha_;
-  std::optional<gfx::BufferFormat> image_format_hdr_;
-
-#if defined(USE_DBUS)
+#if BUILDFLAG(USE_DBUS)
   mutable std::unique_ptr<OrgGnomeMutterIdleMonitor>
       org_gnome_mutter_idle_monitor_;
 #endif
 
-  wl::Object<zwp_idle_inhibitor_v1> idle_inhibitor_;
   uint32_t screen_saver_suspension_count_ = 0;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  display::TabletState tablet_state_;
-#endif
+
+  base::ScopedObservation<ui::LinuxUi, DeviceScaleFactorObserver>
+      display_scale_factor_observer_{this};
 
   base::WeakPtrFactory<WaylandScreen> weak_factory_;
 };

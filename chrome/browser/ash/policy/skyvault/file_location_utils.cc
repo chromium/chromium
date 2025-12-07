@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/skyvault/file_location_utils.h"
 
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/policy/handlers/screen_capture_location_policy_handler.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
@@ -15,11 +16,7 @@ namespace policy::local_user_files {
 
 namespace {
 
-base::FilePath GetODFSPath() {
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  return profile ? ash::cloud_upload::GetODFSFuseboxMount(profile)
-                 : base::FilePath();
-}
+constexpr char kOdfsVirtualPath[] = "/odfs-virtual-path";
 
 base::FilePath GetDriveFsMountPointPath() {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
@@ -41,6 +38,10 @@ base::FilePath GetUserDefaultDownloadsFolder() {
 }
 
 }  // namespace
+
+base::FilePath GetODFSVirtualPath() {
+  return base::FilePath(kOdfsVirtualPath);
+}
 
 // The location string may have Google Drive or Microsoft Drive placeholders,
 // but only in the beginning, so checking that if found - at start.
@@ -87,12 +88,8 @@ base::FilePath ResolvePath(const std::string& path_str) {
 
   const size_t one_drive_position = path_str.find(kOneDrivePolicyVariableName);
   if (one_drive_position != std::string::npos) {
-    const base::FilePath one_drive_path = GetODFSPath();
-    if (one_drive_path.empty()) {
-      // Returning default if OneDrive can't be found.
-      return base::FilePath();
-    }
-
+    // Never empty.
+    const base::FilePath one_drive_path = GetODFSVirtualPath();
     std::string result_str = path_str;
     const base::FilePath resolved =
         base::FilePath(result_str.replace(one_drive_position,

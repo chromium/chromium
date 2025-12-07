@@ -9,23 +9,20 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/user_manager/user_manager.h"
-#include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -50,6 +47,12 @@ LowDiskNotification::LowDiskNotification()
 
 LowDiskNotification::~LowDiskNotification() {
   DCHECK(UserDataAuthClient::Get());
+  if (auto* message_center = message_center::MessageCenter::Get()) {
+    message_center->RemoveNotification(kLowDiskId, /*by_user=*/false);
+  } else {
+    // TODO(crbug.com/454766826): Fix shutdown order so this isn't needed.
+    CHECK_IS_TEST();
+  }
   UserDataAuthClient::Get()->RemoveObserver(this);
 }
 
@@ -67,18 +70,25 @@ void LowDiskNotification::LowDiskSpace(
   // We suppress the low-space notifications when there are multiple users on an
   // enterprise managed device based on policy configuration.
   if (!show_low_disk_space_notification &&
-      user_manager::UserManager::Get()->GetUsers().size() > 1) {
+      user_manager::UserManager::Get()->GetPersistedUsers().size() > 1) {
     LOG(WARNING) << "Device is low on disk space, but the notification was "
                  << "suppressed on a managed device.";
     return;
   }
+
+  if (demo_mode::IsDeviceInDemoMode()) {
+    LOG(WARNING) << "Device is low on disk space, but the notification was "
+                 << "suppressed on a demo mode device.";
+    return;
+  }
+
   Severity severity = GetSeverity(status.disk_free_bytes());
   base::Time now = base::Time::Now();
   if (severity != last_notification_severity_ ||
       (severity == HIGH &&
        now - last_notification_time_ > notification_interval_)) {
-    SystemNotificationHelper::GetInstance()->Display(
-        *CreateNotification(severity));
+    message_center::MessageCenter::Get()->AddNotification(
+        CreateNotification(severity));
     last_notification_time_ = now;
     last_notification_severity_ = severity;
   }

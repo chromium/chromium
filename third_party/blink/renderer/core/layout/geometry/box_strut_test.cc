@@ -99,8 +99,8 @@ TEST(GeometryUnitsTest, ConvertLogicalStrutToPhysical) {
 
 TEST(PhysicalBoxStrutTest, Constructors) {
   test::TaskEnvironment task_environment;
-  PhysicalBoxStrut result(0, std::numeric_limits<int>::max(), -1,
-                          std::numeric_limits<int>::min());
+  auto result = PhysicalBoxStrut::FromInts(0, std::numeric_limits<int>::max(),
+                                           -1, std::numeric_limits<int>::min());
   EXPECT_EQ(LayoutUnit(), result.top);
   EXPECT_EQ(LayoutUnit::FromRawValue(GetMaxSaturatedSetResultForTesting()),
             result.right);

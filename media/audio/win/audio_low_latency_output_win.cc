@@ -14,6 +14,7 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram.h"
@@ -23,7 +24,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/time/time.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/typed_macros.h"
 #include "base/win/scoped_propvariant.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/win/audio_manager_win.h"
@@ -31,6 +32,7 @@
 #include "media/audio/win/avrt_wrapper_win.h"
 #include "media/audio/win/core_audio_util_win.h"
 #include "media/base/amplitude_peak_detector.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -151,21 +153,21 @@ WASAPIAudioOutputStream::WASAPIAudioOutputStream(
   // Create the event which the audio engine will signal each time
   // a buffer becomes ready to be processed by the client.
   audio_samples_render_event_.Set(CreateEvent(nullptr, FALSE, FALSE, nullptr));
-  DCHECK(audio_samples_render_event_.IsValid());
+  DCHECK(audio_samples_render_event_.is_valid());
 
   // Create the event which will be set in Stop() when capturing shall stop.
   stop_render_event_.Set(CreateEvent(nullptr, FALSE, FALSE, nullptr));
-  DCHECK(stop_render_event_.IsValid());
+  DCHECK(stop_render_event_.is_valid());
 }
 
 WASAPIAudioOutputStream::~WASAPIAudioOutputStream() {
-  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_);
+  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_.raw());
 
   StopAudioSessionEventListener();
 }
 
 bool WASAPIAudioOutputStream::Open() {
-  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_);
+  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_.raw());
   SendLogMessage("%s([opened=%s])", __func__, opened_ ? "true" : "false");
   if (opened_)
     return true;
@@ -253,16 +255,18 @@ bool WASAPIAudioOutputStream::Open() {
     if (enable_audio_offload_) {
       audio_client->GetBufferSize(&preferred_frames_per_buffer);
 
-      // if the granted buffer size is not the same as requested buffer size
-      // re-initializing audio bus.
+      // TODO(crbug.com/348468130) : Consider reinitializing `audio_bus_` and
+      // handling mismatch of `packet_size_frames_` and
+      // `preferred_frames_per_buffer`.
+      // If `packet_size_frames_` doesn't match the preferred size, fallback to
+      // not offloading. This might happen after a device change.
       if (packet_size_frames_ != preferred_frames_per_buffer) {
-        AudioParameters params = AudioParameters(params_);
-        params.set_frames_per_buffer(preferred_frames_per_buffer);
-        audio_bus_ = AudioBus::Create(params);
-        // For Offload case GetBuffer API requires the preferred buffer size to
-        // be used or it will fail.
-        packet_size_frames_ = preferred_frames_per_buffer;
-        packet_size_bytes_ = params.GetBytesPerBuffer(kSampleFormatS16);
+        SendLogMessage(
+            "%s => (INFO: Requested buffer size in frames mismatch. "
+            "Disable audio offload for the stream.",
+            __func__);
+        // Return here to allow falling back to non-offload mode.
+        return false;
       }
     } else {
       preferred_frames_per_buffer = AudioTimestampHelper::TimeToFrames(
@@ -349,7 +353,7 @@ bool WASAPIAudioOutputStream::Open() {
 
 void WASAPIAudioOutputStream::Start(AudioSourceCallback* callback) {
   DVLOG(1) << "WASAPIAudioOutputStream::Start()";
-  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_);
+  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_.raw());
   CHECK(callback);
   CHECK(opened_);
   SendLogMessage("%s([opened=%s, started=%s])", __func__,
@@ -436,7 +440,7 @@ void WASAPIAudioOutputStream::Start(AudioSourceCallback* callback) {
 
 void WASAPIAudioOutputStream::Stop() {
   DVLOG(1) << "WASAPIAudioOutputStream::Stop()";
-  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_);
+  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_.raw());
   SendLogMessage("%s([started=%s])", __func__,
                  render_thread_ ? "true" : "false");
 
@@ -484,7 +488,7 @@ void WASAPIAudioOutputStream::Stop() {
 
 void WASAPIAudioOutputStream::Close() {
   DVLOG(1) << "WASAPIAudioOutputStream::Close()";
-  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_);
+  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_.raw());
   SendLogMessage("%s()", __func__);
 
   StopAudioSessionEventListener();
@@ -866,8 +870,12 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
 
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
     if (params_.format() == AudioParameters::AUDIO_BITSTREAM_DTS) {
-      std::unique_ptr<AudioBus> audio_bus(
-          AudioBus::WrapMemory(params_, audio_data));
+      // SAFETY: `audio_data` points to a WASAPI-allocated buffer of
+      // `packet_size_bytes_` bytes. The Windows audio API guarantees this
+      // buffer is valid and will not overflow.
+      std::unique_ptr<AudioBus> audio_bus(AudioBus::WrapMemory(
+          params_,
+          UNSAFE_BUFFERS(base::span<uint8_t>(audio_data, packet_size_bytes_))));
       audio_bus_->set_is_bitstream_format(true);
       int frames_filled = source_->OnMoreData(
           BoundedDelay(delay), delay_timestamp,
@@ -875,7 +883,11 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
 
       // During pause/seek, keep the pipeline filled with zero'ed frames.
       if (!frames_filled) {
-        memset(audio_data, 0, packet_size_frames_);
+        // SAFETY: `audio_data` points to a WASAPI-allocated buffer of
+        // `packet_size_bytes_` bytes. The Windows audio API guarantees this
+        // buffer is valid and will not overflow.
+        UNSAFE_BUFFERS(std::ranges::fill(
+            base::span<uint8_t>(audio_data, packet_size_bytes_), 0));
       }
 
       peak_detector_->FindPeak(audio_bus_.get());
@@ -1027,7 +1039,7 @@ void WASAPIAudioOutputStream::ReportAndResetStats() {
 }
 
 void WASAPIAudioOutputStream::StartAudioSessionEventListener() {
-  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_);
+  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_.raw());
 
   if (session_listener_) {
     // Already started listening!
@@ -1055,7 +1067,7 @@ void WASAPIAudioOutputStream::StartAudioSessionEventListener() {
 }
 
 void WASAPIAudioOutputStream::StopAudioSessionEventListener() {
-  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_);
+  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_.raw());
 
   if (!session_listener_) {
     // Already stopped listening!
@@ -1074,7 +1086,7 @@ void WASAPIAudioOutputStream::StopAudioSessionEventListener() {
 }
 
 void WASAPIAudioOutputStream::OnDeviceChanged() {
-  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_);
+  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_.raw());
 
   device_changed_ = true;
   if (source_)

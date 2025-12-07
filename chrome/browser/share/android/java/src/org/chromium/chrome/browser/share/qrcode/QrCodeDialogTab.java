@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.share.qrcode;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Common interface for all the tab components in QrCodeDialog. */
+@NullMarked
 public interface QrCodeDialogTab {
-    public View getView();
+    View getView();
 
     /**
      * @return whether the tab is currently enabled.
@@ -20,17 +22,17 @@ public interface QrCodeDialogTab {
     }
 
     /** Called when the entire dialog is resumed. */
-    public void onResume();
+    void onResume();
 
     /** Called when the entire dialog is paused. */
-    public void onPause();
+    void onPause();
 
     /**
-     *  Called when the dialog is destroyed. This happens when the user has navigated away from the
-     *  dialog.
+     * Called when the dialog is destroyed. This happens when the user has navigated away from the
+     * dialog.
      */
-    public void onDestroy();
+    void onDestroy();
 
     /** Called when the permissions delegate is reset. */
-    public void updatePermissions(WindowAndroid windowAndroid);
+    void updatePermissions(WindowAndroid windowAndroid);
 }

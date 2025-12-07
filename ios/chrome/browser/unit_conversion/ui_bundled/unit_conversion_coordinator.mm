@@ -7,10 +7,10 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/unit_conversion/model/unit_conversion_service.h"
+#import "ios/chrome/browser/unit_conversion/model/unit_conversion_service_factory.h"
 #import "ios/chrome/browser/unit_conversion/ui_bundled/unit_conversion_mediator.h"
 #import "ios/chrome/browser/unit_conversion/ui_bundled/unit_conversion_view_controller.h"
-#import "ios/chrome/browser/unit_conversion/unit_conversion_service.h"
-#import "ios/chrome/browser/unit_conversion/unit_conversion_service_factory.h"
 
 namespace {
 
@@ -35,7 +35,6 @@ CGFloat const kHalfSheetCornerRadius = 13;
 @end
 
 @implementation UnitConversionCoordinator {
-
   // Mediator to handle the units updates and conversion.
   UnitConversionMediator* _mediator;
 
@@ -67,8 +66,7 @@ CGFloat const kHalfSheetCornerRadius = 13;
   // Init the keyed service to track the changes of the target unit and pass it
   // to the mediator.
   UnitConversionService* service =
-      UnitConversionServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      UnitConversionServiceFactory::GetForProfile(self.profile);
   _mediator = [[UnitConversionMediator alloc] initWithService:service];
   _viewController = [[UnitConversionViewController alloc]
       initWithSourceUnit:_sourceUnit
@@ -129,29 +127,20 @@ CGFloat const kHalfSheetCornerRadius = 13;
   sheetPresentationController.prefersEdgeAttachedInCompactHeight = YES;
   sheetPresentationController.preferredCornerRadius = kHalfSheetCornerRadius;
 
-  if (@available(iOS 16, *)) {
-    __weak UnitConversionCoordinator* weakSelf = self;
-    auto resolver = ^CGFloat(
-        id<UISheetPresentationControllerDetentResolutionContext> context) {
-      CGFloat sheetHeight =
-          weakSelf.viewController.preferredContentSize.height +
-          kHalfSheetDetentHeightOffset;
-      BOOL tooLarge = (sheetHeight > context.maximumDetentValue);
-      return tooLarge ? context.maximumDetentValue : sheetHeight;
-    };
+  __weak UnitConversionCoordinator* weakSelf = self;
+  auto resolver = ^CGFloat(
+      id<UISheetPresentationControllerDetentResolutionContext> context) {
+    CGFloat sheetHeight = weakSelf.viewController.preferredContentSize.height +
+                          kHalfSheetDetentHeightOffset;
+    BOOL tooLarge = (sheetHeight > context.maximumDetentValue);
+    return tooLarge ? context.maximumDetentValue : sheetHeight;
+  };
 
-    UISheetPresentationControllerDetent* customDetent =
-        [UISheetPresentationControllerDetent
-            customDetentWithIdentifier:nil
-                              resolver:resolver];
+  UISheetPresentationControllerDetent* customDetent =
+      [UISheetPresentationControllerDetent customDetentWithIdentifier:nil
+                                                             resolver:resolver];
 
-    sheetPresentationController.detents = @[ customDetent ];
-  } else {
-    sheetPresentationController.detents = @[
-      UISheetPresentationControllerDetent.mediumDetent,
-      UISheetPresentationControllerDetent.largeDetent
-    ];
-  }
+  sheetPresentationController.detents = @[ customDetent ];
 
   [self.baseViewController presentViewController:navigationController
                                         animated:YES

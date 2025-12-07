@@ -12,8 +12,9 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "net/base/hash_value.h"
@@ -21,23 +22,30 @@
 #include "net/extras/shared_dictionary/shared_dictionary_info.h"
 #include "net/extras/sqlite/sqlite_persistent_shared_dictionary_store.h"
 #include "net/shared_dictionary/shared_dictionary_isolation_key.h"
+#include "services/network/shared_dictionary/shared_dictionary_manager.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer_on_disk.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
+namespace url_pattern {
+class SimpleUrlPatternMatcher;
+}
+
 namespace network {
 
+class SharedDictionaryCache;
 class SharedDictionaryManagerOnDisk;
-class SimpleUrlPatternMatcher;
 
 // A SharedDictionaryStorage which is managed by SharedDictionaryManagerOnDisk.
-class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
+class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage,
+                                      public base::MemoryPressureListener {
  public:
   class WrappedDictionaryInfo : public net::SharedDictionaryInfo {
    public:
-    WrappedDictionaryInfo(net::SharedDictionaryInfo info,
-                          std::unique_ptr<SimpleUrlPatternMatcher> matcher);
+    WrappedDictionaryInfo(
+        net::SharedDictionaryInfo info,
+        std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> matcher);
     ~WrappedDictionaryInfo();
     WrappedDictionaryInfo(const WrappedDictionaryInfo&) = delete;
     WrappedDictionaryInfo& operator=(const WrappedDictionaryInfo&) = delete;
@@ -47,17 +55,30 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
     const std::set<mojom::RequestDestination>& match_dest() const {
       return match_dest_;
     }
-    const SimpleUrlPatternMatcher* matcher() const { return matcher_.get(); }
+    const url_pattern::SimpleUrlPatternMatcher* matcher() const {
+      return matcher_.get();
+    }
 
    private:
-    std::unique_ptr<SimpleUrlPatternMatcher> matcher_;
+    std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> matcher_;
     std::set<mojom::RequestDestination> match_dest_;
+  };
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class CacheResult {
+    kCacheMiss = 0,
+    kCacheHitLRU = 1,
+    kCacheHitActive = 2,
+    kMaxValue = kCacheHitActive,
   };
 
   SharedDictionaryStorageOnDisk(
       base::WeakPtr<SharedDictionaryManagerOnDisk> manager,
       const net::SharedDictionaryIsolationKey& isolation_key,
-      base::ScopedClosureRunner on_deleted_closure_runner);
+      base::ScopedClosureRunner on_deleted_closure_runner,
+      scoped_refptr<SharedDictionaryCache> dictionary_cache,
+      SharedDictionaryStorageEvictionReason previous_eviction_reason);
 
   SharedDictionaryStorageOnDisk(const SharedDictionaryStorageOnDisk&) = delete;
   SharedDictionaryStorageOnDisk& operator=(
@@ -74,14 +95,15 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
       override;
   base::expected<scoped_refptr<SharedDictionaryWriter>,
                  mojom::SharedDictionaryError>
-  CreateWriter(const GURL& url,
-               base::Time last_fetch_time,
-               base::Time response_time,
-               base::TimeDelta expiration,
-               const std::string& match,
-               const std::set<mojom::RequestDestination>& match_dest,
-               const std::string& id,
-               std::unique_ptr<SimpleUrlPatternMatcher> matcher) override;
+  CreateWriter(
+      const GURL& url,
+      base::Time last_fetch_time,
+      base::Time response_time,
+      base::TimeDelta expiration,
+      const std::string& match,
+      const std::set<mojom::RequestDestination>& match_dest,
+      const std::string& id,
+      std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> matcher) override;
   bool UpdateLastFetchTimeIfAlreadyRegistered(
       const GURL& url,
       base::Time response_time,
@@ -89,6 +111,7 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
       const std::string& match,
       const std::set<mojom::RequestDestination>& match_dest,
       const std::string& id,
+      const std::optional<base::TimeDelta>& ttl,
       base::Time last_fetch_time) override;
 
   // Called from `SharedDictionaryManagerOnDisk` when dictionary has been
@@ -103,12 +126,19 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
   friend class SharedDictionaryManagerTest;
   friend class SharedDictionaryManagerOnDiskTest;
 
+  scoped_refptr<net::SharedDictionary> GetDictionarySyncInternal(
+      const GURL& url,
+      mojom::RequestDestination destination);
+
   void OnDatabaseRead(
       net::SQLitePersistentSharedDictionaryStore::DictionaryListOrError result);
-  void OnDictionaryWritten(std::unique_ptr<SimpleUrlPatternMatcher> matcher,
-                           net::SharedDictionaryInfo info);
+  void OnDictionaryWritten(
+      std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> matcher,
+      net::SharedDictionaryInfo info);
   void OnSharedDictionaryDeleted(
       const base::UnguessableToken& disk_cache_key_token);
+
+  void OnMemoryPressure(base::MemoryPressureLevel level) override;
 
   const std::map<
       url::SchemeHostPort,
@@ -127,13 +157,22 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
                WrappedDictionaryInfo>>
       dictionary_info_map_;
 
+  scoped_refptr<SharedDictionaryCache> dictionary_cache_;
   std::map<base::UnguessableToken, raw_ptr<net::SharedDictionary>>
       dictionaries_;
+
+  std::unique_ptr<base::AsyncMemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
+  base::MemoryPressureLevel memory_pressure_level_ =
+      base::MEMORY_PRESSURE_LEVEL_NONE;
 
   bool get_dictionary_called_ = false;
   bool is_metadata_ready_ = false;
 
   std::vector<base::OnceClosure> pending_get_dictionary_tasks_;
+
+  SharedDictionaryStorageEvictionReason previous_eviction_reason_ =
+      SharedDictionaryStorageEvictionReason::kNotEvicted;
 
   base::WeakPtrFactory<SharedDictionaryStorageOnDisk> weak_factory_{this};
 };

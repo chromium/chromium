@@ -64,7 +64,8 @@ public class SupportLibTest {
                     returnType,
                     foundReturnType);
         } catch (NoSuchMethodException | SecurityException e) {
-            Assert.fail(String.format("Method %s not found in class %s", method, clazz.getName()));
+            throw new AssertionError(
+                    String.format("Method %s not found in class %s", method, clazz.getName()), e);
         }
     }
 }

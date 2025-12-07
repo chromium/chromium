@@ -10,13 +10,12 @@
 #include "base/strings/string_util.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
 #include "components/attribution_reporting/debug_types.mojom.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "components/attribution_reporting/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -41,8 +40,8 @@ using ::testing::Pair;
 using ::testing::Property;
 using ::testing::SizeIs;
 
-constexpr size_t kNumSourceDebugDataTypes = 13;
-constexpr size_t kNumTriggerDebugDataTypes = 21;
+constexpr size_t kNumSourceDebugDataTypes = 15;
+constexpr size_t kNumTriggerDebugDataTypes = 22;
 
 TEST(AggregatableDebugReportingConfig, Parse) {
   const struct {
@@ -94,6 +93,20 @@ TEST(AggregatableDebugReportingConfig, Parse) {
           .json = R"json({
             "aggregatable_debug_reporting": {
               "budget": "1",
+              "key_piece": "0x2"
+            }
+          })json",
+          .matches_source =
+              ErrorIs(AggregatableDebugReportingConfigError::kBudgetInvalid),
+          .matches_trigger = HasValue(),
+          .expected_metric_source =
+              AggregatableDebugReportingConfigError::kBudgetInvalid,
+      },
+      {
+          .desc = "budget_not_int",
+          .json = R"json({
+            "aggregatable_debug_reporting": {
+              "budget": 1.5,
               "key_piece": "0x2"
             }
           })json",
@@ -292,6 +305,24 @@ TEST(AggregatableDebugReportingConfig, Parse) {
               "budget": 1,
               "key_piece": "0x1",
               "debug_data": [{"key_piece": "0x1", "value": 0}]
+            }
+          })json",
+          .matches_source = ErrorIs(
+              AggregatableDebugReportingConfigError::kDebugDataValueInvalid),
+          .matches_trigger = ErrorIs(
+              AggregatableDebugReportingConfigError::kDebugDataValueInvalid),
+          .expected_metric_source =
+              AggregatableDebugReportingConfigError::kDebugDataValueInvalid,
+          .expected_metric_trigger =
+              AggregatableDebugReportingConfigError::kDebugDataValueInvalid,
+      },
+      {
+          .desc = "debug_data_elem_value_not_int",
+          .json = R"json({
+            "aggregatable_debug_reporting": {
+              "budget": 2,
+              "key_piece": "0x1",
+              "debug_data": [{"key_piece": "0x1", "value": 1.5}]
             }
           })json",
           .matches_source = ErrorIs(
@@ -585,14 +616,40 @@ TEST(AggregatableDebugReportingConfig, Parse) {
                               *AggregatableDebugReportingContribution::Create(
                                   10, 9))))))),
       },
+      {
+          .desc = "all_fields_trailing_zero",
+          .json = R"json({
+            "aggregatable_debug_reporting": {
+              "budget": 10.0,
+              "key_piece": "0xf",
+              "debug_data": [
+                {
+                  "key_piece": "0x2",
+                  "value": 3.0,
+                  "types": ["unspecified"]
+                }
+              ],
+              "aggregation_coordinator_origin": "https://a.test"
+            }
+          })json",
+          .matches_source = ValueIs(AllOf(
+              Property(&SourceAggregatableDebugReportingConfig::budget, 10),
+              Property(
+                  &SourceAggregatableDebugReportingConfig::config,
+                  Field(&AggregatableDebugReportingConfig::debug_data,
+                        testing::Contains(Pair(
+                            _, *AggregatableDebugReportingContribution::Create(
+                                   2, 3))))))),
+          .matches_trigger = ValueIs(Field(
+              &AggregatableDebugReportingConfig::debug_data,
+              testing::Contains(Pair(
+                  _, *AggregatableDebugReportingContribution::Create(2, 3))))),
+      },
   };
 
   aggregation_service::ScopedAggregationCoordinatorAllowlistForTesting
       scoped_coordinator_allowlist(
           {url::Origin::Create(GURL("https://a.test"))});
-
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAttributionAggregatableDebugReporting);
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.desc);
@@ -636,12 +693,7 @@ TEST(AggregatableDebugReportingConfig, SerializeSource) {
   } kTestCases[] = {
       {
           SourceAggregatableDebugReportingConfig(),
-          R"json({
-            "aggregatable_debug_reporting": {
-              "budget": 0,
-              "key_piece": "0x0"
-            }
-          })json",
+          R"json({})json",
       },
       {
           *SourceAggregatableDebugReportingConfig::Create(
@@ -674,9 +726,6 @@ TEST(AggregatableDebugReportingConfig, SerializeSource) {
   aggregation_service::ScopedAggregationCoordinatorAllowlistForTesting
       scoped_coordinator_allowlist(
           {url::Origin::Create(GURL("https://a.test"))});
-
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAttributionAggregatableDebugReporting);
 
   for (const auto& test_case : kTestCases) {
     base::Value::Dict dict;
@@ -727,9 +776,6 @@ TEST(AggregatableDebugReportingConfig, SerializeTrigger) {
       scoped_coordinator_allowlist(
           {url::Origin::Create(GURL("https://a.test"))});
 
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAttributionAggregatableDebugReporting);
-
   for (const auto& test_case : kTestCases) {
     base::Value::Dict dict;
     test_case.input.Serialize(dict);
@@ -779,6 +825,10 @@ TEST(AggregatableDebugReportingConfig, SourceDebugDataTypes) {
           DebugDataType::kSourceReportingOriginPerSiteLimit,
       },
       {
+          "source-scopes-channel-capacity-limit",
+          DebugDataType::kSourceScopesChannelCapacityLimit,
+      },
+      {
           "source-storage-limit",
           DebugDataType::kSourceStorageLimit,
       },
@@ -789,6 +839,10 @@ TEST(AggregatableDebugReportingConfig, SourceDebugDataTypes) {
       {
           "source-trigger-state-cardinality-limit",
           DebugDataType::kSourceTriggerStateCardinalityLimit,
+      },
+      {
+          "source-max-event-states-limit",
+          DebugDataType::kSourceMaxEventStatesLimit,
       },
       {
           "source-unknown-error",
@@ -809,9 +863,6 @@ TEST(AggregatableDebugReportingConfig, SourceDebugDataTypes) {
       }]
     }
   })json";
-
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAttributionAggregatableDebugReporting);
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.type_str);
@@ -847,6 +898,10 @@ TEST(AggregatableDebugReportingConfig, TriggerDebugDataTypes) {
       {
           "trigger-aggregate-insufficient-budget",
           DebugDataType::kTriggerAggregateInsufficientBudget,
+      },
+      {
+          "trigger-aggregate-insufficient-named-budget",
+          DebugDataType::kTriggerAggregateInsufficientNamedBudget,
       },
       {
           "trigger-aggregate-no-contributions",
@@ -930,9 +985,6 @@ TEST(AggregatableDebugReportingConfig, TriggerDebugDataTypes) {
       }]
     }
   })json";
-
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAttributionAggregatableDebugReporting);
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.type_str);

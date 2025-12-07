@@ -23,8 +23,8 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Mac.AppClonefileError" enum="MacErrno"
-    expires_after="2025-06-03">
-  <owner>bur@google.com</owner>
+    expires_after="2025-08-03">
+  <owner>avi@chromium.org</owner>
   <owner>src/ui/base/cocoa/OWNERS</owner>
   <summary>
     The `errno` from the `clonefile` syscall. This histogram is emitted once at
@@ -33,8 +33,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.AppCodeSignCloneCount" units="count"
-    expires_after="2025-06-03">
-  <owner>bur@google.com</owner>
+    expires_after="2025-10-05">
+  <owner>avi@chromium.org</owner>
   <owner>src/ui/base/cocoa/OWNERS</owner>
   <summary>
     The current count of app clones in the code sign clone temp dir. This
@@ -43,8 +43,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.AppCodeSignCloneCreationTime" units="ms"
-    expires_after="2025-03-06">
-  <owner>bur@google.com</owner>
+    expires_after="2025-09-14">
+  <owner>avi@chromium.org</owner>
   <owner>src/ui/base/cocoa/OWNERS</owner>
   <summary>
     The time it took in milliseconds to create the browser app code sign clone.
@@ -53,8 +53,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.AppCodeSignCloneExists" enum="MacCloneExists"
-    expires_after="2025-06-03">
-  <owner>bur@google.com</owner>
+    expires_after="2025-08-03">
+  <owner>avi@chromium.org</owner>
   <owner>src/ui/base/cocoa/OWNERS</owner>
   <summary>
     The existence of the clone on disk. This histogram is emitted up to two
@@ -64,8 +64,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.AppFileSystemType" enum="MacFileSystemType"
-    expires_after="2025-03-06">
-  <owner>bur@google.com</owner>
+    expires_after="2025-09-14">
+  <owner>avi@chromium.org</owner>
   <owner>src/ui/base/cocoa/OWNERS</owner>
   <summary>
     The file system type where the running instance of Chrome is installed. This
@@ -74,8 +74,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.AppHardLinkError" enum="MacErrno"
-    expires_after="2025-06-03">
-  <owner>bur@google.com</owner>
+    expires_after="2025-10-05">
+  <owner>avi@chromium.org</owner>
   <owner>src/ui/base/cocoa/OWNERS</owner>
   <summary>
     The `errno` from the `link` syscall. This histogram is emitted once at
@@ -84,8 +84,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.AppUpgradeCodeSignatureValidationStatus"
-    enum="CodeSigningOSStatus" expires_after="2025-03-06">
-  <owner>bur@google.com</owner>
+    enum="MacSecurityFrameworkOSStatus" expires_after="2025-09-14">
+  <owner>avi@chromium.org</owner>
   <owner>src/ui/base/cocoa/OWNERS</owner>
   <summary>
     The dynamic code signature validation status of Chrome with a pending Chrome
@@ -102,6 +102,104 @@ chromium-metrics-reviews@google.com.
     The result of calls to base::mac::LaunchApplication, logged once for every
     invocation of that method.
   </summary>
+</histogram>
+
+<histogram name="Mac.ProcessRequirement.CurrentProcessValid"
+    enum="BooleanSuccess" expires_after="2026-02-09">
+  <owner>markrowe@chromium.org</owner>
+  <owner>src/base/mac/OWNERS</owner>
+  <summary>
+    The result of validating the current process against a same signing identity
+    process requirement. This histogram is emitted once at browser startup.
+  </summary>
+</histogram>
+
+<histogram name="Mac.ProcessRequirement.FallbackValidationCategory.Result"
+    enum="MacSecurityFrameworkOSStatus" expires_after="2026-04-12">
+  <owner>markrowe@chromium.org</owner>
+  <owner>src/base/mac/OWNERS</owner>
+  <summary>
+    The result of retrieving the validation category of the current process via
+    the fallback code path. 0 on success, or an`OSStatus` value. This histogram
+    is emitted once at browser startup.
+  </summary>
+</histogram>
+
+<histogram name="Mac.ProcessRequirement.TeamIdentifier.Result" enum="MacErrno"
+    expires_after="2025-06-01">
+  <owner>markrowe@chromium.org</owner>
+  <owner>src/base/mac/OWNERS</owner>
+  <summary>
+    The result of retrieving the team identifier of the current process. 0 on
+    success, the `errno` value from the `csops` system call otherwise. This
+    histogram is emitted once at browser startup.
+  </summary>
+</histogram>
+
+<histogram name="Mac.ProcessRequirement.Timing.{Operation}" units="ms"
+    expires_after="2026-02-09">
+  <owner>markrowe@chromium.org</owner>
+  <owner>src/base/mac/OWNERS</owner>
+  <summary>
+    The time taken to {Operation}. This histogram is emitted once at browser
+    startup.
+  </summary>
+  <token key="Operation">
+    <variant name="BuildSameIdentityRequirement"
+        summary="build a same identity requirement"/>
+    <variant name="ValidateSameIdentity"
+        summary="validate the current process against a same identity
+                 requirement"/>
+  </token>
+</histogram>
+
+<histogram name="Mac.ProcessRequirement.ValidationCategory.Result"
+    enum="MacErrno" expires_after="2026-04-12">
+  <owner>markrowe@chromium.org</owner>
+  <owner>src/base/mac/OWNERS</owner>
+  <summary>
+    The result of retrieving the validation category of the current process. 0
+    on success, the `errno` value from the `csops` system call otherwise. This
+    histogram is emitted once at browser startup.
+  </summary>
+</histogram>
+
+<histogram name="Mac.ProcessRequirement.ValidationRequired"
+    enum="BooleanSuccess" expires_after="2025-12-07">
+  <owner>markrowe@chromium.org</owner>
+  <owner>src/base/mac/OWNERS</owner>
+  <summary>
+    Whether ProcessRequirement validation was short-circuited due to the
+    requirement not needing code signature validation. This histogram is emitted
+    whenever a ProcessRequirement is used to validate a process.
+  </summary>
+</histogram>
+
+<histogram name="Mac.ProcessRequirement.ValidationResult"
+    enum="MacSecurityFrameworkOSStatus" expires_after="2026-04-12">
+  <owner>markrowe@chromium.org</owner>
+  <owner>src/base/mac/OWNERS</owner>
+  <summary>
+    The result of validating a ProcessRequirement. This histogram is emitted
+    whenever a ProcessRequirement is used to validate a process.
+  </summary>
+</histogram>
+
+<histogram name="Mac.ProcessRequirement.{Field}.HasExpectedValue"
+    enum="BooleanSuccess" expires_after="2026-02-09">
+  <owner>markrowe@chromium.org</owner>
+  <owner>src/base/mac/OWNERS</owner>
+  <summary>
+    Whether the {Field} retrieved for the current process matched the expected
+    value. This will only be emitted if the {Field} was successfully retrieved.
+    This histogram is emitted once at browser startup.
+  </summary>
+  <token key="Field">
+    <variant name="FallbackValidationCategory"
+        summary="fallback validation category"/>
+    <variant name="TeamIdentifier" summary="team identifier"/>
+    <variant name="ValidationCategory" summary="validation category"/>
+  </token>
 </histogram>
 
 </histograms>

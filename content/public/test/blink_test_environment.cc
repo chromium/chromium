@@ -14,7 +14,6 @@
 #include "build/build_config.h"
 #include "content/common/content_switches_internal.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/user_agent.h"
 #include "content/public/test/content_test_suite_base.h"
 #include "content/public/test/test_content_client_initializer.h"
 #include "content/test/test_blink_web_unit_test_support.h"
@@ -34,7 +33,14 @@
 namespace content {
 
 BlinkTestEnvironment::BlinkTestEnvironment() = default;
-BlinkTestEnvironment::~BlinkTestEnvironment() = default;
+BlinkTestEnvironment::~BlinkTestEnvironment() {
+  // If exit() is called inside a test, which can be the case in fuzz tests,
+  // this destructor will be called, but the ScopedFeatureList instance inside
+  // test_suite.cc, which was was created after BlinkTestEnvironment, will still
+  // be active. We need to reset here, else the ScopedFeatureLists will be
+  // destroyed in an incorrect order (triggering a CHECK).
+  base::TestSuite::ResetScopedFeatureListInstance();
+}
 
 void BlinkTestEnvironment::SetUp() {
   base::test::InitScopedFeatureListForTesting(scoped_feature_list_);

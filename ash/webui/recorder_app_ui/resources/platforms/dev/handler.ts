@@ -8,23 +8,34 @@
  * implementation other than mojo to exist in release image.
  */
 import 'chrome://resources/cros_components/dropdown/dropdown_option.js';
+import 'chrome://resources/cros_components/switch/switch.js';
 import '../../components/cra/cra-dropdown.js';
+import './error-view.js';
 
-import {html, nothing, styleMap} from 'chrome://resources/mwc/lit/index.js';
+import {
+  Switch as CrosSwitch,
+} from 'chrome://resources/cros_components/switch/switch.js';
+import {html, map, styleMap} from 'chrome://resources/mwc/lit/index.js';
 
 import {CraDropdown} from '../../components/cra/cra-dropdown.js';
 import {SAMPLE_RATE} from '../../core/audio_constants.js';
+import {NoArgStringName} from '../../core/i18n.js';
 import {InternalMicInfo} from '../../core/microphone_manager.js';
 import {
+  LoadModelResult,
   Model,
-  ModelId,
+  ModelExecutionError,
+  ModelLoader,
+  ModelLoadError,
   ModelResponse,
   ModelState,
 } from '../../core/on_device_model/types.js';
+import {PerfLogger} from '../../core/perf.js';
 import {
   PlatformHandler as PlatformHandlerBase,
 } from '../../core/platform_handler.js';
-import {signal} from '../../core/reactive/signal.js';
+import {computed, Signal, signal} from '../../core/reactive/signal.js';
+import {LangPackInfo, LanguageCode} from '../../core/soda/language_info.js';
 import {
   HypothesisPart,
   SodaEvent,
@@ -34,28 +45,29 @@ import {
 import {
   assert,
   assertEnumVariant,
+  assertExhaustive,
   assertExists,
   assertInstanceof,
+  checkEnumVariant,
 } from '../../core/utils/assert.js';
-import * as localStorage from '../../core/utils/local_storage.js';
 import {
   Observer,
   ObserverList,
   Unsubscribe,
 } from '../../core/utils/observer_list.js';
-import {ValidationError} from '../../core/utils/schema.js';
 import {sleep} from '../../core/utils/utils.js';
 
+import {ErrorView} from './error-view.js';
+import {EventsSender} from './metrics.js';
 import {
   ColorTheme,
   devSettings,
-  devSettingsSchema,
   init as settingsInit,
 } from './settings.js';
 import {strings} from './strings.js';
 
-class ModelDev implements Model {
-  async suggestTitles(content: string): Promise<ModelResponse<string[]>> {
+class TitleSuggestionModelDev implements Model<string[]> {
+  async execute(content: string): Promise<ModelResponse<string[]>> {
     await sleep(3000);
     const words = content.split(' ');
     const result = [
@@ -63,18 +75,111 @@ class ModelDev implements Model {
       `Longer long title for "${words[1]}"`,
       `This is a very long long title that is too long for "${words[0]}"`,
     ];
-    // TODO(pihsun): Mock error state.
-    return {kind: 'success', result};
-  }
-
-  async summarize(content: string): Promise<ModelResponse> {
-    await sleep(3000);
-    const result = `Summary for ${content.substring(0, 40)}...`;
-    // TODO(pihsun): Mock error state.
     return {kind: 'success', result};
   }
 
   close(): void {}
+}
+
+class SummaryModelDev implements Model<string> {
+  async execute(content: string): Promise<ModelResponse<string>> {
+    await sleep(3000);
+    const result = `Summary for ${content.substring(0, 40)}...`;
+    return {kind: 'success', result};
+  }
+
+  close(): void {}
+}
+
+class ModelLoaderDev<T> extends ModelLoader<T> {
+  constructor(
+    private readonly model: Model<T>,
+    private readonly platformHandler: PlatformHandler,
+  ) {
+    super();
+  }
+
+  override state = signal<ModelState>({kind: 'notInstalled'});
+
+  private modelLoadErrorToModelState(loadError: ModelLoadError): ModelState {
+    switch (loadError) {
+      case ModelLoadError.LOAD_FAILURE:
+        return {kind: 'error'};
+      case ModelLoadError.NEEDS_REBOOT:
+        return {kind: 'needsReboot'};
+      default:
+        return assertExhaustive(loadError);
+    }
+  }
+
+  override async load(): Promise<LoadModelResult<T>> {
+    // The simulation in `load` is not reentrant, `load` should not be called
+    // again before the previous call completes.
+    // TODO(hsuanling): Make `load` reentrant by putting model loading
+    // simulation into an AsyncJobQueue so that multiple calls will wait for the
+    // one AsyncJob to resolve.
+    assert(
+      this.state.value.kind !== 'installing',
+      'Requested model installation when model is installing.',
+    );
+    console.log('model installation requested');
+    if (this.state.value.kind !== 'installed') {
+      this.state.value = {kind: 'installing', progress: 0};
+      // Simulate the loading of model.
+      let progress = 0;
+      while (true) {
+        await sleep(200);
+        // 4% per 200 ms -> simulate 5 seconds for the whole installation.
+        progress += 4;
+        if (progress >= 100) {
+          break;
+        }
+        this.state.value = {kind: 'installing', progress};
+      }
+      this.state.value = {kind: 'installed'};
+      devSettings.mutate((s) => {
+        s.genAiInstalled = true;
+      });
+    }
+    const loadError = this.platformHandler.forceGenAiModelLoadError.value;
+    // Changes model state if load error is specified.
+    if (loadError !== null) {
+      this.state.value = this.modelLoadErrorToModelState(loadError);
+      devSettings.mutate((s) => {
+        s.genAiInstalled = false;
+      });
+    }
+
+    if (this.state.value.kind !== 'installed') {
+      return {kind: 'error', error: loadError ?? ModelLoadError.LOAD_FAILURE};
+    }
+
+    // Returns model only if it is installed.
+    return {kind: 'success', model: this.model};
+  }
+
+  override async loadAndExecute(
+    content: string,
+    language: LanguageCode,
+  ): Promise<ModelResponse<T>> {
+    if (!this.platformHandler.getLangPackInfo(language).isGenAiSupported) {
+      return {kind: 'error', error: ModelExecutionError.UNSUPPORTED_LANGUAGE};
+    }
+    const result = await this.load();
+    if (result.kind === 'error') {
+      return result;
+    }
+    const executionError =
+      this.platformHandler.forceGenAiModelExecutionError.value;
+    if (executionError !== null) {
+      return {kind: 'error', error: executionError};
+    }
+    try {
+      return await result.model.execute(content, language);
+    } finally {
+      result.model.close();
+    }
+  }
 }
 
 // Random placeholder text from ChromeOS blog.
@@ -234,8 +339,9 @@ class SodaSessionDev implements SodaSession {
     }
   }
 
-  async start(): Promise<void> {
+  start(): Promise<void> {
     console.info('Soda session started');
+    return Promise.resolve();
   }
 
   addAudio(samples: Float32Array): void {
@@ -249,9 +355,10 @@ class SodaSessionDev implements SodaSession {
     }
   }
 
-  async stop(): Promise<void> {
+  stop(): Promise<void> {
     console.info('Soda session stopped');
     this.emitSodaNextWord(true);
+    return Promise.resolve();
   }
 
   subscribeEvent(observer: Observer<SodaEvent>): Unsubscribe {
@@ -272,7 +379,7 @@ function substituteI18nString(label: string, ...args: Array<number|string>):
   string {
   return label.replace(/\$(.|$|\n)/g, (m) => {
     assert(
-      m.match(/\$[$1-9]/) !== null,
+      /\$[$1-9]/.exec(m) !== null,
       'Unescaped $ found in localized string.',
     );
     if (m === '$$') {
@@ -290,46 +397,116 @@ function substituteI18nString(label: string, ...args: Array<number|string>):
 }
 
 export class PlatformHandler extends PlatformHandlerBase {
-  readonly sodaState = signal<ModelState>({kind: 'notInstalled'});
+  override readonly quietMode = signal(false);
 
-  readonly modelStates = new Map([
-    [ModelId.SUMMARY, signal<ModelState>({kind: 'notInstalled'})],
-    [ModelId.GEMINI_XXS_IT_BASE, signal<ModelState>({kind: 'notInstalled'})],
-  ]);
+  private readonly sodaStates = new Map<LanguageCode, Signal<ModelState>>();
 
-  override async init(): Promise<void> {
+  private readonly langPacks = new Map<LanguageCode, LangPackInfo>();
+
+  override readonly canUseSpeakerLabel = computed(
+    () => devSettings.value.canUseSpeakerLabel,
+  );
+
+  readonly errorView = new ErrorView();
+
+  static override getStringF(id: string, ...args: Array<number|string>):
+    string {
+    const label = strings[id];
+    if (label === undefined) {
+      console.error(`Unknown string ${id}`);
+      return '';
+    }
+    return substituteI18nString(label, ...args);
+  }
+
+  static override getDeviceType(): string {
+    return 'Chromebook';
+  }
+
+  override readonly canCaptureSystemAudioWithLoopback = computed(
+    () => devSettings.value.canCaptureSystemAudioWithLoopback,
+  );
+
+  private readonly forceLanguageSelection = computed(
+    () => devSettings.value.forceLanguageSelection,
+  );
+
+  readonly forceGenAiModelExecutionError = computed(
+    () => devSettings.value.forceGenAiModelExecutionError,
+  );
+
+  readonly forceGenAiModelLoadError = computed(
+    () => devSettings.value.forceGenAiModelLoadError,
+  );
+
+  override init(): Promise<void> {
+    document.body.appendChild(this.errorView);
     settingsInit();
+    const sodaState = signal<ModelState>({kind: 'notInstalled'});
+    this.sodaStates.set(LanguageCode.EN_US, sodaState);
     if (devSettings.value.sodaInstalled) {
       // TODO(pihsun): Remember the whole state in devSettings instead?
-      this.sodaState.value = {kind: 'installed'};
+      sodaState.value = {kind: 'installed'};
     }
+    if (devSettings.value.genAiInstalled) {
+      this.summaryModelLoader.state = signal<ModelState>({kind: 'installed'});
+      this.titleSuggestionModelLoader.state =
+        signal<ModelState>({kind: 'installed'});
+    }
+    this.langPacks.set(LanguageCode.EN_US, {
+      languageCode: LanguageCode.EN_US,
+      displayName: 'English',
+      isGenAiSupported: true,
+      isSpeakerLabelSupported: true,
+    });
+
+    this.initPerfEventWatchers();
+    return Promise.resolve();
   }
 
-  override async loadModel(modelId: ModelId): Promise<Model> {
-    console.log('model installation requested');
-    const state = assertExists(this.modelStates.get(modelId));
-    if (state.value.kind === 'notInstalled') {
-      state.value = {kind: 'installing', progress: 0};
-      // Simulate the loading of model.
-      let progress = 0;
-      while (true) {
-        await sleep(200);
-        // 4% per 200 ms -> simulate 5 seconds for the whole installation.
-        progress += 4;
-        if (progress >= 100) {
-          state.value = {kind: 'installed'};
-          break;
-        }
-        state.value = {kind: 'installing', progress};
+  override getDefaultLanguage(): LanguageCode {
+    return LanguageCode.EN_US;
+  }
+
+  override getLangPackList(): readonly LangPackInfo[] {
+    return Array.from(this.langPacks.values());
+  }
+
+  override getLangPackInfo(language: LanguageCode): LangPackInfo {
+    return assertExists(this.langPacks.get(language));
+  }
+
+  override isMultipleLanguageAvailable(): boolean {
+    if (this.forceLanguageSelection.value) {
+      return true;
+    }
+
+    let count = 0;
+    for (const state of this.sodaStates.values()) {
+      if (state.value.kind !== 'unavailable') {
+        count += 1;
       }
     }
-    return new ModelDev();
+    return count > 1;
   }
 
-  override installSoda(): void {
-    console.log('SODA installation requested');
-    if (this.sodaState.value.kind === 'notInstalled') {
-      this.sodaState.value = {kind: 'installing', progress: 0};
+  override summaryModelLoader = new ModelLoaderDev(new SummaryModelDev(), this);
+
+  override titleSuggestionModelLoader = new ModelLoaderDev(
+    new TitleSuggestionModelDev(),
+    this,
+  );
+
+  override eventsSender = new EventsSender();
+
+  override perfLogger = new PerfLogger(this.eventsSender);
+
+  override installSoda(language: LanguageCode): Promise<void> {
+    console.log(`SODA lang pack ${language} installation requested`);
+    const sodaState = this.getSodaState(language);
+    if (sodaState.value.kind !== 'installed' &&
+        sodaState.value.kind !== 'installing') {
+      sodaState.value = {kind: 'installing', progress: 0};
       // Simulate the loading of SODA model.
       // Not awaiting the async block should be fine since this is only for
       // dev, and no two async block of this will run at the same time.
@@ -343,39 +520,93 @@ export class PlatformHandler extends PlatformHandlerBase {
             devSettings.mutate((s) => {
               s.sodaInstalled = true;
             });
-            this.sodaState.value = {kind: 'installed'};
+            sodaState.value = {kind: 'installed'};
             return;
           }
-          this.sodaState.value = {kind: 'installing', progress};
+          sodaState.value = {kind: 'installing', progress};
         }
       })();
     }
+    return Promise.resolve();
   }
 
-  override async newSodaSession(): Promise<SodaSession> {
-    return new SodaSessionDev();
+  override isSodaAvailable(): boolean {
+    return true;
   }
 
-  override async getMicrophoneInfo(
+  override getSodaState(language: LanguageCode): Signal<ModelState> {
+    return assertExists(this.sodaStates.get(language));
+  }
+
+  override newSodaSession(_language: LanguageCode): Promise<SodaSession> {
+    return Promise.resolve(new SodaSessionDev());
+  }
+
+  override getMicrophoneInfo(
     _deviceId: string,
   ): Promise<InternalMicInfo> {
-    return {isDefault: false, isInternal: false};
+    return Promise.resolve({isDefault: false, isInternal: false});
   }
 
-  override getStringF(id: string, ...args: Array<number|string>): string {
-    const label = strings[id];
-    if (label === undefined) {
-      console.error(`Unknown string ${id}`);
-      return '';
-    }
-    return substituteI18nString(label, ...args);
+  private renderGenAiErrorOptions<T extends ModelExecutionError|ModelLoadError>(
+    errorValues: T[],
+    selectedError: T|null,
+  ): RenderResult {
+    return html`
+      <cros-dropdown-option
+        headline="SUCCESS"
+        ?selected=${selectedError === null}
+      ></cros-dropdown-option>
+      ${map(errorValues, (errorValue) => {
+        return html`
+          <cros-dropdown-option
+          headline=${errorValue}
+          ?selected=${errorValue === selectedError}
+          ></cros-dropdown-option>
+        `;
+      })}
+    `;
   }
 
   override renderDevUi(): RenderResult {
-    function handleChange(ev: Event) {
+    function handleColorModeChange(ev: Event) {
       devSettings.mutate((s) => {
         s.forceTheme = assertEnumVariant(
           ColorTheme,
+          assertInstanceof(ev.target, CraDropdown).value,
+        );
+      });
+    }
+    function handleCanUseSpeakerLabelChange(ev: Event) {
+      const target = assertInstanceof(ev.target, CrosSwitch);
+      devSettings.mutate((s) => {
+        s.canUseSpeakerLabel = target.selected;
+      });
+    }
+    function handleCanCaptureSystemAudioWithLoopbackChange(ev: Event) {
+      const target = assertInstanceof(ev.target, CrosSwitch);
+      devSettings.mutate((s) => {
+        s.canCaptureSystemAudioWithLoopback = target.selected;
+      });
+    }
+    function handleForceLanguageSelectionChange(ev: Event) {
+      const target = assertInstanceof(ev.target, CrosSwitch);
+      devSettings.mutate((s) => {
+        s.forceLanguageSelection = target.selected;
+      });
+    }
+    function handleForceGenAiModelLoadErrorChange(ev: Event) {
+      devSettings.mutate((s) => {
+        s.forceGenAiModelLoadError = checkEnumVariant(
+          ModelLoadError,
+          assertInstanceof(ev.target, CraDropdown).value,
+        );
+      });
+    }
+    function handleForceGenAiModelExecutionErrorChange(ev: Event) {
+      devSettings.mutate((s) => {
+        s.forceGenAiModelExecutionError = checkEnumVariant(
+          ModelExecutionError,
           assertInstanceof(ev.target, CraDropdown).value,
         );
       });
@@ -387,12 +618,25 @@ export class PlatformHandler extends PlatformHandlerBase {
       flexFlow: 'row',
       alignItems: 'center',
     };
+    const loadErrorValues = Object.values(ModelLoadError);
+    const selectedLoadError = this.forceGenAiModelLoadError.value;
+    const loadErrorOptions = this.renderGenAiErrorOptions<ModelLoadError>(
+      loadErrorValues,
+      selectedLoadError,
+    );
+    const executionErrorValues = Object.values(ModelExecutionError);
+    const selectedExecutionError = this.forceGenAiModelExecutionError.value;
+    const executionErrorOptions =
+      this.renderGenAiErrorOptions<ModelExecutionError>(
+        executionErrorValues,
+        selectedExecutionError,
+      );
     return html`
       <div class="section">
         <label style=${styleMap(labelStyle)}>
           <cra-dropdown
             label="dark/light mode"
-            @change=${handleChange}
+            @change=${handleColorModeChange}
             .value=${devSettings.value.forceTheme ?? ColorTheme.SYSTEM}
           >
             <cros-dropdown-option
@@ -407,20 +651,73 @@ export class PlatformHandler extends PlatformHandlerBase {
           </cra-dropdown>
         </label>
       </div>
+      <div class="section">
+        <label style=${styleMap(labelStyle)}>
+          <!--
+            TODO(pihsun): cros-switch doesn't automatically makes clicking the
+            surrounding label toggles the switch, unlike md-switch.
+          -->
+          <cros-switch
+            @change=${handleCanUseSpeakerLabelChange}
+            .selected=${this.canUseSpeakerLabel.value}
+          >
+          </cros-switch>
+          Toggle can use speaker label
+        </label>
+      </div>
+      <div class="section">
+        <label style=${styleMap(labelStyle)}>
+          <!--
+            TODO(hsuanling): cros-switch doesn't automatically makes clicking
+            the surrounding label toggles the switch, unlike md-switch.
+          -->
+          <cros-switch
+            @change=${handleCanCaptureSystemAudioWithLoopbackChange}
+            .selected=${this.canCaptureSystemAudioWithLoopback.value}
+          >
+          </cros-switch>
+          Toggle can capture system audio via getDisplayMedia
+        </label>
+      </div>
+      <div class="section">
+        <label style=${styleMap(labelStyle)}>
+          <!--
+            TODO(hsuanling): cros-switch doesn't automatically makes clicking
+            the surrounding label toggles the switch, unlike md-switch.
+          -->
+          <cros-switch
+            @change=${handleForceLanguageSelectionChange}
+            .selected=${this.forceLanguageSelection.value}
+          >
+          </cros-switch>
+          Toggle can force language selection display
+        </label>
+      </div>
+      <div class="section">
+        <label style=${styleMap(labelStyle)}>
+          <cra-dropdown
+            label="GenAi model load error"
+            @change=${handleForceGenAiModelLoadErrorChange}
+          >
+            ${loadErrorOptions}
+          </cra-dropdown>
+        </label>
+      </div>
+      <div class="section">
+        <label style=${styleMap(labelStyle)}>
+          <cra-dropdown
+            label="GenAi model execution error"
+            @change=${handleForceGenAiModelExecutionErrorChange}
+          >
+            ${executionErrorOptions}
+          </cra-dropdown>
+        </label>
+      </div>
     `;
   }
 
-  override handleUncaughtError(error: unknown): RenderResult|null {
-    if (error instanceof ValidationError &&
-        error.issue.schema === devSettingsSchema) {
-      // This is caused by dev settings schema change, clear the localStorage
-      // and refresh.
-      console.error('Detected dev settings schema change...');
-      localStorage.remove(localStorage.Key.DEV_SETTINGS);
-      window.location.reload();
-      return nothing;
-    }
-    return null;
+  override handleUncaughtError(error: unknown): void {
+    this.errorView.error = error;
   }
 
   override showAiFeedbackDialog(description: string): void {
@@ -433,7 +730,11 @@ export class PlatformHandler extends PlatformHandlerBase {
     // DISPLAY_MEDIA_SYSTEM_AUDIO permission is not granted, so we need to
     // remove the video tracks manually.
     const stream = await navigator.mediaDevices.getDisplayMedia({
-      audio: true,
+      audio: {
+        autoGainControl: {ideal: false},
+        echoCancellation: {ideal: false},
+        noiseSuppression: {ideal: false},
+      },
       systemAudio: 'include',
     });
     const videoTracks = stream.getVideoTracks();
@@ -447,5 +748,18 @@ export class PlatformHandler extends PlatformHandlerBase {
     // Always use en-US in dev mode, since mock for the main i18n also use en-US
     // translations.
     return 'en-US';
+  }
+
+  override recordSpeakerLabelConsent(
+    consentGiven: boolean,
+    consentDescriptionNames: NoArgStringName[],
+    consentConfirmationName: NoArgStringName,
+  ): void {
+    console.info(
+      'Recorded speaker label consent: ',
+      consentGiven,
+      consentDescriptionNames,
+      consentConfirmationName,
+    );
   }
 }

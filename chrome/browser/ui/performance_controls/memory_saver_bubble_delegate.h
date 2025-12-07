@@ -6,10 +6,11 @@
 #define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_MEMORY_SAVER_BUBBLE_DELEGATE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_bubble_observer.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "ui/base/models/dialog_model.h"
+
+class Browser;
 
 // This class is the delegate for the memory saver bubble dialog that handles
 // the events raised from the dialog.

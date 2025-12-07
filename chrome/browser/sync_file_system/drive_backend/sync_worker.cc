@@ -49,9 +49,7 @@ void InvokeIdleCallback(base::RepeatingClosure idle_callback,
 
 SyncWorker::SyncWorker(
     const base::FilePath& base_dir,
-    const base::WeakPtr<extensions::ExtensionServiceInterface>&
-        extension_service,
-    extensions::ExtensionRegistry* extension_registry,
+    const base::WeakPtr<content::BrowserContext>& browser_context,
     leveldb::Env* env_override)
     : base_dir_(base_dir),
       env_override_(env_override),
@@ -60,8 +58,7 @@ SyncWorker::SyncWorker(
       should_check_remote_change_(true),
       listing_remote_changes_(false),
       sync_enabled_(false),
-      extension_service_(extension_service),
-      extension_registry_(extension_registry) {
+      browser_context_(browser_context) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   DCHECK(base_dir_.IsAbsolute());
 }
@@ -92,7 +89,7 @@ void SyncWorker::RegisterOrigin(const GURL& origin,
     PostInitializeTask();
 
   std::unique_ptr<RegisterAppTask> task(
-      new RegisterAppTask(context_.get(), origin.host()));
+      new RegisterAppTask(context_.get(), origin.GetHost()));
   if (task->CanFinishImmediately()) {
     std::move(callback).Run(SYNC_STATUS_OK);
     return;
@@ -109,7 +106,7 @@ void SyncWorker::EnableOrigin(const GURL& origin, SyncStatusCallback callback) {
   task_manager_->ScheduleTask(
       FROM_HERE,
       base::BindOnce(&SyncWorker::DoEnableApp, weak_ptr_factory_.GetWeakPtr(),
-                     origin.host()),
+                     origin.GetHost()),
       SyncTaskManager::PRIORITY_HIGH, std::move(callback));
 }
 
@@ -120,7 +117,7 @@ void SyncWorker::DisableOrigin(const GURL& origin,
   task_manager_->ScheduleTask(
       FROM_HERE,
       base::BindOnce(&SyncWorker::DoDisableApp, weak_ptr_factory_.GetWeakPtr(),
-                     origin.host()),
+                     origin.GetHost()),
       SyncTaskManager::PRIORITY_HIGH, std::move(callback));
 }
 
@@ -129,10 +126,11 @@ void SyncWorker::UninstallOrigin(const GURL& origin,
                                  SyncStatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  task_manager_->ScheduleSyncTask(
-      FROM_HERE,
-      std::make_unique<UninstallAppTask>(context_.get(), origin.host(), flag),
-      SyncTaskManager::PRIORITY_HIGH, std::move(callback));
+  task_manager_->ScheduleSyncTask(FROM_HERE,
+                                  std::make_unique<UninstallAppTask>(
+                                      context_.get(), origin.GetHost(), flag),
+                                  SyncTaskManager::PRIORITY_HIGH,
+                                  std::move(callback));
 }
 
 void SyncWorker::ProcessRemoteChange(SyncFileCallback callback) {
@@ -160,45 +158,6 @@ RemoteServiceState SyncWorker::GetCurrentState() const {
   if (!sync_enabled_)
     return REMOTE_SERVICE_DISABLED;
   return service_state_;
-}
-
-void SyncWorker::GetOriginStatusMap(
-    RemoteFileSyncService::StatusMapCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!GetMetadataDatabase())
-    return;
-
-  std::vector<std::string> app_ids;
-  GetMetadataDatabase()->GetRegisteredAppIDs(&app_ids);
-
-  std::unique_ptr<RemoteFileSyncService::OriginStatusMap> status_map(
-      new RemoteFileSyncService::OriginStatusMap);
-  for (std::vector<std::string>::const_iterator itr = app_ids.begin();
-       itr != app_ids.end(); ++itr) {
-    const std::string& app_id = *itr;
-    GURL origin = extensions::Extension::GetBaseURLFromExtensionId(app_id);
-    (*status_map)[origin] =
-        GetMetadataDatabase()->IsAppEnabled(app_id) ? "Enabled" : "Disabled";
-  }
-
-  std::move(callback).Run(std::move(status_map));
-}
-
-base::Value::List SyncWorker::DumpFiles(const GURL& origin) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!GetMetadataDatabase())
-    return base::Value::List();
-  return GetMetadataDatabase()->DumpFiles(origin.host());
-}
-
-base::Value::List SyncWorker::DumpDatabase() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!GetMetadataDatabase())
-    return base::Value::List();
-  return GetMetadataDatabase()->DumpDatabase();
 }
 
 void SyncWorker::SetSyncEnabled(bool enabled) {
@@ -403,38 +362,38 @@ void SyncWorker::UpdateRegisteredApps() {
   context_->GetUITaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &SyncWorker::QueryAppStatusOnUIThread, extension_service_,
-          // This is protected by checking the extension_service_
-          // weak pointer, since the underlying ExtensionService
-          // also relies on the ExtensionRegistry.
-          base::Unretained(extension_registry_), base::Owned(app_ids.release()),
-          app_status,
+          &SyncWorker::QueryAppStatusOnUIThread, browser_context_,
+          base::Owned(app_ids.release()), app_status,
           RelayCallbackToTaskRunner(context_->GetWorkerTaskRunner(), FROM_HERE,
                                     std::move(callback))));
 }
 
 void SyncWorker::QueryAppStatusOnUIThread(
-    const base::WeakPtr<extensions::ExtensionServiceInterface>&
-        extension_service_ptr,
-    extensions::ExtensionRegistry* extension_registry,
+    const base::WeakPtr<content::BrowserContext>& browser_context,
     const std::vector<std::string>* app_ids,
     AppStatusMap* status,
     base::OnceClosure callback) {
-  extensions::ExtensionServiceInterface* extension_service =
-      extension_service_ptr.get();
-  if (!extension_service) {
+  if (!browser_context.get()) {
     std::move(callback).Run();
     return;
   }
 
+  // Both ExtensionRegistry and ExtensionRegistrar have lifetimes scoped to
+  // the `browser_context`.
+  auto* extension_registry =
+      extensions::ExtensionRegistry::Get(browser_context.get());
+  auto* extension_registrar =
+      extensions::ExtensionRegistrar::Get(browser_context.get());
+
   for (auto itr = app_ids->begin(); itr != app_ids->end(); ++itr) {
     const std::string& app_id = *itr;
-    if (!extension_registry->GetInstalledExtension(app_id))
+    if (!extension_registry->GetInstalledExtension(app_id)) {
       (*status)[app_id] = APP_STATUS_UNINSTALLED;
-    else if (!extension_service->IsExtensionEnabled(app_id))
+    } else if (!extension_registrar->IsExtensionEnabled(app_id)) {
       (*status)[app_id] = APP_STATUS_DISABLED;
-    else
+    } else {
       (*status)[app_id] = APP_STATUS_ENABLED;
+    }
   }
 
   std::move(callback).Run();

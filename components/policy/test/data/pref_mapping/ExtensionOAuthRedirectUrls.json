@@ -1,34 +1,19 @@
 [
   {
     "os": [
-      "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "ExtensionOAuthRedirectUrls": {
-            "lcncmkcnkcdbbanbjakcencbaoegdjlp": [
-              "example://example/",
-              "https://lcncmkcnkcdbbanbjakcencbaoegdjlp.chromiumapp.org/"
-            ]
-          }
-        },
-        "prefs": {
-          "extensions.oauth_redirect_urls": {
-            "lcncmkcnkcdbbanbjakcencbaoegdjlp": [
-              "example://example/",
-              "https://lcncmkcnkcdbbanbjakcencbaoegdjlp.chromiumapp.org/"
-            ],
-            "value": {
-              "lcncmkcnkcdbbanbjakcencbaoegdjlp": [
-                "example://example/",
-                "https://lcncmkcnkcdbbanbjakcencbaoegdjlp.chromiumapp.org/"
-              ]
-            }
-          }
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "extensions.oauth_redirect_urls",
+      "default_value": {},
+      "values_to_test": [
+        {
+          "lcncmkcnkcdbbanbjakcencbaoegdjlp": [
+            "example://example/",
+            "https://lcncmkcnkcdbbanbjakcencbaoegdjlp.chromiumapp.org/"
+          ]
         }
-      }
-    ]
+      ]
+    }
   }
 ]

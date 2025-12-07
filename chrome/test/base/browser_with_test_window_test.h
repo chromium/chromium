@@ -6,12 +6,12 @@
 #define CHROME_TEST_BASE_BROWSER_WITH_TEST_WINDOW_TEST_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -28,15 +28,19 @@
 #if defined(TOOLKIT_VIEWS)
 #include "chrome/test/views/chrome_test_views_delegate.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/ash_test_views_delegate.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #else
 #include "ui/views/test/scoped_views_test_helper.h"
 #endif
@@ -47,23 +51,35 @@
 #endif
 
 class GURL;
-
-namespace chromeos {
-class ScopedLacrosServiceTestHelper;
-}  // namespace chromeos
+class GaiaId;
 
 namespace content {
 class NavigationController;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace crosapi {
 class CrosapiManager;
-}
-#endif
+}  // namespace crosapi
+
+namespace session_manager {
+class SessionManager;
+}  // namespace session_manager
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class TestingProfileManager;
 
+// WARNING WARNING WARNING WARNING
+// Do not use this class. See docs/chrome_browser_design_principles.md for
+// details. Either write a browser test which provides both a "class Browser"
+// and a "class BrowserView" or a unit test which requires neither.
+// Historically, features were written that take a "class Browser" as an input
+// parameter. "class Browser" cannot be stubbed/faked/mocked, and this class was
+// written as a workaround to create a "class Browser" without a "class
+// BrowserView". This cannot happen in production code and thus results in test
+// logic leaking into production code. New features should not take "class
+// Browser" as input, and should instead perform dependency injection.
+//
 // Base class for browser based unit tests. BrowserWithTestWindowTest creates a
 // Browser with a TestingProfile and TestBrowserWindow. To add a tab use
 // AddTab. For example, the following adds a tab and navigates to two URLs:
@@ -138,12 +154,12 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
   BrowserWindow* window() const { return window_.get(); }
 
   Browser* browser() const { return browser_.get(); }
-  void set_browser(Browser* browser) { browser_.reset(browser); }
-  std::unique_ptr<Browser> release_browser() { return std::move(browser_); }
 
-  TestingProfile* profile() const { return profile_; }
+  std::unique_ptr<Browser> release_browser();
 
-  TestingProfile* GetProfile() { return profile_; }
+  TestingProfile* profile() const { return profile_.get(); }
+
+  TestingProfile* GetProfile() { return profile_.get(); }
 
   TestingProfileManager* profile_manager() { return profile_manager_.get(); }
 
@@ -155,13 +171,15 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
     return &test_url_loader_factory_;
   }
 
-  std::unique_ptr<BrowserWindow> release_browser_window() {
-    return std::move(window_);
-  }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::AshTestHelper* ash_test_helper() { return &ash_test_helper_; }
+#if BUILDFLAG(IS_CHROMEOS)
+  ash::AshTestHelper* ash_test_helper() { return &ash_test_helper_.value(); }
   user_manager::FakeUserManager* user_manager() { return user_manager_.Get(); }
+  // NOTE: `KioskCryptohomeRemover` is owned by `KioskControllerImpl` in
+  // production.
+  ash::KioskCryptohomeRemover* kiosk_cryptohome_remover() {
+    return kiosk_cryptohome_remover_.get();
+  }
+  virtual void OnAshTestHelperCreated();
 #endif
 
   // The context to help determine desktop type when creating new Widgets.
@@ -195,9 +213,9 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
   void FocusMainFrameOfActiveWebContents();
 
   // Returns the profile name used for the profile created in SetUp() by
-  // default.
-  // Subclasses can override to change the profile name.
-  virtual std::string GetDefaultProfileName();
+  // default.  Subclasses can override to change the profile name. If it returns
+  // std::nullopt, this will skip creating profile and browser window.
+  virtual std::optional<std::string> GetDefaultProfileName();
 
   // Creates the profile used by this test. The caller doesn't own the return
   // value.
@@ -227,9 +245,15 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
                                                  bool hosted_app,
                                                  BrowserWindow* browser_window);
 
+  // Creates the browser given `profile`, `browser_type` and `hosted_app` and
+  // a window created via `CreateBrowserWindow()`.
+  virtual std::unique_ptr<Browser> CreateBrowser(Profile* profile,
+                                                 Browser::Type browser_type,
+                                                 bool hosted_app);
+
 #if defined(TOOLKIT_VIEWS)
   views::TestViewsDelegate* test_views_delegate() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     return test_views_delegate_.get();
 #else
     return views_test_helper_->test_views_delegate();
@@ -239,10 +263,8 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Logs in an User as `email`.
-  virtual void LogIn(const std::string& email);
-#endif
+  virtual void LogIn(std::string_view email, const GaiaId& gaia_id);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Handles the post-process for the newly created Profile.
   // Expected to be called on customizing CreateProfile for ash.
   virtual void OnUserProfileCreated(const std::string& email, Profile* profile);
@@ -268,34 +290,42 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
   // We need to create a MessageLoop, otherwise a bunch of things fails.
   std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<chromeos::ScopedLacrosServiceTestHelper>
-      lacros_service_test_helper_;
-#endif
+#if BUILDFLAG(IS_CHROMEOS)
+  ash::TestSessionControllerClient* GetSessionControllerClient();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // A template method (in Design Pattern) that execute post profile creation
+  // steps.
+  void PostUserProfileCreation(const std::string& email, Profile* profile);
+
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+
+  std::unique_ptr<session_manager::SessionManager> session_manager_ =
+      std::make_unique<session_manager::SessionManager>(
+          std::make_unique<session_manager::FakeSessionManagerDelegate>());
+
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
       user_manager_;
   std::vector<
       std::unique_ptr<base::ScopedObservation<Profile, ProfileObserver>>>
       profile_observations_;
   std::unique_ptr<crosapi::CrosapiManager> manager_;
+  std::unique_ptr<ash::KioskCryptohomeRemover> kiosk_cryptohome_remover_;
   std::unique_ptr<ash::KioskChromeAppManager> kiosk_chrome_app_manager_;
 #endif
 
-  raw_ptr<TestingProfile, AcrossTasksDanglingUntriaged> profile_ = nullptr;
+  base::WeakPtr<TestingProfile> profile_ = nullptr;
 
   // test_url_loader_factory_ is declared before profile_manager_
   // to guarantee it outlives any profiles that might use it.
   network::TestURLLoaderFactory test_url_loader_factory_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  std::unique_ptr<BrowserWindow> window_;  // Usually a TestBrowserWindow.
+  // Usually a TestBrowserWindow, owned by Browser.
+  raw_ptr<BrowserWindow> window_;
   std::unique_ptr<Browser> browser_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::AshTestHelper ash_test_helper_;
+#if BUILDFLAG(IS_CHROMEOS)
+  std::optional<ash::AshTestHelper> ash_test_helper_;
   std::unique_ptr<views::TestViewsDelegate> test_views_delegate_ =
       std::make_unique<ChromeTestViewsDelegate<ash::AshTestViewsDelegate>>();
 #elif defined(TOOLKIT_VIEWS)
@@ -318,7 +348,7 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
   const bool hosted_app_;
 
   // Initialize the variations provider.
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 
   // Some of the UI elements in top chrome need to observe the

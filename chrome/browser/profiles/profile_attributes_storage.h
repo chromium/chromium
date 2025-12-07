@@ -112,7 +112,7 @@ class ProfileAttributesStorage {
   size_t GetNumberOfProfiles() const;
 
   // Returns a unique name that can be assigned to a newly created profile.
-  std::u16string ChooseNameForNewProfile(size_t icon_index) const;
+  std::u16string ChooseNameForNewProfile() const;
 
   // Determines whether |name| is one of the default assigned names.
   // On Desktop, if |include_check_for_legacy_profile_name| is false,
@@ -193,6 +193,7 @@ class ProfileAttributesStorage {
       const base::FilePath& profile_path) const;
   void NotifyProfileHostedDomainChanged(
       const base::FilePath& profile_path) const;
+  void NotifyProfileIsManagedChanged(const base::FilePath& profile_path) const;
   void NotifyProfileUserManagementAcceptanceChanged(
       const base::FilePath& profile_path) const;
   void NotifyProfileManagementEnrollmentTokenChanged(
@@ -273,14 +274,14 @@ class ProfileAttributesStorage {
   void LoadGAIAPictureIfNeeded();
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   // Migrate any legacy profile names ("First user", "Default Profile") to
   // new style default names ("Person 1"). Rename any duplicates of "Person n"
   // i.e. Two or more profiles with the profile name "Person 1" would be
   // recomputed to "Person 1" and "Person 2".
   void MigrateLegacyProfileNamesAndRecomputeIfNeeded();
   static void SetLegacyProfileMigrationForTesting(bool value);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
   // Called when the picture given by |key| has been loaded from disk and
   // decoded into |image|.
@@ -342,10 +343,10 @@ class ProfileAttributesStorage {
 
   const base::FilePath user_data_dir_;
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   // PersistentRepeatingTimer for periodically logging profile metrics.
   std::unique_ptr<signin::PersistentRepeatingTimer> repeating_timer_;
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
   base::WeakPtrFactory<ProfileAttributesStorage> weak_ptr_factory_{this};
 };

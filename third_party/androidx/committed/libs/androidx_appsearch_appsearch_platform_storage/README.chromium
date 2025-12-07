@@ -1,0 +1,20 @@
+Name: AppSearch Platform Storage
+Short Name: appsearch-platform-storage
+URL: https://androidx.dev/snapshots/builds/14500233/artifacts/repository/androidx/appsearch/appsearch-platform-storage/1.2.0-SNAPSHOT/appsearch-platform-storage-1.2.0-20251126.133552-1.aar
+Version: 1.2.0-SNAPSHOT
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+An implementation of AppSearchSession which uses the AppSearch service on Android S+
+
+See also: https://developer.android.com/jetpack/androidx/releases/appsearch#1.2.0-SNAPSHOT
+
+
+Local Modifications:
+No modifications.

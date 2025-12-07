@@ -10,6 +10,8 @@
 
 namespace blink {
 
+class ExecutionContext;
+
 class OESSampleVariables final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -17,7 +19,7 @@ class OESSampleVariables final : public WebGLExtension {
   static bool Supported(WebGLRenderingContextBase*);
   static const char* ExtensionName();
 
-  explicit OESSampleVariables(WebGLRenderingContextBase*);
+  OESSampleVariables(WebGLRenderingContextBase*, ExecutionContext*);
 
   WebGLExtensionName GetName() const override;
 };

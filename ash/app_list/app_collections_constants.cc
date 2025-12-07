@@ -43,8 +43,7 @@ std::u16string GetAppCollectionName(ash::AppCollection collection) {
       return l10n_util::GetStringUTF16(
           IDS_ASH_LAUNCHER_APPS_COLLECTIONS_YOUR_APPS_NAME);
     case ash::AppCollection::kOem:
-      NOTREACHED_IN_MIGRATION();
-      return u"";
+      NOTREACHED();
   }
 }
 

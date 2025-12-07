@@ -115,6 +115,10 @@
               "prerender": [{
                 "source": "list",
                 "urls": ["/two.html"]
+              }],
+              "prerender_until_script": [{
+                "source": "list",
+                "urls": ["/pus.html"]
               }]
             }
           </script>
@@ -157,6 +161,10 @@
               "prerender": [{
                 "source": "document",
                 "where": {"selector_matches": ".important-links a"}
+              }],
+              "prerender_until_script": [{
+                "source": "document",
+                "where": {"selector_matches": ".pus-links a"}
               }]
             }
           </script>
@@ -174,6 +182,9 @@
               <a href="/tau-ceti.html"></a>
               <a href="/sol.html"></a>
               <a href="/time.html"></a>
+            </div>
+            <div class="pus-links">
+              <a href="/pus.html"></a>
             </div>
         </body>
       </html>
@@ -193,13 +204,16 @@
     const miscLinks = (await dp.DOM.querySelectorAll({
       nodeId: documentNodeId, selector: ".misc-links a"
     })).result.nodeIds;
+    const pusLinks = (await dp.DOM.querySelectorAll({
+      nodeId: documentNodeId, selector: ".pus-links a"
+    })).result.nodeIds;
 
     testRunner.log(
       await formatPreloadingAttemptSources(
         dp,
         preloadAttemptSources,
         [ruleSet1.id, ruleSet2.id],
-        [...importantLinks, ...lessImportantLinks, ...miscLinks]),
+        [...importantLinks, ...lessImportantLinks, ...miscLinks, ...pusLinks]),
       "Preload attempts: ");
   }
 

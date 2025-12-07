@@ -1,0 +1,96 @@
+// Copyright 2025 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/explainers-by-googlers/proofreader-api
+
+enum CorrectionType {
+  "spelling", // Misspelled words, i.e. typos.
+  "punctuation", // Incorrect or missing punctuation marks.
+  "capitalization", // Incorrect upper/lowercase letters.
+  "preposition", // Errors in the use of prepositions.
+  "missing-words", // One or more words are absent from a sentence,
+                   // making it grammatically incorrect or altering
+                   // its intended meaning.
+  "grammar" // Broad and catch-all category, if no more-specific category
+            // matches. Encompassing sentence errors in structure
+            // errors, word order, subject-verb agreement, etc.
+};
+
+dictionary ProofreaderCreateCoreOptions {
+  boolean includeCorrectionTypes = false;
+  boolean includeCorrectionExplanations = false;
+  sequence<DOMString> expectedInputLanguages;
+  DOMString correctionExplanationLanguage;
+};
+
+dictionary ProofreaderCreateOptions : ProofreaderCreateCoreOptions {
+  AbortSignal signal;
+  CreateMonitorCallback monitor;
+};
+
+dictionary ProofreaderProofreadOptions {
+  AbortSignal signal;
+};
+
+dictionary ProofreadResult {
+  DOMString correctedInput;
+  sequence<ProofreadCorrection> corrections;
+};
+
+dictionary ProofreadCorrection {
+  unsigned long long startIndex;
+  unsigned long long endIndex;
+  DOMString correction;
+  CorrectionType type;
+  DOMString explanation;
+};
+
+[
+  Exposed=(Window,Worker),
+  RuntimeEnabled=AIProofreadingAPI,
+  SecureContext
+]
+interface Proofreader {
+  [
+    MeasureAs=Proofreader_Availability,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<Availability> availability(
+    optional ProofreaderCreateCoreOptions options = {}
+  );
+
+  [
+    MeasureAs=Proofreader_Create,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<Proofreader> create(optional ProofreaderCreateOptions options = {});
+
+  [
+    MeasureAs=Proofreader_Proofread,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<ProofreadResult> proofread(
+    DOMString input,
+    optional ProofreaderProofreadOptions options = {}
+  );
+
+  [
+    MeasureAs=Proofreader_Destroy,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  void destroy();
+
+  [MeasureAs=Proofreader_IncludeCorrectionTypes]
+  readonly attribute boolean includeCorrectionTypes;
+  [MeasureAs=Proofreader_IncludeCorrectionExplanations]
+  readonly attribute boolean includeCorrectionExplanations;
+  [MeasureAs=Proofreader_ExpectedInputLanguages]
+  readonly attribute FrozenArray<DOMString>? expectedInputLanguages;
+  [MeasureAs=Proofreader_CorrectionExplanationLanguage]
+  readonly attribute DOMString? correctionExplanationLanguage;
+};

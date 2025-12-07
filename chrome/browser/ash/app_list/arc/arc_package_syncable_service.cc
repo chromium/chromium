@@ -8,9 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/session/connection_holder.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
@@ -19,10 +16,14 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/session/connection_holder.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/protocol/arc_package_specifics.pb.h"
+#include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 
 namespace arc {
@@ -225,8 +226,9 @@ std::optional<syncer::ModelError> ArcPackageSyncableService::ProcessSyncChanges(
     const base::Location& from_here,
     const syncer::SyncChangeList& change_list) {
   if (!sync_processor_.get()) {
-    return syncer::ModelError(FROM_HERE,
-                              "ARC package syncable service is not started.");
+    return syncer::ModelError(
+        FROM_HERE,
+        syncer::ModelError::Type::kArcPackageSyncableServiceNotStarted);
   }
 
   for (const auto& change : change_list) {
@@ -255,6 +257,11 @@ std::optional<syncer::ModelError> ArcPackageSyncableService::ProcessSyncChanges(
 
 base::WeakPtr<syncer::SyncableService> ArcPackageSyncableService::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+std::string ArcPackageSyncableService::GetClientTag(
+    const syncer::EntityData& entity_data) const {
+  return entity_data.specifics.arc_package().package_name();
 }
 
 bool ArcPackageSyncableService::SyncStarted() {

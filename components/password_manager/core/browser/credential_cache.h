@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/types/strong_alias.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "url/origin.h"
 
 namespace password_manager {
@@ -34,11 +35,16 @@ class CredentialCache {
   void SaveCredentialsAndBlocklistedForOrigin(
       base::span<const PasswordForm> matches,
       IsOriginBlocklisted is_blocklisted,
+      std::optional<PasswordStoreBackendError> backend_error,
       const url::Origin& origin);
 
   // Returns the credential store for a given origin. If it does not exist, an
   // empty store will be created.
   const OriginCredentialStore& GetCredentialStore(const url::Origin& origin);
+
+  // Returns the backend error if there was one encountered during the most
+  // recent `SaveCredentialsAndBlocklistedForOrigin()` call.
+  const std::optional<PasswordStoreBackendError> backend_error() const;
 
   // Removes all credentials for all origins.
   void ClearCredentials();
@@ -48,6 +54,9 @@ class CredentialCache {
 
   // Contains the store for credential of each requested origin.
   std::map<url::Origin, OriginCredentialStore> origin_credentials_;
+
+  // Contains an error reported by the backend, if any.
+  std::optional<PasswordStoreBackendError> backend_error_;
 };
 
 }  // namespace password_manager

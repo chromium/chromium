@@ -6,18 +6,18 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace WTF {
+namespace blink {
 namespace {
 
-TEST(TextCodecCJK, IsSupported) {
-  EXPECT_TRUE(TextCodecCJK::IsSupported("EUC-JP"));
-  EXPECT_TRUE(TextCodecCJK::IsSupported("Shift_JIS"));
-  EXPECT_TRUE(TextCodecCJK::IsSupported("EUC-KR"));
-  EXPECT_TRUE(TextCodecCJK::IsSupported("ISO-2022-JP"));
-  EXPECT_TRUE(TextCodecCJK::IsSupported("GBK"));
-  EXPECT_TRUE(TextCodecCJK::IsSupported("gb18030"));
-  EXPECT_FALSE(TextCodecCJK::IsSupported("non-exist-encoding"));
+TEST(TextCodecCjk, IsSupported) {
+  EXPECT_TRUE(TextCodecCjk::IsSupported("EUC-JP"));
+  EXPECT_TRUE(TextCodecCjk::IsSupported("Shift_JIS"));
+  EXPECT_TRUE(TextCodecCjk::IsSupported("EUC-KR"));
+  EXPECT_TRUE(TextCodecCjk::IsSupported("ISO-2022-JP"));
+  EXPECT_TRUE(TextCodecCjk::IsSupported("GBK"));
+  EXPECT_TRUE(TextCodecCjk::IsSupported("gb18030"));
+  EXPECT_FALSE(TextCodecCjk::IsSupported("non-exist-encoding"));
 }
 
 }  // namespace
-}  // namespace WTF
+}  // namespace blink

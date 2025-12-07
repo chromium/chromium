@@ -5,18 +5,16 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_PAYMENTS_TEST_STRIKE_DATABASE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_PAYMENTS_TEST_STRIKE_DATABASE_H_
 
-#include <memory>
 #include <string>
 #include <unordered_map>
-#include <utility>
 
-#include "components/autofill/core/browser/proto/strike_data.pb.h"
-#include "components/autofill/core/browser/strike_databases/strike_database.h"
+#include "components/strike_database/strike_data.pb.h"
+#include "components/strike_database/strike_database.h"
 
 namespace autofill {
 
 // An in-memory-only test version of StrikeDatabase.
-class TestStrikeDatabase : public StrikeDatabase {
+class TestStrikeDatabase : public strike_database::StrikeDatabase {
  public:
   TestStrikeDatabase();
   ~TestStrikeDatabase() override;
@@ -30,13 +28,9 @@ class TestStrikeDatabase : public StrikeDatabase {
       const std::string& key,
       const ClearStrikesCallback& outer_callback) override;
 
-  // TestStrikeDatabase:
-  void AddEntryWithNumStrikes(const std::string& key, int num_strikes);
-  int GetStrikesForTesting(const std::string& key);
-
  private:
   // In-memory database of StrikeData.
-  std::unordered_map<std::string, StrikeData> db_;
+  std::unordered_map<std::string, strike_database::StrikeData> db_;
 };
 
 }  // namespace autofill

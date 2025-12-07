@@ -227,16 +227,12 @@ SecurePaymentConfirmationRequest* CreateSecurePaymentConfirmationRequest(
   HeapVector<Member<V8UnionArrayBufferOrArrayBufferView>> credentialIds;
   credentialIds.push_back(
       MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
-          DOMArrayBuffer::Create(
-              kSecurePaymentConfirmationCredentialId,
-              std::size(kSecurePaymentConfirmationCredentialId))));
+          DOMArrayBuffer::Create(kSecurePaymentConfirmationCredentialId)));
   request->setCredentialIds(credentialIds);
 
   request->setChallenge(
       MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
-          DOMArrayBuffer::Create(
-              kSecurePaymentConfirmationChallenge,
-              std::size(kSecurePaymentConfirmationChallenge))));
+          DOMArrayBuffer::Create(kSecurePaymentConfirmationChallenge)));
 
   PaymentCredentialInstrument* instrument =
       PaymentCredentialInstrument::Create(scope.GetIsolate());
@@ -261,7 +257,7 @@ BuildSecurePaymentConfirmationMethodDataForTest(const V8TestingScope& scope) {
   HeapVector<Member<PaymentMethodData>> method_data(
       1, PaymentMethodData::Create());
   method_data[0]->setSupportedMethod("secure-payment-confirmation");
-  method_data[0]->setData(ScriptValue(
+  method_data[0]->setData(ScriptObject(
       scope.GetIsolate(), spc_request->ToV8(scope.GetScriptState())));
 
   return method_data;

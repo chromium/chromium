@@ -63,7 +63,8 @@ RemoveFullUpdateTypeProgressMarkerIfExists(
     DataType data_type,
     sync_pb::ClientToServerMessage* message) {
   DCHECK(data_type == syncer::AUTOFILL_WALLET_DATA ||
-         data_type == syncer::AUTOFILL_WALLET_OFFER);
+         data_type == syncer::AUTOFILL_WALLET_OFFER ||
+         data_type == syncer::AUTOFILL_VALUABLE);
   google::protobuf::RepeatedPtrField<sync_pb::DataTypeProgressMarker>*
       progress_markers =
           message->mutable_get_updates()->mutable_from_progress_marker();
@@ -88,11 +89,12 @@ void VerifyNoProgressMarkerExistsInResponseForFullUpdateType(
     // Verified there is no progress marker for the full sync type we cared
     // about.
     DCHECK(type != syncer::AUTOFILL_WALLET_DATA &&
-           type != syncer::AUTOFILL_WALLET_OFFER);
+           type != syncer::AUTOFILL_WALLET_OFFER &&
+           type != syncer::AUTOFILL_VALUABLE);
   }
 }
 
-// Returns a hash representing |entities| including each entity's ID and
+// Returns a hash representing `entities` including each entity's ID and
 // version, in a way that the order of the entities is irrelevant.
 uint64_t ComputeEntitiesHash(const std::vector<sync_pb::SyncEntity>& entities) {
   // Make sure to pick a token that will be consistent across clients when
@@ -228,6 +230,9 @@ net::HttpStatusCode FakeServer::HandleParsedCommand(
   switch (message.message_contents()) {
     case sync_pb::ClientToServerMessage::GET_UPDATES:
       last_getupdates_message_ = message;
+      for (Observer& observer : observers_) {
+        observer.OnWillGetUpdates(message);
+      }
       break;
     case sync_pb::ClientToServerMessage::COMMIT:
       last_commit_message_ = message;
@@ -238,8 +243,7 @@ net::HttpStatusCode FakeServer::HandleParsedCommand(
       break;
     case sync_pb::ClientToServerMessage::DEPRECATED_3:
     case sync_pb::ClientToServerMessage::DEPRECATED_4:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   if (http_error_status_code_) {
@@ -276,6 +280,10 @@ net::HttpStatusCode FakeServer::HandleParsedCommand(
   std::unique_ptr<sync_pb::DataTypeProgressMarker> offer_marker =
       RemoveFullUpdateTypeProgressMarkerIfExists(
           syncer::AUTOFILL_WALLET_OFFER, &message_without_full_update_type);
+  std::unique_ptr<sync_pb::DataTypeProgressMarker> valuable_marker =
+      RemoveFullUpdateTypeProgressMarkerIfExists(
+          syncer::AUTOFILL_VALUABLE, &message_without_full_update_type);
+
   net::HttpStatusCode http_status_code =
       SendToLoopbackServer(message_without_full_update_type, response);
 
@@ -302,6 +310,11 @@ net::HttpStatusCode FakeServer::HandleParsedCommand(
                                     response->mutable_get_updates());
     }
 
+    if (valuable_marker != nullptr) {
+      PopulateFullUpdateTypeResults(valuable_entities_, *valuable_marker,
+                                    response->mutable_get_updates());
+    }
+
     for (sync_pb::DataTypeProgressMarker& progress_marker :
          *response->mutable_get_updates()->mutable_new_progress_marker()) {
       DataType type = syncer::GetDataTypeFromSpecificsFieldNumber(
@@ -312,8 +325,9 @@ net::HttpStatusCode FakeServer::HandleParsedCommand(
       sync_pb::GarbageCollectionDirective::CollaborationGarbageCollection*
           collaboration_gc = progress_marker.mutable_gc_directive()
                                  ->mutable_collaboration_gc();
-      for (const std::string& collaboration_id : collaborations_) {
-        collaboration_gc->add_active_collaboration_ids(collaboration_id);
+      for (const syncer::CollaborationId& collaboration_id : collaborations_) {
+        collaboration_gc->add_active_collaboration_ids(
+            collaboration_id.value());
       }
     }
   }
@@ -341,8 +355,9 @@ net::HttpStatusCode FakeServer::SendToLoopbackServer(
 }
 
 bool FakeServer::GetLastCommitMessage(sync_pb::ClientToServerMessage* message) {
-  if (!last_commit_message_.has_commit())
+  if (!last_commit_message_.has_commit()) {
     return false;
+  }
 
   message->CopyFrom(last_commit_message_);
   return true;
@@ -350,8 +365,9 @@ bool FakeServer::GetLastCommitMessage(sync_pb::ClientToServerMessage* message) {
 
 bool FakeServer::GetLastGetUpdatesMessage(
     sync_pb::ClientToServerMessage* message) {
-  if (!last_getupdates_message_.has_get_updates())
+  if (!last_getupdates_message_.has_get_updates()) {
     return false;
+  }
 
   message->CopyFrom(last_getupdates_message_);
   return true;
@@ -405,9 +421,10 @@ void FakeServer::TriggerKeystoreKeyRotation() {
 void FakeServer::InjectEntity(std::unique_ptr<LoopbackServerEntity> entity) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(entity->GetDataType() != syncer::AUTOFILL_WALLET_DATA &&
-         entity->GetDataType() != syncer::AUTOFILL_WALLET_OFFER)
-      << "Wallet/Offer data must be injected via "
-         "SetWalletData()/SetOfferData().";
+         entity->GetDataType() != syncer::AUTOFILL_WALLET_OFFER &&
+         entity->GetDataType() != syncer::AUTOFILL_VALUABLE)
+      << "Wallet/Offer/Valuable data must be injected via "
+         "SetWalletData()/SetOfferData()/SetValuableData().";
 
   const DataType data_type = entity->GetDataType();
 
@@ -422,7 +439,7 @@ base::Time FakeServer::SetWalletData(
     const std::vector<sync_pb::SyncEntity>& wallet_entities) {
   DCHECK(!wallet_entities.empty());
   DataType data_type = GetDataTypeFromSpecifics(wallet_entities[0].specifics());
-  DCHECK(data_type == syncer::AUTOFILL_WALLET_DATA);
+  CHECK_EQ(data_type, syncer::AUTOFILL_WALLET_DATA);
 
   OnWillCommit();
   wallet_entities_ = wallet_entities;
@@ -449,7 +466,7 @@ base::Time FakeServer::SetOfferData(
     const std::vector<sync_pb::SyncEntity>& offer_entities) {
   DCHECK(!offer_entities.empty());
   DataType data_type = GetDataTypeFromSpecifics(offer_entities[0].specifics());
-  DCHECK(data_type == syncer::AUTOFILL_WALLET_OFFER);
+  CHECK_EQ(data_type, syncer::AUTOFILL_WALLET_OFFER);
 
   OnWillCommit();
   offer_entities_ = offer_entities;
@@ -468,6 +485,35 @@ base::Time FakeServer::SetOfferData(
   }
 
   OnCommit(/*committed_data_types=*/{syncer::AUTOFILL_WALLET_OFFER});
+
+  return now;
+}
+
+base::Time FakeServer::SetValuableData(
+    const std::vector<sync_pb::SyncEntity>& valuable_entities) {
+  CHECK(!valuable_entities.empty());
+  DataType data_type =
+      GetDataTypeFromSpecifics(valuable_entities[0].specifics());
+  CHECK_EQ(data_type, syncer::AUTOFILL_VALUABLE);
+
+  OnWillCommit();
+  valuable_entities_ = valuable_entities;
+
+  const base::Time now = base::Time::Now();
+  const int64_t version = (now - base::Time::UnixEpoch()).InMilliseconds();
+
+  for (sync_pb::SyncEntity& entity : valuable_entities_) {
+    CHECK(!entity.has_client_tag_hash())
+        << "The sync server doesn not provide a client tag for valuable "
+           "entries.";
+    CHECK(!entity.id_string().empty()) << "server id required!";
+
+    // The version is overridden during serving of the entities, but is useful
+    // here to influence the entities' hash.
+    entity.set_version(version);
+  }
+
+  OnCommit(/*committed_data_types=*/{syncer::AUTOFILL_VALUABLE});
 
   return now;
 }
@@ -610,8 +656,9 @@ void FakeServer::SetThrottledTypes(syncer::DataTypeSet types) {
 }
 
 bool FakeServer::ShouldSendTriggeredError() const {
-  if (!alternate_triggered_errors_)
+  if (!alternate_triggered_errors_) {
     return true;
+  }
 
   // Check that the counter is odd so that we trigger an error on the first
   // request after alternating is enabled.
@@ -635,12 +682,9 @@ void FakeServer::RemoveObserver(Observer* observer) {
 }
 
 void FakeServer::OnCommit(syncer::DataTypeSet committed_data_types) {
-  for (Observer& observer : observers_)
+  for (Observer& observer : observers_) {
     observer.OnCommit(committed_data_types);
-}
-
-void FakeServer::OnHistoryCommit(const std::string& url) {
-  committed_history_urls_.insert(url);
+  }
 }
 
 void FakeServer::OnCommittedDeletionOrigin(
@@ -669,18 +713,15 @@ void FakeServer::TriggerMigrationDoneError(syncer::DataTypeSet types) {
   loopback_server_->TriggerMigrationForTesting(types);
 }
 
-void FakeServer::AddCollaboration(const std::string& collaboration_id) {
-  collaborations_.insert(collaboration_id);
+void FakeServer::AddCollaboration(syncer::CollaborationId collaboration_id) {
+  collaborations_.insert(std::move(collaboration_id));
   // TODO(b/325917757): update collaboration data type.
 }
 
-void FakeServer::RemoveCollaboration(const std::string& collaboration_id) {
+void FakeServer::RemoveCollaboration(
+    const syncer::CollaborationId& collaboration_id) {
   collaborations_.erase(collaboration_id);
   // TODO(b/325917757): update collaboration data type.
-}
-
-const std::set<std::string>& FakeServer::GetCommittedHistoryURLs() const {
-  return committed_history_urls_;
 }
 
 std::string FakeServer::GetStoreBirthday() const {

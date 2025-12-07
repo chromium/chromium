@@ -24,18 +24,19 @@ int main(int argc, char** argv) {
   base::ScopedFD startup_pipe;
   int min_log_level;
   bool log_to_console;
+  int port = 0;
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   fakedms::ParseFlags(*command_line, policy_blob_path, client_state_path,
                       unix_socket_path, log_path, startup_pipe, log_to_console,
-                      min_log_level);
+                      min_log_level, port);
   fakedms::InitLogging(log_path, log_to_console, min_log_level);
 
   base::RunLoop run_loop;
   fakedms::FakeDMServer policy_test_server(policy_blob_path, client_state_path,
                                            unix_socket_path,
                                            run_loop.QuitClosure());
-  if (!policy_test_server.StartFakeServer()) {
+  if (!policy_test_server.StartFakeServer(port)) {
     return 1;
   }
   if (startup_pipe.is_valid()) {

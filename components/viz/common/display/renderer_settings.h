@@ -35,6 +35,9 @@ class VIZ_COMMON_EXPORT RendererSettings {
   bool auto_resize_output_surface = true;
   bool requires_alpha_channel = false;
   bool disable_render_pass_bypassing = false;
+  // Force render pass backings to allocate shared images without the scanout
+  // usage. The render pass backing will still claim the backing is scanout.
+  bool force_non_scanout_backing_for_pixel_tests = false;
 
   int slow_down_compositing_scale_factor = 1;
 
@@ -48,16 +51,16 @@ class VIZ_COMMON_EXPORT RendererSettings {
     // The minimum number of fragments that would not be drawn if a quads was
     // split into multiple quads during occlusion culling.
     int minimum_fragments_reduced = 128 * 128;
+    // The minimum visible quad size to be considered an occluder.
+    int occluder_minium_visible_quad_size = 32 * 32;
+    // If true, complex occluders are generated for quads with rounded corners,
+    bool generate_complex_occluder_for_rounded_corners = false;
+    // The minimum size of quads with rounded corners to qualify for generating
+    // complex occluders.
+    int minumum_quad_size_with_rounded_corners = 128 * 128;
   };
 
   OcclusionCullerSettings occlusion_culler_settings;
-
-#if BUILDFLAG(IS_ANDROID)
-  // The screen size at renderer creation time.
-  gfx::Size initial_screen_size = gfx::Size(0, 0);
-
-  gfx::ColorSpace color_space;
-#endif
 
 #if BUILDFLAG(IS_OZONE)
   // A list of overlay strategies that should be tried. If the list is empty

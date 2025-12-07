@@ -36,9 +36,10 @@ class HistoryClustersTabHelper
   // Called by `HistoryTabHelper` right after submitting a new navigation for
   // `web_contents()` to HistoryService. We need close coordination with
   // History's conception of the visit lifetime.
-  void OnUpdatedHistoryForNavigation(int64_t navigation_id,
-                                     base::Time timestamp,
-                                     const GURL& url);
+  // Virtual for testing.
+  virtual void OnUpdatedHistoryForNavigation(int64_t navigation_id,
+                                             base::Time timestamp,
+                                             const GURL& url);
 
   // Invoked for navigations that are tracked by UKM. Specifically, same-app
   // navigations aren't tracked individually in UKM and therefore won't receive
@@ -66,12 +67,16 @@ class HistoryClustersTabHelper
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void WebContentsDestroyed() override;
+  void OnVisibilityChanged(content::Visibility visibility) override;
+
+ protected:
+  // `protected` instead of `private` for mocking in tests.
+  explicit HistoryClustersTabHelper(content::WebContents* web_contents);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(UkmPageLoadMetricsObserverTest,
                            DurationSinceLastVisitSeconds);
 
-  explicit HistoryClustersTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<HistoryClustersTabHelper>;
 
   void StartNewNavigationIfNeeded(int64_t navigation_id);

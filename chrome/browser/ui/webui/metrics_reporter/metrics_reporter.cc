@@ -11,7 +11,11 @@ MetricsReporter::MetricsReporter() = default;
 MetricsReporter::~MetricsReporter() = default;
 
 void MetricsReporter::Mark(const std::string& name) {
-  marks_[name] = base::TimeTicks::Now();
+  Mark(name, base::TimeTicks::Now());
+}
+
+void MetricsReporter::Mark(const std::string& name, base::TimeTicks time) {
+  marks_[name] = time;
 }
 
 void MetricsReporter::Measure(const std::string& start_mark,
@@ -26,13 +30,24 @@ void MetricsReporter::Measure(const std::string& start_mark,
                          std::move(callback));
 }
 
+void MetricsReporter::Measure(const std::string& start_mark,
+                              base::TimeTicks end_time,
+                              MeasureCallback callback) {
+  MeasureInternal(start_mark, end_time, std::move(callback));
+}
+
 void MetricsReporter::MeasureInternal(const std::string& start_mark,
                                       std::optional<std::string> end_mark,
                                       MeasureCallback callback) {
   const base::TimeTicks end_time =
       end_mark ? marks_[*end_mark] : base::TimeTicks::Now();
+  MeasureInternal(start_mark, end_time, std::move(callback));
+}
 
-  if (marks_.count(start_mark)) {
+void MetricsReporter::MeasureInternal(const std::string& start_mark,
+                                      base::TimeTicks end_time,
+                                      MeasureCallback callback) {
+  if (marks_.contains(start_mark)) {
     std::move(callback).Run(end_time - marks_[start_mark]);
     return;
   }
@@ -57,7 +72,7 @@ void MetricsReporter::MeasureInternal(const std::string& start_mark,
 
 void MetricsReporter::HasMark(const std::string& name,
                               HasMarkCallback callback) {
-  if (marks_.count(name)) {
+  if (marks_.contains(name)) {
     std::move(callback).Run(true);
     return;
   }
@@ -71,7 +86,7 @@ void MetricsReporter::HasMark(const std::string& name,
 }
 
 bool MetricsReporter::HasLocalMark(const std::string& name) {
-  return marks_.count(name) > 0;
+  return marks_.contains(name);
 }
 
 void MetricsReporter::ClearMark(const std::string& name) {
@@ -93,7 +108,7 @@ void MetricsReporter::OnPageRemoteCreated(
 
 void MetricsReporter::OnGetMark(const std::string& name,
                                 OnGetMarkCallback callback) {
-  std::move(callback).Run(marks_.count(name)
+  std::move(callback).Run(marks_.contains(name)
                               ? std::make_optional(marks_[name].since_origin())
                               : std::nullopt);
 }

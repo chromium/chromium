@@ -1,0 +1,39 @@
+<style>
+  #offline-screen {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: flex-start;
+    padding: 26px 24px 20px;
+  }
+
+  .google-logo {
+    width: 100px;
+  }
+
+  .offline-text {
+    align-items: center;
+    color: var(--cros-color-secondary);
+    display: flex;
+    font-size: 14px;
+    margin-top: 26px;
+  }
+
+  .offline-title {
+    font-family: var(--cros-font-family-google-sans);
+    font-size: 24px;
+    font-weight: 500;
+    margin-top: 32px;
+  }
+</style>
+<!-- This is a clone of chrome/b/r/c/supervision/supervised_user_offline.html
+and should be kept in alignment with that file until the two are unified.
+b/369166857: Use shared screens.-->
+<div id="offline-screen">
+  <img class="google-logo" src="chrome://theme/IDR_LOGO_GOOGLE_COLOR_90"
+    alt="Google">
+  </img>
+  <div class="offline-title">$i18n{offlinePageTitle}</div>
+  <div class="offline-text">$i18n{offlinePageDescription}</div>
+</div>

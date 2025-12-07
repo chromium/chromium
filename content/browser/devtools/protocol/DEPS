@@ -2,9 +2,8 @@ include_rules = [
   # For DisabledReasonId used in protocol/page_hander.cc.
   "+components/back_forward_cache/disabled_reason_id.h",
   # For parsing and validating fido enums in protocol/webauthn_handler.cc.
-  "+device/fido/fido_constants.h",
+  "+device/fido/public",
   "+device/fido/fido_parsing_utils.h",
-  "+device/fido/fido_transport_protocol.h",
   # For VirtualFidoDevice::RegistrationData used in protocol/webauthn_handler.cc.
   "+device/fido/virtual_fido_device.h",
   # For VirtualU2fDevice::IsTransportSupported used in protocol/webauthn_handler.cc.

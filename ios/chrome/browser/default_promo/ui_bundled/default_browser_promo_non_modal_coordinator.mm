@@ -5,16 +5,18 @@
 #import "ios/chrome/browser/default_promo/ui_bundled/default_browser_promo_non_modal_coordinator.h"
 
 #import "base/notreached.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "ios/chrome/browser/default_browser/model/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_promo/ui_bundled/default_browser_promo_non_modal_commands.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_view_controller.h"
+#import "ios/chrome/browser/infobars/ui_bundled/coordinators/infobar_coordinator+subclassing.h"
+#import "ios/chrome/browser/infobars/ui_bundled/coordinators/infobar_coordinator_implementation.h"
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/infobars/banners/infobar_banner_view_controller.h"
-#import "ios/chrome/browser/ui/infobars/coordinators/infobar_coordinator+subclassing.h"
-#import "ios/chrome/browser/ui/infobars/coordinators/infobar_coordinator_implementation.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/branded_images/branded_images_api.h"
@@ -28,20 +30,26 @@
 
 @end
 
-@implementation DefaultBrowserPromoNonModalCoordinator
+@implementation DefaultBrowserPromoNonModalCoordinator {
+  // The reason to show the non modal promo.
+  NonModalDefaultBrowserPromoReason _promoReason;
+}
 
 // Synthesize because readonly property from superclass is changed to readwrite.
 @synthesize bannerViewController = _bannerViewController;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser {
-  self = [super initWithInfoBarDelegate:nil
-                           badgeSupport:YES
-                                   type:InfobarType::kInfobarTypeConfirm];
+                                   browser:(Browser*)browser
+                               promoReason:(NonModalDefaultBrowserPromoReason)
+                                               promoReason {
+  self = [super initWithBaseViewController:viewController
+                                   browser:browser
+                                      type:InfobarType::kInfobarTypeConfirm];
   if (self) {
-    self.baseViewController = viewController;
-    self.browser = browser;
+    CHECK(viewController, base::NotFatalUntil::M145);
+    CHECK(browser, base::NotFatalUntil::M145);
     self.shouldUseDefaultDismissal = NO;
+    _promoReason = promoReason;
   }
   return self;
 }
@@ -54,11 +62,9 @@
                                                 presentsModal:NO
                                                          type:self.infobarType];
     [self.bannerViewController
-        setTitleText:l10n_util::GetNSString(
-                         IDS_IOS_DEFAULT_BROWSER_NON_MODAL_TITLE)];
+        setTitleText:[self defaultBrowserNonModalTitleForPromoReason]];
     [self.bannerViewController
-        setSubtitleText:l10n_util::GetNSString(
-                            IDS_IOS_DEFAULT_BROWSER_NON_MODAL_DESCRIPTION)];
+        setSubtitleText:[self defaultBrowserNonModalSubtitleForPromoReason]];
     [self.bannerViewController
         setButtonText:l10n_util::GetNSString(
                           IDS_IOS_DEFAULT_NON_MODAL_PRIMARY_BUTTON_TEXT)];
@@ -125,6 +131,11 @@
 
 - (void)infobarWasDismissed {
   self.bannerViewController = nil;
+
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForProfile(self.profile);
+  tracker->Dismissed(GetFeatureForPromoReason(_promoReason));
+
   id<DefaultBrowserPromoNonModalCommands> handler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(),
                          DefaultBrowserPromoNonModalCommands);
@@ -133,17 +144,51 @@
 
 - (CGFloat)infobarModalHeightForWidth:(CGFloat)width {
   // The non-modal promo should never have a modal.
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 #pragma mark - private
 
 // Records that a default browser promo has been shown.
 - (void)recordDefaultBrowserPromoShown {
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
   LogToFETDefaultBrowserPromoShown(
-      feature_engagement::TrackerFactory::GetForBrowserState(browserState));
+      feature_engagement::TrackerFactory::GetForProfile(self.profile));
+}
+
+// Returns the default subtitle for the browser's non-modal window based on the
+// promo reason.
+- (NSString*)defaultBrowserNonModalSubtitleForPromoReason {
+  switch (_promoReason) {
+    case NonModalDefaultBrowserPromoReason::PromoReasonOmniboxPaste:
+      return l10n_util::GetNSString(
+          IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_DESCRIPTION);
+    case NonModalDefaultBrowserPromoReason::PromoReasonAppSwitcher:
+      return l10n_util::GetNSString(
+          IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_DESCRIPTION);
+    case NonModalDefaultBrowserPromoReason::PromoReasonShare:
+      return l10n_util::GetNSString(
+          IDS_IOS_DEFAULT_BROWSER_NON_MODAL_SHARE_DESCRIPTION);
+    default:
+      NOTREACHED();
+  }
+}
+
+// Returns the default title for the browser's non-modal window based on the
+// promo reason.
+- (NSString*)defaultBrowserNonModalTitleForPromoReason {
+  switch (_promoReason) {
+    case NonModalDefaultBrowserPromoReason::PromoReasonOmniboxPaste:
+      return l10n_util::GetNSString(
+          IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_TITLE);
+    case NonModalDefaultBrowserPromoReason::PromoReasonAppSwitcher:
+      return l10n_util::GetNSString(
+          IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_TITLE);
+    case NonModalDefaultBrowserPromoReason::PromoReasonShare:
+      return l10n_util::GetNSString(
+          IDS_IOS_DEFAULT_BROWSER_NON_MODAL_SHARE_TITLE);
+    default:
+      NOTREACHED();
+  }
 }
 
 @end

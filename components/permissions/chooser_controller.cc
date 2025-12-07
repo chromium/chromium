@@ -20,7 +20,7 @@ std::u16string ChooserController::GetTitle() const {
 }
 
 void ChooserController::View::OnAdapterAuthorizationChanged(bool authorized) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool ChooserController::ShouldShowIconBeforeText() const {
@@ -72,15 +72,19 @@ bool ChooserController::IsPaired(size_t index) const {
 }
 
 void ChooserController::RefreshOptions() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ChooserController::OpenAdapterOffHelpUrl() const {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ChooserController::OpenPermissionPreferences() const {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
+}
+
+void ChooserController::OpenBluetoothPermissionHelpUrl() const {
+  NOTREACHED();
 }
 
 bool ChooserController::ShouldShowAdapterOffView() const {
@@ -88,11 +92,11 @@ bool ChooserController::ShouldShowAdapterOffView() const {
 }
 
 int ChooserController::GetAdapterOffMessageId() const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 int ChooserController::GetTurnAdapterOnLinkTextMessageId() const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool ChooserController::ShouldShowAdapterUnauthorizedView() const {
@@ -100,11 +104,11 @@ bool ChooserController::ShouldShowAdapterUnauthorizedView() const {
 }
 
 int ChooserController::GetBluetoothUnauthorizedMessageId() const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 int ChooserController::GetAuthorizeBluetoothLinkTextMessageId() const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace permissions

@@ -4,8 +4,12 @@
 
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 
+#include "base/debug/dump_without_crashing.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/views/frame/web_contents_close_handler.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
+#include "components/search/ntp_features.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -13,7 +17,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
-#include "ui/views/background.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/views/view_class_properties.h"
 
 #if defined(USE_AURA)
@@ -25,41 +29,48 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentsWebView,
                                       kContentsWebViewElementId);
 
 ContentsWebView::ContentsWebView(content::BrowserContext* browser_context)
-    : views::WebView(browser_context),
-      status_bubble_(nullptr) {
+    : views::WebView(browser_context) {
+  // Draws the ContentsWebView background.
+  SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   SetProperty(views::kElementIdentifierKey, kContentsWebViewElementId);
+  status_bubble_ = std::make_unique<StatusBubbleViews>(this);
+  status_bubble_->Reposition();
+  web_contents_close_handler_ = std::make_unique<WebContentsCloseHandler>(this);
 }
 
-ContentsWebView::~ContentsWebView() {
-}
-
-void ContentsWebView::SetStatusBubble(StatusBubbleViews* status_bubble) {
-  status_bubble_ = status_bubble;
-  DCHECK(!status_bubble_ || status_bubble_->base_view() == this);
-  if (status_bubble_)
-    status_bubble_->Reposition();
-  OnPropertyChanged(&status_bubble_, views::kPropertyEffectsNone);
-}
+ContentsWebView::~ContentsWebView() = default;
 
 StatusBubbleViews* ContentsWebView::GetStatusBubble() const {
-  return status_bubble_;
+  if (status_bubble_) {
+    return status_bubble_.get();
+  }
+  return nullptr;
+}
+
+WebContentsCloseHandler* ContentsWebView::GetWebContentsCloseHandler() const {
+  return web_contents_close_handler_.get();
 }
 
 void ContentsWebView::SetBackgroundVisible(bool background_visible) {
   background_visible_ = background_visible;
-  if (GetWidget())
-    UpdateBackgroundColor();
-}
-
-void ContentsWebView::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {
-  if (background_radii_ == radii) {
-    return;
-  }
-
-  background_radii_ = radii;
   if (GetWidget()) {
     UpdateBackgroundColor();
   }
+}
+
+const gfx::RoundedCornersF& ContentsWebView::GetBackgroundRadii() const {
+  const ui::Layer* background_layer = layer();
+
+  CHECK(background_layer);
+  return background_layer->rounded_corner_radii();
+}
+
+void ContentsWebView::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {
+  ui::Layer* background_layer = layer();
+
+  CHECK(background_layer);
+  background_layer->SetRoundedCornerRadius(radii);
+  background_layer->SetIsFastRoundedCorner(true);
 }
 
 bool ContentsWebView::GetNeedsNotificationWhenVisibleBoundsChange() const {
@@ -67,8 +78,9 @@ bool ContentsWebView::GetNeedsNotificationWhenVisibleBoundsChange() const {
 }
 
 void ContentsWebView::OnVisibleBoundsChanged() {
-  if (status_bubble_)
+  if (status_bubble_) {
     status_bubble_->Reposition();
+  }
 }
 
 void ContentsWebView::OnThemeChanged() {
@@ -77,17 +89,51 @@ void ContentsWebView::OnThemeChanged() {
 }
 
 void ContentsWebView::OnLetterboxingChanged() {
-  if (GetWidget())
+  if (GetWidget()) {
     UpdateBackgroundColor();
+  }
+}
+
+void ContentsWebView::SetWebContents(content::WebContents* web_contents) {
+  views::WebView::SetWebContents(web_contents);
+  if (web_contents == nullptr) {
+    status_bubble_ = nullptr;
+    // Early exit: Without web contents, views dependent on ContentsWebView's
+    // bounds cannot be properly created or positioned. These views will
+    // initialize later when valid web contents exist.
+    return;
+  }
+
+  if (status_bubble_ == nullptr) {
+    status_bubble_ = std::make_unique<StatusBubbleViews>(this);
+    status_bubble_->Reposition();
+  }
+
+  // Ensure any dialogs already showing for the webcontents gets
+  // re-centered when the active tab changes or a split tab is created.
+  web_modal::WebContentsModalDialogManager* const dialog_manager =
+      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
+  if (dialog_manager) {
+    dialog_manager->UpdateDialogHost();
+  }
 }
 
 void ContentsWebView::UpdateBackgroundColor() {
-  SkColor color = GetColorProvider()->GetColor(
+  const SkColor color = GetColorProvider()->GetColor(
       is_letterboxing() ? kColorWebContentsBackgroundLetterboxing
                         : kColorWebContentsBackground);
-  SetBackground(background_visible_ ? views::CreateRoundedRectBackground(
-                                          color, background_radii_)
-                                    : nullptr);
+  // `color` must be opaque, see RenderWidgetHostView::SetBackgroundColor() for
+  // details.
+  // TODO(crbug.com/456309057): Update this to be a CHECK.
+  if (SkColorGetA(color) != SK_AlphaOPAQUE) {
+    base::debug::DumpWithoutCrashing();
+    if (background_visible_) {
+      return;
+    }
+  }
+
+  ui::Layer* background_layer = layer();
+  background_layer->SetColor(background_visible_ ? color : SK_ColorTRANSPARENT);
 
   if (web_contents()) {
     content::RenderWidgetHostView* rwhv =
@@ -119,8 +165,9 @@ std::unique_ptr<ui::Layer> ContentsWebView::RecreateLayer() {
 }
 
 void ContentsWebView::CloneWebContentsLayer() {
-  if (!web_contents())
+  if (!web_contents()) {
     return;
+  }
 #if defined(USE_AURA)
   // We don't need to clone the layers on non-Aura (Mac), because closing an
   // NSWindow does not animate.
@@ -131,9 +178,7 @@ void ContentsWebView::CloneWebContentsLayer() {
     return;
   }
 
-  SetPaintToLayer();
-
-  // The cloned layer is in a different coordinate system them our layer (which
+  // The cloned layer is in a different coordinate system than our layer (which
   // is now the new parent of the cloned layer). Convert coordinates so that the
   // cloned layer appears at the right location.
   gfx::PointF origin;
@@ -147,16 +192,15 @@ void ContentsWebView::CloneWebContentsLayer() {
 
 void ContentsWebView::DestroyClonedLayer() {
   cloned_layer_tree_.reset();
-  DestroyLayer();
 }
 
 void ContentsWebView::RenderViewReady() {
   // Set the background color to be the theme's ntp background on startup.
-  if (GetWidget())
+  if (GetWidget()) {
     UpdateBackgroundColor();
+  }
   WebView::RenderViewReady();
 }
 
 BEGIN_METADATA(ContentsWebView)
-ADD_PROPERTY_METADATA(StatusBubbleViews*, StatusBubble)
 END_METADATA

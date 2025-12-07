@@ -42,10 +42,6 @@
       "allowlist": [
         "0F42756099D914A026DADFA182871C015735DD95",  // http://crbug.com/323773
         "2D22CDB6583FD0A13758AEBE8B15E45208B4E9A7",
-        "E7E2461CE072DF036CF9592740196159E2D7C089",  // http://crbug.com/356200
-        "A74A4D44C7CFCD8844830E6140C8D763E12DD8F3",
-        "312745D9BF916161191143F6490085EEA0434997",
-        "53041A2FA309EECED01FFC751E7399186E860B2C",
         "A07A5B743CD82A1C2579DB77D353C98A23201EEF",  // http://crbug.com/413748
         "F16F23C83C5F6DAD9B65A120448B34056DD80691",
         "0F585FB1D0FDFBEBCE1FEB5E9DFFB6DA476B8C9B"
@@ -63,7 +59,9 @@
   ],
   "app.window.shape": {
     "channel": "stable",
-    "extension_types": ["platform_app"]
+    "extension_types": ["platform_app"],
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "linux", "mac", "win"]
   },
   "app.window.ime": {
      "channel": "stable",
@@ -77,13 +75,15 @@
   },
   "appview": {
     "channel": "stable",
-    "extension_types": ["platform_app"]
+    "extension_types": ["platform_app"],
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "linux", "mac", "win"]
   },
   "audio": [
     {
       "channel": "stable",
       "extension_types": ["extension", "platform_app"],
-      "platforms": ["chromeos", "lacros"],
+      "platforms": ["chromeos"],
       "session_types": ["kiosk"]
     },
     {
@@ -96,11 +96,15 @@
     },
     {
       "channel": "dev",
-      "extension_types": ["platform_app"]
+      "extension_types": ["platform_app"],
+      // "desktop_android" is not supported.
+      "platforms": ["chromeos", "linux", "mac", "win"]
     },
     {
       "channel": "stable",
       "extension_types": ["platform_app"],
+      // "desktop_android" is not supported.
+      "platforms": ["chromeos", "linux", "mac", "win"],
       "allowlist": [
         "8C3741E3AF0B93B6E8E0DDD499BB0B74839EA578",
         "E703483CEF33DEC18B4B6DD84B5C776FB9182BDB",
@@ -138,7 +142,7 @@
     {
       "channel": "stable",
       "extension_types": ["platform_app"],
-      "platforms": ["chromeos", "lacros", "win", "mac", "linux"],
+      "platforms": ["chromeos", "win", "mac", "linux"],
       "allowlist": [
         "1C93BD3CF875F4A73C0B2A163BB8FBDA8B8B3D80",  // http://crbug.com/387169
         "A3BC37E2148AC4E99BE4B16AF9D42DD1E592BBBE",  // http://crbug.com/387169
@@ -177,7 +181,7 @@
   "cecPrivate": {
     "channel": "stable",
     "extension_types": ["platform_app"],
-    "platforms": ["chromeos", "lacros"],
+    "platforms": ["chromeos"],
     "session_types": ["kiosk"],
     "allowlist": [
       "1C93BD3CF875F4A73C0B2A163BB8FBDA8B8B3D80",  // http://crbug.com/824667#c15
@@ -194,7 +198,7 @@
   "clipboard": {
     "channel": "dev",
     "extension_types": ["platform_app"],
-    "platforms": ["chromeos", "lacros"]
+    "platforms": ["chromeos"]
   },
   "declarativeNetRequest": {
     "channel": "stable",
@@ -211,7 +215,13 @@
   "declarativeWebRequest": {
     "channel": "beta",
     "extension_types": ["extension", "legacy_packaged_app"],
-    "max_manifest_version": 2
+    "max_manifest_version": 2,
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "linux", "mac", "win"]
+  },
+  "devtools": {
+    "channel": "stable",
+    "extension_types": ["extension", "legacy_packaged_app"]
   },
   "diagnostics": [
     {
@@ -255,6 +265,8 @@
   "feedbackPrivate": {
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "linux", "mac", "win"],
     "allowlist": [
       "7910EAFDAF64B947E1CB31B333A9BD14CA556B6C",  // Feedback UI.
       "1C93BD3CF875F4A73C0B2A163BB8FBDA8B8B3D80",  // http://crbug.com/293683
@@ -274,10 +286,14 @@
   "fileSystem": [{
     "channel": "stable",
     "extension_types": ["platform_app"],
-    "default_parent": true
+    "default_parent": true,
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "linux", "mac", "win"]
   },{
     "channel": "stable",
     "extension_types": ["extension"],
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "linux", "mac", "win"],
     "allowlist": [
       "2FC374607C2DF285634B67C64A2E356C607091C3",  // Quickoffice
       "3727DD3E564B6055387425027AD74C58784ACC15",  // Quickoffice internal
@@ -312,11 +328,15 @@
   "hid": [
     {
       "channel": "stable",
-      "extension_types": ["platform_app"]
+      "extension_types": ["platform_app"],
+      // "desktop_android" is not supported.
+      "platforms": ["chromeos", "linux", "mac", "win"]
     },
     {
       "channel": "stable",
       "extension_types": ["extension"],
+      // "desktop_android" is not supported.
+      "platforms": ["chromeos", "linux", "mac", "win"],
       "allowlist": [
         "D7CD4B3956B1F6E970E4AFCBCD4094B1EF4D07B9",  // http://crbug.com/710541
         "D4EFCCC0CC612380762758BB96C7997224BD6395",  // http://crbug.com/710541
@@ -328,15 +348,6 @@
   "idle": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"]
-  },
-  "lockScreen": {
-    "channel": "stable",
-    "extension_types": ["platform_app"],
-    "platforms": ["chromeos"],
-    "allowlist":  [
-      "6F9C741B8E0E546652134F1138DF0284A7C9B21E",  // http://crbug.com/728309
-      "47448626CB266C60AA2404E4EB426E025DF497DF"   // http://crbug.com/728309
-    ]
   },
   "mediaPerceptionPrivate": [{
     "channel": "stable",
@@ -415,7 +426,9 @@
       "898FB5A39687D210766B8998BA4530B99C9E6586",  // http://crbug.com/819404
       "82F30B65397BC3E4ADE627BBD857AB8A58210648",  // http://crbug.com/819404
       "C74B2AF138F9EDECD04D0965AB36CA66C8290466",  // http://crbug.com/957772
-      "1B1388598AC9A5608F43DE38316D6FB5FAD3574A"   // OneDrive FS extension
+      "1B1388598AC9A5608F43DE38316D6FB5FAD3574A",  // OneDrive FS extension
+      "EC8EA268128FECE14CEC68B90686D87755D87083",  // Assessment Assistant
+      "AA1C88257F51F7A9AFB947720AACE8CA7E9CF85C"   // Assessment Assistant (dev)
     ]
   },
   "nativeMessaging": {
@@ -427,12 +440,13 @@
   "networking.onc": [{
     "channel": "stable",
     "extension_types": ["platform_app"],
-    "platforms": ["chromeos", "lacros"],
+    "platforms": ["chromeos"],
     "session_types": ["kiosk.autolaunched"]
   }, {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
-    "platforms": ["chromeos", "mac", "win", "linux", "fuchsia"],
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "mac", "win", "linux"],
     "allowlist": [
       "0DE0F05680A4A056BCEC864ED8DDA84296F82B40",  // http://crbug.com/434651
       "1C93BD3CF875F4A73C0B2A163BB8FBDA8B8B3D80",  // http://crbug.com/293683
@@ -466,17 +480,12 @@
       "A4CC6F00ACF41015AF38F1D5C98E97C2B8B3B320",  // http://crbug.com/1483151
       "4E09F1C1EEC4D27F1F7DF18BA3643307107A7C41"   // http://crbug.com/1483151
     ]
-  },
-  {
-    "channel": "dev",
-    "extension_types": ["extension"],
-    "platforms": ["chromeos", "lacros"],
-    "session_types": ["kiosk"]
   }],
   "networkingPrivate": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
-    "platforms": ["chromeos", "lacros", "mac", "win", "linux", "fuchsia"],
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "mac", "win", "linux"],
     "allowlist": [
       // DO NOT ADD ANY MORE ENTRIES HERE.
       // networkingPrivate is being migrated to networking.onc.
@@ -506,7 +515,7 @@
   "odfsConfigPrivate": {
     "channel": "stable",
     "extension_types": ["extension"],
-    "platforms": ["chromeos", "lacros"],
+    "platforms": ["chromeos"],
     "allowlist": [
       "1B1388598AC9A5608F43DE38316D6FB5FAD3574A"  // ODFS extension
     ]
@@ -521,7 +530,28 @@
     "dependencies": ["behavior:imprivata_login_screen_extension"],
     "extension_types": ["login_screen_extension"],
     "min_manifest_version": 3
+  },
+  {
+    "channel": "stable",
+    "component_extensions_auto_granted": false,
+    "extension_types": ["login_screen_extension"],
+    "location": "policy",
+    "platforms": ["chromeos"],
+    "min_manifest_version": 3,
+    "allowlist": [
+      "5C825E850034490380BCB756D43ABB2CF537AA91",  // crbug.com/359290130
+      // crbug.com/378640229
+      "EC3DE21E048B67319893889529354DFBFA96FD23",  // Smart Card Connector
+      "A19608AC34215B127FF9D7C006D67F5C8ED8146D",  // Smart Card Connector Beta
+      "6B748A5C005F21B7CBCF4170C2F883E435DEB511",  // DriveLock Smart Card Middleware
+      "075FF17D52ED6E3C2E5EC4D99F188E7A25AF47EA"   // Beta DriveLock Smart Card Middleware
+    ]
   }],
+  "omnibox.directInput" : {
+    "channel": "dev",
+    "feature_flag": "ExperimentalOmniboxLabs",
+    "extension_types": [ "extension"]
+  },
   "power": [{
     "channel": "stable",
     "extension_types": [ "extension", "legacy_packaged_app", "platform_app" ]
@@ -533,7 +563,9 @@
   }],
   "printerProvider": {
     "channel": "stable",
-    "extension_types": ["extension", "platform_app" ]
+    "extension_types": ["extension", "platform_app" ],
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "linux", "mac", "win"]
   },
   // Note: runtime is not actually a permission, but some systems check these
   // values to verify restrictions.
@@ -543,11 +575,15 @@
   },
   "serial": {
     "channel": "stable",
-    "extension_types": ["platform_app"]
+    "extension_types": ["platform_app"],
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "linux", "mac", "win"]
   },
   "socket": {
     "channel": "stable",
-    "extension_types": ["platform_app"]
+    "extension_types": ["platform_app"],
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "linux", "mac", "win"]
   },
   "storage": [
     {
@@ -564,9 +600,13 @@
         "93B7178E8C275515C38D4F43D9DF4648F0EA9B03",   // Identity Card Connector
         "EC3DE21E048B67319893889529354DFBFA96FD23",   // https://crbug.com/1233881
         "A19608AC34215B127FF9D7C006D67F5C8ED8146D",   // https://crbug.com/1233881
+        "1FC31C9D42DF1B51EA7648F73DF26400322999A8",   // https://crbug.com/383855830
         // https://crbug.com/1194693
-        "6B748A5C005F21B7CBCF4170C2F883E435DEB511",   // CSSI Smart Card Middleware
-        "075FF17D52ED6E3C2E5EC4D99F188E7A25AF47EA"    // Beta CSSI Smart Card Middleware
+        "6B748A5C005F21B7CBCF4170C2F883E435DEB511",   // DriveLock Smart Card Middleware
+        "075FF17D52ED6E3C2E5EC4D99F188E7A25AF47EA",   // Beta DriveLock Smart Card Middleware
+        "5C825E850034490380BCB756D43ABB2CF537AA91",   // b/359290130
+        // https://crbug.com/433867146
+        "4B7E9789426EBD1BB3F99D72690DAE303FC042DF"    // AuthX Secure for ChromeOS
       ]
     },
     {
@@ -631,22 +671,30 @@
   "system.storage": [
     {
       "channel": "stable",
-      "extension_types": ["extension", "legacy_packaged_app", "platform_app"]
+      "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
+      // "desktop_android" is not supported.
+      "platforms": ["chromeos", "linux", "mac", "win"]
     },
     {
       "channel": "stable",
       "extension_types": ["hosted_app"],
+      // "desktop_android" is not supported.
+      "platforms": ["chromeos", "linux", "mac", "win"],
       "allowlist": ["B44D08FD98F1523ED5837D78D0A606EA9D6206E5"]  // Web Store
     }
   ],
   "system.display": [
     {
       "channel": "stable",
-      "extension_types": ["extension", "legacy_packaged_app", "platform_app"]
+      "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
+      // "desktop_android" is not supported.
+      "platforms": ["chromeos", "linux", "mac", "win"]
     },
     {
       "channel": "stable",
       "extension_types": ["hosted_app"],
+      // "desktop_android" is not supported.
+      "platforms": ["chromeos", "linux", "mac", "win"],
       "allowlist": ["B44D08FD98F1523ED5837D78D0A606EA9D6206E5"]  // Web Store
     }
   ],
@@ -669,18 +717,12 @@
       "extension", "legacy_packaged_app", "hosted_app", "platform_app"
     ]
   },
-  "usb": [
-    {
-      "channel": "stable",
-      "extension_types": ["platform_app"]
-    },
-    {
-      "channel": "dev",
-      "extension_types": ["extension"],
-      "platforms": ["chromeos", "lacros"],
-      "session_types": ["kiosk"]
-    }
-  ],
+  "usb": {
+    "channel": "stable",
+    "extension_types": ["platform_app"],
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "linux", "mac", "win"]
+  },
   "usbDevices": [
     {
       "channel": "stable",
@@ -695,12 +737,6 @@
         "4839A26B29CD1BD021B2E126EF6D28C9CB84018B",  // http://crbug.com/710541
         "8F44FBB4474CCDF23450B166C9E83E85BD03AE24"   // http://crbug.com/710541
       ]
-    },
-    {
-      "channel": "dev",
-      "extension_types": ["extension"],
-      "platforms": ["chromeos", "lacros"],
-      "session_types": ["kiosk"]
     }
   ],
   "videoCapture": [
@@ -717,17 +753,12 @@
       ]
     }
   ],
-  "virtualKeyboard": [{
+  "virtualKeyboard": {
     "channel": "stable",
     "extension_types": ["platform_app"],
     "platforms": ["chromeos"],
     "session_types": ["kiosk"]
-  }, {
-    "channel": "dev",
-    "extension_types": ["extension"],
-    "platforms": ["chromeos", "lacros"],
-    "session_types": ["kiosk"]
-  }],
+  },
   "virtualKeyboardPrivate": {
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
@@ -752,11 +783,13 @@
   "vpnProvider": {
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
-    "platforms": ["chromeos", "lacros"]
+    "platforms": ["chromeos"]
   },
   "webview": {
     "channel": "stable",
-    "extension_types": ["platform_app"]
+    "extension_types": ["platform_app"],
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "linux", "mac", "win"]
   },
   "webRequest": [
     {

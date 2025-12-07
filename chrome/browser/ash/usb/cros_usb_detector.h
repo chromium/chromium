@@ -27,7 +27,7 @@
 
 namespace ash {
 
-const uint8_t kInvalidUsbPortNumber = 0xff;
+inline constexpr uint8_t kInvalidUsbPortNumber = 0xff;
 
 // List of class codes to handle / not handle.
 // See https://www.usb.org/defined-class-codes for more information.
@@ -98,6 +98,7 @@ struct CrosUsbDeviceInfo {
                     std::optional<guest_os::GuestId> shared_guest_id,
                     uint16_t vendor_id,
                     uint16_t product_id,
+                    std::string serial_number,
                     bool prompt_before_sharing);
   CrosUsbDeviceInfo(const CrosUsbDeviceInfo&);
   ~CrosUsbDeviceInfo();
@@ -109,6 +110,7 @@ struct CrosUsbDeviceInfo {
   std::optional<guest_os::GuestId> shared_guest_id;
   uint16_t vendor_id;
   uint16_t product_id;
+  std::string serial_number;
   // Devices shared with other devices or otherwise in use by the system
   // should have a confirmation prompt shown prior to sharing.
   bool prompt_before_sharing;
@@ -283,7 +285,7 @@ class CrosUsbDetector : public device::mojom::UsbDeviceManagerClient,
   // Callbacks for when the USB device state has been updated.
   void OnUsbDeviceAttachFinished(
       const guest_os::GuestId& guest_id,
-      const std::string& guid,
+      device::mojom::UsbDeviceInfoPtr device_info,
       base::OnceCallback<void(bool success)> callback,
       std::optional<vm_tools::concierge::AttachUsbDeviceResponse> response);
 
@@ -323,7 +325,7 @@ class CrosUsbDetector : public device::mojom::UsbDeviceManagerClient,
       const std::string& vm_name,
       const std::string& guid,
       base::OnceCallback<void(bool success)> callback,
-      std::optional<vm_tools::concierge::DetachUsbDeviceResponse> response);
+      std::optional<vm_tools::concierge::SuccessFailureResponse> response);
 
   // Returns true when a device should show a notification when attached.
   bool ShouldShowNotification(const UsbDevice& device);

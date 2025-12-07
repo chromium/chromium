@@ -6,13 +6,13 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/run_loop.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/events/ozone/layout/scoped_keyboard_layout_engine.h"
 #include "ui/ozone/common/features.h"
-#include "ui/ozone/platform/wayland/host/wayland_connection_test_api.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_screen.h"
@@ -20,6 +20,7 @@
 #include "ui/ozone/platform/wayland/test/scoped_wl_array.h"
 #include "ui/ozone/platform/wayland/test/test_keyboard.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
+#include "ui/ozone/platform/wayland/test/wayland_connection_test_api.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
 #if BUILDFLAG(USE_XKBCOMMON)
@@ -36,7 +37,9 @@ namespace ui {
 WaylandTestBase::WaylandTestBase(wl::ServerConfig config)
     : task_environment_(base::test::TaskEnvironment::MainThreadType::UI,
                         base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-      server_(config) {
+      server_(config),
+      connection_(std::make_unique<WaylandConnection>()),
+      delegate_(connection_.get()) {
 #if BUILDFLAG(USE_XKBCOMMON)
   auto keyboard_layout_engine =
       std::make_unique<XkbKeyboardLayoutEngine>(xkb_evdev_code_converter_);
@@ -45,7 +48,6 @@ WaylandTestBase::WaylandTestBase(wl::ServerConfig config)
 #endif
   scoped_keyboard_layout_engine_ = std::make_unique<ScopedKeyboardLayoutEngine>(
       std::move(keyboard_layout_engine));
-  connection_ = std::make_unique<WaylandConnection>();
   buffer_manager_gpu_ = std::make_unique<WaylandBufferManagerGpu>();
   surface_factory_ = std::make_unique<WaylandSurfaceFactory>(
       connection_.get(), buffer_manager_gpu_.get());
@@ -54,8 +56,6 @@ WaylandTestBase::WaylandTestBase(wl::ServerConfig config)
 WaylandTestBase::~WaylandTestBase() = default;
 
 void WaylandTestBase::SetUp() {
-  disabled_features_.push_back(ui::kWaylandSurfaceSubmissionInPixelCoordinates);
-
   feature_list_.InitWithFeatures(enabled_features_, disabled_features_);
 
   if (DeviceDataManager::HasInstance()) {
@@ -66,6 +66,9 @@ void WaylandTestBase::SetUp() {
   }
 
   ASSERT_TRUE(server_.Start());
+  if (server_.wp_linux_drm_syncobj_manager_v1()) {
+    WaylandConnectionTestApi(connection_.get()).EnableLinuxDrmSyncobj();
+  }
   ASSERT_TRUE(connection_->Initialize());
   screen_ = connection_->wayland_output_manager()->CreateWaylandScreen();
   connection_->wayland_output_manager()->InitWaylandScreen(screen_.get());
@@ -81,7 +84,7 @@ void WaylandTestBase::SetUp() {
   window_->Show(false);
 
   // Wait for the client to flush all pending requests from initialization.
-  WaylandConnectionTestApi(connection_.get()).SyncDisplay();
+  SyncDisplay();
 
   // The surface must be activated before buffers are attached.
   ActivateSurface(window_->root_surface()->get_surface_id());
@@ -97,7 +100,7 @@ void WaylandTestBase::SetUp() {
 
 void WaylandTestBase::TearDown() {
   if (initialized_) {
-    WaylandConnectionTestApi(connection_.get()).SyncDisplay();
+    SyncDisplay();
   }
 }
 
@@ -124,14 +127,13 @@ void WaylandTestBase::PostToServerAndWait(base::OnceClosure closure,
     task_environment_.RunUntilIdle();
   } else {
     // Sync with the display to ensure client's requests are processed.
-    WaylandConnectionTestApi test_api(connection_.get());
-    test_api.SyncDisplay();
+    SyncDisplay();
 
     server_.RunAndWait(std::move(closure));
 
     // Sync with the display to ensure server's events are received and
     // processed
-    test_api.SyncDisplay();
+    SyncDisplay();
   }
 }
 
@@ -151,44 +153,38 @@ void WaylandTestBase::SendConfigureEvent(uint32_t surface_id,
                                          const gfx::Size& size,
                                          const wl::ScopedWlArray& states,
                                          std::optional<uint32_t> serial) {
-  PostToServerAndWait([size, surface_id, states,
-                       serial](wl::TestWaylandServerThread* server) {
-    auto* surface = server->GetObject<wl::MockSurface>(surface_id);
-    ASSERT_TRUE(surface);
-    auto* xdg_surface = surface->xdg_surface();
-    ASSERT_TRUE(xdg_surface);
+  PostToServerAndWait(
+      [size, surface_id, states, serial](wl::TestWaylandServerThread* server) {
+        auto* surface = server->GetObject<wl::MockSurface>(surface_id);
+        ASSERT_TRUE(surface);
+        auto* xdg_surface = surface->xdg_surface();
+        ASSERT_TRUE(xdg_surface);
 
-    const int32_t width = size.width();
-    const int32_t height = size.height();
-    // In xdg_shell_v6+, both surfaces send serial configure event and toplevel
-    // surfaces send other data like states, heights and widths.
-    // Please note that toplevel surfaces may not exist if the surface was
-    // created for the popup role.
-    wl::ScopedWlArray surface_states(states);
-    if (xdg_surface->xdg_toplevel()) {
-      xdg_toplevel_send_configure(xdg_surface->xdg_toplevel()->resource(),
-                                  width, height, surface_states.get());
-    } else {
-      ASSERT_TRUE(xdg_surface->xdg_popup()->resource());
-      xdg_popup_send_configure(xdg_surface->xdg_popup()->resource(), 0, 0,
-                               width, height);
-    }
-    xdg_surface_send_configure(
-        xdg_surface->resource(),
-        serial.has_value() ? serial.value() : server->GetNextSerial());
-  });
+        const int32_t width = size.width();
+        const int32_t height = size.height();
+        // In xdg_shell_v6+, both surfaces send serial configure event and
+        // toplevel surfaces send other data like states, heights and widths.
+        // Please note that toplevel surfaces may not exist if the surface was
+        // created for the popup role.
+        wl::ScopedWlArray surface_states(states);
+        if (xdg_surface->xdg_toplevel()) {
+          xdg_toplevel_send_configure(xdg_surface->xdg_toplevel()->resource(),
+                                      width, height, surface_states.get());
+        } else {
+          ASSERT_TRUE(xdg_surface->xdg_popup()->resource());
+          xdg_popup_send_configure(xdg_surface->xdg_popup()->resource(), 0, 0,
+                                   width, height);
+        }
+        xdg_surface_send_configure(
+            xdg_surface->resource(),
+            serial.has_value() ? serial.value() : server->GetNextSerial());
+      });
 }
 
 void WaylandTestBase::ActivateSurface(uint32_t surface_id,
                                       std::optional<uint32_t> serial) {
   wl::ScopedWlArray state({XDG_TOPLEVEL_STATE_ACTIVATED});
   SendConfigureEvent(surface_id, {0, 0}, state, serial);
-}
-
-void WaylandTestBase::InitializeSurfaceAugmenter() {
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    server->EnsureSurfaceAugmenter();
-  });
 }
 
 void WaylandTestBase::MaybeSetUpXkb() {
@@ -217,7 +213,8 @@ void WaylandTestBase::MaybeSetUpXkb() {
             std::move(shared_keymap_region));
     ASSERT_TRUE(shared_keymap.IsValid());
 
-    memcpy(shared_keymap.memory(), keymap_string.get(), keymap_size);
+    UNSAFE_TODO(
+        memcpy(shared_keymap.memory(), keymap_string.get(), keymap_size));
 
     auto* const keyboard = server->seat()->keyboard()->resource();
     ASSERT_TRUE(keyboard);
@@ -246,14 +243,15 @@ void WaylandTestBase::WaitForAllDisplaysReady() {
   loop.Run();
 
   // Secondly, make sure all events after 'done' are processed.
-  WaylandConnectionTestApi(connection_.get()).SyncDisplay();
+  SyncDisplay();
 }
 
 std::unique_ptr<WaylandWindow> WaylandTestBase::CreateWaylandWindowWithParams(
     PlatformWindowType type,
     const gfx::Rect bounds,
     MockWaylandPlatformWindowDelegate* delegate,
-    gfx::AcceleratedWidget parent_widget) {
+    gfx::AcceleratedWidget parent_widget,
+    bool inactive) {
   PlatformWindowInitProperties properties;
   properties.bounds = bounds;
   properties.type = type;
@@ -262,8 +260,12 @@ std::unique_ptr<WaylandWindow> WaylandTestBase::CreateWaylandWindowWithParams(
   auto window =
       delegate->CreateWaylandWindow(connection_.get(), std::move(properties));
   if (window)
-    window->Show(false);
+    window->Show(inactive);
   return window;
+}
+
+void WaylandTestBase::SyncDisplay() {
+  WaylandConnectionTestApi(connection_.get()).SyncDisplay();
 }
 
 WaylandTest::WaylandTest() : WaylandTestBase(GetParam()) {}
@@ -276,10 +278,6 @@ void WaylandTest::SetUp() {
 
 void WaylandTest::TearDown() {
   WaylandTestBase::TearDown();
-}
-
-bool WaylandTest::IsAuraShellEnabled() {
-  return GetParam().enable_aura_shell == wl::EnableAuraShellProtocol::kEnabled;
 }
 
 WaylandTestSimple::WaylandTestSimple()
@@ -298,18 +296,5 @@ void WaylandTestSimple::TearDown() {
   WaylandTestBase::TearDown();
 }
 
-WaylandTestSimpleWithAuraShell::WaylandTestSimpleWithAuraShell()
-    : WaylandTestBase(
-          {.enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}) {}
-
-WaylandTestSimpleWithAuraShell::~WaylandTestSimpleWithAuraShell() = default;
-
-void WaylandTestSimpleWithAuraShell::SetUp() {
-  WaylandTestBase::SetUp();
-}
-
-void WaylandTestSimpleWithAuraShell ::TearDown() {
-  WaylandTestBase::TearDown();
-}
 
 }  // namespace ui

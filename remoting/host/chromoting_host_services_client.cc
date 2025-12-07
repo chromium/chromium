@@ -11,6 +11,7 @@
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server_client_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/invitation.h"
+#include "remoting/base/constants.h"
 #include "remoting/host/ipc_constants.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
 
@@ -27,8 +28,8 @@ namespace {
 
 bool g_initialized = false;
 
-mojo::PendingRemote<mojom::ChromotingHostServices> ConnectToServer() {
-  auto server_name = GetChromotingHostServicesServerName();
+mojo::PendingRemote<mojom::ChromotingHostServices> ConnectToServer(
+    const mojo::NamedPlatformChannel::ServerName& server_name) {
   auto endpoint = named_mojo_ipc_server::ConnectToServer(server_name);
   if (!endpoint.is_valid()) {
     LOG(WARNING) << "Cannot connect to IPC through server name " << server_name
@@ -59,17 +60,14 @@ mojo::PendingRemote<mojom::ChromotingHostServices> ConnectToServer() {
 
 }  // namespace
 
-#if BUILDFLAG(IS_LINUX)
-
-// static
-constexpr char
-    ChromotingHostServicesClient::kChromeRemoteDesktopSessionEnvVar[];
-
-#endif
-
 ChromotingHostServicesClient::ChromotingHostServicesClient()
-    : ChromotingHostServicesClient(base::Environment::Create(),
-                                   base::BindRepeating(&ConnectToServer)) {
+    : ChromotingHostServicesClient(GetChromotingHostServicesServerName()) {}
+
+ChromotingHostServicesClient::ChromotingHostServicesClient(
+    const mojo::NamedPlatformChannel::ServerName& server_name)
+    : ChromotingHostServicesClient(
+          base::Environment::Create(),
+          base::BindRepeating(&ConnectToServer, server_name)) {
   DCHECK(g_initialized)
       << "ChromotingHostServicesClient::Initialize() has not been called.";
 }
@@ -110,6 +108,11 @@ ChromotingHostServicesClient::GetSessionServices() const {
     return nullptr;
   }
   return session_services_remote_.get();
+}
+
+void ChromotingHostServicesClient::set_disconnect_handler(
+    base::OnceClosure disconnect_handler) {
+  disconnect_handler_ = std::move(disconnect_handler);
 }
 
 bool ChromotingHostServicesClient::EnsureConnection() {
@@ -157,6 +160,10 @@ void ChromotingHostServicesClient::OnDisconnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   remote_.reset();
+
+  if (disconnect_handler_) {
+    std::move(disconnect_handler_).Run();
+  }
 }
 
 void ChromotingHostServicesClient::OnSessionDisconnected() {
@@ -164,8 +171,8 @@ void ChromotingHostServicesClient::OnSessionDisconnected() {
 
   session_services_remote_.reset();
 
-  if (on_session_disconnected_callback_for_testing_) {
-    std::move(on_session_disconnected_callback_for_testing_).Run();
+  if (disconnect_handler_) {
+    std::move(disconnect_handler_).Run();
   }
 }
 

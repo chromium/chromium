@@ -187,6 +187,22 @@ void PeripheralNotificationManager::NotifySpeedLimitingCableWarning() {
     observer.OnSpeedLimitingCableWarning();
 }
 
+void PeripheralNotificationManager::OnUsbLimit(
+    typecd::UsbLimitType usb_limit_type) {
+  if (usb_limit_type == typecd::UsbLimitType::kDeviceLimit ||
+      usb_limit_type == typecd::UsbLimitType::kEndpointLimit) {
+    NotifyUsbDeviceOrEndpointLimit();
+    RecordConnectivityMetric(
+        PeripheralConnectivityResults::kUsbDeviceOrEndpointLimit);
+  }
+}
+
+void PeripheralNotificationManager::NotifyUsbDeviceOrEndpointLimit() {
+  for (auto& observer : observer_list_) {
+    observer.OnUsbDeviceOrEndpointLimit();
+  }
+}
+
 void PeripheralNotificationManager::OnDeviceConnected(
     device::mojom::UsbDeviceInfo* device) {
   if (device->class_code == kBillboardDeviceClassCode) {

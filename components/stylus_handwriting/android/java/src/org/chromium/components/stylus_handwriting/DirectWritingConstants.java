@@ -4,10 +4,13 @@
 
 package org.chromium.components.stylus_handwriting;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Class to store Direct writing constants. The service package constants are from Samsung platform
  * and the MSG_ constants are used to identify Service callback command messages.
  */
+@NullMarked
 class DirectWritingConstants {
     private DirectWritingConstants() {}
 

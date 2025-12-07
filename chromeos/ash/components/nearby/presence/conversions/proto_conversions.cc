@@ -21,9 +21,8 @@ RemoteCredentialTypeToThirdPartyCredentialType(
     case ash::nearby::proto::CredentialType::CREDENTIAL_TYPE_GAIA:
       return ::nearby::internal::CredentialType::CREDENTIAL_TYPE_GAIA;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  NOTREACHED_NORETURN();
 }
 
 ::nearby::internal::IdentityType RemoteIdentityTypeToThirdPartyIdentityType(
@@ -36,10 +35,8 @@ RemoteCredentialTypeToThirdPartyCredentialType(
     case ash::nearby::proto::IdentityType::IDENTITY_TYPE_CONTACTS_GROUP:
       return ::nearby::internal::IdentityType::IDENTITY_TYPE_CONTACTS_GROUP;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-
-  NOTREACHED_NORETURN();
 }
 
 }  // namespace
@@ -90,7 +87,7 @@ mojom::PublicCredentialType PublicCredentialTypeToMojom(
       return mojom::PublicCredentialType::kRemotePublicCredential;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 mojom::PrivateKeyPtr PrivateKeyToMojom(

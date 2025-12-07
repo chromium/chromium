@@ -24,20 +24,25 @@ void ToggleCameraButton::SetCameraState(bool is_turned_on) {
 }
 
 void ToggleCameraButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  if (size() == previous_bounds.size())
+  if (size() == previous_bounds.size()) {
     return;
+  }
 
   UpdateImageAndTooltipText();
 }
 
 void ToggleCameraButton::UpdateImageAndTooltipText() {
-  if (bounds().IsEmpty())
+  if (bounds().IsEmpty()) {
     return;
+  }
 
-  const auto& icon = is_turned_on_ ? vector_icons::kVideocamIcon
-                                   : vector_icons::kVideocamOffIcon;
+  const auto& icon = is_turned_on_
+                         ? vector_icons::kVideocamChromeRefreshIcon
+                         : vector_icons::kVideocamOffChromeRefreshIcon;
+
   auto text = is_turned_on_ ? IDS_PICTURE_IN_PICTURE_TURN_OFF_CAMERA_TEXT
                             : IDS_PICTURE_IN_PICTURE_TURN_ON_CAMERA_TEXT;
+
   const int icon_size = std::max(0, width() - (2 * kPipWindowIconPadding));
 
   SetImageModel(views::Button::STATE_NORMAL,

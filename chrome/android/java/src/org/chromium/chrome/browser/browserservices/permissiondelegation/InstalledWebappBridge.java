@@ -10,7 +10,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 
@@ -22,6 +23,7 @@ import org.chromium.components.embedder_support.util.Origin;
  * Thread safety: Methods will only be called on the UI thread.
  * Native: Requires native to be loaded.
  */
+@NullMarked
 public class InstalledWebappBridge {
     private static long sNativeInstalledWebappProvider;
 
@@ -37,9 +39,9 @@ public class InstalledWebappBridge {
      */
     static class Permission {
         public final Origin origin;
-        public final @ContentSettingValues int setting;
+        public final @ContentSetting int setting;
 
-        public Permission(Origin origin, @ContentSettingValues int setting) {
+        public Permission(Origin origin, @ContentSetting int setting) {
             this.origin = origin;
             this.setting = setting;
         }
@@ -52,8 +54,7 @@ public class InstalledWebappBridge {
                 .notifyPermissionsChange(sNativeInstalledWebappProvider, type);
     }
 
-    public static void runPermissionCallback(
-            long callback, @ContentSettingValues int settingValue) {
+    public static void runPermissionCallback(long callback, @ContentSetting int settingValue) {
         if (callback == 0) return;
 
         InstalledWebappBridgeJni.get().runPermissionCallback(callback, settingValue);
@@ -66,7 +67,7 @@ public class InstalledWebappBridge {
 
     @CalledByNative
     private static Permission[] getPermissions(@ContentSettingsType.EnumType int type) {
-        return InstalledWebappPermissionManager.get().getPermissions(type);
+        return InstalledWebappPermissionManager.getPermissions(type);
     }
 
     @CalledByNative
@@ -87,16 +88,15 @@ public class InstalledWebappBridge {
             long callback) {
         Origin origin = Origin.create(Uri.parse(originUrl));
         if (origin == null) {
-            runPermissionCallback(callback, ContentSettingValues.BLOCK);
+            runPermissionCallback(callback, ContentSetting.BLOCK);
             return;
         }
         switch (type) {
             case ContentSettingsType.GEOLOCATION:
-                PermissionUpdater.get().getLocationPermission(origin, lastCommittedUrl, callback);
+                PermissionUpdater.getLocationPermission(origin, lastCommittedUrl, callback);
                 break;
             case ContentSettingsType.NOTIFICATIONS:
-                PermissionUpdater.get()
-                        .requestNotificationPermission(origin, lastCommittedUrl, callback);
+                PermissionUpdater.requestNotificationPermission(origin, lastCommittedUrl, callback);
                 break;
             default:
                 throw new IllegalStateException("Unsupported permission type.");
@@ -107,6 +107,6 @@ public class InstalledWebappBridge {
     interface Natives {
         void notifyPermissionsChange(long provider, int type);
 
-        void runPermissionCallback(long callback, @ContentSettingValues int settingValue);
+        void runPermissionCallback(long callback, @ContentSetting int settingValue);
     }
 }

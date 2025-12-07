@@ -59,6 +59,10 @@ class PowerButtonControllerTestApi {
   // GetMenuBoundsInScreen.
   PowerButtonMenuView* GetPowerButtonMenuView() const;
 
+  // Gets the layer associated with the `controller_`'s menu background
+  // (a `PowerButtonMenuBackgroundView`).
+  ui::Layer* GetPowerButtonMenuBackgroundLayer() const;
+
   // True if the menu is opened.
   bool IsMenuOpened() const;
 
@@ -78,8 +82,6 @@ class PowerButtonControllerTestApi {
   bool MenuHasFeedbackItem() const;
 
   PowerButtonScreenshotController* GetScreenshotController();
-
-  void SetPowerButtonType(PowerButtonController::ButtonType button_type);
 
   void SetTickClock(const base::TickClock* tick_clock);
 

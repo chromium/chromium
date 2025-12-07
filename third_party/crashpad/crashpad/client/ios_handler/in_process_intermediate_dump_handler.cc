@@ -52,6 +52,7 @@ using thread_state_type = arm_thread_state64_t;
 
 // From snapshot/mac/process_types/crashreporterclient.proctype
 struct crashreporter_annotations_t {
+  // Version 4
   uint64_t version;
   uint64_t message;
   uint64_t signature_string;
@@ -59,7 +60,23 @@ struct crashreporter_annotations_t {
   uint64_t message2;
   uint64_t thread;
   uint64_t dialog_mode;
+
+  // Version 5
   uint64_t abort_cause;
+
+  // The structure here is only defined through version 5, although version 7 is
+  // also known, and contains an additional 264 bytes from this point. Version 7
+  // was first used in iOS 26. The version 7 extension is not defined here
+  // because it would cause the reader to attempt to read the full length of a
+  // version 7 structure, even in cases where only a version 5 structure is
+  // present at runtime, as it will be in iOS versions before 26.
+  //
+  // If it ever becomes necessary to read fields beyond version 5 (or whatever
+  // the minimum structure version that would be encountered at runtime is at
+  // that time in the future), the reader will need to take additional care to
+  // consult the `version` field and only read as much of the structure as is
+  // appropriate for the indicated version. The macOS implementation implements
+  // this logic.
 };
 
 //! \brief Manage memory and ports after calling `task_threads`.
@@ -91,7 +108,7 @@ class ScopedTaskThreads {
 void WriteError(IntermediateDumpKey key) {
   CRASHPAD_RAW_LOG("Unable to write key");
   switch (key) {
-// clang-format off
+    // clang-format off
 #define CASE_KEY(Name, Value)       \
     case IntermediateDumpKey::Name: \
       CRASHPAD_RAW_LOG(#Name);      \
@@ -493,9 +510,14 @@ void WriteCrashpadSimpleAnnotationsDictionary(IOSIntermediateDumpWriter* writer,
 void WriteAppleCrashReporterAnnotations(
     IOSIntermediateDumpWriter* writer,
     crashreporter_annotations_t* crash_info) {
-  // This number was totally made up out of nowhere, but it seems prudent to
-  // enforce some limit.
-  constexpr size_t kMaxMessageSize = 1024;
+  // It seems prudent to enforce some limit. Different users of
+  // CRSetCrashLogMessage and CRSetCrashLogMessage2, apparently the private
+  // <CrashReporterClient.h> functions used to set message and message2, use
+  // different buffer lengths. dyld-1231.3 libdyld/dyld_process_info.cpp has
+  // `static char sCrashReporterInfo[4096]`, which seems like a reasonable
+  // limit.
+  constexpr size_t kMaxMessageSize = 4096;
+
   IOSIntermediateDumpWriter::ScopedMap annotation_map(
       writer, IntermediateDumpKey::kAnnotationsCrashInfo);
   if (crash_info->message) {
@@ -1096,7 +1118,9 @@ void InProcessIntermediateDumpHandler::WriteModuleInfoAtAddress(
         WriteProperty(
             writer, IntermediateDumpKey::kSize, &segment_vm_read_ptr->vmsize);
         slide = address - segment_vm_read_ptr->vmaddr;
-      } else if (strcmp(segment_vm_read_ptr->segname, SEG_DATA) == 0) {
+      } else if (strcmp(segment_vm_read_ptr->segname, SEG_DATA) == 0 ||
+                 // dyld puts __crash_info in __DATA_DIRTY.
+                 strcmp(segment_vm_read_ptr->segname, "__DATA_DIRTY") == 0) {
         WriteDataSegmentAnnotations(writer, segment_vm_read_ptr, slide);
       }
     } else if (command_vm_read_ptr->cmd == LC_ID_DYLIB) {
@@ -1137,21 +1161,29 @@ void InProcessIntermediateDumpHandler::WriteDataSegmentAnnotations(
   for (uint32_t sect_index = 0; sect_index <= segment_vm_read_ptr->nsects;
        ++sect_index) {
     if (strcmp(section_vm_read_ptr->sectname, "crashpad_info") == 0) {
-      ScopedVMRead<CrashpadInfo> crashpad_info;
-      if (crashpad_info.Read(section_vm_read_ptr->addr + slide) &&
-          crashpad_info->size() == sizeof(CrashpadInfo) &&
-          crashpad_info->signature() == CrashpadInfo::kSignature &&
-          crashpad_info->version() == 1) {
-        WriteCrashpadAnnotationsList(writer, crashpad_info.get());
-        WriteCrashpadSimpleAnnotationsDictionary(writer, crashpad_info.get());
+      if (section_vm_read_ptr->size >= sizeof(CrashpadInfo)) {
+        ScopedVMRead<CrashpadInfo> crashpad_info;
+        if (crashpad_info.Read(section_vm_read_ptr->addr + slide) &&
+            crashpad_info->size() <= section_vm_read_ptr->size &&
+            crashpad_info->size() >= sizeof(CrashpadInfo) &&
+            crashpad_info->signature() == CrashpadInfo::kSignature &&
+            crashpad_info->version() == 1) {
+          WriteCrashpadAnnotationsList(writer, crashpad_info.get());
+          WriteCrashpadSimpleAnnotationsDictionary(writer, crashpad_info.get());
+          WriteCrashpadExtraMemoryRanges(writer, crashpad_info.get());
+          WriteCrashpadIntermediateDumpExtraMemoryRanges(writer,
+                                                         crashpad_info.get());
+        }
       }
     } else if (strcmp(section_vm_read_ptr->sectname, "__crash_info") == 0) {
-      ScopedVMRead<crashreporter_annotations_t> crash_info;
-      if (!crash_info.Read(section_vm_read_ptr->addr + slide) ||
-          (crash_info->version != 4 && crash_info->version != 5)) {
-        continue;
+      if (section_vm_read_ptr->size >= sizeof(crashreporter_annotations_t)) {
+        ScopedVMRead<crashreporter_annotations_t> crash_info;
+        if (crash_info.Read(section_vm_read_ptr->addr + slide) &&
+            (crash_info->version == 4 || crash_info->version == 5 ||
+             crash_info->version == 7)) {
+          WriteAppleCrashReporterAnnotations(writer, crash_info.get());
+        }
       }
-      WriteAppleCrashReporterAnnotations(writer, crash_info.get());
     }
     section_vm_read_ptr = reinterpret_cast<const section_64*>(
         reinterpret_cast<uint64_t>(section_vm_read_ptr) + sizeof(section_64));
@@ -1254,6 +1286,73 @@ void InProcessIntermediateDumpHandler::WriteCrashpadAnnotationsList(
                        IntermediateDumpKey::kAnnotationType,
                        reinterpret_cast<const void*>(&type),
                        sizeof(type));
+  }
+}
+
+void InProcessIntermediateDumpHandler::WriteCrashpadExtraMemoryRanges(
+    IOSIntermediateDumpWriter* writer,
+    CrashpadInfo* crashpad_info) {
+  if (!crashpad_info->extra_memory_ranges()) {
+    return;
+  }
+
+  ScopedVMRead<SimpleAddressRangeBag> extra_memory_ranges;
+  if (!extra_memory_ranges.Read(crashpad_info->extra_memory_ranges())) {
+    CRASHPAD_RAW_LOG("Unable to read extra memory ranges object");
+    return;
+  }
+
+  IOSIntermediateDumpWriter::ScopedArray module_extra_memory_regions_array(
+      writer, IntermediateDumpKey::kModuleExtraMemoryRegions);
+
+  SimpleAddressRangeBag::Iterator iterator(*(extra_memory_ranges.get()));
+  while (const SimpleAddressRangeBag::Entry* entry = iterator.Next()) {
+    const uint64_t& address = entry->base;
+    const uint64_t& size = entry->size;
+    IOSIntermediateDumpWriter::ScopedArrayMap memory_region_map(writer);
+    WriteProperty(
+        writer, IntermediateDumpKey::kModuleExtraMemoryRegionAddress, &address);
+    WritePropertyBytes(writer,
+                       IntermediateDumpKey::kModuleExtraMemoryRegionData,
+                       reinterpret_cast<const void*>(address),
+                       size);
+  }
+}
+
+void InProcessIntermediateDumpHandler::
+    WriteCrashpadIntermediateDumpExtraMemoryRanges(
+        IOSIntermediateDumpWriter* writer,
+        CrashpadInfo* crashpad_info) {
+  if (!crashpad_info->intermediate_dump_extra_memory_ranges()) {
+    return;
+  }
+
+  ScopedVMRead<SimpleAddressRangeBag> intermediate_dump_extra_memory;
+  if (!intermediate_dump_extra_memory.Read(
+          crashpad_info->intermediate_dump_extra_memory_ranges())) {
+    CRASHPAD_RAW_LOG(
+        "Unable to read intermediate dump extra memory ranges object");
+    return;
+  }
+
+  IOSIntermediateDumpWriter::ScopedArray module_extra_memory_regions_array(
+      writer, IntermediateDumpKey::kModuleIntermediateDumpExtraMemoryRegions);
+
+  SimpleAddressRangeBag::Iterator iterator(
+      *(intermediate_dump_extra_memory.get()));
+  while (const SimpleAddressRangeBag::Entry* entry = iterator.Next()) {
+    const uint64_t& address = entry->base;
+    const uint64_t& size = entry->size;
+    IOSIntermediateDumpWriter::ScopedArrayMap memory_region_map(writer);
+    WriteProperty(
+        writer,
+        IntermediateDumpKey::kModuleIntermediateDumpExtraMemoryRegionAddress,
+        &address);
+    WritePropertyBytes(
+        writer,
+        IntermediateDumpKey::kModuleIntermediateDumpExtraMemoryRegionData,
+        reinterpret_cast<const void*>(address),
+        size);
   }
 }
 

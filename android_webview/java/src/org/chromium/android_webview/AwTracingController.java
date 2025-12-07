@@ -6,14 +6,15 @@ package org.chromium.android_webview;
 
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.TraceRecordMode;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -26,9 +27,8 @@ import java.util.List;
 /** Manages tracing functionality in WebView. */
 @Lifetime.Singleton
 @JNINamespace("android_webview")
+@NullMarked
 public class AwTracingController {
-    private static final String TAG = "AwTracingController";
-
     public static final int RESULT_SUCCESS = 0;
     public static final int RESULT_ALREADY_TRACING = 1;
     public static final int RESULT_INVALID_CATEGORIES = 2;
@@ -81,7 +81,7 @@ public class AwTracingController {
                             CATEGORIES_FRAME_VIEWER_LIST // CATEGORIES_FRAME_VIEWER
                             ));
 
-    private OutputStream mOutputStream;
+    private @Nullable OutputStream mOutputStream;
 
     // TODO(timvolodine): consider caching mIsTracing value for efficiency.
     // boolean mIsTracing;
@@ -101,8 +101,7 @@ public class AwTracingController {
 
         String categoryFilter =
                 constructCategoryFilterString(predefinedCategories, customIncludedCategories);
-        AwTracingControllerJni.get()
-                .start(mNativeAwTracingController, AwTracingController.this, categoryFilter, mode);
+        AwTracingControllerJni.get().start(mNativeAwTracingController, categoryFilter, mode);
         return RESULT_SUCCESS;
     }
 
@@ -110,14 +109,12 @@ public class AwTracingController {
     public boolean stopAndFlush(@Nullable OutputStream outputStream) {
         if (!isTracing()) return false;
         mOutputStream = outputStream;
-        AwTracingControllerJni.get()
-                .stopAndFlush(mNativeAwTracingController, AwTracingController.this);
+        AwTracingControllerJni.get().stopAndFlush(mNativeAwTracingController);
         return true;
     }
 
     public boolean isTracing() {
-        return AwTracingControllerJni.get()
-                .isTracing(mNativeAwTracingController, AwTracingController.this);
+        return AwTracingControllerJni.get().isTracing(mNativeAwTracingController);
     }
 
     // Combines configuration bits into a category string usable by chromium.
@@ -172,20 +169,19 @@ public class AwTracingController {
         }
     }
 
-    private long mNativeAwTracingController;
+    private final long mNativeAwTracingController;
 
     @NativeMethods
     interface Natives {
-        long init(AwTracingController caller);
+        long init(AwTracingController self);
 
         boolean start(
                 long nativeAwTracingController,
-                AwTracingController caller,
-                String categories,
+                @JniType("std::string") String categories,
                 int traceMode);
 
-        boolean stopAndFlush(long nativeAwTracingController, AwTracingController caller);
+        boolean stopAndFlush(long nativeAwTracingController);
 
-        boolean isTracing(long nativeAwTracingController, AwTracingController caller);
+        boolean isTracing(long nativeAwTracingController);
     }
 }

@@ -77,8 +77,6 @@ function scrollTop() {
 
 async function waitForScrollEndWithFractionalValue(targetElement, value) {
   return waitForScrollEnd(targetElement, () => {
-    if (internals.runtimeFlags.fractionalScrollOffsetsEnabled)
-        return Math.abs(scrollTop() - value) < 1;
     return Math.abs(scrollTop() - value) <= 1;
   }, true);
 }

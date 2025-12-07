@@ -10,6 +10,7 @@ static_library("vr_android") {
   defines = []
   sources = [
     "compositor_delegate_provider.h",
+    "local_texture.h",
     "mailbox_to_surface_bridge.h",
     "web_xr_presentation_state.cc",
     "web_xr_presentation_state.h",
@@ -28,10 +29,10 @@ static_library("vr_android") {
     "//device/vr:vr_base",
     "//device/vr/public/cpp:features",
     "//gpu/command_buffer/service:gles2",
-    "//gpu/ipc/common:common",
+    "//gpu/ipc/common",
     "//ui/display",
     "//ui/gfx",
-    "//ui/gl:gl",
+    "//ui/gl",
     "//ui/gl/init",
   ]
 

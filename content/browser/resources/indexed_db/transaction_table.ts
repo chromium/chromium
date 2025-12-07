@@ -3,17 +3,11 @@
 // found in the LICENSE file.
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
-import type {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 
 import {IdbTransactionMode, IdbTransactionState} from './indexed_db_internals_types.mojom-webui.js';
 import type {IdbTransactionMetadata} from './indexed_db_internals_types.mojom-webui.js';
+import {scope} from './mojo_utils.js';
 import {getTemplate} from './transaction_table.html.js';
-
-// Joins a list of Mojom strings to a comma separated JS string.
-function scope(mojoScope: String16[]): string {
-  return `[${mojoScope.map(s => mojoString16ToString(s)).join(', ')}]`;
-}
 
 // Converts IdbTransactionState enum into a readable string.
 function transactionState(mojoState: IdbTransactionState): string {
@@ -69,7 +63,7 @@ export class IndexedDbTransactionTable extends CustomElement {
       const row = (transactionRowTemplateElement.content.cloneNode(true) as
                    DocumentFragment)
                       .firstElementChild!;
-      row.classList.add(transactionState(transaction.status).toLowerCase());
+      row.classList.add(transactionState(transaction.state).toLowerCase());
       row.querySelector('td.tid')!.textContent = transaction.tid.toString();
       row.querySelector('td.mode')!.textContent =
           transactionMode(transaction.mode);
@@ -80,14 +74,21 @@ export class IndexedDbTransactionTable extends CustomElement {
           (transaction.tasksScheduled - transaction.tasksCompleted).toString();
       row.querySelector('td.age')!.textContent =
           Math.round(transaction.age).toString();
-      if (transaction.status === IdbTransactionState.kStarted ||
-          transaction.status === IdbTransactionState.kRunning ||
-          transaction.status === IdbTransactionState.kCommitting) {
+      if (transaction.state === IdbTransactionState.kStarted ||
+          transaction.state === IdbTransactionState.kRunning ||
+          transaction.state === IdbTransactionState.kCommitting) {
         row.querySelector('td.runtime')!.textContent =
             Math.round(transaction.runtime).toString();
       }
-      row.querySelector('td.state')!.textContent =
-          transactionState(transaction.status);
+      row.querySelector('td.state .text')!.textContent =
+          transactionState(transaction.state);
+      for (const state of transaction.stateHistory) {
+        const li = document.createElement('li');
+        li.textContent =
+            `${transactionState(state.state)}: ${Math.round(state.duration)}ms`;
+        row.querySelector('td.state ul')!.appendChild(li);
+      }
+
       transactionTableBodyElement.appendChild(row);
     }
   }

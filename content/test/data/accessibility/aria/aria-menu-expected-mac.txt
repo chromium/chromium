@@ -8,3 +8,39 @@ AXWebArea
 ++++AXMenuItem AXTitle='Open'
 ++++AXMenuItem AXTitle='Save'
 ++++AXMenuItem AXTitle='Quit'
+++AXGroup AXDescription='Non-menu container'
+++++AXButton AXTitle='Action 1'
+++++AXButton AXTitle='Action 2'
+++++AXGroup
+++++++AXStaticText
+++AXMenu AXDescription='Menu with grouped items'
+++++AXGroup AXSubrole=AXApplicationGroup AXDescription='File operations'
+++++++AXMenuItem AXTitle='New File'
+++++++AXMenuItem AXTitle='Auto Save'
+++++++AXMenuItem AXTitle='Text Format'
+++++AXGroup AXSubrole=AXApplicationGroup AXDescription='Edit operations'
+++++++AXMenuItem AXTitle='Cut'
+++++++AXMenuItem AXTitle='Copy'
+++++++AXMenuItem AXTitle='Paste'
+++AXGroup AXDescription='Menu with non-menuitem group'
+++++AXGroup AXSubrole=AXApplicationGroup AXDescription='Toolbar actions'
+++++++AXButton AXTitle='Bold'
+++++++AXButton AXTitle='Italic'
+++++++AXLink AXDescription='Help'
+++++++++AXStaticText
+++++AXSplitter
+++++AXGroup
+++++++AXStaticText
+++AXMenu AXDescription='Mixed content menu'
+++++AXMenuItem AXTitle='Direct menu item'
+++++AXGroup AXSubrole=AXApplicationGroup AXDescription='Grouped items'
+++++++AXMenuItem AXTitle='Grouped menu item'
+++++++AXButton AXTitle='Non-menu button'
+++++AXSplitter
+++AXGroup AXDescription='Group with non-menuitems'
+++++AXGroup AXSubrole=AXApplicationGroup AXDescription='Control group'
+++++++AXCheckBox AXTitle='Option 1'
+++++++AXGroup
+++++++++AXStaticText
+++++++AXTextField
+++++++++AXStaticText

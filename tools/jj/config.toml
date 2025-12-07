@@ -1,0 +1,96 @@
+# See https://jj-vcs.github.io/jj/latest/config/ for the schema.
+
+[aliases]
+# This allows the script to be run from directories other than the workspace
+# root.
+"relative-script" = [
+  "util",
+  "exec",
+  "python3",
+  "--",
+  "-c",
+  "import os; import sys; script = os.path.join(os.environ['JJ_WORKSPACE_ROOT'], sys.argv[1]); os.execv(script, [script, *sys.argv[2:]])"
+]
+# cr-* aliases are the equivalent of "porcelain" commands and should not
+# be overridden.
+# All cr-foo commands will have a corresponding foo command that you can
+# override with your preference (eg. sync -> ["cr-sync", "-a"])
+"cr-sync" = ["relative-script", "tools/jj/sync.py"]
+"sync" = ["cr-sync"]
+
+"cr-upload" = ["relative-script", "tools/jj/upload.py"]
+"upload" = ["cr-upload"]
+
+"cr-bug" = ["relative-script", "tools/jj/bug.py"]
+"bug" = ["cr-bug"]
+
+[revset-aliases]
+"trunk()" = "main@origin"
+"immutable_heads()" = "remote_bookmarks() | tags()"
+
+[git]
+auto-local-bookmark = false
+# This is unrelated to gerrit change IDs.
+# It will eventually be supported by gerrit instead of the Change-ID footer.
+write-change-id-header = true
+
+# For users of jj-on-piper, this is enabled by default for *all* repos.
+# We want chrome's formatters, not google3's.
+[fix.tools.google3format]
+enabled = false
+# If you're not using the google-internal jj, this will complain that
+# google3format is an invalid fix tool because it has no command/patterns
+command = ["/dev/null"]
+patterns = ["null"]
+
+# The source of truth for the following formatters is depot_tools' git_cl.py
+[fix.tools.gn-format]
+command = ["gn", "format", "--stdin"]
+patterns = [
+    "glob:'**/*.gn'",
+    "glob:'**/*.gni'",
+    "glob:'**/*.typemap'",
+]
+
+[fix.tools.java-format]
+command = ["third_party/google-java-format/google-java-format", "--aosp", "-"]
+patterns = ["glob:'**/*.java'"]
+
+[fix.tools.rust-format]
+command = ["third_party/depot_tools/rustfmt.py", "--config-path=.rustfmt.toml"]
+patterns = ["glob:'**/*.rs'"]
+
+[fix.tools.clang-format]
+command = ["third_party/depot_tools/clang_format.py", "--assume-filename=$path"]
+patterns = [
+    "glob:'**/*.cc'",
+    "glob:'**/*.cpp'",
+    "glob:'**/*.h'",
+    "glob:'**/*.m'",
+    "glob:'**/*.mm'",
+    "glob:'**/*.proto'",
+    "glob:'**/*.js'",
+    "glob:'**/*.ts'",
+]
+
+[fix.tools.py-format]
+command = ["tools/jj/formatters/python.py", "$path"]
+patterns = ["glob:'**/*.py'"]
+
+[fix.tools.mojom-format]
+command = ["vpython3", "mojo/public/tools/mojom/mojom_format.py"]
+patterns = [
+    "glob:'**/*.mojom'",
+    "glob:'**/*.test-mojom'",
+]
+
+[fix.tools.lucicfg-format]
+command = ["lucicfg", "fmt", "-stdio", "$path"]
+patterns = ["glob:'**/*.star'"]
+
+# This formatter is only available on macos
+[[--scope]]
+--when.platforms = ["macos"]
+[--scope.fix.tools.swift-format]
+command = ["third_party/depot_tools/swift_format", "format"]
+patterns = ["glob:'**/*.swift'"]

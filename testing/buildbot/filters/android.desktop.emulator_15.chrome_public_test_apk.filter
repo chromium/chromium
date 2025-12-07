@@ -1,0 +1,183 @@
+# crbug.com/376095153
+-org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.*
+
+# crbug.com/375710620
+-org.chromium.chrome.browser.VirtualKeyboardResizeTest.testModeAfterNavigationWithPref
+
+# crbug.com/376100658
+-org.chromium.chrome.browser.payments.PaymentRequestCanMakePaymentMetricsTest.*
+-org.chromium.chrome.browser.payments.PaymentRequestCanMakePaymentQueryNoCardTest.*
+-org.chromium.chrome.browser.payments.PaymentRequestCanMakePaymentQueryTest.*
+-org.chromium.chrome.browser.payments.PaymentRequestContactDetailsTest.*
+-org.chromium.chrome.browser.payments.PaymentRequestDataUrlTest.*
+-org.chromium.chrome.browser.payments.PaymentRequestEmailAndPhoneTest.*
+-org.chromium.chrome.browser.payments.PaymentRequestEmailTest.*
+-org.chromium.chrome.browser.payments.PaymentRequestIncompletePhoneTest.*
+-org.chromium.chrome.browser.payments.PaymentRequestInputProtectionTest.*
+-org.chromium.chrome.browser.payments.PaymentRequestJourneyLoggerTest.*
+-org.chromium.chrome.browser.payments.PaymentRequestLongIdTest.*
+-org.chromium.chrome.browser.payments.PaymentRequestMetricsTest.*
+-org.chromium.chrome.browser.payments.PaymentRequestNameTest.*
+-org.chromium.chrome.browser.payments.PaymentRequestPayerDetailChangeTest.*
+-org.chromium.chrome.browser.payments.PaymentRequestPaymentAppCanMakePaymentQueryTest.*
+-org.chromium.chrome.browser.payments.PaymentRequestPaymentAppTest.*
+-org.chromium.chrome.browser.payments.PaymentRequestPaymentAppUiSkipPreloadTest.*
+-org.chromium.chrome.browser.payments.PaymentRequestPaymentAppUiSkipTest.*
+-org.chromium.chrome.browser.payments.PaymentRequestPhoneTest.*
+-org.chromium.chrome.browser.payments.PaymentRequestRetryTest.*
+-org.chromium.chrome.browser.payments.PaymentRequestServiceWorkerPaymentAppTest.*
+-org.chromium.chrome.browser.payments.PaymentRequestShowPromiseDigitalGoodsTest.*
+-org.chromium.chrome.browser.payments.PaymentRequestShowPromiseEmptyListsTest.*
+-org.chromium.chrome.browser.payments.PaymentRequestShowPromiseEmptyTest.*
+-org.chromium.chrome.browser.payments.PaymentRequestShowPromiseInvalidDetailsTest.*
+-org.chromium.chrome.browser.payments.PaymentRequestShowPromiseRejectTest.*
+-org.chromium.chrome.browser.payments.PaymentRequestShowPromiseSingleOptionShippingDelayTest.*
+-org.chromium.chrome.browser.payments.PaymentRequestShowPromiseSingleOptionShippingTest.*
+-org.chromium.chrome.browser.payments.PaymentRequestShowPromiseSingleOptionShippingWithUpdateTest.*
+-org.chromium.chrome.browser.payments.PaymentRequestShowPromiseUSOnlyShippingTest.*
+-org.chromium.chrome.browser.payments.PaymentRequestShowPromiseUnsupportedTest.*
+-org.chromium.chrome.browser.payments.PaymentRequestTabTest.*
+
+# crbug.com/446934111
+-org.chromium.chrome.browser.incognito.IncognitoHistoryLeakageTest.*
+-org.chromium.chrome.browser.incognito.IncognitoPermissionLeakageTest.*
+-org.chromium.chrome.browser.incognito.IncognitoProfileDestroyerIntegrationTest.*
+-org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.*
+-org.chromium.chrome.browser.ntp.IncognitoNtpOmniboxAutofocusManagerTest.*
+
+# crbug.com/376168546
+-org.chromium.chrome.browser.tabmodel.ContextMenuLoadUrlParamsTest.testOpenInIncognitoTabNoReferrer
+
+# crbug.com/376375165
+-org.chromium.chrome.browser.NavigateTest.testOpenLink
+-org.chromium.chrome.browser.NavigateTest.testTabObserverOnPageLoadStarted
+-org.chromium.chrome.browser.NavigateTest.testWindowOpenUrlSpoof
+
+# crbug.com/376371633
+-org.chromium.chrome.browser.tabmodel.ChromeTabCreatorTest.testCreateNewTabInBackground
+
+# crbug.com/368117896
+-org.chromium.chrome.browser.commerce.coupons.DiscountsIntegrationTest.testRenderDiscountContextualPageActionIcon
+
+# crbug.com/376527109
+-org.chromium.chrome.browser.tasks.tab_management.TabListContainerViewBinderTest.testSetInitialScrollIndex_Grid
+
+# crbug.com/376528174
+-org.chromium.chrome.browser.signin.FullscreenSigninAndHistorySyncIntegrationTest.testScreenRotation
+
+# crbug.com/394668480
+-org.chromium.chrome.browser.customtabs.CustomTabActivityAppMenuTest.testAppMenu
+-org.chromium.chrome.browser.customtabs.CustomTabActivityAppMenuTest.testAppMenuBeforeFirstRun
+-org.chromium.chrome.browser.customtabs.CustomTabActivityAppMenuTest.testAppMenuForOfflinePage
+-org.chromium.chrome.browser.customtabs.CustomTabActivityAppMenuTest.testAppMenuNoCustomEntries
+-org.chromium.chrome.browser.customtabs.CustomTabActivityAppMenuTest.testMaxMenuItems
+-org.chromium.chrome.browser.customtabs.CustomTabActivityAppMenuTest.testNoHistoryItem_FeatureDisabled
+-org.chromium.chrome.browser.customtabs.CustomTabActivityAppMenuTest.testNoHistoryItem_NoClientPackage
+-org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testContextMenuPreviewPage
+-org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testContextMenuEntriesBeforeFirstRun
+
+# crbug.com/394671175
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.*
+
+# crbug.com/394673741
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testContextMenuRetrievesImageLinkOptions
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testContextMenuRetrievesLinkOptions
+
+# crbug.com/394674606
+-org.chromium.chrome.browser.bookmarks.BookmarkPersonalizedSigninPromoTest.shouldHideBookmarksSigninPromoIfBookmarksIsManagedByPolicy
+-org.chromium.chrome.browser.bookmarks.BookmarkPersonalizedSigninPromoTest.shouldHideBookmarksSigninPromoIfDataTypesSyncing
+
+# crbug.com/394675204
+-org.chromium.chrome.browser.page_info.PageInfoViewDarkModeTest.testChromePage
+-org.chromium.chrome.browser.page_info.PageInfoViewDarkModeTest.testShowOnSecureWebsiteDark
+
+# crbug.com/415118264
+-org.chromium.chrome.browser.customtabs.CustomTabActivityIncognitoTest.ensureAddCustomMenuItemHasNoEffect
+
+# https://crbug.com/446934111
+# Aggressively disable failed tests to green the suite ASAP.
+-org.chromium.chrome.browser.app.appmenu.TabbedAppMenuPTTest.testNewTabPageIncognitoAppMenuItems
+-org.chromium.chrome.browser.app.appmenu.TabbedAppMenuPTTest.testWebPageIncognitoAppMenuItems
+-org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testSearchBookmarks_Delete
+-org.chromium.chrome.browser.app.flags.ChromeCachedFlagsTest.testValueIsConsistentWithDefault
+-org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestratorTest.testOpenArchivedTabFromHubSearch_Incognito
+-org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragmentTest.testBookmarkBarPreferenceIsUpdatedWhenSettingChanges_Tablet
+-org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragmentTest.testBookmarkBarPreferenceUpdatesSettingWhenChanged_Tablet
+-org.chromium.chrome.browser.autofill.TouchToFillCreditCardTest.testSelectingLocalCard
+-org.chromium.chrome.browser.bookmarks.BookmarkOpenerTest.testOpenBookmarkInCurrentTab_Incognito
+-org.chromium.chrome.browser.bookmarks.BookmarkOpenerTest.testOpenBookmarksInNewTabs_Incognito
+-org.chromium.chrome.browser.bookmarks.BookmarkPersonalizedSigninPromoTest.shouldHideBookmarksSigninPromoIfDataTypesAreManagedByPolicy
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testContextMenuOpenedFromHighlight
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testCopyImage
+-org.chromium.chrome.browser.contextmenu.CustomTabContextMenuTest.*
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testContextualDictionaryDefinitions
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testPanelDismissedOnToggleFullscreen
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testTriggeringContextualSearchHidesFindInPageOverlay
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchTriggerTest.testTapGestureFollowedByScrollClearsSelection
+-org.chromium.chrome.browser.customtabs.TabReparentingTest.testTabReparentingSelectPopup
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.testCctRedirectFromIntentUriStaysInChrome_InIncognito
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.testExternalNavigationMessage
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.testIncognitoSubframeExternalNavigation_Accepted
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.testIncognitoSubframeExternalNavigation_Rejected
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.testIntentURIWithEmptySchemeDoesNothing
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallback
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationWithFallbackURL
+-org.chromium.chrome.browser.fullscreen.FullscreenManagerTest.*
+-org.chromium.chrome.browser.history.HistoryPaneTest.testOpenedHistoryItem_SingleClickOpensInSameTab
+-org.chromium.chrome.browser.hub.HubLayoutPublicTransitTest.testChangeTabSwitcherPanes
+-org.chromium.chrome.browser.hub.HubLayoutPublicTransitTest.testEnterHubAndLeaveViaAppMenuNewIncognitoTab
+-org.chromium.chrome.browser.hub.HubLayoutPublicTransitTest.testIncognitoTabSwitcherStation_newTabGroup
+-org.chromium.chrome.browser.identity_disc.IdentityDiscControllerTest.testIdentityDiscWithSwitchToIncognito
+-org.chromium.chrome.browser.input.SelectPopupOtherContentViewTest.testPopupNotClosedByOtherContentView
+-org.chromium.chrome.browser.keyboard_accessory.AutofillKeyboardAccessoryIntegrationTest.*
+-org.chromium.chrome.browser.keyboard_accessory.PasswordGenerationIntegrationTest.*
+-org.chromium.chrome.browser.LauncherShortcutTest.testDynamicShortcuts
+-org.chromium.chrome.browser.LauncherShortcutTest.testDynamicShortcuts_LanguageChange
+-org.chromium.chrome.browser.media.ui.AutoplayMutedNotificationTest.testMutedPlaybackDoesNotTakeAudioFocus
+-org.chromium.chrome.browser.media.ui.AutoplayMutedNotificationTest.testUnmutedPlaybackTakesAudioFocus
+-org.chromium.chrome.browser.media.ui.FullscreenVideoPictureInPictureControllerTest.*
+-org.chromium.chrome.browser.ntp.IncognitoNtpOmniboxAutofocusTrackerTest.*
+-org.chromium.chrome.browser.ntp.MostVisitedTilesPTTest.testOpenItemInIncognitoTab
+-org.chromium.chrome.browser.ntp.NewTabPageNavigationTest.testNavigateToTabSwitcherFromIncognitoNtp
+-org.chromium.chrome.browser.omnibox.geo.GeolocationHeaderTest.testConsistentHeader
+-org.chromium.chrome.browser.omnibox.geo.GeolocationHeaderTest.testConsistentHeaderForOneTimeGrant
+-org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalsTest.*
+-org.chromium.chrome.browser.page_load_metrics.PageLoadMetricsTest.testPageLoadMetricEmitted
+-org.chromium.chrome.browser.page_load_metrics.PageLoadMetricsTest.testPageLoadMetricForPrerendering
+-org.chromium.chrome.browser.page_load_metrics.PageLoadMetricsTest.testPageLoadMetricNavigationIdSetCorrectly
+-org.chromium.chrome.browser.partnercustomizations.PartnerDisableIncognitoModeIntegrationTest.*
+-org.chromium.chrome.browser.payments.ExpandablePaymentHandlerTest.testIncognitoTrue
+-org.chromium.chrome.browser.permissions.RuntimePermissionTest.testAllowRuntimeLocationIncognito
+-org.chromium.chrome.browser.permissions.RuntimePermissionTest.testRuntimeMediaPromptHistogram
+-org.chromium.chrome.browser.picture_in_picture.AutoPictureInPictureTabHelperTest.testBackToTabFromAutoPip
+-org.chromium.chrome.browser.picture_in_picture.AutoPictureInPictureTabHelperTest.testClosingAfterTimerExpiresDoesNotIncrementDismissCount
+-org.chromium.chrome.browser.picture_in_picture.AutoPictureInPictureTabHelperTest.testQuickDismissalIncrementsDismissCount
+-org.chromium.chrome.browser.picture_in_picture.AutoPictureInPictureTabHelperTest.testSwitchingBackToTabDoesNotIncrementDismissCount
+-org.chromium.chrome.browser.sensitive_content.SensitiveContentTest.testIncognitoTabSwitcherBecomesSensitive
+-org.chromium.chrome.browser.sensitive_content.SensitiveContentTest.testSensitiveContentIsRestoredFromTabState
+-org.chromium.chrome.browser.supervised_user.SupervisedUserCriticalJourneysIntegrationTest.incognitoModeIsUnavailableFromAppMenu
+-org.chromium.chrome.browser.supervised_user.SupervisedUserCriticalJourneysIntegrationTest.incognitoModeIsUnavailableFromTabSwitcherActionMenu
+-org.chromium.chrome.browser.tab.SadTabTest.testSadTabBrowserControlsVisibility
+-org.chromium.chrome.browser.tabbed_mode.TabbedNavigationBarColorControllerTest.testToggleIncognito
+-org.chromium.chrome.browser.tabmodel.TabModelImplTest.testCloseIncognitoTabSwitchesToNormalModelAndUpdatesIncognitoIndex
+-org.chromium.chrome.browser.tabmodel.TabModelImplTest.testSetMuteSetting_Incognito
+-org.chromium.chrome.browser.tabmodel.TabModelImplTest.validIndexAfterRestored_FromPreviousActivity_WithIncognitoTabs
+-org.chromium.chrome.browser.tabmodel.TabModelMultiWindowTest.testMoveTabGroupToWindow
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherLayoutPTTest.testRenderGrid_Incognito
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherLayoutPTTest.testRenderGrid_TabGroupColor_Incognito_2TabsInGroup
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherLayoutPTTest.testRenderGrid_TabGroupColor_Incognito_5TabsInGroup
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherLayoutPTTest.testUrlUpdatedNotCrashing_ForTabNotInCurrentModel
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPanePublicTransitTest.*
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherSearchRenderTest.testRenderTypedSuggestions_Incognito
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherSearchRenderTest.testZeroPrefixSuggestions_HiddenInIncognito
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherSearchTest.testSearchActivityBackButton_Incognito
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherSearchTest.testTypedSuggestions_Incognito
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherSearchTest.testTypedSuggestions_OpenSearchSuggestion_Incognito
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherSearchTest.testZeroPrefixSuggestions_Incognito
+-org.chromium.chrome.browser.TabsTest.testLastClosedTabTriggersNotifyChangedCall
+-org.chromium.chrome.browser.TabsTest.testLastClosedUndoableTabGetsHidden
+-org.chromium.chrome.browser.toolbar.TabSwitcherDrawableRenderTest.testTabSwitcherDrawable_newTabPageIncognito
+-org.chromium.chrome.browser.ToolbarSwipeTest.testToolbarSwipeNextThenPrevTabIncognito
+-org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskIntegrationTest.createPendingTask_requestNonOverlappingPendingActions_dispatchesBothActions
+-org.chromium.chrome.browser.ViewTransitionPixelTest.testBrowserControlsChildSnapshotControlsOverlay
+-org.chromium.chrome.browser.ViewTransitionPixelTest.testBrowserControlsRootSnapshotControlsOverlay

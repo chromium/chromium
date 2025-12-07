@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.LargeTest;
 
@@ -60,7 +62,7 @@ public class GestureDetectorResetTest {
             mWebContents = webContents;
             mNodeId = nodeId;
             mExpectedContents = expectedContents;
-            assert mExpectedContents != null;
+            assertThat(mExpectedContents).isNotNull();
         }
 
         @Override

@@ -1,0 +1,39 @@
+This is a wdspec test.
+[FAIL] test_no_browsing_context
+  AssertionError: unknown command (404): unknown command: 'Page.printToPDF' wasn't found
+[FAIL] test_html_document
+  AssertionError: unknown command (404): unknown command: 'Page.printToPDF' wasn't found
+[FAIL] test_large_html_document
+  webdriver.error.ScriptTimeoutException: script timeout (500): script timeout
+[FAIL] test_page_ranges_document[ranges0-expected0]
+  AssertionError: unknown command (404): unknown command: 'Page.printToPDF' wasn't found
+[FAIL] test_page_ranges_document[ranges1-expected1]
+  AssertionError: unknown command (404): unknown command: 'Page.printToPDF' wasn't found
+[FAIL] test_page_ranges_document[ranges2-expected2]
+  AssertionError: unknown command (404): unknown command: 'Page.printToPDF' wasn't found
+[FAIL] test_page_ranges_document[ranges3-expected3]
+  AssertionError: unknown command (404): unknown command: 'Page.printToPDF' wasn't found
+[FAIL] test_page_ranges_document[ranges4-expected4]
+  AssertionError: unknown command (404): unknown command: 'Page.printToPDF' wasn't found
+[FAIL] test_page_ranges_document[ranges5-expected5]
+  AssertionError: unknown command (404): unknown command: 'Page.printToPDF' wasn't found
+[FAIL] test_page_ranges_document[ranges6-expected6]
+  AssertionError: unknown command (404): unknown command: 'Page.printToPDF' wasn't found
+[FAIL] test_page_ranges_document[ranges7-expected7]
+  AssertionError: unknown command (404): unknown command: 'Page.printToPDF' wasn't found
+[FAIL] test_page_ranges_document[ranges8-expected8]
+  AssertionError: unknown command (404): unknown command: 'Page.printToPDF' wasn't found
+[FAIL] test_page_ranges_document[ranges9-expected9]
+  AssertionError: unknown command (404): unknown command: 'Page.printToPDF' wasn't found
+[FAIL] test_page_ranges_document[ranges10-expected10]
+  AssertionError: unknown command (404): unknown command: 'Page.printToPDF' wasn't found
+[FAIL] test_page_ranges_invalid[options9]
+  assert 404 == 400
+[FAIL] test_page_ranges_invalid[options10]
+  assert 404 == 400
+[FAIL] test_page_ranges_invalid[options11]
+  assert 404 == 400
+[FAIL] test_page_ranges_invalid[options12]
+  assert 404 == 400
+Harness: the test ran to completion.
+

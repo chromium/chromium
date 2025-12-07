@@ -22,6 +22,8 @@ enum class VerifierFormat;
 
 namespace updater {
 
+struct EventLoggingPermissionProvider;
+
 // ExternalConstantsBuilder uses the Builder design pattern to write a set of
 // overrides for default constant values to the file loaded by
 // ExternalConstantsOverrider. It is not thread-safe.
@@ -45,11 +47,20 @@ class ExternalConstantsBuilder {
   ExternalConstantsBuilder& SetCrashUploadURL(const std::string& url);
   ExternalConstantsBuilder& ClearCrashUploadURL();
 
-  ExternalConstantsBuilder& SetDeviceManagementURL(const std::string& url);
-  ExternalConstantsBuilder& ClearDeviceManagementURL();
-
   ExternalConstantsBuilder& SetAppLogoURL(const std::string& url);
   ExternalConstantsBuilder& ClearAppLogoURL();
+
+  ExternalConstantsBuilder& SetEventLoggingUrl(const std::string& url);
+  ExternalConstantsBuilder& ClearEventLoggingUrl();
+
+  ExternalConstantsBuilder& SetEventLoggingPermissionProvider(
+      std::optional<EventLoggingPermissionProvider>
+          event_logging_permission_provider);
+  ExternalConstantsBuilder& ClearEventLoggingPermissionProvider();
+
+  ExternalConstantsBuilder& SetMinimumEventLoggingCooldown(
+      base::TimeDelta cooldown);
+  ExternalConstantsBuilder& ClearMinimumEventLoggingCooldown();
 
   ExternalConstantsBuilder& SetUseCUP(bool use_cup);
   ExternalConstantsBuilder& ClearUseCUP();
@@ -65,24 +76,29 @@ class ExternalConstantsBuilder {
       crx_file::VerifierFormat crx_verifier_format);
   ExternalConstantsBuilder& ClearCrxVerifierFormat();
 
-  ExternalConstantsBuilder& SetGroupPolicies(
-      const base::Value::Dict& group_policies);
-  ExternalConstantsBuilder& ClearGroupPolicies();
+  ExternalConstantsBuilder& SetCrxPublicKeyHash(
+      std::optional<std::vector<uint8_t>> crx_public_key_hash);
+  ExternalConstantsBuilder& ClearCrxPublicKeyHash();
+
+  ExternalConstantsBuilder& SetDictPolicies(
+      const base::Value::Dict& dict_policies);
+  ExternalConstantsBuilder& ClearDictPolicies();
 
   ExternalConstantsBuilder& SetOverinstallTimeout(
-      const base::TimeDelta& overinstall_timeout);
+      base::TimeDelta overinstall_timeout);
   ExternalConstantsBuilder& ClearOverinstallTimeout();
 
   ExternalConstantsBuilder& SetIdleCheckPeriod(
-      const base::TimeDelta& idle_check_period);
+      base::TimeDelta idle_check_period);
   ExternalConstantsBuilder& ClearIdleCheckPeriod();
 
   ExternalConstantsBuilder& SetMachineManaged(
-      const std::optional<bool>& is_managed_device);
+      std::optional<bool> is_managed_device);
   ExternalConstantsBuilder& ClearMachineManaged();
 
-  ExternalConstantsBuilder& SetEnableDiffUpdates(bool enable_diffs);
-  ExternalConstantsBuilder& ClearEnableDiffUpdates();
+  ExternalConstantsBuilder& SetCecaConnectionTimeout(
+      base::TimeDelta ceca_connection_timeout);
+  ExternalConstantsBuilder& ClearCecaConnectionTimeout();
 
   // Write the external constants overrides file in the default location
   // with the values that have been previously set, replacing any file

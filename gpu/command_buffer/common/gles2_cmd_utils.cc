@@ -2,27 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include <array>
 
 // This file is here so other GLES2 related files can have a common set of
 // includes where appropriate.
-
-#include "gpu/command_buffer/common/gles2_cmd_utils.h"
 
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #include <GLES2/gl2extchromium.h>
 #include <GLES3/gl3.h>
 #include <GLES3/gl31.h>
+#include <GLES3/gl32.h>
 
 #include <sstream>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_math.h"
+#include "gpu/command_buffer/common/gles2_cmd_utils.h"
+#include "ui/gl/gl_enums.h"
 
 namespace gpu {
 namespace gles2 {
@@ -512,10 +510,6 @@ int GLES2Util::GLGetNumValuesReturned(int id) const {
     case GL_FRAGMENT_SHADER_DERIVATIVE_HINT_OES:
       return 1;
 
-    // Chromium internal bind_generates_resource query
-    case GL_BIND_GENERATES_RESOURCE_CHROMIUM:
-      return 1;
-
     // bad enum
     default:
       return 0;
@@ -955,8 +949,7 @@ uint32_t GLES2Util::GLErrorToErrorBit(uint32_t error) {
     case GL_CONTEXT_LOST_KHR:
       return gl_error_bit::kContextLost;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return gl_error_bit::kNoError;
+      NOTREACHED();
   }
 }
 
@@ -975,17 +968,19 @@ uint32_t GLES2Util::GLErrorBitToGLError(uint32_t error_bit) {
     case gl_error_bit::kContextLost:
       return GL_CONTEXT_LOST_KHR;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return GL_NO_ERROR;
+      NOTREACHED();
   }
 }
 
 uint32_t GLES2Util::IndexToGLFaceTarget(int index) {
-  static uint32_t faces[] = {
-      GL_TEXTURE_CUBE_MAP_POSITIVE_X, GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
-      GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
-      GL_TEXTURE_CUBE_MAP_POSITIVE_Z, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
-  };
+  static auto faces = std::to_array<uint32_t>({
+      GL_TEXTURE_CUBE_MAP_POSITIVE_X,
+      GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+      GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
+      GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+      GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
+      GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
+  });
   return faces[index];
 }
 
@@ -1010,8 +1005,7 @@ size_t GLES2Util::GLTargetToFaceIndex(uint32_t target) {
     case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z:
       return 5;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 
@@ -1031,8 +1025,7 @@ uint32_t GLES2Util::GLFaceTargetToTextureTarget(uint32_t target) {
     case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z:
       return GL_TEXTURE_CUBE_MAP;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 
@@ -1342,8 +1335,7 @@ void GLES2Util::GetColorFormatComponentSizes(
           internal_format = GL_R32F;
           return;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
       break;
     case GL_LUMINANCE_ALPHA:
@@ -1358,8 +1350,7 @@ void GLES2Util::GetColorFormatComponentSizes(
           internal_format = GL_RGBA32F;
           return;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
       break;
     default:
@@ -1507,8 +1498,7 @@ void GLES2Util::GetColorFormatComponentSizes(
       *g = 32;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -1531,17 +1521,7 @@ uint32_t GLES2Util::GetChannelsNeededForAttachmentType(
 }
 
 std::string GLES2Util::GetStringEnum(uint32_t value) {
-  const EnumToString* entry = enum_to_string_table_;
-  const EnumToString* end = entry + enum_to_string_table_len_;
-  for (; entry < end; ++entry) {
-    if (value == entry->value)
-      return entry->name;
-  }
-  std::stringstream ss;
-  ss.fill('0');
-  ss.width(value < 0x10000 ? 4 : 8);
-  ss << std::hex << value;
-  return "0x" + ss.str();
+  return gl::GLEnums::GetStringEnum(value);
 }
 
 std::string GLES2Util::GetStringError(uint32_t value) {
@@ -1559,7 +1539,8 @@ std::string GLES2Util::GetStringBool(uint32_t value) {
 std::string GLES2Util::GetQualifiedEnumString(const EnumToString* table,
                                               size_t count,
                                               uint32_t value) {
-  for (const EnumToString* end = table + count; table < end; ++table) {
+  for (const EnumToString* end = UNSAFE_TODO(table + count); table < end;
+       UNSAFE_TODO(++table)) {
     if (table->value == value) {
       return table->name;
     }
@@ -1764,10 +1745,8 @@ uint32_t GLES2Util::ConvertToSizedFormat(uint32_t format, uint32_t type) {
         case GL_UNSIGNED_SHORT:
           return GL_RGB16_EXT;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
-      break;
     case GL_RGBA:
       switch (type) {
         case GL_UNSIGNED_BYTE:
@@ -1783,10 +1762,8 @@ uint32_t GLES2Util::ConvertToSizedFormat(uint32_t format, uint32_t type) {
         case GL_UNSIGNED_SHORT:
           return GL_RGBA16_EXT;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
-      break;
     case GL_ALPHA:
       switch (type) {
         case GL_UNSIGNED_BYTE:
@@ -1796,10 +1773,8 @@ uint32_t GLES2Util::ConvertToSizedFormat(uint32_t format, uint32_t type) {
         case GL_FLOAT:
           return GL_ALPHA32F_EXT;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
-      break;
     case GL_RED:
       switch (type) {
         case GL_UNSIGNED_BYTE:
@@ -1811,10 +1786,8 @@ uint32_t GLES2Util::ConvertToSizedFormat(uint32_t format, uint32_t type) {
         case GL_UNSIGNED_SHORT:
           return GL_R16_EXT;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
-      break;
     case GL_RG:
       switch (type) {
         case GL_UNSIGNED_BYTE:
@@ -1826,37 +1799,29 @@ uint32_t GLES2Util::ConvertToSizedFormat(uint32_t format, uint32_t type) {
         case GL_UNSIGNED_SHORT:
           return GL_RG16_EXT;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
-      break;
     case GL_SRGB_EXT:
       switch (type) {
         case GL_UNSIGNED_BYTE:
           return GL_SRGB8;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
-      break;
     case GL_SRGB_ALPHA_EXT:
       switch (type) {
         case GL_UNSIGNED_BYTE:
           return GL_SRGB8_ALPHA8;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
-      break;
     case GL_BGRA_EXT:
       switch (type) {
         case GL_UNSIGNED_BYTE:
           return GL_BGRA8_EXT;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
-      break;
     default:
       break;
   }

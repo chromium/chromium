@@ -4,7 +4,6 @@
 
 #include "ui/compositor/total_animation_throughput_reporter.h"
 
-#include "base/logging.h"
 #include "base/observer_list.h"
 #include "ui/compositor/compositor.h"
 
@@ -41,8 +40,9 @@ TotalAnimationThroughputReporter::TotalAnimationThroughputReporter(
                                        /*should_delete=*/false) {}
 
 TotalAnimationThroughputReporter::~TotalAnimationThroughputReporter() {
-  if (throughput_tracker_)
-    throughput_tracker_->Cancel();
+  if (compositor_metrics_tracker_) {
+    compositor_metrics_tracker_->Cancel();
+  }
   if (compositor_)
     compositor_->RemoveObserver(this);
   compositor_ = nullptr;
@@ -50,9 +50,12 @@ TotalAnimationThroughputReporter::~TotalAnimationThroughputReporter() {
 
 void TotalAnimationThroughputReporter::OnFirstAnimationStarted(
     ui::Compositor* compositor) {
-  if (!throughput_tracker_) {
-    throughput_tracker_ = compositor->RequestNewThroughputTracker();
-    throughput_tracker_->Start(base::BindRepeating(
+  if (!compositor_metrics_tracker_) {
+    timestamp_first_animation_started_at_ = base::TimeTicks::Now();
+
+    compositor_metrics_tracker_ =
+        compositor->RequestNewCompositorMetricsTracker();
+    compositor_metrics_tracker_->Start(base::BindRepeating(
         &TotalAnimationThroughputReporter::Report, ptr_factory_.GetWeakPtr()));
   }
 }
@@ -62,8 +65,10 @@ void TotalAnimationThroughputReporter::OnFirstNonAnimatedFrameStarted(
   if (IsBlocked())
     return;
 
-  throughput_tracker_->Stop();
-  throughput_tracker_.reset();
+  timestamp_last_animation_finished_at_ = base::TimeTicks::Now();
+
+  compositor_metrics_tracker_->Stop();
+  compositor_metrics_tracker_.reset();
   // Stop observing if no need to report multiple times.
   if (report_repeating_callback_.is_null())
     compositor_->RemoveObserver(this);
@@ -71,9 +76,9 @@ void TotalAnimationThroughputReporter::OnFirstNonAnimatedFrameStarted(
 
 void TotalAnimationThroughputReporter::OnCompositingShuttingDown(
     ui::Compositor* compositor) {
-  if (throughput_tracker_) {
-    throughput_tracker_->Cancel();
-    throughput_tracker_.reset();
+  if (compositor_metrics_tracker_) {
+    compositor_metrics_tracker_->Cancel();
+    compositor_metrics_tracker_.reset();
   }
   compositor->RemoveObserver(this);
   compositor_ = nullptr;
@@ -115,7 +120,9 @@ void TotalAnimationThroughputReporter::Report(
     const cc::FrameSequenceMetrics::CustomReportData& data) {
   if (!report_once_callback_.is_null()) {
     compositor_->RemoveObserver(this);
-    std::move(report_once_callback_).Run(data);
+    std::move(report_once_callback_)
+        .Run(data, timestamp_first_animation_started_at_,
+             timestamp_last_animation_finished_at_);
     if (should_delete_)
       delete this;
     return;

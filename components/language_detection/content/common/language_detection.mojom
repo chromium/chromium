@@ -1,0 +1,31 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module language_detection.mojom;
+
+import "mojo/public/mojom/base/file.mojom";
+
+// The model file status of the language detection model.
+enum LanguageDetectionModelStatus {
+  // The model file is currently available. However the model may be
+  // reset due to future updates.
+  kReadily = 0,
+  // The model file is currently not available but may be downloaded.
+  kAfterDownload = 1,
+  // The model file is not available because of errors and cannot be downloaded.
+  kNotAvailable = 2,
+};
+
+// Provides the language detection model. The browser provides this interface
+// so that the renderer can access the language model file.
+interface ContentLanguageDetectionDriver {
+  // Request that the language detection model be loaded and returned.
+  GetLanguageDetectionModel() => (mojo_base.mojom.ReadOnlyFile? model_file);
+
+  // Check if the language detection model has been downloaded.
+  // The function only returns the call-time status and the model availability
+  // may change when `GetLanguageDetectionModel` is called so the returned
+  // `model_file` must still be checked.
+  GetLanguageDetectionModelStatus() => (LanguageDetectionModelStatus status);
+};

@@ -14,34 +14,27 @@ import android.provider.ContactsContract;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.browser.ContactsFetcher;
 
 import java.io.ByteArrayInputStream;
 
 /** A worker task to retrieve images for contacts. */
-class FetchIconWorkerTask extends AsyncTask<Bitmap> {
-    /** An interface to use to communicate back the results to the client. */
-    public interface IconRetrievedCallback {
-        /**
-         * A callback to define to receive the icon for a contact.
-         *
-         * @param icon The icon retrieved.
-         * @param contactId The id of the contact the icon refers to.
-         */
-        void iconRetrieved(Bitmap icon, String contactId);
-    }
-
+@NullMarked
+class FetchIconWorkerTask extends AsyncTask<@Nullable Bitmap> {
     // The ID of the contact to look up.
-    private String mContactId;
+    private final String mContactId;
 
     // If positive, the returned icon will be scaled to this size, measured along one side of a
     // square, in pixels. Otherwise, the returned image will be returned as-is.
     private int mDesiredIconSize;
 
     // The content resolver to use for looking up
-    private ContentResolver mContentResolver;
+    private final ContentResolver mContentResolver;
 
     // The callback to use to communicate the results.
-    private IconRetrievedCallback mCallback;
+    private final ContactsFetcher.IconRetrievedCallback mCallback;
 
     /**
      * A FetchIconWorkerTask constructor.
@@ -51,7 +44,9 @@ class FetchIconWorkerTask extends AsyncTask<Bitmap> {
      * @param callback The callback to use to communicate back the results.
      */
     public FetchIconWorkerTask(
-            String id, ContentResolver contentResolver, IconRetrievedCallback callback) {
+            String id,
+            ContentResolver contentResolver,
+            ContactsFetcher.IconRetrievedCallback callback) {
         mContactId = id;
         // Avatar icon for own info should not be obtained through the contacts list.
         assert !id.equals(ContactDetails.SELF_CONTACT_ID);
@@ -75,7 +70,7 @@ class FetchIconWorkerTask extends AsyncTask<Bitmap> {
      * @return The icon representing a contact (returned as Bitmap).
      */
     @Override
-    protected Bitmap doInBackground() {
+    protected @Nullable Bitmap doInBackground() {
         assert !ThreadUtils.runningOnUiThread();
 
         if (isCancelled()) return null;
@@ -116,7 +111,7 @@ class FetchIconWorkerTask extends AsyncTask<Bitmap> {
      * @param icon The icon retrieved.
      */
     @Override
-    protected void onPostExecute(Bitmap icon) {
+    protected void onPostExecute(@Nullable Bitmap icon) {
         assert ThreadUtils.runningOnUiThread();
 
         if (isCancelled()) return;

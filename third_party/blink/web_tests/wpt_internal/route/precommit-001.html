@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<title>@navigation(to) and @navigation(at) in onnavigate, precommitHandler, and handler()</title>
+<link rel="help" href="https://drafts.csswg.org/css-navigation-1/#at-navigation">
+<script type="routemap">
+  {
+    "routes":
+    [
+      { "name": "a", "pattern": {"pathname": "/aaaaa" }}
+    ]
+  }
+</script>
+<style>
+  @navigation(to: a) {
+    body {
+      background: #00ff00;
+    }
+  }
+  @navigation(at: a) {
+    body {
+      color: #ff00ff;
+    }
+  }
+</style>
+<body>
+</body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  promise_test(async (t) => {
+    await new Promise(r => window.onload = () => t.step_timeout(r, 0));
+    const nav = Promise.withResolvers();
+    const precommit = Promise.withResolvers();
+    const handler = Promise.withResolvers();
+    navigation.onnavigate = (event) => {
+      nav.resolve();
+      event.intercept({
+        async precommitHandler() {
+          precommit.resolve();
+          await new Promise(r => t.step_timeout(r, 0));
+        },
+        async handler() { handler.resolve(); }
+      })
+    }
+    assert_equals(getComputedStyle(document.body).backgroundColor, "rgba(0, 0, 0, 0)");
+    assert_equals(getComputedStyle(document.body).color, "rgb(0, 0, 0)");
+    navigation.navigate("/aaaaa");
+    await nav.promise;
+    assert_equals(getComputedStyle(document.body).backgroundColor, "rgba(0, 0, 0, 0)");
+    assert_equals(getComputedStyle(document.body).color, "rgb(0, 0, 0)");
+    await precommit.resolve;
+    assert_equals(getComputedStyle(document.body).backgroundColor, "rgba(0, 0, 0, 0)");
+    assert_equals(getComputedStyle(document.body).color, "rgb(0, 0, 0)");
+    await navigation.transition.committed;
+    assert_equals(getComputedStyle(document.body).backgroundColor, "rgb(0, 255, 0)");
+    assert_equals(getComputedStyle(document.body).color, "rgb(255, 0, 255)");
+    await handler.promise;
+    assert_equals(getComputedStyle(document.body).backgroundColor, "rgb(0, 255, 0)");
+    assert_equals(getComputedStyle(document.body).color, "rgb(255, 0, 255)");
+    await new Promise(r => navigation.onnavigatesuccess = () => t.step_timeout(r, 0));
+    assert_equals(getComputedStyle(document.body).backgroundColor, "rgba(0, 0, 0, 0)");
+    assert_equals(getComputedStyle(document.body).color, "rgb(255, 0, 255)");
+  }, "precommit");
+</script>

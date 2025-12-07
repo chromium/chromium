@@ -4,8 +4,9 @@
 
 #include "ui/views/test/focus_manager_test.h"
 
+#include <algorithm>
+
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/widget/widget.h"
 
@@ -25,23 +26,23 @@ FocusManager* FocusManagerTest::GetFocusManager() {
 void FocusManagerTest::SetUp() {
   ViewsTestBase::SetUp();
 
-  Widget* widget = new Widget;
-  Widget::InitParams params =
-      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
-                   Widget::InitParams::TYPE_WINDOW);
+  widget_ = std::make_unique<Widget>();
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   params.delegate = this;
   params.bounds = gfx::Rect(0, 0, 1024, 768);
-  widget->Init(std::move(params));
+  widget_->Init(std::move(params));
 
   InitContentView();
-  widget->Show();
+  widget_->Show();
 }
 
 void FocusManagerTest::TearDown() {
-  if (focus_change_listener_)
+  if (focus_change_listener_) {
     GetFocusManager()->RemoveFocusChangeListener(focus_change_listener_);
+  }
   if (widget_focus_change_listener_) {
-    WidgetFocusManager::GetInstance()->RemoveFocusChangeListener(
+    NativeViewFocusManager::GetInstance()->RemoveFocusChangeListener(
         widget_focus_change_listener_);
   }
   GetWidget()->Close();
@@ -49,6 +50,11 @@ void FocusManagerTest::TearDown() {
 
   // Flush the message loop to make application verifiers happy.
   RunPendingMessages();
+  contents_view_ = nullptr;
+  focus_change_listener_ = nullptr;
+  widget_focus_change_listener_ = nullptr;
+  accessible_panes_.clear();
+  widget_.reset();
   ViewsTestBase::TearDown();
 }
 
@@ -65,7 +71,7 @@ const Widget* FocusManagerTest::GetWidget() const {
 }
 
 void FocusManagerTest::GetAccessiblePanes(std::vector<View*>* panes) {
-  base::ranges::copy(accessible_panes_, std::back_inserter(*panes));
+  std::ranges::copy(accessible_panes_, std::back_inserter(*panes));
 }
 
 void FocusManagerTest::InitContentView() {}
@@ -84,18 +90,18 @@ void FocusManagerTest::RemoveFocusChangeListener(
   focus_change_listener_ = nullptr;
 }
 
-void FocusManagerTest::AddWidgetFocusChangeListener(
-    WidgetFocusChangeListener* listener) {
+void FocusManagerTest::AddNativeViewFocusChangeListener(
+    NativeViewFocusChangeListener* listener) {
   ASSERT_FALSE(widget_focus_change_listener_);
   widget_focus_change_listener_ = listener;
-  WidgetFocusManager::GetInstance()->AddFocusChangeListener(listener);
+  NativeViewFocusManager::GetInstance()->AddFocusChangeListener(listener);
 }
 
-void FocusManagerTest::RemoveWidgetFocusChangeListener(
-    WidgetFocusChangeListener* listener) {
+void FocusManagerTest::RemoveNativeViewFocusChangeListener(
+    NativeViewFocusChangeListener* listener) {
   ASSERT_TRUE(widget_focus_change_listener_);
   ASSERT_EQ(widget_focus_change_listener_, listener);
-  WidgetFocusManager::GetInstance()->RemoveFocusChangeListener(listener);
+  NativeViewFocusManager::GetInstance()->RemoveFocusChangeListener(listener);
   widget_focus_change_listener_ = nullptr;
 }
 
@@ -123,17 +129,17 @@ void TestFocusChangeListener::ClearFocusChanges() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// TestWidgetFocusChangeListener
+// TestNativeViewFocusChangeListener
 
-TestWidgetFocusChangeListener::TestWidgetFocusChangeListener() = default;
+TestNativeViewFocusChangeListener::TestNativeViewFocusChangeListener() = default;
 
-TestWidgetFocusChangeListener::~TestWidgetFocusChangeListener() = default;
+TestNativeViewFocusChangeListener::~TestNativeViewFocusChangeListener() = default;
 
-void TestWidgetFocusChangeListener::ClearFocusChanges() {
+void TestNativeViewFocusChangeListener::ClearFocusChanges() {
   focus_changes_.clear();
 }
 
-void TestWidgetFocusChangeListener::OnNativeFocusChanged(
+void TestNativeViewFocusChangeListener::OnNativeFocusChanged(
     gfx::NativeView focused_now) {
   focus_changes_.push_back(focused_now);
 }

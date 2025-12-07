@@ -10,9 +10,11 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram.h"
 #include "base/strings/string_util.h"
+#include "base/synchronization/lock.h"
 #include "extensions/common/constants.h"
 #include "extensions/renderer/extension_url_loader_throttle.h"
 #include "net/base/url_util.h"
+#include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -31,6 +33,8 @@ ExtensionThrottleManager::ExtensionThrottleManager()
 }
 
 ExtensionThrottleManager::~ExtensionThrottleManager() {
+  access_->SetDestroyed();
+
   base::AutoLock auto_lock(lock_);
   // Delete all entries.
   url_entries_.clear();
@@ -46,7 +50,7 @@ ExtensionThrottleManager::MaybeCreateURLLoaderThrottle(
   if (request.site_for_cookies.scheme() != extensions::kExtensionScheme) {
     return nullptr;
   }
-  return std::make_unique<ExtensionURLLoaderThrottle>(this);
+  return std::make_unique<ExtensionURLLoaderThrottle>(access_);
 }
 
 ExtensionThrottleEntry* ExtensionThrottleManager::RegisterRequestUrl(
@@ -66,8 +70,9 @@ ExtensionThrottleEntry* ExtensionThrottleManager::RegisterRequestUrl(
   // start with a fresh entry so that we possibly back off a bit less
   // aggressively (i.e. this resets the error count when the entry's URL
   // hasn't been requested in long enough).
-  if (entry && entry->IsEntryOutdated())
+  if (entry && entry->IsEntryOutdated()) {
     entry.reset();
+  }
 
   // Create the entry if needed.
   if (!entry) {
@@ -105,8 +110,9 @@ bool ExtensionThrottleManager::ShouldRejectRedirect(
     // before use.
     base::AutoLock auto_lock(lock_);
     auto it = url_entries_.find(GetIdFromUrl(request_url));
-    if (it != url_entries_.end())
+    if (it != url_entries_.end()) {
       it->second->UpdateWithResponse(redirect_info.status_code);
+    }
   }
   return ShouldRejectRequest(redirect_info.new_url);
 }
@@ -119,8 +125,9 @@ void ExtensionThrottleManager::WillProcessResponse(
     // before use.
     base::AutoLock auto_lock(lock_);
     auto it = url_entries_.find(GetIdFromUrl(response_url));
-    if (it != url_entries_.end())
+    if (it != url_entries_.end()) {
       it->second->UpdateWithResponse(response_head.headers->response_code());
+    }
   }
 }
 
@@ -168,8 +175,9 @@ void ExtensionThrottleManager::SetOnline(bool is_online) {
 }
 
 std::string ExtensionThrottleManager::GetIdFromUrl(const GURL& url) const {
-  if (!url.is_valid())
+  if (!url.is_valid()) {
     return url.possibly_invalid_spec();
+  }
 
   GURL id = url.ReplaceComponents(url_id_replacements_);
   return base::ToLowerASCII(id.spec());
@@ -177,8 +185,9 @@ std::string ExtensionThrottleManager::GetIdFromUrl(const GURL& url) const {
 
 void ExtensionThrottleManager::GarbageCollectEntriesIfNecessary() {
   requests_since_last_gc_++;
-  if (requests_since_last_gc_ < kRequestsBetweenCollecting)
+  if (requests_since_last_gc_ < kRequestsBetweenCollecting) {
     return;
+  }
   requests_since_last_gc_ = 0;
 
   GarbageCollectEntries();

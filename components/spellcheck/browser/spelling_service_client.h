@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -147,7 +148,7 @@ class SpellingServiceClient {
 
   void OnSimpleLoaderComplete(SpellCheckLoaderList::iterator it,
                               base::TimeTicks request_start,
-                              std::unique_ptr<std::string> response_body);
+                              std::optional<std::string> response_body);
 
   // List of loaders in use.
   SpellCheckLoaderList spellcheck_loaders_;

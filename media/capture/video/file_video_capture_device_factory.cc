@@ -58,9 +58,14 @@ void FileVideoCaptureDeviceFactory::GetDevicesInfo(
       VideoCaptureApi::UNKNOWN;
 #endif
 
-  devices_info.emplace_back(
-      VideoCaptureDeviceDescriptor(GetFilePathFromCommandLine().AsUTF8Unsafe(),
-                                   kFileVideoCaptureDeviceName, api));
+  VideoCaptureControlSupport control_support;
+  control_support.pan = true;
+  control_support.tilt = true;
+  control_support.zoom = true;
+
+  devices_info.emplace_back(VideoCaptureDeviceDescriptor(
+      GetFilePathFromCommandLine().AsUTF8Unsafe(), kFileVideoCaptureDeviceName,
+      api, control_support));
 
   VideoCaptureFormat capture_format;
   if (!FileVideoCaptureDevice::GetVideoCaptureFormat(

@@ -106,12 +106,14 @@ inline constexpr char kPrivacySandboxNoConfirmationManuallyControlled[] =
 inline constexpr char kPrivacySandboxDisabledInsufficientConfirmation[] =
     "privacy_sandbox.disabled_insufficient_confirmation";
 
-// Boolean that indicates the user's FPS data access preference has been init,
+// Boolean that indicates the user's RWS data access preference has been init,
 // so named because of the user intent it intends to represent. Currently there
-// is no distinction between FPS for data access, and FPS for other purposes, so
+// is no distinction between RWS for data access, and RWS for other purposes, so
 // this init is applied to the "privacy_sandbox.first_party_sets_enabled" pref.
+// "first_party_sets" in the string name is kept for historic reasons to avoid
+// migration of a synced Pref.
 inline constexpr char
-    kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized[] =
+    kPrivacySandboxRelatedWebsiteSetsDataAccessAllowedInitialized[] =
         "privacy_sandbox.first_party_sets_data_access_allowed_initialized";
 
 // Boolean that indicates whether Related Website Sets is enabled. Exposed to
@@ -143,16 +145,18 @@ inline constexpr char kPrivacySandboxTopicsConsentLastUpdateReason[] =
 inline constexpr char kPrivacySandboxTopicsConsentTextAtLastUpdate[] =
     "privacy_sandbox.topics_consent.text_at_last_update";
 
-// TODO(crbug.com/348369971): Clean up old pref.
-// Pref which contains a list of the activity type from the last 100 chrome
-// launches
-inline constexpr char kPrivacySandboxActivityTypeRecord[] =
-    "privacy_sandbox.activity_type.record";
-
 // Pref which contains a list of the activity type from recent chrome launches.
 // Version 2 after enum values changed.
 inline constexpr char kPrivacySandboxActivityTypeRecord2[] =
     "privacy_sandbox.activity_type.record2";
+
+inline constexpr char kPrivacySandboxAllowNoticeFor3PCBlockedTrial[] =
+    "privacy_sandbox.allow_notice_for_3PC_blocked_trial";
+
+// Unsynced boolean that controls showing the Mode B rollback UI.
+inline constexpr char kShowRollbackUiModeB[] =
+    "tracking_protection.show_rollback_ui_mode_b";
+
 }  // namespace prefs
 
 namespace privacy_sandbox {

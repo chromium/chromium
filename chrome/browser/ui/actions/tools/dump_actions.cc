@@ -2,21 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // This command-line program dumps the computed values of all actiop IDs to
 // stdout.
 
 #include <algorithm>
+#include <functional>
 #include <iomanip>
 #include <ios>
 #include <iostream>
 #include <string>
 
-#include "base/ranges/algorithm.h"
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "ui/actions/action_id.h"
@@ -39,7 +35,7 @@ const char* enum_names[] = {
 
 int main(int argc, const char* argv[]) {
   const size_t longest_name =
-      strlen(base::ranges::max(enum_names, base::ranges::less(), strlen)) + 1;
+      strlen(std::ranges::max(enum_names, std::ranges::less(), strlen)) + 1;
 
   std::cout << std::setfill(' ') << std::left;
   std::cout << std::setw(longest_name) << "ID";
@@ -51,7 +47,7 @@ int main(int argc, const char* argv[]) {
   for (actions::ActionId id = actions::kActionsStart; id < kChromeActionsEnd;
        ++id) {
     std::cout << std::setfill(' ') << std::left;
-    std::cout << std::setw(longest_name) << enum_names[id] << '\n';
+    std::cout << std::setw(longest_name) << UNSAFE_TODO(enum_names[id]) << '\n';
   }
 
   std::cout.flush();

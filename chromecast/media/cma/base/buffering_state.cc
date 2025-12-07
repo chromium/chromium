@@ -103,10 +103,8 @@ static const char* StateToString(BufferingState::State state) {
     case BufferingState::kEosReached:
       return "kEosReached";
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
 }
 
 static std::string TimeDeltaToString(const base::TimeDelta& t) {

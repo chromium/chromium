@@ -1,0 +1,63 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+android_library("enterprise_reporting_java") {
+  sources = [
+    "java/src/org/chromium/components/enterprise/reporting/SignalsReportingBackgroundTask.java",
+    "java/src/org/chromium/components/enterprise/reporting/SignalsReportingSchedulerBridge.java",
+  ]
+
+  srcjar_deps = [ ":jni_headers" ]
+
+  deps = [
+    "//base:base_java",
+    "//build/android:build_java",
+    "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
+    "//components/background_task_scheduler:factory_java",
+    "//components/background_task_scheduler:public_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+}
+
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/components/enterprise/reporting/SignalsReportingSchedulerBridge.java" ]
+}
+
+source_set("signals_reporting_scheduler") {
+  sources = [
+    "signals_reporting_scheduler_bridge.cc",
+    "signals_reporting_scheduler_bridge.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  deps = [
+    ":jni_headers",
+    "//base",
+    "//content/public/browser",
+  ]
+}
+
+robolectric_library("junit") {
+  resources_package = "org.chromium.components.enterprise.reporting"
+  sources = [ "junit/src/org/chromium/components/enterprise/reporting/SignalsReportingBackgroundTaskTest.java" ]
+  deps = [
+    ":enterprise_reporting_java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
+    "//components/background_task_scheduler:factory_java",
+    "//components/background_task_scheduler:public_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+  ]
+}

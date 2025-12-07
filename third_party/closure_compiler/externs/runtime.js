@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,8 @@
 chrome.runtime = {};
 
 /**
- * An object which allows two way communication with other pages. See <a href="messaging#connect">Long-lived connections</a> for more information.
+ * An object which allows two way communication with other pages. See <a
+ * href="messaging#connect">Long-lived connections</a> for more information.
  * @constructor
  * @private
  * @see https://developer.chrome.com/extensions/runtime#type-Port
@@ -52,7 +53,10 @@ chrome.runtime.Port.prototype.disconnect = function() {};
 chrome.runtime.Port.prototype.postMessage = function(message) {};
 
 /**
- * This property will <b>only</b> be present on ports passed to $(ref:runtime.onConnect onConnect) / $(ref:runtime.onConnectExternal onConnectExternal) / $(ref:runtime.onConnectExternal onConnectNative) listeners.
+ * This property will <b>only</b> be present on ports passed to
+ * $(ref:runtime.onConnect onConnect) / $(ref:runtime.onConnectExternal
+ * onConnectExternal) / $(ref:runtime.onConnectExternal onConnectNative)
+ * listeners.
  * @type {(!chrome.runtime.MessageSender|undefined)}
  * @see https://developer.chrome.com/extensions/runtime#type-sender
  */
@@ -60,7 +64,8 @@ chrome.runtime.Port.prototype.sender;
 
 
 /**
- * An object containing information about the script context that sent a message or request.
+ * An object containing information about the script context that sent a message
+ * or request.
  * @typedef {{
  *   tab: (!chrome.tabs.Tab|undefined),
  *   frameId: (number|undefined),
@@ -89,7 +94,6 @@ chrome.runtime.PlatformOs = {
   CROS: 'cros',
   LINUX: 'linux',
   OPENBSD: 'openbsd',
-  FUCHSIA: 'fuchsia',
 };
 
 /**
@@ -103,6 +107,7 @@ chrome.runtime.PlatformArch = {
   X86_64: 'x86-64',
   MIPS: 'mips',
   MIPS64: 'mips64',
+  RISCV64: 'riscv64',
 };
 
 /**
@@ -122,7 +127,7 @@ chrome.runtime.PlatformNaclArch = {
  * @typedef {{
  *   os: !chrome.runtime.PlatformOs,
  *   arch: !chrome.runtime.PlatformArch,
- *   nacl_arch: !chrome.runtime.PlatformNaclArch
+ *   nacl_arch: (!chrome.runtime.PlatformNaclArch|undefined)
  * }}
  * @see https://developer.chrome.com/extensions/runtime#type-PlatformInfo
  */
@@ -169,6 +174,7 @@ chrome.runtime.ContextType = {
   BACKGROUND: 'BACKGROUND',
   OFFSCREEN_DOCUMENT: 'OFFSCREEN_DOCUMENT',
   SIDE_PANEL: 'SIDE_PANEL',
+  DEVELOPER_TOOLS: 'DEVELOPER_TOOLS',
 };
 
 /**
@@ -189,7 +195,9 @@ chrome.runtime.ContextType = {
 chrome.runtime.ExtensionContext;
 
 /**
- * A filter to match against certain extension contexts. Matching contexts must match all specified filters; any filter that is not specified matches all available contexts. Thus, a filter of `{}` will match all available contexts.
+ * A filter to match against certain extension contexts. Matching contexts must
+ * match all specified filters; any filter that is not specified matches all
+ * available contexts. Thus, a filter of `{}` will match all available contexts.
  * @typedef {{
  *   contextTypes: (!Array<!chrome.runtime.ContextType>|undefined),
  *   contextIds: (!Array<string>|undefined),
@@ -206,7 +214,12 @@ chrome.runtime.ExtensionContext;
 chrome.runtime.ContextFilter;
 
 /**
- * This will be defined during an API method callback if there was an error
+ * Populated with an error message if calling an API function fails; otherwise
+ * undefined. This is only defined within the scope of that function's callback.
+ * If an error is produced, but <code>runtime.lastError</code> is not accessed
+ * within the callback, a message is logged to the console listing the API
+ * function that produced the error. API functions that return promises do not
+ * set this property.
  * @typedef {{
  *   message: (string|undefined)
  * }}
@@ -227,20 +240,15 @@ chrome.runtime.id;
  * the system will ensure it is loaded before calling the callback. If there is
  * no background page, an error is set.
  * @param {function((Window|undefined)): void} callback
+ * @deprecated Background pages do not exist in MV3 extensions.
  * @see https://developer.chrome.com/extensions/runtime#method-getBackgroundPage
  */
 chrome.runtime.getBackgroundPage = function(callback) {};
 
 /**
  * <p>Open your Extension's options page, if possible.</p><p>The precise
- * behavior may depend on your manifest's <code><a
- * href="optionsV2">options_ui</a></code> or <code><a
- * href="options">options_page</a></code> key, or what Chrome happens to support
- * at the time. For example, the page may be opened in a new tab, within
- * chrome://extensions, within an App, or it may just focus an open options
- * page. It will never cause the caller page to reload.</p><p>If your Extension
- * does not declare an options page, or Chrome failed to create one for some
- * other reason, the callback will set $(ref:lastError).</p>
+ * behavior may depend on your manifest's <a
+ * href="/docs/extensions/develop/ui/options-page#embedded_options"><code>options_ui</code></a> or <a href="/docs/extensions/develop/ui/options-page#full_page"><code>options_page</code></a> key, or what Chrome happens to support at the time. For example, the page may be opened in a new tab, within chrome://extensions, within an App, or it may just focus an open options page. It will never cause the caller page to reload.</p><p>If your Extension does not declare an options page, or Chrome failed to create one for some other reason, the callback will set $(ref:lastError).</p>
  * @param {function(): void=} callback
  * @see https://developer.chrome.com/extensions/runtime#method-openOptionsPage
  */
@@ -248,7 +256,7 @@ chrome.runtime.openOptionsPage = function(callback) {};
 
 /**
  * Returns details about the app or extension from the manifest. The object
- * returned is a serialization of the full <a href="manifest.html">manifest
+ * returned is a serialization of the full <a href="reference/manifest">manifest
  * file</a>.
  * @return {Object} The manifest details.
  * @see https://developer.chrome.com/extensions/runtime#method-getManifest
@@ -291,14 +299,14 @@ chrome.runtime.reload = function() {};
  * since Chrome already does automatic checks every few hours, and you can
  * listen for the $(ref:runtime.onUpdateAvailable) event without needing to call
  * requestUpdateCheck.</p><p>This method is only appropriate to call in very
- * limited circumstances, such as if your extension/app talks to a backend
- * service, and the backend service has determined that the client extension/app
- * version is very far out of date and you'd like to prompt a user to update.
- * Most other uses of requestUpdateCheck, such as calling it unconditionally
- * based on a repeating timer, probably only serve to waste client, network, and
- * server resources.</p><p>Note: When called with a callback, instead of
- * returning an object this function will return the two properties as separate
- * arguments passed to the callback.</p>
+ * limited circumstances, such as if your extension talks to a backend service,
+ * and the backend service has determined that the client extension version is
+ * very far out of date and you'd like to prompt a user to update. Most other
+ * uses of requestUpdateCheck, such as calling it unconditionally based on a
+ * repeating timer, probably only serve to waste client, network, and server
+ * resources.</p><p>Note: When called with a callback, instead of returning an
+ * object this function will return the two properties as separate arguments
+ * passed to the callback.</p>
  * @param {function({
  *   status: !chrome.runtime.RequestUpdateCheckStatus,
  *   version: (string|undefined)
@@ -329,30 +337,34 @@ chrome.runtime.restart = function() {};
 chrome.runtime.restartAfterDelay = function(seconds, callback) {};
 
 /**
- * Attempts to connect listeners within an extension/app (such as the background
+ * Attempts to connect listeners within an extension (such as the background
  * page), or other extensions/apps. This is useful for content scripts
  * connecting to their extension processes, inter-app/extension communication,
- * and <a href="manifest/externally_connectable.html">web messaging</a>. Note
- * that this does not connect to any listeners in a content script. Extensions
- * may connect to content scripts embedded in tabs via $(ref:tabs.connect).
- * @param {string=} extensionId The ID of the extension or app to connect to. If
+ * and <a href="/docs/extensions/manifest/externally_connectable">web
+ * messaging</a>. Note that this does not connect to any listeners in a content
+ * script. Extensions may connect to content scripts embedded in tabs via
+ * $(ref:tabs.connect).
+ * @param {string=} extensionId The ID of the extension to connect to. If
  *     omitted, a connection will be attempted with your own extension. Required
  *     if sending messages from a web page for <a
- *     href="manifest/externally_connectable.html">web messaging</a>.
+ *     href="/docs/extensions/reference/manifest/externally-connectable">web
+ *     messaging</a>.
  * @param {{
  *   name: (string|undefined),
  *   includeTlsChannelId: (boolean|undefined)
  * }=} connectInfo
  * @return {!chrome.runtime.Port} Port through which messages can be sent and
  *     received. The port's $(ref:Port onDisconnect) event is fired if the
- *     extension/app does not exist.
+ *     extension does not exist.
  * @see https://developer.chrome.com/extensions/runtime#method-connect
  */
 chrome.runtime.connect = function(extensionId, connectInfo) {};
 
 /**
- * Connects to a native application in the host machine. See <a
- * href="nativeMessaging">Native Messaging</a> for more information.
+ * Connects to a native application in the host machine. This method requires
+ * the <code>"nativeMessaging"</code> permission. See <a
+ * href="develop/concepts/native-messaging">Native Messaging</a> for more
+ * information.
  * @param {string} application The name of the registered application to connect
  *     to.
  * @return {!chrome.runtime.Port} Port through which messages can be sent and
@@ -362,7 +374,7 @@ chrome.runtime.connect = function(extensionId, connectInfo) {};
 chrome.runtime.connectNative = function(application) {};
 
 /**
- * Sends a single message to event listeners within your extension/app or a
+ * Sends a single message to event listeners within your extension or a
  * different extension/app. Similar to $(ref:runtime.connect) but only sends a
  * single message, with an optional response. If sending to your extension, the
  * $(ref:runtime.onMessage) event will be fired in every frame of your extension
@@ -370,10 +382,11 @@ chrome.runtime.connectNative = function(application) {};
  * different extension. Note that extensions cannot send messages to content
  * scripts using this method. To send messages to content scripts, use
  * $(ref:tabs.sendMessage).
- * @param {?string|undefined} extensionId The ID of the extension/app to send
- *     the message to. If omitted, the message will be sent to your own
+ * @param {?string|undefined} extensionId The ID of the extension to send the
+ *     message to. If omitted, the message will be sent to your own
  *     extension/app. Required if sending messages from a web page for <a
- *     href="manifest/externally_connectable.html">web messaging</a>.
+ *     href="/docs/extensions/manifest/externally_connectable">web
+ *     messaging</a>.
  * @param {*} message The message to send. This message should be a JSON-ifiable
  *     object.
  * @param {{
@@ -385,7 +398,8 @@ chrome.runtime.connectNative = function(application) {};
 chrome.runtime.sendMessage = function(extensionId, message, options, callback) {};
 
 /**
- * Send a single message to a native application.
+ * Send a single message to a native application. This method requires the
+ * <code>"nativeMessaging"</code> permission.
  * @param {string} application The name of the native messaging host.
  * @param {Object} message The message that will be passed to the native
  *     messaging host.
@@ -490,7 +504,7 @@ chrome.runtime.onConnect;
 
 /**
  * Fired when a connection is made from another extension (by
- * $(ref:runtime.connect)).
+ * $(ref:runtime.connect)), or from an externally connectable web site.
  * @type {!ChromeEvent}
  * @see https://developer.chrome.com/extensions/runtime#event-onConnectExternal
  */
@@ -504,8 +518,9 @@ chrome.runtime.onConnectExternal;
 chrome.runtime.onUserScriptConnect;
 
 /**
- * Fired when a connection is made from a native application. Currently only
- * supported on Chrome OS.
+ * Fired when a connection is made from a native application. This event
+ * requires the <code>"nativeMessaging"</code> permission. It is only supported
+ * on Chrome OS.
  * @type {!ChromeEvent}
  * @see https://developer.chrome.com/extensions/runtime#event-onConnectNative
  */
@@ -520,7 +535,7 @@ chrome.runtime.onConnectNative;
 chrome.runtime.onMessage;
 
 /**
- * Fired when a message is sent from another extension/app (by
+ * Fired when a message is sent from another extension (by
  * $(ref:runtime.sendMessage)). Cannot be used in a content script.
  * @type {!ChromeEvent}
  * @see https://developer.chrome.com/extensions/runtime#event-onMessageExternal

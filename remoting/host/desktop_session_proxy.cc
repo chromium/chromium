@@ -10,11 +10,11 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/process/process_handle.h"
 #include "base/task/sequenced_task_runner.h"
@@ -98,8 +98,15 @@ std::unique_ptr<DesktopCapturer> DesktopSessionProxy::CreateVideoCapturer(
   // return a non-composing frame capturer.
   auto video_capturer = std::make_unique<IpcVideoFrameCapturer>(this);
 
-  DCHECK(!base::FindPtrOrNull(video_capturers_, id))
+#if !defined(NDEBUG)
+  // See if we already have a video capturer created for the given screen ID.
+  // base::FindPtrOrNull() does not work as of 2025-11-05 since there is no
+  // pointer_traits<WeakPtr>, and it will try to deref an invalidated pointer.
+  auto it = video_capturers_.find(id);
+  DCHECK(it == video_capturers_.end() || !it->second)
       << "Multiple capturers created for screen-id " << id;
+#endif
+
   auto capturer_weakptr = video_capturer->GetWeakPtr();
   video_capturers_[id] = capturer_weakptr;
 
@@ -113,7 +120,7 @@ std::unique_ptr<DesktopCapturer> DesktopSessionProxy::CreateVideoCapturer(
   return video_capturer;
 }
 
-std::unique_ptr<webrtc::MouseCursorMonitor>
+std::unique_ptr<protocol::MouseCursorMonitor>
 DesktopSessionProxy::CreateMouseCursorMonitor() {
   return std::make_unique<IpcMouseCursorMonitor>(this);
 }
@@ -154,25 +161,21 @@ std::string DesktopSessionProxy::GetCapabilities() const {
   result += " ";
   result += protocol::kMultiStreamCapability;
 
-  // Ask the client to send its resolution unconditionally.
   if (options_.enable_curtaining()) {
+    // Ask the client to send its resolution unconditionally.
     result += " ";
     result += protocol::kSendInitialResolution;
+    // Advertise support for high-DPI resizing.
+    result += " ";
+    result += protocol::kHighDpiCapability;
+    // Advertise good support for resize.
+    result += " ";
+    result += protocol::kDefaultResizeCapability;
   }
 
   if (InputInjector::SupportsTouchEvents()) {
     result += " ";
     result += protocol::kTouchEventsCapability;
-  }
-
-  if (options_.enable_file_transfer()) {
-    result += " ";
-    result += protocol::kFileTransferCapability;
-  }
-
-  if (options_.enable_remote_open_url() && IsRemoteOpenUrlSupported()) {
-    result += " ";
-    result += protocol::kRemoteOpenUrlCapability;
   }
 
   if (options_.enable_remote_webauthn()) {
@@ -185,6 +188,12 @@ std::string DesktopSessionProxy::GetCapabilities() const {
 
 void DesktopSessionProxy::SetCapabilities(const std::string& capabilities) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  host_cursor_rendered_by_client_ = HasCapability(
+      capabilities, protocol::kClientRenderedHostCursorCapability);
+  if (desktop_session_control_ && host_cursor_rendered_by_client_) {
+    desktop_session_control_->SetHostCursorRenderedByClient();
+  }
 
   // Delay creation of the desktop session until the client screen resolution is
   // received if the desktop session requires the initial screen resolution
@@ -205,13 +214,6 @@ void DesktopSessionProxy::SetCapabilities(const std::string& capabilities) {
                                                   options_.enable_curtaining());
     }
   }
-}
-
-bool DesktopSessionProxy::OnMessageReceived(const IPC::Message& message) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTREACHED_IN_MIGRATION()
-      << "Received unexpected IPC type: " << message.type();
-  return false;
 }
 
 void DesktopSessionProxy::OnChannelConnected(int32_t peer_pid) {
@@ -333,6 +335,10 @@ void DesktopSessionProxy::OnDesktopSessionAgentStarted(
     }
   }
 
+  if (host_cursor_rendered_by_client_) {
+    desktop_session_control_->SetHostCursorRenderedByClient();
+  }
+
   if (client_session_events_) {
     client_session_events_->OnDesktopAttached(desktop_session_id_);
   }
@@ -367,7 +373,11 @@ void DesktopSessionProxy::RebindSingleVideoCapturer(
   // SelectSource() is not used in multi-stream mode.
   DCHECK_LE(video_capturers_.size(), 1U);
 
-  if (base::FindPtrOrNull(video_capturers_, new_id) == capturer_weakptr.get()) {
+  // base::FindPtrOrNull() does not work as of 2025-11-05 since there is no
+  // pointer_traits<WeakPtr>, and it will try to deref an invalidated pointer.
+  auto it = video_capturers_.find(new_id);
+  if (it != video_capturers_.end() &&
+      it->second.get() == capturer_weakptr.get()) {
     // The capturer is already bound to `new_id`, so there's no value in
     // recreating it.
     LOG(WARNING) << "Ignoring SelectSource() for the same ID: " << new_id;
@@ -392,12 +402,16 @@ DesktopSessionProxy::GetKeyboardCurrentLayout() const {
   return keyboard_layout_;
 }
 
-void DesktopSessionProxy::DisconnectSession(protocol::ErrorCode error) {
+void DesktopSessionProxy::DisconnectSession(
+    protocol::ErrorCode error,
+    const std::string& error_details,
+    const SourceLocation& error_location) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Disconnect the client session if it hasn't been disconnected yet.
   if (client_session_control_.get()) {
-    client_session_control_->DisconnectSession(error);
+    client_session_control_->DisconnectSession(error, error_details,
+                                               error_location);
   }
 }
 
@@ -686,6 +700,15 @@ void DesktopSessionProxy::OnMouseCursorChanged(
   }
 }
 
+void DesktopSessionProxy::OnMouseCursorFractionalPositionChanged(
+    const protocol::FractionalCoordinate& position) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (mouse_cursor_monitor_) {
+    mouse_cursor_monitor_->OnMouseCursorFractionalPosition(position);
+  }
+}
+
 void DesktopSessionProxy::OnKeyboardLayoutChanged(
     const protocol::KeyboardLayout& layout) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -693,6 +716,24 @@ void DesktopSessionProxy::OnKeyboardLayoutChanged(
   keyboard_layout_ = layout;
   if (keyboard_layout_monitor_) {
     keyboard_layout_monitor_->OnKeyboardChanged(layout);
+  }
+}
+
+void DesktopSessionProxy::OnLocalMouseMoveDetected(
+    const webrtc::DesktopVector& new_position) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (client_session_control_) {
+    client_session_control_->OnLocalPointerMoved(new_position,
+                                                 ui::EventType::kMouseMoved);
+  }
+}
+
+void DesktopSessionProxy::OnLocalKeyboardInputDetected(int32_t usb_keycode) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (client_session_control_) {
+    client_session_control_->OnLocalKeyPressed(usb_keycode);
   }
 }
 

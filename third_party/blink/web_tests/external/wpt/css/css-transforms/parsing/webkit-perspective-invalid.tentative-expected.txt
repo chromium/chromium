@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] e.style['-webkit-perspective'] = "calc(1000)" should not set the property value
+  assert_equals: expected "" but got "1000px"
+[FAIL] e.style['-webkit-perspective'] = "calc(25)" should not set the property value
+  assert_equals: expected "" but got "25px"
+Harness: the test ran to completion.
+

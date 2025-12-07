@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/hid_detection/hid_detection_manager_impl.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -934,8 +935,8 @@ TEST_F(HidDetectionManagerImplTest,
   StopHidDetection(/*should_be_using_bluetooth=*/false);
 }
 
-// TODO(gordonseto): Test add device for type already connected, remove device
-// for type already connected.
+// TODO(crbug.com/390257083): Test add device for type already connected, remove
+// device for type already connected.
 
 TEST_F(HidDetectionManagerImplTest, StartDetection_BluetoothPointerSuccess) {
   StartHidDetection();

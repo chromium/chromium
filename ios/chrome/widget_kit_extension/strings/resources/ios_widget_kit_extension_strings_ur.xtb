@@ -1,7 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ur">
+<translation id="1149198577555059081">‏‫URL تلاش یا ٹائپ کریں</translation>
 <translation id="1324575488877808473">‏یہاں سب سے زیادہ ملاحظہ کردہ سائٹس دیکھنے کیلئے Chrome کھولیں۔</translation>
+<translation id="1861587787412926934">ڈیفالٹ</translation>
+<translation id="2378341468609349249">پاس ورڈز تلاش کریں</translation>
 <translation id="2513892053093488070">صوتی تلاش</translation>
 <translation id="2535710892645968259">‏اپنی مقفل اسکرین سے Chrome ڈائنوسار گیم کھیلیں۔</translation>
 <translation id="2542770169955243077">‏Chrome Dino گیم</translation>
@@ -11,15 +14,16 @@
 <translation id="3464120926993669599">پوشیدگی تلاش</translation>
 <translation id="3501428580460217920">‏Chrome میں ایک نئے پوشیدگی ٹیب میں تلاش یا نیویگیٹ کریں۔</translation>
 <translation id="3528874492835415837">‏URL تلاش یا ٹائپ کریں</translation>
+<translation id="3606473512813866845">‏‫Google اکاؤنٹ</translation>
 <translation id="3798529146539130967">‏اپنی آواز کا استعمال کرتے ہوئے Chrome میں تلاش کریں۔</translation>
 <translation id="405442954313519726">‏نئے ٹیب میں، پوشیدگی وضع میں، اپنی آواز سے یا QR کوڈ سے تلاش کریں یا نیویگيٹ کریں۔</translation>
 <translation id="4557098988773644458">‏Chrome ڈائنوسار گیم کھیلیں</translation>
 <translation id="4678859075583681103">‏نئی تلاش شروع کریں یا اپنے iPhone کے ہوم پیج سے اپنی سب سے زیادہ ملاحظہ کردہ سائٹس کو کھولیں۔</translation>
-<translation id="4954445889641385956">‏URL تلاش یا ٹائپ کریں</translation>
 <translation id="4962772945748414465">‏WEBSITE_PLACEHOLDER کھولیں</translation>
 <translation id="5234725349196694896">‏اپنے پسندیدہ سرچ انجن کے ساتھ Chrome میں تلاش کریں۔</translation>
 <translation id="5277852985315196237">‏URL تلاش یا ٹائپ کریں</translation>
 <translation id="529497070985873480">‏Chrome ڈائنوسار گیم</translation>
+<translation id="5325847452011598583">اکاؤنٹ نہیں ہے</translation>
 <translation id="5683557219437283801">صوتی تلاش</translation>
 <translation id="6179961764474023795">فوری کارروائیاں</translation>
 <translation id="6330929932864892436">‏URL تلاش یا ٹائپ کریں</translation>
@@ -28,6 +32,7 @@
 <translation id="6663288906398689853">تلاش کریں</translation>
 <translation id="6691821786147477657">‏نئی تلاش شروع کریں یا اپنے iPad ہوم پیج سے اپنی سب سے زیادہ ملاحظہ کردہ سائٹس کو کھولیں۔</translation>
 <translation id="6721566127904256183">آپ کی سب سے زیادہ ملاحظہ کردہ سائٹس یہاں دکھائی دیں گی۔</translation>
+<translation id="6804899947889706382">‏‫URL تلاش یا ٹائپ کریں</translation>
 <translation id="6855322554930231468">تلاش</translation>
 <translation id="6973491011026415905">‏Google پاس ورڈ مینیجر پر پاس ورڈز تلاش کریں</translation>
 <translation id="7010831364920321713">پوشیدگی تلاش</translation>
@@ -38,6 +43,8 @@
 <translation id="8104498668011127805">‏Chrome ڈائنوسار گیم کھیلیں</translation>
 <translation id="8150601371542319992">لینز</translation>
 <translation id="8171952085734471362">پوشیدگی تلاش</translation>
+<translation id="8310150944719146950">اکاؤنٹ</translation>
 <translation id="8564942608461410346">‏اپنے پسندیدہ سرچ انجن کے ساتھ Chrome میں تلاش کریں۔</translation>
+<translation id="8858765528951093286">ویجیٹ کے ساتھ استعمال کردہ اکاؤنٹ کو ہٹا دیا گیا۔ کوئی دوسرا اکاؤنٹ منتخب کرنے کے لیے، ویجیٹ میں ترمیم کریں پر تھپتھپائیں۔</translation>
 <translation id="9175676375569833962">پاس ورڈز تلاش کریں</translation>
 </translationbundle>

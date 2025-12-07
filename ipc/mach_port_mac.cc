@@ -16,7 +16,7 @@ namespace IPC {
 void ParamTraits<MachPortMac>::Write(base::Pickle* m, const param_type& p) {
   if (!m->WriteAttachment(
           new IPC::internal::MachPortAttachmentMac(p.get_mach_port()))) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -36,11 +36,6 @@ bool ParamTraits<MachPortMac>::Read(const base::Pickle* m,
   r->set_mach_port(mach_port_attachment->get_mach_port());
   mach_port_attachment->reset_mach_port_ownership();
   return true;
-}
-
-// static
-void ParamTraits<MachPortMac>::Log(const param_type& p, std::string* l) {
-  l->append(base::StringPrintf("mach port: 0x%X", p.get_mach_port()));
 }
 
 }  // namespace IPC

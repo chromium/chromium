@@ -129,7 +129,7 @@ class MojoMessage {
   ScopedIpczHandle parcel_;
 
   // A heap buffer of message data, used only when `parcel_` is null.
-  using DataPtr = std::unique_ptr<uint8_t>;
+  using DataPtr = std::unique_ptr<uint8_t[]>;
   DataPtr data_storage_;
   size_t data_storage_size_ = 0;
 

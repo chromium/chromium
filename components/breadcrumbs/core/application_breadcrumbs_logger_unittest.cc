@@ -14,6 +14,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
+#if defined(TOOLKIT_VIEWS)
+#include "ui/views/test/native_widget_factory.h"
+#include "ui/views/test/views_test_base.h"
+#endif  // TOOLKIT_VIEWS
+
 namespace breadcrumbs {
 
 namespace {
@@ -98,13 +103,12 @@ TEST_F(ApplicationBreadcrumbsLoggerTest, SkipInProductHelpUserActions) {
 TEST_F(ApplicationBreadcrumbsLoggerTest, MemoryPressure) {
   ASSERT_TRUE(OnlyStartupEventLogged());
 
-  base::MemoryPressureListener::SimulatePressureNotification(
-      base::MemoryPressureListener::MemoryPressureLevel::
-          MEMORY_PRESSURE_LEVEL_MODERATE);
-  base::MemoryPressureListener::SimulatePressureNotification(
-      base::MemoryPressureListener::MemoryPressureLevel::
-          MEMORY_PRESSURE_LEVEL_CRITICAL);
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  base::MemoryPressureListener::SimulatePressureNotificationAsync(
+      base::MEMORY_PRESSURE_LEVEL_MODERATE, base::DoNothing());
+  base::MemoryPressureListener::SimulatePressureNotificationAsync(
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL, run_loop.QuitClosure());
+  run_loop.Run();
 
   EXPECT_FALSE(OnlyStartupEventLogged());
   auto events = GetEvents();
@@ -117,5 +121,42 @@ TEST_F(ApplicationBreadcrumbsLoggerTest, MemoryPressure) {
   events.pop_front();
   EXPECT_NE(std::string::npos, events.front().find("Critical"));
 }
+
+#if defined(TOOLKIT_VIEWS)
+class ApplicationBreadcrumbsLoggerWidgetTest : public views::ViewsTestBase {
+ protected:
+  ApplicationBreadcrumbsLoggerWidgetTest() {
+    base::SetRecordActionTaskRunner(
+        base::SingleThreadTaskRunner::GetCurrentDefault());
+    CHECK(temp_dir_.CreateUniqueTempDir());
+    logger_ = std::make_unique<ApplicationBreadcrumbsLogger>(
+        temp_dir_.GetPath(),
+        /*is_metrics_enabled_callback=*/base::BindRepeating(
+            [] { return true; }));
+  }
+
+  base::ScopedTempDir temp_dir_;
+  std::unique_ptr<ApplicationBreadcrumbsLogger> logger_;
+};
+
+TEST_F(ApplicationBreadcrumbsLoggerWidgetTest, WidgetClosed) {
+  ASSERT_TRUE(OnlyStartupEventLogged());
+  auto widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params =
+      CreateParams(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+                   views::Widget::InitParams::TYPE_WINDOW);
+  params.native_widget = views::test::CreatePlatformNativeWidgetImpl(
+      widget.get(), views::test::kStubCapture, nullptr);
+  params.name = "TestWidget";
+  widget->Init(std::move(params));
+  widget->Show();
+  widget->Close();
+  auto events = GetEvents();
+  ASSERT_EQ(2u, events.size());
+  events.pop_front();
+  EXPECT_NE(std::string::npos,
+            events.front().find("Widget Closed: TestWidget"));
+}
+#endif  // TOOLKIT_VIEWS
 
 }  // namespace breadcrumbs

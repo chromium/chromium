@@ -36,14 +36,16 @@ class CORE_EXPORT DocumentStyleEnvironmentVariables
   // style. If |record_metrics| is true we will record UseCounter metrics when
   // this function is called.
   CSSVariableData* ResolveVariable(const AtomicString& name,
-                                   WTF::Vector<unsigned> indices,
+                                   Vector<unsigned> indices,
                                    bool record_metrics);
+
+  void SetPreferredTextScale(double);
 
   // Resolve the variable |name| and return the data. This will also cause
   // future changes to this variable to invalidate the associated document's
   // style. UseCounter metrics will be recorded when this function is used.
   CSSVariableData* ResolveVariable(const AtomicString& name,
-                                   WTF::Vector<unsigned> indices) override;
+                                   Vector<unsigned> indices) override;
 
   const FeatureContext* GetFeatureContext() const override;
 

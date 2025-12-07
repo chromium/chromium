@@ -4,11 +4,177 @@
 
 #include "chrome/enterprise_companion/installer.h"
 
+#include <memory>
+#include <optional>
+#include <string>
+
+#include "base/base_paths.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/logging.h"
+#include "base/memory/ptr_util.h"
+#include "base/path_service.h"
+#include "base/process/launch.h"
+#include "base/process/process.h"
+#include "base/strings/strcat.h"
+#include "base/strings/strcat_win.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/threading/platform_thread.h"
+#include "base/time/time.h"
+#include "base/win/registry.h"
+#include "base/win/windows_types.h"
+#include "chrome/enterprise_companion/enterprise_companion_branding.h"
+#include "chrome/enterprise_companion/enterprise_companion_version.h"
+#include "chrome/enterprise_companion/installer_paths.h"
+#include "chrome/installer/util/work_item.h"
+#include "chrome/installer/util/work_item_list.h"
+
 namespace enterprise_companion {
 
-bool Install() {
-  // TODO(crbug.com/344878963): Implement the installer.
+namespace {
+
+#if ENTERPRISE_COMPANION_USE_ICU_DATA_FILE
+
+// Blocks the calling sequence for up to 10 seconds until a file becomes
+// writable. Returns true if the file is eventually writable. This is
+// particularly useful for spinning on files which may be be open by other
+// processes.
+bool WaitForFileWritable(const base::FilePath& path) {
+  static constexpr base::TimeDelta kMaxWait = base::Seconds(10);
+  static constexpr base::TimeDelta kLoggingInterval = base::Seconds(2);
+  base::TimeTicks next_logging_time = base::TimeTicks::Now() + kLoggingInterval;
+  base::TimeTicks deadline = base::TimeTicks::Now() + kMaxWait;
+  while (base::TimeTicks::Now() < deadline) {
+    // The file is writeable if it can be opened for exclusive write access or
+    // if it does not exist.
+    if (base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_WRITE |
+                                  base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                                  base::File::FLAG_WIN_EXCLUSIVE_READ |
+                                  base::File::FLAG_WIN_SHARE_DELETE);
+        file.IsValid() ||
+        file.error_details() == base::File::FILE_ERROR_NOT_FOUND) {
+      return true;
+    }
+    if (next_logging_time < base::TimeTicks::Now()) {
+      VLOG(1) << "Still waiting for " << path << " to become writable.";
+      next_logging_time += kLoggingInterval;
+    }
+    base::PlatformThread::Sleep(base::Milliseconds(100));
+  }
   return false;
+}
+#endif  // ENTERPRISE_COMPANION_USE_ICU_DATA_FILE
+
+}  // namespace
+
+const wchar_t kAppRegKey[] = L"Software\\" COMPANY_SHORTNAME_STRING
+                             "\\Update\\Clients\\" ENTERPRISE_COMPANION_APPID;
+const wchar_t kRegValuePV[] = L"pv";
+const wchar_t kRegValueName[] = L"name";
+
+#if ENTERPRISE_COMPANION_USE_ICU_DATA_FILE
+const wchar_t kIcuDataFileName[] = L"icudtl.dat";
+#endif
+
+bool Install() {
+  base::FilePath source_exe_path;
+  if (!base::PathService::Get(base::FILE_EXE, &source_exe_path)) {
+    VLOG(1) << "Failed to retrieve the current executable's path.";
+    return false;
+  }
+
+  const std::optional<base::FilePath> install_directory = GetInstallDirectory();
+  if (!install_directory) {
+    VLOG(1) << "Failed to get install directory";
+    return false;
+  }
+
+  base::ScopedTempDir temp_dir;
+  if (!temp_dir.CreateUniqueTempDir()) {
+    VLOG(1) << "Failed to create temporary directory.";
+    return false;
+  }
+
+  std::unique_ptr<WorkItemList> install_list =
+      base::WrapUnique(WorkItemList::CreateWorkItemList());
+
+  install_list->AddCopyTreeWorkItem(
+      source_exe_path, install_directory->AppendUTF8(kExecutableName),
+      temp_dir.GetPath(), WorkItem::ALWAYS);
+#if ENTERPRISE_COMPANION_USE_ICU_DATA_FILE
+  if (base::PathExists(source_exe_path.DirName().Append(kIcuDataFileName))) {
+    if (WaitForFileWritable(install_directory->Append(kIcuDataFileName))) {
+      install_list->AddCopyTreeWorkItem(
+          source_exe_path.DirName().Append(kIcuDataFileName),
+          install_directory->Append(kIcuDataFileName), temp_dir.GetPath(),
+          WorkItem::ALWAYS);
+    } else {
+      VLOG(1) << "ICU data file is not writable. It will be omitted from the "
+                 "installation.";
+    }
+  }
+#endif
+  install_list->AddCreateRegKeyWorkItem(HKEY_LOCAL_MACHINE, kAppRegKey,
+                                        KEY_WOW64_32KEY);
+  install_list->AddSetRegValueWorkItem(
+      HKEY_LOCAL_MACHINE, kAppRegKey, KEY_WOW64_32KEY, kRegValuePV,
+      base::ASCIIToWide(kEnterpriseCompanionVersion), /*overwrite=*/true);
+  install_list->AddSetRegValueWorkItem(
+      HKEY_LOCAL_MACHINE, kAppRegKey, KEY_WOW64_32KEY, kRegValueName,
+      L"" PRODUCT_FULLNAME_STRING, /*overwrite=*/true);
+
+  if (!install_list->Do()) {
+    VLOG(1) << "Install failed, rolling back...";
+    install_list->Rollback();
+    VLOG(1) << "Rollback complete.";
+    return false;
+  }
+
+  return true;
+}
+
+bool Uninstall() {
+  {
+    LONG result = base::win::RegKey(HKEY_LOCAL_MACHINE, kAppRegKey,
+                                    KEY_SET_VALUE | KEY_WOW64_32KEY)
+                      .DeleteKey(L"");
+    VLOG_IF(1, result != ERROR_SUCCESS)
+        << "Failed to delete updater registration: " << kAppRegKey
+        << " error: " << result;
+  }
+
+  const std::optional<base::FilePath> install_directory = GetInstallDirectory();
+  if (!install_directory) {
+    VLOG(1) << "Failed to get install directory";
+    return false;
+  }
+
+  base::FilePath cmd_exe_path;
+  if (!base::PathService::Get(base::DIR_SYSTEM, &cmd_exe_path)) {
+    VLOG(1) << "Failed to get System32 path.";
+    return false;
+  }
+  cmd_exe_path = cmd_exe_path.Append(L"cmd.exe");
+
+  // Try deleting the directory 15 times and wait one second between tries.
+  const std::wstring command_line = base::StrCat(
+      {L"\"", cmd_exe_path.value(),
+       L"\" /Q /C \"for /L \%G IN (1,1,15) do ( ping -n 2 127.0.0.1 > nul & "
+       L"rmdir \"",
+       install_directory->value(), L"\" /s /q > nul & if not exist \"",
+       install_directory->value(), L"\" exit 0 )\""});
+  VLOG(1) << "Running " << command_line;
+
+  base::LaunchOptions options;
+  options.start_hidden = true;
+  base::Process process = base::LaunchProcess(command_line, options);
+  if (!process.IsValid()) {
+    VLOG(1) << "Failed to create process " << command_line;
+    return false;
+  }
+  return true;
 }
 
 }  // namespace enterprise_companion

@@ -3,20 +3,28 @@
 // found in the LICENSE file.
 #include "components/password_manager/core/browser/credential_manager_impl.h"
 
+#include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/credential_manager_logger.h"
 #include "components/password_manager/core/browser/credential_manager_pending_request_task.h"
 #include "components/password_manager/core/browser/credential_manager_utils.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/form_saver.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
+#include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_manager_interface.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/common/credential_manager_types.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "url/origin.h"
 
 namespace password_manager {
 
@@ -40,7 +48,7 @@ void CredentialManagerImpl::Store(const CredentialInfo& credential,
                                   StoreCallback callback) {
   const url::Origin origin = GetOrigin();
   if (password_manager_util::IsLoggingActive(client_)) {
-    CredentialManagerLogger(client_->GetLogManager())
+    CredentialManagerLogger(client_->GetCurrentLogManager())
         .LogStoreCredential(origin, credential.type);
   }
 
@@ -52,6 +60,10 @@ void CredentialManagerImpl::Store(const CredentialInfo& credential,
     return;
   }
 
+  // Get the submitted form before it's erased in `NotifyStorePasswordCalled`.
+  std::optional<PasswordForm> submitted_form =
+      client_->GetPasswordManager()->GetSubmittedCredentials();
+  last_submitted_form_ = submitted_form ? submitted_form : last_submitted_form_;
   client_->NotifyStorePasswordCalled();
 
   std::unique_ptr<PasswordForm> form(
@@ -71,14 +83,37 @@ void CredentialManagerImpl::Store(const CredentialInfo& credential,
   // only available on HTTPS origins.
   auto form_fetcher = std::make_unique<FormFetcherImpl>(
       observed_digest, client_, /*should_migrate_http_passwords=*/false);
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordFormGroupedAffiliations)) {
+    form_fetcher->set_filter_grouped_credentials(false);
+  }
   form_manager_ = std::make_unique<CredentialManagerPasswordFormManager>(
       client_, std::move(form), this, nullptr, std::move(form_fetcher));
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (!last_submitted_form_) {
+    return;
+  }
+  bool pwm_credential_matches_cmapi_credential =
+      origin.IsSameOriginWith(last_submitted_form_->url) &&
+      last_submitted_form_->username_value == credential.id &&
+      last_submitted_form_->password_value == credential.password;
+  // Propagate the permissions set during Actor Login flow. The permission is
+  // stored in `PasswordFormManager` owned by Password Manager.
+  // last_submitted_form_ is saved as a member field because `Update` clears all
+  // password forms tracked by Password Manager and we are not guaranteed to
+  // receive a single `Update` call from a website.
+  if (base::FeatureList::IsEnabled(password_manager::features::kActorLogin) &&
+      last_submitted_form_->actor_login_approved &&
+      pwm_credential_matches_cmapi_credential) {
+    form_manager_->SetShouldStoreActorLoginPermission();
+  }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
 void CredentialManagerImpl::PreventSilentAccess(
     PreventSilentAccessCallback callback) {
   if (password_manager_util::IsLoggingActive(client_)) {
-    CredentialManagerLogger(client_->GetLogManager())
+    CredentialManagerLogger(client_->GetCurrentLogManager())
         .LogPreventSilentAccess(GetOrigin());
   }
   // Send acknowledge response back.
@@ -104,9 +139,20 @@ void CredentialManagerImpl::Get(CredentialMediationRequirement mediation,
 
   PasswordStoreInterface* store = GetProfilePasswordStore();
   if (password_manager_util::IsLoggingActive(client_)) {
-    CredentialManagerLogger(client_->GetLogManager())
+    CredentialManagerLogger(client_->GetCurrentLogManager())
         .LogRequestCredential(GetOrigin(), mediation, federations);
   }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // Return an empty credential if there is an active actor task.
+  if (client_->IsActorTaskActive()) {
+    std::move(callback).Run(CredentialManagerError::SUCCESS, CredentialInfo());
+    LogCredentialManagerGetResult(
+        metrics_util::CredentialManagerGetResult::kNone, mediation);
+    return;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
   if (pending_request_ || !store) {
     // Callback error.
     std::move(callback).Run(
@@ -148,6 +194,10 @@ void CredentialManagerImpl::Get(CredentialMediationRequirement mediation,
       include_passwords, federations, GetSynthesizedFormForOrigin());
 }
 
+void CredentialManagerImpl::ResetAfterDisconnecting() {
+  pending_request_.reset();
+}
+
 bool CredentialManagerImpl::IsZeroClickAllowed() const {
   return client_->IsAutoSignInEnabled() && !client_->IsOffTheRecord();
 }
@@ -165,10 +215,8 @@ url::Origin CredentialManagerImpl::GetOrigin() const {
 
 void CredentialManagerImpl::SendCredential(SendCredentialCallback send_callback,
                                            const CredentialInfo& info) {
-  DCHECK(pending_request_);
-
   if (password_manager_util::IsLoggingActive(client_)) {
-    CredentialManagerLogger(client_->GetLogManager())
+    CredentialManagerLogger(client_->GetCurrentLogManager())
         .LogSendCredential(GetOrigin(), info.type);
   }
   std::move(send_callback).Run(info);
@@ -226,20 +274,8 @@ void CredentialManagerImpl::OnProvisionalSaveComplete() {
   DCHECK(form_manager_);
   const PasswordForm& form = form_manager_->GetPendingCredentials();
   DCHECK(client_->IsSavingAndFillingEnabled(form.url));
+  last_submitted_form_ = std::nullopt;
 
-  if (form.match_type.has_value()) {
-    // Having PSL or affiliated web match implies there is no credential with an
-    // exactly matching origin and username. In order to avoid showing a save
-    // bubble to the user Save() is called directly. Save prompt is still
-    // offered for grouped credentials.
-    GetLoginMatchType match_type = GetMatchType(form);
-    if (match_type == GetLoginMatchType::kPSL ||
-        (match_type == GetLoginMatchType::kAffiliated &&
-         !affiliations::IsValidAndroidFacetURI(form.signon_realm))) {
-      form_manager_->Save();
-      return;
-    }
-  }
   if (form.federation_origin.IsValid()) {
     // If this is a federated credential, check it against the federated matches
     // produced by the PasswordFormManager. If a match is found, update it and
@@ -252,12 +288,14 @@ void CredentialManagerImpl::OnProvisionalSaveComplete() {
         return;
       }
     }
-  } else if (!form_manager_->IsNewLogin()) {
+  } else if (form.match_type) {
     // Otherwise, if this is not a new password credential, update the existing
     // credential prompting confirmation helium bubble to the user. This will
     // also update the 'skip_zero_click' state, as we've gotten an explicit
     // signal that the page understands the credential management API and so can
     // be trusted to notify us when they sign the user out.
+    // In case the existing match is non-exact, save credential for the current
+    // website automatically.
     bool is_update_confirmation = form_manager_->IsPasswordUpdate();
     form_manager_->Save();
     if (is_update_confirmation) {
@@ -267,7 +305,7 @@ void CredentialManagerImpl::OnProvisionalSaveComplete() {
     return;
   }
 
-  // Otherwise, this is a new form, so as the user if they'd like to save.
+  // Otherwise, this is a new form, so ask the user if they'd like to save.
   client_->PromptUserToSaveOrUpdatePassword(std::move(form_manager_), false);
 }
 

@@ -43,6 +43,8 @@ class MediaGalleriesEventRouter : public extensions::BrowserContextKeyedAPI,
                                   public GalleryWatchManagerObserver,
                                   public extensions::EventRouter::Observer {
  public:
+  explicit MediaGalleriesEventRouter(content::BrowserContext* context);
+  ~MediaGalleriesEventRouter() override;
   MediaGalleriesEventRouter(const MediaGalleriesEventRouter&) = delete;
   MediaGalleriesEventRouter& operator=(const MediaGalleriesEventRouter&) =
       delete;
@@ -67,9 +69,6 @@ class MediaGalleriesEventRouter : public extensions::BrowserContextKeyedAPI,
       extensions::events::HistogramValue histogram_value,
       const std::string& event_name,
       base::Value::List event_args);
-
-  explicit MediaGalleriesEventRouter(content::BrowserContext* context);
-  ~MediaGalleriesEventRouter() override;
 
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() { return "MediaGalleriesAPI"; }

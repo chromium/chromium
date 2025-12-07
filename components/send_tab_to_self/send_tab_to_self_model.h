@@ -53,8 +53,12 @@ class SendTabToSelfModel {
   // of the model as driven by user behaviors.
   virtual void DismissEntry(const std::string& guid) = 0;
 
-  // Mark entry with key |guid| as opened. Allows clients to modify the state
-  // of the model as driven by user behaviors.
+  // If an entry with `guid` exists, marks it as opened.
+  // Otherwise, the guid is queued in-memory, and if an entry with
+  // that guid later arrives from another device, it'll be immediately
+  // marked as opened. This can be used for platforms where
+  // the tab can be additionally received/displayed by layers other than
+  // SendTabToSelfModel, to avoid showing the same notification twice.
   virtual void MarkEntryOpened(const std::string& guid) = 0;
 
   // Guarantee that the model is operational and syncing, i.e., the local

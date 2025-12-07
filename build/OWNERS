@@ -2,9 +2,6 @@ set noparent
 # NOTE: keep this in sync with global-owners-override@chromium.org owners
 # by emailing lsc-policy@chromium.org when this list changes.
 agrieve@chromium.org
-brucedawson@chromium.org
-dpranke@google.com
-jochen@chromium.org
 sdefresne@chromium.org
 thakis@chromium.org
 thomasanderson@chromium.org
@@ -18,6 +15,7 @@ file://tools/clang/scripts/OWNERS
 # For java build changes:
 smaier@chromium.org
 wnwen@chromium.org
+hnakashima@chromium.org
 
 # NOTE: keep this in sync with global-owners-override@chromium.org owners
 # by emailing lsc-policy@chromium.org when this list changes.
@@ -29,7 +27,7 @@ per-file mac_toolchain.py=file://build/mac/OWNERS
 per-file xcode_binaries.yaml=file://build/mac/OWNERS
 
 per-file .gitignore=*
-per-file check_gn_headers_whitelist.txt=*
+per-file check_gn_headers_allowlist.txt=*
 per-file whitespace_file.txt=*
 per-file OWNERS.status=*
 per-file OWNERS.setnoparent=set noparent

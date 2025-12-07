@@ -10,6 +10,8 @@
 
 namespace blink {
 
+class StyleContainmentScopeTree;
+
 // Represents the scope of the subtree that contains style.
 // Manages quotes and child scopes.
 // Managed by StyleContainmentScopeTree.

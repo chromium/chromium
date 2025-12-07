@@ -1,0 +1,63 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("infobar") {
+  sources = [
+    "collaboration_group_infobar_delegate.h",
+    "collaboration_group_infobar_delegate.mm",
+    "collaboration_out_of_date_infobar_delegate.h",
+    "collaboration_out_of_date_infobar_delegate.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/collaboration/public",
+    "//components/infobars/core",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/saved_tab_groups/model",
+    "//ios/chrome/browser/share_kit/model",
+    "//ios/chrome/browser/share_kit/model:factory",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser:utils",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/url_loading/model:url_loading_params_header",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "collaboration_group_infobar_delegate_unittest.mm" ]
+  deps = [
+    ":infobar",
+    "//base/test:test_support",
+    "//components/collaboration:test_support",
+    "//components/collaboration/public",
+    "//components/saved_tab_groups/test_support",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/ui_bundled:test_support",
+    "//ios/chrome/browser/saved_tab_groups/model",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/url_loading/model:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

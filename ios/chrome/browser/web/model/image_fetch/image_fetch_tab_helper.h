@@ -107,8 +107,6 @@ class ImageFetchTabHelper : public ImageFetchJavaScriptFeature::Handler,
   int call_id_ = 0;
 
   base::WeakPtrFactory<ImageFetchTabHelper> weak_ptr_factory_;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_MODEL_IMAGE_FETCH_IMAGE_FETCH_TAB_HELPER_H_

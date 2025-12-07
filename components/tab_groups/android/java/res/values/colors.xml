@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+    <!-- Colors used by the tab group color picker UI and for the small color dot indicator on the card. -->
+    <color name="tab_group_color_picker_blue">@color/tab_group_color_picker_blue_dark</color>
+    <color name="tab_group_color_picker_blue_incognito">@color/tab_group_color_picker_blue_light</color>
+    <color name="tab_group_color_picker_cyan">@color/tab_group_color_picker_cyan_dark</color>
+    <color name="tab_group_color_picker_cyan_incognito">@color/tab_group_color_picker_cyan_light</color>
+    <color name="tab_group_color_picker_green">@color/tab_group_color_picker_green_dark</color>
+    <color name="tab_group_color_picker_green_incognito">@color/tab_group_color_picker_green_light</color>
+    <color name="tab_group_color_picker_grey">@color/tab_group_color_picker_grey_dark</color>
+    <color name="tab_group_color_picker_grey_incognito">@color/tab_group_color_picker_grey_light</color>
+    <color name="tab_group_color_picker_orange">@color/tab_group_color_picker_orange_dark</color>
+    <color name="tab_group_color_picker_orange_incognito">@color/tab_group_color_picker_orange_light</color>
+    <color name="tab_group_color_picker_pink">@color/tab_group_color_picker_pink_dark</color>
+    <color name="tab_group_color_picker_pink_incognito">@color/tab_group_color_picker_pink_light</color>
+    <color name="tab_group_color_picker_purple">@color/tab_group_color_picker_purple_dark</color>
+    <color name="tab_group_color_picker_purple_incognito">@color/tab_group_color_picker_purple_light</color>
+    <color name="tab_group_color_picker_red">@color/tab_group_color_picker_red_dark</color>
+    <color name="tab_group_color_picker_red_incognito">@color/tab_group_color_picker_red_light</color>
+    <color name="tab_group_color_picker_yellow">@color/tab_group_color_picker_yellow_dark</color>
+    <color name="tab_group_color_picker_yellow_incognito">@color/tab_group_color_picker_yellow_light</color>
+    <color name="tab_group_tab_strip_title_text_color_incognito">@color/baseline_neutral_20</color>
+    <!-- Colors that define the main background tint for the entire tab group card. -->
+    <color name="tab_group_card_color_grey">@color/tab_group_card_primary_color_grey_light_gm3</color>
+    <color name="tab_group_card_color_grey_incognito">@color/tab_group_card_primary_color_grey_dark_gm3</color>
+    <color name="tab_group_card_color_blue">@color/tab_group_card_primary_color_blue_light_gm3</color>
+    <color name="tab_group_card_color_blue_incognito">@color/tab_group_card_primary_color_blue_dark_gm3</color>
+    <color name="tab_group_card_color_cyan">@color/tab_group_card_primary_color_cyan_light_gm3</color>
+    <color name="tab_group_card_color_cyan_incognito">@color/tab_group_card_primary_color_cyan_dark_gm3</color>
+    <color name="tab_group_card_color_green">@color/tab_group_card_primary_color_green_light_gm3</color>
+    <color name="tab_group_card_color_green_incognito">@color/tab_group_card_primary_color_green_dark_gm3</color>
+    <color name="tab_group_card_color_orange">@color/tab_group_card_primary_color_orange_light_gm3</color>
+    <color name="tab_group_card_color_orange_incognito">@color/tab_group_card_primary_color_orange_dark_gm3</color>
+    <color name="tab_group_card_color_pink">@color/tab_group_card_primary_color_pink_light_gm3</color>
+    <color name="tab_group_card_color_pink_incognito">@color/tab_group_card_primary_color_pink_dark_gm3</color>
+    <color name="tab_group_card_color_purple">@color/tab_group_card_primary_color_purple_light_gm3</color>
+    <color name="tab_group_card_color_purple_incognito">@color/tab_group_card_primary_color_purple_dark_gm3</color>
+    <color name="tab_group_card_color_red">@color/tab_group_card_primary_color_red_light_gm3</color>
+    <color name="tab_group_card_color_red_incognito">@color/tab_group_card_primary_color_red_dark_gm3</color>
+    <color name="tab_group_card_color_yellow">@color/tab_group_card_primary_color_yellow_light_gm3</color>
+    <color name="tab_group_card_color_yellow_incognito">@color/tab_group_card_primary_color_yellow_dark_gm3</color>
+    <!-- Colors for foreground elements, used for the title, tab counter, and action button on a tab group card. -->
+    <color name="tab_group_card_text_color_grey">@color/tab_group_card_secondary_color_grey_dark_gm3</color>
+    <color name="tab_group_card_text_color_grey_incognito">@color/tab_group_card_secondary_color_grey_light_gm3</color>
+    <color name="tab_group_card_text_color_blue">@color/tab_group_card_secondary_color_blue_dark_gm3</color>
+    <color name="tab_group_card_text_color_blue_incognito">@color/tab_group_card_secondary_color_blue_light_gm3</color>
+    <color name="tab_group_card_text_color_cyan">@color/tab_group_card_secondary_color_cyan_dark_gm3</color>
+    <color name="tab_group_card_text_color_cyan_incognito">@color/tab_group_card_secondary_color_cyan_light_gm3</color>
+    <color name="tab_group_card_text_color_green">@color/tab_group_card_secondary_color_green_dark_gm3</color>
+    <color name="tab_group_card_text_color_green_incognito">@color/tab_group_card_secondary_color_green_light_gm3</color>
+    <color name="tab_group_card_text_color_orange">@color/tab_group_card_secondary_color_orange_dark_gm3</color>
+    <color name="tab_group_card_text_color_orange_incognito">@color/tab_group_card_secondary_color_orange_light_gm3</color>
+    <color name="tab_group_card_text_color_pink">@color/tab_group_card_secondary_color_pink_dark_gm3</color>
+    <color name="tab_group_card_text_color_pink_incognito">@color/tab_group_card_secondary_color_pink_light_gm3</color>
+    <color name="tab_group_card_text_color_purple">@color/tab_group_card_secondary_color_purple_dark_gm3</color>
+    <color name="tab_group_card_text_color_purple_incognito">@color/tab_group_card_secondary_color_purple_light_gm3</color>
+    <color name="tab_group_card_text_color_red">@color/tab_group_card_secondary_color_red_dark_gm3</color>
+    <color name="tab_group_card_text_color_red_incognito">@color/tab_group_card_secondary_color_red_light_gm3</color>
+    <color name="tab_group_card_text_color_yellow">@color/tab_group_card_secondary_color_yellow_dark_gm3</color>
+    <color name="tab_group_card_text_color_yellow_incognito">@color/tab_group_card_secondary_color_yellow_light_gm3</color>
+    <!-- Colors for the background of empty mini-thumbnail slots within a tab group card. -->
+    <color name="tab_group_card_placeholder_color_grey">@color/tab_group_card_secondary_color_grey_light_gm3</color>
+    <color name="tab_group_card_placeholder_color_grey_incognito">@color/tab_group_card_secondary_color_grey_dark_gm3</color>
+    <color name="tab_group_card_placeholder_color_blue">@color/tab_group_card_secondary_color_blue_light_gm3</color>
+    <color name="tab_group_card_placeholder_color_blue_incognito">@color/tab_group_card_secondary_color_blue_dark_gm3</color>
+    <color name="tab_group_card_placeholder_color_cyan">@color/tab_group_card_secondary_color_cyan_light_gm3</color>
+    <color name="tab_group_card_placeholder_color_cyan_incognito">@color/tab_group_card_secondary_color_cyan_dark_gm3</color>
+    <color name="tab_group_card_placeholder_color_green">@color/tab_group_card_secondary_color_green_light_gm3</color>
+    <color name="tab_group_card_placeholder_color_green_incognito">@color/tab_group_card_secondary_color_green_dark_gm3</color>
+    <color name="tab_group_card_placeholder_color_orange">@color/tab_group_card_secondary_color_orange_light_gm3</color>
+    <color name="tab_group_card_placeholder_color_orange_incognito">@color/tab_group_card_secondary_color_orange_dark_gm3</color>
+    <color name="tab_group_card_placeholder_color_pink">@color/tab_group_card_secondary_color_pink_light_gm3</color>
+    <color name="tab_group_card_placeholder_color_pink_incognito">@color/tab_group_card_secondary_color_pink_dark_gm3</color>
+    <color name="tab_group_card_placeholder_color_purple">@color/tab_group_card_secondary_color_purple_light_gm3</color>
+    <color name="tab_group_card_placeholder_color_purple_incognito">@color/tab_group_card_secondary_color_purple_dark_gm3</color>
+    <color name="tab_group_card_placeholder_color_red">@color/tab_group_card_secondary_color_red_light_gm3</color>
+    <color name="tab_group_card_placeholder_color_red_incognito">@color/tab_group_card_secondary_color_red_dark_gm3</color>
+    <color name="tab_group_card_placeholder_color_yellow">@color/tab_group_card_secondary_color_yellow_light_gm3</color>
+    <color name="tab_group_card_placeholder_color_yellow_incognito">@color/tab_group_card_secondary_color_yellow_dark_gm3</color>
+
+    <color name="tab_group_color_picker_incognito_ripple_color">@color/baseline_neutral_90</color>
+</resources>

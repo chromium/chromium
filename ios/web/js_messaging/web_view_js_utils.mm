@@ -20,8 +20,9 @@ namespace {
 // `wk_result` up to a depth of `max_depth`.
 std::unique_ptr<base::Value> ValueResultFromWKResult(id wk_result,
                                                      int max_depth) {
-  if (!wk_result)
+  if (!wk_result) {
     return nullptr;
+  }
 
   std::unique_ptr<base::Value> result;
 
@@ -68,7 +69,7 @@ std::unique_ptr<base::Value> ValueResultFromWKResult(id wk_result,
     }
     result = std::make_unique<base::Value>(std::move(list));
   } else {
-    NOTREACHED_IN_MIGRATION();  // Convert other types as needed.
+    NOTREACHED();  // Convert other types as needed.
   }
   return result;
 }
@@ -122,7 +123,7 @@ id NSObjectFromValueResult(const base::Value* value_result, int max_depth) {
     }
     result = [array copy];
   } else {
-    NOTREACHED_IN_MIGRATION();  // Convert other types as needed.
+    NOTREACHED();  // Convert other types as needed.
   }
   return result;
 }
@@ -197,7 +198,7 @@ void RegisterExistingFrames(WKWebView* web_view,
                             WKContentWorld* content_world) {
   DCHECK(content_world);
 
-  NSString* script = @"__gCrWeb.message.getExistingFrames();";
+  NSString* script = @"__gCrWeb.getExistingFrames();";
 
   [web_view evaluateJavaScript:script
                        inFrame:nil

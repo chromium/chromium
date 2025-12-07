@@ -1,0 +1,81 @@
+The test verifies functionality of protocol method CSS.setStyleTexts for @page.
+==== Initial style sheet text ====
+article {
+  color: blue;
+}
+
+@page {
+  size: 8.5in 9in;
+  margin-top: 4in;
+}
+
+#test {
+  background-color: grey;
+}
+
+
+Running test: testCanChangeAtPage
+ERROR: Failed applying edit #0: NotFoundError Source range didn't match existing style source range
+Dumping matched rules: 
+*article* {    regular
+    color: blue; @[1:2-1:14]
+    color: blue; @[undefined-undefined]
+}
+*#test* {    regular
+    background-color: grey; @[10:2-10:25]
+    background-color: grey; @[undefined-undefined]
+}
+Dumping inherited rules: 
+
+Running test: testCanChangeRulesBefore
+==== Style sheet text ====
+article {
+  color: green;
+}
+
+@page {
+  size: 8.5in 9in;
+  margin-top: 4in;
+}
+
+#test {
+  background-color: grey;
+}
+
+Dumping matched rules: 
+*article* {    regular
+    color: green; @[1:2-1:15]
+    color: green; @[undefined-undefined]
+}
+*#test* {    regular
+    background-color: grey; @[10:2-10:25]
+    background-color: grey; @[undefined-undefined]
+}
+Dumping inherited rules: 
+
+Running test: testCanChangeRulesAfter
+==== Style sheet text ====
+article {
+  color: blue;
+}
+
+@page {
+  size: 8.5in 9in;
+  margin-top: 4in;
+}
+
+#test {
+  background-color: blue;
+}
+
+Dumping matched rules: 
+*article* {    regular
+    color: blue; @[1:2-1:14]
+    color: blue; @[undefined-undefined]
+}
+*#test* {    regular
+    background-color: blue; @[10:2-10:25]
+    background-color: blue; @[undefined-undefined]
+}
+Dumping inherited rules: 
+

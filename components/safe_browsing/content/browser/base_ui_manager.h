@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
@@ -106,7 +105,11 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
       content::WebContents* web_contents);
 
   // A convenience wrapper method for IsUrlAllowlistedOrPendingForWebContents.
-  virtual bool IsAllowlisted(const UnsafeResource& resource);
+  virtual bool IsAllowlisted(
+      const GURL& url,
+      const security_interstitials::UnsafeResourceLocator& rfh_locator,
+      const std::optional<int64_t>& navigation_id,
+      safe_browsing::SBThreatType threat_type);
 
   // Checks if we already displayed or are displaying an interstitial
   // for the top-level site |url| or any URLs in the redirect chain of |entry|

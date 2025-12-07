@@ -26,7 +26,7 @@ build itself, feel free to contact codeql-discuss@chromium.org.
 1. Download a database.
 
     You can download recent databases at the
-    [chrome-codeql-databases GCS bucket](https://pantheon.corp.google.com/storage/browser/chrome-codeql-databases).
+    [chrome-codeql-databases GCS bucket](https://commondatastorage.googleapis.com/chrome-codeql-databases/).
 
     (There are a LOT of databases there.  We'll prune them in the future, but
     for now you probably want to just filter by a date prefix, e.g.
@@ -34,8 +34,7 @@ build itself, feel free to contact codeql-discuss@chromium.org.
     see more than one database. The database for Chrome always begins with
     `chrome`. You may download other databases if you like!  They represent
     other `gn` targets that are used within Chrome and may be of interest to
-    security researchers. For instance, we currently build the `libavif` target
-    for those interested in inspecting that codec library specifically.)
+    security researchers.)
 
 2. Install the VSCode CodeQL Extension
 
@@ -177,6 +176,19 @@ build the Chromium database.
 
 The AST viewer seems to be broken at the moment.  There's no workaround for this
 right now.
+
+## Automation
+
+The file targets_to_index.py in this directory determines which targets should
+be indexed into CodeQL databases in automation.
+
+To add a target, append it to the list of `full_targets` in that file.
+
+The file queries_to_run.json in this directory determines which CodeQL queries
+should be run against which CodeQL databases in automation.
+
+To add a query, add the query's filename to the list corresponding to the
+database you would like to run that query against.
 
 ## Other Resources
 

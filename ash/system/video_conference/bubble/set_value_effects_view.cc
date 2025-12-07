@@ -22,6 +22,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/animated_image_view.h"
 #include "ui/views/controls/image_view.h"
@@ -153,7 +154,7 @@ class AnimatedImageButton : public TabSliderButton {
 
   // Update label and image color on selected state changed.
   void OnSelectedChanged() override {
-    label_->SetEnabledColorId(GetColorIdOnButtonState());
+    label_->SetEnabledColor(GetColorIdOnButtonState());
     // `SchedulePaint()` will result in the `gfx::VectorIcon` for `image_view_`
     // getting re-generated with the proper color.
     SchedulePaint();
@@ -217,7 +218,7 @@ SetValueEffectSlider::SetValueEffectSlider(
     label->SetAutoColorReadabilityEnabled(false);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                           *label);
-    label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    label->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
 
     auto* spacer_view =
         label_container->AddChildView(std::make_unique<views::View>());

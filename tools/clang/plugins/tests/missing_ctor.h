@@ -6,6 +6,8 @@
 #define MISSING_CTOR_H_
 
 #include <string>
+
+#include "base/containers/span.h"
 #include "base/memory/checked_ptr.h"
 #include "base/memory/raw_ptr.h"
 
@@ -387,4 +389,91 @@ class TenRawRefWarns {
   raw_ref<TenRawRefWarns> ten_;
 };
 
+class SpanDoesNotWarn {
+ public:
+  SpanDoesNotWarn() = default;
+  ~SpanDoesNotWarn() = default;
+
+ private:
+  raw_ref<SpanDoesNotWarn> foo_;
+};
+
+class NineSpanDoesNotWarn {
+ public:
+  NineSpanDoesNotWarn() = default;
+  ~NineSpanDoesNotWarn() = default;
+
+ private:
+  base::span<NineSpanDoesNotWarn> one_;
+  base::span<NineSpanDoesNotWarn> two_;
+  base::span<NineSpanDoesNotWarn> three_;
+  base::span<NineSpanDoesNotWarn> four_;
+  base::span<NineSpanDoesNotWarn> five_;
+  base::span<NineSpanDoesNotWarn> six_;
+  base::span<NineSpanDoesNotWarn> seven_;
+  base::span<NineSpanDoesNotWarn> eight_;
+  base::span<NineSpanDoesNotWarn> nine_;
+};
+
+class TenSpanWarns {
+ public:
+  TenSpanWarns() = default;
+  ~TenSpanWarns() = default;
+
+ private:
+  base::span<TenSpanWarns> one_;
+  base::span<TenSpanWarns> two_;
+  base::span<TenSpanWarns> three_;
+  base::span<TenSpanWarns> four_;
+  base::span<TenSpanWarns> five_;
+  base::span<TenSpanWarns> six_;
+  base::span<TenSpanWarns> seven_;
+  base::span<TenSpanWarns> eight_;
+  base::span<TenSpanWarns> nine_;
+  base::span<TenSpanWarns> ten_;
+};
+
+class RawSpanDoesNotWarn {
+ public:
+  RawSpanDoesNotWarn() = default;
+  ~RawSpanDoesNotWarn() = default;
+
+ private:
+  base::raw_span<RawSpanDoesNotWarn> foo_;
+};
+
+class NineRawSpanDoesNotWarn {
+ public:
+  NineRawSpanDoesNotWarn() = default;
+  ~NineRawSpanDoesNotWarn() = default;
+
+ private:
+  base::raw_span<NineRawSpanDoesNotWarn> one_;
+  base::raw_span<NineRawSpanDoesNotWarn> two_;
+  base::raw_span<NineRawSpanDoesNotWarn> three_;
+  base::raw_span<NineRawSpanDoesNotWarn> four_;
+  base::raw_span<NineRawSpanDoesNotWarn> five_;
+  base::raw_span<NineRawSpanDoesNotWarn> six_;
+  base::raw_span<NineRawSpanDoesNotWarn> seven_;
+  base::raw_span<NineRawSpanDoesNotWarn> eight_;
+  base::raw_span<NineRawSpanDoesNotWarn> nine_;
+};
+
+class TenRawSpanWarns {
+ public:
+  TenRawSpanWarns() = default;
+  ~TenRawSpanWarns() = default;
+
+ private:
+  base::raw_span<TenRawSpanWarns> one_;
+  base::raw_span<TenRawSpanWarns> two_;
+  base::raw_span<TenRawSpanWarns> three_;
+  base::raw_span<TenRawSpanWarns> four_;
+  base::raw_span<TenRawSpanWarns> five_;
+  base::raw_span<TenRawSpanWarns> six_;
+  base::raw_span<TenRawSpanWarns> seven_;
+  base::raw_span<TenRawSpanWarns> eight_;
+  base::raw_span<TenRawSpanWarns> nine_;
+  base::raw_span<TenRawSpanWarns> ten_;
+};
 #endif  // MISSING_CTOR_H_

@@ -13,11 +13,13 @@ enum ServiceWorkerRouterSourceType {
   // Network is used as a source.
   kNetwork = 0,
   // Race network and fetch handler.
-  kRace = 1,
+  kRaceNetworkAndFetchEvent = 1,
   // Fetch Event is used as a source.
   kFetchEvent = 2,
   // Cache is used as a source.
   kCache = 3,
+  // Race network and cache.
+  kRaceNetworkAndCache = 4,
 };
 
 // The initial status of service worker on navigation request.
@@ -54,6 +56,9 @@ struct ServiceWorkerRouterInfo {
 
   // The router evaluation time calculated in us.
   mojo_base.mojom.TimeDelta router_evaluation_time;
+
+  // The cache lookup time calculated.
+  mojo_base.mojom.TimeDelta cache_lookup_time;
 
   // The state of the service worker when conducting router evaluation.
   ServiceWorkerStatus? evaluation_worker_status;

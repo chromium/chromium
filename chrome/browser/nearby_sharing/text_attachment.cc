@@ -19,7 +19,7 @@ std::optional<std::string> GetHostFromText(const std::string& text) {
   if (!url.is_valid() || !url.has_host())
     return std::nullopt;
 
-  return url.host();
+  return url.GetHost();
 }
 
 // Masks the given |number| depending on the string length:

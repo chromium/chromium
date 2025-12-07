@@ -1,0 +1,26 @@
+caption: Configure <ph name="CLASS_TOOLS_NAME">Class Tools</ph> view screen feature
+default: true
+desc: |-
+  Setting the policy specifies if the selected teachers can remotely view students' screens.
+
+  If set to true or unset they can view students' screens.
+
+  If set to false they cannot access the feature.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Allow teachers to remotely view students' screens.
+  value: true
+- caption: Prevent teachers from remotely viewing students' screens.
+  value: false
+owners:
+- cros-edu-eng@google.com
+- aprilzhou@google.com
+schema:
+  type: boolean
+supported_on:
+- chrome_os:137-
+tags: []
+type: main

@@ -1,0 +1,4 @@
+include_rules = [
+  "+ios/chrome/browser/first_run/public/best_features_item.h",
+  "+ios/chrome/browser/welcome_back/model/features.h",
+]

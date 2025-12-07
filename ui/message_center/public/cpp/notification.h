@@ -14,13 +14,12 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/public/cpp/message_center_public_export.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -44,10 +43,13 @@ class MESSAGE_CENTER_PUBLIC_EXPORT NotificationItem {
   NotificationItem(const std::u16string& title,
                    const std::u16string& message,
                    ui::ImageModel icon = ui::ImageModel());
-  NotificationItem(const NotificationItem& other);
+
   NotificationItem();
-  ~NotificationItem();
+  NotificationItem(const NotificationItem& other);
+  NotificationItem(NotificationItem&& other);
   NotificationItem& operator=(const NotificationItem& other);
+  NotificationItem& operator=(NotificationItem&& other);
+  ~NotificationItem();
 
   const std::u16string& title() const { return title_; }
   const std::u16string& message() const { return message_; }
@@ -88,10 +90,12 @@ struct MESSAGE_CENTER_PUBLIC_EXPORT ButtonInfo {
   explicit ButtonInfo(const std::u16string& title);
   ButtonInfo(const gfx::VectorIcon* vector_icon,
              const std::u16string& accessible_name);
-  ButtonInfo(const ButtonInfo& other);
   ButtonInfo();
-  ~ButtonInfo();
+  ButtonInfo(const ButtonInfo& other);
+  ButtonInfo(ButtonInfo&& other);
   ButtonInfo& operator=(const ButtonInfo& other);
+  ButtonInfo& operator=(ButtonInfo&& other);
+  ~ButtonInfo();
 
   // Title that should be displayed on the notification button.
   std::u16string title;
@@ -105,7 +109,7 @@ struct MESSAGE_CENTER_PUBLIC_EXPORT ButtonInfo {
   gfx::Image icon;
 
   // Vector icon to that's used for icon-only notification buttons.
-  raw_ptr<const gfx::VectorIcon> vector_icon = &gfx::kNoneIcon;
+  raw_ptr<const gfx::VectorIcon> vector_icon = &gfx::VectorIcon::EmptyIcon();
 
   // Accessible name to be used for the button's tooltip. Required when creating
   // an icon-only notification button.
@@ -166,11 +170,11 @@ class MESSAGE_CENTER_PUBLIC_EXPORT RichNotificationData {
   // is in the views hierarchy or about to be passed to the OS.
   bool small_image_needs_additional_masking = false;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // If true, we simply use the raw |small_image| icon, ignoring accent color
   // styling. For example, this is used with raw icons received from Android.
   bool ignore_accent_color_for_small_image = false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Vector version of |small_image|.
   // Used by Notification::GenerateMaskedSmallIcon.
@@ -186,7 +190,8 @@ class MESSAGE_CENTER_PUBLIC_EXPORT RichNotificationData {
   // retain VectorIcon reference.  https://crbug.com/760866
   // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (always points to a
   // global), so there is no benefit to using a raw_ptr, only cost.
-  RAW_PTR_EXCLUSION const gfx::VectorIcon* vector_small_image = &gfx::kNoneIcon;
+  RAW_PTR_EXCLUSION const gfx::VectorIcon* vector_small_image =
+      &gfx::VectorIcon::EmptyIcon();
 
   // Vector image to display on the parent notification of this notification,
   // illustrating the source of the group notification that this notification
@@ -195,7 +200,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT RichNotificationData {
   // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (always points to a
   // global), so there is no benefit to using a raw_ptr, only cost.
   RAW_PTR_EXCLUSION const gfx::VectorIcon* parent_vector_small_image =
-      &gfx::kNoneIcon;
+      &gfx::VectorIcon::EmptyIcon();
 
   // Items to display on the notification. Only applicable for notifications
   // that have type NOTIFICATION_TYPE_MULTIPLE.
@@ -321,7 +326,9 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   // identical for both the Notification instances.
   Notification(const Notification& other);
 
+  Notification(Notification&& other);
   Notification& operator=(const Notification& other);
+  Notification& operator=(Notification&& other);
 
   virtual ~Notification();
 
@@ -359,7 +366,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
 
   // A display string for the source of the notification.
   const std::u16string& display_source() const { return display_source_; }
-  void set_display_source(const std::u16string display_source) {
+  void set_display_source(const std::u16string& display_source) {
     display_source_ = display_source;
   }
 
@@ -595,7 +602,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   // default state.
   void ClearGroupParent();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void set_system_notification_warning_level(
       SystemNotificationWarningLevel warning_level) {
     system_notification_warning_level_ = warning_level;
@@ -604,12 +611,22 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   SystemNotificationWarningLevel system_notification_warning_level() const {
     return system_notification_warning_level_;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   const std::string& custom_view_type() const { return custom_view_type_; }
   void set_custom_view_type(const std::string& custom_view_type) {
     DCHECK_EQ(type(), NotificationType::NOTIFICATION_TYPE_CUSTOM);
     custom_view_type_ = custom_view_type;
+  }
+
+  // Gets the element ID that should be used for the view that hosts this
+  // notification.
+  ui::ElementIdentifier host_view_element_id() const {
+    return host_view_element_id_;
+  }
+  void set_host_view_element_id(
+      const ui::ElementIdentifier host_view_element_id) {
+    host_view_element_id_ = host_view_element_id;
   }
 
  protected:
@@ -661,11 +678,15 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   // used to register the factory in MessageViewFactory.
   std::string custom_view_type_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // The value that should be used for the element ID of the view that hosts
+  // this notification.
+  ui::ElementIdentifier host_view_element_id_;
+
+#if BUILDFLAG(IS_CHROMEOS)
   // The warning level of a system notification.
   SystemNotificationWarningLevel system_notification_warning_level_ =
       SystemNotificationWarningLevel::NORMAL;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 }  // namespace message_center

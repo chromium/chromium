@@ -174,9 +174,6 @@ export class FolderSelector extends HTMLElement {
     input.toggleAttribute('disabled', selected);
     input.toggleAttribute('checked', selected);
 
-    // TODO(b/237066325): Add one event listener to the <folder-selector> and
-    // switch on the element clicked to identify whether it is expanded or
-    // selected to avoid too many event listeners.
     input.addEventListener('click', event => {
       event.stopPropagation();
       this.onPathSelected(event, folderPath);

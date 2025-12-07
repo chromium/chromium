@@ -7,7 +7,9 @@
 
 #include <dxgi.h>
 
+#include "media/base/video_types.h"
 #include "media/gpu/media_gpu_export.h"
+#include "ui/gfx/color_space.h"
 
 namespace media {
 
@@ -15,6 +17,16 @@ namespace media {
 MEDIA_GPU_EXPORT size_t GetFormatPlaneCount(DXGI_FORMAT format);
 
 MEDIA_GPU_EXPORT const char* DxgiFormatToString(DXGI_FORMAT format);
+
+MEDIA_GPU_EXPORT DXGI_FORMAT
+VideoPixelFormatToDxgiFormat(VideoPixelFormat format);
+
+MEDIA_GPU_EXPORT bool IsRec709(const gfx::ColorSpace& color_space);
+
+MEDIA_GPU_EXPORT bool IsRec601(const gfx::ColorSpace& color_space);
+
+MEDIA_GPU_EXPORT gfx::ColorSpace GetEncoderOutputColorSpaceFromInputColorSpace(
+    const gfx::ColorSpace& input_color_space);
 
 }  // namespace media
 

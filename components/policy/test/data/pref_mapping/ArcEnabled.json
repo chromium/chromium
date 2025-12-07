@@ -1,38 +1,15 @@
 [
   {
     "os": [
-      "chromeos_ash"
+      "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "default_for_enterprise_users overrides the default pref value",
-        "policies": {},
-        "prefs": {
-          "arc.enabled": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "ArcEnabled": false
-        },
-        "prefs": {
-          "arc.enabled": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "ArcEnabled": true
-        },
-        "prefs": {
-          "arc.enabled": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "arc.enabled",
+      "default_for_enterprise_users": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

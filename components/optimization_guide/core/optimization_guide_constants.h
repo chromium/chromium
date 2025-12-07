@@ -39,11 +39,6 @@ extern const char kOptimizationGuideServiceModelQualtiyDefaultURL[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kLoadedHintLocalHistogramString[];
 
-// The local histogram used to record that the on-device model validation
-// completed with an error.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kModelValidationErrorHistogramString[];
-
 // The name of the language override request header.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kOptimizationGuideLanguageOverrideHeaderKey[];
@@ -58,20 +53,26 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const base::FilePath::CharType
     kOldOptimizationGuidePredictionModelMetadataStore[];
 
-// The folder where the old prediction model downloads are stored. This is per
-// profile.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const base::FilePath::CharType
-    kOldOptimizationGuidePredictionModelDownloads[];
-
 // The prefix for the folder where models are stored by the new install-wide
 // model store.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const base::FilePath::CharType kOptimizationGuideModelStoreDirPrefix[];
 
+// The name of the model execution debug logs header.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kOptimizationGuideModelExecutionDebugLogsHeaderKey[];
+
 // Files expected to be in the on device model bundle.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const base::FilePath::CharType kWeightsFile[];
+// TODO(crbug.com/400998489): Cache files are experimental. Eventually we
+// probably want a cache path per-backend. This is here now for testing.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const base::FilePath::CharType kExperimentalCacheFile[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const base::FilePath::CharType kEncoderCacheFile[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const base::FilePath::CharType kAdapterCacheFile[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const base::FilePath::CharType kOnDeviceModelExecutionConfigFile[];
 

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -18,6 +19,21 @@
 ProtocolHandlerRegistryFactory* ProtocolHandlerRegistryFactory::GetInstance() {
   static base::NoDestructor<ProtocolHandlerRegistryFactory> instance;
   return instance.get();
+}
+
+// static
+std::unique_ptr<KeyedService> BuildProtocolHandlerRegistryService(
+    content::BrowserContext* context) {
+  PrefService* prefs = user_prefs::UserPrefs::Get(context);
+  DCHECK(prefs);
+  return custom_handlers::ProtocolHandlerRegistry::Create(
+      prefs, std::make_unique<ChromeProtocolHandlerRegistryDelegate>());
+}
+
+// static
+BrowserContextKeyedServiceFactory::TestingFactory
+ProtocolHandlerRegistryFactory::GetDefaultFactory() {
+  return base::BindRepeating(&BuildProtocolHandlerRegistryService);
 }
 
 // static
@@ -62,8 +78,5 @@ bool ProtocolHandlerRegistryFactory::ServiceIsNULLWhileTesting() const {
 std::unique_ptr<KeyedService>
 ProtocolHandlerRegistryFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  PrefService* prefs = user_prefs::UserPrefs::Get(context);
-  DCHECK(prefs);
-  return custom_handlers::ProtocolHandlerRegistry::Create(
-      prefs, std::make_unique<ChromeProtocolHandlerRegistryDelegate>());
+  return BuildProtocolHandlerRegistryService(context);
 }

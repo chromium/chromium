@@ -1,0 +1,19 @@
+Name: asm-commons
+Short Name: asm-commons
+URL: https://repo.maven.apache.org/maven2/org/ow2/asm/asm-commons/9.9/asm-commons-9.9.jar
+Version: 9.9
+Update Mechanism: Autoroll
+License: BSD-3-Clause
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: no
+Shipped: no
+
+Description:
+Usefull class adapters based on ASM, a very small and fast Java bytecode manipulation framework
+
+See also: http://asm.ow2.io/
+
+
+Local Modifications:
+No modifications.

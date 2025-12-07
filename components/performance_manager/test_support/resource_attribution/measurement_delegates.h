@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -101,7 +102,7 @@ class SimulatedCPUMeasurementDelegateFactory final
   // The delegates are owned by `pending_cpu_delegates_` when they're created,
   // then ownership is passed to the caller of TakeDelegate().
   std::map<const performance_manager::ProcessNode*,
-           SimulatedCPUMeasurementDelegate*>
+           raw_ptr<SimulatedCPUMeasurementDelegate, CtnExperimental>>
       simulated_cpu_delegates_;
 
   // CPUMeasurementDelegates that have been created but not passed to the caller
@@ -200,7 +201,7 @@ class FakeMemoryMeasurementDelegateFactory final
 
  private:
   // The MemorySummary results returned by delegates created by this factory.
-  MemoryMeasurementDelegate::MemorySummaryMap memory_summaries_;
+  MemoryMeasurementDelegate::MemorySummaryMap memory_summaries_{PassKey()};
 
   base::WeakPtrFactory<FakeMemoryMeasurementDelegateFactory> weak_factory_{
       this};

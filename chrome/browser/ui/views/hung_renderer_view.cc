@@ -10,7 +10,7 @@
 
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
@@ -38,6 +38,8 @@
 #include "content/public/common/result_codes.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -48,6 +50,21 @@
 #include "ui/views/widget/widget.h"
 
 using content::WebContents;
+
+namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// This enum is used for the HungRendererDialog.UserAction histogram.
+enum class HungRendererDialogUserAction {
+  kAccept = 0,
+  kCancel = 1,
+  kClose = 2,
+  kMaxValue = kClose,
+};
+
+}  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
 // HungPagesTableModel, public:
@@ -85,8 +102,9 @@ void HungPagesTableModel::InitForWebContents(
   widget_observation_.Observe(render_widget_host_.get());
 
   // The world is different.
-  if (observer_)
+  if (observer_) {
     observer_->OnModelChanged();
+  }
 }
 
 void HungPagesTableModel::Reset() {
@@ -96,13 +114,15 @@ void HungPagesTableModel::Reset() {
   render_widget_host_ = nullptr;
 
   // Inform the table model observers that we cleared the model.
-  if (observer_)
+  if (observer_) {
     observer_->OnModelChanged();
+  }
 }
 
 void HungPagesTableModel::RestartHangMonitorTimeout() {
-  if (hang_monitor_restarter_)
+  if (hang_monitor_restarter_) {
     hang_monitor_restarter_.Run();
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -159,13 +179,15 @@ void HungPagesTableModel::TabDestroyed(WebContentsObserverImpl* tab) {
   // Clean up tab_observers_ and notify our observer.
   size_t index = 0;
   for (; index < tab_observers_.size(); ++index) {
-    if (tab_observers_[index].get() == tab)
+    if (tab_observers_[index].get() == tab) {
       break;
+    }
   }
   DCHECK(index < tab_observers_.size());
   tab_observers_.erase(tab_observers_.begin() + index);
-  if (observer_)
+  if (observer_) {
     observer_->OnItemsRemoved(index, 1);
+  }
 
   // Notify the delegate.
   delegate_->TabDestroyed();
@@ -184,8 +206,9 @@ HungPagesTableModel::WebContentsObserverImpl::WebContentsObserverImpl(
 void HungPagesTableModel::WebContentsObserverImpl::RenderFrameHostChanged(
     content::RenderFrameHost* old_host,
     content::RenderFrameHost* new_host) {
-  if (!new_host->IsInPrimaryMainFrame())
+  if (!new_host->IsInPrimaryMainFrame()) {
     return;
+  }
 
   // If |new_host| is currently responsive dismiss this dialog, otherwise
   // let the model know the tab has been updated. Updating the tab will
@@ -232,11 +255,13 @@ void HungRendererDialogView::Show(
     WebContents* contents,
     content::RenderWidgetHost* render_widget_host,
     base::RepeatingClosure hang_monitor_restarter) {
-  if (logging::DialogsAreSuppressed())
+  if (logging::DialogsAreSuppressed()) {
     return;
+  }
 
-  if (IsShowingForWebContents(contents))
+  if (IsShowingForWebContents(contents)) {
     return;
+  }
 
   // Only show for WebContents in a browser window.
   if (!chrome::FindBrowserWithTab(contents)) {
@@ -263,13 +288,15 @@ void HungRendererDialogView::Show(
 void HungRendererDialogView::Hide(
     WebContents* contents,
     content::RenderWidgetHost* render_widget_host) {
-  if (logging::DialogsAreSuppressed())
+  if (logging::DialogsAreSuppressed()) {
     return;
+  }
 
   DialogHolder* dialog_holder = static_cast<DialogHolder*>(
       contents->GetUserData(&kDialogHolderUserDataKey));
-  if (dialog_holder)
+  if (dialog_holder) {
     dialog_holder->dialog->EndDialog(render_widget_host);
+  }
 }
 
 // static
@@ -279,7 +306,7 @@ bool HungRendererDialogView::IsShowingForWebContents(WebContents* contents) {
 
 HungRendererDialogView::HungRendererDialogView(WebContents* web_contents)
     : web_contents_(web_contents) {
-  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetModalType(ui::mojom::ModalType::kChild);
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kControl));
   auto info_label = std::make_unique<views::Label>(
@@ -296,14 +323,14 @@ HungRendererDialogView::HungRendererDialogView(WebContents* web_contents)
   hung_pages_table_ = hung_pages_table.get();
 
   SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
+      ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(IDS_BROWSER_HANGMONITOR_RENDERER_WAIT));
 
-  SetAcceptCallback(base::BindOnce(&HungRendererDialogView::RestartHangTimer,
+  SetAcceptCallback(base::BindOnce(&HungRendererDialogView::OnDialogAccepted,
                                    base::Unretained(this)));
   SetCancelCallback(base::BindOnce(
-      &HungRendererDialogView::ForceCrashHungRenderer, base::Unretained(this)));
-  SetCloseCallback(base::BindOnce(&HungRendererDialogView::RestartHangTimer,
+      &HungRendererDialogView::OnDialogCancelled, base::Unretained(this)));
+  SetCloseCallback(base::BindOnce(&HungRendererDialogView::OnDialogClosed,
                                   base::Unretained(this)));
 
   DialogModelChanged();
@@ -342,8 +369,9 @@ HungRendererDialogView::GetInstanceForWebContentsForTests(
     WebContents* contents) {
   DialogHolder* dialog_holder = static_cast<DialogHolder*>(
       contents->GetUserData(&kDialogHolderUserDataKey));
-  if (dialog_holder)
+  if (dialog_holder) {
     return dialog_holder->dialog;
+  }
   return nullptr;
 }
 
@@ -367,6 +395,24 @@ void HungRendererDialogView::EndDialog(
       hung_pages_table_model_->GetRenderWidgetHost() == render_widget_host) {
     CloseDialogWithNoAction();
   }
+}
+
+void HungRendererDialogView::OnDialogAccepted() {
+  base::UmaHistogramEnumeration("Renderer.HungRendererDialog.UserAction",
+                                HungRendererDialogUserAction::kAccept);
+  RestartHangTimer();
+}
+
+void HungRendererDialogView::OnDialogCancelled() {
+  base::UmaHistogramEnumeration("Renderer.HungRendererDialog.UserAction",
+                                HungRendererDialogUserAction::kCancel);
+  ForceCrashHungRenderer();
+}
+
+void HungRendererDialogView::OnDialogClosed() {
+  base::UmaHistogramEnumeration("Renderer.HungRendererDialog.UserAction",
+                                HungRendererDialogUserAction::kClose);
+  RestartHangTimer();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -428,7 +474,7 @@ void HungRendererDialogView::UpdateLabels() {
   info_label_->SetText(l10n_util::GetPluralStringFUTF16(
       IDS_BROWSER_HANGMONITOR_RENDERER, hung_pages_table_model_->RowCount()));
   SetButtonLabel(
-      ui::DIALOG_BUTTON_CANCEL,
+      ui::mojom::DialogButton::kCancel,
       l10n_util::GetPluralStringFUTF16(IDS_BROWSER_HANGMONITOR_RENDERER_END,
                                        hung_pages_table_model_->RowCount()));
 }

@@ -58,6 +58,7 @@ Auto-attached subframe target{
             attached : true
             browserContextId : <string>
             canAccessOpener : false
+            parentFrameId : <string>
             targetId : <string>
             title : 
             type : iframe

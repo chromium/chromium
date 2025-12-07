@@ -4,14 +4,17 @@
 
 package org.chromium.chrome.browser.autofill;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
 import android.util.Pair;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.autofill.FieldType;
@@ -19,10 +22,10 @@ import org.chromium.payments.mojom.PaymentAddress;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.List;
 import java.util.regex.Pattern;
 
 /** The locally stored autofill address. */
+@NullMarked
 public class AutofillAddress extends EditableOption {
     /** The pattern for a valid region code. */
     private static final String REGION_CODE_PATTERN = "^[A-Z]{2}$";
@@ -54,29 +57,27 @@ public class AutofillAddress extends EditableOption {
         int MAX_VALUE = 1 << 4;
     }
 
-    @Nullable private static Pattern sRegionCodePattern;
+    private @Nullable static Pattern sRegionCodePattern;
 
     private final Context mContext;
     private final PersonalDataManager mPersonalDataManager;
     private AutofillProfile mProfile;
-    @Nullable private String mShippingLabelWithCountry;
-    @Nullable private String mShippingLabelWithoutCountry;
-    @Nullable private String mBillingLabel;
+    private @Nullable String mShippingLabelWithCountry;
+    private @Nullable String mShippingLabelWithoutCountry;
 
     /**
      * Builds the autofill address.
      *
      * @param context The context where this address was created.
      * @param profile The autofill profile containing the address information.
-     * @param personalDataManager
      */
     public AutofillAddress(
             Context context, AutofillProfile profile, PersonalDataManager personalDataManager) {
         super(
                 profile.getGUID(),
-                profile.getFullName(),
+                profile.getInfo(FieldType.NAME_FULL),
                 profile.getLabel(),
-                profile.getPhoneNumber(),
+                profile.getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER),
                 null);
         mContext = context;
         mProfile = profile;
@@ -114,14 +115,13 @@ public class AutofillAddress extends EditableOption {
         // labels are recomputed next time they are needed.
         mShippingLabelWithCountry = null;
         mShippingLabelWithoutCountry = null;
-        mBillingLabel = null;
 
         mProfile = profile;
         updateIdentifierAndLabels(
                 mProfile.getGUID(),
-                mProfile.getFullName(),
+                mProfile.getInfo(FieldType.NAME_FULL),
                 mProfile.getLabel(),
-                mProfile.getPhoneNumber());
+                mProfile.getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER));
         checkAndUpdateAddressCompleteness();
     }
 
@@ -139,7 +139,7 @@ public class AutofillAddress extends EditableOption {
         }
 
         mProfile.setLabel(mShippingLabelWithCountry);
-        updateSublabel(mProfile.getLabel());
+        updateSublabel(assumeNonNull(mProfile.getLabel()));
     }
 
     /**
@@ -156,7 +156,7 @@ public class AutofillAddress extends EditableOption {
         }
 
         mProfile.setLabel(mShippingLabelWithoutCountry);
-        updateSublabel(mProfile.getLabel());
+        updateSublabel(assumeNonNull(mProfile.getLabel()));
     }
 
     /**
@@ -215,7 +215,7 @@ public class AutofillAddress extends EditableOption {
                 editTitleResId = R.string.payments_add_more_information;
         }
 
-        return new Pair<Integer, Integer>(editMessageResId, editTitleResId);
+        return new Pair<>(editMessageResId, editTitleResId);
     }
 
     /**
@@ -227,26 +227,25 @@ public class AutofillAddress extends EditableOption {
      * renderer.
      *
      * @param profile The autofill profile containing the address information.
-     * @param personalDataManager
      * @return int The completion status.
      */
     public static @CompletionStatus int checkAddressCompletionStatus(
             AutofillProfile profile, PersonalDataManager personalDataManager) {
         @CompletionStatus int completionStatus = CompletionStatus.COMPLETE;
 
-        if (TextUtils.isEmpty(profile.getFullName())) {
+        if (TextUtils.isEmpty(profile.getInfo(FieldType.NAME_FULL))) {
             completionStatus |= CompletionStatus.INVALID_RECIPIENT;
         }
 
         if (!PhoneNumberUtils.isGlobalPhoneNumber(
-                PhoneNumberUtils.stripSeparators(profile.getPhoneNumber().toString()))) {
+                PhoneNumberUtils.stripSeparators(
+                        profile.getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER).toString()))) {
             completionStatus |= CompletionStatus.INVALID_PHONE_NUMBER;
         }
 
-        List<Integer> requiredFields =
+        for (int fieldId :
                 AutofillProfileBridge.getRequiredAddressFields(
-                        AutofillAddress.getCountryCode(profile, personalDataManager));
-        for (int fieldId : requiredFields) {
+                        AutofillAddress.getCountryCode(profile, personalDataManager))) {
             if (fieldId == FieldType.NAME_FULL || fieldId == FieldType.ADDRESS_HOME_COUNTRY) {
                 continue;
             }
@@ -281,15 +280,15 @@ public class AutofillAddress extends EditableOption {
         PaymentAddress result = new PaymentAddress();
 
         result.country = getCountryCode(mProfile, mPersonalDataManager);
-        result.addressLine = mProfile.getStreetAddress().split("\n");
-        result.region = mProfile.getRegion();
-        result.city = mProfile.getLocality();
-        result.dependentLocality = mProfile.getDependentLocality();
-        result.postalCode = mProfile.getPostalCode();
-        result.sortingCode = mProfile.getSortingCode();
-        result.organization = mProfile.getCompanyName();
-        result.recipient = mProfile.getFullName();
-        result.phone = mProfile.getPhoneNumber();
+        result.addressLine = mProfile.getInfo(FieldType.ADDRESS_HOME_STREET_ADDRESS).split("\n");
+        result.region = mProfile.getInfo(FieldType.ADDRESS_HOME_STATE);
+        result.city = mProfile.getInfo(FieldType.ADDRESS_HOME_CITY);
+        result.dependentLocality = mProfile.getInfo(FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY);
+        result.postalCode = mProfile.getInfo(FieldType.ADDRESS_HOME_ZIP);
+        result.sortingCode = mProfile.getInfo(FieldType.ADDRESS_HOME_SORTING_CODE);
+        result.organization = mProfile.getInfo(FieldType.COMPANY_NAME);
+        result.recipient = mProfile.getInfo(FieldType.NAME_FULL);
+        result.phone = mProfile.getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER);
 
         return result;
     }

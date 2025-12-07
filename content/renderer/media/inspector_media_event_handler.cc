@@ -31,7 +31,7 @@ std::optional<blink::InspectorPlayerError> ErrorFromParams(
       caused_by.push_back(*parsed_cause);
   }
 
-  blink::WebVector<blink::InspectorPlayerError::SourceLocation> stack_vec;
+  std::vector<blink::InspectorPlayerError::SourceLocation> stack_vec;
   if (const auto* vec = param.FindList(media::StatusConstants::kStackKey)) {
     for (const auto& loc : *vec) {
       const auto& loc_dict = loc.GetDict();
@@ -47,11 +47,10 @@ std::optional<blink::InspectorPlayerError> ErrorFromParams(
     }
   }
 
-  blink::WebVector<blink::InspectorPlayerError::Data> data_vec;
+  std::vector<blink::InspectorPlayerError::Data> data_vec;
   if (auto* data = param.FindDict(media::StatusConstants::kDataKey)) {
     for (const auto pair : *data) {
-      std::string json;
-      base::JSONWriter::Write(pair.second, &json);
+      std::string json = base::WriteJson(pair.second).value_or("");
       blink::InspectorPlayerError::Data entry = {
           blink::WebString::FromUTF8(pair.first),
           blink::WebString::FromUTF8(json)};
@@ -74,14 +73,12 @@ blink::WebString ToString(const base::Value& value) {
   if (value.is_string()) {
     return blink::WebString::FromUTF8(value.GetString());
   }
-  std::string output_str;
-  base::JSONWriter::Write(value, &output_str);
+  std::string output_str = base::WriteJson(value).value_or("");
   return blink::WebString::FromUTF8(output_str);
 }
 
 blink::WebString ToString(const base::Value::Dict& value) {
-  std::string output_str;
-  base::JSONWriter::Write(value, &output_str);
+  std::string output_str = base::WriteJson(value).value_or("");
   return blink::WebString::FromUTF8(output_str);
 }
 
@@ -101,9 +98,12 @@ blink::InspectorPlayerMessage::Level LevelFromString(const std::string& level) {
 }  // namespace
 
 InspectorMediaEventHandler::InspectorMediaEventHandler(
-    blink::MediaInspectorContext* inspector_context)
+    blink::MediaInspectorContext* inspector_context,
+    int dom_node_id)
     : inspector_context_(inspector_context),
-      player_id_(inspector_context_->CreatePlayer()) {}
+      player_id_(inspector_context_->CreatePlayer()) {
+  inspector_context->SetDomNodeIdForPlayer(player_id_, dom_node_id);
+}
 
 // TODO(tmathmeyer) It would be wonderful if the definition for MediaLogRecord
 // and InspectorPlayerEvent / InspectorPlayerProperty could be unified so that

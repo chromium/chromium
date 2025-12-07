@@ -40,7 +40,7 @@ class DeferredUpdateDialog {
   DeferredUpdateDialog() = default;
 
   // Invoked when "ok" button is clicked.
-  void OnApplyDeferredUpdate();
+  void OnApplyDeferredUpdateAdvanced();
   // Invoked when "cancel" button is clicked.
   void OnContinueWithoutUpdate();
   // Invoked when the dialog is closing.

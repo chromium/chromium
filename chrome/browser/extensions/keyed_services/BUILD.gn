@@ -1,0 +1,31 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions_core)
+
+# The collection of keyed service factories related to Chrome's extensions
+# layer. This is a separate directory and target so that separate builds
+# (like the experimental desktop android build) can depend on this without
+# needing to depend on all of //chrome/browser/extensions.
+source_set("keyed_service_factories") {
+  sources = [
+    "browser_context_keyed_service_factories.cc",
+    "browser_context_keyed_service_factories.h",
+    "chrome_browser_context_keyed_service_factories.cc",
+    "chrome_browser_context_keyed_service_factories.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/extensions",
+    "//chrome/browser/extensions/api:keyed_service_factories",
+    "//chrome/common:buildflags",
+    "//content/public/common:buildflags",
+    "//extensions/buildflags",
+    "//pdf:buildflags",
+    "//printing/buildflags",
+  ]
+}

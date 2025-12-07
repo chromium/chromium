@@ -10,17 +10,18 @@
 #import "base/memory/ptr_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/captive_portal/core/captive_portal_detector.h"
 #import "components/security_interstitials/core/metrics_helper.h"
 #import "components/security_interstitials/core/ssl_error_options_mask.h"
 #import "components/security_interstitials/core/ssl_error_ui.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/ssl/model/captive_portal_metrics.h"
 #import "ios/chrome/browser/ssl/model/ios_captive_portal_blocking_page.h"
 #import "ios/chrome/browser/ssl/model/ios_ssl_blocking_page.h"
 #import "ios/components/security_interstitials/ios_blocking_page_metrics_helper.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
-#import "ios/web/public/browser_state.h"
 #import "ios/web/public/web_state.h"
 #import "net/ssl/ssl_info.h"
 #import "net/traffic_annotation/network_traffic_annotation.h"
@@ -109,7 +110,7 @@ void IOSSSLErrorHandler::StartHandlingError() {
   base::WeakPtr<IOSSSLErrorHandler> weak_error_handler =
       weak_factory_.GetWeakPtr();
   captive_portal_detector_->DetectCaptivePortal(
-      GURL(CaptivePortalDetector::kDefaultURL),
+      GURL(CaptivePortalDetector::GetDefaultUrl()),
       base::BindRepeating(
           &IOSSSLErrorHandler::HandleCaptivePortalDetectionResult,
           weak_error_handler),
@@ -154,7 +155,7 @@ void IOSSSLErrorHandler::ShowSSLInterstitial() {
       std::make_unique<security_interstitials::IOSBlockingPageControllerClient>(
           web_state_,
           CreateMetricsHelper(web_state_, request_url_, overridable_),
-          GetApplicationContext()->GetApplicationLocale()));
+          GetApplicationContext()->GetApplicationLocaleStorage()->Get()));
   std::string error_html = page->GetHtmlContents();
   IOSBlockingPageTabHelper::FromWebState(web_state_)
       ->AssociateBlockingPage(navigation_id_, std::move(page));
@@ -171,7 +172,7 @@ void IOSSSLErrorHandler::ShowCaptivePortalInterstitial(
       new security_interstitials::IOSBlockingPageControllerClient(
           web_state_,
           CreateMetricsHelper(web_state_, request_url_, overridable_),
-          GetApplicationContext()->GetApplicationLocale()));
+          GetApplicationContext()->GetApplicationLocaleStorage()->Get()));
   std::string error_html = page->GetHtmlContents();
   IOSBlockingPageTabHelper::FromWebState(web_state_)
       ->AssociateBlockingPage(navigation_id_, std::move(page));
@@ -189,5 +190,3 @@ void IOSSSLErrorHandler::LogCaptivePortalResult(
                             static_cast<int>(status),
                             static_cast<int>(CaptivePortalStatus::COUNT));
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(IOSSSLErrorHandler)

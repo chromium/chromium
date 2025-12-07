@@ -8,8 +8,9 @@
 #import "base/containers/flat_map.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
-#import "components/optimization_guide/core/insertion_ordered_set.h"
-#import "components/optimization_guide/core/optimization_guide_navigation_data.h"
+#include "base/sequence_checker.h"
+#import "components/optimization_guide/core/hints/insertion_ordered_set.h"
+#import "components/optimization_guide/core/hints/optimization_guide_navigation_data.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -100,8 +101,6 @@ class OptimizationGuideTabHelper
   // Initialized in constructor. It may be null if the OptimizationGuideService
   // feature is not enabled.
   raw_ptr<OptimizationGuideService> optimization_guide_service_ = nullptr;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 
   SEQUENCE_CHECKER(sequence_checker_);
 

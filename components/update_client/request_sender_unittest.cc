@@ -54,7 +54,7 @@ class RequestSenderTest : public testing::Test,
   std::unique_ptr<TestingPrefServiceSimple> pref_ =
       std::make_unique<TestingPrefServiceSimple>();
   scoped_refptr<TestConfigurator> config_;
-  std::unique_ptr<RequestSender> request_sender_;
+  scoped_refptr<RequestSender> request_sender_;
 
   std::unique_ptr<URLLoaderPostInterceptor> post_interceptor_;
 
@@ -75,7 +75,8 @@ RequestSenderTest::~RequestSenderTest() = default;
 void RequestSenderTest::SetUp() {
   RegisterPersistedDataPrefs(pref_->registry());
   config_ = base::MakeRefCounted<TestConfigurator>(pref_.get());
-  request_sender_ = std::make_unique<RequestSender>(config_);
+  request_sender_ =
+      base::MakeRefCounted<RequestSender>(config_->GetNetworkFetcherFactory());
 
   std::vector<GURL> urls;
   urls.push_back(GURL(kUrl1));
@@ -142,11 +143,11 @@ TEST_P(RequestSenderTest, RequestSendSuccess) {
   EXPECT_EQ(0, post_interceptor_->GetHitCountForURL(GURL(kUrl2)))
       << post_interceptor_->GetRequestsAsString();
 
-  EXPECT_STREQ("test", post_interceptor_->GetRequestBody(0).c_str());
+  EXPECT_EQ("test", post_interceptor_->GetRequestBody(0));
 
   // Check the response post conditions.
   EXPECT_EQ(0, error_);
-  EXPECT_EQ(419ul, response_.size());
+  EXPECT_EQ(434ul, response_.size());
 
   // Check the interactivity header value.
   const auto extra_request_headers =
@@ -180,8 +181,8 @@ TEST_F(RequestSenderTest, RequestSendSuccessWithFallback) {
   EXPECT_EQ(1, post_interceptor_->GetHitCountForURL(GURL(kUrl2)))
       << post_interceptor_->GetRequestsAsString();
 
-  EXPECT_STREQ("test", post_interceptor_->GetRequestBody(0).c_str());
-  EXPECT_STREQ("test", post_interceptor_->GetRequestBody(1).c_str());
+  EXPECT_EQ("test", post_interceptor_->GetRequestBody(0));
+  EXPECT_EQ("test", post_interceptor_->GetRequestBody(1));
   EXPECT_EQ(0, error_);
 }
 
@@ -193,7 +194,8 @@ TEST_F(RequestSenderTest, RequestSendFailed) {
       std::make_unique<PartialMatch>("test"), net::HTTP_FORBIDDEN));
 
   const std::vector<GURL> urls = {GURL(kUrl1), GURL(kUrl2)};
-  request_sender_ = std::make_unique<RequestSender>(config_);
+  request_sender_ =
+      base::MakeRefCounted<RequestSender>(config_->GetNetworkFetcherFactory());
   request_sender_->Send(
       urls, {}, "test", false,
       base::BindOnce(&RequestSenderTest::RequestSenderComplete,
@@ -209,15 +211,16 @@ TEST_F(RequestSenderTest, RequestSendFailed) {
   EXPECT_EQ(1, post_interceptor_->GetHitCountForURL(GURL(kUrl2)))
       << post_interceptor_->GetRequestsAsString();
 
-  EXPECT_STREQ("test", post_interceptor_->GetRequestBody(0).c_str());
-  EXPECT_STREQ("test", post_interceptor_->GetRequestBody(1).c_str());
+  EXPECT_EQ("test", post_interceptor_->GetRequestBody(0));
+  EXPECT_EQ("test", post_interceptor_->GetRequestBody(1));
   EXPECT_EQ(403, error_);
 }
 
 // Tests that the request fails when no urls are provided.
 TEST_F(RequestSenderTest, RequestSendFailedNoUrls) {
   std::vector<GURL> urls;
-  request_sender_ = std::make_unique<RequestSender>(config_);
+  request_sender_ =
+      base::MakeRefCounted<RequestSender>(config_->GetNetworkFetcherFactory());
   request_sender_->Send(
       urls, {}, "test", false,
       base::BindOnce(&RequestSenderTest::RequestSenderComplete,
@@ -234,7 +237,8 @@ TEST_F(RequestSenderTest, RequestSendCupError) {
       GetTestFilePath("updatecheck_reply_1.json")));
 
   const std::vector<GURL> urls = {GURL(kUrl1)};
-  request_sender_ = std::make_unique<RequestSender>(config_);
+  request_sender_ =
+      base::MakeRefCounted<RequestSender>(config_->GetNetworkFetcherFactory());
   request_sender_->Send(
       urls, {}, "test", true,
       base::BindOnce(&RequestSenderTest::RequestSenderComplete,
@@ -246,7 +250,7 @@ TEST_F(RequestSenderTest, RequestSendCupError) {
   EXPECT_EQ(1, post_interceptor_->GetCount())
       << post_interceptor_->GetRequestsAsString();
 
-  EXPECT_STREQ("test", post_interceptor_->GetRequestBody(0).c_str());
+  EXPECT_EQ("test", post_interceptor_->GetRequestBody(0));
   EXPECT_EQ(-10000, error_);
   EXPECT_TRUE(response_.empty());
 }

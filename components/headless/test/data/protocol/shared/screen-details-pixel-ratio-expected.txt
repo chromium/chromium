@@ -1,0 +1,2 @@
+Tests screen details device pixel ratio.
+devicePixelRatio=3

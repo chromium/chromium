@@ -4,9 +4,15 @@
 
 package org.chromium.chrome.browser.payments.handler;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
+import android.view.View;
 
 import org.chromium.base.version_info.VersionInfo;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.payments.handler.toolbar.PaymentHandlerToolbarCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -17,8 +23,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.embedder_support.view.ContentView;
-import org.chromium.components.payments.InputProtector;
 import org.chromium.components.payments.PaymentHandlerNavigationThrottle;
+import org.chromium.components.payments.ui.InputProtector;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
@@ -29,6 +35,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.url.GURL;
@@ -39,10 +46,11 @@ import org.chromium.url.GURL;
  * components and acts as the point of contact between them. Any code in this component that needs
  * to interact with another component does that through this coordinator.
  */
+@NullMarked
 public class PaymentHandlerCoordinator {
-    private Runnable mHider;
-    private WebContents mPaymentHandlerWebContents;
-    private PaymentHandlerToolbarCoordinator mToolbarCoordinator;
+    private @Nullable Runnable mHider;
+    private @Nullable WebContents mPaymentHandlerWebContents;
+    private @Nullable PaymentHandlerToolbarCoordinator mToolbarCoordinator;
     private InputProtector mInputProtector = new InputProtector();
 
     /** Constructs the payment-handler component coordinator. */
@@ -67,7 +75,7 @@ public class PaymentHandlerCoordinator {
      * @return The WebContents of the payment handler that's just opened when the showing is
      *     successful; null if failed. When null is returned, caller should also call hide().
      */
-    public WebContents show(
+    public @Nullable WebContents show(
             WebContents paymentRequestWebContents, GURL url, PaymentHandlerUiObserver uiObserver) {
         assert mHider == null : "Already showing payment-handler UI";
         assert paymentRequestWebContents != null;
@@ -91,7 +99,12 @@ public class PaymentHandlerCoordinator {
                         activity,
                         mPaymentHandlerWebContents,
                         url,
-                        windowAndroid::getModalDialogManager);
+                        () -> {
+                            ModalDialogManager modalDialogManager =
+                                    windowAndroid.getModalDialogManager();
+                            assumeNonNull(modalDialogManager);
+                            return modalDialogManager;
+                        });
 
         BottomSheetController bottomSheetController =
                 BottomSheetControllerProvider.from(windowAndroid);
@@ -103,6 +116,9 @@ public class PaymentHandlerCoordinator {
         }
 
         PropertyModel model = new PropertyModel.Builder(PaymentHandlerProperties.ALL_KEYS).build();
+        View tabView = currentTab.getView();
+        assert tabView != null;
+
         PaymentHandlerMediator mediator =
                 new PaymentHandlerMediator(
                         model,
@@ -110,7 +126,7 @@ public class PaymentHandlerCoordinator {
                         /* paymentRequestWebContents= */ paymentRequestWebContents,
                         /* paymentHandlerWebContents= */ mPaymentHandlerWebContents,
                         uiObserver,
-                        currentTab.getView(),
+                        tabView,
                         mToolbarCoordinator.getToolbarHeightPx(),
                         bottomSheetController,
                         tabObscuringHandler,
@@ -119,7 +135,7 @@ public class PaymentHandlerCoordinator {
         activity.getWindow().getDecorView().addOnLayoutChangeListener(mediator);
 
         bottomSheetController.addObserver(mediator);
-        mPaymentHandlerWebContents.addObserver(mediator);
+        mediator.observe(mPaymentHandlerWebContents);
 
         mToolbarCoordinator.setCloseButtonOnClickCallback(mediator::onToolbarCloseButtonClicked);
         IntentRequestTracker intentRequestTracker = windowAndroid.getIntentRequestTracker();
@@ -149,7 +165,10 @@ public class PaymentHandlerCoordinator {
                     assert activity.getWindow().getDecorView() != null;
                     activity.getWindow().getDecorView().removeOnLayoutChangeListener(mediator);
                     mediator.destroy();
+                    assumeNonNull(mToolbarCoordinator);
+                    mToolbarCoordinator.destroy();
                     thinWebView.destroy();
+                    assumeNonNull(mPaymentHandlerWebContents);
                     mPaymentHandlerWebContents.destroy();
                 };
         boolean isShowSuccess = bottomSheetController.requestShowContent(view, /* animate= */ true);
@@ -158,6 +177,7 @@ public class PaymentHandlerCoordinator {
         return mPaymentHandlerWebContents;
     }
 
+    @RequiresNonNull("mPaymentHandlerWebContents")
     private void initializeWebContents(
             WindowAndroid windowAndroid, ContentView webContentView, GURL url) {
         mPaymentHandlerWebContents.setDelegates(
@@ -185,7 +205,7 @@ public class PaymentHandlerCoordinator {
      *
      * @return The WebContents of the Payment Handler.
      */
-    public WebContents getWebContentsForTest() {
+    public @Nullable WebContents getWebContentsForTest() {
         return mPaymentHandlerWebContents;
     }
 
@@ -197,10 +217,12 @@ public class PaymentHandlerCoordinator {
     }
 
     public void clickSecurityIconForTest() {
+        assumeNonNull(mToolbarCoordinator);
         mToolbarCoordinator.clickSecurityIconForTest();
     }
 
     public void clickCloseButtonForTest() {
+        assumeNonNull(mToolbarCoordinator);
         mToolbarCoordinator.clickCloseButtonForTest();
     }
 

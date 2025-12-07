@@ -13,6 +13,7 @@
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/wm/pip/pip_controller.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/system_modal_container_layout_manager.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_restore/window_restore_controller.h"
@@ -124,8 +125,8 @@ gfx::Rect GetSnappedWindowBoundsInParent(aura::Window* window,
                                          float snap_ratio) {
   return GetSnappedWindowBounds(
       screen_util::GetDisplayWorkAreaBoundsInParent(window),
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window), window,
-      type, snap_ratio);
+      display::Screen::Get()->GetDisplayNearestWindow(window), window, type,
+      snap_ratio);
 }
 
 gfx::Rect GetDefaultSnappedWindowBoundsInParent(aura::Window* window,
@@ -164,8 +165,7 @@ gfx::Rect GetSnappedWindowBounds(const gfx::Rect& work_area,
       break;
     default:
       snap_region = SnapRegion::kInvalid;
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   // Compute size of the side of the window bound that should be proportional
@@ -221,8 +221,7 @@ gfx::Rect GetSnappedWindowBounds(const gfx::Rect& work_area,
       snap_bounds.set_y(work_area.bottom() - axis_length);
       break;
     case SnapRegion::kInvalid:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return snap_bounds;
 }
@@ -232,7 +231,7 @@ chromeos::OrientationType GetSnapDisplayOrientation(
   // This function is used by `GetSnappedWindowBounds()` for clamshell mode
   // only. Tablet mode uses a different function
   // `SplitViewController::GetSnappedWindowBoundsInScreen()`.
-  DCHECK(!display::Screen::GetScreen()->InTabletMode());
+  DCHECK(!display::Screen::Get()->InTabletMode());
 
   const display::Display::Rotation& rotation =
       Shell::Get()
@@ -271,6 +270,12 @@ void SetBoundsInScreen(aura::Window* window,
     }
 
     if (dst_container && window->parent() != dst_container) {
+      if (auto* snap_group =
+              SnapGroupController::Get()->GetSnapGroupForGivenWindow(window)) {
+        SnapGroupController::Get()->RemoveSnapGroup(
+            snap_group, SnapGroupExitPoint::kDragWindowOut);
+      }
+
       aura::Window* focused = window_util::GetFocusedWindow();
       aura::Window* active = window_util::GetActiveWindow();
 
@@ -315,10 +320,8 @@ void SetBoundsInScreen(aura::Window* window,
     }
   }
   gfx::Point origin(bounds_in_screen.origin());
-  const gfx::Point display_origin = display::Screen::GetScreen()
-                                        ->GetDisplayNearestWindow(window)
-                                        .bounds()
-                                        .origin();
+  const gfx::Point display_origin =
+      display::Screen::Get()->GetDisplayNearestWindow(window).bounds().origin();
   origin.Offset(-display_origin.x(), -display_origin.y());
   window->SetBounds(gfx::Rect(origin, bounds_in_screen.size()));
 }

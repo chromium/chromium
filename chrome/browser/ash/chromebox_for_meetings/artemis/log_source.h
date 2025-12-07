@@ -9,12 +9,11 @@
 #include "chrome/browser/ash/chromebox_for_meetings/artemis/local_data_source.h"
 #include "chrome/browser/ash/chromebox_for_meetings/artemis/log_file.h"
 #include "chrome/browser/ash/chromebox_for_meetings/artemis/persistent_db.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_data_aggregator.mojom.h"
 
 namespace ash::cfm {
 
 inline constexpr char kCfmChromeLogFile[] = "/var/log/chrome/chrome";
+inline constexpr char kCfmChromeUserLogFile[] = "/home/chronos/user/log/chrome";
 inline constexpr char kCfmCrosEcLogFile[] = "/var/log/cros_ec.log";
 inline constexpr char kCfmFwupdLogFile[] = "/var/log/fwupd.log";
 inline constexpr char kCfmPowerdLogFile[] = "/var/log/powerd.out";
@@ -30,8 +29,9 @@ inline constexpr int kInvalidFileInode = -1;
 class LogSource : public LocalDataSource {
  public:
   LogSource(const std::string& filepath,
+            size_t data_buffer_size_limit_,
             base::TimeDelta poll_rate,
-            size_t batch_size);
+            size_t num_lines_per_batch);
   LogSource(const LogSource&) = delete;
   LogSource& operator=(const LogSource&) = delete;
   ~LogSource() override;
@@ -45,8 +45,11 @@ class LogSource : public LocalDataSource {
   // Getter that returns the proper LogSource child class depending
   // on the provided filename.
   static std::unique_ptr<LogSource> Create(const std::string& filename,
+                                           size_t data_buffer_size_limit,
                                            base::TimeDelta poll_rate,
-                                           size_t batch_size);
+                                           size_t num_lines_per_batch);
+
+  bool InitializeFile();
 
  protected:
   int GetCurrentFileInode();
@@ -58,9 +61,8 @@ class LogSource : public LocalDataSource {
 
   std::string filepath_;
 
-  // Set to true if we can access the file and false if not.
-  // If false, all future operations are no-ops.
-  bool file_is_accessible_ = true;
+  // The number of times we've attempted to open the file.
+  int num_failed_open_attempts_ = 0;
 
   // Contains a handle to the log file on disk
   // TODO(b/320996557): this should be a collection of log files
@@ -68,7 +70,7 @@ class LogSource : public LocalDataSource {
   LogFile log_file_;
 
   // Number of lines to read from the log file at each iteration.
-  const size_t batch_size_;
+  const size_t num_lines_per_batch_;
 
   // Keep track of the last-known inode to detect when the underlying
   // file has rotated. Inodes will not change when the file is renamed.

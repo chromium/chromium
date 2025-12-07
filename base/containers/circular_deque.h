@@ -8,7 +8,6 @@
 #include <algorithm>
 #include <cstddef>
 #include <iterator>
-#include <type_traits>
 #include <utility>
 
 #include "base/check.h"
@@ -18,8 +17,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
-#include "base/ranges/from_range.h"
+#include "base/types/cxx23_from_range.h"
 
 #if DCHECK_IS_ON()
 #include <ostream>
@@ -592,20 +590,19 @@ class circular_deque {
   // Requires that `first` and `last` are valid iterators into a container, with
   // `first <= last`.
   template <typename InputIterator>
-    requires(std::input_iterator<InputIterator>)
+    requires(std::forward_iterator<InputIterator>)
   UNSAFE_BUFFER_USAGE void assign(InputIterator first, InputIterator last) {
     // Possible future enhancement, dispatch on iterator tag type. For forward
     // iterators we can use std::difference to preallocate the space required
     // and only do one copy.
     ClearRetainCapacity();
-    while (first != last) {
+    // SAFETY: Pointers are iterators, so `first` may be a pointer. We require
+    // the caller to provide valid pointers such that `last` is for the same
+    // allocation and `first <= last`, and we've checked in the loop condition
+    // that `first != last` so incrementing will stay a valid pointer for the
+    // allocation.
+    for (; first != last; UNSAFE_BUFFERS(++first)) {
       emplace_back(*first);
-      // SAFETY: Pointers are iterators, so `first` may be a pointer. We require
-      // the caller to provide valid pointers such that `last` is for the same
-      // allocation and `first <= last`, and we've checked in the loop condition
-      // that `first != last` so incrementing will stay a valid pointer for the
-      // allocation.
-      UNSAFE_BUFFERS(++first);
     }
     IncrementGeneration();
   }
@@ -820,11 +817,7 @@ class circular_deque {
     iterator insert_end;
     MakeRoomFor(count, &insert_cur, &insert_end);
     while (insert_cur < insert_end) {
-      std::construct_at(
-          // SAFETY: insert_cur is a valid iterator into the container, which
-          // means its index is less than capacity_. This is checked for above
-          // explicitly, and MakeRoomFor maintains it.
-          UNSAFE_BUFFERS(buffer_.begin() + insert_cur.index_), value);
+      std::construct_at(buffer_.get_at(insert_cur.index_), value);
       ++insert_cur;
     }
 
@@ -832,7 +825,7 @@ class circular_deque {
   }
 
   template <class InputIterator>
-    requires(std::input_iterator<InputIterator>)
+    requires(std::forward_iterator<InputIterator>)
   void insert(const_iterator pos, InputIterator first, InputIterator last) {
     ValidateIterator(pos);
 
@@ -862,11 +855,7 @@ class circular_deque {
 
     // Copy the items.
     while (insert_cur < insert_end) {
-      std::construct_at(
-          // SAFETY: insert_cur.index_ is either `begin_` or `pos.index`. This
-          // class maintains the invariant that `begin_ < capacity_`. In the
-          // latter case, we check above that `pos.index_ < capacity_`.
-          UNSAFE_BUFFERS(buffer_.begin() + insert_cur.index_), *first);
+      std::construct_at(buffer_.get_at(insert_cur.index_), *first);
       ++insert_cur;
       // SAFETY: The input iterator may be a pointer, in which case we will
       // produce UB if `first` is incremented past `last`. We use checked_cast
@@ -911,12 +900,8 @@ class circular_deque {
     iterator insert_begin(this, pos.index_);
     iterator insert_end;
     MakeRoomFor(1, &insert_begin, &insert_end);
-    std::construct_at(
-        // SAFETY: insert_cur is a valid iterator into the container, which
-        // means its index is less than capacity_. This is checked for above
-        // explicitly, and MakeRoomFor maintains it.
-        UNSAFE_BUFFERS(buffer_.begin() + insert_begin.index_),
-        std::forward<Args>(args)...);
+    std::construct_at(buffer_.get_at(insert_begin.index_),
+                      std::forward<Args>(args)...);
 
     return insert_begin;
   }
@@ -995,20 +980,14 @@ class circular_deque {
       begin_--;
     }
     IncrementGeneration();
-    std::construct_at(
-        // SAFETY: This class maintains an invariant that `begin_` is less than
-        // `buffer_`'s capacity.
-        UNSAFE_BUFFERS(buffer_.begin() + begin_), std::forward<Args>(args)...);
+    std::construct_at(buffer_.get_at(begin_), std::forward<Args>(args)...);
     return front();
   }
 
   template <class... Args>
   reference emplace_back(Args&&... args) {
     ExpandCapacityIfNecessary(1);
-    std::construct_at(
-        // SAFETY: This class maintains an invariant that `end_` is less than
-        // `buffer_`'s capacity.
-        UNSAFE_BUFFERS(buffer_.begin() + end_), std::forward<Args>(args)...);
+    std::construct_at(buffer_.get_at(end_), std::forward<Args>(args)...);
     if (end_ == buffer_.capacity() - 1) {
       end_ = 0;
     } else {
@@ -1130,7 +1109,7 @@ class circular_deque {
     min_new_capacity =
         std::max(min_new_capacity, internal::kCircularBufferInitialCapacity);
 
-    // std::vector always grows by at least 50%. WTF::Deque grows by at least
+    // std::vector always grows by at least 50%. blink::Deque grows by at least
     // 25%. We expect queue workloads to generally stay at a similar size and
     // grow less than a vector might, so use 25%.
     SetCapacityTo(std::max(min_new_capacity, cur_capacity + cur_capacity / 4u));
@@ -1282,18 +1261,18 @@ class circular_deque {
 // Implementations of base::Erase[If] (see base/stl_util.h).
 template <class T, class Value>
 size_t Erase(circular_deque<T>& container, const Value& value) {
-  auto it = ranges::remove(container, value);
-  size_t removed = std::distance(it, container.end());
-  container.erase(it, container.end());
-  return removed;
+  auto removed = std::ranges::remove(container, value);
+  size_t num_removed = removed.size();
+  container.erase(removed.begin(), removed.end());
+  return num_removed;
 }
 
 template <class T, class Predicate>
 size_t EraseIf(circular_deque<T>& container, Predicate pred) {
-  auto it = ranges::remove_if(container, pred);
-  size_t removed = std::distance(it, container.end());
-  container.erase(it, container.end());
-  return removed;
+  auto removed = std::ranges::remove_if(container, pred);
+  size_t num_removed = removed.size();
+  container.erase(removed.begin(), removed.end());
+  return num_removed;
 }
 
 }  // namespace base

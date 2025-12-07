@@ -4,8 +4,10 @@
 
 #include "cc/resources/resource_pool.h"
 
+#include <GLES2/gl2extchromium.h>
 #include <stddef.h>
 
+#include <array>
 #include <limits>
 #include <vector>
 
@@ -14,12 +16,10 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "components/viz/client/client_resource_provider.h"
-#include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_context_support.h"
-#include "components/viz/test/test_shared_bitmap_manager.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -53,21 +53,13 @@ class ResourcePoolTest : public testing::Test {
     MOCK_METHOD0(FlushPendingWork, void());
   };
 
-  class StubGpuBacking : public ResourcePool::GpuBacking {
-   public:
-    void OnMemoryDump(
-        base::trace_event::ProcessMemoryDump* pmd,
-        const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
-        uint64_t tracing_process_id,
-        int importance) const override {}
-  };
-
   void SetBackingOnResource(const ResourcePool::InUsePoolResource& resource) {
-    auto backing = std::make_unique<StubGpuBacking>();
-    backing->shared_image = gpu::ClientSharedImage::CreateForTesting();
+    auto backing = std::make_unique<ResourcePool::Backing>(
+        resource.size(), resource.format(), resource.color_space());
+    backing->CreateSharedImageForTesting();
     backing->mailbox_sync_token.Set(
         gpu::GPU_IO, gpu::CommandBufferId::FromUnsafeValue(1), 1);
-    resource.set_gpu_backing(std::move(backing));
+    resource.set_backing(std::move(backing));
   }
 
   void CheckAndReturnResource(ResourcePool::InUsePoolResource resource) {
@@ -75,7 +67,6 @@ class ResourcePoolTest : public testing::Test {
     resource_pool_->ReleaseResource(std::move(resource));
   }
 
-  viz::TestSharedBitmapManager shared_bitmap_manager_;
   scoped_refptr<viz::TestContextProvider> context_provider_;
   raw_ptr<MockContextSupport> context_support_;
   std::unique_ptr<viz::ClientResourceProvider> resource_provider_;
@@ -218,7 +209,7 @@ TEST_F(ResourcePoolTest, SimpleResourceReuse) {
 
   // Different size/format should allocate new resource.
   resource = resource_pool_->AcquireResource(
-      gfx::Size(50, 50), viz::SinglePlaneFormat::kLUMINANCE_8, color_space1);
+      gfx::Size(50, 50), viz::SinglePlaneFormat::kR_8, color_space1);
   EXPECT_EQ(2u, resource_pool_->GetTotalResourceCountForTesting());
   CheckAndReturnResource(std::move(resource));
   EXPECT_EQ(2u, resource_pool_->GetTotalResourceCountForTesting());
@@ -251,9 +242,11 @@ TEST_F(ResourcePoolTest, LostResource) {
 
   std::vector<viz::ResourceId> export_ids = {resource.resource_id_for_export()};
   std::vector<viz::TransferableResource> transferable_resources;
+
+  CHECK(context_provider_);
   resource_provider_->PrepareSendToParent(
       export_ids, &transferable_resources,
-      static_cast<viz::RasterContextProvider*>(context_provider_.get()));
+      context_provider_->SharedImageInterface());
   auto returned_resources =
       viz::TransferableResource::ReturnResources(transferable_resources);
   ASSERT_EQ(1u, returned_resources.size());
@@ -286,9 +279,11 @@ TEST_F(ResourcePoolTest, BusyResourcesNotFreed) {
       resource, viz::TransferableResource::ResourceSource::kTest));
 
   std::vector<viz::TransferableResource> transfers;
+
+  CHECK(context_provider_);
   resource_provider_->PrepareSendToParent(
       {resource.resource_id_for_export()}, &transfers,
-      static_cast<viz::RasterContextProvider*>(context_provider_.get()));
+      context_provider_->SharedImageInterface());
 
   resource_pool_->ReleaseResource(std::move(resource));
   EXPECT_EQ(40000u, resource_pool_->GetTotalMemoryUsageForTesting());
@@ -334,9 +329,11 @@ TEST_F(ResourcePoolTest, UnusedResourcesEventuallyFreed) {
   EXPECT_TRUE(resource_pool_->PrepareForExport(
       resource, viz::TransferableResource::ResourceSource::kTest));
   std::vector<viz::TransferableResource> transfers;
+
+  CHECK(context_provider_);
   resource_provider_->PrepareSendToParent(
       {resource.resource_id_for_export()}, &transfers,
-      static_cast<viz::RasterContextProvider*>(context_provider_.get()));
+      context_provider_->SharedImageInterface());
 
   resource_pool_->ReleaseResource(std::move(resource));
   EXPECT_EQ(40000u, resource_pool_->GetTotalMemoryUsageForTesting());
@@ -388,7 +385,7 @@ TEST_F(ResourcePoolTest, UpdateContentIdAndInvalidatedRect) {
   gfx::Size size(100, 100);
   viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::ColorSpace color_space;
-  uint64_t content_ids[] = {42, 43, 44};
+  auto content_ids = std::to_array<uint64_t>({42, 43, 44});
   gfx::Rect invalidated_rect(20, 20, 10, 10);
   gfx::Rect second_invalidated_rect(25, 25, 10, 10);
   gfx::Rect expected_total_invalidated_rect(20, 20, 15, 15);
@@ -434,7 +431,7 @@ TEST_F(ResourcePoolTest, LargeInvalidatedRect) {
   gfx::Size size(100, 100);
   viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::ColorSpace color_space;
-  uint64_t content_ids[] = {42, 43, 44};
+  auto content_ids = std::to_array<uint64_t>({42, 43, 44});
   // This rect is too large to take the area of it.
   gfx::Rect large_invalidated_rect(0, 0, std::numeric_limits<int>::max() / 2,
                                    std::numeric_limits<int>::max() / 2);
@@ -548,17 +545,18 @@ TEST_F(ResourcePoolTest, PurgedMemory) {
   EXPECT_EQ(0u, resource_pool_->GetBusyResourceCountForTesting());
 
   // Purging and suspending should not impact an in-use resource.
-  resource_pool_->OnMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  resource_pool_->OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   EXPECT_EQ(1u, resource_pool_->GetTotalResourceCountForTesting());
   EXPECT_EQ(0u, resource_pool_->GetBusyResourceCountForTesting());
 
   // Export the resource to the display compositor, so it will be busy once
   // released.
   std::vector<viz::TransferableResource> transfers;
+
+  CHECK(context_provider_);
   resource_provider_->PrepareSendToParent(
       {resource.resource_id_for_export()}, &transfers,
-      static_cast<viz::RasterContextProvider*>(context_provider_.get()));
+      context_provider_->SharedImageInterface());
 
   // Release the resource making it busy.
   resource_pool_->ReleaseResource(std::move(resource));
@@ -566,8 +564,7 @@ TEST_F(ResourcePoolTest, PurgedMemory) {
   EXPECT_EQ(1u, resource_pool_->GetBusyResourceCountForTesting());
 
   // Purging and suspending should not impact a busy resource either.
-  resource_pool_->OnMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  resource_pool_->OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   EXPECT_EQ(1u, resource_pool_->GetTotalResourceCountForTesting());
   EXPECT_EQ(1u, resource_pool_->GetBusyResourceCountForTesting());
 
@@ -578,8 +575,7 @@ TEST_F(ResourcePoolTest, PurgedMemory) {
   EXPECT_EQ(0u, resource_pool_->GetBusyResourceCountForTesting());
 
   // Purging and suspending should drop unused resources.
-  resource_pool_->OnMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  resource_pool_->OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   EXPECT_EQ(0u, resource_pool_->GetTotalResourceCountForTesting());
   EXPECT_EQ(0u, resource_pool_->GetBusyResourceCountForTesting());
 }
@@ -625,9 +621,11 @@ TEST_F(ResourcePoolTest, InvalidateResources) {
   // Export the first resource to the display compositor, so it will be busy
   // once released.
   std::vector<viz::TransferableResource> transfers;
+
+  CHECK(context_provider_);
   resource_provider_->PrepareSendToParent(
       {busy_resource.resource_id_for_export()}, &transfers,
-      static_cast<viz::RasterContextProvider*>(context_provider_.get()));
+      context_provider_->SharedImageInterface());
 
   // Release the resource making it busy.
   resource_pool_->ReleaseResource(std::move(busy_resource));
@@ -694,33 +692,30 @@ TEST_F(ResourcePoolTest, MetadataSentToDisplayCompositor) {
   size_t count_limit = 100;
   resource_pool_->SetResourceUsageLimits(bytes_limit, count_limit);
 
-  // These values are all non-default values so we can tell they are propagated.
-  gfx::Size size(100, 101);
-  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_4444;
-  EXPECT_NE(gfx::BufferFormat::RGBA_8888,
-            viz::SinglePlaneSharedImageFormatToBufferFormat(format));
-  gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
   gpu::SyncToken sync_token(gpu::CommandBufferNamespace::GPU_IO,
                             gpu::CommandBufferId::FromUnsafeValue(0x123), 7);
 
-  ResourcePool::InUsePoolResource resource =
-      resource_pool_->AcquireResource(size, format, color_space);
+  // These values are all non-default values so we can tell they are propagated.
+  ResourcePool::InUsePoolResource resource = resource_pool_->AcquireResource(
+      gfx::Size(100, 101), viz::SinglePlaneFormat::kRGBA_4444,
+      gfx::ColorSpace::CreateSRGB());
   SetBackingOnResource(resource);
 
+  resource.backing()->CreateSharedImageForTesting(GL_TEXTURE_RECTANGLE_ARB);
+
   // More non-default values.
-  resource.gpu_backing()->shared_image =
-      gpu::ClientSharedImage::CreateForTesting();
-  resource.gpu_backing()->mailbox_sync_token = sync_token;
-  resource.gpu_backing()->wait_on_fence_required = true;
-  resource.gpu_backing()->overlay_candidate = true;
+  resource.backing()->mailbox_sync_token = sync_token;
+  resource.backing()->wait_on_fence_required = true;
 
   EXPECT_TRUE(resource_pool_->PrepareForExport(
       resource, viz::TransferableResource::ResourceSource::kTest));
 
   std::vector<viz::TransferableResource> transfer;
+
+  CHECK(context_provider_);
   resource_provider_->PrepareSendToParent(
       {resource.resource_id_for_export()}, &transfer,
-      static_cast<viz::RasterContextProvider*>(context_provider_.get()));
+      context_provider_->SharedImageInterface());
 
   // The verified_flush flag will be set by the ResourceProvider when it exports
   // the resource.
@@ -729,15 +724,17 @@ TEST_F(ResourcePoolTest, MetadataSentToDisplayCompositor) {
   ASSERT_EQ(transfer.size(), 1u);
   EXPECT_EQ(transfer[0].id, resource.resource_id_for_export());
   EXPECT_EQ(transfer[0].mailbox(),
-            resource.gpu_backing()->shared_image->mailbox());
+            resource.backing()->shared_image()->mailbox());
   EXPECT_EQ(transfer[0].sync_token(), sync_token);
   EXPECT_EQ(transfer[0].texture_target(),
-            resource.gpu_backing()->shared_image->GetTextureTarget());
-  EXPECT_EQ(transfer[0].format, format);
+            resource.backing()->shared_image()->GetTextureTarget());
+  EXPECT_EQ(transfer[0].GetSize(), resource.backing()->shared_image()->size());
+  EXPECT_EQ(transfer[0].GetFormat(),
+            resource.backing()->shared_image()->format());
   EXPECT_EQ(
       transfer[0].synchronization_type,
       viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted);
-  EXPECT_TRUE(transfer[0].is_overlay_candidate);
+  EXPECT_TRUE(transfer[0].GetIsOverlayCandidate());
 
   resource_pool_->ReleaseResource(std::move(resource));
 }
@@ -751,18 +748,16 @@ TEST_F(ResourcePoolTest, InvalidResource) {
   // These values are all non-default values so we can tell they are propagated.
   gfx::Size size(100, 101);
   viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_4444;
-  EXPECT_NE(gfx::BufferFormat::RGBA_8888,
-            viz::SinglePlaneSharedImageFormatToBufferFormat(format));
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
 
   ResourcePool::InUsePoolResource resource =
       resource_pool_->AcquireResource(size, format, color_space);
 
   // Keep a zero mailbox
-  auto backing = std::make_unique<StubGpuBacking>();
+  auto backing = std::make_unique<ResourcePool::Backing>(
+      resource.size(), resource.format(), resource.color_space());
   backing->wait_on_fence_required = true;
-  backing->overlay_candidate = true;
-  resource.set_gpu_backing(std::move(backing));
+  resource.set_backing(std::move(backing));
 
   EXPECT_FALSE(resource_pool_->PrepareForExport(
       resource, viz::TransferableResource::ResourceSource::kTest));
@@ -771,7 +766,7 @@ TEST_F(ResourcePoolTest, InvalidResource) {
 
   // Acquire another resource. The resource should not be reused.
   resource = resource_pool_->AcquireResource(size, format, color_space);
-  EXPECT_FALSE(resource.gpu_backing());
+  EXPECT_FALSE(resource.backing());
   resource_pool_->ReleaseResource(std::move(resource));
 }
 

@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/services/file_util/public/cpp/sandboxed_rar_analyzer.h"
 
+#include <array>
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -47,7 +44,7 @@ class SandboxedRarAnalyzerTest : public testing::Test {
   struct BinaryData {
     const char* file_path;
     safe_browsing::ClientDownloadRequest_DownloadType download_type;
-    const uint8_t* sha256_digest;
+    base::raw_span<const unsigned char> sha256_digest;
     bool has_signature;
     bool has_image_headers;
     int64_t length;
@@ -93,9 +90,8 @@ class SandboxedRarAnalyzerTest : public testing::Test {
     ASSERT_TRUE(binary.has_download_type());
     EXPECT_EQ(data.download_type, binary.download_type());
     ASSERT_TRUE(binary.has_digests());
-    EXPECT_EQ(std::string(data.sha256_digest,
-                          data.sha256_digest + crypto::kSHA256Length),
-              binary.digests().sha256());
+    EXPECT_EQ(data.sha256_digest,
+              base::as_byte_span(binary.digests().sha256()));
     ASSERT_TRUE(binary.has_length());
     EXPECT_EQ(data.length, binary.length());
 
@@ -103,8 +99,14 @@ class SandboxedRarAnalyzerTest : public testing::Test {
     ASSERT_EQ(data.has_image_headers, binary.has_image_headers());
   }
 
-  static const uint8_t kNotARarSignature[];
-  static const uint8_t kSignedExeSignature[];
+  static constexpr auto kNotARarSignature = std::to_array<unsigned char>(
+      {0x11, 0x76, 0x44, 0x5c, 0x05, 0x7b, 0x65, 0xb7, 0x06, 0x90, 0xa1,
+       0xc1, 0xa7, 0xdf, 0x08, 0x46, 0x96, 0x10, 0xfe, 0xb5, 0x59, 0xfe,
+       0x9c, 0x7d, 0xe3, 0x0a, 0x7d, 0xc3, 0xde, 0xdb, 0xba, 0xb3});
+  static constexpr auto kSignedExeSignature = std::to_array<unsigned char>(
+      {0xe1, 0x1f, 0xfa, 0x0c, 0x9f, 0x25, 0x23, 0x44, 0x53, 0xa9, 0xed,
+       0xd1, 0xcb, 0x25, 0x1d, 0x46, 0x10, 0x7f, 0x34, 0xb5, 0x36, 0xad,
+       0x74, 0x64, 0x2a, 0x85, 0x84, 0xac, 0xa8, 0xc1, 0xa8, 0xce});
 
   static const BinaryData kNotARar;
   static const BinaryData kSignedExe;
@@ -159,17 +161,6 @@ const SandboxedRarAnalyzerTest::BinaryData
         37768,
 };
 
-// static
-const uint8_t SandboxedRarAnalyzerTest::kNotARarSignature[] = {
-    0x11, 0x76, 0x44, 0x5c, 0x05, 0x7b, 0x65, 0xb7, 0x06, 0x90, 0xa1,
-    0xc1, 0xa7, 0xdf, 0x08, 0x46, 0x96, 0x10, 0xfe, 0xb5, 0x59, 0xfe,
-    0x9c, 0x7d, 0xe3, 0x0a, 0x7d, 0xc3, 0xde, 0xdb, 0xba, 0xb3};
-
-const uint8_t SandboxedRarAnalyzerTest::kSignedExeSignature[] = {
-    0xe1, 0x1f, 0xfa, 0x0c, 0x9f, 0x25, 0x23, 0x44, 0x53, 0xa9, 0xed,
-    0xd1, 0xcb, 0x25, 0x1d, 0x46, 0x10, 0x7f, 0x34, 0xb5, 0x36, 0xad,
-    0x74, 0x64, 0x2a, 0x85, 0x84, 0xac, 0xa8, 0xc1, 0xa8, 0xce};
-
 TEST_F(SandboxedRarAnalyzerTest, AnalyzeBenignRar) {
   base::FilePath path;
   ASSERT_NO_FATAL_FAILURE(path = GetFilePath("small_archive.rar"));
@@ -223,6 +214,7 @@ TEST_F(SandboxedRarAnalyzerTest, AnalyzeEncryptedRarWithCorrectPassword) {
   EXPECT_TRUE(results.archived_archive_filenames.empty());
 
   EXPECT_TRUE(results.encryption_info.is_encrypted);
+  EXPECT_TRUE(results.encryption_info.is_top_level_encrypted);
   EXPECT_EQ(results.encryption_info.password_status,
             EncryptionInfo::kKnownCorrect);
 }
@@ -245,6 +237,7 @@ TEST_F(SandboxedRarAnalyzerTest, AnalyzeEncryptedRarWithIncorrectPassword) {
   EXPECT_TRUE(results.archived_archive_filenames.empty());
 
   EXPECT_TRUE(results.encryption_info.is_encrypted);
+  EXPECT_TRUE(results.encryption_info.is_top_level_encrypted);
   EXPECT_EQ(results.encryption_info.password_status,
             EncryptionInfo::kKnownIncorrect);
 }
@@ -464,6 +457,7 @@ TEST_F(SandboxedRarAnalyzerTest, HeaderEncryptionCorrectPassword) {
   EXPECT_TRUE(results.archived_archive_filenames.empty());
 
   EXPECT_TRUE(results.encryption_info.is_encrypted);
+  EXPECT_TRUE(results.encryption_info.is_top_level_encrypted);
   EXPECT_EQ(results.encryption_info.password_status,
             EncryptionInfo::kKnownCorrect);
 }
@@ -481,6 +475,7 @@ TEST_F(SandboxedRarAnalyzerTest, HeaderEncryptionIncorrectPassword) {
   ASSERT_EQ(results.archived_binary.size(), 0);
 
   EXPECT_TRUE(results.encryption_info.is_encrypted);
+  EXPECT_TRUE(results.encryption_info.is_top_level_encrypted);
   EXPECT_EQ(results.encryption_info.password_status,
             EncryptionInfo::kKnownIncorrect);
 }
@@ -498,6 +493,7 @@ TEST_F(SandboxedRarAnalyzerTest, HeaderEncryptionNoPassword) {
   ASSERT_EQ(results.archived_binary.size(), 0);
 
   EXPECT_TRUE(results.encryption_info.is_encrypted);
+  EXPECT_TRUE(results.encryption_info.is_top_level_encrypted);
   EXPECT_EQ(results.encryption_info.password_status,
             EncryptionInfo::kKnownIncorrect);
 }

@@ -5,9 +5,7 @@
 """Contains common helpers for GN action()s."""
 
 import atexit
-import collections
 import contextlib
-import filecmp
 import fnmatch
 import json
 import logging
@@ -81,7 +79,7 @@ def Touch(path, fail_if_missing=False):
     raise Exception(path + ' doesn\'t exist.')
 
   MakeDirectory(os.path.dirname(path))
-  with open(path, 'a'):
+  with open(path, 'a', encoding='utf-8'):
     os.utime(path, None)
 
 
@@ -104,35 +102,14 @@ def CheckOptions(options, parser, required=None):
 def WriteJson(obj, path, only_if_changed=False):
   old_dump = None
   if os.path.exists(path):
-    with open(path, 'r') as oldfile:
+    with open(path, 'r', encoding='utf-8') as oldfile:
       old_dump = oldfile.read()
 
   new_dump = json.dumps(obj, sort_keys=True, indent=2, separators=(',', ': '))
 
   if not only_if_changed or old_dump != new_dump:
-    with open(path, 'w') as outfile:
+    with open(path, 'w', encoding='utf-8') as outfile:
       outfile.write(new_dump)
-
-
-@contextlib.contextmanager
-def _AtomicOutput(path, only_if_changed=True, mode='w+b'):
-  # Create in same directory to ensure same filesystem when moving.
-  dirname = os.path.dirname(path)
-  if not os.path.exists(dirname):
-    MakeDirectory(dirname)
-  with tempfile.NamedTemporaryFile(
-      mode, suffix=os.path.basename(path), dir=dirname, delete=False) as f:
-    try:
-      yield f
-
-      # file should be closed before comparison/move.
-      f.close()
-      if not (only_if_changed and os.path.exists(path) and
-              filecmp.cmp(f.name, path)):
-        shutil.move(f.name, path)
-    finally:
-      if os.path.exists(f.name):
-        os.unlink(f.name)
 
 
 class CalledProcessError(Exception):
@@ -217,20 +194,21 @@ def CheckOutput(args,
                 stdout_filter=None,
                 stderr_filter=None,
                 fail_on_output=True,
+                before_join_callback=None,
                 fail_func=lambda returncode, stderr: returncode != 0):
   if not cwd:
     cwd = os.getcwd()
 
   logging.info('CheckOutput: %s', ' '.join(args))
-  child = subprocess.Popen(args,
-      stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=cwd, env=env)
-
-  stdout, stderr = child.communicate()
-
-  # For Python3 only:
-  if isinstance(stdout, bytes) and sys.version_info >= (3, ):
-    stdout = stdout.decode('utf-8')
-    stderr = stderr.decode('utf-8')
+  with subprocess.Popen(args,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                        encoding='utf-8',
+                        cwd=cwd,
+                        env=env) as child:
+    if before_join_callback:
+      before_join_callback()
+    stdout, stderr = child.communicate()
 
   if stdout_filter is not None:
     stdout = stdout_filter(stdout)
@@ -348,79 +326,6 @@ def MatchesGlob(path, filters):
   return filters and any(fnmatch.fnmatch(path, f) for f in filters)
 
 
-def MergeZips(output, input_zips, path_transform=None, compress=None):
-  """Combines all files from |input_zips| into |output|.
-
-  Args:
-    output: Path, fileobj, or ZipFile instance to add files to.
-    input_zips: Iterable of paths to zip files to merge.
-    path_transform: Called for each entry path. Returns a new path, or None to
-        skip the file.
-    compress: Overrides compression setting from origin zip entries.
-  """
-  path_transform = path_transform or (lambda p: p)
-
-  out_zip = output
-  if not isinstance(output, zipfile.ZipFile):
-    out_zip = zipfile.ZipFile(output, 'w')
-
-  # Include paths in the existing zip here to avoid adding duplicate files.
-  added_names = set(out_zip.namelist())
-
-  try:
-    for in_file in input_zips:
-      with zipfile.ZipFile(in_file, 'r') as in_zip:
-        for info in in_zip.infolist():
-          # Ignore directories.
-          if info.filename[-1] == '/':
-            continue
-          dst_name = path_transform(info.filename)
-          if not dst_name:
-            continue
-          already_added = dst_name in added_names
-          if not already_added:
-            if compress is not None:
-              compress_entry = compress
-            else:
-              compress_entry = info.compress_type != zipfile.ZIP_STORED
-            AddToZipHermetic(
-                out_zip,
-                dst_name,
-                data=in_zip.read(info),
-                compress=compress_entry)
-            added_names.add(dst_name)
-  finally:
-    if output is not out_zip:
-      out_zip.close()
-
-
-def GetSortedTransitiveDependencies(top, deps_func):
-  """Gets the list of all transitive dependencies in sorted order.
-
-  There should be no cycles in the dependency graph (crashes if cycles exist).
-
-  Args:
-    top: A list of the top level nodes
-    deps_func: A function that takes a node and returns a list of its direct
-        dependencies.
-  Returns:
-    A list of all transitive dependencies of nodes in top, in order (a node will
-    appear in the list at a higher index than all of its dependencies).
-  """
-  # Find all deps depth-first, maintaining original order in the case of ties.
-  deps_map = collections.OrderedDict()
-  def discover(nodes):
-    for node in nodes:
-      if node in deps_map:
-        continue
-      deps = deps_func(node)
-      discover(deps)
-      deps_map[node] = deps
-
-  discover(top)
-  return list(deps_map)
-
-
 def InitLogging(enabling_env):
   logging.basicConfig(
       level=logging.DEBUG if os.environ.get(enabling_env) else logging.WARNING,
@@ -455,7 +360,7 @@ def ExpandFileArgs(args):
   them in the action's inputs in build files).
   """
   new_args = list(args)
-  file_jsons = dict()
+  file_jsons = {}
   r = re.compile(r'@FileArg\((.*?)\)')
   for i, arg in enumerate(args):
     match = r.search(arg)
@@ -470,7 +375,7 @@ def ExpandFileArgs(args):
     lookup_path = match.group(1).split(':')
     file_path, _ = get_key(lookup_path[0])
     if not file_path in file_jsons:
-      with open(file_path) as f:
+      with open(file_path, encoding='utf-8') as f:
         file_jsons[file_path] = json.load(f)
 
     expansion = file_jsons
@@ -498,5 +403,5 @@ def ReadSourcesList(sources_list_file_name):
 
   Note that this function should not be used to parse response files.
   """
-  with open(sources_list_file_name) as f:
+  with open(sources_list_file_name, encoding='utf-8') as f:
     return [file_name.strip() for file_name in f]

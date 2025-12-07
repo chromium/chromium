@@ -1,0 +1,41 @@
+Verify pattern matched network conditions are applied.
+Applies condtitions only to matching requests:
+{
+    appliedNetworkConditionsId : 0
+    url : undefined
+}
+{
+    appliedNetworkConditionsId : 1
+    url : undefined
+}
+{
+    appliedNetworkConditionsId : 1
+    url : undefined
+}
+{
+    appliedNetworkConditionsId : 0
+    url : undefined
+}
+{
+    appliedNetworkConditionsId : 0
+    url : undefined
+}
+Applies global condtitions when no pattern is matching:
+{
+    appliedNetworkConditionsId : 2
+    url : undefined
+}
+{
+    appliedNetworkConditionsId : 2
+    url : undefined
+}
+Ignores invalid patterns:
+{
+    appliedNetworkConditionsId : -1
+    url : undefined
+}
+{
+    appliedNetworkConditionsId : -1
+    url : undefined
+}
+

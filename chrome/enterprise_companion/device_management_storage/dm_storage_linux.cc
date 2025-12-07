@@ -39,9 +39,8 @@ std::string DetermineDeviceID() {
   std::string_view trimmed_machine_id =
       base::TrimWhitespaceASCII(machine_id, base::TRIM_TRAILING);
   if (trimmed_machine_id.size() != kExpectedMachineIdSize) {
-    LOG(ERROR) << "Error: /etc/machine-id contains "
-               << trimmed_machine_id.size() << " characters ("
-               << kExpectedMachineIdSize << " were expected).";
+    VLOG(1) << "Error: /etc/machine-id contains " << trimmed_machine_id.size()
+            << " characters (" << kExpectedMachineIdSize << " were expected).";
     return std::string();
   }
 
@@ -74,7 +73,6 @@ class TokenService : public TokenServiceInterface {
                                              : dm_token_path),
         enrollment_token_(LoadTokenFromFile(enrollment_token_path_)),
         dm_token_(LoadTokenFromFile(dm_token_path_)) {}
-  ~TokenService() override = default;
 
   // Overrides for TokenServiceInterface.
   std::string GetDeviceID() const override { return device_id_; }
@@ -99,7 +97,10 @@ class TokenService : public TokenServiceInterface {
     return true;
   }
 
-  std::string GetEnrollmentToken() const override { return enrollment_token_; }
+  std::string GetEnrollmentToken() const override {
+    enrollment_token_ = LoadTokenFromFile(enrollment_token_path_);
+    return enrollment_token_;
+  }
 
   bool StoreDmToken(const std::string& dm_token) override {
     if (!WriteContentToGlobalReadableFile(dm_token_path_, dm_token)) {
@@ -117,15 +118,18 @@ class TokenService : public TokenServiceInterface {
     return true;
   }
 
-  std::string GetDmToken() const override { return dm_token_; }
+  std::string GetDmToken() const override {
+    dm_token_ = LoadTokenFromFile(dm_token_path_);
+    return dm_token_;
+  }
 
  private:
   // Cached values in memory.
   const std::string device_id_ = DetermineDeviceID();
   const base::FilePath enrollment_token_path_;
   const base::FilePath dm_token_path_;
-  std::string enrollment_token_;
-  std::string dm_token_;
+  mutable std::string enrollment_token_;
+  mutable std::string dm_token_;
 };
 
 scoped_refptr<DMStorage> CreateDMStorage(
@@ -139,9 +143,9 @@ scoped_refptr<DMStorage> CreateDMStorage(
 
 scoped_refptr<DMStorage> GetDefaultDMStorage() {
   return CreateDMStorage(base::FilePath("/opt")
-                             .AppendASCII(COMPANY_SHORTNAME_STRING)
-                             .AppendASCII(PRODUCT_FULLNAME_STRING)
-                             .AppendASCII("DeviceManagement"));
+                             .Append(COMPANY_SHORTNAME_STRING)
+                             .Append(PRODUCT_FULLNAME_STRING)
+                             .Append("DeviceManagement"));
 }
 
 }  // namespace device_management_storage

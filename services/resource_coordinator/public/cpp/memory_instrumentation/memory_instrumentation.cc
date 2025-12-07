@@ -4,18 +4,21 @@
 
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 
+#include <atomic>
+
 #include "base/functional/bind.h"
+#include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom-data-view.h"
 
 namespace memory_instrumentation {
 namespace {
 
-MemoryInstrumentation* g_instance = nullptr;
+std::atomic<MemoryInstrumentation*> g_instance = nullptr;
 
 void WrapGlobalMemoryDump(
     MemoryInstrumentation::RequestGlobalDumpCallback callback,
-    bool success,
+    mojom::RequestOutcome outcome,
     mojom::GlobalMemoryDumpPtr dump) {
-  std::move(callback).Run(success, GlobalMemoryDump::MoveFrom(std::move(dump)));
+  std::move(callback).Run(outcome, GlobalMemoryDump::MoveFrom(std::move(dump)));
 }
 }  // namespace
 
@@ -24,13 +27,16 @@ void MemoryInstrumentation::CreateInstance(
     mojo::PendingRemote<memory_instrumentation::mojom::Coordinator> coordinator,
     bool is_browser_process) {
   DCHECK(!g_instance);
-  g_instance =
-      new MemoryInstrumentation(std::move(coordinator), is_browser_process);
+  g_instance.store(
+      new MemoryInstrumentation(std::move(coordinator), is_browser_process),
+      std::memory_order_release);
 }
 
 // static
 MemoryInstrumentation* MemoryInstrumentation::GetInstance() {
-  return g_instance;
+  // Called from a different thread from CreateInstance(), make sure that the
+  // updates are visible.
+  return g_instance.load(std::memory_order_acquire);
 }
 
 MemoryInstrumentation::MemoryInstrumentation(

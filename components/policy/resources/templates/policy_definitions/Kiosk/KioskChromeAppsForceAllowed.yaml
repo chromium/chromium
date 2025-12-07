@@ -1,0 +1,26 @@
+owners:
+- giovax@chromium.org
+- file://apps/DEPRECATION_OWNERS
+caption: Force Allow Chrome Apps in Kiosk mode
+desc: |-
+  Setting this policy to True allows Chrome Apps to continue to run in a Kiosk session, regardless of the default Chrome Apps enablement.
+
+  Leaving this policy unset or setting this policy to False will use the default behavior defined on the device.
+
+  Attempting to launch a disabled Chrome App will show the user a message explaining why the app was not launched and suggesting to contact their IT department.
+features:
+  dynamic_refresh: true
+  per_profile: false
+type: main
+schema:
+  type: boolean
+items:
+- caption: Allow Chrome Apps to run in Kiosk sessions.
+  value: true
+- caption: Use Default behavior.
+  value: false
+default: false
+example_value: false
+supported_on:
+- chrome_os:138-
+tags: []

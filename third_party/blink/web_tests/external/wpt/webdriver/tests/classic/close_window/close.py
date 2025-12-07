@@ -20,10 +20,10 @@ def test_no_browsing_context(session, url):
     session.url = url("/webdriver/tests/support/html/frames.html")
 
     subframe = session.find.css("#sub-frame", all=False)
-    session.switch_frame(subframe)
+    session.switch_to_frame(subframe)
 
     frame = session.find.css("#delete-frame", all=False)
-    session.switch_frame(frame)
+    session.switch_to_frame(frame)
 
     button = session.find.css("#remove-parent", all=False)
     button.click()
@@ -73,8 +73,15 @@ def test_close_last_browsing_context(session):
 
     assert_success(response, [])
 
-    # With no more open top-level browsing contexts, the session is closed.
-    session.session_id = None
+    try:
+        # The session should've been deleted by closing the last context.
+        with pytest.raises(error.InvalidSessionIdException):
+            session.handles
+
+    finally:
+        # Need an explicit call to session.end() to notify the test harness
+        # that a new session needs to be created for subsequent tests.
+        session.end()
 
 
 def test_element_usage_after_closing_browsing_context(session, inline):

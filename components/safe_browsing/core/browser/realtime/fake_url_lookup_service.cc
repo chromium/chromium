@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/core/browser/realtime/fake_url_lookup_service.h"
 
+#include "components/enterprise/common/proto/connectors.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace safe_browsing::testing {
@@ -16,6 +17,7 @@ FakeRealTimeUrlLookupService::FakeRealTimeUrlLookupService()
             return safe_browsing::ChromeUserPopulation();
           }),
           /*referrer_chain_provider=*/nullptr,
+          /*token_fetcher=*/nullptr,
           /*pref_service=*/nullptr,
           /*webui_delegate=*/nullptr) {}
 
@@ -53,14 +55,34 @@ std::string FakeRealTimeUrlLookupService::GetProfileDMTokenString() const {
   return "profile_dm_token";
 }
 
+std::unique_ptr<enterprise_connectors::ClientMetadata>
+FakeRealTimeUrlLookupService::GetClientMetadata() const {
+  return nullptr;
+}
+
+std::string safe_browsing::testing::FakeRealTimeUrlLookupService::
+    GetContentAreaAccountEmail(const GURL& tab_url) const {
+  return "content_area_account_email@gmail.com";
+}
+
 std::string FakeRealTimeUrlLookupService::GetMetricSuffix() const {
   return ".Mock";
+}
+
+bool FakeRealTimeUrlLookupService::ShouldOverrideKnownSafeUrlDecision(
+    const GURL& url) const {
+  return false;
 }
 
 void FakeRealTimeUrlLookupService::SendSampledRequest(
     const GURL& url,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-    SessionID session_id) {}
+    SessionID session_id,
+    std::optional<internal::ReferringAppInfo> referring_app_info) {}
+
+bool FakeRealTimeUrlLookupService::CanCheckUrl(const GURL& url) {
+  return true;
+}
 
 GURL FakeRealTimeUrlLookupService::GetRealTimeLookupUrl() const {
   return GURL();
@@ -81,12 +103,6 @@ int FakeRealTimeUrlLookupService::GetReferrerUserGestureLimit() const {
 bool FakeRealTimeUrlLookupService::CanSendPageLoadToken() const {
   return false;
 }
-
-void FakeRealTimeUrlLookupService::GetAccessToken(
-    const GURL& url,
-    safe_browsing::RTLookupResponseCallback response_callback,
-    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-    SessionID session_id) {}
 
 std::optional<std::string> FakeRealTimeUrlLookupService::GetDMTokenString()
     const {

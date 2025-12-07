@@ -5,10 +5,9 @@
 #ifndef CHROME_COMMON_LOGGING_CHROME_H_
 #define CHROME_COMMON_LOGGING_CHROME_H_
 
-#include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace base {
 class CommandLine;
@@ -38,9 +37,7 @@ base::FilePath SetUpLogFile(const base::FilePath& target_path, bool new_log);
 
 // Allow external calls to the internal method for testing.
 bool RotateLogFile(const base::FilePath& target_path);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #if defined(UNIT_TEST)
 // Expose the following methods only for tests.
 
@@ -58,7 +55,7 @@ base::FilePath GetSessionLogDir(const base::CommandLine& command_line);
 
 // Get the log file location.
 base::FilePath GetSessionLogFile(const base::CommandLine& command_line);
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Call when done using logging for Chrome.
 void CleanupChromeLogging();

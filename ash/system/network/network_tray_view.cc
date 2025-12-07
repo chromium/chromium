@@ -17,6 +17,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
@@ -26,6 +27,9 @@ NetworkTrayView::NetworkTrayView(Shelf* shelf, ActiveNetworkIcon::Type type)
   Shell::Get()->system_tray_model()->network_state_model()->AddObserver(this);
   Shell::Get()->session_controller()->AddObserver(this);
   CreateImageView();
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kImage);
+
   UpdateConnectionStatus(true /* notify_a11y */);
 }
 
@@ -36,26 +40,13 @@ NetworkTrayView::~NetworkTrayView() {
   Shell::Get()->session_controller()->RemoveObserver(this);
 }
 
-void NetworkTrayView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // A valid role must be set prior to setting the name.
-  node_data->role = ax::mojom::Role::kImage;
-  node_data->SetNameChecked(accessible_name_);
-  if (!accessible_description_.empty()) {
-    node_data->SetDescription(accessible_description_);
-  }
-}
-
 std::u16string NetworkTrayView::GetAccessibleNameString() const {
-  return tooltip_;
+  return GetTooltipText();
 }
 
 views::View* NetworkTrayView::GetTooltipHandlerForPoint(
     const gfx::Point& point) {
   return GetLocalBounds().Contains(point) ? this : nullptr;
-}
-
-std::u16string NetworkTrayView::GetTooltipText(const gfx::Point& p) const {
-  return tooltip_;
 }
 
 void NetworkTrayView::HandleLocaleChange() {
@@ -94,7 +85,7 @@ void NetworkTrayView::NetworkListChanged() {
 
 void NetworkTrayView::UpdateIcon(bool tray_icon_visible,
                                  const gfx::ImageSkia& image) {
-  image_view()->SetImage(image);
+  image_view()->SetImage(ui::ImageModel::FromImageSkia(image));
   SetVisible(tray_icon_visible);
   SchedulePaint();
 }
@@ -114,16 +105,27 @@ void NetworkTrayView::UpdateNetworkStateHandlerIcon() {
 }
 
 void NetworkTrayView::UpdateConnectionStatus(bool notify_a11y) {
-  std::u16string prev_accessible_name = accessible_name_;
+  std::u16string prev_accessible_name = GetViewAccessibility().GetCachedName();
+  std::u16string accessible_name;
+  std::u16string tooltip;
   Shell::Get()
       ->system_tray_model()
       ->active_network_icon()
-      ->GetConnectionStatusStrings(type_, &accessible_name_,
-                                   &accessible_description_, &tooltip_);
-  if (notify_a11y && !accessible_name_.empty() &&
-      accessible_name_ != prev_accessible_name) {
-    NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+      ->GetConnectionStatusStrings(type_, &accessible_name,
+                                   &accessible_description_, &tooltip);
+  GetViewAccessibility().SetName(accessible_name);
+  if (notify_a11y && !accessible_name.empty() &&
+      accessible_name != prev_accessible_name) {
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert, true);
   }
+
+  if (!accessible_description_.empty()) {
+    GetViewAccessibility().SetDescription(accessible_description_);
+  } else {
+    GetViewAccessibility().RemoveDescription();
+  }
+
+  SetTooltipText(tooltip);
 }
 
 network_icon::IconType NetworkTrayView::GetIconType() {

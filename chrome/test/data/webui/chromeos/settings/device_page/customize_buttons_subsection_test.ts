@@ -5,12 +5,13 @@
 import 'chrome://os-settings/lazy_load.js';
 import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
-import {CustomizeButtonsSubsectionElement, KeyCombinationInputDialogElement} from 'chrome://os-settings/lazy_load.js';
+import type {KeyCombinationInputDialogElement} from 'chrome://os-settings/lazy_load.js';
+import {CustomizeButtonsSubsectionElement} from 'chrome://os-settings/lazy_load.js';
 import {fakeGraphicsTabletButtonActions, fakeGraphicsTablets} from 'chrome://os-settings/os_settings.js';
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
-import {CrIconButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
-import {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrIconButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
+import type {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -48,7 +49,7 @@ suite('<customize-buttons-subsection>', () => {
         'actionList', [...fakeGraphicsTabletButtonActions]);
     customizeButtonsSubsection.set(
         'buttonRemappingList',
-        [...fakeGraphicsTablets[0]!.settings!.penButtonRemappings]);
+        [...fakeGraphicsTablets[0]!.settings.penButtonRemappings]);
     document.body.appendChild(customizeButtonsSubsection);
     return await flushTasks();
   }
@@ -120,9 +121,9 @@ suite('<customize-buttons-subsection>', () => {
     assertFalse(saveButton.disabled);
     assertTrue(customizeButtonsSubsection.get('buttonNameInvalid_'));
     assertEquals(buttonLabelInput.value.length, 32);
-    const inputCountText: HTMLDivElement|null =
+    const inputCountText: HTMLElement|null =
         customizeButtonsSubsection.shadowRoot!.querySelector('#inputCount');
-    assertEquals(inputCountText!.textContent!.trim(), '32/32');
+    assertEquals(inputCountText!.textContent.trim(), '32/32');
 
     // Verify that if the button name is duplicate with other buttons, the
     // save button is blocked.
@@ -133,7 +134,7 @@ suite('<customize-buttons-subsection>', () => {
     assertEquals(buttonRemappingChangedEventCount, 0);
 
     buttonLabelInput.value = 'New Button Name';
-    assertEquals(inputCountText!.textContent!.trim(), '15/32');
+    assertEquals(inputCountText!.textContent.trim(), '15/32');
     assertFalse(customizeButtonsSubsection.get('buttonNameInvalid_'));
     saveButton.click();
     await flushTasks();
@@ -170,8 +171,7 @@ suite('<customize-buttons-subsection>', () => {
 
     // Call the callback directly since the event listening functionality
     // is handled by DragAndDropManager (which is unit tested separately).
-    // @ts-expect-error (we're invoking a private method for the test).
-    customizeButtonsSubsection.onDrop_(1, 0);
+    customizeButtonsSubsection.onDropForTesting(1, 0);
     await flushTasks();
 
     assertNotEquals(
@@ -195,8 +195,7 @@ suite('<customize-buttons-subsection>', () => {
 
     // When onDrop_ is called with invalid indices, the button remapping list
     // should not change.
-    // @ts-expect-error (we're invoking a private method for the test).
-    customizeButtonsSubsection.onDrop_(100, -10);
+    customizeButtonsSubsection.onDropForTesting(100, -10);
     await flushTasks();
 
     assertEquals(1, buttonRemappingChangedEventCount);

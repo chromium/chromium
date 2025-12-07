@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/containers/flat_set.h"
-#include "base/files/file_util.h"
 #include "base/strings/string_util.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -25,6 +24,7 @@
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
@@ -88,13 +88,14 @@ class InstallAppFromVerifiedManifestCommandTest : public WebAppBrowserTestBase {
       webapps::AppId expected_id = "",
       webapps::WebappInstallSource install_source =
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+      bool is_diy_app = false,
       std::optional<WebAppInstallParams> params = std::nullopt) {
     base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
         result;
     provider().command_manager().ScheduleCommand(
         std::make_unique<InstallAppFromVerifiedManifestCommand>(
             install_source, document_url, manifest_url, manifest, expected_id,
-            std::move(params), result.GetCallback()));
+            is_diy_app, std::move(params), result.GetCallback()));
     return result.Take();
   }
 };
@@ -135,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
                 .registrar_unsafe()
                 .GetAppById(result_id)
                 ->launch_handler()
-                ->client_mode,
+                ->parsed_client_mode(),
             blink::Manifest::LaunchHandler::ClientMode::kFocusExisting);
   SkColor icon_color =
       IconManagerReadAppIconPixel(provider().icon_manager(), result_id, 96);
@@ -285,9 +286,15 @@ IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
 
   EXPECT_TRUE(webapps::IsSuccess(result_code));
 
+  // Post trusted icons launch, all icons use the same color (chosen from the
+  // one of the largest size).
+  SkColor expected_color =
+      base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon)
+          ? SK_ColorGREEN
+          : SK_ColorRED;
   SkColor small_icon_color =
       IconManagerReadAppIconPixel(provider().icon_manager(), result_id, 96);
-  EXPECT_EQ(small_icon_color, SK_ColorRED);
+  EXPECT_EQ(small_icon_color, expected_color);
 
   SkColor large_icon_color =
       IconManagerReadAppIconPixel(provider().icon_manager(), result_id, 192);
@@ -518,9 +525,15 @@ IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
 
   EXPECT_TRUE(webapps::IsSuccess(result_code));
 
+  // Post trusted icons launch, all icons use the same color (chosen from the
+  // one of the largest size).
+  SkColor expected_color =
+      base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon)
+          ? SK_ColorGREEN
+          : SK_ColorRED;
   SkColor small_icon_color =
       IconManagerReadAppIconPixel(provider().icon_manager(), result_id, 96);
-  EXPECT_EQ(small_icon_color, SK_ColorRED);
+  EXPECT_EQ(small_icon_color, expected_color);
 
   SkColor large_icon_color =
       IconManagerReadAppIconPixel(provider().icon_manager(), result_id, 192);
@@ -623,9 +636,10 @@ IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
   WebAppInstallParams params;
   params.user_display_mode = mojom::UserDisplayMode::kBrowser;
 
-  auto [result_id, result_code] = InstallAndAwaitResult(
-      kDocumentUrl, kManifestUrl, manifest, expected_id,
-      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, params);
+  auto [result_id, result_code] =
+      InstallAndAwaitResult(kDocumentUrl, kManifestUrl, manifest, expected_id,
+                            webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+                            /*is_diy_app=*/false, params);
 
   EXPECT_EQ(
       provider().registrar_unsafe().GetAppById(result_id)->user_display_mode(),
@@ -645,15 +659,31 @@ IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
   WebAppInstallParams params;
   params.additional_search_terms = {"chocolate", "vanilla", "strawberry"};
 
-  auto [result_id, result_code] = InstallAndAwaitResult(
-      kDocumentUrl, kManifestUrl, manifest, expected_id,
-      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, params);
+  auto [result_id, result_code] =
+      InstallAndAwaitResult(kDocumentUrl, kManifestUrl, manifest, expected_id,
+                            webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+                            /*is_diy_app=*/false, params);
 
   EXPECT_THAT(provider()
                   .registrar_unsafe()
                   .GetAppById(result_id)
                   ->additional_search_terms(),
               testing::ElementsAre("chocolate", "vanilla", "strawberry"));
+}
+
+IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
+                       InstallAsDiyApp) {
+  const GURL kDocumentUrl("https://www.app.com/");
+  const GURL kManifestUrl("https://www.app.com/manifest.json");
+  std::string manifest = GetBasicManifest();
+  webapps::AppId expected_id =
+      GenerateAppId(/*manifest_id=*/std::nullopt, kDocumentUrl);
+
+  auto [result_id, result_code] = InstallAndAwaitResult(
+      kDocumentUrl, kManifestUrl, manifest, expected_id,
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, /*is_diy_app=*/true);
+
+  EXPECT_TRUE(provider().registrar_unsafe().IsDiyApp(result_id));
 }
 
 }  // namespace web_app

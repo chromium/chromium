@@ -20,53 +20,54 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtilsJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.segmentation_platform.ContextualPageActionController.ActionProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.commerce.core.CommerceFeatureUtils;
+import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.ShoppingService.ProductInfo;
 import org.chromium.components.commerce.core.ShoppingService.ProductInfoCallback;
 import org.chromium.url.JUnitTestGURLs;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.HashMap;
 
 /** Unit tests for {@link PriceTrackingActionProvider} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class PriceTrackingActionProviderTest {
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock PriceTrackingUtils.Natives mMockPriceTrackingUtilsJni;
 
     @Mock private Tab mMockTab;
 
     @Mock private ShoppingService mShoppingService;
 
-    @Mock private BookmarkModel mBookmarkModel;
+    @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
 
-    @Mock private Profile mProfile;
+    @Mock private BookmarkModel mBookmarkModel;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         setBookmarkModelReady();
     }
 
     private void setBookmarkModelReady() {
-        mJniMocker.mock(PriceTrackingUtilsJni.TEST_HOOKS, mMockPriceTrackingUtilsJni);
+        PriceTrackingUtilsJni.setInstanceForTesting(mMockPriceTrackingUtilsJni);
+        CommerceFeatureUtilsJni.setInstanceForTesting(mCommerceFeatureUtilsJniMock);
 
         // Setup bookmark model expectations.
         Mockito.doAnswer(
@@ -81,16 +82,8 @@ public class PriceTrackingActionProviderTest {
 
     private void setIsUrlPriceTrackableResult(boolean hasProductInfo) {
         ProductInfo testProductInfo =
-                new ProductInfo(
-                        null,
-                        null,
-                        Optional.of(12345L),
-                        Optional.empty(),
-                        null,
-                        0,
-                        null,
-                        Optional.empty());
-        Mockito.doReturn(true).when(mShoppingService).isShoppingListEligible();
+                new ProductInfo(null, null, 12345L, null, null, 0, null, null);
+        doReturn(true).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
         Mockito.doAnswer(
                         invocation -> {
                             ProductInfoCallback callback = invocation.getArgument(1);
@@ -117,25 +110,23 @@ public class PriceTrackingActionProviderTest {
     @Test
     public void priceTrackingActionShownSuccessfully() {
         doReturn(JUnitTestGURLs.EXAMPLE_URL).when(mMockTab).getUrl();
-        List<ActionProvider> providers = new ArrayList<>();
+        HashMap<Integer, ActionProvider> providers = new HashMap<>();
         PriceTrackingActionProvider provider =
-                new PriceTrackingActionProvider(
-                        () -> mShoppingService, () -> mBookmarkModel, () -> mProfile);
-        providers.add(provider);
+                new PriceTrackingActionProvider(() -> mShoppingService, () -> mBookmarkModel);
+        providers.put(AdaptiveToolbarButtonVariant.PRICE_TRACKING, provider);
         SignalAccumulator accumulator = new SignalAccumulator(new Handler(), mMockTab, providers);
         setIsUrlPriceTrackableResult(true);
         provider.getAction(mMockTab, accumulator);
-        Assert.assertTrue(accumulator.hasPriceTracking());
+        Assert.assertTrue(accumulator.getSignal(AdaptiveToolbarButtonVariant.PRICE_TRACKING));
     }
 
     @Test
     public void priceTrackingNotShownForNonTrackablePages() {
         doReturn(JUnitTestGURLs.GOOGLE_URL).when(mMockTab).getUrl();
-        List<ActionProvider> providers = new ArrayList<>();
+        HashMap<Integer, ActionProvider> providers = new HashMap<>();
         PriceTrackingActionProvider provider =
-                new PriceTrackingActionProvider(
-                        () -> mShoppingService, () -> mBookmarkModel, () -> mProfile);
-        providers.add(provider);
+                new PriceTrackingActionProvider(() -> mShoppingService, () -> mBookmarkModel);
+        providers.put(AdaptiveToolbarButtonVariant.PRICE_TRACKING, provider);
         SignalAccumulator accumulator = new SignalAccumulator(new Handler(), mMockTab, providers);
         // URL does not support price tracking.
         setIsUrlPriceTrackableResult(false);
@@ -144,21 +135,20 @@ public class PriceTrackingActionProviderTest {
         // Bookmark has no price tracking information.
         setIsBookmarkPriceTrackedResult(false);
         provider.getAction(mMockTab, accumulator);
-        Assert.assertFalse(accumulator.hasPriceTracking());
+        Assert.assertFalse(accumulator.getSignal(AdaptiveToolbarButtonVariant.PRICE_TRACKING));
     }
 
     @Test
     public void priceTrackingNotUsedForNonHttpUrls() {
         // Use a non-http(s) url (about:blank).
         doReturn(JUnitTestGURLs.ABOUT_BLANK).when(mMockTab).getUrl();
-        List<ActionProvider> providers = new ArrayList<>();
+        HashMap<Integer, ActionProvider> providers = new HashMap<>();
         PriceTrackingActionProvider provider =
-                new PriceTrackingActionProvider(
-                        () -> mShoppingService, () -> mBookmarkModel, () -> mProfile);
-        providers.add(provider);
+                new PriceTrackingActionProvider(() -> mShoppingService, () -> mBookmarkModel);
+        providers.put(AdaptiveToolbarButtonVariant.PRICE_TRACKING, provider);
         SignalAccumulator accumulator = new SignalAccumulator(new Handler(), mMockTab, providers);
         provider.getAction(mMockTab, accumulator);
-        Assert.assertFalse(accumulator.hasPriceTracking());
+        Assert.assertFalse(accumulator.getSignal(AdaptiveToolbarButtonVariant.PRICE_TRACKING));
         // Bookmark model shouldn't be loaded/queried.
         verify(mBookmarkModel, never()).finishLoadingBookmarkModel(any());
     }

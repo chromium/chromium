@@ -4,6 +4,8 @@
 
 #include "gpu/command_buffer/common/shm_count.h"
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 
@@ -11,6 +13,7 @@ namespace gpu {
 
 ShmCountBase::ShmCountBase() = default;
 ShmCountBase::ShmCountBase(ShmCountBase&& other) = default;
+ShmCountBase& ShmCountBase::operator=(ShmCountBase&& other) = default;
 ShmCountBase::~ShmCountBase() = default;
 
 void ShmCountBase::Initialize(base::UnsafeSharedMemoryRegion region) {
@@ -27,7 +30,6 @@ volatile ShmCountBase::AtomicType* ShmCountBase::AsAtomic() {
 }
 
 GpuProcessShmCount::GpuProcessShmCount() = default;
-GpuProcessShmCount::GpuProcessShmCount(GpuProcessShmCount&& other) = default;
 
 GpuProcessShmCount::GpuProcessShmCount(base::UnsafeSharedMemoryRegion region) {
   // In cases where we are running without a GpuProcessHost, we may not

@@ -128,6 +128,40 @@ class ChromeMessagesJsonFormatUnittest(unittest.TestCase):
 """
     self.assertEqual(json.loads(test), json.loads(output))
 
+  # This test makes sure that we don't always get False back from:
+  #
+  #   translation_missing = not child.GetCliques()[0].HasTranslation(lang,
+  #     constants.DEFAULT_GENDER)
+  #
+  # If we got False back all the time (say, due to calling it with an argument
+  # of the wrong type), then we would assume it was completely normal to just
+  # skip every translation and let Chrome fall back to English all the time with
+  # no errors or warnings.
+  def testTranslationsWithFallbackToEnglish(self):
+    root = util.ParseGrdForUnittest("""
+    <messages fallback_to_english="true">
+        <message name="ID_HELLO">Hello!</message>
+        <message name="ID_HELLO_USER">Hello <ph name="USERNAME">%s<ex>
+          Joi</ex></ph></message>
+      </messages>
+    """)
+
+    buf = io.StringIO()
+    build.RcBuilder.ProcessNode(root, DummyOutput('chrome_messages_json', 'en'),
+                                buf)
+    output = buf.getvalue()
+    test = """
+{
+  "ID_HELLO": {
+    "message": "Hello!"
+  },
+  "ID_HELLO_USER": {
+    "message": "Hello %s"
+  }
+}
+"""
+    self.assertEqual(json.loads(test), json.loads(output))
+
   def testSkipMissingTranslations(self):
     grd = """<?xml version="1.0" encoding="UTF-8"?>
 <grit latest_public_release="2" current_release="3" source_lang_id="en"
@@ -181,6 +215,9 @@ class DummyOutput:
 
   def GetOutputFilename(self):
     return 'hello.gif'
+
+  def GetGender(self):
+    return None
 
 
 if __name__ == '__main__':

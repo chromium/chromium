@@ -6,7 +6,10 @@
 #define CONTENT_BROWSER_DEVTOOLS_DEDICATED_WORKER_DEVTOOLS_AGENT_HOST_H_
 
 #include "content/browser/devtools/worker_or_worklet_devtools_agent_host.h"
-#include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
+
+namespace blink {
+class StorageKey;
+}  // namespace blink
 
 namespace content {
 
@@ -22,6 +25,8 @@ class DedicatedWorkerDevToolsAgentHost final
   static DedicatedWorkerDevToolsAgentHost* GetFor(
       const DedicatedWorkerHost* host);
 
+  static void AddAllAgentHosts(DevToolsAgentHost::List* result);
+
   DedicatedWorkerDevToolsAgentHost(
       int process_id,
       const GURL& url,
@@ -30,6 +35,19 @@ class DedicatedWorkerDevToolsAgentHost final
       const std::string& parent_id,
       base::OnceCallback<void(DevToolsAgentHostImpl*)> destroyed_callback);
 
+  std::optional<blink::StorageKey> GetStorageKey();
+
+  void DisconnectIfNotCreated();
+
+  // A DedicatedWorkerDevToolsAgentHost is created before it is known if a
+  // worker thread will be created in the renderer. This method is used to
+  // indicate the the worker thread is actually created and this agent host is
+  // associated with a renderer agent.
+  void ChildWorkerCreated(
+      const GURL& url,
+      const std::string& name,
+      base::OnceCallback<void(DevToolsAgentHostImpl*)> callback);
+
  private:
   ~DedicatedWorkerDevToolsAgentHost() override;
 
@@ -37,7 +55,7 @@ class DedicatedWorkerDevToolsAgentHost final
   std::string GetType() override;
 
   // DevToolsAgentHostImpl overrides
-  bool AttachSession(DevToolsSession* session, bool acquire_wake_lock) override;
+  bool AttachSession(DevToolsSession* session) override;
   protocol::TargetAutoAttacher* auto_attacher() override;
   std::optional<network::CrossOriginEmbedderPolicy>
   cross_origin_embedder_policy(const std::string& id) override;
@@ -45,6 +63,7 @@ class DedicatedWorkerDevToolsAgentHost final
   DedicatedWorkerHost* GetDedicatedWorkerHost();
 
   std::unique_ptr<protocol::TargetAutoAttacher> const auto_attacher_;
+  bool child_worker_created_ = false;
 };
 
 }  // namespace content

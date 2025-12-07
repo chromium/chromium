@@ -12,4 +12,5 @@ found in the LICENSE file.
     android:initialLayout="@layout/quick_action_search_widget_dino_layout"
     android:previewLayout="@layout/quick_action_search_widget_dino_preview_layout"
     android:previewImage="@drawable/quick_action_search_widget_dino_preview"
+    android:description="@string/dino_widget_description"
     android:widgetCategory="home_screen" />

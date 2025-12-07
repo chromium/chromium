@@ -9,6 +9,7 @@ include_rules = [
   "+components/location/android",
   "+components/permissions",
   "+components/prefs/android",
+  "+components/site_isolation/site_isolation_policy.h",
   "+components/subresource_filter/android",
   "+components/url_formatter/android",
   "+components/user_prefs",

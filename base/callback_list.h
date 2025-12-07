@@ -5,6 +5,7 @@
 #ifndef BASE_CALLBACK_LIST_H_
 #define BASE_CALLBACK_LIST_H_
 
+#include <algorithm>
 #include <list>
 #include <memory>
 #include <utility>
@@ -15,7 +16,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/is_instantiation.h"
 
 // OVERVIEW:
@@ -63,7 +63,7 @@
 //
 // UNSUPPORTED:
 //
-// * Destroying the CallbackList during callback notification.
+// * Destroying or clearing the CallbackList during callback notification.
 //
 // This is possible to support, but not currently necessary.
 
@@ -132,10 +132,6 @@ class CallbackListBase {
   using CallbackType =
       typename CallbackListTraits<CallbackListImpl>::CallbackType;
 
-  // TODO(crbug.com/40139093): Update references to use this directly and by
-  // value, then remove.
-  using Subscription = CallbackListSubscription;
-
   CallbackListBase() = default;
   CallbackListBase(const CallbackListBase&) = delete;
   CallbackListBase& operator=(const CallbackListBase&) = delete;
@@ -143,6 +139,21 @@ class CallbackListBase {
   ~CallbackListBase() {
     // Destroying the list during iteration is unsupported and will cause a UAF.
     CHECK(!iterating_);
+  }
+
+  // Remove all callbacks. Must not be called while iterating.
+  void Clear() {
+    CHECK(!iterating_);
+    if (empty()) {
+      return;
+    }
+    // Invalidate `Subscription` callbacks, because they reference iterators
+    // that are about to be invalid.
+    weak_ptr_factory_.InvalidateWeakPtrs();
+    callbacks_.clear();
+    if (removal_callback_) {
+      removal_callback_.Run();  // May delete |this|!
+    }
   }
 
   // Registers |cb| for future notifications. Returns a CallbackListSubscription
@@ -174,7 +185,7 @@ class CallbackListBase {
   // Returns whether the list of registered callbacks is empty (from an external
   // perspective -- meaning no remaining callbacks are live).
   bool empty() const {
-    return ranges::all_of(
+    return std::ranges::all_of(
         callbacks_, [](const auto& callback) { return callback.is_null(); });
   }
 
@@ -196,8 +207,9 @@ class CallbackListBase {
   // the reentrant Notify() call.
   template <typename... RunArgs>
   void Notify(RunArgs&&... args) {
-    if (empty())
+    if (empty()) {
       return;  // Nothing to do.
+    }
 
     {
       AutoReset<bool> iterating(&iterating_, true);
@@ -211,18 +223,20 @@ class CallbackListBase {
         });
       };
       for (auto it = next_valid(callbacks_.begin()); it != callbacks_.end();
-           it = next_valid(it))
+           it = next_valid(it)) {
         // NOTE: Intentionally does not call std::forward<RunArgs>(args)...,
         // since that would allow move-only arguments.
         static_cast<CallbackListImpl*>(this)->RunCallback(it++, args...);
+      }
     }
 
     // Re-entrant invocations shouldn't prune anything from the list. This can
     // invalidate iterators from underneath higher call frames. It's safe to
     // simply do nothing, since the outermost frame will continue through here
     // and prune all null callbacks below.
-    if (iterating_)
+    if (iterating_) {
       return;
+    }
 
     // Any null callbacks remaining in the list were canceled due to
     // Subscription destruction during iteration, and can safely be erased now.
@@ -236,7 +250,7 @@ class CallbackListBase {
     // that were executed above have all been removed regardless of whether
     // they're counted in |erased_callbacks_|.
     if (removal_callback_ &&
-        (erased_callbacks || is_instantiation<OnceCallback, CallbackType>)) {
+        (erased_callbacks || is_instantiation<CallbackType, OnceCallback>)) {
       removal_callback_.Run();  // May delete |this|!
     }
   }
@@ -250,8 +264,9 @@ class CallbackListBase {
  private:
   // Cancels the callback pointed to by |it|, which is guaranteed to be valid.
   void CancelCallback(const typename Callbacks::iterator& it) {
-    if (static_cast<CallbackListImpl*>(this)->CancelNullCallback(it))
+    if (static_cast<CallbackListImpl*>(this)->CancelNullCallback(it)) {
       return;
+    }
 
     if (iterating_) {
       // Calling erase() here is unsafe, since the loop in Notify() may be
@@ -261,8 +276,9 @@ class CallbackListBase {
       it->Reset();
     } else {
       callbacks_.erase(it);
-      if (removal_callback_)
+      if (removal_callback_) {
         removal_callback_.Run();  // May delete |this|!
+      }
     }
   }
 

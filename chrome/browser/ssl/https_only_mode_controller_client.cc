@@ -13,6 +13,7 @@
 #include "components/security_interstitials/content/settings_page_helper.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/security_interstitials/core/metrics_helper.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 
 // static
@@ -26,7 +27,9 @@ HttpsOnlyModeControllerClient::GetMetricsHelper(const GURL& url) {
 
 HttpsOnlyModeControllerClient::HttpsOnlyModeControllerClient(
     content::WebContents* web_contents,
-    const GURL& request_url)
+    const GURL& request_url,
+    std::unique_ptr<security_interstitials::SettingsPageHelper>
+        settings_page_helper)
     : SecurityInterstitialControllerClient(
           web_contents,
           GetMetricsHelper(request_url),
@@ -34,7 +37,7 @@ HttpsOnlyModeControllerClient::HttpsOnlyModeControllerClient(
               ->GetPrefs(),
           g_browser_process->GetApplicationLocale(),
           GURL(chrome::kChromeUINewTabURL),
-          /*settings_page_helper=*/nullptr),
+          std::move(settings_page_helper)),
       web_contents_(web_contents),
       request_url_(request_url) {}
 
@@ -45,6 +48,7 @@ void HttpsOnlyModeControllerClient::GoBack() {
 }
 
 void HttpsOnlyModeControllerClient::Proceed() {
+  // LINT.IfChange(HttpsFirstModeProceedLogic)
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
   StatefulSSLHostStateDelegate* state =
@@ -57,7 +61,7 @@ void HttpsOnlyModeControllerClient::Proceed() {
     web_contents_->SetAlwaysSendSubresourceNotifications();
 
     state->AllowHttpForHost(
-        request_url_.host(),
+        request_url_.GetHost(),
         web_contents_->GetPrimaryMainFrame()->GetStoragePartition());
   }
   auto* tab_helper = HttpsOnlyModeTabHelper::FromWebContents(web_contents_);
@@ -67,4 +71,5 @@ void HttpsOnlyModeControllerClient::Proceed() {
   // The failed https navigation will remain as a forward entry, so it needs to
   // be removed.
   web_contents_->GetController().PruneForwardEntries();
+  // LINT.ThenChange(chrome/browser/ssl/ask_before_http_dialog_controller.cc:HttpsFirstModeProceedLogic)
 }

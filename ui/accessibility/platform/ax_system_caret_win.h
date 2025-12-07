@@ -17,7 +17,7 @@
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui {
 
@@ -37,7 +37,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXSystemCaretWin
 
   ~AXSystemCaretWin() override;
 
-  Microsoft::WRL::ComPtr<IAccessible> GetCaret() const;
+  // Returns an unowned pointer to the caret's IAccessible interface.
+  IAccessible* GetCaret() const;
   void MoveCaretTo(const gfx::Rect& bounds_physical_pixels);
   void Hide();
 
@@ -52,15 +53,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXSystemCaretWin
   bool ShouldIgnoreHoveredStateForTesting() override;
   AXPlatformNodeId GetUniqueId() const override;
 
-  static void AXPlatformNodeWinDeleter(AXPlatformNodeWin* ptr);
-
-  using deleter = std::integral_constant<
-      decltype(AXSystemCaretWin::AXPlatformNodeWinDeleter)*,
-      AXSystemCaretWin::AXPlatformNodeWinDeleter>;
-  std::unique_ptr<AXPlatformNodeWin, deleter> caret_;
+  const AXUniqueId unique_id_{AXUniqueId::Create()};
   gfx::AcceleratedWidget event_target_;
+  AXPlatformNode::Pointer caret_;
   AXNodeData data_;
-  const ui::AXUniqueId unique_id_{ui::AXUniqueId::Create()};
 
   friend class AXPlatformNodeWin;
 };

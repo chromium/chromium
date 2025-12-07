@@ -6,9 +6,11 @@
 
 #include <lib/sys/cpp/component_context.h>
 
+#include "base/compiler_specific.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -83,18 +85,20 @@ scoped_refptr<media::DecoderBuffer> PreparePcm24Buffer(
   static_assert(ARCH_CPU_LITTLE_ENDIAN,
                 "Only little-endian CPUs are supported.");
 
-  size_t samples = buffer->size() / 3;
+  auto buffer_span = base::span(*buffer);
+  size_t samples = buffer_span.size() / 3;
   scoped_refptr<media::DecoderBuffer> result =
       base::MakeRefCounted<media::DecoderBuffer>(samples * 4);
   for (size_t i = 0; i < samples - 1; ++i) {
-    reinterpret_cast<uint32_t*>(result->writable_data())[i] =
-        *reinterpret_cast<const uint32_t*>(buffer->data() + i * 3) & 0x00ffffff;
+    UNSAFE_TODO(reinterpret_cast<uint32_t*>(result->writable_data())[i]) =
+        *reinterpret_cast<const uint32_t*>(buffer_span.subspan(i * 3).data()) &
+        0x00ffffff;
   }
   size_t last_sample = samples - 1;
-  reinterpret_cast<uint32_t*>(result->writable_data())[last_sample] =
-      buffer->data()[last_sample * 3] |
-      (buffer->data()[last_sample * 3 + 1] << 8) |
-      (buffer->data()[last_sample * 3 + 2] << 16);
+  UNSAFE_TODO(
+      reinterpret_cast<uint32_t*>(result->writable_data())[last_sample]) =
+      buffer_span[last_sample * 3] | (buffer_span[last_sample * 3 + 1] << 8) |
+      (buffer_span[last_sample * 3 + 2] << 16);
 
   result->set_timestamp(buffer->timestamp());
   result->set_duration(buffer->duration());
@@ -341,8 +345,9 @@ void WebEngineAudioRenderer::SetPreservesPitch(bool preserves_pitch) {
   NOTIMPLEMENTED();
 }
 
-void WebEngineAudioRenderer::SetWasPlayedWithUserActivation(
-    bool was_played_with_user_activation) {
+void WebEngineAudioRenderer::
+    SetWasPlayedWithUserActivationAndHighMediaEngagement(
+        bool was_played_with_user_activation_and_high_media_engagement) {
   // WebEngine does not use this signal. This is currently only used by the Live
   // Caption feature.
   NOTIMPLEMENTED_LOG_ONCE();
@@ -361,7 +366,7 @@ void WebEngineAudioRenderer::StartTicking() {
     case PlaybackState::kStartPending:
     case PlaybackState::kStarting:
     case PlaybackState::kPlaying:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 
     case PlaybackState::kPaused: {
       // If the stream was paused then we can unpause it without restarting
@@ -412,8 +417,7 @@ void WebEngineAudioRenderer::StopTicking() {
   switch (GetPlaybackState()) {
     case PlaybackState::kStopped:
     case PlaybackState::kPaused:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
 
     case PlaybackState::kStartPending: {
       base::AutoLock lock(timeline_lock_);

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // The file defines the symbols from OpenSLES that android is using. It then
 // loads the library dynamically on first use.
 
@@ -24,6 +19,9 @@
 // untouched.
 #include <stdint.h>
 
+#include <array>
+
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 
 #define const
@@ -41,13 +39,13 @@
 // SLInterfaceID_. Those symbols are defined as extern symbols in the OpenSLES
 // headers. They will be initialized to their correct values when the library is
 // loaded.
-SLInterfaceID SL_IID_ENGINE = NULL;
-SLInterfaceID SL_IID_ANDROIDSIMPLEBUFFERQUEUE = NULL;
-SLInterfaceID SL_IID_ANDROIDCONFIGURATION = NULL;
-SLInterfaceID SL_IID_RECORD = NULL;
-SLInterfaceID SL_IID_BUFFERQUEUE = NULL;
-SLInterfaceID SL_IID_VOLUME = NULL;
-SLInterfaceID SL_IID_PLAY = NULL;
+SLInterfaceID SL_IID_ENGINE = nullptr;
+SLInterfaceID SL_IID_ANDROIDSIMPLEBUFFERQUEUE = nullptr;
+SLInterfaceID SL_IID_ANDROIDCONFIGURATION = nullptr;
+SLInterfaceID SL_IID_RECORD = nullptr;
+SLInterfaceID SL_IID_BUFFERQUEUE = nullptr;
+SLInterfaceID SL_IID_VOLUME = nullptr;
+SLInterfaceID SL_IID_PLAY = nullptr;
 
 namespace {
 
@@ -57,10 +55,10 @@ const char kOpenSLLibraryName[] = "libOpenSLES.so";
 // Loads the OpenSLES library, and initializes all the proxies.
 base::NativeLibrary IntializeLibraryHandle() {
   base::NativeLibrary handle =
-      base::LoadNativeLibrary(base::FilePath(kOpenSLLibraryName), NULL);
+      base::LoadNativeLibrary(base::FilePath(kOpenSLLibraryName), nullptr);
   if (!handle) {
     DLOG(ERROR) << "Unable to load " << kOpenSLLibraryName;
-    return NULL;
+    return nullptr;
   }
 
   // Setup the proxy for each symbol.
@@ -71,23 +69,25 @@ base::NativeLibrary IntializeLibraryHandle() {
   };
 
   // The list of defined symbols.
-  const SymbolDefinition kSymbols[] = {
-      {"SL_IID_ENGINE", &SL_IID_ENGINE},
-      {"SL_IID_ANDROIDSIMPLEBUFFERQUEUE", &SL_IID_ANDROIDSIMPLEBUFFERQUEUE},
-      {"SL_IID_ANDROIDCONFIGURATION", &SL_IID_ANDROIDCONFIGURATION},
-      {"SL_IID_RECORD", &SL_IID_RECORD},
-      {"SL_IID_BUFFERQUEUE", &SL_IID_BUFFERQUEUE},
-      {"SL_IID_VOLUME", &SL_IID_VOLUME},
-      {"SL_IID_PLAY", &SL_IID_PLAY}};
+  auto kSymbols = std::to_array<const SymbolDefinition>(
+      {{"SL_IID_ENGINE", &SL_IID_ENGINE},
+       {"SL_IID_ANDROIDSIMPLEBUFFERQUEUE", &SL_IID_ANDROIDSIMPLEBUFFERQUEUE},
+       {"SL_IID_ANDROIDCONFIGURATION", &SL_IID_ANDROIDCONFIGURATION},
+       {"SL_IID_RECORD", &SL_IID_RECORD},
+       {"SL_IID_BUFFERQUEUE", &SL_IID_BUFFERQUEUE},
+       {"SL_IID_VOLUME", &SL_IID_VOLUME},
+       {"SL_IID_PLAY", &SL_IID_PLAY}});
 
-  for (size_t i = 0; i < sizeof(kSymbols) / sizeof(kSymbols[0]); ++i) {
+  for (auto& symbol : kSymbols) {
     void* func_ptr =
-        base::GetFunctionPointerFromNativeLibrary(handle, kSymbols[i].name);
+        base::GetFunctionPointerFromNativeLibrary(handle, symbol.name);
     if (!func_ptr) {
-      DLOG(ERROR) << "Unable to find symbol for " << kSymbols[i].name;
-      return NULL;
+      DLOG(ERROR) << "Unable to find symbol for " << symbol.name;
+      return nullptr;
     }
-    memcpy(kSymbols[i].sl_iid, func_ptr, sizeof(SLInterfaceID));
+    base::byte_span_from_ref(*symbol.sl_iid)
+        .copy_from(base::byte_span_from_ref(
+            *reinterpret_cast<SLInterfaceID*>(func_ptr)));
   }
   return handle;
 }

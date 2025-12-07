@@ -7,8 +7,10 @@
 #include <inttypes.h>
 
 #include "base/functional/callback.h"
+#include "base/notimplemented.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
@@ -66,8 +68,7 @@ class KAnonymityTrustTokenGetterTest : public testing::Test {
  protected:
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{network::features::kPrivateStateTokens, {}},
-                              {features::kKAnonymityService,
+        /*enabled_features=*/{{features::kKAnonymityService,
                                {{"KAnonymityServiceAuthServer", kAuthServer}}}},
         /*disabled_features=*/{});
     TestingProfile::Builder builder;

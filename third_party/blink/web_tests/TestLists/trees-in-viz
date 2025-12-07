@@ -1,0 +1,17 @@
+animations
+compositing
+dom
+fast
+paint
+scrollbars
+virtual/android/url-bar
+virtual/fluent-overlay-scrollbar
+
+external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-parent-element-overflow-hidden-and-border-radius-2.html
+external/wpt/css/css-masking/mask-image/mask-under-border-radius.html
+external/wpt/css/filter-effects/backdrop-filter-clip-rounded-clip.html
+external/wpt/css/filter-effects/backdrop-filter-clipped.html
+external/wpt/css/filter-effects/css-backdrop-filter-transform-clip.html
+compositing/perspective-interest-rect.html
+transforms/3d/point-mapping/3d-point-mapping-deep.html
+transforms/3d/point-mapping/3d-point-mapping-preserve-3d.html

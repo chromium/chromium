@@ -5,7 +5,6 @@
 #include "base/task/common/scoped_defer_task_posting.h"
 
 #include "base/compiler_specific.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 
@@ -13,7 +12,7 @@ namespace {
 
 // Holds a thread-local pointer to the current scope or null when no
 // scope is active.
-ABSL_CONST_INIT thread_local ScopedDeferTaskPosting* scoped_defer_task_posting =
+constinit thread_local ScopedDeferTaskPosting* scoped_defer_task_posting =
     nullptr;
 
 }  // namespace
@@ -48,8 +47,9 @@ ScopedDeferTaskPosting* ScopedDeferTaskPosting::Get() {
 bool ScopedDeferTaskPosting::Set(ScopedDeferTaskPosting* scope) {
   // We can post a task from within a ScheduleWork in some tests, so we can
   // get nested scopes. In this case ignore all except the top one.
-  if (Get() && scope)
+  if (Get() && scope) {
     return false;
+  }
   scoped_defer_task_posting = scope;
   return true;
 }
@@ -95,8 +95,8 @@ void ScopedDeferTaskPosting::DeferTaskPosting(
     const Location& from_here,
     OnceClosure task,
     base::TimeDelta delay) {
-  deferred_tasks_.push_back(
-      {std::move(task_runner), from_here, std::move(task), delay});
+  deferred_tasks_.emplace_back(std::move(task_runner), from_here,
+                               std::move(task), delay);
 }
 
 }  // namespace base

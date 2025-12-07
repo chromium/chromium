@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/shared_memory_mapping.h"
@@ -91,7 +92,7 @@ class BASE_EXPORT DiscardableSharedMemory {
   // Returns an ID for the shared memory region. This is ID of the mapped region
   // consistent across all processes and is valid as long as the region is not
   // unmapped.
-  const UnguessableToken& mapped_id() const {
+  const UnguessableToken& mapped_id() const LIFETIME_BOUND {
     return shared_memory_mapping_.guid();
   }
 
@@ -124,7 +125,8 @@ class BASE_EXPORT DiscardableSharedMemory {
   // requested. The actual mapped memory may be larger due to system alignment
   // requirements. See `SharedMemoryMapping::size()` vs
   // `SharedMemoryMapping::mapped_size()`.
-  span<uint8_t> memory() const;
+  span<uint8_t> memory();
+  span<const uint8_t> memory() const;
 
   // Returns the last known usage time for DiscardableSharedMemory object. This
   // may be earlier than the "true" usage time when memory has been used by a
@@ -176,7 +178,8 @@ class BASE_EXPORT DiscardableSharedMemory {
   // header. This may be larger than the region exposed through `memory()` due
   // to platform alignment requirements. Discardable memory must have been
   // mapped via Map().
-  span<uint8_t> mapped_memory() const;
+  span<uint8_t> mapped_memory();
+  span<const uint8_t> mapped_memory() const;
 
   // LockPages/UnlockPages are platform-native discardable page management
   // helper functions. Both expect |offset| to be specified relative to the

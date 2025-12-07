@@ -1,0 +1,6 @@
+file://ui/base/interaction/OWNERS
+
+kerenzhu@chromium.org
+
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS

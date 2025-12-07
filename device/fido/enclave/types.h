@@ -13,8 +13,8 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
-#include "crypto/sha2.h"
-#include "device/fido/fido_constants.h"
+#include "crypto/hash.h"
+#include "device/fido/public/fido_constants.h"
 #include "url/gurl.h"
 
 namespace sync_pb {
@@ -27,8 +27,11 @@ namespace device::enclave {
 // connect to an enclave.
 struct COMPONENT_EXPORT(DEVICE_FIDO) EnclaveIdentity {
   EnclaveIdentity();
-  ~EnclaveIdentity();
   EnclaveIdentity(const EnclaveIdentity&);
+  EnclaveIdentity(EnclaveIdentity&&);
+  EnclaveIdentity& operator=(const EnclaveIdentity&);
+  EnclaveIdentity& operator=(EnclaveIdentity&&);
+  ~EnclaveIdentity();
 
   GURL url;
   std::array<uint8_t, kP256X962Length> public_key;
@@ -71,7 +74,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) ClientSignature {
 };
 
 // Message format that can be signed by SignedCallback.
-using SignedMessage = std::array<uint8_t, 2 * crypto::kSHA256Length>;
+using SignedMessage = std::array<uint8_t, 2 * crypto::hash::kSha256Size>;
 
 // A SigningCallback is used to sign an encoded array of enclave requests.
 using SigningCallback = base::OnceCallback<void(
@@ -105,6 +108,16 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) ClaimedPIN {
   std::vector<uint8_t> pin_claim;
   // The true PIN hash, encrypted to the security domain secret.
   std::vector<uint8_t> wrapped_pin;
+};
+
+// Legal `up` and `uv` bit combinations.
+enum class UserPresentAndVerifiedBits {
+  // up=0, uv=0. Only allowed for MakeCredential (for mediation=conditional).
+  kNeither,
+  // up=1, uv=0
+  kPresentOnly,
+  // up=1, uv=1
+  kPresentAndVerified,
 };
 
 // A CredentialRequest contains the values that, in addition to a CTAP request,
@@ -148,8 +161,11 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CredentialRequest {
   // The PIN entered by the user (wrapped for the enclave), and the correct PIN
   // (encrypted to the security domain secret). Optional, may be nullptr.
   std::unique_ptr<ClaimedPIN> claimed_pin;
-  // True when a user verification has been performed, false otherwise.
-  bool user_verified = false;
+  // The user presence and user verified bits. Only considered for
+  // MakeCredential. For GetAssertion the authenticatorData that contains these
+  // bits is enclave-supplied.
+  UserPresentAndVerifiedBits up_and_uv_bits =
+      UserPresentAndVerifiedBits::kPresentOnly;
 };
 
 }  // namespace device::enclave

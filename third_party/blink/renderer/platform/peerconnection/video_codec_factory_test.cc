@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/video_codec_factory.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "media/base/mock_filters.h"

@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
+#include "base/test/run_until.h"
 #include "ui/events/test/event_generator.h"
 
 namespace ash {
@@ -320,12 +321,17 @@ TEST_F(LaserPointerControllerTest, MouseCursorState) {
   EXPECT_FALSE(cursor_manager->IsCursorVisible());
   EXPECT_FALSE(cursor_manager->IsCursorLocked());
   EXPECT_EQ(1, controller_test_api_->laser_points().GetNumberOfPoints());
+  event_generator->ReleaseTouch();
+  // Wait until laser pointer view created by touch goes away. Otherwise mouse
+  // event will be dropped.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !controller_test_api_->HasLaserPointerView(); }));
 
   // Verify that moving the mouse cursor shows the cursor.
   event_generator->MoveMouseTo(gfx::Point(6, 6));
   EXPECT_FALSE(cursor_manager->IsCursorVisible());
   EXPECT_TRUE(cursor_manager->IsCursorLocked());
-  EXPECT_EQ(2, controller_test_api_->laser_points().GetNumberOfPoints());
+  EXPECT_EQ(1, controller_test_api_->laser_points().GetNumberOfPoints());
 
   // Verify that by disabling the mode, mouse cursor should be visible.
   controller_test_api_->SetEnabled(false);
@@ -333,6 +339,75 @@ TEST_F(LaserPointerControllerTest, MouseCursorState) {
   event_generator->MoveMouseTo(gfx::Point(7, 7));
   EXPECT_TRUE(cursor_manager->IsCursorVisible());
   EXPECT_FALSE(cursor_manager->IsCursorLocked());
+}
+
+// Verify that touch events can take over and create new laser pointer
+// to replace the laser pointer created by mouse event.
+TEST_F(LaserPointerControllerTest, TouchTakeOverMouse) {
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  controller_test_api_->SetEnabled(true);
+
+  for (const auto touch_pointer_type :
+       {ui::EventPointerType::kTouch, ui::EventPointerType::kPen}) {
+    // Create laser pointer by mouse event.
+    event_generator->MoveMouseTo(gfx::Point(1, 1));
+    auto* view_created_by_mouse = controller_test_api_->GetLaserPointerView();
+
+    // Touch events will take over and create a new laser pointer because
+    // touch events have higher priority.
+    if (touch_pointer_type == ui::EventPointerType::kPen) {
+      event_generator->EnterPenPointerMode();
+    }
+    event_generator->PressTouch();
+    // A new laser pointer view is created by touch event.
+    EXPECT_NE(view_created_by_mouse,
+              controller_test_api_->GetLaserPointerView());
+    EXPECT_EQ(1, controller_test_api_->laser_points().GetNumberOfPoints());
+    event_generator->MoveTouch(gfx::Point(2, 2));
+    event_generator->MoveTouch(gfx::Point(1, 1));
+    EXPECT_EQ(3, controller_test_api_->laser_points().GetNumberOfPoints());
+
+    event_generator->ReleaseTouch();
+    if (touch_pointer_type == ui::EventPointerType::kPen) {
+      event_generator->ExitPenPointerMode();
+    }
+  }
+
+  controller_test_api_->SetEnabled(false);
+}
+
+// Verify that mouse events should not interfere laser pointer
+// created by touch event.
+TEST_F(LaserPointerControllerTest, NoMouseInterference) {
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  controller_test_api_->SetEnabled(true);
+
+  for (const auto touch_pointer_type :
+       {ui::EventPointerType::kTouch, ui::EventPointerType::kPen}) {
+    // Create laser pointer by touch event.
+    if (touch_pointer_type == ui::EventPointerType::kPen) {
+      event_generator->EnterPenPointerMode();
+    }
+    event_generator->PressTouch();
+    EXPECT_EQ(1, controller_test_api_->laser_points().GetNumberOfPoints());
+
+    // Mouse events should get dropped.
+    event_generator->MoveMouseTo(gfx::Point(2, 2));
+    event_generator->MoveMouseTo(gfx::Point(1, 1));
+    EXPECT_EQ(1, controller_test_api_->laser_points().GetNumberOfPoints());
+
+    // Touch events should still get processed.
+    event_generator->MoveTouch(gfx::Point(2, 2));
+    event_generator->MoveTouch(gfx::Point(1, 1));
+    EXPECT_EQ(3, controller_test_api_->laser_points().GetNumberOfPoints());
+
+    event_generator->ReleaseTouch();
+    if (touch_pointer_type == ui::EventPointerType::kPen) {
+      event_generator->ExitPenPointerMode();
+    }
+  }
+
+  controller_test_api_->SetEnabled(false);
 }
 
 // Base class for tests that rely on palette.

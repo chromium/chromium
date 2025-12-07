@@ -40,7 +40,7 @@ constexpr CGFloat kButtonTopPadding = 14.0;
   return self;
 }
 
-- (void)configureCell:(TableViewCell*)tableCell
+- (void)configureCell:(LegacyTableViewCell*)tableCell
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:tableCell withStyler:styler];
   TableViewIllustratedCell* cell =

@@ -13,7 +13,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
-#include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -33,6 +32,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
@@ -40,8 +41,6 @@
 #include "url/gurl.h"
 
 using safe_browsing::ClientSafeBrowsingReportRequest;
-
-namespace {
 
 // Views-specific implementation of download danger prompt dialog, which
 // implements danger warning bypass from the downloads extension API. We use
@@ -82,15 +81,14 @@ DownloadDangerPromptViews::DownloadDangerPromptViews(
     download::DownloadItem* item,
     Profile* profile,
     OnDone done)
-    : download_(item),
-      profile_(profile),
-      done_(std::move(done)) {
+    : download_(item), profile_(profile), done_(std::move(done)) {
   // Note that this prompt is asking whether to cancel a dangerous download, so
   // the accept path is titled "Cancel".
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, l10n_util::GetStringUTF16(IDS_CANCEL));
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
+                 l10n_util::GetStringUTF16(IDS_CANCEL));
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  l10n_util::GetStringUTF16(IDS_CONFIRM_DOWNLOAD));
-  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetModalType(ui::mojom::ModalType::kChild);
 
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
@@ -122,8 +120,9 @@ DownloadDangerPromptViews::DownloadDangerPromptViews(
 }
 
 DownloadDangerPromptViews::~DownloadDangerPromptViews() {
-  if (download_)
+  if (download_) {
     download_->RemoveObserver(this);
+  }
 }
 
 // DownloadDangerPrompt methods:
@@ -143,7 +142,7 @@ void DownloadDangerPromptViews::InvokeActionForTesting(Action action) {
       break;
 
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -189,7 +188,7 @@ std::u16string DownloadDangerPromptViews::GetMessageBody() const {
       return l10n_util::GetStringFUTF16(IDS_PROMPT_DOWNLOAD_CHANGES_SETTINGS,
                                         filename);
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -223,29 +222,26 @@ void DownloadDangerPromptViews::RunDone(Action action) {
         RecordDownloadDangerPromptHistogram("Proceed", *download_);
       }
       RecordDownloadWarningEvent(action, download_);
-      if (!download_->GetURL().is_empty() &&
-          !content::DownloadItemUtils::GetBrowserContext(download_)
-               ->IsOffTheRecord()) {
-        ClientSafeBrowsingReportRequest::ReportType report_type =
-            ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_BY_API;
-        // Do not send cancel report since it's not a terminal action.
-        if (accept) {
-          SendSafeBrowsingDownloadReport(report_type, accept, download_);
-        }
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+      // Do not send cancel report since it's not a terminal action.
+      if (accept) {
+        SendSafeBrowsingDownloadReport(
+            ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_BY_API, accept,
+            download_);
       }
+#endif
     }
     download_->RemoveObserver(this);
     download_ = nullptr;
   }
-  if (done)
+  if (done) {
     std::move(done).Run(action);
+  }
 }
 
 BEGIN_METADATA(DownloadDangerPromptViews)
 ADD_READONLY_PROPERTY_METADATA(std::u16string, MessageBody)
 END_METADATA
-
-}  // namespace
 
 // static
 DownloadDangerPrompt* DownloadDangerPrompt::Create(

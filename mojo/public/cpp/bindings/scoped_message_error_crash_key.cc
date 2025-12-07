@@ -4,6 +4,8 @@
 
 #include "mojo/public/cpp/bindings/scoped_message_error_crash_key.h"
 
+#include "base/debug/crash_logging.h"
+
 namespace mojo {
 namespace debug {
 

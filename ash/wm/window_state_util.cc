@@ -14,12 +14,9 @@ namespace ash {
 
 void ToggleFullScreen(WindowState* window_state,
                       WindowStateDelegate* delegate) {
-  // Window which cannot be maximized should not be full screen'ed.
-  // It can, however, be restored if it was full screen'ed.
+  // Window can be restored, even if cannot be fullscreened
   bool is_fullscreen = window_state->IsFullscreen();
-  if (!is_fullscreen &&
-      (!window_state->CanMaximize() || !window_state->CanFullscreen())) {
-    // If `window` cannot be maximized, then do a window bounce animation.
+  if (!is_fullscreen && !window_state->CanFullscreen()) {
     wm::AnimateWindow(window_state->window(), wm::WINDOW_ANIMATION_TYPE_BOUNCE);
     return;
   }
@@ -36,12 +33,18 @@ void ToggleMaximizeCaption(WindowState* window_state) {
   if (window_state->IsFullscreen()) {
     const WMEvent wm_event(WM_EVENT_TOGGLE_FULLSCREEN);
     window_state->OnWMEvent(&wm_event);
-  } else if (window_state->IsMaximized()) {
+    return;
+  }
+  // False CanMaximize blocks both maximizing and restoring
+  if (!window_state->CanMaximize()) {
+    wm::AnimateWindow(window_state->window(), wm::WINDOW_ANIMATION_TYPE_BOUNCE);
+    return;
+  }
+
+  if (window_state->IsMaximized()) {
     window_state->Restore();
   } else if (window_state->IsNormalOrSnapped() || window_state->IsFloated()) {
-    if (window_state->CanMaximize()) {
-      window_state->Maximize();
-    }
+    window_state->Maximize();
   }
 }
 
@@ -52,13 +55,18 @@ void ToggleMaximize(WindowState* window_state) {
   if (window_state->IsFullscreen()) {
     const WMEvent wm_event(WM_EVENT_TOGGLE_FULLSCREEN);
     window_state->OnWMEvent(&wm_event);
-  } else if (window_state->IsMaximized()) {
-    window_state->Restore();
-  } else if (window_state->CanMaximize()) {
-    window_state->Maximize();
-  } else {
-    // If `window` cannot be maximized, then do a window bounce animation.
+    return;
+  }
+  // False CanMaximize blocks both maximizing and restoring
+  if (!window_state->CanMaximize()) {
     wm::AnimateWindow(window_state->window(), wm::WINDOW_ANIMATION_TYPE_BOUNCE);
+    return;
+  }
+
+  if (window_state->IsMaximized()) {
+    window_state->Restore();
+  } else {
+    window_state->Maximize();
   }
 }
 

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/ui_devtools/protocol.h"
 #include "components/ui_devtools/ui_devtools_unittest_utils.h"
@@ -37,7 +38,7 @@ void TestBooleanCustomPropertySetting(ui_devtools::ViewElement* element,
                                       bool init_value) {
   std::pair<size_t, size_t> indices =
       GetPropertyIndices(element, property_name);
-  std::string old_value(init_value ? "true" : "false");
+  std::string old_value = base::ToString(init_value);
   std::vector<UIElement::ClassProperties> props =
       element->GetCustomPropertiesForMatchedStyle();
   std::vector<UIElement::UIProperty> ui_props =
@@ -45,7 +46,7 @@ void TestBooleanCustomPropertySetting(ui_devtools::ViewElement* element,
   EXPECT_EQ(ui_props[indices.second].value_, old_value);
 
   // Check the property can be set accordingly.
-  std::string new_value(init_value ? "false" : "true");
+  std::string new_value(base::ToString(!init_value));
   std::string separator(":");
   element->SetPropertiesFromString(property_name + separator + new_value);
   props = element->GetCustomPropertiesForMatchedStyle();
@@ -68,9 +69,9 @@ class MockNamedTestView : public views::View {
   METADATA_HEADER(MockNamedTestView, views::View)
 
  public:
-  // For custom properties test.
-  std::u16string GetTooltipText(const gfx::Point& p) const override {
-    return u"This is the tooltip";
+  MockNamedTestView() {
+    // For custom properties test.
+    SetTooltipText(u"This is the tooltip");
   }
 
   int GetBoolProperty() const { return bool_property_; }
@@ -126,12 +127,12 @@ END_METADATA
 
 class ViewElementTest : public views::ViewsTestBase {
  public:
-  ViewElementTest() {}
+  ViewElementTest() = default;
 
   ViewElementTest(const ViewElementTest&) = delete;
   ViewElementTest& operator=(const ViewElementTest&) = delete;
 
-  ~ViewElementTest() override {}
+  ~ViewElementTest() override = default;
 
  protected:
   void SetUp() override {
@@ -165,7 +166,7 @@ TEST_F(ViewElementTest, AddingChildView) {
   EXPECT_CALL(*delegate(), OnUIElementAdded(nullptr, _)).Times(1);
   EXPECT_CALL(*delegate(), OnUIElementAdded(element(), _)).Times(1);
   views::View child_view;
-  view()->AddChildView(&child_view);
+  view()->AddChildViewRaw(&child_view);
 
   DCHECK_EQ(element()->children().size(), 1U);
   UIElement* child_element = element()->children()[0];
@@ -280,7 +281,7 @@ TEST_F(ViewElementTest, GetNodeWindowAndScreenBounds) {
   widget->Init(std::move(params));
   widget->Show();
 
-  widget->GetContentsView()->AddChildView(view());
+  widget->GetContentsView()->AddChildViewRaw(view());
   gfx::Rect bounds(50, 60, 70, 80);
   view()->SetBoundsRect(bounds);
 
@@ -288,6 +289,23 @@ TEST_F(ViewElementTest, GetNodeWindowAndScreenBounds) {
       element()->GetNodeWindowAndScreenBounds();
   EXPECT_EQ(window_and_bounds.first, widget->GetNativeWindow());
   EXPECT_EQ(window_and_bounds.second, view()->GetBoundsInScreen());
+
+  view()->parent()->RemoveChildView(view());
+}
+
+TEST_F(ViewElementTest, GetNodeBoundsInScreen) {
+  // For this to be meaningful, the view must be in a widget.
+  auto widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params =
+      CreateParams(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+                   views::Widget::InitParams::TYPE_WINDOW);
+  widget->Init(std::move(params));
+  widget->Show();
+
+  widget->GetContentsView()->AddChildViewRaw(view());
+  gfx::Rect bounds(50, 60, 70, 80);
+  view()->SetBoundsRect(bounds);
+  EXPECT_EQ(view()->GetBoundsInScreen(), element()->GetNodeBoundsInScreen());
 
   view()->parent()->RemoveChildView(view());
 }
@@ -348,7 +366,7 @@ TEST_F(ViewElementTest, DispatchMouseEvent) {
       CreateParams(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
                    views::Widget::InitParams::TYPE_WINDOW);
   widget->Init(std::move(params));
-  widget->GetContentsView()->AddChildView(view());
+  widget->GetContentsView()->AddChildViewRaw(view());
   widget->Show();
   gfx::Rect bounds(50, 60, 70, 80);
   view()->SetBoundsRect(bounds);

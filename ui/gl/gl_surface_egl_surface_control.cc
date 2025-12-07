@@ -4,10 +4,12 @@
 
 #include "ui/gl/gl_surface_egl_surface_control.h"
 
-#include <utility>
+#include <android/hardware_buffer.h>
 
-#include "base/android/android_hardware_buffer_compat.h"
-#include "base/android/build_info.h"
+#include <utility>
+#include <variant>
+
+#include "base/android/apk_info.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/functional/bind.h"
 #include "base/posix/eintr_wrapper.h"
@@ -34,13 +36,12 @@ constexpr char kChildSurfaceName[] = "ChromeChildSurface";
 
 gfx::Size GetBufferSize(const AHardwareBuffer* buffer) {
   AHardwareBuffer_Desc desc;
-  base::AndroidHardwareBufferCompat::GetInstance().Describe(buffer, &desc);
+  AHardwareBuffer_describe(buffer, &desc);
   return gfx::Size(desc.width, desc.height);
 }
 
 std::string BuildSurfaceName(const char* suffix) {
-  return base::StrCat(
-      {base::android::BuildInfo::GetInstance()->package_name(), "/", suffix});
+  return base::StrCat({base::android::apk_info::package_name(), "/", suffix});
 }
 
 base::TimeTicks GetSignalTime(const base::ScopedFD& fence) {
@@ -206,8 +207,8 @@ void GLSurfaceEGLSurfaceControl::CommitPendingTransaction(
   pending_transaction_->SetOnCompleteCb(std::move(complete_cb),
                                         gpu_task_runner_);
 
-  if (use_target_deadline_) {
-    DCHECK(!!choreographer_vsync_id_for_next_frame_);
+  if (use_target_deadline_ &&
+      choreographer_vsync_id_for_next_frame_.has_value()) {
     DCHECK(gfx::SurfaceControl::SupportsSetFrameTimeline());
     pending_transaction_->SetFrameTimelineId(
         choreographer_vsync_id_for_next_frame_.value());
@@ -351,7 +352,7 @@ bool GLSurfaceEGLSurfaceControl::ScheduleOverlayPlane(
     src.Intersect(gfx::Rect(buffer_size));
 
     auto transform =
-        absl::get<gfx::OverlayTransform>(overlay_plane_data.plane_transform);
+        std::get<gfx::OverlayTransform>(overlay_plane_data.plane_transform);
     if (uninitialized || surface_state.src != src || surface_state.dst != dst ||
         surface_state.transform != transform) {
       surface_state.src = src;
@@ -564,7 +565,8 @@ void GLSurfaceEGLSurfaceControl::CheckPendingPresentationCallbacks() {
   }
 }
 
-void GLSurfaceEGLSurfaceControl::SetFrameRate(float frame_rate) {
+void GLSurfaceEGLSurfaceControl::SetFrameRate(
+    gfx::SurfaceControlFrameRate frame_rate) {
   if (frame_rate_ == frame_rate)
     return;
 

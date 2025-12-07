@@ -1,0 +1,72 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/safe_browsing/buildflags.gni")
+
+source_set("download") {
+  public = [
+    "download_item_warning_data.h",
+    "download_prompt_status.h",
+    "download_stats.h",
+    "download_ui_model.h",
+  ]
+
+  sources = [
+    "download_item_warning_data.cc",
+    "download_stats.cc",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/download/public/common:public",
+    "//components/offline_items_collection/core",
+    "//components/safe_browsing:buildflags",
+    "//components/safe_browsing/content/common/proto:download_file_types_proto",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//ui/base",
+    "//ui/color:color_headers",
+    "//ui/gfx",
+  ]
+
+  deps = [
+    ":status_text_builder_utils",
+    "//chrome/browser/profiles:profile",
+    "//components/profile_metrics",
+    "//components/strings",
+    "//url",
+  ]
+
+  if (!is_android) {
+    public += [
+      "download_commands.h",
+      "download_item_web_app_data.h",
+    ]
+
+    sources += [ "download_item_web_app_data.cc" ]
+
+    public_deps += [ "//components/webapps/common" ]
+
+    deps += [
+      "//chrome/browser/policy:path_parser",
+      "//chrome/common:chrome_features",
+    ]
+  }
+
+  if (safe_browsing_mode != 0) {
+    deps +=
+        [ "//components/safe_browsing/content/browser/download:download_stats" ]
+  }
+}
+
+source_set("status_text_builder_utils") {
+  public = [ "status_text_builder_utils.h" ]
+
+  sources = [ "status_text_builder_utils.cc" ]
+
+  deps = [
+    "//base",
+    "//chrome/app:generated_resources",
+    "//ui/base",
+  ]
+}

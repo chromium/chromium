@@ -9,7 +9,7 @@ declare_args() {
   enable_platform_experience = is_chrome_branded
 
   # By default, only branded builds integrate with automatic updates.
-  enable_updater = is_chrome_branded
+  enable_updater = is_chrome_branded && !is_fuchsia && target_os != "android"
 
   # Detect updates and notify the user for Google Chrome across all platforms.
   # Chromium does not use an auto-updater.

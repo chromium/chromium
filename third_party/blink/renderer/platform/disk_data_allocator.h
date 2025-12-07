@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/files/file.h"
 #include "base/gtest_prod_util.h"
@@ -51,7 +52,7 @@ class PLATFORM_EXPORT DiskDataAllocator : public mojom::blink::DiskAllocator {
   // Returns |nullptr| in case of error.
   // Note that this performs a blocking disk write.
   std::unique_ptr<DiskDataMetadata> Write(std::unique_ptr<ReservedChunk> chunk,
-                                          const void* data);
+                                          base::span<const uint8_t> data);
 
   // Reads data. A read failure is fatal.
   // Caller must make sure that this is not called at the same time as
@@ -60,7 +61,7 @@ class PLATFORM_EXPORT DiskDataAllocator : public mojom::blink::DiskAllocator {
   //
   // |data| must point to an area large enough to fit a |metadata.size|-ed
   // array. Note that this performs a blocking disk read.
-  void Read(const DiskDataMetadata& metadata, void* data);
+  void Read(const DiskDataMetadata& metadata, base::span<uint8_t> data);
 
   // Discards existing data pointed at by |metadata|. Caller must make sure this
   // is not called while the same file is being read.
@@ -92,10 +93,11 @@ class PLATFORM_EXPORT DiskDataAllocator : public mojom::blink::DiskAllocator {
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Virtual for testing.
-  virtual int DoWrite(int64_t offset, const char* data, int size)
+  virtual std::optional<size_t> DoWrite(int64_t offset,
+                                        base::span<const uint8_t> data)
       LOCKS_EXCLUDED(lock_);
   // CHECK()s that the read is successful.
-  virtual void DoRead(int64_t offset, char* data, int size);
+  virtual void DoRead(int64_t offset, base::span<uint8_t> data);
 
   mojo::Receiver<mojom::blink::DiskAllocator> receiver_{this};
   base::File file_;  // May be invalid.

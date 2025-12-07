@@ -14,10 +14,8 @@
 #include "android_webview/common/aw_features.h"
 #include "base/auto_reset.h"
 #include "base/check_op.h"
-#include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/supports_user_data.h"
 #include "base/task/bind_post_task.h"
@@ -30,8 +28,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_switches.h"
-#include "gpu/command_buffer/service/gpu_switches.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPicture.h"
@@ -46,13 +42,12 @@ namespace android_webview {
 
 namespace {
 
-const double kEpsilon = 1e-8;
+constexpr double kEpsilon = 1e-8;
 
 // Used to calculate memory allocation. Determined experimentally.
-const size_t kMemoryMultiplier = 20;
-const size_t kBytesPerPixel = 4;
-const size_t kMemoryAllocationStep = 5 * 1024 * 1024;
-uint64_t g_memory_override_in_bytes = 0u;
+constexpr size_t kMemoryMultiplier = 20;
+constexpr size_t kBytesPerPixel = 4;
+constexpr size_t kMemoryAllocationStep = 5 * 1024 * 1024;
 
 const void* const kBrowserViewRendererUserDataKey =
     &kBrowserViewRendererUserDataKey;
@@ -63,35 +58,19 @@ class BrowserViewRendererUserData : public base::SupportsUserData::Data {
 
   static BrowserViewRenderer* GetBrowserViewRenderer(
       content::WebContents* web_contents) {
-    if (!web_contents)
-      return NULL;
-    BrowserViewRendererUserData* data =
-        static_cast<BrowserViewRendererUserData*>(
-            web_contents->GetUserData(kBrowserViewRendererUserDataKey));
-    return data ? data->bvr_.get() : NULL;
+    if (!web_contents) {
+      return nullptr;
+    }
+    auto* data = static_cast<BrowserViewRendererUserData*>(
+        web_contents->GetUserData(kBrowserViewRendererUserDataKey));
+    return data ? data->bvr_.get() : nullptr;
   }
 
  private:
-  raw_ptr<BrowserViewRenderer> bvr_;
+  const raw_ptr<BrowserViewRenderer> bvr_;
 };
 
 }  // namespace
-
-// static
-void BrowserViewRenderer::CalculateTileMemoryPolicy() {
-  base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
-
-  // If the value was overridden on the command line, use the specified value.
-  bool client_hard_limit_bytes_overridden =
-      cl->HasSwitch(switches::kForceGpuMemAvailableMb);
-  if (client_hard_limit_bytes_overridden) {
-    base::StringToUint64(
-        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            switches::kForceGpuMemAvailableMb),
-        &g_memory_override_in_bytes);
-    g_memory_override_in_bytes *= 1024 * 1024;
-  }
-}
 
 // static
 BrowserViewRenderer* BrowserViewRenderer::FromWebContents(
@@ -219,39 +198,34 @@ gfx::Rect BrowserViewRenderer::ComputeTileRectAndUpdateMemoryPolicy() {
   }
   viewport_rect_for_tile_priority_in_view_space.Intersect(gfx::Rect(size_));
 
-  size_t bytes_limit = 0u;
-  if (g_memory_override_in_bytes) {
-    bytes_limit = static_cast<size_t>(g_memory_override_in_bytes);
+  // Note we are using |last_on_draw_global_visible_rect_| rather than
+  // |external_draw_constraints_.viewport_size|. This is to reduce budget
+  // for a webview that's much smaller than the surface it's rendering.
+  gfx::Rect interest_rect;
+  if (offscreen_pre_raster_) {
+    interest_rect = gfx::Rect(size_);
   } else {
-    // Note we are using |last_on_draw_global_visible_rect_| rather than
-    // |external_draw_constraints_.viewport_size|. This is to reduce budget
-    // for a webview that's much smaller than the surface it's rendering.
-    gfx::Rect interest_rect;
-    if (offscreen_pre_raster_) {
-      interest_rect = gfx::Rect(size_);
-    } else {
-      // Re-compute screen-space rect for computing tile budget, since tile is
-      // rastered in screen space.
-      gfx::Rect viewport_rect_for_tile_priority_in_screen_space =
-          cc::MathUtil::ProjectEnclosingClippedRect(
-              transform_for_tile_priority,
-              viewport_rect_for_tile_priority_in_view_space);
-      // Intersect by viewport size again, in case axis-aligning operations made
-      // the rect bigger than necessary.
-      viewport_rect_for_tile_priority_in_screen_space.Intersect(
-          gfx::Rect(external_draw_constraints_.viewport_size));
-      interest_rect = viewport_rect_for_tile_priority_in_screen_space.IsEmpty()
-                          ? last_on_draw_global_visible_rect_
-                          : viewport_rect_for_tile_priority_in_screen_space;
-    }
-
-    size_t width = interest_rect.width();
-    size_t height = interest_rect.height();
-    bytes_limit = kMemoryMultiplier * kBytesPerPixel * width * height;
-    // Round up to a multiple of kMemoryAllocationStep.
-    bytes_limit =
-        (bytes_limit / kMemoryAllocationStep + 1) * kMemoryAllocationStep;
+    // Re-compute screen-space rect for computing tile budget, since tile is
+    // rastered in screen space.
+    gfx::Rect viewport_rect_for_tile_priority_in_screen_space =
+        cc::MathUtil::ProjectEnclosingClippedRect(
+            transform_for_tile_priority,
+            viewport_rect_for_tile_priority_in_view_space);
+    // Intersect by viewport size again, in case axis-aligning operations made
+    // the rect bigger than necessary.
+    viewport_rect_for_tile_priority_in_screen_space.Intersect(
+        gfx::Rect(external_draw_constraints_.viewport_size));
+    interest_rect = viewport_rect_for_tile_priority_in_screen_space.IsEmpty()
+                        ? last_on_draw_global_visible_rect_
+                        : viewport_rect_for_tile_priority_in_screen_space;
   }
+
+  size_t width = interest_rect.width();
+  size_t height = interest_rect.height();
+  size_t bytes_limit = kMemoryMultiplier * kBytesPerPixel * width * height;
+  // Round up to a multiple of kMemoryAllocationStep.
+  bytes_limit =
+      (bytes_limit / kMemoryAllocationStep + 1) * kMemoryAllocationStep;
 
   compositor_->SetMemoryPolicy(bytes_limit);
   return viewport_rect_for_tile_priority_in_view_space;
@@ -344,7 +318,7 @@ bool BrowserViewRenderer::OnDrawHardware() {
       std::move(future), frame_sink_id_, viewport_size_for_tile_priority,
       external_draw_constraints_.transform, offscreen_pre_raster_, dip_scale_,
       std::move(requests), did_invalidate,
-      begin_frame_source_->LastDispatchedBeginFrameArgs(), renderer_thread_ids_,
+      begin_frame_source_->LastDispatchedBeginFrameArgs(), renderer_threads_,
       browser_io_thread_id_);
 
   ReturnUnusedResource(
@@ -368,14 +342,18 @@ bool BrowserViewRenderer::DoUpdateParentDrawData() {
   viz::FrameTimingDetailsMap new_timing_details;
   viz::FrameSinkId id;
   uint32_t frame_token = 0u;
+  base::TimeDelta preferred_frame_interval;
   current_compositor_frame_consumer_->TakeParentDrawDataOnUI(
-      &new_constraints, &id, &new_timing_details, &frame_token);
+      &new_constraints, &id, &new_timing_details, &frame_token,
+      &preferred_frame_interval);
 
   content::SynchronousCompositor* compositor = FindCompositor(id);
   if (compositor) {
     compositor->DidPresentCompositorFrames(std::move(new_timing_details),
                                            frame_token);
   }
+
+  client_->SetPreferredFrameInterval(preferred_frame_interval);
 
   if (external_draw_constraints_ == new_constraints)
     return false;
@@ -964,8 +942,8 @@ void BrowserViewRenderer::AddBeginFrameCompletionCallback(
   begin_frame_source_->AddBeginFrameCompletionCallback(std::move(callback));
 }
 
-void BrowserViewRenderer::SetThreadIds(const std::vector<int32_t>& thread_ids) {
-  renderer_thread_ids_ = thread_ids;
+void BrowserViewRenderer::SetThreads(const std::vector<viz::Thread>& threads) {
+  renderer_threads_ = threads;
 }
 
 void BrowserViewRenderer::PostInvalidate(

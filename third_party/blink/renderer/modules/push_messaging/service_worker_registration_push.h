@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/modules/service_worker/service_worker_registration.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -16,9 +15,9 @@ class ServiceWorkerRegistration;
 
 class ServiceWorkerRegistrationPush final
     : public GarbageCollected<ServiceWorkerRegistrationPush>,
-      public Supplement<ServiceWorkerRegistration> {
+      public GarbageCollectedMixin {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   explicit ServiceWorkerRegistrationPush(
       ServiceWorkerRegistration* registration);
@@ -27,7 +26,7 @@ class ServiceWorkerRegistrationPush final
   ServiceWorkerRegistrationPush& operator=(
       const ServiceWorkerRegistrationPush&) = delete;
 
-  virtual ~ServiceWorkerRegistrationPush();
+  ~ServiceWorkerRegistrationPush();
   static ServiceWorkerRegistrationPush& From(
       ServiceWorkerRegistration& registration);
 
@@ -37,6 +36,7 @@ class ServiceWorkerRegistrationPush final
   void Trace(Visitor* visitor) const override;
 
  private:
+  Member<ServiceWorkerRegistration> service_worker_registration_;
   Member<PushManager> push_manager_;
 };
 

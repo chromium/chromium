@@ -6,6 +6,7 @@ package org.chromium.android_webview.services;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.base.PathUtils;
 
@@ -20,10 +21,10 @@ public class ComponentsProviderPathUtil {
 
     /**
      * @return The absolute path to the serving directory that {@link ComponentsProviderService}
-     *         uses to look components up.
+     *     uses to look components up.
      */
     @CalledByNative
-    public static String getComponentsServingDirectoryPath() {
+    public static @JniType("std::string") String getComponentsServingDirectoryPath() {
         return new File(PathUtils.getDataDirectory(), COMPONENTS_DIRECTORY_PATH).getAbsolutePath();
     }
 
@@ -40,15 +41,35 @@ public class ComponentsProviderPathUtil {
      *
      * @param componentDirectoryPath the absolute path of the component directory.
      * @return the highest sequence number or 0 if the directory is empty or no valid directories
-     *         that match the format.
+     *     that match the format.
      */
     @CalledByNative
-    private static int getTheHighestSequenceNumber(String componentDirectoryPath) {
+    private static int getTheHighestSequenceNumber(
+            @JniType("std::string") String componentDirectoryPath) {
         File[] filesSorted = getComponentsNewestFirst(new File(componentDirectoryPath));
         if (filesSorted == null || filesSorted.length == 0) {
             return 0;
         }
         return sequenceNumberForDirectory(filesSorted[0]);
+    }
+
+    /**
+     * Returns the name of the directory with the highest sequence number from the subdirectories in
+     * the given directory. It looks up directories with the following name format {@code
+     * <componentDirectoryPath>/<sequence-number>_<version>}.
+     *
+     * @param componentDirectoryPath the absolute path of the component directory.
+     * @return the name of the directory with the highest sequence number or null if none exists or
+     *     no valid directories that match the format.
+     */
+    @CalledByNative
+    private static @JniType("std::string") String getTheHighestSequenceNumberDirectory(
+            @JniType("std::string") String componentDirectoryPath) {
+        File[] filesSorted = getComponentsNewestFirst(new File(componentDirectoryPath));
+        if (filesSorted == null || filesSorted.length == 0) {
+            return "";
+        }
+        return filesSorted[0].getName();
     }
 
     /**
@@ -58,7 +79,7 @@ public class ComponentsProviderPathUtil {
      *
      * @param componentDirectory the component directory that has components versions.
      * @return Sorted array of directories under {@code componentDirectory}, {@code null} if it's
-     *         not a valid directory.
+     *     not a valid directory.
      */
     public static File[] getComponentsNewestFirst(File componentDirectory) {
         final File[] files =

@@ -17,7 +17,7 @@ function populateStore()
 {
     debug("");
     debug("populating store...");
-    evalAndLog("trans = db.transaction('store', 'readwrite', {durability: 'relaxed'})");
+    evalAndLog("trans = db.transaction('store', 'readwrite')");
     evalAndLog("store = trans.objectStore('store');");
     trans.onerror = unexpectedErrorCallback;
     trans.onabort = unexpectedAbortCallback;
@@ -170,7 +170,7 @@ function makeOpenKeyCursor(obj, upperBound, open, direction)
 
 function runTest(openCursor, expectation, callback)
 {
-    trans = db.transaction('store', 'readonly', {durability: 'relaxed'});
+    trans = db.transaction('store', 'readonly');
 
     // expose these for code in openCursor
     store = trans.objectStore('store');

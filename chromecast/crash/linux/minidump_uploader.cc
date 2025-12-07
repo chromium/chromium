@@ -12,6 +12,7 @@
 #include <fstream>
 #include <list>
 #include <memory>
+#include <optional>
 #include <sstream>
 #include <vector>
 
@@ -71,6 +72,7 @@ bool IsDumpObsolete(const DumpInfo& dump) {
 
 MinidumpUploader::MinidumpUploader(CastSysInfo* sys_info,
                                    const std::string& server_url,
+                                   const std::string& crash_report_product_name,
                                    CastCrashdumpUploader* const uploader,
                                    PrefServiceGeneratorCallback callback)
     : release_channel_(sys_info->GetSystemReleaseChannel()),
@@ -82,15 +84,20 @@ MinidumpUploader::MinidumpUploader(CastSysInfo* sys_info,
       system_version_(sys_info->GetSystemBuildNumber()),
       upload_location_(!server_url.empty() ? server_url
                                            : kCrashServerProduction),
+      crash_report_product_name_(!crash_report_product_name.empty()
+                                     ? crash_report_product_name
+                                     : kProductName),
       reboot_scheduled_(false),
       filestate_initialized_(false),
       uploader_(uploader),
       pref_service_generator_(std::move(callback)) {}
 
 MinidumpUploader::MinidumpUploader(CastSysInfo* sys_info,
-                                   const std::string& server_url)
+                                   const std::string& server_url,
+                                   const std::string& crash_report_product_name)
     : MinidumpUploader(sys_info,
                        server_url,
+                       crash_report_product_name,
                        nullptr,
                        base::BindRepeating(&CreatePrefService)) {}
 
@@ -144,9 +151,7 @@ bool MinidumpUploader::DoWork() {
       LOG(INFO) << "OptInStats is false, removing crash dump";
       ignore_and_erase_dump = true;
     } else if (IsDumpObsolete(dump)) {
-      NOTREACHED_IN_MIGRATION();
-      LOG(INFO) << "DumpInfo belongs to older version, removing crash dump";
-      ignore_and_erase_dump = true;
+      NOTREACHED();
     }
 
     // Ratelimiting persists across reboots.
@@ -179,30 +184,35 @@ bool MinidumpUploader::DoWork() {
 
     LOG(INFO) << "OptInStats is true, uploading crash dump";
 
-    int64_t size;
-    if (!dump_path.empty() && !base::GetFileSize(dump_path, &size)) {
-      // either the file does not exist, or there was an error logging its
-      // path, or settings its permission; regardless, we can't upload it.
-      for (const auto& attachment : attachments) {
-        base::FilePath attachment_path(attachment);
-        if (attachment_path.DirName() == dump_path.DirName()) {
-          base::DeleteFile(attachment_path);
+    if (!dump_path.empty()) {
+      std::optional<int64_t> size = base::GetFileSize(dump_path);
+      if (!size.has_value()) {
+        // either the file does not exist, or there was an error logging its
+        // path, or settings its permission; regardless, we can't upload it.
+        for (const auto& attachment : attachments) {
+          base::FilePath attachment_path(attachment);
+          if (attachment_path.DirName() == dump_path.DirName()) {
+            base::DeleteFile(attachment_path);
+          }
         }
+        dumps.erase(dumps.begin());
+        continue;
       }
-      dumps.erase(dumps.begin());
-      continue;
     }
 
     std::stringstream comment;
     if (log_path.empty()) {
       comment << "Log file not specified. ";
-    } else if (!base::GetFileSize(log_path, &size)) {
-      comment << "Can't get size of " << log_path.value() << ": "
-              << strerror(errno);
-      // if we can't find the log file, don't upload the log
-      log_path.clear();
     } else {
-      comment << "Log size is " << size << ". ";
+      std::optional<int64_t> size = base::GetFileSize(log_path);
+      if (!size.has_value()) {
+        comment << "Can't get size of " << log_path.value() << ": "
+                << strerror(errno);
+        // if we can't find the log file, don't upload the log
+        log_path.clear();
+      } else {
+        comment << "Log size is " << size.value() << ". ";
+      }
     }
 
     std::stringstream uptime_stream;
@@ -211,7 +221,7 @@ bool MinidumpUploader::DoWork() {
     // attempt to upload
     LOG(INFO) << "Uploading crash to " << upload_location_;
     CastCrashdumpData crashdump_data;
-    crashdump_data.product = kProductName;
+    crashdump_data.product = crash_report_product_name_;
     crashdump_data.version = GetVersionString(
         dump.params().cast_release_version, dump.params().cast_build_number);
     crashdump_data.guid = client_id;

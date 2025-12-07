@@ -5,6 +5,7 @@
 #ifndef MEDIA_GPU_V4L2_TEST_AV1_DECODER_H_
 #define MEDIA_GPU_V4L2_TEST_AV1_DECODER_H_
 
+#include <array>
 #include <set>
 
 #include "base/files/memory_mapped_file.h"

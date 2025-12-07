@@ -7,18 +7,17 @@
 #include "base/feature_list.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/history_clusters/core/history_clusters_service.h"
-#include "components/page_image_service/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/webui/webui_util.h"
 
 // Static
 void HistoryClustersUtil::PopulateSource(content::WebUIDataSource* source,
@@ -45,10 +44,8 @@ void HistoryClustersUtil::PopulateSource(content::WebUIDataSource* source,
                      journeys_is_managed);
   source->AddBoolean("isHistoryClustersDebug",
                      history_clusters::GetConfig().user_visible_debug);
-  source->AddBoolean(
-      "isHistoryClustersImagesEnabled",
-      history_clusters::GetConfig().images &&
-          base::FeatureList::IsEnabled(page_image_service::kImageService));
+  source->AddBoolean("isHistoryClustersImagesEnabled",
+                     history_clusters::GetConfig().images);
 
   source->AddBoolean("isHistoryClustersImageCover",
                      history_clusters::GetConfig().images_cover);

@@ -62,15 +62,17 @@ class WaylandTestBase {
 
   // Similar to the two methods above, but provides the convenience of using a
   // capturing lambda directly.
-  template <
-      typename Lambda,
-      typename = std::enable_if_t<
-          std::is_invocable_r_v<void, Lambda, wl::TestWaylandServerThread*> ||
-          std::is_invocable_r_v<void, Lambda>>>
+  template <typename Lambda>
+    requires(
+        std::is_invocable_r_v<void, Lambda, wl::TestWaylandServerThread*> ||
+        std::is_invocable_r_v<void, Lambda>)
   void PostToServerAndWait(Lambda&& lambda, bool no_nested_runloops = true) {
     PostToServerAndWait(base::BindLambdaForTesting(std::move(lambda)),
                         no_nested_runloops);
   }
+
+  // Convenience wrapper function for WaylandConnectionTestApi::SyncDisplay.
+  void SyncDisplay();
 
  protected:
   // Disables client-server sync during the teardown.  Used by tests that
@@ -94,9 +96,6 @@ class WaylandTestBase {
   void ActivateSurface(uint32_t surface_id,
                        std::optional<uint32_t> serial = std::nullopt);
 
-  // Initializes SurfaceAugmenter in |server_|.
-  void InitializeSurfaceAugmenter();
-
   // A helper method that sets up the XKB configuration for tests that require
   // it.
   // Does nothing if XkbCommon is not used.
@@ -111,7 +110,8 @@ class WaylandTestBase {
       PlatformWindowType type,
       const gfx::Rect bounds,
       MockWaylandPlatformWindowDelegate* delegate,
-      gfx::AcceleratedWidget parent_widget = gfx::kNullAcceleratedWidget);
+      gfx::AcceleratedWidget parent_widget = gfx::kNullAcceleratedWidget,
+      bool inactive = false);
 
   base::test::TaskEnvironment task_environment_;
 
@@ -121,16 +121,16 @@ class WaylandTestBase {
   XkbEvdevCodes xkb_evdev_code_converter_;
 #endif
 
-  ::testing::NiceMock<MockWaylandPlatformWindowDelegate> delegate_;
   std::unique_ptr<ScopedKeyboardLayoutEngine> scoped_keyboard_layout_engine_;
-  std::unique_ptr<WaylandSurfaceFactory> surface_factory_;
-  std::unique_ptr<WaylandBufferManagerGpu> buffer_manager_gpu_;
   std::unique_ptr<WaylandConnection> connection_;
+  ::testing::NiceMock<MockWaylandPlatformWindowDelegate> delegate_;
+  std::unique_ptr<WaylandBufferManagerGpu> buffer_manager_gpu_;
+  std::unique_ptr<WaylandSurfaceFactory> surface_factory_;
   std::unique_ptr<WaylandScreen> screen_;
   std::unique_ptr<WaylandWindow> window_;
   gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
   std::vector<base::test::FeatureRef> enabled_features_{
-      features::kLacrosColorManagement, ui::kWaylandOverlayDelegation};
+      ui::kWaylandOverlayDelegation};
   std::vector<base::test::FeatureRef> disabled_features_;
 
  private:
@@ -150,8 +150,6 @@ class WaylandTest : public WaylandTestBase,
 
   void SetUp() override;
   void TearDown() override;
-
-  bool IsAuraShellEnabled();
 };
 
 // Version of WaylandTest that uses simple test fixtures (TEST_F).
@@ -162,20 +160,6 @@ class WaylandTestSimple : public WaylandTestBase, public ::testing::Test {
   WaylandTestSimple(const WaylandTestSimple&) = delete;
   WaylandTestSimple& operator=(const WaylandTestSimple&) = delete;
   ~WaylandTestSimple() override;
-
-  void SetUp() override;
-  void TearDown() override;
-};
-
-// Version of WaylandTest that uses simple test fixtures (TEST_F) and
-// aura_shell enabled.
-class WaylandTestSimpleWithAuraShell : public WaylandTestBase,
-                                       public ::testing::Test {
- public:
-  WaylandTestSimpleWithAuraShell();
-  WaylandTestSimpleWithAuraShell(const WaylandTestSimple&) = delete;
-  WaylandTestSimpleWithAuraShell& operator=(const WaylandTestSimple&) = delete;
-  ~WaylandTestSimpleWithAuraShell() override;
 
   void SetUp() override;
   void TearDown() override;

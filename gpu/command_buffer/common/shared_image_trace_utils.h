@@ -6,7 +6,7 @@
 #define GPU_COMMAND_BUFFER_COMMON_SHARED_IMAGE_TRACE_UTILS_H_
 
 #include "base/trace_event/memory_allocator_dump_guid.h"
-#include "gpu/gpu_export.h"
+#include "gpu/command_buffer/common/gpu_command_buffer_common_export.h"
 
 namespace gpu {
 
@@ -15,7 +15,7 @@ struct Mailbox;
 // Generates a memory tracing GUID for `mailbox` to be used for shared
 // MemoryAllocatorDump. This allows GPU clients and service to link together
 // memory dumps for the shared image.
-GPU_EXPORT base::trace_event::MemoryAllocatorDumpGuid
+GPU_COMMAND_BUFFER_COMMON_EXPORT base::trace_event::MemoryAllocatorDumpGuid
 GetSharedImageGUIDForTracing(const Mailbox& mailbox);
 
 }  // namespace gpu

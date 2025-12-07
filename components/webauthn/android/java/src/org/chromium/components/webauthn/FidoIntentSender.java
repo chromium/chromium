@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.util.Pair;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Abstracts the task of starting an intent and getting the result.
@@ -16,6 +18,7 @@ import org.chromium.base.Callback;
  * <p>This interface is ultimately expected to call Android's <code>startIntentSenderForResult
  * </code> and pass the resulting response code and {@link Intent} to the given callback.
  */
+@NullMarked
 public interface FidoIntentSender {
     /**
      * @param intent the intent to be started to complete a WebAuthn operation.
@@ -24,5 +27,5 @@ public interface FidoIntentSender {
      * @return true to indicate that the {@link PendingIntent} was started and false if it could not
      *     be.
      */
-    boolean showIntent(PendingIntent intent, Callback<Pair<Integer, Intent>> callback);
+    boolean showIntent(PendingIntent intent, Callback<Pair<Integer, @Nullable Intent>> callback);
 }

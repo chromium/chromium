@@ -19,6 +19,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/view_class_properties.h"
@@ -27,15 +28,14 @@
 
 namespace {
 
-// TODO(343110207): Adjust the size when the WebUI page is finalized.
-constexpr gfx::Size kDialogSize{500, 290};
+constexpr gfx::Size kDialogSize{470, 350};
 
 void UpdateDialogPosition(views::Widget* widget,
                           content::WebContents* web_contents) {
   auto* dialog_host =
       web_modal::WebContentsModalDialogManager::FromWebContents(web_contents)
           ->delegate()
-          ->GetWebContentsModalDialogHost();
+          ->GetWebContentsModalDialogHost(web_contents);
   views::Widget* host_widget =
       views::Widget::GetWidgetForNativeView(dialog_host->GetHostView());
   auto size = widget->GetRootView()->GetPreferredSize();
@@ -57,7 +57,7 @@ void UpdateDialogPosition(views::Widget* widget,
 
   // Adjust the dialog bound to ensure it remains visible on the display.
   const gfx::Rect display_work_area =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestView(dialog_host->GetHostView())
           .work_area();
   if (!display_work_area.Contains(dialog_screen_bounds)) {
@@ -95,8 +95,12 @@ namespace commerce {
 
 DialogArgs::DialogArgs(std::vector<GURL> urls,
                        std::string name,
+                       std::string set_id,
                        bool in_new_tab)
-    : urls(std::move(urls)), name(std::move(name)), in_new_tab(in_new_tab) {}
+    : urls(std::move(urls)),
+      name(std::move(name)),
+      set_id(std::move(set_id)),
+      in_new_tab(in_new_tab) {}
 DialogArgs::~DialogArgs() = default;
 DialogArgs::DialogArgs(const DialogArgs&) = default;
 DialogArgs& DialogArgs::operator=(const DialogArgs&) = default;
@@ -104,11 +108,12 @@ DialogArgs& DialogArgs::operator=(const DialogArgs&) = default;
 base::Value::Dict DialogArgs::ToValue() {
   base::Value::Dict dialog_args_value;
   base::Value::List product_spec_urls;
-  for (auto url : urls) {
+  for (const auto& url : urls) {
     product_spec_urls.Append(url.spec());
   }
   dialog_args_value.Set(kDialogArgsName, std::move(name));
   dialog_args_value.Set(kDialogArgsUrls, std::move(product_spec_urls));
+  dialog_args_value.Set(kDialogArgsSetId, std::move(set_id));
   dialog_args_value.Set(kDialogArgsInNewTab, in_new_tab);
   return dialog_args_value;
 }
@@ -140,6 +145,16 @@ void ProductSpecificationsDisclosureDialog::ShowDialog(
   UpdateDialogPosition(current_instance_->dialog_widget_, web_contents);
 }
 
+// static
+bool ProductSpecificationsDisclosureDialog::CloseDialog() {
+  if (current_instance_) {
+    current_instance_->dialog_widget_->Close();
+    current_instance_ = nullptr;
+    return true;
+  }
+  return false;
+}
+
 ProductSpecificationsDisclosureDialog::ProductSpecificationsDisclosureDialog(
     content::WebContents* contents,
     DialogArgs dialog_args) {
@@ -152,7 +167,7 @@ ProductSpecificationsDisclosureDialog::ProductSpecificationsDisclosureDialog(
   set_dialog_size(kDialogSize);
   set_can_close(true);
   set_allow_default_context_menu(false);
-  set_dialog_modal_type(ui::ModalType::MODAL_TYPE_CHILD);
+  set_dialog_modal_type(ui::mojom::ModalType::kNone);
   set_dialog_args(base::WriteJson(dialog_args.ToValue()).value());
 }
 

@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.safety_check;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -21,19 +21,18 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.password_check.PasswordCheck;
-import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
+import org.chromium.chrome.browser.password_manager.PasswordManagerBackendSupportHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelperJni;
+import org.chromium.chrome.browser.password_manager.PasswordManagerTestHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -46,6 +45,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
+import org.chromium.google_apis.gaia.GaiaId;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Collections;
@@ -68,15 +68,15 @@ public class SafetyCheckSettingsFragmentTest {
     private static final long H_TO_MS = 60 * MIN_TO_MS;
     private static final long DAY_TO_MS = 24 * H_TO_MS;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public SettingsActivityTestRule<SafetyCheckSettingsFragment> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(SafetyCheckSettingsFragment.class);
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
-    @Mock private PasswordCheck mPasswordCheck;
     @Mock private SyncService mSyncService;
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeNativeMock;
+    @Mock private PasswordManagerBackendSupportHelper mBackendSupportHelperMock;
     @Mock private PasswordManagerHelper.Natives mPasswordManagerHelperNativeMock;
 
     private PropertyModel mSafetyCheckModel;
@@ -85,12 +85,16 @@ public class SafetyCheckSettingsFragmentTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        PasswordCheckFactory.setPasswordCheckForTesting(mPasswordCheck);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
-        mJniMocker.mock(
-                PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeNativeMock);
-        mJniMocker.mock(PasswordManagerHelperJni.TEST_HOOKS, mPasswordManagerHelperNativeMock);
+        PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeNativeMock);
+        PasswordManagerHelperJni.setInstanceForTesting(mPasswordManagerHelperNativeMock);
+        PasswordManagerBackendSupportHelper.setInstanceForTesting(mBackendSupportHelperMock);
+        // Make sure that if requests to the UPM backends are made, they hit the fake backends.
+        PasswordManagerTestHelper.setUpGmsCoreFakeBackends();
+
+        when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
+        // The password manger is always available in Safety Check after login db deprecation.
+        configurePasswordManagerUtilBridge();
     }
 
     @Test
@@ -164,26 +168,28 @@ public class SafetyCheckSettingsFragmentTest {
 
     private void configureMockSyncService(boolean isPasswordSyncEnabled) {
         when(mSyncService.isSyncFeatureEnabled()).thenReturn(true);
-        Set<Integer> selectedTypes =
+        Set<Integer> selectedTypes;
+        selectedTypes =
                 isPasswordSyncEnabled
-                        ? CollectionUtil.newHashSet(UserSelectableType.PASSWORDS)
+                        ? Set.of(UserSelectableType.PASSWORDS)
                         : Collections.EMPTY_SET;
         when(mSyncService.getSelectedTypes()).thenReturn(selectedTypes);
         when(mSyncService.getAccountInfo())
-                .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId(TEST_EMAIL_ADDRESS, "0"));
+                .thenReturn(
+                        CoreAccountInfo.createFromEmailAndGaiaId(
+                                TEST_EMAIL_ADDRESS, new GaiaId("0")));
         when(mPasswordManagerHelperNativeMock.hasChosenToSyncPasswords(mSyncService))
                 .thenReturn(isPasswordSyncEnabled);
     }
 
-    private void configurePasswordManagerUtilBridge(boolean usesSplitStores) {
-        when(mPasswordManagerUtilBridgeNativeMock.usesSplitStoresAndUPMForLocal(any()))
-                .thenReturn(usesSplitStores);
+    private void configurePasswordManagerUtilBridge() {
+        when(mPasswordManagerUtilBridgeNativeMock.isPasswordManagerAvailable(true))
+                .thenReturn(true);
     }
 
-    private void verifyNullStateDisplayedCorrectly(
-            boolean isPasswordSyncEnabled, boolean usesSplitStores) {
+    private void verifyNullStateDisplayedCorrectly(boolean isPasswordSyncEnabled) {
         configureMockSyncService(isPasswordSyncEnabled);
-        configurePasswordManagerUtilBridge(usesSplitStores);
+        configurePasswordManagerUtilBridge();
         createFragmentAndModel();
         // Binds the account model.
         ThreadUtils.runOnUiThreadBlocking(
@@ -200,7 +206,7 @@ public class SafetyCheckSettingsFragmentTest {
         Preference safeBrowsing = mFragment.findPreference(SAFE_BROWSING);
         Preference updates = mFragment.findPreference(UPDATES);
 
-        assertEquals(!isPasswordSyncEnabled || usesSplitStores, passwordsLocal.isVisible());
+        assertTrue(passwordsLocal.isVisible());
         assertEquals(isPasswordSyncEnabled, passwordsAccount.isVisible());
         assertEquals("", passwordsLocal.getSummary());
         assertEquals("", passwordsAccount.getSummary());
@@ -210,36 +216,21 @@ public class SafetyCheckSettingsFragmentTest {
 
     @Test
     @MediumTest
-    public void testNullStateDisplayedCorrectlySyncOffNoUsingSplitStores() {
-        verifyNullStateDisplayedCorrectly(
-                /* isPasswordSyncEnabled= */ false, /* usesSplitStores= */ false);
+    public void testNullStateDisplayedCorrectlySyncOff() {
+        verifyNullStateDisplayedCorrectly(/* isPasswordSyncEnabled= */ false);
     }
 
     @Test
     @MediumTest
-    public void testNullStateDisplayedCorrectlySyncOffUsingSplitStores() {
-        verifyNullStateDisplayedCorrectly(
-                /* isPasswordSyncEnabled= */ false, /* usesSplitStores= */ true);
-    }
-
-    @Test
-    @MediumTest
-    public void testNullStateDisplayedCorrectlySyncOnNoUsingSplitStores() {
-        verifyNullStateDisplayedCorrectly(
-                /* isPasswordSyncEnabled= */ true, /* usesSplitStores= */ false);
-    }
-
-    @Test
-    @MediumTest
-    public void testNullStateDisplayedCorrectlySyncOnUsingSplitStores() {
-        verifyNullStateDisplayedCorrectly(true, true);
+    public void testNullStateDisplayedCorrectlySyncOn() {
+        verifyNullStateDisplayedCorrectly(true);
     }
 
     @Test
     @MediumTest
     public void testPasswordsCheckTitlesAreCorrect() {
         configureMockSyncService(true);
-        configurePasswordManagerUtilBridge(true);
+        configurePasswordManagerUtilBridge();
         mSettingsActivityTestRule.startSettingsActivity();
         mFragment = (SafetyCheckSettingsFragment) mSettingsActivityTestRule.getFragment();
 

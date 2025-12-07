@@ -12,12 +12,15 @@
 #include "ui/aura/window_delegate.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/linux/linux_ui.h"
+#include "ui/ozone/public/ozone_platform.h"
 #include "ui/platform_window/wm/wm_move_resize_handler.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
 #include "ui/views/widget/native_widget_aura.h"
@@ -39,6 +42,23 @@ WindowEventFilterLinux::~WindowEventFilterLinux() {
 void WindowEventFilterLinux::HandleLocatedEventWithHitTest(
     int hit_test,
     ui::LocatedEvent* event) {
+  if (event->type() == ui::EventType::kMouseDragged &&
+      begin_drag_location_.has_value()) {
+    auto* linux_theme_ui = ui::LinuxUi::instance();
+    int threshold = linux_theme_ui ? linux_theme_ui->GetWindowDragThresholdPx()
+                                   : ui::LinuxUi::kDefaultWindowDragThreshold;
+
+    gfx::Vector2d delta =
+        event->AsMouseEvent()->location() - begin_drag_location_.value();
+    if (abs(delta.x()) >= threshold || abs(delta.y()) >= threshold) {
+      begin_drag_location_.reset();
+      MaybeDispatchHostWindowDragMovement(HTCAPTION, event);
+    }
+    return;
+  }
+
+  begin_drag_location_.reset();
+
   if (event->type() != ui::EventType::kMousePressed) {
     return;
   }
@@ -59,7 +79,7 @@ bool WindowEventFilterLinux::HandleMouseEventWithHitTest(
     int hit_test,
     ui::MouseEvent* event) {
   int previous_click_component = HTNOWHERE;
-  if (event->IsLeftMouseButton()) {
+  if (event->changed_button_flags() & ui::EF_LEFT_MOUSE_BUTTON) {
     previous_click_component = click_component_;
     click_component_ = hit_test;
   }
@@ -69,9 +89,22 @@ bool WindowEventFilterLinux::HandleMouseEventWithHitTest(
     return true;
   }
 
-  if (hit_test == HTMAXBUTTON) {
-    OnClickedMaximizeButton(event);
-    return true;
+  if (event->changed_button_flags() & ui::EF_RIGHT_MOUSE_BUTTON) {
+    switch (hit_test) {
+      case HTMINBUTTON:
+      case HTMAXBUTTON:
+      case HTCLOSE:
+        if (ui::OzonePlatform::GetInstance()
+                ->GetPlatformRuntimeProperties()
+                .supports_server_window_menus) {
+          desktop_window_tree_host_->ShowWindowControlsMenu(
+              display::Screen::Get()->GetCursorScreenPoint());
+          return true;
+        }
+        break;
+      default:
+        break;
+    }
   }
 
   return false;
@@ -82,13 +115,13 @@ void WindowEventFilterLinux::OnClickedCaption(ui::MouseEvent* event,
   ui::LinuxUi::WindowFrameActionSource action_type;
   ui::LinuxUi::WindowFrameAction default_action;
 
-  if (event->IsRightMouseButton()) {
+  if (event->changed_button_flags() & ui::EF_RIGHT_MOUSE_BUTTON) {
     action_type = ui::LinuxUi::WindowFrameActionSource::kRightClick;
     default_action = ui::LinuxUi::WindowFrameAction::kMenu;
-  } else if (event->IsMiddleMouseButton()) {
+  } else if (event->changed_button_flags() & ui::EF_MIDDLE_MOUSE_BUTTON) {
     action_type = ui::LinuxUi::WindowFrameActionSource::kMiddleClick;
     default_action = ui::LinuxUi::WindowFrameAction::kNone;
-  } else if (event->IsLeftMouseButton() &&
+  } else if (event->changed_button_flags() & ui::EF_LEFT_MOUSE_BUTTON &&
              event->flags() & ui::EF_IS_DOUBLE_CLICK) {
     click_component_ = HTNOWHERE;
     if (previous_click_component == HTCAPTION) {
@@ -97,8 +130,10 @@ void WindowEventFilterLinux::OnClickedCaption(ui::MouseEvent* event,
     } else {
       return;
     }
+  } else if (event->changed_button_flags() & ui::EF_LEFT_MOUSE_BUTTON) {
+    begin_drag_location_ = event->location();
+    return;
   } else {
-    MaybeDispatchHostWindowDragMovement(HTCAPTION, event);
     return;
   }
 
@@ -125,11 +160,13 @@ void WindowEventFilterLinux::OnClickedCaption(ui::MouseEvent* event,
     case ui::LinuxUi::WindowFrameAction::kMenu:
       views::Widget* widget =
           views::Widget::GetWidgetForNativeView(content_window);
-      if (!widget)
+      if (!widget) {
         break;
+      }
       views::View* view = widget->GetContentsView();
-      if (!view || !view->context_menu_controller())
+      if (!view || !view->context_menu_controller()) {
         break;
+      }
       // Controller requires locations to be in DIP, while |this| receives the
       // location in px.
       gfx::PointF location = desktop_window_tree_host_->GetRootTransform()
@@ -137,32 +174,10 @@ void WindowEventFilterLinux::OnClickedCaption(ui::MouseEvent* event,
                                  .value_or(event->location_f());
       gfx::Point location_in_screen = gfx::ToRoundedPoint(location);
       views::View::ConvertPointToScreen(view, &location_in_screen);
-      view->ShowContextMenu(location_in_screen, ui::MENU_SOURCE_MOUSE);
+      view->ShowContextMenu(location_in_screen,
+                            ui::mojom::MenuSourceType::kMouse);
       event->SetHandled();
       break;
-  }
-}
-
-void WindowEventFilterLinux::OnClickedMaximizeButton(ui::MouseEvent* event) {
-  auto* content_window = desktop_window_tree_host_->GetContentWindow();
-  views::Widget* widget = views::Widget::GetWidgetForNativeView(content_window);
-  if (!widget)
-    return;
-
-  gfx::Rect display_work_area = display::Screen::GetScreen()
-                                    ->GetDisplayNearestWindow(content_window)
-                                    .work_area();
-  gfx::Rect bounds = widget->GetWindowBoundsInScreen();
-  if (event->IsMiddleMouseButton()) {
-    bounds.set_y(display_work_area.y());
-    bounds.set_height(display_work_area.height());
-    widget->SetBounds(bounds);
-    event->StopPropagation();
-  } else if (event->IsRightMouseButton()) {
-    bounds.set_x(display_work_area.x());
-    bounds.set_width(display_work_area.width());
-    widget->SetBounds(bounds);
-    event->StopPropagation();
   }
 }
 
@@ -172,10 +187,11 @@ void WindowEventFilterLinux::MaybeToggleMaximizedState(aura::Window* window) {
     return;
   }
 
-  if (desktop_window_tree_host_->IsMaximized())
+  if (desktop_window_tree_host_->IsMaximized()) {
     desktop_window_tree_host_->Restore();
-  else
+  } else {
     desktop_window_tree_host_->Maximize();
+  }
 }
 
 void WindowEventFilterLinux::LowerWindow() {
@@ -187,14 +203,17 @@ void WindowEventFilterLinux::LowerWindow() {
 void WindowEventFilterLinux::MaybeDispatchHostWindowDragMovement(
     int hittest,
     ui::LocatedEvent* event) {
-  if (!event->IsMouseEvent() && !event->IsGestureEvent())
+  if (!event->IsMouseEvent() && !event->IsGestureEvent()) {
     return;
+  }
 
-  if (event->IsMouseEvent() && !event->AsMouseEvent()->IsLeftMouseButton())
+  if (event->IsMouseEvent() && !event->AsMouseEvent()->IsLeftMouseButton()) {
     return;
+  }
 
-  if (!handler_ || !ui::CanPerformDragOrResize(hittest))
+  if (!handler_ || !ui::CanPerformDragOrResize(hittest)) {
     return;
+  }
 
   // Some platforms (eg X11) may require last pointer location not in the
   // local surface coordinates, but rather in the screen coordinates for
@@ -209,8 +228,9 @@ void WindowEventFilterLinux::MaybeDispatchHostWindowDragMovement(
   // it'd prevent the Gesture{Provider,Detector} machirery to get triggered,
   // breaking gestures including tapping, double tapping, show press and
   // long press.
-  if (event->IsMouseEvent())
+  if (event->IsMouseEvent()) {
     event->StopPropagation();
+  }
 }
 
 void WindowEventFilterLinux::OnGestureEvent(ui::GestureEvent* event) {

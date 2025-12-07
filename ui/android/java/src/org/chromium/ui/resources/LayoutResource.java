@@ -7,9 +7,11 @@ package org.chromium.ui.resources;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.resources.statics.NinePatchData;
 
 /** A resource that provides sizing information for layouts. */
+@NullMarked
 public class LayoutResource {
     private final RectF mPadding;
     private final RectF mBitmapSize;

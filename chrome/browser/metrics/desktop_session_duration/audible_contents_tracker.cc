@@ -7,6 +7,7 @@
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 
@@ -15,8 +16,11 @@ namespace metrics {
 AudibleContentsTracker::AudibleContentsTracker(Observer* observer)
     : observer_(observer) {
   BrowserList* browser_list = BrowserList::GetInstance();
-  for (Browser* browser : *browser_list)
-    browser->tab_strip_model()->AddObserver(this);
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this](BrowserWindowInterface* browser) {
+        browser->GetTabStripModel()->AddObserver(this);
+        return true;
+      });
   browser_list->AddObserver(this);
 }
 

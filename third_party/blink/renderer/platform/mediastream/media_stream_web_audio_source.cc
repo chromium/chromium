@@ -52,10 +52,10 @@ void MediaStreamWebAudioSource::ProvideInput(AudioBus* bus,
     return;
   }
 
-  // Wrap the AudioBus channel data using WebVector.
+  // Wrap the AudioBus channel data using std::vector.
   uint32_t n = bus->NumberOfChannels();
   if (web_audio_data_.size() != n)
-    web_audio_data_ = WebVector<float*>(static_cast<size_t>(n));
+    web_audio_data_ = std::vector<float*>(static_cast<size_t>(n));
 
   for (uint32_t i = 0; i < n; ++i)
     web_audio_data_[i] = bus->Channel(i)->MutableData();

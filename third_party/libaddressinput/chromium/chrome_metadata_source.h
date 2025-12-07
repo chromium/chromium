@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
@@ -56,7 +57,7 @@ class ChromeMetadataSource : public ::i18n::addressinput::Source {
   void Download(const std::string& key, const Callback& downloaded);
 
   void OnSimpleLoaderComplete(RequestList::iterator it,
-                              std::unique_ptr<std::string> response_body);
+                              std::optional<std::string> response_body);
 
   const std::string validation_data_url_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

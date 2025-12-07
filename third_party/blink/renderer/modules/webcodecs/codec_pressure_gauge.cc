@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/webcodecs/codec_pressure_gauge.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 #if !BUILDFLAG(IS_WIN)

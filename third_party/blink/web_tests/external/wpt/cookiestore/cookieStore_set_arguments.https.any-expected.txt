@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+Found 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] cookieStore.set does not add / to path that does not end with /
+  assert_equals: expected null but got object "[object Object]"
+[FAIL] cookieStore.set can modify a cookie set by document.cookie if document is defined
+  assert_equals: expected 1 but got 2
+[FAIL] cookieStore.set with whitespace at begining or end
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'set' on 'CookieStore': Cookie was malformed and could not be stored, due to problem(s) while parsing."
+Harness: the test ran to completion.
+

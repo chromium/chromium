@@ -6,7 +6,7 @@
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/test/ash_test_base.h"
+#include "chrome/test/base/chrome_ash_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/fake_message_center.h"
 
@@ -14,7 +14,7 @@ namespace ash {
 
 namespace {
 
-class DeprecationNotificationControllerTest : public AshTestBase {
+class DeprecationNotificationControllerTest : public ChromeAshTestBase {
  protected:
   DeprecationNotificationControllerTest() : controller_(&message_center_) {}
   DeprecationNotificationControllerTest(

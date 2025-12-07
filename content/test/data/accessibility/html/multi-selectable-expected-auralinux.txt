@@ -1,0 +1,24 @@
+[document web]
+++[combo box]
+++++[menu]
+++++++[menu item] name='Option1' selectable selected
+++++++[menu item] name='Option2' selectable
+++++++[menu item] name='Option3' selectable
+++[list box] multiselectable
+++++[list item] name='Option1' selectable selected
+++++[list item] name='Option2' selectable selected
+++++[list item] name='Option3' selectable
+++[list box] multiselectable
+++++[list item] name='Option1' selectable selected
+++++[list item] name='Option2' selectable selected
+++++[list item] name='Option3' selectable
+++[list box] multiselectable
+++++[list item] name='Red' selectable selected
+++++[list item] name='Orange' selectable selected
+++++[list item] name='Yellow' selectable
+++[section] label-for=[list box]
+++++[static] name='Available upgrades:'
+++[list box] name='Available upgrades:' multiselectable labelled-by=[section]
+++++[list item] name='" Leather seats "' selectable
+++++[list item] name='" Front seat warmers "' selectable
+++++[list item] name=' " Rear bucket seats "' selectable selected

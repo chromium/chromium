@@ -4,8 +4,6 @@
 
 #include "media/base/audio_decoder.h"
 
-#include "media/base/audio_buffer.h"
-
 namespace media {
 
 AudioDecoder::AudioDecoder() = default;

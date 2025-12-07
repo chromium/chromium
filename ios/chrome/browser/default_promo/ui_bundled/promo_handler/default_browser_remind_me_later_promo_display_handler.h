@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_DEFAULT_PROMO_UI_BUNDLED_PROMO_HANDLER_DEFAULT_BROWSER_REMIND_ME_LATER_PROMO_DISPLAY_HANDLER_H_
 #define IOS_CHROME_BROWSER_DEFAULT_PROMO_UI_BUNDLED_PROMO_HANDLER_DEFAULT_BROWSER_REMIND_ME_LATER_PROMO_DISPLAY_HANDLER_H_
 
-#import "ios/chrome/browser/ui/promos_manager/standard_promo_display_handler.h"
+#import "ios/chrome/browser/promos_manager/ui_bundled/standard_promo_display_handler.h"
 
 // Handler for displaying Default Browser Remind Me Later Promos. This handler
 // is called by the Promos Manager after the main default browser promo has been

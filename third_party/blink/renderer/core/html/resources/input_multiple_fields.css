@@ -18,8 +18,6 @@ input[type="week" i] {
     padding: 0;
     padding-inline-start: 1px;
     cursor: default;
-    /* NOTE: This can be removed once InputClipRulesCss is removed */
-    overflow: hidden;
 }
 
 input::-webkit-datetime-edit {

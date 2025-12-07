@@ -38,8 +38,8 @@
    MDCT implementation in FFMPEG, but has differences in signs, ordering
    and scaling in many places.
 */
-#ifndef __MDCT_MIPSR1_H__
-#define __MDCT_MIPSR1_H__
+#ifndef MDCT_MIPSR1_H__
+#define MDCT_MIPSR1_H__
 
 #ifndef SKIP_CONFIG_H
 #ifdef HAVE_CONFIG_H
@@ -285,4 +285,4 @@ void clt_mdct_backward(const mdct_lookup *l, kiss_fft_scalar *in, kiss_fft_scala
       }
    }
 }
-#endif /* __MDCT_MIPSR1_H__ */
+#endif /* MDCT_MIPSR1_H__ */

@@ -18,11 +18,6 @@ mojom_component("mojom") {
     "//services/metrics/public/mojom",
   ]
 
-  enabled_features = []
-  if (is_linux || is_chromeos || is_android) {
-    enabled_features += [ "private_swap_info" ]
-  }
-
   cpp_typemaps = [
     {
       types = [

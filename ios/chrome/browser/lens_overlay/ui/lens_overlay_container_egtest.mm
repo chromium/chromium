@@ -21,36 +21,10 @@
   return config;
 }
 
-- (void)testShowAndHideLensOverlayContainer {
-  [ChromeEarlGrey loadURL:GURL("about:blank")];
-
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:chrome_test_util::TabShareButton()];
-
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
-      performAction:grey_tap()];
-
-  id<GREYMatcher> lensOverlayContainerMatcher =
-      grey_accessibilityID(kLenscontainerViewAccessibilityIdentifier);
-
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:lensOverlayContainerMatcher];
-
-  id<GREYMatcher> closeButtonMatcher = grey_accessibilityID(
-      kLenscontainerViewCloseButtonAccessibilityIdentifier);
-
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:closeButtonMatcher];
-
-  [[EarlGrey selectElementWithMatcher:closeButtonMatcher]
-      performAction:grey_tap()];
-
-  [ChromeEarlGrey
-      waitForUIElementToDisappearWithMatcher:lensOverlayContainerMatcher];
-}
-
 // Tests that when pressing the escape keyboard button, closes the overlay
 // container.
 - (void)testPressEscapeHidesLensOverlayContainer {
+  EARL_GREY_TEST_DISABLED(@"crbug.com/359498644");
   [ChromeEarlGrey loadURL:GURL("about:blank")];
 
   [ChromeEarlGrey

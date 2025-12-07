@@ -92,6 +92,11 @@ struct StructTraits<
     return profile.gpu_supported_pixel_formats;
   }
 
+  static bool supports_gpu_shared_images(
+      const media::VideoEncodeAccelerator::SupportedProfile& profile) {
+    return profile.supports_gpu_shared_images;
+  }
+
   static bool Read(
       media::mojom::VideoEncodeAcceleratorSupportedProfileDataView data,
       media::VideoEncodeAccelerator::SupportedProfile* out);
@@ -140,6 +145,17 @@ class StructTraits<media::mojom::VideoEncodeOptionsDataView,
     return options.quantizer.value_or(-1);
   }
 
+  // Return the optional update_buffer.
+  static std::optional<uint8_t> update_buffer(
+      const media::VideoEncoder::EncodeOptions& options) {
+    return options.update_buffer;
+  }
+
+  static std::vector<uint8_t> reference_buffers(
+      const media::VideoEncoder::EncodeOptions& options) {
+    return {options.reference_buffers.begin(), options.reference_buffers.end()};
+  }
+
   static bool Read(media::mojom::VideoEncodeOptionsDataView data,
                    media::VideoEncoder::EncodeOptions* out_options);
 };
@@ -157,17 +173,12 @@ struct UnionTraits<media::mojom::OptionalMetadataDataView,
       return media::mojom::OptionalMetadataDataView::Tag::kVp8;
     } else if (metadata.vp9) {
       return media::mojom::OptionalMetadataDataView::Tag::kVp9;
-    } else if (metadata.av1) {
-      return media::mojom::OptionalMetadataDataView::Tag::kAv1;
-    } else if (metadata.h265) {
-      return media::mojom::OptionalMetadataDataView::Tag::kH265;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   static bool IsNull(const media::BitstreamBufferMetadata& metadata) {
-    return !metadata.drop && !metadata.h264 && !metadata.vp8 && !metadata.vp9 &&
-           !metadata.av1 && !metadata.h265;
+    return !metadata.drop && !metadata.h264 && !metadata.vp8 && !metadata.vp9;
   }
 
   static void SetToNull(media::BitstreamBufferMetadata* metadata) {
@@ -175,8 +186,6 @@ struct UnionTraits<media::mojom::OptionalMetadataDataView,
     metadata->h264.reset();
     metadata->vp8.reset();
     metadata->vp9.reset();
-    metadata->av1.reset();
-    metadata->h265.reset();
   }
 
   static const media::DropFrameMetadata& drop(
@@ -196,16 +205,6 @@ struct UnionTraits<media::mojom::OptionalMetadataDataView,
   static const media::Vp9Metadata& vp9(
       const media::BitstreamBufferMetadata& metadata) {
     return *metadata.vp9;
-  }
-
-  static const media::Av1Metadata& av1(
-      const media::BitstreamBufferMetadata& metadata) {
-    return *metadata.av1;
-  }
-
-  static const media::H265Metadata& h265(
-      const media::BitstreamBufferMetadata& metadata) {
-    return *metadata.h265;
   }
 
   static bool Read(media::mojom::OptionalMetadataDataView data,
@@ -231,6 +230,10 @@ class StructTraits<media::mojom::BitstreamBufferMetadataDataView,
   static const media::BitstreamBufferMetadata& optional_metadata(
       const media::BitstreamBufferMetadata& bbm) {
     return bbm;
+  }
+  static std::optional<media::SVCGenericMetadata> svc_generic(
+      const media::BitstreamBufferMetadata& bbm) {
+    return bbm.svc_generic;
   }
   static std::optional<gfx::Size> encoded_size(
       const media::BitstreamBufferMetadata& bbm) {
@@ -271,17 +274,6 @@ class StructTraits<media::mojom::H264MetadataDataView, media::H264Metadata> {
 
   static bool Read(media::mojom::H264MetadataDataView data,
                    media::H264Metadata* out_metadata);
-};
-
-template <>
-class StructTraits<media::mojom::H265MetadataDataView, media::H265Metadata> {
- public:
-  static uint8_t temporal_idx(const media::H265Metadata& h265) {
-    return h265.temporal_idx;
-  }
-
-  static bool Read(media::mojom::H265MetadataDataView data,
-                   media::H265Metadata* out_metadata);
 };
 
 template <>
@@ -348,14 +340,28 @@ class StructTraits<media::mojom::Vp9MetadataDataView, media::Vp9Metadata> {
 };
 
 template <>
-class StructTraits<media::mojom::Av1MetadataDataView, media::Av1Metadata> {
+class StructTraits<media::mojom::SVCGenericMetadataDataView,
+                   media::SVCGenericMetadata> {
  public:
-  static uint8_t temporal_idx(const media::Av1Metadata& av1) {
-    return av1.temporal_idx;
+  static bool follow_svc_spec(const media::SVCGenericMetadata& svc_generic) {
+    return svc_generic.follow_svc_spec;
   }
-
-  static bool Read(media::mojom::Av1MetadataDataView data,
-                   media::Av1Metadata* out_metadata);
+  static uint8_t temporal_idx(const media::SVCGenericMetadata& svc_generic) {
+    return svc_generic.temporal_idx;
+  }
+  static uint8_t spatial_idx(const media::SVCGenericMetadata& svc_generic) {
+    return svc_generic.spatial_idx;
+  }
+  static std::optional<uint16_t> reference_flags(
+      const media::SVCGenericMetadata& svc_generic) {
+    return svc_generic.reference_flags;
+  }
+  static std::optional<uint16_t> refresh_flags(
+      const media::SVCGenericMetadata& svc_generic) {
+    return svc_generic.refresh_flags;
+  }
+  static bool Read(media::mojom::SVCGenericMetadataDataView data,
+                   media::SVCGenericMetadata* out_metadata);
 };
 
 template <>
@@ -551,6 +557,11 @@ struct StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
   static media::VideoEncodeAccelerator::Config::EncoderType
   required_encoder_type(const media::VideoEncodeAccelerator::Config& input) {
     return input.required_encoder_type;
+  }
+
+  static bool manual_reference_buffer_control(
+      const media::VideoEncodeAccelerator::Config& input) {
+    return input.manual_reference_buffer_control;
   }
 
   static bool Read(media::mojom::VideoEncodeAcceleratorConfigDataView input,

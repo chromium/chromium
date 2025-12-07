@@ -5,32 +5,37 @@
 package org.chromium.chrome.browser.ui;
 
 import android.content.Context;
+import android.view.View;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordinator.PriceInsightsDelegate;
-import org.chromium.chrome.browser.price_tracking.CurrentTabPriceTrackingStateSupplier;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.commerce.core.ShoppingService.PriceInsightsInfo;
 
+@NullMarked
 public class PriceInsightsDelegateImpl implements PriceInsightsDelegate {
 
     private final Context mContext;
-    private final CurrentTabPriceTrackingStateSupplier mCurrentTabPriceTrackingStateSupplier;
+    private final ObservableSupplier<Boolean> mPriceTrackingStateSupplier;
 
     public PriceInsightsDelegateImpl(
-            Context context,
-            CurrentTabPriceTrackingStateSupplier currentTabPriceTrackingStateSupplier) {
+            Context context, ObservableSupplier<Boolean> priceTrackingStateSupplier) {
         mContext = context;
-        mCurrentTabPriceTrackingStateSupplier = currentTabPriceTrackingStateSupplier;
+        mPriceTrackingStateSupplier = priceTrackingStateSupplier;
     }
 
     @Override
-    public Boolean isTabPriceTracked(Tab tab) {
-        return mCurrentTabPriceTrackingStateSupplier.get();
+    public ObservableSupplier<Boolean> getPriceTrackingStateSupplier(Tab tab) {
+        return mPriceTrackingStateSupplier;
     }
 
     @Override
@@ -47,6 +52,11 @@ public class PriceInsightsDelegateImpl implements PriceInsightsDelegate {
                         : BookmarkUtils.addBookmarkWithoutShowingSaveFlow(
                                 mContext, tab, bookmarkModel);
 
+        if (bookmarkId == null) {
+            callback.onResult(false);
+            return;
+        }
+
         Callback<Boolean> wrapperCallback =
                 (success) -> {
                     callback.onResult(success);
@@ -58,5 +68,10 @@ public class PriceInsightsDelegateImpl implements PriceInsightsDelegate {
 
         PriceTrackingUtils.setPriceTrackingStateForBookmark(
                 tab.getProfile(), bookmarkId.getId(), enabled, wrapperCallback);
+    }
+
+    @Override
+    public @Nullable View getPriceHistoryChartForPriceInsightsInfo(PriceInsightsInfo info) {
+        return AppHooks.get().getLineChartForPriceInsightsInfo(mContext, info);
     }
 }

@@ -5,27 +5,23 @@
 #ifndef IOS_CHROME_BROWSER_TRANSLATE_MODEL_TRANSLATE_RANKER_FACTORY_H_
 #define IOS_CHROME_BROWSER_TRANSLATE_MODEL_TRANSLATE_RANKER_FACTORY_H_
 
-#include <memory>
+#import <memory>
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "base/no_destructor.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
-class ChromeBrowserState;
+class ProfileIOS;
 
 namespace translate {
 
 class TranslateRanker;
 
 // TranslateRankerFactory is a way to associate a TranslateRanker instance to
-// a BrowserState.
-class TranslateRankerFactory : public BrowserStateKeyedServiceFactory {
+// a Profile.
+class TranslateRankerFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  static translate::TranslateRanker* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  static translate::TranslateRanker* GetForProfile(ProfileIOS* profile);
   static TranslateRankerFactory* GetInstance();
-
-  TranslateRankerFactory(const TranslateRankerFactory&) = delete;
-  TranslateRankerFactory& operator=(const TranslateRankerFactory&) = delete;
 
  private:
   friend class base::NoDestructor<TranslateRankerFactory>;
@@ -33,11 +29,9 @@ class TranslateRankerFactory : public BrowserStateKeyedServiceFactory {
   TranslateRankerFactory();
   ~TranslateRankerFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace translate

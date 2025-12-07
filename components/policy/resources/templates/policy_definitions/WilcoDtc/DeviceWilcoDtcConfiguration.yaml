@@ -14,7 +14,6 @@ features:
 max_size: 1000000
 owners:
 - bkersting@google.com
-- kerker@chromium.org
 - chungsheng@google.com
 - byronlee@chromium.org
 - chromeos-oem-services@google.com

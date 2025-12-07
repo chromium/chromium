@@ -8,12 +8,25 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {PluginController, PluginControllerEventType} from '../controller.js';
 
-import {getTemplate} from './viewer_thumbnail_bar.html.js';
 import type {ViewerThumbnailElement} from './viewer_thumbnail.js';
+import {getCss} from './viewer_thumbnail_bar.css.js';
+import {getHtml} from './viewer_thumbnail_bar.html.js';
+
+// <if expr="enable_pdf_ink2">
+export interface Ink2ThumbnailData {
+  type: string;
+  pageNumber: number;
+  isInk: boolean;
+  imageData: ArrayBuffer;
+  width: number;
+  height: number;
+}
+// </if>
 
 export interface ViewerThumbnailBarElement {
   $: {
@@ -21,39 +34,33 @@ export interface ViewerThumbnailBarElement {
   };
 }
 
-export class ViewerThumbnailBarElement extends PolymerElement {
+export class ViewerThumbnailBarElement extends CrLitElement {
   static get is() {
     return 'viewer-thumbnail-bar';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      activePage: {
-        type: Number,
-        observer: 'activePageChanged_',
-      },
-
-      clockwiseRotations: Number,
-      docLength: Number,
-      isPluginActive_: Boolean,
-
-      pageNumbers_: {
-        type: Array,
-        computed: 'computePageNumbers_(docLength)',
-      },
+      activePage: {type: Number},
+      clockwiseRotations: {type: Number},
+      docLength: {type: Number},
+      isPluginActive_: {type: Boolean},
     };
   }
 
-  activePage: number;
-  clockwiseRotations: number;
-  docLength: number;
-  private isPluginActive_: boolean;
-  private pageNumbers_: number[];
-  private intersectionObserver_: IntersectionObserver;
+  accessor activePage: number = 0;
+  accessor clockwiseRotations: number = 0;
+  accessor docLength: number = 0;
+  protected accessor isPluginActive_: boolean = false;
+  private intersectionObserver_: IntersectionObserver|null = null;
   private pluginController_: PluginController = PluginController.getInstance();
   private tracker_: EventTracker = new EventTracker();
 
@@ -72,11 +79,16 @@ export class ViewerThumbnailBarElement extends PolymerElement {
         this.pluginController_.getEventTarget(),
         PluginControllerEventType.IS_ACTIVE_CHANGED,
         (e: CustomEvent<boolean>) => this.isPluginActive_ = e.detail);
+
+    // <if expr="enable_pdf_ink2">
+    this.tracker_.add(
+        this.pluginController_.getEventTarget(),
+        PluginControllerEventType.UPDATE_INK_THUMBNAIL,
+        this.handleUpdateInkThumbnail_.bind(this));
+    // </if>
   }
 
-  override ready() {
-    super.ready();
-
+  override firstUpdated() {
     this.addEventListener('focus', this.onFocus_);
     this.addEventListener('keydown', this.onKeydown_);
 
@@ -101,7 +113,8 @@ export class ViewerThumbnailBarElement extends PolymerElement {
               return;
             }
 
-            this.pluginController_.requestThumbnail(thumbnail.pageNumber)
+            // Convert to zero-based page index.
+            this.pluginController_.requestThumbnail(thumbnail.pageNumber - 1)
                 .then(response => {
                   const array = new Uint8ClampedArray(response.imageData);
                   const imageData = new ImageData(array, response.width);
@@ -120,13 +133,22 @@ export class ViewerThumbnailBarElement extends PolymerElement {
     FocusOutlineManager.forDocument(document);
   }
 
-  /**
-   * Changes the focus to the thumbnail of the new active page if the focus was
-   * already on a thumbnail.
-   */
-  private activePageChanged_() {
-    if (this.shadowRoot!.activeElement) {
-      this.getThumbnailForPage(this.activePage)!.focusAndScroll();
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('activePage')) {
+      if (this.shadowRoot.activeElement) {
+        // Changes the focus to the thumbnail of the new active page if the
+        // focus was already on a thumbnail.
+        this.getThumbnailForPage(this.activePage)!.focusAndScroll();
+      }
+    }
+
+    if (changedProperties.has('docLength')) {
+      assert(this.intersectionObserver_);
+      // If doc length changes, we render new thumbnails.
+      this.shadowRoot.querySelectorAll('viewer-thumbnail')
+          .forEach(thumbnail => this.intersectionObserver_!.observe(thumbnail));
     }
   }
 
@@ -140,28 +162,22 @@ export class ViewerThumbnailBarElement extends PolymerElement {
   }
 
   getThumbnailForPage(pageNumber: number): ViewerThumbnailElement|null {
-    return this.shadowRoot!.querySelector(
+    return this.shadowRoot.querySelector(
         `viewer-thumbnail:nth-child(${pageNumber})`);
   }
 
   /** @return The array of page numbers. */
-  private computePageNumbers_(): number[] {
+  protected computePageNumbers_(): number[] {
     return Array.from({length: this.docLength}, (_, i) => i + 1);
   }
 
-  private getAriaLabel_(pageNumber: number): string {
+  protected getAriaLabel_(pageNumber: number): string {
     return loadTimeData.getStringF('thumbnailPageAriaLabel', pageNumber);
   }
 
   /** @return Whether the page is the current page. */
-  private isActivePage_(page: number): boolean {
+  protected isActivePage_(page: number): boolean {
     return this.activePage === page;
-  }
-
-  private onDomChange_() {
-    this.shadowRoot!.querySelectorAll('viewer-thumbnail').forEach(thumbnail => {
-      this.intersectionObserver_.observe(thumbnail);
-    });
   }
 
   /** Forwards focus to a thumbnail when tabbing. */
@@ -175,7 +191,7 @@ export class ViewerThumbnailBarElement extends PolymerElement {
 
     // Change focus to the thumbnail of the active page.
     const activeThumbnail =
-        this.shadowRoot!.querySelector<ViewerThumbnailElement>(
+        this.shadowRoot.querySelector<ViewerThumbnailElement>(
             'viewer-thumbnail[is-active]');
     if (activeThumbnail) {
       activeThumbnail.focus();
@@ -183,7 +199,7 @@ export class ViewerThumbnailBarElement extends PolymerElement {
     }
 
     // Otherwise change to the first thumbnail, if there is one.
-    const firstThumbnail = this.shadowRoot!.querySelector('viewer-thumbnail');
+    const firstThumbnail = this.shadowRoot.querySelector('viewer-thumbnail');
     if (!firstThumbnail) {
       return;
     }
@@ -204,7 +220,7 @@ export class ViewerThumbnailBarElement extends PolymerElement {
         // On tab, first redirect focus to the last thumbnail to focus to the
         // element after the thumbnail bar from any thumbnail.
         const lastThumbnail =
-            this.shadowRoot!.querySelector<ViewerThumbnailElement>(
+            this.shadowRoot.querySelector<ViewerThumbnailElement>(
                 'viewer-thumbnail:last-of-type');
         assert(lastThumbnail);
         lastThumbnail.focus({preventScroll: true});
@@ -221,8 +237,26 @@ export class ViewerThumbnailBarElement extends PolymerElement {
         e.preventDefault();
         this.clickThumbnailForPage(this.activePage - 1);
         break;
+      default:
+        break;
     }
   }
+
+  // <if expr="enable_pdf_ink2">
+  private handleUpdateInkThumbnail_(e: CustomEvent<Ink2ThumbnailData>) {
+    const data = e.detail;
+    const thumbnail = this.getThumbnailForPage(data.pageNumber);
+    if (thumbnail && thumbnail.isPainted()) {
+      const array = new Uint8ClampedArray(data.imageData);
+      const imageData = new ImageData(array, data.width);
+      if (data.isInk) {
+        thumbnail.ink2Image = imageData;
+      } else {
+        thumbnail.image = imageData;
+      }
+    }
+  }
+  // </if>
 }
 
 declare global {

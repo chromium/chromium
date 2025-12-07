@@ -111,7 +111,7 @@ export class AsyncJobQueue {
                               .catch(
                                 () => {
                                   /* ignore error from previous job */
-                                }
+                                },
                               )
                               .then(() => this.handlePendingJobs());
       return {result};

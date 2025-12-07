@@ -26,6 +26,24 @@ declare_args() {
   # the extensions code will be included in the desktop android variant.
   #
   # TODO(https://crbug.com/356905053): Continue expanding the scope of
-  # enable_android_desktop_extensions.
+  # enable_desktop_android_extensions.
   enable_desktop_android_extensions = is_desktop_android
+}
+
+# Note: GN forbids relying on args from the same declare_args() block, so we
+# need this separate from the block above.
+declare_args() {
+  # A control for whether support for platform apps should be compiled into the
+  # browser.
+  # TODO(https://crbug.com/41407868): This doesn't belong here; extensions code
+  # shouldn't rely on platform apps at all. But at least this lets it be
+  # toggled / if-def'd.
+  enable_platform_apps = enable_extensions
+
+  # Whether the core extensions system is enabled. This prevents many callsites
+  # from needing blocks for
+  # `if (enable_extensions || enable_desktop_android_extensions)`, since the
+  # core handling in each of these implementations is similar.
+  enable_extensions_core =
+      enable_extensions || enable_desktop_android_extensions
 }

@@ -18,7 +18,7 @@ import '../icons.html.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrIconButtonElement} from '../cr_icon_button/cr_icon_button.js';
+import type {CrIconButtonElement} from '../cr_icon_button/cr_icon_button.js';
 
 import {getTemplate} from './cr_expand_button.html.js';
 
@@ -96,6 +96,8 @@ export class CrExpandButtonElement extends PolymerElement {
 
   expanded: boolean;
   disabled: boolean;
+  override ariaLabel: string;
+  override tabIndex: number;
   expandIcon: string;
   collapseIcon: string;
   expandTitle: string;

@@ -5,6 +5,7 @@
 #include "components/safe_search_api/safe_search/safe_search_url_checker_client.h"
 
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -40,7 +41,8 @@ std::string BuildRequestData(const std::string& api_key, const GURL& url) {
 // Parses a SafeSearch API |response| and stores the result in |is_porn|,
 // returns true on success. Otherwise, returns false and doesn't set |is_porn|.
 bool ParseResponse(const std::string& response, bool* is_porn) {
-  std::optional<base::Value> optional_value = base::JSONReader::Read(response);
+  std::optional<base::Value> optional_value =
+      base::JSONReader::Read(response, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!optional_value || !optional_value.value().is_dict()) {
     DLOG(WARNING) << "ParseResponse failed to parse global dictionary";
     return false;
@@ -127,7 +129,7 @@ void SafeSearchURLCheckerClient::CheckURL(const GURL& url,
 
 void SafeSearchURLCheckerClient::OnSimpleLoaderComplete(
     CheckList::iterator it,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   std::unique_ptr<Check> check = std::move(*it);
 
   checks_in_progress_.erase(it);

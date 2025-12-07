@@ -9,13 +9,14 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Shared stateless capture utility functions. */
+@NullMarked
 public class CaptureUtils {
     /** Creates a bitmap with the given size. */
     public static Bitmap createBitmap(int width, int height) {
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        bitmap.setHasAlpha(true);
-        return bitmap;
+        return Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888, /* hasAlpha= */ true);
     }
 
     /**

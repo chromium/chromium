@@ -16,6 +16,8 @@ class SecurityStateModelDelegate {
   virtual ~SecurityStateModelDelegate() = default;
   virtual security_state::SecurityLevel GetSecurityLevel(
       content::WebContents* web_contents) const = 0;
+  virtual security_state::MaliciousContentStatus GetMaliciousContentStatus(
+      content::WebContents* web_contents) const = 0;
 };
 
 #endif  // COMPONENTS_SECURITY_STATE_CONTENT_ANDROID_SECURITY_STATE_MODEL_DELEGATE_H_

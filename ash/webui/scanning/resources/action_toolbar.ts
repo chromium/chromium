@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import './scanning_shared.css.js';
-import './strings.m.js';
+import '/strings.m.js';
 import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';

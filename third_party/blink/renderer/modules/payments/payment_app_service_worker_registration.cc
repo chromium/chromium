@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/payments/payment_app_service_worker_registration.h"
 
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/modules/payments/payment_manager.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_registration.h"
@@ -26,7 +26,7 @@ bool AllowedToUsePaymentFeatures(ScriptState* script_state) {
 
   return execution_context->GetSecurityContext()
       .GetPermissionsPolicy()
-      ->IsFeatureEnabled(mojom::blink::PermissionsPolicyFeature::kPayment);
+      ->IsFeatureEnabled(network::mojom::PermissionsPolicyFeature::kPayment);
 }
 
 }  // namespace
@@ -38,13 +38,12 @@ PaymentAppServiceWorkerRegistration::~PaymentAppServiceWorkerRegistration() =
 PaymentAppServiceWorkerRegistration& PaymentAppServiceWorkerRegistration::From(
     ServiceWorkerRegistration& registration) {
   PaymentAppServiceWorkerRegistration* supplement =
-      Supplement<ServiceWorkerRegistration>::From<
-          PaymentAppServiceWorkerRegistration>(registration);
+      registration.GetPaymentAppServiceWorkerRegistration();
 
   if (!supplement) {
     supplement = MakeGarbageCollected<PaymentAppServiceWorkerRegistration>(
         &registration);
-    ProvideTo(registration, supplement);
+    registration.SetPaymentAppServiceWorkerRegistration(supplement);
   }
 
   return *supplement;
@@ -65,29 +64,26 @@ PaymentManager* PaymentAppServiceWorkerRegistration::paymentManager(
   if (!AllowedToUsePaymentFeatures(script_state)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
-        "Must be in a top-level browsing context or an iframe needs to specify allow=\"payment\" "
+        "Must be in a top-level browsing context or an iframe needs to specify "
+        "allow=\"payment\" "
         "explicitly");
     return nullptr;
   }
 
   if (!payment_manager_) {
     payment_manager_ =
-        MakeGarbageCollected<PaymentManager>(GetSupplementable());
+        MakeGarbageCollected<PaymentManager>(service_worker_registration_);
   }
   return payment_manager_.Get();
 }
 
 void PaymentAppServiceWorkerRegistration::Trace(Visitor* visitor) const {
   visitor->Trace(payment_manager_);
-  Supplement<ServiceWorkerRegistration>::Trace(visitor);
+  visitor->Trace(service_worker_registration_);
 }
 
 PaymentAppServiceWorkerRegistration::PaymentAppServiceWorkerRegistration(
     ServiceWorkerRegistration* registration)
-    : Supplement(*registration) {}
-
-// static
-const char PaymentAppServiceWorkerRegistration::kSupplementName[] =
-    "PaymentAppServiceWorkerRegistration";
+    : service_worker_registration_(*registration) {}
 
 }  // namespace blink

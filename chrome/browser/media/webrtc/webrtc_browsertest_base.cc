@@ -17,6 +17,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -239,9 +240,10 @@ void WebRtcTestBase::GetUserMediaReturnsFalseIfWaitIsTooLong(
           permissions::PermissionRequestManager::ACCEPT_ALL);
   permissions::PermissionRequestObserver observer(tab_contents);
   // Request user media: this will launch the media stream info bar or bubble.
-  EXPECT_EQ(
-      content::EvalJs(tab_contents, "doGetUserMedia(" + constraints + ");"),
-      "request-timedout");
+  constexpr char kTimeoutSeconds[] = "8";
+  EXPECT_EQ(content::EvalJs(tab_contents, "doGetUserMedia(" + constraints +
+                                              ", " + kTimeoutSeconds + ");"),
+            "request-timedout");
 }
 
 content::WebContents* WebRtcTestBase::OpenPageAndGetUserMediaInNewTab(
@@ -501,8 +503,8 @@ scoped_refptr<content::TestStatsReportDictionary>
 WebRtcTestBase::GetStatsReportDictionary(content::WebContents* tab) const {
   std::string result = ExecuteJavascript("getStatsReportDictionary()", tab);
   EXPECT_TRUE(base::StartsWith(result, "ok-", base::CompareCase::SENSITIVE));
-  std::optional<base::Value> parsed_json =
-      base::JSONReader::Read(result.substr(3));
+  std::optional<base::Value> parsed_json = base::JSONReader::Read(
+      result.substr(3), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   CHECK(parsed_json);
   base::Value::Dict* dictionary = parsed_json->GetIfDict();
   CHECK(dictionary);
@@ -538,7 +540,7 @@ void WebRtcTestBase::SetDefaultVideoCodec(content::WebContents* tab,
 
   EXPECT_EQ("ok", ExecuteJavascript(
                       "setDefaultVideoCodec('" + video_codec + "'," +
-                          (prefer_hw_codec ? "true" : "false") + "," +
+                          base::ToString(prefer_hw_codec) + "," +
                           (codec_profile.empty() ? "null"
                                                  : "'" + codec_profile + "'") +
                           ")",

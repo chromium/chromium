@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -18,17 +18,19 @@ class Navigator;
 
 // Low-level scheduling primitives for JS scheduler implementations.
 class CORE_EXPORT Scheduling : public ScriptWrappable,
-                               public Supplement<Navigator> {
+                               public GarbageCollectedMixin {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
   static Scheduling* scheduling(Navigator&);
   explicit Scheduling(Navigator&);
 
   bool isInputPending(const IsInputPendingOptions* options) const;
 
   void Trace(Visitor*) const override;
+
+ private:
+  Member<Navigator> navigator_;
 };
 
 }  // namespace blink

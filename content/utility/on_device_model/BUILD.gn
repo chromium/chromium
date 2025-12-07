@@ -1,0 +1,35 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//services/on_device_model/on_device_model.gni")
+
+source_set("on_device_model_sandbox_init") {
+  sources = [
+    "on_device_model_sandbox_init.cc",
+    "on_device_model_sandbox_init.h",
+  ]
+  deps = [
+    "//base",
+    "//services/on_device_model:on_device_model_service",
+  ]
+  defines = []
+  if (enable_ml_internal) {
+    deps += [ "//services/on_device_model/ml" ]
+    defines += [ "ENABLE_ML_INTERNAL" ]
+  }
+  if (is_linux || is_chromeos) {
+    deps += [
+      "//content/common",
+      "//gpu/config",
+      "//sandbox/policy",
+    ]
+  }
+  if (!is_fuchsia) {
+    deps += [
+      "//third_party/dawn/include/dawn:cpp_headers",
+      "//third_party/dawn/src/dawn:proc",
+      "//third_party/dawn/src/dawn/native",
+    ]
+  }
+}

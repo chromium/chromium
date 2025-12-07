@@ -8,6 +8,7 @@ import android.view.View.OnClickListener;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
@@ -17,6 +18,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Contains the properties that a pwa-universal-install {@link PropertyModel} can have. */
+@NullMarked
 public class PwaUniversalInstallProperties {
     /** View states of the PWA Restore Bottom Sheet. */
     @IntDef({

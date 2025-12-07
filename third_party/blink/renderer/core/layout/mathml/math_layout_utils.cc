@@ -135,14 +135,12 @@ bool IsValidMathMLScript(const BlockNode& node) {
     case MathScriptType::kMultiscripts:
       return IsValidMultiscript(node);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
 bool IsValidMathMLRadical(const BlockNode& node) {
-  auto* radical =
-      DynamicTo<MathMLRadicalElement>(node.GetDOMNode());
+  auto* radical = DynamicTo<MathMLRadicalElement>(node.GetDOMNode());
   return !radical->HasIndex() || InFlowChildCountIs(node, 2);
 }
 
@@ -166,7 +164,7 @@ RadicalVerticalParameters GetRadicalVerticalParameters(
   RadicalVerticalParameters parameters;
   bool has_display = HasDisplayStyle(style);
   float rule_thickness = RuleThicknessFallback(style);
-  const SimpleFontData* font_data = style.GetFont().PrimaryFont();
+  const SimpleFontData* font_data = style.GetFont()->PrimaryFont();
   float x_height = font_data ? font_data->GetFontMetrics().XHeight() : 0;
   parameters.rule_thickness = LayoutUnit(
       MathConstant(style,
@@ -195,14 +193,16 @@ RadicalVerticalParameters GetRadicalVerticalParameters(
 
 MinMaxSizes GetMinMaxSizesForVerticalStretchyOperator(
     const ComputedStyle& style,
-    UChar character) {
+    UChar character,
+    TextDirection direction) {
   // https://w3c.github.io/mathml-core/#dfn-preferred-inline-size-of-a-glyph-stretched-along-the-block-axis
-  const SimpleFontData* font_data = style.GetFont().PrimaryFont();
+  const SimpleFontData* font_data = style.GetFont()->PrimaryFont();
   MinMaxSizes sizes;
   if (!font_data)
     return sizes;
 
-  if (auto base_glyph = font_data->GlyphForCharacter(character)) {
+  if (auto base_glyph =
+          font_data->GlyphForMathCharacter(character, direction)) {
     sizes.Encompass(LayoutUnit(font_data->WidthForGlyph(base_glyph)));
 
     const HarfBuzzFace* harfbuzz_face =
@@ -248,11 +248,12 @@ bool IsOperatorWithSpecialShaping(const BlockNode& node) {
   // https://w3c.github.io/mathml-core/#layout-of-operators
   if (auto* element = DynamicTo<MathMLOperatorElement>(node.GetDOMNode())) {
     UChar32 base_code_point = element->GetTokenContent().code_point;
-    if (base_code_point == kNonCharacter ||
-        !node.Style().GetFont().PrimaryFont() ||
-        !node.Style().GetFont().PrimaryFont()->GlyphForCharacter(
-            base_code_point))
+    if (base_code_point == uchar::kNonCharacter ||
+        !node.Style().GetFont()->PrimaryFont() ||
+        !node.Style().GetFont()->PrimaryFont()->GlyphForCharacter(
+            base_code_point)) {
       return false;
+    }
 
     if (element->HasBooleanProperty(MathMLOperatorElement::kStretchy))
       return true;
@@ -276,7 +277,7 @@ inline LayoutUnit DefaultFractionLineThickness(const ComputedStyle& style) {
 }  // namespace
 
 LayoutUnit MathAxisHeight(const ComputedStyle& style) {
-  const SimpleFontData* font_data = style.GetFont().PrimaryFont();
+  const SimpleFontData* font_data = style.GetFont()->PrimaryFont();
   float x_height = font_data ? font_data->GetFontMetrics().XHeight() : 0;
   return LayoutUnit(
       MathConstant(style, OpenTypeMathSupport::MathConstants::kAxisHeight)

@@ -7,27 +7,76 @@ found in the LICENSE file.
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="?android:attr/listPreferredItemHeightSmall"
+    android:layout_height="wrap_content"
     android:layout_gravity="top|start"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:baselineAligned="false"
+    android:padding="?attr/appMenuIconRowPadding">
 
-    <org.chromium.ui.widget.ChromeImageButton
-        android:id="@+id/button_one"
-        style="@style/OverflowMenuButton" />
+    <!-- Using weight = 1, evenly distribute the buttons along the width of the
+    space.  -->
+    <FrameLayout
+        android:id="@+id/button_wrapper_one"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_one"
+            android:layout_width="?attr/minInteractTargetSize"
+            android:layout_height="?attr/minInteractTargetSize"
+            android:layout_gravity="center"
+            style="?attr/overflowMenuButtonStyle"/>
+    </FrameLayout>
 
-    <org.chromium.ui.widget.ChromeImageButton
-        android:id="@+id/button_two"
-        style="@style/OverflowMenuButton" />
+    <FrameLayout
+        android:id="@+id/button_wrapper_two"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_two"
+            android:layout_width="?attr/minInteractTargetSize"
+            android:layout_height="?attr/minInteractTargetSize"
+            android:layout_gravity="center"
+            style="?attr/overflowMenuButtonStyle"/>
+    </FrameLayout>
 
-    <org.chromium.ui.widget.ChromeImageButton
-        android:id="@+id/button_three"
-        style="@style/OverflowMenuButton" />
+    <FrameLayout
+        android:id="@+id/button_wrapper_three"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_three"
+            android:layout_width="?attr/minInteractTargetSize"
+            android:layout_height="?attr/minInteractTargetSize"
+            android:layout_gravity="center"
+            style="?attr/overflowMenuButtonStyle"/>
+    </FrameLayout>
 
-    <org.chromium.ui.widget.ChromeImageButton
-        android:id="@+id/button_four"
-        style="@style/OverflowMenuButton" />
+    <FrameLayout
+        android:id="@+id/button_wrapper_four"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_four"
+            android:layout_width="?attr/minInteractTargetSize"
+            android:layout_height="?attr/minInteractTargetSize"
+            android:layout_gravity="center"
+            style="?attr/overflowMenuButtonStyle"/>
+    </FrameLayout>
 
-    <org.chromium.ui.widget.ChromeImageButton
-        android:id="@+id/button_five"
-        style="@style/OverflowMenuButton" />
+    <FrameLayout
+        android:id="@+id/button_wrapper_five"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_five"
+            android:layout_width="?attr/minInteractTargetSize"
+            android:layout_height="?attr/minInteractTargetSize"
+            android:layout_gravity="center"
+            style="?attr/overflowMenuButtonStyle"/>
+    </FrameLayout>
 </LinearLayout>

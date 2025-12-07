@@ -1,13 +1,7 @@
-/*
- * parser classes for MySpell
- *
- * implemented: text, HTML, TeX
- *
- * Copyright (C) 2002, Laszlo Nemeth
- *
- */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * Copyright (C) 2002-2022 Németh László
  *
  * The contents of this file are subject to the Mozilla Public License Version
  * 1.1 (the "License"); you may not use this file except in compliance with
@@ -19,12 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is Hunspell, based on MySpell.
- *
- * The Initial Developers of the Original Code are
- * Kevin Hendricks (MySpell) and Németh László (Hunspell).
- * Portions created by the Initial Developers are Copyright (C) 2002-2005
- * the Initial Developers. All Rights Reserved.
+ * Hunspell is based on MySpell which is Copyright (C) 2002 Kevin Hendricks.
  *
  * Contributor(s): David Einstein, Davide Prina, Giuseppe Modugno,
  * Gianluca Turconi, Simon Brouwer, Noll János, Bíró Árpád,
@@ -67,9 +56,10 @@
 
 class TextParser {
  protected:
-  int wordcharacters[256];        // for detection of the word boundaries
+  std::vector<int> wordcharacters;// for detection of the word boundaries
   std::string line[MAXPREVLINE];  // parsed and previous lines
   std::vector<bool> urlline;      // mask for url detection
+  std::vector<w_char> wc;
   int checkurl;
   int actual;  // actual line
   size_t head; // head position
@@ -89,6 +79,7 @@ class TextParser {
   std::string get_line() const;
   std::string get_prevline(int n) const;
   virtual bool next_token(std::string&);
+  virtual std::string get_word(const std::string &tok);
   virtual int change_token(const char* word);
   void set_url_checking(int check);
 

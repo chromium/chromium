@@ -2,18 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "third_party/blink/renderer/core/html/lazy_load_image_observer.h"
 
+#include <array>
 #include <optional>
 #include <tuple>
 
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -79,7 +75,8 @@ TEST_F(LazyLoadImagesSimTest, ImgSrcset) {
 
   // Scrolling down should load the larger image.
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 10000), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 10000), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   SimRequest image_resource("https://example.com/img.png?200w", "image/png");
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -122,8 +119,8 @@ class LazyLoadImagesParamsTest
   }
 
   int GetMargin() const {
-    static constexpr int kDistanceThresholdByEffectiveConnectionType[] = {
-        200, 300, 400, 500, 600, 700};
+    static constexpr auto kDistanceThresholdByEffectiveConnectionType =
+        std::to_array<int>({200, 300, 400, 500, 600, 700});
     return kDistanceThresholdByEffectiveConnectionType[static_cast<int>(
         GetParam())];
   }
@@ -279,7 +276,8 @@ TEST_P(LazyLoadImagesParamsTest, FarFromViewport) {
 
   // Scroll down so that the images are near the viewport.
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 150), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 150), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -559,7 +557,8 @@ TEST_F(LazyLoadImagesTest, ImageInsideLazyLoadedFrame) {
   // Scroll down so that the iframe is near the viewport, but the images within
   // it aren't near the viewport yet.
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 150), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 150), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -621,7 +620,8 @@ TEST_F(LazyLoadImagesTest, ImageInsideLazyLoadedFrame) {
                                       "image/png");
 
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 250), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 250), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -663,7 +663,7 @@ TEST_F(LazyLoadImagesTest, LazyLoadFileUrls) {
   // Scroll down such that the image is visible.
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, kViewportHeight + kLoadingDistanceThreshold),
-      mojom::blink::ScrollType::kProgrammatic);
+      mojom::blink::ScrollType::kProgrammatic, cc::ScrollSourceType::kNone);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -701,6 +701,49 @@ TEST_F(LazyLoadImagesTest, GarbageCollectDeferredLazyLoadImages) {
   ThreadState::Current()->CollectAllGarbageForTesting();
 
   EXPECT_EQ(nullptr, image);
+}
+
+// This is a regression test added for https://crbug.com/40071424, which was
+// filed as a result of outstanding decode promises *not* keeping an underlying
+// lazyload-deferred image alive, even after removal from the DOM. Images of
+// this sort must kept alive for the underlying decode request promise's sake.
+TEST_F(LazyLoadImagesTest, DeferredLazyLoadImagesKeptAliveForDecodeRequest) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(String::Format(
+      R"HTML(
+        <body>
+        <div style='height: %dpx;'></div>
+        <img src='https://example.com/image.png' loading='lazy'>
+        </body>)HTML",
+      kViewportHeight + kLoadingDistanceThreshold + 100));
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  WeakPersistent<HTMLImageElement> image =
+      To<HTMLImageElement>(GetDocument().QuerySelector(AtomicString("img")));
+
+  ScriptState* script_state =
+      ToScriptStateForMainWorld(GetDocument().GetFrame());
+  v8::HandleScope handle_scope(script_state->GetIsolate());
+  // This creates an outstanding decode request for the underlying image, which
+  // keeps it alive solely for the sake of the promise's existence.
+  image->decode(script_state, ASSERT_NO_EXCEPTION);
+
+  EXPECT_FALSE(image->complete());
+  image->remove();
+  EXPECT_FALSE(image->isConnected());
+  EXPECT_FALSE(image->complete());
+  EXPECT_NE(image, nullptr);
+
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  test::RunPendingTasks();
+  ThreadState::Current()->CollectAllGarbageForTesting();
+
+  // After GC, the image is still non-null, since it is kept alive due to the
+  // outstanding decode request.
+  EXPECT_NE(image, nullptr);
 }
 
 }  // namespace

@@ -1,0 +1,200 @@
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Legion histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Legion.Client.FeatureName" enum="LegionFeatureName"
+    expires_after="2026-12-01">
+  <owner>nikhiljakhar@google.com</owner>
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>lamzin@google.com</owner>
+  <owner>saeideid@google.com</owner>
+  <summary>
+    Records the Legion feature name for each request sent. Recorded for every
+    request.
+  </summary>
+</histogram>
+
+<histogram name="Legion.Client.RequestErrorCode" enum="LegionErrorCode"
+    expires_after="2026-11-25">
+  <owner>nikhiljakhar@google.com</owner>
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>lamzin@google.com</owner>
+  <owner>saeideid@google.com</owner>
+  <summary>
+    Records the client-side errors that occur during the request lifecycle.
+    Recorded for every failed request.
+  </summary>
+</histogram>
+
+<histogram name="Legion.Client.RequestLatency.{Status}" units="ms"
+    expires_after="2026-11-25">
+  <owner>nikhiljakhar@google.com</owner>
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>lamzin@google.com</owner>
+  <owner>saeideid@google.com</owner>
+  <summary>
+    Records the latency of a request sent from the Legion Client. This is the
+    time from when the request is sent to when the response is received or the
+    request times out. Recorded for every request. The suffix on the histogram
+    name indicates the outcome: {Status}
+  </summary>
+  <token key="Status">
+    <variant name="Error" summary="The request failed with an error."/>
+    <variant name="Success" summary="The request was successful."/>
+    <variant name="Timeout" summary="The request timed out."/>
+  </token>
+</histogram>
+
+<histogram name="Legion.Client.RequestSize" units="bytes"
+    expires_after="2026-11-25">
+  <owner>nikhiljakhar@google.com</owner>
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>lamzin@google.com</owner>
+  <owner>saeideid@google.com</owner>
+  <summary>
+    Records the size of the request payload sent from the Legion Client.
+    Recorded for every request.
+  </summary>
+</histogram>
+
+<histogram name="Legion.Client.ResponseSize.Success" units="bytes"
+    expires_after="2026-11-25">
+  <owner>nikhiljakhar@google.com</owner>
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>lamzin@google.com</owner>
+  <owner>saeideid@google.com</owner>
+  <summary>
+    Records the size of the response payload received by the Legion Client for
+    successful requests. Recorded for every successful request.
+  </summary>
+</histogram>
+
+<histogram name="Legion.SecureChannel.GetAttestationRequestLatency.{Status}"
+    units="ms" expires_after="2026-11-25">
+  <owner>nikhiljakhar@google.com</owner>
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>lamzin@google.com</owner>
+  <owner>saeideid@google.com</owner>
+  <summary>
+    Records the latency of getting the attestation request. This may involve
+    server requests to get a blinded token. The suffix indicates the outcome:
+    {Status}.
+  </summary>
+  <token key="Status">
+    <variant name="Error" summary="Getting the attestation request failed."/>
+    <variant name="Success"
+        summary="Getting the attestation request was successful."/>
+  </token>
+</histogram>
+
+<histogram name="Legion.SecureChannel.GetHandshakeMessageLatency.{Status}"
+    units="ms" expires_after="2026-11-25">
+  <owner>nikhiljakhar@google.com</owner>
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>lamzin@google.com</owner>
+  <owner>saeideid@google.com</owner>
+  <summary>
+    Records the latency of getting the handshake message. The suffix indicates
+    the outcome: {Status}.
+  </summary>
+  <token key="Status">
+    <variant name="Error" summary="Getting the handshake message failed."/>
+    <variant name="Success"
+        summary="Getting the handshake message was successful."/>
+  </token>
+</histogram>
+
+<histogram name="Legion.SecureChannel.RequestsPerSession" units="requests"
+    expires_after="2026-11-28">
+  <owner>nikhiljakhar@google.com</owner>
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>lamzin@google.com</owner>
+  <owner>saeideid@google.com</owner>
+  <summary>
+    Records the number of requests sent in a single secure channel session.
+    Recorded when a session is closed.
+  </summary>
+</histogram>
+
+<histogram name="Legion.SecureChannel.SendAttestationRequestLatency.{Status}"
+    units="ms" expires_after="2026-11-25">
+  <owner>nikhiljakhar@google.com</owner>
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>lamzin@google.com</owner>
+  <owner>saeideid@google.com</owner>
+  <summary>
+    Records the latency of sending the attestation request and receiving a
+    response. This is the time from when the attestation request is sent to when
+    the response is received and verified. The suffix indicates the outcome:
+    {Status}.
+  </summary>
+  <token key="Status">
+    <variant name="Error"
+        summary="The attestation request failed with an error."/>
+    <variant name="Success" summary="The attestation was successful."/>
+  </token>
+</histogram>
+
+<histogram name="Legion.SecureChannel.SendHandshakeRequestLatency.{Status}"
+    units="ms" expires_after="2026-11-25">
+  <owner>nikhiljakhar@google.com</owner>
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>lamzin@google.com</owner>
+  <owner>saeideid@google.com</owner>
+  <summary>
+    Records the latency of sending the handshake request and receiving a
+    response. This is the time from when the handshake request is sent to when
+    the response is received and verified. The suffix indicates the outcome:
+    {Status}.
+  </summary>
+  <token key="Status">
+    <variant name="Error"
+        summary="The handshake request failed with an error."/>
+    <variant name="Success" summary="The handshake was successful."/>
+  </token>
+</histogram>
+
+<histogram name="Legion.SecureChannel.SessionDuration" units="ms"
+    expires_after="2026-11-28">
+  <owner>nikhiljakhar@google.com</owner>
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>lamzin@google.com</owner>
+  <owner>saeideid@google.com</owner>
+  <summary>
+    Records the duration of a secure channel session. This is the time from when
+    the session is established to when it is closed. Recorded when a session is
+    closed.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

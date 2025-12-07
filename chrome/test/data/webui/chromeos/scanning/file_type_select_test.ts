@@ -7,7 +7,7 @@ import 'chrome://scanning/file_type_select.js';
 
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {FileTypeSelectElement} from 'chrome://scanning/file_type_select.js';
+import type {FileTypeSelectElement} from 'chrome://scanning/file_type_select.js';
 import {FileType} from 'chrome://scanning/scanning.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
@@ -49,9 +49,9 @@ suite('fileTypeSelectTest', function() {
     assertTrue(!!select);
     assertFalse(select.disabled);
     assertEquals(3, select.length);
-    assertEquals('JPG', getOption(0).textContent!.trim());
-    assertEquals('PNG', getOption(1).textContent!.trim());
-    assertEquals('PDF', getOption(2).textContent!.trim());
+    assertEquals('JPG', getOption(0).textContent.trim());
+    assertEquals('PNG', getOption(1).textContent.trim());
+    assertEquals('PDF', getOption(2).textContent.trim());
     assertEquals(FileType.kPdf.toString(), select.value);
 
     // Selecting a different option should update the selected value.

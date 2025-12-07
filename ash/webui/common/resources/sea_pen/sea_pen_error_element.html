@@ -1,11 +1,11 @@
 <style include="sea-pen">
   .error-message {
+    margin-top: 24px;
     max-width: 316px;
-    top: -9px;
   }
 </style>
 
 <div class="error-container illustration-container fade-in-900ms">
   <iron-icon icon$="[[errorIllo_]]"></iron-icon>
-  <p id="error" class="error-message illustration-message" aria-live="polite">[[errorMessage_]]</p>
+  <p id="error" class="error-message illustration-message" aria-live="polite" inner-h-t-m-l="[[errorMessage_]]"></p>
 </div>

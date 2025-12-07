@@ -77,11 +77,6 @@ bool WebBluetoothDeviceId::operator==(
   return this->DeviceId() == device_id.DeviceId();
 }
 
-bool WebBluetoothDeviceId::operator!=(
-    const WebBluetoothDeviceId& device_id) const {
-  return !(*this == device_id);
-}
-
 bool WebBluetoothDeviceId::operator<(
     const WebBluetoothDeviceId& device_id) const {
   return this->str() < device_id.str();

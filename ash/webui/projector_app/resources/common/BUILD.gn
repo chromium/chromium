@@ -5,7 +5,7 @@
 import("//third_party/closure_compiler/compile_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-assert(is_chromeos_ash, "Projector is ChromeOS only")
+assert(is_chromeos, "Projector is ChromeOS only")
 
 js_library("message_types") {
   sources = [ "./message_types.js" ]

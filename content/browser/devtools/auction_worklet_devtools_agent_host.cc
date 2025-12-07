@@ -69,8 +69,7 @@ BrowserContext* AuctionWorkletDevToolsAgentHost::GetBrowserContext() {
   return worklet_ ? worklet_->owning_frame()->GetBrowserContext() : nullptr;
 }
 
-bool AuctionWorkletDevToolsAgentHost::AttachSession(DevToolsSession* session,
-                                                    bool acquire_wake_lock) {
+bool AuctionWorkletDevToolsAgentHost::AttachSession(DevToolsSession* session) {
   // We use `force_using_io_session` as AuctionV8DevToolsSession can't handle
   // commands on main session when blocked on a breakpoint, only on IO session.
   session->AttachToAgent(associated_agent_remote_.get(),
@@ -127,7 +126,7 @@ AuctionWorkletDevToolsAgentHostManager::
 
 AuctionWorkletDevToolsAgentHostManager::
     ~AuctionWorkletDevToolsAgentHostManager() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void AuctionWorkletDevToolsAgentHostManager::GetAll(

@@ -223,7 +223,7 @@ TEST_F(ShellWithClientTest, CreateWithDisplayId) {
     return shell_surface_base;
   };
 
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   constexpr gfx::Rect kPrimarilyOnPrimary{100, 0, 800, 100};
   {
     auto* shell_surface_base = create_new_window(kPrimarilyOnPrimary, 1);

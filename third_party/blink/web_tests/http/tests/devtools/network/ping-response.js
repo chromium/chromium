@@ -20,7 +20,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
   TestRunner.evaluateInPage('sendBeacon()');
 
   function step2() {
-    NetworkTestRunner.networkRequests().pop().requestContent().then(step3);
+    NetworkTestRunner.networkRequests().pop().requestContentData().then(step3);
   }
 
   async function step3() {

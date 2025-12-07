@@ -33,7 +33,7 @@ AccountMigrationWelcomeDialog::AccountMigrationWelcomeDialog(
       email_(email),
       id_(gurl.spec()) {}
 
-AccountMigrationWelcomeDialog::~AccountMigrationWelcomeDialog() {}
+AccountMigrationWelcomeDialog::~AccountMigrationWelcomeDialog() = default;
 
 // static
 AccountMigrationWelcomeDialog* AccountMigrationWelcomeDialog::Show(
@@ -75,11 +75,9 @@ void AccountMigrationWelcomeDialog::GetDialogSize(gfx::Size* size) const {
 }
 
 std::string AccountMigrationWelcomeDialog::GetDialogArgs() const {
-  std::string data;
   base::Value::Dict dialog_args;
   dialog_args.Set("email", email_);
-  base::JSONWriter::Write(dialog_args, &data);
-  return data;
+  return base::WriteJson(dialog_args).value_or("");
 }
 
 bool AccountMigrationWelcomeDialog::ShouldShowDialogTitle() const {

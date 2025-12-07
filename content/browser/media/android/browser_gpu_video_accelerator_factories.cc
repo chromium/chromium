@@ -23,29 +23,22 @@ namespace {
 void OnGpuChannelEstablished(
     GpuVideoAcceleratorFactoriesCallback callback,
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host) {
-  gpu::ContextCreationAttribs attributes;
-  attributes.bind_generates_resource = false;
-  attributes.enable_raster_interface = true;
-  attributes.enable_oop_rasterization = true;
-  attributes.enable_gles2_interface = false;
-  attributes.enable_grcontext = false;
-
   int32_t stream_id = kGpuStreamIdDefault;
   gpu::SchedulingPriority stream_priority = kGpuStreamPriorityUI;
 
   constexpr bool automatic_flushes = false;
   constexpr bool support_locking = false;
 
-  auto context_provider =
-      base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
-          std::move(gpu_channel_host), stream_id, stream_priority,
-          gpu::kNullSurfaceHandle,
-          GURL(std::string("chrome://gpu/"
-                           "BrowserGpuVideoAcceleratorFactories::"
-                           "CreateGpuVideoAcceleratorFactories")),
-          automatic_flushes, support_locking,
-          gpu::SharedMemoryLimits::ForMailboxContext(), attributes,
-          viz::command_buffer_metrics::ContextType::UNKNOWN);
+  auto context_provider = viz::ContextProviderCommandBuffer::CreateForRaster(
+      std::move(gpu_channel_host), stream_id, stream_priority,
+      GURL(std::string("chrome://gpu/"
+                       "BrowserGpuVideoAcceleratorFactories::"
+                       "CreateGpuVideoAcceleratorFactories")),
+      automatic_flushes, support_locking,
+      gpu::SharedMemoryLimits::ForMailboxContext(),
+      viz::command_buffer_metrics::ContextType::UNKNOWN,
+      /*enable_gpu_rasterization=*/true,
+      /*lose_context_when_out_of_memory=*/false);
   context_provider->BindToCurrentSequence();
 
   auto gpu_factories = std::make_unique<BrowserGpuVideoAcceleratorFactories>(
@@ -143,14 +136,6 @@ BrowserGpuVideoAcceleratorFactories::CreateVideoEncodeAccelerator() {
   return nullptr;
 }
 
-std::unique_ptr<gfx::GpuMemoryBuffer>
-BrowserGpuVideoAcceleratorFactories::CreateGpuMemoryBuffer(
-    const gfx::Size& size,
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage) {
-  return nullptr;
-}
-
 bool BrowserGpuVideoAcceleratorFactories::
     ShouldUseGpuMemoryBuffersForVideoFrames(bool for_media_stream) const {
   return false;
@@ -164,12 +149,7 @@ BrowserGpuVideoAcceleratorFactories::VideoFrameOutputFormat(
 
 gpu::SharedImageInterface*
 BrowserGpuVideoAcceleratorFactories::SharedImageInterface() {
-  NOTREACHED_NORETURN();
-}
-
-gpu::GpuMemoryBufferManager*
-BrowserGpuVideoAcceleratorFactories::GpuMemoryBufferManager() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 base::UnsafeSharedMemoryRegion
@@ -186,6 +166,11 @@ std::optional<media::VideoEncodeAccelerator::SupportedProfiles>
 BrowserGpuVideoAcceleratorFactories::
     GetVideoEncodeAcceleratorSupportedProfiles() {
   return media::VideoEncodeAccelerator::SupportedProfiles();
+}
+
+std::optional<media::SupportedVideoDecoderConfigs>
+BrowserGpuVideoAcceleratorFactories::GetSupportedVideoDecoderConfigs() {
+  return std::nullopt;
 }
 
 bool BrowserGpuVideoAcceleratorFactories::IsEncoderSupportKnown() {

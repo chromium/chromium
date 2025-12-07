@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "chrome/browser/ash/policy/skyvault/skyvault_capture_upload_notification.h"
 
@@ -27,7 +23,7 @@ constexpr char kUploadNotificationId[] = "skyvault_capture_upload_notification";
 
 class SkyvaultCaptureUploadNotificationTest : public BrowserWithTestWindowTest {
  public:
-  SkyvaultCaptureUploadNotificationTest() {}
+  SkyvaultCaptureUploadNotificationTest() = default;
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
@@ -38,7 +34,7 @@ class SkyvaultCaptureUploadNotificationTest : public BrowserWithTestWindowTest {
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     file_path_ = temp_dir_.GetPath().AppendASCII("test_capture.png");
-    base::WriteFile(file_path_, "test content", 12);
+    base::WriteFile(file_path_, "test content");
   }
 
   void TearDown() override { BrowserWithTestWindowTest::TearDown(); }
@@ -51,7 +47,8 @@ class SkyvaultCaptureUploadNotificationTest : public BrowserWithTestWindowTest {
 };
 
 TEST_F(SkyvaultCaptureUploadNotificationTest, CreationAndDisplay) {
-  SkyvaultCaptureUploadNotification notification(file_path_);
+  SkyvaultCaptureUploadNotification notification(file_path_,
+                                                 /*for_video=*/false);
   base::RunLoop().RunUntilIdle();
 
   std::optional<message_center::Notification> displayed_notification =
@@ -63,7 +60,8 @@ TEST_F(SkyvaultCaptureUploadNotificationTest, CreationAndDisplay) {
 }
 
 TEST_F(SkyvaultCaptureUploadNotificationTest, UpdateProgress) {
-  SkyvaultCaptureUploadNotification notification(file_path_);
+  SkyvaultCaptureUploadNotification notification(file_path_,
+                                                 /*for_video=*/false);
   base::RunLoop().RunUntilIdle();
 
   notification.UpdateProgress(6);
@@ -76,7 +74,8 @@ TEST_F(SkyvaultCaptureUploadNotificationTest, UpdateProgress) {
 }
 
 TEST_F(SkyvaultCaptureUploadNotificationTest, CancelClosure) {
-  SkyvaultCaptureUploadNotification notification(file_path_);
+  SkyvaultCaptureUploadNotification notification(file_path_,
+                                                 /*for_video=*/false);
   base::RunLoop().RunUntilIdle();
 
   bool cancel_called = false;

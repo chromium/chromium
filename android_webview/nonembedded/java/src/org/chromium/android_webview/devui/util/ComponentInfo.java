@@ -28,13 +28,13 @@ public class ComponentInfo {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null || (getClass() != obj.getClass())) {
+        if (!(obj instanceof ComponentInfo)) {
             return false;
         }
 
         ComponentInfo item2 = (ComponentInfo) obj;
-        return (mComponentName).equals(item2.mComponentName)
-                && (mComponentVersion).equals(item2.mComponentVersion);
+        return mComponentName.equals(item2.mComponentName)
+                && mComponentVersion.equals(item2.mComponentVersion);
     }
 
     @Override

@@ -9,7 +9,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
-#include "base/files/file_util.h"
 #include "chromeos/ash/services/ime/constants.h"
 #include "chromeos/ash/services/ime/public/mojom/ime_service.mojom.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method_user_data.mojom.h"
@@ -59,14 +58,8 @@ bool IsDownloadPathValid(const base::FilePath& file_path) {
 }
 
 bool IsDownloadURLValid(const GURL& url) {
-  // TODO(https://crbug.com/837156): Allowlist all URLs instead of some general
-  // checks below.
   return url.SchemeIs(url::kHttpsScheme) &&
-         url.DomainIs(ime::kGoogleKeyboardDownloadDomain);
-}
-
-bool ShouldUseUpdatedDownloadLogic() {
-  return base::FeatureList::IsEnabled(features::kImeDownloaderUpdate);
+         (url.DomainIs("dl.google.com") || url.DomainIs("edgedl.me.gvt1.com"));
 }
 
 std::unique_ptr<network::SimpleURLLoader> CreateUrlLoader(const GURL& url) {
@@ -87,7 +80,9 @@ std::unique_ptr<network::SimpleURLLoader> CreateUrlLoader(const GURL& url) {
 }  // namespace
 
 ImeServiceConnector::ImeServiceConnector(Profile* profile)
-    : profile_(profile), url_loader_factory_(profile->GetURLLoaderFactory()) {}
+    : profile_(profile), url_loader_factory_(profile->GetURLLoaderFactory()) {
+  profile_observation_.Observe(profile);
+}
 
 ImeServiceConnector::~ImeServiceConnector() = default;
 
@@ -102,35 +97,16 @@ void ImeServiceConnector::DownloadImeFileTo(
     return;
   }
 
-  if (ShouldUseUpdatedDownloadLogic()) {
-    base::FilePath full_path = profile_->GetPath().Append(file_path);
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&ImeServiceConnector::MaybeTriggerDownload,
-                                  weak_ptr_factory_.GetWeakPtr(), url,
-                                  full_path, std::move(callback)));
-    return;
-  }
-
-  // For now, we don't allow the client to download multi files at same time.
-  // Downloading request will be aborted and return empty before the current
-  // downloading task exits.
-  // TODO(https://crbug.com/971954): Support multi downloads.
-  // Validate url and file_path, return an empty file path if not.
-  if (url_loader_) {
-    base::FilePath empty_path;
-    std::move(callback).Run(empty_path);
-    return;
-  }
-
-  // Download the language module into a preconfigured ime folder of current
-  // user's home which is allowed in IME service's sandbox.
   base::FilePath full_path = profile_->GetPath().Append(file_path);
-  url_loader_ = CreateUrlLoader(url);
-  url_loader_->DownloadToFile(
-      url_loader_factory_.get(),
-      base::BindOnce(&ImeServiceConnector::OnFileDownloadComplete,
-                     base::Unretained(this), std::move(callback)),
-      full_path);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&ImeServiceConnector::MaybeTriggerDownload,
+                                weak_ptr_factory_.GetWeakPtr(), url, full_path,
+                                std::move(callback)));
+}
+
+void ImeServiceConnector::OnProfileWillBeDestroyed(Profile* profile) {
+  profile_observation_.Reset();
+  profile_ = nullptr;
 }
 
 void ImeServiceConnector::SetupImeService(
@@ -167,14 +143,6 @@ void ImeServiceConnector::BindInputMethodUserDataService(
   }
 
   remote_service_->BindInputMethodUserDataService(std::move(receiver));
-}
-
-void ImeServiceConnector::OnFileDownloadComplete(
-    DownloadImeFileToCallback client_callback,
-    base::FilePath path) {
-  std::move(client_callback).Run(path);
-  url_loader_.reset();
-  return;
 }
 
 void ImeServiceConnector::MaybeTriggerDownload(

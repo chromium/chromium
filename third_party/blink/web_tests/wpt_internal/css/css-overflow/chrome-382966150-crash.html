@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<title>Chrome crash when removing ::scroll-marker-group from size query container</title>
+<link rel="help" href="https://crbug.com/382966150">
+<style>
+  #scroller {
+    container-type: inline-size;
+    overflow: hidden;
+    width: 400px;
+    height: 100px;
+  }
+  #scroller.group { scroll-marker-group: before; }
+  #scroller::scroll-marker-group { height: 100px; }
+</style>
+<div>
+  <div id="scroller" class="group">
+    PASS if no crash
+  </div>
+</div>
+<script>
+  scroller.offsetTop;
+  scroller.className = "";
+</script>

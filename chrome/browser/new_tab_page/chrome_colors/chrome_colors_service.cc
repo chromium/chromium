@@ -4,8 +4,9 @@
 
 #include "chrome/browser/new_tab_page/chrome_colors/chrome_colors_service.h"
 
+#include <algorithm>
+
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/new_tab_page/chrome_colors/generated_colors_info.h"
 #include "chrome/browser/new_tab_page/chrome_colors/selected_colors_info.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -58,7 +59,6 @@ void ChromeColorsService::RevertThemeChangesInternal() {
 }
 
 void ChromeColorsService::SaveThemeRevertState(content::WebContents* tab) {
-  // TODO(crbug.com/41468999): Support theme reverting for multiple tabs.
   if (!prev_theme_reinstaller_) {
     prev_theme_reinstaller_ = theme_service_->BuildReinstallerForCurrentTheme();
     dialog_tab_ = tab;

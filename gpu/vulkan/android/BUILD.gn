@@ -25,11 +25,7 @@ component("android") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
-    "//gpu/ipc/common",
-    "//gpu/ipc/common:vulkan_ycbcr_info",
-    "//ui/gfx",
-  ]
+  deps = [ "//ui/gfx" ]
 
   public_configs = [ ":vulkan_android" ]
 
@@ -42,7 +38,7 @@ component("android") {
 test("vk_tests") {
   deps = [
     ":android",
-    "//base:base",
+    "//base",
     "//base/test:test_support",
     "//components/viz/common:vulkan_context_provider",
     "//testing/gtest",

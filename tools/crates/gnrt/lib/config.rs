@@ -7,9 +7,14 @@
 
 use crate::group::Group;
 
-use std::collections::{BTreeMap, HashMap, HashSet};
-
+use anyhow::{Context, Result};
 use serde::Deserialize;
+use std::{
+    collections::{BTreeMap, HashMap, HashSet},
+    hash::Hash,
+    ops::Deref,
+    path::Path,
+};
 
 #[derive(Clone, Debug, Default, Deserialize)]
 #[serde(default, deny_unknown_fields)]
@@ -17,8 +22,6 @@ pub struct BuildConfig {
     pub resolve: ResolveConfig,
     #[serde(rename = "gn")]
     pub gn_config: GnConfig,
-    #[serde(rename = "vet")]
-    pub vet_config: VetConfig,
     /// Configuration that applies to all crates
     #[serde(rename = "all-crates")]
     pub all_config: CrateConfig,
@@ -29,16 +32,29 @@ pub struct BuildConfig {
 }
 
 impl BuildConfig {
-    /// Combines the global and per-crate `CrateConfig` for a single
-    /// `Vec<String>` entry.
-    pub fn get_combined_set(
-        &self,
+    /// Combines the global and per-crate `CrateConfig` for a single entry.
+    /// Combined `Vec<String>` entries will be returned as `HashSet<&str>`.
+    /// Combined `Vec<PathBuf>` entries will be returned as `HashSet<&Path>`.
+    pub fn get_combined_set<'a, T>(
+        &'a self,
         package_name: &str,
-        entry_getter: impl Fn(&CrateConfig) -> &Vec<String>,
-    ) -> HashSet<&str> {
-        let all: Option<&Vec<String>> = Some(entry_getter(&self.all_config));
-        let per: Option<&Vec<String>> = self.per_crate_config.get(package_name).map(entry_getter);
-        all.into_iter().chain(per).flatten().map(String::as_str).collect()
+        entry_getter: impl Fn(&CrateConfig) -> &Vec<T>,
+    ) -> HashSet<&'a <T as Deref>::Target>
+    where
+        T: Deref + 'a,
+        T::Target: Hash + Eq + PartialEq,
+    {
+        let all_crates_vec: &Vec<T> = entry_getter(&self.all_config);
+        let maybe_per_crate_vec: Option<&Vec<T>> =
+            self.per_crate_config.get(package_name).map(entry_getter);
+        let combined_vecs = std::iter::once(all_crates_vec).chain(maybe_per_crate_vec);
+        combined_vecs.flatten().map(Deref::deref).collect()
+    }
+
+    pub fn from_path(path: &Path) -> Result<Self> {
+        let context = || format!("Error reading `gnrt_config.toml` from `{}`", path.display());
+        let file_content = std::fs::read_to_string(path).with_context(context)?;
+        toml::de::from_str(&file_content).with_context(context)
     }
 }
 
@@ -85,7 +101,7 @@ pub struct ResolveConfig {
     /// sparingly; it does not affect Cargo's dependency resolution, so the
     /// output can easily be incorrect. This is primarily intended to work
     /// around bugs in `cargo metadata` output.
-    pub remove_crates: Vec<String>,
+    pub remove_crates: HashSet<String>,
 }
 
 /// Customizes GN output for a crate.
@@ -158,6 +174,9 @@ pub struct CrateConfig {
     /// `extra_src_roots`. Nothing is searched if this is empty.
     #[serde(default)]
     pub native_libs_roots: Vec<std::path::PathBuf>,
+    /// Whether the crate is permitted to have no license files.
+    #[serde(default)]
+    pub no_license_file_tracked_in_crbug_369075726: bool,
 }
 
 #[cfg(test)]

@@ -10,6 +10,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/media_galleries/media_galleries_dialog_controller.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -18,7 +20,7 @@ class Checkbox;
 class LabelButton;
 class MenuRunner;
 class Widget;
-}
+}  // namespace views
 
 class MediaGalleryCheckboxView;
 
@@ -44,12 +46,13 @@ class MediaGalleriesDialogViews : public MediaGalleriesDialog,
   views::Widget* GetWidget() override;
   const views::Widget* GetWidget() const override;
   views::View* GetContentsView() override;
-  bool IsDialogButtonEnabled(ui::DialogButton button) const override;
+  bool IsDialogButtonEnabled(ui::mojom::DialogButton button) const override;
 
   // views::ContextMenuController:
-  void ShowContextMenuForViewImpl(views::View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImpl(
+      views::View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override;
 
  private:
   friend class MediaGalleriesDialogTest;
@@ -66,13 +69,12 @@ class MediaGalleriesDialogViews : public MediaGalleriesDialog,
 
   // Adds a checkbox or updates an existing checkbox. Returns true if a new one
   // was added.
-  bool AddOrUpdateGallery(
-      const MediaGalleriesDialogController::Entry& gallery,
-      views::View* container,
-      int trailing_vertical_space);
+  bool AddOrUpdateGallery(const MediaGalleriesDialogController::Entry& gallery,
+                          views::View* container,
+                          int trailing_vertical_space);
 
   void ShowContextMenu(const gfx::Point& point,
-                       ui::MenuSourceType source_type,
+                       ui::mojom::MenuSourceType source_type,
                        MediaGalleryPrefId id);
 
   // Whether |controller_| has a valid WebContents or not.

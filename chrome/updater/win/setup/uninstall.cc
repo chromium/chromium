@@ -11,8 +11,10 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <typeinfo>
 #include <vector>
 
+#include "base/base_paths.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
@@ -27,6 +29,7 @@
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/installer/util/install_service_work_item.h"
 #include "chrome/installer/util/registry_util.h"
+#include "chrome/updater/branded_constants.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
@@ -98,15 +101,22 @@ void DeleteComInterfaces(UpdaterScope scope, bool uninstall_all) {
 }
 
 void DeleteClientStateKey(UpdaterScope scope) {
-  base::win::RegKey client_state;
-  if (client_state.Open(UpdaterScopeToHKeyRoot(scope), CLIENT_STATE_KEY,
-                        Wow6432(KEY_QUERY_VALUE)) == ERROR_SUCCESS) {
-    // Delete the entire `ClientState` key only if all the apps are uninstalled
-    // already, as evidenced by the `--uninstall-if-unused` switch.
-    client_state.DeleteKey(base::CommandLine::ForCurrentProcess()->HasSwitch(
-                               kUninstallIfUnusedSwitch)
-                               ? L""
-                               : base::UTF8ToWide(kUpdaterAppId).c_str());
+  const HKEY root = UpdaterScopeToHKeyRoot(scope);
+  const bool has_switch_uninstall_if_unused =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kUninstallIfUnusedSwitch);
+  const std::wstring updater_app_id = base::UTF8ToWide(kUpdaterAppId);
+
+  for (const auto& access_mask : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
+    base::win::RegKey client_state;
+    if (client_state.Open(root, CLIENT_STATE_KEY,
+                          KEY_QUERY_VALUE | access_mask) == ERROR_SUCCESS) {
+      // Delete the entire `ClientState` key only if all the apps are
+      // uninstalled already, as evidenced by the `--uninstall-if-unused`
+      // switch.
+      client_state.DeleteKey(
+          has_switch_uninstall_if_unused ? L"" : updater_app_id.c_str());
+    }
   }
 }
 
@@ -140,7 +150,7 @@ int RunUninstallScript(UpdaterScope scope, bool uninstall_all) {
   cmd_exe_path = cmd_exe_path.Append(L"cmd.exe");
 
   const base::FilePath script_path =
-      versioned_dir->AppendASCII(kUninstallScript);
+      versioned_dir->AppendUTF8(kUninstallScript);
 
   const std::wstring cmdline = base::StrCat(
       {L"\"", cmd_exe_path.value(), L"\" /Q /C \"\"", script_path.value(),
@@ -193,14 +203,16 @@ int UninstallImpl(UpdaterScope scope, bool uninstall_all) {
   }
 
   if (uninstall_all) {
-    // Preserve the log file in %TMP%.
-    std::optional<base::FilePath> log_file = GetLogFilePath(scope);
-    if (log_file) {
-      std::optional<base::FilePath> temp_file =
-          GetUniqueTempFilePath(*log_file);
-      if (temp_file) {
-        base::CopyFile(*log_file, *temp_file);
-      }
+    // Preserve the log file in the temp (`SystemTemp` for system installs)
+    // directory.
+    base::FilePath temp_dir;
+    if (std::optional<base::FilePath> log_file = GetLogFilePath(scope);
+        log_file &&
+        base::PathService::Get(IsSystemInstall(scope)
+                                   ? static_cast<int>(base::DIR_SYSTEM_TEMP)
+                                   : static_cast<int>(base::DIR_TEMP),
+                               &temp_dir)) {
+      base::CopyFile(*log_file, temp_dir.Append(log_file->BaseName()));
     }
   }
 

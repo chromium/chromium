@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//testing/test.gni")
-
-assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
+assert(is_chromeos, "Non-Chrome-OS builds must not depend on //ash")
 
 component("settings") {
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_SETTINGS_IMPL" ]
@@ -12,6 +10,8 @@ component("settings") {
     "//ash/constants",
     "//base",
     "//base:i18n",
+    "//components/policy/proto",
+    "//components/prefs",
     "//components/user_manager:common",
     "//google_apis",
     "//third_party/icu",
@@ -22,6 +22,8 @@ component("settings") {
     "cros_settings_names.h",
     "cros_settings_provider.cc",
     "cros_settings_provider.h",
+    "device_settings_cache.cc",
+    "device_settings_cache.h",
     "scoped_timezone_settings.cc",
     "scoped_timezone_settings.h",
     "system_settings_provider.cc",
@@ -30,6 +32,27 @@ component("settings") {
     "timezone_settings.h",
     "timezone_settings_helper.cc",
     "timezone_settings_helper.h",
+    "user_login_permission_tracker.cc",
+    "user_login_permission_tracker.h",
+  ]
+}
+
+# This target should be conceptually `testonly = true`, but unfortunately
+# some of the testing code is written in a way to inject in non-test code.
+# TODO(hidehiko): Mark testonly.
+static_library("test_support") {
+  deps = [
+    ":settings",
+    "//base",
+    "//components/policy/proto",
+    "//components/prefs",
+  ]
+  sources = [
+    "cros_settings_waiter.cc",
+    "cros_settings_waiter.h",
+    "device_settings_cache_test_support.h",
+    "fake_cros_settings_provider.cc",
+    "fake_cros_settings_provider.h",
   ]
 }
 
@@ -37,14 +60,18 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     ":settings",
+    ":test_support",
     "//base",
     "//base:i18n",
     "//base/test:test_support",
+    "//components/policy/proto",
+    "//components/prefs:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/icu",
   ]
   sources = [
+    "device_settings_cache_unittest.cc",
     "scoped_timezone_settings_unittest.cc",
     "timezone_settings_unittest.cc",
   ]

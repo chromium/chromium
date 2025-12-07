@@ -1,0 +1,32 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions)
+
+source_set("safe_browsing_private") {
+  sources = [
+    "safe_browsing_private_api.cc",
+    "safe_browsing_private_api.h",
+    "safe_browsing_util.cc",
+    "safe_browsing_util.h",
+  ]
+
+  public_deps = [
+    "//chrome/common/extensions/api",
+    "//components/safe_browsing/content/browser",
+    "//extensions/browser",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/safe_browsing",
+    "//content/public/browser",
+  ]
+}

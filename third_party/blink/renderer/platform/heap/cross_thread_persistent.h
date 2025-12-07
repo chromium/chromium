@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_CROSS_THREAD_PERSISTENT_H_
 
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "v8/include/cppgc/cross-thread-persistent.h"
 
 namespace blink {
@@ -58,10 +59,6 @@ CrossThreadWeakPersistent<T> WrapCrossThreadWeakPersistent(
   return CrossThreadWeakPersistent<T>(value, loc);
 }
 
-}  // namespace blink
-
-namespace WTF {
-
 template <typename T>
 struct HashTraits<blink::CrossThreadPersistent<T>>
     : BasePersistentHashTraits<T, blink::CrossThreadPersistent<T>> {};
@@ -70,19 +67,7 @@ template <typename T>
 struct HashTraits<blink::CrossThreadWeakPersistent<T>>
     : BasePersistentHashTraits<T, blink::CrossThreadWeakPersistent<T>> {};
 
-template <typename T>
-struct CrossThreadCopier<blink::CrossThreadPersistent<T>>
-    : public CrossThreadCopierPassThrough<blink::CrossThreadPersistent<T>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <typename T>
-struct CrossThreadCopier<blink::CrossThreadWeakPersistent<T>>
-    : public CrossThreadCopierPassThrough<blink::CrossThreadWeakPersistent<T>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-}  // namespace WTF
+}  // namespace blink
 
 namespace base {
 

@@ -659,6 +659,17 @@ TEST(HlsTypesTest, ParseDecimalResolution) {
   error_test("18446744073709551616x18446744073709551616");
 }
 
+TEST(HlsTypesTest, DecimalResolutionSzudzik) {
+  std::set<types::DecimalInteger> values;
+  for (types::DecimalInteger x = 0; x < 10; x++) {
+    for (types::DecimalInteger y = 0; y < 10; y++) {
+      types::DecimalResolution res{x, y};
+      values.insert(res.Szudzik());
+    }
+  }
+  ASSERT_EQ(values.size(), 100u);
+}
+
 TEST(HlsTypesTest, ParseByteRangeExpression) {
   const auto error_test = [](std::string_view input,
                              const base::Location& from =
@@ -710,31 +721,24 @@ TEST(HlsTypesTest, ParseByteRangeExpression) {
   error_test("\"12@34\"");
 
   // Test some valid inputs
-  ok_test("0", types::parsing::ByteRangeExpression{.length = 0,
-                                                   .offset = std::nullopt});
-  ok_test("12", types::parsing::ByteRangeExpression{.length = 12,
-                                                    .offset = std::nullopt});
-  ok_test("12@0",
-          types::parsing::ByteRangeExpression{.length = 12, .offset = 0});
-  ok_test("12@34",
-          types::parsing::ByteRangeExpression{.length = 12, .offset = 34});
-  ok_test("0@34",
-          types::parsing::ByteRangeExpression{.length = 0, .offset = 34});
-  ok_test("0@0", types::parsing::ByteRangeExpression{.length = 0, .offset = 0});
+  ok_test("0", types::parsing::ByteRangeExpression(0, std::nullopt));
+  ok_test("12", types::parsing::ByteRangeExpression(12, std::nullopt));
+  ok_test("12@0", types::parsing::ByteRangeExpression(12, 0));
+  ok_test("12@34", types::parsing::ByteRangeExpression(12, 34));
+  ok_test("0@34", types::parsing::ByteRangeExpression(0, 34));
+  ok_test("0@0", types::parsing::ByteRangeExpression(0, 0));
 
   // Test max supported values. These are valid ByteRangeExpressions, but not
   // necessarily valid ByteRanges.
   ok_test("18446744073709551615@0",
-          types::parsing::ByteRangeExpression{.length = 18446744073709551615u,
-                                              .offset = 0});
+          types::parsing::ByteRangeExpression(18446744073709551615u, 0));
   error_test("18446744073709551616@0");
   ok_test("0@18446744073709551615",
-          types::parsing::ByteRangeExpression{.length = 0,
-                                              .offset = 18446744073709551615u});
+          types::parsing::ByteRangeExpression(0, 18446744073709551615u));
   error_test("0@18446744073709551616");
   ok_test("18446744073709551615@18446744073709551615",
-          types::parsing::ByteRangeExpression{.length = 18446744073709551615u,
-                                              .offset = 18446744073709551615u});
+          types::parsing::ByteRangeExpression(18446744073709551615u,
+                                              18446744073709551615u));
   error_test("18446744073709551616@18446744073709551615");
   error_test("18446744073709551615@18446744073709551616");
   error_test("18446744073709551616@18446744073709551616");
@@ -885,8 +889,8 @@ TEST(HlsTypesTest, ParseAudioChannels) {
         ASSERT_TRUE(result.has_value()) << from.ToString();
         const auto value = std::move(result).value();
         EXPECT_EQ(value.GetMaxChannels(), max_channels) << from.ToString();
-        EXPECT_TRUE(base::ranges::equal(value.GetAudioCodingIdentifiers(),
-                                        audio_coding_identifiers))
+        EXPECT_TRUE(std::ranges::equal(value.GetAudioCodingIdentifiers(),
+                                       audio_coding_identifiers))
             << from.ToString();
       };
   constexpr auto error_test = [](std::string_view str,

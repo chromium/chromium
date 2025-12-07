@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[FAIL] Valid simple color: 4 characters long
+  assert_equals: expected "#ffffff" but got "#000000"
+[FAIL] Valid color: leading space
+  assert_equals: expected "#ffffff" but got "#000000"
+[FAIL] Valid color: trailing space
+  assert_equals: expected "#ffffff" but got "#000000"
+[FAIL] Valid color: leading+trailing spaces
+  assert_equals: expected "#ffffff" but got "#000000"
+[FAIL] Valid color: keyword crimson
+  assert_equals: expected "#dc143c" but got "#000000"
+[FAIL] Valid color: keyword bisque
+  assert_equals: expected "#ffe4c4" but got "#000000"
+[FAIL] Valid color: rgb(1,1,1)
+  assert_equals: expected "#010101" but got "#000000"
+[FAIL] Valid color: rgb(1,1,1,1)
+  assert_equals: expected "#010101" but got "#000000"
+[FAIL] Valid color: hsl(150deg 100 53.5)
+  assert_equals: expected "#12ff88" but got "#000000"
+[FAIL] Valid color: color(display-p3 .5 0 0)
+  assert_equals: expected "#8c0000" but got "#000000"
+[FAIL] Valid color: color(display-p3 1 0 0)
+  assert_equals: expected "#ff0000" but got "#000000"
+[FAIL] System colors are parsed
+  assert_not_equals: got disallowed value "#000000"
+Harness: the test ran to completion.
+

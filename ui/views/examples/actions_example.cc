@@ -59,7 +59,7 @@ namespace {
 constexpr int kActionExampleVerticalSpacing = 3;
 constexpr int kActionExampleLeftPadding = 8;
 constexpr gfx::Insets kSeparatorPadding = gfx::Insets::TLBR(5, 0, 5, 0);
-const char* kBoolStrings[2] = {"false", "true"};
+constexpr const char* kBoolStrings[2] = {"false", "true"};
 
 #define MAP_ACTION_IDS_TO_STRINGS
 #include "ui/actions/action_id_macros.inc"
@@ -170,7 +170,7 @@ size_t ActionItemComboboxModel::GetItemCount() const {
 }
 
 std::u16string ActionItemComboboxModel::GetItemAt(size_t index) const {
-  return GetActionItemAt(index)->GetText();
+  return std::u16string(GetActionItemAt(index)->GetText());
 }
 
 actions::ActionItem* ActionItemComboboxModel::GetActionItemAt(
@@ -201,50 +201,8 @@ std::u16string ControlTypeComboboxModel::GetItemAt(size_t index) const {
     case 1:
       return u"Checkbox";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return u"";
+      NOTREACHED();
   }
-}
-
-class FlowLayout : public LayoutManagerBase {
- public:
-  FlowLayout() = default;
-  FlowLayout(const FlowLayout&) = delete;
-  FlowLayout& operator=(const FlowLayout&) = delete;
-  ~FlowLayout() override = default;
-
- protected:
-  ProposedLayout CalculateProposedLayout(
-      const SizeBounds& size_bounds) const override;
-};
-
-ProposedLayout FlowLayout::CalculateProposedLayout(
-    const SizeBounds& size_bounds) const {
-  ProposedLayout layout;
-  int x = 0;
-  int y = 0;
-  int max_height = 0;
-  for (views::View* view : host_view()->children()) {
-    bool view_visible = view->GetVisible();
-    gfx::Size preferred_size = view->GetPreferredSize(size_bounds);
-    if (view_visible) {
-      max_height = std::max(max_height, preferred_size.height());
-      if (x > 0 && (x + preferred_size.width() > size_bounds.width())) {
-        x = 0;
-        y += max_height;
-        max_height = 0;
-      }
-    }
-    gfx::Rect proposed_bounds = gfx::Rect(gfx::Point(x, y), preferred_size);
-    SizeBounds available_bounds = SizeBounds(preferred_size);
-    ChildLayout child_layout = {view, view_visible, proposed_bounds,
-                                available_bounds};
-    layout.child_layouts.push_back(child_layout);
-    if (view_visible) {
-      x += preferred_size.width();
-    }
-  }
-  return layout;
 }
 
 }  // namespace
@@ -265,10 +223,14 @@ void ActionsExample::CreateExampleView(View* container) {
           Builder<BoxLayoutView>()
               .SetOrientation(BoxLayout::Orientation::kHorizontal)
               .AddChildren(
-                  Builder<View>()
+                  Builder<BoxLayoutView>()
                       .CopyAddressTo(&action_panel_)
-                      .SetLayoutManager(std::make_unique<FlowLayout>())
-                      .SetBorder(CreateThemedSolidBorder(
+                      .SetOrientation(BoxLayout::Orientation::kVertical)
+                      .SetInsideBorderInsets(
+                          gfx::Insets::VH(kActionExampleVerticalSpacing,
+                                          kActionExampleLeftPadding))
+                      .SetBetweenChildSpacing(kActionExampleVerticalSpacing)
+                      .SetBorder(CreateSolidBorder(
                           1, ui::kColorFocusableBorderUnfocused)),
                   Builder<BoxLayoutView>()
                       .CopyAddressTo(&control_panel_)
@@ -276,15 +238,7 @@ void ActionsExample::CreateExampleView(View* container) {
                       .SetInsideBorderInsets(
                           gfx::Insets::VH(kActionExampleVerticalSpacing,
                                           kActionExampleLeftPadding))
-                      .SetBetweenChildSpacing(kActionExampleVerticalSpacing))
-              .AfterBuild(base::BindOnce(
-                  [](raw_ptr<View>* action_panel,
-                     raw_ptr<BoxLayoutView>* control_panel,
-                     BoxLayoutView* box) {
-                    box->SetFlexForView((*action_panel).get(), 4);
-                    box->SetFlexForView((*control_panel).get(), 1);
-                  },
-                  &action_panel_, &control_panel_)))
+                      .SetBetweenChildSpacing(kActionExampleVerticalSpacing)))
       .BuildChildren();
 
   auto add_row = [this]() {
@@ -310,7 +264,7 @@ void ActionsExample::CreateExampleView(View* container) {
             Builder<Combobox>(std::make_unique<Combobox>(std::move(model)))
                 .CopyAddressTo(&combobox))
         .BuildChildren();
-    combobox->GetViewAccessibility().SetName(label->GetText());
+    combobox->GetViewAccessibility().SetName(std::u16string(label->GetText()));
     return {row, combobox};
   };
 
@@ -363,7 +317,9 @@ void ActionsExample::CreateExampleView(View* container) {
         .AfterBuild(base::BindOnce(
             [](Textfield** textfield, Label** label, BoxLayoutView* row) {
               row->SetFlexForView(*textfield, 1);
-              (*textfield)->GetViewAccessibility().SetName((*label)->GetText());
+              (*textfield)
+                  ->GetViewAccessibility()
+                  .SetName(std::u16string((*label)->GetText()));
             },
             &textfield, &label))
         .BuildChildren();
@@ -437,7 +393,7 @@ void ActionsExample::CreateActions(actions::ActionManager* manager) {
                            base::BindRepeating(&ActionsExample::ActionInvoked,
                                                base::Unretained(this)))
                            .SetText(u"Test Action 3")
-                           .SetActionId(kActionTest2))
+                           .SetActionId(kActionTest3))
           .Build(),
       actions::ActionItem::Builder()
           .AddChildren(
@@ -460,7 +416,7 @@ void ActionsExample::ActionInvoked(actions::ActionItem* action,
   auto bool_to_string = [](bool value) {
     return value ? kBoolStrings[1] : kBoolStrings[0];
   };
-  std::u16string text = actions_trigger_info_->GetText();
+  std::u16string text(actions_trigger_info_->GetText());
   if (!text.empty()) {
     text.append(u"\n");
   }
@@ -526,7 +482,7 @@ void ActionsExample::CreateControl(actions::ActionItem* action,
               .Build();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   action_panel_->AddChildView(std::move(new_view));
   ++control_num;

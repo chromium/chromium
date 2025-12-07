@@ -11,6 +11,7 @@ dictionary FontFaceDescriptors {
     CSSOMString unicodeRange = "U+0-10FFFF";
     CSSOMString variant = "normal";
     CSSOMString featureSettings = "normal";
+    [RuntimeEnabled=FontVariationSettingsDescriptor] CSSOMString variationSettings = "normal";
     CSSOMString display = "auto";
     [MeasureAs=FontFaceAscentOverride] CSSOMString ascentOverride = "normal";
     [MeasureAs=FontFaceDescentOverride] CSSOMString descentOverride = "normal";

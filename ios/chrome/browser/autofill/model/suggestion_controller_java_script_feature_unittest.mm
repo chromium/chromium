@@ -9,8 +9,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/test_timeouts.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/js_test_util.h"
@@ -28,9 +29,9 @@ class SuggestionControllerJavaScriptFeatureTest : public PlatformTest {
  protected:
   SuggestionControllerJavaScriptFeatureTest()
       : web_client_(std::make_unique<ChromeWebClient>()) {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
 
-    web::WebState::CreateParams params(browser_state_.get());
+    web::WebState::CreateParams params(profile_.get());
     web_state_ = web::WebState::Create(params);
     web_state_->GetView();
     web_state_->SetKeepRenderProcessAlive(true);
@@ -46,8 +47,8 @@ class SuggestionControllerJavaScriptFeatureTest : public PlatformTest {
   id ExecuteJavaScript(NSString* java_script) {
     autofill::SuggestionControllerJavaScriptFeature* feature =
         autofill::SuggestionControllerJavaScriptFeature::GetInstance();
-    return web::test::ExecuteJavaScriptForFeature(web_state(), java_script,
-                                                  feature);
+    return web::test::ExecuteJavaScriptForFeatureAndReturnResult(
+        web_state(), java_script, feature);
   }
   // Returns the active element name from the JS side.
   NSString* GetActiveElementName() {
@@ -64,9 +65,10 @@ class SuggestionControllerJavaScriptFeatureTest : public PlatformTest {
  protected:
   web::WebState* web_state() { return web_state_.get(); }
 
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
 };
 
@@ -79,7 +81,7 @@ web::WebFrame* SuggestionControllerJavaScriptFeatureTest::GetMainFrame() {
 
 TEST_F(SuggestionControllerJavaScriptFeatureTest, InitAndInject) {
   web::test::LoadHtml(@"<html></html>", web_state());
-  EXPECT_NSEQ(@"object", ExecuteJavaScript(@"typeof __gCrWeb.suggestion"));
+  EXPECT_NSEQ(@1, ExecuteJavaScript(@"__gCrWeb.hasRegisteredApi('suggestion')"));
 }
 
 TEST_F(SuggestionControllerJavaScriptFeatureTest, SelectElementInTabOrder) {
@@ -121,23 +123,21 @@ TEST_F(SuggestionControllerJavaScriptFeatureTest, SelectElementInTabOrder) {
   for (NSString* element_id : next_expected_ids) {
     NSString* expected_id = [next_expected_ids objectForKey:element_id];
     NSString* script = [NSString
-        stringWithFormat:
-            @"var elements=document.getElementsByTagName('input');"
-             "var element=document.getElementById('%@');"
-             "var next = __gCrWeb.suggestion.getNextElementInTabOrder("
-             "    element, elements);"
-             "next ? next.id : 'null';",
-            element_id];
+        stringWithFormat:@"var elements=document.getElementsByTagName('input');"
+                          "var element=document.getElementById('%@');"
+                          "var next = __gCrWeb.getRegisteredApi('suggestion')."
+                          "getFunction('getNextElementInTabOrder')(element, elements);"
+                          "next ? next.id : 'null';",
+                         element_id];
     EXPECT_NSEQ(expected_id, ExecuteJavaScript(script))
         << "Wrong when selecting next element of element with element id "
         << base::SysNSStringToUTF8(element_id);
   }
-  EXPECT_NSEQ(@YES,
-              ExecuteJavaScript(
-                  @"var elements=document.getElementsByTagName('input');"
-                   "var element=document.getElementsByTagName('a')[0];"
-                   "var next = __gCrWeb.suggestion.getNextElementInTabOrder("
-                   "    element, elements); next===null"))
+  EXPECT_NSEQ(@YES, ExecuteJavaScript(
+                        @"var elements=document.getElementsByTagName('input');"
+                         "var element=document.getElementsByTagName('a')[0];"
+                         "var next = __gCrWeb.getRegisteredApi('suggestion')."
+                         "getFunction('getNextElementInTabOrder')(element, elements); next===null"))
       << "Wrong when selecting the next element of an element not in the "
       << "element list.";
 
@@ -149,7 +149,8 @@ TEST_F(SuggestionControllerJavaScriptFeatureTest, SelectElementInTabOrder) {
     }
     NSString* script =
         [NSString stringWithFormat:@"document.getElementById('%@').focus();"
-                                    "__gCrWeb.suggestion.selectNextElement();"
+                                    "__gCrWeb.getRegisteredApi('suggestion')."
+                                    "getFunction('selectNextElement')();"
                                     "document.activeElement.id",
                                    element_id];
     EXPECT_NSEQ(expected_id, ExecuteJavaScript(script))
@@ -162,7 +163,8 @@ TEST_F(SuggestionControllerJavaScriptFeatureTest, SelectElementInTabOrder) {
     BOOL expected = ![next_expected_ids[element_id] isEqualToString:@"null"];
     NSString* script =
         [NSString stringWithFormat:@"document.getElementById('%@').focus();"
-                                    "__gCrWeb.suggestion.hasNextElement()",
+                                    "__gCrWeb.getRegisteredApi('suggestion')."
+                                    "getFunction('hasNextElement')()",
                                    element_id];
     EXPECT_NSEQ(@(expected), ExecuteJavaScript(script))
         << "Wrong when checking hasNextElement() for "
@@ -189,23 +191,23 @@ TEST_F(SuggestionControllerJavaScriptFeatureTest, SelectElementInTabOrder) {
   for (NSString* element_id : prev_expected_ids) {
     NSString* expected_id = [prev_expected_ids objectForKey:element_id];
     NSString* script = [NSString
-        stringWithFormat:
-            @"var elements=document.getElementsByTagName('input');"
-             "var element=document.getElementById('%@');"
-             "var prev = __gCrWeb.suggestion.getPreviousElementInTabOrder("
-             "    element, elements);"
-             "prev ? prev.id : 'null';",
-            element_id];
+        stringWithFormat:@"var elements=document.getElementsByTagName('input');"
+                          "var element=document.getElementById('%@');"
+                          "var prev = "
+                          "__gCrWeb.getRegisteredApi('suggestion')."
+                          "getFunction('getPreviousElementInTabOrder')(element, elements);"
+                          "prev ? prev.id : 'null';",
+                         element_id];
     EXPECT_NSEQ(expected_id, ExecuteJavaScript(script))
         << "Wrong when selecting prev element of element with element id "
         << base::SysNSStringToUTF8(element_id);
   }
-  EXPECT_NSEQ(
-      @YES, ExecuteJavaScript(
-                @"var elements=document.getElementsByTagName('input');"
-                 "var element=document.getElementsByTagName('a')[0];"
-                 "var prev = __gCrWeb.suggestion.getPreviousElementInTabOrder("
-                 "    element, elements); prev===null"))
+  EXPECT_NSEQ(@YES, ExecuteJavaScript(
+                        @"var elements=document.getElementsByTagName('input');"
+                         "var element=document.getElementsByTagName('a')[0];"
+                         "var prev = "
+                         "__gCrWeb.getRegisteredApi('suggestion')."
+                         "getFunction('getPreviousElementInTabOrder')(element, elements); prev===null"))
       << "Wrong when selecting the previous element of an element not in the "
       << "element list";
 
@@ -215,11 +217,12 @@ TEST_F(SuggestionControllerJavaScriptFeatureTest, SelectElementInTabOrder) {
       // If the expected previous element is null, the focus is not moved.
       expected_id = element_id;
     }
-    NSString* script = [NSString
-        stringWithFormat:@"document.getElementById('%@').focus();"
-                          "__gCrWeb.suggestion.selectPreviousElement();"
-                          "document.activeElement.id",
-                         element_id];
+    NSString* script =
+        [NSString stringWithFormat:@"document.getElementById('%@').focus();"
+                                    "__gCrWeb.getRegisteredApi('suggestion')."
+                                    "getFunction('selectPreviousElement')();"
+                                    "document.activeElement.id",
+                                   element_id];
     EXPECT_NSEQ(expected_id, ExecuteJavaScript(script))
         << "Wrong when selecting previous element with active element "
         << base::SysNSStringToUTF8(element_id);
@@ -230,7 +233,8 @@ TEST_F(SuggestionControllerJavaScriptFeatureTest, SelectElementInTabOrder) {
     BOOL expected = ![prev_expected_ids[element_id] isEqualToString:@"null"];
     NSString* script =
         [NSString stringWithFormat:@"document.getElementById('%@').focus();"
-                                    "__gCrWeb.suggestion.hasPreviousElement()",
+                                    "__gCrWeb.getRegisteredApi('suggestion')."
+                                    "getFunction('hasPreviousElement')()",
                                    element_id];
     EXPECT_NSEQ(@(expected), ExecuteJavaScript(script))
         << "Wrong when checking hasPreviousElement() for "
@@ -288,10 +292,11 @@ void SuggestionControllerJavaScriptFeatureTest::SequentialNavigationSkipCheck(
   EXPECT_NSEQ(@"firstname", GetActiveElementName());
   autofill::SuggestionControllerJavaScriptFeature::GetInstance()
       ->SelectNextElementInFrame(GetMainFrame());
-  if (shouldSkip)
+  if (shouldSkip) {
     EXPECT_TRUE(WaitUntilElementSelected(@"lastname"));
-  else
+  } else {
     EXPECT_TRUE(WaitUntilElementSelected(@"middlename"));
+  }
 }
 
 TEST_F(SuggestionControllerJavaScriptFeatureTest,
@@ -353,61 +358,6 @@ TEST_F(SuggestionControllerJavaScriptFeatureTest,
 TEST_F(SuggestionControllerJavaScriptFeatureTest,
        SequentialNavigationSkipCheckbox) {
   SequentialNavigationSkipCheck(@"type='checkbox'", YES);
-}
-
-// Test fixture to test
-// `FetchPreviousAndNextElementsPresenceInFrameWithID`.
-class FetchPreviousAndNextExceptionTest
-    : public SuggestionControllerJavaScriptFeatureTest {
- public:
-  void SetUp() override {
-    SuggestionControllerJavaScriptFeatureTest::SetUp();
-    web::test::LoadHtml(@"<html></html>", web_state());
-  }
-
- protected:
-  // Evaluates JS and tests that the completion handler passed to
-  // `FetchPreviousAndNextElementsPresenceInFrameWithID` is called with
-  // (false, false) indicating no previous and next element.
-  void EvaluateJavaScriptAndExpectNoPreviousAndNextElement(NSString* js) {
-    ExecuteJavaScript(js);
-    __block BOOL block_was_called = NO;
-    autofill::SuggestionControllerJavaScriptFeature::GetInstance()
-        ->FetchPreviousAndNextElementsPresenceInFrame(
-            GetMainFrame(),
-            base::BindOnce(^(bool hasPreviousElement, bool hasNextElement) {
-              EXPECT_FALSE(hasPreviousElement);
-              EXPECT_FALSE(hasNextElement);
-              block_was_called = YES;
-            }));
-    ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-        TestTimeouts::action_timeout(), ^bool() {
-          base::RunLoop().RunUntilIdle();
-          return block_was_called;
-        }));
-  }
-};
-
-// Tests that `fetchPreviousAndNextElementsPresenceWithCompletionHandler` works
-// when `__gCrWeb.suggestion.hasPreviousElement` throws an exception.
-TEST_F(FetchPreviousAndNextExceptionTest, HasPreviousElementException) {
-  EvaluateJavaScriptAndExpectNoPreviousAndNextElement(
-      @"__gCrWeb.suggestion.hasPreviousElement = function() { bar.foo1; }");
-}
-
-// Tests that `fetchPreviousAndNextElementsPresenceWithCompletionHandler` works
-// when `__gCrWeb.suggestion.hasNextElement` throws an exception.
-TEST_F(FetchPreviousAndNextExceptionTest, HasNextElementException) {
-  EvaluateJavaScriptAndExpectNoPreviousAndNextElement(
-      @"__gCrWeb.suggestion.hasNextElement = function() { bar.foo1; }");
-}
-
-// Tests that `fetchPreviousAndNextElementsPresenceWithCompletionHandler` works
-// when `Array.toString` has been overridden to return a malformed string
-// without a ",".
-TEST_F(FetchPreviousAndNextExceptionTest, HasPreviousElementNull) {
-  EvaluateJavaScriptAndExpectNoPreviousAndNextElement(
-      @"Array.prototype.toString = function() { return 'Hello'; }");
 }
 
 }  // namespace

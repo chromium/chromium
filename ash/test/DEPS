@@ -4,13 +4,16 @@ include_rules = [
   "+chromeos/ash/components/test",
   "+components/viz/test",
   "+mojo/core/embedder",
-   "+third_party/googletest/src/googletest/include/gtest/gtest.h",
 ]
 
 specific_include_rules = {
-  "ash_test_helper\.cc": [
+  "ash_test_helper\\.cc": [
     "+ash/host",
     "+chromeos/ash/components/fwupd",
     "+chromeos/ash/components/login/login_state",
+    "+components/session_manager/core/fake_session_manager_delegate.h",
   ],
+  "ash_test_helper\\.h": [
+    "+components/session_manager/core/session_manager.h",
+  ]
 }

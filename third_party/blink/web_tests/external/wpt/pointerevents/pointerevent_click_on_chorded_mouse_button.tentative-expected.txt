@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] Chorded button sequence L-down M-down M-up L-up
+  assert_equals: received click-like events expected "{type: auxclick, button: 1, buttons: 1},{type: click, button: 0, buttons: 0}" but got "{type: auxclick, button: 1, buttons: 1}"
+[FAIL] Chorded button sequence M-down L-down L-up M-up
+  assert_equals: received click-like events expected "{type: click, button: 0, buttons: 4},{type: auxclick, button: 1, buttons: 0}" but got "{type: click, button: 0, buttons: 4}"
+Harness: the test ran to completion.

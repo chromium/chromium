@@ -8,8 +8,6 @@
 #include "base/values.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/dips/dips_service.h"
-#include "chrome/browser/dips/dips_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
 #include "chrome/browser/ui/browser.h"
@@ -22,7 +20,9 @@
 #include "components/tpcd/metadata/browser/parser.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_devtools_protocol_client.h"
+#include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/features.h"
@@ -33,24 +33,124 @@ namespace {
 
 using ::chrome_test_utils::GetActiveWebContents;
 
+class URLCookieAccessObserver : public content::WebContentsObserver {
+ public:
+  URLCookieAccessObserver(content::WebContents* web_contents,
+                          GURL url,
+                          content::CookieAccessDetails::Type access_type);
+
+  void Wait();
+
+ private:
+  // WebContentsObserver overrides
+  void OnCookiesAccessed(content::RenderFrameHost* render_frame_host,
+                         const content::CookieAccessDetails& details) override;
+  void OnCookiesAccessed(content::NavigationHandle* navigation_handle,
+                         const content::CookieAccessDetails& details) override;
+
+  GURL url_;
+  content::CookieAccessDetails::Type access_type_;
+  base::RunLoop run_loop_;
+};
+
+URLCookieAccessObserver::URLCookieAccessObserver(
+    content::WebContents* web_contents,
+    GURL url,
+    content::CookieAccessDetails::Type access_type)
+    : WebContentsObserver(web_contents),
+      url_(std::move(url)),
+      access_type_(access_type) {}
+
+void URLCookieAccessObserver::Wait() {
+  run_loop_.Run();
+}
+
+void URLCookieAccessObserver::OnCookiesAccessed(
+    content::RenderFrameHost* render_frame_host,
+    const content::CookieAccessDetails& details) {
+  if (details.type == access_type_ && details.url == url_) {
+    run_loop_.Quit();
+  }
+}
+
+void URLCookieAccessObserver::OnCookiesAccessed(
+    content::NavigationHandle* navigation_handle,
+    const content::CookieAccessDetails& details) {
+  if (details.type == access_type_ && details.url == url_) {
+    run_loop_.Quit();
+  }
+}
+
+bool NavigateToSetCookie(content::WebContents* web_contents,
+                         const net::EmbeddedTestServer* server,
+                         std::string_view host,
+                         bool is_secure_cookie_set,
+                         bool is_ad_tagged) {
+  std::string relative_url = "/set-cookie?name=value";
+  if (is_secure_cookie_set) {
+    relative_url += ";Secure;SameSite=None";
+  }
+  if (is_ad_tagged) {
+    relative_url += "&isad=1";
+  }
+  const auto url = server->GetURL(host, relative_url);
+
+  URLCookieAccessObserver observer(web_contents, url,
+                                   content::CookieAccessDetails::Type::kChange);
+  bool success = content::NavigateToURL(web_contents, url);
+  if (success) {
+    observer.Wait();
+  }
+  return success;
+}
+
+void CreateImageAndWaitForCookieAccess(content::WebContents* web_contents,
+                                       const GURL& image_url) {
+  URLCookieAccessObserver observer(web_contents, image_url,
+                                   content::CookieAccessDetails::Type::kRead);
+  ASSERT_TRUE(content::ExecJs(web_contents,
+                              content::JsReplace(
+                                  R"(
+    let img = document.createElement('img');
+    img.src = $1;
+    document.body.appendChild(img);)",
+                                  image_url),
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  // The image must cause a cookie access, or else this will hang.
+  observer.Wait();
+}
+
 }  // namespace
 
 class TpcdMetadataDevtoolsObserverBrowserTest
-    : public subresource_filter::SubresourceFilterBrowserTest,
-      public content::TestDevToolsProtocolClient {
+    : public subresource_filter::SubresourceFilterBrowserTest {
  public:
   explicit TpcdMetadataDevtoolsObserverBrowserTest(
-      bool enable_metadata_feature = true)
+      bool enable_tracking_protection = true,
+      bool enable_metadata_feature = true,
+      bool enable_staged_control = true)
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    enabled_features_.push_back(
-        {content_settings::features::kTrackingProtection3pcd, {}});
     enabled_features_.push_back(
         {network::features::kSkipTpcdMitigationsForAds,
          {{"SkipTpcdMitigationsForAdsMetadata", "true"}}});
+    // Since Tracking Protection is always enabled via the field trial config
+    // for browser tests, we need to manually disable it.
+    if (enable_tracking_protection) {
+      enabled_features_.push_back(
+          {content_settings::features::kTrackingProtection3pcd, {}});
+    } else {
+      disabled_features_.push_back(
+          content_settings::features::kTrackingProtection3pcd);
+    }
     if (enable_metadata_feature) {
       enabled_features_.push_back({net::features::kTpcdMetadataGrants, {}});
     } else {
       disabled_features_.push_back(net::features::kTpcdMetadataGrants);
+    }
+
+    enable_staged_control_ = enable_staged_control;
+    if (!enable_staged_control) {
+      disabled_features_.push_back(net::features::kTpcdMetadataStageControl);
     }
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features_,
@@ -70,9 +170,11 @@ class TpcdMetadataDevtoolsObserverBrowserTest
     ASSERT_TRUE(https_server_.Start());
 
     // Open and reset DevTools.
-    AttachToWebContents(GetActiveWebContents(this));
-    SendCommandSync("Audits.enable");
-    ClearNotifications();
+    web_contents_devtools_client.AttachToWebContents(
+        GetActiveWebContents(this));
+    web_contents_devtools_client.SendCommandSync("Audits.enable");
+    web_contents_devtools_client.SendCommandSync("Network.enable");
+    web_contents_devtools_client.ClearNotifications();
 
     // Initialize mock 3PCD metadata component.
     const std::string first_party_pattern_spec = "[*.]a.test";
@@ -80,12 +182,19 @@ class TpcdMetadataDevtoolsObserverBrowserTest
     const std::string third_party_pattern_spec_2 = "c.test";
 
     Metadata metadata;
+    // If staged control is enabled, DTRP values must be set to 0 to avoid
+    // flakiness if the entry is dropped. If staged control is disabled, the
+    // values can be tested.
+    std::optional<uint32_t> dtrp =
+        enable_staged_control_ ? std::nullopt : std::make_optional(50u);
+    std::optional<uint32_t> dtrp_override =
+        enable_staged_control_ ? std::nullopt : std::make_optional(20u);
     tpcd::metadata::helpers::AddEntryToMetadata(
         metadata, third_party_pattern_spec_1, first_party_pattern_spec,
-        Parser::kSource1pDt, /*dtrp=*/50u);
+        Parser::kSource1pDt, dtrp);
     tpcd::metadata::helpers::AddEntryToMetadata(
         metadata, third_party_pattern_spec_2, first_party_pattern_spec,
-        Parser::kSource3pDt, /*dtrp=*/50u, /*dtrp_override=*/20u);
+        Parser::kSource3pDt, dtrp, dtrp_override);
     tpcd::metadata::Parser::GetInstance()->ParseMetadata(
         metadata.SerializeAsString());
 
@@ -100,7 +209,8 @@ class TpcdMetadataDevtoolsObserverBrowserTest
   }
 
   void TearDownOnMainThread() override {
-    DetachProtocolClient();
+    web_contents_devtools_client.DetachProtocolClient();
+    frame_devtools_client.DetachProtocolClient();
     devtools_observer_ = nullptr;
   }
 
@@ -125,9 +235,9 @@ class TpcdMetadataDevtoolsObserverBrowserTest
         https_server_.GetURL(third_party_site, relative_url));
   }
 
-  void WaitForIssueAndCheck(const std::vector<std::string>& sites,
-                            uint32_t opt_out_percentage,
-                            bool is_opt_out_top_level) {
+  void WaitForMetadataIssueAndCheck(const std::vector<std::string>& sites,
+                                    uint32_t opt_out_percentage,
+                                    bool is_opt_out_top_level) {
     auto is_metadata_issue = [](const base::Value::Dict& params) {
       const std::string* issue_code =
           params.FindStringByDottedPath("issue.code");
@@ -135,8 +245,9 @@ class TpcdMetadataDevtoolsObserverBrowserTest
     };
 
     // Wait for notification of a Metadata Issue.
-    base::Value::Dict params = WaitForMatchingNotification(
-        "Audits.issueAdded", base::BindRepeating(is_metadata_issue));
+    base::Value::Dict params =
+        web_contents_devtools_client.WaitForMatchingNotification(
+            "Audits.issueAdded", base::BindRepeating(is_metadata_issue));
     const std::string* issue_code = params.FindStringByDottedPath("issue.code");
     ASSERT_TRUE(issue_code);
     ASSERT_EQ(*issue_code, "CookieDeprecationMetadataIssue");
@@ -170,14 +281,107 @@ class TpcdMetadataDevtoolsObserverBrowserTest
 
     // Clear existing notifications so subsequent calls don't fail by checking
     // `sites` against old notifications.
-    ClearNotifications();
+    web_contents_devtools_client.ClearNotifications();
+  }
+
+  void WaitForCookieIssueAndCheck(std::string_view third_party_site,
+                                  std::string_view warning,
+                                  std::string_view exclusion) {
+    CHECK(warning.empty() || exclusion.empty())
+        << "inclusion reason and exclusion reason should not co-exist";
+    auto is_cookie_issue = [](const base::Value::Dict& params) {
+      const std::string* issue_code =
+          params.FindStringByDottedPath("issue.code");
+      return issue_code && *issue_code == "CookieIssue";
+    };
+
+    // Wait for notification of a Cookie Issue.
+    base::Value::Dict params =
+        web_contents_devtools_client.WaitForMatchingNotification(
+            "Audits.issueAdded", base::BindRepeating(is_cookie_issue));
+
+    std::string_view reason_name =
+        warning.empty() ? "cookieExclusionReasons" : "cookieWarningReasons";
+    std::string_view reason_value = warning.empty() ? exclusion : warning;
+    std::string partial_expected =
+        content::JsReplace(R"({
+            "cookie": {
+               "domain": $1,
+               "name": "name",
+               "path": "/"
+            },
+            $2: [ $3 ],
+            "operation": "ReadCookie",
+         })",
+                           third_party_site, reason_name, reason_value);
+
+    // Find relevant fields from cookieIssueDetails
+    ASSERT_THAT(params.FindDictByDottedPath("issue.details.cookieIssueDetails"),
+                testing::Pointee(base::test::DictionaryHasValues(
+                    base::test::ParseJsonDict(partial_expected))));
+
+    web_contents_devtools_client.ClearNotifications();
   }
 
   void CheckNoAddedIssue() {
     ReportDummyIssue();
 
-    WaitForIssueAndCheck({"dummy.test"}, 0u, false);
+    WaitForMetadataIssueAndCheck({"dummy.test"}, 0u, false);
   }
+
+  void SendSetCookieControls(bool enable_third_party_cookie_restriction,
+                             bool disable_third_party_cookie_metadata,
+                             bool disable_third_party_cookie_heuristics) {
+    base::Value::Dict command_params;
+    command_params.Set("enableThirdPartyCookieRestriction",
+                       enable_third_party_cookie_restriction);
+    command_params.Set("disableThirdPartyCookieMetadata",
+                       disable_third_party_cookie_metadata);
+    command_params.Set("disableThirdPartyCookieHeuristics",
+                       disable_third_party_cookie_heuristics);
+    web_contents_devtools_client.SendCommandSync("Network.setCookieControls",
+                                                 std::move(command_params));
+  }
+
+  content::RenderFrameHost* GetFrame() {
+    return ChildFrameAt(GetActiveWebContents(this)->GetPrimaryMainFrame(), 0);
+  }
+
+  void NavigateToPageWith3pIFrame(std::string_view host) {
+    frame_devtools_client.DetachProtocolClient();
+    GURL main_url(https_server().GetURL(host, "/iframe.html"));
+
+    ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(this), main_url));
+    EXPECT_TRUE(
+        NavigateIframeToURL(GetActiveWebContents(this), "test",
+                            https_server().GetURL("b.test", "/blank.html")));
+
+    frame_devtools_client.AttachToFrameTreeHost(GetFrame());
+    frame_devtools_client.SendCommandSync("Network.enable");
+  }
+
+  std::string SetCookieFromJS(content::RenderFrameHost* render_frame_host,
+                              std::string cookie) {
+    content::EvalJsResult result = content::EvalJs(
+        render_frame_host,
+        "document.cookie = '" + cookie + "; SameSite=None; Secure'",
+        content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+
+    return result.ExtractString();
+  }
+
+  std::string ReadCookiesFromJS(content::RenderFrameHost* render_frame_host) {
+    std::string res = content::EvalJs(render_frame_host, "document.cookie",
+                                      content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+                          .ExtractString();
+
+    return res;
+  }
+
+  net::test_server::EmbeddedTestServer& https_server() { return https_server_; }
+
+  content::TestDevToolsProtocolClient web_contents_devtools_client;
+  content::TestDevToolsProtocolClient frame_devtools_client;
 
  private:
   void ReportDummyIssue() {
@@ -197,6 +401,7 @@ class TpcdMetadataDevtoolsObserverBrowserTest
             std::move(details)));
   }
 
+  bool enable_staged_control_ = true;
   base::test::ScopedFeatureList feature_list_;
   std::vector<base::test::FeatureRefAndParams> enabled_features_;
   std::vector<base::test::FeatureRef> disabled_features_;
@@ -204,14 +409,131 @@ class TpcdMetadataDevtoolsObserverBrowserTest
   raw_ptr<TpcdMetadataDevtoolsObserver> devtools_observer_ = nullptr;
 };
 
-// TODO(https://crbug.com/341211478): Flaky.
 IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverBrowserTest,
-                       DISABLED_EmitsDevtoolsIssues) {
+                       EmitsDevtoolsIssues) {
   AddCookieAccess("a.test", "b.test", /*is_ad_tagged=*/false);
-  WaitForIssueAndCheck({"b.test"}, 50u, true);
+  WaitForMetadataIssueAndCheck({"b.test"}, 0u, true);
 
   AddCookieAccess("a.test", "c.test", /*is_ad_tagged=*/false);
-  WaitForIssueAndCheck({"c.test"}, 20u, false);
+  WaitForMetadataIssueAndCheck({"c.test"}, 0u, false);
+}
+
+IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverBrowserTest,
+                       DoesNotEmitMetadataIssueWhenDevToolsDisableMetadata) {
+  AddCookieAccess("a.test", "b.test", /*is_ad_tagged=*/false);
+  WaitForMetadataIssueAndCheck({"b.test"}, 0u, true);
+
+  SendSetCookieControls(/*enable_third_party_cookie_restriction=*/true,
+                        /*disable_third_party_cookie_metadata=*/true,
+                        /*disable_third_party_cookie_heuristics=*/false);
+
+  AddCookieAccess("a.test", "b.test", /*is_ad_tagged=*/false);
+  CheckNoAddedIssue();
+}
+
+class TpcdMetadataDevtoolsObserverTrackingProtectionDisabledBrowserTest
+    : public TpcdMetadataDevtoolsObserverBrowserTest {
+ public:
+  TpcdMetadataDevtoolsObserverTrackingProtectionDisabledBrowserTest()
+      : TpcdMetadataDevtoolsObserverBrowserTest(
+            /*enable_tracking_protection=*/false) {}
+};
+
+IN_PROC_BROWSER_TEST_F(
+    TpcdMetadataDevtoolsObserverTrackingProtectionDisabledBrowserTest,
+    EmitCookieIssueWhenDevToolsBlockTPC) {
+  SendSetCookieControls(/*enable_third_party_cookie_restriction=*/true,
+                        /*disable_third_party_cookie_metadata=*/false,
+                        /*disable_third_party_cookie_heuristics=*/false);
+
+  AddCookieAccess("a.test", "b.test", /*is_ad_tagged=*/false);
+  WaitForCookieIssueAndCheck("b.test", {"WarnDeprecationTrialMetadata"}, {});
+}
+
+IN_PROC_BROWSER_TEST_F(
+    TpcdMetadataDevtoolsObserverTrackingProtectionDisabledBrowserTest,
+    EmitMetadataIssueWhenDevToolsBlockTPC) {
+  SendSetCookieControls(/*enable_third_party_cookie_restriction=*/true,
+                        /*disable_third_party_cookie_metadata=*/false,
+                        /*disable_third_party_cookie_heuristics=*/false);
+
+  AddCookieAccess("a.test", "b.test", /*is_ad_tagged=*/false);
+  WaitForMetadataIssueAndCheck({"b.test"}, 0u, true);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    TpcdMetadataDevtoolsObserverTrackingProtectionDisabledBrowserTest,
+    EmitCookieIssueWhenDevToolsDisableMetadata) {
+  AddCookieAccess("a.test", "b.test", /*is_ad_tagged=*/false);
+  WaitForCookieIssueAndCheck("b.test", {"WarnThirdPartyPhaseout"}, {});
+
+  SendSetCookieControls(/*enable_third_party_cookie_restriction=*/true,
+                        /*disable_third_party_cookie_metadata=*/true,
+                        /*disable_third_party_cookie_heuristics=*/false);
+
+  AddCookieAccess("a.test", "b.test", /*is_ad_tagged=*/false);
+  // Since the cookie is no longer exempted by metadata,
+  // ExcludeThirdPartyPhaseout cookie issue should be present.
+  WaitForCookieIssueAndCheck("b.test", {}, {"ExcludeThirdPartyPhaseout"});
+}
+
+IN_PROC_BROWSER_TEST_F(
+    TpcdMetadataDevtoolsObserverTrackingProtectionDisabledBrowserTest,
+    DevToolsDisableMetadataJS) {
+  SendSetCookieControls(/*enable_third_party_cookie_restriction=*/true,
+                        /*disable_third_party_cookie_metadata=*/true,
+                        /*disable_third_party_cookie_heuristics=*/false);
+
+  NavigateToPageWith3pIFrame("a.test");
+
+  // Neither of these commands should work.
+  SetCookieFromJS(GetFrame(), "nonExistentCookie=value");
+  EXPECT_EQ(ReadCookiesFromJS(GetFrame()), "");
+
+  // Reenabling the metadata exemption. Cookie should now get set.
+  SendSetCookieControls(/*enable_third_party_cookie_restriction=*/true,
+                        /*disable_third_party_cookie_metadata=*/false,
+                        /*disable_third_party_cookie_heuristics=*/false);
+
+  // Refreshing so that RCM is re-created with new controls
+  NavigateToPageWith3pIFrame("a.test");
+
+  // Should now be unblocked by metadata and return the new cookie we set.
+  SetCookieFromJS(GetFrame(), "cookie=false");
+  EXPECT_EQ(ReadCookiesFromJS(GetFrame()), "cookie=false");
+}
+
+// Setting the DTRP values in the issue needs to be tested with the flag off.
+// Otherwise, a non-zero DTRP value might filter the entry and the issue will
+// never fire.
+class TpcdMetadataDevtoolsObserverDtrpDisabledBrowserTest
+    : public TpcdMetadataDevtoolsObserverBrowserTest {
+ public:
+  TpcdMetadataDevtoolsObserverDtrpDisabledBrowserTest()
+      : TpcdMetadataDevtoolsObserverBrowserTest(
+            /*enable_tracking_protection=*/true,
+            /*enable_metadata_feature=*/true,
+            /*enable_staged_control=*/false) {}
+};
+
+IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverDtrpDisabledBrowserTest,
+                       EmitsDevtoolsIssuesWithDtrpValues) {
+  AddCookieAccess("a.test", "b.test", /*is_ad_tagged=*/false);
+  WaitForMetadataIssueAndCheck({"b.test"}, 50u, true);
+
+  AddCookieAccess("a.test", "c.test", /*is_ad_tagged=*/false);
+  WaitForMetadataIssueAndCheck({"c.test"}, 20u, false);
+}
+
+IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverBrowserTest,
+                       EmitsDevtoolsIssuesForExemption) {
+  AddCookieAccess("a.test", "b.test", /*is_ad_tagged=*/false);
+  WaitForCookieIssueAndCheck(
+      "b.test", /*warning=*/{"WarnDeprecationTrialMetadata"}, /*exclusion=*/{});
+
+  AddCookieAccess("a.test", "c.test", /*is_ad_tagged=*/false);
+  WaitForCookieIssueAndCheck(
+      "c.test", /*warning=*/{"WarnDeprecationTrialMetadata"}, /*exclusion=*/{});
 }
 
 IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverBrowserTest,
@@ -243,7 +565,9 @@ class TpcdMetadataDevtoolsObserverDisabledBrowserTest
  public:
   TpcdMetadataDevtoolsObserverDisabledBrowserTest()
       : TpcdMetadataDevtoolsObserverBrowserTest(
-            /*enable_metadata_feature=*/false) {}
+            /*enable_tracking_protection=*/true,
+            /*enable_metadata_feature=*/false,
+            /*enable_staged_control=*/true) {}
 };
 
 IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverDisabledBrowserTest,

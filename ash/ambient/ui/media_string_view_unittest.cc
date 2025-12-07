@@ -5,6 +5,7 @@
 #include "ash/ambient/ui/media_string_view.h"
 
 #include <string>
+#include <string_view>
 
 #include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/test/ambient_ash_test_base.h"
@@ -15,7 +16,7 @@
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/views_test_utils.h"
 
@@ -37,7 +38,7 @@ class MediaStringViewTest : public AmbientAshTestBase {
     AmbientAshTestBase::TearDown();
   }
 
-  const std::u16string& GetText() {
+  std::u16string_view GetText() {
     return GetMediaStringViewTextLabel()->GetText();
   }
 };
@@ -98,8 +99,8 @@ TEST_F(MediaStringViewTest, TextContainerHasMaxWidthWithLongText) {
 }
 
 TEST_F(MediaStringViewTest, HasNoAnimationWithShortText) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   SetAmbientShownAndWaitForWidgets();
 
@@ -126,8 +127,8 @@ TEST_F(MediaStringViewTest, HasNoAnimationWithShortText) {
 }
 
 TEST_F(MediaStringViewTest, HasAnimationWithLongText) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   SetAmbientShownAndWaitForWidgets();
 
@@ -154,8 +155,8 @@ TEST_F(MediaStringViewTest, HasAnimationWithLongText) {
 }
 
 TEST_F(MediaStringViewTest, ShouldStopAndStartAnimationWhenTextChanges) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   SetAmbientShownAndWaitForWidgets();
 
@@ -199,8 +200,8 @@ TEST_F(MediaStringViewTest, ShouldStopAndStartAnimationWhenTextChanges) {
 }
 
 TEST_F(MediaStringViewTest, ShouldStartAndStopAnimationWhenTextChanges) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   SetAmbientShownAndWaitForWidgets();
 
@@ -261,8 +262,8 @@ TEST_F(MediaStringViewTest, ShouldStartAndStopAnimationWhenTextChanges) {
 }
 
 TEST_F(MediaStringViewTest, PauseMediaWillNotStopAnimationWithLongText) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   SetAmbientShownAndWaitForWidgets();
 

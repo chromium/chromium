@@ -289,7 +289,7 @@ TEST_F(BufferPoolTest, BestEffortBlockAllocation) {
   EXPECT_TRUE(pool.AddBlockBuffer(id1, std::move(mapping1), {&allocator1, 1}));
   EXPECT_TRUE(pool.AddBlockBuffer(id2, std::move(mapping2), {&allocator2, 1}));
 
-  // Oversized best-effort allocations can succceed.
+  // Oversized best-effort allocations can succeed.
 
   Fragment partial_fragment =
       pool.AllocateBlockBestEffort(kBuffer2BlockSize * 2);

@@ -19,10 +19,8 @@ include_rules = [
   "+chrome/browser/ash/arc",
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/extensions/extension_service.h",
   "+chrome/browser/extensions/extension_service_test_base.h",
-  "+chrome/browser/image_decoder",
   "+chrome/browser/notifications",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
@@ -38,7 +36,13 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "arc_app_list_prefs\.cc": [
+  "arc_app_list_prefs\\.cc": [
      "+ash",
+  ],
+  "arc_app_test\\.h": [
+    "+chrome/browser/ash/settings/scoped_testing_cros_settings.h",
+  ],
+  "arc_app_unittest\\.cc": [
+    "+chrome/browser/ash/browser_delegate/browser_controller_impl.h",
   ],
 }

@@ -83,7 +83,8 @@ ExtensionFunction::ResponseAction TestOpenFileUrlFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(file_url.is_valid());
   EXTENSION_FUNCTION_VALIDATE(file_url.SchemeIsFile());
 
-  ExtensionsAPIClient::Get()->OpenFileUrl(file_url, browser_context());
+  ExtensionsAPIClient::Get()->OpenFileUrlForTesting(file_url,
+                                                    browser_context());
   return RespondNow(NoArguments());
 }
 

@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import logging
 import os
 import sys
@@ -33,6 +31,15 @@ FORCED_RENDERER_CRASH_SIGNATURES = [
     'chrome!DispatchProtocolCommand',
     'logging::LogMessage::~LogMessage',
 ]
+
+# At the time of writing, this is the default timeout for
+# App.GetRecentMinidumpPathWithTimeout(). Ideally, we would be able to pass in
+# None, but that will require updating Telemetry.
+WAIT_FOR_MINIDUMP_TIMEOUT = 15
+if sys.platform == 'win32':
+  # TODO(crbug.com/406190893): Remove this special case if the cause of slow
+  # minidump generation on Windows is fixed.
+  WAIT_FOR_MINIDUMP_TIMEOUT = 30
 
 
 def ContainsAtLeastOne(expected_values, checked_value):
@@ -70,7 +77,8 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
     # Wait for the browser to restart fully before crashing
     self._LoadPageThenWait('var sam = "car";', 'sam')
     self._browser.tabs.New().Navigate('chrome://gpucrash', timeout=10)
-    crash_minidump_path = self._browser.GetRecentMinidumpPathWithTimeout()
+    crash_minidump_path = self._browser.GetRecentMinidumpPathWithTimeout(
+        timeout_s=WAIT_FOR_MINIDUMP_TIMEOUT)
     self.assertIsNotNone(crash_minidump_path)
 
     if crash_minidump_path is not None:
@@ -115,7 +123,8 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
     # Wait for the browser to restart fully before crashing
     self._LoadPageThenWait('var cat = "dog";', 'cat')
     self._browser.tabs.New().Navigate('chrome://gpucrash', timeout=10)
-    first_crash_path = self._browser.GetRecentMinidumpPathWithTimeout()
+    first_crash_path = self._browser.GetRecentMinidumpPathWithTimeout(
+        timeout_s=WAIT_FOR_MINIDUMP_TIMEOUT)
 
     self.assertIsNotNone(first_crash_path)
     if first_crash_path is not None:
@@ -150,7 +159,7 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
     # timestamp so we don't get the first one returned to us again
     oldest_ts = os.path.getmtime(first_crash_path) + 1
     second_crash_path = self._browser.GetRecentMinidumpPathWithTimeout(
-        oldest_ts=oldest_ts)
+        timeout_s=WAIT_FOR_MINIDUMP_TIMEOUT, oldest_ts=oldest_ts)
     self.assertIsNotNone(second_crash_path)
     if second_crash_path is not None:
       logging.info(
@@ -225,6 +234,11 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
       # don't make it too short.
       self._browser.tabs[-1].EvaluateJavaScript('var cat = "dog";', timeout=10)
     except exceptions.TimeoutException:
+      # Try to until at least one minidump is written to disk. If none end up
+      # being written, the test will fail shortly after.
+      _ = self._browser.GetRecentMinidumpPathWithTimeout(
+          timeout_s=WAIT_FOR_MINIDUMP_TIMEOUT)
+
       # If we time out while crashing the renderer process, the minidump should
       # still exist, we just have to manually look for it instead of it being
       # part of the exception.

@@ -11,6 +11,8 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.Set;
@@ -23,11 +25,12 @@ import java.util.Set;
  * Threading model: all calls to/from C++ happen on the UI thread.
  */
 @JNINamespace("gcm")
+@NullMarked
 public class GCMDriver {
     private static final String TAG = "GCMDriver";
 
     // The instance of GCMDriver currently owned by a C++ GCMDriverAndroid, if any.
-    private static GCMDriver sInstance;
+    private static @Nullable GCMDriver sInstance;
 
     private long mNativeGCMDriverAndroid;
     private GoogleCloudMessagingSubscriber mSubscriber;
@@ -104,7 +107,6 @@ public class GCMDriver {
                 GCMDriverJni.get()
                         .onRegisterFinished(
                                 mNativeGCMDriverAndroid,
-                                GCMDriver.this,
                                 appId,
                                 registrationId,
                                 !registrationId.isEmpty());
@@ -129,9 +131,7 @@ public class GCMDriver {
 
             @Override
             protected void onPostExecute(Boolean success) {
-                GCMDriverJni.get()
-                        .onUnregisterFinished(
-                                mNativeGCMDriverAndroid, GCMDriver.this, appId, success);
+                GCMDriverJni.get().onUnregisterFinished(mNativeGCMDriverAndroid, appId, success);
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
@@ -147,7 +147,6 @@ public class GCMDriver {
         GCMDriverJni.get()
                 .onMessageReceived(
                         sInstance.mNativeGCMDriverAndroid,
-                        sInstance,
                         message.getAppId(),
                         message.getSenderId(),
                         message.getMessageId(),
@@ -165,23 +164,17 @@ public class GCMDriver {
     @NativeMethods
     interface Natives {
         void onRegisterFinished(
-                long nativeGCMDriverAndroid,
-                GCMDriver caller,
-                String appId,
-                String registrationId,
-                boolean success);
+                long nativeGCMDriverAndroid, String appId, String registrationId, boolean success);
 
-        void onUnregisterFinished(
-                long nativeGCMDriverAndroid, GCMDriver caller, String appId, boolean success);
+        void onUnregisterFinished(long nativeGCMDriverAndroid, String appId, boolean success);
 
         void onMessageReceived(
                 long nativeGCMDriverAndroid,
-                GCMDriver caller,
-                String appId,
-                String senderId,
-                String messageId,
-                String collapseKey,
-                byte[] rawData,
-                String[] dataKeysAndValues);
+                @Nullable String appId,
+                @Nullable String senderId,
+                @Nullable String messageId,
+                @Nullable String collapseKey,
+                byte @Nullable [] rawData,
+                String @Nullable [] dataKeysAndValues);
     }
 }

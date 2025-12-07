@@ -5,30 +5,22 @@
 #include "chrome/browser/ash/app_mode/startup_app_launcher.h"
 
 #include <memory>
-#include <utility>
-#include <vector>
+#include <string>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
-#include "base/location.h"
 #include "base/notreached.h"
 #include "base/syslog_logging.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
-#include "chrome/browser/ash/crosapi/browser_manager_observer.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/crosapi/chrome_app_kiosk_service_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_installer.h"
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_launcher.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom.h"
 #include "components/crx_file/id_util.h"
+#include "net/base/backoff_entry.h"
 
 using chromeos::ChromeKioskAppInstaller;
 using chromeos::ChromeKioskAppLauncher;
@@ -49,12 +41,6 @@ const net::BackoffEntry::Policy kKioskLaunchExtensionBackoffPolicy = {
     .entry_lifetime_ms = -1,
     .always_use_initial_delay = false,
 };
-
-crosapi::ChromeAppKioskServiceAsh* crosapi_chrome_app_kiosk_service() {
-  return crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->chrome_app_kiosk_service();
-}
 
 }  // namespace
 
@@ -171,26 +157,11 @@ void StartupAppLauncher::OnKioskAppDataLoadStatusChanged(
 void StartupAppLauncher::BeginInstall() {
   state_ = LaunchState::kInstallingApp;
   observers_.NotifyAppInstalling();
-  if (crosapi::browser_util::IsLacrosEnabledInChromeKioskSession()) {
-    InstallAppInLacros();
-  } else {
-    InstallAppInAsh();
-  }
-}
-
-void StartupAppLauncher::InstallAppInAsh() {
   installer_ = std::make_unique<ChromeKioskAppInstaller>(
       profile_,
       KioskChromeAppManager::Get()->CreatePrimaryAppInstallData(app_id_));
   installer_->BeginInstall(base::BindOnce(
       &StartupAppLauncher::OnInstallComplete, weak_ptr_factory_.GetWeakPtr()));
-}
-
-void StartupAppLauncher::InstallAppInLacros() {
-  crosapi_chrome_app_kiosk_service()->InstallKioskApp(
-      KioskChromeAppManager::Get()->CreatePrimaryAppInstallData(app_id_),
-      base::BindOnce(&StartupAppLauncher::OnInstallComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void StartupAppLauncher::OnInstallComplete(
@@ -201,6 +172,14 @@ void StartupAppLauncher::OnInstallComplete(
 
   switch (result) {
     case ChromeKioskAppInstaller::InstallResult::kSuccess:
+      OnInstallSuccess();
+      return;
+    case ChromeKioskAppInstaller::InstallResult::kPrimaryAppUpdateFailed:
+      SYSLOG(WARNING) << "Primary app update failed, proceeding anyways";
+      OnInstallSuccess();
+      return;
+    case ChromeKioskAppInstaller::InstallResult::kSecondaryAppUpdateFailed:
+      SYSLOG(WARNING) << "Secondary app update failed, proceeding anyways";
       OnInstallSuccess();
       return;
     case ChromeKioskAppInstaller::InstallResult::kPrimaryAppInstallFailed:
@@ -230,46 +209,54 @@ void StartupAppLauncher::OnInstallSuccess() {
 
 void StartupAppLauncher::LaunchApp() {
   if (state_ != LaunchState::kReadyToLaunch) {
-    NOTREACHED_IN_MIGRATION();
     SYSLOG(ERROR) << "LaunchApp() called but launcher is not initialized.";
+    NOTREACHED();
   }
 
-  if (crosapi::browser_util::IsLacrosEnabledInChromeKioskSession()) {
-    crosapi_chrome_app_kiosk_service()->LaunchKioskApp(
-        app_id_, delegate_->IsNetworkReady(),
-        base::BindOnce(&StartupAppLauncher::OnLaunchComplete,
-                       weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    launcher_ = std::make_unique<ChromeKioskAppLauncher>(
-        profile_, app_id_, delegate_->IsNetworkReady());
+  launcher_ = std::make_unique<ChromeKioskAppLauncher>(
+      profile_, app_id_, delegate_->IsNetworkReady());
 
-    launcher_->LaunchApp(base::BindOnce(&StartupAppLauncher::OnLaunchComplete,
-                                        weak_ptr_factory_.GetWeakPtr()));
+  base::expected<void, ChromeKioskAppLauncher::PreLaunchError>
+      pre_launch_result = launcher_->PerformPreLaunchChecks();
+  if (!pre_launch_result.has_value()) {
+    HandlePreLaunchError(pre_launch_result.error());
+    return;
   }
+  observers_.NotifyAppLaunching();
+
+  launcher_->LaunchApp(base::BindOnce(&StartupAppLauncher::OnLaunchComplete,
+                                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void StartupAppLauncher::OnLaunchComplete(
-    ChromeKioskAppLauncher::LaunchResult result) {
-  CHECK_EQ(state_, LaunchState::kReadyToLaunch);
-
-  launcher_.reset();
-
-  switch (result) {
-    case ChromeKioskAppLauncher::LaunchResult::kSuccess:
-      OnLaunchSuccess();
-      return;
-    case ChromeKioskAppLauncher::LaunchResult::kUnableToLaunch:
+void StartupAppLauncher::HandlePreLaunchError(
+    ChromeKioskAppLauncher::PreLaunchError error) {
+  switch (error) {
+    case ChromeKioskAppLauncher::PreLaunchError::kPrimaryAppMissing:
+    case ChromeKioskAppLauncher::PreLaunchError::kSecondaryAppsMissing:
+    case ChromeKioskAppLauncher::PreLaunchError::kPrimaryAppNotKioskEnabled:
       OnLaunchFailure(KioskAppLaunchError::Error::kUnableToLaunch);
       return;
-    case ChromeKioskAppLauncher::LaunchResult::kNetworkMissing:
+    case ChromeKioskAppLauncher::PreLaunchError::kNetworkMissing:
       if (!RetryWhenNetworkIsAvailable()) {
         OnLaunchFailure(KioskAppLaunchError::Error::kUnableToLaunch);
       }
       return;
-    case ChromeKioskAppLauncher::LaunchResult::kUnknown:
-      SYSLOG(ERROR) << "Received unknown LaunchResult";
-      OnLaunchFailure(KioskAppLaunchError::Error::kUnableToLaunch);
+    case ChromeKioskAppLauncher::PreLaunchError::kChromeAppDeprecated:
+      OnLaunchFailure(KioskAppLaunchError::Error::kChromeAppDeprecated);
       return;
+  }
+}
+
+void StartupAppLauncher::OnLaunchComplete(bool success) {
+  CHECK_EQ(state_, LaunchState::kReadyToLaunch);
+
+  launcher_.reset();
+
+  if (success) {
+    OnLaunchSuccess();
+  } else {
+    // Other error cases are being handled in `HandlePreLaunchError`
+    OnLaunchFailure(KioskAppLaunchError::Error::kUnableToLaunch);
   }
 }
 

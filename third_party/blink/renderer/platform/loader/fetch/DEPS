@@ -1,18 +1,24 @@
 include_rules = [
   "+base/containers/flat_set.h",
+  "+base/memory_coordinator",
+  "+components/subresource_filter/core/common/scoped_rule.h",
   "+net/base/auth.h",
   "+net/base/ip_endpoint.h",
-  "+net/base/schemeful_site.h",
   "+net/dns/public",
-  "+net/filter/source_stream.h",
+  "+net/filter/source_stream_type.h",
   "+net/http/alternate_protocol_usage.h",
-  "+net/http/http_connection_info.h",
   "+net/ssl/ssl_info.h",
   "+net/storage_access_api/status.h",
   "+third_party/blink/renderer/platform/mojo",
 ]
 
 specific_include_rules = {
+  "code_cache_host.cc": [
+    "+base/threading/sequence_bound.h",
+    "+components/persistent_cache",
+    "+net/base/url_util.h",
+    "+url/gurl.h",
+  ],
   "resource_request.cc": [
     "+net/base/request_priority.h",
   ],

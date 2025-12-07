@@ -19,7 +19,8 @@ using webrtc::VideoFrame;
 namespace {
 
 std::unique_ptr<DesktopFrame> MakeDesktopFrame(int width, int height) {
-  return std::make_unique<BasicDesktopFrame>(DesktopSize(width, height));
+  return std::make_unique<BasicDesktopFrame>(DesktopSize(width, height),
+                                             webrtc::FOURCC_ARGB);
 }
 
 }  // namespace
@@ -43,8 +44,8 @@ TEST(WebrtcVideoFrameAdapter, CreateVideoFrameWrapsDesktopFrame) {
 TEST(WebrtcVideoFrameAdapter, AdapterHasCorrectSize) {
   auto desktop_frame = MakeDesktopFrame(100, 200);
   auto frame_stats = std::make_unique<WebrtcVideoEncoder::FrameStats>();
-  rtc::scoped_refptr<WebrtcVideoFrameAdapter> adapter(
-      new rtc::RefCountedObject<WebrtcVideoFrameAdapter>(
+  webrtc::scoped_refptr<WebrtcVideoFrameAdapter> adapter(
+      new webrtc::RefCountedObject<WebrtcVideoFrameAdapter>(
           std::move(desktop_frame), std::move(frame_stats)));
 
   EXPECT_EQ(100, adapter->width());

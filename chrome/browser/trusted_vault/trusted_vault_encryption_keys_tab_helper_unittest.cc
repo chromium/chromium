@@ -32,18 +32,21 @@ class TrustedVaultEncryptionKeysTabHelperTest
     : public ChromeRenderViewHostTestHarness {
  public:
   TrustedVaultEncryptionKeysTabHelperTest() {
+#if BUILDFLAG(IS_ANDROID)
     // Avoid the disabling of site isolation due to memory constraints, required
     // on Android so that ApplyGlobalIsolatedOrigins() takes effect regardless
     // of available memory when running the test (otherwise low-memory bots may
     // run into test failures).
-    feature_list_.InitAndEnableFeatureWithParameters(
-        site_isolation::features::kSiteIsolationMemoryThresholds,
-        {{site_isolation::features::
-              kStrictSiteIsolationMemoryThresholdParamName,
-          "0"},
-         {site_isolation::features::
-              kPartialSiteIsolationMemoryThresholdParamName,
-          "0"}});
+    feature_list_.InitWithFeaturesAndParameters(
+        {{site_isolation::features::kSiteIsolationMemoryThresholdsAndroid,
+          {{site_isolation::features::
+                kStrictSiteIsolationMemoryThresholdParamName,
+            "0"},
+           {site_isolation::features::
+                kPartialSiteIsolationMemoryThresholdParamName,
+            "0"}}}},
+        {});
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   ~TrustedVaultEncryptionKeysTabHelperTest() override = default;
@@ -107,9 +110,8 @@ TEST_F(TrustedVaultEncryptionKeysTabHelperTest,
   EXPECT_FALSE(HasEncryptionKeysApiInMainFrame());
 }
 
-// TODO(crbug.com/40881433): flaky on android bots.
 TEST_F(TrustedVaultEncryptionKeysTabHelperTest,
-       DISABLED_ShouldNotExposeMojoApiIfNavigatedAway) {
+       ShouldNotExposeMojoApiIfNavigatedAway) {
   web_contents_tester()->NavigateAndCommit(GaiaUrls::GetInstance()->gaia_url());
   ASSERT_TRUE(HasEncryptionKeysApiInMainFrame());
   web_contents_tester()->NavigateAndCommit(GURL("http://page.com"));
@@ -215,9 +217,10 @@ TEST_F(TrustedVaultEncryptionKeysTabHelperPrerenderingTest,
   // If the prerendering happens to the cross origin, the prerendering would be
   // canceled.
   const GURL kCrossOriginPrerenderingUrl(GURL("http://page.com"));
-  int frame_tree_node_id = content::WebContentsTester::For(web_contents())
-                               ->AddPrerender(kCrossOriginPrerenderingUrl);
-  ASSERT_EQ(frame_tree_node_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+  content::FrameTreeNodeId frame_tree_node_id =
+      content::WebContentsTester::For(web_contents())
+          ->AddPrerender(kCrossOriginPrerenderingUrl);
+  ASSERT_TRUE(frame_tree_node_id.is_null());
   // EncryptionKeys is still valid in a primary page.
   EXPECT_TRUE(HasEncryptionKeysApiInMainFrame());
 

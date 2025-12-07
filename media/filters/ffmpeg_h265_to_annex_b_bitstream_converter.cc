@@ -25,33 +25,34 @@ FFmpegH265ToAnnexBBitstreamConverter::~FFmpegH265ToAnnexBBitstreamConverter() {}
 
 bool FFmpegH265ToAnnexBBitstreamConverter::ConvertPacket(AVPacket* packet) {
   DVLOG(3) << __func__;
-  if (packet == NULL || !packet->data)
+  if (packet == nullptr || !packet->data) {
     return false;
+  }
 
   // Calculate the needed output buffer size.
   if (!hevc_config_) {
     if (!stream_codec_parameters_->extradata ||
         stream_codec_parameters_->extradata_size <= 0) {
       DVLOG(1) << "HEVCDecoderConfiguration not found, no extra codec data";
-      return false;
+      return true;
     }
 
     hevc_config_ = std::make_unique<mp4::HEVCDecoderConfigurationRecord>();
 
-    if (!hevc_config_->Parse(stream_codec_parameters_->extradata,
-                             stream_codec_parameters_->extradata_size)) {
+    if (!hevc_config_->Parse(
+            AVCodecParametersExtraDataToSpan(stream_codec_parameters_.get()))) {
       DVLOG(1) << "Parsing HEVCDecoderConfiguration failed";
       return false;
     }
   }
 
-  std::vector<uint8_t> input_frame;
-  std::vector<SubsampleEntry> subsamples;
+  auto packet_data = AVPacketData(*packet);
+
   // TODO(servolk): Performance could be improved here, by reducing unnecessary
   // data copying, but first annex b conversion code needs to be refactored to
   // allow that (see crbug.com/455379).
-  input_frame.insert(input_frame.end(),
-                     packet->data, packet->data + packet->size);
+  std::vector<uint8_t> input_frame(packet_data.begin(), packet_data.end());
+  std::vector<SubsampleEntry> subsamples;
   size_t nalu_size_len = hevc_config_->lengthSizeMinusOne + 1;
   if (!mp4::AVC::ConvertFrameToAnnexB(nalu_size_len, &input_frame,
                                       &subsamples)) {
@@ -82,13 +83,13 @@ bool FFmpegH265ToAnnexBBitstreamConverter::ConvertPacket(AVPacket* packet) {
 
   // Proceed with the conversion of the actual in-band NAL units, leave room
   // for configuration in the beginning.
-  memcpy(dest_packet.data, &input_frame[0], input_frame.size());
+  AVPacketData(dest_packet).copy_from(input_frame);
 
   // At the end we must destroy the old packet.
   av_packet_unref(packet);
 
   // Finally, replace the values in the input packet.
-  memcpy(packet, &dest_packet, sizeof(*packet));
+  *packet = dest_packet;
   return true;
 }
 

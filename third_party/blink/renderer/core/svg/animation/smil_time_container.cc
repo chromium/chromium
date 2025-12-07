@@ -31,10 +31,10 @@
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg/animation/element_smil_animations.h"
 #include "third_party/blink/renderer/core/svg/animation/svg_smil_element.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
@@ -419,14 +419,11 @@ void SMILTimeContainer::WakeupTimerFired(TimerBase*) {
   TimingUpdate update(*this, Elapsed(), TimingUpdate::kNormal);
   if (previous_frame_scheduling_state == kFutureAnimationFrame) {
     DCHECK(IsTimelineRunning());
-    if (RuntimeEnabledFeatures::SmilAutoSuspendOnLagEnabled()) {
-      // Advance time to just before the next event.
-      const SMILTime next_event_time =
-          !priority_queue_.IsEmpty()
-              ? priority_queue_.Min() - SMILTime::Epsilon()
-              : SMILTime::Unresolved();
-      update.TryAdvanceTime(next_event_time);
-    }
+    // Advance time to just before the next event.
+    const SMILTime next_event_time =
+        !priority_queue_.IsEmpty() ? priority_queue_.Min() - SMILTime::Epsilon()
+                                   : SMILTime::Unresolved();
+    update.TryAdvanceTime(next_event_time);
     ServiceOnNextFrame();
   } else {
     UpdateAnimationsAndScheduleFrameIfNeeded(update);
@@ -486,25 +483,23 @@ bool SMILTimeContainer::ServiceAnimations() {
   if (!GetDocument().IsActive())
     return false;
   SMILTime elapsed = Elapsed();
-  if (RuntimeEnabledFeatures::SmilAutoSuspendOnLagEnabled()) {
-    // If an unexpectedly long amount of time has passed since we last
-    // ticked animations, behave as if we paused the timeline after
-    // |kMaxAnimationLag| and now automatically resume the animation.
-    constexpr SMILTime kMaxAnimationLag = SMILTime::FromSecondsD(60);
-    const SMILTime elapsed_limit = latest_update_time_ + kMaxAnimationLag;
-    if (previous_frame_scheduling_state == kAnimationFrame &&
-        elapsed > elapsed_limit) {
-      // We've passed the lag limit. Compute the excess lag and then
-      // rewind/adjust the timeline by that amount to make it appear as if only
-      // kMaxAnimationLag has passed.
-      const SMILTime excess_lag = elapsed - elapsed_limit;
-      // Since Elapsed() is clamped, the limit should fall within the clamped
-      // time range as well.
-      DCHECK_EQ(ClampPresentationTime(presentation_time_ - excess_lag),
-                presentation_time_ - excess_lag);
-      presentation_time_ = presentation_time_ - excess_lag;
-      elapsed = Elapsed();
-    }
+  // If an unexpectedly long amount of time has passed since we last
+  // ticked animations, behave as if we paused the timeline after
+  // |kMaxAnimationLag| and now automatically resume the animation.
+  constexpr SMILTime kMaxAnimationLag = SMILTime::FromSecondsD(60);
+  const SMILTime elapsed_limit = latest_update_time_ + kMaxAnimationLag;
+  if (previous_frame_scheduling_state == kAnimationFrame &&
+      elapsed > elapsed_limit) {
+    // We've passed the lag limit. Compute the excess lag and then
+    // rewind/adjust the timeline by that amount to make it appear as if only
+    // kMaxAnimationLag has passed.
+    const SMILTime excess_lag = elapsed - elapsed_limit;
+    // Since Elapsed() is clamped, the limit should fall within the clamped
+    // time range as well.
+    DCHECK_EQ(ClampPresentationTime(presentation_time_ - excess_lag),
+              presentation_time_ - excess_lag);
+    presentation_time_ = presentation_time_ - excess_lag;
+    elapsed = Elapsed();
   }
   TimingUpdate update(*this, elapsed, TimingUpdate::kNormal);
   return UpdateAnimationsAndScheduleFrameIfNeeded(update);
@@ -648,8 +643,9 @@ bool NonRenderedElementThatAffectsContent(const SVGElement& target) {
 }
 
 bool CanThrottleTarget(const SVGElement& target) {
-  // Don't throttle if the target is in the layout tree.
-  if (target.GetLayoutObject()) {
+  // Don't throttle if the target is in the layout tree or needs to
+  // recalc style.
+  if (target.GetLayoutObject() || target.NeedsStyleRecalc()) {
     return false;
   }
   // Don't throttle if the target has computed style (for example <stop>

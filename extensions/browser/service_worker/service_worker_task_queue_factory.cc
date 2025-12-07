@@ -47,13 +47,12 @@ ServiceWorkerTaskQueueFactory::BuildServiceInstanceForBrowserContext(
           extensions_features::kUseNewServiceWorkerTaskQueue)) {
     // TODO(crbug.com/40276609): Insert new task queue once
     // ServiceWorkerTaskQueue is an abstract class.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   } else {
     task_queue = std::make_unique<ServiceWorkerTaskQueue>(context);
   }
   BrowserContext* original_context =
-      ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
-          context, /*force_guest_profile=*/true);
+      ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(context);
   if (original_context != context) {
     // To let incognito context's ServiceWorkerTaskQueue know about extensions
     // that were activated (which has its own instance of
@@ -67,8 +66,7 @@ ServiceWorkerTaskQueueFactory::BuildServiceInstanceForBrowserContext(
 
 BrowserContext* ServiceWorkerTaskQueueFactory::GetBrowserContextToUse(
     BrowserContext* context) const {
-  return ExtensionsBrowserClient::Get()->GetContextOwnInstance(
-      context, /*force_guest_profile=*/true);
+  return ExtensionsBrowserClient::Get()->GetContextOwnInstance(context);
 }
 
 }  // namespace extensions

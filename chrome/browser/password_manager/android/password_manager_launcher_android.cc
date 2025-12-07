@@ -12,13 +12,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/PasswordManagerLauncher_jni.h"
 
-namespace {
-
-static bool g_override_for_testing_set = false;
-static bool g_manage_password_when_passkeys_present_override = false;
-
-}  // namespace
-
 namespace password_manager_launcher {
 
 void ShowPasswordSettings(content::WebContents* web_contents,
@@ -29,17 +22,6 @@ void ShowPasswordSettings(content::WebContents* web_contents,
       static_cast<int>(referrer), manage_passkeys);
 }
 
-bool CanManagePasswordsWhenPasskeysPresent(Profile* profile) {
-  if (g_override_for_testing_set) {
-    return g_manage_password_when_passkeys_present_override;
-  }
-  return Java_PasswordManagerLauncher_canManagePasswordsWhenPasskeysPresent(
-      base::android::AttachCurrentThread(), profile->GetJavaObject());
-}
-
-void OverrideManagePasswordWhenPasskeysPresentForTesting(bool can_manage) {
-  g_override_for_testing_set = true;
-  g_manage_password_when_passkeys_present_override = can_manage;
-}
-
 }  // namespace password_manager_launcher
+
+DEFINE_JNI(PasswordManagerLauncher)

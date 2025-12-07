@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/types/id_type.h"
 #include "url/gurl.h"
 
@@ -25,8 +26,7 @@ class SaveItem;
 using SaveItemId = base::IdType32<SaveItem>;
 
 // Map from save_item_id into final file path.
-using FinalNamesMap =
-    std::unordered_map<SaveItemId, base::FilePath, SaveItemId::Hasher>;
+using FinalNamesMap = std::unordered_map<SaveItemId, base::FilePath>;
 
 // This structure is used to handle and deliver some info
 // when processing each save item job.
@@ -81,6 +81,8 @@ struct SaveFileCreateInfo {
   std::string content_disposition;
   // Source type of saved file.
   SaveFileSource save_source;
+  // Callback to run to quarantine the file;
+  base::OnceClosure quarantine_callback;
 };
 
 }  // namespace content

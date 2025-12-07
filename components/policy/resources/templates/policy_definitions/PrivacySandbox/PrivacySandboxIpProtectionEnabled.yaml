@@ -1,28 +1,42 @@
 caption: Choose whether the <ph name="PRIVACY_SANDBOX_NAME">Privacy Sandbox</ph> IP Protection feature should be enabled.
 default: null
-desc: |-
-  A policy to control whether the <ph name="PRIVACY_SANDBOX_NAME">Privacy Sandbox</ph> IP Protection feature should be enabled.
+desc: |- # TODO(b/416726104): Move the considerations and other details to a help center article.
+  A policy to control whether the <ph name="PRIVACY_SANDBOX_NAME">Privacy Sandbox</ph> <ph name="IP_PROTECTION_NAME">IP Protection</ph> feature should be enabled.
 
-  If the policy is set to Disabled, then the IP Protection feature will be disabled and users won't be able to enable the feature via UI settings.
-  If the policy is set to Enabled, then the IP Protection feature will be enabled and users won't be able to disable the feature via UI settings.
-  If the policy is not set, users will be able to turn on or turn off the IP Protection feature on their device via UI settings.
+  <ph name="IP_PROTECTION_NAME">IP Protection</ph> is a feature that limits availability of a user's original IP address for certain third-party network requests made while browsing in Incognito mode, enhancing protections against cross-site tracking during Incognito browsing sessions.
 
-  Note: The behavior of the IP Protection feature for enterprise users may vary over time when the policy is set to Enabled or when the policy is not set and the feature is enabled via UI settings.
+  If the policy is set to Disabled, then <ph name="IP_PROTECTION_NAME">IP Protection</ph> will be disabled and users won't be able to enable the feature via UI settings.
+  If the policy is set to Enabled, then <ph name="IP_PROTECTION_NAME">IP Protection</ph> will be enabled and users won't be able to disable the feature via UI settings.
+  If the policy is not set, <ph name="IP_PROTECTION_NAME">IP Protection</ph> will be enabled by default and users will be able to control the feature on their device via UI settings.
+
+  Some considerations regarding whether enterprises should disable <ph name="IP_PROTECTION_NAME">IP Protection</ph> include:
+
+  - DNS lookups won't be performed for requests that are proxied, which may impact DNS-based monitoring or filtering.
+
+  - Enterprise applications may experience breakage when used in Incognito mode if they rely on requests to domains (or subdomains of those domains) on the Masked Domain List (<ph name="MASKED_DOMAIN_LIST_URL">$1<ex>https://github.com/GoogleChrome/ip-protection/blob/main/Masked-Domain-List.md</ex></ph>) and require those requests to come from specific IP address ranges.
+
+  - Traffic might not be proxied in Incognito mode under certain conditions, for example when users launch Incognito mode from a Chrome profile they aren't signed in to. In general the feature requires the user to have been signed in to Chrome with a personal Google account when launching Incognito mode.
+
+  - The list of domains on the Masked Domain List may change over time, with new versions being pushed to users automatically. For more information on the Masked Domain List, see: <ph name="MASKED_DOMAIN_LIST_CRITERIA_URL">$1<ex>https://github.com/GoogleChrome/ip-protection/blob/main/README.md#identifying-domains-and-the-masked-domain-list-mdl</ex></ph>.
+
+  For more information on <ph name="IP_PROTECTION_NAME">IP Protection</ph>, see: <ph name="IP_PROTECTION_README_URL">$1<ex>https://github.com/GoogleChrome/ip-protection/blob/main/README.md</ex></ph>.
+
+  <ph name="IP_PROTECTION_NAME">IP Protection</ph> will be launched no sooner than M139.
+
 example_value: false
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
- - fuchsia
- - chrome.*
- - chrome_os
- - android
+supported_on:
+- android:138-
+- chrome.*:138-
+- chrome_os:138-
 items:
-- caption: Disable the <ph name="PRIVACY_SANDBOX_NAME">Privacy Sandbox</ph> IP Protection feature.
+- caption: Disable the <ph name="IP_PROTECTION_NAME">IP Protection</ph> feature.
   value: false
-- caption: Enable the <ph name="PRIVACY_SANDBOX_NAME">Privacy Sandbox</ph> IP Protection feature.
+- caption: Enable the <ph name="IP_PROTECTION_NAME">IP Protection</ph> feature.
   value: true
-- caption: Allow users to turn on or turn off the <ph name="PRIVACY_SANDBOX_NAME">Privacy Sandbox</ph> IP Protection setting on their device.
+- caption: Allow users to turn on or turn off the <ph name="IP_PROTECTION_NAME">IP Protection</ph> setting on their device. The feature will be enabled by default.
   value: null
 owners:
 - awillia@chromium.org

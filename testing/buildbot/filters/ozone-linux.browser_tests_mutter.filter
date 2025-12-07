@@ -1,0 +1,67 @@
+######################################################################
+# Very flaky/failing on mutter (more stable/passing on other builders)
+######################################################################
+
+# TODO(crbug.com/348590032) Failing as test relies on window.devicePixelRatio
+# which doesn't work with per-window scaling.
+-All/GetDisplayMediaHiDpiBrowserTest.Capture/1
+
+-All/PDFExtensionJSInk2Test.Ink2/*
+-All/PDFExtensionJSInk2Test.Ink2BottomToolbar/*
+-All/PDFExtensionJSInk2Test.Ink2TextBottomToolbar/*
+-All/PDFExtensionScrollTest.WithArrowLeftRightScrollToPage/*
+-All/PDFExtensionJSInk2TextTest.Ink2TextBottomToolbar/*
+-All/SearchEnginePreconnectorNoDelaysBrowserTest.PreconnectOnlyInForeground/*
+-All/SoftNavigationTest.LayoutShift/*
+-BackForwardCachePageLoadMetricsObserverBrowserTest.LayoutShiftNormalization_AfterBackForwardCacheRestore
+-BorderlessIsolatedWebAppBrowserTest.PopupResize_CanSubceedMinimumWindowSize_And_InnerAndOuterSizesAreCorrect
+
+# TODO(crbug.com/40688401) This test requires full Picture-in-Picture support.
+-FedCmAccountSelectionViewBrowserTest.DisabledWhenOccluded
+
+-FindInPageControllerTest.FindMovesOnTabClose_Issue1343052
+-FindInPageControllerTest.FindMovesWhenObscuring
+-LayoutInstabilityTest.*
+-PageLoadMetricsBrowserTest.MainFrameIntersectionsMainFrame
+-PolicyTest.DefaultSearchProvider
+-PrintBrowserTest.NoResizeEvent
+-PrintBrowserTest.NoScrolling
+-ProfilePickerEnterpriseCreationFlowBrowserTest.CreateSignedInProfileWithSuggestedTwoFactorAuthSetup
+-ReadAnythingReadAloudPhraseHighlightingMochaTest.*
+-SessionRestoreTest.RestoredTabsHaveCorrectInitialSize
+-WebAppBrowserTest.PWASizeIsCorrectlyRestored
+-WebAppBrowserTest.SetBounds
+-WebAppBrowserTest.WindowOffsetsClampedToScreen
+-WebAppFrameToolbarBrowserTest_WindowControlsOverlay.DownloadIconVisibilityForAppDownload
+
+#################################################
+# Also flaky/failing weston and/or other builders
+#################################################
+
+-All/OmniboxSearchAggregatorHTTPErrorTest.HTTPErrorResponse/*
+
+# TODO(crbug.com/395595608) Also disabled in weston, but maybe this could work
+# in mutter with some additional steps.
+-All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideo/1
+-All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideoAndAudio/1
+
+-BackForwardCachePageLoadMetricsObserverBrowserTest.CumulativeLayoutShiftAfterBackForwardCacheRestore
+-BrowserViewTest.GetAccessibleTabModalDialogTree
+-CrElementsTest.CrLazyList
+-DevModeToggle/UserScriptsUITest.ToggleControls_UserScriptsAPIUsage/0
+-EnclaveAuthenticatorWithTimeout.SecurityDomainCheckTimesOut
+-ExtensionWebRequestApiTest.ExtensionRequestRedirectToServer
+-FrameNodeImplBrowserTest.ViewportIntersection_PartiallyVisible
+-HeadlessModeProtocolBrowserTest.InputClipboardOps
+-OmniboxSearchAggregatorTest.*
+-ParameterizedFrameNodeImplBrowserTest.ViewportIntersection_OutOfView/*
+-PermissionElementBrowserTest.CombinedPermissionAndDeviceStatusesGranted
+-ProfileHelperTest.OpenNewWindowForProfile
+-SearchPrefetchServiceNavigationPrefetchBrowserTest.NavigationPrefetchIsServedForOmniboxOpenSelection
+
+-TabRestoreTest.RestoreGroupWithUnloadHandlerRejected
+
+# TODO(crbug.com/334413759) The test fails due to a DCHECK in
+# wm::FocusController only on the try bots with OzoneBubblesUsePlatformWidgets
+# enabled.
+-PermissionElementBrowserTest.TabSwitchingClosesPrompt

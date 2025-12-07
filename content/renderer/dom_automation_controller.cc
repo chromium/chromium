@@ -13,12 +13,11 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "v8/include/cppgc/allocation.h"
 #include "v8/include/v8-context.h"
+#include "v8/include/v8-cppgc.h"
 
 namespace content {
-
-gin::WrapperInfo DomAutomationController::kWrapperInfo = {
-    gin::kEmbedderNativeGin};
 
 // static
 void DomAutomationController::Install(RenderFrame* render_frame,
@@ -32,22 +31,26 @@ void DomAutomationController::Install(RenderFrame* render_frame,
 
   v8::Context::Scope context_scope(context);
 
-  gin::Handle<DomAutomationController> controller =
-      gin::CreateHandle(isolate, new DomAutomationController(render_frame));
-  if (controller.IsEmpty())
-    return;
+  auto* controller = cppgc::MakeGarbageCollected<DomAutomationController>(
+      isolate->GetCppHeap()->GetAllocationHandle(), render_frame);
+  v8::Local<v8::Object> wrapper =
+      controller->GetWrapper(isolate).ToLocalChecked();
 
   v8::Local<v8::Object> global = context->Global();
   global
       ->Set(context, gin::StringToV8(isolate, "domAutomationController"),
-            controller.ToV8())
+            wrapper)
       .Check();
 }
 
 DomAutomationController::DomAutomationController(RenderFrame* render_frame)
     : RenderFrameObserver(render_frame) {}
 
-DomAutomationController::~DomAutomationController() {}
+DomAutomationController::~DomAutomationController() = default;
+
+void DomAutomationController::Dispose() {
+  RenderFrameObserver::Dispose();
+}
 
 gin::ObjectTemplateBuilder DomAutomationController::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
@@ -70,16 +73,13 @@ void DomAutomationController::DidCreateScriptContext(
 
   v8::Context::Scope context_scope(context);
 
-  // Resuse this object instead of creating others.
-  gin::Handle<DomAutomationController> controller =
-      gin::CreateHandle(isolate, this);
-  if (controller.IsEmpty())
-    return;
+  // Reuse this object instead of creating others
+  v8::Local<v8::Object> wrapper = GetWrapper(isolate).ToLocalChecked();
 
   v8::Local<v8::Object> global = context->Global();
   global
       ->Set(context, gin::StringToV8(isolate, "domAutomationController"),
-            controller.ToV8())
+            wrapper)
       .Check();
 }
 
@@ -102,9 +102,7 @@ bool DomAutomationController::SendMsg(const gin::Arguments& args) {
     value =
         conv.FromV8Value(args.PeekNext(), args.isolate()->GetCurrentContext());
   } else {
-    NOTREACHED_IN_MIGRATION()
-        << "No arguments passed to domAutomationController.send";
-    return false;
+    NOTREACHED() << "No arguments passed to domAutomationController.send";
   }
 
   if (!value || !serializer.Serialize(*value))
@@ -112,6 +110,10 @@ bool DomAutomationController::SendMsg(const gin::Arguments& args) {
 
   GetDomAutomationControllerHost()->DomOperationResponse(json);
   return true;
+}
+
+const gin::WrapperInfo* DomAutomationController::wrapper_info() const {
+  return &kWrapperInfo;
 }
 
 const mojo::AssociatedRemote<mojom::DomAutomationControllerHost>&

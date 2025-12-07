@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Autofill keyboard accessory dimensions -->
+    <dimen name="keyboard_accessory_bar_item_padding">8dp</dimen>
+    <dimen name="keyboard_accessory_horizontal_padding">6dp</dimen>
+    <dimen name="keyboard_accessory_height">48dp</dimen>
+    <dimen name="keyboard_accessory_height_redesign">64dp</dimen>
+    <dimen name="keyboard_accessory_height_with_shadow_redesign">72dp</dimen>
+    <dimen name="keyboard_accessory_dynamic_positioning_padding">10dp</dimen>
+    <dimen name="keyboard_accessory_chip_min_height_redesign">64dp</dimen>
+    <dimen name="keyboard_accessory_chip_vertical_insets">8dp</dimen>
+    <dimen name="keyboard_accessory_chip_vertical_insets_large_font">2dp</dimen>
+    <dimen name="keyboard_accessory_action_button_horizontal_padding">12dp</dimen>
+    <dimen name="keyboard_accessory_chip_corner_radius_redesign">8dp</dimen>
+    <dimen name="keyboard_accessory_chip_home_and_work_start_padding">12dp</dimen>
+    <dimen name="keyboard_accessory_top_inset_overlap">4dp</dimen>
+    <dimen name="keyboard_accessory_dismiss_button_padding_horizontal">20dp</dimen>
+    <dimen name="keyboard_accessory_dismiss_button_margin_end">6dp</dimen>
+    <!--dimen name="keyboard_accessory_height_with_shadow">56dp</dimen-->
+    <dimen name="keyboard_accessory_image_top_padding">12dp</dimen>
+    <dimen name="keyboard_accessory_shadow">5dp</dimen>
+    <!--dimen name="keyboard_accessory_sheet_height">330dp</dimen-->
+    <dimen name="keyboard_accessory_sheet_divider_margin">24dp</dimen>
+    <dimen name="keyboard_accessory_sheet_footer_trailing_margin">64dp</dimen>
+    <dimen name="keyboard_accessory_sheet_padding">8dp</dimen>
+    <dimen name="keyboard_accessory_sheet_top_margin">16dp</dimen>
+    <dimen name="keyboard_accessory_sheet_bottom_margin">8dp</dimen>
+    <dimen name="keyboard_accessory_suggestion_padding">16dp</dimen>
+    <dimen name="keyboard_accessory_chip_start_padding_redesign">6dp</dimen>
+    <dimen name="keyboard_accessory_chip_increased_start_padding_redesign">8dp</dimen>
+    <dimen name="keyboard_accessory_chip_payments_start_padding_redesign">12dp</dimen>
+    <dimen name="keyboard_accessory_chip_end_padding_redesign">12dp</dimen>
+    <dimen name="keyboard_accessory_text_start_padding_redesign">6dp</dimen>
+    <dimen name="keyboard_accessory_payments_text_start_padding_redesign">10dp</dimen>
+    <dimen name="keyboard_accessory_suggestion_offset">12dp</dimen>
+    <dimen name="keyboard_accessory_suggestion_height">48dp</dimen>
+    <dimen name="keyboard_accessory_scroll_shadow_width">80dp</dimen>
+    <dimen name="keyboard_accessory_tab_icon_width">48dp</dimen>
+    <dimen name="keyboard_accessory_tab_icon_spacing">12dp</dimen>
+    <dimen name="keyboard_accessory_elevation">3dp</dimen>
+    <dimen name="keyboard_accessory_last_chip_peek_width">42dp</dimen>
+    <dimen name="keyboard_accessory_corner_radius">24dp</dimen>
+    <dimen name="keyboard_accessory_corner_radius_redesign">14dp</dimen>
+    <dimen name="all_passwords_bottom_sheet_padding">20dp</dimen>
+    <dimen name="all_passwords_bottom_sheet_recycler_view_padding">6dp</dimen>
+    <dimen name="all_passwords_bottom_sheet_search_view_bottom_padding">8dp</dimen>
+    <dimen name="all_passwords_bottom_sheet_search_view_padding">24dp</dimen>
+</resources>

@@ -5,6 +5,7 @@
 #include "sandbox/policy/sandbox.h"
 
 #include "base/command_line.h"
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
@@ -27,6 +28,8 @@
 #include "base/process/process_info.h"
 #include "sandbox/policy/win/sandbox_win.h"
 #include "sandbox/win/src/sandbox.h"
+#include "sandbox/win/src/sandbox_factory.h"
+#include "sandbox/win/src/target_services.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace sandbox {
@@ -109,8 +112,21 @@ bool Sandbox::IsProcessSandboxed() {
   return (status & kLayer1Flags) != 0 && (status & kLayer2Flags) != 0;
 #elif BUILDFLAG(IS_MAC)
   return Seatbelt::IsSandboxed();
+#elif BUILDFLAG(IS_IOS)
+  // Process launching on iOS is only supported via BrowserEngineKit which
+  // will automatically sandbox processes.
+  return !is_browser;
 #elif BUILDFLAG(IS_WIN)
-  return base::GetCurrentProcessIntegrityLevel() < base::MEDIUM_INTEGRITY;
+#if !defined(COMPONENT_BUILD)
+  // Target services is not available in the component build.
+  auto* target_services = sandbox::SandboxFactory::GetTargetServices();
+  if (!target_services || !target_services->GetState()->InitCompleted()) {
+    return false;
+  }
+#endif  // !defined(COMPONENT_BUILD)
+  const auto integrity_level = base::GetCurrentProcessIntegrityLevel();
+  return integrity_level != base::INTEGRITY_UNKNOWN &&
+         integrity_level < base::MEDIUM_INTEGRITY;
 #else
   return false;
 #endif

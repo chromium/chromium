@@ -15,12 +15,14 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/test_extension_service.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync_file_system/drive_backend/metadata_database.h"
 #include "chrome/browser/sync_file_system/drive_backend/metadata_database.pb.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_engine_context.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_task.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_task_manager.h"
 #include "chrome/browser/sync_file_system/sync_file_system_test_util.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/drive/drive_uploader.h"
 #include "components/drive/service/fake_drive_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -54,7 +56,7 @@ class MockSyncTask : public ExclusiveTask {
   MockSyncTask(const MockSyncTask&) = delete;
   MockSyncTask& operator=(const MockSyncTask&) = delete;
 
-  ~MockSyncTask() override {}
+  ~MockSyncTask() override = default;
 
   void RunExclusive(SyncStatusCallback callback) override {
     std::move(callback).Run(SYNC_STATUS_OK);
@@ -63,55 +65,60 @@ class MockSyncTask : public ExclusiveTask {
 
 class MockExtensionService : public TestExtensionService {
  public:
-  MockExtensionService() : registry_(nullptr) {}
+  // The ExtensionRegistry and ExtensionRegistrar must use the same profile
+  // (as in production) because the registrar uses the profile to look up
+  // the appropriate registry.
+  explicit MockExtensionService(Profile* profile)
+      : registry_(extensions::ExtensionRegistry::Get(profile)),
+        registrar_(extensions::ExtensionRegistrar::Get(profile)) {}
 
   MockExtensionService(const MockExtensionService&) = delete;
   MockExtensionService& operator=(const MockExtensionService&) = delete;
 
-  ~MockExtensionService() override {}
+  ~MockExtensionService() override = default;
 
-  void AddExtension(const extensions::Extension* extension) override {
-    registry_.AddEnabled(base::WrapRefCounted(extension));
-  }
-
-  bool IsExtensionEnabled(const std::string& extension_id) const override {
-    return registry_.enabled_extensions().Contains(extension_id);
+  void AddExtension(const extensions::Extension* extension) {
+    registry_->AddEnabled(base::WrapRefCounted(extension));
   }
 
   void UninstallExtension(const std::string& extension_id) {
-    EXPECT_TRUE(registry_.RemoveEnabled(extension_id) ||
-                registry_.RemoveDisabled(extension_id));
+    EXPECT_TRUE(registry_->RemoveEnabled(extension_id) ||
+                registry_->RemoveDisabled(extension_id));
   }
 
   void DisableExtension(const std::string& extension_id) {
-    if (!IsExtensionEnabled(extension_id))
+    if (!registrar_->IsExtensionEnabled(extension_id)) {
       return;
+    }
     scoped_refptr<const extensions::Extension> extension =
-        registry_.GetInstalledExtension(extension_id);
-    EXPECT_TRUE(registry_.RemoveEnabled(extension_id));
-    registry_.AddDisabled(extension);
+        registry_->GetInstalledExtension(extension_id);
+    EXPECT_TRUE(registry_->RemoveEnabled(extension_id));
+    registry_->AddDisabled(extension);
   }
 
-  extensions::ExtensionRegistry& registry() { return registry_; }
+  extensions::ExtensionRegistry& registry() { return *registry_; }
+  extensions::ExtensionRegistrar& registrar() { return *registrar_; }
 
  private:
-  extensions::ExtensionRegistry registry_;
+  const raw_ptr<extensions::ExtensionRegistry> registry_;
+  const raw_ptr<extensions::ExtensionRegistrar> registrar_;
 };
 
 class SyncWorkerTest : public testing::Test {
  public:
-  SyncWorkerTest() {}
+  SyncWorkerTest() = default;
 
   SyncWorkerTest(const SyncWorkerTest&) = delete;
   SyncWorkerTest& operator=(const SyncWorkerTest&) = delete;
 
-  ~SyncWorkerTest() override {}
+  ~SyncWorkerTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(profile_dir_.CreateUniqueTempDir());
     in_memory_env_ = leveldb_chrome::NewMemEnv("SyncWorkerTest");
 
-    extension_service_ = std::make_unique<MockExtensionService>();
+    profile_ = std::make_unique<TestingProfile>();
+    extension_service_ = std::make_unique<MockExtensionService>(profile_.get());
     std::unique_ptr<drive::DriveServiceInterface> fake_drive_service(
         new drive::FakeDriveService);
 
@@ -125,8 +132,7 @@ class SyncWorkerTest : public testing::Test {
                 GetCurrentDefault() /* worker_task_runner */));
 
     sync_worker_ = std::make_unique<SyncWorker>(
-        profile_dir_.GetPath(), extension_service_->AsWeakPtr(),
-        &extension_service_->registry(), in_memory_env_.get());
+        profile_dir_.GetPath(), profile_->GetWeakPtr(), in_memory_env_.get());
     sync_worker_->Initialize(std::move(sync_engine_context));
 
     sync_worker_->SetSyncEnabled(true);
@@ -136,6 +142,7 @@ class SyncWorkerTest : public testing::Test {
   void TearDown() override {
     sync_worker_.reset();
     extension_service_.reset();
+    profile_.reset();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -170,6 +177,7 @@ class SyncWorkerTest : public testing::Test {
   base::ScopedTempDir profile_dir_;
   std::unique_ptr<leveldb::Env> in_memory_env_;
 
+  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<MockExtensionService> extension_service_;
   std::unique_ptr<SyncWorker> sync_worker_;
   base::WeakPtrFactory<SyncWorkerTest> weak_ptr_factory_{this};
@@ -251,40 +259,6 @@ TEST_F(SyncWorkerTest, UpdateRegisteredApps) {
   EXPECT_EQ(TRACKER_KIND_DISABLED_APP_ROOT, tracker.tracker_kind());
 
   ASSERT_FALSE(metadata_database()->FindAppRootTracker("app_2", &tracker));
-}
-
-TEST_F(SyncWorkerTest, GetOriginStatusMap) {
-  FileTracker tracker;
-  SyncStatusCode sync_status = SYNC_STATUS_UNKNOWN;
-  GURL origin = extensions::Extension::GetBaseURLFromExtensionId(kAppID);
-
-  sync_worker()->RegisterOrigin(GURL("chrome-extension://app_0"),
-                                CreateResultReceiver(&sync_status));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(SYNC_STATUS_OK, sync_status);
-
-  sync_worker()->RegisterOrigin(GURL("chrome-extension://app_1"),
-                                CreateResultReceiver(&sync_status));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(SYNC_STATUS_OK, sync_status);
-
-  std::unique_ptr<RemoteFileSyncService::OriginStatusMap> status_map;
-  sync_worker()->GetOriginStatusMap(CreateResultReceiver(&status_map));
-  base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(2u, status_map->size());
-  EXPECT_EQ("Enabled", (*status_map)[GURL("chrome-extension://app_0")]);
-  EXPECT_EQ("Enabled", (*status_map)[GURL("chrome-extension://app_1")]);
-
-  sync_worker()->DisableOrigin(GURL("chrome-extension://app_1"),
-                               CreateResultReceiver(&sync_status));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(SYNC_STATUS_OK, sync_status);
-
-  sync_worker()->GetOriginStatusMap(CreateResultReceiver(&status_map));
-  base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(2u, status_map->size());
-  EXPECT_EQ("Enabled", (*status_map)[GURL("chrome-extension://app_0")]);
-  EXPECT_EQ("Disabled", (*status_map)[GURL("chrome-extension://app_1")]);
 }
 
 TEST_F(SyncWorkerTest, UpdateServiceState) {

@@ -1,0 +1,47 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+source_set("hid") {
+  sources = [
+    "hid_chooser.cc",
+    "hid_chooser.h",
+    "hid_chooser_controller.cc",
+    "hid_chooser_controller.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/hid",
+    "//components/permissions",
+    "//content/public/browser",
+    "//services/device/public/mojom",
+    "//third_party/blink/public/common",
+    "//url",
+  ]
+
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//components/strings:components_strings",
+    "//services/device/public/cpp/hid",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "hid_chooser_controller_unittest.cc" ]
+  deps = [
+    ":hid",
+    "//base/test:test_support",
+    "//chrome/app:generated_resources",
+    "//chrome/test:test_support",
+    "//components/permissions:test_support",
+    "//content/test:test_support",
+    "//services/device/public/cpp:test_support",
+    "//services/device/public/cpp/hid",
+  ]
+}

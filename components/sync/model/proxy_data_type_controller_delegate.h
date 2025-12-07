@@ -14,9 +14,9 @@
 namespace syncer {
 
 // Implementation of DataTypeControllerDelegate that simply delegates the work
-// further to |other|, which lives in a difference thread/sequence. This means
+// further to `other`, which lives in a difference thread/sequence. This means
 // all methods are implemented via posting tasks to the destination sequence, as
-// provided in the constructor via |task_runner|.
+// provided in the constructor via `task_runner`.
 // Instantiations of this typically live on the UI thread, for use by the
 // DataTypeController, and forward calls to the real implementation on the
 // model sequence.
@@ -24,7 +24,7 @@ class ProxyDataTypeControllerDelegate : public DataTypeControllerDelegate {
  public:
   using DelegateProvider =
       base::RepeatingCallback<base::WeakPtr<DataTypeControllerDelegate>()>;
-  // |delegate_provider| will be run lazily *AND* in |task_runner|.
+  // `delegate_provider` will be run lazily *AND* in `task_runner`.
   ProxyDataTypeControllerDelegate(
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       const DelegateProvider& delegate_provider);
@@ -40,7 +40,7 @@ class ProxyDataTypeControllerDelegate : public DataTypeControllerDelegate {
   void OnSyncStarting(const DataTypeActivationRequest& request,
                       StartCallback callback) override;
   void OnSyncStopping(SyncStopMetadataFate metadata_fate) override;
-  void HasUnsyncedData(base::OnceCallback<void(bool)> callback) override;
+  void GetUnsyncedDataCount(base::OnceCallback<void(size_t)> callback) override;
   void GetAllNodesForDebugging(AllNodesCallback callback) override;
   void GetTypeEntitiesCountForDebugging(
       base::OnceCallback<void(const TypeEntitiesCount&)> callback)
@@ -51,7 +51,7 @@ class ProxyDataTypeControllerDelegate : public DataTypeControllerDelegate {
 
  private:
   // Post the given task (that requires the destination delegate to run) to
-  // |task_runner_|.
+  // `task_runner_`.
   void PostTask(
       const base::Location& location,
       base::OnceCallback<void(base::WeakPtr<DataTypeControllerDelegate>)> task)

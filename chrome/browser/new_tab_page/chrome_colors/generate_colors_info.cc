@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/base64.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -36,6 +33,8 @@ const char kFileContentTemplate[] =
     "\n"
     "#include <stdint.h>\n"
     "\n"
+    "#include <array>\n"
+    "\n"
     "#include "
     "\"chrome/browser/new_tab_page/chrome_colors/selected_colors_info.h\"\n"
     "#include \"third_party/skia/include/core/SkColor.h\"\n"
@@ -44,7 +43,7 @@ const char kFileContentTemplate[] =
     "\n"
     "// List of preselected colors with icon data to show in Chrome Colors"
     " menu.\n"
-    "constexpr ColorInfo kGeneratedColorsInfo[] = {\n"
+    "inline constexpr std::array kGeneratedColorsInfo = {\n"
     "$1\n"
     "};\n"
     "\n"
@@ -95,6 +94,12 @@ void GenerateColorsInfoFile(std::string output_dir) {
 }
 
 int main(int argc, char* argv[]) {
-  GenerateColorsInfoFile(argv[1]);
+  // SAFETY: main() receives argc and argv from the OS and the contract is
+  // that argv has argc elements.
+  auto args = UNSAFE_BUFFERS(base::span(argv, static_cast<size_t>(argc)));
+  if (args.size() < 2) {
+    return 1;
+  }
+  GenerateColorsInfoFile(args[1]);
   return 0;
 }

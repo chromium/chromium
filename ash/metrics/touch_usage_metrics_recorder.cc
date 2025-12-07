@@ -131,8 +131,8 @@ void TouchUsageMetricsRecorder::OnTouchEvent(ui::TouchEvent* event) {
 
 void TouchUsageMetricsRecorder::NotifyTouchscreenUsageRecorders() {
   std::array<TouchscreenUsageRecorder, 7>& recorders =
-      display::Screen::GetScreen()->InTabletMode() ? tablet_recorders_
-                                                   : clamshell_recorders_;
+      display::Screen::Get()->InTabletMode() ? tablet_recorders_
+                                             : clamshell_recorders_;
 
   for (TouchscreenUsageRecorder& recorder : recorders) {
     recorder.RecordTouch();

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef COMPONENTS_SUBRESOURCE_FILTER_CORE_COMMON_INDEXED_RULESET_H_
 #define COMPONENTS_SUBRESOURCE_FILTER_CORE_COMMON_INDEXED_RULESET_H_
 
@@ -20,7 +15,6 @@
 #include "components/subresource_filter/core/common/flat/indexed_ruleset_generated.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/url_pattern_index/url_pattern_index.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 
 class GURL;
@@ -33,7 +27,7 @@ namespace url_pattern_index {
 namespace proto {
 class UrlRule;
 }
-}
+}  // namespace url_pattern_index
 
 namespace subresource_filter {
 
@@ -86,8 +80,9 @@ class RulesetIndexer {
 
   // Returns a pointer to the buffer containing the serialized flat data
   // structures. Should only be called after Finish().
-  base::span<const uint8_t> data() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return base::span(builder_.GetBufferPointer(), builder_.GetSize());
+  base::span<const uint8_t> data() const LIFETIME_BOUND {
+    return UNSAFE_TODO(
+        base::span(builder_.GetBufferPointer(), builder_.GetSize()));
   }
 
  private:
@@ -131,12 +126,16 @@ class IndexedRulesetMatcher {
 
   // Returns the LoadPolicy for a network request to |url| of |element_type|
   // initiated by |document_origin|. Always returns ALLOW if the  |url| is not
-  // valid or |element_type| == ELEMENT_TYPE_UNSPECIFIED.
+  // valid or |element_type| == ELEMENT_TYPE_UNSPECIFIED. If `out_rule` is
+  // non-null and the result load policy is DISALLOW, then `out_rule` will be
+  // populated with a pointer to the matching filterlist rule. `out_rule` is
+  // valid as long as the ruleset is kept alive.
   LoadPolicy GetLoadPolicyForResourceLoad(
       const GURL& url,
       const FirstPartyOrigin& first_party,
       url_pattern_index::proto::ElementType element_type,
-      bool disable_generic_rules) const;
+      bool disable_generic_rules,
+      const url_pattern_index::flat::UrlRule** out_rule) const;
 
   // Like ShouldDisallowResourceLoad, but returns the matching rule that
   // determines whether the request should be allowed or not. Allowlist rules

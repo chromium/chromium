@@ -35,19 +35,19 @@ bool FetchAndCacheBuildInfo() {
   auto provider_client_end =
       fuchsia_component::Connect<fuchsia_buildinfo::Provider>();
   if (provider_client_end.is_error()) {
-    DLOG(ERROR) << base::FidlConnectionErrorMessage(provider_client_end);
+    LOG(ERROR) << base::FidlConnectionErrorMessage(provider_client_end);
     return false;
   }
   fidl::SyncClient provider_sync(std::move(provider_client_end.value()));
 
   auto build_info_result = provider_sync->GetBuildInfo();
   if (build_info_result.is_error()) {
-    ZX_DLOG(ERROR, build_info_result.error_value().status());
+    ZX_LOG(ERROR, build_info_result.error_value().status());
     return false;
   }
 
   if (build_info_result->build_info().IsEmpty()) {
-    DLOG(ERROR) << "Received empty BuildInfo";
+    LOG(ERROR) << "Received empty BuildInfo";
     return false;
   }
 
@@ -74,14 +74,14 @@ fuchsia_hwinfo::ProductInfo GetProductInfo() {
   auto product_client_end =
       fuchsia_component::Connect<fuchsia_hwinfo::Product>();
   if (product_client_end.is_error()) {
-    DLOG(ERROR) << base::FidlConnectionErrorMessage(product_client_end);
+    LOG(ERROR) << base::FidlConnectionErrorMessage(product_client_end);
     return {};
   }
   fidl::SyncClient provider_sync(std::move(product_client_end.value()));
 
   auto product_info_result = provider_sync->GetInfo();
   if (product_info_result.is_error()) {
-    ZX_DLOG(ERROR, product_info_result.error_value().status());
+    ZX_LOG(ERROR, product_info_result.error_value().status());
     return {};
   }
 

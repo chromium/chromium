@@ -5,8 +5,13 @@
 #ifndef CONTENT_PUBLIC_BROWSER_CLEAR_SITE_DATA_UTILS_H_
 #define CONTENT_PUBLIC_BROWSER_CLEAR_SITE_DATA_UTILS_H_
 
+#include <optional>
+#include <set>
+#include <string>
+
 #include "base/containers/enum_set.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "net/cookies/cookie_partition_key.h"
@@ -25,10 +30,12 @@ enum class ClearSiteDataType {
   kStorage,
   kCache,
   kClientHints,
+  kPrefetchCache,
+  kPrerenderCache,
 };
 using ClearSiteDataTypeSet = base::EnumSet<ClearSiteDataType,
                                            ClearSiteDataType::kCookies,
-                                           ClearSiteDataType::kClientHints>;
+                                           ClearSiteDataType::kPrerenderCache>;
 
 // Removes browsing data associated with |origin|. Used when the Clear-Site-Data
 // header is sent.
@@ -36,13 +43,13 @@ using ClearSiteDataTypeSet = base::EnumSet<ClearSiteDataType,
 // thread when done.
 CONTENT_EXPORT void ClearSiteData(
     base::WeakPtr<BrowserContext> browser_context,
-    const std::optional<StoragePartitionConfig> storage_partition_config,
+    std::optional<StoragePartitionConfig> storage_partition_config,
     const url::Origin& origin,
     const ClearSiteDataTypeSet clear_site_data_types,
     const std::set<std::string>& storage_buckets_to_remove,
     bool avoid_closing_connections,
-    const std::optional<net::CookiePartitionKey> cookie_partition_key,
-    const std::optional<blink::StorageKey> storage_key,
+    std::optional<net::CookiePartitionKey> cookie_partition_key,
+    std::optional<blink::StorageKey> storage_key,
     bool partitioned_state_allowed_only,
     base::OnceClosure callback);
 

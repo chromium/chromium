@@ -4,6 +4,7 @@
 
 #include "components/dom_distiller/content/browser/dom_distiller_viewer_source.h"
 
+#include <deque>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -30,6 +31,7 @@
 #include "components/dom_distiller/core/viewer.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/back_forward_cache.h"
+#include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -43,6 +45,7 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace dom_distiller {
 
@@ -85,7 +88,7 @@ class DomDistillerViewerSource::RequestViewerHandle
 
   // Temporary store of pending JavaScript if the page isn't ready to receive
   // data from distillation.
-  std::string buffer_;
+  std::deque<std::string> buffers_;
 };
 
 DomDistillerViewerSource::RequestViewerHandle::RequestViewerHandle(
@@ -106,9 +109,9 @@ DomDistillerViewerSource::RequestViewerHandle::~RequestViewerHandle() {
 void DomDistillerViewerSource::RequestViewerHandle::SendJavaScript(
     const std::string& buffer) {
   if (waiting_for_page_ready_) {
-    buffer_ += buffer;
+    buffers_.push_back(buffer);
   } else {
-    DCHECK(buffer_.empty());
+    DCHECK(buffers_.empty());
     if (web_contents()) {
       RunIsolatedJavaScript(web_contents()->GetPrimaryMainFrame(), buffer);
     }
@@ -174,12 +177,26 @@ void DomDistillerViewerSource::RequestViewerHandle::DOMContentLoaded(
     return;
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  // Reading mode should not be affected by the default zoom level. There is a
+  // JS font scaling applied based on distilled_page_prefs, so we want to set
+  // temporary zoom level of 0 so that the zoom settings do not stack on top of
+  // one another.
+  content::HostZoomMap* host_zoom_map =
+      content::HostZoomMap::GetForWebContents(web_contents());
+  host_zoom_map->SetTemporaryZoomLevel(
+      web_contents()->GetPrimaryMainFrame()->GetGlobalId(), 0.0);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  // Execute the scripts in buffer_ one-by-one, starting from the front of the
+  // list.
+  while (!buffers_.empty()) {
+    RunIsolatedJavaScript(web_contents()->GetPrimaryMainFrame(),
+                          buffers_.front());
+    buffers_.pop_front();
+  }
   // No SendJavaScript() calls allowed before |buffer_| is run and cleared.
   waiting_for_page_ready_ = false;
-  if (!buffer_.empty()) {
-    RunIsolatedJavaScript(web_contents()->GetPrimaryMainFrame(), buffer_);
-    buffer_.clear();
-  }
   // No need to Cancel() here.
 }
 
@@ -222,12 +239,12 @@ void DomDistillerViewerSource::StartDataRequest(
         base::MakeRefCounted<base::RefCountedString>(std::move(image)));
     return;
   }
-  if (base::StartsWith(path, kViewerSaveFontScalingPath,
-                       base::CompareCase::SENSITIVE)) {
+  auto remainder = base::RemovePrefix(path, kViewerSaveFontScalingPath);
+  if (remainder) {
     double scale = 1.0;
-    if (base::StringToDouble(path.substr(strlen(kViewerSaveFontScalingPath)),
-                             &scale)) {
-      dom_distiller_service_->GetDistilledPagePrefs()->SetFontScaling(scale);
+    if (base::StringToDouble(*remainder, &scale)) {
+      dom_distiller_service_->GetDistilledPagePrefs()->SetUserPrefFontScaling(
+          scale);
     }
   }
 
@@ -235,12 +252,12 @@ void DomDistillerViewerSource::StartDataRequest(
   // from |URLDataSource|. |web_contents| is the most convenient place to
   // obtain the full URL.
   // TODO(crbug.com/40095934): pass GURL in URLDataSource::StartDataRequest().
-  const std::string query = GURL("https://host/" + path).query();
+  const std::string query = GURL("https://host/" + path).GetQuery();
   GURL request_url = web_contents->GetVisibleURL();
   // The query should match what's seen in |web_contents|.
   // For javascript:window.open(), it's not the case, but it's not a supported
   // use case.
-  if (request_url.query() != query || request_url.path() != "/") {
+  if (request_url.GetQuery() != query || request_url.GetPath() != "/") {
     request_url = GURL();
   }
   RequestViewerHandle* request_viewer_handle =
@@ -256,7 +273,7 @@ void DomDistillerViewerSource::StartDataRequest(
   std::string unsafe_page_html = viewer::GetArticleTemplateHtml(
       dom_distiller_service_->GetDistilledPagePrefs()->GetTheme(),
       dom_distiller_service_->GetDistilledPagePrefs()->GetFontFamily(),
-      std::string());
+      std::string(), /*use_offline_data=*/false);
 
   if (viewer_handle) {
     // The service returned a |ViewerHandle| and guarantees it will call
@@ -274,7 +291,7 @@ void DomDistillerViewerSource::StartDataRequest(
 }
 
 std::string DomDistillerViewerSource::GetMimeType(const GURL& url) {
-  const std::string_view path = url.path_piece().substr(1);
+  const std::string_view path = url.path().substr(1);
   if (kViewerCssPath == path)
     return "text/css";
   if (kViewerLoadingImagePath == path)

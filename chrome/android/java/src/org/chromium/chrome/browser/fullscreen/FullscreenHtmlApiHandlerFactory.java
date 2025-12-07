@@ -6,28 +6,32 @@ package org.chromium.chrome.browser.fullscreen;
 
 import android.app.Activity;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 
+@NullMarked
 public class FullscreenHtmlApiHandlerFactory {
 
     /** Creates an instance of {@link FullscreenHtmlApiHandlerBase}. */
     static FullscreenHtmlApiHandlerBase createInstance(
             Activity activity,
             ObservableSupplier<Boolean> areControlsHidden,
-            boolean exitFullscreenOnStop) {
+            boolean exitFullscreenOnStop,
+            MultiWindowModeStateDispatcher multiWindowDispatcher) {
         if (isFullscreenApiMigrationEnabled()) {
             return new FullscreenHtmlApiHandlerCompat(
-                    activity, areControlsHidden, exitFullscreenOnStop);
+                    activity, areControlsHidden, exitFullscreenOnStop, multiWindowDispatcher);
         }
         return new FullscreenHtmlApiHandlerLegacy(
-                activity, areControlsHidden, exitFullscreenOnStop);
+                activity, areControlsHidden, exitFullscreenOnStop, multiWindowDispatcher);
     }
 
     private static boolean isFullscreenApiMigrationEnabled() {
-        return ChromeFeatureList.sFullscreenInsetsApiMigration.isEnabled()
-                || (BuildInfo.getInstance().isAutomotive
-                        && ChromeFeatureList.sFullscreenInsetsApiMigrationOnAutomotive.isEnabled());
+        if (ChromeFeatureList.sFullscreenInsetsApiMigration.isEnabled()) return true;
+        return DeviceInfo.isAutomotive()
+                && ChromeFeatureList.sFullscreenInsetsApiMigrationOnAutomotive.isEnabled();
     }
 }

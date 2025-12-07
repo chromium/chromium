@@ -17,7 +17,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/openscreen/src/cast/common/public/message_port.h"
 #include "third_party/openscreen/src/cast/streaming/message_fields.h"
-#include "third_party/openscreen/src/cast/streaming/session_messenger.h"
+#include "third_party/openscreen/src/cast/streaming/public/session_messenger.h"
 #include "third_party/openscreen/src/platform/base/error.h"
 
 using ::testing::_;
@@ -102,8 +102,8 @@ TEST_F(RpcDispatcherImplTest, ReceivesMessages) {
   dispatcher().OnMessage(kMessage);
 
   EXPECT_CALL(*this, OnMessage(testing::ElementsAre(1, 2, 3, 4)));
-  dispatcher().Subscribe(base::BindRepeating(
-      &RpcDispatcherImplTest::OnMessage, base::Unretained(this)));
+  dispatcher().Subscribe(base::BindRepeating(&RpcDispatcherImplTest::OnMessage,
+                                             base::Unretained(this)));
   dispatcher().OnMessage(kMessage);
 }
 
@@ -117,7 +117,8 @@ TEST_F(RpcDispatcherImplTest, SendsMessages) {
 
   EXPECT_EQ(1u, message_port().posted_messages().size());
   std::optional<base::Value> value =
-      base::JSONReader::Read(message_port().posted_messages()[0]);
+      base::JSONReader::Read(message_port().posted_messages()[0],
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value);
 
   std::string message_type;

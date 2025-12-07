@@ -41,6 +41,8 @@
 
 #define ENDIANNESS_BIG 0
 
+#define HAVE_ALIGNED_ALLOC 1
+
 #define HAVE_ASM 1
 
 #define HAVE_AS_ARCHEXT_DOTPROD_DIRECTIVE 1
@@ -63,19 +65,33 @@
 
 #define HAVE_DOTPROD 1
 
+#define HAVE_ELF_AUX_INFO 0
+
 #define HAVE_GETAUXVAL 1
 
 #define HAVE_I8MM 1
+
+#define HAVE_IO_H 0
+
+#define HAVE_MEMALIGN 1
 
 #define HAVE_POSIX_MEMALIGN 1
 
 // #define HAVE_PTHREAD_GETAFFINITY_NP 1 -- Controlled by Chomium
 
+#define HAVE_PTHREAD_NP_H 0
+
 // #define HAVE_PTHREAD_SETAFFINITY_NP 1 -- Controlled by Chomium
+
+#define HAVE_PTHREAD_SETNAME_NP 1
+
+#define HAVE_PTHREAD_SET_NAME_NP 0
 
 #define HAVE_SVE 1
 
 #define HAVE_SVE2 1
+
+#define HAVE_SYS_TYPES_H 1
 
 #define HAVE_UNISTD_H 1
 

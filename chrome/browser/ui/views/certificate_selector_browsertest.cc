@@ -26,7 +26,7 @@
 
 namespace {
 
-class TestCertificateSelector : public chrome::CertificateSelector {
+class TestCertificateSelector : public CertificateSelector {
  public:
   TestCertificateSelector(net::ClientCertIdentityList certificates,
                           content::WebContents* web_contents)
@@ -36,8 +36,9 @@ class TestCertificateSelector : public chrome::CertificateSelector {
   TestCertificateSelector& operator=(const TestCertificateSelector&) = delete;
 
   ~TestCertificateSelector() override {
-    if (!on_destroy_.is_null())
+    if (!on_destroy_.is_null()) {
       std::move(on_destroy_).Run();
+    }
   }
 
   void Init() {
@@ -46,13 +47,15 @@ class TestCertificateSelector : public chrome::CertificateSelector {
 
   void AcceptCertificate(
       std::unique_ptr<net::ClientCertIdentity> identity) override {
-    if (accepted_)
+    if (accepted_) {
       *accepted_ = true;
+    }
   }
 
   bool Cancel() override {
-    if (canceled_)
+    if (canceled_) {
       *canceled_ = true;
+    }
     return CertificateSelector::Cancel();
   }
 
@@ -61,7 +64,7 @@ class TestCertificateSelector : public chrome::CertificateSelector {
     canceled_ = canceled;
   }
 
-  using chrome::CertificateSelector::table_model_for_testing;
+  using CertificateSelector::table_model_for_testing;
 
   void set_on_destroy(base::OnceClosure on_destroy) {
     on_destroy_ = std::move(on_destroy);

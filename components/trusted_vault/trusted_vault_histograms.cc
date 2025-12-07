@@ -9,6 +9,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "components/trusted_vault/local_recovery_factor.h"
+#include "components/trusted_vault/recovery_key_store_connection.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 
 namespace trusted_vault {
@@ -40,7 +42,7 @@ std::string GetTrustedVaultURLFetchReasonSuffix(
       return "RegisterICloudKeychain";
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::string GetRecoveryKeyStoreURLFetchReasonSuffix(
@@ -48,9 +50,11 @@ std::string GetRecoveryKeyStoreURLFetchReasonSuffix(
   switch (reason) {
     case RecoveryKeyStoreURLFetchReasonForUMA::kUpdateRecoveryKeyStore:
       return "UpdateRecoveryKeyStore";
+    case RecoveryKeyStoreURLFetchReasonForUMA::kListRecoveryKeyStores:
+      return "ListRecoveryKeyStores";
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -75,30 +79,46 @@ SecurityDomainIdOrInvalidForUma GetSecurityDomainIdOrInvalidForUma(
     case SecurityDomainId::kPasskeys:
       return SecurityDomainIdOrInvalidForUma::kPasskeys;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void RecordTrustedVaultHintDegradedRecoverabilityChangedReason(
     TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA
         hint_degraded_recoverability_changed_reason) {
-  // TODO(crbug.com/40897451): eventually histograms under
-  // components/trusted_vault should start using their own prefix instead of
-  // "Sync." and migrated to the dedicated histograms.xml file.
   base::UmaHistogramEnumeration(
-      "Sync.TrustedVaultHintDegradedRecoverabilityChangedReason2",
+      "TrustedVault.TrustedVaultHintDegradedRecoverabilityChangedReason",
       hint_degraded_recoverability_changed_reason);
 }
 
 void RecordTrustedVaultDeviceRegistrationState(
     TrustedVaultDeviceRegistrationStateForUMA registration_state) {
-  base::UmaHistogramEnumeration("Sync.TrustedVaultDeviceRegistrationState",
-                                registration_state);
+  RecordTrustedVaultRecoveryFactorRegistrationState(
+      LocalRecoveryFactorType::kPhysicalDevice, SecurityDomainId::kChromeSync,
+      registration_state);
 }
 
-void RecordTrustedVaultDeviceRegistrationOutcome(
-    TrustedVaultDeviceRegistrationOutcomeForUMA registration_outcome) {
-  base::UmaHistogramEnumeration("Sync.TrustedVaultDeviceRegistrationOutcome",
-                                registration_outcome);
+void RecordTrustedVaultRecoveryFactorRegistrationState(
+    LocalRecoveryFactorType local_recovery_factor_type,
+    SecurityDomainId security_domain_id,
+    TrustedVaultRecoveryFactorRegistrationStateForUMA registration_state) {
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"TrustedVault.RecoveryFactorRegistrationState.",
+           GetLocalRecoveryFactorNameForUma(local_recovery_factor_type), ".",
+           GetSecurityDomainNameForUma(security_domain_id)}),
+      registration_state);
+}
+
+void RecordTrustedVaultRecoveryFactorRegistrationOutcome(
+    LocalRecoveryFactorType local_recovery_factor_type,
+    SecurityDomainId security_domain_id,
+    TrustedVaultRecoveryFactorRegistrationOutcomeForUMA registration_outcome) {
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"TrustedVault.RecoveryFactorRegistrationOutcome.",
+           GetLocalRecoveryFactorNameForUma(local_recovery_factor_type), ".",
+           GetSecurityDomainNameForUma(security_domain_id)}),
+      registration_outcome);
 }
 
 void RecordTrustedVaultURLFetchResponse(SecurityDomainId security_domain_id,
@@ -151,18 +171,45 @@ void RecordRecoveryKeyStoreURLFetchResponse(
       value);
 }
 
-void RecordTrustedVaultDownloadKeysStatus(
-    TrustedVaultDownloadKeysStatusForUMA status,
-    bool also_log_with_v1_suffix) {
-  base::UmaHistogramEnumeration("Sync.TrustedVaultDownloadKeysStatus", status);
-  if (also_log_with_v1_suffix) {
-    base::UmaHistogramEnumeration("Sync.TrustedVaultDownloadKeysStatusV1",
-                                  status);
-  }
+void RecordRecoveryKeyStoreFetchCertificatesStatus(
+    RecoveryKeyStoreCertificatesFetchStatusForUMA status) {
+  base::UmaHistogramEnumeration(
+      "TrustedVault.RecoveryKeyStoreCertificatesFetchStatus", status);
 }
 
-void RecordTrustedVaultFileReadStatus(TrustedVaultFileReadStatusForUMA status) {
-  base::UmaHistogramEnumeration("Sync.TrustedVaultFileReadStatus", status);
+void RecordTrustedVaultDownloadKeysStatus(
+    LocalRecoveryFactorType local_recovery_factor_type,
+    SecurityDomainId security_domain_id,
+    TrustedVaultDownloadKeysStatusForUMA status) {
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"TrustedVault.DownloadKeysStatus.",
+           GetLocalRecoveryFactorNameForUma(local_recovery_factor_type), ".",
+           GetSecurityDomainNameForUma(security_domain_id)}),
+      status);
+}
+
+void RecordTrustedVaultDownloadKeysStatus(
+    TrustedVaultDownloadKeysStatusForUMA status) {
+  RecordTrustedVaultDownloadKeysStatus(LocalRecoveryFactorType::kPhysicalDevice,
+                                       SecurityDomainId::kChromeSync, status);
+}
+
+void RecordTrustedVaultRecoverKeysOutcome(
+    SecurityDomainId security_domain_id,
+    TrustedVaultRecoverKeysOutcomeForUMA status) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"TrustedVault.RecoverKeysOutcome.",
+                    GetSecurityDomainNameForUma(security_domain_id)}),
+      status);
+}
+
+void RecordTrustedVaultFileReadStatus(SecurityDomainId security_domain_id,
+                                      TrustedVaultFileReadStatusForUMA status) {
+  base::UmaHistogramEnumeration(
+      "TrustedVault.FileReadStatus." +
+          GetSecurityDomainNameForUma(security_domain_id),
+      status);
 }
 
 void RecordTrustedVaultSetEncryptionKeysForSecurityDomain(
@@ -188,6 +235,32 @@ void RecordCallToJsSetClientEncryptionKeysWithSecurityDomainToUma(
   base::UmaHistogramEnumeration(
       "TrustedVault.JavascriptSetClientEncryptionKeysForSecurityDomain",
       domain_for_uma);
+}
+
+void RecordTrustedVaultListSecurityDomainMembersPinStatus(
+    SecurityDomainId security_domain_id,
+    TrustedVaultListSecurityDomainMembersPinStatus status) {
+  base::UmaHistogramEnumeration(
+      "TrustedVault.ListSecurityDomainMembersPinStatus." +
+          GetSecurityDomainNameForUma(security_domain_id),
+      status);
+}
+
+std::string GetLocalRecoveryFactorNameForUma(
+    LocalRecoveryFactorType local_recovery_factor_type) {
+  // These strings get embedded in histogram names and so should not be
+  // changed.
+  switch (local_recovery_factor_type) {
+    case LocalRecoveryFactorType::kPhysicalDevice:
+      return "PhysicalDevice";
+#if BUILDFLAG(IS_MAC)
+    case LocalRecoveryFactorType::kICloudKeychain:
+      return "ICloudKeychain";
+#endif
+      // If adding a new value, also update the variants for
+      // LocalRecoveryFactorType in
+      // tools/metrics/histograms/metadata/trusted_vault/histograms.xml.
+  }
 }
 
 std::string GetSecurityDomainNameForUma(SecurityDomainId domain) {

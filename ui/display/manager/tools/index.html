@@ -1,0 +1,160 @@
+<!-- Copyright 2024 The Chromium Authors. All rights reserved.
+  -- Use of this source code is governed by a BSD-style license that can be
+  -- found in the LICENSE file.
+  -->
+<html>
+  <title>ChromeOS Display Resolution Checker</title>
+  <style>
+    body, option, input {
+      font-family: "Sans-serif", Sans, serif;
+      font-size: large;
+    }
+  </style>
+  <body>
+    <h1>ChromeOS Display Resolution Checker</h1>
+    See <a href="http://go/cros-ppi-spectrum">CrOS PPI(PixelPerInch) Spectrum</a> for the definitive info.
+    <h2>Exmaple</h2>
+    <form>
+      <select id="examples" size="5" onchange="showExample()">
+        <option value="daisy">daisy</option>
+        <option value="minnie">minnie</option>
+        <option value="link/samus">link/samus</option>
+        <option value="peach-pit">peach-pit(FHD)</option>
+        <option value="yuna">yuna</option>
+        <option value="scarlet">scarlet</option>
+        <option value="krane">krane</option>
+        <option value="nocturne">noctrune</option>
+        <option value="kohaku">kohaku(4K)</option>
+        <option value="pantheon">pantheon(4K)</option>
+        <option value="chell">chell</option>
+        <option value="coachz">coachz</option>
+      </select> <br>
+      <hr>
+      <label for="width">Width:</label> <br>
+      <input type="text" id="width" name="width" value="0"/> <br>
+      <label for="height">Height:</label> <br>
+      <input type="text" id="height" name="height" value="0"/> <br>
+      <label for="size">Size:</label> <br>
+      <input type="text" id="size" name="size" value="10"/> <br>
+      <input type="button" value="Check" onclick="check()"> </input>
+      <hr>
+      <label for="dpi">DPI  :</label> <label id="dpi"> </label> <br>
+      <label for="dsf">Scale factor  :</label> <label id="dsf"> </label> <br>
+      <label for="dp-size">Size in dp  :</label> <label id="dp-size"> </label> <br>
+      <label for="result">Result  :</label> <label id="result"> </label> <br>
+    </form>
+  </body>
+
+  <script>
+    function showExample() {
+        // Example panels used by devices [size in inch, [width, height]].
+        const kExamples = {
+            "daisy" : [11.6, [1366, 768]],
+            "minnie" : [10.1, [1280, 800]],
+            "link/samus" : [12.85, [2560, 1700]],
+            "peach-pit" : [13.3, [1920, 1080]],
+            "yuna" : [15.6, [1920, 1080]],
+            "kevin/caroline" : [12.3, [2400, 1600]],
+            "eve" : [12.3, [2400, 1600]],
+            "scarlet" : [9.7, [1536, 2048]],
+            "krane" : [10.1, [1920, 1200]],
+            "nocturne" : [12.3, [3000, 2000]],
+            "kohaku" : [13.1, [3840, 2160]],
+            "pantheon" : [15.6, [3840, 2160]],
+            "chell" : [13.3, [3200, 1800]],
+            "coachz" : [11.0, [2160, 1440]],
+        };
+
+        var selected = document.getElementById('examples').value;
+        var selectedItem = kExamples[selected];
+        document.getElementById('width').value = selectedItem[1][0];
+        document.getElementById('height').value = selectedItem[1][1];
+        document.getElementById('size').value = selectedItem[0];
+        check();
+    }
+
+    function findScaleFactor(dpi, width, height) {
+        class Result {
+            constructor(dsf, isException) {
+                this.dsf = dsf;
+                this.isException = isException;
+            }
+        };
+        // TODO: These data should be shared with C++ code via json file.
+        // The list of panel that has special dsf.
+        const kExceptionPanelTable = [
+            [3000, 2000, (3000.0 / 1332.0)],  // Nocturne
+            [3200, 1800, 2.0],                // Chell
+            [2160, 1440, 1.8]                 // Coachz
+        ];
+        const kDpiToDsfTable = [
+            [310,  3840.0 / 1440.0],
+            [270, 2.4],
+            [230, 2.0],
+            [220, 1920.0 / 1080.0],
+            [180, 1.6],
+            [150, 1.25],
+            [0.0,   1.0]
+        ];
+
+        for (var i = 0; i < kExceptionPanelTable.length; i++) {
+            var panel = kExceptionPanelTable[i];
+            if (panel[0] == width && panel[1] == height) {
+                return new Result(panel[2], /*isException=*/true);
+            }
+        }
+        for (var i = 0; i < kDpiToDsfTable.length; i++) {
+            if (dpi >= kDpiToDsfTable[i][0]) {
+                return new Result(kDpiToDsfTable[i][1], false);
+            }
+        }
+        return new Result(1, false);
+    }
+
+    function setResult(text, color) {
+        var element = document.getElementById('result');
+        element.innerText = text;
+        element.style.color = color;
+    }
+
+    function findRange(dpi) {
+        const ideal = [[155, 165], [200, 210], [225, 265], [270, 350]];
+        const ok = [[125, 155], [180, 200], [220, 225]];
+        found = ideal.find(element => element[0] <= dpi && dpi < element[1]);
+        if (found) {
+            setResult('Ideal', '#00Af00');
+            return;
+        }
+        found = ok.find(element => element[0] <= dpi && dpi < element[1]);
+        if (found) {
+            setResult('OK', '#000000');
+            return;
+        }
+        setResult('Not OK - out of good range. Please contact chromeos-wmp@google.com for assistance',
+                   '#ff0000');
+    }
+    function check() {
+        var width = parseInt(document.getElementById('width').value);
+        var height = parseInt(document.getElementById('height').value);
+        var size = parseFloat(document.getElementById('size').value);
+        var dpi = Math.sqrt(width * width + height * height) / size;
+        var dsf_info = findScaleFactor(dpi, width, height);
+        var dsf = dsf_info.dsf;
+
+        document.getElementById('dpi').innerText = dpi;
+        document.getElementById('dsf').innerText = dsf;
+        var dp_width = (width / dsf);
+        var dp_height = (height / dsf);
+        document.getElementById('dp-size').innerHTML = dp_width + 'x' + dp_height;
+
+        if (dsf_info.isException) {
+            setResult('OK but exception panel. Please contact chromeos-wmp@google.com for assistance', '#CCAA00');
+        } else if ((Math.round(dp_width) - dp_width) != 0 ||
+                  (Math.round(dp_height) - dp_height) != 0) {
+            setResult('Not OK - fractional dp size. Please contact chromeos-wmp@google.com for assistance', '#ff0000');
+        } else {
+            findRange(dpi);
+        }
+    }
+  </script>
+</html>

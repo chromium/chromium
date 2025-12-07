@@ -13,7 +13,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
-#include "base/not_fatal_until.h"
 #include "mojo/public/cpp/bindings/message.h"
 
 namespace mojo {
@@ -74,7 +73,7 @@ void ReceiverSetState::Entry::OnDisconnect(uint32_t custom_reason_code,
   state_.OnDisconnect(id_, custom_reason_code, description);
 }
 
-ReceiverSetState::ReceiverSetState() = default;
+ReceiverSetState::ReceiverSetState() : entries_(PassKey()) {}
 
 ReceiverSetState::~ReceiverSetState() = default;
 
@@ -161,7 +160,7 @@ void ReceiverSetState::OnDisconnect(ReceiverId id,
                                     uint32_t custom_reason_code,
                                     const std::string& description) {
   auto it = entries_.find(id);
-  CHECK(it != entries_.end(), base::NotFatalUntil::M130);
+  CHECK(it != entries_.end());
 
   // We keep the Entry alive throughout error dispatch.
   std::unique_ptr<Entry> entry = std::move(it->second);

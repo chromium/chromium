@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
@@ -20,8 +21,7 @@
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 namespace {
 
@@ -220,5 +220,4 @@ TEST_F(OutputStreamImplTest, ResetHandle) {
   EXPECT_EQ(Exception::kIo, output_stream_->Write(byte_array).value);
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

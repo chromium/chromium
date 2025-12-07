@@ -28,8 +28,10 @@ import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -37,6 +39,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.messages.MessagesTestHelper;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
@@ -56,7 +59,8 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
 public class PasswordSavingIntegrationTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule public SigninTestRule mSigninTestRule = new SigninTestRule();
 
@@ -76,6 +80,7 @@ public class PasswordSavingIntegrationTest {
     private static final String CHANGE_PASSWORD_BUTTON_ID = "chg_submit_button";
     private static final String PASSWORD_MANAGER_ANNOTATION = "pm_parser_annotation";
 
+    private WebPageStation mStartingPage;
     private PasswordStoreBridge mPasswordStoreBridge;
     private BottomSheetController mBottomSheetController;
     private BottomSheetTestSupport mBottomSheetTestSupport;
@@ -84,10 +89,10 @@ public class PasswordSavingIntegrationTest {
 
     @Before
     public void setup() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
-        PasswordManagerTestHelper.setAccountForPasswordStore(SigninTestRule.TEST_ACCOUNT_EMAIL);
+        mStartingPage = mActivityTestRule.startOnBlankPage();
+        PasswordManagerTestHelper.setAccountForPasswordStore(TestAccounts.ACCOUNT1.getEmail());
         PasswordManagerTestUtilsBridge.disableServerPredictions();
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
         runOnUiThreadBlocking(
                 () -> {
@@ -99,7 +104,7 @@ public class PasswordSavingIntegrationTest {
                             new PasswordStoreBridge(mActivityTestRule.getProfile(false));
                 });
 
-        mWebContents = mActivityTestRule.getWebContents();
+        mWebContents = mStartingPage.webContentsElement.value();
         ImeAdapter imeAdapter = WebContentsUtils.getImeAdapter(mWebContents);
         mInputMethodManagerWrapper = TestInputMethodManagerWrapper.create(imeAdapter);
         imeAdapter.setInputMethodManagerWrapper(mInputMethodManagerWrapper);
@@ -120,6 +125,7 @@ public class PasswordSavingIntegrationTest {
         DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
         GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30
     })
+    @DisabledTest(message = "https://crbug.com/371014579")
     // TODO(crbug/1475346): Add integration tests for automotive save password flow.
     public void testSavingNewPassword() throws InterruptedException, TimeoutException {
         mActivityTestRule.loadUrl(mActivityTestRule.getTestServer().getURL(SIGNIN_FORM_URL));

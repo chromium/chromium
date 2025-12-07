@@ -14,8 +14,11 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Fiel
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALIDATOR;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.NOTICE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.TEXT_INPUT;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_REQUIRED_INDICATOR;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NoticeProperties.IMPORTANT_FOR_ACCESSIBILITY;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NoticeProperties.NOTICE_ALL_KEYS;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NoticeProperties.NOTICE_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FIELD_TYPE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FORMATTER;
@@ -29,16 +32,17 @@ import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
 import android.util.Patterns;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.editors.EditorBase;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogViewBinder;
 import org.chromium.chrome.browser.autofill.editors.EditorFieldValidator;
-import org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldItem;
+import org.chromium.chrome.browser.autofill.editors.EditorProperties.EditorItem;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.FieldType;
 import org.chromium.payments.mojom.PayerErrors;
@@ -48,11 +52,11 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 /** Contact information editor. */
+@NullMarked
 public class ContactEditor extends EditorBase<AutofillContact> {
     // Bit field values are identical to ProfileFields in payments_profile_comparator.h.
     // Please also modify payments_profile_comparator.h after changing these bits.
@@ -78,15 +82,17 @@ public class ContactEditor extends EditorBase<AutofillContact> {
     private final Set<String> mPayerNames;
     private final Set<String> mPhoneNumbers;
     private final Set<String> mEmailAddresses;
-    @Nullable private PayerErrors mPayerErrors;
-    @Nullable private EditorFieldValidator mEmailValidator;
+    private @Nullable PayerErrors mPayerErrors;
     private boolean mContactNew;
-    private AutofillContact mContact;
-    private Optional<PropertyModel> mNameField;
-    private Optional<PropertyModel> mPhoneField;
-    private Optional<PropertyModel> mEmailField;
-    private Callback<AutofillContact> mDoneCallback;
-    private Callback<AutofillContact> mCancelCallback;
+    private @Nullable AutofillContact mContact;
+
+    private @Nullable PropertyModel mNameField;
+    private @Nullable PropertyModel mPhoneField;
+    private @Nullable PropertyModel mEmailField;
+
+    private @Nullable Callback<AutofillContact> mDoneCallback;
+    private @Nullable Callback<@Nullable AutofillContact> mCancelCallback;
+    private boolean mIsShown;
 
     /**
      * Builds a contact information editor.
@@ -199,28 +205,28 @@ public class ContactEditor extends EditorBase<AutofillContact> {
     }
 
     /**
-     * Allows calling |edit| with a single callback used for both 'done' and 'cancel'.
-     * @see #edit(AutofillContact, Callback, Callback)
+     * Allows calling |showEditPrompt| with a single callback used for both 'done' and 'cancel'.
+     *
+     * @see #showEditPrompt(AutofillContact, Callback, Callback)
      */
-    public void edit(
-            @Nullable final AutofillContact toEdit, final Callback<AutofillContact> callback) {
-        edit(toEdit, callback, callback);
+    public void showEditPrompt(
+            final @Nullable AutofillContact toEdit,
+            final Callback<@Nullable AutofillContact> callback) {
+        showEditPrompt(toEdit, (Callback<AutofillContact>) callback, callback);
     }
 
     @Override
-    public void edit(
-            @Nullable final AutofillContact toEdit,
+    public void showEditPrompt(
+            final @Nullable AutofillContact toEdit,
             final Callback<AutofillContact> doneCallback,
-            final Callback<AutofillContact> cancelCallback) {
-        super.edit(toEdit, doneCallback, cancelCallback);
+            final Callback<@Nullable AutofillContact> cancelCallback) {
         mDoneCallback = doneCallback;
         mCancelCallback = cancelCallback;
 
-        boolean contactNew = toEdit == null;
-        mContactNew = contactNew;
+        mContactNew = (toEdit == null);
         var context = mContext;
         AutofillContact contact =
-                contactNew
+                toEdit == null
                         ? new AutofillContact(
                                 context,
                                 AutofillProfile.builder().build(),
@@ -255,7 +261,7 @@ public class ContactEditor extends EditorBase<AutofillContact> {
                             .with(VALUE, contact.getPayerName())
                             .build();
         }
-        mNameField = Optional.ofNullable(nameField);
+        mNameField = nameField;
 
         PropertyModel phoneField = null;
         if (mRequestPayerPhone) {
@@ -273,7 +279,7 @@ public class ContactEditor extends EditorBase<AutofillContact> {
                             .with(VALUE, contact.getPayerPhone())
                             .build();
         }
-        mPhoneField = Optional.ofNullable(phoneField);
+        mPhoneField = phoneField;
 
         PropertyModel emailField = null;
         if (mRequestPayerEmail) {
@@ -288,43 +294,74 @@ public class ContactEditor extends EditorBase<AutofillContact> {
                             .with(VALUE, contact.getPayerEmail())
                             .build();
         }
-        mEmailField = Optional.ofNullable(emailField);
+        mEmailField = emailField;
 
         final String editorTitle =
                 toEdit == null
                         ? context.getString(R.string.payments_add_contact_details_label)
                         : toEdit.getEditTitle();
 
-        ListModel<FieldItem> editorFields = new ListModel<>();
-        if (mNameField.isPresent()) {
-            editorFields.add(new FieldItem(TEXT_INPUT, mNameField.get(), /* isFullLine= */ true));
+        ListModel<EditorItem> editorFields = new ListModel<>();
+        if (mNameField != null) {
+            editorFields.add(new EditorItem(TEXT_INPUT, mNameField, /* isFullLine= */ true));
         }
-        if (mPhoneField.isPresent()) {
-            editorFields.add(new FieldItem(TEXT_INPUT, mPhoneField.get(), /* isFullLine= */ true));
+        if (mPhoneField != null) {
+            editorFields.add(new EditorItem(TEXT_INPUT, mPhoneField, /* isFullLine= */ true));
         }
-        if (mEmailField.isPresent()) {
-            editorFields.add(new FieldItem(TEXT_INPUT, mEmailField.get(), /* isFullLine= */ true));
+        if (mEmailField != null) {
+            editorFields.add(new EditorItem(TEXT_INPUT, mEmailField, /* isFullLine= */ true));
         }
+        editorFields.add(
+                new EditorItem(
+                        NOTICE,
+                        new PropertyModel.Builder(NOTICE_ALL_KEYS)
+                                .with(
+                                        NOTICE_TEXT,
+                                        mContext.getString(
+                                                R.string.payments_required_field_message))
+                                // Required fields are indicated by an asterisk (*) and announced
+                                // separately by screen readers. Don't announce the message itself.
+                                .with(IMPORTANT_FOR_ACCESSIBILITY, false)
+                                .build(),
+                        /* isFullLine= */ true));
 
         mEditorModel =
                 new PropertyModel.Builder(ALL_KEYS)
                         .with(EDITOR_TITLE, editorTitle)
-                        .with(SHOW_REQUIRED_INDICATOR, true)
                         .with(EDITOR_FIELDS, editorFields)
                         .with(DONE_RUNNABLE, this::onDone)
                         .with(CANCEL_RUNNABLE, this::onCancel)
                         .with(ALLOW_DELETE, false)
                         // Form validation must be performed only for non-empty address profiles.
-                        .with(VALIDATE_ON_SHOW, !contactNew)
+                        .with(VALIDATE_ON_SHOW, !mContactNew)
                         .build();
 
         mEditorMCP =
                 PropertyModelChangeProcessor.create(
                         mEditorModel, mEditorDialog, EditorDialogViewBinder::bindEditorDialogView);
         mEditorModel.set(VISIBLE, true);
+
+        mIsShown = true;
+    }
+
+    @EnsuresNonNullIf({
+        "mDoneCallback",
+        "mCancelCallback",
+        "mContact",
+        "mNameField",
+        "mPhoneField",
+        "mEmailField",
+        "mEditorModel",
+        "mEditorMCP"
+    })
+    @SuppressWarnings("NullAway")
+    private boolean isShown() {
+        return mIsShown;
     }
 
     private void onDone() {
+        assert isShown();
+
         if (!validateForm(mEditorModel)) {
             scrollToFieldWithErrorMessage(mEditorModel);
             return;
@@ -336,18 +373,18 @@ public class ContactEditor extends EditorBase<AutofillContact> {
         String email = null;
         AutofillProfile profile = mContact.getProfile();
 
-        if (mNameField.isPresent()) {
-            name = mNameField.get().get(VALUE);
+        if (mNameField != null) {
+            name = mNameField.get(VALUE);
             profile.setFullName(name);
         }
 
-        if (mPhoneField.isPresent()) {
-            phone = mPhoneField.get().get(VALUE);
+        if (mPhoneField != null) {
+            phone = mPhoneField.get(VALUE);
             profile.setPhoneNumber(phone);
         }
 
-        if (mEmailField.isPresent()) {
-            email = mEmailField.get().get(VALUE);
+        if (mEmailField != null) {
+            email = mEmailField.get(VALUE);
             profile.setEmailAddress(email);
         }
 
@@ -370,6 +407,8 @@ public class ContactEditor extends EditorBase<AutofillContact> {
     }
 
     private void onCancel() {
+        assert isShown();
+
         mEditorModel.set(VISIBLE, false);
 
         mCancelCallback.onResult(mContactNew ? null : mContact);

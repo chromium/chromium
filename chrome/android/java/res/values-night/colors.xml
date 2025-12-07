@@ -6,12 +6,6 @@ found in the LICENSE file.
 -->
 
 <resources>
-    <!-- Account Signin Colors -->
-    <color name="signin_header_animation_background">@color/header_background_dark</color>
-    <color name="signin_header_animation_line_light">@color/modern_grey_700</color>
-    <color name="signin_header_animation_line_dark">@color/modern_grey_700</color>
-    <color name="signin_header_animation_laptop_screen">@color/modern_grey_900</color>
-
     <!-- History Navigation UI colors -->
     <color name="navigation_bubble_arrow">@android:color/white</color>
 
@@ -20,4 +14,9 @@ found in the LICENSE file.
 
     <!-- Model selector button background TSR colors -->
     <color name="model_selector_button_bg_color">@android:color/white</color>
+
+    <!-- Settings -->
+    <color name="settings_search_logo_color_1">@color/material_primary_40</color>
+    <color name="settings_search_logo_color_2">@color/material_primary_60</color>
+    <color name="settings_search_logo_color_3">@color/material_primary_90</color>
 </resources>

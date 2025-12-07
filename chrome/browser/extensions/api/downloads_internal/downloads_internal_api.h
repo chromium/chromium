@@ -6,9 +6,14 @@
 #define CHROME_BROWSER_EXTENSIONS_API_DOWNLOADS_INTERNAL_DOWNLOADS_INTERNAL_API_H_
 
 #include "extensions/browser/extension_function.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
+// NOTE: The downloadsInternal API is required for the downloads API to
+// function, because downloads_custom_bindings.js refers to downloadsInternal.
 class DownloadsInternalDetermineFilenameFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("downloadsInternal.determineFilename",

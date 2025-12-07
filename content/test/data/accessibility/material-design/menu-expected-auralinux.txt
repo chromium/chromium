@@ -1,0 +1,37 @@
+[document web] name='Material Web Menu'
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[section]
+++++++++[push button] name='Open Menu'
+=== Start Continuation ===
+[document web] name='Material Web Menu'
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[section]
+++++++++[push button] name='Open Menu'
+++++++[menu]
+++++++++[section]
+++++++++++[panel]
+++++++++++++[menu item]
+++++++++++++++[section]
+++++++++++[menu item]
+++++++++++++[section]
+++++++++++[menu item]
+++++++++++++[section]
+++++++++++[menu item]
+++++++++++++[section]
+++++[section]
+++++++[static] name='Menu Opened'
+=== Start Continuation ===
+[document web] name='Material Web Menu'
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[section]
+++++++++[push button] name='Open Menu'
+++++[section]
+++++++[static] name='Menu Opened'
+++++[section]
+++++++[static] name='Menu Closed'

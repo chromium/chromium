@@ -7,17 +7,17 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/containers/adapters.h"
 #include "base/containers/queue.h"
+#include "base/debug/crash_logging.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
@@ -116,7 +116,7 @@ void SurfaceManager::SetTickClockForTesting(const base::TickClock* tick_clock) {
   tick_clock_ = tick_clock;
 }
 
-Surface* SurfaceManager::CreateSurface(
+base::expected<Surface*, std::string> SurfaceManager::CreateSurface(
     base::WeakPtr<SurfaceClient> surface_client,
     const SurfaceInfo& surface_info,
     const SurfaceId& pending_copy_surface_id) {
@@ -126,15 +126,17 @@ Surface* SurfaceManager::CreateSurface(
 
   // We should not be asked to create a surface that already exists.
   auto it = surface_map_.find(surface_info.id());
-  if (it != surface_map_.end())
-    return nullptr;
+  if (it != surface_map_.end()) {
+    return base::unexpected("surface already exists");
+  }
 
   SurfaceAllocationGroup* allocation_group =
       GetOrCreateAllocationGroupForSurfaceId(surface_info.id());
   // GetOrCreateAllocationGroupForSurfaceId can fail if two FrameSinkIds use the
   // same embed token.
-  if (!allocation_group)
-    return nullptr;
+  if (!allocation_group) {
+    return base::unexpected("Cannot reuse embed token across frame sinks");
+  }
 
   std::unique_ptr<Surface> surface = std::make_unique<Surface>(
       surface_info, this, allocation_group, surface_client,
@@ -150,7 +152,7 @@ Surface* SurfaceManager::CreateSurface(
   // is received, is added to prevent this from happening.
   AddTemporaryReference(surface_info.id());
 
-  return surface_map_[surface_info.id()].get();
+  return base::ok(surface_map_[surface_info.id()].get());
 }
 
 void SurfaceManager::MarkSurfaceForDestruction(const SurfaceId& surface_id) {
@@ -224,9 +226,6 @@ void SurfaceManager::GarbageCollectSurfaces() {
 
   // ~Surface() draw callback could modify |surfaces_to_destroy_|.
   for (const auto& iter : surfaces_to_delete) {
-    base::TimeDelta delta = base::TimeTicks::Now() - iter.second;
-    UMA_HISTOGRAM_TIMES(
-        "Compositing.SurfaceManager.MarkForDestructionToDestroy", delta);
     DestroySurfaceInternal(iter.first);
   }
 
@@ -538,10 +537,13 @@ void SurfaceManager::SurfaceActivated(Surface* surface) {
     // modified. This will allow frame production to continue for this client
     // leading to the group being unblocked.
     surface->SendAckToClient();
-  } else if (ShouldAckInteractiveFrame(metadata.begin_frame_ack)) {
-    // If we should be early acking during an interaction, do that here. This,
-    // will persist for a number of frames (the cooldown) following an
-    // interaction.
+  } else if (ShouldAckNonInteractiveFrame(metadata)) {
+    // If we should be early acking during an interaction, do that here. We only
+    // ack the non-interactive frames, this allows them to continue being
+    // pipelined, while their most recent frame is queued for the next
+    // aggregation. We do not ack the interactive frame so that back pressure
+    // can be properly applied. This, will persist for a number of frames (the
+    // cooldown) following an interaction.
     surface->SendAckToClient();
   }
 
@@ -549,19 +551,20 @@ void SurfaceManager::SurfaceActivated(Surface* surface) {
     observer.OnSurfaceActivated(surface->surface_id());
 }
 
-bool SurfaceManager::ShouldAckInteractiveFrame(const BeginFrameAck& ack) const {
+bool SurfaceManager::ShouldAckNonInteractiveFrame(
+    const CompositorFrameMetadata& metadata) const {
   if (!cooldown_frames_for_ack_on_activation_during_interaction_ ||
-      !last_interactive_frame_) {
+      !last_interactive_frame_ || metadata.is_handling_interaction) {
     return false;
   }
   // If we get an ack for a previous (i.e., slow) frame while we have a more
   // recent and valid interactive frame, then assume that we should ack it
   // on activation.
-  if (ack.frame_id < last_interactive_frame_.value()) {
+  if (metadata.begin_frame_ack.frame_id < last_interactive_frame_.value()) {
     return true;
   }
   const uint64_t frames_since_interactive =
-      ack.frame_id.sequence_number -
+      metadata.begin_frame_ack.frame_id.sequence_number -
       last_interactive_frame_.value().sequence_number;
   return frames_since_interactive <
          cooldown_frames_for_ack_on_activation_during_interaction_.value();
@@ -582,7 +585,7 @@ void SurfaceManager::SurfaceDamageExpected(const SurfaceId& surface_id,
 void SurfaceManager::DestroySurfaceInternal(const SurfaceId& surface_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = surface_map_.find(surface_id);
-  CHECK(it != surface_map_.end(), base::NotFatalUntil::M130);
+  CHECK(it != surface_map_.end());
   // Make sure that the surface is removed from the map before being actually
   // destroyed. An ack could be sent during the destruction of a surface which
   // could trigger a synchronous frame submission to a half-destroyed surface
@@ -726,6 +729,26 @@ bool SurfaceManager::HasBlockedEmbedder(
 void SurfaceManager::AggregatedFrameSinksChanged() {
   if (delegate_)
     delegate_->AggregatedFrameSinksChanged();
+}
+
+void SurfaceManager::AddFrameSinkObserver(FrameSinkObserver* obs) {
+  if (delegate_) {
+    return delegate_->AddObserver(obs);
+  }
+}
+
+void SurfaceManager::RemoveFrameSinkObserver(FrameSinkObserver* obs) {
+  if (delegate_) {
+    return delegate_->RemoveObserver(obs);
+  }
+}
+
+bool SurfaceManager::FrameSinkManagerHasViewTransitionToken(
+    const blink::ViewTransitionToken& transition_token) {
+  if (delegate_) {
+    return delegate_->HasViewTransitionToken(transition_token);
+  }
+  return false;
 }
 
 void SurfaceManager::CommitFramesInRangeRecursively(

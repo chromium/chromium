@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<script src="../resources/runner.js"></script>
+<body onload="startTest()">
+<div id="container" style="columns:1000; column-gap:3px; column-rule: 1px solid red; column-fill:auto; height:100px;">
+    <div style="height:25000px;"></div>
+    <div style="height: 10px; column-span: all;"></div>
+    <div style="height:25000px;"></div>
+    <div style="height: 10px; column-span: all;"></div>
+    <div style="height: 25000px;"></div>
+</div>
+</body>
+<script>
+function startTest() {
+    PerfTestRunner.forceLayout();
+
+    var index = 0;
+    PerfTestRunner.measureRunsPerSecond({
+        description: "Measures performance of layout on a page using CSS multicol layout and gap decorations.",
+        run: function() {
+            document.body.style.width = ++index % 2 ? "99%" : "98%";
+            PerfTestRunner.forceLayout();
+        }
+    });
+}
+</script>

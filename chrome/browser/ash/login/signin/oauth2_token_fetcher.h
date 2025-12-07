@@ -9,7 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
@@ -27,7 +27,7 @@ class OAuth2TokenFetcher : public GaiaAuthConsumer {
  public:
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
     virtual void OnOAuth2TokensAvailable(
         const GaiaAuthConsumer::ClientOAuthResult& oauth2_tokens) = 0;
     virtual void OnOAuth2TokensFetchFailed() = 0;

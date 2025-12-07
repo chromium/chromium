@@ -7,12 +7,11 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui {
 class WindowAndroid;
@@ -77,6 +76,11 @@ class XrJavaCoordinator {
       SurfaceTouchCallback touch_callback,
       JavaShutdownCallback destroyed_callback,
       XrSessionButtonTouchedCallback button_touched_callback) = 0;
+
+  // `shutdown_callback` may optionally be provided to override the previously
+  // supplied `destroyed_callback`. Default constructed callbacks are considered
+  // null, so this is not wrapped in std::optional.
+  virtual void EndSession(JavaShutdownCallback shutdown_callback) = 0;
   virtual void EndSession() = 0;
 };
 

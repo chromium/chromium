@@ -5,6 +5,7 @@
 #include "third_party/blink/public/common/tokens/multi_token.h"
 
 #include <algorithm>
+#include <variant>
 
 #include "base/types/token_type.h"
 #include "base/unguessable_token.h"
@@ -16,12 +17,15 @@ using FooToken = base::TokenType<class FooTokenTag>;
 using BarToken = base::TokenType<class BarTokenTag>;
 using BazToken = base::TokenType<class BazTokenTag>;
 
-static_assert(internal::IsBaseTokenTypeV<FooToken>);
-static_assert(!internal::IsBaseTokenTypeV<int>);
+static_assert(internal::IsBaseToken<FooToken>);
+static_assert(!internal::IsBaseToken<int>);
 
 static_assert(internal::AreAllUnique<int>);
 static_assert(!internal::AreAllUnique<int, int>);
 static_assert(!internal::AreAllUnique<int, char, int>);
+
+static_assert(internal::IsCompatible<BazToken, FooToken, BarToken, BazToken>);
+static_assert(!internal::IsCompatible<BazToken, FooToken, BarToken>);
 
 using FooBarToken = MultiToken<FooToken, BarToken>;
 using FooBarBazToken = MultiToken<FooToken, BarToken, BazToken>;
@@ -83,9 +87,9 @@ TEST(MultiTokenTest, Comparison) {
     EXPECT_TRUE(token2 == token3);
     EXPECT_FALSE(token2 != token3);
 
-    // absl::variant and std::variant order by index. If the indexes are equal
-    // (e.g. the same type is held in both), then the comparison operator of the
-    // held type is used.
+    // std::variant orders by index. If the indices are equal (e.g. the same
+    // type is held in both), then the comparison operator of the held type is
+    // used.
     EXPECT_TRUE(token1 < token2);
     EXPECT_TRUE(token1 < token3);
     EXPECT_FALSE(token2 < token3);
@@ -129,6 +133,50 @@ TEST(MultiTokenTest, Comparison) {
 
     EXPECT_FALSE(token1 >= token2);
     EXPECT_TRUE(token2 >= token1);
+  }
+}
+
+TEST(MultiTokenTest, Visit) {
+  struct Visitor {
+    std::string_view operator()(const FooToken& token) { return "FooToken"; }
+    std::string_view operator()(const BarToken& token) { return "BarToken"; }
+    std::string_view operator()(const BazToken& token) { return "BazToken"; }
+  };
+
+  FooBarBazToken token(FooToken{});
+  EXPECT_EQ(token.Visit(Visitor()), "FooToken");
+
+  token = BarToken{};
+  EXPECT_EQ(token.Visit(Visitor()), "BarToken");
+
+  token = BazToken{};
+  EXPECT_EQ(token.Visit(Visitor()), "BazToken");
+}
+
+TEST(MultiTokenTest, CompatibleConstruction) {
+  {
+    FooBarToken foo_bar_token(FooToken{});
+    FooBarBazToken foo_bar_baz_token(foo_bar_token);
+    EXPECT_EQ(FooBarBazToken::Tag{0}, foo_bar_baz_token.variant_index());
+  }
+  {
+    FooBarToken foo_bar_token(BarToken{});
+    FooBarBazToken foo_bar_baz_token(foo_bar_token);
+    EXPECT_EQ(FooBarBazToken::Tag{1}, foo_bar_baz_token.variant_index());
+  }
+}
+
+TEST(MultiTokenTest, CompatibleAssignment) {
+  FooBarBazToken foo_bar_baz_token;
+  {
+    FooBarToken foo_bar_token(FooToken{});
+    foo_bar_baz_token = foo_bar_token;
+    EXPECT_EQ(FooBarBazToken::Tag{0}, foo_bar_baz_token.variant_index());
+  }
+  {
+    FooBarToken foo_bar_token(BarToken{});
+    foo_bar_baz_token = foo_bar_token;
+    EXPECT_EQ(FooBarBazToken::Tag{1}, foo_bar_baz_token.variant_index());
   }
 }
 

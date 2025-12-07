@@ -13,17 +13,12 @@
 #include "base/timer/timer.h"
 #include "remoting/base/protobuf_http_request_base.h"
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
-
-namespace google {
-namespace protobuf {
-class MessageLite;
-}  // namespace protobuf
-}  // namespace google
+#include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 namespace remoting {
 
+class HttpStatus;
 class ProtobufHttpClient;
-class ProtobufHttpStatus;
 class ProtobufHttpStreamParser;
 
 // A server streaming request.
@@ -35,7 +30,7 @@ class ProtobufHttpStreamRequest final
   using MessageCallback =
       base::RepeatingCallback<void(std::unique_ptr<MessageType> message)>;
   using StreamClosedCallback =
-      base::OnceCallback<void(const ProtobufHttpStatus& status)>;
+      base::OnceCallback<void(const HttpStatus& status)>;
 
   static constexpr base::TimeDelta kStreamReadyTimeoutDuration =
       base::Seconds(30);
@@ -69,10 +64,10 @@ class ProtobufHttpStreamRequest final
 
   // ProtobufHttpStreamParser callbacks.
   void OnMessage(const std::string& message);
-  void OnStreamClosed(const ProtobufHttpStatus& status);
+  void OnStreamClosed(const HttpStatus& status);
 
   // ProtobufHttpRequestBase implementations.
-  void OnAuthFailed(const ProtobufHttpStatus& status) override;
+  void OnAuthFailed(const HttpStatus& status) override;
   void StartRequestInternal(
       network::mojom::URLLoaderFactory* loader_factory) override;
   base::TimeDelta GetRequestTimeoutDuration() const override;

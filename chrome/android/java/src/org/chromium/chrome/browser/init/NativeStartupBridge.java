@@ -8,9 +8,11 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.BrowserStartupController;
 
 /** A class for native code to request full browser start when running in minimal browser mode. */
+@NullMarked
 public class NativeStartupBridge {
     @CalledByNative
     private static void loadFullBrowser() {

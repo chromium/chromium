@@ -15,24 +15,22 @@ import '../settings_shared.css.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {LWIN_KEY, META_KEY, ShortcutInputKeyElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
 import {KeyToIconNameMap} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
-// <if expr="_google_chrome" >
-import {KeyToInternalIconNameMap} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
-// </if>
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
+import type {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 
-import {CustomizeButtonDropdownItemElement, DropdownItemSelectEvent, DropdownMenuOption} from './customize_button_dropdown_item.js';
+import type {CustomizeButtonDropdownItemElement, DropdownItemSelectEvent, DropdownMenuOption} from './customize_button_dropdown_item.js';
 import {getTemplate} from './customize_button_select.html.js';
-import {ActionChoice, ButtonRemapping, KeyEvent, MetaKey, RemappingAction, StaticShortcutAction} from './input_device_settings_types.js';
+import type {ActionChoice, ButtonRemapping, KeyEvent, RemappingAction} from './input_device_settings_types.js';
+import {MetaKey, StaticShortcutAction} from './input_device_settings_types.js';
 
 export interface CustomizeButtonSelectElement {
   $: {
     selectDropdown: HTMLButtonElement,
-    menuContainer: HTMLDivElement,
+    menuContainer: HTMLElement,
   };
 }
 
@@ -466,7 +464,7 @@ export class CustomizeButtonSelectElement extends
         case MetaKey.kSearch:
           return 'shortcut-input-keys:search';
         case MetaKey.kLauncherRefresh:
-          return 'ash-internal:launcher-refresh';
+          return 'shortcut-input-keys:launcher-refresh';
         default:
           return 'shortcut-input-keys:launcher';
       }
@@ -476,13 +474,6 @@ export class CustomizeButtonSelectElement extends
     if (iconName) {
       return `shortcut-input-keys:${iconName}`;
     }
-
-    // <if expr="_google_chrome" >
-    const internalIconName = KeyToInternalIconNameMap[key];
-    if (internalIconName) {
-      return `ash-internal:${internalIconName}`;
-    }
-    // </if>
 
     return null;
   }
@@ -555,7 +546,7 @@ export class CustomizeButtonSelectElement extends
     dropdownMenuOptions[indexOfNewRow]?.scrollIntoViewIfNeeded();
 
     // Update the highlighted value.
-    this.highlightedValue_ = this.menu[indexOfNewRow]!.value as string;
+    this.highlightedValue_ = this.menu[indexOfNewRow].value as string;
   }
 
   private updateDropdownSelection_(): void {

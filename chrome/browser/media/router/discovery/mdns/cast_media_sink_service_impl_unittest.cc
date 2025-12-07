@@ -4,13 +4,13 @@
 
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -24,7 +24,6 @@
 #include "components/media_router/common/providers/cast/channel/cast_socket.h"
 #include "components/media_router/common/providers/cast/channel/cast_socket_service.h"
 #include "components/media_router/common/providers/cast/channel/cast_test_util.h"
-#include "components/media_router/common/test/test_helper.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -64,7 +63,7 @@ MATCHER_P(OpenParamEq, expected, "") {
 
 class MockObserver : public MediaSinkServiceBase::Observer {
  public:
-  MockObserver() {}
+  MockObserver() = default;
   ~MockObserver() override = default;
 
   MOCK_METHOD1(OnSinkAddedOrUpdated, void(const MediaSinkInternal&));
@@ -80,6 +79,9 @@ class CastMediaSinkServiceImplTest : public ::testing::TestWithParam<bool> {
         mock_time_task_runner_(new base::TestMockTimeTaskRunner()),
         mock_cast_socket_service_(
             new cast_channel::MockCastSocketService(mock_time_task_runner_)),
+        dial_media_sink_service_(
+            base::DoNothing(),
+            base::SequencedTaskRunner::GetCurrentDefault()),
         media_sink_service_impl_(
             mock_sink_discovered_cb_.Get(),
             mock_cast_socket_service_.get(),
@@ -97,6 +99,9 @@ class CastMediaSinkServiceImplTest : public ::testing::TestWithParam<bool> {
     auto mock_timer = std::make_unique<base::MockOneShotTimer>();
     mock_timer_ = mock_timer.get();
     media_sink_service_impl_.SetTimerForTest(std::move(mock_timer));
+    auto mock_timer2 = std::make_unique<base::MockOneShotTimer>();
+    mock_timer_for_dial_ = mock_timer2.get();
+    dial_media_sink_service_.SetTimerForTest(std::move(mock_timer2));
   }
 
   void TearDown() override {
@@ -137,11 +142,12 @@ class CastMediaSinkServiceImplTest : public ::testing::TestWithParam<bool> {
       DiscoveryNetworkMonitor::CreateInstanceForTest(&FakeGetNetworkInfo);
 
   base::MockCallback<OnSinksDiscoveredCallback> mock_sink_discovered_cb_;
-  TestMediaSinkService dial_media_sink_service_;
   std::unique_ptr<cast_channel::MockCastSocketService>
       mock_cast_socket_service_;
-  raw_ptr<base::MockOneShotTimer, DanglingUntriaged> mock_timer_;
+  DialMediaSinkServiceImpl dial_media_sink_service_;
   CastMediaSinkServiceImpl media_sink_service_impl_;
+  raw_ptr<base::MockOneShotTimer> mock_timer_;
+  raw_ptr<base::MockOneShotTimer> mock_timer_for_dial_;
   testing::NiceMock<MockObserver> observer_;
 };
 
@@ -675,7 +681,7 @@ TEST_P(CastMediaSinkServiceImplTest, TestOnSinkAddedOrUpdated) {
   // |media_sink_service_impl_| via the Observer interface.
   dial_media_sink_service_.AddOrUpdateSink(dial_sink1);
   dial_media_sink_service_.AddOrUpdateSink(dial_sink2);
-  EXPECT_TRUE(dial_media_sink_service_.timer()->IsRunning());
+  EXPECT_TRUE(mock_timer_for_dial_->IsRunning());
 
   // Verify sink content.
   const auto& sinks = media_sink_service_impl_.GetSinks();
@@ -1188,9 +1194,9 @@ TEST_P(CastMediaSinkServiceImplTest, CacheDialDiscoveredSinks) {
 
   // CastMediaSinkServiceImpl generates a Cast sink based on |sink2_dial|.
   const auto& sinks = media_sink_service_impl_.GetSinks();
-  auto sink2_it = base::ranges::find(
-      sinks, ip_endpoint2,
-      [](const auto& entry) { return entry.second.cast_data().ip_endpoint; });
+  auto sink2_it = std::ranges::find(sinks, ip_endpoint2, [](const auto& entry) {
+    return entry.second.cast_data().ip_endpoint;
+  });
   ASSERT_TRUE(sink2_it != sinks.end());
   MediaSinkInternal sink2_cast_from_dial = sink2_it->second;
 

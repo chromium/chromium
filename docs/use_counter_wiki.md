@@ -27,8 +27,8 @@ feature to UseCounter, simply:
     * \[[MeasureAs="WebDXFeature::\<enum value\>"]\] in the feature's IDL definition; Or
     * \[[MeasureAs=\<WebFeature enum value\>]\] in the feature's IDL definition for WebFeature use counters; Or
     * \[[Measure]\] in the feature's IDL definition for WebFeature use counters with an appropriately named use counter; Or
-    * blink::UseCounter::CountWebDXFeature() or blink::UseCounter::Count() for blink side features; Or
-    * content::ContentBrowserClient::LogWeb[DX]FeatureForCurrentPage() for browser side features.
+    * `blink::UseCounter::CountWebDXFeature()` or `blink::UseCounter::Count()` for blink side features; Or
+    * `content::ContentBrowserClient::LogWeb[DX]FeatureForCurrentPage()` for browser side features.
 + Run [`update_use_counter_feature_enum.py`] to update the UMA mappings.
 
 Example:
@@ -99,6 +99,32 @@ checking chrome://histograms/Blink.UseCounter.WebDXFeatures,
 chrome://histograms/Blink.UseCounter.Features and chrome://ukm in your local
 build.
 
+To add a test for a use counter, there are several options:
+ + For use counters recorded from the renderer,
+   [internal WPTs](https://chromium.googlesource.com/chromium/src/+/HEAD/third_party/blink/web_tests/wpt_internal/README.md)
+   expose the `internals.isUseCounted` and `internals.clearUseCounter`
+   functions for testing use counters recorded for a given document.
+
+ + Chrome browser tests can verify that use counters were recorded by using a
+   `base::HistogramTester` to check whether the "Blink.UseCounter.Features"
+   histogram was emitted to for the bucket corresponding to the new WebFeature.
+   If the use counter is recorded from the renderer,
+   `content::FetchHistogramsFromChildProcesses()` can be used to make this
+   use counter activity visible to the browser process.
+
+ + For use counters recorded from the browser process (e.g. by calling
+   `GetContentClient()->browser()->LogWebFeatureForCurrentPage()`), a content
+   browser test can be used by creating a subclass of
+   `ContentBrowserTestContentBrowserClient` that implements
+   `LogWebFeatureForCurrentPage`, creating an instance of it in
+   `SetUpOnMainThread`, and checking whether the instance's
+   `LogWebFeatureForCurrentPage` is called. One way to implement this is to
+   have `LogWebFeatureForCurrentPage` be defined as a `MOCK_METHOD` and then
+   use `EXPECT_CALL` to ensure that the method is called as expected with
+   the new WebFeature value. Note that the
+   `ContentBrowserTestContentBrowserClient` instance should be destroyed in
+   `TearDownOnMainThread`.
+
 ## Analyze UseCounter Histogram Data
 
 ### Public Data on https://chromestatus.com
@@ -130,62 +156,43 @@ Some metrics of interest:
 
 ### UseCounter Feature in HTTP Archive
 
-HTTP Archive crawls the top 10K sites on the web and records everything from
+HTTP Archive crawls the top sites on the web and records everything from
 request and response headers. The data is available on Google BigQuery.
 
-You can find pages that trigger a particular UseCounter using the following
-script:
+You can find usage and sample pages that trigger a particular UseCounter using
+the following script:
 
 ```sql
 SELECT
-  DATE(yyyymmdd) AS date,
+  date,
   client AS platform,
-  num_url AS url_count,
-  pct_urls AS urls_percentile,
+  num_urls AS url_count,
+  pct_urls AS urls_percent,
   sample_urls AS url
-FROM [httparchive:blink_features.usage]
-WHERE feature = 'MyFeature'
-ORDER BY url_percentile DESC
+FROM `httparchive.blink_features.usage`
+WHERE
+  feature = 'MyFeature' AND
+  date = (SELECT MAX(date) FROM `httparchive.blink_features.usage`)
+ORDER BY date DESC
 ```
-OR
+
+
+Or to see or filter my more data available in the HTTP Archive you can query the main `httparchive.crawl.pages` table like this:
 
 ```sql
-SELECT
-  url
-FROM [httparchive:pages.yyyy_mm_dd_mobile]
+SELECT DISTINCT
+  client,
+  page,
+  rank
+FROM
+  `httparchive.crawl.pages`,
+  UNNEST (features) As feats
 WHERE
-  JSON_EXTRACT(payload, '$._blinkFeatureFirstUsed.Features.MyFeature') IS NOT
-  NULL
-LIMIT 500
+  date = '2024-11-01' AND     -- update date to latest month
+  feats.feature = 'MyFeature' -- update feature
+ORDER BY
+  rank
 ```
-
-You can also find pages that trigger a particular CSS property (during parsing):
-
-```sql
-SELECT
-  url
-FROM [httparchive:pages.yyyy_mm_dd_mobile]
-WHERE
-  JSON_EXTRACT(payload, '$._blinkFeatureFirstUsed.CSSFeatures.MyCSSProperty')
-  IS NOT NULL
-LIMIT 500
-```
-
-To find pages that trigger a UseCounter and sort by page rank:
-
-```sql
-SELECT
-  IFNULL(runs.rank, 1000000) AS rank,
-  har.url AS url,
-FROM [httparchive:latest.pages_desktop] AS har
-LEFT JOIN [httparchive:runs.latest_pages] AS runs
-  ON har.url = runs.url
-WHERE
-  JSON_EXTRACT(payload, '$._blinkFeatureFirstUsed.Features.MyFeature') IS NOT
-  NULL
-ORDER BY rank;
-```
-
 
 ### UMA Usage on Fraction of Users
 You may also see the fraction of users that trigger your feature at lease once a

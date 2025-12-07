@@ -156,23 +156,29 @@ TEST_F(CommerceFeatureListTest, TestNoDiscountMerchant) {
 // This test assumes that, at bare minimum, "US" is an allowed country and
 // "en-us" is an allowed locale for the US.
 TEST_F(CommerceFeatureListTest, TestEnabledForCountryAndLocale) {
+  base::test::ScopedFeatureList scoped_features;
+
+  // Specifically init with no flags so that the feature is not in an
+  // "overridden" state.
+  scoped_features.InitWithEmptyFeatureAndFieldTrialLists();
+
   // Check the known success cases with different character cases.
   ASSERT_TRUE(commerce::IsEnabledForCountryAndLocale(
-      commerce::kShoppingPDPMetricsRegionLaunched, "US", "en-us"));
+      commerce::kShoppingPDPMetrics, "US", "en-us"));
   ASSERT_TRUE(commerce::IsEnabledForCountryAndLocale(
-      commerce::kShoppingPDPMetricsRegionLaunched, "us", "en-US"));
+      commerce::kShoppingPDPMetrics, "us", "en-US"));
 
   // Test allowed country with disallowed (fake) locale.
   ASSERT_FALSE(commerce::IsEnabledForCountryAndLocale(
-      commerce::kShoppingPDPMetricsRegionLaunched, "us", "zz-zz"));
+      commerce::kShoppingPDPMetrics, "us", "zz-zz"));
 
   // Test allowed locale in a disallowed (fake) country.
   ASSERT_FALSE(commerce::IsEnabledForCountryAndLocale(
-      commerce::kShoppingPDPMetricsRegionLaunched, "zz", "en-us"));
+      commerce::kShoppingPDPMetrics, "zz", "en-us"));
 
   // Ensure empty values don't crash.
   ASSERT_FALSE(commerce::IsEnabledForCountryAndLocale(
-      commerce::kShoppingPDPMetricsRegionLaunched, "", ""));
+      commerce::kShoppingPDPMetrics, "", ""));
 }
 
 TEST_F(CommerceFeatureListTest, IsShoppingListEnabled) {

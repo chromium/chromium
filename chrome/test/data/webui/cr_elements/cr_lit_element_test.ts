@@ -2,11 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Disabled because otherwise it is incorrectly also applied to Lit properties,
+// since Lit and Polymer coexist in this file.
+/* eslint-disable @webui-eslint/polymer-property-class-member */
+
+// Disabled because otherwise it is incorrectly also applied to Polymer
+// properties, since Lit and Polymer coexist in this file.
+/* eslint-disable @webui-eslint/lit-property-accessor */
+
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+// <if expr="not is_android">
 import {html as polymerHtml, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// </if>
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNotReached, assertNull, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 
@@ -94,20 +105,58 @@ class CrDummyPropertiesWithNotifyElement extends CrLitElement {
     };
   }
 
-  prop1: boolean = false;
-  prop2: boolean = false;
-  prop3: boolean = false;
-  propFour: boolean = false;
-  prop5: boolean|undefined = false;
+  accessor prop1: boolean = false;
+  accessor prop2: boolean = false;
+  accessor prop3: boolean = false;
+  accessor propFour: boolean = false;
+  accessor prop5: boolean|undefined = false;
 }
 
 customElements.define(
     CrDummyPropertiesWithNotifyElement.is, CrDummyPropertiesWithNotifyElement);
 
+class CrDummyPropertiesWithReflectElement extends CrLitElement {
+  static get is() {
+    return 'cr-dummy-properties-with-reflect' as const;
+  }
+
+  static override get properties() {
+    return {
+      prop1: {
+        type: Boolean,
+        reflect: true,
+      },
+
+      prop2WithSuffix: {
+        type: Boolean,
+        reflect: true,
+      },
+
+      prop3: {type: Boolean},
+
+      propFour: {
+        type: Boolean,
+        reflect: true,
+      },
+    };
+  }
+
+  accessor prop1: boolean = false;
+  accessor prop2WithSuffix: boolean = false;
+  accessor prop3: boolean = false;
+  accessor propFour: boolean = false;
+}
+
+customElements.define(
+    CrDummyPropertiesWithReflectElement.is,
+    CrDummyPropertiesWithReflectElement);
+
 declare global {
   interface HTMLElementTagNameMap {
     [CrDummyLitElement.is]: CrDummyLitElement;
     [CrDummyPropertiesWithNotifyElement.is]: CrDummyPropertiesWithNotifyElement;
+    [CrDummyPropertiesWithReflectElement.is]:
+        CrDummyPropertiesWithReflectElement;
   }
 }
 
@@ -131,6 +180,7 @@ suite('CrLitElement', function() {
     assertNotEquals(null, element.shadowRoot);
   });
 
+  // <if expr="not is_android">
   // Called by cr-polymer-wrapper's connectedCallback() below. Exposed as a hook
   // to allow testing different cases.
   let polymerWrapperCallback: (e: CrDummyLitElement) => void = (_e) => {};
@@ -202,11 +252,14 @@ suite('CrLitElement', function() {
 
       static get properties() {
         return {
-          show: Boolean,
+          show: {
+            type: Boolean,
+            value: false,
+          },
         };
       }
 
-      show: boolean = false;
+      declare show: boolean;
 
       override connectedCallback() {
         super.connectedCallback();
@@ -258,6 +311,7 @@ suite('CrLitElement', function() {
     `;
     return whenDone;
   });
+  // </if>
 
   test('DollarSign_ErrorWhenNotConnectedOnce', function() {
     const element = document.createElement('cr-dummy-lit');
@@ -266,7 +320,13 @@ suite('CrLitElement', function() {
     assertThrows(function() {
       element.$.foo;
       assertNotReached('Previous statement should have thrown an exception');
-    }, 'CrLitElement CR-DUMMY-LIT $ dictionary accessed before element is connected at least once.');
+    }, 'CrLitElement CR-DUMMY-LIT accessed \'$.foo\' before connected at least once.');
+
+    assertThrows(function() {
+      element.id = 'dummyId';
+      element.$.foo;
+      assertNotReached('Previous statement should have thrown an exception');
+    }, 'CrLitElement CR-DUMMY-LIT#dummyId accessed \'$.foo\' before connected at least once.');
 
     assertDeepEquals([], element.lifecycleCallbacks);
   });
@@ -327,9 +387,9 @@ suite('CrLitElement', function() {
         };
       }
 
-      fooBarBoolean: boolean = false;
-      fooBarString: string = 'hello';
-      fooBarStringCustom: string = 'hola';
+      accessor fooBarBoolean: boolean = false;
+      accessor fooBarString: string = 'hello';
+      accessor fooBarStringCustom: string = 'hola';
     }
 
     customElements.define(
@@ -380,8 +440,8 @@ suite('CrLitElement', function() {
 
     const events = await whenFired1;
     for (const event of events) {
-      assertTrue(event.bubbles);
-      assertTrue(event.composed);
+      assertFalse(event.bubbles);
+      assertFalse(event.composed);
       assertDeepEquals({value: false}, event.detail);
     }
 
@@ -389,18 +449,19 @@ suite('CrLitElement', function() {
     let whenFired2 = eventToPromise('prop1-changed', element);
     element.prop1 = true;
     let event = await whenFired2;
-    assertTrue(event.bubbles);
-    assertTrue(event.composed);
+    assertFalse(event.bubbles);
+    assertFalse(event.composed);
     assertDeepEquals({value: true}, event.detail);
 
     whenFired2 = eventToPromise('prop-four-changed', element);
     element.propFour = true;
     event = await whenFired2;
-    assertTrue(event.bubbles);
-    assertTrue(event.composed);
+    assertFalse(event.bubbles);
+    assertFalse(event.composed);
     assertDeepEquals({value: true}, event.detail);
   });
 
+  // <if expr="not is_android">
   // Test that a Lit child with 'notify: true' properties works with a Polymer
   // parent that uses 2-way bindings for that property.
   test('PropertiesWithNotifyTwoWayBinding', async function() {
@@ -417,11 +478,14 @@ suite('CrLitElement', function() {
 
       static get properties() {
         return {
-          myProp: Boolean,
+          myProp: {
+            type: Boolean,
+            value: false,
+          },
         };
       }
 
-      myProp: boolean = false;
+      declare myProp: boolean;
     }
 
     customElements.define(CrPolymerWrapperElement.is, CrPolymerWrapperElement);
@@ -449,6 +513,7 @@ suite('CrLitElement', function() {
     await whenFired;
     assertFalse(child.prop1);
   });
+  // </if>
 
   test('Fire', async function() {
     const element = document.createElement('cr-dummy-lit');
@@ -464,5 +529,211 @@ suite('CrLitElement', function() {
     assertTrue(event.bubbles);
     assertTrue(event.composed);
     assertEquals(dummyPayload, event.detail);
+  });
+
+  // Checks that properties and attributes map correctly for various cases.
+  test('Property to attribute mapping', async function() {
+    const element = document.createElement('cr-dummy-properties-with-reflect');
+    document.body.appendChild(element);
+
+    assertFalse(element.hasAttribute('prop1'));
+    assertFalse(element.hasAttribute('prop2-with-suffix'));
+    assertFalse(element.hasAttribute('prop-four'));
+
+    // Property -> attribute
+    element.prop1 = true;
+    element.prop2WithSuffix = true;
+    element.propFour = true;
+    await microtasksFinished();
+
+    assertTrue(element.hasAttribute('prop1'));
+    assertTrue(element.hasAttribute('prop2-with-suffix'));
+    assertTrue(element.hasAttribute('prop-four'));
+
+    // Attribute -> property
+    element.toggleAttribute('prop1', false);
+    element.toggleAttribute('prop2-with-suffix', false);
+    element.toggleAttribute('prop-four', false);
+    await microtasksFinished();
+
+    assertFalse(element.prop1);
+    assertFalse(element.prop2WithSuffix);
+    assertFalse(element.propFour);
+
+    // Non-reflected property doesn't show up in attribute, but should observe
+    // attribute changes.
+    assertFalse(element.hasAttribute('prop3'));
+    assertFalse(element.prop3);
+    element.toggleAttribute('prop3', true);
+    await microtasksFinished();
+    assertTrue(element.prop3);
+  });
+});
+
+suite('CrLitElement accessor', function() {
+  class CrDummyPropertiesWithAccessorElement extends CrLitElement {
+    static get is() {
+      return 'cr-dummy-properties-with-accessor' as const;
+    }
+
+    static override get properties() {
+      return {
+        // Disable @webui-eslint/polymer-property-class-member since the code
+        // below simulates TypeScript's JS output when class properties are
+        // replaced with getter/setter pairs.
+
+        propReflected: {
+          type: String,
+          reflect: true,
+        },
+
+        propNonReflected: {type: String},
+      };
+    }
+
+    accessor propReflected: string = 'initial';
+    accessor propNonReflected: string = 'initial';
+
+    override willUpdate(changedProperties: PropertyValues<this>) {
+      super.willUpdate(changedProperties);
+      willUpdateCalls.push(changedProperties);
+    }
+
+    override updated(changedProperties: PropertyValues<this>) {
+      super.updated(changedProperties);
+      updatedCalls.push(changedProperties);
+    }
+  }
+
+  customElements.define(
+      CrDummyPropertiesWithAccessorElement.is,
+      CrDummyPropertiesWithAccessorElement);
+
+  let willUpdateCalls:
+      Array<PropertyValues<CrDummyPropertiesWithAccessorElement>> = [];
+  let updatedCalls:
+      Array<PropertyValues<CrDummyPropertiesWithAccessorElement>> = [];
+
+  function assertChangedProperties(
+      changedProperties: PropertyValues<CrDummyPropertiesWithAccessorElement>,
+      propReflected: string|undefined, propNonReflected: string|undefined) {
+    assertTrue(changedProperties.has('propReflected'));
+    assertEquals(propReflected, changedProperties.get('propReflected'));
+    assertTrue(changedProperties.has('propNonReflected'));
+    assertEquals(propNonReflected, changedProperties.get('propNonReflected'));
+  }
+
+
+  setup(() => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    willUpdateCalls = [];
+    updatedCalls = [];
+  });
+
+  test('InitialValuesOnly', async function() {
+    const element =
+        document.createElement(CrDummyPropertiesWithAccessorElement.is) as
+        CrDummyPropertiesWithAccessorElement;
+    document.body.appendChild(element);
+
+    // Check initial state.
+    assertEquals('initial', element.propReflected);
+    assertEquals('initial', element.propNonReflected);
+
+    // Check `changedProperties` in initial willUpdate call.
+    assertEquals(1, willUpdateCalls.length);
+    assertChangedProperties(willUpdateCalls[0]!, undefined, undefined);
+    // Check `changedProperties` in initial updated call.
+    assertEquals(1, updatedCalls.length);
+    assertChangedProperties(updatedCalls[0]!, undefined, undefined);
+    // Check that initial value is reflected correctly.
+    assertEquals('initial', element.getAttribute('prop-reflected'));
+    assertFalse(element.hasAttribute('prop-non-reflected'));
+
+
+    element.propReflected = 'other1';
+    element.propNonReflected = 'other1';
+    await microtasksFinished();
+
+    // Check `changedProperties` in 2nd willUpdate call.
+    assertEquals(2, willUpdateCalls.length);
+    assertChangedProperties(willUpdateCalls[1]!, 'initial', 'initial');
+    // Check `changedProperties` in 2nd updated call.
+    assertEquals(2, updatedCalls.length);
+    assertChangedProperties(updatedCalls[1]!, 'initial', 'initial');
+    // Check property -> attribute
+    assertEquals('other1', element.getAttribute('prop-reflected'));
+    assertFalse(element.hasAttribute('prop-non-reflected'));
+
+    element.setAttribute('prop-reflected', 'other2');
+    element.setAttribute('prop-non-reflected', 'other2');
+    await microtasksFinished();
+
+    // Check `changedProperties` in 3rd willUpdate call.
+    assertEquals(3, willUpdateCalls.length);
+    assertChangedProperties(willUpdateCalls[2]!, 'other1', 'other1');
+    // Check `changedProperties` in 3rd updated call.
+    assertEquals(3, updatedCalls.length);
+    assertChangedProperties(updatedCalls[2]!, 'other1', 'other1');
+
+    // Check attribute -> property
+    assertEquals('other2', element.propReflected);
+    // Non-reflected property changes don't update the attribute, but the
+    // property updates when the attribute changes.
+    assertEquals('other2', element.propNonReflected);
+  });
+
+  test('InitialAndInheritedValues', async function() {
+    document.body.innerHTML = getTrustedHTML`
+       <cr-dummy-properties-with-accessor
+           prop-reflected="inherited" prop-non-reflected="inherited">
+       </cr-dummy-properties-with-accessor>
+    `;
+    const element =
+        document.body.querySelector<CrDummyPropertiesWithAccessorElement>(
+            CrDummyPropertiesWithAccessorElement.is)!;
+
+    // Check initial state.
+    assertEquals('inherited', element.propReflected);
+    assertEquals('inherited', element.propNonReflected);
+
+    // Check `changedProperties` in initial willUpdate call.
+    assertEquals(1, willUpdateCalls.length);
+    assertChangedProperties(willUpdateCalls[0]!, undefined, undefined);
+    // Check `changedProperties` in initial updated call.
+    assertEquals(1, updatedCalls.length);
+    assertChangedProperties(updatedCalls[0]!, undefined, undefined);
+
+    element.propReflected = 'other1';
+    element.propNonReflected = 'other1';
+    await microtasksFinished();
+
+    // Check `changedProperties` in 2nd willUpdate call.
+    assertEquals(2, willUpdateCalls.length);
+    assertChangedProperties(willUpdateCalls[1]!, 'inherited', 'inherited');
+    // Check `changedProperties` in 2nd updated call.
+    assertEquals(2, updatedCalls.length);
+    assertChangedProperties(updatedCalls[1]!, 'inherited', 'inherited');
+    // Check property -> attribute
+    assertEquals('other1', element.getAttribute('prop-reflected'));
+    // Check that non-reflected property leaves the attribute unaffected.
+    assertEquals('inherited', element.getAttribute('prop-non-reflected'));
+
+    element.setAttribute('prop-reflected', 'other2');
+    element.setAttribute('prop-non-reflected', 'other2');
+    await microtasksFinished();
+
+    // Check `changedProperties` in 3rd willUpdate call.
+    assertEquals(3, willUpdateCalls.length);
+    assertChangedProperties(willUpdateCalls[2]!, 'other1', 'other1');
+    // Check `changedProperties` in 3rd updated call.
+    assertEquals(3, updatedCalls.length);
+    assertChangedProperties(updatedCalls[2]!, 'other1', 'other1');
+
+    // Check attribute -> property
+    assertEquals('other2', element.propReflected);
+    // Non-reflected property changes don't update the attribute, but the
+    // property updates when the attribute changes.
+    assertEquals('other2', element.propNonReflected);
   });
 });

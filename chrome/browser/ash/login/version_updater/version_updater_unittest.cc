@@ -15,13 +15,10 @@
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/version_updater/mock_version_updater_delegate.h"
 #include "chrome/browser/ash/login/version_updater/update_time_estimator.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
-#include "chromeos/ash/components/network/portal_detector/mock_network_portal_detector.h"
-#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -51,7 +48,7 @@ MATCHER_P2(DowloadingTimeLeftEq, can_be_used, time, "") {
 
 class VersionUpdaterUnitTest : public testing::Test {
  public:
-  VersionUpdaterUnitTest() : local_state_(TestingBrowserProcess::GetGlobal()) {}
+  VersionUpdaterUnitTest() = default;
 
   VersionUpdaterUnitTest(const VersionUpdaterUnitTest&) = delete;
   VersionUpdaterUnitTest& operator=(const VersionUpdaterUnitTest&) = delete;
@@ -88,14 +85,6 @@ class VersionUpdaterUnitTest : public testing::Test {
 
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
 
-    mock_network_portal_detector_ =
-        std::make_unique<MockNetworkPortalDetector>();
-    EXPECT_CALL(*mock_network_portal_detector_, IsEnabled())
-        .Times(AnyNumber())
-        .WillRepeatedly(Return(false));
-    network_portal_detector::SetNetworkPortalDetector(
-        mock_network_portal_detector_.get());
-
     mock_delegate_ = std::make_unique<MockVersionUpdaterDelegate>();
     version_updater_ = std::make_unique<VersionUpdater>(mock_delegate_.get());
 
@@ -108,7 +97,6 @@ class VersionUpdaterUnitTest : public testing::Test {
     version_updater_.reset();
     mock_delegate_.reset();
 
-    network_portal_detector::InitializeForTesting(nullptr);
     network_handler_test_helper_.reset();
 
     UpdateEngineClient::Shutdown();
@@ -128,9 +116,12 @@ class VersionUpdaterUnitTest : public testing::Test {
     SetStatusWithChecks(update_engine::Operation::IDLE, true);
   }
 
-  void StartNetworkCheck() {
-    EXPECT_CALL(*mock_delegate_, UpdateInfoChanged(_)).Times(1);
+  void PrepareOnlineNetworkAndStartNetworkCheck() {
+    ConfigureWiFi(shill::kStateOnline);
+
+    EXPECT_CALL(*mock_delegate_, UpdateInfoChanged(_)).Times(2);
     EXPECT_CALL(*mock_delegate_, PrepareForUpdateCheck()).Times(1);
+
     version_updater_->StartNetworkCheck();
   }
 
@@ -145,20 +136,17 @@ class VersionUpdaterUnitTest : public testing::Test {
   // Accessory objects needed by VersionUpdater.
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<MockVersionUpdaterDelegate> mock_delegate_;
-  std::unique_ptr<MockNetworkPortalDetector> mock_network_portal_detector_;
   raw_ptr<FakeUpdateEngineClient, DanglingUntriaged> fake_update_engine_client_;
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
-  ScopedTestingLocalState local_state_;
-
   int checks_count_ = 0;
 };
 
 TEST_F(VersionUpdaterUnitTest, HandlesNoUpdate) {
-  StartNetworkCheck();
+  PrepareOnlineNetworkAndStartNetworkCheck();
   // Verify that the DUT checks for an update.
   EXPECT_EQ(fake_update_engine_client_->request_update_check_call_count(), 1);
 
@@ -172,7 +160,7 @@ TEST_F(VersionUpdaterUnitTest, HandlesNoUpdate) {
 }
 
 TEST_F(VersionUpdaterUnitTest, HandlesAvailableUpdate) {
-  StartNetworkCheck();
+  PrepareOnlineNetworkAndStartNetworkCheck();
   // Verify that the DUT checks for an update.
   EXPECT_EQ(fake_update_engine_client_->request_update_check_call_count(), 1);
 
@@ -198,7 +186,7 @@ TEST_F(VersionUpdaterUnitTest, HandlesAvailableUpdate) {
 // Simple time left test case expectation which does not cover using download
 // speed estimation.
 TEST_F(VersionUpdaterUnitTest, TimeLeftExpectation) {
-  StartNetworkCheck();
+  PrepareOnlineNetworkAndStartNetworkCheck();
   // Verify that the DUT checks for an update.
   EXPECT_EQ(fake_update_engine_client_->request_update_check_call_count(), 1);
 
@@ -261,7 +249,7 @@ TEST_F(VersionUpdaterUnitTest, TimeLeftExpectation) {
 }
 
 TEST_F(VersionUpdaterUnitTest, SimpleTimeLeftExpectationDownloadinStage) {
-  StartNetworkCheck();
+  PrepareOnlineNetworkAndStartNetworkCheck();
   // Verify that the DUT checks for an update.
   EXPECT_EQ(fake_update_engine_client_->request_update_check_call_count(), 1);
 
@@ -295,7 +283,7 @@ TEST_F(VersionUpdaterUnitTest, SimpleTimeLeftExpectationDownloadinStage) {
 }
 
 TEST_F(VersionUpdaterUnitTest, HandlesCancelUpdateOnUpdateAvailable) {
-  StartNetworkCheck();
+  PrepareOnlineNetworkAndStartNetworkCheck();
 
   // Verify that the DUT checks for an update.
   EXPECT_EQ(fake_update_engine_client_->request_update_check_call_count(), 1);
@@ -314,7 +302,7 @@ TEST_F(VersionUpdaterUnitTest, HandlesCancelUpdateOnUpdateAvailable) {
 }
 
 TEST_F(VersionUpdaterUnitTest, HandlesCancelUpdateOnDownloading) {
-  StartNetworkCheck();
+  PrepareOnlineNetworkAndStartNetworkCheck();
 
   // Verify that the DUT checks for an update.
   EXPECT_EQ(fake_update_engine_client_->request_update_check_call_count(), 1);
@@ -335,7 +323,7 @@ TEST_F(VersionUpdaterUnitTest, HandlesCancelUpdateOnDownloading) {
 }
 
 TEST_F(VersionUpdaterUnitTest, HandleUpdateError) {
-  StartNetworkCheck();
+  PrepareOnlineNetworkAndStartNetworkCheck();
 
   // Verify that the DUT checks for an update.
   EXPECT_EQ(fake_update_engine_client_->request_update_check_call_count(), 1);
@@ -355,9 +343,6 @@ TEST_F(VersionUpdaterUnitTest, HandleUpdateError) {
 }
 
 TEST_F(VersionUpdaterUnitTest, HandlesPortalOnline) {
-  EXPECT_CALL(*mock_network_portal_detector_, IsEnabled())
-      .WillOnce(Return(true));
-
   // StartNetworkCheck will call PortalStateChanged with an unknown portal
   // state.
   EXPECT_CALL(*mock_delegate_,
@@ -380,9 +365,6 @@ TEST_F(VersionUpdaterUnitTest, HandlesPortalOnline) {
 }
 
 TEST_F(VersionUpdaterUnitTest, HandlesPortalError) {
-  EXPECT_CALL(*mock_network_portal_detector_, IsEnabled())
-      .WillOnce(Return(true));
-
   // StartNetworkCheck will call PortalStateChanged with update_info.state with
   // an unknown portal state.
   EXPECT_CALL(*mock_delegate_,
@@ -409,7 +391,7 @@ TEST_F(VersionUpdaterUnitTest, HandlesPortalError) {
 }
 
 TEST_F(VersionUpdaterUnitTest, IgnoreInstallStatus) {
-  StartNetworkCheck();
+  PrepareOnlineNetworkAndStartNetworkCheck();
   // Verify that the DUT checks for an update.
   EXPECT_EQ(fake_update_engine_client_->request_update_check_call_count(), 1);
 
@@ -424,7 +406,7 @@ TEST_F(VersionUpdaterUnitTest, IgnoreInstallStatus) {
 }
 
 TEST_F(VersionUpdaterUnitTest, RetryOnIDLEState) {
-  StartNetworkCheck();
+  PrepareOnlineNetworkAndStartNetworkCheck();
   // Verify that the DUT checks for an update.
   // this is the iitial request and not include in the retry update.
   EXPECT_EQ(fake_update_engine_client_->request_update_check_call_count(), 1);
@@ -438,7 +420,7 @@ TEST_F(VersionUpdaterUnitTest, RetryOnIDLEState) {
 }
 
 TEST_F(VersionUpdaterUnitTest, ExitOnRetryCheckTimeout) {
-  StartNetworkCheck();
+  PrepareOnlineNetworkAndStartNetworkCheck();
 
   EXPECT_EQ(fake_update_engine_client_->request_update_check_call_count(), 1);
 

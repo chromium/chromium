@@ -4,6 +4,7 @@
 
 #include "components/policy/core/browser/policy_error_map.h"
 
+#include <algorithm>
 #include <iterator>
 #include <string>
 #include <string_view>
@@ -12,7 +13,6 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/policy/core/common/schema.h"
@@ -48,7 +48,7 @@ class PolicyErrorMap::PendingError {
         replacements_(std::move(replacements)),
         error_path_string_(ErrorPathToString(policy_name, error_path)),
         level_(level) {
-    DCHECK(!base::ranges::any_of(replacements_, &std::string::empty));
+    DCHECK(!std::ranges::any_of(replacements_, &std::string::empty));
   }
   PendingError(const PendingError&) = delete;
   PendingError& operator=(const PendingError&) = delete;
@@ -71,9 +71,9 @@ class PolicyErrorMap::PendingError {
     // AddError(policy, message, error_path) and add a DCHECK
     if (message_id_ >= 0) {
       std::vector<std::u16string> utf_16_replacements;
-      base::ranges::transform(replacements_,
-                              std::back_inserter(utf_16_replacements),
-                              &ConvertReplacementToUTF16);
+      std::ranges::transform(replacements_,
+                             std::back_inserter(utf_16_replacements),
+                             &ConvertReplacementToUTF16);
       return l10n_util::GetStringFUTF16(message_id_, utf_16_replacements,
                                         nullptr);
     }
@@ -159,11 +159,20 @@ bool PolicyErrorMap::HasFatalError(const std::string& policy) {
 }
 
 std::u16string PolicyErrorMap::GetErrorMessages(const std::string& policy) {
+  return GetErrorMessages(policy, PolicyMap::MessageType::kError);
+}
+
+std::u16string PolicyErrorMap::GetErrorMessages(
+    const std::string& policy,
+    PolicyMap::MessageType message_type) {
   CheckReadyAndConvert();
   std::pair<const_iterator, const_iterator> range = map_.equal_range(policy);
   std::vector<std::u16string_view> list;
-  for (auto it = range.first; it != range.second; ++it)
-    list.push_back(it->second.message);
+  for (auto it = range.first; it != range.second; ++it) {
+    if (it->second.level == message_type) {
+      list.push_back(it->second.message);
+    }
+  }
   return base::JoinString(list, u"\n");
 }
 

@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/autofill/ui_bundled/cells/expiration_date_edit_item.h"
-#import "ios/chrome/browser/autofill/ui_bundled/cells/expiration_date_edit_item+Testing.h"
 
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
+#import "ios/chrome/browser/autofill/ui_bundled/cells/expiration_date_edit_item+Testing.h"
 #import "ios/chrome/browser/autofill/ui_bundled/cells/expiration_date_edit_item_delegate.h"
 #import "ios/chrome/browser/autofill/ui_bundled/expiration_date_picker.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ui/base/l10n/l10n_util.h"
 

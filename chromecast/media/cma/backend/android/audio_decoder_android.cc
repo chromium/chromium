@@ -9,8 +9,11 @@
 #include <algorithm>
 #include <limits>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "chromecast/base/task_runner_impl.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
@@ -82,7 +85,7 @@ AudioDecoderAndroid::AudioDecoderAndroid(MediaPipelineBackendAndroid* backend,
       current_pts_(kInvalidTimestamp),
       pending_output_frames_(kNoPendingOutput),
       volume_multiplier_(1.0f),
-      pool_(new ::media::AudioBufferMemoryPool()),
+      pool_(base::MakeRefCounted<::media::AudioBufferMemoryPool>()),
       weak_factory_(this) {
   LOG(INFO) << __func__ << ":";
   TRACE_FUNCTION_ENTRY0();
@@ -482,9 +485,10 @@ void AudioDecoderAndroid::OnBufferDecoded(
         if (c != playout_channel) {
           const size_t channel_size =
               decoded->data_size() / config_.channel_number;
-          std::memcpy(decoded->writable_data() + c * channel_size,
-                      decoded->writable_data() + playout_channel * channel_size,
-                      channel_size);
+          UNSAFE_TODO(std::memcpy(
+              decoded->writable_data() + c * channel_size,
+              decoded->writable_data() + playout_channel * channel_size,
+              channel_size));
         }
       }
     }
@@ -516,8 +520,9 @@ void AudioDecoderAndroid::OnBufferDecoded(
     buffer->set_timestamp(base::TimeDelta());
     const int channel_data_size = input_frames * sizeof(float);
     for (int c = 0; c < config_.channel_number; ++c) {
-      memcpy(buffer->channel_data()[c], decoded->data() + c * channel_data_size,
-             channel_data_size);
+      UNSAFE_TODO(memcpy(buffer->channel_data()[c],
+                         decoded->data() + c * channel_data_size,
+                         channel_data_size));
     }
 
     rate_shifter_->EnqueueBuffer(buffer);
@@ -615,11 +620,13 @@ void AudioDecoderAndroid::PushRateShifted() {
   DCHECK_GE(possible_output_frames, rate_info->output_frames);
 
   int channel_data_size = out_frames * sizeof(float);
-  scoped_refptr<DecoderBufferBase> output_buffer(new DecoderBufferAdapter(
-      new ::media::DecoderBuffer(channel_data_size * config_.channel_number)));
+  scoped_refptr<DecoderBufferBase> output_buffer(
+      new DecoderBufferAdapter(base::MakeRefCounted<::media::DecoderBuffer>(
+          channel_data_size * config_.channel_number)));
   for (int c = 0; c < config_.channel_number; ++c) {
-    memcpy(output_buffer->writable_data() + c * channel_data_size,
-           rate_shifter_output_->channel(c), channel_data_size);
+    UNSAFE_TODO(memcpy(output_buffer->writable_data() + c * channel_data_size,
+                       rate_shifter_output_->channel_span(c).data(),
+                       channel_data_size));
   }
   pending_output_frames_ = out_frames;
   sink_->WritePcm(output_buffer);

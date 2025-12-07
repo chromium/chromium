@@ -22,12 +22,11 @@ class OverlayRequestConfig : public OverlayUserData<ConfigType> {
 };
 
 // Macro used to define an OverlayRequestConfig that holds no data.  Should be
-// declared in headers and accompanied by OVERLAY_USER_DATA_SETUP_IMPL() in the
-// implementation.
+// used in headers.
 #define DEFINE_STATELESS_OVERLAY_REQUEST_CONFIG(ConfigType)    \
   class ConfigType : public OverlayRequestConfig<ConfigType> { \
    private:                                                    \
-    OVERLAY_USER_DATA_SETUP(ConfigType);                       \
+    friend class OverlayUserData<ConfigType>;                  \
   }
 
 #endif  // IOS_CHROME_BROWSER_OVERLAYS_MODEL_PUBLIC_OVERLAY_REQUEST_CONFIG_H_

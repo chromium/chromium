@@ -26,15 +26,15 @@
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_occlusion_tracker.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
 namespace {
 
 int64_t GetPrimaryDisplayId() {
-  return display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  return display::Screen::Get()->GetPrimaryDisplay().id();
 }
 
 class AppListPresenterImplTest : public AshTestBase {
@@ -70,15 +70,6 @@ class AppListPresenterImplTest : public AshTestBase {
                       GetPrimaryDisplay().id(), base::TimeTicks(),
                       /*show_source=*/std::nullopt);
   }
-
-  // Shows the Assistant UI.
-  void ShowAssistantUI() {
-    presenter()->ShowEmbeddedAssistantUI(/*show=*/true);
-  }
-
-  bool IsShowingAssistantUI() {
-    return presenter()->IsShowingEmbeddedAssistantUI();
-  }
 };
 
 // Tests, in tablet mode, that when specific container id widgets are focused,
@@ -110,29 +101,6 @@ TEST_F(AppListPresenterImplTest,
   }
 }
 
-// Tests that Assistant UI in tablet mode is closed when open another window.
-TEST_F(AppListPresenterImplTest, HideAssistantUIOnFocusOut) {
-  // Enter tablet mode to display the home launcher.
-  EnableTabletMode();
-  EXPECT_TRUE(presenter()->IsVisibleDeprecated());
-  EXPECT_FALSE(IsShowingAssistantUI());
-
-  // Open a window to cover Home Launcher.
-  std::unique_ptr<aura::Window> window1 = CreateTestWindow();
-  EXPECT_FALSE(presenter()->IsVisibleDeprecated());
-
-  // Open Assistant UI.
-  ShowAssistantUI();
-  // Assistant UI is visible but Home Launcher is considered not visible.
-  EXPECT_TRUE(IsShowingAssistantUI());
-  EXPECT_FALSE(presenter()->IsVisibleDeprecated());
-
-  // Open another window should close Assistant UI.
-  std::unique_ptr<aura::Window> window2 = CreateTestWindow();
-  EXPECT_FALSE(IsShowingAssistantUI());
-  EXPECT_FALSE(presenter()->IsVisibleDeprecated());
-}
-
 // Regression test for https://crbug.com/1235056
 // Tests that shelf observers are cleared when shelf is destroyed.
 TEST_F(AppListPresenterImplTest, ClearShelfObserversOnShelfRemoval) {
@@ -143,8 +111,8 @@ TEST_F(AppListPresenterImplTest, ClearShelfObserversOnShelfRemoval) {
   // Enter tablet mode, so the test can trigger tablet mode exit later on.
   EnableTabletMode();
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Remove the secondary display, and exit tablet mode to trigger app list view
   // dismissal. Note that the display will be removed before the app list close

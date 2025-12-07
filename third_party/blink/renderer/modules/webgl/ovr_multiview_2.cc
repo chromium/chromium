@@ -10,7 +10,8 @@
 
 namespace blink {
 
-OVRMultiview2::OVRMultiview2(WebGLRenderingContextBase* context)
+OVRMultiview2::OVRMultiview2(WebGLRenderingContextBase* context,
+                             ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled("GL_OVR_multiview2");
   context->ContextGL()->GetIntegerv(GL_MAX_VIEWS_OVR, &max_views_ovr_);

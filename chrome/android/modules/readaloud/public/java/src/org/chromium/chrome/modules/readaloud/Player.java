@@ -6,16 +6,20 @@ package org.chromium.chrome.modules.readaloud;
 
 import android.app.Activity;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.chrome.modules.readaloud.Feedback.FeedbackType;
+import org.chromium.chrome.modules.readaloud.Feedback.NegativeFeedbackReason;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackModeSelectionEnablementStatus;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.chrome.modules.readaloud.contentjs.Highlighter;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -24,6 +28,7 @@ import org.chromium.components.prefs.PrefService;
 import java.util.List;
 
 /** This interface represents Read Aloud player UI. */
+@NullMarked
 public interface Player {
     /** Embedders of the Read Aloud player must provide a Delegate implementation. */
     interface Delegate {
@@ -31,7 +36,7 @@ public interface Player {
         BottomSheetController getBottomSheetController();
 
         /** Returns true if highlighting is supported. */
-        boolean isHighlightingSupported();
+        boolean isHighlightingSupported(PlaybackMode playbackMode);
 
         /** Set highlighter mode. */
         void setHighlighterMode(@Highlighter.Mode int mode);
@@ -45,11 +50,17 @@ public interface Player {
         /** Returns the supplier for the current language's selected voice. */
         ObservableSupplier<String> getVoiceIdSupplier();
 
+        /** Whether the mode selection is enabled. */
+        ObservableSupplier<PlaybackModeSelectionEnablementStatus> getPlaybackModeSelectionEnabled();
+
         /**
          * Called when the user selects a voice in the voice settings menu. Saves the new choice for
          * the given language and continues playback from the same position.
          */
         void setVoiceOverrideAndApplyToPlayback(PlaybackVoice voice);
+
+        /** Called when the user selects a different playback mode. */
+        void setPlaybackModeAndApplyToPlayback(PlaybackMode mode);
 
         /**
          * Play a short example of the specified voice.
@@ -58,6 +69,12 @@ public interface Player {
          * @return Promise that resolves to the preview's playback.
          */
         Promise<Playback> previewVoice(PlaybackVoice voice);
+
+        /**
+         * Restores playback to the UI. If playback is stopped due to background playback, the UI
+         * for the original playback will still be shown so it can be seamless restored on play.
+         */
+        void restorePlayback();
 
         /** Navigate to the tab associated with the current playback */
         void navigateToPlayingTab();
@@ -76,7 +93,7 @@ public interface Player {
          * in place of the mini player layout during browser controls resizing when showing and
          * hiding.
          */
-        LayoutManager getLayoutManager();
+        @Nullable LayoutManager getLayoutManager();
 
         /**
          * Return {@link ActivityLifecycleDispatcher} that can be used to register for configuration
@@ -85,11 +102,22 @@ public interface Player {
         ActivityLifecycleDispatcher getActivityLifecycleDispatcher();
 
         /** Return the current {@link Profile}. */
-        @Nullable
-        Profile getProfile();
+        @Nullable Profile getProfile();
 
         /** Return {@link UserEducationHelper} for requesting in-product-help. */
         UserEducationHelper getUserEducationHelper();
+
+        /** Positive feedback was triggered by the user. */
+        void onPositiveFeedback();
+
+        /** Negative feedback was triggered by the user. */
+        void onNegativeFeedback(NegativeFeedbackReason negativeFeedbackReason);
+
+        ObservableSupplier<FeedbackType> getFeedbackTypeSupplier();
+
+        void moveToPrevious();
+
+        void moveToNext();
     }
 
     /** Observer interface to provide updates about player UI. */
@@ -125,12 +153,12 @@ public interface Player {
     default void destroy() {}
 
     /** Show the mini player, called when playback is requested. */
-    default void playTabRequested() {}
+    default void playTabRequested(PlaybackMode playbackMode) {}
 
     /**
      * Update players when playback is ready.
      *
-     * @param playback             New Playback object.
+     * @param playback New Playback object.
      * @param currentPlaybackState Playback state.
      */
     default void playbackReady(
@@ -140,7 +168,7 @@ public interface Player {
     default void playbackFailed() {}
 
     /** Show mini player. Assumes the playback is running. */
-    default void restoreMiniPlayer() {}
+    default void restoreMiniPlayer(boolean animate) {}
 
     /** Only called after playback is released and no more events are coming. */
     default void recordPlaybackDuration() {}
@@ -170,4 +198,10 @@ public interface Player {
      * @param boolean isScreenLocked
      */
     default void onScreenStatusChanged(boolean isScreenLocked) {}
+
+    /**
+     * Sets the player restorable property. This is used to indicate whether there is a restorable
+     * playback that has been stopped due to background playback.
+     */
+    default void setPlayerRestorable(boolean isPlayerRestorable) {}
 }

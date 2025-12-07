@@ -1,0 +1,5 @@
+CONSOLE WARNING: XSLTProcessor and XSLT Processing Instructions have been removed in this browser. See https://chromestatus.com/feature/4709671889534976.
+CONSOLE ERROR: Uncaught NotSupportedError: Failed to construct 'XSLTProcessor': XSLT is disabled
+This tests that passing string parameters to the XSLTProcessor works as expected. If this test is successful, the text "SUCCESS" will be shown below.
+
+FAILURE

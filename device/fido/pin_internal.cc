@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/fido/pin_internal.h"
 
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/i18n/char_iterator.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -181,14 +177,13 @@ class ProtocolV2 : public ProtocolV1 {
   // GetHMACSubKey returns the HMAC-key portion of the shared secret.
   static base::span<const uint8_t, kHMACKeyLength> GetHMACSubKey(
       base::span<const uint8_t, kSharedKeyLength> shared_key) {
-    CHECK_EQ(shared_key.size(), kSharedKeyLength);
-    return base::make_span<kHMACKeyLength>(shared_key.first(kHMACKeyLength));
+    return shared_key.first<kHMACKeyLength>();
   }
 
   // GetAESSubKey returns the HMAC-key portion of the shared secret.
   static base::span<const uint8_t, kAESKeyLength> GetAESSubKey(
       base::span<const uint8_t, kSharedKeyLength> shared_key) {
-    return base::make_span<kAESKeyLength>(shared_key.subspan(kHMACKeyLength));
+    return shared_key.last<kAESKeyLength>();
   }
 
   std::vector<uint8_t> Encrypt(
@@ -197,13 +192,10 @@ class ProtocolV2 : public ProtocolV1 {
     DCHECK_EQ(plaintext.size() % AES_BLOCK_SIZE, 0u);
 
     const base::span<const uint8_t, kAESKeyLength> aes_key =
-        GetAESSubKey(base::make_span<kSharedKeyLength>(shared_key));
+        GetAESSubKey(*shared_key.to_fixed_extent<kSharedKeyLength>());
 
     std::vector<uint8_t> result(AES_BLOCK_SIZE + plaintext.size());
-    const base::span<uint8_t> iv =
-        base::make_span(result).first<AES_BLOCK_SIZE>();
-    const base::span<uint8_t> ciphertext =
-        base::make_span(result).subspan<AES_BLOCK_SIZE>();
+    const auto [iv, ciphertext] = base::span(result).split_at<AES_BLOCK_SIZE>();
 
     crypto::RandBytes(iv);
 
@@ -224,10 +216,8 @@ class ProtocolV2 : public ProtocolV1 {
     DCHECK_EQ(input.size() % AES_BLOCK_SIZE, 0u);
 
     const base::span<const uint8_t, kAESKeyLength> aes_key =
-        GetAESSubKey(base::make_span<kSharedKeyLength>(shared_key));
-    const base::span<const uint8_t> iv = input.first<AES_BLOCK_SIZE>();
-    const base::span<const uint8_t> ciphertext =
-        input.subspan<AES_BLOCK_SIZE>();
+        GetAESSubKey(*shared_key.to_fixed_extent<kSharedKeyLength>());
+    const auto [iv, ciphertext] = input.split_at<AES_BLOCK_SIZE>();
     std::vector<uint8_t> plaintext(ciphertext.size());
 
     EVP_CIPHER_CTX aes_ctx;
@@ -252,8 +242,8 @@ class ProtocolV2 : public ProtocolV1 {
            key.size() == kPINUVAuthTokenLength);
     const base::span<const uint8_t, kHMACKeyLength> hmac_key =
         (key.size() == kSharedKeyLength
-             ? GetHMACSubKey(base::make_span<kSharedKeyLength>(key))
-             : base::make_span<kPINUVAuthTokenLength>(key));
+             ? GetHMACSubKey(*key.to_fixed_extent<kSharedKeyLength>())
+             : *key.to_fixed_extent<kPINUVAuthTokenLength>());
 
     std::vector<uint8_t> pin_auth(SHA256_DIGEST_LENGTH);
     unsigned hmac_bytes;
@@ -286,13 +276,11 @@ class ProtocolV2 : public ProtocolV1 {
   }
 
   static void* KDF(const void* in, size_t in_len, void* out, size_t* out_len) {
-    static_assert(kSharedKeyLength == 2 * SHA256_DIGEST_LENGTH, "");
-    DCHECK_GE(*out_len, static_cast<size_t>(kSharedKeyLength));
-    auto hmac_key_out = base::make_span(
-        static_cast<uint8_t*>(out), static_cast<size_t>(SHA256_DIGEST_LENGTH));
-    auto aes_key_out =
-        base::make_span(static_cast<uint8_t*>(out) + SHA256_DIGEST_LENGTH,
-                        static_cast<size_t>(SHA256_DIGEST_LENGTH));
+    static_assert(kSharedKeyLength == 2 * SHA256_DIGEST_LENGTH);
+    DCHECK_GE(*out_len, kSharedKeyLength);
+    const auto [hmac_key_out, aes_key_out] =
+        UNSAFE_TODO(base::span(static_cast<uint8_t*>(out), kSharedKeyLength))
+            .split_at<SHA256_DIGEST_LENGTH>();
 
     constexpr uint8_t kHMACKeyInfo[] = "CTAP2 HMAC key";
     constexpr uint8_t kAESKeyInfo[] = "CTAP2 AES key";

@@ -8,6 +8,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/service_worker_test_helpers.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/extension_host.h"
@@ -78,16 +79,37 @@ std::string ExecuteScriptInBackgroundPageDeprecated(
 
 void StopServiceWorkerForExtensionGlobalScope(content::BrowserContext* context,
                                               const ExtensionId& extension_id) {
+  StopServiceWorkerForExtensionGlobalScope(context, extension_id,
+                                           base::RunLoop::Type::kDefault);
+}
+void StopServiceWorkerForExtensionGlobalScope(
+    content::BrowserContext* context,
+    const ExtensionId& extension_id,
+    base::RunLoop::Type stop_waiter_type) {
   const Extension* extension =
       ExtensionRegistry::Get(context)->GetExtensionById(
           extension_id, ExtensionRegistry::ENABLED);
   ASSERT_TRUE(extension) << "Unknown extension ID.";
-  base::RunLoop run_loop;
+  base::RunLoop stop_waiter(stop_waiter_type);
   content::ServiceWorkerContext* service_worker_context =
       context->GetDefaultStoragePartition()->GetServiceWorkerContext();
   content::StopServiceWorkerForScope(service_worker_context, extension->url(),
-                                     run_loop.QuitClosure());
-  run_loop.Run();
+                                     stop_waiter.QuitClosure());
+  stop_waiter.Run();
+}
+
+bool DidChangeTitle(content::WebContents& web_contents,
+                    const std::u16string& original_title,
+                    const std::u16string& changed_title) {
+  const std::u16string& title = web_contents.GetTitle();
+  if (title == changed_title) {
+    return true;
+  }
+  if (title == original_title) {
+    return false;
+  }
+  ADD_FAILURE() << "Unexpected page title found:  " << title;
+  return false;
 }
 
 }  // namespace extensions::browsertest_util

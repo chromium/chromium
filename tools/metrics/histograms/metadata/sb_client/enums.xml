@@ -47,6 +47,9 @@ chromium-metrics-reviews@google.com.
   <int value="2"
       label="Classification is not triggered because the URL is not forced by
              real-time URL check"/>
+  <int value="3"
+      label="Classification is not triggered because the trigger model ping
+             is converted to force request request type ping"/>
 </enum>
 
 <enum name="BooleanForceRequest">
@@ -77,6 +80,14 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="CancellationSucceeded"/>
 </enum>
 
+<enum name="CanExtractVisualFeaturesResult">
+  <int value="0" label="Can extract visual features"/>
+  <int value="1" label="User is not opted in"/>
+  <int value="2" label="User is off the record"/>
+  <int value="3" label="Frame is below minimal width and/or height"/>
+  <int value="4" label="Zoom level is above maximum value"/>
+</enum>
+
 <enum name="ClientSideAllowlistMatchResult">
   <int value="0" label="No match"/>
   <int value="1" label="CSD match"/>
@@ -92,6 +103,10 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="KEYBOARD_LOCK_REQUESTED"/>
   <int value="5" label="POINTER_LOCK_REQUESTED"/>
   <int value="6" label="VIBRATION_API"/>
+  <int value="7" label="FULLSCREEN_API"/>
+  <int value="8" label="CLIPBOARD_COPY_API"/>
+  <int value="9" label="CREDIT_CARD_FORM"/>
+  <int value="10" label="IMAGE_EMBEDDING_MATCH"/>
 </enum>
 
 <enum name="ClientSidePhishingImageEmbeddingResult">
@@ -122,16 +137,117 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Visual extraction failed"/>
 </enum>
 
-<!-- LINT.IfChange(SafeBrowsingVerifyAppsEnabledResult) -->
-
-<enum name="SafeBrowsingVerifyAppsEnabledResult">
-  <int value="0" label="Enabled"/>
-  <int value="1" label="Disabled"/>
-  <int value="2" label="Request timed out"/>
-  <int value="3" label="Request failed"/>
+<enum name="CreditCardFormEvent">
+  <summary>
+    Enumerates all permutations of loggable details when an event fires that may
+    trigger a CDS ping.
+  </summary>
+  <int value="0"
+      label="Unknown site visits, no referring app, no detection heuristic"/>
+  <int value="1"
+      label="Unknown site visits, no referring app, Autofill local heuristic"/>
+  <int value="2"
+      label="Unknown site visits, no referring app, Autofill server heuristic"/>
+  <int value="10"
+      label="Unknown site visits, other referring app, NoDetectionHeuristic"/>
+  <int value="11"
+      label="Unknown site visits, other referring app, Autofill local
+             heuristic"/>
+  <int value="12"
+      label="Unknown site visits, other referring app, Autofill server
+             heuristic"/>
+  <int value="20"
+      label="Unknown site visits, Chrome referring app, NoDetectionHeuristic"/>
+  <int value="21"
+      label="Unknown site visits, Chrome referring app, Autofill local
+             heuristic"/>
+  <int value="22"
+      label="Unknown site visits, Chrome referring app, Autofill server
+             heuristic"/>
+  <int value="30"
+      label="Unknown site visits, SMS referring app, NoDetectionHeuristic"/>
+  <int value="31"
+      label="Unknown site visits, SMS referring app, Autofill local heuristic"/>
+  <int value="32"
+      label="Unknown site visits, SMS referring app, Autofill server
+             heuristic"/>
+  <int value="100"
+      label="First visit, no referring app, no detection heuristic"/>
+  <int value="101"
+      label="First visit, no referring app, Autofill local heuristic"/>
+  <int value="102"
+      label="First visit, no referring app, Autofill server heuristic"/>
+  <int value="110"
+      label="First visit, other referring app, NoDetectionHeuristic"/>
+  <int value="111"
+      label="First visit, other referring app, Autofill local heuristic"/>
+  <int value="112"
+      label="First visit, other referring app, Autofill server heuristic"/>
+  <int value="120"
+      label="First visit, Chrome referring app, NoDetectionHeuristic"/>
+  <int value="121"
+      label="First visit, Chrome referring app, Autofill local heuristic"/>
+  <int value="122"
+      label="First visit, Chrome referring app, Autofill server heuristic"/>
+  <int value="130"
+      label="First visit, SMS referring app, NoDetectionHeuristic"/>
+  <int value="131"
+      label="First visit, SMS referring app, Autofill local heuristic"/>
+  <int value="132"
+      label="First visit, SMS referring app, Autofill server heuristic"/>
+  <int value="200"
+      label="Repeat visit, no referring app, NoDetectionHeuristic"/>
+  <int value="201"
+      label="Repeat visit, no referring app, Autofill local heuristic"/>
+  <int value="202"
+      label="Repeat visit, no referring app, Autofill server heuristic"/>
+  <int value="210"
+      label="Repeat visit, other referring app, NoDetectionHeuristic"/>
+  <int value="211"
+      label="Repeat visit, other referring app, Autofill local heuristic"/>
+  <int value="212"
+      label="Repeat visit, other referring app, Autofill server heuristic"/>
+  <int value="220"
+      label="Repeat visit, Chrome referring app, NoDetectionHeuristic"/>
+  <int value="221"
+      label="Repeat visit, Chrome referring app, Autofill local heuristic"/>
+  <int value="222"
+      label="Repeat visit, Chrome referring app, Autofill server heuristic"/>
+  <int value="230"
+      label="Repeat visit, SMS referring app, NoDetectionHeuristic"/>
+  <int value="231"
+      label="Repeat visit, SMS referring app, Autofill local heuristic"/>
+  <int value="232"
+      label="Repeat visit, SMS referring app, Autofill server heuristic"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/safe_browsing/android/safe_browsing_api_handler_util.h:VerifyAppsEnabledResult) -->
+<enum name="IntelligentScanVerdict">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="Intelligent scan verdict safe"/>
+  <int value="2" label="Scam experiment verdict 1"/>
+  <int value="3" label="Scam experiment verdict 2"/>
+  <int value="999" label="Scam experiment verdict catch all enforcement"/>
+  <int value="1000" label="Scam experiment verdict catch all telemetry"/>
+</enum>
+
+<enum name="OptimizationGuideOnDeviceModelUnavailableReason">
+  <int value="0" label="Unknown"/>
+  <int value="2" label="NotSupported"/>
+  <int value="3" label="PendingAssets"/>
+  <int value="4" label="PendingUsage"/>
+</enum>
+
+<!-- LINT.IfChange(SafeBrowsingAndroidGetReferringAppInfoResult) -->
+
+<enum name="SafeBrowsingAndroidGetReferringAppInfoResult">
+  <int value="0" label="ReferringAppInfo lookup not attempted"/>
+  <int value="1" label="Referring app not found, referring WebAPK not found"/>
+  <int value="2" label="Referring app not found, referring WebAPK found"/>
+  <int value="3" label="Referring app found, referring WebAPK not found"/>
+  <int value="4" label="Referring app found, referring WebAPK found"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/safe_browsing/core/browser/referring_app_info.h:GetReferringAppInfoResult) -->
 
 <enum name="SBClientDetectionClassifyThresholdsResult">
   <int value="0" label="Success"/>
@@ -158,7 +274,34 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="LOCAL_RESOURCE"/>
   <int value="16" label="CHROME_UI_PAGE"/>
   <int value="17" label="(Obsolete) NOT_ALLOWED_BY_POLICY"/>
+  <int value="18" label="MATCH_HC_ALLOWLIST"/>
+  <int value="19" label="ALLOWLIST_MATCH_METRIC"/>
 </enum>
+
+<!-- LINT.IfChange(SBClientDownloadAndroidDownloadProtectionOutcome) -->
+
+<enum name="SBClientDownloadAndroidDownloadProtectionOutcome">
+  <int value="0" label="ClientDownloadRequest not sent: Other reason"/>
+  <int value="1" label="ClientDownloadRequest sent"/>
+  <int value="2"
+      label="ClientDownloadRequest not sent: Android download protection
+             disabled"/>
+  <int value="3" label="ClientDownloadRequest not sent: No display name"/>
+  <int value="4"
+      label="ClientDownloadRequest not sent: Display name from DownloadItem
+             is not a supported file type"/>
+  <int value="5" label="ClientDownloadRequest not sent: Empty URL chain"/>
+  <int value="6" label="ClientDownloadRequest not sent: Invalid URL"/>
+  <int value="7"
+      label="ClientDownloadRequest not sent: Unsupported URL scheme"/>
+  <int value="8" label="ClientDownloadRequest not sent: Remote file"/>
+  <int value="9" label="ClientDownloadRequest not sent: Local file"/>
+  <int value="10"
+      label="ClientDownloadRequest not sent: Service misconfigured"/>
+  <int value="11" label="ClientDownloadRequest not sent: Not sampled"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/safe_browsing/android/download_protection_metrics_data.h:AndroidDownloadProtectionOutcome) -->
 
 <enum name="SBClientDownloadCheckDownloadStats">
   <int value="0" label="INVALID_URL"/>
@@ -201,6 +344,7 @@ chromium-metrics-reviews@google.com.
   <int value="37" label="LOCAL_DECRYPTION_PROMPT"/>
   <int value="38" label="LOCAL_DECRYPTION_FAILED"/>
   <int value="39" label="IMMEDIATE_DEEP_SCAN"/>
+  <int value="40" label="IGNORED_VERDICT"/>
 </enum>
 
 <enum name="SBClientDownloadCheckResult">
@@ -225,6 +369,7 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="ASYNC_LOCAL_PASSWORD_SCANNING"/>
   <int value="19" label="BLOCKED_SCAN_FAILED"/>
   <int value="20" label="IMMEDIATE_DEEP_SCAN"/>
+  <int value="21" label="FORCE_SAVE_TO_GDRIVE"/>
 </enum>
 
 <enum name="SBClientDownloadUserGestureFileTypeAttributes">
@@ -294,6 +439,12 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Phishing classifier was destructed"/>
   <int value="5"
       label="Scorer sent update and classifier is ready within timeout"/>
+  <int value="6" label="Phishing classifier request begins"/>
+  <int value="7" label="Phishing classifier completes"/>
+  <int value="8"
+      label="Phishing classifier callback is empty on classification
+             completion"/>
+  <int value="9" label="Phishing classification request is responded"/>
 </enum>
 
 <enum name="TailoredWarningType">

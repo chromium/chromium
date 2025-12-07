@@ -4,13 +4,16 @@
 
 package org.chromium.chrome.browser.readaloud.player.mini;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.view.View;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BottomControlsLayer;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
@@ -37,29 +40,18 @@ import org.chromium.ui.modelutil.PropertyModel;
  * <li>Shrink the bottom controls and move the scene layer down along with the changing bottom
  *     controls min height.
  */
+@NullMarked
 public class MiniPlayerMediator implements BottomControlsLayer {
     private final PropertyModel mModel;
     private final BottomControlsStacker mBottomControlsStacker;
-    private MiniPlayerCoordinator mCoordinator;
+    private @Nullable MiniPlayerCoordinator mCoordinator;
     // Height of MiniPlayerLayout's background (without shadow).
     private int mLayoutHeightPx;
+    // Height of the mini player for the purposes of calculations for the bottom browser controls.
+    private int mBottomControlsLayerHeightPx;
     private boolean mIsAnimationStarted;
     private final BrowserControlsStateProvider.Observer mBrowserControlsStateObserver =
             new BrowserControlsStateProvider.Observer() {
-                @Override
-                public void onControlsOffsetChanged(
-                        int topOffset,
-                        int topControlsMinHeightOffset,
-                        int bottomOffset,
-                        int bottomControlsMinHeightOffset,
-                        boolean needsAnimate,
-                        boolean isVisibilityForced) {
-                    // Direct the call to BottomControlsLayer#onBrowserControlsOffsetUpdate.
-                    if (BottomControlsStacker.isDispatchingYOffset()) return;
-
-                    MiniPlayerMediator.this.onControlsOffsetChanged(bottomControlsMinHeightOffset);
-                }
-
                 @Override
                 public void onBottomControlsHeightChanged(
                         int bottomControlContainerHeight, int bottomControlsMinHeight) {
@@ -135,6 +127,7 @@ public class MiniPlayerMediator implements BottomControlsLayer {
         // (1.5) Grow bottom controls once player height has been measured.
         if (heightPx > 0 && heightPx != mLayoutHeightPx) {
             mLayoutHeightPx = heightPx;
+            mBottomControlsLayerHeightPx = heightPx;
             mModel.set(Properties.HEIGHT, heightPx);
             growBottomControls();
         }
@@ -153,6 +146,7 @@ public class MiniPlayerMediator implements BottomControlsLayer {
     void onFullOpacityReached(@Nullable View containerForNonErrorView) {
         // show() is finished!
         onTransitionFinished(VisibilityState.VISIBLE);
+        assumeNonNull(mCoordinator);
         mCoordinator.onShown(containerForNonErrorView);
     }
 
@@ -175,7 +169,7 @@ public class MiniPlayerMediator implements BottomControlsLayer {
     // (2) Finished fading out, now pull down.
     void onZeroOpacityReached() {
         mModel.set(Properties.ANDROID_VIEW_VISIBILITY, View.GONE);
-        shrinkBottomControls();
+        updateBottomControlsHeight();
         mLayoutHeightPx = 0;
     }
 
@@ -192,6 +186,7 @@ public class MiniPlayerMediator implements BottomControlsLayer {
      */
     private void onTransitionFinished(@VisibilityState int newState) {
         mModel.set(Properties.VISIBILITY, newState);
+        mBottomControlsStacker.requestLayerUpdate(false);
     }
 
     void onBackgroundColorUpdated(@ColorInt int backgroundColorArgb) {
@@ -199,28 +194,19 @@ public class MiniPlayerMediator implements BottomControlsLayer {
     }
 
     private void growBottomControls() {
-        mBottomControlsStacker.notifyBackgroundColor(mModel.get(Properties.BACKGROUND_COLOR_ARGB));
-        int minHeight = getBrowserControls().getBottomControlsMinHeight();
-        setBottomControlsHeight(
-                getBrowserControls().getBottomControlsHeight() + mLayoutHeightPx,
-                mLayoutHeightPx + minHeight);
+        if (!mBottomControlsStacker.isLayerVisible(LayerType.BOTTOM_TOOLBAR)) {
+            // TODO(crbug.com/345488108): Handle background coloring for bottom controls layers in a
+            // more coordinated way.
+            mBottomControlsStacker.notifyBackgroundColor(
+                    mModel.get(Properties.BACKGROUND_COLOR_ARGB));
+        }
+        updateBottomControlsHeight();
     }
 
-    private void shrinkBottomControls() {
-        // Hack: Bottom controls animation doesn't work if the new height is 0. Shrink
-        // to 1 pixel instead in this case.
-        // TODO(b/320750931): fix the underlying issue in browser controls code
-        int minHeight = getBrowserControls().getBottomControlsMinHeight();
-        assert minHeight >= mLayoutHeightPx;
-        setBottomControlsHeight(
-                Math.max(getBrowserControls().getBottomControlsHeight() - mLayoutHeightPx, 1),
-                minHeight - mLayoutHeightPx);
-    }
-
-    private void setBottomControlsHeight(int height, int minHeight) {
+    private void updateBottomControlsHeight() {
         mIsAnimationStarted = false;
         boolean animate = mModel.get(Properties.ANIMATE_VISIBILITY_CHANGES);
-        mBottomControlsStacker.setBottomControlsHeight(height, minHeight, animate);
+        mBottomControlsStacker.requestLayerUpdate(animate);
     }
 
     private BrowserControlsStateProvider getBrowserControls() {
@@ -266,12 +252,6 @@ public class MiniPlayerMediator implements BottomControlsLayer {
         }
     }
 
-    private boolean isVisible() {
-        // Consider layer visible even during its transition.
-        return mModel.get(Properties.VISIBILITY) == VisibilityState.VISIBLE
-                || mModel.get(Properties.VISIBILITY) == VisibilityState.SHOWING;
-    }
-
     // Implements BottomControlsStacker.BottomControlsLayer
 
     @Override
@@ -282,7 +262,7 @@ public class MiniPlayerMediator implements BottomControlsLayer {
     /** Get the height represent the layer in the bottom controls, without the yOffset. */
     @Override
     public int getHeight() {
-        return mLayoutHeightPx;
+        return mBottomControlsLayerHeightPx;
     }
 
     @Override
@@ -292,13 +272,20 @@ public class MiniPlayerMediator implements BottomControlsLayer {
 
     @Override
     public @LayerVisibility int getLayerVisibility() {
-        return isVisible() ? LayerVisibility.VISIBLE : LayerVisibility.HIDDEN;
+        @VisibilityState int currentVisibility = getVisibility();
+        if (currentVisibility == VisibilityState.VISIBLE) {
+            return LayerVisibility.VISIBLE;
+        } else if (currentVisibility == VisibilityState.SHOWING) {
+            return LayerVisibility.SHOWING;
+        } else if (currentVisibility == VisibilityState.HIDING) {
+            return LayerVisibility.HIDING;
+        } else {
+            return LayerVisibility.HIDDEN;
+        }
     }
 
     @Override
     public void onBrowserControlsOffsetUpdate(int layerYOffset) {
-        assert BottomControlsStacker.isDispatchingYOffset();
-
         // yOffset for the mini player is a negative number if it has to move up. This value *can*
         // be positive when we are going through an animation; in which case the player view should
         // stay invisible.

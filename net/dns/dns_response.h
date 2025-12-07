@@ -44,7 +44,7 @@ struct NET_EXPORT_PRIVATE DnsResourceRecord {
 
   // A helper to set |owned_rdata| that also sets |rdata| to point to it. The
   // |value| must be non-empty. See the definition of |owned_rdata| below.
-  void SetOwnedRdata(std::string value);
+  void SetOwnedRdata(base::span<const uint8_t> value);
 
   // NAME (variable length) + TYPE (2 bytes) + CLASS (2 bytes) + TTL (4 bytes) +
   // RDLENGTH (2 bytes) + RDATA (variable length)
@@ -57,10 +57,10 @@ struct NET_EXPORT_PRIVATE DnsResourceRecord {
   uint16_t klass = 0;
   uint32_t ttl = 0;
   // Points to the original response buffer or otherwise to |owned_rdata|.
-  std::string_view rdata;
+  std::vector<uint8_t> owned_rdata;
   // Used to construct a DnsResponse from data. This field is empty if |rdata|
   // points to the response buffer.
-  std::string owned_rdata;
+  base::raw_span<const uint8_t> rdata;
 };
 
 // Iterator to walk over resource records of the DNS response packet.
@@ -77,12 +77,6 @@ class NET_EXPORT_PRIVATE DnsRecordParser {
   DnsRecordParser(base::span<const uint8_t> packet,
                   size_t offset,
                   size_t num_records);
-
-  // TODO(crbug.com/40284755): Deprecated, use the span-based constructor.
-  UNSAFE_BUFFER_USAGE DnsRecordParser(const void* packet,
-                                      size_t length,
-                                      size_t offset,
-                                      size_t num_records);
 
   DnsRecordParser(const DnsRecordParser&);
   DnsRecordParser(DnsRecordParser&&);
@@ -157,7 +151,7 @@ class NET_EXPORT_PRIVATE DnsResponse {
   DnsResponse(scoped_refptr<IOBuffer> buffer, size_t size);
 
   // Constructs a response from |data|. Used for testing purposes only!
-  DnsResponse(const void* data, size_t length, size_t answer_offset);
+  DnsResponse(base::span<const uint8_t> data, size_t answer_offset);
 
   static DnsResponse CreateEmptyNoDataResponse(uint16_t id,
                                                bool is_authoritative,

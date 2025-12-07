@@ -4,6 +4,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "build/buildflag.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -12,16 +13,25 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_account_checker.h"
 #include "components/commerce/core/mock_shopping_service.h"
+#include "components/commerce/core/test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_test.h"
 
 class ProductSpecificationsTest : public WebUIMochaBrowserTest {
  protected:
   ProductSpecificationsTest()
-      : account_checker_(std::make_unique<commerce::MockAccountChecker>()) {
+      : prefs_(std::make_unique<TestingPrefServiceSimple>()),
+        account_checker_(std::make_unique<
+                         testing::NiceMock<commerce::MockAccountChecker>>()) {
     account_checker_->SetCountry("US");
     account_checker_->SetLocale("en-us");
     account_checker_->SetSignedIn(true);
+    account_checker_->SetPrefs(prefs_.get());
+
+    commerce::MockAccountChecker::RegisterCommercePrefs(prefs_->registry());
+    commerce::SetTabCompareEnterprisePolicyPref(prefs_.get(), 0);
+
     set_test_loader_host(commerce::kChromeUICompareHost);
     scoped_feature_list_.InitWithFeatures({commerce::kProductSpecifications},
                                           {});
@@ -55,12 +65,29 @@ class ProductSpecificationsTest : public WebUIMochaBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   base::CallbackListSubscription create_services_subscription_;
   bool is_browser_context_services_created{false};
+  std::unique_ptr<TestingPrefServiceSimple> prefs_;
   std::unique_ptr<commerce::MockAccountChecker> account_checker_;
   base::WeakPtrFactory<ProductSpecificationsTest> weak_ptr_factory_{this};
 };
 
-IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, App) {
+// TODO(crbug.com/391487364): Test is flaky.
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, DISABLED_App) {
   RunTest("commerce/product_specifications/app_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, BuyingOptionsSection) {
+  RunTest("commerce/product_specifications/buying_options_section_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, ComparisonTableList) {
+  RunTest("commerce/product_specifications/comparison_table_list_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, ComparisonTableListItem) {
+  RunTest("commerce/product_specifications/comparison_table_list_item_test.js",
+          "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, DescriptionCitation) {
@@ -68,7 +95,18 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, DescriptionCitation) {
           "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, DisclosureApp) {
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, DescriptionSection) {
+  RunTest("commerce/product_specifications/description_section_test.js",
+          "mocha.run()");
+}
+
+// TODO(https://crbug.com/374855688): Fix flaky timeout on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DisclosureApp DISABLED_DisclosureApp
+#else
+#define MAYBE_DisclosureApp DisclosureApp
+#endif
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, MAYBE_DisclosureApp) {
   RunTest("commerce/product_specifications/disclosure_app_test.js",
           "mocha.run()");
 }
@@ -80,6 +118,16 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, DragAndDropManager) {
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, Header) {
   RunTest("commerce/product_specifications/header_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, HorizontalCarousel) {
+  RunTest("commerce/product_specifications/horizontal_carousel_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, LoadingState) {
+  RunTest("commerce/product_specifications/loading_state_test.js",
+          "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, Table) {

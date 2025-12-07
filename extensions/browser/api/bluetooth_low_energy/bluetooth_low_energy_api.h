@@ -82,7 +82,7 @@ class BluetoothLowEnergyExtensionFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
   // Implemented by individual bluetoothLowEnergy extension functions to perform
-  // the body of the function. This invoked asynchonously after Run after
+  // the body of the function. This invoked asynchronously after Run after
   // the BluetoothLowEnergyEventRouter has obtained a handle on the
   // BluetoothAdapter.
   virtual void DoWork() = 0;

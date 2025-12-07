@@ -9,9 +9,11 @@
 #include <string_view>
 
 #include "base/base64.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -19,6 +21,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/typed_macros.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_switches.h"
 #include "chrome/browser/signin/bound_session_credentials/rotation_debug_info.pb.h"
 #include "chrome/browser/signin/bound_session_credentials/session_binding_helper.h"
@@ -35,15 +38,14 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace {
-constexpr char kRotationChallengeHeader[] = "Sec-Session-Google-Challenge";
-constexpr char kRotationChallengeResponseHeader[] =
-    "Sec-Session-Google-Response";
-constexpr char kRotationDebugHeader[] =
-    "Sec-Session-Google-Rotation-Debug-Info";
 constexpr char kChallengeItemKey[] = "challenge";
 constexpr char kSessionIdItemKey[] = "session_id";
 const size_t kMaxAssertionRequestsAllowed = 5;
-const size_t kMaxVerifySignatureFailuresAllowed = 1;
+
+constexpr std::string_view kRotationResultHistogramName =
+    "Signin.BoundSessionCredentials.CookieRotationResult";
+constexpr std::string_view kRotationTotalDurationHistogramName =
+    "Signin.BoundSessionCredentials.CookieRotationTotalDuration";
 
 bool IsExpectedCookie(
     const GURL& url,
@@ -53,7 +55,8 @@ bool IsExpectedCookie(
     CHECK(cookie_ptr->cookie_or_line->is_cookie());
     const net::CanonicalCookie& cookie =
         cookie_ptr->cookie_or_line->get_cookie();
-    return (cookie.Name() == cookie_name) && cookie.IsDomainMatch(url.host());
+    return (cookie.Name() == cookie_name) &&
+           cookie.IsDomainMatch(url.GetHost());
   }
   return false;
 }
@@ -65,6 +68,55 @@ std::string UpdateDebugInfoAndSerializeToHeader(
   std::string serialized = debug_info.SerializeAsString();
   return base::Base64Encode(serialized);
 }
+
+std::string_view GetRotationHttpResultHistogramName(
+    bool had_previously_received_challenge,
+    bool request_contained_challenge_response) {
+  static constexpr std::string_view kHistogramNameWithoutChallenge =
+      "Signin.BoundSessionCredentials.CookieRotationHttpResult."
+      "WithoutChallenge";
+  static constexpr std::string_view kHistogramNameWithCachedChallenge =
+      "Signin.BoundSessionCredentials.CookieRotationHttpResult."
+      "WithCachedChallenge";
+  static constexpr std::string_view kHistogramNameWithFreshChallenge =
+      "Signin.BoundSessionCredentials.CookieRotationHttpResult."
+      "WithFreshChallenge";
+  if (had_previously_received_challenge) {
+    DUMP_WILL_BE_CHECK(request_contained_challenge_response);
+    return kHistogramNameWithFreshChallenge;
+  }
+
+  return request_contained_challenge_response
+             ? kHistogramNameWithCachedChallenge
+             : kHistogramNameWithoutChallenge;
+}
+
+// LINT.IfChange(GetRotationHistogramTriggerSuffix)
+std::string_view GetRotationHistogramTriggerSuffix(
+    BoundSessionRefreshCookieFetcher::Trigger trigger) {
+  using enum BoundSessionRefreshCookieFetcher::Trigger;
+  switch (trigger) {
+    case kOther:
+      return ".Other";
+    case kNewSession:
+      return ".NewSession";
+    case kStartup:
+      return ".Startup";
+    case kBlockedRequest:
+      return ".BlockedRequest";
+    case kCookieExpired:
+      return ".CookieExpired";
+    case kPreemptiveRefresh:
+      return ".PreemptiveRefresh";
+    case kRetryWithBackoff:
+      return ".RetryWithBackoff";
+    case kConnectionChanged:
+      return ".ConnectionChanged";
+  }
+  NOTREACHED();
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/histograms.xml:BoundSessionRefreshCookieFetcherTrigger)
+
 }  // namespace
 
 BoundSessionRefreshCookieFetcherImpl::BoundSessionRefreshCookieFetcherImpl(
@@ -75,6 +127,7 @@ BoundSessionRefreshCookieFetcherImpl::BoundSessionRefreshCookieFetcherImpl(
     const GURL& cookie_url,
     base::flat_set<std::string> cookie_names,
     bool is_off_the_record_profile,
+    Trigger trigger,
     bound_session_credentials::RotationDebugInfo debug_info)
     : url_loader_factory_(std::move(url_loader_factory)),
       session_binding_helper_(session_binding_helper),
@@ -83,6 +136,8 @@ BoundSessionRefreshCookieFetcherImpl::BoundSessionRefreshCookieFetcherImpl(
       expected_cookie_domain_(cookie_url),
       expected_cookie_names_(std::move(cookie_names)),
       is_off_the_record_profile_(is_off_the_record_profile),
+      trigger_(trigger),
+      non_refreshed_cookie_names_(expected_cookie_names_),
       debug_info_(std::move(debug_info)) {
   CHECK(refresh_url.is_valid());
 }
@@ -127,6 +182,16 @@ BoundSessionRefreshCookieFetcherImpl::TakeSecSessionChallengeResponseIfAny() {
   return response;
 }
 
+base::flat_set<std::string>
+BoundSessionRefreshCookieFetcherImpl::GetNonRefreshedCookieNames() {
+  return non_refreshed_cookie_names_;
+}
+
+BoundSessionRefreshCookieFetcherImpl::Trigger
+BoundSessionRefreshCookieFetcherImpl::GetTrigger() const {
+  return trigger_;
+}
+
 void BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest(
     std::optional<std::string> sec_session_challenge_response) {
   sec_session_challenge_response_ = std::move(sec_session_challenge_response);
@@ -146,45 +211,6 @@ void BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest(
     CompleteRequestAndReportRefreshResult(*result);
     return;
   }
-
-  // TODO(b/273920907): Update the `traffic_annotation` setting once a mechanism
-  // allowing the user to disable the feature is implemented.
-  net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("gaia_auth_rotate_bound_cookies",
-                                          R"(
-        semantics {
-          sender: "Chrome - Google authentication API"
-          description:
-            "This request is used to rotate bound Google authentication "
-            "cookies."
-          trigger:
-            "This request is triggered in a bound session when the bound Google"
-            " authentication cookies are soon to expire."
-          user_data {
-            type: ACCESS_TOKEN
-          }
-          data: "Request includes cookies and a signed token proving that a"
-                " request comes from the same device as was registered before."
-          destination: GOOGLE_OWNED_SERVICE
-          internal {
-            contacts {
-                email: "chrome-signin-team@google.com"
-            }
-          }
-          last_reviewed: "2024-05-30"
-        }
-        policy {
-          cookies_allowed: YES
-          cookies_store: "user"
-          setting:
-             "This feature cannot be disabled in settings, but this request "
-             "won't be made unless the user signs in to google.com."
-          chrome_policy: {
-            BoundSessionCredentialsEnabled {
-              BoundSessionCredentialsEnabled: false
-            }
-          }
-        })");
 
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = refresh_url_;
@@ -212,7 +238,7 @@ void BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest(
           std::move(request),
           is_off_the_record_profile_ ? variations::InIncognito::kYes
                                      : variations::InIncognito::kNo,
-          traffic_annotation);
+          kTrafficAnnotation);
   url_loader_->SetRetryOptions(
       3, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
   // TODO(b/273920907): Download the response body to support in refresh DBSC
@@ -230,6 +256,11 @@ void BoundSessionRefreshCookieFetcherImpl::OnURLLoaderComplete(
   TRACE_EVENT("browser",
               "BoundSessionRefreshCookieFetcherImpl::OnURLLoaderComplete",
               perfetto::Flow::FromPointer(this), "net_error", net_error);
+
+  base::UmaHistogramSparse(
+      GetRotationHttpResultHistogramName(
+          IsChallengeReceived(), sec_session_challenge_response_.has_value()),
+      headers ? headers->response_code() : net_error);
 
   std::optional<std::string> challenge_header_value =
       GetChallengeIfBindingKeyAssertionRequired(headers);
@@ -286,6 +317,12 @@ BoundSessionRefreshCookieFetcherImpl::GetResultFromNetErrorAndHttpStatusCode(
     return Result::kServerTransientError;
   }
 
+  if (response_code == net::HTTP_PROXY_AUTHENTICATION_REQUIRED) {
+    // Treat proxy errors as connection errors. It makes sense to retry again
+    // once the user responds to the authentication challenge.
+    return Result::kConnectionError;
+  }
+
   if (response_code >= net::HTTP_BAD_REQUEST) {
     // Server error 4xx.
     return Result::kServerPersistentError;
@@ -298,20 +335,27 @@ BoundSessionRefreshCookieFetcherImpl::GetResultFromNetErrorAndHttpStatusCode(
 void BoundSessionRefreshCookieFetcherImpl::ReportRefreshResult() {
   reported_cookies_notified_timer_.Stop();
   CHECK(cookie_refresh_completed_);
-  if (result_ == Result::kSuccess && !expected_cookies_set_) {
+  if (result_ == Result::kSuccess && !non_refreshed_cookie_names_.empty()) {
     result_ = Result::kServerUnexepectedResponse;
   }
   TRACE_EVENT("browser",
               "BoundSessionRefreshCookieFetcherImpl::ReportRefreshResult",
               perfetto::TerminatingFlow::FromPointer(this), "result", result_);
+  const std::string_view histogram_trigger_suffix =
+      GetRotationHistogramTriggerSuffix(trigger_);
+  base::UmaHistogramEnumeration(kRotationResultHistogramName, result_);
   base::UmaHistogramEnumeration(
-      "Signin.BoundSessionCredentials.CookieRotationResult", result_);
+      base::StrCat({kRotationResultHistogramName, histogram_trigger_suffix}),
+      result_);
 
   CHECK(cookie_refresh_duration_.has_value());
   base::TimeDelta duration = base::TimeTicks::Now() - *cookie_refresh_duration_;
   cookie_refresh_duration_.reset();
+  base::UmaHistogramMediumTimes(kRotationTotalDurationHistogramName, duration);
   base::UmaHistogramMediumTimes(
-      "Signin.BoundSessionCredentials.CookieRotationTotalDuration", duration);
+      base::StrCat(
+          {kRotationTotalDurationHistogramName, histogram_trigger_suffix}),
+      duration);
 
   std::move(callback_).Run(result_);
 }
@@ -324,9 +368,8 @@ BoundSessionRefreshCookieFetcherImpl::GetChallengeIfBindingKeyAssertionRequired(
     return std::nullopt;
   }
 
-  std::string challenge;
-  headers->GetNormalizedHeader(kRotationChallengeHeader, &challenge);
-  return challenge;
+  return headers->GetNormalizedHeader(kRotationChallengeHeader)
+      .value_or(std::string());
 }
 
 void BoundSessionRefreshCookieFetcherImpl::HandleBindingKeyAssertionRequired(
@@ -346,12 +389,11 @@ void BoundSessionRefreshCookieFetcherImpl::HandleBindingKeyAssertionRequired(
     return;
   }
 
-  // TODO(http://b/341261442): make this a requirement after confirming the
-  // number of affected users.
-  bool session_ids_match = items.session_id == session_id_;
-  base::UmaHistogramBoolean(
-      "Signin.BoundSessionCredentials.CookieRotationSessionIdsMatch",
-      session_ids_match);
+  if (items.session_id != session_id_) {
+    CompleteRequestAndReportRefreshResult(
+        Result::kChallengeRequiredSessionIdMismatch);
+    return;
+  }
 
   // Binding key assertion required.
   assertion_requests_count_++;
@@ -386,8 +428,7 @@ void BoundSessionRefreshCookieFetcherImpl::
 }
 
 void BoundSessionRefreshCookieFetcherImpl::RefreshWithChallenge(
-    const std::string& challenge,
-    size_t generate_assertion_attempt) {
+    const std::string& challenge) {
   TRACE_EVENT("browser",
               "BoundSessionRefreshCookieFetcherImpl::RefreshWithChallenge",
               perfetto::Flow::FromPointer(this));
@@ -395,24 +436,19 @@ void BoundSessionRefreshCookieFetcherImpl::RefreshWithChallenge(
       challenge, refresh_url_,
       base::BindOnce(
           &BoundSessionRefreshCookieFetcherImpl::OnGenerateBindingKeyAssertion,
-          weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer(), challenge,
-          generate_assertion_attempt));
+          weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer(), challenge));
 }
 
 void BoundSessionRefreshCookieFetcherImpl::OnGenerateBindingKeyAssertion(
     base::ElapsedTimer generate_assertion_timer,
     const std::string& challenge,
-    size_t generate_assertion_attempt,
     base::expected<std::string, SessionBindingHelper::Error>
         assertion_or_error) {
   base::UmaHistogramMediumTimes(
       "Signin.BoundSessionCredentials.CookieRotationGenerateAssertionDuration",
       generate_assertion_timer.Elapsed());
   base::UmaHistogramEnumeration(
-      base::StrCat({"Signin.BoundSessionCredentials."
-                    "CookieRotationGenerateAssertionResult."
-                    "Attempt",
-                    base::NumberToString(generate_assertion_attempt)}),
+      "Signin.BoundSessionCredentials.CookieRotationGenerateAssertionResult",
       assertion_or_error.error_or(SessionBindingHelper::kNoErrorForMetrics));
   TRACE_EVENT(
       "browser",
@@ -421,13 +457,6 @@ void BoundSessionRefreshCookieFetcherImpl::OnGenerateBindingKeyAssertion(
       assertion_or_error.error_or(SessionBindingHelper::kNoErrorForMetrics));
 
   if (!assertion_or_error.has_value()) {
-    if (assertion_or_error.error() ==
-            SessionBindingHelper::Error::kVerifySignatureFailure &&
-        generate_assertion_attempt < kMaxVerifySignatureFailuresAllowed) {
-      RefreshWithChallenge(challenge, generate_assertion_attempt + 1);
-      return;
-    }
-
     CompleteRequestAndReportRefreshResult(Result::kSignChallengeFailed);
     return;
   }
@@ -445,21 +474,18 @@ void BoundSessionRefreshCookieFetcherImpl::OnCookiesAccessed(
     }
 
     reported_cookies_notified_ = true;
-    bool all_cookies_set = true;
     for (const std::string& expected_cookie_name : expected_cookie_names_) {
-      auto it = base::ranges::find_if(
+      auto it = std::ranges::find_if(
           cookie_details->cookie_list,
           [this, &expected_cookie_name](
               const network::mojom::CookieOrLineWithAccessResultPtr& cookie) {
             return IsExpectedCookie(expected_cookie_domain_,
                                     expected_cookie_name, cookie);
           });
-      if (it == cookie_details->cookie_list.end()) {
-        all_cookies_set = false;
-        break;
+      if (it != cookie_details->cookie_list.end()) {
+        non_refreshed_cookie_names_.erase(expected_cookie_name);
       }
     }
-    expected_cookies_set_ = expected_cookies_set_ || all_cookies_set;
   }
 
   if (cookie_refresh_completed_ && reported_cookies_notified_) {

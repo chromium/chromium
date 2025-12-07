@@ -12,6 +12,8 @@
 #include <errno.h>
 #include <stddef.h>
 #include <stdlib.h>
+
+#include "base/compiler_specific.h"
 #ifdef __SSE2__
 #include <immintrin.h>
 #elif defined(__aarch64__)
@@ -147,9 +149,9 @@ int _itoa_s(int value, char* buffer, size_t size_in_chars, int radix) {
   // "%d" or "%x" based on radix.
   int written;
   if (radix == 10) {
-    written = snprintf(buffer, size_in_chars, "%d", value);
+    written = UNSAFE_TODO(snprintf(buffer, size_in_chars, "%d", value));
   } else if (radix == 16) {
-    written = snprintf(buffer, size_in_chars, "%x", value);
+    written = UNSAFE_TODO(snprintf(buffer, size_in_chars, "%x", value));
   } else {
     return EINVAL;
   }

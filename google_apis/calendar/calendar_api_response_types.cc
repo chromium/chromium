@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <optional>
@@ -15,7 +16,6 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/json/json_value_converter.h"
-#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -247,7 +247,7 @@ GURL GetConferenceDataUri(const base::Value::Dict& dict) {
     return GURL();
   }
 
-  const auto video_conference_entry_point = base::ranges::find_if(
+  const auto video_conference_entry_point = std::ranges::find_if(
       entry_points->begin(), entry_points->end(), [](const auto& entry_point) {
         const std::string* entry_point_type =
             entry_point.GetDict().FindString(kEntryPointType);

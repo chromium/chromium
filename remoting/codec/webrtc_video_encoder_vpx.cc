@@ -7,13 +7,13 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "remoting/base/cpu_utils.h"
 #include "remoting/base/util.h"
 #include "remoting/codec/utils.h"
@@ -88,7 +88,7 @@ void SetVp8CodecParameters(vpx_codec_enc_cfg_t* config,
                            const webrtc::DesktopSize& size) {
   SetCommonCodecParameters(config, size);
 
-#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   // On Linux, using too many threads for VP8 encoding has been linked to high
   // CPU usage on machines that are under stress. See http://crbug.com/1151148.
   // 5/3/2022 update: Perf testing has shown that doubling the number of threads
@@ -99,7 +99,7 @@ void SetVp8CodecParameters(vpx_codec_enc_cfg_t* config,
   // and leave plenty of cores for the non-remoting workload.
   uint threshold = config->g_threads >= 16 ? 4U : 2U;
   config->g_threads = std::min(config->g_threads, threshold);
-#endif  // BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_LINUX)
 
   // Value of 2 means using the real time profile. This is basically a
   // redundant option since we explicitly select real time mode when doing
@@ -437,7 +437,7 @@ void WebrtcVideoEncoderVpx::UpdateConfig(const FrameParams& params) {
 
   // Update encoder context.
   if (vpx_codec_enc_config_set(codec_.get(), &config_)) {
-    NOTREACHED_IN_MIGRATION() << "Unable to set encoder config";
+    NOTREACHED() << "Unable to set encoder config";
   }
 }
 
@@ -484,6 +484,7 @@ void WebrtcVideoEncoderVpx::PrepareImage(
 
   // Convert the updated region to YUV ready for encoding.
   const uint8_t* rgb_data = frame->data();
+  CHECK_EQ(frame->pixel_format(), webrtc::FOURCC_ARGB);
   const int rgb_stride = frame->stride();
   const int y_stride = image_->stride[0];
   DCHECK_EQ(image_->stride[1], image_->stride[2]);
@@ -500,9 +501,10 @@ void WebrtcVideoEncoderVpx::PrepareImage(
         int rgb_offset =
             rgb_stride * rect.top() + rect.left() * kBytesPerRgbPixel;
         int yuv_offset = uv_stride * rect.top() + rect.left();
-        libyuv::ARGBToI444(rgb_data + rgb_offset, rgb_stride,
-                           y_data + yuv_offset, y_stride, u_data + yuv_offset,
-                           uv_stride, v_data + yuv_offset, uv_stride,
+        libyuv::ARGBToI444(UNSAFE_TODO(rgb_data + rgb_offset), rgb_stride,
+                           UNSAFE_TODO(y_data + yuv_offset), y_stride,
+                           UNSAFE_TODO(u_data + yuv_offset), uv_stride,
+                           UNSAFE_TODO(v_data + yuv_offset), uv_stride,
                            rect.width(), rect.height());
       }
       break;
@@ -514,15 +516,15 @@ void WebrtcVideoEncoderVpx::PrepareImage(
             rgb_stride * rect.top() + rect.left() * kBytesPerRgbPixel;
         int y_offset = y_stride * rect.top() + rect.left();
         int uv_offset = uv_stride * rect.top() / 2 + rect.left() / 2;
-        libyuv::ARGBToI420(rgb_data + rgb_offset, rgb_stride, y_data + y_offset,
-                           y_stride, u_data + uv_offset, uv_stride,
-                           v_data + uv_offset, uv_stride, rect.width(),
-                           rect.height());
+        libyuv::ARGBToI420(UNSAFE_TODO(rgb_data + rgb_offset), rgb_stride,
+                           UNSAFE_TODO(y_data + y_offset), y_stride,
+                           UNSAFE_TODO(u_data + uv_offset), uv_stride,
+                           UNSAFE_TODO(v_data + uv_offset), uv_stride,
+                           rect.width(), rect.height());
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

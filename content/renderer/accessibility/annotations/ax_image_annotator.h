@@ -66,7 +66,7 @@ class CONTENT_EXPORT AXImageAnnotator : public AXAnnotator,
   class ImageInfo final {
    public:
     ImageInfo(const blink::WebAXObject& image);
-    virtual ~ImageInfo();
+    ~ImageInfo();
 
     mojo::PendingRemote<image_annotation::mojom::ImageProcessor>
     GetImageProcessor();

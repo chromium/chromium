@@ -6,12 +6,17 @@
 #define CONTENT_PUBLIC_BROWSER_DOCUMENT_SERVICE_INTERNAL_H_
 
 #include "base/memory/raw_ref.h"
+#include "base/types/pass_key.h"
 #include "content/common/content_export.h"
 
 namespace content {
 
+class DocumentAssociatedData;
 class RenderFrameHost;
 enum class DocumentServiceDestructionReason : int;
+
+template <typename T>
+class DocumentService;
 
 namespace internal {
 
@@ -24,12 +29,6 @@ class CONTENT_EXPORT DocumentServiceBase {
 
   virtual ~DocumentServiceBase();
 
-  // Virtual as an implementation detail of //content, which keeps a generic
-  // container of pointers to document services via this base class, but still
-  // needs to be able to end the lifetime of document service instances. See
-  // `DocumentService<T>` for more information.
-  virtual void ResetAndDeleteThis() = 0;
-
   // To be called just before the destructor, when the object does not
   // self-destroy via one of the *AndDeleteThis() helpers. `reason` provides
   // context on why `this` is being destroyed (i.e. the document is deleted or
@@ -37,12 +36,25 @@ class CONTENT_EXPORT DocumentServiceBase {
   // to react in a specific way to a destruction reason.
   virtual void WillBeDestroyed(DocumentServiceDestructionReason reason) {}
 
+  // Internal implementation helpers:
+  // Resets the receiver and then deletes `this`.
+  virtual void ResetAndDeleteThisInternal(
+      base::PassKey<DocumentAssociatedData>) = 0;
+
+  // Unregisters `this` from `DocumentAssociatedData`.
+  template <typename T>
+  void InternalUnregister(base::PassKey<DocumentService<T>>) {
+    InternalUnregisterImpl();
+  }
+
  protected:
   explicit DocumentServiceBase(RenderFrameHost& render_frame_host);
 
   RenderFrameHost& render_frame_host() const { return *render_frame_host_; }
 
  private:
+  void InternalUnregisterImpl();
+
   const raw_ref<RenderFrameHost> render_frame_host_;
 };
 

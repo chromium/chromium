@@ -18,8 +18,9 @@ void FlushPendingTasks(TestSimpleTaskRunner* task_runner) {
   // TestSimpleTaskRunner::RunPendingTasks(), as its overridden
   // SingleThreadTaskRunner::CurrentDefaultHandle causes unexpected side
   // effects.
-  for (TestPendingTask& task : task_runner->TakePendingTasks())
+  for (TestPendingTask& task : task_runner->TakePendingTasks()) {
     std::move(task.task).Run();
+  }
 }
 
 }  // namespace
@@ -34,8 +35,7 @@ MockOneShotTimer::~MockOneShotTimer() = default;
 
 void MockOneShotTimer::SetTaskRunner(
     scoped_refptr<SequencedTaskRunner> task_runner) {
-  NOTREACHED_IN_MIGRATION()
-      << "MockOneShotTimer doesn't support SetTaskRunner().";
+  NOTREACHED() << "MockOneShotTimer doesn't support SetTaskRunner().";
 }
 
 void MockOneShotTimer::Fire() {
@@ -59,8 +59,7 @@ MockRepeatingTimer::~MockRepeatingTimer() = default;
 
 void MockRepeatingTimer::SetTaskRunner(
     scoped_refptr<SequencedTaskRunner> task_runner) {
-  NOTREACHED_IN_MIGRATION()
-      << "MockRepeatingTimer doesn't support SetTaskRunner().";
+  NOTREACHED() << "MockRepeatingTimer doesn't support SetTaskRunner().";
 }
 
 void MockRepeatingTimer::Fire() {
@@ -79,8 +78,7 @@ MockRetainingOneShotTimer::~MockRetainingOneShotTimer() = default;
 
 void MockRetainingOneShotTimer::SetTaskRunner(
     scoped_refptr<SequencedTaskRunner> task_runner) {
-  NOTREACHED_IN_MIGRATION()
-      << "MockRetainingOneShotTimer doesn't support SetTaskRunner().";
+  NOTREACHED() << "MockRetainingOneShotTimer doesn't support SetTaskRunner().";
 }
 
 void MockRetainingOneShotTimer::Fire() {

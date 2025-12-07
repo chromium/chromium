@@ -28,11 +28,22 @@ typedef NS_ENUM(NSUInteger, FRESigninIntent) {
   FRESigninIntentSigninWithUMAReportingDisabledPolicy,
 };
 
+// Type of FRE default browser screen intent.
+enum class FREDefaultBrowserIntent {
+  // FRE without enterprise policy.
+  kRegular,
+  // FRE with enterprise policy and UMA disabled.
+  kEnterpriseWithoutUMADisclaimer,
+};
+
 // Base test class for egtests for first run.
 @interface FirstRunTestCaseBase : ChromeTestCase
 
+// Dismisses the default browser screen.
++ (void)dismissDefaultBrowser;
+
 // Dismisses the remaining screens in FRE after the default browser screen.
-+ (void)dismissDefaultBrowserAndOmniboxPositionSelectionScreens;
++ (void)dismissDefaultBrowserAndRemainingScreens;
 
 // Returns GREYElementInteraction for `matcher`, using `scrollViewMatcher` to
 // scroll.
@@ -43,6 +54,11 @@ typedef NS_ENUM(NSUInteger, FRESigninIntent) {
 // Checks that the sign-in screen for enterprise is displayed.
 - (void)verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
     (FRESigninIntent)FRESigninIntent;
+
+// Checks that the default browser screen is displayed with the correct
+// disclaimer.
+- (void)verifyDefaultBrowserIsDisplayedWithScreenIntent:
+    (FREDefaultBrowserIntent)screenIntent;
 
 // Accept the history opt-in screen.
 - (void)acceptSyncOrHistory;
@@ -61,6 +77,9 @@ typedef NS_ENUM(NSUInteger, FRESigninIntent) {
 
 // Checks that the default browser screen is displayed.
 - (void)verifyDefaultBrowserIsDisplayed;
+
+// Checks that the default browser screen is not displayed.
+- (void)verifyDefaultBrowserNotDisplayed;
 
 @end
 

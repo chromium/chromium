@@ -30,8 +30,7 @@ std::string GetLogName(SupportedSource source_type) {
     case SupportedSource::kUptime:
       return "uptime";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 }  // namespace
@@ -40,7 +39,7 @@ SingleDebugDaemonLogSource::SingleDebugDaemonLogSource(
     SupportedSource source_type)
     : SystemLogsSource(GetLogName(source_type)) {}
 
-SingleDebugDaemonLogSource::~SingleDebugDaemonLogSource() {}
+SingleDebugDaemonLogSource::~SingleDebugDaemonLogSource() = default;
 
 void SingleDebugDaemonLogSource::Fetch(SysLogsSourceCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

@@ -24,7 +24,7 @@ class CORE_EXPORT SpeculationRuleLoader final : public ResourceFinishObserver,
   ~SpeculationRuleLoader() override;
 
   void Trace(Visitor*) const override;
-  const char* NameInHeapSnapshot() const override {
+  const char* GetHumanReadableName() const override {
     return "SpeculationRuleLoader";
   }
   String DebugName() const override { return "SpeculationRuleLoader"; }

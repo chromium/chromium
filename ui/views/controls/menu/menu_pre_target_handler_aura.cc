@@ -45,8 +45,9 @@ void MenuPreTargetHandlerAura::OnWindowActivated(
     wm::ActivationChangeObserver::ActivationReason reason,
     aura::Window* gained_active,
     aura::Window* lost_active) {
-  if (!controller_->drag_in_progress())
+  if (!controller_->drag_in_progress()) {
     controller_->Cancel(MenuController::ExitType::kAll);
+  }
 }
 
 void MenuPreTargetHandlerAura::OnWindowDestroying(aura::Window* window) {
@@ -90,6 +91,7 @@ bool MenuPreTargetHandlerAura::ShouldCancelMenuForEvent(
     case ui::VKEY_T:
     case ui::VKEY_P:
     case ui::VKEY_S:
+    case ui::VKEY_D:
       // Fully exit the menu when:
       // Ctrl+H is pressed because it is supposed to open the history page.
       // Ctrl+R is pressed because it is supposed to reload the current page.
@@ -98,7 +100,19 @@ bool MenuPreTargetHandlerAura::ShouldCancelMenuForEvent(
       // Ctrl+T is pressed because it is supposed to open the new tab.
       // Ctrl+P is pressed because it is supposed to print the current page.
       // Ctrl+S is pressed because it is supposed to save the current web page.
+      // Ctrl+D/Ctrl+Shift+D is pressed because it is supposed to bookmark the
+      // current page/all pages.
       if (event.IsControlDown()) {
+        return true;
+      }
+      break;
+    case ui::VKEY_B:
+    case ui::VKEY_O:
+      // Ctrl+Shift+B is pressed because it is supposed to show or hide
+      // bookmark bar.
+      // Ctrl+Shift+O is pressed because it is supposed to open bookmark
+      // manager.
+      if (event.IsControlDown() && event.IsShiftDown()) {
         return true;
       }
       break;
@@ -109,12 +123,14 @@ bool MenuPreTargetHandlerAura::ShouldCancelMenuForEvent(
 }
 
 void MenuPreTargetHandlerAura::Cleanup() {
-  if (!root_)
+  if (!root_) {
     return;
+  }
   // The ActivationClient may have been destroyed by the time we get here.
   wm::ActivationClient* client = wm::GetActivationClient(root_);
-  if (client)
+  if (client) {
     client->RemoveObserver(this);
+  }
   root_->RemoveObserver(this);
   root_ = nullptr;
 }

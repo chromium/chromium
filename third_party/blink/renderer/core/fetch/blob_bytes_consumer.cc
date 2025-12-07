@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/fetch/blob_bytes_consumer.h"
 
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -67,8 +68,8 @@ BlobBytesConsumer::BlobBytesConsumer(
 
 BlobBytesConsumer::~BlobBytesConsumer() = default;
 
-BytesConsumer::Result BlobBytesConsumer::BeginRead(const char** buffer,
-                                                   size_t* available) {
+BytesConsumer::Result BlobBytesConsumer::BeginRead(
+    base::span<const char>& buffer) {
   if (!nested_consumer_) {
     if (!blob_data_handle_)
       return Result::kDone;
@@ -105,7 +106,7 @@ BytesConsumer::Result BlobBytesConsumer::BeginRead(const char** buffer,
     blob_data_handle_ = nullptr;
     client_ = nullptr;
   }
-  return nested_consumer_->BeginRead(buffer, available);
+  return nested_consumer_->BeginRead(buffer);
 }
 
 BytesConsumer::Result BlobBytesConsumer::EndRead(size_t read) {
@@ -129,7 +130,7 @@ scoped_refptr<EncodedFormData> BlobBytesConsumer::DrainAsFormData() {
   if (!handle)
     return nullptr;
   scoped_refptr<EncodedFormData> form_data = EncodedFormData::Create();
-  form_data->AppendBlob(handle->Uuid(), handle);
+  form_data->AppendBlob(std::move(handle));
   return form_data;
 }
 

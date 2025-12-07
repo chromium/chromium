@@ -9,24 +9,27 @@
 #import "base/notreached.h"
 #import "ios/chrome/browser/crash_report/model/crash_loop_detection_util.h"
 #import "ios/chrome/browser/safe_mode/ui_bundled/safe_mode_view_controller.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 
 namespace {
 const int kStartupCrashLoopThreshold = 3;
 }
 
-@interface SafeModeCoordinator ()<SafeModeViewControllerDelegate>
-@property(weak, nonatomic, readonly) UIWindow* window;
+@interface SafeModeCoordinator () <SafeModeViewControllerDelegate>
 @end
 
-@implementation SafeModeCoordinator
+@implementation SafeModeCoordinator {
+  SceneState* _sceneState;
+}
 
 @synthesize delegate = _delegate;
 
 #pragma mark - Public class methods
 
-- (instancetype)initWithWindow:(UIWindow*)window {
-  if ((self = [super initWithBaseViewController:nil browser:nullptr])) {
-    _window = window;
+- (instancetype)initWithSceneState:(SceneState*)sceneState {
+  CHECK(sceneState);
+  if ((self = [super init])) {
+    _sceneState = sceneState;
   }
   return self;
 }
@@ -34,8 +37,9 @@ const int kStartupCrashLoopThreshold = 3;
 + (BOOL)shouldStart {
   // Check whether there appears to be a startup crash loop. If not, don't look
   // at anything else.
-  if (crash_util::GetFailedStartupAttemptCount() < kStartupCrashLoopThreshold)
+  if (crash_util::GetFailedStartupAttemptCount() < kStartupCrashLoopThreshold) {
     return NO;
+  }
 
   return [SafeModeViewController hasSuggestions];
 }
@@ -50,22 +54,15 @@ const int kStartupCrashLoopThreshold = 3;
   // General note: Safe mode should be safe; it should not depend on other
   // objects being created. Be extremely conservative when adding code to this
   // method.
-  SafeModeViewController* viewController =
+  UIWindow* window = _sceneState.window;
+  window.rootViewController =
       [[SafeModeViewController alloc] initWithDelegate:self];
-  DCHECK(self.window);
-  [self.window setRootViewController:viewController];
+  [window makeKeyAndVisible];
 
   // Reset the crash count; the user may change something based on the recovery
   // UI that will fix the crash, and having the next launch start in recovery
   // mode would be strange.
   crash_util::ResetFailedStartupAttemptCount();
-}
-
-// Override of ChildCoordinators method, which is not supported in this class.
-- (MutableCoordinatorArray*)childCoordinators {
-  NOTREACHED_IN_MIGRATION()
-      << "Do not add child coordinators to SafeModeCoordinator.";
-  return nil;
 }
 
 #pragma mark - SafeModeViewControllerDelegate implementation

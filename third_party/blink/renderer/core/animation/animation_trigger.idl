@@ -1,0 +1,28 @@
+// Copyright 2025 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://drafts.csswg.org/web-animations-2/#the-animationtrigger-interface
+
+// https://github.com/w3c/csswg-drafts/issues/12611#issue-3326243729
+enum AnimationTriggerBehavior {
+  "play",
+  "pause",
+  "reset",
+  "play-once",
+  "play-alternate",
+  "play-forwards",
+  "play-backwards",
+  "play-pause",
+  "replay",
+  "none",
+};
+
+[
+    Exposed=Window,
+    RuntimeEnabled=AnimationTrigger
+] interface AnimationTrigger {
+  [RaisesException] void addAnimation(Animation animation, AnimationTriggerBehavior activateBehavior, optional AnimationTriggerBehavior deactivateBehavior = "none");
+  void removeAnimation(Animation animation);
+  sequence<Animation> getAnimations();
+};

@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_view_util.h"
 #include "content/public/browser/browser_thread.h"
 
 // static
@@ -87,8 +88,9 @@ void BlobReader::Start(base::OnceClosure callback) {
 void BlobReader::OnCalculatedSize(uint64_t total_size,
                                   uint64_t expected_content_size) {
   blob_length_ = total_size;
-  if (data_complete_)
+  if (data_complete_) {
     Succeeded();
+  }
 }
 
 void BlobReader::OnDataAvailable(base::span<const uint8_t> data) {
@@ -97,8 +99,9 @@ void BlobReader::OnDataAvailable(base::span<const uint8_t> data) {
 
 void BlobReader::OnDataComplete() {
   data_complete_ = true;
-  if (blob_length_)
+  if (blob_length_) {
     Succeeded();
+  }
 }
 
 void BlobReader::Failed() {

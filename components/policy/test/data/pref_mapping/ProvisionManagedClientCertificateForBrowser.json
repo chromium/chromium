@@ -1,0 +1,19 @@
+[
+    {
+      "os": [
+        "mac",
+        "win",
+        "linux",
+        "android"
+      ],
+      "simple_policy_pref_mapping_test": {
+        "pref_name": "client_certificates.provision_for_browser.value",
+        "pref_location": "local_state",
+        "default_value": 0,
+        "values_to_test": [
+          0,
+          1
+        ]
+      }
+    }
+  ]

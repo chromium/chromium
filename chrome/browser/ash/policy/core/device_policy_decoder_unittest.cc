@@ -8,14 +8,15 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_interval.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
-#include "components/policy/core/common/device_local_account_type.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -32,9 +33,11 @@ namespace policy {
 namespace {
 
 constexpr char kInvalidJson[] = R"({"foo": "bar")";
-constexpr char16_t kInvalidJsonParsingError[] =
-    u"Policy parsing error: Invalid JSON string: Line: 1, column: 14, Syntax "
-    u"error.";
+
+// Prefix of the invalid-JSON error. The remainder of the error depends on which
+// specific JSON parser is used.
+constexpr char16_t kInvalidJsonParsingErrorPrefix[] =
+    u"Policy parsing error: Invalid JSON string:";
 
 constexpr char kInvalidPolicyName[] = "invalid-policy-name";
 
@@ -612,6 +615,47 @@ TEST_F(DevicePolicyDecoderTest, DeviceHindiInscriptLayoutEnabled) {
       std::move(device_hindi_inscript_layout_enabled_value));
 }
 
+TEST_F(DevicePolicyDecoderTest, DeviceUserInitiatedFirmwareUpdatesEnabled) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(
+      device_policy, key::kDeviceUserInitiatedFirmwareUpdatesEnabled);
+
+  base::Value device_user_initiated_firmware_updates_enabled_value(true);
+
+  em::BooleanPolicyProto* proto =
+      device_policy.mutable_deviceuserinitiatedfirmwareupdatesenabled();
+  proto->set_value(
+      device_user_initiated_firmware_updates_enabled_value.GetBool());
+
+  DecodeDevicePolicyTestHelper(
+      device_policy, key::kDeviceUserInitiatedFirmwareUpdatesEnabled,
+      std::move(device_user_initiated_firmware_updates_enabled_value));
+}
+
+TEST_F(DevicePolicyDecoderTest,
+       DeviceUserInitiatedFlexSystemFirmwareUpdatesEnabled) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(
+      device_policy, key::kDeviceUserInitiatedFlexSystemFirmwareUpdatesEnabled);
+
+  base::Value device_user_initiated_flex_system_firmware_updates_enabled_value(
+      true);
+
+  em::BooleanPolicyProto* proto =
+      device_policy
+          .mutable_deviceuserinitiatedflexsystemfirmwareupdatesenabled();
+  proto->set_value(
+      device_user_initiated_flex_system_firmware_updates_enabled_value
+          .GetBool());
+
+  DecodeDevicePolicyTestHelper(
+      device_policy, key::kDeviceUserInitiatedFlexSystemFirmwareUpdatesEnabled,
+      std::move(
+          device_user_initiated_flex_system_firmware_updates_enabled_value));
+}
+
 TEST_F(DevicePolicyDecoderTest, DeviceSystemAecEnabled) {
   em::ChromeDeviceSettingsProto device_policy;
 
@@ -790,8 +834,9 @@ TEST_F(DevicePolicyDecoderTest, DeviceLoginScreenTouchVirtualKeyboardPolicy) {
   device_policy.mutable_deviceloginscreentouchvirtualkeyboardenabled()
       ->set_value(true);
 
-  DecodeDevicePolicyTestHelper(device_policy, key::kTouchVirtualKeyboardEnabled,
-                               base::Value(true));
+  DecodeDevicePolicyTestHelper(
+      device_policy, key::kDeviceLoginScreenTouchVirtualKeyboardEnabled,
+      base::Value(true));
 }
 
 TEST_F(DevicePolicyDecoderTest, DeviceExtendedAutoUpdateEnabled) {
@@ -933,10 +978,100 @@ TEST_F(DevicePolicyDecoderTest, DecodeDeviceRestrictionScheduleError) {
   const PolicyMap::Entry* entry = policies.Get(key::kDeviceRestrictionSchedule);
   ASSERT_NE(entry, nullptr);
   EXPECT_TRUE(entry->HasMessage(PolicyMap::MessageType::kError));
-  EXPECT_EQ(
-      kInvalidJsonParsingError,
+  EXPECT_TRUE(base::StartsWith(
       entry->GetLocalizedMessages(PolicyMap::MessageType::kError,
-                                  PolicyMap::Entry::L10nLookupFunction()));
+                                  PolicyMap::Entry::L10nLookupFunction()),
+      kInvalidJsonParsingErrorPrefix));
+}
+
+TEST_F(DevicePolicyDecoderTest, DevicePowerBatteryChargingOptimization) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  // Test that the policy is not set by default.
+  DecodeUnsetDevicePolicyTestHelper(
+      device_policy, key::kDevicePowerBatteryChargingOptimization);
+
+  // Test with a valid value (e.g., Adaptive charging, value = 2).
+  // The specific value doesn't matter, as we're testing the decoding logic.
+  // Test with Adaptive charging (value = 2)
+  int64_t charging_optimization_value = 2;
+  device_policy.mutable_devicepowerbatterychargingoptimization()->set_value(
+      charging_optimization_value);
+
+  base::Value expected_value(static_cast<int>(charging_optimization_value));
+  DecodeDevicePolicyTestHelper(device_policy,
+                               key::kDevicePowerBatteryChargingOptimization,
+                               std::move(expected_value));
+}
+
+TEST_F(DevicePolicyDecoderTest,
+       DecodeDeviceBluetoothJustWorksPairingEnabledSuccess) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(
+      device_policy, key::kDeviceBluetoothJustWorksPairingEnabled);
+
+  base::Value device_bluetooth_just_works_pairing_enabled_value(true);
+
+  em::BooleanPolicyProto* proto =
+      device_policy.mutable_devicebluetoothjustworkspairingenabled();
+  proto->set_value(device_bluetooth_just_works_pairing_enabled_value.GetBool());
+
+  DecodeDevicePolicyTestHelper(
+      device_policy, key::kDeviceBluetoothJustWorksPairingEnabled,
+      std::move(device_bluetooth_just_works_pairing_enabled_value));
+}
+
+TEST_F(DevicePolicyDecoderTest, DeviceLoginScreenSecurityKeyPermitAttestation) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(
+      device_policy, key::kDeviceLoginScreenSecurityKeyPermitAttestation);
+
+  em::StringList* list =
+      device_policy.mutable_deviceloginscreensecuritykeypermitattestation()
+          ->mutable_value();
+
+  auto list_items = base::Value::List().Append("example.com").Append("foo.com");
+
+  for (auto& item : list_items) {
+    list->add_entries(item.GetString());
+  }
+
+  DecodeDevicePolicyTestHelper(
+      device_policy, key::kDeviceLoginScreenSecurityKeyPermitAttestation,
+      base::Value(std::move(list_items)));
+}
+
+TEST_F(DevicePolicyDecoderTest,
+       DecodeDeviceLoginScreenPreferSlowKexAlgorithms) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(
+      device_policy, key::kDeviceLoginScreenPreferSlowKexAlgorithms);
+
+  base::Value deviceloginscreenpreferslowkexalgorithms("cnsa2");
+  device_policy.mutable_deviceloginscreenpreferslowkexalgorithms()->set_value(
+      deviceloginscreenpreferslowkexalgorithms.GetString());
+
+  DecodeDevicePolicyTestHelper(
+      device_policy, key::kDeviceLoginScreenPreferSlowKexAlgorithms,
+      std::move(deviceloginscreenpreferslowkexalgorithms));
+}
+
+TEST_F(DevicePolicyDecoderTest, DecodeDeviceLoginScreenPreferSlowCiphers) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(device_policy,
+                                    key::kDeviceLoginScreenPreferSlowCiphers);
+
+  base::Value deviceloginscreenpreferslowciphers("cnsa");
+  device_policy.mutable_deviceloginscreenpreferslowciphers()->set_value(
+      deviceloginscreenpreferslowciphers.GetString());
+
+  DecodeDevicePolicyTestHelper(device_policy,
+                               key::kDeviceLoginScreenPreferSlowCiphers,
+                               std::move(deviceloginscreenpreferslowciphers));
 }
 
 }  // namespace policy

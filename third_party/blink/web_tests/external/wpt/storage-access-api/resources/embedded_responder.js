@@ -55,13 +55,22 @@ window.addEventListener("message", async (event) => {
       await test_driver.set_permission(...event.data.args);
       reply(undefined);
       break;
-    case "observe_permission_change":
+    case "get_permission": {
+      const status = await navigator.permissions.query({name: "storage-access"});
+      reply(status.state);
+      break;
+    }
+    case "observe_permission_change": {
       const status = await navigator.permissions.query({name: "storage-access"});
       status.addEventListener("change", (event) => {
-        parent.postMessage(event.target.state, '*');
+        parent.postMessage({
+          tag: 'observed_permission_change',
+          state: event.target.state,
+        }, '*');
       }, { once: true });
       reply('permission_change_observer_installed');
       break;
+    }
     case "reload":
       window.location.reload();
       break;
@@ -76,9 +85,12 @@ window.addEventListener("message", async (event) => {
     case "cors fetch":
       reply(await fetch(event.data.url, {mode: 'cors', credentials: 'include'}).then((resp) => resp.text()));
       break;
-    case "no-cors fetch":
-      reply(await fetch(event.data.url, {mode: 'no-cors', credentials: 'include'}).then((resp) => resp.text()));
+    case "no-cors fetch": {
+      const resp = await fetch(event.data.url, {mode: 'no-cors', credentials: 'include'});
+      await resp.text();
+      reply(undefined);
       break;
+    }
     case "start_dedicated_worker":
       worker = new Worker("embedded_worker.py");
       reply(undefined);

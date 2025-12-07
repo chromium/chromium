@@ -19,7 +19,6 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.MenuRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -28,8 +27,12 @@ import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver;
 import androidx.recyclerview.widget.RecyclerView.ItemAnimator;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.FadingShadow;
 import org.chromium.components.browser_ui.widget.FadingShadowView;
 import org.chromium.components.browser_ui.widget.R;
@@ -39,11 +42,14 @@ import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig.DisplayStyle;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
+import org.chromium.ui.display.DisplayUtil;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.widget.LoadingView;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * Contains UI elements common to selectable list views: a loading view, empty view, selection
@@ -57,9 +63,11 @@ import java.util.Set;
  *
  * @param <E> The type of the selectable items this layout holds.
  */
+@NullMarked
 public class SelectableListLayout<E> extends FrameLayout
         implements DisplayStyleObserver, SelectionObserver<E>, BackPressHandler {
     private static final int WIDE_DISPLAY_MIN_PADDING_DP = 16;
+
     private RecyclerView.Adapter mAdapter;
     private ViewStub mToolbarStub;
     private TextView mEmptyView;
@@ -68,17 +76,20 @@ public class SelectableListLayout<E> extends FrameLayout
     private ImageView mEmptyImageView;
     private LoadingView mLoadingView;
     private RecyclerView mRecyclerView;
-    private ItemAnimator mItemAnimator;
+    private @Nullable ItemAnimator mItemAnimator;
     SelectableListToolbar<E> mToolbar;
+    private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
+
     private FadingShadowView mToolbarShadow;
 
     private @StringRes int mEmptyStringResId;
-    private CharSequence mEmptySubheadingString;
+    private @Nullable CharSequence mEmptySubheadingString;
 
-    private UiConfig mUiConfig;
+    private @Nullable UiConfig mUiConfig;
 
-    private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier =
+            ObservableSuppliers.createNonNull(false);
+
     private final Set<Integer> mIgnoredTypesForEmptyState = new HashSet<>();
 
     private final AdapterDataObserver mAdapterObserver =
@@ -90,7 +101,7 @@ public class SelectableListLayout<E> extends FrameLayout
                     // At inflation, the RecyclerView is set to gone, and the loading view is
                     // visible. As long as the adapter data changes, we show the recycler view,
                     // and hide loading view.
-                    mLoadingView.hideLoadingUI();
+                    mLoadingView.hideLoadingUi();
                 }
 
                 @Override
@@ -100,7 +111,7 @@ public class SelectableListLayout<E> extends FrameLayout
                     // At inflation, the RecyclerView is set to gone, and the loading view is
                     // visible. As long as the adapter data changes, we show the recycler view,
                     // and hide loading view.
-                    mLoadingView.hideLoadingUI();
+                    mLoadingView.hideLoadingUi();
                 }
 
                 @Override
@@ -116,6 +127,16 @@ public class SelectableListLayout<E> extends FrameLayout
     }
 
     @Override
+    protected void onWindowVisibilityChanged(int visibility) {
+        super.onWindowVisibilityChanged(visibility);
+        if (visibility == VISIBLE
+                && mToolbar != null
+                && (mToolbar.isSearching() || mToolbar.isLargeScreenWithKeyboard())) {
+            mToolbar.requestSearchFocus(/* showKeyboard= */ true);
+        }
+    }
+
+    @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
 
@@ -124,7 +145,7 @@ public class SelectableListLayout<E> extends FrameLayout
         mEmptyView = findViewById(R.id.empty_view);
         mEmptyViewWrapper = findViewById(R.id.empty_view_wrapper);
         mLoadingView = findViewById(R.id.loading_view);
-        mLoadingView.showLoadingUI();
+        mLoadingView.showLoadingUi();
 
         mToolbarStub = findViewById(R.id.action_bar_stub);
 
@@ -150,14 +171,26 @@ public class SelectableListLayout<E> extends FrameLayout
         return initializeRecyclerView(adapter, null);
     }
 
+    public RecyclerView initializeRecyclerView(
+            RecyclerView.Adapter adapter,
+            @Nullable RecyclerView recyclerView,
+            @Nullable Function<View, EdgeToEdgePadAdjuster> edgeToEdgePadAdjusterGenerator) {
+        RecyclerView view = initializeRecyclerView(adapter, recyclerView);
+        if (edgeToEdgePadAdjusterGenerator != null) {
+            mEdgeToEdgePadAdjuster = edgeToEdgePadAdjusterGenerator.apply(view);
+        }
+        return view;
+    }
+
     /**
      * Initializes the layout with the given recycler view and adapter.
      *
      * @param adapter The adapter that provides a binding from an app-specific data set to views
-     *                that are displayed within the RecyclerView.
+     *     that are displayed within the RecyclerView.
      * @param recyclerView The recycler view to be shown.
      * @return The RecyclerView itself.
      */
+    @Initializer
     public RecyclerView initializeRecyclerView(
             RecyclerView.Adapter adapter, @Nullable RecyclerView recyclerView) {
         mAdapter = adapter;
@@ -178,6 +211,7 @@ public class SelectableListLayout<E> extends FrameLayout
 
         mRecyclerView.setAdapter(mAdapter);
         initializeRecyclerViewProperties();
+        mItemAnimator = mRecyclerView.getItemAnimator();
         return mRecyclerView;
     }
 
@@ -204,8 +238,6 @@ public class SelectableListLayout<E> extends FrameLayout
                         int oldBottom) -> {
                     setToolbarShadowVisibility();
                 });
-
-        mItemAnimator = mRecyclerView.getItemAnimator();
     }
 
     /**
@@ -267,6 +299,7 @@ public class SelectableListLayout<E> extends FrameLayout
      * @param showBackInNormalView Whether the back arrow should appear on the normal view.
      * @return The initialized SelectionToolbar.
      */
+    @Initializer
     public SelectableListToolbar<E> initializeToolbar(
             @LayoutRes int toolbarLayoutId,
             SelectionDelegate<E> delegate,
@@ -298,6 +331,7 @@ public class SelectableListLayout<E> extends FrameLayout
         mToolbarShadow.init(
                 getContext().getColor(R.color.toolbar_shadow_color), FadingShadow.POSITION_TOP);
 
+        mToolbar.hasSearchTextSupplier().addObserver((hasText) -> onBackPressStateChanged());
         delegate.addObserver(this);
         setToolbarShadowVisibility();
 
@@ -328,6 +362,7 @@ public class SelectableListLayout<E> extends FrameLayout
      * @return The {@link TextView} displayed when the list is empty.
      */
     // @TODO: (crbugs.com/1443648) Refactor return value for ForTesting method
+    @Initializer
     public TextView initializeEmptyStateView(
             @DrawableRes int imageResId,
             @StringRes int emptyHeadingStringResId,
@@ -391,6 +426,11 @@ public class SelectableListLayout<E> extends FrameLayout
         mIgnoredTypesForEmptyState.add(type);
     }
 
+    /** Hides the loading UI. */
+    public void hideLoadingUi() {
+        mLoadingView.hideLoadingUi();
+    }
+
     /** Called when the view that owns the SelectableListLayout is destroyed. */
     public void onDestroyed() {
         mAdapter.unregisterAdapterDataObserver(mAdapterObserver);
@@ -398,6 +438,9 @@ public class SelectableListLayout<E> extends FrameLayout
         mToolbar.destroy();
         mLoadingView.destroy();
         mRecyclerView.setAdapter(null);
+        if (mEdgeToEdgePadAdjuster != null) {
+            mEdgeToEdgePadAdjuster.destroy();
+        }
     }
 
     /**
@@ -416,7 +459,7 @@ public class SelectableListLayout<E> extends FrameLayout
 
     @Override
     public void onDisplayStyleChanged(DisplayStyle newDisplayStyle) {
-        int padding = getPaddingForDisplayStyle(newDisplayStyle, getResources());
+        int padding = getPaddingForDisplayStyle(newDisplayStyle, mRecyclerView, getResources());
         mRecyclerView.setPaddingRelative(
                 padding, mRecyclerView.getPaddingTop(), padding, mRecyclerView.getPaddingBottom());
     }
@@ -459,11 +502,18 @@ public class SelectableListLayout<E> extends FrameLayout
      * @param resources The {@link Resources} used to retrieve configuration and display metrics.
      * @return The lateral padding to use for the current display style.
      */
-    public static int getPaddingForDisplayStyle(DisplayStyle displayStyle, Resources resources) {
+    public static int getPaddingForDisplayStyle(
+            DisplayStyle displayStyle, View view, Resources resources) {
         int padding = 0;
         if (displayStyle.horizontal == HorizontalDisplayStyle.WIDE) {
-            int screenWidthDp = resources.getConfiguration().screenWidthDp;
             float dpToPx = resources.getDisplayMetrics().density;
+            int screenWidthDp = 0;
+            if (DisplayUtil.isUiScaled() && view != null) {
+                screenWidthDp = (int) (view.getMeasuredWidth() / dpToPx);
+            } else {
+                screenWidthDp = resources.getConfiguration().screenWidthDp;
+            }
+
             padding =
                     (int)
                             (((screenWidthDp - UiConfig.WIDE_DISPLAY_STYLE_MIN_WIDTH_DP) / 2.f)
@@ -525,8 +575,9 @@ public class SelectableListLayout<E> extends FrameLayout
 
     /**
      * Called when the user presses the back key. Note that this method is not called automatically.
-     * The embedding UI must call this method
-     * when a backpress is detected for the event to be handled.
+     * The embedding UI must call this method when a backpress is detected for the event to be
+     * handled.
+     *
      * @return Whether this event is handled.
      */
     public boolean onBackPressed() {
@@ -536,9 +587,16 @@ public class SelectableListLayout<E> extends FrameLayout
             return true;
         }
 
-        if (mToolbar.isSearching()) {
-            mToolbar.hideSearchView();
-            return true;
+        if (mToolbar.isLargeScreenWithKeyboard()) {
+            if (mToolbar.hasSearchText()) {
+                mToolbar.clearSearch();
+                return true;
+            }
+        } else {
+            if (mToolbar.isSearching()) {
+                mToolbar.hideSearchView();
+                return true;
+            }
         }
 
         return false;
@@ -552,7 +610,7 @@ public class SelectableListLayout<E> extends FrameLayout
     }
 
     @Override
-    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mBackPressStateSupplier;
     }
 
@@ -561,7 +619,18 @@ public class SelectableListLayout<E> extends FrameLayout
             mBackPressStateSupplier.set(false);
             return;
         }
+
+        boolean canHandleSearch = false;
+        if (mToolbar.isLargeScreenWithKeyboard()) {
+            canHandleSearch = mToolbar.hasSearchText();
+        } else if (mToolbar.isSearching()) {
+            canHandleSearch = true;
+        }
         mBackPressStateSupplier.set(
-                mToolbar.getSelectionDelegate().isSelectionEnabled() || mToolbar.isSearching());
+                mToolbar.getSelectionDelegate().isSelectionEnabled() || canHandleSearch);
+    }
+
+    public RecyclerView getRecyclerViewForTesting() {
+        return mRecyclerView;
     }
 }

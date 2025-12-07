@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/native/native_view_host.h"
@@ -41,21 +42,6 @@ const int kTextfieldHeight = 35;
 const SkColor kModalParentColor = SK_ColorBLUE;
 const SkColor kChildColor = SK_ColorWHITE;
 
-views::WidgetDelegateView* CreateChildModalWindow() {
-  auto child = std::make_unique<views::WidgetDelegateView>();
-  child->SetModalType(ui::MODAL_TYPE_CHILD);
-  child->SetTitle(u"Examples: Child Modal Window");
-  child->SetBackground(views::CreateSolidBackground(kChildColor));
-  child->SetPreferredSize(gfx::Size(kChildWindowWidth, kChildWindowHeight));
-
-  auto textfield = std::make_unique<views::Textfield>();
-  textfield->SetBounds(kTextfieldLeft, kTextfieldTop, kTextfieldWidth,
-                       kTextfieldHeight);
-  textfield->SetPlaceholderText(u"modal child window");
-  child->AddChildView(std::move(textfield));
-  return child.release();
-}
-
 }  // namespace
 
 // static
@@ -87,7 +73,7 @@ TestChildModalParent::TestChildModalParent(aura::Window* context)
   modal_parent_->GetRootView()->SetBackground(
       views::CreateSolidBackground(kModalParentColor));
   auto* modal_parent_textfield = new views::Textfield;
-  modal_parent_->GetRootView()->AddChildView(modal_parent_textfield);
+  modal_parent_->GetRootView()->AddChildViewRaw(modal_parent_textfield);
   modal_parent_textfield->SetBounds(kTextfieldLeft, kTextfieldTop,
                                     kTextfieldWidth, kTextfieldHeight);
   modal_parent_textfield->SetPlaceholderText(u"modal parent window");
@@ -97,8 +83,8 @@ TestChildModalParent::TestChildModalParent(aura::Window* context)
                           base::Unretained(this)),
       u"Show/Hide Child Modal Window");
   button_ = AddChildView(std::move(button));
-  AddChildView(textfield_.get());
-  AddChildView(host_.get());
+  AddChildViewRaw(textfield_.get());
+  AddChildViewRaw(host_.get());
 }
 
 TestChildModalParent::~TestChildModalParent() = default;
@@ -109,7 +95,21 @@ aura::Window* TestChildModalParent::GetModalParent() {
 
 aura::Window* TestChildModalParent::ShowModalChild() {
   DCHECK(!modal_child_);
-  modal_child_ = Widget::CreateWindowWithParent(CreateChildModalWindow(),
+
+  auto child = std::make_unique<views::WidgetDelegateView>(
+      views::WidgetDelegateView::CreatePassKey());
+  child->SetModalType(ui::mojom::ModalType::kChild);
+  child->SetTitle(u"Examples: Child Modal Window");
+  child->SetBackground(views::CreateSolidBackground(kChildColor));
+  child->SetPreferredSize(gfx::Size(kChildWindowWidth, kChildWindowHeight));
+
+  auto textfield = std::make_unique<views::Textfield>();
+  textfield->SetBounds(kTextfieldLeft, kTextfieldTop, kTextfieldWidth,
+                       kTextfieldHeight);
+  textfield->SetPlaceholderText(u"modal child window");
+  child->AddChildView(std::move(textfield));
+
+  modal_child_ = Widget::CreateWindowWithParent(child.release(),
                                                 GetWidget()->GetNativeView());
   wm::SetModalParent(modal_child_->GetNativeView(),
                      modal_parent_->GetNativeView());

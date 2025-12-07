@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/parsers/h265_parser.h"
 
@@ -13,7 +14,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     return 0;
 
   media::H265Parser parser;
-  parser.SetStream(data, base::checked_cast<off_t>(size));
+  parser.SetStream(UNSAFE_TODO(base::span(data, size)));
 
   // Parse until the end of stream/unsupported stream/error in stream is
   // found.

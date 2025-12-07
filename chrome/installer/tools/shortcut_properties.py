@@ -39,12 +39,6 @@ def PrintShortcutProperties(shortcut_path, dump_all):
   app_id = properties.GetValue(pscon.PKEY_AppUserModel_ID).GetValue()
   print('\tAppUserModelId => "%s"' % app_id)
 
-  # Hard code PKEY_AppUserModel_IsDualMode as pscon doesn't support it.
-  PKEY_AppUserModel_IsDualMode = (IID('{9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3}'),
-                                  11)
-  dual_mode = properties.GetValue(PKEY_AppUserModel_IsDualMode).GetValue()
-  print('\tDual Mode => "%s"' % dual_mode)
-
   # Dump all other properties with their raw ID if requested, add them above
   # over time as we explicitly care about more properties, see propkey.h or
   # pscon.py for a reference of existing PKEYs' meaning.

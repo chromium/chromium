@@ -12,10 +12,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
 
 namespace content {
@@ -40,6 +40,10 @@ class AutofillSuggestionController : public AutofillPopupViewDelegate {
       PopupControllerCommon controller_common,
       int32_t form_control_ax_id);
 
+  using UiSessionId = AutofillClient::SuggestionUiSessionId;
+  // Generates a new unique session id for suggestion UI.
+  static UiSessionId GenerateSuggestionUiSessionId();
+
   // Recalculates the height and width of the suggestion UI and triggers a
   // redraw when suggestions change.
   virtual void OnSuggestionsChanged() = 0;
@@ -49,7 +53,9 @@ class AutofillSuggestionController : public AutofillPopupViewDelegate {
   // allow ruling out accidental UI interactions (crbug.com/1279268).
   static constexpr base::TimeDelta kIgnoreEarlyClicksOnSuggestionsDuration =
       base::Milliseconds(500);
-  virtual void AcceptSuggestion(int index) = 0;
+  virtual void AcceptSuggestion(
+      int index,
+      AutofillMetrics::SuggestionAcceptedMethod accept_method) = 0;
 
   // Removes the suggestion at the given `index`. `removal_method`specifies the
   // UI entry point for removal, e.g. clicking on a delete button.
@@ -75,9 +81,16 @@ class AutofillSuggestionController : public AutofillPopupViewDelegate {
 
   // Shows the suggestion UI, or updates the existing suggestion UI with the
   // given values.
-  virtual void Show(std::vector<Suggestion> suggestions,
+  virtual void Show(UiSessionId session_id,
+                    std::vector<Suggestion> suggestions,
                     AutofillSuggestionTriggerSource trigger_source,
                     AutoselectFirstSuggestion autoselect_first_suggestion) = 0;
+
+  // Returns the unique session id for the suggestions UI that is showing. If
+  // no UI is showing, it returns `std::nullopt`. If there are multiple,
+  // connected controllers (e.g. for sub-popups on Desktop), all controllers
+  // will have the same session id.
+  virtual std::optional<UiSessionId> GetUiSessionId() const = 0;
 
   // This method cannot be moved into a test api, because it is called by
   // production code in `ChromeAutofillClient`. This happens because, before the
@@ -88,11 +101,6 @@ class AutofillSuggestionController : public AutofillPopupViewDelegate {
 
   // Updates the data list values currently shown.
   virtual void UpdateDataListValues(base::span<const SelectOption> options) = 0;
-
-  // Informs the controller that the suggestions may not be hidden by stale data
-  // or interactions with native Chrome UI. This state remains active until the
-  // view is destroyed.
-  virtual void PinView() = 0;
 
  protected:
   ~AutofillSuggestionController() override = default;

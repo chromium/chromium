@@ -4,9 +4,9 @@
 
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 
-#include <utility>
-
 #include <google/protobuf/message_lite.h>
+
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -107,6 +108,16 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
   void RemovePrepareAuthFactorProgressObserver(
       PrepareAuthFactorProgressObserver* observer) override {
     progress_observer_list_.RemoveObserver(observer);
+  }
+
+  void AddAuthFactorStatusUpdateObserver(
+      AuthFactorStatusUpdateObserver* observer) override {
+    auth_factor_status_observer_list_.AddObserver(observer);
+  }
+
+  void RemoveAuthFactorStatusUpdateObserver(
+      AuthFactorStatusUpdateObserver* observer) override {
+    auth_factor_status_observer_list_.RemoveObserver(observer);
   }
 
   void WaitForServiceToBeAvailable(
@@ -301,6 +312,14 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
                     std::move(callback));
   }
 
+  void GenerateFreshRecoveryId(
+      const ::user_data_auth::GenerateFreshRecoveryIdRequest& request,
+      GenerateFreshRecoveryIdCallback callback) override {
+    CallProtoMethod(::user_data_auth::kGenerateFreshRecoveryId,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
   void GetAuthSessionStatus(
       const ::user_data_auth::GetAuthSessionStatusRequest& request,
       GetAuthSessionStatusCallback callback) override {
@@ -345,6 +364,14 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
       const ::user_data_auth::SetUserDataStorageWriteEnabledRequest& request,
       SetUserDataStorageWriteEnabledCallback callback) override {
     CallProtoMethod(::user_data_auth::kSetUserDataStorageWriteEnabled,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
+  void LockFactorUntilReboot(
+      const ::user_data_auth::LockFactorUntilRebootRequest& request,
+      LockFactorUntilRebootCallback callback) override {
+    CallProtoMethod(::user_data_auth::kLockFactorUntilReboot,
                     ::user_data_auth::kUserDataAuthInterface, request,
                     std::move(callback));
   }
@@ -487,6 +514,19 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
     }
   }
 
+  void OnAuthFactorStatusUpdate(dbus::Signal* signal) {
+    dbus::MessageReader reader(signal);
+    ::user_data_auth::AuthFactorStatusUpdate proto;
+    if (!reader.PopArrayOfBytesAsProto(&proto)) {
+      LOG(ERROR) << "Failed to parse AuthFactorStatusUpdate protobuf from "
+                    "UserDataAuth signal";
+      return;
+    }
+    for (auto& observer : auth_factor_status_observer_list_) {
+      observer.OnAuthFactorStatusUpdate(proto);
+    }
+  }
+
   // Connects the dbus signals.
   void ConnectToSignals() {
     proxy_->ConnectToSignal(
@@ -515,6 +555,12 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
             &UserDataAuthClientImpl::OnPrepareAuthFactorProgress,
             weak_factory_.GetWeakPtr()),
         base::BindOnce(&OnSignalConnected));
+    proxy_->ConnectToSignal(
+        ::user_data_auth::kUserDataAuthInterface,
+        ::user_data_auth::kAuthFactorStatusUpdate,
+        base::BindRepeating(&UserDataAuthClientImpl::OnAuthFactorStatusUpdate,
+                            weak_factory_.GetWeakPtr()),
+        base::BindOnce(&OnSignalConnected));
   }
 
   // D-Bus proxy for cryptohomed, not owned.
@@ -528,6 +574,10 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
 
   // List of observers for dbus signals related to fingerprint.
   base::ObserverList<PrepareAuthFactorProgressObserver> progress_observer_list_;
+
+  // List of observers for dbus signal AuthFactorStatusUpdate.
+  base::ObserverList<AuthFactorStatusUpdateObserver>
+      auth_factor_status_observer_list_;
 
   base::WeakPtrFactory<UserDataAuthClientImpl> weak_factory_{this};
 };

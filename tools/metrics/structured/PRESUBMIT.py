@@ -16,7 +16,7 @@ def CheckChange(input_api, output_api):
   """ Checks that structured.xml is pretty-printed and well-formatted. """
   errors = []
 
-  for file in input_api.AffectedTextFiles():
+  for file in input_api.AffectedFiles():
     path = file.AbsoluteLocalPath()
     basename = input_api.basename(path)
     if input_api.os_path.dirname(path) != input_api.PresubmitLocalPath():

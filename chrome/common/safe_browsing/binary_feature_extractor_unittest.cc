@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <string_view>
@@ -18,7 +19,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "crypto/sha2.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -36,8 +36,7 @@ class MockBinaryFeatureExtractor : public BinaryFeatureExtractor {
  public:
   MOCK_METHOD(bool,
               ExtractImageFeaturesFromData,
-              (const uint8_t*,
-               size_t,
+              (base::span<const uint8_t>,
                ExtractHeadersOption,
                ClientDownloadRequest_ImageHeaders*,
                google::protobuf::RepeatedPtrField<std::string>*));
@@ -115,7 +114,7 @@ TEST_F(BinaryFeatureExtractorTest, ExtractOneBlockDigest) {
 
   const int kDataLen = kBlockSize;
   auto data = base::HeapArray<uint8_t>::Uninit(kDataLen);
-  base::ranges::fill(data, 71);
+  std::ranges::fill(data, 71);
   WriteFileToHash(data);
   ExpectFileDigestEq(kDigest);
 }
@@ -129,7 +128,7 @@ TEST_F(BinaryFeatureExtractorTest, ExtractBigBlockDigest) {
 
   const int kDataLen = kBlockSize + 1;
   auto data = base::HeapArray<uint8_t>::Uninit(kDataLen);
-  base::ranges::fill(data, 71);
+  std::ranges::fill(data, 71);
   WriteFileToHash(data);
   ExpectFileDigestEq(kDigest);
 }
@@ -141,9 +140,9 @@ TEST_F(BinaryFeatureExtractorTest, CanRemoveFileDuringExecution) {
 
   scoped_refptr<MockBinaryFeatureExtractor> mock_extractor(
       new MockBinaryFeatureExtractor());
-  EXPECT_CALL(*mock_extractor, ExtractImageFeaturesFromData(_, _, _, _, _))
+  EXPECT_CALL(*mock_extractor, ExtractImageFeaturesFromData(_, _, _, _))
       .WillOnce(
-          [&](const uint8_t* data, size_t data_size,
+          [&](base::span<const uint8_t> data,
               BinaryFeatureExtractor::ExtractHeadersOption options,
               ClientDownloadRequest_ImageHeaders* image_headers,
               google::protobuf::RepeatedPtrField<std::string>* signed_data) {

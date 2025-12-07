@@ -1,0 +1,119 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module on_device_translation.mojom;
+
+import "components/on_device_translation/public/mojom/translator.mojom";
+import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
+import "sandbox/policy/mojom/context.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
+
+// The language package information of the TranslateKit library.
+// Normally, `language1` and `language2` are input from hard-coded dictionary
+// information within Chromium, but they can also be specified from the command
+// line for testing purposes.
+struct OnDeviceTranslationLanguagePackage {
+  // The first ISO 639 language code of the language pair (eg:"en"). This can
+  // either be both source or target language.
+  string language1;
+  // The second ISO 639 language code of the language pair (eg:"en"). This can
+  // either be both source or target language.
+  string language2;
+};
+
+// The interface that provides file operations for the OnDeviceTranslation
+// service. This interface is implemented in the browser process and its methods
+// are called from the OnDeviceTranslation service.
+// Note: The translation library performs file operations synchronously,
+// necessitating the use of synchronous IPC methods.
+interface FileOperationProxy {
+  // Returns if the file exists and whether it is a directory.
+  // `package_index` is the index of the language package in the config.
+  // `relative_path` is the relative path in the language package.
+  [Sync]
+  FileExists(uint32 package_index, mojo_base.mojom.FilePath relative_path)
+      => (bool exists, bool is_directory);
+
+  // Returns the file handle of the file. If the file does not exist, it will
+  // return an invalid handle.
+  // `package_index` is the index of the language package in the config.
+  // `relative_path` is the relative path in the language package.
+  [Sync]
+  Open(uint32 package_index, mojo_base.mojom.FilePath relative_path)
+      => (mojo_base.mojom.ReadOnlyFile? file);
+};
+
+// The list of language package information.
+struct OnDeviceTranslationServiceConfig {
+  // The list of language packages.
+  array<OnDeviceTranslationLanguagePackage> packages;
+  // The file operation proxy used by the service.
+  pending_remote<FileOperationProxy> file_operation_proxy;
+};
+
+// The result of creating a translator.
+enum CreateTranslatorResult {
+  // The translator is created successfully.
+  kSuccess = 0,
+
+  // The translator cannot be created because the library binary failed to
+  // loaded.
+  kErrorInvalidBinary = 1,
+
+  // The translator cannot be created because the function pointer of the
+  // library is invalid.
+  kErrorInvalidFunctionPointer = 2,
+
+  // The translator cannot be created because the library failed to initialize.
+  kErrorFailedToInitialize = 3,
+
+  // The translator cannot be created because the library failed to create the
+  // translator.
+  kErrorFailedToCreateTranslator = 4,
+
+  // The translator cannot be created because the library version is invalid.
+  kErrorInvalidVersion= 5,
+};
+
+// Currently the sandboxing of the On Device Translation service is supported
+// only on macOS, Linux and ChromeOS.
+[EnableIf=is_linux|is_mac|is_chromeos]
+const sandbox.mojom.Sandbox kOnDeviceTranslationSandbox =
+    sandbox.mojom.Sandbox.kOnDeviceTranslation;
+
+[EnableIf=is_win]
+const sandbox.mojom.Sandbox kOnDeviceTranslationSandbox =
+    sandbox.mojom.Sandbox.kService;
+
+[EnableIfNot=is_linux|is_mac|is_win|is_chromeos]
+const sandbox.mojom.Sandbox kOnDeviceTranslationSandbox =
+    sandbox.mojom.Sandbox.kNoSandbox;
+
+// The service that provides translation capabilities through
+// various implementation.
+[ServiceSandbox=kOnDeviceTranslationSandbox,
+    RequireContext=sandbox.mojom.Context.kBrowser]
+interface OnDeviceTranslationService {
+  // This must be called soon after creating the service. Also this can be used
+  // when the binary or the language packages are updated (or uninstalled).
+  SetServiceConfig(OnDeviceTranslationServiceConfig config);
+
+  // Creates a `Translator` that could do translation from `source_lang` to
+  // `target_lang`. When succeeds, the result callback will be called with a
+  // true `kSuccess`. Otherwise, the result callback will be called with one of
+  // the other error codes.
+  // To detect the idle state of the service, this IPC is passing a
+  // pending_receiver instead of returning a pending_remote. See
+  // https://crrev.com/c/5992971/comment/ca3edf7c_2ae4ca1a/ for more details.
+  CreateTranslator(string source_lang,
+                   string target_lang,
+                   pending_receiver<Translator> receiver)
+      => (CreateTranslatorResult result);
+
+  // Returns if the service could translate text from `source_lang` to
+  // `target_lang`.
+  CanTranslate(string source_lang, string target_lang)
+      => (bool can_stranslate);
+};

@@ -4,21 +4,28 @@
 
 package org.chromium.components.embedder_support.delegate;
 
+import static android.view.Display.INVALID_DISPLAY;
+
 import android.graphics.Bitmap;
 import android.view.KeyEvent;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
-import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.base.JniOnceCallback;
 import org.chromium.blink.mojom.DisplayMode;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.navigation_controller.UserAgentOverrideOption;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.url.GURL;
 
 /** Java peer of the native class of the same name. */
 @JNINamespace("web_contents_delegate_android")
+@NullMarked
 public class WebContentsDelegateAndroid {
     // Equivalent of WebCore::WebConsoleMessage::LevelTip.
     public static final int LOG_LEVEL_TIP = 0;
@@ -30,9 +37,8 @@ public class WebContentsDelegateAndroid {
     public static final int LOG_LEVEL_ERROR = 3;
 
     /**
-     * @param url
-     * @param disposition         The new tab disposition, defined in
-     *                            //ui/base/mojo/window_open_disposition.mojom.
+     * @param disposition The new tab disposition, defined in
+     *     //ui/base/mojo/window_open_disposition.mojom.
      * @param isRendererInitiated Whether or not the renderer initiated this action.
      */
     @CalledByNative
@@ -50,7 +56,7 @@ public class WebContentsDelegateAndroid {
     public void closeContents() {}
 
     @CalledByNative
-    public void loadingStateChanged(boolean shouldShowLoadingUI) {}
+    public void loadingStateChanged(boolean shouldShowLoadingUi) {}
 
     @CalledByNative
     public void navigationStateChanged(int flags) {}
@@ -67,24 +73,20 @@ public class WebContentsDelegateAndroid {
     public void rendererResponsive() {}
 
     @CalledByNative
-    public void webContentsCreated(
-            WebContents sourceWebContents,
-            long openerRenderProcessId,
-            long openerRenderFrameId,
-            String frameName,
-            GURL targetUrl,
-            WebContents newWebContents) {}
-
-    @CalledByNative
     public boolean shouldCreateWebContents(GURL targetUrl) {
         return true;
     }
 
     @CalledByNative
-    public void onUpdateUrl(GURL url) {}
+    public void onUpdateTargetUrl(GURL url) {}
 
     @CalledByNative
     public boolean takeFocus(boolean reverse) {
+        return false;
+    }
+
+    @CalledByNative
+    public boolean preHandleKeyboardEvent(long nativeKeyEvent) {
         return false;
     }
 
@@ -109,19 +111,25 @@ public class WebContentsDelegateAndroid {
     }
 
     /**
-     * Report a form resubmission. The overwriter of this function should eventually call
-     * either of NavigationController.ContinuePendingReload or
-     * NavigationController.CancelPendingReload.
+     * Report a form resubmission. The overwriter of this function should eventually call either of
+     * NavigationController.ContinuePendingReload or NavigationController.CancelPendingReload.
      */
     @CalledByNative
     public void showRepostFormWarningDialog() {}
 
     @CalledByNative
-    public void enterFullscreenModeForTab(boolean prefersNavigationBar, boolean prefersStatusBar) {}
+    public void enterFullscreenModeForTab(
+            RenderFrameHost renderFrameHost,
+            boolean prefersNavigationBar,
+            boolean prefersStatusBar,
+            long displayId) {}
 
     @CalledByNative
     public void fullscreenStateChangedForTab(
-            boolean prefersNavigationBar, boolean prefersStatusBar) {}
+            RenderFrameHost renderFrameHost,
+            boolean prefersNavigationBar,
+            boolean prefersStatusBar,
+            long displayId) {}
 
     @CalledByNative
     public void exitFullscreenModeForTab() {}
@@ -131,8 +139,20 @@ public class WebContentsDelegateAndroid {
         return false;
     }
 
+    @CalledByNative
+    public long getFullscreenTargetDisplay() {
+        return INVALID_DISPLAY;
+    }
+
+    @CalledByNative
+    public void requestKeyboardLock(boolean escKeyLocked) {}
+
+    @CalledByNative
+    public void cancelKeyboardLockRequest() {}
+
     /**
      * Called when BrowserMediaPlayerManager wants to load a media resource.
+     *
      * @param url the URL of media resource to load.
      * @return true to prevent the resource from being loaded.
      */
@@ -141,19 +161,25 @@ public class WebContentsDelegateAndroid {
         return false;
     }
 
-    /** @return The height of the top controls in physical pixels (not DIPs). */
+    /**
+     * @return The height of the top controls in physical pixels (not DIPs).
+     */
     @CalledByNative
     public int getTopControlsHeight() {
         return 0;
     }
 
-    /** @return The minimum visible height the top controls can have in physical pixels (not DIPs). */
+    /**
+     * @return The minimum visible height the top controls can have in physical pixels (not DIPs).
+     */
     @CalledByNative
     public int getTopControlsMinHeight() {
         return 0;
     }
 
-    /** @return The height of the bottom controls in physical pixels (not DIPs). */
+    /**
+     * @return The height of the bottom controls in physical pixels (not DIPs).
+     */
     @CalledByNative
     public int getBottomControlsHeight() {
         return 0;
@@ -161,20 +187,24 @@ public class WebContentsDelegateAndroid {
 
     /**
      * @return The minimum visible height the bottom controls can have in physical pixels (not
-     *         DIPs).
+     *     DIPs).
      */
     @CalledByNative
     public int getBottomControlsMinHeight() {
         return 0;
     }
 
-    /** @return Whether or not the browser controls height changes should be animated. */
+    /**
+     * @return Whether or not the browser controls height changes should be animated.
+     */
     @CalledByNative
     public boolean shouldAnimateBrowserControlsHeightChanges() {
         return false;
     }
 
-    /** @return Whether or not the browser controls resize Blink's view size. */
+    /**
+     * @return Whether or not the browser controls resize Blink's view size.
+     */
     @CalledByNative
     public boolean controlsResizeView() {
         return false;
@@ -182,7 +212,7 @@ public class WebContentsDelegateAndroid {
 
     /**
      * @return If shown, returns the height of the virtual keyboard in physical pixels. Otherwise,
-     *         returns 0.
+     *     returns 0.
      */
     @CalledByNative
     public int getVirtualKeyboardHeight() {
@@ -205,12 +235,69 @@ public class WebContentsDelegateAndroid {
     public void didBackForwardTransitionAnimationChange() {}
 
     @CalledByNative
-    private boolean maybeCopyContentAreaAsBitmap(long nativeCallback) {
-        return maybeCopyContentAreaAsBitmap(
-                (bitmap) -> {
-                    WebContentsDelegateAndroidJni.get()
-                            .maybeCopyContentAreaAsBitmapOutcome(nativeCallback, bitmap);
-                });
+    private boolean maybeCopyContentAreaAsBitmap(
+            JniOnceCallback<@Nullable ScreenshotResult> callback) {
+        boolean result = maybeCopyContentArea(callback, ScreenshotResult.Destination.BITMAP);
+        if (!result) {
+            // If the method returns false, the callback won't be called, so we need to destroy it
+            // to prevent memory leaks and match the previous behavior of no callback.
+            callback.destroy();
+        }
+        return result;
+    }
+
+    @CalledByNative
+    private boolean maybeCopyContentAreaAsHardwareBuffer(
+            JniOnceCallback<@Nullable ScreenshotResult> callback) {
+        boolean result =
+                maybeCopyContentArea(callback, ScreenshotResult.Destination.HARDWARE_BUFFER);
+        if (!result) {
+            // If the method returns false, the callback won't be called, so we need to destroy it
+            // to prevent memory leaks and match the previous behavior of no callback.
+            callback.destroy();
+        }
+        return result;
+    }
+
+    /**
+     * Used to fetch the color info to compose the fallback UX for the navigation transitions when
+     * no valid screenshots are available.
+     *
+     * @return The rounded rectangle's color.
+     */
+    @CalledByNative
+    public int getBackForwardTransitionFallbackUXFaviconBackgroundColor() {
+        return 0;
+    }
+
+    /**
+     * Used to fetch the color info to compose the fallback UX for the navigation transitions when
+     * no valid screenshots are available.
+     *
+     * @return The fallback UX's background color.
+     */
+    @CalledByNative
+    public int getBackForwardTransitionFallbackUXPageBackgroundColor() {
+        return 0;
+    }
+
+    /**
+     * Request the delegate to change the zoom level of the current tab.
+     *
+     * @param zoomIn Whether to zoom in or out.
+     */
+    @CalledByNative
+    public void contentsZoomChange(boolean zoomIn) {}
+
+    /**
+     * Returns whether to override user agent for prerendering navigation.
+     *
+     * @param url The target URL of the prerendering navigation.
+     */
+    @CalledByNative
+    public @UserAgentOverrideOption int shouldOverrideUserAgentForPreloading(GURL url) {
+        // Inherit UA override of the last committed navigation regardless of URL as fallback.
+        return UserAgentOverrideOption.INHERIT;
     }
 
     /**
@@ -219,10 +306,33 @@ public class WebContentsDelegateAndroid {
      * @param callback Executed asynchronously with the captured screenshot if this returns true.
      *     Note this callback is guaranteed to not retain a reference to this bitmap once it
      *     returns.
+     * @param destination whether to return the result as a Bitmap or a Hardware Buffer.
      * @return True if a native view such as an NTP is presenting.
      */
-    public boolean maybeCopyContentAreaAsBitmap(Callback<Bitmap> callback) {
+    public boolean maybeCopyContentArea(
+            Callback<@Nullable ScreenshotResult> callback,
+            ScreenshotResult.Destination destination) {
         return false;
+    }
+
+    /**
+     * Synchronous version of {@link #maybeCopyContentAreaAsBitmap(long)}
+     *
+     * @return Null if there is no native view corresponding to the currently committed navigation
+     *     entry or capture fails; otherwise, a bitmap object.
+     */
+    @CalledByNative
+    public @Nullable Bitmap maybeCopyContentAreaAsBitmapSync() {
+        return null;
+    }
+
+    /**
+     * @return Null if the embedder fails to provide a privileged internal icon; otherwise, a bitmap
+     *     object for the icon.
+     */
+    @CalledByNative
+    public @Nullable Bitmap getBackForwardTransitionFallbackUXInternalPageIcon() {
+        return null;
     }
 
     /**
@@ -241,8 +351,37 @@ public class WebContentsDelegateAndroid {
     @CalledByNative
     public void didChangeCloseSignalInterceptStatus() {}
 
-    @NativeMethods
-    public interface Natives {
-        void maybeCopyContentAreaAsBitmapOutcome(long callbackPtr, Bitmap bitmap);
-    }
+    /**
+     * Requests that the web contents obtain a pointer lock.
+     *
+     * <p>A pointer lock restricts the mouse cursor to the bounds of the view and provides relative
+     * motion events as the user moves the mouse.
+     *
+     * @param webContents The {@link WebContents} for which to request the pointer lock.
+     * @param userGesture {@code true} if the request is a result of a user gesture, {@code false}
+     *     otherwise. A user gesture is required for the pointer lock to be granted.
+     * @param lastUnlockedByTarget {@code true} if the pointer was previously unlocked by the target
+     *     (website) itself, {@code false} if it was unlocked by the system or user action. This
+     *     flag helps to prevent websites from instantly re-locking the pointer after it has been
+     *     released by the user or system.
+     */
+    public void requestPointerLock(
+            WebContents webContents, boolean userGesture, boolean lastUnlockedByTarget) {}
+
+    /**
+     * Called when the pointer lock is lost, either by a system event, user action or when the
+     * focused view changes.
+     *
+     * <p>This method is invoked when the pointer lock, previously requested via {@link
+     * #requestPointerLock}, is no longer active. This can occur for several reasons:
+     *
+     * <ul>
+     *   <li>The user pressed the escape key or a system-defined key to release the lock.
+     *   <li>The application called {@code document.exitPointerLock()} in JavaScript.
+     *   <li>The window lost focus.
+     *   <li>The view hierarchy capturing the pointer went out of focus.
+     *   <li>The system released the pointer lock for other reasons.
+     * </ul>
+     */
+    public void lostPointerLock() {}
 }

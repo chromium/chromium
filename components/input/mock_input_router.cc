@@ -11,27 +11,47 @@ namespace input {
 
 void MockInputRouter::SendMouseEvent(
     const MouseEventWithLatencyInfo& mouse_event,
-    MouseEventCallback event_result_callback) {
+    MouseEventCallback event_result_callback,
+    DispatchToRendererCallback& dispatch_callback) {
+  std::move(dispatch_callback)
+      .Run(mouse_event.event, DispatchToRendererResult::kDispatched);
   sent_mouse_event_ = true;
 }
 void MockInputRouter::SendWheelEvent(
-    const MouseWheelEventWithLatencyInfo& wheel_event) {
+    const MouseWheelEventWithLatencyInfo& wheel_event,
+    DispatchToRendererCallback& dispatch_callback) {
+  std::move(dispatch_callback)
+      .Run(wheel_event.event, DispatchToRendererResult::kDispatched);
   sent_wheel_event_ = true;
 }
 void MockInputRouter::SendKeyboardEvent(
     const NativeWebKeyboardEventWithLatencyInfo& key_event,
-    KeyboardEventCallback event_result_callback) {
+    KeyboardEventCallback event_result_callback,
+    DispatchToRendererCallback& dispatch_callback) {
+  std::move(dispatch_callback)
+      .Run(key_event.event, DispatchToRendererResult::kDispatched);
   sent_keyboard_event_ = true;
 }
 void MockInputRouter::SendGestureEvent(
-    const GestureEventWithLatencyInfo& gesture_event) {
+    const GestureEventWithLatencyInfo& gesture_event,
+    DispatchToRendererCallback& dispatch_callback) {
+  std::move(dispatch_callback)
+      .Run(gesture_event.event, DispatchToRendererResult::kDispatched);
   sent_gesture_event_ = true;
 }
 void MockInputRouter::SendTouchEvent(
-    const TouchEventWithLatencyInfo& touch_event) {
+    const TouchEventWithLatencyInfo& touch_event,
+    DispatchToRendererCallback& dispatch_callback) {
   send_touch_event_not_cancelled_ =
       client_->FilterInputEvent(touch_event.event, touch_event.latency) ==
       blink::mojom::InputEventResultState::kNotConsumed;
+  if (send_touch_event_not_cancelled_) {
+    std::move(dispatch_callback)
+        .Run(touch_event.event, DispatchToRendererResult::kDispatched);
+  } else {
+    std::move(dispatch_callback)
+        .Run(touch_event.event, DispatchToRendererResult::kNotDispatched);
+  }
 }
 
 bool MockInputRouter::HasPendingEvents() const {

@@ -18,7 +18,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "extensions/browser/event_router.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/base/ime/ash/input_method_manager.h"
 #endif
 
@@ -33,9 +33,9 @@ namespace extensions {
 class LanguageSettingsPrivateDelegate
     : public KeyedService,
       public EventRouter::Observer,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       public ash::input_method::InputMethodManager::Observer,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
       public SpellcheckHunspellDictionary::Observer,
       public SpellcheckCustomDictionary::Observer {
  public:
@@ -66,14 +66,14 @@ class LanguageSettingsPrivateDelegate
   void OnListenerAdded(const EventListenerInfo& details) override;
   void OnListenerRemoved(const EventListenerInfo& details) override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // ash::input_method::InputMethodManager::Observer implementation.
   void InputMethodChanged(ash::input_method::InputMethodManager* manager,
                           Profile* profile,
                           bool show_message) override;
   void OnInputMethodExtensionAdded(const std::string& extension_id) override;
   void OnInputMethodExtensionRemoved(const std::string& extension_id) override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // SpellcheckHunspellDictionary::Observer implementation.
   void OnHunspellDictionaryInitialized(const std::string& language) override;
@@ -103,12 +103,12 @@ class LanguageSettingsPrivateDelegate
   // any observers.
   void StartOrStopListeningForSpellcheckChanges();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // If there are any JavaScript listeners registered for input method events,
   // ensures we are registered for change notifications. Otherwise, unregisters
   // any observers.
   void StartOrStopListeningForInputMethodChanges();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Handles the preference for which languages should be used for spellcheck
   // by resetting the dictionaries and broadcasting an event.

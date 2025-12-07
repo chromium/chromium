@@ -6,21 +6,15 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
-#include "components/attribution_reporting/source_type.mojom.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 
 namespace content {
 
-namespace {
-using ::attribution_reporting::mojom::SourceType;
-
-}  // namespace
-
 AttributionResolverDelegate::AttributionResolverDelegate(
     const AttributionConfig& config)
     : config_(config) {
-  DCHECK(config_.Validate());
+  CHECK(config_.Validate());
 }
 
 AttributionResolverDelegate::~AttributionResolverDelegate() = default;
@@ -39,7 +33,7 @@ int AttributionResolverDelegate::GetMaxReportsPerDestination(
     case attribution_reporting::mojom::ReportType::kAggregatableAttribution:
       return config_.aggregate_limit.max_reports_per_destination;
     case attribution_reporting::mojom::ReportType::kNullAggregatable:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -53,17 +47,6 @@ const AttributionConfig::RateLimitConfig&
 AttributionResolverDelegate::GetRateLimits() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return config_.rate_limit;
-}
-
-double AttributionResolverDelegate::GetMaxChannelCapacity(
-    SourceType source_type) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  switch (source_type) {
-    case SourceType::kNavigation:
-      return config_.event_level_limit.max_navigation_info_gain;
-    case SourceType::kEvent:
-      return config_.event_level_limit.max_event_info_gain;
-  }
 }
 
 int AttributionResolverDelegate::GetMaxAggregatableReportsPerSource() const {

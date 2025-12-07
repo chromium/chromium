@@ -33,13 +33,11 @@ class ChromeSafeBrowsingUIManagerDelegate
       const GURL& page_url,
       const std::string& reason,
       int net_error_code) override;
-#if !BUILDFLAG(IS_ANDROID)
   void TriggerUrlFilteringInterstitialExtensionEventIfDesired(
       content::WebContents* web_contents,
       const GURL& page_url,
       const std::string& threat_type,
       safe_browsing::RTLookupResponse rt_lookup_response) override;
-#endif
   prerender::NoStatePrefetchContents* GetNoStatePrefetchContentsIfExists(
       content::WebContents* web_contents) override;
   bool IsHostingExtension(content::WebContents* web_contents) override;
@@ -49,7 +47,6 @@ class ChromeSafeBrowsingUIManagerDelegate
   PingManager* GetPingManager(
       content::BrowserContext* browser_context) override;
   bool IsMetricsAndCrashReportingEnabled() override;
-  bool IsSendingOfHitReportsEnabled() override;
 };
 
 }  // namespace safe_browsing

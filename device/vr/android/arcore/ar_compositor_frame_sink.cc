@@ -7,10 +7,8 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
-#include "components/viz/common/features.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
@@ -26,8 +24,12 @@
 namespace {
 class ArCoreHostDisplayClient : public viz::HostDisplayClient {
  public:
-  explicit ArCoreHostDisplayClient(ui::WindowAndroid* root_window)
+  explicit ArCoreHostDisplayClient(
+      const scoped_refptr<base::SingleThreadTaskRunner>&
+          main_thread_task_runner,
+      ui::WindowAndroid* root_window)
       : HostDisplayClient(gfx::kNullAcceleratedWidget),
+        main_thread_task_runner_(main_thread_task_runner),
         root_window_(root_window) {
     // TODO(crbug.com/40758616): Ideally, we'd DCHECK here, but the UTs
     // don't create a root_window.
@@ -40,19 +42,37 @@ class ArCoreHostDisplayClient : public viz::HostDisplayClient {
   void OnContextCreationResult(gpu::ContextResult context_result) override {}
 
   void SetWideColorEnabled(bool enabled) override {
+    main_thread_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ArCoreHostDisplayClient::DoSetWideColorEnabled,
+                       weak_ptr_factory_.GetWeakPtr(), enabled));
+  }
+
+  void SetPreferredRefreshRate(float refresh_rate) override {
+    main_thread_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ArCoreHostDisplayClient::DoSetPreferredRefreshRate,
+                       weak_ptr_factory_.GetWeakPtr(), refresh_rate));
+  }
+
+ private:
+  void DoSetWideColorEnabled(bool enabled) {
     if (root_window_) {
       root_window_->SetWideColorEnabled(enabled);
     }
   }
 
-  void SetPreferredRefreshRate(float refresh_rate) override {
+  void DoSetPreferredRefreshRate(float refresh_rate) {
     if (root_window_) {
       root_window_->SetPreferredRefreshRate(refresh_rate);
     }
   }
 
- private:
+  scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
   raw_ptr<ui::WindowAndroid> root_window_;
+
+  // Must be the last member so that it will be destructed first.
+  base::WeakPtrFactory<ArCoreHostDisplayClient> weak_ptr_factory_{this};
 };
 }  // namespace
 
@@ -68,8 +88,6 @@ ArCompositorFrameSink::ArCompositorFrameSink(
       on_compositor_received_frame_(on_compositor_received_frame),
       on_rendering_finished_(on_rendering_finished),
       on_can_issue_new_frame_(on_can_issue_new_frame) {
-  DCHECK(ArImageTransport::UseSharedBuffer())
-      << "ArCompositorFrameSink only works with Shared Buffers";
   DCHECK(gl_thread_task_runner_);
 }
 
@@ -89,6 +107,7 @@ viz::FrameSinkId ArCompositorFrameSink::FrameSinkId() {
 }
 
 void ArCompositorFrameSink::Initialize(
+    const scoped_refptr<base::SingleThreadTaskRunner>& main_thread_task_runner,
     gpu::SurfaceHandle surface_handle,
     ui::WindowAndroid* root_window,
     const gfx::Size& frame_size,
@@ -102,7 +121,8 @@ void ArCompositorFrameSink::Initialize(
   DVLOG(1) << __func__;
 
   // Store the passed in values.
-  display_client_ = std::make_unique<ArCoreHostDisplayClient>(root_window);
+  display_client_ = std::make_unique<ArCoreHostDisplayClient>(
+      main_thread_task_runner, root_window);
   frame_size_ = frame_size;
   xr_frame_sink_client_ = xr_frame_sink_client;
   on_initialized_ = std::move(on_initialized);
@@ -254,8 +274,8 @@ void ArCompositorFrameSink::ReclaimResources(
       continue;
 
     auto it = id_to_frame_map_.find(resource.id);
-    CHECK(it != id_to_frame_map_.end(), base::NotFatalUntil::M130);
-    auto* rendering_frame = it->second;
+    CHECK(it != id_to_frame_map_.end());
+    auto* rendering_frame = it->second.get();
 
     // While we now know that this resource is associated with this frame, we
     // don't know which buffer it is associated with, and we need to ensure that
@@ -296,16 +316,9 @@ void ArCompositorFrameSink::ReclaimResources(
 void ArCompositorFrameSink::OnBeginFrame(
     const viz::BeginFrameArgs& args,
     const viz::FrameTimingDetailsMap& timing_details,
-    bool frame_ack,
     std::vector<viz::ReturnedResource> resources) {
-  // TODO(crbug.com/40250552): Determine why the timing of this Ack leads to
-  // frame production stopping in tests.
-  if (features::IsOnBeginFrameAcksEnabled()) {
-    if (frame_ack) {
-      DidReceiveCompositorFrameAck(std::move(resources));
-    } else if (!resources.empty()) {
-      ReclaimResources(std::move(resources));
-    }
+  if (!resources.empty()) {
+    ReclaimResources(std::move(resources));
   }
   on_begin_frame_.Run(args, timing_details);
 }
@@ -405,7 +418,7 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
   // Setup some variables for the SharedQuadState that are the same for the
   // Camera/Renderer
   // Next add the Renderer Content
-  if (frame_type == FrameType::kHasWebXrContent) {
+  if (frame_type != FrameType::kMissingWebXrContent) {
     WebXrSharedBuffer* renderer_buffer = xr_frame->shared_buffer.get();
     renderer_buffer->id = resource_id_generator_.GenerateNextId();
     id_to_frame_map_[renderer_buffer->id] = xr_frame;
@@ -427,20 +440,23 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
         /*rect=*/output_rect,
         /*visible_rect=*/output_rect,
         /*needs_blending=*/true, renderer_buffer->id,
-        /*premultiplied_alpha=*/true,
         /*uv_top_left=*/xr_frame->bounds_left.origin(),
         /*uv_bottom_right=*/xr_frame->bounds_left.bottom_right(),
         /*background_color=*/SkColors::kTransparent,
-        /*y_flipped=*/true,
         /*nearest_neighbor=*/false,
         /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
 
-    auto renderer_resource = viz::TransferableResource::MakeGpu(
-        renderer_buffer->shared_image, renderer_buffer->texture_target(),
-        renderer_buffer->sync_token, renderer_buffer->size,
-        viz::SinglePlaneFormat::kRGBA_8888,
-        /*is_overlay_candidate=*/false,
-        viz::TransferableResource::ResourceSource::kAR);
+    viz::TransferableResource::MetadataOverride render_resource_overrides = {
+        .is_overlay_candidate = false,
+        .origin = frame_type == FrameType::kHasWebGlContent
+                      ? kBottomLeft_GrSurfaceOrigin
+                      : kTopLeft_GrSurfaceOrigin,
+    };
+
+    auto renderer_resource = viz::TransferableResource::Make(
+        renderer_buffer->shared_image,
+        viz::TransferableResource::ResourceSource::kAR,
+        renderer_buffer->sync_token, render_resource_overrides);
 
     renderer_resource.id = renderer_buffer->id;
     id_to_frame_map_[renderer_buffer->id] = xr_frame;
@@ -468,22 +484,23 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
                       /*rect=*/output_rect,
                       /*visible_rect=*/output_rect,
                       /*needs_blending=*/true, camera_buffer->id,
-                      /*premultiplied_alpha=*/true,
                       /*uv_top_left=*/gfx::PointF(0.f, 0.f),
                       /*uv_bottom_right=*/gfx::PointF(1.f, 1.f),
                       /*background_color=*/SkColors::kTransparent,
-                      /*y_flipped=*/true,
                       /*nearest_neighbor=*/false,
                       /*secure_output_only=*/false,
                       gfx::ProtectedVideoType::kClear);
 
+  viz::TransferableResource::MetadataOverride camera_resource_overrides = {
+      .is_overlay_candidate = false,
+      .origin = kBottomLeft_GrSurfaceOrigin,
+  };
+
   // Additionally append to the resource_list
-  auto camera_resource = viz::TransferableResource::MakeGpu(
-      camera_buffer->shared_image, camera_buffer->texture_target(),
-      camera_buffer->sync_token, camera_buffer->size,
-      viz::SinglePlaneFormat::kRGBA_8888,
-      /*is_overlay_candidate=*/false,
-      viz::TransferableResource::ResourceSource::kAR);
+  auto camera_resource = viz::TransferableResource::Make(
+      camera_buffer->shared_image,
+      viz::TransferableResource::ResourceSource::kAR, camera_buffer->sync_token,
+      camera_resource_overrides);
 
   camera_resource.id = camera_buffer->id;
   id_to_frame_map_[camera_buffer->id] = xr_frame;

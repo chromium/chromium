@@ -16,7 +16,7 @@ namespace blink {
 class PLATFORM_EXPORT ShapeResultTestInfo : public ShapeResult {
  public:
   unsigned NumberOfRunsForTesting() const;
-  ShapeResult::RunInfo& RunInfoForTesting(unsigned run_index) const;
+  ShapeResultRun& RunInfoForTesting(unsigned run_index) const;
   bool RunInfoForTesting(unsigned run_index,
                          unsigned& start_index,
                          unsigned& num_glyphs,

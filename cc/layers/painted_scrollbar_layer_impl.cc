@@ -98,6 +98,7 @@ bool PaintedScrollbarLayerImpl::WillDraw(
 }
 
 void PaintedScrollbarLayerImpl::AppendQuads(
+    const AppendQuadsContext& context,
     viz::CompositorRenderPass* render_pass,
     AppendQuadsData* append_quads_data) {
   AppendThumbQuads(render_pass, append_quads_data);
@@ -109,51 +110,6 @@ void PaintedScrollbarLayerImpl::AppendThumbQuads(
     AppendQuadsData* append_quads_data) const {
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();
-  if (thumb_color_.has_value()) {
-    const gfx::Rect thumb_rect = ComputeThumbQuadRect();
-    if (thumb_rect.IsEmpty()) {
-      return;
-    }
-    gfx::Rect visible_thumb_rect =
-        draw_properties().occlusion_in_content_space.GetUnoccludedContentRect(
-            thumb_rect);
-    visible_thumb_rect.Intersect(visible_layer_rect());
-    if (visible_thumb_rect.IsEmpty()) {
-      return;
-    }
-
-    gfx::MaskFilterInfo rounded_corners_mask =
-        draw_properties().mask_filter_info;
-    // Web tests draw the thumb as a square to avoid issues that come with the
-    // differences in calculation of anti-aliasing and rounding in different
-    // platforms.
-    if (!is_web_test() && IsFluentScrollbarEnabled()) {
-      const int rounded_corner_radius =
-          orientation() == ScrollbarOrientation::kHorizontal
-              ? thumb_rect.height()
-              : thumb_rect.width();
-      rounded_corners_mask = gfx::MaskFilterInfo(
-          gfx::RRectF(gfx::RectF(thumb_rect), rounded_corner_radius));
-      rounded_corners_mask.ApplyTransform(
-          draw_properties().target_space_transform);
-    }
-    shared_quad_state->SetAll(
-        draw_properties().target_space_transform, thumb_rect,
-        visible_thumb_rect, rounded_corners_mask, /*clip=*/std::nullopt,
-        /*contents_opaque=*/false, draw_properties().opacity,
-        /*blend=*/SkBlendMode::kSrcOver, GetSortingContextId(),
-        static_cast<uint32_t>(id()),
-        /*fast_rounded_corner=*/true);
-    auto* thumb_quad =
-        render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-    thumb_quad->SetNew(shared_quad_state, thumb_rect, visible_thumb_rect,
-                       thumb_color_.value(), /*anti_aliasing_off=*/false);
-    ValidateQuadResources(thumb_quad);
-    return;
-  }
-
-  CHECK(!IsFluentScrollbarEnabled());
-
   // The thumb sqs must be non-opaque so that the track and buttons will not be
   // occluded in viz by the thumb's 'quad_layer_rect'.
   constexpr bool kContentsOpaque = false;
@@ -162,18 +118,52 @@ void PaintedScrollbarLayerImpl::AppendThumbQuads(
 
   AppendDebugBorderQuad(render_pass, gfx::Rect(internal_content_bounds_),
                         shared_quad_state, append_quads_data);
-  gfx::Rect thumb_quad_rect = ComputeThumbQuadRect();
-  gfx::Rect scaled_thumb_quad_rect =
+
+  const gfx::Rect thumb_quad_rect = ComputeThumbQuadRect();
+  const gfx::Rect scaled_thumb_quad_rect =
       gfx::ScaleToEnclosingRect(thumb_quad_rect, internal_contents_scale_);
-  gfx::Rect visible_thumb_quad_rect =
+  const gfx::Rect visible_thumb_quad_rect =
       draw_properties().occlusion_in_content_space.GetUnoccludedContentRect(
           thumb_quad_rect);
-  gfx::Rect scaled_visible_thumb_quad_rect = gfx::ScaleToEnclosingRect(
+  if (visible_thumb_quad_rect.IsEmpty()) {
+    return;
+  }
+  const gfx::Rect scaled_visible_thumb_quad_rect = gfx::ScaleToEnclosingRect(
       visible_thumb_quad_rect, internal_contents_scale_);
+
+  if (thumb_color_.has_value()) {
+    // Web tests draw the thumb as a square to avoid issues that come with the
+    // differences in calculation of anti-aliasing and rounding in different
+    // platforms.
+    if (!is_web_test() && IsFluentScrollbarEnabled()) {
+      const int rounded_corner_radius =
+          orientation() == ScrollbarOrientation::kHorizontal
+              ? thumb_quad_rect.height()
+              : thumb_quad_rect.width();
+      shared_quad_state->mask_filter_info = gfx::MaskFilterInfo(
+          gfx::RRectF(gfx::RectF(thumb_quad_rect), rounded_corner_radius));
+      shared_quad_state->mask_filter_info.ApplyTransform(
+          draw_properties().target_space_transform);
+    }
+    auto* thumb_quad =
+        render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
+    thumb_quad->SetNew(shared_quad_state, scaled_thumb_quad_rect,
+                       scaled_visible_thumb_quad_rect, thumb_color_.value(),
+                       /*anti_aliasing_off=*/false);
+    ValidateQuadResources(thumb_quad);
+    return;
+  }
+
+  // If Fluent scrollbars are enabled but there is no `thumb_color_`, that means
+  // that the scrollbar's bounds or thumb have no dimensions so we can exit
+  // early.
+  if (IsFluentScrollbarEnabled()) {
+    return;
+  }
+
   viz::ResourceId thumb_resource_id =
       layer_tree_impl()->ResourceIdForUIResource(thumb_ui_resource_id_);
-
-  if (!thumb_resource_id || visible_thumb_quad_rect.IsEmpty()) {
+  if (!thumb_resource_id) {
     return;
   }
 
@@ -181,11 +171,10 @@ void PaintedScrollbarLayerImpl::AppendThumbQuads(
   auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   quad->SetNew(shared_quad_state, scaled_thumb_quad_rect,
                scaled_visible_thumb_quad_rect, /*needs_blending=*/true,
-               thumb_resource_id, /*premultiplied=*/true,
+               thumb_resource_id,
                /*top_left=*/gfx::PointF(0.f, 0.f),
                /*bottom_right=*/gfx::PointF(1.f, 1.f),
                /*background=*/SkColors::kTransparent,
-               /*flipped=*/false,
                /*nearest=*/false, /*secure_output=*/false,
                /*video_type=*/gfx::ProtectedVideoType::kClear);
   ValidateQuadResources(quad);
@@ -230,14 +219,15 @@ void PaintedScrollbarLayerImpl::AppendTrackAndButtonsQuads(
     track_and_buttons_shared_quad_state->opacity *= scaled_opacity;
   }
 
+  gfx::Rect scaled_track_and_buttons_quad_rect(internal_content_bounds_);
+
   if (uses_nine_patch_track_and_buttons_ && !has_find_in_page_tickmarks()) {
     AppendNinePatchScaledTrackAndButtons(render_pass,
                                          track_and_buttons_shared_quad_state,
-                                         track_and_buttons_quad_rect);
+                                         scaled_track_and_buttons_quad_rect);
     return;
   }
 
-  gfx::Rect scaled_track_and_buttons_quad_rect(internal_content_bounds_);
   gfx::Rect scaled_visible_track_and_buttons_quad_rect =
       gfx::ScaleToEnclosingRect(visible_track_and_buttons_quad_rect,
                                 internal_contents_scale_);
@@ -246,11 +236,10 @@ void PaintedScrollbarLayerImpl::AppendTrackAndButtonsQuads(
   quad->SetNew(track_and_buttons_shared_quad_state,
                scaled_track_and_buttons_quad_rect,
                scaled_visible_track_and_buttons_quad_rect, needs_blending,
-               track_and_buttons_resource_id, /*premultiplied=*/true,
+               track_and_buttons_resource_id,
                /*top_left=*/gfx::PointF(0.f, 0.f),
                /*bottom_right=*/gfx::PointF(1.f, 1.f),
                /*background=*/SkColors::kTransparent,
-               /*flipped=*/false,
                /*nearest=*/false, /*secure_output=*/false,
                /*video_type=*/gfx::ProtectedVideoType::kClear);
   ValidateQuadResources(quad);
@@ -259,15 +248,14 @@ void PaintedScrollbarLayerImpl::AppendTrackAndButtonsQuads(
 void PaintedScrollbarLayerImpl::AppendNinePatchScaledTrackAndButtons(
     viz::CompositorRenderPass* render_pass,
     viz::SharedQuadState* shared_quad_state,
-    gfx::Rect& track_and_buttons_quad_rect) {
+    const gfx::Rect& track_and_buttons_quad_rect) {
   CHECK(uses_nine_patch_track_and_buttons_);
-  gfx::Rect border(
+  const gfx::Rect border(
       track_and_buttons_aperture_.x(), track_and_buttons_aperture_.y(),
       track_and_buttons_aperture_.x() * 2, track_and_buttons_aperture_.y() * 2);
-  gfx::Rect layer_occlusion;
-  bool layout_changed = track_and_buttons_patch_generator_.SetLayout(
+  const bool layout_changed = track_and_buttons_patch_generator_.SetLayout(
       track_and_buttons_image_bounds_, track_and_buttons_quad_rect.size(),
-      track_and_buttons_aperture_, border, layer_occlusion,
+      track_and_buttons_aperture_, border, /*output_occlusion=*/gfx::Rect(),
       /*fill_center=*/true, /*nearest_neighbor=*/false);
   if (layout_changed) {
     track_and_buttons_patch_generator_.CheckGeometryLimitations();

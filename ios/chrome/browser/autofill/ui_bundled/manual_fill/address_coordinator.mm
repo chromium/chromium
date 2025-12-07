@@ -4,11 +4,12 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/address_coordinator.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/ref_counted.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/autofill/core/browser/data_model/autofill_profile.h"
-#import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
@@ -17,13 +18,14 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_address_mediator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_injection_handler.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address_mediator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/plus_address_list_navigator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ui/base/device_form_factor.h"
 
-@interface AddressCoordinator () <AddressListDelegate>
+@interface AddressCoordinator () <AddressListDelegate, PlusAddressListNavigator>
 
 // The view controller presented above the keyboard where the user can select
 // a field from one of their addresses.
@@ -54,17 +56,16 @@
   if (self) {
     _addressViewController = [[AddressViewController alloc] init];
 
-    ChromeBrowserState* browserState =
-        self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
+    ProfileIOS* profile = self.profile->GetOriginalProfile();
 
-    // Service must use regular browser state, even if the Browser has an
-    // OTR browser state.
+    // Service must use regular profile, even if the Browser has an
+    // OTR profile.
     autofill::PersonalDataManager* personalDataManager =
-        autofill::PersonalDataManagerFactory::GetForBrowserState(browserState);
+        autofill::PersonalDataManagerFactory::GetForProfile(profile);
     CHECK(personalDataManager);
 
     AuthenticationService* authenticationService =
-        AuthenticationServiceFactory::GetForBrowserState(browserState);
+        AuthenticationServiceFactory::GetForProfile(profile);
     CHECK(authenticationService);
 
     _addressMediator = [[ManualFillAddressMediator alloc]
@@ -75,7 +76,10 @@
     _addressMediator.contentInjector = super.injectionHandler;
     _addressMediator.consumer = _addressViewController;
     if (manualFillPlusAddressMediator) {
+      manualFillPlusAddressMediator.contentInjector = super.injectionHandler;
       manualFillPlusAddressMediator.consumer = _addressViewController;
+      manualFillPlusAddressMediator.navigator = self;
+      _addressViewController.imageDataSource = manualFillPlusAddressMediator;
     }
   }
   return self;
@@ -104,12 +108,41 @@
   }];
 }
 
-- (void)openAddressDetailsInEditMode:(const autofill::AutofillProfile*)address
+- (void)openAddressDetailsInEditMode:(autofill::AutofillProfile)address
                offerMigrateToAccount:(BOOL)offerMigrateToAccount {
   __weak __typeof(self) weakSelf = self;
+  auto callback = base::BindOnce(
+      [](__weak __typeof(self) weak_self, autofill::AutofillProfile address,
+         BOOL offer_migrate_to_account) {
+        [weak_self.delegate
+            openAddressDetailsInEditMode:std::move(address)
+                   offerMigrateToAccount:offer_migrate_to_account];
+      },
+      weakSelf, std::move(address), offerMigrateToAccount);
+  [self dismissIfNecessaryThenDoCompletion:base::CallbackToBlock(
+                                               std::move(callback))];
+}
+
+#pragma mark - PlusAddressListNavigator
+
+- (void)openCreatePlusAddressSheet {
+  __weak __typeof(self) weakSelf = self;
   [self dismissIfNecessaryThenDoCompletion:^{
-    [weakSelf.delegate openAddressDetailsInEditMode:address
-                              offerMigrateToAccount:offerMigrateToAccount];
+    [weakSelf.delegate openCreatePlusAddressSheet];
+  }];
+}
+
+- (void)openAllPlusAddressList:(BOOL)isAddressManualFallback {
+  __weak __typeof(self) weakSelf = self;
+  [self dismissIfNecessaryThenDoCompletion:^{
+    [weakSelf.delegate openAllPlusAddressesPicker:isAddressManualFallback];
+  }];
+}
+
+- (void)openManagePlusAddress {
+  __weak __typeof(self) weakSelf = self;
+  [self dismissIfNecessaryThenDoCompletion:^{
+    [weakSelf.delegate openManagePlusAddress];
   }];
 }
 

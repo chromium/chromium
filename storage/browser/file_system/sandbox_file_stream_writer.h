@@ -19,7 +19,6 @@
 #include "storage/browser/file_system/task_runner_bound_observer_list.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
-#include "url/gurl.h"
 
 namespace storage {
 

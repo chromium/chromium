@@ -1,0 +1,20 @@
+Name: ConstraintLayout
+Short Name: constraintlayout
+URL: https://androidx.dev/snapshots/builds/14500233/artifacts/repository/androidx/constraintlayout/constraintlayout/2.3.0-SNAPSHOT/constraintlayout-2.3.0-20251126.133552-1.aar
+Version: 2.3.0-SNAPSHOT
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+This library offers a flexible and adaptable way to position and animate widgets
+
+See also: https://developer.android.com/jetpack/androidx/releases/constraintlayout#2.3.0-SNAPSHOT
+
+
+Local Modifications:
+No modifications.

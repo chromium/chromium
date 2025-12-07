@@ -16,14 +16,15 @@
               "builder_group": "chromium.fyi",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
-                "config": "x64_builder"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
                 "apply_configs": [
                   "mb"
                 ],
                 "build_config": "Release",
-                "config": "android",
+                "config": "main_builder",
+                "target_arch": "intel",
                 "target_bits": 64,
                 "target_platform": "android"
               },
@@ -43,21 +44,21 @@
           "builder": "android-perfetto-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/android-perfetto-rel/targets"
     }
-  },
-  "$build/reclient": {
-    "instance": "rbe-chromium-untrusted",
-    "metrics_project": "chromium-reclient-metrics",
-    "scandeps_server": true
   },
   "$build/siso": {
     "configs": [
-      "builder"
+      "builder",
+      "remote-link"
     ],
+    "enable_cloud_monitoring": true,
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
+    "metrics_project": "chromium-reclient-metrics",
+    "output_local_strategy": "greedy",
     "project": "rbe-chromium-untrusted",
     "remote_jobs": -1
   },

@@ -17,10 +17,10 @@ import '../../components/buttons/oobe_text_button.js';
 
 import {getInstance as getAnnouncerInstance} from '//resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrCheckboxElement} from '//resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
+import type {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
 import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
 import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
 import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';

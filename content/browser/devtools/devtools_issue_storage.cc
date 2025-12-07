@@ -7,6 +7,7 @@
 #include <bit>
 #include <cstdint>
 
+#include "base/debug/crash_logging.h"
 #include "content/browser/devtools/protocol/audits.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -34,7 +35,7 @@ DevToolsIssueStorage::~DevToolsIssueStorage() {
   issues_.clear();
 }
 
-void DevToolsIssueStorage::AddInspectorIssue(
+const protocol::Audits::InspectorIssue& DevToolsIssueStorage::AddInspectorIssue(
     RenderFrameHost* rfh,
     std::unique_ptr<protocol::Audits::InspectorIssue> issue) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
@@ -45,6 +46,7 @@ void DevToolsIssueStorage::AddInspectorIssue(
   }
   total_added_issues_++;
   issues_.emplace_back(rfh->GetGlobalId(), std::move(issue));
+  return *issues_.back().second.get();
 }
 
 std::vector<const protocol::Audits::InspectorIssue*>

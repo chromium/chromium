@@ -10,8 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/mojom/app.mojom.h"
-#include "ash/components/arc/test/fake_app_instance.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -28,7 +26,10 @@
 #include "chrome/browser/ash/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
+#include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 #include "components/sync/model/string_ordinal.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,7 +52,7 @@ void AppSearchProviderTestBase::SetUp() {
 void AppSearchProviderTestBase::InitializeSearchProvider() {
   search_controller_ = std::make_unique<TestSearchController>();
   data_source_ =
-      std::make_unique<AppSearchDataSource>(profile_.get(), nullptr, &clock_);
+      std::make_unique<AppSearchDataSource>(profile(), nullptr, &clock_);
 
   std::unique_ptr<SearchProvider> app_search;
   if (zero_state_provider_) {
@@ -117,7 +118,7 @@ std::string AppSearchProviderTestBase::AddArcApp(const std::string& name,
   app_info.activity = activity;
   app_info.sticky = sticky;
   app_info.notifications_enabled = false;
-  arc_test_.app_instance()->SendAppAdded(app_info);
+  arc_app_test_.app_instance()->SendAppAdded(app_info);
   return ArcAppListPrefs::GetAppId(package, activity);
 }
 
@@ -149,8 +150,8 @@ void AppSearchProviderTestBase::AddExtension(const std::string& id,
   const syncer::StringOrdinal& page_ordinal =
       syncer::StringOrdinal::CreateInitialOrdinal();
 
-  service()->OnExtensionInstalled(extension.get(), page_ordinal,
-                                  extensions::kInstallFlagNone);
+  registrar()->OnExtensionInstalled(extension.get(), page_ordinal,
+                                    extensions::kInstallFlagNone);
 }
 
 void AppSearchProviderTestBase::CallViewClosing() {

@@ -20,8 +20,8 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "components/device_event_log/device_event_log.h"
-#include "crypto/apple_keychain_util.h"
-#include "crypto/apple_keychain_v2.h"
+#include "crypto/apple/keychain_util.h"
+#include "crypto/apple/keychain_v2.h"
 #include "device/fido/mac/authenticator_config.h"
 
 using base::apple::CFToNSPtrCast;
@@ -48,7 +48,7 @@ bool CanCreateSecureEnclaveKeyPairBlocking() {
 
   base::apple::ScopedCFTypeRef<CFErrorRef> cferr;
   base::apple::ScopedCFTypeRef<SecKeyRef> private_key(
-      crypto::AppleKeychainV2::GetInstance().KeyCreateRandomKey(
+      crypto::apple::KeychainV2::GetInstance().KeyCreateRandomKey(
           NSToCFPtrCast(params), cferr.InitializeInto()));
   return !!private_key;
 }
@@ -84,7 +84,7 @@ bool TouchIdContext::TouchIdAvailableImpl(AuthenticatorConfig config) {
   // entitlement that is configured by the embedder; that user authentication
   // with biometry, watch, or device passcode possible; and that the device has
   // a secure enclave.
-  if (!crypto::ExecutableHasKeychainAccessGroupEntitlement(
+  if (!crypto::apple::ExecutableHasKeychainAccessGroupEntitlement(
           config.keychain_access_group)) {
     FIDO_LOG(ERROR)
         << "Touch ID authenticator unavailable because keychain-access-group "

@@ -7,6 +7,7 @@
 
 #include "base/types/pass_key.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
+#include "third_party/blink/renderer/modules/xr/xr_id_hash_traits.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -34,7 +35,7 @@ class XRPlaneManager : public GarbageCollected<XRPlaneManager> {
  private:
   Member<XRSession> session_;
 
-  HeapHashMap<uint64_t, Member<XRPlane>> plane_ids_to_planes_;
+  HeapHashMap<device::PlaneId, Member<XRPlane>> plane_ids_to_planes_;
 };
 
 }  // namespace blink

@@ -11,9 +11,5 @@ found in the LICENSE file.
   <dimen name="tab_thumbnail_placeholder_vertical_offset">2dp</dimen>
   <dimen name="favicon_corner_radius_for_single_tab_switcher">1dp</dimen>
 
-  <!-- Elevation -->
-  <dimen name="tab_bg_elevation">@dimen/default_elevation_5</dimen>
-
   <integer name="tab_thumbnail_placeholder_selected_color_alpha">38</integer>
-  <integer name="tab_thumbnail_placeholder_color_alpha">255</integer>
 </resources>

@@ -35,7 +35,7 @@ GURL SearchEngineURLStripHandler::StripExtraParams(GURL url) {
     // from history that differ only by some obscure query param from each other
     // or from the search/keyword provider matches.
     const TemplateURL* template_url = GetConstTemplateURLWithKeyword(
-        keyword_, stripped_destination_url.host());
+        keyword_, stripped_destination_url.GetHost());
     if (template_url && template_url->SupportsReplacement(
                             template_url_service_->search_terms_data())) {
       template_url->KeepSearchTermsInURL(

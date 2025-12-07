@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/containers/span.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -17,11 +14,11 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
-namespace WTF {
+namespace blink {
 
 TEST(Base64Test, Encode) {
   struct {
-    const char* in;
+    std::string_view in;
     Vector<char> expected_out;
   } kTestCases[] = {{"", {}},
                     {"i", {'a', 'Q', '=', '='}},
@@ -29,16 +26,14 @@ TEST(Base64Test, Encode) {
                     {"i\xB7\x1D", {'a', 'b', 'c', 'd'}}};
 
   for (const auto& test : kTestCases) {
-    base::span<const uint8_t> in =
-        base::as_bytes(base::make_span(test.in, strlen(test.in)));
+    auto in = base::as_byte_span(test.in);
 
     Vector<char> out_vec;
     Base64Encode(in, out_vec);
     EXPECT_EQ(out_vec, test.expected_out);
 
     String out_str = Base64Encode(in);
-    EXPECT_EQ(out_str,
-              String(test.expected_out.data(), test.expected_out.size()));
+    EXPECT_EQ(out_str, String(test.expected_out));
   }
 }
 
@@ -81,10 +76,10 @@ TEST(Base64Test, DecodeNoPaddingValidation) {
 
   for (const auto& test : kTestCases) {
     SCOPED_TRACE(::testing::Message() << test.in);
-    Vector<char> out;
+    Vector<uint8_t> out;
     String in = String(test.in);
     bool expected_success = test.expected_out != nullptr;
-    Vector<char> expected_out;
+    Vector<uint8_t> expected_out;
     if (expected_success) {
       expected_out.insert(0, test.expected_out, strlen(test.expected_out));
     }
@@ -143,10 +138,10 @@ TEST(Base64Test, ForgivingBase64Decode) {
 
   for (const auto& test : kTestCases) {
     SCOPED_TRACE(::testing::Message() << test.in);
-    Vector<char> out;
+    Vector<uint8_t> out;
     String in = String(test.in);
     bool expected_success = test.expected_out != nullptr;
-    Vector<char> expected_out;
+    Vector<uint8_t> expected_out;
     if (expected_success) {
       expected_out.insert(0, test.expected_out, strlen(test.expected_out));
     }
@@ -166,4 +161,4 @@ TEST(Base64Test, ForgivingBase64Decode) {
   }
 }
 
-}  // namespace WTF
+}  // namespace blink

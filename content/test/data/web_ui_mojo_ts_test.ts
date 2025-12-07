@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {OptionalNumericsStruct, TestEnum, WebUITsMojoTestCache} from './web_ui_ts_test.test-mojom-webui.js';
+import {TypeWithNestedEnumTypemap} from './web_ui_mojo_ts_test_converters.js';
+import {MappedOptionalContainer, StringDictType, TestNode} from './web_ui_mojo_ts_test_mapped_types.js';
+import {ExtensibleUnion, ExtensibleUnionFieldTags, MojoResultTestCallbackRouter, MojoResultTestReceiver, MojoResultTestRemote, OptionalNumericsStruct, Result, TestAssociatedClient, TestAssociatedClientReceiver, TestEnum, TestMoreTypemapCallbackRouter, TypeWithNestedEnum_Enum, Union, UnionFieldTags, WebUITsMojoTestCache, whichExtensibleUnion, whichUnion} from './web_ui_ts_test.test-mojom-webui.js';
+import {StringWrapper} from './web_ui_ts_test_types.test-mojom-webui.js';
 
 const TEST_DATA: Array<{url: string, contents: string}> = [
   { url: 'https://google.com/', contents: 'i am in fact feeling lucky' },
@@ -34,10 +37,13 @@ async function doTest(): Promise<boolean> {
   const cache = WebUITsMojoTestCache.getRemote();
   for (const entry of TEST_DATA) {
     cache.put({ url: entry.url }, entry.contents);
+    let stringWrapper = StringWrapper.getRemote();
+    stringWrapper.putString(entry.contents);
+    cache.addStringWrapper(stringWrapper);
   }
 
   const {items} = await cache.getAll();
-  if (items.length != TEST_DATA.length) {
+  if (items.length !== TEST_DATA.length) {
     return false;
   }
 
@@ -55,6 +61,23 @@ async function doTest(): Promise<boolean> {
     }
   }
 
+  const {stringWrapperList} = await cache.getStringWrapperList();
+  if (stringWrapperList.length !== TEST_DATA.length) {
+    return false;
+  }
+
+  let stringsInList = [];
+  for (const stringWrapper of stringWrapperList) {
+    let {item} = await stringWrapper.getString();
+    stringsInList.push(item);
+  }
+
+  for (const entry of TEST_DATA) {
+    if (!stringsInList.includes(entry.contents)) {
+      return false;
+    }
+  }
+
   {
     const testStruct: OptionalNumericsStruct = {
       optionalBool: true,
@@ -62,12 +85,21 @@ async function doTest(): Promise<boolean> {
       optionalEnum: TestEnum.kOne,
     };
 
-    const {optionalBool, optionalUint8, optionalEnum, optionalNumerics,
-           optionalBools, optionalInts, optionalEnums,
-           boolMap, intMap, enumMap} =
-        await cache.echo(true, null, TestEnum.kOne, testStruct,
-                         [], [], [],
-                         {}, {}, {});
+    const {
+      optionalBool,
+      optionalUint8,
+      optionalEnum,
+      optionalNumerics,
+      optionalBools,
+      optionalInts,
+      optionalEnums,
+      boolMap,
+      intMap,
+      enumMap
+    } =
+        await cache.echo(
+            true, null, TestEnum.kOne, testStruct, [], [], [], {}, {}, {}, '',
+            new TestNode(), null);
     if (optionalBool !== false) {
       return false;
     }
@@ -107,12 +139,22 @@ async function doTest(): Promise<boolean> {
     const inIntMap = {0: 0, 2: null};
     const inEnumMap = {0: 0, 1: null};
 
-    const {optionalBool, optionalUint8, optionalEnum, optionalNumerics,
-           optionalBools, optionalInts, optionalEnums,
-           boolMap, intMap, enumMap} =
-        await cache.echo(null, 1, null, testStruct,
-                         inOptionalBools, inOptionalInts, inOptionalEnums,
-                         inBoolMap, inIntMap, inEnumMap);
+    const {
+      optionalBool,
+      optionalUint8,
+      optionalEnum,
+      optionalNumerics,
+      optionalBools,
+      optionalInts,
+      optionalEnums,
+      boolMap,
+      intMap,
+      enumMap
+    } =
+        await cache.echo(
+            null, 1, null, testStruct, inOptionalBools, inOptionalInts,
+            inOptionalEnums, inBoolMap, inIntMap, inEnumMap, '', new TestNode(),
+            null);
     if (optionalBool !== null) {
       return false;
     }
@@ -139,6 +181,331 @@ async function doTest(): Promise<boolean> {
     assertObjectEquals(inBoolMap, boolMap, 'bool map');
     assertObjectEquals(inIntMap, intMap, 'bool int');
     assertObjectEquals(inEnumMap, enumMap, 'enum map');
+  }
+
+  const testStruct: OptionalNumericsStruct = {
+    optionalBool: null,
+    optionalUint8: null,
+    optionalEnum: null,
+  };
+  // Test simple mapped type where a struct is mapped to a string.
+  {
+    const str = 'foobear';
+    const result = await cache.echo(
+        null, 1, null, testStruct, [], [], [], {}, {}, {}, str, new TestNode(),
+        null);
+
+    if (result.simpleMappedType !== str) {
+      return false;
+    }
+  }
+
+  // Tests an empty nested struct to test basic encoding/decoding.
+  {
+    const result = await cache.echo(
+        null, 1, null, testStruct, [], [], [], {}, {}, {}, '', new TestNode(),
+        null);
+
+    assertObjectEquals(
+        new TestNode(), result.nestedMappedType,
+        'nested mappped type: got: ' + JSON.stringify(result.nestedMappedType) +
+            ', expected: {next: null}');
+  }
+
+  // Tests a nested type where a struct includes itself.
+  {
+    const depth = 10;
+    const chain: TestNode = new TestNode();
+    let cursor = chain;
+    for (let i = 0; i < depth; ++i) {
+      cursor = cursor!.next = new TestNode();
+    }
+    const result = await cache.echo(
+        null, 1, null, testStruct, [], [], [], {}, {}, {}, '', chain, null);
+
+    if (JSON.stringify(chain) !== JSON.stringify(result.nestedMappedType)) {
+      throw new Error(
+          'nested mappped type: got: ' +
+          JSON.stringify(result.nestedMappedType) +
+          ', expected: ' + JSON.stringify(chain));
+    }
+  }
+
+  {
+    let map: StringDictType = new Map<string, string>();
+    map.set('foo', 'bear');
+    map.set('some', 'where');
+    const result = await cache.echo(
+        null, 1, null, testStruct, [], [], [], {}, {}, {}, '', new TestNode(),
+        map);
+
+    for (const key of map.keys()) {
+      assert(
+          result.otherMappedType!.get(key) === map.get(key),
+          `Expected value: ${map.get(key)} for key: ${key}, got: ${
+              result.otherMappedType!.get(key)}`);
+    }
+  }
+
+  {
+    const token = '0123456789ABCDEFBEEFDEADDEADBEEF';
+    const result = await cache.echoTypemaps(
+        new Date(12321),
+        token,
+    );
+    assert(
+        result.time.getTime() === new Date(12321).getTime(),
+        `unexpected date received ${result.time.getTime()}`);
+    assert(result.token === token, `unexpected token ${token}`);
+  }
+
+  const assertTypemapContainerEquals =
+      (expected: MappedOptionalContainer, result: MappedOptionalContainer,
+       msg: string) => {
+        assert(expected.optionalInt === result.optionalInt, msg);
+        assertArrayEquals(expected.bools, result.bools, msg);
+        assertObjectEquals(expected.optionalMap, result.optionalMap, msg);
+      };
+
+  {
+    const withNulls = {
+      optionalInt: null,
+      bools: [null, null, null],
+      optionalMap: {'foo': null}
+    };
+    const result = await cache.echoOptionalTypemaps(withNulls);
+    assertTypemapContainerEquals(
+        withNulls, result.result,
+        `unexpected object ${JSON.stringify(result)}, expected: ${
+            JSON.stringify(withNulls)}`);
+  }
+
+  {
+    const withValues = {
+      optionalInt: 6,
+      bools: [null, false, null, true, null],
+      optionalMap: {'foo': null, 'bear': true}
+    };
+    const result = await cache.echoOptionalTypemaps(withValues);
+    assertTypemapContainerEquals(
+        withValues, result.result,
+        `unexpected object ${JSON.stringify(result.result)}, expected: ${
+            JSON.stringify(withValues)}`);
+  }
+
+  // Loopback test for result types.
+  {
+    // Test general success case.
+    const listener = {
+      testResult:
+          (():
+               Promise<Result> => {
+                 return Promise.resolve({secretMessage: `it's all for naught`});
+               })
+    };
+    const service = new MojoResultTestReceiver(listener);
+    const client: MojoResultTestRemote = service.$.bindNewPipeAndPassRemote();
+
+    await client.testResult().then(result => {
+      assert(
+          result.secretMessage === `it's all for naught`,
+          `got unexpected msg: ${JSON.stringify(result)}`);
+    });
+  }
+
+  {
+    // Tests listener pattern.
+    const callbacks = new MojoResultTestCallbackRouter();
+    const client = callbacks.$.bindNewPipeAndPassRemote();
+    callbacks.testResult.addListener(
+        () => Promise.resolve({secretMessage: 'I listen'}));
+
+    await client.testResult().then(result => {
+      assert(
+          result.secretMessage === 'I listen',
+          `got unexpected msg: ${JSON.stringify(result)}`);
+    });
+  }
+
+  {
+    // Tests rejection.
+    const callbacks = new MojoResultTestCallbackRouter();
+    const client = callbacks.$.bindNewPipeAndPassRemote();
+    callbacks.testResult.addListener(
+        () => Promise.reject(new Error('cannot go on')));
+
+    await client.testResult()
+        .then(() => {
+          assert(false, 'should have failed');
+        })
+        .catch((error: Error) => {
+          assert(error.message === 'cannot go on', JSON.stringify(error));
+        });
+  }
+
+  {
+    // Tests loose js error encoding for JsError.
+    const callbacks = new MojoResultTestCallbackRouter();
+    const client = callbacks.$.bindNewPipeAndPassRemote();
+    callbacks.testResult.addListener(
+        () => Promise.reject({message: 'cannot go on'}));
+
+    await client.testResult()
+        .then(() => {
+          assert(false, 'should have failed');
+        })
+        .catch((error: Error) => {
+          assert(error.message === 'cannot go on', JSON.stringify(error));
+        });
+  }
+
+  {
+    // Tests throwing.
+    const callbacks = new MojoResultTestCallbackRouter();
+    const client = callbacks.$.bindNewPipeAndPassRemote();
+    callbacks.testResult.addListener(() => {
+      throw new Error('oh noes');
+    });
+
+    await client.testResult()
+        .then(() => {
+          assert(false, 'should have failed');
+        })
+        .catch((error: Error) => {
+          assert(error.message === 'oh noes', JSON.stringify(error));
+        });
+  }
+
+  {
+    // Tests unknown object to JsError mapping.
+    class Potato {}
+    const callbacks = new MojoResultTestCallbackRouter();
+    const client = callbacks.$.bindNewPipeAndPassRemote();
+    callbacks.testResult.addListener(() => {
+      throw new Potato();
+    });
+
+    await client.testResult()
+        .then(() => {
+          assert(false, 'should have failed');
+        })
+        .catch((error: Error) => {
+          assert(
+              error.message === 'unknown error has occured',
+              JSON.stringify(error));
+        });
+  }
+
+  {
+    const callbacks = new TestMoreTypemapCallbackRouter();
+    const client = callbacks.$.bindNewPipeAndPassRemote();
+    callbacks.testNestedEnum.addListener((req: TypeWithNestedEnumTypemap) => {
+      assert(
+          req.isNativeType,
+          'expected native type for request, this indicates that the type was '
+          + 'not properly typemapped');
+      return {res: req};
+    });
+
+    await client
+        .testNestedEnum(
+            new TypeWithNestedEnumTypemap(TypeWithNestedEnum_Enum.kToTest))
+        .then(resp => {
+          assert(
+              resp.res.isNativeType,
+              'expected native type for response, this indicates that the type '
+              + 'was not properly typemapped');
+          assert(
+              resp.res.value === TypeWithNestedEnum_Enum.kToTest,
+              `Expected kToTest, but got: ${resp.res.value}`);
+        });
+  }
+
+  {
+    const u: Union = {
+      one: 1,
+    };
+
+    assert(
+        whichUnion(u) === UnionFieldTags.ONE,
+        'unexpected result: ' + whichUnion(u));
+
+    const u3: Union = {
+      three: 'blahblahblah',
+    };
+
+    switch (whichUnion(u3)) {
+      case UnionFieldTags.ONE:
+        assert(false, 'wrongly one');
+        break;
+      case UnionFieldTags.TWO:
+        assert(false, 'wrongly two');
+        break;
+      case UnionFieldTags.THREE:
+        // Great success!
+        break;
+      default:
+        assert(false, 'wrongly default');
+        break;
+    }
+
+    try {
+      const badU: Union = {};
+      whichUnion(badU);
+    } catch (e) {
+      // Expected, passed.
+    }
+  }
+
+  {
+    const u: ExtensibleUnion = {
+      foo: 6,
+    };
+    assert(
+        whichExtensibleUnion(u) === ExtensibleUnionFieldTags.FOO,
+        'unexpected extensible union: ' + whichExtensibleUnion(u));
+
+    const u2: any = {
+      simulatingUnknownField: 9001,
+    };
+    // Should go to default.
+    assert(
+        whichExtensibleUnion(u2) === ExtensibleUnionFieldTags.FOO,
+        'unexpected extensible union: ' + whichExtensibleUnion(u2));
+  }
+
+  // Test associated interface blocks until client is bound.
+  {
+    // This setup is somewhat convoluted, but basically getAssociatedReceiver()
+    // will return an associated receiver that has a message enqueued on it
+    // immediately. Subsequent calls to the echo service should be blocked until
+    // we bind a client to the associated interface, at which point, all calls
+    // will resolve. The associated interface should preserve ordering. That is,
+    // the associated receiver method call should resolve first, followed by the
+    // latter call to the cache service.
+    const resp = await cache.getAssociatedReceiver();
+
+    const received: string[] = [];
+
+    cache.ping().then(() => {
+      received.push('ping');
+    });
+
+    class Client implements TestAssociatedClient {
+      blockUntilBound() {
+        received.push('blockUntilBound');
+      }
+    }
+
+    const receiver = new TestAssociatedClientReceiver(new Client());
+    receiver.$.bindHandle((resp.client as any).handle);
+
+    await cache.$.flushForTesting();
+
+    assert(
+        JSON.stringify(['blockUntilBound', 'ping']) ===
+            JSON.stringify(received),
+        'unexpected ordering: ' + JSON.stringify(received));
   }
 
   return true;

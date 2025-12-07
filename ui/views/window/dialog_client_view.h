@@ -5,13 +5,18 @@
 #ifndef UI_VIEWS_WINDOW_DIALOG_CLIENT_VIEW_H_
 #define UI_VIEWS_WINDOW_DIALOG_CLIENT_VIEW_H_
 
+#include <array>
 #include <memory>
 #include <utility>
+#include <vector>
 
+#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/input_event_activation_protector.h"
 #include "ui/views/layout/delegating_layout_manager.h"
@@ -24,6 +29,10 @@ namespace views {
 class DialogDelegate;
 class MdTextButton;
 class Widget;
+
+namespace features {
+VIEWS_EXPORT BASE_DECLARE_FEATURE(kDialogVerticalButtonFallback);
+}
 
 // DialogClientView provides adornments for a dialog's content view, including
 // custom-labeled [OK] and [Cancel] buttons with [Enter] and [Esc] accelerators.
@@ -70,10 +79,11 @@ class VIEWS_EXPORT DialogClientView : public ClientView,
   gfx::Size GetMaximumSize() const override;
   void VisibilityChanged(View* starting_from, bool is_visible) override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // ClientView implementation:
-  void UpdateWindowRoundedCorners(int corner_radius) override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  void UpdateWindowRoundedCorners(
+      const gfx::RoundedCornersF& window_radii) override;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Input protection is triggered upon prompt creation and updated on
   // visibility changes. Other situations such as top window changes in certain
@@ -110,11 +120,14 @@ class VIEWS_EXPORT DialogClientView : public ClientView,
     input_protector_ = std::move(input_protector);
   }
 
-  bool IsPossiblyUnintendedInteraction(const ui::Event& event);
+  bool IsPossiblyUnintendedInteraction(const ui::Event& event,
+                                       bool allow_key_events);
 
   // LayoutDelegate:
   ProposedLayout CalculateProposedLayout(
       const SizeBounds& size_bounds) const override;
+
+  void SetBackgroundColor(ui::ColorId background_color_id);
 
  private:
   enum {
@@ -141,9 +154,10 @@ class VIEWS_EXPORT DialogClientView : public ClientView,
   // (which must be pointed to by `member`).  Which action is chosen is based on
   // whether DialogDelegate::GetDialogButtons() includes `type`, and whether
   // `member` points to a button that already exists.
-  void UpdateDialogButton(raw_ptr<MdTextButton>* member, ui::DialogButton type);
+  void UpdateDialogButton(raw_ptr<MdTextButton>* member,
+                          ui::mojom::DialogButton type);
 
-  void ButtonPressed(ui::DialogButton type, const ui::Event& event);
+  void ButtonPressed(ui::mojom::DialogButton type, const ui::Event& event);
 
   // Returns the spacing between the extra view and the ok/cancel buttons. 0 if
   // no extra view. Otherwise uses the default padding.
@@ -153,8 +167,18 @@ class VIEWS_EXPORT DialogClientView : public ClientView,
   // a View should not appear, it will be null.
   std::array<View*, kNumButtons> GetButtonRowViews();
 
+  // Returns Views in column order. This is used when the buttons don't fit in
+  // a row, and the buttons are laid out vertically instead.
+  std::vector<View*> GetButtonColumnViews() const;
+
   // Installs and configures the LayoutManager for `button_row_container_`.
   void SetupLayout();
+
+  // Horizontal and vertical variations of button layout logic. The vertical
+  // layout is utilized if the horizontal layout exceeds a maximum width
+  // criteria.
+  void SetupHorizontalLayout();
+  void SetupVerticalLayout();
 
   // Creates or deletes any buttons that are required. Updates data members.
   // After calling this, no button row Views will be in the view hierarchy.
@@ -195,6 +219,7 @@ class VIEWS_EXPORT DialogClientView : public ClientView,
 
   std::unique_ptr<InputEventActivationProtector> input_protector_;
 
+  ui::ColorId background_color_id_ = ui::kColorDialogBackground;
   gfx::RoundedCornersF background_radii_;
 };
 

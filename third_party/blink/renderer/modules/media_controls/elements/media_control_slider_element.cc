@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
+#include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
@@ -24,8 +25,9 @@ void SetSegmentDivPosition(blink::HTMLDivElement* segment,
                            int width,
                            float zoom_factor) {
   int segment_width =
-      ClampTo<int>(floor((position.width * width) / zoom_factor));
-  int segment_left = ClampTo<int>(floor((position.left * width) / zoom_factor));
+      blink::ClampTo<int>(floor((position.width * width) / zoom_factor));
+  int segment_left =
+      blink::ClampTo<int>(floor((position.left * width) / zoom_factor));
   int current_width = 0;
   int current_left = 0;
 
@@ -33,15 +35,16 @@ void SetSegmentDivPosition(blink::HTMLDivElement* segment,
   // then it will be a nullptr so we should assume zero.
   blink::LayoutBox* box = segment->GetLayoutBox();
   if (box) {
-    current_width = box->LogicalWidth().ToInt();
-    current_left = box->LogicalLeft().ToInt();
+    blink::LogicalRect rect = box->LogicalRectInContainer();
+    current_width = rect.size.inline_size.ToInt();
+    current_left = rect.offset.inline_offset.ToInt();
   }
 
   // If the width and left has not changed then do not update the segment.
   if (segment_width == current_width && segment_left == current_left)
     return;
 
-  StringBuilder builder;
+  blink::StringBuilder builder;
   builder.Append("width: ");
   builder.AppendNumber(segment_width);
   builder.Append("px; left: ");

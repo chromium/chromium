@@ -2,19 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/common/api/sockets/sockets_manifest_permission.h"
 
+#include <algorithm>
+#include <iterator>
 #include <set>
 #include <tuple>
 
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "extensions/common/manifest_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,7 +42,8 @@ static void AssertEmptyPermission(const SocketsManifestPermission* permission) {
 }
 
 static base::Value ParsePermissionJSON(const std::string& json) {
-  std::optional<base::Value> result = base::JSONReader::Read(json);
+  std::optional<base::Value> result =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(result) << "Invalid JSON string: " << json;
   return std::move(result.value());
 }
@@ -71,17 +68,7 @@ struct CheckFormatEntry {
                    std::string host_pattern)
       : operation_type(operation_type), host_pattern(host_pattern) {}
 
-  // operators <, == are needed by container std::set and algorithms
-  // std::set_includes and std::set_differences.
-  bool operator<(const CheckFormatEntry& rhs) const {
-    return std::tie(operation_type, host_pattern) <
-           std::tie(rhs.operation_type, rhs.host_pattern);
-  }
-
-  bool operator==(const CheckFormatEntry& rhs) const {
-    return operation_type == rhs.operation_type &&
-           host_pattern == rhs.host_pattern;
-  }
+  auto operator<=>(const CheckFormatEntry& rhs) const = default;
 
   SocketPermissionRequest::OperationType operation_type;
   std::string host_pattern;
@@ -109,8 +96,9 @@ static testing::AssertionResult CheckFormat(
         CheckFormatEntry(it->pattern().type, it->GetHostPatternAsString()));
   }
 
-  if (!base::ranges::equal(permissions, parsed_permissions))
+  if (!std::ranges::equal(permissions, parsed_permissions)) {
     return testing::AssertionFailure() << "Incorrect socket operations.";
+  }
   return testing::AssertionSuccess();
 }
 
@@ -122,7 +110,7 @@ static testing::AssertionResult CheckFormat(const std::string& json,
                                             const CheckFormatEntry& op1) {
   CheckFormatEntry entries[] = {op1};
   return CheckFormat(
-      std::multiset<CheckFormatEntry>(entries, entries + std::size(entries)),
+      std::multiset<CheckFormatEntry>(std::begin(entries), std::end(entries)),
       json);
 }
 
@@ -131,7 +119,7 @@ static testing::AssertionResult CheckFormat(const std::string& json,
                                             const CheckFormatEntry& op2) {
   CheckFormatEntry entries[] = {op1, op2};
   return CheckFormat(
-      std::multiset<CheckFormatEntry>(entries, entries + std::size(entries)),
+      std::multiset<CheckFormatEntry>(std::begin(entries), std::end(entries)),
       json);
 }
 
@@ -147,7 +135,7 @@ static testing::AssertionResult CheckFormat(const std::string& json,
                                             const CheckFormatEntry& op9) {
   CheckFormatEntry entries[] = {op1, op2, op3, op4, op5, op6, op7, op8, op9};
   return CheckFormat(
-      std::multiset<CheckFormatEntry>(entries, entries + std::size(entries)),
+      std::multiset<CheckFormatEntry>(std::begin(entries), std::end(entries)),
       json);
 }
 

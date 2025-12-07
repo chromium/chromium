@@ -4,125 +4,152 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
-import org.chromium.base.supplier.LazyOneshotSupplier;
-import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.hub.HubManager;
-import org.chromium.chrome.browser.hub.Pane;
-import org.chromium.chrome.browser.hub.PaneId;
+import androidx.annotation.VisibleForTesting;
+
+import org.chromium.base.CallbackUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab_ui.TabSwitcher;
+import org.chromium.chrome.browser.tab.TabArchiver;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /** Helper for closing all tabs via {@link CloseAllTabsDialog}. */
+@NullMarked
 public class CloseAllTabsHelper {
-    /** Closes all tabs hiding tab groups. */
-    public static void closeAllTabsHidingTabGroups(TabModelSelector tabModelSelector) {
-        var filterProvider = tabModelSelector.getTabModelFilterProvider();
-        TabClosureParams params = TabClosureParams.closeAllTabs().hideTabGroups(true).build();
-        ((TabGroupModelFilter) filterProvider.getTabModelFilter(false)).closeTabs(params);
-        ((TabGroupModelFilter) filterProvider.getTabModelFilter(true)).closeTabs(params);
+    /**
+     * Closes all tabs hiding tab groups.
+     *
+     * @param tabModelSelector {@link TabModelSelector} for the activity.
+     * @param allowUndo See {@link TabClosureParams#allowUndo}.
+     */
+    public static void closeAllTabsHidingTabGroups(
+            TabModelSelector tabModelSelector, boolean allowUndo) {
+        tabModelSelector
+                .getModel(/* incognito= */ true)
+                .getTabRemover()
+                .closeTabs(
+                        TabClosureParams.closeAllTabs()
+                                .allowUndo(allowUndo)
+                                .hideTabGroups(true)
+                                .build(),
+                        /* allowDialog= */ false);
+
+        // To support CloseAllTabs for archived tabs, the tabs are restored/deleted but remain
+        // cached. If a user undos the operation, then those tabs are re-archived. It's possible
+        // that the archived infrastructure isn't fully initialized at this point. In that case,
+        // archived tabs will be skipped entirely.
+        final ArchivedTabModelOrchestrator archivedOrchestrator =
+                ArchivedTabModelOrchestrator.getForProfile(
+                        assumeNonNull(tabModelSelector.getCurrentModel().getProfile())
+                                .getOriginalProfile());
+        Runnable restoreArchivedTabsRunnable =
+                removeArchivedTabsAndGetUndoRunnable(archivedOrchestrator, tabModelSelector);
+
+        tabModelSelector
+                .getModel(/* incognito= */ false)
+                .getTabRemover()
+                .closeTabs(
+                        TabClosureParams.closeAllTabs()
+                                .allowUndo(allowUndo)
+                                .hideTabGroups(true)
+                                .withUndoRunnable(restoreArchivedTabsRunnable)
+                                .build(),
+                        /* allowDialog= */ false);
     }
 
     /**
      * Create a runnable to close all tabs using appropriate animations where applicable.
      *
-     * @param hubManagerSupplier The supplier for the manager of the Hub.
-     * @param regularTabSwitcherSupplier The supplier for the regular {@link TabSwitcher}.
-     * @param incognitoTabSwitcherSupplier The supplier for the incognito {@link TabSwitcher}.
-     * @param tabModelSelector The tab model selector for the activity.
+     * @param tabModelSelector The {@link TabModelSelector} for the activity.
      * @param isIncognitoOnly Whether to only close incognito tabs.
+     * @param allowUndo See {@link TabClosureParams#allowUndo}.
      */
     public static Runnable buildCloseAllTabsRunnable(
-            LazyOneshotSupplier<HubManager> hubManagerSupplier,
-            OneshotSupplier<TabSwitcher> regularTabSwitcherSupplier,
-            OneshotSupplier<TabSwitcher> incognitoTabSwitcherSupplier,
-            TabModelSelector tabModelSelector,
-            boolean isIncognitoOnly) {
-        return () ->
-                closeAllTabsRunnableImpl(
-                        hubManagerSupplier,
-                        regularTabSwitcherSupplier,
-                        incognitoTabSwitcherSupplier,
-                        tabModelSelector,
-                        isIncognitoOnly);
+            TabModelSelector tabModelSelector, boolean isIncognitoOnly, boolean allowUndo) {
+        return () -> closeAllTabs(tabModelSelector, isIncognitoOnly, allowUndo);
     }
 
-    private static void closeAllTabsRunnableImpl(
-            LazyOneshotSupplier<HubManager> hubManagerSupplier,
-            OneshotSupplier<TabSwitcher> regularTabSwitcherSupplier,
-            OneshotSupplier<TabSwitcher> incognitoTabSwitcherSupplier,
-            TabModelSelector tabModelSelector,
-            boolean isIncognitoOnly) {
-
-        boolean useCustomAnimation =
-                ChromeFeatureList.sGtsCloseTabAnimationCloseAllCustomAnimation.getValue();
-        boolean useQuickDeleteAnimation =
-                ChromeFeatureList.sGtsCloseTabAnimationCloseAllQuickDeleteAnimation.getValue();
-
-        HubState hubState = getHubState(hubManagerSupplier);
-        boolean isRegularHubPane = hubState.currentPaneId == PaneId.TAB_SWITCHER;
-        boolean isIncognitoHubPane = hubState.currentPaneId == PaneId.INCOGNITO_TAB_SWITCHER;
-        boolean isPaneAndCloseCombinationValid =
-                (isRegularHubPane && !isIncognitoOnly) || isIncognitoHubPane;
-        boolean canShowAnimation = hubState.isVisible && isPaneAndCloseCombinationValid;
-
-        Runnable onAnimationFinished = () -> closeAllTabs(tabModelSelector, isIncognitoOnly);
-        if (canShowAnimation && (useCustomAnimation || useQuickDeleteAnimation)) {
-            TabSwitcher tabSwitcher =
-                    isIncognitoHubPane
-                            ? incognitoTabSwitcherSupplier.get()
-                            : regularTabSwitcherSupplier.get();
-            assert tabSwitcher != null;
-
-            if (useCustomAnimation) {
-                tabSwitcher.showCloseAllTabsAnimation(onAnimationFinished);
-            } else if (useQuickDeleteAnimation) {
-                TabModel tabModel = tabModelSelector.getModel(isIncognitoHubPane);
-                List<Tab> tabs = TabModelUtils.convertTabListToListOfTabs(tabModel);
-                tabSwitcher.showQuickDeleteAnimation(onAnimationFinished, tabs);
-            } else {
-                assert false : "Not reached";
-            }
-        } else {
-            onAnimationFinished.run();
-        }
-    }
-
-    private static void closeAllTabs(TabModelSelector tabModelSelector, boolean isIncognitoOnly) {
+    private static void closeAllTabs(
+            TabModelSelector tabModelSelector, boolean isIncognitoOnly, boolean allowUndo) {
         if (isIncognitoOnly) {
             tabModelSelector
-                    .getModel(/* isIncognito= */ true)
-                    .closeTabs(TabClosureParams.closeAllTabs().build());
+                    .getModel(/* incognito= */ true)
+                    .getTabRemover()
+                    .closeTabs(
+                            TabClosureParams.closeAllTabs().allowUndo(allowUndo).build(),
+                            /* allowDialog= */ false);
         } else {
-            closeAllTabsHidingTabGroups(tabModelSelector);
+            closeAllTabsHidingTabGroups(tabModelSelector, allowUndo);
         }
     }
 
-    private static class HubState {
-        public boolean isVisible;
-        public @PaneId int currentPaneId = PaneId.COUNT;
+    @VisibleForTesting
+    static Runnable removeArchivedTabsAndGetUndoRunnable(
+            ArchivedTabModelOrchestrator archivedOrchestrator, TabModelSelector tabModelSelector) {
+        if (!archivedOrchestrator.areTabModelsInitialized()) {
+            return CallbackUtils.emptyRunnable();
+        }
+        List<Integer> previouslyArchivedTabIds =
+                unarchiveTabsForTabClosure(
+                        archivedOrchestrator,
+                        tabModelSelector
+                                .getTabCreatorManager()
+                                .getTabCreator(/* incognito= */ false));
+        return () -> {
+            TabGroupModelFilter filter =
+                    assumeNonNull(
+                            tabModelSelector
+                                    .getTabGroupModelFilterProvider()
+                                    .getTabGroupModelFilter(/* isIncognito= */ false));
+            archiveTabsAfterTabClosureUndo(archivedOrchestrator, filter, previouslyArchivedTabIds);
+        };
     }
 
-    private static HubState getHubState(LazyOneshotSupplier<HubManager> hubManagerSupplier) {
-        var state = new HubState();
-        if (!hubManagerSupplier.hasValue()) return state;
+    private static List<Integer> unarchiveTabsForTabClosure(
+            ArchivedTabModelOrchestrator archivedOrchestrator, TabCreator regularTabCreator) {
+        assert archivedOrchestrator.areTabModelsInitialized();
+        List<Integer> previouslyArchivedTabIds = new ArrayList<>();
 
-        HubManager manager = hubManagerSupplier.get();
-
-        state.isVisible = manager.getHubVisibilitySupplier().get();
-        @Nullable Pane focusedPane = manager.getPaneManager().getFocusedPaneSupplier().get();
-        if (focusedPane != null) {
-            state.currentPaneId = focusedPane.getPaneId();
+        TabArchiver archiver = archivedOrchestrator.getTabArchiver();
+        TabModel archivedTabModel = archivedOrchestrator.getTabModel();
+        assumeNonNull(archivedTabModel);
+        for (Tab archivedTab : archivedTabModel) {
+            previouslyArchivedTabIds.add(archivedTab.getId());
         }
-        return state;
+        archiver.unarchiveAndRestoreTabs(
+                regularTabCreator,
+                TabModelUtils.convertTabListToListOfTabs(archivedTabModel),
+                /* updateTimestamp= */ true,
+                /* areTabsBeingOpened= */ false);
+        return previouslyArchivedTabIds;
+    }
+
+    private static void archiveTabsAfterTabClosureUndo(
+            ArchivedTabModelOrchestrator archivedOrchestrator,
+            TabGroupModelFilter regularTabGroupModelFilter,
+            List<Integer> previouslyArchivedTabIds) {
+        assert archivedOrchestrator.areTabModelsInitialized();
+
+        TabModel regularTabModel = regularTabGroupModelFilter.getTabModel();
+        TabArchiver archiver = archivedOrchestrator.getTabArchiver();
+        List<Tab> tabsToArchive = new ArrayList<>();
+        for (int i = 0; i < regularTabModel.getCount(); i++) {
+            Tab tab = regularTabModel.getTabAtChecked(i);
+            if (previouslyArchivedTabIds.contains(tab.getId())) {
+                tabsToArchive.add(tab);
+            }
+        }
+
+        archiver.archiveAndRemoveTabs(regularTabGroupModelFilter, tabsToArchive);
     }
 }

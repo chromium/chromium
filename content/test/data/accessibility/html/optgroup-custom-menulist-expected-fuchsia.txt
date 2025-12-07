@@ -1,0 +1,22 @@
+UNKNOWN focusable
+++UNKNOWN hidden
+++++UNKNOWN
+++++++UNKNOWN focusable label='Transformer' actions='{DEFAULT}' value='Random Transformer'
+++++++++UNKNOWN
+++++++++++UNKNOWN focusable has_input_focus selected label='Random Transformer' actions='{DEFAULT}'
+++++++++++UNKNOWN label='group 1'
+++++++++++++UNKNOWN hidden
+++++++++++++++UNKNOWN focusable label='Optimus Prime' actions='{DEFAULT}'
+++++++++++++++UNKNOWN focusable label='Bumblebee' actions='{DEFAULT}'
+++++++++++++++UNKNOWN focusable label='Jazz' actions='{DEFAULT}'
+++++++++++UNKNOWN label='group 2'
+++++++++++++UNKNOWN hidden
+++++++++++++++UNKNOWN hidden
+++++++++++++++++STATIC_TEXT label='group '
+++++++++++++++++++UNKNOWN label='group '
+++++++++++++++++UNKNOWN
+++++++++++++++++++STATIC_TEXT label='2'
+++++++++++++++++++++UNKNOWN label='2'
+++++++++++++++UNKNOWN focusable label='Megatron' actions='{DEFAULT}'
+++++++++++++++UNKNOWN focusable label='Starscream' actions='{DEFAULT}'
+++++++++++++++UNKNOWN focusable label='Brawl' actions='{DEFAULT}'

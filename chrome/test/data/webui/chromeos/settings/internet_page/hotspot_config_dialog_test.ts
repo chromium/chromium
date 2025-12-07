@@ -4,13 +4,14 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {HotspotConfigDialogElement, Router, routes, WiFiSecurityType} from 'chrome://os-settings/os_settings.js';
+import type {HotspotConfigDialogElement} from 'chrome://os-settings/os_settings.js';
+import {Router, routes, WiFiSecurityType} from 'chrome://os-settings/os_settings.js';
 import {setHotspotConfigForTesting} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.js';
 import {HotspotAllowStatus, HotspotState, SetHotspotConfigResult, WiFiBand, WiFiSecurityMode} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js';
 import {FakeHotspotConfig} from 'chrome://resources/ash/common/hotspot/fake_hotspot_config.js';
-import {NetworkConfigInputElement} from 'chrome://resources/ash/common/network/network_config_input.js';
-import {NetworkConfigSelectElement} from 'chrome://resources/ash/common/network/network_config_select.js';
-import {NetworkPasswordInputElement} from 'chrome://resources/ash/common/network/network_password_input.js';
+import type {NetworkConfigInputElement} from 'chrome://resources/ash/common/network/network_config_input.js';
+import type {NetworkConfigSelectElement} from 'chrome://resources/ash/common/network/network_config_select.js';
+import type {NetworkPasswordInputElement} from 'chrome://resources/ash/common/network/network_password_input.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -86,7 +87,7 @@ suite('<hotspot-config-dialog>', () => {
     assertFalse(cancelBtn.disabled);
     assertEquals(
         hotspotConfigDialog.i18n('hotspotConfigNameEmptyInfo'),
-        hotspotNameInputInfo.textContent!.trim());
+        hotspotNameInputInfo.textContent.trim());
     assertTrue(hotspotNameInputInfo.classList.contains('error'));
 
     hotspotNameInput.value = 'new_ssid';
@@ -95,7 +96,7 @@ suite('<hotspot-config-dialog>', () => {
     assertFalse(cancelBtn.disabled);
     assertEquals(
         hotspotConfigDialog.i18n('hotspotConfigNameInfo'),
-        hotspotNameInputInfo.textContent!.trim());
+        hotspotNameInputInfo.textContent.trim());
     assertFalse(hotspotNameInputInfo.classList.contains('error'));
 
     hotspotConfig.setFakeSetHotspotConfigResult(
@@ -146,7 +147,7 @@ suite('<hotspot-config-dialog>', () => {
     assertFalse(cancelBtn.disabled);
     assertEquals(
         hotspotConfigDialog.i18n('hotspotConfigPasswordInfo'),
-        hotspotPasswordInputInfo.textContent!.trim());
+        hotspotPasswordInputInfo.textContent.trim());
     assertFalse(hotspotPasswordInputInfo.classList.contains('error'));
 
     hotspotConfig.setFakeSetHotspotConfigResult(
@@ -306,7 +307,7 @@ suite('<hotspot-config-dialog>', () => {
     assertEquals(
         hotspotConfigDialog.i18n(
             'hotspotConfigInvalidConfigurationErrorMessage'),
-        errorMessageElement.textContent!.trim());
+        errorMessageElement.textContent.trim());
 
     hotspotConfig.setFakeSetHotspotConfigResult(
         SetHotspotConfigResult.kFailedNotLogin);
@@ -317,7 +318,7 @@ suite('<hotspot-config-dialog>', () => {
     assertTrue(!!errorMessageElement, 'Hotspot error message doesn\'t show');
     assertEquals(
         hotspotConfigDialog.i18n('hotspotConfigNotLoginErrorMessage'),
-        errorMessageElement.textContent!.trim());
+        errorMessageElement.textContent.trim());
 
     cancelBtn.click();
     await flushTasks();

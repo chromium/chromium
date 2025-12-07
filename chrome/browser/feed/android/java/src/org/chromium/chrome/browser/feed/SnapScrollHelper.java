@@ -6,12 +6,13 @@ package org.chromium.chrome.browser.feed;
 
 import android.view.View;
 
-import androidx.annotation.NonNull;
+import org.chromium.build.annotations.NullMarked;
 
 /** This class handles snap scroll for the search box on a {@link NewTabPage}. */
+@NullMarked
 public interface SnapScrollHelper {
     /** @param view The view on which this class needs to handle snap scroll. */
-    void setView(@NonNull View view);
+    void setView(View view);
 
     /** Update scroll offset and perform snap scroll if necessary. */
     void handleScroll();

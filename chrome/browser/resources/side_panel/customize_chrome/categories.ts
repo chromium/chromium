@@ -7,14 +7,14 @@ import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import './check_mark_wrapper.js';
-import './strings.m.js';
+import '/strings.m.js';
 import './wallpaper_search/wallpaper_search_tile.js';
 
 import type {SpHeadingElement} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
-import type {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -22,7 +22,7 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './categories.css.js';
 import {getHtml} from './categories.html.js';
-import {CustomizeChromeAction, recordCustomizeChromeAction} from './common.js';
+import {CustomizeChromeAction, NtpImageType, recordCustomizeChromeAction, recordCustomizeChromeImageError} from './common.js';
 import type {BackgroundCollection, CustomizeChromePageHandlerInterface, Theme} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import {WindowProxy} from './window_proxy.js';
@@ -82,14 +82,17 @@ export class CategoriesElement extends CategoriesElementBase {
     };
   }
 
-  protected collections_: BackgroundCollection[] = [];
-  private selectedCategory_: SelectedCategory = {type: CategoryType.NONE};
-  private theme_: Theme|null = null;
-  protected isClassicChromeSelected_: boolean = false;
-  protected isLocalImageSelected_: boolean = false;
-  protected isWallpaperSearchSelected_: boolean = false;
-  protected wallpaperSearchEnabled_: boolean =
+  protected accessor collections_: BackgroundCollection[] = [];
+  private accessor selectedCategory_:
+      SelectedCategory = {type: CategoryType.NONE};
+  private accessor theme_: Theme|null = null;
+  protected accessor isClassicChromeSelected_: boolean = false;
+  protected accessor isLocalImageSelected_: boolean = false;
+  protected accessor isWallpaperSearchSelected_: boolean = false;
+  protected accessor wallpaperSearchEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchEnabled');
+  protected imageErrorDetectionEnabled_: boolean =
+      loadTimeData.getBoolean('imageErrorDetectionEnabled');
 
   private pageHandler_: CustomizeChromePageHandlerInterface;
   private previewImageLoadStartEpoch_: number;
@@ -155,14 +158,24 @@ export class CategoriesElement extends CategoriesElementBase {
   }
 
   private onCollectionsRendered_() {
-    const collections = this.shadowRoot!.querySelectorAll('.collection');
+    const collections = this.shadowRoot.querySelectorAll('.collection');
     if (collections.length >= 5) {
       this.registerHelpBubble(
           CHROME_THEME_COLLECTION_ELEMENT_ID, collections[4]!);
     }
   }
 
-  protected onPreviewImageLoad_() {
+  protected shouldShowCollection_(itemLoaded: boolean) {
+    return !this.imageErrorDetectionEnabled_ || itemLoaded;
+  }
+
+  protected onPreviewImageLoad_(e: Event) {
+    if (this.imageErrorDetectionEnabled_) {
+      const index = Number((e.currentTarget as HTMLElement).dataset['index']);
+      assert(this.collections_[index]);
+      this.collections_[index].imageVerified = true;
+      this.requestUpdate();
+    }
     chrome.metricsPrivate.recordValue(
         {
           metricName: 'NewTabPage.Images.ShownTime.CollectionPreviewImage',
@@ -174,6 +187,23 @@ export class CategoriesElement extends CategoriesElementBase {
         Math.floor(
             WindowProxy.getInstance().now() -
             this.previewImageLoadStartEpoch_));
+  }
+
+  protected onPreviewImageError_(e: Event) {
+    if (!this.imageErrorDetectionEnabled_) {
+      return;
+    }
+    recordCustomizeChromeImageError(NtpImageType.COLLECTIONS);
+    const index = Number((e.currentTarget as HTMLElement).dataset['index']);
+    assert(this.collections_[index]);
+    this.pageHandler_
+        .getReplacementCollectionPreviewImage(this.collections_[index].id)
+        .then(({previewImageUrl}) => {
+          if (previewImageUrl) {
+            this.collections_[index]!.previewImageUrl = previewImageUrl;
+            this.requestUpdate();
+          }
+        });
   }
 
   private computeSelectedCategory_() {
@@ -225,7 +255,7 @@ export class CategoriesElement extends CategoriesElementBase {
         'NTPRicherPicker.Backgrounds.UploadClicked');
     const {success} = await this.pageHandler_.chooseLocalCustomBackground();
     if (success) {
-      const announcer = getAnnouncerInstance() as CrA11yAnnouncerElement;
+      const announcer = getAnnouncerInstance();
       announcer.announce(this.i18n('updatedToUploadedImage'));
       this.dispatchEvent(new Event('local-image-upload'));
     }

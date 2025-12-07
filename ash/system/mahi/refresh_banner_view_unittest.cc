@@ -18,8 +18,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -87,8 +87,8 @@ TEST_F(RefreshBannerViewTest, ShowsCorrectTitle) {
 }
 
 TEST_F(RefreshBannerViewTest, BannerVisibilityAnimations) {
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   RefreshBannerView* banner_view = CreateBannerView();
 
   EXPECT_TRUE(banner_view->layer()->GetAnimator()->is_animating());
@@ -106,8 +106,8 @@ TEST_F(RefreshBannerViewTest, BannerVisibilityAnimations) {
 }
 
 TEST_F(RefreshBannerViewTest, HideImmediatelyAfterShow) {
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   RefreshBannerView* banner_view = CreateBannerView();
 
   banner_view->Hide();
@@ -118,8 +118,8 @@ TEST_F(RefreshBannerViewTest, HideImmediatelyAfterShow) {
 }
 
 TEST_F(RefreshBannerViewTest, ShowImmediatelyAfterHide) {
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   RefreshBannerView* banner_view = CreateBannerView();
 
   ui::LayerAnimationStoppedWaiter().Wait(banner_view->layer());

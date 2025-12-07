@@ -34,6 +34,10 @@ enum : unsigned {
 
   // Used to paint SVG resource subtree for masks.
   kPaintingSVGMask = 1 << 5,
+
+  // Used to suppress painting of PII and other sensitive content, allowing
+  // the result to be used in WebGL, WebGPU and 2D Canvas.
+  kPrivacyPreserving = 1 << 6,
 };
 }  // namespace PaintFlag
 

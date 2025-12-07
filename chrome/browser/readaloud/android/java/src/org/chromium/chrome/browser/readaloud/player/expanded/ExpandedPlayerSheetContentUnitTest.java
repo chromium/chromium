@@ -24,17 +24,23 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.R;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -44,13 +50,18 @@ import java.util.Locale;
 /** Unit tests for {@link ExpandedPlayerSheetContent}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@DisableFeatures({
+    ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS_FEEDBACK,
+    ChromeFeatureList.FEED_AUDIO_OVERVIEWS
+})
 public class ExpandedPlayerSheetContentUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private InteractionHandler mInteractionHandler;
     @Mock private PropertyModel mModel;
     @Mock private OptionsMenuSheetContent mOptionsMenu;
     @Mock private SpeedMenuSheetContent mSpeedMenu;
-    @Mock private View.OnClickListener mOnClickListener;
+    @Mock private PlaybackModeIphController mPlaybackModeIphController;
 
     private Context mContext;
     private Drawable mPlayDrawable;
@@ -59,6 +70,7 @@ public class ExpandedPlayerSheetContentUnitTest {
     private TextView mSpeedView;
     private TextView mTitleView;
     private TextView mPublisherView;
+    private View mPublisherContainerView;
     private ImageView mBackButton;
     private ImageView mForwardButton;
     private ImageView mPlayPauseButton;
@@ -67,10 +79,13 @@ public class ExpandedPlayerSheetContentUnitTest {
     private Activity mActivity;
     private LinearLayout mNormalLayout;
     private LinearLayout mErrorLayout;
+    private LinearLayout mLoadingLayout;
+    private ImageView mThumbUp;
+    private ImageView mThumbDown;
+    private ImageView mMoreOptions;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mContext = ApplicationProvider.getApplicationContext();
         mPlayDrawable = mContext.getDrawable(R.drawable.play_button);
         mPauseDrawable = mContext.getDrawable(R.drawable.pause_button);
@@ -85,6 +100,8 @@ public class ExpandedPlayerSheetContentUnitTest {
         mTitleView = (TextView) mContentView.findViewById(R.id.readaloud_expanded_player_title);
         mPublisherView =
                 (TextView) mContentView.findViewById(R.id.readaloud_expanded_player_publisher);
+        mPublisherContainerView =
+                mContentView.findViewById(R.id.readaloud_player_publisher_container);
         mSpeedView = (TextView) mContentView.findViewById(R.id.readaloud_playback_speed);
         mBackButton = (ImageView) mContentView.findViewById(R.id.readaloud_seek_back_button);
         mForwardButton = (ImageView) mContentView.findViewById(R.id.readaloud_seek_forward_button);
@@ -92,13 +109,49 @@ public class ExpandedPlayerSheetContentUnitTest {
         mSeekbar = (SeekBar) mContentView.findViewById(R.id.readaloud_expanded_player_seek_bar);
         mNormalLayout = (LinearLayout) mContentView.findViewById(R.id.normal_layout);
         mErrorLayout = (LinearLayout) mContentView.findViewById(R.id.error_layout);
+        mLoadingLayout = (LinearLayout) mContentView.findViewById(R.id.readaloud_loading_overlay);
+        mThumbUp = (ImageView) mContentView.findViewById(R.id.readaloud_thumb_up_button);
+        mThumbDown = (ImageView) mContentView.findViewById(R.id.readaloud_thumb_down_button);
+        mMoreOptions = (ImageView) mContentView.findViewById(R.id.readaloud_more_button);
         mContent =
                 new ExpandedPlayerSheetContent(
-                        mActivity, mBottomSheetController, mContentView, mModel);
+                        mActivity,
+                        mBottomSheetController,
+                        mContentView,
+                        mModel,
+                        mPlaybackModeIphController);
         mContent.setOptionsMenuSheetContent(mOptionsMenu);
         mContent.setSpeedMenuSheetContent(mSpeedMenu);
         // PlayerMediator is responsible for setting initial speed.
         mContent.setSpeed(1f);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS_FEEDBACK})
+    public void setPlaybackModeWithFeedback() {
+        mContent.setPlaybackMode(PlaybackMode.OVERVIEW);
+
+        assertTrue(mMoreOptions.getVisibility() == View.GONE);
+        assertTrue(mThumbUp.getVisibility() == View.VISIBLE);
+        assertTrue(mThumbDown.getVisibility() == View.VISIBLE);
+    }
+
+    @Test
+    public void setPlaybackModeWithoutFeedback() {
+        mContent.setPlaybackMode(PlaybackMode.OVERVIEW);
+
+        assertTrue(mMoreOptions.getVisibility() == View.GONE);
+        assertTrue(mThumbUp.getVisibility() == View.GONE);
+        assertTrue(mThumbDown.getVisibility() == View.GONE);
+    }
+
+    @Test
+    public void setPlaybackClassic_optionsButtonIsShown() {
+        mContent.setPlaybackMode(PlaybackMode.CLASSIC);
+
+        assertTrue(mMoreOptions.getVisibility() == View.VISIBLE);
+        assertTrue(mThumbUp.getVisibility() == View.GONE);
+        assertTrue(mThumbDown.getVisibility() == View.GONE);
     }
 
     @Test
@@ -123,7 +176,7 @@ public class ExpandedPlayerSheetContentUnitTest {
         verify(mInteractionHandler).onPlayPauseClick();
         verify(mInteractionHandler).onSeekForwardClick();
 
-        assertTrue(mPublisherView.performClick());
+        assertTrue(mPublisherContainerView.performClick());
         verify(mInteractionHandler).onPublisherClick();
     }
 
@@ -213,12 +266,12 @@ public class ExpandedPlayerSheetContentUnitTest {
         mContent.onPlaybackStateChanged(PlaybackListener.State.PLAYING);
         assertTrue(mErrorLayout.getVisibility() == View.GONE);
         assertTrue(mNormalLayout.getVisibility() == View.VISIBLE);
-        assertEquals(mPlayPauseButton.getContentDescription(), "Pause");
+        assertEquals("Pause", mPlayPauseButton.getContentDescription());
 
         mContent.onPlaybackStateChanged(PlaybackListener.State.PAUSED);
         assertTrue(mErrorLayout.getVisibility() == View.GONE);
         assertTrue(mNormalLayout.getVisibility() == View.VISIBLE);
-        assertEquals(mPlayPauseButton.getContentDescription(), "Play");
+        assertEquals("Play", mPlayPauseButton.getContentDescription());
     }
 
     @Test
@@ -243,7 +296,7 @@ public class ExpandedPlayerSheetContentUnitTest {
         mContent.showOptionsMenu();
         verify(mModel).set(PlayerProperties.SHOW_MINI_PLAYER_ON_DISMISS, false);
         verify(mBottomSheetController).hideContent(mContent, false);
-        verify(mBottomSheetController).requestShowContent(mOptionsMenu, true);
+        verify(mBottomSheetController).requestShowContent(mOptionsMenu, false);
     }
 
     @Test
@@ -251,7 +304,7 @@ public class ExpandedPlayerSheetContentUnitTest {
         mContent.showSpeedMenu();
         verify(mModel).set(PlayerProperties.SHOW_MINI_PLAYER_ON_DISMISS, false);
         verify(mBottomSheetController).hideContent(mContent, false);
-        verify(mBottomSheetController).requestShowContent(mSpeedMenu, true);
+        verify(mBottomSheetController).requestShowContent(mSpeedMenu, false);
     }
 
     @Test
@@ -272,5 +325,40 @@ public class ExpandedPlayerSheetContentUnitTest {
         scrollView.setPadding(0, 100, 0, 100);
         scrollView.scrollTo(0, 100);
         assertEquals(100, mContent.getVerticalScrollOffset());
+    }
+
+    @Test
+    public void testLoadingTextIsSetCorrectly() {
+        TextView loadingText = (TextView) mContentView.findViewById(R.id.readaloud_loading_text);
+
+        mContent.setRequestedPlaybackMode(PlaybackMode.OVERVIEW);
+        assertEquals(
+                loadingText.getText(),
+                mContext.getString(R.string.readaloud_mini_player_loading_ai_playback));
+
+        mContent.setRequestedPlaybackMode(PlaybackMode.CLASSIC);
+        assertEquals(
+                loadingText.getText(), mContext.getString(R.string.readaloud_playback_loading));
+    }
+
+    @Test
+    public void testLoadingLayoutIsShownInPlaybackCreation() {
+        mContent.onPlaybackStateChanged(PlaybackListener.State.PLAYBACK_CREATION);
+
+        assertTrue(mErrorLayout.getVisibility() == View.GONE);
+        assertTrue(mLoadingLayout.getVisibility() == View.VISIBLE);
+    }
+
+    @Test
+    public void testFormatDuration() {
+        assertEquals("1 hour and 23 seconds", ExpandedPlayerSheetContent.formatDuration(3623));
+        assertEquals(
+                "1 hour, 2 minutes and 23 seconds",
+                ExpandedPlayerSheetContent.formatDuration(3743));
+        assertEquals("1 minute and 23 seconds", ExpandedPlayerSheetContent.formatDuration(83));
+        assertEquals("2 minutes and 23 seconds", ExpandedPlayerSheetContent.formatDuration(143));
+        assertEquals("0 seconds", ExpandedPlayerSheetContent.formatDuration(0));
+        assertEquals("1 second", ExpandedPlayerSheetContent.formatDuration(1));
+        assertEquals("53 seconds", ExpandedPlayerSheetContent.formatDuration(53));
     }
 }

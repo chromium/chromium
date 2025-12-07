@@ -18,7 +18,7 @@
 namespace mojo {
 namespace android {
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace {
 
@@ -35,10 +35,10 @@ class WatcherImpl {
   ~WatcherImpl() = default;
 
   jint Start(JNIEnv* env,
-             const JavaParamRef<jobject>& jcaller,
+             const JavaRef<jobject>& obj,
              jlong mojo_handle,
              jint signals) {
-    java_watcher_.Reset(env, jcaller);
+    java_watcher_.Reset(env, obj);
 
     auto ready_callback = base::BindRepeating(&WatcherImpl::OnHandleReady,
                                               base::Unretained(this));
@@ -77,32 +77,30 @@ class WatcherImpl {
 
 }  // namespace
 
-static jlong JNI_WatcherImpl_CreateWatcher(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller) {
+static jlong JNI_WatcherImpl_CreateWatcher(JNIEnv* env) {
   return reinterpret_cast<jlong>(new WatcherImpl);
 }
 
 static jint JNI_WatcherImpl_Start(JNIEnv* env,
-                                  const JavaParamRef<jobject>& jcaller,
+                                  const JavaRef<jobject>& obj,
                                   jlong watcher_ptr,
                                   jlong mojo_handle,
                                   jint signals) {
   auto* watcher = reinterpret_cast<WatcherImpl*>(watcher_ptr);
-  return watcher->Start(env, jcaller, mojo_handle, signals);
+  return watcher->Start(env, obj, mojo_handle, signals);
 }
 
 static void JNI_WatcherImpl_Cancel(JNIEnv* env,
-                                   const JavaParamRef<jobject>& jcaller,
                                    jlong watcher_ptr) {
   reinterpret_cast<WatcherImpl*>(watcher_ptr)->Cancel();
 }
 
 static void JNI_WatcherImpl_Delete(JNIEnv* env,
-                                   const JavaParamRef<jobject>& jcaller,
                                    jlong watcher_ptr) {
   delete reinterpret_cast<WatcherImpl*>(watcher_ptr);
 }
 
 }  // namespace android
 }  // namespace mojo
+
+DEFINE_JNI(WatcherImpl)

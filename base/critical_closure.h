@@ -30,8 +30,7 @@ namespace internal {
 // |ios::ScopedCriticalAction|.
 class ImmediateCriticalClosure {
  public:
-  explicit ImmediateCriticalClosure(std::string_view task_name,
-                                    OnceClosure closure);
+  ImmediateCriticalClosure(std::string_view task_name, OnceClosure closure);
   ImmediateCriticalClosure(const ImmediateCriticalClosure&) = delete;
   ImmediateCriticalClosure& operator=(const ImmediateCriticalClosure&) = delete;
   ~ImmediateCriticalClosure();
@@ -46,8 +45,7 @@ class ImmediateCriticalClosure {
 // is started when the action runs, not when the CriticalAction is created.
 class PendingCriticalClosure {
  public:
-  explicit PendingCriticalClosure(std::string_view task_name,
-                                  OnceClosure closure);
+  PendingCriticalClosure(std::string_view task_name, OnceClosure closure);
   PendingCriticalClosure(const PendingCriticalClosure&) = delete;
   PendingCriticalClosure& operator=(const PendingCriticalClosure&) = delete;
   ~PendingCriticalClosure();

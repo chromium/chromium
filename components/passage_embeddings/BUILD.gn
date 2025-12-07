@@ -1,0 +1,108 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+static_library("passage_embeddings_types") {
+  sources = [
+    "passage_embeddings_types.cc",
+    "passage_embeddings_types.h",
+  ]
+
+  deps = [
+    "//base",
+    "//services/passage_embeddings/public/mojom",
+  ]
+}
+
+static_library("passage_embeddings_internal") {
+  sources = [
+    "internal/scheduling_embedder.cc",
+    "internal/scheduling_embedder.h",
+  ]
+
+  deps = [
+    ":passage_embeddings_types",
+    "//base",
+    "//components/performance_manager/scenario_api",
+    "//services/passage_embeddings/public/mojom",
+  ]
+}
+
+static_library("passage_embeddings") {
+  sources = [
+    "passage_embedder_model_observer.cc",
+    "passage_embedder_model_observer.h",
+    "passage_embeddings_features.cc",
+    "passage_embeddings_features.h",
+    "passage_embeddings_service_controller.cc",
+    "passage_embeddings_service_controller.h",
+    "passage_embeddings_types.h",
+  ]
+
+  deps = [
+    ":passage_embeddings_internal",
+    "//base",
+    "//build:blink_buildflags",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//mojo/public/cpp/bindings",
+    "//services/passage_embeddings/public/mojom",
+  ]
+
+  if (is_android) {
+    deps += [ "//components/download/public/background_service:public" ]
+  }
+  public_deps = [ ":passage_embeddings_types" ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "passage_embeddings_test_util.cc",
+    "passage_embeddings_test_util.h",
+  ]
+  deps = [
+    ":passage_embeddings",
+    "//base",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/core:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "internal/scheduling_embedder_unittest.cc",
+    "passage_embedder_model_observer_unittest.cc",
+    "passage_embeddings_service_controller_unittest.cc",
+  ]
+
+  deps = [
+    ":passage_embeddings",
+    ":passage_embeddings_internal",
+    ":test_support",
+    "//base/test:test_support",
+    "//components/history/core/browser",
+    "//components/history/core/test",
+    "//components/history_embeddings/core",
+    "//components/history_embeddings/proto:history_embeddings_proto",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/core:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/os_crypt/async/browser:test_support",
+    "//components/page_content_annotations/core:test_support",
+    "//components/passage_embeddings",
+    "//mojo/public/cpp/bindings",
+    "//services/passage_embeddings/public/mojom",
+    "//testing/gtest",
+  ]
+
+  if (is_ios) {
+    deps += [ "//components/test:passage_embeddings_test_bundle_data" ]
+  }
+
+  data = [ "//components/test/data/passage_embeddings/" ]
+}

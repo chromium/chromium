@@ -15,14 +15,7 @@ namespace sync_sessions {
 struct SyncedSession;
 }  // namespace sync_sessions
 
-class SyncedSessionClientAsh;
-
-namespace ash {
-
-struct ForeignSyncedSessionAsh;
-class SyncedSessionClientAsh;
-
-namespace phonehub {
+namespace ash::phonehub {
 
 // Used to collect the most recently visited tab metadata from a
 // sync_sessions::SyncedSession, fetch their respective favicon images, and
@@ -44,16 +37,11 @@ class BrowserTabsMetadataFetcher {
   virtual void Fetch(
       const sync_sessions::SyncedSession* session,
       base::OnceCallback<void(BrowserTabsMetadataResponse)> callback) = 0;
-  virtual void FetchForeignSyncedPhoneSessionMetadata(
-      const ForeignSyncedSessionAsh& session,
-      SyncedSessionClientAsh* synced_session_client_ash,
-      base::OnceCallback<void(BrowserTabsMetadataResponse)> callback) = 0;
 
  protected:
   BrowserTabsMetadataFetcher() = default;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_BROWSER_TABS_METADATA_FETCHER_H_

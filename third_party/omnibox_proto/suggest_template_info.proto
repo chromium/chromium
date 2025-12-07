@@ -1,0 +1,118 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto2';
+
+option optimize_for = LITE_RUNTIME;
+option java_package = 'org.chromium.components.omnibox';
+option java_outer_classname = 'SuggestTemplateInfoProto';
+
+package omnibox;
+
+import "answer_data.proto";
+import "chrome_searchbox_stats.proto";
+
+// Suggest Template rendering data.
+// Next ID: 8
+message SuggestTemplateInfo {
+  enum StandardSuggestStyle {
+    SUGGEST_STYLE_UNSPECIFIED = 0;
+    // Suggestions with query text only
+    DEFAULT = 1;
+    // Suggestions enriched with additional text or image data
+    ENRICHED = 2;
+    // Suggestion annotated with updated data.
+    ANNOTATED = 3;
+  }
+
+  // The style of the suggestion.
+  optional StandardSuggestStyle style = 1;
+
+  enum IconType {
+    // Unspecified.
+    ICON_TYPE_UNSPECIFIED = 0;
+    // History clock icon.
+    HISTORY = 1;
+    // Search loop icon.
+    SEARCH_LOOP = 2;
+    // Search loop with sparkle icon.
+    SEARCH_LOOP_WITH_SPARKLE = 3;
+    // Trending icon.
+    TRENDING = 4;
+    // A sub arrow right icon.
+    SUB_ARROW_RIGHT = 5;
+  }
+
+  // The icon type of the suggestion, this is typically the icon in front of
+  // the primary text (i.e. query).
+  optional IconType type_icon = 2;
+
+  // The primary text of the suggestion (i.e. query).
+  optional FormattedString primary_text = 3;
+
+  // The secondary text of the suggestion (i.e. subtitle).
+  optional FormattedString secondary_text = 4;
+
+  message Image {
+    // The URL of the image.
+    optional string url = 1;
+
+    // Dominant color.
+    // Affects how image is rendered.
+    optional string dominant_color = 2;
+
+    // Image type.
+    optional ImageType type = 3;
+
+    enum ImageType {
+      TYPE_UNKNOWN = 0;
+      TYPE_LARGE = 1;
+      TYPE_SMALL = 2;
+    }
+  }
+
+  // This image is typically in front of the primary text (i.e. query) and
+  // replaces the suggestion icon.
+  optional Image image = 5;
+
+  // Additioanl request parameters for SRP fulfillment.
+  map<string, string> default_search_parameters = 6;
+
+  // Entity Suggestion Action descriptor.
+  message TemplateAction {
+    enum ActionType {
+      DIRECTIONS = 2;
+      CALL = 3;
+      REVIEWS = 20;
+      CHROME_AIM = 1000;
+      CHROME_LENS = 1001;
+      CHROME_TAB_SWITCH = 1002;
+    }
+
+    // The URI to open when the action is invoked.
+    // IMPORTANT: The `action_uri` must be used when non-empty and overrides
+    // the default navigation to the SRP.
+    optional string action_uri = 1;
+
+    // Action type for logging.
+    optional .omnibox.metrics.ActionInfo.ActionType logs_action_type = 2;
+
+    // Action type.
+    optional ActionType action_type = 3;
+
+    // If non-empty, the action must result in navigation to the SRP accompanied
+    // with these additional request parameters to help force a certain SRP.
+    map<string, string> search_parameters = 4;
+
+    // Display text for this action (primarily used for enhancements).
+    optional string display_text = 5;
+
+    // Query executed when this action or enhancement is selected. If non-empty,
+    // this query should be used instead of the parent suggestion's query.
+    optional string query = 6;
+  }
+
+  // List of possible actions for the suggestion.
+  repeated TemplateAction action_suggestions = 7;
+}

@@ -15,7 +15,6 @@
   }
 
   #inputTextArea {
-    padding: 0 95px;
     width: 100%;
   }
 
@@ -23,11 +22,15 @@
     --cr-input-underline-display: none;
     --cr-textarea-autogrow-max-height: 3.5lh;
     color: var(--cros-sys-on_secondary_container);
-    font: var(--cros-display-4-font);
+    font: var(--cros-display-6-font);
     font-weight: 400;
     margin-top: 28px;
     text-align: start;
     width: 100%;
+  }
+
+  #queryInput::part(text-area)::placeholder {
+    color: var(--cros-sys-secondary);
   }
 
   #thumbnailsLoadingText {
@@ -40,22 +43,18 @@
     padding: 0px 12px;
   }
 
+  iron-icon[icon^='personalization-shared:refresh'] {
+    transform: rotateY(180deg);
+  }
+
   #underline {
     background-image:
         linear-gradient(to right, transparent 65%, var(--cros-sys-app_base_shaded) 35%),
-        linear-gradient(to right, #D7E6FF, #C7E4FF, #DCE2FF, #ECDCFB);
+        linear-gradient(to right, #217BFE, #078EFB, #AC87EB, #EE4D5D);
     background-size: 12px 3px, 100% 3px;
     border: none;
     height: 3px;
     width: 100%;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    #underline {
-      background-image:
-        linear-gradient(to right, transparent 65%, var(--cros-sys-app_base_shaded) 35%),
-        linear-gradient(to right, #217BFE, #078EFB, #AC87EB, #EE4D5D);
-    }
   }
 </style>
 <div id="container">
@@ -65,6 +64,7 @@
         rows=1
         has-max-height
         autogrow
+        disabled="[[thumbnailsLoading_]]"
         placeholder="[[i18n('seaPenFreeformInputPlaceholder')]]"
         maxlength="[[maxTextLength_]]"
         spellcheck="false"
@@ -97,6 +97,7 @@
               slot="prefix-icon"
               asset-url="chrome://resources/ash/common/sea_pen/lightbulb_icon.json"
               loop
+              autoplay="[[autoplay_]]"
               dynamic
               aria-hidden>
           </cros-lottie-renderer>

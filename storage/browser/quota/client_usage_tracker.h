@@ -21,7 +21,6 @@
 #include "storage/browser/quota/quota_task.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace blink {
@@ -46,7 +45,6 @@ class ClientUsageTracker : public SpecialStoragePolicy::Observer {
   ClientUsageTracker(
       UsageTracker* tracker,
       mojom::QuotaClient* client,
-      blink::mojom::StorageType type,
       scoped_refptr<SpecialStoragePolicy> special_storage_policy);
 
   ClientUsageTracker(const ClientUsageTracker&) = delete;
@@ -123,7 +121,6 @@ class ClientUsageTracker : public SpecialStoragePolicy::Observer {
   bool IsStorageUnlimited(const blink::StorageKey& storage_key) const;
 
   raw_ptr<mojom::QuotaClient> client_;
-  const blink::mojom::StorageType type_;
 
   // The implementation relies on a collection whose erase() only invalidates
   // iterators that point to the erased element. This comment is intended to

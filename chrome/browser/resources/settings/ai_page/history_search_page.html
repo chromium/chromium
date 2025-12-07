@@ -1,0 +1,137 @@
+<style include="settings-shared settings-columned-section">
+  .separator {
+    margin: 0 4px;
+  }
+
+  .separator + settings-toggle-button {
+    margin-inline-end: 12px;
+  }
+
+  cr-icon {
+    flex-shrink: 0;
+  }
+
+  cr-policy-pref-indicator {
+    margin-inline-end: 4px;
+  }
+</style>
+
+<settings-subpage page-title="$i18n{historySearchSettingLabel}"
+    route-path$="[[routePath]]">
+<div class="settings-row first">
+  <template is="dom-if" if="[[!isDisabledByPolicy_(enterprisePref_)]]"
+      restamp>
+    <cr-link-row label="$i18n{historySearchSettingLabel}"
+        on-click="onHistorySearchLinkoutClick_" external>
+      <div slot="sub-label">
+        <span id="linkoutText">[[toggleSubLabelV2_]]</span>
+        <a href="[[getLearnMoreUrl_(enterprisePref_)]]"
+            aria-label="$i18n{historySearchLearnMoreA11yLabel}"
+            aria-description="$i18n{opensInNewTab}"
+            on-click="onLearnMoreClick_" target="_blank">
+          $i18n{learnMore}
+        </a>
+      </div>
+    </cr-link-row>
+    <div class="separator"></div>
+  </template>
+  <template is="dom-if" if="[[isDisabledByPolicy_(enterprisePref_)]]" restamp>
+    <div class="cr-row first">
+      <div class="flex cr-padded-text">
+        <div id="historySearchLabel">$i18n{historySearchSettingLabel}</div>
+        <div class="secondary">
+          [[toggleSubLabelV2_]]
+          <a href="[[getLearnMoreUrl_(enterprisePref_)]]"
+              aria-label="$i18n{historySearchLearnMoreA11yLabel}"
+              aria-description="$i18n{opensInNewTab}"
+              on-click="onLearnMoreClick_" target="_blank">
+            $i18n{learnMore}
+          </a>
+        </div>
+      </div>
+    </div>
+    <cr-policy-pref-indicator id="policyIndicator"
+          pref="[[enterprisePref_]]">
+    </cr-policy-pref-indicator>
+  </template>
+  <settings-toggle-button aria-label="$i18n{historySearchSettingLabel}"
+      learn-more-url="[[getLearnMoreUrl_(enterprisePref_)]]"
+      learn-more-aria-label="$i18n{historySearchLearnMoreA11yLabel}"
+      pref="{{prefs.optimization_guide.history_search_setting_state}}"
+      numeric-unchecked-values="[[numericUncheckedValues_]]"
+      numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]"
+      on-settings-boolean-control-change="onHistorySearchToggleChange_"
+      disabled="[[isDisabledByPolicy_(enterprisePref_)]]">
+  </settings-toggle-button>
+</div>
+<div class="settings-columned-section">
+  <div class="column">
+    <h2 class="description-header">$i18n{columnHeadingWhenOn}</h2>
+    <ul class="icon-bulleted-list">
+      <li>
+        <cr-icon icon="settings20:search-spark" aria-hidden="true"></cr-icon>
+        <div id="whenOnPageContentText" class="secondary"
+            hidden="[[isAnswersFeatureEnabled_]]">
+          $i18n{historySearchWhenOnPageContent}
+        </div>
+        <div id="whenOnPageContentTextWithAnswers" class="secondary"
+            hidden="[[!isAnswersFeatureEnabled_]]">
+          $i18n{historySearchWithAnswersWhenOnPageContent}
+        </div>
+      </li>
+      <li id="whenOnRecallInfoWithAnswers"
+          hidden="[[!isAnswersFeatureEnabled_]]">
+        <cr-icon icon="settings20:auto-summarize" aria-hidden="true">
+        </cr-icon>
+        <div class="secondary">
+          $i18n{historySearchWithAnswersWhenOnRecallInfo}
+        </div>
+      </li>
+      <li>
+        <cr-icon icon="settings20:quick-reference-all" aria-hidden="true">
+        </cr-icon>
+        <div class="secondary">$i18n{historySearchWhenOnSearchFrom}</div>
+      </li>
+      <li id="whenOnLogStartItem">
+        <cr-icon icon="settings20:history" aria-hidden="true">
+        </cr-icon>
+        <div class="secondary">
+          $i18n{historySearchWhenOnLogStart}
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div class="column">
+    <h2 class="description-header">$i18n{columnHeadingConsider}</h2>
+    <ul class="icon-bulleted-list">
+      <li>
+        <cr-icon icon="settings20:psychiatry" aria-hidden="true"></cr-icon>
+        <div class="secondary">$i18n{aiSubpageSublabelAi}</div>
+      </li>
+      <li>
+        <cr-icon icon="settings20:googleg" aria-hidden="true"></cr-icon>
+        <div class="secondary">$i18n{historySearchConsiderData}</div>
+      </li>
+      <settings-ai-logging-info-bullet pref="[[enterprisePref_]]">
+      </settings-ai-logging-info-bullet>
+      <li>
+        <cr-icon icon="settings20:file-save" aria-hidden="true"></cr-icon>
+        <div id="considerDataEncryptedText" class="secondary"
+            hidden="[[isAnswersFeatureEnabled_]]">
+          $i18n{historySearchConsiderDataEncrypted}
+        </div>
+        <div id="considerDataEncryptedTextWithAnswers" class="secondary"
+            hidden="[[!isAnswersFeatureEnabled_]]">
+          $i18n{historySearchWithAnswersConsiderDataEncrypted}
+        </div>
+      </li>
+      <li id="considerOutDatedItem" hidden="[[!isAnswersFeatureEnabled_]]">
+        <cr-icon icon="settings20:difference" aria-hidden="true"></cr-icon>
+        <div class="secondary">
+          $i18n{historySearchWithAnswersConsiderOutdated}
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>
+</settings-subpage>

@@ -27,10 +27,7 @@ class URLSearchParamsIterationSource final
   explicit URLSearchParamsIterationSource(URLSearchParams* params)
       : params_(params), current_(0) {}
 
-  bool FetchNextItem(ScriptState*,
-                     String& key,
-                     String& value,
-                     ExceptionState&) override {
+  bool FetchNextItem(ScriptState*, String& key, String& value) override {
     if (current_ >= params_->Params().size())
       return false;
 
@@ -52,7 +49,7 @@ class URLSearchParamsIterationSource final
 
 bool CompareParams(const std::pair<String, String>& a,
                    const std::pair<String, String>& b) {
-  return WTF::CodeUnitCompareLessThan(a.first, b.first);
+  return CodeUnitCompareLessThan(a.first, b.first);
 }
 
 }  // namespace
@@ -74,8 +71,7 @@ URLSearchParams* URLSearchParams::Create(const URLSearchParamsInit* init,
       return URLSearchParams::Create(init->GetAsUSVStringUSVStringRecord(),
                                      exception_state);
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 URLSearchParams* URLSearchParams::Create(const Vector<Vector<String>>& init,
@@ -174,7 +170,7 @@ void URLSearchParams::SetInputWithoutUpdate(const String& query_string) {
 String URLSearchParams::toString() const {
   Vector<char> encoded_data;
   EncodeAsFormData(encoded_data);
-  return String(encoded_data.data(), encoded_data.size());
+  return String(encoded_data);
 }
 
 uint32_t URLSearchParams::size() const {
@@ -328,11 +324,11 @@ void URLSearchParams::EncodeAsFormData(Vector<char>& encoded_data) const {
 scoped_refptr<EncodedFormData> URLSearchParams::ToEncodedFormData() const {
   Vector<char> encoded_data;
   EncodeAsFormData(encoded_data);
-  return EncodedFormData::Create(encoded_data.data(), encoded_data.size());
+  return EncodedFormData::Create(encoded_data);
 }
 
 PairSyncIterable<URLSearchParams>::IterationSource*
-URLSearchParams::CreateIterationSource(ScriptState*, ExceptionState&) {
+URLSearchParams::CreateIterationSource(ScriptState*) {
   return MakeGarbageCollected<URLSearchParamsIterationSource>(this);
 }
 

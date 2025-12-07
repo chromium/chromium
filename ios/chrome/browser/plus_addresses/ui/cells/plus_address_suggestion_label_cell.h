@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/legacy_table_view_cell.h"
 
 @protocol PlusAddressSuggestionLabelCellDelegate <NSObject>
 
@@ -22,7 +22,7 @@
 // | `leadingImage`         `label`          `optional trailingImage` |
 // +------------------------------------------------------------------+
 //
-@interface PlusAddressSuggestionLabelCell : TableViewCell
+@interface PlusAddressSuggestionLabelCell : LegacyTableViewCell
 
 // Delegate to notify when the button is tapped.
 @property(nonatomic, weak) id<PlusAddressSuggestionLabelCellDelegate> delegate;
@@ -36,6 +36,10 @@
 // Sets the `image` that should be displayed at the leading edge of the cell
 // with a `tintColor`.
 - (void)setLeadingIconImage:(UIImage*)image withTintColor:(UIColor*)tintColor;
+
+// Called to show or hide the activity indicators.
+- (void)showActivityIndicator;
+- (void)hideActivityIndicator;
 
 @end
 

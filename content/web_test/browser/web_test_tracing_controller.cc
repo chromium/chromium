@@ -4,6 +4,7 @@
 
 #include "content/web_test/browser/web_test_tracing_controller.h"
 
+#include "base/compiler_specific.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_config.h"
@@ -109,7 +110,7 @@ void WebTestTracingController::OnTracingStopped() {
       [this](perfetto::TracingSession::ReadTraceCallbackArgs args) {
         CHECK(tracing_file_.IsValid());
         if (args.size > 0) {
-          tracing_file_.WriteAtCurrentPos(args.data, args.size);
+          UNSAFE_TODO(tracing_file_.WriteAtCurrentPos(args.data, args.size));
         }
         if (!args.has_more) {
           TracingFinished();

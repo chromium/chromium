@@ -14,7 +14,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/animation/animation.h"
@@ -22,6 +21,7 @@
 #include "cc/animation/animation_events.h"
 #include "cc/animation/animation_id_provider.h"
 #include "cc/animation/animation_timeline.h"
+#include "cc/animation/animation_trigger.h"
 #include "cc/animation/element_animations.h"
 #include "cc/animation/keyframe_effect.h"
 #include "cc/animation/scroll_offset_animation_curve.h"
@@ -30,7 +30,6 @@
 #include "cc/animation/scroll_timeline.h"
 #include "cc/animation/worklet_animation.h"
 #include "ui/gfx/animation/keyframe/timing_function.h"
-#include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace cc {
@@ -90,10 +89,26 @@ AnimationTimeline* AnimationHost::GetTimelineById(int timeline_id) {
                                                      : f->second.get();
 }
 
+scoped_refptr<AnimationTimeline> AnimationHost::GetScopedRefTimelineById(
+    int timeline_id) {
+  auto f = id_to_timeline_map_.Write(*this).find(timeline_id);
+  return f == id_to_timeline_map_.Write(*this).end() ? nullptr : f->second;
+}
+
+const AnimationTrigger* AnimationHost::GetTriggerById(int id) const {
+  const auto& it = id_to_trigger_map_.Read(*this).find(id);
+  return it == id_to_trigger_map_.Read(*this).end() ? nullptr
+                                                    : it->second.get();
+}
+
 void AnimationHost::ClearMutators() {
   for (auto& kv : id_to_timeline_map_.Read(*this))
     EraseTimeline(kv.second);
   id_to_timeline_map_.Write(*this).clear();
+  for (auto& it : id_to_trigger_map_.Write(*this)) {
+    it.second->SetAnimationHost(nullptr);
+  }
+  id_to_trigger_map_.Write(*this).clear();
 }
 
 base::TimeDelta AnimationHost::MinimumTickInterval() const {
@@ -124,11 +139,23 @@ void AnimationHost::AddAnimationTimeline(
   SetNeedsPushProperties();
 }
 
+void AnimationHost::AddTrigger(scoped_refptr<AnimationTrigger> trigger) {
+  trigger->SetAnimationHost(this);
+  id_to_trigger_map_.Write(*this).insert(
+      std::make_pair(trigger->id(), trigger));
+  SetNeedsPushProperties();
+}
+
 void AnimationHost::RemoveAnimationTimeline(
     scoped_refptr<AnimationTimeline> timeline) {
   DCHECK(timeline->id());
   EraseTimeline(timeline);
   id_to_timeline_map_.Write(*this).erase(timeline->id());
+  SetNeedsPushProperties();
+}
+
+void AnimationHost::RemoveTrigger(scoped_refptr<AnimationTrigger> trigger) {
+  id_to_trigger_map_.Write(*this).erase(trigger->id());
   SetNeedsPushProperties();
 }
 
@@ -140,6 +167,16 @@ void AnimationHost::DetachAnimationTimeline(
         std::make_pair(timeline->id(), timeline));
   } else {
     RemoveAnimationTimeline(timeline);
+  }
+}
+
+void AnimationHost::DetachTrigger(scoped_refptr<AnimationTrigger> trigger) {
+  if (InProtectedSequence()) {
+    // Defer cleanup until post-commit.
+    detached_trigger_map_.Write(*this).insert(
+        std::make_pair(trigger->id(), trigger));
+  } else {
+    RemoveTrigger(trigger);
   }
 }
 
@@ -338,6 +375,10 @@ void AnimationHost::SetNeedsPushProperties() {
     mutator_host_client()->SetMutatorsNeedCommit();
 }
 
+void AnimationHost::ResetNeedsPushProperties() {
+  needs_push_properties_.Write(*this) = false;
+}
+
 void AnimationHost::PushPropertiesTo(MutatorHost* mutator_host_impl,
                                      const PropertyTrees& property_trees) {
   auto* host_impl = static_cast<AnimationHost*>(mutator_host_impl);
@@ -362,9 +403,14 @@ void AnimationHost::PushPropertiesTo(MutatorHost* mutator_host_impl,
     needs_push_properties_.Write(*this) = false;
     PushTimelinesToImplThread(host_impl);
     RemoveTimelinesFromImplThread(host_impl);
+    PushTriggersToImplThread(host_impl);
+    RemoveTriggersFromImplThread(host_impl);
     PushPropertiesToImplThread(host_impl);
-    // This is redundant but used in tests.
-    host_impl->needs_push_properties_.Write(*host_impl) = false;
+
+    // When using a display tree this ensures that any new animation updates are
+    // pushed to Viz on next display tree update. When not using display trees,
+    // setting this flag here is meaningless.
+    host_impl->needs_push_properties_.Write(*host_impl) = true;
   }
 }
 
@@ -380,6 +426,18 @@ void AnimationHost::RemoveStaleTimelines() {
   detached_timeline_map_.Write(*this).clear();
 }
 
+void AnimationHost::RemoveStaleTriggers() {
+  DCHECK(!InProtectedSequence());
+  if (detached_trigger_map_.Read(*this).empty()) {
+    return;
+  }
+
+  for (auto& kv : detached_trigger_map_.Read(*this)) {
+    RemoveTrigger(kv.second);
+  }
+  detached_trigger_map_.Write(*this).clear();
+}
+
 void AnimationHost::PushTimelinesToImplThread(AnimationHost* host_impl) const {
   for (auto& kv : id_to_timeline_map_.Read(*this)) {
     auto& timeline = kv.second;
@@ -393,12 +451,27 @@ void AnimationHost::PushTimelinesToImplThread(AnimationHost* host_impl) const {
   }
 }
 
+void AnimationHost::PushTriggersToImplThread(AnimationHost* host_impl) const {
+  for (auto& it : id_to_trigger_map_.Read(*this)) {
+    const scoped_refptr<AnimationTrigger>& trigger = it.second;
+    if (host_impl->GetTriggerById(trigger->id())) {
+      continue;
+    }
+
+    auto to_add = trigger->CreateImplInstance(*host_impl);
+    host_impl->AddTrigger(std::move(to_add));
+  }
+}
+
 void AnimationHost::RemoveTimelinesFromImplThread(
     AnimationHost* host_impl) const {
   IdToTimelineMap& timelines_impl =
       host_impl->id_to_timeline_map_.Write(*host_impl);
 
   // Erase all the impl timelines which |this| doesn't have.
+  // TODO(crbug.com/459538550): It might be too early to remove a timeline here
+  // as the timeline might still be relevant to the active tree until the
+  // pending tree becomes active.
   for (auto it = timelines_impl.begin(); it != timelines_impl.end();) {
     auto& timeline_impl = it->second;
     if (timeline_impl->is_impl_only() || GetTimelineById(timeline_impl->id())) {
@@ -408,6 +481,19 @@ void AnimationHost::RemoveTimelinesFromImplThread(
       it = timelines_impl.erase(it);
     }
   }
+}
+
+void AnimationHost::RemoveTriggersFromImplThread(
+    AnimationHost* host_impl) const {
+  IdToTriggerMap& impl_list = host_impl->id_to_trigger_map_.Write(*host_impl);
+  // TODO(crbug.com/459538550): It might be too early to remove a trigger here
+  // as the trigger might still be relevant to the active tree until the pending
+  // tree becomes active.
+  std::erase_if(
+      impl_list,
+      [&](const std::pair<int, scoped_refptr<AnimationTrigger>>& pair) {
+        return !GetTriggerById(pair.second->id());
+      });
 }
 
 void AnimationHost::PushPropertiesToImplThread(AnimationHost* host_impl) {
@@ -439,9 +525,10 @@ void AnimationHost::PushPropertiesToImplThread(AnimationHost* host_impl) {
 
   // The pending info list is cleared in LayerTreeHostImpl::CommitComplete
   // and should be empty when pushing properties.
-  DCHECK(host_impl->pending_throughput_tracker_infos_.Read(*host_impl).empty());
-  host_impl->pending_throughput_tracker_infos_.Write(*host_impl) =
-      TakePendingThroughputTrackerInfos();
+  DCHECK(host_impl->pending_compositor_metrics_tracker_infos_.Read(*host_impl)
+             .empty());
+  host_impl->pending_compositor_metrics_tracker_infos_.Write(*host_impl) =
+      TakePendingCompositorMetricsTrackerInfos();
 }
 
 const ElementAnimations* AnimationHost::GetElementAnimationsForElementId(
@@ -670,9 +757,7 @@ void AnimationHost::SetAnimationEvents(
   auto events =
       base::WrapUnique(static_cast<AnimationEvents*>(mutator_events.release()));
 
-  for (size_t event_index = 0; event_index < events->events_.size();
-       ++event_index) {
-    AnimationEvent& event = events->events_[event_index];
+  for (const AnimationEvent& event : events->events()) {
     AnimationTimeline* timeline = GetTimelineById(event.uid.timeline_id);
     if (timeline) {
       Animation* animation = timeline->GetAnimationById(event.uid.animation_id);
@@ -685,18 +770,16 @@ void AnimationHost::SetAnimationEvents(
 bool AnimationHost::ScrollOffsetAnimationWasInterrupted(
     ElementId element_id) const {
   const auto* element_animations = GetElementAnimationsForElementId(element_id);
-  return element_animations
-             ? element_animations->ScrollOffsetAnimationWasInterrupted()
-             : false;
+  return element_animations &&
+         element_animations->ScrollOffsetAnimationWasInterrupted();
 }
 
 bool AnimationHost::IsAnimatingProperty(ElementId element_id,
                                         ElementListType list_type,
                                         TargetProperty::Type property) const {
   const auto* element_animations = GetElementAnimationsForElementId(element_id);
-  return element_animations ? element_animations->IsCurrentlyAnimatingProperty(
-                                  property, list_type)
-                            : false;
+  return element_animations &&
+         element_animations->IsCurrentlyAnimatingProperty(property, list_type);
 }
 
 bool AnimationHost::HasPotentiallyRunningAnimationForProperty(
@@ -704,29 +787,25 @@ bool AnimationHost::HasPotentiallyRunningAnimationForProperty(
     ElementListType list_type,
     TargetProperty::Type property) const {
   const auto* element_animations = GetElementAnimationsForElementId(element_id);
-  return element_animations
-             ? element_animations->IsPotentiallyAnimatingProperty(property,
-                                                                  list_type)
-             : false;
+  return element_animations &&
+         element_animations->IsPotentiallyAnimatingProperty(property,
+                                                            list_type);
 }
 
 bool AnimationHost::HasAnyAnimationTargetingProperty(
     ElementId element_id,
     TargetProperty::Type property) const {
   const auto* element_animations = GetElementAnimationsForElementId(element_id);
-  if (!element_animations)
-    return false;
-
-  return element_animations->HasAnyAnimationTargetingProperty(property,
+  return element_animations &&
+         element_animations->HasAnyAnimationTargetingProperty(property,
                                                               element_id);
 }
 
 bool AnimationHost::AnimationsPreserveAxisAlignment(
     ElementId element_id) const {
   const auto* element_animations = GetElementAnimationsForElementId(element_id);
-  return element_animations
-             ? element_animations->AnimationsPreserveAxisAlignment()
-             : true;
+  return !element_animations ||
+         element_animations->AnimationsPreserveAxisAlignment();
 }
 
 float AnimationHost::MaximumScale(ElementId element_id,
@@ -740,14 +819,13 @@ float AnimationHost::MaximumScale(ElementId element_id,
 
 bool AnimationHost::IsElementAnimating(ElementId element_id) const {
   const auto* element_animations = GetElementAnimationsForElementId(element_id);
-  return element_animations ? element_animations->HasAnyKeyframeModel() : false;
+  return element_animations && element_animations->HasAnyKeyframeModel();
 }
 
 bool AnimationHost::HasTickingKeyframeModelForTesting(
     ElementId element_id) const {
   const auto* element_animations = GetElementAnimationsForElementId(element_id);
-  return element_animations ? element_animations->HasTickingKeyframeEffect()
-                            : false;
+  return element_animations && element_animations->HasTickingKeyframeEffect();
 }
 
 void AnimationHost::ImplOnlyAutoScrollAnimationCreate(
@@ -778,11 +856,13 @@ std::optional<gfx::PointF> AnimationHost::ImplOnlyScrollAnimationUpdateTarget(
     const gfx::Vector2dF& scroll_delta,
     const gfx::PointF& max_scroll_offset,
     base::TimeTicks frame_monotonic_time,
-    base::TimeDelta delayed_by) {
+    base::TimeDelta delayed_by,
+    ElementId element_id) {
   DCHECK(scroll_offset_animations_impl_.Read(*this));
   return scroll_offset_animations_impl_.Write(*this)
       ->ScrollAnimationUpdateTarget(scroll_delta, max_scroll_offset,
-                                    frame_monotonic_time, delayed_by);
+                                    frame_monotonic_time, delayed_by,
+                                    element_id);
 }
 
 ScrollOffsetAnimations& AnimationHost::scroll_offset_animations() {
@@ -790,23 +870,39 @@ ScrollOffsetAnimations& AnimationHost::scroll_offset_animations() {
   return *scroll_offset_animations_.Write(*this).get();
 }
 
-void AnimationHost::ScrollAnimationAbort() {
+void AnimationHost::ScrollAnimationAbort(ElementId element_id) {
   DCHECK(scroll_offset_animations_impl_.Read(*this));
   scroll_offset_animations_impl_.Write(*this)->ScrollAnimationAbort(
-      false /* needs_completion */);
+      false /* needs_completion */, element_id);
 }
 
-ElementId AnimationHost::ImplOnlyScrollAnimatingElement() const {
-  DCHECK(scroll_offset_animations_impl_.Read(*this));
-  if (!scroll_offset_animations_impl_.Read(*this)->IsAnimating())
-    return ElementId();
-
-  return scroll_offset_animations_impl_.Read(*this)->GetElementId();
+bool AnimationHost::ElementHasImplOnlyScrollAnimation(
+    ElementId element_id) const {
+  return scroll_offset_animations_impl_.Read(*this)
+      ->ElementHasImplOnlyScrollAnimation(element_id);
 }
 
-void AnimationHost::ImplOnlyScrollAnimatingElementRemoved() {
+bool AnimationHost::HasImplOnlyScrollAnimatingElement() const {
+  return scroll_offset_animations_impl_.Read(*this)
+      ->HasImplOnlyScrollAnimatingElement();
+}
+
+bool AnimationHost::HasImplOnlyAutoScrollAnimatingElement() const {
+  return scroll_offset_animations_impl_.Read(*this)
+      ->HasImplOnlyAutoScrollAnimatingElement();
+}
+
+bool AnimationHost::IsElementInPropertyTrees(ElementId element_id,
+                                             bool commits_to_active) const {
+  return mutator_host_client()->IsElementInPropertyTrees(
+      element_id,
+      commits_to_active ? ElementListType::ACTIVE : ElementListType::PENDING);
+}
+
+void AnimationHost::HandleRemovedScrollAnimatingElements(
+    bool commits_to_active) {
   scroll_offset_animations_impl_.Write(*this)
-      ->AnimatingElementRemovedByCommit();
+      ->HandleRemovedScrollAnimatingElements(commits_to_active);
 }
 
 void AnimationHost::AddToTicking(scoped_refptr<Animation> animation) {
@@ -816,7 +912,7 @@ void AnimationHost::AddToTicking(scoped_refptr<Animation> animation) {
 
 void AnimationHost::RemoveFromTicking(scoped_refptr<Animation> animation) {
   auto to_erase =
-      base::ranges::find(ticking_animations_.Write(*this), animation);
+      std::ranges::find(ticking_animations_.Write(*this), animation);
   if (to_erase != ticking_animations_.Write(*this).end()) {
     ticking_animations_.Write(*this).erase(to_erase);
   }
@@ -841,7 +937,7 @@ void AnimationHost::SetLayerTreeMutator(
 WorkletAnimation* AnimationHost::FindWorkletAnimation(WorkletAnimationId id) {
   // TODO(majidvp): Use a map to make lookup O(1)
   auto animation =
-      base::ranges::find_if(ticking_animations_.Read(*this), [id](auto& it) {
+      std::ranges::find_if(ticking_animations_.Read(*this), [id](auto& it) {
         return it->IsWorkletAnimation() &&
                ToWorkletAnimation(it.get())->worklet_animation_id() == id;
       });
@@ -901,24 +997,25 @@ bool AnimationHost::HasNativePropertyAnimation() const {
   return false;
 }
 
-AnimationHost::PendingThroughputTrackerInfos
-AnimationHost::TakePendingThroughputTrackerInfos() {
-  PendingThroughputTrackerInfos infos =
-      std::move(pending_throughput_tracker_infos_.Write(*this));
-  pending_throughput_tracker_infos_.Write(*this) = {};
+AnimationHost::PendingCompositorMetricsTrackerInfos
+AnimationHost::TakePendingCompositorMetricsTrackerInfos() {
+  PendingCompositorMetricsTrackerInfos infos =
+      std::move(pending_compositor_metrics_tracker_infos_.Write(*this));
+  pending_compositor_metrics_tracker_infos_.Write(*this) = {};
   return infos;
 }
 
-void AnimationHost::StartThroughputTracking(
+void AnimationHost::StartCompositorMetricsTracking(
     TrackedAnimationSequenceId sequence_id) {
-  pending_throughput_tracker_infos_.Write(*this).push_back({sequence_id, true});
+  pending_compositor_metrics_tracker_infos_.Write(*this).push_back(
+      {sequence_id, true});
   SetNeedsPushProperties();
 }
 
-void AnimationHost::StopThroughputTracking(
-    TrackedAnimationSequenceId sequnece_id) {
-  pending_throughput_tracker_infos_.Write(*this).push_back(
-      {sequnece_id, false});
+void AnimationHost::StopCompositorMetricsTracking(
+    TrackedAnimationSequenceId sequence_id) {
+  pending_compositor_metrics_tracker_infos_.Write(*this).push_back(
+      {sequence_id, false});
   SetNeedsPushProperties();
 }
 
@@ -931,10 +1028,6 @@ bool AnimationHost::HasScrollLinkedAnimation(ElementId for_scroller) const {
     }
   }
   return false;
-}
-
-bool AnimationHost::IsAutoScrolling() const {
-  return scroll_offset_animations_impl_.Read(*this)->IsAutoScrolling();
 }
 
 }  // namespace cc

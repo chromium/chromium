@@ -23,6 +23,7 @@ class EmptyLockScreenController : public LockScreenController {
                                     base::OnceClosure cancal_callback,
                                     int message_id) override;
   bool IsScreenLocked() const override;
+  bool IsNotificationAllowedOnLockScreen(const std::string& id) const override;
 };
 
 }  // namespace message_center

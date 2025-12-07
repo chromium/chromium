@@ -25,6 +25,7 @@ namespace ash {
 class CrosSettingsHolder;
 class FakeOwnerSettingsService;
 class ScopedTestDeviceSettingsService;
+class UserLoginPermissionTracker;
 
 // Helps in a variety of ways with setting up CrosSettings for testing.
 // This class is overly complex for most use-cases - if possible, prefer to
@@ -97,6 +98,7 @@ class ScopedCrosSettingsTestHelper {
   std::unique_ptr<CrosSettingsProvider> real_settings_provider_;
   std::unique_ptr<CrosSettingsProvider> stub_settings_provider_;
   raw_ptr<StubCrosSettingsProvider> stub_settings_provider_ptr_;
+  std::unique_ptr<UserLoginPermissionTracker> user_login_permission_tracker_;
 
   void Initialize(bool create_settings_service);
 };

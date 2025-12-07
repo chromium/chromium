@@ -932,7 +932,7 @@ policies:
   931: OnPrintEnterpriseConnector
   932: UserAgentReduction
   933: OriginAgentClusterDefaultEnabled
-  934: DeviceLoginScreenWebUILazyLoading
+  934: ''
   935: ProjectorEnabled
   936: PhoneHubCameraRollAllowed
   937: EcheAllowed
@@ -1257,10 +1257,10 @@ policies:
   1256: PdfViewerOutOfProcessIframeEnabled
   1257: LockScreenAutoStartOnlineReauth
   1258: KeyboardFocusableScrollersEnabled
-  1259: ExtensibleEnterpriseSSOEnabled
+  1259: ExtensibleEnterpriseSSOBlocklist
   1260: CSSCustomStateDeprecatedSyntaxEnabled
   1261: MemorySaverModeSavings
-  1262: KioskVisionTelemetryEnabled
+  1262: ''
   1263: GenAIWallpaperSettings
   1264: GenAIVcBackgroundSettings
   1265: DynamicCodeSettings
@@ -1290,6 +1290,132 @@ policies:
   1289: ShowGeminiIntroScreenEnabled
   1290: DeviceRestrictionSchedule
   1291: TabCompareSettings
+  1292: AdHocCodeSigningForPWAsEnabled
+  1293: KioskWebAppOfflineEnabled
+  1294: ContentTransferEnablementStatus
+  1295: HelpMeReadSettings
+  1296: GenAiDefaultSettings
+  1297: KioskActiveWiFiCredentialsScopeChangeEnabled
+  1298: DataURLWhitespacePreservationEnabled
+  1299: AllowExcludeDisplayInMirrorMode
+  1300: AutofillPredictionSettings
+  1301: ArcOpenLinksInBrowserByDefault
+  1302: EnterpriseProfileBadgeToolbarSettings
+  1303: DefaultDirectSocketsPrivateNetworkAccessSetting
+  1304: DirectSocketsPrivateNetworkAccessAllowedForUrls
+  1305: DirectSocketsPrivateNetworkAccessBlockedForUrls
+  1306: SelectParserRelaxationEnabled
+  1307: ClassManagementEnabled
+  1308: EnterpriseSearchAggregatorSettings
+  1309: TranslatorAPIAllowed
+  1310: WebAudioOutputBufferingEnabled
+  1311: NTPOutlookCardVisible
+  1312: NTPSharepointCardVisible
+  1313: SharedWorkerBlobURLFixEnabled
+  1314: DeviceNativeClientForceAllowed
+  1315: ''
+  1316: PasswordManagerPasskeysEnabled
+  1317: FilePickerChooseFromDriveSettings
+  1318: LiveTranslateEnabled
+  1319: DevicePowerBatteryChargingOptimization
+  1320: SmartCardConnectAllowedForUrls
+  1321: SmartCardConnectBlockedForUrls
+  1322: DeviceFlexArcPreloadEnabled
+  1323: AllowedInputMethodsForceEnabled
+  1324: WebRtcIPHandlingUrl
+  1325: GenAIPhotoEditingSettings
+  1326: PartitionedBlobUrlUsage
+  1327: ''
+  1328: DefaultControlledFrameSetting
+  1329: ControlledFrameAllowedForUrls
+  1330: ControlledFrameBlockedForUrls
+  1331: ExternalStorageAllowlist
+  1332: WebAuthenticationRemoteDesktopAllowedOrigins
+  1333: ServiceWorkerToControlSrcdocIframeEnabled
+  1334: ProvisionManagedClientCertificateForBrowser
+  1335: GeminiSettings
+  1336: GenAISmartGroupingSettings
+  1337: GenAiChromeOsSmartActionsSettings
+  1338: RelaunchFastIfOutdated
+  1339: ClassManagementCaptionsEnabled
+  1340: ClassManagementClassroomIntegrationEnabled
+  1341: ClassManagementNetworkRestrictionEnabled
+  1342: ''
+  1343: ClassManagementViewScreenEnabled
+  1344: KioskChromeAppsForceAllowed
+  1345: ReduceAcceptLanguageEnabled
+  1346: GenAIInlineImageSettings
+  1347: UserSecuritySignalsReporting
+  1348: UserSecurityAuthenticatedReporting
+  1349: HappyEyeballsV3Enabled
+  1350: FaceGazeEnabled
+  1351: ProvisionalNotificationsAllowed
+  1352: DeviceLoginScreenFaceGazeEnabled
+  1353: EnterpriseLogoUrlForBrowser
+  1354: EnterpriseCustomLabelForBrowser
+  1355: DefaultSmartCardConnectSetting
+  1356: DeviceUserInitiatedFirmwareUpdatesEnabled
+  1357: BuiltInAIAPIsEnabled
+  1358: TabGroupSharingSettings
+  1359: NTPFooterManagementNoticeEnabled
+  1360: NTPFooterExtensionAttributionEnabled
+  1361: ClearWindowNameForNewBrowsingContextGroup
+  1362: PasswordManagerBlocklist
+  1363: TLS13EarlyDataEnabled
+  1364: LocalNetworkAccessRestrictionsEnabled
+  1365: PrefetchWithServiceWorkerEnabled
+  1366: ''
+  1367: AIModeSettings
+  1368: WatermarkStyle
+  1369: KioskApplicationLogCollectionEnabled
+  1370: EnableUnsafeSwiftShader
+  1371: LocalNetworkAccessAllowedForUrls
+  1372: LocalNetworkAccessBlockedForUrls
+  1373: DeviceBluetoothJustWorksPairingEnabled
+  1374: LiveCaptionEnabled
+  1375: DeviceUserInitiatedFlexSystemFirmwareUpdatesEnabled
+  1376: AutomatedPasswordChangeSettings
+  1377: DefaultDeviceAttributesSetting
+  1378: DeviceAttributesBlockedForOrigins
+  1379: FloatingSsoSessionCookiesIncluded
+  1380: ServiceWorkerAutoPreloadEnabled
+  1381: ProtectedContentIdentifiersAllowed
+  1382: LegacyCookieScopeEnabled
+  1383: LegacyCookieScopeEnabledForDomainList
+  1384: WebRtcPostQuantumKeyAgreement
+  1385: DeviceLoginScreenSecurityKeyPermitAttestation
+  1386: RestrictCoreSharingOnRenderer
+  1387: OriginKeyedProcessesEnabled
+  1388: NTPShortcuts
+  1389: AutoSignOutEnabled
+  1390: ExtensionInstallCloudPolicyChecksEnabled
+  1391: DevToolsGoogleDeveloperProgramProfileAvailability
+  1392: IncognitoModeBlocklist
+  1393: IncognitoModeAllowlist
+  1394: PreferSlowKexAlgorithms
+  1395: ExtensionForceInstallWithNonMalwareViolationsEnabled
+  1396: CacheEncryptionEnabled
+  1397: SilentPrintingEnabled
+  1398: PreferSlowCiphers
+  1399: DeveloperToolsAvailabilityAllowlist
+  1400: DeveloperToolsAvailabilityBlocklist
+  1401: LocalNetworkAccessRestrictionsTemporaryOptOut
+  1402: GeminiActOnWebSettings
+  1403: LocalAuthFactorsComplexity
+  1404: ProxyOverrideRules
+  1405: LocalAuthFactors
+  1406: EnableProxyOverrideRulesForAllUsers
+  1407: DefaultIdleDetectionSetting
+  1408: IdleDetectionAllowedForUrls
+  1409: IdleDetectionBlockedForUrls
+  1410: PreciseGeolocationAllowedForUrls
+  1411: GeolocationBlockedForUrls
+  1412: PdfXfaFormsEnabled
+  1413: CameraSaveLocation
+  1414: DeviceLoginScreenPreferSlowKexAlgorithms
+  1415: DeviceLoginScreenPreferSlowCiphers
+  1416: SearchContentSharingSettings
+  1417: StaticStorageQuotaEnabled
 
 atomic_groups:
   1: Homepage
@@ -1346,3 +1472,11 @@ atomic_groups:
   52: DirectSocketsSettings
   53: SkyVaultSettings
   54: BrowserEventReporting
+  55: SmartCardConnectSettings
+  56: WebRtc
+  57: ControlledFrameSettings
+  58: LocalNetworkAccessSettings
+  59: DeviceAttributesSettings
+  60: ProtectedContent
+  61: LegacyCookieScopeSettings
+  62: GeolocationSettings

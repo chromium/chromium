@@ -31,20 +31,20 @@ function createPasswordsImporter(
 
 async function triggerImportHelper(
     importer: PasswordsImporterElement,
-    passwordManager: TestPasswordManagerProxy,
+    passwordManager: TestPasswordManagerProxy, buttonSelector: string,
     expectedStore: chrome.passwordsPrivate.PasswordStoreSet =
         chrome.passwordsPrivate.PasswordStoreSet.DEVICE) {
   const chooseFile =
-      importer.shadowRoot!.querySelector<HTMLElement>('#selectFileButton');
+      importer.shadowRoot!.querySelector<HTMLElement>(buttonSelector);
   assertTrue(!!chooseFile);
   assertTrue(isVisible(chooseFile));
   chooseFile.click();
   flush();
 
   // In progress state after the click.
-  const spinner = importer.shadowRoot!.querySelector('paper-spinner-lite');
+  const spinner = importer.shadowRoot!.querySelector('.spinner');
   assertTrue(!!spinner);
-  assertTrue(spinner.active);
+  assertTrue(isVisible(spinner));
   assertFalse(isVisible(chooseFile));
 
   // Import flow should have been triggered.
@@ -57,7 +57,7 @@ function assertVisibleTextContent(
   const element = parent.querySelector<HTMLElement>(selector);
   assertTrue(!!element);
   assertTrue(isVisible(element));
-  assertEquals(expectedText, element?.textContent!.trim());
+  assertEquals(expectedText, element?.textContent.trim());
 }
 
 async function closeDialogHelper(
@@ -89,7 +89,7 @@ async function assertErrorStateAndClose(
   assertEquals(expectedDescription, description.innerHTML.toString());
 
   assertVisibleTextContent(
-      dialog, '#selectFileButton', importer.i18n('selectFile'));
+      dialog, '#selectFileButtonError', importer.i18n('selectFile'));
   assertVisibleTextContent(dialog, '#closeButton', importer.i18n('close'));
 
   await closeDialogHelper(importer, passwordManager, dialog, '#closeButton');
@@ -143,7 +143,8 @@ suite('PasswordsImporterTest', function() {
   test('can trigger import', async function() {
     const importer = createPasswordsImporter();
 
-    await triggerImportHelper(importer, passwordManager);
+    await triggerImportHelper(
+        importer, passwordManager, '#selectFileButtonLinkRow');
   });
 
   test('store picker dialog has correct state', async function() {
@@ -167,42 +168,79 @@ suite('PasswordsImporterTest', function() {
     assertVisibleTextContent(
         dialog, '#description', importer.i18n('importPasswordsSelectFile'));
     assertVisibleTextContent(
-        dialog, '#selectFileButton', importer.i18n('selectFile'));
+        dialog, '#selectFileButtonStorePicker', importer.i18n('selectFile'));
     assertVisibleTextContent(dialog, '#cancelButton', importer.i18n('cancel'));
 
     await closeDialogHelper(importer, passwordManager, dialog, '#cancelButton');
   });
 
   test('account store user can import passwords to device', async function() {
-    // Store picker should pre-select preferred store as DEVICE.
-    passwordManager.data.isAccountStorageDefault = false;
     const importer = createPasswordsImporter(
         /*isUserSyncingPasswords=*/ false, /*isAccountStoreUser=*/ true,
         /*accountEmail=*/ 'test@test.com');
     await flushTasks();
 
-    // Clicking on the importer row should open the STORE_PICKER dialog.
+    // Clicking on the importer row should open the import dialog. The store
+    // picker should be shown and "account" should be the default.
     importer.$.linkRow.click();
     flush();
+    const storePicker =
+        importer.shadowRoot!.querySelector<HTMLSelectElement>('#storePicker');
+    assertTrue(!!storePicker);
+    assertTrue(isVisible(storePicker));
+    assertEquals(
+        storePicker.value, chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT);
 
+    // Switch the picker to "device" and confirm. Passwords should be imported
+    // to the device.
     const expectedStore = chrome.passwordsPrivate.PasswordStoreSet.DEVICE;
-    await triggerImportHelper(importer, passwordManager, expectedStore);
+    storePicker.value = chrome.passwordsPrivate.PasswordStoreSet.DEVICE;
+    await triggerImportHelper(
+        importer, passwordManager, '#selectFileButtonStorePicker',
+        expectedStore);
   });
 
+
   test('account store user can import passwords to account', async function() {
-    // Store picker should pre-select preferred store as ACCOUNT.
-    passwordManager.data.isAccountStorageDefault = true;
     const importer = createPasswordsImporter(
         /*isUserSyncingPasswords=*/ false, /*isAccountStoreUser=*/ true,
         /*accountEmail=*/ 'test@test.com');
     await flushTasks();
 
-    // Clicking on the importer row should open the STORE_PICKER dialog.
+    // Clicking on the importer row should open the import dialog. The store
+    // picker should be shown and "account" should be the default.
     importer.$.linkRow.click();
     flush();
+    const storePicker =
+        importer.shadowRoot!.querySelector<HTMLSelectElement>('#storePicker');
+    assertTrue(!!storePicker);
+    assertTrue(isVisible(storePicker));
+    assertEquals(
+        storePicker.value, chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT);
 
     const expectedStore = chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT;
-    await triggerImportHelper(importer, passwordManager, expectedStore);
+    await triggerImportHelper(
+        importer, passwordManager, '#selectFileButtonStorePicker',
+        expectedStore);
+  });
+
+  test('non-account store user imports passwords to device', async function() {
+    const importer = createPasswordsImporter(
+        /*isUserSyncingPasswords=*/ false, /*isAccountStoreUser=*/ false,
+        /*accountEmail=*/ 'test@test.com');
+    await flushTasks();
+
+    // Clicking on the importer row should open the import dialog. The store
+    // picker should be hidden.
+    importer.$.linkRow.click();
+    flush();
+    assertFalse(isVisible(
+        importer.shadowRoot!.querySelector<HTMLSelectElement>('#storePicker')));
+
+    // Accepting the dialog should import to the device.
+    const expectedStore = chrome.passwordsPrivate.PasswordStoreSet.DEVICE;
+    await triggerImportHelper(
+        importer, passwordManager, '#selectFileButtonLinkRow', expectedStore);
   });
 
   test('Has correct success state with no errors', async function() {
@@ -214,7 +252,8 @@ suite('PasswordsImporterTest', function() {
       fileName: 'test.csv',
     });
 
-    await triggerImportHelper(importer, passwordManager);
+    await triggerImportHelper(
+        importer, passwordManager, '#selectFileButtonLinkRow');
     await pluralString.whenCalled('getPluralString');
     await flushTasks();
 
@@ -274,7 +313,8 @@ suite('PasswordsImporterTest', function() {
     const expectedTitle = '2 existing passwords found';
     pluralString.text = expectedTitle;
 
-    await triggerImportHelper(importer, passwordManager);
+    await triggerImportHelper(
+        importer, passwordManager, '#selectFileButtonLinkRow');
     await pluralString.whenCalled('getPluralString');
     await flushTasks();
 
@@ -328,7 +368,8 @@ suite('PasswordsImporterTest', function() {
       fileName: 'test.csv',
     });
 
-    await triggerImportHelper(importer, passwordManager);
+    await triggerImportHelper(
+        importer, passwordManager, '#selectFileButtonLinkRow');
     await pluralString.whenCalled('getPluralString');
     await flushTasks();
 
@@ -343,9 +384,9 @@ suite('PasswordsImporterTest', function() {
     flush();
 
     // In progress state after the click.
-    const spinner = importer.shadowRoot!.querySelector('paper-spinner-lite');
+    const spinner = importer.shadowRoot!.querySelector('.spinner');
     assertTrue(!!spinner);
-    assertTrue(spinner.active);
+    assertTrue(isVisible(spinner));
 
     assertFalse(
         !!importer.shadowRoot!.querySelector<CrDialogElement>('#dialog'));
@@ -378,7 +419,8 @@ suite('PasswordsImporterTest', function() {
       fileName: 'test.csv',
     });
 
-    await triggerImportHelper(importer, passwordManager);
+    await triggerImportHelper(
+        importer, passwordManager, '#selectFileButtonLinkRow');
     await pluralString.whenCalled('getPluralString');
     await flushTasks();
 
@@ -400,9 +442,9 @@ suite('PasswordsImporterTest', function() {
     flush();
 
     // In progress state after the click.
-    const spinner = importer.shadowRoot!.querySelector('paper-spinner-lite');
+    const spinner = importer.shadowRoot!.querySelector('.spinner');
     assertTrue(!!spinner);
-    assertTrue(spinner.active);
+    assertTrue(isVisible(spinner));
 
     assertFalse(
         !!importer.shadowRoot!.querySelector<CrDialogElement>('#dialog'));
@@ -437,7 +479,8 @@ suite('PasswordsImporterTest', function() {
     const expectedTitle = '2 existing passwords found';
     pluralString.text = expectedTitle;
 
-    await triggerImportHelper(importer, passwordManager);
+    await triggerImportHelper(
+        importer, passwordManager, '#selectFileButtonLinkRow');
     await pluralString.whenCalled('getPluralString');
     await flushTasks();
 
@@ -494,7 +537,8 @@ suite('PasswordsImporterTest', function() {
           fileName: 'test.csv',
         });
 
-        await triggerImportHelper(importer, passwordManager);
+        await triggerImportHelper(
+            importer, passwordManager, '#selectFileButtonLinkRow');
         await pluralString.whenCalled('getPluralString');
         await flushTasks();
 
@@ -525,7 +569,8 @@ suite('PasswordsImporterTest', function() {
           fileName: 'test.csv',
         });
 
-        await triggerImportHelper(importer, passwordManager);
+        await triggerImportHelper(
+            importer, passwordManager, '#selectFileButtonLinkRow');
         await pluralString.whenCalled('getPluralString');
         await flushTasks();
 
@@ -555,7 +600,8 @@ suite('PasswordsImporterTest', function() {
       fileName: 'test.csv',
     });
 
-    await triggerImportHelper(importer, passwordManager);
+    await triggerImportHelper(
+        importer, passwordManager, '#selectFileButtonLinkRow');
     await pluralString.whenCalled('getPluralString');
     await flushTasks();
 
@@ -645,7 +691,8 @@ suite('PasswordsImporterTest', function() {
       fileName: 'test.csv',
     });
 
-    await triggerImportHelper(importer, passwordManager);
+    await triggerImportHelper(
+        importer, passwordManager, '#selectFileButtonLinkRow');
     await pluralString.whenCalled('getPluralString');
     await flushTasks();
 
@@ -678,7 +725,8 @@ suite('PasswordsImporterTest', function() {
       displayedEntries: [],
       fileName: 'test.csv',
     });
-    await triggerImportHelper(importer, passwordManager);
+    await triggerImportHelper(
+        importer, passwordManager, '#selectFileButtonLinkRow');
 
     await assertErrorStateAndClose(
         importer, passwordManager,
@@ -704,7 +752,8 @@ suite('PasswordsImporterTest', function() {
       displayedEntries: [],
       fileName: 'test.csv',
     });
-    await triggerImportHelper(importer, passwordManager);
+    await triggerImportHelper(
+        importer, passwordManager, '#selectFileButtonLinkRow');
 
     await assertErrorStateAndClose(
         importer, passwordManager,
@@ -720,7 +769,8 @@ suite('PasswordsImporterTest', function() {
       displayedEntries: [],
       fileName: 'test.csv',
     });
-    await triggerImportHelper(importer, passwordManager);
+    await triggerImportHelper(
+        importer, passwordManager, '#selectFileButtonLinkRow');
 
     await assertErrorStateAndClose(
         importer, passwordManager,
@@ -735,7 +785,8 @@ suite('PasswordsImporterTest', function() {
       displayedEntries: [],
       fileName: 'test.csv',
     });
-    await triggerImportHelper(importer, passwordManager);
+    await triggerImportHelper(
+        importer, passwordManager, '#selectFileButtonLinkRow');
 
     await assertErrorStateAndClose(
         importer, passwordManager,
@@ -751,7 +802,8 @@ suite('PasswordsImporterTest', function() {
       fileName: '',
     });
 
-    await triggerImportHelper(importer, passwordManager);
+    await triggerImportHelper(
+        importer, passwordManager, '#selectFileButtonLinkRow');
 
     const dialog =
         importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
@@ -766,4 +818,59 @@ suite('PasswordsImporterTest', function() {
 
     await closeDialogHelper(importer, passwordManager, dialog, '#closeButton');
   });
+
+  test(
+      'for account user, dialog close restores focus to link row',
+      async function() {
+        const importer = createPasswordsImporter(
+            /*isUserSyncingPasswords=*/ false, /*isAccountStoreUser=*/ true,
+            /*accountEmail=*/ 'test@test.com');
+
+        importer.$.linkRow.click();
+        flush();
+
+        const dialog =
+            importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+        assertTrue(!!dialog);
+        assertTrue(dialog.open);
+
+        await closeDialogHelper(
+            importer, passwordManager, dialog, '#cancelButton');
+        await flushTasks();
+
+        // Focus should be restored to the link row.
+        assertEquals(importer.shadowRoot!.activeElement, importer.$.linkRow);
+      });
+
+  test(
+      'for non-account user, dialog close restores focus to select file button',
+      async function() {
+        const importer = createPasswordsImporter(
+            /*isUserSyncingPasswords=*/ false, /*isAccountStoreUser=*/ false,
+            /*accountEmail=*/ 'test@test.com');
+
+        passwordManager.setImportResults({
+          status:
+              chrome.passwordsPrivate.ImportResultsStatus.IMPORT_ALREADY_ACTIVE,
+          numberImported: 0,
+          displayedEntries: [],
+          fileName: '',
+        });
+
+        await triggerImportHelper(
+            importer, passwordManager, '#selectFileButtonLinkRow');
+
+        const dialog =
+            importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+        assertTrue(!!dialog);
+        assertTrue(dialog.open);
+
+        await closeDialogHelper(
+            importer, passwordManager, dialog, '#closeButton');
+        await flushTasks();
+        // Focus should be restored to the select file button.
+        assertEquals(
+            importer.shadowRoot!.activeElement,
+            importer.$.selectFileButtonLinkRow);
+      });
 });

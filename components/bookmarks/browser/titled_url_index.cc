@@ -14,7 +14,6 @@
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/unicodestring.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -22,6 +21,7 @@
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/titled_url_match.h"
 #include "components/bookmarks/browser/titled_url_node.h"
+#include "components/omnibox/common/string_cleaning.h"
 #include "components/query_parser/snippet.h"
 #include "third_party/icu/source/common/unicode/normalizer2.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
@@ -30,7 +30,7 @@ namespace bookmarks {
 
 namespace {
 
-// Return true if `prefix` is a prefix of `string`.
+// Returns true if `prefix` is a prefix of `string`.
 bool IsPrefix(const std::u16string& prefix, const std::u16string& string) {
   return prefix.size() <= string.size() &&
          prefix.compare(0, prefix.size(), string, 0, prefix.size()) == 0;
@@ -189,9 +189,9 @@ std::optional<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodeWithQuery(
       base::i18n::ToLower(Normalize(node->GetTitledUrlNodeTitle()));
   base::OffsetAdjuster::Adjustments adjustments;
   const std::u16string clean_url =
-      CleanUpUrlForMatching(node->GetTitledUrlNodeUrl(), &adjustments);
+      omnibox::CleanUpUrlForMatching(node->GetTitledUrlNodeUrl(), &adjustments);
   std::vector<std::u16string> lower_ancestor_titles;
-  base::ranges::transform(
+  std::ranges::transform(
       node->GetTitledUrlNodeAncestorTitles(),
       std::back_inserter(lower_ancestor_titles),
       [](const auto& ancestor_title) {
@@ -203,7 +203,7 @@ std::optional<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodeWithQuery(
   // faster, so if it returns false, early exit and avoid the expensive
   // `ExtractQueryWords()` calls.
   bool approximate_match =
-      base::ranges::all_of(query_terms, [&](const auto& word) {
+      std::ranges::all_of(query_terms, [&](const auto& word) {
         if (lower_title.find(word) != std::u16string::npos)
           return true;
         if (clean_url.find(word) != std::u16string::npos)
@@ -252,7 +252,7 @@ std::optional<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodeWithQuery(
     match.title_match_positions.swap(title_matches);
   }
   // Now that we're done processing this entry, correct the offsets of the
-  // matches in |url_matches| so they point to offsets in the original URL
+  // matches in `url_matches` so they point to offsets in the original URL
   // spec, not the cleaned-up URL string that we used for matching.
   std::vector<size_t> offsets =
       TitledUrlMatch::OffsetsFromMatchPositions(url_matches);
@@ -296,10 +296,10 @@ TitledUrlIndex::TitledUrlNodeSet TitledUrlIndex::RetrieveNodesMatchingAnyTerms(
   // same, since all terms must either title, URL, or path match; but there'll
   // be much fewer nodes returned.
   std::vector<std::u16string> terms_not_path;
-  base::ranges::copy_if(terms, std::back_inserter(terms_not_path),
-                        [&](const std::u16string& term) {
-                          return !DoesTermMatchPath(term, matching_algorithm);
-                        });
+  std::ranges::copy_if(terms, std::back_inserter(terms_not_path),
+                       [&](const std::u16string& term) {
+                         return !DoesTermMatchPath(term, matching_algorithm);
+                       });
   if (!terms_not_path.empty())
     return RetrieveNodesMatchingAllTerms(terms_not_path, matching_algorithm);
 
@@ -319,7 +319,7 @@ TitledUrlIndex::TitledUrlNodeSet TitledUrlIndex::RetrieveNodesMatchingAnyTerms(
 
   // Sort `matches_per_term` least frequent first. This prevents terms like
   // 'https', which match a lot of nodes, from wasting `max_nodes` capacity.
-  base::ranges::sort(
+  std::ranges::sort(
       matches_per_term,
       [](size_t first, size_t second) { return first < second; },
       [](const auto& matches) { return matches.size(); });
@@ -379,7 +379,7 @@ TitledUrlIndex::TitledUrlNodes TitledUrlIndex::RetrieveNodesMatchingTerm(
   }
 
   // Loop through index adding all entries that start with term to
-  // |prefix_matches|.
+  // `prefix_matches`.
   TitledUrlNodes prefix_matches;
   while (i != index_.end() && IsPrefix(term, i->first)) {
     prefix_matches.insert(prefix_matches.end(), i->second.begin(),
@@ -424,7 +424,8 @@ std::vector<std::u16string> TitledUrlIndex::ExtractIndexTerms(
     terms.push_back(term);
   }
 
-  for (const std::u16string& term : ExtractQueryWords(CleanUpUrlForMatching(
+  for (const std::u16string& term :
+       ExtractQueryWords(omnibox::CleanUpUrlForMatching(
            node->GetTitledUrlNodeUrl(), /*adjustments=*/nullptr))) {
     terms.push_back(term);
   }

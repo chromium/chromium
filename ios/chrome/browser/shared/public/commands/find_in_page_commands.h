@@ -23,12 +23,6 @@
 // reappear.
 - (void)hideFindUI;
 
-// Defocuses the find in page text field.
-- (void)defocusFindInPage;
-
-// Search the current tab for the query string in the Find In Page bar.
-- (void)searchFindInPage;
-
 // Go to the next location of the Find In Page query string in the current tab.
 - (void)findNextStringInPage;
 

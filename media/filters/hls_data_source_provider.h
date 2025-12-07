@@ -11,7 +11,9 @@
 #include <string_view>
 
 #include "base/containers/queue.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/sequence_checker.h"
 #include "base/types/id_type.h"
 #include "media/base/media_export.h"
 #include "media/base/status.h"
@@ -50,6 +52,7 @@ class MEDIA_EXPORT HlsDataSourceProvider {
   struct UrlDataSegment {
     const GURL uri;
     const std::optional<hls::types::ByteRange> range;
+    const bool bypass_cache;
   };
   using SegmentQueue = base::queue<UrlDataSegment>;
 
@@ -102,7 +105,7 @@ class MEDIA_EXPORT HlsDataSourceStream {
 
   std::optional<size_t> max_read_position() const { return max_read_position_; }
 
-  const uint8_t* raw_data() const { return buffer_.data(); }
+  base::span<const uint8_t> data() const { return buffer_; }
 
   uint64_t memory_usage() const { return memory_usage_; }
 
@@ -125,9 +128,15 @@ class MEDIA_EXPORT HlsDataSourceStream {
   bool RequiresNextDataSource() const;
 
   // Gets the next segment URI from the queue of segments. It is invalid to call
-  // this method if `RequiresResetForNewSegment` does not return true. This
-  // method will also update the internal range if the segment has one set.
+  // this method if `RequiresNextDataSource` does not return true. This
+  // method will also update the internal range if the segment has one.
   GURL GetNextSegmentURI();
+
+  // Gets the next segment URI and its cache bypass option from the queue of
+  // segments. It is invalid to call this method if `RequiresNextDataSource`
+  // does not return true. This method will also update the internal range if
+  // the segment has one.
+  std::pair<GURL, bool> GetNextSegmentURIAndCacheStatus();
 
   // Has the stream read all possible data?
   bool CanReadMore() const;
@@ -138,12 +147,12 @@ class MEDIA_EXPORT HlsDataSourceStream {
 
   // Used by a HlsDataSourceProvider implementation to finish adding data to
   // the internal buffer.
-  void UnlockStreamPostWrite(int read_size, bool end_of_stream);
+  void UnlockStreamPostWrite(size_t read_size, bool end_of_stream);
 
   // Used by a HlsDataSourceProvider implementation to start adding new data,
   // which means ensuring that there is enough space for the expected write, as
   // well as returning the correct buffer address to write into.
-  uint8_t* LockStreamForWriting(int ensure_minimum_space);
+  base::span<uint8_t> LockStreamForWriting(size_t ensure_minimum_space);
 
  private:
   const StreamId stream_id_;

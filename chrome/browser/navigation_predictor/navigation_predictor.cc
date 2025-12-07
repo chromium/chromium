@@ -13,7 +13,6 @@
 #include "base/hash/hash.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
@@ -71,13 +70,13 @@ struct PathLengthDepthAndHash {
 };
 
 PathLengthDepthAndHash GetUrlPathLengthDepthAndHash(const GURL& target_url) {
-  std::string_view path = target_url.path_piece();
+  std::string_view path = target_url.path();
   int64_t path_length = path.length();
   path_length = ukm::GetLinearBucketMin(path_length, 10);
   // Truncate at 100 characters.
   path_length = std::min(path_length, static_cast<int64_t>(100));
 
-  int num_slashes = base::ranges::count(path, '/');
+  int num_slashes = std::ranges::count(path, '/');
   // Truncate at 5.
   int path_depth = std::min(num_slashes, 5);
 
@@ -102,27 +101,17 @@ int GetLinearBucketForRatioArea(int value) {
 }
 
 base::TimeDelta MLModelExecutionTimerStartDelay() {
-  static int timer_start_delay =
-      blink::features::kPreloadingModelTimerStartDelay.Get();
-  return base::Milliseconds(timer_start_delay);
+  return base::Milliseconds(
+      blink::features::kPreloadingModelTimerStartDelay.Get());
 }
 
 base::TimeDelta MLModelExecutionTimerInterval() {
-  static int timer_interval =
-      blink::features::kPreloadingModelTimerInterval.Get();
-  return base::Milliseconds(timer_interval);
-}
-
-bool MLModelOneExecutionPerHover() {
-  static bool one_execution_per_hover =
-      blink::features::kPreloadingModelOneExecutionPerHover.Get();
-  return one_execution_per_hover;
+  return base::Milliseconds(
+      blink::features::kPreloadingModelTimerInterval.Get());
 }
 
 base::TimeDelta MLModelMaxHoverTime() {
-  static const base::TimeDelta max_hover_time =
-      blink::features::kPreloadingModelMaxHoverTime.Get();
-  return max_hover_time;
+  return blink::features::kPreloadingModelMaxHoverTime.Get();
 }
 
 void RecordMetricsForModelTraining(
@@ -243,17 +232,22 @@ void NavigationPredictor::Create(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::AnchorElementMetricsHost> receiver) {
   CHECK(render_frame_host);
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kNavigationPredictor));
-  DCHECK(!IsPrerendering(*render_frame_host));
+  CHECK(!IsPrerendering(*render_frame_host));
+
+  if (!base::FeatureList::IsEnabled(blink::features::kNavigationPredictor)) {
+    return;
+  }
 
   // Only valid for the main frame.
-  if (render_frame_host->GetParentOrOuterDocument())
+  if (render_frame_host->GetParentOrOuterDocument()) {
     return;
+  }
 
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
-  if (!web_contents)
+  if (!web_contents) {
     return;
+  }
 
   DCHECK(web_contents->GetBrowserContext());
   if (web_contents->GetBrowserContext()->IsOffTheRecord()) {
@@ -488,14 +482,7 @@ void NavigationPredictor::OnMLModelExecutionTimerFired() {
       base::BindOnce(&NavigationPredictor::OnPreloadingHeuristicsModelDone,
                      weak_ptr_factory_.GetWeakPtr(), anchor.target_url));
 
-  // TODO(crbug.com/40278151): In its current form, the model does not seem to
-  // ever increase in confidence when dwelling on an anchor, which makes
-  // repeated executions wasteful. So we only do one execution per mouse over.
-  // As we iterate on the model, multiple executions may become useful, but we
-  // need to take care to not produce a large amount of redundant predictions
-  // (as seen in crbug.com/338200075 ).
-  if (!MLModelOneExecutionPerHover() &&
-      inputs.hover_dwell_time < MLModelMaxHoverTime() &&
+  if (inputs.hover_dwell_time < MLModelMaxHoverTime() &&
       !ml_model_execution_timer_.IsRunning()) {
     ml_model_execution_timer_.Start(
         FROM_HERE, MLModelExecutionTimerInterval(),
@@ -507,14 +494,6 @@ void NavigationPredictor::OnMLModelExecutionTimerFired() {
 void NavigationPredictor::SetModelScoreCallbackForTesting(
     ModelScoreCallbackForTesting callback) {
   model_score_callback_ = std::move(callback);
-}
-
-void NavigationPredictor::SetTaskRunnerForTesting(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    const base::TickClock* clock) {
-  ml_model_execution_timer_.SetTaskRunner(task_runner);
-  clock_ = clock;
-  navigation_start_ = NowTicks();
 }
 
 // static
@@ -540,8 +519,9 @@ void NavigationPredictor::ReportAnchorElementClick(
   navigation_start_to_click_ = click->navigation_start_to_click;
 
   clicked_count_++;
-  if (clicked_count_ > kMaxClicksTracked)
+  if (clicked_count_ > kMaxClicksTracked) {
     return;
+  }
 
   if (!ukm_recorder_) {
     return;
@@ -646,8 +626,14 @@ void NavigationPredictor::ReportAnchorElementsLeftViewport(
 
 void NavigationPredictor::ReportAnchorElementsPositionUpdate(
     std::vector<blink::mojom::AnchorElementPositionUpdatePtr> elements) {
-  CHECK(base::FeatureList::IsEnabled(
-      blink::features::kNavigationPredictorNewViewportFeatures));
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kNavigationPredictorNewViewportFeatures)) {
+    ReportBadMessageAndDeleteThis(
+        "ReportAnchorElementsPositionUpdate should only be called with "
+        "kNavigationPredictorNewViewportFeatures enabled.");
+    return;
+  }
+
   auto& user_interactions =
       GetNavigationPredictorMetricsDocumentData().GetUserInteractionsData();
   for (const auto& element : elements) {

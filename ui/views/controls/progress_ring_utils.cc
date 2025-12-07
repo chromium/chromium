@@ -7,6 +7,8 @@
 #include <utility>
 #include <vector>
 
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
@@ -43,18 +45,19 @@ void DrawRing(gfx::Canvas* canvas,
   foreground_flags.setColor(foreground_color);
   foreground_flags.setStrokeWidth(stroke_width);
 
-  SkPath background_path, foreground_path;
+  SkPathBuilder background_path, foreground_path;
   SkScalar cur_angle = start_angle;
   for (const ArcSpec& arc : arcs) {
-    SkPath& path = arc.color == ArcSpec::Color::kBackground ? background_path
-                                                            : foreground_path;
+    SkPathBuilder& path = arc.color == ArcSpec::Color::kBackground
+                              ? background_path
+                              : foreground_path;
     path.addArc(bounds, cur_angle, arc.sweep_angle);
     cur_angle += arc.sweep_angle;
   }
   CHECK_EQ(cur_angle, 360 + start_angle);
 
-  canvas->DrawPath(std::move(foreground_path), std::move(foreground_flags));
-  canvas->DrawPath(std::move(background_path), std::move(background_flags));
+  canvas->DrawPath(foreground_path.detach(), std::move(foreground_flags));
+  canvas->DrawPath(background_path.detach(), std::move(background_flags));
 }
 
 }  // namespace

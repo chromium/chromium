@@ -24,5 +24,6 @@ schema:
 supported_on:
 - chrome.*:80-
 - chrome_os:80-
+- ios:142-
 tags: []
 type: main

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 28 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["stylewithcss","true"],["underline",""]] "foo<u>[bar]</u>baz" queryCommandState("underline") after
   assert_equals: Wrong result returned expected false but got true
 [FAIL] [["stylewithcss","true"],["underline",""]] "foo<u>[bar]</u>baz" queryCommandValue("underline") after
@@ -56,5 +56,9 @@ Found 28 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["stylewithcss","false"],["underline",""]] "<u>fo[o</u><ins>b]ar</ins>" queryCommandValue("underline") after
   assert_equals: Wrong result returned expected "" but got "false"
+[FAIL] [["stylewithcss","true"],["underline",""]] "abc<span style=\\"text-decoration:blink line-through overline\\">[def]</span>ghi" compare innerHTML
+  assert_in_array: Unexpected innerHTML (after normalizing inline style) value "abc<span style=\\"text-decoration-line:underline overline line-through blink\\">def</span>ghi" not in array ["abc<span style=\\"text-decoration:underline overline line-through\\">def</span>ghi", "abc<span style=\\"text-decoration-line:underline overline line-through\\">def</span>ghi"]
+[FAIL] [["stylewithcss","true"],["underline",""]] "abc<span style=\\"text-decoration:blink line-through underline overline\\">[def]</span>ghi" compare innerHTML
+  assert_in_array: Unexpected innerHTML (after normalizing inline style) value "abc<span style=\\"text-decoration-line:overline line-through blink\\">def</span>ghi" not in array ["abc<span style=\\"text-decoration:overline line-through\\">def</span>ghi", "abc<span style=\\"text-decoration-line:overline line-through\\">def</span>ghi"]
 Harness: the test ran to completion.
 

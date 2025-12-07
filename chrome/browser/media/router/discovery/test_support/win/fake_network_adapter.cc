@@ -4,7 +4,7 @@
 
 #include "chrome/browser/media/router/discovery/test_support/win/fake_network_adapter.h"
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "chrome/browser/media/router/discovery/test_support/win/fake_winrt_network_environment.h"
 
 namespace WinrtConnectivity = ABI::Windows::Networking::Connectivity;

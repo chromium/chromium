@@ -115,8 +115,8 @@ class ChannelMultiplexerTest : public testing::Test {
   scoped_refptr<net::IOBufferWithSize> CreateTestBuffer(int size) {
     scoped_refptr<net::IOBufferWithSize> result =
         base::MakeRefCounted<net::IOBufferWithSize>(size);
-    for (int i = 0; i < size; ++i) {
-      result->data()[i] = rand() % 256;
+    for (auto& elem : result->span()) {
+      elem = rand() % 256;
     }
     return result;
   }

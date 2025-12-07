@@ -66,7 +66,8 @@ void SwizzleUIImageImageNamed() {
 
   id swizzleBlock = ^(id self, NSString* imageName) {
     // Call the original [UIImage imageNamed:] method.
-    UIImage* (*imp)(id, SEL, id) = (UIImage*(*)(id,SEL,id))*originalImpPtr;
+    UIImage* (*imp)(id, SEL, id) =
+        (UIImage * (*)(id, SEL, id)) * originalImpPtr;
     Class aClass = objc_getClass("UIImage");
     UIImage* image = imp(aClass, @selector(imageNamed:), imageName);
 
@@ -164,8 +165,10 @@ void SwizzleNSDataDataWithContentsOfFile() {
 + (void)setUpDebuggingOptions {
 // Enable the zombie treadmill on simulator builds.
 // TODO(crbug.com/40492640): Consider enabling this on device builds too.
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
+#if !defined(ADDRESS_SANITIZER) && !defined(MEMORY_SANITIZER)
   DCHECK(ObjcEvilDoers::ZombieEnable(true, 10000));
+#endif
 #endif
 
 #if !defined(NDEBUG)

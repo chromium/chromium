@@ -7,17 +7,13 @@
 #import <memory>
 #import <utility>
 
-#import "base/no_destructor.h"
 #import "base/not_fatal_until.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
 #import "components/affiliations/core/browser/affiliation_constants.h"
 #import "components/affiliations/core/browser/affiliation_service_impl.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 // static
@@ -29,41 +25,34 @@ IOSChromeAffiliationServiceFactory::GetInstance() {
 
 // static
 affiliations::AffiliationService*
-IOSChromeAffiliationServiceFactory::GetForBrowserState(
-    web::BrowserState* browser_state) {
-  CHECK(browser_state, base::NotFatalUntil::M123);
+IOSChromeAffiliationServiceFactory::GetForProfile(ProfileIOS* profile) {
+  CHECK(profile);
 
-  // Always use the original BrowserState, not incognito. AffiliationService is
-  // safe to use in incognito.
-  auto* original_browser_state =
-      ChromeBrowserState::FromBrowserState(browser_state)
-          ->GetOriginalChromeBrowserState();
-
-  return static_cast<affiliations::AffiliationService*>(
-      GetInstance()->GetServiceForBrowserState(original_browser_state, true));
+  return GetInstance()
+      ->GetServiceForProfileAs<affiliations::AffiliationService>(
+          profile, /*create=*/true);
 }
 
 IOSChromeAffiliationServiceFactory::IOSChromeAffiliationServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "AffiliationService",
-          BrowserStateDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactoryIOS("AffiliationService",
+                                    ProfileSelection::kRedirectedInIncognito) {}
 
 IOSChromeAffiliationServiceFactory::~IOSChromeAffiliationServiceFactory() =
     default;
 
 std::unique_ptr<KeyedService>
 IOSChromeAffiliationServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
   auto affiliation_service =
       std::make_unique<affiliations::AffiliationServiceImpl>(
-          context->GetSharedURLLoaderFactory(), backend_task_runner);
+          profile->GetSharedURLLoaderFactory(), backend_task_runner);
   affiliation_service->Init(
       GetApplicationContext()->GetNetworkConnectionTracker(),
-      context->GetStatePath().Append(
+      profile->GetStatePath().Append(
           affiliations::kAffiliationDatabaseFileName));
 
   return affiliation_service;

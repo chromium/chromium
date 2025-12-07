@@ -1,7 +1,0 @@
-The generated documentation files for the SDK go here.
-
-To generate these files, run:
-
-    make chromesite
-
-from the native_client_sdk/src/doc directory.

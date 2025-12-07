@@ -27,6 +27,9 @@ enum ViewportFit {
 interface DisplayCutoutHost {
   // Notify the browser that the ViewportFit for the renderer has changed.
   NotifyViewportFitChanged(blink.mojom.ViewportFit value);
+
+  // Notify the browser that the page's slow safe area constraint state changed.
+  NotifyComplexSafeAreaConstraintChanged(bool value);
 };
 
 // Used for browser -> renderer calls about display cutout. This is associated

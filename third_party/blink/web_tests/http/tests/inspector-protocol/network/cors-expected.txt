@@ -1,0 +1,170 @@
+Test to make sure CORS with preflight requests are correctly reported.
+Creating request from the main frame...
+Creating request from the iframe...
+Preflight events: [
+    [0] : {
+        method : Network.requestWillBeSent
+        params : {
+            documentURL : <string>
+            hasUserGesture : false
+            initiator : {
+                requestId : <string 0>
+                type : preflight
+                url : https://127.0.0.1:8443/inspector-protocol/network/resources/cors-headers.php?origin=*
+            }
+            loaderId : <string>
+            redirectHasExtraInfo : false
+            request : {
+                headers : <object>
+                initialPriority : High
+                method : OPTIONS
+                referrerPolicy : strict-origin-when-cross-origin
+                url : https://127.0.0.1:8443/inspector-protocol/network/resources/cors-headers.php?origin=*
+            }
+            requestId : <string 1>
+            timestamp : <number>
+            type : Other
+            wallTime : <number>
+        }
+        sessionId : <string>
+    }
+    [1] : {
+        method : Network.responseReceived
+        params : {
+            hasExtraInfo : true
+            loaderId : <string>
+            requestId : <string 1>
+            response : <object>
+            timestamp : <number>
+            type : Preflight
+        }
+        sessionId : <string>
+    }
+    [2] : {
+        method : Network.requestWillBeSent
+        params : {
+            documentURL : <string>
+            hasUserGesture : false
+            initiator : {
+                requestId : <string 2>
+                type : preflight
+                url : https://127.0.0.1:8443/inspector-protocol/network/resources/cors-headers.php?origin=*
+            }
+            loaderId : <string>
+            redirectHasExtraInfo : false
+            request : {
+                headers : <object>
+                initialPriority : High
+                method : OPTIONS
+                referrerPolicy : strict-origin-when-cross-origin
+                url : https://127.0.0.1:8443/inspector-protocol/network/resources/cors-headers.php?origin=*
+            }
+            requestId : <string 3>
+            timestamp : <number>
+            type : Other
+            wallTime : <number>
+        }
+        sessionId : <string>
+    }
+    [3] : {
+        method : Network.responseReceived
+        params : {
+            hasExtraInfo : true
+            loaderId : <string>
+            requestId : <string 3>
+            response : <object>
+            timestamp : <number>
+            type : Preflight
+        }
+        sessionId : <string>
+    }
+]
+Other events: [
+    [0] : {
+        method : Network.requestWillBeSent
+        params : {
+            documentURL : <string>
+            frameId : <string 4>
+            hasUserGesture : false
+            initiator : {
+                stack : <object>
+                type : script
+            }
+            loaderId : <string>
+            redirectHasExtraInfo : false
+            request : {
+                headers : <object>
+                initialPriority : High
+                isSameSite : false
+                method : PUT
+                mixedContentType : none
+                referrerPolicy : strict-origin-when-cross-origin
+                url : https://127.0.0.1:8443/inspector-protocol/network/resources/cors-headers.php?origin=*
+            }
+            requestId : <string 0>
+            timestamp : <number>
+            type : Fetch
+            wallTime : <number>
+        }
+        sessionId : <string>
+    }
+    [1] : {
+        method : Network.loadingFailed
+        params : {
+            canceled : false
+            corsErrorStatus : {
+                corsError : MethodDisallowedByPreflightResponse
+                failedParameter : PUT
+            }
+            errorText : net::ERR_FAILED
+            requestId : <string 0>
+            timestamp : <number>
+            type : Fetch
+        }
+        sessionId : <string>
+    }
+    [2] : {
+        method : Network.requestWillBeSent
+        params : {
+            documentURL : <string>
+            frameId : <string 5>
+            hasUserGesture : false
+            initiator : {
+                stack : <object>
+                type : script
+            }
+            loaderId : <string>
+            redirectHasExtraInfo : false
+            request : {
+                headers : <object>
+                initialPriority : High
+                isSameSite : false
+                method : PUT
+                mixedContentType : none
+                referrerPolicy : strict-origin-when-cross-origin
+                url : https://127.0.0.1:8443/inspector-protocol/network/resources/cors-headers.php?origin=*
+            }
+            requestId : <string 2>
+            timestamp : <number>
+            type : Fetch
+            wallTime : <number>
+        }
+        sessionId : <string>
+    }
+    [3] : {
+        method : Network.loadingFailed
+        params : {
+            canceled : false
+            corsErrorStatus : {
+                corsError : MethodDisallowedByPreflightResponse
+                failedParameter : PUT
+            }
+            errorText : net::ERR_FAILED
+            requestId : <string 2>
+            timestamp : <number>
+            type : Fetch
+        }
+        sessionId : <string>
+    }
+]
+

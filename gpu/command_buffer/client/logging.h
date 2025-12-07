@@ -38,7 +38,7 @@
 // };
 
 #if (DCHECK_IS_ON() || defined(GPU_ENABLE_CLIENT_LOGGING)) && \
-    !defined(__native_client__) && !defined(GLES2_INLINE_OPTIMIZATION)
+    !defined(GLES2_INLINE_OPTIMIZATION)
 #define GPU_CLIENT_DEBUG
 #endif
 

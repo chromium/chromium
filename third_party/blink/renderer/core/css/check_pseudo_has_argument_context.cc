@@ -7,13 +7,14 @@
 #include "third_party/blink/renderer/core/css/check_pseudo_has_fast_reject_filter.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 
 namespace blink {
 
 namespace {
 
 // Iterator class for the compound selectors in the :has() argument selector.
-// During iteration, this class collects :has() pseudo class argument
+// During iteration, this class collects :has() pseudo-class argument
 // hashes for fast rejection and provides current compound information.
 class CheckPseudoHasArgumentCompoundIterator {
   STACK_ALLOCATED();
@@ -61,7 +62,7 @@ class CheckPseudoHasArgumentCompoundIterator {
   // In most cases, a compound selector doesn't have any sibling relationships
   // in it. (.e.g. 'div.item:hover')
   // But it can have implicit sibling relationships when it has a child indexed
-  // pseudo class or a logical combination pseudo class containing a complex
+  // pseudo-class or a logical combination pseudo-class containing a complex
   // selector.
   // - .a:nth-child(3) : An element that matches this compound selector has
   //                     relationships with its siblings since 'nth-child(3)'
@@ -132,7 +133,7 @@ CheckPseudoHasArgumentCompoundIterator::CheckPseudoHasArgumentCompoundIterator(
 // In most cases, a simple selector doesn't have any sibling relationships
 // in it. (.e.g. 'div', '.item', ':hover')
 // But it can have implicit sibling relationships if it is a child indexed
-// pseudo class or a logical combination pseudo class containing a complex
+// pseudo-class or a logical combination pseudo-class containing a complex
 // selector.
 // - :nth-child(3) : An element that matches this selector has relationships
 //                   with its siblings since the match result can be affected
@@ -157,7 +158,7 @@ void CheckPseudoHasArgumentCompoundIterator::
     return;
   }
 
-  // In case of a logical combination pseudo class (e.g. :is(), :where()), the
+  // In case of a logical combination pseudo-class (e.g. :is(), :where()), the
   // relationship within the logical combination can be collected by checking
   // the simple selectors or the combinators in its sub selectors.
   //
@@ -165,22 +166,22 @@ void CheckPseudoHasArgumentCompoundIterator::
   // order (from rightmost to left), if the sibling relationship is collected,
   // we need to differentiate the sibling relationship by checking whether the
   // child or descendant combinator has already been found or not since the
-  // collected sibling relationship make the logical combination pseudo class
+  // collected sibling relationship make the logical combination pseudo-class
   // containing sibling relationship or ancestor sibling relationship.
   //
   // We can see this with the following nested ':is()' case:
   // - ':is(:is(.ancestor_sibling ~ .ancestor) .target)'
   //
-  // The inner ':is()' pseudo class contains the 'sibling relationship'
+  // The inner ':is()' pseudo-class contains the 'sibling relationship'
   // because there is one adjacent combinator in the sub selector of the
-  // pseudo class and there is no child or descendant combinator to the
+  // pseudo-class and there is no child or descendant combinator to the
   // right of the adjacent combinator:
   // - ':is(.ancestor_sibling ~ .ancestor)'
   //
-  // The 'sibling relationship' within the inner 'is()' pseudo class makes
-  // the outer ':is()' pseudo class containing the 'ancestor sibling
+  // The 'sibling relationship' within the inner 'is()' pseudo-class makes
+  // the outer ':is()' pseudo-class containing the 'ancestor sibling
   // relationship' because there is a descendant combinator to the right of
-  // the inner ':is()' pseudo class:
+  // the inner ':is()' pseudo-class:
   // - ':is(:is(...) .target)'
   const CSSSelector* sub_selector = simple_selector->SelectorListOrParent();
   for (; sub_selector; sub_selector = CSSSelectorList::Next(*sub_selector)) {
@@ -243,8 +244,12 @@ void CheckPseudoHasArgumentCompoundIterator::operator++() {
 }  // namespace
 
 CheckPseudoHasArgumentContext::CheckPseudoHasArgumentContext(
-    const CSSSelector* selector)
-    : has_argument_(selector) {
+    const CSSSelector* selector,
+    const ContainerNode* scope,
+    bool match_in_shadow_tree)
+    : has_argument_(selector),
+      scope_(scope),
+      match_in_shadow_tree_(match_in_shadow_tree) {
   depth_limit_ = 0;
   adjacent_distance_limit_ = 0;
   bool contains_child_or_descendant_combinator = false;
@@ -253,7 +258,7 @@ CheckPseudoHasArgumentContext::CheckPseudoHasArgumentContext(
                                                   pseudo_has_argument_hashes_);
   for (; !iterator.AtEnd(); ++iterator) {
     // If the compound contains an :nth-child() or another child-indexed
-    // selector, or the compound contains a logical combination pseudo class
+    // selector, or the compound contains a logical combination pseudo-class
     // containing a sibling relationship in its sub-selector, we need to do the
     // same invalidation as for an indirect adjacent combinator since inserting
     // or removing a sibling at any place may change matching of a :has()
@@ -325,8 +330,7 @@ CheckPseudoHasArgumentContext::CheckPseudoHasArgumentContext(
         break;
 
       default:
-        NOTREACHED_IN_MIGRATION();
-        return;
+        NOTREACHED();
     }
   }
   DCHECK_NE(leftmost_relation_, CSSSelector::kSubSelector);
@@ -373,8 +377,21 @@ CheckPseudoHasArgumentContext::CheckPseudoHasArgumentContext(
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
+  }
+
+  if (match_in_shadow_tree_) {
+    switch (traversal_scope_) {
+      case kSubtree:
+        traversal_scope_ = kShadowRootSubtree;
+        break;
+      case kFixedDepthDescendants:
+        traversal_scope_ = kShadowRootFixedDepthDescendants;
+        break;
+      default:
+        traversal_scope_ = kInvalidShadowRootTraversalScope;
+        break;
+    }
   }
 }
 
@@ -383,7 +400,16 @@ CheckPseudoHasArgumentTraversalIterator::
         Element& has_anchor_element,
         CheckPseudoHasArgumentContext& context)
     : has_anchor_element_(&has_anchor_element),
+      match_in_shadow_tree_(context.MatchInShadowTree()),
       depth_limit_(context.DepthLimit()) {
+  if (match_in_shadow_tree_) {
+    if (!has_anchor_element.GetShadowRoot() ||
+        context.TraversalScope() == kInvalidShadowRootTraversalScope) {
+      DCHECK_EQ(current_element_, nullptr);
+      return;
+    }
+  }
+
   if (!context.AdjacentDistanceFixed()) {
     // Set the last_element_ as the next sibling of the :has() anchor element,
     // and move to the last sibling of the :has() anchor element, and move again
@@ -404,12 +430,16 @@ CheckPseudoHasArgumentTraversalIterator::
     // Set the last_element_ as the first child of the :has() anchor element,
     // and move to the last descendant of the :has() anchor element without
     // exceeding the depth limit.
-    last_element_ = ElementTraversal::FirstChild(*has_anchor_element_);
+    ContainerNode* has_anchor_node = has_anchor_element_;
+    if (match_in_shadow_tree_) {
+      has_anchor_node = has_anchor_element_->GetShadowRoot();
+    }
+    last_element_ = ElementTraversal::FirstChild(*has_anchor_node);
     if (!last_element_) {
       DCHECK_EQ(current_element_, nullptr);
       return;
     }
-    current_element_ = LastWithin(has_anchor_element_);
+    current_element_ = LastWithin(has_anchor_node);
     DCHECK(current_element_);
   } else {
     // Set last_element_ as the next sibling of the :has() anchor element, set
@@ -442,17 +472,18 @@ CheckPseudoHasArgumentTraversalIterator::
   }
 }
 
-Element* CheckPseudoHasArgumentTraversalIterator::LastWithin(Element* element) {
+Element* CheckPseudoHasArgumentTraversalIterator::LastWithin(
+    ContainerNode* container_node) {
   // If the current depth is at the depth limit, return null.
   if (current_depth_ == depth_limit_) {
     return nullptr;
   }
 
   // Return the last element of the pre-order traversal starting from the passed
-  // in element without exceeding the depth limit.
+  // in container node without exceeding the depth limit.
   Element* last_descendant = nullptr;
-  for (Element* descendant = ElementTraversal::LastChild(*element); descendant;
-       descendant = ElementTraversal::LastChild(*descendant)) {
+  for (Element* descendant = ElementTraversal::LastChild(*container_node);
+       descendant; descendant = ElementTraversal::LastChild(*descendant)) {
     last_descendant = descendant;
     if (++current_depth_ == depth_limit_) {
       break;

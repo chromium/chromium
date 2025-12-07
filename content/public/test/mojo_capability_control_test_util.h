@@ -7,11 +7,15 @@
 
 #include "content/public/browser/mojo_binder_policy_map.h"
 #include "content/public/test/mojo_capability_control_test_interfaces.mojom.h"
-#include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+
+namespace mojo {
+template <typename>
+class BinderMapWithContext;
+}  // namespace mojo
 
 namespace content {
 

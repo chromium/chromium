@@ -191,7 +191,12 @@ ClientDiscardableSharedMemoryManager::ClientDiscardableSharedMemoryManager(
       task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       heap_(std::make_unique<DiscardableSharedMemoryHeap>()),
       io_task_runner_(std::move(io_task_runner)),
-      manager_mojo_(nullptr) {
+      manager_mojo_(nullptr),
+      memory_pressure_listener_registration_(
+          FROM_HERE,
+          base::MemoryPressureListenerTag::
+              kClientDiscardableSharedMemoryManager,
+          this) {
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "ClientDiscardableSharedMemoryManager",
       base::SingleThreadTaskRunner::GetCurrentDefault());
@@ -231,6 +236,13 @@ void ClientDiscardableSharedMemoryManager::OnBackgrounded() {
   foregrounded_ = false;
 }
 
+void ClientDiscardableSharedMemoryManager::OnMemoryPressure(
+    base::MemoryPressureLevel level) {
+  if (level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    ReleaseFreeMemory();
+  }
+}
+
 std::unique_ptr<base::DiscardableMemory>
 ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
     size_t size) {
@@ -247,7 +259,7 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
 
   DCHECK_NE(size, 0u);
 
-  auto size_in_kb = static_cast<base::HistogramBase::Sample>(size / 1024);
+  auto size_in_kb = static_cast<base::HistogramBase::Sample32>(size / 1024);
   UMA_HISTOGRAM_CUSTOM_COUNTS("Memory.DiscardableAllocationSize",
                               size_in_kb,  // In KiB
                               1,
@@ -499,8 +511,7 @@ bool ClientDiscardableSharedMemoryManager::LockSpan(
       return false;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void ClientDiscardableSharedMemoryManager::UnlockSpan(

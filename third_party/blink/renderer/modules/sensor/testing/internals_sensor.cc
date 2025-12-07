@@ -11,8 +11,8 @@
 #include "services/device/public/cpp/generic_sensor/orientation_util.h"
 #include "services/device/public/mojom/sensor.mojom-blink.h"
 #include "services/device/public/mojom/sensor_provider.mojom-blink.h"
-#include "third_party/blink/public/mojom/sensor/web_sensor_provider_automation.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/test/mojom/sensor/web_sensor_provider_automation.test-mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -47,8 +47,6 @@ device::mojom::blink::SensorType ToMojoSensorType(
       return device::mojom::blink::SensorType::LINEAR_ACCELERATION;
     case V8VirtualSensorType::Enum::kMagnetometer:
       return device::mojom::blink::SensorType::MAGNETOMETER;
-    case V8VirtualSensorType::Enum::kProximity:
-      return device::mojom::blink::SensorType::PROXIMITY;
     case V8VirtualSensorType::Enum::kRelativeOrientation:
       return device::mojom::blink::SensorType::RELATIVE_ORIENTATION_QUATERNION;
   }
@@ -120,7 +118,6 @@ ToMojoRawReading(V8VirtualSensorType::Enum type,
     case V8VirtualSensorType::Enum::kGyroscope:
     case V8VirtualSensorType::Enum::kLinearAcceleration:
     case V8VirtualSensorType::Enum::kMagnetometer:
-    case V8VirtualSensorType::Enum::kProximity:
       if (!reading->hasX() || !reading->hasY() || !reading->hasZ()) {
         return base::unexpected("Invalid xyz reading format");
       }
@@ -153,7 +150,7 @@ ScriptPromise<IDLUndefined> InternalsSensor::createVirtualSensor(
   auto* raw_virtual_sensor_provider = virtual_sensor_provider.get();
   raw_virtual_sensor_provider->CreateVirtualSensor(
       ToMojoSensorType(type.AsEnum()), ToMojoSensorMetadata(options),
-      WTF::BindOnce(
+      BindOnce(
           // While we only really need |resolver|, we also take the
           // mojo::Remote<> so that it remains alive after this function exits.
           [](ScriptPromiseResolver<IDLUndefined>* resolver,
@@ -201,7 +198,7 @@ ScriptPromise<IDLUndefined> InternalsSensor::updateVirtualSensor(
   auto* raw_virtual_sensor_provider = virtual_sensor_provider.get();
   raw_virtual_sensor_provider->UpdateVirtualSensor(
       ToMojoSensorType(type.AsEnum()), std::move(mojo_reading.value()),
-      WTF::BindOnce(
+      BindOnce(
           // While we only really need |resolver|, we also take the
           // mojo::Remote<> so that it remains alive after this function exits.
           [](ScriptPromiseResolver<IDLUndefined>* resolver,
@@ -241,7 +238,7 @@ ScriptPromise<IDLUndefined> InternalsSensor::removeVirtualSensor(
   auto* raw_virtual_sensor_provider = virtual_sensor_provider.get();
   raw_virtual_sensor_provider->RemoveVirtualSensor(
       ToMojoSensorType(type.AsEnum()),
-      WTF::BindOnce(
+      BindOnce(
           // While we only really need |resolver|, we also take the
           // mojo::Remote<> so that it remains alive after this function exits.
           [](ScriptPromiseResolver<IDLUndefined>* resolver,
@@ -271,7 +268,7 @@ InternalsSensor::getVirtualSensorInformation(ScriptState* script_state,
   auto* raw_virtual_sensor_provider = virtual_sensor_provider.get();
   raw_virtual_sensor_provider->GetVirtualSensorInformation(
       ToMojoSensorType(type.AsEnum()),
-      WTF::BindOnce(
+      BindOnce(
           // While we only really need |resolver|, we also take the
           // mojo::Remote<> so that it remains alive after this function exits.
           [](ScriptPromiseResolver<VirtualSensorInformation>* resolver,

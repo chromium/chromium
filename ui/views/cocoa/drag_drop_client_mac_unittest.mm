@@ -18,6 +18,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer_tree_owner.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/test/widget_test.h"
@@ -105,13 +106,13 @@
 }
 
 - (void)
-enumerateDraggingItemsWithOptions:(NSDraggingItemEnumerationOptions)enumOpts
-                          forView:(NSView*)view
-                          classes:(NSArray*)classArray
-                    searchOptions:(NSDictionary*)searchOptions
-                       usingBlock:(void (^)(NSDraggingItem* draggingItem,
-                                            NSInteger idx,
-                                            BOOL* stop))block {
+    enumerateDraggingItemsWithOptions:(NSDraggingItemEnumerationOptions)enumOpts
+                              forView:(NSView*)view
+                              classes:(NSArray*)classArray
+                        searchOptions:(NSDictionary*)searchOptions
+                           usingBlock:(void (^)(NSDraggingItem* draggingItem,
+                                                NSInteger idx,
+                                                BOOL* stop))block {
 }
 
 - (void)resetSpringLoading {
@@ -215,8 +216,9 @@ class DragDropClientMacTest : public WidgetTest {
 
   void TearDown() override {
     target_ = nullptr;
-    if (widget_)
+    if (widget_) {
       widget_->CloseNow();
+    }
     WidgetTest::TearDown();
   }
 

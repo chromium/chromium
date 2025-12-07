@@ -7,7 +7,6 @@
 goog.module('goog.eventsTest');
 goog.setTestOnly();
 
-const AssertionError = goog.require('goog.asserts.AssertionError');
 const CaptureSimulationMode = goog.require('goog.events.CaptureSimulationMode');
 const EntryPointMonitor = goog.require('goog.debug.EntryPointMonitor');
 const ErrorHandler = goog.require('goog.debug.ErrorHandler');
@@ -24,6 +23,7 @@ const events = goog.require('goog.events');
 const functions = goog.require('goog.functions');
 const recordFunction = goog.require('goog.testing.recordFunction');
 const testSuite = goog.require('goog.testing.testSuite');
+const {AssertionError} = goog.require('goog.asserts');
 
 /** @suppress {visibility} suppression added to enable type checking */
 const originalHandleBrowserEvent = events.handleBrowserEvent_;
@@ -211,7 +211,7 @@ testSuite({
     if (!window.matchMedia) return;
 
     const mql = window.matchMedia('(max-width: 640px)');
-    const key = events.listen(mql, 'change', goog.nullFunction);
+    const key = events.listen(mql, 'change', () => {});
 
     // I don't know of any way to make it raise an event in a test.
 
@@ -515,7 +515,7 @@ testSuite({
     propertyReplacer.replace(Listener, 'ENABLE_MONITORING', true);
 
     const div = dom.createElement(TagName.DIV);
-    const key = events.listen(div, EventType.CLICK, goog.nullFunction);
+    const key = events.listen(div, EventType.CLICK, () => {});
     /**
      * @suppress {strictMissingProperties} suppression added to enable type
      * checking

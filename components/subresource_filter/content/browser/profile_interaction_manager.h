@@ -21,6 +21,10 @@ class RenderFrameHost;
 class WebContents;
 }  // namespace content
 
+namespace content_settings {
+class CookieSettings;
+}  // namespace content_settings
+
 namespace subresource_filter {
 
 class SubresourceFilterProfileContext;
@@ -38,6 +42,10 @@ class ProfileInteractionManager
   ProfileInteractionManager(const ProfileInteractionManager&) = delete;
   ProfileInteractionManager& operator=(const ProfileInteractionManager&) =
       delete;
+
+  base::WeakPtr<ProfileInteractionManager> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
   void DidCreatePage(content::Page& page);
 
@@ -68,6 +76,8 @@ class ProfileInteractionManager
   }
 #endif
 
+  content_settings::CookieSettings* GetCookieSettings();
+
  private:
   content::WebContents* GetWebContents();
 
@@ -86,6 +96,8 @@ class ProfileInteractionManager
 #if BUILDFLAG(IS_ANDROID)
   raw_ptr<AdsBlockedMessageDelegate> ads_blocked_message_delegate_;
 #endif
+
+  base::WeakPtrFactory<ProfileInteractionManager> weak_ptr_factory_{this};
 };
 
 }  // namespace subresource_filter

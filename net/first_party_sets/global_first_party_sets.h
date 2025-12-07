@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/function_ref.h"
+#include "base/types/optional_ref.h"
 #include "base/version.h"
 #include "net/base/net_export.h"
 #include "net/base/schemeful_site.h"
@@ -50,14 +51,13 @@ class NET_EXPORT GlobalFirstPartySets {
   ~GlobalFirstPartySets();
 
   bool operator==(const GlobalFirstPartySets& other) const;
-  bool operator!=(const GlobalFirstPartySets& other) const;
 
   // Creates a clone of this instance.
   GlobalFirstPartySets Clone() const;
 
   // Returns a FirstPartySetsContextConfig that respects the overrides given by
   // `mutation`, relative to this instance's state.
-  FirstPartySetsContextConfig ComputeConfig(const SetsMutation& mutation) const;
+  FirstPartySetsContextConfig ComputeConfig(SetsMutation mutation) const;
 
   // Returns the entry corresponding to the given `site`, if one exists.
   // Respects any customization/overlay specified by `config`. This is
@@ -76,7 +76,7 @@ class NET_EXPORT GlobalFirstPartySets {
   // Computes the First-Party Set metadata related to the given request context.
   FirstPartySetMetadata ComputeMetadata(
       const SchemefulSite& site,
-      const SchemefulSite* top_frame_site,
+      base::optional_ref<const SchemefulSite> top_frame_site,
       const FirstPartySetsContextConfig& fps_context_config) const;
 
   // Modifies this instance such that it will respect the given
@@ -142,8 +142,7 @@ class NET_EXPORT GlobalFirstPartySets {
       base::Version public_sets_version,
       base::flat_map<SchemefulSite, FirstPartySetEntry> entries,
       base::flat_map<SchemefulSite, SchemefulSite> aliases,
-      FirstPartySetsContextConfig manual_config,
-      base::flat_map<SchemefulSite, SchemefulSite> manual_aliases);
+      FirstPartySetsContextConfig manual_config);
 
   // Same as the public version of FindEntry, but is allowed to omit the
   // `config` argument (i.e. pass nullptr instead of a reference).
@@ -184,19 +183,26 @@ class NET_EXPORT GlobalFirstPartySets {
   // Same as the public version of ForEachEffectiveSetEntry, but is allowed to
   // omit the `config` argument (i.e. pass nullptr instead of a reference).
   bool ForEachEffectiveSetEntry(
-      const FirstPartySetsContextConfig* config,
+      base::optional_ref<const FirstPartySetsContextConfig> config,
       base::FunctionRef<bool(const SchemefulSite&, const FirstPartySetEntry&)>
           f) const;
 
-  // Iterates over the mappings in `manual_aliases_` and `aliases_` (skipping
-  // entries of `aliases_` that are shadowed), invoking `f` for each `alias,
-  // canonical` pair.
+  // Iterates over the alias mappings in `manual_config_` and `aliases_`
+  // (skipping entries of `aliases_` that are shadowed), invoking `f` for each
+  // `alias, canonical` pair.
   void ForEachAlias(base::FunctionRef<void(const SchemefulSite&,
                                            const SchemefulSite&)> f) const;
 
   // Synchronously iterate over all the effective entries. Returns true iff all
   // the entries are valid.
-  bool IsValid(const FirstPartySetsContextConfig* config = nullptr) const;
+  bool IsValid(base::optional_ref<const FirstPartySetsContextConfig> config =
+                   std::nullopt) const;
+
+  // Resolves an alias site into the canonical representative site, if possible.
+  // The returned reference's lifetime is the *minimum* of the lifetimes of
+  // `site` and `this`.
+  const SchemefulSite& ResolveAlias(const SchemefulSite& site) const
+      LIFETIME_BOUND;
 
   // The version associated with the component_updater-provided public sets.
   // This may be invalid if the "First-Party Sets" component has not been
@@ -215,10 +221,6 @@ class NET_EXPORT GlobalFirstPartySets {
   // Stores the customizations induced by the manually-specified set. May be
   // empty if no switch was provided.
   FirstPartySetsContextConfig manual_config_;
-
-  // Stores the aliases contained in the manually-specified set. (Note that the
-  // aliases are *also* stored in `manual_config_`.)
-  base::flat_map<SchemefulSite, SchemefulSite> manual_aliases_;
 };
 
 NET_EXPORT std::ostream& operator<<(std::ostream& os,

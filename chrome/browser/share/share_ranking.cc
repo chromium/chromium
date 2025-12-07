@@ -4,10 +4,12 @@
 
 #include "chrome/browser/share/share_ranking.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/containers/to_vector.h"
-#include "base/ranges/algorithm.h"
+#include "base/functional/callback_helpers.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -29,7 +31,7 @@
 // Must come after other includes, because FromJniType() uses Profile.
 #include "chrome/browser/share/jni_headers/ShareRankingBridge_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 #endif
 
 namespace sharing {
@@ -80,6 +82,7 @@ std::vector<std::string> OrderByUses(const std::vector<std::string>& ranking,
 std::string HighestUnshown(const std::vector<std::string>& ranking,
                            const std::map<std::string, int>& uses,
                            size_t length) {
+  CHECK_GT(length, 0u);
   std::vector<std::string> unshown =
       base::ToVector(base::span(ranking).subspan(length));
   return !unshown.empty() ? OrderByUses(unshown, uses).front() : "";
@@ -88,6 +91,7 @@ std::string HighestUnshown(const std::vector<std::string>& ranking,
 std::string LowestShown(const std::vector<std::string>& ranking,
                         const std::map<std::string, int>& uses,
                         size_t length) {
+  CHECK_GT(length, 0u);
   std::vector<std::string> shown =
       base::ToVector(base::span(ranking).first(length));
   return !shown.empty() ? OrderByUses(shown, uses).back() : "";
@@ -96,8 +100,8 @@ std::string LowestShown(const std::vector<std::string>& ranking,
 void SwapRankingElement(std::vector<std::string>& ranking,
                         const std::string& from,
                         const std::string& to) {
-  auto from_loc = base::ranges::find(ranking, from);
-  auto to_loc = base::ranges::find(ranking, to);
+  auto from_loc = std::ranges::find(ranking, from);
+  auto to_loc = std::ranges::find(ranking, to);
 
   CHECK(from_loc != ranking.end());
   CHECK(to_loc != ranking.end());
@@ -110,7 +114,7 @@ std::vector<std::string> ReplaceUnavailableEntries(
     const std::vector<std::string>& ranking,
     const std::vector<std::string>& available) {
   std::vector<std::string> result;
-  base::ranges::transform(
+  std::ranges::transform(
       ranking, std::back_inserter(result), [&](const std::string& e) {
         return RankingContains(available, e) ? e : std::string();
       });
@@ -143,9 +147,9 @@ void FillGaps(std::vector<std::string>& ranking,
 
   for (size_t i = 0; i < length && !candidates.empty(); ++i) {
     std::string& candidate = candidates.front();
-    if (ranking[i] == "" && candidate != "") {
+    if (ranking[i].empty() && !candidate.empty()) {
       ranking[i] = std::move(candidate);
-      candidates = candidates.subspan(1);
+      candidates = candidates.subspan<1>();
     }
   }
 }
@@ -156,6 +160,13 @@ std::vector<std::string> MaybeUpdateRankingFromHistory(
     const std::map<std::string, int>& all_share_history,
     size_t length) {
   const double DAMPENING = 1.1;
+
+  if (length == 0) {
+    // Special case: if length is 0 here, the only thing that will be shown is
+    // the "More" tile, and the logic below to find lowest/highest within the
+    // first length tiles will all break. Bail out here.
+    return old_ranking;
+  }
 
   const std::string lowest_shown_recent =
       LowestShown(old_ranking, recent_share_history, length);
@@ -177,12 +188,12 @@ std::vector<std::string> MaybeUpdateRankingFromHistory(
     return all_share_history.count(key) > 0 ? all_share_history.at(key) : 0;
   };
 
-  if (highest_unshown_recent != "" &&
+  if (!highest_unshown_recent.empty() &&
       recent_count_for(highest_unshown_recent) >
           recent_count_for(lowest_shown_recent) * DAMPENING) {
     SwapRankingElement(new_ranking, lowest_shown_recent,
                        highest_unshown_recent);
-  } else if (highest_unshown_all != "" &&
+  } else if (!highest_unshown_all.empty() &&
              all_count_for(highest_unshown_all) >
                  all_count_for(lowest_shown_all) * DAMPENING) {
     SwapRankingElement(new_ranking, lowest_shown_all, highest_unshown_all);
@@ -265,8 +276,8 @@ std::map<std::string, int> BuildHistoryMap(
 }
 
 std::vector<std::string> AddMissingItemsFromHistory(
-    const std::vector<std::string> existing,
-    const std::map<std::string, int> history) {
+    const std::vector<std::string>& existing,
+    const std::map<std::string, int>& history) {
   std::vector<std::string> updated = existing;
   for (const auto& item : history) {
     if (!RankingContains(updated, item.first))
@@ -544,14 +555,14 @@ ShareRanking::Ranking ShareRanking::GetDefaultInitialRankingForType(
 
 #if BUILDFLAG(IS_ANDROID)
 
-void JNI_ShareRankingBridge_Rank(JNIEnv* env,
-                                 Profile* profile,
-                                 std::string& type,
-                                 std::vector<std::string>& available,
-                                 jint jfold,
-                                 jint jlength,
-                                 jboolean jpersist,
-                                 const JavaParamRef<jobject>& jcallback) {
+static void JNI_ShareRankingBridge_Rank(JNIEnv* env,
+                                        Profile* profile,
+                                        std::string& type,
+                                        std::vector<std::string>& available,
+                                        jint jfold,
+                                        jint jlength,
+                                        jboolean jpersist,
+                                        const JavaRef<jobject>& jcallback) {
   base::android::ScopedJavaGlobalRef<jobject> callback(jcallback);
 
   if (profile->IsOffTheRecord()) {
@@ -569,11 +580,18 @@ void JNI_ShareRankingBridge_Rank(JNIEnv* env,
   CHECK(history);
   CHECK(ranking);
 
+  size_t fold = base::checked_cast<size_t>(jfold);
+  size_t length = base::checked_cast<size_t>(jlength);
+
   ranking->Rank(
-      history, type, available, jfold, jlength, jpersist,
+      history, type, available, fold, length, jpersist,
       base::BindOnce(&sharing::RunJniRankCallback, std::move(callback),
                      // TODO(ellyjones): Is it safe to unretained env here?
                      base::Unretained(env)));
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(ShareRankingBridge)
+#endif

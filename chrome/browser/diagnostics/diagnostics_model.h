@@ -8,6 +8,8 @@
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
+
 #include "base/time/time.h"
 
 namespace base {
@@ -43,7 +45,7 @@ class DiagnosticsModel {
   // calling model->GetTest(id).
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
     // Called when a test has finished, regardless of outcome.
     virtual void OnTestFinished(int index, DiagnosticsModel* model) = 0;
     // Called once all the test are run.
@@ -57,15 +59,15 @@ class DiagnosticsModel {
   // Encapsulates what you can know about a given test.
   class TestInfo {
    public:
-    virtual ~TestInfo() {}
+    virtual ~TestInfo() = default;
     // A numerical id for this test. Must be a unique number among all the
     // tests.
     virtual int GetId() const = 0;
     // A parse-able ASCII string that indicates what is being tested.
-    virtual std::string GetName() const = 0;
+    virtual std::string_view GetName() const = 0;
     // A human readable string that tells you what is being tested.
     // This is not localized: it is only meant for developer consumption.
-    virtual std::string GetTitle() const = 0;
+    virtual std::string_view GetTitle() const = 0;
     // The result of running the test. If called before the test is ran the
     // answer is TEST_NOT_RUN.
     virtual TestResult GetResult() const = 0;
@@ -82,7 +84,7 @@ class DiagnosticsModel {
     virtual base::Time GetEndTime() const = 0;
   };
 
-  virtual ~DiagnosticsModel() {}
+  virtual ~DiagnosticsModel() = default;
   // Returns how many tests have been run.
   virtual int GetTestRunCount() const = 0;
   // Returns how many tests are available. This value never changes.

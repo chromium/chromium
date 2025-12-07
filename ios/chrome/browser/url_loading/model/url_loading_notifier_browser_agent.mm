@@ -6,10 +6,8 @@
 
 #import "ios/chrome/browser/url_loading/model/url_loading_observer.h"
 
-BROWSER_USER_DATA_KEY_IMPL(UrlLoadingNotifierBrowserAgent)
-
-UrlLoadingNotifierBrowserAgent::UrlLoadingNotifierBrowserAgent(
-    Browser* browser) {}
+UrlLoadingNotifierBrowserAgent::UrlLoadingNotifierBrowserAgent(Browser* browser)
+    : BrowserUserData(browser) {}
 
 UrlLoadingNotifierBrowserAgent::~UrlLoadingNotifierBrowserAgent() {}
 

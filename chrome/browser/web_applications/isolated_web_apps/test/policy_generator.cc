@@ -4,40 +4,28 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_generator.h"
 
-#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
-
-namespace {
-base::Value::Dict AppPrefValue(std::string swb_id,
-                               std::string update_manifest_url) {
-  base::Value::Dict entry_dict;
-  entry_dict.Set(web_app::kPolicyUpdateManifestUrlKey,
-                 std::move(update_manifest_url));
-  entry_dict.Set(web_app::kPolicyWebBundleIdKey, std::move(swb_id));
-
-  return entry_dict;
-}
-}  // namespace
+#include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
+#include "components/webapps/isolated_web_apps/types/update_channel.h"
 
 namespace web_app {
 
 PolicyGenerator::PolicyGenerator() = default;
 PolicyGenerator::~PolicyGenerator() = default;
 
-void PolicyGenerator::AddForceInstalledIwa(web_package::SignedWebBundleId id,
-                                           GURL update_manifest_url) {
-  app_policies_.emplace_back(IwaForceInstalledPolicy{
-      .id_ = std::move(id),
-      .update_manifest_url_ = std::move(update_manifest_url)});
+void PolicyGenerator::AddForceInstalledIwa(
+    const web_package::SignedWebBundleId& web_bundle_id,
+    const GURL& update_manifest_url,
+    const std::optional<UpdateChannel>& channel,
+    const std::optional<IwaVersion>& pinned_version,
+    bool allow_downgrades) {
+  app_policies_.Append(test::CreateForceInstallIwaPolicyEntry(
+      web_bundle_id, update_manifest_url,
+      channel.value_or(UpdateChannel::default_channel()), pinned_version,
+      allow_downgrades));
 }
 
 base::Value PolicyGenerator::Generate() {
-  base::Value::List policy;
-  for (const auto& app_policy_value : app_policies_) {
-    policy.Append(AppPrefValue(app_policy_value.id_.id(),
-                               app_policy_value.update_manifest_url_.spec()));
-  }
-
-  return base::Value(std::move(policy));
+  return base::Value(app_policies_.Clone());
 }
 
 }  // namespace web_app

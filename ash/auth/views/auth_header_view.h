@@ -6,11 +6,13 @@
 #define ASH_AUTH_VIEWS_AUTH_HEADER_VIEW_H_
 
 #include <string>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "ash/login/ui/animated_rounded_image_view.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "components/account_id/account_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -33,12 +35,22 @@ class ASH_EXPORT AuthHeaderView : public views::View {
     TestApi(const TestApi&) = delete;
     TestApi& operator=(const TestApi&) = delete;
 
-    const std::u16string& GetCurrentTitle() const;
+    std::u16string_view GetCurrentTitle() const;
 
     raw_ptr<AuthHeaderView> GetView();
 
    private:
     const raw_ptr<AuthHeaderView> view_;
+  };
+
+  class Observer : public base::CheckedObserver {
+   public:
+    Observer();
+    ~Observer() override;
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
+    virtual void OnTitleChanged(const std::u16string& error_str) = 0;
   };
 
   AuthHeaderView(const AccountId& account_id,
@@ -61,12 +73,19 @@ class ASH_EXPORT AuthHeaderView : public views::View {
   void SetErrorTitle(const std::u16string& error_str);
   void RestoreTitle();
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
  private:
+  void NotifyTitleChanged(const std::u16string& title);
+
   raw_ptr<AnimatedRoundedImageView> avatar_view_ = nullptr;
   raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<views::Label> description_label_ = nullptr;
 
   const std::u16string title_str_;
+
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<AuthHeaderView> weak_ptr_factory_{this};
 };

@@ -29,8 +29,6 @@ std::string GetHistogramSuffixForSecurityLevel(
       return "NONE";
     case WARNING:
       return "WARNING";
-    case SECURE_WITH_POLICY_INSTALLED_CERT:
-      return "SECURE_WITH_POLICY_INSTALLED_CERT";
     case DANGEROUS:
       return "DANGEROUS";
     default:
@@ -50,15 +48,13 @@ std::string GetHistogramSuffixForSafetyTipStatus(
     case security_state::SafetyTipStatus::kLookalikeIgnored:
       return "SafetyTip_LookalikeIgnored";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 }  // namespace
 
 SecurityLevel GetSecurityLevel(
-    const VisibleSecurityState& visible_security_state,
-    bool used_policy_installed_certificate) {
+    const VisibleSecurityState& visible_security_state) {
   // Override the connection security information if the website failed the
   // browser's malware checks.
   if (visible_security_state.malicious_content_status !=
@@ -167,13 +163,6 @@ SecurityLevel GetSecurityLevel(
     return NONE;
   }
 
-  // Any prior observation of a policy-installed cert is a strong indicator
-  // of a MITM being present (the enterprise), so a "secure-but-inspected"
-  // security level is returned.
-  if (used_policy_installed_certificate) {
-    return SECURE_WITH_POLICY_INSTALLED_CERT;
-  }
-
   return SECURE;
 }
 
@@ -217,7 +206,7 @@ VisibleSecurityState::VisibleSecurityState(const VisibleSecurityState& other) =
 VisibleSecurityState& VisibleSecurityState::operator=(
     const VisibleSecurityState& other) = default;
 
-VisibleSecurityState::~VisibleSecurityState() {}
+VisibleSecurityState::~VisibleSecurityState() = default;
 
 bool IsSchemeCryptographic(const GURL& url) {
   return url.is_valid() && url.SchemeIsCryptographic();
@@ -228,8 +217,7 @@ bool IsOriginLocalhostOrFile(const GURL& url) {
 }
 
 bool IsSslCertificateValid(SecurityLevel security_level) {
-  return security_level == SECURE ||
-         security_level == SECURE_WITH_POLICY_INSTALLED_CERT;
+  return security_level == SECURE;
 }
 
 std::string GetSecurityLevelHistogramName(

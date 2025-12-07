@@ -9,8 +9,6 @@
 
 using infobars::InfoBar;
 
-OVERLAY_USER_DATA_SETUP_IMPL(InfobarOverlayRequestConfig);
-
 InfobarOverlayRequestConfig::InfobarOverlayRequestConfig(
     InfoBarIOS* infobar,
     InfobarOverlayType overlay_type,

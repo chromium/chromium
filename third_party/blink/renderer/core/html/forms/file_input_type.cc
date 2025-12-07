@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -191,10 +192,14 @@ void FileInputType::OpenPopupView() {
   HTMLInputElement& input = GetElement();
   Document& document = input.GetDocument();
 
-  bool intercepted = false;
+  bool suppressed = false;
+  bool canceled = false;
   probe::FileChooserOpened(document.GetFrame(), &input, input.Multiple(),
-                           &intercepted);
-  if (intercepted) {
+                           &suppressed, &canceled);
+  if (suppressed) {
+    if (canceled) {
+      SetFilesAndDispatchEvents(nullptr);
+    }
     return;
   }
 
@@ -221,7 +226,16 @@ void FileInputType::OpenPopupView() {
                       ? WebFeature::kInputTypeFileSecureOriginOpenChooser
                       : WebFeature::kInputTypeFileInsecureOriginOpenChooser);
     chrome_client->OpenFileChooser(document.GetFrame(), NewFileChooser(params));
+
+    input.PseudoStateChanged(CSSSelector::kPseudoOpen);
   }
+}
+
+bool FileInputType::IsPickerVisible() const {
+  if (FileChooser* chooser = FileChooserOrNull()) {
+    return chooser->FrameOrNull();
+  }
+  return false;
 }
 
 void FileInputType::AdjustStyle(ComputedStyleBuilder& builder) {
@@ -263,7 +277,7 @@ String FileInputType::ValueInFilenameValueMode() const {
   // decided to try to parse the value by looking for backslashes
   // (because that's what Windows file paths use). To be compatible
   // with that code, we make up a fake path for the file.
-  return "C:\\fakepath\\" + file_list_->item(0)->name();
+  return StrCat({"C:\\fakepath\\", file_list_->item(0)->name()});
 }
 
 void FileInputType::SetValue(const String&,
@@ -300,14 +314,34 @@ FileList* FileInputType::CreateFileList(ExecutionContext& context,
       // Normalize backslashes to slashes before exposing the relative path to
       // script.
       String string_path = FilePathToString(file->get_native_file()->file_path);
-      DCHECK(
-          string_path.StartsWithIgnoringASCIICase(FilePathToString(base_dir)))
-          << "A path in a FileChooserFileInfo " << string_path
-          << " should start with " << FilePathToString(base_dir);
-      String relative_path =
-          string_path.Substring(root_length).Replace('\\', '/');
-      file_list->Append(
-          File::CreateWithRelativePath(&context, string_path, relative_path));
+      String display_name = file->get_native_file()->display_name;
+      if (display_name.empty()) {
+        display_name =
+            FilePathToString(file->get_native_file()->file_path.BaseName());
+      }
+      String relative_path;
+#if BUILDFLAG(IS_ANDROID)
+      // Android content-URIs do not use tree paths with separators like posix
+      // so we build relative path using base_subdirs.
+      if (base_dir.IsContentUri()) {
+        StringBuilder builder;
+        for (const auto& subdir : file->get_native_file()->base_subdirs) {
+          builder.Append(subdir);
+          builder.Append("/");
+        }
+        builder.Append(display_name);
+        relative_path = builder.ToString();
+      }
+#endif
+      if (relative_path.empty()) {
+        DCHECK(
+            string_path.StartsWithIgnoringASCIICase(FilePathToString(base_dir)))
+            << "A path in a FileChooserFileInfo " << string_path
+            << " should start with " << FilePathToString(base_dir);
+        relative_path = string_path.Substring(root_length).Replace('\\', '/');
+      }
+      file_list->Append(File::CreateWithRelativePath(
+          &context, string_path, display_name, relative_path));
     }
     return file_list;
   }
@@ -380,8 +414,6 @@ Node* FileInputType::FileStatusElement() const {
 }
 
 void FileInputType::DisabledAttributeChanged() {
-  DCHECK(RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled() ||
-         IsShadowHost(GetElement()));
   if (Element* button = UploadButton()) {
     button->SetBooleanAttribute(html_names::kDisabledAttr,
                                 GetElement().IsDisabledFormControl());
@@ -389,8 +421,6 @@ void FileInputType::DisabledAttributeChanged() {
 }
 
 void FileInputType::MultipleAttributeChanged() {
-  DCHECK(RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled() ||
-         IsShadowHost(GetElement()));
   if (Element* button = UploadButton()) {
     button->setAttribute(
         html_names::kValueAttr,
@@ -458,6 +488,8 @@ void FileInputType::FilesChosen(FileChooserFileInfoList files,
   }
   if (HasConnectedFileChooser())
     DisconnectFileChooser();
+
+  GetElement().PseudoStateChanged(CSSSelector::kPseudoOpen);
 }
 
 LocalFrame* FileInputType::FrameOrNull() const {

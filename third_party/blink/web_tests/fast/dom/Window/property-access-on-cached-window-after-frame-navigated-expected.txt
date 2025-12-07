@@ -49,6 +49,7 @@ PASS oldChildWindow.navigator.connection.rtt is newChildWindow.navigator.connect
 PASS oldChildWindow.navigator.connection.saveData is newChildWindow.navigator.connection.saveData
 PASS oldChildWindow.navigator.connection.type is newChildWindow.navigator.connection.type
 PASS oldChildWindow.navigator.cookieEnabled is newChildWindow.navigator.cookieEnabled
+PASS oldChildWindow.navigator.cpuPerformance is newChildWindow.navigator.cpuPerformance
 PASS oldChildWindow.navigator.deprecatedRunAdAuctionEnforcesKAnonymity is newChildWindow.navigator.deprecatedRunAdAuctionEnforcesKAnonymity
 PASS oldChildWindow.navigator.deviceMemory is newChildWindow.navigator.deviceMemory
 PASS oldChildWindow.navigator.devicePosture.onchange is newChildWindow.navigator.devicePosture.onchange
@@ -92,7 +93,6 @@ PASS oldChildWindow.navigator.serviceWorker.controller is newChildWindow.navigat
 PASS oldChildWindow.navigator.serviceWorker.oncontrollerchange is newChildWindow.navigator.serviceWorker.oncontrollerchange
 PASS oldChildWindow.navigator.serviceWorker.onmessage is newChildWindow.navigator.serviceWorker.onmessage
 PASS oldChildWindow.navigator.serviceWorker.onmessageerror is newChildWindow.navigator.serviceWorker.onmessageerror
-PASS oldChildWindow.navigator.storage.onquotachange is newChildWindow.navigator.storage.onquotachange
 PASS oldChildWindow.navigator.usb.onconnect is newChildWindow.navigator.usb.onconnect
 PASS oldChildWindow.navigator.usb.ondisconnect is newChildWindow.navigator.usb.ondisconnect
 PASS oldChildWindow.navigator.userActivation.hasBeenActive is newChildWindow.navigator.userActivation.hasBeenActive
@@ -139,6 +139,7 @@ PASS oldChildWindow.oncanplaythrough is newChildWindow.oncanplaythrough
 PASS oldChildWindow.onchange is newChildWindow.onchange
 PASS oldChildWindow.onclick is newChildWindow.onclick
 PASS oldChildWindow.onclose is newChildWindow.onclose
+PASS oldChildWindow.oncommand is newChildWindow.oncommand
 PASS oldChildWindow.oncontentvisibilityautostatechange is newChildWindow.oncontentvisibilityautostatechange
 PASS oldChildWindow.oncontextlost is newChildWindow.oncontextlost
 PASS oldChildWindow.oncontextmenu is newChildWindow.oncontextmenu
@@ -161,6 +162,9 @@ PASS oldChildWindow.onended is newChildWindow.onended
 PASS oldChildWindow.onerror is newChildWindow.onerror
 PASS oldChildWindow.onfocus is newChildWindow.onfocus
 PASS oldChildWindow.onformdata is newChildWindow.onformdata
+PASS oldChildWindow.ongamepadconnected is newChildWindow.ongamepadconnected
+PASS oldChildWindow.ongamepaddisconnected is newChildWindow.ongamepaddisconnected
+PASS oldChildWindow.ongamepadrawinputchanged is newChildWindow.ongamepadrawinputchanged
 PASS oldChildWindow.ongotpointercapture is newChildWindow.ongotpointercapture
 PASS oldChildWindow.onhashchange is newChildWindow.onhashchange
 PASS oldChildWindow.oninput is newChildWindow.oninput
@@ -308,7 +312,7 @@ PASS oldChildWindow.statusbar.visible is newChildWindow.statusbar.visible
 PASS oldChildWindow.styleMedia.type is newChildWindow.styleMedia.type
 PASS oldChildWindow.toolbar.visible is newChildWindow.toolbar.visible
 PASS oldChildWindow.trustedTypes.defaultPolicy is newChildWindow.trustedTypes.defaultPolicy
-PASS oldChildWindow.trustedTypes.onbeforecreatepolicy is newChildWindow.trustedTypes.onbeforecreatepolicy
+PASS oldChildWindow.viewport.segments is newChildWindow.viewport.segments
 PASS oldChildWindow.visualViewport.height is newChildWindow.visualViewport.height
 PASS oldChildWindow.visualViewport.offsetLeft is newChildWindow.visualViewport.offsetLeft
 PASS oldChildWindow.visualViewport.offsetTop is newChildWindow.visualViewport.offsetTop
@@ -318,7 +322,6 @@ PASS oldChildWindow.visualViewport.onscrollend is newChildWindow.visualViewport.
 PASS oldChildWindow.visualViewport.pageLeft is newChildWindow.visualViewport.pageLeft
 PASS oldChildWindow.visualViewport.pageTop is newChildWindow.visualViewport.pageTop
 PASS oldChildWindow.visualViewport.scale is newChildWindow.visualViewport.scale
-PASS oldChildWindow.visualViewport.segments is newChildWindow.visualViewport.segments
 PASS oldChildWindow.visualViewport.width is newChildWindow.visualViewport.width
 PASS successfullyParsed is true
 

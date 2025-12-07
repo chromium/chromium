@@ -63,11 +63,15 @@ def _get_tsc_paths(board: str) -> Dict[str, List[str]]:
 
     lit_d_ts = os.path.join(
         root_dir, "third_party/material_web_components/lit_exports.d.ts")
+    typescript_definition_dir = os.path.join(root_dir,
+                                             "tools/typescript/definitions")
 
     return {
         "//resources/*": [os.path.relpath(resources_dir)],
         "chrome://resources/*": [os.path.relpath(resources_dir)],
         "chrome://resources/mwc/lit/index.js": [os.path.relpath(lit_d_ts)],
+        "/strings.m.js":
+        [os.path.join(typescript_definition_dir, "strings.d.ts")],
     }
 
 

@@ -24,7 +24,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "components/app_constants/constants.h"
@@ -88,12 +87,11 @@ class ShelfAnimationObserver : public views::BoundsAnimatorObserver {
 };
 
 bool HasBrowserIcon(const ShelfModel* model) {
-  return model->ItemByID(ShelfID(app_constants::kLacrosAppId)) ||
-         model->ItemByID(ShelfID(app_constants::kChromeAppId));
+  return model->ItemByID(ShelfID(app_constants::kChromeAppId));
 }
 
 bool HasPendingIcon(const ShelfModel* model) {
-  return base::ranges::any_of(model->items(), [](const ShelfItem& item) {
+  return std::ranges::any_of(model->items(), [](const ShelfItem& item) {
     return item.image.isNull();
   });
 }
@@ -103,9 +101,10 @@ bool HasPendingIcon(const ShelfModel* model) {
 WindowRestoreTracker::WindowRestoreTracker() = default;
 WindowRestoreTracker::~WindowRestoreTracker() = default;
 
-void WindowRestoreTracker::Init(base::OnceClosure on_all_window_created,
-                                base::OnceClosure on_all_window_shown,
-                                base::OnceClosure on_all_window_presented) {
+void WindowRestoreTracker::Init(
+    WindowRestoreTracker::NotifyCallback on_all_window_created,
+    WindowRestoreTracker::NotifyCallback on_all_window_shown,
+    WindowRestoreTracker::NotifyCallback on_all_window_presented) {
   on_created_ = std::move(on_all_window_created);
   on_shown_ = std::move(on_all_window_shown);
   on_presented_ = std::move(on_all_window_presented);
@@ -114,8 +113,7 @@ void WindowRestoreTracker::Init(base::OnceClosure on_all_window_created,
 void WindowRestoreTracker::AddWindow(int window_id, const std::string& app_id) {
   DCHECK(window_id);
   DCHECK(!app_id.empty());
-  if (app_id == app_constants::kChromeAppId ||
-      app_id == app_constants::kLacrosAppId) {
+  if (app_id == app_constants::kChromeAppId) {
     windows_.emplace(window_id, State::kNotCreated);
   }
 }
@@ -132,7 +130,7 @@ void WindowRestoreTracker::OnCreated(int window_id) {
 
   const bool all_created = CountWindowsInState(State::kNotCreated) == 0;
   if (all_created && on_created_) {
-    std::move(on_created_).Run();
+    std::move(on_created_).Run(base::TimeTicks::Now());
   }
 }
 
@@ -149,31 +147,31 @@ void WindowRestoreTracker::OnShown(int window_id, ui::Compositor* compositor) {
   const bool all_shown = CountWindowsInState(State::kNotCreated) == 0 &&
                          CountWindowsInState(State::kCreated) == 0;
   if (all_shown && on_shown_) {
-    std::move(on_shown_).Run();
+    std::move(on_shown_).Run(base::TimeTicks::Now());
   }
 
-  if (compositor &&
-      display::Screen::GetScreen()->GetPrimaryDisplay().detected()) {
+  if (compositor && display::Screen::Get()->GetPrimaryDisplay().detected()) {
     compositor->RequestSuccessfulPresentationTimeForNextFrame(
         base::BindOnce(&WindowRestoreTracker::OnCompositorFramePresented,
                        weak_ptr_factory_.GetWeakPtr(), window_id));
   } else if (compositor) {
     // Primary display not detected. Assume it's a headless unit.
-    OnPresented(window_id);
+    OnPresented(window_id, base::TimeTicks::Now());
   }
 }
 
 void WindowRestoreTracker::OnPresentedForTesting(int window_id) {
-  OnPresented(window_id);
+  OnPresented(window_id, base::TimeTicks::Now());
 }
 
 void WindowRestoreTracker::OnCompositorFramePresented(
     int window_id,
     const viz::FrameTimingDetails& details) {
-  OnPresented(window_id);
+  OnPresented(window_id, details.presentation_feedback.timestamp);
 }
 
-void WindowRestoreTracker::OnPresented(int window_id) {
+void WindowRestoreTracker::OnPresented(int window_id,
+                                       base::TimeTicks presentation_time) {
   auto iter = windows_.find(window_id);
   if (iter == windows_.end()) {
     return;
@@ -187,7 +185,7 @@ void WindowRestoreTracker::OnPresented(int window_id) {
                              CountWindowsInState(State::kCreated) == 0 &&
                              CountWindowsInState(State::kShown) == 0;
   if (all_presented && on_presented_) {
-    std::move(on_presented_).Run();
+    std::move(on_presented_).Run(presentation_time);
   }
 }
 
@@ -276,10 +274,7 @@ void LoginUnlockThroughputRecorder::OnAuthSuccess() {
 
 void LoginUnlockThroughputRecorder::OnAshRestart() {
   is_ash_restart_ = true;
-  post_login_deferred_task_timer_.Stop();
-  if (!post_login_deferred_task_runner_->Started()) {
-    post_login_deferred_task_runner_->Start();
-  }
+  StartDeferredTaskRunner();
 }
 
 void LoginUnlockThroughputRecorder::LoggedInStateChanged() {
@@ -293,7 +288,6 @@ void LoginUnlockThroughputRecorder::LoggedInStateChanged() {
     return;
 
   const bool is_regular_user_or_owner =
-      logged_in_user == LoginState::LOGGED_IN_USER_OWNER ||
       logged_in_user == LoginState::LOGGED_IN_USER_REGULAR;
 
   auto now = base::TimeTicks::Now();
@@ -338,13 +332,6 @@ void LoginUnlockThroughputRecorder::LoggedInStateChanged() {
   // were loaded.
   scoped_throughput_reporter_blocker_ =
       login_animation_throughput_reporter_->NewScopedBlocker();
-
-  constexpr base::TimeDelta kLoginAnimationDelayTimer = base::Seconds(20);
-  // post_login_deferred_task_timer_ is owned by this class so it's safe to
-  // use unretained pointer here.
-  post_login_deferred_task_timer_.Start(
-      FROM_HERE, kLoginAnimationDelayTimer, this,
-      &LoginUnlockThroughputRecorder::OnPostLoginDeferredTaskTimerFired);
 }
 
 void LoginUnlockThroughputRecorder::OnRestoredWindowCreated(int id) {
@@ -372,28 +359,32 @@ void LoginUnlockThroughputRecorder::
 }
 
 void LoginUnlockThroughputRecorder::OnCompositorAnimationFinished(
-    const cc::FrameSequenceMetrics::CustomReportData& data) {
-  auto now = base::TimeTicks::Now();
+    const cc::FrameSequenceMetrics::CustomReportData& data,
+    base::TimeTicks first_animation_started_at,
+    base::TimeTicks last_animation_finished_at) {
   for (auto& obs : observers_) {
-    obs.OnCompositorAnimationFinished(now, data);
+    obs.OnCompositorAnimationFinished(last_animation_finished_at, data);
   }
 
-  login_animation_throughput_received_ = true;
+  time_compositor_animation_finished_ = last_animation_finished_at;
   MaybeReportLoginFinished();
 }
 
 void LoginUnlockThroughputRecorder::ScheduleWaitForShelfAnimationEndIfNeeded() {
   // If not ready yet, do nothing this time.
-  if (!window_restore_done_ || !shelf_icons_loaded_) {
+  if (!time_window_restore_done_.has_value() ||
+      !time_shelf_icons_loaded_.has_value()) {
     return;
   }
 
   DCHECK(!shelf_animation_end_scheduled_);
   shelf_animation_end_scheduled_ = true;
 
-  auto now = base::TimeTicks::Now();
+  auto timestamp =
+      std::max(*time_window_restore_done_, *time_shelf_icons_loaded_);
+
   for (auto& obs : observers_) {
-    obs.OnShelfIconsLoadedAndSessionRestoreDone(now);
+    obs.OnShelfIconsLoadedAndSessionRestoreDone(timestamp);
   }
 
   scoped_throughput_reporter_blocker_.reset();
@@ -422,24 +413,22 @@ void LoginUnlockThroughputRecorder::ScheduleWaitForShelfAnimationEndIfNeeded() {
           obs.OnShelfAnimationFinished(now);
         }
 
-        self->shelf_animation_finished_ = true;
+        self->time_shelf_animation_finished_ = now;
         self->MaybeReportLoginFinished();
       },
       weak_ptr_factory_.GetWeakPtr());
 
   (new ShelfAnimationObserver(on_shelf_animation_end))->StartObserving();
 
-  post_login_deferred_task_timer_.Stop();
-  if (!post_login_deferred_task_runner_->Started()) {
-    post_login_deferred_task_runner_->Start();
-  }
+  StartDeferredTaskRunner();
 }
 
 void LoginUnlockThroughputRecorder::OnAllExpectedShelfIconsLoaded() {
-  DCHECK(!shelf_icons_loaded_);
-  shelf_icons_loaded_ = true;
-
   auto now = base::TimeTicks::Now();
+
+  DCHECK(!time_shelf_icons_loaded_.has_value());
+  time_shelf_icons_loaded_ = now;
+
   for (auto& obs : observers_) {
     obs.OnAllExpectedShelfIconLoaded(now);
   }
@@ -468,8 +457,8 @@ void LoginUnlockThroughputRecorder::FullSessionRestoreDataLoaded(
   if (window_ids.empty() || !restore_automatically) {
     shelf_tracker_.IgnoreBrowserIcon();
 
-    DCHECK(!window_restore_done_);
-    window_restore_done_ = true;
+    DCHECK(!time_window_restore_done_.has_value());
+    time_window_restore_done_ = now;
     ScheduleWaitForShelfAnimationEndIfNeeded();
   } else {
     for (const auto& w : window_ids) {
@@ -489,8 +478,22 @@ void LoginUnlockThroughputRecorder::SetLoginFinishedReportedForTesting() {
   login_finished_reported_ = true;
 }
 
+void LoginUnlockThroughputRecorder::StartDeferredTaskRunner() {
+  if (post_login_deferred_task_runner_->Started()) {
+    return;
+  }
+
+  post_login_deferred_task_runner_->Start();
+
+  auto now = base::TimeTicks::Now();
+  for (auto& obs : observers_) {
+    obs.OnDeferredTasksStarted(now);
+  }
+}
+
 void LoginUnlockThroughputRecorder::MaybeReportLoginFinished() {
-  if (!login_animation_throughput_received_ || !shelf_animation_finished_) {
+  if (!time_compositor_animation_finished_.has_value() ||
+      !time_shelf_animation_finished_.has_value()) {
     return;
   }
   if (login_finished_reported_) {
@@ -498,56 +501,37 @@ void LoginUnlockThroughputRecorder::MaybeReportLoginFinished() {
   }
   login_finished_reported_ = true;
 
-  auto now = base::TimeTicks::Now();
+  base::TimeTicks timestamp = std::max(*time_shelf_animation_finished_,
+                                       *time_compositor_animation_finished_);
+
   for (auto& obs : observers_) {
-    obs.OnShelfAnimationAndCompositorAnimationDone(now);
+    obs.OnShelfAnimationAndCompositorAnimationDone(timestamp);
   }
 
   ui_recorder_.OnPostLoginAnimationFinish();
 }
 
-void LoginUnlockThroughputRecorder::OnPostLoginDeferredTaskTimerFired() {
-  TRACE_EVENT0(
-      "startup",
-      "LoginUnlockThroughputRecorder::OnPostLoginDeferredTaskTimerFired");
-
-  // `post_login_deferred_task_runner_` could be started in tests in
-  // `ScheduleWaitForShelfAnimationEndIfNeeded` where shelf is created
-  // before tests fake logins.
-  // No `CHECK_IS_TEST()` because there could be longer than 20s animations
-  // in production. See http://b/331236941
-  if (post_login_deferred_task_runner_->Started()) {
-    base::debug::DumpWithoutCrashing();
-    return;
-  }
-
-  post_login_deferred_task_runner_->Start();
-}
-
-void LoginUnlockThroughputRecorder::OnAllWindowsCreated() {
-  auto now = base::TimeTicks::Now();
+void LoginUnlockThroughputRecorder::OnAllWindowsCreated(base::TimeTicks time) {
   for (auto& obs : observers_) {
-    obs.OnAllBrowserWindowsCreated(now);
+    obs.OnAllBrowserWindowsCreated(time);
   }
 }
 
-void LoginUnlockThroughputRecorder::OnAllWindowsShown() {
-  auto now = base::TimeTicks::Now();
+void LoginUnlockThroughputRecorder::OnAllWindowsShown(base::TimeTicks time) {
   for (auto& obs : observers_) {
-    obs.OnAllBrowserWindowsShown(now);
+    obs.OnAllBrowserWindowsShown(time);
   }
 }
 
-void LoginUnlockThroughputRecorder::OnAllWindowsPresented() {
-  auto now = base::TimeTicks::Now();
+void LoginUnlockThroughputRecorder::OnAllWindowsPresented(
+    base::TimeTicks time) {
   for (auto& obs : observers_) {
-    obs.OnAllBrowserWindowsPresented(now);
+    obs.OnAllBrowserWindowsPresented(time);
   }
 
-  DCHECK(!window_restore_done_);
-  window_restore_done_ = true;
+  DCHECK(!time_window_restore_done_.has_value());
+  time_window_restore_done_ = time;
   ScheduleWaitForShelfAnimationEndIfNeeded();
 }
-
 
 }  // namespace ash

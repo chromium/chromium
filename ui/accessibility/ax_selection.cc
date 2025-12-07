@@ -38,8 +38,9 @@ bool ComputeUnignoredSelectionEndpoint(
   // The reason is that |position| becomes null because no AXTreeManager is
   // registered for that |tree|'s AXTreeID.
   // TODO(accessibility): investigate and fix this if needed.
-  if (!position->IsIgnored())
+  if (!position->IsIgnored()) {
     return true;  // We assume that unignored positions are already valid.
+  }
 
   position =
       position->AsValidPosition()->AsUnignoredPosition(adjustment_behavior);

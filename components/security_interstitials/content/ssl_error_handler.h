@@ -44,8 +44,6 @@ class NetworkTimeTracker;
 }
 
 BASE_DECLARE_FEATURE(kMITMSoftwareInterstitial);
-BASE_DECLARE_FEATURE(kCaptivePortalInterstitial);
-BASE_DECLARE_FEATURE(kCaptivePortalCertificateList);
 
 // This class is responsible for deciding what type of interstitial to display
 // for an SSL validation error and actually displaying it. The display of the
@@ -113,7 +111,7 @@ class SSLErrorHandler : public content::WebContentsUserData<SSLErrorHandler>,
   // actions.
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
     virtual void CheckForCaptivePortal() = 0;
     virtual bool DoesOSReportCaptivePortal() = 0;
     virtual bool GetSuggestedUrl(const std::vector<std::string>& dns_names,
@@ -186,6 +184,8 @@ class SSLErrorHandler : public content::WebContentsUserData<SSLErrorHandler>,
   static int GetErrorAssistantProtoVersionIdForTesting();
   static void SetOSReportsCaptivePortalForTesting(
       bool os_reports_captive_portal);
+  static void SetIsMultiNetworkCCTWorkflowForTesting(
+      bool is_multi_network_cct_workflow);
   bool IsTimerRunningForTesting() const;
 
  protected:

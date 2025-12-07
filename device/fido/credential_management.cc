@@ -5,11 +5,12 @@
 #include "device/fido/credential_management.h"
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/pin.h"
+#include "device/fido/public/fido_constants.h"
 #include "third_party/boringssl/src/include/openssl/hmac.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
 
@@ -34,8 +35,8 @@ CredentialManagementRequest CredentialManagementRequest::ForGetCredsMetadata(
       version, CredentialManagementSubCommand::kGetCredsMetadata,
       /*params=*/std::nullopt);
   std::tie(request.pin_protocol, request.pin_auth) =
-      token.PinAuth({{static_cast<uint8_t>(
-          CredentialManagementSubCommand::kGetCredsMetadata)}});
+      token.PinAuth(base::span_from_ref(static_cast<uint8_t>(
+          CredentialManagementSubCommand::kGetCredsMetadata)));
   return request;
 }
 
@@ -47,8 +48,8 @@ CredentialManagementRequest CredentialManagementRequest::ForEnumerateRPsBegin(
       version, CredentialManagementSubCommand::kEnumerateRPsBegin,
       /*params=*/std::nullopt);
   std::tie(request.pin_protocol, request.pin_auth) =
-      token.PinAuth({{static_cast<uint8_t>(
-          CredentialManagementSubCommand::kEnumerateRPsBegin)}});
+      token.PinAuth(base::span_from_ref(static_cast<uint8_t>(
+          CredentialManagementSubCommand::kEnumerateRPsBegin)));
   return request;
 }
 
@@ -312,12 +313,15 @@ std::optional<EnumerateCredentialsResponse> EnumerateCredentialsResponse::Parse(
   it = response_map.find(cbor::Value(
       static_cast<int>(CredentialManagementResponseKey::kLargeBlobKey)));
   if (it != response_map.end()) {
-    if (!it->second.is_bytestring() ||
-        it->second.GetBytestring().size() != kLargeBlobKeyLength) {
+    if (!it->second.is_bytestring()) {
       return std::nullopt;
     }
-    large_blob_key = fido_parsing_utils::Materialize(
-        base::make_span<kLargeBlobKeyLength>(it->second.GetBytestring()));
+    auto sized_large_blob_span = base::span(it->second.GetBytestring())
+                                     .to_fixed_extent<kLargeBlobKeyLength>();
+    if (!sized_large_blob_span) {
+      return std::nullopt;
+    }
+    large_blob_key = fido_parsing_utils::Materialize(*sized_large_blob_span);
   }
 
   size_t credential_count = 0;

@@ -25,7 +25,6 @@ class VIZ_SERVICE_EXPORT FrameCounter {
 
   // Add a record for a frame sink.
   void AddFrameSink(const FrameSinkId& frame_sink_id,
-                    mojom::CompositorFrameSinkType type,
                     bool is_root,
                     std::string_view debug_label);
 
@@ -35,10 +34,6 @@ class VIZ_SERVICE_EXPORT FrameCounter {
 
   // Takes the collected frame counts.
   mojom::FrameCountingDataPtr TakeData();
-
-  // Sets a frame sink's type.
-  void SetFrameSinkType(const FrameSinkId& frame_sink_id,
-                        mojom::CompositorFrameSinkType type);
 
   void SetFrameSinkDebugLabel(const FrameSinkId& frame_sink_id,
                               std::string_view debug_label);

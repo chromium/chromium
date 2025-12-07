@@ -42,7 +42,6 @@ void AudioWorkletMessagingProxy::CreateProcessor(
       *GetWorkerThread()->GetTaskRunner(TaskType::kMiscPlatformAPI), FROM_HERE,
       CrossThreadBindOnce(
           &AudioWorkletMessagingProxy::CreateProcessorOnRenderingThread,
-          WrapCrossThreadPersistent(this),
           CrossThreadUnretained(GetWorkerThread()), handler, handler->Name(),
           std::move(message_port_channel), std::move(node_options)));
 }
@@ -79,7 +78,7 @@ bool AudioWorkletMessagingProxy::IsProcessorRegistered(
   return processor_info_map_.Contains(name);
 }
 
-const Vector<CrossThreadAudioParamInfo>
+Vector<CrossThreadAudioParamInfo>
 AudioWorkletMessagingProxy::GetParamInfoListForProcessor(
     const String& name) const {
   DCHECK(IsProcessorRegistered(name));
@@ -99,7 +98,9 @@ AudioWorkletMessagingProxy::CreateObjectProxy(
   return std::make_unique<AudioWorkletObjectProxy>(
       static_cast<AudioWorkletMessagingProxy*>(messaging_proxy),
       parent_execution_context_task_runners,
-      worklet_->GetBaseAudioContext()->sampleRate());
+      worklet_->GetBaseAudioContext()->sampleRate(),
+      worklet_->GetBaseAudioContext()->CurrentSampleFrame(),
+      worklet_->GetBaseAudioContext()->renderQuantumSize());
 }
 
 std::unique_ptr<WorkerThread> AudioWorkletMessagingProxy::CreateWorkerThread() {

@@ -24,8 +24,6 @@ class Value;
 
 namespace trace_event {
 
-class TraceEventMemoryOverhead;
-
 class BASE_EXPORT TracedValue : public ConvertableToTraceFormat {
  public:
   // TODO(oysteine): |capacity| is not used in any production code. Consider
@@ -70,8 +68,6 @@ class BASE_EXPORT TracedValue : public ConvertableToTraceFormat {
   void AppendAsTraceFormat(std::string* out) const override;
   bool AppendToProto(ProtoAppender* appender) const override;
 
-  void EstimateTraceMemoryOverhead(TraceEventMemoryOverhead* overhead) override;
-
   // Helper to auto-close an array. The call to |ArrayScope::~ArrayScope| closes
   // the array.
   //
@@ -87,7 +83,7 @@ class BASE_EXPORT TracedValue : public ConvertableToTraceFormat {
   // the held |TracedValue*| is in array state).
   //
   // Example:
-  //   std::unique_ptr<TracedValue> value(new TracedValue());
+  //   auto value = std::make_unique<TracedValue>();
   //   {
   //     auto scope = value->BeginArrayScoped("array_name");
   //     value->AppendBoolean(false);
@@ -130,7 +126,7 @@ class BASE_EXPORT TracedValue : public ConvertableToTraceFormat {
   // (which checks if the held |TracedValue*| is in dictionary state).
   //
   // Example:
-  //   std::unique_ptr<TracedValue> value(new TracedValue());
+  //   auto value = std::make_unique<TracedValue>();
   //   {
   //     auto scope = value->BeginDictionaryScoped("dictionary_name");
   //     value->SetBoolean("my_boolean", false);
@@ -376,9 +372,6 @@ class BASE_EXPORT TracedValue : public ConvertableToTraceFormat {
     virtual void AppendAsTraceFormat(std::string* out) const = 0;
 
     virtual bool AppendToProto(ProtoAppender* appender);
-
-    virtual void EstimateTraceMemoryOverhead(
-        TraceEventMemoryOverhead* overhead) = 0;
 
     virtual bool IsPickleWriter() const = 0;
     virtual bool IsProtoWriter() const = 0;

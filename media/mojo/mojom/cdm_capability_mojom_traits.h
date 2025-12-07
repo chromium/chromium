@@ -6,6 +6,7 @@
 #define MEDIA_MOJO_MOJOM_CDM_CAPABILITY_MOJOM_TRAITS_H_
 
 #include "base/containers/flat_set.h"
+#include "base/version.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/cdm_capability.h"
 #include "media/base/content_decryption_module.h"
@@ -55,8 +56,25 @@ struct StructTraits<media::mojom::CdmCapabilityDataView, media::CdmCapability> {
     return input.session_types;
   }
 
+  // CDM version.
+  static const base::Version version(const media::CdmCapability& input) {
+    return input.version;
+  }
+
   static bool Read(media::mojom::CdmCapabilityDataView input,
                    media::CdmCapability* output);
+};
+
+template <>
+struct EnumTraits<media::mojom::CdmCapabilityQueryStatus,
+                  media::CdmCapabilityQueryStatus> {
+  static media::mojom::CdmCapabilityQueryStatus ToMojom(
+      media::CdmCapabilityQueryStatus input);
+
+  // Returning false results in deserialization failure and causes the
+  // message pipe receiving it to be disconnected.
+  static bool FromMojom(media::mojom::CdmCapabilityQueryStatus input,
+                        media::CdmCapabilityQueryStatus* output);
 };
 
 }  // namespace mojo

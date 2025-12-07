@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.util.AttributeSet;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable.TabSwitcherDrawableLocation;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.listmenu.ListMenuButton;
 
@@ -15,6 +17,7 @@ import org.chromium.ui.listmenu.ListMenuButton;
  * The Button used for switching tabs. Currently this class is only being used for the bottom
  * toolbar tab switcher button.
  */
+@NullMarked
 public class TabSwitcherButtonView extends ListMenuButton {
     /** A drawable for the tab switcher icon. */
     private TabSwitcherDrawable mTabSwitcherButtonDrawable;
@@ -29,7 +32,9 @@ public class TabSwitcherButtonView extends ListMenuButton {
 
         mTabSwitcherButtonDrawable =
                 TabSwitcherDrawable.createTabSwitcherDrawable(
-                        getContext(), BrandedColorScheme.APP_DEFAULT);
+                        getContext(),
+                        BrandedColorScheme.APP_DEFAULT,
+                        TabSwitcherDrawableLocation.TAB_SWITCHER_TOOLBAR);
         setImageDrawable(mTabSwitcherButtonDrawable);
     }
 

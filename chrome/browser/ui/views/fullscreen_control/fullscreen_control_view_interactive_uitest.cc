@@ -12,7 +12,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
@@ -22,10 +22,12 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/fullscreen_control/fullscreen_control_view.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/mock_permission_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/base/ui_base_features.h"
@@ -76,6 +78,21 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
         std::make_unique<aura::test::TestCursorClient>(root_window);
     cursor_client_->DisableMouseEvents();
 #endif
+    GetExclusiveAccessManager()
+        ->permission_manager()
+        .set_permission_controller_for_test(&permission_controller_);
+    ON_CALL(permission_controller_, RequestPermissionsFromCurrentDocument)
+        .WillByDefault(
+            [](content::RenderFrameHost* render_frame_host,
+               content::PermissionRequestDescription request_description,
+               base::OnceCallback<void(
+                   const std::vector<content::PermissionResult>&)> callback) {
+              std::move(callback).Run(std::vector<content::PermissionResult>(
+                  request_description.permissions.size(),
+                  content::PermissionResult(
+                      content::PermissionStatus::GRANTED,
+                      content::PermissionStatusSource::UNSPECIFIED)));
+            });
   }
 
   void TearDownOnMainThread() override {
@@ -86,9 +103,7 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
 
  protected:
   FullscreenControlHost* GetFullscreenControlHost() {
-    BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(browser());
-    return browser_view->fullscreen_control_host_for_test();
+    return browser()->GetFeatures().fullscreen_control_host();
   }
 
   FullscreenControlView* GetFullscreenControlView() {
@@ -100,13 +115,13 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
   }
 
   ExclusiveAccessManager* GetExclusiveAccessManager() {
-    return browser()->exclusive_access_manager();
+    return browser()->GetFeatures().exclusive_access_manager();
   }
 
   ExclusiveAccessBubbleViews* GetExclusiveAccessBubble() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
-    return browser_view->exclusive_access_bubble();
+    return browser_view->GetExclusiveAccessBubble();
   }
 
   KeyboardLockController* GetKeyboardLockController() {
@@ -168,6 +183,8 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
     return &GetFullscreenControlHost()->popup_timeout_timer_;
   }
 
+  bool IsInFullScreen() { return !!GetFullscreenControlHost()->event_monitor_; }
+
   void RunLoopUntilVisibilityChanges() {
     base::RunLoop run_loop;
     SetPopupVisibilityChangedCallback(run_loop.QuitClosure());
@@ -178,6 +195,7 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  content::MockPermissionController permission_controller_;
 
 #if defined(USE_AURA)
   std::unique_ptr<aura::test::TestCursorClient> cursor_client_;
@@ -187,16 +205,8 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
 // Creating the popup on Mac increases the memory use by ~2MB so it should be
 // lazily loaded only when necessary. This test verifies that the popup is not
 // immediately created when FullscreenControlHost is created.
-// Disabled on Lacros due to flaky. crbug.com/1254453
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_NoFullscreenPopupOnBrowserFullscreen \
-  DISABLED_NoFullscreenPopupOnBrowserFullscreen
-#else
-#define MAYBE_NoFullscreenPopupOnBrowserFullscreen \
-  NoFullscreenPopupOnBrowserFullscreen
-#endif
 IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest,
-                       MAYBE_NoFullscreenPopupOnBrowserFullscreen) {
+                       NoFullscreenPopupOnBrowserFullscreen) {
   EnterActiveTabFullscreenAndFinishPromptAnimation();
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   DCHECK(browser_view);
@@ -209,13 +219,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest,
 // UI. See IsExitUiEnabled() in FullscreenControlHost.
 #if !BUILDFLAG(IS_MAC)
 
-// Disabled on Lacros due to flaky. crbug.com/1254453
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_MouseExitFullscreen DISABLED_MouseExitFullscreen
-#else
-#define MAYBE_MouseExitFullscreen MouseExitFullscreen
-#endif
-IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest, MAYBE_MouseExitFullscreen) {
+IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest, MouseExitFullscreen) {
   EnterActiveTabFullscreenAndFinishPromptAnimation();
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   ASSERT_TRUE(browser_view->IsFullscreen());
@@ -239,18 +243,18 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest, MAYBE_MouseExitFullscreen) {
   views::test::ButtonTestApi(GetFullscreenExitButton())
       .NotifyClick(mouse_click);
 
-  ASSERT_FALSE(GetFullscreenControlHost());
+  ASSERT_FALSE(IsInFullScreen());
   ASSERT_FALSE(browser_view->IsFullscreen());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(https://crbug.com/374539762): Deflake and re-enable on Windows.
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_MouseExitFullscreen_TimeoutAndRetrigger \
   DISABLED_MouseExitFullscreen_TimeoutAndRetrigger
 #else
 #define MAYBE_MouseExitFullscreen_TimeoutAndRetrigger \
   MouseExitFullscreen_TimeoutAndRetrigger
 #endif
-// Flaky on lacros: https://crbug.com/1254453
 IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest,
                        MAYBE_MouseExitFullscreen_TimeoutAndRetrigger) {
   EnterActiveTabFullscreenAndFinishPromptAnimation();
@@ -305,17 +309,9 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest,
   ASSERT_TRUE(browser_view->IsFullscreen());
 }
 
-// Disabled on Lacros due to flaky. crbug.com/1254453
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_MouseOnTopWhenPromptIsShowing_ButtonNotShownUntilMouseLeavesBufferArea \
-  DISABLED_MouseOnTopWhenPromptIsShowing_ButtonNotShownUntilMouseLeavesBufferArea
-#else
-#define MAYBE_MouseOnTopWhenPromptIsShowing_ButtonNotShownUntilMouseLeavesBufferArea \
-  MouseOnTopWhenPromptIsShowing_ButtonNotShownUntilMouseLeavesBufferArea
-#endif
 IN_PROC_BROWSER_TEST_F(
     FullscreenControlViewTest,
-    MAYBE_MouseOnTopWhenPromptIsShowing_ButtonNotShownUntilMouseLeavesBufferArea) {
+    MouseOnTopWhenPromptIsShowing_ButtonNotShownUntilMouseLeavesBufferArea) {
   EnterActiveTabFullscreen();
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   ASSERT_TRUE(browser_view->IsFullscreen());
@@ -358,13 +354,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(host->IsVisible());
 }
 
-// Disabled on Lacros due to flaky. crbug.com/1254453
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_TouchPopupInteraction DISABLED_TouchPopupInteraction
-#else
-#define MAYBE_TouchPopupInteraction TouchPopupInteraction
-#endif
-IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest, MAYBE_TouchPopupInteraction) {
+IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest, TouchPopupInteraction) {
   EnterActiveTabFullscreenAndFinishPromptAnimation();
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   ASSERT_TRUE(browser_view->IsFullscreen());
@@ -440,20 +430,12 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest, MAYBE_TouchPopupInteraction) {
   views::test::ButtonTestApi(GetFullscreenExitButton())
       .NotifyClick(touch_event);
 
-  ASSERT_FALSE(GetFullscreenControlHost());
+  ASSERT_FALSE(IsInFullScreen());
   ASSERT_FALSE(browser_view->IsFullscreen());
 }
 
-// Disabled on Lacros due to flaky. crbug.com/1254453
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_MouseAndTouchInteraction_NoInterference \
-  DISABLED_MouseAndTouchInteraction_NoInterference
-#else
-#define MAYBE_MouseAndTouchInteraction_NoInterference \
-  MouseAndTouchInteraction_NoInterference
-#endif
 IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest,
-                       MAYBE_MouseAndTouchInteraction_NoInterference) {
+                       MouseAndTouchInteraction_NoInterference) {
   EnterActiveTabFullscreenAndFinishPromptAnimation();
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   ASSERT_TRUE(browser_view->IsFullscreen());
@@ -529,14 +511,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest,
 }
 #endif
 
-// Disabled on Lacros due to flaky. crbug.com/1254453
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_KeyboardPopupInteraction DISABLED_KeyboardPopupInteraction
-#else
-#define MAYBE_KeyboardPopupInteraction KeyboardPopupInteraction
-#endif
-IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest,
-                       MAYBE_KeyboardPopupInteraction) {
+IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest, KeyboardPopupInteraction) {
   EnterActiveTabFullscreenAndFinishPromptAnimation();
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   ASSERT_TRUE(browser_view->IsFullscreen());

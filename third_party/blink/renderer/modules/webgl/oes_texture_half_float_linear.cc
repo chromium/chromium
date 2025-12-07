@@ -30,7 +30,8 @@
 namespace blink {
 
 OESTextureHalfFloatLinear::OESTextureHalfFloatLinear(
-    WebGLRenderingContextBase* context)
+    WebGLRenderingContextBase* context,
+    ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_OES_texture_half_float_linear");

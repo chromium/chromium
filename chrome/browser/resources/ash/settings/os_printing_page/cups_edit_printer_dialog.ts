@@ -18,20 +18,24 @@ import './cups_printer_dialog_error.js';
 import './cups_printer_shared.css.js';
 import './cups_printers_browser_proxy.js';
 
+import type {I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
-import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
+import type {NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
+import {NetworkListenerBehavior} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {CrosNetworkConfigInterface, FilterType, NetworkStateProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {CrosNetworkConfigInterface, NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {FilterType, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {cast} from '../assert_extras.js';
-import {Constructor} from '../common/types.js';
+import type {Constructor} from '../common/types.js';
 
 import {getTemplate} from './cups_edit_printer_dialog.html.js';
-import {getBaseName, getErrorText, isNameAndAddressValid, isNetworkProtocol, isPPDInfoValid} from './cups_printer_dialog_util.js';
-import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, ManufacturersInfo, ModelsInfo, PrinterPpdMakeModel, PrinterSetupResult} from './cups_printers_browser_proxy.js';
+import {getDisplayPpd, getErrorText, isNameAndAddressValid, isNetworkProtocol, isPPDInfoValid} from './cups_printer_dialog_util.js';
+import type {CupsPrinterInfo, CupsPrintersBrowserProxy, ManufacturersInfo, ModelsInfo, PrinterPpdMakeModel, PrinterSetupResult} from './cups_printers_browser_proxy.js';
+import {CupsPrintersBrowserProxyImpl} from './cups_printers_browser_proxy.js';
 
 /**
  * The types of actions that can be performed with the edit dialog.  These
@@ -228,7 +232,7 @@ export class SettingsCupsEditPrinterDialogElement extends
             this.onGetPrinterPpdManufacturerAndModelFailed_.bind(this));
     this.browserProxy_.getCupsPrinterManufacturersList().then(
         this.manufacturerListChanged_.bind(this));
-    this.userPPD_ = getBaseName(this.pendingPrinter_.printerPPDPath);
+    this.userPPD_ = getDisplayPpd(this.pendingPrinter_.printerPPDPath);
   }
 
   override onActiveNetworksChanged(networks: NetworkStateProperties[]): void {
@@ -245,7 +249,7 @@ export class SettingsCupsEditPrinterDialogElement extends
 
   private onProtocolChange_(event: Event): void {
     const selectEl = cast(event.target, HTMLSelectElement);
-    this.set('pendingPrinter_.printerProtocol', selectEl!.value);
+    this.set('pendingPrinter_.printerProtocol', selectEl.value);
     this.onPrinterInfoChange_();
   }
 
@@ -458,7 +462,7 @@ export class SettingsCupsEditPrinterDialogElement extends
       // A new valid PPD file should be treated as a saveable change.
       this.onPrinterInfoChange_();
     }
-    this.userPPD_ = getBaseName(path);
+    this.userPPD_ = getDisplayPpd(path);
   }
 
   /**
@@ -565,6 +569,20 @@ export class SettingsCupsEditPrinterDialogElement extends
   private isInputFieldReadonly_(): boolean {
     return !this.isOnline_ ||
         (this.pendingPrinter_ && this.pendingPrinter_.isManaged);
+  }
+
+  /**
+   * @return Returns true if the printer is managed and both manufacturer and
+   * model fields are empty.
+   */
+  private shouldHideMakeAndModel_(): boolean {
+    // If the printer is not managed, we should not hide the fields.
+    if (!this.pendingPrinter_ || !this.pendingPrinter_.isManaged) {
+      return false;
+    }
+    // Hide the fields if both are empty.
+    return !this.pendingPrinter_.ppdManufacturer &&
+        !this.pendingPrinter_.ppdModel;
   }
 }
 

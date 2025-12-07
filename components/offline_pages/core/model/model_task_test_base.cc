@@ -8,8 +8,8 @@
 #include "base/task/single_thread_task_runner.h"
 
 namespace offline_pages {
-ModelTaskTestBase::ModelTaskTestBase() {}
-ModelTaskTestBase::~ModelTaskTestBase() {}
+ModelTaskTestBase::ModelTaskTestBase() = default;
+ModelTaskTestBase::~ModelTaskTestBase() = default;
 
 void ModelTaskTestBase::SetUp() {
   TaskTestBase::SetUp();

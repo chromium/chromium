@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.announcement;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -12,9 +14,11 @@ import android.content.Intent;
 import androidx.annotation.IntDef;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
@@ -35,9 +39,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Sends announcement notification for information update of Chrome.
- * When to show notification is controlled by Finch.
+ * Sends announcement notification for information update of Chrome. When to show notification is
+ * controlled by Finch.
  */
+@NullMarked
 public class AnnouncementNotificationManager {
     private static final String ANNOUNCEMENT_NOTIFICATION_TAG = "announcement_notification";
     private static final int ANNOUNCEMENT_NOTIFICATION_ID = 100;
@@ -74,6 +79,7 @@ public class AnnouncementNotificationManager {
                                     IntentUtils.safeGetIntExtra(
                                             intent, EXTRA_INTENT_TYPE, IntentType.UNKNOWN);
                             String url = IntentUtils.safeGetStringExtra(intent, EXTRA_URL);
+                            assumeNonNull(url);
                             switch (intentType) {
                                 case IntentType.UNKNOWN:
                                     break;
@@ -115,12 +121,12 @@ public class AnnouncementNotificationManager {
 
     private static void close() {
         // Dismiss the notification.
-        BaseNotificationManagerProxyFactory.create(ContextUtils.getApplicationContext())
+        BaseNotificationManagerProxyFactory.create()
                 .cancel(ANNOUNCEMENT_NOTIFICATION_TAG, ANNOUNCEMENT_NOTIFICATION_ID);
     }
 
     @CalledByNative
-    private static void showNotification(String url) {
+    private static void showNotification(@JniType("std::string") String url) {
         Context context = ContextUtils.getApplicationContext();
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
@@ -148,7 +154,7 @@ public class AnnouncementNotificationManager {
                 createIntent(context, IntentType.OPEN, url),
                 NotificationUmaTracker.ActionType.ANNOUNCEMENT_OPEN);
 
-        BaseNotificationManagerProxy nm = BaseNotificationManagerProxyFactory.create(context);
+        BaseNotificationManagerProxy nm = BaseNotificationManagerProxyFactory.create();
         NotificationWrapper notification = builder.buildNotificationWrapper();
         nm.notify(notification);
 

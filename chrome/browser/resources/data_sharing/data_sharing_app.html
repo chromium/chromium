@@ -1,0 +1,90 @@
+<style>
+  .container {
+    width: 448px;
+    min-height: 100px;
+    background-color: var(--color-sys-surface);
+
+    --skw-color-primary: var(--color-sys-primary);
+    --skw-color-surface-tint: var(--color-sys-surface-tint);
+    --skw-color-on-primary: var(--color-sys-on-primary);
+    --skw-color-primary-container: var(--color-sys-primary-container);
+    --skw-color-on-primary-container: var(--color-sys-on-primary-container);
+    --skw-color-secondary: var(--color-sys-secondary);
+    --skw-color-on-secondary: var(--color-sys-on-secondary);
+    --skw-color-secondary-container: var(--color-sys-secondary-container);
+    --skw-color-on-secondary-container: var(--color-sys-on-secondary-container);
+    --skw-color-tertiary: var(--color-sys-tertiary);
+    --skw-color-on-tertiary: var(--color-sys-on-tertiary);
+    --skw-color-tertiary-container: var(--color-sys-tertiary-container);
+    --skw-color-on-tertiary-container: var(--color-sys-on-tertiary-container);
+    --skw-color-error: var(--color-sys-error);
+    --skw-color-on-error: var(--color-sys-on-error);
+    --skw-color-error-container: var(--color-sys-error-container);
+    --skw-color-on-error-container: var(--color-sys-on-error-container);
+    --skw-color-background: var(--color-sys-background);
+    --skw-color-on-background: var(--color-sys-on-background);
+    --skw-color-surface: var(--color-sys-surface);
+    --skw-color-surface1: var(--color-sys-surface1);
+    --skw-color-on-surface: var(--color-sys-on-surface);
+    --skw-color-surface-variant: var(--color-sys-surface-variant);
+    --skw-color-on-surface-variant: var(--color-sys-on-surface-variant);
+    --skw-color-outline: var(--color-sys-outline);
+    --skw-color-tonal-outline: var(--color-sys-tonal-outline);
+    --skw-color-outline-variant: var(--color-sys-outline-variant);
+    --skw-color-shadow: var(--color-sys-shadow);
+    --skw-color-scrim: var(--color-sys-scrim);
+    --skw-color-inverse-surface: var(--color-sys-inverse-surface);
+    --skw-color-inverse-on-surface: var(--color-sys-inverse-on-surface);
+    --skw-color-inverse-primary: var(--color-sys-inverse-primary);
+    --skw-color-primary-fixed: var(--color-sys-primary-fixed);
+    --skw-color-on-primary-fixed: var(--color-sys-on-primary-fixed);
+    --skw-color-primary-fixed-dim: var(--color-sys-primary-fixed-dim);
+    --skw-color-on-primary-fixed-variant: var(
+      --color-sys-on-primary-fixed-variant
+    );
+    --skw-color-secondary-fixed: var(--color-sys-secondary-fixed);
+    --skw-color-on-secondary-fixed: var(--color-sys-on-secondary-fixed);
+    --skw-color-secondary-fixed-dim: var(--color-sys-secondary-fixed-dim);
+    --skw-color-on-secondary-fixed-variant: var(
+      --color-sys-on-secondary-fixed-variant
+    );
+    --skw-color-tertiary-fixed: var(--color-sys-tertiary-fixed);
+    --skw-color-on-tertiary-fixed: var(--color-sys-on-tertiary-fixed);
+    --skw-color-tertiary-fixed-dim: var(--color-sys-tertiary-fixed-dim);
+    --skw-color-on-tertiary-fixed-variant: var(
+      --color-sys-on-tertiary-fixed-variant
+    );
+    --skw-color-surface-dim: var(--color-sys-surface-dim);
+    --skw-color-surface-bright: var(--color-sys-surface-bright);
+    --skw-color-surface-container-lowest: var(
+      --color-sys-surface
+    );
+    --skw-color-surface-container-low: var(--color-sys-surface);
+    --skw-color-surface-container: var(--color-sys-surface);
+    --skw-color-surface-container-high: var(--color-sys-surface5);
+    --skw-color-surface-container-highest: var(
+      --color-sys-surface5
+    );
+    --skw-font: $i18nRaw{fontfamilyMd};
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .container {
+      /* ShareKit defaults to a 'light' color scheme when creating a component.
+      While custom styles handle dark mode correctly, browser-native elements
+      (e.g. scrollbars) remain in light mode unless color-scheme is explicitly
+      set. */
+      color-scheme: dark;
+    }
+  }
+
+  .invite {
+    width: 320px;
+  }
+</style>
+
+<!-- Import stylesheet so it's inside the shadow DOM -->
+<link rel="stylesheet" href="data_sharing_sdk.css">
+
+<!-- Container that hosts flow dialogs. -->
+<div id="dialog-container" class="container"></div>

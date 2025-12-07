@@ -8,8 +8,28 @@
 #include <stddef.h>
 #include <stdint.h>
 
+namespace std {
+
+template <bool Condition, class If, class Else>
+struct conditional {
+  using type = If;
+};
+
+template <class If, class Else>
+struct conditional<false, If, Else> {
+  using type = Else;
+};
+
+template <bool Condition, class If, class Else>
+using conditional_t = conditional<Condition, If, Else>::type;
+
+}  // namespace std
+
 #define GC_PLUGIN_IGNORE(reason) \
   __attribute__((annotate("blink_gc_plugin_ignore")))
+
+#define STACK_ALLOCATED_IGNORE(reason) \
+  __attribute__((annotate("stack_allocated_ignore")))
 
 namespace base {
 
@@ -36,7 +56,7 @@ template <typename T, typename Traits = void>
 class raw_ref {};
 
 }  // namespace base
-namespace WTF {
+namespace blink {
 
 template<typename T> class RefCounted { };
 
@@ -135,7 +155,7 @@ class HashMap {
 
   ~HashMap() {}
 };
-}
+}  // namespace blink
 
 // Empty namespace declaration to exercise internal
 // handling of namespace equality.
@@ -215,6 +235,12 @@ class Visitor {
 
   template <typename T>
   void Trace(const T&);
+
+  template <typename T>
+  void TraceMultiple(const T* start, size_t len);
+
+  template <typename K, typename V>
+  void TraceEphemeron(const K& key, const V* value);
 };
 
 namespace internal {
@@ -390,8 +416,6 @@ using CrossThreadWeakPersistent = cppgc::subtle::CrossThreadWeakPersistent<T>;
 template <typename T>
 using TraceWrapperV8Reference = v8::TracedReference<T>;
 
-using namespace WTF;
-
 #define DISALLOW_NEW()                                            \
  public:                                                          \
   void* operator new(size_t, void* location) { return location; } \
@@ -415,29 +439,106 @@ public:
     static const bool isGarbageCollected = true;
 };
 
+namespace internal {
+
+enum class HeapCollectionType { kGCed, kDisallowNew };
+
+class DisallowNewBaseForHeapCollections {
+  DISALLOW_NEW();
+};
+
+}  // namespace internal
+
+// HeapVector
+template <internal::HeapCollectionType CollectionType,
+          typename T,
+          size_t inlineCapacity>
+class BasicHeapVector final
+    : public std::conditional_t<
+          CollectionType == internal::HeapCollectionType::kGCed,
+          GarbageCollected<BasicHeapVector<CollectionType, T, inlineCapacity>>,
+          internal::DisallowNewBaseForHeapCollections>,
+      public Vector<T, inlineCapacity, HeapAllocator> {};
 template <typename T, size_t inlineCapacity = 0>
-class HeapVector : public GarbageCollected<HeapVector<T, inlineCapacity>>,
-                   public Vector<T, inlineCapacity, HeapAllocator> {};
-
+using HeapVector = BasicHeapVector<internal::HeapCollectionType::kDisallowNew,
+                                   T,
+                                   inlineCapacity>;
 template <typename T, size_t inlineCapacity = 0>
-class HeapDeque : public GarbageCollected<HeapDeque<T, inlineCapacity>>,
-                  public Vector<T, inlineCapacity, HeapAllocator> {};
+using GCedHeapVector =
+    BasicHeapVector<internal::HeapCollectionType::kGCed, T, inlineCapacity>;
 
+// HeapDeque
+template <internal::HeapCollectionType CollectionType, typename T>
+class BasicHeapDeque final
+    : public std::conditional_t<
+          CollectionType == internal::HeapCollectionType::kGCed,
+          GarbageCollected<BasicHeapDeque<CollectionType, T>>,
+          internal::DisallowNewBaseForHeapCollections>,
+      public Deque<T, 0, HeapAllocator> {};
 template <typename T>
-class HeapHashSet : public GarbageCollected<HeapHashSet<T>>,
-                    public HashSet<T, void, HeapAllocator> {};
-
+using HeapDeque = BasicHeapDeque<internal::HeapCollectionType::kDisallowNew, T>;
 template <typename T>
-class HeapLinkedHashSet : public GarbageCollected<HeapLinkedHashSet<T>>,
-                          public LinkedHashSet<T, void, HeapAllocator> {};
+using GCedHeapDeque = BasicHeapDeque<internal::HeapCollectionType::kGCed, T>;
 
+// HeapHashSet
+template <internal::HeapCollectionType CollectionType, typename T>
+class BasicHeapHashSet final
+    : public std::conditional_t<
+          CollectionType == internal::HeapCollectionType::kGCed,
+          GarbageCollected<BasicHeapHashSet<CollectionType, T>>,
+          internal::DisallowNewBaseForHeapCollections>,
+      public HashSet<T, void, HeapAllocator> {};
 template <typename T>
-class HeapHashCountedSet : public GarbageCollected<HeapHashCountedSet<T>>,
-                           public HashCountedSet<T, void, HeapAllocator> {};
+using HeapHashSet =
+    BasicHeapHashSet<internal::HeapCollectionType::kDisallowNew, T>;
+template <typename T>
+using GCedHeapHashSet =
+    BasicHeapHashSet<internal::HeapCollectionType::kGCed, T>;
 
+// HeapLinkedHashSet
+template <internal::HeapCollectionType CollectionType, typename T>
+class BasicHeapLinkedHashSet final
+    : public std::conditional_t<
+          CollectionType == internal::HeapCollectionType::kGCed,
+          GarbageCollected<BasicHeapLinkedHashSet<CollectionType, T>>,
+          internal::DisallowNewBaseForHeapCollections>,
+      public LinkedHashSet<T, void, HeapAllocator> {};
+template <typename T>
+using HeapLinkedHashSet =
+    BasicHeapLinkedHashSet<internal::HeapCollectionType::kDisallowNew, T>;
+template <typename T>
+using GCedHeapLinkedHashSet =
+    BasicHeapLinkedHashSet<internal::HeapCollectionType::kGCed, T>;
+
+// HeapHashCountedSet
+template <internal::HeapCollectionType CollectionType, typename T>
+class BasicHeapHashCountedSet final
+    : public std::conditional_t<
+          CollectionType == internal::HeapCollectionType::kGCed,
+          GarbageCollected<BasicHeapHashCountedSet<CollectionType, T>>,
+          internal::DisallowNewBaseForHeapCollections>,
+      public HashCountedSet<T, void, HeapAllocator> {};
+template <typename T>
+using HeapHashCountedSet =
+    BasicHeapHashCountedSet<internal::HeapCollectionType::kDisallowNew, T>;
+template <typename T>
+using GCedHeapHashCountedSet =
+    BasicHeapHashCountedSet<internal::HeapCollectionType::kGCed, T>;
+
+// HeapHashMap
+template <internal::HeapCollectionType CollectionType, typename K, typename V>
+class BasicHeapHashMap final
+    : public std::conditional_t<
+          CollectionType == internal::HeapCollectionType::kGCed,
+          GarbageCollected<BasicHeapHashMap<CollectionType, K, V>>,
+          internal::DisallowNewBaseForHeapCollections>,
+      public HashMap<K, V, void, void, HeapAllocator> {};
 template <typename K, typename V>
-class HeapHashMap : public GarbageCollected<HeapHashMap<K, V>>,
-                    public HashMap<K, V, void, void, HeapAllocator> {};
+using HeapHashMap =
+    BasicHeapHashMap<internal::HeapCollectionType::kDisallowNew, K, V>;
+template <typename K, typename V>
+using GCedHeapHashMap =
+    BasicHeapHashMap<internal::HeapCollectionType::kGCed, K, V>;
 
 template<typename T>
 struct TraceIfNeeded {

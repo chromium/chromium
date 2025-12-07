@@ -6,6 +6,18 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [ "file_patcher.mojom" ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "patch.mojom.ZucchiniStatus"
+          cpp = "zucchini::status::Code"
+        },
+      ]
+      traits_headers = [ "file_patcher_mojom_traits.h" ]
+      traits_public_deps = [ "//components/zucchini:zucchini_lib" ]
+    },
+  ]
 
   public_deps = [
     "//mojo/public/mojom/base",

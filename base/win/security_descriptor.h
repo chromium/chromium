@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/win/access_control_list.h"
 #include "base/win/access_token.h"
@@ -130,10 +131,9 @@ class BASE_EXPORT SecurityDescriptor {
   // |security_info| determines what parts are included in the string.
   std::optional<std::wstring> ToSddl(SECURITY_INFORMATION security_info) const;
 
-  // Create an reference to the absolute security descriptor of this instance.
-  // |sd| the SECURITY_DESCRIPTOR structure to populate. This is is only valid
-  // as long as this object is in scope and not modified.
-  void ToAbsolute(SECURITY_DESCRIPTOR& sd) const;
+  // Create a reference to the absolute security descriptor of this instance.
+  // This is is only valid as long as this object is in scope and not modified.
+  SECURITY_DESCRIPTOR ToAbsolute() LIFETIME_BOUND;
 
   // Create a self-relative security descriptor in a single buffer.
   std::optional<SelfRelative> ToSelfRelative() const;
@@ -209,16 +209,19 @@ class BASE_EXPORT SecurityDescriptor {
 
   // Get, set and clear owner member.
   const std::optional<Sid>& owner() const { return owner_; }
+  std::optional<Sid>& owner() { return owner_; }
   void set_owner(const Sid& owner) { owner_ = owner.Clone(); }
   void clear_owner() { owner_ = std::nullopt; }
 
   // Get, set and clear group member.
   const std::optional<Sid>& group() const { return group_; }
+  std::optional<Sid>& group() { return group_; }
   void set_group(const Sid& group) { group_ = group.Clone(); }
   void clear_group() { group_ = std::nullopt; }
 
   // Get, set and clear dacl member.
   const std::optional<AccessControlList>& dacl() const { return dacl_; }
+  std::optional<AccessControlList>& dacl() { return dacl_; }
   void set_dacl(const AccessControlList& dacl) { dacl_ = dacl.Clone(); }
   void clear_dacl() { dacl_ = std::nullopt; }
 
@@ -230,6 +233,7 @@ class BASE_EXPORT SecurityDescriptor {
 
   // Get, set and clear sacl member.
   const std::optional<AccessControlList>& sacl() const { return sacl_; }
+  std::optional<AccessControlList>& sacl() { return sacl_; }
   void set_sacl(const AccessControlList& sacl) { sacl_ = sacl.Clone(); }
   void clear_sacl() { sacl_ = std::nullopt; }
 

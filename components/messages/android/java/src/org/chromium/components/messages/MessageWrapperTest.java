@@ -21,7 +21,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit test for MessageWrapper. */
@@ -29,13 +28,11 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class MessageWrapperTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
     @Mock private MessageWrapper.Natives mNativeMock;
 
     @Before
     public void setUp() {
-        mJniMocker.mock(MessageWrapperJni.TEST_HOOKS, mNativeMock);
+        MessageWrapperJni.setInstanceForTesting(mNativeMock);
     }
 
     /** Tests that message properties are correctly propagated to PropertyModel. */
@@ -109,7 +106,7 @@ public class MessageWrapperTest {
         final long nativePtr = 1;
         MessageWrapper message = MessageWrapper.create(nativePtr, MessageIdentifier.TEST_MESSAGE);
         PropertyModel messageProperties = message.getMessageProperties();
-        messageProperties.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
+        var unused = messageProperties.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
         Mockito.verify(mNativeMock).handleActionClick(nativePtr);
         messageProperties.get(MessageBannerProperties.ON_SECONDARY_ACTION).run();
         Mockito.verify(mNativeMock).handleSecondaryActionClick(nativePtr);
@@ -128,7 +125,7 @@ public class MessageWrapperTest {
         PropertyModel messageProperties = message.getMessageProperties();
 
         message.clearNativePtr();
-        messageProperties.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
+        var unused = messageProperties.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
         Mockito.verify(mNativeMock, never()).handleActionClick(nativePtr);
         messageProperties.get(MessageBannerProperties.ON_SECONDARY_ACTION).run();
         Mockito.verify(mNativeMock, never()).handleSecondaryActionClick(nativePtr);
@@ -162,7 +159,7 @@ public class MessageWrapperTest {
                 messageSecondaryMenuItems.mMenuItems.size());
 
         // Select a secondary menu item.
-        message.onItemSelected(item1);
+        message.onItemSelected(item1, null);
         Mockito.verify(mNativeMock).handleSecondaryMenuItemSelected(nativePtr, 1);
 
         // Clear the secondary menu.

@@ -44,7 +44,6 @@ using offline_items_collection::OfflineItemState;
 namespace offline_pages {
 namespace {
 using testing::_;
-using testing::Invoke;
 using testing::WithArg;
 
 // Constants for a test OfflinePageItem.
@@ -78,8 +77,8 @@ void GetItemAndVerify(const std::optional<OfflineItem>& expected,
 // Mock DownloadUIAdapter::Delegate
 class DownloadUIAdapterDelegate : public DownloadUIAdapter::Delegate {
  public:
-  DownloadUIAdapterDelegate() {}
-  ~DownloadUIAdapterDelegate() override {}
+  DownloadUIAdapterDelegate() = default;
+  ~DownloadUIAdapterDelegate() override = default;
 
   // DownloadUIAdapter::Delegate
   bool IsVisibleInUI(const ClientId& client_id) override { return is_visible; }
@@ -113,7 +112,7 @@ class MockOfflinePageModel : public StubOfflinePageModel {
   MockOfflinePageModel(const MockOfflinePageModel&) = delete;
   MockOfflinePageModel& operator=(const MockOfflinePageModel&) = delete;
 
-  ~MockOfflinePageModel() override {}
+  ~MockOfflinePageModel() override = default;
 
   void AddInitialPage(ClientId client_id) {
     OfflinePageItem page(GURL(kTestUrl), kTestOfflineId1, client_id,
@@ -266,7 +265,7 @@ DownloadUIAdapterTest::DownloadUIAdapterTest()
     : task_runner_(new base::TestMockTimeTaskRunner),
       task_runner_current_default_handle_(task_runner_) {}
 
-DownloadUIAdapterTest::~DownloadUIAdapterTest() {}
+DownloadUIAdapterTest::~DownloadUIAdapterTest() = default;
 
 void DownloadUIAdapterTest::SetUp() {
   model = std::make_unique<MockOfflinePageModel>(task_runner_.get());
@@ -561,17 +560,15 @@ TEST_F(DownloadUIAdapterTest, GetVisualsForItem) {
       std::make_unique<OfflinePageVisuals>(kVisuals);
   const int kImageWidth = 24;
   EXPECT_CALL(*visuals_decoder, DecodeAndCropImage_(kThumbnailData, _))
-      .WillOnce(
-          WithArg<1>(Invoke([&](VisualsDecoder::DecodeComplete* callback) {
-            std::move(*callback).Run(
-                gfx::test::CreateImage(kImageWidth, kImageWidth));
-          })));
+      .WillOnce(WithArg<1>([&](VisualsDecoder::DecodeComplete* callback) {
+        std::move(*callback).Run(
+            gfx::test::CreateImage(kImageWidth, kImageWidth));
+      }));
   EXPECT_CALL(*visuals_decoder, DecodeAndCropImage_(kFaviconData, _))
-      .WillOnce(
-          WithArg<1>(Invoke([&](VisualsDecoder::DecodeComplete* callback) {
-            std::move(*callback).Run(
-                gfx::test::CreateImage(kImageWidth, kImageWidth));
-          })));
+      .WillOnce(WithArg<1>([&](VisualsDecoder::DecodeComplete* callback) {
+        std::move(*callback).Run(
+            gfx::test::CreateImage(kImageWidth, kImageWidth));
+      }));
   bool called = false;
   auto callback = base::BindLambdaForTesting(
       [&](const offline_items_collection::ContentId& id,
@@ -646,16 +643,14 @@ TEST_F(DownloadUIAdapterTest, GetVisualsForItemNoThumbnail) {
   model->visuals_by_offline_id_result->thumbnail = "";
 
   EXPECT_CALL(*visuals_decoder, DecodeAndCropImage_("", _))
-      .WillOnce(
-          WithArg<1>(Invoke([&](VisualsDecoder::DecodeComplete* callback) {
-            std::move(*callback).Run(gfx::test::CreateImage(0, 0));
-          })));
+      .WillOnce(WithArg<1>([&](VisualsDecoder::DecodeComplete* callback) {
+        std::move(*callback).Run(gfx::test::CreateImage(0, 0));
+      }));
   EXPECT_CALL(*visuals_decoder, DecodeAndCropImage_(kFaviconData, _))
-      .WillOnce(
-          WithArg<1>(Invoke([&](VisualsDecoder::DecodeComplete* callback) {
-            std::move(*callback).Run(
-                gfx::test::CreateImage(kImageWidth, kImageWidth));
-          })));
+      .WillOnce(WithArg<1>([&](VisualsDecoder::DecodeComplete* callback) {
+        std::move(*callback).Run(
+            gfx::test::CreateImage(kImageWidth, kImageWidth));
+      }));
   bool called = false;
   auto callback = base::BindLambdaForTesting(
       [&](const offline_items_collection::ContentId& id,
@@ -683,16 +678,14 @@ TEST_F(DownloadUIAdapterTest, GetVisualsForItemNoFavicon) {
   model->visuals_by_offline_id_result->favicon = "";
 
   EXPECT_CALL(*visuals_decoder, DecodeAndCropImage_(kThumbnailData, _))
-      .WillOnce(
-          WithArg<1>(Invoke([&](VisualsDecoder::DecodeComplete* callback) {
-            std::move(*callback).Run(
-                gfx::test::CreateImage(kImageWidth, kImageWidth));
-          })));
+      .WillOnce(WithArg<1>([&](VisualsDecoder::DecodeComplete* callback) {
+        std::move(*callback).Run(
+            gfx::test::CreateImage(kImageWidth, kImageWidth));
+      }));
   EXPECT_CALL(*visuals_decoder, DecodeAndCropImage_("", _))
-      .WillOnce(
-          WithArg<1>(Invoke([&](VisualsDecoder::DecodeComplete* callback) {
-            std::move(*callback).Run(gfx::test::CreateImage(0, 0));
-          })));
+      .WillOnce(WithArg<1>([&](VisualsDecoder::DecodeComplete* callback) {
+        std::move(*callback).Run(gfx::test::CreateImage(0, 0));
+      }));
   bool called = false;
   auto callback = base::BindLambdaForTesting(
       [&](const offline_items_collection::ContentId& id,
@@ -717,15 +710,13 @@ TEST_F(DownloadUIAdapterTest, GetVisualsForItemBadDecode) {
   model->visuals_by_offline_id_result =
       std::make_unique<OfflinePageVisuals>(kVisuals);
   EXPECT_CALL(*visuals_decoder, DecodeAndCropImage_(kThumbnailData, _))
-      .WillOnce(
-          WithArg<1>(Invoke([&](VisualsDecoder::DecodeComplete* callback) {
-            std::move(*callback).Run(gfx::test::CreateImage(0, 0));
-          })));
+      .WillOnce(WithArg<1>([&](VisualsDecoder::DecodeComplete* callback) {
+        std::move(*callback).Run(gfx::test::CreateImage(0, 0));
+      }));
   EXPECT_CALL(*visuals_decoder, DecodeAndCropImage_(kFaviconData, _))
-      .WillOnce(
-          WithArg<1>(Invoke([&](VisualsDecoder::DecodeComplete* callback) {
-            std::move(*callback).Run(gfx::test::CreateImage(0, 0));
-          })));
+      .WillOnce(WithArg<1>([&](VisualsDecoder::DecodeComplete* callback) {
+        std::move(*callback).Run(gfx::test::CreateImage(0, 0));
+      }));
   bool called = false;
   auto callback = base::BindLambdaForTesting(
       [&](const offline_items_collection::ContentId& id,

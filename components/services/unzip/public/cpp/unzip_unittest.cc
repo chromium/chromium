@@ -4,6 +4,7 @@
 
 #include "components/services/unzip/public/cpp/unzip.h"
 
+#include <cstdint>
 #include <string_view>
 #include <utility>
 
@@ -12,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -41,9 +43,10 @@ int CountFiles(const base::FilePath& dir, bool* some_files_empty = nullptr) {
                                        base::FileEnumerator::FILES);
   for (base::FilePath path = file_enumerator.Next(); !path.empty();
        path = file_enumerator.Next()) {
-    if (int64_t file_size; some_files_empty != nullptr &&
-                           base::GetFileSize(path, &file_size) &&
-                           file_size == 0) {
+    std::optional<int64_t> file_size = base::GetFileSize(path);
+
+    if (some_files_empty != nullptr && file_size.has_value() &&
+        file_size.value() == 0) {
       *some_files_empty = true;
       some_files_empty = nullptr;  // So we don't check files again.
     }
@@ -64,21 +67,19 @@ class UnzipTest : public testing::Test {
   // it is provided.
   bool DoUnzip(const base::FilePath& zip_file,
                const base::FilePath& output_dir,
-               UnzipFilterCallback filter_callback = {}) {
+               UnzipFilterCallback filter_callback = unzip::AllContents()) {
     mojo::PendingRemote<mojom::Unzipper> unzipper;
     receivers_.Add(&unzipper_, unzipper.InitWithNewPipeAndPassReceiver());
 
     base::RunLoop run_loop;
     bool result = false;
 
-    UnzipCallback result_callback =
-        base::BindLambdaForTesting([&](const bool success) {
-          result = success;
-          run_loop.QuitClosure().Run();
-        });
-
-    UnzipWithFilter(std::move(unzipper), zip_file, output_dir,
-                    std::move(filter_callback), std::move(result_callback));
+    Unzip(std::move(unzipper), zip_file, output_dir,
+          unzip::mojom::UnzipOptions::New(), std::move(filter_callback),
+          base::DoNothing(), base::BindLambdaForTesting([&](bool success) {
+            result = success;
+            run_loop.QuitClosure().Run();
+          }));
 
     run_loop.Run();
     return result;
@@ -95,17 +96,12 @@ class UnzipTest : public testing::Test {
     base::RunLoop run_loop;
     bool result = false;
 
-    UnzipListenerCallback progress_callback = base::BindLambdaForTesting(
-        [&](uint64_t written_bytes) { base::DoNothing(); });
-
-    UnzipCallback result_callback =
-        base::BindLambdaForTesting([&](const bool success) {
-          result = success;
-          run_loop.QuitClosure().Run();
-        });
-
     Unzip(std::move(unzipper), zip_file, output_dir, std::move(options),
-          std::move(progress_callback), std::move(result_callback));
+          AllContents(), base::BindLambdaForTesting([&](uint64_t) {}),
+          base::BindLambdaForTesting([&](bool success) {
+            result = success;
+            run_loop.QuitClosure().Run();
+          }));
 
     run_loop.Run();
     return result;
@@ -154,23 +150,33 @@ class UnzipTest : public testing::Test {
 
     base::RunLoop run_loop;
     uint64_t bytes = 0;
-    mojom::UnzipOptionsPtr options =
-        unzip::mojom::UnzipOptions::New("auto", "");
 
-    UnzipListenerCallback progress_callback =
-        base::BindLambdaForTesting([&](uint64_t written_bytes) {
-          bytes = written_bytes;
-          run_loop.QuitClosure().Run();
-        });
-
-    UnzipCallback result_callback = base::BindLambdaForTesting(
-        [&](const bool success) { run_loop.QuitClosure().Run(); });
-
-    Unzip(std::move(unzipper), zip_file, output_dir, std::move(options),
-          std::move(progress_callback), std::move(result_callback));
+    Unzip(std::move(unzipper), zip_file, output_dir,
+          unzip::mojom::UnzipOptions::New("auto", ""), AllContents(),
+          base::BindLambdaForTesting([&](uint64_t written_bytes) {
+            bytes = written_bytes;
+            run_loop.QuitClosure().Run();
+          }),
+          base::BindLambdaForTesting(
+              [&](bool) { run_loop.QuitClosure().Run(); }));
 
     run_loop.Run();
     return bytes;
+  }
+
+  bool DoDecodeXz(const base::FilePath& in_file,
+                  const base::FilePath& out_file) {
+    mojo::PendingRemote<mojom::Unzipper> unzipper;
+    receivers_.Add(&unzipper_, unzipper.InitWithNewPipeAndPassReceiver());
+    bool result = false;
+    base::RunLoop run_loop;
+    DecodeXz(std::move(unzipper), in_file, out_file,
+             base::BindLambdaForTesting([&](bool success) {
+               result = success;
+               run_loop.Quit();
+             }));
+    run_loop.Run();
+    return result;
   }
 
  protected:
@@ -216,6 +222,33 @@ TEST_F(UnzipTest, UnzipGoodArchive) {
   // they are not empty.
   bool some_files_empty = false;
   EXPECT_EQ(8, CountFiles(unzip_dir_, &some_files_empty));
+  EXPECT_FALSE(some_files_empty);
+}
+
+TEST_F(UnzipTest, UnzipGoodArchiveWithExtraBytes) {
+  EXPECT_TRUE(DoUnzip(GetArchivePath("good_archive_prefixed.zip"), unzip_dir_));
+  bool some_files_empty = false;
+  EXPECT_EQ(8, CountFiles(unzip_dir_, &some_files_empty));
+  EXPECT_FALSE(some_files_empty);
+}
+
+TEST_F(UnzipTest, UnzipBadArchiveHang) {
+  // Don't hang trying to open this bad archive.
+  EXPECT_FALSE(DoUnzip(GetArchivePath("bad_archive_hang.zip"), unzip_dir_));
+  EXPECT_EQ(0, CountFiles(unzip_dir_));
+}
+
+TEST_F(UnzipTest, UnzipZip64) {
+  EXPECT_TRUE(DoUnzip(GetArchivePath("good_zip64.zip"), unzip_dir_));
+  bool some_files_empty = false;
+  EXPECT_EQ(1, CountFiles(unzip_dir_, &some_files_empty));
+  EXPECT_FALSE(some_files_empty);
+}
+
+TEST_F(UnzipTest, UnzipZip64WithExtraBytes) {
+  EXPECT_TRUE(DoUnzip(GetArchivePath("good_zip64_prefixed.zip"), unzip_dir_));
+  bool some_files_empty = false;
+  EXPECT_EQ(1, CountFiles(unzip_dir_, &some_files_empty));
   EXPECT_FALSE(some_files_empty);
 }
 
@@ -337,6 +370,76 @@ TEST_F(UnzipTest, DetectAESArchive) {
   mojom::Info result =
       DoGetExtractedInfo(GetArchivePath("DifferentEncryptions.zip"));
   EXPECT_TRUE(result.uses_aes_encryption);
+}
+
+TEST_F(UnzipTest, DecodeXz_Success) {
+  base::FilePath out = unzip_dir_.AppendASCII("out");
+  ASSERT_TRUE(DoDecodeXz(GetArchivePath("file1.xz"), out));
+  EXPECT_EQ(ReadFileToBytes(out), ReadFileToBytes(GetArchivePath("file1")));
+  ASSERT_TRUE(base::DeleteFile(out));
+  ASSERT_TRUE(DoDecodeXz(GetArchivePath("bd646.xz"), out));
+  EXPECT_EQ(ReadFileToBytes(out), ReadFileToBytes(GetArchivePath("bd646")));
+}
+
+TEST_F(UnzipTest, DecodeXz_DontReplaceExistingOutfile) {
+  base::FilePath out = unzip_dir_.AppendASCII("out");
+  ASSERT_TRUE(base::WriteFile(out, "data"));
+  ASSERT_FALSE(DoDecodeXz(GetArchivePath("file1.xz"), out));
+  std::string out_contents;
+  ASSERT_TRUE(base::ReadFileToString(out, &out_contents));
+  EXPECT_EQ(out_contents, "data");
+}
+
+TEST_F(UnzipTest, DecodeXz_MissingInput) {
+  base::FilePath out = unzip_dir_.AppendASCII("out");
+  EXPECT_FALSE(DoDecodeXz(GetArchivePath("doesnotexist"), out));
+  EXPECT_FALSE(base::PathExists(out));
+}
+
+TEST_F(UnzipTest, DecodeXz_BadFormat) {
+  base::FilePath out = unzip_dir_.AppendASCII("out");
+  EXPECT_FALSE(DoDecodeXz(GetArchivePath("file1"), out));
+  EXPECT_FALSE(base::PathExists(out));
+}
+
+TEST_F(UnzipTest, DecodeXz_Cancel) {
+  base::FilePath out = unzip_dir_.AppendASCII("out");
+  base::FilePath in = GetArchivePath("file1.xz");
+  mojo::PendingRemote<mojom::Unzipper> unzipper;
+  receivers_.Add(&unzipper_, unzipper.InitWithNewPipeAndPassReceiver());
+  base::RunLoop run_loop;
+  DecodeXz(std::move(unzipper), in, out,
+           base::BindLambdaForTesting([&](bool success) {
+             EXPECT_FALSE(success);
+             run_loop.Quit();
+           }))
+      .Run();
+  run_loop.Run();
+  EXPECT_FALSE(base::PathExists(out));
+}
+
+TEST_F(UnzipTest, DecodeXz_CancelAfterReturn) {
+  base::FilePath out = unzip_dir_.AppendASCII("out");
+  base::FilePath in = GetArchivePath("file1.xz");
+  base::OnceClosure cancellation;
+  int call_count = 0;
+  {
+    mojo::PendingRemote<mojom::Unzipper> unzipper;
+    receivers_.Add(&unzipper_, unzipper.InitWithNewPipeAndPassReceiver());
+    base::RunLoop run_loop;
+    cancellation = DecodeXz(std::move(unzipper), in, out,
+                            base::BindLambdaForTesting([&](bool success) {
+                              EXPECT_TRUE(success);
+                              ++call_count;
+                              run_loop.Quit();
+                            }));
+    run_loop.Run();
+    EXPECT_EQ(call_count, 1);
+  }
+  std::move(cancellation).Run();
+  base::RunLoop run_loop;
+  run_loop.RunUntilIdle();
+  EXPECT_EQ(call_count, 1);
 }
 
 }  // namespace

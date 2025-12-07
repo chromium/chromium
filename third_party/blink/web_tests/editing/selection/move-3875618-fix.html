@@ -18,9 +18,9 @@ selection_test(
     '<div contenteditable>',
       '<div>',
         'line 1<br>',
-        '|line 2',
+        'line 2',
       '</div>',
-      '<div>line 3</div>',
+      '<div>|line 3</div>',
     '</div>',
   ],
   '1. Move forward line after BR');
@@ -37,8 +37,8 @@ selection_test(
   [
     '<div contenteditable>',
       '<div>line 1</div>',
-      '<div>|line 2</div>',
-      '<div>line 3</div>',
+      '<div>line 2</div>',
+      '<div>|line 3</div>',
     '</div>',
   ],
   '2. Move forward line from start of DIV');

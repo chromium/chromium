@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.status_indicator;
 
 import android.graphics.drawable.Drawable;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
+@NullMarked
 class StatusIndicatorProperties {
     /** The text that describes status. */
     static final PropertyModel.WritableObjectPropertyKey<String> STATUS_TEXT =

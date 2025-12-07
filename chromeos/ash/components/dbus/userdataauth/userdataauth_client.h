@@ -62,6 +62,13 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
         const ::user_data_auth::AuthEnrollmentProgress& result) {}
   };
 
+  class AuthFactorStatusUpdateObserver : public base::CheckedObserver {
+   public:
+    // Called when AuthFactorStatusUpdate signal is received.
+    virtual void OnAuthFactorStatusUpdate(
+        const ::user_data_auth::AuthFactorStatusUpdate& update) {}
+  };
+
   using IsMountedCallback =
       chromeos::DBusMethodCallback<::user_data_auth::IsMountedReply>;
   using GetVaultPropertiesCallback =
@@ -102,6 +109,8 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
       chromeos::DBusMethodCallback<::user_data_auth::ListAuthFactorsReply>;
   using GetAuthFactorExtendedInfoCallback = chromeos::DBusMethodCallback<
       ::user_data_auth::GetAuthFactorExtendedInfoReply>;
+  using GenerateFreshRecoveryIdCallback = chromeos::DBusMethodCallback<
+      ::user_data_auth::GenerateFreshRecoveryIdReply>;
 
   // Asynchronous (biometric) AuthFactors API.
   using PrepareAuthFactorCallback =
@@ -133,6 +142,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
 
   using SetUserDataStorageWriteEnabledCallback = chromeos::DBusMethodCallback<
       ::user_data_auth::SetUserDataStorageWriteEnabledReply>;
+
+  using LockFactorUntilRebootCallback = chromeos::DBusMethodCallback<
+      ::user_data_auth::LockFactorUntilRebootReply>;
 
   // Not copyable or movable.
   UserDataAuthClient(const UserDataAuthClient&) = delete;
@@ -181,6 +193,12 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   // Removes a PrepareAuthFactorProgress observer if added.
   virtual void RemovePrepareAuthFactorProgressObserver(
       PrepareAuthFactorProgressObserver* observer) = 0;
+
+  virtual void AddAuthFactorStatusUpdateObserver(
+      AuthFactorStatusUpdateObserver* observer) = 0;
+
+  virtual void RemoveAuthFactorStatusUpdateObserver(
+      AuthFactorStatusUpdateObserver* observer) = 0;
 
   // Actual DBus Methods:
 
@@ -323,6 +341,12 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
       const ::user_data_auth::GetAuthFactorExtendedInfoRequest& request,
       GetAuthFactorExtendedInfoCallback callback) = 0;
 
+  // This is called to rotate the recovery ID after a user authenticates with a
+  // recovery factor. It should only be used once the user directory is mounted.
+  virtual void GenerateFreshRecoveryId(
+      const ::user_data_auth::GenerateFreshRecoveryIdRequest& request,
+      GenerateFreshRecoveryIdCallback callback) = 0;
+
   // This is called when a user wants to get an AuthSession status.
   virtual void GetAuthSessionStatus(
       const ::user_data_auth::GetAuthSessionStatusRequest& request,
@@ -357,6 +381,14 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   virtual void SetUserDataStorageWriteEnabled(
       const ::user_data_auth::SetUserDataStorageWriteEnabledRequest& request,
       SetUserDataStorageWriteEnabledCallback callback) = 0;
+
+  // Initiates a Cryptohome lock on the provided authentication factor type,
+  // persisting until device reboot.
+  // NOTE: The `LockFactorUntilRebootRequest` is only implemented for
+  // `AUTH_FACTOR_TYPE_CRYPTOHOME_RECOVERY`.
+  virtual void LockFactorUntilReboot(
+      const ::user_data_auth::LockFactorUntilRebootRequest& request,
+      LockFactorUntilRebootCallback callback) = 0;
 
  protected:
   // Initialize/Shutdown should be used instead.

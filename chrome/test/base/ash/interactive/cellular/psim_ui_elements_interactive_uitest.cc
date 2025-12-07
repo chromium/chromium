@@ -70,9 +70,9 @@ IN_PROC_BROWSER_TEST_F(PsimUiElementsUiTest, OsSettingsDetailsPage) {
           kOSSettingsId,
           ash::settings::cellular::CellularSubpagePsimListTitle()),
 
-      WaitForElementTextContains(
-          kOSSettingsId, settings::cellular::CellularDetailsSubpageTitle(),
-          /*text=*/psim_info().name()),
+      WaitForElementTextContains(kOSSettingsId,
+                                 settings::InternetSettingsSubpageTitle(),
+                                 /*text=*/psim_info().name()),
 
       Log("Test complete"));
 }

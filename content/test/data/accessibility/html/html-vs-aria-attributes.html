@@ -1,0 +1,54 @@
+<!--
+@BLINK-ALLOW:checked
+@BLINK-ALLOW:disabled
+@BLINK-ALLOW:name*
+@BLINK-ALLOW:placeholder
+@BLINK-ALLOW:readonly
+@BLINK-ALLOW:required
+-->
+<h3>Checked</h3>
+<!-- Note:checkbox element possesses inherent, "strong native semantics" for its checked state that's why aria-checked is ignored if there is no native HTML checked attribute.  -->
+<fieldset>
+  <input id="checked-1" checked aria-checked="false" type="checkbox"/>
+  <input id="checked-2" checked aria-checked="true" type="checkbox" />
+  <input id="checked-3" aria-checked="false" type="checkbox"/>
+  <input id="checked-4" aria-checked="true" type="checkbox"/>
+</fieldset>
+<h3>Disabled</h3>
+<!-- Note: if aria-disabled is false and there is no disabled HTML attribute, it is omitted in the accessibility tree to save space. -->
+<fieldset>
+  <input id="disabled-1" disabled aria-disabled="false"/>
+  <input id="disabled-2" disabled aria-disabled="true" />
+  <input id="disabled-3" aria-disabled="false" />
+  <input id="disabled-4" aria-disabled="true" />
+</fieldset>
+<h3>Placeholder</h3>
+<!-- Note: we can inspect this behavior taking a look at the accessibility computed properties of the input tag. In this case, we can find the placeholder as the node's name. -->
+<fieldset>
+  <input id="placeholder-1" placeholder="HTML" aria-placeholder="Aria"/>
+  <input id="placeholder-2" placeholder="Name match" aria-placeholder="Name match" />
+  <input id="placeholder-3" aria-placeholder="Aria" />
+</fieldset>
+
+<h3>Readonly</h3>
+<fieldset>
+  <input id="readonly-1" readonly aria-readonly="false"/>
+  <input id="readonly-2" readonly aria-readonly="true" />
+  <input id="readonly-3" aria-readonly="false" />
+  <input id="readonly-4" aria-readonly="true" />
+</fieldset>
+
+<h3>Required</h3>
+<fieldset>
+  <input id="required-1" required aria-required="false"/>
+  <input id="required-2" required aria-required="true" />
+  <input id="required-3" aria-required="false" />
+  <input id="required-4" aria-required="true" />
+</fieldset>
+
+<h3>Button type changes</h3>
+<fieldset>
+  <button>Regular Button</button>
+  <button aria-pressed="true">Pressed Button</button>
+  <button role="option">Option Button</button>
+</fieldset>

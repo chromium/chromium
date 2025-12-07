@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -13,11 +14,13 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/stringize_macros.h"
 #include "base/test/task_environment.h"
@@ -317,7 +320,7 @@ void Me2MeNativeMessagingHostTest::SetUp() {
       base::BindOnce(&Me2MeNativeMessagingHostTest::ExitTest,
                      base::Unretained(this)));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   test_url_loader_factory_ = new network::TestSharedURLLoaderFactory();
 #endif
 
@@ -420,42 +423,40 @@ std::optional<base::Value::Dict>
 Me2MeNativeMessagingHostTest::ReadMessageFromOutputPipe() {
   while (true) {
     uint32_t length;
-    int read_result = output_read_file_.ReadAtCurrentPos(
-        reinterpret_cast<char*>(&length), sizeof(length));
+    int read_result = UNSAFE_TODO(output_read_file_.ReadAtCurrentPos(
+        reinterpret_cast<char*>(&length), sizeof(length)));
     if (read_result != sizeof(length)) {
       return std::nullopt;
     }
 
     std::string message_json(length, '\0');
-    read_result =
-        output_read_file_.ReadAtCurrentPos(std::data(message_json), length);
+    read_result = UNSAFE_TODO(
+        output_read_file_.ReadAtCurrentPos(std::data(message_json), length));
     if (read_result != static_cast<int>(length)) {
       return std::nullopt;
     }
 
-    std::optional<base::Value> message = base::JSONReader::Read(message_json);
-    if (!message || !message->is_dict()) {
+    std::optional<base::Value::Dict> message = base::JSONReader::ReadDict(
+        message_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+    if (!message) {
       return std::nullopt;
     }
 
-    base::Value::Dict& result = message->GetDict();
-    const std::string* type = result.FindString("type");
+    const std::string* type = message->FindString("type");
     // If this is a debug message log, ignore it, otherwise return it.
     if (!type || *type != LogMessageHandler::kDebugMessageTypeName) {
-      return std::move(result);
+      return std::move(*message);
     }
   }
 }
 
 void Me2MeNativeMessagingHostTest::WriteMessageToInputPipe(
     const base::ValueView& message) {
-  std::string message_json;
-  base::JSONWriter::Write(message, &message_json);
+  std::string message_json = base::WriteJson(message).value_or("");
 
-  uint32_t length = message_json.length();
-  input_write_file_.WriteAtCurrentPos(reinterpret_cast<char*>(&length),
-                                      sizeof(length));
-  input_write_file_.WriteAtCurrentPos(message_json.data(), length);
+  uint32_t length = base::checked_cast<uint32_t>(message_json.length());
+  input_write_file_.WriteAtCurrentPos(base::byte_span_from_ref(length));
+  input_write_file_.WriteAtCurrentPos(base::as_byte_span(message_json));
 }
 
 void Me2MeNativeMessagingHostTest::TestBadRequest(const base::Value& message) {
@@ -538,7 +539,7 @@ TEST_F(Me2MeNativeMessagingHostTest, All) {
   message.Set("authorizationCode", "fake_auth_code");
   WriteMessageToInputPipe(message);
 
-  void (*verify_routines[])(const base::Value::Dict&) = {
+  auto verify_routines = std::to_array<void (*)(const base::Value::Dict&)>({
       &VerifyHelloResponse,
       &VerifyGetHostNameResponse,
       &VerifyGetPinHashResponse,
@@ -550,7 +551,7 @@ TEST_F(Me2MeNativeMessagingHostTest, All) {
       &VerifyUpdateDaemonConfigResponse,
       &VerifyStartDaemonResponse,
       &VerifyGetCredentialsFromAuthCodeResponse,
-  };
+  });
   ASSERT_EQ(std::size(verify_routines), static_cast<size_t>(next_id));
 
   // Read all responses from output pipe, and verify them.

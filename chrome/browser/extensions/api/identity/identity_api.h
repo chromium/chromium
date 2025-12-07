@@ -11,25 +11,32 @@
 
 #include "base/callback_list.h"
 #include "base/containers/flat_set.h"
-#include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "chrome/browser/extensions/api/identity/identity_clear_all_cached_auth_tokens_function.h"
 #include "chrome/browser/extensions/api/identity/identity_get_accounts_function.h"
-#include "chrome/browser/extensions/api/identity/identity_get_auth_token_function.h"
 #include "chrome/browser/extensions/api/identity/identity_get_profile_user_info_function.h"
 #include "chrome/browser/extensions/api/identity/identity_launch_web_auth_flow_function.h"
 #include "chrome/browser/extensions/api/identity/identity_mint_queue.h"
-#include "chrome/browser/extensions/api/identity/identity_remove_cached_auth_token_function.h"
 #include "chrome/browser/extensions/api/identity/identity_token_cache.h"
-#include "chrome/browser/extensions/api/identity/web_auth_flow.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/buildflags/buildflags.h"
+#include "google_apis/gaia/gaia_id.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/api/identity/identity_unimplemented_functions_android.h"
+#else
+#include "chrome/browser/extensions/api/identity/identity_clear_all_cached_auth_tokens_function.h"
+#include "chrome/browser/extensions/api/identity/identity_get_auth_token_function.h"
+#include "chrome/browser/extensions/api/identity/identity_remove_cached_auth_token_function.h"
+#endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace content {
 class BrowserContext;
@@ -52,11 +59,10 @@ class IdentityAPI : public BrowserContextKeyedAPI,
 
   // GAIA id cache.
   void SetGaiaIdForExtension(const std::string& extension_id,
-                             const std::string& gaia_id);
-  // Returns |std::nullopt| if no GAIA id is saved for |extension_id|.
+                             const GaiaId& gaia_id);
+  // Returns |std::nullopt| if no GAIA id is saved for `extension_id`.
   // Otherwise, returns GAIA id previously saved via SetGaiaIdForExtension().
-  std::optional<std::string> GetGaiaIdForExtension(
-      const std::string& extension_id);
+  std::optional<GaiaId> GetGaiaIdForExtension(const std::string& extension_id);
   void EraseGaiaIdForExtension(const std::string& extension_id);
   // If refresh tokens have been loaded, erases GAIA ids of accounts that are no
   // longer signed in to Chrome for all extensions.
@@ -92,8 +98,9 @@ class IdentityAPI : public BrowserContextKeyedAPI,
   // - The dialog is not already showing
   // - The user is signed in on the web but not to Chrome
   // `on_complete` is guaranteed to be called.
-  void MaybeShowChromeSigninDialog(std::string_view extension_name,
-                                   base::OnceClosure on_complete);
+  void MaybeShowChromeSigninDialog(
+      const std::u16string& extension_name_for_display,
+      base::OnceClosure on_complete);
 
   // Callback to be called when the tests triggers showing UI.
   // Should be used in unittests.
@@ -133,8 +140,7 @@ class IdentityAPI : public BrowserContextKeyedAPI,
   void OnExtendedAccountInfoRemoved(const AccountInfo& info) override;
 
   // Fires the chrome.identity.onSignInChanged event.
-  void FireOnAccountSignInChanged(const std::string& gaia_id,
-                                  bool is_signed_in);
+  void FireOnAccountSignInChanged(const GaiaId& gaia_id, bool is_signed_in);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   void OnChromeSigninDialogDestroyed();
@@ -149,7 +155,7 @@ class IdentityAPI : public BrowserContextKeyedAPI,
   IdentityMintRequestQueue mint_queue_;
   IdentityTokenCache token_cache_;
   // Contains Gaia Id of accounts known to extensions.
-  base::flat_set<std::string> accounts_known_to_extensions_;
+  base::flat_set<GaiaId> accounts_known_to_extensions_;
 
   OnSignInChangedCallback on_signin_changed_callback_for_testing_;
 

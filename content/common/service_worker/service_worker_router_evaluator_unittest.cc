@@ -67,7 +67,7 @@ TEST(ServiceWorkerRouterEvaluator, SimpleMatch) {
     {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
       auto parse_result = liburlpattern::Parse("/test/*", ParseEncodeCallback);
-      ASSERT_TRUE(parse_result.ok());
+      ASSERT_TRUE(parse_result.has_value());
       url_pattern.pathname = parse_result.value().PartList();
       rule.condition =
           blink::ServiceWorkerRouterCondition::WithUrlPattern(url_pattern);
@@ -102,7 +102,7 @@ TEST(ServiceWorkerRouterEvaluator, SimpleExactMatch) {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
       auto parse_result =
           liburlpattern::Parse("/test/page.html", ParseEncodeCallback);
-      ASSERT_TRUE(parse_result.ok());
+      ASSERT_TRUE(parse_result.has_value());
       url_pattern.pathname = parse_result.value().PartList();
       rule.condition =
           blink::ServiceWorkerRouterCondition::WithUrlPattern(url_pattern);
@@ -136,7 +136,7 @@ TEST(ServiceWorkerRouterEvaluator, NotMatchingCondition) {
     {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
       auto parse_result = liburlpattern::Parse("/test/*", ParseEncodeCallback);
-      ASSERT_TRUE(parse_result.ok());
+      ASSERT_TRUE(parse_result.has_value());
       url_pattern.pathname = parse_result.value().PartList();
       rule.condition =
           blink::ServiceWorkerRouterCondition::WithUrlPattern(url_pattern);
@@ -179,7 +179,7 @@ TEST(ServiceWorkerRouterEvaluator, OneConditionMisMatch) {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
       auto parse_result =
           liburlpattern::Parse("/notmatch/*", ParseEncodeCallback);
-      ASSERT_TRUE(parse_result.ok());
+      ASSERT_TRUE(parse_result.has_value());
       url_pattern.pathname = parse_result.value().PartList();
       rule.condition =
           blink::ServiceWorkerRouterCondition::WithUrlPattern(url_pattern);
@@ -213,7 +213,7 @@ TEST(ServiceWorkerRouterEvaluator, AllConditionMatch) {
     {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
       auto parse_result = liburlpattern::Parse("/test/*", ParseEncodeCallback);
-      ASSERT_TRUE(parse_result.ok());
+      ASSERT_TRUE(parse_result.has_value());
       url_pattern.pathname = parse_result.value().PartList();
       rule.condition =
           blink::ServiceWorkerRouterCondition::WithUrlPattern(url_pattern);
@@ -255,7 +255,7 @@ TEST(ServiceWorkerRouterEvaluator, ChooseMatchedRoute) {
     {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
       auto parse_result = liburlpattern::Parse("*.html", ParseEncodeCallback);
-      ASSERT_TRUE(parse_result.ok());
+      ASSERT_TRUE(parse_result.has_value());
       url_pattern.pathname = parse_result.value().PartList();
       rule.condition =
           blink::ServiceWorkerRouterCondition::WithUrlPattern(url_pattern);
@@ -273,15 +273,16 @@ TEST(ServiceWorkerRouterEvaluator, ChooseMatchedRoute) {
     {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
       auto parse_result = liburlpattern::Parse("*.css", ParseEncodeCallback);
-      ASSERT_TRUE(parse_result.ok());
+      ASSERT_TRUE(parse_result.has_value());
       url_pattern.pathname = parse_result.value().PartList();
       rule.condition =
           blink::ServiceWorkerRouterCondition::WithUrlPattern(url_pattern);
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = network::mojom::ServiceWorkerRouterSourceType::kRace;
-      source.race_source.emplace();
+      source.type = network::mojom::ServiceWorkerRouterSourceType::
+          kRaceNetworkAndFetchEvent;
+      source.race_network_and_fetch_event_source.emplace();
       rule.sources.push_back(source);
     }
     rules.rules.push_back(rule);
@@ -299,8 +300,9 @@ TEST(ServiceWorkerRouterEvaluator, ChooseMatchedRoute) {
   // Four sources rule should match because of *.css URLPattern.
   EXPECT_TRUE(eval_result.has_value());
   EXPECT_EQ(1U, eval_result->sources.size());
-  EXPECT_EQ(network::mojom::ServiceWorkerRouterSourceType::kRace,
-            eval_result->sources[0].type);
+  EXPECT_EQ(
+      network::mojom::ServiceWorkerRouterSourceType::kRaceNetworkAndFetchEvent,
+      eval_result->sources[0].type);
 }
 
 TEST(ServiceWorkerRouterEvaluator, SimpleHostnameMatch) {
@@ -311,7 +313,7 @@ TEST(ServiceWorkerRouterEvaluator, SimpleHostnameMatch) {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
       auto parse_result =
           liburlpattern::Parse("*.example.com", ParseEncodeCallback);
-      ASSERT_TRUE(parse_result.ok());
+      ASSERT_TRUE(parse_result.has_value());
       url_pattern.hostname = parse_result.value().PartList();
       rule.condition =
           blink::ServiceWorkerRouterCondition::WithUrlPattern(url_pattern);
@@ -346,7 +348,7 @@ TEST(ServiceWorkerRouterEvaluator, SimpleExactHostnameMatch) {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
       auto parse_result =
           liburlpattern::Parse("www.example.com", ParseEncodeCallback);
-      ASSERT_TRUE(parse_result.ok());
+      ASSERT_TRUE(parse_result.has_value());
       url_pattern.hostname = parse_result.value().PartList();
       rule.condition =
           blink::ServiceWorkerRouterCondition::WithUrlPattern(url_pattern);
@@ -381,7 +383,7 @@ TEST(ServiceWorkerRouterEvaluator, NotMatchingHostnameCondition) {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
       auto parse_result =
           liburlpattern::Parse("*.example.com", ParseEncodeCallback);
-      ASSERT_TRUE(parse_result.ok());
+      ASSERT_TRUE(parse_result.has_value());
       url_pattern.pathname = parse_result.value().PartList();
       rule.condition =
           blink::ServiceWorkerRouterCondition::WithUrlPattern(url_pattern);
@@ -415,45 +417,45 @@ TEST(ServiceWorkerRouterEvaluator, MatchingVariousCondition) {
       blink::SafeUrlPattern url_pattern;
       {
         auto parse_result = liburlpattern::Parse("https", ParseEncodeCallback);
-        ASSERT_TRUE(parse_result.ok());
+        ASSERT_TRUE(parse_result.has_value());
         url_pattern.protocol = parse_result.value().PartList();
       }
       {
         auto parse_result = liburlpattern::Parse("user*", ParseEncodeCallback);
-        ASSERT_TRUE(parse_result.ok());
+        ASSERT_TRUE(parse_result.has_value());
         url_pattern.username = parse_result.value().PartList();
       }
       {
         auto parse_result = liburlpattern::Parse("pass*", ParseEncodeCallback);
-        ASSERT_TRUE(parse_result.ok());
+        ASSERT_TRUE(parse_result.has_value());
         url_pattern.password = parse_result.value().PartList();
       }
       {
         auto parse_result =
             liburlpattern::Parse("*.example.org", ParseEncodeCallback);
-        ASSERT_TRUE(parse_result.ok());
+        ASSERT_TRUE(parse_result.has_value());
         url_pattern.hostname = parse_result.value().PartList();
       }
       {
         auto parse_result = liburlpattern::Parse("80*", ParseEncodeCallback);
-        ASSERT_TRUE(parse_result.ok());
+        ASSERT_TRUE(parse_result.has_value());
         url_pattern.port = parse_result.value().PartList();
       }
       {
         auto parse_result = liburlpattern::Parse("*.html", ParseEncodeCallback);
-        ASSERT_TRUE(parse_result.ok());
+        ASSERT_TRUE(parse_result.has_value());
         url_pattern.pathname = parse_result.value().PartList();
       }
       {
         auto parse_result =
             liburlpattern::Parse("query=test", ParseEncodeCallback);
-        ASSERT_TRUE(parse_result.ok());
+        ASSERT_TRUE(parse_result.has_value());
         url_pattern.search = parse_result.value().PartList();
       }
       {
         auto parse_result =
             liburlpattern::Parse("test_hash", ParseEncodeCallback);
-        ASSERT_TRUE(parse_result.ok());
+        ASSERT_TRUE(parse_result.has_value());
         url_pattern.hash = parse_result.value().PartList();
       }
       rule.condition =
@@ -523,7 +525,7 @@ TEST(ServiceWorkerRouterEvaluator, NotMatchingProtocol) {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
       {
         auto parse_result = liburlpattern::Parse("wss", ParseEncodeCallback);
-        ASSERT_TRUE(parse_result.ok());
+        ASSERT_TRUE(parse_result.has_value());
         url_pattern.protocol = parse_result.value().PartList();
       }
       rule.condition =
@@ -561,7 +563,7 @@ TEST(ServiceWorkerRouterEvaluator, NotMatchingUsername) {
       {
         auto parse_result =
             liburlpattern::Parse("not_matching_user", ParseEncodeCallback);
-        ASSERT_TRUE(parse_result.ok());
+        ASSERT_TRUE(parse_result.has_value());
         url_pattern.username = parse_result.value().PartList();
       }
       rule.condition =
@@ -599,7 +601,7 @@ TEST(ServiceWorkerRouterEvaluator, NotMatchingPassword) {
       {
         auto parse_result =
             liburlpattern::Parse("not_matching_pass", ParseEncodeCallback);
-        ASSERT_TRUE(parse_result.ok());
+        ASSERT_TRUE(parse_result.has_value());
         url_pattern.password = parse_result.value().PartList();
       }
       rule.condition =
@@ -636,7 +638,7 @@ TEST(ServiceWorkerRouterEvaluator, NotMatchingPort) {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
       {
         auto parse_result = liburlpattern::Parse("1234", ParseEncodeCallback);
-        ASSERT_TRUE(parse_result.ok());
+        ASSERT_TRUE(parse_result.has_value());
         url_pattern.port = parse_result.value().PartList();
       }
       rule.condition =
@@ -674,7 +676,7 @@ TEST(ServiceWorkerRouterEvaluator, NotMatchingSearch) {
       {
         auto parse_result =
             liburlpattern::Parse("not_matching_query", ParseEncodeCallback);
-        ASSERT_TRUE(parse_result.ok());
+        ASSERT_TRUE(parse_result.has_value());
         url_pattern.search = parse_result.value().PartList();
       }
       rule.condition =
@@ -712,7 +714,7 @@ TEST(ServiceWorkerRouterEvaluator, NotMatchingHash) {
       {
         auto parse_result =
             liburlpattern::Parse("not_matching", ParseEncodeCallback);
-        ASSERT_TRUE(parse_result.ok());
+        ASSERT_TRUE(parse_result.has_value());
         url_pattern.hash = parse_result.value().PartList();
       }
       rule.condition =
@@ -749,7 +751,7 @@ TEST(ServiceWorkerRouterEvaluator, SimpleIgnoreCaseMatch) {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
       auto parse_result =
           liburlpattern::Parse("/test/*.html", ParseEncodeCallback);
-      ASSERT_TRUE(parse_result.ok());
+      ASSERT_TRUE(parse_result.has_value());
       url_pattern.pathname = parse_result.value().PartList();
       url_pattern.options.ignore_case = true;
       rule.condition =
@@ -785,7 +787,7 @@ TEST(ServiceWorkerRouterEvaluator, SimpleRespectCaseAndMismatch) {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
       auto parse_result =
           liburlpattern::Parse("/test/*.html", ParseEncodeCallback);
-      ASSERT_TRUE(parse_result.ok());
+      ASSERT_TRUE(parse_result.has_value());
       url_pattern.pathname = parse_result.value().PartList();
       // Respects case.
       url_pattern.options.ignore_case = false;
@@ -840,7 +842,7 @@ TEST(ServiceWorkerRouterEvaluator, EmptySource) {
     {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
       auto parse_result = liburlpattern::Parse("/test/*", ParseEncodeCallback);
-      ASSERT_TRUE(parse_result.ok());
+      ASSERT_TRUE(parse_result.has_value());
       url_pattern.pathname = parse_result.value().PartList();
       rule.condition =
           blink::ServiceWorkerRouterCondition::WithUrlPattern(url_pattern);
@@ -862,7 +864,7 @@ TEST(ServiceWorkerRouterEvaluator, InvalidSource) {
     {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
       auto parse_result = liburlpattern::Parse("/test/*", ParseEncodeCallback);
-      ASSERT_TRUE(parse_result.ok());
+      ASSERT_TRUE(parse_result.has_value());
       url_pattern.pathname = parse_result.value().PartList();
       rule.condition =
           blink::ServiceWorkerRouterCondition::WithUrlPattern(url_pattern);
@@ -1113,7 +1115,7 @@ TEST(ServiceWorkerRouterEvaluator, OrConditionMatch) {
         blink::SafeUrlPattern url_pattern = DefaultURLPattern();
         auto parse_result =
             liburlpattern::Parse("/test/page.html", ParseEncodeCallback);
-        ASSERT_TRUE(parse_result.ok());
+        ASSERT_TRUE(parse_result.has_value());
         url_pattern.pathname = parse_result.value().PartList();
         outer_or.conditions.emplace_back(
             blink::ServiceWorkerRouterCondition::WithUrlPattern(url_pattern));
@@ -1184,7 +1186,7 @@ TEST(ServiceWorkerRouterEvaluator, NotConditionMatch) {
     {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
       auto parse_result = liburlpattern::Parse("/test/*", ParseEncodeCallback);
-      ASSERT_TRUE(parse_result.ok());
+      ASSERT_TRUE(parse_result.has_value());
       url_pattern.pathname = parse_result.value().PartList();
       blink::ServiceWorkerRouterNotCondition not_condition;
       not_condition.condition =
@@ -1232,7 +1234,7 @@ TEST(ServiceWorkerRouterEvaluator, NotConditionMatchNested) {
     {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
       auto parse_result = liburlpattern::Parse("/test/*", ParseEncodeCallback);
-      ASSERT_TRUE(parse_result.ok());
+      ASSERT_TRUE(parse_result.has_value());
       url_pattern.pathname = parse_result.value().PartList();
       blink::ServiceWorkerRouterNotCondition not_condition;
       not_condition.condition =
@@ -1356,8 +1358,9 @@ TEST(ServiceWorkerRouterEvaluator, ToValueBasicSimpleRule) {
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = network::mojom::ServiceWorkerRouterSourceType::kRace;
-      source.race_source.emplace();
+      source.type = network::mojom::ServiceWorkerRouterSourceType::
+          kRaceNetworkAndFetchEvent;
+      source.race_network_and_fetch_event_source.emplace();
       rule.sources.push_back(source);
     }
     {
@@ -1378,6 +1381,25 @@ TEST(ServiceWorkerRouterEvaluator, ToValueBasicSimpleRule) {
       blink::ServiceWorkerRouterCacheSource cache_source;
       cache_source.cache_name = "example_cache_name";
       source.cache_source = cache_source;
+      rule.sources.push_back(source);
+    }
+    {
+      blink::ServiceWorkerRouterSource source;
+      source.type =
+          network::mojom::ServiceWorkerRouterSourceType::kRaceNetworkAndCache;
+      source.race_network_and_cache_source.emplace();
+      blink::ServiceWorkerRouterCacheSource cache_source;
+      source.race_network_and_cache_source->cache_source = cache_source;
+      rule.sources.push_back(source);
+    }
+    {
+      blink::ServiceWorkerRouterSource source;
+      source.type =
+          network::mojom::ServiceWorkerRouterSourceType::kRaceNetworkAndCache;
+      source.race_network_and_cache_source.emplace();
+      blink::ServiceWorkerRouterCacheSource cache_source;
+      cache_source.cache_name = "example_cache_name";
+      source.race_network_and_cache_source->cache_source = cache_source;
       rule.sources.push_back(source);
     }
     rules.rules.push_back(rule);
@@ -1426,6 +1448,12 @@ TEST(ServiceWorkerRouterEvaluator, ToValueBasicSimpleRule) {
         {
           base::Value::Dict source;
           source.Set("cache_name", "example_cache_name");
+          sources.Append(std::move(source));
+        }
+        sources.Append("race-network-and-cache");
+        {
+          base::Value::Dict source;
+          source.Set("race_network_and_cache_cache_name", "example_cache_name");
           sources.Append(std::move(source));
         }
         rule.Set("source", std::move(sources));
@@ -1605,45 +1633,45 @@ TEST(ServiceWorkerRouterEvaluator, ToValueUrlPatternWithFields) {
       blink::SafeUrlPattern url_pattern;
       {
         auto parse_result = liburlpattern::Parse("https", ParseEncodeCallback);
-        ASSERT_TRUE(parse_result.ok());
+        ASSERT_TRUE(parse_result.has_value());
         url_pattern.protocol = parse_result.value().PartList();
       }
       {
         auto parse_result = liburlpattern::Parse("user*", ParseEncodeCallback);
-        ASSERT_TRUE(parse_result.ok());
+        ASSERT_TRUE(parse_result.has_value());
         url_pattern.username = parse_result.value().PartList();
       }
       {
         auto parse_result = liburlpattern::Parse("pass*", ParseEncodeCallback);
-        ASSERT_TRUE(parse_result.ok());
+        ASSERT_TRUE(parse_result.has_value());
         url_pattern.password = parse_result.value().PartList();
       }
       {
         auto parse_result =
             liburlpattern::Parse("*.example.org", ParseEncodeCallback);
-        ASSERT_TRUE(parse_result.ok());
+        ASSERT_TRUE(parse_result.has_value());
         url_pattern.hostname = parse_result.value().PartList();
       }
       {
         auto parse_result = liburlpattern::Parse("80*", ParseEncodeCallback);
-        ASSERT_TRUE(parse_result.ok());
+        ASSERT_TRUE(parse_result.has_value());
         url_pattern.port = parse_result.value().PartList();
       }
       {
         auto parse_result = liburlpattern::Parse("*.html", ParseEncodeCallback);
-        ASSERT_TRUE(parse_result.ok());
+        ASSERT_TRUE(parse_result.has_value());
         url_pattern.pathname = parse_result.value().PartList();
       }
       {
         auto parse_result =
             liburlpattern::Parse("query=test", ParseEncodeCallback);
-        ASSERT_TRUE(parse_result.ok());
+        ASSERT_TRUE(parse_result.has_value());
         url_pattern.search = parse_result.value().PartList();
       }
       {
         auto parse_result =
             liburlpattern::Parse("test_hash", ParseEncodeCallback);
-        ASSERT_TRUE(parse_result.ok());
+        ASSERT_TRUE(parse_result.has_value());
         url_pattern.hash = parse_result.value().PartList();
       }
       rule.condition =

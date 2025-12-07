@@ -92,7 +92,8 @@ class EnabledPolicyBrowsertest
     if (std::optional<std::string> policy = GetOverridesPolicy();
         policy.has_value()) {
       SetPolicyValue(GetOverridesPolicyName(),
-                     base::JSONReader::Read(policy.value()));
+                     base::JSONReader::Read(
+                         policy.value(), base::JSON_PARSE_CHROMIUM_EXTENSIONS));
     }
 
     if (GetInitialFirstPartySetPolicyState() !=

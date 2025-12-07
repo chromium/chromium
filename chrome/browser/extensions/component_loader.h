@@ -16,16 +16,24 @@
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
+#include "components/keyed_service/core/keyed_service.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 class Profile;
+
+namespace content {
+class BrowserContext;
+}
 
 namespace extensions {
 
@@ -33,14 +41,17 @@ class Extension;
 class ExtensionSystem;
 
 // For registering, loading, and unloading component extensions.
-class ComponentLoader {
+class ComponentLoader : public KeyedService {
  public:
-  ComponentLoader(ExtensionSystem* extension_system, Profile* browser_context);
+  static ComponentLoader* Get(content::BrowserContext* context);
 
   ComponentLoader(const ComponentLoader&) = delete;
   ComponentLoader& operator=(const ComponentLoader&) = delete;
 
-  virtual ~ComponentLoader();
+  ~ComponentLoader() override;
+
+  // KeyedService:
+  void Shutdown() override;
 
   size_t registered_extensions_count() const {
     return component_extensions_.size();
@@ -88,15 +99,15 @@ class ComponentLoader {
   // background pages for testing, which could otherwise interfere with tests.
   static void EnableBackgroundExtensionsForTesting();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Call this during test setup to disabling loading the HelpApp.
   static void DisableHelpAppForTesting();
 #endif
 
-  // Adds the default component extensions. If |skip_session_components|
+  // Adds the default component extensions. If `skip_session_components`
   // the loader will skip loading component extensions that weren't supposed to
   // be loaded unless we are in signed user session (ChromeOS). For all other
-  // platforms this |skip_session_components| is expected to be unset.
+  // platforms this `skip_session_components` is expected to be unset.
   void AddDefaultComponentExtensions(bool skip_session_components);
 
   // Similar to above but adds the default component extensions for kiosk mode.
@@ -109,6 +120,13 @@ class ComponentLoader {
   std::vector<ExtensionId> GetRegisteredComponentExtensionsIds() const;
 
 #if BUILDFLAG(IS_CHROMEOS)
+  // Whether the given extension is being loaded in the file task runner.
+  bool IsPendingAdd(const ExtensionId& extension_id) const;
+
+  // Convenience wrapper of `Exists` and `IsPendingAdd` since most callers do
+  // not need to differentiate the two cases.
+  bool ExistsOrPendingAdd(const ExtensionId& extension_id) const;
+
   // Identical to AddComponentFromDir() except allows for the caller to supply
   // the name of the manifest file.
   void AddComponentFromDirWithManifestFilename(
@@ -116,29 +134,19 @@ class ComponentLoader {
       const ExtensionId& extension_id,
       const base::FilePath::CharType* manifest_file_name,
       const base::FilePath::CharType* guest_manifest_file_name,
-      base::OnceClosure done_cb);
-#endif  // BUILDFLAG(IS_CHROMEOS)
+      base::OnceClosure done_cb,
+      base::OnceClosure error_cb);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Add a component extension from a specific directory. Assumes that the
   // extension uses a different manifest file when this is a guest session
-  // and that the manifest file lives in |root_directory|. Calls |done_cb|
+  // and that the manifest file lives in `root_directory`. Calls `done_cb`
   // on success, unless the component loader is shut down during loading.
   void AddComponentFromDir(const base::FilePath& root_directory,
                            const ExtensionId& extension_id,
                            base::OnceClosure done_cb);
 
-  // Add a component extension from a specific directory. Assumes that the
-  // extension's manifest file lives in |root_directory| and its name is
-  // 'manifest.json'. |name_string| and |description_string| are used to
-  // localize component extension's name and description text exclusively.
-  void AddWithNameAndDescriptionFromDir(const base::FilePath& root_directory,
-                                        const ExtensionId& extension_id,
-                                        const std::string& name_string,
-                                        const std::string& description_string);
-
   void AddChromeOsSpeechSynthesisExtensions();
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   void set_ignore_allowlist_for_testing(bool value) {
     ignore_allowlist_for_testing_ = value;
@@ -148,6 +156,8 @@ class ComponentLoader {
   void set_profile_for_testing(Profile* profile) { profile_ = profile; }
 
  private:
+  friend class ComponentLoaderFactory;
+  friend class TtsApiTest;
   FRIEND_TEST_ALL_PREFIXES(ComponentLoaderTest, ParseManifest);
 
   // Information about a registered component extension.
@@ -172,6 +182,8 @@ class ComponentLoader {
     // The component extension's ID.
     ExtensionId extension_id;
   };
+
+  explicit ComponentLoader(Profile* profile);
 
   // Parses the given JSON manifest. Returns `std::nullopt` if it cannot be
   // parsed or if the result is not a base::Value::Dict.
@@ -205,49 +217,52 @@ class ComponentLoader {
   void AddWebStoreApp();
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // Used as a reply callback by |AddComponentFromDir|.
-  // Called with a |root_directory| and parsed |manifest| and invokes
-  // |done_cb| after adding the extension.
-  void FinishAddComponentFromDir(
-      const base::FilePath& root_directory,
-      const ExtensionId& extension_id,
-      const std::optional<std::string>& name_string,
-      const std::optional<std::string>& description_string,
-      base::OnceClosure done_cb,
-      std::optional<base::Value::Dict> manifest);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   void AddChromeApp();
   void AddFileManagerExtension();
   void AddGalleryExtension();
   void AddImageLoaderExtension();
   void AddGuestModeTestExtension(const base::FilePath& path);
   void AddKeyboardApp();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  scoped_refptr<const Extension> CreateExtension(
-      const ComponentExtensionInfo& info, std::string* utf8_error);
-
-  // Unloads |component| from the memory.
-  void UnloadComponent(ComponentExtensionInfo* component);
+  // Used as a reply callback by `AddComponentFromDir`.
+  // Called with a `root_directory` and parsed `manifest` and invokes
+  // `done_cb` after adding the extension.
+  void FinishAddComponentFromDir(
+      const base::FilePath& root_directory,
+      const ExtensionId& extension_id,
+      const std::optional<std::string>& name_string,
+      const std::optional<std::string>& description_string,
+      base::OnceClosure done_cb,
+      base::OnceClosure error_cb,
+      std::optional<base::Value::Dict> manifest);
 
   // Finishes loading an extension tts engine.
   void FinishLoadSpeechSynthesisExtension(const ExtensionId& extension_id);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  scoped_refptr<const Extension> CreateExtension(
+      const ComponentExtensionInfo& info,
+      std::u16string* error);
+
+  // Unloads `component` from the memory.
+  void UnloadComponent(ComponentExtensionInfo* component);
 
   raw_ptr<Profile> profile_;
 
   raw_ptr<ExtensionSystem, AcrossTasksDanglingUntriaged> extension_system_;
 
   // List of registered component extensions (see mojom::ManifestLocation).
-  typedef std::vector<ComponentExtensionInfo> RegisteredComponentExtensions;
+  using RegisteredComponentExtensions = std::vector<ComponentExtensionInfo>;
   RegisteredComponentExtensions component_extensions_;
 
   bool ignore_allowlist_for_testing_;
 
-  base::WeakPtrFactory<ComponentLoader> weak_factory_{this};
+#if BUILDFLAG(IS_CHROMEOS)
+  // Ids of extensions that are being loaded on file task runner.
+  ExtensionIdSet pending_extension_ids_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-  friend class TtsApiTest;
+  base::WeakPtrFactory<ComponentLoader> weak_factory_{this};
 };
 
 }  // namespace extensions

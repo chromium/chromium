@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <bit>
 #include <iterator>
 #include <memory>
@@ -13,10 +14,8 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/feature_list.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
@@ -36,6 +35,7 @@
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -47,6 +47,31 @@ constexpr char kPermissionsPolicyErrorMessage[] =
     "privateAggregation";
 
 constexpr size_t kBitsPerByte = 8;
+
+std::optional<mojom::blink::PrivateAggregationErrorEvent> ParseEvent(
+    String event) {
+  if (event == "reserved.report-success") {
+    return mojom::blink::PrivateAggregationErrorEvent::kReportSuccess;
+  } else if (event == "reserved.too-many-contributions") {
+    return mojom::blink::PrivateAggregationErrorEvent::kTooManyContributions;
+  } else if (event == "reserved.empty-report-dropped") {
+    return mojom::blink::PrivateAggregationErrorEvent::kEmptyReportDropped;
+  } else if (event == "reserved.pending-report-limit-reached") {
+    return mojom::blink::PrivateAggregationErrorEvent::
+        kPendingReportLimitReached;
+  } else if (event == "reserved.insufficient-budget") {
+    return mojom::blink::PrivateAggregationErrorEvent::kInsufficientBudget;
+  } else if (event == "reserved.contribution-timeout-reached") {
+    return mojom::blink::PrivateAggregationErrorEvent::
+        kContributionTimeoutReached;
+  } else if (event == "reserved.uncaught-error") {
+    // Note: uncaught error is the only external error for Shared Storage.
+    return mojom::blink::PrivateAggregationErrorEvent::
+        kAlreadyTriggeredExternalError;
+  } else {
+    return std::nullopt;
+  }
+}
 
 }  // namespace
 
@@ -71,76 +96,100 @@ void PrivateAggregation::contributeToHistogram(
     return;
   }
 
-  ExecutionContext* execution_context = ExecutionContext::From(script_state);
-  CHECK(execution_context->IsSharedStorageWorkletGlobalScope());
+  CHECK(ExecutionContext::From(script_state)
+            ->IsSharedStorageWorkletGlobalScope());
 
   EnsureGeneralUseCountersAreRecorded();
 
-  if (!global_scope_->private_aggregation_permissions_policy_allowed()) {
+  if (!global_scope_->permissions_policy_state()->private_aggregation_allowed) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
                                       kPermissionsPolicyErrorMessage);
     return;
   }
 
-  // TODO(alexmt): Align error types with Protected Audience implementation.
-  std::optional<absl::uint128> bucket = contribution->bucket().ToUInt128();
-  if (!bucket) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        "contribution['bucket'] is negative or does not fit in 128 bits");
+  mojom::blink::AggregatableReportHistogramContributionPtr parsed_contribution =
+      ParseContribution(contribution, exception_state);
+  if (!parsed_contribution) {
+    // An exception has been thrown.
     return;
   }
 
-  int32_t value = contribution->value();
-  if (value < 0) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "contribution['value'] is negative");
-    return;
-  }
-
-  std::optional<uint64_t> filtering_id;
-  if (contribution->hasFilteringId() &&
-      base::FeatureList::IsEnabled(
-          features::kPrivateAggregationApiFilteringIds)) {
-    EnsureFilteringIdUseCounterIsRecorded();
-    std::optional<absl::uint128> filtering_id_128 =
-        contribution->filteringId().ToUInt128();
-    if (!filtering_id_128 || absl::Uint128High64(*filtering_id_128) != 0) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          "contribution['filteringId'] is negative or does not fit in byte "
-          "size");
-      return;
-    }
-    filtering_id = absl::Uint128Low64(*filtering_id_128);
-
-    int64_t operation_id = global_scope_->GetCurrentOperationId();
-    CHECK(base::Contains(operation_states_, operation_id));
-    OperationState* operation_state = operation_states_.at(operation_id);
-
-    if (static_cast<size_t>(std::bit_width(*filtering_id)) >
-        kBitsPerByte * operation_state->filtering_id_max_bytes) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          "contribution['filteringId'] is negative or does not fit in byte "
-          "size");
-      return;
-    }
-  }
-
-  // TODO(crbug.com/330744610): Allow filtering ID to be set.
   Vector<mojom::blink::AggregatableReportHistogramContributionPtr>
       mojom_contribution_vector;
-  mojom_contribution_vector.push_back(
-      mojom::blink::AggregatableReportHistogramContribution::New(
-          bucket.value(), value, filtering_id));
+  mojom_contribution_vector.push_back(std::move(parsed_contribution));
 
-  int64_t operation_id = global_scope_->GetCurrentOperationId();
-  CHECK(operation_states_.Contains(operation_id));
-  OperationState* operation_state = operation_states_.at(operation_id);
-
-  operation_state->private_aggregation_host->ContributeToHistogram(
+  GetCurrentOperationState().private_aggregation_host->ContributeToHistogram(
       std::move(mojom_contribution_vector));
+}
+
+void PrivateAggregation::contributeToHistogramOnEvent(
+    ScriptState* script_state,
+    const String& event,
+    const PrivateAggregationHistogramContribution* contribution,
+    ExceptionState& exception_state) {
+  if (!CheckBrowsingContextIsValid(*script_state, exception_state)) {
+    return;
+  }
+
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  CHECK(execution_context->IsSharedStorageWorkletGlobalScope());
+
+  EnsureGeneralUseCountersAreRecorded();
+  EnsureErrorReportingUseCounterIsRecorded();
+
+  if (!global_scope_->permissions_policy_state()->private_aggregation_allowed) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
+                                      kPermissionsPolicyErrorMessage);
+    return;
+  }
+
+  mojom::blink::AggregatableReportHistogramContributionPtr parsed_contribution =
+      ParseContribution(contribution, exception_state);
+  if (!parsed_contribution) {
+    // An exception has been thrown.
+    return;
+  }
+
+  // If event does not start with "reserved.", throw a TypeError.
+  if (!event.StartsWith("reserved.")) {
+    exception_state.ThrowTypeError("event must begin with \"reserved.\"");
+    return;
+  }
+
+  std::optional<mojom::blink::PrivateAggregationErrorEvent> parsed_event =
+      ParseEvent(event);
+  if (!parsed_event.has_value()) {
+    // For forward compatibility no error is thrown.
+    execution_context->AddConsoleMessage(
+        mojom::blink::ConsoleMessageSource::kRecommendation,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        StrCat({"Unrecognized event ", event,
+                " was passed to contributeToHistogramOnEvent(). The call will "
+                "be ignored."}));
+    return;
+  }
+
+  if (parsed_event == mojom::blink::PrivateAggregationErrorEvent::
+                          kAlreadyTriggeredExternalError) {
+    // Limit worst-case memory usage.
+    constexpr size_t kConditionalContributionLimit = 10'000;
+    if (GetCurrentOperationState()
+            .contributions_conditional_on_uncaught_error.size() <
+        kConditionalContributionLimit) {
+      GetCurrentOperationState()
+          .contributions_conditional_on_uncaught_error.push_back(
+              std::move(parsed_contribution));
+    }
+    return;
+  }
+
+  Vector<mojom::blink::AggregatableReportHistogramContributionPtr>
+      mojom_contribution_vector;
+  mojom_contribution_vector.push_back(std::move(parsed_contribution));
+
+  GetCurrentOperationState()
+      .private_aggregation_host->ContributeToHistogramOnEvent(
+          parsed_event.value(), std::move(mojom_contribution_vector));
 }
 
 void PrivateAggregation::enableDebugMode(ScriptState* script_state,
@@ -162,23 +211,21 @@ void PrivateAggregation::enableDebugMode(
   EnsureGeneralUseCountersAreRecorded();
   EnsureEnableDebugModeUseCounterIsRecorded();
 
-  if (!global_scope_->private_aggregation_permissions_policy_allowed()) {
+  if (!global_scope_->permissions_policy_state()->private_aggregation_allowed) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
                                       kPermissionsPolicyErrorMessage);
     return;
   }
 
-  int64_t operation_id = global_scope_->GetCurrentOperationId();
-  CHECK(base::Contains(operation_states_, operation_id));
-  OperationState* operation_state = operation_states_.at(operation_id);
+  OperationState& operation_state = GetCurrentOperationState();
 
-  if (operation_state->enable_debug_mode_called) {
+  if (operation_state.enable_debug_mode_called) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataError,
         "enableDebugMode may be called at most once");
     return;
   }
-  operation_state->enable_debug_mode_called = true;
+  operation_state.enable_debug_mode_called = true;
 
   mojom::blink::DebugKeyPtr debug_key;
 
@@ -198,7 +245,7 @@ void PrivateAggregation::enableDebugMode(
         absl::Uint128Low64(maybe_debug_key.value()));
   }
 
-  operation_state->private_aggregation_host->EnableDebugMode(
+  operation_state.private_aggregation_host->EnableDebugMode(
       std::move(debug_key));
 }
 
@@ -215,8 +262,27 @@ void PrivateAggregation::OnOperationStarted(
       global_scope_->GetTaskRunner(blink::TaskType::kMiscPlatformAPI));
 }
 
-void PrivateAggregation::OnOperationFinished(int64_t operation_id) {
+void PrivateAggregation::OnOperationFinished(
+    int64_t operation_id,
+    TerminationStatus termination_status) {
   CHECK(operation_states_.Contains(operation_id));
+
+  bool completion_caused_by_uncaught_error =
+      termination_status == TerminationStatus::kUncaughtError;
+  if (completion_caused_by_uncaught_error) {
+    Vector<mojom::blink::AggregatableReportHistogramContributionPtr>
+        contributions_conditional_on_uncaught_error =
+            std::move(operation_states_.at(operation_id)
+                          ->contributions_conditional_on_uncaught_error);
+    if (!contributions_conditional_on_uncaught_error.empty()) {
+      operation_states_.at(operation_id)
+          ->private_aggregation_host->ContributeToHistogramOnEvent(
+              mojom::blink::PrivateAggregationErrorEvent::
+                  kAlreadyTriggeredExternalError,
+              std::move(contributions_conditional_on_uncaught_error));
+    }
+  }
+
   operation_states_.at(operation_id)->private_aggregation_host.reset();
   operation_states_.erase(operation_id);
 }
@@ -225,15 +291,77 @@ void PrivateAggregation::OnWorkletDestroyed() {
   // Ensure any unfinished operations are properly handled.
   Vector<int64_t> remaining_operation_ids;
   remaining_operation_ids.reserve(operation_states_.size());
-  base::ranges::transform(operation_states_,
-                          std::back_inserter(remaining_operation_ids),
-                          [](auto& elem) { return elem.key; });
+  std::ranges::transform(operation_states_,
+                         std::back_inserter(remaining_operation_ids),
+                         [](auto& elem) { return elem.key; });
 
-  base::ranges::for_each(remaining_operation_ids, [this](int64_t operation_id) {
-    OnOperationFinished(operation_id);
+  std::ranges::for_each(remaining_operation_ids, [this](int64_t operation_id) {
+    OnOperationFinished(
+        operation_id, PrivateAggregation::TerminationStatus::kNoUncaughtError);
   });
 
   CHECK(operation_states_.empty());
+}
+
+mojom::blink::AggregatableReportHistogramContributionPtr
+PrivateAggregation::ParseContribution(
+    const PrivateAggregationHistogramContribution* contribution,
+    ExceptionState& exception_state) {
+  CHECK(contribution);
+  // TODO(alexmt): Align error types with Protected Audience implementation.
+  std::optional<absl::uint128> bucket = contribution->bucket().ToUInt128();
+  if (!bucket) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "contribution['bucket'] is negative or does not fit in 128 bits");
+    return nullptr;
+  }
+
+  int32_t value = contribution->value();
+  if (value < 0) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "contribution['value'] is negative");
+    return nullptr;
+  }
+
+  std::optional<uint64_t> filtering_id;
+  if (contribution->hasFilteringId()) {
+    EnsureFilteringIdUseCounterIsRecorded();
+    std::optional<absl::uint128> filtering_id_128 =
+        contribution->filteringId().ToUInt128();
+    if (!filtering_id_128 || absl::Uint128High64(*filtering_id_128) != 0) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          "contribution['filteringId'] is negative or does not fit in byte "
+          "size");
+      return nullptr;
+    }
+    filtering_id = absl::Uint128Low64(*filtering_id_128);
+
+    int64_t operation_id = global_scope_->GetCurrentOperationId();
+    CHECK(base::Contains(operation_states_, operation_id));
+    OperationState* operation_state = operation_states_.at(operation_id);
+
+    if (static_cast<size_t>(std::bit_width(*filtering_id)) >
+        kBitsPerByte * operation_state->filtering_id_max_bytes) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          "contribution['filteringId'] is negative or does not fit in byte "
+          "size");
+      return nullptr;
+    }
+  }
+
+  return mojom::blink::AggregatableReportHistogramContribution::New(
+      bucket.value(), value, filtering_id);
+}
+
+PrivateAggregation::OperationState&
+PrivateAggregation::GetCurrentOperationState() {
+  int64_t operation_id = global_scope_->GetCurrentOperationId();
+  CHECK(operation_states_.Contains(operation_id));
+  OperationState* operation_state_ptr = operation_states_.at(operation_id);
+  return *operation_state_ptr;
 }
 
 void PrivateAggregation::EnsureGeneralUseCountersAreRecorded() {
@@ -258,6 +386,14 @@ void PrivateAggregation::EnsureFilteringIdUseCounterIsRecorded() {
     has_recorded_filtering_id_use_counter_ = true;
     global_scope_->GetSharedStorageWorkletServiceClient()->RecordUseCounters(
         {mojom::blink::WebFeature::kPrivateAggregationApiFilteringIds});
+  }
+}
+
+void PrivateAggregation::EnsureErrorReportingUseCounterIsRecorded() {
+  if (!has_recorded_error_reporting_use_counter_) {
+    has_recorded_error_reporting_use_counter_ = true;
+    global_scope_->GetSharedStorageWorkletServiceClient()->RecordUseCounters(
+        {mojom::blink::WebFeature::kPrivateAggregationApiErrorReporting});
   }
 }
 

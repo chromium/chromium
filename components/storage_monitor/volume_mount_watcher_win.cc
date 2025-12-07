@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -108,7 +109,8 @@ bool IsLogicalVolumeStructure(LPARAM data) {
 
 // Gets the total volume of the |mount_point| in bytes.
 uint64_t GetVolumeSize(const base::FilePath& mount_point) {
-  int64_t size = base::SysInfo::AmountOfTotalDiskSpace(mount_point);
+  int64_t size =
+      base::SysInfo::AmountOfTotalDiskSpace(mount_point).value_or(-1);
   return std::max(size, static_cast<int64_t>(0));
 }
 
@@ -126,7 +128,7 @@ bool GetDeviceDetails(const base::FilePath& device_path, StorageInfo* info) {
                          kMaxPathBufLen)) {
     return false;
   }
-  mount_point.resize(wcslen(mount_point.c_str()));
+  mount_point.resize(UNSAFE_TODO(wcslen(mount_point.c_str())));
 
   // Note: experimentally this code does not spin a floppy drive. It
   // returns a GUID associated with the device, not the volume.
@@ -239,7 +241,7 @@ void EjectDeviceInThreadPool(
       volume_name.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
       nullptr, OPEN_EXISTING, 0, nullptr));
 
-  if (!volume_handle.IsValid()) {
+  if (!volume_handle.is_valid()) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), StorageMonitor::EJECT_FAILURE));

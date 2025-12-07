@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_data_channel_transfer_list.h"
 
-#include "third_party/blink/renderer/modules/peerconnection//rtc_data_channel.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_data_channel.h"
 
 namespace blink {
 

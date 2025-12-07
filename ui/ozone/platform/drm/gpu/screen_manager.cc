@@ -14,7 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/not_fatal_until.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/common/trace_event_common.h"
@@ -101,8 +101,7 @@ CrtcController* GetCrtcController(HardwareDisplayController* controller,
       return crtc_controller.get();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void ParamsToTracedValue(
@@ -164,7 +163,9 @@ std::string GenerateConfigurationLogForController(
       const std::string size = ModeSize(*(param.mode.get())).ToString();
       const std::string refresh_rate =
           base::NumberToString(ModeRefreshRate(*param.mode));
-      mode = base::StrCat({size, "@", refresh_rate});
+      const char* scan_mode =
+          param.mode.get()->flags & DRM_MODE_FLAG_INTERLACE ? "i" : "p";
+      mode = base::StrCat({size, scan_mode, "@", refresh_rate});
     } else {
       mode = "Disabled";
     }
@@ -193,6 +194,55 @@ std::string GenerateConfigurationLogForController(
   return drm_config_log;
 }
 
+bool ControllerContainsCrtcConnectorPair(
+    const HardwareDisplayController& controller,
+    const DrmDisplay::CrtcConnectorPair& crtc_connector_pair) {
+  for (const auto& crtc_controller : controller.crtc_controllers()) {
+    const std::optional<TileProperty>& tile_property =
+        crtc_controller->tile_property();
+    std::optional<gfx::Point> tile_location;
+    if (tile_property.has_value()) {
+      tile_location = tile_property->location;
+    }
+
+    if (crtc_controller->crtc() == crtc_connector_pair.crtc_id &&
+        crtc_controller->connector() ==
+            crtc_connector_pair.connector->connector_id &&
+        tile_location == crtc_connector_pair.tile_location) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+void AddNonPrimaryTileControllers(const DrmDisplay& display,
+                                  HardwareDisplayController& controller) {
+  TRACE_EVENT1("drm", "ScreenManager::AddNonPrimaryTileControllers",
+               "display_id", display.display_id());
+
+  TileProperty nonprimary_tile_prop = *display.GetTileProperty();
+  for (const auto& crtc_connector_pair : display.crtc_connector_pairs()) {
+    // Skip adding primary tile controller.
+    if (crtc_connector_pair.crtc_id == display.GetPrimaryCrtcId() &&
+        crtc_connector_pair.connector->connector_id ==
+            display.GetPrimaryConnectorId()) {
+      continue;
+    }
+
+    // If |controller| already contains an equivalent CrtcController for
+    // |crtc_connector_pair|, do not add again.
+    if (ControllerContainsCrtcConnectorPair(controller, crtc_connector_pair)) {
+      continue;
+    }
+
+    nonprimary_tile_prop.location = *crtc_connector_pair.tile_location;
+    controller.AddCrtc(std::make_unique<CrtcController>(
+        display.drm(), crtc_connector_pair.crtc_id,
+        crtc_connector_pair.connector->connector_id, nonprimary_tile_prop));
+  }
+}
+
 }  // namespace
 
 ScreenManager::ScreenManager() = default;
@@ -201,9 +251,11 @@ ScreenManager::~ScreenManager() {
   DCHECK(window_map_.empty());
 }
 
-void ScreenManager::AddDisplayController(const scoped_refptr<DrmDevice>& drm,
-                                         uint32_t crtc,
-                                         uint32_t connector) {
+void ScreenManager::AddDisplayController(
+    const scoped_refptr<DrmDevice>& drm,
+    uint32_t crtc,
+    uint32_t connector,
+    std::optional<TileProperty> tile_property) {
   HardwareDisplayControllers::iterator it = FindDisplayController(drm, crtc);
   // TODO(dnicoara): Turn this into a DCHECK when async display configuration is
   // properly supported. (When there can't be a race between forcing initial
@@ -215,8 +267,22 @@ void ScreenManager::AddDisplayController(const scoped_refptr<DrmDevice>& drm,
   }
 
   controllers_.push_back(std::make_unique<HardwareDisplayController>(
-      std::make_unique<CrtcController>(drm, crtc, connector), gfx::Point(),
-      drm_modifiers_filter_.get()));
+      std::make_unique<CrtcController>(drm, crtc, connector, tile_property),
+      gfx::Point(), drm_modifiers_filter_.get()));
+}
+
+void ScreenManager::AddDisplayControllersForDisplay(const DrmDisplay& display) {
+  const std::optional<TileProperty> tile_property = display.GetTileProperty();
+  AddDisplayController(display.drm(), display.GetPrimaryCrtcId(),
+                       display.GetPrimaryConnectorId(), tile_property);
+
+  if (!tile_property.has_value()) {
+    return;
+  }
+
+  HardwareDisplayController& controller =
+      **FindDisplayController(display.drm(), display.GetPrimaryCrtcId());
+  AddNonPrimaryTileControllers(display, controller);
 }
 
 void ScreenManager::RemoveDisplayControllers(
@@ -251,10 +317,13 @@ void ScreenManager::RemoveDisplayControllers(
 
       bool is_mirrored = (*it)->IsMirrored();
 
-      std::unique_ptr<CrtcController> crtc = (*it)->RemoveCrtc(drm, crtc_id);
-      if (crtc->is_enabled()) {
-        commit_request.push_back(CrtcCommitRequest::DisableCrtcRequest(
-            crtc->crtc(), crtc->connector()));
+      if ((*it)->IsTiled()) {
+        // Disable all CRTCs/connectors for a tiled display if any CRTC is
+        // removed. DrmGpuDisplayManager will create a new controller if any of
+        // the connectors are still connected.
+        (*it)->RemoveAllCrtcs(&commit_request);
+      } else {
+        (*it)->RemoveCrtc(drm, crtc_id, &commit_request);
       }
 
       if (!is_mirrored) {
@@ -360,7 +429,7 @@ bool ScreenManager::TestAndSetPreferredModifiers(
 
   for (const auto& params : controllers_params) {
     auto it = FindDisplayController(params.drm, params.crtc);
-    CHECK(controllers_.end() != it, base::NotFatalUntil::M130);
+    CHECK(controllers_.end() != it);
     HardwareDisplayController* controller = it->get();
 
     if (params.mode) {
@@ -412,7 +481,7 @@ bool ScreenManager::TestAndSetLinearModifier(
 
   for (const auto& params : controllers_params) {
     auto it = FindDisplayController(params.drm, params.crtc);
-    CHECK(controllers_.end() != it, base::NotFatalUntil::M130);
+    CHECK(controllers_.end() != it);
     HardwareDisplayController* controller = it->get();
 
     uint32_t fourcc_format = GetFourCCFormatForOpaqueFramebuffer(
@@ -471,7 +540,9 @@ void ScreenManager::SetPreferredModifiers(
         auto it = FindDisplayController(params.drm, params.crtc);
         DCHECK(*it);
         it->get()->UpdatePreferredModifierForFormat(
-            display::DisplaySnapshot::PrimaryFormat(), picked_modifier);
+            viz::SinglePlaneSharedImageFormatToBufferFormat(
+                display::DisplaySnapshot::PrimaryFormat()),
+            picked_modifier);
       }
     }
   }
@@ -489,7 +560,7 @@ bool ScreenManager::TestModesetWithOverlays(
   auto drm = controllers_params[0].drm;
   for (const auto& params : controllers_params) {
     auto it = FindDisplayController(params.drm, params.crtc);
-    CHECK(controllers_.end() != it, base::NotFatalUntil::M130);
+    CHECK(controllers_.end() != it);
     HardwareDisplayController* controller = it->get();
 
     if (params.mode) {
@@ -536,7 +607,7 @@ bool ScreenManager::Modeset(
   for (const auto& params : controllers_params) {
     if (params.mode) {
       auto it = FindDisplayController(params.drm, params.crtc);
-      CHECK(controllers_.end() != it, base::NotFatalUntil::M130);
+      CHECK(controllers_.end() != it);
       HardwareDisplayController* controller = it->get();
 
       uint32_t fourcc_format = GetFourCCFormatForOpaqueFramebuffer(
@@ -544,7 +615,13 @@ bool ScreenManager::Modeset(
       std::vector<uint64_t> modifiers =
           controller->GetSupportedModifiers(fourcc_format, /*is_modeset=*/true);
 
-      gfx::Rect bounds = gfx::Rect(params.origin, ModeSize(*params.mode));
+      gfx::Size mode_size = ModeSize(*params.mode);
+      std::optional<TileProperty> tile_property = (*it)->GetTileProperty();
+      if (tile_property.has_value() && IsTileMode(mode_size, *tile_property)) {
+        mode_size = GetTotalTileDisplaySize(*tile_property);
+      }
+
+      gfx::Rect bounds = gfx::Rect(params.origin, mode_size);
       DrmOverlayPlaneList modeset_planes =
           GetModesetPlanes(controller, bounds, modifiers,
                            can_modeset_with_overlays, /*is_testing=*/false);
@@ -579,7 +656,7 @@ void ScreenManager::SetDisplayControllerForEnableAndGetProps(
     const DrmOverlayPlaneList& modeset_planes,
     bool enable_vrr) {
   HardwareDisplayControllers::iterator it = FindDisplayController(drm, crtc);
-  CHECK(controllers_.end() != it, base::NotFatalUntil::M130)
+  CHECK(controllers_.end() != it)
       << "Display controller (crtc=" << crtc << ") doesn't exist.";
 
   HardwareDisplayController* controller = it->get();
@@ -768,8 +845,9 @@ void ScreenManager::UpdateControllerToWindowMapping() {
   // First create a unique mapping between a window and a controller. Note, a
   // controller may be associated with at most 1 window.
   for (const auto& controller : controllers_) {
-    if (!controller->IsEnabled())
+    if (!controller->IsEnabled() || !controller->GetDrmDevice()->has_master()) {
       continue;
+    }
 
     DrmWindow* window = FindWindowAt(
         gfx::Rect(controller->origin(), controller->GetModeSize()));
@@ -963,20 +1041,49 @@ bool ScreenManager::ReplaceDisplayControllersCrtcs(
     connector_to_controllers.push_back({connector_id, hdc_it->get()});
   }
 
+  // TileProperty stored in HardwareDisplayController does not have the correct
+  // |location| for the connector, so each TileProperty must be copied from the
+  // old CrtcController.
+  base::flat_map<uint32_t /*connector_id*/, std::optional<TileProperty>>
+      connector_tile_properties;
   // First, remove the CRTC.
   for (auto& [connector_id, hdc] : connector_to_controllers) {
-    hdc->RemoveCrtc(drm, current_pairings.at(connector_id));
+    auto crtc_controller =
+        hdc->RemoveCrtc(drm, current_pairings.at(connector_id));
+    connector_tile_properties[connector_id] = crtc_controller->tile_property();
   }
 
   // Now, add the new ones back in separately to avoid a state where multiple
   // HDCs share a CRTC.
   for (auto& [connector_id, hdc] : connector_to_controllers) {
     hdc->AddCrtc(std::make_unique<CrtcController>(
-        drm, new_pairings.at(connector_id), connector_id));
+        drm, new_pairings.at(connector_id), connector_id,
+        connector_tile_properties[connector_id]));
   }
 
   // No need to UpdateControllerToWindowMapping() since the underlying
   // HardwareDisplayController remained intact - just changed their CRTCs.
+
+  return true;
+}
+
+bool ScreenManager::DetachPlanesFromAllControllers() {
+  base::flat_map<scoped_refptr<DrmDevice>, CommitRequest>
+      commit_request_per_device;
+  for (const auto& controller : controllers_) {
+    scoped_refptr<DrmDevice> drm = controller->GetDrmDevice();
+    CommitRequest& commit_request = commit_request_per_device[drm];
+    controller->GetCurrentModesetPropsWithoutPlanes(&commit_request);
+  }
+
+  for (auto& [drm, commit_request] : commit_request_per_device) {
+    if (!drm->plane_manager()->Commit(
+            commit_request, /*flags=*/DRM_MODE_ATOMIC_ALLOW_MODESET)) {
+      LOG(ERROR) << __func__ << " detach plane commit failure for drm device: "
+                 << drm->device_path().value();
+      return false;
+    }
+  }
 
   return true;
 }

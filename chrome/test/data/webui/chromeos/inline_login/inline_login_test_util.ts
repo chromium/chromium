@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AccountAdditionOptions} from 'chrome://chrome-signin/arc_account_picker/arc_util.js';
-import {AuthCompletedCredentials, AuthMode, AuthParams} from 'chrome://chrome-signin/gaia_auth_host/authenticator.js';
-import {InlineLoginBrowserProxy} from 'chrome://chrome-signin/inline_login_browser_proxy.js';
+import type {AuthCompletedCredentials, AuthMode, AuthParams} from 'chrome://chrome-signin/gaia_auth_host/authenticator.js';
+import type {InlineLoginBrowserProxy} from 'chrome://chrome-signin/inline_login_browser_proxy.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export function getFakeAccountsList(): string[] {
@@ -90,8 +89,6 @@ export class TestAuthenticator extends EventTarget {
 
 export class TestInlineLoginBrowserProxy extends TestBrowserProxy implements
     InlineLoginBrowserProxy {
-  private dialogArguments_: AccountAdditionOptions|null = null;
-
   constructor() {
     super([
       'initialize',
@@ -105,12 +102,7 @@ export class TestInlineLoginBrowserProxy extends TestBrowserProxy implements
       'dialogClose',
       'skipWelcomePage',
       'openGuestWindow',
-      'getDialogArguments',
     ]);
-  }
-
-  setDialogArguments(dialogArguments: AccountAdditionOptions|null) {
-    this.dialogArguments_ = dialogArguments;
   }
 
   initialize() {
@@ -161,9 +153,5 @@ export class TestInlineLoginBrowserProxy extends TestBrowserProxy implements
 
   openGuestWindow() {
     this.methodCalled('openGuestWindow');
-  }
-
-  getDialogArguments() {
-    return JSON.stringify(this.dialogArguments_);
   }
 }

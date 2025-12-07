@@ -79,6 +79,11 @@ void IncomingPasswordSharingInvitationDataTypeController::OnStateChanged(
   sync_service_->DataTypePreconditionChanged(type());
 }
 
+void IncomingPasswordSharingInvitationDataTypeController::OnSyncShutdown(
+    syncer::SyncService* sync) {
+  // Nothing to be done, `this` will be destructed imminently.
+}
+
 void IncomingPasswordSharingInvitationDataTypeController::
     OnPasswordSharingEnabledPolicyChanged() {
   DCHECK(CalledOnValidThread());

@@ -4,7 +4,10 @@
 
 #include "ui/base/pointer/pointer_device.h"
 
-#include "base/check_op.h"
+#include <algorithm>
+#include <functional>
+#include <utility>
+
 #include "ui/events/devices/device_data_manager.h"
 
 namespace ui {
@@ -17,54 +20,30 @@ bool IsTouchDevicePresent() {
 
 bool IsMouseOrTouchpadPresent() {
   DeviceDataManager* device_data_manager = DeviceDataManager::GetInstance();
-  for (const ui::InputDevice& device :
-       device_data_manager->GetTouchpadDevices()) {
-    if (device.enabled)
-      return true;
-  }
-  // We didn't find a touchpad then let's look if there is a mouse connected.
-  for (const ui::InputDevice& device : device_data_manager->GetMouseDevices()) {
-    if (device.enabled)
-      return true;
-  }
-  // We didn't find a mouse then let's look if there is a pointing stick
-  // connected.
-  for (const ui::InputDevice& device :
-       device_data_manager->GetPointingStickDevices()) {
-    if (device.enabled) {
-      return true;
-    }
-  }
-  return false;
+  return std::ranges::any_of(device_data_manager->GetTouchpadDevices(),
+                             std::identity(), &InputDevice::enabled) ||
+         std::ranges::any_of(device_data_manager->GetMouseDevices(),
+                             std::identity(), &InputDevice::enabled) ||
+         std::ranges::any_of(device_data_manager->GetPointingStickDevices(),
+                             std::identity(), &InputDevice::enabled);
 }
 
 }  // namespace
 
-int GetAvailablePointerTypes() {
-  int available_pointer_types = 0;
-  if (IsMouseOrTouchpadPresent())
-    available_pointer_types |= POINTER_TYPE_FINE;
-
-  if (IsTouchDevicePresent())
-    available_pointer_types |= POINTER_TYPE_COARSE;
-
-  if (available_pointer_types == 0)
-    available_pointer_types = POINTER_TYPE_NONE;
-
-  DCHECK(available_pointer_types);
-  return available_pointer_types;
-}
-
-int GetAvailableHoverTypes() {
-  if (IsMouseOrTouchpadPresent())
-    return HOVER_TYPE_HOVER;
-
-  return HOVER_TYPE_NONE;
+std::pair<int, int> GetAvailablePointerAndHoverTypesImpl() {
+  int pointer_types = IsTouchDevicePresent() ? POINTER_TYPE_COARSE : 0;
+  int hover_types = HOVER_TYPE_NONE;
+  if (IsMouseOrTouchpadPresent()) {
+    pointer_types |= POINTER_TYPE_FINE;
+    hover_types = HOVER_TYPE_HOVER;
+  }
+  return {pointer_types ? pointer_types : POINTER_TYPE_NONE, hover_types};
 }
 
 TouchScreensAvailability GetTouchScreensAvailability() {
-  if (!IsTouchDevicePresent())
+  if (!IsTouchDevicePresent()) {
     return TouchScreensAvailability::NONE;
+  }
 
   return DeviceDataManager::GetInstance()->AreTouchscreensEnabled()
              ? TouchScreensAvailability::ENABLED
@@ -72,38 +51,11 @@ TouchScreensAvailability GetTouchScreensAvailability() {
 }
 
 int MaxTouchPoints() {
-  int max_touch = 0;
-  const std::vector<ui::TouchscreenDevice>& touchscreen_devices =
-      ui::DeviceDataManager::GetInstance()->GetTouchscreenDevices();
-  for (const ui::TouchscreenDevice& device : touchscreen_devices) {
-    if (device.touch_points > max_touch)
-      max_touch = device.touch_points;
-  }
-  return max_touch;
-}
-
-PointerType GetPrimaryPointerType(int available_pointer_types) {
-  if (available_pointer_types & POINTER_TYPE_FINE)
-    return POINTER_TYPE_FINE;
-  if (available_pointer_types & POINTER_TYPE_COARSE)
-    return POINTER_TYPE_COARSE;
-  DCHECK_EQ(available_pointer_types, POINTER_TYPE_NONE);
-  return POINTER_TYPE_NONE;
-}
-
-HoverType GetPrimaryHoverType(int available_hover_types) {
-  if (available_hover_types & HOVER_TYPE_HOVER)
-    return HOVER_TYPE_HOVER;
-  DCHECK_EQ(available_hover_types, HOVER_TYPE_NONE);
-  return HOVER_TYPE_NONE;
-}
-
-std::optional<PointerDevice> GetPointerDevice(PointerDevice::Key key) {
-  return std::nullopt;
-}
-
-std::vector<PointerDevice> GetPointerDevices() {
-  return {};
+  const std::vector<TouchscreenDevice>& touchscreen_devices =
+      DeviceDataManager::GetInstance()->GetTouchscreenDevices();
+  const auto& it = std::ranges::max_element(touchscreen_devices, {},
+                                            &TouchscreenDevice::touch_points);
+  return (it == touchscreen_devices.end()) ? 0 : it->touch_points;
 }
 
 }  // namespace ui

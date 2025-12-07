@@ -80,7 +80,7 @@ class ConciergeClientImpl : public ConciergeClient {
   }
 
   bool IsDiskImageProgressSignalConnected() override {
-    return is_disk_import_progress_signal_connected_;
+    return is_disk_image_progress_signal_connected_;
   }
 
   void CreateDiskImage(
@@ -120,9 +120,18 @@ class ConciergeClientImpl : public ConciergeClient {
                      std::move(callback));
   }
 
+  void ExportDiskImage(
+      std::vector<base::ScopedFD> fds,
+      const concierge::ExportDiskImageRequest& request,
+      chromeos::DBusMethodCallback<concierge::ExportDiskImageResponse> callback)
+      override {
+    CallMethodWithFds(concierge::kExportDiskImageMethod, request,
+                      std::move(fds), std::move(callback));
+  }
+
   void CancelDiskImageOperation(
       const concierge::CancelDiskImageRequest& request,
-      chromeos::DBusMethodCallback<concierge::CancelDiskImageResponse> callback)
+      chromeos::DBusMethodCallback<concierge::SuccessFailureResponse> callback)
       override {
     CallMethod(concierge::kCancelDiskImageMethod, request, std::move(callback));
   }
@@ -159,19 +168,19 @@ class ConciergeClientImpl : public ConciergeClient {
   }
 
   void StopVm(const concierge::StopVmRequest& request,
-              chromeos::DBusMethodCallback<concierge::StopVmResponse> callback)
-      override {
+              chromeos::DBusMethodCallback<concierge::SuccessFailureResponse>
+                  callback) override {
     CallMethod(concierge::kStopVmMethod, request, std::move(callback));
   }
 
   void SuspendVm(const concierge::SuspendVmRequest& request,
-                 chromeos::DBusMethodCallback<concierge::SuspendVmResponse>
+                 chromeos::DBusMethodCallback<concierge::SuccessFailureResponse>
                      callback) override {
     CallMethod(concierge::kSuspendVmMethod, request, std::move(callback));
   }
 
   void ResumeVm(const concierge::ResumeVmRequest& request,
-                chromeos::DBusMethodCallback<concierge::ResumeVmResponse>
+                chromeos::DBusMethodCallback<concierge::SuccessFailureResponse>
                     callback) override {
     CallMethod(concierge::kResumeVmMethod, request, std::move(callback));
   }
@@ -223,7 +232,7 @@ class ConciergeClientImpl : public ConciergeClient {
 
   void DetachUsbDevice(
       const concierge::DetachUsbDeviceRequest& request,
-      chromeos::DBusMethodCallback<concierge::DetachUsbDeviceResponse> callback)
+      chromeos::DBusMethodCallback<concierge::SuccessFailureResponse> callback)
       override {
     CallMethod(concierge::kDetachUsbDeviceMethod, request, std::move(callback));
   }
@@ -254,6 +263,14 @@ class ConciergeClientImpl : public ConciergeClient {
     CallMethod(concierge::kListVmsMethod, request, std::move(callback));
   }
 
+  void ModifyFakePowerConfig(
+      const vm_tools::concierge::ModifyFakePowerConfigRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
+          callback) override {
+    CallMethod(concierge::kModifyFakePowerConfigMethod, request,
+               std::move(callback));
+  }
+
   void GetVmLaunchAllowed(
       const vm_tools::concierge::GetVmLaunchAllowedRequest& request,
       chromeos::DBusMethodCallback<concierge::GetVmLaunchAllowedResponse>
@@ -262,16 +279,17 @@ class ConciergeClientImpl : public ConciergeClient {
                std::move(callback));
   }
 
-  void SwapVm(const vm_tools::concierge::SwapVmRequest& request,
-              chromeos::DBusMethodCallback<vm_tools::concierge::SwapVmResponse>
-                  callback) override {
+  void SwapVm(
+      const vm_tools::concierge::SwapVmRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
+          callback) override {
     CallMethod(concierge::kSwapVmMethod, request, std::move(callback));
   }
 
   void InstallPflash(
       base::ScopedFD fd,
       const vm_tools::concierge::InstallPflashRequest& request,
-      chromeos::DBusMethodCallback<vm_tools::concierge::InstallPflashResponse>
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
           callback) override {
     CallMethodWithFd(concierge::kInstallPflashMethod, request, std::move(fd),
                      std::move(callback));
@@ -279,10 +297,30 @@ class ConciergeClientImpl : public ConciergeClient {
 
   void AggressiveBalloon(
       const vm_tools::concierge::AggressiveBalloonRequest& request,
-      chromeos::DBusMethodCallback<
-          vm_tools::concierge::AggressiveBalloonResponse> callback) override {
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
+          callback) override {
     CallMethod(concierge::kAggressiveBalloonMethod, request,
                std::move(callback));
+  }
+
+  void MuteVmAudio(
+      const vm_tools::concierge::MuteVmAudioRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
+          callback) override {
+    CallMethod(concierge::kMuteVmAudioMethod, request, std::move(callback));
+  }
+
+  void SetUpVmUser(
+      const vm_tools::concierge::SetUpVmUserRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::concierge::SetUpVmUserResponse>
+          callback) override {
+    CallMethod(concierge::kSetUpVmUserMethod, request, std::move(callback));
+  }
+
+  void GetBaguetteImageUrl(
+      chromeos::DBusMethodCallback<
+          vm_tools::concierge::GetBaguetteImageUrlResponse> callback) override {
+    CallMethod(concierge::kGetBaguetteImageUrlMethod, std::move(callback));
   }
 
   void Init(dbus::Bus* bus) override {
@@ -395,6 +433,17 @@ class ConciergeClientImpl : public ConciergeClient {
           FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
       return;
     }
+
+    concierge_proxy_->CallMethod(
+        &method_call, kConciergeDBusTimeoutMs,
+        base::BindOnce(&ConciergeClientImpl::OnDBusProtoResponse<ResponseProto>,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  template <typename ResponseProto>
+  void CallMethod(const std::string& method_name,
+                  chromeos::DBusMethodCallback<ResponseProto> callback) {
+    dbus::MethodCall method_call(concierge::kVmConciergeInterface, method_name);
 
     concierge_proxy_->CallMethod(
         &method_call, kConciergeDBusTimeoutMs,
@@ -526,13 +575,13 @@ class ConciergeClientImpl : public ConciergeClient {
     } else if (signal_name == concierge::kVmStoppedSignal) {
       is_vm_stopped_signal_connected_ = is_connected;
     } else if (signal_name == concierge::kDiskImageProgressSignal) {
-      is_disk_import_progress_signal_connected_ = is_connected;
+      is_disk_image_progress_signal_connected_ = is_connected;
     } else if (signal_name == concierge::kVmStoppingSignal) {
       is_vm_stopping_signal_connected_ = is_connected;
     } else if (signal_name == concierge::kVmSwappingSignal) {
       // DO NOTHING.
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 
@@ -548,7 +597,7 @@ class ConciergeClientImpl : public ConciergeClient {
   bool is_vm_started_signal_connected_ = false;
   bool is_vm_stopped_signal_connected_ = false;
   bool is_vm_stopping_signal_connected_ = false;
-  bool is_disk_import_progress_signal_connected_ = false;
+  bool is_disk_image_progress_signal_connected_ = false;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

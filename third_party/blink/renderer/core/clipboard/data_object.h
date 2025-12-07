@@ -34,10 +34,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/clipboard/data_object_item.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/forward_declared_member.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -48,14 +48,14 @@ class KURL;
 class SystemClipboard;
 class WebDragData;
 class ExecutionContext;
+class DraggedIsolatedFileSystemImpl;
 
 enum class PasteMode;
 
 // A data object for holding data that would be in a clipboard or moved
 // during a drag-n-drop operation. This is the data that WebCore is aware
 // of and is not specific to a platform.
-class CORE_EXPORT DataObject : public GarbageCollected<DataObject>,
-                               public Supplementable<DataObject> {
+class CORE_EXPORT DataObject : public GarbageCollected<DataObject> {
  public:
   struct CORE_EXPORT Observer : public GarbageCollectedMixin {
     // Called whenever |item_list_| is modified. Note it can be called multiple
@@ -99,6 +99,7 @@ class CORE_EXPORT DataObject : public GarbageCollected<DataObject>,
   void SetURLAndTitle(const String& url, const String& title);
   void HtmlAndBaseURL(String& html, KURL& base_url) const;
   void SetHTMLAndBaseURL(const String& html, const KURL& base_url);
+  Vector<String> Urls() const;
 
   // Used for dragging in files from the desktop.
   bool ContainsFilenames() const;
@@ -133,9 +134,19 @@ class CORE_EXPORT DataObject : public GarbageCollected<DataObject>,
   // whenever the underlying item_list_ changes.
   void AddObserver(Observer*);
 
-  void Trace(Visitor*) const override;
+  void Trace(Visitor*) const;
 
   WebDragData ToWebDragData();
+
+  ForwardDeclaredMember<DraggedIsolatedFileSystemImpl>
+  GetDraggedIsolatedFileSystemImpl() const {
+    return dragged_isolated_file_system_impl_;
+  }
+  void SetDraggedIsolatedFileSystemImpl(
+      ForwardDeclaredMember<DraggedIsolatedFileSystemImpl>
+          dragged_isolated_file_system_impl) {
+    dragged_isolated_file_system_impl_ = dragged_isolated_file_system_impl;
+  }
 
  private:
   DataObjectItem* FindStringItem(const String& type) const;
@@ -150,6 +161,9 @@ class CORE_EXPORT DataObject : public GarbageCollected<DataObject>,
   // State of Shift/Ctrl/Alt/Meta keys and Left/Right/Middle mouse buttons
   int modifiers_;
   String filesystem_id_;
+
+  ForwardDeclaredMember<DraggedIsolatedFileSystemImpl>
+      dragged_isolated_file_system_impl_;
 };
 
 }  // namespace blink

@@ -57,6 +57,63 @@ export function parseNumber(val: string|null|undefined): number|null {
 }
 
 /**
+ * Counts words in the given string, respecting word boundaries defined by the
+ * given locale.
+ *
+ * Returns 0 if string is empty.
+ */
+export function getWordCount(s: string, locale: Intl.LocalesArgument): number {
+  const segmenter = new Intl.Segmenter(locale, {granularity: 'word'});
+  const segments = segmenter.segment(s);
+  let wordCount = 0;
+  for (const segment of segments) {
+    // "word-like" is implementation-dependent. In general, segments consisting
+    // solely of spaces and/or punctuation (such as those terminated with
+    // "WORD_NONE" boundaries by ICU [International Components for Unicode,
+    // documented at https://unicode-org.github.io/icu-docs/]) are not
+    // considered to be "word-like". See
+    // https://tc39.es/ecma402/#sec-%segmentsprototype%.containing for
+    // reference.
+    wordCount += segment.isWordLike === true ? 1 : 0;
+  }
+  return wordCount;
+}
+
+/**
+ * Chunks content string by size, respecting word boundaries defined by the
+ * given locale. See getWordCount comments for more implementation details.
+ *
+ * Returns array of strings chunked by word.
+ */
+export function chunkContentByWord(
+  content: string,
+  chunkSize: number,
+  locale: Intl.LocalesArgument,
+): string[] {
+  const segmenter = new Intl.Segmenter(locale, {granularity: 'word'});
+  const segments = segmenter.segment(content);
+  const chunks = [];
+  let chunk: string[] = [];
+  let wordCount = 0;
+  for (const {segment, isWordLike} of segments) {
+    if (wordCount < chunkSize) {
+      chunk.push(segment);
+    } else {
+      wordCount = 0;
+      chunks.push(chunk.join(''));
+      chunk = [segment];
+    }
+
+    wordCount += isWordLike === true ? 1 : 0;
+  }
+
+  if (chunk.length > 0) {
+    chunks.push(chunk.join(''));
+  }
+  return chunks;
+}
+
+/**
  * Shorten the given string to at most `maxWords` space-delimited words by
  * snipping the middle of string as "(...)".
  */
@@ -120,6 +177,19 @@ export function lazyInit<T>(fn: () => T): () => T {
 }
 
 /**
+ * Cache async function return value so the function would only be called once.
+ */
+export function asyncLazyInit<T>(fn: () => Promise<T>): () => Promise<T> {
+  let val: T|typeof UNINITIALIZED = UNINITIALIZED;
+  return async () => {
+    if (val === UNINITIALIZED) {
+      val = await fn();
+    }
+    return val;
+  };
+}
+
+/**
  * Cache function return value so the function would only be called when the
  * input changes.
  *
@@ -136,4 +206,35 @@ export function cacheLatest<T, U>(fn: (input: T) => U): (input: T) => U {
     assert(output !== UNINITIALIZED);
     return output;
   };
+}
+
+/**
+ * Checks if an Object is empty.
+ */
+export function isObjectEmpty(obj: Record<string, unknown>): boolean {
+  // We're explicitly using for (... in ...) here to avoid the cost of having
+  // to initialize Object.keys() array. The usage is safe since we check
+  // Object.hasOwn afterwards.
+  // eslint-disable-next-line no-restricted-syntax
+  for (const k in obj) {
+    if (Object.hasOwn(obj, k)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
+ * Wrapper for the View Transition API for unsupported browser.
+ *
+ * @return Promise when the transition is finished.
+ */
+export function startViewTransition(fn: () => void): Promise<void> {
+  if (document.startViewTransition === undefined) {
+    fn();
+    return Promise.resolve();
+  } else {
+    const transition = document.startViewTransition(fn);
+    return transition.finished;
+  }
 }

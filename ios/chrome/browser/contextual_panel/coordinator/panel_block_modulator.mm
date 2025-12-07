@@ -18,7 +18,7 @@
                          itemConfiguration:
                              (base::WeakPtr<ContextualPanelItemConfiguration>)
                                  itemConfiguration {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _baseViewController = viewController;
     if (browser) {
       _browser = browser->AsWeakPtr();

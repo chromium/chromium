@@ -135,6 +135,17 @@ int MojoCertVerifier::Verify(
   return net::ERR_IO_PENDING;
 }
 
+void MojoCertVerifier::Verify2QwacBinding(
+    const std::string& binding,
+    const std::string& hostname,
+    const scoped_refptr<net::X509Certificate>& tls_cert,
+    base::OnceCallback<void(const scoped_refptr<net::X509Certificate>&)>
+        callback,
+    const net::NetLogWithSource& net_log) {
+  mojo_cert_verifier_->Verify2QwacBinding(
+      binding, hostname, tls_cert, net_log.source(), std::move(callback));
+}
+
 void MojoCertVerifier::SetConfig(const net::CertVerifier::Config& config) {
   mojo_cert_verifier_->SetConfig(config);
 }

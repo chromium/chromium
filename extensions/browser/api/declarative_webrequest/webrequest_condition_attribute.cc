@@ -6,15 +6,15 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "extensions/browser/api/declarative/deduping_factory.h"
@@ -79,8 +79,10 @@ struct WebRequestConditionAttributeFactory {
   }
 };
 
-base::LazyInstance<WebRequestConditionAttributeFactory>::Leaky
-    g_web_request_condition_attribute_factory = LAZY_INSTANCE_INITIALIZER;
+WebRequestConditionAttributeFactory& GetWebRequestConditionAttributeFactory() {
+  static base::NoDestructor<WebRequestConditionAttributeFactory> instance;
+  return *instance;
+}
 
 }  // namespace
 
@@ -105,7 +107,7 @@ WebRequestConditionAttribute::Create(
     std::string* error) {
   CHECK(value != nullptr && error != nullptr);
   bool bad_message = false;
-  return g_web_request_condition_attribute_factory.Get().factory.Instantiate(
+  return GetWebRequestConditionAttributeFactory().factory.Instantiate(
       name, value, error, &bad_message);
 }
 
@@ -237,9 +239,10 @@ bool WebRequestConditionAttributeContentType::IsFulfilled(
   if (!(request_data.stage & GetStages()))
     return false;
 
-  std::string content_type;
-  request_data.original_response_headers->GetNormalizedHeader(
-      net::HttpRequestHeaders::kContentType, &content_type);
+  std::string content_type =
+      request_data.original_response_headers
+          ->GetNormalizedHeader(net::HttpRequestHeaders::kContentType)
+          .value_or(std::string());
   std::string mime_type;
   std::string charset;
   bool had_charset = false;
@@ -419,16 +422,15 @@ bool HeaderMatcher::StringMatchTest::Matches(
              base::StartsWith(str, data_, case_sensitive_);
     case kContains:
       if (case_sensitive_ == base::CompareCase::INSENSITIVE_ASCII) {
-        return base::ranges::search(str, data_,
-                                    CaseInsensitiveCompareASCII<char>()) !=
-               str.end();
+        return std::ranges::search(str, data_,
+                                   CaseInsensitiveCompareASCII<char>())
+                   .begin() != str.end();
       } else {
         return base::Contains(str, data_);
       }
   }
   // We never get past the "switch", but the compiler worries about no return.
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 HeaderMatcher::StringMatchTest::StringMatchTest(const std::string& data,
@@ -479,9 +481,7 @@ HeaderMatcher::HeaderMatchTest::Create(const base::Value::Dict& tests) {
     } else if (entry.first == keys::kValueEqualsKey) {
       match_type = StringMatchTest::kEquals;
     } else {
-      NOTREACHED_IN_MIGRATION();  // JSON schema type checking should prevent
-                                  // this.
-      return nullptr;
+      NOTREACHED();  // JSON schema type checking should prevent this.
     }
     const base::Value* content = &entry.second;
 
@@ -502,9 +502,7 @@ HeaderMatcher::HeaderMatchTest::Create(const base::Value::Dict& tests) {
         break;
       }
       default: {
-        NOTREACHED_IN_MIGRATION();  // JSON schema type checking should prevent
-                                    // this.
-        return nullptr;
+        NOTREACHED();  // JSON schema type checking should prevent this.
       }
     }
   }
@@ -734,8 +732,7 @@ bool ParseListOfStages(const base::Value& value, int* out_stages) {
     } else if (stage_name == keys::kOnAuthRequiredEnum) {
       stages |= ON_AUTH_REQUIRED;
     } else {
-      NOTREACHED_IN_MIGRATION();  // JSON schema checks prevent getting here.
-      return false;
+      NOTREACHED();  // JSON schema checks prevent getting here.
     }
   }
 

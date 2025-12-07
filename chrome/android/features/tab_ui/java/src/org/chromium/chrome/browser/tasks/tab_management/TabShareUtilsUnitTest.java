@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -33,13 +32,14 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.google_apis.gaia.GaiaId;
 
 /** Unit tests for {@link TabShareUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabShareUtilsUnitTest {
     private static final int TAB_ID = 34789;
     private static final Token TAB_GROUP_ID = new Token(87493L, 3489L);
-    private static final String GAIA_ID = "asdf";
+    private static final GaiaId GAIA_ID = new GaiaId("asdf");
     private static final String GROUP_ID = "group";
     private static final String DISPLAY_NAME = "display_name";
     private static final String ACCESS_TOKEN = "token";
@@ -52,9 +52,8 @@ public class TabShareUtilsUnitTest {
     @Mock TabModel mTabModel;
     @Mock TabGroupSyncService mTabGroupSyncService;
     @Mock IdentityManager mIdentityManager;
-    @Mock CoreAccountInfo mCoreAccountInfo;
 
-    private LocalTabGroupId mLocalTabGroupId = new LocalTabGroupId(TAB_GROUP_ID);
+    private final LocalTabGroupId mLocalTabGroupId = new LocalTabGroupId(TAB_GROUP_ID);
     private SavedTabGroup mSavedTabGroup;
     private GroupDataOrFailureOutcome mGroupDataOutcome;
 
@@ -62,7 +61,12 @@ public class TabShareUtilsUnitTest {
     public void setUp() {
         GroupMember member =
                 new GroupMember(
-                        GAIA_ID, DISPLAY_NAME, EMAIL, MemberRole.MEMBER, /* avatarUrl= */ null);
+                        GAIA_ID,
+                        DISPLAY_NAME,
+                        EMAIL,
+                        MemberRole.MEMBER,
+                        /* avatarUrl= */ null,
+                        /* givenName= */ null);
         GroupData groupData =
                 new GroupData(GROUP_ID, DISPLAY_NAME, new GroupMember[] {member}, ACCESS_TOKEN);
         mGroupDataOutcome =
@@ -76,9 +80,8 @@ public class TabShareUtilsUnitTest {
 
         when(mTabGroupSyncService.getGroup(mLocalTabGroupId)).thenReturn(mSavedTabGroup);
 
-        when(mCoreAccountInfo.getGaiaId()).thenReturn(GAIA_ID);
         when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN))
-                .thenReturn(mCoreAccountInfo);
+                .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId(EMAIL, GAIA_ID));
     }
 
     @Test
@@ -114,55 +117,5 @@ public class TabShareUtilsUnitTest {
         assertFalse(TabShareUtils.isCollaborationIdValid(null));
         assertFalse(TabShareUtils.isCollaborationIdValid(""));
         assertTrue(TabShareUtils.isCollaborationIdValid("valid-id"));
-    }
-
-    @Test
-    public void testGetSelfMemberRole_Unknown() {
-        assertEquals(
-                MemberRole.UNKNOWN,
-                TabShareUtils.getSelfMemberRole(/* outcome= */ null, mIdentityManager));
-        assertEquals(
-                MemberRole.UNKNOWN,
-                TabShareUtils.getSelfMemberRole(
-                        mGroupDataOutcome, /* identityManager= */ (IdentityManager) null));
-
-        when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(null);
-        assertEquals(
-                MemberRole.UNKNOWN,
-                TabShareUtils.getSelfMemberRole(mGroupDataOutcome, mIdentityManager));
-        when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN))
-                .thenReturn(mCoreAccountInfo);
-
-        GroupDataOrFailureOutcome datalessGroupDataOutcome =
-                new GroupDataOrFailureOutcome(
-                        /* groupData= */ null, PeopleGroupActionFailure.UNKNOWN);
-        assertEquals(
-                MemberRole.UNKNOWN,
-                TabShareUtils.getSelfMemberRole(datalessGroupDataOutcome, mIdentityManager));
-
-        GroupData memberlessGroupData =
-                new GroupData(GROUP_ID, DISPLAY_NAME, /* members= */ null, ACCESS_TOKEN);
-        GroupDataOrFailureOutcome memberlessGroupDataOutcome =
-                new GroupDataOrFailureOutcome(
-                        memberlessGroupData, PeopleGroupActionFailure.UNKNOWN);
-        assertEquals(
-                MemberRole.UNKNOWN,
-                TabShareUtils.getSelfMemberRole(memberlessGroupDataOutcome, mIdentityManager));
-
-        GroupData emptyMemberGroupData =
-                new GroupData(GROUP_ID, DISPLAY_NAME, new GroupMember[] {}, ACCESS_TOKEN);
-        GroupDataOrFailureOutcome emptyMemberGroupDataOutcome =
-                new GroupDataOrFailureOutcome(
-                        emptyMemberGroupData, PeopleGroupActionFailure.UNKNOWN);
-        assertEquals(
-                MemberRole.UNKNOWN,
-                TabShareUtils.getSelfMemberRole(emptyMemberGroupDataOutcome, mIdentityManager));
-    }
-
-    @Test
-    public void testGetSelfMemberRole() {
-        assertEquals(
-                MemberRole.MEMBER,
-                TabShareUtils.getSelfMemberRole(mGroupDataOutcome, mIdentityManager));
     }
 }

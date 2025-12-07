@@ -11,13 +11,8 @@
 namespace net {
 
 struct COMPONENT_EXPORT(NET_SHARED_DICTIONARY) SharedDictionaryUsageInfo {
-  bool operator==(const SharedDictionaryUsageInfo& other) const {
-    return std::tie(isolation_key, total_size_bytes) ==
-           std::tie(other.isolation_key, other.total_size_bytes);
-  }
-  bool operator!=(const SharedDictionaryUsageInfo& other) const {
-    return !(*this == other);
-  }
+  friend bool operator==(const SharedDictionaryUsageInfo&,
+                         const SharedDictionaryUsageInfo&) = default;
 
   SharedDictionaryIsolationKey isolation_key;
   uint64_t total_size_bytes = 0;

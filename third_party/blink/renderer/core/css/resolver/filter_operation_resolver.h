@@ -46,9 +46,10 @@ class CORE_EXPORT FilterOperationResolver {
                                                  const CSSValue&,
                                                  CSSPropertyID);
   static FilterOperations CreateOffscreenFilterOperations(const CSSValue&,
-                                                          const Font&);
+                                                          const Font*);
   static double ResolveNumericArgumentForFunction(
-      const CSSFunctionValue& filter);
+      const CSSFunctionValue& filter,
+      const CSSLengthResolver& length_resolver);
 };
 
 }  // namespace blink

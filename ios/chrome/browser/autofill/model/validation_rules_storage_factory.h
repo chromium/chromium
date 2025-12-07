@@ -7,14 +7,14 @@
 
 #include <memory>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 
 namespace i18n {
 namespace addressinput {
 class Storage;
 }
-}
+}  // namespace i18n
 
 class JsonPrefStore;
 

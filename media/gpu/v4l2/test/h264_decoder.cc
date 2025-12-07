@@ -2,10 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/v4l2/test/h264_decoder.h"
 
 #include <linux/v4l2-controls.h>
 #include <linux/videodev2.h>
+
+#include <tuple>
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -104,8 +111,7 @@ v4l2_ctrl_h264_sps SetupSPSCtrl(const H264SPS* sps) {
 
   // Check that SPS offsets for ref frames size matches v4l2 sps.
   static_assert(std::extent<decltype(v4l2_sps.offset_for_ref_frame)>() ==
-                    std::extent<decltype(sps->offset_for_ref_frame)>(),
-                "SPS Offsets for ref frames size must match");
+                std::tuple_size<decltype(sps->offset_for_ref_frame)>::value);
   for (size_t i = 0; i < std::size(v4l2_sps.offset_for_ref_frame); i++)
     v4l2_sps.offset_for_ref_frame[i] = sps->offset_for_ref_frame[i];
 
@@ -180,25 +186,33 @@ v4l2_ctrl_h264_scaling_matrix SetupScalingMatrix(const H264SPS* sps,
   // Makes sure that the size of the matrix scaling lists correspond
   // to the PPS scaling matrix sizes.
   static_assert(std::extent<decltype(matrix.scaling_list_4x4)>() <=
-                        std::extent<decltype(pps->scaling_list4x4)>() &&
+                        std::tuple_size<std::remove_reference_t<
+                            decltype(pps->scaling_list4x4)>>::value &&
                     std::extent<decltype(matrix.scaling_list_4x4[0])>() <=
-                        std::extent<decltype(pps->scaling_list4x4[0])>() &&
+                        std::tuple_size<std::remove_reference_t<
+                            decltype(pps->scaling_list4x4[0])>>::value &&
                     std::extent<decltype(matrix.scaling_list_8x8)>() <=
-                        std::extent<decltype(pps->scaling_list8x8)>() &&
+                        std::tuple_size<std::remove_reference_t<
+                            decltype(pps->scaling_list8x8)>>::value &&
                     std::extent<decltype(matrix.scaling_list_8x8[0])>() <=
-                        std::extent<decltype(pps->scaling_list8x8[0])>(),
+                        std::tuple_size<std::remove_reference_t<
+                            decltype(pps->scaling_list8x8[0])>>::value,
                 "PPS scaling_lists must be of correct size");
 
   // Makes sure that the size of the matrix scaling lists correspond
   // to the SPS scaling matrix sizes.
   static_assert(std::extent<decltype(matrix.scaling_list_4x4)>() <=
-                        std::extent<decltype(sps->scaling_list4x4)>() &&
+                        std::tuple_size<std::remove_reference_t<
+                            decltype(sps->scaling_list4x4)>>::value &&
                     std::extent<decltype(matrix.scaling_list_4x4[0])>() <=
-                        std::extent<decltype(sps->scaling_list4x4[0])>() &&
+                        std::tuple_size<std::remove_reference_t<
+                            decltype(sps->scaling_list4x4[0])>>::value &&
                     std::extent<decltype(matrix.scaling_list_8x8)>() <=
-                        std::extent<decltype(sps->scaling_list8x8)>() &&
+                        std::tuple_size<std::remove_reference_t<
+                            decltype(sps->scaling_list8x8)>>::value &&
                     std::extent<decltype(matrix.scaling_list_8x8[0])>() <=
-                        std::extent<decltype(sps->scaling_list8x8[0])>(),
+                        std::tuple_size<std::remove_reference_t<
+                            decltype(sps->scaling_list8x8[0])>>::value,
                 "SPS scaling_lists must be of correct size");
 
   const auto* scaling_list4x4 = &sps->scaling_list4x4[0];
@@ -523,11 +537,7 @@ VideoDecoder::Result H264Decoder::InitializeSliceMetadata(
   slice_metadata->long_term_reference_flag = slice_hdr.long_term_reference_flag;
 
   if (slice_hdr.adaptive_ref_pic_marking_mode_flag) {
-    static_assert(sizeof(slice_metadata->ref_pic_marking) ==
-                      sizeof(slice_hdr.ref_pic_marking),
-                  "Array sizes of ref pic marking do not match.");
-    memcpy(slice_metadata->ref_pic_marking, slice_hdr.ref_pic_marking,
-           sizeof(slice_metadata->ref_pic_marking));
+    slice_metadata->ref_pic_marking = slice_hdr.ref_pic_marking;
   }
 
   // Calculate H264 slice order counts.
@@ -971,7 +981,7 @@ VideoDecoder::Result H264Decoder::DecodeNextFrame(const int frame_number,
   }
 
   if (slice_ready_queue_.empty()) {
-    NOTREACHED_IN_MIGRATION() << "Stream ended with |slice_ready_queue_| empty";
+    NOTREACHED() << "Stream ended with |slice_ready_queue_| empty";
   }
 
   H264SliceMetadata picture = slice_ready_queue_.front();

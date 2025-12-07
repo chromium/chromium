@@ -53,14 +53,58 @@ AVSpeechSynthesisVoice* GetSystemDefaultVoice() {
   // indeed return "the default voice for the system’s language and region",
   // that's not necessarily the voice that the user selected in System Settings
   // > Accessibility > Spoken Content, and that user voice selection is the only
-  // one that matters. There does not appear to be an AVSpeechSynthesis API that
-  // returns that user choice, so use the deprecated NSSpeechSynthesizer API,
-  // which behaves correctly.
+  // one that matters. The first two workarounds below behave correctly.
+  NSUserDefaults* accessibility_defaults =
+      [[NSUserDefaults alloc] initWithSuiteName:@"com.apple.Accessibility"];
+
+  // SpokenContentDefaultVoiceSelectionsByLanguage is an array that maps a
+  // language code to a dictionary of voice selection details.
+  //
+  // SpokenContentDefaultVoiceSelectionsByLanguage Structure:
+  // @[
+  //   @"en", // System language code (NSString).
+  //   @{
+  //     @"_type": @"Speech.VoiceSelection",  // Type identifier (NSString).
+  //     @"_version": @0,  // Voice format version (NSNumber).
+  //     @"boundLanguage": @"en",  // Language bound to this voice (NSString).
+  //     @"voiceId":
+  //         @"com.apple.voice.compact.en-IE.Moira" // Unique ID (NSString).
+  //   }
+  // ]
+  NSArray* spoken_default_voice_settings = [accessibility_defaults
+      arrayForKey:@"SpokenContentDefaultVoiceSelectionsByLanguage"];
+
+  AVSpeechSynthesisVoice* voice = nil;
+
+  // Attempt 1: Get the user-selected voice from accessibility defaults.
+  //
+  // Process `spoken_default_voice_settings` only if the voice selection data
+  // (expected second value in SpokenContentDefaultVoiceSelectionsByLanguage) is
+  // present. This is a precautionary check.
+  if (spoken_default_voice_settings.count > 1) {
+    NSDictionary* selected_voice_settings = spoken_default_voice_settings[1];
+    NSString* selected_voice_id = selected_voice_settings[@"voiceId"];
+    voice = [AVSpeechSynthesisVoice voiceWithIdentifier:selected_voice_id];
+  }
+
+  // Attempt 2: Get the user-selected voice from the deprecated
+  // NSSpeechSynthesizer API.
+  if (!voice) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
   NSString* default_voice_identifier = NSSpeechSynthesizer.defaultVoice;
 #pragma clang diagnostic pop
-  return [AVSpeechSynthesisVoice voiceWithIdentifier:default_voice_identifier];
+  voice = [AVSpeechSynthesisVoice voiceWithIdentifier:default_voice_identifier];
+  }
+
+  // Fallback to the default voice for the system's language and location if we
+  // are unable to get the user-selected voice. This is the next most-specific
+  // voice preference that we are able to retrieve using supported APIs.
+  if (!voice) {
+    return [AVSpeechSynthesisVoice voiceWithLanguage:nil];
+  }
+
+  return voice;
 }
 
 std::vector<content::VoiceData>& Voices() {

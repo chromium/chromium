@@ -9,8 +9,12 @@
 
 namespace ash {
 
-SeaPenImage::SeaPenImage(std::string jpg_bytes_in, uint32_t id_in)
-    : jpg_bytes(std::move(jpg_bytes_in)), id(id_in) {}
+SeaPenImage::SeaPenImage(std::string jpg_bytes_in,
+                         uint32_t id_in,
+                         std::string prompt_in)
+    : jpg_bytes(std::move(jpg_bytes_in)),
+      id(id_in),
+      generative_prompt(prompt_in) {}
 
 SeaPenImage::SeaPenImage(SeaPenImage&&) = default;
 SeaPenImage& SeaPenImage::operator=(SeaPenImage&&) = default;

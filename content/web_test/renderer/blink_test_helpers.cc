@@ -7,7 +7,6 @@
 #include <string_view>
 
 #include "base/command_line.h"
-#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -65,7 +64,7 @@ base::FilePath GetExternalWPTFilePath() {
 //
 // Note that this doesn't apply when the WPT tests are run by the python script.
 WebURL RewriteWPTAbsolutePath(std::string_view utf8_url) {
-  if (!base::StartsWith(utf8_url, kFileScheme, base::CompareCase::SENSITIVE) ||
+  if (!utf8_url.starts_with(kFileScheme) ||
       utf8_url.find("/web_tests/") != std::string::npos) {
     return WebURL(GURL(utf8_url));
   }
@@ -134,7 +133,7 @@ WebURL RewriteWebTestsURL(std::string_view utf8_url, bool is_wpt_mode) {
   static constexpr std::string_view kGenPrefix = "file:///gen/";
 
   // Map "file:///gen/" to "file://<build directory>/gen/".
-  if (base::StartsWith(utf8_url, kGenPrefix, base::CompareCase::SENSITIVE)) {
+  if (utf8_url.starts_with(kGenPrefix)) {
     base::FilePath gen_directory_path =
         GetBuildDirectory().Append(FILE_PATH_LITERAL("gen/"));
     std::string new_url("file://");
@@ -145,8 +144,9 @@ WebURL RewriteWebTestsURL(std::string_view utf8_url, bool is_wpt_mode) {
 
   static constexpr std::string_view kPrefix = "file:///tmp/web_tests/";
 
-  if (!base::StartsWith(utf8_url, kPrefix, base::CompareCase::SENSITIVE))
+  if (!utf8_url.starts_with(kPrefix)) {
     return WebURL(GURL(utf8_url));
+  }
 
   std::string new_url("file://");
   new_url.append(GetWebTestsFilePath().AsUTF8Unsafe());

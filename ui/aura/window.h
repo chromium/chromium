@@ -41,10 +41,16 @@
 #include "ui/events/event_targeter.h"
 #include "ui/events/gestures/gesture_types.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_APPLE)
 #error "This file must not be included on macOS; Chromium Mac doesn't use Aura."
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/376575664): Remove this include directive when the
+// ADVANCED_MEMORY_SAFETY_CHECKS macro is removed.
+#include "base/memory/safety_checks.h"
 #endif
 
 namespace cc {
@@ -110,6 +116,11 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
                            public ui::PropertyHandler,
                            public ui::metadata::MetaDataProvider,
                            public viz::HostFrameSinkClient {
+#if BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/376575664): Remove this macro once the bug gets fixed.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+#endif
+
  public:
   METADATA_HEADER_BASE(Window);
 
@@ -187,12 +198,14 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
 
   bool GetTransparent() const;
 
-  // Note: Setting a window transparent has significant performance impact,
-  // especially on low-end Chrome OS devices. Please ensure you are not
+  // Note: Must be called after initializing the window.
+  // Additionally, setting a window transparent has significant performance
+  // impact, especially on low-end Chrome OS devices. Please ensure you are not
   // adding unnecessary overdraw. When in doubt, talk to the graphics team.
   void SetTransparent(bool transparent);
 
   // See description in Layer::SetFillsBoundsCompletely.
+  // Note: Must be called after initializing the window.
   void SetFillsBoundsCompletely(bool fills_bounds);
 
   WindowDelegate* delegate() { return delegate_; }
@@ -216,10 +229,16 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   bool IsRootWindow() const { return !!host_; }
 
   // Changes the visibility of the window.
+  // Note: Must be called after initializing the window.
   void Show();
+
+  // Note: Must be called after initializing the window.
   void Hide();
+
   // Returns true if this window and all its ancestors are visible.
+  // Note: Must be called after initializing the window.
   bool IsVisible() const;
+
   // Returns the visibility requested by this window. IsVisible() takes into
   // account the visibility of the layer and ancestors, where as this tracks
   // whether Show() without a Hide() has been invoked.
@@ -252,7 +271,7 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   //
   // Note that this should only be called for non-root windows. Root windows are
   // already capturable by the capturer as they're identifiable by their
-  // |viz::FrameSinkId| and thei associated root render pass, so there's no need
+  // |viz::FrameSinkId| and the associated root render pass, so there's no need
   // to call this.
   //
   // This returns a scoped object associated with this request to make the
@@ -291,6 +310,7 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   // this function returns the same value as `GetBoundsInScreen()`.
   gfx::Rect GetActualBoundsInScreen() const;
 
+  // Note: Must be called after initializing the window.
   void SetTransform(const gfx::Transform& transform);
   const gfx::Transform& transform() const;
 
@@ -314,10 +334,12 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
 
   // Changes the bounds of the window. If present, the window's parent's
   // LayoutManager may adjust the bounds.
+  // Note: Must be called after initializing the window.
   void SetBounds(const gfx::Rect& new_bounds);
 
   // Changes the bounds of the window in the screen coordinates.
   // If present, the window's parent's LayoutManager may adjust the bounds.
+  // Note: Must be called after initializing the window.
   void SetBoundsInScreen(const gfx::Rect& new_bounds_in_screen_coords,
                          const display::Display& dst_display);
 
@@ -326,9 +348,11 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   gfx::Rect GetTargetBounds() const;
 
   // Forwards directly to the layer. See Layer::ScheduleDraw() for details.
+  // Note: Must be called after initializing the window.
   void ScheduleDraw();
 
   // Marks the a portion of window as needing to be painted.
+  // Note: Must be called after initializing the window.
   void SchedulePaintInRect(const gfx::Rect& rect);
 
   // Stacks the specified child of this Window at the front of the z-order.
@@ -376,7 +400,7 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
                                   const Window* target,
                                   gfx::Rect* rect);
 
-  // Convert the native |point| in pixels to the target's host's coordiantes if
+  // Convert the native |point| in pixels to the target's host's coordinates if
   // source and target have different hosts.
   static void ConvertNativePointToTargetHost(const Window* source,
                                              const Window* target,
@@ -396,6 +420,7 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   void RemoveObserver(WindowObserver* observer);
   bool HasObserver(const WindowObserver* observer) const;
 
+  // Note: Must be called after initializing the window.
   void SetEventTargetingPolicy(EventTargetingPolicy policy);
   EventTargetingPolicy event_targeting_policy() const {
     return event_targeting_policy_;
@@ -517,6 +542,10 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   // Notifies observers of the state of a resize loop.
   void NotifyResizeLoopStarted();
   void NotifyResizeLoopEnded();
+
+  // Notifies observers of the state of a move loop.
+  void NotifyMoveLoopStarted();
+  void NotifyMoveLoopEnded();
 
   // ui::GestureConsumer:
   bool RequiresDoubleTapGestureEvents() const override;
@@ -755,12 +784,12 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   // Occlusion state of the window.
   OcclusionState occlusion_state_ = OcclusionState::UNKNOWN;
 
-  // Occluded region of the window in the root window coordiantes.
+  // Occluded region of the window in the root window coordinates.
   SkRegion occluded_region_in_root_;
 
   int id_ = kInitialId;
 
-  // Whether layer is initialized as non-opaque. Defaults to false.
+  // If true, window's layer is marked as non-opaque. Defaults to false.
   bool transparent_ = false;
 
   // Whether it's in a process of CleanupGestureState() or not.

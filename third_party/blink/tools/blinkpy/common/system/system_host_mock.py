@@ -26,12 +26,13 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import io
+
 from blinkpy.common.system.executive_mock import MockExecutive
 from blinkpy.common.system.filesystem_mock import MockFileSystem
 from blinkpy.common.system.platform_info_mock import MockPlatformInfo
 from blinkpy.common.system.user_mock import MockUser
 
-from six import StringIO
 
 
 class MockSystemHost(object):
@@ -54,9 +55,9 @@ class MockSystemHost(object):
         if os_version:
             self.platform.os_version = os_version
 
-        self.stdin = StringIO()
-        self.stdout = StringIO()
-        self.stderr = StringIO()
+        self.stdin = io.StringIO()
+        self.stdout = io.StringIO()
+        self.stderr = io.StringIO()
         self.environ = {'MOCK_ENVIRON_COPY': '1', 'PATH': '/bin:/mock/bin'}
         self.time_return_val = time_return_val
 

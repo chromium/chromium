@@ -38,7 +38,7 @@ class WebAppAshInteractiveUITest : public web_app::WebAppBrowserTestBase {
     Browser* browser = LaunchWebAppBrowser(app_id);
     browser_view_ = BrowserView::GetBrowserViewForBrowser(browser);
 
-    controller_ = browser_view_->immersive_mode_controller();
+    controller_ = ImmersiveModeController::From(browser);
     chromeos::ImmersiveFullscreenControllerTestApi(
         static_cast<ImmersiveModeControllerChromeos*>(controller_)
             ->controller())
@@ -52,7 +52,7 @@ class WebAppAshInteractiveUITest : public web_app::WebAppBrowserTestBase {
 
     // Open the app menu by clicking on it.
     base::RunLoop open_loop;
-    ui_test_utils::MoveMouseToCenterAndPress(
+    ui_test_utils::MoveMouseToCenterAndClick(
         menu_button, ui_controls::LEFT, ui_controls::DOWN | ui_controls::UP,
         open_loop.QuitClosure());
     open_loop.Run();
@@ -60,7 +60,7 @@ class WebAppAshInteractiveUITest : public web_app::WebAppBrowserTestBase {
 
     // Close the app menu by clicking on it again.
     base::RunLoop close_loop;
-    ui_test_utils::MoveMouseToCenterAndPress(
+    ui_test_utils::MoveMouseToCenterAndClick(
         menu_button, ui_controls::LEFT, ui_controls::DOWN | ui_controls::UP,
         close_loop.QuitClosure());
     close_loop.Run();

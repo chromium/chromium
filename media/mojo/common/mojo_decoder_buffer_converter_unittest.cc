@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -20,7 +21,7 @@ namespace media {
 
 namespace {
 
-uint32_t kDefaultDataPipeCapacityBytes = 1024;
+constexpr uint32_t kDefaultDataPipeCapacityBytes = 1024;
 
 MATCHER_P(MatchesDecoderBuffer, buffer, "") {
   DCHECK(arg);
@@ -69,7 +70,8 @@ TEST(MojoDecoderBufferConverterTest, ConvertDecoderBuffer_Normal) {
   buffer->set_discard_padding(DecoderBuffer::DiscardPadding(
       base::Milliseconds(5), base::Milliseconds(6)));
   buffer->WritableSideData().spatial_layers = {1, 2, 3};
-  buffer->WritableSideData().alpha_data = {0, 1, 2};
+  buffer->WritableSideData().alpha_data =
+      base::HeapArray<uint8_t>::CopiedFrom(base::as_byte_span("alpha_data"));
   buffer->WritableSideData().secure_handle = 42;
 
   MojoDecoderBufferConverter converter;
@@ -88,7 +90,7 @@ TEST(MojoDecoderBufferConverterTest, ConvertDecoderBuffer_EOS) {
 // See http://crbug.com/663438
 TEST(MojoDecoderBufferConverterTest, ConvertDecoderBuffer_ZeroByteBuffer) {
   base::test::SingleThreadTaskEnvironment task_environment;
-  scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(0));
+  auto buffer = base::MakeRefCounted<DecoderBuffer>(0);
 
   MojoDecoderBufferConverter converter;
   converter.ConvertAndVerify(buffer);

@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/in_memory_database.h"
 #include "components/history/core/browser/url_database.h"
 
@@ -39,9 +40,14 @@ void InMemoryHistoryBackend::DeleteAllSearchTermsForKeyword(
 
 void InMemoryHistoryBackend::OnURLVisited(
     history::HistoryService* history_service,
-    const history::URLRow& url_row,
-    const history::VisitRow& new_visit) {
-  OnURLVisitedOrModified(url_row);
+    const VisitedURLInfo& visited_url_info) {
+  // Filter out 404 visits to prevent them from impacting user
+  // journeys on search.
+  if (visited_url_info.response_code_category ==
+      history::VisitResponseCodeCategory::k404) {
+    return;
+  }
+  OnURLVisitedOrModified(visited_url_info.url_row);
 }
 
 void InMemoryHistoryBackend::OnURLsModified(HistoryService* history_service,

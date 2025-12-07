@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../i18n_setup.js';
 import './safety_hub_module.js';
 
@@ -48,7 +48,7 @@ export class SettingsSafetyHubExtensionsModuleElement extends
     };
   }
 
-  private headerString_: string;
+  declare private headerString_: string;
 
   override async connectedCallback() {
     super.connectedCallback();
@@ -65,7 +65,7 @@ export class SettingsSafetyHubExtensionsModuleElement extends
   private async onSafetyCheckExtensionsChanged_(numExtensions: number) {
     this.headerString_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
-            'safetyCheckExtensionsReviewLabel', numExtensions);
+            'safetyHubExtensionsReviewLabel', numExtensions);
   }
 
   private onButtonClick_() {

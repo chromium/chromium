@@ -107,7 +107,7 @@ class ImageFrameGeneratorTest : public testing::Test,
         MockImageDecoderFactory::Create(this, FullSize()));
   }
 
-  void AddNewData() { data_->Append("g", 1u); }
+  void AddNewData() { data_->Append(base::span_from_cstring("g")); }
 
   void SetFrameStatus(ImageFrame::Status status) {
     status_ = next_frame_status_ = status;
@@ -326,8 +326,8 @@ TEST_F(ImageFrameGeneratorTest,
                                       .SetThreadNameForTest("DecodeThread"));
   PostCrossThreadTask(
       *thread->GetTaskRunner(), FROM_HERE,
-      CrossThreadBindOnce(&DecodeThreadMain, WTF::RetainedRef(generator_),
-                          WTF::RetainedRef(segment_reader_)));
+      CrossThreadBindOnce(&DecodeThreadMain, blink::RetainedRef(generator_),
+                          blink::RetainedRef(segment_reader_)));
   thread.reset();
   EXPECT_EQ(2, decode_request_count_);
   EXPECT_EQ(1, decoders_destroyed_);

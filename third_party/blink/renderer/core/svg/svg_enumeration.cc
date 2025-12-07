@@ -35,12 +35,6 @@
 
 namespace blink {
 
-SVGPropertyBase* SVGEnumeration::CloneForAnimation(const String& value) const {
-  SVGEnumeration* svg_enumeration = Clone();
-  svg_enumeration->SetValueAsString(value);
-  return svg_enumeration;
-}
-
 String SVGEnumeration::ValueAsString() const {
   if (const char* enum_name = map_.NameFromValue(value_))
     return String(enum_name);
@@ -73,7 +67,7 @@ uint16_t SVGEnumeration::MaxInternalEnumValue() const {
 }
 
 void SVGEnumeration::Add(const SVGPropertyBase*, const SVGElement*) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SVGEnumeration::CalculateAnimatedValue(
@@ -84,7 +78,7 @@ void SVGEnumeration::CalculateAnimatedValue(
     const SVGPropertyBase* to,
     const SVGPropertyBase*,
     const SVGElement*) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 float SVGEnumeration::CalculateDistance(const SVGPropertyBase*,

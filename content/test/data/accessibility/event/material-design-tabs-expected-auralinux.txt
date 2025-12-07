@@ -1,0 +1,62 @@
+=== Accessibility tree before go() pass 1 ===
+[document web] name='Material Web Tabs Events' focused
+++[section] name='Ready'
+++++[page tab list] horizontal
+++++++[section]
+++++++++[page tab] name='Tab 1' selectable selected
+++++++++[page tab] name='Tab 2' selectable
+++++++++[page tab] name='Tab 3' selectable
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 1 ===
+[document web] name='Material Web Tabs Events' focused
+++[section] name='Ready'
+++++[page tab list] horizontal
+++++++[section]
+++++++++[page tab] name='Tab 1' selectable selected
+++++++++[page tab] name='Tab 2' selectable
+++++++++[page tab] name='Tab 3' selectable
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 2 ===
+[document web] name='Material Web Tabs Events' focused
+++[section] name='Ready'
+++++[page tab list] horizontal
+++++++[section]
+++++++++[page tab] name='Tab 1' selectable selected
+++++++++[page tab] name='Tab 2' selectable
+++++++++[page tab] name='Tab 3' selectable
+=== End accessibility tree ===
+SELECTION-CHANGED role=ROLE_PAGE_TAB_LIST name='(null)' ENABLED,HORIZONTAL,SENSITIVE,SHOWING,VISIBLE
+STATE-CHANGE:SELECTED:FALSE role=ROLE_PAGE_TAB name='Tab 1' ENABLED,FOCUSABLE,SELECTABLE,SENSITIVE,SHOWING,VISIBLE
+STATE-CHANGE:SELECTED:TRUE role=ROLE_PAGE_TAB name='Tab 2' ENABLED,FOCUSABLE,SELECTABLE,SELECTED,SENSITIVE,SHOWING,VISIBLE
+=== Accessibility tree after go() pass 2 ===
+[document web] name='Material Web Tabs Events' focused
+++[section] name='Ready'
+++++[page tab list] horizontal
+++++++[section]
+++++++++[page tab] name='Tab 1' selectable <<<<<< CHANGED
+++++++++[page tab] name='Tab 2' selectable selected <<<<<< CHANGED
+++++++++[page tab] name='Tab 3' selectable
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 3 ===
+[document web] name='Material Web Tabs Events' focused
+++[section] name='Ready'
+++++[page tab list] horizontal
+++++++[section]
+++++++++[page tab] name='Tab 1' selectable
+++++++++[page tab] name='Tab 2' selectable selected
+++++++++[page tab] name='Tab 3' selectable
+=== End accessibility tree ===
+SELECTION-CHANGED role=ROLE_PAGE_TAB_LIST name='(null)' ENABLED,HORIZONTAL,SENSITIVE,SHOWING,VISIBLE
+STATE-CHANGE:SELECTED:FALSE role=ROLE_PAGE_TAB name='Tab 2' ENABLED,FOCUSABLE,SELECTABLE,SENSITIVE,SHOWING,VISIBLE
+STATE-CHANGE:SELECTED:TRUE role=ROLE_PAGE_TAB name='Tab 3' ENABLED,FOCUSABLE,SELECTABLE,SELECTED,SENSITIVE,SHOWING,VISIBLE
+=== Accessibility tree after go() pass 3 ===
+[document web] name='Material Web Tabs Events' focused
+++[section] name='Ready'
+++++[page tab list] horizontal
+++++++[section]
+++++++++[page tab] name='Tab 1' selectable
+++++++++[page tab] name='Tab 2' selectable <<<<<< CHANGED
+++++++++[page tab] name='Tab 3' selectable selected <<<<<< CHANGED
+=== End accessibility tree ===

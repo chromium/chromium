@@ -6,10 +6,11 @@ import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.
 import 'chrome://resources/ash/common/cr_elements/policy/cr_tooltip_icon.js';
 import './app_management_cros_shared_style.css.js';
 
-import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {AppManagementUserAction, AppType, InstallReason, InstallSource} from 'chrome://resources/cr_components/app_management/constants.js';
-import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {AppType, InstallReason, InstallSource} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
+import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -102,7 +103,7 @@ export class AppManagementAppDetailsItem extends
         app.installSource === InstallSource.kPlayStore;
   }
 
-  private getTypeString_(app: App): string {
+  private getTypeString_(app: App, suffix: string = ''): string {
     // When installReason = kSystem, the system has determined that the app
     // needs to be installed. This includes apps such as Chrome and the Play
     // Store.
@@ -111,14 +112,12 @@ export class AppManagementAppDetailsItem extends
     }
     switch (app.type) {
       case AppType.kArc:
-        return this.i18n('appManagementAppDetailsTypeAndroid');
+        return this.i18n('appManagementAppDetailsTypeAndroid' + suffix);
       case AppType.kChromeApp:
-      case AppType.kStandaloneBrowserChromeApp:
-        return this.i18n('appManagementAppDetailsTypeChrome');
+        return this.i18n('appManagementAppDetailsTypeChrome' + suffix);
       case AppType.kWeb:
       case AppType.kExtension:
-      case AppType.kStandaloneBrowserExtension:
-        return this.i18n('appManagementAppDetailsTypeWeb');
+        return this.i18n('appManagementAppDetailsTypeWeb' + suffix);
       default:
         console.error('App type not handled by app management.');
         return '';
@@ -138,6 +137,9 @@ export class AppManagementAppDetailsItem extends
   }
 
   private getTypeAndSourceString_(app: App): string {
+    if (app.installReason === InstallReason.kPolicy) {
+      return this.getTypeString_(app, 'InstallReasonPolicy');
+    }
     if (app.type === AppType.kWeb &&
         (app.installSource === InstallSource.kBrowser ||
          app.installSource === InstallSource.kSync)) {

@@ -14,12 +14,11 @@ interface ColorChooserFactory {
   // OpenColorChooser opens a platform specific color chooser in the browser.
   // Enabled on platfoms that opt in using the "is_using_open_color_chooser"
   // enabled_features option.
-  [EnableIf=is_using_open_color_chooser]
-  OpenColorChooser(
-      pending_receiver<ColorChooser> chooser,
-      pending_remote<ColorChooserClient> client,
-      uint32 color,
-      array<ColorSuggestion> suggestions);
+  [EnableIf=is_android|is_ios]
+  OpenColorChooser(pending_receiver<ColorChooser> chooser,
+                   pending_remote<ColorChooserClient> client,
+                   uint32 color,
+                   array<ColorSuggestion> suggestions);
 };
 
 interface ColorChooser {

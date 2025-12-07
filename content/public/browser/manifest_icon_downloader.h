@@ -31,7 +31,18 @@ class WebContents;
 // to the value specified by |minimum_icon_size_in_px|.
 class CONTENT_EXPORT ManifestIconDownloader final {
  public:
+  enum class Result {
+    kMinValue = 0,
+    kNoImageFound = kMinValue,
+    kIncorrectSize,
+    kSuccess,
+    kMaxValue = kSuccess
+  };
+
   using IconFetchCallback = base::OnceCallback<void(const SkBitmap&)>;
+
+  using IconFetchCallbackWithResult =
+      base::OnceCallback<void(const SkBitmap&, Result)>;
 
   ManifestIconDownloader() = delete;
 
@@ -54,7 +65,8 @@ class CONTENT_EXPORT ManifestIconDownloader final {
       IconFetchCallback callback,
       bool square_only = true,
       const GlobalRenderFrameHostId& initiator_frame_routing_id =
-          GlobalRenderFrameHostId());
+          GlobalRenderFrameHostId(),
+      bool suppress_warnings = false);
 
   // This threshold has been chosen arbitrarily and is open to any necessary
   // changes in the future.
@@ -67,7 +79,8 @@ class CONTENT_EXPORT ManifestIconDownloader final {
                             int minimum_icon_size_in_px,
                             bool square_only,
                             base::WeakPtr<WebContents> web_contents,
-                            IconFetchCallback callback,
+                            IconFetchCallbackWithResult callback,
+                            bool suppress_warnings,
                             int id,
                             int http_status_code,
                             const GURL& url,
@@ -77,7 +90,7 @@ class CONTENT_EXPORT ManifestIconDownloader final {
   static void ScaleIcon(int ideal_icon_width_in_px,
                         int ideal_icon_height_in_px,
                         const SkBitmap& bitmap,
-                        IconFetchCallback callback);
+                        IconFetchCallbackWithResult callback);
 
   static int FindClosestBitmapIndex(int ideal_icon_size_in_px,
                                     int minimum_icon_size_in_px,

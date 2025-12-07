@@ -17,6 +17,8 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_test.h"
 #include "extensions/browser/process_map.h"
+#include "extensions/buildflags/buildflags.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/permissions/permission_set.h"
@@ -27,6 +29,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -148,6 +152,9 @@ TEST_P(ExtensionWebRequestPermissionsWithHashRealTimeDependenceTest,
       {"https://clients2.google.com/service/update2/crx", HIDE_ALL},
       {"https://chrome.google.com/webstore/inlineinstall/detail/"
        "kcnhkahnjcbndmmehfkdnkjomaanaooo",
+       HIDE_ALL},
+      {"https://chromewebstore.googleapis.com/v2/items/"
+       "kcnhkahnjcbndmmehfkdnkjomaanaooo:fetchItemSnippet",
        HIDE_ALL},
   };
   std::vector<TestCase> additional_cases;

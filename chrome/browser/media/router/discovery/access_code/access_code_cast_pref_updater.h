@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_MEDIA_ROUTER_DISCOVERY_ACCESS_CODE_ACCESS_CODE_CAST_PREF_UPDATER_H_
 #define CHROME_BROWSER_MEDIA_ROUTER_DISCOVERY_ACCESS_CODE_ACCESS_CODE_CAST_PREF_UPDATER_H_
 
+#include <vector>
+
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
@@ -12,8 +14,7 @@
 
 namespace media_router {
 
-// An interface used by both LaCros and other desktop platforms for pref
-// updating in AccessCodeCasting.
+// An interface used for pref updating in AccessCodeCasting.
 class AccessCodeCastPrefUpdater {
  public:
   AccessCodeCastPrefUpdater() = default;

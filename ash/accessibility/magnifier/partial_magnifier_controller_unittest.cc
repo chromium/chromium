@@ -197,7 +197,7 @@ TEST_F(PartialMagnifierControllerTest, MagnifierAppearsCorrectDisplay) {
   event_generator->EnterPenPointerMode();
   UpdateDisplay("800x600,800x600");
   GetController()->SetEnabled(true);
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
 
   event_generator->PressTouch(gfx::Point(400, 300));
   EXPECT_EQ(GetPrimaryDisplay(),
@@ -215,7 +215,7 @@ TEST_F(PartialMagnifierControllerTest, MagnifierAppearsUnderPen) {
   ui::test::EventGenerator* event_generator = GetEventGenerator();
   UpdateDisplay("800x600,800x600");
   GetController()->SetEnabled(true);
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
 
   // Hold pen on primary; use mouse to move pointer to secondary
   event_generator->EnterPenPointerMode();

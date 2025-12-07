@@ -130,6 +130,9 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
   }
   void RemoveManuallyAssignedNode(Node&);
 
+  // Override in order to defer this work when needed.
+  bool CalculateAndAdjustAutoDirectionality() final;
+
   void Trace(Visitor*) const override;
 
  private:

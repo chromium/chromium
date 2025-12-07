@@ -60,16 +60,16 @@ void GetRequestBlobTask::DidOpenCache(int64_t trace_id,
 
 void GetRequestBlobTask::DidMatchRequest(
     int64_t trace_id,
-    blink::mojom::CacheKeysResultPtr result) {
+    blink::mojom::CacheStorageCache::KeysResult result) {
   TRACE_EVENT_WITH_FLOW0("CacheStorage", "GetRequestBlobTask::DidMatchRequest",
                          TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN);
 
-  if (result->is_status() || result->get_keys().size() == 0) {
+  if (!result.has_value() || result.value().size() == 0) {
     SetStorageErrorAndFinish(BackgroundFetchStorageError::kCacheStorageError);
     return;
   }
 
-  auto& keys = result->get_keys();
+  auto& keys = result.value();
   DCHECK_EQ(keys.size(), 1u);
   DCHECK(keys[0]->blob);
 

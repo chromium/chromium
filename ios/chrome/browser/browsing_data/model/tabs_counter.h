@@ -9,6 +9,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #import "components/browsing_data/core/counters/browsing_data_counter.h"
 #import "ios/chrome/browser/browsing_data/model/tabs_closure_util.h"
 
@@ -77,6 +78,14 @@ class TabsCounter : public browsing_data::BrowsingDataCounter {
   // the timerange and the number of windows that have such tabs.
   int total_tab_count_ = 0;
   int total_window_count_ = 0;
+
+  // Active browsers with tabs with last navigation within the timerange.
+  // This is needed, because inactive tabs have a different Browser from their
+  // active counterparts. As we increment the `total_window_count_` by Browser,
+  // we should make sure we're not overcounting by keeping track of the active
+  // browsers (or the active browsers of inactive browsers) with tabs within the
+  // timeframe.
+  std::set<Browser*> active_browsers_;
 
   // Holds the tabs information used for counting the number of tabs with a last
   // navigation within the timerange. It's returned in `TabsCounter::TabsResult`

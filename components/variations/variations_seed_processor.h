@@ -11,9 +11,11 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
 #include "components/variations/entropy_provider.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/proto/variations_seed.pb.h"
+#include "components/variations/sticky_activation_manager.h"
 
 namespace base {
 class FeatureList;
@@ -48,7 +50,9 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedProcessor {
   using UIStringOverrideCallback =
       base::RepeatingCallback<void(uint32_t, const std::u16string&)>;
 
-  VariationsSeedProcessor();
+  // Note: The `sticky_activation_manager` must outlive this class.
+  explicit VariationsSeedProcessor(
+      StickyActivationManager& sticky_activation_manager);
 
   VariationsSeedProcessor(const VariationsSeedProcessor&) = delete;
   VariationsSeedProcessor& operator=(const VariationsSeedProcessor&) = delete;
@@ -82,6 +86,10 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedProcessor {
                             const EntropyProviders& entropy_providers,
                             const VariationsLayers& layers,
                             base::FeatureList* feature_list);
+
+  // Used to manage studies that use sticky activation, to determine which ones
+  // should be activated on startup per their prior state.
+  raw_ref<StickyActivationManager> sticky_activation_manager_;
 };
 
 }  // namespace variations

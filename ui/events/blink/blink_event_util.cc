@@ -70,8 +70,7 @@ WebInputEvent::Type ToWebTouchEventType(MotionEvent::Action action) {
     case MotionEvent::Action::BUTTON_RELEASE:
       break;
   }
-  NOTREACHED_IN_MIGRATION() << "Invalid MotionEvent::Action = " << action;
-  return WebInputEvent::Type::kUndefined;
+  NOTREACHED() << "Invalid MotionEvent::Action = " << action;
 }
 
 // Note that the action index is meaningful only in the context of
@@ -104,8 +103,7 @@ WebTouchPoint::State ToWebTouchPointState(const MotionEvent& event,
     case MotionEvent::Action::BUTTON_RELEASE:
       break;
   }
-  NOTREACHED_IN_MIGRATION() << "Invalid MotionEvent::Action.";
-  return WebTouchPoint::State::kStateUndefined;
+  NOTREACHED() << "Invalid MotionEvent::Action.";
 }
 
 WebPointerProperties::PointerType ToWebPointerType(
@@ -122,8 +120,7 @@ WebPointerProperties::PointerType ToWebPointerType(
     case MotionEvent::ToolType::ERASER:
       return WebPointerProperties::PointerType::kEraser;
   }
-  NOTREACHED_IN_MIGRATION() << "Invalid MotionEvent::ToolType = " << tool_type;
-  return WebPointerProperties::PointerType::kUnknown;
+  NOTREACHED() << "Invalid MotionEvent::ToolType = " << tool_type;
 }
 
 WebPointerProperties::PointerType ToWebPointerType(
@@ -140,9 +137,8 @@ WebPointerProperties::PointerType ToWebPointerType(
     case EventPointerType::kEraser:
       return WebPointerProperties::PointerType::kEraser;
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid EventPointerType = "
-                                << static_cast<int>(event_pointer_type);
-      return WebPointerProperties::PointerType::kUnknown;
+      NOTREACHED() << "Invalid EventPointerType = "
+                   << static_cast<int>(event_pointer_type);
   }
 }
 
@@ -319,8 +315,7 @@ WebGestureEvent CreateWebGestureEvent(const GestureEventDetails& details,
       source_device = WebGestureDevice::kTouchpad;
       break;
     case GestureDeviceType::DEVICE_UNKNOWN:
-      NOTREACHED_IN_MIGRATION() << "Unknown device type is not allowed";
-      break;
+      NOTREACHED() << "Unknown device type is not allowed";
   }
   WebGestureEvent gesture(WebInputEvent::Type::kUndefined,
                           EventFlagsToWebEventModifiers(flags), timestamp,
@@ -472,9 +467,8 @@ WebGestureEvent CreateWebGestureEvent(const GestureEventDetails& details,
       gesture.SetType(WebInputEvent::Type::kUndefined);
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "EventType provided wasn't a valid gesture event: "
-          << base::to_underlying(details.type());
+      NOTREACHED() << "EventType provided wasn't a valid gesture event: "
+                   << base::to_underlying(details.type());
   }
 
   return gesture;
@@ -655,14 +649,18 @@ WebInputEvent::Type ToWebMouseEventType(MotionEvent::Action action) {
     case MotionEvent::Action::UP:
     case MotionEvent::Action::BUTTON_RELEASE:
       return WebInputEvent::Type::kMouseUp;
-    case MotionEvent::Action::NONE:
     case MotionEvent::Action::CANCEL:
     case MotionEvent::Action::POINTER_DOWN:
     case MotionEvent::Action::POINTER_UP:
-      break;
+      // TODO(https://crbug.com/390453017): We occasionally see these apparently
+      // unexpected MotionEvent::Action values in Android native events.
+      // Unfortunately, MotionEvent documentation is not clear what actions are
+      // acceptable.  We are returning kUndefined here so that the caller can
+      // gracefully drop any events it cannot handle.
+      return WebInputEvent::Type::kUndefined;
+    default:
+      NOTREACHED() << "Invalid MotionEvent::Action = " << action;
   }
-  DUMP_WILL_BE_NOTREACHED() << "Invalid MotionEvent::Action = " << action;
-  return WebInputEvent::Type::kUndefined;
 }
 
 void SetWebPointerPropertiesFromMotionEventData(
@@ -769,8 +767,7 @@ EventPointerType WebPointerTypeToEventPointerType(
     case WebPointerProperties::PointerType::kUnknown:
       return EventPointerType::kUnknown;
   }
-  NOTREACHED_IN_MIGRATION() << "Invalid pointer type";
-  return EventPointerType::kUnknown;
+  NOTREACHED() << "Invalid pointer type";
 }
 
 blink::WebGestureEvent ScrollBeginFromScrollUpdate(
@@ -829,8 +826,7 @@ std::unique_ptr<WebGestureEvent> CreateWebGestureEventFromGestureEventAndroid(
       event_type = WebInputEvent::Type::kGestureDoubleTap;
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown gesture event type";
-      return std::make_unique<WebGestureEvent>();
+      NOTREACHED() << "Unknown gesture event type";
   }
   auto web_event = std::make_unique<WebGestureEvent>(
       event_type, WebInputEvent::kNoModifiers,
@@ -840,7 +836,18 @@ std::unique_ptr<WebGestureEvent> CreateWebGestureEventFromGestureEventAndroid(
   // event's fields better when extended to handle more cases.
   web_event->SetPositionInWidget(event.location());
   web_event->SetPositionInScreen(event.screen_location());
-  web_event->SetSourceDevice(WebGestureDevice::kTouchscreen);
+  WebGestureDevice device_type = WebGestureDevice::kUninitialized;
+  switch (event.source()) {
+    case ui::GestureDeviceType::DEVICE_TOUCHPAD:
+      device_type = WebGestureDevice::kTouchpad;
+      break;
+    case ui::GestureDeviceType::DEVICE_TOUCHSCREEN:
+      device_type = WebGestureDevice::kTouchscreen;
+      break;
+    default:
+      NOTREACHED() << "Unexpected gesture device type";
+  }
+  web_event->SetSourceDevice(device_type);
   if (event.synthetic_scroll())
     web_event->SetSourceDevice(WebGestureDevice::kSyntheticAutoscroll);
   if (event_type == WebInputEvent::Type::kGesturePinchUpdate) {

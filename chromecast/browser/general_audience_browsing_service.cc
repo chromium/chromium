@@ -22,7 +22,7 @@ void CheckURLCallbackWrapper(
     GeneralAudienceBrowsingService::CheckURLCallback callback,
     const GURL& /* url */,
     safe_search_api::Classification classification,
-    bool /* uncertain */) {
+    safe_search_api::ClassificationDetails details) {
   std::move(callback).Run(classification ==
                           safe_search_api::Classification::SAFE);
 }

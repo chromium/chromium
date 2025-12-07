@@ -30,7 +30,7 @@ class InputMethodSurfaceTest : public test::ExoTestBase,
 TEST_F(InputMethodSurfaceTest, SetGeometryShouldIgnoreWorkArea) {
   UpdateDisplay("800x600");
 
-  int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
   display::DisplayManager* display_manager =
       ash::Shell::Get()->display_manager();
 

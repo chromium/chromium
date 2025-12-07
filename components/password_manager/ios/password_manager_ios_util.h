@@ -7,7 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
-#include "url/gurl.h"
+#import <optional>
+
+#import "url/gurl.h"
+#import "url/origin.h"
 
 namespace web {
 class WebState;
@@ -24,21 +27,18 @@ namespace password_manager {
 // ignore API calls from insecure context.
 bool WebStateContentIsSecureHtml(const web::WebState* web_state);
 
-// Extracts password form data from |json_string| to |form_data| and returns
-// whether the xtraction was successful.
-bool JsonStringToFormData(NSString* json_string,
-                          autofill::FormData* form_data,
-                          const GURL& page_url,
-                          const autofill::FieldDataManager& field_data_manager);
-
-// Whether the |origin| matches the last committed URl in the |web_state|.
-bool OriginMatchesLastCommittedURLOrigin(web::WebState* web_state,
-                                         const GURL& origin);
+// Converts password form data from |json_string| to autofill::FormData.
+std::optional<autofill::FormData> JsonStringToFormData(
+    NSString* json_string,
+    const GURL& page_url,
+    const url::Origin& frame_origin,
+    const autofill::FieldDataManager& field_data_manager,
+    const std::string& frame_id);
 
 // Returns whether an iframe is cross-origin.
 bool IsCrossOriginIframe(web::WebState* web_state,
                          bool frame_is_main_frame,
-                         const GURL& frame_security_origin);
+                         const url::Origin& frame_security_origin);
 
 }  // namespace password_manager
 

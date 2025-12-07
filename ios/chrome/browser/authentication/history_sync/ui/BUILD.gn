@@ -1,0 +1,29 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("ui") {
+  sources = [
+    "history_sync_consumer.h",
+    "history_sync_view_controller.h",
+    "history_sync_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/signin/public/base",
+    "//components/signin/public/base:signin_switches",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/keyboard/ui_bundled",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/elements:elements_internal",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/common/ui/button_stack",
+    "//ios/chrome/common/ui/promo_style",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+}

@@ -47,13 +47,14 @@ class CustomScrollbarTheme final : public ScrollbarTheme {
     return GetTheme().NativeThemeHasButtons();
   }
 
+  int NativeThemeMinimumThumbLength(const Scrollbar& scrollbar) {
+    return GetTheme().MinimumThumbLength(scrollbar);
+  }
+
   void PaintScrollCorner(GraphicsContext&,
-                         const Scrollbar* vertical_scrollbar,
+                         const ScrollableArea&,
                          const DisplayItemClient&,
-                         const gfx::Rect& corner_rect,
-                         mojom::blink::ColorScheme color_scheme,
-                         bool in_forced_colors,
-                         const ui::ColorProvider* color_provider) override;
+                         const gfx::Rect& corner_rect) override;
 
   bool ShouldCenterOnThumb(const Scrollbar& scrollbar,
                            const WebMouseEvent& event) const override {

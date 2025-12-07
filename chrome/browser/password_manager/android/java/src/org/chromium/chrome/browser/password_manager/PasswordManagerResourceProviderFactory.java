@@ -4,13 +4,23 @@
 
 package org.chromium.chrome.browser.password_manager;
 
+import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.build.annotations.NullMarked;
+
 /** Factory for creating {@link PasswordManagerResourceProvider} */
+@NullMarked
 public class PasswordManagerResourceProviderFactory {
     /**
      * Creates an instance of PasswordManagerResourceProvider
+     *
      * @return {@link PasswordManagerResourceProvider}
      */
     public static PasswordManagerResourceProvider create() {
-        return new PasswordManagerResourceProviderImpl();
+        PasswordManagerResourceProvider provider =
+                ServiceLoaderUtil.maybeCreate(PasswordManagerResourceProvider.class);
+        if (provider == null) {
+            provider = new PasswordManagerResourceProviderUpstreamImpl();
+        }
+        return provider;
     }
 }

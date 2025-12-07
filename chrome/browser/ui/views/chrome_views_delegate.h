@@ -11,7 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/views/views_delegate.h"
 
 class Profile;
@@ -31,24 +31,17 @@ class ChromeViewsDelegate : public views::ViewsDelegate {
   void SaveWindowPlacement(const views::Widget* window,
                            const std::string& window_name,
                            const gfx::Rect& bounds,
-                           ui::WindowShowState show_state) override;
-  bool GetSavedWindowPlacement(const views::Widget* widget,
-                               const std::string& window_name,
-                               gfx::Rect* bounds,
-                               ui::WindowShowState* show_state) const override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+                           ui::mojom::WindowShowState show_state) override;
+  bool GetSavedWindowPlacement(
+      const views::Widget* widget,
+      const std::string& window_name,
+      gfx::Rect* bounds,
+      ui::mojom::WindowShowState* show_state) const override;
+#if BUILDFLAG(IS_CHROMEOS)
   ProcessMenuAcceleratorResult ProcessAcceleratorWhileMenuShowing(
       const ui::Accelerator& accelerator) override;
   bool ShouldCloseMenuIfMouseCaptureLost() const override;
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  bool ShouldWindowHaveRoundedCorners(
-      const gfx::NativeWindow window) const override;
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-  std::unique_ptr<views::NonClientFrameView> CreateDefaultNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateDefaultFrameView(
       views::Widget* widget) override;
 #endif
 
@@ -57,13 +50,10 @@ class ChromeViewsDelegate : public views::ViewsDelegate {
   HICON GetSmallWindowIcon() const override;
   int GetAppbarAutohideEdges(HMONITOR monitor,
                              base::OnceClosure callback) override;
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  bool WindowManagerProvidesTitleBar(bool maximized) override;
 #endif
 
 #if BUILDFLAG(IS_LINUX)
+  bool WindowManagerProvidesTitleBar(bool maximized) override;
   gfx::ImageSkia* GetDefaultWindowIcon() const override;
 #endif
 
@@ -90,7 +80,7 @@ class ChromeViewsDelegate : public views::ViewsDelegate {
                                 int edges);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Called from GetSavedWindowPlacement() on ChromeOS to adjust the bounds.
   void AdjustSavedWindowPlacementChromeOS(const views::Widget* widget,
                                           gfx::Rect* bounds) const;

@@ -14,7 +14,7 @@ class LabelButtonBorder;
 namespace bookmark_button_util {
 
 // Max width of the buttons in the bookmark bar.
-constexpr int kMaxButtonWidth = 150;
+inline constexpr int kMaxButtonWidth = 150;
 
 std::unique_ptr<views::LabelButtonBorder> CreateBookmarkButtonBorder();
 

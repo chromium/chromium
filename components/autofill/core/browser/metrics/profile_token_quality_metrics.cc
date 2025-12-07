@@ -11,14 +11,13 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
-#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/profile_token_quality.h"
 #include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill::autofill_metrics {
@@ -33,9 +32,8 @@ using ObservationType = ProfileTokenQuality::ObservationType;
 // metrics. This excludes additional supported types, since no observations
 // are tracked for them.
 FieldTypeSet GetMetricRelevantTypes(const AutofillProfile& profile) {
-  FieldTypeSet relevant_types;
-  profile.GetSupportedTypes(&relevant_types);
-  relevant_types.intersect(GetDatabaseStoredTypesOfAutofillProfile());
+  FieldTypeSet relevant_types = profile.GetSupportedTypes();
+  relevant_types.intersect(AutofillProfile::kDatabaseStoredTypes);
   return relevant_types;
 }
 
@@ -173,50 +171,17 @@ void LogStoredProfileTokenQualityMetrics(
   }
 }
 
-void LogObservationCountBeforeSubmissionMetric(const FormStructure& form,
-                                               const PersonalDataManager& pdm) {
-  std::set<const AutofillProfile*> profiles_used;
-  // Emit per-type metrics for all autofilled fields.
-  for (const std::unique_ptr<AutofillField>& field : form) {
-    if (!field->autofill_source_profile_guid()) {
-      // The field was not autofilled.
-      continue;
-    }
-    if (const AutofillProfile* profile =
-            pdm.address_data_manager().GetProfileByGUID(
-                *field->autofill_source_profile_guid())) {
-      profiles_used.insert(profile);
-      FieldType field_type = field->Type().GetStorableType();
-      base::UmaHistogramExactLinear(
-          base::StrCat({kHistogramPrefix, "ObservationCountBeforeSubmission.",
-                        FieldTypeToStringView(field_type)}),
-          profile->token_quality()
-              .GetObservationTypesForFieldType(field_type)
-              .size(),
-          ProfileTokenQuality::kMaxObservationsPerToken + 1);
-    }
-  }
-  // Emit the total observation counts for all `profiles_used`.
-  for (const AutofillProfile* profile : profiles_used) {
-    base::UmaHistogramCounts1000(
-        base::StrCat(
-            {kHistogramPrefix, "ObservationCountBeforeSubmission.PerProfile"}),
-        GetTotalObservationCount(*profile, GetMetricRelevantTypes(*profile)));
-  }
-}
-
 void LogProfileTokenQualityScoreMetric(const FormStructure& form,
-                                       const PersonalDataManager& pdm) {
+                                       const AddressDataManager& adm) {
   for (const std::unique_ptr<AutofillField>& field : form) {
     if (!field->autofill_source_profile_guid()) {
       // The field was not autofilled.
       continue;
     }
     if (const AutofillProfile* profile =
-            pdm.address_data_manager().GetProfileByGUID(
-                *field->autofill_source_profile_guid())) {
+            adm.GetProfileByGUID(*field->autofill_source_profile_guid())) {
       FieldTypeSet relevant_types = GetMetricRelevantTypes(*profile);
-      FieldType field_type = field->Type().GetStorableType();
+      FieldType field_type = field->Type().GetAddressType();
       if (!relevant_types.contains(field_type)) {
         continue;
       }

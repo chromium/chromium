@@ -4,12 +4,18 @@
 
 #include "media/gpu/test/video_test_environment.h"
 
+#include "base/logging/logging_settings.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "media/gpu/buildflags.h"
 #include "mojo/core/embedder/embedder.h"
+
+#if BUILDFLAG(USE_V4L2_CODEC)
+#include "media/gpu/v4l2/v4l2_utils.h"
+#endif
 
 #if BUILDFLAG(USE_VAAPI)
 #include "media/gpu/vaapi/vaapi_wrapper.h"
@@ -92,6 +98,14 @@ base::FilePath VideoTestEnvironment::GetTestOutputFilePath() const {
   test_suite_name = test_info->test_suite_name();
 #endif  // BUILDFLAG(IS_WIN)
   return base::FilePath(test_suite_name).Append(test_name);
+}
+
+bool VideoTestEnvironment::IsV4L2VirtualDriver() const {
+#if BUILDFLAG(USE_V4L2_CODEC)
+  return IsVislDriver();
+#else
+  return false;
+#endif
 }
 
 }  // namespace test

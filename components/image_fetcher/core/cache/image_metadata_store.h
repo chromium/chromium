@@ -27,22 +27,22 @@ class ImageMetadataStore {
   // While this is false, initialization may have already started.
   virtual bool IsInitialized() = 0;
 
-  // Loads the image metadata for the |key|.
+  // Loads the image metadata for the `key`.
   virtual void LoadImageMetadata(const std::string& key,
                                  ImageMetadataCallback) = 0;
 
-  // Adds or updates the image metadata for the |key|. If metadata exists for an
-  // image and the |needs_transcoding| is still true, we don't need to update
+  // Adds or updates the image metadata for the `key`. If metadata exists for an
+  // image and the `needs_transcoding` is still true, we don't need to update
   // the existing metadata.
   virtual void SaveImageMetadata(const std::string& key,
                                  const size_t data_size,
                                  bool needs_transcoding,
                                  ExpirationInterval expiration_interval) = 0;
 
-  // Deletes the image metadata for the |key|.
+  // Deletes the image metadata for the `key`.
   virtual void DeleteImageMetadata(const std::string& key) = 0;
 
-  // Updates |last_used_time| for the given |key| if it exists.
+  // Updates `last_used_time` for the given `key` if it exists.
   virtual void UpdateImageMetadata(const std::string& key) = 0;
 
   // Returns all the keys this store has.
@@ -53,14 +53,14 @@ class ImageMetadataStore {
   virtual int64_t GetEstimatedSize(CacheOption cache_option) = 0;
 
   // Deletes all metadata that's been cached before the boundary given as
-  // |expiration_time|.
+  // `expiration_time`.
   void EvictImageMetadata(base::Time expiration_time, KeysCallback callback) {
     EvictImageMetadata(expiration_time, /* Max size_t */ -1,
                        std::move(callback));
   }
 
   // Deletes all metadata that's been cached before the boundary given as
-  // |expiration_time|. Evicts other metadata until there are |bytes_left|
+  // `expiration_time`. Evicts other metadata until there are `bytes_left`
   // in storage.
   virtual void EvictImageMetadata(base::Time expiration_time,
                                   const size_t bytes_left,

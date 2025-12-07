@@ -85,11 +85,11 @@ public class ArTestRuleUtils extends XrTestRuleUtils {
      *     an ArTestRule for a supported ChromeActivity.
      */
     public static ArrayList<ParameterSet> generateDefaultTestRuleParameters() {
-        ArrayList<ParameterSet> parameters = new ArrayList<ParameterSet>();
+        ArrayList<ParameterSet> parameters = new ArrayList<>();
         parameters.add(
                 new ParameterSet()
                         .value(
-                                new Callable<ChromeTabbedActivityArTestRule>() {
+                                new Callable<>() {
                                     @Override
                                     public ChromeTabbedActivityArTestRule call() {
                                         return new ChromeTabbedActivityArTestRule();
@@ -99,7 +99,7 @@ public class ArTestRuleUtils extends XrTestRuleUtils {
         parameters.add(
                 new ParameterSet()
                         .value(
-                                new Callable<CustomTabActivityArTestRule>() {
+                                new Callable<>() {
                                     @Override
                                     public CustomTabActivityArTestRule call() {
                                         return new CustomTabActivityArTestRule();
@@ -109,7 +109,7 @@ public class ArTestRuleUtils extends XrTestRuleUtils {
         parameters.add(
                 new ParameterSet()
                         .value(
-                                new Callable<WebappActivityArTestRule>() {
+                                new Callable<>() {
                                     @Override
                                     public WebappActivityArTestRule call() {
                                         return new WebappActivityArTestRule();

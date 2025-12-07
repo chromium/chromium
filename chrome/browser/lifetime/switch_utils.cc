@@ -38,8 +38,9 @@ constexpr const char* kSwitchesToRemoveOnAutorestart[] = {
 }  // namespace
 
 void RemoveSwitchesForAutostart(base::CommandLine::SwitchMap* switch_list) {
-  for (const char* switch_to_remove : kSwitchesToRemoveOnAutorestart)
+  for (const char* switch_to_remove : kSwitchesToRemoveOnAutorestart) {
     switch_list->erase(switch_to_remove);
+  }
 
 #if BUILDFLAG(IS_WIN)
   // The relaunched browser process shouldn't reuse the /prefetch:# switch of

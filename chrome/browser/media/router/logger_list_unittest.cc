@@ -14,7 +14,9 @@ class LoggerListTest : public testing::Test {
  protected:
   std::string GetAttributeOfFirstEntry(const std::string& logs_json,
                                        const std::string& attribute) {
-    base::Value logs = base::JSONReader::Read(logs_json).value();
+    base::Value logs =
+        base::JSONReader::Read(logs_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+            .value();
     return *logs.GetList()[0].GetDict().FindString(attribute);
   }
 
@@ -74,10 +76,12 @@ TEST_F(LoggerListTest, Log) {
       }
     ])";
 
-  EXPECT_EQ(base::JSONReader::Read(logs1),
-            base::JSONReader::Read(expected_logs));
-  EXPECT_EQ(base::JSONReader::Read(logs2),
-            base::JSONReader::Read(expected_logs));
+  EXPECT_EQ(base::JSONReader::Read(logs1, base::JSON_PARSE_CHROMIUM_EXTENSIONS),
+            base::JSONReader::Read(expected_logs,
+                                   base::JSON_PARSE_CHROMIUM_EXTENSIONS));
+  EXPECT_EQ(base::JSONReader::Read(logs2, base::JSON_PARSE_CHROMIUM_EXTENSIONS),
+            base::JSONReader::Read(expected_logs,
+                                   base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   logger_list->RemoveLogger(&logger1);
   logger_list->RemoveLogger(&logger2);

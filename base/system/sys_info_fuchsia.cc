@@ -76,30 +76,33 @@ int64_t GetAmountOfTotalDiskSpaceAndVolumePath(const FilePath& path,
   for (const auto& path_and_size : total_disk_space.space_map) {
     if (path_and_size.first == path || path_and_size.first.IsParent(path)) {
       // If a deeper path was already matched then ignore this entry.
-      if (!matched_path.empty() && !matched_path.IsParent(path_and_size.first))
+      if (!matched_path.empty() &&
+          !matched_path.IsParent(path_and_size.first)) {
         continue;
+      }
       matched_path = path_and_size.first;
       result = path_and_size.second;
     }
   }
 
-  if (volume_path)
+  if (volume_path) {
     *volume_path = matched_path;
+  }
   return result;
 }
 
 }  // namespace
 
 // static
-uint64_t SysInfo::AmountOfPhysicalMemoryImpl() {
-  return zx_system_get_physmem();
+ByteCount SysInfo::AmountOfPhysicalMemoryImpl() {
+  return ByteCount::FromUnsigned(zx_system_get_physmem());
 }
 
 // static
-uint64_t SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
+ByteCount SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
   // TODO(crbug.com/42050649): Implement this when Fuchsia supports it.
   NOTIMPLEMENTED_LOG_ONCE();
-  return 0;
+  return ByteCount(0);
 }
 
 // static
@@ -108,10 +111,10 @@ int SysInfo::NumberOfProcessors() {
 }
 
 // static
-uint64_t SysInfo::AmountOfVirtualMemory() {
+ByteCount SysInfo::AmountOfVirtualMemory() {
   // Fuchsia does not provide this type of information.
   // Return zero to indicate that there is unlimited available virtual memory.
-  return 0;
+  return ByteCount(0);
 }
 
 // static
@@ -120,7 +123,7 @@ std::string SysInfo::OperatingSystemName() {
 }
 
 // static
-int64_t SysInfo::AmountOfFreeDiskSpace(const FilePath& path) {
+std::optional<int64_t> SysInfo::AmountOfFreeDiskSpace(const FilePath& path) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 
   // First check whether there is a soft-quota that applies to |path|.
@@ -135,29 +138,35 @@ int64_t SysInfo::AmountOfFreeDiskSpace(const FilePath& path) {
 
   // Report the actual amount of free space in |path|'s filesystem.
   int64_t available;
-  if (GetDiskSpaceInfo(path, &available, nullptr))
+  if (GetDiskSpaceInfo(path, &available, nullptr)) {
+    CHECK(available >= 0, base::NotFatalUntil::M150);
     return available;
+  }
 
-  return -1;
+  return std::nullopt;
 }
 
 // static
-int64_t SysInfo::AmountOfTotalDiskSpace(const FilePath& path) {
+std::optional<int64_t> SysInfo::AmountOfTotalDiskSpace(const FilePath& path) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 
-  if (path.empty())
-    return -1;
+  if (path.empty()) {
+    return std::nullopt;
+  }
 
   // Return the soft-quota that applies to |path|, if one is configured.
   int64_t total_space = GetAmountOfTotalDiskSpaceAndVolumePath(path, nullptr);
-  if (total_space >= 0)
+  if (total_space >= 0) {
     return total_space;
+  }
 
   // Report the actual space in |path|'s filesystem.
-  if (GetDiskSpaceInfo(path, nullptr, &total_space))
+  if (GetDiskSpaceInfo(path, nullptr, &total_space)) {
+    CHECK(total_space >= 0, base::NotFatalUntil::M150);
     return total_space;
+  }
 
-  return -1;
+  return std::nullopt;
 }
 
 // static
@@ -165,10 +174,11 @@ void SysInfo::SetAmountOfTotalDiskSpace(const FilePath& path, int64_t bytes) {
   DCHECK(path.IsAbsolute());
   TotalDiskSpace& total_disk_space = GetTotalDiskSpace();
   AutoLock l(total_disk_space.lock);
-  if (bytes >= 0)
+  if (bytes >= 0) {
     total_disk_space.space_map[path] = bytes;
-  else
+  } else {
     total_disk_space.space_map.erase(path);
+  }
 }
 
 // static

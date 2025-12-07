@@ -1,3 +1,4 @@
+# META: timeout=long
 import pytest
 
 from webdriver.error import InvalidArgumentException
@@ -304,6 +305,28 @@ def test_key_action_value_invalid_type(session, key_action, value):
     assert_error(response, "invalid argument")
 
 
+@pytest.mark.parametrize("action_type", ["keyDown", "keyUp"])
+@pytest.mark.parametrize(
+    "value",
+    ["fa", "\u0BA8\u0BBFb", "\u0BA8\u0BBF\u0BA8", "\u1100\u1161\u11A8c"],
+)
+def test_key_action_invalid_value(session, action_type, value):
+    actions = [
+        {
+            "type": "key",
+            "id": "foo",
+            "actions": [
+                {
+                    "type": action_type,
+                    "value": value,
+                }
+            ],
+        }
+    ]
+    response = perform_actions(session, actions)
+    assert_error(response, "invalid argument")
+
+
 @pytest.mark.parametrize("value", ["", "pointerDowns", "pointerMoves", "pointerUps"])
 def test_pointer_action_subtype_invalid_value(session, value):
     if value == "pointerMoves":
@@ -339,28 +362,8 @@ def test_pointer_action_subtype_invalid_value(session, value):
 
 
 @pytest.mark.parametrize("coordinate", ["x", "y"])
-@pytest.mark.parametrize("value", [None, "foo", True, 0.1, [], {}])
+@pytest.mark.parametrize("value", [None, "foo", True, [], {}])
 def test_pointer_action_move_coordinate_invalid_type(session, coordinate, value):
-    actions = [
-        {
-            "type": "pointer",
-            "id": "foo",
-            "actions": [
-                {
-                    "type": "pointerMove",
-                    "x": value if coordinate == "x" else 0,
-                    "y": value if coordinate == "y" else 0,
-                }
-            ],
-        }
-    ]
-    response = perform_actions(session, actions)
-    assert_error(response, "invalid argument")
-
-
-@pytest.mark.parametrize("coordinate", ["x", "y"])
-@pytest.mark.parametrize("value", [MIN_INT - 1, MAX_INT + 1])
-def test_pointer_action_move_coordinate_invalid_value(session, coordinate, value):
     actions = [
         {
             "type": "pointer",

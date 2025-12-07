@@ -1,29 +1,24 @@
-# autogen.sh-generated files
-Makefile.in
-src/Makefile.in
-config.guess
-config.h.in
-config.sub
-configure
-depcomp
-install-sh
-ltmain.sh
-missing
+# CMake-generated files
+.ninja_deps
+.ninja_logs
+cmake/protobuf/*.cmake
+cmake_install.cmake
+CMakeCache.txt
+CTestTestfile.cmake
+CMakeFiles/*
+Testing/Temporary/*
 
-aclocal.m4
-m4/libtool.m4
-m4/ltoptions.m4
-m4/ltsugar.m4
-m4/ltversion.m4
-m4/lt~obsolete.m4
-autom4te.cache
+/core
+/protoc
+/test_plugin
+/tests
+/lite-test
+/protoc-*.*
 
 # downloaded files
 /gmock
 
 # in-tree configure-generated files
-Makefile
-src/Makefile
 /config.h
 config.log
 config.status
@@ -38,8 +33,8 @@ stamp-h1
 *.o
 *.lo
 *.la
-src/.libs
 *.so
+*.a
 
 .dirstamp
 
@@ -53,8 +48,6 @@ src/google/protobuf/util/**/*.pb.h
 *.pyc
 *.egg-info
 *_pb2.py
-!python/google/protobuf/compiler/plugin_pb2.py
-!python/google/protobuf/descriptor_pb2.py
 python/**/*.egg
 python/.eggs/
 python/.tox
@@ -62,11 +55,10 @@ python/build/
 python/docs/_build/
 
 src/js_embed
-src/protoc
-src/unittest_proto_middleman
 
 # vim generated
 *.swp
+*~
 
 # Generated test scaffolding
 src/no_warning_test.cc
@@ -181,9 +173,14 @@ ruby/tests/test_import_pb.rb
 ruby/tests/test_ruby_package_pb.rb
 ruby/tests/generated_code_proto2_pb.rb
 ruby/tests/multi_level_nesting_test_pb.rb
+ruby/tests/service_test_pb.rb
 ruby/tests/test_import_proto2_pb.rb
 ruby/tests/test_ruby_package_proto2_pb.rb
-ruby/Gemfile.lock
+ruby/tests/basic_test_features_pb.rb
+ruby/tests/generated_code_editions_pb.rb
+ruby/tests/repeated_field_test_pb.rb
+ruby/tests/stress_pb.rb
+ruby/tests/utf8_pb.rb
 ruby/compatibility_tests/v3.0.0/protoc
 ruby/compatibility_tests/v3.0.0/tests/generated_code_pb.rb
 ruby/compatibility_tests/v3.0.0/tests/test_import_pb.rb
@@ -217,3 +214,12 @@ BenchmarkDotNet.Artifacts/
 # Clangd uses these common ephemeral files
 .cache
 compile_commands.json
+
+# Ignore GHA NodeJS files
+.github/**/node_modules/
+
+# Ignore Bzlmod lock file until it is more stable
+MODULE.bazel.lock
+
+# Chromium: this directory contains some large files that we don't use.
+compatibility/

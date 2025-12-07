@@ -4,13 +4,18 @@
 
 package org.chromium.components.webapps;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -25,13 +30,16 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * chooses the "Add to Home screen" option from the app menu.
  */
 @JNINamespace("webapps")
+@NullMarked
 public class AddToHomescreenCoordinator {
-    private Context mActivityContext;
-    private ModalDialogManager mModalDialogManager;
-    private PropertyModel mModel;
-    private WindowAndroid mWindowAndroid;
+    private final Context mActivityContext;
+    private final ModalDialogManager mModalDialogManager;
+    private @Nullable PropertyModel mModel;
+    private final WindowAndroid mWindowAndroid;
     // May be null during tests.
-    private WebContents mWebContents;
+    private final WebContents mWebContents;
+
+    private long mNativeCoordinator;
 
     @VisibleForTesting
     public AddToHomescreenCoordinator(
@@ -45,31 +53,27 @@ public class AddToHomescreenCoordinator {
         mWebContents = webContents;
     }
 
-    /**
-     * Starts and shows the add-to-homescreen UI component for the given {@link WebContents}.
-     *
-     * @return whether add-to-homescreen UI was started successfully.
-     */
+    /** Starts and shows the add-to-homescreen UI component for the given {@link WebContents}. */
     public static void showForAppMenu(
             Context activityContext,
             WindowAndroid windowAndroid,
             ModalDialogManager modalDialogManager,
             WebContents webContents,
-            int menuItemType,
-            boolean universalInstall) {
+            int menuItemType) {
         new AddToHomescreenCoordinator(
                         webContents, activityContext, windowAndroid, modalDialogManager)
-                .showForAppMenu(menuItemType, universalInstall);
+                .showForAppMenu(menuItemType);
     }
 
     @VisibleForTesting
-    public boolean showForAppMenu(int type, boolean universalInstall) {
+    public boolean showForAppMenu(int type) {
         // Don't start if there is no visible URL to add.
         if (mWebContents == null || mWebContents.getVisibleUrl().isEmpty()) {
             return false;
         }
 
-        buildMediatorAndShowDialog().startForAppMenu(mWebContents, type, universalInstall);
+        mNativeCoordinator =
+                AddToHomescreenCoordinatorJni.get().startForAppMenu(this, mWebContents, type);
         return true;
     }
 
@@ -93,29 +97,35 @@ public class AddToHomescreenCoordinator {
         AddToHomescreenCoordinator coordinator =
                 new AddToHomescreenCoordinator(
                         webContents,
-                        windowAndroid.getContext().get(),
+                        assertNonNull(windowAndroid.getContext().get()),
                         windowAndroid,
                         modalDialogManager);
-        return coordinator.buildMediatorAndShowDialog().getNativeMediator();
+        return coordinator.buildMediatorAndShowDialog();
     }
 
     /**
-     * Constructs all MVC components. {@link AddToHomescreenDialogView} is shown as soon as it's
-     * constructed.
+     * Constructs the mediator and the view components. {@link AddToHomescreenDialogView} is shown
+     * as soon as it's constructed.
      *
      * @return The instance of {@link AddToHomescreenMediator} that was constructed.
      */
-    private AddToHomescreenMediator buildMediatorAndShowDialog() {
+    @CalledByNative
+    private long buildMediatorAndShowDialog() {
         mModel = new PropertyModel.Builder(AddToHomescreenProperties.ALL_KEYS).build();
         AddToHomescreenMediator addToHomescreenMediator =
-                new AddToHomescreenMediator(mModel, mWindowAndroid);
+                new AddToHomescreenMediator(
+                        mModel, mWindowAndroid, mWebContents, this::onFlowCompleted);
         PropertyModelChangeProcessor.create(
-                mModel,
-                initView(
-                        AppBannerManager.getHomescreenLanguageOption(mWebContents),
-                        addToHomescreenMediator),
-                AddToHomescreenViewBinder::bind);
-        return addToHomescreenMediator;
+                mModel, initView(addToHomescreenMediator), AddToHomescreenViewBinder::bind);
+        return addToHomescreenMediator.getNativeMediator();
+    }
+
+    @CalledByNative
+    private void onFlowCompleted() {
+        if (mNativeCoordinator != 0) {
+            AddToHomescreenCoordinatorJni.get().destroy(mNativeCoordinator);
+            mNativeCoordinator = 0;
+        }
     }
 
     /**
@@ -123,11 +133,8 @@ public class AddToHomescreenCoordinator {
      * easier testing.
      */
     @VisibleForTesting
-    protected AddToHomescreenDialogView initView(
-            AppBannerManager.InstallStringPair installStrings,
-            AddToHomescreenViewDelegate delegate) {
-        return new AddToHomescreenDialogView(
-                mActivityContext, mModalDialogManager, installStrings, delegate);
+    protected AddToHomescreenDialogView initView(AddToHomescreenViewDelegate delegate) {
+        return new AddToHomescreenDialogView(mActivityContext, mModalDialogManager, delegate);
     }
 
     protected ModalDialogManager getModalDialogManagerForTests() {
@@ -138,7 +145,15 @@ public class AddToHomescreenCoordinator {
         return mActivityContext;
     }
 
-    public PropertyModel getPropertyModelForTesting() {
+    public @Nullable PropertyModel getPropertyModelForTesting() {
         return mModel;
+    }
+
+    @NativeMethods
+    interface Natives {
+        long startForAppMenu(
+                AddToHomescreenCoordinator self, WebContents webContents, int menuItemType);
+
+        void destroy(long nativeAddToHomescreenCoordinator);
     }
 }

@@ -33,7 +33,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -43,7 +44,6 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
-import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.base.TestActivity;
@@ -54,6 +54,8 @@ import org.chromium.ui.base.WindowAndroid;
 @Batch(Batch.UNIT_TESTS)
 @Config(manifest = Config.NONE)
 public class CustomTabBottomBarDelegateUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
@@ -61,7 +63,6 @@ public class CustomTabBottomBarDelegateUnitTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private BrowserControlsSizer mBrowserControlsSizer;
     @Mock private CustomTabNightModeStateController mNightModeStateController;
-    @Mock private SystemNightModeMonitor mSystemNightModeMonitor;
     @Mock private CustomTabActivityTabProvider mTabProvider;
     @Mock private CustomTabCompositorContentInitializer mCompositorContentInitializer;
     @Mock private CustomTabBottomBarView mBottomBarView;
@@ -79,7 +80,6 @@ public class CustomTabBottomBarDelegateUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         when(mIntent.getParcelableExtra(CustomTabsIntent.EXTRA_REMOTEVIEWS))
                 .thenReturn(mRemoteViews);
@@ -101,7 +101,6 @@ public class CustomTabBottomBarDelegateUnitTest {
                         mIntentDataProvider,
                         mBrowserControlsSizer,
                         mNightModeStateController,
-                        mSystemNightModeMonitor,
                         mTabProvider,
                         mCompositorContentInitializer);
         when(mBottomBarView.findViewById(eq(R.id.bottombar_shadow))).thenReturn(mShadowView);
@@ -162,7 +161,7 @@ public class CustomTabBottomBarDelegateUnitTest {
         var description = "description";
         CustomButtonParams customButtonParams = Mockito.mock(CustomButtonParams.class);
         when(customButtonParams.getId()).thenReturn(1);
-        when(customButtonParams.getIcon(any())).thenReturn(icon);
+        when(customButtonParams.getIcon(any(), any())).thenReturn(icon);
         when(customButtonParams.getDescription()).thenReturn(description);
 
         mBottomBarDelegate.updateBottomBarButtons(customButtonParams);
@@ -178,7 +177,7 @@ public class CustomTabBottomBarDelegateUnitTest {
         var description = "description";
         CustomButtonParams customButtonParams = Mockito.mock(CustomButtonParams.class);
         when(customButtonParams.getId()).thenReturn(1);
-        when(customButtonParams.getIcon(any())).thenReturn(icon);
+        when(customButtonParams.getIcon(any(), any())).thenReturn(icon);
         when(customButtonParams.getDescription()).thenReturn(description);
         CustomTabBottomBarDelegate.CustomButtonsUpdater updater =
                 Mockito.mock(CustomTabBottomBarDelegate.CustomButtonsUpdater.class);
@@ -198,9 +197,11 @@ public class CustomTabBottomBarDelegateUnitTest {
         mBottomBarDelegate.onControlsOffsetChanged(
                 /* topOffset= */ 0,
                 /* topControlsMinHeightOffset= */ 0,
+                /* topControlsMinHeightChanged= */ false,
                 /* bottomOffset= */ 0,
                 /* bottomControlsMinHeightOffset= */ 0,
-                /* needsAnimate= */ false,
+                /* bottomControlsMinHeightChanged= */ false,
+                /* requestNewFrame= */ false,
                 /* isVisibilityForced= */ false);
         verify(mBottomBarView).setTranslationY(-100);
     }

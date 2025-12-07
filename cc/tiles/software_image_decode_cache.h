@@ -30,8 +30,6 @@ class CC_EXPORT SoftwareImageDecodeCache
   using CacheKey = Utils::CacheKey;
   using CacheKeyHash = Utils::CacheKeyHash;
 
-  enum class DecodeTaskType { USE_IN_RASTER_TASKS, USE_OUT_OF_RASTER_TASKS };
-
   // Identifies whether a decode task performed decode work, or was fulfilled /
   // failed trivially.
   enum class TaskProcessingResult { kFullDecode, kLockOnly, kCancelled };
@@ -48,16 +46,16 @@ class CC_EXPORT SoftwareImageDecodeCache
                                    const TracingInfo& tracing_info) override;
   TaskResult GetOutOfRasterDecodeTaskForImageAndRef(
       ClientId client_id,
-      const DrawImage& image) override;
+      const DrawImage& image,
+      bool speculative = false) override;
   void UnrefImage(const DrawImage& image) override;
   DecodedDrawImage GetDecodedImageForDraw(const DrawImage& image) override;
   void DrawWithImageFinished(const DrawImage& image,
                              const DecodedDrawImage& decoded_image) override;
   void ReduceCacheUsage() override;
   // Software doesn't keep outstanding images pinned, so this is a no-op.
-  void SetShouldAggressivelyFreeResources(bool aggressively_free_resources,
-                                          bool context_lock_acquired) override {
-  }
+  void SetShouldAggressivelyFreeResources(
+      bool aggressively_free_resources) override {}
   void ClearCache() override;
   size_t GetMaximumMemoryLimitBytes() const override;
   bool UseCacheForDrawImage(const DrawImage& image) const override;
@@ -68,10 +66,9 @@ class CC_EXPORT SoftwareImageDecodeCache
   // image decode task from a worker thread.
   TaskProcessingResult DecodeImageInTask(const CacheKey& key,
                                          const PaintImage& paint_image,
-                                         DecodeTaskType task_type);
+                                         TaskType task_type);
 
-  void OnImageDecodeTaskCompleted(const CacheKey& key,
-                                  DecodeTaskType task_type);
+  void OnImageDecodeTaskCompleted(const CacheKey& key, TaskType task_type);
 
   // MemoryDumpProvider overrides.
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
@@ -120,7 +117,8 @@ class CC_EXPORT SoftwareImageDecodeCache
   // if it was public (ie, all of the locks need to be properly acquired).
   TaskResult GetTaskForImageAndRefInternal(const DrawImage& image,
                                            const TracingInfo& tracing_info,
-                                           DecodeTaskType type)
+                                           TaskType type,
+                                           bool speculative)
       LOCKS_EXCLUDED(lock_);
 
   CacheEntry* AddCacheEntry(const CacheKey& key)

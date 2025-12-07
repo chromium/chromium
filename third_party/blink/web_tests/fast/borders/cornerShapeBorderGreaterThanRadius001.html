@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<style>
+  .test {
+    font-size: 14px;
+    margin: 30px;
+    display: inline-block;
+    vertical-align: top;
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(in srgb, yellow, red);
+    corner-shape: superellipse(2);
+    border: 10px solid blue;
+    border-radius: 1%;
+    outline: 8px solid green;
+  }
+  </style>
+  <div class="test"></div>
+  <div class="test" style="corner-shape: superellipse(1.001);"></div>
+  <div class="test" style="corner-shape: superellipse(16);"></div>

@@ -8,10 +8,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <map>
+#include <optional>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
@@ -20,11 +19,14 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
-#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/media/multi_buffer.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl_hash.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
-#include "url/gurl.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -70,18 +72,24 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
  public:
   // Keep in sync with WebMediaPlayer::CorsMode.
   enum CorsMode { CORS_UNSPECIFIED, CORS_ANONYMOUS, CORS_USE_CREDENTIALS };
-  using KeyType = std::pair<GURL, CorsMode>;
+  enum CacheMode { kNormal, kCacheDisabled };
+  using KeyType = std::pair<KURL, CorsMode>;
 
+  // `url_index` is a WeakPtr since while UrlData objects are created by the
+  // UrlIndex they are not owned by the UrlIndex until after the network load
+  // starts successfully. If the UrlIndex dies before that happens the UrlData
+  // is left with a dangling pointer to the index.
   UrlData(base::PassKey<UrlIndex>,
-          const GURL& url,
+          const KURL& url,
           CorsMode cors_mode,
-          UrlIndex* url_index,
+          base::WeakPtr<UrlIndex> url_index,
+          CacheMode cache_lookup_mode,
           scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   UrlData(const UrlData&) = delete;
   UrlData& operator=(const UrlData&) = delete;
 
   // Accessors
-  const GURL& url() const { return url_; }
+  const KURL& url() const { return url_; }
 
   // Cross-origin access mode
   CorsMode cors_mode() const { return cors_mode_; }
@@ -100,6 +108,10 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
   // True if we found a reason why this URL won't be stored in the
   // HTTP disk cache.
   bool cacheable() const { return cacheable_; }
+
+  // True if this UrlData and any it might redirect to should bypass cache
+  // lookups, regardless of disk cache or response status.
+  CacheMode cache_lookup_mode() const { return cache_lookup_mode_; }
 
   // Last used time.
   base::Time last_used() const { return last_used_; }
@@ -125,7 +137,7 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
   bool FullyCached();
 
   // Returns our url_index.
-  UrlIndex* url_index() const { return url_index_; }
+  base::WeakPtr<UrlIndex> url_index() const { return url_index_; }
 
   // This must be called after the response arrives.
   bool is_cors_cross_origin() const { return is_cors_cross_origin_; }
@@ -139,7 +151,7 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
   // If the multibuffer is empty, the data origin is set from
   // |origin| and returns true. If not, it compares |origin|
   // to the previous origin and returns whether they match or not.
-  bool ValidateDataOrigin(const GURL& origin);
+  bool ValidateDataOrigin(const KURL& origin);
 
   // Setters.
   void set_length(int64_t length);
@@ -180,9 +192,10 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
   int64_t BytesReadFromCache() const { return bytes_read_from_cache_; }
 
  protected:
-  UrlData(const GURL& url,
+  UrlData(const KURL& url,
           CorsMode cors_mode,
-          UrlIndex* url_index,
+          base::WeakPtr<UrlIndex> url_index,
+          CacheMode cache_lookup_mode,
           scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   virtual ~UrlData();
 
@@ -196,12 +209,11 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
 
   // Url we represent, note that there may be multiple UrlData for
   // the same url.
-  const GURL url_ ALLOW_DISCOURAGED_TYPE("TODO(crbug.com/40760651)");
+  const KURL url_;
 
   // Origin of the data, should only be different from the
   // url_.DeprecatedGetOriginAsURL() when service workers are involved.
-  GURL data_origin_ ALLOW_DISCOURAGED_TYPE("TODO(crbug.com/40760651)");
-  bool have_data_origin_;
+  std::optional<KURL> data_origin_;
 
   // Cross-origin access mode.
   const CorsMode cors_mode_;
@@ -213,7 +225,7 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
   // Mime type category (stashed for UMA / metrics).
   std::string mime_type_;
 
-  const raw_ptr<UrlIndex> url_index_;
+  const base::WeakPtr<UrlIndex> url_index_;
 
   // Length of resource this url points to. (in bytes)
   int64_t length_;
@@ -227,6 +239,11 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
   // Set to false if we have reason to believe the chrome disk cache
   // will not cache this url.
   bool cacheable_;
+
+  // While `cacheable_` determines whether this UrlData's underlying data should
+  // be stored in the cache, `cache_lookup_mode_` determines whether this
+  // UrlData should use existing underlying cached data.
+  CacheMode cache_lookup_mode_;
 
   // https://html.spec.whatwg.org/#cors-cross-origin
   bool is_cors_cross_origin_ = false;
@@ -249,23 +266,20 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
   std::string etag_;
 
   ResourceMultiBuffer multibuffer_;
-  std::vector<RedirectCB> redirect_callbacks_
-      ALLOW_DISCOURAGED_TYPE("TODO(crbug.com/40760651)");
+  Vector<RedirectCB> redirect_callbacks_;
 
   THREAD_CHECKER(thread_checker_);
 };
 
 // The UrlIndex lets you look up UrlData instances by url.
-class PLATFORM_EXPORT UrlIndex {
+class PLATFORM_EXPORT UrlIndex : public base::MemoryPressureListener {
  public:
   UrlIndex(ResourceFetchContext* fetch_context,
            scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   UrlIndex(ResourceFetchContext* fetch_context,
            int block_shift,
            scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-  virtual ~UrlIndex();
-
-  enum CacheMode { kNormal, kCacheDisabled };
+  ~UrlIndex() override;
 
   // Look up an UrlData in the index and return it. If none is found,
   // create a new one. Note that newly created UrlData entries are NOT
@@ -274,9 +288,9 @@ class PLATFORM_EXPORT UrlIndex {
   // ranges and it's last modified time.
   // Because the returned UrlData has a raw reference to |this|, it must be
   // released before |this| is destroyed.
-  scoped_refptr<UrlData> GetByUrl(const GURL& gurl,
+  scoped_refptr<UrlData> GetByUrl(const KURL& url,
                                   UrlData::CorsMode cors_mode,
-                                  CacheMode cache_mode);
+                                  UrlData::CacheMode cache_mode);
 
   // Add the given UrlData to the index if possible. If a better UrlData
   // is already present in the index, return it instead. (If not, we just
@@ -309,23 +323,29 @@ class PLATFORM_EXPORT UrlIndex {
   void RemoveUrlData(const scoped_refptr<UrlData>& url_data);
 
   // Virtual so we can override it in tests.
-  virtual scoped_refptr<UrlData> NewUrlData(const GURL& url,
-                                            UrlData::CorsMode cors_mode);
+  virtual scoped_refptr<UrlData> NewUrlData(
+      const KURL& url,
+      UrlData::CorsMode cors_mode,
+      UrlData::CacheMode cache_lookup_mode);
 
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+  void OnMemoryPressure(base::MemoryPressureLevel) override;
 
   raw_ptr<ResourceFetchContext> fetch_context_;
-  using UrlDataMap = std::map<UrlData::KeyType, scoped_refptr<UrlData>>;
-  UrlDataMap indexed_data_ ALLOW_DISCOURAGED_TYPE("TODO(crbug.com/40760651)");
+  using UrlDataMap = HashMap<UrlData::KeyType, scoped_refptr<UrlData>>;
+  UrlDataMap indexed_data_;
   scoped_refptr<MultiBuffer::GlobalLRU> lru_;
 
   // log2 of block size in multibuffer cache. Defaults to kBlockSizeShift.
   // Currently only changed for testing purposes.
   const int block_shift_;
 
-  base::MemoryPressureListener memory_pressure_listener_;
+  // Must be async, because it runs on the renderer's main thread, which is not
+  // the process's main thread in --single-process mode.
+  base::AsyncMemoryPressureListenerRegistration
+      memory_pressure_listener_registration_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+
+  base::WeakPtrFactory<UrlIndex> weak_factory_{this};
 };
 
 }  // namespace blink

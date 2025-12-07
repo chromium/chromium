@@ -17,10 +17,9 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/key_upload_request.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/util.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_types.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/metrics_util.h"
-#include "components/enterprise/client_certificates/core/cloud_management_delegate.h"
-#include "components/policy/proto/device_management_backend.pb.h"
 #include "url/gurl.h"
 
 using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
@@ -28,8 +27,6 @@ using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
 namespace enterprise_connectors {
 
 namespace {
-
-constexpr int kMaxDMTokenLength = 4096;
 
 bool IsValidKey(const SigningKeyPair* key_pair) {
   return key_pair && !key_pair->is_empty();
@@ -47,17 +44,50 @@ KeyRotationManagerImpl::KeyRotationManagerImpl(
 }
 
 KeyRotationManagerImpl::KeyRotationManagerImpl(
-    std::unique_ptr<enterprise_attestation::CloudManagementDelegate>
-        cloud_management_delegate,
     std::unique_ptr<KeyPersistenceDelegate> persistence_delegate)
-    : cloud_management_delegate_(std::move(cloud_management_delegate)),
-      persistence_delegate_(std::move(persistence_delegate)) {
+    : persistence_delegate_(std::move(persistence_delegate)) {
   CHECK(IsDTCKeyRotationUploadedBySharedAPI());
-  CHECK(cloud_management_delegate_);
   CHECK(persistence_delegate_);
 }
 
 KeyRotationManagerImpl::~KeyRotationManagerImpl() = default;
+
+base::expected<const enterprise_management::DeviceManagementRequest,
+               KeyRotationResult>
+KeyRotationManagerImpl::CreateUploadKeyRequest() {
+  // Mac always permits rotation. We can skip checking for permissions.
+  auto new_key_pair = persistence_delegate_->CreateKeyPair();
+  if (!IsValidKey(new_key_pair.get())) {
+    // TODO(b:254072094): We should rollback the storage when failing after
+    // after the "Create key" step as, on Mac, storage is being updated in
+    // this action.
+    RecordRotationStatus(/*is_rotation=*/false,
+                         RotationStatus::FAILURE_CANNOT_GENERATE_NEW_KEY);
+    SYSLOG(ERROR) << "Device trust key creation failed. Could not generate a "
+                     "new signing key.";
+    return base::unexpected(KeyRotationResult::kFailed);
+  }
+
+  auto request = KeyUploadRequest::BuildUploadPublicKeyRequest(*new_key_pair);
+
+  if (!request.has_value()) {
+    RecordRotationStatus(/*is_rotation=*/false,
+                         RotationStatus::FAILURE_CANNOT_BUILD_REQUEST);
+    SYSLOG(ERROR) << "Device trust key rotation failed. Could not build the "
+                     "upload key request.";
+    return base::unexpected(KeyRotationResult::kFailed);
+  }
+
+  if (!persistence_delegate_->StoreKeyPair(
+          new_key_pair->trust_level(), new_key_pair->key()->GetWrappedKey())) {
+    RecordRotationStatus(/*is_rotation=*/false,
+                         RotationStatus::FAILURE_CANNOT_STORE_KEY);
+    SYSLOG(ERROR) << "Device trust key creation failed. Could not write to "
+                     "signing key storage.";
+    return base::unexpected(KeyRotationResult::kFailed);
+  }
+  return request.value();
+}
 
 void KeyRotationManagerImpl::Rotate(
     const GURL& dm_server_url,
@@ -78,51 +108,27 @@ void KeyRotationManagerImpl::Rotate(
     return;
   }
 
-  if (IsDTCKeyRotationUploadedBySharedAPI()) {
-    CHECK(cloud_management_delegate_);
+  // DM Server params are not expected when the feature is enabled.
+  if (!dm_server_url.is_valid()) {
+    RecordRotationStatus(is_rotation,
+                         RotationStatus::FAILURE_INVALID_DMSERVER_URL);
+    SYSLOG(ERROR) << "DMServer URL invalid";
+    std::move(result_callback).Run(KeyRotationResult::kFailed);
+    return;
+  }
 
-    if (!cloud_management_delegate_->GetDMToken().has_value() ||
-        cloud_management_delegate_->GetDMToken().value().empty()) {
-      RecordRotationStatus(is_rotation,
-                           RotationStatus::FAILURE_INVALID_DMTOKEN);
-      SYSLOG(ERROR) << "DMToken empty";
-      std::move(result_callback).Run(KeyRotationResult::kFailed);
-      return;
-    }
+  if (dm_token.size() > kMaxDMTokenLength) {
+    RecordRotationStatus(is_rotation, RotationStatus::FAILURE_INVALID_DMTOKEN);
+    SYSLOG(ERROR) << "DMToken length out of bounds";
+    std::move(result_callback).Run(KeyRotationResult::kFailed);
+    return;
+  }
 
-    if (cloud_management_delegate_->GetDMToken().value().size() >
-        kMaxDMTokenLength) {
-      RecordRotationStatus(is_rotation,
-                           RotationStatus::FAILURE_INVALID_DMTOKEN);
-      SYSLOG(ERROR) << "DMToken length out of bounds";
-      std::move(result_callback).Run(KeyRotationResult::kFailed);
-      return;
-    }
-  } else {
-    // DM Server params are not expected when the feature is enabled.
-    if (!dm_server_url.is_valid()) {
-      RecordRotationStatus(is_rotation,
-                           RotationStatus::FAILURE_INVALID_DMSERVER_URL);
-      SYSLOG(ERROR) << "DMServer URL invalid";
-      std::move(result_callback).Run(KeyRotationResult::kFailed);
-      return;
-    }
-
-    if (dm_token.size() > kMaxDMTokenLength) {
-      RecordRotationStatus(is_rotation,
-                           RotationStatus::FAILURE_INVALID_DMTOKEN);
-      SYSLOG(ERROR) << "DMToken length out of bounds";
-      std::move(result_callback).Run(KeyRotationResult::kFailed);
-      return;
-    }
-
-    if (dm_token.empty()) {
-      RecordRotationStatus(is_rotation,
-                           RotationStatus::FAILURE_INVALID_DMTOKEN);
-      SYSLOG(ERROR) << "DMToken empty";
-      std::move(result_callback).Run(KeyRotationResult::kFailed);
-      return;
-    }
+  if (dm_token.empty()) {
+    RecordRotationStatus(is_rotation, RotationStatus::FAILURE_INVALID_DMTOKEN);
+    SYSLOG(ERROR) << "DMToken empty";
+    std::move(result_callback).Run(KeyRotationResult::kFailed);
+    return;
   }
 
   if (!persistence_delegate_->CheckRotationPermissions()) {
@@ -136,53 +142,13 @@ void KeyRotationManagerImpl::Rotate(
   auto new_key_pair = persistence_delegate_->CreateKeyPair();
   if (!IsValidKey(new_key_pair.get())) {
     // TODO(b:254072094): We should rollback the storage when failing after
-    // after the "Create key" step as, on Mac, storage is being updated in this
-    // action.
+    // after the "Create key" step as, on Mac, storage is being updated in
+    // this action.
     RecordRotationStatus(is_rotation,
                          RotationStatus::FAILURE_CANNOT_GENERATE_NEW_KEY);
     SYSLOG(ERROR) << "Device trust key rotation failed. Could not generate a "
                      "new signing key.";
     std::move(result_callback).Run(KeyRotationResult::kFailed);
-    return;
-  }
-
-  if (IsDTCKeyRotationUploadedBySharedAPI()) {
-    CHECK(cloud_management_delegate_);
-    std::optional<const enterprise_management::DeviceManagementRequest>
-        request =
-            is_rotation
-                ? KeyUploadRequest::BuildUploadPublicKeyRequest(
-                      *new_key_pair, old_key_pair.get(), nonce)
-                : KeyUploadRequest::BuildUploadPublicKeyRequest(*new_key_pair);
-
-    if (!request) {
-      RecordRotationStatus(is_rotation,
-                           RotationStatus::FAILURE_CANNOT_BUILD_REQUEST);
-      SYSLOG(ERROR) << "Device trust key rotation failed. Could not build the "
-                       "upload key request.";
-      std::move(result_callback).Run(KeyRotationResult::kFailed);
-      return;
-    }
-
-    if (!persistence_delegate_->StoreKeyPair(
-            new_key_pair->trust_level(),
-            new_key_pair->key()->GetWrappedKey())) {
-      RecordRotationStatus(is_rotation,
-                           RotationStatus::FAILURE_CANNOT_STORE_KEY);
-      SYSLOG(ERROR) << "Device trust key rotation failed. Could not write to "
-                       "signing key storage.";
-      std::move(result_callback).Run(KeyRotationResult::kFailed);
-      return;
-    }
-
-    // Any attempt to reuse a nonce will result in an INVALID_SIGNATURE error
-    // being returned by the server.
-    cloud_management_delegate_->UploadBrowserPublicKey(
-        std::move(request.value()),
-        base::BindOnce(&KeyRotationManagerImpl::OnUploadPublicKeyCompleted,
-                       weak_factory_.GetWeakPtr(), std::move(old_key_pair),
-                       std::move(result_callback)));
-
     return;
   }
 
@@ -263,16 +229,10 @@ void KeyRotationManagerImpl::OnDmServerResponse(
     std::move(result_callback).Run(KeyRotationResult::kFailed);
     return;
   }
+
   persistence_delegate_->CleanupTemporaryKeyData();
   RecordRotationStatus(is_rotation, RotationStatus::SUCCESS);
   std::move(result_callback).Run(KeyRotationResult::kSucceeded);
-}
-
-void KeyRotationManagerImpl::OnUploadPublicKeyCompleted(
-    scoped_refptr<SigningKeyPair> old_key_pair,
-    base::OnceCallback<void(KeyRotationResult)> callback,
-    const policy::DMServerJobResult result) {
-  OnDmServerResponse(old_key_pair, std::move(callback), result.response_code);
 }
 
 }  // namespace enterprise_connectors

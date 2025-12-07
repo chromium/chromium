@@ -32,7 +32,7 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) RefCountedUnexportableSigningKey
   // `key` must be non-null.
   explicit RefCountedUnexportableSigningKey(
       std::unique_ptr<crypto::UnexportableSigningKey> key,
-      const UnexportableKeyId& key_id);
+      UnexportableKeyId key_id);
 
   RefCountedUnexportableSigningKey(const RefCountedUnexportableSigningKey&) =
       delete;
@@ -40,7 +40,7 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) RefCountedUnexportableSigningKey
       const RefCountedUnexportableSigningKey&) = delete;
 
   crypto::UnexportableSigningKey& key() const { return *key_; }
-  const UnexportableKeyId& id() const { return id_; }
+  UnexportableKeyId id() const { return id_; }
 
  private:
   friend class base::RefCountedThreadSafe<RefCountedUnexportableSigningKey>;

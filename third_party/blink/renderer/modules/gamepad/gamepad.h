@@ -28,6 +28,7 @@
 
 #include "base/time/time.h"
 #include "device/gamepad/public/cpp/gamepad.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gamepad_mapping_type.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/modules/gamepad/gamepad_button.h"
 #include "third_party/blink/renderer/modules/gamepad/gamepad_haptic_actuator.h"
@@ -51,8 +52,7 @@ class MODULES_EXPORT Gamepad final : public ScriptWrappable {
         const Gamepad&) = 0;
     virtual void SetTouchEvents(const Gamepad&,
                                 GamepadTouchVector&,
-                                unsigned count,
-                                const device::GamepadTouch* data) {}
+                                base::span<const device::GamepadTouch> data) {}
 
     virtual ~Client() = default;
   };
@@ -78,15 +78,15 @@ class MODULES_EXPORT Gamepad final : public ScriptWrappable {
 
   DOMHighResTimeStamp timestamp() const { return timestamp_; }
 
-  const String& mapping() const { return mapping_; }
+  V8GamepadMappingType mapping() const { return mapping_; }
   void SetMapping(device::GamepadMapping mapping);
 
   const DoubleVector& axes();
-  void SetAxes(unsigned count, const double* data);
+  void SetAxes(base::span<const double> data);
   bool isAxisDataDirty() const { return is_axis_data_dirty_; }
 
   const GamepadButtonVector& buttons();
-  void SetButtons(unsigned count, const device::GamepadButton* data);
+  void SetButtons(base::span<const device::GamepadButton> data);
   bool isButtonDataDirty() const { return is_button_data_dirty_; }
 
   GamepadHapticActuator* vibrationActuator() const;
@@ -97,7 +97,7 @@ class MODULES_EXPORT Gamepad final : public ScriptWrappable {
   }
 
   const GamepadTouchVector* touchEvents();
-  void SetTouchEvents(unsigned count, const device::GamepadTouch* data);
+  void SetTouchEvents(base::span<const device::GamepadTouch> data);
 
   bool HasTouchEvents() const { return has_touch_events_; }
   bool IsTouchDataDirty() const { return is_touch_data_dirty_; }
@@ -123,7 +123,8 @@ class MODULES_EXPORT Gamepad final : public ScriptWrappable {
   DOMHighResTimeStamp timestamp_;
 
   // A string indicating whether the standard mapping is in use.
-  String mapping_;
+  V8GamepadMappingType mapping_ =
+      V8GamepadMappingType(V8GamepadMappingType::Enum::k);
 
   // Snapshot of the axis state.
   DoubleVector axes_;

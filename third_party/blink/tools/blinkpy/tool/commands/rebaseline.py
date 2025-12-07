@@ -64,13 +64,21 @@ from blinkpy.tool.commands.command import (
     check_file_option,
 )
 from blinkpy.tool.grammar import pluralize
+from blinkpy.web_tests import command_line
 from blinkpy.web_tests.models import test_failures, testharness_results
 from blinkpy.web_tests.models.test_expectations import SystemConfigurationEditor, TestExpectations
 from blinkpy.web_tests.models.typ_types import RESULT_TAGS, ResultType
-from blinkpy.web_tests.port import factory
 from blinkpy.web_tests.port.base import Port
 
 _log = logging.getLogger(__name__)
+
+
+def parse_suffixes(option, opt_str, value, parser):
+    suffixes = set(value.split(','))
+    if invalid_suffixes := suffixes - set(get_args(BaselineSuffix)):
+        raise optparse.OptionValueError('invalid suffixes: ' +
+                                        ', '.join(sorted(invalid_suffixes)))
+    parser.values.suffixes = sorted(suffixes)
 
 
 class AbstractRebaseliningCommand(Command):
@@ -78,8 +86,8 @@ class AbstractRebaseliningCommand(Command):
     # pylint: disable=abstract-method; not overriding `execute()`
 
     # Generic option groups (list of options):
-    platform_options = factory.platform_options(use_globs=True)
-    wpt_options = factory.wpt_options()
+    platform_options = command_line.platform_options(use_globs=True)
+    wpt_options = command_line.wpt_options()
 
     no_optimize_option = optparse.make_option(
         '--no-optimize',
@@ -96,6 +104,13 @@ class AbstractRebaseliningCommand(Command):
         default=False,
         help=('Dry run mode. List actions that would be performed '
               'but do not actually write to disk.'))
+    clobber_os_version_option = optparse.make_option(
+        '--clobber-os-version',
+        action='store_true',
+        default=False,
+        help=('Write baselines directly to `platform/$os/` instead of '
+              '`platform/$os-$version/` by assuming the tests are OS version-'
+              'agnostic.'))
     results_directory_option = optparse.make_option(
         '--results-directory',
         action='callback',
@@ -104,8 +119,10 @@ class AbstractRebaseliningCommand(Command):
         help='Local results directory to use.')
     suffixes_option = optparse.make_option(
         '--suffixes',
-        default=','.join(get_args(BaselineSuffix)),
-        action='store',
+        action='callback',
+        callback=parse_suffixes,
+        type='string',
+        default=get_args(BaselineSuffix),
         help='Comma-separated-list of file types to rebaseline.')
     builder_option = optparse.make_option(
         '--builder',
@@ -163,28 +180,6 @@ class AbstractRebaseliningCommand(Command):
         # output_filename takes extensions starting with '.'.
         return self._host_port.output_filename(
             test_name, test_failures.FILENAME_SUFFIX_EXPECTED, '.' + suffix)
-
-    def _test_can_have_suffix(self, test_name: str,
-                              suffix: BaselineSuffix) -> bool:
-        wpt_type = self._get_wpt_type(test_name)
-        # Only legacy reftests can dump text output, not WPT reftests.
-        if wpt_type in {'testharness', 'wdspec'} and suffix == 'txt':
-            return True
-        # Some manual tests are run as pixel tests (crbug.com/1114920), so
-        # `png` is allowed in that case.
-        elif wpt_type == 'manual' and suffix == 'png':
-            return True
-        elif self._host_port.reference_files(test_name) and suffix == 'png':
-            return False
-        # No other WPT-suffix combinations are allowed.
-        return not wpt_type
-
-    def _get_wpt_type(self, test_name: str) -> Optional[str]:
-        wpt_dir, url_from_wpt_dir = self._host_port.split_wpt_dir(test_name)
-        if not wpt_dir:
-            return None  # Not a WPT.
-        manifest = self._host_port.wpt_manifest(wpt_dir)
-        return manifest.get_test_type(url_from_wpt_dir)
 
 
 class ChangeSet(object):
@@ -351,6 +346,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         self.baseline_cache_stats = BaselineCacheStatistics()
         self._total_commands = self._completed_commands = 0
         self._rebaseline_failures = {}
+        self._clobber_os_version = False
 
     def _release_builders(self):
         """Returns a list of builder names for continuous release builders.
@@ -427,13 +423,13 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         return build_steps
 
     def _copy_baselines(self, groups: Dict[str, TestBaselineSet]) -> None:
+        if self._clobber_os_version:
+            return
         commands = []
         for base_test in sorted(groups):
             group = groups[base_test]
             for suffix in self._suffixes_for_group(group):
-                if self._test_can_have_suffix(base_test, suffix):
-                    commands.append(
-                        ('copy_baselines', base_test, suffix, group))
+                commands.append(('copy_baselines', base_test, suffix, group))
         self._run_in_message_pool(self._worker_factory, commands)
 
     def _group_tests_by_base(
@@ -552,7 +548,9 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             pool.run(commands)
 
     def _worker_factory(self, worker_connection):
-        return Worker(worker_connection, dry_run=self._dry_run)
+        return Worker(worker_connection,
+                      dry_run=self._dry_run,
+                      clobber_os_version=self._clobber_os_version)
 
     def handle(self, name: str, source: str, *args):
         """Handler called when a worker completes a rebaseline task.
@@ -560,6 +558,8 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         This allows this class to conform to the `message_pool.MessageHandler`
         interface.
         """
+        if not args:
+            return
         if name == 'report_baseline_cache_stats':
             (stats, ) = args
             self.baseline_cache_stats += stats
@@ -588,8 +588,9 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         """
         self._rebaseline_failures.clear()
         self._results_dir = options.results_directory
-        if not self._dry_run and self._tool.git(
-        ).has_working_directory_changes(pathspec=self._web_tests_dir()):
+        git = self._tool.git()
+        if not self._dry_run and git and git.has_working_directory_changes(
+                pathspec=self._web_tests_dir()):
             _log.error(
                 'There are uncommitted changes in the web tests directory; aborting.'
             )
@@ -619,11 +620,11 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                     groups, options.verbose)
                 exit_code = exit_code or self._tool.main(optimize_command)
 
-        if not self._dry_run:
+        if not self._dry_run and git:
             unstaged_baselines = self.unstaged_baselines()
             _log.info('Staging %s with git.',
                       pluralize('baseline', len(unstaged_baselines)))
-            self._tool.git().add_list(unstaged_baselines)
+            git.add_list(unstaged_baselines)
         return exit_code
 
     def _warn_about_rebaseline_failures(self):
@@ -697,10 +698,13 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         baseline_re = re.compile(r'.*[\\/]' + WEB_TESTS_LAST_COMPONENT +
                                  r'[\\/].*-expected\.(' +
                                  '|'.join(get_args(BaselineSuffix)) + ')$')
-        unstaged_changes = self._tool.git().unstaged_changes()
-        return sorted(self._tool.git().absolute_path(path)
-                      for path in unstaged_changes
-                      if re.match(baseline_re, path))
+        git = self._tool.git()
+        if not git:
+            return []
+        unstaged_changes = git.unstaged_changes()
+        return sorted(
+            git.absolute_path(path) for path in unstaged_changes
+            if re.match(baseline_re, path))
 
     def _web_tests_dir(self):
         return self._host_port.web_tests_dir()
@@ -1005,19 +1009,22 @@ class Worker:
 
     def __init__(self,
                  connection,
-                 dry_run: bool = False):
+                 dry_run: bool = False,
+                 clobber_os_version: bool = False):
         self._connection = connection
         self._dry_run = dry_run
+        self._clobber_os_version = clobber_os_version
         self._commands = {
             'copy_baselines': self._copy_baselines,
             'download_baselines': self._download_baselines,
         }
 
     def start(self):
-        self._copier = BaselineCopier(self._connection.host)
         self._host = self._connection.host
         self._default_port = self._host.port_factory.get()
         self._default_port.set_option_default('manifest_update', False)
+        self._copier = BaselineCopier(self._connection.host,
+                                      self._default_port)
         self._fs = self._connection.host.filesystem
         self._baseline_loader = BaselineLoader(self._host, self._default_port)
 
@@ -1036,6 +1043,11 @@ class Worker:
 
     def _copy_baselines(self, test_name: str, suffix: BaselineSuffix,
                         group: TestBaselineSet):
+        # `suffix` is derived from test result artifacts. Check for cases where
+        # the artifact is not actually something to rebaseline (e.g., reftest
+        # PNG).
+        if suffix not in self._default_port.allowed_suffixes(test_name):
+            return
         copies = list(
             self._copier.find_baselines_to_copy(test_name, suffix, group))
         copies.sort(key=lambda copy: copy[1])
@@ -1083,8 +1095,13 @@ class Worker:
         flag_spec_option = self._host.builders.flag_specific_option(
             task.build.builder_name, task.step_name)
         port.set_option_default('flag_specific', flag_spec_option)
+        if self._clobber_os_version:
+            version_dir = self._fs.join(port.web_tests_dir(), 'platform',
+                                        port.operating_system())
+        else:
+            version_dir = port.baseline_version_dir()
         dest = self._fs.join(
-            port.baseline_version_dir(),
+            version_dir,
             port.output_filename(task.test,
                                  test_failures.FILENAME_SUFFIX_EXPECTED,
                                  '.' + suffix))

@@ -82,27 +82,25 @@ std::vector<std::unique_ptr<RecentSource>> CreateDefaultSources(
       "FileBrowser.Recent.LoadDownloads"));
   sources.emplace_back(std::make_unique<RecentDriveSource>(profile));
 
-  if (base::FeatureList::IsEnabled(ash::features::kFSPsInRecents)) {
-    file_manager::VolumeManager* volume_manager =
-        file_manager::VolumeManager::Get(profile);
-    for (const base::WeakPtr<file_manager::Volume> volume :
-         volume_manager->GetVolumeList()) {
-      if (!volume || volume->type() != file_manager::VOLUME_TYPE_PROVIDED ||
-          volume->file_system_type() == file_manager::util::kFuseBox) {
-        // Provided volume types are served via two file system types: fusebox
-        // (usable from ash or lacros, but requires ChromeOS' /usr/bin/fusebox
-        // daemon process to be running) and non-fusebox (ash only, no separate
-        // process required). The Files app runs in ash and could use either.
-        // Using both would return duplicate results. We therefore filter out
-        // the fusebox file system type.
-        continue;
-      }
-      sources.emplace_back(std::make_unique<RecentDiskSource>(
-          fmp::VolumeType::kProvided,
-          volume->mount_path().BaseName().AsUTF8Unsafe(),
-          /*ignore_dot_files=*/true, /*max_depth=*/0,
-          "FileBrowser.Recent.LoadFileSystemProvider"));
+  // File System Providers.
+  file_manager::VolumeManager* volume_manager =
+      file_manager::VolumeManager::Get(profile);
+  for (const base::WeakPtr<file_manager::Volume> volume :
+       volume_manager->GetVolumeList()) {
+    if (!volume || volume->type() != file_manager::VOLUME_TYPE_PROVIDED ||
+        volume->file_system_type() == file_manager::util::kFuseBox) {
+      // Provided volume types are served via two file system types: fusebox
+      // (requires ChromeOS' /usr/bin/fusebox daemon process to be running) and
+      // non-fusebox. The Files app runs in ash and could use either. Using both
+      // would return duplicate results. We therefore filter out the fusebox
+      // file system type.
+      continue;
     }
+    sources.emplace_back(std::make_unique<RecentDiskSource>(
+        fmp::VolumeType::kProvided,
+        volume->mount_path().BaseName().AsUTF8Unsafe(),
+        /*ignore_dot_files=*/true, /*max_depth=*/0,
+        "FileBrowser.Recent.LoadFileSystemProvider"));
   }
 
   return sources;
@@ -192,17 +190,21 @@ void RecentModel::GetRecentFiles(
     volume_filter.emplace(restriction.volume_type);
   }
 
-  size_t source_count = 0;
+  // filtered_sources is a copy of active_sources. However, as active_sources
+  // is modified, we need to create a copy that is not going to be altered
+  // while we are iterating over it.
+  std::vector<RecentSource*> filtered_sources;
+  filtered_sources.reserve(sources_.size());
   for (const auto& source : sources_) {
     auto it = volume_filter.find(source->volume_type());
     if (it != volume_filter.end()) {
       context->active_sources.insert(source.get());
-      ++source_count;
+      filtered_sources.emplace_back(source.get());
     }
   }
   context_map_.AddWithID(std::move(context), this_call_id);
 
-  if (source_count == 0) {
+  if (filtered_sources.empty()) {
     OnSearchCompleted(this_call_id);
     return;
   }
@@ -232,10 +234,10 @@ void RecentModel::GetRecentFiles(
   const RecentSource::Params params(file_system_context, this_call_id, origin,
                                     query, options.max_files, cutoff_time,
                                     end_time, options.file_type);
-  for (const auto& source : sources_) {
+  for (const auto& source : filtered_sources) {
     source->GetRecentFiles(
         params, base::BindOnce(&RecentModel::OnGotRecentFiles,
-                               weak_ptr_factory_.GetWeakPtr(), source.get(),
+                               weak_ptr_factory_.GetWeakPtr(), source,
                                cutoff_time, this_call_id));
   }
 }

@@ -1,0 +1,13 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/mikewest/pepc-install/
+
+[RuntimeEnabled=InstallElement, Exposed=Window]
+interface HTMLInstallElement : HTMLPermissionElement {
+  [HTMLConstructor] constructor();
+
+  [CEReactions, Reflect, URL] attribute USVString manifest;
+};
+// TODO(455783637): HTMLPermissionElement should shift to `InPagePermissionMixin`.

@@ -5,9 +5,10 @@
 #include "android_webview/lib/aw_main_delegate.h"
 
 #include <memory>
+#include <variant>
 
+#include "android_webview/browser/aw_browser_process.h"
 #include "android_webview/browser/aw_content_browser_client.h"
-#include "android_webview/browser/aw_media_url_interceptor.h"
 #include "android_webview/browser/gfx/aw_draw_fn_impl.h"
 #include "android_webview/browser/gfx/browser_view_renderer.h"
 #include "android_webview/browser/gfx/gpu_service_webview.h"
@@ -22,8 +23,9 @@
 #include "android_webview/common/crash_reporter/crash_keys.h"
 #include "android_webview/gpu/aw_content_gpu_client.h"
 #include "android_webview/renderer/aw_content_renderer_client.h"
+#include "base/android/android_info.h"
 #include "base/android/apk_assets.h"
-#include "base/android/build_info.h"
+#include "base/android/apk_info.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/cpu.h"
@@ -36,6 +38,8 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/default_clock.h"
+#include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -49,8 +53,8 @@
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/variations/variations_ids_provider.h"
 #include "components/version_info/android/channel_getter.h"
+#include "components/viz/common/features.h"
 #include "content/public/app/initialize_mojo_core.h"
-#include "content/public/browser/android/media_url_interceptor_register.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_util.h"
@@ -65,7 +69,7 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "media/media_buildflags.h"
 #include "net/base/features.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "services/tracing/public/cpp/perfetto/track_name_recorder.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
 #include "tools/v8_context_snapshot/buildflags.h"
@@ -104,7 +108,7 @@ std::optional<int> AwMainDelegate::BasicStartupComplete() {
   cl->AppendSwitch(switches::kDisableNotifications);
 
   // Check damage in OnBeginFrame to prevent unnecessary draws.
-  cl->AppendSwitch(cc::switches::kCheckDamageEarly);
+  cl->AppendSwitch(switches::kCheckDamageEarly);
 
   // This is needed for sharing textures across the different GL threads.
   cl->AppendSwitch(switches::kEnableThreadedTextureMailboxes);
@@ -139,19 +143,12 @@ std::optional<int> AwMainDelegate::BasicStartupComplete() {
   // isn't much point in having the crash dumps there.
   cl->AppendSwitch(switches::kDisableOoprDebugCrashDump);
 
-  // Deemed that performance benefit is not worth the stability cost.
-  // See crbug.com/1309151.
-  cl->AppendSwitch(switches::kDisableGpuShaderDiskCache);
-
   // Keep data: URL support in SVGUseElement for webview until deprecation is
   // completed in the Web Platform.
   cl->AppendSwitch(blink::switches::kDataUrlInSvgUseEnabled);
 
   if (cl->GetSwitchValueASCII(switches::kProcessType).empty()) {
     // Browser process (no type specified).
-
-    content::RegisterMediaUrlInterceptor(new AwMediaUrlInterceptor());
-    BrowserViewRenderer::CalculateTileMemoryPolicy();
 
     if (AwDrawFnImpl::IsUsingVulkan())
       cl->AppendSwitch(switches::kWebViewDrawFunctorUsesVulkan);
@@ -221,7 +218,7 @@ std::optional<int> AwMainDelegate::BasicStartupComplete() {
       base::BindRepeating(&IsTraceEventArgsAllowlisted));
   base::trace_event::TraceLog::GetInstance()->SetMetadataFilterPredicate(
       base::BindRepeating(&IsTraceMetadataAllowlisted));
-  base::trace_event::TraceLog::GetInstance()->SetRecordHostAppPackageName(true);
+  tracing::TrackNameRecorder::SetRecordHostAppPackageName(true);
 
   // The TLS slot used by the memlog allocator shim needs to be initialized
   // early to ensure that it gets assigned a low slot number. If it gets
@@ -240,12 +237,6 @@ std::optional<int> AwMainDelegate::BasicStartupComplete() {
 
 void AwMainDelegate::PreSandboxStartup() {
   TRACE_EVENT0("startup", "AwMainDelegate::PreSandboxStartup");
-#if defined(ARCH_CPU_ARM_FAMILY)
-  // Create an instance of the CPU class to parse /proc/cpuinfo and cache
-  // cpu_brand info.
-  base::CPU cpu_info;
-#endif
-
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
 
@@ -263,23 +254,20 @@ void AwMainDelegate::PreSandboxStartup() {
 
   EnableCrashReporter(process_type);
 
-  base::android::BuildInfo* android_build_info =
-      base::android::BuildInfo::GetInstance();
-
   static ::crash_reporter::CrashKeyString<64> app_name_key(
       crash_keys::kAppPackageName);
-  app_name_key.Set(android_build_info->host_package_name());
+  app_name_key.Set(base::android::apk_info::host_package_name());
 
   static ::crash_reporter::CrashKeyString<64> app_version_key(
       crash_keys::kAppPackageVersionCode);
-  app_version_key.Set(android_build_info->host_version_code());
+  app_version_key.Set(base::android::apk_info::host_version_code());
 
   static ::crash_reporter::CrashKeyString<8> sdk_int_key(
       crash_keys::kAndroidSdkInt);
-  sdk_int_key.Set(base::NumberToString(android_build_info->sdk_int()));
+  sdk_int_key.Set(base::NumberToString(base::android::android_info::sdk_int()));
 }
 
-absl::variant<int, content::MainFunctionParams> AwMainDelegate::RunProcess(
+std::variant<int, content::MainFunctionParams> AwMainDelegate::RunProcess(
     const std::string& process_type,
     content::MainFunctionParams main_function_params) {
   // Defer to the default main method outside the browser process.
@@ -303,7 +291,7 @@ void AwMainDelegate::ProcessExiting(const std::string& process_type) {
 bool AwMainDelegate::ShouldCreateFeatureList(InvokedIn invoked_in) {
   // In the browser process the FeatureList is created in
   // AwMainDelegate::PostEarlyInitialization().
-  return absl::holds_alternative<InvokedInChildProcess>(invoked_in);
+  return std::holds_alternative<InvokedInChildProcess>(invoked_in);
 }
 
 bool AwMainDelegate::ShouldInitializeMojo(InvokedIn invoked_in) {
@@ -312,28 +300,21 @@ bool AwMainDelegate::ShouldInitializeMojo(InvokedIn invoked_in) {
 
 variations::VariationsIdsProvider*
 AwMainDelegate::CreateVariationsIdsProvider() {
-  return variations::VariationsIdsProvider::Create(
-      variations::VariationsIdsProvider::Mode::kDontSendSignedInVariations);
+  // TODO: crbug.com/442849530 - Use VariationsNetworkClock instead of
+  // base::DefaultClock.
+  return variations::VariationsIdsProvider::CreateInstance(
+      variations::VariationsIdsProvider::Mode::kDontSendSignedInVariations,
+      std::make_unique<base::DefaultClock>());
 }
 
 std::optional<int> AwMainDelegate::PostEarlyInitialization(
     InvokedIn invoked_in) {
   const bool is_browser_process =
-      absl::holds_alternative<InvokedInBrowserProcess>(invoked_in);
+      std::holds_alternative<InvokedInBrowserProcess>(invoked_in);
   if (is_browser_process) {
     InitIcuAndResourceBundleBrowserSide();
     aw_feature_list_creator_->CreateFeatureListAndFieldTrials();
     content::InitializeMojoCore();
-
-    // WebView apps can override WebView#computeScroll to achieve custom
-    // scroll/fling. As a result, fling animations may not be ticked,
-    // potentially
-    // confusing the tap suppression controller. Simply disable it for WebView
-    if (!base::FeatureList::IsEnabled(
-            ::features::kWebViewSuppressTapDuringFling)) {
-      ui::GestureConfiguration::GetInstance()
-          ->set_fling_touchscreen_tap_suppression_enabled(false);
-    }
   }
 
   InitializeMemorySystem(is_browser_process);
@@ -380,7 +361,8 @@ content::ContentGpuClient* AwMainDelegate::CreateContentGpuClient() {
       base::BindRepeating(&GetSyncPointManager),
       base::BindRepeating(&GetSharedImageManager),
       base::BindRepeating(&GetScheduler),
-      base::BindRepeating(&GetVizCompositorThreadRunner));
+      base::BindRepeating(&GetVizCompositorThreadRunner),
+      &aw_gr_context_options_provider_);
   return content_gpu_client_.get();
 }
 
@@ -414,4 +396,14 @@ void AwMainDelegate::InitializeMemorySystem(const bool is_browser_process) {
                                process_type)
       .Initialize(memory_system_);
 }
+
+bool AwMainDelegate::ShouldInitializePerfetto(InvokedIn invoked_in) {
+  const bool is_browser_process =
+      std::holds_alternative<InvokedInBrowserProcess>(invoked_in);
+  if (!is_browser_process) {
+    return true;
+  }
+  return !AwBrowserProcess::DidEarlyPerfettoInitialization();
+}
+
 }  // namespace android_webview

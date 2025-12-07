@@ -139,7 +139,7 @@ TEST_F(WaylandCursorFactoryTest, RetainOldThemeUntilNewBufferIsAttached) {
 
       auto* const new_current_theme = cursor_factory->theme_cache_.get();
       ASSERT_EQ(new_current_theme->size(), 1U);
-      EXPECT_EQ(new_current_theme->begin()->second->cache.size(), 0U);
+      EXPECT_EQ(new_current_theme->begin()->second->cache().size(), 0U);
       EXPECT_NE(new_current_theme, used_current_theme);
       EXPECT_EQ(cursor_factory->unloaded_theme_.get(), used_current_theme);
 
@@ -236,7 +236,7 @@ TEST_F(WaylandCursorFactoryTest, CachesSizesUntilThemeNameIsChanged) {
     ASSERT_EQ(cursor_factory->theme_cache_->size(), 1U);
     auto* const new_current_theme =
         cursor_factory->theme_cache_->begin()->second.get();
-    EXPECT_EQ(new_current_theme->cache.size(), 0U);
+    EXPECT_EQ(new_current_theme->cache().size(), 0U);
     EXPECT_NE(cursor_factory->unloaded_theme_.get(), nullptr);
 
     WaitForThemeLoaded();

@@ -9,12 +9,19 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * Java side of the JNI bridge between SegmentationPlatformServiceImpl in Java
- * and C++. All method calls are delegated to the native C++ class.
+ * Java side of the JNI bridge between SegmentationPlatformServiceImpl in Java and C++. All method
+ * calls are delegated to the native C++ class.
  */
 @JNINamespace("segmentation_platform")
+@NullMarked
 public class SegmentationPlatformServiceImpl implements SegmentationPlatformService {
     private long mNativePtr;
 
@@ -31,29 +38,47 @@ public class SegmentationPlatformServiceImpl implements SegmentationPlatformServ
     public void getSelectedSegment(
             String segmentationKey, Callback<SegmentSelectionResult> callback) {
         SegmentationPlatformServiceImplJni.get()
-                .getSelectedSegment(mNativePtr, this, segmentationKey, callback);
+                .getSelectedSegment(mNativePtr, segmentationKey, callback);
     }
 
     @Override
     public void getClassificationResult(
             String segmentationKey,
             PredictionOptions predictionOptions,
-            InputContext inputContext,
+            @Nullable InputContext inputContext,
             Callback<ClassificationResult> callback) {
         SegmentationPlatformServiceImplJni.get()
                 .getClassificationResult(
-                        mNativePtr,
-                        this,
-                        segmentationKey,
-                        predictionOptions,
-                        inputContext,
-                        callback);
+                        mNativePtr, segmentationKey, predictionOptions, inputContext, callback);
     }
 
     @Override
     public SegmentSelectionResult getCachedSegmentResult(String segmentationKey) {
         return SegmentationPlatformServiceImplJni.get()
-                .getCachedSegmentResult(mNativePtr, this, segmentationKey);
+                .getCachedSegmentResult(mNativePtr, segmentationKey);
+    }
+
+    @Override
+    public void getInputKeysForModel(String segmentationKey, Callback<Set<String>> callback) {
+        SegmentationPlatformServiceImplJni.get()
+                .getInputKeysForModel(
+                        mNativePtr,
+                        segmentationKey,
+                        (inputArray) -> {
+                            callback.onResult(new HashSet<>(Arrays.asList(inputArray)));
+                        });
+    }
+
+    @Override
+    public void collectTrainingData(
+            int segmentId,
+            long requestId,
+            long ukmSourceId,
+            TrainingLabels param,
+            Callback<Boolean> callback) {
+        SegmentationPlatformServiceImplJni.get()
+                .collectTrainingData(
+                        mNativePtr, segmentId, requestId, ukmSourceId, param, callback);
     }
 
     @CalledByNative
@@ -65,21 +90,30 @@ public class SegmentationPlatformServiceImpl implements SegmentationPlatformServ
     interface Natives {
         void getSelectedSegment(
                 long nativeSegmentationPlatformServiceAndroid,
-                SegmentationPlatformServiceImpl caller,
                 String segmentationKey,
                 Callback<SegmentSelectionResult> callback);
 
         void getClassificationResult(
                 long nativeSegmentationPlatformServiceAndroid,
-                SegmentationPlatformServiceImpl caller,
                 String segmentationKey,
                 PredictionOptions predictionOptions,
-                InputContext inputContext,
+                @Nullable InputContext inputContext,
                 Callback<ClassificationResult> callback);
 
         SegmentSelectionResult getCachedSegmentResult(
+                long nativeSegmentationPlatformServiceAndroid, String segmentationKey);
+
+        void getInputKeysForModel(
                 long nativeSegmentationPlatformServiceAndroid,
-                SegmentationPlatformServiceImpl caller,
-                String segmentationKey);
+                String segmentationKey,
+                Callback<String[]> callback);
+
+        void collectTrainingData(
+                long nativeSegmentationPlatformServiceAndroid,
+                int segmentId,
+                long requestId,
+                long ukmSourceId,
+                TrainingLabels param,
+                Callback<Boolean> callback);
     }
 }

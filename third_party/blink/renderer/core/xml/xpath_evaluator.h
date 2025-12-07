@@ -29,10 +29,7 @@
 
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
@@ -55,12 +52,12 @@ class XPathEvaluator final : public ScriptWrappable {
   XPathEvaluator() = default;
 
   XPathExpression* createExpression(ExecutionContext* execution_context,
-                                    const WTF::String& expression,
+                                    const String& expression,
                                     V8XPathNSResolver*,
                                     ExceptionState&);
   Node* createNSResolver(Node* node_resolver);
   XPathResult* evaluate(ExecutionContext* execustin_context,
-                        const WTF::String& expression,
+                        const String& expression,
                         Node* context_node,
                         V8XPathNSResolver*,
                         uint16_t type,

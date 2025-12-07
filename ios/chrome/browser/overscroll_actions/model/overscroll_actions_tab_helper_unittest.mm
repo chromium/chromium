@@ -9,7 +9,7 @@
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_view.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/test/fakes/fake_overscroll_actions_controller_delegate.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -26,7 +26,7 @@
 class OverscrollActionsTabHelperTest : public PlatformTest {
  protected:
   OverscrollActionsTabHelperTest()
-      : browser_state_(TestChromeBrowserState::Builder().Build()),
+      : profile_(TestProfileIOS::Builder().Build()),
         overscroll_delegate_(
             [[FakeOverscrollActionsControllerDelegate alloc] init]),
         scroll_view_proxy_([[CRWWebViewScrollViewProxy alloc] init]),
@@ -72,7 +72,7 @@ class OverscrollActionsTabHelperTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<ProfileIOS> profile_;
   web::FakeWebState web_state_;
   FakeOverscrollActionsControllerDelegate* overscroll_delegate_;
   CRWWebViewScrollViewProxy* scroll_view_proxy_;
@@ -82,7 +82,7 @@ class OverscrollActionsTabHelperTest : public PlatformTest {
 // Tests that OverscrollActionsControllerDelegate is set correctly and triggered
 // When there is a view pull.
 TEST_F(OverscrollActionsTabHelperTest, TestDelegateTrigger) {
-  web_state_.SetBrowserState(browser_state_.get());
+  web_state_.SetBrowserState(profile_.get());
   overscroll_tab_helper()->SetDelegate(overscroll_delegate_);
   // Start pull for page refresh action.
   SimulatePullForRefreshAction();
@@ -96,9 +96,9 @@ TEST_F(OverscrollActionsTabHelperTest, TestDelegateTrigger) {
 }
 
 // Tests that overscrolls actions view style is set correctly, for regular
-// browsing browser state.
-TEST_F(OverscrollActionsTabHelperTest, TestRegularBrowserStateStyle) {
-  web_state_.SetBrowserState(browser_state_.get());
+// browsing profile.
+TEST_F(OverscrollActionsTabHelperTest, TestRegularProfileStyle) {
+  web_state_.SetBrowserState(profile_.get());
   overscroll_tab_helper()->SetDelegate(overscroll_delegate_);
   SimulatePullForRefreshAction();
   UIColor* expected_color = [UIColor colorNamed:kBackgroundColor];
@@ -107,10 +107,9 @@ TEST_F(OverscrollActionsTabHelperTest, TestRegularBrowserStateStyle) {
 }
 
 // Tests that overscrolls actions view style is set correctly, for off the
-// record browser state.
-TEST_F(OverscrollActionsTabHelperTest, TestOffTheRecordBrowserStateStyle) {
-  web_state_.SetBrowserState(
-      browser_state_->GetOffTheRecordChromeBrowserState());
+// record profile.
+TEST_F(OverscrollActionsTabHelperTest, TestOffTheRecordProfileStyle) {
+  web_state_.SetBrowserState(profile_->GetOffTheRecordProfile());
   overscroll_tab_helper()->SetDelegate(overscroll_delegate_);
   SimulatePullForRefreshAction();
   // For iOS 13 and dark mode, the incognito overscroll actions view uses a
@@ -122,7 +121,7 @@ TEST_F(OverscrollActionsTabHelperTest, TestOffTheRecordBrowserStateStyle) {
 
 // Tests that overscroll state is reset when Clear() is called.
 TEST_F(OverscrollActionsTabHelperTest, TestClear) {
-  web_state_.SetBrowserState(browser_state_.get());
+  web_state_.SetBrowserState(profile_.get());
   overscroll_tab_helper()->SetDelegate(overscroll_delegate_);
   OverscrollActionsController* controller =
       overscroll_tab_helper()->GetOverscrollActionsController();

@@ -30,8 +30,8 @@ struct HatsConfig {
 
   // Chrome OS-level feature (switch) we use to retrieve whether this HaTS
   // survey is enabled or not, and its parameters.
-  // This field is not a raw_ref<> because it was filtered by the rewriter for:
-  // #global-scope
+  // This field is not a raw_ref<> because it only ever points at statically-
+  // allocated memory which is never freed, and hence it cannot dangle.
   RAW_PTR_EXCLUSION const base::Feature& feature;
 
   // Minimum amount of time after initial login or oobe after which we can show
@@ -86,7 +86,6 @@ extern const HatsConfig kHatsGeneralCameraPrioritizedSurvey;
 extern const HatsConfig kHatsBluetoothRevampSurvey;
 extern const HatsConfig kHatsBatteryLifeSurvey;
 extern const HatsConfig kHatsPeripheralsSurvey;
-extern const HatsConfig kPrivacyHubPostLaunchSurvey;
 extern const HatsConfig kHatsOsSettingsSearchSurvey;
 extern const HatsConfig kHatsBorealisGamesSurvey;
 extern const HatsConfig kHatsLauncherAppsFindingSurvey;

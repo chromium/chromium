@@ -1,7 +1,9 @@
 include_rules = [
+  "+aidl/org/chromium/base/process_launcher",
   "+chromeos/startup",
   "+components/discardable_memory",
   "+components/download",
+  "+components/embedder_support/switches.h",
   "+components/power_monitor",
   "+components/tracing/common",
   "+content",
@@ -15,6 +17,7 @@ include_rules = [
   "+services/network/public/cpp/features.h",
   "+services/resource_coordinator/public",
   "+services/tracing/public/cpp",
+  "+third_party/android_toolchain/native_service.h",
   "+third_party/tflite/buildflags.h",
   "+third_party/cpuinfo/src/include/cpuinfo.h",
   "+tools/v8_context_snapshot/buildflags.h",

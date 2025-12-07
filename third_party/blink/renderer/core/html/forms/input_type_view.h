@@ -39,14 +39,10 @@
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/theme_types.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
@@ -86,15 +82,17 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
   virtual ~InputTypeView();
   void Trace(Visitor*) const override;
 
-  virtual bool SizeShouldIncludeDecoration(int default_size,
-                                           int& preferred_size) const;
+  virtual bool GetSizeWithDecoration(int default_size,
+                                     int& preferred_size) const;
 
   // Event handling functions
 
   virtual void HandleClickEvent(MouseEvent&);
   virtual void HandleMouseDownEvent(MouseEvent&);
-  virtual ClickHandlingState* WillDispatchClick();
-  virtual void DidDispatchClick(Event&, const ClickHandlingState&);
+  // https://html.spec.whatwg.org/C#the-input-element:legacy-pre-activation-behavior.
+  virtual ClickHandlingState* LegacyPreActivationBehavior();
+  // https://html.spec.whatwg.org/C#input-activation-behavior.
+  virtual void RunInputActivationBehavior(Event&, const ClickHandlingState&);
   virtual void HandleKeydownEvent(KeyboardEvent&);
   virtual void HandleKeypressEvent(KeyboardEvent&);
   virtual void HandleKeyupEvent(KeyboardEvent&);
@@ -114,11 +112,14 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
   virtual void SubtreeHasChanged();
   virtual LayoutObject* CreateLayoutObject(const ComputedStyle&) const;
   virtual void AdjustStyle(ComputedStyleBuilder&) {}
-  virtual ControlPart AutoAppearance() const;
+  virtual AppearanceValue AutoAppearance() const;
   virtual TextDirection ComputedTextDirection();
   virtual void OpenPopupView();
   virtual void ClosePopupView();
+  // HasOpenedPopup will return true if the popup has ever been opened on this
+  // element. IsPickerVisible will return true if the popup is currently open.
   virtual bool HasOpenedPopup() const;
+  virtual bool IsPickerVisible() const;
 
   // Functions for shadow trees
 
@@ -128,14 +129,13 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
   // changing the input-type.
   void CreateShadowSubtreeIfNeeded(bool is_type_changing = false);
   void set_needs_update_view_in_create_shadow_subtree(bool value) {
-    DCHECK(RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled());
     needs_update_view_in_create_shadow_subtree_ = value;
   }
   virtual bool IsInnerEditorValueEmpty() const { return false; }
   virtual bool NeedsShadowSubtree() const;
   virtual void DestroyShadowSubtree();
   virtual HTMLInputElement* UploadButton() const;
-  virtual WTF::String FileStatusText() const;
+  virtual String FileStatusText() const;
 
   virtual void MinOrMaxAttributeChanged();
   virtual void StepAttributeChanged();
@@ -147,7 +147,7 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
   virtual void ReadonlyAttributeChanged();
   virtual void RequiredAttributeChanged();
   virtual void ValueAttributeChanged();
-  virtual void DidSetValue(const WTF::String&, bool value_changed);
+  virtual void DidSetValue(const String&, bool value_changed);
   virtual void ListAttributeTargetChanged();
   virtual void CapsLockStateMayHaveChanged();
   virtual bool ShouldDrawCapsLockIndicator() const;

@@ -10,6 +10,7 @@
 #include <string>
 #include <tuple>
 
+#include "base/containers/span.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -55,8 +56,7 @@ const uint16_t* GetPortFieldFromSockaddr(const struct sockaddr* address,
         reinterpret_cast<const struct sockaddr_in6*>(address);
     return &sockaddr->sin6_port;
   } else {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 }
 
@@ -68,25 +68,55 @@ int GetPortFromSockaddr(const struct sockaddr* address, socklen_t address_len) {
   return base::NetToHost16(*port_field);
 }
 
+constexpr uint32_t kMaxFakeInterfaceIndex = 10;
+
+uint32_t FakeNameToIndexFunc(const char* name) {
+  uint32_t index = 0;
+  const bool ok = base::StringToUint(name, &index);
+  if (!ok || index > kMaxFakeInterfaceIndex) {
+    return 0;
+  }
+  return index;
+}
+
+char* FakeIndexToNameFunc(unsigned int index, base::span<char>ifname) {
+  if (index > kMaxFakeInterfaceIndex) {
+    return nullptr;
+  }
+  std::string name = base::NumberToString(index);
+  ifname[0] = name[0];
+  return ifname.data();
+}
+
 struct TestData {
   std::string host;
   std::string host_normalized;
   bool ipv6;
   IPAddress ip_address;
+  std::optional<uint32_t> scope_id = std::nullopt;
 } tests[] = {
     {"127.0.00.1", "127.0.0.1", false},
     {"192.168.1.1", "192.168.1.1", false},
     {"::1", "[::1]", true},
     {"2001:db8:0::42", "[2001:db8::42]", true},
+    {"fe80::1", "[fe80::1]", true, IPAddress(), /*scope_id=*/1},
 };
 
 class IPEndPointTest : public PlatformTest {
  public:
   void SetUp() override {
+    IPEndPoint::SetNameToIndexFuncForTesting(FakeNameToIndexFunc);
+    IPEndPoint::SetIndexToNameFuncForTesting(FakeIndexToNameFunc);
+
     // This is where we populate the TestData.
     for (auto& test : tests) {
       EXPECT_TRUE(test.ip_address.AssignFromIPLiteral(test.host));
     }
+  }
+
+  void TearDown() override {
+    IPEndPoint::SetNameToIndexFuncForTesting(nullptr);
+    IPEndPoint::SetIndexToNameFuncForTesting(nullptr);
   }
 };
 
@@ -97,54 +127,63 @@ TEST_F(IPEndPointTest, Constructor) {
   }
 
   for (const auto& test : tests) {
-    IPEndPoint endpoint(test.ip_address, 80);
+    IPEndPoint endpoint(test.ip_address, 80, test.scope_id);
     EXPECT_EQ(80, endpoint.port());
     EXPECT_EQ(test.ip_address, endpoint.address());
+    EXPECT_EQ(test.scope_id, endpoint.scope_id());
   }
 }
 
 TEST_F(IPEndPointTest, Assignment) {
   uint16_t port = 0;
   for (const auto& test : tests) {
-    IPEndPoint src(test.ip_address, ++port);
+    IPEndPoint src(test.ip_address, ++port, test.scope_id);
     IPEndPoint dest = src;
 
     EXPECT_EQ(src.port(), dest.port());
     EXPECT_EQ(src.address(), dest.address());
+    EXPECT_EQ(src.scope_id(), dest.scope_id());
   }
 }
 
 TEST_F(IPEndPointTest, Copy) {
   uint16_t port = 0;
   for (const auto& test : tests) {
-    IPEndPoint src(test.ip_address, ++port);
+    IPEndPoint src(test.ip_address, ++port, test.scope_id);
     IPEndPoint dest(src);
 
     EXPECT_EQ(src.port(), dest.port());
     EXPECT_EQ(src.address(), dest.address());
+    EXPECT_EQ(src.scope_id(), dest.scope_id());
   }
 }
 
 TEST_F(IPEndPointTest, ToFromSockAddr) {
   uint16_t port = 0;
   for (const auto& test : tests) {
-    IPEndPoint ip_endpoint(test.ip_address, ++port);
+    IPEndPoint ip_endpoint(test.ip_address, ++port, test.scope_id);
 
     // Convert to a sockaddr.
     SockaddrStorage storage;
-    EXPECT_TRUE(ip_endpoint.ToSockAddr(storage.addr, &storage.addr_len));
+    EXPECT_TRUE(ip_endpoint.ToSockAddr(storage.addr(), &storage.addr_len));
 
     // Basic verification.
     socklen_t expected_size =
         test.ipv6 ? sizeof(struct sockaddr_in6) : sizeof(struct sockaddr_in);
     EXPECT_EQ(expected_size, storage.addr_len);
     EXPECT_EQ(ip_endpoint.port(),
-              GetPortFromSockaddr(storage.addr, storage.addr_len));
+              GetPortFromSockaddr(storage.addr(), storage.addr_len));
+    if (test.ipv6) {
+      uint32_t scope_id =
+          reinterpret_cast<struct sockaddr_in6*>(storage.addr())->sin6_scope_id;
+      EXPECT_EQ(scope_id, test.scope_id.value_or(0));
+    }
     // And convert back to an IPEndPoint.
     IPEndPoint ip_endpoint2;
-    EXPECT_TRUE(ip_endpoint2.FromSockAddr(storage.addr, storage.addr_len));
+    EXPECT_TRUE(ip_endpoint2.FromSockAddr(storage.addr(), storage.addr_len));
     EXPECT_EQ(ip_endpoint.port(), ip_endpoint2.port());
     EXPECT_EQ(ip_endpoint.address(), ip_endpoint2.address());
+    EXPECT_EQ(ip_endpoint.scope_id(), ip_endpoint2.scope_id());
   }
 }
 
@@ -155,13 +194,12 @@ TEST_F(IPEndPointTest, ToSockAddrBufTooSmall) {
 
     SockaddrStorage storage;
     storage.addr_len = 3;  // size is too small!
-    EXPECT_FALSE(ip_endpoint.ToSockAddr(storage.addr, &storage.addr_len));
+    EXPECT_FALSE(ip_endpoint.ToSockAddr(storage.addr(), &storage.addr_len));
   }
 }
 
 TEST_F(IPEndPointTest, FromSockAddrBufTooSmall) {
-  struct sockaddr_in addr;
-  memset(&addr, 0, sizeof(addr));
+  struct sockaddr_in addr = {};
   addr.sin_family = AF_INET;
   IPEndPoint ip_endpoint;
   struct sockaddr* sockaddr = reinterpret_cast<struct sockaddr*>(&addr);
@@ -185,8 +223,7 @@ SOCKADDR_BTH BuildBluetoothSockAddr(const IPAddress& ip_address,
                                     uint32_t port) {
   SOCKADDR_BTH addr = {};
   addr.addressFamily = AF_BTH;
-  DCHECK_LE(ip_address.bytes().size(), sizeof(addr.btAddr));
-  memcpy(&addr.btAddr, ip_address.bytes().data(), ip_address.bytes().size());
+  base::byte_span_from_ref(addr.btAddr).copy_prefix_from(ip_address.bytes());
   addr.port = port;
   return addr;
 }
@@ -208,7 +245,7 @@ TEST_F(IPEndPointTest, WinBluetoothSockAddrCompareWithSelf) {
   EXPECT_DCHECK_DEATH(bt_endpoint.port());
   SockaddrStorage storage;
   EXPECT_DCHECK_DEATH(
-      std::ignore = bt_endpoint.ToSockAddr(storage.addr, &storage.addr_len));
+      std::ignore = bt_endpoint.ToSockAddr(storage.addr(), &storage.addr_len));
   EXPECT_DCHECK_DEATH(bt_endpoint.ToString());
   EXPECT_DCHECK_DEATH(bt_endpoint.ToStringWithoutPort());
 }
@@ -253,7 +290,7 @@ TEST_F(IPEndPointTest, WinBluetoothSockAddrCompareWithCopy) {
   EXPECT_DCHECK_DEATH(bt_endpoint_other.port());
   SockaddrStorage storage;
   EXPECT_DCHECK_DEATH(std::ignore = bt_endpoint_other.ToSockAddr(
-                          storage.addr, &storage.addr_len));
+                          storage.addr(), &storage.addr_len));
   EXPECT_DCHECK_DEATH(bt_endpoint_other.ToString());
   EXPECT_DCHECK_DEATH(bt_endpoint_other.ToStringWithoutPort());
 }
@@ -284,7 +321,7 @@ TEST_F(IPEndPointTest, WinBluetoothSockAddrCompareWithDifferentPort) {
   EXPECT_DCHECK_DEATH(bt_endpoint_other.port());
   SockaddrStorage storage;
   EXPECT_DCHECK_DEATH(std::ignore = bt_endpoint_other.ToSockAddr(
-                          storage.addr, &storage.addr_len));
+                          storage.addr(), &storage.addr_len));
   EXPECT_DCHECK_DEATH(bt_endpoint_other.ToString());
   EXPECT_DCHECK_DEATH(bt_endpoint_other.ToStringWithoutPort());
 }
@@ -314,7 +351,7 @@ TEST_F(IPEndPointTest, WinBluetoothSockAddrCompareWithDifferentAddress) {
   EXPECT_DCHECK_DEATH(bt_endpoint_other.port());
   SockaddrStorage storage;
   EXPECT_DCHECK_DEATH(std::ignore = bt_endpoint_other.ToSockAddr(
-                          storage.addr, &storage.addr_len));
+                          storage.addr(), &storage.addr_len));
   EXPECT_DCHECK_DEATH(bt_endpoint_other.ToString());
   EXPECT_DCHECK_DEATH(bt_endpoint_other.ToStringWithoutPort());
 }
@@ -323,10 +360,20 @@ TEST_F(IPEndPointTest, WinBluetoothSockAddrCompareWithDifferentAddress) {
 TEST_F(IPEndPointTest, Equality) {
   uint16_t port = 0;
   for (const auto& test : tests) {
-    IPEndPoint src(test.ip_address, ++port);
+    IPEndPoint src(test.ip_address, ++port, test.scope_id);
     IPEndPoint dest(src);
     EXPECT_TRUE(src == dest);
   }
+
+  // Compare scope_id.
+  const auto v6_link_local_address = *IPAddress::FromIPLiteral("fe80::1");
+  IPEndPoint ip_endpoint1 =
+      IPEndPoint(v6_link_local_address, 80, /*scope_id=*/1);
+  IPEndPoint ip_endpoint2 =
+      IPEndPoint(v6_link_local_address, 80, /*scope_id=*/1);
+  EXPECT_EQ(ip_endpoint1, ip_endpoint2);
+  ip_endpoint2 = IPEndPoint(v6_link_local_address, 80, /*scope_id=*/2);
+  EXPECT_NE(ip_endpoint1, ip_endpoint2);
 }
 
 TEST_F(IPEndPointTest, LessThan) {
@@ -370,7 +417,7 @@ TEST_F(IPEndPointTest, ToString) {
   uint16_t port = 100;
   for (const auto& test : tests) {
     ++port;
-    IPEndPoint endpoint(test.ip_address, port);
+    IPEndPoint endpoint(test.ip_address, port, test.scope_id);
     const std::string result = endpoint.ToString();
     EXPECT_EQ(test.host_normalized + ":" + base::NumberToString(port), result);
   }
@@ -384,7 +431,7 @@ TEST_F(IPEndPointTest, ToString) {
 
 TEST_F(IPEndPointTest, RoundtripThroughValue) {
   for (const auto& test : tests) {
-    IPEndPoint endpoint(test.ip_address, 1645);
+    IPEndPoint endpoint(test.ip_address, 1645, test.scope_id);
     base::Value value = endpoint.ToValue();
 
     EXPECT_THAT(IPEndPoint::FromValue(value), Optional(endpoint));
@@ -398,7 +445,8 @@ TEST_F(IPEndPointTest, FromGarbageValue) {
 
 TEST_F(IPEndPointTest, FromMalformedValues) {
   for (const auto& test : tests) {
-    base::Value valid_value = IPEndPoint(test.ip_address, 1111).ToValue();
+    base::Value valid_value =
+        IPEndPoint(test.ip_address, 1111, test.scope_id).ToValue();
     ASSERT_TRUE(IPEndPoint::FromValue(valid_value).has_value());
 
     base::Value missing_address = valid_value.Clone();
@@ -421,6 +469,32 @@ TEST_F(IPEndPointTest, FromMalformedValues) {
     *large_port.GetDict().Find("port") = base::Value(66000);
     EXPECT_FALSE(IPEndPoint::FromValue(large_port).has_value());
   }
+
+  // Invalid values for scope id.
+  const auto v6_link_local_address = *IPAddress::FromIPLiteral("fe80::1");
+  base::Value valid_value =
+      IPEndPoint(v6_link_local_address, /*port=*/80, /*scope_id=*/1).ToValue();
+
+  base::Value invalid_scope_id = valid_value.Clone();
+  *invalid_scope_id.GetDict().Find("interface_name") = base::Value("-1");
+  EXPECT_FALSE(IPEndPoint::FromValue(invalid_scope_id).has_value());
+
+  base::Value invalid_scope_id2 = valid_value.Clone();
+  *invalid_scope_id2.GetDict().Find("interface_name") = base::Value("0");
+  EXPECT_FALSE(IPEndPoint::FromValue(invalid_scope_id2).has_value());
+
+  base::Value invalid_address_v4 = valid_value.Clone();
+  *invalid_address_v4.GetDict().Find("address") = base::Value("169.254.0.1");
+  EXPECT_FALSE(IPEndPoint::FromValue(invalid_scope_id).has_value());
+
+  base::Value invalid_address_v6 = valid_value.Clone();
+  *invalid_address_v4.GetDict().Find("address") = base::Value("2001:db8:0::42");
+  EXPECT_FALSE(IPEndPoint::FromValue(invalid_scope_id).has_value());
+
+  base::Value invalid_ipv4_mapped_v6_address = valid_value.Clone();
+  *invalid_address_v4.GetDict().Find("address") =
+      base::Value("::ffff:169.254.0.1");
+  EXPECT_FALSE(IPEndPoint::FromValue(invalid_scope_id).has_value());
 }
 
 }  // namespace

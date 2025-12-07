@@ -3,26 +3,55 @@
 # found in the LICENSE file.
 
 import("//third_party/perfetto/gn/proto_library.gni")
+import("//third_party/perfetto/gn/protozero_descriptor_diff.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//tools/grit/grit_rule.gni")
 import("sources.gni")
 
+# Generates only a proto descriptor. This must only have a single entry in
+# `sources`, because `generate_descriptor` adds a `--dependency_out` argument to
+# protoc. With multiple sources protoc fails with the error: "Can only process
+# one input file when using --dependency_out=FILE."
 proto_library("chrome_track_event") {
   proto_in_dir = "//"
   proto_out_dir = "base/tracing/protos"
+  sources = [
+    # Wrapper file importing all files in `chrome_track_event_sources`.
+    chrome_track_event_descriptor_source,
+  ]
   import_dirs = [ "//third_party/perfetto/" ]
-  sources = chrome_track_event_sources
   generate_cc = false
   generate_python = false
   generate_descriptor = "chrome_track_event.descriptor"
+  deps = [
+    # To track build dependencies, this must depend on a proto library target
+    # listing  `chrome_track_event_descriptor_source`'s imports as sources.
+    # Conveniently `chrome_track_event_zero` is just such a library.
+    ":chrome_track_event_zero",
+    "//third_party/perfetto/protos/perfetto/trace/track_event:source_set",
+  ]
 }
 
 protozero_library("chrome_track_event_zero") {
+  proto_in_dir = "//"
   perfetto_root_path = "//third_party/perfetto/"
   sources = chrome_track_event_sources
   import_dirs = [ "//third_party/perfetto/" ]
   generator_plugin_options = "wrapper_namespace=pbzero"
   omit_protozero_dep = true
+  proto_deps =
+      [ "//third_party/perfetto/protos/perfetto/trace/track_event:source_set" ]
+}
+
+protozero_descriptor_diff("chrome_track_event_extension") {
+  minuend_descriptor_target = ":chrome_track_event_gen"
+  minuend_descriptor_name = "chrome_track_event.descriptor"
+
+  subtrahend_descriptor_target =
+      "//third_party/perfetto/protos/perfetto/trace:descriptor"
+  subtrahend_descriptor_name = "trace.descriptor"
+
+  generate_descriptor = "chrome_track_event_extension.descriptor"
 }
 
 grit("chrome_track_event_resources") {
@@ -31,5 +60,5 @@ grit("chrome_track_event_resources") {
     "grit/tracing_proto_resources.h",
     "tracing_proto_resources.pak",
   ]
-  deps = [ ":chrome_track_event" ]
+  deps = [ ":chrome_track_event_extension_gen" ]
 }

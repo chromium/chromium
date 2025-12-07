@@ -13,12 +13,12 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import '../settings_shared.css.js';
 
 import {getESimProfile} from 'chrome://resources/ash/common/cellular_setup/esim_manager_utils.js';
-import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
-import {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
-import {ESimOperationResult, ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
+import type {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
+import type {ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
+import {ESimOperationResult} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -146,7 +146,7 @@ export class EsimRenameDialogElement extends EsimRenameDialogElementBase {
     // The C++ layer uses std::u16string, which use 16 bit characters. JS
     // strings support either 8 or 16 bit characters, and must be converted
     // to an array of 16 bit character codes that match std::u16string.
-    const name = stringToMojoString16(this.esimProfileName_);
+    const name = this.esimProfileName_;
 
     const response = await this.esimProfileRemote_!.setProfileNickname(name);
     this.handleSetProfileNicknameResponse_(response.result);

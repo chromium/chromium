@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "components/permissions/permission_util.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents.h"
 #include "url/origin.h"
 
@@ -28,13 +29,21 @@ const url::Origin& GetCanonicalOrigin(PermissionType permission,
                                       const url::Origin& requesting_origin,
                                       const url::Origin& embedding_origin) {
   // Logic in this function should match the logic in
-  // permissions::PermissionManager::GetCanonicalOrigin(). Currently it always
-  // returns embedding origin, which is correct for all permissions supported by
-  // WebEngine (AUDIO_CAPTURE, VIDEO_CAPTURE, PROTECTED_MEDIA_IDENTIFIER,
-  // DURABLE_STORAGE).
+  // permissions::PermissionUtil::GetCanonicalOrigin.
   //
   // TODO(crbug.com/40680523): Update this function when other permissions are
   // added.
+  if (permission == PermissionType::NOTIFICATIONS) {
+    return requesting_origin;
+  }
+
+  // Return embedding origin by default, which is correct for all remaining
+  // permissions supported by WebEngine.
+  //
+  // - AUDIO_CAPTURE
+  // - VIDEO_CAPTURE
+  // - PROTECTED_MEDIA_IDENTIFIER
+  // - DURABLE_STORAGE
   return embedding_origin;
 }
 
@@ -72,7 +81,8 @@ void FramePermissionController::SetPermissionState(PermissionType permission,
   DCHECK(permission == PermissionType::AUDIO_CAPTURE ||
          permission == PermissionType::VIDEO_CAPTURE ||
          permission == PermissionType::PROTECTED_MEDIA_IDENTIFIER ||
-         permission == PermissionType::DURABLE_STORAGE);
+         permission == PermissionType::DURABLE_STORAGE ||
+         permission == PermissionType::NOTIFICATIONS);
 
   auto it = per_origin_permissions_.find(origin);
   if (it == per_origin_permissions_.end()) {
@@ -114,12 +124,15 @@ PermissionStatus FramePermissionController::GetPermissionState(
 void FramePermissionController::RequestPermissions(
     const std::vector<PermissionType>& permissions,
     const url::Origin& requesting_origin,
-    base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback) {
-  std::vector<PermissionStatus> result;
+    base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
+        callback) {
+  std::vector<content::PermissionResult> result;
   result.reserve(permissions.size());
 
   for (auto& permission : permissions) {
-    result.push_back(GetPermissionState(permission, requesting_origin));
+    result.push_back(content::PermissionResult(
+        GetPermissionState(permission, requesting_origin),
+        content::PermissionStatusSource::UNSPECIFIED));
   }
 
   std::move(callback).Run(result);

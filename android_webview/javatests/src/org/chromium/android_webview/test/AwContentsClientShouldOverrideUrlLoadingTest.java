@@ -25,9 +25,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
-import org.chromium.android_webview.AwContentsClient;
-import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
-import org.chromium.android_webview.AwSettings;
+import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.policy.AwPolicyProvider;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedErrorHelper;
 import org.chromium.android_webview.test.util.CommonResources;
@@ -815,10 +813,10 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), redirectUrl);
         AwWebResourceRequest request = mContentsClient.waitForShouldOverrideUrlLoading();
-        Assert.assertEquals(redirectTarget, request.url);
-        Assert.assertEquals(serverSideRedirect, request.isRedirect);
-        Assert.assertFalse(request.hasUserGesture);
-        Assert.assertTrue(request.isOutermostMainFrame);
+        Assert.assertEquals(redirectTarget, request.getUrl());
+        Assert.assertEquals(serverSideRedirect, request.isRedirect());
+        Assert.assertFalse(request.hasUserGesture());
+        Assert.assertTrue(request.isOutermostMainFrame());
         waitForRedirectsToFinish(redirectUrl, redirectTarget);
 
         // Test clicking with JS, hasUserGesture must be false.
@@ -839,16 +837,16 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
         clickOnLinkUsingJs();
 
         request = mContentsClient.waitForShouldOverrideUrlLoading();
-        Assert.assertEquals(redirectUrl, request.url);
-        Assert.assertFalse(request.isRedirect);
-        Assert.assertFalse(request.hasUserGesture);
-        Assert.assertTrue(request.isOutermostMainFrame);
+        Assert.assertEquals(redirectUrl, request.getUrl());
+        Assert.assertFalse(request.isRedirect());
+        Assert.assertFalse(request.hasUserGesture());
+        Assert.assertTrue(request.isOutermostMainFrame());
 
         request = mContentsClient.waitForShouldOverrideUrlLoading();
-        Assert.assertEquals(redirectTarget, request.url);
-        Assert.assertEquals(serverSideRedirect, request.isRedirect);
-        Assert.assertFalse(request.hasUserGesture);
-        Assert.assertTrue(request.isOutermostMainFrame);
+        Assert.assertEquals(redirectTarget, request.getUrl());
+        Assert.assertEquals(serverSideRedirect, request.isRedirect());
+        Assert.assertFalse(request.hasUserGesture());
+        Assert.assertTrue(request.isOutermostMainFrame());
         waitForRedirectsToFinish(redirectUrl, redirectTarget);
 
         indirectLoadCallCount = mShouldOverrideUrlLoadingHelper.getCallCount();
@@ -870,16 +868,16 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
         JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "link");
 
         request = mContentsClient.waitForShouldOverrideUrlLoading();
-        Assert.assertEquals(redirectUrl, request.url);
-        Assert.assertFalse(request.isRedirect);
-        Assert.assertTrue(request.hasUserGesture);
-        Assert.assertTrue(request.isOutermostMainFrame);
+        Assert.assertEquals(redirectUrl, request.getUrl());
+        Assert.assertFalse(request.isRedirect());
+        Assert.assertTrue(request.hasUserGesture());
+        Assert.assertTrue(request.isOutermostMainFrame());
 
         request = mContentsClient.waitForShouldOverrideUrlLoading();
-        Assert.assertEquals(redirectTarget, request.url);
-        Assert.assertEquals(serverSideRedirect, request.isRedirect);
-        Assert.assertFalse(request.hasUserGesture);
-        Assert.assertTrue(request.isOutermostMainFrame);
+        Assert.assertEquals(redirectTarget, request.getUrl());
+        Assert.assertEquals(serverSideRedirect, request.isRedirect());
+        Assert.assertFalse(request.hasUserGesture());
+        Assert.assertTrue(request.isOutermostMainFrame());
         waitForRedirectsToFinish(redirectUrl, redirectTarget);
     }
 
@@ -985,7 +983,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
     public void testCallDestroyInCallback() throws Throwable {
         class DestroyInCallbackClient extends ShouldOverrideUrlLoadingClient {
             @Override
-            public boolean shouldOverrideUrlLoading(AwContentsClient.AwWebResourceRequest request) {
+            public boolean shouldOverrideUrlLoading(AwWebResourceRequest request) {
                 mAwContents.destroy();
                 return super.shouldOverrideUrlLoading(request);
             }
@@ -993,9 +991,6 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
 
         setupWithProvidedContentsClient(new DestroyInCallbackClient());
         mShouldOverrideUrlLoadingHelper = mContentsClient.getShouldOverrideUrlLoadingHelper();
-
-        OnReceivedErrorHelper onReceivedErrorHelper = mContentsClient.getOnReceivedErrorHelper();
-        int onReceivedErrorCount = onReceivedErrorHelper.getCallCount();
 
         mActivityTestRule.loadDataSync(
                 mAwContents,
@@ -1019,9 +1014,9 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
     public void testReloadingUrlDoesNotBreakBackForwardList() throws Throwable {
         class ReloadInCallbackClient extends ShouldOverrideUrlLoadingClient {
             @Override
-            public boolean shouldOverrideUrlLoading(AwContentsClient.AwWebResourceRequest request) {
+            public boolean shouldOverrideUrlLoading(AwWebResourceRequest request) {
                 super.shouldOverrideUrlLoading(request);
-                mAwContents.loadUrl(request.url);
+                mAwContents.loadUrl(request.getUrl());
                 return true;
             }
         }
@@ -1051,10 +1046,11 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
         Assert.assertEquals(1, navHistory.getCurrentEntryIndex());
         Assert.assertEquals(linkUrl, navHistory.getEntryAtIndex(1).getUrl().getSpec());
 
-        pageFinishedCount = onPageFinishedHelper.getCallCount();
+        OnPageStartedHelper startHelper = mContentsClient.getOnPageStartedHelper();
+        int pageStartedCount = startHelper.getCallCount();
         shouldOverrideUrlLoadingCallCount = mShouldOverrideUrlLoadingHelper.getCallCount();
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> mAwContents.goBack());
-        onPageFinishedHelper.waitForCallback(pageFinishedCount);
+        startHelper.waitForCallback(pageStartedCount);
         Assert.assertEquals(
                 "Should not invoke shouldOverrideUrlLoading() for history navigation",
                 shouldOverrideUrlLoadingCallCount,
@@ -1075,7 +1071,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
         final String globalJsVar = "window.testCallStopAndLoadJsInCallback";
         class StopInCallbackClient extends ShouldOverrideUrlLoadingClient {
             @Override
-            public boolean shouldOverrideUrlLoading(AwContentsClient.AwWebResourceRequest request) {
+            public boolean shouldOverrideUrlLoading(AwWebResourceRequest request) {
                 mAwContents.stopLoading();
                 mAwContents.loadUrl("javascript:" + globalJsVar + "= 1;");
                 return super.shouldOverrideUrlLoading(request);
@@ -1124,7 +1120,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
                         getTestPageCommonHeaders(), ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL));
         class StopInCallbackClient extends ShouldOverrideUrlLoadingClient {
             @Override
-            public boolean shouldOverrideUrlLoading(AwContentsClient.AwWebResourceRequest request) {
+            public boolean shouldOverrideUrlLoading(AwWebResourceRequest request) {
                 mAwContents.loadUrl(httpPathOnServer);
                 return super.shouldOverrideUrlLoading(request);
             }
@@ -1294,6 +1290,45 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
         }
     }
 
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testNullContentsClientIntentSelectorRemoved() throws Throwable {
+        try {
+            // The test will fire real intents through the test activity.
+            // Need to temporarily suppress startActivity otherwise there will be a
+            // handler selection window and the test can't dismiss that.
+            mActivityTestRule.getActivity().setIgnoreStartActivity(true);
+            final String testUrl =
+                    "intent:wtai://wp/#Intent;SEL;action=android.settings.SETTINGS;"
+                            + "component=package/class;end";
+            setupWithProvidedContentsClient(new TestDefaultContentsClient());
+            AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
+            final String pageTitle = "Click Title";
+            final String htmlWithLink =
+                    "<html><title>"
+                            + pageTitle
+                            + "</title>"
+                            + "<body><a id='link' href='"
+                            + testUrl
+                            + "'>Click this!</a></body></html>";
+            final String urlWithLink =
+                    mWebServer.setResponse(
+                            "/html_with_link.html",
+                            htmlWithLink,
+                            CommonResources.getTextHtmlHeaders(true));
+
+            mActivityTestRule.loadUrlSync(
+                    mAwContents, mContentsClient.getOnPageFinishedHelper(), urlWithLink);
+            JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "link");
+            mActivityTestRule.pollUiThread(
+                    () -> mActivityTestRule.getActivity().getLastSentIntent() != null);
+            Assert.assertNull(mActivityTestRule.getActivity().getLastSentIntent().getSelector());
+        } finally {
+            mActivityTestRule.getActivity().setIgnoreStartActivity(false);
+        }
+    }
+
     private void setAppLinkPolicy(final AwPolicyProvider testProvider, String url) {
         final PolicyData[] policies = {
             new PolicyData.Str(sEnterpriseAuthAppLinkPolicy, "[{ \"url\": \"" + url + "\"}]")
@@ -1315,7 +1350,6 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
         try {
             standardSetup();
             mActivityTestRule.getActivity().setIgnoreStartActivity(true);
-            AwSettings contentSettings = mActivityTestRule.getAwSettingsOnUiThread(mAwContents);
 
             final AwPolicyProvider testProvider =
                     new AwPolicyProvider(mActivityTestRule.getActivity().getApplicationContext());
@@ -1351,7 +1385,6 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
         try {
             standardSetup();
             mActivityTestRule.getActivity().setIgnoreStartActivity(true);
-            AwSettings contentSettings = mActivityTestRule.getAwSettingsOnUiThread(mAwContents);
             final AwPolicyProvider testProvider =
                     new AwPolicyProvider(mActivityTestRule.getActivity().getApplicationContext());
             ThreadUtils.runOnUiThreadBlocking(
@@ -1412,11 +1445,11 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
 
     // AwContentsClient handling an invalid network scheme
     private static class BadSchemeClient extends ShouldOverrideUrlLoadingClient {
-        CountDownLatch mLatch = new CountDownLatch(1);
+        final CountDownLatch mLatch = new CountDownLatch(1);
 
         @Override
         public boolean shouldOverrideUrlLoading(AwWebResourceRequest request) {
-            if (request.url.startsWith(BAD_SCHEME)) {
+            if (request.getUrl().startsWith(BAD_SCHEME)) {
                 mLatch.countDown();
                 return true;
             }
@@ -1426,7 +1459,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
         @Override
         public void onReceivedError(AwWebResourceRequest request, AwWebResourceError error) {
             super.onReceivedError(request, error);
-            throw new RuntimeException("we should not receive an error code! " + request.url);
+            throw new RuntimeException("we should not receive an error code! " + request.getUrl());
         }
 
         public void waitForLatch() {
@@ -1448,11 +1481,6 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
         final String path1 = "/from.html";
         final String path2 = BAD_SCHEME + "to.html";
         final String fromUrl = mWebServer.setRedirect(path1, path2);
-        final String toUrl =
-                mWebServer.setResponse(
-                        path2,
-                        CommonResources.ABOUT_HTML,
-                        CommonResources.getTextHtmlHeaders(true));
         mActivityTestRule.loadUrlAsync(mAwContents, fromUrl);
         client.waitForLatch();
         // Wait for an arbitrary amount of time to ensure onReceivedError is never called.

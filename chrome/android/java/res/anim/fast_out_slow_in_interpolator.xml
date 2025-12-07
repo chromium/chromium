@@ -9,5 +9,4 @@ found in the LICENSE file.
     android:controlX1="0.4"
     android:controlY1="0"
     android:controlX2="0.2"
-    android:controlY2="1"
-    tools:targetApi="21"/>
+    android:controlY2="1"/>

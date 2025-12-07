@@ -82,9 +82,6 @@
     Update Chrome button, activate to update Chrome from your Chrome settings
   </message>
 
-  <message name="IDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_HINT" desc="The button text contents to suggest pedal action, RUN_CHROME_SAFETY_CHECK">
-    Run Chrome safety check
-  </message>
   <message name="IDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe pedal action, RUN_CHROME_SAFETY_CHECK">
     Run a safety check in Chrome settings
   </message>
@@ -158,6 +155,19 @@
   </message>
   <message name="IDS_ACC_OMNIBOX_PEDAL_MANAGE_SYNC" desc="Announcement when pedal action button is focused, MANAGE_SYNC">
     Manage sync button, activate to manage what info you sync in Chrome settings
+  </message>
+
+  <message name="IDS_OMNIBOX_PEDAL_MANAGE_SYNC_HINT_UPDATED" desc="The button text contents to suggest pedal action, MANAGE_SYNC">
+    Manage data in your account
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_MANAGE_SYNC_SUGGESTION_CONTENTS_UPDATED" desc="The button hover tooltip text to describe pedal action, MANAGE_SYNC">
+    Manage what Chrome info you save in your Google Account
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_MANAGE_SYNC_SUFFIX_UPDATED" desc="Suffix for spoken suggestion description with pedal action button, to explain keystroke used to MANAGE_SYNC.">
+    <ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Tab then Enter to manage what Chrome info you save in your Google Account
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_MANAGE_SYNC_UPDATED" desc="Announcement when pedal action button is focused, MANAGE_SYNC">
+    Manage data in your account button, activate to manage what Chrome info you save in your Google Account
   </message>
 
   <message name="IDS_OMNIBOX_PEDAL_MANAGE_SITE_SETTINGS_HINT" desc="The button text contents to suggest pedal action, MANAGE_SITE_SETTINGS">

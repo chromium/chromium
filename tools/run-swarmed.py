@@ -302,8 +302,22 @@ def main():
       type=str,
       help='Arguments to pass to the test runner, e.g. gtest_filter and '
       'gtest_repeat.')
+  parser.add_argument('--force',
+                      action='store_true',
+                      help='Bypasses deprecation notice.')
 
   args = parser.parse_intermixed_args()
+
+  # TODO(crbug.com/386167803): Remove this script after this deprecation notice
+  # has been live for a few months.
+  if not args.force:
+    print(
+        'This script is deprecated in favor of the UTR. For more info, see '
+        'https://chromium.googlesource.com/chromium/src/+/main/tools/utr/README.md. '
+        'To skip this warning, re-run this script with "--force". Note that '
+        'this script will be deleted sometime in 2025.',
+        file=sys.stderr)
+    return 1
 
   with open(os.path.join(args.out_dir, 'args.gn')) as f:
     gn_args = gn_helpers.FromGNArgs(f.read())

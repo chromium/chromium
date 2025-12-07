@@ -135,9 +135,8 @@ crosapi::mojom::TelemetryInputTouchButton Convert(
 cros_healthd::mojom::EventCategoryEnum Convert(
     crosapi::mojom::TelemetryEventCategoryEnum input);
 
-template <class OutputT,
-          class InputT,
-          std::enable_if_t<std::is_enum_v<InputT>, bool> = true>
+template <class OutputT, class InputT>
+  requires(std::is_enum_v<InputT>)
 std::vector<OutputT> ConvertVector(std::vector<InputT> input) {
   std::vector<OutputT> result;
   for (auto elem : input) {
@@ -157,8 +156,8 @@ template <class InputT,
           class... Types,
           class OutputT = decltype(unchecked::UncheckedConvertPtr(
               std::declval<InputT>(),
-              std::declval<Types>()...)),
-          class = std::enable_if_t<std::is_default_constructible_v<OutputT>>>
+              std::declval<Types>()...))>
+  requires(std::is_default_constructible_v<OutputT>)
 OutputT ConvertStructPtr(InputT input) {
   return (!input.is_null()) ? unchecked::UncheckedConvertPtr(std::move(input))
                             : OutputT();

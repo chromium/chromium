@@ -42,11 +42,9 @@ bool IsConfigRelatedUpdateOriginValue(
     case sync_pb::SyncEnums::UNKNOWN_ORIGIN:
     case sync_pb::SyncEnums::PERIODIC:
     case sync_pb::SyncEnums::GU_TRIGGER:
-    case sync_pb::SyncEnums::RETRY:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool ShouldRequestEarlyExit(const SyncProtocolError& error) {
@@ -62,18 +60,15 @@ bool ShouldRequestEarlyExit(const SyncProtocolError& error) {
     case CLIENT_DATA_OBSOLETE:
     case DISABLED_BY_ADMIN:
     case ENCRYPTION_OBSOLETE:
-      // If we send terminate sync early then |sync_cycle_ended| notification
-      // would not be sent. If there were no actions then |ACTIONABLE_ERROR|
-      // notification wouldnt be sent either. Then the UI layer would be left
-      // waiting forever. So assert we would send something.
-      DCHECK_NE(error.action, UNKNOWN_ACTION);
       return true;
     case CONFLICT:
     case INVALID_MESSAGE:
-      NOTREACHED_IN_MIGRATION();
+      // These cases should not occur here, but since the error ultimately comes
+      // from the server, handle them gracefully (by not doing anything in
+      // particular).
       return false;
   }
-  return false;
+  NOTREACHED();
 }
 
 bool IsActionableProtocolError(const SyncProtocolError& error) {
@@ -148,8 +143,9 @@ void SyncSchedulerImpl::Start(Mode mode, base::Time last_poll_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::string thread_name = base::PlatformThread::GetName();
-  if (thread_name.empty())
+  if (thread_name.empty()) {
     thread_name = "<Main thread>";
+  }
   SDVLOG(2) << "Start called from thread " << thread_name << " with mode "
             << GetModeString(mode);
   if (!started_) {
@@ -172,8 +168,6 @@ void SyncSchedulerImpl::Start(Mode mode, base::Time last_poll_time) {
 
     AdjustPolling(UPDATE_INTERVAL);  // Will kick start poll timer if needed.
 
-    // Update our current time before checking IsRetryRequired().
-    nudge_tracker_.SetSyncCycleStartTime(TimeTicks::Now());
     if (nudge_tracker_.IsSyncRequired(GetEnabledAndUnblockedTypes()) &&
         CanRunNudgeJobNow(RespectGlobalBackoff(true))) {
       TrySyncCycleJob(RespectGlobalBackoff(true));
@@ -199,8 +193,9 @@ void SyncSchedulerImpl::SendInitialSnapshot() {
 
   SyncCycleEvent event(SyncCycleEvent::STATUS_CHANGED);
   event.snapshot = SyncCycle(cycle_context_, this).TakeSnapshot();
-  for (SyncEngineEventListener& observer : *cycle_context_->listeners())
+  for (SyncEngineEventListener& observer : *cycle_context_->listeners()) {
     observer.OnSyncCycleEvent(event);
+  }
 }
 
 void SyncSchedulerImpl::ScheduleConfiguration(
@@ -359,8 +354,7 @@ const char* SyncSchedulerImpl::GetModeString(SyncScheduler::Mode mode) {
     case NORMAL_MODE:
       return "NORMAL_MODE";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 void SyncSchedulerImpl::ForceShortNudgeDelayForTest() {
@@ -470,7 +464,7 @@ void SyncSchedulerImpl::HandleFailure(
             ? wait_interval_->length
             : delay_provider_->GetInitialDelay(model_neutral_state);
     base::TimeDelta next_delay = delay_provider_->GetDelay(previous_delay);
-    wait_interval_ = std::make_unique<WaitInterval>(
+    wait_interval_.emplace(
         WaitInterval::BlockingMode::kExponentialBackoff, next_delay);
     SDVLOG(2) << "Sync cycle failed.  Will back off for "
               << wait_interval_->length.InMilliseconds() << "ms.";
@@ -500,8 +494,9 @@ base::TimeDelta SyncSchedulerImpl::GetPollInterval() {
 void SyncSchedulerImpl::AdjustPolling(PollAdjustType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!started_)
+  if (!started_) {
     return;
+  }
 
   const base::Time now = base::Time::Now();
 
@@ -540,7 +535,7 @@ void SyncSchedulerImpl::RestartWaiting() {
       // a global unblock job, we will schedule another unblock job which has
       // same waiting time, then the job will be run later than expected. Even
       // we did not schedule an unblock job when code reach here, it is ok since
-      // |TrySyncCycleJobImpl| will call this function after the scheduled job
+      // `TrySyncCycleJobImpl` will call this function after the scheduled job
       // got run.
       return;
     }
@@ -602,8 +597,6 @@ void SyncSchedulerImpl::TrySyncCycleJobImpl(
     RespectGlobalBackoff respect_backoff) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  nudge_tracker_.SetSyncCycleStartTime(TimeTicks::Now());
-
   if (mode_ == CONFIGURATION_MODE) {
     if (pending_configure_params_) {
       SDVLOG(2) << "Found pending configure job";
@@ -637,10 +630,6 @@ void SyncSchedulerImpl::PollTimerCallback() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!syncer_->IsSyncing());
 
-  TrySyncCycleJob(RespectGlobalBackoff(true));
-}
-
-void SyncSchedulerImpl::RetryTimerCallback() {
   TrySyncCycleJob(RespectGlobalBackoff(true));
 }
 
@@ -680,8 +669,8 @@ void SyncSchedulerImpl::PerformDelayedNudge() {
   if (CanRunNudgeJobNow(RespectGlobalBackoff(true))) {
     TrySyncCycleJob(RespectGlobalBackoff(true));
   } else {
-    // If we set |wait_interval_| while this PerformDelayedNudge was pending
-    // callback scheduled to |retry_timer_|, it's possible we didn't re-schedule
+    // If we set `wait_interval_` while this PerformDelayedNudge was pending
+    // callback scheduled to `retry_timer_`, it's possible we didn't re-schedule
     // because this PerformDelayedNudge was going to execute sooner. If that's
     // the case, we need to make sure we setup to waiting callback now.
     RestartWaiting();
@@ -693,8 +682,9 @@ void SyncSchedulerImpl::ExponentialBackoffRetry() {
 }
 
 void SyncSchedulerImpl::NotifyRetryTime(base::Time retry_time) {
-  for (SyncEngineEventListener& observer : *cycle_context_->listeners())
+  for (SyncEngineEventListener& observer : *cycle_context_->listeners()) {
     observer.OnRetryTimeChanged(retry_time);
+  }
 }
 
 void SyncSchedulerImpl::NotifyBlockedTypesChanged() {
@@ -735,7 +725,7 @@ bool SyncSchedulerImpl::IsGlobalBackoff() const {
 void SyncSchedulerImpl::OnThrottled(const base::TimeDelta& throttle_duration) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::UmaHistogramBoolean("Sync.ThrottledAllDataTypes", true);
-  wait_interval_ = std::make_unique<WaitInterval>(
+  wait_interval_.emplace(
       WaitInterval::BlockingMode::kThrottled, throttle_duration);
   for (SyncEngineEventListener& observer : *cycle_context_->listeners()) {
     observer.OnThrottledTypesChanged(DataTypeSet::All());
@@ -798,8 +788,9 @@ void SyncSchedulerImpl::OnReceivedCustomNudgeDelays(
     const std::map<DataType, base::TimeDelta>& nudge_delays) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (force_short_nudge_delay_for_test_)
+  if (force_short_nudge_delay_for_test_) {
     return;
+  }
 
   for (const auto& [type, delay] : nudge_delays) {
     nudge_tracker_.UpdateLocalChangeDelay(type, delay);
@@ -816,24 +807,18 @@ void SyncSchedulerImpl::OnSyncProtocolError(
   }
   if (IsActionableProtocolError(sync_protocol_error)) {
     SDVLOG(2) << "OnActionableProtocolError";
-    for (SyncEngineEventListener& observer : *cycle_context_->listeners())
+    for (SyncEngineEventListener& observer : *cycle_context_->listeners()) {
       observer.OnActionableProtocolError(sync_protocol_error);
+    }
   }
-}
-
-void SyncSchedulerImpl::OnReceivedGuRetryDelay(const base::TimeDelta& delay) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  nudge_tracker_.SetNextRetryTime(TimeTicks::Now() + delay);
-  retry_timer_.Start(FROM_HERE, delay, this,
-                     &SyncSchedulerImpl::RetryTimerCallback);
 }
 
 void SyncSchedulerImpl::OnReceivedMigrationRequest(DataTypeSet types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  for (SyncEngineEventListener& observer : *cycle_context_->listeners())
+  for (SyncEngineEventListener& observer : *cycle_context_->listeners()) {
     observer.OnMigrationRequested(types);
+  }
 }
 
 void SyncSchedulerImpl::OnReceivedQuotaParamsForExtensionTypes(
@@ -848,10 +833,11 @@ void SyncSchedulerImpl::SetNotificationsEnabled(bool notifications_enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   cycle_context_->set_notifications_enabled(notifications_enabled);
-  if (notifications_enabled)
+  if (notifications_enabled) {
     nudge_tracker_.OnInvalidationsEnabled();
-  else
+  } else {
     nudge_tracker_.OnInvalidationsDisabled();
+  }
 }
 
 bool SyncSchedulerImpl::IsEarlierThanCurrentPendingJob(

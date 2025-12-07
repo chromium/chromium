@@ -39,11 +39,11 @@ class AXPlatformNode;
 
 class TestFragmentRootDelegate : public AXFragmentRootDelegateWin {
  public:
-  TestFragmentRootDelegate();
-  virtual ~TestFragmentRootDelegate();
+  TestFragmentRootDelegate() = default;
   gfx::NativeViewAccessible GetChildOfAXFragmentRoot() override;
   gfx::NativeViewAccessible GetParentOfAXFragmentRoot() override;
   bool IsAXFragmentRootAControlElement() override;
+
   gfx::NativeViewAccessible child_ = nullptr;
   gfx::NativeViewAccessible parent_ = nullptr;
   bool is_control_element_ = true;
@@ -87,6 +87,8 @@ class AXPlatformNodeWinTest : public AXPlatformNodeTest {
 
   void TearDown() override;
 
+  void DestroyTree() override;
+
  protected:
   static const std::u16string kEmbeddedCharacterAsString;
 
@@ -100,8 +102,7 @@ class AXPlatformNodeWinTest : public AXPlatformNodeTest {
   Microsoft::WRL::ComPtr<IRawElementProviderSimple>
   GetIRawElementProviderSimpleFromChildIndex(int child_index);
   Microsoft::WRL::ComPtr<IRawElementProviderSimple>
-  GetIRawElementProviderSimpleFromTree(const ui::AXTreeID tree_id,
-                                       const AXNodeID node_id);
+  GetIRawElementProviderSimpleFromId(const AXNodeID node_id);
   Microsoft::WRL::ComPtr<IRawElementProviderFragment>
   GetRootIRawElementProviderFragment();
   Microsoft::WRL::ComPtr<IRawElementProviderFragment>

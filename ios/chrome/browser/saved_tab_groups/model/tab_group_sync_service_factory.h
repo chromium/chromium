@@ -6,26 +6,22 @@
 #define IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_MODEL_TAB_GROUP_SYNC_SERVICE_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
-class ChromeBrowserState;
+class ProfileIOS;
 
 namespace tab_groups {
-
+class SyntheticFieldTrialHelper;
 class TabGroupSyncService;
 
 // Factory for the Tab Group Sync service.
-class TabGroupSyncServiceFactory : public BrowserStateKeyedServiceFactory {
+class TabGroupSyncServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  // Returns the TabGroupSyncService for this `browser_state`.
-  static TabGroupSyncService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
-
+  static TabGroupSyncService* GetForProfile(ProfileIOS* profile);
   static TabGroupSyncServiceFactory* GetInstance();
 
-  TabGroupSyncServiceFactory(const TabGroupSyncServiceFactory&) = delete;
-  TabGroupSyncServiceFactory& operator=(const TabGroupSyncServiceFactory&) =
-      delete;
+  // Return the default factory.
+  static TestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<TabGroupSyncServiceFactory>;
@@ -34,7 +30,21 @@ class TabGroupSyncServiceFactory : public BrowserStateKeyedServiceFactory {
   ~TabGroupSyncServiceFactory() override;
 
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
+
+  // Called to report synthetic field trial on whether the client had a sync
+  // tabgroup.
+  static void OnHadSyncedTabGroup(bool had_synced_group);
+
+  // Called to report synthetic field trial on whether the client had a shared
+  // tabgroup.
+  static void OnHadSharedTabGroup(bool had_shared_group);
+
+  // Helper method to register a synthetic field trial.
+  static void RegisterFieldTrial(std::string_view trial_name,
+                                 std::string_view group_name);
+
+  std::unique_ptr<SyntheticFieldTrialHelper> synthetic_field_trial_helper_;
 };
 
 }  // namespace tab_groups

@@ -96,22 +96,24 @@ class MotionMarkPage(rendering_story.RenderingStory):
       suite_name = suite_name.replace(ch, '')
       test_name = test_name.replace(ch, '')
 
-    # Using patched snapshot of MotionMark 1.3 (crbug.com/1521178)
-    return (
-        'https://vmiura.github.io/MotionMarkSnapshot1.3/MotionMark/developer.html'
-        '?suite-name=%s'
-        '&test-name=%s'
-        '&complexity=%d'
-        '&test-interval=20'
-        '&warmup-length=2000'
-        '&warmup-frame-count=30'
-        '&first-frame-minimum-length=0'
-        '&display=minimal'
-        '&tiles=big'
-        '&controller=fixed'
-        '&system-frame-rate=60'
-        '&frame-rate=60'
-        '&time-measurement=performance') % (suite_name, test_name, complexity)
+    # Using latest MotionMark 1.3.1 as previous patches from 1.3 were pulled
+    # into the main repo. Commit at time of recording
+    # https://github.com/WebKit/MotionMark/commit/be2a5fea89b6ef411b053ebeb95a6302b3dc0ecb
+    return ('https://browserbench.org/MotionMark1.3.1/developer.html'
+            '?suite-name=%s'
+            '&test-name=%s'
+            '&complexity=%d'
+            '&test-interval=20'
+            '&warmup-length=2000'
+            '&warmup-frame-count=30'
+            '&first-frame-minimum-length=0'
+            '&display=minimal'
+            '&tiles=big'
+            '&controller=fixed'
+            '&system-frame-rate=60'
+            '&frame-rate=60'
+            '&time-measurement=performance') % (suite_name, test_name,
+                                                complexity)
 
 class MotionMarkRampPage(MotionMarkPage):
   ABSTRACT_STORY = True
@@ -125,20 +127,21 @@ class MotionMarkRampPage(MotionMarkPage):
       suite_name = suite_name.replace(ch, '')
       test_name = test_name.replace(ch, '')
 
-    # Using patched snapshot of MotionMark 1.3 (crbug.com/1521178)
-    return (
-        'https://vmiura.github.io/MotionMarkSnapshot1.3/MotionMark/developer.html'
-        '?suite-name=%s'
-        '&test-name=%s'
-        '&test-interval=20'
-        '&display=minimal'
-        '&tiles=big'
-        '&controller=ramp'
-        '&system-frame-rate=60'
-        '&frame-rate=60'
-        '&warmup-length=2000'
-        '&warmup-frame-count=30'
-        '&time-measurement=performance') % (suite_name, test_name)
+    # Using latest MotionMark 1.3.1 as previous patches from 1.3 were pulled
+    # into the main repo. Commit at time of recording
+    # https://github.com/WebKit/MotionMark/commit/be2a5fea89b6ef411b053ebeb95a6302b3dc0ecb
+    return ('https://browserbench.org/MotionMark1.3.1/developer.html'
+            '?suite-name=%s'
+            '&test-name=%s'
+            '&test-interval=20'
+            '&display=minimal'
+            '&tiles=big'
+            '&controller=ramp'
+            '&system-frame-rate=60'
+            '&frame-rate=60'
+            '&warmup-length=2000'
+            '&warmup-frame-count=30'
+            '&time-measurement=performance') % (suite_name, test_name)
 
 
 class MotionMarkRampMultiply(MotionMarkRampPage):
@@ -186,8 +189,10 @@ class MotionMarkRampComposite(MotionMarkPage):
   TAGS = [story_tags.MOTIONMARK, story_tags.MOTIONMARK_RAMP]
   SUPPORTED_PLATFORMS = platforms.ALL_PLATFORMS
   BASE_NAME = 'motionmark_ramp_composite'
-  # Using patched snapshot of MotionMark 1.3 (crbug.com/1521178)
-  URL = 'https://vmiura.github.io/MotionMarkSnapshot1.3/MotionMark/developer.html'
+  # Using latest MotionMark 1.3.1 as previous patches from 1.3 were pulled
+  # into the main repo. Commit at time of recording
+  # https://github.com/WebKit/MotionMark/commit/be2a5fea89b6ef411b053ebeb95a6302b3dc0ecb
+  URL = 'https://browserbench.org/MotionMark1.3.1/developer.html'
 
   def RunNavigateSteps(self, action_runner):
     action_runner.Navigate(self.url)
@@ -268,23 +273,24 @@ class MotionMarkFixed2SecondsPage(MotionMarkPage):
       suite_name = suite_name.replace(ch, '')
       test_name = test_name.replace(ch, '')
 
-    # Using patched snapshot of MotionMark 1.3 (crbug.com/1521178)
-    return (
-        'https://vmiura.github.io/MotionMarkSnapshot1.3/MotionMark/developer.html'
-        '?suite-name=%s'
-        '&test-name=%s'
-        '&complexity=%d'
-        '&test-interval=%d'
-        '&warmup-length=0'
-        '&warmup-frame-count=0'
-        '&first-frame-minimum-length=0'
-        '&display=minimal'
-        '&tiles=big'
-        '&controller=fixed'
-        '&system-frame-rate=60'
-        '&frame-rate=60'
-        '&time-measurement=performance') % (suite_name, test_name, complexity,
-                                            test_interval)
+  # Using latest MotionMark 1.3.1 as previous patches from 1.3 were pulled
+  # into the main repo. Commit at time of recording#
+  # https://github.com/WebKit/MotionMark/commit/be2a5fea89b6ef411b053ebeb95a6302b3dc0ecb
+    return ('https://browserbench.org/MotionMark1.3.1/developer.html'
+            '?suite-name=%s'
+            '&test-name=%s'
+            '&complexity=%d'
+            '&test-interval=%d'
+            '&warmup-length=0'
+            '&warmup-frame-count=0'
+            '&first-frame-minimum-length=0'
+            '&display=minimal'
+            '&tiles=big'
+            '&controller=fixed'
+            '&system-frame-rate=60'
+            '&frame-rate=60'
+            '&time-measurement=performance') % (suite_name, test_name,
+                                                complexity, test_interval)
 
 
 # Numbers for complexity come from recent high scores on perf bots with a PGO

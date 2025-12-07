@@ -1,6 +1,7 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #ifndef PARTITION_ALLOC_BUILD_CONFIG_H_
 #define PARTITION_ALLOC_BUILD_CONFIG_H_
 
@@ -16,9 +17,8 @@
 // This files contains the following definition:
 //
 // Operating system:
-//   IS_IOS / IS_AIX / IS_ANDROID / IS_ASMJS / IS_FREEBSD / IS_FUCHSIA /
-//   IS_LINUX / IS_MAC / IS_NACL / IS_NETBSD / IS_OPENBSD / IS_QNX /
-//   IS_SOLARIS / IS_WIN
+//   IS_IOS / IS_AIX / IS_ASMJS / IS_FREEBSD / IS_FUCHSIA / IS_LINUX / IS_MAC /
+//   IS_NETBSD / IS_OPENBSD / IS_QNX / IS_SOLARIS / IS_WIN
 //
 // Operating system family:
 //   IS_APPLE / IS_BSD / IS_POSIX
@@ -56,11 +56,14 @@
 // IWYU pragma: always_keep
 
 // A set of macros to use for platform detection.
-#if defined(__native_client__)
-// __native_client__ must be first, so that other IS_ defines are not set.
-#define PA_IS_NACL
-#elif defined(ANDROID)
-#define PA_IS_ANDROID
+#if PA_BUILDFLAG(IS_ANDROID)
+// The IS_ANDROID PA_BUILDFLAG macro is defined in buildflags.h.
+//
+// PartitionAlloc's embedders (Chromium, Dawn, Pdfium, Skia) define different
+// macros for Android builds: "ANDROID" or "SK_BUILD_FOR_ANDROID".
+//
+// To avoid relying on these external definitions, PartitionAlloc uses its own
+// dedicated build flag.
 #elif defined(__APPLE__)
 // Only include TargetConditionals after testing ANDROID as some Android builds
 // on the Mac have this header available and it's not needed unless the target
@@ -74,11 +77,11 @@
 #elif defined(__linux__)
 #if !PA_BUILDFLAG(IS_CHROMEOS)
 // Do not define PA_IS_LINUX on Chrome OS build.
-// The IS_CHROMEOS PA_BUILDFLAG macro is defined in chromeos_buildflags.h.
+// The IS_CHROMEOS PA_BUILDFLAG macro is defined in buildflags.h.
 #define PA_IS_LINUX
 #endif  // !PA_BUILDFLAG(IS_CHROMEOS)
-// Include a system header to pull in features.h for glibc/uclibc macros.
-#include <assert.h>
+// Include features.h for glibc/uclibc macros.
+#include <features.h>
 #if defined(__GLIBC__) && !defined(__UCLIBC__)
 // We really are using glibc, not uClibc pretending to be glibc.
 #define PA_LIBC_GLIBC
@@ -114,11 +117,11 @@
 #define PA_IS_BSD
 #endif
 
-#if defined(PA_IS_AIX) || defined(PA_IS_ANDROID) || defined(PA_IS_ASMJS) ||  \
-    defined(PA_IS_FREEBSD) || defined(PA_IS_IOS) || defined(PA_IS_LINUX) ||  \
-    defined(PA_IS_CHROMEOS) || defined(PA_IS_MAC) || defined(PA_IS_NACL) ||  \
-    defined(PA_IS_NETBSD) || defined(PA_IS_OPENBSD) || defined(PA_IS_QNX) || \
-    defined(PA_IS_SOLARIS) || PA_BUILDFLAG(IS_CHROMEOS)
+#if defined(PA_IS_AIX) || defined(PA_IS_ASMJS) || defined(PA_IS_FREEBSD) ||  \
+    defined(PA_IS_IOS) || defined(PA_IS_LINUX) || defined(PA_IS_CHROMEOS) || \
+    defined(PA_IS_MAC) || defined(PA_IS_NETBSD) || defined(PA_IS_OPENBSD) || \
+    defined(PA_IS_QNX) || defined(PA_IS_SOLARIS) ||                          \
+    PA_BUILDFLAG(IS_ANDROID) || PA_BUILDFLAG(IS_CHROMEOS)
 #define PA_IS_POSIX
 #endif
 
@@ -174,7 +177,7 @@
 #define PA_ARCH_CPU_ARM64
 #define PA_ARCH_CPU_64_BITS
 #define PA_ARCH_CPU_LITTLE_ENDIAN
-#elif defined(__pnacl__) || defined(__asmjs__) || defined(__wasm__)
+#elif defined(__asmjs__) || defined(__wasm__)
 #define PA_ARCH_CPU_32_BITS
 #define PA_ARCH_CPU_LITTLE_ENDIAN
 #elif defined(__MIPSEL__)
@@ -388,13 +391,6 @@
 #endif
 #undef PA_IS_AIX
 
-#if defined(PA_IS_ANDROID)
-#define PA_BUILDFLAG_INTERNAL_IS_ANDROID() (1)
-#else
-#define PA_BUILDFLAG_INTERNAL_IS_ANDROID() (0)
-#endif
-#undef PA_IS_ANDROID
-
 #if defined(PA_IS_APPLE)
 #define PA_BUILDFLAG_INTERNAL_IS_APPLE() (1)
 #else
@@ -450,13 +446,6 @@
 #define PA_BUILDFLAG_INTERNAL_IS_MAC() (0)
 #endif
 #undef PA_IS_MAC
-
-#if defined(PA_IS_NACL)
-#define PA_BUILDFLAG_INTERNAL_IS_NACL() (1)
-#else
-#define PA_BUILDFLAG_INTERNAL_IS_NACL() (0)
-#endif
-#undef PA_IS_NACL
 
 #if defined(PA_IS_NETBSD)
 #define PA_BUILDFLAG_INTERNAL_IS_NETBSD() (1)

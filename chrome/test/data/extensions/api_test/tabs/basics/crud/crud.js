@@ -101,7 +101,9 @@ chrome.test.runTests([
     var verify_default = function() {
       return pass(function(win) {
         assertEq(1, win.tabs.length);
-        assertEq("chrome://newtab/", win.tabs[0].pendingUrl);
+        // In case the URL has or has not committed yet, check both.
+        const url = win.tabs[0].pendingUrl || win.tabs[0].url;
+        assertEq("chrome://newtab/", url);
       });
     };
 
@@ -123,7 +125,9 @@ chrome.test.runTests([
         assertEq(1, win.tabs.length);
         assertEq(tab.id, win.tabs[0].id);
         assertEq(win.id, win.tabs[0].windowId);
-        assertEq(pageUrl('a'), win.tabs[0].pendingUrl);
+        // In case the URL has or has not committed yet, check both.
+        const url = win.tabs[0].pendingUrl || win.tabs[0].url;
+        assertEq(pageUrl('a'), url);
         lastWindowId = win.id;
       }));
     }));

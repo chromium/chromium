@@ -6,7 +6,7 @@
 #include "base/command_line.h"
 
 CrossDeviceScopedLogMessage::CrossDeviceScopedLogMessage(
-    const std::string_view file,
+    std::string_view file,
     int line,
     logging::LogSeverity severity,
     Feature feature)

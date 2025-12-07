@@ -5,33 +5,31 @@
 #include "base/task/thread_pool/environment_config.h"
 
 #include "base/base_switches.h"
-#include "base/command_line.h"
 #include "base/synchronization/lock.h"
+#include "base/synchronization/lock_impl.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 
-namespace base {
-namespace internal {
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/background_thread_pool_field_trial.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
+namespace base::internal {
 namespace {
 
 bool CanUseBackgroundThreadTypeForWorkerThreadImpl() {
-  // Commandline flag overrides (e.g. for experiments). Note that it may not be
-  // initialized yet, e.g. in cronet.
-  if (CommandLine::InitializedForCurrentProcess() &&
-      CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnableBackgroundThreadPool)) {
-    return true;
-  }
-
+#if BUILDFLAG(IS_ANDROID)
+  return base::android::BackgroundThreadPoolFieldTrial::
+      ShouldUseBackgroundThreadPool();
+#else   // BUILDFLAG(IS_ANDROID)
   // When Lock doesn't handle multiple thread priorities, run all
   // WorkerThread with a normal priority to avoid priority inversion when a
   // thread running with a normal priority tries to acquire a lock held by a
   // thread running with a background priority.
-  if (!Lock::HandlesMultipleThreadPriorities())
+  if (!Lock::HandlesMultipleThreadPriorities()) {
     return false;
+  }
 
-#if !BUILDFLAG(IS_ANDROID)
   // When thread type can't be increased to kNormal, run all threads with a
   // kNormal thread type to avoid priority inversions on shutdown
   // (ThreadPoolImpl increases kBackground threads type to kNormal on shutdown
@@ -39,19 +37,21 @@ bool CanUseBackgroundThreadTypeForWorkerThreadImpl() {
   //
   // This is ignored on Android, because it doesn't have a clean shutdown phase.
   if (!PlatformThread::CanChangeThreadType(ThreadType::kBackground,
-                                           ThreadType::kDefault))
+                                           ThreadType::kDefault)) {
     return false;
-#endif  // BUILDFLAG(IS_ANDROID)
+  }
 
   return true;
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 bool CanUseUtilityThreadTypeForWorkerThreadImpl() {
 #if !BUILDFLAG(IS_ANDROID)
   // Same as CanUseBackgroundThreadTypeForWorkerThreadImpl()
   if (!PlatformThread::CanChangeThreadType(ThreadType::kUtility,
-                                           ThreadType::kDefault))
+                                           ThreadType::kDefault)) {
     return false;
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
   return true;
@@ -71,5 +71,4 @@ bool CanUseUtilityThreadTypeForWorkerThread() {
   return can_use_utility_thread_type_for_worker_thread;
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

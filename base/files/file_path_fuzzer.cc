@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/files/file_path.h"
+
 #include <fuzzer/FuzzedDataProvider.h>
 #include <stdint.h>
 
@@ -10,7 +12,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/files/file_path.h"
 #include "base/pickle.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -90,8 +91,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Smoke-test operations against a second path.
   FilePath second_path(GenerateNativeString(provider));
   std::ignore = path.IsParent(second_path);
-  if (!second_path.IsAbsolute())
+  if (!second_path.IsAbsolute()) {
     std::ignore = path.Append(second_path);
+  }
   FilePath relative_path;
   std::ignore = path.AppendRelativePath(second_path, &relative_path);
 

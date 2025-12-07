@@ -27,7 +27,6 @@
 #include "media/base/media_log_properties.h"
 #include "media/base/media_log_record.h"
 #include "media/base/pipeline_status.h"
-#include "url/gurl.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include "base/apple/osstatus_logging.h"
@@ -101,10 +100,10 @@ class MEDIA_EXPORT MediaLog {
     DCHECK(!status.is_ok());
     std::unique_ptr<MediaLogRecord> record =
         CreateRecord(MediaLogRecord::Type::kMediaStatus);
-    base::Value serialized = MediaSerialize(status);
+    base::Value serialized = MediaSerialize(status.data_);
     DCHECK(serialized.is_dict());
-    if (DCHECK_IS_ON() && DLOG_IS_ON(ERROR) && ShouldLogToDebugConsole()) {
-      EmitConsoleErrorLog(serialized.GetDict().Clone());
+    if (ShouldLogToDebugConsole()) {
+      status.data_->RenderToLogWriter(true);
     }
     record->params.Merge(std::move(serialized.GetDict()));
     AddLogRecord(std::move(record));
@@ -180,6 +179,8 @@ class MEDIA_EXPORT MediaLog {
   void InvalidateLog();
 
   struct ParentLogRecord : base::RefCountedThreadSafe<ParentLogRecord> {
+    REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
     explicit ParentLogRecord(MediaLog* log);
 
     ParentLogRecord(const ParentLogRecord&) = delete;
@@ -207,9 +208,6 @@ class MEDIA_EXPORT MediaLog {
 
   // Helper methods to create events and their parameters.
   std::unique_ptr<MediaLogRecord> CreateRecord(MediaLogRecord::Type type);
-
-  // Helper method for emitting error logs to console.
-  void EmitConsoleErrorLog(base::Value::Dict status_dict);
 
   // The underlying media log.
   scoped_refptr<ParentLogRecord> parent_log_record_;

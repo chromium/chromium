@@ -8,34 +8,16 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace blink {
 
-namespace {
-
-size_t MaxChar16StringLength() {
-  // Each char16_t takes 2 bytes.
-  return static_cast<size_t>(features::kMaxSharedStorageBytesPerOrigin.Get()) /
-         2;
-}
-
-}  // namespace
-
 bool IsValidSharedStorageURLsArrayLength(size_t length) {
-  return length > 0u &&
+  return length != 0 &&
          length <=
-             static_cast<size_t>(
-                 features::kSharedStorageURLSelectionOperationInputURLSizeLimit
-                     .Get());
-}
-
-bool IsValidSharedStorageKeyStringLength(size_t length) {
-  return length > 0u && length <= MaxChar16StringLength();
-}
-
-bool IsValidSharedStorageValueStringLength(size_t length) {
-  return length <= MaxChar16StringLength();
+             network::features::
+                 kSharedStorageURLSelectionOperationInputURLSizeLimit.Get();
 }
 
 void LogSharedStorageWorkletError(SharedStorageWorkletErrorType error_type) {
@@ -62,16 +44,6 @@ bool IsValidPrivateAggregationContextId(std::string_view context_id) {
 
 bool IsValidPrivateAggregationFilteringIdMaxBytes(
     size_t filtering_id_max_bytes) {
-  if (filtering_id_max_bytes ==
-      kPrivateAggregationApiDefaultFilteringIdMaxBytes) {
-    return true;
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          features::kPrivateAggregationApiFilteringIds)) {
-    return false;
-  }
-
   return filtering_id_max_bytes > 0 &&
          filtering_id_max_bytes <= kPrivateAggregationApiMaxFilteringIdMaxBytes;
 }

@@ -2,7 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/libpng/visibility.gni")
+
 import("//build/config/arm.gni")
+import("//build/config/loongarch64.gni")
 import("//build/config/mips.gni")
 
 if (build_with_chromium) {
@@ -91,6 +94,11 @@ source_set("libpng_sources") {
       "mips/filter_msa_intrinsics.c",
       "mips/mips_init.c",
     ]
+  } else if (current_cpu == "loong64" && loongarch64_use_lsx) {
+    sources += [
+      "loongarch/filter_lsx_intrinsics.c",
+      "loongarch/loongarch_lsx_init.c",
+    ]
   }
 
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -120,6 +128,14 @@ if (is_win) {
   group("libpng") {
     public_deps = [ ":libpng_sources" ]
   }
+}
+
+group("libpng_for_testonly") {
+  testonly = true
+  public_deps = [ ":libpng" ]
+
+  visibility = []
+  visibility = libpng_testonly_visibility
 }
 
 if (build_with_chromium) {

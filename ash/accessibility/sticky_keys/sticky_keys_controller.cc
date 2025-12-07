@@ -146,8 +146,7 @@ ui::EventRewriteStatus StickyKeysController::RewriteEvent(
   if (event.IsScrollEvent())
     return RewriteScrollEvent(*event.AsScrollEvent(), rewritten_event);
 
-  NOTREACHED_IN_MIGRATION();
-  return ui::EVENT_REWRITE_CONTINUE;
+  NOTREACHED();
 }
 
 ui::EventRewriteStatus StickyKeysController::NextDispatchEvent(
@@ -271,8 +270,7 @@ bool StickyKeysHandler::HandleKeyEvent(const ui::KeyEvent& event,
     case STICKY_KEY_STATE_LOCKED:
       return HandleLockedState(event, mod_down_flags, released);
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool StickyKeysHandler::HandleMouseEvent(const ui::MouseEvent& event,
@@ -409,8 +407,7 @@ bool StickyKeysHandler::HandleDisabledState(const ui::KeyEvent& event) {
     case OTHER_MODIFIER_UP:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool StickyKeysHandler::HandleEnabledState(const ui::KeyEvent& event,
@@ -434,8 +431,7 @@ bool StickyKeysHandler::HandleEnabledState(const ui::KeyEvent& event,
     case OTHER_MODIFIER_UP:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool StickyKeysHandler::HandleLockedState(const ui::KeyEvent& event,
@@ -455,8 +451,7 @@ bool StickyKeysHandler::HandleLockedState(const ui::KeyEvent& event,
     case OTHER_MODIFIER_UP:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace ash

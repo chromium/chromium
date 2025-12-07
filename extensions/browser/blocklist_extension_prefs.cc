@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/containers/contains.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/extension_id.h"
@@ -79,9 +80,7 @@ BitMapBlocklistState BlocklistStateToBitMapBlocklistState(
     case BLOCKLISTED_POTENTIALLY_UNWANTED:
       return BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED;
     case BLOCKLISTED_UNKNOWN:
-      NOTREACHED_IN_MIGRATION()
-          << "The unknown state should not be added into prefs.";
-      return BitMapBlocklistState::NOT_BLOCKLISTED;
+      NOTREACHED() << "The unknown state should not be added into prefs.";
   }
 }
 
@@ -115,6 +114,13 @@ bool IsExtensionBlocklisted(const ExtensionId& extension_id,
                             ExtensionPrefs* extension_prefs) {
   return GetExtensionBlocklistState(extension_id, extension_prefs) ==
          BitMapBlocklistState::BLOCKLISTED_MALWARE;
+}
+
+bool IsExtensionGreylisted(const ExtensionId& extension_id,
+                           ExtensionPrefs* extension_prefs) {
+  const BitMapBlocklistState state =
+      GetExtensionBlocklistState(extension_id, extension_prefs);
+  return base::Contains(kGreylistStates, state);
 }
 
 void AddOmahaBlocklistState(const ExtensionId& extension_id,

@@ -8,13 +8,15 @@
 #include <array>
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
-#include "ui/gfx/image/image_skia.h"
+#include "ui/color/color_variant.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button_image_container.h"
 #include "ui/views/controls/button/label_button_label.h"
@@ -33,10 +35,15 @@ namespace actions {
 class ActionItem;
 }
 
+namespace gfx {
+class ImageSkia;
+}
+
 namespace views {
 
 class InkDropContainerView;
 class LabelButtonBorder;
+enum class PropertyEffects;
 
 // LabelButton is a button with text and an icon.
 class VIEWS_EXPORT LabelButton : public Button,
@@ -50,7 +57,7 @@ class VIEWS_EXPORT LabelButton : public Button,
   // determines the appearance of `text`.
   explicit LabelButton(
       PressedCallback callback = PressedCallback(),
-      const std::u16string& text = std::u16string(),
+      std::u16string_view text = {},
       int button_context = style::CONTEXT_BUTTON,
       std::unique_ptr<LabelButtonImageContainer> image_container =
           std::make_unique<SingleImageContainer>());
@@ -75,8 +82,8 @@ class VIEWS_EXPORT LabelButton : public Button,
   bool HasImage(ButtonState state) const;
 
   // Gets or sets the text shown on the button.
-  const std::u16string& GetText() const;
-  virtual void SetText(const std::u16string& text);
+  std::u16string_view GetText() const;
+  virtual void SetText(std::u16string_view text);
 
   // Set the text style of the label.
   void SetLabelStyle(views::style::TextStyle text_style);
@@ -91,20 +98,10 @@ class VIEWS_EXPORT LabelButton : public Button,
   void ShrinkDownThenClearText();
 
   // Sets the text color shown for the specified button |for_state| to |color|.
-  // TODO(crbug.com/40259212): Get rid of SkColor versions of these functions in
-  // favor of the ColorId versions.
-  void SetTextColor(ButtonState for_state, SkColor color);
-
-  // Sets the text color as above but using ColorId.
-  void SetTextColorId(ButtonState for_state, ui::ColorId color_id);
+  void SetTextColor(ButtonState for_state, ui::ColorVariant color);
 
   // Sets the text colors shown for the non-disabled states to |color|.
-  // TODO(crbug.com/40259212): Get rid of SkColor versions of these functions in
-  // favor of the ColorId versions.
-  virtual void SetEnabledTextColors(std::optional<SkColor> color);
-
-  // Sets the text colors shown for the non-disabled states to |color_id|.
-  void SetEnabledTextColorIds(ui::ColorId color_id);
+  virtual void SetEnabledTextColors(std::optional<ui::ColorVariant> color);
 
   // Gets the current state text color.
   SkColor GetCurrentTextColor() const;
@@ -142,8 +139,9 @@ class VIEWS_EXPORT LabelButton : public Button,
   bool GetImageCentered() const;
   void SetImageCentered(bool image_centered);
 
-  // Sets the corner radius of the focus ring around the button.
-  float GetFocusRingCornerRadius() const;
+  // Sets the corner radii of the focus ring around the button.
+  gfx::RoundedCornersF GetFocusRingCornerRadii() const;
+  void SetFocusRingCornerRadii(const gfx::RoundedCornersF& radii);
   void SetFocusRingCornerRadius(float radius);
 
   // Creates the default border for this button. This can be overridden by
@@ -161,7 +159,6 @@ class VIEWS_EXPORT LabelButton : public Button,
   gfx::Size CalculatePreferredSize(
       const SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void AddLayerToRegion(ui::Layer* new_layer,
                         views::LayerRegion region) override;
   void RemoveLayerFromRegions(ui::Layer* old_layer) override;
@@ -186,6 +183,10 @@ class VIEWS_EXPORT LabelButton : public Button,
   // account both the button's underlying state, the state of the containing
   // widget, and the parent of the containing widget.
   ButtonState GetVisualState() const;
+
+  bool has_paint_as_active_subscription_for_testing() {
+    return !!paint_as_active_subscription_;
+  }
 
  protected:
   LabelButtonImageContainer* image_container() {
@@ -237,7 +238,7 @@ class VIEWS_EXPORT LabelButton : public Button,
   void StateChanged(ButtonState old_state) override;
 
  private:
-  void SetTextInternal(const std::u16string& text);
+  void SetTextInternal(std::u16string_view text);
 
   void ClearTextIfShrunkDown();
 
@@ -285,8 +286,7 @@ class VIEWS_EXPORT LabelButton : public Button,
   // The image models and colors for each button state.
   std::array<std::optional<ui::ImageModel>, STATE_COUNT>
       button_state_image_models_;
-  std::array<absl::variant<SkColor, ui::ColorId>, STATE_COUNT>
-      button_state_colors_;
+  std::array<std::optional<ui::ColorVariant>, STATE_COUNT> button_state_colors_;
 
   // Used to track whether SetTextColor() has been invoked.
   std::array<bool, STATE_COUNT> explicitly_set_colors_ = {};
@@ -323,8 +323,9 @@ class VIEWS_EXPORT LabelButton : public Button,
   // UI direction).
   gfx::HorizontalAlignment horizontal_alignment_ = gfx::ALIGN_LEFT;
 
-  // Corner radius of the focus ring.
-  float focus_ring_corner_radius_ = FocusRing::kDefaultCornerRadiusDp;
+  // Corner radii of the focus ring.
+  gfx::RoundedCornersF focus_ring_corner_radii_ =
+      gfx::RoundedCornersF(FocusRing::kDefaultCornerRadiusDp);
 
   base::CallbackListSubscription paint_as_active_subscription_;
 
@@ -355,12 +356,12 @@ VIEW_BUILDER_PROPERTY(gfx::HorizontalAlignment, HorizontalAlignment)
 VIEW_BUILDER_PROPERTY(views::style::TextStyle, LabelStyle)
 VIEW_BUILDER_PROPERTY(gfx::Size, MinSize)
 VIEW_BUILDER_PROPERTY(gfx::Size, MaxSize)
-VIEW_BUILDER_PROPERTY(std::optional<SkColor>, EnabledTextColors)
-VIEW_BUILDER_PROPERTY(ui::ColorId, EnabledTextColorIds)
+VIEW_BUILDER_PROPERTY(std::optional<ui::ColorVariant>, EnabledTextColors)
 VIEW_BUILDER_PROPERTY(bool, IsDefault)
 VIEW_BUILDER_PROPERTY(int, ImageLabelSpacing)
 VIEW_BUILDER_PROPERTY(bool, ImageCentered)
 VIEW_BUILDER_METHOD(SetImageModel, Button::ButtonState, const ui::ImageModel&)
+VIEW_BUILDER_METHOD(SetTextColor, Button::ButtonState, ui::ColorVariant)
 END_VIEW_BUILDER
 
 }  // namespace views

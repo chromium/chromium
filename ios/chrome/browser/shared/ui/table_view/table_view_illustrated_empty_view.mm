@@ -59,7 +59,7 @@ NSAttributedString* GetAttributedMessage(NSString* message) {
                         image:(UIImage*)image
                         title:(NSString*)title
            attributedSubtitle:(NSAttributedString*)attributedSubtitle {
-  if (self = [super initWithFrame:frame]) {
+  if ((self = [super initWithFrame:frame])) {
     _title = title;
     _subtitle = attributedSubtitle;
     _image = image;
@@ -117,13 +117,15 @@ NSAttributedString* GetAttributedMessage(NSString* message) {
 
 #pragma mark - UITextViewDelegate
 
-- (BOOL)textView:(UITextView*)textView
-    shouldInteractWithURL:(NSURL*)URL
-                  inRange:(NSRange)characterRange
-              interaction:(UITextItemInteraction)interaction {
-  [self.delegate tableViewIllustratedEmptyView:self didTapSubtitleLink:URL];
-
-  return NO;
+- (UIAction*)textView:(UITextView*)textView
+    primaryActionForTextItem:(UITextItem*)textItem
+               defaultAction:(UIAction*)defaultAction {
+  __weak __typeof(self) weakSelf = self;
+  NSURL* URL = textItem.link;
+  return [UIAction actionWithHandler:^(UIAction* action) {
+    [weakSelf.delegate tableViewIllustratedEmptyView:weakSelf
+                                  didTapSubtitleLink:URL];
+  }];
 }
 
 - (void)textViewDidChangeSelection:(UITextView*)textView {

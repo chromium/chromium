@@ -5,16 +5,16 @@
 #ifndef IOS_CHROME_BROWSER_WEB_MODEL_BLOCKED_POPUP_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_WEB_MODEL_BLOCKED_POPUP_TAB_HELPER_H_
 
-#include <vector>
+#import <vector>
 
 #import "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
-#include "components/infobars/core/infobar_manager.h"
+#import "base/scoped_observation.h"
+#import "components/infobars/core/infobar_manager.h"
 #import "ios/web/public/lazy_web_state_user_data.h"
-#include "ios/web/public/navigation/referrer.h"
-#include "url/gurl.h"
+#import "ios/web/public/navigation/referrer.h"
+#import "url/gurl.h"
 
-class ChromeBrowserState;
+class ProfileIOS;
 
 namespace infobars {
 class InfoBar;
@@ -45,9 +45,12 @@ class BlockedPopupTabHelper
   // `referrer` represents the frame which requested this popup.
   void HandlePopup(const GURL& popup_url, const web::Referrer& referrer);
 
+  // Returns the number of currently blocked popups for this tab.
+  size_t GetBlockedPopupCount() const { return popups_.size(); }
+
   // infobars::InfoBarManager::Observer implementation.
   void OnInfoBarRemoved(infobars::InfoBar* infobar, bool animate) override;
-  void OnManagerShuttingDown(
+  void OnManagerWillBeDestroyed(
       infobars::InfoBarManager* infobar_manager) override;
 
   // Encapsulates information about popup.
@@ -60,6 +63,9 @@ class BlockedPopupTabHelper
     const web::Referrer referrer;
   };
 
+  // Returns a copy of the currently blocked popups.
+  std::vector<Popup> GetBlockedPopups() const { return popups_; }
+
  private:
   friend class web::LazyWebStateUserData<BlockedPopupTabHelper>;
 
@@ -69,8 +75,8 @@ class BlockedPopupTabHelper
   // existing infobar with the updated count.
   void ShowInfoBar();
 
-  // Returns BrowserState for the WebState that this object is attached to.
-  ChromeBrowserState* GetBrowserState() const;
+  // Returns the profile for the WebState that this object is attached to.
+  ProfileIOS* GetProfile() const;
 
   // Registers this object as an observer for the InfoBarManager associated with
   // `web_state_`.  Does nothing if already registered.
@@ -80,7 +86,7 @@ class BlockedPopupTabHelper
   // The WebState that this object is attached to.
   raw_ptr<web::WebState> web_state_;
   // The currently displayed infobar.
-  raw_ptr<infobars::InfoBar> infobar_;
+  raw_ptr<infobars::InfoBar, DanglingUntriaged> infobar_;
   // The popups to open.
   std::vector<Popup> popups_;
   // For management of infobars::InfoBarManager::Observer registration.  This
@@ -89,8 +95,6 @@ class BlockedPopupTabHelper
   base::ScopedObservation<infobars::InfoBarManager,
                           infobars::InfoBarManager::Observer>
       scoped_observation_{this};
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_MODEL_BLOCKED_POPUP_TAB_HELPER_H_

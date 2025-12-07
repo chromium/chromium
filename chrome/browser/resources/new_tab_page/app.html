@@ -1,35 +1,97 @@
+<!-- #html_wrapper_imports_start
+import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
+#html_wrapper_imports_end -->
 <div id="content">
-  ${this.lazyRender_ && this.oneGoogleBarEnabled_ ? html`
-    <div id="oneGoogleBarScrim" ?hidden="${!this.showBackgroundImage_}"
-        ?fixed="${this.scrolledToTop_}"></div>
-    <ntp-iframe id="oneGoogleBar" src="${this.oneGoogleBarIframePath_}"
-        ?hidden="${!this.oneGoogleBarLoaded_}"
-        allow="camera ${this.oneGoogleBarIframeOrigin_}; display-capture ${this.oneGoogleBarIframeOrigin_}"> <!-- presubmit: ignore-long-line -->
-    </ntp-iframe>
+  ${this.lazyRender_ && this.microsoftModuleEnabled_ ? html`
+    <iframe id="microsoftAuth" src="${this.microsoftAuthIframePath_}"></iframe>
   ` : ''}
-  <!-- TODO(crbug.com/40743294): Instead of ?hidden="${!this.logoEnabled_}" it would
+  ${this.lazyRender_ && this.oneGoogleBarEnabled_ ?
+    (
+      this.ntpRealboxNextEnabled_ ?
+        html`
+        <div id="oneGoogleBarStackingContext">
+          <div id="oneGoogleBarScrim" ?hidden="${!this.showBackgroundImage_}"
+              ?fixed="${this.scrolledToTop_}"></div>
+          <ntp-iframe id="oneGoogleBar" src="${this.oneGoogleBarIframePath_}"
+              ?hidden="${!this.oneGoogleBarLoaded_}"
+              allow="camera ${this.oneGoogleBarIframeOrigin_}; display-capture ${this.oneGoogleBarIframeOrigin_}"> <!-- presubmit: ignore-long-line -->
+          </ntp-iframe>
+        </div>
+        ` :
+        html`
+        <div id="oneGoogleBarScrim" ?hidden="${!this.showBackgroundImage_}"
+            ?fixed="${this.scrolledToTop_}"></div>
+        <ntp-iframe id="oneGoogleBar" src="${this.oneGoogleBarIframePath_}"
+            ?hidden="${!this.oneGoogleBarLoaded_}"
+            allow="camera ${this.oneGoogleBarIframeOrigin_}; display-capture ${this.oneGoogleBarIframeOrigin_}"> <!-- presubmit: ignore-long-line -->
+        </ntp-iframe>
+        `
+    ) : ''}
+  <!-- TODO(crbug.com/40743294): Instead of ?hidden="\${!this.logoEnabled_}" it would
        be nicer to use Lit's conditional rendering. However, that breaks
        StartupBrowserCreatorPickerNoParamsTest.ShowPickerWhenAlreadyLaunched on
        the msan builder. See crbug.com/1169070. -->
   <ntp-logo id="logo" ?single-colored="${this.singleColoredLogo_}"
-      .dark="${this.isThemeDark_()}" .backgroundColor="${this.backgroundColor_}"
-      ?hidden="${!this.logoEnabled_}">
+      .theme="${this.theme_}" ?hidden="${!this.logoEnabled_}">
   </ntp-logo>
-  <div id="realboxContainer">
-    <cr-realbox id="realbox" ?is-dark="${this.isThemeDark_()}"
+  ${this.ntpRealboxNextEnabled_ ? html`
+    <div id="scrim"
+        @click="${this.showComposebox_ && this.composeboxCloseByClickOutside_ ? this.onComposeboxClickOutside_ : nothing}"
+        ?hidden="${!this.showScrim_}"></div>
+  ` : ''}
+  <div id="searchboxContainer">
+    <cr-searchbox id="searchbox" ?is-dark="${this.isThemeDark_()}"
+        placeholder-text="$i18n{searchBoxPlaceholder}"
         ?color-source-is-baseline="${this.colorSourceIsBaseline}"
+        @open-composebox="${this.openComposebox_}"
         @open-lens-search="${this.onOpenLensSearch_}"
         @open-voice-search="${this.onOpenVoiceSearch_}" ?shown="${this.realboxShown_}"
         ?had-secondary-side="${this.realboxHadSecondarySide}"
         @had-secondary-side-changed="${this.onRealboxHadSecondarySideChanged_}"
-        ?can-show-secondary-side="${this.realboxCanShowSecondarySide}">
-    </cr-realbox>
+        ?can-show-secondary-side="${this.realboxCanShowSecondarySide}"
+        ?compose-button-enabled="${this.composeButtonEnabled}"
+        ?composebox-enabled="${this.composeboxEnabled}"
+        searchbox-layout-mode="${this.realboxLayoutMode_}"
+        ?ntp-realbox-next-enabled="${this.ntpRealboxNextEnabled_}"
+        ?cycling-placeholders="${this.searchboxCyclingPlaceholders_}"
+        @searchbox-input-focus-changed="${this.onInputFocusChanged_}"
+        context-menu-glif-animation-state="${this.contextMenuGlifAnimationState_}">
+    </cr-searchbox>
+    ${this.showComposebox_ ? html`
+      ${this.enableModalComposebox_ ? html`
+        <div id="dialogAnchor"></div>
+        <dialog id="composeboxDialog">
+          <cr-composebox id="composebox"
+              ?ntp-realbox-next-enabled="${this.ntpRealboxNextEnabled_}"
+              @composebox-initialized="${this.onComposeboxInitialized_}"
+              @close-composebox="${this.closeComposebox_}"
+              @composebox-input-focus-changed="${this.onInputFocusChanged_}"
+              searchbox-layout-mode="${this.realboxLayoutMode_}">
+          </cr-composebox>
+        </dialog>
+      ` : html`
+        <cr-composebox id="composebox"
+            ?ntp-realbox-next-enabled="${this.ntpRealboxNextEnabled_}"
+            @composebox-initialized="${this.onComposeboxInitialized_}"
+            @close-composebox="${this.closeComposebox_}"
+            @composebox-input-focus-changed="${this.onInputFocusChanged_}"
+            searchbox-layout-mode="${this.realboxLayoutMode_}">
+        </cr-composebox>
+      `}
+    ` : ''}
     ${this.showLensUploadDialog_ ? html`
       <ntp-lens-upload-dialog id="lensUploadDialog"
           @close-lens-search="${this.onCloseLensSearch_}">
       </ntp-lens-upload-dialog>
     ` : ''}
   </div>
+  ${this.lazyRender_
+    && this.ntpNextFeaturesEnabled_ && this.isActionChipsVisible_ ? html`
+    <ntp-action-chips
+        @action-chip-click="${this.openComposebox_}"
+        @action-chips-retrieval-state-changed="${this.onActionChipsRetrievalStateChanged_}">
+    </ntp-action-chips>
+  ` : ''}
   ${this.lazyRender_ ? html`
     <cr-toast id="webstoreToast" duration="10000" hidden>
       <div>$i18n{webstoreThemesToastMessage}</div>
@@ -41,7 +103,9 @@
   ${this.lazyRender_ ? html`
     ${this.shortcutsEnabled_ ? html`
       <cr-most-visited id="mostVisited" .theme="${this.theme_?.mostVisited || null}"
-          ?single-row="${this.singleRowShortcutsEnabled_}" reflow-on-overflow>
+          single-row reflow-on-overflow
+          ?expandable-tiles-enabled="${this.ntpNextFeaturesEnabled_}"
+          max-tiles-before-show-more="${this.maxTilesBeforeShowMore_}">
       </cr-most-visited>
     ` : ''}
     ${this.middleSlotPromoEnabled_ ? html`
@@ -51,7 +115,7 @@
       </ntp-middle-slot-promo>
     ` : ''}
     ${this.modulesEnabled_ ? html`
-      ${!this.modulesRedesignedEnabled_ ? html`
+      ${html`
         <ntp-modules id="modules"
             ?modules-shown-to-user="${this.modulesShownToUser}"
             @modules-shown-to-user-changed="${this.onModulesShownToUserChanged_}"
@@ -59,55 +123,51 @@
             @modules-loaded="${this.onModulesLoaded_}"
             ?hidden="${!this.promoAndModulesLoaded_}">
         </ntp-modules>
-      ` : html`
-        <ntp-modules-v2 id="modules"
-            ?modules-shown-to-user="${this.modulesShownToUser}"
-            @modules-shown-to-user-changed="${this.onModulesShownToUserChanged_}"
-            @customize-module="${this.onCustomizeModule_}"
-            @modules-loaded="${this.onModulesLoaded_}"
-            ?hidden="${!this.promoAndModulesLoaded_}">
-        </ntp-modules-v2>
       `}
     ` : ''}
-    <a id="backgroundImageAttribution"
-        href="${this.backgroundImageAttributionUrl_}"
-        ?hidden="${!this.backgroundImageAttribution1_}">
-      <div id="backgroundImageAttribution1Container">
-        <div id="linkIcon" ?hidden="${!this.backgroundImageAttributionUrl_}"></div>
-        <div id="backgroundImageAttribution1">
-          ${this.backgroundImageAttribution1_}
-        </div>
-      </div>
-      <div id="backgroundImageAttribution2"
-          ?hidden="${!this.backgroundImageAttribution2_}">
-        ${this.backgroundImageAttribution2_}
-      </div>
-    </a>
-    <div id="customizeButtons">
-      ${this.wallpaperSearchButtonEnabled_ ? html`
-        <cr-button id="wallpaperSearchButton"
-            class="customize-button" @click="${this.onWallpaperSearchClick_}"
-            title="$i18n{customizeThisPageWallpaperSearch}"
-            aria-pressed="${this.showWallpaperSearch_}">
-          <div id="wallpaperSearchIcon"
-              class="customize-icon cr-icon" slot="prefix-icon"></div>
-          <div id="wallpaperSearchText" class="customize-text"
-              ?hidden="${this.showWallpaperSearch_}">
-            $i18n{wallpaperSearchButton}
+    ${ this.showBrowserPromo_ ? (() => { switch (this.browserPromoType_) {
+     case "simple":
+      return html`
+        <individual-promos maxPromos="${this.browserPromoLimit_}">
+        </individual-promos>
+
+      `;
+     case "setuplist":
+      return html`
+        <setup-list-module-wrapper maxPromos="${this.browserPromoLimit_}"
+            maxCompletedPromos="${this.browserPromoCompletedLimit_}">
+        </setup-list-module-wrapper>
+      `;
+     default:
+      return '';
+    } })() : '' }
+  ${!this.isFooterVisible_ ? html`
+      <a id="backgroundImageAttribution"
+          href="${this.backgroundImageAttributionUrl_}"
+          ?hidden="${!this.backgroundImageAttribution1_}">
+        <div id="backgroundImageAttribution1Container">
+          <div id="linkIcon" ?hidden="${!this.backgroundImageAttributionUrl_}"></div>
+          <div id="backgroundImageAttribution1">
+            ${this.backgroundImageAttribution1_}
           </div>
-        </cr-button>
-      ` : ''}
-      <cr-button id="customizeButton" class="customize-button"
-          @click="${this.onCustomizeClick_}" title="$i18n{customizeThisPage}"
-          aria-pressed="${this.showCustomize_}">
-        <div id="customizeIcon"
-            class="customize-icon cr-icon" slot="prefix-icon"></div>
-        <div id="customizeText" class="customize-text"
-            ?hidden="${!this.showCustomizeChromeText_}">
-          $i18n{customizeButton}
         </div>
-      </cr-button>
-    </div>
+        <div id="backgroundImageAttribution2"
+            ?hidden="${!this.backgroundImageAttribution2_}">
+          ${this.backgroundImageAttribution2_}
+        </div>
+      </a>
+      <ntp-customize-buttons id="customizeButtons"
+          ?modules-shown-to-user="${this.modulesShownToUser}"
+          ?show-background-image="${this.showBackgroundImage_}"
+          ?show-customize="${this.showCustomize_}"
+          ?show-customize-chrome-text="${this.showCustomizeChromeText_}"
+          ?show-wallpaper-search="${this.showWallpaperSearch_}"
+          ?show-wallpaper-search-button="${this.showWallpaperSearchButton_}"
+          ?wallpaper-search-button-animation-enabled="${this.wallpaperSearchButtonAnimationEnabled_}"
+          @customize-click="${this.onCustomizeClick_}"
+          @wallpaper-search-click="${this.onWallpaperSearchClick_}" show-shadow>
+      </ntp-customize-buttons>
+    ` : ''}
     ${this.showThemeAttribution_() ? html`
       <div id="themeAttribution">
         <div>$i18n{themeCreatedBy}</div>
@@ -120,6 +180,10 @@
 ${this.showVoiceSearchOverlay_ ? html`
   <ntp-voice-search-overlay @close="${this.onVoiceSearchOverlayClose_}">
   </ntp-voice-search-overlay>
+` : ''}
+${!this.ntpRealboxNextEnabled_ && this.showComposebox_ ? html`
+  <div id="scrim"
+      @click="${this.composeboxCloseByClickOutside_ ? this.onComposeboxClickOutside_ : nothing}"></div>
 ` : ''}
 <svg>
   <defs>

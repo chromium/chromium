@@ -5,7 +5,6 @@
 #include "chrome/browser/lifetime/termination_notification.h"
 
 #include "base/no_destructor.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace browser_shutdown {
@@ -27,8 +26,9 @@ base::CallbackListSubscription AddAppTerminatingCallback(
 void NotifyAppTerminating() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   static bool notified = false;
-  if (notified)
+  if (notified) {
     return;
+  }
   notified = true;
   GetAppTerminatingCallbackList().Notify();
 }

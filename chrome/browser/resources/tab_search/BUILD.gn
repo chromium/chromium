@@ -16,38 +16,50 @@ build_webui("build") {
     "alert_indicators/tab_audio_muting_rounded.svg",
     "alert_indicators/tab_audio_rounded.svg",
     "alert_indicators/tab_media_recording.svg",
-    "images/auto_tab_groups.svg",
-    "images/tab_search.svg",
+    "split_new_tab_page.html",
+    "split_view/images/empty_dark.svg",
+    "split_view/images/empty.svg",
     "tab_search.html",
   ]
 
   icons_html_files = [ "icons.html" ]
 
-  non_web_component_files = [
+  ts_files = [
     "app.html.ts",
     "app.ts",
-    "infinite_list.ts",
+    "auto_tab_groups/auto_tab_groups_failure.html.ts",
+    "auto_tab_groups/auto_tab_groups_failure.ts",
+    "auto_tab_groups/auto_tab_groups_group.html.ts",
+    "auto_tab_groups/auto_tab_groups_group.ts",
+    "auto_tab_groups/auto_tab_groups_in_progress.html.ts",
+    "auto_tab_groups/auto_tab_groups_in_progress.ts",
+    "auto_tab_groups/auto_tab_groups_new_badge.html.ts",
+    "auto_tab_groups/auto_tab_groups_new_badge.ts",
+    "auto_tab_groups/auto_tab_groups_not_started.html.ts",
+    "auto_tab_groups/auto_tab_groups_not_started.ts",
+    "auto_tab_groups/auto_tab_groups_not_started_image.html.ts",
+    "auto_tab_groups/auto_tab_groups_not_started_image.ts",
+    "auto_tab_groups/auto_tab_groups_page.html.ts",
+    "auto_tab_groups/auto_tab_groups_page.ts",
+    "auto_tab_groups/auto_tab_groups_results.html.ts",
+    "auto_tab_groups/auto_tab_groups_results.ts",
+    "auto_tab_groups/auto_tab_groups_results_actions.html.ts",
+    "auto_tab_groups/auto_tab_groups_results_actions.ts",
+    "declutter/declutter_page.html.ts",
+    "declutter/declutter_page.ts",
+    "lazy_list.ts",
     "search.ts",
+    "selectable_lazy_list.ts",
+    "split_new_tab_page.ts",
+    "split_view/app.html.ts",
+    "split_view/app.ts",
     "tab_data.ts",
     "tab_group_color_helper.ts",
-    "tab_organization_failure.html.ts",
-    "tab_organization_failure.ts",
-    "tab_organization_group.html.ts",
-    "tab_organization_group.ts",
-    "tab_organization_in_progress.html.ts",
-    "tab_organization_in_progress.ts",
-    "tab_organization_new_badge.html.ts",
-    "tab_organization_new_badge.ts",
-    "tab_organization_not_started.html.ts",
-    "tab_organization_not_started_image.html.ts",
-    "tab_organization_not_started_image.ts",
-    "tab_organization_not_started.ts",
-    "tab_organization_page.html.ts",
-    "tab_organization_page.ts",
-    "tab_organization_results_actions.html.ts",
-    "tab_organization_results_actions.ts",
-    "tab_organization_results.html.ts",
-    "tab_organization_results.ts",
+    "tab_organization_selector.html.ts",
+    "tab_organization_selector.ts",
+    "tab_organization_selector_button.html.ts",
+    "tab_organization_selector_button.ts",
+    "tab_search.ts",
     "tab_search_api_proxy.ts",
     "tab_search_group_item.html.ts",
     "tab_search_group_item.ts",
@@ -56,28 +68,32 @@ build_webui("build") {
     "tab_search_page.html.ts",
     "tab_search_page.ts",
     "tab_search_sync_browser_proxy.ts",
-    "tab_search.ts",
     "tab_search_utils.ts",
     "title_item.ts",
   ]
 
   css_files = [
     "app.css",
-    "infinite_list.css",
-    "tab_search_page.css",
+    "auto_tab_groups/auto_tab_groups_failure.css",
+    "auto_tab_groups/auto_tab_groups_group.css",
+    "auto_tab_groups/auto_tab_groups_in_progress.css",
+    "auto_tab_groups/auto_tab_groups_new_badge.css",
+    "auto_tab_groups/auto_tab_groups_not_started.css",
+    "auto_tab_groups/auto_tab_groups_not_started_image.css",
+    "auto_tab_groups/auto_tab_groups_page.css",
+    "auto_tab_groups/auto_tab_groups_results.css",
+    "auto_tab_groups/auto_tab_groups_results_actions.css",
+    "auto_tab_groups/auto_tab_groups_shared_style.css",
+    "declutter/declutter_page.css",
+    "lazy_list.css",
+    "selectable_lazy_list.css",
+    "split_view/app.css",
     "tab_group_shared_vars.css",
-    "tab_organization_failure.css",
-    "tab_organization_group.css",
-    "tab_organization_in_progress.css",
-    "tab_organization_new_badge.css",
-    "tab_organization_not_started.css",
-    "tab_organization_not_started_image.css",
-    "tab_organization_page.css",
-    "tab_organization_results_actions.css",
-    "tab_organization_results.css",
-    "tab_organization_shared_style.css",
+    "tab_organization_selector.css",
+    "tab_organization_selector_button.css",
     "tab_search_group_item.css",
     "tab_search_item.css",
+    "tab_search_page.css",
   ]
 
   mojo_files_deps = [
@@ -91,10 +107,11 @@ build_webui("build") {
     "$root_gen_dir/components/tab_groups/public/mojom/tab_group_types.mojom-webui.ts",
   ]
 
-  html_to_wrapper_template = "detect"
-
   ts_composite = true
-  ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
+  ts_definitions = [
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
+  ]
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
@@ -108,12 +125,9 @@ build_webui("build") {
   optimize = optimize_webui
   if (optimize) {
     optimize_webui_host = "tab-search.top-chrome"
-    optimize_webui_in_files = [ "tab_search.js" ]
-    optimize_webui_excludes = [
-      "chrome://resources/js/metrics_reporter/metrics_reporter.js",
-      "chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js",
-      "chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js",
-      "chrome://resources/mojo/url/mojom/url.mojom-webui.js",
+    optimize_webui_in_files = [
+      "split_new_tab_page.js",
+      "tab_search.js",
     ]
   }
 }

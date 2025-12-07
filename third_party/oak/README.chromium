@@ -1,0 +1,29 @@
+Name: oak
+URL: https://github.com/project-oak/oak/
+Version: N/A
+Date: 2025-08-07
+Revision: 96c00a6c99ac382f3f3a8f376bc7a70890d1adaa
+Update Mechanism: Manual
+License: Apache-2.0
+License File: src/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description:
+Oak is a software platform for building distributed systems providing externally
+verifiable (or falsifiable) claims about system behaviors in a transparent way.
+
+Oak provides building blocks that are used to build Enclave Applications,
+i.e. applications that are isolated from the host on which they run, and are
+remotely attestable.
+
+Local Modifications:
+Added the "chromium_types/" directory. This directory contains the following
+wire-compatible equivalents of the full protobuf versions:
+- `any.proto`
+- `timestamp.proto`
+
+These are needed because Chromium uses `protobuf_lite`, which does
+not include these files, and including the full protobuf library is not
+feasible due to its size. This approach of copying needed protos is a common
+practice within Chromium. All other protocol buffers are unchanged.

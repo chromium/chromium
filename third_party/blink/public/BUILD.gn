@@ -83,6 +83,7 @@ buildflag_header("buildflags") {
 if (is_android) {
   java_cpp_enum("blink_headers_java_enums_srcjar") {
     sources = [
+      "./common/context_menu_data/context_menu_data.h",
       "./common/input/web_input_event.h",
       "./mojom/context_menu/context_menu.mojom",
       "./mojom/input/input_handler.mojom",
@@ -103,10 +104,10 @@ if (is_android) {
 source_set("test_headers") {
   testonly = true
   sources = [
+    "common/interest_group/test/interest_group_test_utils.h",
     "common/interest_group/test_interest_group_builder.h",
     "common/origin_trials/scoped_test_origin_trial_policy.h",
     "platform/scheduler/test/renderer_scheduler_test_support.h",
-    "platform/scheduler/test/web_fake_thread_scheduler.h",
     "platform/scheduler/test/web_mock_thread_scheduler.h",
     "test/frame_widget_test_helper.h",
     "test/test_web_frame_content_dumper.h",
@@ -114,15 +115,12 @@ source_set("test_headers") {
   ]
   public_deps = [ ":blink_headers" ]
   deps = [
-    "//base:base",
-    "//cc:cc",
-    "//testing/gmock:gmock",
+    "//base",
+    "//cc",
+    "//testing/gmock",
   ]
 }
 
-# Depend on this target to use public blink API headers for things like enums
-# and public structures without actually linking against any Blink libraries.
-#
 # See public/common/BUILD.gn for the headers that can be referenced both from
 # the browser- and renderer-side components.
 source_set("blink_headers") {
@@ -133,19 +131,17 @@ source_set("blink_headers") {
     "platform/cross_variant_mojo_util.h",
     "platform/file_path_conversion.h",
     "platform/interface_registry.h",
+    "platform/media/video_capture.h",
     "platform/media/web_media_player_delegate.h",
     "platform/modules/mediastream/media_stream_types.h",
     "platform/modules/mediastream/secure_display_link_tracker.h",
     "platform/modules/mediastream/web_media_stream.h",
-    "platform/modules/mediastream/web_media_stream_audio_renderer.h",
     "platform/modules/mediastream/web_media_stream_audio_sink.h",
     "platform/modules/mediastream/web_media_stream_sink.h",
     "platform/modules/mediastream/web_media_stream_source.h",
     "platform/modules/mediastream/web_media_stream_track.h",
-    "platform/modules/mediastream/web_media_stream_video_renderer.h",
     "platform/modules/mediastream/web_platform_media_stream_source.h",
     "platform/modules/remoteplayback/remote_playback_source.h",
-    "platform/modules/remoteplayback/web_remote_playback_client.h",
     "platform/modules/service_worker/web_service_worker_error.h",
     "platform/modules/service_worker/web_service_worker_fetch_context.h",
     "platform/modules/service_worker/web_service_worker_network_provider.h",
@@ -179,7 +175,6 @@ source_set("blink_headers") {
     "platform/web_cache.h",
     "platform/web_callbacks.h",
     "platform/web_common.h",
-    "platform/web_computed_ax_tree.h",
     "platform/web_connection_type.h",
     "platform/web_content_decryption_module.h",
     "platform/web_content_decryption_module_access.h",
@@ -195,7 +190,7 @@ source_set("blink_headers") {
     "platform/web_crypto_key_algorithm.h",
     "platform/web_crypto_key_algorithm_params.h",
     "platform/web_data.h",
-    "platform/web_dedicated_or_shared_worker_fetch_context.h",
+    "platform/web_dedicated_or_shared_worker_global_scope_context.h",
     "platform/web_dedicated_worker.h",
     "platform/web_dedicated_worker_host_factory_client.h",
     "platform/web_distillability.h",
@@ -209,7 +204,6 @@ source_set("blink_headers") {
     "platform/web_encrypted_media_types.h",
     "platform/web_fetch_client_settings_object.h",
     "platform/web_file_system_type.h",
-    "platform/web_font.h",
     "platform/web_font_description.h",
     "platform/web_font_render_style.h",
     "platform/web_gesture_curve.h",
@@ -229,7 +223,6 @@ source_set("blink_headers") {
     "platform/web_media_player_encrypted_media_client.h",
     "platform/web_media_player_source.h",
     "platform/web_media_source.h",
-    "platform/web_memory_pressure_listener.h",
     "platform/web_navigation_body_loader.h",
     "platform/web_network_state_notifier.h",
     "platform/web_policy_container.h",
@@ -248,7 +241,6 @@ source_set("blink_headers") {
     "platform/web_text_input_info.h",
     "platform/web_text_input_mode.h",
     "platform/web_text_input_type.h",
-    "platform/web_text_run.h",
     "platform/web_theme_engine.h",
     "platform/web_thread_safe_data.h",
     "platform/web_time_range.h",
@@ -260,7 +252,6 @@ source_set("blink_headers") {
     "platform/web_url_request_util.h",
     "platform/web_url_response.h",
     "platform/web_v8_value_converter.h",
-    "platform/web_vector.h",
     "platform/web_video_frame_submitter.h",
     "platform/web_worker_fetch_context.h",
     "platform/websocket_handshake_throttle.h",
@@ -272,7 +263,6 @@ source_set("blink_headers") {
     "web/modules/media/audio/audio_device_factory.h",
     "web/modules/media/audio/audio_input_ipc_factory.h",
     "web/modules/media/audio/audio_output_ipc_factory.h",
-    "web/modules/media/web_media_player_util.h",
     "web/modules/mediastream/encoded_video_frame.h",
     "web/modules/mediastream/media_stream_video_sink.h",
     "web/modules/mediastream/media_stream_video_source.h",
@@ -293,6 +283,7 @@ source_set("blink_headers") {
     "web/web_ax_enums.h",
     "web/web_ax_object.h",
     "web/web_blob.h",
+    "web/web_bundled_code_cache_generator.h",
     "web/web_console_message.h",
     "web/web_content_capture_client.h",
     "web/web_content_holder.h",
@@ -332,6 +323,8 @@ source_set("blink_headers") {
     "web/web_image_cache.h",
     "web/web_input_element.h",
     "web/web_input_method_controller.h",
+    "web/web_interaction_effects_monitor.h",
+    "web/web_interaction_effects_monitor_observer.h",
     "web/web_label_element.h",
     "web/web_language_detection_details.h",
     "web/web_lifecycle_update.h",
@@ -353,8 +346,6 @@ source_set("blink_headers") {
     "web/web_non_composited_widget_client.h",
     "web/web_option_element.h",
     "web/web_page_popup.h",
-    "web/web_pepper_socket.h",
-    "web/web_pepper_socket_client.h",
     "web/web_performance_metrics_for_nested_contexts.h",
     "web/web_performance_metrics_for_reporting.h",
     "web/web_picture_in_picture_window_options.h",
@@ -379,7 +370,6 @@ source_set("blink_headers") {
     "web/web_searchable_form_data.h",
     "web/web_security_policy.h",
     "web/web_select_element.h",
-    "web/web_select_list_element.h",
     "web/web_selector.h",
     "web/web_serialized_script_value.h",
     "web/web_serialized_script_value_version.h",
@@ -392,6 +382,7 @@ source_set("blink_headers") {
     "web/web_text_checking_completion.h",
     "web/web_text_checking_result.h",
     "web/web_text_decoration_type.h",
+    "web/web_url_pattern_to_safe_url_pattern.h",
     "web/web_user_level_memory_pressure_signal_generator.h",
     "web/web_v8_context_snapshot.h",
     "web/web_v8_features.h",
@@ -417,6 +408,7 @@ source_set("blink_headers") {
     sources += [
       "platform/web_font_prewarmer.h",
       "platform/web_font_rendering_client.h",
+      "platform/win/web_sandbox_support.h",
       "web/win/web_font_family_names.h",
       "web/win/web_font_rendering.h",
     ]
@@ -433,6 +425,7 @@ source_set("blink_headers") {
     ":devtools_inspector_resources_grit",
     ":resources_grit",
     ":runtime_features_for_public",
+    "//components/subresource_filter/core/common",
     "//net",
     "//services/network/public/mojom:mojom_shared",
     "//services/service_manager/public/cpp",
@@ -444,7 +437,7 @@ source_set("blink_headers") {
     "//ui/base/dragdrop/mojom:mojom_shared",
     "//ui/base/ime",
     "//ui/base/ime/mojom",
-    "//ui/base/prediction:prediction",
+    "//ui/base/prediction",
     "//url",
   ]
 
@@ -453,22 +446,21 @@ source_set("blink_headers") {
   }
 
   deps = [
-    "//base:base",
-    "//cc:cc",
-    "//cc/paint:paint",
+    "//base",
+    "//cc",
+    "//cc/paint",
     "//components/viz/common",
     "//media/capture:capture_base",
     "//media/capture:capture_lib",
-    "//media/webrtc:webrtc",
-    "//mojo/public/cpp/bindings:bindings",
-    "//mojo/public/cpp/system:system",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/system",
     "//printing/mojom",
     "//services/device/public/mojom:mojom_shared_cpp_sources",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//services/network/public/mojom",
-    "//third_party/blink/renderer/platform/wtf:wtf",
+    "//third_party/blink/renderer/platform/wtf",
     "//third_party/webrtc_overrides:webrtc_component",
-    "//ui/base:base",
+    "//ui/base",
     "//v8:v8_headers",
   ]
 }
@@ -481,13 +473,18 @@ blink_python_runner("runtime_features_for_public") {
   inputs =
       scripts_for_json5_files + [
         runtime_enabled_features_json5,
+        "../renderer/platform/runtime_enabled_features.override.json5",
+        "../renderer/build/scripts/make_runtime_features_utilities.py",
+        "../renderer/build/scripts/make_runtime_features.py",
         "../renderer/build/scripts/templates/features_generated.h.tmpl",
+        "../renderer/build/scripts/templates/web_origin_trials.h.tmpl",
         "../renderer/build/scripts/templates/web_runtime_features_base.h.tmpl",
       ]
 
   outputs = [
     "$blink_public_output_dir/common/features_generated.h",
     "$blink_public_output_dir/platform/web_runtime_features_base.h",
+    "$blink_public_output_dir/web/web_origin_trials.h",
   ]
 
   args = [

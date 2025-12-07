@@ -1,0 +1,90 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+source_set("cast") {
+  sources = [
+    "cast_toolbar_button_controller.h",
+    "cast_toolbar_button_util.h",
+  ]
+  public_deps = [
+    "//base",
+    "//build:branding_buildflags",
+    "//chrome/browser/profiles:profile",
+    "//components/media_router/browser",
+    "//components/prefs",
+    "//ui/base",
+    "//ui/menus",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "cast_toolbar_button_controller.cc",
+    "cast_toolbar_button_util.cc",
+  ]
+  deps = [
+    ":cast",
+    "//base",
+    "//chrome/app:branded_strings",
+    "//chrome/app:command_ids",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:primitives",
+    "//chrome/browser/media/router:media_router_feature",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/actions:actions_headers",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/views/toolbar",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//components/media_router/common",
+    "//components/signin/public/identity_manager",
+    "//components/strings:components_strings",
+    "//components/vector_icons",
+    "//content/public/browser",
+    "//extensions/common:common_constants",
+    "//ui/gfx",
+    "//ui/gfx:color_utils",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "cast_contextual_menu_browsertest.cc",
+      "cast_toolbar_button_controller_browsertest.cc",
+    ]
+    deps = [
+      ":cast",
+      "//base",
+      "//base/test:test_support",
+      "//build:branding_buildflags",
+      "//chrome/browser/media/router:media_router_feature",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/actions:actions_headers",
+      "//chrome/browser/ui/toolbar/pinned_toolbar",
+      "//chrome/browser/ui/views/toolbar",
+      "//chrome/common:constants",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/media_router/browser:test_support",
+      "//components/media_router/common",
+      "//components/policy:generated",
+      "//components/policy:policy_code_generate",
+      "//components/policy/core/browser",
+      "//components/policy/core/common",
+      "//components/policy/core/common:test_support",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//ui/actions:actions_headers",
+      "//ui/views:test_support",
+    ]
+  }
+}

@@ -6,7 +6,7 @@
 #define CHROMECAST_MEDIA_COMMON_MEDIA_RESOURCE_TRACKER_H_
 
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 
 namespace base {

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Property text-emphasis-style value 'filled'
+  assert_equals: expected "circle" but got "dot"
+[FAIL] Property text-emphasis-style value 'open'
+  assert_equals: expected "open circle" but got "open dot"
+Harness: the test ran to completion.
+

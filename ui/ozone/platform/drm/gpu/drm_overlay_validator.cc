@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/metrics/histogram_macros.h"
@@ -38,7 +39,7 @@ scoped_refptr<DrmFramebuffer> GetBufferForPageFlipTest(
   uint32_t fourcc_format =
       overlay_surface.is_opaque
           ? GetFourCCFormatForOpaqueFramebuffer(overlay_surface.format)
-          : GetFourCCFormatFromBufferFormat(overlay_surface.format);
+          : GetFourCCFormatFromSharedImageFormat(overlay_surface.format);
   gfx::Size size = overlay_surface.buffer_size;
   bool is_0th_plane = !overlay_surface.plane_z_order;
   // Force the 0th plane (e.g. primary plane and fullscreen) with the modifiers
@@ -94,7 +95,7 @@ DrmOverlayPlane DrmOverlayValidator::MakeOverlayPlane(
       GetBufferForPageFlipTest(window_, param, &reusable_buffers);
 
   return DrmOverlayPlane(buffer, param.color_space, param.plane_z_order,
-                         absl::get<gfx::OverlayTransform>(param.transform),
+                         std::get<gfx::OverlayTransform>(param.transform),
                          gfx::ToNearestRect(param.display_rect),
                          gfx::ToNearestRect(param.display_rect),
                          param.crop_rect, !param.is_opaque,

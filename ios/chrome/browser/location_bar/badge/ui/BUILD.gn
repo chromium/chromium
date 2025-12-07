@@ -1,0 +1,57 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "location_bar_badge_consumer.h",
+    "location_bar_badge_mutator.h",
+    "location_bar_badge_view_controller.h",
+    "location_bar_badge_view_controller.mm",
+  ]
+  deps = [
+    ":constants",
+    "//base:i18n",
+    "//ios/chrome/browser/badges/ui_bundled",
+    "//ios/chrome/browser/badges/ui_bundled:public",
+    "//ios/chrome/browser/bubble/ui_bundled:bubble_view",
+    "//ios/chrome/browser/contextual_panel/entrypoint/ui",
+    "//ios/chrome/browser/contextual_panel/model:public",
+    "//ios/chrome/browser/fullscreen/ui_bundled:ui",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/location_bar/badge/model",
+    "//ios/chrome/browser/location_bar/ui_bundled:badges",
+    "//ios/chrome/browser/location_bar/ui_bundled:constants",
+    "//ios/chrome/browser/location_bar/ui_bundled:metrics",
+    "//ios/chrome/browser/reader_mode/model:features",
+    "//ios/chrome/browser/reader_mode/ui:chip",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/chrome/common/ui/util:dynamic_type_util",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "location_bar_badge_constants.h",
+    "location_bar_badge_constants.mm",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "location_bar_badge_view_controller_unittest.mm" ]
+  deps = [
+    ":ui",
+    "//ios/chrome/browser/contextual_panel/entrypoint/ui",
+    "//ios/chrome/browser/location_bar/badge/model",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

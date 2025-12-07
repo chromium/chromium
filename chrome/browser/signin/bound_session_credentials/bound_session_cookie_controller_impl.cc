@@ -4,16 +4,15 @@
 
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <variant>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/functional/overloaded.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_observer.h"
@@ -24,9 +23,11 @@
 #include "chrome/browser/signin/bound_session_credentials/rotation_debug_info.pb.h"
 #include "chrome/browser/signin/bound_session_credentials/session_binding_helper.h"
 #include "chrome/common/renderer_configuration.mojom.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/backoff_entry.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace {
 using Result = BoundSessionRefreshCookieFetcher::Result;
@@ -62,6 +63,8 @@ constexpr net::BackoffEntry::Policy kBackoffPolicy = {
     false,
 };
 
+constexpr base::TimeDelta kResumeBlockedRequestsTimeout = base::Seconds(20);
+
 void RecordNumberOfSuccessiveTimeoutIfAny(size_t successive_timeout) {
   if (successive_timeout == 0) {
     return;
@@ -76,17 +79,20 @@ struct TimeoutOccured {};
 
 void UpdateDebugInfo(bound_session_credentials::RotationDebugInfo& info,
                      std::variant<Result, TimeoutOccured> last_result,
-                     bool last_challenge_received) {
+                     bool last_challenge_received,
+                     const base::flat_set<std::string>& last_missing_cookies) {
   using bound_session_credentials::RotationDebugInfo;
   // Null value means no error.
   std::optional<RotationDebugInfo::FailureType> failure_type = std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](Result result) -> std::optional<RotationDebugInfo::FailureType> {
             switch (result) {
               case Result::kConnectionError:
                 return RotationDebugInfo::CONNECTION_ERROR;
               case Result::kServerTransientError:
                 return RotationDebugInfo::SERVER_ERROR;
+              case Result::kServerUnexepectedResponse:
+                return RotationDebugInfo::SUCCESS_WITH_MISSING_COOKIES;
               case Result::kSuccess:
                 return std::nullopt;
               default:
@@ -104,7 +110,7 @@ void UpdateDebugInfo(bound_session_credentials::RotationDebugInfo& info,
     return;
   }
 
-  auto counter_it = base::ranges::find_if(
+  auto counter_it = std::ranges::find_if(
       *info.mutable_errors_since_last_rotation(),
       [&failure_type](const RotationDebugInfo::FailureCounter& counter) {
         return counter.type() == failure_type.value();
@@ -125,6 +131,12 @@ void UpdateDebugInfo(bound_session_credentials::RotationDebugInfo& info,
         bound_session_credentials::TimeToTimestamp(base::Time::Now());
     failure_info->set_type(failure_type.value());
     failure_info->set_received_challenge(last_challenge_received);
+    if (failure_type.value() ==
+        RotationDebugInfo::SUCCESS_WITH_MISSING_COOKIES) {
+      for (const std::string& cookie_name : last_missing_cookies) {
+        failure_info->add_missing_cookies(cookie_name);
+      }
+    }
   }
 }
 
@@ -145,7 +157,7 @@ BoundSessionCookieControllerImpl::BoundSessionCookieControllerImpl(
       refresh_cookie_fetcher_backoff_(&kBackoffPolicy) {
   CHECK(!bound_session_params.wrapped_key().empty());
   base::span<const uint8_t> wrapped_key =
-      base::as_bytes(base::make_span(bound_session_params.wrapped_key()));
+      base::as_byte_span(bound_session_params.wrapped_key());
   session_binding_helper_ = std::make_unique<SessionBindingHelper>(
       key_service_.get(), wrapped_key, session_id_);
   // Preemptively load the binding key to speed up the generation of binding
@@ -161,18 +173,21 @@ BoundSessionCookieControllerImpl::~BoundSessionCookieControllerImpl() {
   RecordCookieRotationOutageMetricsIfNeeded(/*periodic=*/false);
 }
 
-void BoundSessionCookieControllerImpl::Initialize() {
+void BoundSessionCookieControllerImpl::Initialize(bool is_new_session) {
   network_connection_observer_.Observe(network_connection_tracker_);
   is_offline_ = network_connection_tracker_->IsOffline();
   CreateBoundCookiesObservers();
-  MaybeRefreshCookie();
+  MaybeRefreshCookie(
+      is_new_session ? BoundSessionRefreshCookieFetcher::Trigger::kNewSession
+                     : BoundSessionRefreshCookieFetcher::Trigger::kStartup);
 }
 
 void BoundSessionCookieControllerImpl::OnConnectionChanged(
     network::mojom::ConnectionType type) {
   if (is_offline_ && type != network::mojom::ConnectionType::CONNECTION_NONE) {
     // We are back online. Schedule a new cookie rotation if needed.
-    MaybeScheduleCookieRotation();
+    MaybeScheduleCookieRotation(
+        BoundSessionRefreshCookieFetcher::Trigger::kConnectionChanged);
   }
 
   is_offline_ = type == network::mojom::ConnectionType::CONNECTION_NONE;
@@ -195,25 +210,46 @@ void BoundSessionCookieControllerImpl::HandleRequestBlockedOnCookie(
   }
 
   resume_blocked_requests_.push_back(std::move(resume_blocked_request));
-  MaybeRefreshCookie();
+  MaybeRefreshCookie(
+      BoundSessionRefreshCookieFetcher::Trigger::kBlockedRequest);
+  MaybeStartResumeBlockedRequestsTimer();
+}
 
-  if (!resume_blocked_requests_timer_.IsRunning() &&
-      !resume_blocked_requests_.empty()) {
-    // Ensure all blocked requests are released after a timeout.
-    // `base::Unretained(this)` is safe because `this` owns
-    // `resume_blocked_requests_timer_`.
-    const base::TimeDelta kResumeBlockedRequestTimeout = base::Seconds(20);
-    resume_blocked_requests_timer_.Start(
-        FROM_HERE, kResumeBlockedRequestTimeout,
-        base::BindRepeating(
-            &BoundSessionCookieControllerImpl::OnResumeBlockedRequestsTimeout,
-            base::Unretained(this)));
-  }
+void BoundSessionCookieControllerImpl::StopCookieRotation() {
+  CHECK(base::FeatureList::IsEnabled(
+      switches::kEnableOAuthMultiloginCookiesBinding));
+  rotation_stopped_ = true;
+  // Stop the cookie rotation.
+  cookie_refresh_timer_.Stop();
+  // Cancel any pending rotation request.
+  refresh_cookie_fetcher_.reset();
+  // Make sure that all blocked requests remain blocked until the session is
+  // terminated.
+  resume_blocked_requests_timer_.Stop();
+  // Start a timer to make sure the session is eventually terminated (reusing
+  // the same timeout period as for resuming blocked requests).
+  //
+  // `base::Unretained` is safe because:
+  // - it is guaranteed that `delegate_` outlives `this`,
+  // - `this` owns `rotation_stopped_timer_`.
+  rotation_stopped_timer_.Start(
+      FROM_HERE, kResumeBlockedRequestsTimeout,
+      base::BindOnce(&BoundSessionCookieController::Delegate::
+                         OnCookieRotationStoppedTimeout,
+                     base::Unretained(delegate_), base::Unretained(this)));
 }
 
 bool BoundSessionCookieControllerImpl::ShouldPauseThrottlingRequests() const {
-  return refresh_cookie_fetcher_backoff_.failure_count() >
-         kNumberOfErrorsToIgnoreForBackoff;
+  return !rotation_stopped_ && refresh_cookie_fetcher_backoff_.failure_count() >
+                                   kNumberOfErrorsToIgnoreForBackoff;
+}
+
+bound_session_credentials::RotationDebugInfo
+BoundSessionCookieControllerImpl::TakeDebugInfo() {
+  bound_session_credentials::RotationDebugInfo return_info;
+  // Leave `debug_info_` in a specified empty state.
+  return_info.Swap(&debug_info_);
+  return return_info;
 }
 
 void BoundSessionCookieControllerImpl::SetCookieExpirationTimeAndNotify(
@@ -241,7 +277,10 @@ void BoundSessionCookieControllerImpl::SetCookieExpirationTimeAndNotify(
 
   if (min_cookie_expiration_time() != old_min_expiration_time) {
     delegate_->OnBoundSessionThrottlerParamsChanged();
-    MaybeScheduleCookieRotation();
+    MaybeScheduleCookieRotation(
+        AreAllCookiesFresh()
+            ? BoundSessionRefreshCookieFetcher::Trigger::kPreemptiveRefresh
+            : BoundSessionRefreshCookieFetcher::Trigger::kCookieExpired);
   }
 }
 
@@ -260,16 +299,17 @@ void BoundSessionCookieControllerImpl::CreateBoundCookiesObservers() {
 }
 
 std::unique_ptr<BoundSessionRefreshCookieFetcher>
-BoundSessionCookieControllerImpl::CreateRefreshCookieFetcher() const {
+BoundSessionCookieControllerImpl::CreateRefreshCookieFetcher(
+    BoundSessionRefreshCookieFetcher::Trigger trigger) const {
   return refresh_cookie_fetcher_factory_for_testing_.is_null()
              ? std::make_unique<BoundSessionRefreshCookieFetcherImpl>(
                    storage_partition_->GetURLLoaderFactoryForBrowserProcess(),
                    *session_binding_helper_, session_id_, refresh_url_,
                    scope_url_, bound_cookie_names(), is_off_the_record_profile_,
-                   debug_info_)
+                   trigger, debug_info_)
              : refresh_cookie_fetcher_factory_for_testing_.Run(
                    storage_partition_->GetCookieManagerForBrowserProcess(),
-                   scope_url_, bound_cookie_names());
+                   scope_url_, bound_cookie_names(), trigger);
 }
 
 bool BoundSessionCookieControllerImpl::AreAllCookiesFresh() {
@@ -277,17 +317,18 @@ bool BoundSessionCookieControllerImpl::AreAllCookiesFresh() {
 }
 
 bool BoundSessionCookieControllerImpl::CanCreateRefreshCookieFetcher() const {
-  return !refresh_cookie_fetcher_ &&
+  return !rotation_stopped_ && !refresh_cookie_fetcher_ &&
          !refresh_cookie_fetcher_backoff_.ShouldRejectRequest();
 }
 
-void BoundSessionCookieControllerImpl::MaybeRefreshCookie() {
+void BoundSessionCookieControllerImpl::MaybeRefreshCookie(
+    BoundSessionRefreshCookieFetcher::Trigger trigger) {
   cookie_refresh_timer_.Stop();
   if (!CanCreateRefreshCookieFetcher()) {
     return;
   }
 
-  refresh_cookie_fetcher_ = CreateRefreshCookieFetcher();
+  refresh_cookie_fetcher_ = CreateRefreshCookieFetcher(trigger);
   std::optional<std::string> sec_session_challenge_response;
   std::swap(cached_sec_session_challenge_response_,
             sec_session_challenge_response);
@@ -314,7 +355,13 @@ void BoundSessionCookieControllerImpl::OnCookieRefreshFetched(Result result) {
   }
 
   UpdateDebugInfo(debug_info_, result,
-                  refresh_cookie_fetcher_->IsChallengeReceived());
+                  refresh_cookie_fetcher_->IsChallengeReceived(),
+                  result == BoundSessionRefreshCookieFetcher::Result::
+                                kServerUnexepectedResponse
+                      ? refresh_cookie_fetcher_->GetNonRefreshedCookieNames()
+                      : base::flat_set<std::string>());
+  BoundSessionRefreshCookieFetcher::Trigger refresh_trigger =
+      refresh_cookie_fetcher_->GetTrigger();
   refresh_cookie_fetcher_.reset();
 
   UpdateCookieFetcherBackoff(result);
@@ -325,7 +372,7 @@ void BoundSessionCookieControllerImpl::OnCookieRefreshFetched(Result result) {
     // On transient error, retry the cookie refresh before releasing
     // throttled requests. Do not retry preemptive refreshes.
     cookie_rotation_retries_on_transient_error_++;
-    MaybeRefreshCookie();
+    MaybeRefreshCookie(refresh_trigger);
     return;
   }
 
@@ -346,7 +393,7 @@ void BoundSessionCookieControllerImpl::OnCookieRefreshFetched(Result result) {
   // Persistent errors result in session termination.
   // Transient errors have no impact on future requests.
   if (BoundSessionRefreshCookieFetcher::IsPersistentError(result)) {
-    delegate_->OnPersistentErrorEncountered(this);
+    delegate_->OnPersistentErrorEncountered(this, result);
     // `this` should be deleted.
   }
 }
@@ -382,7 +429,8 @@ void BoundSessionCookieControllerImpl::UpdateCookieFetcherBackoff(
 
   // Request throttling is paused due to an outage, schedule cookie rotation in
   // the background with backoff.
-  MaybeScheduleCookieRotation();
+  MaybeScheduleCookieRotation(
+      BoundSessionRefreshCookieFetcher::Trigger::kRetryWithBackoff);
 }
 
 void BoundSessionCookieControllerImpl::
@@ -429,20 +477,29 @@ void BoundSessionCookieControllerImpl::ResetCookieFetcherBackoff() {
   // cookie's expiration date.
 }
 
-void BoundSessionCookieControllerImpl::MaybeScheduleCookieRotation() {
+void BoundSessionCookieControllerImpl::MaybeScheduleCookieRotation(
+    BoundSessionRefreshCookieFetcher::Trigger trigger) {
+  if (rotation_stopped_) {
+    return;
+  }
   const base::TimeDelta kCookieRefreshInterval = base::Minutes(2);
   base::TimeDelta preemptive_refresh_in =
       min_cookie_expiration_time() - base::Time::Now() - kCookieRefreshInterval;
 
+  const bool throttling_paused = ShouldPauseThrottlingRequests();
   // Respect backoff release time if set, otherwise follow the time for
   // preemptive cookie refresh.
   base::TimeDelta refresh_in =
-      ShouldPauseThrottlingRequests()
-          ? refresh_cookie_fetcher_backoff_.GetTimeUntilRelease()
-          : preemptive_refresh_in;
+      throttling_paused ? refresh_cookie_fetcher_backoff_.GetTimeUntilRelease()
+                        : preemptive_refresh_in;
+  if (throttling_paused) {
+    // If throttling is paused, all refreshes follow the backoff policy, so
+    // the actual trigger doesn't matter.
+    trigger = BoundSessionRefreshCookieFetcher::Trigger::kRetryWithBackoff;
+  }
 
   if (!refresh_in.is_positive()) {
-    MaybeRefreshCookie();
+    MaybeRefreshCookie(trigger);
     return;
   }
 
@@ -452,7 +509,22 @@ void BoundSessionCookieControllerImpl::MaybeScheduleCookieRotation() {
   cookie_refresh_timer_.Start(
       FROM_HERE, refresh_in,
       base::BindRepeating(&BoundSessionCookieControllerImpl::MaybeRefreshCookie,
-                          base::Unretained(this)));
+                          base::Unretained(this), trigger));
+}
+
+void BoundSessionCookieControllerImpl::MaybeStartResumeBlockedRequestsTimer() {
+  if (rotation_stopped_ || resume_blocked_requests_timer_.IsRunning() ||
+      resume_blocked_requests_.empty()) {
+    return;
+  }
+  // Ensure all blocked requests are released after a timeout.
+  // `base::Unretained(this)` is safe because `this` owns
+  // `resume_blocked_requests_timer_`.
+  resume_blocked_requests_timer_.Start(
+      FROM_HERE, kResumeBlockedRequestsTimeout,
+      base::BindRepeating(
+          &BoundSessionCookieControllerImpl::OnResumeBlockedRequestsTimeout,
+          base::Unretained(this)));
 }
 
 void BoundSessionCookieControllerImpl::ResumeBlockedRequests(
@@ -474,7 +546,7 @@ void BoundSessionCookieControllerImpl::ResumeBlockedRequests(
 
 void BoundSessionCookieControllerImpl::OnResumeBlockedRequestsTimeout() {
   UpdateDebugInfo(debug_info_, TimeoutOccured{},
-                  refresh_cookie_fetcher_->IsChallengeReceived());
+                  refresh_cookie_fetcher_->IsChallengeReceived(), {});
   // Reset the fetcher, it has been taking at least
   // kResumeBlockedRequestTimeout. New requests will trigger a new fetch.
   refresh_cookie_fetcher_.reset();

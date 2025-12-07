@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("tasks") {
   sources = [
@@ -23,7 +23,9 @@ static_library("tasks") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//chrome/browser/web_applications",
+    "//chromeos/ash/components/policy/policy_blocklist_service",
     "//components/account_id",
     "//components/policy/content",
     "//components/policy/core/browser",
@@ -52,8 +54,11 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service/publishers",
+    "//chrome/browser/prefs",
     "//chrome/browser/web_applications",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/policy/policy_blocklist_service",
     "//components/services/app_service/public/cpp:app_types",
     "//components/sync_preferences:test_support",
     "//content/test:test_support",

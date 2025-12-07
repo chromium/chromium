@@ -7,12 +7,15 @@ package org.chromium.support_lib_boundary;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.lang.reflect.InvocationHandler;
 
 /**
  * Boundary interface for a class used for converting webkit objects into Compat (support library)
  * objects.
  */
+@NullMarked
 public interface WebkitToCompatConverterBoundaryInterface {
     // ====================================================
     // Pre-L classes, these only need conversion methods from webkit -> support library since their
@@ -72,4 +75,6 @@ public interface WebkitToCompatConverterBoundaryInterface {
     // CookieManager
     /* SupportLibWebViewCookieManager */ InvocationHandler convertCookieManager(
             Object cookieManager);
+
+    /* SupportLibWebStorage */ InvocationHandler convertWebStorage(Object webStorageManager);
 }

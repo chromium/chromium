@@ -14,6 +14,7 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -30,7 +31,6 @@
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/media/capture/desktop_capture_device_uma_types.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -44,20 +44,21 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
-#include "third_party/libyuv/include/libyuv/scale_argb.h"
+#include "third_party/libyuv/include/libyuv/convert.h"
+#include "third_party/libyuv/include/libyuv/scale.h"
 #include "third_party/webrtc/modules/desktop_capture/cropped_desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/cropping_window_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_and_cursor_composer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/fake_desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
+#include "third_party/webrtc_overrides/rtc_base/diagnostic_logging.h"
 #include "ui/gfx/icc_profile.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "content/browser/media/capture/desktop_capturer_lacros.h"
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
 #endif
 
 namespace content {
@@ -110,17 +111,6 @@ void BindWakeLockProvider(
   GetDeviceService().BindWakeLockProvider(std::move(receiver));
 }
 
-void LogDesktopCaptureZeroHzIsActive(DesktopMediaID::Type capturer_type,
-                                     bool zero_hz_is_active) {
-  if (capturer_type == DesktopMediaID::TYPE_SCREEN) {
-    UMA_HISTOGRAM_BOOLEAN("WebRTC.DesktopCapture.IsZeroHzActive.Screen",
-                          zero_hz_is_active);
-  } else {
-    UMA_HISTOGRAM_BOOLEAN("WebRTC.DesktopCapture.IsZeroHzActive.Window",
-                          zero_hz_is_active);
-  }
-}
-
 void LogDesktopCaptureFrameIsRefresh(DesktopMediaID::Type capturer_type,
                                      bool is_refresh_frame) {
   if (capturer_type == DesktopMediaID::TYPE_SCREEN) {
@@ -154,6 +144,43 @@ void LogDesktopCaptureRequestRefreshRate(DesktopMediaID::Type capturer_type,
   }
 }
 
+#if BUILDFLAG(IS_WIN)
+bool IsWgcEnabledForScreenCapture() {
+  bool enabled =
+      base::FeatureList::IsEnabled(features::kWebRtcAllowWgcScreenCapturer);
+  if (enabled) {
+    return true;
+  }
+
+  if (base::FeatureList::GetInstance() &&
+      base::FeatureList::GetInstance()->IsFeatureOverridden(
+          features::kWebRtcAllowWgcScreenCapturer.name)) {
+    return enabled;
+  }
+
+  // Starting from WIN11 24H2 (build 26100), the Capture API returns empty
+  // frame when the captured content is unchanged, helping to maintain
+  // performance for 0Hz capture scenarios.
+  enabled = (base::win::GetVersion() >= base::win::Version::WIN11_24H2);
+  return enabled;
+}
+
+bool IsWgcZeroHzEnabledForScreenCapture() {
+  bool enabled =
+      base::FeatureList::IsEnabled(features::kWebRtcAllowWgcScreenZeroHz);
+  if (enabled) {
+    return true;
+  }
+
+  if (base::FeatureList::GetInstance() &&
+      base::FeatureList::GetInstance()->IsFeatureOverridden(
+          features::kWebRtcAllowWgcScreenZeroHz.name)) {
+    return enabled;
+  }
+  return IsWgcEnabledForScreenCapture();
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 // Helper class which request that the system-global Windows timer interrupt
 // frequency be raised at construction. The corresponding deactivation is done
 // at destruction. How high the frequency is raised depends on the system's
@@ -179,7 +206,49 @@ class ScopedHighResolutionTimer {
 #endif
 };
 
+// Helper class to temporarily hook webrtc RTC_LOG macro to
+// DesktopCaptureDevice::Client::OnLog
+// With this RTC_LOG messages in webrtc code for desktop capturers
+// will be forwarded to webrtc log, as they already do in the renderer
+// process where webrtc is running.
+// This is not thread safe and can't be used in other places.
+class ScopedWebrtcDebugLogging {
+ public:
+  explicit ScopedWebrtcDebugLogging(DesktopCaptureDevice::Client* client) {
+    g_client_ = client;
+    webrtc::InitDiagnosticLoggingDelegateFunction(
+        &ScopedWebrtcDebugLogging::OnLog);
+  }
+
+  static void OnLog(const std::string& s) {
+    CHECK(g_client_);
+    g_client_->OnLog(s);
+  }
+
+  ~ScopedWebrtcDebugLogging() {
+    g_client_ = nullptr;
+    webrtc::ResetDiagnosticLoggingDelegateFunction();
+  }
+
+ private:
+  static DesktopCaptureDevice::Client* g_client_;
+};
+
+DesktopCaptureDevice::Client* ScopedWebrtcDebugLogging::g_client_ = nullptr;
 }  // namespace
+
+media::VideoPixelFormat FourCCToVideoPixelFormat(webrtc::FourCC fourcc) {
+  switch (fourcc) {
+    case webrtc::FOURCC_ARGB:
+      return media::PIXEL_FORMAT_ARGB;
+    case webrtc::FOURCC_ABGR:
+      return media::PIXEL_FORMAT_ABGR;
+    case webrtc::FOURCC_I420:
+      return media::PIXEL_FORMAT_I420;
+    default:
+      NOTREACHED();
+  }
+}
 
 class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
  public:
@@ -288,6 +357,9 @@ class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
   // an optimization to avoid re-clearing |output_frame_| during stretches where
   // we are only sending black frames.
   bool output_frame_is_black_ = false;
+
+  // Used for conversion to I420 before scaling.
+  std::vector<uint8_t> temp_buffer_;
 
   // Determines the size of frames to deliver to the |client_|.
   media::CaptureResolutionChooser resolution_chooser_;
@@ -516,9 +588,6 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
       !frame_is_refresh && frame->updated_region().is_empty();
   VLOG(2) << __func__ << " [SUCCESS]" << (frame_is_refresh ? "[RRF]" : "")
           << (zero_hertz_is_active ? "[0Hz]" : "");
-  if (zero_hertz_is_supported()) {
-    LogDesktopCaptureZeroHzIsActive(capturer_type_, zero_hertz_is_active);
-  }
   if (zero_hertz_is_active) {
     ScheduleNextCaptureFrame();
     return;
@@ -548,6 +617,7 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
   size_t output_bytes = output_size.width() * output_size.height() *
                         webrtc::DesktopFrame::kBytesPerPixel;
   const uint8_t* output_data = nullptr;
+  webrtc::FourCC output_format = frame->pixel_format();
 
   if (frame->size().width() <= 1 || frame->size().height() <= 1) {
     // On OSX We receive a 1x1 frame when the shared window is minimized. It
@@ -556,7 +626,8 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
     // last frame.
     if (!output_frame_ || !output_frame_->size().equals(output_size)) {
       // The new frame will be black by default.
-      output_frame_ = std::make_unique<webrtc::BasicDesktopFrame>(output_size);
+      output_frame_ = std::make_unique<webrtc::BasicDesktopFrame>(
+          output_size, webrtc::FOURCC_ARGB);
       output_frame_is_black_ = true;
     }
     if (!output_frame_is_black_) {
@@ -592,22 +663,113 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
       // don't need to worry about clearing out stale pixel data in
       // letterboxed areas.
       if (!output_frame_) {
-        output_frame_ =
-            std::make_unique<webrtc::BasicDesktopFrame>(output_size);
+        output_frame_ = std::make_unique<webrtc::BasicDesktopFrame>(
+            output_size, webrtc::FOURCC_I420);
       }
       DCHECK(output_frame_->size().equals(output_size));
 
-      // TODO(wez): Optimize this to scale only changed portions of the
-      // output, using ARGBScaleClip().
-      const webrtc::DesktopRect output_rect =
+      const int temp_width_y = frame->size().width();
+      const int temp_height_y = frame->size().height();
+      const int temp_plane_size_y = temp_width_y * temp_height_y;
+
+      // In I420, U and V planes have half the resolution.
+      const int temp_width_uv = temp_width_y / 2;
+      const int temp_height_uv = temp_height_y / 2;
+      const int temp_plane_size_uv = temp_width_uv * temp_height_uv;
+
+      const size_t i420_buffer_size =
+          temp_plane_size_y + 2 * temp_plane_size_uv;
+      if (temp_buffer_.size() < i420_buffer_size) {
+        temp_buffer_.resize(i420_buffer_size);
+      }
+
+      // SAFETY: libyuv interface requires raw pointers.
+      // temp_buffer_ is allocated to be enough to store I420 frame.
+      uint8_t* temp_buffer_y = temp_buffer_.data();
+      uint8_t* temp_buffer_u =
+          UNSAFE_BUFFERS(temp_buffer_y + temp_plane_size_y);
+      uint8_t* temp_buffer_v =
+          UNSAFE_BUFFERS(temp_buffer_u + temp_plane_size_uv);
+
+      const int temp_stride_y = temp_width_y;
+      const int temp_stride_u = temp_width_uv;
+      const int temp_stride_v = temp_width_uv;
+
+      switch (frame->pixel_format()) {
+        case webrtc::FOURCC_ARGB:
+          libyuv::ARGBToI420(frame->data(), frame->stride(), temp_buffer_y,
+                             temp_stride_y, temp_buffer_u, temp_stride_u,
+                             temp_buffer_v, temp_stride_v,
+                             frame->size().width(), frame->size().height());
+          break;
+        case webrtc::FOURCC_ABGR:
+          libyuv::ABGRToI420(frame->data(), frame->stride(), temp_buffer_y,
+                             temp_stride_y, temp_buffer_u, temp_stride_u,
+                             temp_buffer_v, temp_stride_v,
+                             frame->size().width(), frame->size().height());
+          break;
+        default:
+          // TODO(crbug.com/352187279): Support other pixel formats.
+          NOTREACHED() << "Unsupported pixel format.";
+      }
+
+      webrtc::DesktopRect output_rect =
           ComputeLetterboxRect(output_size, frame->size());
-      uint8_t* output_rect_data =
-          output_frame_->GetFrameDataAtPos(output_rect.top_left());
-      libyuv::ARGBScale(frame->data(), frame->stride(), frame->size().width(),
-                        frame->size().height(), output_rect_data,
-                        output_frame_->stride(), output_rect.width(),
-                        output_rect.height(), libyuv::kFilterBilinear);
+
+      // output_rect for I420 format must start and end at even offsets
+      // because of UV planes subsampling.
+      if ((output_rect.top() & 1) || (output_rect.left() & 1)) {
+        output_rect.Translate(-(output_rect.left() & 1),
+                              -(output_rect.top() & 1));
+      }
+      if ((output_rect.bottom() & 1) || (output_rect.right() & 1)) {
+        output_rect.Extend(0, 0, output_rect.right() & 1,
+                           output_rect.bottom() & 1);
+      }
+
+      CHECK_LE(output_rect.right(), output_size.width());
+      CHECK_LE(output_rect.bottom(), output_size.height());
+
+      const int output_width_y = output_size.width();
+      const int output_height_y = output_size.height();
+      const int output_plane_size_y = output_width_y * output_height_y;
+
+      const int output_width_uv = output_width_y / 2;
+      const int output_height_uv = output_height_y / 2;
+      const int output_plane_size_uv = output_width_uv * output_height_uv;
+
+      // Offsets of the top-left pixel for the output rect inside each plane.
+      const int offset_y =
+          output_rect.left() + output_rect.top() * output_width_y;
+      // UV planes have half the resolution, so coordinates are also halved.
+      const int offset_uv =
+          output_rect.left() / 2 + (output_rect.top() / 2) * output_width_uv;
+
+      uint8_t* output_data_base = output_frame_->data();
+
+      // SAFETY: libyuv interface requires raw pointers.
+      // output_frame_ is big enough to store ARGB frame and I420
+      // is smaller.
+      uint8_t* output_y = UNSAFE_BUFFERS(output_data_base + offset_y);
+      uint8_t* output_u =
+          UNSAFE_BUFFERS(output_data_base + output_plane_size_y + offset_uv);
+      uint8_t* output_v =
+          UNSAFE_BUFFERS(output_data_base + output_plane_size_y +
+                         output_plane_size_uv + offset_uv);
+
+      const int output_stride_y = output_width_y;
+      const int output_stride_u = output_width_uv;
+      const int output_stride_v = output_width_uv;
+
+      libyuv::I420Scale(temp_buffer_y, temp_stride_y, temp_buffer_u,
+                        temp_stride_u, temp_buffer_v, temp_stride_v,
+                        frame->size().width(), frame->size().height(), output_y,
+                        output_stride_y, output_u, output_stride_u, output_v,
+                        output_stride_v, output_rect.width(),
+                        output_rect.height(), libyuv::kFilterBox);
+
       output_data = output_frame_->data();
+      output_format = output_frame_->pixel_format();
       output_frame_is_black_ = false;
     } else if (IsFrameUnpackedOrInverted(frame.get())) {
       // If |frame| is not packed top-to-bottom then create a packed
@@ -615,18 +777,20 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
       // crbug.com/306876), or if |frame| is cropped form a larger frame (see
       // crbug.com/437740).
       if (!output_frame_) {
-        output_frame_ =
-            std::make_unique<webrtc::BasicDesktopFrame>(output_size);
+        output_frame_ = std::make_unique<webrtc::BasicDesktopFrame>(
+            output_size, frame->pixel_format());
       }
       output_frame_->CopyPixelsFrom(
           *frame, webrtc::DesktopVector(),
           webrtc::DesktopRect::MakeSize(frame->size()));
       output_data = output_frame_->data();
+      output_format = output_frame_->pixel_format();
       output_frame_is_black_ = false;
     } else {
       // If the captured frame matches the output size, we can return the pixel
       // data directly.
       output_data = frame->data();
+      output_format = frame->pixel_format();
       output_frame_is_black_ = false;
     }
   }
@@ -636,18 +800,34 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
     gfx::ICCProfile icc_profile = gfx::ICCProfile::FromData(
         frame->icc_profile().data(), frame->icc_profile().size());
     frame_color_space = icc_profile.GetColorSpace();
+    if (frame->pixel_format() != output_format &&
+        output_format == webrtc::FOURCC_I420) {
+      // Conversion ARGB->I420 will switch the color space.
+      frame_color_space = frame_color_space.GetWithMatrixAndRange(
+          gfx::ColorSpace::MatrixID::SMPTE170M,
+          gfx::ColorSpace::RangeID::LIMITED);
+    }
   }
 
   base::TimeTicks now = NowTicks();
   if (first_ref_time_.is_null())
     first_ref_time_ = now;
+
+  // This passes the information to the frame metadata for screen and non-chrome
+  // window captures.
+  media::VideoFrameMetadata metadata;
+  metadata.source_size =
+      gfx::Size(frame->size().width(), frame->size().height());
+  metadata.device_scale_factor = frame->device_scale_factor();
+
   client_->OnIncomingCapturedData(
       output_data, output_bytes,
       media::VideoCaptureFormat(
           gfx::Size(output_size.width(), output_size.height()),
-          requested_frame_rate_, media::PIXEL_FORMAT_ARGB),
+          requested_frame_rate_, FourCCToVideoPixelFormat(output_format)),
       frame_color_space, 0 /* clockwise_rotation */, false /* flip_y */, now,
-      now - first_ref_time_, std::nullopt);
+      now - first_ref_time_, /*capture_begin_timestamp=*/std::nullopt,
+      metadata);
 
   ScheduleNextCaptureFrame();
 }
@@ -752,7 +932,12 @@ base::TimeTicks DesktopCaptureDevice::Core::NowTicks() const {
 
 // static
 std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
-    const DesktopMediaID& source) {
+    const DesktopMediaID& source,
+    Client* device_client) {
+  ScopedWebrtcDebugLogging enable_webrtc_logging(device_client);
+  CHECK(source.type == DesktopMediaID::TYPE_WINDOW ||
+        source.type == DesktopMediaID::TYPE_SCREEN);
+
   VLOG(1) << __func__ << "(source=" << source.ToString() << ")";
   auto options = desktop_capture::CreateDesktopCaptureOptions();
   std::unique_ptr<webrtc::DesktopCapturer> capturer;
@@ -768,46 +953,53 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
   // the captured frame in combination with DXGI; hence most cursors will be
   // added separately by a desktop and cursor composer even if this option is
   // set to true. GDI does not use this option.
-  // TODO(crbug.com/40259358): Possibly remove this flag. Keeping for now to
-  // force non embedded cursor for all capture APIs on Windows.
-  static BASE_FEATURE(kAllowWinCursorEmbedded, "AllowWinCursorEmbedded",
-                      base::FEATURE_ENABLED_BY_DEFAULT);
-  if (base::FeatureList::IsEnabled(kAllowWinCursorEmbedded)) {
-    options.set_prefer_cursor_embedded(true);
-  }
-  if (base::FeatureList::IsEnabled(features::kWebRtcAllowWgcScreenCapturer)) {
+  options.set_prefer_cursor_embedded(true);
+
+  if (IsWgcEnabledForScreenCapture()) {
     options.set_allow_wgc_screen_capturer(true);
 
-    // 0Hz support is by default disabled for WGC but it can be enabled using
-    // the `kWebRtcAllowWgcZeroHz` feature flag. When enabled, the WGC capturer
-    // will compare the pixel values of the new frame and the previous frame and
-    // update the DesktopRegion part of the frame to reflect if the content has
-    // changed or not. DesktopFrame::updated_region() will be empty if nothing
-    // has changed and contain one (damage) region corresponding to the complete
-    // screen or window being captured if any change is detected.
+    // 0Hz support is enabled for WGC window capture but disabled by default for
+    // screen capture through the `kWebRtcAllowWgcScreenZeroHz` feature flag.
+    // When 0Hz is enabled, the WGC capturer will compare the pixel values of
+    // the new frame and the previous frame and update the DesktopRegion part of
+    // the frame to reflect if the content has changed or not.
+    // DesktopFrame::updated_region() will be empty if nothing has changed and
+    // contain one (damage) region corresponding to the complete screen or
+    // window being captured if any change is detected.
     if (source.type == DesktopMediaID::TYPE_SCREEN) {
-      options.set_allow_wgc_zero_hertz(
-          base::FeatureList::IsEnabled(features::kWebRtcAllowWgcScreenZeroHz));
+      options.set_allow_wgc_zero_hertz(IsWgcZeroHzEnabledForScreenCapture());
     }
   }
-  if (base::FeatureList::IsEnabled(features::kWebRtcAllowWgcWindowCapturer)) {
-    options.set_allow_wgc_window_capturer(true);
-    if (source.type == DesktopMediaID::TYPE_WINDOW) {
-      options.set_allow_wgc_zero_hertz(
-          base::FeatureList::IsEnabled(features::kWebRtcAllowWgcWindowZeroHz));
-    }
+  options.set_allow_wgc_window_capturer(true);
+  if (source.type == DesktopMediaID::TYPE_WINDOW) {
+    options.set_allow_wgc_zero_hertz(true);
   }
-  VLOG(1) << "DesktopCaptureOptions: options={prefer_cursor_embedded: "
-          << options.prefer_cursor_embedded() << ", allow_wgc_screen_capturer: "
-          << options.allow_wgc_screen_capturer()
-          << ", allow_wgc_window_capturer: "
-          << options.allow_wgc_window_capturer()
-          << ", allow_wgc_zero_hertz: " << options.allow_wgc_zero_hertz()
-          << "}";
+
+  options.set_wgc_require_border(
+      base::FeatureList::IsEnabled(features::kWebRtcWgcRequireBorder));
+
+  std::ostringstream string_stream;
+  string_stream << "DesktopCaptureOptions: options={prefer_cursor_embedded: "
+                << options.prefer_cursor_embedded()
+                << ", allow_wgc_screen_capturer: "
+                << options.allow_wgc_screen_capturer()
+                << ", allow_wgc_window_capturer: "
+                << options.allow_wgc_window_capturer()
+                << ", allow_wgc_zero_hertz: " << options.allow_wgc_zero_hertz()
+                << ", wgc_require_border: " << options.wgc_require_border()
+                << "}";
+  VLOG(1) << string_stream.str();
+  if (device_client) {
+    device_client->OnLog(string_stream.str());
+  }
 #endif
 
   // For browser tests, to create a fake desktop capturer.
   if (source.id == DesktopMediaID::kFakeId) {
+    if (device_client) {
+      device_client->OnLog(
+          "DesktopCaptureDevice::Create creates FakeDesktopCapturer");
+    }
     capturer = std::make_unique<webrtc::FakeDesktopCapturer>();
     result.reset(new DesktopCaptureDevice(std::move(capturer), source.type));
     return result;
@@ -815,16 +1007,9 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
 
   switch (source.type) {
     case DesktopMediaID::TYPE_SCREEN: {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      // TODO(crbug.com/40135428): Handle options.
-      std::unique_ptr<webrtc::DesktopCapturer> screen_capturer =
-          std::make_unique<DesktopCapturerLacros>(
-              DesktopCapturerLacros::CaptureType::kScreen,
-              webrtc::DesktopCaptureOptions());
-#else
       std::unique_ptr<webrtc::DesktopCapturer> screen_capturer(
-          webrtc::DesktopCapturer::CreateScreenCapturer(options));
-#endif
+          desktop_capture::CreateScreenCapturer(options,
+                                                /*for_snapshot=*/false));
       if (screen_capturer && screen_capturer->SelectSource(source.id)) {
         capturer = std::make_unique<webrtc::DesktopAndCursorComposer>(
             std::move(screen_capturer), options);
@@ -832,29 +1017,31 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
         IncrementDesktopCaptureCounter(
             source.audio_share ? SCREEN_CAPTURER_CREATED_WITH_AUDIO
                                : SCREEN_CAPTURER_CREATED_WITHOUT_AUDIO);
+      } else if (device_client) {
+        device_client->OnLog(
+            "DesktopCaptureDevice::Create fails because either screen_capturer "
+            "is null or screen_capturer->SelectSource(source.id) is false");
       }
       break;
     }
 
     case DesktopMediaID::TYPE_WINDOW: {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      std::unique_ptr<webrtc::DesktopCapturer> window_capturer(
-          new DesktopCapturerLacros(DesktopCapturerLacros::CaptureType::kWindow,
-                                    webrtc::DesktopCaptureOptions()));
-#else
       std::unique_ptr<webrtc::DesktopCapturer> window_capturer =
-          webrtc::DesktopCapturer::CreateWindowCapturer(options);
-#endif
+          desktop_capture::CreateWindowCapturer(options);
       if (window_capturer && window_capturer->SelectSource(source.id)) {
         capturer = std::make_unique<webrtc::DesktopAndCursorComposer>(
             std::move(window_capturer), options);
         IncrementDesktopCaptureCounter(WINDOW_CAPTURER_CREATED);
+      } else if (device_client) {
+        device_client->OnLog(
+            "DesktopCaptureDevice::Create fails because either window_capturer "
+            "is null or window_capturer->SelectSource(source.id) is false");
       }
       break;
     }
 
     default: {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 
@@ -865,7 +1052,11 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
 }
 
 DesktopCaptureDevice::~DesktopCaptureDevice() {
-  DCHECK(!core_);
+  // There is an edge case that `StopAndDeAllocate()` is not called before
+  // destruction, which might happen during shutdown (can't repro it though).
+  // It calls `StopAndDeAllocate()` here in order to ensure `core_` is deleted
+  // on the `desktopCaptureThread`.
+  StopAndDeAllocate();
 }
 
 void DesktopCaptureDevice::AllocateAndStart(
@@ -911,50 +1102,30 @@ DesktopCaptureDevice::DesktopCaptureDevice(
     DesktopMediaID::Type type)
     : thread_("desktopCaptureThread") {
   DVLOG(1) << __func__ << "(type=" << DesktopMediaTypeToString(type) << ")";
+
+  bool zero_hertz_is_supported = true;
+#if BUILDFLAG(IS_WIN)
+  // On Windows, 0Hz might be disabled for screen capture when using the
+  // Windows.Graphics.Capture (WGC) API.  See comment in
+  // `DesktopCaptureDevice::Create()` above for details.
+  if (IsWgcEnabledForScreenCapture()) {
+    zero_hertz_is_supported = IsWgcZeroHzEnabledForScreenCapture();
+  }
+  VLOG(1) << __func__ << " [zero_hertz_is_supported=" << zero_hertz_is_supported
+          << "]";
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+  thread_.Start();
+#else
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // On Windows/OSX the thread must be a UI thread.
   base::MessagePumpType thread_type = base::MessagePumpType::UI;
 #else
   base::MessagePumpType thread_type = base::MessagePumpType::DEFAULT;
 #endif
-  bool zero_hertz_is_supported = true;
-#if BUILDFLAG(IS_WIN)
-  const bool wgc_screen_zero_hertz =
-      base::FeatureList::IsEnabled(features::kWebRtcAllowWgcScreenZeroHz);
-  const bool wgc_window_zero_hertz =
-      base::FeatureList::IsEnabled(features::kWebRtcAllowWgcWindowZeroHz);
-  // TODO(crbug.com/40259358): 0Hz mode seems to cause a flickering
-  // cursor in some setups. This flag allows us to disable 0Hz when needed.
-  const bool dxgi_gdi_zero_hertz =
-      base::FeatureList::IsEnabled(features::kWebRtcAllowDxgiGdiZeroHz);
-  const bool wgc_screen_capturer =
-      base::FeatureList::IsEnabled(features::kWebRtcAllowWgcScreenCapturer);
-  const bool wgc_window_capturer =
-      base::FeatureList::IsEnabled(features::kWebRtcAllowWgcWindowCapturer);
-  if (!wgc_window_capturer && !wgc_screen_capturer) {
-    zero_hertz_is_supported = dxgi_gdi_zero_hertz;
-  } else if (!wgc_window_capturer && wgc_screen_capturer) {
-    zero_hertz_is_supported = (type == DesktopMediaID::TYPE_SCREEN)
-                                  ? wgc_screen_zero_hertz
-                                  : dxgi_gdi_zero_hertz;
-  } else if (wgc_window_capturer && !wgc_screen_capturer) {
-    zero_hertz_is_supported = (type == DesktopMediaID::TYPE_WINDOW)
-                                  ? wgc_window_zero_hertz
-                                  : dxgi_gdi_zero_hertz;
-  } else {
-    if (type == DesktopMediaID::TYPE_SCREEN) {
-      zero_hertz_is_supported = wgc_screen_zero_hertz;
-    } else if (type == DesktopMediaID::TYPE_WINDOW) {
-      zero_hertz_is_supported = wgc_window_zero_hertz;
-    } else {
-      zero_hertz_is_supported = false;
-    }
-  }
-  VLOG(1) << __func__ << " [zero_hertz_is_supported=" << zero_hertz_is_supported
-          << "]";
-#endif
-
   thread_.StartWithOptions(base::Thread::Options(thread_type, 0));
+#endif
 
   core_ = std::make_unique<Core>(thread_.task_runner(), std::move(capturer),
                                  type, zero_hertz_is_supported);

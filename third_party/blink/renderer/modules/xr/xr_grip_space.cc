@@ -49,6 +49,10 @@ bool XRGripSpace::IsStationary() const {
   return false;
 }
 
+bool XRGripSpace::IsInputSpace() const {
+  return true;
+}
+
 std::string XRGripSpace::ToString() const {
   return "XRGripSpace";
 }

@@ -11,9 +11,11 @@ import android.view.MenuItem;
 
 import androidx.appcompat.widget.Toolbar;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.R;
 
 /** Simple class for displaying a toolbar in the editor dialog. */
+@NullMarked
 class EditorDialogToolbar extends Toolbar {
     private boolean mShowDeleteMenuItem = true;
 

@@ -55,7 +55,7 @@ class RTCEncodedVideoUnderlyingSinkTest : public testing::Test {
       : main_task_runner_(
             blink::scheduler::GetSingleThreadTaskRunnerForTesting()),
         webrtc_callback_(
-            new rtc::RefCountedObject<MockWebRtcTransformedFrameCallback>()),
+            new webrtc::RefCountedObject<MockWebRtcTransformedFrameCallback>()),
         transformer_(main_task_runner_, /*metronome=*/nullptr) {}
 
   void SetUp() override {
@@ -72,7 +72,8 @@ class RTCEncodedVideoUnderlyingSinkTest : public testing::Test {
 
   RTCEncodedVideoUnderlyingSink* CreateSink(ScriptState* script_state) {
     return MakeGarbageCollected<RTCEncodedVideoUnderlyingSink>(
-        script_state, transformer_.GetBroker());
+        script_state, transformer_.GetBroker(),
+        /*detach_frame_data_on_write=*/false);
   }
 
   RTCEncodedVideoStreamTransformer* GetTransformer() { return &transformer_; }
@@ -96,7 +97,7 @@ class RTCEncodedVideoUnderlyingSinkTest : public testing::Test {
   test::TaskEnvironment task_environment_;
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
-  rtc::scoped_refptr<MockWebRtcTransformedFrameCallback> webrtc_callback_;
+  webrtc::scoped_refptr<MockWebRtcTransformedFrameCallback> webrtc_callback_;
   RTCEncodedVideoStreamTransformer transformer_;
 };
 

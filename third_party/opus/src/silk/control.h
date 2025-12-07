@@ -77,6 +77,9 @@ typedef struct {
     /* I:   Flag to enable in-band Forward Error Correction (FEC); 0/1                      */
     opus_int useInBandFEC;
 
+    /* I:   Flag to enable in-band Deep REDundancy (DRED); 0/1                              */
+    opus_int useDRED;
+
     /* I:   Flag to actually code in-band Forward Error Correction (FEC) in the current packet; 0/1 */
     opus_int LBRR_coded;
 
@@ -141,6 +144,14 @@ typedef struct {
 
     /* O:   Pitch lag of previous frame (0 if unvoiced), measured in samples at 48 kHz      */
     opus_int prevPitchLag;
+
+    /* I:   Enable Deep PLC                                                                 */
+    opus_int enable_deep_plc;
+
+#ifdef ENABLE_OSCE
+    /* I: OSCE method */
+    opus_int osce_method;
+#endif
 } silk_DecControlStruct;
 
 #ifdef __cplusplus

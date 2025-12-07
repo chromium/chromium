@@ -4,6 +4,8 @@
 
 #include "chrome/browser/smart_card/get_smart_card_context_factory.h"
 
+#include "build/chromeos_buildflags.h"
+
 #if BUILDFLAG(IS_CHROMEOS_DEVICE)
 #include "chrome/browser/chromeos/extensions/smart_card_provider_private/smart_card_provider_private_api.h"
 #else

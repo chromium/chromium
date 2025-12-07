@@ -4,7 +4,9 @@
 
 #include "components/cronet/native/test/test_upload_data_provider.h"
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -141,7 +143,7 @@ void TestUploadDataProvider::Read(Cronet_UploadDataSinkPtr upload_data_sink,
   const auto& read = reads_[next_read_];
   EXPECT_TRUE(read.size() <= Cronet_Buffer_GetSize(buffer))
       << "Read buffer smaller than expected.";
-  memcpy(Cronet_Buffer_GetData(buffer), read.data(), read.size());
+  UNSAFE_TODO(memcpy(Cronet_Buffer_GetData(buffer), read.data(), read.size()));
   ++next_read_;
 
   auto complete_closure = base::BindOnce(

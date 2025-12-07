@@ -35,17 +35,19 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/events/email_verified_event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element_with_state.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_select_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
+#include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 
@@ -113,16 +115,6 @@ void WebFormControlElement::SetAutofillState(WebAutofillState autofill_state) {
   Unwrap<HTMLFormControlElement>()->SetAutofillState(autofill_state);
 }
 
-FormElementPiiType WebFormControlElement::GetFormElementPiiType() const {
-  return ConstUnwrap<HTMLFormControlElement>()->GetFormElementPiiType();
-}
-
-void WebFormControlElement::SetFormElementPiiType(
-    FormElementPiiType form_element_pii_type) {
-  Unwrap<HTMLFormControlElement>()->SetFormElementPiiType(
-      form_element_pii_type);
-}
-
 WebString WebFormControlElement::NameForAutofill() const {
   return ConstUnwrap<HTMLFormControlElement>()->NameForAutofill();
 }
@@ -162,6 +154,18 @@ void WebFormControlElement::DispatchFocusEvent() {
 void WebFormControlElement::DispatchBlurEvent() {
   Unwrap<Element>()->DispatchBlurEvent(
       nullptr, mojom::blink::FocusType::kForward, nullptr);
+}
+
+void WebFormControlElement::DispatchEmailVerifiedEvent(
+    const WebString& presentation_token) {
+  if (IsNull()) {
+    return;
+  }
+
+  // Create and dispatch the event.
+  EmailVerifiedEvent* event = EmailVerifiedEvent::Create(
+      AtomicString("emailverified"), presentation_token);
+  Unwrap<HTMLFormControlElement>()->DispatchEvent(*event);
 }
 
 void WebFormControlElement::SetAutofillValue(const WebString& value,
@@ -217,15 +221,6 @@ void WebFormControlElement::SetAutofillValue(const WebString& value,
     select->SetAutofillValue(value, autofill_state);
     if (!Focused())
       DispatchBlurEvent();
-  } else if (auto* selectlist =
-                 ::blink::DynamicTo<HTMLSelectListElement>(*private_)) {
-    if (!Focused()) {
-      DispatchFocusEvent();
-    }
-    selectlist->SetAutofillValue(value, autofill_state);
-    if (!Focused()) {
-      DispatchBlurEvent();
-    }
   }
 }
 
@@ -236,9 +231,6 @@ WebString WebFormControlElement::Value() const {
     return textarea->Value();
   if (auto* select = ::blink::DynamicTo<HTMLSelectElement>(*private_))
     return select->Value();
-  if (auto* selectlist = ::blink::DynamicTo<HTMLSelectListElement>(*private_)) {
-    return selectlist->value();
-  }
   return WebString();
 }
 
@@ -250,9 +242,6 @@ void WebFormControlElement::SetSuggestedValue(const WebString& value) {
     textarea->SetSuggestedValue(value);
   } else if (auto* select = ::blink::DynamicTo<HTMLSelectElement>(*private_)) {
     select->SetSuggestedValue(value);
-  } else if (auto* selectlist =
-                 ::blink::DynamicTo<HTMLSelectListElement>(*private_)) {
-    selectlist->SetSuggestedValue(value);
   }
 }
 
@@ -263,9 +252,6 @@ WebString WebFormControlElement::SuggestedValue() const {
     return textarea->SuggestedValue();
   if (auto* select = ::blink::DynamicTo<HTMLSelectElement>(*private_))
     return select->SuggestedValue();
-  if (auto* selectlist = ::blink::DynamicTo<HTMLSelectListElement>(*private_)) {
-    return selectlist->SuggestedValue();
-  }
   return WebString();
 }
 
@@ -307,28 +293,34 @@ unsigned WebFormControlElement::SelectionEnd() const {
   return 0;
 }
 
-WebString WebFormControlElement::AlignmentForFormData() const {
+WebFormControlElement::Alignment WebFormControlElement::AlignmentForFormData()
+    const {
   if (const ComputedStyle* style =
           ConstUnwrap<HTMLFormControlElement>()->GetComputedStyle()) {
     if (style->GetTextAlign() == ETextAlign::kRight)
-      return WebString::FromUTF8("right");
+      return Alignment::kRight;
     if (style->GetTextAlign() == ETextAlign::kLeft)
-      return WebString::FromUTF8("left");
+      return Alignment::kLeft;
   }
-  return WebString();
+  return Alignment::kNotSet;
 }
 
-WebString WebFormControlElement::DirectionForFormData() const {
+base::i18n::TextDirection WebFormControlElement::DirectionForFormData() const {
   if (const ComputedStyle* style =
           ConstUnwrap<HTMLFormControlElement>()->GetComputedStyle()) {
-    return style->IsLeftToRightDirection() ? WebString::FromUTF8("ltr")
-                                           : WebString::FromUTF8("rtl");
+    return style->IsLeftToRightDirection() ? base::i18n::LEFT_TO_RIGHT
+                                           : base::i18n::RIGHT_TO_LEFT;
   }
-  return WebString::FromUTF8("ltr");
+  return base::i18n::LEFT_TO_RIGHT;
 }
 
 WebFormElement WebFormControlElement::Form() const {
   return WebFormElement(ConstUnwrap<HTMLFormControlElement>()->Form());
+}
+
+WebFormElement WebFormControlElement::GetOwningFormForAutofill() const {
+  return WebFormElement(
+      ConstUnwrap<HTMLFormControlElement>()->GetOwningFormForAutofill());
 }
 
 int32_t WebFormControlElement::GetAxId() const {

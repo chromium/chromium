@@ -9,6 +9,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/font_names_testing.h"
 
@@ -59,8 +60,7 @@ TEST_F(FontTest, LoadArial) {
   EXPECT_EQ(cf.GetStyle(), Font::NORMAL);
   EXPECT_EQ(cf.GetFontSize(), 16);
   EXPECT_EQ(cf.GetFontName(), kTestFontName);
-  EXPECT_EQ(base::ToLowerASCII(kTestFontName),
-            base::ToLowerASCII(cf.GetActualFontName()));
+  EXPECT_THAT(cf.GetActualFontNames(), testing::Contains(kTestFontName));
 }
 
 TEST_F(FontTest, LoadArialBold) {
@@ -71,8 +71,7 @@ TEST_F(FontTest, LoadArialBold) {
 #endif
   EXPECT_EQ(bold.GetStyle(), Font::NORMAL);
   EXPECT_EQ(bold.GetWeight(), Font::Weight::BOLD);
-  EXPECT_EQ(base::ToLowerASCII(kTestFontName),
-            base::ToLowerASCII(cf.GetActualFontName()));
+  EXPECT_THAT(bold.GetActualFontNames(), testing::Contains(kTestFontName));
 }
 
 TEST_F(FontTest, Ascent) {
@@ -108,19 +107,17 @@ TEST_F(FontTest, AvgWidths) {
 // http://crbug.com/347429
 TEST_F(FontTest, GetActualFontName) {
   Font arial(kTestFontName, 16);
-  EXPECT_EQ(base::ToLowerASCII(kTestFontName),
-            base::ToLowerASCII(arial.GetActualFontName()))
+  EXPECT_THAT(arial.GetActualFontNames(), testing::Contains(kTestFontName))
       << "********\n"
-      << "Your test environment seems to be missing Arial font, which is "
-      << "needed for unittests.  Check if Arial font is installed.\n"
+      << "Your test environment seems to be missing the " << kTestFontName
+      << " font, which is needed for unittests. Check if " << kTestFontName
+      << " font is installed.\n"
       << "********";
   Font symbol(kSymbolFontName, 16);
-  EXPECT_EQ(base::ToLowerASCII(kSymbolFontName),
-            base::ToLowerASCII(symbol.GetActualFontName()))
+  EXPECT_THAT(symbol.GetActualFontNames(), testing::Contains(kSymbolFontName))
       << "********\n"
       << "Your test environment seems to be missing the " << kSymbolFontName
-      << " font, which is "
-      << "needed for unittests.  Check if " << kSymbolFontName
+      << " font, which is needed for unittests. Check if " << kSymbolFontName
       << " font is installed.\n"
       << "********";
 

@@ -9,14 +9,11 @@
 #include <optional>
 
 #include "base/check_op.h"
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
-#include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
+#include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper_clip_cache.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_property_node.h"
-#include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
-#include "third_party/blink/renderer/platform/graphics/path.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
@@ -24,6 +21,7 @@ namespace blink {
 class EffectPaintPropertyNode;
 class GeometryMapperClipCache;
 class PropertyTreeState;
+class TransformPaintPropertyNodeOrAlias;
 
 // A clip rect created by a css property such as "overflow" or "clip".
 // Along with a reference to the transform space the clip rect is based on,
@@ -64,15 +62,17 @@ class PLATFORM_EXPORT ClipPaintPropertyNodeOrAlias
 
 class ClipPaintPropertyNodeAlias final : public ClipPaintPropertyNodeOrAlias {
  public:
-  static scoped_refptr<ClipPaintPropertyNodeAlias> Create(
+  static ClipPaintPropertyNodeAlias* Create(
       const ClipPaintPropertyNodeOrAlias& parent) {
-    return base::AdoptRef(new ClipPaintPropertyNodeAlias(parent));
+    return MakeGarbageCollected<ClipPaintPropertyNodeAlias>(kParentAlias,
+                                                            parent);
   }
 
- private:
-  explicit ClipPaintPropertyNodeAlias(
-      const ClipPaintPropertyNodeOrAlias& parent)
-      : ClipPaintPropertyNodeOrAlias(parent, kParentAlias) {}
+  // These are public required by MakeGarbageCollected, but the protected tags
+  // prevent these from being called from outside.
+  ClipPaintPropertyNodeAlias(ParentAliasTag,
+                             const ClipPaintPropertyNodeOrAlias& parent)
+      : ClipPaintPropertyNodeOrAlias(kParentAlias, parent) {}
 };
 
 class PLATFORM_EXPORT ClipPaintPropertyNode final
@@ -84,35 +84,42 @@ class PLATFORM_EXPORT ClipPaintPropertyNode final
     DISALLOW_NEW();
 
    public:
-    State(scoped_refptr<const TransformPaintPropertyNodeOrAlias>
-              local_transform_space,
-          const gfx::RectF& layout_clip_rect,
-          const FloatRoundedRect& paint_clip_rect)
-        : local_transform_space(std::move(local_transform_space)) {
-      SetClipRect(layout_clip_rect, paint_clip_rect);
+    State(const TransformPaintPropertyNodeOrAlias& local_transform_space,
+          const gfx::RectF& precise_layout_clip_rect,
+          const FloatRoundedRect& paint_clip_rect,
+          const std::optional<gfx::RectF> expanded_rect = std::nullopt)
+        : local_transform_space(&local_transform_space) {
+      SetClipRect(precise_layout_clip_rect, paint_clip_rect, expanded_rect);
     }
-    State(scoped_refptr<const TransformPaintPropertyNodeOrAlias>
-              local_transform_space,
-          scoped_refptr<const EffectPaintPropertyNode> pixel_moving_filter)
-        : local_transform_space(std::move(local_transform_space)),
-          pixel_moving_filter(std::move(pixel_moving_filter)) {
-      DCHECK(layout_clip_rect_.IsInfinite());
-      paint_clip_rect_ = FloatRoundedRect(layout_clip_rect_.Rect());
+    State(const TransformPaintPropertyNodeOrAlias& local_transform_space,
+          const EffectPaintPropertyNode* pixel_moving_filter)
+        : local_transform_space(&local_transform_space),
+          pixel_moving_filter(pixel_moving_filter) {
+      DCHECK(expanded_layout_clip_rect_.IsInfinite());
+      paint_clip_rect_ = FloatRoundedRect(expanded_layout_clip_rect_.Rect());
     }
 
-    scoped_refptr<const TransformPaintPropertyNodeOrAlias>
-        local_transform_space;
+    Member<const TransformPaintPropertyNodeOrAlias> local_transform_space;
     std::optional<FloatClipRect> layout_clip_rect_excluding_overlay_scrollbars;
     std::optional<Path> clip_path;
     // If this is not nullptr, this clip node will generate a cc clip node to
     // expand clip rect for a pixel-moving filter.
-    scoped_refptr<const EffectPaintPropertyNode> pixel_moving_filter;
+    Member<const EffectPaintPropertyNode> pixel_moving_filter;
 
-    void SetClipRect(const gfx::RectF& layout_clip_rect_arg,
-                     const FloatRoundedRect& paint_clip_rect_arg) {
-      layout_clip_rect_.SetRect(layout_clip_rect_arg);
-      if (paint_clip_rect_arg.IsRounded())
-        layout_clip_rect_.SetHasRadius();
+    void SetClipRect(
+        const gfx::RectF& precise_layout_clip_rect_arg,
+        const FloatRoundedRect& paint_clip_rect_arg,
+        const std::optional<gfx::RectF> expanded_rect = std::nullopt) {
+      precise_layout_clip_rect_.SetRect(precise_layout_clip_rect_arg);
+      expanded_layout_clip_rect_.SetRect(
+          expanded_rect.value_or(precise_layout_clip_rect_arg));
+      if (paint_clip_rect_arg.IsRounded()) {
+        // Clip rects for cc clip-path animations are never rounded
+        if (!expanded_rect.has_value()) {
+          expanded_layout_clip_rect_.SetHasRadius();
+        }
+        precise_layout_clip_rect_.SetHasRadius();
+      }
       paint_clip_rect_ = paint_clip_rect_arg;
     }
 
@@ -122,19 +129,35 @@ class PLATFORM_EXPORT ClipPaintPropertyNode final
       return (!clip_path && !p) || (clip_path && p && *clip_path == *p);
     }
 
+    void Trace(Visitor*) const;
+
    private:
     friend class ClipPaintPropertyNode;
-    FloatClipRect layout_clip_rect_;
+
+    // See getter functions in parent ClipPaintPropertyNode for a description
+    // of each of these values.
+    FloatClipRect expanded_layout_clip_rect_;
+    FloatClipRect precise_layout_clip_rect_;
     FloatRoundedRect paint_clip_rect_;
   };
 
   // This node is really a sentinel, and does not represent a real clip space.
   static const ClipPaintPropertyNode& Root();
 
-  static scoped_refptr<ClipPaintPropertyNode> Create(
+  static ClipPaintPropertyNode* Create(
       const ClipPaintPropertyNodeOrAlias& parent,
       State&& state) {
-    return base::AdoptRef(new ClipPaintPropertyNode(&parent, std::move(state)));
+    return MakeGarbageCollected<ClipPaintPropertyNode>(kNonParentAlias, parent,
+                                                       std::move(state));
+  }
+
+  static const FloatClipRect& ExpandedLayoutClipRect();
+  static const FloatRoundedRect& ExpandedPaintClipRect();
+
+  void Trace(Visitor* visitor) const final {
+    ClipPaintPropertyNodeOrAlias::Trace(visitor);
+    visitor->Trace(state_);
+    visitor->Trace(clip_cache_);
   }
 
   // The empty AnimationState struct is to meet the requirement of
@@ -165,14 +188,32 @@ class PLATFORM_EXPORT ClipPaintPropertyNode final
   const FloatRoundedRect& PaintClipRect() const {
     return state_.paint_clip_rect_;
   }
-  // The clip rect used for GeometryMapper to map in layout coordinates.
+  // The clip rect used for GeometryMapper to map in layout coordinates,
+  // including potential expansions for cc-side clip-path animations which
+  // require a larger area to accommodate the entire animated path, which may be
+  // larger than the clip-path for the current animation frame. This is used in
+  // multiple places, including calculating cull rects. For better understanding
+  // of when this is used vs. PreciseLayoutClipRect, search for usage of
+  // blink::VisualRectFlags.
   const FloatClipRect& LayoutClipRect() const {
-    return state_.layout_clip_rect_;
+    return state_.expanded_layout_clip_rect_;
   }
+  // The clip rect used for GeometryMapper to map in layout coordinates,
+  // accounting for only the clip path of the current main-thread animation
+  // frame. Currently used only by intersection observers.
+  const FloatClipRect& PreciseLayoutClipRect() const {
+    return state_.precise_layout_clip_rect_;
+  }
+
+  bool IsForCompositeClipPathAnimation() const {
+    return state_.expanded_layout_clip_rect_ !=
+           state_.precise_layout_clip_rect_;
+  }
+
   const FloatClipRect& LayoutClipRectExcludingOverlayScrollbars() const {
     return state_.layout_clip_rect_excluding_overlay_scrollbars
                ? *state_.layout_clip_rect_excluding_overlay_scrollbars
-               : state_.layout_clip_rect_;
+               : state_.precise_layout_clip_rect_;
   }
 
   const std::optional<Path>& ClipPath() const { return state_.clip_path; }
@@ -181,7 +222,7 @@ class PLATFORM_EXPORT ClipPaintPropertyNode final
   }
 
   const EffectPaintPropertyNode* PixelMovingFilter() const {
-    return state_.pixel_moving_filter.get();
+    return state_.pixel_moving_filter.Get();
   }
 
   const ClipPaintPropertyNode* NearestPixelMovingFilterClip() const {
@@ -190,25 +231,31 @@ class PLATFORM_EXPORT ClipPaintPropertyNode final
 
   std::unique_ptr<JSONObject> ToJSON() const final;
 
- private:
-  ClipPaintPropertyNode(const ClipPaintPropertyNodeOrAlias* parent,
+  // These are public required by MakeGarbageCollected, but the protected tags
+  // prevent these from being called from outside.
+  explicit ClipPaintPropertyNode(RootTag);
+  ClipPaintPropertyNode(NonParentAliasTag,
+                        const ClipPaintPropertyNodeOrAlias& parent,
                         State&& state)
-      : ClipPaintPropertyNodeOrAlias(parent), state_(std::move(state)) {}
+      : ClipPaintPropertyNodeOrAlias(kNonParentAlias, parent),
+        state_(std::move(state)) {}
 
+ private:
   // For access to GetClipCache();
   friend class GeometryMapper;
   friend class GeometryMapperClipCache;
   friend class GeometryMapperTest;
 
   GeometryMapperClipCache& GetClipCache() const {
-    if (!clip_cache_)
-      clip_cache_ = std::make_unique<GeometryMapperClipCache>();
+    if (!clip_cache_) {
+      clip_cache_ = MakeGarbageCollected<GeometryMapperClipCache>();
+    }
     clip_cache_->UpdateIfNeeded(*this);
     return *clip_cache_;
   }
 
   State state_;
-  mutable std::unique_ptr<GeometryMapperClipCache> clip_cache_;
+  mutable Member<GeometryMapperClipCache> clip_cache_;
 };
 
 }  // namespace blink

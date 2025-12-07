@@ -18,11 +18,14 @@
 #include "extensions/browser/install/crx_install_error.h"
 #include "extensions/browser/install/sandboxed_unpacker_failure_reason.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_urls.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/arc_prefs.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -252,7 +255,7 @@ bool ForceInstalledTracker::IsMisconfiguration(
     }
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // REPLACED_BY_SYSTEM_APP is a misconfiguration because these apps are legacy
   // apps and are replaced by system apps.
   if (installation_data.failure_reason ==
@@ -268,7 +271,7 @@ bool ForceInstalledTracker::IsMisconfiguration(
           InstallStageTracker::FailureReason::REPLACED_BY_ARC_APP) {
     return true;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (installation_data.failure_reason ==
       InstallStageTracker::FailureReason::NOT_PERFORMING_NEW_INSTALL) {

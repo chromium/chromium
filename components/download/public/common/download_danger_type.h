@@ -14,6 +14,8 @@ namespace download {
 // Update enum names in
 // tools/metrics/histograms/metadata/download/enums.xml, and variants
 // in tools/metrics/histograms/metadata/download/histograms.xml on additions.
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.download
 enum DownloadDangerType {
   // The download is safe.
   DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS = 0,
@@ -102,6 +104,10 @@ enum DownloadDangerType {
   // Download scan is unsuccessful, and should be blocked according to the
   // policy.
   DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED = 23,
+
+  // Download deep scanning identified sensitive content, will force download
+  // to GDrive if safe browsing extension is installed.
+  DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE = 24,
 
   // Memory space for histograms is determined by the max.
   // ALWAYS ADD NEW VALUES BEFORE THIS ONE.

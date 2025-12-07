@@ -9,7 +9,7 @@
 namespace {
 
 /// FirstRunRecency key, should match the one in `system_flags`.
-NSString* kFirstRunRecencyKey = @"FirstRunRecency";
+NSString* const kFirstRunRecencyKey = @"FirstRunRecency";
 
 }  // namespace
 

@@ -23,6 +23,7 @@ using SuggestResults = std::vector<FileSuggestData>;
 }  // namespace
 
 FileSuggestKeyedService::FileSuggestKeyedService(
+    const ApplicationLocaleStorage* application_locale_storage,
     Profile* profile,
     PersistentProto<app_list::RemovedResultsProto> proto)
     : profile_(profile), proto_(std::move(proto)) {
@@ -35,20 +36,11 @@ FileSuggestKeyedService::FileSuggestKeyedService(
 
   proto_.Init();
 
-  if (features::IsLauncherContinueSectionWithRecentsEnabled() ||
-      features::IsForestFeatureEnabled()) {
-    drive_file_suggestion_provider_ =
-        std::make_unique<DriveRecentFileSuggestionProvider>(
-            profile, base::BindRepeating(
-                         &FileSuggestKeyedService::OnSuggestionProviderUpdated,
-                         weak_factory_.GetWeakPtr()));
-  } else {
-    drive_file_suggestion_provider_ =
-        std::make_unique<DriveFileSuggestionProvider>(
-            profile, base::BindRepeating(
-                         &FileSuggestKeyedService::OnSuggestionProviderUpdated,
-                         weak_factory_.GetWeakPtr()));
-  }
+  drive_file_suggestion_provider_ =
+      std::make_unique<DriveRecentFileSuggestionProvider>(
+          profile, base::BindRepeating(
+                       &FileSuggestKeyedService::OnSuggestionProviderUpdated,
+                       weak_factory_.GetWeakPtr()));
 
   local_file_suggestion_provider_ =
       std::make_unique<LocalFileSuggestionProvider>(
@@ -86,17 +78,23 @@ void FileSuggestKeyedService::GetSuggestFileData(
     return;
   }
 
-  GetSuggestFileDataCallback filter_suggestions_callback =
+  // Deduplicate file suggestions, then filter out removed suggestions.
+  GetSuggestFileDataCallback filter_removed_suggestions_callback =
       base::BindOnce(&FileSuggestKeyedService::FilterRemovedSuggestions,
                      weak_factory_.GetWeakPtr(), std::move(callback));
+  GetSuggestFileDataCallback dedupe_suggestions_callback =
+      base::BindOnce(&FileSuggestKeyedService::FilterDuplicateSuggestions,
+                     weak_factory_.GetWeakPtr(),
+                     std::move(filter_removed_suggestions_callback));
+
   switch (type) {
     case FileSuggestionType::kDriveFile:
       drive_file_suggestion_provider_->GetSuggestFileData(
-          std::move(filter_suggestions_callback));
+          std::move(dedupe_suggestions_callback));
       return;
     case FileSuggestionType::kLocalFile:
       local_file_suggestion_provider_->GetSuggestFileData(
-          std::move(filter_suggestions_callback));
+          std::move(dedupe_suggestions_callback));
       return;
   }
 }
@@ -180,6 +178,30 @@ void FileSuggestKeyedService::OnSuggestionProviderUpdated(
 bool FileSuggestKeyedService::IsReadyForTest() const {
   return local_file_suggestion_provider_->IsInitialized() &&
          IsProtoInitialized();
+}
+
+void FileSuggestKeyedService::FilterDuplicateSuggestions(
+    GetSuggestFileDataCallback callback,
+    const std::optional<std::vector<FileSuggestData>>& suggestions) {
+  // There are no candidate suggestions. Therefore, return early.
+  if (!suggestions.has_value() || suggestions->empty()) {
+    std::move(callback).Run(suggestions);
+    return;
+  }
+
+  // Dedupe any items with duplicate file_path.
+  std::vector<FileSuggestData> unique_suggestions;
+  std::set<base::FilePath> unique_file_paths;
+  for (const auto& suggestion : *suggestions) {
+    auto result = unique_file_paths.insert(suggestion.file_path);
+    if (result.second) {
+      // Insertion took place, current `suggestion` file path is not a
+      // duplicate.
+      unique_suggestions.push_back(suggestion);
+    }
+  }
+
+  std::move(callback).Run(unique_suggestions);
 }
 
 void FileSuggestKeyedService::FilterRemovedSuggestions(

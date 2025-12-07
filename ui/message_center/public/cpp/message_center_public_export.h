@@ -18,11 +18,7 @@
 #endif  // defined(MESSAGE_CENTER_PUBLIC_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(MESSAGE_CENTER_PUBLIC_IMPLEMENTATION)
 #define MESSAGE_CENTER_PUBLIC_EXPORT __attribute__((visibility("default")))
-#else
-#define MESSAGE_CENTER_PUBLIC_EXPORT
-#endif  // defined(MESSAGE_CENTER_PUBLIC_IMPLEMENTATION)
 #endif
 
 #else  // defined(COMPONENT_BUILD)

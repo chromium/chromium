@@ -6,7 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
-#include "base/hash/sha1.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
@@ -21,21 +21,22 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/login/test/webview_content_extractor.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/ash/login/ui/webui_login_view.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/consent_auditor/consent_auditor_test_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
+#include "chrome/browser/ui/ash/login/webui_login_view.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/login/consolidated_consent_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/consent_auditor/fake_consent_auditor.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "content/public/test/browser_test.h"
+#include "crypto/obsolete/sha1.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {
@@ -53,7 +54,7 @@ using ArcGoogleLocationServiceConsent =
     ::sync_pb::UserConsentTypes::ArcGoogleLocationServiceConsent;
 
 const char kManagedUser[] = "user@example.com";
-const char kManagedGaiaID[] = "33333";
+const GaiaId::Literal kManagedGaiaID("33333");
 
 constexpr char kConsolidatedConsentId[] = "consolidated-consent";
 
@@ -191,7 +192,8 @@ ArcPlayTermsOfServiceConsent BuildArcPlayTermsOfServiceConsent(
       IDS_CONSOLIDATED_CONSENT_ACCEPT_AND_CONTINUE);
   play_consent.set_consent_flow(ArcPlayTermsOfServiceConsent::SETUP);
   play_consent.set_play_terms_of_service_hash(
-      base::SHA1HashString(tos_content));
+      std::string(base::as_string_view(crypto::obsolete::Sha1::HashForTesting(
+          base::as_byte_span(tos_content)))));
   play_consent.set_play_terms_of_service_text_length(tos_content.length());
   return play_consent;
 }
@@ -630,15 +632,12 @@ class ConsolidatedConsentScreenArcEnabledParameterizedTest
     ConsolidatedConsentScreenArcEnabledTestBase::SetUp();
   }
 
-  void SetUpInProcessBrowserTestFixture() override {
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
     ConsolidatedConsentScreenArcEnabledTestBase::
-        SetUpInProcessBrowserTestFixture();
-    subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                &ConsolidatedConsentScreenArcEnabledParameterizedTest::
-                    OnWillCreateBrowserContextServices,
-                base::Unretained(this)));
+        SetUpBrowserContextKeyedServices(context);
+    ConsentAuditorFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&BuildFakeConsentAuditor));
   }
 
   bool IsPhEnabled() { return is_ph_enabled_; }
@@ -654,11 +653,13 @@ class ConsolidatedConsentScreenArcEnabledParameterizedTest
     FakeConsentAuditor* auditor = static_cast<FakeConsentAuditor*>(
         ConsentAuditorFactory::GetForProfile(profile));
 
-    if (!accept_backup_restore_)
+    if (!accept_backup_restore_) {
       test::OobeJS().ClickOnPath(kBackupToggle);
+    }
 
-    if (!accept_location_service_)
+    if (!accept_location_service_) {
       test::OobeJS().ClickOnPath(kLocationToggle);
+    }
 
     EXPECT_CALL(*auditor, RecordArcPlayConsent(
                               testing::_,
@@ -682,17 +683,11 @@ class ConsolidatedConsentScreenArcEnabledParameterizedTest
   }
 
  protected:
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    ConsentAuditorFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating(&BuildFakeConsentAuditor));
-  }
-
   bool is_ph_enabled_;
   bool accept_backup_restore_;
   bool accept_location_service_;
 
   base::test::ScopedFeatureList feature_list_;
-  base::CallbackListSubscription subscription_;
 };
 
 // Tests that clicking on "Accept" button records the expected consents.
@@ -801,7 +796,7 @@ class ConsolidatedConsentScreenManagedUserTest
               ->clear_googlelocationservicesenabled();
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
     } else {
       // Legacy handling.

@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/browsing_data/browsing_data_test_utils.h"
 #include "content/public/browser/browser_thread.h"
@@ -154,12 +155,13 @@ void SetResponseContent(const GURL& url,
     auto buffer = base::HeapArray<uint8_t>::WithSize(length);
     file.Read(0, buffer);
 
-    if (path.Extension() == FILE_PATH_LITERAL(".js"))
+    if (path.Extension() == FILE_PATH_LITERAL(".js")) {
       response->set_content_type("application/javascript");
-    else if (path.Extension() == FILE_PATH_LITERAL(".html"))
+    } else if (path.Extension() == FILE_PATH_LITERAL(".html")) {
       response->set_content_type("text/html");
-    else
-      NOTREACHED_IN_MIGRATION();
+    } else {
+      NOTREACHED();
+    }
 
     response->set_content(base::as_string_view(buffer));
   }

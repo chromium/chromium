@@ -14,6 +14,9 @@
 // Object.prototype.
 //
 // Note that the properties and methods we taint are not exhaustive.
+//
+// Controlled Frame has a test derived from this at:
+// //chrome/browser/controlled_frame/controlled_frame_apitest.cc
 
 window.onload = () => {
   chrome.test.sendMessage('LAUNCHED');
@@ -30,6 +33,7 @@ function makeUnreached() {
   };
 }
 
+// Step 1: Overwrite prototype method setters/getters on properties.
 (function taintProperties() {
   var properties = [
     'AppView',
@@ -113,21 +117,11 @@ function makeUnreached() {
   }
 })();
 
-// Overwrite methods.
-Object.assign = makeUnreached();
-Object.create = makeUnreached();
-Object.defineProperty = makeUnreached();
-Object.freeze = makeUnreached();
-Object.getOwnPropertyDescriptor = makeUnreached();
-Object.getPrototypeOf = makeUnreached();
-Object.keys = makeUnreached();
-Object.setPrototypeOf = makeUnreached();
+// Step 2: Overwrite remainder of prototype methods.
 Object.prototype.hasOwnProperty = makeUnreached();
 Function.prototype.apply = makeUnreached();
 Function.prototype.bind = makeUnreached();
 Function.prototype.call = makeUnreached();
-Array.from = makeUnreached();
-Array.isArray = makeUnreached();
 Array.prototype.concat = makeUnreached();
 Array.prototype.filter = makeUnreached();
 Array.prototype.forEach = makeUnreached();
@@ -148,7 +142,6 @@ String.prototype.split = makeUnreached();
 String.prototype.substr = makeUnreached();
 String.prototype.toLowerCase = makeUnreached();
 String.prototype.toUpperCase = makeUnreached();
-
 CustomElementRegistry.prototype.define = makeUnreached();
 Document.prototype.createElement = makeUnreached();
 Document.prototype.createEvent = makeUnreached();
@@ -168,16 +161,29 @@ Node.prototype.appendChild = makeUnreached();
 Node.prototype.removeChild = makeUnreached();
 Node.prototype.replaceChild = makeUnreached();
 
-getComputedStyle = makeUnreached();
-parseInt = makeUnreached();
-parseFloat = makeUnreached();
-
-// Also overwrite constructors.
+// Step 3: Overwrite constructors.
 MutationObserver = makeUnreached();
 Object = makeUnreached();
 Function = makeUnreached();
 Array = makeUnreached();
 String = makeUnreached();
+
+// Step 4: Overwrite static methods on constructors.
+Object.assign = makeUnreached();
+Object.create = makeUnreached();
+Object.defineProperty = makeUnreached();
+Object.freeze = makeUnreached();
+Object.getOwnPropertyDescriptor = makeUnreached();
+Object.getPrototypeOf = makeUnreached();
+Object.keys = makeUnreached();
+Object.setPrototypeOf = makeUnreached();
+Array.from = makeUnreached();
+Array.isArray = makeUnreached();
+
+// Step 5: Overwrite global functions.
+getComputedStyle = makeUnreached();
+parseInt = makeUnreached();
+parseFloat = makeUnreached();
 
 var tests = {
   testCreate: () => {

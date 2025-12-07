@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/location.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/video_frame.h"
@@ -17,7 +18,7 @@ namespace media {
 
 FuchsiaDecryptor::FuchsiaDecryptor(FuchsiaCdmContext* cdm_context)
     : cdm_context_(cdm_context) {
-  DCHECK(cdm_context_);
+  CHECK(cdm_context_);
 }
 
 FuchsiaDecryptor::~FuchsiaDecryptor() {}
@@ -29,7 +30,9 @@ void FuchsiaDecryptor::Decrypt(StreamType stream_type,
 }
 
 void FuchsiaDecryptor::CancelDecrypt(StreamType stream_type) {
-  NOTREACHED_IN_MIGRATION();
+  // There is nothing to cancel because `Decrypt()` is not expected to be
+  // called directly. This method may still be called by
+  // the `DecryptingDemuxerStream` destructor.
 }
 
 void FuchsiaDecryptor::InitializeAudioDecoder(const AudioDecoderConfig& config,
@@ -47,23 +50,21 @@ void FuchsiaDecryptor::InitializeVideoDecoder(const VideoDecoderConfig& config,
 void FuchsiaDecryptor::DecryptAndDecodeAudio(
     scoped_refptr<DecoderBuffer> encrypted,
     AudioDecodeCB audio_decode_cb) {
-  NOTREACHED_IN_MIGRATION();
-  std::move(audio_decode_cb).Run(Status::kError, AudioFrames());
+  NOTREACHED();
 }
 
 void FuchsiaDecryptor::DecryptAndDecodeVideo(
     scoped_refptr<DecoderBuffer> encrypted,
     VideoDecodeCB video_decode_cb) {
-  NOTREACHED_IN_MIGRATION();
-  std::move(video_decode_cb).Run(Status::kError, nullptr);
+  NOTREACHED();
 }
 
 void FuchsiaDecryptor::ResetDecoder(StreamType stream_type) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FuchsiaDecryptor::DeinitializeDecoder(StreamType stream_type) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool FuchsiaDecryptor::CanAlwaysDecrypt() {

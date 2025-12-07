@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 // Create a state machine for validating UTF-8. The algorithm in brief:
 // 1. Convert the complete unicode range of code points, except for the
 //    surrogate code points, to an ordered array of sequences of bytes in
@@ -38,6 +33,7 @@
 #include <string.h>
 
 #include <algorithm>
+#include <array>
 #include <map>
 #include <string>
 #include <vector>
@@ -46,6 +42,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -134,15 +131,14 @@ typedef std::vector<Pair> PairVector;
 // A class to print a table of numbers in the same style as clang-format.
 class TablePrinter {
  public:
-  explicit TablePrinter(FILE* stream)
-      : stream_(stream), values_on_this_line_(0), current_offset_(0) {}
+  explicit TablePrinter(FILE* stream) : stream_(stream) {}
 
   TablePrinter(const TablePrinter&) = delete;
   TablePrinter& operator=(const TablePrinter&) = delete;
 
   void PrintValue(uint8_t value) {
     if (values_on_this_line_ == 0) {
-      fputs("   ", stream_);
+      UNSAFE_TODO(fputs("   ", stream_));
     } else if (values_on_this_line_ == kMaxValuesPerLine) {
       fprintf(stream_.get(), "  // 0x%02x\n   ", current_offset_);
       values_on_this_line_ = 0;
@@ -154,7 +150,7 @@ class TablePrinter {
 
   void NewLine() {
     while (values_on_this_line_ < kMaxValuesPerLine) {
-      fputs("      ", stream_);
+      UNSAFE_TODO(fputs("      ", stream_));
       ++values_on_this_line_;
     }
     fprintf(stream_.get(), "  // 0x%02x\n", current_offset_);
@@ -166,10 +162,10 @@ class TablePrinter {
   raw_ptr<FILE> stream_;
 
   // Number of values so far printed on this line.
-  int values_on_this_line_;
+  int values_on_this_line_ = 0;
 
   // Total values printed so far.
-  int current_offset_;
+  int current_offset_ = 0;
 
   static const int kMaxValuesPerLine = 8;
 };
@@ -184,14 +180,16 @@ PairVector InitializeCharacters() {
       // explicitly permitted.
       continue;
     }
-    uint8_t bytes[4];
+    std::array<uint8_t, 4> bytes;
     unsigned int offset = 0;
     UBool is_error = false;
     U8_APPEND(bytes, offset, std::size(bytes), i, is_error);
     DCHECK(!is_error);
     DCHECK_GT(offset, 0u);
     DCHECK_LE(offset, std::size(bytes));
-    Pair pair = {Character(bytes, bytes + offset), StringSet()};
+    Pair pair = {Character(bytes.data(),
+                           base::span<uint8_t>(bytes).subspan(offset).data()),
+                 StringSet()};
     vector.push_back(pair);
   }
   return vector;
@@ -204,8 +202,8 @@ void ConstructPairAndAppend(const Character& character,
                             const StringSet& existing_set,
                             PairVector* pairs) {
   Pair new_pair = {character, StringSet(1, new_range)};
-  new_pair.set.insert(
-      new_pair.set.end(), existing_set.begin(), existing_set.end());
+  new_pair.set.insert(new_pair.set.end(), existing_set.begin(),
+                      existing_set.end());
   pairs->push_back(new_pair);
 }
 
@@ -230,8 +228,7 @@ void MoveRightMostCharToSet(PairVector* pairs) {
   while (it != pairs->end()) {
     const Pair& current_pair = *it++;
     if (current_pair.character.size() == unconverted_bytes.size() + 1 &&
-        std::equal(unconverted_bytes.begin(),
-                   unconverted_bytes.end(),
+        std::equal(unconverted_bytes.begin(), unconverted_bytes.end(),
                    current_pair.character.begin()) &&
         converted == current_pair.set) {
       // The particular set of UTF-8 codepoints we are validating guarantees
@@ -272,11 +269,10 @@ void MoveAllCharsToSets(PairVector* pairs) {
 void LogStringSets(const PairVector& pairs) {
   for (const auto& pair_it : pairs) {
     std::string set_as_string;
-    for (auto set_it = pair_it.set.begin(); set_it != pair_it.set.end();
-         ++set_it) {
+    for (const auto& set_it : pair_it.set) {
       set_as_string += base::StringPrintf("[\\x%02x-\\x%02x]",
-                                          static_cast<int>(set_it->from()),
-                                          static_cast<int>(set_it->to()));
+                                          static_cast<int>(set_it.from()),
+                                          static_cast<int>(set_it.to()));
     }
     VLOG(1) << set_as_string;
   }
@@ -323,9 +319,8 @@ uint8_t MakeState(const StringSet& set,
       {0, 1},
       {range.from(), target_state},
       {static_cast<uint8_t>(range.to() + 1), 1}};
-  states->push_back(
-      State(new_state_initializer,
-            new_state_initializer + std::size(new_state_initializer)));
+  states->emplace_back(std::begin(new_state_initializer),
+                       std::end(new_state_initializer));
   const uint8_t new_state_number =
       base::checked_cast<uint8_t>(states->size() - 1);
   CHECK(state_map->insert(std::make_pair(set, new_state_number)).second);
@@ -357,9 +352,8 @@ std::vector<State> GenerateStates(const PairVector& pairs) {
       const StateRange new_range_initializer[] = {
           {range.from(), target_state},
           {static_cast<uint8_t>(range.to() + 1), 1}};
-      states[0].insert(
-          states[0].end(), new_range_initializer,
-          new_range_initializer + std::size(new_range_initializer));
+      states[0].insert(states[0].end(), std::begin(new_range_initializer),
+                       std::end(new_range_initializer));
     }
   }
   return states;
@@ -385,9 +379,8 @@ void PrintStates(const std::vector<State>& states, FILE* stream) {
     // bits we can discard and still determine what range a byte lies in. Sadly
     // it appears that ffs() is not portable, so we do it clumsily.
     uint8_t shift = 7;
-    for (auto range_it = state_it.begin(); range_it != state_it.end();
-         ++range_it) {
-      while (shift > 0 && range_it->from % (1 << shift) != 0) {
+    for (const auto& range_it : state_it) {
+      while (shift > 0 && range_it.from % (1 << shift) != 0) {
         --shift;
       }
     }
@@ -398,15 +391,14 @@ void PrintStates(const std::vector<State>& states, FILE* stream) {
 
   DCHECK_EQ(129, state_offset[1]);
 
-  fputs(kProlog, stream);
+  UNSAFE_TODO(fputs(kProlog, stream));
   TablePrinter table_printer(stream);
 
   for (uint8_t state_index = 0; state_index < states.size(); ++state_index) {
     const uint8_t shift = shifts[state_index];
     uint8_t next_range = 0;
     uint8_t target_state = 1;
-    fprintf(stream,
-            "    // State %d, offset 0x%02x\n",
+    fprintf(stream, "    // State %d, offset 0x%02x\n",
             static_cast<int>(state_index),
             static_cast<int>(state_offset[state_index]));
     table_printer.PrintValue(shift);
@@ -423,7 +415,7 @@ void PrintStates(const std::vector<State>& states, FILE* stream) {
     table_printer.NewLine();
   }
 
-  fputs(kEpilog, stream);
+  UNSAFE_TODO(fputs(kEpilog, stream));
 }
 
 }  // namespace
@@ -435,7 +427,7 @@ int main(int argc, char* argv[]) {
       logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
   logging::InitLogging(settings);
   if (base::CommandLine::ForCurrentProcess()->HasSwitch("help")) {
-    fwrite(kHelpText, 1, std::size(kHelpText), stdout);
+    UNSAFE_TODO(fwrite(kHelpText, 1, std::size(kHelpText), stdout));
     exit(EXIT_SUCCESS);
   }
   base::FilePath filename =
@@ -444,9 +436,10 @@ int main(int argc, char* argv[]) {
   FILE* output = stdout;
   if (!filename.empty()) {
     output = base::OpenFile(filename, "wb");
-    if (!output)
+    if (!output) {
       PLOG(FATAL) << "Couldn't open '" << filename.AsUTF8Unsafe()
                   << "' for writing";
+    }
   }
 
   // Step 1: Enumerate the characters
@@ -462,9 +455,10 @@ int main(int argc, char* argv[]) {
   PrintStates(states, output);
 
   if (!filename.empty()) {
-    if (!base::CloseFile(output))
+    if (!base::CloseFile(output)) {
       PLOG(FATAL) << "Couldn't finish writing '" << filename.AsUTF8Unsafe()
                   << "'";
+    }
   }
 
   return EXIT_SUCCESS;

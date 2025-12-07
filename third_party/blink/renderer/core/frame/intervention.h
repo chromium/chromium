@@ -24,9 +24,12 @@ class CORE_EXPORT Intervention {
 
   // Generates a intervention report, to be routed to the Reporting API and any
   // ReportingObservers. Also sends the intervention message to the console.
+  // `message` will be used for both the console and intervention report unless
+  // `console_message` is specified.
   static void GenerateReport(LocalFrame*,
                              const String& id,
-                             const String& message);
+                             const String& message,
+                             const String& console_message = "");
 };
 
 }  // namespace blink

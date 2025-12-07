@@ -4,8 +4,11 @@
 
 #include "chrome/browser/error_reporting/chrome_js_error_report_processor.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
@@ -13,6 +16,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -21,6 +25,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace {
@@ -35,7 +40,7 @@ void ChromeJsErrorReportProcessor::OnRequestComplete(
     std::unique_ptr<network::SimpleURLLoader> url_loader,
     base::ScopedClosureRunner callback_runner,
     base::Time report_time,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   if (response_body) {
     DVLOG(1) << "Uploaded crash report. ID: " << *response_body;
     base::ThreadPool::PostTaskAndReply(
@@ -82,8 +87,7 @@ void ChromeJsErrorReportProcessor::UpdateReportDatabase(
   std::string line = base::StrCat({base::NumberToString(report_time.ToTimeT()),
                                    ",", remote_report_id, "\n"});
   // WriteAtCurrentPos because O_APPEND.
-  if (upload_log.WriteAtCurrentPos(line.c_str(), line.length()) !=
-      static_cast<int>(line.length())) {
+  if (!upload_log.WriteAtCurrentPosAndCheck(base::as_byte_span(line))) {
     DVLOG(1) << "Could not write to upload.log";
     return;
   }
@@ -114,6 +118,7 @@ void ChromeJsErrorReportProcessor::SendReport(
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->method = "POST";
   resource_request->url = url;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   const auto traffic_annotation =
       net::DefineNetworkTrafficAnnotation("javascript_report_error", R"(

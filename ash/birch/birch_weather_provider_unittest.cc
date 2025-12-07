@@ -13,7 +13,6 @@
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_model.h"
 #include "ash/birch/stub_birch_client.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/geolocation_access_level.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
@@ -22,9 +21,8 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time_override.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_names.h"
 
@@ -39,8 +37,6 @@ BirchWeatherProvider* GetWeatherProvider() {
 class BirchWeatherProviderTest : public AshTestBase {
  public:
   BirchWeatherProviderTest() : clock_override_(&GetTestTime, nullptr, nullptr) {
-    feature_list_.InitWithFeatures(
-        {features::kForestFeature, features::kBirchWeather}, {});
     // Ensure the time is morning (7 AM) so weather will be fetched.
     SetTestTime(base::Time::Now().LocalMidnight() + base::Hours(7));
   }
@@ -76,7 +72,6 @@ class BirchWeatherProviderTest : public AshTestBase {
  private:
   base::subtle::ScopedTimeClockOverrides clock_override_;
   static base::Time test_time_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // static
@@ -101,8 +96,10 @@ TEST_F(BirchWeatherProviderTest, GetWeather) {
   EXPECT_EQ(u"Cloudy", weather_items[0].title());
   EXPECT_FLOAT_EQ(70.f, weather_items[0].temp_f());
   weather_items[0].LoadIcon(base::BindOnce(
-      [](const ui::ImageModel& icon, SecondaryIconType secondary_icon_type) {
+      [](PrimaryIconType primary_icon_type,
+         SecondaryIconType secondary_icon_type, const ui::ImageModel& icon) {
         EXPECT_FALSE(icon.IsEmpty());
+        EXPECT_EQ(primary_icon_type, PrimaryIconType::kWeatherImage);
         EXPECT_EQ(secondary_icon_type, SecondaryIconType::kNoIcon);
       }));
 }
@@ -155,8 +152,10 @@ TEST_F(BirchWeatherProviderTest, GetWeatherWaitsForRefreshTokens) {
   EXPECT_EQ(u"Cloudy", weather_items[0].title());
   EXPECT_FLOAT_EQ(70.f, weather_items[0].temp_f());
   weather_items[0].LoadIcon(base::BindOnce(
-      [](const ui::ImageModel& icon, SecondaryIconType secondary_icon_type) {
+      [](PrimaryIconType primary_icon_type,
+         SecondaryIconType secondary_icon_type, const ui::ImageModel& icon) {
         EXPECT_FALSE(icon.IsEmpty());
+        EXPECT_EQ(primary_icon_type, PrimaryIconType::kWeatherImage);
         EXPECT_EQ(secondary_icon_type, SecondaryIconType::kNoIcon);
       }));
 
@@ -174,7 +173,7 @@ TEST_F(BirchWeatherProviderTest, WeatherNotFetchedWhenGeolocationDisabled) {
   ambient_backend_controller_->SetWeatherInfo(info);
 
   // Disable geolocation.
-  SimpleGeolocationProvider::GetInstance()->SetGeolocationAccessLevel(
+  SystemLocationProvider::GetInstance()->SetGeolocationAccessLevel(
       GeolocationAccessLevel::kDisallowed);
 
   // Fetch birch data.
@@ -356,8 +355,10 @@ TEST_F(BirchWeatherProviderTest, RefetchWeather) {
   EXPECT_EQ(u"Cloudy", weather_items[0].title());
   EXPECT_FLOAT_EQ(70.f, weather_items[0].temp_f());
   weather_items[0].LoadIcon(base::BindOnce(
-      [](const ui::ImageModel& icon, SecondaryIconType secondary_icon_type) {
+      [](PrimaryIconType primary_icon_type,
+         SecondaryIconType secondary_icon_type, const ui::ImageModel& icon) {
         EXPECT_FALSE(icon.IsEmpty());
+        EXPECT_EQ(primary_icon_type, PrimaryIconType::kWeatherImage);
         EXPECT_EQ(secondary_icon_type, SecondaryIconType::kNoIcon);
       }));
 
@@ -381,8 +382,10 @@ TEST_F(BirchWeatherProviderTest, RefetchWeather) {
   EXPECT_EQ(u"Sunny", updated_weather_items[0].title());
   EXPECT_FLOAT_EQ(73.f, updated_weather_items[0].temp_f());
   weather_items[0].LoadIcon(base::BindOnce(
-      [](const ui::ImageModel& icon, SecondaryIconType secondary_icon_type) {
+      [](PrimaryIconType primary_icon_type,
+         SecondaryIconType secondary_icon_type, const ui::ImageModel& icon) {
         EXPECT_FALSE(icon.IsEmpty());
+        EXPECT_EQ(primary_icon_type, PrimaryIconType::kWeatherImage);
         EXPECT_EQ(secondary_icon_type, SecondaryIconType::kNoIcon);
       }));
 }
@@ -451,8 +454,10 @@ TEST_F(BirchWeatherProviderTest, RefetchInvalidWeather) {
   EXPECT_EQ(u"Cloudy", weather_items[0].title());
   EXPECT_FLOAT_EQ(70.f, weather_items[0].temp_f());
   weather_items[0].LoadIcon(base::BindOnce(
-      [](const ui::ImageModel& icon, SecondaryIconType secondary_icon_type) {
+      [](PrimaryIconType primary_icon_type,
+         SecondaryIconType secondary_icon_type, const ui::ImageModel& icon) {
         EXPECT_FALSE(icon.IsEmpty());
+        EXPECT_EQ(primary_icon_type, PrimaryIconType::kWeatherImage);
         EXPECT_EQ(secondary_icon_type, SecondaryIconType::kNoIcon);
       }));
 
@@ -505,6 +510,23 @@ TEST_F(BirchWeatherProviderTest, DisabledByPolicy) {
   pref_service->SetList(prefs::kContextualGoogleIntegrationsConfiguration,
                         std::move(enabled_integrations));
 
+  provider.RequestBirchDataFetch();
+  EXPECT_EQ(ambient_backend_controller_->fetch_weather_count(), 1);
+}
+
+TEST_F(BirchWeatherProviderTest, WeatherManagedUser) {
+  auto* birch_model = Shell::Get()->birch_model();
+  BirchWeatherProvider provider(birch_model);
+
+  provider.RequestBirchDataFetch();
+  EXPECT_EQ(ambient_backend_controller_->fetch_weather_count(), 1);
+
+  // Add and switch to a managed user account.
+  SimulateUserLogin({.display_email = "primary@test",
+                     .is_new_profile = true,
+                     .is_account_managed = true});
+
+  // Weather should not be fetched when the active account is managed.
   provider.RequestBirchDataFetch();
   EXPECT_EQ(ambient_backend_controller_->fetch_weather_count(), 1);
 }

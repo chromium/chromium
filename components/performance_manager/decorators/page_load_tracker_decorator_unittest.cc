@@ -115,7 +115,9 @@ void PageLoadTrackerDecoratorTest::TestPageAlmostIdleTransitions(
 
   // Go back to not idling. We should transition back to kLoadedNotIdling, and
   // a timer should still be running.
-  frame_node->OnNavigationCommitted(GURL(), url::Origin(), false);
+  frame_node->OnNavigationCommitted(
+      GURL(), url::Origin(), /*same_document=*/false,
+      /*is_served_from_back_forward_cache=*/false);
   EXPECT_FALSE(frame_node->GetNetworkAlmostIdle());
   EXPECT_EQ(LIS::kLoadedNotIdling, page_data.load_idle_state());
   EXPECT_TRUE(page_data.timer_.IsRunning());
@@ -143,7 +145,9 @@ void PageLoadTrackerDecoratorTest::TestPageAlmostIdleTransitions(
   proc_node->SetMainThreadTaskLoadIsLow(false);
   EXPECT_FALSE(Data::Exists(page_node));
   EXPECT_EQ(LS::kLoadedIdle, page_node->GetLoadingState());
-  frame_node->OnNavigationCommitted(GURL(), url::Origin(), false);
+  frame_node->OnNavigationCommitted(
+      GURL(), url::Origin(), /*same_document=*/false,
+      /*is_served_from_back_forward_cache=*/false);
   EXPECT_FALSE(frame_node->GetNetworkAlmostIdle());
   EXPECT_FALSE(Data::Exists(page_node));
   EXPECT_EQ(LS::kLoadedIdle, page_node->GetLoadingState());
@@ -187,7 +191,9 @@ TEST_F(PageLoadTrackerDecoratorTest, TestTransitionsNotIdlingOnDidStopLoading) {
   EXPECT_FALSE(page_data.timer_.IsRunning());
 
   // Mark the page as not idling.
-  frame_node->OnNavigationCommitted(GURL(), url::Origin(), false);
+  frame_node->OnNavigationCommitted(
+      GURL(), url::Origin(), /*same_document=*/false,
+      /*is_served_from_back_forward_cache=*/false);
   proc_node->SetMainThreadTaskLoadIsLow(false);
   EXPECT_FALSE(IsIdling(page_node));
 
@@ -218,7 +224,9 @@ TEST_F(PageLoadTrackerDecoratorTest, TestStartLoadingAgainBeforeIdle) {
   EXPECT_EQ(LS::kLoading, page_node->GetLoadingState());
 
   // Mark the page as not idling.
-  frame_node->OnNavigationCommitted(GURL(), url::Origin(), false);
+  frame_node->OnNavigationCommitted(
+      GURL(), url::Origin(), /*same_document=*/false,
+      /*is_served_from_back_forward_cache=*/false);
   proc_node->SetMainThreadTaskLoadIsLow(false);
   EXPECT_FALSE(IsIdling(page_node));
 
@@ -272,7 +280,9 @@ TEST_F(PageLoadTrackerDecoratorTest, IsIdling) {
   EXPECT_TRUE(IsIdling(page_node));
 
   // Should return false when network is no longer idle.
-  frame_node->OnNavigationCommitted(GURL(), url::Origin(), false);
+  frame_node->OnNavigationCommitted(
+      GURL(), url::Origin(), /*same_document=*/false,
+      /*is_served_from_back_forward_cache=*/false);
   EXPECT_FALSE(IsIdling(page_node));
 
   // And should stay false if main thread task also goes low again.

@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -104,6 +105,52 @@ TEST(CSSParserFastPathsTest, ParseRevertLayer) {
         CSSPropertyID::kDirection, "revert-layer", context);
     ASSERT_TRUE(value);
     EXPECT_TRUE(value->IsRevertLayerValue());
+  }
+}
+
+TEST(CSSParserFastPathsTest, ParseRevertRule) {
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  // 'revert-rule' enabled, IsHandledByKeywordFastPath=false
+  {
+    ScopedCSSRevertRuleForTest scoped_feature(true);
+    DCHECK(!CSSParserFastPaths::IsHandledByKeywordFastPath(
+        CSSPropertyID::kMarginTop));
+    CSSValue* value = CSSParserFastPaths::MaybeParseValue(
+        CSSPropertyID::kMarginTop, "revert-rule", context);
+    ASSERT_TRUE(value);
+    EXPECT_TRUE(value->IsRevertRuleValue());
+  }
+
+  // 'revert-rule' enabled, IsHandledByKeywordFastPath=true
+  {
+    ScopedCSSRevertRuleForTest scoped_feature(true);
+    DCHECK(CSSParserFastPaths::IsHandledByKeywordFastPath(
+        CSSPropertyID::kDirection));
+    CSSValue* value = CSSParserFastPaths::MaybeParseValue(
+        CSSPropertyID::kDirection, "revert-rule", context);
+    ASSERT_TRUE(value);
+    EXPECT_TRUE(value->IsRevertRuleValue());
+  }
+
+  // 'revert-rule' enabled, IsHandledByKeywordFastPath=false
+  {
+    ScopedCSSRevertRuleForTest scoped_feature(false);
+    DCHECK(!CSSParserFastPaths::IsHandledByKeywordFastPath(
+        CSSPropertyID::kMarginTop));
+    CSSValue* value = CSSParserFastPaths::MaybeParseValue(
+        CSSPropertyID::kMarginTop, "revert-rule", context);
+    EXPECT_FALSE(value);
+  }
+
+  // 'revert-rule' enabled, IsHandledByKeywordFastPath=true
+  {
+    ScopedCSSRevertRuleForTest scoped_feature(false);
+    DCHECK(CSSParserFastPaths::IsHandledByKeywordFastPath(
+        CSSPropertyID::kDirection));
+    CSSValue* value = CSSParserFastPaths::MaybeParseValue(
+        CSSPropertyID::kDirection, "revert-rule", context);
+    EXPECT_FALSE(value);
   }
 }
 

@@ -19,7 +19,6 @@ GetIbanUploadDetailsRequest::GetIbanUploadDetailsRequest(
     const bool full_sync_enabled,
     const std::string& app_locale,
     int64_t billing_customer_number,
-    int billable_service_number,
     const std::string& country_code,
     base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                             const std::u16string& validation_regex,
@@ -28,7 +27,6 @@ GetIbanUploadDetailsRequest::GetIbanUploadDetailsRequest(
     : full_sync_enabled_(full_sync_enabled),
       app_locale_(app_locale),
       billing_customer_number_(billing_customer_number),
-      billable_service_number_(billable_service_number),
       country_code_(country_code),
       callback_(std::move(callback)) {}
 
@@ -46,7 +44,8 @@ std::string GetIbanUploadDetailsRequest::GetRequestContent() {
   base::Value::Dict request_dict;
   base::Value::Dict context;
   context.Set("language_code", app_locale_);
-  context.Set("billable_service", billable_service_number_);
+  context.Set("billable_service",
+              payments::kUploadPaymentMethodBillableServiceNumber);
   if (billing_customer_number_ != 0) {
     context.Set("customer_context",
                 BuildCustomerContextDictionary(billing_customer_number_));

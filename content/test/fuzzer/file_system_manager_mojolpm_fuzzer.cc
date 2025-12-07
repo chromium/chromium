@@ -45,7 +45,8 @@ using url::Origin;
 namespace content {
 
 const size_t kNumRenderers = 2;
-const char* kCmdline[] = {"file_system_manager_mojolpm_fuzzer", nullptr};
+constexpr const char* kCmdline[] = {"file_system_manager_mojolpm_fuzzer",
+                                    nullptr};
 
 mojolpm::FuzzerEnvironment& GetEnvironment() {
   static base::NoDestructor<mojolpm::FuzzerEnvironmentWithTaskEnvironment>

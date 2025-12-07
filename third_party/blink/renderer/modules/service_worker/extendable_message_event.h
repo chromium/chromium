@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/service_worker/extendable_event.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
@@ -29,24 +30,26 @@ class MODULES_EXPORT ExtendableMessageEvent final : public ExtendableEvent {
       const ExtendableMessageEventInit* initializer);
   static ExtendableMessageEvent* Create(
       scoped_refptr<SerializedScriptValue> data,
-      const String& origin,
-      MessagePortArray* ports,
+      scoped_refptr<const SecurityOrigin> origin,
+      GCedMessagePortArray* ports,
       ServiceWorkerClient* source,
       WaitUntilObserver*);
   static ExtendableMessageEvent* Create(
       scoped_refptr<SerializedScriptValue> data,
-      const String& origin,
-      MessagePortArray* ports,
+      scoped_refptr<const SecurityOrigin> origin,
+      GCedMessagePortArray* ports,
       ServiceWorker* source,
       WaitUntilObserver*);
-  static ExtendableMessageEvent* CreateError(const String& origin,
-                                             MessagePortArray* ports,
-                                             ServiceWorkerClient* source,
-                                             WaitUntilObserver*);
-  static ExtendableMessageEvent* CreateError(const String& origin,
-                                             MessagePortArray* ports,
-                                             ServiceWorker* source,
-                                             WaitUntilObserver*);
+  static ExtendableMessageEvent* CreateError(
+      scoped_refptr<const SecurityOrigin> origin,
+      GCedMessagePortArray* ports,
+      ServiceWorkerClient* source,
+      WaitUntilObserver*);
+  static ExtendableMessageEvent* CreateError(
+      scoped_refptr<const SecurityOrigin> origin,
+      GCedMessagePortArray* ports,
+      ServiceWorker* source,
+      WaitUntilObserver*);
 
   ExtendableMessageEvent(const AtomicString& type,
                          const ExtendableMessageEventInit* initializer);
@@ -54,12 +57,12 @@ class MODULES_EXPORT ExtendableMessageEvent final : public ExtendableEvent {
                          const ExtendableMessageEventInit* initializer,
                          WaitUntilObserver*);
   ExtendableMessageEvent(scoped_refptr<SerializedScriptValue> data,
-                         const String& origin,
-                         MessagePortArray* ports,
+                         scoped_refptr<const SecurityOrigin> origin,
+                         GCedMessagePortArray* ports,
                          WaitUntilObserver*);
   // Creates a 'messageerror' event.
-  ExtendableMessageEvent(const String& origin,
-                         MessagePortArray* ports,
+  ExtendableMessageEvent(scoped_refptr<const SecurityOrigin> origin,
+                         GCedMessagePortArray* ports,
                          WaitUntilObserver*);
 
   SerializedScriptValue* SerializedData() const {
@@ -71,24 +74,30 @@ class MODULES_EXPORT ExtendableMessageEvent final : public ExtendableEvent {
 
   ScriptValue data(ScriptState* script_state) const;
   bool isDataDirty() const { return false; }
-  const String& origin() const { return origin_; }
+  String origin() const;
   const String& lastEventId() const { return last_event_id_; }
   V8UnionClientOrMessagePortOrServiceWorker* source() const;
   MessagePortArray ports() const;
 
   const AtomicString& InterfaceName() const override;
 
+  // DOMOriginUtils overrides:
+  DOMOrigin* GetDOMOrigin(LocalDOMWindow*) const override;
+
+  const SecurityOrigin* GetSecurityOrigin() const { return origin_.get(); }
+
   void Trace(Visitor*) const override;
 
  private:
   scoped_refptr<SerializedScriptValue> serialized_data_;
   WorldSafeV8Reference<v8::Value> data_;
-  String origin_;
+  scoped_refptr<const SecurityOrigin> origin_;
+  String potentially_invalid_origin_serialization_;
   String last_event_id_;
   Member<ServiceWorkerClient> source_as_client_;
   Member<ServiceWorker> source_as_service_worker_;
   Member<MessagePort> source_as_message_port_;
-  Member<MessagePortArray> ports_;
+  Member<GCedMessagePortArray> ports_;
 };
 
 }  // namespace blink

@@ -294,17 +294,13 @@ function pointerActionButtonId(button_str) {
 // https://crbug.com/893608
 const SPEED_INSTANT = 400000;
 
-// Constant wheel delta value when percent based scrolling is enabled
-const WHEEL_DELTA = 100;
-
 // kMinFractionToStepWhenPaging constant from cc/input/scroll_utils.h
 const MIN_FRACTION_TO_STEP_WHEN_PAGING = 0.875;
 
 // This will be replaced by smoothScrollWithXY.
 function smoothScroll(pixels_to_scroll, start_x, start_y, gesture_source_type,
                       direction, speed_in_pixels_s, precise_scrolling_deltas,
-                      scroll_by_page, cursor_visible, scroll_by_percentage,
-                      modifier_keys) {
+                      scroll_by_page, cursor_visible, modifier_keys) {
   let pixels_to_scroll_x = 0;
   let pixels_to_scroll_y = 0;
   if (direction == "down") {
@@ -331,18 +327,7 @@ function smoothScroll(pixels_to_scroll, start_x, start_y, gesture_source_type,
   return smoothScrollWithXY(pixels_to_scroll_x, pixels_to_scroll_y, start_x,
                             start_y, gesture_source_type, speed_in_pixels_s,
                             precise_scrolling_deltas, scroll_by_page,
-                            cursor_visible, scroll_by_percentage, modifier_keys);
-}
-
-// Perform a percent based scroll using smoothScrollWithXY
-function percentScroll(percent_to_scroll_x, percent_to_scroll_y, start_x, start_y, gesture_source_type) {
-  return smoothScrollWithXY(percent_to_scroll_x, percent_to_scroll_y, start_x, start_y,
-    gesture_source_type,
-    undefined /* speed_in_pixels_s - not defined for percent based scrolls */,
-    false /* precise_scrolling_deltas */,
-    false /* scroll_by_page */,
-    true /* cursor_visible */,
-    true /* scroll_by_percentage */);
+                            cursor_visible, modifier_keys);
 }
 
 // modifier_keys means the keys pressed while doing the mouse wheel scroll, it
@@ -354,8 +339,7 @@ function percentScroll(percent_to_scroll_x, percent_to_scroll_y, start_x, start_
 function smoothScrollWithXY(pixels_to_scroll_x, pixels_to_scroll_y, start_x,
                             start_y, gesture_source_type, speed_in_pixels_s,
                             precise_scrolling_deltas, scroll_by_page,
-                            cursor_visible, scroll_by_percentage, modifier_keys,
-                            modifier_buttons) {
+                            cursor_visible, modifier_keys, modifier_buttons) {
   return new Promise((resolve, reject) => {
     if (window.chrome && chrome.gpuBenchmarking) {
       chrome.gpuBenchmarking.smoothScrollByXY(pixels_to_scroll_x,
@@ -368,7 +352,6 @@ function smoothScrollWithXY(pixels_to_scroll_x, pixels_to_scroll_y, start_x,
                                               precise_scrolling_deltas,
                                               scroll_by_page,
                                               cursor_visible,
-                                              scroll_by_percentage,
                                               modifier_keys,
                                               modifier_buttons);
     } else {
@@ -393,11 +376,15 @@ function wheelTick(scroll_tick_x, scroll_tick_y, center, speed_in_pixels_s,
                             center.x, center.y, GestureSourceType.MOUSE_INPUT,
                             speed_in_pixels_s, false /* precise_scrolling_deltas */,
                             false /* scroll_by_page */, true /* cursor_visible */,
-                            false /* scroll_by_percentage */, modifier_keys,
-                            modifier_buttons);
+                            modifier_keys, modifier_buttons);
 }
 
 const LEGACY_MOUSE_WHEEL_TICK_MULTIPLIER = 120;
+
+// The number of pixels keyboard arrows will scroll when the device scale factor
+// equals to 1. Defined in cc/input/scroll_utils.h.
+// Matches SCROLLBAR_SCROLL_PIXELS from scrollbar-util.js.
+const KEYBOARD_SCROLL_PIXELS = 40;
 
 // Returns the number of pixels per wheel tick which is a platform specific value.
 function pixelsPerTick() {
@@ -810,6 +797,12 @@ async function waitForScrollReset(scroller = document.scrollingElement,
   });
 }
 
+function waitForWindowScrollBy(options) {
+  const scrollPromise = waitForScrollendEvent(document);
+  window.scrollBy(options);
+  return scrollPromise;
+}
+
 function waitForWindowScrollTo(options) {
   const scrollPromise = waitForScrollendEvent(document);
   window.scrollTo(options);
@@ -820,17 +813,50 @@ function waitForWindowScrollTo(options) {
 // scroll updates to be considered smooth.
 function animatedScrollPromise(scrollTarget) {
   return new Promise((resolve, reject) => {
+    // Set to roughly a third to a quarter of the expected animation duration.
+    const maxAllowableFrameIntervalInMs = 80;
     let scrollCount = 0;
+    let ticking = true;
+    let lastFrameTime = performance.now();
+    let largestFrameInterval = undefined;
+
+    // Pump rAFs until the scrollend event is received inspecting the timing
+    // between frames. If the frame interval becomes too large, detection of a
+    // smooth scroll becomes unreliable. Record this outcome as a pass. A fail
+    // is recorded when we don't see a smooth scroll, but had the opportunity
+    // to observe one.
+    const tick = () => {
+      requestAnimationFrame((frameTime) => {
+        const frameInterval = frameTime - lastFrameTime;
+        if (!largestFrameInterval || frameInterval > largestFrameInterval) {
+          largestFrameInterval = frameInterval;
+        }
+        lastFrameTime = frameTime;
+        if (ticking) {
+          requestAnimationFrame(tick);
+        } else {
+          cleanup();
+          if (scrollCount > 1) {
+            resolve();
+          } else if (largestFrameInterval > maxAllowableFrameIntervalInMs) {
+            // Though we didn't see a smooth scroll, we didn't have the
+            // opportunity because of the coarse granularity of main frame
+            // updates. What this means is that test could trigger a false pass
+            // should animated scrolls be turned off; however, safer to
+            // relax expectations than flake.
+            resolve();
+          } else {
+             reject('expected smooth scroll');
+           }
+        }
+      });
+    };
+    tick();
     const scrollListener = () => {
       scrollCount++;
     }
-    const scrollendListener = () => {
-      cleanup();
-      if (scrollCount > 1) {
-        resolve();
-      } else {
-        reject('expected smooth scroll');
-      }
+    const scrollendListener = (event) => {
+      ticking = false;
     }
     const scrollendTarget =
         scrollTarget == document.scrollingElement ? document : scrollTarget;
@@ -1102,6 +1128,60 @@ function touchLongPressElement(target, options) {
       .pointerUp()
       .send();
   return actionPromise.then(pointerPromise);
+}
+
+// Long press on the target element and drag to move. This function will check
+// the dragstart event. The options are of the form:
+// {
+//    x: horizontal offset of longpress from midpoint of the target element (default 0)
+//    y: vertical offset of longpress from the midpoint of the target element (default 0)
+//    dragDeltaX: horizontal distance to drag (default 100)
+//    dragDeltaY: vertical distance to drag (default 0)
+//    duration: duration of the press in milliseconds (default 800)
+// }
+//
+// Be sure to call preventContextMenu during test setup to avoid a memory leak
+// before calling this method. If event handling is permitted to transfer to the
+// browser process, we are unable to fully tear down the test resulting in a
+// leak.
+function touchLongPressAndDragElement(target, options) {
+  // Conservative long-press duration based on the default duration for a long
+  // press gesture, defined in: ui/events/gesture_detection/gesture_detector.h
+  // Some long-press operations require longer.
+  const LONG_PRESS_DURATION = 800;
+  const x = (options && options.x) ? options.x : 0;
+  const y = (options && options.y) ? options.y : 0;
+  const duration = (options && options.duration !== undefined)
+    ? options.duration
+    : LONG_PRESS_DURATION;
+  const dragDeltaX = (options && options.dragDeltaX) ? options.dragDeltaX : 100;
+  const dragDeltaY = (options && options.dragDeltaY) ? options.dragDeltaY : 0;
+  verifyTestDriverLoaded();
+
+  return new Promise((resolve, reject) => {
+    let dragStarted = false;
+    const dragStartListener = () => {
+      dragStarted = true;
+      target.removeEventListener('dragstart', dragStartListener);
+      resolve('dragstart');
+    };
+    target.addEventListener('dragstart', dragStartListener);
+
+    new test_driver.Actions()
+      .addPointer('pointer1', 'touch')
+      .pointerMove(x, y, {origin: target})
+      .pointerDown()
+      .pause(duration)
+      .pointerMove(x + dragDeltaX, y + dragDeltaY, {origin: target})
+      .pointerUp()
+      .send()
+      .then(() => {
+        if (!dragStarted) {
+          target.removeEventListener('dragstart', dragStartListener);
+          reject('No dragstart event detected');
+        }
+      });
+  });
 }
 
 function preventContextMenu(test) {

@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="es-419">
+<translation id="1293272072740285747">Conserva este grupo para agregar pestañas más tarde o bórralo si ya no lo necesitas.
+
+Si lo borras, todos los usuarios perderán de inmediato el acceso al grupo de pestañas "<ph name="TITLE_OF_GROUP" />", y se borrará de todos los dispositivos.</translation>
+<translation id="1340839264183302272">Abandonar grupo</translation>
+<translation id="1419023007528516122">Esta acción borrará el grupo de tu dispositivo de forma permanente</translation>
+<translation id="1501480321619201731">Borrar grupo</translation>
+<translation id="2677748264148917807">Abandonar</translation>
+<translation id="3547352561153509682">Esta acción borrará el grupo de todos los dispositivos en los que accediste a <ph name="USER_EMAIL" /></translation>
+<translation id="381219490185664296">¿Quieres desagrupar el grupo de pestañas?</translation>
+<translation id="4139634748112164403">Las pestañas permanecerán abiertas en este dispositivo, pero el grupo se borrará de forma permanente</translation>
+<translation id="4431937619879060901">Perderás de inmediato el acceso al grupo de pestañas "<ph name="GROUP_NAME" />" y se borrará de todos tus dispositivos</translation>
+<translation id="4460014764210899310">Desagrupar</translation>
+<translation id="4777866634702576038">¿Quieres borrar el grupo de pestañas?</translation>
+<translation id="5094423602314093681">¿Quieres quitar las pestañas y borrar el grupo?</translation>
+<translation id="5647702255748985085">¿Quieres abandonar el grupo?</translation>
+<translation id="742664698522525515">¿Quieres conservar el grupo?</translation>
+<translation id="750886945254958667">Conserva este grupo para agregar pestañas más tarde o abandónalo si ya no quieres acceder a él</translation>
+<translation id="8261506727792406068">Borrar</translation>
+<translation id="870736955561925754">¿Quieres cerrar la pestaña y borrar el grupo?</translation>
+<translation id="8804742093141782941">Conservar grupo</translation>
+<translation id="9169141410816678175">Todos los usuarios perderán de inmediato el acceso al grupo de pestañas "<ph name="GROUP_NAME" />" y se borrará de todos los dispositivos</translation>
+<translation id="9216898458513705996">Las pestañas permanecerán abiertas en este dispositivo, pero se borrará el grupo de todos los dispositivos en los que accediste a <ph name="USER_EMAIL" /></translation>
+<translation id="94870150074703282">¿Quieres borrar el grupo?</translation>
+</translationbundle>

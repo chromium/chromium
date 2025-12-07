@@ -8,6 +8,7 @@
 
 #include <optional>
 
+#include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
@@ -60,8 +61,9 @@ void VariationsRequestScheduler::Start() {
 }
 
 void VariationsRequestScheduler::Reset() {
-  if (timer_.IsRunning())
+  if (timer_.IsRunning()) {
     timer_.Reset();
+  }
   one_shot_timer_.Stop();
 }
 
@@ -83,8 +85,7 @@ void VariationsRequestScheduler::ScheduleFetchShortly() {
 }
 
 void VariationsRequestScheduler::OnAppEnterForeground() {
-  NOTREACHED_IN_MIGRATION()
-      << "Attempted to OnAppEnterForeground on non-mobile device";
+  NOTREACHED() << "Attempted to OnAppEnterForeground on non-mobile device";
 }
 
 base::TimeDelta VariationsRequestScheduler::GetFetchPeriod() const {

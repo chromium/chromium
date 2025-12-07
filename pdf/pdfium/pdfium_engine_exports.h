@@ -8,13 +8,17 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "pdf/document_metadata.h"
 #include "services/screen_ai/buildflags/buildflags.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -22,24 +26,22 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include <optional>
-
 #include "pdf/flatten_pdf_result.h"
 #endif
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include <memory>
 
 #include "base/functional/callback_forward.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 namespace chrome_pdf {
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 class PdfProgressiveSearchifier;
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 // Interface for exports that wrap PDFiumEngine.
 class PDFiumEngineExports {
@@ -139,7 +141,7 @@ class PDFiumEngineExports {
       base::span<const uint8_t> pdf_buffer,
       int page_index);
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   // Converts an inaccessible PDF to a searchable PDF. See `Searchify` in pdf.h
   // for more details.
   std::vector<uint8_t> Searchify(
@@ -150,7 +152,7 @@ class PDFiumEngineExports {
   // Creates a PDF searchifier for future operations, such as adding and
   // deleting pages, and saving PDFs.
   std::unique_ptr<PdfProgressiveSearchifier> CreateProgressiveSearchifier();
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 };
 
 }  // namespace chrome_pdf

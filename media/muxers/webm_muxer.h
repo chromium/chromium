@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/containers/circular_deque.h"
+#include "base/sequence_checker.h"
 #include "media/muxers/muxer.h"
 #include "third_party/libwebm/source/mkvmuxer.hpp"
 
@@ -38,11 +39,6 @@ class MEDIA_EXPORT WebmMuxer : public Muxer {
     Delegate();
     ~Delegate() override;
 
-    base::TimeTicks last_data_output_timestamp() const {
-      DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-      return last_data_output_timestamp_;
-    }
-
     // Initializes the given |segment| according to the mode desired by the
     // concrete implementation of this delegate.
     virtual void InitSegment(mkvmuxer::Segment* segment) = 0;
@@ -54,17 +50,13 @@ class MEDIA_EXPORT WebmMuxer : public Muxer {
     // Does the actual writing of |len| bytes from the given |buf| depending on
     // the mode desired by the concrete implementation of this delegate.
     // Returns 0 on success, -1 otherwise.
-    virtual mkvmuxer::int32 DoWrite(const void* buf, mkvmuxer::uint32 len) = 0;
+    virtual mkvmuxer::int32 DoWrite(base::span<const uint8_t> buf) = 0;
 
     SEQUENCE_CHECKER(sequence_checker_);
 
     // The current writing position as set by libwebm.
     base::CheckedNumeric<mkvmuxer::int64> position_
         GUARDED_BY_CONTEXT(sequence_checker_) = 0;
-
-    // Last time data was written via Write().
-    base::TimeTicks last_data_output_timestamp_
-        GUARDED_BY_CONTEXT(sequence_checker_);
   };
 
   // `audio_codec` should coincide with whatever is sent in OnEncodedAudio(),
@@ -90,6 +82,7 @@ class MEDIA_EXPORT WebmMuxer : public Muxer {
 
  private:
   friend class WebmMuxerTest;
+  friend class WebmMuxerTestUnparametrized;
 
   // Methods for creating and adding video and audio tracks, called upon
   // receiving the first frame of a given Track.
@@ -98,14 +91,15 @@ class MEDIA_EXPORT WebmMuxer : public Muxer {
   // frame size.
   void AddVideoTrack(const gfx::Size& frame_size,
                      double frame_rate,
-                     const std::optional<gfx::ColorSpace>& color_space);
+                     std::optional<gfx::ColorSpace> color_space,
+                     std::optional<VideoTransformation> transformation);
   void AddAudioTrack(const AudioParameters& params);
   bool WriteWebmFrame(EncodedFrame frame, base::TimeDelta relative_timestamp);
 
   // Forces data output from |segment_| on the next frame if recording video,
   // and |min_data_output_interval_| was configured and has passed since the
   // last received video frame.
-  void MaybeForceNewCluster();
+  void MaybeForceNewCluster(base::TimeDelta media_relative_timestamp);
 
   // Audio codec configured on construction. Video codec is taken from first
   // received frame.
@@ -129,12 +123,11 @@ class MEDIA_EXPORT WebmMuxer : public Muxer {
   // |duration| after the last write.
   // The maximum duration between forced clusters is internally limited to not
   // go below 100 ms.
-  // TODO(crbug.com/40876732): consider if cluster output should be based on
-  // media timestamps.
-  base::TimeDelta max_data_output_interval_;
+  const base::TimeDelta max_data_output_interval_;
 
-  // Last timestamp written into the segment.
-  base::TimeDelta last_timestamp_written_;
+  // Tracks the start time of the current fragment to enforce periodic cluster
+  // output. It's updated after each forced flush or on the first frame.
+  std::optional<base::TimeDelta> cluster_origin_;
 
   std::unique_ptr<Delegate> delegate_;
 

@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "media/base/limits.h"
 #include "media/base/media_util.h"
 #include "media/base/video_types.h"
@@ -41,6 +42,14 @@ VideoDecoderConfig::VideoDecoderConfig(VideoCodec codec,
 }
 
 VideoDecoderConfig::VideoDecoderConfig(const VideoDecoderConfig& other) =
+    default;
+
+VideoDecoderConfig::VideoDecoderConfig(VideoDecoderConfig&& other) = default;
+
+VideoDecoderConfig& VideoDecoderConfig::operator=(
+    const VideoDecoderConfig& other) = default;
+
+VideoDecoderConfig& VideoDecoderConfig::operator=(VideoDecoderConfig&& other) =
     default;
 
 VideoDecoderConfig::~VideoDecoderConfig() = default;
@@ -81,6 +90,7 @@ bool VideoDecoderConfig::Matches(const VideoDecoderConfig& config) const {
          coded_size() == config.coded_size() &&
          visible_rect() == config.visible_rect() &&
          natural_size() == config.natural_size() &&
+         aspect_ratio() == config.aspect_ratio() &&
          extra_data() == config.extra_data() &&
          encryption_scheme() == config.encryption_scheme() &&
          color_space_info() == config.color_space_info() &&
@@ -101,7 +111,7 @@ std::string VideoDecoderConfig::AsHumanReadableString() const {
     << "," << visible_rect().width() << "," << visible_rect().height() << "]"
     << ", natural size: [" << natural_size().width() << ","
     << natural_size().height() << "]"
-    << ", has extra data: " << (extra_data().empty() ? "false" : "true")
+    << ", has extra data: " << base::ToString(!extra_data().empty())
     << ", encryption scheme: " << encryption_scheme()
     << ", rotation: " << VideoRotationToString(video_transformation().rotation)
     << ", flipped: " << video_transformation().mirrored

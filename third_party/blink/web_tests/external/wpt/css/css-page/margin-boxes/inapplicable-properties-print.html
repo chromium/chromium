@@ -4,6 +4,9 @@
 <meta name="assert" content="Test that inapplicable properties are ignored.">
 <link rel="match" href="inapplicable-properties-print-ref.html">
 <style>
+  :root {
+    print-color-adjust: exact;
+  }
   @page {
     size: 400px;
     margin: 100px;
@@ -14,6 +17,7 @@
       white-space: pre-wrap;
       content: "Line 1\aLine 2";
       position: relative;
+      display: none;
       columns: 2;
       column-rule: solid red;
       orphans: 1;

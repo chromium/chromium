@@ -1,0 +1,92 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/util/process_version.gni")
+import("//chrome/updater/branding.gni")
+
+# `apply_updater_branding` performs updater branding substitutions using
+# `process_version`. If the caller provides extra_args or sources, they are
+# appended to those used by this template. Other variables are forwarded
+# to the underlying `process_version` call; typically, an invocation of this
+# template will specify `output` and `template_file`.
+template("apply_updater_branding") {
+  _sources = [ "//chrome/VERSION" ]
+  if (defined(invoker.sources)) {
+    _sources += invoker.sources
+  }
+  _extra_args = [
+    "-e",
+    "BROWSER_NAME=\"$browser_name\"",
+    "-e",
+    "BROWSER_PRODUCT_NAME=\"$browser_product_name\"",
+    "-e",
+    "BROWSER_APPID=\"$browser_appid\"",
+    "-e",
+    "COMPANY_FULLNAME=\"$updater_company_full_name\"",
+    "-e",
+    "COMPANY_SHORTNAME=\"$updater_company_short_name\"",
+    "-e",
+    "COMPANY_SHORTNAME_LOWERCASE=\"$updater_company_short_name_lowercase\"",
+    "-e",
+    "COMPANY_SHORTNAME_UPPERCASE=\"$updater_company_short_name_uppercase\"",
+    "-e",
+    "COPYRIGHT=\"updater_copyright\"",
+    "-e",
+    "CRASH_PRODUCT_NAME=\"$crash_product_name\"",
+    "-e",
+    "CRASH_UPLOAD_URL=\"$crash_upload_url\"",
+    "-e",
+    "HELP_CENTER_URL=\"$help_center_url\"",
+    "-e",
+    "APP_LOGO_URL=\"$app_logo_url\"",
+    "-e",
+    "UPDATER_EVENT_LOGGING_URL=\"$updater_event_logging_url\"",
+    "-e",
+    "KEYSTONE_NAME=\"$keystone_app_name\"",
+    "-e",
+    "PRIVILEGED_HELPER_NAME=\"$privileged_helper_name\"",
+    "-e",
+    "PRODUCT_FULLNAME=\"$updater_product_full_name\"",
+    "-e",
+    "PRODUCT_FULLNAME_DASHED_LOWERCASE=\"$updater_product_full_name_dashed_lowercase\"",
+    "-e",
+    "MAC_BROWSER_BUNDLE_IDENTIFIER=\"$mac_browser_bundle_identifier\"",
+    "-e",
+    "MAC_BUNDLE_IDENTIFIER=\"$mac_updater_bundle_identifier\"",
+    "-e",
+    "MAC_TEAM_IDENTIFIER=\"$mac_team_identifier\"",
+    "-e",
+    "UPDATE_CHECK_URL=\"$update_check_url\"",
+    "-e",
+    "UPDATER_APP_ICON_PATH=\"$updater_app_icon_path\"",
+    "-e",
+    "UPDATER_APPID=\"$updater_appid\"",
+    "-e",
+    "QUALIFICATION_APPID=\"$qualification_appid\"",
+    "-e",
+    "CRX_PKHASH=\"$crx_pkhash\"",
+    "-e",
+    "LEGACY_GOOGLE_UPDATE_APPID=\"$legacy_google_update_appid\"",
+    "-e",
+    "LEGACY_SERVICE_NAME_PREFIX=\"$legacy_service_name_prefix\"",
+    "-e",
+    "PREFS_ACCESS_MUTEX=\"$prefs_access_mutex\"",
+    "-e",
+    "SETUP_MUTEX=\"$setup_mutex_prefix.%s.%s.%s.%s\"%(MAJOR,MINOR,BUILD,PATCH)",
+  ]
+  if (defined(invoker.extra_args)) {
+    _extra_args += invoker.extra_args
+  }
+
+  process_version(target_name) {
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "sources",
+                             "extra_args",
+                           ])
+    sources = _sources
+    extra_args = _extra_args
+  }
+}

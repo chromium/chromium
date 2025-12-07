@@ -1,0 +1,11 @@
+Name: num-rational
+URL: https://crates.io/crates/num-rational
+Version: 0.4.2
+Revision: 4d55ad22ac86ebbc4cb45d79a956e4a1f7af57d1
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/num-rational-v0_4/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: Rational numbers implementation for Rust

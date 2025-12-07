@@ -10,8 +10,7 @@
 #include "chromeos/ash/components/phonehub/notification.h"
 #include "chromeos/ash/components/phonehub/notification_interaction_handler.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 class NotificationInteractionHandlerImpl
     : public NotificationInteractionHandler {
@@ -25,7 +24,6 @@ class NotificationInteractionHandlerImpl
       const Notification::AppMetadata& app_metadata) override;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_NOTIFICATION_INTERACTION_HANDLER_IMPL_H_

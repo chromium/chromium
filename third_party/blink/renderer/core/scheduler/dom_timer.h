@@ -27,7 +27,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_DOM_TIMER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_DOM_TIMER_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/probe/async_task_context.h"
@@ -36,19 +35,18 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/timer.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
 
 namespace blink {
 
+class ExceptionState;
 class ExecutionContext;
 class ScheduledAction;
 class ScriptState;
 class ScriptValue;
 class V8Function;
+class V8UnionStringOrTrustedScript;
 
 class CORE_EXPORT DOMTimer final : public GarbageCollected<DOMTimer>,
                                    public ExecutionContextLifecycleObserver,
@@ -64,9 +62,10 @@ class CORE_EXPORT DOMTimer final : public GarbageCollected<DOMTimer>,
                         const HeapVector<ScriptValue>& arguments);
   static int setTimeout(ScriptState*,
                         ExecutionContext&,
-                        const WTF::String& handler,
+                        const V8UnionStringOrTrustedScript* handler,
                         int timeout,
-                        const HeapVector<ScriptValue>&);
+                        const HeapVector<ScriptValue>&,
+                        ExceptionState&);
   static int setInterval(ScriptState*,
                          ExecutionContext&,
                          V8Function* handler,
@@ -74,9 +73,10 @@ class CORE_EXPORT DOMTimer final : public GarbageCollected<DOMTimer>,
                          const HeapVector<ScriptValue>&);
   static int setInterval(ScriptState*,
                          ExecutionContext&,
-                         const WTF::String& handler,
+                         const V8UnionStringOrTrustedScript* handler,
                          int timeout,
-                         const HeapVector<ScriptValue>&);
+                         const HeapVector<ScriptValue>&,
+                         ExceptionState&);
   static void clearTimeout(ExecutionContext&, int timeout_id);
   static void clearInterval(ExecutionContext&, int timeout_id);
 
@@ -96,7 +96,7 @@ class CORE_EXPORT DOMTimer final : public GarbageCollected<DOMTimer>,
   void Dispose();
 
   void Trace(Visitor*) const override;
-  const char* NameInHeapSnapshot() const override { return "DOMTimer"; }
+  const char* GetHumanReadableName() const override { return "DOMTimer"; }
 
   void Stop() override;
 

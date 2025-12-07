@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
@@ -102,7 +103,7 @@ class FieldConverterBase {
   virtual ~FieldConverterBase() = default;
   virtual bool ConvertField(const base::Value& value,
                             StructType* obj) const = 0;
-  const std::string& field_path() const { return field_path_; }
+  const std::string& field_path() const LIFETIME_BOUND { return field_path_; }
 
  private:
   std::string field_path_;
@@ -118,9 +119,9 @@ class ValueConverter {
 template <typename StructType, typename FieldType>
 class FieldConverter : public FieldConverterBase<StructType> {
  public:
-  explicit FieldConverter(const std::string& path,
-                          FieldType StructType::*field,
-                          ValueConverter<FieldType>* converter)
+  FieldConverter(const std::string& path,
+                 FieldType StructType::* field,
+                 ValueConverter<FieldType>* converter)
       : FieldConverterBase<StructType>(path),
         field_pointer_(field),
         value_converter_(converter) {}
@@ -299,8 +300,9 @@ class RepeatedMessageConverter
   bool Convert(const base::Value& value,
                std::vector<std::unique_ptr<NestedType>>* field) const override {
     const Value::List* list = value.GetIfList();
-    if (!list)
+    if (!list) {
       return false;
+    }
 
     field->reserve(list->size());
     size_t i = 0;
@@ -337,8 +339,9 @@ class RepeatedCustomValueConverter
   bool Convert(const base::Value& value,
                std::vector<std::unique_ptr<NestedType>>* field) const override {
     const Value::List* list = value.GetIfList();
-    if (!list)
+    if (!list) {
       return false;
+    }
 
     field->reserve(list->size());
     size_t i = 0;
@@ -503,8 +506,9 @@ class JSONValueConverter {
 
   bool Convert(const base::Value& value, StructType* output) const {
     const base::Value::Dict* dict = value.GetIfDict();
-    if (!dict)
+    if (!dict) {
       return false;
+    }
 
     return Convert(*dict, output);
   }

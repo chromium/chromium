@@ -12,7 +12,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
+#include "chromeos/ash/components/policy/restriction_schedule/device_restriction_schedule_controller.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
+
+class PrefService;
 
 namespace policy {
 class BrowserPolicyConnectorAsh;
@@ -49,18 +53,21 @@ namespace system {
 //   session running in the background.
 //   When the device is re-enabled, Chrome is restarted once more to resume the
 //   regular login screen flows from a known-good point.
-class DeviceDisablingManager {
+class DeviceDisablingManager
+    : public policy::DeviceRestrictionScheduleController::Observer {
  public:
   using DeviceDisabledCheckCallback = base::OnceCallback<void(bool)>;
 
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     Observer& operator=(const Observer&) = delete;
 
-    virtual ~Observer();
+    ~Observer() override;
 
     virtual void OnDisabledMessageChanged(
         const std::string& disabled_message) = 0;
+
+    virtual void OnRestrictionScheduleMessageChanged() = 0;
   };
 
   class Delegate {
@@ -77,15 +84,17 @@ class DeviceDisablingManager {
     virtual void ShowDeviceDisabledScreen() = 0;
   };
 
-  // |delegate| must outlive |this|.
-  DeviceDisablingManager(Delegate* delegate,
+  // `local_state` must be non-null, and must outlive `this`.
+  // `delegate` must outlive `this`.
+  DeviceDisablingManager(PrefService* local_state,
+                         Delegate* delegate,
                          CrosSettings* cros_settings,
                          user_manager::UserManager* user_manager);
 
   DeviceDisablingManager(const DeviceDisablingManager&) = delete;
   DeviceDisablingManager& operator=(const DeviceDisablingManager&) = delete;
 
-  ~DeviceDisablingManager();
+  ~DeviceDisablingManager() override;
 
   // Must be called after construction.
   void Init();
@@ -123,14 +132,19 @@ class DeviceDisablingManager {
   // Cache the disabled message and inform observers if it changed.
   void CacheDisabledMessageAndNotify(const std::string& disabled_message);
 
-  void UpdateFromCrosSettings();
+  // DeviceRestrictionScheduleController::Observer:
+  void OnRestrictionScheduleStateChanged(bool enabled) override;
+  void OnRestrictionScheduleMessageChanged() override;
 
+  void Update();
+
+  const raw_ref<PrefService> local_state_;
   raw_ptr<Delegate> delegate_;
   raw_ptr<policy::BrowserPolicyConnectorAsh> browser_policy_connector_;
   raw_ptr<CrosSettings> cros_settings_;
   raw_ptr<user_manager::UserManager> user_manager_;
 
-  base::ObserverList<Observer>::UncheckedAndDanglingUntriaged observers_;
+  base::ObserverList<Observer> observers_;
 
   base::CallbackListSubscription device_disabled_subscription_;
   base::CallbackListSubscription disabled_message_subscription_;

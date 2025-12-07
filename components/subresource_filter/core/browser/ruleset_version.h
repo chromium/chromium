@@ -17,8 +17,7 @@ class PrefService;
 
 namespace base::trace_event {
 class TracedValue;
-} // namespace base::trace_event
-
+}  // namespace base::trace_event
 
 namespace subresource_filter {
 

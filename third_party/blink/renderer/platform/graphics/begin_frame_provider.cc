@@ -10,7 +10,6 @@
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
-#include "components/viz/common/features.h"
 #include "services/viz/public/mojom/compositing/frame_timing_details.mojom-blink.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -87,7 +86,7 @@ void BeginFrameProvider::CreateCompositorFrameSinkIfNeeded() {
       cfs_receiver_.BindNewPipeAndPassRemote(task_runner),
       compositor_frame_sink_.BindNewPipeAndPassReceiver(task_runner));
 
-  compositor_frame_sink_.set_disconnect_with_reason_handler(WTF::BindOnce(
+  compositor_frame_sink_.set_disconnect_with_reason_handler(BindOnce(
       &BeginFrameProvider::OnMojoConnectionError, WrapWeakPersistent(this)));
 }
 
@@ -105,9 +104,8 @@ void BeginFrameProvider::RequestBeginFrame() {
 
 void BeginFrameProvider::OnBeginFrame(
     const viz::BeginFrameArgs& args,
-    const WTF::HashMap<uint32_t, viz::FrameTimingDetails>&,
-    bool frame_ack,
-    WTF::Vector<viz::ReturnedResource> resources) {
+    const HashMap<uint32_t, viz::FrameTimingDetails>&,
+    Vector<viz::ReturnedResource> resources) {
   TRACE_EVENT_WITH_FLOW0("blink", "BeginFrameProvider::OnBeginFrame",
                          TRACE_ID_GLOBAL(args.trace_id),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);

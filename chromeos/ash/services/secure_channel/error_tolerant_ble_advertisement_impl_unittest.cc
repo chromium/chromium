@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -78,8 +79,9 @@ class SecureChannelErrorTolerantBleAdvertisementImplTest
         service_data->at(kAdvertisingServiceUuid);
     EXPECT_EQ(service_data_from_args.size(),
               derived_type->advertisement_data().data.size() + 1);
-    EXPECT_FALSE(memcmp(derived_type->advertisement_data().data.data(),
-                        service_data_from_args.data(), service_data->size()));
+    EXPECT_FALSE(UNSAFE_TODO(
+        memcmp(derived_type->advertisement_data().data.data(),
+               service_data_from_args.data(), service_data->size())));
     EXPECT_EQ(kInvertedConnectionFlag, service_data_from_args.back());
   }
 

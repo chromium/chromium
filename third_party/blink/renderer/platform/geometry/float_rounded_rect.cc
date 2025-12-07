@@ -33,9 +33,14 @@
 #include <cmath>
 
 #include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
+#include "third_party/blink/renderer/platform/geometry/path.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/insets_f.h"
 #include "ui/gfx/geometry/quad_f.h"
+#include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -137,9 +142,9 @@ void FloatRoundedRect::Radii::Outset(const gfx::OutsetsF& outsets) {
 // 20px (r = .5), the corner radius of the shadow shape will be
 // 10px + 20px × (1 + (.5 - 1)^3) = 27.5px rather than 30px. This adjustment
 // is applied independently to the radii in each dimension.
-static void OutsetCornerForMarginOrShadow(gfx::SizeF& corner,
-                                          float width_outset,
-                                          float height_outset) {
+static void ApplyCornerCorrection(gfx::SizeF& corner,
+                                  float width_outset,
+                                  float height_outset) {
   if (corner.IsZero() || (width_outset == 0 && height_outset == 0))
     return;
 
@@ -161,13 +166,71 @@ static void OutsetCornerForMarginOrShadow(gfx::SizeF& corner,
       std::max(corner.height() + height_factor * height_outset, 0.f));
 }
 
-void FloatRoundedRect::Radii::OutsetForMarginOrShadow(
+// From: https://drafts.csswg.org/css-backgrounds-3/#corner-shaping
+// To compute the <dfn>adjusted radius dimension</dfn> given numbers |coverage|,
+// |radius|, and |outset|:
+static float AdjustedRadiusDimension(float radius,
+                                     float outset,
+                                     float coverage) {
+  //  1. If |radius| is greater than |spread|, or if |coverage| is greater
+  // than 1, then return <code>|radius| + |outset|</code>.
+  if (radius > outset || coverage > 1) {
+    return radius + outset;
+  }
+
+  //  2. Let |ratio| be <code>|radius| / |outset|</code>.
+  const float ratio = radius / outset;
+  //  3. Return <code>|radius| + |outset| * (1 - (1 - |ratio|)<sup>3</sup> *
+  //     (1- |coverage|<sup>3</sup>))</code>.
+  return radius +
+         outset * (1 - std::pow(1 - ratio, 3) * (1 - std::pow(coverage, 3)));
+}
+
+// From: https://drafts.csswg.org/css-backgrounds-3/#corner-shaping
+// To compute the outset-adjusted border radius given the 2-dimensional
+// |size|s |edge|, |radius|, and |outset|:
+static void ComputeOutsetAdjustedBorderRadius(gfx::SizeF& corner,
+                                              const gfx::SizeF& edge,
+                                              const gfx::Vector2dF& outset) {
+  if (corner.IsZero() || outset.IsZero()) {
+    return;
+  }
+
+  //  1. Let |coverage| be <code>2 * min(|radius|'s |width| / |edge|'s
+  // |width|, |radius|'s |height| / |edge|'s |height|)</code>.
+  const float coverage = 2 * std::min(corner.width() / edge.width(),
+                                      corner.height() / edge.height());
+
+  //  2. Let |adjustedRadiusWidth| be the |adjusted radius dimension| given
+  // |coverage|, |radius|'s |width|, and |outset|'s |width|.
+  corner.set_width(
+      AdjustedRadiusDimension(corner.width(), outset.x(), coverage));
+  //  3. Let |adjustedRadiusHeight| be the |adjusted radius dimension| given
+  // |coverage|, |radius|'s |height|, and |outset|'s |height|.
+  corner.set_height(
+      AdjustedRadiusDimension(corner.height(), outset.y(), coverage));
+}
+
+void FloatRoundedRect::Radii::OutsetWithCornerCorrection(
     const gfx::OutsetsF& outsets) {
-  OutsetCornerForMarginOrShadow(top_left_, outsets.left(), outsets.top());
-  OutsetCornerForMarginOrShadow(top_right_, outsets.right(), outsets.top());
-  OutsetCornerForMarginOrShadow(bottom_left_, outsets.left(), outsets.bottom());
-  OutsetCornerForMarginOrShadow(bottom_right_, outsets.right(),
-                                outsets.bottom());
+  ApplyCornerCorrection(top_left_, outsets.left(), outsets.top());
+  ApplyCornerCorrection(top_right_, outsets.right(), outsets.top());
+  ApplyCornerCorrection(bottom_left_, outsets.left(), outsets.bottom());
+  ApplyCornerCorrection(bottom_right_, outsets.right(), outsets.bottom());
+}
+
+void FloatRoundedRect::Radii::OutsetWithCornerCorrectionUsingCoverageFactor(
+    const gfx::OutsetsF& outsets,
+    const gfx::SizeF& box_size) {
+  ComputeOutsetAdjustedBorderRadius(
+      top_left_, box_size, gfx::Vector2dF(outsets.left(), outsets.top()));
+  ComputeOutsetAdjustedBorderRadius(
+      top_right_, box_size, gfx::Vector2dF(outsets.right(), outsets.top()));
+  ComputeOutsetAdjustedBorderRadius(
+      bottom_left_, box_size, gfx::Vector2dF(outsets.left(), outsets.bottom()));
+  ComputeOutsetAdjustedBorderRadius(
+      bottom_right_, box_size,
+      gfx::Vector2dF(outsets.right(), outsets.bottom()));
 }
 
 void FloatRoundedRect::Radii::OutsetForShapeMargin(float outset) {
@@ -182,72 +245,24 @@ void FloatRoundedRect::Radii::OutsetForShapeMargin(float outset) {
   bottom_right_ += outset_size;
 }
 
-static inline float CornerRectIntercept(float y,
-                                        const gfx::RectF& corner_rect) {
-  DCHECK_GT(corner_rect.height(), 0);
-  return corner_rect.width() *
-         sqrt(1 - (y * y) / (corner_rect.height() * corner_rect.height()));
-}
-
-bool FloatRoundedRect::XInterceptsAtY(float y,
-                                      float& min_x_intercept,
-                                      float& max_x_intercept) const {
-  if (y < Rect().y() || y > Rect().bottom())
-    return false;
-
-  if (!IsRounded()) {
-    min_x_intercept = Rect().x();
-    max_x_intercept = Rect().right();
-    return true;
-  }
-
-  const gfx::RectF& top_left_rect = TopLeftCorner();
-  const gfx::RectF& bottom_left_rect = BottomLeftCorner();
-
-  if (!top_left_rect.IsEmpty() && y >= top_left_rect.y() &&
-      y < top_left_rect.bottom()) {
-    min_x_intercept =
-        top_left_rect.right() -
-        CornerRectIntercept(top_left_rect.bottom() - y, top_left_rect);
-  } else if (!bottom_left_rect.IsEmpty() && y >= bottom_left_rect.y() &&
-             y <= bottom_left_rect.bottom()) {
-    min_x_intercept =
-        bottom_left_rect.right() -
-        CornerRectIntercept(y - bottom_left_rect.y(), bottom_left_rect);
-  } else {
-    min_x_intercept = rect_.x();
-  }
-
-  const gfx::RectF& top_right_rect = TopRightCorner();
-  const gfx::RectF& bottom_right_rect = BottomRightCorner();
-
-  if (!top_right_rect.IsEmpty() && y >= top_right_rect.y() &&
-      y <= top_right_rect.bottom()) {
-    max_x_intercept =
-        top_right_rect.x() +
-        CornerRectIntercept(top_right_rect.bottom() - y, top_right_rect);
-  } else if (!bottom_right_rect.IsEmpty() && y >= bottom_right_rect.y() &&
-             y <= bottom_right_rect.bottom()) {
-    max_x_intercept =
-        bottom_right_rect.x() +
-        CornerRectIntercept(y - bottom_right_rect.y(), bottom_right_rect);
-  } else {
-    max_x_intercept = rect_.right();
-  }
-
-  return true;
-}
-
 void FloatRoundedRect::Outset(const gfx::OutsetsF& outsets) {
   rect_.Outset(outsets);
   radii_.Outset(outsets);
 }
 
-void FloatRoundedRect::OutsetForMarginOrShadow(const gfx::OutsetsF& outsets) {
+void FloatRoundedRect::OutsetWithCornerCorrection(
+    const gfx::OutsetsF& outsets) {
   if (outsets.IsEmpty())
     return;
+
+  const gfx::SizeF size = rect_.size();
   rect_.Outset(outsets);
-  radii_.OutsetForMarginOrShadow(outsets);
+  if (RuntimeEnabledFeatures::ShadowContourFollowsBorderEnabled() &&
+      !size.IsEmpty()) {
+    radii_.OutsetWithCornerCorrectionUsingCoverageFactor(outsets, size);
+  } else {
+    radii_.OutsetWithCornerCorrection(outsets);
+  }
 }
 
 void FloatRoundedRect::OutsetForShapeMargin(float outset) {
@@ -372,7 +387,9 @@ String FloatRoundedRect::ToString() const {
   }
   if (GetRadii().IsZero())
     return String(Rect().ToString());
-  return String(Rect().ToString()) + " radii:(" + GetRadii().ToString() + ")";
+
+  return StrCat(
+      {String(Rect().ToString()), " radii:(", GetRadii().ToString(), ")"});
 }
 
 }  // namespace blink

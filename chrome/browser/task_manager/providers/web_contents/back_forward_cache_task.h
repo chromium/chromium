@@ -22,14 +22,14 @@ class WebContentsTaskProvider;
 class BackForwardCacheTask : public RendererTask {
  public:
   BackForwardCacheTask(content::RenderFrameHost* render_frame_host,
-                       RendererTask* parent_task,
+                       base::WeakPtr<RendererTask> parent_task,
                        WebContentsTaskProvider* task_provider);
   BackForwardCacheTask(const BackForwardCacheTask&) = delete;
   BackForwardCacheTask& operator=(const BackForwardCacheTask&) = delete;
-  ~BackForwardCacheTask() override = default;
+  ~BackForwardCacheTask() override;
 
   // task_manager::Task:
-  Task* GetParentTask() const override;
+  base::WeakPtr<Task> GetParentTask() const override;
 
   // task_manager::RendererTask:
   void Activate() override;
@@ -43,7 +43,7 @@ class BackForwardCacheTask : public RendererTask {
   // is created per site. Therefore a 1:1 mapping of main frame task to subframe
   // task is not guaranteed.
   // For cached main frame tasks |parent_task_| is nullptr.
-  raw_ptr<RendererTask, DanglingUntriaged> parent_task_;
+  base::WeakPtr<RendererTask> parent_task_;
   // The provider has the same lifespan as the task manager.
   const raw_ptr<WebContentsTaskProvider, DanglingUntriaged> task_provider_;
 };

@@ -11,6 +11,7 @@
 #include "ash/system/keyboard_brightness/keyboard_backlight_color_controller.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
 
 using DisplayType = ash::KeyboardBacklightColorController::DisplayType;
 
@@ -48,8 +49,7 @@ void KeyboardBacklightColorMetricsProvider::ProvideCurrentSessionData(
       return;
     }
     case DisplayType::kMultiZone: {
-      if (!ash::features::IsMultiZoneRgbKeyboardEnabled() ||
-          ash::Shell::Get()->rgb_keyboard_manager()->GetZoneCount() <= 1) {
+      if (ash::Shell::Get()->rgb_keyboard_manager()->GetZoneCount() <= 1) {
         return;
       }
       base::UmaHistogramEnumeration(

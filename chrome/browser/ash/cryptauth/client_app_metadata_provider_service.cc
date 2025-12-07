@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/linux_util.h"
@@ -18,8 +19,8 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/version.h"
-#include "chrome/browser/ash/cryptauth/cryptauth_device_id_provider_impl.h"
-#include "chrome/browser/chrome_content_browser_client.h"
+#include "chrome/browser/ash/cryptauth/cryptauth_device_id_provider.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -161,10 +162,12 @@ int64_t ClientAppMetadataProviderService::ConvertVersionCodeToInt64(
 }
 
 ClientAppMetadataProviderService::ClientAppMetadataProviderService(
-    PrefService* pref_service,
+    PrefService* local_state,
+    PrefService* profile_pref_service,
     NetworkStateHandler* network_state_handler,
     instance_id::InstanceIDProfileService* instance_id_profile_service)
-    : pref_service_(pref_service),
+    : local_state_(CHECK_DEREF(local_state)),
+      pref_service_(profile_pref_service),
       network_state_handler_(network_state_handler),
       instance_id_profile_service_(instance_id_profile_service) {}
 
@@ -319,9 +322,9 @@ void ClientAppMetadataProviderService::OnInstanceIdTokenFetched(
   metadata.set_instance_id(instance_id);
   metadata.set_instance_id_token(token);
   metadata.set_long_device_id(
-      CryptAuthDeviceIdProviderImpl::GetInstance()->GetDeviceId());
+      cryptauth_device_id::GetDeviceID(local_state_.get()));
 
-  metadata.set_locale(ChromeContentBrowserClient().GetApplicationLocale());
+  metadata.set_locale(g_browser_process->GetApplicationLocale());
   metadata.set_device_os_version(base::GetLinuxDistro());
   metadata.set_device_os_version_code(SoftwareVersionCodeAsInt64());
   metadata.set_device_os_release(std::string(version_info::GetVersionNumber()));

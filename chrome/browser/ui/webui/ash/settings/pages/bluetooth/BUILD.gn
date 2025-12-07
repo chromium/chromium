@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("bluetooth") {
   sources = [
@@ -22,6 +20,7 @@ static_library("bluetooth") {
     "//ash/quick_pair/feature_status_tracker",
     "//ash/quick_pair/proto:fastpair_proto",
     "//base",
+    "//chrome/browser/ui/webui/settings",
     "//device/bluetooth",
     "//ui/gfx",
   ]
@@ -34,8 +33,7 @@ static_library("bluetooth") {
     "//ash/webui/settings/public/constants:mojom",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ui/webui",
-    "//chrome/browser/ui/webui/ash",
+    "//chrome/browser/ui/webui/ash/bluetooth",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/browser/ui/webui/ash/settings/search/mojom",
     "//chrome/common",
@@ -47,6 +45,7 @@ static_library("bluetooth") {
     "//content/public/browser",
     "//device/bluetooth/strings",
     "//ui/base",
+    "//ui/webui",
   ]
 }
 
@@ -76,4 +75,8 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/gfx:test_support",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

@@ -28,10 +28,10 @@ class Course {
     kOther,
   };
 
-  Course() = default;
+  Course();
   Course(const Course&) = delete;
   Course& operator=(const Course&) = delete;
-  ~Course() = default;
+  ~Course();
 
   // Registers the mapping between JSON field names and the members in this
   // class.
@@ -42,6 +42,7 @@ class Course {
 
   const std::string& id() const { return id_; }
   const std::string& name() const { return name_; }
+  const std::string& section() const { return section_; }
   State state() const { return state_; }
 
  private:
@@ -50,6 +51,9 @@ class Course {
 
   // Name of the course. For example, "10th Grade Biology".
   std::string name_;
+
+  // Section of the course. For example, "Period 2".
+  std::string section_;
 
   // State of the course.
   State state_ = State::kOther;

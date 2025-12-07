@@ -17,8 +17,9 @@ const base::Clock* custom_clock_ = nullptr;
 }
 
 const base::Clock* OfflineClock() {
-  if (custom_clock_)
+  if (custom_clock_) {
     return custom_clock_;
+  }
   return base::DefaultClock::GetInstance();
 }
 

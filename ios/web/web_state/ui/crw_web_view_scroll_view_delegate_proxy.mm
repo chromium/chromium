@@ -4,11 +4,20 @@
 
 #import "ios/web/web_state/ui/crw_web_view_scroll_view_delegate_proxy.h"
 
-#import <ostream>
+#import <string_view>
 
 #import "base/check_op.h"
 #import "base/ios/crb_protocol_observers.h"
 #import "ios/web/web_state/ui/crw_web_view_scroll_view_proxy+internal.h"
+
+namespace {
+
+// Returns whether the two strings are equals.
+bool AreStringsEqual(std::string_view lhs, std::string_view rhs) {
+  return lhs == rhs;
+}
+
+}  // namespace
 
 @interface CRWWebViewScrollViewDelegateProxy ()
 
@@ -77,8 +86,8 @@
   // self and _cmd respectively.
   NSMethodSignature* signature = invocation.methodSignature;
   if (signature.numberOfArguments >= 3 &&
-      strcmp([signature getArgumentTypeAtIndex:2], @encode(UIScrollView*)) ==
-          0) {
+      AreStringsEqual([signature getArgumentTypeAtIndex:2],
+                      @encode(UIScrollView*))) {
     __unsafe_unretained UIScrollView* sender;
     [invocation getArgument:&sender atIndex:2];
     if (sender == self.scrollViewProxy.underlyingScrollView) {
@@ -202,12 +211,6 @@
   if (self.userIsZooming) {
     [self.scrollViewProxy.observers
         webViewScrollViewDidZoom:self.scrollViewProxy];
-  } else {
-    if (@available(iOS 16.0, *)) {
-      // In iOS < 16 versions, changing the value of `zoomScale` calls
-      // `scrollViewDidZoom`.
-      scrollView.zoomScale = scrollView.minimumZoomScale;
-    }
   }
 }
 

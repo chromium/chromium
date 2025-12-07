@@ -39,13 +39,13 @@ namespace chromecast {
 namespace {
 
 gfx::Transform GetPrimaryDisplayRotationTransform() {
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  display::Display display = display::Screen::Get()->GetPrimaryDisplay();
   return display::CreateRotationTransform(display.rotation(),
                                           gfx::SizeF(display.size()));
 }
 
 gfx::Rect GetPrimaryDisplayHostBounds() {
-  display::Display display(display::Screen::GetScreen()->GetPrimaryDisplay());
+  display::Display display(display::Screen::Get()->GetPrimaryDisplay());
   gfx::Point display_origin_in_pixel = display.bounds().origin();
   gfx::Size display_size_in_pixel = display.GetSizeInPixel();
   switch (display.rotation()) {
@@ -180,7 +180,7 @@ void CastWindowManagerAura::Setup() {
   if (window_tree_host_) {
     return;
   }
-  DCHECK(display::Screen::GetScreen());
+  DCHECK(display::Screen::Get());
 
   ui::InitializeInputMethodForTesting();
 

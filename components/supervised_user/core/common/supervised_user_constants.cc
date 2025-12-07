@@ -5,6 +5,7 @@
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "components/supervised_user/core/common/pref_names.h"
 
 namespace supervised_user {
@@ -13,21 +14,10 @@ const int kHistogramFilteringBehaviorSpacing = 100;
 const int kSupervisedUserURLFilteringResultHistogramMax = 800;
 
 namespace {
-
-GURL KidsManagementBaseURL() {
-  return GURL("https://kidsmanagement-pa.googleapis.com/kidsmanagement/v1/");
-}
-
-const char kGetFamilyProfileURL[] = "families/mine?alt=json";
-const char kGetFamilyMembersURL[] = "families/mine/members?alt=json";
-const char kPermissionRequestsURL[] = "people/me/permissionRequests";
-const char kClassifyURLRequestURL[] = "people/me:classifyUrl";
-
 const int kHistogramPageTransitionMaxKnownValue =
     static_cast<int>(ui::PAGE_TRANSITION_KEYWORD_GENERATED);
 const int kHistogramPageTransitionFallbackValue =
     kHistogramFilteringBehaviorSpacing - 1;
-
 }  // namespace
 
 static_assert(kHistogramPageTransitionMaxKnownValue <
@@ -46,8 +36,10 @@ std::string WebFilterTypeToDisplayString(WebFilterType web_filter_type) {
       return "allow_certain_sites";
     case WebFilterType::kTryToBlockMatureSites:
       return "block_mature_sites";
+    case WebFilterType::kDisabled:
+      return "disabled";
     case WebFilterType::kMixed:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -57,8 +49,7 @@ int GetHistogramValueForTransitionType(ui::PageTransition transition_type) {
   if (0 <= value && value <= kHistogramPageTransitionMaxKnownValue) {
     return value;
   }
-  NOTREACHED_IN_MIGRATION();
-  return kHistogramPageTransitionFallbackValue;
+  NOTREACHED();
 }
 
 const char kAuthorizationHeader[] = "Bearer";
@@ -98,25 +89,6 @@ const char* const kCustodianInfoPrefs[] = {
 const base::FilePath::CharType kSupervisedUserSettingsFilename[] =
     FILE_PATH_LITERAL("Managed Mode Settings");
 
-const char kSyncGoogleDashboardURL[] =
-    "https://www.google.com/settings/chrome/sync";
-
-GURL KidsManagementGetFamilyProfileURL() {
-  return KidsManagementBaseURL().Resolve(kGetFamilyProfileURL);
-}
-
-GURL KidsManagementGetFamilyMembersURL() {
-  return KidsManagementBaseURL().Resolve(kGetFamilyMembersURL);
-}
-
-GURL KidsManagementPermissionRequestsURL() {
-  return KidsManagementBaseURL().Resolve(kPermissionRequestsURL);
-}
-
-GURL KidsManagementClassifyURLRequestURL() {
-  return KidsManagementBaseURL().Resolve(kClassifyURLRequestURL);
-}
-
 const char kFamilyLinkUserLogSegmentHistogramName[] =
     "FamilyLinkUser.LogSegment";
 
@@ -134,9 +106,17 @@ const char kSupervisedUserURLFilteringResultHistogramName[] =
 
 const char kSupervisedUserTopLevelURLFilteringResultHistogramName[] =
     "ManagedUsers.TopLevelFilteringResult";
+const char kSupervisedUserTopLevelURLFilteringResult2HistogramName[] =
+    "ManagedUsers.TopLevelFilteringResult2";
+
+const char kLocalWebApprovalResultHistogramName[] =
+    "FamilyLinkUser.LocalWebApprovalResult";
 
 const char kManagedByParentUiMoreInfoUrl[] =
     "https://familylink.google.com/setting/resource/94";
+
+const char kFamilyManagementUrl[] =
+    "https://myaccount.google.com/family/details";
 
 const char kDefaultEmptyFamilyMemberRole[] = "not_in_family";
 
@@ -148,4 +128,17 @@ const char kClassifiedEarlierThanContentResponseHistogramName[] =
     "SupervisedUsers.ClassifyUrlThrottle.EarlierThanContentResponse";
 const char kClassifiedLaterThanContentResponseHistogramName[] =
     "SupervisedUsers.ClassifyUrlThrottle.LaterThanContentResponse";
+extern const char kClassifyUrlThrottleFinalStatusHistogramName[] =
+    "SupervisedUsers.ClassifyUrlThrottle.FinalStatus";
+
+const char kLocalWebApprovalDurationMillisecondsHistogramName[] =
+    "FamilyLinkUser.LocalWebApprovalCompleteRequestTotalDuration";
+const char kLocalWebApprovalErrorTypeHistogramName[] =
+    "FamilyLinkUser.LocalWebApprovalErrorType";
+
+const char kBrowserContentFiltersSettingName[] =
+    "browser_content_filters_enabled";
+const char kSearchContentFiltersSettingName[] =
+    "search_content_filters_enabled";
+
 }  // namespace supervised_user

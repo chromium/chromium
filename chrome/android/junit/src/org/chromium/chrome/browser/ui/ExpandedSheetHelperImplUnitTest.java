@@ -14,6 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -30,7 +31,7 @@ public class ExpandedSheetHelperImplUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ModalDialogManager mModalDialogManager;
-    @Mock private TabObscuringHandler mTabObscuringHandler;
+    @Spy private TabObscuringHandler mTabObscuringHandler;
     private ExpandedSheetHelperImpl mExpandedSheetHelperImpl;
 
     @Before

@@ -21,7 +21,6 @@ import static org.mockito.Mockito.verify;
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createClickActionWithFlags;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.CREDENTIAL;
-import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.FORMATTED_ORIGIN;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.ITEM_COLLECTION_INFO;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.ON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.SHOW_SUBMIT_BUTTON;
@@ -54,7 +53,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
@@ -74,7 +74,9 @@ import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionIn
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
 import org.chromium.chrome.browser.touch_to_fill.data.WebauthnCredential;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
@@ -94,33 +96,63 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TouchToFillViewTest {
     private static final Credential ANA =
-            new Credential("Ana", "S3cr3t", "Ana", "", "example.xyz", GetLoginMatchType.EXACT, 0);
+            new Credential.Builder()
+                    .setUsername("Ana")
+                    .setPassword("S3cr3t")
+                    .setFormattedUsername("Ana")
+                    .setOriginUrl("")
+                    .setDisplayName("example.xyz")
+                    .setMatchType(GetLoginMatchType.EXACT)
+                    .setLastUsedMsSinceEpoch(0)
+                    .build();
     private static final Credential NO_ONE =
-            new Credential(
-                    "",
-                    "***",
-                    "No Username",
-                    "m.example.xyz",
-                    "m.example.xyz",
-                    GetLoginMatchType.PSL,
-                    0);
+            new Credential.Builder()
+                    .setUsername("")
+                    .setPassword("***")
+                    .setFormattedUsername("No Username")
+                    .setOriginUrl("m.example.xyz")
+                    .setDisplayName("m.example.xyz")
+                    .setMatchType(GetLoginMatchType.PSL)
+                    .setLastUsedMsSinceEpoch(0)
+                    .build();
     private static final Credential BOB =
-            new Credential(
-                    "Bob",
-                    "***",
-                    "Bob",
-                    "mobile.example.xyz",
-                    "mobile.example.xyz",
-                    GetLoginMatchType.PSL,
-                    0);
+            new Credential.Builder()
+                    .setUsername("Bob")
+                    .setPassword("***")
+                    .setFormattedUsername("Bob")
+                    .setOriginUrl("mobile.example.xyz")
+                    .setDisplayName("mobile.example.xyz")
+                    .setMatchType(GetLoginMatchType.PSL)
+                    .setLastUsedMsSinceEpoch(0)
+                    .build();
     private static final WebauthnCredential CAM =
             new WebauthnCredential("example.net", new byte[] {1}, new byte[] {2}, "Cam");
     private static final Credential NIK =
-            new Credential(
-                    "Nik", "***", "Nik", "group.xyz", "group.xyz", GetLoginMatchType.AFFILIATED, 0);
+            new Credential.Builder()
+                    .setUsername("Nik")
+                    .setPassword("***")
+                    .setFormattedUsername("Nik")
+                    .setOriginUrl("group.xyz")
+                    .setDisplayName("group.xyz")
+                    .setMatchType(GetLoginMatchType.AFFILIATED)
+                    .setLastUsedMsSinceEpoch(0)
+                    .build();
+    private static final Credential NIK_BACKUP =
+            new Credential.Builder()
+                    .setUsername("Nik")
+                    .setPassword("***")
+                    .setFormattedUsername("Nik")
+                    .setOriginUrl("group.xyz")
+                    .setDisplayName("group.xyz")
+                    .setMatchType(GetLoginMatchType.AFFILIATED)
+                    .setLastUsedMsSinceEpoch(0)
+                    .setIsBackupCredential(true)
+                    .build();
     private final AtomicBoolean mManageButtonClicked = new AtomicBoolean(false);
     private final AtomicBoolean mHybridButtonClicked = new AtomicBoolean(false);
     private final AtomicBoolean mMorePasskeysClicked = new AtomicBoolean(false);
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Callback<Integer> mDismissHandler;
     @Mock private Callback<Credential> mCredentialCallback;
@@ -130,21 +162,20 @@ public class TouchToFillViewTest {
     private TouchToFillView mTouchToFillView;
     private BottomSheetController mBottomSheetController;
     private BottomSheetTestSupport mSheetTestSupport;
-    TouchToFillResourceProvider mResourceProvider;
+    private WebPageStation mPage;
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Before
     public void setUp() throws InterruptedException {
-        MockitoAnnotations.initMocks(this);
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
         mBottomSheetController =
                 mActivityTestRule
                         .getActivity()
                         .getRootUiCoordinatorForTesting()
                         .getBottomSheetController();
-        mResourceProvider = new TouchToFillResourceProviderImpl();
         mSheetTestSupport = new BottomSheetTestSupport(mBottomSheetController);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -160,6 +191,13 @@ public class TouchToFillViewTest {
                 () -> {
                     AccessibilityState.setIsTouchExplorationEnabledForTesting(false);
                 });
+    }
+
+    @Test
+    @MediumTest
+    public void testInitializesHomeScreen() {
+        assertNotNull(mTouchToFillView.getSheetItemListView());
+        assertNotNull(mTouchToFillView.getSheetItemListView().getAdapter());
     }
 
     @Test
@@ -212,8 +250,8 @@ public class TouchToFillViewTest {
                                                                                     "www.example.org"))
                                                             .with(
                                                                     IMAGE_DRAWABLE_ID,
-                                                                    mResourceProvider
-                                                                            .getHeaderImageDrawableId())
+                                                                    R.drawable
+                                                                            .touch_to_fill_default_header_image)
                                                             .build()),
                                             buildFooterItem(false)));
                     mModel.set(VISIBLE, true);
@@ -254,8 +292,8 @@ public class TouchToFillViewTest {
                                                                                     "www.example.org"))
                                                             .with(
                                                                     IMAGE_DRAWABLE_ID,
-                                                                    mResourceProvider
-                                                                            .getHeaderImageDrawableId())
+                                                                    R.drawable
+                                                                            .touch_to_fill_default_header_image)
                                                             .build()),
                                             buildFooterItem(false)));
                     mModel.set(VISIBLE, true);
@@ -286,8 +324,8 @@ public class TouchToFillViewTest {
                                                             .with(SUBTITLE, "www.example.org")
                                                             .with(
                                                                     IMAGE_DRAWABLE_ID,
-                                                                    mResourceProvider
-                                                                            .getHeaderImageDrawableId())
+                                                                    R.drawable
+                                                                            .touch_to_fill_default_header_image)
                                                             .build()),
                                             buildFooterItem(false)));
                     mModel.set(VISIBLE, true);
@@ -320,8 +358,8 @@ public class TouchToFillViewTest {
                                                                                     "m.example.org"))
                                                             .with(
                                                                     IMAGE_DRAWABLE_ID,
-                                                                    mResourceProvider
-                                                                            .getHeaderImageDrawableId())
+                                                                    R.drawable
+                                                                            .touch_to_fill_default_header_image)
                                                             .build()),
                                             buildFooterItem(false)));
                     mModel.set(VISIBLE, true);
@@ -354,8 +392,8 @@ public class TouchToFillViewTest {
                                                                                     "m.example.org"))
                                                             .with(
                                                                     IMAGE_DRAWABLE_ID,
-                                                                    mResourceProvider
-                                                                            .getHeaderImageDrawableId())
+                                                                    R.drawable
+                                                                            .touch_to_fill_default_header_image)
                                                             .build()),
                                             buildFooterItem(false)));
                     mModel.set(VISIBLE, true);
@@ -388,8 +426,8 @@ public class TouchToFillViewTest {
                                                                                     "m.example.org"))
                                                             .with(
                                                                     IMAGE_DRAWABLE_ID,
-                                                                    mResourceProvider
-                                                                            .getHeaderImageDrawableId())
+                                                                    R.drawable
+                                                                            .touch_to_fill_default_header_image)
                                                             .build()),
                                             buildFooterItem(false)));
                     mModel.set(VISIBLE, true);
@@ -682,12 +720,50 @@ public class TouchToFillViewTest {
                 getActivity()
                         .getString(
                                 R.string
-                                        .touch_to_fill_password_credential_accessibility_description,
-                                ANA.getFormattedUsername());
+                                        .touch_to_fill_password_credential_accessibility_description_with_url,
+                                ANA.getFormattedUsername(),
+                                ANA.getDisplayName());
         assertEquals(
                 getCredentials().getChildAt(0).getContentDescription(),
                 getActivity()
                         .getString(R.string.touch_to_fill_a11y_item_collection_info, label, 1, 1));
+    }
+
+    @Test
+    @MediumTest
+    public void testRecoveryPasswordCredentialAccessibilityDescription() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.get(SHEET_ITEMS)
+                            .addAll(
+                                    asList(
+                                            buildCredentialItem(
+                                                    NIK, new FillableItemCollectionInfo(1, 2)),
+                                            buildCredentialItem(
+                                                    NIK_BACKUP,
+                                                    new FillableItemCollectionInfo(2, 2)),
+                                            buildFooterItem(false)));
+                    mModel.set(VISIBLE, true);
+                });
+
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        assertNotNull(getCredentials().getChildAt(1));
+        String expected_label =
+                getActivity()
+                        .getString(
+                                R.string
+                                        .touch_to_fill_recovery_password_credential_accessibility_description_with_url,
+                                NIK_BACKUP.getFormattedUsername(),
+                                NIK_BACKUP.getDisplayName());
+        assertEquals(
+                getCredentials().getChildAt(1).getContentDescription(),
+                getActivity()
+                        .getString(
+                                R.string.touch_to_fill_a11y_item_collection_info,
+                                expected_label,
+                                2,
+                                2));
     }
 
     @Test
@@ -740,8 +816,9 @@ public class TouchToFillViewTest {
                 getActivity()
                         .getString(
                                 R.string
-                                        .touch_to_fill_password_credential_accessibility_description,
-                                ANA.getFormattedUsername()));
+                                        .touch_to_fill_password_credential_accessibility_description_with_url,
+                                ANA.getFormattedUsername(),
+                                ANA.getDisplayName()));
 
         assertNotNull(getCredentials().getChildAt(1));
         assertEquals(
@@ -849,8 +926,8 @@ public class TouchToFillViewTest {
                                                             .with(SUBTITLE, "www.example.org")
                                                             .with(
                                                                     IMAGE_DRAWABLE_ID,
-                                                                    mResourceProvider
-                                                                            .getHeaderImageDrawableId())
+                                                                    R.drawable
+                                                                            .touch_to_fill_default_header_image)
                                                             .build()),
                                             buildFooterItem(true)));
                     mModel.set(VISIBLE, true);
@@ -942,7 +1019,40 @@ public class TouchToFillViewTest {
                                 .getString(
                                         R.string.touch_to_fill_sheet_passkey_credential_context)));
 
-        CredManSupportProvider.setupForTesting(/*override*/ false);
+        CredManSupportProvider.setupForTesting(
+                /* overrideAndroidVersion= */ null, /* overrideForcesGpm= */ null);
+    }
+
+    @Test
+    @MediumTest
+    public void testDisplaysRecoverySubtitleNotExactMatch() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.get(SHEET_ITEMS)
+                            .addAll(
+                                    asList(
+                                            buildCredentialItem(
+                                                    NIK, new FillableItemCollectionInfo(1, 2)),
+                                            buildCredentialItem(
+                                                    NIK_BACKUP,
+                                                    new FillableItemCollectionInfo(2, 2)),
+                                            buildFooterItem(false)));
+                    mModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        assertThat(mTouchToFillView.getContentView().isShown(), is(true));
+
+        assertThat(getCredentials().getChildCount(), is(3));
+        assertThat(getCredentialOriginAt(0).getVisibility(), is(View.VISIBLE));
+        assertThat(getCredentialOriginAt(0).getText(), is("group.xyz"));
+        assertThat(getCredentialNameAt(0).getText(), is(NIK.getFormattedUsername()));
+        assertThat(getCredentialPasswordOrContextAt(0).getText(), is(NIK.getPassword()));
+
+        assertThat(getCredentialOriginAt(1).getVisibility(), is(View.GONE));
+        assertThat(getCredentialRecoveryLabelAt(1).getVisibility(), is(View.VISIBLE));
+        assertThat(getCredentialNameAt(1).getText(), is(NIK.getFormattedUsername()));
+        assertThat(getCredentialPasswordOrContextAt(1).getText(), is(NIK.getPassword()));
     }
 
     private ChromeActivity getActivity() {
@@ -969,6 +1079,10 @@ public class TouchToFillViewTest {
         return getCredentials().getChildAt(index).findViewById(R.id.credential_origin);
     }
 
+    private TextView getCredentialRecoveryLabelAt(int index) {
+        return getCredentials().getChildAt(index).findViewById(R.id.recovery_password_label);
+    }
+
     private static <T> T waitForEvent(T mock) {
         return verify(
                 mock,
@@ -982,7 +1096,6 @@ public class TouchToFillViewTest {
                 new PropertyModel.Builder(TouchToFillProperties.CredentialProperties.ALL_KEYS)
                         .with(CREDENTIAL, credential)
                         .with(ON_CLICK_LISTENER, mCredentialCallback)
-                        .with(FORMATTED_ORIGIN, credential.getDisplayName())
                         .with(SHOW_SUBMIT_BUTTON, false)
                         .with(ITEM_COLLECTION_INFO, collectionInfo)
                         .build());
@@ -1006,7 +1119,6 @@ public class TouchToFillViewTest {
                 new PropertyModel.Builder(TouchToFillProperties.CredentialProperties.ALL_KEYS)
                         .with(CREDENTIAL, credential)
                         .with(ON_CLICK_LISTENER, mCredentialCallback)
-                        .with(FORMATTED_ORIGIN, credential.getDisplayName())
                         .with(SHOW_SUBMIT_BUTTON, showSubmitButton)
                         .build());
     }

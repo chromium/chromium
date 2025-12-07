@@ -356,7 +356,7 @@ def RunNmOnIntermediates(target, output_directory):
   lines = stdout.splitlines()
   # Empty .a file has no output.
   if not lines:
-    return parallel.EMPTY_ENCODED_DICT, parallel.EMPTY_ENCODED_DICT
+    return parallel.EMPTY_ENCODED_DICT, parallel.EMPTY_ENCODED_DICT, 0
   is_multi_file = not lines[0]
   lines = iter(lines)
   if is_multi_file:

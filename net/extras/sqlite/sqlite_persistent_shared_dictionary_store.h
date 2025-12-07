@@ -160,6 +160,10 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
                                      base::OnceCallback<void(Error)> callback);
   void UpdateDictionaryLastUsedTime(int64_t primary_key_in_database,
                                     base::Time last_used_time);
+  void UpdateDictionaryResponseTimeAndLastFetchTime(
+      const int64_t primary_key_in_database,
+      const base::Time new_time,
+      base::OnceCallback<void(Error)> callback);
 
   base::WeakPtr<SQLitePersistentSharedDictionaryStore> GetWeakPtr();
 

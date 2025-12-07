@@ -1,0 +1,54 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module device.mojom;
+
+import "ui/gfx/mojom/transform.mojom";
+
+// Sourced from https://immersive-web.github.io/webxr-hand-input/#idl-index
+enum XRHandJoint {
+  kWrist = 0,
+  kThumbMetacarpal = 1,
+  kThumbPhalanxProximal = 2,
+  kThumbPhalanxDistal = 3,
+  kThumbTip = 4,
+  kIndexFingerMetacarpal = 5,
+  kIndexFingerPhalanxProximal = 6,
+  kIndexFingerPhalanxIntermediate = 7,
+  kIndexFingerPhalanxDistal = 8,
+  kIndexFingerTip = 9,
+  kMiddleFingerMetacarpal = 10,
+  kMiddleFingerPhalanxProximal = 11,
+  kMiddleFingerPhalanxIntermediate = 12,
+  kMiddleFingerPhalanxDistal = 13,
+  kMiddleFingerTip = 14,
+  kRingFingerMetacarpal = 15,
+  kRingFingerPhalanxProximal = 16,
+  kRingFingerPhalanxIntermediate = 17,
+  kRingFingerPhalanxDistal = 18,
+  kRingFingerTip = 19,
+  kPinkyFingerMetacarpal = 20,
+  kPinkyFingerPhalanxProximal = 21,
+  kPinkyFingerPhalanxIntermediate = 22,
+  kPinkyFingerPhalanxDistal = 23,
+  kPinkyFingerTip = 24,
+};
+
+// This struct contains joint data and the associated joint for which the data
+// corresponds.
+// For each hand joint we are required to supply a transform and a radius.
+struct XRHandJointData {
+  // Which joint this data is for denoted by the XRHandJoint enum.
+  XRHandJoint joint;
+  // The transform of pose of this joint in mojo space.
+  gfx.mojom.Transform? mojo_from_joint;
+  // The radius of the joint in meters.
+  float radius;
+};
+
+// The list of joint data. Must have data for each of the 25 joints.
+struct XRHandTrackingData {
+  // The transforms and radii of the joints
+  array<XRHandJointData> hand_joint_data;
+};

@@ -21,9 +21,8 @@ namespace safe_browsing {
 // features may test their interaction with Safe Browsing.
 class FakeSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
  public:
-  FakeSafeBrowsingDatabaseManager(
-      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-      scoped_refptr<base::SequencedTaskRunner> io_task_runner);
+  explicit FakeSafeBrowsingDatabaseManager(
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
   void AddDangerousUrl(const GURL& dangerous_url, SBThreatType threat_type);
   void AddDangerousUrlPattern(const GURL& dangerous_url,
@@ -43,10 +42,9 @@ class FakeSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
                         Client* client) override;
   bool CheckExtensionIDs(const std::set<std::string>& extension_ids,
                          Client* client) override;
-  std::optional<HighConfidenceAllowlistCheckLoggingDetails>
-  CheckUrlForHighConfidenceAllowlist(
+  void CheckUrlForHighConfidenceAllowlist(
       const GURL& url,
-      base::OnceCallback<void(bool)> callback) override;
+      CheckUrlForHighConfidenceAllowlistCallback callback) override;
   bool CheckUrlForSubresourceFilter(const GURL& url, Client* client) override;
   safe_browsing::ThreatSource GetBrowseUrlThreatSource(
       CheckBrowseUrlType check_type) const override;

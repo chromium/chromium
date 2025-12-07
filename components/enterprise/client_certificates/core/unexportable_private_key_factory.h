@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "components/enterprise/client_certificates/core/private_key_factory.h"
 #include "crypto/unexportable_key.h"
 
@@ -28,6 +29,8 @@ class UnexportablePrivateKeyFactory : public PrivateKeyFactory {
   void LoadPrivateKey(
       const client_certificates_pb::PrivateKey& serialized_private_key,
       PrivateKeyCallback callback) override;
+  void LoadPrivateKeyFromDict(const base::Value::Dict& serialized_private_key,
+                              PrivateKeyCallback callback) override;
 
  private:
   explicit UnexportablePrivateKeyFactory(

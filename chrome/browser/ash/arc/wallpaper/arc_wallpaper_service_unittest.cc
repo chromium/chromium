@@ -10,24 +10,23 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/components/arc/test/connection_holder_util.h"
-#include "ash/components/arc/test/fake_wallpaper_instance.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
-#include "chrome/browser/image_decoder/image_decoder.h"
-#include "chrome/browser/ui/ash/test_wallpaper_controller.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
+#include "chrome/browser/ui/ash/wallpaper/test_wallpaper_controller.h"
+#include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/arc/test/connection_holder_util.h"
+#include "chromeos/ash/experiences/arc/test/fake_wallpaper_instance.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -38,26 +37,24 @@
 
 namespace {
 
-class SuccessDecodeRequestSender
-    : public arc::ArcWallpaperService::DecodeRequestSender {
+// Ignores the input and always produces a valid bitmap.
+class SuccessImageDecoder : public arc::ArcWallpaperService::ImageDecoder {
  public:
-  ~SuccessDecodeRequestSender() override = default;
-  void SendDecodeRequest(ImageDecoder::ImageRequest* request,
-                         const std::vector<uint8_t>& data) override {
+  void DecodeImage(const std::vector<uint8_t>& data,
+                   ResultCallback callback) override {
     SkBitmap bitmap;
     bitmap.allocN32Pixels(256 /* width */, 256 /* height */);
     bitmap.eraseColor(SK_ColorRED);
-    request->OnImageDecoded(bitmap);
+    std::move(callback).Run(bitmap);
   }
 };
 
-class FailureDecodeRequestSender
-    : public arc::ArcWallpaperService::DecodeRequestSender {
+// Ignores the input and always reports failure.
+class FailureImageDecoder : public arc::ArcWallpaperService::ImageDecoder {
  public:
-  ~FailureDecodeRequestSender() override = default;
-  void SendDecodeRequest(ImageDecoder::ImageRequest* request,
-                         const std::vector<uint8_t>& data) override {
-    request->OnDecodeImageFailed();
+  void DecodeImage(const std::vector<uint8_t>& data,
+                   ResultCallback callback) override {
+    std::move(callback).Run(SkBitmap());
   }
 };
 
@@ -73,15 +70,6 @@ class ArcWallpaperServiceTest : public testing::Test {
   ~ArcWallpaperServiceTest() override = default;
 
   void SetUp() override {
-    // Prefs
-    TestingBrowserProcess::GetGlobal()->SetLocalState(&pref_service_);
-    pref_service_.registry()->RegisterDictionaryPref(
-        ash::prefs::kUserWallpaperInfo);
-    pref_service_.registry()->RegisterDictionaryPref(
-        ash::prefs::kWallpaperColors);
-    pref_service_.registry()->RegisterStringPref(
-        prefs::kDeviceWallpaperImageFilePath, std::string());
-
     // User
     fake_user_manager_->AddUser(user_manager::StubAccountId());
     fake_user_manager_->LoginUser(user_manager::StubAccountId());
@@ -90,6 +78,7 @@ class ArcWallpaperServiceTest : public testing::Test {
     // Wallpaper
     wallpaper_controller_client_ = std::make_unique<
         WallpaperControllerClientImpl>(
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
         std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>());
     wallpaper_controller_client_->InitForTesting(&test_wallpaper_controller_);
 
@@ -116,7 +105,6 @@ class ArcWallpaperServiceTest : public testing::Test {
     wallpaper_instance_.reset();
 
     wallpaper_controller_client_.reset();
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
     ash::SystemSaltGetter::Shutdown();
   }
 
@@ -131,9 +119,7 @@ class ArcWallpaperServiceTest : public testing::Test {
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
   arc::ArcServiceManager arc_service_manager_;
-  TestingPrefServiceSimple pref_service_;
-  // testing_profile_ needs to be deleted before arc_service_manager_ and
-  // pref_service_.
+  // testing_profile_ needs to be deleted before arc_service_manager_.
   TestingProfile testing_profile_;
 };
 
@@ -141,29 +127,22 @@ class ArcWallpaperServiceTest : public testing::Test {
 
 TEST_F(ArcWallpaperServiceTest, SetDefaultWallpaper) {
   test_wallpaper_controller_.ClearCounts();
-  base::HistogramTester histogram_tester;
 
   service_->SetDefaultWallpaper();
 
   EXPECT_EQ(1, test_wallpaper_controller_.set_default_wallpaper_count());
-  histogram_tester.ExpectUniqueSample("Arc.WallpaperApiUsage", 1,
-                                      /*expected_bucket_count=*/1);
 }
 
 TEST_F(ArcWallpaperServiceTest, SetAndGetWallpaper) {
-  service_->SetDecodeRequestSenderForTesting(
-      std::make_unique<SuccessDecodeRequestSender>());
+  service_->SetImageDecoderForTesting(std::make_unique<SuccessImageDecoder>());
   std::vector<uint8_t> bytes;
   test_wallpaper_controller_.SetCurrentUser(user_manager::StubAccountId());
-  base::HistogramTester histogram_tester;
 
   service_->SetWallpaper(bytes, 10 /*wallpaper_id=*/);
 
   ASSERT_EQ(1u, wallpaper_instance_->changed_ids().size());
   EXPECT_EQ(10, wallpaper_instance_->changed_ids()[0]);
   ASSERT_EQ(1, test_wallpaper_controller_.get_third_party_wallpaper_count());
-  histogram_tester.ExpectUniqueSample("Arc.WallpaperApiUsage", 0,
-                                      /*expected_bucket_count=*/1);
 
   service_->GetWallpaper(
       base::BindOnce([](std::vector<uint8_t>* out,
@@ -172,13 +151,10 @@ TEST_F(ArcWallpaperServiceTest, SetAndGetWallpaper) {
   content::RunAllTasksUntilIdle();
 
   ASSERT_NE(0u, bytes.size());
-  histogram_tester.ExpectBucketCount("Arc.WallpaperApiUsage", 2,
-                                     /*expected_count=*/1);
 }
 
 TEST_F(ArcWallpaperServiceTest, SetWallpaperFailure) {
-  service_->SetDecodeRequestSenderForTesting(
-      std::make_unique<FailureDecodeRequestSender>());
+  service_->SetImageDecoderForTesting(std::make_unique<FailureImageDecoder>());
   test_wallpaper_controller_.SetCurrentUser(user_manager::StubAccountId());
   std::vector<uint8_t> bytes;
   service_->SetWallpaper(bytes, 10 /*wallpaper_id=*/);

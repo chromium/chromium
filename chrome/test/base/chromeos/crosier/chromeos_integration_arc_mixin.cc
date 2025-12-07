@@ -4,7 +4,8 @@
 
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_arc_mixin.h"
 
-#include "ash/components/arc/metrics/arc_metrics_constants.h"
+#include <string>
+
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -13,16 +14,18 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string_util.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_login_mixin.h"
 #include "chrome/test/base/chromeos/crosier/helper/test_sudo_helper_client.h"
+#include "chrome/test/base/chromeos/crosier/upstart.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/aura/client/aura_constants.h"
@@ -67,8 +70,7 @@ class ArcBootWaiter : public arc::ArcBootPhaseMonitorBridge::Observer {
 // AppReadyWaiter waits until the given `app_id` is ready and launchable.
 class AppReadyWaiter : public ArcAppListPrefs::Observer {
  public:
-  AppReadyWaiter(ArcAppListPrefs* arc_app_list_prefs,
-                 const std::string_view app_id)
+  AppReadyWaiter(ArcAppListPrefs* arc_app_list_prefs, std::string_view app_id)
       : prefs_(arc_app_list_prefs), app_id_(app_id) {
     scoped_observation_.Observe(arc_app_list_prefs);
   }
@@ -179,7 +181,7 @@ void WaitForAppRegister(const std::string& app_id) {
 ChromeOSIntegrationArcMixin::ChromeOSIntegrationArcMixin(
     InProcessBrowserTestMixinHost* host,
     const ChromeOSIntegrationLoginMixin& login_mixin)
-    : InProcessBrowserTestMixin(host), login_mixin_(login_mixin) {}
+    : InProcessBrowserTestMixin(host), login_mixin_(raw_ref(login_mixin)) {}
 
 ChromeOSIntegrationArcMixin::~ChromeOSIntegrationArcMixin() = default;
 
@@ -190,6 +192,12 @@ void ChromeOSIntegrationArcMixin::SetMode(Mode mode) {
 
 void ChromeOSIntegrationArcMixin::SetUp() {
   setup_called_ = true;
+  // Use `RestartJob` in case `arc-manager` is already running.
+  CHECK(upstart::RestartJob("arc-manager"));
+}
+
+void ChromeOSIntegrationArcMixin::TearDown() {
+  CHECK(upstart::StopJob("arc-manager"));
 }
 
 void ChromeOSIntegrationArcMixin::WaitForBootAndConnectAdb() {
@@ -235,7 +243,7 @@ void ChromeOSIntegrationArcMixin::SetUpCommandLine(
     return;
   }
 
-  CHECK(login_mixin_.mode() != ChromeOSIntegrationLoginMixin::Mode::kStubLogin)
+  CHECK(login_mixin_->mode() != ChromeOSIntegrationLoginMixin::Mode::kStubLogin)
       << "ARC does not work with stub login.";
 
   // User data dir needs to be "/home/chronos". Otherwise,
@@ -264,11 +272,11 @@ void ChromeOSIntegrationArcMixin::SetUpCommandLine(
                                     "always-start-with-no-play-store");
 
     // The "installed" mode needs `kEnableArcFeature` to work.
-    // See "IsArcAvailable()" in ash/components/arc/arc_util.cc.
+    // See "IsArcAvailable()" in chromeos/ash/experiences/arc/arc_util.cc.
     command_line->AppendSwitchASCII(ash::switches::kArcAvailability,
                                     "installed");
     scoped_feature_list_.emplace();
-    scoped_feature_list_->InitFromCommandLine("EnableARC", base::EmptyString());
+    scoped_feature_list_->InitFromCommandLine("EnableARC", std::string());
   }
 
   if (mode_ == Mode::kSupported) {

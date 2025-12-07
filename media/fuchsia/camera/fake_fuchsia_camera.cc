@@ -109,20 +109,6 @@ void ValidatePlane(const uint8_t* data,
   }
 }
 
-fidl::InterfaceHandle<fuchsia::sysmem2::BufferCollectionToken>
-Sysmem2TokenFromSysmem1Token(
-    fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken> v1_token) {
-  return fidl::InterfaceHandle<fuchsia::sysmem2::BufferCollectionToken>(
-    v1_token.TakeChannel());
-}
-
-fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>
-Sysmem1TokenFromSysmem2Token(
-    fidl::InterfaceHandle<fuchsia::sysmem2::BufferCollectionToken> v2_token) {
-  return fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>(
-    v2_token.TakeChannel());
-}
-
 }  // namespace
 
 // static
@@ -294,15 +280,19 @@ void FakeCameraStream::WatchOrientation(WatchOrientationCallback callback) {
   SendOrientation();
 }
 
+// temporary until other chromium code switches to sysmem2 tokens only
 void FakeCameraStream::SetBufferCollection(
     fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>
-        token_handle_param) {
-  EXPECT_TRUE(token_handle_param);
-  fidl::InterfaceHandle<fuchsia::sysmem2::BufferCollectionToken> token_handle =
-      Sysmem2TokenFromSysmem1Token(std::move(token_handle_param));
+        token_handle) {
+  SetBufferCollection2(
+      fidl::InterfaceHandle<fuchsia::sysmem2::BufferCollectionToken>(
+          token_handle.TakeChannel()));
+}
 
-  (
-      token_handle_param.TakeChannel());
+void FakeCameraStream::SetBufferCollection2(
+    fidl::InterfaceHandle<fuchsia::sysmem2::BufferCollectionToken>
+        token_handle) {
+  EXPECT_TRUE(token_handle);
 
   // Drop old buffers.
   buffers_.clear();
@@ -344,8 +334,22 @@ void FakeCameraStream::SetBufferCollection(
       });
 }
 
+// temporary until other chromium code switches to sysmem2 tokens only
 void FakeCameraStream::WatchBufferCollection(
     WatchBufferCollectionCallback callback) {
+  WatchBufferCollection2(
+      [callback = std::move(callback)](
+          fidl::InterfaceHandle<fuchsia::sysmem2::BufferCollectionToken>
+              sysmem2_token) mutable {
+        auto sysmem1_token =
+            fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>(
+                sysmem2_token.TakeChannel());
+        callback(std::move(sysmem1_token));
+      });
+}
+
+void FakeCameraStream::WatchBufferCollection2(
+    WatchBufferCollection2Callback callback) {
   EXPECT_FALSE(watch_buffer_collection_callback_);
   watch_buffer_collection_callback_ = std::move(callback);
   SendBufferCollection();
@@ -420,7 +424,7 @@ void FakeCameraStream::OnBufferCollectionError(zx_status_t status) {
     sysmem_allocator_->AllocateSharedCollection(
         std::move(fuchsia::sysmem2::AllocatorAllocateSharedCollectionRequest{}
                       .set_token_request(token.NewRequest())));
-    SetBufferCollection(Sysmem1TokenFromSysmem2Token(std::move(token)));
+    SetBufferCollection2(std::move(token));
     return;
   }
 
@@ -489,7 +493,7 @@ void FakeCameraStream::SendBufferCollection() {
     return;
   }
   watch_buffer_collection_callback_(
-      Sysmem1TokenFromSysmem2Token(std::move(*new_buffer_collection_token_for_client_)));
+      std::move(*new_buffer_collection_token_for_client_));
   watch_buffer_collection_callback_ = {};
   new_buffer_collection_token_for_client_.reset();
 }

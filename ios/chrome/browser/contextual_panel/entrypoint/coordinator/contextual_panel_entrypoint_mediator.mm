@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_mediator.h"
 
 #import "base/check_op.h"
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/stringprintf.h"
@@ -13,6 +14,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_mediator_delegate.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_consumer.h"
+#import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_visibility_delegate.h"
 #import "ios/chrome/browser/contextual_panel/model/active_contextual_panel_tab_helper_observation_forwarder.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
@@ -22,6 +24,8 @@
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper_observer.h"
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper_observer_bridge.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
@@ -45,7 +49,7 @@
   __weak id<ContextualPanelEntrypointIPHCommands> _entrypointHelpHandler;
 
   // The engagement tracker for the current browser.
-  feature_engagement::Tracker* _engagementTracker;
+  raw_ptr<feature_engagement::Tracker> _engagementTracker;
 
   // WebStateList to use for observing ContextualPanelTabHelper events.
   raw_ptr<WebStateList> _webStateList;
@@ -123,6 +127,14 @@
   return self;
 }
 
+- (void)cancelContextualPanelEntrypointLoudMoment {
+  [self resetTimersAndUIStateAnimated:YES];
+  ContextualPanelTabHelper* contextualPanelTabHelper =
+      ContextualPanelTabHelper::FromWebState(
+          _webStateList->GetActiveWebState());
+  contextualPanelTabHelper->SetLoudMomentEntrypointCanceled(true);
+}
+
 - (void)disconnect {
   _infobarBadgeObservation->Reset();
   _infobarBadgeObservation.reset();
@@ -142,15 +154,13 @@
 
 - (void)entrypointTapped {
   // Cancel any pending transition timers since user interacted with entrypoint.
-  _transitionToEntrypointLoudMomentTimer = nullptr;
-  _transitionToDefaultEntrypointTimer = nullptr;
-
-  [self dismissEntrypointIPHAnimated:YES];
-  [self.delegate enableFullscreen];
+  [self resetTimersAndUIStateAnimated:YES];
 
   ContextualPanelTabHelper* contextualPanelTabHelper =
       ContextualPanelTabHelper::FromWebState(
           _webStateList->GetActiveWebState());
+  ContextualPanelItemConfiguration* config =
+      contextualPanelTabHelper->GetFirstCachedConfig().get();
 
   if (contextualPanelTabHelper->IsContextualPanelCurrentlyOpened()) {
     base::UmaHistogramEnumeration(
@@ -159,11 +169,20 @@
     [_contextualSheetHandler closeContextualSheet];
   } else {
     [self logEntrypointFirstTapMetrics];
-    [_contextualSheetHandler openContextualSheet];
+    if (!config || !config->entrypoint_custom_action) {
+      // The contextual panel should not be opened if there is a primary item
+      // with a custom action.
+      [_contextualSheetHandler openContextualSheet];
+    }
   }
 
-  base::WeakPtr<ContextualPanelItemConfiguration> config =
-      contextualPanelTabHelper->GetFirstCachedConfig();
+  if (config && config->entrypoint_custom_action) {
+    // Regardless of whether the contextual panel is opened or closed, if the
+    // primary item has a custom action, then it should be triggered when upon
+    // being tapped.
+    config->entrypoint_custom_action.Run();
+  }
+
   if (!config || config->iph_entrypoint_used_event_name.empty()) {
     return;
   }
@@ -175,6 +194,23 @@
                                                   centered:centered];
 }
 
+- (void)didCompleteTransitionToSmallEntrypoint {
+  web::WebState* activeWebState = _webStateList->GetActiveWebState();
+  if (!activeWebState || activeWebState->IsBeingDestroyed()) {
+    return;
+  }
+  // Notify the configuration item that it transitioned to a small entrypoint.
+  ContextualPanelTabHelper* contextualPanelTabHelper =
+      ContextualPanelTabHelper::FromWebState(activeWebState);
+  ContextualPanelItemConfiguration* config =
+      contextualPanelTabHelper->GetFirstCachedConfig().get();
+  if (config) {
+    config->DidTransitionToSmallEntrypoint();
+  }
+  [self.visibilityDelegate setContextualPanelCurrentlyAnimating:NO];
+  [self.consumer updateAccessibilityStatus];
+}
+
 #pragma mark - ContextualPanelTabHelperObserving
 
 - (void)contextualPanel:(ContextualPanelTabHelper*)tabHelper
@@ -183,7 +219,7 @@
                      item_configurations {
   [self activeTabHasNewData:item_configurations.empty()
                                 ? nullptr
-                                : item_configurations[0]];
+                                : item_configurations[0].get()];
 }
 
 - (void)contextualPanelTabHelperDestroyed:(ContextualPanelTabHelper*)tabHelper {
@@ -224,6 +260,8 @@
     }
   }
 
+  [self resetTimersAndUIStateAnimated:NO];
+
   // Return early if no new webstates are active.
   if (!status.new_active_web_state) {
     return;
@@ -236,41 +274,86 @@
 
   ContextualPanelTabHelper* contextualPanelTabHelper =
       ContextualPanelTabHelper::FromWebState(status.new_active_web_state);
-  [self activeTabHasNewData:contextualPanelTabHelper->GetFirstCachedConfig()];
+  // In some cases (e.g. tests), an OTR web state (without a
+  // ContextualPanelTabHelper) can be added to the web state list being
+  // observed, even though this mediator is only created for non-OTR browsers.
+  // Just in case, make sure there actually is a ContextualPanelTabHelper.
+  if (!contextualPanelTabHelper) {
+    return;
+  }
+  [self activeTabHasNewData:contextualPanelTabHelper->GetFirstCachedConfig()
+                                .get()];
 }
 
 #pragma mark - InfobarBadgeTabHelperObserving
 
 - (void)infobarBadgesUpdated:(InfobarBadgeTabHelper*)tabHelper {
-  DCHECK_EQ(tabHelper, InfobarBadgeTabHelper::GetOrCreateForWebState(
-                           _webStateList->GetActiveWebState()));
+  // Return early if the notification doesn't come from the currently active
+  // webstate's tab helper.
+  raw_ptr<web::WebState> active_web_state = _webStateList->GetActiveWebState();
+  if (!active_web_state || active_web_state->IsBeingDestroyed()) {
+    return;
+  }
+  if (tabHelper !=
+      InfobarBadgeTabHelper::GetOrCreateForWebState(active_web_state)) {
+    return;
+  }
 
   size_t badgesCount = tabHelper->GetInfobarBadgesCount();
 
   BOOL infobarBadgesCurrentlyShown = badgesCount > 0;
+
+  // Disable contextual panel separator when Proactive Suggestions Framework is
+  // enabled to prevent conflicts.
+  if (IsProactiveSuggestionsFrameworkEnabled()) {
+    infobarBadgesCurrentlyShown = NO;
+  }
+
   if (_infobarBadgesCurrentlyShown == infobarBadgesCurrentlyShown) {
     return;
   }
   _infobarBadgesCurrentlyShown = infobarBadgesCurrentlyShown;
+
+  if (_infobarBadgesCurrentlyShown) {
+    [self dismissEntrypointIPHAnimated:YES];
+  }
 
   [self.consumer setInfobarBadgesCurrentlyShown:_infobarBadgesCurrentlyShown];
 }
 
 #pragma mark - private
 
-// Updates the entrypoint state whenever the active tab changes or new data is
-// provided.
-- (void)activeTabHasNewData:
-    (base::WeakPtr<ContextualPanelItemConfiguration>)config {
+// Cancels pending timers, dismisses any showing IPH and removes any active
+// fullscreen disabler.
+- (void)resetTimersAndUIStateAnimated:(BOOL)animated {
   _transitionToEntrypointLoudMomentTimer = nullptr;
   _transitionToDefaultEntrypointTimer = nullptr;
+  [self.visibilityDelegate setContextualPanelCurrentlyAnimating:NO];
+  [self.consumer updateAccessibilityStatus];
+  [self dismissEntrypointIPHAnimated:animated];
+  [self cleanupAndTransitionToSmallEntrypoint];
+}
 
-  [self dismissEntrypointIPHAnimated:NO];
-  [self.delegate enableFullscreen];
+// Updates the entrypoint state whenever the active tab changes or new data is
+// provided.
+- (void)activeTabHasNewData:(ContextualPanelItemConfiguration*)config {
+  [self resetTimersAndUIStateAnimated:NO];
 
   if (!config) {
     [self.consumer hideEntrypoint];
     return;
+  }
+
+  // Prevents entrypoint from showing while the Gemini promo is showing.
+  if (IsPageActionMenuEnabled()) {
+    BwgTabHelper* BWGTabHelper =
+        BwgTabHelper::FromWebState(_webStateList->GetActiveWebState());
+    if (BWGTabHelper) {
+      if (BWGTabHelper->ShouldPreventContextualPanelEntryPoint()) {
+        [self.consumer hideEntrypoint];
+        return;
+      }
+    }
   }
 
   ContextualPanelTabHelper* contextualPanelTabHelper =
@@ -286,6 +369,8 @@
   }
 
   [self.consumer setEntrypointConfig:config];
+  [self.visibilityDelegate setContextualPanelItemType:config->item_type];
+  [self.consumer updateAccessibilityStatus];
   [self.consumer transitionToSmallEntrypoint];
   [self.consumer showEntrypoint];
 
@@ -315,8 +400,8 @@
   ContextualPanelTabHelper* contextualPanelTabHelper =
       ContextualPanelTabHelper::FromWebState(
           _webStateList->GetActiveWebState());
-  base::WeakPtr<ContextualPanelItemConfiguration> config =
-      contextualPanelTabHelper->GetFirstCachedConfig();
+  ContextualPanelItemConfiguration* config =
+      contextualPanelTabHelper->GetFirstCachedConfig().get();
 
   if (![self canShowLargeEntrypointWithConfig:config] ||
       ![self.delegate canShowLargeContextualPanelEntrypoint:self]) {
@@ -363,21 +448,19 @@
       base::BindOnce(^{
         [weakSelf setupAndTransitionToLargeEntrypoint];
       }));
+  [self.visibilityDelegate setContextualPanelCurrentlyAnimating:YES];
+  [self.consumer updateAccessibilityStatus];
 }
 
 - (void)setupAndShowEntrypointIPH {
   ContextualPanelTabHelper* contextualPanelTabHelper =
       ContextualPanelTabHelper::FromWebState(
           _webStateList->GetActiveWebState());
-  base::WeakPtr<ContextualPanelItemConfiguration> config =
-      contextualPanelTabHelper->GetFirstCachedConfig();
-
-  if (!config || ![self canShowEntrypointIPHWithConfig:config]) {
-    return;
-  }
+  ContextualPanelItemConfiguration* config =
+      contextualPanelTabHelper->GetFirstCachedConfig().get();
 
   // Show the large entrypoint instead if the IPH can't be shown.
-  if (!_engagementTracker->WouldTriggerHelpUI(*config->iph_feature)) {
+  if (!config || ![self canShowEntrypointIPHWithConfig:config]) {
     [self setupAndTransitionToLargeEntrypoint];
     return;
   }
@@ -433,38 +516,37 @@
 // it was shown successfully. Also passes the current config's entrypoint FET
 // feature, which controls whether the IPH can be shown.
 - (BOOL)attemptShowingEntrypointIPHWithText:(NSString*)text
-                                     config:
-                                         (base::WeakPtr<
-                                             ContextualPanelItemConfiguration>)
-                                             config {
+                                     config:(ContextualPanelItemConfiguration*)
+                                                config {
   BOOL isBottomOmnibox = [self.delegate isBottomOmniboxActive];
 
   CGPoint anchorPoint =
       [self.delegate helpAnchorUsingBottomOmnibox:isBottomOmnibox];
 
   BOOL shown = [_entrypointHelpHandler
-      maybeShowContextualPanelEntrypointIPHWithConfig:config
-                                          anchorPoint:anchorPoint
-                                      isBottomOmnibox:isBottomOmnibox];
+      showContextualPanelEntrypointIPHWithConfig:config
+                                     anchorPoint:anchorPoint
+                                 isBottomOmnibox:isBottomOmnibox];
 
   return shown;
 }
 
 - (void)dismissEntrypointIPHAnimated:(BOOL)animated {
-  [_entrypointHelpHandler dismissContextualPanelEntrypointIPHAnimated:animated];
+  [_entrypointHelpHandler dismissContextualPanelEntrypointIPH:animated];
   [self.consumer setEntrypointColored:NO];
 }
 
 - (BOOL)canShowLargeEntrypointWithConfig:
-    (base::WeakPtr<ContextualPanelItemConfiguration>)config {
+    (ContextualPanelItemConfiguration*)config {
   return [self canShowLoudEntrypointMoment] && config &&
          config->CanShowLargeEntrypoint();
 }
 
 - (BOOL)canShowEntrypointIPHWithConfig:
-    (base::WeakPtr<ContextualPanelItemConfiguration>)config {
+    (ContextualPanelItemConfiguration*)config {
   return [self canShowLoudEntrypointMoment] && config &&
-         config->CanShowEntrypointIPH();
+         config->CanShowEntrypointIPH() &&
+         _engagementTracker->WouldTriggerHelpUI(*config->iph_feature);
 }
 
 - (BOOL)canShowLoudEntrypointMoment {
@@ -475,6 +557,7 @@
   return !_infobarBadgesCurrentlyShown &&
          !contextualPanelTabHelper->IsContextualPanelCurrentlyOpened() &&
          !contextualPanelTabHelper->WasLoudMomentEntrypointShown() &&
+         !contextualPanelTabHelper->WasLoudMomentEntrypointCanceled() &&
          [self.delegate canShowLargeContextualPanelEntrypoint:self];
 }
 

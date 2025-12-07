@@ -22,7 +22,7 @@ class DMPolicyManager : public PolicyManagerInterface {
   explicit DMPolicyManager(
       const ::wireless_android_enterprise_devicemanagement::
           OmahaSettingsClientProto& omaha_settings,
-      const std::optional<bool>& override_is_managed_device = std::nullopt);
+      std::optional<bool> override_is_managed_device = std::nullopt);
   DMPolicyManager(const DMPolicyManager&) = delete;
   DMPolicyManager& operator=(const DMPolicyManager&) = delete;
 
@@ -45,6 +45,10 @@ class DMPolicyManager : public PolicyManagerInterface {
   std::optional<std::string> GetTargetVersionPrefix(
       const std::string& app_id) const override;
   std::optional<bool> IsRollbackToTargetVersionAllowed(
+      const std::string& app_id) const override;
+  std::optional<int> GetMajorVersionRolloutPolicy(
+      const std::string& app_id) const override;
+  std::optional<int> GetMinorVersionRolloutPolicy(
       const std::string& app_id) const override;
   std::optional<std::string> GetProxyMode() const override;
   std::optional<std::string> GetProxyPacUrl() const override;
@@ -72,7 +76,7 @@ GetOmahaPolicySettings(
 
 // A factory method to create a DM policy manager.
 scoped_refptr<PolicyManagerInterface> CreateDMPolicyManager(
-    const std::optional<bool>& override_is_managed_device);
+    std::optional<bool> override_is_managed_device);
 
 }  // namespace updater
 

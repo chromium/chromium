@@ -8,10 +8,12 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Binder object for the appfilter sheet content model and the view. */
+@NullMarked
 class AppFilterViewBinder {
     static void bind(PropertyModel model, View view, PropertyKey key) {
         if (AppFilterProperties.ICON == key) {

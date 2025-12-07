@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>
+      InputEvent: input events for insertFromDrop with DataTransfer
+    </title>
+    <script src="../../../resources/testharness.js"></script>
+    <script src="../../../resources/testharnessreport.js"></script>
+    <style>
+      div {
+        width: 100px;
+        height: 100px;
+        border: 1px solid gray;
+        margin: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="editable1" contenteditable>
+      <b id="boldtext">EditableText</b>
+    </div>
+    <div id="editable2" contenteditable></div>
+    <textarea id="textarea1">PlainText</textarea>
+    <textarea id="textarea2"></textarea>
+    <input id="input1" value="InputText" />
+    <input id="input2" />
+
+    <script>
+      test(function () {
+        assert_not_equals(
+          window.eventSender,
+          undefined,
+          "This test requires eventSender."
+        );
+      });
+
+      function simulateDragDrop(dragElement, dropElement, start, end) {
+        if (dragElement.select) {
+          if (start === undefined || end === undefined) {
+            dragElement.select();
+          } else {
+            dragElement.focus();
+            dragElement.setSelectionRange(start, end);
+          }
+        } else {
+          const selection = window.getSelection();
+          selection.selectAllChildren(dragElement);
+        }
+
+        // Simulate drag and drop using eventSender
+        eventSender.mouseMoveTo(
+          dragElement.offsetLeft + dragElement.offsetWidth / 2,
+          dragElement.offsetTop + dragElement.offsetHeight / 2
+        );
+        eventSender.mouseDown();
+        eventSender.leapForward(600);
+        eventSender.mouseMoveTo(
+          dropElement.offsetLeft + dropElement.offsetWidth / 2,
+          dropElement.offsetTop + dropElement.offsetHeight / 2
+        );
+        eventSender.mouseUp();
+      }
+
+      test(function () {
+        const editable1 = document.getElementById("editable1");
+        const editable2 = document.getElementById("editable2");
+
+        let inputEventFired = false;
+        let inputEventData = null;
+        let dataTransferPlainText = null;
+        let dataTransferHTML = null;
+        let dataTransferObject = null;
+
+        editable2.addEventListener("input", function (event) {
+          if (event.inputType === "insertFromDrop") {
+            inputEventFired = true;
+            inputEventData = event.data;
+            dataTransferObject = event.dataTransfer;
+
+            // Test DataTransfer availability
+            if (event.dataTransfer) {
+              dataTransferPlainText =
+                event.dataTransfer.getData("text/plain");
+              dataTransferHTML =
+                event.dataTransfer.getData("text/html");
+            }
+          }
+        });
+
+        simulateDragDrop(editable1, editable2);
+
+        assert_true(
+          inputEventFired,
+          "input event with inputType insertFromDrop should fire"
+        );
+        assert_equals(
+          inputEventData,
+          null,
+          "input event data should be null for insertFromDrop on contenteditables"
+        );
+        assert_not_equals(
+          dataTransferObject,
+          null,
+          "DataTransfer should be available on input event on contenteditables"
+        );
+        assert_not_equals(
+          dataTransferPlainText,
+          null,
+          "DataTransfer should be available on input event on contenteditables"
+        );
+        assert_equals(
+          dataTransferPlainText,
+          "EditableText",
+          "DataTransfer plain text should match dragged content on contenteditables"
+        );
+        assert_true(
+          dataTransferHTML.includes("EditableText"),
+          "DataTransfer HTML should contain dragged content on contenteditables"
+        );
+        assert_true(
+          dataTransferHTML.includes("<b"),
+          "DataTransfer HTML should preserve formatting on contenteditables"
+        );
+      }, "input event for insertFromDrop should have DataTransfer with contenteditable");
+
+      test(function () {
+        const textarea1 = document.getElementById("textarea1");
+        const textarea2 = document.getElementById("textarea2");
+
+        let inputEventFired = false;
+        let inputEventData = null;
+        let dataTransferObject = null;
+
+        textarea2.addEventListener("input", function (event) {
+          if (event.inputType === "insertFromDrop") {
+            inputEventFired = true;
+            inputEventData = event.data;
+            dataTransferObject = event.dataTransfer;
+          }
+        });
+        simulateDragDrop(textarea1, textarea2);
+
+        assert_true(
+          inputEventFired,
+          "input event with inputType insertFromDrop should fire for textarea"
+        );
+        assert_equals(
+          inputEventData,
+          "PlainText",
+          "input event data should contain the dropped text for textarea"
+        );
+        assert_equals(
+          dataTransferObject,
+          null,
+          "DataTransfer should not be available for textarea elements"
+        );
+      }, "input event for insertFromDrop should not have DataTransfer but data with textarea");
+
+      test(function () {
+        const input1 = document.getElementById("input1");
+        const input2 = document.getElementById("input2");
+
+        let inputEventFired = false;
+        let inputEventData = null;
+        let dataTransferObject = null;
+
+        input2.addEventListener("input", function (event) {
+          if (event.inputType === "insertFromDrop") {
+            inputEventFired = true;
+            inputEventData = event.data;
+            dataTransferObject = event.dataTransfer;
+          }
+        });
+        simulateDragDrop(input1, input2);
+
+        assert_true(
+          inputEventFired,
+          "input event with inputType insertFromDrop should fire for input"
+        );
+        assert_equals(
+          inputEventData,
+          "InputText",
+          "input event data should contain the dropped text for input"
+        );
+        assert_equals(
+          dataTransferObject,
+          null,
+          "DataTransfer should not be available for input elements"
+        );
+      }, "input event for insertFromDrop should not have DataTransfer but data with input elements");
+    </script>
+  </body>
+</html>

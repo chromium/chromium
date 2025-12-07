@@ -9,7 +9,6 @@
 
 #include "chrome/browser/devtools/global_confirm_info_bar.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/core/infobar.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -32,6 +31,11 @@ infobars::InfoBar* AutomationInfoBarDelegate::Create(
 infobars::InfoBarDelegate::InfoBarIdentifier
 AutomationInfoBarDelegate::GetIdentifier() const {
   return AUTOMATION_INFOBAR_DELEGATE;
+}
+
+infobars::InfoBarDelegate::InfobarPriority
+AutomationInfoBarDelegate::GetPriority() const {
+  return infobars::InfoBarDelegate::InfobarPriority::kCriticalSecurity;
 }
 
 bool AutomationInfoBarDelegate::ShouldExpire(

@@ -5,23 +5,26 @@
 #include "third_party/liburlpattern/tokenize.h"
 
 #include <string_view>
+#include <vector>
 
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace liburlpattern {
 
-void RunTokenizeTest(std::string_view pattern,
-                     absl::StatusOr<std::vector<Token>> expected,
-                     TokenizePolicy policy = TokenizePolicy::kStrict) {
+void RunTokenizeTest(
+    std::string_view pattern,
+    const base::expected<std::vector<Token>, absl::Status>& expected,
+    TokenizePolicy policy = TokenizePolicy::kStrict) {
   auto result = Tokenize(pattern, policy);
-  ASSERT_EQ(result.ok(), expected.ok()) << "lexer status for: " << pattern;
-  if (!expected.ok()) {
-    ASSERT_EQ(result.status().code(), expected.status().code())
+  ASSERT_EQ(result.has_value(), expected.has_value())
+      << "lexer status for: " << pattern;
+  if (!expected.has_value()) {
+    ASSERT_EQ(result.error().code(), expected.error().code())
         << "lexer status code for: " << pattern;
-    EXPECT_NE(result.status().message().find(expected.status().message()),
+    EXPECT_NE(result.error().message().find(expected.error().message()),
               std::string::npos)
-        << "lexer message '" << result.status().message()
-        << "' does not contain '" << expected.status().message()
+        << "lexer message '" << result.error().message()
+        << "' does not contain '" << expected.error().message()
         << "' for: " << pattern;
     return;
   }
@@ -34,6 +37,13 @@ void RunTokenizeTest(std::string_view pattern,
     EXPECT_EQ(token_list[i], expected_token_list[i])
         << "token at index " << i << " wrong for: " << pattern;
   }
+}
+
+void ExpectTokenizeFail(std::string_view pattern,
+                        std::string_view message,
+                        TokenizePolicy policy = TokenizePolicy::kStrict) {
+  RunTokenizeTest(
+      pattern, base::unexpected(absl::InvalidArgumentError(message)), policy);
 }
 
 TEST(TokenizeTest, EmptyPattern) {
@@ -116,8 +126,7 @@ TEST(TokenizeTest, EscapedCurlyBrace) {
 }
 
 TEST(TokenizeTest, EscapedCharAtEnd) {
-  RunTokenizeTest("/foo\\",
-                  absl::InvalidArgumentError("Trailing escape character"));
+  ExpectTokenizeFail("/foo\\", "Trailing escape character");
 }
 
 TEST(TokenizeTest, Name) {
@@ -129,8 +138,7 @@ TEST(TokenizeTest, Name) {
 }
 
 TEST(TokenizeTest, NameWithZeroLength) {
-  RunTokenizeTest("/:/foo",
-                  absl::InvalidArgumentError("Missing parameter name"));
+  ExpectTokenizeFail("/:/foo", "Missing parameter name");
 }
 
 TEST(TokenizeTest, NameWithUnicodeChar) {
@@ -143,8 +151,7 @@ TEST(TokenizeTest, NameWithUnicodeChar) {
 }
 
 TEST(TokenizeTest, NameWithSpaceFirstChar) {
-  RunTokenizeTest("/: bad",
-                  absl::InvalidArgumentError("Missing parameter name"));
+  ExpectTokenizeFail("/: bad", "Missing parameter name");
 }
 
 TEST(TokenizeTest, NameWithDollarFirst) {
@@ -227,21 +234,19 @@ TEST(TokenizeTest, Regex) {
 }
 
 TEST(TokenizeTest, RegexWithZeroLength) {
-  RunTokenizeTest("()", absl::InvalidArgumentError("Missing regex"));
+  ExpectTokenizeFail("()", "Missing regex");
 }
 
 TEST(TokenizeTest, RegexWithInvalidChar) {
-  RunTokenizeTest("(ßar)",
-                  absl::InvalidArgumentError("Invalid non-ASCII character"));
+  ExpectTokenizeFail("(ßar)", "Invalid non-ASCII character");
 }
 
 TEST(TokenizeTest, RegexWithoutClosingParen) {
-  RunTokenizeTest("(foo", absl::InvalidArgumentError("Unbalanced regex"));
+  ExpectTokenizeFail("(foo", "Unbalanced regex");
 }
 
 TEST(TokenizeTest, RegexWithNestedCapturingGroup) {
-  RunTokenizeTest("(f(oo))", absl::InvalidArgumentError(
-                                 "Unnamed capturing groups are not allowed"));
+  ExpectTokenizeFail("(f(oo))", "Unnamed capturing groups are not allowed");
 }
 
 TEST(TokenizeTest, RegexWithNestedNamedCapturingGroup) {
@@ -269,11 +274,11 @@ TEST(TokenizeTest, RegexWithAssertion) {
 }
 
 TEST(TokenizeTest, RegexWithNestedUnbalancedGroup) {
-  RunTokenizeTest("(f(?oo)", absl::InvalidArgumentError("Unbalanced regex"));
+  ExpectTokenizeFail("(f(?oo)", "Unbalanced regex");
 }
 
 TEST(TokenizeTest, RegexWithTrailingParen) {
-  RunTokenizeTest("(f(", absl::InvalidArgumentError("Unbalanced regex"));
+  ExpectTokenizeFail("(f(", "Unbalanced regex");
 }
 
 TEST(TokenizeTest, RegexWithEscapedChar) {
@@ -285,20 +290,17 @@ TEST(TokenizeTest, RegexWithEscapedChar) {
 }
 
 TEST(TokenizeTest, RegexWithTrailingEscapedChar) {
-  RunTokenizeTest("(foo\\",
-                  absl::InvalidArgumentError("Trailing escape character"));
+  ExpectTokenizeFail("(foo\\", "Trailing escape character");
 }
 
 TEST(TokenizeTest, RegexWithEscapedInvalidChar) {
   // Use a valid UTF-8 sequence (encoding of U+00A2) that encodes a non-ASCII
   // character.
-  RunTokenizeTest("(\\\xc2\xa2)",
-                  absl::InvalidArgumentError("Invalid non-ASCII character"));
+  ExpectTokenizeFail("(\\\xc2\xa2)", "Invalid non-ASCII character");
 }
 
 TEST(TokenizeTest, RegexWithLeadingQuestion) {
-  RunTokenizeTest("(?foo)",
-                  absl::InvalidArgumentError("Regex cannot start with '?'"));
+  ExpectTokenizeFail("(?foo)", "Regex cannot start with '?'");
 }
 
 TEST(TokenizeTest, RegexInPath) {
@@ -480,35 +482,28 @@ TEST(TokenizeTest, LenientPolicyRegexWithCaptureGroup) {
 }
 
 TEST(TokenizeTest, InvalidUtf8) {
-  RunTokenizeTest("hello\xcdworld", absl::InvalidArgumentError(
-                                        "Invalid UTF-8 codepoint at index 5."));
+  ExpectTokenizeFail("hello\xcdworld", "Invalid UTF-8 codepoint at index 5.");
 }
 
 TEST(TokenizeTest, InvalidUtf8Escaped) {
-  RunTokenizeTest(
-      "hello\\\xcdworld",
-      absl::InvalidArgumentError("Invalid UTF-8 codepoint at index 7."));
+  ExpectTokenizeFail("hello\\\xcdworld", "Invalid UTF-8 codepoint at index 7.");
 }
 
 TEST(TokenizeTest, InvalidUtf8InName) {
-  RunTokenizeTest(
-      "/:foo:hello\xcdworld",
-      absl::InvalidArgumentError("Invalid UTF-8 codepoint at index 11."));
+  ExpectTokenizeFail("/:foo:hello\xcdworld",
+                     "Invalid UTF-8 codepoint at index 11.");
 }
 
 TEST(TokenizeTest, InvalidUtf8InRegexGroup) {
-  RunTokenizeTest("(foo\xcd)", absl::InvalidArgumentError(
-                                   "Invalid UTF-8 codepoint at index 4."));
+  ExpectTokenizeFail("(foo\xcd)", "Invalid UTF-8 codepoint at index 4.");
 }
 
 TEST(TokenizeTest, InvalidUtf8EscapedInRegexGroup) {
-  RunTokenizeTest("(foo\\\xcd)", absl::InvalidArgumentError(
-                                     "Invalid UTF-8 codepoint at index 6."));
+  ExpectTokenizeFail("(foo\\\xcd)", "Invalid UTF-8 codepoint at index 6.");
 }
 
 TEST(TokenizeTest, InvalidUtf8InNestedRegexGroup) {
-  RunTokenizeTest("(foo(\xcd))", absl::InvalidArgumentError(
-                                     "Invalid UTF-8 codepoint at index 6."));
+  ExpectTokenizeFail("(foo(\xcd))", "Invalid UTF-8 codepoint at index 6.");
 }
 
 }  // namespace liburlpattern

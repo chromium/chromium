@@ -15,6 +15,7 @@
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "v8/include/cppgc/prefinalizer.h"
 #include "v8/include/v8-util.h"
 
 namespace blink {
@@ -23,10 +24,13 @@ class WebLocalFrame;
 
 namespace content {
 
-class GinJavaBridgeObject : public gin::Wrappable<GinJavaBridgeObject>,
-                            public gin::NamedPropertyInterceptor {
+class GinJavaBridgeObject
+    : public gin::WrappableWithNamedPropertyInterceptor<GinJavaBridgeObject> {
+  CPPGC_USING_PRE_FINALIZER(GinJavaBridgeObject, Dispose);
+
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {{gin::kEmbedderNativeGin},
+                                                    gin::kGinJavaBridgeObject};
 
   GinJavaBridgeObject(const GinJavaBridgeObject&) = delete;
   GinJavaBridgeObject& operator=(const GinJavaBridgeObject&) = delete;
@@ -34,6 +38,8 @@ class GinJavaBridgeObject : public gin::Wrappable<GinJavaBridgeObject>,
   GinJavaBridgeDispatcher::ObjectID object_id() const { return object_id_; }
 
   // gin::Wrappable.
+  const gin::WrapperInfo* wrapper_info() const override;
+
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
 
@@ -56,11 +62,13 @@ class GinJavaBridgeObject : public gin::Wrappable<GinJavaBridgeObject>,
   // Returns the bound remote object, nullptr if mojo is disabled.
   mojom::GinJavaBridgeRemoteObject* GetRemote();
 
- private:
   GinJavaBridgeObject(v8::Isolate* isolate,
                       const base::WeakPtr<GinJavaBridgeDispatcher>& dispatcher,
                       GinJavaBridgeDispatcher::ObjectID object_id);
   ~GinJavaBridgeObject() override;
+
+ private:
+  void Dispose();
 
   v8::Local<v8::FunctionTemplate> GetFunctionTemplate(v8::Isolate* isolate,
                                                       const std::string& name);

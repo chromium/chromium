@@ -34,6 +34,10 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
+namespace os_crypt_async {
+class OSCryptAsync;
+}  // namespace os_crypt_async
+
 // This file includes multiple helper functions to create the Profile's
 // PrefService. Note: please update all of the callers if updating any helper
 // function. Currently, these code are called in both ProfileImpl and
@@ -47,7 +51,7 @@ void RegisterProfilePrefs(bool is_signin_profile,
                           user_prefs::PrefRegistrySyncable* pref_registry);
 
 // Creates the PrefService.
-std::unique_ptr<sync_preferences::PrefServiceSyncable> CreatePrefService(
+std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefService(
     scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,
     PrefStore* extension_pref_store,
     policy::PolicyService* policy_service,
@@ -56,7 +60,8 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreatePrefService(
         pref_validation_delegate,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     SimpleFactoryKey* key,
-    const base::FilePath& path,
-    bool async_prefs);
+    const base::FilePath& profile_path,
+    bool async_prefs,
+    os_crypt_async::OSCryptAsync* os_crypt_async);
 
 #endif  // CHROME_BROWSER_PROFILES_PREF_SERVICE_BUILDER_UTILS_H_

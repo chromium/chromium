@@ -6,9 +6,12 @@
 #define CHROME_BROWSER_EXTENSIONS_API_COMMANDS_COMMANDS_H_
 
 #include "extensions/browser/extension_function.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class GetAllCommandsFunction : public ExtensionFunction {
-  ~GetAllCommandsFunction() override {}
+  ~GetAllCommandsFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("commands.getAll", COMMANDS_GETALL)
 };

@@ -8,14 +8,13 @@ import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.jank_tracker.PlaceholderJankTracker;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -28,16 +27,13 @@ import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.TabbedModeTabDelegateFactory;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
-import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
-import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.net.test.EmbeddedTestServer;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -51,41 +47,36 @@ import java.util.concurrent.ExecutionException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class TabUmaTest {
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @Rule public TemporaryFolder mTemporaryFolder = new TemporaryFolder();
 
     private static final String TEST_PATH = "/chrome/test/data/android/about.html";
 
-    private EmbeddedTestServer mTestServer;
+    private WebPageStation mInitialPage;
     private String mTestUrl;
 
     @Before
     public void setUp() throws Exception {
-        mTestServer = sActivityTestRule.getTestServer();
-        mTestUrl = mTestServer.getURL(TEST_PATH);
+        mInitialPage = mActivityTestRule.startOnBlankPage();
+        mTestUrl = mActivityTestRule.getTestServer().getURL(TEST_PATH);
     }
 
     private TabbedModeTabDelegateFactory createTabDelegateFactory() {
         BrowserControlsVisibilityDelegate visibilityDelegate =
                 new BrowserControlsVisibilityDelegate(BrowserControlsState.BOTH) {};
-        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         RootUiCoordinator rootUiCoordinator = cta.getRootUiCoordinatorForTesting();
         return new TabbedModeTabDelegateFactory(
-                sActivityTestRule.getActivity(),
+                mActivityTestRule.getActivity(),
                 visibilityDelegate,
-                new ObservableSupplierImpl<ShareDelegate>(),
-                null,
-                () -> {},
+                new ObservableSupplierImpl<>(),
+                /* ephemeralTabCoordinatorSupplier= */ null,
+                CallbackUtils.emptyRunnable(),
                 rootUiCoordinator.getBottomSheetController(),
                 /* chromeActivityNativeDelegate= */ cta,
-                /* isCustomTab= */ false,
                 rootUiCoordinator.getBrowserControlsManager(),
                 cta.getFullscreenManager(),
                 /* tabCreatorManager= */ cta,
@@ -97,12 +88,18 @@ public class TabUmaTest {
                 cta.getActivityTabProvider(),
                 cta.getLifecycleDispatcher(),
                 cta.getWindowAndroid(),
-                new PlaceholderJankTracker(),
                 rootUiCoordinator.getToolbarManager()::getToolbar,
-                null,
-                null,
+                /* homeSurfaceTracker= */ null,
+                /* tabContentManagerSupplier= */ null,
                 rootUiCoordinator.getToolbarManager().getTabStripHeightSupplier(),
-                new OneshotSupplierImpl<ModuleRegistry>());
+                new OneshotSupplierImpl<>(),
+                new ObservableSupplierImpl<>(),
+                new ObservableSupplierImpl<>(),
+                cta.getStartupMetricsTracker(),
+                /* exclusiveAccessManager= */ null,
+                /* backPressManager= */ null,
+                /* multiInstanceManager= */ null,
+                /* recentlyClosedEntriesManager= */ null);
     }
 
     private Tab createLazilyLoadedTab(boolean show) throws ExecutionException {
@@ -110,37 +107,16 @@ public class TabUmaTest {
                 () -> {
                     Tab bgTab =
                             TabBuilder.createForLazyLoad(
-                                            sActivityTestRule.getProfile(false),
+                                            mActivityTestRule.getProfile(false),
                                             new LoadUrlParams(mTestUrl),
                                             /* title= */ null)
-                                    .setWindow(sActivityTestRule.getActivity().getWindowAndroid())
+                                    .setWindow(mActivityTestRule.getActivity().getWindowAndroid())
                                     .setLaunchType(TabLaunchType.FROM_LONGPRESS_BACKGROUND)
                                     .setDelegateFactory(createTabDelegateFactory())
                                     .setInitiallyHidden(true)
                                     .build();
                     if (show) bgTab.show(TabSelectionType.FROM_USER, TabLoadIfNeededCaller.OTHER);
                     return bgTab;
-                });
-    }
-
-    private Tab createLiveTab(boolean foreground, boolean kill) throws ExecutionException {
-        return ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Tab tab =
-                            TabBuilder.createLiveTab(
-                                            sActivityTestRule.getProfile(false), !foreground)
-                                    .setWindow(sActivityTestRule.getActivity().getWindowAndroid())
-                                    .setLaunchType(TabLaunchType.FROM_LONGPRESS_BACKGROUND)
-                                    .setDelegateFactory(createTabDelegateFactory())
-                                    .setInitiallyHidden(!foreground)
-                                    .build();
-                    tab.loadUrl(new LoadUrlParams(mTestUrl));
-
-                    // Simulate the renderer being killed by the OS.
-                    if (kill) ChromeTabUtils.simulateRendererKilledForTesting(tab);
-
-                    tab.show(TabSelectionType.FROM_USER, TabLoadIfNeededCaller.OTHER);
-                    return tab;
                 });
     }
 
@@ -186,8 +162,8 @@ public class TabUmaTest {
         Tab tab =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            return new TabBuilder(sActivityTestRule.getProfile(false))
-                                    .setWindow(sActivityTestRule.getActivity().getWindowAndroid())
+                            return new TabBuilder(mActivityTestRule.getProfile(false))
+                                    .setWindow(mActivityTestRule.getActivity().getWindowAndroid())
                                     .setDelegateFactory(createTabDelegateFactory())
                                     .setLaunchType(TabLaunchType.FROM_LONGPRESS_BACKGROUND)
                                     .setTabState(createTabState())
@@ -223,13 +199,13 @@ public class TabUmaTest {
                                     .map(
                                             FileChannel.MapMode.READ_ONLY,
                                             fileInputStream.getChannel().position(),
-                                            file.length()));
-            state.contentsState.setVersion(2);
+                                            file.length()),
+                            WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
             state.timestampMillis = 10L;
             state.parentId = 1;
             state.themeColor = 4;
             state.openerAppId = "test";
-            state.tabLaunchTypeAtCreation = null;
+            state.tabLaunchTypeAtCreation = TabLaunchType.UNSET;
             state.rootId = 1;
         }
         return state;

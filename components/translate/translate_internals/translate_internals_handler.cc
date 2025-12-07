@@ -32,8 +32,7 @@ TranslateInternalsHandler::TranslateInternalsHandler() {
   translate::TranslateLanguageList* language_list =
       translate::TranslateDownloadManager::GetInstance()->language_list();
   if (!language_list) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   error_subscription_ =
@@ -59,8 +58,8 @@ base::Value::Dict TranslateInternalsHandler::GetLanguages() {
 
   const std::string app_locale =
       translate::TranslateDownloadManager::GetInstance()->application_locale();
-  std::vector<std::string> language_codes;
-  l10n_util::GetAcceptLanguagesForLocale(app_locale, &language_codes);
+  std::vector<std::string> language_codes =
+      l10n_util::GetAcceptLanguagesForLocale(app_locale);
 
   for (auto& lang_code : language_codes) {
     std::u16string lang_name =

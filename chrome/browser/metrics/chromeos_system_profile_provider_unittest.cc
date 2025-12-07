@@ -31,6 +31,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -158,9 +159,9 @@ TEST_F(ChromeOSSystemProfileProviderTest, MultiProfileUserCount) {
   // TODO(crbug.com/40735060): Overload operator-> in ScopedUserManager.
   user_manager::ScopedUserManager scoped_enabler(
       base::WrapUnique(user_manager));
-  user_manager->AddKioskAppUser(account_id1);
-  user_manager->AddKioskAppUser(account_id2);
-  user_manager->AddKioskAppUser(account_id3);
+  user_manager->AddKioskChromeAppUser(account_id1);
+  user_manager->AddKioskChromeAppUser(account_id2);
+  user_manager->AddKioskChromeAppUser(account_id3);
 
   user_manager->LoginUser(account_id1);
   user_manager->LoginUser(account_id3);
@@ -178,9 +179,9 @@ TEST_F(ChromeOSSystemProfileProviderTest, MultiProfileCountInvalidated) {
   // TODO(crbug.com/40735060): Overload operator-> in ScopedUserManager.
   user_manager::ScopedUserManager scoped_enabler(
       base::WrapUnique(user_manager));
-  user_manager->AddKioskAppUser(account_id1);
-  user_manager->AddKioskAppUser(account_id2);
-  user_manager->AddKioskAppUser(account_id3);
+  user_manager->AddKioskChromeAppUser(account_id1);
+  user_manager->AddKioskChromeAppUser(account_id2);
+  user_manager->AddKioskChromeAppUser(account_id3);
 
   user_manager->LoginUser(account_id1);
 
@@ -213,7 +214,7 @@ TEST_F(ChromeOSSystemProfileProviderTest,
   // TODO(crbug.com/40735060): Overload operator-> in ScopedUserManager.
   user_manager::ScopedUserManager scoped_enabler(
       base::WrapUnique(user_manager));
-  user_manager->AddKioskAppUser(account_id1);
+  user_manager->AddKioskChromeAppUser(account_id1);
   user_manager->LoginUser(account_id1);
   const user_manager::User* primary_user = user_manager->GetPrimaryUser();
   ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(

@@ -25,12 +25,14 @@
 
 // https://html.spec.whatwg.org/C/#the-dialog-element
 [
-    Exposed=Window,
-    HTMLConstructor
+    Exposed=Window
 ] interface HTMLDialogElement : HTMLElement {
+    [HTMLConstructor] constructor();
     [CEReactions, Reflect] attribute boolean open;
     attribute DOMString returnValue;
+    [CEReactions] attribute DOMString closedBy;
     [CEReactions, Measure, RaisesException] void show();
     [CEReactions, Measure, RaisesException] void showModal();
     [CEReactions] void close(optional DOMString returnValue);
+    [CEReactions,RaisesException,MeasureAs="WebDXFeature::kRequestclose"] void requestClose(optional DOMString returnValue);
 };

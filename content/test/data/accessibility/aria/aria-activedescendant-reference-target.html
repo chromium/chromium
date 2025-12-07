@@ -1,0 +1,24 @@
+<!--
+@BLINK-ALLOW:active*
+-->
+<html>
+<body>
+  <div id="parent" aria-label="parent node" role="menu" aria-activedescendant="active" tabindex="0" autofocus>
+    <x-menuitem>
+      <template shadowrootmode="open" shadowrootreferencetarget="target">
+        <div role="menuitem" id="target">Inactive descendant</div>
+      </template>
+    </x-menuitem>
+    <x-menuitem id="active">
+      <template shadowrootmode="open" shadowrootreferencetarget="target">
+        <div role="menuitemcheckbox" id="target">Active descendant</div>
+      </template>
+    </x-menuitem>
+    <x-menuitem>
+      <template shadowrootmode="open" shadowrootreferencetarget="target">
+        <div role="menuitemradio" id="target">Inactive descendant</div>
+      </template>
+    </x-menuitem>
+  </div>
+</body>
+</html>

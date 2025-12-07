@@ -9,8 +9,11 @@ namespace data_sharing {
 DataSharingNetworkLoader::LoadResult::LoadResult() = default;
 
 DataSharingNetworkLoader::LoadResult::LoadResult(std::string result_bytes,
-                                                 NetworkLoaderStatus status)
-    : result_bytes(std::move(result_bytes)), status(status) {}
+                                                 NetworkLoaderStatus status,
+                                                 int network_error_code)
+    : result_bytes(std::move(result_bytes)),
+      status(status),
+      network_error_code(network_error_code) {}
 
 DataSharingNetworkLoader::LoadResult::~LoadResult() = default;
 

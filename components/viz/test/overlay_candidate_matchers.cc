@@ -7,6 +7,14 @@
 #include "base/trace_event/traced_value.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 
+namespace gfx {
+
+void PrintTo(const OverlayLayerId& layer_id, std::ostream* os) {
+  *os << layer_id.ToString();
+}
+
+}  // namespace gfx
+
 namespace viz {
 
 void PrintTo(const OverlayCandidate& candidate, std::ostream* os) {
@@ -35,12 +43,6 @@ void PrintTo(const OverlayCandidate& candidate, std::ostream* os) {
 }
 
 namespace test {
-
-bool PlaneZOrderAscendingComparator::operator()(
-    const OverlayCandidate& a,
-    const OverlayCandidate& b) const {
-  return a.plane_z_order < b.plane_z_order;
-}
 
 testing::Matcher<const OverlayCandidate&> IsRenderPassOverlay(
     AggregatedRenderPassId id) {
@@ -79,6 +81,35 @@ testing::Matcher<const OverlayCandidate&> OverlayHasRoundedCorners(
     gfx::RRectF rounded_corners) {
   return testing::Field("rounded_corners", &OverlayCandidate::rounded_corners,
                         testing::Eq(rounded_corners));
+}
+
+// Use a `MATCHER` to improve expectation messages.
+MATCHER(IsFullScreen, "") {
+  return arg == gfx::OverlayType::kFullScreen;
+}
+
+testing::Matcher<const OverlayCandidate&> OverlayIsFullScreen() {
+  return testing::Field("overlay_type", &OverlayCandidate::overlay_type,
+                        IsFullScreen());
+}
+
+MATCHER_P(ApproximatelyEquals, expected, "") {
+  constexpr float threshold = 0.001f;
+  return expected.ApproximatelyEqual(expected, threshold, threshold);
+}
+
+testing::Matcher<const OverlayCandidate&> OverlayTargetRectIs(
+    const gfx::RectF& expected) {
+  return testing::ResultOf("display rect in target space",
+                           &OverlayCandidate::DisplayRectInTargetSpace,
+                           ApproximatelyEquals(expected));
+}
+
+size_t NumOverlaysExcludingPrimaryPlane(
+    const OverlayCandidateList& candidate_list) {
+  return std::ranges::count_if(candidate_list, [](const auto& overlay) {
+    return !overlay.is_root_render_pass;
+  });
 }
 
 }  // namespace test

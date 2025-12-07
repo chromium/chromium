@@ -4,11 +4,16 @@
 
 module gfx.mojom;
 
-// See ui/gfx/transform.h.
-[Stable]
-struct Transform {
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+union TransformData {
+  gfx.mojom.AxisTransform2d axis_2d;
   // Column major order.
-  // The identity matrix is considered null and will not be serialized. This
-  // saves the cost of serialization and deserialization.
-  array<float, 16>? matrix;
+  array<double, 16> matrix;
+};
+
+// See ui/gfx/transform.h.
+struct Transform {
+  // If data is null, this is an identity transform.
+  TransformData? data;
 };

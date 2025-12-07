@@ -7,7 +7,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/scoped_refptr.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/touch_selection/touch_handle.h"
 
 namespace cc::slim {
@@ -39,6 +39,8 @@ class CompositedTouchHandleDrawable : public ui::TouchHandleDrawable {
   void SetAlpha(float alpha) override;
   gfx::RectF GetVisibleBounds() const override;
   float GetDrawableHorizontalPaddingRatio() const override;
+  void OnUpdateNativeViewTree(gfx::NativeView parent_native_view,
+                              cc::slim::Layer* parent_layer) override;
 
  private:
   void DetachLayer();

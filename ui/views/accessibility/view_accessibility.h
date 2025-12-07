@@ -8,18 +8,19 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_platform_node_id.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
-#include "ui/gfx/native_widget_types.h"
-#include "ui/views/accessibility/ax_virtual_view.h"
+#include "ui/gfx/native_ui_types.h"
+#include "ui/views/accessibility/ax_attribute_changed_callbacks.h"
 #include "ui/views/accessibility/view_accessibility_utils.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/widget_observer.h"
@@ -33,24 +34,45 @@ class AXPlatformNodeDelegate;
 namespace views {
 
 class AtomicViewAXTreeManager;
+class AXVirtualView;
+class ScopedAccessibilityEventBlocker;
 class View;
 class Widget;
 
+using RoleCallbackList = base::RepeatingCallbackList<void(ax::mojom::Role)>;
+using IntAttributeCallbackList =
+    base::RepeatingCallbackList<void(ax::mojom::IntAttribute,
+                                     std::optional<int>)>;
+using StringAttributeCallbackList =
+    base::RepeatingCallbackList<void(ax::mojom::StringAttribute,
+                                     const std::optional<std::string>&)>;
+using BoolAttributeCallbackList =
+    base::RepeatingCallbackList<void(ax::mojom::BoolAttribute,
+                                     std::optional<bool>)>;
+using StateCallbackList =
+    base::RepeatingCallbackList<void(ax::mojom::State, bool)>;
+using IntListAttributeCallbackList = base::RepeatingCallbackList<void(
+    ax::mojom::IntListAttribute,
+    const std::optional<std::vector<int32_t>>&)>;
+
 // An object that manages the accessibility interface for a View.
 //
-// The default accessibility properties of a View is determined by calling
-// |View::GetAccessibleNodeData()|, which is overridden by many |View|
-// subclasses. |ViewAccessibility| lets you override these for a particular
-// view.
+// The accessibility attributes of a View are set by calling the various setters
+// on ViewAccessibility.
 //
-// In most cases, subclasses of |ViewAccessibility| own the |AXPlatformNode|
+// In most cases, subclasses of `ViewAccessibility` own the `AXPlatformNode`
 // that implements the native accessibility APIs on a specific platform.
+//
+// TODO(crbug.com/40672441): Update the comment about AXPlatformNode once
+// ViewsAX is completed.
 class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
  public:
   using AccessibilityEventsCallback =
       base::RepeatingCallback<void(const ui::AXPlatformNodeDelegate*,
                                    const ax::mojom::Event)>;
-  using AXVirtualViews = AXVirtualView::AXVirtualViews;
+  using AXVirtualViews = std::vector<std::unique_ptr<AXVirtualView>>;
+
+  enum class State { kUninitialized, kInitializing, kInitialized };
 
   static std::unique_ptr<ViewAccessibility> Create(View* view);
 
@@ -58,12 +80,10 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   ViewAccessibility& operator=(const ViewAccessibility&) = delete;
   ~ViewAccessibility() override;
 
-  // Modifies |node_data| to reflect the current accessible state of the
-  // associated View, taking any custom overrides into account
-  // (see OverrideFocus, etc. below).
-  virtual void GetAccessibleNodeData(ui::AXNodeData* node_data) const;
+  // Retrieves the accessibility data in the cache.
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) const;
 
-  void NotifyEvent(ax::mojom::Event event_type, bool send_native_event = true);
+  virtual void NotifyEvent(ax::mojom::Event event_type, bool send_native_event);
 
   // Made to be overridden on platforms that need the temporary
   // `AtomicViewAXTreeManager` to enable more accessibility functionalities for
@@ -75,9 +95,7 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   }
 
   //
-  // The following methods get or set accessibility attributes (in the owning
-  // View's AXNodeData), overrideing any identical attributes which might have
-  // been set by the owning View in its View::GetAccessibleNodeData() method.
+  // The following methods get or set accessibility attributes.
   //
   // Note that accessibility string attributes are only used if non-empty, so
   // you can't override a string with the empty string.
@@ -111,23 +129,6 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   // Call when a menu closes, to restore focus to where it was previously.
   virtual void FireFocusAfterMenuClose();
-
-  // Convenience function to set common accessibility properties during view
-  // construction/initialization. It should only be used to define property
-  // values as part of the creation of this view; not to provide property-
-  // change updates. This function will only modify properties for which a value
-  // has been explicitly set.
-  // TODO(crbug.com/325137417): Remove this function, no real benefit is added
-  // anymore now that all event firing is blocked during
-  // construction/initialization.
-  void SetProperties(
-      std::optional<ax::mojom::Role> role = std::nullopt,
-      std::optional<std::u16string> name = std::nullopt,
-      std::optional<std::u16string> description = std::nullopt,
-      std::optional<std::u16string> role_description = std::nullopt,
-      std::optional<ax::mojom::NameFrom> name_from = std::nullopt,
-      std::optional<ax::mojom::DescriptionFrom> description_from =
-          std::nullopt);
 
   // Sets/gets whether or not this view's descendants should be included in
   // the accessibility tree. It is the functional equivalent of calling
@@ -167,6 +168,14 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   void ClearTextOffsets();
 
+  void SetControlIds(const std::vector<int32_t>& ids);
+
+  void RemoveControlIds();
+
+  void SetClipsChildren(bool clips_children);
+
+  void SetClassName(const std::string& class_name);
+
   void SetHasPopup(const ax::mojom::HasPopup has_popup);
 
   void SetRole(const ax::mojom::Role role);
@@ -190,6 +199,9 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   void SetRoleDescription(const std::u16string& role_description);
   void SetRoleDescription(const std::string& role_description);
+
+  std::u16string GetRoleDescription() const;
+
   void RemoveRoleDescription();
 
   // For the same reasons as GetCachedRole, this function cannot
@@ -229,14 +241,17 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // * kValue: Name from a value attribute (e.g. button).
   // * kPopoverAttribute: Name from a tooltip-style popover.
   void SetName(std::u16string name, ax::mojom::NameFrom name_from);
-  void SetName(const std::string& name, ax::mojom::NameFrom name_from);
-  void SetName(const std::u16string& name);
-  void SetName(const std::string& name);
+  void SetName(std::string_view name, ax::mojom::NameFrom name_from);
+  void SetName(std::u16string name);
+  void SetName(std::string_view name);
 
   // Sets the accessible name of this view to that of `naming_view`. Often
   // `naming_view` is a `views::Label`, but any view with an accessible name
   // will work.
   void SetName(View& naming_view);
+
+  // Removes kName and KNameFrom attributes from accessibility cache.
+  void RemoveName();
 
   void SetIsEditable(bool editable);
 
@@ -245,6 +260,10 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void SetIsSelected(bool selected);
 
   void SetIsMultiselectable(bool multiselectable);
+
+  void SetIsModal(bool modal);
+
+  void AddHTMLAttributes(std::pair<std::string, std::string> attribute);
 
   void SetIsHovered(bool is_hovered);
   bool GetIsHovered() const;
@@ -258,11 +277,21 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void SetTextSelStart(int32_t text_sel_start);
   void SetTextSelEnd(int32_t text_sel_end);
 
+  void SetLiveAtomic(bool live_atomic);
+
+  void SetLiveStatus(const std::string& status);
+
+  void SetLiveRelevant(const std::string& live_relevant);
+  void RemoveLiveRelevant();
+
+  void SetContainerLiveRelevant(const std::string& live_relevant);
+  void RemoveContainerLiveRelevant();
+
   // Hides this view from the accessibility APIs. Keep in mind that this is not
   // the sole determinant of whether the ignored state is set. See
   // `UpdateIgnoredState`.
   void SetIsIgnored(bool is_ignored);
-  virtual bool GetIsIgnored() const;
+  bool GetIsIgnored() const;
 
   // Note that `pos_in_set` starts from 1 not 0.
   void SetPosInSet(int pos_in_set);
@@ -296,18 +325,40 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // cache.
   void RemoveExpandCollapseState();
 
+  void SetIsVertical(bool vertical);
+
   void SetIsDefault(bool is_default);
+  bool GetIsDefault() const;
 
   // Sets/gets whether or not this view should be marked as "enabled" for the
   // purpose exposing this state in the accessibility tree. As a general rule,
   // it is not advisable to mark a View as enabled in the accessibility tree,
   // while the real View is actually disabled, because such a View will not
   // respond to user actions.
-  void SetIsEnabled(bool is_enabled);
+  virtual void SetIsEnabled(bool is_enabled);
   bool GetIsEnabled() const;
 
   void SetTableRowCount(int row_count);
   void SetTableColumnCount(int column_count);
+  void SetAriaTableRowCount(int row_count);
+  void SetAriaTableColumnCount(int column_count);
+  void ClearTableRowCount();
+  void ClearTableColumnCount();
+  void ClearAriaTableRowCount();
+  void ClearAriaTableColumnCount();
+
+  void SetTableRowIndex(int row_index);
+  int GetTableRowIndex() const;
+  void SetTableCellRowIndex(int cell_index);
+  void SetTableCellColumnIndex(int cell_index);
+
+  void SetTableCellRowSpan(int row_span);
+  void SetTableCellColumnSpan(int column_span);
+
+  void SetSortDirection(ax::mojom::SortDirection sort_direction);
+
+  void ClearDescriptionAndDescriptionFrom();
+  void RemoveDescription();
 
   void SetDescription(const std::string& description,
                       const ax::mojom::DescriptionFrom description_from =
@@ -325,9 +376,18 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // project is completed and we don't have ViewAXPlatformNodeDelegate anymore.
   std::u16string GetCachedDescription() const;
 
+  void OnTooltipTextChanged(
+      std::optional<std::u16string> old_tooltip_text = std::nullopt);
+
+  void OnViewAddedToWidget();
+  void OnViewRemovedFromWidget();
+
   void SetPlaceholder(const std::string& placeholder);
 
+  void AddAction(ax::mojom::Action action);
+
   void SetCheckedState(ax::mojom::CheckedState checked_state);
+  ax::mojom::CheckedState GetCheckedState() const;
   void RemoveCheckedState();
 
   void SetKeyShortcuts(const std::string& key_shortcuts);
@@ -359,7 +419,7 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   Widget* GetNextWindowFocus() const;
   Widget* GetPreviousWindowFocus() const;
 
-  void SetShowContextMenu(bool show_context_menu);
+  virtual void SetShowContextMenu(bool show_context_menu);
 
   void SetContainerLiveStatus(const std::string& status);
   void RemoveContainerLiveStatus();
@@ -368,41 +428,61 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // In case of ProgressBar, if progressBarIndicator value is negative,
   // then kValue attribute should not be set.
   void SetValue(const std::string& value);
-  void SetValue(const std::u16string& value);
+  void SetValue(std::u16string_view value);
   void RemoveValue();
+  std::u16string GetValue() const;
 
   void SetDefaultActionVerb(
       const ax::mojom::DefaultActionVerb default_action_verb);
+  ax::mojom::DefaultActionVerb GetDefaultActionVerb() const;
   void RemoveDefaultActionVerb();
 
-  void SetAutoComplete(const std::string autocomplete);
+  void SetAutoComplete(const std::string& autocomplete);
 
   void SetHierarchicalLevel(int hierarchical_level);
+
+  void SetHasFocusableAncestorRecursive(bool ancestor_focusable);
 
   // Updates the focusable state of the `data_` object.
   // The view is considered focusable if it is not set to never receive focus
   // This function must be called whenever an attribute that can affect the
   // focusable state changes
-  void UpdateFocusableState();
+  virtual void UpdateFocusableState();
 
-  // This function recursively updates the focusable state of the `data_` member
-  // and that of the view's children. Then it updates the focusable state of the
-  // current view.
-  void UpdateFocusableStateRecursive();
+  // Updates has_focusable_ancestor_ and the view's ignored state, which depends
+  // on this variable.
+  void SetHasFocusableAncestor(bool ancestor_focusable);
+
+  // Recursively updates the focusable and invisible states of the view and its
+  // children. If a parent is invisible, non-explicitly invisible views inherit
+  // invisibility, affecting their final state and focusability.
+  void UpdateInvisibleByInheritanceRecursive(const View* initial_view,
+                                             bool invisible_by_inheritance);
 
   // This updates some shared state for the view and all its descendants.
-  void UpdateStatesForViewAndDescendants();
+  // Called when `view_` gets added as a child of another View.
+  void OnViewHasNewAncestor(const View* new_ancestor);
 
   // This should only ever be called on the RootView.
   void SetRootViewIsReadyToNotifyEvents();
 
+  // Sets the displayed, top-level URL for the active document. This should
+  // generally correspond to what would be shown in the Omnibox. Setting the
+  // value should only be done on the `RootView`.
+  void SetRootViewURL(const std::string& url);
+
   // Updates the invisible state of the `data_` object. The view is considered
-  // invisible if it is not visible and its role is not kAlert.
-  void UpdateInvisibleState();
+  // invisible if it is not visible and its role is not kAlert, or if it is
+  // "invisible by inheritance", meaning one of its ancestors was set to be
+  // invisible.
+  virtual void UpdateInvisibleState();
+
+  bool should_be_invisible() const { return should_be_invisible_; }
 
   // Override the child tree id.
   void SetChildTreeID(ui::AXTreeID tree_id);
   ui::AXTreeID GetChildTreeID() const;
+  void RemoveChildTreeID();
 
   void SetChildTreeScaleFactor(float scale_factor);
 
@@ -420,9 +500,9 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // AnnounceText() is a deprecated alias for AnnounceAlert().
   // TODO(crbug.com/40287811) - Migrate all callers of AnnounceText() to
   // one of the other two methods.
-  virtual void AnnounceAlert(const std::u16string& text);
-  virtual void AnnouncePolitely(const std::u16string& text);
-  virtual void AnnounceText(const std::u16string& text);
+  virtual void AnnounceAlert(std::u16string_view text);
+  virtual void AnnouncePolitely(std::u16string_view text);
+  virtual void AnnounceText(std::u16string_view text);
 
   virtual ui::AXPlatformNodeId GetUniqueId() const;
 
@@ -430,6 +510,20 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   AXVirtualView* FocusedVirtualChild() const { return focused_virtual_child_; }
 
   virtual AtomicViewAXTreeManager* GetAtomicViewAXTreeManagerForTesting() const;
+
+  virtual Widget* GetWidget() const;
+
+  // Returns the ViewAccessibility object associated with the parent view (or
+  // virtual view). Returns nullptr if this is the root view or the parent is
+  // not set yet.
+  // TODO(crbug.com/40672441): Rename to GetParent once ViewsAX is completed and
+  // AXVirtualView no longer needs to extend AXPlatformNodeDelegate.
+  virtual ViewAccessibility* GetViewAccessibilityParent() const;
+
+  // Returns the ViewAccessibility object associated with the first ancestor
+  // view (or virtual view) that is not ignored. Returns nullptr if this is the
+  // root view or the parent is not set yet.
+  ViewAccessibility* GetUnignoredParent() const;
 
   //
   // Methods for managing virtual views.
@@ -469,10 +563,24 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // native accessibility object associated with this view.
   gfx::NativeViewAccessible GetFocusedDescendant();
 
+  // Returns the ViewAccessibility children. Since virtual children have a
+  // higher priority than real children (views), this function returns them
+  // first if any. If there are no virtual children, it returns the
+  // ViewAccessibility objects associated with the children of the `view_`.
+  std::vector<raw_ptr<ViewAccessibility>> GetChildren() const;
+
+  virtual std::string GetDebugString() const;
+
   // If true, moves accessibility focus to an ancestor.
   void set_propagate_focus_to_ancestor(bool value) {
     propagate_focus_to_ancestor_ = value;
   }
+
+  bool is_invisible_by_inheritance() const {
+    return is_invisible_by_inheritance_;
+  }
+
+  bool has_focusable_ancestor() const { return has_focusable_ancestor_; }
 
   bool propagate_focus_to_ancestor() { return propagate_focus_to_ancestor_; }
 
@@ -489,12 +597,141 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void OnWidgetClosing(Widget* widget) override;
   void OnWidgetDestroyed(Widget* widget) override;
 
-  void OnWidgetUpdated(Widget* widget, Widget* old_widget);
+  virtual void OnWidgetUpdated(Widget* widget, Widget* old_widget);
+
+  void CompleteCacheInitialization();
+
+  bool IsAccessibilityEnabled() const;
+
+  bool IsReadyToNotifyEvents() const { return ready_to_notify_events_; }
+
+  bool is_initialized() const {
+    return initialization_state_ == State::kInitialized;
+  }
+
+  // This mechanism allows views to listen for changes in the accessibility
+  // attributes of other views. It facilitates communication between views that
+  // depend on each other's accessibility attributes, ensuring they can respond
+  // to updates effectively. For examples of how to do this, see
+  // view_accessibility_unittest.cc.
+  // Here's an example:
+  //
+  // class MyLabel : public View {
+  // public:
+  //  void SetAccessibleName(const std::string& name) {
+  //    GetViewAccessibility().SetName(name);
+  //  }
+  // };
+  //
+  // class MyButton : public View {
+  // public:
+  // explicit MyButton(MyLabel* label) {
+  // // Subscribe to label's accessible name changes.
+  //  name_changed_subscription_ =
+  //    label->GetViewAccessibility().AddStringAttributeChangedCallback(
+  //    ax::mojom::StringAttribute::kName,
+  //    base::BindRepeating(&MyButton::OnLabelNameChanged,
+  //    base::Unretained(this)));
+  // }
+  //
+  // private:
+  // void OnLabelNameChanged(ax::mojom::StringAttribute attribute,
+  // const std::optional<std::string>& name) {
+  //   // The call to SetName()/RemoveName() below will trigger an
+  //   // accessibility event. In most cases, this would be the expected
+  //   // behavior. However, if we don't want to trigger another one, we can
+  //   // block the event temporarily by uncommenting the following line.
+  //   // ScopedAccessibilityEventBlocker blocker(GetViewAccessibility());
+  //   if (name.has_value()) {
+  //     GetViewAccessibility().SetName(name.value());
+  //   } else {
+  //     GetViewAccessibility().RemoveName();
+  //   }
+  // }
+  //
+  // base::CallbackListSubscription name_changed_subscription_;
+  // };
+  base::CallbackListSubscription AddRoleChangedCallback(
+      RoleCallbackList::CallbackType callback);
+  base::CallbackListSubscription AddIntAttributeChangedCallback(
+      ax::mojom::IntAttribute attribute,
+      IntAttributeCallbackList::CallbackType callback);
+  base::CallbackListSubscription AddStringAttributeChangedCallback(
+      ax::mojom::StringAttribute attribute,
+      StringAttributeCallbackList::CallbackType callback);
+  base::CallbackListSubscription AddBoolAttributeChangedCallback(
+      ax::mojom::BoolAttribute attribute,
+      BoolAttributeCallbackList::CallbackType callback);
+  base::CallbackListSubscription AddStateChangedCallback(
+      ax::mojom::State state,
+      StateCallbackList::CallbackType callback);
+  base::CallbackListSubscription AddIntListAttributeChangedCallback(
+      ax::mojom::IntListAttribute attribute,
+      IntListAttributeCallbackList::CallbackType callback);
 
  protected:
   explicit ViewAccessibility(View* view);
 
   virtual void FireNativeEvent(ax::mojom::Event event_type);
+
+  const ui::AXNodeData& data() const { return data_; }
+
+  // Updates the ignored state of the `data_` object.
+  // The view is considered ignored if it should be ignored as per
+  // `should_be_ignored_`, or if it has been pruned (`pruned_`), or if its role
+  // is 'kNone'.
+  virtual void UpdateIgnoredState();
+
+  void SetState(ax::mojom::State state, bool is_enabled);
+
+  // We don't want to fire accessibility events when the view is being
+  // initialized and any setters are called from their respective constructors.
+  // We only want to fire events of any subtree of views when that subtree of
+  // views is connected to a RootView. This way we ensure that we don't fire
+  // events for views that are not connected to a valid tree. See
+  // `SetRootViewIsReadyToNotifyEvents`.
+  virtual void UpdateReadyToNotifyEvents();
+
+  void SetReadyToNotifyEvents();
+
+  void SetWidgetClosedRecursive(Widget* widget, bool value);
+
+  void SetDataForClosedWidget(ui::AXNodeData* data) const;
+
+  // Contains data that is populated by the accessibility attributes setters.
+  ui::AXNodeData data_;
+
+  // Used to determine if a View should be ignored by accessibility clients by
+  // being a non-focusable child of a focusable ancestor.
+  // E.g., LabelButtons contain Labels, but a11y should just show that there's a
+  // button. This helps us make sure this element is excluded from the a11y tree
+  // if there's a focusable parent. All focusable elements should be leaf nodes.
+  // Exceptions to this rule will themselves be accessibility focusable.
+  // TODO(crbug.com/371237539): Eventually this should be standardized across
+  // platforms.
+  bool has_focusable_ancestor_ = false;
+
+  bool pruned_ = false;
+
+  // This keeps track of whether the view is invisible by an ancestor being set
+  // to be invisible.
+  bool is_invisible_by_inheritance_ = false;
+
+  // This is set to true when the view is explicitly marked as ignored by
+  // `SetIsIgnored`. It is not the only condition that will cause a view to have
+  // the ignored accessible state, as `pruned_` and `is_leaf_` can also cause
+  // this. See `UpdateIgnoredState`.
+  bool should_be_ignored_ = false;
+
+  // This is set to true when the view is explicitly marked as invisible by
+  // `SetIsInvisible`. It is not the only condition that will cause a view to
+  // have the invisible accessible state. See `UpdateInvisibleState`.
+  bool should_be_invisible_ = false;
+
+  // Prevents accessibility events from being fired during initialization of
+  // the owning View.
+  // True once a View is connected to a RootView.
+  bool ready_to_notify_events_ = false;
 
   // Used for testing. Called every time an accessibility event is fired.
   AccessibilityEventsCallback accessibility_events_callback_;
@@ -505,15 +742,12 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   FRIEND_TEST_ALL_PREFIXES(ViewTest, ViewAccessibilityReadyToNotifyEvents);
   FRIEND_TEST_ALL_PREFIXES(ViewTest,
                            WidgetObserverViewWidgetClosedViewReparented);
+  friend class ScopedAccessibilityEventBlocker;
 
-  // Initializes the role attribute on the `data_` object with the one returned
-  // from `View::GetAccessibleNodeData` called on the owning view to ensure that
-  // the role is set before calling `SetName` or `SetDescription`.
-  //
-  // TODO(crbug.com/325137417): This is currently called by the setters before
-  // they perform their operations, but it won't be needed once we rely entirely
-  // on the cache and initialize it with the output of `GetAccessibleNodeData`.
-  void InitializeRoleIfNeeded();
+  // Fully initialize the cache.
+  void CompleteCacheInitializationRecursive();
+
+  void OnWidgetUpdatedRecursive(Widget* widget, Widget* old_widget);
 
   // Prune/Unprune all descendant views from the accessibility tree. We prune
   // for two reasons: 1) The view has been explicitly marked as a leaf node, 2)
@@ -522,27 +756,22 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void PruneSubtree();
   void UnpruneSubtree();
 
-  // Updates the ignored state of the `data_` object.
-  // The view is considered ignored if it should be ignored as per
-  // `should_be_ignored_`, or if it has been pruned (`pruned_`), or if its role
-  // is 'kNone'.
-  void UpdateIgnoredState();
+  void OnRoleChanged(ax::mojom::Role role);
+  void OnIntAttributeChanged(ax::mojom::IntAttribute attribute,
+                             std::optional<int> value);
+  void OnStringAttributeChanged(ax::mojom::StringAttribute attribute,
+                                const std::optional<std::string>& value);
+  void OnBoolAttributeChanged(ax::mojom::BoolAttribute attribute,
+                              std::optional<bool> value);
+  void OnStateChanged(ax::mojom::State state, bool is_enabled);
+  void OnIntListAttributeChanged(ax::mojom::IntListAttribute attribute,
+                                 const std::optional<std::vector<int>>& value);
 
-  // We don't want to fire accessibility events when the view is being
-  // initialized and any setters are called from their respective constructors.
-  // We only want to fire events of any subtree of views when that subtree of
-  // views is connected to a RootView. This way we ensure that we don't fire
-  // events for views that are not connected to a valid tree. See
-  // `SetRootViewIsReadyToNotifyEvents`.
-  void UpdateReadyToNotifyEvents();
+  void SetBlockNotifyEvents(bool block);
 
-  void SetReadyToNotifyEvents();
+  ui::AXAttributeChangedCallbacks* GetOrCreateAXAttributeChangedCallbacks();
 
-  void SetWidgetClosedRecursive(Widget* widget, bool value);
-
-  void SetDataForClosedWidget(ui::AXNodeData* data) const;
-
-  void SetState(ax::mojom::State state, bool is_enabled);
+  virtual void NotifyDataChanged();
 
   // Weak. Owns this.
   const raw_ptr<View> view_;
@@ -558,28 +787,11 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   const ui::AXUniqueId unique_id_{ui::AXUniqueId::Create()};
 
-  // Contains data that is populated by the setters in this class.
-  // This member is tied to the ViewsAX project. Which is introducing a new
-  // system to set accessible properties in a "push" fashion (instead of pull).
-  // Authors are encouraged to start using it today, and it will eventually
-  // replace the old system. For now, while the migration to the new system
-  // happens, we allow the old system to coexist with he new one by just
-  // unioning the data from both systems. This is done in
-  // GetAccessibleNodeData().
-  ui::AXNodeData data_;
 
   // If set to true, anything that is a descendant of this view will be hidden
   // from accessibility by 'pruning' it from the tree, and setting `pruned_` to
   // true.
   bool is_leaf_ = false;
-
-  bool pruned_ = false;
-
-  // This is set to true when the view is explicitly marked as ignored by
-  // `SetIsIgnored`. It is not the only condition that will cause a view to have
-  // the ignored accessible state, as `pruned_` and `is_leaf_` can also cause
-  // this. See `UpdateIgnoredState`.
-  bool should_be_ignored_ = false;
 
   // Used by the Views system to help some assistive technologies, such as
   // screen readers, transition focus from one widget to another.
@@ -593,12 +805,12 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // View.
   bool needs_ax_tree_manager_ = false;
 
-  // Prevents accessibility events from being fired during initialization of
-  // the owning View.
-  // True once a View is connected to a RootView.
-  bool ready_to_notify_events_ = false;
-
   bool is_widget_closed_ = false;
+
+  std::unique_ptr<ui::AXAttributeChangedCallbacks>
+      attribute_changed_callbacks_ = nullptr;
+
+  State initialization_state_ = State::kUninitialized;
 
   base::ScopedObservation<Widget, WidgetObserver> observation_{this};
 };
@@ -612,6 +824,23 @@ class IgnoreMissingWidgetForTestingScopedSetter {
   }
   ~IgnoreMissingWidgetForTestingScopedSetter() {
     view_accessibility_->SetIgnoreMissingWidgetForTesting(false);
+  }
+
+ private:
+  raw_ptr<ViewAccessibility> view_accessibility_;
+};
+
+class ScopedAccessibilityEventBlocker {
+ public:
+  explicit ScopedAccessibilityEventBlocker(
+      ViewAccessibility& view_accessibility)
+      : view_accessibility_(&view_accessibility) {
+    CHECK(view_accessibility_);
+    view_accessibility_->SetBlockNotifyEvents(true);
+  }
+  ~ScopedAccessibilityEventBlocker() {
+    CHECK(view_accessibility_);
+    view_accessibility_->SetBlockNotifyEvents(false);
   }
 
  private:

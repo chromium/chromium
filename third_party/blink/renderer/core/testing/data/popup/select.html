@@ -6,3 +6,12 @@
 </select>
 <select id="emptySelect">
 </select>
+<div id="result"></div>
+
+<script>
+const result = document.getElementById('result');
+const select = document.getElementById('select');
+select.addEventListener('click', (e) => {
+  result.innerText = e.target.value;
+});
+</script>

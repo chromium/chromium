@@ -7,7 +7,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/bindings/core/v8/callback_promise_adapter.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
@@ -61,7 +60,7 @@ ScriptPromise<IDLUndefined> SyncManager::registerFunction(
   background_sync_service_->Register(
       std::move(sync_registration), registration_->RegistrationId(),
       resolver->WrapCallbackInScriptScope(
-          WTF::BindOnce(&SyncManager::RegisterCallback, WrapPersistent(this))));
+          BindOnce(&SyncManager::RegisterCallback, WrapPersistent(this))));
 
   return promise;
 }
@@ -84,7 +83,7 @@ ScriptPromise<IDLSequence<IDLString>> SyncManager::getTags(
   background_sync_service_->GetRegistrations(
       registration_->RegistrationId(),
       resolver->WrapCallbackInScriptScope(
-          WTF::BindOnce(&SyncManager::GetRegistrationsCallback)));
+          BindOnce(&SyncManager::GetRegistrationsCallback)));
 
   return promise;
 }
@@ -110,8 +109,7 @@ void SyncManager::RegisterCallback(
               mojom::blink::BackgroundSyncType::ONE_SHOT));
       break;
     case mojom::blink::BackgroundSyncError::NOT_FOUND:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case mojom::blink::BackgroundSyncError::STORAGE:
       resolver->Reject(V8ThrowDOMException::CreateOrDie(
           resolver->GetScriptState()->GetIsolate(),
@@ -142,7 +140,7 @@ void SyncManager::RegisterCallback(
 void SyncManager::GetRegistrationsCallback(
     ScriptPromiseResolver<IDLSequence<IDLString>>* resolver,
     mojom::blink::BackgroundSyncError error,
-    WTF::Vector<mojom::blink::SyncRegistrationOptionsPtr> registrations) {
+    Vector<mojom::blink::SyncRegistrationOptionsPtr> registrations) {
   DCHECK(resolver);
   // TODO(iclelland): Determine the correct error message to return in each case
   switch (error) {
@@ -151,7 +149,7 @@ void SyncManager::GetRegistrationsCallback(
       for (const auto& r : registrations) {
         tags.push_back(r->tag);
       }
-      resolver->Resolve(tags);
+      resolver->Resolve(std::move(tags));
       break;
     }
     case mojom::blink::BackgroundSyncError::NOT_FOUND:
@@ -159,8 +157,7 @@ void SyncManager::GetRegistrationsCallback(
     case mojom::blink::BackgroundSyncError::PERMISSION_DENIED:
       // These errors should never be returned from
       // BackgroundSyncManager::GetRegistrations
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case mojom::blink::BackgroundSyncError::STORAGE:
       resolver->Reject(V8ThrowDOMException::CreateOrDie(
           resolver->GetScriptState()->GetIsolate(),

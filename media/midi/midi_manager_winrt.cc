@@ -30,8 +30,6 @@
 
 #include <iomanip>
 #include <memory>
-#include <unordered_map>
-#include <unordered_set>
 
 #include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
@@ -44,6 +42,8 @@
 #include "base/win/winrt_storage_util.h"
 #include "media/midi/midi_service.h"
 #include "media/midi/task_service.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace midi {
 namespace {
@@ -615,15 +615,15 @@ class MidiManagerWinrt::MidiPortManager {
                          token_Updated_ = {kInvalidTokenValue};
 
   // All manipulations to these fields should be done on kComTaskRunner.
-  std::unordered_map<std::string, std::unique_ptr<MidiPort<InterfaceType>>>
+  absl::flat_hash_map<std::string, std::unique_ptr<MidiPort<InterfaceType>>>
       ports_;
   std::vector<std::string> port_ids_;
-  std::unordered_map<std::string, std::string> port_names_;
+  absl::flat_hash_map<std::string, std::string> port_names_;
 
   // Keeps AsyncOperation references before the operation completes. Note that
   // raw pointers are used here and the COM interfaces should be released
   // manually.
-  std::unordered_set<IAsyncOperation<RuntimeType*>*> async_ops_;
+  absl::flat_hash_set<IAsyncOperation<RuntimeType*>*> async_ops_;
 
   // Set when device enumeration is completed but OnPortManagerReady() is not
   // called since some ports are not yet ready (i.e. |async_ops_| is not empty).

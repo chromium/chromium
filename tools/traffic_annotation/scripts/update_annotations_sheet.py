@@ -25,7 +25,7 @@ import os
 import re
 import sys
 
-from apiclient import discovery
+from apiclient import discovery, http as googlehttp
 from infra_libs import luci_auth
 from oauth2client import client
 from oauth2client import tools
@@ -49,6 +49,13 @@ def GetCurrentChromeVersion():
 
 def VersionTupleToString(version_tuple):
   return '.'.join(map(str, version_tuple))
+
+
+class HttpRequestWithRetries(googlehttp.HttpRequest):
+  """Same as HttpRequest, but all requests are retried up to 5 times."""
+
+  def execute(self, http=None, num_retries=1):
+    return super().execute(http=http, num_retries=5)
 
 
 class SheetEditor():
@@ -113,7 +120,10 @@ class SheetEditor():
     """
     http = credentials.authorize(httplib2.Http())
     discoveryUrl = ("https://sheets.googleapis.com/$discovery/rest?version=v4")
-    return discovery.build("sheets", "v4", http=http,
+    return discovery.build("sheets",
+                           "v4",
+                           http=http,
+                           requestBuilder=HttpRequestWithRetries,
                            discoveryServiceUrl=discoveryUrl)
 
 

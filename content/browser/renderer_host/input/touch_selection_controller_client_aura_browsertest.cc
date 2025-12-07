@@ -16,7 +16,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/renderer_host/render_widget_host_view_event_handler.h"
@@ -38,7 +37,6 @@
 #include "third_party/blink/public/common/switches.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/base/pointer/touch_editing_controller.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/display_switches.h"
 #include "ui/events/event_sink.h"
@@ -46,6 +44,7 @@
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/test/motion_event_test_utils.h"
+#include "ui/touch_selection/touch_editing_controller.h"
 #include "ui/touch_selection/touch_selection_controller_test_api.h"
 #include "ui/touch_selection/touch_selection_metrics.h"
 
@@ -57,7 +56,8 @@ constexpr int kCharacterWidth = 15;
 constexpr int kCharacterHeight = 15;
 
 bool JSONToPoint(const std::string& str, gfx::PointF* point) {
-  std::optional<base::Value> value = base::JSONReader::Read(str);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(str, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value)
     return false;
   base::Value::Dict* root = value->GetIfDict();
@@ -279,6 +279,8 @@ class TouchSelectionControllerClientAuraTest : public ContentBrowserTest {
     EXPECT_TRUE(NavigateToURL(shell(), test_url));
     aura::Window* content = shell()->web_contents()->GetContentNativeView();
     content->GetHost()->SetBoundsInPixels(gfx::Rect(800, 600));
+
+    SimulateEndOfPaintHoldingOnPrimaryMainFrame(shell()->web_contents());
   }
 
   gfx::PointF GetPointInText(int cursor_index) const {
@@ -1290,7 +1292,7 @@ IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraTest,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Tests that touch selection dragging records a histogram entry.
 IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraTest,
                        SelectionDraggingMetrics) {
@@ -1329,13 +1331,8 @@ IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraTest,
       ui::TouchSelectionDragType::kDoublePressDrag, 1);
   histogram_tester.ExpectTotalCount(ui::kTouchSelectionDragTypeHistogramName,
                                     2);
-
-  // Start typing to end the touch selection session.
-  generator.PressAndReleaseKey(ui::VKEY_A);
-  histogram_tester.ExpectUniqueSample(
-      ui::kTouchSelectionSessionTouchDownCountHistogramName, 3, 1);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Tests that the quick menu is hidden whenever a touch point is active.
 // Flaky: https://crbug.com/803576

@@ -33,6 +33,7 @@ namespace blink {
 
 class WebGLRenderingContextBase;
 class WebGLVertexArrayObjectOES;
+class ExecutionContext;
 
 class OESVertexArrayObject final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
@@ -41,13 +42,13 @@ class OESVertexArrayObject final : public WebGLExtension {
   static bool Supported(WebGLRenderingContextBase*);
   static const char* ExtensionName();
 
-  explicit OESVertexArrayObject(WebGLRenderingContextBase*);
+  OESVertexArrayObject(WebGLRenderingContextBase*, ExecutionContext*);
 
   WebGLExtensionName GetName() const override;
 
   WebGLVertexArrayObjectOES* createVertexArrayOES();
   void deleteVertexArrayOES(WebGLVertexArrayObjectOES*);
-  GLboolean isVertexArrayOES(WebGLVertexArrayObjectOES*);
+  bool isVertexArrayOES(WebGLVertexArrayObjectOES*);
   void bindVertexArrayOES(WebGLVertexArrayObjectOES*);
 };
 

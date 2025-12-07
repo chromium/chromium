@@ -6,11 +6,14 @@ package org.chromium.chrome.browser.ui.hats;
 
 import android.app.Activity;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 
 import java.util.Map;
 
 /** SurveyClient created in charged to show survey. */
+@NullMarked
 public interface SurveyClient {
     /**
      * Show survey in the given activity.
@@ -31,7 +34,7 @@ public interface SurveyClient {
      */
     void showSurvey(
             Activity activity,
-            ActivityLifecycleDispatcher lifecycleDispatcher,
+            @Nullable ActivityLifecycleDispatcher lifecycleDispatcher,
             Map<String, Boolean> surveyPsdBitValues,
             Map<String, String> surveyPsdStringValues);
 }

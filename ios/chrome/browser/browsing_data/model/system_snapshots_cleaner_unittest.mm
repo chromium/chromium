@@ -20,17 +20,17 @@ bool RegexMatchesOneSnapshotPath(NSString* regexString) {
       [NSRegularExpression regularExpressionWithPattern:regexString
                                                 options:0
                                                   error:nullptr];
-  std::vector<base::FilePath> snapshotsPaths;
-  GetSnapshotsPaths(&snapshotsPaths);
+  std::vector<base::FilePath> snapshotsPaths = GetSnapshotsPaths();
   int numberOfMatches = 0;
   for (const base::FilePath& path : snapshotsPaths) {
-    NSString* string =
-        [NSString stringWithCString:path.value().c_str()
-                           encoding:[NSString defaultCStringEncoding]];
+    NSString* string = base::apple::FilePathToNSString(path);
     if ([regex numberOfMatchesInString:string
                                options:0
                                  range:NSMakeRange(0, [string length])]) {
       numberOfMatches++;
+      if (numberOfMatches > 1) {
+        return false;
+      }
     }
   }
   return numberOfMatches == 1;

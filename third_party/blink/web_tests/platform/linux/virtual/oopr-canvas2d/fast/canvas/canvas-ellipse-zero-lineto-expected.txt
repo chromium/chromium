@@ -1,6 +1,0 @@
-CONSOLE WARNING: Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently
-This is a testharness.js-based test.
-[FAIL] This tests checks that ellipse can draw lines correctly in edge cases.
-  assert_equals: expected 255 but got 0
-Harness: the test ran to completion.
-

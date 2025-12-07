@@ -22,11 +22,11 @@
 #include "chrome/browser/segmentation_platform/ukm_data_manager_test_utils.h"
 #include "chrome/browser/segmentation_platform/ukm_database_client.h"
 #include "chrome/test/base/chrome_test_utils.h"
-#include "components/optimization_guide/core/model_info.h"
-#include "components/optimization_guide/core/test_model_info_builder.h"
+#include "chrome/test/base/platform_browser_test.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
+#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/prefs/pref_observer.h"
 #include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/embedder/default_model/database_api_clients.h"
 #include "components/segmentation_platform/embedder/default_model/optimization_target_segmentation_dummy.h"
@@ -55,7 +55,6 @@ namespace segmentation_platform {
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::SaveArg;
 
@@ -274,7 +273,7 @@ class SegmentationPlatformTest : public PlatformBrowserTest {
     return search_user_metadata;
   }
 
-  void WaitForHistogram(const std::string& histogram_name,
+  void WaitForHistogram(std::string_view histogram_name,
                         const base::HistogramTester& histogram_tester) {
     // Continue if histogram was already recorded.
     if (histogram_tester.GetAllSamples(histogram_name).size() > 0) {
@@ -287,8 +286,8 @@ class SegmentationPlatformTest : public PlatformBrowserTest {
         base::StatisticsRecorder::ScopedHistogramSampleObserver>(
         histogram_name,
         base::BindLambdaForTesting(
-            [&](const char* histogram_name, uint64_t name_hash,
-                base::HistogramBase::Sample sample) { run_loop.Quit(); }));
+            [&](std::string_view histogram_name, uint64_t name_hash,
+                base::HistogramBase::Sample32 sample) { run_loop.Quit(); }));
     run_loop.Run();
   }
 
@@ -539,11 +538,11 @@ class SegmentationPlatformUkmModelTest : public SegmentationPlatformTest {
         {{kSegmentId1, utils_.GetSamplePageLoadMetadata(kSqlFeatureQuery)}});
     MockDefaultModelProvider* provider = utils_.GetDefaultOverride(kSegmentId1);
     EXPECT_CALL(*provider, ExecuteModelWithInput(_, _))
-        .WillRepeatedly(Invoke([&](const ModelProvider::Request& inputs,
-                                   ModelProvider::ExecutionCallback callback) {
+        .WillRepeatedly([&](const ModelProvider::Request& inputs,
+                            ModelProvider::ExecutionCallback callback) {
           input_feature_in_last_execution_ = inputs;
           std::move(callback).Run(ModelProvider::Response(1, 0.5));
-        }));
+        });
   }
 
   void PreRunTestOnMainThread() override {

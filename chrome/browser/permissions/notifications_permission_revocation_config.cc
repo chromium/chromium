@@ -11,9 +11,3 @@ bool NotificationsPermissionRevocationConfig::
   return base::FeatureList::IsEnabled(
       features::kAbusiveNotificationPermissionRevocation);
 }
-
-bool NotificationsPermissionRevocationConfig::
-    IsDisruptiveOriginPermissionRevocationEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kDisruptiveNotificationPermissionRevocation);
-}

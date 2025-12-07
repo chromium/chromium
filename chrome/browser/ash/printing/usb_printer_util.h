@@ -7,6 +7,7 @@
 #ifndef CHROME_BROWSER_ASH_PRINTING_USB_PRINTER_UTIL_H_
 #define CHROME_BROWSER_ASH_PRINTING_USB_PRINTER_UTIL_H_
 
+#include <optional>
 #include <string>
 
 #include "chrome/browser/ash/printing/printer_detector.h"
@@ -42,10 +43,11 @@ bool UsbDeviceIsPrinter(const device::mojom::UsbDeviceInfo& device_info);
 bool UsbDeviceToPrinter(const device::mojom::UsbDeviceInfo& device_info,
                         PrinterDetector::DetectedPrinter* entry);
 
-// Expects |device_ptr| to be linked to a Printer-class USB Device. Queries the
-// printer for its IEEE 1284 Standard Device ID.
+// Expects `device` to be linked to a Printer-class USB Device described by
+// `device_info`. Queries the printer for its IEEE 1284 Standard Device ID.
 using GetDeviceIdCallback = base::OnceCallback<void(chromeos::UsbPrinterId)>;
-void GetDeviceId(mojo::Remote<device::mojom::UsbDevice> device,
+void GetDeviceId(const device::mojom::UsbDeviceInfo& device_info,
+                 mojo::Remote<device::mojom::UsbDevice> device,
                  GetDeviceIdCallback cb);
 
 // Create a USB printer display name that incorporates any non-empty values from
@@ -57,6 +59,34 @@ std::string MakeDisplayName(const std::string& make, const std::string& model);
 // from `device_id` entirely.
 void UpdateSearchDataFromDeviceId(const chromeos::UsbPrinterId& device_id,
                                   PrinterDetector::DetectedPrinter* printer);
+
+// Implementation details exposed only for testing.
+namespace internal {
+// Where to send GET_DEVICE_ID class-specific requests.
+struct PrinterInterfaceTarget {
+  // Device VID:PID for logging.
+  std::string vidpid;
+
+  // Zero-based config index.
+  uint8_t config;
+
+  // Zero-based interface index.
+  uint8_t interface;
+
+  // Zero-based interface alternate.
+  uint8_t alternate;
+
+  // True if SET_INTERFACE is needed before sending printer class requests,
+  // primarily if the interface has more than one alternate.
+  bool set_alternate;
+
+  bool operator==(const PrinterInterfaceTarget&) const = default;
+};
+
+// Find a valid printer class interface for sending GET_DEVICE_ID requests.
+std::optional<PrinterInterfaceTarget> FindPrinterInterfaceTarget(
+    const device::mojom::UsbDeviceInfo& device_info);
+}  // namespace internal
 
 }  // namespace ash
 

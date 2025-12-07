@@ -10,23 +10,30 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.annotation.CallSuper;
 import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceViewHolder;
 
-import org.chromium.ui.drawable.StateListDrawableBuilder;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.widget.CheckableImageView;
 
 /**
  * A preference category that can be in either expanded or collapsed state. It shows expand/collapse
- * arrow and changes content description for a11y according to the current state. Use
- * {@link #setExpanded} to toggle collapsed/expanded state. Please note that this preference group
- * won't modify the set of children preferences on expanded state change.
+ * arrow and changes content description for a11y according to the current state. Use {@link
+ * #setExpanded} to toggle collapsed/expanded state. Please note that this preference group won't
+ * modify the set of children preferences on expanded state change.
  */
+@NullMarked
 public class ExpandablePreferenceGroup extends PreferenceGroup {
+    /** A listener to be notified when the preference is expanded or collapsed. */
+    public interface OnExpandedListener {
+        void onExpanded();
+    }
+
     private boolean mExpanded = true;
-    private Drawable mDrawable;
+    private @Nullable Drawable mDrawable;
+    private @Nullable OnExpandedListener mOnExpandedListener;
 
     public ExpandablePreferenceGroup(Context context, AttributeSet attrs) {
         super(context, attrs, R.attr.preferenceStyle);
@@ -50,15 +57,25 @@ public class ExpandablePreferenceGroup extends PreferenceGroup {
         notifyChanged();
     }
 
+    /** Sets a listener to be notified when the preference is expanded or collapsed. */
+    public void setOnExpandedListener(OnExpandedListener listener) {
+        mOnExpandedListener = listener;
+    }
+
     /** Subclasses may override this method to handle changes to the expanded/collapsed state. */
-    protected void onExpandedChanged(boolean expanded) {}
+    @CallSuper
+    protected void onExpandedChanged(boolean expanded) {
+        if (mOnExpandedListener != null) {
+            mOnExpandedListener.onExpanded();
+        }
+    }
 
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
         if (mDrawable == null) {
-            mDrawable = createDrawable(getContext());
+            mDrawable = SettingsUtils.createExpandArrow(getContext());
         }
         CheckableImageView imageView =
                 (CheckableImageView) holder.findViewById(R.id.checkable_image_view);
@@ -70,7 +87,6 @@ public class ExpandablePreferenceGroup extends PreferenceGroup {
         String description =
                 getTitle()
                         + getContext()
-                                .getResources()
                                 .getString(
                                         mExpanded
                                                 ? R.string.accessibility_expanded_group
@@ -79,25 +95,5 @@ public class ExpandablePreferenceGroup extends PreferenceGroup {
         if (view.isAccessibilityFocused()) {
             view.sendAccessibilityEvent(AccessibilityEvent.CONTENT_CHANGE_TYPE_CONTENT_DESCRIPTION);
         }
-    }
-
-    private static Drawable createDrawable(Context context) {
-        StateListDrawableBuilder builder = new StateListDrawableBuilder(context);
-        StateListDrawableBuilder.State checked =
-                builder.addState(
-                        R.drawable.ic_expand_less_black_24dp, android.R.attr.state_checked);
-        StateListDrawableBuilder.State unchecked =
-                builder.addState(R.drawable.ic_expand_more_black_24dp);
-        builder.addTransition(
-                checked, unchecked, R.drawable.transition_expand_less_expand_more_black_24dp);
-        builder.addTransition(
-                unchecked, checked, R.drawable.transition_expand_more_expand_less_black_24dp);
-
-        Drawable tintableDrawable = DrawableCompat.wrap(builder.build());
-        DrawableCompat.setTintList(
-                tintableDrawable,
-                AppCompatResources.getColorStateList(
-                        context, R.color.default_icon_color_tint_list));
-        return tintableDrawable;
     }
 }

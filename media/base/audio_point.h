@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "media/base/media_shmem_export.h"
+#include "media/base/media_export.h"
 #include "ui/gfx/geometry/point3_f.h"
 
 namespace media {
@@ -17,7 +17,7 @@ using Point = gfx::Point3F;
 
 // Returns |points| as a human-readable string. (Not necessarily in the format
 // required by ParsePointsFromString).
-MEDIA_SHMEM_EXPORT std::string PointsToString(const std::vector<Point>& points);
+MEDIA_EXPORT std::string PointsToString(const std::vector<Point>& points);
 
 }  // namespace media
 

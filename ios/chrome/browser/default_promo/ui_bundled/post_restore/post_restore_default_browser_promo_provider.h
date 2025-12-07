@@ -5,8 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_DEFAULT_PROMO_UI_BUNDLED_POST_RESTORE_POST_RESTORE_DEFAULT_BROWSER_PROMO_PROVIDER_H_
 #define IOS_CHROME_BROWSER_DEFAULT_PROMO_UI_BUNDLED_POST_RESTORE_POST_RESTORE_DEFAULT_BROWSER_PROMO_PROVIDER_H_
 
+#import "ios/chrome/browser/promos_manager/ui_bundled/standard_promo_alert_provider.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
-#import "ios/chrome/browser/ui/promos_manager/standard_promo_alert_provider.h"
 
 // Provider for displaying the Post Restore Default Browser Promo.
 //

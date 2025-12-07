@@ -32,6 +32,9 @@ class WebFaviconDriver : public web::WebStateObserver,
 
   ~WebFaviconDriver() override;
 
+  // Returns a pointer to the owning `WebState`.
+  web::WebState* web_state() { return web_state_; }
+
   // FaviconDriver implementation.
   gfx::Image GetFavicon() const override;
   bool FaviconIsValid() const override;
@@ -85,8 +88,6 @@ class WebFaviconDriver : public web::WebStateObserver,
   // The WebState this instance is observing. Will be null after
   // WebStateDestroyed has been called.
   raw_ptr<web::WebState> web_state_ = nullptr;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 }  // namespace favicon

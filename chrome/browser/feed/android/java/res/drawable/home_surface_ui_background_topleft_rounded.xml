@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+  <solid android:color="@color/home_surface_ui_background_color"/>
+  <corners
+      android:topLeftRadius="@dimen/home_surface_ui_background_radius"
+      android:topRightRadius="0dp"
+      android:bottomLeftRadius="0dp"
+      android:bottomRightRadius="0dp" />
+</shape>

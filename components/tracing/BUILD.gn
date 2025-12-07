@@ -19,27 +19,18 @@ if (is_android) {
   }
 }
 
-component("startup_tracing") {
+component("tracing_config") {
   sources = [
     "common/background_tracing_state_manager.cc",
     "common/background_tracing_state_manager.h",
     "common/pref_names.cc",
     "common/pref_names.h",
-    "common/trace_to_console.cc",
-    "common/trace_to_console.h",
+    "common/tracing_scenarios_config.cc",
+    "common/tracing_scenarios_config.h",
     "common/tracing_switches.cc",
     "common/tracing_switches.h",
     "tracing_export.h",
   ]
-
-  if (is_win) {
-    sources += [
-      "common/etw_export_win.cc",
-      "common/etw_export_win.h",
-      "common/etw_system_data_source_win.cc",
-      "common/etw_system_data_source_win.h",
-    ]
-  }
 
   defines = [ "TRACING_IMPLEMENTATION" ]
 
@@ -47,13 +38,44 @@ component("startup_tracing") {
     "//base",
     "//components/prefs",
     "//third_party/perfetto:libperfetto",
+    "//third_party/snappy",
   ]
 }
 
-component("background_tracing_metrics_provider") {
+if (is_win) {
+  component("tracing_etw") {
+    sources = [
+      "common/active_processes_win.cc",
+      "common/active_processes_win.h",
+      "common/etw_consumer_win.cc",
+      "common/etw_consumer_win.h",
+      "common/etw_export_win.cc",
+      "common/etw_export_win.h",
+      "common/etw_system_data_source_win.cc",
+      "common/etw_system_data_source_win.h",
+      "common/inclusion_policy_win.cc",
+      "common/inclusion_policy_win.h",
+      "common/system_log_event_utils_win.cc",
+      "common/system_log_event_utils_win.h",
+      "tracing_export.h",
+    ]
+
+    defines = [ "TRACING_IMPLEMENTATION" ]
+
+    deps = [
+      "//base",
+      "//crypto",
+      "//third_party/perfetto:libperfetto",
+    ]
+  }
+}
+
+component("tracing_metrics") {
   sources = [
     "common/background_tracing_metrics_provider.cc",
     "common/background_tracing_metrics_provider.h",
+    "common/system_profile_metadata_recorder.cc",
+    "common/system_profile_metadata_recorder.h",
     "tracing_export.h",
   ]
 
@@ -63,7 +85,7 @@ component("background_tracing_metrics_provider") {
     "//base",
     "//components/metrics:content",
     "//content/public/browser",
-    "//third_party/metrics_proto:metrics_proto",
+    "//third_party/metrics_proto",
   ]
 }
 
@@ -76,6 +98,7 @@ component("background_tracing_utils") {
   defines = [ "IS_BACKGROUND_TRACING_UTILS_IMPL" ]
 
   deps = [
+    ":tracing_config",
     "//base",
     "//content/public/browser",
   ]
@@ -86,8 +109,9 @@ source_set("unit_tests") {
 
   deps = [
     "//base/test:test_support",
-    "//testing/gmock:gmock",
+    "//testing/gmock",
     "//testing/gtest",
+    "//third_party/snappy",
   ]
 
   sources = [
@@ -99,13 +123,29 @@ source_set("unit_tests") {
     deps += [ ":graphics_provider" ]
   }
 
+  data_deps = [
+    "//third_party/perfetto/protos/perfetto/config/chrome:scenario_descriptor",
+  ]
+
+  data = [ "$root_gen_dir/third_party/perfetto/protos/perfetto/config/chrome/scenario_config.descriptor" ]
+
   if (is_win) {
-    sources += [ "common/etw_system_data_source_win_unittest.cc" ]
+    sources += [
+      "common/active_processes_win_unittest.cc",
+      "common/etw_consumer_win_unittest.cc",
+      "common/system_log_event_utils_win_unittest.cc",
+    ]
+    deps += [
+      ":tracing_etw",
+      "//base/version_info:generate_version_info",
+      "//third_party/perfetto:libperfetto",
+    ]
   }
   deps += [
     ":background_tracing_utils",
-    ":startup_tracing",
-    "//components/metrics:metrics",
+    ":tracing_config",
+    "//base/test:proto_test_support",
+    "//components/metrics",
     "//components/prefs:test_support",
     "//content/public/browser",
     "//content/test:test_support",
@@ -119,7 +159,7 @@ test("tracing_perftests") {
     "test/trace_event_perftest.cc",
   ]
   deps = [
-    "//base:base",
+    "//base",
     "//base/test:test_support",
     "//base/test:test_support_perf",
     "//testing/gtest",

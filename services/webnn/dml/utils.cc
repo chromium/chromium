@@ -13,8 +13,8 @@
 #include "base/numerics/checked_math.h"
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
-#include "services/webnn/dml/buffer_impl_dml.h"
 #include "services/webnn/dml/error.h"
+#include "services/webnn/dml/tensor_impl_dml.h"
 #include "services/webnn/public/cpp/webnn_errors.h"
 
 namespace webnn::dml {
@@ -22,27 +22,6 @@ namespace webnn::dml {
 namespace {
 
 const char kBackendName[] = "DirectML: ";
-
-// Note that the element count is considered as 1 when the given dimensions is
-// empty.
-uint64_t CalculateElementCount(const std::vector<uint32_t>& dimensions,
-                               const std::vector<uint32_t>& strides = {}) {
-  base::CheckedNumeric<uint64_t> checked_element_count = 1;
-  if (strides.empty()) {
-    for (const auto& d : dimensions) {
-      checked_element_count *= d;
-    }
-  } else {
-    CHECK_EQ(dimensions.size(), strides.size());
-    base::CheckedNumeric<uint32_t> index_of_last_element = 0;
-    for (size_t i = 0; i < dimensions.size(); ++i) {
-      index_of_last_element += (dimensions[i] - 1) * strides[i];
-    }
-    checked_element_count = index_of_last_element + 1;
-  }
-
-  return checked_element_count.ValueOrDie();
-}
 
 D3D12_HEAP_PROPERTIES CreateHeapProperties(D3D12_HEAP_TYPE type) {
   return {.Type = type,
@@ -69,64 +48,82 @@ D3D12_RESOURCE_DESC CreateResourceDesc(
 
 }  // namespace
 
+uint64_t CalculatePhysicalElementCount(base::span<const uint32_t> dimensions,
+                                       base::span<const uint32_t> strides) {
+  base::CheckedNumeric<uint64_t> checked_element_count = 1;
+  if (strides.empty()) {
+    for (uint32_t dimension : dimensions) {
+      checked_element_count *= dimension;
+    }
+  } else {
+    CHECK_EQ(dimensions.size(), strides.size());
+    base::CheckedNumeric<uint64_t> index_of_last_element = 0;
+    for (size_t i = 0; i < dimensions.size(); ++i) {
+      index_of_last_element += (dimensions[i] - 1) * strides[i];
+    }
+    checked_element_count = index_of_last_element + 1;
+  }
+
+  return checked_element_count.ValueOrDie();
+}
+
 uint64_t CalculateDMLBufferTensorSize(
     DML_TENSOR_DATA_TYPE data_type,
     const std::vector<uint32_t>& dimensions,
     const std::vector<uint32_t>& strides = {}) {
-  size_t element_size;
+  uint64_t element_size_in_bits;
   switch (data_type) {
+    case DML_TENSOR_DATA_TYPE_FLOAT64:
+    case DML_TENSOR_DATA_TYPE_UINT64:
+    case DML_TENSOR_DATA_TYPE_INT64:
+      element_size_in_bits = 64;
+      break;
     case DML_TENSOR_DATA_TYPE_FLOAT32:
     case DML_TENSOR_DATA_TYPE_UINT32:
     case DML_TENSOR_DATA_TYPE_INT32:
-      element_size = 4;
+      element_size_in_bits = 32;
       break;
     case DML_TENSOR_DATA_TYPE_FLOAT16:
     case DML_TENSOR_DATA_TYPE_UINT16:
     case DML_TENSOR_DATA_TYPE_INT16:
-      element_size = 2;
+      element_size_in_bits = 16;
       break;
     case DML_TENSOR_DATA_TYPE_UINT8:
     case DML_TENSOR_DATA_TYPE_INT8:
-      element_size = 1;
+      element_size_in_bits = 8;
       break;
-    case DML_TENSOR_DATA_TYPE_FLOAT64:
-    case DML_TENSOR_DATA_TYPE_UINT64:
-    case DML_TENSOR_DATA_TYPE_INT64:
-      element_size = 8;
+    case DML_TENSOR_DATA_TYPE_UINT4:
+    case DML_TENSOR_DATA_TYPE_INT4:
+      element_size_in_bits = 4;
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
+
+  base::CheckedNumeric<uint64_t> checked_buffer_length_in_bytes =
+      (base::CheckedNumeric<uint64_t>(element_size_in_bits) *
+           CalculatePhysicalElementCount(dimensions, strides) +
+       7) /
+      8;
 
   // Calculate the total size of the tensor in bytes. It should be rounded up to
   // the nearest 4 bytes according to the alignment requirement:
   // https://learn.microsoft.com/en-us/windows/ai/directml/dml-helper-functions#dmlcalcbuffertensorsize
-  base::CheckedNumeric<uint64_t> buffer_tensor_size =
-      base::bits::AlignUp<uint64_t>(
-          CalculateElementCount(dimensions, strides) * element_size, 4);
+  uint64_t buffer_tensor_size = base::bits::AlignUp<uint64_t>(
+      checked_buffer_length_in_bytes.ValueOrDie<uint64_t>(), 4);
 
-  return buffer_tensor_size.ValueOrDie();
+  CHECK_NE(buffer_tensor_size, 0u);
+  return buffer_tensor_size;
 }
 
-std::vector<uint32_t> CalculateStrides(base::span<const uint32_t> dimensions) {
-  size_t dim_size = dimensions.size();
-  std::vector<uint32_t> strides(dim_size);
-  base::CheckedNumeric<uint32_t> stride = 1;
-  for (size_t i = dim_size; i-- > 0;) {
-    strides[i] = stride.ValueOrDie();
-    stride *= dimensions[i];
-  }
-  return strides;
-}
-
-Microsoft::WRL::ComPtr<ID3D12Device> GetD3D12Device(IDMLDevice* dml_device) {
+Microsoft::WRL::ComPtr<ID3D12Device> GetD3D12Device(IDMLDevice1* dml_device) {
   CHECK(dml_device);
   Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device;
   CHECK_EQ(dml_device->GetParentDevice(IID_PPV_ARGS(&d3d12_device)), S_OK);
   return d3d12_device;
 }
 
-DML_FEATURE_LEVEL GetMaxSupportedDMLFeatureLevel(IDMLDevice* dml_device) {
+DML_FEATURE_LEVEL GetMaxSupportedDMLFeatureLevel(IDMLDevice1* dml_device) {
   CHECK(dml_device);
 
   // WebNN targets DML_FEATURE_LEVEL_4_0 for GPU and DML_FEATURE_LEVEL_6_4 for
@@ -155,6 +152,41 @@ DML_FEATURE_LEVEL GetMaxSupportedDMLFeatureLevel(IDMLDevice* dml_device) {
   }
 
   return feature_levels_supported.MaxSupportedFeatureLevel;
+}
+
+std::string_view DMLFeatureLevelToString(DML_FEATURE_LEVEL dml_feature_level) {
+  switch (dml_feature_level) {
+    case DML_FEATURE_LEVEL_1_0:
+      return "DML_FEATURE_LEVEL_1_0";
+    case DML_FEATURE_LEVEL_2_0:
+      return "DML_FEATURE_LEVEL_2_0";
+    case DML_FEATURE_LEVEL_2_1:
+      return "DML_FEATURE_LEVEL_2_1";
+    case DML_FEATURE_LEVEL_3_0:
+      return "DML_FEATURE_LEVEL_3_0";
+    case DML_FEATURE_LEVEL_3_1:
+      return "DML_FEATURE_LEVEL_3_1";
+    case DML_FEATURE_LEVEL_4_0:
+      return "DML_FEATURE_LEVEL_4_0";
+    case DML_FEATURE_LEVEL_4_1:
+      return "DML_FEATURE_LEVEL_4_1";
+    case DML_FEATURE_LEVEL_5_0:
+      return "DML_FEATURE_LEVEL_5_0";
+    case DML_FEATURE_LEVEL_5_1:
+      return "DML_FEATURE_LEVEL_5_1";
+    case DML_FEATURE_LEVEL_5_2:
+      return "DML_FEATURE_LEVEL_5_2";
+    case DML_FEATURE_LEVEL_6_0:
+      return "DML_FEATURE_LEVEL_6_0";
+    case DML_FEATURE_LEVEL_6_1:
+      return "DML_FEATURE_LEVEL_6_1";
+    case DML_FEATURE_LEVEL_6_2:
+      return "DML_FEATURE_LEVEL_6_2";
+    case DML_FEATURE_LEVEL_6_4:
+      return "DML_FEATURE_LEVEL_6_4";
+    default:
+      return "Unknown DML_FEATURE_LEVEL";
+  }
 }
 
 D3D12_RESOURCE_BARRIER CreateTransitionBarrier(ID3D12Resource* resource,
@@ -211,23 +243,23 @@ void ReadbackBufferWithBarrier(
   command_recorder->ResourceBarrier(barriers);
 }
 
-void UploadBufferWithBarrier(CommandRecorder* command_recorder,
-                             BufferImplDml* dst_buffer,
+void UploadTensorWithBarrier(CommandRecorder* command_recorder,
+                             TensorImplDml* dst_tensor,
                              Microsoft::WRL::ComPtr<ID3D12Resource> src_buffer,
                              size_t buffer_size) {
-  UploadBufferWithBarrier(command_recorder, dst_buffer->buffer(),
+  UploadBufferWithBarrier(command_recorder, dst_tensor->buffer(),
                           std::move(src_buffer), buffer_size);
-  command_recorder->OnBufferAccessed(dst_buffer);
+  command_recorder->OnTensorAccessed(dst_tensor);
 }
 
-void ReadbackBufferWithBarrier(
+void ReadbackTensorWithBarrier(
     CommandRecorder* command_recorder,
     Microsoft::WRL::ComPtr<ID3D12Resource> dst_buffer,
-    BufferImplDml* src_buffer,
+    TensorImplDml* src_tensor,
     size_t buffer_size) {
-  ReadbackBufferWithBarrier(command_recorder, dst_buffer, src_buffer->buffer(),
+  ReadbackBufferWithBarrier(command_recorder, dst_buffer, src_tensor->buffer(),
                             buffer_size);
-  command_recorder->OnBufferAccessed(src_buffer);
+  command_recorder->OnTensorAccessed(src_tensor);
 }
 
 mojom::ErrorPtr CreateError(mojom::Error::Code error_code,

@@ -1,0 +1,25 @@
+Name: libdisplay-info
+URL: https://gitlab.freedesktop.org/emersion/libdisplay-info
+Version: 0.2.0
+Revision: 66b802d05b374cd8f388dc6ad1e7ae4f08cb3300
+Update Mechanism: Manual
+License: MIT
+License File: LICENSE
+Shipped: no
+Security Critical: no
+
+Description:
+EDID and DisplayID library.
+
+This is only used in tests.
+
+Local Modifications:
+None.
+
+When updating to a new version, update the Revision above with the new commit hash,
+and perform the following steps:
+1. Ensure `hwdata` package is installed
+2. Run the following script (replacing /usr/share/hwdata/pnp.ids with path to pnp.ids if it's different):
+   `third_party/libdisplay-info/src/tool/gen-search-table.py /usr/share/hwdata/pnp.ids third_party/libdisplay-info/pnp-id-table.c pnp_id_table`
+3. `sed -i '/Laser Maste/s/$/ \/\/ nocheck/' third_party/libdisplay-info/pnp-id-table.c`
+3. Check in the generated pnp-id-table.c along with the changes for the update.

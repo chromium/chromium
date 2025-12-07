@@ -7,6 +7,8 @@
 #include <optional>
 
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_map.h"
+#include "base/containers/map_util.h"
 #include "base/containers/to_vector.h"
 #include "chrome/browser/printing/web_api/web_printing_utils.h"
 #include "chrome/common/printing/print_media_l10n.h"
@@ -163,6 +165,53 @@ void ProcessPrintColorMode(const PrinterSemanticCapsAndDefaults& caps,
   }
 }
 
+constexpr auto kIppQualityToWebPrintQualityMap =
+    base::MakeFixedFlatMap<std::string_view, blink::mojom::WebPrintQuality>({
+        {"3", blink::mojom::WebPrintQuality::kDraft},
+        {"4", blink::mojom::WebPrintQuality::kNormal},
+        {"5", blink::mojom::WebPrintQuality::kHigh},
+    });
+
+std::optional<blink::mojom::WebPrintQuality> WebPrintQualityFromIppQuality(
+    std::string_view ipp_quality) {
+  if (auto* quality =
+          base::FindOrNull(kIppQualityToWebPrintQualityMap, ipp_quality)) {
+    return *quality;
+  }
+
+  LOG(WARNING) << "Unsupported print-quality IPP value: " << ipp_quality;
+  mojo::ReportBadMessage(
+      "Unknown print-quality enum value in advanced capability!");
+  return std::nullopt;
+}
+
+void ProcessPrintQuality(const PrinterSemanticCapsAndDefaults& caps,
+                         blink::mojom::WebPrinterAttributes* attributes) {
+  auto* print_quality_capability =
+      internal::FindAdvancedCapability(caps, kIppPrintQuality);
+  if (!print_quality_capability) {
+    return;
+  }
+
+  attributes->print_quality_default =
+      WebPrintQualityFromIppQuality(print_quality_capability->default_value);
+
+  for (const AdvancedCapabilityValue& capability_value :
+       print_quality_capability->values) {
+    std::optional<blink::mojom::WebPrintQuality> print_quality =
+        WebPrintQualityFromIppQuality(capability_value.name);
+    if (print_quality) {
+      attributes->print_quality_supported.push_back(*print_quality);
+    }
+  }
+
+  if (!ValidateDefaultAgainstSupported(attributes->print_quality_default,
+                                       attributes->print_quality_supported)) {
+    attributes->print_quality_default.reset();
+    attributes->print_quality_supported.clear();
+  }
+}
+
 void ProcessSides(const PrinterSemanticCapsAndDefaults& caps,
                   blink::mojom::WebPrinterAttributes* attributes) {
   if (caps.duplex_default != mojom::DuplexMode::kUnknownDuplexMode) {
@@ -201,6 +250,7 @@ TypeConverter<blink::mojom::WebPrinterAttributesPtr,
   printing::ProcessOrientationRequested(capabilities, attributes.get());
   printing::ProcessPrinterResolution(capabilities, attributes.get());
   printing::ProcessPrintColorMode(capabilities, attributes.get());
+  printing::ProcessPrintQuality(capabilities, attributes.get());
   printing::ProcessSides(capabilities, attributes.get());
 
   return attributes;

@@ -214,10 +214,6 @@ template("fuchsia_test_runner") {
 
     executable_args += [ package_name ]
 
-    if (defined(invoker.use_test_server) && invoker.use_test_server) {
-      executable_args += [ "--enable-test-server" ]
-    }
-
     if (default_fuchsia_device_node_name != "") {
       executable_args += [
         "--target-id",

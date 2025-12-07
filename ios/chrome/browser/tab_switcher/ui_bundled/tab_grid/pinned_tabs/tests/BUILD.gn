@@ -1,0 +1,58 @@
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "pinned_tabs_context_egtest.mm",
+    "pinned_tabs_drag_drop_egtest.mm",
+    "pinned_tabs_generic_egtest.mm",
+  ]
+
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/popup_menu/ui_bundled:constants",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_ui_constants",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_ui_constants",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/pinned_tabs:constants",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/test:utils",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "pinned_tabs_mediator_unittest.mm",
+    "pinned_tabs_view_controller_unittest.mm",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/drag_and_drop/model",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/snapshots/model:snapshot_source",
+    "//ios/chrome/browser/tab_insertion/model",
+    "//ios/chrome/browser/tab_switcher/ui_bundled",
+    "//ios/chrome/browser/tab_switcher/ui_bundled:items",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/pinned_tabs",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/pinned_tabs:pinned_tabs_ui",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/test:fakes",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/url_loading/model:test_support",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//third_party/ocmock",
+  ]
+}

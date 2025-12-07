@@ -1,4 +1,6 @@
 include_rules = [
+    "+base/command_line.h",
+    "+base/no_destructor.h",
     "+base/run_loop.h",
     "+base/process/process_handle.h",
     "+cc",
@@ -18,5 +20,9 @@ specific_include_rules = {
     ],
     'internals\.cc' : [
         "+third_party/blink/renderer/core/exported/web_view_impl.h",
+        "+ui/gfx/image/canvas_image_source.h",
+    ],
+    'worker_internals\.cc' : [
+        "+ui/gfx/image/canvas_image_source.h",
     ],
 }

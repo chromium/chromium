@@ -4,15 +4,17 @@
 # found in the LICENSE file.
 
 import base64
+from email.message import EmailMessage
 import os
 from typing import Any
 import unittest
-import unittest.mock as mock
+from unittest import mock
 import urllib.error
 
-from flake_suppressor import gpu_expectations
-
+# vpython-provided modules.
 from pyfakefs import fake_filesystem_unittest  # pylint:disable=import-error
+
+from flake_suppressor import gpu_expectations
 
 
 class GetExpectationFileForSuiteUnittest(unittest.TestCase):
@@ -70,7 +72,7 @@ mode type hash bar_tests.txt"""
       elif url.endswith('bar_tests.txt?format=TEXT'):
         text = 'bar_tests.txt content'
       else:
-        self.fail('Given unhandled URL %s' % url)
+        self.fail(f'Given unhandled URL {url}')
       request_result.text = base64.b64encode(text.encode('utf-8'))
       return request_result
 
@@ -92,7 +94,8 @@ mode type hash bar_tests.txt"""
     """Tests that getting a non-200 status code back results in a failure."""
 
     def SideEffect(_: Any) -> None:
-      raise urllib.error.HTTPError('url', 404, 'No exist :(', {}, None)
+      raise urllib.error.HTTPError('url', 404, 'No exist :(', EmailMessage(),
+                                   None)
 
     self._get_mock.side_effect = SideEffect
     with self.assertRaises(urllib.error.HTTPError):
@@ -108,13 +111,15 @@ class GetLocalCheckoutExpectationFileContentsUnittest(
   def testBasic(self) -> None:
     """Tests basic functionality."""
     os.makedirs(gpu_expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY)
-    with open(
-        os.path.join(gpu_expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
-                     'foo.txt'), 'w') as outfile:
+    with open(os.path.join(gpu_expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
+                           'foo.txt'),
+              'w',
+              encoding='utf-8') as outfile:
       outfile.write('foo.txt contents')
-    with open(
-        os.path.join(gpu_expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
-                     'bar.txt'), 'w') as outfile:
+    with open(os.path.join(gpu_expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
+                           'bar.txt'),
+              'w',
+              encoding='utf-8') as outfile:
       outfile.write('bar.txt contents')
     foo_txt = os.path.join(gpu_expectations.RELATIVE_EXPECTATION_FILE_DIRECTORY,
                            'foo.txt')

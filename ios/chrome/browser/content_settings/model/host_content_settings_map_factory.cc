@@ -6,18 +6,17 @@
 
 #include "base/no_destructor.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/prefs/pref_service.h"
-#include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace ios {
 
 // static
-HostContentSettingsMap* HostContentSettingsMapFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  return static_cast<HostContentSettingsMap*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true).get());
+HostContentSettingsMap* HostContentSettingsMapFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return GetInstance()
+      ->GetServiceForProfileAs<HostContentSettingsMap>(profile, /*create=*/true)
+      .get();
 }
 
 // static
@@ -27,44 +26,30 @@ HostContentSettingsMapFactory* HostContentSettingsMapFactory::GetInstance() {
 }
 
 HostContentSettingsMapFactory::HostContentSettingsMapFactory()
-    : RefcountedBrowserStateKeyedServiceFactory(
+    : RefcountedProfileKeyedServiceFactoryIOS(
           "HostContentSettingsMap",
-          BrowserStateDependencyManager::GetInstance()) {}
+          ProfileSelection::kOwnInstanceInIncognito) {}
 
-HostContentSettingsMapFactory::~HostContentSettingsMapFactory() {}
+HostContentSettingsMapFactory::~HostContentSettingsMapFactory() = default;
 
 bool HostContentSettingsMapFactory::ServiceIsRequiredForContextInitialization()
     const {
   // HostContentSettingsMap is required to initialize the PrefService of
-  // the ChromeBrowserState as it is part of the implementation of the
+  // the ProfileIOS as it is part of the implementation of the
   // SupervisedUserPrefStore.
   return true;
 }
 
 scoped_refptr<RefcountedKeyedService>
 HostContentSettingsMapFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  if (browser_state->IsOffTheRecord()) {
-    // If off-the-record, retrieve the host content settings map of the parent
-    // browser state to ensure the preferences have been migrated.
-    GetForBrowserState(browser_state->GetOriginalChromeBrowserState());
-  }
-
+    ProfileIOS* profile) const {
   // TODO(crbug.com/40130635): Set restore_session to whether or not the phone
   // has been reset, which would mirror iOS's cookie store.
-  const bool is_off_the_record = browser_state->IsOffTheRecord();
+  const bool is_off_the_record = profile->IsOffTheRecord();
   const bool should_record_metrics = !is_off_the_record;
   return base::MakeRefCounted<HostContentSettingsMap>(
-      browser_state->GetPrefs(), is_off_the_record,
-      false /* store_last_modified */, false /*restore_session*/,
-      should_record_metrics);
-}
-
-web::BrowserState* HostContentSettingsMapFactory::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  return GetBrowserStateOwnInstanceInIncognito(context);
+      profile->GetPrefs(), is_off_the_record, /*store_last_modified=*/false,
+      /*restore_session=*/false, should_record_metrics);
 }
 
 }  // namespace ios

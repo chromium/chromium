@@ -10,12 +10,15 @@
 #include <memory>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
@@ -33,6 +36,7 @@
 #include "media/audio/test_audio_thread.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
+#include "media/base/audio_sample_types.h"
 #include "media/base/test_helpers.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -77,7 +81,8 @@ class SpeechRecognizerImplTest : public SpeechRecognitionEventListener,
                                  public testing::Test {
  public:
   SpeechRecognizerImplTest()
-      : audio_capturer_source_(new testing::NiceMock<MockCapturerSource>()),
+      : audio_capturer_source_(
+            base::MakeRefCounted<testing::NiceMock<MockCapturerSource>>()),
         recognition_started_(false),
         recognition_ended_(false),
         result_received_(false),
@@ -96,8 +101,7 @@ class SpeechRecognizerImplTest : public SpeechRecognitionEventListener,
     std::unique_ptr<NetworkSpeechRecognitionEngineImpl> sr_engine =
         std::make_unique<NetworkSpeechRecognitionEngineImpl>(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &url_loader_factory_),
-            "" /* accept_language */);
+                &url_loader_factory_));
     NetworkSpeechRecognitionEngineImpl::Config config;
     config.audio_num_bits_per_sample =
         SpeechRecognizerImpl::kNumBitsPerAudioSample;
@@ -242,7 +246,8 @@ class SpeechRecognizerImplTest : public SpeechRecognitionEventListener,
                   "FromInterleaved expects 2 bytes.");
     // Copy the created signal into an audio bus in a deinterleaved format.
     audio_bus_->FromInterleaved<media::SignedInt16SampleTypeTraits>(
-        reinterpret_cast<int16_t*>(audio_packet_.data()), audio_bus_->frames());
+        UNSAFE_TODO(reinterpret_cast<int16_t*>(audio_packet_.data())),
+        audio_bus_->frames());
   }
 
   void FillPacketWithTestWaveform() {
@@ -266,7 +271,7 @@ class SpeechRecognizerImplTest : public SpeechRecognitionEventListener,
     auto* capture_callback =
         static_cast<media::AudioCapturerSource::CaptureCallback*>(
             recognizer_.get());
-    capture_callback->Capture(data, base::TimeTicks::Now(), {}, 0.0, false);
+    capture_callback->Capture(data, base::TimeTicks::Now(), {}, 0.0);
   }
 
   void OnCaptureError() {

@@ -7,14 +7,18 @@
 
 #include "services/screen_ai/proto/chrome_screen_ai.pb.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/accessibility/ax_tree_update.h"
 
 namespace gfx {
 class Rect;
 }  // namespace gfx
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace screen_ai {
 
+#if BUILDFLAG(IS_CHROMEOS)
 // Converts serialized VisualAnnotation proto from VisualAnnotator to
 // AXTreeUpdate. The argument `image_rect` is the bounding box of the image
 // from which the visual annotation was created.
@@ -24,6 +28,7 @@ ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
 
 // Resets the node id generator to start from 1 again.
 void ResetNodeIDForTesting();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Converts a serialized VisualAnnotation proto into a mojo struct.
 mojom::VisualAnnotationPtr ConvertProtoToVisualAnnotation(

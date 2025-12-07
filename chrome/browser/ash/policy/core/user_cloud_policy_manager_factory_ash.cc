@@ -6,10 +6,8 @@
 
 #include <utility>
 
-#include "ash/components/arc/arc_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -29,11 +27,12 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/policy/schema_registry_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/user_login_permission_tracker.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -130,8 +129,6 @@ std::unique_ptr<UserCloudPolicyManagerAsh> CreateUserCloudPolicyManagerAsh(
         return nullptr;
       }
       break;
-    case AccountType::ACTIVE_DIRECTORY:
-      NOTREACHED_NORETURN();
   }
 
   const ProfileRequiresPolicy requires_policy_user_property =
@@ -204,8 +201,7 @@ std::unique_ptr<UserCloudPolicyManagerAsh> CreateUserCloudPolicyManagerAsh(
   // block signin. Policy refresh will fail without the token that is available
   // only after profile initialization.
   const bool policy_refresh_requires_oauth_token =
-      user->GetType() == user_manager::UserType::kChild &&
-      base::FeatureList::IsEnabled(features::kDMServerOAuthForChildUser);
+      user->GetType() == user_manager::UserType::kChild;
 
   base::TimeDelta policy_refresh_timeout;
   if (block_profile_init_on_policy_refresh &&
@@ -260,7 +256,7 @@ std::unique_ptr<UserCloudPolicyManagerAsh> CreateUserCloudPolicyManagerAsh(
 
   bool wildcard_match = false;
   if (connector->IsDeviceEnterpriseManaged() &&
-      ash::CrosSettings::Get()->IsUserAllowlisted(
+      ash::UserLoginPermissionTracker::Get()->IsUserAllowlisted(
           account_id.GetUserEmail(), &wildcard_match, user->GetType()) &&
       wildcard_match &&
       signin::AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(

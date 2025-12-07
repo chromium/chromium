@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <tuple>
 
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
@@ -160,7 +156,7 @@ extern "C" int LLVMFuzzerTestOneInput(const unsigned char* data, size_t size) {
   ui::AXNodeData root;
   root.id = 1;
   if (i < size)
-    root.role = GetInterestingTableRole(data[i++]);
+    root.role = GetInterestingTableRole(UNSAFE_TODO(data[i++]));
   root.child_ids.push_back(2);
   initial_state.nodes.push_back(root);
 
@@ -170,9 +166,9 @@ extern "C" int LLVMFuzzerTestOneInput(const unsigned char* data, size_t size) {
   table.id = 2;
   table.role = ax::mojom::Role::kTable;
   if (i < size) {
-    size_t child_count = data[i++] % 8;
+    size_t child_count = UNSAFE_TODO(data[i++]) % 8;
     for (size_t j = 0; j < child_count && i < size; j++)
-      table.child_ids.push_back(3 + data[i++] % 32);
+      table.child_ids.push_back(3 + UNSAFE_TODO(data[i++]) % 32);
   }
   initial_state.nodes.push_back(table);
 
@@ -182,19 +178,19 @@ extern "C" int LLVMFuzzerTestOneInput(const unsigned char* data, size_t size) {
     ui::AXNodeData node;
     node.id = next_id++;
     if (i < size)
-      node.role = GetInterestingTableRole(data[i++]);
+      node.role = GetInterestingTableRole(UNSAFE_TODO(data[i++]));
     if (i < size) {
-      int attr_count = data[i++] % 6;
+      int attr_count = UNSAFE_TODO(data[i++]) % 6;
       for (int j = 0; j < attr_count && i + 1 < size; j++) {
-        unsigned char attr = data[i++];
-        int32_t value = static_cast<int32_t>(data[i++]) - 2;
+        unsigned char attr = UNSAFE_TODO(data[i++]);
+        int32_t value = static_cast<int32_t>(UNSAFE_TODO(data[i++])) - 2;
         node.AddIntAttribute(GetInterestingTableAttribute(attr), value);
       }
     }
     if (i < size) {
-      size_t child_count = data[i++] % 8;
+      size_t child_count = UNSAFE_TODO(data[i++]) % 8;
       for (size_t j = 0; j < child_count && i < size; j++)
-        node.child_ids.push_back(4 + data[i++] % 32);
+        node.child_ids.push_back(4 + UNSAFE_TODO(data[i++]) % 32);
     }
     initial_state.nodes.push_back(node);
   }

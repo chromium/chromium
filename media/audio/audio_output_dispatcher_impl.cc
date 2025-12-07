@@ -104,7 +104,7 @@ bool AudioOutputDispatcherImpl::StartStream(
 void AudioOutputDispatcherImpl::StopStream(AudioOutputProxy* stream_proxy) {
   DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());
   auto it = proxy_to_physical_map_.find(stream_proxy);
-  CHECK(it != proxy_to_physical_map_.end(), base::NotFatalUntil::M130);
+  CHECK(it != proxy_to_physical_map_.end());
   StopPhysicalStream(it->second);
   proxy_to_physical_map_.erase(it);
   ++idle_proxies_;
@@ -191,7 +191,7 @@ void AudioOutputDispatcherImpl::CloseIdleStreams(size_t keep_alive) {
     stream->Close();
 
     auto it = audio_logs_.find(stream);
-    CHECK(it != audio_logs_.end(), base::NotFatalUntil::M130);
+    CHECK(it != audio_logs_.end());
     it->second->OnClosed();
     audio_logs_.erase(it);
   }

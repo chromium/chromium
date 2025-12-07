@@ -37,7 +37,6 @@ void IdleTimeEstimator::DidCommitFrameToCompositor() {
 
 void IdleTimeEstimator::Clear() {
   task_start_time_ = base::TimeTicks();
-  prev_commit_time_ = base::TimeTicks();
   cumulative_compositor_runtime_ = base::TimeDelta();
   per_frame_compositor_task_runtime_.Clear();
   did_commit_ = false;

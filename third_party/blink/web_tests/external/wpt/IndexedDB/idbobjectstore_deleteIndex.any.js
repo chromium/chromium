@@ -2,8 +2,8 @@
 // META: title=IDBObjectStore.deleteIndex()
 // META: script=resources/support.js
 // @author Microsoft <https://www.microsoft.com>
+'use strict';
 
-'use_strict';
 
 async_test(t => {
     let db;
@@ -28,8 +28,7 @@ async_test(t => {
 
         new_version.onsuccess = function(e) {
             let index;
-            const objStore = db.transaction("test", "readonly",
-            { durability: 'relaxed' })
+            const objStore = db.transaction("test", "readonly")
                                .objectStore("test");
 
             assert_throws_dom('NotFoundError', function()

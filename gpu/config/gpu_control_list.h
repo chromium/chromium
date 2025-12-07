@@ -16,13 +16,13 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_span.h"
 #include "base/values.h"
+#include "gpu/config/gpu_config_export.h"
 #include "gpu/config/gpu_info.h"
-#include "gpu/gpu_export.h"
 
 namespace gpu {
 struct GPUInfo;
 
-class GPU_EXPORT GpuControlList {
+class GPU_CONFIG_EXPORT GpuControlList {
  public:
   typedef std::unordered_map<int, std::string> FeatureMap;
 
@@ -78,9 +78,10 @@ class GPU_EXPORT GpuControlList {
   };
 
   enum GLType {
-    kGLTypeGL,     // This is default on MacOSX, Linux, ChromeOS
-    kGLTypeGLES,   // This is default on Android
-    kGLTypeANGLE,  // This is default on Windows
+    kGLTypeGLES,
+    kGLTypeANGLE_GL,
+    kGLTypeANGLE_GLES,
+    kGLTypeANGLE_VULKAN,
     kGLTypeNone
   };
 
@@ -109,7 +110,7 @@ class GPU_EXPORT GpuControlList {
     kDontCare,
   };
 
-  struct GPU_EXPORT Version {
+  struct GPU_CONFIG_EXPORT Version {
     NumericOp op;
     VersionStyle style;
     VersionSchema schema;
@@ -118,9 +119,9 @@ class GPU_EXPORT GpuControlList {
 
     bool IsSpecified() const { return op != kUnknown; }
 
-    bool Contains(const std::string& version_string, char splitter) const;
+    bool Contains(std::string_view version_string, char splitter) const;
 
-    bool Contains(const std::string& version_string) const {
+    bool Contains(std::string_view version_string) const {
       return Contains(version_string, '.');
     }
 
@@ -134,19 +135,19 @@ class GPU_EXPORT GpuControlList {
     // If "version_style" is Lexical, the first segment is compared
     // numerically, all other segments are compared lexically.
     // Lexical is used for AMD Linux driver versions only.
-    static int Compare(const std::vector<std::string>& version,
-                       const std::vector<std::string>& version_ref,
+    static int Compare(base::span<const std::string> version,
+                       base::span<const std::string> version_ref,
                        VersionStyle version_style);
   };
 
-  struct GPU_EXPORT DriverInfo {
+  struct GPU_CONFIG_EXPORT DriverInfo {
     const char* driver_vendor;
     Version driver_version;
 
-    bool Contains(const std::vector<GPUInfo::GPUDevice>& gpus) const;
+    bool Contains(base::span<const GPUInfo::GPUDevice> gpus) const;
   };
 
-  struct GPU_EXPORT GLStrings {
+  struct GPU_CONFIG_EXPORT GLStrings {
     const char* gl_vendor;
     const char* gl_renderer;
     const char* gl_extensions;
@@ -155,17 +156,14 @@ class GPU_EXPORT GpuControlList {
     bool Contains(const GPUInfo& gpu_info) const;
   };
 
-  struct GPU_EXPORT MachineModelInfo {
-    size_t machine_model_name_size;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #global-scope
-    RAW_PTR_EXCLUSION const char* const* machine_model_names;
+  struct GPU_CONFIG_EXPORT MachineModelInfo {
+    base::raw_span<const char* const> machine_model_names;
     Version machine_model_version;
 
     bool Contains(const GPUInfo& gpu_info) const;
   };
 
-  struct GPU_EXPORT More {
+  struct GPU_CONFIG_EXPORT More {
     // These are just part of Entry fields that are less common.
     // Putting them to a separate struct to save Entry data size.
     GLType gl_type;
@@ -182,43 +180,58 @@ class GPU_EXPORT GpuControlList {
     SupportedOrNot subpixel_font_rendering;
 
     // Return true if GL_VERSION string does not fit the entry info
-    // on GL type and GL version.
-    bool GLVersionInfoMismatch(const std::string& gl_version_string) const;
+    // on GL version.
+    bool GLVersionInfoMismatch(std::string_view gl_version_string) const;
 
     bool Contains(const GPUInfo& gpu_info) const;
-
-    // Return the default GL type, depending on the OS.
-    // See GLType declaration.
-    static GLType GetDefaultGLType();
   };
 
-  struct GPU_EXPORT Device {
+  struct GPU_CONFIG_EXPORT Device {
     uint32_t device_id;
     uint32_t revision = 0u;
   };
 
-  struct GPU_EXPORT Conditions {
+  struct GPU_CONFIG_EXPORT IntelConditions {
+    base::raw_span<const IntelGpuSeriesType> intel_gpu_series_list;
+    Version intel_gpu_generation;
+
+    bool Contains(base::span<const GPUInfo::GPUDevice> candidates,
+                  const GPUInfo& gpu_info) const;
+  };
+
+  struct GPU_CONFIG_EXPORT Conditions {
     OsType os_type;
     Version os_version;
     uint32_t vendor_id;
-    size_t device_size;
+    // TODO(367764863) Rewrite to base::raw_span.
+    RAW_PTR_EXCLUSION base::span<const Device> devices;
+    MultiGpuCategory multi_gpu_category;
+    MultiGpuStyle multi_gpu_style;
     // RAW_PTR_EXCLUSION: since these pointers only ever point to other
     // globals, and `Conditions` itself is used to construct globals, using
     // raw_ptr would add additional (unnecessary) complexity with
     // `NoDestructor`.
-    RAW_PTR_EXCLUSION const Device* devices;
-    MultiGpuCategory multi_gpu_category;
-    MultiGpuStyle multi_gpu_style;
     RAW_PTR_EXCLUSION const DriverInfo* driver_info;
     RAW_PTR_EXCLUSION const GLStrings* gl_strings;
     RAW_PTR_EXCLUSION const MachineModelInfo* machine_model_info;
-    size_t intel_gpu_series_list_size;
-    RAW_PTR_EXCLUSION const IntelGpuSeriesType* intel_gpu_series_list;
-    Version intel_gpu_generation;
+    RAW_PTR_EXCLUSION const IntelConditions* intel_conditions;
     RAW_PTR_EXCLUSION const More* more;
 
+    Conditions(OsType os_type,
+               Version os_version,
+               uint32_t vendor_id,
+               base::span<const Device> devices,
+               MultiGpuCategory multi_gpu_category,
+               MultiGpuStyle multi_gpu_style,
+               const DriverInfo* driver_info,
+               const GLStrings* gl_strings,
+               const MachineModelInfo* machine_model_info,
+               const IntelConditions* intel_conditions,
+               const More* more);
+    Conditions(const Conditions& other);
+
     bool Contains(OsType os_type,
-                  const std::string& os_version,
+                  std::string_view os_version,
                   const GPUInfo& gpu_info) const;
 
     // Determines whether we needs more gpu info to make the blocklisting
@@ -226,33 +239,28 @@ class GPU_EXPORT GpuControlList {
     bool NeedsMoreInfo(const GPUInfo& gpu_info) const;
   };
 
-  struct GPU_EXPORT Entry {
+  struct GPU_CONFIG_EXPORT Entry {
     uint32_t id;
     const char* description;
-    size_t feature_size;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #reinterpret-cast-trivial-type, #global-scope
-    RAW_PTR_EXCLUSION const int* features;
-    size_t disabled_extension_size;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #reinterpret-cast-trivial-type, #global-scope
-    RAW_PTR_EXCLUSION const char* const* disabled_extensions;
-    size_t disabled_webgl_extension_size;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #reinterpret-cast-trivial-type, #global-scope
-    RAW_PTR_EXCLUSION const char* const* disabled_webgl_extensions;
-    size_t cr_bug_size;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #reinterpret-cast-trivial-type, #global-scope
-    RAW_PTR_EXCLUSION const uint32_t* cr_bugs;
+    // `Entry` is used extensively in
+    // `gen/gpu/config/software_rendering_list_autogen.cc`, where making these
+    // `raw_span` would cause a warning:
+    //
+    // > declaration requires an exit-time destructor
+    //
+    // These only seem to be set in files generated by
+    // gpu/config/process_json.py, which only ever sets them to point at
+    // statically-allocated data which is never freed. Thus these can never
+    // dangle, so making them raw_span is unnecessary.
+    RAW_PTR_EXCLUSION base::span<const int> features;
+    RAW_PTR_EXCLUSION base::span<const char* const> disabled_extensions;
+    RAW_PTR_EXCLUSION base::span<const char* const> disabled_webgl_extensions;
+    RAW_PTR_EXCLUSION base::span<const uint32_t> cr_bugs;
     Conditions conditions;
-    size_t exception_size;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #reinterpret-cast-trivial-type, #global-scope
-    RAW_PTR_EXCLUSION const Conditions* exceptions;
+    RAW_PTR_EXCLUSION base::span<const Conditions> exceptions;
 
     bool Contains(OsType os_type,
-                  const std::string& os_version,
+                  std::string_view os_version,
                   const GPUInfo& gpu_info) const;
 
     bool AppliesToTestGroup(uint32_t target_test_group) const;
@@ -265,8 +273,7 @@ class GPU_EXPORT GpuControlList {
 
     // Logs a control list match for this rule in the list identified by
     // |control_list_logging_name|.
-    void LogControlListMatch(
-        const std::string& control_list_logging_name) const;
+    void LogControlListMatch(std::string_view control_list_logging_name) const;
   };
 
   explicit GpuControlList(base::span<const GpuControlList::Entry> data);
@@ -278,13 +285,13 @@ class GPU_EXPORT GpuControlList {
   // If os is kOsAny, use the current OS; if os_version is empty, use the
   // current OS version.
   std::set<int32_t> MakeDecision(OsType os,
-                                 const std::string& os_version,
+                                 std::string_view os_version,
                                  const GPUInfo& gpu_info);
   // Same as the above function, but instead of using the entries with no
   // "test_group" specified or "test_group" = 0, using the entries with
   // "test_group" = |target_test_group|.
   std::set<int32_t> MakeDecision(OsType os,
-                                 const std::string& os_version,
+                                 std::string_view os_version,
                                  const GPUInfo& gpu_info,
                                  uint32_t target_test_group);
 
@@ -292,7 +299,7 @@ class GPU_EXPORT GpuControlList {
   const std::vector<uint32_t>& GetActiveEntries() const;
   // Return corresponding entry IDs from entry indices.
   std::vector<uint32_t> GetEntryIDsFromIndices(
-      const std::vector<uint32_t>& entry_indices) const;
+      base::span<const uint32_t> entry_indices) const;
 
   // Collects all disabled extensions.
   std::vector<std::string> GetDisabledExtensions();
@@ -308,8 +315,8 @@ class GPU_EXPORT GpuControlList {
   // The use case is we compute the entries from GPU process and send them to
   // browser process, and call GetReasons() in browser process.
   void GetReasons(base::Value::List& problem_list,
-                  const std::string& tag,
-                  const std::vector<uint32_t>& entries) const;
+                  std::string_view tag,
+                  base::span<const uint32_t> entries) const;
 
   // Return the largest entry id.  This is used for histogramming.
   uint32_t max_entry_id() const;
@@ -323,22 +330,31 @@ class GPU_EXPORT GpuControlList {
   size_t num_entries() const;
 
   // Register a feature to FeatureMap.
-  void AddSupportedFeature(const std::string& feature_name, int feature_id);
+  void AddSupportedFeature(std::string_view feature_name, int feature_id);
 
   // Enables logging of control list decisions.
-  void EnableControlListLogging(const std::string& control_list_logging_name) {
+  void EnableControlListLogging(std::string_view control_list_logging_name) {
     control_list_logging_enabled_ = true;
     control_list_logging_name_ = control_list_logging_name;
   }
 
  protected:
   // Return false if an entry index goes beyond |total_entries|.
-  static bool AreEntryIndicesValid(const std::vector<uint32_t>& entry_indices,
+  static bool AreEntryIndicesValid(base::span<const uint32_t> entry_indices,
                                    size_t total_entries);
 
  private:
+  // Returns kGLTypeNone if gl_renderer is empty.
+  // Returns kGLTypeGLES if gl_renderer isn't in the format of ANGLE(_,_,_).
+  // Returns kGLTypeANGLE_VULKAN or kGLTypeANGLE_GLES otherwise.
+  static GLType ProcessANGLEGLRenderer(std::string_view gl_renderer,
+                                       std::string* vendor = nullptr,
+                                       std::string* renderer = nullptr,
+                                       std::string* version = nullptr);
+
   friend class GpuControlListEntryTest;
   friend class VersionInfoTest;
+  friend class GpuControlListTest;
 
   // Gets the current OS type.
   static OsType GetOsType();

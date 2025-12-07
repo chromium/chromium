@@ -11,7 +11,6 @@
 #include "base/component_export.h"
 #include "base/scoped_environment_variable_override.h"
 #include "third_party/khronos/EGL/egl.h"
-#include "ui/gfx/gpu_extra_info.h"
 
 namespace ui {
 
@@ -29,11 +28,6 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformGLEGLUtility {
   // Chooses alpha and buffer size values.
   virtual void ChooseEGLAlphaAndBufferSize(EGLint* alpha_size,
                                            EGLint* buffer_size) = 0;
-
-  // Fills in the platform specific bits of the GPU extra info holder.
-  // |enable_native_gpu_memory_buffers| should be taken from GpuPreferences.
-  virtual void CollectGpuExtraInfo(bool enable_native_gpu_memory_buffers,
-                                   gfx::GpuExtraInfo& gpu_extra_info) const = 0;
 
   // X11 specific; returns whether the platform supports visuals.
   virtual bool HasVisualManager();

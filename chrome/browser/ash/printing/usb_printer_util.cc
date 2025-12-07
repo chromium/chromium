@@ -7,7 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
-#include <array>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -17,10 +17,10 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
-#include "base/hash/md5.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -28,6 +28,7 @@
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/printing/usb_printer_id.h"
 #include "components/device_event_log/device_event_log.h"
+#include "crypto/obsolete/md5.h"
 #include "services/device/public/cpp/usb/usb_utils.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "services/device/public/mojom/usb_enumeration_options.mojom.h"
@@ -35,6 +36,13 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
+
+namespace printing {
+crypto::obsolete::Md5 MakeMd5HasherForUsbPrinterUtil() {
+  return {};
+}
+}  // namespace printing
+
 namespace {
 
 using device::mojom::UsbDeviceInfo;
@@ -53,8 +61,6 @@ constexpr uint8_t kPrinterIppusbProtocol = 4;
 
 // Configuration for a GET_DEVICE_ID Printer Class-Specific Request.
 const int kGetDeviceIdRequest = 0;
-const int kDefaultInterface = 0;
-const int kDefaultConfiguration = 0;
 
 // Generic USB make_and_model strings that are reused across device.
 bool IsGenericUsbDescription(const std::string& make_and_model) {
@@ -75,6 +81,7 @@ bool IsGenericUsbDescription(const std::string& make_and_model) {
 // Callback for device.mojom.UsbDevice.ControlTransferIn.
 // Expects |data| to hold a newly queried Device ID.
 void OnControlTransfer(mojo::Remote<device::mojom::UsbDevice> device,
+                       uint8_t interface_num,
                        GetDeviceIdCallback cb,
                        device::mojom::UsbTransferStatus status,
                        base::span<const uint8_t> data) {
@@ -83,19 +90,24 @@ void OnControlTransfer(mojo::Remote<device::mojom::UsbDevice> device,
   }
 
   // Cleanup device.
-  device->ReleaseInterface(kDefaultInterface, base::DoNothing());
+  device->ReleaseInterface(interface_num, base::DoNothing());
   device->Close(base::DoNothing());
 
   return std::move(cb).Run(chromeos::UsbPrinterId(data));
 }
 
-// Callback for device.mojom.UsbDevice.ClaimInterface.
-// If interface was claimed successfully, attempts to query printer for a
+// Callback for device.mojom.UsbDevice.SetInterfaceAlternateSetting.
+// If interface was set successfully, attempts to query printer for a
 // Device ID.
-void OnClaimInterface(mojo::Remote<device::mojom::UsbDevice> device,
-                      GetDeviceIdCallback cb,
-                      device::mojom::UsbClaimInterfaceResult result) {
-  if (result != device::mojom::UsbClaimInterfaceResult::kSuccess) {
+void OnAlternateSelected(mojo::Remote<device::mojom::UsbDevice> device,
+                         const internal::PrinterInterfaceTarget& target,
+                         GetDeviceIdCallback cb,
+                         bool result) {
+  if (!result) {
+    PRINTER_LOG(ERROR) << "USB printer " << target.vidpid
+                       << " failed to set interface "
+                       << target.interface << " to alternate "
+                       << target.alternate;
     return std::move(cb).Run({});
   }
 
@@ -103,46 +115,73 @@ void OnClaimInterface(mojo::Remote<device::mojom::UsbDevice> device,
   params->type = device::mojom::UsbControlTransferType::CLASS;
   params->recipient = device::mojom::UsbControlTransferRecipient::INTERFACE;
   params->request = kGetDeviceIdRequest;
-  params->value = kDefaultConfiguration;  // default config index
-  params->index = kDefaultInterface;      // default interface index
+  params->value = target.config;
+  params->index = (uint16_t(target.interface) << 8) | (target.alternate);
 
   // Query for IEEE1284 string.
   auto* device_raw = device.get();
   device_raw->ControlTransferIn(
       std::move(params), 255 /* max size */, 2000 /* 2 second timeout */,
-      base::BindOnce(OnControlTransfer, std::move(device), std::move(cb)));
+      base::BindOnce(OnControlTransfer, std::move(device), target.interface,
+                     std::move(cb)));
+}
+
+// Callback for device.mojom.UsbDevice.ClaimInterface.
+// If interface was claimed successfully, either sets the target alternate or
+// continues directly to querying Device ID.
+void OnClaimInterface(mojo::Remote<device::mojom::UsbDevice> device,
+                      const internal::PrinterInterfaceTarget& target,
+                      GetDeviceIdCallback cb,
+                      device::mojom::UsbClaimInterfaceResult result) {
+  if (result != device::mojom::UsbClaimInterfaceResult::kSuccess) {
+    PRINTER_LOG(ERROR) << "USB printer " << target.vidpid
+                       << " failed to claim interface "
+                       << target.interface << ": " << result;
+    return std::move(cb).Run({});
+  }
+
+  // Set alternate or directly proceed to next step if the interface only has
+  // one alternate.
+  if (target.set_alternate) {
+    auto* device_raw = device.get();
+    device_raw->SetInterfaceAlternateSetting(
+        target.interface, target.alternate,
+        base::BindOnce(OnAlternateSelected, std::move(device),
+                       std::move(target), std::move(cb)));
+  } else {
+    OnAlternateSelected(std::move(device), std::move(target), std::move(cb),
+                        true);
+  }
 }
 
 // Callback for device.mojom.UsbDevice.Open.
 // If device was opened successfully, attempts to claim printer's default
 // interface.
 void OnDeviceOpen(mojo::Remote<device::mojom::UsbDevice> device,
+                  const internal::PrinterInterfaceTarget& target,
                   GetDeviceIdCallback cb,
                   device::mojom::UsbOpenDeviceResultPtr result) {
   if (result->is_error() || !device) {
     return std::move(cb).Run({});
   }
 
-  // Claim interface.
+  // Claim target interface.
   auto* device_raw = device.get();
-  device_raw->ClaimInterface(
-      kDefaultInterface,
-      base::BindOnce(OnClaimInterface, std::move(device), std::move(cb)));
+  device_raw->ClaimInterface(target.interface,
+                             base::BindOnce(OnClaimInterface, std::move(device),
+                                            target, std::move(cb)));
 }
 
-// Incorporate the bytes of |val| into the incremental hash carried in |ctx| in
-// big-endian order.  |val| must be a simple integer type
-void MD5UpdateU8BigEndian(base::MD5Context* ctx,
-                          base::StrictNumeric<uint8_t> val) {
-  std::array<uint8_t, 1u> buf;
-  base::span(buf).copy_from(base::numerics::U8ToBigEndian(val));
-  base::MD5Update(ctx, buf);
+// Incorporate the byte |val| into the incremental hash carried in |md5|.
+void Md5UpdateU8(crypto::obsolete::Md5& md5, base::StrictNumeric<uint8_t> val) {
+  uint8_t tmp = val;
+  md5.Update(base::span_from_ref(tmp));
 }
-void MD5UpdateU16BigEndian(base::MD5Context* ctx,
+
+// Incorporate |val| into |md5| as a big-endian value.
+void Md5UpdateU16BigEndian(crypto::obsolete::Md5& md5,
                            base::StrictNumeric<uint16_t> val) {
-  std::array<uint8_t, 2u> buf;
-  base::span(buf).copy_from(base::numerics::U16ToBigEndian(val));
-  base::MD5Update(ctx, buf);
+  md5.Update(base::U16ToBigEndian(val));
 }
 
 // Update the hash with the contents of |str|.
@@ -153,9 +192,8 @@ void MD5UpdateU16BigEndian(base::MD5Context* ctx,
 //
 // This is a long way to say "UTF-16 is hard to hash, let's just convert
 // to UTF-8 and hash that", which avoids all of these issues.
-void MD5UpdateString16(base::MD5Context* ctx, const std::u16string& str) {
-  std::string tmp = base::UTF16ToUTF8(str);
-  base::MD5Update(ctx, std::string_view(tmp.data(), tmp.size()));
+void Md5UpdateString16(crypto::obsolete::Md5& md5, const std::u16string& str) {
+  md5.Update(base::UTF16ToUTF8(str));
 }
 
 // Get the usb printer id for |device|.  This is used both as the identifier for
@@ -179,20 +217,17 @@ std::string CreateUsbPrinterId(const UsbDeviceInfo& device_info) {
   static_assert(sizeof(device::GetDeviceVersion(device_info)) == 2,
                 "Version size changed");
 
-  base::MD5Context ctx;
-  base::MD5Init(&ctx);
-  MD5UpdateU8BigEndian(&ctx, device_info.class_code);
-  MD5UpdateU8BigEndian(&ctx, device_info.subclass_code);
-  MD5UpdateU8BigEndian(&ctx, device_info.protocol_code);
-  MD5UpdateU16BigEndian(&ctx, device_info.vendor_id);
-  MD5UpdateU16BigEndian(&ctx, device_info.product_id);
-  MD5UpdateU16BigEndian(&ctx, device::GetDeviceVersion(device_info));
-  base::MD5Update(&ctx, GetManufacturerName(device_info));
-  base::MD5Update(&ctx, GetProductName(device_info));
-  MD5UpdateString16(&ctx, GetSerialNumber(device_info));
-  base::MD5Digest digest;
-  base::MD5Final(&digest, &ctx);
-  return base::StringPrintf("usb-%s", base::MD5DigestToBase16(digest).c_str());
+  auto md5 = ash::printing::MakeMd5HasherForUsbPrinterUtil();
+  Md5UpdateU8(md5, device_info.class_code);
+  Md5UpdateU8(md5, device_info.subclass_code);
+  Md5UpdateU8(md5, device_info.protocol_code);
+  Md5UpdateU16BigEndian(md5, device_info.vendor_id);
+  Md5UpdateU16BigEndian(md5, device_info.product_id);
+  Md5UpdateU16BigEndian(md5, device::GetDeviceVersion(device_info));
+  md5.Update(GetManufacturerName(device_info));
+  md5.Update(GetProductName(device_info));
+  Md5UpdateString16(md5, GetSerialNumber(device_info));
+  return base::StringPrintf("usb-%s", base::HexEncodeLower(md5.Finish()));
 }
 
 // Creates a mojom filter which can be used to identify a basic USB printer.
@@ -259,6 +294,50 @@ chromeos::Uri UsbPrinterUri(const UsbDeviceInfo& device_info) {
 }
 
 }  // namespace
+
+namespace internal {
+
+// Find the best interface to send a printer-specific GET_DEVICE_ID request to.
+// Not every printer has a printer class interface at alternate 0 of interface
+// 0.  First, try to find the first interface that does have printer class
+// without any alternates.  If that fails, select the first interface that has
+// printer class on any of the alternates and mark that SET_INTERFACE will need
+// to be called.
+std::optional<PrinterInterfaceTarget> FindPrinterInterfaceTarget(
+    const device::mojom::UsbDeviceInfo& device_info) {
+  std::optional<PrinterInterfaceTarget> candidate;
+  for (uint8_t config_idx = 0;
+       const auto& config : device_info.configurations) {
+    for (uint8_t iface_idx = 0; const auto& iface : config->interfaces) {
+      for (uint8_t alt_idx = 0; const auto& alt : iface->alternates) {
+        if (alt->class_code == kPrinterInterfaceClass &&
+            alt->subclass_code == kPrinterInterfaceSubclass) {
+          std::string vidpid = base::StringPrintf(
+              "%04x:%04x", device_info.vendor_id, device_info.product_id);
+          if (iface->alternates.size() == 1) {
+            return PrinterInterfaceTarget{
+                std::move(vidpid), config_idx, iface_idx, alt_idx, false,
+            };
+          } else if (!candidate.has_value()) {
+            candidate.emplace(std::move(vidpid), config_idx, iface_idx, alt_idx,
+                              true);
+          }
+        }
+        alt_idx++;
+      }
+      iface_idx++;
+    }
+    config_idx++;
+  }
+
+  if (candidate.has_value()) {
+    return candidate;
+  }
+
+  return std::nullopt;
+}
+
+}  // namespace internal
 
 std::string GuessEffectiveMakeAndModel(
     const device::mojom::UsbDeviceInfo& device_info) {
@@ -332,15 +411,27 @@ bool UsbDeviceToPrinter(const UsbDeviceInfo& device_info,
   entry->printer.SetUri(UsbPrinterUri(device_info));
   entry->printer.set_id(CreateUsbPrinterId(device_info));
   entry->printer.set_supports_ippusb(UsbDeviceSupportsIppusb(device_info));
+  entry->printer.set_usb_device_id(chromeos::Printer::UsbDeviceId(
+      device_info.vendor_id, device_info.product_id));
+
   return true;
 }
 
-void GetDeviceId(mojo::Remote<device::mojom::UsbDevice> device,
+void GetDeviceId(const device::mojom::UsbDeviceInfo& device_info,
+                 mojo::Remote<device::mojom::UsbDevice> device,
                  GetDeviceIdCallback cb) {
+  // Find printer class interface so the request can be directed to it.
+  auto target = internal::FindPrinterInterfaceTarget(device_info);
+  if (!target.has_value()) {
+    PRINTER_LOG(ERROR) << "No printer interface found for device: "
+                       << UsbPrinterDeviceDetailsAsString(device_info);
+    return std::move(cb).Run({});
+  }
+
   // Open device.
   auto* device_raw = device.get();
-  device_raw->Open(
-      base::BindOnce(OnDeviceOpen, std::move(device), std::move(cb)));
+  device_raw->Open(base::BindOnce(OnDeviceOpen, std::move(device),
+                                  std::move(target.value()), std::move(cb)));
 }
 
 std::string MakeDisplayName(const std::string& make, const std::string& model) {
@@ -364,8 +455,8 @@ void UpdateSearchDataFromDeviceId(const chromeos::UsbPrinterId& device_id,
                                   PrinterDetector::DetectedPrinter* printer) {
   // If the IEEE1284 device info looks complete and doesn't match the USB
   // string descriptors, add an additional PPD search string.  In addition, if
-  // the USB make_and_model matches known generic strings, replace the entire
-  // device description with the values from the IEEE1284 info.
+  // the USB make_and_model is empty or matches known generic strings, replace
+  // the entire device description with the values from the IEEE1284 info.
   const std::string& usb_make = device_id.make();
   const std::string& usb_model = device_id.model();
   if (usb_make.empty() || usb_model.empty()) {
@@ -377,7 +468,10 @@ void UpdateSearchDataFromDeviceId(const chromeos::UsbPrinterId& device_id,
     return;
   }
 
-  if (IsGenericUsbDescription(
+  if (base::TrimWhitespaceASCII(printer->printer.make_and_model(),
+                                base::TRIM_ALL)
+          .empty() ||
+      IsGenericUsbDescription(
           base::ToLowerASCII(printer->printer.make_and_model()))) {
     PRINTER_LOG(EVENT) << printer->printer.make_and_model()
                        << " replaced with USB device info: "

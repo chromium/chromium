@@ -4,6 +4,7 @@
 
 #include "chrome/browser/performance_manager/metrics/metrics_provider_desktop.h"
 
+#include "base/byte_count.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -13,14 +14,19 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/timer.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/registry.h"
+#endif
 
 using performance_manager::user_tuning::prefs::kMemorySaverModeState;
 using performance_manager::user_tuning::prefs::MemorySaverModeState;
@@ -31,14 +37,7 @@ namespace {
 
 MetricsProviderDesktop* g_metrics_provider = nullptr;
 
-uint64_t kBytesPerMb = 1024 * 1024;
-
-#if BUILDFLAG(IS_MAC)
-uint64_t kKilobytesPerMb = 1024;
-#endif
-
-base::TimeDelta kCpuThroughputSamplingInterval = base::Minutes(5);
-
+#if SHOULD_COLLECT_CPU_FREQUENCY_METRICS()
 enum class CpuThroughputEstimatedStatus {
   kNormal,
   kUnknown,
@@ -81,7 +80,8 @@ CpuThroughputEstimatedStatus EstimateCpuThroughputStatus(
   return CpuThroughputEstimatedStatus::kNormal;
 }
 
-constexpr char kCpuEstimationEventCategory[] = "power";
+constexpr char kCpuEstimationEventCategory[] =
+    "performance_manager.cpu_metrics";
 constexpr char kCpuEstimationEvent[] = "CpuStatusSampling";
 
 constexpr char kCpuEstimationStatusNormalEvent[] =
@@ -137,12 +137,10 @@ void EmitCpuStatusSamplingTraceEvents(base::TimeTicks posted_at_time,
 
   base::TimeTicks end_time = started_running_time + wall_time;
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      kCpuEstimationEventCategory, kCpuEstimationEvent, TRACE_ID_LOCAL(id),
-      posted_at_time);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(kCpuEstimationEventCategory,
-                                                 kCpuEstimationEvent,
-                                                 TRACE_ID_LOCAL(id), end_time);
+  TRACE_EVENT_BEGIN(kCpuEstimationEventCategory, kCpuEstimationEvent,
+                    perfetto::Track::FromPointer(id), posted_at_time);
+  TRACE_EVENT_END(kCpuEstimationEventCategory, perfetto::Track::FromPointer(id),
+                  end_time);
 
   const char* selected;
   switch (status) {
@@ -167,42 +165,85 @@ void EmitCpuStatusSamplingTraceEvents(base::TimeTicks posted_at_time,
       break;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(kCpuEstimationEventCategory,
-                                                   selected, TRACE_ID_LOCAL(id),
-                                                   posted_at_time);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      kCpuEstimationEventCategory, selected, TRACE_ID_LOCAL(id), end_time);
+  TRACE_EVENT_BEGIN(kCpuEstimationEventCategory,
+                    perfetto::StaticString(selected),
+                    perfetto::Track::FromPointer(id), posted_at_time);
+  TRACE_EVENT_END(kCpuEstimationEventCategory, perfetto::Track::FromPointer(id),
+                  end_time);
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      kCpuEstimationEventCategory, kCpuEstimationQueuedEvent,
-      TRACE_ID_LOCAL(id), posted_at_time);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      kCpuEstimationEventCategory, kCpuEstimationQueuedEvent,
-      TRACE_ID_LOCAL(id), started_running_time);
+  TRACE_EVENT_BEGIN(kCpuEstimationEventCategory, kCpuEstimationQueuedEvent,
+                    perfetto::Track::FromPointer(id), posted_at_time);
+  TRACE_EVENT_END(kCpuEstimationEventCategory, perfetto::Track::FromPointer(id),
+                  started_running_time);
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      kCpuEstimationEventCategory, kCpuEstimationRunningEvent,
-      TRACE_ID_LOCAL(id), started_running_time);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(kCpuEstimationEventCategory,
-                                                 kCpuEstimationRunningEvent,
-                                                 TRACE_ID_LOCAL(id), end_time);
+  TRACE_EVENT_BEGIN(kCpuEstimationEventCategory, kCpuEstimationRunningEvent,
+                    perfetto::Track::FromPointer(id), started_running_time);
+  TRACE_EVENT_END(kCpuEstimationEventCategory, perfetto::Track::FromPointer(id),
+                  end_time);
 
   // Emit a block for the running thread time
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      kCpuEstimationEventCategory, kCpuEstimationThreadTimeEvent,
-      TRACE_ID_LOCAL(id), started_running_time);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      kCpuEstimationEventCategory, kCpuEstimationThreadTimeEvent,
-      TRACE_ID_LOCAL(id), started_running_time + thread_time);
+  TRACE_EVENT_BEGIN(kCpuEstimationEventCategory, kCpuEstimationThreadTimeEvent,
+                    perfetto::Track::FromPointer(id), started_running_time);
+  TRACE_EVENT_END(kCpuEstimationEventCategory, perfetto::Track::FromPointer(id),
+                  started_running_time + thread_time);
 
   // And then one of the wall time spent descheduled
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      kCpuEstimationEventCategory, kCpuEstimationDescheduledEvent,
-      TRACE_ID_LOCAL(id), started_running_time + thread_time);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      kCpuEstimationEventCategory, kCpuEstimationDescheduledEvent,
-      TRACE_ID_LOCAL(id), started_running_time + wall_time);
+  TRACE_EVENT_BEGIN(kCpuEstimationEventCategory, kCpuEstimationDescheduledEvent,
+                    perfetto::Track::FromPointer(id),
+                    started_running_time + thread_time);
+  TRACE_EVENT_END(kCpuEstimationEventCategory, perfetto::Track::FromPointer(id),
+                  started_running_time + wall_time);
 }
+#endif  // SHOULD_COLLECT_CPU_FREQUENCY_METRICS()
+
+#if BUILDFLAG(IS_WIN)
+// Reports histograms describing the value of the HKEY_LOCAL_MACHINE ->
+// Software\Microsoft\Windows NT\CurrentVersion\Image File ->
+// FrontEndHeapDebugOptions registry key. We observed locally that the 0x10 bit
+// activates stack collection on heap allocation, which results in unacceptable
+// performance. We want to be sure that this isn't used widely in the field.
+void RecordFrontEndHeapDebugOptionsHistogram() {
+  // Outcome of reading the registry key. These values are persisted to logs.
+  // Entries should not be renumbered and numeric values should never be reused.
+  // LINT.IfChange(FrontEndHeapDebugOptionsOutcome)
+  enum class FrontEndHeapDebugOptionsOutcome {
+    kCannotOpenKey = 0,
+    kCannotReadValue = 1,
+    kSuccess = 2,
+    kMaxValue = kSuccess,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/performance_manager/enums.xml:FrontEndHeapDebugOptionsOutcome)
+
+  std::optional<FrontEndHeapDebugOptionsOutcome> outcome;
+  base::win::RegKey key;
+  if (key.Open(HKEY_LOCAL_MACHINE,
+               L"Software\\Microsoft\\Windows NT\\CurrentVersion\\Image File "
+               L"Execution Options\\chrome.exe",
+               KEY_QUERY_VALUE | KEY_WOW64_32KEY) == ERROR_SUCCESS) {
+    DWORD value = 0;
+    if (key.ReadValueDW(L"FrontEndHeapDebugOptions", &value) == ERROR_SUCCESS) {
+      base::UmaHistogramSparse(
+          "PerformanceManager.RegistryStats.FrontEndHeapDebugOptionsValue",
+          // Limit the number of distinct values recorded to this histogram, as
+          // recommended by `base::UmaHistogramSparse()` documentation. The
+          // highest bit observed being set in practice is 0x10 (for stack
+          // collection on heap allocation). We set the maximum a little bit
+          // above that, to be aware if higher bits are used in the field.
+          std::clamp(base::saturated_cast<int>(value), 0, 0xff));
+      outcome = FrontEndHeapDebugOptionsOutcome::kSuccess;
+    } else {
+      outcome = FrontEndHeapDebugOptionsOutcome::kCannotReadValue;
+    }
+  } else {
+    outcome = FrontEndHeapDebugOptionsOutcome::kCannotOpenKey;
+  }
+
+  CHECK(outcome.has_value());
+  base::UmaHistogramEnumeration(
+      "PerformanceManager.RegistryStats.FrontEndHeapDebugOptionsOutcome",
+      outcome.value());
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -346,6 +387,10 @@ void MetricsProviderDesktop::ProvideCurrentSessionData(
 
   RecordDiskMetrics();
 
+#if BUILDFLAG(IS_WIN)
+  RecordFrontEndHeapDebugOptionsHistogram();
+#endif  // BUILDFLAG(IS_WIN)
+
   // Request a disk measurement so it's ready for the next interval
   PostDiskMetricsTask();
 }
@@ -357,14 +402,9 @@ MetricsProviderDesktop::MetricsProviderDesktop(PrefService* local_state)
   DCHECK(!g_metrics_provider);
   g_metrics_provider = this;
 
-  available_memory_metrics_timer_.Start(
-      FROM_HERE, base::Minutes(2),
-      base::BindRepeating(&MetricsProviderDesktop::RecordAvailableMemoryMetrics,
-                          base::Unretained(this)));
-
-  if constexpr (ShouldCollectCpuFrequencyMetrics()) {
-    ScheduleCpuFrequencyTask();
-  }
+#if SHOULD_COLLECT_CPU_FREQUENCY_METRICS()
+  ScheduleCpuFrequencyTask();
+#endif  // SHOULD_COLLECT_CPU_FREQUENCY_METRICS()
 }
 
 void MetricsProviderDesktop::OnBatterySaverActiveChanged(bool is_active) {
@@ -425,32 +465,6 @@ bool MetricsProviderDesktop::IsMemorySaverEnabled() const {
          static_cast<int>(MemorySaverModeState::kDisabled);
 }
 
-void MetricsProviderDesktop::RecordAvailableMemoryMetrics() {
-  auto available_bytes = base::SysInfo::AmountOfAvailablePhysicalMemory();
-  auto total_bytes = base::SysInfo::AmountOfPhysicalMemory();
-
-  base::UmaHistogramMemoryLargeMB("Memory.Experimental.AvailableMemoryMB",
-                                  available_bytes / kBytesPerMb);
-  base::UmaHistogramPercentage("Memory.Experimental.AvailableMemoryPercent",
-                               available_bytes * 100 / total_bytes);
-
-#if BUILDFLAG(IS_MAC)
-  base::SystemMemoryInfoKB info;
-  if (base::GetSystemMemoryInfo(&info)) {
-    base::UmaHistogramMemoryLargeMB(
-        "Memory.Experimental.MacFileBackedMemoryMB2",
-        info.file_backed / kKilobytesPerMb);
-    // `info.file_backed` is in kb, so multiply it by 1024 to get the amount of
-    // bytes
-    base::UmaHistogramPercentage(
-        "Memory.Experimental.MacAvailableMemoryPercentFreePageCache2",
-        (available_bytes +
-         (base::checked_cast<uint64_t>(info.file_backed) * 1024u)) *
-            100u / total_bytes);
-  }
-#endif
-}
-
 void MetricsProviderDesktop::ResetTrackers() {
   battery_saver_mode_tracker_ = std::make_unique<ScopedTimeInModeTracker>(
       battery_saver_enabled_,
@@ -460,15 +474,11 @@ void MetricsProviderDesktop::ResetTrackers() {
       "PerformanceManager.UserTuning.MemorySaverModeEnabledPercent");
 }
 
+#if SHOULD_COLLECT_CPU_FREQUENCY_METRICS()
 // static
 void MetricsProviderDesktop::RecordCpuFrequencyMetrics(
     base::TimeTicks posted_at_time) {
   auto started_running_time = base::TimeTicks::Now();
-
-  // Check this after computing started_running_time so that
-  // started_running_time is as close to reality as possible.
-  CHECK(ShouldCollectCpuFrequencyMetrics());
-
   auto queued_time = started_running_time - posted_at_time;
 
   static const double kHzInMhz = 1000 * 1000;
@@ -565,6 +575,8 @@ void MetricsProviderDesktop::RecordCpuFrequencyMetrics(
 
 // static
 void MetricsProviderDesktop::ScheduleCpuFrequencyTask() {
+  static constexpr base::TimeDelta kCpuThroughputSamplingInterval =
+      base::Minutes(5);
   base::ThreadPool::PostDelayedTask(
       FROM_HERE,
       {base::TaskPriority::USER_VISIBLE,
@@ -582,6 +594,7 @@ void MetricsProviderDesktop::PostCpuFrequencyEstimation() {
       base::BindOnce(&MetricsProviderDesktop::RecordCpuFrequencyMetrics,
                      base::TimeTicks::Now()));
 }
+#endif  // SHOULD_COLLECT_CPU_FREQUENCY_METRICS()
 
 void MetricsProviderDesktop::RecordDiskMetrics() {
   if (!pending_disk_metrics_) {
@@ -589,22 +602,22 @@ void MetricsProviderDesktop::RecordDiskMetrics() {
     return;
   }
 
-  if (pending_disk_metrics_->free_bytes == -1 ||
-      pending_disk_metrics_->total_bytes == -1) {
+  if (pending_disk_metrics_->free_bytes.is_negative() ||
+      pending_disk_metrics_->total_bytes.is_negative()) {
     return;
   }
 
   base::UmaHistogramCustomCounts(
       "PerformanceManager.DiskStats.UserDataDirFreeSpaceMb",
-      pending_disk_metrics_->free_bytes /
-          kBytesPerMb,  // space_info is bytes, convert to Mb
-      0, 10240,  // It's fine to bucket everything >10Gb as "large enough"
+      pending_disk_metrics_->free_bytes.InMiB(), 0,
+      base::GiB(10)
+          .InMiB(),  // It's fine to bucket everything >10Gb as "large enough"
       100);
   // Also report as a percentage of capacity
   base::UmaHistogramPercentage(
       "PerformanceManager.DiskStats.UserDataDirFreeSpacePercent",
-      pending_disk_metrics_->free_bytes * 100 /
-          pending_disk_metrics_->total_bytes);
+      pending_disk_metrics_->free_bytes.InBytes() * 100 /
+          pending_disk_metrics_->total_bytes.InBytes());
 
   pending_disk_metrics_ = std::nullopt;
 }
@@ -632,8 +645,10 @@ MetricsProviderDesktop::DiskMetrics
 MetricsProviderDesktop::DiskMetricsThreadPoolGetter::ComputeDiskMetrics(
     const base::FilePath& user_data_dir) {
   return {
-      .free_bytes = base::SysInfo::AmountOfFreeDiskSpace(user_data_dir),
-      .total_bytes = base::SysInfo::AmountOfTotalDiskSpace(user_data_dir),
+      .free_bytes = base::ByteCount(
+          base::SysInfo::AmountOfFreeDiskSpace(user_data_dir).value_or(-1)),
+      .total_bytes = base::ByteCount(
+          base::SysInfo::AmountOfTotalDiskSpace(user_data_dir).value_or(-1)),
   };
 }
 

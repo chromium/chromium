@@ -5,18 +5,21 @@
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
 
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_keyboard.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
+#include "ui/ozone/platform/wayland/host/wayland_tablet_manager.h"
+#include "ui/ozone/platform/wayland/host/wayland_tablet_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_touch.h"
 
 namespace ui {
 
 namespace {
 constexpr uint32_t kMinVersion = 1;
-constexpr uint32_t kMaxVersion = 8;
+constexpr uint32_t kMaxVersion = 10;
 }  // namespace
 
 // static
@@ -93,6 +96,8 @@ void WaylandSeat::HandleCapabilities(void* data,
                                      uint32_t capabilities) {
   DCHECK(connection_->event_source());
 
+  bool prev_keyboard_available = !!keyboard_;
+
   if (capabilities & WL_SEAT_CAPABILITY_KEYBOARD) {
     if (!RefreshKeyboard()) {
       LOG(ERROR) << "Failed to get wl_keyboard from seat";
@@ -123,9 +128,27 @@ void WaylandSeat::HandleCapabilities(void* data,
     touch_.reset();
   }
 
+  if (connection_->tablet_manager()) {
+    if (!tablet_) {
+      tablet_ = std::make_unique<WaylandTabletSeat>(
+          connection_->tablet_manager()->GetTabletSeat(wl_object()).release(),
+          connection_, connection_->event_source());
+    }
+  } else {
+    tablet_.reset();
+  }
+
   connection_->UpdateInputDevices();
   connection_->UpdateCursor();
   connection_->Flush();
+
+  bool keyboard_available = !!keyboard_;
+
+  if (keyboard_available != prev_keyboard_available) {
+    // Keyboard focus can be used to determine window active state depending on
+    // keyboard availability.
+    connection_->window_manager()->UpdateActivationState();
+  }
 }
 
 }  // namespace ui

@@ -1,0 +1,4 @@
+include_rules = [
+  # Minimize dependencies on internal code, but allow service construction.
+  "+components/data_sharing/migration/internal/migratable_sync_service_coordinator_impl.h",
+]

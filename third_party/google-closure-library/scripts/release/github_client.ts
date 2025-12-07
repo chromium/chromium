@@ -53,6 +53,11 @@ export interface DraftReleaseOptions {
   name: string;
   /** The body text for the release. */
   body: string;
+  /**
+   * The ID of a draft to update.
+   * If omitted, a new draft will be created.
+   */
+  id?: number;
 }
 
 /**
@@ -67,12 +72,7 @@ export class GitHubClient {
    * Constructs a new GitHubClient.
    * @param options Options for constructing this GitHubClient.
    */
-  constructor({
-    owner,
-    repo,
-    userAgent,
-    token,
-  }: GitHubClientOptions) {
+  constructor({owner, repo, userAgent, token}: GitHubClientOptions) {
     this.owner = owner;
     this.repo = repo;
     this.octokit = new Octokit({
@@ -94,25 +94,50 @@ export class GitHubClient {
   }
 
   /**
+   * Gets a list of drafts out of the last 30 releases.
+   * @return A list of recent drafts.
+   */
+  async getRecentDrafts() {
+    const {data} = await this.octokit.repos.listReleases({
+      owner: this.owner,
+      repo: this.repo,
+    });
+    return data.filter((release) => release.draft).map((release) => ({
+                                                         tagName:
+                                                             release.tag_name,
+                                                         id: release.id,
+                                                       }));
+  }
+
+  /**
    * Drafts a new GitHub Release.
    * @param options Options for drafting the GitHub Release.
    * @return The URL to the GitHub Web UI for managing the drafted release.
    */
-  async draftRelease({
-    tagName,
-    commit,
-    name,
-    body,
-  }: DraftReleaseOptions) {
-    const {data} = await this.octokit.repos.createRelease({
-      owner: this.owner,
-      repo: this.repo,
-      tag_name: tagName,
-      target_commitish: commit,
-      name,
-      body,
-      draft: true,
-    });
-    return data.html_url;
+  async draftRelease({tagName, commit, name, body, id}: DraftReleaseOptions) {
+    if (id) {
+      const {data} = await this.octokit.repos.updateRelease({
+        owner: this.owner,
+        repo: this.repo,
+        tag_name: tagName,
+        target_commitish: commit,
+        name,
+        body,
+        draft: true,
+        release_id: id,
+      });
+      return data.html_url;
+    } else {
+      const {data} = await this.octokit.repos.createRelease({
+        owner: this.owner,
+        repo: this.repo,
+        tag_name: tagName,
+        target_commitish: commit,
+        name,
+        body,
+        draft: true,
+      });
+      return data.html_url;
+    }
   }
 }

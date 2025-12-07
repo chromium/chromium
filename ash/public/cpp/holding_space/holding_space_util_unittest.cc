@@ -91,10 +91,10 @@ TEST_F(HoldingSpaceUtilAshTest, ExtractFilePaths) {
 
   // Configure the `client` to crack file system URLs.
   ON_CALL(client, CrackFileSystemUrl)
-      .WillByDefault(testing::Invoke([](const GURL& file_system_url) {
+      .WillByDefault([](const GURL& file_system_url) {
         return base::FilePath(base::StrCat(
             {"//path/to/", std::string(&file_system_url.spec().back())}));
-      }));
+      });
 
   // Case: Empty.
   data = CreateOSExchangeData(file_system_sources, filenames);
@@ -202,7 +202,6 @@ TEST_F(HoldingSpaceUtilTest, GetAllItemTypes) {
       case HoldingSpaceItem::Type::kDiagnosticsLog:
       case HoldingSpaceItem::Type::kDownload:
       case HoldingSpaceItem::Type::kDriveSuggestion:
-      case HoldingSpaceItem::Type::kLacrosDownload:
       case HoldingSpaceItem::Type::kLocalSuggestion:
       case HoldingSpaceItem::Type::kNearbyShare:
       case HoldingSpaceItem::Type::kPhoneHubCameraRoll:
@@ -311,9 +310,6 @@ TEST_F(HoldingSpaceUtilTest, ItemTypeToString) {
         break;
       case HoldingSpaceItem::Type::kDriveSuggestion:
         expected_string = "DriveSuggestion";
-        break;
-      case HoldingSpaceItem::Type::kLacrosDownload:
-        expected_string = "LacrosDownload";
         break;
       case HoldingSpaceItem::Type::kLocalSuggestion:
         expected_string = "LocalSuggestion";

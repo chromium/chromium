@@ -23,10 +23,10 @@ include_rules = [
   "+base/task/task_executor.h",
   "+base/task/task_features.h",
   "+base/task/task_traits.h",
+  "+base/threading/hang_watcher.h",
   "+base/threading/sequenced_task_runner_handle.h",
   "+base/threading/thread.h",
   "+base/traits_bag.h",
-  "+components/miracle_parameter",
   "+services/metrics",
 
   "+third_party/blink/renderer/platform/allow_discouraged_type.h",
@@ -54,7 +54,6 @@ specific_include_rules = {
   ".*test\.cc": [
     "+base/metrics/field_trial_param_associator.h",
     "+base/task/sequence_manager/test",
-    "+components/ukm/test_ukm_recorder.h",
     "+testing",
   ],
   "sequence_manager_fuzzer.cc": [

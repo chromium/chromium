@@ -7,8 +7,9 @@
 
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_hide_callback.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_tab_params.h"
+#include "url/origin.h"
 
-class GURL;
 class Profile;
 
 namespace content {
@@ -33,9 +34,9 @@ class ExclusiveAccessContext {
   virtual void UpdateUIForTabFullscreen() {}
 
   // Enters fullscreen and updates the exclusive access bubble.
-  virtual void EnterFullscreen(const GURL& url,
+  virtual void EnterFullscreen(const url::Origin& origin,
                                ExclusiveAccessBubbleType bubble_type,
-                               const int64_t display_id) = 0;
+                               FullscreenTabParams fullscreen_tab_params) = 0;
 
   // Exits fullscreen and updates the exclusive access bubble.
   virtual void ExitFullscreen() = 0;
@@ -54,6 +55,10 @@ class ExclusiveAccessContext {
 
   // Returns the currently active WebContents, or nullptr if there is none.
   virtual content::WebContents* GetWebContentsForExclusiveAccess() = 0;
+
+  // window.setResizable(false) blocks user-initiated fullscreen requests, see:
+  // https://github.com/explainers-by-googlers/additional-windowing-controls/blob/main/README.md
+  virtual bool CanUserEnterFullscreen() const = 0;
 
   // There are special modes where the user isn't allowed to exit fullscreen on
   // their own, and this function allows us to check for that.

@@ -19,7 +19,7 @@ OverlayStrategy OverlayProcessorStrategy::GetUMAEnum() const {
 }
 
 gfx::RectF OverlayProcessorStrategy::GetPrimaryPlaneDisplayRect(
-    const PrimaryPlane* primary_plane) {
+    const std::optional<OverlayCandidate>& primary_plane) {
   return primary_plane ? primary_plane->display_rect : gfx::RectF();
 }
 

@@ -22,14 +22,12 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/management_service/rotate_util.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/util_constants.h"
-#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::StrictMock;
 
 using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
@@ -56,18 +54,18 @@ HRESULT MockRunGoogleUpdateElevatedCommandFn(
   auto mock_network_delegate =
       std::make_unique<StrictMock<MockKeyNetworkDelegate>>();
   EXPECT_CALL(*mock_network_delegate, SendPublicKeyToDmServer(_, _, _, _))
-      .WillOnce(Invoke(
-          [upload_response_code, expected_dm_token, expected_client_id, args](
-              const GURL& url, const std::string& dm_token,
-              const std::string& body, base::OnceCallback<void(int)> callback) {
-            // Check if the DM Server URL contains the correct Client ID
-            CHECK(url.spec().find(expected_client_id) != std::string::npos);
-            // Check if the correct DM Token is being uploaded
-            CHECK_EQ(dm_token, expected_dm_token);
-            // TODO(b/269746642): add a check for the 'body' parameter above
+      .WillOnce([upload_response_code, expected_dm_token, expected_client_id,
+                 args](const GURL& url, const std::string& dm_token,
+                       const std::string& body,
+                       base::OnceCallback<void(int)> callback) {
+        // Check if the DM Server URL contains the correct Client ID
+        CHECK(url.spec().find(expected_client_id) != std::string::npos);
+        // Check if the correct DM Token is being uploaded
+        CHECK_EQ(dm_token, expected_dm_token);
+        // TODO(b/269746642): add a check for the 'body' parameter above
 
-            std::move(callback).Run(upload_response_code);
-          }));
+        std::move(callback).Run(upload_response_code);
+      });
   const auto result = enterprise_connectors::RotateDeviceTrustKey(
       enterprise_connectors::KeyRotationManager::Create(
           std::move(mock_network_delegate)),
@@ -105,7 +103,6 @@ DeviceTrustTestEnvironmentWin::~DeviceTrustTestEnvironmentWin() {
 std::unique_ptr<KeyRotationCommand>
 DeviceTrustTestEnvironmentWin::CreateCommand(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    policy::BrowserDMTokenStorage* dm_token_storage,
     policy::DeviceManagementService* device_management_service) {
   if (!worker_thread_.IsRunning()) {
     // Make sure the worker thread is running. Its task runner can be reused for

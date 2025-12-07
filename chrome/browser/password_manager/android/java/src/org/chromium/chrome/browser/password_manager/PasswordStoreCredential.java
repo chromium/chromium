@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.password_manager;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.url.GURL;
 
 /** This class represents key elements of stored credential in the password store. */
+@NullMarked
 public class PasswordStoreCredential {
     private final GURL mUrl;
     private final String mUsername;
@@ -48,7 +50,7 @@ public class PasswordStoreCredential {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof PasswordStoreCredential)) return false;
         PasswordStoreCredential that = (PasswordStoreCredential) o;
         return mUrl.equals(that.mUrl)
                 && mUsername.equals(that.mUsername)

@@ -4,6 +4,8 @@
 
 source_set("metrics") {
   sources = [
+    "android_metrics_log_uploader.cc",
+    "android_metrics_log_uploader.h",
     "android_metrics_provider.cc",
     "android_metrics_provider.h",
     "aw_component_metrics_provider_delegate.cc",
@@ -15,6 +17,8 @@ source_set("metrics") {
     "aw_metrics_service_client.h",
     "aw_server_side_allowlist_metrics_provider.cc",
     "aw_server_side_allowlist_metrics_provider.h",
+    "memory_metrics_logger.cc",
+    "memory_metrics_logger.h",
     "renderer_process_metrics_provider.cc",
     "renderer_process_metrics_provider.h",
     "system_state_util.cc",
@@ -26,16 +30,21 @@ source_set("metrics") {
   ]
   deps = [
     "//android_webview:browser_jni_headers",
+    "//android_webview/browser:browser_enums",
     "//android_webview/browser/lifecycle",
     "//android_webview/common",
     "//base",
     "//components/component_updater",
     "//components/component_updater/android:embedded_component_loader",
-    "//components/embedder_support/android/metrics",
     "//components/metrics",
     "//components/metrics:component_metrics",
+    "//components/metrics:content",
+    "//components/metrics:net",
+    "//components/metrics:ui",
     "//components/prefs",
+    "//components/variations",
     "//components/version_info/android:channel_getter",
     "//content/public/browser",
+    "//services/resource_coordinator/public/cpp/memory_instrumentation:browser",
   ]
 }

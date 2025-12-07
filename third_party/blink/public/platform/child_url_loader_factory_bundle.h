@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -20,6 +19,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"
 #include "third_party/blink/public/mojom/loader/fetch_later.mojom.h"
+#include "third_party/blink/public/mojom/loader/local_resource_loader_config.mojom.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_common.h"
@@ -70,6 +70,7 @@ class BLINK_PLATFORM_EXPORT ChildPendingURLLoaderFactoryBundle
           pending_keep_alive_loader_factory,
       mojo::PendingAssociatedRemote<blink::mojom::FetchLaterLoaderFactory>
           pending_fetch_later_loader_factory,
+      mojom::LocalResourceLoaderConfigPtr local_resource_loader_config,
       bool bypass_redirect_checks);
   ChildPendingURLLoaderFactoryBundle(
       const ChildPendingURLLoaderFactoryBundle&) = delete;
@@ -89,6 +90,7 @@ class BLINK_PLATFORM_EXPORT ChildPendingURLLoaderFactoryBundle
             {},       // pending_subresource_proxying_loader_factory
             {},       // pending_keep_alive_loader_factory
             {},       // pending_fetch_later_loader_factory
+            nullptr,  // local_resource_loader_config
             false));  // bypass_redirect_checks
     return pending_bundle;
   }

@@ -11,22 +11,20 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-
-import java.util.concurrent.FutureTask;
+import org.chromium.build.annotations.NullMarked;
 
 /**
- * Implements the Java side of LocationProviderAndroid.
- * Delegates all real functionality to the implementation
- * returned from LocationProviderFactory.
- * See detailed documentation on
- * content/browser/geolocation/location_api_adapter_android.h.
- * Based on android.webkit.GeolocationService.java
+ * Implements the Java side of LocationProviderAndroid. Delegates all real functionality to the
+ * implementation returned from LocationProviderFactory. See detailed documentation on
+ * content/browser/geolocation/location_api_adapter_android.h. Based on
+ * android.webkit.GeolocationService.java
  */
+@NullMarked
 public class LocationProviderAdapter {
     private static final String TAG = "LocationProvider";
 
     // Delegate handling the real work in the main thread.
-    private LocationProvider mImpl;
+    private final LocationProvider mImpl;
 
     private LocationProviderAdapter() {
         mImpl = LocationProviderFactory.create();
@@ -39,35 +37,18 @@ public class LocationProviderAdapter {
 
     /**
      * Start listening for location updates until we're told to quit. May be called in any thread.
+     *
      * @param enableHighAccuracy Whether or not to enable high accuracy location providers.
      */
     @CalledByNative
     public void start(final boolean enableHighAccuracy) {
-        FutureTask<Void> task =
-                new FutureTask<Void>(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                mImpl.start(enableHighAccuracy);
-                            }
-                        },
-                        null);
-        ThreadUtils.runOnUiThread(task);
+        ThreadUtils.runOnUiThread(() -> mImpl.start(enableHighAccuracy));
     }
 
     /** Stop listening for location updates. May be called in any thread. */
     @CalledByNative
     public void stop() {
-        FutureTask<Void> task =
-                new FutureTask<Void>(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                mImpl.stop();
-                            }
-                        },
-                        null);
-        ThreadUtils.runOnUiThread(task);
+        ThreadUtils.runOnUiThread(mImpl::stop);
     }
 
     /**
@@ -79,7 +60,7 @@ public class LocationProviderAdapter {
         return mImpl.isRunning();
     }
 
-    public static void onNewLocationAvailable(Location location) {
+    public static void onNewLocationAvailable(Location location, boolean isPrecise) {
         LocationProviderAdapterJni.get()
                 .newLocationAvailable(
                         location.getLatitude(),
@@ -92,7 +73,8 @@ public class LocationProviderAdapter {
                         location.hasBearing(),
                         location.getBearing(),
                         location.hasSpeed(),
-                        location.getSpeed());
+                        location.getSpeed(),
+                        isPrecise);
     }
 
     public static void newErrorAvailable(String message) {
@@ -113,7 +95,8 @@ public class LocationProviderAdapter {
                 boolean hasHeading,
                 double heading,
                 boolean hasSpeed,
-                double speed);
+                double speed,
+                boolean isPrecise);
 
         void newErrorAvailable(String message);
     }

@@ -4,11 +4,11 @@
 
 /** @fileoverview Common utilities for extension ui tests. */
 import type {ItemDelegate} from 'chrome://extensions/extensions.js';
-import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {createDummyExtensionInfo} from 'chrome://extensions/extensions.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';
 import {MockController, MockMethod} from 'chrome://webui-test/mock_controller.js';
-import {isChildVisible} from 'chrome://webui-test/test_util.js';
+import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 /** A mock to test that clicking on an element calls a specific method. */
 export class ClickMock {
@@ -29,9 +29,9 @@ export class ClickMock {
     MockMethod.prototype.addExpectation.apply(mockMethod, expectedArgs);
     element.click();
 
-    if (element instanceof CrLitElement) {
-      await (element as CrLitElement).updateComplete;
-    }
+    // Necessary in case the element or any ancestor of the element that is
+    // expected to make the call is a Lit element.
+    await microtasksFinished();
 
     mock.verifyMocks();
   }
@@ -98,8 +98,11 @@ export class MockItemDelegate extends ClickMock implements ItemDelegate {
     return Promise.resolve();
   }
   setItemSafetyCheckWarningAcknowledged(_id: string) {}
-  setItemEnabled(_id: string, _isEnabled: boolean) {}
+  setItemEnabled(_id: string, _isEnabled: boolean) {
+    return Promise.resolve();
+  }
   setItemAllowedIncognito(_id: string, _isAllowedIncognito: boolean) {}
+  setItemAllowedUserScripts(_id: string, _isAllowedUserScripts: boolean) {}
   setItemAllowedOnFileUrls(_id: string, _isAllowedOnFileUrls: boolean) {}
   setItemHostAccess(
       _id: string, _hostAccess: chrome.developerPrivate.HostAccess) {}
@@ -107,6 +110,9 @@ export class MockItemDelegate extends ClickMock implements ItemDelegate {
   setItemPinnedToToolbar(_id: string, _pinnedToToolbar: boolean) {}
   inspectItemView(_id: string, _view: chrome.developerPrivate.ExtensionView) {}
   openUrl(_url: string) {}
+  uploadItemToAccount(_id: string) {
+    return Promise.resolve(false);
+  }
 
 
   reloadItem(_id: string) {
@@ -136,6 +142,8 @@ export class MockItemDelegate extends ClickMock implements ItemDelegate {
   getItemStateChangedTarget() {
     return this.itemStateChangedTarget;
   }
+
+  showSiteSettings(_id: string) {}
 }
 
 /**
@@ -174,7 +182,7 @@ export function testVisible(
   assertEquals(expectedVisible, visible, selector);
   if (expectedVisible && visible && expectedText) {
     const element = parentEl.shadowRoot!.querySelector(selector)!;
-    assertEquals(expectedText, element.textContent!.trim(), selector);
+    assertEquals(expectedText, element.textContent.trim(), selector);
   }
 }
 
@@ -189,58 +197,32 @@ export function createExtensionInfo(
   const id = properties && properties.hasOwnProperty('id') ? properties['id']! :
                                                              'a'.repeat(32);
   const baseUrl = 'chrome-extension://' + id + '/';
-  return Object.assign(
-      {
-        commands: [],
-        errorCollection: {
-          isEnabled: false,
-          isActive: false,
-        },
-        dependentExtensions: [],
-        description: 'This is an extension',
-        disableReasons: {
-          suspiciousInstall: false,
-          corruptInstall: false,
-          updateRequired: false,
-          publishedInStoreRequired: false,
-          blockedByPolicy: false,
-          custodianApprovalRequired: false,
-          parentDisabledPermissions: false,
-          reloading: false,
-          unsupportedManifestVersion: false,
-        },
-        fileAccess: {
-          isEnabled: false,
-          isActive: false,
-        },
-        homePage: {specified: false, url: ''},
-        iconUrl: 'chrome://extension-icon/' + id + '/24/0',
-        id: id,
-        incognitoAccess: {isEnabled: true, isActive: false},
-        installWarnings: [],
-        location: 'FROM_STORE',
-        manifestErrors: [],
-        manifestHomePageUrl: '',
-        mustRemainInstalled: false,
-        name: 'Wonderful Extension',
-        offlineEnabled: false,
-        runtimeErrors: [],
-        runtimeWarnings: [],
-        permissions: {simplePermissions: [], canAccessSiteData: false},
-        state: 'ENABLED',
-        type: 'EXTENSION',
-        updateUrl: '',
-        userMayModify: true,
-        version: '2.0',
-        views: [{url: baseUrl + 'foo.html'}, {url: baseUrl + 'bar.html'}],
-        webStoreUrl: '',
-        showSafeBrowsingAllowlistWarning: false,
-        showAccessRequestsInToolbar: false,
-        isAffectedByMV2Deprecation: false,
-        didAcknowledgeMV2DeprecationNotice: false,
-        safetyCheckWarningReason: 'UNPUBLISHED',
-      },
-      properties || {});
+  const dummy = createDummyExtensionInfo();
+
+  // Modify some dummy properties for testing.
+  dummy.description = 'This is an extension';
+  dummy.iconUrl = 'chrome://extension-icon/' + id + '/24/0';
+  dummy.id = id;
+  dummy.incognitoAccess = {isEnabled: true, isActive: false};
+  dummy.name = 'Wonderful Extension';
+  dummy.location = chrome.developerPrivate.Location.FROM_STORE;
+  dummy.userMayModify = true;
+
+  function createDummyView(url: string): chrome.developerPrivate.ExtensionView {
+    return {
+      url: url,
+      renderProcessId: 0,
+      renderViewId: 0,
+      incognito: false,
+      isIframe: false,
+      type: chrome.developerPrivate.ViewType.APP_WINDOW,
+    };
+  }
+  dummy.views = [
+    createDummyView(baseUrl + 'foo.html'),
+    createDummyView(baseUrl + 'bar.html'),
+  ];
+  return Object.assign(dummy, properties || {});
 }
 
 /**

@@ -3,24 +3,29 @@
 // found in the LICENSE file.
 
 use crate::config;
-use crate::crates::{self, CrateFiles, Epoch, NormalizedName, VendoredCrate};
+use crate::crates::{self, CrateFiles, VendoredCrate};
 use crate::deps;
 use crate::gn;
-use crate::paths;
+use crate::paths::{self, get_build_dir_for_package};
 use crate::util::{
-    check_exit_ok, check_spawn, check_wait_with_output, create_dirs_if_needed, init_handlebars,
-    run_cargo_metadata,
+    check_exit_ok, check_spawn, check_wait_with_output, create_dirs_if_needed,
+    get_guppy_package_graph, init_handlebars_with_template_paths, render_handlebars,
 };
 use crate::GenCommandArgs;
 
 use std::collections::{HashMap, HashSet};
-use std::fs;
-use std::io::{self, Write};
 use std::path::{Path, PathBuf};
-use std::process;
+use std::process::{Command, Stdio};
 
 use anyhow::{ensure, format_err, Context, Result};
 
+/// `fn generate` implements handling of the `gnrt gen` CLI command - this
+/// covers the following steps (for either `//build/rust/std` or for
+/// `//third_party/rust`):
+///
+/// 1. Using `cargo` / `guppy` (in offline mode) to resolve transitive
+///    dependencies of `Cargo.toml`
+/// 2. Generating all required `BUILD.gn` files
 pub fn generate(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
     if args.for_std.is_some() {
         generate_for_std(args, paths)
@@ -31,23 +36,24 @@ pub fn generate(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Result<()
 
 fn generate_for_std(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
     // Load config file, which applies rustenv and cfg flags to some std crates.
-    let config_file_contents = std::fs::read_to_string(paths.std_config_file).unwrap();
-    let config: config::BuildConfig = toml::de::from_str(&config_file_contents).unwrap();
+    let config = config::BuildConfig::from_path(paths.std_config_file)?;
 
-    let template_path =
+    let build_file_template_path =
         paths.std_config_file.parent().unwrap().join(&config.gn_config.build_file_template);
 
-    let handlebars = init_handlebars(&template_path)?;
+    let handlebars = init_handlebars_with_template_paths(&[&build_file_template_path])?;
 
     // The Rust source tree, containing the standard library and vendored
     // dependencies.
-    let rust_src_root = args.for_std.as_ref().unwrap();
+    // Backslashes will confuse some of the string processing later, so
+    // ensure we only use forward-slash paths, even on windows.
+    let rust_src_root = paths::normalize_unix_path_separator(args.for_std.as_ref().unwrap());
 
-    println!("Generating stdlib GN rules from {}", rust_src_root);
+    println!("Generating stdlib GN rules from {rust_src_root}");
 
     let cargo_config = std::fs::read_to_string(paths.std_fake_root_config_template)
         .unwrap()
-        .replace("RUST_SRC_ROOT", rust_src_root);
+        .replace("RUST_SRC_ROOT", &rust_src_root);
     std::fs::write(
         paths.strip_template(paths.std_fake_root_config_template).unwrap(),
         cargo_config,
@@ -56,11 +62,11 @@ fn generate_for_std(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Resul
 
     let cargo_toml = std::fs::read_to_string(paths.std_fake_root_cargo_template)
         .unwrap()
-        .replace("RUST_SRC_ROOT", rust_src_root);
+        .replace("RUST_SRC_ROOT", &rust_src_root);
     std::fs::write(paths.strip_template(paths.std_fake_root_cargo_template).unwrap(), cargo_toml)
         .unwrap();
     // Convert the `rust_src_root` to a Path hereafter.
-    let rust_src_root = paths.root.join(Path::new(rust_src_root));
+    let rust_src_root = paths.root.join(Path::new(&rust_src_root)).canonicalize().unwrap();
 
     // Delete the Cargo.lock if it exists.
     let mut std_fake_root_cargo_lock = paths.std_fake_root.to_path_buf();
@@ -97,49 +103,27 @@ fn generate_for_std(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Resul
     //   Rust codebase (see
     //   https://github.com/rust-lang/rust/tree/master/library/rustc-std-workspace-core)
     let mut dependencies = {
-        let metadata =
-            run_cargo_metadata(paths.std_fake_root.into(), cargo_extra_options, cargo_extra_env)
-                .with_context(|| {
-                    format!(
-                        "Failed to parse cargo metadata in a directory synthesized from \
-                         {} and {}",
-                        paths.std_fake_root_cargo_template.display(),
-                        paths.std_fake_root_config_template.display(),
-                    )
-                })?;
-        deps::collect_dependencies(
-            &metadata,
-            Some(vec![config.resolve.root.clone()]),
-            None,
-            &config,
+        let metadata = get_guppy_package_graph(
+            paths.std_fake_root.into(),
+            cargo_extra_options,
+            cargo_extra_env,
         )
+        .with_context(|| {
+            format!(
+                "Failed to parse cargo metadata in a directory synthesized from \
+                         {} and {}",
+                paths.std_fake_root_cargo_template.display(),
+                paths.std_fake_root_config_template.display(),
+            )
+        })?;
+        deps::collect_dependencies(&metadata, &config.resolve.root, &config)?
     };
-
-    // Filter out any crates' dependencies removed by config file.
-    for dep in dependencies.iter_mut() {
-        let combined: HashSet<&str> =
-            config.get_combined_set(&dep.package_name, |crate_cfg| &crate_cfg.remove_deps);
-        if combined.is_empty() {
-            continue;
-        }
-
-        for kind in [&mut dep.dependencies, &mut dep.build_dependencies] {
-            kind.retain(|dep_of_dep| !combined.contains(dep_of_dep.package_name.as_str()));
-        }
-    }
-
-    // Remove any excluded dep entries.
-    dependencies
-        .retain(|dep| !config.resolve.remove_crates.iter().any(|r| **r == dep.package_name));
 
     // Remove dev dependencies since tests aren't run. Also remove build deps
     // since we configure flags and env vars manually. Include the root
     // explicitly since it doesn't get a dependency_kinds entry.
     dependencies.retain(|dep| dep.dependency_kinds.contains_key(&deps::DependencyKind::Normal));
 
-    dependencies.sort_unstable_by(|a, b| {
-        a.package_name.cmp(&b.package_name).then(a.version.cmp(&b.version))
-    });
     for dep in dependencies.iter_mut() {
         // Rehome stdlib deps from the `rust_src_root` to where they will be installed
         // in the Chromium checkout.
@@ -171,7 +155,7 @@ fn generate_for_std(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Resul
     // the set of third-party dependencies vendored in the Rust source package.
     let vendored_crates: HashSet<VendoredCrate> =
         crates::collect_std_vendored_crates(&rust_src_root.join(paths.rust_src_vendor_subdir))
-            .unwrap()
+            .context("Collecting vendored `std` crates")?
             .into_iter()
             .collect();
 
@@ -203,9 +187,9 @@ fn generate_for_std(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Resul
         .filter(|p| p.lib_target.is_some())
         .map(|p| {
             crates::collect_crate_files(p, &config, crates::IncludeCrateTargets::LibOnly)
-                .expect("missing a stdlib input file, did you gclient sync?")
+                .with_context(|| format!("Failed to collect crate files for {p}"))
         })
-        .collect();
+        .collect::<Result<_>>()?;
 
     let build_file = gn::build_file_from_deps(
         dependencies.iter(),
@@ -223,19 +207,19 @@ fn generate_for_std(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Resul
         .context("dumping gn information");
     }
 
-    let gn_str = handlebars.render("template", &build_file)?;
-    write_build_file(&paths.std_build.join("BUILD.gn"), gn_str).unwrap();
+    let build_gn_path = paths.std_build.join("BUILD.gn");
+    render_handlebars(&handlebars, &build_file_template_path, &build_file, &build_gn_path)?;
+    format_build_file(&build_gn_path)?;
 
     Ok(())
 }
 
 fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
-    let config_file_contents = std::fs::read_to_string(paths.third_party_config_file).unwrap();
-    let config: config::BuildConfig = toml::de::from_str(&config_file_contents).unwrap();
+    let config = config::BuildConfig::from_path(paths.third_party_config_file)?;
 
-    let template_path =
+    let build_file_template_path =
         paths.third_party_config_file.parent().unwrap().join(&config.gn_config.build_file_template);
-    let handlebars = init_handlebars(&template_path)?;
+    let handlebars = init_handlebars_with_template_paths(&[&build_file_template_path])?;
 
     println!("Generating third-party GN rules from {}", paths.third_party_cargo_root.display());
 
@@ -248,47 +232,15 @@ fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) 
     ];
 
     // Compute the set of all third-party crates.
-    let mut dependencies = deps::collect_dependencies(
-        &run_cargo_metadata(
+    let dependencies = deps::collect_dependencies(
+        &get_guppy_package_graph(
             paths.third_party_cargo_root.into(),
             cargo_extra_options,
             HashMap::new(),
         )?,
-        Some(vec![config.resolve.root.clone()]),
-        None,
+        &config.resolve.root,
         &config,
-    );
-
-    // Filter out any crates' dependencies removed by config file.
-    for dep in dependencies.iter_mut() {
-        let all: Option<&Vec<String>> = Some(&config.all_config.remove_deps);
-        let per: Option<&Vec<String>> =
-            config.per_crate_config.get(&dep.package_name).map(|config| &config.remove_deps);
-
-        let combined: Vec<&String> = all.into_iter().chain(per).flatten().collect();
-        if combined.is_empty() {
-            continue;
-        }
-
-        for kind in [&mut dep.dependencies, &mut dep.build_dependencies] {
-            kind.retain(|dep_of_dep| !combined.iter().any(|r| **r == dep_of_dep.package_name));
-        }
-    }
-
-    // Remove any excluded dep entries.
-    dependencies
-        .retain(|dep| !config.resolve.remove_crates.iter().any(|r| **r == dep.package_name));
-
-    // Remove dev dependencies since tests aren't run.
-    dependencies.retain(|dep| {
-        dep.dependency_kinds.contains_key(&deps::DependencyKind::Normal)
-        // TODO: Needed?
-            || dep.dependency_kinds.contains_key(&deps::DependencyKind::Build)
-    });
-
-    dependencies.sort_unstable_by(|a, b| {
-        a.package_name.cmp(&b.package_name).then(a.version.cmp(&b.version))
-    });
+    )?;
 
     let crate_inputs: HashMap<VendoredCrate, CrateFiles> = dependencies
         .iter()
@@ -332,10 +284,7 @@ fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) 
                 gn::NameLibStyle::LibLiteral,
                 |crate_id| crate_inputs.get(crate_id).unwrap(),
             )?;
-            let path = paths
-                .third_party
-                .join(NormalizedName::from_crate_name(&dep.package_name).as_str())
-                .join(Epoch::from_version(&dep.version).to_string());
+            let path = get_build_dir_for_package(paths, &dep.package_name, &dep.version);
             let previous = map.insert(path, build_file);
             if previous.is_some() {
                 Err(format_err!(
@@ -364,29 +313,30 @@ fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) 
     }
 
     for (dir, build_file) in &all_build_files {
-        let gn_str = handlebars.render("template", &build_file)?;
-        write_build_file(&dir.join("BUILD.gn"), gn_str).unwrap();
+        let build_file_path = dir.join("BUILD.gn");
+        render_handlebars(&handlebars, &build_file_template_path, &build_file, &build_file_path)?;
+        if let Err(err) = format_build_file(&build_file_path) {
+            log::warn!(
+                "Ignoring the following `gn format` failure: {err}. \
+                 Please format the generated file(s) manually."
+            );
+        }
     }
     Ok(())
 }
 
-fn write_build_file(path: &Path, content: String) -> Result<()> {
+/// Runs `gn format` command to format a `BUILD.gn` file at the given path.
+fn format_build_file(path_to_build_gn_file: &Path) -> Result<()> {
     let cmd_name = "gn format";
-    let output_handle = fs::File::create(path)
-        .with_context(|| format!("Could not create GN output file {}", path.to_string_lossy()))?;
-
-    // Spawn a child process to format GN rules. The formatted GN is written to
-    // the file `output_handle`.
-    let mut child = check_spawn(
-        process::Command::new(if cfg!(windows) { "gn.bat" } else { "gn" })
+    check_spawn(
+        Command::new(if cfg!(windows) { "gn.bat" } else { "gn" })
             .arg("format")
-            .arg("--stdin")
-            .stdin(process::Stdio::piped())
-            .stdout(output_handle),
+            .arg(path_to_build_gn_file)
+            // Discard `Wrote formatted to '//.../BUILD>gn'` messages.
+            .stdout(Stdio::null()),
         cmd_name,
-    )?;
-
-    write!(io::BufWriter::new(child.stdin.take().unwrap()), "{}", content)
-        .context("Failed to write to GN format process")?;
-    check_exit_ok(&check_wait_with_output(child, cmd_name)?, cmd_name)
+    )
+    .and_then(|child| check_wait_with_output(child, cmd_name))
+    .and_then(|output| check_exit_ok(&output, cmd_name))
+    .with_context(|| format!("Error formatting `{}`", path_to_build_gn_file.display()))
 }

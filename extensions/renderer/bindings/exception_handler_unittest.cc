@@ -28,7 +28,7 @@ void PopulateError(std::optional<std::string>* error_out,
 void ThrowException(v8::Local<v8::Context> context,
                     const std::string& to_throw,
                     ExceptionHandler* handler) {
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::TryCatch try_catch(isolate);
   v8::Local<v8::Function> function = FunctionFromString(
       context,
@@ -152,7 +152,7 @@ TEST_F(ExceptionHandlerTest, StackTraces) {
     v8::TryCatch try_catch(isolate());
     v8::Local<v8::Script> script =
         v8::Script::Compile(context,
-                            gin::StringToV8(context->GetIsolate(),
+                            gin::StringToV8(v8::Isolate::GetCurrent(),
                                             "throw new Error('simple');"))
             .ToLocalChecked();
     ASSERT_TRUE(script->Run(context).IsEmpty());
@@ -187,8 +187,8 @@ TEST_F(ExceptionHandlerTest, StackTraces) {
         "function callThrowError() { throwError(); }\n"
         "callThrowError()\n";
     v8::Local<v8::Script> script =
-        v8::Script::Compile(context,
-                            gin::StringToV8(context->GetIsolate(), kNestedCall))
+        v8::Script::Compile(
+            context, gin::StringToV8(v8::Isolate::GetCurrent(), kNestedCall))
             .ToLocalChecked();
     ASSERT_TRUE(script->Run(context).IsEmpty());
     ASSERT_TRUE(try_catch.HasCaught());

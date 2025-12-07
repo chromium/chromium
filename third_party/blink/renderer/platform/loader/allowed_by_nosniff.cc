@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -76,10 +77,11 @@ const std::array<WebFeature, 2> kUnknownFeatures = {
 // expected future blocking of this resource. 'counter' determines which
 // Use counter should be used to count this. 'is_worker_global_scope' is used
 // for choosing 'counter' value.
-bool AllowMimeTypeAsScript(const String& mime_type,
-                           bool same_origin,
-                           AllowedByNosniff::MimeTypeCheck mime_type_check_mode,
-                           WebFeature& counter) {
+static bool AllowMimeTypeAsScript(
+    const String& mime_type,
+    bool same_origin,
+    AllowedByNosniff::MimeTypeCheck mime_type_check_mode,
+    std::optional<WebFeature>& counter) {
   using MimeTypeCheck = AllowedByNosniff::MimeTypeCheck;
 
   // If strict mime type checking for workers is enabled, we'll treat all
@@ -138,10 +140,10 @@ bool AllowMimeTypeAsScript(const String& mime_type,
     counter = kTextHtmlFeatures[same_origin];
   } else if (mime_type.StartsWithIgnoringASCIICase("text/plain")) {
     counter = kTextPlainFeatures[same_origin];
-  } else if (mime_type.StartsWithIgnoringCase("text/xml")) {
+  } else if (mime_type.StartsWithIgnoringASCIICase("text/xml")) {
     counter = kTextXmlFeatures[same_origin];
-  } else if (mime_type.StartsWithIgnoringCase("text/json") ||
-             mime_type.StartsWithIgnoringCase("application/json")) {
+  } else if (mime_type.DeprecatedStartsWithIgnoringCase("text/json") ||
+             mime_type.DeprecatedStartsWithIgnoringCase("application/json")) {
     counter = kJsonFeatures[same_origin];
   } else {
     counter = kUnknownFeatures[same_origin];
@@ -157,10 +159,13 @@ bool AllowedByNosniff::MimeTypeAsScript(UseCounter& use_counter,
                                         const ResourceResponse& response,
                                         MimeTypeCheck mime_type_check_mode) {
   // The content type is really only meaningful for `http:`-family schemes.
-  if (!response.CurrentRequestUrl().ProtocolIsInHTTPFamily() &&
-      (response.CurrentRequestUrl().LastPathComponent().EndsWith(".js") ||
-       response.CurrentRequestUrl().LastPathComponent().EndsWith(".mjs"))) {
-    return true;
+  if (!response.CurrentRequestUrl().ProtocolIsInHTTPFamily()) {
+    String last_path_component =
+        response.CurrentRequestUrl().LastPathComponent().ToString();
+    if (last_path_component.EndsWith(".js") ||
+        last_path_component.EndsWith(".mjs")) {
+      return true;
+    }
   }
 
   // Exclude `data:`, `blob:` and `filesystem:` URLs from MIME checks.
@@ -179,10 +184,11 @@ bool AllowedByNosniff::MimeTypeAsScript(UseCounter& use_counter,
     console_logger->AddConsoleMessage(
         mojom::ConsoleMessageSource::kSecurity,
         mojom::ConsoleMessageLevel::kError,
-        "Refused to execute script from '" +
-            response.CurrentRequestUrl().ElidedString() +
-            "' because its MIME type ('" + mime_type +
-            "') is not executable, and strict MIME type checking is enabled.");
+        StrCat({"Refused to execute script from '",
+                response.CurrentRequestUrl().ElidedString(),
+                "' because its MIME type ('", mime_type,
+                "') is not executable, and strict MIME type checking is "
+                "enabled."}));
     return false;
   }
 
@@ -194,8 +200,7 @@ bool AllowedByNosniff::MimeTypeAsScript(UseCounter& use_counter,
 
   // For any MIME type, we can do three things: accept/reject it, print a
   // warning into the console, and count it using a use counter.
-  const WebFeature kWebFeatureNone = WebFeature::kNumberOfFeatures;
-  WebFeature counter = kWebFeatureNone;
+  std::optional<WebFeature> counter;
   bool allow = AllowMimeTypeAsScript(mime_type, same_origin,
                                      mime_type_check_mode, counter);
 
@@ -209,16 +214,17 @@ bool AllowedByNosniff::MimeTypeAsScript(UseCounter& use_counter,
 
   // The code above has made a decision and handed down the result in accept
   // and counter.
-  if (counter != kWebFeatureNone) {
-    use_counter.CountUse(counter);
+  if (counter.has_value()) {
+    use_counter.CountUse(*counter);
   }
   if (!allow) {
     console_logger->AddConsoleMessage(
-        mojom::ConsoleMessageSource::kSecurity,
-        mojom::ConsoleMessageLevel::kError,
-        "Refused to execute script from '" +
-            response.CurrentRequestUrl().ElidedString() +
-            "' because its MIME type ('" + mime_type + "') is not executable.");
+        mojom::blink::ConsoleMessageSource::kSecurity,
+        mojom::blink::ConsoleMessageLevel::kError,
+        StrCat({"Refused to execute script from '",
+                response.CurrentRequestUrl().ElidedString(),
+                "' because its MIME type ('", mime_type,
+                "') is not executable."}));
   } else if (mime_type_check_mode == MimeTypeCheck::kLaxForWorker) {
     bool strict_allow = AllowMimeTypeAsScript(mime_type, same_origin,
                                               MimeTypeCheck::kStrict, counter);
@@ -226,6 +232,29 @@ bool AllowedByNosniff::MimeTypeAsScript(UseCounter& use_counter,
       use_counter.CountUse(WebFeature::kStrictMimeTypeChecksWouldBlockWorker);
   }
   return allow;
+}
+
+bool AllowedByNosniff::MimeTypeAsXMLExternalEntity(
+    ConsoleLogger* console_logger,
+    const ResourceResponse& response) {
+  if (ParseContentTypeOptionsHeader(response.HttpHeaderField(
+          http_names::kXContentTypeOptions)) != kContentTypeOptionsNosniff) {
+    return true;
+  }
+
+  if (MIMETypeRegistry::IsXMLExternalEntityMIMEType(
+          response.HttpContentType())) {
+    return true;
+  }
+
+  console_logger->AddConsoleMessage(
+      mojom::blink::ConsoleMessageSource::kSecurity,
+      mojom::blink::ConsoleMessageLevel::kError,
+      StrCat({"Refused to load XML external entity from '",
+              response.CurrentRequestUrl().ElidedString(),
+              "' because its MIME type ('", response.HttpContentType(),
+              "') is incorrect, and strict MIME type checking is enabled."}));
+  return false;
 }
 
 }  // namespace blink

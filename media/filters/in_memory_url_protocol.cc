@@ -8,37 +8,29 @@
 
 namespace media {
 
-InMemoryUrlProtocol::InMemoryUrlProtocol(const uint8_t* data,
-                                         int64_t size,
+InMemoryUrlProtocol::InMemoryUrlProtocol(base::span<const uint8_t> data,
                                          bool streaming)
-    : data_(data),
-      size_(size >= 0 ? size : 0),
-      position_(0),
-      streaming_(streaming) {}
+    : data_(data), position_(0), streaming_(streaming) {}
 
 InMemoryUrlProtocol::~InMemoryUrlProtocol() = default;
 
-int InMemoryUrlProtocol::Read(int size, uint8_t* data) {
-  // Not sure this can happen, but it's unclear from the ffmpeg code, so guard
-  // against it.
-  if (size < 0)
-    return AVERROR(EIO);
-  if (!size)
+int InMemoryUrlProtocol::Read(base::span<uint8_t> data) {
+  if (data.empty()) {
     return 0;
-
-  const int64_t available_bytes = size_ - position_;
-  if (available_bytes <= 0)
+  }
+  if (position_ >= base::checked_cast<int64_t>(data_.size())) {
     return AVERROR_EOF;
-
-  if (size > available_bytes)
-    size = available_bytes;
-
-  if (size > 0) {
-    memcpy(data, data_ + base::checked_cast<size_t>(position_), size);
-    position_ += size;
   }
 
-  return size;
+  const auto source = data_.subspan(base::checked_cast<size_t>(position_));
+  if (data.size() > source.size()) {
+    data = data.first(source.size());
+  }
+  if (!data.empty()) {
+    data.copy_from(source.first(data.size()));
+    position_ += data.size();
+  }
+  return data.size();
 }
 
 bool InMemoryUrlProtocol::GetPosition(int64_t* position_out) {
@@ -50,8 +42,9 @@ bool InMemoryUrlProtocol::GetPosition(int64_t* position_out) {
 }
 
 bool InMemoryUrlProtocol::SetPosition(int64_t position) {
-  if (position < 0 || position > size_)
+  if (position < 0 || position > base::checked_cast<int64_t>(data_.size())) {
     return false;
+  }
   position_ = position;
   return true;
 }
@@ -60,7 +53,7 @@ bool InMemoryUrlProtocol::GetSize(int64_t* size_out) {
   if (!size_out)
     return false;
 
-  *size_out = size_;
+  *size_out = data_.size();
   return true;
 }
 

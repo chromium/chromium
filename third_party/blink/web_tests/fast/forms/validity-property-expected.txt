@@ -37,7 +37,7 @@ PASS "validity" in controls[i] is true
 PASS validity1 = controls[i].validity; validity1 instanceof ValidityState is true
 PASS validity2 = controls[i].validity; validity1 === validity2 is true
 PASS countAttr(controls[i].validity) is 11
-PASS new ValidityState() threw exception TypeError: Illegal constructor.
+PASS new ValidityState() threw exception TypeError: Failed to construct 'ValidityState': Illegal constructor.
 PASS successfullyParsed is true
 
 TEST COMPLETE

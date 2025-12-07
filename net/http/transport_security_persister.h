@@ -106,14 +106,6 @@ class NET_EXPORT TransportSecurityPersister
   //     "report-uri": string
   //     "sts_observed": double
   //
-  // Legacy data (see https://crbug.com/1232560) may also contain a top-level
-  // "expect_ct" key, which will be deleted when read:
-  //     "expect_ct": dictionary with keys:
-  //         "expect_ct_expiry": double
-  //         "expect_ct_observed": double
-  //         "expect_ct_enforce": true|false
-  //         "expect_ct_report_uri": string
-  //
   // The JSON dictionary keys are strings containing
   // Base64(SHA256(TransportSecurityState::CanonicalizeHost(domain))).
   // The reason for hashing them is so that the stored state does not
@@ -131,8 +123,7 @@ class NET_EXPORT TransportSecurityPersister
  private:
   // Populates |state| from the JSON string |serialized|.
   static void Deserialize(const std::string& serialized,
-                          TransportSecurityState* state,
-                          bool& contains_legacy_expect_ct_data);
+                          TransportSecurityState* state);
 
   void CompleteLoad(const std::string& state);
   void OnWriteFinished(base::OnceClosure callback);

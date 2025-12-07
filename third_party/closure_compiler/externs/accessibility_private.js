@@ -1,4 +1,4 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,23 @@ chrome.accessibilityPrivate = {};
  * }}
  */
 chrome.accessibilityPrivate.AlertInfo;
+
+/**
+ * An object that resembles a web KeyboardEvent object, with the addition of a
+ * unique ID property.
+ * @typedef {{
+ *   id: number,
+ *   altKey: boolean,
+ *   code: string,
+ *   ctrlKey: boolean,
+ *   key: string,
+ *   keyCode: number,
+ *   metaKey: boolean,
+ *   repeat: boolean,
+ *   shiftKey: boolean
+ * }}
+ */
+chrome.accessibilityPrivate.KeyboardEvent;
 
 /**
  * Bounding rectangle in global screen coordinates.
@@ -208,7 +225,10 @@ chrome.accessibilityPrivate.SyntheticMouseEventButton = {
  *   y: number,
  *   touchAccessibility: (boolean|undefined),
  *   mouseButton: (!chrome.accessibilityPrivate.SyntheticMouseEventButton|undefined),
- *   isDoubleClick: (boolean|undefined)
+ *   isDoubleClick: (boolean|undefined),
+ *   isTripleClick: (boolean|undefined),
+ *   useRewriters: (boolean|undefined),
+ *   forceNotSynthetic: (boolean|undefined)
  * }}
  */
 chrome.accessibilityPrivate.SyntheticMouseEvent;
@@ -277,8 +297,8 @@ chrome.accessibilityPrivate.AcceleratorAction = {
  */
 chrome.accessibilityPrivate.AccessibilityFeature = {
   DICTATION_CONTEXT_CHECKING: 'dictationContextChecking',
-  FACE_GAZE: 'faceGaze',
   GOOGLE_TTS_HIGH_QUALITY_VOICES: 'googleTtsHighQualityVoices',
+  CAPTIONS_ON_BRAILLE_DISPLAY: 'captionsOnBrailleDisplay',
 };
 
 /**
@@ -424,6 +444,49 @@ chrome.accessibilityPrivate.PumpkinData;
 chrome.accessibilityPrivate.FaceGazeAssets;
 
 /**
+ * @enum {string}
+ */
+chrome.accessibilityPrivate.ScrollDirection = {
+  UP: 'up',
+  DOWN: 'down',
+  LEFT: 'left',
+  RIGHT: 'right',
+};
+
+/**
+ * @enum {string}
+ */
+chrome.accessibilityPrivate.FacialGesture = {
+  BROW_INNER_UP: 'browInnerUp',
+  BROWS_DOWN: 'browsDown',
+  EYE_SQUINT_LEFT: 'eyeSquintLeft',
+  EYE_SQUINT_RIGHT: 'eyeSquintRight',
+  EYES_BLINK: 'eyesBlink',
+  EYES_LOOK_DOWN: 'eyesLookDown',
+  EYES_LOOK_LEFT: 'eyesLookLeft',
+  EYES_LOOK_RIGHT: 'eyesLookRight',
+  EYES_LOOK_UP: 'eyesLookUp',
+  JAW_LEFT: 'jawLeft',
+  JAW_OPEN: 'jawOpen',
+  JAW_RIGHT: 'jawRight',
+  MOUTH_FUNNEL: 'mouthFunnel',
+  MOUTH_LEFT: 'mouthLeft',
+  MOUTH_PUCKER: 'mouthPucker',
+  MOUTH_RIGHT: 'mouthRight',
+  MOUTH_SMILE: 'mouthSmile',
+  MOUTH_UPPER_UP: 'mouthUpperUp',
+};
+
+/**
+ * Information about a detected facial gesture.
+ * @typedef {{
+ *   gesture: !chrome.accessibilityPrivate.FacialGesture,
+ *   confidence: number
+ * }}
+ */
+chrome.accessibilityPrivate.GestureInfo;
+
+/**
  * Property to indicate whether event source should default to touch.
  * @type {number}
  */
@@ -556,7 +619,7 @@ chrome.accessibilityPrivate.setPointScanState = function(state) {};
  * Sets current ARC app to use native ARC support.
  * @param {boolean} enabled True for ChromeVox (native), false for TalkBack.
  * @param {function(!chrome.accessibilityPrivate.SetNativeChromeVoxResponse): void}
- *     callback
+ *     callback Callback function.
  */
 chrome.accessibilityPrivate.setNativeChromeVoxArcSupportForCurrentApp = function(enabled, callback) {};
 
@@ -565,10 +628,13 @@ chrome.accessibilityPrivate.setNativeChromeVoxArcSupportForCurrentApp = function
  * @param {!chrome.accessibilityPrivate.SyntheticKeyboardEvent} keyEvent The
  *     event to send.
  * @param {boolean=} useRewriters If true, uses rewriters for the key event;
- *     only allowed if used from Dictation. Otherwise indicates that rewriters
- *     should be skipped.
+ *     only allowed if used from Dictation or FaceGaze. Otherwise indicates that
+ *     rewriters should be skipped.
+ * @param {boolean=} isRepeat If true, sets the key event to repeat, which
+ *     should occur if the key event should be held. Otherwise, the key event
+ *     should not repeat.
  */
-chrome.accessibilityPrivate.sendSyntheticKeyEvent = function(keyEvent, useRewriters) {};
+chrome.accessibilityPrivate.sendSyntheticKeyEvent = function(keyEvent, useRewriters, isRepeat) {};
 
 /**
  * Enables or disables mouse events in accessibility extensions
@@ -576,6 +642,13 @@ chrome.accessibilityPrivate.sendSyntheticKeyEvent = function(keyEvent, useRewrit
  *     receive mouse events.
  */
 chrome.accessibilityPrivate.enableMouseEvents = function(enabled) {};
+
+/**
+ * Enables or disables live captioning
+ * @param {boolean} enabled True if live caption should be turned on.
+ * @param {function(): void=} callback
+ */
+chrome.accessibilityPrivate.enableLiveCaption = function(enabled, callback) {};
 
 /**
  * Sets the cursor position on the screen in absolute screen coordinates.
@@ -597,13 +670,6 @@ chrome.accessibilityPrivate.sendSyntheticMouseEvent = function(mouseEvent) {};
  * @param {!chrome.accessibilityPrivate.SelectToSpeakState} state
  */
 chrome.accessibilityPrivate.setSelectToSpeakState = function(state) {};
-
-/**
- * Called by the Select-to-Speak extension to request a clipboard copy in the
- * active Lacros Google Docs tab for the copy-paste fallback.
- * @param {string} url URL of the Google Docs tab.
- */
-chrome.accessibilityPrivate.clipboardCopyInActiveLacrosGoogleDoc = function(url) {};
 
 /**
  * Called by the Accessibility Common extension when
@@ -738,18 +804,56 @@ chrome.accessibilityPrivate.getTtsDlcContents = function(dlc, variant, callback)
 chrome.accessibilityPrivate.getDisplayBounds = function(callback) {};
 
 /**
- * Gets whether new browser windows and tabs should be in Lacros browser.
- * @param {function(boolean): void} callback A callback that is run when the
- *     result is returned.
- */
-chrome.accessibilityPrivate.isLacrosPrimary = function(callback) {};
-
-/**
  * Displays an accessibility-related toast.
  * @param {!chrome.accessibilityPrivate.ToastType} type The type of toast to
  *     show.
  */
 chrome.accessibilityPrivate.showToast = function(type) {};
+
+/**
+ * Scrolls at the target location in the specified direction.
+ * @param {!chrome.accessibilityPrivate.ScreenPoint} target
+ * @param {!chrome.accessibilityPrivate.ScrollDirection} direction
+ */
+chrome.accessibilityPrivate.scrollAtPoint = function(target, direction) {};
+
+/**
+ * Fired when FaceGaze processes a video frame, detects facial gestures from the
+ * frame, then sends information about the recognized facial gesture to the
+ * settings.
+ * @param {!Array<!chrome.accessibilityPrivate.GestureInfo>} gestureInfo The
+ *     recognized facial gestures and their associated confidence values.
+ */
+chrome.accessibilityPrivate.sendGestureInfoToSettings = function(gestureInfo) {};
+
+/**
+ * Updates FaceGaze's bubble UI.
+ * @param {string} text The text to be displayed in the bubble UI.
+ * @param {boolean=} isWarning True if the bubble UI contains a warning about
+ *     state.
+ */
+chrome.accessibilityPrivate.updateFaceGazeBubble = function(text, isWarning) {};
+
+/**
+ * Turns on/off the DragEventRewriter, which rewrites kMouseMoved events into
+ * kMouseDragged events.
+ * @param {boolean} enabled Whether or not the DragEventRewriter should be
+ *     enabled.
+ */
+chrome.accessibilityPrivate.enableDragEventRewriter = function(enabled) {};
+
+/**
+ * Used by the ChromeVox extension to enable key handling for the Manifest V3
+ * version of the extension.
+ */
+chrome.accessibilityPrivate.enableSpokenFeedbackMv3KeyHandling = function() {};
+
+/**
+ * Used by the ChromeVox extension to process a pending spoken feedback event.
+ * @param {number} id The ID of the key event.
+ * @param {boolean} propagate Whether or not to propagate the key.
+ */
+chrome.accessibilityPrivate.processPendingSpokenFeedbackEvent = function(id, propagate) {};
 
 /**
  * Fired whenever ChromeVox should output introduction.
@@ -872,3 +976,22 @@ chrome.accessibilityPrivate.onShowChromeVoxTutorial;
  * @type {!ChromeEvent}
  */
 chrome.accessibilityPrivate.onToggleDictation;
+
+/**
+ * Fired only from the FaceGaze settings when the settings page requests to
+ * receive or stop receiving gesture detection information from FaceGaze.
+ * @type {!ChromeEvent}
+ */
+chrome.accessibilityPrivate.onToggleGestureInfoForSettings;
+
+/**
+ * Fired when a key is pressed.
+ * @type {!ChromeEvent}
+ */
+chrome.accessibilityPrivate.onKeyDown;
+
+/**
+ * Fired when a key is released.
+ * @type {!ChromeEvent}
+ */
+chrome.accessibilityPrivate.onKeyUp;

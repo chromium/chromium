@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include <array>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -47,6 +45,22 @@ class BluetoothRemoteGattDescriptorTest :
     if (!PlatformSupportsLowEnergy()) {
       GTEST_SKIP() << "Bluetooth Low Energy unavailable.";
     }
+  }
+
+  void TearDown() override {
+    // Reset raw pointers before the teardown process destroys the objects they
+    // refer to.
+    device_ = nullptr;
+    service_ = nullptr;
+    characteristic_ = nullptr;
+    descriptor1_ = nullptr;
+    descriptor2_ = nullptr;
+
+#if BUILDFLAG(IS_WIN)
+    BluetoothTestWinrt::TearDown();
+#else
+    BluetoothTest::TearDown();
+#endif
   }
 
   // Creates adapter_, device_, service_, characteristic_,
@@ -359,8 +373,10 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_ReadRemoteDescriptor) {
       GetReadValueCallback(Call::EXPECTED, Result::SUCCESS));
   EXPECT_EQ(1, gatt_read_descriptor_attempts_);
 
-  uint8_t values[] = {0, 1, 2, 3, 4, 0xf, 0xf0, 0xff};
-  std::vector<uint8_t> test_vector(values, values + std::size(values));
+  auto values = std::to_array<uint8_t>({0, 1, 2, 3, 4, 0xf, 0xf0, 0xff});
+  std::vector<uint8_t> test_vector(
+      values.data(),
+      base::span<uint8_t>(values).subspan(std::size(values)).data());
   SimulateGattDescriptorRead(descriptor1_, test_vector);
   base::RunLoop().RunUntilIdle();
 
@@ -386,8 +402,10 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_WriteRemoteDescriptor) {
 #endif
   ASSERT_NO_FATAL_FAILURE(FakeDescriptorBoilerplate());
 
-  uint8_t values[] = {0, 1, 2, 3, 4, 0xf, 0xf0, 0xff};
-  std::vector<uint8_t> test_vector(values, values + std::size(values));
+  auto values = std::to_array<uint8_t>({0, 1, 2, 3, 4, 0xf, 0xf0, 0xff});
+  std::vector<uint8_t> test_vector(
+      values.data(),
+      base::span<uint8_t>(values).subspan(std::size(values)).data());
   descriptor1_->WriteRemoteDescriptor(test_vector, GetCallback(Call::EXPECTED),
                                       GetGattErrorCallback(Call::NOT_EXPECTED));
   EXPECT_EQ(1, gatt_write_descriptor_attempts_);
@@ -415,8 +433,10 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_ReadRemoteDescriptor_Twice) {
       GetReadValueCallback(Call::EXPECTED, Result::SUCCESS));
   EXPECT_EQ(1, gatt_read_descriptor_attempts_);
 
-  uint8_t values[] = {0, 1, 2, 3, 4, 0xf, 0xf0, 0xff};
-  std::vector<uint8_t> test_vector(values, values + std::size(values));
+  auto values = std::to_array<uint8_t>({0, 1, 2, 3, 4, 0xf, 0xf0, 0xff});
+  std::vector<uint8_t> test_vector(
+      values.data(),
+      base::span<uint8_t>(values).subspan(std::size(values)).data());
   SimulateGattDescriptorRead(descriptor1_, test_vector);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, callback_count_);
@@ -451,8 +471,10 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_WriteRemoteDescriptor_Twice) {
 #endif
   ASSERT_NO_FATAL_FAILURE(FakeDescriptorBoilerplate());
 
-  uint8_t values[] = {0, 1, 2, 3, 4, 0xf, 0xf0, 0xff};
-  std::vector<uint8_t> test_vector(values, values + std::size(values));
+  auto values = std::to_array<uint8_t>({0, 1, 2, 3, 4, 0xf, 0xf0, 0xff});
+  std::vector<uint8_t> test_vector(
+      values.data(),
+      base::span<uint8_t>(values).subspan(std::size(values)).data());
   descriptor1_->WriteRemoteDescriptor(test_vector, GetCallback(Call::EXPECTED),
                                       GetGattErrorCallback(Call::NOT_EXPECTED));
   EXPECT_EQ(1, gatt_write_descriptor_attempts_);
@@ -908,7 +930,8 @@ TEST_F(BluetoothRemoteGattDescriptorTest, ReadRemoteDescriptor_NSNumber) {
   base::RunLoop().RunUntilIdle();
 
   uint8_t values[] = {0x34, 0x12};
-  std::vector<uint8_t> test_vector(values, values + std::size(values));
+  std::vector<uint8_t> test_vector(values,
+                                   UNSAFE_TODO(values + std::size(values)));
   EXPECT_EQ(test_vector, last_read_value_);
   EXPECT_EQ(test_vector, descriptor1_->GetValue());
 }

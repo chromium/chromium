@@ -7,40 +7,47 @@
 
 #include <memory>
 
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "chrome/browser/sync/glue/extensions_activity_monitor.h"
-#include "components/prefs/pref_change_registrar.h"
-#include "components/sync/service/data_type_controller.h"
-#include "components/sync/service/local_data_description.h"
+#include "components/browser_sync/sync_engine_factory_impl.h"
 #include "components/sync/service/sync_client.h"
 #include "extensions/buildflags/buildflags.h"
 
-class Profile;
+namespace supervised_user {
+class SupervisedUserSettingsService;
+}  // namespace supervised_user
 
 namespace syncer {
-class DataTypeController;
 class DataTypeStoreService;
-class SyncService;
-class SyncableService;
+class DeviceInfoSyncService;
 }  // namespace syncer
+
+namespace trusted_vault {
+class TrustedVaultService;
+}  // namespace trusted_vault
 
 namespace browser_sync {
 
-class SyncEngineFactoryImpl;
+class ExtensionsActivityMonitor;
 
 class ChromeSyncClient : public syncer::SyncClient {
  public:
-  explicit ChromeSyncClient(Profile* profile);
+  ChromeSyncClient(
+      const base::FilePath& profile_base_name,
+      PrefService* pref_service,
+      signin::IdentityManager* identity_manager,
+      trusted_vault::TrustedVaultService* trusted_vault_service,
+      syncer::SyncInvalidationsService* sync_invalidations_service,
+      syncer::DeviceInfoSyncService* device_info_sync_service,
+      syncer::DataTypeStoreService* data_type_store_service,
+      supervised_user::SupervisedUserSettingsService*
+          supervised_user_settings_service,
+      std::unique_ptr<ExtensionsActivityMonitor> extensions_activity_monitor);
 
   ChromeSyncClient(const ChromeSyncClient&) = delete;
   ChromeSyncClient& operator=(const ChromeSyncClient&) = delete;
 
   ~ChromeSyncClient() override;
-
-  // TODO(crbug.com/335688372): Inline this in the sync_service_factory.cc.
-  syncer::DataTypeController::TypeVector CreateDataTypeControllers(
-      syncer::SyncService* sync_service);
 
   // SyncClient implementation.
   PrefService* GetPrefService() override;
@@ -51,44 +58,20 @@ class ChromeSyncClient : public syncer::SyncClient {
   scoped_refptr<syncer::ExtensionsActivity> GetExtensionsActivity() override;
   syncer::SyncEngineFactory* GetSyncEngineFactory() override;
   bool IsCustomPassphraseAllowed() override;
-  bool IsPasswordSyncAllowed() override;
-  void SetPasswordSyncAllowedChangeCb(
-      const base::RepeatingClosure& cb) override;
   void RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(
       const syncer::TrustedVaultAutoUpgradeSyntheticFieldTrialGroup& group)
       override;
+
  private:
-  // Convenience function that exercises DataTypeStoreServiceFactory.
-  syncer::DataTypeStoreService* GetDataTypeStoreService();
-
-  // Convenience function used during controller creation.
-  base::WeakPtr<syncer::SyncableService> GetSyncableServiceForType(
-      syncer::DataType type);
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Creates the DataTypeController for syncer::APPS.
-  std::unique_ptr<syncer::DataTypeController> CreateAppsDataTypeController();
-
-  // Creates the DataTypeController for syncer::APP_SETTINGS.
-  std::unique_ptr<syncer::DataTypeController>
-  CreateAppSettingsDataTypeController(syncer::SyncService* sync_service);
-
-  // Creates the DataTypeController for syncer::WEB_APPS.
-  std::unique_ptr<syncer::DataTypeController> CreateWebAppsDataTypeController();
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-  const raw_ptr<Profile> profile_;
-
-  // The sync engine factory in use by this client.
-  std::unique_ptr<browser_sync::SyncEngineFactoryImpl> engine_factory_;
-
-  // Generates and monitors the ExtensionsActivity object used by sync.
-  ExtensionsActivityMonitor extensions_activity_monitor_;
-
-#if BUILDFLAG(IS_ANDROID)
-  // Watches password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores.
-  PrefChangeRegistrar upm_pref_change_registrar_;
-#endif  // BUILDFLAG(IS_ANDROID)
+  const base::FilePath profile_base_name_;
+  const raw_ptr<PrefService> pref_service_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
+  const raw_ptr<trusted_vault::TrustedVaultService> trusted_vault_service_;
+  const raw_ptr<syncer::SyncInvalidationsService> sync_invalidations_service_;
+  const raw_ptr<supervised_user::SupervisedUserSettingsService>
+      supervised_user_settings_service_;
+  const std::unique_ptr<ExtensionsActivityMonitor> extensions_activity_monitor_;
+  SyncEngineFactoryImpl engine_factory_;
 };
 
 }  // namespace browser_sync

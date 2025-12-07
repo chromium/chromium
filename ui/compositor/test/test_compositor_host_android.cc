@@ -10,7 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "ui/compositor/compositor.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui {
 

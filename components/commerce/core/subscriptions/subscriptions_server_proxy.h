@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_COMMERCE_CORE_SUBSCRIPTIONS_SUBSCRIPTIONS_SERVER_PROXY_H_
 #define COMPONENTS_COMMERCE_CORE_SUBSCRIPTIONS_SUBSCRIPTIONS_SERVER_PROXY_H_
 
-#include <queue>
 #include <string>
 #include <unordered_map>
 
@@ -13,8 +12,8 @@
 #include "base/functional/callback.h"
 #include "base/values.h"
 #include "components/commerce/core/subscriptions/subscriptions_manager.h"
+#include "components/signin/public/base/consent_level.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -24,8 +23,10 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
+namespace endpoint_fetcher {
 class EndpointFetcher;
 struct EndpointResponse;
+}  // namespace endpoint_fetcher
 
 namespace commerce {
 
@@ -43,7 +44,8 @@ class SubscriptionsServerProxy {
  public:
   SubscriptionsServerProxy(
       signin::IdentityManager* identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      signin::ConsentLevel consent_level);
   SubscriptionsServerProxy(const SubscriptionsServerProxy&) = delete;
   SubscriptionsServerProxy& operator=(const SubscriptionsServerProxy&) = delete;
   virtual ~SubscriptionsServerProxy();
@@ -64,11 +66,11 @@ class SubscriptionsServerProxy {
 
  protected:
   // This method could be overridden in tests.
-  virtual std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
-      const GURL& url,
-      const std::string& http_method,
-      const std::string& post_data,
-      const net::NetworkTrafficAnnotationTag& annotation_tag);
+  virtual std::unique_ptr<endpoint_fetcher::EndpointFetcher>
+  CreateEndpointFetcher(const GURL& url,
+                        const endpoint_fetcher::HttpMethod http_method,
+                        const std::string& post_data,
+                        const net::NetworkTrafficAnnotationTag& annotation_tag);
 
  private:
   // Handle Create or Delete response.
@@ -78,13 +80,8 @@ class SubscriptionsServerProxy {
       // lifetime extends to the callback and is not destroyed
       // prematurely (which would result in cancellation of the request).
       // TODO(crbug.com/40238190): Avoid passing this fetcher.
-      std::unique_ptr<EndpointFetcher> endpoint_fetcher,
-      std::unique_ptr<EndpointResponse> responses);
-
-  // This is called when Create or Delete response is parsed.
-  void OnManageSubscriptionsJsonParsed(
-      ManageSubscriptionsFetcherCallback callback,
-      data_decoder::DataDecoder::ValueOrError result);
+      std::unique_ptr<endpoint_fetcher::EndpointFetcher> endpoint_fetcher,
+      std::unique_ptr<endpoint_fetcher::EndpointResponse> responses);
 
   // Handle Get response.
   void HandleGetSubscriptionsResponses(
@@ -93,17 +90,11 @@ class SubscriptionsServerProxy {
       // lifetime extends to the callback and is not destroyed
       // prematurely (which would result in cancellation of the request).
       // TODO(crbug.com/40238190): Avoid passing this fetcher.
-      std::unique_ptr<EndpointFetcher> endpoint_fetcher,
-      std::unique_ptr<EndpointResponse> responses);
-
-  // This is called when Get response is parsed.
-  void OnGetSubscriptionsJsonParsed(
-      GetSubscriptionsFetcherCallback callback,
-      data_decoder::DataDecoder::ValueOrError result);
+      std::unique_ptr<endpoint_fetcher::EndpointFetcher> endpoint_fetcher,
+      std::unique_ptr<endpoint_fetcher::EndpointResponse> responses);
 
   std::unique_ptr<std::vector<CommerceSubscription>>
-  GetSubscriptionsFromParsedJson(
-      const data_decoder::DataDecoder::ValueOrError& result);
+  GetSubscriptionsFromParsedJson(const base::Value::Dict& result);
 
   bool IsPriceTrackingLocaleKeyEnabled();
 
@@ -114,6 +105,7 @@ class SubscriptionsServerProxy {
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   const raw_ptr<signin::IdentityManager> identity_manager_;
+  const signin::ConsentLevel consent_level_;
 
   base::WeakPtrFactory<SubscriptionsServerProxy> weak_ptr_factory_;
 };

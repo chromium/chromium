@@ -12,6 +12,7 @@ const GoogEventTarget = goog.require('goog.events.EventTarget');
 const PropertyReplacer = goog.require('goog.testing.PropertyReplacer');
 const dispose = goog.require('goog.dispose');
 const events = goog.require('goog.events');
+const functions = goog.require('goog.functions');
 const recordFunction = goog.require('goog.testing.recordFunction');
 const testSuite = goog.require('goog.testing.testSuite');
 
@@ -244,10 +245,10 @@ testSuite({
     eh = new EventHandler();
     assertEquals('0 listeners registered initially', 0, eh.getListenerCount());
     const target = new GoogEventTarget();
-    eh.listen(target, 'click', goog.nullFunction, false);
-    eh.listen(target, 'click', goog.nullFunction, true);
+    eh.listen(target, 'click', functions.UNDEFINED, false);
+    eh.listen(target, 'click', functions.UNDEFINED, true);
     assertEquals('2 listeners registered', 2, eh.getListenerCount());
-    eh.unlisten(target, 'click', goog.nullFunction, true);
+    eh.unlisten(target, 'click', functions.UNDEFINED, true);
     assertEquals('1 listener removed, 1 left', 1, eh.getListenerCount());
     eh.removeAll();
     assertEquals('all listeners removed', 0, eh.getListenerCount());

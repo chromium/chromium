@@ -32,7 +32,6 @@ include_rules = [
     "+ui/gfx/color_space.h",
     "+ui/gfx/geometry/rect.h",
     "+ui/gfx/geometry/size.h",
-    "+ui/gfx/gpu_memory_buffer.h",
 ]
 
 specific_include_rules = {
@@ -51,6 +50,7 @@ specific_include_rules = {
   ],
   "video_frame_test\.cc": [
     "+components/viz/test/test_context_provider.h",
+    "+components/viz/test/test_raster_interface.h",
   ],
   "video_frame_monitor_test\.cc": [
     "+base/run_loop.h",

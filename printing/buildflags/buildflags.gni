@@ -11,7 +11,7 @@ import("//pdf/features.gni")
 
 declare_args() {
   # Enables printing support.
-  enable_printing = !is_ios && !is_castos && !is_cast_android
+  enable_printing = !is_ios && !is_castos && !is_cast_android && !is_fuchsia
 
   # TODO(crbug.com/40263786): iOS blink port only enables printing_tests to run
   # unit tests and web tests for now because the port does not enable the
@@ -27,7 +27,7 @@ declare_args() {
 
   # Enables the printing system dialog for platforms that support printing
   # and have a system dialog.
-  enable_basic_print_dialog = enable_printing && !is_chromeos && !is_fuchsia
+  enable_basic_print_dialog = enable_printing && !is_chromeos
 
   if (use_fuzzing_engine && (is_linux || is_chromeos)) {
     # For fuzzing, just restrict to chromeos and linux.
@@ -40,7 +40,7 @@ declare_args() {
   # Enables out-of-process printing.  Do not have this definition just be
   # based on `enable_print_preview`; this feature could still be appropriate
   # for some build configurations which explicitly disable print preview.
-  enable_oop_printing = enable_printing && !is_android && !is_fuchsia
+  enable_oop_printing = enable_printing && !is_android
 }
 
 declare_args() {

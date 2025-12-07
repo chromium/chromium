@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -108,7 +109,7 @@ bool CaptureServiceReceiver::Socket::SendRequest() {
 void CaptureServiceReceiver::Socket::OnSendUnblocked() {
   // The request is the first buffer sent, so it should be always accepted by
   // the socket.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void CaptureServiceReceiver::Socket::ReportErrorAndStop() {
@@ -133,7 +134,7 @@ bool CaptureServiceReceiver::Socket::OnMessage(char* data, size_t size) {
     LOG(ERROR) << "Invalid message size: " << size << ".";
     return false;
   }
-  memcpy(&type, data, sizeof(type));
+  UNSAFE_TODO(memcpy(&type, data, sizeof(type)));
   capture_service::MessageType message_type =
       static_cast<capture_service::MessageType>(type);
 

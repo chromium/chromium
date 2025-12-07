@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/qr_code_generator/bitmap_generator.h"
 
-#include "base/metrics/histogram_macros.h"
-#include "base/notreached.h"
+#include <cstdint>
+
+#include "base/containers/span.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "components/qr_code_generator/dino_image.h"
@@ -55,13 +51,13 @@ SkBitmap CreateDinoBitmap() {
 
   // Helper: Copies |src_num_rows| of dino data from |src_array| to
   // canvas (obtained via closure), starting at |dest_row|.
-  auto copyPixelBitData = [&](const unsigned char* src_array, int src_num_rows,
-                              int dest_row) {
+  auto copyPixelBitData = [&](base::span<const unsigned char> src_array,
+                              int src_num_rows, int dest_row) {
     for (int row = 0; row < src_num_rows; row++) {
       int which_byte = (row * bytes_per_row);
       unsigned char mask = 0b10000000;
       for (int col = 0; col < dino_image::kDinoWidth; col++) {
-        if (*(src_array + which_byte) & mask) {
+        if (src_array[which_byte] & mask) {
           canvas.drawIRect({col, dest_row + row, col + 1, dest_row + row + 1},
                            paint);
         }
@@ -228,7 +224,7 @@ int CalculateMargin(QuietZone quiet_zone) {
     case QuietZone::kWillBeAddedByClient:
       return 0;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 SkBitmap RenderBitmap(base::span<const uint8_t> data,
@@ -251,7 +247,7 @@ SkBitmap RenderBitmap(base::span<const uint8_t> data,
 
   // Loop over qr module data and paint to canvas.
   // Paint data modules first, then locators and dino.
-  int data_index = 0;
+  size_t data_index = 0;
   for (int y = 0; y < data_size.height(); y++) {
     for (int x = 0; x < data_size.width(); x++) {
       if (data[data_index++] & 0x1) {
@@ -333,13 +329,8 @@ base::expected<SkBitmap, Error> GenerateBitmap(base::span<const uint8_t> data,
                                                LocatorStyle locator_style,
                                                CenterImage center_image,
                                                QuietZone quiet_zone) {
-  SCOPED_UMA_HISTOGRAM_TIMER("Sharing.QRCodeGeneration.Duration");
-
   GeneratedCode qr_code;
   {
-    SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
-        "Sharing.QRCodeGeneration.Duration.BytesToQrPixels2");
-
     // The QR version (i.e. size) must be >= 5 because otherwise the dino
     // painted over the middle covers too much of the code to be decodable.
     constexpr int kMinimumQRVersion = 5;
@@ -357,10 +348,8 @@ base::expected<SkBitmap, Error> GenerateBitmap(base::span<const uint8_t> data,
   }
 
   {
-    SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
-        "Sharing.QRCodeGeneration.Duration.QrPixelsToQrImage2");
     gfx::Size data_size = {qr_code.qr_size, qr_code.qr_size};
-    return RenderBitmap(base::make_span(qr_code.data), data_size, module_style,
+    return RenderBitmap(base::span(qr_code.data), data_size, module_style,
                         locator_style, center_image, quiet_zone);
   }
 }

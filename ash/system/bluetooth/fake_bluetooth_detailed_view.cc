@@ -32,7 +32,7 @@ void FakeBluetoothDetailedView::UpdateBluetoothEnabledState(
 }
 
 BluetoothDeviceListItemView* FakeBluetoothDetailedView::AddDeviceListItem() {
-  return device_list_->AddChildView(
+  return device_list_->AddChildViewRaw(
       new BluetoothDeviceListItemView(/*listener=*/nullptr));
 }
 
@@ -42,7 +42,7 @@ views::View* FakeBluetoothDetailedView::AddDeviceListSubHeader(
   std::unique_ptr<TriView> sub_header = std::make_unique<TriView>();
   sub_header->AddView(TriView::Container::CENTER,
                       new views::Label(l10n_util::GetStringUTF16(text_id)));
-  device_list_->AddChildView(sub_header.get());
+  device_list_->AddChildViewRaw(sub_header.get());
   return sub_header.release();
 }
 

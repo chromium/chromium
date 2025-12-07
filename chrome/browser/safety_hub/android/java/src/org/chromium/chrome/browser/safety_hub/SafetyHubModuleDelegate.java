@@ -6,13 +6,12 @@ package org.chromium.chrome.browser.safety_hub;
 
 import android.content.Context;
 
-import androidx.annotation.Nullable;
-
-import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
-import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 
 /** A delegate for Safety Hub to handle UI related behaviour. */
+@NullMarked
 public interface SafetyHubModuleDelegate {
 
     /**
@@ -20,13 +19,15 @@ public interface SafetyHubModuleDelegate {
      *
      * @param context used to show the dialog.
      */
-    void showPasswordCheckUI(Context context);
+    // TODO(crbug.com/388788969): Rename to `showAccountPasswordCheckUi`.
+    void showPasswordCheckUi(Context context);
 
     /**
-     * @return The last fetched update status from Omaha if available.
+     * Launches the Local Password Checkup UI from GMSCore.
+     *
+     * @param context used to show the dialog.
      */
-    @Nullable
-    UpdateStatusProvider.UpdateStatus getUpdateStatus();
+    void showLocalPasswordCheckUi(Context context);
 
     /**
      * Opens the Play Store page for the installed Chrome channel.
@@ -36,38 +37,21 @@ public interface SafetyHubModuleDelegate {
     void openGooglePlayStore(Context context);
 
     /**
-     * @return The current safe browsing state.
-     */
-    @SafeBrowsingState
-    int getSafeBrowsingState();
-
-    /**
-     * @return Whether the Safe Browsing preference is managed.
-     */
-    boolean isSafeBrowsingManaged();
-
-    /**
      * @param passwordStoreBridge Provides access to stored passwords.
      * @return the total passwords count for Account-level passwords.
      */
     int getAccountPasswordsCount(@Nullable PasswordStoreBridge passwordStoreBridge);
 
     /**
-     * Open the sign-in bottomsheet or sync promo page based on {@link
-     * ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS} state.
+     * @param passwordStoreBridge Provides access to stored passwords.
+     * @return the total passwords count for local-level passwords.
+     */
+    int getLocalPasswordsCount(@Nullable PasswordStoreBridge passwordStoreBridge);
+
+    /**
+     * Opens the sign-in bottomsheet.
      *
      * @param context used to launch the promo in.
      */
-    void launchSyncOrSigninPromo(Context context);
-
-    /**
-     * @return Whether the primary account is signed in.
-     */
-    boolean isSignedIn();
-
-    /**
-     * @return The email associated with the currently signed in account.
-     */
-    @Nullable
-    String getAccountEmail();
+    void launchSigninPromo(Context context);
 }

@@ -3,13 +3,13 @@
 # found in the LICENSE file.
 
 import optparse
-import textwrap
 import unittest
-from unittest import mock
+from collections import OrderedDict
 
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.system.filesystem_mock import MockFileSystem
 from blinkpy.web_tests.controllers import web_test_finder
+from blinkpy.web_tests.controllers.web_test_finder import FilterTrie
 from blinkpy.web_tests.models import test_expectations
 
 
@@ -155,6 +155,8 @@ class WebTestFinderTests(unittest.TestCase):
         port = host.port_factory.get('test-win-win7', None)
 
         all_tests = [
+            'path/test.html',
+            'new/test.html',
             'fast/css/1.html',
             'fast/css/2.html',
             'fast/css/3.html',
@@ -163,8 +165,6 @@ class WebTestFinderTests(unittest.TestCase):
             'fast/css/skip3.html',
             'fast/css/skip4.html',
             'fast/css/skip5.html',
-            'new/test.html',
-            'path/test.html',
         ]
 
         port.tests = lambda paths: paths or all_tests
@@ -289,84 +289,31 @@ class WebTestFinderTests(unittest.TestCase):
             set(tests[1]),
             set(['path/test.html','virtual/path/test.html',]))
 
-    def test_empty_test_list_find_tests(self):
-        host = MockHost()
-        port = host.port_factory.get('test-win-win7')
-        host.filesystem.write_text_file(
-            'test-list.txt',
-            textwrap.dedent("""\
-                # this file is deliberately empty to signal no tests to run
-                """))
-        all_tests = [
-            'path/test.html',
-        ]
-
-        finder = web_test_finder.WebTestFinder(port, {})
-        with mock.patch.object(port, 'tests',
-                               lambda paths: paths or all_tests):
-            paths, all_test_names, running_all_tests = finder.find_tests(
-                args=[], test_lists=['test-list.txt'])
-
-        self.assertEqual(paths, [])
-        self.assertEqual(all_test_names, [])
-        self.assertFalse(running_all_tests)
-
-    def test_exclude_test_list_find_tests(self):
+    def test_inverted_test_filter_find_tests(self):
         host = MockHost()
         port = host.port_factory.get('test-win-win7', None)
-        host.filesystem.write_text_file(
-            'test-list.txt',
-            textwrap.dedent("""\
-                path/test.html
-                """))
-        all_tests = [
+        mock_files = {
+            'test-list.txt': 'path/test.html\nvirtual/path/test.html',
+            'inverted-filter.txt': 'path/test.html'
+        }
+        host.filesystem = MockFileSystem(files=mock_files)
+
+        port_tests = [
             'path/test.html',
-            'virtual/fake-vts/path/test.html',
+            'not/in/test/list.html',
         ]
 
-        finder = web_test_finder.WebTestFinder(port, {})
-        with mock.patch.object(port, 'tests',
-                               lambda paths: paths or all_tests):
-            paths, all_test_names, running_all_tests = finder.find_tests(
-                args=[], exclude_test_lists=['test-list.txt'])
-
-        self.assertEqual(paths, [])
-        self.assertEqual(set(all_test_names),
-                         {'virtual/fake-vts/path/test.html'})
-        self.assertFalse(running_all_tests)
-
-    def test_include_and_exclude_test_list_find_tests(self):
-        host = MockHost()
-        port = host.port_factory.get('test-win-win7', None)
-        fs = host.filesystem
-        fs.write_text_file(
-            'include.txt',
-            textwrap.dedent("""\
-                http/tests
-                failures/flaky
-                """))
-        fs.write_text_file(
-            'exclude.txt',
-            textwrap.dedent("""\
-                http/tests/passes  # excludes two tests
-
-                # these lines should have no effect
-                passes/skipped
-                failures
-                """))
+        port.tests = lambda paths: paths or port_tests
 
         finder = web_test_finder.WebTestFinder(port, {})
-        paths, all_test_names, running_all_tests = finder.find_tests(
+
+        tests = finder.find_tests(
             args=[],
-            test_lists=['include.txt'],
-            exclude_test_lists=['exclude.txt'])
-
-        self.assertEqual(set(paths), {'http/tests', 'failures/flaky'})
-        self.assertEqual(set(all_test_names), {
-            'http/tests/ssl/text.html',
-            'failures/flaky/text.html',
-        })
-        self.assertFalse(running_all_tests)
+            test_lists=['test-list.txt'],
+            inverted_filter_files=['inverted-filter.txt'])
+        self.assertEqual(set(tests[1]), set([
+            'virtual/path/test.html',
+        ]))
 
 
 class FilterTestsTests(unittest.TestCase):
@@ -421,6 +368,15 @@ class FilterTestsTests(unittest.TestCase):
         self.check(self.simple_test_filter, [['a*'], ['-b*']],
                    ['a/a1.html', 'a/a2.html'])
 
+    def test_middle_exclude(self):
+        self.check(['a2', 'a1', 'a3'], [['a*', '-a2']], ['a1', 'a3'])
+
+    def test_fall_back_to_glob(self):
+        self.check(['a/b/c'], [['*', '-a/b/d']], ['a/b/c'])
+
+    def test_glob_can_match_zero_chars(self):
+        self.check(['a'], [['-a*']], [])
+
     def test_longest_glob_wins(self):
         # These test that if two matching globs are specified as
         # part of the same filter expression, the longest matching
@@ -450,3 +406,80 @@ class FilterTestsTests(unittest.TestCase):
     def test_escaped_globs_allowed(self):
         self.check(self.simple_test_filter + ['a\\*1'], [['-a\\*1']],
                    self.simple_test_filter)
+
+    def test_contradictory_sign_not_allowed(self):
+        with self.assertRaises(ValueError):
+            self.check([], [['a/a.html', '-a/a.html']], [])
+        with self.assertRaises(ValueError):
+            self.check([], [['a/*', '-a/*']], [])
+        # This is allowed, but maybe it shouldn't be?
+        self.check([], [['a/a.html', '+a/a.html']], [])
+
+
+class FilterTrieTests(unittest.TestCase):
+    """Additional coverage for the internal structure of `FilterTrie`."""
+
+    def test_exact_test(self):
+        trie = FilterTrie.from_terms([('a/b/c.html', False),
+                                      ('a/b/d.html', True),
+                                      ('a/e.html', False)])
+        expected_trie = FilterTrie({
+            'a':
+            FilterTrie({
+                'b':
+                FilterTrie({
+                    'c.html': FilterTrie({}, False),
+                    'd.html': FilterTrie({}, True),
+                }),
+                'e.html':
+                FilterTrie({}, False),
+            }),
+        })
+
+        self.assertEqual(expected_trie, trie)
+        self.assertFalse(trie.should_include(['a', 'b', 'c.html']))
+        self.assertTrue(trie.should_include(['a', 'b', 'd.html']))
+        self.assertFalse(trie.should_include(['a', 'e.html']))
+        self.assertIsNone(trie.should_include(['a', 'f.html']))
+
+    def test_glob(self):
+        trie = FilterTrie.from_terms([('a/b*', True), ('*', False)])
+        expected_trie = FilterTrie(
+            OrderedDict([
+                ('a', FilterTrie({
+                    'b*': FilterTrie({}, True),
+                })),
+                ('*', FilterTrie({}, False)),
+            ]))
+
+        self.assertEqual(expected_trie, trie)
+        self.assertTrue(trie.should_include(['a', 'b-c.html']))
+        self.assertTrue(trie.should_include(['a', 'b', 'd.html']))
+        self.assertFalse(trie.should_include(['a', 'e.html']))
+
+    def test_exact_test_overrides_glob(self):
+        trie = FilterTrie.from_terms([('a-b.html', False), ('a*', True)])
+        expected_trie = FilterTrie(
+            OrderedDict([
+                ('a-b.html', FilterTrie({}, False)),
+                ('a*', FilterTrie({}, True)),
+            ]))
+
+        self.assertEqual(expected_trie, trie)
+        self.assertFalse(trie.should_include(['a-b.html']))
+        self.assertTrue(trie.should_include(['a-c.html']))
+        self.assertIsNone(trie.should_include(['b.html']))
+
+    def test_special_characters(self):
+        trie = FilterTrie.from_terms([('a.html?b&c*', True),
+                                      ('a.html?b*', False)])
+        expected_trie = FilterTrie(
+            OrderedDict([
+                ('a.html?b&c*', FilterTrie({}, True)),
+                ('a.html?b*', FilterTrie({}, False)),
+            ]))
+
+        self.assertEqual(expected_trie, trie)
+        self.assertTrue(trie.should_include(['a.html?b&c']))
+        self.assertTrue(trie.should_include(['a.html?b&c&d']))
+        self.assertFalse(trie.should_include(['a.html?b']))

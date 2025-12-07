@@ -50,36 +50,29 @@ std::string GetDangerTypeMetricSuffix(
     case download::DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY:
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
     case download::DOWNLOAD_DANGER_TYPE_MAX:
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
       return ".Others";
   }
 }
 
-void RecordDangerousWarningFileType(download::DownloadDangerType danger_type,
-                                    const base::FilePath& file_path,
+void RecordDangerousWarningFileType(const base::FilePath& file_path,
                                     const std::string& metrics_suffix) {
   base::UmaHistogramSparse(
-      "SBClientDownload.Warning.FileType" +
-          GetDangerTypeMetricSuffix(danger_type) + metrics_suffix,
+      "SBClientDownload.Warning.FileType" + metrics_suffix,
       FileTypePolicies::GetInstance()->UmaValueForFile(file_path));
 }
 
-void RecordDangerousWarningIsHttps(download::DownloadDangerType danger_type,
-                                   bool is_https,
+void RecordDangerousWarningIsHttps(bool is_https,
                                    const std::string& metrics_suffix) {
-  base::UmaHistogramBoolean("SBClientDownload.Warning.DownloadIsHttps" +
-                                GetDangerTypeMetricSuffix(danger_type) +
-                                metrics_suffix,
-                            is_https);
+  base::UmaHistogramBoolean(
+      "SBClientDownload.Warning.DownloadIsHttps" + metrics_suffix, is_https);
 }
 
-void RecordDangerousWarningHasUserGesture(
-    download::DownloadDangerType danger_type,
-    bool has_user_gesture,
-    const std::string& metrics_suffix) {
-  base::UmaHistogramBoolean("SBClientDownload.Warning.DownloadHasUserGesture" +
-                                GetDangerTypeMetricSuffix(danger_type) +
-                                metrics_suffix,
-                            has_user_gesture);
+void RecordDangerousWarningHasUserGesture(bool has_user_gesture,
+                                          const std::string& metrics_suffix) {
+  base::UmaHistogramBoolean(
+      "SBClientDownload.Warning.DownloadHasUserGesture" + metrics_suffix,
+      has_user_gesture);
 }
 
 }  // namespace
@@ -91,10 +84,11 @@ void RecordDangerousDownloadWarningShown(
     const base::FilePath& file_path,
     bool is_https,
     bool has_user_gesture) {
-  RecordDangerousWarningFileType(danger_type, file_path, kShownMetricSuffix);
-  RecordDangerousWarningIsHttps(danger_type, is_https, kShownMetricSuffix);
-  RecordDangerousWarningHasUserGesture(danger_type, has_user_gesture,
-                                       kShownMetricSuffix);
+  std::string metrics_suffix =
+      GetDangerTypeMetricSuffix(danger_type) + kShownMetricSuffix;
+  RecordDangerousWarningFileType(file_path, metrics_suffix);
+  RecordDangerousWarningIsHttps(is_https, metrics_suffix);
+  RecordDangerousWarningHasUserGesture(has_user_gesture, metrics_suffix);
   base::RecordAction(
       base::UserMetricsAction("SafeBrowsing.Download.WarningShown"));
 }
@@ -104,29 +98,13 @@ void RecordDangerousDownloadWarningBypassed(
     const base::FilePath& file_path,
     bool is_https,
     bool has_user_gesture) {
-  RecordDangerousWarningFileType(danger_type, file_path, kBypassedMetricSuffix);
-  RecordDangerousWarningIsHttps(danger_type, is_https, kBypassedMetricSuffix);
-  RecordDangerousWarningHasUserGesture(danger_type, has_user_gesture,
-                                       kBypassedMetricSuffix);
+  std::string metrics_suffix =
+      GetDangerTypeMetricSuffix(danger_type) + kBypassedMetricSuffix;
+  RecordDangerousWarningFileType(file_path, metrics_suffix);
+  RecordDangerousWarningIsHttps(is_https, metrics_suffix);
+  RecordDangerousWarningHasUserGesture(has_user_gesture, metrics_suffix);
   base::RecordAction(
       base::UserMetricsAction("SafeBrowsing.Download.WarningBypassed"));
-}
-
-void RecordDownloadOpenedLatency(download::DownloadDangerType danger_type,
-                                 download::DownloadContent download_content,
-                                 base::Time download_opened_time,
-                                 base::Time download_end_time,
-                                 bool show_download_in_folder) {
-  if (danger_type != download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS) {
-    return;
-  }
-  std::string metric_suffix =
-      show_download_in_folder ? ".ShowInFolder" : ".OpenDirectly";
-  base::UmaHistogramCustomTimes(
-      "SBClientDownload.SafeDownloadOpenedLatency2" + metric_suffix,
-      /* sample */ download_opened_time - download_end_time,
-      /* min */ base::Seconds(1),
-      /* max */ base::Days(1), /* buckets */ 50);
 }
 
 void RecordDownloadFileTypeAttributes(

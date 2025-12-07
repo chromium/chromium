@@ -1,7 +1,7 @@
 WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 ++View text:"Group 1" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group"]
 ++++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
-++++++Button text:"Before" viewIdResName:"before" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300", roleDescription="button"]
+++++++Button text:"Before" viewIdResName:"before" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300"]
 ++++TextView text:"After" viewIdResName:"after" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
 ++View text:"Group 2" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group"]
 ++++TextView text:"Before" viewIdResName:"before" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]

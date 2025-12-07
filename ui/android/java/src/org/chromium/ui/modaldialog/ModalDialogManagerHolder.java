@@ -4,7 +4,10 @@
 
 package org.chromium.ui.modaldialog;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Classes that hold an instance of {@link ModalDialogManager} should implement this interface. */
+@NullMarked
 public interface ModalDialogManagerHolder {
     /**
      * @return The {@link ModalDialogManager} associated with this class

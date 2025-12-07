@@ -23,14 +23,19 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_XML_XSLT_PROCESSOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_XML_XSLT_PROCESSOR_H_
 
+#include <libxml/parserInternals.h>
+#include <libxslt/documents.h>
+
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/web_feature_forward.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/xml/xsl_style_sheet.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
-
-#include <libxml/parserInternals.h>
-#include <libxslt/documents.h>
 
 namespace blink {
 
@@ -42,12 +47,23 @@ class XSLTProcessor final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static XSLTProcessor* Create(Document& document) {
-    return MakeGarbageCollected<XSLTProcessor>(document);
+  using PassKey = base::PassKey<XSLTProcessor>;
+  static XSLTProcessor* Create(
+      Document& document,
+      ExceptionState& exception_state,
+      WebFeature feature = WebFeature::kXSLTProcessor) {
+    return MakeGarbageCollected<XSLTProcessor>(
+        XSLTProcessor::PassKey(), document, feature, exception_state);
   }
-
-  XSLTProcessor(Document& document) : document_(&document) {}
+  XSLTProcessor(PassKey, Document&, WebFeature, ExceptionState&);
   ~XSLTProcessor() override;
+
+  // This returns the current enabled state for XSLT, taking all feature flag
+  // inputs into account.
+  static bool XSLTEnabled();
+
+  static void ReportXSLTDisabled(Document& document,
+                                 ExceptionState* exception_state);
 
   void SetXSLStyleSheet(XSLStyleSheet* style_sheet) {
     stylesheet_ = style_sheet;

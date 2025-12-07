@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {debug} from './util.js';
+
 export interface ChangedValue {
   newValue: any;
 }
@@ -70,7 +72,9 @@ class StorageChangeTracker {
     try {
       changedKeys[key] = {newValue: JSON.parse(newValue)};
     } catch (error) {
-      console.warn(
+      // This is expected when window.localStorage is used directly instead of
+      // `local.storage` defined below.
+      debug(
           `Cannot parse local storage value from key '${key}' as JSON`, error);
       changedKeys[key] = {newValue};
     }

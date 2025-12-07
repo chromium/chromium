@@ -3,19 +3,22 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/lifetime/application_lifetime.h"
-#include "chrome/browser/lifetime/application_lifetime_desktop.h"
 
 #include "base/command_line.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/first_run/scoped_relaunch_chrome_browser_override.h"
+#include "chrome/browser/lifetime/application_lifetime_desktop.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/prefs/testing_pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -115,4 +118,19 @@ IN_PROC_BROWSER_TEST_F(RelaunchIgnoreUnloadHandlersTest, Do) {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&chrome::RelaunchIgnoreUnloadHandlers));
   ui_test_utils::WaitForBrowserToClose(browser());
+}
+
+using ApplicationLifetimeTest = InProcessBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(ApplicationLifetimeTest, AttemptRestart) {
+  ASSERT_TRUE(g_browser_process);
+
+  PrefService* testing_pref_service = g_browser_process->local_state();
+  EXPECT_FALSE(testing_pref_service->GetBoolean(prefs::kWasRestarted));
+  chrome::AttemptRestart();
+  EXPECT_TRUE(testing_pref_service->GetBoolean(prefs::kWasRestarted));
+
+  // Cancel the effects of us calling chrome::AttemptRestart. Otherwise
+  // this test and tests ran after this one will fail.
+  browser_shutdown::SetTryingToQuit(false);
 }

@@ -65,6 +65,15 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Migrate command failed"/>
 </enum>
 
+<enum name="EnrollSessionResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed for unknown reason (runtime or starting error)"/>
+  <int value="2" label="Failed due to no primary user being active"/>
+  <int value="3" label="Failed to start enrollment session"/>
+  <int value="4" label="Failed due to receiving a DBus cancellation"/>
+  <int value="5" label="Failed due to the DBus owner dying"/>
+</enum>
+
 <enum name="FingerprintError">
   <int value="0" label="Unknown error"/>
   <int value="1" label="Hardware unavailable"/>
@@ -202,6 +211,31 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Establish nonce context failed"/>
   <int value="4" label="Unlock templates failed"/>
   <int value="5" label="Set enroll mode failed"/>
+</enum>
+
+<enum name="UploadTemplateResStatus">
+  <int value="-1" label="Command failed"/>
+  <int value="0" label="Success"/>
+  <int value="1" label="Invalid command"/>
+  <int value="2" label="Error"/>
+  <int value="3" label="Invalid parameter"/>
+  <int value="4" label="Access denied"/>
+  <int value="5" label="Invalid response"/>
+  <int value="6" label="Invalid version"/>
+  <int value="7" label="Invalid checksum"/>
+  <int value="8" label="In progress"/>
+  <int value="9" label="Unavailable"/>
+  <int value="10" label="Timeout"/>
+  <int value="11" label="Overflow"/>
+  <int value="12" label="Invalid header"/>
+  <int value="13" label="Request truncated"/>
+  <int value="14" label="Response too big"/>
+  <int value="15" label="Bus error"/>
+  <int value="16" label="Busy"/>
+  <int value="17" label="Invalid header version"/>
+  <int value="18" label="Invalid header crc"/>
+  <int value="19" label="Invalid data crc"/>
+  <int value="20" label="DUP unavailable"/>
 </enum>
 
 </enums>

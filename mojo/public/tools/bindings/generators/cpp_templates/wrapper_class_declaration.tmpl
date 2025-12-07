@@ -75,10 +75,17 @@ class {{export_attribute}} {{struct.name}} {
   size_t Hash(size_t seed) const;
 {%- endif %}
 
-{%- set serialization_result_type = "WTF::Vector<uint8_t>"
+{%- set serialization_result_type = "::blink::Vector<uint8_t>"
         if for_blink else "std::vector<uint8_t>" %}
 
 {%- if not struct|contains_handles_or_interfaces %}
+
+  template <mojo::internal::SendValidation send_validation, typename UserType>
+  static {{serialization_result_type}} Serialize(UserType* input) {
+    return mojo::internal::SerializeImpl<
+        {{struct.name}}::DataView, {{serialization_result_type}}, send_validation>(input);
+  }
+
   template <typename UserType>
   static {{serialization_result_type}} Serialize(UserType* input) {
     return mojo::internal::SerializeImpl<
@@ -114,10 +121,10 @@ class {{export_attribute}} {{struct.name}} {
   }
 
   template <typename UserType>
-  static bool Deserialize(const {{serialization_result_type}}& input,
+  static bool Deserialize(base::span<const uint8_t> input,
                           UserType* output) {
     return {{struct.name}}::Deserialize(
-        input.size() == 0 ? nullptr : &input.front(), input.size(), output);
+        input.empty() ? nullptr : input.data(), input.size(), output);
   }
 
   template <typename UserType>

@@ -8,7 +8,12 @@
 namespace android_webview {
 
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.android_webview
-enum class ApkType { STANDALONE = 0, MONOCHROME = 1, TRICHROME = 2 };
+enum class ApkType {
+  STANDALONE = 0,
+  MONOCHROME = 1,
+  TRICHROME = 2,
+  UNKNOWN = 3
+};
 
 }  // namespace android_webview
 

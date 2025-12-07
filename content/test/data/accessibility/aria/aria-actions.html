@@ -1,0 +1,36 @@
+<!--
+@AURALINUX-ALLOW:actions*
+@BLINK-ALLOW:actions*
+@BLINK-ALLOW:name*
+@BLINK-ALLOW:hasActions*
+@WIN-ALLOW:has-actions*
+@UIA-WIN-ALLOW:*hasactions=true*
+@EXECUTE-AND-WAIT-FOR:changeAriaActionsId()
+-->
+<div role="tablist">
+  <div role="tab" id="my-tab" aria-actions="edit open delete">
+    your-file-name.pdf
+    <button id="edit">Edit</button>
+    <a href="https://google.com" id="open">Open</a>
+    <div role="switch" id="close">Close</div>
+  </div>
+</div>
+<!-- aria-actions can point to non-descendant. -->
+<button id="delete">Delete</button>
+<!--
+Nodes referenced by aria-actions should be excluded from the name calculation.
+
+Before changeAriaActionsId() runs, aria-actions points to the first two child
+buttons inside the tab, so the name should just include the third child button.
+After changeAriaActionsId() runs, aria-actions points to the close button,
+excluding it from the name calculation of the tab.
+-->
+<script>
+  function changeAriaActionsId() {
+    const option = document.getElementById("my-tab");
+    option.setAttribute('aria-actions', 'close');
+    document.title = "change-aria-action-id";
+    return "change-aria-action-id";
+  }
+</script>
+

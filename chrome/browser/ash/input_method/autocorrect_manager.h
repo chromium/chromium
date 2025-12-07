@@ -8,7 +8,6 @@
 #include <optional>
 #include <string>
 
-#include "ash/system/federated/federated_client_manager.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/input_method/assistive_input_denylist.h"
@@ -88,11 +87,6 @@ class AutocorrectManager {
   // example of an invalid experiment context could be a provider or decoder
   // parameter set that is not allowed with the currently enabled experiments.
   bool DisabledByInvalidExperimentContext();
-
-  const federated::FederatedClientManager& GetFederatedClientManagerForTest()
-      const {
-    return federated_manager_;
-  }
 
  private:
   void LogAssistiveAutocorrectAction(AutocorrectActions action);
@@ -265,9 +259,6 @@ class AutocorrectManager {
   raw_ptr<SuggestionHandlerInterface> suggestion_handler_;
   raw_ptr<Profile> profile_;
 
-  // For logging examples to the CrOS Federated Service.
-  federated::FederatedClientManager federated_manager_;
-
   DiacriticsInsensitiveStringComparator
       diacritics_insensitive_string_comparator_;
 
@@ -282,4 +273,4 @@ class AutocorrectManager {
 }  // namespace input_method
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_INPUT_METHOD_AUTOCORRECT_MANAGER_H_:w
+#endif  // CHROME_BROWSER_ASH_INPUT_METHOD_AUTOCORRECT_MANAGER_H_

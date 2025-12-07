@@ -30,6 +30,7 @@
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace media {
 
@@ -347,7 +348,7 @@ class CAPTURE_EXPORT RequestManager final
 
   // StreamBufferManager does not own the ResultMetadataObservers.  The
   // observers are responsible for removing itself before self-destruction.
-  std::unordered_set<raw_ptr<ResultMetadataObserver, CtnExperimental>>
+  absl::flat_hash_set<raw_ptr<ResultMetadataObserver, CtnExperimental>>
       result_metadata_observers_;
 
   // The list of settings to set/override once in the capture request.

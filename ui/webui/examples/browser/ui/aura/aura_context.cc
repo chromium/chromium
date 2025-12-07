@@ -5,6 +5,7 @@
 #include "ui/webui/examples/browser/ui/aura/aura_context.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/test/test_screen.h"
@@ -43,7 +44,7 @@ class FocusRules : public wm::BaseFocusRules {
 
 class AuraContext::NativeCursorManager : public wm::NativeCursorManager {
  public:
-  NativeCursorManager() = default;
+  NativeCursorManager() { aura::client::SetCursorShapeClient(&cursor_loader_); }
   ~NativeCursorManager() override = default;
 
   void AddHost(aura::WindowTreeHost* host) { hosts_.insert(host); }
@@ -94,6 +95,12 @@ class AuraContext::NativeCursorManager : public wm::NativeCursorManager {
     NOTIMPLEMENTED();
   }
 
+  void SetLargeCursorSizeInDip(
+      int large_cursor_size_in_dip,
+      wm::NativeCursorManagerDelegate* delegate) override {
+    NOTIMPLEMENTED();
+  }
+
   void SetMouseEventsEnabled(
       bool enabled,
       wm::NativeCursorManagerDelegate* delegate) override {
@@ -102,6 +109,11 @@ class AuraContext::NativeCursorManager : public wm::NativeCursorManager {
     for (aura::WindowTreeHost* host : hosts_) {
       host->dispatcher()->OnMouseEventsEnableStateChanged(enabled);
     }
+  }
+
+  void SetCursorColor(SkColor color,
+                      wm::NativeCursorManagerDelegate* delegate) override {
+    NOTIMPLEMENTED();
   }
 
   // The set of hosts to notify of changes in cursor state.
@@ -124,7 +136,7 @@ AuraContext::ContextualizedWindowTreeHost::~ContextualizedWindowTreeHost() {
 
 AuraContext::AuraContext()
     : screen_(aura::TestScreen::Create(gfx::Size(1024, 768))) {
-  DCHECK(!display::Screen::GetScreen());
+  DCHECK(!display::Screen::Get());
   display::Screen::SetScreenInstance(screen_.get());
   focus_controller_ = std::make_unique<wm::FocusController>(new FocusRules());
   auto native_cursor_manager = std::make_unique<NativeCursorManager>();

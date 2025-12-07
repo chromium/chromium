@@ -21,7 +21,7 @@ CGPoint ScreenPointFromWindow(NSPoint window_point, NSWindow* window) {
                              : window_rect.origin;
   CGFloat primary_screen_height = NSHeight(NSScreen.screens.firstObject.frame);
   screen_point.y = primary_screen_height - screen_point.y;
-  return NSPointToCGPoint(screen_point);
+  return screen_point;
 }
 
 NSEvent* AttachWindowToCGEvent(CGEventRef event, NSWindow* window) {
@@ -207,7 +207,7 @@ NSEvent* TestScrollEvent(NSPoint window_point,
       default:
         // Those are the only 4 options for CGMomentumScrollPhase. If something
         // else was provided it should probably never appear on an NSEvent.
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     CGEventSetIntegerValueField(scroll.get(), kCGScrollWheelEventScrollPhase,
                                 cg_event_phase);

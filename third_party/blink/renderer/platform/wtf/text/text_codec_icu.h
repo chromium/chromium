@@ -28,57 +28,46 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_TEXT_CODEC_ICU_H_
 
 #include <unicode/utypes.h>
+
 #include <memory>
+
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
-typedef struct UConverter UConverter;
+using UConverter = struct UConverter;
 
-namespace WTF {
+namespace blink {
 
-class TextCodecInput;
-
-class TextCodecICU final : public TextCodec {
+class TextCodecIcu final : public TextCodec {
  public:
   static void RegisterEncodingNames(EncodingNameRegistrar);
   static void RegisterCodecs(TextCodecRegistrar);
 
-  ~TextCodecICU() override;
+  ~TextCodecIcu() override;
 
  private:
-  TextCodecICU(const TextEncoding&);
-  WTF_EXPORT static std::unique_ptr<TextCodec> Create(const TextEncoding&,
-                                                      const void*);
+  explicit TextCodecIcu(const TextEncoding&);
+  WTF_EXPORT static std::unique_ptr<TextCodec> Create(const TextEncoding&);
 
-  String Decode(const char*,
-                wtf_size_t length,
+  String Decode(base::span<const uint8_t> data,
                 FlushBehavior,
                 bool stop_on_error,
                 bool& saw_error) override;
-  std::string Encode(const UChar*,
-                     wtf_size_t length,
-                     UnencodableHandling) override;
-  std::string Encode(const LChar*,
-                     wtf_size_t length,
-                     UnencodableHandling) override;
+  std::string Encode(base::span<const UChar>, UnencodableHandling) override;
+  std::string Encode(base::span<const LChar>, UnencodableHandling) override;
 
-  template <typename CharType>
-  std::string EncodeCommon(const CharType*,
-                           wtf_size_t length,
-                           UnencodableHandling);
-  std::string EncodeInternal(const TextCodecInput&, UnencodableHandling);
+  std::string EncodeCommon(base::span<const UChar>, UnencodableHandling);
+  std::string EncodeInternal(base::span<const UChar>, UnencodableHandling);
 
-  void CreateICUConverter() const;
-  void ReleaseICUConverter() const;
+  void CreateIcuConverter() const;
+  void ReleaseIcuConverter() const;
 
-  int DecodeToBuffer(UChar* buffer,
-                     UChar* buffer_limit,
-                     const char*& source,
-                     const char* source_limit,
-                     int32_t* offsets,
-                     bool flush,
-                     UErrorCode&);
+  size_t DecodeToBuffer(base::span<UChar> target,
+                        base::span<const char>& source,
+                        bool flush,
+                        UErrorCode&);
 
   TextEncoding encoding_;
   mutable UConverter* converter_icu_ = nullptr;
@@ -86,21 +75,21 @@ class TextCodecICU final : public TextCodec {
   mutable bool needs_gbk_fallbacks_ = false;
 #endif
 
-  FRIEND_TEST_ALL_PREFIXES(TextCodecICUTest, IgnorableCodePoint);
+  FRIEND_TEST_ALL_PREFIXES(TextCodecIcuTest, IgnorableCodePoint);
 };
 
-struct ICUConverterWrapper {
-  USING_FAST_MALLOC(ICUConverterWrapper);
+struct IcuConverterWrapper {
+  USING_FAST_MALLOC(IcuConverterWrapper);
 
  public:
-  ICUConverterWrapper() : converter(nullptr) {}
-  ICUConverterWrapper(const ICUConverterWrapper&) = delete;
-  ICUConverterWrapper& operator=(const ICUConverterWrapper&) = delete;
-  ~ICUConverterWrapper();
+  IcuConverterWrapper() : converter(nullptr) {}
+  IcuConverterWrapper(const IcuConverterWrapper&) = delete;
+  IcuConverterWrapper& operator=(const IcuConverterWrapper&) = delete;
+  ~IcuConverterWrapper();
 
   UConverter* converter;
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_TEXT_CODEC_ICU_H_

@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_state.h"
 
-#include "base/functional/overloaded.h"
+#include <variant>
+
 #include "base/strings/stringprintf.h"
 #include "components/policy/core/common/cloud/dmserver_job_configurations.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "net/base/net_errors.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace policy {
 
@@ -23,17 +25,16 @@ std::string_view AutoEnrollmentResultToString(AutoEnrollmentResult result) {
       return "Device disabled";
     case AutoEnrollmentResult::kSuggestedEnrollment:
       return "Suggested enrollment";
+    case AutoEnrollmentResult::kDeviceAlreadyOwned:
+      return "Device already owned";
   }
 }
 
 std::string AutoEnrollmentErrorToString(AutoEnrollmentError error) {
-  return absl::visit(
-      base::Overloaded{
+  return std::visit(
+      absl::Overload{
           [](AutoEnrollmentSafeguardTimeoutError) {
             return std::string("Safeguard timeout");
-          },
-          [](AutoEnrollmentSystemClockSyncError) {
-            return std::string("System clock sync error");
           },
           [](AutoEnrollmentStateKeysRetrievalError) {
             return std::string("State keys retrieval error");

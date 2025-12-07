@@ -15,6 +15,7 @@
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/attribution_reporting/constants.h"
+#include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
 
 namespace attribution_reporting {
@@ -57,13 +58,12 @@ AggregatableFilteringIdsMaxBytes::Parse(const base::Value::Dict& registration) {
     return AggregatableFilteringIdsMaxBytes();
   }
 
-  std::optional<int> v = value->GetIfInt();
-  if (!v.has_value()) {
-    return base::unexpected(mojom::TriggerRegistrationError::
-                                kAggregatableFilteringIdMaxBytesInvalidValue);
-  }
+  ASSIGN_OR_RETURN(int v, ParseInt(*value), [](ParseError) {
+    return mojom::TriggerRegistrationError::
+        kAggregatableFilteringIdMaxBytesInvalidValue;
+  });
 
-  auto max_bytes = AggregatableFilteringIdsMaxBytes::Create(v.value());
+  auto max_bytes = AggregatableFilteringIdsMaxBytes::Create(v);
   if (!max_bytes.has_value()) {
     return base::unexpected(mojom::TriggerRegistrationError::
                                 kAggregatableFilteringIdMaxBytesInvalidValue);

@@ -25,7 +25,7 @@ using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::GetClass;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::MethodID;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaArrayOfStrings;
@@ -73,8 +73,7 @@ void TextSuggestionHostAndroid::UpdateRenderProcessConnection(
 
 void TextSuggestionHostAndroid::ApplySpellCheckSuggestion(
     JNIEnv* env,
-    const JavaParamRef<jobject>&,
-    const base::android::JavaParamRef<jstring>& replacement) {
+    const base::android::JavaRef<jstring>& replacement) {
   const mojo::Remote<blink::mojom::TextSuggestionBackend>&
       text_suggestion_backend = GetTextSuggestionBackend();
   if (!text_suggestion_backend)
@@ -85,7 +84,6 @@ void TextSuggestionHostAndroid::ApplySpellCheckSuggestion(
 
 void TextSuggestionHostAndroid::ApplyTextSuggestion(
     JNIEnv*,
-    const JavaParamRef<jobject>&,
     int marker_tag,
     int suggestion_index) {
   const mojo::Remote<blink::mojom::TextSuggestionBackend>&
@@ -95,9 +93,7 @@ void TextSuggestionHostAndroid::ApplyTextSuggestion(
   text_suggestion_backend->ApplyTextSuggestion(marker_tag, suggestion_index);
 }
 
-void TextSuggestionHostAndroid::DeleteActiveSuggestionRange(
-    JNIEnv*,
-    const JavaParamRef<jobject>&) {
+void TextSuggestionHostAndroid::DeleteActiveSuggestionRange(JNIEnv*) {
   const mojo::Remote<blink::mojom::TextSuggestionBackend>&
       text_suggestion_backend = GetTextSuggestionBackend();
   if (!text_suggestion_backend)
@@ -107,8 +103,7 @@ void TextSuggestionHostAndroid::DeleteActiveSuggestionRange(
 
 void TextSuggestionHostAndroid::OnNewWordAddedToDictionary(
     JNIEnv* env,
-    const JavaParamRef<jobject>&,
-    const base::android::JavaParamRef<jstring>& word) {
+    const base::android::JavaRef<jstring>& word) {
   const mojo::Remote<blink::mojom::TextSuggestionBackend>&
       text_suggestion_backend = GetTextSuggestionBackend();
   if (!text_suggestion_backend)
@@ -117,9 +112,7 @@ void TextSuggestionHostAndroid::OnNewWordAddedToDictionary(
       ConvertJavaStringToUTF8(env, word));
 }
 
-void TextSuggestionHostAndroid::OnSuggestionMenuClosed(
-    JNIEnv*,
-    const JavaParamRef<jobject>&) {
+void TextSuggestionHostAndroid::OnSuggestionMenuClosed(JNIEnv*) {
   const mojo::Remote<blink::mojom::TextSuggestionBackend>&
       text_suggestion_backend = GetTextSuggestionBackend();
   if (!text_suggestion_backend)
@@ -255,3 +248,6 @@ void TextSuggestionHostAndroid::OnSuggestionMenuTimeout() {
 }
 
 }  // namespace content
+
+DEFINE_JNI(SuggestionInfo)
+DEFINE_JNI(TextSuggestionHost)

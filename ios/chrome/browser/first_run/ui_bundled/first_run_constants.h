@@ -12,12 +12,14 @@ namespace first_run {
 // The accessibility identifier for the Sign in screen shown in first run.
 extern NSString* const kFirstRunSignInScreenAccessibilityIdentifier;
 
-// The accessibility identifier for the Choice screen title;
-extern NSString* const kSearchEngineChoiceTitleAccessibilityIdentifier;
-
 // The accessibility identifier for the Default browser screen shown in first
 // run.
 extern NSString* const kFirstRunDefaultBrowserScreenAccessibilityIdentifier;
+
+// The accessibility identifier for the animated Default browser screen shown in
+// first run.
+extern NSString* const
+    kFirstRunAnimatedDefaultBrowserScreenAccessibilityIdentifier;
 
 // The accessibility identifier for the Omnibox position choice screen shown in
 // first run.
@@ -36,6 +38,12 @@ extern NSString* const kLaunchScreenAccessibilityIdentifier;
 // Accessibility identifier of the enterprise loading screen.
 extern NSString* const kEnterpriseLoadingScreenAccessibilityIdentifier;
 
-}  // first_run
+// Accessibility identifier of the Best Features main screen.
+extern NSString* const kBestFeaturesMainScreenAccessibilityIdentifier;
+
+// Accessibility identifier of the Lens Animated promo.
+extern NSString* const kAnimatedLensPromoAccessibilityIdentifier;
+
+}  // namespace first_run
 
 #endif  // IOS_CHROME_BROWSER_FIRST_RUN_UI_BUNDLED_FIRST_RUN_CONSTANTS_H_

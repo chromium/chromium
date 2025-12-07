@@ -160,6 +160,7 @@ ResultCode TargetProcess::Create(
   if (startup_info_helper->IsEnvironmentFiltered()) {
     wchar_t* old_environment = ::GetEnvironmentStringsW();
     if (!old_environment) {
+      *win_error = ::GetLastError();
       return SBOX_ERROR_CANNOT_OBTAIN_ENVIRONMENT;
     }
 
@@ -184,7 +185,9 @@ ResultCode TargetProcess::Create(
 
   bool inherit_handles = startup_info_helper->ShouldInheritHandles();
   PROCESS_INFORMATION temp_process_info = {};
-  if (!::CreateProcessAsUserW(lockdown_token_.get(), exe_path, cmd_line.get(),
+  // Allow Token handle to be closed once this function completes.
+  auto lockdown_token = lockdown_token_.release();
+  if (!::CreateProcessAsUserW(lockdown_token.get(), exe_path, cmd_line.get(),
                               nullptr,  // No security attribute.
                               nullptr,  // No thread attribute.
                               inherit_handles, flags,
@@ -195,17 +198,21 @@ ResultCode TargetProcess::Create(
     *win_error = ::GetLastError();
     return SBOX_ERROR_CREATE_PROCESS;
   }
+
   base::win::ScopedProcessInformation process_info(temp_process_info);
 
   // Change the token of the main thread of the new process for the
   // impersonation token with more rights. This allows the target to start;
   // otherwise it will crash too early for us to help.
   HANDLE temp_thread = process_info.thread_handle();
-  if (!::SetThreadToken(&temp_thread, initial_token_.get())) {
+  // Allow Token handle to be closed after this function completes.
+  auto initial_token = initial_token_.release();
+  if (!::SetThreadToken(&temp_thread, initial_token.get())) {
     *win_error = ::GetLastError();
     ::TerminateProcess(process_info.process_handle(), 0);
     return SBOX_ERROR_SET_THREAD_TOKEN;
   }
+
   if (!CheckImpersonationToken(process_info.thread_handle())) {
     *win_error = ERROR_BAD_IMPERSONATION_LEVEL;
     ::TerminateProcess(process_info.process_handle(), 0);

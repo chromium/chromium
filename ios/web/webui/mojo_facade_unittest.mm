@@ -18,7 +18,7 @@
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_test.h"
-#import "ios/web/test/mojo_test.mojom.h"
+#import "ios/web/test/mojo_test.test-mojom.h"
 #import "ios/web/web_state/web_state_impl.h"
 #import "testing/gtest_mac.h"
 
@@ -31,8 +31,9 @@ namespace {
 
 // Serializes the given `object` to JSON string.
 std::string GetJson(id object) {
-  NSData* json_as_data =
-      [NSJSONSerialization dataWithJSONObject:object options:0 error:nil];
+  NSData* json_as_data = [NSJSONSerialization dataWithJSONObject:object
+                                                         options:0
+                                                           error:nil];
   NSString* json_as_string =
       [[NSString alloc] initWithData:json_as_data
                             encoding:NSUTF8StringEncoding];
@@ -70,8 +71,7 @@ class MojoFacadeTest : public WebTest {
     frames_manager_ = web_frames_manager.get();
     web_state_.SetWebFramesManager(std::move(web_frames_manager));
 
-    auto main_frame =
-        FakeWebFrame::Create("frameID", /*is_main_frame=*/true, GURL());
+    auto main_frame = FakeWebFrame::Create("frameID", /*is_main_frame=*/true);
 
     main_frame_ = main_frame.get();
     frames_manager_->AddWebFrame(std::move(main_frame));
@@ -319,7 +319,8 @@ TEST_F(MojoFacadeTest, ReadWrite) {
 
   // Read the message from the pipe.
   NSDictionary* message = ReadMessage(handle0);
-  NSArray* expected_message = @[ @65, @66, @67, @68 ];  // ASCII values for A, B, C, D
+  NSArray* expected_message =
+      @[ @65, @66, @67, @68 ];  // ASCII values for A, B, C, D
   EXPECT_NSEQ(expected_message, message[@"buffer"]);
   EXPECT_FALSE([message[@"handles"] count]);
   EXPECT_EQ(MOJO_RESULT_OK, [message[@"result"] unsignedIntValue]);

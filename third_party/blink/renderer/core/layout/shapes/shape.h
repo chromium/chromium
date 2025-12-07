@@ -31,18 +31,18 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SHAPES_SHAPE_H_
 
 #include <memory>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
+#include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
-#include "third_party/blink/renderer/platform/graphics/path.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 
 namespace blink {
 
-class FloatRoundedRect;
+class ContouredRect;
 struct LogicalSize;
 
 struct LineSegment {
@@ -85,12 +85,13 @@ class CORE_EXPORT Shape {
   static std::unique_ptr<Shape> CreateRasterShape(
       Image*,
       float threshold,
-      const DeprecatedLayoutRect& image_rect,
-      const DeprecatedLayoutRect& margin_rect,
+      int content_block_size,
+      const gfx::Rect& image_rect,
+      const gfx::Rect& margin_logical_rect,
       WritingMode,
       float margin,
       RespectImageOrientationEnum);
-  static std::unique_ptr<Shape> CreateLayoutBoxShape(const FloatRoundedRect&,
+  static std::unique_ptr<Shape> CreateLayoutBoxShape(const ContouredRect&,
                                                      WritingMode,
                                                      float margin);
 

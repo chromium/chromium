@@ -17,6 +17,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
 
+using screen_ai::dlc_installer::DlcInstallResult;
+
 namespace ash {
 
 class ScreenAIDlcInstallerTest
@@ -50,19 +52,18 @@ class ScreenAIDlcInstallerTest
     fake_dlcservice_client_.set_install_error(error_code);
   }
 
-  void ExpectSuccessHistogramCount(std::string_view histogram_name,
-                                   int expected_count,
-                                   int expected_total_count) {
-    histogram_tester_.ExpectBucketCount(histogram_name, true, expected_count);
-    histogram_tester_.ExpectTotalCount(histogram_name, expected_total_count);
+  void ExpectNoDlcInstallHistogramCount() {
+    histogram_tester_.ExpectTotalCount(
+        "Accessibility.ScreenAI.DlcInstallResult", 0);
   }
 
-  void ExpectFailureHistogramCount(int expected_count,
-                                   int expected_total_count) {
-    histogram_tester_.ExpectBucketCount(
-        "Accessibility.ScreenAI.Component.Install", false, expected_count);
+  void ExpectDlcInstallHistogramCount(DlcInstallResult install_result,
+                                      int expected_count) {
     histogram_tester_.ExpectTotalCount(
-        "Accessibility.ScreenAI.Component.Install", expected_total_count);
+        "Accessibility.ScreenAI.DlcInstallResult", expected_count);
+    histogram_tester_.ExpectBucketCount(
+        "Accessibility.ScreenAI.DlcInstallResult", install_result,
+        expected_count);
   }
 
   int base_retry_delay_in_seconds;
@@ -78,20 +79,21 @@ class ScreenAIDlcInstallerTest
 
 TEST_F(ScreenAIDlcInstallerTest, InstallSuccess) {
   InstallAndWait();
-  ExpectSuccessHistogramCount("Accessibility.ScreenAI.Component.Install",
-                              /*expected_count=*/1, /*expected_total_count=*/1);
+  ExpectDlcInstallHistogramCount(DlcInstallResult::kSuccess,
+                                 /*expected_count=*/1);
 }
 
 TEST_F(ScreenAIDlcInstallerTest, InstallFailureWithDlcErrorNeedReboot) {
   SetInstallError(dlcservice::kErrorNeedReboot);
   InstallAndWait();
-  ExpectFailureHistogramCount(/*expected_count=*/1, /*expected_total_count=*/1);
+  ExpectDlcInstallHistogramCount(DlcInstallResult::kErrorNeedReboot,
+                                 /*expected_count=*/1);
 }
 
 TEST_F(ScreenAIDlcInstallerTest, InstallFailureWithDlcErrorBusy) {
   SetInstallError(dlcservice::kErrorBusy);
   InstallAndWait();
-  ExpectFailureHistogramCount(/*expected_count=*/0, /*expected_total_count=*/0);
+  ExpectNoDlcInstallHistogramCount();
 
   int delay_in_seconds = base_retry_delay_in_seconds;
   for (int i = 0; i < max_install_retries; ++i) {
@@ -100,7 +102,8 @@ TEST_F(ScreenAIDlcInstallerTest, InstallFailureWithDlcErrorBusy) {
         screen_ai::dlc_installer::CalculateNextDelayInSecondsForTesting(
             delay_in_seconds);
   }
-  ExpectFailureHistogramCount(/*expected_count=*/1, /*expected_total_count=*/1);
+  ExpectDlcInstallHistogramCount(DlcInstallResult::kErrorBusy,
+                                 /*expected_count=*/1);
 }
 
 TEST_F(ScreenAIDlcInstallerTest,
@@ -109,21 +112,21 @@ TEST_F(ScreenAIDlcInstallerTest,
   InstallAndWait();
   int delay_in_seconds = base_retry_delay_in_seconds;
   WaitForDelay(delay_in_seconds);
-  ExpectFailureHistogramCount(/*expected_count=*/0, /*expected_total_count=*/0);
+  ExpectNoDlcInstallHistogramCount();
 
   SetInstallError(dlcservice::kErrorNone);
   delay_in_seconds =
       screen_ai::dlc_installer::CalculateNextDelayInSecondsForTesting(
           delay_in_seconds);
   WaitForDelay(delay_in_seconds);
-  ExpectSuccessHistogramCount("Accessibility.ScreenAI.Component.Install",
-                              /*expected_count=*/1, /*expected_total_count=*/1);
+  ExpectDlcInstallHistogramCount(DlcInstallResult::kSuccess,
+                                 /*expected_count=*/1);
 }
 
 TEST_F(ScreenAIDlcInstallerTest, InstallFailuresRepeatedWithDlcErrorBusy) {
   SetInstallError(dlcservice::kErrorBusy);
   InstallAndWait();
-  ExpectFailureHistogramCount(/*expected_count=*/0, /*expected_total_count=*/0);
+  ExpectNoDlcInstallHistogramCount();
   int delay_in_seconds = base_retry_delay_in_seconds;
   for (int i = 0; i < max_install_retries; ++i) {
     WaitForDelay(delay_in_seconds);
@@ -131,7 +134,8 @@ TEST_F(ScreenAIDlcInstallerTest, InstallFailuresRepeatedWithDlcErrorBusy) {
         screen_ai::dlc_installer::CalculateNextDelayInSecondsForTesting(
             delay_in_seconds);
   }
-  ExpectFailureHistogramCount(/*expected_count=*/1, /*expected_total_count=*/1);
+  ExpectDlcInstallHistogramCount(DlcInstallResult::kErrorBusy,
+                                 /*expected_count=*/1);
 
   InstallAndWait();
   delay_in_seconds = base_retry_delay_in_seconds;
@@ -141,13 +145,13 @@ TEST_F(ScreenAIDlcInstallerTest, InstallFailuresRepeatedWithDlcErrorBusy) {
         screen_ai::dlc_installer::CalculateNextDelayInSecondsForTesting(
             delay_in_seconds);
   }
-  ExpectFailureHistogramCount(/*expected_count=*/2, /*expected_total_count=*/2);
+  ExpectDlcInstallHistogramCount(DlcInstallResult::kErrorBusy,
+                                 /*expected_count=*/2);
 }
 
 TEST_F(ScreenAIDlcInstallerTest, UninstallSuccess) {
   UninstallAndWait();
-  ExpectSuccessHistogramCount("Accessibility.ScreenAI.Component.Uninstall",
-                              /*expected_count=*/1, /*expected_total_count=*/1);
+  ExpectNoDlcInstallHistogramCount();
 }
 
 }  // namespace ash

@@ -5,6 +5,8 @@
 #ifndef BASE_IOS_DEVICE_UTIL_H_
 #define BASE_IOS_DEVICE_UTIL_H_
 
+#include <base/types/expected.h>
+#include <mach/mach.h>
 #include <stdint.h>
 
 #include <string>
@@ -54,6 +56,9 @@ std::string GetVendorId();
 std::string GetSaltedString(const std::string& in_string,
                             const std::string& salt);
 
+// Returns a task_vm_info runtime memory data on Apple platforms in
+// case of KERN_SUCCESS. Otherwise returns an error of kern_return_t type.
+[[nodiscard]] base::expected<task_vm_info, kern_return_t> GetTaskVMInfo();
 }  // namespace device_util
 }  // namespace ios
 

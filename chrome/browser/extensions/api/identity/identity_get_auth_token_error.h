@@ -8,12 +8,17 @@
 #include <string>
 #include <string_view>
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
 
 class IdentityGetAuthTokenError {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  // LINT.IfChange(GetAuthTokenResult)
   enum class State {
     kNone = 0,
     kInvalidClientId = 1,
@@ -42,26 +47,29 @@ class IdentityGetAuthTokenError {
     kRemoteConsentPageLoadFailure = 24,
     // kSetAccountsInCookieFailure = 25, // Deprecated
     kInvalidConsentResult = 26,
-    kCanceled = 27,
+    // kCanceled = 27, // Deprecated
     kInteractivityDenied = 28,
     kCannotCreateWindow = 29,
-    kMaxValue = kCannotCreateWindow,
+    kBrowserContextShutDown = 30,
+    kSetRemoteConsentResolutionCookiesFailed = 31,
+    kMaxValue = kSetRemoteConsentResolutionCookiesFailed,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:GetAuthTokenResult)
 
   // Constructs a |State::kMintTokenAuthFailure| error with an
-  // |error_message|.
+  // `error_message`.
   static IdentityGetAuthTokenError FromMintTokenAuthError(
       std::string_view error_message);
 
   // Constructs a |State::kGetAccessTokenAuthFailure| error with an
-  // |error_message|.
+  // `error_message`.
   static IdentityGetAuthTokenError FromGetAccessTokenAuthError(
       std::string_view error_message);
 
   // Constructs a |State::kNone| error.
   IdentityGetAuthTokenError();
 
-  // Constructs an IdentityGetAuthTokenError from |state| with no additional
+  // Constructs an IdentityGetAuthTokenError from `state` with no additional
   // data.
   explicit IdentityGetAuthTokenError(State state);
 

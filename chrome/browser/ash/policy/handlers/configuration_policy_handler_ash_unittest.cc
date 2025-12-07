@@ -7,13 +7,13 @@
 #include <memory>
 #include <utility>
 
-#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/values.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/browser/policy_error_map.h"
@@ -60,7 +60,7 @@ class LoginScreenPowerManagementPolicyHandlerTest : public testing::Test {
 };
 
 LoginScreenPowerManagementPolicyHandlerTest::
-    LoginScreenPowerManagementPolicyHandlerTest() {}
+    LoginScreenPowerManagementPolicyHandlerTest() = default;
 
 void LoginScreenPowerManagementPolicyHandlerTest::SetUp() {
   chrome_schema_ = Schema::Wrap(GetChromeSchemaData());
@@ -320,7 +320,8 @@ TEST_F(LoginScreenPowerManagementPolicyHandlerTest, ValidPolicy) {
   PolicyMap policy_map;
   policy_map.Set(key::kDeviceLoginScreenPowerManagement, POLICY_LEVEL_MANDATORY,
                  POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-                 base::JSONReader::Read(kLoginScreenPowerManagementPolicy),
+                 base::JSONReader::Read(kLoginScreenPowerManagementPolicy,
+                                        base::JSON_PARSE_CHROMIUM_EXTENSIONS),
                  nullptr);
   LoginScreenPowerManagementPolicyHandler handler(chrome_schema_);
   PolicyErrorMap errors;
@@ -360,7 +361,8 @@ TEST_F(PowerManagementIdleSettingsPolicyHandlerTest,
   )";
   policy_.Set(key::kPowerManagementIdleSettings, POLICY_LEVEL_MANDATORY,
               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-              base::JSONReader::Read(policy_with_minimum_correct_idle_timeouts),
+              base::JSONReader::Read(policy_with_minimum_correct_idle_timeouts,
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS),
               nullptr);
   PowerManagementIdleSettingsPolicyHandler handler(chrome_schema_);
   handler.ApplyPolicySettings(policy_, &prefs_);
@@ -394,7 +396,9 @@ TEST_F(PowerManagementIdleSettingsPolicyHandlerTest,
   )";
   policy_.Set(key::kPowerManagementIdleSettings, POLICY_LEVEL_MANDATORY,
               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-              base::JSONReader::Read(policy_with_zero_ac_idle), nullptr);
+              base::JSONReader::Read(policy_with_zero_ac_idle,
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS),
+              nullptr);
   PowerManagementIdleSettingsPolicyHandler handler(chrome_schema_);
   handler.ApplyPolicySettings(policy_, &prefs_);
 
@@ -426,7 +430,9 @@ TEST_F(PowerManagementIdleSettingsPolicyHandlerTest,
   )";
   policy_.Set(key::kPowerManagementIdleSettings, POLICY_LEVEL_MANDATORY,
               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-              base::JSONReader::Read(policy_with_zero_battery_idle), nullptr);
+              base::JSONReader::Read(policy_with_zero_battery_idle,
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS),
+              nullptr);
   PowerManagementIdleSettingsPolicyHandler handler(chrome_schema_);
   handler.ApplyPolicySettings(policy_, &prefs_);
 
@@ -453,7 +459,9 @@ TEST_F(PowerManagementIdleSettingsPolicyHandlerTest,
   )";
   policy_.Set(key::kPowerManagementIdleSettings, POLICY_LEVEL_MANDATORY,
               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-              base::JSONReader::Read(policy_without_idle_timeouts), nullptr);
+              base::JSONReader::Read(policy_without_idle_timeouts,
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS),
+              nullptr);
   PowerManagementIdleSettingsPolicyHandler handler(chrome_schema_);
   handler.ApplyPolicySettings(policy_, &prefs_);
 

@@ -4,12 +4,16 @@
 
 #include "ash/app_list/model/search/search_box_model.h"
 
+#include <string>
 #include <utility>
 
 #include "ash/app_list/model/search/search_box_model_observer.h"
 #include "ash/public/cpp/app_list/app_list_client.h"
+#include "base/check_is_test.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "ui/base/models/image_model.h"
+#include "ui/gfx/image/image.h"
 
 namespace ash {
 
@@ -17,12 +21,29 @@ SearchBoxModel::SearchBoxModel() = default;
 
 SearchBoxModel::~SearchBoxModel() = default;
 
-void SearchBoxModel::SetShowAssistantButton(bool show) {
-  if (show_assistant_button_ == show)
+void SearchBoxModel::SetGeminiButtonVisibility(
+    std::optional<SearchBoxIconButton> search_box_icon_button) {
+  gemini_search_box_icon_button_ = search_box_icon_button;
+
+  if (gemini_search_box_icon_button_) {
+    CHECK(!gemini_search_box_icon_button_.value().display_name.empty());
+    CHECK(!gemini_search_box_icon_button_.value().icon.IsEmpty());
+  }
+
+  for (SearchBoxModelObserver& observer : observers_) {
+    observer.ShowGeminiButtonChanged();
+  }
+}
+
+void SearchBoxModel::SetSunfishButtonVisibility(
+    SearchBoxModel::SunfishButtonVisibility show) {
+  if (sunfish_button_visibility_ == show) {
     return;
-  show_assistant_button_ = show;
-  for (auto& observer : observers_)
-    observer.ShowAssistantChanged();
+  }
+  sunfish_button_visibility_ = show;
+  for (SearchBoxModelObserver& observer : observers_) {
+    observer.SunfishButtonVisibilityChanged();
+  }
 }
 
 void SearchBoxModel::SetWouldTriggerIph(bool would_trigger_iph) {

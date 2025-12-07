@@ -18,6 +18,7 @@
 #include "remoting/protocol/audio_pump.h"
 #include "remoting/protocol/audio_source.h"
 #include "remoting/protocol/audio_writer.h"
+#include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/desktop_capturer.h"
 #include "remoting/protocol/host_control_dispatcher.h"
@@ -46,8 +47,7 @@ std::unique_ptr<AudioEncoder> CreateAudioEncoder(
   }
 #endif
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -84,12 +84,14 @@ protocol::Session* IceConnectionToClient::session() {
   return session_.get();
 }
 
-void IceConnectionToClient::Disconnect(ErrorCode error) {
+void IceConnectionToClient::Disconnect(ErrorCode error,
+                                       std::string_view error_details,
+                                       const SourceLocation& error_location) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // This should trigger OnConnectionClosed() event and this object
   // may be destroyed as the result.
-  session_->Close(error);
+  session_->Close(error, error_details, error_location);
 }
 
 std::unique_ptr<VideoStream> IceConnectionToClient::StartVideoStream(
@@ -123,6 +125,11 @@ std::unique_ptr<AudioStream> IceConnectionToClient::StartAudioStream(
   return base::WrapUnique(
       new AudioPump(audio_task_runner_, std::move(audio_source),
                     std::move(audio_encoder), audio_writer_.get()));
+}
+
+void IceConnectionToClient::ApplyNetworkSettings(
+    const NetworkSettings& settings) {
+  transport_.ApplyNetworkSettings(settings);
 }
 
 // Return pointer to ClientStub.
@@ -183,7 +190,8 @@ void IceConnectionToClient::OnSessionStateChange(Session::State state) {
 
       // Notify the handler after initializing the channels, so that
       // ClientSession can get a client clipboard stub.
-      event_handler_->OnConnectionAuthenticated();
+      event_handler_->OnConnectionAuthenticated(
+          session_->authenticator().GetSessionPolicies());
       break;
 
     case Session::CLOSED:
@@ -203,7 +211,7 @@ void IceConnectionToClient::OnIceTransportRouteChange(
 
 void IceConnectionToClient::OnIceTransportError(ErrorCode error) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  Disconnect(error);
+  Disconnect(error, /* error_details= */ {}, FROM_HERE);
 }
 
 void IceConnectionToClient::OnChannelInitialized(
@@ -216,7 +224,7 @@ void IceConnectionToClient::OnChannelInitialized(
 void IceConnectionToClient::OnChannelClosed(
     ChannelDispatcherBase* channel_dispatcher) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  Disconnect(ErrorCode::OK);
+  Disconnect(ErrorCode::OK, /* error_details= */ {}, FROM_HERE);
 }
 
 void IceConnectionToClient::NotifyIfChannelsReady() {

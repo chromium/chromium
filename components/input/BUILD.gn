@@ -3,17 +3,20 @@
 # found in the LICENSE file.
 
 import("//build/config/ui.gni")
-
-assert(
-    use_blink,
-    "//components/input can't be built without blink and shouldn't be included if use_blink is false")
+import("//mojo/public/tools/bindings/mojom.gni")
 
 component("input") {
   defines = [ "IS_INPUT_IMPL" ]
   sources = [
+    "child_frame_input_helper.cc",
+    "child_frame_input_helper.h",
     "cursor_manager.cc",
     "cursor_manager.h",
+    "dispatch_to_renderer_callback.cc",
+    "dispatch_to_renderer_callback.h",
     "event_with_latency_info.h",
+    "events_helper.cc",
+    "events_helper.h",
     "features.cc",
     "features.h",
     "fling_controller.cc",
@@ -23,6 +26,7 @@ component("input") {
     "gesture_event_queue.h",
     "gesture_event_stream_validator.cc",
     "gesture_event_stream_validator.h",
+    "input_constants.h",
     "input_disposition_handler.h",
     "input_event_ack_state.cc",
     "input_event_ack_state.h",
@@ -39,7 +43,6 @@ component("input") {
     "native_web_keyboard_event.h",
     "passthrough_touch_event_queue.cc",
     "passthrough_touch_event_queue.h",
-    "peak_gpu_memory_tracker.h",
     "render_input_router.cc",
     "render_input_router.h",
     "render_input_router_client.h",
@@ -49,6 +52,7 @@ component("input") {
     "render_input_router_latency_tracker.h",
     "render_widget_host_input_event_router.cc",
     "render_widget_host_input_event_router.h",
+    "render_widget_host_view_input.cc",
     "render_widget_host_view_input.h",
     "render_widget_host_view_input_observer.cc",
     "render_widget_host_view_input_observer.h",
@@ -79,17 +83,19 @@ component("input") {
     "web_touch_event_traits.cc",
     "web_touch_event_traits.h",
   ]
+  public_deps = [ "//ui/base/mojom:ui_base_types" ]
   deps = [
+    ":mojom",
     "//base",
     "//cc",
     "//services/viz/public/mojom",
     "//third_party/blink/public/common:headers",
     "//ui/base",
     "//ui/base/cursor",
-    "//ui/events:events",
+    "//ui/events",
     "//ui/events:events_base",
     "//ui/events:gesture_detection",
-    "//ui/events/blink:blink",
+    "//ui/events/blink",
     "//ui/events/gestures/blink",
   ]
   if (use_aura) {
@@ -97,9 +103,28 @@ component("input") {
   }
   if (is_android) {
     sources += [
+      "android/android_input_callback.cc",
+      "android/android_input_callback.h",
+      "android/input_feature_map.cc",
+      "android/input_receiver_data.cc",
+      "android/input_receiver_data.h",
+      "android/input_token_forwarder.cc",
+      "android/input_token_forwarder.h",
+      "android/scoped_input_receiver.cc",
+      "android/scoped_input_receiver.h",
+      "android/scoped_input_receiver_callbacks.cc",
+      "android/scoped_input_receiver_callbacks.h",
+      "android/scoped_input_transfer_token.cc",
+      "android/scoped_input_transfer_token.h",
+      "android_input_helper.cc",
+      "android_input_helper.h",
       "native_web_keyboard_event_android.cc",
       "web_input_event_builders_android.cc",
       "web_input_event_builders_android.h",
+    ]
+    deps += [
+      "//components/input/android:jni_headers",
+      "//ui/events:motionevent_jni_headers",
     ]
   }
   if (is_ios) {
@@ -123,6 +148,28 @@ component("input") {
   }
 }
 
+mojom_component("mojom") {
+  sources = [ "render_input_router.mojom" ]
+  public_deps = [
+    "//services/viz/public/mojom",
+    "//third_party/blink/public/mojom:mojom_platform",
+    "//ui/events/mojom",
+    "//ui/events/mojom:event_latency_metadata_mojom",
+  ]
+
+  overridden_deps = [ "//third_party/blink/public/mojom:mojom_platform" ]
+  component_deps = [ "//third_party/blink/public/common" ]
+
+  # It's important to specify these settings for Blink bindings, because the
+  # dependency above requires linkage into the platform library.
+  export_class_attribute_blink = "PLATFORM_EXPORT"
+  export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+  export_header_blink = "third_party/blink/renderer/platform/platform_export.h"
+
+  output_prefix = "components_input_mojom"
+  macro_prefix = "COMPONENTS_INPUT_MOJOM"
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -139,19 +186,23 @@ source_set("unit_tests") {
   ]
   deps = [
     ":input",
-    "//base:base",
+    "//base",
     "//base/test:test_support",
     "//testing/gtest",
     "//third_party/blink/public/common:headers",
     "//ui/base:features",
+    "//ui/events",
     "//ui/events:dom_keycode_converter",
-    "//ui/events:events",
     "//ui/events:test_support",
     "//ui/events:velocity_tracker",
-    "//ui/events/blink:blink",
+    "//ui/events/blink",
   ]
   if (is_android) {
-    sources += [ "web_input_event_builders_android_unittest.cc" ]
+    sources += [
+      "utils_unittest.cc",
+      "web_input_event_builders_android_unittest.cc",
+    ]
+    deps += [ "//ui/events:motionevent_jni_headers" ]
   }
   if (is_mac) {
     sources += [

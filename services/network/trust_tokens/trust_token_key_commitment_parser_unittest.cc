@@ -6,15 +6,18 @@
 
 #include "base/base64.h"
 #include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/fuzztest_support.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 using ::testing::ElementsAre;
 using ::testing::Truly;
@@ -49,7 +52,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsNonemptyMalformed) {
   const char input[] = "certainly not valid JSON";
 
   // Sanity check that the input is not valid JSON.
-  ASSERT_FALSE(base::JSONReader::Read(input));
+  ASSERT_FALSE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   EXPECT_FALSE(TrustTokenKeyCommitmentParser().Parse(input));
 }
@@ -61,7 +65,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsNonDictionaryInput) {
   const char input[] = "5";
 
   // Sanity check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   EXPECT_FALSE(TrustTokenKeyCommitmentParser().Parse(input));
 }
@@ -75,7 +80,8 @@ TEST(TrustTokenKeyCommitmentParser, AcceptsMinimal) {
         }} )";
 
   // Sanity check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   auto expectation = mojom::TrustTokenKeyCommitmentResult::New();
   expectation->protocol_version =
@@ -96,7 +102,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsKeyWithTypeUnsafeValue) {
          }})";
 
   // Sanity check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   // Keys should be a dictionary, so this result shouldn't parse.
   EXPECT_FALSE(TrustTokenKeyCommitmentParser().Parse(input));
@@ -127,7 +134,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsKeyWithTypeUnsafeKeyLabel) {
       base::NumberToString(one_minute_from_now_in_micros).c_str());
 
   // Sanity check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   // Key labels must be integers in the representable range of uint32_t, so this
   // result shouldn't parse.
@@ -157,7 +165,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsKeyWithKeyLabelTooSmall) {
       base::NumberToString(one_minute_from_now_in_micros).c_str());
 
   // Sanity check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   // Key labels must be integers in the representable range of uint32_t, so this
   // result shouldn't parse.
@@ -186,7 +195,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsKeyWithKeyLabelTooLarge) {
       base::NumberToString(one_minute_from_now_in_micros).c_str());
 
   // Sanity check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   // Key labels must be integers in the representable range of uint32_t, so this
   // result shouldn't parse.
@@ -216,7 +226,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsOtherwiseValidButNonBase64Key) {
 
   // Sanity check that the input is actually valid JSON,
   // and that the given time is valid.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   EXPECT_FALSE(TrustTokenKeyCommitmentParser().Parse(input));
 }
@@ -239,7 +250,8 @@ TEST(TrustTokenKeyCommitmentParser, AcceptsKeyWithExpiryAndBody) {
 
   // Sanity check that the input is actually valid JSON,
   // and that the given time is valid.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   auto my_key = mojom::TrustTokenVerificationKey::New();
   ASSERT_TRUE(base::Base64Decode("akey", &my_key->body));
@@ -275,7 +287,8 @@ TEST(TrustTokenKeyCommitmentParser, AcceptsMultipleKeys) {
 
   // Sanity check that the input is actually valid JSON,
   // and that the given time is valid.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   auto a_key = mojom::TrustTokenVerificationKey::New();
   ASSERT_TRUE(base::Base64Decode("akey", &a_key->body));
@@ -300,7 +313,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsKeyWithNoExpiry) {
           "batchsize": 5, "keys": {"1": { "Y": "akey" }} }})";
 
   // Sanity check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   // Since the key doesn't have an expiry, reject it.
   EXPECT_FALSE(TrustTokenKeyCommitmentParser().Parse(input));
@@ -322,7 +336,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsKeyWithMalformedExpiry) {
    }})";
 
   // Sanity check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   // Since the key doesn't have an expiry, reject it.
   EXPECT_FALSE(TrustTokenKeyCommitmentParser().Parse(input));
@@ -351,7 +366,8 @@ TEST(TrustTokenKeyCommitmentParser, IgnoreKeyWithExpiryInThePast) {
       base::NumberToString(one_minute_before_now_in_micros).c_str());
 
   // Sanity check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   auto expectation = mojom::TrustTokenKeyCommitmentResult::New();
   expectation->protocol_version =
@@ -381,7 +397,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsKeyWithNoBody) {
 
   // Sanity check that the input is actually valid JSON,
   // and that the date is valid.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   // Since the key doesn't have a body, reject it.
   EXPECT_FALSE(TrustTokenKeyCommitmentParser().Parse(input));
@@ -398,7 +415,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsEmptyKey) {
 
   // Sanity check that the input is actually valid JSON,
   // and that the date is valid.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   // Since the key doesn't have an expiry or a body, reject it.
   EXPECT_FALSE(TrustTokenKeyCommitmentParser().Parse(input));
@@ -410,7 +428,8 @@ TEST(TrustTokenKeyCommitmentParser, ParsesBatchSize) {
      "protocol_version": "PrivateStateTokenV1PMB", "id": 1, "batchsize": 5
    }})";
   // Double-check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   mojom::TrustTokenKeyCommitmentResultPtr result =
       TrustTokenKeyCommitmentParser().Parse(input);
@@ -425,7 +444,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsMissingBatchSize) {
      "protocol_version": "PrivateStateTokenV1PMB", "id": 1
    }})";
   // Double-check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   mojom::TrustTokenKeyCommitmentResultPtr result =
       TrustTokenKeyCommitmentParser().Parse(input);
@@ -439,7 +459,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsNonpositiveBatchSize) {
      "batchsize": 0
    }})";
   // Double-check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   mojom::TrustTokenKeyCommitmentResultPtr result =
       TrustTokenKeyCommitmentParser().Parse(input);
@@ -453,7 +474,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsTypeUnsafeBatchSize) {
      "batchsize": "not a number"
    }})";
   // Double-check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   mojom::TrustTokenKeyCommitmentResultPtr result =
       TrustTokenKeyCommitmentParser().Parse(input);
@@ -471,7 +493,8 @@ TEST(TrustTokenKeyCommitmentParser, IgnoresRequestIssuanceLocallyOn) {
      "unavailable_local_operation_fallback": "web_issuance"
    }})";
   // Double-check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   mojom::TrustTokenKeyCommitmentResultPtr result =
       TrustTokenKeyCommitmentParser().Parse(input);
@@ -485,7 +508,8 @@ TEST(TrustTokenKeyCommitmentParser, ParsesProtocolVersion) {
      "srrkey": "aaaa"
    }})";
   // Make sure the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   mojom::TrustTokenKeyCommitmentResultPtr result =
       TrustTokenKeyCommitmentParser().Parse(input);
@@ -503,7 +527,8 @@ TEST(TrustTokenKeyCommitmentParser, ParsesMultipleProtocolVersion) {
      "protocol_version": "PrivateStateTokenV1VOPRF", "id": 1, "batchsize": 5
      }})";
   // Make sure the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   mojom::TrustTokenKeyCommitmentResultPtr result =
       TrustTokenKeyCommitmentParser().Parse(input);
@@ -522,7 +547,8 @@ TEST(TrustTokenKeyCommitmentParser,
      "protocol_version": "PrivateStateTokenJunk", "id": 1, "batchsize": 5
      }})";
   // Make sure the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   mojom::TrustTokenKeyCommitmentResultPtr result =
       TrustTokenKeyCommitmentParser().Parse(input);
@@ -534,7 +560,8 @@ TEST(TrustTokenKeyCommitmentParser,
 TEST(TrustTokenKeyCommitmentParser, RejectsBadVersionCommitmentType) {
   std::string input = R"({ "PrivateStateTokenV1PMB": 3})";
   // Make sure the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   mojom::TrustTokenKeyCommitmentResultPtr result =
       TrustTokenKeyCommitmentParser().Parse(input);
@@ -547,7 +574,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsMissingProtocolVersion) {
      "id": 1, "batchsize": 5, "srrkey": "aaaa"
    }})";
   // Make sure the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   mojom::TrustTokenKeyCommitmentResultPtr result =
       TrustTokenKeyCommitmentParser().Parse(input);
@@ -560,7 +588,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsMismatchedProtocolVersion) {
      "protocol_version": "PrivateStateTokenV1VOPRF", "id": 1, "batchsize": 5
    }})";
   // Make sure the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   mojom::TrustTokenKeyCommitmentResultPtr result =
       TrustTokenKeyCommitmentParser().Parse(input);
@@ -574,7 +603,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsUnknownProtocolVersion) {
      "batchsize": 5
    }})";
   // Make sure the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   mojom::TrustTokenKeyCommitmentResultPtr result =
       TrustTokenKeyCommitmentParser().Parse(input);
@@ -588,7 +618,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsTypeUnsafeProtocolVersion) {
      "batchsize": 5
    }})";
   // Make sure the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   mojom::TrustTokenKeyCommitmentResultPtr result =
       TrustTokenKeyCommitmentParser().Parse(input);
@@ -602,7 +633,8 @@ TEST(TrustTokenKeyCommitmentParser, ParsesID) {
      "srrkey": "aaaa"
    }})";
   // Make sure the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   mojom::TrustTokenKeyCommitmentResultPtr result =
       TrustTokenKeyCommitmentParser().Parse(input);
@@ -618,7 +650,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsMissingID) {
      "srrkey": "aaaa"
    }})";
   // Make sure the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   mojom::TrustTokenKeyCommitmentResultPtr result =
       TrustTokenKeyCommitmentParser().Parse(input);
@@ -633,7 +666,8 @@ TEST(TrustTokenKeyCommitmentParser, RejectsTypeUnsafeID) {
      "batchsize": 5
    }})";
   // Make sure the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   mojom::TrustTokenKeyCommitmentResultPtr result =
       TrustTokenKeyCommitmentParser().Parse(input);
@@ -642,8 +676,9 @@ TEST(TrustTokenKeyCommitmentParser, RejectsTypeUnsafeID) {
 
 TEST(TrustTokenKeyCommitmentParserMultipleIssuers, InvalidJson) {
   std::string input = "";
+  // Make sure it's really not valid JSON.
   ASSERT_FALSE(
-      base::JSONReader::Read(input));  // Make sure it's really not valid JSON.
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   auto result = TrustTokenKeyCommitmentParser().ParseMultipleIssuers(input);
   EXPECT_FALSE(result);
@@ -652,7 +687,8 @@ TEST(TrustTokenKeyCommitmentParserMultipleIssuers, InvalidJson) {
 TEST(TrustTokenKeyCommitmentParserMultipleIssuers, NotADictionary) {
   std::string input = "3";
   // Make sure the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   auto result = TrustTokenKeyCommitmentParser().ParseMultipleIssuers(input);
   EXPECT_FALSE(result);
@@ -662,7 +698,8 @@ TEST(TrustTokenKeyCommitmentParserMultipleIssuers, Empty) {
   std::string input = "{}";
 
   // Make sure the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   auto result = TrustTokenKeyCommitmentParser().ParseMultipleIssuers(input);
   ASSERT_TRUE(result);
@@ -678,7 +715,8 @@ TEST(TrustTokenKeyCommitmentParserMultipleIssuers, UnsuitableKey) {
                  } } )";
 
   // Make sure the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   auto result = TrustTokenKeyCommitmentParser().ParseMultipleIssuers(input);
   ASSERT_TRUE(result);
@@ -692,7 +730,8 @@ TEST(TrustTokenKeyCommitmentParserMultipleIssuers, SuitableKeyInvalidValue) {
               "not a valid encoding of a key commitment result" } )";
 
   // Make sure the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   auto result = TrustTokenKeyCommitmentParser().ParseMultipleIssuers(input);
   ASSERT_TRUE(result);
@@ -707,7 +746,8 @@ TEST(TrustTokenKeyCommitmentParserMultipleIssuers, SingleIssuer) {
               }} } )";
 
   // Make sure the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   TrustTokenKeyCommitmentParser parser;
 
@@ -738,7 +778,8 @@ TEST(TrustTokenKeyCommitmentParserMultipleIssuers, DuplicateIssuer) {
     } )";
 
   // Make sure the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   TrustTokenKeyCommitmentParser parser;
 
@@ -777,7 +818,8 @@ TEST(TrustTokenKeyCommitmentParserMultipleIssuers, DuplicateIssuerFirstWins) {
     }} )";
 
   // Make sure the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   TrustTokenKeyCommitmentParser parser;
 
@@ -808,7 +850,8 @@ TEST(TrustTokenKeyCommitmentParserMultipleIssuers,
       "id": 1, "batchsize": 5 } }} )";
 
   // Make sure the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   TrustTokenKeyCommitmentParser parser;
 
@@ -825,5 +868,17 @@ TEST(TrustTokenKeyCommitmentParserMultipleIssuers,
         "protocol_version": "PrivateStateTokenV1PMB",
         "id": 1, "batchsize": 5}})")));
 }
+
+void ParsesOneIssuerCorrectly(base::Value value) {
+  TrustTokenKeyCommitmentParser().Parse(base::WriteJson(value).value_or(""));
+}
+
+void ParsesMultipleIssuersCorrectly(base::Value value) {
+  TrustTokenKeyCommitmentParser().ParseMultipleIssuers(
+      base::WriteJson(value).value_or(""));
+}
+
+FUZZ_TEST(TrustTokenKeyCommitmentFuzzer, ParsesOneIssuerCorrectly);
+FUZZ_TEST(TrustTokenKeyCommitmentFuzzer, ParsesMultipleIssuersCorrectly);
 
 }  // namespace network

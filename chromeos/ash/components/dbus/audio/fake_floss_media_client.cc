@@ -8,7 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/logging.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 
 namespace ash {
 

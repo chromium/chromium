@@ -12,6 +12,7 @@
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 
 namespace metrics {
 
@@ -42,15 +43,23 @@ void ChromeVisibilityObserver::OnBrowserSetLastActive(Browser* browser) {
 }
 
 void ChromeVisibilityObserver::OnBrowserNoLongerActive(Browser* browser) {
-  if (visibility_gap_timeout_.InMicroseconds() == 0) {
-    SendVisibilityChangeEvent(false, base::TimeDelta());
-  } else {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&ChromeVisibilityObserver::SendVisibilityChangeEvent,
-                       weak_factory_.GetWeakPtr(), false,
-                       visibility_gap_timeout_),
-        visibility_gap_timeout_);
+  // Check if there is an active browser instead of assuming ordering of the
+  // observation calls when we are switching between browsers.
+  const auto* const last_active_bwi =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  bool is_active = last_active_bwi && last_active_bwi->IsActive();
+
+  if (!is_active) {
+    if (visibility_gap_timeout_.InMicroseconds() == 0) {
+      SendVisibilityChangeEvent(false, base::TimeDelta());
+    } else {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&ChromeVisibilityObserver::SendVisibilityChangeEvent,
+                         weak_factory_.GetWeakPtr(), false,
+                         visibility_gap_timeout_),
+          visibility_gap_timeout_);
+    }
   }
 }
 

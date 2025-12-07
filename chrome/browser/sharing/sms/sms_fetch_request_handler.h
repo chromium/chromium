@@ -40,11 +40,17 @@ class SmsFetchRequestHandler : public SharingMessageHandler {
   // SharingMessageHandler
   void OnMessage(components_sharing_message::SharingMessage message,
                  SharingMessageHandler::DoneCallback done_callback) override;
-  virtual void AskUserPermission(const content::OriginList&,
+  virtual void AskUserPermission(const content::SmsFetcher::OriginList&,
                                  const std::string& one_time_code,
                                  const std::string& client_name);
-  virtual void OnConfirm(JNIEnv*, jstring top_origin, jstring embedded_origin);
-  virtual void OnDismiss(JNIEnv*, jstring top_origin, jstring embedded_origin);
+  virtual void OnConfirm(
+      JNIEnv*,
+      std::u16string top_origin,
+      const base::android::JavaRef<jstring>& embedded_origin);
+  virtual void OnDismiss(
+      JNIEnv*,
+      std::u16string top_origin,
+      const base::android::JavaRef<jstring>& embedded_origin);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SmsFetchRequestHandlerTest, Basic);
@@ -53,8 +59,6 @@ class SmsFetchRequestHandler : public SharingMessageHandler {
                            SendSuccessMessageOnConfirm);
   FRIEND_TEST_ALL_PREFIXES(SmsFetchRequestHandlerTest,
                            SendFailureMessageOnDismiss);
-  FRIEND_TEST_ALL_PREFIXES(SmsFetchRequestHandlerTest, DefaultDeviceName);
-  FRIEND_TEST_ALL_PREFIXES(SmsFetchRequestHandlerTest, EmptyDeviceName);
   // Request represents an incoming request from a remote WebOTPService.
   // It manages subscribing and unsubscribing for SMSes in SmsFetcher and
   // responding to the callback.
@@ -73,11 +77,13 @@ class SmsFetchRequestHandler : public SharingMessageHandler {
 
     ~Request() override;
 
-    void OnReceive(const content::OriginList&,
+    void OnReceive(const content::SmsFetcher::OriginList&,
                    const std::string& one_time_code,
                    content::SmsFetcher::UserConsent) override;
     void OnFailure(FailureType failure_type) override;
-    const content::OriginList& origin_list() const { return origin_list_; }
+    const content::SmsFetcher::OriginList& origin_list() const {
+      return origin_list_;
+    }
     // OnReceive stashes the response and asks users for permission to send it
     // to remote. Based on user's interaction, we send different responses back.
     void SendSuccessMessage();
@@ -86,7 +92,7 @@ class SmsFetchRequestHandler : public SharingMessageHandler {
    private:
     raw_ptr<SmsFetchRequestHandler> handler_;
     raw_ptr<content::SmsFetcher> fetcher_;
-    const content::OriginList origin_list_;
+    const content::SmsFetcher::OriginList origin_list_;
     std::string one_time_code_;
     std::string client_name_;
     SharingMessageHandler::DoneCallback respond_callback_;

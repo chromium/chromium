@@ -50,8 +50,8 @@ class ManagedBookmarksTracker {
   // LoadInitial() to do the initial load.
   base::Value::List GetInitialManagedBookmarks();
 
-  // Loads the initial managed bookmarks in |list| into |folder|.
-  // New nodes will be assigned IDs starting at |next_node_id|.
+  // Loads the initial managed bookmarks in `list` into `folder`.
+  // New nodes will be assigned IDs starting at `next_node_id`.
   // Returns the next node ID to use.
   static int64_t LoadInitial(BookmarkNode* folder,
                              const base::Value::List& list,

@@ -374,8 +374,7 @@ TEST_F(GraphImplTest, OpenersAndEmbeddersClearedOnTeardown) {
   // Set up some embedder relationships. These should be gracefully torn down as
   // the graph cleans up nodes, otherwise the frame and page node destructors
   // will explode.
-  pageB->SetEmbedderFrameNodeAndEmbeddingType(
-      frameA1.get(), PageNode::EmbeddingType::kGuestView);
+  pageB->SetEmbedderFrameNode(frameA1.get());
   pageC->SetOpenerFrameNode(frameA2.get());
 }
 

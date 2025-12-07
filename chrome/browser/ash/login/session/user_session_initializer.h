@@ -9,7 +9,9 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user.h"
 
@@ -21,7 +23,10 @@ class User;
 
 namespace ash {
 
-class UserSessionInitializer : public session_manager::SessionManagerObserver {
+class CrosSafetyService;
+
+class UserSessionInitializer : public session_manager::SessionManagerObserver,
+                               public ProfileObserver {
  public:
   // Parameters to use when initializing the RLZ library.  These fields need
   // to be retrieved from a blocking task and this structure is used to pass
@@ -47,6 +52,9 @@ class UserSessionInitializer : public session_manager::SessionManagerObserver {
   void OnUserProfileLoaded(const AccountId& account_id) override;
   void OnUserSessionStarted(bool is_primary_user) override;
   void OnUserSessionStartUpTaskCompleted() override;
+
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override;
 
   // Called before a session begins loading.
   void PreStartSession(bool is_primary_session);
@@ -75,13 +83,14 @@ class UserSessionInitializer : public session_manager::SessionManagerObserver {
   void InitializePrimaryProfileServices(Profile* profile,
                                         const user_manager::User* user);
 
-  // Initialize a `ScalableIph` service for a profile.
-  void InitializeScalableIph(Profile* profile);
-
   // Initializes RLZ. If `disabled` is true, RLZ pings are disabled.
   void InitRlzImpl(Profile* profile, const RlzInitParams& params);
 
-  raw_ptr<Profile, DanglingUntriaged> primary_profile_ = nullptr;
+  raw_ptr<Profile> primary_profile_ = nullptr;
+  base::ScopedObservation<Profile, ProfileObserver> primary_profile_observer_{
+      this};
+
+  std::unique_ptr<CrosSafetyService> cros_safety_service_;
 
   bool inited_for_testing_ = false;
   base::OnceClosure init_rlz_impl_closure_for_testing_;

@@ -12,6 +12,8 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.download.home.DownloadActivityLauncher;
 import org.chromium.chrome.browser.download.dialogs.OpenDownloadDialog;
 import org.chromium.chrome.browser.download.dialogs.OpenDownloadDialog.OpenDownloadDialogEvent;
@@ -23,13 +25,14 @@ import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import java.util.List;
 
 /** Glues open download dialogs UI code and handles the communication to download native backend. */
+@NullMarked
 public class OpenDownloadDialogBridge {
     private long mNativeOpenDownloadDialogBridge;
 
     /**
      * Constructor, taking a pointer to the native instance.
      *
-     * @nativeOpenDownloadDialogBridge Pointer to the native object.
+     * @param nativeOpenDownloadDialogBridge Pointer to the native object.
      */
     public OpenDownloadDialogBridge(long nativeOpenDownloadDialogBridge) {
         mNativeOpenDownloadDialogBridge = nativeOpenDownloadDialogBridge;
@@ -77,7 +80,7 @@ public class OpenDownloadDialogBridge {
      * @param appName Name of the app to open the file, null if there are multiple apps.
      */
     private void showOpenDownloadDialog(
-            Profile profile, String guid, Activity activity, String appName) {
+            Profile profile, String guid, Activity activity, @Nullable String appName) {
         new OpenDownloadDialog()
                 .show(
                         activity,

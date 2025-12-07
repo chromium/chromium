@@ -1,0 +1,44 @@
+<style include="cr-hidden-style">
+  :host .controls {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    padding-bottom: var(--print-preview-sidebar-margin);
+    padding-inline-end: var(--print-preview-sidebar-margin);
+    padding-top: 16px;
+  }
+
+  @media (prefers-color-scheme: light) {
+    :host {
+      background-color: white;
+    }
+  }
+
+  :host cr-button:not(:last-child) {
+    margin-inline-end: 8px;
+  }
+
+  :host cr-button:last-child {
+    margin-inline-end: 0;
+  }
+
+  .error-message {
+    color: red;
+    margin: 16px 16px 0;
+    text-align: start;
+  }
+</style>
+<div class="error-message"
+    hidden="[[!showSheetsError_(destination.id, maxSheets, sheetCount)]]">
+  [[errorMessage_]]
+</div>
+<div class="controls">
+  <cr-button class="cancel-button" on-click="onCancelClick_">
+    $i18n{cancel}
+  </cr-button>
+  <cr-button class="action-button" on-click="onPrintClick_"
+      disabled$="[[!printButtonEnabled_]]">
+    [[printButtonLabel_]]
+  </cr-button>
+</div>

@@ -54,7 +54,7 @@ void ExtensionKeyPermissionsServiceFactory::GetForBrowserContextAndExtension(
       extensions::ExtensionSystem::Get(context)->state_store();
 
   // Must not be nullptr since KeyPermissionsServiceFactory depends on
-  // ExtensionSystemFactory.
+  // ChromeExtensionSystemFactory.
   DCHECK(state_store);
 
   state_store->GetExtensionValue(

@@ -8,6 +8,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -16,7 +17,6 @@
 #include "base/supports_user_data.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
-#include "url/gurl.h"
 
 namespace offline_items_collection {
 
@@ -75,6 +75,7 @@ class OfflineContentAggregator : public OfflineContentProvider,
   void CancelDownload(const ContentId& id) override;
   void PauseDownload(const ContentId& id) override;
   void ResumeDownload(const ContentId& id) override;
+  void ValidateDangerousDownload(const ContentId& id) override;
   void GetItemById(const ContentId& id, SingleItemCallback callback) override;
   void GetAllItems(MultipleItemCallback callback) override;
   void GetVisualsForItem(const ContentId& id,
@@ -102,7 +103,8 @@ class OfflineContentAggregator : public OfflineContentProvider,
   // Stores a map of name_space -> OfflineContentProvider.  These
   // OfflineContentProviders are all aggregated by this class and exposed to the
   // consumer as a single list.
-  using OfflineProviderMap = std::map<std::string, OfflineContentProvider*>;
+  using OfflineProviderMap =
+      std::map<std::string, raw_ptr<OfflineContentProvider, CtnExperimental>>;
   OfflineProviderMap providers_;
 
   // Used by GetAllItems and the corresponding callback.

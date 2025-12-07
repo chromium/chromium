@@ -29,7 +29,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
@@ -38,7 +39,6 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
@@ -53,6 +53,7 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.sync_device_info.FormFactor;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -75,6 +76,8 @@ public class RestoreTabsUiRenderTest {
     public static List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
@@ -85,8 +88,6 @@ public class RestoreTabsUiRenderTest {
     @Rule
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
-
-    @Rule public JniMocker jniMocker = new JniMocker();
 
     @Mock ForeignSessionHelper.Natives mForeignSessionHelperJniMock;
     @Mock FaviconHelper.Natives mFaviconHelperJniMock;
@@ -106,10 +107,9 @@ public class RestoreTabsUiRenderTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        MockitoAnnotations.initMocks(this);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
-        jniMocker.mock(ForeignSessionHelperJni.TEST_HOOKS, mForeignSessionHelperJniMock);
-        jniMocker.mock(FaviconHelperJni.TEST_HOOKS, mFaviconHelperJniMock);
+        ForeignSessionHelperJni.setInstanceForTesting(mForeignSessionHelperJniMock);
+        FaviconHelperJni.setInstanceForTesting(mFaviconHelperJniMock);
         mActivityTestRule.launchActivity(null);
         when(mFaviconHelperJniMock.init()).thenReturn(1L);
 
@@ -170,9 +170,8 @@ public class RestoreTabsUiRenderTest {
                 });
 
         ViewUtils.waitForView(mRootView, withId(R.id.restore_tabs_promo_screen_sheet));
-        // TODO(crbug.com/40268908): With transitions causing unclear goldens, there is no
-        // particular view
-        // that can be waited on hence the need to use a sleep for rendering a cleaner image.
+        // TODO(crbug.com/40268908): With transitions causing unclear goldens, there is no view that
+        // can be waited on hence the need to use a sleep for rendering a cleaner image.
         Thread.sleep(2000);
         mRenderTestRule.render(mRootView, "restore_tabs_promo_screen_all_enabled");
     }
@@ -209,9 +208,8 @@ public class RestoreTabsUiRenderTest {
                 });
 
         ViewUtils.waitForView(mRootView, withId(R.id.restore_tabs_promo_screen_sheet));
-        // TODO(crbug.com/40268908): With transitions causing unclear goldens, there is no
-        // particular view
-        // that can be waited on hence the need to use a sleep for rendering a cleaner image.
+        // TODO(crbug.com/40268908): With transitions causing unclear goldens, there is no view that
+        // can be waited on hence the need to use a sleep for rendering a cleaner image.
         Thread.sleep(2000);
         mRenderTestRule.render(mRootView, "restore_tabs_promo_screen_disabled_elements");
     }
@@ -260,9 +258,8 @@ public class RestoreTabsUiRenderTest {
                 });
 
         ViewUtils.waitForView(mRootView, withId(R.id.restore_tabs_detail_screen_sheet));
-        // TODO(crbug.com/40268908): With transitions causing unclear goldens, there is no
-        // particular view
-        // that can be waited on hence the need to use a sleep for rendering a cleaner image.
+        // TODO(crbug.com/40268908): With transitions causing unclear goldens, there is no view that
+        // can be waited on hence the need to use a sleep for rendering a cleaner image.
         Thread.sleep(2000);
         mRenderTestRule.render(mRootView, "restore_tabs_detail_screen_two_item_decoration");
     }
@@ -319,11 +316,65 @@ public class RestoreTabsUiRenderTest {
                 });
 
         ViewUtils.waitForView(mRootView, withId(R.id.restore_tabs_detail_screen_sheet));
-        // TODO(crbug.com/40268908): With transitions causing unclear goldens, there is no
-        // particular view
-        // that can be waited on hence the need to use a sleep for rendering a cleaner image.
+        // TODO(crbug.com/40268908): With transitions causing unclear goldens, there is no view that
+        // can be waited on hence the need to use a sleep for rendering a cleaner image.
         Thread.sleep(2000);
         mRenderTestRule.render(mRootView, "restore_tabs_detail_screen_three_item_decoration");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    public void testReviewTabsScreenSheet_checkBackArrowRTL()
+            throws IOException, InterruptedException {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Reinitialize the constructor and dependents to include RTL for testing.
+                    mRootView.removeView(mView);
+
+                    Activity activity = mActivityTestRule.getActivity();
+                    LocalizationUtils.setRtlForTesting(true);
+                    mCoordinator =
+                            new RestoreTabsCoordinator(
+                                    mActivityTestRule.getActivity(),
+                                    mProfile,
+                                    mTabCreatorManager,
+                                    mBottomSheetController);
+                    mView = mCoordinator.getContentViewForTesting();
+                    mView.setBackground(
+                            AppCompatResources.getDrawable(activity, R.drawable.menu_bg_tinted));
+                    mModel = mCoordinator.getPropertyModelForTesting();
+                    mRootView.addView(mView);
+
+                    ForeignSessionTab tab1 =
+                            new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", 32L, 32L, 0);
+                    ForeignSessionTab tab2 =
+                            new ForeignSessionTab(JUnitTestGURLs.URL_1, "title2", 33L, 33L, 0);
+                    ForeignSessionTab tab3 =
+                            new ForeignSessionTab(JUnitTestGURLs.URL_1, "title3", 34L, 34L, 0);
+
+                    List<ForeignSessionTab> tabs = new ArrayList<>();
+                    tabs.add(tab1);
+                    tabs.add(tab2);
+                    tabs.add(tab3);
+
+                    ModelList tabItems = mModel.get(REVIEW_TABS_MODEL_LIST);
+                    tabItems.clear();
+                    for (ForeignSessionTab tab : tabs) {
+                        PropertyModel model =
+                                TabItemProperties.create(/* tab= */ tab, /* isSelected= */ true);
+                        tabItems.add(new ListItem(DetailItemType.TAB, model));
+                    }
+
+                    mModel.set(CURRENT_SCREEN, HOME_SCREEN);
+                    mView.findViewById(R.id.restore_tabs_button_review_tabs).performClick();
+                });
+
+        ViewUtils.waitForView(mRootView, withId(R.id.restore_tabs_detail_screen_sheet));
+        // TODO(crbug.com/40268908): With transitions causing unclear goldens, there is no view that
+        // can be waited on hence the need to use a sleep for rendering a cleaner image.
+        Thread.sleep(2000);
+        mRenderTestRule.render(mRootView, "restore_tabs_detail_screen_review_tabs_rtl");
     }
 
     @Test
@@ -358,9 +409,8 @@ public class RestoreTabsUiRenderTest {
                 });
 
         ViewUtils.waitForView(mRootView, withId(R.id.restore_tabs_detail_screen_sheet));
-        // TODO(crbug.com/40268908): With transitions causing unclear goldens, there is no
-        // particular view
-        // that can be waited on hence the need to use a sleep for rendering a cleaner image.
+        // TODO(crbug.com/40268908): With transitions causing unclear goldens, there is no view that
+        // can be waited on hence the need to use a sleep for rendering a cleaner image.
         Thread.sleep(2000);
         mRenderTestRule.render(mRootView, "restore_tabs_detail_screen_review_tabs_all_selected");
     }
@@ -392,9 +442,8 @@ public class RestoreTabsUiRenderTest {
                 });
 
         ViewUtils.waitForView(mRootView, withId(R.id.restore_tabs_detail_screen_sheet));
-        // TODO(crbug.com/40268908): With transitions causing unclear goldens, there is no
-        // particular view
-        // that can be waited on hence the need to use a sleep for rendering a cleaner image.
+        // TODO(crbug.com/40268908): With transitions causing unclear goldens, there is no view that
+        // can be waited on hence the need to use a sleep for rendering a cleaner image.
         Thread.sleep(2000);
         mRenderTestRule.render(
                 mRootView, "restore_tabs_detail_screen_review_tabs_none_selected_single_tab");
@@ -450,9 +499,8 @@ public class RestoreTabsUiRenderTest {
                 });
 
         ViewUtils.waitForView(mRootView, withId(R.id.restore_tabs_detail_screen_sheet));
-        // TODO(crbug.com/40268908): With transitions causing unclear goldens, there is no
-        // particular view
-        // that can be waited on hence the need to use a sleep for rendering a cleaner image.
+        // TODO(crbug.com/40268908): With transitions causing unclear goldens, there is no view that
+        // can be waited on hence the need to use a sleep for rendering a cleaner image.
         Thread.sleep(2000);
         mRenderTestRule.render(
                 mRootView,

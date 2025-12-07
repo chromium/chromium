@@ -9,7 +9,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/base_jni/BundleUtils_jni.h"
+#include "base/bundle_utils_jni/BundleUtils_jni.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -41,9 +41,8 @@ namespace {
 // contains the offset to add to the pointer, in order to find the actual
 // desired pointer address.
 //
-// # Safety
-// If the value in the pointer does not provide an offset from the pointer that
-// stays inside the same allocation, Undefined Behaviour can result.
+// PRECONDITIONS: The value in the pointer must provide an offset from the
+// pointer that stays inside the same allocation.
 UNSAFE_BUFFER_USAGE void* ReadRelPtr(int32_t* relptr) {
   // SAFETY: This relies on the caller to provide a valid pointer + value.
   return UNSAFE_BUFFERS(reinterpret_cast<char*>(relptr) + *relptr);
@@ -55,26 +54,18 @@ UNSAFE_BUFFER_USAGE void* ReadRelPtr(int32_t* relptr) {
 std::string BundleUtils::ResolveLibraryPath(const std::string& library_name,
                                             const std::string& split_name) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> java_path = Java_BundleUtils_getNativeLibraryPath(
-      env, ConvertUTF8ToJavaString(env, library_name),
-      ConvertUTF8ToJavaString(env, split_name));
-  // TODO(crbug.com/40656179): Remove this tolerance.
-  if (!java_path) {
-    return std::string();
-  }
-  return ConvertJavaStringToUTF8(env, java_path);
+  return Java_BundleUtils_getNativeLibraryPath(env, library_name, split_name);
 }
 
 // static
-bool BundleUtils::IsBundle() {
-  return Java_BundleUtils_isBundleForNative(AttachCurrentThread());
+bool BundleUtils::HasAnyInstalledSplits() {
+  return Java_BundleUtils_hasAnyInstalledSplits(AttachCurrentThread());
 }
 
 // static
 void* BundleUtils::DlOpenModuleLibraryPartition(const std::string& library_name,
                                                 const std::string& partition,
                                                 const std::string& split_name) {
-  // TODO(crbug.com/40656179): Remove this tolerance.
   std::string library_path = ResolveLibraryPath(library_name, split_name);
   if (library_path.empty()) {
     return nullptr;
@@ -114,14 +105,15 @@ void* BundleUtils::DlOpenModuleLibraryPartition(const std::string& library_name,
 #else
       // When targeting pre-N, such as for Cronet, android_dlopen_ext() might
       // not be available on the system.
-      CHECK(0) << "android_dlopen_ext not available";
+      NOTREACHED() << "android_dlopen_ext not available";
 #endif
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 }  // namespace android
 }  // namespace base
+
+DEFINE_JNI(BundleUtils)

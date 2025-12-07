@@ -22,9 +22,9 @@
 #import "ios/web/web_state/web_state_impl.h"
 #import "url/gurl.h"
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::kWaitForPageLoadTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace web {
 namespace test {
@@ -38,7 +38,7 @@ id ExecuteJavaScript(NSString* script, web::WebState* web_state) {
         // Most of executed JS does not return the result, and there is no need
         // to log WKErrorJavaScriptResultTypeIsUnsupported error code.
         if (error && error.code != WKErrorJavaScriptResultTypeIsUnsupported) {
-          DLOG(WARNING) << "Script execution of:"
+          DLOG(WARNING) << "\n\nScript execution of:"
                         << base::SysNSStringToUTF8(script)
                         << "\nfailed with error: "
                         << base::SysNSStringToUTF8(error.description);
@@ -171,7 +171,7 @@ std::unique_ptr<WebState> CreateUnrealizedWebStateWithItems(
     for (const PageInfo& info : items) {
       proto::NavigationItemStorage* item_storage =
           navigation_storage->add_items();
-      item_storage->set_virtual_url(info.url.spec());
+      item_storage->set_url(info.url.spec());
       item_storage->set_user_agent(storage.user_agent());
       item_storage->set_title(info.title);
     }
@@ -195,7 +195,7 @@ std::unique_ptr<WebState> CreateUnrealizedWebStateWithItems(
 
   std::unique_ptr<WebState> web_state = WebState::CreateWithStorage(
       browser_state, WebStateID::NewUnique(), std::move(metadata),
-      base::ReturnValueOnce(std::move(storage)),
+      base::ReturnValueOnce(std::make_optional(std::move(storage))),
       base::ReturnValueOnce<NSData*>(nil));
 
   DCHECK(!web_state->IsRealized());

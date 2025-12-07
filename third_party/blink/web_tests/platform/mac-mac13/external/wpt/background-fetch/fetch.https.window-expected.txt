@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Requests with PUT method require CORS Preflight and succeed.
+  assert_equals: expected "backgroundfetchsuccess" but got "backgroundfetchfail"
+[FAIL] Requests with text/json content type require CORS Preflight and succeed.
+  assert_equals: expected "backgroundfetchsuccess" but got "backgroundfetchfail"
+Harness: the test ran to completion.
+

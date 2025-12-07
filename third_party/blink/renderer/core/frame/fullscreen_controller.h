@@ -36,8 +36,6 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -101,7 +99,7 @@ class CORE_EXPORT FullscreenController {
   };
   State state_ = State::kInitial;
 
-  using PendingFullscreenSet = HeapLinkedHashSet<WeakMember<LocalFrame>>;
+  using PendingFullscreenSet = GCedHeapLinkedHashSet<WeakMember<LocalFrame>>;
   Persistent<PendingFullscreenSet> pending_frames_;
 };
 

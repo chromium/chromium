@@ -69,36 +69,14 @@ summary:
 
 #### Standalone WebView
 
-Most AOSP devices will use this variant. It is compatible with Android 5.0
-(Lollipop) and later, and is the only variant which can be used on Android 5.x
-(Lollipop) and 6.x (Marshmallow).
-
-The standalone WebView is a single APK which contains the entire WebView
-implementation. The prebuilt APK provided in AOSP is a standalone WebView APK.
+Most AOSP devices will use this variant. The standalone WebView is a single APK
+which contains the entire WebView implementation. The prebuilt APK provided in
+AOSP is a standalone WebView APK.
 
 The build target is called `system_webview_apk` and the resulting output file is
 called `SystemWebView.apk`. The prebuilt APK provided in AOSP has been renamed
 to `AndroidWebview.apk` for historical reasons, and the filename used in AOSP is
 not significant; only the package name matters.
-
-#### Monochrome
-
-If your AOSP device will include a default web browser based on Chromium, it may
-be beneficial to use Monochrome as the WebView implementation. Monochrome is
-compatible with Android 7.x (Nougat), 8.x (Oreo) and 9.x (Pie), but not with
-Android Q and later due to changes made to support Trichrome.
-
-Monochrome is a single APK which contains both the entire WebView
-implementation, and also an entire Chromium-based web browser. Since WebView and
-the Chromium browser share a lot of common source code, the Monochrome APK is
-much smaller than having a separate WebView APK and browser APK.
-
-However, Monochrome can make it more difficult for you to allow the user to
-freely choose their own web browser and can have other downsides: see
-[this section](#Special-requirements-for-Monochrome) for more information.
-
-The build target is called `monochrome_public_apk` and the resulting output file
-is called `MonochromePublic.apk`.
 
 #### Trichrome
 
@@ -114,10 +92,6 @@ user with a Chromium-based web browser.
 
 3. TrichromeLibrary contains the shared code and data, and is only used as an
 internal implementation detail of TrichromeWebView and TrichromeChrome.
-
-The three Trichrome APKs together are roughly the same size as Monochrome,
-providing the same benefits, but many of the downsides and complexities of
-Monochrome don't apply to Trichrome.
 
 The build targets are called `trichrome_webview_apk`, `trichrome_chrome_bundle`,
 and `trichrome_library_apk` respectively, and the resulting output files are
@@ -319,39 +293,12 @@ LOCAL_CERTIFICATE := PRESIGNED
 This will prevent the Android build system from resigning the APK with the
 default platform key.
 
-For Monochrome or Trichrome APKs you will need to define your own prebuilt
+For Trichrome APKs you will need to define your own prebuilt
 modules in a new `Android.mk` file. You may need to contact the WebView team via
 the [android-webview-dev Google group][1] for help creating the correct build
 files.
 
 ### Configuring the Android framework
-
-#### Android 10.x (Q)
-
-Using Monochrome as a WebView provider on Android 10 is not supported;
-Chrome packages should not be included in the configuration as either the
-Trichrome WebView or standalone WebView should be used.
-
-The configuration mechanism for Android 10 is the same as the following section
-(for Android 7-9), with the exception that the `isFallback` attribute no longer
-causes the provider to be automatically disabled if another implementation is
-available. Android 10 never automatically enables/disables WebView
-implementations under normal usage.
-
-Instead, the `isFallback` attribute is used to allow clean migration from an
-older configuration. When a device is first booted with Android 10, any provider
-marked as `isFallback` will be re-enabled for all users, as a one-time change.
-This ensures that devices which previously used Chrome as their implementation
-on Android 9 and had a disabled WebView do not end up with no enabled WebView
-implementations.
-
-Thus, if upgrading from an Android 9 device, it's recommended that you leave
-`isFallback` set to true for any provider which had it set to true in the
-Android 9 configuration. If this configuration is for a device which has never
-used an older version of Android, `isFallback` is not necessary and can be
-ignored.
-
-#### Android 7.x (Nougat), 8.x (Oreo), and 9.x (Pie)
 
 The permitted WebView implementations are configured using an XML file in the
 framework. The default configuration file is located at
@@ -369,9 +316,8 @@ You can print the base64-encoded signature of a compiled APK with the following
 (look for `Full Signature:` in the output):
 
 ```shell
-# For an APK or Bundle target compiled from chromium (replace
-# "system_webview_apk" with your build target):
-$ out/Default/bin/system_webview_apk print-certs --full-cert
+# For an APK or Bundle target compiled from chromium:
+$ out/Default/bin/trichrome_webview_apk print-certs --full-cert
 
 # For a pre-compiled APK or Bundle:
 $ build/android/apk_operations.py print-certs --full-cert \
@@ -403,12 +349,6 @@ Here's a commented example XML file:
           choice. If false, this provider will only be used if the user selects
           it themselves from the developer settings menu.
 
-      isFallback (default false): If true, this provider will be automatically
-          disabled by the framework, preventing it from being used or updated
-          by app stores, unless there is no other valid provider available.
-          Only one provider can be a fallback. See "Special requirements for
-          Monochrome" to understand one possible use case.
-
       Each webviewprovider tag can also contain zero or more signature tags as
       children. If the provider has no signature tags, then the provider must
       be preinstalled (or be an installed update to a preinstalled provider) to
@@ -436,23 +376,21 @@ Here's a commented example XML file:
                    description="Beta WebView">
     <signature>MIIFxzCCA6+gAw ... FdCQ==</signature>
   </webviewprovider>
-
-  <!-- This provider will be disabled automatically, and will not receive
-       updates from app stores, unless no other provider is valid. -->
-  <webviewprovider packageName="com.android.webview.fallback"
-                   description="Fallback WebView" isFallback="true">
-  </webviewprovider>
 </webviewproviders>
 ```
 
-#### Android 5.x (Lollipop) and 6.x (Marshmallow)
+The `isFallback` attribute is used to allow clean migration from an
+older configuration. When a device is first booted with Android 10, any provider
+marked as `isFallback` will be re-enabled for all users, as a one-time change.
+This ensures that devices which previously used Chrome as their implementation
+on Android 9 and had a disabled WebView do not end up with no enabled WebView
+implementations.
 
-The name of the WebView package is specified as a string resource in the
-framework. The default value is located in
-`frameworks/base/core/res/res/values/config.xml` under the resource name
-`config_webViewPackageName` - you can either edit this file in place, or create
-a new configuration file for your product and include it as a resource overlay
-using the `PRODUCT_PACKAGE_OVERLAYS` build variable.
+Thus, if upgrading from an Android 9 device, it's recommended that you leave
+`isFallback` set to true for any provider which had it set to true in the
+Android 9 configuration. If this configuration is for a device which has never
+used an older version of Android, `isFallback` is not necessary and can be
+ignored.
 
 ## Making your WebView updatable
 
@@ -479,43 +417,6 @@ users to download the APK themselves and install it via sideloading (though this
 probably should only be used for development/test versions). Ideally, your
 distribution mechanism should update WebView automatically without user
 intervention, to ensure that users receive the latest security updates.
-
-## Special requirements for Monochrome
-
-Standalone WebView is not generally visible to the user unless they go looking
-for it, since it's a system app with no UI. In contrast, Monochrome is a web
-browser as well as a WebView implementation, which makes it much more visible,
-since it's a normal app with a launcher icon.
-
-This means that the user may wish to be able to disable Monochrome in some
-circumstances; for example, if they prefer to use a different web browser.
-Allowing the user to do this without breaking applications which use WebView can
-be difficult - on current versions of Android, WebView cannot function correctly
-if the package is disabled, and app stores generally do not update disabled
-apps, so the user would not receive security updates. An alternate WebView
-implementation must be provided on the device to allow users to disable
-Monochrome without unwanted side effects.
-
-The simplest option is to also preinstall the standalone WebView, and mark it as
-`isFallback="true"` in the framework WebView configuration. The framework will
-then automatically disable the standalone WebView in most cases, and will only
-re-enable it if the user does in fact disable Monochrome. This will allow the
-implementation that the user is using to receive updates, while blocking
-unnecessary updates of the implementation that is not being used.
-
-However, preinstalling both Monochrome and the standalone WebView takes up a lot
-of space, as they're both quite large. To avoid this, it's possible to
-preinstall a "stub" version of the standalone WebView instead, which is much
-smaller, but still performs the function of a full WebView APK by using a
-special codepath in the framework: it loads its actual implementation from the
-preinstalled Monochrome APK at runtime. The stub and Monochrome must be matching
-versions for this to work - they should be built together in a single build,
-and any time you build a new version of Monochrome you should also rebuild the
-stub.
-
-Currently, the public Chromium source code does **not** contain a suitable stub
-WebView implementation. Please [contact the WebView team][1] for assistance if
-you're planning to ship a configuration based on Monochrome.
 
 ## Frequently asked questions
 

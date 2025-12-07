@@ -7,9 +7,14 @@
 #include <algorithm>
 #include <limits>
 #include <optional>
+#include <string>
+#include <string_view>
 
 #include "base/no_destructor.h"
+#include "ui/base/class_property.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+
+DEFINE_UI_CLASS_PROPERTY_TYPE(actions::ActionPinnableState)
 namespace actions {
 
 namespace {
@@ -29,7 +34,10 @@ std::optional<GlobalActionManager>& GetGlobalManager() {
 
 }  // namespace
 
-DEFINE_UI_CLASS_PROPERTY_KEY(bool, kActionItemPinnableKey, false)
+DEFINE_UI_CLASS_PROPERTY_KEY(std::underlying_type_t<ActionPinnableState>,
+                             kActionItemPinnableKey,
+                             std::underlying_type_t<ActionPinnableState>(
+                                 ActionPinnableState::kNotPinnable))
 
 ActionList::ActionList(Delegate* delegate) : delegate_(delegate) {}
 
@@ -143,185 +151,6 @@ ActionInvocationContext::ContextBuilder ActionInvocationContext::Builder() {
   return ContextBuilder();
 }
 
-ActionItem::ActionItemBuilder::ActionItemBuilder() {
-  action_item_ = std::make_unique<ActionItem>();
-}
-
-ActionItem::ActionItemBuilder::ActionItemBuilder(
-    InvokeActionCallback callback) {
-  action_item_ = std::make_unique<ActionItem>(std::move(callback));
-}
-
-ActionItem::ActionItemBuilder::ActionItemBuilder(
-    ActionItem::ActionItemBuilder&&) = default;
-
-ActionItem::ActionItemBuilder& ActionItem::ActionItemBuilder::operator=(
-    ActionItem::ActionItemBuilder&&) = default;
-
-ActionItem::ActionItemBuilder::~ActionItemBuilder() = default;
-
-ActionItem::ActionItemBuilder& ActionItem::ActionItemBuilder::AddChild(
-    ActionItemBuilder&& child_item) & {
-  children_.emplace_back(child_item.Release());
-  return *this;
-}
-
-ActionItem::ActionItemBuilder&& ActionItem::ActionItemBuilder::AddChild(
-    ActionItemBuilder&& child_item) && {
-  return std::move(this->AddChild(std::move(child_item)));
-}
-
-ActionItem::ActionItemBuilder& ActionItem::ActionItemBuilder::SetAccessibleName(
-    const std::u16string accessible_name) & {
-  action_item_->SetAccessibleName(accessible_name);
-  return *this;
-}
-
-ActionItem::ActionItemBuilder&&
-ActionItem::ActionItemBuilder::SetAccessibleName(
-    const std::u16string accessible_name) && {
-  return std::move(this->SetAccessibleName(accessible_name));
-}
-
-ActionItem::ActionItemBuilder& ActionItem::ActionItemBuilder::SetActionId(
-    std::optional<ActionId> action_id) & {
-  action_item_->SetActionId(action_id);
-  return *this;
-}
-
-ActionItem::ActionItemBuilder&& ActionItem::ActionItemBuilder::SetActionId(
-    std::optional<ActionId> action_id) && {
-  return std::move(this->SetActionId(action_id));
-}
-
-ActionItem::ActionItemBuilder& ActionItem::ActionItemBuilder::SetAccelerator(
-    ui::Accelerator accelerator) & {
-  action_item_->SetAccelerator(accelerator);
-  return *this;
-}
-
-ActionItem::ActionItemBuilder&& ActionItem::ActionItemBuilder::SetAccelerator(
-    ui::Accelerator accelerator) && {
-  return std::move(this->SetAccelerator(accelerator));
-}
-
-ActionItem::ActionItemBuilder& ActionItem::ActionItemBuilder::SetChecked(
-    bool checked) & {
-  action_item_->SetChecked(checked);
-  return *this;
-}
-
-ActionItem::ActionItemBuilder&& ActionItem::ActionItemBuilder::SetChecked(
-    bool checked) && {
-  return std::move(this->SetChecked(checked));
-}
-
-ActionItem::ActionItemBuilder& ActionItem::ActionItemBuilder::SetEnabled(
-    bool enabled) & {
-  action_item_->SetEnabled(enabled);
-  return *this;
-}
-
-ActionItem::ActionItemBuilder&& ActionItem::ActionItemBuilder::SetEnabled(
-    bool enabled) && {
-  return std::move(this->SetEnabled(enabled));
-}
-
-ActionItem::ActionItemBuilder& ActionItem::ActionItemBuilder::SetGroupId(
-    std::optional<int> group_id) & {
-  action_item_->SetGroupId(group_id);
-  return *this;
-}
-
-ActionItem::ActionItemBuilder&& ActionItem::ActionItemBuilder::SetGroupId(
-    std::optional<int> group_id) && {
-  return std::move(this->SetGroupId(group_id));
-}
-
-ActionItem::ActionItemBuilder& ActionItem::ActionItemBuilder::SetImage(
-    const ui::ImageModel& image) & {
-  action_item_->SetImage(image);
-  return *this;
-}
-
-ActionItem::ActionItemBuilder&& ActionItem::ActionItemBuilder::SetImage(
-    const ui::ImageModel& image) && {
-  return std::move(this->SetImage(image));
-}
-
-ActionItem::ActionItemBuilder& ActionItem::ActionItemBuilder::SetText(
-    const std::u16string& text) & {
-  action_item_->SetText(text);
-  return *this;
-}
-
-ActionItem::ActionItemBuilder&& ActionItem::ActionItemBuilder::SetText(
-    const std::u16string& text) && {
-  return std::move(this->SetText(text));
-}
-
-ActionItem::ActionItemBuilder& ActionItem::ActionItemBuilder::SetTooltipText(
-    const std::u16string& tooltip) & {
-  action_item_->SetTooltipText(tooltip);
-  return *this;
-}
-
-ActionItem::ActionItemBuilder&& ActionItem::ActionItemBuilder::SetTooltipText(
-    const std::u16string& tooltip) && {
-  return std::move(this->SetTooltipText(tooltip));
-}
-
-ActionItem::ActionItemBuilder& ActionItem::ActionItemBuilder::SetVisible(
-    bool visible) & {
-  action_item_->SetVisible(visible);
-  return *this;
-}
-
-ActionItem::ActionItemBuilder&& ActionItem::ActionItemBuilder::SetVisible(
-    bool visible) && {
-  return std::move(this->SetVisible(visible));
-}
-
-ActionItem::ActionItemBuilder&
-ActionItem::ActionItemBuilder::SetInvokeActionCallback(
-    InvokeActionCallback callback) & {
-  action_item_->SetInvokeActionCallback(std::move(callback));
-  return *this;
-}
-
-ActionItem::ActionItemBuilder&&
-ActionItem::ActionItemBuilder::SetInvokeActionCallback(
-    InvokeActionCallback callback) && {
-  return std::move(this->SetInvokeActionCallback(std::move(callback)));
-}
-
-ActionItem::ActionItemBuilder&
-ActionItem::ActionItemBuilder::SetIsShowingBubble(bool showing_bubble) & {
-  action_item_->SetIsShowingBubble(showing_bubble);
-  return *this;
-}
-
-ActionItem::ActionItemBuilder&&
-ActionItem::ActionItemBuilder::SetIsShowingBubble(bool showing_bubble) && {
-  return std::move(this->SetIsShowingBubble(showing_bubble));
-}
-
-std::unique_ptr<ActionItem> ActionItem::ActionItemBuilder::Build() && {
-  CreateChildren();
-  return std::move(action_item_);
-}
-
-void ActionItem::ActionItemBuilder::CreateChildren() {
-  for (auto& child : children_) {
-    action_item_->AddChild(std::move(*child).Build());
-  }
-}
-
-std::unique_ptr<ActionItem::ActionItemBuilder>
-ActionItem::ActionItemBuilder::Release() {
-  return std::make_unique<ActionItemBuilder>(std::move(*this));
-}
-
 ActionItem::ActionItem() = default;
 
 ActionItem::ActionItem(InvokeActionCallback callback)
@@ -329,15 +158,15 @@ ActionItem::ActionItem(InvokeActionCallback callback)
 
 ActionItem::~ActionItem() = default;
 
-std::u16string ActionItem::GetAccessibleName() const {
+std::u16string_view ActionItem::GetAccessibleName() const {
   return accessible_name_;
 }
 
-void ActionItem::SetAccessibleName(const std::u16string accessible_name) {
+void ActionItem::SetAccessibleName(std::u16string_view accessible_name) {
   if (accessible_name_ == accessible_name) {
     return;
   }
-  accessible_name_ = accessible_name;
+  accessible_name_ = std::u16string(accessible_name);
   ActionItemChanged();
 }
 
@@ -429,27 +258,27 @@ void ActionItem::SetImage(const ui::ImageModel& image) {
   ActionItemChanged();
 }
 
-const std::u16string ActionItem::GetText() const {
+std::u16string_view ActionItem::GetText() const {
   return text_;
 }
 
-void ActionItem::SetText(const std::u16string& text) {
+void ActionItem::SetText(std::u16string_view text) {
   if (text_ == text) {
     return;
   }
-  text_ = text;
+  text_ = std::u16string(text);
   ActionItemChanged();
 }
 
-const std::u16string ActionItem::GetTooltipText() const {
+std::u16string_view ActionItem::GetTooltipText() const {
   return tooltip_;
 }
 
-void ActionItem::SetTooltipText(const std::u16string& tooltip) {
+void ActionItem::SetTooltipText(std::u16string_view tooltip) {
   if (tooltip_ == tooltip) {
     return;
   }
-  tooltip_ = tooltip;
+  tooltip_ = std::u16string(tooltip);
   ActionItemChanged();
 }
 
@@ -514,17 +343,6 @@ base::WeakPtr<ActionItem> ActionItem::GetAsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-// static
-ActionItem::ActionItemBuilder ActionItem::Builder(
-    InvokeActionCallback callback) {
-  return ActionItemBuilder(std::move(callback));
-}
-
-// static
-ActionItem::ActionItemBuilder ActionItem::Builder() {
-  return ActionItemBuilder();
-}
-
 ScopedActionUpdate ActionItem::BeginUpdate() {
   ++updating_;
   return ScopedActionUpdate(this);
@@ -554,17 +372,36 @@ void ActionItem::EndUpdate() {
 }
 
 BEGIN_METADATA(ActionItem)
-ADD_PROPERTY_METADATA(std::u16string, AccessibleName)
+ADD_PROPERTY_METADATA(std::u16string_view, AccessibleName)
 ADD_PROPERTY_METADATA(std::optional<ActionId>, ActionId)
 ADD_PROPERTY_METADATA(ui::Accelerator, Accelerator)
 ADD_PROPERTY_METADATA(bool, Checked)
 ADD_PROPERTY_METADATA(bool, Enabled)
 ADD_PROPERTY_METADATA(std::optional<int>, GroupId)
-ADD_PROPERTY_METADATA(std::u16string, Text)
-ADD_PROPERTY_METADATA(std::u16string, TooltipText)
+ADD_PROPERTY_METADATA(std::u16string_view, Text)
+ADD_PROPERTY_METADATA(std::u16string_view, TooltipText)
 ADD_PROPERTY_METADATA(bool, Visible)
 ADD_READONLY_PROPERTY_METADATA(int, InvokeCount)
 ADD_READONLY_PROPERTY_METADATA(std::optional<base::TimeTicks>, LastInvokeTime)
+END_METADATA
+
+StatefulImageActionItem::~StatefulImageActionItem() = default;
+
+const ui::ImageModel& StatefulImageActionItem::GetStatefulImage() const {
+  return stateful_image_;
+}
+
+void StatefulImageActionItem::SetStatefulImage(
+    const ui::ImageModel& stateful_image) {
+  if (stateful_image_ == stateful_image) {
+    return;
+  }
+  stateful_image_ = stateful_image;
+  ActionItemChanged();
+}
+
+BEGIN_METADATA(StatefulImageActionItem)
+ADD_PROPERTY_METADATA(ui::ImageModel, StatefulImage)
 END_METADATA
 
 ActionManager::ActionManager() {

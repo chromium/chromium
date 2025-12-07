@@ -4,6 +4,7 @@
 
 #include "ui/base/dragdrop/os_exchange_data.h"
 
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -47,11 +48,11 @@ bool OSExchangeData::IsFromPrivileged() const {
   return provider_->IsFromPrivileged();
 }
 
-void OSExchangeData::SetString(const std::u16string& data) {
+void OSExchangeData::SetString(std::u16string_view data) {
   provider_->SetString(data);
 }
 
-void OSExchangeData::SetURL(const GURL& url, const std::u16string& title) {
+void OSExchangeData::SetURL(const GURL& url, std::u16string_view title) {
   provider_->SetURL(url, title);
 }
 
@@ -73,14 +74,40 @@ std::optional<std::u16string> OSExchangeData::GetString() const {
   return provider_->GetString();
 }
 
-std::optional<OSExchangeData::UrlInfo> OSExchangeData::GetURLAndTitle(
+std::vector<ClipboardUrlInfo> OSExchangeData::GetURLsAndTitles(
     FilenameToURLPolicy policy) const {
-  return provider_->GetURLAndTitle(policy);
+  // TODO(http://crbug.com/41011768): replace OSExchangeDataProvider::UrlInfo
+  // with ClipboardUrlInfo
+  std::optional<OSExchangeDataProvider::UrlInfo> url_info =
+      provider_->GetURLAndTitle(policy);
+
+  if (!url_info.has_value() || !url_info->url.is_valid()) {
+    return {};
+  }
+
+  return {
+      ClipboardUrlInfo{std::move(url_info->url), std::move(url_info->title)}};
 }
 
-std::optional<std::vector<GURL>> OSExchangeData::GetURLs(
+std::vector<ui::ClipboardUrlInfo> OSExchangeData::GetURLs(
     FilenameToURLPolicy policy) const {
-  return provider_->GetURLs(policy);
+  // TODO(http://crbug.com/41011768): replace std::vector<GURL> with
+  // ClipboardUrlInfo
+  std::optional<std::vector<GURL>> urls = provider_->GetURLs(policy);
+  if (!urls.has_value()) {
+    return {};
+  }
+
+  std::vector<ui::ClipboardUrlInfo> url_infos;
+  url_infos.reserve(urls->size());
+  for (GURL& url : urls.value()) {
+    if (!url.is_valid()) {
+      continue;
+    }
+    url_infos.emplace_back(std::move(url), std::u16string());
+  }
+
+  return url_infos;
 }
 
 std::optional<std::vector<FileInfo>> OSExchangeData::GetFilenames() const {

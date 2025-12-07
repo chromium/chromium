@@ -7,7 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
-#include "gpu/ipc/common/vulkan_ycbcr_info.h"
+#include "gpu/vulkan/vulkan_ycbcr_info.h"
 #include "media/gpu/android/codec_image_group.h"
 #include "media/gpu/android/promotion_hint_aggregator.h"
 #include "media/gpu/media_gpu_export.h"
@@ -69,11 +69,8 @@ class MEDIA_GPU_EXPORT SharedImageVideoProvider {
 
     ~ImageRecord();
 
-    // Mailbox or ClientSharedImage for the current shared image.
-    // TODO(crbug.com/40286368): Replace this variant with
-    // scoped_refptr<gpu::ClientSharedImage>.
-    absl::variant<gpu::Mailbox, scoped_refptr<gpu::ClientSharedImage>>
-        shared_image;
+    // ClientSharedImage for the current shared image.
+    scoped_refptr<gpu::ClientSharedImage> shared_image;
 
     // Release callback.  When this is called (or dropped), the image will be
     // considered to be unused.

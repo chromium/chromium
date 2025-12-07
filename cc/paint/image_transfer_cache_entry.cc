@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/paint/image_transfer_cache_entry.h"
 
 #include <algorithm>
@@ -14,6 +9,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -21,18 +17,18 @@
 #include "base/numerics/safe_conversions.h"
 #include "cc/paint/paint_op_reader.h"
 #include "cc/paint/paint_op_writer.h"
+#include "third_party/skia/include/core/SkCPURecorder.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrYUVABackendTextures.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/graphite/Image.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
-#include "ui/gfx/color_conversion_sk_filter_cache.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/mojom/hdr_metadata.mojom.h"
 
@@ -154,8 +150,7 @@ size_t GetAlignmentForColorType(SkColorType color_type) {
     return 4;
   if (bpp <= 16)
     return 16;
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 bool WritePixmap(PaintOpWriter& writer, const SkPixmap& pixmap) {
@@ -167,6 +162,7 @@ bool WritePixmap(PaintOpWriter& writer, const SkPixmap& pixmap) {
   DCHECK_GT(pixmap.height(), 0);
   DCHECK_GT(pixmap.rowBytes(), 0u);
   writer.Write(pixmap.colorType());
+  writer.Write(pixmap.alphaType());
   writer.Write(pixmap.width());
   writer.Write(pixmap.height());
   size_t data_size = pixmap.computeByteSize();
@@ -180,7 +176,12 @@ bool WritePixmap(PaintOpWriter& writer, const SkPixmap& pixmap) {
   // generation can fail.
   // https://crbug.com/863659, https://crbug.com/1300188
   writer.AlignMemory(GetAlignmentForColorType(pixmap.colorType()));
-  writer.WriteData(data_size, pixmap.addr());
+  // SAFETY: data_size comes from SkPixmap::computeByteSize(), which is then
+  // checked for SIZE_MAX; that's the appropriate size for the buffer returned
+  // by SkPixmap::addr().
+  auto pixmap_data = UNSAFE_BUFFERS(
+      base::span(static_cast<const uint8_t*>(pixmap.addr()), data_size));
+  writer.WriteData(pixmap_data);
   return true;
 }
 
@@ -197,6 +198,14 @@ bool ReadPixmap(PaintOpReader& reader, SkPixmap& pixmap) {
     DLOG(ERROR) << "Invalid color type";
     return false;
   }
+  SkAlphaType alpha_type = kUnknown_SkAlphaType;
+  reader.Read(&alpha_type);
+  if (alpha_type != kPremul_SkAlphaType &&
+      alpha_type != kUnpremul_SkAlphaType &&
+      alpha_type != kOpaque_SkAlphaType) {
+    DLOG(ERROR) << "Invalid alpha type";
+    return false;
+  }
   int width = 0;
   reader.Read(&width);
   int height = 0;
@@ -206,8 +215,7 @@ bool ReadPixmap(PaintOpReader& reader, SkPixmap& pixmap) {
     return false;
   }
 
-  auto image_info =
-      SkImageInfo::Make(width, height, color_type, kPremul_SkAlphaType);
+  auto image_info = SkImageInfo::Make(width, height, color_type, alpha_type);
   size_t row_bytes = 0;
   reader.ReadSize(&row_bytes);
   if (row_bytes < image_info.minRowBytes()) {
@@ -306,7 +314,7 @@ sk_sp<SkImage> ReadImage(
     return nullptr;
   }
 
-  SkPixmap pixmaps[SkYUVAInfo::kMaxPlanes];
+  std::array<SkPixmap, SkYUVAInfo::kMaxPlanes> pixmaps;
   bool fits_on_gpu = true;
   const int num_pixmaps = NumPixmapsForYUVConfig(plane_config);
   for (int i = 0; i < num_pixmaps; ++i) {
@@ -454,9 +462,10 @@ ClientImageTransferCacheEntry::Image::Image(const SkPixmap* pixmap)
   pixmaps[0] = pixmap;
 }
 
-ClientImageTransferCacheEntry::Image::Image(const SkPixmap yuva_pixmaps[],
-                                            const SkYUVAInfo& yuva_info,
-                                            const SkColorSpace* color_space)
+ClientImageTransferCacheEntry::Image::Image(
+    base::span<const SkPixmap> yuva_pixmaps,
+    const SkYUVAInfo& yuva_info,
+    const SkColorSpace* color_space)
     : yuv_plane_config(yuva_info.planeConfig()),
       yuv_subsampling(yuva_info.subsampling()),
       yuv_color_space(yuva_info.yuvColorSpace()),
@@ -469,7 +478,9 @@ ClientImageTransferCacheEntry::Image::Image(const SkPixmap yuva_pixmaps[],
   DCHECK_EQ(yuva_info.sitingX(), SkYUVAInfo::Siting::kCentered);
   DCHECK_EQ(yuva_info.sitingY(), SkYUVAInfo::Siting::kCentered);
   DCHECK(IsYUVAInfoValid(yuv_plane_config, yuv_subsampling, yuv_color_space));
-  for (int i = 0; i < SkYUVAInfo::NumPlanes(yuv_plane_config); ++i) {
+  const auto num_planes =
+      base::checked_cast<size_t>(SkYUVAInfo::NumPlanes(yuv_plane_config));
+  for (size_t i = 0; i < num_planes; ++i) {
     pixmaps[i] = &yuva_pixmaps[i];
   }
 }
@@ -480,7 +491,7 @@ ClientImageTransferCacheEntry::Image::Image(const SkPixmap yuva_pixmaps[],
 ClientImageTransferCacheEntry::ClientImageTransferCacheEntry(
     const Image& image,
     bool needs_mips,
-    const std::optional<gfx::HDRMetadata>& hdr_metadata,
+    const gfx::HDRMetadata& hdr_metadata,
     sk_sp<SkColorSpace> target_color_space)
     : needs_mips_(needs_mips),
       target_color_space_(target_color_space),
@@ -527,9 +538,9 @@ bool ClientImageTransferCacheEntry::Serialize(base::span<uint8_t> data) const {
   bool has_gainmap = gainmap_image_.has_value();
   writer.Write(has_gainmap);
   writer.Write(needs_mips_);
-  writer.Write(hdr_metadata_.has_value());
-  if (hdr_metadata_.has_value()) {
-    writer.Write(hdr_metadata_.value());
+  writer.Write(!hdr_metadata_.IsEmpty());
+  if (!hdr_metadata_.IsEmpty()) {
+    writer.Write(hdr_metadata_);
   }
   writer.Write(target_color_space_.get());
   WriteImage(writer, image_);
@@ -550,8 +561,8 @@ void ClientImageTransferCacheEntry::ComputeSize() {
   safe_size += PaintOpWriter::SerializedSize<bool>();  // has_gainmap
   safe_size += PaintOpWriter::SerializedSize<bool>();  // needs_mips
   safe_size += PaintOpWriter::SerializedSize<bool>();  // has_hdr_metadata
-  if (hdr_metadata_.has_value()) {
-    safe_size += PaintOpWriter::SerializedSize(hdr_metadata_.value());
+  if (!hdr_metadata_.IsEmpty()) {
+    safe_size += PaintOpWriter::SerializedSize(hdr_metadata_);
   }
   safe_size += PaintOpWriter::SerializedSize(target_color_space_.get());
   safe_size += SafeSizeForImage(image_);
@@ -637,51 +648,6 @@ size_t ServiceImageTransferCacheEntry::CachedSize() const {
   return size_;
 }
 
-sk_sp<SkImage> ServiceImageTransferCacheEntry::GetImageWithToneMapApplied(
-    float hdr_headroom,
-    bool needs_mips) const {
-  sk_sp<SkImage> image;
-
-  // Apply tone mapping.
-  // TODO(crbug.com/40210699): Pass a shared cache as a parameter.
-  gfx::ColorConversionSkFilterCache cache;
-  if (has_gainmap_) {
-    image = cache.ApplyGainmap(
-        image_, gainmap_image_, gainmap_info_, hdr_headroom,
-        image_->isTextureBacked() ? gr_context_ : nullptr,
-        image_->isTextureBacked() ? graphite_recorder_ : nullptr);
-  } else if (use_global_tone_map_) {
-    // Images are always rendered as SDR-relative and the output color space
-    // is SDR itself,
-    image = cache.ApplyToneCurve(
-        image_, hdr_metadata_, gfx::ColorSpace::kDefaultSDRWhiteLevel,
-        hdr_headroom, image_->isTextureBacked() ? gr_context_ : nullptr,
-        image_->isTextureBacked() ? graphite_recorder_ : nullptr);
-  }
-  if (!image) {
-    DLOG(ERROR) << "Image tone mapping failed";
-    return nullptr;
-  }
-
-  // Create mipmaps if requested.
-  if (image->isTextureBacked() && needs_mips && !image->hasMipmaps()) {
-    if (gr_context_) {
-      image = SkImages::TextureFromImage(
-          gr_context_, image, skgpu::Mipmapped::kYes, skgpu::Budgeted::kNo);
-    } else {
-      CHECK(graphite_recorder_);
-      SkImage::RequiredProperties props{.fMipmapped = true};
-      image = SkImages::TextureFromImage(graphite_recorder_, image, props);
-    }
-    if (!image) {
-      DLOG(ERROR) << "Failed to generate mipmaps after tone mapping";
-      return nullptr;
-    }
-  }
-
-  return image;
-}
-
 bool ServiceImageTransferCacheEntry::Deserialize(
     GrDirectContext* gr_context,
     skgpu::graphite::Recorder* graphite_recorder,
@@ -744,12 +710,12 @@ bool ServiceImageTransferCacheEntry::Deserialize(
     reader.Read(&gainmap_info_);
   }
 
-  // Save the tone curve parameters, if they are to be used.
-  use_global_tone_map_ =
-      !has_gainmap_ && gfx::ColorConversionSkFilterCache::UseToneCurve(image_);
+  // Determine if this image will be tone mapped.
+  const bool is_tone_mapped =
+      has_gainmap_ || ToneMapUtil::UseGlobalToneMapFilter(image_->colorSpace());
 
   // Perform color conversion (if no tone mapping is needed).
-  if (target_color_space && !NeedsToneMapApplied()) {
+  if (target_color_space && !is_tone_mapped) {
     if (graphite_recorder_) {
       SkImage::RequiredProperties props{.fMipmapped = needs_mips};
       image_ =
@@ -759,7 +725,9 @@ bool ServiceImageTransferCacheEntry::Deserialize(
       // `graphite_recorder` to be nullptr if `image_` is not texture backed.
       // Need to handle this case (currently just goes through gr_context path
       // with nullptr context).
-      image_ = image_->makeColorSpace(gr_context_, target_color_space);
+      image_ = image_->makeColorSpace(
+          gr_context_ ? gr_context_->asRecorder() : skcpu::Recorder::TODO(),
+          target_color_space, {});
       if (needs_mips && gr_context_ && image_ && image_->isTextureBacked()) {
         image_ = SkImages::TextureFromImage(
             gr_context, image_, skgpu::Mipmapped::kYes, skgpu::Budgeted::kNo);
@@ -792,7 +760,7 @@ bool ServiceImageTransferCacheEntry::Deserialize(
         }
         SkPixmap pixmap;
         if (!image->peekPixels(&pixmap)) {
-          NOTREACHED_IN_MIGRATION()
+          NOTREACHED()
               << "Image should be referencing transfer buffer SkPixmap";
         }
         image = SkImages::RasterFromPixmapCopy(pixmap);
@@ -827,10 +795,6 @@ const sk_sp<SkImage>& ServiceImageTransferCacheEntry::GetPlaneImage(
 
 void ServiceImageTransferCacheEntry::EnsureMips() {
   if (!image_ || !image_->isTextureBacked()) {
-    return;
-  }
-  // Don't generate mipmaps for images that will not be used directly.
-  if (NeedsToneMapApplied()) {
     return;
   }
   if (image_->hasMipmaps()) {

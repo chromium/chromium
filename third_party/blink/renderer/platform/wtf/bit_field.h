@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/atomic_operations.h"
 
-namespace WTF {
+namespace blink {
 
 enum class BitFieldValueConstness {
   kNonConst,
@@ -151,6 +151,6 @@ class WTF_EXPORT ConcurrentlyReadBitField
   }
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_BIT_FIELD_H_

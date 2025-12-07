@@ -14,6 +14,8 @@
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/surface_renderer.h"
 
+class Profile;
+
 namespace feedui {
 class StreamUpdate;
 }
@@ -27,6 +29,7 @@ class FeedSurfaceRendererBridge : public ::feed::SurfaceRenderer {
  public:
   explicit FeedSurfaceRendererBridge(
       const base::android::JavaRef<jobject>& j_this,
+      Profile* profile,
       jint stream_kind,
       std::string web_feed_id,
       FeedReliabilityLoggingBridge* reliability_logging_bridge,
@@ -50,10 +53,10 @@ class FeedSurfaceRendererBridge : public ::feed::SurfaceRenderer {
   void OnStreamUpdated(const feedui::StreamUpdate& stream_update);
 
   void LoadMore(JNIEnv* env,
-                const base::android::JavaParamRef<jobject>& callback_obj);
+                const base::android::JavaRef<jobject>& callback_obj);
 
   void ManualRefresh(JNIEnv* env,
-                     const base::android::JavaParamRef<jobject>& callback_obj);
+                     const base::android::JavaRef<jobject>& callback_obj);
 
   void SurfaceOpened(JNIEnv* env);
   void SurfaceClosed(JNIEnv* env);

@@ -13,8 +13,9 @@
 #include "base/test/task_environment.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/test_utils.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/widget/widget.h"
 
@@ -103,6 +104,7 @@ class TrayItemViewTest : public AshTestBase {
   }
 
   void TearDown() override {
+    tray_item_ = nullptr;
     widget_.reset();
     AshTestBase::TearDown();
   }
@@ -117,7 +119,7 @@ class TrayItemViewTest : public AshTestBase {
     // animation throughput data to be passed from cc to ui.
     ui::Compositor* const compositor =
         tray_item()->GetWidget()->GetCompositor();
-    while (compositor->has_throughput_trackers_for_testing()) {
+    while (compositor->has_compositor_metrics_trackers_for_testing()) {
       compositor->ScheduleFullRedraw();
       std::ignore = ui::WaitForNextFrameToBePresented(compositor,
                                                       base::Milliseconds(500));
@@ -143,15 +145,15 @@ class TrayItemViewTest : public AshTestBase {
   std::unique_ptr<views::Widget> widget_;
 
   // Owned by `widget`:
-  raw_ptr<TrayItemView, DanglingUntriaged> tray_item_ = nullptr;
+  raw_ptr<TrayItemView> tray_item_ = nullptr;
 };
 
 // Tests that scheduling a `TrayItemView`'s show animation while its hide
 // animation is running will stop the hide animation in favor of the show
 // animation.
 TEST_F(TrayItemViewTest, ShowInterruptsHide) {
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   ASSERT_FALSE(tray_item()->IsAnimating());
   ASSERT_TRUE(tray_item()->GetVisible());
 
@@ -182,8 +184,8 @@ TEST_F(TrayItemViewTest, HideInterruptsShow) {
 
   // Set the animation duration scale to a non-zero value for the rest of the
   // test.
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Start the tray item's show animation.
   tray_item()->SetVisible(true);
@@ -202,8 +204,8 @@ TEST_F(TrayItemViewTest, HideInterruptsShow) {
 
 // Regression test for http://b/283494045
 TEST_F(TrayItemViewTest, ShowDuringZeroDurationAnimation) {
-  ui::ScopedAnimationDurationScaleMode duration_scale1(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration_scale1(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Hide the tray item and wait for animation to complete.
   base::RunLoop run_loop1;
@@ -216,8 +218,8 @@ TEST_F(TrayItemViewTest, ShowDuringZeroDurationAnimation) {
   {
     // Set animation duration to zero. The screen rotation animation does this,
     // but it's hard to get that animation into the correct state in a test.
-    ui::ScopedAnimationDurationScaleMode duration_scale2(
-        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode duration_scale2(
+        gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
     // While animations are zero duration, show the item.
     base::RunLoop run_loop2;
@@ -238,8 +240,8 @@ TEST_F(TrayItemViewTest, LargeImageIcon) {
 
   // Set the image to a large image.
   gfx::Size kLargeImageSize(kLargeSize, kLargeSize);
-  tray_item()->image_view()->SetImage(
-      CreateSolidColorTestImage(kLargeImageSize, SK_ColorRED));
+  tray_item()->image_view()->SetImage(ui::ImageModel::FromImageSkia(
+      CreateSolidColorTestImage(kLargeImageSize, SK_ColorRED)));
 
   // The preferred size is the size of the larger image (which is not the
   // default tray icon size, see static_assert above).
@@ -256,8 +258,8 @@ TEST_F(TrayItemViewTest, SmoothnessMetricRecordedForShowAnimation) {
 
   // Set the animation duration scale to a non-zero value for the rest of the
   // test. Smoothness metrics should be emitted from this point onward.
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Start the tray item's "show" animation and wait for it to finish.
   tray_item()->SetVisible(true);
@@ -274,8 +276,8 @@ TEST_F(TrayItemViewTest, SmoothnessMetricRecordedForHideAnimation) {
 
   // Set the animation duration scale to a non-zero value for the rest of the
   // test. Smoothness metrics should be emitted from this point onward.
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Start the tray item's "hide" animation and wait for it to finish.
   tray_item()->SetVisible(false);
@@ -296,8 +298,8 @@ TEST_F(TrayItemViewTest, HideSmoothnessMetricRecordedWhenHideInterruptsShow) {
 
   // Set the animation duration scale to a non-zero value for the rest of the
   // test. Smoothness metrics should be emitted from this point onward.
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Start the tray item's "show" animation, but interrupt it with the "hide"
   // animation. Wait for the "hide" animation to complete.
@@ -322,8 +324,8 @@ TEST_F(TrayItemViewTest, ShowSmoothnessMetricRecordedWhenShowInterruptsHide) {
 
   // Set the animation duration scale to a non-zero value for the rest of the
   // test. Smoothness metrics should be emitted from this point onward.
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Start the tray item's "hide" animation, but interrupt it with the "show"
   // animation. Wait for the "show" animation to complete.
@@ -338,6 +340,51 @@ TEST_F(TrayItemViewTest, ShowSmoothnessMetricRecordedWhenShowInterruptsHide) {
 
   // Verify that the "show" animation's smoothness metric was recorded.
   histogram_tester.ExpectTotalCount(kShowAnimationSmoothnessHistogramName, 1);
+}
+
+TEST_F(TrayItemViewTest, IconizedLabelAccessibleProperties) {
+  tray_item()->CreateLabel();
+  IconizedLabel* label = tray_item()->label();
+  ui::AXNodeData data;
+
+  // Test when custom accessible name is empty.
+  label->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(label->GetTextContext(), views::style::CONTEXT_LABEL);
+  EXPECT_EQ(data.role, ax::mojom::Role::kStaticText);
+  EXPECT_FALSE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+
+  label->SetText(u"Sample text");
+  label->SetTextContext(views::style::CONTEXT_DIALOG_TITLE);
+  data = ui::AXNodeData();
+  label->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kTitleBar);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"Sample text");
+
+  // Test when custom accessible name is not empty.
+  label->SetCustomAccessibleName(u"Sample name");
+  label->SetTextContext(views::style::CONTEXT_LABEL);
+  data = ui::AXNodeData();
+  label->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kStaticText);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"Sample name");
+
+  label->SetTextContext(views::style::CONTEXT_DIALOG_TITLE);
+  label->SetText(u"New sample text");
+  data = ui::AXNodeData();
+  label->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kStaticText);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"Sample name");
+
+  // Test when custom accessible name is again set to empty.
+  label->SetCustomAccessibleName(u"");
+  data = ui::AXNodeData();
+  label->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kTitleBar);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"New sample text");
 }
 
 }  // namespace ash

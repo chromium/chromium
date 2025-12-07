@@ -11,7 +11,6 @@ import android.content.SharedPreferences;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,7 +32,7 @@ import org.chromium.base.test.util.Feature;
 @OnlyRunIn(EITHER_PROCESS) // These tests don't use the renderer process
 @Batch(Batch.PER_CLASS)
 public class AwComponentUpdateServiceTest {
-    private CallbackHelper mCallbackHelper = new CallbackHelper();
+    private final CallbackHelper mCallbackHelper = new CallbackHelper();
 
     private class AwNonembeddedUmaRecorderForTest extends AwNonembeddedUmaRecorder {
         @Override
@@ -43,7 +42,8 @@ public class AwComponentUpdateServiceTest {
         }
     }
 
-    private AwNonembeddedUmaRecorderForTest mUmaRecorder = new AwNonembeddedUmaRecorderForTest();
+    private final AwNonembeddedUmaRecorderForTest mUmaRecorder =
+            new AwNonembeddedUmaRecorderForTest();
 
     @Before
     public void setup() {
@@ -57,9 +57,6 @@ public class AwComponentUpdateServiceTest {
                 .putBoolean(AwComponentUpdateService.KEY_UNEXPECTED_EXIT, false)
                 .apply();
     }
-
-    @After
-    public void tearDown() {}
 
     @Test
     @SmallTest

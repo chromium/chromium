@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/metrics/metrics_memory_details.h"
@@ -135,8 +136,8 @@ class IsolatedSandboxedIframeBrowserTestBase : public InProcessBrowserTest {
         "SiteIsolation.IsolatableSandboxedIframes.UniqueSites", 0 /* value */,
         1 /* count*/);
     details->VerifyMetricResult(
-        "Memory.RenderProcessHost.Count.SandboxedIframeOverhead", 0 /* value */,
-        1 /* count*/);
+        "Memory.RenderProcessHost.Count2.SandboxedIframeOverhead",
+        0 /* value */, 1 /* count*/);
   }
 
   void VerifyMetrics(int isolatable_sandboxed_iframes_value,
@@ -156,7 +157,7 @@ class IsolatedSandboxedIframeBrowserTestBase : public InProcessBrowserTest {
         "SiteIsolation.IsolatableSandboxedIframes.UniqueSites",
         unique_sites_value, 1 /* count*/);
     details->VerifyMetricResult(
-        "Memory.RenderProcessHost.Count.SandboxedIframeOverhead",
+        "Memory.RenderProcessHost.Count2.SandboxedIframeOverhead",
         process_overhead_value, 1 /* count*/);
   }
 

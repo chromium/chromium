@@ -6,7 +6,9 @@
 
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_list.h"
 #include "net/proxy_resolution/win/windows_system_proxy_resolution_service.h"
@@ -50,6 +52,7 @@ WindowsSystemProxyResolutionRequest::WindowsSystemProxyResolutionRequest(
     WindowsSystemProxyResolutionService* service,
     const GURL& url,
     const std::string& method,
+    const NetworkAnonymizationKey& network_anonymization_key,
     ProxyInfo* results,
     CompletionOnceCallback user_callback,
     const NetLogWithSource& net_log,
@@ -59,6 +62,7 @@ WindowsSystemProxyResolutionRequest::WindowsSystemProxyResolutionRequest(
       results_(results),
       url_(url),
       method_(method),
+      network_anonymization_key_(network_anonymization_key),
       net_log_(net_log),
       creation_time_(base::TimeTicks::Now()) {
   DCHECK(!user_callback_.is_null());
@@ -96,14 +100,19 @@ void WindowsSystemProxyResolutionRequest::ProxyResolutionComplete(
     int windows_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!was_completed());
-  // TODO(crbug.com/40111093): Log Windows error |windows_error|.
+
+  if (windows_error != 0) {
+    base::UmaHistogramSparse("Net.HttpProxy.WindowsSystemResolver.WinError",
+                             windows_error);
+  }
 
   proxy_resolution_request_.reset();
   results_->UseProxyList(proxy_list);
 
   // Note that DidFinishResolvingProxy might modify |results_|.
-  int net_error = service_->DidFinishResolvingProxy(url_, method_, results_,
-                                                    winhttp_status, net_log_);
+  int net_error = service_->DidFinishResolvingProxy(
+      url_, method_, network_anonymization_key_, results_, winhttp_status,
+      windows_error, net_log_);
 
   // Make a note in the results which configuration was in use at the
   // time of the resolve.

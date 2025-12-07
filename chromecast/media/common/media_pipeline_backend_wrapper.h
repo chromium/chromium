@@ -25,9 +25,10 @@ class DecoderCreatorCmaBackend;
 
 class MediaPipelineBackendWrapper : public CmaBackend {
  public:
-  MediaPipelineBackendWrapper(const media::MediaPipelineDeviceParams& params,
-                              MediaPipelineBackendManager* backend_manager,
-                              MediaResourceTracker* media_resource_tracker);
+  MediaPipelineBackendWrapper(
+      const media::MediaPipelineDeviceParams& params,
+      base::WeakPtr<MediaPipelineBackendManager> backend_manager,
+      MediaResourceTracker* media_resource_tracker);
 
   MediaPipelineBackendWrapper(const MediaPipelineBackendWrapper&) = delete;
   MediaPipelineBackendWrapper& operator=(const MediaPipelineBackendWrapper&) =
@@ -59,7 +60,7 @@ class MediaPipelineBackendWrapper : public CmaBackend {
 
   bool revoked_;
   std::unique_ptr<DecoderCreatorCmaBackend> backend_;
-  MediaPipelineBackendManager* const backend_manager_;
+  const base::WeakPtr<MediaPipelineBackendManager> backend_manager_;
   const AudioContentType content_type_;
 };
 

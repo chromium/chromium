@@ -177,30 +177,18 @@ void InsertTextCommand::DoApply(EditingState* editing_state) {
 
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
-  // Reached by InsertTextCommandTest.NoVisibleSelectionAfterDeletingSelection
-  ABORT_EDITING_COMMAND_IF(EndingVisibleSelection().IsNone());
+  // When the flag is turned on, `CanonicalPosition` directly returns the
+  // visually equivalent position, no need for this check.
+  // See https://issues.chromium.org/issues/40547104 for more details.
+  if (!RuntimeEnabledFeatures::
+          UsePositionIfIsVisuallyEquivalentCandidateEnabled()) {
+    // Reached by InsertTextCommandTest.NoVisibleSelectionAfterDeletingSelection
+    ABORT_EDITING_COMMAND_IF(EndingVisibleSelection().IsNone());
+  }
 
   Position start_position(EndingVisibleSelection().Start());
 
-  Position placeholder;
-  // We want to remove preserved newlines and brs that will collapse (and thus
-  // become unnecessary) when content is inserted just before them.
-  // FIXME: We shouldn't really have to do this, but removing placeholders is a
-  // workaround for 9661.
-  // If the caret is just before a placeholder, downstream will normalize the
-  // caret to it.
-  Position downstream(MostForwardCaretPosition(start_position));
-  if (LineBreakExistsAtPosition(downstream)) {
-    // FIXME: This doesn't handle placeholders at the end of anonymous blocks.
-    VisiblePosition caret = CreateVisiblePosition(start_position);
-    if (IsEndOfBlock(caret) && IsStartOfParagraph(caret))
-      placeholder = downstream;
-    // Don't remove the placeholder yet, otherwise the block we're inserting
-    // into would collapse before we get a chance to insert into it.  We check
-    // for a placeholder now, though, because doing so requires the creation of
-    // a VisiblePosition, and if we did that post-insertion it would force a
-    // layout.
-  }
+  Position placeholder = ComputePlaceholderToCollapseAt(start_position);
 
   // Insert the character at the leftmost candidate.
   start_position = MostBackwardCaretPosition(start_position);
@@ -288,7 +276,12 @@ void InsertTextCommand::DoApply(EditingState* editing_state) {
 
   SelectionInDOMTree::Builder builder;
   const VisibleSelection& selection = EndingVisibleSelection();
-  builder.SetAffinity(selection.Affinity());
+  if (RuntimeEnabledFeatures::CaretWithTextAffinityUpstreamEnabled() &&
+      text_ == " " && !IsRichlyEditablePosition(start_position)) {
+    builder.SetAffinity(TextAffinity::kUpstreamIfPossible);
+  } else {
+    builder.SetAffinity(selection.Affinity());
+  }
   if (selection.End().IsNotNull())
     builder.Collapse(selection.End());
   SetEndingSelection(SelectionForUndoStep::From(builder.Build()));

@@ -5,6 +5,7 @@ desc: |-
         Setting the policy to Disabled or leaving it unset means users can choose to proceed to the flagged site after the warning appears.
 
         See more about Safe Browsing ( https://developers.google.com/safe-browsing ).
+default: false
 example_value: true
 features:
   dynamic_refresh: true

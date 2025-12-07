@@ -23,6 +23,7 @@ limitations under the License.
 #include "tensorflow/lite/core/api/op_resolver.h"
 #include "tensorflow/lite/kernels/op_macros.h"
 #include "tensorflow/lite/kernels/register.h"
+#include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/configuration_proto_inc.h"
 #include "tensorflow_lite_support/cc/port/status_macros.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
@@ -73,10 +74,18 @@ class TaskAPIFactory {
       int num_threads = 1,
       const tflite::proto::ComputeSettings& compute_settings =
           tflite::proto::ComputeSettings()) {
+#ifdef _WIN32
+    return CreateStatusWithPayload(
+        absl::StatusCode::kFailedPrecondition,
+        "File loading from memory map on Windows must use "
+        "CreateFromBaseOptions",
+        tflite::support::TfLiteSupportStatus::kFileReadError);
+#else
     auto engine = absl::make_unique<TfLiteEngine>(std::move(resolver));
     TFLITE_RETURN_IF_ERROR(engine->BuildModelFromFile(file_name, compute_settings));
     return CreateFromTfLiteEngine<T>(std::move(engine), num_threads,
                                      compute_settings);
+#endif
   }
 
   template <typename T, EnableIfBaseUntypedTaskApiSubclass<T> = nullptr>
@@ -90,11 +99,18 @@ class TaskAPIFactory {
       int num_threads = 1,
       const tflite::proto::ComputeSettings& compute_settings =
           tflite::proto::ComputeSettings()) {
+#ifdef _WIN32
+    return CreateStatusWithPayload(
+        absl::StatusCode::kFailedPrecondition,
+        "CreateFromFileDescriptor is not supported on Windows.",
+        tflite::support::TfLiteSupportStatus::kFileReadError);
+#else
     auto engine = absl::make_unique<TfLiteEngine>(std::move(resolver));
     TFLITE_RETURN_IF_ERROR(engine->BuildModelFromFileDescriptor(file_descriptor,
                                                          compute_settings));
     return CreateFromTfLiteEngine<T>(std::move(engine), num_threads,
                                      compute_settings);
+#endif
   }
 
   template <typename T, EnableIfBaseUntypedTaskApiSubclass<T> = nullptr>

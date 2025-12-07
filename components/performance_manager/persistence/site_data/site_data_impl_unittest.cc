@@ -37,7 +37,7 @@ class TestSiteDataImpl : public SiteDataImpl {
   }
 
  protected:
-  ~TestSiteDataImpl() override {}
+  ~TestSiteDataImpl() override = default;
 };
 
 class MockDataStore : public testing::NoopSiteDataStore {
@@ -49,19 +49,15 @@ class MockDataStore : public testing::NoopSiteDataStore {
 
   ~MockDataStore() override = default;
 
-  // Note: As move-only parameters (e.g. OnceCallback) aren't supported by mock
-  // methods, add On... methods to pass a non-const reference to OnceCallback.
-  void ReadSiteDataFromStore(
-      const url::Origin& origin,
-      SiteDataStore::ReadSiteDataFromStoreCallback callback) override {
-    OnReadSiteDataFromStore(origin, callback);
-  }
-  MOCK_METHOD2(OnReadSiteDataFromStore,
-               void(const url::Origin&,
-                    SiteDataStore::ReadSiteDataFromStoreCallback&));
-
-  MOCK_METHOD2(WriteSiteDataIntoStore,
-               void(const url::Origin&, const SiteDataProto&));
+  MOCK_METHOD(void,
+              ReadSiteDataFromStore,
+              (const url::Origin&,
+               SiteDataStore::ReadSiteDataFromStoreCallback),
+              (override));
+  MOCK_METHOD(void,
+              WriteSiteDataIntoStore,
+              (const url::Origin&, const SiteDataProto&),
+              (override));
 };
 
 // Returns a SiteDataFeatureProto that indicates that a feature hasn't been
@@ -106,13 +102,13 @@ class SiteDataImplTest : public ::testing::Test {
       SiteDataStore::ReadSiteDataFromStoreCallback* read_cb) {
     auto read_from_store_mock_impl =
         [&](const url::Origin& origin,
-            SiteDataStore::ReadSiteDataFromStoreCallback& callback) {
+            SiteDataStore::ReadSiteDataFromStoreCallback callback) {
           *read_cb = std::move(callback);
         };
 
     EXPECT_CALL(*mock_data_store,
-                OnReadSiteDataFromStore(::testing::_, ::testing::_))
-        .WillOnce(::testing::Invoke(read_from_store_mock_impl));
+                ReadSiteDataFromStore(::testing::_, ::testing::_))
+        .WillOnce(read_from_store_mock_impl);
     auto local_site_data =
         GetDataImpl(origin, destroy_delegate_.GetWeakPtr(), mock_data_store);
     ::testing::Mock::VerifyAndClear(mock_data_store);
@@ -380,9 +376,9 @@ TEST_F(SiteDataImplTest, OnInitCallbackMergePreviousObservations) {
 
   // Add a couple of performance samples.
   local_site_data->NotifyLoadTimePerformanceMeasurement(
-      base::Microseconds(100), base::Microseconds(1000), 2000u);
+      base::Microseconds(100), base::Microseconds(1000), base::KiB(2000));
   local_site_data->NotifyLoadTimePerformanceMeasurement(
-      base::Microseconds(200), base::Microseconds(500), 1000u);
+      base::Microseconds(200), base::Microseconds(500), base::KiB(1000));
 
   // Make sure the local performance samples are averaged as expected.
   EXPECT_EQ(2U, local_site_data->load_duration().num_datums());
@@ -455,17 +451,16 @@ TEST_F(SiteDataImplTest, OnInitCallbackMergePreviousObservations) {
   // Verify that the in-memory data is flushed to the protobuffer on write.
   EXPECT_CALL(mock_data_store,
               WriteSiteDataIntoStore(::testing::_, ::testing::_))
-      .WillOnce(::testing::Invoke(
-          [](const url::Origin& origin, const SiteDataProto& proto) {
-            ASSERT_TRUE(proto.has_load_time_estimates());
-            const auto& estimates = proto.load_time_estimates();
-            ASSERT_TRUE(estimates.has_avg_load_duration_us());
-            EXPECT_EQ(137.5, estimates.avg_load_duration_us());
-            ASSERT_TRUE(estimates.has_avg_cpu_usage_us());
-            EXPECT_EQ(562.5, estimates.avg_cpu_usage_us());
-            ASSERT_TRUE(estimates.has_avg_footprint_kb());
-            EXPECT_EQ(1125, estimates.avg_footprint_kb());
-          }));
+      .WillOnce([](const url::Origin& origin, const SiteDataProto& proto) {
+        ASSERT_TRUE(proto.has_load_time_estimates());
+        const auto& estimates = proto.load_time_estimates();
+        ASSERT_TRUE(estimates.has_avg_load_duration_us());
+        EXPECT_EQ(137.5, estimates.avg_load_duration_us());
+        ASSERT_TRUE(estimates.has_avg_cpu_usage_us());
+        EXPECT_EQ(562.5, estimates.avg_cpu_usage_us());
+        ASSERT_TRUE(estimates.has_avg_footprint_kb());
+        EXPECT_EQ(1125, estimates.avg_footprint_kb());
+      });
 
   local_site_data = nullptr;
   ::testing::Mock::VerifyAndClear(&mock_data_store);
@@ -606,10 +601,9 @@ TEST_F(SiteDataImplTest, OptionalFieldsNotPopulatedWhenClean) {
   // Verify that the saved protobuffer isn't populated with the perf fields.
   EXPECT_CALL(mock_data_store,
               WriteSiteDataIntoStore(::testing::_, ::testing::_))
-      .WillOnce(::testing::Invoke(
-          [](const url::Origin& origin, const SiteDataProto& proto) {
-            ASSERT_FALSE(proto.has_load_time_estimates());
-          }));
+      .WillOnce([](const url::Origin& origin, const SiteDataProto& proto) {
+        ASSERT_FALSE(proto.has_load_time_estimates());
+      });
 
   local_site_data->NotifySiteUnloaded(TabVisibility::kBackground);
   local_site_data = nullptr;

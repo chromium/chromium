@@ -16,7 +16,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "components/prefs/pref_store.h"
 #include "components/prefs/prefs_export.h"
@@ -56,7 +56,6 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
     MANAGED_STORE = 0,
     SUPERVISED_USER_STORE,
     EXTENSION_STORE,
-    STANDALONE_BROWSER_STORE,
     COMMAND_LINE_STORE,
     USER_STORE,
     RECOMMENDED_STORE,
@@ -82,7 +81,6 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
   PrefValueStore(PrefStore* managed_prefs,
                  PrefStore* supervised_user_prefs,
                  PrefStore* extension_prefs,
-                 PrefStore* standalone_browser_prefs,
                  PrefStore* command_line_prefs,
                  PrefStore* user_prefs,
                  PrefStore* recommended_prefs,
@@ -102,7 +100,6 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
       PrefStore* managed_prefs,
       PrefStore* supervised_user_prefs,
       PrefStore* extension_prefs,
-      PrefStore* standalone_browser_prefs,
       PrefStore* command_line_prefs,
       PrefStore* user_prefs,
       PrefStore* recommended_prefs,
@@ -141,7 +138,6 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
   bool PrefValueInSupervisedStore(const std::string& name) const;
   bool PrefValueInExtensionStore(const std::string& name) const;
   bool PrefValueInUserStore(const std::string& name) const;
-  bool PrefValueInStandaloneBrowserStore(const std::string& name) const;
 
   // These methods return true if a preference with the given name is actually
   // being controlled by the indicated pref store and not being overridden by
@@ -150,7 +146,6 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
   bool PrefValueFromUserStore(const std::string& name) const;
   bool PrefValueFromRecommendedStore(const std::string& name) const;
   bool PrefValueFromDefaultStore(const std::string& name) const;
-  bool PrefValueFromStandaloneBrowserStore(const std::string& name) const;
 
   // Check whether a Preference value is modifiable by the user, i.e. whether
   // there is no higher-priority source controlling it.
@@ -160,12 +155,11 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
   // whether there is no higher-priority source controlling it.
   bool PrefValueExtensionModifiable(const std::string& name) const;
 
-  // Check whether a Preference value is modifiable by a standalone browser
-  // (lacros), i.e. whether there is no higher-priority source controlling it.
-  bool PrefValueStandaloneBrowserModifiable(const std::string& name) const;
-
   // Update the command line PrefStore with |command_line_prefs|.
   void UpdateCommandLinePrefStore(PrefStore* command_line_prefs);
+
+  // Updates the extension PrefStore with `extension_prefs`.
+  void UpdateExtensionPrefStore(PrefStore* extension_prefs);
 
   bool IsInitializationComplete() const;
 

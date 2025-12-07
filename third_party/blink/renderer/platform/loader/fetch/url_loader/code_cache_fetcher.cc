@@ -6,61 +6,23 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/isolated_code_cache_fetcher.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/webui_bundled_code_cache_fetcher.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
-#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
 namespace {
 
-bool ShouldUseIsolatedCodeCache(
-    const network::mojom::URLResponseHead& response_head,
-    const KURL& initial_url,
-    const KURL& current_url,
-    base::Time code_cache_response_time) {
-  // We only support code cache for other service worker provided
-  // resources when a direct pass-through fetch handler is used. If the service
-  // worker synthesizes a new Response or provides a Response fetched from a
-  // different URL, then do not use the code cache.
-  // Also, responses coming from cache storage use a separate code cache
-  // mechanism.
-  if (response_head.was_fetched_via_service_worker) {
-    // Do the same check as !ResourceResponse::IsServiceWorkerPassThrough().
-    if (!response_head.cache_storage_cache_name.empty()) {
-      // Responses was produced by cache_storage
-      return false;
-    }
-    if (response_head.url_list_via_service_worker.empty()) {
-      // Response was synthetically constructed.
-      return false;
-    }
-    if (KURL(response_head.url_list_via_service_worker.back()) != current_url) {
-      // Response was fetched from different URLs.
-      return false;
-    }
-  }
-  if (SchemeRegistry::SchemeSupportsCodeCacheWithHashing(
-          initial_url.Protocol())) {
-    // This resource should use a source text hash rather than a response time
-    // comparison.
-    if (!SchemeRegistry::SchemeSupportsCodeCacheWithHashing(
-            current_url.Protocol())) {
-      // This kind of Resource doesn't support requiring a hash, so we can't
-      // send cached code to it.
-      return false;
-    }
-  } else if (!response_head.should_use_source_hash_for_js_code_cache) {
-    // If the timestamps don't match or are null, the code cache data may be
-    // for a different response. See https://crbug.com/1099587.
-    if (code_cache_response_time.is_null() ||
-        response_head.response_time.is_null() ||
-        code_cache_response_time != response_head.response_time) {
-      return false;
-    }
-  }
-  return true;
+// Returns true if the code cache for `request` should be serviced from the
+// webui bundled code cache.
+bool ShouldFetchWebUIBundledCodeCache(const network::ResourceRequest& request) {
+  return SchemeRegistry::SchemeSupportsWebUIBundledBytecode(
+             String(request.url.GetScheme())) &&
+         Platform::Current()->GetWebUIBundledCodeCacheResourceId(request.url);
 }
 
 bool ShouldFetchCodeCache(const network::ResourceRequest& request) {
@@ -72,10 +34,13 @@ bool ShouldFetchCodeCache(const network::ResourceRequest& request) {
   }
 
   // Aside from http and https, the only other supported protocols are those
-  // listed in the SchemeRegistry as requiring a content equality check.
+  // listed in the SchemeRegistry as requiring a content equality check. Do not
+  // fetch cached code if opted-out by the embedder.
   bool should_use_source_hash =
       SchemeRegistry::SchemeSupportsCodeCacheWithHashing(
-          String(request.url.scheme()));
+          String(request.url.GetScheme())) &&
+      Platform::Current()->ShouldUseCodeCacheWithHashing(
+          WebURL(KURL(request.url)));
   if (!request.url.SchemeIsHTTPOrHTTPS() && !should_use_source_hash) {
     return false;
   }
@@ -131,71 +96,25 @@ mojom::blink::CodeCacheType GetCodeCacheType(
 // static
 scoped_refptr<CodeCacheFetcher> CodeCacheFetcher::TryCreateAndStart(
     const network::ResourceRequest& request,
-    CodeCacheHost& code_cache_host,
+    CodeCacheHost* code_cache_host,
+    scoped_refptr<base::SequencedTaskRunner> host_task_runner,
     base::OnceClosure done_closure) {
-  if (!ShouldFetchCodeCache(request)) {
-    return nullptr;
+  scoped_refptr<CodeCacheFetcher> fetcher;
+  if (ShouldFetchWebUIBundledCodeCache(request)) {
+    fetcher = base::MakeRefCounted<WebUIBundledCodeCacheFetcher>(
+        std::move(host_task_runner),
+        Platform::Current()
+            ->GetWebUIBundledCodeCacheResourceId(request.url)
+            .value(),
+        std::move(done_closure));
+    fetcher->Start();
+  } else if (code_cache_host && ShouldFetchCodeCache(request)) {
+    fetcher = base::MakeRefCounted<IsolatedCodeCacheFetcher>(
+        *code_cache_host, GetCodeCacheType(request.destination),
+        KURL(request.url), std::move(done_closure));
+    fetcher->Start();
   }
-  auto fetcher = base::MakeRefCounted<CodeCacheFetcher>(
-      code_cache_host, GetCodeCacheType(request.destination), KURL(request.url),
-      std::move(done_closure));
-  fetcher->Start();
   return fetcher;
-}
-
-CodeCacheFetcher::CodeCacheFetcher(CodeCacheHost& code_cache_host,
-                                   mojom::blink::CodeCacheType code_cache_type,
-                                   const KURL& url,
-                                   base::OnceClosure done_closure)
-    : code_cache_host_(code_cache_host.GetWeakPtr()),
-      code_cache_type_(code_cache_type),
-      initial_url_(url),
-      current_url_(url),
-      done_closure_(std::move(done_closure)) {}
-
-void CodeCacheFetcher::Start() {
-  CHECK(code_cache_host_);
-  (*code_cache_host_)
-      ->FetchCachedCode(code_cache_type_, initial_url_,
-                        WTF::BindOnce(&CodeCacheFetcher::DidReceiveCachedCode,
-                                      base::WrapRefCounted(this)));
-}
-
-void CodeCacheFetcher::DidReceiveCachedMetadataFromUrlLoader() {
-  did_receive_cached_metadata_from_url_loader_ = true;
-  if (!is_waiting_) {
-    ClearCodeCacheEntryIfPresent();
-  }
-}
-
-std::optional<mojo_base::BigBuffer> CodeCacheFetcher::TakeCodeCacheForResponse(
-    const network::mojom::URLResponseHead& response_head) {
-  CHECK(!is_waiting_);
-  if (!ShouldUseIsolatedCodeCache(response_head, initial_url_, current_url_,
-                                  code_cache_response_time_)) {
-    ClearCodeCacheEntryIfPresent();
-    return std::nullopt;
-  }
-  return std::move(code_cache_data_);
-}
-
-void CodeCacheFetcher::DidReceiveCachedCode(base::Time response_time,
-                                            mojo_base::BigBuffer data) {
-  is_waiting_ = false;
-  code_cache_data_ = std::move(data);
-  if (did_receive_cached_metadata_from_url_loader_) {
-    ClearCodeCacheEntryIfPresent();
-    return;
-  }
-  code_cache_response_time_ = response_time;
-  std::move(done_closure_).Run();
-}
-
-void CodeCacheFetcher::ClearCodeCacheEntryIfPresent() {
-  if (code_cache_host_ && code_cache_data_ && (code_cache_data_->size() > 0)) {
-    (*code_cache_host_)->ClearCodeCacheEntry(code_cache_type_, initial_url_);
-  }
-  code_cache_data_.reset();
 }
 
 }  // namespace blink

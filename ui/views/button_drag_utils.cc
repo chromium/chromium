@@ -10,6 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
@@ -29,6 +31,29 @@
 #include "ui/views/paint_info.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
+
+namespace {
+
+class DragContentsButton : public views::LabelButton {
+  METADATA_HEADER(DragContentsButton, views::LabelButton)
+
+ public:
+  DragContentsButton(PressedCallback callback, std::u16string title)
+      : LabelButton(std::move(callback), title) {
+#if BUILDFLAG(IS_WIN)
+    // For windows, label button paints icon to a layer by default, which
+    // causes the drag image to not render correctly. Disable this behavior.
+    // This is a workaround for crbug.com/394380766
+    image_container_view()->DestroyLayer();
+#endif
+  }
+  ~DragContentsButton() override = default;
+};
+
+BEGIN_METADATA(DragContentsButton)
+END_METADATA
+
+}  // namespace
 
 namespace button_drag_utils {
 
@@ -67,7 +92,8 @@ void SetDragImage(const GURL& url,
                   const std::u16string& title,
                   const gfx::ImageSkia& icon,
                   const gfx::Point* press_pt,
-                  ui::OSExchangeData* data) {
+                  ui::OSExchangeData* data,
+                  std::optional<int> icon_label_spacing_override) {
   // Create a widget to render the drag image for us.
   ScopedWidget drag_widget(std::make_unique<views::Widget>());
   views::Widget::InitParams params(
@@ -79,14 +105,14 @@ void SetDragImage(const GURL& url,
   drag_widget->Init(std::move(params));
 
   // Create a button to render the drag image for us.
-  views::LabelButton* button =
-      drag_widget->SetContentsView(std::make_unique<views::LabelButton>(
+  DragContentsButton* button =
+      drag_widget->SetContentsView(std::make_unique<DragContentsButton>(
           views::Button::PressedCallback(),
           title.empty() ? base::UTF8ToUTF16(url.spec()) : title));
   button->SetTextSubpixelRenderingEnabled(false);
   const ui::ColorProvider* color_provider = drag_widget->GetColorProvider();
-  button->SetTextColorId(views::Button::STATE_NORMAL,
-                         ui::kColorTextfieldForeground);
+  button->SetTextColor(views::Button::STATE_NORMAL,
+                       ui::kColorTextfieldForeground);
 
   SkColor bg_color = color_provider->GetColor(ui::kColorTextfieldBackground);
   if (views::Widget::IsWindowCompositingSupported()) {
@@ -104,7 +130,9 @@ void SetDragImage(const GURL& url,
     button->SetImageModel(views::Button::STATE_NORMAL,
                           ui::ImageModel::FromImageSkia(icon));
   }
-
+  if (icon_label_spacing_override.has_value()) {
+    button->SetImageLabelSpacing(icon_label_spacing_override.value());
+  }
   gfx::Size size(button->GetPreferredSize({}));
   // drag_widget's size must be set to show the drag image in RTL.
   // However, on Windows, calling Widget::SetSize() resets
@@ -114,10 +142,11 @@ void SetDragImage(const GURL& url,
   button->SetBoundsRect(gfx::Rect(size));
 
   gfx::Vector2d press_point;
-  if (press_pt)
+  if (press_pt) {
     press_point = press_pt->OffsetFromOrigin();
-  else
+  } else {
     press_point = gfx::Vector2d(size.width() / 2, size.height() / 2);
+  }
 
   SkBitmap bitmap;
   float raster_scale = ScaleFactorForDragFromWidget(drag_widget.get());

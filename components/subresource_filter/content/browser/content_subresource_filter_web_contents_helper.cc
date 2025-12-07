@@ -9,10 +9,9 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
-#include "base/not_fatal_until.h"
 #include "base/supports_user_data.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
-#include "components/subresource_filter/content/shared/common/subresource_filter_utils.h"
+#include "components/subresource_filter/content/shared/browser/utils.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "content/public/browser/frame_type.h"
 #include "content/public/browser/global_routing_id.h"
@@ -78,11 +77,13 @@ void ContentSubresourceFilterWebContentsHelper::CreateForWebContents(
     SubresourceFilterProfileContext* profile_context,
     scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager,
     VerifiedRulesetDealer::Handle* dealer_handle) {
-  if (!base::FeatureList::IsEnabled(kSafeBrowsingSubresourceFilter))
+  if (!base::FeatureList::IsEnabled(kSafeBrowsingSubresourceFilter)) {
     return;
+  }
 
-  if (FromWebContents(web_contents))
+  if (FromWebContents(web_contents)) {
     return;
+  }
 
   content::WebContentsUserData<ContentSubresourceFilterWebContentsHelper>::
       CreateForWebContents(web_contents, profile_context, database_manager,
@@ -124,17 +125,18 @@ ContentSubresourceFilterWebContentsHelper::GetThrottleManager(
   // We should never be requesting the throttle manager for a navigation that
   // moves a page into the primary frame tree (e.g. prerender activation,
   // BFCache restoration).
-  CHECK(!handle.IsPageActivation(), base::NotFatalUntil::M129);
+  CHECK(!handle.IsPageActivation());
 
   if (WillCreateNewThrottleManager(handle)) {
     auto* container =
         ThrottleManagerInUserDataContainer::GetForNavigationHandle(handle);
-    if (!container)
+    if (!container) {
       return nullptr;
+    }
 
     ContentSubresourceFilterThrottleManager* throttle_manager =
         container->Get();
-    CHECK(throttle_manager, base::NotFatalUntil::M129);
+    CHECK(throttle_manager);
     return throttle_manager;
   }
 
@@ -148,8 +150,7 @@ ContentSubresourceFilterWebContentsHelper::GetThrottleManager(
   // due to a parent's navigation (where the navigation's handle's RFH may be
   // null); this does not affect the result as both frames have the same
   // throttle manager.
-  CHECK(handle.IsSameDocument() || !IsInSubresourceFilterRoot(&handle),
-        base::NotFatalUntil::M129);
+  CHECK(handle.IsSameDocument() || !IsInSubresourceFilterRoot(&handle));
   content::RenderFrameHost* rfh = IsInSubresourceFilterRoot(&handle)
                                       ? handle.GetRenderFrameHost()
                                       : handle.GetParentFrameOrOuterDocument();
@@ -179,21 +180,22 @@ void ContentSubresourceFilterWebContentsHelper::SetDatabaseManagerForTesting(
 void ContentSubresourceFilterWebContentsHelper::WillDestroyThrottleManager(
     ContentSubresourceFilterThrottleManager* throttle_manager) {
   bool was_erased = throttle_managers_.erase(throttle_manager);
-  CHECK(was_erased, base::NotFatalUntil::M129);
+  CHECK(was_erased);
 }
 
 void ContentSubresourceFilterWebContentsHelper::RenderFrameDeleted(
     content::RenderFrameHost* frame_host) {
   ContentSubresourceFilterThrottleManager* throttle_manager =
       GetThrottleManager(frame_host->GetPage());
-  if (!throttle_manager)
+  if (!throttle_manager) {
     return;
+  }
 
   throttle_manager->RenderFrameDeleted(frame_host);
 }
 
 void ContentSubresourceFilterWebContentsHelper::FrameDeleted(
-    int frame_tree_node_id) {
+    content::FrameTreeNodeId frame_tree_node_id) {
   navigated_frames_.erase(frame_tree_node_id);
 
   // TODO(bokan): Not sure how to go from frame tree node id to a Page. The
@@ -209,8 +211,9 @@ void ContentSubresourceFilterWebContentsHelper::FrameDeleted(
 
 void ContentSubresourceFilterWebContentsHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!WillCreateNewThrottleManager(*navigation_handle))
+  if (!WillCreateNewThrottleManager(*navigation_handle)) {
     return;
+  }
 
   std::unique_ptr<ContentSubresourceFilterThrottleManager> new_manager =
       ContentSubresourceFilterThrottleManager::CreateForNewPage(
@@ -243,13 +246,12 @@ void ContentSubresourceFilterWebContentsHelper::DidFinishNavigation(
     // TODO(bokan): Once the BFCache restoration navigation is made synchronous
     // like prerender activation we can remove this special case.
     if (!navigation_handle->HasCommitted()) {
-      CHECK(navigation_handle->IsServedFromBackForwardCache(),
-            base::NotFatalUntil::M129);
+      CHECK(navigation_handle->IsServedFromBackForwardCache());
       return;
     }
 
-    CHECK(navigation_handle->HasCommitted(), base::NotFatalUntil::M129);
-    CHECK(navigation_handle->GetRenderFrameHost(), base::NotFatalUntil::M129);
+    CHECK(navigation_handle->HasCommitted());
+    CHECK(navigation_handle->GetRenderFrameHost());
 
     ContentSubresourceFilterThrottleManager* throttle_manager =
         GetThrottleManager(navigation_handle->GetRenderFrameHost()->GetPage());
@@ -291,7 +293,7 @@ void ContentSubresourceFilterWebContentsHelper::DidFinishNavigation(
       return;
     }
 
-    CHECK(throttle_manager, base::NotFatalUntil::M129);
+    CHECK(throttle_manager);
 
     // If the navigation was successful it will have created a new page,
     // transfer the throttle manager to Page user data. If it failed, but it's
@@ -346,7 +348,7 @@ void ContentSubresourceFilterWebContentsHelper::DidFinishLoad(
 void ContentSubresourceFilterWebContentsHelper::OnSubresourceFilterGoingAway() {
   // Stop observing here because the observer manager could be destroyed by the
   // time this class is destroyed.
-  CHECK(scoped_observation_.IsObserving(), base::NotFatalUntil::M129);
+  CHECK(scoped_observation_.IsObserving());
   scoped_observation_.Reset();
 }
 
@@ -363,8 +365,7 @@ void ContentSubresourceFilterWebContentsHelper::OnPageActivationComputed(
 void ContentSubresourceFilterWebContentsHelper::OnChildFrameNavigationEvaluated(
     content::NavigationHandle* navigation_handle,
     LoadPolicy load_policy) {
-  CHECK(!IsInSubresourceFilterRoot(navigation_handle),
-        base::NotFatalUntil::M129);
+  CHECK(!IsInSubresourceFilterRoot(navigation_handle));
   if (ContentSubresourceFilterThrottleManager* throttle_manager =
           GetThrottleManager(*navigation_handle)) {
     throttle_manager->OnChildFrameNavigationEvaluated(navigation_handle,

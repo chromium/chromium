@@ -1,0 +1,21 @@
+<style include="settings-shared site-settings-shared"></style>
+<settings-subpage page-title="$i18n{siteSettingsWebPrinting}"
+    search-label="$i18n{siteSettingsAllSitesSearch}"
+    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+  <div class="content-settings-header secondary">
+      $i18n{siteSettingsWebPrintingDescription}
+  </div>
+  <settings-category-default-radio-group
+      category="[[contentSettingsTypesEnum_.WEB_PRINTING]]"
+      allow-option-label="$i18n{siteSettingsWebPrintingAsk}"
+      allow-option-icon="settings:printer"
+      block-option-label="$i18n{siteSettingsWebPrintingBlock}"
+      block-option-icon="settings:printer-off">
+  </settings-category-default-radio-group>
+  <category-setting-exceptions
+      category="[[contentSettingsTypesEnum_.WEB_PRINTING]]"
+      allow-header="$i18n{siteSettingsWebPrintingAllowedExceptions}"
+      block-header="$i18n{siteSettingsWebPrintingBlockedExceptions}"
+      search-filter="[[searchTerm]]">
+  </category-setting-exceptions>
+</settings-subpage>

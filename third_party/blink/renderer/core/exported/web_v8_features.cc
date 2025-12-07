@@ -41,9 +41,10 @@ void WebV8Features::EnableMojoJS(v8::Local<v8::Context> context, bool enable) {
     // (crbug.com/976506)
     ContextFeatureSettings::CrashIfMojoJSNotAllowed();
   }
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   ScriptState* script_state = ScriptState::From(isolate, context);
-  DCHECK(script_state->World().IsMainWorld());
+  DCHECK(script_state->World().IsMainWorld() ||
+         script_state->World().IsWorkerOrWorkletWorld());
   ContextFeatureSettings::From(
       ExecutionContext::From(script_state),
       ContextFeatureSettings::CreationMode::kCreateIfNotExists)
@@ -77,7 +78,7 @@ void WebV8Features::EnableMojoJSFileSystemAccessHelper(
     // (crbug.com/976506)
     ContextFeatureSettings::CrashIfMojoJSNotAllowed();
   }
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   ScriptState* script_state = ScriptState::From(isolate, context);
   DCHECK(script_state->World().IsMainWorld());
 
@@ -103,7 +104,7 @@ void WebV8Features::AllowMojoJSForProcess() {
 
 // static
 bool WebV8Features::IsMojoJSEnabledForTesting(v8::Local<v8::Context> context) {
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   ScriptState* script_state = ScriptState::From(isolate, context);
   DCHECK(script_state->World().IsMainWorld());
   ContextFeatureSettings* settings = ContextFeatureSettings::From(
@@ -115,7 +116,7 @@ bool WebV8Features::IsMojoJSEnabledForTesting(v8::Local<v8::Context> context) {
 // static
 void WebV8Features::EnableMojoJSWithoutSecurityChecksForTesting(
     v8::Local<v8::Context> context) {
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   ScriptState* script_state = ScriptState::From(isolate, context);
   DCHECK(script_state->World().IsMainWorld());
   ContextFeatureSettings::From(
@@ -130,12 +131,15 @@ void WebV8Features::SetIsolatePriority(base::Process::Priority priority) {
   Thread::MainThread()
       ->Scheduler()
       ->ToMainThreadScheduler()
-      ->ForEachMainThreadIsolate(WTF::BindRepeating(
-          [](v8::Isolate::Priority priority, v8::Isolate* isolate) {
-            isolate->SetPriority(priority);
-          },
-          isolate_priority));
+      ->ForEachMainThreadIsolate([&](v8::Isolate* isolate) {
+        isolate->SetPriority(isolate_priority);
+      });
   WorkerBackingThread::SetWorkerThreadIsolatesPriority(isolate_priority);
+}
+
+// static
+bool WebV8Features::IsSupported(v8::Local<v8::Context> context) {
+  return blink::ExecutionContext::From(context);
 }
 
 }  // namespace blink

@@ -1,0 +1,63 @@
+<style include="cr-shared-style certificate-manager-style">
+
+  .header-buttons {
+    margin-left: auto;
+  }
+
+  .no-certs {
+    border-top: none;
+  }
+
+  /* Used when list is embedded in a subpage; added in .ts code */
+  .subpage-padding {
+    padding: 0 var(--cr-section-padding);
+  }
+
+  .list-title {
+    display: flex;
+    align-items: center;
+  }
+</style>
+<div hidden$="[[hideEverything_]]">
+  <div id="listHeader" class="section-title list-title first"
+      hidden$="[[hideHeader]]">
+    [[headerText]]
+    <div class="header-buttons">
+      <cr-button hidden$="[[!showImport]]" id="importCert"
+          aria-label="[[i18n('certificateManagerV2ImportButtonAriaLabel', headerText)]]"
+          on-click="onImportCertClick_">
+        $i18n{certificateManagerV2ImportButtonLabel}
+      </cr-button>
+      <cr-button hidden$="[[!showImportAndBind]]" id="importAndBindCert"
+          aria-label="[[i18n('certificateManagerV2ImportAndBindButtonAriaLabel', headerText)]]"
+          on-click="onImportAndBindCertClick_">
+        $i18n{certificateManagerV2ImportAndBindButtonLabel}
+      </cr-button>
+      <cr-button hidden$="[[hideExportButton_(hideExport, hasCerts_)]]"
+          aria-label="[[i18n('certificateManagerV2ExportButtonAriaLabel', headerText)]]"
+          id="exportCerts" on-click="onExportCertsClick_">
+        $i18n{certificateManagerV2ExportButtonLabel}
+      </cr-button>
+    </div>
+    <cr-expand-button id="expandButton" expanded="{{expanded_}}" no-hover
+        aria-label="[[i18n('certificateManagerV2ListExpandAriaLabel', headerText)]]"
+        hidden$="[[hideCollapseButton_(noCollapse, hasCerts_)]]">
+    </cr-expand-button>
+  </div>
+
+  <cr-collapse id="certs" opened="[[expanded_]]" aria-live="polite">
+    <template is="dom-repeat" items="[[certificates_]]">
+      <certificate-entry
+          cert-source="[[certSource]]"
+          display-name="[[item.displayName]]"
+          sha256hash-hex="[[item.sha256hashHex]]"
+          show-edit-icon="[[certMetadataEditable]]"
+          is-deletable="[[item.isDeletable]]"
+          on-delete-result="onDeleteResult_">
+      </certificate-entry>
+    </template>
+    <div id="noCertsRow" class="cr-row no-certs" hidden="[[hasCerts_]]">
+      $i18n{certificateManagerV2NoCertificatesRow}
+    </div>
+  </cr-collapse>
+</div>

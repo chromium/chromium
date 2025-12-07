@@ -7,38 +7,24 @@
 #include <memory>
 #include <utility>
 
-#include "base/check_op.h"
+#include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/field_trial_params.h"
-#include "base/notreached.h"
-#include "base/profiler/process_type.h"
 #include "base/rand_util.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
 #include "components/heap_profiling/in_process/heap_profiler_parameters.h"
 #include "components/heap_profiling/in_process/mojom/snapshot_controller.mojom.h"
+#include "components/sampling_profiler/process_type.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace heap_profiling {
-
-const base::FeatureParam<int> kGpuSnapshotProbability{
-    &kHeapProfilerCentralControl, "gpu-prob-pct", 100};
-
-const base::FeatureParam<int> kNetworkSnapshotProbability{
-    &kHeapProfilerCentralControl, "network-prob-pct", 100};
-
-const base::FeatureParam<int> kRendererSnapshotProbability{
-    &kHeapProfilerCentralControl, "renderer-prob-pct", 100};
-
-const base::FeatureParam<int> kUtilitySnapshotProbability{
-    &kHeapProfilerCentralControl, "utility-prob-pct", 100};
 
 // static
 BrowserProcessSnapshotController*
@@ -56,14 +42,17 @@ BrowserProcessSnapshotController::BrowserProcessSnapshotController(
 
   // Initialize with all supported process types.
   using RemoteSet = mojo::RemoteSet<mojom::SnapshotController>;
-  remotes_by_process_type_.emplace(base::ProfilerProcessType::kGpu,
+  remotes_by_process_type_.emplace(sampling_profiler::ProfilerProcessType::kGpu,
                                    std::make_unique<RemoteSet>());
-  remotes_by_process_type_.emplace(base::ProfilerProcessType::kNetworkService,
-                                   std::make_unique<RemoteSet>());
-  remotes_by_process_type_.emplace(base::ProfilerProcessType::kRenderer,
-                                   std::make_unique<RemoteSet>());
-  remotes_by_process_type_.emplace(base::ProfilerProcessType::kUtility,
-                                   std::make_unique<RemoteSet>());
+  remotes_by_process_type_.emplace(
+      sampling_profiler::ProfilerProcessType::kNetworkService,
+      std::make_unique<RemoteSet>());
+  remotes_by_process_type_.emplace(
+      sampling_profiler::ProfilerProcessType::kRenderer,
+      std::make_unique<RemoteSet>());
+  remotes_by_process_type_.emplace(
+      sampling_profiler::ProfilerProcessType::kUtility,
+      std::make_unique<RemoteSet>());
 
   // Now that `remotes_by_process_type_` is initialized all further access
   // should be on the snapshot sequence.
@@ -87,7 +76,7 @@ void BrowserProcessSnapshotController::SetBindRemoteForChildProcessCallback(
 
 void BrowserProcessSnapshotController::BindRemoteForChildProcess(
     int child_process_id,
-    base::ProfilerProcessType child_process_type) {
+    sampling_profiler::ProfilerProcessType child_process_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   mojo::PendingRemote<mojom::SnapshotController> remote;
   bind_remote_callback_.Run(child_process_id,
@@ -108,25 +97,8 @@ void BrowserProcessSnapshotController::TakeSnapshotsOnSnapshotSequence() {
       // processes to measure.
       continue;
     }
-    int snapshot_probability_pct;
-    switch (process_type) {
-      case base::ProfilerProcessType::kGpu:
-        snapshot_probability_pct = kGpuSnapshotProbability.Get();
-        break;
-      case base::ProfilerProcessType::kNetworkService:
-        snapshot_probability_pct = kNetworkSnapshotProbability.Get();
-        break;
-      case base::ProfilerProcessType::kRenderer:
-        snapshot_probability_pct = kRendererSnapshotProbability.Get();
-        break;
-      case base::ProfilerProcessType::kUtility:
-        snapshot_probability_pct = kUtilitySnapshotProbability.Get();
-        break;
-      default:
-        NOTREACHED_NORETURN();
-    }
-    CHECK_GE(snapshot_probability_pct, 0);
-    CHECK_LE(snapshot_probability_pct, 100);
+    const int snapshot_probability_pct =
+        GetSnapshotProbabilityForProcess(process_type);
     if (snapshot_probability_pct == 0) {
       // No need to test each process since none will be chosen.
       continue;
@@ -142,6 +114,8 @@ void BrowserProcessSnapshotController::TakeSnapshotsOnSnapshotSequence() {
                               : base::RandDouble();
       if (prob * 100.0 < snapshot_probability_pct) {
         remote->TakeSnapshot(snapshot_probability_pct, process_idx++);
+      } else {
+        remote->LogMetricsWithoutSnapshot();
       }
     }
   }
@@ -153,7 +127,7 @@ void BrowserProcessSnapshotController::SuppressRandomnessForTesting() {
 
 void BrowserProcessSnapshotController::StoreRemoteOnSnapshotSequence(
     mojo::PendingRemote<mojom::SnapshotController> remote,
-    base::ProfilerProcessType process_type) {
+    sampling_profiler::ProfilerProcessType process_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(snapshot_sequence_checker_);
   // at() will CHECK if `process_type` wasn't added in the constructor.
   remotes_by_process_type_.at(process_type)

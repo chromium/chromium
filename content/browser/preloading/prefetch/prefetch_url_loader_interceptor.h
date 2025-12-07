@@ -5,22 +5,21 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_URL_LOADER_INTERCEPTOR_H_
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_URL_LOADER_INTERCEPTOR_H_
 
-#include <memory>
 #include <optional>
 
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
-#include "content/browser/preloading/prefetch/prefetch_container.h"
+#include "content/browser/preloading/prefetch/prefetch_serving_handle.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/global_routing_id.h"
-#include "services/network/public/cpp/resource_request.h"
+#include "content/public/browser/frame_tree_node_id.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace content {
 
-class BrowserContext;
 class PrefetchContainer;
-class PrefetchMatchResolver;
+class PrefetchServingPageMetricsContainer;
+class ServiceWorkerMainResourceHandle;
 
 using PrefetchCompleteCallbackForTesting =
     base::RepeatingCallback<void(PrefetchContainer*)>;
@@ -30,7 +29,10 @@ class CONTENT_EXPORT PrefetchURLLoaderInterceptor final
     : public NavigationLoaderInterceptor {
  public:
   PrefetchURLLoaderInterceptor(
-      int frame_tree_node_id,
+      PrefetchServiceWorkerState expected_service_worker_state,
+      base::WeakPtr<ServiceWorkerMainResourceHandle>
+          service_worker_handle_for_navigation,
+      FrameTreeNodeId frame_tree_node_id,
       std::optional<blink::DocumentToken> initiator_document_token,
       base::WeakPtr<PrefetchServingPageMetricsContainer>
           serving_page_metrics_container);
@@ -53,33 +55,39 @@ class CONTENT_EXPORT PrefetchURLLoaderInterceptor final
       PrefetchCompleteCallbackForTesting callback);
 
  protected:
-  int GetFrameTreeNodeId() const { return frame_tree_node_id_; }
+  FrameTreeNodeId GetFrameTreeNodeId() const { return frame_tree_node_id_; }
 
  private:
   // Gets the `PrefetchContainer` (if any) to be used for
-  // `tentative_resource_request`. The `PrefetchContainer` is first obtained
+  // `url`. The `PrefetchContainer` is first obtained
   // from `PrefetchService` and then goes through other checks in
   // `PrefetchUrlLoaderHelper`.
   // The |get_prefetch_callback| is called with this associated prefetch.
-
-  // TODO(crbug.com/40274818): It might be better to store
-  // PrefetchMatchResolver as part of PrefetchUrlLoaderInterceptor
-  // as this is related to serving a navigation. It would simplify GetPrefetch
-  // call.
-  void GetPrefetch(const network::ResourceRequest& tentative_resource_request,
-                   PrefetchMatchResolver& potential_prefetch_matches_container,
-                   base::OnceCallback<void(PrefetchContainer::Reader)>
+  void GetPrefetch(const GURL& url,
+                   base::OnceCallback<void(PrefetchServingHandle)>
                        get_prefetch_callback) const;
 
-  void OnGetPrefetchComplete(PrefetchContainer::Reader reader);
+  void OnGetPrefetchComplete(const GURL& url,
+                             const std::optional<url::Origin>& top_frame_origin,
+                             PrefetchServingHandle serving_handle);
+
+  // Matches prefetches only if its final PrefetchServiceWorkerState is
+  // `expected_service_worker_state_`, either `kControlled` or `kDisallowed`.
+  const PrefetchServiceWorkerState expected_service_worker_state_;
+
+  // `ServiceWorkerMainResourceHandle` used for the navigation to be intercepted
+  // (i.e. NOT the handle used for prefetch). This is used only for the
+  // `kControlled` case and can be null for `kDisallowed` case.
+  const base::WeakPtr<ServiceWorkerMainResourceHandle>
+      service_worker_handle_for_navigation_;
 
   // The frame tree node |this| is associated with, used to retrieve
   // |PrefetchService|.
-  const int frame_tree_node_id_;
+  const FrameTreeNodeId frame_tree_node_id_;
 
   // Corresponds to the ID of "navigable's active document" used for "finding a
   // matching prefetch record" in the spec. This is used as a part of
-  // `PrefetchContainer::Key` to make prefetches per-Document.
+  // `PrefetchKey` to make prefetches per-Document.
   // https://wicg.github.io/nav-speculation/prefetch.html
   const std::optional<blink::DocumentToken> initiator_document_token_;
 
@@ -95,7 +103,7 @@ class CONTENT_EXPORT PrefetchURLLoaderInterceptor final
   // The prefetch container that has already been used to serve a redirect. If
   // another request can be intercepted, this will be checked first to see if
   // its next redirect hop matches the request URL.
-  PrefetchContainer::Reader redirect_reader_;
+  PrefetchServingHandle redirect_serving_handle_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

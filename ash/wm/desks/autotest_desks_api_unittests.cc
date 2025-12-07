@@ -11,7 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
 
@@ -130,8 +130,8 @@ TEST_F(AutotestDesksApiTest, GetDesksInfo) {
       desks_info.desk_containers,
       ElementsAre("Desk_Container_A", "Desk_Container_B", "Desk_Container_C"));
 
-  ui::ScopedAnimationDurationScaleMode non_zero(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Start the desk animation. The active desk index is updated when the
   // animation is done.
@@ -174,8 +174,8 @@ TEST_F(EnhancedDeskAnimationsAutotestDesksApiTest,
 
   // Replacing needs to be done while a current animation is underway, otherwise
   // it will have no effect.
-  ui::ScopedAnimationDurationScaleMode non_zero(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Activate the rightmost desk. Test that we end on that desk and that we
   // observed (max_number_of_desks - 1) activation changes.

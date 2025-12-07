@@ -26,7 +26,7 @@ public class RenderFrameHostTestExt {
      *
      * @param script A String containing the JavaScript to run.
      * @param callback The Callback that will be called with the result of the JavaScript execution
-     *        serialized to a String using JSONStringValueSerializer.
+     *     serialized to a String using base::WriteJsonWithOptions.
      */
     public void executeJavaScript(String script, Callback<String> callback) {
         RenderFrameHostTestExtJni.get()

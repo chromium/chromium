@@ -8,7 +8,7 @@
 #include "base/notreached.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "skia/public/mojom/surface_origin.mojom-shared.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 
 namespace mojo {
 
@@ -21,7 +21,7 @@ struct EnumTraits<skia::mojom::SurfaceOrigin, GrSurfaceOrigin> {
       case kBottomLeft_GrSurfaceOrigin:
         return skia::mojom::SurfaceOrigin::kBottomLeft;
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   static bool FromMojom(skia::mojom::SurfaceOrigin origin,
@@ -37,8 +37,7 @@ struct EnumTraits<skia::mojom::SurfaceOrigin, GrSurfaceOrigin> {
 
     // Mojo has already validated that `origin` is a valid value, so it must be
     // covered by one of the cases above.
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 };
 

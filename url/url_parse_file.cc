@@ -55,50 +55,49 @@ size_t FindNextSlash(std::basic_string_view<CharT> spec, size_t begin_index) {
   return idx;
 }
 
-// A subcomponent of DoParseFileURL, the input of this function should be a UNC
+// A subcomponent of DoParseFileUrl, the input of this function should be a UNC
 // path name, with the index of the first character after the slashes following
 // the scheme given in `after_slashes`. This will initialize the host, path,
 // query, and ref, and leave the other output components untouched
-// (DoParseFileURL handles these for us).
+// (DoParseFileUrl handles these for us).
 template <typename CharT>
-void DoParseUNC(std::basic_string_view<CharT> url,
+void DoParseUnc(std::basic_string_view<CharT> url,
                 size_t after_slashes,
                 Parsed* parsed) {
-  int url_len = base::checked_cast<int>(url.size());
+  size_t url_len = url.size();
   // The cast is safe because `FindNextSlash` will never return anything longer
   // than `url_len`.
-  int next_slash = static_cast<int>(FindNextSlash(url, after_slashes));
+  size_t next_slash = FindNextSlash(url, after_slashes);
 
   // Everything up until that first slash we found (or end of string) is the
   // host name, which will end up being the UNC host. For example,
   // "file://foo/bar.txt" will get a server name of "foo" and a path of "/bar".
   // Later, on Windows, this should be treated as the filename "\\foo\bar.txt"
   // in proper UNC notation.
-  if (after_slashes < static_cast<size_t>(next_slash)) {
+  if (after_slashes < next_slash) {
     parsed->host = MakeRange(after_slashes, next_slash);
   } else {
     parsed->host.reset();
   }
   if (next_slash < url_len) {
-    ParsePathInternal(url.data(), MakeRange(next_slash, url_len), &parsed->path,
+    ParsePathInternal(url, MakeRange(next_slash, url_len), &parsed->path,
                       &parsed->query, &parsed->ref);
   } else {
     parsed->path.reset();
   }
 }
 
-// A subcomponent of DoParseFileURL, the input should be a local file, with the
+// A subcomponent of DoParseFileUrl, the input should be a local file, with the
 // beginning of the path indicated by the index in `path_begin`. This will
 // initialize the host, path, query, and ref, and leave the other output
 // components untouched (DoParseFileURL handles these for us).
 template <typename CharT>
 void DoParseLocalFile(std::basic_string_view<CharT> url,
-                      int path_begin,
+                      size_t path_begin,
                       Parsed* parsed) {
   parsed->host.reset();
-  ParsePathInternal(url.data(),
-                    MakeRange(path_begin, base::checked_cast<int>(url.size())),
-                    &parsed->path, &parsed->query, &parsed->ref);
+  ParsePathInternal(url, MakeRange(path_begin, url.size()), &parsed->path,
+                    &parsed->query, &parsed->ref);
 }
 
 // Backend for the external functions that operates on either char type.
@@ -106,15 +105,14 @@ void DoParseLocalFile(std::basic_string_view<CharT> url,
 // character following the "file:" at the beginning of the spec. If so,
 // this is usually a slash, but needn't be; we allow paths like "file:c:\foo".
 template <typename CharT>
-Parsed DoParseFileURL(std::basic_string_view<CharT> url) {
+Parsed DoParseFileUrl(std::basic_string_view<CharT> url) {
   // Strip leading & trailing spaces and control characters.
-  int begin = 0;
-  int url_len = base::checked_cast<int>(url.size());
-  TrimURL(url.data(), &begin, &url_len);
+  auto [begin, end] = TrimUrl(url);
+  url = url.substr(0, end);
 
   // Find the scheme, if any.
-  int num_slashes = CountConsecutiveSlashes(url.data(), begin, url_len);
-  int after_scheme;
+  size_t num_slashes = CountConsecutiveSlashesOrBackslashes(url, begin);
+  size_t after_scheme;
   size_t after_slashes;
   Parsed parsed;
 #ifdef WIN32
@@ -124,10 +122,10 @@ Parsed DoParseFileURL(std::basic_string_view<CharT> url) {
   // relative URL resolver when it determines there is an absolute URL, which
   // may give us input like "/c:/foo".
   after_slashes = begin + num_slashes;
-  if (DoesBeginWindowsDriveSpec(url.data(), after_slashes, url_len)) {
+  if (DoesBeginWindowsDriveSpec(url.data(), after_slashes, url.length())) {
     // Windows path, don't try to extract the scheme (for example, "c:\foo").
     after_scheme = after_slashes;
-  } else if (DoesBeginUNCPath(url.data(), begin, url_len, false)) {
+  } else if (DoesBeginUNCPath(url.data(), begin, url.length(), false)) {
     // Windows UNC path: don't try to extract the scheme, but keep the slashes.
     after_scheme = begin;
   } else
@@ -137,11 +135,10 @@ Parsed DoParseFileURL(std::basic_string_view<CharT> url) {
     // colons in them, in which case it returns the entire spec up to the
     // colon as the scheme. So handle /foo.c:5 as a file but foo.c:5 as
     // the foo.c: scheme.
-    if (!num_slashes &&
-        ExtractScheme(&url[begin], url_len - begin, &parsed.scheme)) {
+    if (!num_slashes && ExtractScheme(url.substr(begin), &parsed.scheme)) {
       // Offset the results since we gave ExtractScheme a substring.
       parsed.scheme.begin += begin;
-      after_scheme = parsed.scheme.end() + 1;
+      after_scheme = static_cast<size_t>(parsed.scheme.end() + 1);
     } else {
       // No scheme found, remember that.
       parsed.scheme.reset();
@@ -151,29 +148,29 @@ Parsed DoParseFileURL(std::basic_string_view<CharT> url) {
 
   // Handle empty specs ones that contain only whitespace or control chars,
   // or that are just the scheme (for example "file:").
-  if (after_scheme == url_len) {
+  if (after_scheme == url.length()) {
     return parsed;
   }
 
-  num_slashes = CountConsecutiveSlashes(url.data(), after_scheme, url_len);
+  num_slashes = CountConsecutiveSlashesOrBackslashes(url, after_scheme);
   after_slashes = after_scheme + num_slashes;
 #ifdef WIN32
   // Check whether the input is a drive again. We checked above for windows
   // drive specs, but that's only at the very beginning to see if we have a
   // scheme at all. This test will be duplicated in that case, but will
   // additionally handle all cases with a real scheme such as "file:///C:/".
-  if (!DoesBeginWindowsDriveSpec(url.data(), after_slashes, url_len) &&
+  if (!DoesBeginWindowsDriveSpec(url.data(), after_slashes, url.length()) &&
       num_slashes != 3) {
     // Anything not beginning with a drive spec ("c:\") on Windows is treated
     // as UNC, with the exception of three slashes which always means a file.
     // Even IE7 treats file:///foo/bar as "/foo/bar", which then fails.
-    DoParseUNC(url.substr(0, url_len), after_slashes, &parsed);
+    DoParseUnc(url, after_slashes, &parsed);
     return parsed;
   }
 #else
   // file: URL with exactly 2 slashes is considered to have a host component.
   if (num_slashes == 2) {
-    DoParseUNC(url.substr(0, url_len), after_slashes, &parsed);
+    DoParseUnc(url, after_slashes, &parsed);
     return parsed;
   }
 #endif  // WIN32
@@ -183,19 +180,19 @@ Parsed DoParseFileURL(std::basic_string_view<CharT> url) {
   // there to the end as the path. Empty hosts have 0 length instead of -1.
   // We include the last slash as part of the path if there is one.
   DoParseLocalFile(
-      url.substr(0, url_len),
-      num_slashes > 0 ? after_scheme + num_slashes - 1 : after_scheme, &parsed);
+      url, num_slashes > 0 ? after_scheme + num_slashes - 1 : after_scheme,
+      &parsed);
   return parsed;
 }
 
 }  // namespace
 
-Parsed ParseFileURL(std::string_view url) {
-  return DoParseFileURL(url);
+Parsed ParseFileUrl(std::string_view url) {
+  return DoParseFileUrl(url);
 }
 
-Parsed ParseFileURL(std::u16string_view url) {
-  return DoParseFileURL(url);
+Parsed ParseFileUrl(std::u16string_view url) {
+  return DoParseFileUrl(url);
 }
 
 }  // namespace url

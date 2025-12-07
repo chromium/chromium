@@ -55,6 +55,7 @@
 #include "net/quic/quic_context.h"
 #include "net/quic/quic_http_utils.h"
 #include "net/quic/quic_server_info.h"
+#include "net/quic/quic_session_alias_key.h"
 #include "net/quic/quic_session_key.h"
 #include "net/quic/quic_test_packet_maker.h"
 #include "net/quic/test_quic_crypto_client_config_handle.h"
@@ -78,6 +79,7 @@
 #include "net/third_party/quiche/src/quiche/common/platform/api/quiche_flags.h"
 #include "net/third_party/quiche/src/quiche/common/quiche_buffer_allocator.h"
 #include "net/third_party/quiche/src/quiche/common/simple_buffer_allocator.h"
+#include "net/third_party/quiche/src/quiche/http2/core/spdy_protocol.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_crypto_client_config.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/http_encoder.h"
 #include "net/third_party/quiche/src/quiche/quic/core/qpack/qpack_decoder.h"
@@ -96,7 +98,6 @@
 #include "net/third_party/quiche/src/quiche/quic/test_tools/mock_random.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/qpack/qpack_test_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_test_utils.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/websockets/websocket_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -114,7 +115,6 @@ class X509Certificate;
 
 using testing::_;
 using testing::AnyNumber;
-using testing::Invoke;
 using testing::Return;
 using testing::StrictMock;
 using testing::Test;
@@ -144,6 +144,7 @@ class WebSocketClientSocketHandleAdapterTest : public TestWithTaskEnvironment {
         socks_params, /*proxy_annotation_tag=*/TRAFFIC_ANNOTATION_FOR_TESTS,
         MEDIUM, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
         callback.callback(), ClientSocketPool::ProxyAuthCallback(),
+        /*fail_if_alias_requires_proxy_override=*/false,
         network_session_->GetSocketPool(HttpNetworkSession::NORMAL_SOCKET_POOL,
                                         ProxyChain::Direct()),
         NetLogWithSource());
@@ -1279,11 +1280,14 @@ class WebSocketQuicStreamAdapterTest
         /*stream_factory=*/nullptr, &crypto_client_stream_factory_, &clock_,
         &transport_security_state_, &ssl_config_service_,
         /*server_info=*/nullptr,
-        QuicSessionKey("mail.example.org", 80, PRIVACY_MODE_DISABLED,
-                       ProxyChain::Direct(), SessionUsage::kDestination,
-                       SocketTag(), NetworkAnonymizationKey(),
-                       SecureDnsPolicy::kAllow,
-                       /*require_dns_https_alpn=*/false),
+        QuicSessionAliasKey(
+            url::SchemeHostPort(),
+            QuicSessionKey(
+                "mail.example.org", 80, PRIVACY_MODE_DISABLED,
+                ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
+                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*require_dns_https_alpn=*/false,
+                /*disable_cert_verification_network_fetches=*/false)),
         /*require_confirmation=*/false,
         /*migrate_session_early_v2=*/false,
         /*migrate_session_on_network_change_v2=*/false,
@@ -1304,7 +1308,9 @@ class WebSocketQuicStreamAdapterTest
         base::DefaultTickClock::GetInstance(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         /*socket_performance_watcher=*/nullptr, ConnectionEndpointMetadata(),
-        /*report_ecn=*/true, NetLogWithSource::Make(NetLogSourceType::NONE));
+        /*enable_origin_frame=*/true, /*allow_server_preferred_address=*/true,
+        MultiplexedSessionCreationInitiator::kUnknown,
+        NetLogWithSource::Make(NetLogSourceType::NONE));
 
     session_->Initialize();
 
@@ -1530,9 +1536,9 @@ TEST_P(WebSocketQuicStreamAdapterTest, OnHeadersReceivedThenDisconnect) {
                                             quic::QUIC_STREAM_CANCELLED, 1, 0));
   base::RunLoop run_loop;
   auto quit_closure = run_loop.QuitClosure();
-  EXPECT_CALL(mock_delegate_, OnHeadersReceived(_)).WillOnce(Invoke([&]() {
+  EXPECT_CALL(mock_delegate_, OnHeadersReceived(_)).WillOnce([&]() {
     std::move(quit_closure).Run();
-  }));
+  });
 
   Initialize();
 
@@ -1590,9 +1596,9 @@ TEST_P(WebSocketQuicStreamAdapterTest, Read) {
                                             quic::QUIC_STREAM_CANCELLED, 3, 0));
 
   base::RunLoop run_loop;
-  EXPECT_CALL(mock_delegate_, OnHeadersReceived(_)).WillOnce(Invoke([&]() {
+  EXPECT_CALL(mock_delegate_, OnHeadersReceived(_)).WillOnce([&]() {
     run_loop.Quit();
-  }));
+  });
 
   Initialize();
 
@@ -1674,9 +1680,9 @@ TEST_P(WebSocketQuicStreamAdapterTest, ReadIntoSmallBuffer) {
                                             quic::QUIC_STREAM_CANCELLED, 4, 0));
 
   base::RunLoop run_loop;
-  EXPECT_CALL(mock_delegate_, OnHeadersReceived(_)).WillOnce(Invoke([&]() {
+  EXPECT_CALL(mock_delegate_, OnHeadersReceived(_)).WillOnce([&]() {
     run_loop.Quit();
-  }));
+  });
 
   Initialize();
 

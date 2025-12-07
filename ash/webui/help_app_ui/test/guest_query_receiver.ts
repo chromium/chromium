@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TestMessageResponseData, TestMessageRunTestCase} from './driver_api.js';
+import type {TestMessageResponseData, TestMessageRunTestCase} from './driver_api.js';
 import {TEST_ONLY} from './receiver.js';
 
 const {parentMessagePipe} = TEST_ONLY;

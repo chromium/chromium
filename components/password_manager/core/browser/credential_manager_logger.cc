@@ -36,6 +36,9 @@ void CredentialManagerLogger::LogRequestCredential(
     case CredentialMediationRequirement::kRequired:
       s += "required";
       break;
+    case CredentialMediationRequirement::kConditional:
+      s += "conditional";
+      break;
   }
   s += ", federations=";
   for (const GURL& federation_provider : federations) {

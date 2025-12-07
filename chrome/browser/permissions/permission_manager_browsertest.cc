@@ -53,21 +53,14 @@ class SubscriptionInterceptingPermissionManager
     callback_ = std::move(callback);
   }
 
-  SubscriptionId SubscribeToPermissionStatusChange(
-      blink::PermissionType permission,
-      content::RenderProcessHost* render_process_host,
-      content::RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin,
-      bool should_include_device_status,
-      base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback)
-      override {
-    SubscriptionId result =
-        permissions::PermissionManager::SubscribeToPermissionStatusChange(
-            permission, render_process_host, render_frame_host,
-            requesting_origin, should_include_device_status, callback);
+  void OnPermissionStatusChangeSubscriptionAdded(
+      content::PermissionController::SubscriptionId subscription_id) override {
+    permissions::PermissionManager::OnPermissionStatusChangeSubscriptionAdded(
+        subscription_id);
+    if (callback_.is_null()) {
+      return;
+    }
     std::move(callback_).Run();
-
-    return result;
   }
 
  private:
@@ -129,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(PermissionManagerBrowserTest,
 }
 
 // TODO(crbug.com/329645039): Re-enable this test once fixed
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_CHROMEOS_ASH) && !defined(NDEBUG)) || \
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)) || \
     (defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_CHROMEOS))
 #define MAYBE_ServiceWorkerPermissionAfterRendererCrash \
   DISABLED_ServiceWorkerPermissionAfterRendererCrash

@@ -72,6 +72,10 @@ class FormFetcherImpl : public FormFetcher,
   }
 
  private:
+  // Used by `AddConsumer`, when the fetch has already completed to notify the
+  // consumer asynchronously.
+  void NotifyConsumer(FormFetcher::Consumer* consumer);
+
   // Actually finds best matches and notifies consumers.
   void FindMatchesAndNotifyConsumers(
       std::vector<std::unique_ptr<PasswordForm>> results);
@@ -102,7 +106,7 @@ class FormFetcherImpl : public FormFetcher,
   const PasswordFormDigest form_digest_;
 
   // Client used to obtain a CredentialFilter.
-  const raw_ptr<PasswordManagerClient> client_;
+  const raw_ptr<PasswordManagerClient, DanglingUntriaged> client_;
 
   // State of the fetcher.
   State state_ = State::NOT_WAITING;

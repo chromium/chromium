@@ -79,7 +79,7 @@ class DISPLAY_MANAGER_EXPORT DisplayChangeObserver
       const gfx::RoundedCornersF& panel_radii = gfx::RoundedCornersF());
 
  private:
-  friend class DisplayChangeObserverTestBase;
+  friend class DisplayChangeObserverTest;
 
   void UpdateInternalDisplay(
       const DisplayConfigurator::DisplayStateList& display_states);

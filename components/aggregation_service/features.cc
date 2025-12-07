@@ -12,7 +12,6 @@
 namespace aggregation_service {
 
 BASE_FEATURE(kAggregationServiceMultipleCloudProviders,
-             "AggregationServiceMultipleCloudProviders",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kAggregationServiceCoordinatorAllowlist{

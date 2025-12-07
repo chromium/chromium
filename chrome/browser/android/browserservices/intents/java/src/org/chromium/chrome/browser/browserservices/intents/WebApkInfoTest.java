@@ -11,7 +11,6 @@ import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Browser;
 
@@ -25,7 +24,6 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.android.XmlResourceParserImpl;
 import org.robolectric.annotation.Config;
 import org.robolectric.res.ResourceTable;
-import org.robolectric.util.ReflectionHelpers;
 import org.w3c.dom.Document;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -42,6 +40,7 @@ import org.chromium.webapk.lib.common.splash.SplashLayout;
 import org.chromium.webapk.test.WebApkTestHelper;
 
 import java.io.ByteArrayInputStream;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -79,14 +78,14 @@ public class WebApkInfoTest {
 
     /** Fakes the Resources object, allowing lookup of String value. */
     private static class FakeResources extends Resources {
-        private static AssetManager sAssetManager = createAssetManager();
+        private static final AssetManager sAssetManager = createAssetManager();
         private final Map<String, Integer> mStringIdMap;
         private final Map<Integer, String> mIdValueMap;
         private String mShortcutsXmlContents;
         private String mPrimaryIconXmlContents;
 
         private class MockXmlResourceParserImpl extends XmlResourceParserImpl {
-            String mPackageName;
+            final String mPackageName;
 
             public MockXmlResourceParserImpl(
                     Document document,
@@ -94,7 +93,12 @@ public class WebApkInfoTest {
                     String packageName,
                     String applicationPackageName,
                     ResourceTable resourceTable) {
-                super(document, fileName, packageName, applicationPackageName, resourceTable);
+                super(
+                        document,
+                        Paths.get(fileName),
+                        packageName,
+                        applicationPackageName,
+                        resourceTable);
                 mPackageName = packageName;
             }
 
@@ -199,7 +203,7 @@ public class WebApkInfoTest {
     }
 
     @Test
-    public void testSanity() {
+    public void testReadValueFromShell() {
         // Test guidelines:
         // - Stubbing out native calls in this test likely means that there is a bug.
         // - For every WebappInfo boolean there should be a test which tests both values.
@@ -297,26 +301,6 @@ public class WebApkInfoTest {
         Assert.assertEquals(
                 new String[][] {{"text/plain"}, {"image/png", "image/jpeg"}},
                 shareTarget.getFileAccepts());
-    }
-
-    /**
-     * Test that {@link createWebApkInfo()} ignores the maskable icon on pre-Android-O Android OSes.
-     */
-    @Test
-    public void testOsVersionDoesNotSupportAdaptive() {
-        ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.N);
-
-        Bundle bundle = new Bundle();
-        bundle.putInt(WebApkMetaDataKeys.ICON_ID, PRIMARY_ICON_ID);
-        bundle.putInt(WebApkMetaDataKeys.MASKABLE_ICON_ID, PRIMARY_MASKABLE_ICON_ID);
-        bundle.putString(WebApkMetaDataKeys.START_URL, START_URL);
-        WebApkTestHelper.registerWebApkWithMetaData(
-                WEBAPK_PACKAGE_NAME, bundle, /* shareTargetMetaData= */ null);
-
-        Intent intent = WebApkTestHelper.createMinimalWebApkIntent(WEBAPK_PACKAGE_NAME, START_URL);
-        WebappInfo info = createWebApkInfo(intent);
-        Assert.assertEquals(PRIMARY_ICON_ID, info.icon().resourceIdForTesting());
-        Assert.assertEquals(false, info.isIconAdaptive());
     }
 
     /**
@@ -827,7 +811,7 @@ public class WebApkInfoTest {
         res.setShortcutsXmlContent(
                 "<shortcuts xmlns:android='http://schemas.android.com/apk/res/android'/>");
         WebappInfo info = createWebApkInfo(intent);
-        Assert.assertEquals(info.shortcutItems().size(), 0);
+        Assert.assertEquals(0, info.shortcutItems().size());
 
         // One shortcut case.
         String oneShortcut =
@@ -845,15 +829,15 @@ public class WebApkInfoTest {
 
         res.setShortcutsXmlContent(oneShortcut);
         info = createWebApkInfo(intent);
-        Assert.assertEquals(info.shortcutItems().size(), 1);
+        Assert.assertEquals(1, info.shortcutItems().size());
         WebApkExtras.ShortcutItem item = info.shortcutItems().get(0);
-        Assert.assertEquals(item.name, "name1");
-        Assert.assertEquals(item.shortName, "short name1");
-        Assert.assertEquals(item.launchUrl, "https://example.com/launch1");
-        Assert.assertEquals(item.iconUrl, "https://example.com/icon1.png");
-        Assert.assertEquals(item.iconHash, "1234");
+        Assert.assertEquals("name1", item.name);
+        Assert.assertEquals("short name1", item.shortName);
+        Assert.assertEquals("https://example.com/launch1", item.launchUrl);
+        Assert.assertEquals("https://example.com/icon1.png", item.iconUrl);
+        Assert.assertEquals("1234", item.iconHash);
         Assert.assertNotNull(item.icon);
-        Assert.assertEquals(item.icon.resourceIdForTesting(), 6);
+        Assert.assertEquals(6, item.icon.resourceIdForTesting());
 
         // Multiple shortcuts case.
         String twoShortcuts =
@@ -880,15 +864,15 @@ public class WebApkInfoTest {
 
         res.setShortcutsXmlContent(twoShortcuts);
         info = createWebApkInfo(intent);
-        Assert.assertEquals(info.shortcutItems().size(), 2);
+        Assert.assertEquals(2, info.shortcutItems().size());
         item = info.shortcutItems().get(1);
-        Assert.assertEquals(item.name, "name2");
-        Assert.assertEquals(item.shortName, "short name2");
-        Assert.assertEquals(item.launchUrl, "https://example.com/launch2");
-        Assert.assertEquals(item.iconUrl, "https://example.com/icon2.png");
-        Assert.assertEquals(item.iconHash, "2345");
+        Assert.assertEquals("name2", item.name);
+        Assert.assertEquals("short name2", item.shortName);
+        Assert.assertEquals("https://example.com/launch2", item.launchUrl);
+        Assert.assertEquals("https://example.com/icon2.png", item.iconUrl);
+        Assert.assertEquals("2345", item.iconHash);
         Assert.assertNotNull(item.icon);
-        Assert.assertEquals(item.icon.resourceIdForTesting(), 7);
+        Assert.assertEquals(7, item.icon.resourceIdForTesting());
     }
 
     /** Test appKey is set to the WEB_MANIFEST_URL if APP_KEY is not specified. */

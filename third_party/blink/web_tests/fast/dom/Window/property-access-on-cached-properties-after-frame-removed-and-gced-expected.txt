@@ -30,7 +30,8 @@ PASS window.cached_navigator.appCodeName is window.navigator.appCodeName
 PASS window.cached_navigator.appName is window.navigator.appName
 PASS window.cached_navigator.appVersion is ''
 PASS window.cached_navigator.cookieEnabled is false
-FAIL window.cached_navigator.deprecatedRunAdAuctionEnforcesKAnonymity should be false. Was true.
+PASS window.cached_navigator.cpuPerformance is window.navigator.cpuPerformance
+PASS window.cached_navigator.deprecatedRunAdAuctionEnforcesKAnonymity is false
 PASS window.cached_navigator.deviceMemory is window.navigator.deviceMemory
 PASS window.cached_navigator.doNotTrack is null
 PASS window.cached_navigator.hardwareConcurrency is window.navigator.hardwareConcurrency
@@ -85,7 +86,6 @@ PASS window.cached_navigator_serviceWorker.controller is null
 PASS window.cached_navigator_serviceWorker.oncontrollerchange is null
 PASS window.cached_navigator_serviceWorker.onmessage is null
 PASS window.cached_navigator_serviceWorker.onmessageerror is null
-PASS window.cached_navigator_storage.onquotachange is null
 PASS window.cached_navigator_usb.onconnect is null
 PASS window.cached_navigator_usb.ondisconnect is null
 PASS window.cached_navigator_userActivation.hasBeenActive is false
@@ -137,11 +137,11 @@ PASS window.cached_screen.availHeight is 0
 PASS window.cached_screen.availLeft is 0
 PASS window.cached_screen.availTop is 0
 PASS window.cached_screen.availWidth is 0
-PASS window.cached_screen.colorDepth is 0
+PASS window.cached_screen.colorDepth is 24
 PASS window.cached_screen.height is 0
 PASS window.cached_screen.isExtended is false
 PASS window.cached_screen.onchange is null
-PASS window.cached_screen.pixelDepth is 0
+PASS window.cached_screen.pixelDepth is 24
 PASS window.cached_screen.width is 0
 PASS window.cached_screen_orientation.angle is 0
 PASS window.cached_screen_orientation.onchange is null
@@ -155,7 +155,7 @@ PASS window.cached_statusbar.visible is false
 PASS window.cached_styleMedia.type is ''
 PASS window.cached_toolbar.visible is false
 PASS window.cached_trustedTypes.defaultPolicy is null
-PASS window.cached_trustedTypes.onbeforecreatepolicy is null
+PASS window.cached_viewport.segments is null
 PASS window.cached_visualViewport.height is 0
 PASS window.cached_visualViewport.offsetLeft is 0
 PASS window.cached_visualViewport.offsetTop is 0
@@ -165,7 +165,6 @@ PASS window.cached_visualViewport.onscrollend is null
 PASS window.cached_visualViewport.pageLeft is 0
 PASS window.cached_visualViewport.pageTop is 0
 PASS window.cached_visualViewport.scale is 0
-PASS window.cached_visualViewport.segments is null
 PASS window.cached_visualViewport.width is 0
 PASS successfullyParsed is true
 

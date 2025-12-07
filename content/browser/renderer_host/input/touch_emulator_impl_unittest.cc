@@ -17,7 +17,7 @@
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "ui/base/cursor/cursor.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/events/blink/web_input_event_traits.h"
 
 using blink::WebGestureEvent;
@@ -91,7 +91,7 @@ class TouchEmulatorTest : public testing::Test,
 
   void ShowContextMenuAtPoint(
       const gfx::Point& point,
-      const ui::MenuSourceType source_type,
+      const ui::mojom::MenuSourceType source_type,
       input::RenderWidgetHostViewInput* target) override {}
 
  protected:

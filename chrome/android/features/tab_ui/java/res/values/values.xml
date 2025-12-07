@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<resources>
+    <!-- Width modifier multipliers for pinned tab strip items. -->
+    <item name="pinned_tab_strip_item_width_percentage_multiplier_2_rows" format="float" type="dimen">0.80</item>
+    <item name="pinned_tab_strip_item_width_percentage_multiplier_3_rows" format="float" type="dimen">0.75</item>
+    <item name="pinned_tab_strip_item_width_percentage_multiplier_more_than_3_rows" format="float" type="dimen">0.70</item>
+</resources>

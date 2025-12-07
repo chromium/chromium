@@ -92,9 +92,9 @@ void MemorySaverModePolicy::OnTakenFromGraph(Graph* graph) {
 }
 
 void MemorySaverModePolicy::OnMemorySaverModeChanged(bool enabled) {
-  high_efficiency_mode_enabled_ = enabled;
+  memory_saver_mode_enabled_ = enabled;
 
-  if (high_efficiency_mode_enabled_) {
+  if (memory_saver_mode_enabled_) {
     DCHECK(active_discard_timers_.empty());
     StartAllDiscardTimers();
   } else {
@@ -108,14 +108,14 @@ base::TimeDelta MemorySaverModePolicy::GetTimeBeforeDiscardForTesting() const {
 
 void MemorySaverModePolicy::SetMode(MemorySaverModeAggressiveness mode) {
   mode_ = mode;
-  if (high_efficiency_mode_enabled_) {
+  if (memory_saver_mode_enabled_) {
     active_discard_timers_.clear();
     StartAllDiscardTimers();
   }
 }
 
 bool MemorySaverModePolicy::IsMemorySaverDiscardingEnabled() const {
-  return high_efficiency_mode_enabled_;
+  return memory_saver_mode_enabled_;
 }
 
 void MemorySaverModePolicy::StartAllDiscardTimers() {
@@ -195,7 +195,7 @@ void MemorySaverModePolicy::DiscardPageTimerCallback(
         ->GetRegisteredObjectAs<PageDiscardingHelper>()
         ->ImmediatelyDiscardMultiplePages(
             {tab_handle->page_node()},
-            PageDiscardingHelper::DiscardReason::PROACTIVE);
+            DiscardEligibilityPolicy::DiscardReason::PROACTIVE);
   }
 }
 
@@ -209,19 +209,19 @@ base::TimeDelta MemorySaverModePolicy::GetTimeBeforeDiscardForCurrentMode()
     case MemorySaverModeAggressiveness::kAggressive:
       return base::Hours(2);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 int MemorySaverModePolicy::GetMaxNumRevisitsForCurrentMode() const {
   switch (mode_) {
     case MemorySaverModeAggressiveness::kConservative:
-      return 15;
+      return 5;
     case MemorySaverModeAggressiveness::kMedium:
       return 15;
     case MemorySaverModeAggressiveness::kAggressive:
-      return 5;
+      return 15;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace performance_manager::policies

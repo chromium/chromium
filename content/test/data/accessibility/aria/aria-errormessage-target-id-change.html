@@ -1,0 +1,40 @@
+<!--
+@BLINK-ALLOW:error*
+@EXECUTE-AND-WAIT-FOR:switchReferencedElement()
+@EXECUTE-AND-WAIT-FOR:appendNewReferencedElement()
+-->
+<!DOCTYPE html>
+<html>
+  <body>
+    <div>
+      <input aria-label="Invalid is true" aria-invalid="true" aria-errormessage="error1">
+    </div>
+    <!-- Different roles are used here to distinguish between the referenced elements in the expectations file -->
+    <p role="paragraph" id="error1">Error for invalid input</p>
+    <p role="article" id="error2">Another error for invalid input</p>
+    <script>
+      function switchReferencedElement() {
+        // Switch the IDs around. Now we should see the aria-errormessage
+        // point to the p with the article role.
+        document.querySelector("p[role=paragraph]").id = "error2";
+        document.querySelector("p[role=article]").id = "error1";
+        document.title = "switch-referenced-element";
+        return "switch-referenced-element";
+      }
+
+      function appendNewReferencedElement() {
+        // Prepend another element with the same ID that the input
+        // is referencing via aria-errormessage. The reference should switch
+        // to the new caption element since it comes first in document order.
+        const caption = document.createElement("div");
+        caption.role = "caption";
+        caption.innerText = "Yet another error for invalid input";
+        caption.id = "error1";
+        document.body.prepend(caption);
+
+        document.title = "append-new-referenced-element";
+        return "append-new-referenced-element";
+      }
+    </script>
+  </body>
+</html>

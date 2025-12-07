@@ -255,15 +255,15 @@ export class Box {
       return null;
     }
 
-    const cornRD = new Point(this.size.width, this.size.height);
-    const cornLD = new Point(0, this.size.height);
-    const cornLU = new Point(0, 0);
-    const cornRU = new Point(this.size.width, 0);
+    const cornRd = new Point(this.size.width, this.size.height);
+    const cornLd = new Point(0, this.size.height);
+    const cornLu = new Point(0, 0);
+    const cornRu = new Point(this.size.width, 0);
     const segs: Array<[Point, Point]> = [
-      [cornRU, cornLU],
-      [cornRD, cornRU],
-      [cornLU, cornLD],
-      [cornLD, cornRD],
+      [cornRu, cornLu],
+      [cornRd, cornRu],
+      [cornLu, cornLd],
+      [cornLd, cornRd],
     ];
 
     const intersectPts = [];

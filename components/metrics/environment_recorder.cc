@@ -5,23 +5,23 @@
 #include "components/metrics/environment_recorder.h"
 
 #include "base/base64.h"
-#include "base/hash/sha1.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "crypto/obsolete/sha1.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
 namespace metrics {
 
-namespace {
-
-// Computes a SHA-1 hash of |data| and returns it as a hex string.
-std::string ComputeSHA1(const std::string& data) {
-  return base::HexEncode(base::SHA1Hash(base::as_byte_span(data)));
+// Computes a SHA-1 hash of |data| and returns it as a hex string. This
+// function is intentionally declared in a separate header file
+// "crypto/obsolete/sha1.h", so as to easily monitor current usage of SHA-1 in
+// Chrome, since SHA-1 is now discouraged for new code.
+std::string Sha1AsHexForSystemProfile(std::string_view data) {
+  return base::HexEncode(
+      crypto::obsolete::Sha1::Hash(base::as_byte_span(data)));
 }
-
-}  // namespace
 
 EnvironmentRecorder::EnvironmentRecorder(PrefService* local_state)
     : local_state_(local_state) {}
@@ -38,8 +38,9 @@ std::string EnvironmentRecorder::SerializeAndRecordEnvironmentToPrefs(
         base::Base64Encode(serialized_system_profile);
     local_state_->SetString(prefs::kStabilitySavedSystemProfile,
                             base64_system_profile);
-    local_state_->SetString(prefs::kStabilitySavedSystemProfileHash,
-                            ComputeSHA1(serialized_system_profile));
+    local_state_->SetString(
+        prefs::kStabilitySavedSystemProfileHash,
+        Sha1AsHexForSystemProfile(serialized_system_profile));
   }
 
   return serialized_system_profile;
@@ -51,16 +52,29 @@ bool EnvironmentRecorder::LoadEnvironmentFromPrefs(
 
   const std::string base64_system_profile =
       local_state_->GetString(prefs::kStabilitySavedSystemProfile);
-  if (base64_system_profile.empty())
+  if (base64_system_profile.empty()) {
     return false;
+  }
   const std::string system_profile_hash =
       local_state_->GetString(prefs::kStabilitySavedSystemProfileHash);
 
   std::string serialized_system_profile;
-  return base::Base64Decode(base64_system_profile,
-                            &serialized_system_profile) &&
-         ComputeSHA1(serialized_system_profile) == system_profile_hash &&
-         system_profile->ParseFromString(serialized_system_profile);
+  if (!base::Base64Decode(base64_system_profile, &serialized_system_profile)) {
+    return false;
+  }
+  if (Sha1AsHexForSystemProfile(serialized_system_profile) !=
+      system_profile_hash) {
+    return false;
+  }
+  if (!system_profile->ParseFromString(serialized_system_profile)) {
+    return false;
+  }
+  // Prevent initial stability logs from having the `fg_bg_id` field set, since
+  // those logs contain metrics *about* a previous session, and are not emitted
+  // during those sessions (and should certainly not be associated with any
+  // particular background or foreground period).
+  system_profile->clear_fg_bg_id();
+  return true;
 }
 
 void EnvironmentRecorder::ClearEnvironmentFromPrefs() {

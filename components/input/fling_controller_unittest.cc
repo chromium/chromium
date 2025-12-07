@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,13 +43,13 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
  public:
   // testing::Test
   FlingControllerTest()
-      : needs_begin_frame_for_fling_progress_(GetParam()),
+      : progress_fling_on_fling_start_(!GetParam()),
         task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
 
   FlingControllerTest(const FlingControllerTest&) = delete;
   FlingControllerTest& operator=(const FlingControllerTest&) = delete;
 
-  ~FlingControllerTest() override {}
+  ~FlingControllerTest() override = default;
 
   void SetUp() override {
     fling_controller_ = std::make_unique<FakeFlingController>(
@@ -88,8 +89,8 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
       base::WeakPtr<FlingController> fling_controller) override {
     notified_client_after_fling_stop_ = true;
   }
-  bool NeedsBeginFrameForFlingProgress() override {
-    return needs_begin_frame_for_fling_progress_;
+  bool ProgressFlingOnFlingStart() override {
+    return progress_fling_on_fling_start_;
   }
   bool ShouldUseMobileFlingCurve() override {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -166,10 +167,13 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
         fling_cancel_with_latency);
   }
 
-  void ProgressFling(base::TimeTicks current_time) {
+  void ProgressFling(base::TimeTicks current_time,
+                     std::optional<base::TimeTicks>
+                         first_coalesced_frame_begin_time = std::nullopt) {
     DCHECK(scheduled_next_fling_progress_);
     scheduled_next_fling_progress_ = false;
-    fling_controller_->ProgressFling(current_time);
+    fling_controller_->ProgressFling(current_time,
+                                     first_coalesced_frame_begin_time);
   }
 
   bool FlingInProgress() { return fling_controller_->fling_in_progress(); }
@@ -223,13 +227,7 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
 
  private:
   base::SimpleTestTickClock mock_clock_;
-
-  // This determines whether the platform ticks fling animations using
-  // SetNeedsBeginFrame (i.e. WebView). If true, we should avoid calling
-  // ProgressFling immediately after a FlingStart since this will match the
-  // behavior in FlingController::ProcessGestureFlingStart. See
-  // https://crrev.com/c/1181521.
-  bool needs_begin_frame_for_fling_progress_;
+  bool progress_fling_on_fling_start_;
   base::test::TaskEnvironment task_environment_;
 };
 
@@ -299,8 +297,9 @@ TEST_P(FlingControllerTest, FlingStartsAtLastScrollUpdate) {
                      gfx::Vector2dF(1000, 0), /*wait_before_processing=*/false);
   EXPECT_TRUE(FlingInProgress());
 
-  if (NeedsBeginFrameForFlingProgress())
+  if (!ProgressFlingOnFlingStart()) {
     ProgressFling(NowTicks());
+  }
 
   // We haven't advanced time since the FlingStart. Ensure we still send a
   // significant amount of delta (~0.030sec * 1000pixels/sec) since we should
@@ -329,8 +328,9 @@ TEST_P(FlingControllerTest, InterruptedFlingIsntBoosted) {
                        /*wait_before_processing=*/false);
     ASSERT_TRUE(FlingInProgress());
 
-    if (NeedsBeginFrameForFlingProgress())
+    if (!ProgressFlingOnFlingStart()) {
       ProgressFling(NowTicks());
+    }
   }
 
   // Stop the fling. This simulates hitting a scroll extent.
@@ -352,8 +352,9 @@ TEST_P(FlingControllerTest, InterruptedFlingIsntBoosted) {
                        gfx::Vector2dF(1000, 0),
                        /*wait_before_processing=*/false);
 
-    if (NeedsBeginFrameForFlingProgress())
+    if (!ProgressFlingOnFlingStart()) {
       ProgressFling(NowTicks());
+    }
 
     EXPECT_EQ(fling_controller_->CurrentFlingVelocity().x(), 1000)
         << "Fling was boosted but should not have been.";
@@ -561,8 +562,9 @@ TEST_P(FlingControllerTest, GestureFlingWithNegativeTimeDelta) {
 // Regression test for https://crbug.com/924279
 TEST_P(FlingControllerTest, TouchpadFlingWithOldEvent) {
   // Only the code path that uses compositor animation observers is affected.
-  if (NeedsBeginFrameForFlingProgress())
+  if (!ProgressFlingOnFlingStart()) {
     return;
+  }
 
   // Create a fling start event.
   base::TimeTicks event_time = NowTicks();
@@ -756,12 +758,25 @@ TEST_P(FlingControllerTest, NoFlingStartAfterWheelEventConsumed) {
   EXPECT_FALSE(FlingInProgress());
 }
 
+TEST_P(FlingControllerTest,
+       SetGenerationTimestampToFirstCoalescedFrameBeginTime) {
+  SimulateFlingStart(blink::WebGestureDevice::kTouchscreen,
+                     gfx::Vector2dF(1000, 0));
+
+  AdvanceTime();
+  std::optional<base::TimeTicks> first_coalesced_frame_begin_time =
+      NowTicks() - base::Seconds(3);
+  ProgressFling(NowTicks(), first_coalesced_frame_begin_time);
+
+  EXPECT_EQ(first_coalesced_frame_begin_time, last_sent_gesture_.TimeStamp());
+}
+
 class FlingControllerWithPhysicsBasedFlingTest : public FlingControllerTest {
  public:
   // testing::Test
   FlingControllerWithPhysicsBasedFlingTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        features::kExperimentalFlingAnimation);
+        ::features::kExperimentalFlingAnimation);
   }
 
   FlingControllerWithPhysicsBasedFlingTest(
@@ -817,8 +832,9 @@ TEST_P(FlingControllerWithPhysicsBasedFlingTest,
   SimulateFlingStart(blink::WebGestureDevice::kTouchscreen,
                      gfx::Vector2dF(4500, 0));
   EXPECT_TRUE(FlingInProgress());
-  if (NeedsBeginFrameForFlingProgress())
+  if (!ProgressFlingOnFlingStart()) {
     ProgressFling(NowTicks());
+  }
 
   float total_scroll_delta = CompleteFlingAndAccumulateScrollDelta();
 
@@ -865,8 +881,9 @@ TEST_P(FlingControllerWithPhysicsBasedFlingTest,
   SimulateFlingStart(blink::WebGestureDevice::kTouchscreen,
                      gfx::Vector2dF(10000, 0));
   EXPECT_TRUE(FlingInProgress());
-  if (NeedsBeginFrameForFlingProgress())
+  if (!ProgressFlingOnFlingStart()) {
     ProgressFling(NowTicks());
+  }
 
   float total_scroll_delta = CompleteFlingAndAccumulateScrollDelta();
 

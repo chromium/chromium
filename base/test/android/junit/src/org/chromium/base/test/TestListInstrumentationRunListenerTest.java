@@ -25,6 +25,7 @@ import org.chromium.testing.TestListInstrumentationRunListener;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@SuppressWarnings("UnusedMethod")
 public class TestListInstrumentationRunListenerTest {
 
     @CommandLineFlags.Add("hello")

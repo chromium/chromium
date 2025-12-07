@@ -11,6 +11,8 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.core.content.res.ResourcesCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.tab_ui.R;
 
 import java.lang.annotation.Retention;
@@ -20,6 +22,7 @@ import java.lang.annotation.RetentionPolicy;
  * An implementation of {@link DynamicDrawableSpan} for displaying rating stars in a {@link
  * Spannable}.
  */
+@NullMarked
 public class RatingStarSpan extends DynamicDrawableSpan {
     @IntDef({RatingStarType.OUTLINE, RatingStarType.HALF, RatingStarType.FULL})
     @Retention(RetentionPolicy.SOURCE)
@@ -38,11 +41,13 @@ public class RatingStarSpan extends DynamicDrawableSpan {
     }
 
     @Override
-    public Drawable getDrawable() {
+    public @Nullable Drawable getDrawable() {
         Drawable drawable =
                 ResourcesCompat.getDrawable(
                         mContext.getResources(), getResourceId(mType), mContext.getTheme());
-        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+        if (drawable != null) {
+            drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+        }
         return drawable;
     }
 

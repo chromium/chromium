@@ -11,6 +11,9 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -40,7 +43,6 @@
 #include "storage/browser/file_system/file_system_quota_client.h"
 #include "storage/browser/file_system/file_system_request_info.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "storage/browser/file_system/file_system_util.h"
 #include "storage/browser/file_system/isolated_context.h"
 #include "storage/browser/file_system/isolated_file_system_backend.h"
 #include "storage/browser/file_system/mount_points.h"
@@ -137,8 +139,7 @@ int FileSystemContext::GetPermissionPolicy(FileSystemType type) {
     case kFileSystemTypeUnknown:
       return FILE_PERMISSION_ALWAYS_DENY;
   }
-  NOTREACHED_IN_MIGRATION();
-  return FILE_PERMISSION_ALWAYS_DENY;
+  NOTREACHED();
 }
 
 scoped_refptr<FileSystemContext> FileSystemContext::Create(
@@ -249,8 +250,7 @@ void FileSystemContext::Initialize() {
   mojo::PendingReceiver<mojom::QuotaClient> quota_client_receiver =
       quota_client_remote.InitWithNewPipeAndPassReceiver();
   quota_manager_proxy_->RegisterClient(std::move(quota_client_remote),
-                                       QuotaClientType::kFileSystem,
-                                       QuotaManagedStorageTypes());
+                                       QuotaClientType::kFileSystem);
 
   io_task_runner_->PostTask(
       FROM_HERE,
@@ -327,9 +327,11 @@ FileSystemContext::GetCopyOrMoveFileValidatorFactory(
 FileSystemBackend* FileSystemContext::GetFileSystemBackend(
     FileSystemType type) const {
   auto found = backend_map_.find(type);
-  if (found != backend_map_.end())
+  if (found != backend_map_.end()) {
     return found->second;
-  NOTREACHED_IN_MIGRATION() << "Unknown filesystem type: " << type;
+  }
+  SCOPED_CRASH_KEY_NUMBER("398002857", "file_system_type", type);
+  base::debug::DumpWithoutCrashing();
   return nullptr;
 }
 
@@ -411,9 +413,8 @@ void FileSystemContext::OpenFileSystem(
   } else {
     // Ensure default bucket for `storage_key` exists so that Quota API
     // is aware of the usage.
-    quota_manager_proxy()->GetOrCreateBucketDeprecated(
-        BucketInitParams::ForDefaultBucket(storage_key),
-        FileSystemTypeToQuotaStorageType(type), io_task_runner_.get(),
+    quota_manager_proxy()->UpdateOrCreateBucket(
+        BucketInitParams::ForDefaultBucket(storage_key), io_task_runner_.get(),
         std::move(got_bucket));
   }
 }
@@ -539,9 +540,8 @@ void FileSystemContext::DeleteFileSystem(const blink::StorageKey& storage_key,
     return;
   }
 
-  quota_manager_proxy()->GetOrCreateBucketDeprecated(
-      BucketInitParams::ForDefaultBucket(storage_key),
-      FileSystemTypeToQuotaStorageType(type), io_task_runner_.get(),
+  quota_manager_proxy()->UpdateOrCreateBucket(
+      BucketInitParams::ForDefaultBucket(storage_key), io_task_runner_.get(),
       base::BindOnce(&FileSystemContext::OnGetBucketForDeleteFileSystem,
                      weak_factory_.GetWeakPtr(), type, std::move(callback)));
 }
@@ -633,9 +633,7 @@ bool FileSystemContext::CanServeURLRequest(const FileSystemURL& url) const {
     return false;
   if (url.type() == kFileSystemTypeTemporary)
     return true;
-  if (url.type() == kFileSystemTypePersistent &&
-      base::FeatureList::IsEnabled(
-          features::kEnablePersistentFilesystemInIncognito)) {
+  if (url.type() == kFileSystemTypePersistent) {
     return true;
   }
   return !is_incognito_ || !FileSystemContext::IsSandboxFileSystem(url.type());
@@ -645,27 +643,6 @@ FileSystemContext::~FileSystemContext() {
   // TODO(crbug.com/41377719) This is a leak. Delete env after the backends have
   // been deleted.
   env_override_.release();
-}
-
-std::vector<blink::mojom::StorageType>
-FileSystemContext::QuotaManagedStorageTypes() {
-  std::vector<blink::mojom::StorageType> quota_storage_types;
-  for (const auto& file_system_type_and_backend : backend_map_) {
-    FileSystemType file_system_type = file_system_type_and_backend.first;
-    blink::mojom::StorageType storage_type =
-        FileSystemTypeToQuotaStorageType(file_system_type);
-
-    // An more elegant way of filtering out non-quota-managed backends would be
-    // to call GetQuotaUtil() on backends. Unfortunately, the method assumes the
-    // backends are initialized.
-    if (storage_type == blink::mojom::StorageType::kUnknown ||
-        storage_type == blink::mojom::StorageType::kDeprecatedQuotaNotManaged) {
-      continue;
-    }
-
-    quota_storage_types.push_back(storage_type);
-  }
-  return quota_storage_types;
 }
 
 std::unique_ptr<FileSystemOperation>

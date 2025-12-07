@@ -10,6 +10,7 @@ for more details about the presubmit API built into depot_tools.
 
 
 import os
+import re
 from xml.dom import minidom
 
 def _CheckNoProductNameInGeneratedResources(input_api, output_api):
@@ -36,6 +37,92 @@ def _CheckNoProductNameInGeneratedResources(input_api, output_api):
         "Problems with this check? Contact dubroy@chromium.org.",
         items=problems)]
   return []
+
+def _CheckNoLiteralBrandNamesInGeneratedResources(input_api, output_api):
+  """Disallow hardcoded 'Chrome' and 'Chromium' in generated_resources.grd.
+
+  Authors should prefer adding branded IDs in
+  //chrome/app/google_chrome_strings.grd and //chrome/app/chromium_strings.grd
+  instead of hardcoding one brand in generated_resources.grd.
+  """
+  STRICT = False
+
+  brand_word = re.compile(r'(?<![A-Za-z])(Chrome|Chromium)(?![A-Za-z])')
+  filename_filter = \
+    lambda af: af.LocalPath().endswith("generated_resources.grd")
+
+  problems = []
+
+  # 1) Build: per-file → set of changed line numbers (RHS only).
+  changed_lines_by_file = {}
+  for af, line_num, _ in input_api.RightHandSideLines(filename_filter):
+    changed_lines_by_file.setdefault(af, set()).add(line_num)
+
+  if not changed_lines_by_file:
+    return []
+
+  # 2) For each file with changes, parse message ranges once, then
+  #    find only the message blocks that intersect changed lines.
+  for af, changed_lines in changed_lines_by_file.items():
+    new_lines = list(af.NewContents())
+    if not new_lines:
+      continue
+
+    # Find all <message ...> ... </message> ranges: (start_line, end_line).
+    ranges = []
+    inside = False
+    start = None
+    for i, line in enumerate(new_lines, start=1):
+      if not inside and "<message" in line:
+        inside = True
+        start = i
+      if inside and "</message>" in line:
+        ranges.append((start, i))
+        inside = False
+        start = None
+
+    if not ranges:
+      continue
+
+    # Which message ranges were touched?
+    touched_ranges = []
+    for range in ranges:
+      start, end = range
+      # any changed line within [start, end] ?
+      if any(start <= line_number <= end for line_number in changed_lines):
+        touched_ranges.append(range)
+
+    if not touched_ranges:
+      continue
+
+    # 3) Scan only touched message blocks; check *content* (strip tags).
+    for start, end in touched_ranges:
+      block_text = "\n".join(new_lines[start - 1:end])  # inclusive
+
+      # Ignore <ex>…</ex>
+      stripped = re.sub(r"<ex>.*?</ex>", "", block_text, flags=re.DOTALL)
+      # Remove remaining tags
+      stripped = re.sub(r"<[^>]+>", "", stripped)
+
+      if brand_word.search(stripped):
+        problems.append(f"{af.LocalPath()}:{start}: {stripped.strip()}")
+
+  if not problems:
+    return []
+
+  hint = (
+      "Avoid hardcoding 'Chrome' or 'Chromium' inside "
+      "generated_resources.grd.\nAdd new branded IDs to "
+      "google_chrome_strings.grd / chromium_strings.grd instead."
+  )
+  text = \
+  "Hardcoded brand names found in generated_resources.grd:\n" + "\n".join(
+    problems) + "\n\n" + hint
+
+  if STRICT:
+    return [output_api.PresubmitError(text)]
+
+  return [output_api.PresubmitPromptWarning(text)]
 
 def _CheckFlagsMessageNotTranslated(input_api, output_api):
   """Check: all about:flags messages are marked as not requiring translation.
@@ -124,6 +211,8 @@ def _CommonChecks(input_api, output_api):
   """Checks common to both upload and commit."""
   results = []
   results.extend(_CheckNoProductNameInGeneratedResources(input_api, output_api))
+  results.extend(
+    _CheckNoLiteralBrandNamesInGeneratedResources(input_api, output_api))
   results.extend(_CheckFlagsMessageNotTranslated(input_api, output_api))
   return results
 

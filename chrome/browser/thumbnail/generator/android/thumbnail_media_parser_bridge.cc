@@ -23,7 +23,7 @@ void OnMediaParsed(ThumbnailMediaParser*,
                    bool success,
                    chrome::mojom::MediaMetadataPtr metadata,
                    SkBitmap thumbnail_bitmap) {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   DCHECK(metadata);
 
   // Copy the thumbnail bitmap to a Java Bitmap object.
@@ -44,11 +44,11 @@ void OnMediaParsed(ThumbnailMediaParser*,
 }  // namespace
 
 // static
-void JNI_ThumbnailMediaParserBridge_Parse(
+static void JNI_ThumbnailMediaParserBridge_Parse(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jmime_type,
-    const base::android::JavaParamRef<jstring>& jfile_path,
-    const base::android::JavaParamRef<jobject>& jcallback) {
+    const base::android::JavaRef<jstring>& jmime_type,
+    const base::android::JavaRef<jstring>& jfile_path,
+    const base::android::JavaRef<jobject>& jcallback) {
   base::FilePath file_path(
       base::android::ConvertJavaStringToUTF8(env, jfile_path));
   std::string mime_type =
@@ -61,3 +61,6 @@ void JNI_ThumbnailMediaParserBridge_Parse(
       base::BindOnce(&OnMediaParsed, base::Owned(parser),
                      base::android::ScopedJavaGlobalRef<jobject>(jcallback)));
 }
+
+DEFINE_JNI(ThumbnailMediaData)
+DEFINE_JNI(ThumbnailMediaParserBridge)

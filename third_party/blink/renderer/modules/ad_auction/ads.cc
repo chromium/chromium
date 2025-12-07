@@ -14,7 +14,7 @@ bool Ads::IsValid() const {
   return populated_;
 }
 
-WTF::String Ads::GetGuid() const {
+String Ads::GetGuid() const {
   DCHECK(populated_);
   return guid_;
 }

@@ -16,6 +16,7 @@
 #include "base/json/values_util.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
@@ -70,6 +71,77 @@ base::TimeDelta TimeDeltaFromDelay(double delay_in_minutes) {
                             base::Time::kMicrosecondsPerMinute);
 }
 
+// Values of histogram "Extensions.AlarmManager.AlarmsMaxNameLength"
+// must match enum ExtensionAlarmsNameLength.
+enum class AlarmNameLength {
+  k0_10,
+  k11_25,
+  k26_50,
+  k51_75,
+  k76_100,
+  k101_125,
+  k126_250,
+  k251_500,
+  k501_1000,
+  k1001_2000,
+  k2001_5000,
+  k5001_10k,
+  k100k,
+  k1m,
+  k100m,
+  kLarge,
+  kMaxValue = kLarge,
+};
+
+AlarmNameLength AlarmNameLengthToBucket(size_t length) {
+  if (length <= 10) {
+    return AlarmNameLength::k0_10;
+  }
+  if (length <= 25) {
+    return AlarmNameLength::k11_25;
+  }
+  if (length <= 50) {
+    return AlarmNameLength::k26_50;
+  }
+  if (length <= 75) {
+    return AlarmNameLength::k51_75;
+  }
+  if (length <= 100) {
+    return AlarmNameLength::k76_100;
+  }
+  if (length <= 125) {
+    return AlarmNameLength::k101_125;
+  }
+  if (length <= 250) {
+    return AlarmNameLength::k126_250;
+  }
+  if (length <= 500) {
+    return AlarmNameLength::k251_500;
+  }
+  if (length <= 1000) {
+    return AlarmNameLength::k501_1000;
+  }
+  if (length <= 2000) {
+    return AlarmNameLength::k1001_2000;
+  }
+  if (length <= 5000) {
+    return AlarmNameLength::k2001_5000;
+  }
+  if (length <= 10000) {
+    return AlarmNameLength::k5001_10k;
+  }
+  if (length <= 100000) {
+    return AlarmNameLength::k100k;
+  }
+  if (length <= 1000000) {
+    return AlarmNameLength::k1m;
+  }
+  if (length <= 100000000) {
+    return AlarmNameLength::k100m;
+  }
+  return AlarmNameLength::kLarge;
+}
+
 AlarmManager::AlarmList AlarmsFromValue(const ExtensionId extension_id,
                                         base::TimeDelta min_delay,
                                         const base::Value::List& list) {
@@ -77,11 +149,15 @@ AlarmManager::AlarmList AlarmsFromValue(const ExtensionId extension_id,
   const int max_to_create = std::min(base::saturated_cast<int>(list.size()),
                                      AlarmManager::kMaxAlarmsPerExtension);
 
+  size_t max_name_length = 0;
   for (int i = 0; i < max_to_create; ++i) {
     const base::Value& alarm_value = list[i];
     Alarm alarm;
     alarm.js_alarm = alarms::Alarm::FromValue(alarm_value);
     if (alarm.js_alarm) {
+      // Find the maximum alarm name for a histogram.
+      max_name_length =
+          std::max(max_name_length, alarm.js_alarm->name.length());
       std::optional<base::TimeDelta> delta =
           base::ValueToTimeDelta(alarm_value.GetDict().Find(kAlarmGranularity));
       if (delta) {
@@ -94,6 +170,10 @@ AlarmManager::AlarmList AlarmsFromValue(const ExtensionId extension_id,
         alarm.granularity = alarm.minimum_granularity;
       alarms.emplace_back(std::move(alarm));
     }
+  }
+  if (max_to_create > 0) {
+    base::UmaHistogramEnumeration("Extensions.AlarmManager.AlarmsMaxNameLength",
+                                  AlarmNameLengthToBucket(max_name_length));
   }
   return alarms;
 }

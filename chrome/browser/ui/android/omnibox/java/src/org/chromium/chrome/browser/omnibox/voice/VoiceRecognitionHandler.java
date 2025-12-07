@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.voice;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
@@ -25,7 +27,8 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.build.annotations.MockedInTests;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
@@ -45,7 +48,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Class containing functionality related to voice search. */
-@MockedInTests
+@NullMarked
 public class VoiceRecognitionHandler {
     private static final String TAG = "VoiceRecognition";
 
@@ -59,32 +62,12 @@ public class VoiceRecognitionHandler {
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final ApplicationStateListener mApplicationStateListener =
             this::onApplicationStateChange;
-    private Long mQueryStartTimeMs;
-    private WebContentsObserver mVoiceSearchWebContentsObserver;
+    private @Nullable Long mQueryStartTimeMs;
+    private @Nullable WebContentsObserver mVoiceSearchWebContentsObserver;
     private CallbackController mCallbackController = new CallbackController();
-    private ObservableSupplier<Profile> mProfileSupplier;
-    private Boolean mIsVoiceSearchEnabledCached;
+    private final ObservableSupplier<Profile> mProfileSupplier;
+    private @Nullable Boolean mIsVoiceSearchEnabledCached;
     private boolean mRegisteredActivityStateListener;
-
-    /**
-     * AudioPermissionState defined in tools/metrics/histograms/enums.xml.
-     *
-     * <p>Do not reorder or remove items, only add new items before NUM_ENTRIES.
-     */
-    @IntDef({
-        AudioPermissionState.GRANTED,
-        AudioPermissionState.DENIED_CAN_ASK_AGAIN,
-        AudioPermissionState.DENIED_CANNOT_ASK_AGAIN
-    })
-    public @interface AudioPermissionState {
-        // Permissions have been granted and won't be requested this time.
-        int GRANTED = 0;
-        int DENIED_CAN_ASK_AGAIN = 1;
-        int DENIED_CANNOT_ASK_AGAIN = 2;
-
-        // Be sure to also update enums.xml when updating these values.
-        int NUM_ENTRIES = 3;
-    }
 
     /**
      * VoiceInteractionEventSource defined in tools/metrics/histograms/enums.xml.
@@ -227,6 +210,7 @@ public class VoiceRecognitionHandler {
         mObservers.removeObserver(observer);
     }
 
+    @SuppressWarnings("NullAway")
     public void destroy() {
         if (mCallbackController != null) {
             mCallbackController.destroy();
@@ -259,14 +243,15 @@ public class VoiceRecognitionHandler {
          *     navigating to is actually a SRP.
          */
         private void setReceivedUserGesture(GURL url) {
-            WebContents webContents = mWebContents.get();
+            WebContents webContents = getWebContents();
             if (webContents == null) return;
 
             RenderFrameHost renderFrameHost = webContents.getMainFrame();
             if (renderFrameHost == null) return;
 
-            if (!mProfileSupplier.hasValue()) return;
-            if (TemplateUrlServiceFactory.getForProfile(mProfileSupplier.get())
+            Profile profile = mProfileSupplier.get();
+            if (profile == null) return;
+            if (TemplateUrlServiceFactory.getForProfile(profile)
                     .isSearchResultsPageFromDefaultSearchProvider(url)) {
                 renderFrameHost.notifyUserActivation();
             }
@@ -277,7 +262,7 @@ public class VoiceRecognitionHandler {
             if (navigation.hasCommitted() && !navigation.isErrorPage()) {
                 setReceivedUserGesture(navigation.getUrl());
             }
-            destroy();
+            observe(null);
         }
     }
 
@@ -293,9 +278,8 @@ public class VoiceRecognitionHandler {
 
         // WindowAndroid.IntentCallback implementation:
         @Override
-        public void onIntentCompleted(int resultCode, Intent data) {
+        public void onIntentCompleted(int resultCode, @Nullable Intent data) {
             if (mCallbackComplete) {
-                recordVoiceSearchUnexpectedResult(mSource);
                 return;
             }
 
@@ -305,13 +289,13 @@ public class VoiceRecognitionHandler {
                 mDelegate.notifyVoiceRecognitionCanceled();
                 return;
             }
-            if (resultCode != Activity.RESULT_OK || data.getExtras() == null) {
+            if (resultCode != Activity.RESULT_OK || assumeNonNull(data).getExtras() == null) {
                 recordVoiceSearchFailureEvent(mSource);
                 mDelegate.notifyVoiceRecognitionCanceled();
                 return;
             }
 
-            recordSuccessMetrics(mSource, AssistantActionPerformed.TRANSCRIPTION);
+            recordSuccessMetrics(mSource);
             handleTranscriptionResult(data);
         }
 
@@ -356,7 +340,7 @@ public class VoiceRecognitionHandler {
                     locationBarDataProvider != null ? locationBarDataProvider.getTab() : null;
             if (currentTab != null) {
                 if (mVoiceSearchWebContentsObserver != null) {
-                    mVoiceSearchWebContentsObserver.destroy();
+                    mVoiceSearchWebContentsObserver.observe(null);
                     mVoiceSearchWebContentsObserver = null;
                 }
                 if (currentTab.getWebContents() != null) {
@@ -365,9 +349,9 @@ public class VoiceRecognitionHandler {
                 }
             }
 
-            if (!mProfileSupplier.hasValue()) return;
-
             Profile profile = mProfileSupplier.get();
+            if (profile == null) return;
+
             AutocompleteMatch match = AutocompleteCoordinator.classify(profile, topResultQuery);
 
             String url;
@@ -386,7 +370,7 @@ public class VoiceRecognitionHandler {
 
     /** Convert the android voice intent bundle to a list of result objects. */
     @VisibleForTesting
-    protected List<VoiceResult> convertBundleToVoiceResults(Bundle extras) {
+    protected @Nullable List<VoiceResult> convertBundleToVoiceResults(@Nullable Bundle extras) {
         if (extras == null) return null;
 
         ArrayList<String> strings = extras.getStringArrayList(RecognizerIntent.EXTRA_RESULTS);
@@ -406,8 +390,9 @@ public class VoiceRecognitionHandler {
             String culledString = strings.get(i).replaceAll(" ", "");
 
             AutocompleteMatch match = null;
-            if (mProfileSupplier.hasValue()) {
-                match = AutocompleteCoordinator.classify(mProfileSupplier.get(), culledString);
+            Profile profile = mProfileSupplier.get();
+            if (profile != null) {
+                match = AutocompleteCoordinator.classify(profile, culledString);
             }
 
             String urlOrSearchQuery;
@@ -467,13 +452,11 @@ public class VoiceRecognitionHandler {
     private boolean ensureAudioPermissionGranted(
             Activity activity, WindowAndroid windowAndroid, @VoiceInteractionSource int source) {
         if (windowAndroid.hasPermission(Manifest.permission.RECORD_AUDIO)) {
-            recordAudioPermissionStateEvent(AudioPermissionState.GRANTED);
             return true;
         }
         // If we don't have permission and also can't ask, then there's no more work left other
         // than telling the delegate to update the mic state.
         if (!windowAndroid.canRequestPermission(Manifest.permission.RECORD_AUDIO)) {
-            recordAudioPermissionStateEvent(AudioPermissionState.DENIED_CANNOT_ASK_AGAIN);
             notifyVoiceAvailabilityImpacted();
             return false;
         }
@@ -481,7 +464,6 @@ public class VoiceRecognitionHandler {
         PermissionCallback callback =
                 (permissions, grantResults) -> {
                     if (grantResults.length != 1) {
-                        recordAudioPermissionStateEvent(AudioPermissionState.DENIED_CAN_ASK_AGAIN);
                         mDelegate.notifyVoiceRecognitionCanceled();
                         return;
                     }
@@ -492,12 +474,9 @@ public class VoiceRecognitionHandler {
                         startSystemForVoiceSearch(activity, windowAndroid, source);
                     } else if (!windowAndroid.canRequestPermission(
                             Manifest.permission.RECORD_AUDIO)) {
-                        recordAudioPermissionStateEvent(
-                                AudioPermissionState.DENIED_CANNOT_ASK_AGAIN);
                         notifyVoiceAvailabilityImpacted();
                         mDelegate.notifyVoiceRecognitionCanceled();
                     } else {
-                        recordAudioPermissionStateEvent(AudioPermissionState.DENIED_CAN_ASK_AGAIN);
                         mDelegate.notifyVoiceRecognitionCanceled();
                     }
                 };
@@ -595,17 +574,13 @@ public class VoiceRecognitionHandler {
 
     /** Record metrics that are only logged for successful intent responses. */
     @VisibleForTesting
-    protected void recordSuccessMetrics(
-            @VoiceInteractionSource int source,
-            @AssistantActionPerformed int action) {
+    protected void recordSuccessMetrics(@VoiceInteractionSource int source) {
         // Defensive check to guard against onIntentResult being called more than once. This only
         // happens with assistant experiments. See crbug.com/1116927 for details.
         if (mQueryStartTimeMs == null) return;
-        long elapsedTimeMs = SystemClock.elapsedRealtime() - mQueryStartTimeMs;
         mQueryStartTimeMs = null;
 
         recordVoiceSearchFinishEvent(source);
-        recordVoiceSearchOpenDuration(elapsedTimeMs);
     }
 
     /**
@@ -659,20 +634,6 @@ public class VoiceRecognitionHandler {
     }
 
     /**
-     * Records the source of an unexpected voice search result. Ideally this will always be 0.
-     *
-     * @param source The source of the voice search, such as NTP or omnibox. Values taken from the
-     *     enum VoiceInteractionEventSource in enums.xml.
-     */
-    @VisibleForTesting
-    protected void recordVoiceSearchUnexpectedResult(@VoiceInteractionSource int source) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "VoiceInteraction.UnexpectedResultSource",
-                source,
-                VoiceInteractionSource.NUM_ENTRIES);
-    }
-
-    /**
      * Records the result of a voice search.
      *
      * @param result The result of a voice search, true if results were successfully returned.
@@ -693,30 +654,6 @@ public class VoiceRecognitionHandler {
         int percentage = Math.round(value * 100f);
         RecordHistogram.recordPercentageHistogram(
                 "VoiceInteraction.VoiceResultConfidenceValue", percentage);
-    }
-
-    /**
-     * Records the end-to-end voice search duration.
-     *
-     * @param openDurationMs The duration, in milliseconds, between when a voice intent was
-     *     initiated and when its result was returned.
-     */
-    private void recordVoiceSearchOpenDuration(long openDurationMs) {
-        RecordHistogram.recordMediumTimesHistogram(
-                "VoiceInteraction.QueryDuration.Android", openDurationMs);
-    }
-
-    /**
-     * Records audio permissions state when a system voice recognition is requested.
-     *
-     * @param permissionsState The current RECORD_AUDIO permission state.
-     */
-    @VisibleForTesting
-    protected void recordAudioPermissionStateEvent(@AudioPermissionState int permissionsState) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "VoiceInteraction.AudioPermissionEvent",
-                permissionsState,
-                AudioPermissionState.NUM_ENTRIES);
     }
 
     /**

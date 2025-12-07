@@ -9,7 +9,7 @@
 
 #include "components/viz/service/display/software_output_device.h"
 #include "components/viz/service/viz_service_export.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui {
 class PlatformWindowSurface;

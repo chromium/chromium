@@ -12,30 +12,32 @@
 namespace mojo {
 
 template <typename K, typename V>
-struct MapTraits<WTF::HashMap<K, V>> {
+struct MapTraits<blink::HashMap<K, V>> {
   using Key = K;
   using Value = V;
-  using Iterator = typename WTF::HashMap<K, V>::iterator;
-  using ConstIterator = typename WTF::HashMap<K, V>::const_iterator;
+  using Iterator = typename blink::HashMap<K, V>::iterator;
+  using ConstIterator = typename blink::HashMap<K, V>::const_iterator;
 
-  static bool IsNull(const WTF::HashMap<K, V>& input) {
-    // WTF::HashMap<> is always converted to non-null mojom map.
+  static bool IsNull(const blink::HashMap<K, V>& input) {
+    // blink::HashMap<> is always converted to non-null mojom map.
     return false;
   }
 
-  static void SetToNull(WTF::HashMap<K, V>* output) {
-    // WTF::HashMap<> doesn't support null state. Set it to empty instead.
+  static void SetToNull(blink::HashMap<K, V>* output) {
+    // blink::HashMap<> doesn't support null state. Set it to empty instead.
     output->clear();
   }
 
-  static size_t GetSize(const WTF::HashMap<K, V>& input) {
+  static size_t GetSize(const blink::HashMap<K, V>& input) {
     return input.size();
   }
 
-  static ConstIterator GetBegin(const WTF::HashMap<K, V>& input) {
+  static ConstIterator GetBegin(const blink::HashMap<K, V>& input) {
     return input.begin();
   }
-  static Iterator GetBegin(WTF::HashMap<K, V>& input) { return input.begin(); }
+  static Iterator GetBegin(blink::HashMap<K, V>& input) {
+    return input.begin();
+  }
 
   static void AdvanceIterator(ConstIterator& iterator) { ++iterator; }
   static void AdvanceIterator(Iterator& iterator) { ++iterator; }
@@ -47,16 +49,16 @@ struct MapTraits<WTF::HashMap<K, V>> {
   static const V& GetValue(ConstIterator& iterator) { return iterator->value; }
 
   template <typename IK, typename IV>
-  static bool Insert(WTF::HashMap<K, V>& input, IK&& key, IV&& value) {
-    if (!WTF::HashMap<K, V>::IsValidKey(key)) {
-      LOG(ERROR) << "The key value is disallowed by WTF::HashMap";
+  static bool Insert(blink::HashMap<K, V>& input, IK&& key, IV&& value) {
+    if (!blink::HashMap<K, V>::IsValidKey(key)) {
+      LOG(ERROR) << "The key value is disallowed by blink::HashMap";
       return false;
     }
     input.insert(std::forward<IK>(key), std::forward<IV>(value));
     return true;
   }
 
-  static void SetToEmpty(WTF::HashMap<K, V>* output) { output->clear(); }
+  static void SetToEmpty(blink::HashMap<K, V>* output) { output->clear(); }
 };
 
 }  // namespace mojo

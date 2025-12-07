@@ -7,10 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/bottom_sheet/bottom_sheet_view_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/virtual_card_enrollment_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/virtual_card_enrollment_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/virtual_card_enrollment_bottom_sheet_mutator.h"
+#import "ios/chrome/browser/shared/ui/bottom_sheet/bottom_sheet_view_controller.h"
 
 // A bottom sheet view controller for the virtual card enrollment prompt.
 @interface VirtualCardEnrollmentBottomSheetViewController
@@ -20,7 +20,7 @@
 @property(nonatomic, weak) id<VirtualCardEnrollmentBottomSheetDelegate>
     delegate;
 
-// User actions are delagated to this mutator.
+// User actions are delegated to this mutator.
 @property(nonatomic, weak) id<VirtualCardEnrollmentBottomSheetMutator> mutator;
 
 @end

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/test/base/testing_profile.h"
@@ -381,30 +382,7 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest, RevokeNoMatch) {
 }
 
 TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
-       GetSharingPermissionGrantsAsContentSettings_FeatureDisabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(blink::features::kFedCmWithStorageAccessAPI);
-  const url::Origin relying_party_requester =
-      url::Origin::Create(GURL("https://www.relying_party_requester.com"));
-  const url::Origin relying_party_embedder =
-      url::Origin::Create(GURL("https://www.relying_party_embedder.com"));
-  const url::Origin identity_provider =
-      url::Origin::Create(GURL("https://www.identity_provider.com"));
-
-  context()->GrantPermission(relying_party_requester, relying_party_embedder,
-                             identity_provider, "my_account");
-  ASSERT_TRUE(
-      context()->HasPermission(net::SchemefulSite(relying_party_embedder),
-                               net::SchemefulSite(identity_provider)));
-
-  EXPECT_THAT(context()->GetSharingPermissionGrantsAsContentSettings(),
-              IsEmpty());
-}
-
-TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
-       GetSharingPermissionGrantsAsContentSettings_FeatureEnabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(blink::features::kFedCmWithStorageAccessAPI);
+       GetSharingPermissionGrantsAsContentSettings) {
   const url::Origin relying_party_requester =
       url::Origin::Create(GURL("https://www.relying_party_requester.com"));
   const url::Origin relying_party_embedder =

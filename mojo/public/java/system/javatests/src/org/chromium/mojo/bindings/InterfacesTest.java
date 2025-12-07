@@ -95,7 +95,7 @@ public class InterfacesTest {
     }
 
     /** Basic implementation of {@link Factory}. */
-    public class MockFactoryImpl extends CapturingErrorHandler implements Factory {
+    public static class MockFactoryImpl extends CapturingErrorHandler implements Factory {
         private boolean mClosed;
 
         public boolean isClosed() {

@@ -23,7 +23,7 @@ TEST_F(HTMLCanvasResourceTrackerTest, AddCanvasElement) {
       GetDocument().getElementById(AtomicString("canvas")));
   auto* context = GetDocument().GetExecutionContext();
   const auto& resource_map =
-      CanvasResourceTracker::For(context->GetIsolate())->GetResourceMap();
+      CanvasResourceTracker::For(v8::Isolate::GetCurrent())->GetResourceMap();
   // The map may hold more than a single entry as CanvasResourceTracker is
   // instantiated per v8::Isolate which is reused across tests.
   const auto it = resource_map.find(canvas);

@@ -4,7 +4,11 @@
 
 package org.chromium.components.browser_ui.contacts_picker;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.FullscreenAlertDialog;
+import org.chromium.content_public.browser.ContactsFetcher;
 import org.chromium.content_public.browser.ContactsPickerListener;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -12,10 +16,11 @@ import org.chromium.ui.base.WindowAndroid;
  * UI for the contacts picker that shows on the Android platform as a result of &lt;input type=file
  * accept=contacts &gt; form element.
  */
+@NullMarked
 public class ContactsPickerDialog extends FullscreenAlertDialog
         implements ContactsPickerToolbar.ContactsToolbarDelegate {
     // The category we're showing contacts for.
-    private PickerCategoryView mCategoryView;
+    private final PickerCategoryView mCategoryView;
 
     /**
      * The ContactsPickerDialog constructor.
@@ -31,6 +36,7 @@ public class ContactsPickerDialog extends FullscreenAlertDialog
      * @param includeIcons Whether the contacts data returned should include icons.
      * @param formattedOrigin The origin the data will be shared with, formatted for display with
      *     the scheme omitted.
+     * @param contactsFetcher An instance of {@link ContactsFetcher} for this dialog.
      */
     public ContactsPickerDialog(
             WindowAndroid windowAndroid,
@@ -42,8 +48,10 @@ public class ContactsPickerDialog extends FullscreenAlertDialog
             boolean includeTel,
             boolean includeAddresses,
             boolean includeIcons,
-            String formattedOrigin) {
-        super(windowAndroid.getContext().get());
+            String formattedOrigin,
+            boolean shouldPadForContent,
+            ContactsFetcher contactsFetcher) {
+        super(assertNonNull(windowAndroid.getActivity().get()), shouldPadForContent);
 
         // Initialize the main content view.
         mCategoryView =
@@ -57,7 +65,8 @@ public class ContactsPickerDialog extends FullscreenAlertDialog
                         includeAddresses,
                         includeIcons,
                         formattedOrigin,
-                        this);
+                        this,
+                        contactsFetcher);
         mCategoryView.initialize(this, listener);
         setView(mCategoryView);
     }

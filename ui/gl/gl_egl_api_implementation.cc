@@ -16,7 +16,7 @@ namespace gl {
 GL_IMPL_WRAPPER_TYPE(EGL) * g_egl_wrapper = nullptr;
 
 void InitializeStaticGLBindingsEGL() {
-  g_driver_egl.InitializeStaticBindings();
+  g_driver_egl.InitializeStaticBindings(GetGLProcAddress);
   if (!g_egl_wrapper) {
     auto real_api = std::make_unique<RealEGLApi>();
     real_api->Initialize(&g_driver_egl);
@@ -69,8 +69,9 @@ void RealEGLApi::SetDisabledExtensions(const std::string& disabled_extensions) {
         base::SplitString(disabled_extensions, ", ;", base::KEEP_WHITESPACE,
                           base::SPLIT_WANT_NONEMPTY);
     for (const auto& ext : candidates) {
-      if (!base::StartsWith(ext, "EGL_", base::CompareCase::SENSITIVE))
+      if (!ext.starts_with("EGL_")) {
         continue;
+      }
       // For the moment, only the following two extensions can be disabled.
       // See DriverEGL::UpdateConditionalExtensionBindings().
       DCHECK(ext == "EGL_KHR_fence_sync" || ext == "EGL_KHR_wait_sync");

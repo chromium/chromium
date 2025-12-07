@@ -5,12 +5,12 @@
 #include "net/quic/quic_session_pool_direct_job.h"
 
 #include "base/memory/weak_ptr.h"
+#include "base/trace_event/trace_event.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_handle.h"
 #include "net/base/request_priority.h"
 #include "net/base/trace_constants.h"
-#include "net/base/tracing.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/log/net_log_with_source.h"
@@ -18,6 +18,7 @@
 #include "net/quic/quic_crypto_client_config_handle.h"
 #include "net/quic/quic_http_stream.h"
 #include "net/quic/quic_session_pool.h"
+#include "net/spdy/multiplexed_session_creation_initiator.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 
 namespace net {
@@ -33,6 +34,8 @@ QuicSessionPool::DirectJob::DirectJob(
     bool use_dns_aliases,
     bool require_dns_https_alpn,
     int cert_verify_flags,
+    MultiplexedSessionCreationInitiator session_creation_initiator,
+    std::optional<ConnectionManagementConfig> connection_management_config,
     const NetLogWithSource& net_log)
     : QuicSessionPool::Job::Job(
           pool,
@@ -48,7 +51,9 @@ QuicSessionPool::DirectJob::DirectJob(
       require_dns_https_alpn_(require_dns_https_alpn),
       cert_verify_flags_(cert_verify_flags),
       retry_on_alternate_network_before_handshake_(
-          retry_on_alternate_network_before_handshake) {
+          retry_on_alternate_network_before_handshake),
+      session_creation_initiator_(session_creation_initiator),
+      connection_management_config_(connection_management_config) {
   // TODO(davidben): `require_dns_https_alpn_` only exists to be `DCHECK`ed
   // for consistency against `quic_version_`. Remove the parameter?
   DCHECK_EQ(quic_version_.IsKnown(), !require_dns_https_alpn_);
@@ -94,12 +99,9 @@ void QuicSessionPool::DirectJob::UpdatePriority(RequestPriority old_priority,
 
 void QuicSessionPool::DirectJob::PopulateNetErrorDetails(
     NetErrorDetails* details) const {
-  if (!session_attempt_ || !session_attempt_->session()) {
-    return;
+  if (session_attempt_) {
+    session_attempt_->PopulateNetErrorDetails(details);
   }
-  details->connection_info = QuicHttpStream::ConnectionInfoFromQuicVersion(
-      session_attempt_->session()->connection()->version());
-  details->quic_connection_error = session_attempt_->session()->error();
 }
 
 int QuicSessionPool::DirectJob::DoLoop(int rv) {
@@ -120,8 +122,7 @@ int QuicSessionPool::DirectJob::DoLoop(int rv) {
         rv = DoAttemptSession();
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "io_state_: " << io_state_;
-        break;
+        NOTREACHED() << "io_state_: " << io_state_;
     }
   } while (io_state_ != STATE_NONE && rv != ERR_IO_PENDING);
   return rv;
@@ -157,17 +158,17 @@ int QuicSessionPool::DirectJob::DoResolveHostComplete(int rv) {
   // Inform the pool of this resolution, which will set up
   // a session alias, if possible.
   const bool svcb_optional =
-      IsSvcbOptional(*resolve_host_request_->GetEndpointResults());
-  for (const auto& endpoint : *resolve_host_request_->GetEndpointResults()) {
+      IsSvcbOptional(resolve_host_request_->GetEndpointResults());
+  for (const auto& endpoint : resolve_host_request_->GetEndpointResults()) {
     // Only consider endpoints that would have been eligible for QUIC.
     quic::ParsedQuicVersion endpoint_quic_version = pool_->SelectQuicVersion(
         quic_version_, endpoint.metadata, svcb_optional);
     if (!endpoint_quic_version.IsKnown()) {
       continue;
     }
-    if (pool_->HasMatchingIpSession(
-            key_, endpoint.ip_endpoints,
-            *resolve_host_request_->GetDnsAliasResults(), use_dns_aliases_)) {
+    if (pool_->HasMatchingIpSession(key_, endpoint.ip_endpoints,
+                                    resolve_host_request_->GetDnsAliasResults(),
+                                    use_dns_aliases_)) {
       LogConnectionIpPooling(true);
       return OK;
     }
@@ -180,12 +181,12 @@ int QuicSessionPool::DirectJob::DoAttemptSession() {
   // TODO(crbug.com/40256842): This logic only knows how to try one
   // endpoint result.
   bool svcb_optional =
-      IsSvcbOptional(*resolve_host_request_->GetEndpointResults());
+      IsSvcbOptional(resolve_host_request_->GetEndpointResults());
   bool found = false;
   HostResolverEndpointResult endpoint_result;
   quic::ParsedQuicVersion quic_version_used =
       quic::ParsedQuicVersion::Unsupported();
-  for (const auto& candidate : *resolve_host_request_->GetEndpointResults()) {
+  for (const auto& candidate : resolve_host_request_->GetEndpointResults()) {
     quic::ParsedQuicVersion endpoint_quic_version = pool_->SelectQuicVersion(
         quic_version_, candidate.metadata, svcb_optional);
     if (endpoint_quic_version.IsKnown()) {
@@ -200,9 +201,8 @@ int QuicSessionPool::DirectJob::DoAttemptSession() {
   }
 
   std::set<std::string> dns_aliases =
-      use_dns_aliases_ && resolve_host_request_->GetDnsAliasResults()
-          ? *resolve_host_request_->GetDnsAliasResults()
-          : std::set<std::string>();
+      use_dns_aliases_ ? resolve_host_request_->GetDnsAliasResults()
+                       : std::set<std::string>();
   // Passing an empty `crypto_client_config_handle` is safe because this job
   // already owns a handle.
   session_attempt_ = std::make_unique<QuicSessionAttempt>(
@@ -210,7 +210,8 @@ int QuicSessionPool::DirectJob::DoAttemptSession() {
       std::move(quic_version_used), cert_verify_flags_,
       dns_resolution_start_time_, dns_resolution_end_time_,
       retry_on_alternate_network_before_handshake_, use_dns_aliases_,
-      std::move(dns_aliases), /*crypto_client_config_handle=*/nullptr);
+      std::move(dns_aliases), /*crypto_client_config_handle=*/nullptr,
+      session_creation_initiator_, connection_management_config_);
 
   return session_attempt_->Start(
       base::BindOnce(&DirectJob::OnSessionAttemptComplete, GetWeakPtr()));
@@ -241,13 +242,13 @@ void QuicSessionPool::DirectJob::OnSessionAttemptComplete(int rv) {
 bool QuicSessionPool::DirectJob::IsSvcbOptional(
     base::span<const HostResolverEndpointResult> results) const {
   // If SVCB/HTTPS resolution succeeded, the client supports ECH, and all
-  // routes support ECH, disable the A/AAAA fallback. See Section 10.1 of
-  // draft-ietf-dnsop-svcb-https-11.
+  // alternative endpoints support ECH, disable the A/AAAA fallback. See
+  // Section 5.1 of draft-ietf-tls-svcb-ech-08.
   if (!pool_->ssl_config_service_->GetSSLContextConfig().ech_enabled) {
     return true;  // ECH is not supported for this request.
   }
 
-  return !HostResolver::AllProtocolEndpointsHaveEch(results);
+  return !HostResolver::AllAlternativeEndpointsHaveEch(results);
 }
 
 }  // namespace net

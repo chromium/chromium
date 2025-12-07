@@ -11,12 +11,15 @@
 #import "base/apple/foundation_util.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/strcat.h"
 #include "base/task/task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/web_applications/os_integration/mac/apps_folder_support.h"
 #import "chrome/browser/web_applications/os_integration/mac/bundle_info_plist.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_auto_login_util.h"
@@ -24,6 +27,8 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
 
@@ -58,23 +63,45 @@ std::string GetBundleIdentifierForShim(const std::string& app_id,
     std::string normalized_profile_path;
     base::ReplaceChars(profile_path.BaseName().value(), " ", "-",
                        &normalized_profile_path);
-    return base::apple::BaseBundleID() + std::string(".app.") +
-           normalized_profile_path + "-" + app_id;
+    return base::StrCat({base::apple::BaseBundleID(), ".app.",
+                         normalized_profile_path, "-", app_id});
   }
-  return base::apple::BaseBundleID() + std::string(".app.") + app_id;
+  return base::StrCat({base::apple::BaseBundleID(), ".app.", app_id});
 }
 
 bool UseAdHocSigningForWebAppShims() {
-  if (@available(macOS 11.7, *)) {
-    // macOS 11.7 and above can code sign at runtime without requiring that the
-    // developer tools be installed.
-    return base::FeatureList::IsEnabled(
-        features::kUseAdHocSigningForWebAppShims);
+  // A disabled feature flag takes precedence over any enterprise policy.
+  if (!base::FeatureList::IsEnabled(features::kUseAdHocSigningForWebAppShims)) {
+    return false;
   }
 
-  // Code signing on older macOS versions invokes `codesign_allocate` from the
-  // developer tools, so we can't do it at runtime.
-  return false;
+  // An explicitly enabled (via command line or chrome://flags) feature flag
+  // also takes precedence over any enterprise policy, to allow testing the
+  // behavior even if the enterprise policy is set to disabled.
+  if (base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
+          features::kUseAdHocSigningForWebAppShims.name,
+          base::FeatureList::OVERRIDE_ENABLE_FEATURE)) {
+    return true;
+  }
+
+  // The browser's local_state can be null in tests. In that case there is no
+  // enterprise policy to consider.
+  if (PrefService* local_state = g_browser_process->local_state()) {
+    // Respect an enterprise policy if one is set.
+    if (local_state->IsManagedPreference(
+            prefs::kWebAppsUseAdHocCodeSigningForAppShims)) {
+      return local_state->GetBoolean(
+          prefs::kWebAppsUseAdHocCodeSigningForAppShims);
+    }
+  }
+
+  return true;
+}
+
+bool UseNotificationAttributionForWebAppShims() {
+  return base::FeatureList::IsEnabled(
+             features::kAppShimNotificationAttribution) &&
+         UseAdHocSigningForWebAppShims();
 }
 
 namespace internals {
@@ -88,12 +115,17 @@ void CreatePlatformShortcuts_WithUseAdHocSigningForWebAppShims(
     bool use_ad_hoc_signing_for_web_app_shims) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-
-  WebAppShortcutCreator shortcut_creator(app_data_path, GetChromeAppsFolder(),
-                                         &shortcut_info,
-                                         use_ad_hoc_signing_for_web_app_shims);
-  bool created_shortcuts =
-      shortcut_creator.CreateShortcuts(creation_reason, creation_locations);
+  bool created_shortcuts = false;
+  {
+    WebAppShortcutCreator shortcut_creator(
+        app_data_path, GetChromeAppsFolder(), &shortcut_info,
+        use_ad_hoc_signing_for_web_app_shims);
+    created_shortcuts =
+        shortcut_creator.CreateShortcuts(creation_reason, creation_locations);
+    // Make sure WebAppShortcutCreator is destroyed before invoking the
+    // callback, as invoking the callback might for example invalidate the
+    // `shortcut_info` reference that is held by `shortcut_creator`.
+  }
   std::move(callback).Run(created_shortcuts);
 }
 

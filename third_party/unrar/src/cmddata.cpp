@@ -38,6 +38,9 @@ void CommandData::Init()
   InclArgs.Reset();
   ArcNames.Reset();
   StoreArgs.Reset();
+#ifdef PROPAGATE_MOTW
+  MotwList.Reset();
+#endif
   Password.Clean();
   NextVolSizes.clear();
 #ifdef RARDLL
@@ -66,9 +69,9 @@ void CommandData::ParseCommandLine(bool Preprocess,int argc, char *argv[])
       break;
     if (!FirstParam) // First parameter is the executable name.
       if (Preprocess)
-        PreprocessArg(Param.data());
+        PreprocessArg(Param.c_str());
       else
-        ParseArg(Param.data());
+        ParseArg(Param.c_str());
   }
 #else
   for (int I=1;I<argc;I++)
@@ -76,9 +79,9 @@ void CommandData::ParseCommandLine(bool Preprocess,int argc, char *argv[])
     std::wstring Arg;
     CharToWide(argv[I],Arg);
     if (Preprocess)
-      PreprocessArg(Arg.data());
+      PreprocessArg(Arg.c_str());
     else
-      ParseArg(Arg.data());
+      ParseArg(Arg.c_str());
   }
 #endif
   if (!Preprocess)
@@ -189,7 +192,7 @@ void CommandData::ParseDone()
 #if !defined(SFX_MODULE)
 void CommandData::ParseEnvVar()
 {
-  char *EnvVar=getenv("RAR");
+  char *EnvVar=getenv("RARINISWITCHES");
   if (EnvVar!=NULL)
   {
     std::wstring EnvStr;
@@ -292,6 +295,9 @@ void CommandData::ProcessSwitchesString(const std::wstring &Str)
 #if !defined(SFX_MODULE)
 void CommandData::ProcessSwitch(const wchar *Switch)
 {
+
+  if (LargePageAlloc::ProcessSwitch(this,Switch))
+    return;
 
   switch(toupperw(Switch[0]))
   {
@@ -457,6 +463,8 @@ void CommandData::ProcessSwitch(const wchar *Switch)
           EncryptHeaders=true;
           if (Switch[2]!=0)
           {
+            // We use this code for other archive formats too, so MAXPASSWORD
+            // instead of MAXPASSWORD_RAR.
             if (wcslen(Switch+2)>=MAXPASSWORD)
               uiMsg(UIERROR_TRUNCPSW,MAXPASSWORD-1);
             Password.Set(Switch+2);
@@ -619,8 +627,6 @@ void CommandData::ProcessSwitch(const wchar *Switch)
               }
             }
           break;
-        case 'M':
-          break;
         case 'D':
           {
             bool SetDictLimit=toupperw(Switch[2])=='X';
@@ -647,7 +653,7 @@ void CommandData::ProcessSwitch(const wchar *Switch)
             // 2023.07.22: For 4 GB and less we also check that it is power of 2,
             // so archives are compatible with RAR 5.0+.
             // We allow Size>PACK_MAX_DICT here, so we can use -md[x] to unpack
-            // archives created by future versions with higher PACK_MAX_DICTþ
+            // archives created by future versions with higher PACK_MAX_DICT.
             uint Flags;
             if ((Size=Archive::GetWinSize(Size,Flags))==0 ||
                 Size<=0x100000000ULL && !IsPow2(Size))
@@ -665,33 +671,30 @@ void CommandData::ProcessSwitch(const wchar *Switch)
           if (toupperw(Switch[2])=='S' && Switch[3]==0)
             SkipEncrypted=true;
           break;
-        case 'S':
+        case 'L':
+          if (toupperw(Switch[2])=='P')
           {
-            std::wstring StoreNames=(Switch[2]==0 ? DefaultStoreList:Switch+2);
-            size_t Pos=0;
-            while (Pos<StoreNames.size())
+            UseLargePages=true;
+            if (!LargePageAlloc::IsPrivilegeAssigned() && LargePageAlloc::AssignConfirmation())
             {
-              if (StoreNames[Pos]=='.')
-                Pos++;
-              size_t EndPos=StoreNames.find(';',Pos);
-              std::wstring Mask=StoreNames.substr(Pos,EndPos==std::wstring::npos ? EndPos:EndPos-Pos);
-              if (Mask.find_first_of(L"*?.")==std::wstring::npos)
-                Mask.insert(0,L"*.");
-              StoreArgs.AddString(Mask);
-              if (EndPos==std::wstring::npos)
-                break;
-              Pos=EndPos+1;
+              LargePageAlloc::AssignPrivilege();
+
+              // Quit immediately. We do not want to interrupt the current copy
+              // archive processing with reboot after assigning privilege.
+              SetupComplete=true;
             }
           }
+          break;
+        case 'M':
+          break;
+        case 'S':
+          GetBriefMaskList(Switch[2]==0 ? DefaultStoreList:Switch+2,StoreArgs);
           break;
 #ifdef RAR_SMP
         case 'T':
           Threads=atoiw(Switch+2);
           if (Threads>MaxPoolThreads || Threads<1)
             BadSwitch(Switch);
-          else
-          {
-          }
           break;
 #endif
         default:
@@ -750,6 +753,18 @@ void CommandData::ProcessSwitch(const wchar *Switch)
                 BadSwitch(Switch);
                 break;
             }
+          break;
+#endif
+#ifdef PROPAGATE_MOTW
+        case 'M':
+          {
+            MotwAllFields=Switch[2]=='1';
+            const wchar *Sep=wcschr(Switch+2,'=');
+            if (Switch[2]=='-')
+              MotwList.Reset();
+            else
+              GetBriefMaskList(Sep==nullptr ? L"*":Sep+1,MotwList);
+          }
           break;
 #endif
 #ifdef _WIN_ALL
@@ -854,7 +869,52 @@ void CommandData::ProcessSwitch(const wchar *Switch)
         switch(toupperw(Switch[1]))
         {
           case 0:
+          case '=':
             Solid|=SOLID_NORMAL;
+            if (Switch[1]=='=')
+            {
+              uint Par=0;
+              for (const wchar *S=Switch+2;*S!=0;S++)
+              {
+                if (IsDigit(*S))
+                  Par=Par*10+*S-'0';
+                switch(toupperw(*S))
+                {
+                  case '-':
+                    Solid=SOLID_NONE;
+                    break;
+                  case 'D':
+                    Solid|=SOLID_VOLUME_DEPENDENT;
+                    break;
+                  case 'E':
+                    Solid|=SOLID_FILEEXT;
+                    break;
+                  case 'F':
+                    Solid|=SOLID_COUNT;
+                    SolidCount=Par;
+                    break;
+                  case 'K':
+                    Solid|=SOLID_BLOCK_SIZE;
+                    SolidBlockSize=Par*1024LL;
+                    break;
+                  case 'M':
+                    Solid|=SOLID_BLOCK_SIZE;
+                    SolidBlockSize=Par*1024LL*1024LL;
+                    break;
+                  case 'G':
+                    Solid|=SOLID_BLOCK_SIZE;
+                    SolidBlockSize=Par*1024LL*1024LL*1024LL;
+                    break;
+                  case 'R':
+                    Solid=SOLID_RESET;
+                    break;
+                  case 'V':
+                    Solid|=SOLID_VOLUME_INDEPENDENT;
+                    break;
+                }
+
+              }
+            }
             break;
           case '-':
             Solid=SOLID_NONE;
@@ -870,15 +930,20 @@ void CommandData::ProcessSwitch(const wchar *Switch)
             break;
           case 'I':
             ProhibitConsoleInput();
+            // We do not assign the archive name automatically for -si
+            // if archive name is omitted and require the archive name to
+            // present always. Otherwise for"type arc.rar|rar x -si arc2.rar"
+            // if arc2.rar is a dummy archive name or file inside of arc.rar,
+            // which needs to be extracted.
             UseStdin=Switch[2] ? Switch+2:L"stdin";
             break;
           case 'L':
             if (IsDigit(Switch[2]))
-              FileSizeLess=GetVolSize(Switch+2,1);
+              FileSizeLess=GetModSize(Switch+2,1);
             break;
           case 'M':
             if (IsDigit(Switch[2]))
-              FileSizeMore=GetVolSize(Switch+2,1);
+              FileSizeMore=GetModSize(Switch+2,1);
             break;
           case 'C':
             {
@@ -936,12 +1001,6 @@ void CommandData::ProcessSwitch(const wchar *Switch)
     case 'T':
       switch(toupperw(Switch[1]))
       {
-        case 'K':
-          ArcTime=ARCTIME_KEEP;
-          break;
-        case 'L':
-          ArcTime=ARCTIME_LATEST;
-          break;
         case 'O':
           SetTimeFilters(Switch+2,true,true);
           break;
@@ -1033,6 +1092,11 @@ void CommandData::ProcessCommand()
 #ifndef SFX_MODULE
 
   const wchar *SingleCharCommands=L"FUADPXETK";
+
+  // RAR -mlp command is the legitimate way to assign the required privilege.
+  if (Command.empty() && UseLargePages || SetupComplete)
+    return;
+
   if (Command[0]!=0 && Command[1]!=0 && wcschr(SingleCharCommands,Command[0])!=NULL || ArcName.empty())
     OutHelp(Command.empty() ? RARX_SUCCESS:RARX_USERERROR); // Return 'success' for 'rar' without parameters.
 
@@ -1096,8 +1160,18 @@ void CommandData::ProcessCommand()
       OutHelp(RARX_USERERROR);
 #endif
   }
+
+  // Since messages usually include '\n' in the beginning, we also issue
+  // the final '\n'. It is especially important in Unix, where otherwise
+  // the shell can display the prompt on the same line as the last message.
+  // mprintf is blocked with -idq and if error messages had been displayed
+  // in this mode, we use eprintf to separate them from shell prompt.
+  // If nothing was displayed with -idq, we avoid the excessive empty line.
   if (!BareOutput)
-    mprintf(L"\n");
+    if (MsgStream==MSG_ERRONLY && IsConsoleOutputPresent())
+      eprintf(L"\n");
+    else
+      mprintf(L"\n");
 }
 
 
@@ -1202,7 +1276,8 @@ void CommandData::ReportWrongSwitches(RARFORMAT Format)
 #endif
 
 
-int64 CommandData::GetVolSize(const wchar *S,uint DefMultiplier)
+// Get size for string with optional trailing modifiers like "100m".
+int64 CommandData::GetModSize(const wchar *S,uint DefMultiplier)
 {
   int64 Size=0,FloatingDivider=0;
   for (uint I=0;S[I]!=0;I++)
@@ -1219,7 +1294,7 @@ int64 CommandData::GetVolSize(const wchar *S,uint DefMultiplier)
   {
     const wchar *ModList=L"bBkKmMgGtT";
     const wchar *Mod=wcschr(ModList,S[wcslen(S)-1]);
-    if (Mod==NULL)
+    if (Mod==nullptr)
       Size*=DefMultiplier;
     else
       for (ptrdiff_t I=2;I<=Mod-ModList;I+=2)
@@ -1228,6 +1303,26 @@ int64 CommandData::GetVolSize(const wchar *S,uint DefMultiplier)
   if (FloatingDivider!=0)
     Size/=FloatingDivider;
   return Size;
+}
+
+
+// Treat the list like rar;zip as *.rar;*.zip for -ms and similar switches.
+void CommandData::GetBriefMaskList(const std::wstring &Masks,StringList &Args)
+{
+  size_t Pos=0;
+  while (Pos<Masks.size())
+  {
+    if (Masks[Pos]=='.')
+      Pos++;
+    size_t EndPos=Masks.find(';',Pos);
+    std::wstring Mask=Masks.substr(Pos,EndPos==std::wstring::npos ? EndPos:EndPos-Pos);
+    if (Mask.find_first_of(L"*?.")==std::wstring::npos)
+      Mask.insert(0,L"*.");
+    Args.AddString(Mask);
+    if (EndPos==std::wstring::npos)
+      break;
+    Pos=EndPos+1;
+  }
 }
 
 

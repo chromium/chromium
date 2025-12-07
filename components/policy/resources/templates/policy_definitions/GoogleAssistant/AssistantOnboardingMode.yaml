@@ -1,5 +1,6 @@
 caption: Mode of the Assistant onboarding experience
 default: Default
+deprecated: true
 desc: |-
   This policy controls the mode of the Assistant onboarding experience.
 
@@ -27,6 +28,6 @@ schema:
   - Education
   type: string
 supported_on:
-- chrome_os:85-
+- chrome_os:85-137
 tags: []
 type: string-enum

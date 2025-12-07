@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/ozone/platform/wayland/test/test_alpha_compositing.h"
-
 #include <alpha-compositing-unstable-v1-server-protocol.h>
 #include <wayland-server-core.h>
 
 #include "base/check.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
+#include "ui/ozone/platform/wayland/test/test_alpha_compositing.h"
 #include "ui/ozone/platform/wayland/test/test_viewport.h"
 
 namespace wl {

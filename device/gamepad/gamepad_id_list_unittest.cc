@@ -5,6 +5,7 @@
 #include "device/gamepad/gamepad_id_list.h"
 
 #include <string_view>
+#include <unordered_set>
 
 #include "testing/gtest/include/gtest/gtest.h"
 

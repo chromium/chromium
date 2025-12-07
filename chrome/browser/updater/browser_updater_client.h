@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_UPDATER_BROWSER_UPDATER_CLIENT_H_
 #define CHROME_BROWSER_UPDATER_BROWSER_UPDATER_CLIENT_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/updater/registration_data.h"
@@ -18,6 +20,7 @@
 
 namespace base {
 class Version;
+class FilePath;
 }
 
 // Cross-platform client to communicate between the browser and the Chromium
@@ -26,8 +29,19 @@ class Version;
 class BrowserUpdaterClient
     : public base::RefCountedThreadSafe<BrowserUpdaterClient> {
  public:
+  // Must be called on the program's main sequence.
   static scoped_refptr<BrowserUpdaterClient> Create(
       updater::UpdaterScope scope);
+  static scoped_refptr<BrowserUpdaterClient> Create(
+      base::RepeatingCallback<scoped_refptr<updater::UpdateService>()>
+          proxy_provider,
+      updater::UpdaterScope scope);
+  static std::optional<updater::UpdateService::UpdateState>
+  GetLastOnDemandUpdateState();
+  static std::optional<updater::UpdateService::AppState>
+  GetLastKnownBrowserRegistration();
+  static std::optional<updater::UpdateService::AppState>
+  GetLastKnownUpdaterRegistration();
 
   explicit BrowserUpdaterClient(
       scoped_refptr<updater::UpdateService> update_service);
@@ -44,7 +58,8 @@ class BrowserUpdaterClient
   // completes. Must be called on the sequence on which the BrowserUpdateClient
   // was created. `version_updater_callback` will be run on the same sequence.
   void CheckForUpdate(
-      updater::UpdateService::StateChangeCallback version_updater_callback);
+      base::RepeatingCallback<void(const updater::UpdateService::UpdateState&)>
+          version_updater_callback);
 
   // Launches the updater to run its periodic background tasks. This is a
   // mechanism to act as a backup periodic scheduler for the updater.
@@ -64,28 +79,42 @@ class BrowserUpdaterClient
   // will be run on the same sequence.
   void IsBrowserRegistered(base::OnceCallback<void(bool)> callback);
 
+  // Returns the browser's app ID. App IDs are case-insensitive and it may not
+  // be in the same case used elsewhere in the browser.
+  static std::string GetAppId();
+
+  // Returns the expected existence checker path for this browser instance.
+  static base::FilePath GetExpectedEcp();
+
  protected:
   friend class base::RefCountedThreadSafe<BrowserUpdaterClient>;
   virtual ~BrowserUpdaterClient();
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
-
+  static bool AppMatches(const updater::UpdateService::AppState& app);
   updater::RegistrationRequest GetRegistrationRequest();
-  std::string GetAppId();
 
   void RegistrationCompleted(base::OnceClosure complete, int result);
   void GetUpdaterVersionCompleted(
       base::OnceCallback<void(const base::Version&)> callback,
       const base::Version& version);
-  void UpdateCompleted(updater::UpdateService::StateChangeCallback callback,
-                       updater::UpdateService::Result result);
+  void UpdateCompleted(
+      base::RepeatingCallback<void(const updater::UpdateService::UpdateState&)>
+          callback,
+      updater::UpdateService::Result result);
   void RunPeriodicTasksCompleted(base::OnceClosure callback);
   void IsBrowserRegisteredCompleted(
       base::OnceCallback<void(bool)> callback,
       const std::vector<updater::UpdateService::AppState>& apps);
 
+  template <updater::UpdaterScope scope>
+  static scoped_refptr<BrowserUpdaterClient> GetClient(
+      base::RepeatingCallback<scoped_refptr<updater::UpdateService>()>
+          proxy_provider);
+
   scoped_refptr<updater::UpdateService> update_service_;
+  base::WeakPtrFactory<BrowserUpdaterClient> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UPDATER_BROWSER_UPDATER_CLIENT_H_

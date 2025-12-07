@@ -7,13 +7,13 @@
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/enterprise/common/proto/extensions_workflow_events.pb.h"
+#include "components/enterprise/common/proto/synced/extensions_workflow_events.pb.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
@@ -62,8 +62,8 @@ class ExtensionRequestReportGeneratorTest : public ::testing::Test {
 
   void SetExtensionSettings(const std::string& settings_string,
                             TestingProfile* profile) {
-    std::optional<base::Value> settings =
-        base::JSONReader::Read(settings_string);
+    std::optional<base::Value> settings = base::JSONReader::Read(
+        settings_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(settings.has_value());
     profile->GetTestingPrefService()->SetManagedPref(
         extensions::pref_names::kExtensionManagement,
@@ -94,14 +94,14 @@ class ExtensionRequestReportGeneratorTest : public ::testing::Test {
       EXPECT_EQ(actual_report->justification(), kJustification);
     }
     EXPECT_EQ(is_removed, actual_report->removed());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     EXPECT_EQ(ExtensionsWorkflowEvent::CHROME_OS_USER,
               actual_report->client_type());
 #else
     EXPECT_EQ(ExtensionsWorkflowEvent::BROWSER_DEVICE,
               actual_report->client_type());
     EXPECT_EQ(policy::GetMachineName(), actual_report->device_name());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
  private:

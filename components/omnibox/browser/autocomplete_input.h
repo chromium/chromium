@@ -9,6 +9,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
@@ -16,11 +17,14 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
+#include "third_party/omnibox_proto/aim_tools_and_models.pb.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "url/gurl.h"
 #include "url/third_party/mozilla/url_parse.h"
 
 class AutocompleteSchemeClassifier;
+class TemplateURL;
+class TemplateURLService;
 
 // The user input for an autocomplete query.  Allows copying.
 class AutocompleteInput {
@@ -136,6 +140,67 @@ class AutocompleteInput {
   // Returns whether |text| begins with "https:" or "view-source:https:".
   static bool HasHTTPSScheme(const std::u16string& text);
 
+  // Whether the text might be matching featured keyword suggestions.
+  enum class FeaturedKeywordMode {
+    kFalse,   // `text_` doesn't start with '@'.
+    kPrefix,  // `text_` starts with '@'.
+    kExact,   // `text_` is exactly '@'.
+  };
+  static FeaturedKeywordMode GetFeaturedKeywordMode(std::u16string_view text);
+
+  // Returns the matching substituting keyword for `input`, or NULL if there
+  // is no keyword for the specified input.  If the matching keyword was found,
+  // updates `input`'s text and cursor position.
+  // `model` must be non-null.
+  static const TemplateURL* GetSubstitutingTemplateURLForInput(
+      const TemplateURLService* model,
+      AutocompleteInput* input);
+
+  // Extracts the keyword from |input| into |keyword|. Any remaining characters
+  // after the keyword are placed in |remaining_input|. Returns true if |input|
+  // is valid and has a keyword. This makes use of SplitKeywordFromInput() to
+  // extract the keyword and remaining string, and uses |template_url_service|
+  // to validate and clean up the extracted keyword (e.g., to remove unnecessary
+  // characters).
+  // In general use this instead of SplitKeywordFromInput().
+  // Leading whitespace in |*remaining_input| will be trimmed.
+  // |template_url_service| must be non-null.
+  static bool ExtractKeywordFromInput(
+      const AutocompleteInput& input,
+      const TemplateURLService* template_url_service,
+      std::u16string* keyword,
+      std::u16string* remaining_input);
+
+  // Returns the replacement string from the user input. The replacement
+  // string is the portion of the input that does not contain the keyword.
+  // For example, the replacement string for "b blah" is blah.
+  // If |trim_leading_whitespace| is true then leading whitespace in
+  // replacement string will be trimmed.
+  static std::u16string SplitReplacementStringFromInput(
+      const std::u16string& input,
+      bool trim_leading_whitespace);
+
+  // Removes any unnecessary characters from a user input keyword, returning
+  // the resulting keyword.  Usually this means it does transformations such as
+  // removing any leading scheme, "www." and trailing slash and returning the
+  // resulting string regardless of whether it's a registered keyword.
+  // However, if a |template_url_service| is provided and the function finds a
+  // registered keyword at any point before finishing those transformations,
+  // it'll return that keyword.
+  // |template_url_service| must be non-null.
+  static std::u16string CleanUserInputKeyword(
+      const TemplateURLService* template_url_service,
+      const std::u16string& keyword);
+
+  // Extracts the next whitespace-delimited token from input and returns it.
+  // Sets |remaining_input| to everything after the first token (skipping over
+  // the first intervening whitespace).
+  // If |trim_leading_whitespace| is true then leading whitespace in
+  // |*remaining_input| will be trimmed.
+  static std::u16string SplitKeywordFromInput(const std::u16string& input,
+                                              bool trim_leading_whitespace,
+                                              std::u16string* remaining_input);
+
   // User-provided text to be completed.
   const std::u16string& text() const { return text_; }
 
@@ -172,20 +237,23 @@ class AutocompleteInput {
     return current_page_classification_;
   }
 
-  // The Suggest or Search request source. Determines the client= and source= or
-  // sourceid= in the Suggest and Search request URLs respectively.
+  // The Suggest or Search request source. Determines the client= (for Suggest
+  // request URLs) and source= or sourceid= (for Search request URLs).
   SearchTermsData::RequestSource request_source() const {
     switch (current_page_classification()) {
       case metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX:
-        return SearchTermsData::RequestSource::CONTEXTUAL_SEARCHBOX;
       case metrics::OmniboxEventProto::SEARCH_SIDE_PANEL_SEARCHBOX:
-        return SearchTermsData::RequestSource::SEARCH_SIDE_PANEL_SEARCHBOX;
       case metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX:
-        return SearchTermsData::RequestSource::LENS_SIDE_PANEL_SEARCHBOX;
+        return SearchTermsData::RequestSource::LENS_OVERLAY;
+      case metrics::OmniboxEventProto::NTP_COMPOSEBOX:
+      case metrics::OmniboxEventProto::LENS_SIDE_PANEL_COMPOSEBOX:
+      case metrics::OmniboxEventProto::NTP_OMNIBOX_COMPOSEBOX:
+      case metrics::OmniboxEventProto::SRP_OMNIBOX_COMPOSEBOX:
+      case metrics::OmniboxEventProto::OTHER_OMNIBOX_COMPOSEBOX:
+        return SearchTermsData::RequestSource::NTP_COMPOSEBOX;
       default:
-        break;
+        return SearchTermsData::RequestSource::SEARCHBOX;
     }
-    return SearchTermsData::RequestSource::SEARCHBOX;
   }
 
   // The type of input supplied.
@@ -283,16 +351,43 @@ class AutocompleteInput {
     return terms_prefixed_by_http_or_https_;
   }
 
-  const std::optional<lens::proto::LensOverlayInteractionResponse>&
-  lens_overlay_interaction_response() const {
-    return lens_overlay_interaction_response_;
+  const std::optional<lens::proto::LensOverlaySuggestInputs>&
+  lens_overlay_suggest_inputs() const {
+    return lens_overlay_suggest_inputs_;
   }
 
-  void set_lens_overlay_interaction_response(
-      const lens::proto::LensOverlayInteractionResponse&
-          lens_overlay_interaction_response) {
-    lens_overlay_interaction_response_ = lens_overlay_interaction_response;
+  void set_lens_overlay_suggest_inputs(
+      const lens::proto::LensOverlaySuggestInputs&
+          lens_overlay_suggest_inputs) {
+    lens_overlay_suggest_inputs_ = lens_overlay_suggest_inputs;
   }
+
+  // Variant of the set_lens_overlay_suggest_inputs that doesn't make copies
+  // and is better aligned with the value returned by ComposeboxQueryController.
+  void set_lens_overlay_suggest_inputs(
+      std::unique_ptr<lens::proto::LensOverlaySuggestInputs>
+          lens_overlay_suggest_inputs) {
+    lens_overlay_suggest_inputs_.emplace(
+        std::move(*lens_overlay_suggest_inputs.release()));
+  }
+
+  omnibox::ChromeAimToolsAndModels aim_tool_mode() const {
+    return aim_tool_mode_;
+  }
+
+  void set_aim_tool_mode(
+      const omnibox::ChromeAimToolsAndModels& aim_tool_mode) {
+    aim_tool_mode_ = aim_tool_mode;
+  }
+  std::u16string context_tab_title() const { return context_tab_title_; }
+
+  void set_context_tab_title(std::u16string title) {
+    context_tab_title_ = title;
+  }
+
+  GURL context_tab_url() const { return context_tab_url_; }
+
+  void set_context_tab_url(GURL url) { context_tab_url_ = url; }
 
   // Resets all internal variables to the null-constructed state.
   void Clear();
@@ -324,6 +419,9 @@ class AutocompleteInput {
   // mode.
   bool InKeywordMode() const;
 
+  // Whether the input might be matching featured keyword suggestions.
+  FeaturedKeywordMode GetFeaturedKeywordMode() const;
+
  private:
   friend class AutocompleteProviderTest;
 
@@ -353,10 +451,13 @@ class AutocompleteInput {
   metrics::OmniboxFocusType focus_type_ =
       metrics::OmniboxFocusType::INTERACTION_DEFAULT;
   std::vector<std::u16string> terms_prefixed_by_http_or_https_;
-  // The lens overlay interaction response to be sent as a query parameter in
+  // The lens overlay suggest inputs to be sent as query parameters in
   // the suggest requests.
-  std::optional<lens::proto::LensOverlayInteractionResponse>
-      lens_overlay_interaction_response_;
+  std::optional<lens::proto::LensOverlaySuggestInputs>
+      lens_overlay_suggest_inputs_;
+  // Tool mode.
+  omnibox::ChromeAimToolsAndModels aim_tool_mode_ =
+      omnibox::ChromeAimToolsAndModels::TOOL_MODE_UNSPECIFIED;
 
   // Flags for OmniboxDefaultNavigationsToHttps feature.
   bool should_use_https_as_default_scheme_;
@@ -372,6 +473,8 @@ class AutocompleteInput {
   // actually an HTTP server that pretends to serve HTTPS responses. Should only
   // be true on iOS.
   bool use_fake_https_for_https_upgrade_testing_;
+  std::u16string context_tab_title_;
+  GURL context_tab_url_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_INPUT_H_

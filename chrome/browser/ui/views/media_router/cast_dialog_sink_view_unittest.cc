@@ -4,9 +4,7 @@
 
 #include "chrome/browser/ui/views/media_router/cast_dialog_sink_view.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
-#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -136,9 +134,7 @@ class CastDialogSinkViewTest : public ChromeViewsTestBase {
 };
 
 TEST_F(CastDialogSinkViewTest, FreezableSink) {
-  // Enable the proper features / prefs.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kAccessCodeCastFreezeUI);
+  // Enable the proper pref.
   profile_.GetPrefs()->SetBoolean(prefs::kAccessCodeCastEnabled, true);
 
   UIMediaSink sink_1 = CreateFreezableSink();
@@ -177,9 +173,7 @@ TEST_F(CastDialogSinkViewTest, FreezableSink) {
 }
 
 TEST_F(CastDialogSinkViewTest, NonfreezableSink) {
-  // Enable the proper features / prefs.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kAccessCodeCastFreezeUI);
+  // Enable the proper pref.
   profile_.GetPrefs()->SetBoolean(prefs::kAccessCodeCastEnabled, true);
 
   UIMediaSink sink = CreateNonfreezableSink();
@@ -195,9 +189,7 @@ TEST_F(CastDialogSinkViewTest, NonfreezableSink) {
 }
 
 TEST_F(CastDialogSinkViewTest, SetEnabledState) {
-  // Enable the proper features / prefs.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kAccessCodeCastFreezeUI);
+  // Enable the proper pref.
   profile_.GetPrefs()->SetBoolean(prefs::kAccessCodeCastEnabled, true);
 
   UIMediaSink sink_1 = CreateAvailableSink();
@@ -255,9 +247,7 @@ TEST_F(CastDialogSinkViewTest, StopButton) {
 // Tests that the AccessibleName for the freeze and stop buttons are set
 // correctly based on source and device name.
 TEST_F(CastDialogSinkViewTest, ButtonsAccessibleName) {
-  // Enable the proper features / prefs.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kAccessCodeCastFreezeUI);
+  // Enable the proper pref.
   profile_.GetPrefs()->SetBoolean(prefs::kAccessCodeCastEnabled, true);
 
   // Create a range of sinks with different sources so we may test for all

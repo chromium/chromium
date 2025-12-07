@@ -3,10 +3,15 @@
 // found in the LICENSE file.
 package org.chromium.components.search_engines;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.build.annotations.MockedInTests;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.url.GURL;
 
 import java.util.Locale;
 
@@ -15,9 +20,10 @@ import java.util.Locale;
  * from native side. Any class uses this need to register a {@link TemplateUrlServiceObserver} on
  * {@link TemplatUrlService} to listen the native changes in case the native pointer is destroyed.
  */
-@MockedInTests
+@NullMarked
 public class TemplateUrl {
     private final long mTemplateUrlPtr;
+    private @Nullable GURL mFaviconUrl;
 
     @CalledByNative
     private static TemplateUrl create(long templateUrlPtr) {
@@ -52,6 +58,16 @@ public class TemplateUrl {
     }
 
     /**
+     * @return The URL of the Search Engine favicon.
+     */
+    public GURL getFaviconURL() {
+        if (mFaviconUrl == null) {
+            mFaviconUrl = TemplateUrlJni.get().getFaviconURL(mTemplateUrlPtr);
+        }
+        return mFaviconUrl;
+    }
+
+    /**
      * @return The last time used this search engine. If a search engine hasn't been used, it will
      *     return 0.
      */
@@ -75,12 +91,21 @@ public class TemplateUrl {
         return TemplateUrlJni.get().getNewTabURL(mTemplateUrlPtr);
     }
 
+    /**
+     * @return The built-in Search Engine icon (if any)
+     */
+    public @Nullable Bitmap getBuiltInSearchEngineIcon() {
+        byte @Nullable [] pngData =
+                TemplateUrlJni.get().getBuiltInSearchEngineIcon(mTemplateUrlPtr);
+        return pngData == null ? null : BitmapFactory.decodeByteArray(pngData, 0, pngData.length);
+    }
+
     public long getNativePtr() {
         return mTemplateUrlPtr;
     }
 
     @Override
-    public boolean equals(Object other) {
+    public boolean equals(@Nullable Object other) {
         if (!(other instanceof TemplateUrl)) return false;
         TemplateUrl otherTemplateUrl = (TemplateUrl) other;
         return mTemplateUrlPtr == otherTemplateUrl.mTemplateUrlPtr;
@@ -111,5 +136,9 @@ public class TemplateUrl {
         String getURL(long templateUrlPtr);
 
         String getNewTabURL(long templateUrlPtr);
+
+        GURL getFaviconURL(long templateUrlPtr);
+
+        byte @Nullable [] getBuiltInSearchEngineIcon(long templateUrlPtr);
     }
 }

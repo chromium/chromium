@@ -27,14 +27,15 @@ WordBoundaries::~WordBoundaries() = default;
 
 aura::Window* GetWindowParentIncludingTransient(aura::Window* window) {
   aura::Window* transient_parent = wm::GetTransientParent(window);
-  if (transient_parent)
+  if (transient_parent) {
     return transient_parent;
+  }
 
   return window->parent();
 }
 
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
-WordBoundaries ComputeWordBoundaries(const std::u16string& text) {
+WordBoundaries ComputeWordBoundaries(std::u16string_view text) {
   WordBoundaries boundaries;
 
   base::i18n::BreakIterator iter(text, base::i18n::BreakIterator::BREAK_WORD);

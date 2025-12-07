@@ -2,14 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 component("app_menu") {
   sources = [
     "app_menu_model_adapter.cc",
     "app_menu_model_adapter.h",
+    "menu_util.cc",
+    "menu_util.h",
     "notification_item_view.cc",
     "notification_item_view.h",
     "notification_menu_controller.cc",
@@ -24,6 +24,8 @@ component("app_menu") {
 
   defines = [ "APP_MENU_IMPLEMENTATION" ]
 
+  public_deps = [ "//ui/base/mojom:ui_base_types" ]
+
   deps = [
     "//ash/public/cpp",
     "//base",
@@ -32,5 +34,6 @@ component("app_menu") {
     "//ui/message_center",
     "//ui/strings:ui_strings_grit",
     "//ui/views",
+    "//ui/wm",
   ]
 }

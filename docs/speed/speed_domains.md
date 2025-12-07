@@ -26,7 +26,6 @@ we would like to mitigate that. Increasing battery life, reducing users power
 bill, not burning laps/hands, and not making loud fan noises are all important
 benefits of this.
 
- * Primary Contact brucedawson@chromium.org
  * Power
    [Rotation](https://rotation.googleplex.com/#rotation?id=5428142711767040)
  * Rotation

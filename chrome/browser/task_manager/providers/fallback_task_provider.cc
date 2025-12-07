@@ -53,7 +53,7 @@ FallbackTaskProvider::FallbackTaskProvider(
   }
 }
 
-FallbackTaskProvider::~FallbackTaskProvider() {}
+FallbackTaskProvider::~FallbackTaskProvider() = default;
 
 Task* FallbackTaskProvider::GetTaskOfUrlRequest(int child_id, int route_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -103,8 +103,7 @@ void FallbackTaskProvider::ShowTaskLater(Task* task) {
                                            std::forward_as_tuple(task),
                                            std::forward_as_tuple(this));
   } else {
-    NOTREACHED_IN_MIGRATION();
-    it->second.InvalidateWeakPtrs();
+    NOTREACHED();
   }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -141,10 +140,8 @@ void FallbackTaskProvider::ShowTask(Task* task) {
 }
 
 void FallbackTaskProvider::HideTask(Task* task) {
-  auto it = std::remove(shown_tasks_.begin(), shown_tasks_.end(), task);
   pending_shown_tasks_.erase(task);
-  if (it != shown_tasks_.end()) {
-    shown_tasks_.erase(it, shown_tasks_.end());
+  if (std::erase(shown_tasks_, task) > 0) {
     NotifyObserverTaskRemoved(task);
   }
 }
@@ -212,7 +209,7 @@ FallbackTaskProvider::SubproviderSource::SubproviderSource(
     : fallback_task_provider_(fallback_task_provider),
       subprovider_(std::move(subprovider)) {}
 
-FallbackTaskProvider::SubproviderSource::~SubproviderSource() {}
+FallbackTaskProvider::SubproviderSource::~SubproviderSource() = default;
 
 void FallbackTaskProvider::SubproviderSource::TaskAdded(Task* task) {
   DCHECK(task);

@@ -20,13 +20,13 @@
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/discoverable_credential_metadata.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/mac/authenticator_config.h"
 #include "device/fido/mac/get_assertion_operation.h"
 #include "device/fido/mac/make_credential_operation.h"
 #include "device/fido/mac/util.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 
 namespace device::fido::mac {
 
@@ -76,7 +76,8 @@ void TouchIdAuthenticator::GetPlatformCredentialInfoForRequest(
   for (const auto& credential : *credentials) {
     result.emplace_back(AuthenticatorType::kTouchID, request.rp_id,
                         credential.credential_id,
-                        credential.metadata.ToPublicKeyCredentialUserEntity());
+                        credential.metadata.ToPublicKeyCredentialUserEntity(),
+                        /*provider_name=*/std::nullopt);
   }
   std::move(callback).Run(
       std::move(result),
@@ -148,7 +149,9 @@ const AuthenticatorSupportedOptions& TouchIdAuthenticator::Options() const {
 }
 
 void TouchIdAuthenticator::GetTouch(base::OnceClosure callback) {
-  NOTREACHED_IN_MIGRATION();
+  // If at any point request processing wants to collect a "touch" from this
+  // authenticator, pretend that happens immediately because UI interaction
+  // already happened to trigger this authenticator.
   std::move(callback).Run();
 }
 

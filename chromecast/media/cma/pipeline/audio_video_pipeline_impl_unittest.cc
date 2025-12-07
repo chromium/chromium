@@ -6,6 +6,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -233,7 +234,9 @@ class PipelineHelper {
 
   bool have_audio() const { return have_audio_; }
   bool have_video() const { return have_video_; }
-  int64_t last_push_pts(Stream stream) const { return last_push_pts_[stream]; }
+  int64_t last_push_pts(Stream stream) const {
+    return UNSAFE_TODO(last_push_pts_[stream]);
+  }
 
  private:
   std::unique_ptr<CodedFrameProvider> CreateFrameProvider() {
@@ -252,16 +255,15 @@ class PipelineHelper {
     bool provider_delayed_pattern[] = {false, true};
     std::unique_ptr<MockFrameProvider> frame_provider(new MockFrameProvider());
     frame_provider->Configure(
-        std::vector<bool>(
-            provider_delayed_pattern,
-            provider_delayed_pattern + std::size(provider_delayed_pattern)),
+        std::vector<bool>(std::begin(provider_delayed_pattern),
+                          std::end(provider_delayed_pattern)),
         std::move(frame_generator));
     frame_provider->SetDelayFlush(true);
     return std::move(frame_provider);
   }
 
   void OnEos(Stream stream) {
-    eos_[stream] = true;
+    UNSAFE_TODO(eos_[stream]) = true;
     if (eos_[STREAM_AUDIO] && eos_[STREAM_VIDEO] && !eos_cb_.is_null())
       eos_cb_.Run();
   }

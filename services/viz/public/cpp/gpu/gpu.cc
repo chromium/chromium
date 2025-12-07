@@ -19,12 +19,9 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "gpu/config/gpu_finch_features.h"
-#include "gpu/ipc/common/client_gmb_interface.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/connector.h"
-#include "services/viz/public/cpp/gpu/client_gpu_memory_buffer_manager.h"
 #include "services/viz/public/mojom/gpu.mojom.h"
 
 namespace viz {
@@ -42,16 +39,12 @@ class Gpu::GpuPtrIO {
 
   ~GpuPtrIO() { DCHECK_CALLED_ON_VALID_THREAD(thread_checker_); }
 
-  void Initialize(mojo::PendingRemote<mojom::Gpu> gpu_remote,
-                  mojo::PendingReceiver<gpu::mojom::ClientGmbInterface>
-                      client_gmb_interface_receiver) {
+  void Initialize(mojo::PendingRemote<mojom::Gpu> gpu_remote) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
     gpu_remote_.Bind(std::move(gpu_remote));
     gpu_remote_.set_disconnect_handler(
         base::BindOnce(&GpuPtrIO::ConnectionError, base::Unretained(this)));
-      gpu_remote_->CreateClientGpuMemoryBufferFactory(
-          std::move(client_gmb_interface_receiver));
   }
 
   void EstablishGpuChannel(scoped_refptr<EstablishRequest> establish_request) {
@@ -67,14 +60,14 @@ class Gpu::GpuPtrIO {
     }
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void CreateJpegDecodeAccelerator(
       mojo::PendingReceiver<chromeos_camera::mojom::MjpegDecodeAccelerator>
           receiver) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     gpu_remote_->CreateJpegDecodeAccelerator(std::move(receiver));
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   void CreateVideoEncodeAcceleratorProvider(
       mojo::PendingReceiver<media::mojom::VideoEncodeAcceleratorProvider>
@@ -269,14 +262,6 @@ Gpu::Gpu(mojo::PendingRemote<mojom::Gpu> gpu_remote,
   DCHECK(main_task_runner_);
   DCHECK(io_task_runner_);
 
-  mojo::PendingRemote<gpu::mojom::ClientGmbInterface> client_gmb_interface;
-  auto client_gmb_interface_receiver =
-      client_gmb_interface.InitWithNewPipeAndPassReceiver();
-
-  // Note that since |gpu_memory_buffer_manager_| is a owned by this object, it
-  // is safe to provide a |this| pointer to it.
-  gpu_memory_buffer_manager_ = std::make_unique<ClientGpuMemoryBufferManager>(
-      std::move(client_gmb_interface));
   // Initialize mojo::Remote<mojom::Gpu> on the IO thread. |gpu_| can only be
   // used on the IO thread after this point. It is safe to use base::Unretained
   // with |gpu_| for IO thread tasks as |gpu_| is destroyed by an IO thread task
@@ -284,8 +269,7 @@ Gpu::Gpu(mojo::PendingRemote<mojom::Gpu> gpu_remote,
   io_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&GpuPtrIO::Initialize, base::Unretained(gpu_.get()),
-                     std::move(gpu_remote),
-                     std::move(client_gmb_interface_receiver)));
+                     std::move(gpu_remote)));
 }
 
 Gpu::~Gpu() {
@@ -301,23 +285,13 @@ Gpu::~Gpu() {
 
 // static
 std::unique_ptr<Gpu> Gpu::Create(
-    service_manager::Connector* connector,
-    const std::string& service_name,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  mojo::PendingRemote<mojom::Gpu> remote;
-  connector->Connect(service_name, remote.InitWithNewPipeAndPassReceiver());
-  return Create(std::move(remote), std::move(task_runner));
-}
-
-// static
-std::unique_ptr<Gpu> Gpu::Create(
     mojo::PendingRemote<mojom::Gpu> remote,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) {
   return base::WrapUnique(
       new Gpu(std::move(remote), std::move(io_task_runner)));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void Gpu::CreateJpegDecodeAccelerator(
     mojo::PendingReceiver<chromeos_camera::mojom::MjpegDecodeAccelerator>
         jda_receiver) {
@@ -327,7 +301,7 @@ void Gpu::CreateJpegDecodeAccelerator(
       base::BindOnce(&GpuPtrIO::CreateJpegDecodeAccelerator,
                      base::Unretained(gpu_.get()), std::move(jda_receiver)));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void Gpu::CreateVideoEncodeAcceleratorProvider(
     mojo::PendingReceiver<media::mojom::VideoEncodeAcceleratorProvider>
@@ -379,10 +353,6 @@ scoped_refptr<gpu::GpuChannelHost> Gpu::EstablishGpuChannelSync() {
   return gpu_channel_;
 }
 
-gpu::GpuMemoryBufferManager* Gpu::GetGpuMemoryBufferManager() {
-  return gpu_memory_buffer_manager_.get();
-}
-
 void Gpu::LoseChannel() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   if (gpu_channel_) {
@@ -428,8 +398,9 @@ void Gpu::OnEstablishedGpuChannel() {
 
   std::vector<gpu::GpuChannelEstablishedCallback> callbacks;
   callbacks.swap(establish_callbacks_);
-  for (auto&& callback : std::move(callbacks))
+  for (auto& callback : callbacks) {
     std::move(callback).Run(gpu_channel_);
+  }
 }
 
 }  // namespace viz

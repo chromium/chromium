@@ -5,16 +5,14 @@
 #ifndef DEVICE_FIDO_MAC_SCOPED_TOUCH_ID_TEST_ENVIRONMENT_H_
 #define DEVICE_FIDO_MAC_SCOPED_TOUCH_ID_TEST_ENVIRONMENT_H_
 
-#include <os/availability.h>
-
 #include <memory>
 
 #include "base/component_export.h"
 #include "device/fido/mac/authenticator_config.h"
 
-namespace crypto {
-class ScopedFakeAppleKeychainV2;
-}  // namespace crypto
+namespace crypto::apple {
+class ScopedFakeKeychainV2;
+}  // namespace crypto::apple
 
 namespace device::fido::mac {
 
@@ -54,7 +52,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ScopedTouchIdTestEnvironment {
   // Will prevent the next call to PromptTouchId from running the callback.
   void DoNotResolveNextPrompt();
 
-  crypto::ScopedFakeAppleKeychainV2* keychain() { return keychain_.get(); }
+  crypto::apple::ScopedFakeKeychainV2* keychain() { return keychain_.get(); }
 
  private:
   static std::unique_ptr<TouchIdContext> ForwardCreate();
@@ -69,7 +67,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ScopedTouchIdTestEnvironment {
   TouchIdAvailableFuncPtr touch_id_context_touch_id_available_ptr_;
 
   AuthenticatorConfig config_;
-  std::unique_ptr<crypto::ScopedFakeAppleKeychainV2> keychain_;
+  std::unique_ptr<crypto::apple::ScopedFakeKeychainV2> keychain_;
   std::unique_ptr<FakeTouchIdContext> next_touch_id_context_;
   bool touch_id_available_ = true;
 };

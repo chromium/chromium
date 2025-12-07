@@ -15,23 +15,20 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/common/importer/importer_autofill_form_data_entry.h"
-#include "chrome/common/importer/importer_data_types.h"
-#include "chrome/common/importer/importer_url_row.h"
 #include "chrome/common/importer/profile_import.mojom.h"
 #include "components/favicon_base/favicon_usage_data.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/user_data_importer/common/importer_data_types.h"
+#include "components/user_data_importer/common/importer_url_row.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 class ExternalProcessImporterHost;
-struct ImporterAutofillFormDataEntry;
-struct ImportedBookmarkEntry;
 class InProcessImporterBridge;
 
-namespace importer {
-struct ImportedPasswordForm;
-struct SearchEngineInfo;
-}
+namespace user_data_importer {
+struct ImportedBookmarkEntry;
+}  // namespace user_data_importer
 
 // This class is the client for the out of process profile importing.  It
 // collects notifications from this process host and feeds data back to the
@@ -42,7 +39,7 @@ class ExternalProcessImporterClient
  public:
   ExternalProcessImporterClient(
       base::WeakPtr<ExternalProcessImporterHost> importer_host,
-      const importer::SourceProfile& source_profile,
+      const user_data_importer::SourceProfile& source_profile,
       uint16_t items,
       InProcessImporterBridge* bridge);
 
@@ -59,24 +56,25 @@ class ExternalProcessImporterClient
   // chrome::mojom::ProfileImportObserver:
   void OnImportStart() override;
   void OnImportFinished(bool succeeded, const std::string& error_msg) override;
-  void OnImportItemStart(importer::ImportItem item) override;
-  void OnImportItemFinished(importer::ImportItem item) override;
+  void OnImportItemStart(user_data_importer::ImportItem item) override;
+  void OnImportItemFinished(user_data_importer::ImportItem item) override;
   void OnHistoryImportStart(uint32_t total_history_rows_count) override;
   void OnHistoryImportGroup(
-      const std::vector<ImporterURLRow>& history_rows_group,
+      const std::vector<user_data_importer::ImporterURLRow>& history_rows_group,
       int visit_source) override;
   void OnHomePageImportReady(const GURL& home_page) override;
   void OnBookmarksImportStart(const std::u16string& first_folder_name,
                               uint32_t total_bookmarks_count) override;
   void OnBookmarksImportGroup(
-      const std::vector<ImportedBookmarkEntry>& bookmarks_group) override;
+      const std::vector<user_data_importer::ImportedBookmarkEntry>&
+          bookmarks_group) override;
   void OnFaviconsImportStart(uint32_t total_favicons_count) override;
   void OnFaviconsImportGroup(
       const favicon_base::FaviconUsageDataList& favicons_group) override;
   void OnPasswordFormImportReady(
-      const importer::ImportedPasswordForm& form) override;
+      const user_data_importer::ImportedPasswordForm& form) override;
   void OnKeywordsImportReady(
-      const std::vector<importer::SearchEngineInfo>& search_engines,
+      const std::vector<user_data_importer::SearchEngineInfo>& search_engines,
       bool unique_on_host_and_path) override;
   void OnAutofillFormDataImportStart(
       uint32_t total_autofill_form_data_entry_count) override;
@@ -103,8 +101,8 @@ class ExternalProcessImporterClient
 
   // These variables store data being collected from the importer until the
   // entire group has been collected and is ready to be written to the profile.
-  std::vector<ImporterURLRow> history_rows_;
-  std::vector<ImportedBookmarkEntry> bookmarks_;
+  std::vector<user_data_importer::ImporterURLRow> history_rows_;
+  std::vector<user_data_importer::ImportedBookmarkEntry> bookmarks_;
   favicon_base::FaviconUsageDataList favicons_;
   std::vector<ImporterAutofillFormDataEntry> autofill_form_data_;
 
@@ -133,7 +131,7 @@ class ExternalProcessImporterClient
   base::WeakPtr<ExternalProcessImporterHost> process_importer_host_;
 
   // Data to be passed from the importer host to the external importer.
-  importer::SourceProfile source_profile_;
+  user_data_importer::SourceProfile source_profile_;
   uint16_t items_;
 
   // Takes import data coming over IPC and delivers it to be written by the

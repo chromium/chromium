@@ -12,6 +12,7 @@
 #include "base/cancelable_callback.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/device/geolocation/geolocation_provider.h"
@@ -79,11 +80,8 @@ class PublicIpAddressLocationNotifier
   void MakeNetworkLocationRequest();
 
   // Completion callback for network_location_request_.
-  void OnNetworkLocationResponse(
-      mojom::GeopositionResultPtr result,
-      bool server_error,
-      const WifiData& wifi_data,
-      mojom::NetworkLocationResponsePtr response_data);
+  void OnNetworkLocationResponse(LocationResponseResult result,
+                                 const WifiData& wifi_data);
 
   // Cancelable closure to absorb overlapping delayed calls to
   // ReactToNetworkChange.

@@ -19,22 +19,31 @@ namespace {
 
 class MallAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
  public:
-  MallAppIntegrationTest() {
-    features_.InitWithFeatures(
-        {chromeos::features::kCrosMall, chromeos::features::kCrosMallSwa},
-        /*disabled_features=*/{});
-  }
+  std::string GetMallEmbedUrl(content::WebContents* contents) {
+    // Poll to wait for an iframe to be embedded on the page, and resolve with
+    // the 'src' attribute.
+    constexpr char kScript[] = R"js(
+      new Promise((resolve, reject) => {
+        let intervalId = setInterval(() => {
+          const src = document.querySelector("iframe")?.src;
+          if (src) {
+            clearInterval(intervalId);
+            resolve(src);
+          }
+        }, 50);
+      });
+    )js";
 
- private:
-  base::test::ScopedFeatureList features_;
+    return content::EvalJs(contents, kScript).ExtractString();
+  }
 };
 
 // Test that the Mall app installs and launches correctly.
 IN_PROC_BROWSER_TEST_P(MallAppIntegrationTest, MallApp) {
   const GURL url{ash::kChromeUIMallUrl};
-  EXPECT_NO_FATAL_FAILURE(
-      ExpectSystemWebAppValid(ash::SystemWebAppType::MALL, url,
-                              /*title=*/"Get Apps and Games"));
+  EXPECT_NO_FATAL_FAILURE(ExpectSystemWebAppValid(ash::SystemWebAppType::MALL,
+                                                  url,
+                                                  /*title=*/"Apps & games"));
 }
 
 IN_PROC_BROWSER_TEST_P(MallAppIntegrationTest, EmbedMallWithContext) {
@@ -42,25 +51,24 @@ IN_PROC_BROWSER_TEST_P(MallAppIntegrationTest, EmbedMallWithContext) {
 
   content::WebContents* contents = LaunchApp(ash::SystemWebAppType::MALL);
 
-  // Poll to wait for an iframe to be embedded on the page, and resolve with the
-  // 'src' attribute.
-  constexpr char kScript[] = R"js(
-    (async () => {
-      await new Promise((resolve, reject) => {
-        let intervalId = setInterval(() => {
-          if (document.querySelector("iframe")) {
-            clearInterval(intervalId);
-            resolve();
-          }
-        }, 50);
-      });
+  EXPECT_THAT(
+      GetMallEmbedUrl(contents),
+      testing::StartsWith(
+          "https://discover.apps.chrome/?origin=chrome%3A%2F%2Fmall&context="));
+}
 
-      return document.querySelector("iframe").src;
-    })();
-  )js";
+IN_PROC_BROWSER_TEST_P(MallAppIntegrationTest, EmbedMallWithDeepLink) {
+  WaitForTestSystemAppInstall();
 
-  EXPECT_THAT(content::EvalJs(contents, kScript).ExtractString(),
-              testing::StartsWith("https://discover.apps.chrome/?context="));
+  apps::AppLaunchParams params =
+      LaunchParamsForApp(ash::SystemWebAppType::MALL);
+  params.override_url = GURL("chrome://mall/apps/list");
+
+  content::WebContents* contents = LaunchApp(std::move(params));
+
+  EXPECT_THAT(GetMallEmbedUrl(contents),
+              testing::StartsWith("https://discover.apps.chrome/apps/"
+                                  "list?origin=chrome%3A%2F%2Fmall&context="));
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(

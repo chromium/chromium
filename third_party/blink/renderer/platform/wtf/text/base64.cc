@@ -22,11 +22,6 @@
    package by Ronald Tschalaer Copyright (C) 1996-1999.
 */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 
 #include <limits.h>
@@ -35,7 +30,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/modp_b64/modp_b64.h"
 
-namespace WTF {
+namespace blink {
 
 namespace {
 
@@ -59,14 +54,15 @@ ModpDecodePolicy GetModpPolicy(Base64DecodePolicy policy) {
 
 // Invokes modp_b64 without stripping whitespace.
 bool Base64DecodeRaw(const StringView& in,
-                     Vector<char>& out,
+                     Vector<uint8_t>& out,
                      Base64DecodePolicy policy) {
-  // Using StringUTF8Adaptor means we avoid allocations if the string is 8-bit
+  // Using StringUtf8Adaptor means we avoid allocations if the string is 8-bit
   // ascii, which is likely given that base64 is required to be ascii.
-  StringUTF8Adaptor adaptor(in);
+  StringUtf8Adaptor adaptor(in);
   out.resize(modp_b64_decode_len(adaptor.size()));
-  size_t output_size = modp_b64_decode(out.data(), adaptor.data(), adaptor.size(),
-                                       GetModpPolicy(policy));
+  base::span<char> write_buffer = base::as_writable_chars(base::span(out));
+  size_t output_size = modp_b64_decode(write_buffer.data(), adaptor.data(),
+                                       adaptor.size(), GetModpPolicy(policy));
   if (output_size == MODP_B64_ERROR)
     return false;
 
@@ -83,7 +79,7 @@ String Base64Encode(base::span<const uint8_t> data) {
   if (encode_len == 0)
     return String();
   const size_t output_size = modp_b64_encode_data(
-      reinterpret_cast<char*>(result.Characters()),
+      reinterpret_cast<char*>(result.Span().data()),
       reinterpret_cast<const char*>(data.data()), data.size());
   DCHECK_EQ(output_size, encode_len);
   return result.Release();
@@ -103,7 +99,7 @@ void Base64Encode(base::span<const uint8_t> data, Vector<char>& out) {
 }
 
 bool Base64Decode(const StringView& in,
-                  Vector<char>& out,
+                  Vector<uint8_t>& out,
                   Base64DecodePolicy policy) {
   switch (policy) {
     case Base64DecodePolicy::kForgiving: {
@@ -126,21 +122,19 @@ bool Base64Decode(const StringView& in,
   }
 }
 
-bool Base64UnpaddedURLDecode(const String& in, Vector<char>& out) {
+bool Base64UnpaddedURLDecode(const String& in, Vector<uint8_t>& out) {
   if (in.Contains('+') || in.Contains('/') || in.Contains('='))
     return false;
 
   return Base64Decode(NormalizeToBase64(in), out);
 }
 
-String Base64URLEncode(const char* data, unsigned length) {
-  return Base64Encode(base::as_bytes(base::make_span(data, length)))
-      .Replace('+', '-')
-      .Replace('/', '_');
+String Base64URLEncode(base::span<const uint8_t> data) {
+  return Base64Encode(data).Replace('+', '-').Replace('/', '_');
 }
 
 String NormalizeToBase64(const String& encoding) {
   return String(encoding).Replace('-', '+').Replace('_', '/');
 }
 
-}  // namespace WTF
+}  // namespace blink

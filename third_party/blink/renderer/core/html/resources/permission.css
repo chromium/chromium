@@ -9,41 +9,69 @@
 
 @namespace "http://www.w3.org/1999/xhtml";
 
-permission {
+permission, geolocation, install, usermedia {
   background-color:#efefef;
-  box-sizing: border-box !important;
+  border: solid 1px #767676;
+  box-sizing: content-box !important;
   border-radius: 3px;
   color: #000000;
-  cursor: pointer !important;
+  cursor: pointer;
   display: inline-block;
   font-weight: normal;
   font-style: normal;
-  height: 1.2em;
-  outline: solid 1px #767676;
-  width: 188px;
+  padding: 8px 16px;
+  height: auto;
+  width: auto;
   word-spacing: normal;
+  vertical-align: middle !important;
  }
 
 permission:granted {
   background-color: white;
 }
 
-permission::-internal-permission-text {
+permission::-internal-permission-text, geolocation::-internal-permission-text, install::-internal-permission-text, usermedia::-internal-permission-text {
+  text-emphasis: initial !important;
+  text-shadow: initial !important;
   align-items: center;
   display: flex;
   font-family: Arial, Helvetica, sans-serif;
   font-size: inherit;
   font-style: inherit;
   font-weight: inherit;
-  height: 100%;
+  height: fit-content;
+  width: fit-content;
   hyphenate-character: auto;
   line-height: normal;
-  margin: auto;
   min-height: inherit;
+  max-height: inherit;
   outline: none;
   user-select:none;
   white-space:nowrap;
-  width: fit-content;
   word-wrap: normal;
   word-spacing: inherit;
+  -webkit-text-security: none !important;
+}
+
+permission::-internal-permission-container, geolocation::-internal-permission-container, install::-internal-permission-container, usermedia::-internal-permission-container {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: fit-content;
+  min-height: inherit;
+  max-height: inherit;
+  margin: auto;
+  text-indent: 0px;
+}
+
+permission::permission-icon, geolocation::permission-icon, install::permission-icon, usermedia::permission-icon {
+  fill: currentcolor;
+  height: 1.3em;
+  width: auto;
+  margin-inline-end: 5px;
+  margin-block-start: 0px !important;
+  margin-block-end: 0px !important;
+  margin-inline-start: 0px !important;
 }

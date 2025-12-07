@@ -26,6 +26,8 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_registration.h"
+#include "components/ukm/content/source_url_recorder.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
@@ -40,6 +42,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/common/content_features.h"
@@ -54,6 +57,7 @@
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_throttle.h"
 #include "content/public/test/test_navigation_throttle_inserter.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/net_errors.h"
@@ -62,7 +66,6 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/navigation/impression.h"
@@ -92,6 +95,14 @@ using attribution_reporting::kAttributionReportingRegisterSourceHeader;
 
 constexpr char kRegistrationMethod[] = "Conversions.RegistrationMethod2";
 
+constexpr char
+    kNumDataHostsRegisteredOnClientBounceUserActivation5sMetricName[] =
+        "Conversions.NumDataHostsRegisteredOnClientBounce.UserActivation.5s";
+
+constexpr char
+    kNumDataHostsRegisteredOnClientBounceUserInteraction5sMetricName[] =
+        "Conversions.NumDataHostsRegisteredOnClientBounce.UserInteraction.5s";
+
 }  // namespace
 
 class AttributionSrcBrowserTest : public ContentBrowserTest,
@@ -105,8 +116,6 @@ class AttributionSrcBrowserTest : public ContentBrowserTest,
     if (enable_in_browser_migration) {
       enabled_features.emplace_back(
           blink::features::kKeepAliveInBrowserMigration);
-      enabled_features.emplace_back(
-          blink::features::kAttributionReportingInBrowserMigration);
     } else {
       disabled_features.emplace_back(
           blink::features::kKeepAliveInBrowserMigration);
@@ -133,6 +142,11 @@ class AttributionSrcBrowserTest : public ContentBrowserTest,
     // Sets up the blink runtime feature for ConversionMeasurement.
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
+  }
+
+  void PreRunTestOnMainThread() override {
+    content::ContentBrowserTest::PreRunTestOnMainThread();
+    ukm::InitializeSourceUrlRecorderForWebContents(web_contents());
   }
 
   WebContents* web_contents() { return shell()->web_contents(); }
@@ -566,64 +580,6 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcBrowserTest,
   EXPECT_EQ(request->headers.at("Referer"), page_url.GetWithEmptyPath());
 }
 
-class AttributionSrcCrossAppWebDisabledBrowserTest
-    : public AttributionSrcBrowserTest {
- public:
-  AttributionSrcCrossAppWebDisabledBrowserTest()
-      : AttributionSrcBrowserTest(
-            /*enabled_features=*/{},
-            /*disabled_features=*/{
-                network::features::kAttributionReportingCrossAppWeb}) {}
-};
-INSTANTIATE_TEST_SUITE_P(All,
-                         AttributionSrcCrossAppWebDisabledBrowserTest,
-                         ::testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(AttributionSrcCrossAppWebDisabledBrowserTest,
-                       Img_SetsAttributionReportingEligibleHeader) {
-  // Create a separate server as we cannot register a `ControllableHttpResponse`
-  // after the server starts.
-  std::unique_ptr<EmbeddedTestServer> https_server =
-      CreateAttributionTestHttpsServer();
-
-  auto register_response1 =
-      std::make_unique<net::test_server::ControllableHttpResponse>(
-          https_server.get(), "/register_source1");
-  auto register_response2 =
-      std::make_unique<net::test_server::ControllableHttpResponse>(
-          https_server.get(), "/register_source2");
-  ASSERT_TRUE(https_server->Start());
-
-  GURL page_url =
-      https_server->GetURL("b.test", "/page_with_impression_creator.html");
-  ASSERT_TRUE(NavigateToURL(web_contents(), page_url));
-
-  GURL register_url = https_server->GetURL("d.test", "/register_source1");
-  ASSERT_TRUE(ExecJs(web_contents(),
-                     JsReplace("createAttributionSrcImg($1);", register_url)));
-
-  register_response1->WaitForRequest();
-  ExpectValidAttributionReportingEligibleHeaderForImg(
-      register_response1->http_request()->headers.at(
-          "Attribution-Reporting-Eligible"));
-  ASSERT_FALSE(base::Contains(register_response1->http_request()->headers,
-                              "Attribution-Reporting-Support"));
-
-  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
-  http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
-  http_response->AddCustomHeader("Location", "/register_source2");
-  register_response1->Send(http_response->ToResponseString());
-  register_response1->Done();
-
-  // Ensure that redirect requests also contain the header.
-  register_response2->WaitForRequest();
-  ExpectValidAttributionReportingEligibleHeaderForImg(
-      register_response2->http_request()->headers.at(
-          "Attribution-Reporting-Eligible"));
-  ASSERT_FALSE(base::Contains(register_response2->http_request()->headers,
-                              "Attribution-Reporting-Support"));
-}
-
 // Regression test for crbug.com/1345955.
 IN_PROC_BROWSER_TEST_P(AttributionSrcBrowserTest,
                        UntrustworthyUrl_DoesNotSetEligibleHeader) {
@@ -857,13 +813,12 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcBrowserTest,
   TestNavigationThrottleInserter throttle_inserter(
       web_contents(),
       base::BindLambdaForTesting(
-          [&](NavigationHandle* handle) -> std::unique_ptr<NavigationThrottle> {
-            auto throttle = std::make_unique<TestNavigationThrottle>(handle);
+          [&](NavigationThrottleRegistry& registry) -> void {
+            auto throttle = std::make_unique<TestNavigationThrottle>(registry);
             throttle->SetResponse(TestNavigationThrottle::WILL_REDIRECT_REQUEST,
                                   TestNavigationThrottle::SYNCHRONOUS,
                                   NavigationThrottle::CANCEL_AND_IGNORE);
-
-            return throttle;
+            registry.AddThrottle(std::move(throttle));
           }));
 
   // Create a separate server as we cannot register a `ControllableHttpResponse`
@@ -1018,7 +973,7 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcPrerenderBrowserTest,
 
   GURL page_url =
       https_server()->GetURL("b.test", "/page_with_impression_creator.html");
-  int host_id = prerender_helper_.AddPrerender(page_url);
+  FrameTreeNodeId host_id = prerender_helper_.AddPrerender(page_url);
   content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
 
   prerender_helper_.WaitForPrerenderLoadCompletion(page_url);
@@ -1052,7 +1007,7 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcPrerenderBrowserTest,
 
   GURL page_url =
       https_server()->GetURL("b.test", "/page_with_impression_creator.html");
-  int host_id = prerender_helper_.AddPrerender(page_url);
+  FrameTreeNodeId host_id = prerender_helper_.AddPrerender(page_url);
   content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
 
   prerender_helper_.WaitForPrerenderLoadCompletion(page_url);
@@ -1082,7 +1037,7 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcPrerenderBrowserTest,
 
   GURL page_url =
       https_server()->GetURL("b.test", "/page_with_conversion_redirect.html");
-  int host_id = prerender_helper_.AddPrerender(page_url);
+  FrameTreeNodeId host_id = prerender_helper_.AddPrerender(page_url);
   content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
 
   prerender_helper_.WaitForPrerenderLoadCompletion(page_url);
@@ -1119,7 +1074,7 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcPrerenderBrowserTest,
 
   GURL page_url =
       https_server()->GetURL("b.test", "/page_with_conversion_redirect.html");
-  int host_id = prerender_helper_.AddPrerender(page_url);
+  FrameTreeNodeId host_id = prerender_helper_.AddPrerender(page_url);
   content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
 
   prerender_helper_.WaitForPrerenderLoadCompletion(page_url);
@@ -1144,6 +1099,66 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcPrerenderBrowserTest,
   ASSERT_TRUE(host_observer.was_activated());
 
   loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_P(
+    AttributionSrcPrerenderBrowserTest,
+    SourceRegisteredOnActivatedPrerender_ClientBounceMetricRecorded) {
+  base::HistogramTester histograms;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_attribution_manager(), HandleSource)
+      .Times(1)
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+
+  // Navigate to a starting same origin page with the to-be-prerendered page
+  // url.
+  const GURL kEmptyUrl = https_server()->GetURL("b.test", "/empty.html");
+  {
+    auto url_loader_interceptor =
+        content::URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
+            "content/test/data", kEmptyUrl.DeprecatedGetOriginAsURL());
+    EXPECT_TRUE(NavigateToURL(web_contents(), kEmptyUrl));
+  }
+
+  GURL page_url =
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+  FrameTreeNodeId host_id = prerender_helper_.AddPrerender(page_url);
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+
+  prerender_helper_.WaitForPrerenderLoadCompletion(page_url);
+  content::RenderFrameHost* prerender_rfh =
+      prerender_helper_.GetPrerenderedMainFrameHost(host_id);
+
+  ExecuteScriptAsyncWithoutUserGesture(
+      prerender_rfh, JsReplace("createAttributionSrcImg($1);",
+                               https_server()->GetURL(
+                                   "c.test", "/register_source_headers.html")));
+
+  prerender_helper_.NavigatePrimaryPage(page_url);
+  ASSERT_EQ(page_url, web_contents()->GetLastCommittedURL());
+
+  run_loop.Run();
+
+  GURL redirected_url(https_server()->GetURL("a.test", "/title2.html"));
+  EXPECT_TRUE(NavigateToURLFromRendererWithoutUserGesture(web_contents(),
+                                                          redirected_url));
+
+  histograms.ExpectBucketCount(
+      kNumDataHostsRegisteredOnClientBounceUserActivation5sMetricName, 1, 1);
+  histograms.ExpectBucketCount(
+      kNumDataHostsRegisteredOnClientBounceUserInteraction5sMetricName, 1, 1);
+
+  std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> ukm_entries =
+      ukm_recorder.GetEntries("Conversions.ClientBounce",
+                              {"UserActivation.5s", "UserInteraction.5s"});
+  ASSERT_EQ(ukm_entries.size(), 1u);
+  EXPECT_EQ(ukm_recorder.GetSourceForSourceId(ukm_entries[0].source_id)->url(),
+            page_url);
+  EXPECT_THAT(ukm_entries[0].metrics,
+              ElementsAre(testing::Pair("UserActivation.5s", 1),
+                          testing::Pair("UserInteraction.5s", 1)));
 }
 
 class AttributionSrcFencedFrameBrowserTest : public AttributionSrcBrowserTest {
@@ -1250,12 +1265,8 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcFencedFrameBrowserTest,
 }
 
 class AttributionSrcCrossAppWebEnabledBrowserTest
-    : public AttributionSrcBrowserTest {
- public:
-  AttributionSrcCrossAppWebEnabledBrowserTest()
-      : AttributionSrcBrowserTest(/*enabled_features=*/{
-            network::features::kAttributionReportingCrossAppWeb}) {}
-};
+    : public AttributionSrcBrowserTest {};
+
 INSTANTIATE_TEST_SUITE_P(All,
                          AttributionSrcCrossAppWebEnabledBrowserTest,
                          ::testing::Bool());
@@ -1526,6 +1537,232 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcCrossAppWebEnabledBrowserTest,
 
     run_loop.Run();
   }
+}
+
+IN_PROC_BROWSER_TEST_P(
+    AttributionSrcBrowserTest,
+    NoUserActivationAndNavigatedWithoutUserGesture_ClientBounceMetricRecorded) {
+  base::HistogramTester histograms;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  GURL page_url =
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  GURL register_url =
+      https_server()->GetURL("c.test", "/register_source_headers.html");
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_attribution_manager(), HandleSource)
+      .Times(1)
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+
+  ExecuteScriptAsyncWithoutUserGesture(
+      web_contents(), JsReplace("createAttributionSrcImg($1);", register_url));
+
+  run_loop.Run();
+
+  GURL redirected_url(https_server()->GetURL("a.test", "/title2.html"));
+  EXPECT_TRUE(NavigateToURLFromRendererWithoutUserGesture(web_contents(),
+                                                          redirected_url));
+
+  histograms.ExpectBucketCount(
+      kNumDataHostsRegisteredOnClientBounceUserActivation5sMetricName, 1, 1);
+  histograms.ExpectBucketCount(
+      kNumDataHostsRegisteredOnClientBounceUserInteraction5sMetricName, 1, 1);
+
+  std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> ukm_entries =
+      ukm_recorder.GetEntries("Conversions.ClientBounce",
+                              {"UserActivation.5s", "UserInteraction.5s"});
+  ASSERT_EQ(ukm_entries.size(), 1u);
+  EXPECT_EQ(ukm_recorder.GetSourceForSourceId(ukm_entries[0].source_id)->url(),
+            page_url);
+  EXPECT_THAT(ukm_entries[0].metrics,
+              ElementsAre(testing::Pair("UserActivation.5s", 1),
+                          testing::Pair("UserInteraction.5s", 1)));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    AttributionSrcBrowserTest,
+    UserActivationAndNavigatedWithoutUserGesture_ClientBounceMetricNotRecorded) {
+  base::HistogramTester histograms;
+
+  GURL page_url =
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  GURL register_url =
+      https_server()->GetURL("c.test", "/register_source_headers.html");
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_attribution_manager(), HandleSource)
+      .Times(1)
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     JsReplace("createAttributionSrcImg($1);", register_url)));
+
+  run_loop.Run();
+
+  GURL redirected_url(https_server()->GetURL("a.test", "/title2.html"));
+  EXPECT_TRUE(NavigateToURLFromRendererWithoutUserGesture(web_contents(),
+                                                          redirected_url));
+
+  histograms.ExpectTotalCount(
+      kNumDataHostsRegisteredOnClientBounceUserActivation5sMetricName, 0);
+  histograms.ExpectTotalCount(
+      kNumDataHostsRegisteredOnClientBounceUserInteraction5sMetricName, 0);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    AttributionSrcBrowserTest,
+    NoUserActivationAndNavigatedWithUserGesture_ClientBounceMetricNotRecorded) {
+  base::HistogramTester histograms;
+
+  GURL page_url =
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  GURL register_url =
+      https_server()->GetURL("c.test", "/register_source_headers.html");
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_attribution_manager(), HandleSource)
+      .Times(1)
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+
+  ExecuteScriptAsyncWithoutUserGesture(
+      web_contents(), JsReplace("createAttributionSrcImg($1);", register_url));
+
+  run_loop.Run();
+
+  GURL redirected_url(https_server()->GetURL("a.test", "/title2.html"));
+  EXPECT_TRUE(NavigateToURLFromRenderer(web_contents(), redirected_url));
+
+  histograms.ExpectTotalCount(
+      kNumDataHostsRegisteredOnClientBounceUserActivation5sMetricName, 0);
+  histograms.ExpectTotalCount(
+      kNumDataHostsRegisteredOnClientBounceUserInteraction5sMetricName, 0);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    AttributionSrcBrowserTest,
+    NoUserActivationAndNavigatedByBrowser_ClientBounceMetricNotRecorded) {
+  base::HistogramTester histograms;
+
+  GURL page_url =
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  GURL register_url =
+      https_server()->GetURL("c.test", "/register_source_headers.html");
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_attribution_manager(), HandleSource)
+      .Times(1)
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+
+  ExecuteScriptAsyncWithoutUserGesture(
+      web_contents(), JsReplace("createAttributionSrcImg($1);", register_url));
+
+  run_loop.Run();
+
+  GURL redirected_url(https_server()->GetURL("a.test", "/title2.html"));
+  EXPECT_TRUE(NavigateToURL(web_contents(), redirected_url));
+
+  histograms.ExpectTotalCount(
+      kNumDataHostsRegisteredOnClientBounceUserActivation5sMetricName, 0);
+  histograms.ExpectTotalCount(
+      kNumDataHostsRegisteredOnClientBounceUserInteraction5sMetricName, 0);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    AttributionSrcBrowserTest,
+    NoUserActivationAndNavigatedWithoutUserGestureAfterTimeout_ClientBounceMetricNotRecorded) {
+  base::HistogramTester histograms;
+
+  GURL page_url =
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  GURL register_url =
+      https_server()->GetURL("c.test", "/register_source_headers.html");
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_attribution_manager(), HandleSource)
+      .Times(1)
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+
+  ExecuteScriptAsyncWithoutUserGesture(
+      web_contents(), JsReplace("createAttributionSrcImg($1);", register_url));
+
+  run_loop.Run();
+
+  base::RunLoop run_loop_timeout;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop_timeout.QuitClosure(), base::Seconds(2));
+  run_loop_timeout.Run();
+
+  GURL redirected_url(https_server()->GetURL("a.test", "/title2.html"));
+  EXPECT_TRUE(NavigateToURLFromRendererWithoutUserGesture(web_contents(),
+                                                          redirected_url));
+
+  histograms.ExpectTotalCount(
+      "Conversions.NumDataHostsRegisteredOnClientBounce.UserActivation.1s", 0);
+  histograms.ExpectTotalCount(
+      "Conversions.NumDataHostsRegisteredOnClientBounce.UserInteraction.1s", 0);
+
+  // Not timed out yet for 5s and 10s.
+  histograms.ExpectBucketCount(
+      kNumDataHostsRegisteredOnClientBounceUserActivation5sMetricName, 1, 1);
+  histograms.ExpectBucketCount(
+      "Conversions.NumDataHostsRegisteredOnClientBounce.UserActivation.10s", 1,
+      1);
+
+  histograms.ExpectBucketCount(
+      kNumDataHostsRegisteredOnClientBounceUserInteraction5sMetricName, 1, 1);
+  histograms.ExpectBucketCount(
+      "Conversions.NumDataHostsRegisteredOnClientBounce.UserInteraction.10s", 1,
+      1);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    AttributionSrcBrowserTest,
+    ScrollAndNavigatedWithoutUserGesture_ClientBounceMetricRecorded) {
+  base::HistogramTester histograms;
+
+  GURL page_url =
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  GURL register_url =
+      https_server()->GetURL("c.test", "/register_source_headers.html");
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_attribution_manager(), HandleSource)
+      .Times(1)
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+
+  ExecuteScriptAsyncWithoutUserGesture(
+      web_contents(), JsReplace("createAttributionSrcImg($1);", register_url));
+
+  run_loop.Run();
+
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());
+  SimulateGestureScrollSequence(web_contents(), gfx::Point(100, 100),
+                                gfx::Vector2dF(0, 15));
+  RunUntilInputProcessed(
+      web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost());
+
+  GURL redirected_url(https_server()->GetURL("a.test", "/title2.html"));
+  EXPECT_TRUE(NavigateToURLFromRendererWithoutUserGesture(web_contents(),
+                                                          redirected_url));
+
+  // Scroll is considered as an user interaction, but not user activation.
+  histograms.ExpectBucketCount(
+      kNumDataHostsRegisteredOnClientBounceUserActivation5sMetricName, 1, 1);
+  histograms.ExpectTotalCount(
+      kNumDataHostsRegisteredOnClientBounceUserInteraction5sMetricName, 0);
 }
 
 }  // namespace content

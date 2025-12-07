@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_SWITCH_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_SWITCH_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/editor_consent_store.h"
 #include "chrome/browser/ash/input_method/editor_context.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_text_selection_mode.h"
 #include "ui/base/ime/ash/text_input_method.h"
 
 namespace ash::input_method {
@@ -20,7 +23,8 @@ class EditorSwitch {
  public:
   class Observer {
    public:
-    virtual void OnEditorModeChanged(const EditorMode& mode) = 0;
+    virtual void OnEditorModeChanged(
+        chromeos::editor_menu::EditorMode mode) = 0;
   };
 
   EditorSwitch(Observer* observer, Profile* profile, EditorContext* context);
@@ -31,7 +35,14 @@ class EditorSwitch {
   // Determines if the feature trace is ever allowed to be visible.
   bool IsAllowedForUse() const;
 
-  EditorMode GetEditorMode() const;
+  bool IsFeedbackEnabled() const;
+
+  bool CanShowNoticeBanner() const;
+
+  chromeos::editor_menu::EditorMode GetEditorMode() const;
+
+  chromeos::editor_menu::EditorTextSelectionMode GetEditorTextSelectionMode()
+      const;
 
   EditorOpportunityMode GetEditorOpportunityMode() const;
 
@@ -51,7 +62,7 @@ class EditorSwitch {
   const std::vector<std::string> ime_allowlist_;
 
   // Used to determine when Observer::OnEditorModeChanged should be called.
-  EditorMode last_known_editor_mode_;
+  chromeos::editor_menu::EditorMode last_known_editor_mode_;
 };
 
 }  // namespace ash::input_method

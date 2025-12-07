@@ -160,7 +160,7 @@ class MEDIA_EXPORT WASAPIAudioOutputStream
   bool started() const { return render_thread_.get() != NULL; }
 
  private:
-  void SendLogMessage(const char* format, ...) PRINTF_FORMAT(2, 3);
+  PRINTF_FORMAT(2, 3) void SendLogMessage(const char* format, ...);
 
   // DelegateSimpleThread::Delegate implementation.
   void Run() override;

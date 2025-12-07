@@ -12,10 +12,6 @@ constexpr char kMediaViewVolumeIdPrefix[] = "media_view:";
 
 }  // namespace
 
-BASE_FEATURE(kMediaViewFeature,
-             "ArcMediaView",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 const char kMediaDocumentsProviderAuthority[] =
     "com.android.providers.media.documents";
 

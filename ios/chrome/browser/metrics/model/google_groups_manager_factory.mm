@@ -4,54 +4,36 @@
 
 #import "ios/chrome/browser/metrics/model/google_groups_manager_factory.h"
 
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/variations/service/google_groups_manager.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
-GoogleGroupsManager*
-GoogleGroupsManagerFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  return static_cast<GoogleGroupsManager*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, /*create=*/true));
+GoogleGroupsManager* GoogleGroupsManagerFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<GoogleGroupsManager>(
+      profile, /*create=*/true);
 }
 
 // static
-GoogleGroupsManagerFactory*
-GoogleGroupsManagerFactory::GetInstance() {
+GoogleGroupsManagerFactory* GoogleGroupsManagerFactory::GetInstance() {
   static base::NoDestructor<GoogleGroupsManagerFactory> instance;
   return instance.get();
 }
 
 GoogleGroupsManagerFactory::GoogleGroupsManagerFactory()
-    : BrowserStateKeyedServiceFactory(
-          "GoogleGroupsManager",
-          BrowserStateDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactoryIOS("GoogleGroupsManager",
+                                    ServiceCreation::kCreateWithProfile,
+                                    TestingCreation::kNoServiceForTests) {}
 
 std::unique_ptr<KeyedService>
-GoogleGroupsManagerFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+GoogleGroupsManagerFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
   return std::make_unique<GoogleGroupsManager>(
-      *GetApplicationContext()->GetLocalState(),
-      browser_state->GetBrowserStateName(), *browser_state->GetPrefs());
+      *GetApplicationContext()->GetLocalState(), profile->GetProfileName(),
+      *profile->GetPrefs());
 }
 
-bool GoogleGroupsManagerFactory::ServiceIsCreatedWithBrowserState()
-    const {
-  return true;
-}
-
-bool GoogleGroupsManagerFactory::ServiceIsNULLWhileTesting() const {
-  // Many unit tests don't initialize local state prefs, so disable this service
-  // in unit tests.
-  return true;
-}
-
-void GoogleGroupsManagerFactory::RegisterBrowserStatePrefs(
+void GoogleGroupsManagerFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   GoogleGroupsManager::RegisterProfilePrefs(registry);
 }

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PICTURE_IN_PICTURE_AUTO_PIP_SETTING_VIEW_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 // Creates and manages the content setting |BubbleDialogDelegate| for
@@ -38,15 +39,11 @@ class AutoPipSettingView : public views::BubbleDialogDelegate {
   //   Callback is executed after the |AutoPipSettingView| is closed.
   //   * origin: GURL from which the origin will be extracted and added to the
   //   bubble title.
-  //   * browser_view_overridden_bounds: These bounds represent the
-  //   Picture-in-Picture window bounds. Used to adjust the PiP window size to
-  //   accommodate the |AutoPipSettingView|.
   //   * anchor_view: Anchor view for the bubble.
   //   * arrow: The arrow position for the bubble.
   explicit AutoPipSettingView(ResultCb result_cb,
                               HideViewCb hide_view_cb,
                               const GURL& origin,
-                              const gfx::Rect& browser_view_overridden_bounds,
                               views::View* anchor_view,
                               views::BubbleBorder::Arrow arrow);
   AutoPipSettingView(const AutoPipSettingView&) = delete;
@@ -59,7 +56,7 @@ class AutoPipSettingView : public views::BubbleDialogDelegate {
   gfx::Rect GetAnchorRect() const override;
 
   // views::WidgetDelegate:
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateFrameView(
       views::Widget* widget) override;
   void OnWidgetInitialized() override;
 

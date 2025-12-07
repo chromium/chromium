@@ -1,0 +1,16 @@
+Name: play-services-tasks
+Short Name: play-services-tasks
+URL: https://dl.google.com/dl/android/maven2/com/google/android/gms/play-services-tasks/18.4.0/play-services-tasks-18.4.0.aar
+Version: 18.4.0
+Update Mechanism: Autoroll
+License: Android Software Development Kit License
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+Tasks library for gmscore / Google Play Services.
+
+Local Modifications:
+No modifications.

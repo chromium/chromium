@@ -5,15 +5,12 @@
 #include "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 
 #include "base/functional/bind.h"
-#include "base/no_destructor.h"
 #include "components/favicon/core/large_icon_service_impl.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "components/image_fetcher/ios/ios_image_decoder_impl.h"
 #include "components/keyed_service/core/service_access_type.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "ios/chrome/browser/favicon/model/favicon_service_factory.h"
-#include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
@@ -23,16 +20,13 @@ const favicon_base::IconType kIconTypeForServerRequests =
     favicon_base::IconType::kTouchIcon;
 const char kGoogleServerClientParam[] = "chrome";
 
-std::unique_ptr<KeyedService> BuildLargeIconService(
-    web::BrowserState* context) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+std::unique_ptr<KeyedService> BuildLargeIconService(ProfileIOS* profile) {
   return std::make_unique<favicon::LargeIconServiceImpl>(
-      ios::FaviconServiceFactory::GetForBrowserState(
-          browser_state, ServiceAccessType::EXPLICIT_ACCESS),
+      ios::FaviconServiceFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS),
       std::make_unique<image_fetcher::ImageFetcherImpl>(
           image_fetcher::CreateIOSImageDecoder(),
-          browser_state->GetSharedURLLoaderFactory()),
+          profile->GetSharedURLLoaderFactory()),
       kDipForServerRequests, kIconTypeForServerRequests,
       kGoogleServerClientParam);
 }
@@ -40,10 +34,10 @@ std::unique_ptr<KeyedService> BuildLargeIconService(
 }  // namespace
 
 // static
-favicon::LargeIconService* IOSChromeLargeIconServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  return static_cast<favicon::LargeIconService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+favicon::LargeIconService* IOSChromeLargeIconServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<favicon::LargeIconService>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -54,31 +48,22 @@ IOSChromeLargeIconServiceFactory::GetInstance() {
 }
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
+IOSChromeLargeIconServiceFactory::TestingFactory
 IOSChromeLargeIconServiceFactory::GetDefaultFactory() {
-  return base::BindRepeating(&BuildLargeIconService);
+  return base::BindOnce(&BuildLargeIconService);
 }
 
 IOSChromeLargeIconServiceFactory::IOSChromeLargeIconServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "LargeIconService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("LargeIconService",
+                                    ProfileSelection::kOwnInstanceInIncognito,
+                                    TestingCreation::kNoServiceForTests) {
   DependsOn(ios::FaviconServiceFactory::GetInstance());
 }
 
-IOSChromeLargeIconServiceFactory::~IOSChromeLargeIconServiceFactory() {}
+IOSChromeLargeIconServiceFactory::~IOSChromeLargeIconServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 IOSChromeLargeIconServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return BuildLargeIconService(context);
-}
-
-web::BrowserState* IOSChromeLargeIconServiceFactory::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  return GetBrowserStateOwnInstanceInIncognito(context);
-}
-
-bool IOSChromeLargeIconServiceFactory::ServiceIsNULLWhileTesting() const {
-  return true;
+    ProfileIOS* profile) const {
+  return BuildLargeIconService(profile);
 }

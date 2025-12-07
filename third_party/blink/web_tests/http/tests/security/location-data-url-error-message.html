@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+    async_test(t => {
+        var iframe = document.createElement('iframe');
+        iframe.src = 'data:text/html,<script>window.onerror=function(m){parent.postMessage(m,"*");return true;};location.href="test.html";<' + '/script>';
+
+        window.onmessage = t.step_func_done(e => {
+            assert_false(e.data.includes("test.html"),
+                "Should not show raw input 'test.html', got: " + e.data);
+            assert_true(e.data.includes("'' is not a valid URL"),
+                "Should show completed URL (empty for data: + relative), got: " + e.data);
+        });
+
+        document.body.appendChild(iframe);
+    }, "Location error from data URL shows completed URL not raw input");
+</script>
+</body>

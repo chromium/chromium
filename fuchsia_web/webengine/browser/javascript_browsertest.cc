@@ -344,4 +344,28 @@ IN_PROC_BROWSER_TEST_F(JavaScriptTest, BadEncoding) {
   run_loop.Run();
 }
 
+IN_PROC_BROWSER_TEST_F(JavaScriptTest, TouchPoints) {
+  auto frame = FrameForTest::Create(context(), {});
+
+  net::test_server::EmbeddedTestServerHandle test_server_handle;
+  ASSERT_TRUE(test_server_handle =
+                  embedded_test_server()->StartAndReturnHandle());
+  GURL url(embedded_test_server()->GetURL(kPage1Path));
+  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
+                                       fuchsia::web::LoadUrlParams(),
+                                       url.spec()));
+  frame.navigation_listener().RunUntilUrlAndTitleEquals(url, kPage1Title);
+
+  base::RunLoop run_loop;
+  frame->ExecuteJavaScript(
+      {embedded_test_server()->GetOrigin().Serialize()},
+      base::MemBufferFromString("navigator.maxTouchPoints;", "test"),
+      [&run_loop](fuchsia::web::Frame_ExecuteJavaScript_Result result) {
+        EXPECT_FALSE(result.is_err());
+        EXPECT_EQ(*base::StringFromMemBuffer(result.response().result), "2");
+        run_loop.Quit();
+      });
+  run_loop.Run();
+}
+
 }  // namespace

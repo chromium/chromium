@@ -9,8 +9,9 @@
 #include "base/token.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/save_update_bubble_controller.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
-#include "chrome/browser/ui/views/promos/autofill_bubble_signin_promo_view.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -24,11 +25,14 @@ class EditablePasswordCombobox;
 // button and a "Never"/"Nope" button.
 class PasswordSaveUpdateView : public PasswordBubbleViewBase,
                                public views::WidgetObserver {
+  METADATA_HEADER(PasswordSaveUpdateView, PasswordBubbleViewBase)
+
  public:
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPasswordBubble);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPasswordBubbleElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kExtraButtonElementId);
 
   PasswordSaveUpdateView(content::WebContents* web_contents,
-                         views::View* anchor_view,
+                         views::BubbleAnchor anchor_view,
                          DisplayReason reason);
 #ifdef UNIT_TEST
   views::EditableCombobox* username_dropdown_for_testing() const {
@@ -38,6 +42,11 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
   views::EditablePasswordCombobox* password_dropdown_for_testing() const {
     return password_dropdown_.get();
   }
+
+  views::MdTextButton* extra_view_for_testing() const {
+    return extra_view_.get();
+  }
+
 #endif  // #ifdef UNIT_TEST
 
  private:
@@ -47,11 +56,6 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
   PasswordBubbleControllerBase* GetController() override;
   const PasswordBubbleControllerBase* GetController() const override;
 
-  // views::WidgetDelegate override.
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  bool OnCloseRequested(views::Widget::ClosedReason close_reason) override;
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
   // If the sign in promo should be shown, it will remove the current contents
   // of the bubble and replace them with the sign in promo. Returns true if the
   // bubble is not replaced with the promo, and therefore closed. Returns false
@@ -60,7 +64,7 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
 
   // PasswordBubbleViewBase:
   views::View* GetInitiallyFocusedView() override;
-  bool IsDialogButtonEnabled(ui::DialogButton button) const override;
+  bool IsDialogButtonEnabled(ui::mojom::DialogButton button) const override;
   ui::ImageModel GetWindowIcon() override;
 
   // View:
@@ -91,9 +95,6 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
   // save bubble.
   const bool is_update_bubble_;
 
-  // True if the bubble is showing the sign in promo. False if not.
-  bool is_signin_promo_bubble_ = false;
-
   // The views for the username and password dropdown elements.
   raw_ptr<views::EditableCombobox> username_dropdown_ = nullptr;
   raw_ptr<views::EditablePasswordCombobox> password_dropdown_ = nullptr;
@@ -101,6 +102,11 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
   // Hidden view that will contain status text for immediate output by
   // screen readers when the bubble changes state between Save and Update.
   raw_ptr<views::View> accessibility_alert_ = nullptr;
+
+  // Points to the "not now" button when present.
+  raw_ptr<views::MdTextButton> extra_view_ = nullptr;
+
+  std::unique_ptr<CloseOnDeactivatePin> reveal_password_pin_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_SAVE_UPDATE_VIEW_H_

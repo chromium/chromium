@@ -6,6 +6,7 @@
 
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -213,19 +214,14 @@ TEST(Expected, CopyConstructor) {
     constexpr expected<int, Error> ex1 = 42;
     constexpr expected<int, Error> ex2 = ex1;
     static_assert(ex2.has_value());
-    // Note: In theory this could be constexpr, but is currently not due to
-    // implementation details of absl::get [1].
-    // TODO: Make this a static_assert once this is fixed in Abseil, or we use
-    // std::variant. Similarly in the tests below.
-    // [1] https://github.com/abseil/abseil-cpp/blob/50739/absl/types/internal/variant.h#L548
-    EXPECT_EQ(ex2.value(), 42);
+    static_assert(ex2.value() == 42);
   }
 
   {
     constexpr expected<int, Error> ex1 = unexpected(Error::kFail);
     constexpr expected<int, Error> ex2 = ex1;
     static_assert(!ex2.has_value());
-    EXPECT_EQ(ex2.error(), Error::kFail);
+    static_assert(ex2.error() == Error::kFail);
   }
 }
 
@@ -509,21 +505,65 @@ TEST(Expected, EmplaceList) {
 }
 
 TEST(Expected, MemberSwap) {
-  expected<int, int> ex1(42);
-  expected<int, int> ex2 = unexpected(123);
+  {
+    expected<int, int> ex1(42);
+    expected<int, int> ex2 = unexpected(123);
 
-  ex1.swap(ex2);
-  EXPECT_THAT(ex1, test::ErrorIs(123));
-  EXPECT_THAT(ex2, test::ValueIs(42));
+    ex1.swap(ex2);
+    EXPECT_THAT(ex1, test::ErrorIs(123));
+    EXPECT_THAT(ex2, test::ValueIs(42));
+  }
+
+  {
+    expected<int, int> ex1(42);
+    expected<int, int> ex2(123);
+
+    ex1.swap(ex2);
+
+    EXPECT_THAT(ex1, test::ValueIs(123));
+    EXPECT_THAT(ex2, test::ValueIs(42));
+  }
+
+  {
+    expected<int, int> ex1 = unexpected(42);
+    expected<int, int> ex2 = unexpected(123);
+
+    ex1.swap(ex2);
+
+    EXPECT_THAT(ex1, test::ErrorIs(123));
+    EXPECT_THAT(ex2, test::ErrorIs(42));
+  }
 }
 
 TEST(Expected, FreeSwap) {
-  expected<int, int> ex1(42);
-  expected<int, int> ex2 = unexpected(123);
+  {
+    expected<int, int> ex1(42);
+    expected<int, int> ex2 = unexpected(123);
 
-  swap(ex1, ex2);
-  EXPECT_THAT(ex1, test::ErrorIs(123));
-  EXPECT_THAT(ex2, test::ValueIs(42));
+    swap(ex1, ex2);
+    EXPECT_THAT(ex1, test::ErrorIs(123));
+    EXPECT_THAT(ex2, test::ValueIs(42));
+  }
+
+  {
+    expected<int, int> ex1(42);
+    expected<int, int> ex2(123);
+
+    swap(ex1, ex2);
+
+    EXPECT_THAT(ex1, test::ValueIs(123));
+    EXPECT_THAT(ex2, test::ValueIs(42));
+  }
+
+  {
+    expected<int, int> ex1 = unexpected(42);
+    expected<int, int> ex2 = unexpected(123);
+
+    swap(ex1, ex2);
+
+    EXPECT_THAT(ex1, test::ErrorIs(123));
+    EXPECT_THAT(ex2, test::ErrorIs(42));
+  }
 }
 
 TEST(Expected, OperatorArrow) {
@@ -611,8 +651,9 @@ TEST(Expected, ValueOr) {
     expected<int, int> ex;
     EXPECT_EQ(ex.value_or(123), 0);
 
-    expected<int, int> unex = unexpected(0);
+    expected<int, int> unex = unexpected(1);
     EXPECT_EQ(unex.value_or(123), 123);
+    EXPECT_EQ(unex.value_or({}), 0);
   }
 
   {
@@ -626,8 +667,9 @@ TEST(Expected, ValueOr) {
 
 TEST(Expected, ErrorOr) {
   {
-    expected<int, int> ex;
+    expected<int, int> ex(1);
     EXPECT_EQ(ex.error_or(123), 123);
+    EXPECT_EQ(ex.error_or({}), 0);
 
     expected<int, int> unex = unexpected(0);
     EXPECT_EQ(unex.error_or(123), 0);
@@ -871,6 +913,17 @@ TEST(Expected, EqualityOperators) {
   EXPECT_NE(unexpected(123), ExInt(123));
 }
 
+TEST(Expected, RvalueConversionToViewType) {
+  expected<std::string, int> ex =
+      "初めまして。Chromeです。よろしくお願いします。";
+  expected<std::string_view, int> ex_with_ref = std::move(ex);
+  // `ex` is moved-from, but this should not yoink the storage from underneath
+  // `ex_with_ref`. Conversions like this may happen during function calls with
+  // temporaries.
+  EXPECT_EQ("初めまして。Chromeです。よろしくお願いします。",
+            ex_with_ref.value());
+}
+
 TEST(ExpectedDeathTest, UseAfterMove) {
   using ExpectedInt = expected<int, int>;
   using ExpectedDouble = expected<double, double>;
@@ -1048,21 +1101,65 @@ TEST(ExpectedVoid, Emplace) {
 }
 
 TEST(ExpectedVoid, MemberSwap) {
-  expected<void, int> ex1;
-  expected<void, int> ex2 = unexpected(123);
+  {
+    expected<void, int> ex1;
+    expected<void, int> ex2 = unexpected(123);
 
-  ex1.swap(ex2);
-  EXPECT_THAT(ex1, test::ErrorIs(123));
-  ASSERT_TRUE(ex2.has_value());
+    ex1.swap(ex2);
+    EXPECT_THAT(ex1, test::ErrorIs(123));
+    EXPECT_THAT(ex2, test::HasValue());
+  }
+
+  {
+    expected<void, int> ex1;
+    expected<void, int> ex2;
+
+    ex1.swap(ex2);
+
+    EXPECT_THAT(ex1, test::HasValue());
+    EXPECT_THAT(ex2, test::HasValue());
+  }
+
+  {
+    expected<void, int> ex1 = unexpected(42);
+    expected<void, int> ex2 = unexpected(123);
+
+    ex1.swap(ex2);
+
+    EXPECT_THAT(ex1, test::ErrorIs(123));
+    EXPECT_THAT(ex2, test::ErrorIs(42));
+  }
 }
 
 TEST(ExpectedVoid, FreeSwap) {
-  expected<void, int> ex1;
-  expected<void, int> ex2 = unexpected(123);
+  {
+    expected<void, int> ex1;
+    expected<void, int> ex2 = unexpected(123);
 
-  swap(ex1, ex2);
-  EXPECT_THAT(ex1, test::ErrorIs(123));
-  ASSERT_TRUE(ex2.has_value());
+    swap(ex1, ex2);
+    EXPECT_THAT(ex1, test::ErrorIs(123));
+    EXPECT_THAT(ex2, test::HasValue());
+  }
+
+  {
+    expected<void, int> ex1;
+    expected<void, int> ex2;
+
+    swap(ex1, ex2);
+
+    EXPECT_THAT(ex1, test::HasValue());
+    EXPECT_THAT(ex2, test::HasValue());
+  }
+
+  {
+    expected<void, int> ex1 = unexpected(42);
+    expected<void, int> ex2 = unexpected(123);
+
+    swap(ex1, ex2);
+
+    EXPECT_THAT(ex1, test::ErrorIs(123));
+    EXPECT_THAT(ex2, test::ErrorIs(42));
+  }
 }
 
 TEST(ExpectedVoid, OperatorStar) {

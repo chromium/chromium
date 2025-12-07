@@ -4,26 +4,29 @@
 
 module webnn.mojom;
 
+import "gpu/ipc/common/mailbox.mojom";
+import "gpu/ipc/common/sync_token.mojom";
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "services/webnn/public/mojom/features.mojom";
-import "services/webnn/public/mojom/webnn_buffer.mojom";
+import "services/webnn/public/mojom/webnn_tensor.mojom";
 import "services/webnn/public/mojom/webnn_error.mojom";
 import "services/webnn/public/mojom/webnn_graph_builder.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
-// Represents a successful call to `WebNNContext::CreateBuffer()`.
-struct CreateBufferSuccess {
-  pending_associated_remote<WebNNBuffer> buffer_remote;
-  // buffer_handle is a generated token used as a handle to identify the buffer
+// Represents a successful call to `WebNNContext::CreateTensor()`.
+struct CreateTensorSuccess {
+  pending_associated_remote<WebNNTensor> tensor_remote;
+  // tensor_handle is a generated token used as a handle to identify the tensor
   // from the renderer. The token is only valid for the lifetime
-  // of the buffer and is used by context operations in the service using the
-  // buffer corresponding to this handle.
-  blink.mojom.WebNNBufferToken buffer_handle;
+  // of the tensor and is used by context operations in the service using the
+  // tensor corresponding to this handle.
+  blink.mojom.WebNNTensorToken tensor_handle;
 };
 
-// Represents the return value of `WebNNContext::CreateBuffer()`. Let it be
-// `success` if the buffer was successfully created and `error` otherwise.
-union CreateBufferResult {
-  CreateBufferSuccess success;
+// Represents the return value of `WebNNContext::CreateTensor()`. Let it be
+// `success` if the tensor was successfully created and `error` otherwise.
+union CreateTensorResult {
+  CreateTensorSuccess success;
   Error error;
 };
 
@@ -35,8 +38,18 @@ interface WebNNContext {
   // Creates a connection to an `MLGraphBuilder` in the WebNN service.
   CreateGraphBuilder(pending_associated_receiver<WebNNGraphBuilder> receiver);
 
-  // Called by the renderer process to create `WebNNBuffer` message pipe for
-  // creating platform specific buffers, the WebNN buffer will be validated and
+  // Called by the renderer process to create `WebNNTensor` message pipe for
+  // creating platform specific tensors, the WebNN tensor will be validated and
   // created. This method guarantees memory allocation on the device.
-  CreateBuffer(BufferInfo buffer_info) => (CreateBufferResult result);
+  // Optionally, non-empty tensor data containing values to initialize contents.
+  // Valid for tensor data to be empty when not being used as graph constants.
+  CreateTensor(TensorInfo tensor_info, mojo_base.mojom.BigBuffer tensor_data)
+    => (CreateTensorResult result);
+
+  // Similar to CreateTensor() above, except that it creates the tensor from
+  // an existing shared image. The tensor must have WebGPUInterop usage.
+  // The mailbox must reference a valid shared image, and the provided SyncToken
+  // must be verified and obtained from the SharedImageInterface.
+  CreateTensorFromMailbox(TensorInfo tensor_info, gpu.mojom.Mailbox mailbox,
+   gpu.mojom.SyncToken fence) => (CreateTensorResult result);
 };

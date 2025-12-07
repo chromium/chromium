@@ -14,13 +14,14 @@ namespace stylus_handwriting::android {
 namespace {
 
 const base::Feature* const kFeaturesExposedToJava[] = {
-    &kUseHandwritingInitiator,
+    &kCacheStylusSettings,
+    &kProbeStylusWritingInBackground,
 };
 
 // static
 base::android::FeatureMap* GetFeatureMap() {
-  static base::NoDestructor<base::android::FeatureMap> kFeatureMap(std::vector(
-      std::begin(kFeaturesExposedToJava), std::end(kFeaturesExposedToJava)));
+  static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
+      kFeaturesExposedToJava);
   return kFeatureMap.get();
 }
 
@@ -32,11 +33,11 @@ static jlong JNI_StylusHandwritingFeatureMap_GetNativeMap(JNIEnv* env) {
 
 // Android only features.
 
-// Initiate handwriting based on the distance between touch events compared to
-// the current handwriting touch slop rather than relying on scroll events for
-// initiation.
-BASE_FEATURE(kUseHandwritingInitiator,
-             "UseHandwritingInitiator",
+// Cache Stylus related settings
+BASE_FEATURE(kCacheStylusSettings, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kProbeStylusWritingInBackground,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace stylus_handwriting::android
+
+DEFINE_JNI(StylusHandwritingFeatureMap)

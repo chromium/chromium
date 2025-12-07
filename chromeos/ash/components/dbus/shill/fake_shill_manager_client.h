@@ -85,6 +85,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
                        ErrorCallback error_callback) override;
   void DisableTethering(StringCallback callback,
                         ErrorCallback error_callback) override;
+  void OnDisableTetheringSuccess(const std::string& result);
   void CheckTetheringReadiness(StringCallback callback,
                                ErrorCallback error_callback) override;
   void SetLOHSEnabled(bool enabled,
@@ -136,6 +137,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   void AddManagerService(const std::string& service_path,
                          bool notify_observers) override;
   void RemoveManagerService(const std::string& service_path) override;
+  void RestartTethering() override;
   void ClearManagerServices() override;
   void ServiceStateChanged(const std::string& service_path,
                            const std::string& state) override;
@@ -148,6 +150,8 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   bool GetFastTransitionStatus() override;
   void SetSimulateConfigurationResult(
       FakeShillSimulatedResult configuration_result) override;
+  void SetSimulateConfigurationError(std::string_view error_name,
+                                     std::string_view error_message) override;
   void SetSimulateTetheringEnableResult(
       FakeShillSimulatedResult tethering_enable_result,
       const std::string& result_string) override;
@@ -173,11 +177,19 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
       bool wifi_services_visible_by_default) override;
   int GetRecentlyDestroyedP2PGroupId() override;
   int GetRecentlyDisconnectedP2PGroupId() override;
+  void SetAutoCompleteScan(bool auto_complete_scan) override;
+  void TriggerScanCompleted(const std::string& device_path) override;
 
   // Constants used for testing.
   static const char kFakeEthernetNetworkGuid[];
 
  private:
+  // Error message for configure service failure.
+  struct ConfigurationError {
+    std::string name;
+    std::string message;
+  };
+
   using ConnectToBestServicesCallbacks =
       std::tuple<base::OnceClosure, ErrorCallback>;
 
@@ -192,7 +204,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   void NotifyObserversPropertyChanged(const std::string& property);
   base::Value::List& GetListProperty(const std::string& property);
   bool TechnologyEnabled(const std::string& type) const;
-  void ScanCompleted(const std::string& device_path);
 
   // Parses the command line for Shill stub switches and sets initial states.
   // Uses comma-separated name-value pairs (see SplitStringIntoKeyValuePairs):
@@ -245,6 +256,8 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
 
   FakeShillSimulatedResult simulate_configuration_result_ =
       FakeShillSimulatedResult::kSuccess;
+  ConfigurationError simulate_configuration_error_ = {"Error",
+                                                      "Simulated failure"};
   FakeShillSimulatedResult simulate_tethering_enable_result_ =
       FakeShillSimulatedResult::kSuccess;
   std::string simulate_enable_tethering_result_string_;
@@ -274,6 +287,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
 
   // For testing dynamic WEP networks (uses wifi2).
   bool dynamic_wep_ = false;
+
+  // Automatically complete a scan after RequestScan().
+  bool auto_complete_scan_ = true;
 
   // Caches the last-passed callbacks for ScanAndConnectToBestServices.
   std::optional<ConnectToBestServicesCallbacks>

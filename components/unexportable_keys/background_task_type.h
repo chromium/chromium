@@ -11,10 +11,19 @@
 
 namespace unexportable_keys {
 
+// LINT.IfChange(BackgroundTaskType)
 // Enum containing all supported types of background TPM operations.
 // These values are primarily used for histograms together with
 // `GetBackgroundTaskTypeSuffixForHistograms()` below.
-enum class BackgroundTaskType { kGenerateKey, kFromWrappedKey, kSign };
+enum class BackgroundTaskType {
+  kGetAllKeys,
+  kGenerateKey,
+  kFromWrappedKey,
+  kSign,
+  kDeleteKey,
+  kDeleteAllKeys,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/net/histograms.xml:UnexportableKeysBackgroundTaskType)
 
 // Converts `BackgroundTaskType` to a histogram suffix string. The string is
 // prepended with "." symbol so it can be directly concatenated with a base

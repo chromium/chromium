@@ -4,10 +4,11 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 
+#include <variant>
+
 #include "base/base64.h"
 #include "base/containers/to_value_list.h"
 #include "base/containers/to_vector.h"
-#include "base/functional/overloaded.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/expected_macros.h"
 #include "chrome/browser/web_applications/proto/web_app_isolation_data.pb.h"
@@ -15,6 +16,7 @@
 #include "components/web_package/signed_web_bundles/ecdsa_p256_sha256_signature.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack_entry.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace web_app {
 
@@ -130,8 +132,8 @@ IsolatedWebAppIntegrityBlockData::ToProto() const {
   proto::IsolationData::IntegrityBlockData proto;
   for (const auto& signature_info : signatures_) {
     proto::IsolationData::IntegrityBlockData::SignatureInfo si_proto;
-    absl::visit(
-        base::Overloaded{
+    std::visit(
+        absl::Overload{
             [&](const web_package::SignedWebBundleSignatureInfoEd25519&
                     signature_info) {
               *si_proto.mutable_ed25519() = SignatureInfoToProto<
@@ -157,8 +159,8 @@ IsolatedWebAppIntegrityBlockData::ToProto() const {
 base::Value IsolatedWebAppIntegrityBlockData::AsDebugValue() const {
   return base::Value(base::Value::Dict().Set(
       "signatures", base::ToValueList(signatures_, [](const auto& signature) {
-        return absl::visit(
-            base::Overloaded{
+        return std::visit(
+            absl::Overload{
                 [](const web_package::SignedWebBundleSignatureInfoEd25519&
                        signature_info) {
                   return base::Value::Dict().Set(
@@ -195,12 +197,12 @@ base::Value IsolatedWebAppIntegrityBlockData::AsDebugValue() const {
 
 bool IsolatedWebAppIntegrityBlockData::HasPublicKey(
     base::span<const uint8_t> public_key) const {
-  return base::ranges::any_of(signatures(), [&](const auto& signature_info) {
-    return absl::visit(
-        base::Overloaded{
+  return std::ranges::any_of(signatures(), [&](const auto& signature_info) {
+    return std::visit(
+        absl::Overload{
             [&](const auto& signature_info) {
-              return base::ranges::equal(signature_info.public_key().bytes(),
-                                         public_key);
+              return std::ranges::equal(signature_info.public_key().bytes(),
+                                        public_key);
             },
             [](const web_package::SignedWebBundleSignatureInfoUnknown&) {
               return false;

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/ozone/platform/drm/host/drm_display_host_manager.h"
 
 #include <fcntl.h>
@@ -16,6 +11,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -25,6 +21,8 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/trace_event/trace_event.h"
+#include "ui/display/types/display_configuration_params.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/events/ozone/device/device_event.h"
 #include "ui/events/ozone/device/device_manager.h"
@@ -54,7 +52,7 @@ const int kAuthFailSleepMs = 100;
 // Log a warning after failing to authenticate for this many milliseconds.
 const int kLogAuthFailDelayMs = 1000;
 
-const char* kDisplayActionString[] = {
+constexpr const char* kDisplayActionString[] = {
     "ADD",
     "REMOVE",
     "CHANGE",
@@ -86,7 +84,7 @@ base::FilePath MapDevPathToSysPath(const base::FilePath& device_path) {
     // corresponding USB touch device. If the symlink doesn't exist, use the
     // normal sysfs path. In order to ensure that the sysfs path remains unique,
     // append the card name to it.
-    if (base::StartsWith(component, "evdi", base::CompareCase::SENSITIVE)) {
+    if (component.starts_with("evdi")) {
       base::FilePath usb_device_path;
       if (base::ReadSymbolicLink(path_thus_far.Append("device"),
                                  &usb_device_path)) {
@@ -129,7 +127,7 @@ std::unique_ptr<DrmWrapper> OpenDrmDevice(const base::FilePath& dev_path,
         (base::TimeTicks::Now() - start_time).InMilliseconds() >=
         kLogAuthFailDelayMs;
     drm_magic_t magic;
-    memset(&magic, 0, sizeof(magic));
+    UNSAFE_TODO(memset(&magic, 0, sizeof(magic)));
     // We need to make sure the DRM device has enough privilege. Use the DRM
     // authentication logic to figure out if the device has enough permissions.
     int drm_errno = drmGetMagic(fd, &magic);
@@ -207,7 +205,7 @@ std::vector<DisplayCard> GetValidDisplayCards() {
     }
 
     struct drm_mode_card_res res;
-    memset(&res, 0, sizeof(struct drm_mode_card_res));
+    UNSAFE_TODO(memset(&res, 0, sizeof(struct drm_mode_card_res)));
     int ret = drmIoctl(fd.get(), DRM_IOCTL_MODE_GETRESOURCES, &res);
     VPLOG_IF(1, ret) << "Failed to get DRM resources for '" << card_path << "'";
 
@@ -336,10 +334,10 @@ DrmDisplayHostManager::DisplayEvent::~DisplayEvent() = default;
 
 DrmDisplayHost* DrmDisplayHostManager::GetDisplay(int64_t display_id) {
   auto it =
-      base::ranges::find(displays_, display_id,
-                         [](const std::unique_ptr<DrmDisplayHost>& display) {
-                           return display->snapshot()->display_id();
-                         });
+      std::ranges::find(displays_, display_id,
+                        [](const std::unique_ptr<DrmDisplayHost>& display) {
+                          return display->snapshot()->display_id();
+                        });
   if (it == displays_.end())
     return nullptr;
 
@@ -358,6 +356,7 @@ void DrmDisplayHostManager::RemoveDelegate(DrmNativeDisplayDelegate* delegate) {
 
 void DrmDisplayHostManager::TakeDisplayControl(
     display::DisplayControlCallback callback) {
+  TRACE_EVENT0("drm", "DrmDisplayHostManager::TakeDisplayControl");
   if (display_control_change_pending_) {
     LOG(ERROR) << "TakeDisplayControl called while change already pending";
     std::move(callback).Run(false);
@@ -379,6 +378,7 @@ void DrmDisplayHostManager::TakeDisplayControl(
 
 void DrmDisplayHostManager::RelinquishDisplayControl(
     display::DisplayControlCallback callback) {
+  TRACE_EVENT0("drm", "DrmDisplayHostManager::RelinquishDisplayControl");
   if (display_control_change_pending_) {
     LOG(ERROR)
         << "RelinquishDisplayControl called while change already pending";
@@ -414,7 +414,7 @@ void DrmDisplayHostManager::ConfigureDisplays(
     display::ModesetFlags modeset_flags) {
   for (auto& config : config_requests) {
     if (GetDisplay(config.id)->is_dummy()) {
-      std::move(callback).Run(true);
+      std::move(callback).Run(config_requests, true);
       return;
     }
   }
@@ -439,8 +439,9 @@ void DrmDisplayHostManager::ProcessEvent() {
     const std::string seqnum = seqnum_it == event.display_event_props.end()
                                    ? ""
                                    : ("(SEQNUM:" + seqnum_it->second + ")");
-    VLOG(1) << "Got display event " << kDisplayActionString[event.action_type]
-            << seqnum << " for " << event.path.value();
+    VLOG(1) << "Got display event "
+            << UNSAFE_TODO(kDisplayActionString[event.action_type]) << seqnum
+            << " for " << event.path.value();
     switch (event.action_type) {
       case DeviceEvent::ADD:
         if (drm_devices_.find(event.path) == drm_devices_.end()) {
@@ -574,10 +575,10 @@ void DrmDisplayHostManager::GpuHasUpdatedNativeDisplays(
   displays_.swap(old_displays);
   for (auto& display : displays) {
     auto it =
-        base::ranges::find(old_displays, display->display_id(),
-                           [](const std::unique_ptr<DrmDisplayHost>& display) {
-                             return display->snapshot()->display_id();
-                           });
+        std::ranges::find(old_displays, display->display_id(),
+                          [](const std::unique_ptr<DrmDisplayHost>& display) {
+                            return display->snapshot()->display_id();
+                          });
     if (it == old_displays.end()) {
       displays_.push_back(std::make_unique<DrmDisplayHost>(
           proxy_, std::move(display), false /* is_dummy */));

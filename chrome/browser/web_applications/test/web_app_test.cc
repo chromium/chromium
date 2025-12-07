@@ -4,9 +4,11 @@
 
 #include "chrome/browser/web_applications/test/web_app_test.h"
 
+#include "base/check_deref.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/web_applications/test/debug_info_printer.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,7 +18,7 @@ WebAppTest::~WebAppTest() = default;
 void WebAppTest::SetUp() {
   ASSERT_TRUE(testing_profile_manager_.SetUp());
   profile_ = testing_profile_manager_.CreateTestingProfile(
-      TestingProfile::kDefaultProfileUserName, /*is_main_profile=*/true,
+      TestingProfile::kDefaultProfileUserName, /*testing_factories=*/{},
       shared_url_loader_factory_);
   content::RenderViewHostTestHarness::SetUp();
 }
@@ -44,6 +46,8 @@ void WebAppTest::TearDown() {
   // Make sure that we flush any messages related to WebContentsImpl
   // destruction before we destroy the profiles.
   base::RunLoop().RunUntilIdle();
+  // Reset `profile_` to prevent dangling.
+  profile_ = nullptr;
   testing_profile_manager_.DeleteAllTestingProfiles();
   content::RenderViewHostTestHarness::TearDown();
 }
@@ -52,8 +56,18 @@ content::BrowserContext* WebAppTest::GetBrowserContext() {
   return profile();
 }
 
+web_app::WebAppProvider& WebAppTest::provider() const {
+  return *web_app::WebAppProvider::GetForWebApps(profile());
+}
+
 web_app::FakeWebAppProvider& WebAppTest::fake_provider() const {
   return *web_app::FakeWebAppProvider::Get(profile());
+}
+
+web_app::FakeWebContentsManager& WebAppTest::fake_web_contents_manager() const {
+  web_app::FakeWebContentsManager* ptr =
+      provider().web_contents_manager().AsFakeWebContentsManagerForTesting();
+  return CHECK_DEREF(ptr);
 }
 
 web_app::OsIntegrationTestOverrideImpl& WebAppTest::fake_os_integration()

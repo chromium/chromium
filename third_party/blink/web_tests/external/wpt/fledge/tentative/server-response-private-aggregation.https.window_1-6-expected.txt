@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] Private aggregation - invalid reporting origin
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on 'Navigator': Invalid Coordinator"
+[FAIL] Private aggregation - invalid index
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on 'Navigator': Invalid Coordinator"
+[FAIL] Private aggregation - invalid event
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on 'Navigator': Invalid Coordinator"
+[FAIL] Private aggregation - missing required bucket
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on 'Navigator': Invalid Coordinator"
+[FAIL] Private aggregation - bucket is bigger than 128 bits
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on 'Navigator': Invalid Coordinator"
+[FAIL] Private aggregation - missing required value
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on 'Navigator': Invalid Coordinator"
+Harness: the test ran to completion.
+

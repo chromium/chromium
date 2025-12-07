@@ -116,6 +116,18 @@ class ServiceWorkerMetrics {
     kMaxValue = INACCURATE_CLOCK,
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(SyntheticResponseEligibility)
+  enum class SyntheticResponseEligibility {
+    kEligible = 0,
+    kNotEligibleByReload = 1,
+    kNotEligibleByNoHeaderStored = 2,
+    kMaxValue = kNotEligibleByNoHeaderStored,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/service/enums.xml:SyntheticResponseEligibility)
+
   // These are prefixed with "local" or "remote" to indicate whether the browser
   // process or renderer process recorded the timing (browser is local).
   struct StartTimes {

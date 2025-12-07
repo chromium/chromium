@@ -2,20 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/extensions/extensions_internals_source.h"
-
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
-#include "chrome/browser/extensions/permissions/permissions_updater.h"
-#include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
+#include "chrome/browser/ui/webui/extensions/extensions_internals_source.h"
 #include "chrome/test/base/testing_profile.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
+#include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/permissions/permissions_updater.h"
+#include "extensions/browser/permissions/scripting_permissions_modifier.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/simple_feature.h"
 #include "extensions/common/permissions/api_permission.h"
@@ -28,6 +30,8 @@
 #include "extensions/common/user_script.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace {
 
@@ -54,10 +58,11 @@ TEST_F(ExtensionsInternalsUnitTest, Basic) {
           .SetVersion("1.2.3.4")
           .SetLocation(extensions::mojom::ManifestLocation::kExternalPref)
           .Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
 
   ExtensionsInternalsSource source(profile());
-  auto extensions_list = base::JSONReader::Read(source.WriteToString());
+  auto extensions_list = base::JSONReader::Read(
+      source.WriteToString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(extensions_list) << "Failed to parse extensions internals json.";
   base::Value::Dict& extension_json = extensions_list->GetList()[0].GetDict();
 
@@ -71,6 +76,8 @@ TEST_F(ExtensionsInternalsUnitTest, Basic) {
               testing::Pointee(std::string("EXTERNAL_PREF")));
   EXPECT_THAT(extension_json.FindString("guid"),
               testing::Pointee(extension->guid()));
+  EXPECT_THAT(extension_json.FindString("registry_status"),
+              testing::Pointee(std::string("ENABLED")));
 }
 
 // Test that active and optional permissions show up correctly in the JSON
@@ -93,9 +100,10 @@ TEST_F(ExtensionsInternalsUnitTest, WriteToStringPermissions) {
           .AddContentScript("not-real.js", {"https://chromium.org/foo"})
           .Build();
 
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
   ExtensionsInternalsSource source(profile());
-  auto extensions_list = base::JSONReader::Read(source.WriteToString());
+  auto extensions_list = base::JSONReader::Read(
+      source.WriteToString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(extensions_list) << "Failed to parse extensions internals json.";
 
   EXPECT_EQ(extensions_list->GetList().size(), 1U);
@@ -139,10 +147,11 @@ TEST_F(ExtensionsInternalsUnitTest, WriteToStringTabSpecificPermissions) {
       extensions::ExtensionBuilder("test")
           .AddAPIPermission("activeTab")
           .Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
 
   ExtensionsInternalsSource source(profile());
-  auto extensions_list = base::JSONReader::Read(source.WriteToString());
+  auto extensions_list = base::JSONReader::Read(
+      source.WriteToString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(extensions_list) << "Failed to parse extensions internals json.";
   base::Value::Dict* permissions =
       extensions_list->GetList()[0].GetDict().FindDict("permissions");
@@ -161,7 +170,8 @@ TEST_F(ExtensionsInternalsUnitTest, WriteToStringTabSpecificPermissions) {
       tab_hosts.Clone(), tab_hosts.Clone());
   extension->permissions_data()->UpdateTabSpecificPermissions(1,
                                                               tab_permissions);
-  extensions_list = base::JSONReader::Read(source.WriteToString());
+  extensions_list = base::JSONReader::Read(
+      source.WriteToString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(extensions_list->GetList()[0].is_dict());
   permissions = extensions_list->GetList()[0].GetDict().FindDict("permissions");
 
@@ -193,10 +203,11 @@ TEST_F(ExtensionsInternalsUnitTest, WriteToStringWithheldPermissions) {
       extensions::ExtensionBuilder("test")
           .AddHostPermission("https://example.com/*")
           .Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
 
   ExtensionsInternalsSource source(profile());
-  auto extensions_list = base::JSONReader::Read(source.WriteToString());
+  auto extensions_list = base::JSONReader::Read(
+      source.WriteToString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(extensions_list) << "Failed to parse extensions internals json.";
   base::Value::Dict* permissions =
       extensions_list->GetList()[0].GetDict().FindDict("permissions");
@@ -221,7 +232,8 @@ TEST_F(ExtensionsInternalsUnitTest, WriteToStringWithheldPermissions) {
   // Change an active host to be withheld.
   extensions::ScriptingPermissionsModifier modifier(profile(), extension);
   modifier.SetWithholdHostPermissions(true);
-  extensions_list = base::JSONReader::Read(source.WriteToString());
+  extensions_list = base::JSONReader::Read(
+      source.WriteToString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   permissions = extensions_list->GetList()[0].GetDict().FindDict("permissions");
 
   // Check the host that was active is now withheld.
@@ -232,4 +244,73 @@ TEST_F(ExtensionsInternalsUnitTest, WriteToStringWithheldPermissions) {
                 ->front()
                 .GetString(),
             "https://example.com/*");
+}
+
+// Test that extensions in different ExtensionSets in the extension registry are
+// marked correctly as such.
+TEST_F(ExtensionsInternalsUnitTest, RegistryExtensionStatus) {
+  InitializeEmptyExtensionService();
+  extensions::EventRouterFactory::GetInstance()->SetTestingFactory(
+      profile(), base::BindRepeating(&BuildEventRouter));
+
+  scoped_refptr<const extensions::Extension> enabled_extension =
+      extensions::ExtensionBuilder("enabled").Build();
+  registrar()->AddExtension(enabled_extension.get());
+
+  scoped_refptr<const extensions::Extension> disabled_extension =
+      extensions::ExtensionBuilder("disabled").Build();
+  registrar()->AddExtension(disabled_extension.get());
+  registrar()->DisableExtension(
+      disabled_extension->id(),
+      {extensions::disable_reason::DISABLE_USER_ACTION});
+
+  scoped_refptr<const extensions::Extension> terminated_extension =
+      extensions::ExtensionBuilder("terminated").Build();
+  registrar()->AddExtension(terminated_extension.get());
+  registrar()->TerminateExtension(terminated_extension->id());
+
+  scoped_refptr<const extensions::Extension> blocklisted_extension =
+      extensions::ExtensionBuilder("blocklisted").Build();
+  registrar()->AddExtension(blocklisted_extension.get());
+  registrar()->BlocklistExtensionForTest(blocklisted_extension->id());
+
+  ExtensionsInternalsSource source(profile());
+  auto extensions_list = base::JSONReader::Read(
+      source.WriteToString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(extensions_list) << "Failed to parse extensions internals json.";
+  for (const auto& info : extensions_list->GetList()) {
+    const base::Value::Dict& extension_json = info.GetDict();
+    const std::string* registry_status =
+        extension_json.FindString("registry_status");
+    ASSERT_TRUE(registry_status);
+    const std::string* extension_id = extension_json.FindString("id");
+    ASSERT_TRUE(extension_id);
+    if (*extension_id == enabled_extension->id()) {
+      EXPECT_EQ("ENABLED", *registry_status);
+    } else if (*extension_id == disabled_extension->id()) {
+      EXPECT_EQ("DISABLED", *registry_status);
+    } else if (*extension_id == terminated_extension->id()) {
+      EXPECT_EQ("TERMINATED", *registry_status);
+    } else if (*extension_id == blocklisted_extension->id()) {
+      EXPECT_EQ("BLOCKLISTED", *registry_status);
+    } else {
+      ADD_FAILURE() << "Unexpected extension found in regsitry";
+    }
+  }
+
+  // There's no easy way to put a single extension into the BLOCKED state, so
+  // instead we just block them all to check that. We do have to unblocklist
+  // the blocklisted extension first though, as that takes priority otherwise.
+  extensions::blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+      blocklisted_extension->id(),
+      extensions::BitMapBlocklistState::NOT_BLOCKLISTED,
+      extensions::ExtensionPrefs::Get(profile()));
+  registrar()->OnBlocklistStateRemoved(blocklisted_extension->id());
+  registrar()->BlockAllExtensions();
+  extensions_list = base::JSONReader::Read(
+      source.WriteToString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(extensions_list) << "Failed to parse extensions internals json.";
+  for (const auto& info : extensions_list->GetList()) {
+    EXPECT_EQ("BLOCKED", *info.GetDict().FindString("registry_status"));
+  }
 }

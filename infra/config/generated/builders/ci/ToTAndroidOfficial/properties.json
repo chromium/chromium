@@ -1,4 +1,7 @@
 {
+  "$build/chromium": {
+    "fail_build_on_clang_warnings": true
+  },
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
@@ -13,11 +16,10 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-clang-archive",
               "builder_group": "chromium.clang",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
-                "config": "clang_builder_mb_x64"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
                 "apply_configs": [
@@ -47,21 +49,19 @@
           "builder": "ToTAndroidOfficial",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/ToTAndroidOfficial/targets"
     }
-  },
-  "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "metrics_project": "chromium-reclient-metrics",
-    "scandeps_server": true
   },
   "$build/siso": {
     "configs": [
       "builder"
     ],
+    "enable_cloud_monitoring": true,
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
+    "metrics_project": "chromium-reclient-metrics",
     "project": "rbe-chromium-trusted"
   },
   "$recipe_engine/resultdb/test_presentation": {

@@ -5,7 +5,7 @@
 import("//build/config/chromebox_for_meetings/buildflags.gni")
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 assert(is_cfm)
 
 static_library("xu_camera") {
@@ -25,6 +25,7 @@ static_library("xu_camera") {
   ]
 
   deps = [
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/media/webrtc",
     "//components/media_device_salt",
     "//content/public/browser",
@@ -48,4 +49,8 @@ source_set("unit_tests") {
     "//mojo/public/cpp/bindings",
     "//testing/gmock",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

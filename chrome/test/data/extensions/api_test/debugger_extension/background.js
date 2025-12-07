@@ -8,9 +8,22 @@ var fail = chrome.test.callbackFail;
 var debuggee;
 var protocolVersion = "1.3";
 
+// Returns true if the platform is Android.
+async function isAndroid() {
+  const os = await new Promise((resolve) => {
+    chrome.runtime.getPlatformInfo(info => resolve(info.os));
+  });
+  return os === 'android';
+}
+
 chrome.test.runTests([
 
   async function attachToWebUI() {
+    // TODO(crbug.com/371432155): Support chrome.tabs on desktop Android.
+    if (await isAndroid()) {
+      chrome.test.succeed('skipped');
+      return;
+    }
     const {openTab} = await import('/_test_resources/test_util/tabs_util.js');
     const tab = await openTab('chrome://version');
     const debuggee = {tabId: tab.id};
@@ -48,7 +61,14 @@ chrome.test.runTests([
             debuggee.extensionId + "."));
   },
 
-  function discoverOwnBackgroundPage() {
+  async function discoverOwnBackgroundPage() {
+    // Android only supports manifest V3 and higher, which does not support
+    // background pages. Therefore the test extension has no background page to
+    // find.
+    if (await isAndroid()) {
+      chrome.test.succeed('skipped');
+      return;
+    }
     chrome.debugger.getTargets(function(targets) {
       var target = targets.filter(
         function(t) {
@@ -64,7 +84,13 @@ chrome.test.runTests([
     });
   },
 
-  function discoverWorker() {
+  async function discoverWorker() {
+    // SharedWorker is not supported on Chrome for Android.
+    // https://developer.mozilla.org/en-US/docs/Web/API/SharedWorker
+    if (await isAndroid()) {
+      chrome.test.succeed('skipped');
+      return;
+    }
     var workerPort = new SharedWorker("worker.js").port;
     workerPort.onmessage = function() {
       chrome.debugger.getTargets(function(targets) {

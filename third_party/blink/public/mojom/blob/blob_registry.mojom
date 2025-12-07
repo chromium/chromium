@@ -46,10 +46,4 @@ interface BlobRegistry {
                      handle<data_pipe_consumer> data,
                      pending_associated_remote<ProgressClient>? progress_client)
       => (SerializedBlob? blob);
-
-  // Returns a reference to an existing blob. Should not be used by new code,
-  // is only exposed to make converting existing blob using code easier.
-  // TODO(mek): Remove when crbug.com/740744 is resolved.
-  [Sync] GetBlobFromUUID(pending_receiver<Blob> blob, string uuid) => ();
-
 };

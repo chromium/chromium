@@ -26,6 +26,7 @@ class SamlConfirmPasswordScreen : public BaseScreen {
   using TView = SamlConfirmPasswordView;
 
   enum class Result {
+    kSuccess,
     kCancel,
     kTooManyAttempts,
   };

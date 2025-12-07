@@ -1,0 +1,16 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++ROLE_SYSTEM_GROUPING ispopup:auto
+++++ROLE_SYSTEM_TEXT FOCUSABLE
+++ROLE_SYSTEM_PUSHBUTTON name='Button' FOCUSABLE has-interest-for:true details-from:interest-for details-roles:popover
+++ROLE_SYSTEM_PUSHBUTTON name='Button' FOCUSABLE
+++ROLE_SYSTEM_GROUPING ispopup:auto
+++++ROLE_SYSTEM_TEXT FOCUSABLE
+++ROLE_SYSTEM_GROUPING ispopup:auto
+++++ROLE_SYSTEM_STATICTEXT name='Plain #3'
+++ROLE_SYSTEM_PUSHBUTTON name='Plain #3' FOCUSABLE
+++ROLE_SYSTEM_GROUPING ispopup:auto
+++++ROLE_SYSTEM_STATICTEXT name='Plain #4'
+++ROLE_SYSTEM_PUSHBUTTON name='Button' FOCUSABLE description-from:tooltip description='Plain #4'
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_STATICTEXT name='Plain #5'
+++ROLE_SYSTEM_PUSHBUTTON name='Plain #5' FOCUSABLE

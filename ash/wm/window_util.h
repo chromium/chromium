@@ -21,6 +21,10 @@
 
 class PrefRegistrySimple;
 
+namespace ash {
+class WindowState;
+}
+
 namespace gfx {
 class Point;
 class Rect;
@@ -37,8 +41,6 @@ class View;
 }  // namespace views
 
 namespace ash::window_util {
-
-ASH_EXPORT int GetMiniWindowRoundedCornerRadius();
 
 // Returns the rounded corners for a mini window representation of
 // `source_window`. It takes into account if the `source_window`
@@ -90,6 +92,7 @@ ASH_EXPORT void GetBlockingContainersForRoot(
 ASH_EXPORT bool IsWindowUserPositionable(aura::Window* window);
 
 // Pins the window on top of other windows.
+// TODO(crbug.com/429215055): Rename 'trusted' to a more appropriate name.
 ASH_EXPORT void PinWindow(aura::Window* window, bool trusted);
 
 // Indicates that the window should autohide the shelf when it is the active
@@ -120,6 +123,11 @@ ASH_EXPORT void InstallResizeHandleWindowTargeterForWindow(
 
 // Returns true if `window` is currently in tab-dragging process.
 ASH_EXPORT bool IsDraggingTabs(const aura::Window* window);
+
+// For a tab drag window (see `IsDraggingTabs`) returns the state of the source
+// window if any. Otherwise returns nullptr.
+ASH_EXPORT const WindowState* GetTabDraggingSourceWindowState(
+    const aura::Window* drag_window);
 
 // Returns true if `window` should be excluded from the cycle list and/or
 // overview.

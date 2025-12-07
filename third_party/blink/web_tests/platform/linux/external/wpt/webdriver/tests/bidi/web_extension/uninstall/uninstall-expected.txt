@@ -1,0 +1,5 @@
+This is a wdspec test.
+[FAIL] test_uninstall
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Archived and Base64 extensions are not supported)
+Harness: the test ran to completion.
+

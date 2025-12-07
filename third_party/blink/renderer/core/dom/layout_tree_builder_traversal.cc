@@ -27,12 +27,14 @@
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_pseudo_element_base.h"
 
 namespace blink {
 
@@ -43,6 +45,21 @@ inline static bool HasDisplayContentsStyle(const Node& node) {
 
 static bool IsLayoutObjectReparented(const LayoutObject* layout_object) {
   return layout_object->IsInTopOrViewTransitionLayer();
+}
+
+static Node* PreviousLayoutSiblingOfElement(Element& element) {
+  Node* originating_prev = LayoutTreeBuilderTraversal::PreviousSibling(element);
+  Element* originating_prev_element = DynamicTo<Element>(originating_prev);
+  if (originating_prev_element &&
+      originating_prev_element->GetComputedStyle() &&
+      originating_prev_element->GetComputedStyle()
+          ->HasScrollMarkerGroupAfter()) {
+    if (Element* pseudo = originating_prev_element->GetPseudoElement(
+            kPseudoIdScrollMarkerGroupAfter)) {
+      return pseudo;
+    }
+  }
+  return originating_prev;
 }
 
 ContainerNode* LayoutTreeBuilderTraversal::Parent(const Node& node) {
@@ -57,29 +74,44 @@ ContainerNode* LayoutTreeBuilderTraversal::Parent(const Node& node) {
   return FlatTreeTraversal::Parent(node);
 }
 
+bool LayoutTreeBuilderTraversal::IsLayoutParent(const Node& node) {
+  return !HasDisplayContentsStyle(node) && !node.IsColumnPseudoElement();
+}
+
 ContainerNode* LayoutTreeBuilderTraversal::LayoutParent(const Node& node) {
   // TODO(crbug.com/332396355): consider to check for ::scroll-marker-group
   // from all call sites of this function, or move the check here.
   ContainerNode* parent = LayoutTreeBuilderTraversal::Parent(node);
 
-  while (parent && HasDisplayContentsStyle(*parent))
+  while (parent && !IsLayoutParent(*parent)) {
     parent = LayoutTreeBuilderTraversal::Parent(*parent);
+  }
 
   return parent;
 }
 
 LayoutObject* LayoutTreeBuilderTraversal::ParentLayoutObject(const Node& node) {
   if (node.GetPseudoId() == kPseudoIdViewTransition) {
-    // The view-transition pseudo is wrapped by the anonymous
-    // LayoutViewTransitionRoot but that's created by adding the
-    // view-transition to the LayoutView.
-    return node.GetDocument().GetLayoutView();
+    Element* scope = node.parentElement();
+    if (scope->IsDocumentElement()) {
+      // For a document transition, the LayoutObject for the ::view-transition
+      // pseudo-element is wrapped by the anonymous LayoutViewTransitionRoot,
+      // which represents the snapshot containing block.
+      //
+      // The LayoutViewTransitionRoot is a child of the LayoutView, and will be
+      // injected by LayoutView::AddChild.
+      return node.GetDocument().GetLayoutView();
+    }
+    // For a scoped transition, the LayoutObject for the ::view-transition
+    // pseudo-element is a child of the LayoutObject for the scope element.
+    return scope->GetLayoutObject();
   }
   const Node* search_start_node = &node;
-  // Parent of ::scroll-marker-group should be layout parent of its
-  // originating element.
-  if (node.IsScrollMarkerGroupPseudoElement()) {
-    search_start_node = To<PseudoElement>(node).OriginatingElement();
+  // Parent of ::scroll-marker-group and ::scroll-button() should be layout
+  // parent of its originating element.
+  if (node.IsScrollMarkerGroupPseudoElement() ||
+      node.IsScrollButtonPseudoElement()) {
+    search_start_node = node.parentNode();
   }
   ContainerNode* parent =
       LayoutTreeBuilderTraversal::LayoutParent(*search_start_node);
@@ -100,12 +132,65 @@ Node* LayoutTreeBuilderTraversal::NextSibling(const Node& node) {
       }
       [[fallthrough]];
     case kPseudoIdMarker:
+      if (const ColumnPseudoElementsVector* columns =
+              parent_element->GetColumnPseudoElements();
+          columns && !columns->empty()) {
+        return columns->front();
+      }
+      [[fallthrough]];
+    case kPseudoIdColumn:
+      if (auto* column = DynamicTo<ColumnPseudoElement>(node)) {
+        const ColumnPseudoElementsVector* columns =
+            parent_element->GetColumnPseudoElements();
+        if (column->Index() + 1u < columns->size()) {
+          return columns->at(column->Index() + 1u);
+        }
+      }
       if (Node* next =
               parent_element->GetPseudoElement(kPseudoIdScrollMarker)) {
         return next;
       }
       [[fallthrough]];
     case kPseudoIdScrollMarker:
+      if (Node* next = parent_element->GetPseudoElement(
+              kPseudoIdScrollButtonBlockStart)) {
+        return next;
+      }
+      [[fallthrough]];
+    case kPseudoIdScrollButtonBlockStart:
+      if (Node* next = parent_element->GetPseudoElement(
+              kPseudoIdScrollButtonInlineStart)) {
+        return next;
+      }
+      [[fallthrough]];
+    case kPseudoIdScrollButtonInlineStart:
+      if (Node* next = parent_element->GetPseudoElement(
+              kPseudoIdScrollButtonInlineEnd)) {
+        return next;
+      }
+      [[fallthrough]];
+    case kPseudoIdScrollButtonInlineEnd:
+      if (Node* next =
+              parent_element->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
+        return next;
+      }
+      [[fallthrough]];
+    case kPseudoIdScrollButtonBlockEnd:
+      if (const ScopedCSSNameList* overscroll_areas =
+              parent_element->GetComputedStyle()->OverscrollArea()) {
+        if (!overscroll_areas->GetNames().empty()) {
+          Node* next = parent_element->GetPseudoElement(
+              kPseudoIdOverscrollAreaParent,
+              overscroll_areas->GetNames().front()->GetName());
+          CHECK(next);
+          return next;
+        }
+      }
+      if (Node* next = parent_element->GetPseudoElement(kPseudoIdCheckMark)) {
+        return next;
+      }
+      [[fallthrough]];
+    case kPseudoIdCheckMark:
       if (Node* next = parent_element->GetPseudoElement(kPseudoIdBefore))
         return next;
       [[fallthrough]];
@@ -123,59 +208,121 @@ Node* LayoutTreeBuilderTraversal::NextSibling(const Node& node) {
       }
       if (Node* next = parent_element->GetPseudoElement(kPseudoIdAfter))
         return next;
+      if (Node* next =
+              parent_element->GetPseudoElement(kPseudoIdViewTransition)) {
+        // If parent is a non-root view transition scope, place this child
+        // before the ::view-transition pseudo-element.
+        // If parent is the document element, its ::view-transition is placed
+        // under the LayoutViewTransitionRoot instead.
+        if (!parent_element->IsDocumentElement()) {
+          return next;
+        }
+      }
       [[fallthrough]];
     case kPseudoIdAfter:
+      if (Node* next = parent_element->GetPseudoElement(kPseudoIdPickerIcon)) {
+        return next;
+      }
+      [[fallthrough]];
+    case kPseudoIdPickerIcon:
+      if (Node* next =
+              parent_element->GetPseudoElement(kPseudoIdInterestHint)) {
+        return next;
+      }
+      [[fallthrough]];
+    case kPseudoIdInterestHint:
       if (Node* next = parent_element->GetPseudoElement(
               kPseudoIdScrollMarkerGroupAfter)) {
         return next;
       }
       [[fallthrough]];
+
+    // All of these pseudo-elements have no next sibling.
     case kPseudoIdScrollMarkerGroupAfter:
-      return nullptr;
+    case kPseudoIdOverscrollAreaParent:
+    case kPseudoIdOverscrollClientArea:
     case kPseudoIdViewTransition:
       return nullptr;
+
     case kPseudoIdViewTransitionGroup: {
-      auto* pseudo_element = DynamicTo<PseudoElement>(node);
+      auto* parent_pseudo =
+          DynamicTo<ViewTransitionPseudoElementBase>(parent_element);
+      DCHECK(parent_pseudo);
+
+      auto* pseudo_element = DynamicTo<ViewTransitionPseudoElementBase>(node);
       DCHECK(pseudo_element);
 
       // Iterate the list of IDs until we hit the entry for |node's| ID. The
-      // sibling is the next ID in the list which generates a pseudo element.
+      // sibling is the next ID in the list which generates a pseudo-element.
       bool found = false;
-      for (const auto& view_transition_name : parent_element->GetDocument()
-                                                  .GetStyleEngine()
-                                                  .ViewTransitionTags()) {
+      for (const auto& pseudo_argument :
+           parent_pseudo->GetContainedViewTransitionNames()) {
         if (!found) {
-          if (view_transition_name == pseudo_element->view_transition_name())
+          if (pseudo_argument == pseudo_element->view_transition_name()) {
             found = true;
+          }
           continue;
         }
 
         if (auto* sibling = parent_element->GetPseudoElement(
-                kPseudoIdViewTransitionGroup, view_transition_name)) {
+                kPseudoIdViewTransitionGroup, pseudo_argument)) {
           return sibling;
         }
       }
       return nullptr;
     }
-    case kPseudoIdViewTransitionImagePair:
-    case kPseudoIdViewTransitionOld:
+    case kPseudoIdViewTransitionImagePair: {
+      auto* pseudo_element = DynamicTo<ViewTransitionPseudoElementBase>(node);
+      DCHECK(pseudo_element);
+      if (auto* sibling = parent_element->GetPseudoElement(
+              kPseudoIdViewTransitionGroupChildren,
+              pseudo_element->view_transition_name())) {
+        return sibling;
+      }
+      return nullptr;
+    }
+    case kPseudoIdViewTransitionGroupChildren:
+    case kPseudoIdViewTransitionOld: {
+      auto* pseudo_element = DynamicTo<ViewTransitionPseudoElementBase>(node);
+      DCHECK(pseudo_element);
+      if (auto* sibling = parent_element->GetPseudoElement(
+              kPseudoIdViewTransitionNew,
+              pseudo_element->view_transition_name())) {
+        return sibling;
+      }
+      return nullptr;
+    }
     case kPseudoIdViewTransitionNew:
       return nullptr;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
 Node* LayoutTreeBuilderTraversal::PreviousSibling(const Node& node) {
   PseudoId pseudo_id = node.GetPseudoId();
+  AtomicString pseudo_argument;
   Element* parent_element;
   if (pseudo_id != kPseudoIdNone) {
+    const PseudoElement& pseudo_element = To<PseudoElement>(node);
+    pseudo_argument = pseudo_element.GetPseudoArgument();
     parent_element = DynamicTo<Element>(*node.parentNode());
     DCHECK(parent_element);
   }
   switch (pseudo_id) {
     case kPseudoIdScrollMarkerGroupAfter:
+      if (Node* previous =
+              parent_element->GetPseudoElement(kPseudoIdInterestHint)) {
+        return previous;
+      }
+      [[fallthrough]];
+    case kPseudoIdInterestHint:
+      if (Node* previous =
+              parent_element->GetPseudoElement(kPseudoIdPickerIcon)) {
+        return previous;
+      }
+      [[fallthrough]];
+    case kPseudoIdPickerIcon:
       if (Node* previous = parent_element->GetPseudoElement(kPseudoIdAfter)) {
         return previous;
       }
@@ -197,13 +344,70 @@ Node* LayoutTreeBuilderTraversal::PreviousSibling(const Node& node) {
       [[fallthrough]];
     case kPseudoIdBefore:
       if (Node* previous =
+              parent_element->GetPseudoElement(kPseudoIdCheckMark)) {
+        return previous;
+      }
+      [[fallthrough]];
+    case kPseudoIdCheckMark:
+      if (Node* previous =
+              parent_element->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
+        return previous;
+      }
+      [[fallthrough]];
+    case kPseudoIdOverscrollAreaParent:
+      if (pseudo_id == kPseudoIdOverscrollAreaParent) {
+        const ScopedCSSNameList* overscroll_areas =
+            parent_element->GetComputedStyle()->OverscrollArea();
+        CHECK(overscroll_areas);
+        CHECK(!overscroll_areas->GetNames().empty());
+        if (pseudo_argument !=
+            overscroll_areas->GetNames().front()->GetName()) {
+          return nullptr;
+        }
+      }
+      [[fallthrough]];
+    case kPseudoIdScrollButtonBlockEnd:
+      if (Node* previous = parent_element->GetPseudoElement(
+              kPseudoIdScrollButtonInlineEnd)) {
+        return previous;
+      }
+      [[fallthrough]];
+    case kPseudoIdScrollButtonInlineEnd:
+      if (Node* previous = parent_element->GetPseudoElement(
+              kPseudoIdScrollButtonInlineStart)) {
+        return previous;
+      }
+      [[fallthrough]];
+    case kPseudoIdScrollButtonInlineStart:
+      if (Node* previous = parent_element->GetPseudoElement(
+              kPseudoIdScrollButtonBlockStart)) {
+        return previous;
+      }
+      [[fallthrough]];
+    case kPseudoIdScrollButtonBlockStart:
+      if (Node* previous =
               parent_element->GetPseudoElement(kPseudoIdScrollMarker)) {
         return previous;
       }
       [[fallthrough]];
     case kPseudoIdScrollMarker:
-      if (Node* previous = parent_element->GetPseudoElement(kPseudoIdMarker))
+      if (const ColumnPseudoElementsVector* columns =
+              parent_element->GetColumnPseudoElements();
+          columns && !columns->empty()) {
+        return columns->back();
+      }
+      [[fallthrough]];
+    case kPseudoIdColumn:
+      if (auto* column = DynamicTo<ColumnPseudoElement>(node)) {
+        const ColumnPseudoElementsVector* columns =
+            parent_element->GetColumnPseudoElements();
+        if (column->Index() > 0) {
+          return columns->at(column->Index() - 1u);
+        }
+      }
+      if (Node* previous = parent_element->GetPseudoElement(kPseudoIdMarker)) {
         return previous;
+      }
       [[fallthrough]];
     case kPseudoIdMarker:
       if (Node* previous = parent_element->GetPseudoElement(
@@ -211,11 +415,13 @@ Node* LayoutTreeBuilderTraversal::PreviousSibling(const Node& node) {
         return previous;
       }
       [[fallthrough]];
+
+    // These pseudo-elements have no previous sibling.
+    case kPseudoIdOverscrollClientArea:
     case kPseudoIdScrollMarkerGroupBefore:
       return nullptr;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -228,12 +434,44 @@ Node* LayoutTreeBuilderTraversal::LastChild(const Node& node) {
           current_element->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter)) {
     return last;
   }
+  if (Node* last = current_element->GetPseudoElement(kPseudoIdInterestHint)) {
+    return last;
+  }
+  if (Node* last = current_element->GetPseudoElement(kPseudoIdPickerIcon)) {
+    return last;
+  }
   if (Node* last = current_element->GetPseudoElement(kPseudoIdAfter))
     return last;
   if (Node* last = FlatTreeTraversal::LastChild(*current_element))
     return last;
   if (Node* last = current_element->GetPseudoElement(kPseudoIdBefore))
     return last;
+  if (Node* last = current_element->GetPseudoElement(kPseudoIdCheckMark)) {
+    return last;
+  }
+  if (const ColumnPseudoElementsVector* columns =
+          current_element->GetColumnPseudoElements();
+      columns && !columns->empty()) {
+    if (Node* last = columns->back()) {
+      return last;
+    }
+  }
+  if (Node* last =
+          current_element->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
+    return last;
+  }
+  if (Node* last =
+          current_element->GetPseudoElement(kPseudoIdScrollButtonInlineEnd)) {
+    return last;
+  }
+  if (Node* last =
+          current_element->GetPseudoElement(kPseudoIdScrollButtonInlineStart)) {
+    return last;
+  }
+  if (Node* last =
+          current_element->GetPseudoElement(kPseudoIdScrollButtonBlockStart)) {
+    return last;
+  }
   if (Node* last = current_element->GetPseudoElement(kPseudoIdScrollMarker)) {
     return last;
   }
@@ -270,11 +508,80 @@ Node* LayoutTreeBuilderTraversal::FirstChild(const Node& node) {
   if (Node* first = current_element->GetPseudoElement(kPseudoIdScrollMarker)) {
     return first;
   }
+  if (Node* first =
+          current_element->GetPseudoElement(kPseudoIdScrollButtonBlockStart)) {
+    return first;
+  }
+  if (Node* first =
+          current_element->GetPseudoElement(kPseudoIdScrollButtonInlineStart)) {
+    return first;
+  }
+  if (Node* first =
+          current_element->GetPseudoElement(kPseudoIdScrollButtonInlineEnd)) {
+    return first;
+  }
+  if (Node* first =
+          current_element->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
+    return first;
+  }
+  const Element& originating_element =
+      current_element->IsPseudoElement()
+          ? To<PseudoElement>(current_element)->UltimateOriginatingElement()
+          : *current_element;
+  if (!current_element->IsPseudoElement() ||
+      current_element->GetPseudoId() == kPseudoIdOverscrollAreaParent) {
+    if (const ScopedCSSNameList* overscroll_areas =
+            originating_element.GetComputedStyle()
+                ? originating_element.GetComputedStyle()->OverscrollArea()
+                : nullptr;
+        overscroll_areas && !overscroll_areas->GetNames().empty()) {
+      bool return_next = !current_element->IsPseudoElement();
+      for (const auto& name : overscroll_areas->GetNames()) {
+        if (return_next) {
+          Node* next = originating_element.GetPseudoElement(
+              kPseudoIdOverscrollAreaParent, name->GetName());
+          CHECK(next);
+          return next;
+        }
+        if (name->GetName() ==
+            To<PseudoElement>(current_element)->GetPseudoArgument()) {
+          return_next = true;
+        }
+      }
+      CHECK(return_next);
+      return originating_element.GetPseudoElement(
+          kPseudoIdOverscrollClientArea);
+    }
+  }
+
+  // All of these pseudo-elements are part of the contents and NextChild
+  // will never return one of the pseudos that comes before the overscroll
+  // area.
+  if (current_element->GetPseudoId() == kPseudoIdOverscrollClientArea) {
+    // Find the first child of the originating element's content.
+    current_element = &originating_element;
+  }
+  if (const ColumnPseudoElementsVector* columns =
+          current_element->GetColumnPseudoElements();
+      columns && !columns->empty()) {
+    if (Node* first = columns->front()) {
+      return first;
+    }
+  }
+  if (Node* first = current_element->GetPseudoElement(kPseudoIdCheckMark)) {
+    return first;
+  }
   if (Node* first = current_element->GetPseudoElement(kPseudoIdBefore))
     return first;
   if (Node* first = FlatTreeTraversal::FirstChild(node))
     return first;
   if (Node* first = current_element->GetPseudoElement(kPseudoIdAfter)) {
+    return first;
+  }
+  if (Node* first = current_element->GetPseudoElement(kPseudoIdPickerIcon)) {
+    return first;
+  }
+  if (Node* first = current_element->GetPseudoElement(kPseudoIdInterestHint)) {
     return first;
   }
   return current_element->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter);
@@ -312,24 +619,46 @@ Node* LayoutTreeBuilderTraversal::Next(const Node& node,
 }
 
 // Checks if current or (next/prev) sibling is either ::scroll-marker-group
-// or element with scroll-marker-group property set.
+// or element with scroll-marker-group property set,
+// or ::scroll-button(), or element with scroll-button.
 static inline bool AreBoxTreeOrderSiblings(const Node& current, Node* sibling) {
   if (current.IsScrollMarkerGroupPseudoElement()) {
     return false;
   }
-  const ComputedStyle* style = current.GetComputedStyle();
-  if (style && !style->ScrollMarkerGroupNone()) {
+  if (const auto* element = DynamicTo<Element>(current)) {
+    const ComputedStyle* style = element->GetComputedStyle();
+    if (style && !style->ScrollMarkerGroupNone()) {
+      return false;
+    }
+  }
+  if (Element* sibling_element = DynamicTo<Element>(sibling)) {
+    if (sibling_element->IsScrollMarkerGroupPseudoElement()) {
+      return false;
+    }
+    const ComputedStyle* sibling_style = sibling_element->GetComputedStyle();
+    if (sibling_style && !sibling_style->ScrollMarkerGroupNone()) {
+      return false;
+    }
+  }
+  if (current.IsScrollButtonPseudoElement()) {
     return false;
   }
-  if (!sibling) {
-    return true;
-  }
-  if (sibling->IsScrollMarkerGroupPseudoElement()) {
-    return false;
-  }
-  const ComputedStyle* sibling_style = sibling->GetComputedStyle();
-  if (sibling_style && !sibling_style->ScrollMarkerGroupNone()) {
-    return false;
+  if (Element* sibling_element = DynamicTo<Element>(sibling)) {
+    if (sibling_element->IsScrollButtonPseudoElement()) {
+      return false;
+    }
+    if (sibling_element->GetPseudoElement(kPseudoIdScrollButtonBlockStart)) {
+      return false;
+    }
+    if (sibling_element->GetPseudoElement(kPseudoIdScrollButtonInlineStart)) {
+      return false;
+    }
+    if (sibling_element->GetPseudoElement(kPseudoIdScrollButtonInlineEnd)) {
+      return false;
+    }
+    if (sibling_element->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
+      return false;
+    }
   }
   return true;
 }
@@ -337,20 +666,21 @@ static inline bool AreBoxTreeOrderSiblings(const Node& current, Node* sibling) {
 // This function correctly performs one move from `node` to next
 // layout sibling. We can't just use NextSibling, as ::scroll-marker-group
 // layout object is either previous or next sibling of its originating element,
-// but still a node child of it, as a pseudo element.
+// but still a node child of it, as a pseudo-element.
 // Layout tree:
 //        (PS) (SMGB) (OE) (SMGA) (NS)
 //                  (B)  (A)
 // OE - originating element
 // PS - previous sibling of OE
 // NS - next sibling of OE
+// SB - scroll buttons
 // SMGB - ::scroll-marker-group of OE with scroll-marker-group: before
 // SMGA - ::scroll-marker-group of OE with scroll-marker-group: after
 // B - ::before of OE
 // A - ::after of OE
 // Node tree:
-//        (PS) (OE) (NS)
-//    (SMGB) (B)  (A) (SMGA)
+//          (PS) (OE) (NS)
+// (SMGB) (SB) (B)  (A) (SMGA)
 // Node tree is input (`node`), return output based on layout tree.
 static Node* NextLayoutSiblingInBoxTreeOrder(const Node& node) {
   Node* next = LayoutTreeBuilderTraversal::NextSibling(node);
@@ -358,38 +688,59 @@ static Node* NextLayoutSiblingInBoxTreeOrder(const Node& node) {
     return next;
   }
   // From PS to OE with SMGB, return SMGB.
-  if (next && next->GetComputedStyle() &&
-      next->GetComputedStyle()->HasScrollMarkerGroupBefore()) {
-    if (Element* pseudo = To<Element>(next)->GetPseudoElement(
-            kPseudoIdScrollMarkerGroupBefore)) {
+  Element* next_element = DynamicTo<Element>(next);
+  if (next_element && next_element->GetComputedStyle() &&
+      next_element->GetComputedStyle()->HasScrollMarkerGroupBefore()) {
+    if (Element* pseudo =
+            next_element->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore)) {
       return pseudo;
     }
   }
   // From some pseudo to any SMG, just skip SMG.
-  if (next && next->IsScrollMarkerGroupPseudoElement()) {
-    return LayoutTreeBuilderTraversal::NextSibling(*next);
+  if (next_element && next_element->IsScrollMarkerGroupPseudoElement()) {
+    return LayoutTreeBuilderTraversal::NextSibling(*next_element);
   }
   // From OE with SMGA to NS, return SMGA.
-  if (node.GetComputedStyle() &&
-      node.GetComputedStyle()->HasScrollMarkerGroupAfter()) {
+  const Element* element = DynamicTo<Element>(node);
+  if (!element) {
+    return next;
+  }
+  if (element->GetComputedStyle() &&
+      element->GetComputedStyle()->HasScrollMarkerGroupAfter()) {
     if (Element* pseudo = To<Element>(node).GetPseudoElement(
             kPseudoIdScrollMarkerGroupAfter)) {
       return pseudo;
     }
   }
-  // From SMGB, return OE.
-  if (node.IsScrollMarkerGroupBeforePseudoElement()) {
-    return To<PseudoElement>(node).OriginatingElement();
+  // From SMGB.
+  if (element->IsScrollMarkerGroupBeforePseudoElement()) {
+    // return SB, if found.
+    if (next && next->IsScrollButtonPseudoElement()) {
+      return next;
+    }
+    // return OE, if not.
+    return element->parentNode();
+  }
+  // From SB.
+  if (element->IsScrollButtonPseudoElement()) {
+    // return next SB, if found.
+    if (next && next->IsScrollButtonPseudoElement()) {
+      return next;
+    }
+    // return OE, if not.
+    return element->parentNode();
   }
   // From SMGA, return NS, but check if NS has SMGB, then return NS's SMGB.
-  if (node.IsScrollMarkerGroupAfterPseudoElement()) {
-    Node* originating_next = LayoutTreeBuilderTraversal::NextSibling(
-        *To<PseudoElement>(node).OriginatingElement());
-    if (originating_next && originating_next->GetComputedStyle() &&
-        originating_next->GetComputedStyle()->HasScrollMarkerGroupBefore()) {
-      if (Element* pseudo =
-              To<Element>(originating_next)
-                  ->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore)) {
+  if (element->IsScrollMarkerGroupAfterPseudoElement()) {
+    Node* originating_next =
+        LayoutTreeBuilderTraversal::NextSibling(*element->parentNode());
+    Element* originating_next_element = DynamicTo<Element>(originating_next);
+    if (originating_next_element &&
+        originating_next_element->GetComputedStyle() &&
+        originating_next_element->GetComputedStyle()
+            ->HasScrollMarkerGroupBefore()) {
+      if (Element* pseudo = originating_next_element->GetPseudoElement(
+              kPseudoIdScrollMarkerGroupBefore)) {
         return pseudo;
       }
     }
@@ -441,38 +792,56 @@ static Node* PreviousLayoutSiblingInBoxTreeOrder(const Node& node) {
   if (AreBoxTreeOrderSiblings(node, previous)) {
     return previous;
   }
-  if (previous && previous->GetComputedStyle() &&
-      previous->GetComputedStyle()->HasScrollMarkerGroupAfter()) {
-    if (Element* pseudo = To<Element>(previous)->GetPseudoElement(
+  Element* previous_element = DynamicTo<Element>(previous);
+  if (previous_element && previous_element->GetComputedStyle() &&
+      previous_element->GetComputedStyle()->HasScrollMarkerGroupAfter()) {
+    if (Element* pseudo = previous_element->GetPseudoElement(
             kPseudoIdScrollMarkerGroupAfter)) {
       return pseudo;
     }
   }
-  if (previous && previous->IsScrollMarkerGroupPseudoElement()) {
-    return LayoutTreeBuilderTraversal::PreviousSibling(*previous);
+  if (previous_element &&
+      previous_element->IsScrollMarkerGroupPseudoElement()) {
+    return LayoutTreeBuilderTraversal::PreviousSibling(*previous_element);
   }
-  if (node.GetComputedStyle() &&
-      node.GetComputedStyle()->HasScrollMarkerGroupBefore()) {
-    if (Element* pseudo = To<Element>(node).GetPseudoElement(
-            kPseudoIdScrollMarkerGroupBefore)) {
+  const Element* element = DynamicTo<Element>(node);
+  if (!element) {
+    return previous;
+  }
+  if (element->IsScrollMarkerGroupAfterPseudoElement()) {
+    return element->parentNode();
+  }
+  if (Element* pseudo =
+          element->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
+    return pseudo;
+  }
+  if (Element* pseudo =
+          element->GetPseudoElement(kPseudoIdScrollButtonInlineEnd)) {
+    return pseudo;
+  }
+  if (Element* pseudo =
+          element->GetPseudoElement(kPseudoIdScrollButtonInlineStart)) {
+    return pseudo;
+  }
+  if (Element* pseudo =
+          element->GetPseudoElement(kPseudoIdScrollButtonBlockStart)) {
+    return pseudo;
+  }
+  if (element->GetComputedStyle() &&
+      element->GetComputedStyle()->HasScrollMarkerGroupBefore()) {
+    if (Element* pseudo =
+            element->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore)) {
       return pseudo;
     }
   }
-  if (node.IsScrollMarkerGroupAfterPseudoElement()) {
-    return To<PseudoElement>(node).OriginatingElement();
-  }
-  if (node.IsScrollMarkerGroupBeforePseudoElement()) {
-    Node* originating_prev = LayoutTreeBuilderTraversal::PreviousSibling(
-        *To<PseudoElement>(node).OriginatingElement());
-    if (originating_prev && originating_prev->GetComputedStyle() &&
-        originating_prev->GetComputedStyle()->HasScrollMarkerGroupAfter()) {
-      if (Element* pseudo =
-              To<Element>(originating_prev)
-                  ->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter)) {
-        return pseudo;
-      }
+  if (element->IsScrollButtonPseudoElement()) {
+    if (previous && previous->IsScrollMarkerGroupBeforePseudoElement()) {
+      return previous;
     }
-    return originating_prev;
+    return PreviousLayoutSiblingOfElement(*element->parentElement());
+  }
+  if (element->IsScrollMarkerGroupBeforePseudoElement()) {
+    return PreviousLayoutSiblingOfElement(*element->parentElement());
   }
   return previous;
 }

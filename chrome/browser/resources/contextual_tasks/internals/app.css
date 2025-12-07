@@ -1,0 +1,66 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #import=//resources/cr_elements/md_select_lit.css.js
+ * #scheme=relative
+ * #include=cr-shared-style-lit cr-hidden-style-lit md-select-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+  margin: auto;
+  max-width: 800px;
+  padding: 20px;
+}
+
+h1 {
+  margin-bottom: 20px;
+  margin-top: 0;
+  padding-top: 40px;
+  text-align: center;
+}
+
+#textInput {
+  --cr-input-error-display: none;
+  margin: 0 0 10px 0;
+}
+
+cr-textarea {
+  margin-bottom: 10px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    color: var(--google-grey-200);
+  }
+}
+
+cr-slider {
+  width: 160px;
+  --cr-slider-active-color: var(--google-blue-300);
+  --cr-slider-knob-color: var(--google-blue-300);
+  --cr-slider-container-color: var(--google-blue-300);
+  --cr-slider-bar-height: 4px;
+  line-height: 20px;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.model-options > span {
+  color: var(--google-grey-700);
+  font-size: 13px;
+  width: 180px;
+  text-align: left;
+  display: inline-block;
+}

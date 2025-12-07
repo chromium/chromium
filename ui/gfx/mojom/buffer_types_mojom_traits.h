@@ -5,14 +5,14 @@
 #ifndef UI_GFX_MOJOM_BUFFER_TYPES_MOJOM_TRAITS_H_
 #define UI_GFX_MOJOM_BUFFER_TYPES_MOJOM_TRAITS_H_
 
-
 #include "base/component_export.h"
 #include "base/notreached.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "ui/gfx/buffer_types.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 #include "ui/gfx/mojom/buffer_types.mojom-shared.h"
 #include "ui/gfx/mojom/native_handle_types.mojom.h"
 
@@ -58,8 +58,7 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
       case gfx::BufferFormat::P010:
         return gfx::mojom::BufferFormat::P010;
     }
-    NOTREACHED_IN_MIGRATION();
-    return gfx::mojom::BufferFormat::kMinValue;
+    NOTREACHED();
   }
 
   static bool FromMojom(gfx::mojom::BufferFormat input,
@@ -117,8 +116,7 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
         *out = gfx::BufferFormat::P010;
         return true;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 };
 
@@ -152,8 +150,7 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
       case gfx::BufferUsage::SCANOUT_FRONT_RENDERING:
         return gfx::mojom::BufferUsage::SCANOUT_FRONT_RENDERING;
     }
-    NOTREACHED_IN_MIGRATION();
-    return gfx::mojom::BufferUsage::kMinValue;
+    NOTREACHED();
   }
 
   static bool FromMojom(gfx::mojom::BufferUsage input, gfx::BufferUsage* out) {
@@ -195,8 +192,7 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
         *out = gfx::BufferUsage::SCANOUT_FRONT_RENDERING;
         return true;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 };
 
@@ -216,39 +212,24 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
                    gfx::BufferUsageAndFormat* out);
 };
 
-template <>
-struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
-    StructTraits<gfx::mojom::GpuMemoryBufferIdDataView,
-                 gfx::GpuMemoryBufferId> {
-  static int32_t id(const gfx::GpuMemoryBufferId& buffer_id) {
-    return buffer_id.id;
-  }
-  static bool Read(gfx::mojom::GpuMemoryBufferIdDataView data,
-                   gfx::GpuMemoryBufferId* out) {
-    out->id = data.id();
-    return true;
-  }
-};
-
+#if BUILDFLAG(USE_BLINK)
 template <>
 struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
     StructTraits<gfx::mojom::GpuMemoryBufferHandleDataView,
                  gfx::GpuMemoryBufferHandle> {
-  static gfx::GpuMemoryBufferId id(const gfx::GpuMemoryBufferHandle& handle) {
-    return handle.id;
-  }
   static uint32_t offset(const gfx::GpuMemoryBufferHandle& handle) {
     return handle.offset;
   }
   static uint32_t stride(const gfx::GpuMemoryBufferHandle& handle) {
     return handle.stride;
   }
-  static mojo::StructPtr<gfx::mojom::GpuMemoryBufferPlatformHandle>
-  platform_handle(gfx::GpuMemoryBufferHandle& handle);
+  static gfx::GpuMemoryBufferHandle& platform_handle(
+      gfx::GpuMemoryBufferHandle& handle);
 
   static bool Read(gfx::mojom::GpuMemoryBufferHandleDataView data,
                    gfx::GpuMemoryBufferHandle* handle);
 };
+#endif  // BUILDFLAG(USE_BLINK)
 
 template <>
 struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
@@ -268,8 +249,7 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
       case gfx::BufferPlane::A:
         return gfx::mojom::BufferPlane::A;
     }
-    NOTREACHED_IN_MIGRATION();
-    return gfx::mojom::BufferPlane::kMinValue;
+    NOTREACHED();
   }
 
   static bool FromMojom(gfx::mojom::BufferPlane input, gfx::BufferPlane* out) {
@@ -293,8 +273,7 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
         *out = gfx::BufferPlane::A;
         return true;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 };
 

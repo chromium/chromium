@@ -17,7 +17,7 @@ BrowserProcessContextData::CloneProcessContextData() const {
   return std::make_unique<BrowserProcessContextData>(process_);
 }
 
-bool BrowserProcessContextData::HasIsolatedContextCapability() const {
+bool BrowserProcessContextData::HasControlledFrameCapability() const {
   return content::IsIsolatedContext(process_);
 }
 

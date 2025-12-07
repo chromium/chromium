@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
+#include <variant>
+
 namespace {
 
 struct Empty {};
@@ -12,9 +14,17 @@ struct StackAllocatedType {
   STACK_ALLOCATED();
 };
 
-static_assert(!WTF::IsStackAllocatedType<Empty>,
+static_assert(!blink::IsStackAllocatedTypeV<Empty>,
               "Failed to detect STACK_ALLOCATED macro.");
-static_assert(WTF::IsStackAllocatedType<StackAllocatedType>,
+static_assert(blink::IsStackAllocatedTypeV<StackAllocatedType>,
               "Failed to detect STACK_ALLOCATED macro.");
+
+static_assert(blink::IsStackAllocatedTypeV<std::pair<int, StackAllocatedType>>,
+              "Failed to detect STACK_ALLOCATED macro.");
+static_assert(blink::IsStackAllocatedTypeV<std::optional<StackAllocatedType>>,
+              "Failed to detect STACK_ALLOCATED macro.");
+static_assert(
+    blink::IsStackAllocatedTypeV<std::variant<int, StackAllocatedType>>,
+    "Failed to detect STACK_ALLOCATED macro.");
 
 }  // namespace

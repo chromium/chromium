@@ -9,7 +9,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "build/chromeos_buildflags.h"
 #include "media/capture/video/mock_device.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/video_capture/public/cpp/mock_video_frame_handler.h"
@@ -17,7 +16,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::Invoke;
 using testing::_;
 
 namespace video_capture {
@@ -32,7 +30,7 @@ class DeviceMediaToMojoAdapterTest : public ::testing::Test {
         video_frame_handler_.InitWithNewPipeAndPassReceiver());
     auto mock_device = std::make_unique<media::MockDevice>();
     mock_device_ptr_ = mock_device.get();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     adapter_ = std::make_unique<DeviceMediaToMojoAdapter>(
         std::move(mock_device), base::DoNothing(),
         base::SingleThreadTaskRunner::GetCurrentDefault());
@@ -42,7 +40,7 @@ class DeviceMediaToMojoAdapterTest : public ::testing::Test {
 #else
     adapter_ =
         std::make_unique<DeviceMediaToMojoAdapter>(std::move(mock_device));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   void TearDown() override {
@@ -65,13 +63,13 @@ TEST_F(DeviceMediaToMojoAdapterTest,
   {
     base::RunLoop run_loop;
     EXPECT_CALL(*mock_device_ptr_, DoAllocateAndStart(_, _))
-        .WillOnce(Invoke(
+        .WillOnce(
             [](const media::VideoCaptureParams& params,
                std::unique_ptr<media::VideoCaptureDevice::Client>* client) {
               (*client)->OnStarted();
-            }));
+            });
     EXPECT_CALL(*mock_video_frame_handler_, OnStarted())
-        .WillOnce(Invoke([&run_loop]() { run_loop.Quit(); }));
+        .WillOnce([&run_loop]() { run_loop.Quit(); });
 
     const media::VideoCaptureParams kArbitrarySettings;
     adapter_->Start(kArbitrarySettings, std::move(video_frame_handler_));
@@ -80,7 +78,7 @@ TEST_F(DeviceMediaToMojoAdapterTest,
   {
     base::RunLoop run_loop;
     EXPECT_CALL(*mock_device_ptr_, DoStopAndDeAllocate())
-        .WillOnce(Invoke([&run_loop]() { run_loop.Quit(); }));
+        .WillOnce([&run_loop]() { run_loop.Quit(); });
     mock_video_frame_handler_.reset();
     run_loop.Run();
   }
@@ -95,13 +93,13 @@ TEST_F(DeviceMediaToMojoAdapterTest,
   {
     base::RunLoop run_loop;
     EXPECT_CALL(*mock_device_ptr_, DoAllocateAndStart(_, _))
-        .WillOnce(Invoke(
+        .WillOnce(
             [](const media::VideoCaptureParams& params,
                std::unique_ptr<media::VideoCaptureDevice::Client>* client) {
               (*client)->OnStarted();
-            }));
+            });
     EXPECT_CALL(*mock_video_frame_handler_, OnStarted())
-        .WillOnce(Invoke([&run_loop]() { run_loop.Quit(); }));
+        .WillOnce([&run_loop]() { run_loop.Quit(); });
 
     const media::VideoCaptureParams kArbitrarySettings;
     adapter_->Start(kArbitrarySettings, std::move(video_frame_handler_));

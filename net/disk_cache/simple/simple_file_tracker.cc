@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/disk_cache/simple/simple_file_tracker.h"
 
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <memory>
 #include <utility>
@@ -17,7 +13,6 @@
 #include "base/files/file.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/synchronization/lock.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/simple/simple_histogram_enums.h"
@@ -34,6 +29,12 @@ void RecordFileDescripterLimiterOp(FileDescriptorLimiterOp op) {
 
 }  // namespace
 
+bool SimpleFileTracker::TrackedFiles::InLRUList() const {
+  // Either both should be set, or neither.
+  DCHECK((next() && previous()) || (!next() && !previous()));
+  return next();
+}
+
 SimpleFileTracker::SimpleFileTracker(int file_limit)
     : file_limit_(file_limit) {}
 
@@ -41,12 +42,17 @@ SimpleFileTracker::~SimpleFileTracker() {
   DCHECK(lru_.empty());
   DCHECK(tracked_files_.empty());
 }
+void SimpleFileTracker::TrackedFiles::RemoveIfLinked() {
+  if (InLRUList()) {
+    RemoveFromList();
+  }
+}
 
 void SimpleFileTracker::Register(const SimpleSynchronousEntry* owner,
                                  SubFile subfile,
-                                 std::unique_ptr<base::File> file) {
+                                 std::unique_ptr<CacheFile> file) {
   DCHECK(file->IsValid());
-  std::vector<std::unique_ptr<base::File>> files_to_close;
+  std::vector<std::unique_ptr<CacheFile>> files_to_close;
 
   {
     base::AutoLock hold_lock(lock_);
@@ -91,7 +97,7 @@ SimpleFileTracker::FileHandle SimpleFileTracker::Acquire(
     BackendFileOperations* file_operations,
     const SimpleSynchronousEntry* owner,
     SubFile subfile) {
-  std::vector<std::unique_ptr<base::File>> files_to_close;
+  std::vector<std::unique_ptr<CacheFile>> files_to_close;
 
   {
     base::AutoLock hold_lock(lock_);
@@ -116,7 +122,7 @@ SimpleFileTracker::FileHandle SimpleFileTracker::Acquire(
 }
 
 SimpleFileTracker::TrackedFiles::TrackedFiles() {
-  std::fill(state, state + kSimpleEntryTotalFileCount, TF_NO_REGISTRATION);
+  std::ranges::fill(state, TF_NO_REGISTRATION);
 }
 
 SimpleFileTracker::TrackedFiles::~TrackedFiles() = default;
@@ -129,15 +135,16 @@ bool SimpleFileTracker::TrackedFiles::Empty() const {
 }
 
 bool SimpleFileTracker::TrackedFiles::HasOpenFiles() const {
-  for (const std::unique_ptr<base::File>& file : files)
+  for (const std::unique_ptr<CacheFile>& file : files) {
     if (file != nullptr)
       return true;
+  }
   return false;
 }
 
 void SimpleFileTracker::Release(const SimpleSynchronousEntry* owner,
                                 SubFile subfile) {
-  std::vector<std::unique_ptr<base::File>> files_to_close;
+  std::vector<std::unique_ptr<CacheFile>> files_to_close;
 
   {
     base::AutoLock hold_lock(lock_);
@@ -165,7 +172,7 @@ void SimpleFileTracker::Release(const SimpleSynchronousEntry* owner,
 
 void SimpleFileTracker::Close(const SimpleSynchronousEntry* owner,
                               SubFile subfile) {
-  std::unique_ptr<base::File> file_to_close;
+  std::unique_ptr<CacheFile> file_to_close;
 
   {
     base::AutoLock hold_lock(lock_);
@@ -190,7 +197,7 @@ void SimpleFileTracker::Doom(const SimpleSynchronousEntry* owner,
                              EntryFileKey* key) {
   base::AutoLock hold_lock(lock_);
   auto iter = tracked_files_.find(key->entry_hash);
-  CHECK(iter != tracked_files_.end(), base::NotFatalUntil::M130);
+  CHECK(iter != tracked_files_.end());
 
   uint64_t max_doom_gen = 0;
   for (const std::unique_ptr<TrackedFiles>& file_with_same_hash :
@@ -224,7 +231,7 @@ bool SimpleFileTracker::IsEmptyForTesting() {
 SimpleFileTracker::TrackedFiles* SimpleFileTracker::Find(
     const SimpleSynchronousEntry* owner) {
   auto candidates = tracked_files_.find(owner->entry_file_key().entry_hash);
-  CHECK(candidates != tracked_files_.end(), base::NotFatalUntil::M130);
+  CHECK(candidates != tracked_files_.end());
   for (const auto& candidate : candidates->second) {
     if (candidate->owner == owner) {
       return candidate.get();
@@ -234,18 +241,17 @@ SimpleFileTracker::TrackedFiles* SimpleFileTracker::Find(
   return nullptr;
 }
 
-std::unique_ptr<base::File> SimpleFileTracker::PrepareClose(
+std::unique_ptr<CacheFile> SimpleFileTracker::PrepareClose(
     TrackedFiles* owners_files,
     int file_index) {
-  std::unique_ptr<base::File> file_out =
+  std::unique_ptr<CacheFile> file_out =
       std::move(owners_files->files[file_index]);
   owners_files->state[file_index] = TrackedFiles::TF_NO_REGISTRATION;
   if (owners_files->Empty()) {
     auto iter = tracked_files_.find(owners_files->key.entry_hash);
     for (auto i = iter->second.begin(); i != iter->second.end(); ++i) {
       if ((*i).get() == owners_files) {
-        if (owners_files->in_lru)
-          lru_.erase(owners_files->position_in_lru);
+        owners_files->RemoveIfLinked();
         iter->second.erase(i);
         break;
       }
@@ -259,33 +265,31 @@ std::unique_ptr<base::File> SimpleFileTracker::PrepareClose(
 }
 
 void SimpleFileTracker::CloseFilesIfTooManyOpen(
-    std::vector<std::unique_ptr<base::File>>* files_to_close) {
-  auto i = lru_.end();
-  while (open_files_ > file_limit_ && i != lru_.begin()) {
-    --i;  // Point to the actual entry.
-    TrackedFiles* tracked_files = *i;
-    DCHECK(tracked_files->in_lru);
+    std::vector<std::unique_ptr<CacheFile>>* files_to_close) {
+  TrackedFiles* node = lru_.tail()->value();
+  while (open_files_ > file_limit_ && node != lru_.end()) {
+    // Grab the previous node *before* we possibly remove |node| from the list.
+    TrackedFiles* previous = node->previous()->value();
+    DCHECK(node->InLRUList());
+    // Close TF_REGISTERED subfiles for this node.
     for (int j = 0; j < kSimpleEntryTotalFileCount; ++j) {
-      if (tracked_files->state[j] == TrackedFiles::TF_REGISTERED &&
-          tracked_files->files[j] != nullptr) {
-        files_to_close->push_back(std::move(tracked_files->files[j]));
+      if (node->state[j] == TrackedFiles::TF_REGISTERED &&
+          node->files[j] != nullptr) {
+        files_to_close->push_back(std::move(node->files[j]));
         --open_files_;
         RecordFileDescripterLimiterOp(FD_LIMIT_CLOSE_FILE);
       }
     }
 
-    if (!tracked_files->HasOpenFiles()) {
+    if (!node->HasOpenFiles()) {
       // If there is nothing here that can possibly be closed, remove this from
       // LRU for now so we don't have to rescan it next time we are here. If the
       // files get re-opened (in Acquire), it will get added back in.
-      DCHECK_EQ(*tracked_files->position_in_lru, tracked_files);
-      DCHECK(i == tracked_files->position_in_lru);
-      // Note that we're erasing at i, which would make it invalid, so go back
-      // one element ahead to we can decrement from that on next iteration.
-      ++i;
-      lru_.erase(tracked_files->position_in_lru);
-      tracked_files->in_lru = false;
+      DCHECK(node->InLRUList());
+      node->RemoveIfLinked();
     }
+    // Move to the previous item in the list
+    node = previous;
   }
 }
 
@@ -298,8 +302,7 @@ void SimpleFileTracker::ReopenFile(BackendFileOperations* file_operations,
               base::File::FLAG_WRITE | base::File::FLAG_WIN_SHARE_DELETE;
   base::FilePath file_path =
       owners_files->owner->GetFilenameForSubfile(subfile);
-  owners_files->files[file_index] =
-      std::make_unique<base::File>(file_operations->OpenFile(file_path, flags));
+  owners_files->files[file_index] = file_operations->OpenFile(file_path, flags);
   if (owners_files->files[file_index]->IsValid()) {
     RecordFileDescripterLimiterOp(FD_LIMIT_REOPEN_FILE);
 
@@ -311,14 +314,17 @@ void SimpleFileTracker::ReopenFile(BackendFileOperations* file_operations,
 }
 
 void SimpleFileTracker::EnsureInFrontOfLRU(TrackedFiles* owners_files) {
-  if (!owners_files->in_lru) {
-    lru_.push_front(owners_files);
-    owners_files->position_in_lru = lru_.begin();
-    owners_files->in_lru = true;
-  } else if (owners_files->position_in_lru != lru_.begin()) {
-    lru_.splice(lru_.begin(), lru_, owners_files->position_in_lru);
+  if (lru_.head() == owners_files) {
+    return;
   }
-  DCHECK_EQ(*owners_files->position_in_lru, owners_files);
+  owners_files->RemoveIfLinked();
+  if (lru_.empty()) {
+    lru_.Append(owners_files);
+  } else {
+    auto* head = lru_.head()->value();
+    owners_files->InsertBefore(head);
+  }
+  DCHECK_EQ(lru_.head(), owners_files);
 }
 
 SimpleFileTracker::FileHandle::FileHandle() = default;
@@ -326,7 +332,7 @@ SimpleFileTracker::FileHandle::FileHandle() = default;
 SimpleFileTracker::FileHandle::FileHandle(SimpleFileTracker* file_tracker,
                                           const SimpleSynchronousEntry* entry,
                                           SimpleFileTracker::SubFile subfile,
-                                          base::File* file)
+                                          CacheFile* file)
     : file_tracker_(file_tracker),
       entry_(entry),
       subfile_(subfile),
@@ -355,11 +361,11 @@ SimpleFileTracker::FileHandle& SimpleFileTracker::FileHandle::operator=(
   return *this;
 }
 
-base::File* SimpleFileTracker::FileHandle::operator->() const {
+CacheFile* SimpleFileTracker::FileHandle::operator->() const {
   return file_;
 }
 
-base::File* SimpleFileTracker::FileHandle::get() const {
+CacheFile* SimpleFileTracker::FileHandle::get() const {
   return file_;
 }
 

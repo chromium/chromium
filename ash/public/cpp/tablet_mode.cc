@@ -38,15 +38,15 @@ TabletMode::~TabletMode() {
 
 TabletMode::Waiter::Waiter(bool enable)
     : enable_(enable), run_loop_(base::RunLoop::Type::kNestableTasksAllowed) {
-  if (display::Screen::GetScreen()->InTabletMode() == enable_) {
+  if (display::Screen::Get()->InTabletMode() == enable_) {
     run_loop_.Quit();
   } else {
-    display::Screen::GetScreen()->AddObserver(this);
+    display::Screen::Get()->AddObserver(this);
   }
 }
 
 TabletMode::Waiter::~Waiter() {
-  display::Screen::GetScreen()->RemoveObserver(this);
+  display::Screen::Get()->RemoveObserver(this);
 }
 
 void TabletMode::Waiter::Wait() {

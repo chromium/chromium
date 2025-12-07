@@ -8,7 +8,6 @@
 #include <optional>
 #include <string>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/window_open_disposition.h"
@@ -23,14 +22,14 @@ class Image;
 
 class TabModalConfirmDialogCloseDelegate {
  public:
-  TabModalConfirmDialogCloseDelegate() {}
+  TabModalConfirmDialogCloseDelegate() = default;
 
   TabModalConfirmDialogCloseDelegate(
       const TabModalConfirmDialogCloseDelegate&) = delete;
   TabModalConfirmDialogCloseDelegate& operator=(
       const TabModalConfirmDialogCloseDelegate&) = delete;
 
-  virtual ~TabModalConfirmDialogCloseDelegate() {}
+  virtual ~TabModalConfirmDialogCloseDelegate() = default;
 
   virtual void CloseDialog() = 0;
 };

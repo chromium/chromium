@@ -805,49 +805,73 @@ Called by update_protocol_commands_enum.py.-->
   <int value="157" label="Console insight onboarding moving to next page"/>
   <int value="158" label="Console insight onboarding moving to previous page"/>
   <int value="159" label="Console insight onboarding disabling feature"/>
+  <int value="160" label="Console insight opt-in teaser shown"/>
+  <int value="161"
+      label="Console insight opt-in teaser link to settings clicked"/>
+  <int value="162"
+      label="Console insight opt-in teaser confirmed via settings"/>
+  <int value="163" label="Console insight reminder teaser shown"/>
+  <int value="164" label="Console insight reminder teaser confirmed"/>
+  <int value="165" label="Console insight reminder teaser canceled"/>
+  <int value="166"
+      label="Console insight reminder teaser link to settings clicked"/>
+  <int value="167"
+      label="Console insight reminder teaser aborted via settings"/>
+  <int value="168" label="Console insight generated skipping disclaimers"/>
+  <int value="169"
+      label="Freestyler opened from Elements panel floating button"/>
+  <int value="170"
+      label="DrJones Network opened from Network panel context menu"/>
+  <int value="171" label="DrJones File opened from Sources panel context menu"/>
+  <int value="172"
+      label="DrJones File opened from Sources panel floating button"/>
+  <int value="173"
+      label="DrJones Performance opened from Performance panel context menu"/>
+  <int value="174"
+      label="DrJones Network opened from Network panel floating button"/>
+  <int value="175" label="AI Assistance - Panel opened"/>
+  <int value="176" label="AI Assistance - Query submitted"/>
+  <int value="177" label="AI Assistance - Answer received"/>
+  <int value="178" label="AI Assistance - Suggestion clicked"/>
+  <int value="179" label="AI Assistance - Side effect confirmed"/>
+  <int value="180" label="AI Assistance - Side effect rejected"/>
+  <int value="181" label="AI Assistance - Error"/>
+  <int value="182"
+      label="Performance Insight agent opened from Insights sidebar"/>
+  <int value="183" label="AI Assistance - Opened from Performance full button"/>
+  <int value="184" label="AI Code Completion - Response served from cache"/>
+  <int value="185" label="AI Code Completion - Request triggered"/>
+  <int value="186" label="AI Code Completion - Suggestion displayed"/>
+  <int value="187" label="AI Code Completion - Suggestion accepted"/>
+  <int value="188" label="AI Code Completion - Error"/>
+  <int value="189" label="Attribute-link clicked"/>
+  <int value="190" label="Console Insight requested via Teaser"/>
+  <int value="191" label="Teaser for Console Insight - Generation started"/>
+  <int value="192" label="Teaser for Console Insight - Generation completed"/>
+  <int value="193" label="Teaser for Console Insight - Generation aborted"/>
+  <int value="194" label="Teaser for Console Insight - Generation errored"/>
 </enum>
 
-<enum name="DevToolsAnimationPlaybackRateChanged">
-  <int value="0" label="100%"/>
-  <int value="1" label="25%"/>
-  <int value="2" label="10%"/>
-  <int value="3" label="Other"/>
+<enum name="DevToolsBuiltInAiAvailability">
+  <int value="0" label="LanguageModel unavailable, has GPU"/>
+  <int value="1" label="LanguageModel downloadable, has GPU"/>
+  <int value="2" label="LanguageModel downloading, has GPU"/>
+  <int value="3" label="LanguageModel available, has GPU"/>
+  <int value="4" label="LanguageModel disabled, has GPU"/>
+  <int value="5" label="LanguageModel unavailable, no GPU"/>
+  <int value="6" label="LanguageModel downloadable, no GPU"/>
+  <int value="7" label="LanguageModel downloading, no GPU"/>
+  <int value="8" label="LanguageModel available, no GPU"/>
+  <int value="9" label="LanguageModel disabled, no GPU"/>
 </enum>
 
-<enum name="DevToolsAnimationPointDragged">
-  <int value="0" label="Animation is dragged as a whole"/>
-  <int value="1" label="Keyframe is moved"/>
-  <int value="2" label="Animation start point is moved"/>
-  <int value="3" label="Animation finish point is moved"/>
-  <int value="4" label="Other"/>
-</enum>
-
-<enum name="DevToolsColorPickerOpenedFrom">
-  <int value="0" label="Sources panel"/>
-  <int value="1" label="Styles pane"/>
-</enum>
-
-<enum name="DevToolsCSSHintShown">
-  <int value="0" label="Other"/>
-  <int value="1" label="AlignContent"/>
-  <int value="2" label="FlexItem"/>
-  <int value="3" label="FlexContainer"/>
-  <int value="4" label="GridContainer"/>
-  <int value="5" label="GridItem"/>
-  <int value="6" label="FlexGrid"/>
-  <int value="7" label="MulticolFlexGrid"/>
-  <int value="8" label="Padding"/>
-  <int value="9" label="Position"/>
-  <int value="10" label="ZIndex"/>
-  <int value="11" label="Sizing"/>
-  <int value="12" label="FlexOrGridItem"/>
-  <int value="13" label="FontVariationSettings"/>
-</enum>
-
-<enum name="DevToolsCSSPropertyDocumentation">
-  <int value="0" label="Documentation shown"/>
-  <int value="1" label="Feature toggled on"/>
-  <int value="2" label="Feature toggled off"/>
+<enum name="DevToolsDebuggingUserDataDirStatus">
+  <int value="0" label="Not being debugged"/>
+  <int value="1" label="Debugging requested with a non-default user data dir"/>
+  <int value="2" label="Debugging requested with a default user data dir"/>
+  <int value="3"
+      label="Debugging requested but was unable to determine the user data
+             dir"/>
 </enum>
 
 <enum name="DevToolsDeveloperResourceLoaded">
@@ -967,6 +991,11 @@ Called by update_protocol_commands_enum.py.-->
   <int value="95" label="timeline-rpp-sidebar"/>
   <int value="96" label="timelineObservations"/>
   <int value="97" label="genAISettingsPanel"/>
+  <int value="98" label="timelineServerTimings"/>
+  <int value="101" label="floatingEntrypointsForAiAssistance"/>
+  <int value="102" label="timelineExperimentalInsights"/>
+  <int value="103" label="timelineDimUnrelatedEvents"/>
+  <int value="104" label="timelineAlternativeNavigation"/>
 </enum>
 
 <enum name="DevToolsIssueCreated">
@@ -1060,10 +1089,11 @@ Called by update_protocol_commands_enum.py.-->
   <int value="68" label="GenericIssue::FormAutocompleteAttributeEmptyError"/>
   <int value="69"
       label="GenericIssue::FormEmptyIdAndNameAttributesForInputError"/>
-  <int value="70" label="GenericIssue::FormAriaLabelledByToNonExistingId"/>
+  <int value="70" label="GenericIssue::FormAriaLabelledByToNonExistingIdError"/>
   <int value="71"
       label="GenericIssue::FormInputAssignedAutocompleteValueToIdOrNameAttributeError"/>
-  <int value="72" label="GenericIssue::FormLabelHasNeitherForNorNestedInput"/>
+  <int value="72"
+      label="GenericIssue::FormLabelHasNeitherForNorNestedInputError"/>
   <int value="73" label="GenericIssue::FormLabelForMatchesNonExistingIdError"/>
   <int value="74"
       label="GenericIssue::FormHasPasswordFieldWithoutUsernameFieldError"/>
@@ -1079,6 +1109,57 @@ Called by update_protocol_commands_enum.py.-->
   <int value="83" label="CookieIssue::WarnThirdPartyPhaseout::SetCookie"/>
   <int value="84" label="CookieIssue::ExcludeThirdPartyPhaseout::ReadCookie"/>
   <int value="85" label="CookieIssue::ExcludeThirdPartyPhaseout::SetCookie"/>
+  <int value="86" label="ElementAccessibilityIssue::DisallowedSelectChild"/>
+  <int value="87" label="ElementAccessibilityIssue::DisallowedOptGroupChild"/>
+  <int value="88"
+      label="ElementAccessibilityIssue::NonPhrasingContentOptionChild"/>
+  <int value="89"
+      label="ElementAccessibilityIssue::InteractiveContentOptionChild"/>
+  <int value="90"
+      label="ElementAccessibilityIssue::InteractiveContentLegendChild"/>
+  <int value="91" label="SRIMessageSignatureIssue::MissingSignatureHeader"/>
+  <int value="92"
+      label="SRIMessageSignatureIssue::MissingSignatureInputHeader"/>
+  <int value="93" label="SRIMessageSignatureIssue::InvalidSignatureHeader"/>
+  <int value="94"
+      label="SRIMessageSignatureIssue::InvalidSignatureInputHeader"/>
+  <int value="95"
+      label="SRIMessageSignatureIssue::SignatureHeaderValueIsNotByteSequence"/>
+  <int value="96"
+      label="SRIMessageSignatureIssue::SignatureHeaderValueIsParameterized"/>
+  <int value="97"
+      label="SRIMessageSignatureIssue::SignatureHeaderValueIsIncorrectLength"/>
+  <int value="98"
+      label="SRIMessageSignatureIssue::SignatureInputHeaderMissingLabel"/>
+  <int value="99"
+      label="SRIMessageSignatureIssue::SignatureInputHeaderValueNotInnerList"/>
+  <int value="100"
+      label="SRIMessageSignatureIssue::SignatureInputHeaderValueMissingComponents"/>
+  <int value="101"
+      label="SRIMessageSignatureIssue::SignatureInputHeaderInvalidComponentType"/>
+  <int value="102"
+      label="SRIMessageSignatureIssue::SignatureInputHeaderInvalidComponentName"/>
+  <int value="103"
+      label="SRIMessageSignatureIssue::SignatureInputHeaderInvalidHeaderComponentParameter"/>
+  <int value="104"
+      label="SRIMessageSignatureIssue::SignatureInputHeaderInvalidDerivedComponentParameter"/>
+  <int value="105"
+      label="SRIMessageSignatureIssue::SignatureInputHeaderKeyIdLength"/>
+  <int value="106"
+      label="SRIMessageSignatureIssue::SignatureInputHeaderInvalidParameter"/>
+  <int value="107"
+      label="SRIMessageSignatureIssue::SignatureInputHeaderMissingRequiredParameters"/>
+  <int value="108"
+      label="SRIMessageSignatureIssue::ValidationFailedSignatureExpired"/>
+  <int value="109"
+      label="SRIMessageSignatureIssue::ValidationFailedInvalidLength"/>
+  <int value="110"
+      label="SRIMessageSignatureIssue::ValidationFailedSignatureMismatch"/>
+  <int value="111" label="CorsIssue::LocalNetworkAccessPermissionDenied"/>
+  <int value="112"
+      label="SRIMessageSignatureIssue::ValidationFailedIntegrityMismatch"/>
+  <int value="113"
+      label="ElementAccessibilityIssue::InteractiveContentSummaryDescendant"/>
 </enum>
 
 <enum name="DevToolsIssuesPanelIssueExpanded">
@@ -1324,59 +1405,11 @@ Called by update_protocol_commands_enum.py.-->
   <int value="82" label="zu - Zulu"/>
 </enum>
 
-<enum name="DevToolsLegacyResourceTypeFilterItemSelected">
-  <int value="0" label="All"/>
-  <int value="1" label="Document"/>
-  <int value="2" label="JavaScript"/>
-  <int value="3" label="Fetch and XHR"/>
-  <int value="4" label="CSS"/>
-  <int value="5" label="Font"/>
-  <int value="6" label="Image"/>
-  <int value="7" label="Media"/>
-  <int value="8" label="Manifest"/>
-  <int value="9" label="WebSocket"/>
-  <int value="10" label="WebAssembly"/>
-  <int value="11" label="Other"/>
-</enum>
-
-<enum name="DevToolsLegacyResourceTypeFilterNumberOfSelectedChanged">
-  <int value="0" label="0"/>
-  <int value="1" label="1"/>
-  <int value="2" label="2"/>
-  <int value="3" label="3"/>
-  <int value="4" label="4"/>
-  <int value="5" label="5"/>
-  <int value="6" label="6"/>
-  <int value="7" label="7"/>
-  <int value="8" label="8"/>
-  <int value="9" label="9"/>
-  <int value="10" label="10"/>
-  <int value="11" label="11"/>
-</enum>
-
-<enum name="DevToolsLighthouseCategoryUsed">
-  <int value="0" label="Performance"/>
-  <int value="1" label="Accessibility"/>
-  <int value="2" label="BestPractices"/>
-  <int value="3" label="SEO"/>
-  <int value="4" label="PWA"/>
-  <int value="5" label="PubAds"/>
-</enum>
-
 <enum name="DevToolsLighthouseModeRun">
   <int value="0" label="Navigation"/>
   <int value="1" label="Timespan"/>
   <int value="2" label="Snapshot"/>
   <int value="3" label="LegacyNavigation"/>
-</enum>
-
-<enum name="DevToolsManifestSection">
-  <int value="0" label="Other section selected"/>
-  <int value="1" label="Identity section selected"/>
-  <int value="2" label="Presentation section selected"/>
-  <int value="3" label="Protocol Handlers section selected"/>
-  <int value="4" label="Icons section selected"/>
-  <int value="5" label="Window Controls Overlay section selected"/>
 </enum>
 
 <enum name="DevToolsMediaType">
@@ -1418,23 +1451,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="35" label="text/x.vue"/>
   <int value="36" label="text/javascript+snippet"/>
   <int value="37" label="text/javascript+eval"/>
-</enum>
-
-<enum name="DevToolsNetworkPanelMoreFiltersItemSelected">
-  <int value="0" label="Hide data URLs"/>
-  <int value="1" label="Hide extension URLs"/>
-  <int value="2" label="Blocked response cookies"/>
-  <int value="3" label="Blocked requests"/>
-  <int value="4" label="3rd-party requests"/>
-</enum>
-
-<enum name="DevToolsNetworkPanelMoreFiltersNumberOfSelectedChanged">
-  <int value="0" label="0"/>
-  <int value="1" label="1"/>
-  <int value="2" label="2"/>
-  <int value="3" label="3"/>
-  <int value="4" label="4"/>
-  <int value="5" label="5"/>
 </enum>
 
 <enum name="DevToolsOpenedByAction">
@@ -1518,141 +1534,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="65" label="Application - Bounce Tracking Mitigations"/>
   <int value="66" label="Drawer - Resource Loading"/>
   <int value="67" label="Drawer - Autofill"/>
-</enum>
-
-<enum name="DevToolsPanelWithLocation">
-  <int value="1" label="Elements - Main"/>
-  <int value="2" label="Elements - Drawer"/>
-  <int value="3" label="Application - Main"/>
-  <int value="4" label="Application - Drawer"/>
-  <int value="5" label="Network - Main"/>
-  <int value="6" label="Network - Drawer"/>
-  <int value="7" label="Sources - Main"/>
-  <int value="8" label="Sources - Drawer"/>
-  <int value="9" label="Performance - Main"/>
-  <int value="10" label="Performance - Drawer"/>
-  <int value="11" label="Memory - Main"/>
-  <int value="12" label="Memory - Drawer"/>
-  <int value="13" label="Console - Main"/>
-  <int value="14" label="Console - Drawer"/>
-  <int value="15" label="Layers - Main"/>
-  <int value="16" label="Layers - Drawer"/>
-  <int value="17" label="Console View - Main"/>
-  <int value="18" label="Console View - Drawer"/>
-  <int value="19" label="Animations - Main"/>
-  <int value="20" label="Animations - Drawer"/>
-  <int value="21" label="Network config - Main"/>
-  <int value="22" label="Network config - Drawer"/>
-  <int value="23" label="Rendering - Main"/>
-  <int value="24" label="Rendering - Drawer"/>
-  <int value="25" label="Sensors - Main"/>
-  <int value="26" label="Sensors - Drawer"/>
-  <int value="27" label="Search - Main"/>
-  <int value="28" label="Search - Drawer"/>
-  <int value="29" label="Security - Main"/>
-  <int value="30" label="Security - Drawer"/>
-  <int value="31" label="JavaScript Profiler - Main"/>
-  <int value="32" label="JavaScript Profiler - Drawer"/>
-  <int value="33" label="Lighthouse - Main"/>
-  <int value="34" label="Lighthouse - Drawer"/>
-  <int value="35" label="Coverage - Main"/>
-  <int value="36" label="Coverage - Drawer"/>
-  <int value="37" label="Protocol monitor - Main"/>
-  <int value="38" label="Protocol monitor - Drawer"/>
-  <int value="39" label="Remote devices - Main"/>
-  <int value="40" label="Remote devices - Drawer"/>
-  <int value="41" label="WebAudio - Main"/>
-  <int value="42" label="WebAudio - Drawer"/>
-  <int value="43" label="Changes - Main"/>
-  <int value="44" label="Changes - Drawer"/>
-  <int value="45" label="Performance monitor - Main"/>
-  <int value="46" label="Performance monitor - Drawer"/>
-  <int value="47" label="What's New - Main"/>
-  <int value="48" label="What's New - Drawer"/>
-  <int value="49" label="Live Heap Profile - Main"/>
-  <int value="50" label="Live Heap Profile - Drawer"/>
-  <int value="51" label="Quick source - Main"/>
-  <int value="52" label="Quick source - Drawer"/>
-  <int value="53" label="Request blocking - Main"/>
-  <int value="54" label="Request blocking - Drawer"/>
-  <int value="55" label="Settings - Preferences - Main"/>
-  <int value="56" label="Settings - Preferences - Drawer"/>
-  <int value="57" label="Settings - Workspace - Main"/>
-  <int value="58" label="Settings - Workspace - Drawer"/>
-  <int value="59" label="Settings - Experiments - Main"/>
-  <int value="60" label="Settings - Experiments - Drawer"/>
-  <int value="61" label="Settings - Blackbox - Main"/>
-  <int value="62" label="Settings - Blackbox - Drawer"/>
-  <int value="63" label="Settings - Devices - Main"/>
-  <int value="64" label="Settings - Devices - Drawer"/>
-  <int value="65" label="Settings - Throttling Conditions - Main"/>
-  <int value="66" label="Settings - Throttling Conditions - Drawer"/>
-  <int value="67" label="Settings - Emulation Geolocations - Main"/>
-  <int value="68" label="Settings - Emulation Geolocations - Drawer"/>
-  <int value="69" label="Settings - Shortcuts - Main"/>
-  <int value="70" label="Settings - Shortcuts - Drawer"/>
-  <int value="71" label="Issues - Main"/>
-  <int value="72" label="Issues - Drawer"/>
-  <int value="73" label="Settings - Shortcuts (custom) - Main"/>
-  <int value="74" label="Settings - Shortcuts (custom) - Drawer"/>
-  <int value="75" label="CSS Overview - Main"/>
-  <int value="76" label="CSS Overview - Drawer"/>
-  <int value="77" label="Recorder - Main"/>
-  <int value="78" label="Recorder - Drawer"/>
-  <int value="79" label="Application - Trust Tokens - Main"/>
-  <int value="80" label="Application - Trust Tokens - Drawer"/>
-  <int value="81" label="Application - Reporting API - Main"/>
-  <int value="82" label="Application - Reporting API - Drawer"/>
-  <int value="83" label="Application - Interest Groups - Main"/>
-  <int value="84" label="Application - Interest Groups - Drawer"/>
-  <int value="85" label="Application - Back/forward cache - Main"/>
-  <int value="86" label="Application - Back/forward cache - Drawer"/>
-  <int value="87" label="Application - Cache Storage - Main"/>
-  <int value="88" label="Application - Cache Storage - Drawer"/>
-  <int value="89" label="Application - Background Fetch - Main"/>
-  <int value="90" label="Application - Background Fetch - Drawer"/>
-  <int value="91" label="Application - Background Sync - Main"/>
-  <int value="92" label="Application - Background Sync - Drawer"/>
-  <int value="93" label="Application - Push Messaging - Main"/>
-  <int value="94" label="Application - Push Messaging - Drawer"/>
-  <int value="95" label="Application - Notifications - Main"/>
-  <int value="96" label="Application - Notifications - Drawer"/>
-  <int value="97" label="Application - Payment Handler - Main"/>
-  <int value="98" label="Application - Payment Handler - Drawer"/>
-  <int value="99" label="Application - Periodic Background Sync - Main"/>
-  <int value="100" label="Application - Periodic Background Sync - Drawer"/>
-  <int value="101" label="Application - Service Workers - Main"/>
-  <int value="102" label="Application - Service Workers - Drawer"/>
-  <int value="103" label="Application - Manifest - Main"/>
-  <int value="104" label="Application - Manifest - Drawer"/>
-  <int value="105" label="Application - Storage - Main"/>
-  <int value="106" label="Application - Storage - Drawer"/>
-  <int value="107" label="Application - Cookies - Main"/>
-  <int value="108" label="Application - Cookies - Drawer"/>
-  <int value="109" label="Application - Frame Details - Main"/>
-  <int value="110" label="Application - Frame Details - Drawer"/>
-  <int value="111" label="Application - Frame Resource - Main"/>
-  <int value="112" label="Application - Frame Resource - Drawer"/>
-  <int value="113" label="Application - Frame Window - Main"/>
-  <int value="114" label="Application - Frame Window - Drawer"/>
-  <int value="115" label="Application - Frame Worker - Main"/>
-  <int value="116" label="Application - Frame Worker - Drawer"/>
-  <int value="117" label="Application - Local/Session Storage - Main"/>
-  <int value="118" label="Application - Local/Session Storage - Drawer"/>
-  <int value="119" label="Application - IndexedDB - Main"/>
-  <int value="120" label="Application - IndexedDB - Drawer"/>
-  <int value="121" label="Application - Web SQL - Main"/>
-  <int value="122" label="Application - Web SQL - Drawer"/>
-  <int value="123" label="Performance Insights - Main"/>
-  <int value="124" label="Performance Insights - Drawer"/>
-  <int value="125" label="Application - Preloading - Main"/>
-  <int value="126" label="Application - Preloading - Drawer"/>
-  <int value="127" label="Application - Bounce Tracking Mitigations - Main"/>
-  <int value="128" label="Application - Bounce Tracking Mitigations - Drawer"/>
-  <int value="129" label="Resource Loading - Main"/>
-  <int value="130" label="Resource Loading - Drawer"/>
-  <int value="131" label="Autofill - Main"/>
-  <int value="132" label="Autofill - Drawer"/>
+  <int value="68" label="AI Assistance"/>
 </enum>
 
 <enum name="DevToolsRecordingAssertion">
@@ -1723,74 +1605,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="2" label="Recording finished"/>
 </enum>
 
-<enum name="DevToolsResourceTypeFilterItemSelected">
-  <int value="0" label="All"/>
-  <int value="1" label="Document"/>
-  <int value="2" label="JavaScript"/>
-  <int value="3" label="Fetch and XHR"/>
-  <int value="4" label="CSS"/>
-  <int value="5" label="Font"/>
-  <int value="6" label="Image"/>
-  <int value="7" label="Media"/>
-  <int value="8" label="Manifest"/>
-  <int value="9" label="WebSocket"/>
-  <int value="10" label="WebAssembly"/>
-  <int value="11" label="Other"/>
-</enum>
-
-<enum name="DevToolsResourceTypeFilterNumberOfSelectedChanged">
-  <int value="0" label="0"/>
-  <int value="1" label="1"/>
-  <int value="2" label="2"/>
-  <int value="3" label="3"/>
-  <int value="4" label="4"/>
-  <int value="5" label="5"/>
-  <int value="6" label="6"/>
-  <int value="7" label="7"/>
-  <int value="8" label="8"/>
-  <int value="9" label="9"/>
-  <int value="10" label="10"/>
-  <int value="11" label="11"/>
-</enum>
-
-<enum name="DevToolsSidebarPane">
-  <int value="0" label="Other sidebar pane"/>
-  <int value="1" label="Elements - Styles"/>
-  <int value="2" label="Elements - Computed"/>
-  <int value="3" label="Elements - Layout"/>
-  <int value="4" label="Elements - Event Listeners"/>
-  <int value="5" label="Elements - DOM Breakpoints"/>
-  <int value="6" label="Elements - Properties"/>
-  <int value="7" label="Elements - Accessibility"/>
-  <int value="8" label="Sources - Page"/>
-  <int value="9" label="Sources - Workspace"/>
-  <int value="10" label="Sources - Overrides"/>
-  <int value="11" label="Sources - Content Scripts"/>
-  <int value="12" label="Sources - Snippets"/>
-</enum>
-
-<enum name="DevToolsSourcesSidebarTab">
-  <int value="0" label="Other sidebar pane"/>
-  <int value="1" label="Sources - Page"/>
-  <int value="2" label="Sources - Workspace"/>
-  <int value="3" label="Sources - Overrides"/>
-  <int value="4" label="Sources - Content Scripts"/>
-  <int value="5" label="Sources - Snippets"/>
-</enum>
-
-<enum name="DevToolsStyleTextCopied">
-  <int value="1" label="Declaration from changed line"/>
-  <int value="2" label="All changes from Styles pane"/>
-  <int value="3" label="Declaration from context menu"/>
-  <int value="4" label="Property from context menu"/>
-  <int value="5" label="Value from context menu"/>
-  <int value="6" label="Declaration as JS from context menu"/>
-  <int value="7" label="Rule from context menu"/>
-  <int value="8" label="All declarations from context menu"/>
-  <int value="9" label="All declarations as JS from context menu"/>
-  <int value="10" label="Selector from context menu"/>
-</enum>
-
 <enum name="DevToolsSwatchActivated">
   <int value="0" label="Variable link"/>
   <int value="1" label="Animation name link"/>
@@ -1802,6 +1616,9 @@ Called by update_protocol_commands_enum.py.-->
   <int value="7" label="Angle"/>
   <int value="8" label="Length"/>
   <int value="9" label="Position fallback link"/>
+  <int value="10" label="Position try link"/>
+  <int value="11" label="Attribute link"/>
+  <int value="12" label="Masonry editor"/>
 </enum>
 
 <enum name="DevToolsSyncSetting">

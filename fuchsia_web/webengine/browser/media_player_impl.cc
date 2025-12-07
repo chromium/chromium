@@ -10,6 +10,7 @@
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "content/public/browser/media_session.h"

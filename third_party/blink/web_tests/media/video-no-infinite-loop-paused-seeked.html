@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<title>Test a video seeks to zero properly after seeking to last frame</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<video paused muted></video>
+<script>
+async_test(function(t) {
+    var video = document.querySelector("video");
+    video.onerror = t.unreached_func();
+    video.addEventListener('canplaythrough', t.step_func(_ => {
+        video.addEventListener('seeked', t.step_func(_ => {
+            video.addEventListener('seeked', t.step_func_done(_ => {
+              assert_equals(video.currentTime, 0);
+            }), {once: true});
+            video.currentTime = 0;
+        }), {once: true});
+        // This is the timestamp of the last frame in white.webm.
+        video.currentTime = 9.967;
+    }), {once: true});
+    video.src = "content/white.webm";
+});
+</script>

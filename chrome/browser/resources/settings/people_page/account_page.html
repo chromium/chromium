@@ -1,0 +1,126 @@
+<style include="cr-shared-style settings-shared">
+  #other-sync-items {
+    padding-bottom: 8px;
+  }
+
+  .passphrase-reset-container {
+    display: flex;
+    align-items: flex-start;
+    margin-top: 10px;
+  }
+
+  .passphrase-reset-icon {
+    margin-inline-end: 8px;
+  }
+
+  cr-link-row {
+    padding-inline-end: 0;
+    padding-inline-start: 0;
+  }
+
+  cr-collapse > cr-link-row {
+    padding-inline-start: var(--cr-section-indent-padding);
+  }
+</style>
+
+<settings-subpage page-title="$i18n{accountPageTitle}"
+    route-path$="[[routePath]]">
+
+  <template is="dom-if" if="[[shouldShowPageContents_(syncStatus_,
+      syncStatus_.signedInState)]]" restamp>
+
+    <!-- Account card -->
+    <settings-sync-account-control embedded-in-subpage
+        sync-status="[[syncStatus_]]" prefs="{{prefs}}" hide-banner
+        access-point="[[accessPointEnum_.SETTINGS]]">
+    </settings-sync-account-control>
+
+    <!-- In your Google Account -->
+    <settings-sync-controls sync-status="[[syncStatus_]]">
+    </settings-sync-controls>
+
+    <!-- Advanced -->
+    <div id="sync-section">
+      <div class="cr-row first">
+        <h2 class="cr-title-text">$i18n{advancedPageTitle}</h2>
+      </div>
+
+      <div id="other-sync-items" class="list-frame">
+
+        <!-- Chrome data in your account -->
+        <cr-link-row id="syncDashboardLink" class="hr"
+            label="$i18n{manageSyncedDataTitle}"
+            on-click="onSyncDashboardLinkClick_"
+            hidden="[[syncStatus_.supervisedUser]]" external>
+        </cr-link-row>
+
+        <!-- Manage your Google Account -->
+        <cr-link-row id="manage-google-account" class="hr"
+            label="$i18n{manageGoogleAccount}"
+            hidden="[[syncStatus.hasError]]"
+            on-click="onManageGoogleAccountClicked_" external>
+        </cr-link-row>
+
+        <!-- Control how browsing history is used -->
+        <template is="dom-if" if="[[!isEeaChoiceCountry_]]">
+          <cr-link-row class="hr" id="activityControlsLinkRowV2"
+              label="$i18n{personalizeGoogleServicesTitleV2}"
+              sub-label="$i18n{personalizeGoogleServicesDesc}"
+              on-click="onActivityControlsClick_" external>
+          </cr-link-row>
+        </template>
+        <template is="dom-if" if="[[isEeaChoiceCountry_]]">
+          <cr-expand-button class="hr" id="personalizationExpandButton"
+              expanded="{{personalizationCollapseExpanded_}}">
+            $i18n{personalizeGoogleServicesTitleV2}
+            <div class="secondary">
+              $i18n{personalizeGoogleServicesDescWithLinkedServices}
+            </div>
+          </cr-expand-button>
+          <cr-collapse id="personalizationCollapse"
+              opened="[[personalizationCollapseExpanded_]]">
+            <cr-link-row external on-click="onActivityControlsClick_"
+                label="$i18n{personalizeGoogleServicesWaaTitle}">
+            </cr-link-row>
+            <cr-link-row external id="linkedServicesLinkRow"
+                on-click="onLinkedServicesClick_"
+                label="$i18n{personalizeGoogleServicesLinkedServicesTitle}"
+                sub-label=
+                    "$i18n{personalizeGoogleServicesLinkedServicesDesc}">
+            </cr-link-row>
+          </cr-collapse>
+        </template>
+
+        <!-- Encryption options -->
+        <cr-expand-button id="encryptionDescription"
+            hidden="[[syncPrefs.passphraseRequired]]"
+            expanded="{{encryptionExpanded_}}"
+            class="hr">
+          $i18n{encryptionOptionsTitle}
+          <div class="secondary">
+            $i18n{syncDataEncryptedText}
+            <div on-click="onResetSyncClick_"
+                hidden="[[!syncPrefs.encryptAllData]]"
+                class="passphrase-reset-container">
+              <cr-icon icon="cr:info-outline"
+                  class="passphrase-reset-icon">
+              </cr-icon>
+              <span>$i18nRaw{passphraseResetHintEncryption}</span>
+            </div>
+          </div>
+        </cr-expand-button>
+
+        <cr-collapse id="encryptionCollapse"
+            opened="[[encryptionExpanded_]]">
+          <settings-sync-encryption-options
+              sync-status="[[syncStatus_]]" sync-prefs="{{syncPrefs}}"
+              existing-passphrase-label="[[existingPassphraseLabel_]]">
+          </settings-sync-encryption-options>
+        </cr-collapse>
+
+      </div>
+    </div>
+
+  </template>
+
+</settings-subpage>

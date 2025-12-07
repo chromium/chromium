@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_CHROMEOS_CROS_APPS_API_CROS_APPS_API_FRAME_CONTEXT_H_
 #define CHROME_BROWSER_CHROMEOS_CROS_APPS_API_CROS_APPS_API_FRAME_CONTEXT_H_
 
+#include <variant>
+
 #include "base/memory/raw_ref.h"
 #include "base/memory/stack_allocated.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -49,8 +50,8 @@ class CrosAppsApiFrameContext {
   const Profile* Profile() const;
 
  private:
-  const absl::variant<raw_ref<content::RenderFrameHost>,
-                      raw_ref<content::NavigationHandle>>
+  const std::variant<raw_ref<content::RenderFrameHost>,
+                     raw_ref<content::NavigationHandle>>
       context_;
 };
 

@@ -5,14 +5,12 @@
 #ifndef CONTENT_SERVICES_AUCTION_WORKLET_PUBLIC_CPP_AUCTION_NETWORK_EVENTS_DELEGATE_H_
 #define CONTENT_SERVICES_AUCTION_WORKLET_PUBLIC_CPP_AUCTION_NETWORK_EVENTS_DELEGATE_H_
 
-#include <string>
+#include <string_view>
 #include <utility>
 
 #include "content/services/auction_worklet/public/cpp/auction_downloader.h"
 #include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -27,6 +25,10 @@ class CONTENT_EXPORT MojoNetworkEventsDelegate
   explicit MojoNetworkEventsDelegate(
       mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
           remote);
+  explicit MojoNetworkEventsDelegate(
+      mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
+          remote,
+      std::string_view request_id);
   ~MojoNetworkEventsDelegate() override;
 
   void OnNetworkSendRequest(network::ResourceRequest& request) override;

@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -21,10 +20,8 @@ class SensorProxy;
 // This class wraps 'SensorProvider' mojo interface and it manages
 // 'SensorProxy' instances.
 class SensorProviderProxy final : public GarbageCollected<SensorProviderProxy>,
-                                  public Supplement<LocalDOMWindow> {
+                                  public GarbageCollectedMixin {
  public:
-  static const char kSupplementName[];
-
   static SensorProviderProxy* From(LocalDOMWindow*);
 
   explicit SensorProviderProxy(LocalDOMWindow&);
@@ -41,6 +38,8 @@ class SensorProviderProxy final : public GarbageCollected<SensorProviderProxy>,
 
   void Trace(Visitor*) const override;
 
+  LocalDOMWindow* GetLocalDOMWindow() const { return local_dom_window_; }
+
  private:
   friend class SensorProxy;
 
@@ -51,6 +50,7 @@ class SensorProviderProxy final : public GarbageCollected<SensorProviderProxy>,
   void InitializeIfNeeded();
   void OnSensorProviderConnectionError();
 
+  Member<LocalDOMWindow> local_dom_window_;
   HeapHashSet<WeakMember<SensorProxy>> sensor_proxies_;
   HeapMojoRemote<mojom::blink::WebSensorProvider> sensor_provider_;
 };

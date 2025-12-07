@@ -5,10 +5,34 @@
 #ifndef CRYPTO_UNEXPORTABLE_KEY_METRICS_H_
 #define CRYPTO_UNEXPORTABLE_KEY_METRICS_H_
 
+#include <string>
+
 #include "crypto/crypto_export.h"
 #include "crypto/unexportable_key.h"
 
 namespace crypto {
+
+enum class TPMOperation {
+  // An operation to sign data with a TPM key.
+  kMessageSigning,
+  // An operation to verify a TPM signature.
+  kMessageVerify,
+  // An operation to create a TPM key from a wrapped key or a similar
+  // representation identifying a TPM key.
+  kWrappedKeyCreation,
+  // An operation to create a new TPM-protected key.
+  kNewKeyCreation,
+  // An operation to export a wrapped key (or a similar representation
+  // identifying a TPM key) from an existing TPM key.
+  kWrappedKeyExport,
+};
+
+// Converts the given `operation` to a string representation.
+CRYPTO_EXPORT std::string OperationToString(TPMOperation operation);
+
+// Converts the given `algorithm` to a string representation.
+CRYPTO_EXPORT std::string AlgorithmToString(
+    SignatureVerifier::SignatureAlgorithm algorithm);
 
 // Records UMA metrics of TPM availability, latency and successful usage.
 // Does the work on a new background task.

@@ -9,15 +9,16 @@
 #import "base/memory/ptr_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/policy/core/browser/url_blocklist_manager.h"
+#import "components/policy/core/browser/url_list/policy_blocklist_service.h"
+#import "components/policy/core/browser/url_list/url_blocklist_manager.h"
 #import "components/reading_list/core/reading_list_model.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_abuse_detector.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_delegate.h"
-#import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_service.h"
+#import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_service_factory.h"
 #import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_util.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/common/features.h"
@@ -51,7 +52,7 @@ bool IsValidAppUrl(const GURL& app_url) {
 bool HasChromeAppScheme(const GURL& app_url) {
   NSArray* chrome_schemes =
       [[ChromeAppConstants sharedInstance] allBundleURLSchemes];
-  NSString* app_url_scheme = base::SysUTF8ToNSString(app_url.scheme());
+  NSString* app_url_scheme = base::SysUTF8ToNSString(app_url.GetScheme());
   return [chrome_schemes containsObject:app_url_scheme];
 }
 
@@ -93,7 +94,8 @@ bool AppLauncherTabHelper::IsAppUrl(const GURL& url) {
   return !(web::UrlHasWebScheme(url) ||
            web::GetWebClient()->IsAppSpecificURL(url) ||
            url.SchemeIs(url::kFileScheme) || url.SchemeIs(url::kAboutScheme) ||
-           url.SchemeIs(url::kBlobScheme));
+           url.SchemeIs(url::kBlobScheme) ||
+           url.SchemeIs(web::kMarketplaceKitScheme));
 }
 
 void AppLauncherTabHelper::SetDelegate(AppLauncherTabHelperDelegate* delegate) {
@@ -296,9 +298,10 @@ AppLauncherTabHelper::GetPolicyDecisionAndOptionalAppLaunchRequest(
   }
 
   // Do not allow allow navigation if URL is blocked by enterprise policy.
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state()->GetBrowserState());
   PolicyBlocklistService* blocklistService =
-      PolicyBlocklistServiceFactory::GetForBrowserState(
-          web_state()->GetBrowserState());
+      PolicyBlocklistServiceFactory::GetForProfile(profile);
   if (blocklistService->GetURLBlocklistState(request_url) ==
       policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
     return {PolicyDecision::CancelAndDisplayError(
@@ -356,15 +359,11 @@ AppLauncherTabHelper::GetPolicyDecisionAndOptionalAppLaunchRequest(
   bool is_link_transition = ui::PageTransitionCoreTypeIs(
       request_info.transition_type, ui::PAGE_TRANSITION_LINK);
 
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
-
   if (!is_link_transition && original_pending_url.is_valid()) {
     // At this stage the navigation will be canceled in all cases. If this
     // was a redirection, the `source_url` may not have been reported to
     // ReadingListWebStateObserver. Report it to mark as read if needed.
-    ReadingListModel* model =
-        ReadingListModelFactory::GetForBrowserState(browser_state);
+    ReadingListModel* model = ReadingListModelFactory::GetForProfile(profile);
     if (model && model->loaded()) {
       model->SetReadStatusIfExists(original_pending_url, true);
     }
@@ -381,5 +380,3 @@ AppLauncherTabHelper::GetPolicyDecisionAndOptionalAppLaunchRequest(
   }
   return {PolicyDecision::Cancel(), std::move(optional_app_launch_request)};
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(AppLauncherTabHelper)

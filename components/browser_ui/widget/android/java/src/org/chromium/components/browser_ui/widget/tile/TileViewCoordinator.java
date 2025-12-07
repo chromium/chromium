@@ -11,10 +11,12 @@ import android.view.ViewGroup;
 
 import androidx.annotation.LayoutRes;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinator for the TileView. */
+@NullMarked
 public class TileViewCoordinator {
     private final TileView mView;
     private final TileViewMediator mMediator;
@@ -55,12 +57,12 @@ public class TileViewCoordinator {
     }
 
     /**
-     * Set whether the Icon Badge should be visible.
+     * Set whether the offline badge should be visible.
      *
-     * @param badgeVisible Whether icon badge should be visible.
+     * @param isVisible Whether offline badge should be visible.
      */
-    public void setBadgeVisible(boolean badgeVisible) {
-        mMediator.setBadgeVisible(badgeVisible);
+    public void setOfflineBadgeVisibility(boolean isVisible) {
+        mMediator.setOfflineBadgeVisibility(isVisible);
     }
 
     /**

@@ -7,6 +7,7 @@
 
 #include <string>
 
+class GaiaId;
 class Profile;
 class SigninUIError;
 
@@ -15,15 +16,17 @@ class SigninUIError;
 // and the error message are passed in the returned value.
 // This function can be used either for new signins or for reauthentication of
 // an already existing account. In the case of reauth, the function checks that
-// the account being reauthenticated matches the current Sync account.
-// TODO(alexilin): consider renaming this function to CanOfferSyncOrReauth() or
-// similar to make it clear that this function is about signin into Sync.
+// the account being reauthenticated matches the current account.
+// If `allow_account_from_other_profile` is false, then the function checks if
+// another profile is already signed in with the same account, and returns an
+// error if this is the case.
 SigninUIError CanOfferSignin(Profile* profile,
-                             const std::string& gaia_id,
-                             const std::string& email);
+                             const GaiaId& gaia_id,
+                             const std::string& email,
+                             bool allow_account_from_other_profile);
 
 // Return true if an account other than `gaia_id` was previously signed into
 // `profile`.
-bool IsCrossAccountError(Profile* profile, const std::string& gaia_id);
+bool IsCrossAccountError(Profile* profile, const GaiaId& gaia_id);
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_UTILS_DESKTOP_H_

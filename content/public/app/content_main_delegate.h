@@ -8,12 +8,13 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/common/main_function_params.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace variations {
 class VariationsIdsProvider;
@@ -39,17 +40,14 @@ class CONTENT_EXPORT ContentMainDelegate {
 
   // Indicates the delegate is being invoked in a child process. The
   // `kProcessType` switch will hold the precise child process type.
-  struct InvokedInChildProcess {
-    // True if the child process was forked from one of the browser's zygotes.
-    bool is_zygote_child = false;
-  };
+  struct InvokedInChildProcess {};
 
   // The context in which a delegate method is invoked, including the process
   // type and whether it is in a test harness. Can distinguish between
   // the browser process and child processes; for more fine-grained process
   // types check the `switches::kProcessType` command-line switch.
   using InvokedIn =
-      absl::variant<InvokedInBrowserProcess, InvokedInChildProcess>;
+      std::variant<InvokedInBrowserProcess, InvokedInChildProcess>;
 
   virtual ~ContentMainDelegate() = default;
 
@@ -73,7 +71,7 @@ class CONTENT_EXPORT ContentMainDelegate {
   // |main_function_params| back to decline the request and kick-off the
   // default behavior or return a non-negative exit code to indicate it handled
   // the request.
-  virtual absl::variant<int, MainFunctionParams> RunProcess(
+  virtual std::variant<int, MainFunctionParams> RunProcess(
       const std::string& process_type,
       MainFunctionParams main_function_params);
 
@@ -96,7 +94,7 @@ class CONTENT_EXPORT ContentMainDelegate {
 
   // Fatal errors during initialization are reported by this function, so that
   // the embedder can implement graceful exit by displaying some message and
-  // returning initialization error code. Default behavior is CHECK(false).
+  // returning initialization error code. Default behavior is NOTREACHED().
   virtual int TerminateForFatalInitializationError();
 
   // Allows the embedder to prevent locking the scheme registry. The scheme
@@ -174,6 +172,13 @@ class CONTENT_EXPORT ContentMainDelegate {
   // when a console control event is received. All non-browser processes will
   // swallow the event.
   virtual bool ShouldHandleConsoleControlEvents();
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+  // Called during `ContentMainRunnerImpl::RunBrowser` to determine if Perfetto
+  // should be initialized. Embedders can return `false` to indicate that they
+  // have already initialized Perfetto.
+  virtual bool ShouldInitializePerfetto(InvokedIn invoked_in);
 #endif
 
  protected:

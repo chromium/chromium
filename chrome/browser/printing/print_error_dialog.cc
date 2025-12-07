@@ -53,7 +53,7 @@ void ShowPrintErrorDialogTask(const std::u16string& title,
     window = browser->window()->GetNativeWindow();
   }
 #endif
-  chrome::ShowWarningMessageBox(window, title, message);
+  chrome::ShowWarningMessageBoxAsync(window, title, message);
 }
 
 void ShowPrintErrorDialog(const std::u16string& title,

@@ -38,7 +38,7 @@ class SvgHitTestPerfTest : public RenderingTest {
     constexpr float row_stride = kSvgHeight / num_rows;
     constexpr float column_stride = kSvgWidth / num_rows;
 
-    WTF::StringBuilder html;
+    StringBuilder html;
     html.AppendFormat(
         "<svg width='%.2f' height='%.2f' viewBox='0 0 %.2f %.2f' "
         "style='cursor: auto;'>",
@@ -86,7 +86,7 @@ TEST_F(SvgHitTestPerfTest, HandleMouseMoveEvent) {
   EventHandler& event_handler = GetDocument().GetFrame()->GetEventHandler();
 
   RunTest("HandleMouseMoveEvent",
-          WTF::BindRepeating(
+          BindRepeating(
               [](EventHandler* event_handler) {
                 WebMouseEvent mouse_move_event(
                     WebMouseEvent::Type::kMouseMove, gfx::PointF(1, 1),
@@ -116,7 +116,7 @@ TEST_F(SvgHitTestPerfTest, IntersectsClipPath) {
   ASSERT_TRUE(local_location);
 
   RunTest("IntersectsClipPath",
-          WTF::BindRepeating(
+          BindRepeating(
               [](const LayoutObject* container,
                  TransformedHitTestLocation& local_location) {
                 container->HasClipPath() &&

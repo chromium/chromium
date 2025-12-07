@@ -8,7 +8,9 @@
 
 #include "base/logging.h"
 #include "components/sync/engine/nigori/cryptographer.h"
+#include "components/sync/protocol/client_debug_info.pb.h"
 #include "components/sync/protocol/encryption.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 
 namespace syncer {
 

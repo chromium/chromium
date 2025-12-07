@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "chromeos/ash/components/nearby/common/connections_manager/nearby_connections_manager_impl.h"
 
@@ -70,13 +66,13 @@ void VerifyFileReadWrite(base::File& input_file, base::File& output_file) {
   const std::vector<uint8_t> expected_bytes(std::begin(kPayload),
                                             std::end(kPayload));
   EXPECT_TRUE(output_file.WriteAndCheck(
-      /*offset=*/0, base::make_span(expected_bytes)));
+      /*offset=*/0, base::span(expected_bytes)));
   output_file.Flush();
   output_file.Close();
 
   std::vector<uint8_t> payload_bytes(input_file.GetLength());
   EXPECT_TRUE(input_file.ReadAndCheck(
-      /*offset=*/0, base::make_span(payload_bytes)));
+      /*offset=*/0, base::span(payload_bytes)));
   EXPECT_EQ(expected_bytes, payload_bytes);
   input_file.Close();
 }
@@ -92,7 +88,7 @@ base::FilePath InitializeTemporaryFile(base::File& file) {
                             base::File::Flags::FLAG_READ |
                             base::File::Flags::FLAG_WRITE);
   EXPECT_TRUE(file.WriteAndCheck(
-      /*offset=*/0, base::make_span(kPayload, sizeof(kPayload))));
+      /*offset=*/0, base::span(kPayload)));
   EXPECT_TRUE(file.Flush());
   return path;
 }
@@ -242,7 +238,7 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
           EXPECT_TRUE(options->allowed_mediums->bluetooth);
           EXPECT_TRUE(options->allowed_mediums->ble);
           EXPECT_EQ(should_use_web_rtc_, options->allowed_mediums->web_rtc);
-          EXPECT_FALSE(options->allowed_mediums->wifi_lan);
+          EXPECT_EQ(should_use_wifilan_, options->allowed_mediums->wifi_lan);
           EXPECT_EQ(should_use_wifidirect_,
                     options->allowed_mediums->wifi_direct);
           EXPECT_EQ(
@@ -458,7 +454,7 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
           base::File file = std::move(payload->content->get_file()->file);
           std::vector<uint8_t> payload_bytes(file.GetLength());
           EXPECT_TRUE(file.ReadAndCheck(
-              /*offset=*/0, base::make_span(payload_bytes)));
+              /*offset=*/0, base::span(payload_bytes)));
           EXPECT_EQ(expected_payload, payload_bytes);
 
           std::move(callback).Run(Status::kSuccess);
@@ -560,7 +556,7 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   bool should_use_web_rtc_ = true;
   bool should_use_wifilan_ = false;
-  bool should_use_wifidirect_ = false;
+  bool should_use_wifidirect_ = true;
   NearbyConnectionsManager::DataUsage default_data_usage_ =
       NearbyConnectionsManager::DataUsage::kWifiOnly;
   std::unique_ptr<net::test::MockNetworkChangeNotifier> network_notifier_ =
@@ -1642,7 +1638,7 @@ TEST_F(NearbyConnectionsManagerImplTest, IncomingFilePayload) {
     std::vector<uint8_t> payload_bytes(
         payload->content->get_file()->file.GetLength());
     EXPECT_TRUE(payload->content->get_file()->file.ReadAndCheck(
-        /*offset=*/0, base::make_span(payload_bytes)));
+        /*offset=*/0, base::span(payload_bytes)));
     EXPECT_EQ(expected_payload, payload_bytes);
   }
 }
@@ -1782,7 +1778,7 @@ TEST_P(NearbyConnectionsManagerImplTestMediums, StartAdvertising_Options) {
       /*ble=*/use_ble,
       /*web_rtc=*/should_use_web_rtc_,
       /*wifi_lan=*/false,
-      /*wifi_direct=*/false);
+      /*wifi_direct=*/true);
 
   base::RunLoop run_loop;
   const std::vector<uint8_t> local_endpoint_info(std::begin(kEndpointInfo),

@@ -168,6 +168,7 @@ export const ICON_TYPES = {
   MTP: 'mtp',
   MY_FILES: 'my_files',
   OFFLINE: 'offline',
+  ODFS: 'odfs',
   OPTICAL: 'optical',
   PDF: 'pdf',
   PLUGIN_VM: 'plugin_vm',

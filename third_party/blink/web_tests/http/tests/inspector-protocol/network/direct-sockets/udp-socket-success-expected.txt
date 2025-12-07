@@ -1,0 +1,27 @@
+UDP DirectSockets success
+socket created
+   options: {
+    localAddr : 127.0.0.1
+    multicastAllowAddressSharing : true
+    multicastLoopback : true
+    multicastTimeToLive : 64
+    receiveBufferSize : 1005
+    sendBufferSize : 1002
+}
+
+   Initiator Type: script
+   Stack #0
+     functionName: openSocket
+     url: udp-socket-success.php
+     lineNumber: 14
+socket opened
+   localAddr: 127.0.0.1
+   remoteAddr: undefined
+socket chunk sent
+   message.data: Hola from connected
+   message.remoteAddr: undefined
+socket chunk received
+   message.data: Hola from connected
+   message.remoteAddr: 127.0.0.1
+socket closed
+

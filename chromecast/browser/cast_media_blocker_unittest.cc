@@ -20,7 +20,6 @@ namespace chromecast {
 namespace shell {
 
 using ::testing::_;
-using ::testing::Invoke;
 
 class CastMediaBlockerTest : public content::RenderViewHostTestHarness {
  public:

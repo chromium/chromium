@@ -31,14 +31,14 @@
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
 
 #include <utility>
+#include <variant>
 
-#include "base/functional/overloaded.h"
 #include "base/notreached.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_drag_data.h"
-#include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_utilities.h"
 #include "third_party/blink/renderer/core/clipboard/dragged_isolated_file_system.h"
 #include "third_party/blink/renderer/core/clipboard/paste_mode.h"
@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "ui/base/clipboard/clipboard_constants.h"
 
 namespace blink {
 
@@ -58,13 +59,14 @@ DataObject* DataObject::CreateFromClipboard(ExecutionContext* context,
 #if DCHECK_IS_ON()
   HashSet<String> types_seen;
 #endif
-  ClipboardSequenceNumberToken sequence_number =
-      system_clipboard->SequenceNumber();
+  absl::uint128 sequence_number = system_clipboard->SequenceNumber();
   for (const String& type : system_clipboard->ReadAvailableTypes()) {
-    if (paste_mode == PasteMode::kPlainTextOnly && type != kMimeTypeTextPlain)
+    if (paste_mode == PasteMode::kPlainTextOnly &&
+        type != ui::kMimeTypePlainText) {
       continue;
+    }
     mojom::blink::ClipboardFilesPtr files;
-    if (type == kMimeTypeTextURIList) {
+    if (type == ui::kMimeTypeUriList) {
       files = system_clipboard->ReadFiles();
       if (files) {
         // Ignore ReadFiles() result if clipboard sequence number has changed.
@@ -102,7 +104,7 @@ DataObject* DataObject::CreateFromClipboard(SystemClipboard* system_clipboard,
 // static
 DataObject* DataObject::CreateFromString(const String& data) {
   DataObject* data_object = Create();
-  data_object->Add(data, kMimeTypeTextPlain);
+  data_object->Add(data, ui::kMimeTypePlainText);
   return data_object;
 }
 
@@ -213,9 +215,13 @@ Vector<String> DataObject::Types() const {
     }
   }
   if (contains_files) {
-    results.push_back(kMimeTypeFiles);
+    // The "Files" value that isn't a MIME type but that is inserted into the
+    // types array when files are present in the store item list. See
+    // https://html.spec.whatwg.org/multipage/dnd.html#concept-datatransfer-types.
+    constexpr char kPseudoMimeTypeFiles[] = "Files";
+    results.push_back(kPseudoMimeTypeFiles);
 #if DCHECK_IS_ON()
-    DCHECK(types_seen.insert(kMimeTypeFiles).is_new_entry);
+    DCHECK(types_seen.insert(kPseudoMimeTypeFiles).is_new_entry);
 #endif
   }
   return results;
@@ -231,12 +237,13 @@ String DataObject::GetData(const String& type) const {
 
 void DataObject::SetData(const String& type, const String& data) {
   ClearData(type);
-  if (!Add(data, type))
-    NOTREACHED_IN_MIGRATION();
+  if (!Add(data, type)) {
+    NOTREACHED();
+  }
 }
 
 void DataObject::UrlAndTitle(String& url, String* title) const {
-  DataObjectItem* item = FindStringItem(kMimeTypeTextURIList);
+  DataObjectItem* item = FindStringItem(ui::kMimeTypeUriList);
   if (!item)
     return;
   url = ConvertURIListToURL(item->GetAsString());
@@ -245,12 +252,12 @@ void DataObject::UrlAndTitle(String& url, String* title) const {
 }
 
 void DataObject::SetURLAndTitle(const String& url, const String& title) {
-  ClearData(kMimeTypeTextURIList);
+  ClearData(ui::kMimeTypeUriList);
   InternalAddStringItem(DataObjectItem::CreateFromURL(url, title));
 }
 
 void DataObject::HtmlAndBaseURL(String& html, KURL& base_url) const {
-  DataObjectItem* item = FindStringItem(kMimeTypeTextHTML);
+  DataObjectItem* item = FindStringItem(ui::kMimeTypeHtml);
   if (!item)
     return;
   html = item->GetAsString();
@@ -258,8 +265,19 @@ void DataObject::HtmlAndBaseURL(String& html, KURL& base_url) const {
 }
 
 void DataObject::SetHTMLAndBaseURL(const String& html, const KURL& base_url) {
-  ClearData(kMimeTypeTextHTML);
+  ClearData(ui::kMimeTypeHtml);
   InternalAddStringItem(DataObjectItem::CreateFromHTML(html, base_url));
+}
+
+Vector<String> DataObject::Urls() const {
+  Vector<String> results;
+  for (const auto& item : item_list_) {
+    if (item->Kind() == DataObjectItem::kStringKind &&
+        item->GetType() == ui::kMimeTypeUriList) {
+      results.push_back(ConvertURIListToURL(item->GetAsString()));
+    }
+  }
+  return results;
 }
 
 bool DataObject::ContainsFilenames() const {
@@ -342,7 +360,7 @@ void DataObject::NotifyItemListChanged() const {
 void DataObject::Trace(Visitor* visitor) const {
   visitor->Trace(item_list_);
   visitor->Trace(observers_);
-  Supplementable<DataObject>::Trace(visitor);
+  visitor->Trace(dragged_isolated_file_system_impl_);
 }
 
 // static
@@ -352,59 +370,59 @@ DataObject* DataObject::Create(ExecutionContext* context,
   bool has_file_system = false;
 
   for (const WebDragData::Item& item : data.Items()) {
-    absl::visit(
-        base::Overloaded{
-            [&](const WebDragData::StringItem& item) {
-              if (String(item.type) == kMimeTypeTextURIList) {
-                data_object->SetURLAndTitle(item.data, item.title);
-              } else if (String(item.type) == kMimeTypeTextHTML) {
-                data_object->SetHTMLAndBaseURL(item.data, item.base_url);
-              } else {
-                data_object->SetData(item.type, item.data);
-              }
-            },
-            [&](const WebDragData::FilenameItem& item) {
-              has_file_system = true;
-              data_object->AddFilename(context, item.filename,
-                                       item.display_name, data.FilesystemId(),
-                                       item.file_system_access_entry);
-            },
-            [&](const WebDragData::BinaryDataItem& item) {
-              data_object->AddFileSharedBuffer(
-                  item.data, item.image_accessible, item.source_url,
-                  item.filename_extension, item.content_disposition);
-            },
-            [&](const WebDragData::FileSystemFileItem& item) {
-              // TODO(http://crbug.com/429077): The file system URL may refer a
-              // user visible file.
-              scoped_refptr<BlobDataHandle> blob_data_handle =
-                  item.blob_info.GetBlobHandle();
+    std::visit(absl::Overload{
+                   [&](const WebDragData::StringItem& item) {
+                     if (String(item.type) == ui::kMimeTypeUriList) {
+                       data_object->SetURLAndTitle(item.data, item.title);
+                     } else if (String(item.type) == ui::kMimeTypeHtml) {
+                       data_object->SetHTMLAndBaseURL(item.data, item.base_url);
+                     } else {
+                       data_object->SetData(item.type, item.data);
+                     }
+                   },
+                   [&](const WebDragData::FilenameItem& item) {
+                     has_file_system = true;
+                     data_object->AddFilename(
+                         context, item.filename, item.display_name,
+                         data.FilesystemId(), item.file_system_access_entry);
+                   },
+                   [&](const WebDragData::BinaryDataItem& item) {
+                     data_object->AddFileSharedBuffer(
+                         item.data, item.image_accessible, item.source_url,
+                         item.filename_extension, item.content_disposition);
+                   },
+                   [&](const WebDragData::FileSystemFileItem& item) {
+                     // TODO(http://crbug.com/429077): The file system URL may
+                     // refer a user visible file.
+                     scoped_refptr<BlobDataHandle> blob_data_handle =
+                         item.blob_info.GetBlobHandle();
 
-              // If the browser process has provided a BlobDataHandle to use for
-              // building the File object (as a result of a drop operation being
-              // performed) then use it to create the file here (instead of
-              // creating a File object without one and requiring a call to
-              // BlobRegistry::Register in the browser process to hook up the
-              // Blob remote/receiver pair). If no BlobDataHandle was provided,
-              // create a BlobDataHandle to an empty blob since the File object
-              // contents won't be needed (for example, because this DataObject
-              // will be used for the DragEnter case where the spec only
-              // indicates that basic file metadata should be retrievable via
-              // the corresponding DataTransferItem).
-              if (!blob_data_handle) {
-                blob_data_handle = BlobDataHandle::Create();
-              }
-              has_file_system = true;
-              FileMetadata file_metadata;
-              file_metadata.length = item.size;
-              data_object->Add(
-                  File::CreateForFileSystemFile(item.url, file_metadata,
-                                                File::kIsNotUserVisible,
-                                                std::move(blob_data_handle)),
-                  item.file_system_id);
-            },
-        },
-        item);
+                     // If the browser process has provided a BlobDataHandle to
+                     // use for building the File object (as a result of a drop
+                     // operation being performed) then use it to create the
+                     // file here (instead of creating a File object without one
+                     // and requiring a call to BlobRegistry::Register in the
+                     // browser process to hook up the Blob remote/receiver
+                     // pair). If no BlobDataHandle was provided, create a
+                     // BlobDataHandle to an empty blob since the File object
+                     // contents won't be needed (for example, because this
+                     // DataObject will be used for the DragEnter case where the
+                     // spec only indicates that basic file metadata should be
+                     // retrievable via the corresponding DataTransferItem).
+                     if (!blob_data_handle) {
+                       blob_data_handle = BlobDataHandle::Create();
+                     }
+                     has_file_system = true;
+                     FileMetadata file_metadata;
+                     file_metadata.length = item.size;
+                     data_object->Add(
+                         File::CreateForFileSystemFile(
+                             item.url, file_metadata, File::kIsNotUserVisible,
+                             std::move(blob_data_handle)),
+                         item.file_system_id);
+                   },
+               },
+               item);
   }
 
   data_object->SetFilesystemId(data.FilesystemId());
@@ -421,7 +439,7 @@ DataObject* DataObject::Create(const WebDragData& data) {
 
 WebDragData DataObject::ToWebDragData() {
   WebDragData data;
-  WebVector<WebDragData::Item> item_list(length());
+  std::vector<WebDragData::Item> item_list(length());
 
   for (wtf_size_t i = 0; i < length(); ++i) {
     DataObjectItem* original_item = Item(i);
@@ -467,7 +485,7 @@ WebDragData DataObject::ToWebDragData() {
             string_item.data = file->name();
           }
         } else {
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
         }
         break;
       }

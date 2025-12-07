@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Google Inc.
+ * Copyright 2019 Google LLC.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,11 +15,12 @@
 
 #include "third_party/private-join-and-compute/src/crypto/context.h"
 
-#include <math.h>
-
-#include <algorithm>
 #include <cmath>
+#include <memory>
+#include <string>
 
+#include "third_party/abseil-cpp/absl/strings/str_cat.h"
+#include "third_party/abseil-cpp/absl/strings/string_view.h"
 #include "third_party/private-join-and-compute/src/chromium_patch.h"
 
 namespace private_join_and_compute {
@@ -31,8 +32,8 @@ std::string OpenSSLErrorString() {
 }
 
 Context::Context()
-    : bn_ctx_(CHECK_NOTNULL(BN_CTX_new())),
-      evp_md_ctx_(CHECK_NOTNULL(EVP_MD_CTX_create())),
+    : bn_ctx_(BN_CTX_new()),
+      evp_md_ctx_(EVP_MD_CTX_create()),
       zero_bn_(CreateBigNum(0)),
       one_bn_(CreateBigNum(1)),
       two_bn_(CreateBigNum(2)),
@@ -45,7 +46,7 @@ Context::~Context() { HMAC_CTX_cleanup(&hmac_ctx_); }
 
 BN_CTX* Context::GetBnCtx() { return bn_ctx_.get(); }
 
-BigNum Context::CreateBigNum(const std::string& bytes) {
+BigNum Context::CreateBigNum(absl::string_view bytes) {
   return BigNum(bn_ctx_.get(), bytes);
 }
 
@@ -57,33 +58,47 @@ BigNum Context::CreateBigNum(BigNum::BignumPtr bn) {
   return BigNum(bn_ctx_.get(), std::move(bn));
 }
 
-std::string Context::Sha256String(const std::string& bytes) {
+std::string Context::Sha256String(absl::string_view bytes) {
   unsigned char hash[EVP_MAX_MD_SIZE];
   CRYPTO_CHECK(1 ==
                EVP_DigestInit_ex(evp_md_ctx_.get(), EVP_sha256(), nullptr));
   CRYPTO_CHECK(
-      1 == EVP_DigestUpdate(evp_md_ctx_.get(), bytes.c_str(), bytes.length()));
+      1 == EVP_DigestUpdate(evp_md_ctx_.get(), bytes.data(), bytes.length()));
   unsigned int md_len;
   CRYPTO_CHECK(1 == EVP_DigestFinal_ex(evp_md_ctx_.get(), hash, &md_len));
   return std::string(reinterpret_cast<char*>(hash), md_len);
 }
 
-std::string Context::Sha512String(const std::string& bytes) {
+std::string Context::Sha384String(absl::string_view bytes) {
+  unsigned char hash[EVP_MAX_MD_SIZE];
+  CRYPTO_CHECK(1 ==
+               EVP_DigestInit_ex(evp_md_ctx_.get(), EVP_sha384(), nullptr));
+  CRYPTO_CHECK(
+      1 == EVP_DigestUpdate(evp_md_ctx_.get(), bytes.data(), bytes.length()));
+  unsigned int md_len;
+  CRYPTO_CHECK(1 == EVP_DigestFinal_ex(evp_md_ctx_.get(), hash, &md_len));
+  return std::string(reinterpret_cast<char*>(hash), md_len);
+}
+
+std::string Context::Sha512String(absl::string_view bytes) {
   unsigned char hash[EVP_MAX_MD_SIZE];
   CRYPTO_CHECK(1 ==
                EVP_DigestInit_ex(evp_md_ctx_.get(), EVP_sha512(), nullptr));
   CRYPTO_CHECK(
-      1 == EVP_DigestUpdate(evp_md_ctx_.get(), bytes.c_str(), bytes.length()));
+      1 == EVP_DigestUpdate(evp_md_ctx_.get(), bytes.data(), bytes.length()));
   unsigned int md_len;
   CRYPTO_CHECK(1 == EVP_DigestFinal_ex(evp_md_ctx_.get(), hash, &md_len));
   return std::string(reinterpret_cast<char*>(hash), md_len);
 }
 
-BigNum Context::RandomOracle(const std::string& x, const BigNum& max_value,
+BigNum Context::RandomOracle(absl::string_view x,
+                             const BigNum& max_value,
                              RandomOracleHashType hash_type) {
   int hash_output_length = 256;
   if (hash_type == SHA512) {
     hash_output_length = 512;
+  } else if (hash_type == SHA384) {
+    hash_output_length = 384;
   }
   int output_bit_length = max_value.BitLength() + hash_output_length;
   int iter_count =
@@ -96,35 +111,44 @@ BigNum Context::RandomOracle(const std::string& x, const BigNum& max_value,
   BigNum hash_output = CreateBigNum(0);
   for (int i = 1; i < iter_count + 1; i++) {
     hash_output = hash_output.Lshift(hash_output_length);
+    std::string bignum_bytes = absl::StrCat(CreateBigNum(i).ToBytes(), x);
     std::string hashed_string;
     if (hash_type == SHA512) {
-      hashed_string = Sha512String(CreateBigNum(i).ToBytes().append(x));
+      hashed_string = Sha512String(bignum_bytes);
+    } else if (hash_type == SHA384) {
+      hashed_string = Sha384String(bignum_bytes);
     } else {
-      hashed_string = Sha256String(CreateBigNum(i).ToBytes().append(x));
+      hashed_string = Sha256String(bignum_bytes);
     }
     hash_output = hash_output + CreateBigNum(hashed_string);
   }
   return hash_output.Rshift(excess_bit_count).Mod(max_value);
 }
 
-BigNum Context::RandomOracleSha512(const std::string& x,
+BigNum Context::RandomOracleSha512(absl::string_view x,
                                    const BigNum& max_value) {
   return RandomOracle(x, max_value, SHA512);
 }
 
-BigNum Context::RandomOracleSha256(const std::string& x,
+BigNum Context::RandomOracleSha384(absl::string_view x,
+                                   const BigNum& max_value) {
+  return RandomOracle(x, max_value, SHA384);
+}
+
+BigNum Context::RandomOracleSha256(absl::string_view x,
                                    const BigNum& max_value) {
   return RandomOracle(x, max_value, SHA256);
 }
 
-BigNum Context::PRF(const std::string& key, const std::string& data,
+BigNum Context::PRF(absl::string_view key,
+                    absl::string_view data,
                     const BigNum& max_value) {
-  CHECK_GE(key.size() * 8, 80u);
+  CHECK_GE(key.size() * 8, std::size_t(80));
   CHECK_LE(max_value.BitLength(), 512)
       << "The requested output length is not supported. The maximum "
          "supported output length is 512. The requested output length is "
       << max_value.BitLength();
-  CRYPTO_CHECK(1 == HMAC_Init_ex(&hmac_ctx_, key.c_str(), key.size(),
+  CRYPTO_CHECK(1 == HMAC_Init_ex(&hmac_ctx_, key.data(), key.size(),
                                  EVP_sha512(), nullptr));
   CRYPTO_CHECK(1 ==
                HMAC_Update(&hmac_ctx_,

@@ -12,7 +12,7 @@
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "mojo/public/c/system/types.h"
-#include "mojo/public/cpp/bindings/connection_group.h"
+#include "mojo/public/cpp/bindings/connection_group_ref.h"
 #include "mojo/public/cpp/bindings/disconnect_reason.h"
 #include "mojo/public/cpp/bindings/interface_id.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
@@ -63,8 +63,6 @@ class PendingReceiver {
   explicit PendingReceiver(ScopedMessagePipeHandle pipe)
       : state_(std::move(pipe)) {}
 
-  // Disabled on NaCl since it crashes old version of clang.
-#if !BUILDFLAG(IS_NACL)
   // Move conversion operator for custom receiver types. Only participates in
   // overload resolution if a typesafe conversion is supported.
   template <typename T,
@@ -76,7 +74,6 @@ class PendingReceiver {
   PendingReceiver(T&& other)
       : PendingReceiver(PendingReceiverConverter<T>::template To<Interface>(
             std::forward<T>(other))) {}
-#endif  // !BUILDFLAG(IS_NACL)
 
   PendingReceiver(const PendingReceiver&) = delete;
   PendingReceiver& operator=(const PendingReceiver&) = delete;
@@ -107,7 +104,11 @@ class PendingReceiver {
     MojoResult result =
         WriteMessageNew(state_.pipe.get(), message.TakeMojoMessage(),
                         MOJO_WRITE_MESSAGE_FLAG_NONE);
-    DCHECK_EQ(MOJO_RESULT_OK, result);
+    // Either the message was sent successfully or the message pipe has already
+    // been closed on the other end.
+    DCHECK(result == MOJO_RESULT_OK ||
+           result == MOJO_RESULT_FAILED_PRECONDITION)
+        << "result: " << result;
 
     reset();
   }
@@ -121,17 +122,17 @@ class PendingReceiver {
 
   // Assigns this PendingReceiver to the ConnectionGroup referenced by |ref|.
   // Any Receiver which binds this PendingReceiver will inherit the Ref.
-  void set_connection_group(ConnectionGroup::Ref ref) {
+  void set_connection_group(ConnectionGroupRef ref) {
     state_.connection_group = std::move(ref);
   }
 
-  const ConnectionGroup::Ref& connection_group() const {
+  const ConnectionGroupRef& connection_group() const {
     return state_.connection_group;
   }
 
   // Passes ownership of this PendingReceiver's ConnectionGroup Ref, removing it
   // from its group.
-  ConnectionGroup::Ref PassConnectionGroupRef() {
+  ConnectionGroupRef PassConnectionGroupRef() {
     return std::move(state_.connection_group);
   }
 

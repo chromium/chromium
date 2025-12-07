@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/path_utils.h"
@@ -391,7 +390,7 @@ void WebApkInstaller::OnReadUpdateRequest(
 }
 
 void WebApkInstaller::OnURLLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   timer_.Stop();
 
   int response_code = -1;
@@ -406,7 +405,7 @@ void WebApkInstaller::OnURLLoaderComplete(
   }
 
   std::unique_ptr<webapk::WebApkResponse> response(new webapk::WebApkResponse);
-  if (!response_body || !response->ParseFromString(*response_body)) {
+  if (!response->ParseFromString(*response_body)) {
     LOG(WARNING) << "WebAPK server did not return proto.";
     OnResult(webapps::WebApkInstallResult::SERVER_ERROR);
     return;
@@ -561,3 +560,5 @@ GURL WebApkInstaller::GetServerUrl() {
   JNIEnv* env = base::android::AttachCurrentThread();
   return GURL(Java_WebApkInstaller_getWebApkServerUrl(env, java_ref_));
 }
+
+DEFINE_JNI(WebApkInstaller)

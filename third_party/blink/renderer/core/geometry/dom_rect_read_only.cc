@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_rect_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -17,7 +18,8 @@ DOMRectReadOnly* DOMRectReadOnly::Create(double x,
   return MakeGarbageCollected<DOMRectReadOnly>(x, y, width, height);
 }
 
-ScriptValue DOMRectReadOnly::toJSONForBinding(ScriptState* script_state) const {
+ScriptObject DOMRectReadOnly::toJSONForBinding(
+    ScriptState* script_state) const {
   V8ObjectBuilder result(script_state);
   result.AddNumber("x", x());
   result.AddNumber("y", y());
@@ -27,7 +29,7 @@ ScriptValue DOMRectReadOnly::toJSONForBinding(ScriptState* script_state) const {
   result.AddNumber("right", right());
   result.AddNumber("bottom", bottom());
   result.AddNumber("left", left());
-  return result.GetScriptValue();
+  return result.ToScriptObject();
 }
 
 DOMRectReadOnly* DOMRectReadOnly::FromRect(const gfx::Rect& rect) {
@@ -50,5 +52,10 @@ DOMRectReadOnly::DOMRectReadOnly(double x,
                                  double width,
                                  double height)
     : x_(x), y_(y), width_(width), height_(height) {}
+
+gfx::PointF DOMRectReadOnly::Center() const {
+  return gfx::PointF(left() + std::fabs(width_) / 2.0,
+                     top() + std::fabs(height_) / 2.0);
+}
 
 }  // namespace blink

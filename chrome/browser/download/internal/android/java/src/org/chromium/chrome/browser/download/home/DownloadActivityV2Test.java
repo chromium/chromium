@@ -20,15 +20,22 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.AllOf.allOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Pair;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import androidx.test.espresso.action.ViewActions;
@@ -39,36 +46,49 @@ import androidx.test.filters.MediumTest;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mockito;
+import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.DiscardableReferencePool;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
-import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.download.home.list.ListUtils;
 import org.chromium.chrome.browser.download.home.list.holder.ListItemViewHolder;
 import org.chromium.chrome.browser.download.home.rename.RenameUtils;
 import org.chromium.chrome.browser.download.home.toolbar.DownloadHomeToolbar;
 import org.chromium.chrome.browser.download.internal.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.OverrideContextWrapperTestRule;
+import org.chromium.chrome.test.util.browser.edge_to_edge.TestEdgeToEdgeController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
+import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.components.browser_ui.util.date.StringUtils;
+import org.chromium.components.download.DownloadDangerType;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.offline_items_collection.ContentId;
@@ -79,8 +99,9 @@ import org.chromium.components.offline_items_collection.RenameResult;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -92,16 +113,29 @@ import java.util.List;
 
 /** Tests the download home V2. */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@EnableFeatures(ChromeFeatureList.SHOW_BLOCKED_SENSITIVE_DOWNLOAD)
 @Batch(Batch.UNIT_TESTS)
-public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
+public class DownloadActivityV2Test {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static BlankUiTestActivity sActivity;
+
     @Mock private Tracker mTracker;
     @Mock private SnackbarManager mSnackbarManager;
-    @Rule public JniMocker mJniMocker = new JniMocker();
     @Mock private UrlFormatter.Natives mUrlFormatterJniMock;
+    @Mock private DownloadHelpPageLauncher mHelpPageLauncher;
+    @Spy private TestEdgeToEdgeController mEdgeToEdgeController;
+    private @Captor ArgumentCaptor<EdgeToEdgePadAdjuster> mPadAdjusterCaptor;
 
     @Rule
-    public AutomotiveContextWrapperTestRule mAutomotiveContextWrapperTestRule =
-            new AutomotiveContextWrapperTestRule();
+    public OverrideContextWrapperTestRule mOverrideContextWrapperTestRule =
+            new OverrideContextWrapperTestRule();
+
+    private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier;
 
     private ModalDialogManager.Presenter mAppModalPresenter;
 
@@ -119,7 +153,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
      * @param text The text that the view holder has in its view hierarchy.
      */
     private static Matcher<ViewHolder> hasTextInViewHolder(String text) {
-        return new BoundedMatcher<ViewHolder, ListItemViewHolder>(ListItemViewHolder.class) {
+        return new BoundedMatcher<>(ListItemViewHolder.class) {
             @Override
             public void describeTo(Description description) {
                 description.appendText("has text: " + text);
@@ -135,11 +169,16 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
         };
     }
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
-        MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        ModalDialogView.disableButtonTapProtectionForTesting();
+
+        UrlFormatterJni.setInstanceForTesting(mUrlFormatterJniMock);
         when(mUrlFormatterJniMock.formatUrlForSecurityDisplay(
                         any(), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS)))
                 .then(
@@ -175,46 +214,96 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
     }
 
     private void setUpUi() {
+        setUpUi(
+                /* showDangerousItems= */ false,
+                /* inlineSearchBar= */ false,
+                /* autoFocusSearchBox= */ false);
+    }
+
+    private void setUpUi(
+            boolean showDangerousItems, boolean inlineSearchBar, boolean autoFocusSearchBox) {
+        // Initialize this here to avoid "wrong thread" assertion.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mEdgeToEdgeSupplier = new ObservableSupplierImpl<>());
+
         DownloadManagerUiConfig config =
-                DownloadManagerUiConfigHelper.fromFlags()
-                        .setOTRProfileID(null)
+                DownloadManagerUiConfigHelper.fromFlags(sActivity)
+                        .setOtrProfileId(null)
                         .setIsSeparateActivity(true)
+                        .setShowDangerousItems(showDangerousItems)
+                        .setInlineSearchBar(inlineSearchBar)
+                        .setAutoFocusSearchBox(autoFocusSearchBox)
+                        .setEdgeToEdgePadAdjusterGenerator(
+                                view ->
+                                        EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
+                                                view, mEdgeToEdgeSupplier))
                         .build();
 
-        mAppModalPresenter = new AppModalPresenter(getActivity());
+        mAppModalPresenter = new AppModalPresenter(sActivity);
 
         mModalDialogManager =
                 new ModalDialogManager(mAppModalPresenter, ModalDialogManager.ModalDialogType.APP);
 
-        FaviconProvider faviconProvider = (url, faviconSizePx, callback) -> {};
-        Callback<Context> settingsLauncher = context -> {};
+        FaviconProvider faviconProvider =
+                new FaviconProvider() {
+                    @Override
+                    public void destroy() {}
+
+                    @Override
+                    public void getFavicon(
+                            final String url, int faviconSizePx, Callback<Bitmap> callback) {}
+                };
+        Callback<Context> settingsNavigation = context -> {};
         ObservableSupplierImpl<Boolean> isPrefetchEnabledSupplier = new ObservableSupplierImpl<>();
         isPrefetchEnabledSupplier.set(true);
 
         mDownloadCoordinator =
                 new DownloadManagerCoordinatorImpl(
-                        getActivity(),
+                        sActivity,
                         config,
                         isPrefetchEnabledSupplier,
-                        settingsLauncher,
+                        settingsNavigation,
                         mSnackbarManager,
                         mModalDialogManager,
+                        mHelpPageLauncher,
                         mTracker,
                         faviconProvider,
                         mStubbedOfflineContentProvider,
                         mDiscardableReferencePool);
-        getActivity().setContentView(mDownloadCoordinator.getView());
+        sActivity.setContentView(mDownloadCoordinator.getView());
         BackPressHelper.create(
-                getActivity(),
-                getActivity().getOnBackPressedDispatcher(),
-                mDownloadCoordinator.getBackPressHandlers(),
-                SecondaryActivity.DOWNLOAD);
+                sActivity,
+                sActivity.getOnBackPressedDispatcher(),
+                mDownloadCoordinator.getBackPressHandlers());
 
         mDownloadCoordinator.updateForUrl(UrlConstants.DOWNLOADS_URL);
     }
 
+    // Adds a dangerous item in Download Home. Returns ID of the item.
+    private ContentId setUpDangerousItem() {
+        OfflineItem dangerousItem =
+                StubbedProvider.createOfflineItem(
+                        "offline_guid_5",
+                        JUnitTestGURLs.URL_2,
+                        OfflineItemState.COMPLETE,
+                        1024,
+                        "dangerous",
+                        "/data/fake_path/Downloads/file_5",
+                        System.currentTimeMillis(),
+                        100000,
+                        OfflineItemFilter.OTHER);
+        dangerousItem.dangerType = DownloadDangerType.DANGEROUS_CONTENT;
+        dangerousItem.isDangerous = true;
+        dangerousItem.canRename = false;
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mStubbedOfflineContentProvider.addItem(dangerousItem));
+        return dangerousItem.id;
+    }
+
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/372835715")
     public void testLaunchingActivity() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -361,6 +450,209 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
+    public void testAddRemoveDangerousItem() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    setUpUi(
+                            /* showDangerousItems= */ true,
+                            /* inlineSearchBar= */ false,
+                            /* autoFocusSearchBox= */ false);
+                });
+
+        String storageHeaderText = "Using 1.10 KB of";
+        onView(withText(containsString(storageHeaderText))).check(matches(isDisplayed()));
+
+        // Add a dangerous item. The new item should be visible and the storage text should not
+        // include the size of the dangerous item.
+        ContentId dangerousItemId = setUpDangerousItem();
+        onView(withText("dangerous")).check(matches(isDisplayed()));
+        onView(withText(containsString("Using 1.10 KB of"))).check(matches(isDisplayed()));
+        onView(withText(containsString("Dangerous download blocked")))
+                .check(matches(isDisplayed()));
+
+        // Open menu for a dangerous download, it should not have share, rename options.
+        onView(allOf(withId(R.id.more), hasSibling(withText("dangerous"))))
+                .check(matches(isDisplayed()))
+                .perform(ViewActions.click());
+
+        onView(withText("Delete from history")).check(matches(isDisplayed()));
+        onView(withText("Download")).check(matches(isDisplayed()));
+        onView(withText("Rename")).check(doesNotExist());
+        onView(withText("Share")).check(doesNotExist());
+
+        // Delete the item. The item should be gone and the storage text should be unchanged.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mStubbedOfflineContentProvider.removeItem(dangerousItemId));
+        onView(withText("dangerous")).check(doesNotExist());
+        onView(withText(containsString("Using 1.10 KB of"))).check(matches(isDisplayed()));
+        onView(withText(containsString("Dangerous download blocked"))).check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
+    public void testDangerousItemNotShownDueToConfig() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    setUpUi(
+                            /* showDangerousItems= */ false,
+                            /* inlineSearchBar= */ false,
+                            /* autoFocusSearchBox= */ false);
+                });
+
+        String storageHeaderText = "Using 1.10 KB of";
+        onView(withText(containsString(storageHeaderText))).check(matches(isDisplayed()));
+
+        // Attempt to add a dangerous item. The new item should not be visible because the config
+        // does not specify showDangerousItems.
+        ContentId dangerousItemId = setUpDangerousItem();
+        onView(withText("dangerous")).check(doesNotExist());
+        onView(withText(containsString("Using 1.10 KB of"))).check(matches(isDisplayed()));
+        onView(withText(containsString("Dangerous download blocked"))).check(doesNotExist());
+
+        // Delete the item. Nothing should change because it was never displayed.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mStubbedOfflineContentProvider.removeItem(dangerousItemId));
+        onView(withText("dangerous")).check(doesNotExist());
+        onView(withText(containsString("Using 1.10 KB of"))).check(matches(isDisplayed()));
+        onView(withText(containsString("Dangerous download blocked"))).check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
+    @DisabledTest(message = "crbug.com/427410747")
+    public void testDeleteDangerousUsingMenu() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    setUpUi(
+                            /* showDangerousItems= */ true,
+                            /* inlineSearchBar= */ false,
+                            /* autoFocusSearchBox= */ false);
+                });
+
+        // Add a dangerous item.
+        setUpDangerousItem();
+        onView(withText("dangerous")).check(matches(isDisplayed()));
+
+        // Delete a dangerous item using three dot menu. The item should be removed from the list.
+        onView(allOf(withId(R.id.more), hasSibling(withText("dangerous"))))
+                .perform(ViewActions.click());
+        onView(withText("Delete from history"))
+                .check(matches(isDisplayed()))
+                .perform(ViewActions.click());
+
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    onView(withText("dangerous")).check(doesNotExist());
+                });
+    }
+
+    @Test
+    @MediumTest
+    @DisabledTest(message = "crbug.com/427410747")
+    public void testDeleteDangerousUsingSelection() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    setUpUi(
+                            /* showDangerousItems= */ true,
+                            /* inlineSearchBar= */ false,
+                            /* autoFocusSearchBox= */ false);
+                });
+
+        // Add a dangerous item.
+        setUpDangerousItem();
+        // Long-press the dangerous item to select it.
+        onView(withText("dangerous"))
+                .check(matches(isDisplayed()))
+                .perform(ViewActions.longClick());
+
+        // Delete using the icon on the toolbar.
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    DownloadHomeToolbar toolbar = sActivity.findViewById(R.id.download_toolbar);
+                    toolbar.getMenu()
+                            .performIdentifierAction(R.id.selection_mode_delete_menu_id, 0);
+                });
+
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    onView(withText("dangerous")).check(doesNotExist());
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testBypassDangerousWarning() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    setUpUi(
+                            /* showDangerousItems= */ true,
+                            /* inlineSearchBar= */ false,
+                            /* autoFocusSearchBox= */ false);
+                });
+
+        String storageHeaderText = "Using 1.10 KB of";
+        onView(withText(containsString(storageHeaderText))).check(matches(isDisplayed()));
+
+        // Add a dangerous item.
+        setUpDangerousItem();
+        onView(withText("dangerous")).check(matches(isDisplayed()));
+        onView(withText(containsString("Using 1.10 KB of"))).check(matches(isDisplayed()));
+        // Open bypass dialog by clicking on the item.
+        onView(withText(containsString("Dangerous download blocked")))
+                .check(matches(isDisplayed()))
+                .perform(ViewActions.click());
+
+        // Click the bypass button.
+        onView(allOf(withId(R.id.negative_button), withText("Download anyway")))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()))
+                .perform(ViewActions.click());
+
+        // Wait for the download to be validated.
+        mStubbedOfflineContentProvider.getValidateDangerousDownloadHelper().waitForOnly();
+
+        // The UI has updated that the download is no longer dangerous, and now counts towards the
+        // storage total.
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    onView(withText(containsString("Dangerous download blocked")))
+                            .check(doesNotExist());
+                });
+        onView(withText(containsString("Using 2.10 KB of"))).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @DisabledTest(message = "crbug.com/423066352")
+    public void testWarningBypassDialogLearnMore() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    setUpUi(
+                            /* showDangerousItems= */ true,
+                            /* inlineSearchBar= */ false,
+                            /* autoFocusSearchBox= */ false);
+                });
+
+        // Add a dangerous item.
+        setUpDangerousItem();
+        onView(withText("dangerous")).check(matches(isDisplayed()));
+        // Open bypass dialog by clicking on the item.
+        onView(withText(containsString("Dangerous download blocked")))
+                .check(matches(isDisplayed()))
+                .perform(ViewActions.click());
+
+        // Click the Learn more button.
+        onView(allOf(withId(R.id.positive_button), withText("Learn more")))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()))
+                .perform(ViewActions.click());
+
+        Mockito.verify(mHelpPageLauncher).openUrl(eq(sActivity), anyString());
+    }
+
+    @Test
+    @MediumTest
     public void testShowListItemMenuWithRename() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -375,7 +667,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
 
         onView(withText("Rename")).check(matches(isDisplayed()));
         onView(withText("Delete")).check(matches(isDisplayed()));
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             onView(withText("Share")).check(doesNotExist());
         } else {
             onView(withText("Share")).check(matches(isDisplayed()));
@@ -402,7 +694,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
 
         onView(withText("Rename")).check(doesNotExist());
         onView(withText("Delete")).check(matches(isDisplayed()));
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             onView(withText("Share")).check(doesNotExist());
         } else {
             onView(withText("Share")).check(matches(isDisplayed()));
@@ -439,7 +731,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
         onView(withId(R.id.search_menu_id)).check(doesNotExist());
         onView(withId(R.id.close_menu_id)).check(doesNotExist());
         onView(withId(R.id.selection_mode_number)).check(matches(isDisplayed()));
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             onView(withId(R.id.selection_mode_share_menu_id)).check(matches(not(isDisplayed())));
         } else {
             onView(withId(R.id.selection_mode_share_menu_id)).check(matches(isDisplayed()));
@@ -493,7 +785,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    DownloadHomeToolbar toolbar = getActivity().findViewById(R.id.download_toolbar);
+                    DownloadHomeToolbar toolbar = sActivity.findViewById(R.id.download_toolbar);
                     toolbar.getMenu()
                             .performIdentifierAction(R.id.selection_mode_delete_menu_id, 0);
                 });
@@ -549,7 +841,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
                 .perform(ViewActions.click());
 
         // Share an item. The share via android dialog should popup.
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             onView(withText("Share")).check(doesNotExist());
         } else {
             onView(withText("Share")).check(matches(isDisplayed()));
@@ -560,13 +852,14 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/372835715")
     public void testSearchView() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     setUpUi();
                 });
 
-        final DownloadHomeToolbar toolbar = getActivity().findViewById(R.id.download_toolbar);
+        final DownloadHomeToolbar toolbar = sActivity.findViewById(R.id.download_toolbar);
         onView(withId(R.id.search_text)).check(matches(not(isDisplayed())));
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -590,13 +883,14 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/372252512")
     public void testDismissSearchViewByBackPress() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     setUpUi();
                 });
 
-        final DownloadHomeToolbar toolbar = getActivity().findViewById(R.id.download_toolbar);
+        final DownloadHomeToolbar toolbar = sActivity.findViewById(R.id.download_toolbar);
         onView(withId(R.id.search_text)).check(matches(not(isDisplayed())));
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -610,25 +904,63 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
         onView(withId(R.id.search_text)).check(matches(not(isDisplayed())));
 
         // Clear the selection by back press and assert that the search view is showing again.
-        var backPressRecorder =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.BackPress.SecondaryActivity", SecondaryActivity.DOWNLOAD);
-        ThreadUtils.runOnUiThreadBlocking(
-                getActivity().getOnBackPressedDispatcher()::onBackPressed);
-        backPressRecorder.assertExpected();
+        ThreadUtils.runOnUiThreadBlocking(sActivity.getOnBackPressedDispatcher()::onBackPressed);
         onView(withId(R.id.search_text)).check(matches(isDisplayed()));
 
         // Close the search view, by performing a back press.
-        var backPressRecorder2 =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.BackPress.SecondaryActivity", SecondaryActivity.DOWNLOAD);
-        ThreadUtils.runOnUiThreadBlocking(
-                getActivity().getOnBackPressedDispatcher()::onBackPressed);
-        backPressRecorder2.assertExpected();
+        ThreadUtils.runOnUiThreadBlocking(sActivity.getOnBackPressedDispatcher()::onBackPressed);
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
                     onView(withId(R.id.search_text)).check(matches(not(isDisplayed())));
                 });
+    }
+
+    @Test
+    @MediumTest
+    public void testDownloadsFocus() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    setUpUi(
+                            /* showDangerousItems= */ false,
+                            /* inlineSearchBar= */ true,
+                            /* autoFocusSearchBox= */ true);
+                });
+
+        onView(withText("Downloads")).check(matches(isDisplayed()));
+        // Check the search field is displayed
+        onView(allOf(withId(R.id.search_text), isDescendantOfA(withId(R.id.download_search_bar))))
+                .check(matches(isDisplayed()));
+        // Check we can type in search query
+        onView(allOf(withId(R.id.search_text), isDescendantOfA(withId(R.id.download_search_bar))))
+                .perform(ViewActions.typeText("Google"));
+        // Check no any downloaded item.
+        onView(withText(containsString("Using 0.00 KB of"))).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testEdgeToEdge() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    setUpUi();
+                    // This should call SimpleEdgeToEdgePadAdjuster#mControllerChangedCallback.
+                    mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
+                });
+
+        verify(mEdgeToEdgeController).registerAdjuster(mPadAdjusterCaptor.capture());
+        EdgeToEdgePadAdjuster padAdjuster = mPadAdjusterCaptor.getValue();
+
+        padAdjuster.overrideBottomInset(100);
+        ViewGroup listView = mDownloadCoordinator.getListViewForTesting();
+        assertEquals("Bottom insets should have been applied.", 100, listView.getPaddingBottom());
+        assertFalse(listView.getClipToPadding());
+
+        padAdjuster.overrideBottomInset(0);
+        assertEquals("Bottom insets should have been reset.", 0, listView.getPaddingBottom());
+        assertTrue(listView.getClipToPadding());
+
+        ThreadUtils.runOnUiThreadBlocking(mDownloadCoordinator::destroy);
+        verify(mEdgeToEdgeController).unregisterAdjuster(padAdjuster);
     }
 
     /**
@@ -712,7 +1044,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
                 .perform(ViewActions.click());
 
         if (expectErrorMsgId != -1) {
-            onView(withText(getActivity().getResources().getString(expectErrorMsgId)))
+            onView(withText(sActivity.getResources().getString(expectErrorMsgId)))
                     .check(matches(isDisplayed()));
         }
     }

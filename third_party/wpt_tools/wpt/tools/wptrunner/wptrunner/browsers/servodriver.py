@@ -1,23 +1,18 @@
 # mypy: allow-untyped-defs
 
 import os
-import subprocess
 import tempfile
-
-from mozprocess import ProcessHandler
 
 from tools.serve.serve import make_hosts_file
 
-from .base import (Browser,
-                   ExecutorBrowser,
-                   OutputHandler,
-                   require_arg,
-                   get_free_port,
-                   browser_command)
+from .base import (WebDriverBrowser,
+                   require_arg)
 from .base import get_timeout_multiplier   # noqa: F401
 from ..executors import executor_kwargs as base_executor_kwargs
+from ..executors.base import WdspecExecutor  # noqa: F401
 from ..executors.executorservodriver import (ServoWebDriverTestharnessExecutor,  # noqa: F401
-                                             ServoWebDriverRefTestExecutor)  # noqa: F401
+                                             ServoWebDriverRefTestExecutor,  # noqa: F401
+                                             ServoWebDriverCrashtestExecutor)  # noqa: F401
 
 here = os.path.dirname(__file__)
 
@@ -28,6 +23,8 @@ __wptrunner__ = {
     "executor": {
         "testharness": "ServoWebDriverTestharnessExecutor",
         "reftest": "ServoWebDriverRefTestExecutor",
+        "crashtest": "ServoWebDriverCrashtestExecutor",
+        "wdspec": "WdspecExecutor",
     },
     "browser_kwargs": "browser_kwargs",
     "executor_kwargs": "executor_kwargs",
@@ -42,19 +39,21 @@ def check_args(**kwargs):
     require_arg(kwargs, "binary")
 
 
-def browser_kwargs(logger, test_type, run_info_data, config, **kwargs):
+def browser_kwargs(logger, test_type, run_info_data, config, subsuite, **kwargs):
     return {
         "binary": kwargs["binary"],
-        "binary_args": kwargs["binary_args"],
+        "binary_args": kwargs["binary_args"] + subsuite.config.get("binary_args", []),
         "debug_info": kwargs["debug_info"],
         "server_config": config,
         "user_stylesheets": kwargs.get("user_stylesheets"),
         "headless": kwargs.get("headless"),
+        "capabilities": kwargs.get("capabilities"),
     }
 
 
 def executor_kwargs(logger, test_type, test_environment, run_info_data, **kwargs):
     rv = base_executor_kwargs(test_type, test_environment, run_info_data, **kwargs)
+    rv['capabilities'] = {}
     return rv
 
 
@@ -64,12 +63,11 @@ def env_extras(**kwargs):
 
 def env_options():
     return {"server_host": "127.0.0.1",
-            "testharnessreport": "testharnessreport-servodriver.js",
             "supports_debugger": True}
 
 
 def update_properties():
-    return (["debug", "os", "processor"], {"os": ["version"], "processor": ["bits"]})
+    return (["debug", "os", "processor", "subsuite"], {"os": ["version"], "processor": ["bits"]})
 
 
 def write_hosts_file(config):
@@ -79,107 +77,68 @@ def write_hosts_file(config):
     return hosts_path
 
 
-class ServoWebDriverBrowser(Browser):
+class ServoWebDriverBrowser(WebDriverBrowser):
     init_timeout = 300  # Large timeout for cases where we're booting an Android emulator
 
     def __init__(self, logger, binary, debug_info=None, webdriver_host="127.0.0.1",
                  server_config=None, binary_args=None,
                  user_stylesheets=None, headless=None, **kwargs):
-        Browser.__init__(self, logger)
-        self.binary = binary
-        self.binary_args = binary_args or []
-        self.webdriver_host = webdriver_host
-        self.webdriver_port = None
-        self.proc = None
-        self.debug_info = debug_info
-        self.hosts_path = write_hosts_file(server_config)
-        self.server_ports = server_config.ports if server_config else {}
-        self.command = None
-        self.user_stylesheets = user_stylesheets if user_stylesheets else []
-        self.headless = headless if headless else False
-        self.ca_certificate_path = server_config.ssl_config["ca_cert_path"]
-        self.output_handler = None
-
-    def start(self, **kwargs):
-        self.webdriver_port = get_free_port()
-
+        hosts_path = write_hosts_file(server_config)
         env = os.environ.copy()
-        env["HOST_FILE"] = self.hosts_path
+        env["HOST_FILE"] = hosts_path
         env["RUST_BACKTRACE"] = "1"
-        env["EMULATOR_REVERSE_FORWARD_PORTS"] = ",".join(
-            str(port)
-            for _protocol, ports in self.server_ports.items()
-            for port in ports
-            if port
-        )
 
-        debug_args, command = browser_command(
-            self.binary,
-            self.binary_args + [
-                "--hard-fail",
-                "--webdriver=%s" % self.webdriver_port,
-                "about:blank",
-            ],
-            self.debug_info
-        )
+        if debug_info:
+            env["DELAY_AFTER_ACCEPT"] = env.get("DELAY_SECS", "15")
 
-        if self.headless:
-            command += ["--headless"]
+        args = [
+            "--hard-fail",
+            "-u", "Servo/wptrunner",
+            # See https://github.com/servo/servo/issues/30080.
+            # For some reason rustls does not like the certificate generated by the WPT tooling.
+            "--ignore-certificate-errors",
+            "--enable-experimental-web-platform-features",
+            "--window-size", "800x600",
+            "about:blank",
+        ]
 
-        if self.ca_certificate_path:
-            command += ["--certificate-path", self.ca_certificate_path]
+        ca_cert_path = server_config.ssl_config["ca_cert_path"]
+        if ca_cert_path:
+            args += ["--certificate-path", ca_cert_path]
+        if binary_args:
+            args += binary_args
+        if user_stylesheets:
+            for stylesheet in user_stylesheets:
+                args += ["--user-stylesheet", stylesheet]
+        if headless:
+            args += ["--headless"]
 
-        for stylesheet in self.user_stylesheets:
-            command += ["--user-stylesheet", stylesheet]
+        # Add the shared `wpt-prefs.json` file to the list of arguments.
+        args += ["--prefs-file", self.find_wpt_prefs(logger)]
 
-        self.command = command
+        super().__init__(logger, binary=binary, webdriver_binary=binary,
+                         webdriver_args=args, host=webdriver_host, env=env,
+                         supports_pac=False, **kwargs)
 
-        self.command = debug_args + self.command
+        self.hosts_path = hosts_path
 
-        if not self.debug_info or not self.debug_info.interactive:
-            self.output_handler = OutputHandler(self.logger, self.command)
-            self.proc = ProcessHandler(self.command,
-                                       processOutputLine=[self.on_output],
-                                       env=env,
-                                       storeOutput=False)
-            self.proc.run()
-            self.output_handler.after_process_start(self.proc.pid)
-            self.output_handler.start()
-        else:
-            self.proc = subprocess.Popen(self.command, env=env)
-
-        self.logger.debug("Servo Started")
-
-    def stop(self, force=False):
-        self.logger.debug("Stopping browser")
-        if self.proc is not None:
-            try:
-                self.proc.kill()
-            except OSError:
-                # This can happen on Windows if the process is already dead
-                pass
-        if self.output_handler is not None:
-            self.output_handler.after_process_stop()
-
-    @property
-    def pid(self):
-        if self.proc is None:
-            return None
-
-        try:
-            return self.proc.pid
-        except AttributeError:
-            return None
-
-    def is_alive(self):
-        return self.proc.poll() is None
+    def make_command(self):
+        return [self.webdriver_binary, f"--webdriver={self.port}"] + self.webdriver_args
 
     def cleanup(self):
-        self.stop()
+        super().cleanup()
         os.remove(self.hosts_path)
 
-    def executor_browser(self):
-        assert self.webdriver_port is not None
-        return ExecutorBrowser, {"webdriver_host": self.webdriver_host,
-                                 "webdriver_port": self.webdriver_port,
-                                 "init_timeout": self.init_timeout}
+    def find_wpt_prefs(self, logger):
+        default_path = os.path.join("resources", "wpt-prefs.json")
+        # The cwd is the servo repo for `./mach test-wpt`, but on WPT runners
+        # it is the WPT repo. The nightly tar is extracted inside the Python
+        # virtual environment within the repo. This means that on WPT runners,
+        # the cwd has the `_venv3/servo` directory inside which we find the
+        # binary and the 'resources' directory.
+        for dir in [".", "./_venv3/servo"]:
+            candidate = os.path.abspath(os.path.join(dir, default_path))
+            if os.path.isfile(candidate):
+                return candidate
+        logger.error("Unable to find wpt-prefs.json")
+        return default_path

@@ -24,7 +24,6 @@ Note: This is a jinja2 template, processed at build time into the final manifest
         android:label="{{ application_label|default('Trichrome Library') }}"
         android:icon="@drawable/icon_webview"
         android:multiArch="true"
-        android:extractNativeLibs="false"
         {% if force_32_bit is defined and force_32_bit == 'true' %}
         android:use32bitAbi="true"
         {% endif %}

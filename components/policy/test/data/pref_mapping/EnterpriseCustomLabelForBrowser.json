@@ -1,0 +1,37 @@
+[
+    {
+      "os": [
+        "win",
+        "linux",
+        "mac"
+      ],
+      "policy_pref_mapping_tests": [
+        {
+          "policies": {},
+          "prefs": {
+            "enterprise_label.custom_value.for_browser": {
+              "location": "local_state",
+              "default_value": ""
+            }
+          }
+        },
+        {
+          "policies": {
+            "EnterpriseCustomLabelForBrowser": "Label"
+          },
+          "policies_settings": {
+            "EnterpriseCustomLabelForBrowser": {
+              "scope": "machine",
+              "source": "cloud"
+            }
+          },
+          "prefs": {
+            "enterprise_label.custom_value.for_browser": {
+              "location": "local_state",
+              "value": "Label"
+            }
+          }
+        }
+      ]
+    }
+  ]

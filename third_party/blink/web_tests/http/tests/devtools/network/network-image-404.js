@@ -6,6 +6,8 @@ import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
+
 (async function() {
   'use strict';
   TestRunner.addResult(`Tests content is available for failed image request.\n`);
@@ -33,7 +35,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
     TestRunner.addResult(request1.url());
     TestRunner.addResult('resource.type: ' + request1.resourceType());
     TestRunner.assertTrue(!request1.failed, 'Resource loading failed.');
-    request1.requestContent().then(step3);
+    request1.requestContentData().then(step3);
   }
 
   async function step3() {
@@ -45,7 +47,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
     TestRunner.addResult('resources count = ' + requests.length);
     for (let i = 0; i < requests.length; i++) {
       TestRunner.addResult(requests[i].url());
-      const {content} = await requests[i].requestContent();
+      const {content} = await requests[i].requestContentData().then(TextUtils.ContentData.ContentData.asDeferredContent);
       TestRunner.addResult('resource.content after requesting content: ' + content);
     }
 

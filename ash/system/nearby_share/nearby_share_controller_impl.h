@@ -20,6 +20,10 @@ class NearbyShareControllerImpl : public NearbyShareController {
     // Relays high visibility state changes from the service to the pod button.
     virtual void OnHighVisibilityEnabledChanged(bool enabled) = 0;
 
+    // Relay Nearby Share enabled state changes from the service to the pod
+    // button.
+    virtual void OnNearbyShareEnabledChanged(bool enabled) = 0;
+
     // Relay visibility state changes from the settings to the pod button.
     virtual void OnVisibilityChanged(
         ::nearby_share::mojom::Visibility visibility) = 0;
@@ -32,6 +36,7 @@ class NearbyShareControllerImpl : public NearbyShareController {
 
   // NearbyShareController
   void HighVisibilityEnabledChanged(bool enabled) override;
+  void NearbyShareEnabledChanged(bool enabled) override;
   void VisibilityChanged(
       ::nearby_share::mojom::Visibility visibility) const override;
 

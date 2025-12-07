@@ -6,7 +6,7 @@
 
 #include <ostream>
 
-namespace content {
+namespace content::indexed_db {
 
 PartitionedLock::PartitionedLock() = default;
 
@@ -51,8 +51,5 @@ bool operator<(const PartitionedLock& x, const PartitionedLock& y) {
 bool operator==(const PartitionedLock& x, const PartitionedLock& y) {
   return x.lock_id() == y.lock_id();
 }
-bool operator!=(const PartitionedLock& x, const PartitionedLock& y) {
-  return !(x == y);
-}
 
-}  // namespace content
+}  // namespace content::indexed_db

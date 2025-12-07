@@ -15,15 +15,11 @@ TaskAttributionInfoImpl::TaskAttributionInfoImpl(
     : id_(id), soft_navigation_context_(soft_navigation_context) {}
 
 void TaskAttributionInfoImpl::Trace(Visitor* visitor) const {
-  ScriptWrappableTaskState::Trace(visitor);
+  TaskAttributionTaskState::Trace(visitor);
   visitor->Trace(soft_navigation_context_);
 }
 
-AbortSignal* TaskAttributionInfoImpl::AbortSource() {
-  return nullptr;
-}
-
-DOMTaskSignal* TaskAttributionInfoImpl::PrioritySource() {
+SchedulerTaskContext* TaskAttributionInfoImpl::GetSchedulerTaskContext() {
   return nullptr;
 }
 

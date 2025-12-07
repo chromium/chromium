@@ -7,9 +7,11 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/webdata/common/web_data_request_manager.h"
 #include "components/webdata/common/web_database.h"
 #include "components/webdata/common/web_database_table.h"
@@ -22,22 +24,40 @@ WebDatabaseBackend::WebDatabaseBackend(
     const scoped_refptr<base::SequencedTaskRunner>& db_thread)
     : base::RefCountedDeleteOnSequence<WebDatabaseBackend>(db_thread),
       db_path_(path),
-      delegate_(std::move(delegate)) {}
+      delegate_(std::move(delegate)) {
+  // WebDatabaseBackend is created on the client sequence then accessed on the
+  // DB sequence.
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
 
 void WebDatabaseBackend::AddTable(std::unique_ptr<WebDatabaseTable> table) {
-  DCHECK(!db_);
+  CHECK(!init_complete_) << "AddTable must be called before init starts.";
   tables_.push_back(std::move(table));
 }
 
+void WebDatabaseBackend::MaybeInitEncryptorOnUiSequence(
+    os_crypt_async::Encryptor encryptor) {
+  CHECK(!encryptor_) << "Init should only be called once.";
+  // Encryptor is thread safe. This transfers it from the UI sequence to the DB
+  // sequence. The CHECKs above and below guarantee this only happens once,
+  // before any tasks have been posted to the DB sequence.
+  encryptor_.emplace(std::move(encryptor));
+}
+
 void WebDatabaseBackend::InitDatabase() {
+  // MaybeInitEncryptorOnUiSequence must be called first.
+  CHECK(encryptor_);
   LoadDatabaseIfNecessary();
-  if (delegate_)
+  if (delegate_) {
     delegate_->DBLoaded(init_status_, diagnostics_);
+  }
 }
 
 void WebDatabaseBackend::ShutdownDatabase() {
-  if (db_ && init_status_ == sql::INIT_OK)
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (db_ && init_status_ == sql::INIT_OK) {
     db_->CommitTransaction();
+  }
   db_.reset();
   init_complete_ = true;  // Ensures the init sequence is not re-run.
   init_status_ = sql::INIT_FAILURE;
@@ -46,79 +66,125 @@ void WebDatabaseBackend::ShutdownDatabase() {
 void WebDatabaseBackend::DBWriteTaskWrapper(
     WebDatabaseService::WriteTask task,
     std::unique_ptr<WebDataRequest> request) {
-  if (!request->IsActive())
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(init_complete_) << "Init must be complete before running a DB task.";
+  if (!request->IsActive()) {
     return;
-
+  }
   ExecuteWriteTask(std::move(task));
   request_manager_->RequestCompleted(std::move(request), nullptr);
 }
 
 void WebDatabaseBackend::ExecuteWriteTask(WebDatabaseService::WriteTask task) {
-  LoadDatabaseIfNecessary();
-  if (db_ && init_status_ == sql::INIT_OK) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(init_complete_) << "Init must be complete before running a DB task.";
+  // The database is not opened or have been shutdown.
+  if (!db_) {
+    return;
+  }
+
+  auto transaction = database()->AcquireTransaction();
+  if (init_status_ == sql::INIT_OK) {
     WebDatabase::State state = std::move(task).Run(db_.get());
-    if (state == WebDatabase::COMMIT_NEEDED)
+    if (state == WebDatabase::COMMIT_NEEDED) {
+      // Either commit the changes using the Commit(...) call or commit the
+      // changes via the scoped transaction. This is controlled through the
+      // Finch experiment 'SqlScopedTransactionWebDatabase'.
       Commit();
+      if (transaction) {
+        transaction->Commit();
+      }
+    }
   }
 }
 
 void WebDatabaseBackend::DBReadTaskWrapper(
     WebDatabaseService::ReadTask task,
     std::unique_ptr<WebDataRequest> request) {
-  if (!request->IsActive())
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(init_complete_) << "Init must be complete before running a DB task.";
+  if (!request->IsActive()) {
     return;
-
+  }
   std::unique_ptr<WDTypedResult> result = ExecuteReadTask(std::move(task));
   request_manager_->RequestCompleted(std::move(request), std::move(result));
 }
 
 std::unique_ptr<WDTypedResult> WebDatabaseBackend::ExecuteReadTask(
     WebDatabaseService::ReadTask task) {
-  LoadDatabaseIfNecessary();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(init_complete_) << "Init must be complete before running a DB task.";
   return (db_ && init_status_ == sql::INIT_OK) ? std::move(task).Run(db_.get())
                                                : nullptr;
 }
 
 WebDatabaseBackend::~WebDatabaseBackend() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ShutdownDatabase();
 }
 
 void WebDatabaseBackend::LoadDatabaseIfNecessary() {
-  if (init_complete_ || db_path_.empty())
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (init_complete_ || db_path_.empty()) {
     return;
+  }
 
   init_complete_ = true;
   db_ = std::make_unique<WebDatabase>();
 
-  for (const auto& table : tables_)
+  for (const auto& table : tables_) {
     db_->AddTable(table.get());
+  }
 
   // Unretained to avoid a ref loop since we own |db_|.
   db_->set_error_callback(base::BindRepeating(
       &WebDatabaseBackend::DatabaseErrorCallback, base::Unretained(this)));
   diagnostics_.clear();
   catastrophic_error_occurred_ = false;
-  init_status_ = db_->Init(db_path_);
+  init_status_ = db_->Init(db_path_, &(*encryptor_));
 
   if (init_status_ != sql::INIT_OK) {
-    db_.reset();
-    return;
+    // The database failed to be opened. This can be caused by a third-party
+    // that locks or has an exclusive sql query running. In that scenario,
+    // the initial error code is stored in `init_status_` and
+    // `catastrophic_error_occurred_` to ensure the user is getting the window
+    // notification about the profile being corrupt.
+    //
+    // Since Chrome keeps running after the error windows, we do mitigate the
+    // assumption of the WebDatabase not being null by opening an in-memory
+    // and empty database.
+    db_->GetSQLConnection()->Close();
+    sql::InitStatus memory_init_status =
+        db_->Init(base::FilePath(WebDatabase::kInMemoryPath), &(*encryptor_));
+    CHECK_EQ(memory_init_status, sql::INIT_OK);
   }
 
+  DCHECK(db_->GetSQLConnection());
+  DCHECK(db_->GetSQLConnection()->is_open());
+
   // A catastrophic error might have happened and recovered.
-  if (catastrophic_error_occurred_)
+  if (catastrophic_error_occurred_) {
     init_status_ = sql::INIT_OK_WITH_DATA_LOSS;
+  }
   db_->BeginTransaction();
 }
 
 void WebDatabaseBackend::DatabaseErrorCallback(int error,
                                                sql::Statement* statement) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sql::UmaHistogramSqliteResult("WebDatabase.DatabaseErrors", error);
 
   // We ignore any further error callbacks after the first catastrophic error.
   if (!catastrophic_error_occurred_ && sql::IsErrorCatastrophic(error)) {
     catastrophic_error_occurred_ = true;
-    diagnostics_ = db_->GetDiagnosticInfo(error, statement);
+    diagnostics_.clear();
+    // If the error is triggered during the call to Database::Open(...), it is
+    // possible that the database is not opened (https://crbug.com/420369590).
+    // The call to GetDiagnosticInfo(...) will execute sql statements; which is
+    // invalid on a closed database.
+    if (db_->GetSQLConnection()->is_open()) {
+      diagnostics_ += db_->GetDiagnosticInfo(error, statement);
+    }
     diagnostics_ += sql::GetCorruptFileDiagnosticsInfo(db_path_);
 
     db_->GetSQLConnection()->RazeAndPoison();
@@ -126,6 +192,7 @@ void WebDatabaseBackend::DatabaseErrorCallback(int error,
 }
 
 void WebDatabaseBackend::Commit() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
   DCHECK_EQ(sql::INIT_OK, init_status_);
   db_->CommitTransaction();

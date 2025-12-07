@@ -13,8 +13,18 @@
 
 namespace autofill {
 
-// The origin of an AutofillDataModel created or modified in the settings page.
+// The origin of a CreditCard created or modified in the settings page.
 extern const char kSettingsOrigin[];
+
+// The maximum number of `FieldLogEvent` objects that we store per field. We
+// assume that fields that would have more than this number of events are not
+// interesting for Autofill's purpose.
+inline constexpr size_t kMaxLogEventsPerField = 250;
+
+// The maximum number of Addresses and CreditCards considered while trying to
+// determine the possible field types of AutofillField's by looking at the
+// submitted value.
+inline constexpr size_t kMaxDataConsideredForPossibleTypes = 10;
 
 // The maximum number of Autofill fill operations that Autofill is allowed to
 // store in history so that they can be undone later.
@@ -69,7 +79,7 @@ inline constexpr size_t kMaxListSize = 512;
 // If #fields * (#profiles + #credit-cards) exceeds this number, type matching
 // and voting is omitted.
 // The rationale is that for a form with |kMaxExtractableFields| = 200 fields,
-// this still allows for 25 profiles plus credit cars.
+// this still allows for 25 profiles plus credit cards.
 inline constexpr size_t kMaxTypeMatchingCalls = 5000;
 
 // The minimum number of fields in a form that contains only password fields to

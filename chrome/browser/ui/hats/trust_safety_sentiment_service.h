@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
@@ -25,8 +26,8 @@
 using PasswordProtectionUIType = safe_browsing::WarningUIType;
 using PasswordProtectionUIAction = safe_browsing::WarningAction;
 
-const base::TimeDelta kPasswordChangeInactivity = base::Minutes(30);
-const base::TimeDelta kSafetyHubSurveyDelay = base::Minutes(10);
+inline constexpr base::TimeDelta kPasswordChangeInactivity = base::Minutes(30);
+inline constexpr base::TimeDelta kSafetyHubSurveyDelay = base::Minutes(10);
 
 // Service which receives events from Trust & Safety features and determines
 // whether or not to launch a HaTS survey on the NTP for the user.
@@ -126,10 +127,10 @@ class TrustSafetySentimentService
     kBrowsingData = 12,
     kPrivacyGuide = 13,
     kControlGroup = 14,
-    kPrivacySandbox4ConsentAccept = 15,
-    kPrivacySandbox4ConsentDecline = 16,
-    kPrivacySandbox4NoticeOk = 17,
-    kPrivacySandbox4NoticeSettings = 18,
+    // kPrivacySandbox4ConsentAccept = 15, // DEPRECATED.
+    // kPrivacySandbox4ConsentDecline = 16, // DEPRECATED.
+    // kPrivacySandbox4NoticeOk = 17, // DEPRECATED.
+    // kPrivacySandbox4NoticeSettings = 18, // DEPRECATED.
     kSafeBrowsingInterstitial = 19,
     kDownloadWarningUI = 20,
     kPasswordProtectionUI = 21,
@@ -137,10 +138,6 @@ class TrustSafetySentimentService
     kSafetyHubInteracted = 23,
     kMaxValue = kSafetyHubInteracted,
   };
-
-  // Called when the user interacts with Privacy Sandbox 4, `feature_area`
-  // specifies what type of interaction occurred.
-  virtual void InteractedWithPrivacySandbox4(FeatureArea feature_area);
 
   // Called when the user interacts with a safe browsing blocking page.
   virtual void InteractedWithSafeBrowsingInterstitial(
@@ -302,6 +299,9 @@ class TrustSafetySentimentService
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       observed_profiles_{this};
   bool performed_control_group_dice_roll_;
+  base::ScopedObservation<metrics::DesktopSessionDurationTracker,
+                          metrics::DesktopSessionDurationTracker::Observer>
+      session_duration_observation_{this};
   base::WeakPtrFactory<TrustSafetySentimentService> weak_ptr_factory_{this};
 };
 

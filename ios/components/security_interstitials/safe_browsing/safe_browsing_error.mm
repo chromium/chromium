@@ -5,4 +5,3 @@
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_error.h"
 
 const NSErrorDomain kSafeBrowsingErrorDomain = @"safe_browsing";
-const NSInteger kUnsafeResourceErrorCode = 1;

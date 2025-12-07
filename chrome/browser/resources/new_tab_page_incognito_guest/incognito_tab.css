@@ -112,27 +112,28 @@ em {
   display: block;
 }
 
+#cookie-controls-header {
+  display: block;
+  line-height: 20px;
+  margin: 4px 0 8px 0;
+}
+
+#cookie-controls-header svg {
+  fill: rgba(234, 240, 249, 1);
+  height: 20px;
+  margin-right: 8px;
+  vertical-align: top;
+  width: 20px;
+}
+
+#cookie-controls-header em {
+  display: inline-block;
+  font-weight: 500;
+}
+
 .learn-more-button,
 #cookie-controls-description a {
   color: rgb(138, 180, 248);
-}
-
-#cookie-controls-toggle,
-#cookie-controls-tooltip-icon {
-  flex: none;
-}
-
-#cookie-controls-toggle:not(:defined) {
-  width: 34px;
-}
-
-#cookie-controls-tooltip-icon {
-  --cr-tooltip-icon-fill-color: currentColor;
-  margin-inline-end: 24px; /* var(--cr-controlled-by-spacing) */
-}
-
-#cookie-controls-tooltip-icon:not(:defined) {
-  width: 20px; /* var(--cr-icon-size) */
 }
 
 /** Layout ------------------------------------------------------------------ */

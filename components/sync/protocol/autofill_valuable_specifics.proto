@@ -1,0 +1,135 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// If you change or add any fields in this file, update proto_visitors.h and
+// potentially proto_enum_conversions.{h, cc}.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+// LINT.IfChange(AutofillValuableSpecifics)
+// This is a copy of google.protobuf.Any.
+message Any {
+  // A URL/resource name that uniquely identifies the type of the serialized
+  // protocol buffer message.
+  optional string type_url = 1;
+
+  // Must be a valid serialized protocol buffer of the above specified type.
+  optional bytes value = 2;
+}
+
+// Represents a loyalty card from Google Wallet.
+message LoyaltyCard {
+  // The merchant name e.g. "Deutsche Bahn".
+  optional string merchant_name = 1;
+
+  // The program name e.g. "BahnBonus".
+  optional string program_name = 2;
+
+  // The logo URL.
+  optional string program_logo = 3;
+
+  // The loyalty card text code.
+  optional string loyalty_card_number = 4;
+
+  // Merchant domains associated to the loyalty card.
+  repeated string merchant_domains = 5;
+}
+
+// Represents a vehicle registration from Google Wallet.
+message VehicleRegistration {
+  // The vehicle make e.g. "Ford".
+  optional string vehicle_make = 1;
+
+  // The vehicle model e.g. "Fiesta".
+  optional string vehicle_model = 2;
+
+  // The year when model was first made e.g. "2018".
+  optional string vehicle_year = 3;
+
+  // The Vehicle Identification Number (VIN).
+  optional string vehicle_identification_number = 4;
+
+  // The license plate number.
+  optional string vehicle_license_plate = 5;
+
+  // The region that issued the license plate.
+  optional string license_plate_region = 6;
+
+  // The country that issued the license plate, normalized to ISO 3166-1
+  // alpha-2.
+  optional string license_plate_country = 7;
+
+  // The owner of the vehicle as it appears on their vehicle registration
+  // documents.
+  optional string owner_name = 8;
+}
+
+// Represents a flight reservation from Google Wallet.
+message FlightReservation {
+  // The flight number.
+  optional string flight_number = 1;
+
+  // The flight ticket number.
+  optional string flight_ticket_number = 2;
+
+  // The flight confirmation code (normally ~6 digits made of alphanumeric
+  // characters).
+  optional string flight_confirmation_code = 3;
+
+  // The passenger's full name.
+  optional string passenger_name = 4;
+
+  // The departure airport in IATA format e.g AMS for Amsterdam Schiphol.
+  optional string departure_airport = 5;
+
+  // The arrival airport in IATA format e.g LHR for London Heathrow.
+  optional string arrival_airport = 6;
+
+  // The departure date. This is a server-provided timestamp in microseconds.
+  optional int64 departure_date_unix_epoch_micros = 7;
+
+  // The arrival date. This is a server-provided timestamp with units in
+  // microseconds.
+  optional int64 arrival_date_unix_epoch_micros = 8;
+
+  // The airline logo. This is a Google URI pointing to an image.
+  optional string airline_logo = 9;
+
+  // The carrier code e.g. BA for British Airways.
+  optional string carrier_code = 10;
+
+  // The UTC offset of the departure airport's time zone in seconds.
+  optional int64 departure_airport_utc_offset_seconds = 11;
+
+  // The UTC offset of the arrival airport's time zone in seconds.
+  optional int64 arrival_airport_utc_offset_seconds = 12;
+}
+
+// Valuables coming from Google Wallet.
+message AutofillValuableSpecifics {
+  // The valuable id.
+  optional string id = 1;
+
+  // True if the pass is editable by external clients.
+  optional bool is_editable = 6;
+
+  oneof valuable_data {
+    LoyaltyCard loyalty_card = 2;
+    VehicleRegistration vehicle_registration = 3;
+    FlightReservation flight_reservation = 5;
+    // add other valuable types here.
+  }
+
+  // Contains information that is used by Chrome and needs to be persisted
+  // across clients.
+  optional Any serialized_chrome_valuables_metadata = 4;
+}
+// LINT.ThenChange(//components/autofill/core/browser/webdata/valuables/valuables_sync_util.cc:TrimAutofillValuableSpecificsDataForCaching)

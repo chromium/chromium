@@ -3,7 +3,7 @@ rootWebArea
 ++++genericContainer ignored
 ++++++staticText name='Some '
 ++++++++inlineTextBox name='Some '
-++++++mark detailsIds=comment,docFootnote,definition
+++++++mark detailsFrom=ariaDetails detailsIds=comment,docFootnote,definition
 ++++++++staticText name='highlighted text'
 ++++++++++inlineTextBox name='highlighted text'
 ++++++staticText name=' example.'

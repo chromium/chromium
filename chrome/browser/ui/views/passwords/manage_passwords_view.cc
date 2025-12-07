@@ -24,9 +24,12 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
@@ -39,12 +42,12 @@
 using password_manager::metrics_util::PasswordManagementBubbleInteractions;
 
 ManagePasswordsView::ManagePasswordsView(content::WebContents* web_contents,
-                                         views::View* anchor_view)
+                                         views::BubbleAnchor anchor_view)
     : PasswordBubbleViewBase(web_contents,
                              anchor_view,
                              /*easily_dismissable=*/true),
       controller_(PasswordsModelDelegateFromWebContents(web_contents)) {
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
@@ -60,6 +63,10 @@ ManagePasswordsView::ManagePasswordsView(content::WebContents* web_contents,
 
   page_container_ = AddChildView(
       std::make_unique<PageSwitcherView>(std::make_unique<views::View>()));
+  page_container_->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets().set_bottom(ChromeLayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_CONTENT_LIST_VERTICAL_SINGLE)));
 
   if (!controller_.GetCredentials().empty()) {
     // The request is cancelled when the |controller_| is destroyed.
@@ -163,7 +170,7 @@ ManagePasswordsView::CreatePasswordListView() {
                         kManagePasswordsButtonClicked);
           },
           base::Unretained(this)),
-      controller_.IsOptedInForAccountStorage());
+      controller_.IsAccountStorageEnabled());
 }
 
 std::unique_ptr<ManagePasswordsDetailsView>
@@ -177,21 +184,26 @@ ManagePasswordsView::CreatePasswordDetailsView() {
                           base::Unretained(&controller_)),
       base::BindRepeating(
           [](ManagePasswordsView* view) {
-            view->SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
+            view->SetButtons(
+                static_cast<int>(ui::mojom::DialogButton::kOk) |
+                static_cast<int>(ui::mojom::DialogButton::kCancel));
             view->SetButtonLabel(
-                ui::DIALOG_BUTTON_OK,
+                ui::mojom::DialogButton::kOk,
                 l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_UPDATE));
             view->GetBubbleFrameView()->SetFootnoteView(
                 view->CreateFooterView());
-            view->PreferredSizeChanged();
+
+            // TODO(crbug.com/41493925): Remove this SizeToContents().
+            // This SizeToContent() is used for immediate layout to ensure that
+            // a subsequent RequestFocus() sets the correct focus.
+            view->SizeToContents();
           },
           base::Unretained(this)),
       base::BindRepeating(&ManagePasswordsView::ExtendAuthValidity,
                           base::Unretained(this)),
       base::BindRepeating(
           [](ManagePasswordsView* view, bool is_invalid) {
-            view->SetButtonEnabled(ui::DialogButton::DIALOG_BUTTON_OK,
-                                   !is_invalid);
+            view->SetButtonEnabled(ui::mojom::DialogButton::kOk, !is_invalid);
           },
           base::Unretained(this)),
       base::BindRepeating(
@@ -266,7 +278,7 @@ ManagePasswordsView::CreateMovePasswordFooterView() {
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
           vector_icons::kSaveCloudIcon, ui::kColorIcon,
           layout_provider->GetDistanceMetric(
-              DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE))));
+              views::DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE))));
   icon_view->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
   icon_view->SetProperty(
       views::kMarginsKey,
@@ -309,7 +321,7 @@ void ManagePasswordsView::RecreateLayout() {
         CreatePasswordDetailsView();
     password_details_view_ = details_view.get();
     page_container_->SwitchToPage(std::move(details_view));
-    if (controller_.IsOptedInForAccountStorage() &&
+    if (controller_.IsAccountStorageEnabled() &&
         !controller_.get_details_bubble_credential()
              .value()
              .IsUsingAccountStore()) {
@@ -320,10 +332,6 @@ void ManagePasswordsView::RecreateLayout() {
     password_details_view_ = nullptr;
     frame_view->SetTitleView(CreateTitleView(controller_.GetTitle()));
     page_container_->SwitchToPage(CreatePasswordListView());
-    page_container_->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets().set_bottom(ChromeLayoutProvider::Get()->GetDistanceMetric(
-            DISTANCE_CONTENT_LIST_VERTICAL_SINGLE)));
   }
   SetTitle(controller_.GetTitle());
   PreferredSizeChanged();
@@ -331,13 +339,13 @@ void ManagePasswordsView::RecreateLayout() {
 
 void ManagePasswordsView::SwitchToReadingMode() {
   password_details_view_->SwitchToReadingMode();
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   RecreateLayout();
 }
 
 void ManagePasswordsView::SwitchToListView() {
   auth_timer_.Stop();
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   controller_.set_details_bubble_credential(std::nullopt);
   RecreateLayout();
 }

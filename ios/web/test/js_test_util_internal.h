@@ -11,19 +11,27 @@
 namespace web {
 namespace test {
 
-// Synchronously executes `script` in `content_world` and returns result.
-// NOTE: Generally, tests should not deal with raw WKContentWorlds. Instead,
-// prefer specifying the associated JavaScriptFeature instance using
+// NOTE: The following accept a pointer to a `WKContentWorld`. However, tests
+// should generally not deal with raw WKContentWorlds. Instead, prefer
+// specifying the associated JavaScriptFeature instance using
 // WebTestWithWebState::ExecuteJavaScriptForFeature.
-id ExecuteJavaScript(WKWebView* web_view,
-                     WKContentWorld* content_world,
-                     NSString* script);
+
+// Synchronously executes `script` in `content_world` and waits for the
+// execution to complete.
+void ExecuteJavaScriptInWebViewAndWorld(WKWebView* web_view,
+                                        WKContentWorld* content_world,
+                                        NSString* script);
+
+// Synchronously executes `script` in `content_world` and returns result.
+[[nodiscard]] id ExecuteJavaScript(WKWebView* web_view,
+                                   WKContentWorld* content_world,
+                                   NSString* script);
 
 // Executes `script` in `content_world` as an asynchronous JavaScript function,
 // waits for execution to complete, and returns the result.
-id ExecuteAsyncJavaScript(WKWebView* web_view,
-                          WKContentWorld* content_world,
-                          NSString* script);
+[[nodiscard]] id ExecuteAsyncJavaScript(WKWebView* web_view,
+                                        WKContentWorld* content_world,
+                                        NSString* script);
 
 }  // namespace test
 }  // namespace web

@@ -23,7 +23,6 @@ cc_library_with_tflite(
     ],
     deps = [
         "//tensorflow_lite_support/cc:common",
-        "//tensorflow_lite_support/cc/port:integral_types",
         "//tensorflow_lite_support/cc/port:statusor",
         "//tensorflow_lite_support/cc/task/audio/core:audio_buffer",
         "//tensorflow_lite_support/cc/task/audio/proto:audio_classifier_options_cc_proto",

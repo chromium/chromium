@@ -29,10 +29,10 @@
  */
 
 [
-    Exposed=(Window,Worker,SharedStorageWorklet)
+    Exposed=(Window,Worker,SharedStorageWorklet,ShadowRealm) // TODO(crbug.com/41480387): This should be Exposed=*
 ] interface TextEncoder {
     [CallWith=ExecutionContext, RaisesException, MeasureAs=TextEncoderConstructor] constructor();
     readonly attribute DOMString encoding;
-    [MeasureAs=TextEncoderEncode] Uint8Array encode(optional USVString input = "");
+    [MeasureAs=TextEncoderEncode, RaisesException] Uint8Array encode(optional USVString input = "");
     [MeasureAs=TextEncoderEncodeInto] TextEncoderEncodeIntoResult encodeInto(USVString source, Uint8Array destination);
 };

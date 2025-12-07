@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/version.h"
 
@@ -59,6 +60,7 @@ enum class Version {
   WIN11 = 22,        // Win11 21H2: Build 22000.
   WIN11_22H2 = 23,   // Win11 22H2: Build 22621.
   WIN11_23H2 = 24,   // Win11 23H2: Build 22631.
+  WIN11_24H2 = 25,   // Win11 24H2: Build 26100.
   WIN_LAST,          // Indicates error condition.
 };
 
@@ -144,9 +146,9 @@ class BASE_EXPORT OSInfo {
 
   // Functions to determine Version Type (e.g. Enterprise/Home) and Service Pack
   // value. See above for definitions of these values.
-  const VersionType& version_type() const { return version_type_; }
-  const ServicePack& service_pack() const { return service_pack_; }
-  const std::string& service_pack_str() const { return service_pack_str_; }
+  const VersionType& version_type() const LIFETIME_BOUND {
+    return version_type_;
+  }
 
   // Returns the number of processors on the system.
   const int& processors() const { return processors_; }
@@ -157,11 +159,12 @@ class BASE_EXPORT OSInfo {
     return allocation_granularity_;
   }
 
-  // Processor name as read from registry.
+  // Processor info as read from registry.
   std::string processor_model_name();
+  std::string processor_vendor_name();
 
   // Returns the "ReleaseId" (Windows 10 release number) from the registry.
-  const std::string& release_id() const { return release_id_; }
+  const std::string& release_id() const LIFETIME_BOUND { return release_id_; }
 
   // It returns true if the Windows SKU is N edition.
   bool IsWindowsNSku() const;
@@ -217,7 +220,6 @@ class BASE_EXPORT OSInfo {
   Version version_;
   VersionNumber version_number_;
   VersionType version_type_;
-  ServicePack service_pack_;
 
   // Represents the version of the OS associated to a release of
   // Windows 10. Each version may have different releases (such as patch
@@ -229,15 +231,12 @@ class BASE_EXPORT OSInfo {
   // for more information.
   std::string release_id_;
 
-  // A string, such as "Service Pack 3", that indicates the latest Service Pack
-  // installed on the system. If no Service Pack has been installed, the string
-  // is empty.
-  std::string service_pack_str_;
   int processors_;
   size_t allocation_granularity_;
   WowProcessMachine wow_process_machine_;
   WowNativeMachine wow_native_machine_;
   std::string processor_model_name_;
+  std::string processor_vendor_name_;
   DWORD os_type_;
 };
 

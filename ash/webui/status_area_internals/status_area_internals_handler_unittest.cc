@@ -36,7 +36,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/webui/status_area_internals/mojom/status_area_internals.mojom.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
@@ -53,7 +52,7 @@ namespace {
 // A class that mocks `MagicBoostStateAsh` to use in tests.
 class TestMagicBoostState : public chromeos::MagicBoostState {
  public:
-  TestMagicBoostState() = default;
+  TestMagicBoostState() { UpdateUserEligibleForGenAIFeatures(true); }
 
   TestMagicBoostState(const TestMagicBoostState&) = delete;
   TestMagicBoostState& operator=(const TestMagicBoostState&) = delete;
@@ -66,9 +65,18 @@ class TestMagicBoostState : public chromeos::MagicBoostState {
     UpdateHMRConsentStatus(consent_status);
   }
 
+  bool ShouldIncludeOrcaInOptInSync() override { return false; }
+  bool CanShowNoticeBannerForHMR() override { return false; }
   int32_t AsyncIncrementHMRConsentWindowDismissCount() override { return 0; }
   void AsyncWriteHMREnabled(bool enabled) override {}
   void DisableOrcaFeature() override {}
+  void DisableLobsterSettings() override {}
+
+ protected:
+  base::expected<bool, chromeos::MagicBoostState::Error>
+  IsUserEligibleForGenAIFeaturesExpected() const override {
+    return true;
+  }
 };
 
 }  // namespace

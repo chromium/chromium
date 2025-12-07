@@ -7,34 +7,39 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/check_deref.h"
 #include "base/functional/callback.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/input_method/input_method_configuration.h"
 #include "chrome/browser/ash/login/enrollment/mock_enrollment_launcher.h"
 #include "chrome/browser/ash/login/startup_utils.h"
-#include "chrome/browser/ash/login/ui/fake_login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
-#include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
 #include "chrome/browser/ash/net/rollback_network_config/fake_rollback_network_config.h"
 #include "chrome/browser/ash/net/rollback_network_config/rollback_network_config_service.h"
+#include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/profiles/signin_profile_handler.h"
-#include "chrome/browser/ash/settings/device_settings_cache.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
+#include "chrome/browser/ash/settings/scoped_test_device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client_test_helper.h"
-#include "chrome/browser/ui/ash/test_wallpaper_controller.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
+#include "chrome/browser/ui/ash/login/fake_login_display_host.h"
+#include "chrome/browser/ui/ash/wallpaper/test_wallpaper_controller.h"
+#include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/webui/ash/login/demo_preferences_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/demo_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
@@ -51,13 +56,16 @@
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/oobe_config/fake_oobe_configuration_client.h"
 #include "chromeos/ash/components/dbus/oobe_config/oobe_configuration_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/device_settings_cache.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "components/ownership/mock_owner_key_util.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/fake_user_manager.h"
@@ -65,6 +73,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/test_web_ui.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -175,16 +184,31 @@ void CreateExtensionServiceFor(Profile* profile) {
 // be done to run unit tests, but is not directly related to the tests.
 class WizardControllerTestBase : public ::testing::Test {
  public:
-  WizardControllerTestBase() = default;
+  WizardControllerTestBase() {
+    // Stabilizes the behavior on branded build.
+    command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+        ash::switches::kEnterpriseEnableUnifiedStateDetermination,
+        policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationNever);
+  }
 
   void SetUp() override {
+    SessionManagerClient::InitializeFake();
+
+    DeviceSettingsService::Get()->StartProcessing(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        SessionManagerClient::Get(), new ownership::MockOwnerKeyUtil());
+    DeviceSettingsService::Get()->Load();
+
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
-    input_method::Initialize();
+    input_method::Initialize(TestingBrowserProcess::GetGlobal()->local_state(),
+                             TestingBrowserProcess::GetGlobal()
+                                 ->GetFeatures()
+                                 ->application_locale_storage());
     AshTestHelper::InitParams params;
     params.start_session = false;
-    params.local_state = profile_manager_->local_state()->Get();
+    params.local_state = TestingBrowserProcess::GetGlobal()->local_state();
     test_context_factories_ = std::make_unique<ui::TestContextFactories>(
         /*enable_pixel_output=*/false);
     ash_test_helper_ = std::make_unique<AshTestHelper>(
@@ -213,16 +237,16 @@ class WizardControllerTestBase : public ::testing::Test {
         std::make_unique<ScopedEnrollmentLauncherFactoryOverrideForTesting>(
             base::BindRepeating(FakeEnrollmentLauncher::Create,
                                 &mock_enrollment_launcher_));
-    network_portal_detector::InitializeForTesting(&network_portal_detector_);
     chromeos::TpmManagerClient::InitializeFake();
     StatsReportingController::Initialize(
-        profile_manager_->local_state()->Get());
+        TestingBrowserProcess::GetGlobal()->local_state());
     CreateExtensionServiceFor(profile_.get());
     CreateExtensionServiceFor(
         profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true));
     auth_events_recorder_ = AuthEventsRecorder::CreateForTesting();
     wallpaper_controller_client_ = std::make_unique<
         WallpaperControllerClientImpl>(
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
         std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>());
     wallpaper_controller_client_->InitForTesting(WallpaperController::Get());
   }
@@ -230,13 +254,8 @@ class WizardControllerTestBase : public ::testing::Test {
   void TearDown() override {
     wallpaper_controller_client_.reset();
     auth_events_recorder_.reset();
-    extensions::ExtensionSystem::Get(profile_)->Shutdown();
-    extensions::ExtensionSystem::Get(
-        profile_->GetPrimaryOTRProfile(/*create_if_needed=*/false))
-        ->Shutdown();
     StatsReportingController::Shutdown();
     chromeos::TpmManagerClient::Shutdown();
-    network_portal_detector::InitializeForTesting(nullptr);
     enrollment_launcher_factory_.reset();
     OobeConfigurationClient::Shutdown();
     DBusThreadManager::Shutdown();
@@ -253,6 +272,9 @@ class WizardControllerTestBase : public ::testing::Test {
     TestingBrowserProcess::GetGlobal()->platform_part()->StartTearDown();
     profile_ = nullptr;
     profile_manager_.reset();
+
+    DeviceSettingsService::Get()->StopProcessing();
+    SessionManagerClient::Shutdown();
   }
 
   void FakeInstallAttributesForDemoMode() {
@@ -264,6 +286,8 @@ class WizardControllerTestBase : public ::testing::Test {
   testing::NiceMock<MockEnrollmentLauncher> mock_enrollment_launcher_;
 
  private:
+  base::test::ScopedCommandLine command_line_;
+
   std::unique_ptr<base::test::TaskEnvironment> task_environment_ =
       std::make_unique<content::BrowserTaskEnvironment>(
           base::test::TaskEnvironment::ThreadingMode::MULTIPLE_THREADS,
@@ -282,14 +306,18 @@ class WizardControllerTestBase : public ::testing::Test {
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
       chrome_keyboard_controller_client_test_helper_;
+  ash::ScopedTestDeviceSettingsService device_settings_service_;
   ScopedTestingCrosSettings settings_;
-  KioskChromeAppManager kiosk_chrome_app_manager_;
+  KioskCryptohomeRemover kiosk_cryptohome_remover_{
+      TestingBrowserProcess::GetGlobal()->local_state()};
+  KioskChromeAppManager kiosk_chrome_app_manager_{
+      TestingBrowserProcess::GetGlobal()->local_state(),
+      TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
+      &kiosk_cryptohome_remover_};
   ScopedStubInstallAttributes scoped_stub_install_attributes_;
-  ash::ScopedDeviceSettingsTestHelper device_settings_test_helper_;
   ash::system::ScopedFakeStatisticsProvider statistics_provider_;
   std::unique_ptr<ScopedEnrollmentLauncherFactoryOverrideForTesting>
       enrollment_launcher_factory_;
-  NetworkPortalDetectorTestImpl network_portal_detector_;
   std::unique_ptr<AuthEventsRecorder> auth_events_recorder_;
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
 };

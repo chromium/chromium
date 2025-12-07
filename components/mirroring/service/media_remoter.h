@@ -15,7 +15,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
-#include "third_party/openscreen/src/cast/streaming/sender.h"
+#include "third_party/openscreen/src/cast/streaming/public/sender.h"
 
 namespace media::cast {
 class CastEnvironment;
@@ -45,7 +45,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MediaRemoter final
  public:
   class Client {
    public:
-    virtual ~Client() {}
+    virtual ~Client() = default;
 
     // Connects the |remoter| with a source tab.
     virtual void ConnectToRemotingSource(

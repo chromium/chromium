@@ -278,7 +278,7 @@ public class FlagsFragment extends DevUiBaseFragment {
     }
 
     private class FlagStateSpinnerSelectedListener implements AdapterView.OnItemSelectedListener {
-        private Flag mFlag;
+        private final Flag mFlag;
 
         FlagStateSpinnerSelectedListener(Flag flag) {
             mFlag = flag;
@@ -349,7 +349,7 @@ public class FlagsFragment extends DevUiBaseFragment {
 
     private static class FlagQuery {
         // Lower-case words from the query. Never contains empty strings.
-        String[] mLowerCaseWords;
+        final String[] mLowerCaseWords;
 
         public FlagQuery(CharSequence chars) {
             String lowerCaseTrimmed = chars.toString().toLowerCase(Locale.getDefault()).trim();
@@ -450,7 +450,7 @@ public class FlagsFragment extends DevUiBaseFragment {
                     };
         }
 
-        private View getToggleableFlag(@NonNull Flag flag, View view, ViewGroup parent) {
+        private View getToggleableFlag(@NonNull Flag flag, View view) {
             // If the the old view is already created then reuse it, else create a new one by layout
             // inflation.
             if (view == null) {
@@ -497,7 +497,7 @@ public class FlagsFragment extends DevUiBaseFragment {
             return view;
         }
 
-        private View getWarningMessage(View view, ViewGroup parent) {
+        private View getWarningMessage(View view) {
             // If the the old view is already created then reuse it, else create a new one by layout
             // inflation.
             if (view == null) {
@@ -539,9 +539,9 @@ public class FlagsFragment extends DevUiBaseFragment {
         public View getView(int position, View view, ViewGroup parent) {
             Flag flag = getItem(position);
             if (getItemViewType(position) == LayoutType.WARNING_MESSAGE) {
-                return getWarningMessage(view, parent);
+                return getWarningMessage(view);
             } else {
-                return getToggleableFlag(flag, view, parent);
+                return getToggleableFlag(flag, view);
             }
         }
 

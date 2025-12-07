@@ -38,20 +38,18 @@ LayoutUnit ComputeTilePhase(LayoutUnit position, LayoutUnit tile_extent) {
                      : LayoutUnit();
 }
 
-LayoutUnit ResolveWidthForRatio(LayoutUnit height,
-                                const PhysicalSize& natural_ratio) {
-  LayoutUnit resolved_width =
-      height.MulDiv(natural_ratio.width, natural_ratio.height);
+LayoutUnit ResolveClampedWidthForRatio(LayoutUnit height,
+                                       const PhysicalSize& natural_ratio) {
+  LayoutUnit resolved_width = ResolveWidthForRatio(height, natural_ratio);
   if (natural_ratio.width >= 1 && resolved_width < 1) {
     return LayoutUnit(1);
   }
   return resolved_width;
 }
 
-LayoutUnit ResolveHeightForRatio(LayoutUnit width,
-                                 const PhysicalSize& natural_ratio) {
-  LayoutUnit resolved_height =
-      width.MulDiv(natural_ratio.height, natural_ratio.width);
+LayoutUnit ResolveClampedHeightForRatio(LayoutUnit width,
+                                        const PhysicalSize& natural_ratio) {
+  LayoutUnit resolved_height = ResolveHeightForRatio(width, natural_ratio);
   if (natural_ratio.height >= 1 && resolved_height < 1) {
     return LayoutUnit(1);
   }
@@ -210,7 +208,7 @@ SnappedAndUnsnappedOutsets BackgroundImageGeometry::ComputeDestRectAdjustments(
     const PhysicalRect& unsnapped_positioning_area,
     bool disallow_border_derived_adjustment) const {
   SnappedAndUnsnappedOutsets dest_adjust;
-  switch (fill_layer.Clip()) {
+  switch (paint_context.EffectiveClip(fill_layer)) {
     case EFillBox::kNoClip:
       dest_adjust.unsnapped = paint_context.VisualOverflowOutsets();
       dest_adjust.snapped = dest_adjust.unsnapped;
@@ -324,7 +322,7 @@ BackgroundImageGeometry::ComputePositioningAreaAdjustments(
     case EFillBox::kNoClip:
     case EFillBox::kText:
       // These are not supported mask-origin values.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return box_outset;
 }
@@ -408,7 +406,7 @@ void BackgroundImageGeometry::CalculateFillTileSize(
   // generated content) and unsnapped for content that has intrinsic
   // dimensions. Once we choose here we stop tracking whether the tile size is
   // snapped or unsnapped.
-  IntrinsicSizingInfo sizing_info = image->GetNaturalSizingInfo(
+  NaturalSizingInfo sizing_info = image->GetNaturalSizingInfo(
       style.EffectiveZoom(), style.ImageOrientation());
   PhysicalSize image_aspect_ratio =
       PhysicalSize::FromSizeFFloor(sizing_info.aspect_ratio);
@@ -423,14 +421,14 @@ void BackgroundImageGeometry::CalculateFillTileSize(
       const Length& layer_height = fill_layer.SizeLength().Height();
 
       if (layer_width.IsFixed()) {
-        tile_size_.width = LayoutUnit(layer_width.Value());
+        tile_size_.width = LayoutUnit(layer_width.Pixels());
       } else if (layer_width.IsPercent() || layer_width.IsCalculated()) {
         tile_size_.width =
             ValueForLength(layer_width, positioning_area_size.width);
       }
 
       if (layer_height.IsFixed()) {
-        tile_size_.height = LayoutUnit(layer_height.Value());
+        tile_size_.height = LayoutUnit(layer_height.Pixels());
       } else if (layer_height.IsPercent() || layer_height.IsCalculated()) {
         tile_size_.height =
             ValueForLength(layer_height, positioning_area_size.height);
@@ -446,8 +444,8 @@ void BackgroundImageGeometry::CalculateFillTileSize(
       // natural size, its size is determined as for contain.
       if (layer_width.IsAuto() && !layer_height.IsAuto()) {
         if (!image_aspect_ratio.IsEmpty()) {
-          tile_size_.width =
-              ResolveWidthForRatio(tile_size_.height, image_aspect_ratio);
+          tile_size_.width = ResolveClampedWidthForRatio(tile_size_.height,
+                                                         image_aspect_ratio);
         } else if (sizing_info.has_width) {
           tile_size_.width =
               LayoutUnit::FromFloatFloor(sizing_info.size.width());
@@ -456,8 +454,8 @@ void BackgroundImageGeometry::CalculateFillTileSize(
         }
       } else if (!layer_width.IsAuto() && layer_height.IsAuto()) {
         if (!image_aspect_ratio.IsEmpty()) {
-          tile_size_.height =
-              ResolveHeightForRatio(tile_size_.width, image_aspect_ratio);
+          tile_size_.height = ResolveClampedHeightForRatio(tile_size_.width,
+                                                           image_aspect_ratio);
         } else if (sizing_info.has_height) {
           tile_size_.height =
               LayoutUnit::FromFloatFloor(sizing_info.size.height());
@@ -509,11 +507,10 @@ void BackgroundImageGeometry::CalculateFillTileSize(
     }
     case EFillSizeType::kSizeNone:
       // This value should only be used while resolving style.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return;
+  NOTREACHED();
 }
 
 void BackgroundImageGeometry::CalculateRepeatAndPosition(
@@ -546,7 +543,8 @@ void BackgroundImageGeometry::CalculateRepeatAndPosition(
     // Maintain aspect ratio if background-size: auto is set
     if (fill_layer.SizeLength().Height().IsAuto() &&
         background_repeat_y != EFillRepeat::kRoundFill) {
-      tile_size_.height = ResolveHeightForRatio(rounded_width, tile_size_);
+      tile_size_.height =
+          ResolveClampedHeightForRatio(rounded_width, tile_size_);
     }
     tile_size_.width = rounded_width;
 
@@ -566,7 +564,8 @@ void BackgroundImageGeometry::CalculateRepeatAndPosition(
     // Maintain aspect ratio if background-size: auto is set
     if (fill_layer.SizeLength().Width().IsAuto() &&
         background_repeat_x != EFillRepeat::kRoundFill) {
-      tile_size_.width = ResolveWidthForRatio(rounded_height, tile_size_);
+      tile_size_.width =
+          ResolveClampedWidthForRatio(rounded_height, tile_size_);
     }
     tile_size_.height = rounded_height;
 
@@ -707,8 +706,7 @@ gfx::RectF BackgroundImageGeometry::ComputePositioningArea(
   switch (layer.Origin()) {
     case EFillBox::kNoClip:
     case EFillBox::kText:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case EFillBox::kBorder:
     case EFillBox::kContent:
     case EFillBox::kFillBox:

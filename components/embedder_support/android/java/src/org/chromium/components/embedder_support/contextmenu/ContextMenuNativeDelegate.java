@@ -8,9 +8,12 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.url.GURL;
 
 /** Interface to handle context menu actions in native. */
+@NullMarked
 public interface ContextMenuNativeDelegate {
     /** Called when this {@link ContextMenuNativeDelegate} is being destroyed. */
     void destroy();
@@ -35,14 +38,22 @@ public interface ContextMenuNativeDelegate {
     void retrieveImageForShare(@ContextMenuImageFormat int imageFormat, Callback<Uri> callback);
 
     /**
-     * Starts a download based on the params.
+     * Starts a download based on the given url.
      *
-     * @param isLink Whether the download target is a link.
+     * @param isMedia Whether the download target is a media.
      */
-    void startDownload(boolean isLink);
+    void startDownload(GURL url, boolean isMedia);
 
     /** Does a reverse image search for the current image that the context menu was triggered on. */
     void searchForImage();
+
+    /**
+     * Opens DevTools to inspect the specified HTML element in the render frame.
+     *
+     * @param x The x-coordinate of the element to be inspected in dps.
+     * @param y The y-coordinate of the element to be inspected in dps.
+     */
+    void inspectElement(int x, int y);
 
     /**
      * Get the current {@link RenderFrameHost} that the context menu was triggered on, to be shared.
@@ -50,4 +61,12 @@ public interface ContextMenuNativeDelegate {
      * @return {@link RenderFrameHost}.
      */
     RenderFrameHost getRenderFrameHost();
+
+    /**
+     * Requests to enter or exit Picture-in-Picture for the video.
+     *
+     * @param enterPip {@code true} to request entering Picture-in-Picture, or {@code false} to
+     *     request exiting.
+     */
+    void setPictureInPicture(boolean enterPip);
 }

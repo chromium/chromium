@@ -7,8 +7,10 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -21,11 +23,12 @@
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/login/local_password_setup_handler.h"
+#include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
+#include "chromeos/ash/services/auth_factor_config/auth_factor_config.h"
 #include "chromeos/ash/services/auth_factor_config/in_process_instances.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-forward.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-shared.h"
-#include "components/crash/core/app/crashpad.h"
 
 namespace ash {
 namespace {
@@ -67,10 +70,28 @@ void LocalPasswordSetupScreen::ShowImpl() {
   }
   EstablishKnowledgeFactorGuard(base::BindOnce(
       &LocalPasswordSetupScreen::DoShow, weak_factory_.GetWeakPtr()));
+
+  if (ash::features::IsRecoveryFlowReorderEnabled() &&
+      context()->knowledge_factor_setup.auth_setup_flow ==
+          WizardContext::AuthChangeFlow::kRecovery &&
+      context()->extra_factors_token) {
+    session_refresher_ = AuthSessionStorage::Get()->KeepAlive(
+        context()->extra_factors_token.value());
+  }
+}
+
+void LocalPasswordSetupScreen::HideImpl() {
+  session_refresher_.reset();
 }
 
 void LocalPasswordSetupScreen::DoShow() {
-  bool can_go_back = !context()->knowledge_factor_setup.local_password_forced;
+  // The user can go back in the flow, if:
+  // 1. They were presented the choice between local vs. online password on the
+  //    LocalPasswordSetup screen.
+  // 2. They clicked on 'Choose password instead' during main PIN setup.
+  bool can_go_back = !context()->knowledge_factor_setup.local_password_forced ||
+                     context()->knowledge_factor_setup.pin_setup_mode ==
+                         WizardContext::PinSetupMode::kUserChosePasswordInstead;
   bool is_recovery_flow = context()->knowledge_factor_setup.auth_setup_flow ==
                           WizardContext::AuthChangeFlow::kRecovery;
   view_->Show(/*can_go_back=*/can_go_back,
@@ -94,13 +115,13 @@ void LocalPasswordSetupScreen::OnUserAction(const base::Value::List& args) {
                            weak_factory_.GetWeakPtr()));
         break;
       case WizardContext::AuthChangeFlow::kRecovery:
-        password_factor_editor.UpdateLocalPassword(
+        password_factor_editor.UpdateOrSetLocalPassword(
             GetToken(), password,
             base::BindOnce(&LocalPasswordSetupScreen::OnUpdateLocalPassword,
                            weak_factory_.GetWeakPtr()));
         break;
       case WizardContext::AuthChangeFlow::kReauthentication:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     return;
   } else if (action_id == kUserActionBack) {
@@ -117,7 +138,7 @@ void LocalPasswordSetupScreen::OnUpdateLocalPassword(
     LOG(ERROR) << "Failed to update local password, error id= "
                << static_cast<int>(result);
     exit_callback_.Run(Result::kDone);
-    crash_reporter::DumpWithoutCrashing();
+    base::debug::DumpWithoutCrashing();
     return;
   }
   context()->knowledge_factor_setup.modified_factors.Put(
@@ -132,7 +153,7 @@ void LocalPasswordSetupScreen::OnSetLocalPassword(
     LOG(ERROR) << "Failed to set local password, error id= "
                << static_cast<int>(result);
     exit_callback_.Run(Result::kDone);
-    crash_reporter::DumpWithoutCrashing();
+    base::debug::DumpWithoutCrashing();
     return;
   }
   context()->knowledge_factor_setup.modified_factors.Put(

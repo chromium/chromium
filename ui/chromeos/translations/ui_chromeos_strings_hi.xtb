@@ -19,6 +19,7 @@
 <translation id="115443833402798225">हंगुल आनमाटी</translation>
 <translation id="1155759005174418845">कैटेलन</translation>
 <translation id="1168100932582989117">Google नाम सर्वर</translation>
+<translation id="1170788066030116158">फ़ोटो लेने की तारीख</translation>
 <translation id="1172970565351728681">करीब <ph name="REMAINING_TIME" /> बाकी हैं</translation>
 <translation id="1173894706177603556">नाम बदलें</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%, फ़ोन की बैटरी <ph name="BATTERY_STATUS" />%, जानकारी</translation>
@@ -34,6 +35,7 @@
 <translation id="1249250836236328755">शैली</translation>
 <translation id="1254593899333212300">प्रत्यक्ष इंटरनेट कनेक्‍शन</translation>
 <translation id="1272293450992660632">पिन के मान मेल नहीं खाते.</translation>
+<translation id="1279040297980392566">स्कैन होने की प्रोसेस पूरी होने तक इंतज़ार करें. इसके बाद, फिर से कोशिश करें</translation>
 <translation id="1280820357415527819">मोबाइल नेटवर्क खोजे जा रहे हैं</translation>
 <translation id="1293556467332435079">फ़ाइल</translation>
 <translation id="1297922636971898492">Google डिस्क इस समय उपलब्ध नहीं है. Google डिस्क के वापस आ जाने पर अपलोडिंग अपने आप फिर से प्रारंभ हो जाएगी.</translation>
@@ -46,7 +48,7 @@
 <translation id="1363028406613469049">ट्रैक</translation>
 <translation id="1378727793141957596">Google डिस्क में आपका स्वागत है!</translation>
 <translation id="1379911846207762492">आप ऑफ़लाइन मोड में ऐक्सेस करने के लिए फ़ाइलें डाउनलोड कर सकते हैं.</translation>
-<translation id="1383876407941801731">Search</translation>
+<translation id="1383876407941801731">खोजें</translation>
 <translation id="1388045380422025115">सभी तरह की फ़ाइलें</translation>
 <translation id="1395262318152388157">सीक स्‍लाइडर</translation>
 <translation id="1399511500114202393">कोई 'उपयोगकर्ता प्रमाणपत्र' नहीं</translation>
@@ -72,6 +74,7 @@
 <translation id="1577977504532381335">एडमिन नीति देखें</translation>
 <translation id="158849752021629804">होम नेटवर्क की आवश्यकता है</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> पीबी</translation>
+<translation id="1601786938618212857">Zip फ़ाइल बनाएं</translation>
 <translation id="1620510694547887537">कैमरा</translation>
 <translation id="162175252992296058">यूएस इंटरनैशनल कीबोर्ड के साथ पॉर्चुगीज़</translation>
 <translation id="1629521517399325891">नेटवर्क की पुष्टि करने के लिए, उपयोगकर्ता प्रमाणपत्र उपलब्ध नहीं है.</translation>
@@ -105,6 +108,7 @@
 <translation id="1810764548349082891">कोई झलक उपलब्ध नहीं है</translation>
 <translation id="1812302367230252929">ऐम्हेरिक ट्रांसलिट्रेशन</translation>
 <translation id="1813278315230285598">सेवाएं</translation>
+<translation id="181434555916624618">फ़िलहाल, ऐसी इमेज जनरेट नहीं की जा सकती जिसमें लोग शामिल हों. किसी अन्य इमेज का निर्देश देकर देखें.</translation>
 <translation id="1829129547161959350">पेंगुइन</translation>
 <translation id="183183971458492120">जानकारी लोड हो रही है...</translation>
 <translation id="1832073788765803750">हाफ़ विड्थ काताकाना</translation>
@@ -135,7 +139,6 @@
 <translation id="2084809735218147718">जेस्चर से धन्यवाद बोलता हुआ व्यक्ति</translation>
 <translation id="2088690981887365033">वीपीएन नेटवर्क</translation>
 <translation id="209653272837065803">फ़ाइलों को सिंक करना जारी रखने के लिए, डिवाइस में ज़रूरत के मुताबिक स्टोरेज उपलब्ध नहीं है</translation>
-<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />गुप्त मोड में एक्सटेंशन इस्तेमाल करने की अनुमति दें<ph name="END_BOLD" /> को चालू करें</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> आइटम मिटा दिए जाएंगे और इन्हें वापस नहीं लाया जा सकेगा.</translation>
 <translation id="2122305276694332719">दिखाई न देने वाले नेटवर्क से अपने आप जुड़ने से दूसरे लोग आपके डिवाइस और कुछ नेटवर्क सेटिंग को देख सकते हैं. ऐसा करने का सुझाव नहीं दिया जाता.</translation>
 <translation id="2125607626296734455">खमेर</translation>
@@ -166,7 +169,6 @@
 <translation id="2304820083631266885">ग्रह</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> को निकाल लिया गया है.</translation>
 <translation id="2307462900900812319">नेटवर्क कॉन्फ़िगर करें</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> आईडी वाला एक्सटेंशन नहीं मिला. अपने एडमिन से संपर्क करें.}one{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> आईडी वाला एक्सटेंशन नहीं मिला. अपने एडमिन से संपर्क करें.}other{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> आईडी वाले एक्सटेंशन नहीं मिले. अपने एडमिन से संपर्क करें.}}</translation>
 <translation id="2325650632570794183">इस तरह की फ़ाइल नहीं खुल सकती है. वैसा ऐप्लिकेशन जिसमें ऐसी फ़ाइल खुल सके, उसे ढूंढने के लिए कृपया 'Chrome वेब स्टोर' पर जाएं.</translation>
 <translation id="2326539130272988168">बुल्गेरियन</translation>
 <translation id="233822363739146957">आपकी सभी फ़ाइलों को सिंक करने के लिए, डिवाइस में ज़रूरत के मुताबिक स्टोरेज उपलब्ध नहीं है</translation>
@@ -238,7 +240,6 @@
 <translation id="290843123675549676">मराठी</translation>
 <translation id="2923240520113693977">एस्टोनियाई</translation>
 <translation id="2938685643439809023">मंगोलियाई</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{एक्सटेंशन नहीं मिला}one{एक्सटेंशन नहीं मिला}other{एक्सटेंशन नहीं मिले}}</translation>
 <translation id="2943503720238418293">थोड़े छोटे नाम का इस्तेमाल करें</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> को फ़ॉर्मैट किया जा रहा है...</translation>
 <translation id="2951236788251446349">जेलीफ़िश</translation>
@@ -295,7 +296,6 @@
 <translation id="3356580349448036450">पूरा हुआ</translation>
 <translation id="3358452157379365236">गिटार</translation>
 <translation id="3368922792935385530">कनेक्ट है</translation>
-<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />जानकारी<ph name="END_BOLD" /> पर क्लिक करें</translation>
 <translation id="3382143449143186018">इनस्क्रिप्ट कीबोर्ड के साथ नेपाली</translation>
 <translation id="338691029516748599"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%, आपका एडमिन प्रबंधित करता है, कनेक्ट करें</translation>
 <translation id="3408072735282270043"><ph name="NETWORK_NAME" /> चालू करें</translation>
@@ -354,7 +354,6 @@
 <translation id="3811494700605067549">1 फ़ाइल चुनी गई</translation>
 <translation id="3817579325494460411">नहीं दिया गया</translation>
 <translation id="3819448694985509187">आपने गलत पिन डाला है. आप 1 बार और कोशिश कर सकते हैं.</translation>
-<translation id="3822559385185038546">यह प्रॉक्सी आपके व्‍यवस्‍थापक ने लागू किया है</translation>
 <translation id="3830674330436234648">कोई प्लेबैक उपलब्ध नहीं है</translation>
 <translation id="383652340667548381">सर्बियाई</translation>
 <translation id="3839045880592694915">मोबाइल और इंटरनेट सेवा देने वाली कंपनी, आपके मॉडम को कनेक्ट करने की अनुमति नहीं दे रही है. ज़्यादा जानकारी के लिए, मोबाइल और इंटरनेट सेवा देने वाली कंपनी से संपर्क करें.</translation>
@@ -385,15 +384,13 @@
 <translation id="4124935795427217608">यूनिकॉर्न</translation>
 <translation id="4131235941541910880">ग़ैर-ज़रूरी आइटम को ट्रैश में ले जाएं</translation>
 <translation id="4134804435730168042"><ph name="NETWORK_COUNT" /> में से नेटवर्क <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> को डिवाइस सेटअप होने के बाद चालू करें</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{इस एक्सटेंशन को गुप्त मोड में चालू करें:}one{इस एक्सटेंशन को गुप्त मोड में चालू करें:}other{इन एक्सटेंशन को गुप्त मोड में चालू करें:}}</translation>
 <translation id="4153015322587141338">शेल्फ़ में अपनी फ़ाइलों को तुरंत ऐक्सेस करने के लिए, किसी फ़ाइल पर दायां क्लिक करें. इसके बाद, "<ph name="PIN_COMMAND" />" चुनें.</translation>
 <translation id="4157569377477607576">एडमिन नीति, ये सुझाव नहीं देती:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> को भेज दिया गया.</translation>
 <translation id="4176286497474237543">ट्रैश अभी खाली करें</translation>
 <translation id="4179621117429069925">यह आइटम आपके ट्रैश में है</translation>
 <translation id="4186579485882418952">ऑफ़लाइन मोड चालू करें</translation>
-<translation id="4193154014135846272">Google दस्‍तावेज़</translation>
-<translation id="4197674956721858839">ज़िप चुनें</translation>
+<translation id="4193154014135846272">Google दस्तावेज़</translation>
 <translation id="4202378258276439759">स्पैनिश (लैटिन अमेरिका)</translation>
 <translation id="4202977638116331303">जॉर्जियन</translation>
 <translation id="421017592316736757">इस फ़ाइल को एक्सेस करने के लिए आपका ऑनलाइन होना ज़रूरी है.</translation>
@@ -421,6 +418,7 @@
 <translation id="4387004326333427325">प्रमाणीकरण प्रमाणपत्र को दूरस्थ रूप से अस्वीकार किया गया</translation>
 <translation id="4394214039309501350">बाहरी लिंक</translation>
 <translation id="4394980935660306080">इस हफ़्ते की शुरुआत में</translation>
+<translation id="4397435965699247285">ऑफ़लाइन होने पर, OneDrive उपलब्ध नहीं होता</translation>
 <translation id="4398096759193130964">आइटम को वापस लाएं या इन्हें खींचकर ट्रैश के बाहर किसी नए फ़ोल्डर में ले जाएं</translation>
 <translation id="4401287888955153199">सभी निकालें</translation>
 <translation id="4410695710508688828">एक्सट्रैक्ट नहीं किया जा सका. <ph name="ERROR_MESSAGE" /></translation>
@@ -483,9 +481,7 @@
 <translation id="4801956050125744859">दोनों रखें</translation>
 <translation id="4804827417948292437">एवोकैडो</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> आइटम वापस लाए जा रहे हैं</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{गुप्त मोड का इस्तेमाल करने के लिए, आपके संगठन के पास कोई एक्सटेंशन होना चाहिए}one{गुप्त मोड का इस्तेमाल करने के लिए, आपके संगठन के पास कोई एक्सटेंशन होना चाहिए}other{गुप्त मोड का इस्तेमाल करने के लिए, आपके संगठन के पास कुछ एक्सटेंशन होने चाहिए}}</translation>
 <translation id="4826849268470072925">तमिल ITRANS</translation>
-<translation id="482932175346970750">अपने ब्राउज़र में <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> टाइप करें</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">देखें</translation>
 <translation id="485316830061041779">जर्मन</translation>
@@ -558,7 +554,6 @@
 <ph name="MARKUP_7" />शेयर करें, बनाएं और सहयोग करें<ph name="MARKUP_8" />.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google डिस्क से पुनर्प्राप्त की गई फ़ाइलें</translation>
 <translation id="5278111733643988471">इस आइटम को वापस लाने के लिए, इसे खींचकर ट्रैश के बाहर किसी नए फ़ोल्डर में ले जाएं. इस आइटम के मूल फ़ोल्डर "<ph name="PARENT_FOLDER_NAME" />" को मिटा दिया गया है.</translation>
-<translation id="5283101102242354279">गुप्त मोड में कोई एक्सटेंशन चालू करने के लिए:</translation>
 <translation id="5288441970121584418">बर्गर</translation>
 <translation id="5293615890992542006">एडमिन नीति के तहत, इस फ़ाइल को एक जगह से दूसरी जगह पर ट्रांसफ़र करने की अनुमति नहीं है</translation>
 <translation id="5305688511332277257">कुछ भी इंस्टॉल नहीं है</translation>
@@ -582,7 +577,7 @@
 <translation id="5449551289610225147">गलत पासवर्ड</translation>
 <translation id="5459064203055649751">"<ph name="FILENAME" />" नाम की फ़ाइल पहले से मौजूद है. क्या आपको इसे उस फ़ाइल से बदलना है जिसे आपको दूसरी जगह ले जाना है?</translation>
 <translation id="5463231940765244860">डालें</translation>
-<translation id="5469868506864199649">इतालवी</translation>
+<translation id="5469868506864199649">इटैलियन</translation>
 <translation id="5473333559083690127">नया पिन फिर से डालें</translation>
 <translation id="5489067830765222292">लातवियन</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> फ़िल्टर बंद है.</translation>
@@ -601,6 +596,7 @@
 <translation id="5596627076506792578">ज़्यादा विकल्प</translation>
 <translation id="5602622065581044566">फ़ोनेटिक कीबोर्ड के साथ बुल्गेरियन</translation>
 <translation id="5605830556594064952">यूएस ड्वोरक</translation>
+<translation id="560739212255190568">आपके एडमिन ने प्रॉक्सी ओवरराइड के नियम सेट किए हैं. साथ ही, इस प्रॉक्सी को लागू किया है</translation>
 <translation id="5618330573454123917">यह फ़ाइल, Mac OS वाले कंप्यूटर के लिए बनाई गई है. यह ChromeOS वाले आपके डिवाइस के साथ काम नहीं करती. ChromeOS पर फ़ाइलें खोलने के बारे में <ph name="BEGIN_LINK_HELP" />ज़्यादा जानें<ph name="END_LINK_HELP" />.</translation>
 <translation id="5625294776298156701">Tamil99 कीबोर्ड के साथ तमिल</translation>
 <translation id="5633226425545095130">इस आइटम को कहीं और ट्रांसफ़र करने से, यह उन सभी लोगों के साथ शेयर हो जाएगा जो इस शेयर किए जाने वाले फ़ोल्डर '<ph name="DESTINATION_NAME" />' को देख सकते हैं.</translation>
@@ -792,7 +788,7 @@
 <translation id="7075931588889865715">टीआईएस 820-2531 कीबोर्ड के साथ थाई</translation>
 <translation id="708278670402572152">स्कैन करना चालू करने के लिए डिसकनेक्ट करें</translation>
 <translation id="7086590977277044826">इनस्क्रिप्ट कीबोर्ड के साथ तमिल</translation>
-<translation id="7088615885725309056">इससे पुराने</translation>
+<translation id="7088615885725309056">पुराना</translation>
 <translation id="7103992300314999525">मेसिडोनियन</translation>
 <translation id="7104338189998813914">आपके OneDrive खाते को ऐक्सेस करने में कोई समस्या हुई</translation>
 <translation id="7106346894903675391">ज़्यादा स्टोरेज खरीदें...</translation>
@@ -812,7 +808,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, जानकारी</translation>
 <translation id="7246947237293279874">FTP प्रॉक्सी</translation>
 <translation id="7248671827512403053">ऐप्स </translation>
-<translation id="7252604552361840748">ऊपर दिया गया एक्सटेंशन ढूंढें</translation>
 <translation id="7256405249507348194">अपरिचित गड़बड़ी: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">उपलब्ध सेवाएं</translation>
 <translation id="7291818353625820805">क्या आपको बटन दबाकर रखना है? कीबोर्ड सेटिंग में उच्चारण के चिह्न बंद करें</translation>
@@ -999,6 +994,7 @@
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, जानकारी</translation>
 <translation id="8545476925160229291">अंग्रेज़ी (यूएस)</translation>
 <translation id="854655314928502177">वेब प्रॉक्सी अपने आप खोज संबंधी URL:</translation>
+<translation id="8547747809824590510">आपके एडमिन ने प्रॉक्सी ओवरराइड के नियम सेट किए हैं</translation>
 <translation id="8549186985808798022">इटैलियन</translation>
 <translation id="8551494947769799688">लातवियाई</translation>
 <translation id="8560515948038859357">कैंटोनीज़</translation>
@@ -1059,6 +1055,7 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" नाम की फ़ाइल पहले से मौजूद है. कृपया कोई दूसरा नाम चुनें.</translation>
 <translation id="9046895021617826162">कनेक्ट करना विफल</translation>
 <translation id="9065512565307033593">अगर आप पुष्टि नहीं कर पाते, तो आपके नेटवर्क का ऐक्सेस बंद कर दिया जाएगा.</translation>
+<translation id="9079844694307518094">आपके एडमिन ने इस प्रॉक्सी को लागू किया है</translation>
 <translation id="908378762078012445">फ़ोनेटिक AATSEEL कीबोर्ड के साथ रशियन</translation>
 <translation id="9086302186042011942">समन्वयित हो रहा है</translation>
 <translation id="9099674669267916096">पेज संख्या</translation>
@@ -1082,6 +1079,7 @@
 <translation id="9213073329713032541">ठीक से इंस्टॉल होना शुरू हो गया है.</translation>
 <translation id="9219103736887031265">इमेज</translation>
 <translation id="9219908252191632183">लूनर</translation>
+<translation id="931652069802536959">नीति के तहत नेटवर्क को ब्लॉक किया गया है</translation>
 <translation id="938470336146445890">कृपया कोई 'उपयोगकर्ता प्रमाणपत्र' इंस्टॉल करें.</translation>
 <translation id="939736085109172342">नया फ़ोल्डर</translation>
 <translation id="943972244133411984">बदलाव करने वाले</translation>

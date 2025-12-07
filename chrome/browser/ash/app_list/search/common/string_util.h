@@ -22,6 +22,7 @@ std::string NormalizeId(const std::string& id);
 std::string RemoveAppShortcutLabel(const std::string& id);
 
 // Extracts the Drive ID from the given URL.
+// Only works with "docs.google.com/.../d/[id]/" links.
 std::optional<std::string> GetDriveId(const GURL& url);
 
 }  // namespace app_list

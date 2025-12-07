@@ -1,0 +1,342 @@
+This test verifies the names, positions and sizes of the highlight rectangles overlayed on CSS Grid Lanes areas.
+
+grid-lanes-with-areas{
+  "paths": [
+    {
+      "path": [
+        "M",
+        8,
+        8,
+        "L",
+        408,
+        8,
+        "L",
+        408,
+        608,
+        "L",
+        8,
+        608,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 0, 0, 0)",
+      "outlineColor": "rgba(128, 0, 0, 0)",
+      "name": "content"
+    },
+    {
+      "path": [
+        "M",
+        8,
+        8,
+        "L",
+        408,
+        8,
+        "L",
+        408,
+        608,
+        "L",
+        8,
+        608,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 255, 0, 0)",
+      "name": "padding"
+    },
+    {
+      "path": [
+        "M",
+        8,
+        8,
+        "L",
+        408,
+        8,
+        "L",
+        408,
+        608,
+        "L",
+        8,
+        608,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 0, 255, 0)",
+      "name": "border"
+    },
+    {
+      "path": [
+        "M",
+        8,
+        8,
+        "L",
+        408,
+        8,
+        "L",
+        408,
+        608,
+        "L",
+        8,
+        608,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 255, 255, 0)",
+      "name": "margin"
+    }
+  ],
+  "showRulers": true,
+  "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
+  "elementInfo": {
+    "tagName": "div",
+    "idValue": "grid-lanes-with-areas",
+    "nodeWidth": "400",
+    "nodeHeight": "600",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutGridLanes",
+    "showAccessibilityInfo": true
+  },
+  "gridInfo": [
+    {
+      "rotationAngle": 0,
+      "writingMode": "horizontal-tb",
+      "columns": [
+        "M",
+        8,
+        8,
+        "L",
+        8,
+        608,
+        "M",
+        198,
+        608,
+        "L",
+        198,
+        8,
+        "M",
+        208,
+        8,
+        "L",
+        208,
+        608,
+        "M",
+        303,
+        608,
+        "L",
+        303,
+        8,
+        "M",
+        313,
+        8,
+        "L",
+        313,
+        608,
+        "M",
+        408,
+        608,
+        "L",
+        408,
+        8
+      ],
+      "columnGaps": [
+        "M",
+        198,
+        8,
+        "L",
+        208,
+        8,
+        "L",
+        208,
+        608,
+        "L",
+        198,
+        608,
+        "Z",
+        "M",
+        303,
+        8,
+        "L",
+        313,
+        8,
+        "L",
+        313,
+        608,
+        "L",
+        303,
+        608,
+        "Z"
+      ],
+      "rows": [],
+      "rowGaps": [],
+      "columnTrackSizes": [
+        {
+          "x": 103,
+          "y": 8,
+          "computedSize": 190,
+          "authoredSize": "2fr"
+        },
+        {
+          "x": 255.5,
+          "y": 8,
+          "computedSize": 95,
+          "authoredSize": "1fr"
+        },
+        {
+          "x": 360.5,
+          "y": 8,
+          "computedSize": 95,
+          "authoredSize": "1fr"
+        }
+      ],
+      "positiveColumnLineNumberPositions": [
+        {
+          "x": 8,
+          "y": 8
+        },
+        {
+          "x": 203,
+          "y": 8
+        },
+        {
+          "x": 308,
+          "y": 8
+        },
+        {
+          "x": 408,
+          "y": 8
+        }
+      ],
+      "negativeColumnLineNumberPositions": [
+        {
+          "x": 8,
+          "y": 608
+        },
+        {
+          "x": 203,
+          "y": 608
+        },
+        {
+          "x": 308,
+          "y": 608
+        },
+        {
+          "x": 408,
+          "y": 608
+        }
+      ],
+      "areaNames": {
+        "sidebar": [
+          "M",
+          208,
+          8,
+          "L",
+          303,
+          8,
+          "L",
+          303,
+          608,
+          "L",
+          208,
+          608,
+          "Z"
+        ],
+        "header": [
+          "M",
+          8,
+          8,
+          "L",
+          198,
+          8,
+          "L",
+          198,
+          608,
+          "L",
+          8,
+          608,
+          "Z"
+        ],
+        "main": [
+          "M",
+          313,
+          8,
+          "L",
+          408,
+          8,
+          "L",
+          408,
+          608,
+          "L",
+          313,
+          608,
+          "Z"
+        ]
+      },
+      "columnLineNameOffsets": [
+        {
+          "x": 308,
+          "y": 8,
+          "name": "sidebar-end"
+        },
+        {
+          "x": 408,
+          "y": 8,
+          "name": "main-end"
+        },
+        {
+          "x": 203,
+          "y": 8,
+          "name": "header-end"
+        },
+        {
+          "x": 308,
+          "y": 8,
+          "name": "main-start"
+        },
+        {
+          "x": 8,
+          "y": 8,
+          "name": "header-start"
+        },
+        {
+          "x": 203,
+          "y": 8,
+          "name": "sidebar-start"
+        }
+      ],
+      "gridBorder": [
+        "M",
+        8,
+        8,
+        "L",
+        408,
+        8,
+        "L",
+        408,
+        608,
+        "L",
+        8,
+        608,
+        "Z"
+      ],
+      "gridHighlightConfig": {
+        "gridBorderDash": false,
+        "rowLineDash": true,
+        "columnLineDash": true,
+        "showGridExtensionLines": true,
+        "showPositiveLineNumbers": true,
+        "showNegativeLineNumbers": true,
+        "showAreaNames": true,
+        "showLineNames": true,
+        "gridBorderColor": "rgba(255, 0, 0, 0)",
+        "rowLineColor": "rgba(128, 0, 0, 0)",
+        "columnLineColor": "rgba(128, 0, 0, 0)",
+        "rowGapColor": "rgba(0, 255, 0, 0)",
+        "columnGapColor": "rgba(0, 0, 255, 0)",
+        "rowHatchColor": "rgba(255, 255, 255, 0)",
+        "columnHatchColor": "rgba(128, 128, 128, 0)",
+        "areaBorderColor": "rgba(255, 0, 0, 0)",
+        "gridBackgroundColor": "rgba(255, 0, 0, 0)"
+      }
+    }
+  ]
+}
+

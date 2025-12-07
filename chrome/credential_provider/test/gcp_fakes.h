@@ -5,10 +5,12 @@
 #ifndef CHROME_CREDENTIAL_PROVIDER_TEST_GCP_FAKES_H_
 #define CHROME_CREDENTIAL_PROVIDER_TEST_GCP_FAKES_H_
 
+#include <condition_variable>
 #include <deque>
 #include <list>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <thread>
 #include <unordered_map>
@@ -39,6 +41,8 @@
 #include "chrome/credential_provider/gaiacp/user_policies_manager.h"
 #include "chrome/credential_provider/gaiacp/win_http_url_fetcher.h"
 #include "chrome/credential_provider/setup/gcpw_files.h"
+
+class GaiaId;
 
 namespace base {
 class WaitableEvent;
@@ -185,7 +189,7 @@ class FakeOSUserManager : public OSUserManager {
                            const std::wstring& password,
                            const std::wstring& fullname,
                            const std::wstring& comment,
-                           const std::wstring& gaia_id,
+                           const GaiaId& gaia_id,
                            const std::wstring& email,
                            BSTR* sid);
 
@@ -198,7 +202,7 @@ class FakeOSUserManager : public OSUserManager {
                            const std::wstring& password,
                            const std::wstring& fullname,
                            const std::wstring& comment,
-                           const std::wstring& gaia_id,
+                           const GaiaId& gaia_id,
                            const std::wstring& email,
                            const std::wstring& domain,
                            BSTR* sid);

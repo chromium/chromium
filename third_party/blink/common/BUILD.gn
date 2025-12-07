@@ -4,6 +4,7 @@
 
 import("//build/config/features.gni")
 import("//build/config/rust.gni")
+import("//build/nocompile.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")
@@ -13,32 +14,13 @@ if (is_ios) {
   import("//build/config/ios/bundle_data_from_filelist.gni")
 }
 
-blink_python_runner("make_generated_permissions_policy_features") {
-  script = "../renderer/build/scripts/make_permissions_policy_features.py"
-
-  inputs = scripts_for_json5_files + [
-             "../renderer/build/scripts/make_permissions_policy_features.py",
-             "../renderer/core/permissions_policy/permissions_policy_features.json5",
-             "../renderer/build/scripts/templates/permissions_policy_features_generated.cc.tmpl",
-           ]
-  outputs = [ "$root_gen_dir/third_party/blink/common/permissions_policy/permissions_policy_features_generated.cc" ]
-
-  args = [
-    rebase_path(
-        "../renderer/core/permissions_policy/permissions_policy_features.json5",
-        root_build_dir),
-    "--output_dir",
-    rebase_path("$root_gen_dir/third_party/blink/common/permissions_policy",
-                root_build_dir),
-  ]
-}
-
 blink_python_runner("make_generated_document_policy_features") {
   script = "../renderer/build/scripts/make_document_policy_features.py"
 
   inputs =
       scripts_for_json5_files + [
-        "../renderer/build/scripts/make_document_policy_features.py",
+        "../renderer/build/scripts/make_runtime_features_utilities.py",
+        "../renderer/build/scripts/make_runtime_features.py",
         "../renderer/build/scripts/make_document_policy_features_util.py",
         "../renderer/core/permissions_policy/document_policy_features.json5",
         "../renderer/build/scripts/templates/document_policy_features.cc.tmpl",
@@ -59,9 +41,11 @@ blink_python_runner("make_generated_features") {
   script = "../renderer/build/scripts/make_common_features.py"
 
   inputs = scripts_for_json5_files + [
-             "../renderer/build/scripts/make_common_features.py",
-             "../renderer/platform/runtime_enabled_features.json5",
+             "../renderer/build/scripts/make_runtime_features_utilities.py",
+             "../renderer/build/scripts/make_runtime_features.py",
              "../renderer/build/scripts/templates/features_generated.cc.tmpl",
+             "../renderer/platform/runtime_enabled_features.json5",
+             "../renderer/platform/runtime_enabled_features.override.json5",
            ]
   outputs = [ "$root_gen_dir/third_party/blink/common/features_generated.cc" ]
 
@@ -82,9 +66,11 @@ blink_python_runner("make_generated_origin_trials") {
   script = "../renderer/build/scripts/make_origin_trials.py"
 
   inputs = scripts_for_json5_files + [
-             "../renderer/build/scripts/make_origin_trials.py",
-             "../renderer/platform/runtime_enabled_features.json5",
+             "../renderer/build/scripts/make_runtime_features_utilities.py",
+             "../renderer/build/scripts/make_runtime_features.py",
              "../renderer/build/scripts/templates/origin_trials.cc.tmpl",
+             "../renderer/platform/runtime_enabled_features.json5",
+             "../renderer/platform/runtime_enabled_features.override.json5",
            ]
   outputs = [
     "$root_gen_dir/third_party/blink/common/origin_trials/origin_trials.cc",
@@ -104,8 +90,11 @@ blink_python_runner("make_runtime_feature_state_contexts_impl") {
       "../renderer/build/scripts/make_runtime_feature_state_contexts_impl.py"
 
   inputs = scripts_for_json5_files + [
-             "../renderer/platform/runtime_enabled_features.json5",
+             "../renderer/build/scripts/make_runtime_features_utilities.py",
+             "../renderer/build/scripts/make_runtime_features.py",
              "../renderer/build/scripts/templates/runtime_feature_state_context.cc.tmpl",
+             "../renderer/platform/runtime_enabled_features.json5",
+             "../renderer/platform/runtime_enabled_features.override.json5",
            ]
 
   outputs = [ "$root_gen_dir/third_party/blink/common/runtime_feature_state/runtime_feature_state_context.cc" ]
@@ -168,7 +157,6 @@ source_set("common") {
     "frame/frame_visual_properties.cc",
     "frame/frame_visual_properties_mojom_traits.cc",
     "frame/from_ad_state.cc",
-    "frame/transient_allow_fullscreen.cc",
     "frame/user_activation_state.cc",
     "frame/view_transition_state_mojom_traits.cc",
     "indexeddb/indexed_db_default_mojom_traits.cc",
@@ -197,6 +185,7 @@ source_set("common") {
     "interest_group/interest_group.cc",
     "interest_group/interest_group_mojom_traits.cc",
     "link_to_text/link_to_text_mojom_traits.cc",
+    "loader/code_cache_util.cc",
     "loader/inter_process_time_ticks_converter.cc",
     "loader/lcp_critical_path_predictor_util.cc",
     "loader/loader_constants.cc",
@@ -214,8 +203,6 @@ source_set("common") {
     "manifest/manifest.cc",
     "manifest/manifest_icon_selector.cc",
     "manifest/manifest_util.cc",
-    "media/watch_time_component.cc",
-    "media/watch_time_reporter.cc",
     "mediastream/media_device_id.cc",
     "mediastream/media_devices.cc",
     "mediastream/media_devices_mojom_traits.cc",
@@ -239,6 +226,7 @@ source_set("common") {
     "navigation/navigation_policy.cc",
     "navigation/navigation_policy_mojom_traits.cc",
     "navigation/prefetched_signed_exchange_info_mojom_traits.cc",
+    "navigation/preloading_headers.cc",
     "notifications/notification_mojom_traits.cc",
     "notifications/notification_resources.cc",
     "notifications/platform_notification_data.cc",
@@ -249,8 +237,6 @@ source_set("common") {
     "origin_trials/trial_token.cc",
     "origin_trials/trial_token_result.cc",
     "origin_trials/trial_token_validator.cc",
-    "page/browsing_context_group_info.cc",
-    "page/browsing_context_group_info_mojom_traits.cc",
     "page/color_provider_color_maps_mojom_traits.cc",
     "page/content_to_visible_time_reporter.cc",
     "page/drag_mojom_traits.cc",
@@ -261,14 +247,6 @@ source_set("common") {
     "peerconnection/webrtc_ip_handling_policy.cc",
     "permissions/permission_utils.cc",
     "permissions_policy/document_policy.cc",
-    "permissions_policy/origin_with_possible_wildcards.cc",
-    "permissions_policy/permissions_policy.cc",
-    "permissions_policy/permissions_policy_declaration.cc",
-    "permissions_policy/permissions_policy_features.cc",
-    "permissions_policy/permissions_policy_features_generated.h",
-    "permissions_policy/permissions_policy_features_internal.cc",
-    "permissions_policy/permissions_policy_features_internal.h",
-    "permissions_policy/permissions_policy_mojom_traits.cc",
     "permissions_policy/policy_value.cc",
     "renderer_preferences/renderer_preferences.cc",
     "renderer_preferences/renderer_preferences_mojom_traits.cc",
@@ -284,20 +262,23 @@ source_set("common") {
     "service_worker/service_worker_status_code.cc",
     "service_worker/service_worker_type_converters.cc",
     "shared_storage/module_script_downloader.cc",
-    "shared_storage/shared_storage_mojom_traits.cc",
     "shared_storage/shared_storage_utils.cc",
     "storage_key/storage_key.cc",
     "storage_key/storage_key_mojom_traits.cc",
     "switches.cc",
     "thread_safe_browser_interface_broker_proxy.cc",
+    "tracing_support.cc",
     "unique_name/unique_name_helper.cc",
     "use_counter/use_counter_feature.cc",
     "use_counter/use_counter_feature_tracker.cc",
     "user_agent/user_agent_metadata.cc",
+    "view_source/rendering_preferences.cc",
     "web_package/signed_exchange_consts.cc",
     "web_package/web_package_request_matcher.cc",
     "web_preferences/web_preferences.cc",
     "web_preferences/web_preferences_mojom_traits.cc",
+    "webid/login_status_account.cc",
+    "webid/login_status_options.cc",
     "widget/constants.cc",
     "widget/device_emulation_params_mojom_traits.cc",
     "widget/visual_properties.cc",
@@ -307,36 +288,36 @@ source_set("common") {
   sources += get_target_outputs(":make_generated_document_policy_features")
   sources += get_target_outputs(":make_generated_features")
   sources += get_target_outputs(":make_generated_origin_trials")
-  sources += get_target_outputs(":make_generated_permissions_policy_features")
   sources += get_target_outputs(":make_runtime_feature_state_contexts_impl")
 
   public_deps = [
     ":make_generated_document_policy_features",
     ":make_generated_features",
     ":make_generated_origin_trials",
-    ":make_generated_permissions_policy_features",
     ":make_runtime_feature_state_contexts_impl",
-    "//components/viz/common:common",
-    "//third_party/blink/common/privacy_budget:privacy_budget",
+    "//components/viz/common",
     "//third_party/blink/public/common:common_export",
     "//third_party/blink/public/common:headers",
+    "//ui/base/mojom:ui_base_types",
   ]
 
   deps = [
     "//base",
+    "//build:android_buildflags",
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
     "//media/capture:capture_base",
     "//media/capture/mojom:video_capture_mojom_support",
     "//mojo/public/cpp/system",
     "//net",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
-    "//services/metrics/public/mojom:mojom",
-    "//services/network/public/cpp:cpp",
+    "//services/metrics/public/mojom",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom:mojom_permissions_policy",
+    "//third_party/blink/common/rust_crash",
     "//third_party/blink/public/common:buildflags",
     "//third_party/re2",
-    "//ui/base:base",
+    "//ui/base",
     "//ui/base/dragdrop/mojom:mojom_shared",
     "//ui/base/mojom",
     "//ui/display",
@@ -345,10 +326,6 @@ source_set("common") {
     "//ui/events/mojom:event_latency_metadata_mojom",
     "//ui/latency/mojom:shared_mojom_traits",
   ]
-
-  if (enable_rust_crash) {
-    deps += [ "//third_party/blink/common/rust_crash" ]
-  }
 
   # If use_blink is used then it needs to depend on //media
   if (use_blink) {
@@ -372,6 +349,10 @@ source_set("common") {
   if (is_chromeos || is_android || is_win || is_castos || is_fuchsia) {
     defines = [ "ENABLE_PROTECTED_MEDIA_IDENTIFIER_PERMISSION" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 test("blink_common_unittests") {
@@ -380,8 +361,7 @@ test("blink_common_unittests") {
     ":common_unittests_sources",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
-    "//services/metrics/public/mojom:mojom",
-    "//third_party/blink/common/privacy_budget:unit_tests",
+    "//services/metrics/public/mojom",
     "//third_party/blink/public/common",
     "//ui/gfx:test_support",
   ]
@@ -406,10 +386,11 @@ source_set("common_unittests_sources") {
     "bluetooth/web_bluetooth_device_id_unittest.cc",
     "client_hints/client_hints_unittest.cc",
     "client_hints/enabled_client_hints_unittest.cc",
+    "custom_handlers/protocol_handler_utils_unittest.cc",
     "device_memory/approximated_device_memory_unittest.cc",
     "frame/delegated_capability_request_token_unittest.cc",
-    "frame/transient_allow_fullscreen_unittest.cc",
     "frame/user_activation_state_unittest.cc",
+    "indexeddb/indexed_db_default_mojom_traits_unittest.cc",
     "indexeddb/indexeddb_key_unittest.cc",
     "input/synthetic_web_input_event_builders_unittest.cc",
     "input/web_input_event_unittest.cc",
@@ -423,40 +404,35 @@ source_set("common_unittests_sources") {
     "interest_group/devtools_serialization_unittest.cc",
     "interest_group/interest_group_mojom_traits_test.cc",
     "interest_group/interest_group_unittest.cc",
+    "interest_group/test/interest_group_test_utils_unittest.cc",
     "loader/inter_process_time_ticks_converter_unittest.cc",
     "loader/mime_sniffing_throttle_unittest.cc",
     "loader/referrer_utils_unittest.cc",
     "loader/throttling_url_loader_unittest.cc",
     "manifest/manifest_icon_selector_unittest.cc",
     "manifest/manifest_util_unittest.cc",
-    "media/watch_time_component_unittest.cc",
     "mediastream/media_devices_mojom_traits_unittest.cc",
     "mediastream/media_devices_unittest.cc",
     "mediastream/media_stream_mojom_traits_unittest.cc",
     "messaging/message_port_descriptor_unittest.cc",
     "mime_util/mime_util_unittest.cc",
+    "navigation/preloading_headers_unittest.cc",
     "notifications/notification_mojom_traits_unittest.cc",
     "notifications/platform_notification_data_unittest.cc",
     "origin_trials/origin_trials_settings_provider_unittest.cc",
     "origin_trials/origin_trials_test.cc",
     "origin_trials/trial_token_unittest.cc",
     "origin_trials/trial_token_validator_unittest.cc",
-    "page/browsing_context_group_info_mojom_traits_test.cc",
-    "page/browsing_context_group_info_unittest.cc",
     "page/content_to_visible_time_reporter_unittest.cc",
     "page_state/page_state_serialization_unittest.cc",
+    "peerconnection/webrtc_ip_handling_policy_unittest.cc",
     "permissions_policy/document_policy_unittest.cc",
-    "permissions_policy/origin_with_possible_wildcards_unittest.cc",
-    "permissions_policy/permissions_policy_declaration_unittest.cc",
-    "permissions_policy/permissions_policy_features_internal.h",
-    "permissions_policy/permissions_policy_unittest.cc",
     "permissions_policy/policy_value_unittest.cc",
     "scheduler/web_scheduler_tracked_feature_unittest.cc",
     "security/address_space_feature_unittest.cc",
     "service_worker/service_worker_router_rule_mojom_traits_unittest.cc",
     "service_worker/service_worker_scope_match_unittest.cc",
     "shared_storage/module_script_downloader_unittest.cc",
-    "shared_storage/shared_storage_mojom_traits_unittest.cc",
     "storage_key/storage_key_mojom_traits_unittest.cc",
     "storage_key/storage_key_unittest.cc",
     "test/run_all_unittests.cc",
@@ -465,9 +441,11 @@ source_set("common_unittests_sources") {
     "unique_name/unique_name_helper_unittest.cc",
     "user_agent/user_agent_metadata_unittest.cc",
     "web_package/web_package_request_matcher_unittest.cc",
+    "webid/federated_auth_request_mojom_traits_unittest.cc",
   ]
 
   deps = [
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/ukm:test_support",
@@ -480,9 +458,11 @@ source_set("common_unittests_sources") {
     "//net:test_support",
     "//services/device:test_support",
     "//services/network:test_support",
+    "//services/network/public/cpp",
     "//skia/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/blink/public:test_headers",
     "//third_party/blink/public/common:buildflags",
     "//third_party/blink/public/common:headers",
     "//third_party/blink/public/mojom/tokens:tokens_traits_headers",
@@ -492,6 +472,10 @@ source_set("common_unittests_sources") {
     "//v8",
     "//v8:v8_libplatform",
   ]
+
+  if (enable_nocompile_tests) {
+    deps += [ ":blink_common_nocompile_tests" ]
+  }
 
   if (!is_android) {
     # TODO(crbug.com/845384): Enable these tests also on Android. Currently
@@ -509,6 +493,10 @@ source_set("common_unittests_sources") {
       "font_unique_name_lookup/icu_fold_case_util_unittest.cc",
     ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 group("common_unittests_data") {
@@ -526,13 +514,21 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "interest_group/test/interest_group_test_utils.cc",
     "interest_group/test_interest_group_builder.cc",
     "origin_trials/scoped_test_origin_trial_policy.cc",
   ]
 
-  deps = [ "//third_party/blink/public:test_headers" ]
+  deps = [
+    "//base",
+    "//testing/gtest",
+    "//third_party/blink/public:test_headers",
+  ]
 
-  visibility = [ "//third_party/blink/public:test_support" ]
+  visibility = [
+    ":common_unittests_sources",
+    "//third_party/blink/public:test_support",
+  ]
 }
 
 if (use_fuzzing_engine_with_lpm) {
@@ -562,6 +558,17 @@ if (use_fuzzing_engine_with_lpm) {
     deps = [
       ":common",
       "//content/public/common",
+    ]
+  }
+}
+
+if (enable_nocompile_tests) {
+  nocompile_source_set("blink_common_nocompile_tests") {
+    sources = [ "tokens/multi_token_nocompile.nc" ]
+
+    deps = [
+      "//base",
+      "//third_party/blink/public/common",
     ]
   }
 }

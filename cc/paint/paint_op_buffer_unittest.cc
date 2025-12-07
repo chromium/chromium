@@ -57,6 +57,7 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "third_party/skia/include/core/SkPoint.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -327,7 +328,7 @@ TEST(PaintOpBufferTest, SaveSaveLayerFiltersRestore) {
 
   PaintFlags paint_flags;
   EXPECT_TRUE(paint_flags.SupportsFoldingAlpha());
-  buffer.push<SaveLayerFiltersOp>(std::vector<sk_sp<PaintFilter>>{},
+  buffer.push<SaveLayerFiltersOp>(std::vector<sk_sp<PaintFilter>>{}, nullptr,
                                   paint_flags);
   buffer.push<RestoreOp>();
   buffer.push<RestoreOp>();
@@ -597,16 +598,14 @@ TEST(PaintOpBufferTest, SlowPaths) {
   EXPECT_EQ(buffer.num_slow_paths_up_to_min_for_MSAA(), 1);
 
   // Antialiased convex path is not slow.
-  SkPath path;
-  path.addCircle(2, 2, 5);
+  const SkPath path = SkPath::Circle(2, 2, 5);
   EXPECT_TRUE(path.isConvex());
   buffer.push<ClipPathOp>(path, SkClipOp::kIntersect, /*antialias=*/true,
                           UsePaintCache::kDisabled);
   EXPECT_EQ(buffer.num_slow_paths_up_to_min_for_MSAA(), 1);
 
   // Concave paths are slow only when antialiased.
-  SkPath concave = path;
-  concave.addCircle(3, 4, 2);
+  const SkPath concave = SkPathBuilder(path).addCircle(3, 4, 2).detach();
   EXPECT_FALSE(concave.isConvex());
   buffer.push<ClipPathOp>(concave, SkClipOp::kIntersect, /*antialias=*/true,
                           UsePaintCache::kDisabled);
@@ -650,8 +649,7 @@ TEST(PaintOpBufferTest, NonAAPaint) {
     PaintOpBuffer buffer;
     EXPECT_FALSE(buffer.has_non_aa_paint());
 
-    SkPath path;
-    path.addCircle(2, 2, 5);
+    const SkPath path = SkPath::Circle(2, 2, 5);
 
     // ClipPathOp with AA
     buffer.push<ClipPathOp>(path, SkClipOp::kIntersect, /*antialias=*/true,
@@ -686,8 +684,7 @@ TEST(PaintOpBufferTest, NonAAPaint) {
     EXPECT_FALSE(buffer.has_non_aa_paint());
 
     PaintOpBuffer sub_buffer;
-    SkPath path;
-    path.addCircle(2, 2, 5);
+    const SkPath path = SkPath::Circle(2, 2, 5);
     sub_buffer.push<ClipPathOp>(path, SkClipOp::kIntersect,
                                 /*antialias=*/false, UsePaintCache::kDisabled);
     EXPECT_TRUE(sub_buffer.has_non_aa_paint());
@@ -1167,19 +1164,19 @@ std::vector<SkM44> test_matrices = {
 
 std::vector<SkPath> test_paths = {
     [] {
-      SkPath path;
-      path.moveTo(SkIntToScalar(20), SkIntToScalar(20));
-      path.lineTo(SkIntToScalar(80), SkIntToScalar(20));
-      path.lineTo(SkIntToScalar(30), SkIntToScalar(30));
-      path.lineTo(SkIntToScalar(20), SkIntToScalar(80));
-      return path;
+      return SkPathBuilder()
+          .moveTo(SkIntToScalar(20), SkIntToScalar(20))
+          .lineTo(SkIntToScalar(80), SkIntToScalar(20))
+          .lineTo(SkIntToScalar(30), SkIntToScalar(30))
+          .lineTo(SkIntToScalar(20), SkIntToScalar(80))
+          .detach();
     }(),
     [] {
-      SkPath path;
-      path.addCircle(2, 2, 5);
-      path.addCircle(3, 4, 2);
-      path.addArc(SkRect::MakeXYWH(1, 2, 3, 4), 5, 6);
-      return path;
+      return SkPathBuilder()
+          .addCircle(2, 2, 5)
+          .addCircle(3, 4, 2)
+          .addArc(SkRect::MakeXYWH(1, 2, 3, 4), 5, 6)
+          .detach();
     }(),
     SkPath(),
 };
@@ -1299,10 +1296,9 @@ std::vector<PaintImage> test_images = {
 };
 
 #if BUILDFLAG(SKIA_SUPPORT_SKOTTIE)
-
-bool kIsSkottieSupported = true;
+constexpr bool kIsSkottieSupported = true;
 #else
-bool kIsSkottieSupported = false;
+constexpr bool kIsSkottieSupported = false;
 #endif
 
 // Writes as many ops in |buffer| as can fit in |output_size| to |output|.
@@ -1886,7 +1882,10 @@ void PushSaveLayerFiltersOps(PaintOpBuffer* buffer) {
   for (size_t i = 0; i < len; ++i) {
     sk_sp<PaintFilter> filter =
         sk_make_sp<OffsetPaintFilter>(-1.f, -2.f, nullptr);
-    buffer->push<SaveLayerFiltersOp>(std::array{filter}, test_flags[i]);
+    sk_sp<PaintFilter> backdrop_filter =
+        sk_make_sp<OffsetPaintFilter>(-1.f, -2.f, nullptr);
+    buffer->push<SaveLayerFiltersOp>(std::array{filter}, backdrop_filter,
+                                     test_flags[i]);
   }
 
   EXPECT_THAT(*buffer, Each(PaintOpIs<SaveLayerFiltersOp>()));
@@ -2692,6 +2691,28 @@ TEST(PaintOpBufferTest, ValidateSkBlendMode) {
   }
 }
 
+TEST(PaintOpBufferTest, SaveLayerFiltersOpIsValid) {
+  std::vector<sk_sp<PaintFilter>> filters;
+  for (int i = 0; i < SaveLayerFiltersOp::kMaxFiltersPerLayer; ++i) {
+    filters.push_back(sk_make_sp<OffsetPaintFilter>(-1.f, -2.f, nullptr));
+  }
+  sk_sp<PaintFilter> backdrop_filter =
+      sk_make_sp<OffsetPaintFilter>(-1.f, -2.f, nullptr);
+
+  PaintFlags flags;
+  SaveLayerFiltersOp op_at_limit(filters, nullptr, flags);
+  EXPECT_TRUE(op_at_limit.IsValid());
+  SaveLayerFiltersOp op_at_limit_with_backdrop(filters, backdrop_filter, flags);
+  EXPECT_TRUE(op_at_limit.IsValid());
+
+  filters.push_back(sk_make_sp<OffsetPaintFilter>(-1.f, -2.f, nullptr));
+  SaveLayerFiltersOp op_over_limit(filters, nullptr, flags);
+  EXPECT_FALSE(op_over_limit.IsValid());
+  SaveLayerFiltersOp op_over_limit_with_backdrop(filters, backdrop_filter,
+                                                 flags);
+  EXPECT_FALSE(op_over_limit.IsValid());
+}
+
 TEST(PaintOpBufferTest, BoundingRect_DrawImageOp) {
   PaintOpBuffer buffer;
   PushDrawImageOps(&buffer);
@@ -3025,7 +3046,7 @@ TEST(PaintOpBufferTest, RasterPaintWorkletImageRectTranslated) {
   std::vector<SkSize> src_rect_offset = {SkSize::MakeEmpty()};
   std::vector<SkSize> scale_adjustment = {SkSize::Make(0.2f, 0.2f)};
   std::vector<PaintFlags::FilterQuality> quality = {
-      PaintFlags::FilterQuality::kHigh};
+      PaintFlags::FilterQuality::kLow};
   MockImageProvider provider(src_rect_offset, scale_adjustment, quality);
   provider.SetRecord(paint_worklet_buffer.ReleaseAsRecord());
 
@@ -3041,7 +3062,7 @@ TEST(PaintOpBufferTest, RasterPaintWorkletImageRectTranslated) {
   testing::StrictMock<MockCanvas> canvas;
   InSequence sequence;
 
-  SkSamplingOptions sampling({0, 1.0f / 2});
+  SkSamplingOptions sampling(SkFilterMode::kLinear, SkMipmapMode::kNone);
 
   EXPECT_CALL(canvas, willSave());
   EXPECT_CALL(canvas, didConcat44(SkM44::Translate(5.0f, 7.0f)));
@@ -3089,7 +3110,7 @@ TEST(PaintOpBufferTest, RasterPaintWorkletImageRectScaled) {
   testing::StrictMock<MockCanvas> canvas;
   InSequence sequence;
 
-  SkSamplingOptions sampling({0, 1.0f / 2});
+  SkSamplingOptions sampling({1.0f / 3, 1.0f / 3});
 
   EXPECT_CALL(canvas, willSave());
   EXPECT_CALL(canvas, didConcat44(SkM44::Scale(2.f, 1.5f)));
@@ -3109,7 +3130,7 @@ TEST(PaintOpBufferTest, RasterPaintWorkletImageRectScaled) {
   blink_buffer.Playback(&canvas, PlaybackParams(&provider));
 }
 
-TEST(PaintOpBufferTest, RasterPaintWorkletImageRectClipped) {
+TEST(PaintOpBufferTest, RasterPaintWorkletImageRectClipped_upscale) {
   PaintOpBuffer paint_worklet_buffer;
   paint_worklet_buffer.push<SaveLayerOp>(SkRect::MakeXYWH(0, 0, 60, 60),
                                          PaintFlags());
@@ -3140,7 +3161,57 @@ TEST(PaintOpBufferTest, RasterPaintWorkletImageRectClipped) {
   testing::StrictMock<MockCanvas> canvas;
   InSequence sequence;
 
-  SkSamplingOptions sampling({0, 1.0f / 2});
+  SkSamplingOptions sampling({1.0f / 3, 1.0f / 3});
+
+  EXPECT_CALL(canvas, willSave());
+  EXPECT_CALL(canvas, OnSaveLayer());
+  EXPECT_CALL(canvas, OnSaveLayer());
+  EXPECT_CALL(canvas, willSave());
+  EXPECT_CALL(canvas, didScale(1.0f / scale_adjustment[0].width(),
+                               1.0f / scale_adjustment[0].height()));
+  EXPECT_CALL(canvas, onDrawImageRect2(NonLazyImage(), SkRect::MakeWH(10, 10),
+                                       SkRect::MakeWH(10, 10), sampling, _,
+                                       SkCanvas::kFast_SrcRectConstraint));
+  EXPECT_CALL(canvas, willRestore());
+  EXPECT_CALL(canvas, willRestore());
+  EXPECT_CALL(canvas, willRestore());
+  EXPECT_CALL(canvas, willRestore());
+
+  blink_buffer.Playback(&canvas, PlaybackParams(&provider));
+}
+
+TEST(PaintOpBufferTest, RasterPaintWorkletImageRectClipped_downscale) {
+  PaintOpBuffer paint_worklet_buffer;
+  paint_worklet_buffer.push<SaveLayerOp>(SkRect::MakeXYWH(0, 0, 60, 60),
+                                         PaintFlags());
+  SkSamplingOptions linear(SkFilterMode::kLinear);
+  PaintImage paint_image = CreateDiscardablePaintImage(gfx::Size(10, 10));
+  // One rect inside the src-rect, one outside.
+  paint_worklet_buffer.push<DrawImageOp>(paint_image, 0.0f, 0.0f, linear,
+                                         nullptr);
+  paint_worklet_buffer.push<DrawImageOp>(paint_image, 50.0f, 50.0f, linear,
+                                         nullptr);
+
+  std::vector<SkSize> src_rect_offset = {SkSize::MakeEmpty()};
+  std::vector<SkSize> scale_adjustment = {SkSize::Make(2.f, 2.f)};
+  std::vector<PaintFlags::FilterQuality> quality = {
+      PaintFlags::FilterQuality::kHigh};
+  MockImageProvider provider(src_rect_offset, scale_adjustment, quality);
+  provider.SetRecord(paint_worklet_buffer.ReleaseAsRecord());
+
+  PaintOpBuffer blink_buffer;
+  scoped_refptr<TestPaintWorkletInput> input =
+      base::MakeRefCounted<TestPaintWorkletInput>(gfx::SizeF(100, 100));
+  PaintImage image = CreatePaintWorkletPaintImage(input);
+  SkRect src = SkRect::MakeXYWH(0, 0, 20, 20);
+  SkRect dst = SkRect::MakeXYWH(0, 0, 20, 20);
+  blink_buffer.push<DrawImageRectOp>(image, src, dst,
+                                     SkCanvas::kStrict_SrcRectConstraint);
+
+  testing::StrictMock<MockCanvas> canvas;
+  InSequence sequence;
+
+  SkSamplingOptions sampling(SkFilterMode::kLinear, SkMipmapMode::kLinear);
 
   EXPECT_CALL(canvas, willSave());
   EXPECT_CALL(canvas, OnSaveLayer());
@@ -3162,18 +3233,18 @@ TEST(PaintOpBufferTest, RasterPaintWorkletImageRectClipped) {
 TEST(PaintOpBufferTest, ReplacesImagesFromProvider) {
   std::vector<SkSize> src_rect_offset = {
       SkSize::MakeEmpty(), SkSize::Make(2.0f, 2.0f), SkSize::Make(3.0f, 3.0f)};
-  std::vector<SkSize> scale_adjustment = {SkSize::Make(0.2f, 0.2f),
+  std::vector<SkSize> scale_adjustment = {SkSize::Make(3.0f, 3.0f),
                                           SkSize::Make(0.3f, 0.3f),
                                           SkSize::Make(0.4f, 0.4f)};
   std::vector<PaintFlags::FilterQuality> quality = {
       PaintFlags::FilterQuality::kHigh, PaintFlags::FilterQuality::kMedium,
-      PaintFlags::FilterQuality::kHigh};
+      PaintFlags::FilterQuality::kLow};
 
   MockImageProvider image_provider(src_rect_offset, scale_adjustment, quality);
   PaintOpBuffer buffer;
 
   SkRect rect = SkRect::MakeWH(10, 10);
-  SkSamplingOptions sampling(SkFilterMode::kLinear);
+  SkSamplingOptions sampling(SkFilterMode::kLinear, SkMipmapMode::kNone);
   PaintImage paint_image = CreateDiscardablePaintImage(gfx::Size(10, 10));
   buffer.push<DrawImageOp>(paint_image, 0.0f, 0.0f, sampling, nullptr);
   buffer.push<DrawImageRectOp>(paint_image, rect, rect, sampling, nullptr,
@@ -3189,9 +3260,6 @@ TEST(PaintOpBufferTest, ReplacesImagesFromProvider) {
   testing::Sequence save_restore_seq;
   testing::Sequence on_draw_image_rect_seq;
 
-  SkSamplingOptions sampling0({0, 1.0f / 2});
-  SkSamplingOptions sampling1(SkFilterMode::kLinear, SkMipmapMode::kNearest);
-
   // Save/scale/image/restore from DrawImageop.
   EXPECT_CALL(canvas, willSave()).InSequence(save_restore_seq);
   EXPECT_CALL(canvas, didScale(1.0f / scale_adjustment[0].width(),
@@ -3201,8 +3269,9 @@ TEST(PaintOpBufferTest, ReplacesImagesFromProvider) {
   // onDrawImageRect2() to avoid spurious EXPECT_*() calls firing when gtest
   // tries to match the expectation corresponding to the
   // DrawImageRectOp (below) against the call for the DrawImageOp.
+  SkSamplingOptions sampling1(SkFilterMode::kLinear, SkMipmapMode::kLinear);
   EXPECT_CALL(canvas, onDrawImageRect2(NonLazyImage(), SkRect::MakeWH(10, 10),
-                                       SkRect::MakeWH(10, 10), sampling0, _,
+                                       SkRect::MakeWH(10, 10), sampling1, _,
                                        SkCanvas::kFast_SrcRectConstraint))
       .InSequence(on_draw_image_rect_seq);
   EXPECT_CALL(canvas, willRestore()).InSequence(save_restore_seq);
@@ -3377,7 +3446,7 @@ TEST_P(PaintFilterSerializationTest, Basic) {
                                                  filters[4], filters[5]));
   filters.emplace_back(new DisplacementMapEffectPaintFilter(
       SkColorChannel::kR, SkColorChannel::kG, 10, filters[6], filters[7]));
-  filters.emplace_back(new MergePaintFilter(filters.data(), filters.size()));
+  filters.emplace_back(new MergePaintFilter(filters));
   filters.emplace_back(
       new RecordPaintFilter(PaintRecord(), SkRect::MakeXYWH(10, 15, 20, 25)));
 
@@ -3484,6 +3553,39 @@ TEST(PaintOpBufferTest, PaintRecordShaderSerialization) {
   flags.setShader(PaintShader::MakePaintRecord(
       shader_buffer.ReleaseAsRecord(), SkRect::MakeWH(10, 10),
       SkTileMode::kClamp, SkTileMode::kRepeat, nullptr));
+  PaintOpBuffer buffer;
+  buffer.push<DrawRectOp>(SkRect::MakeXYWH(1, 2, 3, 4), flags);
+
+  EXPECT_THAT(SerializeAndDeserialize(buffer),
+              Pointee(ElementsAre(
+                  PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 2, 3, 4), flags))));
+}
+
+TEST(PaintOpBufferTest, SkSLCommandShaderSerialization) {
+  static constexpr char kCommand[] =
+      "half4 main(float2 coord) { return half4(0.5); }";
+
+  PaintFlags flags;
+  std::vector<PaintShader::FloatUniform> scalar_uniforms = {
+      {.name = SkString("u_scalar"), .value = 42.f}};
+  std::vector<PaintShader::Float2Uniform> float2_uniforms = {
+      {.name = SkString("u_vec2"), .value = SkV2{42.f, 21.f}}};
+  std::vector<PaintShader::Float4Uniform> float4_uniforms = {
+      {.name = SkString("u_vec4"), .value = SkV4{42.f, 21.f, 10.f, 5.f}}};
+  std::vector<PaintShader::IntUniform> int_uniforms = {
+      {.name = SkString("u_int"), .value = 2}};
+
+  auto paint_shader = PaintShader::MakeSkSLCommand(
+      kCommand, std::move(scalar_uniforms), std::move(float2_uniforms),
+      std::move(float4_uniforms), std::move(int_uniforms), nullptr);
+  flags.setShader(paint_shader);
+
+  auto other_paint_shader =
+      PaintShader::MakeSkSLCommand(kCommand, {}, {}, {}, {}, paint_shader);
+
+  EXPECT_TRUE(
+      paint_shader->MatchingCachedRuntimeEffectForTesting(*other_paint_shader));
+
   PaintOpBuffer buffer;
   buffer.push<DrawRectOp>(SkRect::MakeXYWH(1, 2, 3, 4), flags);
 
@@ -3858,7 +3960,7 @@ TEST(PaintOpBufferTest, RecordShadersCached) {
   }
 
   // Hold onto records so PaintShader pointer comparisons are valid.
-  sk_sp<PaintOpBuffer> buffers[5];
+  std::array<sk_sp<PaintOpBuffer>, 5> buffers;
   SkPicture* last_shader = nullptr;
   std::vector<uint8_t> scratch_buffer;
   PaintOp::DeserializeOptions deserialize_options{
@@ -4338,13 +4440,14 @@ TEST(PaintOpBufferTest, PlaybackDrawRecordNestedNonLocalAndNonLocalCTM) {
 }
 
 TEST(PaintOpBufferTest, PathCaching) {
-  SkPath path;
+  SkPathBuilder path_builder;
   PaintFlags flags;
 
   // Grow path large enough to trigger caching
-  path.moveTo(0, 0);
+  path_builder.moveTo(0, 0);
   for (int x = 1; x < 100; ++x)
-    path.lineTo(x, x % 1);
+    path_builder.lineTo(x, x % 1);
+  const SkPath path = path_builder.detach();
 
   TestOptionsProvider options_provider;
 
@@ -4378,7 +4481,7 @@ TEST(PaintOpBufferTest, ShrinkToFit) {
 
   buffer.push<DrawColorOp>(SkColors::kRed, SkBlendMode::kSrc);
   EXPECT_GT(buffer.bytes_used(), sizeof(PaintOpBuffer) + sizeof(DrawColorOp));
-  const char* data_buffer = buffer.DataBufferForTesting();
+  const uint8_t* data_buffer = buffer.DataBufferForTesting();
   ASSERT_TRUE(data_buffer);
   buffer.ShrinkToFit();
   EXPECT_EQ(sizeof(PaintOpBuffer) + sizeof(DrawColorOp), buffer.bytes_used());
@@ -4402,7 +4505,7 @@ TEST(PaintOpBufferTest, ReleaseAsRecord) {
   buffer.push<DrawColorOp>(SkColors::kRed, SkBlendMode::kSrc);
   size_t old_bytes_used = buffer.bytes_used();
   EXPECT_GT(old_bytes_used, sizeof(PaintOpBuffer) + sizeof(DrawColorOp));
-  const char* data_buffer = buffer.DataBufferForTesting();
+  const uint8_t* data_buffer = buffer.DataBufferForTesting();
   ASSERT_TRUE(data_buffer);
   EXPECT_EQ(1u, buffer.size());
 

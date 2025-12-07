@@ -5,6 +5,7 @@
 #include "android_webview/browser/aw_browser_process.h"
 
 #include "android_webview/browser/aw_browser_context.h"
+#include "android_webview/browser/aw_content_browser_client.h"
 #include "android_webview/browser/aw_enterprise_authentication_app_link_manager.h"
 #include "android_webview/browser/component_updater/registration.h"
 #include "android_webview/browser/lifecycle/aw_contents_lifecycle_notifier.h"
@@ -12,7 +13,11 @@
 #include "android_webview/common/crash_reporter/crash_keys.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/android/path_utils.h"
 #include "base/base_paths_posix.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -21,10 +26,14 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/browser/posix_key_provider.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_config.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/process_visibility_util.h"
+#include "services/tracing/public/cpp/trace_startup.h"
+#include "services/tracing/public/cpp/tracing_features.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwBrowserProcess_jni.h"
@@ -48,10 +57,32 @@ const char kAuthServerAllowlist[] = "auth.server_allowlist";
 // navigated to any of these urls, browse intent will be sent.
 const char kEnterpriseAuthAppLinkPolicy[] = "enterprise_auth_app_link_policy";
 
+// App is provided with a cache quota by the Android framework.
+// This pref contains the last known value of the cache quota which was queried
+// by WebView. -1 denotes no known value.
+const char kLastKnownAppCacheQuota[] =
+    "android_webview.last_known_app_cache_quota";
+
 }  // namespace prefs
 
 namespace {
 AwBrowserProcess* g_aw_browser_process = nullptr;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class CacheQuotaFreshness {
+  kInMemory = 0,
+  kInPref = 1,
+  kAbsent = 2,
+  kMaxValue = kAbsent,
+};
+
+void recordCacheQuotaFreshness(CacheQuotaFreshness state) {
+  base::UmaHistogramEnumeration("Android.WebView.CacheQuotaFreshness", state);
+}
+
+bool g_did_early_perfetto_initialization = false;
+
 }  // namespace
 
 // static
@@ -59,10 +90,11 @@ AwBrowserProcess* AwBrowserProcess::GetInstance() {
   return g_aw_browser_process;
 }
 
-AwBrowserProcess::AwBrowserProcess(
-    AwFeatureListCreator* aw_feature_list_creator) {
+AwBrowserProcess::AwBrowserProcess(AwContentBrowserClient* browser_client)
+    : browser_client_(
+          raw_ref<AwContentBrowserClient>::from_ptr(browser_client)) {
   g_aw_browser_process = this;
-  aw_feature_list_creator_ = aw_feature_list_creator;
+  aw_feature_list_creator_ = browser_client->aw_feature_list_creator();
   aw_contents_lifecycle_notifier_ =
       std::make_unique<AwContentsLifecycleNotifier>(base::BindRepeating(
           &AwBrowserProcess::OnLoseForeground, base::Unretained(this)));
@@ -73,11 +105,14 @@ AwBrowserProcess::AwBrowserProcess(
   origin_trials_settings_storage_ =
       std::make_unique<embedder_support::OriginTrialsSettingsStorage>();
 
-  // Initialize OSCryptAsync with no providers. This delegates all encryption
-  // operations to OSCrypt.
-  os_crypt_async_ = std::make_unique<os_crypt_async::OSCryptAsync>(
-      std::vector<
-          std::pair<size_t, std::unique_ptr<os_crypt_async::KeyProvider>>>());
+  // Initialize OSCryptAsync with a PosixKeyProvider. Initialization always
+  // succeeds, so encryption is never delegated to synchronous OSCrypt.
+  auto key_provider = std::make_unique<os_crypt_async::PosixKeyProvider>();
+  std::vector<std::pair<size_t, std::unique_ptr<os_crypt_async::KeyProvider>>>
+      key_providers;
+  key_providers.emplace_back(/*precedence=*/5u, std::move(key_provider));
+  os_crypt_async_ =
+      std::make_unique<os_crypt_async::OSCryptAsync>(std::move(key_providers));
 }
 
 AwBrowserProcess::~AwBrowserProcess() {
@@ -93,7 +128,7 @@ void AwBrowserProcess::PreMainMessageLoopRun() {
                              auth_pref_callback);
 
   // Trigger async initialization of OSCrypt key providers.
-  std::ignore = os_crypt_async_->GetInstance(base::DoNothing());
+  os_crypt_async_->GetInstance(base::DoNothing());
 
   InitSafeBrowsing();
 }
@@ -174,8 +209,8 @@ AwBrowserProcess::GetSafeBrowsingDBManager() {
   if (!safe_browsing_db_manager_started_) {
     // V4ProtocolConfig is not used. Just create one with empty values..
     safe_browsing::V4ProtocolConfig config("", false, "", "");
-    safe_browsing_db_manager_->StartOnSBThread(
-        GetSafeBrowsingUIManager()->GetURLLoaderFactoryOnSBThread(), config);
+    safe_browsing_db_manager_->StartOnUIThread(
+        GetSafeBrowsingUIManager()->GetURLLoaderFactory(), config);
     safe_browsing_db_manager_started_ = true;
   }
 
@@ -222,6 +257,12 @@ void AwBrowserProcess::RegisterEnterpriseAuthenticationAppLinkPolicyPref(
   pref_registry->RegisterListPref(prefs::kEnterpriseAuthAppLinkPolicy);
 }
 
+// static
+void AwBrowserProcess::RegisterAppCacheQuotaLocalStatePref(
+    PrefRegistrySimple* pref_registry) {
+  pref_registry->RegisterInt64Pref(prefs::kLastKnownAppCacheQuota, -1);
+}
+
 network::mojom::HttpAuthDynamicParamsPtr
 AwBrowserProcess::CreateHttpAuthDynamicParams() {
   network::mojom::HttpAuthDynamicParamsPtr auth_dynamic_params =
@@ -253,6 +294,43 @@ AwBrowserProcess::GetOriginTrialsSettingsStorage() {
   return origin_trials_settings_storage_.get();
 }
 
+AwContentBrowserClient* AwBrowserProcess::GetBrowserClient() {
+  return &*browser_client_;
+}
+
+int64_t AwBrowserProcess::GetHostAppCacheQuota() {
+  {
+    base::AutoLock lock(lock_);
+    if (app_cache_quota_ != -1) {
+      recordCacheQuotaFreshness(CacheQuotaFreshness::kInMemory);
+      return app_cache_quota_;
+    }
+  }
+  int64_t quota = AwBrowserProcess::GetInstance()->local_state()->GetInt64(
+      prefs::kLastKnownAppCacheQuota);
+  if (quota == -1) {
+    recordCacheQuotaFreshness(CacheQuotaFreshness::kAbsent);
+  } else {
+    recordCacheQuotaFreshness(CacheQuotaFreshness::kInPref);
+  }
+  return quota;
+}
+
+void AwBrowserProcess::FetchHostAppCacheQuota() {
+  int64_t cache_quota = base::android::GetCacheQuotaBytes();
+  {
+    base::AutoLock lock(lock_);
+    app_cache_quota_ = cache_quota;
+  }
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](int64_t cache_quota) {
+                       AwBrowserProcess::GetInstance()->local_state()->SetInt64(
+                           prefs::kLastKnownAppCacheQuota, cache_quota);
+                     },
+                     cache_quota));
+}
+
 // static
 void AwBrowserProcess::TriggerMinidumpUploading() {
   Java_AwBrowserProcess_triggerMinidumpUploading(
@@ -265,12 +343,16 @@ ApkType AwBrowserProcess::GetApkType() {
       Java_AwBrowserProcess_getApkType(base::android::AttachCurrentThread()));
 }
 
+static void JNI_AwBrowserProcess_OnStartupComplete(JNIEnv* env) {
+  AwBrowserProcess::GetInstance()->GetBrowserClient()->OnStartupComplete();
+}
+
 static void JNI_AwBrowserProcess_SetProcessNameCrashKey(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& processName) {
+    std::string& processName) {
   static ::crash_reporter::CrashKeyString<64> crash_key(
       crash_keys::kAppProcessName);
-  crash_key.Set(base::android::ConvertJavaStringToUTF8(env, processName));
+  crash_key.Set(processName);
 }
 
 static base::android::ScopedJavaLocalRef<jobjectArray>
@@ -280,4 +362,21 @@ JNI_AwBrowserProcess_GetComponentLoaderPolicies(JNIEnv* env) {
                                                 GetComponentLoaderPolicies());
 }
 
+static void JNI_AwBrowserProcess_InitPerfetto(JNIEnv* env,
+                                              bool enable_system_backend) {
+  tracing::InitTracing(/*enable_consumer=*/true,
+                       /*will_trace_thread_restart=*/false,
+                       /*enable_system_backend=*/enable_system_backend ||
+                           tracing::ShouldSetupSystemTracing(),
+                       base::NullCallback());
+  g_did_early_perfetto_initialization = true;
+}
+
+// static
+bool AwBrowserProcess::DidEarlyPerfettoInitialization() {
+  return g_did_early_perfetto_initialization;
+}
+
 }  // namespace android_webview
+
+DEFINE_JNI(AwBrowserProcess)

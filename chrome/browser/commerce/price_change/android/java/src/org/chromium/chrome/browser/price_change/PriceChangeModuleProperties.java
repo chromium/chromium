@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.price_change;
 import android.graphics.Bitmap;
 import android.view.View.OnClickListener;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Properties for the price change module. */
+@NullMarked
 interface PriceChangeModuleProperties {
     PropertyModel.WritableObjectPropertyKey<String> MODULE_TITLE =
             new PropertyModel.WritableObjectPropertyKey<>();

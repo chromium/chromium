@@ -52,10 +52,10 @@ class ArcTracingModel {
   // separated by '/' where segment is in format
   // category:name(arg_name=arg_value;..). See ArcTracingEventMatcher for more
   // details. Processing starts from the each root node for thread or group.
-  TracingEventPtrs Select(const std::string query) const;
+  TracingEventPtrs Select(const std::string& query) const;
   // Similar to case above but starts from provided event |event|.
   TracingEventPtrs Select(const ArcTracingEvent* event,
-                          const std::string query) const;
+                          const std::string& query) const;
 
   // Gets group of asynchronous events for |id|.
   TracingEventPtrs GetGroupEvents(const std::string& id) const;

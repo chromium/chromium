@@ -21,8 +21,9 @@ Owner GetOwner(const url::Origin& top_frame_origin) {
   // to handle sandboxed top frames in addition to non-sandboxed ones.
   // top_frame_origin.GetURL() handles only the latter.
   const GURL url(top_frame_origin.GetTupleOrPrecursorTupleIfOpaque().GetURL());
-  if (!url.is_valid())
+  if (!url.is_valid()) {
     return Owner::kUnknownFromRenderer;
+  }
   return google_util::IsGoogleAssociatedDomainUrl(url) ? Owner::kGoogle
                                                        : Owner::kNotGoogle;
 }
@@ -46,8 +47,9 @@ VariationsURLLoaderThrottle::~VariationsURLLoaderThrottle() = default;
 void VariationsURLLoaderThrottle::AppendThrottleIfNeeded(
     const variations::VariationsClient* variations_client,
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>>* throttles) {
-  if (!variations_client || variations_client->IsOffTheRecord())
+  if (!variations_client || variations_client->IsOffTheRecord()) {
     return;
+  }
 
   throttles->push_back(std::make_unique<VariationsURLLoaderThrottle>(
       variations_client->GetVariationsHeaders()));
@@ -58,8 +60,9 @@ void VariationsURLLoaderThrottle::DetachFromCurrentSequence() {}
 void VariationsURLLoaderThrottle::WillStartRequest(
     network::ResourceRequest* request,
     bool* defer) {
-  if (variations_headers_.is_null())
+  if (variations_headers_.is_null()) {
     return;
+  }
 
   // InIncognito::kNo is passed because this throttle is never created in
   // incognito mode.

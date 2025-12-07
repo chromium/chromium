@@ -5,55 +5,418 @@
 #include "components/enterprise/browser/reporting/chrome_profile_request_generator.h"
 
 #include <utility>
+#include <variant>
 
+#include "base/barrier_callback.h"
+#include "base/base64.h"
+#include "base/check.h"
 #include "base/functional/callback.h"
+#include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
+#include "build/build_config.h"
+#include "components/device_signals/core/browser/signals_aggregator.h"
+#include "components/device_signals/core/common/signals_features.h"
 #include "components/enterprise/browser/reporting/os_report_generator.h"
 #include "components/enterprise/browser/reporting/report_type.h"
+#include "components/enterprise/browser/reporting/report_util.h"
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
+#include "components/enterprise/device_attestation/device_attestation_service_factory.h"
+#include "components/policy/core/common/policy_logger.h"
 
 namespace enterprise_reporting {
 
 namespace em = enterprise_management;
 
+namespace {
+
+// The size of the nonce challenge in bytes.
+const int kNonceSizeInBytes = 16;
+
+constexpr char kAttestationFlowName[] = "chrome-signals-sharing";
+
+std::string CreateNonce() {
+  std::vector<uint8_t> nonce_buffer(kNonceSizeInBytes);
+  base::RandBytes(nonce_buffer);
+
+  return base::Base64Encode(nonce_buffer);
+}
+
+em::ChromeProfileReportRequest::ReportType GetReportTypeFromSignalsMode(
+    SecuritySignalsMode signals_mode) {
+  switch (signals_mode) {
+    case SecuritySignalsMode::kNoSignals:
+      return em::ChromeProfileReportRequest::PROFILE_REPORT;
+    case SecuritySignalsMode::kSignalsAttached:
+      return em::ChromeProfileReportRequest::
+          PROFILE_REPORT_WITH_SECURITY_SIGNALS;
+    case SecuritySignalsMode::kSignalsOnly:
+      return em::ChromeProfileReportRequest::PROFILE_SECURITY_SIGNALS;
+  }
+}
+
+void ParseReports(
+    base::OnceCallback<void(std::unique_ptr<em::BrowserReport>,
+                            std::unique_ptr<em::ChromeUserProfileInfo>)>
+        callback,
+    std::vector<std::variant<std::unique_ptr<em::BrowserReport>,
+                             std::unique_ptr<em::ChromeUserProfileInfo>>>
+        reports) {
+  std::unique_ptr<em::BrowserReport> browser_report;
+  std::unique_ptr<enterprise_management::ChromeUserProfileInfo> profile_report;
+  for (auto& variant : reports) {
+    if (std::holds_alternative<std::unique_ptr<em::BrowserReport>>(variant)) {
+      browser_report =
+          std::move(std::get<std::unique_ptr<em::BrowserReport>>(variant));
+    } else {
+      profile_report = std::move(
+          std::get<std::unique_ptr<em::ChromeUserProfileInfo>>(variant));
+    }
+  }
+
+  std::move(callback).Run(std::move(browser_report), std::move(profile_report));
+}
+
+}  // namespace
+
 ChromeProfileRequestGenerator::ChromeProfileRequestGenerator(
     const base::FilePath& profile_path,
-    const std::string& profile_name,
-    ReportingDelegateFactory* delegate_factory)
+    ReportingDelegateFactory* delegate_factory,
+    device_signals::SignalsAggregator* signals_aggregator)
     : profile_path_(profile_path),
-      profile_name_(profile_name),
       browser_report_generator_(delegate_factory),
-      profile_report_generator_(delegate_factory) {
+      profile_report_generator_(delegate_factory),
+      signals_aggregator_(signals_aggregator),
+      device_attestation_service_(
+          enterprise::DeviceAttestationServiceFactory::GetInstance()
+              ->CreateDeviceAttestationService()) {
   profile_report_generator_.set_is_machine_scope(false);
 }
 
 ChromeProfileRequestGenerator::~ChromeProfileRequestGenerator() = default;
 
-void ChromeProfileRequestGenerator::Generate(ReportCallback callback) {
+void ChromeProfileRequestGenerator::Generate(
+    ReportGenerationConfig generation_config,
+    ReportCallback callback) {
+  if (generation_config.report_type != ReportType::kProfileReport) {
+    auto empty_request =
+        std::make_unique<ReportRequest>(generation_config.report_type);
+    return OnRequestReady(std::move(empty_request), std::move(callback));
+  }
+
   auto request = std::make_unique<ReportRequest>(ReportType::kProfileReport);
-  request->GetChromeProfileReportRequest().set_allocated_os_report(
-      GetOSReport().release());
-  browser_report_generator_.Generate(
-      ReportType::kProfileReport,
-      base::BindOnce(&ChromeProfileRequestGenerator::OnBrowserReportReady,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(request),
-                     std::move(callback)));
+  request->GetChromeProfileReportRequest().set_report_type(
+      GetReportTypeFromSignalsMode(generation_config.security_signals_mode));
+
+  bool is_signals_only = generation_config.security_signals_mode ==
+                         SecuritySignalsMode::kSignalsOnly;
+  bool policies_enabled =
+      enterprise_signals::features::IsPolicyDataCollectionEnabled();
+
+  // Early Exit since it's a Signals-Only report with no policies.
+  if (is_signals_only && !policies_enabled) {
+    return OnBaseReportsReady(std::move(request), std::move(callback),
+                              generation_config,
+                              std::make_unique<em::BrowserReport>(),
+                              std::make_unique<em::ChromeUserProfileInfo>());
+  }
+
+  auto barrier_callback = base::BarrierCallback<
+      std::variant<std::unique_ptr<em::BrowserReport>,
+                   std::unique_ptr<em::ChromeUserProfileInfo>>>(
+      2, base::BindOnce(
+             ParseReports,
+             base::BindOnce(&ChromeProfileRequestGenerator::OnBaseReportsReady,
+                            weak_ptr_factory_.GetWeakPtr(), std::move(request),
+                            std::move(callback), generation_config)));
+
+  if (is_signals_only) {
+    barrier_callback.Run(std::make_unique<em::BrowserReport>());
+  } else {
+    browser_report_generator_.Generate(
+        ReportType::kProfileReport,
+        base::BindOnce(
+            [](std::unique_ptr<em::BrowserReport> browser_report)
+                -> std::variant<std::unique_ptr<em::BrowserReport>,
+                                std::unique_ptr<em::ChromeUserProfileInfo>> {
+              return std::move(browser_report);
+            })
+            .Then(barrier_callback));
+  }
+
+  profile_report_generator_.MaybeGenerate(
+      profile_path_, ReportType::kProfileReport,
+      generation_config.security_signals_mode,
+      base::BindOnce(
+          [](std::unique_ptr<em::ChromeUserProfileInfo> profile_report)
+              -> std::variant<std::unique_ptr<em::BrowserReport>,
+                              std::unique_ptr<em::ChromeUserProfileInfo>> {
+            return std::move(profile_report);
+          })
+          .Then(barrier_callback));
 }
 
-void ChromeProfileRequestGenerator::ToggleExtensionReport(bool enabled) {
-  profile_report_generator_.set_extensions_enabled(enabled);
+void ChromeProfileRequestGenerator::ToggleExtensionReport(
+    ProfileReportGenerator::ExtensionsEnabledCallback callback) {
+  profile_report_generator_.SetExtensionsEnabledCallback(std::move(callback));
 }
 
-void ChromeProfileRequestGenerator::OnBrowserReportReady(
+void ChromeProfileRequestGenerator::OnBaseReportsReady(
     std::unique_ptr<ReportRequest> request,
     ReportCallback callback,
-    std::unique_ptr<em::BrowserReport> browser_report) {
-  auto profile_report = profile_report_generator_.MaybeGenerate(
-      profile_path_, profile_name_, ReportType::kProfileReport);
+    ReportGenerationConfig generation_config,
+    std::unique_ptr<em::BrowserReport> browser_report,
+    std::unique_ptr<em::ChromeUserProfileInfo> profile_report) {
+  if (generation_config.security_signals_mode ==
+          SecuritySignalsMode::kNoSignals ||
+      !signals_aggregator_) {
+    request->GetChromeProfileReportRequest().set_allocated_os_report(
+        GetOSReport().release());
+    browser_report->add_chrome_user_profile_infos()->Swap(profile_report.get());
+
+    request->GetChromeProfileReportRequest().set_allocated_browser_report(
+        browser_report.release());
+
+    return OnRequestReady(std::move(request), std::move(callback));
+  }
+
+  // Start signals collection process.
+  device_signals::SignalsAggregationRequest signals_request;
+  signals_request.signal_names.emplace(device_signals::SignalName::kOsSignals);
+  signals_request.signal_names.emplace(
+      device_signals::SignalName::kBrowserContextSignals);
+
+  if (enterprise_signals::features::IsDetectedAgentSignalCollectionEnabled()) {
+    signals_request.signal_names.emplace(device_signals::SignalName::kAgent);
+    signals_request.agent_signal_parameters.emplace(
+        device_signals::AgentSignalCollectionType::kDetectedAgents);
+  }
+
+#if BUILDFLAG(IS_WIN)
+  signals_request.signal_names.emplace(device_signals::SignalName::kAntiVirus);
+  signals_request.signal_names.emplace(device_signals::SignalName::kHotfixes);
+#endif  // BUILDFLAG(IS_WIN)
+  signals_request.trigger = device_signals::Trigger::kSignalsReport;
+
+  signals_aggregator_->GetSignals(
+      signals_request,
+      base::BindOnce(
+          &ChromeProfileRequestGenerator::OnAggregatedSignalsReceived,
+          weak_ptr_factory_.GetWeakPtr(), std::move(request),
+          std::move(callback), std::move(browser_report),
+          std::move(profile_report)));
+}
+
+// TODO(crbug.com/448356931): Separate the following logics into a specialized
+// module.
+void ChromeProfileRequestGenerator::OnAggregatedSignalsReceived(
+    std::unique_ptr<ReportRequest> request,
+    ReportCallback callback,
+    std::unique_ptr<em::BrowserReport> browser_report,
+    std::unique_ptr<em::ChromeUserProfileInfo> profile_report,
+    device_signals::SignalsAggregationResponse response) {
+  auto os_report = GetOSReport();
+  auto device_identifier = std::make_unique<em::BrowserDeviceIdentifier>();
+  auto profile_signals_report = std::make_unique<em::ProfileSignalsReport>();
+
+  if (response.os_signals_response) {
+    const auto& os_signals = response.os_signals_response.value();
+
+    if (os_signals.display_name) {
+      device_identifier->set_computer_name(os_signals.display_name.value());
+    }
+    if (os_signals.serial_number) {
+      device_identifier->set_serial_number(os_signals.serial_number.value());
+    }
+    if (os_signals.hostname) {
+      device_identifier->set_host_name(os_signals.hostname.value());
+    }
+
+    if (os_signals.device_enrollment_domain) {
+      os_report->set_device_enrollment_domain(
+          os_signals.device_enrollment_domain.value());
+    }
+    os_report->set_device_manufacturer(os_signals.device_manufacturer);
+    os_report->set_device_model(os_signals.device_model);
+    os_report->set_disk_encryption(
+        TranslateSettingValue(os_signals.disk_encryption));
+    if (os_signals.mac_addresses) {
+      const auto& mac_addresses = os_signals.mac_addresses.value();
+      os_report->mutable_mac_addresses()->Add(mac_addresses.begin(),
+                                              mac_addresses.end());
+    }
+
+    os_report->set_name(os_signals.operating_system);
+    os_report->set_os_firewall(TranslateSettingValue(os_signals.os_firewall));
+    os_report->set_screen_lock_secured(
+        TranslateSettingValue(os_signals.screen_lock_secured));
+    if (os_signals.system_dns_servers) {
+      const auto& system_dns_servers = os_signals.system_dns_servers.value();
+      os_report->mutable_system_dns_servers()->Add(system_dns_servers.begin(),
+                                                   system_dns_servers.end());
+    }
+
+    os_report->set_version(os_signals.os_version);
+#if BUILDFLAG(IS_WIN)
+    if (os_signals.machine_guid) {
+      os_report->set_machine_guid(os_signals.machine_guid.value());
+    }
+    if (os_signals.secure_boot_mode) {
+      os_report->set_secure_boot_mode(
+          (os_signals.secure_boot_mode)
+              ? TranslateSettingValue(os_signals.secure_boot_mode.value())
+              : em::SettingValue::UNKNOWN);
+    }
+    if (os_signals.windows_machine_domain) {
+      os_report->set_windows_machine_domain(
+          os_signals.windows_machine_domain.value());
+    }
+    if (os_signals.windows_user_domain) {
+      os_report->set_windows_user_domain(
+          os_signals.windows_user_domain.value());
+    }
+#endif  // BUILDFLAG(IS_WIN)
+
+    if (os_signals.distribution_version) {
+      os_report->set_distribution_version(
+          os_signals.distribution_version.value());
+    }
+
+#if BUILDFLAG(IS_ANDROID)
+    os_report->set_has_potentially_harmful_apps(
+        os_signals.has_potentially_harmful_apps);
+    os_report->set_verified_apps_enabled(os_signals.verified_apps_enabled);
+
+    if (os_signals.security_patch_ms) {
+      os_report->set_security_patch_ms(os_signals.security_patch_ms.value());
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
+
+    browser_report->set_browser_version(os_signals.browser_version);
+  }
+
+  if (response.profile_signals_response) {
+    const auto& profile_signals = response.profile_signals_response.value();
+    profile_signals_report->set_built_in_dns_client_enabled(
+        profile_signals.built_in_dns_client_enabled);
+    profile_signals_report->set_chrome_remote_desktop_app_blocked(
+        profile_signals.chrome_remote_desktop_app_blocked);
+    profile_signals_report->set_password_protection_warning_trigger(
+        TranslatePasswordProtectionTrigger(
+            profile_signals.password_protection_warning_trigger));
+    if (profile_signals.profile_enrollment_domain) {
+      profile_signals_report->set_profile_enrollment_domain(
+          profile_signals.profile_enrollment_domain.value());
+    }
+    profile_signals_report->set_realtime_url_check_mode(
+        TranslateRealtimeUrlCheckMode(profile_signals.realtime_url_check_mode));
+    profile_signals_report->set_safe_browsing_protection_level(
+        TranslateSafeBrowsingLevel(
+            profile_signals.safe_browsing_protection_level));
+    profile_signals_report->set_site_isolation_enabled(
+        profile_signals.site_isolation_enabled);
+
+    profile_signals_report->mutable_file_downloaded_providers()->Add(
+        profile_signals.file_downloaded_providers.begin(),
+        profile_signals.file_downloaded_providers.end());
+    profile_signals_report->mutable_file_attached_providers()->Add(
+        profile_signals.file_attached_providers.begin(),
+        profile_signals.file_attached_providers.end());
+    profile_signals_report->mutable_bulk_data_entry_providers()->Add(
+        profile_signals.bulk_data_entry_providers.begin(),
+        profile_signals.bulk_data_entry_providers.end());
+    profile_signals_report->mutable_print_providers()->Add(
+        profile_signals.print_providers.begin(),
+        profile_signals.print_providers.end());
+    profile_signals_report->mutable_security_event_providers()->Add(
+        profile_signals.security_event_providers.begin(),
+        profile_signals.security_event_providers.end());
+
+    profile_report->set_allocated_profile_signals_report(
+        profile_signals_report.release());
+
+    if (profile_signals.profile_id) {
+      profile_report->set_profile_id(profile_signals.profile_id.value());
+    }
+  }
+
+  if (response.agent_signals_response) {
+    const auto& agent_signals = response.agent_signals_response.value();
+    for (auto detected_agent : agent_signals.detected_agents) {
+      switch (detected_agent) {
+        case (device_signals::Agents::kCrowdStrikeFalcon):
+          os_report->add_detected_agents(em::Agent::CROWDSTRIKE_FALCON);
+          break;
+      }
+    }
+  }
+
+#if BUILDFLAG(IS_WIN)
+  if (response.av_signal_response) {
+    const auto& antivirus_signals = response.av_signal_response.value();
+    for (auto av_product : antivirus_signals.av_products) {
+      os_report->add_antivirus_info()->Swap(
+          TranslateAvProduct(av_product).get());
+    }
+  }
+
+  if (response.hotfix_signal_response) {
+    const auto& hotfix_signals = response.hotfix_signal_response.value();
+    for (auto hotfix : hotfix_signals.hotfixes) {
+      os_report->add_hotfixes(hotfix.hotfix_id);
+    }
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
+  request->GetChromeProfileReportRequest()
+      .set_allocated_browser_device_identifier(device_identifier.release());
+
+  request->GetChromeProfileReportRequest().set_allocated_os_report(
+      os_report.release());
 
   browser_report->add_chrome_user_profile_infos()->Swap(profile_report.get());
 
   request->GetChromeProfileReportRequest().set_allocated_browser_report(
       browser_report.release());
+
+  VLOG_POLICY(1, REPORTING) << "Signals report request is mostly ready, "
+                               "generating attestation payload";
+  std::string report_timestamp =
+      base::NumberToString(base::Time::Now().InMillisecondsFSinceUnixEpoch());
+  std::string report_nonce = CreateNonce();
+  auto signals_string =
+      GetSecuritySignalsInReport(request->GetChromeProfileReportRequest());
+  device_attestation_service_->GetAttestationResponse(
+      kAttestationFlowName, signals_string, report_timestamp, report_nonce,
+      base::BindOnce(&ChromeProfileRequestGenerator::OnAttestationResultReady,
+                     weak_ptr_factory_.GetWeakPtr(), report_timestamp,
+                     report_nonce, std::move(callback), std::move(request)));
+}
+
+void ChromeProfileRequestGenerator::OnAttestationResultReady(
+    std::string_view timestamp,
+    std::string_view nonce,
+    ReportCallback callback,
+    std::unique_ptr<ReportRequest> request,
+    const enterprise::BlobGenerationResult& attestation_result) {
+  auto attestation_payload = std::make_unique<em::AttestationPayload>();
+  attestation_payload->set_timestamp(timestamp);
+  attestation_payload->set_nonce(nonce);
+
+  attestation_payload->set_attestation_blob(
+      attestation_result.attestation_blob);
+  attestation_payload->set_attestation_error(attestation_result.error_message);
+  request->GetChromeProfileReportRequest().set_allocated_attestation_payload(
+      attestation_payload.release());
+  VLOG_POLICY(2, REPORTING)
+      << "Signals report request generated with attestation: "
+      << GetSecuritySignalsInReport(request->GetChromeProfileReportRequest());
+  OnRequestReady(std::move(request), std::move(callback));
+}
+
+void ChromeProfileRequestGenerator::OnRequestReady(
+    std::unique_ptr<ReportRequest> request,
+    ReportCallback callback) {
   ReportRequestQueue requests;
   requests.push(std::move(request));
   std::move(callback).Run(std::move(requests));

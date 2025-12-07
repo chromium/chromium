@@ -1,0 +1,13 @@
+{
+  "gn_args": {
+    "is_clang": true,
+    "is_component_build": true,
+    "is_debug": true,
+    "rust_force_head_revision": true,
+    "target_cpu": "x86",
+    "target_os": "win",
+    "treat_warnings_as_errors": false,
+    "use_reclient": false,
+    "use_siso": true
+  }
+}

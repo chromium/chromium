@@ -11,6 +11,8 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_site_info.h"
 
+@class LegacyTableViewCell;
+
 // Margins of the cell content.
 extern const CGFloat kCellMargin;
 
@@ -44,9 +46,9 @@ struct ManualFillCellView {
     kHeaderSeparator,
     // The view presenting the instructions on how to use virtual cards.
     kVirtualCardInstructions,
-    // A grey line to separate the virtual card instruction view from the rest
+    // A grey line to separate the card instruction view from the rest
     // of the cell.
-    kVirtualCardInstructionsSeparator,
+    kCardInstructionsSeparator,
     // Any other element not falling into one of the above types.
     kOther,
   };
@@ -77,17 +79,6 @@ void AppendVerticalConstraintsSpacingForViews(
     const std::vector<ManualFillCellView>& manual_fill_cell_views,
     UILayoutGuide* layout_guide);
 
-// Adds vertical constraints like `AppendVerticalConstraintsSpacingForViews`
-// above but using an `offset` to shift the first view's top anchor upwards when
-// displaying a password cell that is connected to the previous one.
-// TODO(crbug.com/326398845): Remove the `offset` parameter once the Keyboard
-// Accessory Upgrade feature has launched both on iPhone and iPad.
-void AppendVerticalConstraintsSpacingForViews(
-    NSMutableArray<NSLayoutConstraint*>* constraints,
-    const std::vector<ManualFillCellView>& manual_fill_cell_views,
-    UILayoutGuide* layout_guide,
-    CGFloat offset);
-
 // Creates a ManualFillCellView with each chip button of `chip_groups`,
 // and adds the ManualFillCellViews to `vertical_lead_views`.
 void AddChipGroupsToVerticalLeadViews(
@@ -109,34 +100,22 @@ void AppendHorizontalConstraintsForViews(
     NSArray<UIView*>* views,
     UILayoutGuide* layout_guide);
 
-// Adds constraints like `AppendHorizontalConstraintsForViews` above but also
-// applies the given constant `margin` at both ends of the whole row.
-void AppendHorizontalConstraintsForViews(
-    NSMutableArray<NSLayoutConstraint*>* constraints,
-    NSArray<UIView*>* views,
-    UILayoutGuide* layout_guide,
-    CGFloat margin);
-
 // Adds constraints like `AppendHorizontalConstraintsForViews` above
 // but with given `options`.
 void AppendHorizontalConstraintsForViews(
     NSMutableArray<NSLayoutConstraint*>* constraints,
     NSArray<UIView*>* views,
     UILayoutGuide* layout_guide,
-    CGFloat margin,
     AppendConstraints options);
 
 // Adds constraints like `AppendHorizontalConstraintsForViews` above,
 // but with the given `trailing_view`, which is a view that is attached to the
 // trailing side of the cell. The last view of `views` is therefore constraint
 // to not overlap `trailing_view` when valid (i.e., when not `nil`).
-// TODO(crbug.com/326398845): Remove the `margin` parameter once the Keyboard
-// Accessory Upgrade feature has launched both on iPhone and iPad.
 void AppendHorizontalConstraintsForViews(
     NSMutableArray<NSLayoutConstraint*>* constraints,
     NSArray<UIView*>* views,
     UILayoutGuide* layout_guide,
-    CGFloat margin,
     AppendConstraints options,
     UIView* trailing_view);
 
@@ -180,17 +159,13 @@ UIStackView* CreateHeaderView(UIView* icon,
                               UIButton* overflow_menu_button);
 
 // Creates and configures the overflow menu button that's displayed in the
-// cell's header.
-UIButton* CreateOverflowMenuButton();
+// cell's header. 'cell_index' is used as part of the accessibility identifier.
+UIButton* CreateOverflowMenuButton(NSInteger cell_index);
 
 // Creates a gray horizontal line separator. The gray line is added to the given
 // `container` and proper constraints are enabled to keep the line in the
 // desired location within the horizontal safe area.
 UIView* CreateGraySeparatorForContainer(UIView* container);
-
-// Returns YES if the button used to fill the current form with the manual fill
-// entity data should be shown.
-BOOL ShouldCreateAutofillFormButton(BOOL show_button);
 
 // Creates the button used to fill the current form with the manual fill entity
 // data.
@@ -205,6 +180,26 @@ UILayoutGuide* AddLayoutGuideToContentView(UIView* content_view,
 // Creates the attributed string containing the site name and potentially a host
 // subtitle for the site name label.
 NSMutableAttributedString* CreateSiteNameLabelAttributedText(
-    ManualFillSiteInfo* siteInfo);
+    ManualFillSiteInfo* site_info,
+    BOOL should_show_host);
+
+// Sets the cell's container and its overflow menu button's accessibility label
+// with the given `accessibility_context`. `accessibility_context` contains
+// information on the position of the cell and its title (if any). Adding this
+// information to the accessibility labels gives more context on the UI
+// elements, and, therefore, allows accessibility users to better differentiate
+// the different cells and their buttons.
+void GiveAccessibilityContextToCellAndButton(UIView* cell_container,
+                                             UIButton* overflow_menu_button,
+                                             UIButton* autofill_form_button,
+                                             NSString* accessibility_context);
+
+// Set up the cell accessibility elements so that the cell itself is accessible
+// as a container and the accessibility subviews are read in the right order.
+// Without setting the cell's accessibility elements, VoiceOver would read the
+// elements following the view's hierarchy, meaning that it would follow the
+// back to front order instead of the top to bottom order.
+void SetUpCellAccessibilityElements(LegacyTableViewCell* cell,
+                                    NSArray<UIView*>* accessibilityElements);
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_MANUAL_FILL_CELL_UTILS_H_

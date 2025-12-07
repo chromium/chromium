@@ -5,12 +5,10 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_NET_IPC_PARAM_TRAITS_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_NET_IPC_PARAM_TRAITS_H_
 
-#include <string>
-
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/pickle.h"
-#include "ipc/ipc_param_traits.h"
+#include "ipc/param_traits.h"
 #include "ipc/param_traits_macros.h"
 #include "net/base/auth.h"
 #include "net/base/host_port_pair.h"
@@ -60,7 +58,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -71,17 +68,16 @@ struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
-struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM) ParamTraits<net::HashValue> {
-  typedef net::HashValue param_type;
+struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
+    ParamTraits<net::SHA256HashValue> {
+  typedef net::SHA256HashValue param_type;
   static void Write(base::Pickle* m, const param_type& p);
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -92,7 +88,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* p);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -102,7 +97,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM) ParamTraits<net::IPAddress> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* p);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -113,7 +107,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -124,7 +117,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -135,7 +127,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -145,7 +136,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM) ParamTraits<net::SSLInfo> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -156,7 +146,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -167,7 +156,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -178,7 +166,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -189,7 +176,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -200,7 +186,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -210,7 +195,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM) ParamTraits<url::Origin> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* p);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -221,16 +205,21 @@ struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* p);
-  static void Log(const param_type& p, std::string* l);
 };
 
 }  // namespace IPC
 
 #endif  // INTERNAL_SERVICES_NETWORK_PUBLIC_CPP_NET_IPC_PARAM_TRAITS_H_
 
+// TODO(crbug.com/408018829): convert these to normal mojom EnumTraits
+// LINT.IfChange(CTPolicyCompliance)
 IPC_ENUM_TRAITS_MAX_VALUE(
     net::ct::CTPolicyCompliance,
     net::ct::CTPolicyCompliance::CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE)
+// LINT.ThenChange(/net/cert/ct_policy_status.h:CTPolicyCompliance)
+
+IPC_ENUM_TRAITS_MAX_VALUE(net::ct::CTRequirementsStatus,
+                          net::ct::CTRequirementsStatus::kMaxValue)
 
 IPC_ENUM_TRAITS(net::ProxyServer::Scheme)  // BitMask.
 
@@ -262,6 +251,7 @@ IPC_STRUCT_TRAITS_BEGIN(net::SignedCertificateTimestampAndStatus)
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(net::RedirectInfo)
+  IPC_STRUCT_TRAITS_MEMBER(original_initiator)
   IPC_STRUCT_TRAITS_MEMBER(status_code)
   IPC_STRUCT_TRAITS_MEMBER(new_method)
   IPC_STRUCT_TRAITS_MEMBER(new_url)

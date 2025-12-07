@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/autofill/core/browser/payments/credit_card_access_manager.h"
+
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
-#include "components/autofill/core/browser/payments/credit_card_access_manager.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
+#include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager_test_api.h"
-#include "components/autofill/core/browser/test_autofill_manager_waiter.h"
-#include "components/autofill/core/browser/test_browser_autofill_manager.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "content/public/test/browser_test.h"
 
 namespace autofill {
@@ -30,7 +30,7 @@ class CreditCardAccessManagerBrowserTest : public InProcessBrowserTest {
   class TestAutofillManager : public BrowserAutofillManager {
    public:
     explicit TestAutofillManager(ContentAutofillDriver* driver)
-        : BrowserAutofillManager(driver, "en-US") {}
+        : BrowserAutofillManager(driver) {}
 
     testing::AssertionResult WaitForFormsSeen(int min_num_awaited_calls) {
       return forms_seen_waiter_.Wait(min_num_awaited_calls);
@@ -70,9 +70,9 @@ class CreditCardAccessManagerBrowserTest : public InProcessBrowserTest {
     ContentAutofillDriver* autofill_driver =
         ContentAutofillDriver::GetForRenderFrameHost(
             web_contents()->GetPrimaryMainFrame());
-    return static_cast<BrowserAutofillManager&>(
-               autofill_driver->GetAutofillManager())
-        .GetCreditCardAccessManager();
+    return *static_cast<BrowserAutofillManager&>(
+                autofill_driver->GetAutofillManager())
+                .GetCreditCardAccessManager();
   }
 
  private:

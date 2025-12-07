@@ -4,7 +4,7 @@
 
 #include "chrome/browser/password_manager/android/account_chooser_dialog_android.h"
 
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
@@ -82,7 +82,7 @@ class AccountChooserDialogAndroidTest : public ChromeRenderViewHostTestHarness {
   AccountChooserDialogAndroidTest& operator=(
       const AccountChooserDialogAndroidTest&) = delete;
 
-  ~AccountChooserDialogAndroidTest() override {}
+  ~AccountChooserDialogAndroidTest() override = default;
 
   void SetUp() override;
 
@@ -130,7 +130,7 @@ AccountChooserDialogAndroidTest::CreateDialogManyAccounts() {
 
 TEST_F(AccountChooserDialogAndroidTest, SendsCredentialIfAuthNotAvailable) {
   // Auth is required to fill passwords in Android automotive.
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     GTEST_SKIP();
   }
 
@@ -147,7 +147,7 @@ TEST_F(AccountChooserDialogAndroidTest, SendsCredentialIfAuthNotAvailable) {
   EXPECT_CALL(credential_callback_, Run(Pointee(*form.get())));
 
   dialog->OnCredentialClicked(base::android::AttachCurrentThread(),
-                              nullptr /* obj */, 1 /* credential_item */,
+                              1 /* credential_item */,
                               false /* signin_button_clicked */);
 }
 
@@ -167,7 +167,7 @@ TEST_F(AccountChooserDialogAndroidTest, SendsCredentialIfAuthSuccessful) {
   EXPECT_CALL(credential_callback_, Run(Pointee(*form.get())));
 
   dialog->OnCredentialClicked(base::android::AttachCurrentThread(),
-                              nullptr /* obj */, 1 /* credential_item */,
+                              1 /* credential_item */,
                               false /* signin_button_clicked */);
 }
 
@@ -187,7 +187,7 @@ TEST_F(AccountChooserDialogAndroidTest, DoesntSendCredentialIfAuthFailed) {
   EXPECT_CALL(credential_callback_, Run(nullptr));
 
   dialog->OnCredentialClicked(base::android::AttachCurrentThread(),
-                              nullptr /* obj */, 1 /* credential_item */,
+                              1 /* credential_item */,
                               false /* signin_button_clicked */);
 }
 
@@ -203,7 +203,7 @@ TEST_F(AccountChooserDialogAndroidTest, CancelsAuthIfDestroyed) {
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 
   dialog->OnCredentialClicked(base::android::AttachCurrentThread(),
-                              nullptr /* obj */, 1 /* credential_item */,
+                              1 /* credential_item */,
                               false /* signin_button_clicked */);
 
   EXPECT_CALL(*authenticator_ptr, Cancel());

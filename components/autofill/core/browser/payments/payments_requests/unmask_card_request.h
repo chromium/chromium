@@ -6,7 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_REQUESTS_UNMASK_CARD_REQUEST_H_
 
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 
 namespace autofill {
@@ -15,17 +15,15 @@ namespace payments {
 class UnmaskCardRequest : public PaymentsRequest {
  public:
   UnmaskCardRequest(
-      const PaymentsNetworkInterface::UnmaskRequestDetails& request_details,
+      const UnmaskRequestDetails& request_details,
       const bool full_sync_enabled,
-      base::OnceCallback<void(
-          PaymentsAutofillClient::PaymentsRpcResult,
-          const PaymentsNetworkInterface::UnmaskResponseDetails&)> callback);
+      base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
+                              const UnmaskResponseDetails&)> callback);
   UnmaskCardRequest(const UnmaskCardRequest&) = delete;
   UnmaskCardRequest& operator=(const UnmaskCardRequest&) = delete;
   ~UnmaskCardRequest() override;
 
-  const PaymentsNetworkInterface::UnmaskResponseDetails&
-  GetResponseDetailsForTesting() {
+  const UnmaskResponseDetails& GetResponseDetailsForTesting() {
     return response_details_;
   }
 
@@ -50,13 +48,12 @@ class UnmaskCardRequest : public PaymentsRequest {
   // perform an authentication for a virtual card.
   bool CanPerformVirtualCardAuth();
 
-  PaymentsNetworkInterface::UnmaskRequestDetails request_details_;
+  UnmaskRequestDetails request_details_;
   const bool full_sync_enabled_;
-  base::OnceCallback<void(
-      PaymentsAutofillClient::PaymentsRpcResult,
-      const PaymentsNetworkInterface::UnmaskResponseDetails&)>
+  base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
+                          const UnmaskResponseDetails&)>
       callback_;
-  PaymentsNetworkInterface::UnmaskResponseDetails response_details_;
+  UnmaskResponseDetails response_details_;
 };
 
 }  // namespace payments

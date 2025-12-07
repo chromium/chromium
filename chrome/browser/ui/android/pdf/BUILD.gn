@@ -32,16 +32,22 @@ android_library("java") {
     ":java_resources",
     ":pdf_provider_java",
     "//base:base_java",
+    "//base:content_uri_utils_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/gsa:java",
     "//chrome/browser/profiles/android:java",
-    "//chrome/browser/ui/android/fakepdf:java",
     "//chrome/browser/ui/android/native_page:java",
     "//chrome/browser/util:java",
     "//components/browser_ui/styles/android:java",
     "//components/embedder_support/android:util_java",
-    "//content/public/android:content_java",
+    "//content/public/android:content_full_java",
+    "//content/public/android:content_main_dex_java",
+    "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_pdf_pdf_document_service_java",
+    "//third_party/androidx:androidx_pdf_pdf_viewer_fragment_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
     "//url:url_java",
@@ -71,11 +77,11 @@ robolectric_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/browser/profiles/android:java",
-    "//chrome/browser/ui/android/fakepdf:java",
     "//chrome/browser/ui/android/native_page:java",
     "//chrome/browser/util:java",
     "//components/embedder_support/android:util_java",
     "//content/public/android:content_full_java",
+    "//content/public/android:content_main_dex_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/hamcrest:hamcrest_java",
@@ -85,4 +91,26 @@ robolectric_library("junit") {
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",
   ]
+}
+
+android_library("javatests") {
+  testonly = true
+  sources = [ "java/src/org/chromium/chrome/browser/pdf/PdfPageTest.java" ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base/test:public_transit_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/native_page:java",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//chrome/test/android:chrome_java_transit",
+    "//net/android:net_java_test_support",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+  ]
+
+  data = [ "//pdf/test/data/" ]
 }

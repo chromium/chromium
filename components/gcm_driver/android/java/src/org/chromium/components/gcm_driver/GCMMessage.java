@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.PersistableBundle;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.json.JSONArray;
@@ -16,6 +15,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -27,6 +29,7 @@ import java.util.List;
  * Represents the contents of a GCM Message that is to be handled by the GCM Driver. Can be created
  * based on data received from GCM, or serialized and deserialized to and from a Bundle.
  */
+@NullMarked
 public class GCMMessage {
     @VisibleForTesting static final String VERSION = "v1";
     private static final String TAG = "GCMMessage";
@@ -43,13 +46,13 @@ public class GCMMessage {
     private static final String KEY_ORIGINAL_PRIORITY = "originalPriority";
     private static final String KEY_MESSAGE_ID = "messageId";
 
-    private final String mSenderId;
-    private final String mAppId;
+    private final @Nullable String mSenderId;
+    private final @Nullable String mAppId;
 
-    @Nullable private final String mMessageId;
+    private final @Nullable String mMessageId;
 
-    @Nullable private final String mCollapseKey;
-    @Nullable private final byte[] mRawData;
+    private final @Nullable String mCollapseKey;
+    private final byte @Nullable [] mRawData;
 
     /** A list of possible priority values the GCMMessage can have. */
     @IntDef({Priority.NONE, Priority.NORMAL, Priority.HIGH})
@@ -62,13 +65,13 @@ public class GCMMessage {
     }
 
     /** The priority at which this GCMMessage was originally sent. */
-    @Nullable private final String mOriginalPriority;
+    private final @Nullable String mOriginalPriority;
 
     /** Array that contains pairs of entries in the format of {key, value}. */
-    private final String[] mDataKeysAndValuesArray;
+    private final String @Nullable [] mDataKeysAndValuesArray;
 
     /** Creates a GCMMessage object based on data received from GCM. The extras will be filtered. */
-    public GCMMessage(String senderId, Bundle extras) {
+    public GCMMessage(@Nullable String senderId, @Nullable Bundle extras) {
         String bundleCollapseKey = "collapse_key";
         String bundleGcmplex = "com.google.ipc.invalidation.gcmmplex.";
         String bundleRawData = "rawData";
@@ -77,7 +80,7 @@ public class GCMMessage {
         String bundleOriginalPriority = "google.original_priority";
         String bundleMessageId = "google.message_id";
 
-        if (!extras.containsKey(bundleSubtype)) {
+        if (extras == null || !extras.containsKey(bundleSubtype)) {
             throw new IllegalArgumentException("Received push message with no subtype");
         }
 
@@ -89,7 +92,7 @@ public class GCMMessage {
         mOriginalPriority = extras.getString(bundleOriginalPriority); // May be null.
         mMessageId = extras.getString(bundleMessageId); // May be null.
 
-        List<String> dataKeysAndValues = new ArrayList<String>();
+        List<String> dataKeysAndValues = new ArrayList<>();
         for (String key : extras.keySet()) {
             if (key.equals(bundleSubtype)
                     || key.equals(bundleSenderId)
@@ -117,8 +120,7 @@ public class GCMMessage {
      * Creates a GCMMessage object based on the given bundle. Assumes that the bundle has previously
      * been created through {@link #toBundle}.
      */
-    @Nullable
-    public static GCMMessage createFromBundle(Bundle bundle) {
+    public static @Nullable GCMMessage createFromBundle(Bundle bundle) {
         return create(bundle, new BundleReader());
     }
 
@@ -126,8 +128,7 @@ public class GCMMessage {
      * Creates a GCMMessage object based on the given bundle. Assumes that the bundle has previously
      * been created through {@link #toPersistableBundle}.
      */
-    @Nullable
-    public static GCMMessage createFromPersistableBundle(PersistableBundle bundle) {
+    public static @Nullable GCMMessage createFromPersistableBundle(PersistableBundle bundle) {
         return create(bundle, new PersistableBundleReader());
     }
 
@@ -135,13 +136,12 @@ public class GCMMessage {
      * Creates a GCMMessage object based on the given JSONObject. Assumes that the JSONObject has
      * previously been created through {@link #toJSON}.
      */
-    @Nullable
-    public static GCMMessage createFromJSON(JSONObject messageJSON) {
+    public static @Nullable GCMMessage createFromJSON(JSONObject messageJSON) {
         return create(messageJSON, new JSONReader());
     }
 
-    @Nullable
-    private static <T> GCMMessage create(T in, Reader<T> reader) {
+    @NullUnmarked // https://github.com/uber/NullAway/issues/1138
+    private static <T> @Nullable GCMMessage create(T in, Reader<T> reader) {
         // validate() checks that the fields are present, which is different to the checks below
         // that check if required fields are not null.
         if (!validate(in, reader)) {
@@ -183,30 +183,28 @@ public class GCMMessage {
             mRawData = null;
         }
 
-        mDataKeysAndValuesArray = reader.readStringArray(source, KEY_DATA);
+        // Assume read array has no null values.
+        mDataKeysAndValuesArray = (String @Nullable []) reader.readStringArray(source, KEY_DATA);
     }
 
-    public String getSenderId() {
+    public @Nullable String getSenderId() {
         return mSenderId;
     }
 
-    public String getAppId() {
+    public @Nullable String getAppId() {
         return mAppId;
     }
 
-    @Nullable
-    public String getMessageId() {
+    public @Nullable String getMessageId() {
         return mMessageId;
     }
 
-    @Nullable
-    public String getCollapseKey() {
+    public @Nullable String getCollapseKey() {
         return mCollapseKey;
     }
 
     /** Callers are expected to not modify values in the returned byte array. */
-    @Nullable
-    public byte[] getRawData() {
+    public byte @Nullable [] getRawData() {
         return mRawData;
     }
 
@@ -226,7 +224,7 @@ public class GCMMessage {
     }
 
     /** Callers are expected to not modify values in the returned byte array. */
-    public String[] getDataKeysAndValuesArray() {
+    public String @Nullable [] getDataKeysAndValuesArray() {
         return mDataKeysAndValuesArray;
     }
 
@@ -305,12 +303,11 @@ public class GCMMessage {
     }
 
     private interface Reader<T> {
-        public boolean hasKey(T in, String key);
+        boolean hasKey(T in, String key);
 
-        public String readString(T in, String key);
+        @Nullable String readString(T in, String key);
 
-        @Nullable
-        public String[] readStringArray(T in, String key);
+        @Nullable String @Nullable [] readStringArray(T in, String key);
     }
 
     private static class BundleReader implements Reader<Bundle> {
@@ -320,12 +317,12 @@ public class GCMMessage {
         }
 
         @Override
-        public String readString(Bundle bundle, String key) {
+        public @Nullable String readString(Bundle bundle, String key) {
             return bundle.getString(key);
         }
 
         @Override
-        public String[] readStringArray(Bundle bundle, String key) {
+        public String @Nullable [] readStringArray(Bundle bundle, String key) {
             return bundle.getStringArray(key);
         }
     }
@@ -337,12 +334,12 @@ public class GCMMessage {
         }
 
         @Override
-        public String readString(PersistableBundle bundle, String key) {
+        public @Nullable String readString(PersistableBundle bundle, String key) {
             return bundle.getString(key);
         }
 
         @Override
-        public String[] readStringArray(PersistableBundle bundle, String key) {
+        public String @Nullable [] readStringArray(PersistableBundle bundle, String key) {
             return bundle.getStringArray(key);
         }
     }
@@ -354,7 +351,7 @@ public class GCMMessage {
         }
 
         @Override
-        public String readString(JSONObject jsonObj, String key) {
+        public @Nullable String readString(JSONObject jsonObj, String key) {
             if (JSONObject.NULL.equals(jsonObj.opt(key))) {
                 return null;
             }
@@ -362,12 +359,12 @@ public class GCMMessage {
         }
 
         @Override
-        public String[] readStringArray(JSONObject jsonObj, String key) {
+        public String @Nullable [] readStringArray(JSONObject jsonObj, String key) {
             JSONArray jsonArray = jsonObj.optJSONArray(key);
             if (jsonArray == null) {
                 return null;
             }
-            List<String> strings = new ArrayList<String>(jsonArray.length());
+            List<String> strings = new ArrayList<>(jsonArray.length());
             for (int i = 0; i < jsonArray.length(); i++) {
                 strings.add(jsonArray.optString(i));
             }
@@ -376,55 +373,56 @@ public class GCMMessage {
     }
 
     private interface Writer<T> {
-        public T createOutputObject();
+        T createOutputObject();
 
-        public void writeString(T out, String key, String value);
+        void writeString(T out, String key, @Nullable String value);
 
-        public void writeStringArray(T out, String key, String[] value);
+        void writeStringArray(T out, String key, String @Nullable [] value);
     }
 
-    private class PersistableBundleWriter implements Writer<PersistableBundle> {
+    private static class PersistableBundleWriter implements Writer<PersistableBundle> {
         @Override
         public PersistableBundle createOutputObject() {
             return new PersistableBundle();
         }
 
         @Override
-        public void writeString(PersistableBundle bundle, String key, String value) {
+        public void writeString(PersistableBundle bundle, String key, @Nullable String value) {
             bundle.putString(key, value);
         }
 
         @Override
-        public void writeStringArray(PersistableBundle bundle, String key, String[] value) {
+        public void writeStringArray(
+                PersistableBundle bundle, String key, String @Nullable [] value) {
             bundle.putStringArray(key, value);
         }
     }
 
-    private class BundleWriter implements Writer<Bundle> {
+    private static class BundleWriter implements Writer<Bundle> {
         @Override
         public Bundle createOutputObject() {
             return new Bundle();
         }
 
         @Override
-        public void writeString(Bundle bundle, String key, String value) {
+        public void writeString(Bundle bundle, String key, @Nullable String value) {
             bundle.putString(key, value);
         }
 
         @Override
-        public void writeStringArray(Bundle bundle, String key, String[] value) {
+        public void writeStringArray(Bundle bundle, String key, String @Nullable [] value) {
             bundle.putStringArray(key, value);
         }
     }
 
-    private class JSONWriter implements Writer<JSONObject> {
+    private static class JSONWriter implements Writer<JSONObject> {
         @Override
         public JSONObject createOutputObject() {
             return new JSONObject();
         }
 
         @Override
-        public void writeString(JSONObject jsonObj, String key, String value) {
+        public void writeString(JSONObject jsonObj, String key, @Nullable String value) {
             try {
                 if (value == null) {
                     jsonObj.put(key, JSONObject.NULL);
@@ -437,7 +435,10 @@ public class GCMMessage {
         }
 
         @Override
-        public void writeStringArray(JSONObject jsonObj, String key, String[] value) {
+        public void writeStringArray(JSONObject jsonObj, String key, String @Nullable [] value) {
+            if (value == null) {
+                return;
+            }
             JSONArray jsonArray = new JSONArray();
             try {
                 for (String str : value) {

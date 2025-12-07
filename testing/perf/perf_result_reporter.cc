@@ -91,10 +91,9 @@ void PerfResultReporter::AddResult(const std::string& metric_suffix,
   } else if (info.units == "ns") {
     time = value.InNanoseconds();
   } else {
-    NOTREACHED_IN_MIGRATION()
-        << "Attempted to use AddResult with a TimeDelta when "
-        << "registered unit for metric " << metric_suffix << " is "
-        << info.units;
+    NOTREACHED() << "Attempted to use AddResult with a TimeDelta when "
+                 << "registered unit for metric " << metric_suffix << " is "
+                 << info.units;
   }
 
   PrintResult(metric_basename_, metric_suffix, story_name_, time, info.units,

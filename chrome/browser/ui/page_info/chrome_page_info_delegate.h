@@ -23,6 +23,7 @@ class PageSpecificContentSettings;
 namespace permissions {
 class ObjectPermissionContextBase;
 class PermissionDecisionAutoBlocker;
+class PermissionActionsHistory;
 }  // namespace permissions
 
 namespace safe_browsing {
@@ -53,8 +54,8 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
       const url::Origin& origin,
       const std::optional<url::Origin>& requesting_origin) override;
 #if !BUILDFLAG(IS_ANDROID)
-  std::optional<std::u16string> GetFpsOwner(const GURL& site_url) override;
-  bool IsFpsManaged() override;
+  std::optional<std::u16string> GetRwsOwner(const GURL& site_url) override;
+  bool IsRwsManaged(const GURL& site_url) override;
   bool CreateInfoBarDelegate() override;
   std::unique_ptr<content_settings::CookieControlsController>
   CreateCookieControlsController() override;
@@ -63,12 +64,14 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
   // page, depending on context.
   void ShowSiteSettings(const GURL& site_url) override;
   void ShowCookiesSettings() override;
-  void ShowAllSitesSettingsFilteredByFpsOwner(
-      const std::u16string& fps_owner) override;
+  void ShowAllSitesSettingsFilteredByRwsOwner(
+      const std::u16string& rws_owner) override;
+  void ShowSyncSettings() override;
   void OpenCookiesDialog() override;
   void OpenCertificateDialog(net::X509Certificate* certificate) override;
   void OpenConnectionHelpCenterPage(const ui::Event& event) override;
   void OpenSafetyTipHelpCenterPage() override;
+  void OpenSafeBrowsingHelpCenterPage(const ui::Event& event) override;
   void OpenContentSettingsExceptions(
       ContentSettingsType content_settings_type) override;
   void OnPageInfoActionOccurred(page_info::PageInfoAction action) override;
@@ -78,6 +81,7 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
   std::u16string GetSubjectName(const GURL& url) override;
   permissions::PermissionDecisionAutoBlocker* GetPermissionDecisionAutoblocker()
       override;
+  permissions::PermissionActionsHistory* GetPermissionActionsHistory() override;
   StatefulSSLHostStateDelegate* GetStatefulSSLHostStateDelegate() override;
   HostContentSettingsMap* GetContentSettings() override;
   bool IsSubresourceFilterActivated(const GURL& site_url) override;
@@ -94,6 +98,7 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
 #endif
 
   bool IsHttpsFirstModeEnabled() override;
+  bool IsIncognitoProfile() override;
 
  private:
   Profile* GetProfile() const;

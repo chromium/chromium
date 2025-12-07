@@ -6,16 +6,18 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_RTP_RECEIVER_H_
 
 #include <optional>
+#include <vector>
 
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_contributing_source.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_receive_parameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_synchronization_source.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_transceiver_direction.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_script_transform.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -36,6 +38,7 @@ class RTCEncodedVideoUnderlyingSink;
 class RTCInsertableStreams;
 class RTCPeerConnection;
 class RTCRtpCapabilities;
+class RTCRtpScriptTransform;
 class RTCRtpTransceiver;
 class RTCStatsReport;
 
@@ -83,12 +86,18 @@ class RTCRtpReceiver final : public ScriptWrappable,
   ScriptPromise<RTCStatsReport> getStats(ScriptState*);
   RTCInsertableStreams* createEncodedStreams(ScriptState*, ExceptionState&);
 
+  RTCRtpScriptTransform* transform() { return transform_; }
+  void setTransform(RTCRtpScriptTransform*, ExceptionState&);
+
   RTCRtpReceiverPlatform* platform_receiver();
   MediaKind kind() const;
   MediaStreamVector streams() const;
   void set_streams(MediaStreamVector streams);
   void set_transceiver(RTCRtpTransceiver*);
   void set_transport(RTCDtlsTransport*);
+
+  V8RTCRtpTransceiverDirection TransceiverDirection();
+  std::optional<V8RTCRtpTransceiverDirection> TransceiverCurrentDirection();
 
   // ExecutionContextLifecycleObserver
   void ContextDestroyed() override;
@@ -98,29 +107,21 @@ class RTCRtpReceiver final : public ScriptWrappable,
  private:
   // Insertable Streams audio support methods
   RTCInsertableStreams* CreateEncodedAudioStreams(ScriptState*);
-  void RegisterEncodedAudioStreamCallback();
   void UnregisterEncodedAudioStreamCallback();
   void SetAudioUnderlyingSource(
       RTCEncodedAudioUnderlyingSource* new_underlying_source,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   void SetAudioUnderlyingSink(
       RTCEncodedAudioUnderlyingSink* new_underlying_sink);
-  void OnAudioFrameFromDepacketizer(
-      std::unique_ptr<webrtc::TransformableAudioFrameInterface>
-          encoded_audio_frame);
 
   // Insertable Streams video support methods
   RTCInsertableStreams* CreateEncodedVideoStreams(ScriptState*);
-  void RegisterEncodedVideoStreamCallback();
   void UnregisterEncodedVideoStreamCallback();
   void SetVideoUnderlyingSource(
       RTCEncodedVideoUnderlyingSource* new_underlying_source,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   void SetVideoUnderlyingSink(
       RTCEncodedVideoUnderlyingSink* new_underlying_sink);
-  void OnVideoFrameFromDepacketizer(
-      std::unique_ptr<webrtc::TransformableVideoFrameInterface>
-          encoded_video_frame);
 
   void LogMessage(const std::string& message);
 
@@ -147,6 +148,7 @@ class RTCRtpReceiver final : public ScriptWrappable,
 
   THREAD_CHECKER(thread_checker_);
   Member<RTCInsertableStreams> encoded_streams_;
+  Member<RTCRtpScriptTransform> transform_;
 
   // Insertable Streams support for audio.
   base::Lock audio_underlying_source_lock_;

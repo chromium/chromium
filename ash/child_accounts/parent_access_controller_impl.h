@@ -43,7 +43,7 @@ class ASH_EXPORT ParentAccessControllerImpl : public ParentAccessController,
     kTimeChangeInSession = 2,
     kTimezoneChange = 3,
     kAddUserLoginScreen = 4,
-    kReauhLoginScreen = 5,
+    kReauhLoginScreen = 5,  // Deprecated
     kMaxValue = kReauhLoginScreen,
   };
 

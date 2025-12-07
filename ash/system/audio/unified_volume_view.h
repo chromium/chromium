@@ -5,6 +5,8 @@
 #ifndef ASH_SYSTEM_AUDIO_UNIFIED_VOLUME_VIEW_H_
 #define ASH_SYSTEM_AUDIO_UNIFIED_VOLUME_VIEW_H_
 
+#include <array>
+
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/ash_export.h"
@@ -51,14 +53,14 @@ class ASH_EXPORT UnifiedVolumeView : public UnifiedSliderView,
 
   // References to the icons that correspond to different volume levels used in
   // the `QuickSettingsSlider`. Defined as a public member to be used in tests.
-  static constexpr const gfx::VectorIcon* kQsVolumeLevelIcons[] = {
+  static constexpr std::array<const gfx::VectorIcon*, 3> kQsVolumeLevelIcons = {
       &kUnifiedMenuVolumeMuteIcon,    // Muted.
       &kUnifiedMenuVolumeMediumIcon,  // Medium volume.
       &kUnifiedMenuVolumeHighIcon,    // High volume.
   };
 
   // The maximum index of `kQsVolumeLevelIcons`.
-  static constexpr int kQsVolumeLevels = std::size(kQsVolumeLevelIcons) - 1;
+  static constexpr int kQsVolumeLevels = kQsVolumeLevelIcons.size() - 1;
 
   IconButton* more_button() { return more_button_; }
 

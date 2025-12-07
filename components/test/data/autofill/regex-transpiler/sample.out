@@ -1,0 +1,154 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_REGEX_PATTERNS_INL_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_REGEX_PATTERNS_INL_H_
+
+#include <array>
+#include <string_view>
+
+#include "base/containers/fixed_flat_map.h"
+#include "base/containers/fixed_flat_set.h"
+#include "base/containers/span.h"
+
+#include "components/autofill/core/browser/form_parsing/regex_patterns.h"
+#include "components/autofill/core/common/dense_set.h"
+#include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
+
+namespace autofill {
+
+// Wrapper of MatchPatternRef's private constructor.
+// It's a friend of MatchPatternRef.
+constexpr MatchPatternRef MakeMatchPatternRef(
+    bool is_supplementary,
+    MatchPatternRef::UnderlyingType index) {
+  return MatchPatternRef(is_supplementary, index);
+}
+
+// A pair of const char* used as keys in the `kPatternMap`.
+struct NameAndLanguage {
+  using StringViewPair = std::pair<std::string_view, std::string_view>;
+
+  // By this implicit conversion, the below comparator can be called for
+  // NameAndLanguageComparator and StringViewPairs alike.
+  constexpr operator StringViewPair() const {
+    return {std::string_view(name), std::string_view(lang)};
+  }
+
+  const char* name;  // A pattern name.
+  const char* lang;  // A language code.
+};
+
+// A less-than relation on NameAndLanguage and/or std::string_view pairs.
+struct NameAndLanguageComparator {
+  using is_transparent = void;
+
+  // By way of the implicit conversion from NameAndLanguage to StringViewPair,
+  // this function also accepts NameAndLanguage.
+  //
+  // To implement constexpr lexicographic comparison of const char* with the
+  // standard library, we need to compute both the lengths of the strings before
+  // we can actually compare the strings. A simple way of doing so is to convert
+  // each const char* to a std::string_view and then comparing the
+  // std::string_views.
+  //
+  // This is exactly what the comparator does: when an argument is a
+  // NameAndLanguage, it is implicitly converted to a StringViewPair, which
+  // is then compared to the other StringViewPair.
+  constexpr bool operator()(
+      NameAndLanguage::StringViewPair a,
+      NameAndLanguage::StringViewPair b) const {
+    int cmp = a.first.compare(b.first);
+    return cmp < 0 || (cmp == 0 && a.second.compare(b.second) < 0);
+  }
+};
+
+// A less-than relation on const char* and std::string_view, in particular for
+// language codes.
+struct LanguageComparator {
+  using is_transparent = void;
+
+  // This function also accepts const char* by implicit conversion to
+  // std::string_view.
+  //
+  // This comparator facilitates constexpr comparison among const char*
+  // similarly to the above NameAndLanguageComparator.
+  constexpr bool operator()(std::string_view a, std::string_view b) const {
+    return a.compare(b) < 0;
+  }
+};
+
+// The patterns. Referred to by their index in MatchPatternRef.
+constexpr auto kPatterns = std::to_array<MatchingPattern>({
+/*[0]=*/MatchingPattern{
+  .positive_pattern = u"something german",
+  .negative_pattern = u"negative pattern",
+  .match_field_attributes = DenseSet<MatchAttribute>{MatchAttribute::kLabel,MatchAttribute::kName},
+  .form_control_types = DenseSet<FormControlType>{FormControlType::kInputText,FormControlType::kInputNumber},
+  .feature = OptionalRegexFeatureWithState{RegexFeature::kSomeFeatureFlag, false},
+},
+/*[1]=*/MatchingPattern{
+  .positive_pattern = u"something updated german",
+  .negative_pattern = u"negative pattern",
+  .match_field_attributes = DenseSet<MatchAttribute>{MatchAttribute::kLabel,MatchAttribute::kName},
+  .form_control_types = DenseSet<FormControlType>{FormControlType::kInputText,FormControlType::kInputNumber},
+  .feature = OptionalRegexFeatureWithState{RegexFeature::kSomeFeatureFlag, true},
+},
+/*[2]=*/MatchingPattern{
+  .positive_pattern = u"english",
+  .negative_pattern = u"",
+  .match_field_attributes = DenseSet<MatchAttribute>{MatchAttribute::kLabel,MatchAttribute::kName},
+  .form_control_types = DenseSet<FormControlType>{FormControlType::kInputText,FormControlType::kInputNumber},
+  .feature = OptionalRegexFeatureWithState(),
+},
+/*[3]=*/MatchingPattern{
+  .positive_pattern = u"pattern 2's regex",
+  .negative_pattern = u"",
+  .match_field_attributes = DenseSet<MatchAttribute>{MatchAttribute::kLabel},
+  .form_control_types = DenseSet<FormControlType>{FormControlType::kInputText},
+  .feature = OptionalRegexFeatureWithState(),
+},
+});
+
+// The patterns for field types and languages.
+// They are sorted by the patterns MatchingPattern::positive_score.
+constexpr MatchPatternRef kPatterns__0__PATTERN_1[] {MakeMatchPatternRef(false, 0), MakeMatchPatternRef(false, 1), MakeMatchPatternRef(false, 2)};
+constexpr MatchPatternRef kPatterns__0__PATTERN_1__de[] {MakeMatchPatternRef(false, 0), MakeMatchPatternRef(false, 1), MakeMatchPatternRef(true, 2)};
+constexpr MatchPatternRef kPatterns__0__PATTERN_1__en[] {MakeMatchPatternRef(false, 2)};
+constexpr MatchPatternRef kPatterns__0__PATTERN_2[] {MakeMatchPatternRef(false, 3)};
+constexpr MatchPatternRef kPatterns__0__PATTERN_2__en[] {MakeMatchPatternRef(false, 3)};
+
+// The lookup map for field types and langs.
+//
+// The key type in the map is essentially a pair of const char*.
+// It also allows for lookup by std::string_view pairs (because the
+// comparator transparently accepts std::string_view pairs).
+//
+// The value type is an array of spans of MatchPatternRefs. The
+// indices of the array correspond to the pattern source: the patterns
+// from the first input JSON file are stored at index 0, etc.
+//
+// This design exploits that the different JSON files by and large
+// contain the same pattern names and languages. If instead we
+// generated an individual map for each JSON file, then, assuming four
+// JSON files, the duplicate keys would cause 60% overhead, which
+// adds up to >10K binary size on Android.
+constexpr auto kPatternMap = base::MakeFixedFlatMap<NameAndLanguage, std::array<base::span<const MatchPatternRef>, 1>>({
+  {{"PATTERN_1", ""}, {kPatterns__0__PATTERN_1}},
+  {{"PATTERN_1", "de"}, {kPatterns__0__PATTERN_1__de}},
+  {{"PATTERN_1", "en"}, {kPatterns__0__PATTERN_1__en}},
+  {{"PATTERN_2", ""}, {kPatterns__0__PATTERN_2}},
+  {{"PATTERN_2", "en"}, {kPatterns__0__PATTERN_2__en}},
+}, NameAndLanguageComparator());
+
+// The set of language codes across all language source ids and
+// pattern names.
+constexpr auto kLanguages = base::MakeFixedFlatSet<const char*>({
+  "de", "en"
+}, LanguageComparator());
+
+}  // namespace autofill
+
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_REGEX_PATTERNS_INL_H_
+

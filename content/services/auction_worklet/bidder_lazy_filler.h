@@ -17,6 +17,7 @@
 #include "content/services/auction_worklet/context_recycler.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
+#include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-forward.h"
 #include "v8/include/v8-forward.h"
 
 class GURL;
@@ -51,7 +52,14 @@ class CONTENT_EXPORT InterestGroupLazyFiller : public PersistedLazyFiller {
       v8::Local<v8::Object> object,
       base::RepeatingCallback<bool(const std::string&)> is_ad_excluded,
       base::RepeatingCallback<bool(const std::string&)>
-          is_ad_component_excluded);
+          is_ad_component_excluded,
+      base::RepeatingCallback<bool(
+          const std::string& ad_render_url,
+          base::optional_ref<const std::string> buyer_reporting_id,
+          base::optional_ref<const std::string> buyer_and_seller_reporting_id,
+          base::optional_ref<const std::string>
+              selected_buyer_and_seller_reporting_id)>
+          is_reporting_id_set_excluded);
 
   void Reset() override;
 
@@ -64,6 +72,12 @@ class CONTENT_EXPORT InterestGroupLazyFiller : public PersistedLazyFiller {
       v8::Local<v8::Object>& object,
       std::string_view name,
       base::RepeatingCallback<bool(const std::string&)> is_ad_excluded,
+      base::RepeatingCallback<bool(const std::string&,
+                                   base::optional_ref<const std::string>,
+                                   base::optional_ref<const std::string>,
+                                   base::optional_ref<const std::string>)>
+          is_reporting_id_set_excluded,
+      std::optional<size_t> selectable_reporting_ids_limit,
       const std::vector<blink::InterestGroup::Ad>& ads,
       v8::Local<v8::ObjectTemplate>& lazy_filler_template);
 
@@ -136,6 +150,7 @@ class CONTENT_EXPORT InterestGroupLazyFiller : public PersistedLazyFiller {
   raw_ptr<const GURL> trusted_bidding_signals_url_ = nullptr;
   raw_ptr<const mojom::BidderWorkletNonSharedParams>
       bidder_worklet_non_shared_params_ = nullptr;
+  const bool creative_scanning_enabled_;
   const raw_ptr<AuctionV8Logger> v8_logger_;
 };
 
@@ -148,7 +163,7 @@ class CONTENT_EXPORT BiddingBrowserSignalsLazyFiller
  public:
   explicit BiddingBrowserSignalsLazyFiller(AuctionV8Helper* v8_helper);
 
-  void ReInitialize(mojom::BiddingBrowserSignals* bidder_browser_signals,
+  void ReInitialize(blink::mojom::BiddingBrowserSignals* bidder_browser_signals,
                     base::Time auction_start_time);
 
   // Returns success/failure.
@@ -166,7 +181,8 @@ class CONTENT_EXPORT BiddingBrowserSignalsLazyFiller
       const v8::PropertyCallbackInfo<v8::Value>& info,
       PrevWinsType prev_wins_type);
 
-  raw_ptr<mojom::BiddingBrowserSignals> bidder_browser_signals_ = nullptr;
+  raw_ptr<blink::mojom::BiddingBrowserSignals> bidder_browser_signals_ =
+      nullptr;
   base::Time auction_start_time_;
 };
 

@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/test/bind.h"
@@ -19,30 +20,87 @@
 #include "base/test/task_environment.h"
 #include "base/token.h"
 #include "build/build_config.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "media/capture/mojom/video_capture.mojom-blink.h"
 #include "media/capture/mojom/video_capture_buffer.mojom-blink.h"
 #include "media/capture/mojom/video_capture_types.mojom-blink.h"
+#include "media/video/mock_gpu_video_accelerator_factories.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
-#include "third_party/blink/renderer/platform/video_capture/gpu_memory_buffer_test_support.h"
+#include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::InSequence;
-using ::testing::Invoke;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Mock;
 using ::testing::SaveArg;
 using ::testing::WithArgs;
 
 namespace blink {
+
+namespace {
+
+class TestingPlatformSupportWithGpuFactories
+    : public IOTaskRunnerTestingPlatformSupport {
+ public:
+  TestingPlatformSupportWithGpuFactories();
+  ~TestingPlatformSupportWithGpuFactories() override;
+  media::GpuVideoAcceleratorFactories* GetGpuFactories() override;
+
+  void SetGpuCapabilities(gpu::Capabilities* capabilities);
+  void SetSharedImageCapabilities(
+      const gpu::SharedImageCapabilities& capabilities);
+
+ private:
+  scoped_refptr<gpu::TestSharedImageInterface> sii_;
+  std::unique_ptr<media::MockGpuVideoAcceleratorFactories> gpu_factories_;
+  base::Thread media_thread_;
+  raw_ptr<gpu::Capabilities> capabilities_ = nullptr;
+};
+
+TestingPlatformSupportWithGpuFactories::TestingPlatformSupportWithGpuFactories()
+    : sii_(base::MakeRefCounted<gpu::TestSharedImageInterface>()),
+      gpu_factories_(new media::MockGpuVideoAcceleratorFactories(sii_.get())),
+      media_thread_("TestingMediaThread") {
+  gpu_factories_->SetVideoFrameOutputFormat(
+      media::GpuVideoAcceleratorFactories::OutputFormat::NV12);
+  media_thread_.Start();
+  ON_CALL(*gpu_factories_, GetTaskRunner())
+      .WillByDefault(testing::Return(media_thread_.task_runner()));
+  ON_CALL(*gpu_factories_, ContextCapabilities()).WillByDefault([&]() {
+    return capabilities_;
+  });
+}
+
+TestingPlatformSupportWithGpuFactories::
+    ~TestingPlatformSupportWithGpuFactories() {
+  media_thread_.Stop();
+}
+
+media::GpuVideoAcceleratorFactories*
+TestingPlatformSupportWithGpuFactories::GetGpuFactories() {
+  return gpu_factories_.get();
+}
+
+void TestingPlatformSupportWithGpuFactories::SetGpuCapabilities(
+    gpu::Capabilities* capabilities) {
+  capabilities_ = capabilities;
+}
+
+void TestingPlatformSupportWithGpuFactories::SetSharedImageCapabilities(
+    const gpu::SharedImageCapabilities& shared_image_capabilities) {
+  sii_->SetCapabilities(shared_image_capabilities);
+}
+
+}  // namespace
 
 void RunEmptyFormatsCallback(
     media::mojom::blink::VideoCaptureHost::GetDeviceSupportedFormatsCallback&
@@ -58,9 +116,9 @@ class MockMojoVideoCaptureHost : public media::mojom::blink::VideoCaptureHost {
  public:
   MockMojoVideoCaptureHost() : released_buffer_count_(0) {
     ON_CALL(*this, GetDeviceSupportedFormatsMock(_, _, _))
-        .WillByDefault(WithArgs<2>(Invoke(RunEmptyFormatsCallback)));
+        .WillByDefault(WithArgs<2>(RunEmptyFormatsCallback));
     ON_CALL(*this, GetDeviceFormatsInUseMock(_, _, _))
-        .WillByDefault(WithArgs<2>(Invoke(RunEmptyFormatsCallback)));
+        .WillByDefault(WithArgs<2>(RunEmptyFormatsCallback));
     ON_CALL(*this, ReleaseBuffer(_, _, _))
         .WillByDefault(InvokeWithoutArgs(
             this, &MockMojoVideoCaptureHost::increase_released_buffer_count));
@@ -181,10 +239,12 @@ class VideoCaptureImplTest : public ::testing::Test {
         }));
 
     platform_->SetGpuCapabilities(&fake_capabilities_);
-
-    video_capture_impl_->SetGpuMemoryBufferSupportForTesting(
-        std::make_unique<FakeGpuMemoryBufferSupport>());
   }
+
+#if DCHECK_IS_ON()
+  ~VideoCaptureImplTest() override { SetIsBeforeThreadCreatedForTest(); }
+#endif
+
   VideoCaptureImplTest(const VideoCaptureImplTest&) = delete;
   VideoCaptureImplTest& operator=(const VideoCaptureImplTest&) = delete;
 
@@ -200,17 +260,21 @@ class VideoCaptureImplTest : public ::testing::Test {
                void(const Vector<media::VideoCaptureFormat>&));
 
   void StartCapture(int client_id, const media::VideoCaptureParams& params) {
-    const auto state_update_callback = WTF::BindRepeating(
+    const auto state_update_callback = BindRepeating(
         &VideoCaptureImplTest::OnStateUpdate, base::Unretained(this));
-    const auto frame_ready_callback = WTF::BindRepeating(
+    const auto frame_ready_callback = blink::BindRepeating(
         &VideoCaptureImplTest::OnFrameReady, base::Unretained(this));
-    const auto frame_dropped_callback = WTF::BindRepeating(
+    const auto frame_dropped_callback = BindRepeating(
         &VideoCaptureImplTest::OnFrameDropped, base::Unretained(this));
 
-    video_capture_impl_->StartCapture(
-        client_id, params, state_update_callback, frame_ready_callback,
-        /*sub_capture_target_version_cb=*/base::DoNothing(),
-        frame_dropped_callback);
+    VideoCaptureCallbacks video_capture_callbacks;
+    video_capture_callbacks.state_update_cb = state_update_callback;
+    video_capture_callbacks.deliver_frame_cb = frame_ready_callback;
+    video_capture_callbacks.frame_dropped_cb = frame_dropped_callback;
+    video_capture_callbacks.capture_version_cb = base::DoNothing();
+
+    video_capture_impl_->StartCapture(client_id, params,
+                                      std::move(video_capture_callbacks));
   }
 
   void StopCapture(int client_id) {
@@ -251,12 +315,12 @@ class VideoCaptureImplTest : public ::testing::Test {
 
   void GetDeviceSupportedFormats() {
     video_capture_impl_->GetDeviceSupportedFormats(
-        WTF::BindOnce(&VideoCaptureImplTest::OnDeviceSupportedFormats,
-                      base::Unretained(this)));
+        BindOnce(&VideoCaptureImplTest::OnDeviceSupportedFormats,
+                 base::Unretained(this)));
   }
 
   void GetDeviceFormatsInUse() {
-    video_capture_impl_->GetDeviceFormatsInUse(WTF::BindOnce(
+    video_capture_impl_->GetDeviceFormatsInUse(BindOnce(
         &VideoCaptureImplTest::OnDeviceFormatsInUse, base::Unretained(this)));
   }
 
@@ -269,7 +333,7 @@ class VideoCaptureImplTest : public ::testing::Test {
   const base::UnguessableToken session_id_ = base::UnguessableToken::Create();
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  ScopedTestingPlatformSupport<TestingPlatformSupportForGpuMemoryBuffer>
+  ScopedTestingPlatformSupport<TestingPlatformSupportWithGpuFactories>
       platform_;
   std::unique_ptr<VideoCaptureImpl> video_capture_impl_;
   MockMojoVideoCaptureHost mock_video_capture_host_;
@@ -437,13 +501,12 @@ TEST_F(VideoCaptureImplTest, BufferReceived_GpuMemoryBufferHandle) {
   EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STARTED));
   EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STOPPED));
   EXPECT_CALL(*this, OnFrameReady(_, _))
-      .WillOnce(
-          Invoke([&](scoped_refptr<media::VideoFrame> f, base::TimeTicks t) {
-            // Hold on a reference to the video frame to emulate that we're
-            // actively using the buffer.
-            frame = f;
-            frame_ready_event.Signal();
-          }));
+      .WillOnce([&](scoped_refptr<media::VideoFrame> f, base::TimeTicks t) {
+        // Hold on a reference to the video frame to emulate that we're
+        // actively using the buffer.
+        frame = f;
+        frame_ready_event.Signal();
+      });
   EXPECT_CALL(mock_video_capture_host_, DoStart(_, session_id_, params_small_));
   EXPECT_CALL(mock_video_capture_host_, Stop(_));
   EXPECT_CALL(mock_video_capture_host_, ReleaseBuffer(_, kArbitraryBufferId, _))
@@ -455,12 +518,11 @@ TEST_F(VideoCaptureImplTest, BufferReceived_GpuMemoryBufferHandle) {
   //   2. create a SharedImage from the GpuMemoryBuffer on |media_thread_|
   //   3. invoke OnFrameReady callback on |testing_io_thread|
   auto create_and_queue_buffer = [&]() {
-    gfx::GpuMemoryBufferHandle gmb_handle;
-    gmb_handle.type = gfx::NATIVE_PIXMAP;
-    gmb_handle.id = gfx::GpuMemoryBufferId(kArbitraryBufferId);
-
     StartCapture(0, params_small_);
-    SimulateGpuMemoryBufferCreated(kArbitraryBufferId, std::move(gmb_handle));
+    SimulateGpuMemoryBufferCreated(
+        kArbitraryBufferId, gpu::TestSharedImageInterface::CreateGMBHandle(
+                                viz::MultiPlaneFormat::kNV12,
+                                params_small_.requested_format.frame_size));
     SimulateBufferReceived(BufferDescription(
         kArbitraryBufferId, params_small_.requested_format.frame_size,
         media::PIXEL_FORMAT_NV12));
@@ -561,8 +623,7 @@ TEST_F(VideoCaptureImplTest, BufferReceivedAfterStop_GpuMemoryBufferHandle) {
   const int kArbitraryBufferId = 12;
 
   gfx::GpuMemoryBufferHandle gmb_handle;
-  gmb_handle.type = gfx::NATIVE_PIXMAP;
-  gmb_handle.id = gfx::GpuMemoryBufferId(kArbitraryBufferId);
+  gmb_handle.type = gfx::SHARED_MEMORY_BUFFER;
 
   SetSharedImageCapabilities(/* shared_image_d3d = */ true);
   EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STARTED));
@@ -750,8 +811,7 @@ TEST_F(VideoCaptureImplTest,
   const int kArbitraryBufferId = 16;
 
   gfx::GpuMemoryBufferHandle gmb_handle;
-  gmb_handle.type = gfx::NATIVE_PIXMAP;
-  gmb_handle.id = gfx::GpuMemoryBufferId(kArbitraryBufferId);
+  gmb_handle.type = gfx::SHARED_MEMORY_BUFFER;
 
   InSequence s;
   EXPECT_CALL(mock_video_capture_host_, DoStart(_, session_id_, params_small_))
@@ -789,7 +849,8 @@ TEST_F(VideoCaptureImplTest,
 TEST_F(VideoCaptureImplTest, StartTimeout) {
   base::HistogramTester histogram_tester;
 
-  EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_ERROR));
+  EXPECT_CALL(*this,
+              OnStateUpdate(blink::VIDEO_CAPTURE_STATE_ERROR_START_TIMEOUT));
   EXPECT_CALL(mock_video_capture_host_, DoStart(_, session_id_, params_small_));
 
   ON_CALL(mock_video_capture_host_, DoStart(_, _, _))
@@ -806,37 +867,6 @@ TEST_F(VideoCaptureImplTest, StartTimeout) {
   histogram_tester.ExpectUniqueSample(
       "Media.VideoCapture.StartErrorCode",
       media::VideoCaptureError::kVideoCaptureImplTimedOutOnStart, 1);
-}
-
-TEST_F(VideoCaptureImplTest, StartTimeout_FeatureDisabled) {
-  base::HistogramTester histogram_tester;
-  feature_list_.InitAndDisableFeature(kTimeoutHangingVideoCaptureStarts);
-
-  EXPECT_CALL(mock_video_capture_host_, DoStart(_, session_id_, params_small_));
-  ON_CALL(mock_video_capture_host_, DoStart(_, _, _))
-      .WillByDefault(InvokeWithoutArgs([]() {
-        // Do nothing.
-      }));
-
-  StartCapture(0, params_small_);
-  // Wait past the deadline, nothing should happen.
-  task_environment_.FastForwardBy(2 * VideoCaptureImpl::kCaptureStartTimeout);
-
-  // Finally callback that the capture has started, should respond.
-  EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STARTED));
-  video_capture_impl_->OnStateChanged(
-      media::mojom::blink::VideoCaptureResult::NewState(
-          media::mojom::VideoCaptureState::STARTED));
-
-  EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STOPPED));
-  EXPECT_CALL(mock_video_capture_host_, Stop(_));
-  StopCapture(0);
-
-  histogram_tester.ExpectTotalCount("Media.VideoCapture.Start", 1);
-  histogram_tester.ExpectUniqueSample("Media.VideoCapture.StartOutcome",
-                                      VideoCaptureStartOutcome::kStarted, 1);
-  histogram_tester.ExpectUniqueSample("Media.VideoCapture.StartErrorCode",
-                                      media::VideoCaptureError::kNone, 1);
 }
 
 TEST_F(VideoCaptureImplTest, ErrorBeforeStart) {
@@ -882,14 +912,13 @@ TEST_F(VideoCaptureImplTest, FallbacksToPremappedGmbsWhenNotSupported) {
   EXPECT_CALL(mock_video_capture_host_, DoStart(_, session_id_, params_small_));
   EXPECT_CALL(mock_video_capture_host_, Stop(_));
   EXPECT_CALL(mock_video_capture_host_, ReleaseBuffer(_, kArbitraryBufferId, _))
-      .WillOnce(
-          Invoke([&](const base::UnguessableToken& device_id, int32_t buffer_id,
-                     const media::VideoCaptureFeedback& fb) {
-            // Hold on a reference to the video frame to emulate that we're
-            // actively using the buffer.
-            feedback = fb;
-            frame_ready_event.Signal();
-          }));
+      .WillOnce([&](const base::UnguessableToken& device_id, int32_t buffer_id,
+                    const media::VideoCaptureFeedback& fb) {
+        // Hold on a reference to the video frame to emulate that we're
+        // actively using the buffer.
+        feedback = fb;
+        frame_ready_event.Signal();
+      });
 
   // The first half of the test: Create and queue the GpuMemoryBufferHandle.
   // VideoCaptureImpl would:
@@ -898,8 +927,7 @@ TEST_F(VideoCaptureImplTest, FallbacksToPremappedGmbsWhenNotSupported) {
   //   3. invoke OnFrameReady callback on |testing_io_thread|
   auto create_and_queue_buffer = [&]() {
     gfx::GpuMemoryBufferHandle gmb_handle;
-    gmb_handle.type = gfx::NATIVE_PIXMAP;
-    gmb_handle.id = gfx::GpuMemoryBufferId(kArbitraryBufferId);
+    gmb_handle.type = gfx::SHARED_MEMORY_BUFFER;
 
     StartCapture(0, params_small_);
     SimulateGpuMemoryBufferCreated(kArbitraryBufferId, std::move(gmb_handle));

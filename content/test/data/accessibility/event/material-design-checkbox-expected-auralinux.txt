@@ -1,0 +1,59 @@
+=== Accessibility tree before go() pass 1 ===
+[document web] name='Material Web Checkbox Toggle Event' focused
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[check box] name='Test Checkbox' checkable checkable:true
+++++++++[section]
+++++++++[section]
+=== End accessibility tree ===
+STATE-CHANGE:CHECKED:TRUE role=ROLE_CHECK_BOX name='Test Checkbox' CHECKED,ENABLED,FOCUSABLE,SENSITIVE,SHOWING,VISIBLE,CHECKABLE
+=== Accessibility tree after go() pass 1 ===
+[document web] name='Material Web Checkbox Toggle Event' focused
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[check box] name='Test Checkbox' checked checkable checkable:true <<<<<< CHANGED
+++++++++[section]
+++++++++[section]
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 2 ===
+[document web] name='Material Web Checkbox Toggle Event' focused
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[check box] name='Test Checkbox' checked checkable checkable:true
+++++++++[section]
+++++++++[section]
+=== End accessibility tree ===
+STATE-CHANGE:CHECKED:FALSE role=ROLE_CHECK_BOX name='Test Checkbox' ENABLED,FOCUSABLE,SENSITIVE,SHOWING,VISIBLE,CHECKABLE
+=== Accessibility tree after go() pass 2 ===
+[document web] name='Material Web Checkbox Toggle Event' focused
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[check box] name='Test Checkbox' checkable checkable:true <<<<<< CHANGED
+++++++++[section]
+++++++++[section]
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 3 ===
+[document web] name='Material Web Checkbox Toggle Event' focused
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[check box] name='Test Checkbox' checkable checkable:true
+++++++++[section]
+++++++++[section]
+=== End accessibility tree ===
+STATE-CHANGE:INDETERMINATE:TRUE role=ROLE_CHECK_BOX name='Test Checkbox' ENABLED,FOCUSABLE,SENSITIVE,SHOWING,VISIBLE,INDETERMINATE,CHECKABLE
+=== Accessibility tree after go() pass 3 ===
+[document web] name='Material Web Checkbox Toggle Event' focused
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[check box] name='Test Checkbox' indeterminate checkable checkable:true <<<<<< CHANGED
+++++++++[section]
+++++++++[section]
+=== End accessibility tree ===

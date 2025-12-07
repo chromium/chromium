@@ -10,8 +10,7 @@ AXActionTarget::Type NullAXActionTarget::GetType() const {
   return AXActionTarget::Type::kNull;
 }
 
-bool NullAXActionTarget::PerformAction(
-    const ui::AXActionData& action_data) const {
+bool NullAXActionTarget::PerformAction(const AXActionData& action_data) const {
   return false;
 }
 

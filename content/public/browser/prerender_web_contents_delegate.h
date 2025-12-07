@@ -22,13 +22,14 @@ class CONTENT_EXPORT PrerenderWebContentsDelegate : public WebContentsDelegate {
                               const OpenURLParams& params,
                               base::OnceCallback<void(NavigationHandle&)>
                                   navigation_handle_callback) override;
-  void AddNewContents(WebContents* source,
-                      std::unique_ptr<WebContents> new_contents,
-                      const GURL& target_url,
-                      WindowOpenDisposition disposition,
-                      const blink::mojom::WindowFeatures& window_features,
-                      bool user_gesture,
-                      bool* was_blocked) override;
+  WebContents* AddNewContents(
+      WebContents* source,
+      std::unique_ptr<WebContents> new_contents,
+      const GURL& target_url,
+      WindowOpenDisposition disposition,
+      const blink::mojom::WindowFeatures& window_features,
+      bool user_gesture,
+      bool* was_blocked) override;
   void ActivateContents(WebContents* contents) override;
   void LoadingStateChanged(WebContents* source,
                            bool should_show_loading_ui) override;
@@ -54,14 +55,14 @@ class CONTENT_EXPORT PrerenderWebContentsDelegate : public WebContentsDelegate {
   void OnDidBlockNavigation(
       WebContents* web_contents,
       const GURL& blocked_url,
-      const GURL& initiator_url,
       blink::mojom::NavigationBlockedReason reason) override;
   bool ShouldAllowRunningInsecureContent(WebContents* web_contents,
                                          bool allowed_per_prefs,
                                          const url::Origin& origin,
                                          const GURL& resource_url) override;
   PreloadingEligibility IsPrerender2Supported(
-      WebContents& web_contents) override;
+      WebContents& web_contents,
+      PreloadingTriggerType trigger_type) override;
 };
 
 }  // namespace content

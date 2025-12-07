@@ -26,11 +26,13 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownKeyValue;
+import org.chromium.base.test.util.DisabledTest;
+import org.chromium.components.autofill.DropdownKeyValue;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /** Unit test for {@link DropdownFieldView}. */
@@ -53,6 +55,14 @@ public final class DropdownFieldViewUnitTest {
         return new PropertyModel.Builder(DROPDOWN_ALL_KEYS)
                 .with(IS_REQUIRED, false)
                 .with(DROPDOWN_KEY_VALUE_LIST, keyValues)
+                .with(LABEL, "label")
+                .build();
+    }
+
+    private PropertyModel buildPropertyModelNoValues() {
+        return new PropertyModel.Builder(DROPDOWN_ALL_KEYS)
+                .with(IS_REQUIRED, false)
+                .with(DROPDOWN_KEY_VALUE_LIST, Collections.emptyList())
                 .with(LABEL, "label")
                 .build();
     }
@@ -127,5 +137,36 @@ public final class DropdownFieldViewUnitTest {
         field.getDropdown().setSelection(0);
         assertFalse(field.validate());
         assertFalse(TextUtils.isEmpty(field.getErrorLabelForTests().getText()));
+    }
+
+    /** Test that the content description for dropdown elements is correctly set. */
+    @Test
+    @DisabledTest(message = "Flaky test. See https://crbug.com/416758468")
+    public void testContentDescriptionIsCorrect() {
+        PropertyModel model = buildDefaultPropertyModel();
+        DropdownFieldView field = attachDropdownFieldView(model);
+
+        assertTrue(field.getDropdown().isImportantForAccessibility());
+        assertFalse(field.getLabel().isImportantForAccessibility());
+
+        assertEquals("label/value1", field.getDropdown().getContentDescription());
+        model.set(VALUE, "value2");
+        assertEquals("label/value2", field.getDropdown().getContentDescription());
+    }
+
+    /**
+     * Test that the content description for dropdown elements is correctly set even if option list
+     * is empty.
+     */
+    @Test
+    @DisabledTest(message = "Flaky test. See https://crbug.com/416761636")
+    public void testContentDescriptionIsCorrectDropdownListEmpty() {
+        PropertyModel model = buildPropertyModelNoValues();
+        DropdownFieldView field = attachDropdownFieldView(model);
+
+        assertTrue(field.getDropdown().isImportantForAccessibility());
+        assertFalse(field.getLabel().isImportantForAccessibility());
+
+        assertEquals("label", field.getDropdown().getContentDescription());
     }
 }

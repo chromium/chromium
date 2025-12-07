@@ -13,8 +13,8 @@ bool StructTraits<blink::mojom::blink::SerializedBlob::DataView,
                   scoped_refptr<blink::BlobDataHandle>>::
     Read(blink::mojom::blink::SerializedBlob::DataView data,
          scoped_refptr<blink::BlobDataHandle>* out) {
-  WTF::String uuid;
-  WTF::String type;
+  blink::String uuid;
+  blink::String type;
   if (!data.ReadUuid(&uuid) || !data.ReadContentType(&type))
     return false;
   *out = blink::BlobDataHandle::Create(

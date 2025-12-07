@@ -4,6 +4,8 @@
 
 source_set("browser") {
   sources = [
+    "issue_manager.cc",
+    "issue_manager.h",
     "media_router.h",
     "media_router_base.cc",
     "media_router_base.h",
@@ -22,14 +24,14 @@ source_set("browser") {
     "mirroring_media_controller_host_impl.h",
     "presentation/browser_presentation_connection_proxy.cc",
     "presentation/browser_presentation_connection_proxy.h",
+    "presentation/controller_presentation_service_delegate_impl.cc",
+    "presentation/controller_presentation_service_delegate_impl.h",
     "presentation/local_presentation_manager.cc",
     "presentation/local_presentation_manager.h",
     "presentation/local_presentation_manager_factory.cc",
     "presentation/local_presentation_manager_factory.h",
     "presentation/presentation_media_sinks_observer.cc",
     "presentation/presentation_media_sinks_observer.h",
-    "presentation/presentation_service_delegate_impl.cc",
-    "presentation/presentation_service_delegate_impl.h",
     "presentation/presentation_service_delegate_observers.cc",
     "presentation/presentation_service_delegate_observers.h",
     "presentation/receiver_presentation_service_delegate_impl.cc",
@@ -63,8 +65,10 @@ source_set("browser") {
     "//url",
   ]
   public_deps = [
+    "//build:android_buildflags",
     "//components/media_router/common",
     "//components/media_router/common/mojom:media_router",
+    "//extensions/buildflags",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
@@ -82,8 +86,6 @@ source_set("browser") {
     deps += [ "android:jni_headers" ]
   } else {
     sources += [
-      "issue_manager.cc",
-      "issue_manager.h",
       "issues_observer.cc",
       "issues_observer.h",
       "log_util.cc",
@@ -114,7 +116,10 @@ source_set("test_support") {
     "//content/public/browser",
     "//testing/gmock",
   ]
-  public_deps = [ ":browser" ]
+  public_deps = [
+    ":browser",
+    "//build:android_buildflags",
+  ]
 }
 
 source_set("unit_tests") {

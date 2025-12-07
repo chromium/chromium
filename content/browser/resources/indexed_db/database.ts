@@ -5,16 +5,16 @@
 import './transaction_table.js';
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
+import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
-import type {BucketId} from './bucket_id.mojom-webui.js';
+import type {BucketClientInfo} from './bucket_client_info.mojom-webui.js';
 import {getTemplate} from './database.html.js';
 import {IdbInternalsHandler} from './indexed_db_internals.mojom-webui.js';
 import type {IdbDatabaseMetadata, IdbTransactionMetadata} from './indexed_db_internals_types.mojom-webui.js';
-import type {IndexedDbTransactionTable} from './transaction_table.js';
+import type {ExecutionContextToken} from './tokens.mojom-webui.js';
 
 export class IndexedDbDatabase extends CustomElement {
-  idbBucketId: BucketId;
+  clients: BucketClientInfo[];
 
   static override get template() {
     return getTemplate();
@@ -33,7 +33,7 @@ export class IndexedDbDatabase extends CustomElement {
     const activeConnectionElement = this.$a('.connection-count.active');
     const pendingConnectionElement = this.$a('.connection-count.pending');
 
-    openDatabasesElement.textContent = mojoString16ToString(metadata.name);
+    openDatabasesElement.textContent = metadata.name;
 
     openConnectionElement.hidden = metadata.connectionCount === 0n;
     openConnectionElement.querySelector('.value')!.textContent =
@@ -83,8 +83,14 @@ export class IndexedDbDatabase extends CustomElement {
     clientMetadata.querySelector('.client-id')!.textContent = clientToken;
     clientMetadata.querySelector('.control.inspect')!.addEventListener(
         'click', () => {
+          // If there are non-zero clients, inspecting any of them should have
+          // the same effect.
+          const client = this.getClientsMatchingToken(clientToken).pop();
+          if (!client) {
+            return;
+          }
           IdbInternalsHandler.getRemote()
-              .inspectClient(this.idbBucketId, clientToken)
+              .inspectClient(client)
               .then(message => {
                 if (message.error) {
                   console.error(message.error);
@@ -93,13 +99,44 @@ export class IndexedDbDatabase extends CustomElement {
               .catch(errorMsg => console.error(errorMsg));
         });
     const transactionTable =
-        document.createElement('indexeddb-transaction-table') as
-        IndexedDbTransactionTable;
+        document.createElement('indexeddb-transaction-table');
     transactionTable.transactions = transactions;
     const container = document.createElement('div');
     container.appendChild(clientMetadata);
     container.appendChild(transactionTable);
     return container;
+  }
+
+  // Returns the list of clients whose `documentToken` or `contextToken` matches
+  // the supplied `token`.
+  private getClientsMatchingToken(token: string): BucketClientInfo[] {
+    const matchedClients: BucketClientInfo[] = [];
+    for (const client of this.clients) {
+      const tokenValue = client.documentToken ?
+          client.documentToken.value :
+          this.getExecutionContextTokenValue(client.contextToken);
+      if (tokenValue && tokenValue === token) {
+        matchedClients.push(client);
+      }
+    }
+    return matchedClients;
+  }
+
+  private getExecutionContextTokenValue(token: ExecutionContextToken):
+      UnguessableToken {
+    if (token.localFrameToken) {
+      return token.localFrameToken.value;
+    }
+    if (token.dedicatedWorkerToken) {
+      return token.dedicatedWorkerToken.value;
+    }
+    if (token.serviceWorkerToken) {
+      return token.serviceWorkerToken.value;
+    }
+    if (token.sharedWorkerToken) {
+      return token.sharedWorkerToken.value;
+    }
+    throw new Error('Unrecognized ExecutionContextToken');
   }
 }
 

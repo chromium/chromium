@@ -27,7 +27,7 @@ AtomicString CSSTransition::transitionProperty() const {
   return transition_property_.GetCSSPropertyName().ToAtomicString();
 }
 
-String CSSTransition::playState() const {
+V8AnimationPlayState CSSTransition::playState() const {
   // TODO(1043778): Flush is likely not required once the CSSTransition is
   // disassociated from its owning element.
   if (GetDocument())

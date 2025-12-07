@@ -5,16 +5,15 @@
 #ifndef MOJO_CORE_CHANNEL_POSIX_H_
 #define MOJO_CORE_CHANNEL_POSIX_H_
 
-#include "mojo/core/channel.h"
-
 #include "base/containers/circular_deque.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/message_loop/message_pump_for_io.h"
+#include "base/message_loop/io_watcher.h"
 #include "base/synchronization/lock.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
+#include "mojo/core/channel.h"
 
 namespace mojo {
 namespace core {
@@ -23,7 +22,7 @@ class MessageView;
 
 class ChannelPosix : public Channel,
                      public base::CurrentThread::DestructionObserver,
-                     public base::MessagePumpForIO::FdWatcher {
+                     public base::IOWatcher::FdWatcher {
  public:
   ChannelPosix(Delegate* delegate,
                ConnectionParams connection_params,
@@ -42,8 +41,7 @@ class ChannelPosix : public Channel,
                               size_t num_handles,
                               const void* extra_header,
                               size_t extra_header_size,
-                              std::vector<PlatformHandle>* handles,
-                              bool* deferred) override;
+                              std::vector<PlatformHandle>* handles) override;
   bool GetReadPlatformHandlesForIpcz(
       size_t num_handles,
       std::vector<PlatformHandle>& handles) override;
@@ -63,8 +61,9 @@ class ChannelPosix : public Channel,
   );
   virtual void OnWriteError(Error error) LOCKS_EXCLUDED(write_lock_);
 
-  void RejectUpgradeOffer();
-  void AcceptUpgradeOffer();
+  // Keeps the functionality to reject upgrade offers for old (pre-ipcz) clients
+  // that ignored the advertised capabilities and offered an upgrade anyway.
+  void RejectPreIpczUpgradeOffer();
 
   // Keeps the Channel alive at least until explicit shutdown on the IO thread.
   scoped_refptr<Channel> self_;
@@ -78,10 +77,9 @@ class ChannelPosix : public Channel,
   // base::CurrentThread::DestructionObserver:
   void WillDestroyCurrentMessageLoop() override;
 
-  // base::MessagePumpForIO::FdWatcher:
-  void OnFileCanReadWithoutBlocking(int fd) override;
-  void OnFileCanWriteWithoutBlocking(int fd) override
-      LOCKS_EXCLUDED(write_lock_);
+  // base::IOWatcher::FdWatcher:
+  void OnFdReadable(int fd) override;
+  void OnFdWritable(int fd) override LOCKS_EXCLUDED(write_lock_);
 
   // Attempts to write a message directly to the channel. If the full message
   // cannot be written, it's queued and a wait is initiated to write the message
@@ -94,19 +92,6 @@ class ChannelPosix : public Channel,
               ;
   bool FlushOutgoingMessagesNoLock() EXCLUSIVE_LOCKS_REQUIRED(write_lock_);
 
-#if !BUILDFLAG(IS_NACL)
-  bool WriteOutgoingMessagesWithWritev() EXCLUSIVE_LOCKS_REQUIRED(write_lock_);
-
-  // FlushOutgoingMessagesWritevNoLock is equivalent to
-  // FlushOutgoingMessagesNoLock except it looks for opportunities to make
-  // only a single write syscall by using writev(2) instead of write(2). In
-  // most situations this is very straight forward; however, when a handle
-  // needs to be transferred we cannot use writev(2) and instead will fall
-  // back to the standard write.
-  bool FlushOutgoingMessagesWritevNoLock()
-      EXCLUSIVE_LOCKS_REQUIRED(write_lock_);
-#endif  // !BUILDFLAG(IS_NACL)
-
 #if BUILDFLAG(IS_IOS)
   bool CloseHandles(const int* fds, size_t num_fds)
       LOCKS_EXCLUDED(fds_to_close_lock_);
@@ -118,9 +103,9 @@ class ChannelPosix : public Channel,
   // These watchers must only be accessed on the IO thread. These are locked for
   // allowing concurrent nullptr checking the unique_ptr but not dereferencing
   // outside of the `io_task_runner_`.
-  std::unique_ptr<base::MessagePumpForIO::FdWatchController> read_watcher_
+  std::unique_ptr<base::IOWatcher::FdWatch> read_watcher_
       GUARDED_BY(write_lock_);
-  std::unique_ptr<base::MessagePumpForIO::FdWatchController> write_watcher_
+  std::unique_ptr<base::IOWatcher::FdWatch> write_watcher_
       GUARDED_BY(write_lock_);
 
   base::circular_deque<base::ScopedFD> incoming_fds_;

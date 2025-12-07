@@ -41,7 +41,8 @@ class DelegatedInkPointPixelTestHelper {
                              float diameter,
                              SkColor4f color,
                              base::TimeTicks timestamp,
-                             const gfx::RectF& presentation_area);
+                             const gfx::RectF& presentation_area,
+                             const std::uint64_t render_pass_id);
 
   void CreateAndSendMetadataFromLastPoint();
   void CreateAndSendMetadataFromLastPoint(int32_t pointer_id);

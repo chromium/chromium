@@ -77,8 +77,9 @@ void OneGoogleBarService::SetLanguageCodeForTesting(
   language_code_ = language_code;
 }
 
-bool OneGoogleBarService::SetAdditionalQueryParams(const std::string& value) {
-  return loader_->SetAdditionalQueryParams(value);
+void OneGoogleBarService::SetAdditionalQueryParams(
+    const std::map<std::string, std::string>& params) {
+  return loader_->SetAdditionalQueryParams(params);
 }
 
 void OneGoogleBarService::SigninStatusChanged() {

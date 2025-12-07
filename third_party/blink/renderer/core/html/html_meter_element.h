@@ -64,11 +64,11 @@ class CORE_EXPORT HTMLMeterElement final : public HTMLElement {
 
   bool CanContainRangeEndPoint() const override;
 
+  void AdjustStyle(ComputedStyleBuilder& builder) override;
+
   void Trace(Visitor*) const override;
 
  private:
-  bool AreAuthorShadowsAllowed() const override { return false; }
-
   bool IsLabelable() const override { return true; }
 
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;

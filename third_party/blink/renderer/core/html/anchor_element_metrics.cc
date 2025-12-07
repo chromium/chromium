@@ -11,7 +11,6 @@
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/anchor_element_metrics_sender.h"
@@ -34,7 +33,7 @@ namespace {
 
 // Returns the document of the main frame of the frame tree containing `anchor`.
 // This could be null if `anchor` is in an out-of-process iframe.
-Document* GetTopDocument(const HTMLAnchorElement& anchor) {
+Document* GetTopDocument(const HTMLAnchorElementBase& anchor) {
   LocalFrame* frame = anchor.GetDocument().GetFrame();
   if (!frame) {
     return nullptr;
@@ -49,13 +48,13 @@ Document* GetTopDocument(const HTMLAnchorElement& anchor) {
 }
 
 // Whether the element is inside an iframe.
-bool IsInIFrame(const HTMLAnchorElement& anchor_element) {
+bool IsInIFrame(const HTMLAnchorElementBase& anchor_element) {
   Frame* frame = anchor_element.GetDocument().GetFrame();
   return frame && !frame->IsMainFrame();
 }
 
 // Whether the anchor element contains an image element.
-bool ContainsImage(const HTMLAnchorElement& anchor_element) {
+bool ContainsImage(const HTMLAnchorElementBase& anchor_element) {
   for (Node* node = FlatTreeTraversal::FirstChild(anchor_element); node;
        node = FlatTreeTraversal::Next(*node, &anchor_element)) {
     if (IsA<HTMLImageElement>(*node))
@@ -65,14 +64,14 @@ bool ContainsImage(const HTMLAnchorElement& anchor_element) {
 }
 
 // Whether the link target has the same host as the root document.
-bool IsSameHost(const HTMLAnchorElement& anchor_element,
+bool IsSameHost(const HTMLAnchorElementBase& anchor_element,
                 const KURL& anchor_href) {
   Document* top_document = GetTopDocument(anchor_element);
   if (!top_document) {
     return false;
   }
-  StringView source_host = top_document->Url().HostView();
-  StringView target_host = anchor_href.HostView();
+  StringView source_host = top_document->Url().Host();
+  StringView target_host = anchor_href.Host();
   return source_host == target_host;
 }
 
@@ -119,10 +118,10 @@ bool IsStringIncrementedByOne(const String& source, const String& target) {
 
   int source_number =
       CharactersToInt(StringView(source, left, source_right - left),
-                      WTF::NumberParsingOptions(), /*ok=*/nullptr);
+                      NumberParsingOptions(), /*ok=*/nullptr);
   int target_number =
       CharactersToInt(StringView(target, left, target_right - left),
-                      WTF::NumberParsingOptions(), /*ok=*/nullptr);
+                      NumberParsingOptions(), /*ok=*/nullptr);
 
   // The second number should increment by one and the rest of the strings
   // should be the same.
@@ -131,7 +130,7 @@ bool IsStringIncrementedByOne(const String& source, const String& target) {
 }
 
 // Extract source and target link url, and return IsStringIncrementedByOne().
-bool IsUrlIncrementedByOne(const HTMLAnchorElement& anchor_element,
+bool IsUrlIncrementedByOne(const HTMLAnchorElementBase& anchor_element,
                            const KURL& anchor_href) {
   if (!IsSameHost(anchor_element, anchor_href)) {
     return false;
@@ -156,7 +155,7 @@ gfx::Rect AbsoluteElementBoundingBoxRect(const LayoutObject& layout_object) {
   return ToEnclosingRect(layout_object.LocalToAbsoluteRect(UnionRect(rects)));
 }
 
-bool HasTextSibling(const HTMLAnchorElement& anchor_element) {
+bool HasTextSibling(const HTMLAnchorElementBase& anchor_element) {
   for (auto* text = DynamicTo<Text>(anchor_element.previousSibling()); text;
        text = DynamicTo<Text>(text->previousSibling())) {
     if (!text->ContainsOnlyWhitespaceOrEmpty()) {
@@ -180,9 +179,9 @@ bool HasTextSibling(const HTMLAnchorElement& anchor_element) {
 // object. Note that this implementation can lead to collisions if an element is
 // destroyed and a new one is created with the same address. We don't mind this
 // issue as the anchor ID is only used for metric collection.
-uint32_t AnchorElementId(const HTMLAnchorElement& element) {
-  uint32_t id = WTF::GetHash(&element);
-  if (WTF::IsHashTraitsEmptyOrDeletedValue<HashTraits<uint32_t>>(id)) {
+uint32_t AnchorElementId(const HTMLAnchorElementBase& element) {
+  uint32_t id = GetHash(&element);
+  if (IsHashTraitsEmptyOrDeletedValue<HashTraits<uint32_t>>(id)) {
     // Anchor IDs are used in HashMaps, so we can't have sentinel values. If the
     // hash happens to be a sentinel value, we return an arbitrary value
     // instead.
@@ -192,7 +191,7 @@ uint32_t AnchorElementId(const HTMLAnchorElement& element) {
 }
 
 mojom::blink::AnchorElementMetricsPtr CreateAnchorElementMetrics(
-    const HTMLAnchorElement& anchor_element) {
+    const HTMLAnchorElementBase& anchor_element) {
   const KURL anchor_href = anchor_element.Href();
   if (!anchor_href.ProtocolIsInHTTPFamily()) {
     return nullptr;

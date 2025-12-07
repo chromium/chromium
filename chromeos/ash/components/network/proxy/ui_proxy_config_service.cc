@@ -120,7 +120,7 @@ std::optional<base::Value::Dict> OncValueForManualProxyList(
     const net::ProxyList& for_http,
     const net::ProxyList& for_https,
     const net::ProxyList& fallback,
-    const net::ProxyBypassRules& bypass_rules) {
+    const net::ProxyHostMatchingRules& bypass_rules) {
   if (for_http.IsEmpty() && for_https.IsEmpty() && fallback.IsEmpty()) {
     return std::nullopt;
   }
@@ -198,8 +198,7 @@ ProxyPrefs::ProxyMode OncStringToProxyMode(const std::string& onc_proxy_type) {
   if (onc_proxy_type == ::onc::proxy::kManual) {
     return ProxyPrefs::ProxyMode::MODE_FIXED_SERVERS;
   }
-  NOTREACHED_IN_MIGRATION() << "Unsupported ONC proxy type: " << onc_proxy_type;
-  return ProxyPrefs::ProxyMode::MODE_DIRECT;
+  NOTREACHED() << "Unsupported ONC proxy type: " << onc_proxy_type;
 }
 
 }  // namespace

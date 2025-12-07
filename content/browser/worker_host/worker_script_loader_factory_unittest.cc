@@ -57,7 +57,8 @@ class WorkerScriptLoaderFactoryTest : public testing::Test {
 
     // Set up a service worker host for the shared worker.
     service_worker_handle_ = std::make_unique<ServiceWorkerMainResourceHandle>(
-        helper_->context_wrapper(), base::DoNothing());
+        helper_->context_wrapper(), base::DoNothing(),
+        /*fetch_event_client_id=*/"");
   }
 
  protected:
@@ -122,7 +123,7 @@ TEST_F(WorkerScriptLoaderFactoryTest, ServiceWorkerContainerHost) {
       service_worker_handle_->scoped_service_worker_client()
           ->CommitResponseAndRelease(
               /*rfh_id=*/std::nullopt, PolicyContainerPolicies(),
-              /*coep_reporter=*/{}, ukm::kInvalidSourceId);
+              /*coep_reporter=*/{}, /*dip_reporter=*/{}, ukm::kInvalidSourceId);
   (*service_worker_handle_->scoped_service_worker_client())
       ->SetContainerReady();
   factory->GetScriptLoader()->OnFetcherCallbackCalled();

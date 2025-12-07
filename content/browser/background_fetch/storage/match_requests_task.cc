@@ -79,17 +79,17 @@ void MatchRequestsTask::DidOpenCache(int64_t trace_id,
 
 void MatchRequestsTask::DidGetAllMatchedEntries(
     int64_t trace_id,
-    blink::mojom::GetAllMatchedEntriesResultPtr result) {
+    blink::mojom::CacheStorageCache::GetAllMatchedEntriesResult result) {
   TRACE_EVENT_WITH_FLOW0("CacheStorage",
                          "MatchRequestsTask::DidGetAllMatchedEntries",
                          TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN);
 
-  if (result->is_status()) {
+  if (!result.has_value()) {
     SetStorageErrorAndFinish(BackgroundFetchStorageError::kCacheStorageError);
     return;
   }
 
-  auto& entries = result->get_entries();
+  auto& entries = result.value();
   // If we tried to match without filtering, there should always be entries.
   if (entries.empty()) {
     if (!match_params_->FilterByRequest())
@@ -140,7 +140,8 @@ bool MatchRequestsTask::ShouldMatchRequest(
   // Ignore the request if the queries don't match.
   if ((!match_params_->cache_query_options() ||
        !match_params_->cache_query_options()->ignore_search) &&
-      request->url.query() != match_params_->request_to_match()->url.query()) {
+      request->url.GetQuery() !=
+          match_params_->request_to_match()->url.GetQuery()) {
     return false;
   }
 

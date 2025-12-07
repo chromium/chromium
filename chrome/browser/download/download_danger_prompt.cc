@@ -5,10 +5,14 @@
 #include "chrome/browser/download/download_danger_prompt.h"
 
 #include "chrome/browser/download/download_item_warning_data.h"
+#include "components/download/public/common/download_item.h"
+#include "components/safe_browsing/buildflags.h"
+#include "content/public/browser/download_item_utils.h"
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "components/download/public/common/download_item.h"
-#include "content/public/browser/download_item_utils.h"
+#endif
 
 // static
 void DownloadDangerPrompt::RecordDownloadWarningEvent(

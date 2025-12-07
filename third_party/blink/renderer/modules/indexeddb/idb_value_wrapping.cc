@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/indexeddb/idb_value_wrapping.h"
 
 #include <cstdint>
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
@@ -85,16 +82,6 @@ bool ShouldTransmitCompressed(size_t uncompressed_length,
     return false;
   }
 
-  // Don't keep compressed if decompressed size is large. Snappy doesn't have
-  // native support for streamed decoding, so decompressing requires
-  // O(uncompressed_length) memory more than handling an uncompressed value
-  // would.
-  // TODO(estade): implement framing as described in
-  // https://github.com/google/snappy/blob/main/framing_format.txt
-  if (compressed_length > 256000U) {
-    return false;
-  }
-
   return true;
 }
 
@@ -105,7 +92,9 @@ IDBValueWrapper::IDBValueWrapper(
     v8::Local<v8::Value> value,
     SerializedScriptValue::SerializeOptions::WasmSerializationPolicy
         wasm_policy,
-    ExceptionState& exception_state) {
+    ExceptionState& exception_state,
+    bool backend_uses_sqlite)
+    : backend_uses_sqlite_(backend_uses_sqlite) {
   SerializedScriptValue::SerializeOptions options;
   options.blob_info = &blob_info_;
   options.for_storage = SerializedScriptValue::kForStorage;
@@ -156,19 +145,27 @@ void IDBValueWrapper::DoneCloning() {
                           << " called on wrapper with serialization exception";
   DCHECK(!done_cloning_) << __func__ << " called twice";
   done_cloning_ = true;
-  DCHECK(owns_blob_handles_)
-      << __func__ << " called after TakeBlobDataHandles()";
-  DCHECK(owns_blob_info_) << __func__ << " called after TakeBlobInfo()";
-  DCHECK(owns_wire_bytes_) << __func__ << " called after TakeWireBytes()";
+  DCHECK(owns_wire_bytes_) << __func__ << " called after Build()";
 #endif  // DCHECK_IS_ON()
-
-  for (const auto& kvp : serialized_value_->BlobDataHandles()) {
-    blob_handles_.push_back(std::move(kvp.value));
-  }
 
   wire_data_ = serialized_value_->GetWireData();
   MaybeCompress();
   MaybeStoreInBlob();
+}
+
+bool IDBValueWrapper::ShouldCompress(size_t uncompressed_length) const {
+  if (backend_uses_sqlite_) {
+    return false;
+  }
+
+  static int field_trial_threshold =
+      features::kIndexedDBCompressValuesWithSnappyCompressionThreshold.Get();
+  return base::FeatureList::IsEnabled(
+             features::kIndexedDBCompressValuesWithSnappy) &&
+         uncompressed_length >=
+             compression_threshold_override_.value_or(static_cast<size_t>(
+                 field_trial_threshold < 0 ? mojom::blink::kIDBWrapThreshold
+                                           : field_trial_threshold));
 }
 
 void IDBValueWrapper::MaybeCompress() {
@@ -179,6 +176,11 @@ void IDBValueWrapper::MaybeCompress() {
 
   DCHECK(wire_data_buffer_.empty());
   const size_t wire_data_size = wire_data_.size();
+
+  if (!ShouldCompress(wire_data_size)) {
+    return;
+  }
+
   wire_data_buffer_.resize(
       kHeaderSize +
       static_cast<wtf_size_t>(snappy::MaxCompressedLength(wire_data_size)));
@@ -186,10 +188,9 @@ void IDBValueWrapper::MaybeCompress() {
   wire_data_buffer_[1] = kRequiresProcessingSSVPseudoVersion;
   wire_data_buffer_[2] = kCompressedWithSnappy;
   size_t compressed_length;
-  snappy::RawCompress(
-      reinterpret_cast<const char*>(wire_data_.data()), wire_data_size,
-      reinterpret_cast<char*>(wire_data_buffer_.data() + kHeaderSize),
-      &compressed_length);
+  snappy::RawCompress(reinterpret_cast<const char*>(wire_data_.data()),
+                      wire_data_size, &wire_data_buffer_[kHeaderSize],
+                      &compressed_length);
   if (ShouldTransmitCompressed(wire_data_size, compressed_length)) {
     // Truncate the excess space that was previously allocated.
     wire_data_buffer_.resize(kHeaderSize +
@@ -198,17 +199,20 @@ void IDBValueWrapper::MaybeCompress() {
     CHECK_GE(wire_data_buffer_.size(), wire_data_size);
     // Compression wasn't very successful, but we still allocated a large chunk
     // of memory, so we can repurpose it. This copy saves us from making another
-    // allocation later on in `MaybeStoreInBlob()` or `TakeWireBytes()`.
-    memcpy(wire_data_buffer_.data(), wire_data_.data(), wire_data_size);
+    // allocation later on in `MaybeStoreInBlob()`.
     wire_data_buffer_.resize(static_cast<wtf_size_t>(wire_data_size));
+    base::as_writable_byte_span(wire_data_buffer_)
+        .copy_from_nonoverlapping(wire_data_.first(wire_data_size));
   }
 
-  wire_data_ = base::make_span(
-      reinterpret_cast<const uint8_t*>(wire_data_buffer_.data()),
-      wire_data_buffer_.size());
+  wire_data_ = base::as_byte_span(wire_data_buffer_);
 }
 
 void IDBValueWrapper::MaybeStoreInBlob() {
+  if (backend_uses_sqlite_) {
+    return;
+  }
+
   const unsigned wrapping_threshold =
       wrapping_threshold_override_.value_or(mojom::blink::kIDBWrapThreshold);
   if (wire_data_.size() <= wrapping_threshold) {
@@ -221,8 +225,7 @@ void IDBValueWrapper::MaybeStoreInBlob() {
   wrapper_blob_data->SetContentType(String(kWrapMimeType));
 
   if (wire_data_buffer_.empty()) {
-    DCHECK(!base::FeatureList::IsEnabled(
-        features::kIndexedDBCompressValuesWithSnappy));
+    DCHECK(!ShouldCompress(wire_data_.size()));
     wrapper_blob_data->AppendBytes(wire_data_);
   } else {
     scoped_refptr<RawData> raw_data = RawData::Create();
@@ -230,10 +233,8 @@ void IDBValueWrapper::MaybeStoreInBlob() {
     wrapper_blob_data->AppendData(std::move(raw_data));
   }
   const size_t wire_data_size = wire_data_.size();
-  scoped_refptr<BlobDataHandle> wrapper_handle =
-      BlobDataHandle::Create(std::move(wrapper_blob_data), wire_data_size);
-  blob_info_.emplace_back(wrapper_handle);
-  blob_handles_.push_back(std::move(wrapper_handle));
+  blob_info_.emplace_back(
+      BlobDataHandle::Create(std::move(wrapper_blob_data), wire_data_size));
 
   DCHECK(wire_data_buffer_.empty());
   wire_data_buffer_.push_back(kVersionTag);
@@ -241,36 +242,39 @@ void IDBValueWrapper::MaybeStoreInBlob() {
   wire_data_buffer_.push_back(kReplaceWithBlob);
   IDBValueWrapper::WriteVarInt(base::checked_cast<unsigned>(wire_data_size),
                                wire_data_buffer_);
-  IDBValueWrapper::WriteVarInt(serialized_value_->BlobDataHandles().size(),
-                               wire_data_buffer_);
+  IDBValueWrapper::WriteVarInt(blob_info_.size() - 1, wire_data_buffer_);
 
-  wire_data_ = base::make_span(
-      reinterpret_cast<const uint8_t*>(wire_data_buffer_.data()),
-      wire_data_buffer_.size());
+  wire_data_ = base::as_byte_span(wire_data_buffer_);
   DCHECK(!wire_data_buffer_.empty());
 }
 
-Vector<char> IDBValueWrapper::TakeWireBytes() {
+std::unique_ptr<IDBValue> IDBValueWrapper::Build() && {
 #if DCHECK_IS_ON()
   DCHECK(done_cloning_) << __func__ << " called before DoneCloning()";
   DCHECK(owns_wire_bytes_) << __func__ << " called twice";
   owns_wire_bytes_ = false;
 #endif  // DCHECK_IS_ON()
 
+  auto value = std::make_unique<IDBValue>();
+  value->SetBlobInfo(std::move(blob_info_));
+  value->SetFileSystemAccessTokens(
+      std::move(serialized_value_->FileSystemAccessTokens()));
+
   if (wire_data_buffer_.empty()) {
-    DCHECK(!base::FeatureList::IsEnabled(
-        features::kIndexedDBCompressValuesWithSnappy));
+    DCHECK(!ShouldCompress(wire_data_.size()));
     // The wire bytes are coming directly from the SSV's GetWireData() call.
     DCHECK_EQ(wire_data_.data(), serialized_value_->GetWireData().data());
     DCHECK_EQ(wire_data_.size(), serialized_value_->GetWireData().size());
-    return Vector<char>(wire_data_);
+    value->SetData(
+        std::move(*serialized_value_.release()).ConsumeAndTakeBuffer());
+  } else {
+    // The wire bytes are coming from wire_data_buffer_, so we can avoid a copy.
+    DCHECK_EQ(wire_data_buffer_.data(),
+              reinterpret_cast<const char*>(wire_data_.data()));
+    DCHECK_EQ(wire_data_buffer_.size(), wire_data_.size());
+    value->SetData(std::move(wire_data_buffer_));
   }
-
-  // The wire bytes are coming from wire_data_buffer_, so we can avoid a copy.
-  DCHECK_EQ(wire_data_buffer_.data(),
-            reinterpret_cast<const char*>(wire_data_.data()));
-  DCHECK_EQ(wire_data_buffer_.size(), wire_data_.size());
-  return std::move(wire_data_buffer_);
+  return value;
 }
 
 IDBValueUnwrapper::IDBValueUnwrapper() {
@@ -281,10 +285,10 @@ IDBValueUnwrapper::IDBValueUnwrapper() {
 bool IDBValueUnwrapper::IsWrapped(IDBValue* value) {
   DCHECK(value);
 
-  if (value->DataSize() < kHeaderSize) {
+  if (value->Data().size() < kHeaderSize) {
     return false;
   }
-  base::span<const uint8_t> data_span = base::as_byte_span(value->Data());
+  base::span<const uint8_t> data_span = value->Data();
   return data_span[0] == kVersionTag &&
          data_span[1] == kRequiresProcessingSSVPseudoVersion &&
          data_span[2] == kReplaceWithBlob;
@@ -308,33 +312,46 @@ void IDBValueUnwrapper::Unwrap(Vector<char>&& wrapper_blob_content,
 }
 
 // static
-bool IDBValueUnwrapper::Decompress(const Vector<char>& buffer,
-                                   Vector<char>* out_buffer) {
+bool IDBValueUnwrapper::Decompress(
+    base::span<const uint8_t> buffer,
+    Vector<char>* out_buffer,
+    SerializedScriptValue::DataBufferPtr* out_buffer_in_place) {
   if (buffer.size() < kHeaderSize) {
     return false;
   }
-  base::span<const uint8_t> data_span = base::as_byte_span(buffer);
-
-  if (data_span[0] != kVersionTag ||
-      data_span[1] != kRequiresProcessingSSVPseudoVersion ||
-      data_span[2] != kCompressedWithSnappy) {
+  if (buffer[0] != kVersionTag ||
+      buffer[1] != kRequiresProcessingSSVPseudoVersion ||
+      buffer[2] != kCompressedWithSnappy) {
     return false;
   }
 
   base::span<const char> compressed(
-      base::as_chars(data_span.subspan(kHeaderSize)));
+      base::as_chars(buffer.subspan(kHeaderSize)));
 
-  Vector<char> decompressed_data;
   size_t decompressed_length;
   if (!snappy::GetUncompressedLength(compressed.data(), compressed.size(),
                                      &decompressed_length)) {
     return false;
   }
 
-  decompressed_data.resize(static_cast<wtf_size_t>(decompressed_length));
-  snappy::RawUncompress(compressed.data(), compressed.size(),
-                        decompressed_data.data());
-  *out_buffer = std::move(decompressed_data);
+  if (out_buffer) {
+    Vector<char> decompressed_data;
+    decompressed_data.resize(static_cast<wtf_size_t>(decompressed_length));
+    if (!snappy::RawUncompress(compressed.data(), compressed.size(),
+                               decompressed_data.data())) {
+      return false;
+    }
+    *out_buffer = std::move(decompressed_data);
+  } else {
+    SerializedScriptValue::DataBufferPtr decompressed_data =
+        SerializedScriptValue::AllocateBuffer(decompressed_length);
+    if (!snappy::RawUncompress(
+            compressed.data(), compressed.size(),
+            reinterpret_cast<char*>(decompressed_data.data()))) {
+      return false;
+    }
+    *out_buffer_in_place = std::move(decompressed_data);
+  }
   return true;
 }
 
@@ -343,9 +360,7 @@ bool IDBValueUnwrapper::Parse(IDBValue* value) {
   if (!IDBValueUnwrapper::IsWrapped(value))
     return false;
 
-  const uint8_t* data = reinterpret_cast<const uint8_t*>(value->Data().data());
-  end_ = data + value->DataSize();
-  current_ = data + kHeaderSize;
+  parse_span_ = value->Data().subspan(kHeaderSize);
 
   if (!ReadVarInt(blob_size_))
     return Reset();
@@ -376,13 +391,14 @@ bool IDBValueUnwrapper::ReadVarInt(unsigned& value) {
   unsigned shift = 0;
   bool has_another_byte;
   do {
-    if (current_ >= end_)
+    if (parse_span_.empty()) {
       return false;
+    }
 
     if (shift >= sizeof(unsigned) * 8)
       return false;
-    uint8_t byte = *current_;
-    ++current_;
+    uint8_t byte = *parse_span_.data();
+    parse_span_ = parse_span_.subspan(1U);
     value |= static_cast<unsigned>(byte & 0x7F) << shift;
     shift += 7;
 
@@ -396,22 +412,21 @@ bool IDBValueUnwrapper::ReadBytes(Vector<uint8_t>& value) {
   if (!ReadVarInt(length))
     return false;
 
-  DCHECK_LE(current_, end_);
-  if (end_ - current_ < static_cast<ptrdiff_t>(length))
+  if (parse_span_.size() < length) {
     return false;
+  }
   Vector<uint8_t> result;
   result.ReserveInitialCapacity(length);
-  result.Append(current_, length);
+  result.AppendSpan(parse_span_.first(length));
   value = std::move(result);
-  current_ += length;
+  parse_span_ = parse_span_.subspan(length);
   return true;
 }
 
 bool IDBValueUnwrapper::Reset() {
 #if DCHECK_IS_ON()
   blob_handle_ = nullptr;
-  current_ = nullptr;
-  end_ = nullptr;
+  parse_span_ = base::span<const uint8_t>();
 #endif  // DCHECK_IS_ON()
   return false;
 }

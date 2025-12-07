@@ -42,3 +42,5 @@ static jboolean JNI_DisableOriginTrialsSafeModeTestUtils_IsFlagSet(
   return policy->GetAllowOnlyDeprecationTrials();
 }
 }  // namespace android_webview
+
+DEFINE_JNI(DisableOriginTrialsSafeModeTestUtils)

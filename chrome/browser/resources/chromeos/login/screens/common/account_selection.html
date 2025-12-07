@@ -1,0 +1,75 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<style include="oobe-dialog-host-styles cr-card-radio-group-styles
+    cros-color-overrides">
+@media screen and (max-width: 920px) {
+  :host {
+    --radio-button-height: 155px;
+  }
+}
+
+.card-icon {
+  height: 32px;
+  width: 32px;
+}
+</style>
+
+<oobe-adaptive-dialog id="accountSelectionDialog" role="presentation"
+    aria-live="polite"
+  for-step="selection">
+  <iron-icon slot="icon" icon="oobe-32:avatar"></iron-icon>
+  <h1 slot="title">
+    Add account to the device
+  </h1>
+  <div slot="subtitle">
+    Sign in to create the first device user
+  </div>
+  <div slot="content" class="layout vertical landscape-vertical-centered">
+    <cr-radio-group id="choiceRadio" selected="{{selectedAccountOption}}">
+      <cr-card-radio-button id="reuseAccountButton" class="focus-on-show"
+          name="[[accountSelectionEnum.REUSE_ACCOUNT]]">
+        <div class="card-container">
+          <iron-icon icon="oobe-32:avatar" class="card-icon">
+          </iron-icon>
+          <div class="card-content">
+            <div id="reuseAccountCardLabel" class="card-label">
+              Use [[enrollmentEmail]]
+            </div>
+            <div class="card-text">
+              The account used for device enrollment
+            </div>
+          </div>
+        </div>
+      </cr-card-radio-button>
+      <cr-card-radio-button id="signinAgainButton" class="flex"
+          name="[[accountSelectionEnum.SIGNIN_AGAIN]]">
+        <div class="card-container">
+          <iron-icon icon="oobe-32:password" class="card-icon">
+          </iron-icon>
+          <div class="card-content">
+            <div class="card-label">
+              Use a different account
+            </div>
+            <div class="card-text">
+              Sign in with a different account in the next step
+            </div>
+          </div>
+        </div>
+      </cr-card-radio-button>
+    </cr-radio-group>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-next-button id="nextButton"
+        on-click="onNextClicked" disabled="[[!selectedAccountOption]]">
+    </oobe-next-button>
+  </div>
+</oobe-adaptive-dialog>
+
+<oobe-loading-dialog id="account-selection-progress" role="dialog"
+    for-step="progress" title-key="gaiaLoading">
+  <iron-icon slot="icon" icon="oobe-32:avatar"></iron-icon>
+</oobe-loading-dialog>

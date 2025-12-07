@@ -72,6 +72,7 @@ import tempfile
 
 PATCHES = [
     'xslt-locale.patch',
+    '0004-Use-a-dedicated-node-type-to-maintain-the-list-of-ca.patch',
 ]
 
 
@@ -88,6 +89,7 @@ SHARED_XSLT_CONFIGURE_OPTIONS = [
     ('--without-mem-debug', 'mem_debug=no'),
     ('--without-plugins', 'modules=no'),
     ('--without-crypto', 'crypto=no'),
+    ('--without-python', 'python=no'),
 ]
 
 # These options are only available in configure.ac for Linux and Mac.
@@ -250,7 +252,7 @@ def patch_config():
     sed_in_place('config.h', 's/#define HAVE_MKTIME 1//')
 
     sed_in_place('config.log',
-                 's/[a-z.0-9]\+\.corp\.google\.com/REDACTED/')
+                 r's/[a-z.0-9]\+\.corp\.google\.com/REDACTED/')
 
 
 def prepare_libxslt_distribution(src_path, libxslt_repo_path, temp_dir):
@@ -328,6 +330,11 @@ def roll_libxslt_linux(src_path, repo_path, fast):
         with WorkingDir(THIRD_PARTY_LIBXSLT_SRC):
             # Write the commit ID into the README.chromium file
             sed_in_place('../README.chromium',
+                         's/Revision: .*$/Revision: %s/' % commit)
+            # TODO(crbug.com/349529871): Use the version number instead of
+            # commit hash once it has been added upstream:
+            # https://gitlab.gnome.org/GNOME/libxslt/-/issues/117
+            sed_in_place('../README.chromium',
                          's/Version: .*$/Version: %s/' % commit)
             check_copying()
 
@@ -391,7 +398,7 @@ def roll_libxslt_mac(src_path):
 
 def check_clean(path):
     with WorkingDir(path):
-        status = subprocess.check_output(['git', 'status', '-s']).decode('ascii')
+        status = subprocess.check_output(['git', 'status', '-s', '-uno']).decode('ascii')
         if len(status) > 0:
             raise Exception('repository at %s is not clean' % path)
 

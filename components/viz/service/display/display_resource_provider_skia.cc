@@ -10,7 +10,6 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
-#include "base/not_fatal_until.h"
 #include "build/build_config.h"
 #include "components/viz/service/display/resource_fence.h"
 #include "gpu/command_buffer/service/scheduler_sequence.h"
@@ -142,7 +141,7 @@ DisplayResourceProviderSkia::LockSetForExternalUse::LockResource(
     bool maybe_concurrent_reads,
     bool raw_draw_is_possible) {
   auto it = resource_provider_->resources_.find(id);
-  CHECK(it != resource_provider_->resources_.end(), base::NotFatalUntil::M130);
+  CHECK(it != resource_provider_->resources_.end());
 
   ChildResource& resource = it->second;
   DCHECK(resource.is_gpu_resource_type());
@@ -152,21 +151,12 @@ DisplayResourceProviderSkia::LockSetForExternalUse::LockResource(
     resources_.emplace_back(id, &resource);
 
     if (!resource.image_context) {
-      // SkColorSpace covers only RGB portion of the gfx::ColorSpace, YUV
-      // portion is handled via SkYuvColorSpace at places where we create YUV
-      // images.
-      sk_sp<SkColorSpace> image_color_space =
-          resource.transferable.color_space.GetAsFullRangeRGB()
-              .ToSkColorSpace();
-
+      uint32_t client_id =
+          resource_provider_->GetSurfaceId(id).frame_sink_id().client_id();
       resource.image_context =
           resource_provider_->external_use_client_->CreateImageContext(
-              gpu::MailboxHolder(resource.transferable.mailbox(),
-                                 resource.transferable.sync_token(),
-                                 resource.transferable.texture_target()),
-              resource.transferable.size, resource.transferable.format,
-              maybe_concurrent_reads, resource.transferable.ycbcr_info,
-              std::move(image_color_space), raw_draw_is_possible);
+              resource.transferable, maybe_concurrent_reads,
+              raw_draw_is_possible, client_id);
     }
     resource.locked_for_external_use = true;
 

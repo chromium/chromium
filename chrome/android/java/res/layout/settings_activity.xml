@@ -20,18 +20,34 @@ found in the LICENSE file.
         android:theme="@style/ThemeOverlay.Settings.DisableElevationOverlay"
         app:liftOnScroll="true">
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/action_bar"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"/>
+            android:layout_height="wrap_content">
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/action_bar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"/>
+
+            <!-- detailed pane title placeholder.
+                 Visible only in two pane UI -->
+            <LinearLayout
+                android:id="@+id/settings_detailed_pane_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
+                android:visibility="gone" />
+        </FrameLayout>
+
     </com.google.android.material.appbar.AppBarLayout>
 
-    <FrameLayout
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
-    </FrameLayout>
+    </androidx.fragment.app.FragmentContainerView>
 
     <!-- Container for displaying dialogs. -->
     <FrameLayout
@@ -42,4 +58,12 @@ found in the LICENSE file.
 
     <!-- Container for displaying a bottom sheet. -->
     <include layout="@layout/bottom_sheet_container"/>
+
+    <!-- Container for displaying a HaTS survey. -->
+    <ViewStub
+        android:id="@+id/hats_survey_container_stub"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:inflatedId="@+id/survey_container"
+        android:layout="@layout/hats_survey_container" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

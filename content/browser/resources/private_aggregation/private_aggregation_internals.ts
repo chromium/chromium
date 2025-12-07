@@ -4,7 +4,7 @@
 
 import './private_aggregation_internals_table.js';
 
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 
 import type {AggregatableReportRequestID, ObserverInterface, WebUIAggregatableReport} from './private_aggregation_internals.mojom-webui.js';
 import {Factory as PrivateAggregationInternalsFactory, HandlerRemote as PrivateAggregationInternalsHandlerRemote, ObserverReceiver, ReportStatus} from './private_aggregation_internals.mojom-webui.js';
@@ -170,7 +170,7 @@ class SelectionColumn<T extends Selectable> implements Column<T> {
   }
 }
 
-function reportStatusToText(status: ReportStatus) {
+function reportStatusToText(status: ReportStatus): string {
   switch (status) {
     case ReportStatus.kPending:
       return 'Pending';
@@ -180,6 +180,8 @@ function reportStatusToText(status: ReportStatus) {
       return 'Failed to assemble';
     case ReportStatus.kFailedToSend:
       return 'Failed to send';
+    default:
+      assertNotReachedCase(status);
   }
 }
 
@@ -238,8 +240,7 @@ class ReportTableModel extends TableModel<Report> {
       new ValueColumn<Report, string>(
           'API identifier', (e) => e.apiIdentifier, '90px'),
       new ValueColumn<Report, string>('API version', (e) => e.apiVersion),
-      new CodeColumn<Report>(
-          'Contributions', (e) => (e as Report).contributions),
+      new CodeColumn<Report>('Contributions', (e) => (e).contributions),
       new CodeColumn<Report>('Report Body', (e) => e.reportBody),
     ];
 
@@ -365,7 +366,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const reportTable =
       document.querySelector<PrivateAggregationInternalsTableElement<Report>>(
           '#reportTable');
-  reportTable!.setModel(reportTableModel!);
+  reportTable!.setModel(reportTableModel);
 
   PrivateAggregationInternalsFactory.getRemote().create(
     new ObserverReceiver(new Observer()).$.bindNewPipeAndPassRemote(),

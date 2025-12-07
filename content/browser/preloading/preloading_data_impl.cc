@@ -126,24 +126,23 @@ PreloadingURLMatchCallback PreloadingData::GetSameURLMatcher(
 
 // static
 PreloadingURLMatchCallback PreloadingDataImpl::GetPrefetchServiceMatcher(
-    PrefetchService* prefetch_service,
-    const PrefetchContainer::Key& predicted) {
+    PrefetchService& prefetch_service,
+    const PrefetchKey& predicted) {
   return base::BindRepeating(
       [](base::WeakPtr<PrefetchService> prefetch_service,
-         const PrefetchContainer::Key& predicted, const GURL& navigated_url) {
+         const PrefetchKey& predicted, const GURL& navigated_url) {
         if (!prefetch_service) {
-          return predicted.prefetch_url() == navigated_url;
+          return predicted.url() == navigated_url;
         }
-        if (predicted.prefetch_url() == navigated_url) {
+        if (predicted.url() == navigated_url) {
           return true;
         }
 
         base::WeakPtr<PrefetchContainer> prefetch_container =
             prefetch_service->MatchUrl(predicted.WithNewUrl(navigated_url));
-        return prefetch_container &&
-               prefetch_container->GetPrefetchContainerKey() == predicted;
+        return prefetch_container && prefetch_container->key() == predicted;
       },
-      prefetch_service ? prefetch_service->GetWeakPtr() : nullptr, predicted);
+      prefetch_service.GetWeakPtr(), predicted);
 }
 
 // static
@@ -160,24 +159,19 @@ PreloadingData* PreloadingData::GetForWebContents(WebContents* web_contents) {
 // static
 PreloadingDataImpl* PreloadingDataImpl::GetOrCreateForWebContents(
     WebContents* web_contents) {
-  auto* preloading_impl = PreloadingDataImpl::FromWebContents(web_contents);
-  if (!preloading_impl)
-    PreloadingDataImpl::CreateForWebContents(web_contents);
-
-  return PreloadingDataImpl::FromWebContents(web_contents);
+  return WebContentsUserData<PreloadingDataImpl>::GetOrCreateForWebContents(
+      web_contents);
 }
 
 PreloadingAttempt* PreloadingDataImpl::AddPreloadingAttempt(
     PreloadingPredictor predictor,
     PreloadingType preloading_type,
     PreloadingURLMatchCallback url_match_predicate,
-    std::optional<PreloadingType> planned_max_preloading_type,
     ukm::SourceId triggering_primary_page_source_id) {
   // The same `predictor` created and enacted the candidate associated with this
   // attempt.
   return AddPreloadingAttempt(predictor, predictor, preloading_type,
                               std::move(url_match_predicate),
-                              std::move(planned_max_preloading_type),
                               triggering_primary_page_source_id);
 }
 
@@ -186,12 +180,11 @@ PreloadingAttemptImpl* PreloadingDataImpl::AddPreloadingAttempt(
     const PreloadingPredictor& enacting_predictor,
     PreloadingType preloading_type,
     PreloadingURLMatchCallback url_match_predicate,
-    std::optional<PreloadingType> planned_max_preloading_type,
     ukm::SourceId triggering_primary_page_source_id) {
   auto attempt = std::make_unique<PreloadingAttemptImpl>(
       creating_predictor, enacting_predictor, preloading_type,
       triggering_primary_page_source_id, std::move(url_match_predicate),
-      std::move(planned_max_preloading_type), sampling_seed_);
+      sampling_seed_);
   preloading_attempts_.push_back(std::move(attempt));
 
   return preloading_attempts_.back().get();
@@ -359,6 +352,16 @@ void PreloadingDataImpl::RecordPreloadingAttemptPrecisionToUMA(
   }
 }
 
+// static
+bool PreloadingDataImpl::IsLinkClickNavigation(
+    NavigationHandle* navigation_handle) {
+  auto page_transition = navigation_handle->GetPageTransition();
+  return ui::PageTransitionCoreTypeIs(
+             page_transition, ui::PageTransition::PAGE_TRANSITION_LINK) &&
+         (page_transition & ui::PAGE_TRANSITION_CLIENT_REDIRECT) == 0 &&
+         ui::PageTransitionIsNewNavigation(page_transition);
+}
+
 void PreloadingDataImpl::RecordPredictionPrecisionToUMA(
     const PreloadingPrediction& prediction) {
   bool is_true_positive = prediction.IsAccuratePrediction();
@@ -396,6 +399,7 @@ void PreloadingDataImpl::ResetRecallStats() {
 
 void PreloadingDataImpl::RecordRecallStatsToUMA(
     NavigationHandle* navigation_handle) {
+  // TODO(https://crbug.com/428500219): Report recall for kPrerenderUntilScript.
   constexpr PreloadingType kPreloadingTypes[] = {PreloadingType::kPreconnect,
                                                  PreloadingType::kPrefetch,
                                                  PreloadingType::kPrerender};

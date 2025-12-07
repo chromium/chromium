@@ -9,7 +9,7 @@
 
 namespace blink {
 
-void retrieveGlyphForStretchyOperators(const blink::Font operatorsWoff,
+void retrieveGlyphForStretchyOperators(const blink::Font* operatorsWoff,
                                        Vector<UChar32>& verticalGlyphs,
                                        Vector<UChar32>& horizontalGlyphs) {
   DCHECK(verticalGlyphs.empty());
@@ -17,10 +17,10 @@ void retrieveGlyphForStretchyOperators(const blink::Font operatorsWoff,
   // For details, see createSizeVariants() and createStretchy() from
   // third_party/blink/web_tests/external/wpt/mathml/tools/operator-dictionary.py
   for (unsigned i = 0; i < 4; i++) {
-    verticalGlyphs.push_back(operatorsWoff.PrimaryFont()->GlyphForCharacter(
-        kPrivateUseFirstCharacter + 2 * i));
-    horizontalGlyphs.push_back(operatorsWoff.PrimaryFont()->GlyphForCharacter(
-        kPrivateUseFirstCharacter + 2 * i + 1));
+    verticalGlyphs.push_back(operatorsWoff->PrimaryFont()->GlyphForCharacter(
+        uchar::kPrivateUseFirst + 2 * i));
+    horizontalGlyphs.push_back(operatorsWoff->PrimaryFont()->GlyphForCharacter(
+        uchar::kPrivateUseFirst + 2 * i + 1));
   }
 }
 

@@ -9,9 +9,8 @@
 #include <optional>
 #include <string>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/browser_theme_provider_delegate.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/url_formatter/url_formatter.h"
@@ -21,28 +20,36 @@
 #include "third_party/blink/public/mojom/page/draggable_region.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRegion.h"
-#include "ui/color/color_provider.h"
+#include "ui/actions/action_id.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/color/color_provider_key.h"
 #include "url/gurl.h"
 
 class Browser;
+class BrowserWindowInterface;
 class BrowserThemePack;
 class CustomThemeSupplier;
 class TabMenuModelFactory;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace ash {
 class SystemWebAppDelegate;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+namespace base {
+class TimeTicks;
+}  // namespace base
 
 namespace gfx {
 class Rect;
 }  // namespace gfx
 
 namespace ui {
+class ColorProvider;
 class ImageModel;
-}
+class ThemeProvider;
+}  // namespace ui
 
 namespace web_app {
 
@@ -60,18 +67,52 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
                              public content::WebContentsObserver,
                              public BrowserThemeProviderDelegate {
  public:
+  DECLARE_USER_DATA(AppBrowserController);
+
   AppBrowserController(const AppBrowserController&) = delete;
   AppBrowserController& operator=(const AppBrowserController&) = delete;
   ~AppBrowserController() override;
 
+  static const AppBrowserController* From(
+      const BrowserWindowInterface* browser);
+  static AppBrowserController* From(BrowserWindowInterface* browser);
+
   // Returns whether |browser| is a web app window/pop-up.
-  static bool IsWebApp(const Browser* browser);
+  static bool IsWebApp(const BrowserWindowInterface* browser);
+  // Returns whether |browser| is an isolated web app window/pop-up.
+  static bool IsIsolatedWebApp(const BrowserWindowInterface* browser);
   // Returns whether |browser| is a web app window/pop-up for |app_id|.
-  static bool IsForWebApp(const Browser* browser, const webapps::AppId& app_id);
-  // Returns a Browser* that is for |app_id| and |profile| if any, searches in
-  // order of last browser activation. Ignores pop-up Browsers.
-  static Browser* FindForWebApp(const Profile& profile,
-                                const webapps::AppId& app_id);
+  static bool IsForWebApp(const BrowserWindowInterface* browser,
+                          const webapps::AppId& app_id);
+  // Returns a BrowserWindowInterface* that is for |app_id| and |profile| if
+  // any, searches in order of last browser activation. Ignores pop-up Browsers.
+  static BrowserWindowInterface* FindForWebApp(const Profile& profile,
+                                               const webapps::AppId& app_id);
+
+  // Returns the `browser` and `tab_index` for a tab for the given `app_id` in
+  // the given `profile`, where the tab does not have an opener, and the browser
+  // is of the specified `browser_type`. Prefers more recently activated
+  // windows and tabs over less recently used ones.
+  struct BrowserAndTabIndex {
+    raw_ptr<BrowserWindowInterface> browser = nullptr;
+    int tab_index = -1;
+  };
+  enum class HomeTabScope {
+    kDontCare,   // The caller doesn't care if the returned tab is a home tab.
+    kInScope,    // Only return tabs that are a pinned home tab.
+    kOutOfScope  // Only return tabs that are not a pinned home tab.
+  };
+  static std::optional<BrowserAndTabIndex> FindTopLevelBrowsingContextForWebApp(
+      const Profile& profile,
+      const webapps::AppId& app_id,
+      bool for_app_browser,
+      bool for_focus_existing,
+      HomeTabScope home_tab_scope = HomeTabScope::kDontCare);
+  static std::optional<int> FindTabIndexForApp(
+      BrowserWindowInterface* browser,
+      const webapps::AppId& app_id,
+      bool for_focus_existing,
+      HomeTabScope home_tab_scope = HomeTabScope::kDontCare);
 
   // Renders |url|'s origin as Unicode.
   static std::u16string FormatUrlOrigin(
@@ -92,10 +133,6 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   // Returns the text to flash in the title bar on app launch.
   std::u16string GetLaunchFlashText() const;
 
-  // Returns whether this controller was created for a
-  // Chrome App (platform app or legacy packaged app).
-  virtual bool IsHostedApp() const;
-
   // Whether the custom tab bar should be visible.
   virtual bool ShouldShowCustomTabBar() const;
 
@@ -111,8 +148,13 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   // Whether to show content settings in the titlebar toolbar.
   virtual bool HasTitlebarContentSettings() const;
 
-  // Returns which PageActionIconTypes should appear in the titlebar toolbar.
-  virtual std::vector<PageActionIconType> GetTitleBarPageActions() const;
+  // Returns which page actions which should should appear in the titlebar
+  // toolbar.
+  virtual std::vector<actions::ActionId> GetTitleBarPageActions() const;
+  // The page actions framework is currently undergoing a migration.
+  // This is method is used by the legacy framework and will be removed once
+  // the migration is complete.
+  virtual std::vector<PageActionIconType> GetTitleBarPageActionTypes() const;
 
   // Whether to show the Back and Refresh buttons in the web app toolbar.
   virtual bool HasMinimalUiButtons() const = 0;
@@ -145,10 +187,13 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   virtual std::u16string GetFormattedUrlOrigin() const = 0;
 
   // Gets the start_url for the app.
-  virtual GURL GetAppStartUrl() const = 0;
+  virtual const GURL& GetAppStartUrl() const = 0;
 
   // Gets the new tab URL for tabbed apps.
-  virtual GURL GetAppNewTabUrl() const;
+  virtual const GURL& GetAppNewTabUrl() const;
+
+  // Returns the pinned home tab if there is one, otherwise nullptr.
+  virtual content::WebContents* GetPinnedHomeTab() const;
 
   // Whether the app's tab strip should hide the new tab button, e.g. because
   // the app has a pinned home tab at the same URL as the new tab URL.
@@ -192,6 +237,10 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   // Returns true when an app's effective display mode is borderless.
   virtual bool AppUsesBorderlessMode() const;
 
+  // Returns true when `url` matches one of the borderless URL patterns of this
+  // app, or when there are no patterns to match.
+  virtual bool UrlMatchesBorderlessPattern(const GURL& url) const;
+
   // Returns true when an app's effective display mode is tabbed.
   virtual bool AppUsesTabbed() const;
 
@@ -214,6 +263,18 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   // Whether the browser should show the reload button in the toolbar.
   virtual bool HasReloadButton() const;
 
+  // Returns true if there is a pending update available for this app.
+  virtual bool HasPendingUpdate() const;
+
+  // Returns true if there is a pending update available for this app that has
+  // not been ignored by the user.
+  virtual bool HasPendingUpdateNotIgnoredByUser() const;
+
+  // Constructs the metadata required for app identity updating and triggers the
+  // corresponding dialog.
+  virtual void CreateMetadataAndTriggerAppUpdateDialog(
+      base::TimeTicks start_time) const;
+
   // Returns whether prevent close is enabled.
   bool IsPreventCloseEnabled() const;
 
@@ -225,10 +286,10 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   virtual bool IsProfileMenuButtonVisible() const;
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Returns the SystemWebAppDelegate if any for this controller.
   virtual const ash::SystemWebAppDelegate* system_app() const;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Updates the custom tab bar's visibility based on whether it should be
   // currently visible or not. If |animate| is set, the change will be
@@ -302,11 +363,6 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   // Sets the url that the app browser controller was created with.
   void SetInitialURL(const GURL& initial_url);
 
-  // Indicates to the WebView whether it should support draggable regions via
-  // the app-region CSS property.
-  void UpdateSupportsDraggableRegions(bool supports_draggable_regions,
-                                      content::RenderFrameHost* host);
-
   const raw_ptr<Browser> browser_;
   const webapps::AppId app_id_;
   const bool has_tab_strip_;
@@ -320,6 +376,8 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   std::optional<SkRegion> draggable_region_ = std::nullopt;
 
   base::OnceClosure on_draggable_region_set_for_testing_;
+
+  ui::ScopedUnownedUserData<AppBrowserController> scoped_unowned_user_data_;
 };
 
 }  // namespace web_app

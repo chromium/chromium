@@ -14,7 +14,6 @@
 #include "base/i18n/rtl.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -26,6 +25,7 @@
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_core_service_impl.h"
 #include "chrome/browser/download/download_ui_model.h"
+#include "chrome/browser/download/status_text_builder_utils.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -52,11 +52,12 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "ui/views/vector_icons.h"
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
-#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
+#endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 using download::DownloadItem;
 using offline_items_collection::FailState;
@@ -69,7 +70,7 @@ using ::testing::ReturnRef;
 using ::testing::ReturnRefOfCopy;
 using ::testing::SetArgPointee;
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 using TailoredVerdict = safe_browsing::ClientDownloadResponse::TailoredVerdict;
 #endif
 
@@ -166,7 +167,7 @@ class DownloadItemModelTest : public testing::Test {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   }
 
-  ~DownloadItemModelTest() override {}
+  ~DownloadItemModelTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(testing_profile_manager_.SetUp());
@@ -267,99 +268,89 @@ TEST_F(DownloadItemModelTest, InterruptedStatus) {
     download::DownloadInterruptReason reason;
 
     // Expected status string. This will include the progress as well.
-    const char* expected_status_msg;
+    std::u16string expected_status_msg;
 
     // Expected bubble status string. This will include the progress as well.
-    // If empty, use the expected_status_msg.
-    std::string expected_bubble_status_msg;
+    std::u16string expected_bubble_status_msg;
 
     // Most types of interrupted downloads have combination of icon and color
     // that is not the same as "dangerous" or "suspicious" downloads.
     DownloadUIModel::DangerUiPattern expected_danger_pattern =
         DownloadUIModel::DangerUiPattern::kOther;
   } kTestCases[] = {
-      {download::DOWNLOAD_INTERRUPT_REASON_NONE, "1/2 B", "1/2 B • Resuming…",
+      {download::DOWNLOAD_INTERRUPT_REASON_NONE, u"1/2 B", u"1/2 B • Resuming…",
        DownloadUIModel::DangerUiPattern::kNormal},
-      {download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED, "%s - Download error",
-       "Something went wrong"},
+      {download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED,
+       u"Failed - Download error", u"Something went wrong"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_ACCESS_DENIED,
-       "%s - Insufficient permissions", "Needs permission to download"},
-      {download::DOWNLOAD_INTERRUPT_REASON_FILE_NO_SPACE, "%s - Disk full",
-       "Out of storage space"},
+       u"Failed - Insufficient permissions", u"Needs permission to download"},
+      {download::DOWNLOAD_INTERRUPT_REASON_FILE_NO_SPACE, u"Failed - Disk full",
+       u"Out of storage space"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_NAME_TOO_LONG,
-       "%s - Path too long", "File name or location is too long"},
+       u"Failed - Path too long", u"File name or location is too long"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_TOO_LARGE,
-       "%s - File too large", "File is too big for this device"},
+       u"Failed - File too large", u"File is too big for this device"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_VIRUS_INFECTED,
-       "%s - Virus detected", "Virus detected"},
-      {download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED, "%s - Blocked",
-       "Blocked by your organization"},
+       u"Failed - Virus detected", u"Virus detected"},
+      {download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED, u"Failed - Blocked",
+       u"Blocked by your organization"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_SECURITY_CHECK_FAILED,
-       "%s - Virus scan failed", "Virus scan failed"},
+       u"Failed - Virus scan failed", u"Virus scan failed"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_TOO_SHORT,
-       "%s - File truncated", "Something went wrong"},
+       u"Failed - File truncated", u"Something went wrong"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_SAME_AS_SOURCE,
-       "%s - Already downloaded", "Already downloaded"},
+       u"Failed - Already downloaded", u"Already downloaded"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_TRANSIENT_ERROR,
-       "%s - System busy", "Couldn’t finish download"},
+       u"Failed - System busy", u"Couldn’t finish download"},
       {download::DOWNLOAD_INTERRUPT_REASON_FILE_HASH_MISMATCH,
-       "%s - Download error", "Something went wrong"},
-      {download::DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED, "%s - Network error",
-       "Check internet connection"},
+       u"Failed - Download error", u"Something went wrong"},
+      {download::DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED,
+       u"Failed - Network error", u"Check internet connection"},
       {download::DOWNLOAD_INTERRUPT_REASON_NETWORK_TIMEOUT,
-       "%s - Network timeout", "Check internet connection"},
+       u"Failed - Network timeout", u"Check internet connection"},
       {download::DOWNLOAD_INTERRUPT_REASON_NETWORK_DISCONNECTED,
-       "%s - Network disconnected", "Check internet connection"},
+       u"Failed - Network disconnected", u"Check internet connection"},
       {download::DOWNLOAD_INTERRUPT_REASON_NETWORK_SERVER_DOWN,
-       "%s - Server unavailable", "Site wasn’t available"},
+       u"Failed - Server unavailable", u"Site wasn’t available"},
       {download::DOWNLOAD_INTERRUPT_REASON_NETWORK_INVALID_REQUEST,
-       "%s - Network error", "Check internet connection"},
-      {download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED, "%s - Server problem",
-       "Site wasn’t available"},
+       u"Failed - Network error", u"Check internet connection"},
+      {download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED,
+       u"Failed - Server problem", u"Site wasn’t available"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_NO_RANGE,
-       "%s - Download error", "Something went wrong"},
-      {download::DOWNLOAD_INTERRUPT_REASON_SERVER_BAD_CONTENT, "%s - No file",
-       "File wasn’t available on site"},
+       u"Failed - Download error", u"Something went wrong"},
+      {download::DOWNLOAD_INTERRUPT_REASON_SERVER_BAD_CONTENT,
+       u"Failed - No file", u"File wasn’t available on site"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_UNAUTHORIZED,
-       "%s - Needs authorization", "File wasn’t available on site"},
+       u"Failed - Needs authorization", u"File wasn’t available on site"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_CERT_PROBLEM,
-       "%s - Bad certificate", "Site wasn’t available"},
-      {download::DOWNLOAD_INTERRUPT_REASON_SERVER_FORBIDDEN, "%s - Forbidden",
-       "File wasn’t available on site"},
+       u"Failed - Bad certificate", u"Site wasn’t available"},
+      {download::DOWNLOAD_INTERRUPT_REASON_SERVER_FORBIDDEN,
+       u"Failed - Forbidden", u"File wasn’t available on site"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_UNREACHABLE,
-       "%s - Server unreachable", "Site wasn’t available"},
+       u"Failed - Server unreachable", u"Site wasn’t available"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_CONTENT_LENGTH_MISMATCH,
-       "%s - File incomplete", "Couldn’t finish download"},
+       u"Failed - File incomplete", u"Couldn’t finish download"},
       {download::DOWNLOAD_INTERRUPT_REASON_SERVER_CROSS_ORIGIN_REDIRECT,
-       "%s - Download error", "Something went wrong"},
-      {download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED, "Canceled"},
-      {download::DOWNLOAD_INTERRUPT_REASON_USER_SHUTDOWN, "%s - Shutdown",
-       "Couldn’t finish download"},
-      {download::DOWNLOAD_INTERRUPT_REASON_CRASH, "%s - Crash",
-       "Couldn’t finish download"},
+       u"Failed - Download error", u"Something went wrong"},
+      {download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED, u"Canceled",
+       u"Canceled"},
+      {download::DOWNLOAD_INTERRUPT_REASON_USER_SHUTDOWN, u"Failed - Shutdown",
+       u"Couldn’t finish download"},
+      {download::DOWNLOAD_INTERRUPT_REASON_CRASH, u"Failed - Crash",
+       u"Couldn’t finish download"},
   };
   static_assert(kInterruptReasonCount == std::size(kTestCases),
                 "interrupt reason mismatch");
 
   SetupDownloadItemDefaults();
 
-  const char default_failed_msg[] = "Failed";
   for (const auto& test_case : kTestCases) {
     SetupInterruptedDownloadItem(test_case.reason);
-    std::string expected_status_msg = base::StringPrintfNonConstexpr(
-        test_case.expected_status_msg, default_failed_msg);
-    std::u16string expected_bubble_status_msg =
-        base::UTF8ToUTF16(test_case.expected_bubble_status_msg);
-    if (expected_bubble_status_msg.empty()) {
-      expected_bubble_status_msg = base::UTF8ToUTF16(expected_status_msg);
-      base::ReplaceFirstSubstringAfterOffset(&expected_bubble_status_msg, 0,
-                                             u"-", u"•");
-    }
     SetStatusTextBuilder(/*for_bubble=*/false);
-    EXPECT_EQ(expected_status_msg, base::UTF16ToUTF8(model().GetStatusText()));
+    EXPECT_EQ(test_case.expected_status_msg, model().GetStatusText());
 
     SetStatusTextBuilder(/*for_bubble=*/true);
-    EXPECT_EQ(expected_bubble_status_msg, model().GetStatusText());
+    EXPECT_EQ(test_case.expected_bubble_status_msg, model().GetStatusText());
 
 #if !BUILDFLAG(IS_ANDROID)
     EXPECT_EQ(model().GetDangerUiPattern(), test_case.expected_danger_pattern);
@@ -675,7 +666,7 @@ TEST_F(DownloadItemModelTest,
             DownloadUIModel::DangerUiPattern::kSuspicious);
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(FULL_SAFE_BROWSING)
+#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
   // It doesn't matter what the DownloadProtectionData is; just that it is
   // present.
   std::string token = "token";
@@ -687,7 +678,8 @@ TEST_F(DownloadItemModelTest,
 
   EXPECT_EQ(base::UTF16ToUTF8(model().GetStatusText()),
             "Suspicious download blocked");
-#endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(FULL_SAFE_BROWSING)
+#endif  // !BUILDFLAG(IS_ANDROID) &&
+        // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -750,9 +742,8 @@ TEST_F(DownloadItemModelTest, GetBubbleStatusMessageWithBytes) {
   auto* arabic_bytes = L"5 \x062A";
   auto* arabic_status = L"\x0645";
   std::u16string arabic =
-      DownloadUIModel::BubbleStatusTextBuilder::GetBubbleStatusMessageWithBytes(
-          base::WideToUTF16(arabic_bytes), base::WideToUTF16(arabic_status),
-          false);
+      StatusTextBuilderUtils::GetBubbleStatusMessageWithBytes(
+          base::WideToUTF16(arabic_bytes), base::WideToUTF16(arabic_status));
   std::vector<int> expected_arabic =
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_POSIX)
       {8207, 8235, 53, 32, 1578, 32, 8226, 32, 1605, 8236, 8207};
@@ -763,9 +754,9 @@ TEST_F(DownloadItemModelTest, GetBubbleStatusMessageWithBytes) {
 
   // Hebrew
   auto* hebrew_status = L"\x05D0";
-  std::u16string hebrew = DownloadUIModel::BubbleStatusTextBuilder ::
-      GetBubbleStatusMessageWithBytes(u"5 MB", base::WideToUTF16(hebrew_status),
-                                      false);
+  std::u16string hebrew =
+      StatusTextBuilderUtils::GetBubbleStatusMessageWithBytes(
+          u"5 MB", base::WideToUTF16(hebrew_status));
   std::vector<int> expected_hebrew =
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_POSIX)
       {8207, 8235, 8234, 53, 32, 77, 66, 8236, 32, 8226, 32, 1488, 8236, 8207};
@@ -776,35 +767,35 @@ TEST_F(DownloadItemModelTest, GetBubbleStatusMessageWithBytes) {
 
   // English
   base::i18n::SetRTLForTesting(false);
-  std::u16string english = DownloadUIModel::BubbleStatusTextBuilder ::
-      GetBubbleStatusMessageWithBytes(u"5 MB", u"A", false);
+  std::u16string english =
+      StatusTextBuilderUtils::GetBubbleStatusMessageWithBytes(u"5 MB", u"A");
   std::vector<int> expected_english = {53, 32, 77, 66, 32, 8226, 32, 65};
   compare_results(english, expected_english);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
-TEST_F(DownloadItemModelTest, ShouldShowInShelf) {
+TEST_F(DownloadItemModelTest, ShouldShowInUi) {
   SetupDownloadItemDefaults();
 
-  // By default the download item should be displayable on the shelf when it is
+  // By default the download item should be displayable on the UI when it is
   // not a transient download.
   EXPECT_CALL(item(), IsTransient()).WillOnce(Return(false));
-  EXPECT_TRUE(model().ShouldShowInShelf());
+  EXPECT_TRUE(model().ShouldShowInUi());
 
   EXPECT_CALL(item(), IsTransient()).WillOnce(Return(true));
-  EXPECT_FALSE(model().ShouldShowInShelf());
+  EXPECT_FALSE(model().ShouldShowInUi());
 
-  // Once explicitly set, ShouldShowInShelf() should return the explicit value
+  // Once explicitly set, ShouldShowInUi() should return the explicit value
   // regardless of whether it's a transient download, which should no longer
   // be considered by the model after initializing it.
   EXPECT_CALL(item(), IsTransient()).Times(1);
 
-  model().SetShouldShowInShelf(true);
-  EXPECT_TRUE(model().ShouldShowInShelf());
+  model().SetShouldShowInUi(true);
+  EXPECT_TRUE(model().ShouldShowInUi());
 
-  model().SetShouldShowInShelf(false);
-  EXPECT_FALSE(model().ShouldShowInShelf());
+  model().SetShouldShowInUi(false);
+  EXPECT_FALSE(model().ShouldShowInUi());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(DownloadItemModelTest, DangerLevel) {
   SetupDownloadItemDefaults();
@@ -841,59 +832,6 @@ TEST_F(DownloadItemModelTest, HasSupportedImageMimeType) {
   ON_CALL(item(), GetTargetFilePath())
       .WillByDefault(ReturnRef(kNoExtensionPath));
   EXPECT_FALSE(model().HasSupportedImageMimeType());
-}
-
-TEST_F(DownloadItemModelTest, ShouldRemoveFromShelfWhenComplete) {
-  const struct TestCase {
-    DownloadItem::DownloadState state;
-    bool is_dangerous;  // Expectation for IsDangerous().
-    bool is_auto_open;  // Expectation for GetOpenWhenComplete().
-    bool auto_opened;   // Whether the download was successfully
-                        // auto-opened. Expecation for GetAutoOpened().
-    bool expected_result;
-  } kTestCases[] = {
-    // All the valid combinations of state, is_dangerous, is_auto_open and
-    // auto_opened.
-    //
-    //                              .--- Is dangerous.
-    //                             |       .--- Auto open or temporary.
-    //                             |      |      .--- Auto opened.
-    //                             |      |      |      .--- Expected result.
-    { DownloadItem::IN_PROGRESS, false, false, false, false},
-    { DownloadItem::IN_PROGRESS, false, true , false, true },
-    { DownloadItem::IN_PROGRESS, true , false, false, false},
-    { DownloadItem::IN_PROGRESS, true , true , false, false},
-    { DownloadItem::COMPLETE,    false, false, false, false},
-    { DownloadItem::COMPLETE,    false, true , false, false},
-    { DownloadItem::COMPLETE,    false, false, true , true },
-    { DownloadItem::COMPLETE,    false, true , true , true },
-    { DownloadItem::CANCELLED,   false, false, false, false},
-    { DownloadItem::CANCELLED,   false, true , false, false},
-    { DownloadItem::CANCELLED,   true , false, false, false},
-    { DownloadItem::CANCELLED,   true , true , false, false},
-    { DownloadItem::INTERRUPTED, false, false, false, false},
-    { DownloadItem::INTERRUPTED, false, true , false, false},
-    { DownloadItem::INTERRUPTED, true , false, false, false},
-    { DownloadItem::INTERRUPTED, true , true , false, false}
-  };
-
-  SetupDownloadItemDefaults();
-
-  for (const auto& test_case : kTestCases) {
-    EXPECT_CALL(item(), GetOpenWhenComplete())
-        .WillRepeatedly(Return(test_case.is_auto_open));
-    EXPECT_CALL(item(), GetState())
-        .WillRepeatedly(Return(test_case.state));
-    EXPECT_CALL(item(), IsDangerous())
-        .WillRepeatedly(Return(test_case.is_dangerous));
-    EXPECT_CALL(item(), GetAutoOpened())
-        .WillRepeatedly(Return(test_case.auto_opened));
-
-    EXPECT_EQ(test_case.expected_result,
-              model().ShouldRemoveFromShelfWhenComplete());
-    Mock::VerifyAndClearExpectations(&item());
-    Mock::VerifyAndClearExpectations(&model());
-  }
 }
 
 TEST_F(DownloadItemModelTest, ShouldShowDropdown) {
@@ -958,13 +896,11 @@ TEST_F(DownloadItemModelTest, RenamingProgress) {
   EXPECT_EQ(60, model().PercentComplete());
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 class DownloadItemModelTailoredWarningTest : public DownloadItemModelTest {
  public:
   DownloadItemModelTailoredWarningTest() {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    scoped_feature_list_.InitAndEnableFeature(
-        safe_browsing::kDownloadTailoredWarnings);
   }
 
   ~DownloadItemModelTailoredWarningTest() override = default;
@@ -972,22 +908,15 @@ class DownloadItemModelTailoredWarningTest : public DownloadItemModelTest {
  protected:
   void SetupTailoredWarningForItem(
       download::DownloadDangerType danger_type,
-      TailoredVerdict::TailoredVerdictType tailored_verdict_type,
-      std::vector<TailoredVerdict::ExperimentalWarningAdjustment> adjustments) {
+      TailoredVerdict::TailoredVerdictType tailored_verdict_type) {
     ON_CALL(item(), GetDangerType()).WillByDefault(Return(danger_type));
     TailoredVerdict tailored_verdict;
     tailored_verdict.set_tailored_verdict_type(tailored_verdict_type);
-    for (const auto& adjustment : adjustments) {
-      tailored_verdict.add_adjustments(adjustment);
-    }
     safe_browsing::DownloadProtectionService::SetDownloadProtectionData(
         &item(), "token",
         safe_browsing::ClientDownloadResponse::SAFE,  // placeholder
         tailored_verdict);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(DownloadItemModelTailoredWarningTest, GetTailoredWarningType) {
@@ -1023,50 +952,11 @@ TEST_F(DownloadItemModelTailoredWarningTest, GetTailoredWarningType) {
                  << "danger_type "
                  << GetDownloadDangerTypeString(test_case.danger_type));
     SetupTailoredWarningForItem(test_case.danger_type,
-                                test_case.tailored_verdict_type,
-                                /*adjustments=*/{});
+                                test_case.tailored_verdict_type);
     EXPECT_EQ(model().GetTailoredWarningType(),
               test_case.expected_warning_type);
     EXPECT_EQ(model().GetDangerUiPattern(), test_case.expected_danger_pattern);
   }
-
-  SetupTailoredWarningForItem(
-      download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
-      TailoredVerdict::COOKIE_THEFT,
-      /*adjustments=*/{TailoredVerdict::ACCOUNT_INFO_STRING});
-  EXPECT_EQ(model().GetTailoredWarningType(),
-            DownloadUIModel::TailoredWarningType::kCookieTheftWithAccountInfo);
-  EXPECT_EQ(model().GetDangerUiPattern(),
-            DownloadUIModel::DangerUiPattern::kDangerous);
 }
 
-class DownloadItemModelTailoredWarningDisabledTest
-    : public DownloadItemModelTailoredWarningTest {
- public:
-  DownloadItemModelTailoredWarningDisabledTest() {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    scoped_feature_list_.InitAndDisableFeature(
-        safe_browsing::kDownloadTailoredWarnings);
-  }
-
-  ~DownloadItemModelTailoredWarningDisabledTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(DownloadItemModelTailoredWarningDisabledTest,
-       GetBubbleUIInfoForTailoredWarning_Disabled) {
-  SetupDownloadItemDefaults();
-  SetupTailoredWarningForItem(
-      download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
-      TailoredVerdict::COOKIE_THEFT, /*adjustments=*/{});
-  EXPECT_EQ(model().GetTailoredWarningType(),
-            DownloadUIModel::TailoredWarningType::kNoTailoredWarning);
-  // This is dangerous despite kNoTailoredWarning, because the base
-  // danger_type is dangerous.
-  EXPECT_EQ(model().GetDangerUiPattern(),
-            DownloadUIModel::DangerUiPattern::kDangerous);
-}
-
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)

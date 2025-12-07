@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.payments;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.payments.mojom.PaymentShippingType;
 
 /** Container for custom shipping strings. */
+@NullMarked
 public class ShippingStrings {
     private final int mSummaryLabel;
     private final int mAddressLabel;

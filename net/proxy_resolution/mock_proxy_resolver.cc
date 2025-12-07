@@ -4,12 +4,11 @@
 
 #include "net/proxy_resolution/mock_proxy_resolver.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/check.h"
-#include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 
 namespace net {
 
@@ -66,7 +65,7 @@ int MockAsyncProxyResolver::GetProxyForURL(
 }
 
 void MockAsyncProxyResolver::AddCancelledJob(std::unique_ptr<Job> job) {
-  auto it = base::ranges::find(pending_jobs_, job.get());
+  auto it = std::ranges::find(pending_jobs_, job.get());
   // Because this is called always when RequestImpl is destructed,
   // we need to check if it is still in pending jobs.
   if (it != pending_jobs_.end()) {
@@ -77,8 +76,8 @@ void MockAsyncProxyResolver::AddCancelledJob(std::unique_ptr<Job> job) {
 
 void MockAsyncProxyResolver::RemovePendingJob(Job* job) {
   DCHECK(job);
-  auto it = base::ranges::find(pending_jobs_, job);
-  CHECK(it != pending_jobs_.end(), base::NotFatalUntil::M130);
+  auto it = std::ranges::find(pending_jobs_, job);
+  CHECK(it != pending_jobs_.end());
   pending_jobs_.erase(it);
 }
 
@@ -157,8 +156,8 @@ int MockAsyncProxyResolverFactory::CreateProxyResolver(
 }
 
 void MockAsyncProxyResolverFactory::RemovePendingRequest(Request* request) {
-  auto it = base::ranges::find(pending_requests_, request);
-  CHECK(it != pending_requests_.end(), base::NotFatalUntil::M130);
+  auto it = std::ranges::find(pending_requests_, request);
+  CHECK(it != pending_requests_.end());
   pending_requests_.erase(it);
 }
 

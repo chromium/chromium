@@ -7,28 +7,33 @@
 
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 
+@class UNNotification;
+
 class TestPushNotificationClient : public PushNotificationClient {
  public:
   TestPushNotificationClient(size_t client_id);
   ~TestPushNotificationClient() override;
 
   // Override PushNotificationClient::
-  void HandleNotificationInteraction(
+  bool CanHandleNotification(UNNotification* notification) override;
+  bool HandleNotificationInteraction(
       UNNotificationResponse* notification_response) override;
-  UIBackgroundFetchResult HandleNotificationReception(
+  std::optional<UIBackgroundFetchResult> HandleNotificationReception(
       NSDictionary<NSString*, id>* notification) override;
   NSArray<UNNotificationCategory*>* RegisterActionableNotifications() override;
 
   // Indicates whether the client has been
   bool HasNotificationReceivedInteraction();
   // Sets the client's UIBackgroundFetchResult to given FetchResult.
-  void SetBackgroundFetchResult(UIBackgroundFetchResult result);
+  void SetBackgroundFetchResult(std::optional<UIBackgroundFetchResult> result);
   void OnSceneActiveForegroundBrowserReady() override;
   bool IsBrowserReady();
+  void SetCanHandleNotification(bool can_handle_notification);
 
  private:
-  UIBackgroundFetchResult fetch_result_ = UIBackgroundFetchResultNoData;
+  std::optional<UIBackgroundFetchResult> fetch_result_ = std::nullopt;
   bool has_notification_received_interaction_ = false;
   bool is_browser_ready_ = false;
+  bool can_handle_notification_ = false;
 };
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_TEST_PUSH_NOTIFICATION_CLIENT_H_

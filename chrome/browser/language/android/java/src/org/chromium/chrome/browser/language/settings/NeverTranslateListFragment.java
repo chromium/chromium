@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.language.settings;
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.language.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.translate.TranslateBridge;
@@ -17,6 +19,7 @@ import java.util.Collection;
  * languages in the summary. Provides callbacks for adding and removing languages from the never
  * translate list in LanguageItemListFragment.
  */
+@NullMarked
 public class NeverTranslateListFragment extends LanguageItemListFragment {
     @Override
     protected LanguageItemListFragment.ListDelegate makeFragmentListDelegate() {
@@ -25,7 +28,7 @@ public class NeverTranslateListFragment extends LanguageItemListFragment {
 
     @Override
     protected String getLanguageListTitle(Context context) {
-        return context.getResources().getString(R.string.languages_settings_never_langs_title);
+        return context.getString(R.string.languages_settings_never_langs_title);
     }
 
     @Override
@@ -58,13 +61,18 @@ public class NeverTranslateListFragment extends LanguageItemListFragment {
     }
 
     @Override
-    protected void onLanguageAdded(String code) {
+    protected void onLanguageAdded(@Nullable String code) {
         TranslateBridge.setLanguageBlockedState(getProfile(), code, true);
     }
 
     @Override
     protected void onLanguageRemoved(String code) {
         TranslateBridge.setLanguageBlockedState(getProfile(), code, false);
+    }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
     }
 
     /**

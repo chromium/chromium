@@ -5,6 +5,7 @@ desc: |-
         If this policy is disabled, the network service process will run unsandboxed. This leaves users open to additional security risks related to running the network service unsandboxed.
         If this policy is not set, the default configuration for the network sandbox will be used. This may vary depending on <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> release, currently running field trials, and platform.
         This policy is intended to give enterprises flexibility to disable the network sandbox if they use third party software that interferes with the network service sandbox.
+default: null
 example_value: true
 features:
   dynamic_refresh: false
@@ -14,6 +15,8 @@ items:
   value: true
 - caption: Disable the network service sandbox
   value: false
+- caption: Use the default configuration for the network service sandbox
+  value: null
 owners:
 - wfh@chromium.org
 - file://services/network/OWNERS

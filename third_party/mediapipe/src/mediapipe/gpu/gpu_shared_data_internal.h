@@ -41,9 +41,9 @@
 
 namespace mediapipe {
 
-#ifdef __APPLE__
+#if MEDIAPIPE_METAL_ENABLED
 class MetalSharedResources;
-#endif  // defined(__APPLE__)
+#endif  // MEDIAPIPE_METAL_ENABLED
 
 // TODO: rename to GpuService or GpuManager or something.
 class GpuResources {
@@ -57,6 +57,12 @@ class GpuResources {
       PlatformGlContext external_context,
       const MultiPoolOptions* gpu_buffer_pool_options = nullptr);
 
+  // Creates a GpuResources instance that is shared with the GL context provided
+  // by the gpu_resources argument.
+  static StatusOrGpuResources Create(
+      const GpuResources& gpu_resources,
+      const MultiPoolOptions* gpu_buffer_pool_options = nullptr);
+
   // The destructor must be defined in the implementation file so that on iOS
   // the correct ARC release calls are generated.
   ~GpuResources();
@@ -65,16 +71,18 @@ class GpuResources {
 
   // Shared GL context for calculators.
   // TODO: require passing a context or node identifier.
-  const std::shared_ptr<GlContext>& gl_context() { return gl_context(nullptr); }
+  const std::shared_ptr<GlContext>& gl_context() const {
+    return gl_context(nullptr);
+  }
 
-  const std::shared_ptr<GlContext>& gl_context(CalculatorContext* cc);
+  const std::shared_ptr<GlContext>& gl_context(CalculatorContext* cc) const;
 
   // Shared buffer pool.
   GpuBufferMultiPool& gpu_buffer_pool() { return gpu_buffer_pool_; }
 
-#ifdef __APPLE__
+#if MEDIAPIPE_METAL_ENABLED
   MetalSharedResources& metal_shared() { return *metal_shared_; }
-#endif  // defined(__APPLE__)§
+#endif  // MEDIAPIPE_METAL_ENABLED
 
   absl::Status PrepareGpuNode(CalculatorNode* node);
 
@@ -108,9 +116,9 @@ class GpuResources {
   // ios_gpu_data, so the declaration order is important.
   GpuBufferMultiPool gpu_buffer_pool_;
 
-#ifdef __APPLE__
+#if MEDIAPIPE_METAL_ENABLED
   std::unique_ptr<MetalSharedResources> metal_shared_;
-#endif  // defined(__APPLE__)
+#endif  // MEDIAPIPE_METAL_ENABLED
 
   std::map<std::string, std::shared_ptr<Executor>> named_executors_;
 };

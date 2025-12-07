@@ -8,14 +8,14 @@
 #include "base/i18n/time_formatting.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
-#include "base/test/bind.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
-#include "chrome/browser/ash/file_manager/volume_manager.h"
-#include "chrome/browser/ash/file_manager/volume_manager_factory.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/test_file_system_context.h"
@@ -41,8 +41,8 @@ void TrashBaseTest::SetUp() {
   // Create the profile and add it to the user manager for DriveFS.
   profile_ =
       std::make_unique<TestingProfile>(base::FilePath(temp_dir_.GetPath()));
-  AccountId account_id =
-      AccountId::FromUserEmailGaiaId(profile_->GetProfileUserName(), "12345");
+  AccountId account_id = AccountId::FromUserEmailGaiaId(
+      profile_->GetProfileUserName(), GaiaId("12345"));
   fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
       account_id, /*is_affiliated=*/false, user_manager::UserType::kRegular,
       profile_.get());
@@ -61,35 +61,22 @@ void TrashBaseTest::SetUp() {
   downloads_dir_ = my_files_dir_.Append("Downloads");
   ASSERT_TRUE(base::CreateDirectory(downloads_dir_));
 
-  ash::ChunneldClient::InitializeFake();
-  ash::CiceroneClient::InitializeFake();
-  ash::ConciergeClient::InitializeFake();
   ash::CrosDisksClient::InitializeFake();
-  ash::SeneschalClient::InitializeFake();
 
-  // Ensure Crostini is setup correctly.
-  crostini_manager_ = crostini::CrostiniManager::GetForProfile(profile_.get());
-  crostini_manager_->AddRunningVmForTesting(crostini::kCrostiniDefaultVmName);
-  crostini_manager_->AddRunningContainerForTesting(
-      crostini::kCrostiniDefaultVmName,
-      crostini::ContainerInfo(crostini::kCrostiniDefaultContainerName,
-                              "testuser", "/remote/mount", "PLACEHOLDER_IP"));
+  // The TrashService launches a sandboxed process to perform parsing in, in
+  // unit tests this is not possible. So instead override the launcher to
+  // start an in-process TrashService and have `LaunchTrashService` invoke it.
+  ash::trash_service::SetTrashServiceLaunchOverrideForTesting(
+      base::BindRepeating(&TrashBaseTest::CreateInProcessTrashService,
+                          base::Unretained(this)));
+}
 
-  crostini_dir_ = temp_dir_.GetPath().Append("crostini");
-  ASSERT_TRUE(base::CreateDirectory(crostini_dir_));
-
-  VolumeManagerFactory::GetInstance()->SetTestingFactory(
-      profile_.get(),
-      base::BindLambdaForTesting([this](content::BrowserContext* context) {
-        return std::unique_ptr<KeyedService>(std::make_unique<VolumeManager>(
-            Profile::FromBrowserContext(context), nullptr, nullptr,
-            &disk_mount_manager_, nullptr,
-            VolumeManager::GetMtpStorageInfoCallback()));
-      }));
-  crostini_remote_mount_ = base::FilePath("/remote/mount");
-  auto* volume_manager = VolumeManager::Get(profile_.get());
-  volume_manager->AddVolumeForTesting(
-      Volume::CreateForSshfsCrostini(crostini_dir_, crostini_remote_mount_));
+mojo::PendingRemote<ash::trash_service::mojom::TrashService>
+TrashBaseTest::CreateInProcessTrashService() {
+  mojo::PendingRemote<ash::trash_service::mojom::TrashService> remote;
+  trash_service_impl_ = std::make_unique<ash::trash_service::TrashServiceImpl>(
+      remote.InitWithNewPipeAndPassReceiver());
+  return remote;
 }
 
 void TrashBaseTest::TearDown() {
@@ -97,11 +84,7 @@ void TrashBaseTest::TearDown() {
   storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
   profile_.reset();
   fake_user_manager_.Reset();
-  ash::SeneschalClient::Shutdown();
   ash::CrosDisksClient::Shutdown();
-  ash::ConciergeClient::Shutdown();
-  ash::CiceroneClient::Shutdown();
-  ash::ChunneldClient::Shutdown();
 }
 
 drive::DriveIntegrationService* TrashBaseTest::CreateDriveIntegrationService(
@@ -111,8 +94,8 @@ drive::DriveIntegrationService* TrashBaseTest::CreateDriveIntegrationService(
   fake_drivefs_helper_ =
       std::make_unique<drive::FakeDriveFsHelper>(profile, mount_point);
   integration_service_ = new drive::DriveIntegrationService(
-      profile, "", mount_point,
-      fake_drivefs_helper_->CreateFakeDriveFsListenerFactory());
+      TestingBrowserProcess::GetGlobal()->local_state(), profile, "",
+      mount_point, fake_drivefs_helper_->CreateFakeDriveFsListenerFactory());
   return integration_service_;
 }
 
@@ -179,6 +162,23 @@ bool TrashBaseTest::EnsureTrashDirectorySetup(
     return false;
   }
   return true;
+}
+
+TrashBaseIOTest::TrashBaseIOTest() = default;
+
+TrashBaseIOTest::~TrashBaseIOTest() = default;
+
+void TrashBaseIOTest::SetUp() {
+  TrashBaseTest::SetUp();
+
+  VolumeManagerFactory::GetInstance()->SetTestingFactory(
+      profile_.get(),
+      base::BindLambdaForTesting([this](content::BrowserContext* context) {
+        return std::unique_ptr<KeyedService>(std::make_unique<VolumeManager>(
+            Profile::FromBrowserContext(context), nullptr, nullptr,
+            &disk_mount_manager_, nullptr,
+            VolumeManager::GetMtpStorageInfoCallback()));
+      }));
 }
 
 }  // namespace file_manager::io_task

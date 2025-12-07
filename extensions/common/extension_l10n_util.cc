@@ -6,16 +6,19 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/containers/contains.h"
+#include "base/containers/extend.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
@@ -47,7 +50,7 @@ bool g_allow_gzipped_messages_for_test = false;
 // or there was parsing error we return null and set |error|. If
 // |gzip_permission| is kAllowForTrustedSource, this will also look for a .gz
 // version of the file and if found will decompresses it into a string first.
-std::unique_ptr<base::Value::Dict> LoadMessageFile(
+std::optional<base::Value::Dict> LoadMessageFile(
     const base::FilePath& locale_path,
     const std::string& locale,
     std::string* error,
@@ -55,14 +58,13 @@ std::unique_ptr<base::Value::Dict> LoadMessageFile(
   base::FilePath file_path =
       locale_path.AppendASCII(locale).Append(extensions::kMessagesFilename);
 
-  std::unique_ptr<base::Value::Dict> dictionary;
+  std::optional<base::Value::Dict> dictionary;
   if (base::PathExists(file_path)) {
     JSONFileValueDeserializer messages_deserializer(file_path);
     std::unique_ptr<base::Value> value =
         messages_deserializer.Deserialize(nullptr, error);
     if (value) {
-      dictionary =
-          std::make_unique<base::Value::Dict>(std::move(*value).TakeDict());
+      dictionary = std::move(*value).TakeDict();
     }
   } else if (gzip_permission == extension_l10n_util::GzippedMessagesPermission::
                                     kAllowForTrustedSource ||
@@ -83,12 +85,13 @@ std::unique_ptr<base::Value::Dict> LoadMessageFile(
                                     locale.c_str());
         return dictionary;
       }
-      JSONStringValueDeserializer messages_deserializer(data);
-      std::unique_ptr<base::Value> value =
-          messages_deserializer.Deserialize(nullptr, error);
-      if (value) {
-        dictionary =
-            std::make_unique<base::Value::Dict>(std::move(*value).TakeDict());
+      base::JSONReader::Result value =
+          base::JSONReader::ReadAndReturnValueWithError(
+              data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+      if (value.has_value()) {
+        dictionary = std::move(*value).TakeDict();
+      } else {
+        *error = value.error().message;
       }
     }
   } else {
@@ -417,8 +420,7 @@ void GetAllLocales(std::set<std::string>* all_locales) {
   // Add all parents of the current locale to the available locales set.
   // I.e. for sr_Cyrl_RS we add sr_Cyrl_RS, sr_Cyrl and sr.
   for (const auto& locale : available_locales) {
-    std::vector<std::string> result;
-    l10n_util::GetParentLocales(locale, &result);
+    std::vector<std::string> result = l10n_util::GetParentLocales(locale);
     all_locales->insert(result.begin(), result.end());
   }
 }
@@ -439,8 +441,10 @@ void GetAllFallbackLocales(const std::string& default_locale,
     all_fallback_locales->push_back(preferred_locale);
   }
 
-  if (!application_locale.empty() && application_locale != default_locale)
-    l10n_util::GetParentLocales(application_locale, all_fallback_locales);
+  if (!application_locale.empty() && application_locale != default_locale) {
+    base::Extend(*all_fallback_locales,
+                 l10n_util::GetParentLocales(application_locale));
+  }
   all_fallback_locales->push_back(default_locale);
 }
 
@@ -457,8 +461,7 @@ bool GetValidLocales(const base::FilePath& locale_path,
   while (!(locale_folder = locales.Next()).empty()) {
     std::string locale_name = locale_folder.BaseName().MaybeAsASCII();
     if (locale_name.empty()) {
-      NOTREACHED_IN_MIGRATION();
-      continue;  // Not ASCII.
+      NOTREACHED();  // Not ASCII.
     }
     if (!AddLocale(
             chrome_locales, locale_folder, locale_name, valid_locales, error)) {
@@ -489,9 +492,9 @@ extensions::MessageBundle* LoadMessageCatalogs(
     base::FilePath this_locale_path = locale_path.AppendASCII(fallback_locale);
     if (!base::PathExists(this_locale_path))
       continue;
-    std::unique_ptr<base::Value::Dict> catalog =
+    std::optional<base::Value::Dict> catalog =
         LoadMessageFile(locale_path, fallback_locale, error, gzip_permission);
-    if (!catalog.get()) {
+    if (!catalog.has_value()) {
       // If locale is valid, but messages.json is corrupted or missing, return
       // an error.
       return nullptr;
@@ -504,17 +507,27 @@ extensions::MessageBundle* LoadMessageCatalogs(
 
 bool ValidateExtensionLocales(const base::FilePath& extension_path,
                               const base::Value::Dict& manifest,
-                              std::string* error) {
-  std::string default_locale = GetDefaultLocaleFromManifest(manifest, error);
+                              std::u16string* error) {
+  // TODO(crbug.com/41317803): Continue removing std::string errors and
+  // replacing with std::u16string.
+  std::string utf8_error;
+  std::string default_locale =
+      GetDefaultLocaleFromManifest(manifest, &utf8_error);
 
-  if (default_locale.empty())
+  if (default_locale.empty()) {
+    *error = base::UTF8ToUTF16(utf8_error);
     return true;
+  }
 
   base::FilePath locale_path = extension_path.Append(extensions::kLocaleFolder);
 
   std::set<std::string> valid_locales;
-  if (!GetValidLocales(locale_path, &valid_locales, error))
+  // TODO(crbug.com/41317803): Continue removing std::string errors and
+  // replacing with std::u16string.
+  if (!GetValidLocales(locale_path, &valid_locales, &utf8_error)) {
+    *error = base::UTF8ToUTF16(utf8_error);
     return false;
+  }
 
   // Load each available localization file and check for errors within. This
   // entire method only gets used when reloading unpacked or packing extensions.
@@ -528,17 +541,22 @@ bool ValidateExtensionLocales(const base::FilePath& extension_path,
     if (locale_error.empty()) {
       continue;
     }
-    if (!error->empty()) {
-      *error += '\n';
+    if (!utf8_error.empty()) {
+      utf8_error += '\n';
     }
     base::FilePath file_path =
         locale_path.AppendASCII(locale).Append(extensions::kMessagesFilename);
-    error->append(extensions::ErrorUtils::FormatErrorMessage(
+    utf8_error.append(extensions::ErrorUtils::FormatErrorMessage(
         errors::kLocalesInvalidLocale,
         base::UTF16ToUTF8(file_path.LossyDisplayName()), locale_error));
   }
 
-  return error->empty();
+  if (!utf8_error.empty()) {
+    *error = base::UTF8ToUTF16(utf8_error);
+    return false;
+  }
+
+  return true;
 }
 
 bool ShouldSkipValidation(const base::FilePath& locales_path,
@@ -549,8 +567,7 @@ bool ShouldSkipValidation(const base::FilePath& locales_path,
   // '.svn' directories.
   base::FilePath relative_path;
   if (!locales_path.AppendRelativePath(locale_path, &relative_path)) {
-    NOTREACHED_IN_MIGRATION();
-    return true;
+    NOTREACHED();
   }
   std::string subdir = relative_path.MaybeAsASCII();
   if (subdir.empty())

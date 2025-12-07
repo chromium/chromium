@@ -1,7 +1,0 @@
-android.webkit.WebView focusable focused scrollable
-++android.view.View
-++++android.view.View name='Test for modal dialog closed in an iframe. '
-++++android.view.View
-++++++android.view.View scrollable
-++++++++android.view.View
-++++++++++android.widget.Button role_description='button' clickable focusable name='I am a non-inert button!'

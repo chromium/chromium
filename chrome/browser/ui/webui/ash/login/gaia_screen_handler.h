@@ -10,21 +10,21 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/ash/http_auth_dialog.h"
+#include "chrome/browser/ash/certificate_provider/security_token_pin_dialog_host.h"
 #include "chrome/browser/ash/login/login_client_cert_usage_observer.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ash/login/signin/authentication_flow_auto_reload_manager.h"
 #include "chrome/browser/ash/login/wizard_context.h"
-#include "chrome/browser/certificate_provider/security_token_pin_dialog_host.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
+#include "chromeos/ash/components/http_auth_dialog/http_auth_dialog.h"
 #include "chromeos/components/security_token_pin/constants.h"
 #include "components/user_manager/user_type.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
@@ -187,16 +187,6 @@ class GaiaScreenHandler final
   void SetNextSamlChallengeKeyHandlerForTesting(
       std::unique_ptr<SamlChallengeKeyHandler> handler_for_test);
 
-  // To avoid spurious error messages on flaky networks, the offline message is
-  // only shown if the network is offline for a threshold number of seconds.
-  // This method provides an ability to reduce the threshold to zero, allowing
-  // the offline message to show instantaneously in tests. The threshold can
-  // also be set to a high value to disable the offline message on slow
-  // configurations like MSAN, where it otherwise triggers on every run.
-  void set_offline_timeout_for_testing(base::TimeDelta offline_timeout) {
-    offline_timeout_ = offline_timeout;
-  }
-
   // TODO(https://issuetracker.google.com/292489063): Remove these methods to
   // query the frame state, and instead, allow registering callbacks or futures
   // to learn of the relevant state transitions e.g. with an Observer class.
@@ -350,9 +340,11 @@ class GaiaScreenHandler final
   // Gaia sign-in page.
   bool IsGaiaHiddenByError();
 
-  // After proxy auth information has been supplied, this function re-enables
-  // responding to network state notifications.
-  void ReenableNetworkStateUpdatesAfterProxyAuth();
+  // After proxy auth is cancelled or information has been supplied, this
+  // function re-enables responding to network state notifications, and
+  // reactivates the authentication flow autoreload functionality (if enabled by
+  // policy).
+  void OnProxyAuthDone();
 
   // Error screen hide callback which records error screen metrics and shows
   // GAIA.
@@ -475,8 +467,7 @@ class GaiaScreenHandler final
   base::CancelableOnceCallback<void()> update_state_callback_;
   base::CancelableOnceCallback<void()> connecting_callback_;
 
-  // Once Lacros is shipped, this will no longer be necessary.
-  std::unique_ptr<HttpAuthDialog::ScopedEnabler> enable_ash_httpauth_;
+  std::unique_ptr<HttpAuthDialog::ScopedEnabler> enable_system_httpauth_;
 
   // Whether we're currently ignoring network state updates because a proxy auth
   // UI pending (or we're waiting for a grace period after the proxy auth UI is
@@ -496,12 +487,6 @@ class GaiaScreenHandler final
   // True if we need to reload gaia page to bring back "Proxy authentication"
   // dialog.
   bool proxy_auth_dialog_need_reload_ = false;
-
-  bool is_offline_timeout_for_test_set_ = false;
-
-  // Timeout to delay first notification about offline state for a
-  // current network.
-  base::TimeDelta offline_timeout_ = base::Seconds(1);
 
   std::unique_ptr<ErrorScreensHistogramHelper> histogram_helper_;
 

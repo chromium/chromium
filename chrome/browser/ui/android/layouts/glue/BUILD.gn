@@ -8,6 +8,8 @@ android_library("java") {
   visibility = [
     ":*",
     "//chrome/android:chrome_java",
+    "//chrome/android/junit:*",
+    "//chrome/browser/ui/plus_addresses/android:junit",
   ]
 
   sources = [

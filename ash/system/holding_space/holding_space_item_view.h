@@ -127,10 +127,10 @@ class ASH_EXPORT HoldingSpaceItemView : public views::View,
   bool selected_ = false;
 
   // Subscription to be notified of `item_` deletion.
-  base::RepeatingClosureList::Subscription item_deletion_subscription_;
+  base::CallbackListSubscription item_deletion_subscription_;
 
   // Subscription to be notified of changes to `delegate_''s selection UI.
-  base::RepeatingClosureList::Subscription selection_ui_changed_subscription_;
+  base::CallbackListSubscription selection_ui_changed_subscription_;
 
   base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
       model_observer_{this};

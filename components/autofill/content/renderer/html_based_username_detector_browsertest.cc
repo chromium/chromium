@@ -21,7 +21,6 @@ using blink::WebLocalFrame;
 using blink::WebString;
 
 namespace autofill {
-
 namespace {
 
 struct TextField {
@@ -85,7 +84,7 @@ class HtmlBasedUsernameDetectorTest : public content::RenderViewTest {
 
   WebFormElement GetFormElement() {
     const WebLocalFrame* frame = GetMainFrame();
-    const blink::WebVector<WebFormElement>& forms =
+    const std::vector<WebFormElement>& forms =
         frame->GetDocument().GetTopLevelForms();
     EXPECT_EQ(1U, forms.size());
     EXPECT_TRUE(forms[0]);
@@ -94,10 +93,7 @@ class HtmlBasedUsernameDetectorTest : public content::RenderViewTest {
   }
 
   std::vector<WebFormControlElement> GetFormControlElements() {
-    const WebFormElement& form = GetFormElement();
-    blink::WebVector<WebFormControlElement> control_elements =
-        form.GetFormControlElements();
-    return control_elements.ReleaseVector();
+    return GetFormElement().GetFormControlElements();  // nocheck
   }
 
   void PredictAndCheckUsernameId(const std::string& html,
@@ -120,8 +116,6 @@ class HtmlBasedUsernameDetectorTest : public content::RenderViewTest {
     EXPECT_EQ(expected_renderer_id, renderer_ids[0]);
   }
 };
-
-}  // namespace
 
 TEST_F(HtmlBasedUsernameDetectorTest, DeveloperGroupAttributes) {
   // Each test case consists of a set of parameters to be plugged into
@@ -283,10 +277,10 @@ TEST_F(HtmlBasedUsernameDetectorTest, SeveralDetections) {
 }
 
 TEST_F(HtmlBasedUsernameDetectorTest, HTMLDetectorCache) {
-  const TextField text_fields[] = {
+  const auto text_fields = std::to_array<TextField>({
       {"unknown", "12345"},
       {"something", "smith"},
-  };
+  });
 
   const std::string& form_html = GetFormHTML(text_fields[0], text_fields[1]);
 
@@ -341,4 +335,5 @@ TEST_F(HtmlBasedUsernameDetectorTest, HTMLDetectorCache) {
             cache.begin()->second[0]);
 }
 
+}  // namespace
 }  // namespace autofill

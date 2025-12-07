@@ -72,7 +72,6 @@ function refreshNavigationRootsReducer(currentState: State): State {
     navigation: {roots: previousRoots},
     folderShortcuts,
     androidApps,
-    materializedViews,
   } = currentState;
 
   /** Roots in the desired order. */
@@ -80,7 +79,7 @@ function refreshNavigationRootsReducer(currentState: State): State {
   /** Set to avoid adding the same entry multiple times. */
   const processedEntryKeys = new Set<NavigationKey>();
 
-  // Add the Recent/Materialized view root.
+  // Add the Recent view root.
   const recentRoot = previousRoots.find(root => root.key === recentRootKey);
   if (recentRoot) {
     roots.push(recentRoot);
@@ -96,18 +95,6 @@ function refreshNavigationRootsReducer(currentState: State): State {
         type: NavigationType.RECENT,
       });
       processedEntryKeys.add(recentRootKey);
-    }
-  }
-
-  // Add Starred files.
-  for (const view of materializedViews) {
-    if (view.isRoot) {
-      roots.push({
-        key: view.key,
-        section: NavigationSection.TOP,
-        separator: false,
-        type: NavigationType.MATERIALIZED_VIEW,
-      });
     }
   }
 

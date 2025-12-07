@@ -38,7 +38,13 @@ import zip_util
 # below are common. At library splitting time, llvm-objcopy pulls what's needed
 # from these sections into the new libraries. Hence, the ELF sections will end
 # up smaller than the combined .map file sections.
-_SECTION_SIZE_BLOCKLIST = ['.symtab', '.shstrtab', '.strtab']
+# Also: .shstrtab gets smaller after stripping a debug binary.
+# Also: .ARM.attributes is an arm32-only section that appears after .debug
+# sections, so is absent in map file sections (which stop when they find
+# .debug). .part.end likewise is different in map file vs readelf.
+_SECTION_SIZE_BLOCKLIST = [
+    '.shstrtab', '.ARM.attributes', models.SECTION_PART_END
+]
 
 # A limit on the number of symbols an address can have, before these symbols
 # are compacted into shared symbols. Increasing this value causes more data
@@ -66,25 +72,29 @@ class _OutputDirectoryContext:
 
 @dataclasses.dataclass
 class ElfInfo:
+  path: str  # File path
   architecture: str  # Results of ArchFromElf().
   build_id: str  # Result of BuildIdFromElf().
   section_ranges: dict  # Results of SectionInfoFromElf().
   size: int  # Result of os.path.getsize().
 
-  def OverheadSize(self):
-    section_sizes_total_without_bss = sum(
-        size for k, (_, size) in self.section_ranges.items()
-        if k not in models.BSS_SECTIONS)
-    ret = self.size - section_sizes_total_without_bss
-    assert ret >= 0, 'Negative ELF overhead {}'.format(ret)
-    return ret
-
 
 def _CreateElfInfo(elf_path):
-  return ElfInfo(architecture=readelf.ArchFromElf(elf_path),
+  return ElfInfo(path=elf_path,
+                 architecture=readelf.ArchFromElf(elf_path),
                  build_id=readelf.BuildIdFromElf(elf_path),
                  section_ranges=readelf.SectionInfoFromElf(elf_path),
                  size=os.path.getsize(elf_path))
+
+
+def _ComputeUnattributedElfSize(elf_info, section_ranges):
+  sum_without_bss = sum(s for k, (_, s) in section_ranges.items()
+                        if k not in models.BSS_SECTIONS)
+  ret = elf_info.size - sum_without_bss
+  assert ret >= 0, (
+      f'Negative ELF overhead for {elf_info.path}: overhead={ret} '
+      f'size={elf_info.size}.\nsections: {section_ranges}\n')
+  return ret
 
 
 def _AddSourcePathsUsingObjectPaths(ninja_source_mapper, raw_symbols):
@@ -399,7 +409,9 @@ def _ResolveThinArchivePaths(raw_symbols, thin_archives):
 
 
 def _DeduceObjectPathForSwitchTables(raw_symbols, object_paths_by_name):
-  strip_num_suffix_regexp = re.compile(r'\s+\(\.\d+\)$')
+  # Example: foo (.67.rel)
+  # Example: bar (.67)
+  strip_num_suffix_regexp = re.compile(r'\s+\(\.\d+.*?\)$')
   num_switch_tables = 0
   num_unassigned = 0
   num_deduced = 0
@@ -422,7 +434,8 @@ def _DeduceObjectPathForSwitchTables(raw_symbols, object_paths_by_name):
           if len(object_paths) > 1:
             num_arbitrations += 1
       else:
-        assert object_paths and s.object_path in object_paths
+        assert object_paths, 'Name was: ' + name
+        assert s.object_path in object_paths, s.object_path
   if num_switch_tables > 0:
     logging.info(
         'Found %d switch tables: Deduced %d object paths with ' +
@@ -430,15 +443,14 @@ def _DeduceObjectPathForSwitchTables(raw_symbols, object_paths_by_name):
         num_deduced, num_arbitrations, num_unassigned)
 
 
-def _ParseElfInfo(native_spec, outdir_context=None):
+def _AnalyzeElf(native_spec, elf_info, outdir_context=None):
   """Adds ELF section ranges and symbols."""
   assert native_spec.map_path or native_spec.elf_path, (
       'Need a linker map or an ELF file.')
   assert native_spec.map_path or not native_spec.track_string_literals, (
       'track_string_literals not yet implemented without map file')
   if native_spec.elf_path:
-    elf_section_ranges = readelf.SectionInfoFromElf(native_spec.elf_path)
-
+    elf_section_ranges = elf_info.section_ranges
     # Run nm on the elf file to retrieve the list of symbol names per-address.
     # This list is required because the .map file contains only a single name
     # for each address, yet multiple symbols are often coalesced when they are
@@ -468,26 +480,29 @@ def _ParseElfInfo(native_spec, outdir_context=None):
     if outdir_context and outdir_context.thin_archives:
       _ResolveThinArchivePaths(raw_symbols, outdir_context.thin_archives)
   else:
+    map_section_ranges = None
     logging.info('Collecting symbols from nm')
     raw_symbols = nm.CreateUniqueSymbols(native_spec.elf_path,
                                          elf_section_ranges)
 
   if native_spec.elf_path and native_spec.map_path:
     logging.debug('Validating section sizes')
-    differing_elf_section_sizes = {}
-    differing_map_section_sizes = {}
-    for k, (_, elf_size) in elf_section_ranges.items():
+    differing_elf_section_ranges = {}
+    differing_map_section_ranges = {}
+    for k in sorted(set(elf_section_ranges) | set(map_section_ranges)):
       if k in _SECTION_SIZE_BLOCKLIST:
         continue
-      _, map_size = map_section_ranges.get(k)
-      if map_size != elf_size:
-        differing_map_section_sizes[k] = map_size
-        differing_elf_section_sizes[k] = elf_size
-    if differing_map_section_sizes:
-      logging.error('ELF file and .map file do not agree on section sizes.')
-      logging.error('readelf: %r', differing_elf_section_sizes)
-      logging.error('.map file: %r', differing_map_section_sizes)
-      sys.exit(1)
+      elf_range = elf_section_ranges.get(k, (-1, -1))
+      map_range = map_section_ranges.get(k, (-1, -1))
+      # This should compare the whole range, but our test data has not been
+      # updated to have the addresses match (only the sizes).
+      if map_range[1] != elf_range[1]:
+        differing_elf_section_ranges[k] = elf_range
+        differing_map_section_ranges[k] = map_range
+    if differing_map_section_ranges:
+      raise Exception('ELF file and .map file do not agree on section sizes.\n'
+                      f'readelf: {differing_elf_section_ranges}\n'
+                      f'.map file: {differing_map_section_ranges}\n')
 
   if native_spec.elf_path and native_spec.map_path and outdir_context:
     missed_object_paths = _DiscoverMissedObjectPaths(
@@ -564,10 +579,7 @@ def _ParseElfInfo(native_spec, outdir_context=None):
     for sym, data in sym_and_string_literals:
       sym.full_name = string_extract.GetNameOfStringLiteralBytes(data)
 
-  # If we have an ELF file, use its ranges as the source of truth, since some
-  # sections can differ from the .map.
-  return (elf_section_ranges if native_spec.elf_path else map_section_ranges,
-          raw_symbols, object_paths_by_name)
+  return map_section_ranges, raw_symbols, object_paths_by_name
 
 
 def _AddUnattributedSectionSymbols(raw_symbols, section_ranges, source_path):
@@ -584,6 +596,12 @@ def _AddUnattributedSectionSymbols(raw_symbols, section_ranges, source_path):
     for sym in group:
       pass
     end_address = sym.end_address  # pylint: disable=undefined-loop-variable
+    section_range = section_ranges.get(section_name)
+    if not section_range:
+      logging.warning(
+          'Found symbol(s) in invalid section %s\nSection ranges: %s', sym,
+          section_ranges)
+      continue
     size_from_syms = end_address - section_ranges[section_name][0]
     overhead = section_ranges[section_name][1] - size_from_syms
     assert overhead >= 0, (
@@ -631,34 +649,28 @@ def _AddUnattributedSectionSymbols(raw_symbols, section_ranges, source_path):
   # Merge |new_syms_by_section| into |raw_symbols| while maintaining ordering.
   for section_name, group in itertools.groupby(
       raw_symbols, lambda s: s.section_name):
+    if section_name not in section_ranges:
+      # We log an warning about this above already.
+      continue
     ret.extend(group)
     ret.extend(new_syms_by_section[section_name])
   return ret, other_symbols
 
 
-def _ParseNinjaFiles(output_directory, elf_path=None):
-  linker_elf_path = elf_path
-  if elf_path:
-    # For partitioned libraries, the actual link command outputs __combined.so.
-    partitioned_elf_path = elf_path.replace('.so', '__combined.so')
-    if os.path.exists(partitioned_elf_path):
-      linker_elf_path = partitioned_elf_path
+def ParseNinjaFiles(output_directory, elf_paths_to_find_inputs_for=None):
+  logging.info('Parsing ninja files')
+  ninja_source_mapper = ninja_parser.Parse(output_directory,
+                                           elf_paths_to_find_inputs_for)
+  logging.debug('Parsed %d .ninja files. Linker inputs=%d of %d',
+                ninja_source_mapper.parsed_file_count,
+                ninja_source_mapper.inputs_map_count,
+                len(elf_paths_to_find_inputs_for))
+  if elf_paths_to_find_inputs_for:
+    for path in elf_paths_to_find_inputs_for:
+      assert ninja_source_mapper.GetInputsForBinary(path), (
+          'Failed to find any link commands in ninja files for ' + path)
 
-  logging.info('Parsing ninja files, looking for %s.',
-               (linker_elf_path or 'source mapping only (elf_path=None)'))
-
-  source_mapper, ninja_elf_object_paths = ninja_parser.Parse(
-      output_directory, linker_elf_path)
-
-  logging.debug('Parsed %d .ninja files. Linker inputs=%d',
-                source_mapper.parsed_file_count,
-                len(ninja_elf_object_paths or []))
-  if elf_path:
-    assert ninja_elf_object_paths, (
-        'Failed to find link command in ninja files for ' +
-        os.path.relpath(linker_elf_path, output_directory))
-
-  return source_mapper, ninja_elf_object_paths
+  return ninja_source_mapper
 
 
 def _ElfInfoFromApk(apk_path, apk_so_path):
@@ -670,7 +682,7 @@ def _CountRelocationsFromElf(elf_path):
   args = [path_util.GetReadElfPath(), '-r', elf_path]
   stdout = subprocess.check_output(args).decode('ascii')
   relocations = re.findall(
-      'Relocation section .* at offset .* contains (\d+) entries', stdout)
+      r'Relocation section .* at offset .* contains (\d+) entries', stdout)
   return sum([int(i) for i in relocations])
 
 
@@ -697,8 +709,8 @@ def CreateMetadata(*, native_spec, elf_info, shorten_path):
   if native_spec.elf_path:
     native_metadata[models.METADATA_ELF_FILENAME] = shorten_path(
         native_spec.elf_path)
-    timestamp_obj = datetime.datetime.utcfromtimestamp(
-        os.path.getmtime(native_spec.elf_path))
+    timestamp_obj = datetime.datetime.fromtimestamp(
+        os.path.getmtime(native_spec.elf_path), datetime.timezone.utc)
     timestamp = calendar.timegm(timestamp_obj.timetuple())
     native_metadata[models.METADATA_ELF_MTIME] = timestamp
 
@@ -712,6 +724,7 @@ def CreateSymbols(*,
                   apk_spec,
                   native_spec,
                   output_directory=None,
+                  ninja_source_mapper=None,
                   pak_id_map=None):
   """Creates native symbols for the given native_spec.
 
@@ -720,6 +733,7 @@ def CreateSymbols(*,
     native_spec: Instance of NativeSpec.
     output_directory: Build output directory. If None, source_paths and symbol
         alias information will not be recorded.
+    ninja_source_mapper: From ninja_parser.Parse()
     pak_id_map: Instance of PakIdMap.
 
   Returns:
@@ -733,15 +747,15 @@ def CreateSymbols(*,
         _ElfInfoFromApk, (apk_spec.apk_path, native_spec.apk_so_path))
 
   raw_symbols = []
-  ninja_source_mapper = None
   dwarf_source_mapper = None
-  section_ranges = {}
   ninja_elf_object_paths = None
   metrics_by_file = {}
-  if output_directory and native_spec.map_path:
+  if ninja_source_mapper and native_spec.map_path:
     # Finds all objects passed to the linker and creates a map of .o -> .cc.
-    ninja_source_mapper, ninja_elf_object_paths = _ParseNinjaFiles(
-        output_directory, native_spec.elf_path)
+    elf_path = native_spec.combined_elf_path or native_spec.elf_path
+    if elf_path:
+      ninja_elf_object_paths = ninja_source_mapper.GetInputsForBinary(elf_path)
+      assert ninja_elf_object_paths, 'Failed to find link step for ' + elf_path
   elif native_spec.elf_path:
     logging.info('Parsing source path info via dwarfdump')
     dwarf_source_mapper = dwarfdump.CreateAddressSourceMapper(
@@ -762,7 +776,7 @@ def CreateSymbols(*,
     known_inputs = None
     # When we don't know which elf file is used, just search all paths.
     # TODO(agrieve): Seems to be used only for tests. Remove?
-    if ninja_source_mapper:
+    if ninja_source_mapper and native_spec.map_path:
       thin_archives = set(
           p for p in ninja_source_mapper.IterAllPaths() if p.endswith('.a')
           and ar.IsThinArchive(os.path.join(output_directory, p)))
@@ -779,17 +793,6 @@ def CreateSymbols(*,
     toolchain_subdirs = None
     outdir_context = None
 
-  object_paths_by_name = None
-  if native_spec.elf_path or native_spec.map_path:
-    section_ranges, raw_symbols, object_paths_by_name = _ParseElfInfo(
-        native_spec, outdir_context=outdir_context)
-    if pak_id_map and native_spec.map_path:
-      # For trichrome, pak files are in different apks than native library,
-      # so need to pass along pak_id_map separately and ensure
-      # TrichromeLibrary appears first in .ssargs file.
-      logging.debug('Extracting pak IDs from symbol names')
-      pak_id_map.Update(object_paths_by_name, ninja_source_mapper)
-
   elf_info = None
   if apk_elf_info_result:
     logging.debug('Extracting section sizes from .so within .apk')
@@ -803,16 +806,33 @@ def CreateSymbols(*,
                                                       elf_info.build_id))
   elif native_spec.elf_path:
     # Strip ELF before capturing section information to avoid recording
-    # debug sections.
+    # debug sections (and .shstrtab gets smaller as well).
     with tempfile.NamedTemporaryFile(
         suffix=os.path.basename(native_spec.elf_path)) as f:
       strip_path = path_util.GetStripPath()
-      subprocess.run([strip_path, '-o', f.name, native_spec.elf_path],
+      subprocess.run([
+          strip_path, '--strip-debug', '--strip-unneeded', '-o', f.name,
+          native_spec.elf_path
+      ],
                      check=True)
       elf_info = _CreateElfInfo(f.name)
 
+  object_paths_by_name = None
+  if native_spec.elf_path or native_spec.map_path:
+    section_ranges, raw_symbols, object_paths_by_name = _AnalyzeElf(
+        native_spec, elf_info, outdir_context=outdir_context)
+    if pak_id_map and native_spec.map_path:
+      # For trichrome, pak files are in different apks than native library,
+      # so need to pass along pak_id_map separately and ensure
+      # TrichromeLibrary appears first in .ssargs file.
+      logging.debug('Extracting pak IDs from symbol names')
+      pak_id_map.Update(object_paths_by_name, ninja_source_mapper)
+
   if elf_info:
+    # Prefer the readelf output, since the size of .shstrtab changes after
+    # removing debug sections.
     section_ranges = elf_info.section_ranges.copy()
+
     if native_spec.elf_path:
       key = posixpath.basename(native_spec.elf_path)
       metrics_by_file[key] = {
@@ -831,11 +851,13 @@ def CreateSymbols(*,
         models.NATIVE_PREFIX_PATH, posixpath.basename(native_spec.apk_so_path),
         elf_info.architecture)
 
+  if elf_info:
+    elf_overhead_size = _ComputeUnattributedElfSize(elf_info, section_ranges)
+
   raw_symbols, other_symbols = _AddUnattributedSectionSymbols(
       raw_symbols, section_ranges, source_path)
 
   if elf_info:
-    elf_overhead_size = elf_info.OverheadSize()
     elf_overhead_symbol = models.Symbol(models.SECTION_OTHER,
                                         elf_overhead_size,
                                         full_name='Overhead: ELF file',

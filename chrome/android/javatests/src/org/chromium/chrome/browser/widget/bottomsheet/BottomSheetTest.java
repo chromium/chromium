@@ -15,6 +15,7 @@ import static org.chromium.chrome.browser.flags.ChromeSwitches.DISABLE_FIRST_RUN
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.FrameLayout;
 
 import androidx.test.filters.MediumTest;
@@ -27,11 +28,15 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.ContentPriority;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
@@ -40,20 +45,24 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.browser_ui.bottomsheet.TestBottomSheetContent;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /** This class tests the functionality of the {@link BottomSheet}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+@Restriction(DeviceFormFactor.PHONE)
 @CommandLineFlags.Add({DISABLE_FIRST_RUN_EXPERIENCE})
 public class BottomSheetTest {
     private static final float VELOCITY_WHEN_MOVING_UP = 1.0f;
     private static final float VELOCITY_WHEN_MOVING_DOWN = -1.0f;
 
-    @Rule public ChromeTabbedActivityTestRule mTestRule = new ChromeTabbedActivityTestRule();
+    @Rule
+    public FreshCtaTransitTestRule mTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    private WebPageStation mPage;
     private TestBottomSheetContent mLowPriorityContent;
     private TestBottomSheetContent mHighPriorityContent;
     private BottomSheetController mSheetController;
@@ -63,9 +72,9 @@ public class BottomSheetTest {
     @Before
     public void setUp() throws Exception {
         BottomSheetTestSupport.setSmallScreen(false);
-        mTestRule.startMainActivityOnBlankPage();
+        mPage = mTestRule.startOnBlankPage();
         mSheetController =
-                mTestRule.getActivity().getRootUiCoordinatorForTesting().getBottomSheetController();
+                mPage.getActivity().getRootUiCoordinatorForTesting().getBottomSheetController();
         mTestSupport = new BottomSheetTestSupport(mSheetController);
 
         runOnUiThreadBlocking(
@@ -229,14 +238,16 @@ public class BottomSheetTest {
                 mTestRule.getActivity().getRootUiCoordinatorForTesting().getToolbarManager();
         showContent(mHighPriorityContent, SheetState.HALF);
 
-        runOnUiThreadBlocking(() -> toolbarManager.setUrlBarFocus(true, 0));
+        runOnUiThreadBlocking(
+                () -> toolbarManager.setUrlBarFocus(true, OmniboxFocusReason.OMNIBOX_TAP));
 
         assertEquals(
                 "The bottom sheet should be hidden.",
                 SheetState.HIDDEN,
                 mSheetController.getSheetState());
 
-        runOnUiThreadBlocking(() -> toolbarManager.setUrlBarFocus(false, 0));
+        runOnUiThreadBlocking(
+                () -> toolbarManager.setUrlBarFocus(false, OmniboxFocusReason.OMNIBOX_TAP));
 
         assertNotEquals(
                 "The bottom sheet should not be hidden.",
@@ -356,6 +367,60 @@ public class BottomSheetTest {
         BottomSheetTestSupport.waitForState(mSheetController, SheetState.FULL);
 
         assertEquals(endingHeight, mSheetController.getCurrentOffset());
+    }
+
+    @Test
+    @MediumTest
+    public void testAdditionalBottomOffset() {
+        final int height = 300;
+        final int margin = 100;
+        final int edgeToEdgeInset = 50;
+
+        runOnUiThreadBlocking(
+                () -> {
+                    // Set up content view.
+                    final ViewGroup contentView = new FrameLayout(mTestRule.getActivity());
+                    View child = new View(mTestRule.getActivity());
+                    child.setLayoutParams(
+                            new ViewGroup.LayoutParams(
+                                    ViewGroup.LayoutParams.MATCH_PARENT, height));
+                    contentView.addView(child);
+
+                    // Set up bottom sheet.
+                    TestBottomSheetContent testBottomSheetContent =
+                            new TestBottomSheetContent(
+                                    mTestRule.getActivity(),
+                                    ContentPriority.HIGH,
+                                    false,
+                                    contentView);
+                    testBottomSheetContent.setFullHeightRatio(HeightMode.WRAP_CONTENT);
+                    testBottomSheetContent.setHalfHeightRatio(HeightMode.DISABLED);
+                    testBottomSheetContent.setPeekHeight(HeightMode.DISABLED);
+
+                    // Show content view in bottom sheet.
+                    mSheetController.requestShowContent(testBottomSheetContent, false);
+                });
+
+        BottomSheetTestSupport.waitForState(mSheetController, SheetState.FULL);
+        assertEquals(height, mSheetController.getCurrentOffset());
+
+        // Change bottom margin; the margin and height should change.
+        runOnUiThreadBlocking(
+                () -> {
+                    mTestSupport.setEdgeToEdgeBottomInsetSupplier(() -> edgeToEdgeInset);
+                    mTestSupport.setBottomMargin(margin);
+                });
+
+        CriteriaHelper.pollUiThread(
+                () ->
+                        mTestSupport.getSheetContainer().getPaddingBottom() == 0
+                                && ((MarginLayoutParams)
+                                                        mTestSupport
+                                                                .getSheetContainer()
+                                                                .getLayoutParams())
+                                                .bottomMargin
+                                        == margin
+                                && !mTestSupport.getSheetContainer().isLayoutRequested());
     }
 
     private void hideSheet() {

@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <string>
@@ -15,7 +16,6 @@
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "ui/base/models/tree_model.h"
 
 namespace ui {
@@ -137,7 +137,7 @@ class TreeNode : public TreeModelNode {
   std::optional<size_t> GetIndexOf(const NodeType* node) const {
     DCHECK(node);
     const auto i =
-        base::ranges::find(children_, node, &std::unique_ptr<NodeType>::get);
+        std::ranges::find(children_, node, &std::unique_ptr<NodeType>::get);
     return i != children_.end()
                ? std::make_optional(static_cast<size_t>(i - children_.begin()))
                : std::nullopt;
@@ -285,18 +285,17 @@ class TreeNodeModel : public TreeModel {
   }
 
   void NotifyObserverTreeNodeAdded(NodeType* parent, size_t index) {
-    for (TreeModelObserver& observer : observer_list_)
-      observer.TreeNodeAdded(this, parent, index);
+    observer_list_.Notify(&TreeModelObserver::TreeNodeAdded, this, parent,
+                          index);
   }
 
   void NotifyObserverTreeNodeRemoved(NodeType* parent, size_t index) {
-    for (TreeModelObserver& observer : observer_list_)
-      observer.TreeNodeRemoved(this, parent, index);
+    observer_list_.Notify(&TreeModelObserver::TreeNodeRemoved, this, parent,
+                          index);
   }
 
   void NotifyObserverTreeNodeChanged(TreeModelNode* node) {
-    for (TreeModelObserver& observer : observer_list_)
-      observer.TreeNodeChanged(this, node);
+    observer_list_.Notify(&TreeModelObserver::TreeNodeChanged, this, node);
   }
 
   // TreeModel:
@@ -318,8 +317,8 @@ class TreeNodeModel : public TreeModel {
     const auto& children = AsNode(parent)->children();
     Nodes nodes;
     nodes.reserve(children.size());
-    base::ranges::transform(children, std::back_inserter(nodes),
-                            &TreeNode<NodeType>::TreeNodes::value_type::get);
+    std::ranges::transform(children, std::back_inserter(nodes),
+                           &TreeNode<NodeType>::TreeNodes::value_type::get);
     return nodes;
   }
 

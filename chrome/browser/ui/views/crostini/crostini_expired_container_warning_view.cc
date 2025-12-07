@@ -4,11 +4,12 @@
 
 #include "chrome/browser/ui/views/crostini/crostini_expired_container_warning_view.h"
 
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_dialog.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
@@ -45,14 +46,15 @@ CrostiniExpiredContainerWarningView::CrostiniExpiredContainerWarningView(
   callbacks_.push_back(std::move(callback));
 
   // Make the dialog modal to force the user to make a decision.
-  SetModalType(ui::MODAL_TYPE_SYSTEM);
+  SetModalType(ui::mojom::ModalType::kSystem);
 
   SetTitle(IDS_CROSTINI_EXPIRED_CONTAINER_WARNING_TITLE);
-  SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |
+             static_cast<int>(ui::mojom::DialogButton::kCancel));
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  l10n_util::GetStringUTF16(
                      IDS_CROSTINI_EXPIRED_CONTAINER_WARNING_CONTINUE_BUTTON));
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(
                      IDS_CROSTINI_EXPIRED_CONTAINER_WARNING_UPGRADE_BUTTON));
   SetShowCloseButton(false);
@@ -81,8 +83,8 @@ CrostiniExpiredContainerWarningView::CrostiniExpiredContainerWarningView(
       },
       weak_ptr_factory_.GetWeakPtr()));
 
-  set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_STANDALONE_BUBBLE_PREFERRED_WIDTH));
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   views::LayoutProvider* provider = views::LayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -95,7 +97,7 @@ CrostiniExpiredContainerWarningView::CrostiniExpiredContainerWarningView(
   views::Label* message_label = new views::Label(message);
   message_label->SetMultiLine(true);
   message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  AddChildView(message_label);
+  AddChildViewRaw(message_label);
 }
 
 CrostiniExpiredContainerWarningView::~CrostiniExpiredContainerWarningView() {

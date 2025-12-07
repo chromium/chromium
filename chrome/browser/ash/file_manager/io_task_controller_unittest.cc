@@ -19,7 +19,6 @@ using base::test::RunClosure;
 using testing::_;
 using testing::AllOf;
 using testing::Field;
-using testing::Invoke;
 using testing::Property;
 
 namespace file_manager {

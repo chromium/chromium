@@ -62,8 +62,9 @@ int32_t H265POC::ComputePicOrderCnt(const H265SPS* sps,
   }
 
   // 8.3.1 Decoding process for picture order count.
-  if (!pps->temporal_id && (slice_hdr.nal_unit_type < H265NALU::RADL_N ||
-                            slice_hdr.nal_unit_type > H265NALU::RSV_VCL_N14)) {
+  if (!slice_hdr.temporal_id &&
+      (slice_hdr.nal_unit_type < H265NALU::RADL_N ||
+       slice_hdr.nal_unit_type > H265NALU::RSV_VCL_N14)) {
     ref_pic_order_cnt_lsb_ = slice_hdr.slice_pic_order_cnt_lsb;
     ref_pic_order_cnt_msb_ = pic_order_cnt_msb;
   }

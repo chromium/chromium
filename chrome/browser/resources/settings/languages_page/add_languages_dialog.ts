@@ -24,7 +24,7 @@ import type {SettingsCheckboxListEntryElement} from '../controls/settings_checkb
 import {ScrollableMixin} from '../scrollable_mixin.js';
 
 import {getTemplate} from './add_languages_dialog.html.js';
-import type {LanguageHelper} from './languages_types.js';
+import {getFullName} from './languages_util.js';
 
 export interface SettingsAddLanguagesDialogElement {
   $: {
@@ -55,12 +55,7 @@ export class SettingsAddLanguagesDialogElement extends
 
   static get properties() {
     return {
-      languages: {
-        type: Array,
-        notify: true,
-      },
-
-      languageHelper: Object,
+      languages: Object,
 
       languagesToAdd_: {
         type: Object,
@@ -81,11 +76,10 @@ export class SettingsAddLanguagesDialogElement extends
     };
   }
 
-  languages: chrome.languageSettingsPrivate.Language[];
-  languageHelper: LanguageHelper;
-  private languagesToAdd_: Set<string>;
-  private disableActionButton_: boolean;
-  private filterValue_: string;
+  declare languages: chrome.languageSettingsPrivate.Language[];
+  declare private languagesToAdd_: Set<string>;
+  declare private disableActionButton_: boolean;
+  declare private filterValue_: string;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -107,7 +101,7 @@ export class SettingsAddLanguagesDialogElement extends
   // Override FindShortcutMixin methods.
   override searchInputHasFocus() {
     return this.$.search.getSearchInput() ===
-        this.$.search.shadowRoot!.activeElement;
+        this.$.search.shadowRoot.activeElement;
   }
 
   private onSearchChanged_(e: CustomEvent<string>) {
@@ -140,7 +134,7 @@ export class SettingsAddLanguagesDialogElement extends
 
   private getDisplayText_(language: chrome.languageSettingsPrivate.Language):
       string {
-    return this.languageHelper.getFullName(language);
+    return getFullName(language);
   }
 
   /**

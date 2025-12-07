@@ -60,12 +60,12 @@ public class PostMessageTest extends AwParameterizedTest {
 
     // Inject to the page to verify received messages.
     private static class MessageObject {
-        private LinkedBlockingQueue<Data> mQueue = new LinkedBlockingQueue<>();
+        private final LinkedBlockingQueue<MessageObject.Data> mQueue = new LinkedBlockingQueue<>();
 
         public static class Data {
-            public String mMessage;
-            public String mOrigin;
-            public int[] mPorts;
+            public final String mMessage;
+            public final String mOrigin;
+            public final int[] mPorts;
 
             public Data(String message, String origin, int[] ports) {
                 mMessage = message;
@@ -76,21 +76,22 @@ public class PostMessageTest extends AwParameterizedTest {
 
         @JavascriptInterface
         public void setMessageParams(String message, String origin, int[] ports) {
-            mQueue.add(new Data(message, origin, ports));
+            mQueue.add(new MessageObject.Data(message, origin, ports));
         }
 
-        public Data waitForMessage() throws Exception {
+        public MessageObject.Data waitForMessage() throws Exception {
             return AwActivityTestRule.waitForNextQueueElement(mQueue);
         }
     }
 
     private static class ChannelContainer {
         private MessagePort[] mChannel;
-        private LinkedBlockingQueue<Data> mQueue = new LinkedBlockingQueue<>();
+        private final LinkedBlockingQueue<ChannelContainer.Data> mQueue =
+                new LinkedBlockingQueue<>();
 
         public static class Data {
-            public MessagePayload mMessagePayload;
-            public Looper mLastLooper;
+            public final MessagePayload mMessagePayload;
+            public final Looper mLastLooper;
 
             public Data(MessagePayload messagePayload, Looper looper) {
                 mMessagePayload = messagePayload;
@@ -116,14 +117,14 @@ public class PostMessageTest extends AwParameterizedTest {
 
         public void notifyCalled(MessagePayload messagePayload) {
             try {
-                mQueue.add(new Data(messagePayload, Looper.myLooper()));
+                mQueue.add(new ChannelContainer.Data(messagePayload, Looper.myLooper()));
             } catch (IllegalStateException e) {
                 // We expect this add operation will always succeed since the default capacity of
                 // the queue is Integer.MAX_VALUE.
             }
         }
 
-        public Data waitForMessageCallback() throws Exception {
+        public ChannelContainer.Data waitForMessageCallback() throws Exception {
             return AwActivityTestRule.waitForNextQueueElement(mQueue);
         }
 
@@ -301,7 +302,7 @@ public class PostMessageTest extends AwParameterizedTest {
                                         mWebServer.getBaseUrl(),
                                         null);
                             } catch (UnsupportedEncodingException e) {
-                                Assert.fail();
+                                throw new RuntimeException(e);
                             }
                         });
         expectTitle(testString);

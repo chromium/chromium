@@ -10,7 +10,6 @@
 #include <optional>
 #include <set>
 #include <string>
-#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -56,7 +55,6 @@ class ReportingCacheImpl : public ReportingCache {
                  base::Value::Dict body,
                  int depth,
                  base::TimeTicks queued,
-                 int attempts,
                  ReportingTargetType target_type) override;
   void GetReports(
       std::vector<raw_ptr<const ReportingReport, VectorExperimental>>*

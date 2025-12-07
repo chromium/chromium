@@ -4,26 +4,30 @@
 
 #import "ios/web_view/internal/passwords/web_view_password_manager_client.h"
 
-#include <memory>
-#include <utility>
+#import <memory>
+#import <utility>
 
-#include "base/functional/callback.h"
-#include "components/autofill/core/browser/logging/log_manager.h"
-#include "components/keyed_service/core/service_access_type.h"
-#include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/password_manager/ios/password_manager_ios_util.h"
+#import "base/functional/callback.h"
+#import "base/notimplemented.h"
+#import "components/autofill/core/browser/logging/log_manager.h"
+#import "components/autofill/core/browser/logging/log_router.h"
+#import "components/keyed_service/core/service_access_type.h"
+#import "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
+#import "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/password_manager/ios/password_manager_ios_util.h"
 #import "ios/web_view/internal/app/application_context.h"
 #import "ios/web_view/internal/passwords/web_view_account_password_store_factory.h"
 #import "ios/web_view/internal/passwords/web_view_password_manager_log_router_factory.h"
 #import "ios/web_view/internal/passwords/web_view_password_requirements_service_factory.h"
 #import "ios/web_view/internal/passwords/web_view_password_reuse_manager_factory.h"
 #import "ios/web_view/internal/passwords/web_view_profile_password_store_factory.h"
-#include "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
+#import "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
 #import "ios/web_view/internal/sync/web_view_sync_service_factory.h"
-#include "net/cert/cert_status_flags.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
+#import "net/cert/cert_status_flags.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 
+using password_manager::LeakDetectionInitiator;
 using password_manager::PasswordFormManagerForUI;
 using password_manager::PasswordManagerMetricsRecorder;
 using password_manager::PasswordStoreInterface;
@@ -40,11 +44,9 @@ WebViewPasswordManagerClient::Create(web::WebState* web_state,
   signin::IdentityManager* identity_manager =
       ios_web_view::WebViewIdentityManagerFactory::GetForBrowserState(
           browser_state);
-  autofill::LogRouter* logRouter =
+  autofill::LogRouter* log_router =
       ios_web_view::WebViewPasswordManagerLogRouterFactory::GetForBrowserState(
           browser_state);
-  auto log_manager =
-      autofill::LogManager::Create(logRouter, base::RepeatingClosure());
   scoped_refptr<password_manager::PasswordStoreInterface> profile_store =
       ios_web_view::WebViewProfilePasswordStoreFactory::GetForBrowserState(
           browser_state, ServiceAccessType::EXPLICIT_ACCESS);
@@ -59,8 +61,8 @@ WebViewPasswordManagerClient::Create(web::WebState* web_state,
           browser_state, ServiceAccessType::EXPLICIT_ACCESS);
   return std::make_unique<ios_web_view::WebViewPasswordManagerClient>(
       web_state, sync_service, browser_state->GetPrefs(), identity_manager,
-      std::move(log_manager), profile_store.get(), account_store.get(),
-      reuse_manager, requirements_service);
+      log_router, profile_store.get(), account_store.get(), reuse_manager,
+      requirements_service);
 }
 
 WebViewPasswordManagerClient::WebViewPasswordManagerClient(
@@ -68,7 +70,7 @@ WebViewPasswordManagerClient::WebViewPasswordManagerClient(
     syncer::SyncService* sync_service,
     PrefService* pref_service,
     signin::IdentityManager* identity_manager,
-    std::unique_ptr<autofill::LogManager> log_manager,
+    autofill::LogRouter* log_router,
     PasswordStoreInterface* profile_store,
     PasswordStoreInterface* account_store,
     password_manager::PasswordReuseManager* reuse_manager,
@@ -77,11 +79,11 @@ WebViewPasswordManagerClient::WebViewPasswordManagerClient(
       sync_service_(sync_service),
       pref_service_(pref_service),
       identity_manager_(identity_manager),
-      log_manager_(std::move(log_manager)),
+      log_router_(log_router),
       profile_store_(profile_store),
       account_store_(account_store),
       reuse_manager_(reuse_manager),
-      password_feature_manager_(pref_service, sync_service),
+      password_feature_manager_(sync_service),
       credentials_filter_(this),
       requirements_service_(requirements_service),
       helper_(this) {
@@ -105,7 +107,7 @@ bool WebViewPasswordManagerClient::PromptUserToSaveOrUpdatePassword(
   if (form_to_save->IsBlocklisted()) {
     return false;
   }
-  if (!password_feature_manager_.IsOptedInForAccountStorage()) {
+  if (!password_feature_manager_.IsAccountStorageEnabled()) {
     return false;
   }
 
@@ -200,6 +202,11 @@ WebViewPasswordManagerClient::GetPasswordReuseManager() const {
   return reuse_manager_;
 }
 
+password_manager::PasswordChangeServiceInterface*
+WebViewPasswordManagerClient::GetPasswordChangeService() const {
+  return nullptr;
+}
+
 void WebViewPasswordManagerClient::NotifyUserAutoSignin(
     std::vector<std::unique_ptr<password_manager::PasswordForm>> local_forms,
     const url::Origin& origin) {
@@ -213,11 +220,21 @@ void WebViewPasswordManagerClient::NotifyUserCouldBeAutoSignedIn(
   helper_.NotifyUserCouldBeAutoSignedIn(std::move(form));
 }
 
+password_manager::LeakDetectionInitiator
+WebViewPasswordManagerClient::GetLeakDetectionInitiator() {
+  return password_manager::LeakDetectionInitiator::kIOSWebViewSignInCheck;
+}
+
 void WebViewPasswordManagerClient::NotifySuccessfulLoginWithExistingPassword(
     std::unique_ptr<password_manager::PasswordFormManagerForUI>
         submitted_manager) {
   helper_.NotifySuccessfulLoginWithExistingPassword(
       std::move(submitted_manager));
+  [bridge_ showSignedInWithSavedCredentialMessage];
+}
+
+bool WebViewPasswordManagerClient::IsPasswordChangeOngoing() {
+  return false;
 }
 
 void WebViewPasswordManagerClient::NotifyStorePasswordCalled() {
@@ -225,13 +242,10 @@ void WebViewPasswordManagerClient::NotifyStorePasswordCalled() {
 }
 
 void WebViewPasswordManagerClient::NotifyUserCredentialsWereLeaked(
-    password_manager::CredentialLeakType leak_type,
-    const GURL& origin,
-    const std::u16string& username,
-    bool in_account_store) {
-  [bridge_ showPasswordBreachForLeakType:leak_type
-                                     URL:origin
-                                username:username];
+    password_manager::LeakedPasswordDetails details) {
+  [bridge_ showPasswordBreachForLeakType:details.leak_type
+                                     URL:details.credentials.url
+                                username:details.credentials.username_value];
 }
 
 void WebViewPasswordManagerClient::NotifyKeychainError() {}
@@ -260,7 +274,11 @@ WebViewPasswordManagerClient::GetStoreResultFilter() const {
   return &credentials_filter_;
 }
 
-autofill::LogManager* WebViewPasswordManagerClient::GetLogManager() {
+autofill::LogManager* WebViewPasswordManagerClient::GetCurrentLogManager() {
+  if (!log_manager_ && log_router_ && log_router_->HasReceivers()) {
+    log_manager_ =
+        autofill::LogManager::Create(log_router_, base::RepeatingClosure());
+  }
   return log_manager_.get();
 }
 
@@ -276,6 +294,11 @@ WebViewPasswordManagerClient::GetMetricsRecorder() {
 }
 
 signin::IdentityManager* WebViewPasswordManagerClient::GetIdentityManager() {
+  return identity_manager_;
+}
+
+const signin::IdentityManager*
+WebViewPasswordManagerClient::GetIdentityManager() const {
   return identity_manager_;
 }
 

@@ -1,0 +1,42 @@
+Tests CDP Emulation.removeScreen() API.
+{
+    code : -32602
+    message : Invalid screen id: foobar
+}
+{
+    code : -32602
+    message : Unknown screen id: 123456789
+}
+{
+    code : -32602
+    message : Cannot remove the primary screen
+}
+{
+    screenInfos : [
+        [0] : {
+            availHeight : 600
+            availLeft : 0
+            availTop : 0
+            availWidth : 800
+            colorDepth : 24
+            devicePixelRatio : 1
+            height : 600
+            id : <string>
+            isExtended : false
+            isInternal : false
+            isPrimary : true
+            label : 1st
+            left : 0
+            orientation : {
+                angle : 0
+                type : landscapePrimary
+            }
+            top : 0
+            width : 800
+        }
+    ]
+}
+{
+    code : -32602
+    message : Cannot remove the only screen in the system
+}

@@ -555,6 +555,8 @@ const std::string GetFastPairTrackedModelId(const std::string& model_id) {
 // numeric values should never be reused. This enum should be kept in sync
 // with the BluetoothConnectToServiceError enum in
 // //tools/metrics/histograms/metadata/bluetooth/enums.xml.
+//
+// LINT.IfChange(BluetoothConnectToServiceError)
 enum class ConnectToServiceError {
   kUnknownError = 0,
   kAcceptFailed = 1,
@@ -562,6 +564,7 @@ enum class ConnectToServiceError {
   kSocketNotListening = 3,
   kMaxValue = kSocketNotListening,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/bluetooth/enums.xml:BluetoothConnectToServiceError)
 
 ConnectToServiceError GetConnectToServiceError(const std::string& error) {
   if (error == kAcceptFailedString) {

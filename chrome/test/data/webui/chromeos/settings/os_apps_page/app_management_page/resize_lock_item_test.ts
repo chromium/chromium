@@ -4,12 +4,12 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {AppManagementResizeLockItemElement} from 'chrome://os-settings/lazy_load.js';
+import type {AppManagementResizeLockItemElement} from 'chrome://os-settings/lazy_load.js';
 import {AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {FakePageHandler} from '../../app_management/fake_page_handler.js';
+import type {FakePageHandler} from '../../app_management/fake_page_handler.js';
 import {isHidden, replaceBody, setupFakeHandler} from '../../app_management/test_util.js';
 
 suite('<app-management-resize-lock-item>', () => {

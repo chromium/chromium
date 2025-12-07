@@ -40,13 +40,8 @@ class DlpFilesController {
                    const std::string& referrer_url);
     FileDaemonInfo(const FileDaemonInfo&);
 
-    friend bool operator==(const FileDaemonInfo& a, const FileDaemonInfo& b) {
-      return a.inode == b.inode && a.crtime == b.crtime && a.path == b.path &&
-             a.source_url == b.source_url && a.referrer_url == b.referrer_url;
-    }
-    friend bool operator!=(const FileDaemonInfo& a, const FileDaemonInfo& b) {
-      return !(a == b);
-    }
+    friend bool operator==(const FileDaemonInfo&,
+                           const FileDaemonInfo&) = default;
 
     // File inode.
     ino64_t inode;
@@ -105,8 +100,6 @@ class DlpFilesController {
 
   // Gets all files inside |roots| recursively and runs |callback_| with the
   // whole files list. Deletes itself after |callback_| is run.
-  // TODO(b/259184140): Extract RootsRecursionDelegate to another file to
-  // have better testing coverage.
   class RootsRecursionDelegate {
    public:
     RootsRecursionDelegate(storage::FileSystemContext* file_system_context,

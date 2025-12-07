@@ -60,7 +60,7 @@
 // dependencies on Chromium, making it easier to use this file outside of the
 // Chromium repo. When using this file, consumers should also #include their own
 // copy of the MojoSystemThunks struct definition.
-struct MojoSystemThunks;
+struct MojoSystemThunks2;
 
 namespace ash {
 namespace ime {
@@ -134,12 +134,7 @@ class ImeCrosPlatform {
                                      const char* file_path,
                                      SimpleDownloadCallbackV2 callback) = 0;
 
-  // Returns a pointer to the Mojo system thunks.
-  // The shared library can use this pointer for its own Mojo environment in
-  // order to communicate directly with the browser process.
-  // MojoSystemThunks has a stable ABI, hence it is safe to use it from the
-  // shared library
-  virtual const MojoSystemThunks* GetMojoSystemThunks() = 0;
+  virtual const void* Unused4() = 0;
 
   // Retrieves the string value of a CrOS feature's Finch param. Only a subset
   // of CrOS features are considered (see impl for details). |feature_name| is
@@ -150,6 +145,13 @@ class ImeCrosPlatform {
   virtual const char* GetFieldTrialParamValueByFeature(
       const char* feature_name,
       const char* param_name) = 0;
+
+  // Returns a pointer to the Mojo system thunks.
+  // The shared library can use this pointer for its own Mojo environment in
+  // order to communicate directly with the browser process.
+  // MojoSystemThunks has a stable ABI, hence it is safe to use it from the
+  // shared library
+  virtual const MojoSystemThunks2* GetMojoSystemThunks2() = 0;
 
   // TODO(https://crbug.com/837156): Provide Logger for main entry.
 };
@@ -260,6 +262,11 @@ __attribute__((visibility("default"))) void CloseMojoMode();
 // Returns false if the connection attempt was unsuccessful.
 __attribute__((visibility("default"))) bool InitializeConnectionFactory(
     uint32_t receiver_connection_factory_handle);
+
+// Bootstraps an implementation of a ConnectionFactory in the IME shared lib.
+// Returns false if the connection attempt was unsuccessful.
+__attribute__((visibility("default"))) bool InitializeConnectionFactoryV2(
+    uintptr_t receiver_connection_factory_handle);
 
 // Returns whether there's a direct Mojo connection to an input method.
 __attribute__((visibility("default"))) bool IsInputMethodConnected();

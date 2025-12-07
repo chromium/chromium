@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/client_hints/client_hints.h"
 
 #include <algorithm>
@@ -49,16 +44,19 @@
 #include "net/nqe/effective_connection_type.h"
 #include "net/nqe/network_quality_estimator_params.h"
 #include "services/network/public/cpp/client_hints.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
+#include "services/network/public/cpp/permissions_policy/client_hints_permissions_policy_mapping.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/client_hints/enabled_client_hints.h"
 #include "third_party/blink/public/common/device_memory/approximated_device_memory.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
-#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -144,9 +142,9 @@ double RoundKbpsToMbps(const std::string& host,
 
 double GetDeviceScaleFactor() {
   double device_scale_factor = 1.0;
-  if (display::Screen::GetScreen()) {
+  if (display::Screen::Get()) {
     device_scale_factor =
-        display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor();
+        display::Screen::Get()->GetPrimaryDisplay().device_scale_factor();
   }
   DCHECK_LT(0.0, device_scale_factor);
   return device_scale_factor;
@@ -154,16 +152,9 @@ double GetDeviceScaleFactor() {
 
 // Returns the zoom factor for a given |url|.
 double GetZoomFactor(BrowserContext* context, const GURL& url) {
-#if BUILDFLAG(IS_ANDROID)
-  // On Android, use the default value when the AccessibilityPageZoom
-  // feature is not enabled.
-  if (!base::FeatureList::IsEnabled(features::kAccessibilityPageZoom))
-    return 1.0;
-#endif
-
   double zoom_level = HostZoomMap::GetDefaultForBrowserContext(context)
                           ->GetZoomLevelForHostAndScheme(
-                              url.scheme(), net::GetHostOrSpecFromURL(url));
+                              url.GetScheme(), net::GetHostOrSpecFromURL(url));
 
   if (zoom_level == 0.0) {
     // Get default zoom level.
@@ -339,16 +330,7 @@ gfx::Size GetScaledViewportSize(BrowserContext* context,
     viewport_size =
         ScaleToRoundedSize(viewport_size, 980.0 / viewport_size.width());
   }
-
-  // On Android, use the default value when the AccessibilityPageZoom
-  // feature is not enabled.
-  if (!base::FeatureList::IsEnabled(features::kAccessibilityPageZoom)) {
-    return viewport_size;
-  }
 #endif
-
-  base::UmaHistogramBoolean("ClientHints.Viewport.IsDeviceScaleFactorOne",
-                            GetDeviceScaleFactor() == 1.0);
 
   double zoom_factor = GetZoomFactor(context, url);
   if (zoom_factor > 0) {
@@ -420,7 +402,7 @@ void AddRttHeader(net::HttpRequestHeaders* headers,
         net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN);
   }
   SetHeaderToInt(headers, WebClientHintsType::kRtt_DEPRECATED,
-                 RoundRtt(url.host(), http_rtt));
+                 RoundRtt(url.GetHost(), http_rtt));
 }
 
 void AddDownlinkHeader(net::HttpRequestHeaders* headers,
@@ -446,17 +428,13 @@ void AddDownlinkHeader(net::HttpRequestHeaders* headers,
   }
 
   SetHeaderToDouble(headers, WebClientHintsType::kDownlink_DEPRECATED,
-                    RoundKbpsToMbps(url.host(), downlink_throughput_kbps));
+                    RoundKbpsToMbps(url.GetHost(), downlink_throughput_kbps));
 }
 
 void AddEctHeader(net::HttpRequestHeaders* headers,
                   network::NetworkQualityTracker* network_quality_tracker,
                   const GURL& url) {
   DCHECK(headers);
-  DCHECK_EQ(network::kWebEffectiveConnectionTypeMappingCount,
-            net::EFFECTIVE_CONNECTION_TYPE_4G + 1u);
-  DCHECK_EQ(network::kWebEffectiveConnectionTypeMappingCount,
-            static_cast<size_t>(net::EFFECTIVE_CONNECTION_TYPE_LAST));
 
   std::optional<net::EffectiveConnectionType> web_holdback_ect =
       GetWebHoldbackEffectiveConnectionType();
@@ -545,8 +523,7 @@ const std::string SerializeHeaderString(const T& value) {
 struct ClientHintsExtendedData {
   ClientHintsExtendedData(const url::Origin& origin,
                           FrameTreeNode* frame_tree_node,
-                          ClientHintsControllerDelegate* delegate,
-                          const std::optional<GURL>& maybe_request_url)
+                          ClientHintsControllerDelegate* delegate)
       : resource_origin(origin) {
     // If the current frame is the outermost main frame, the URL wasn't
     // committed yet, so in order to get the main frame URL, we should use the
@@ -572,18 +549,19 @@ struct ClientHintsExtendedData {
       // See crbug.com/1470634.
       const std::optional<FencedFrameProperties>& fenced_frame_properties =
           frame_tree_node->GetFencedFrameProperties();
-      base::span<const blink::mojom::PermissionsPolicyFeature> permissions;
+      base::span<const network::mojom::PermissionsPolicyFeature> permissions;
       if (fenced_frame_properties) {
         permissions = fenced_frame_properties->effective_enabled_permissions();
       }
-      permissions_policy = blink::PermissionsPolicy::CreateFixedForFencedFrame(
-          resource_origin, /*header_policy=*/{}, permissions);
+      permissions_policy =
+          network::PermissionsPolicy::CreateFixedForFencedFrame(
+              resource_origin, /*header_policy=*/{}, permissions);
     } else {
       RenderFrameHostImpl* main_frame =
           frame_tree_node->frame_tree().GetMainFrame();
       main_frame_origin = main_frame->GetLastCommittedOrigin();
-      permissions_policy = blink::PermissionsPolicy::CopyStateFrom(
-          main_frame->permissions_policy());
+      permissions_policy = network::PermissionsPolicy::CopyStateFrom(
+          main_frame->GetPermissionsPolicy());
     }
 
     const base::TimeTicks start_time = base::TimeTicks::Now();
@@ -614,7 +592,7 @@ struct ClientHintsExtendedData {
   url::Origin resource_origin;
   bool is_outermost_main_frame = false;
   url::Origin main_frame_origin;
-  std::unique_ptr<blink::PermissionsPolicy> permissions_policy;
+  std::unique_ptr<network::PermissionsPolicy> permissions_policy;
 };
 
 bool IsClientHintEnabled(const ClientHintsExtendedData& data,
@@ -628,7 +606,8 @@ bool IsClientHintAllowed(const ClientHintsExtendedData& data,
     return true;
   }
   return (data.permissions_policy->IsFeatureEnabledForOrigin(
-      blink::GetClientHintToPolicyFeatureMap().at(type), data.resource_origin));
+      network::GetClientHintToPolicyFeatureMap().at(type),
+      data.resource_origin));
 }
 
 bool ShouldAddClientHint(const ClientHintsExtendedData& data,
@@ -650,7 +629,7 @@ bool IsJavascriptEnabled(FrameTreeNode* frame_tree_node) {
 // TODO(crbug.com/40208054): Replace w/ generic HTML policy modification.
 void UpdateIFramePermissionsPolicyWithDelegationSupportForClientHints(
     ClientHintsExtendedData& data,
-    const blink::ParsedPermissionsPolicy& container_policy) {
+    const network::ParsedPermissionsPolicy& container_policy) {
   if (container_policy.empty()) {
     return;
   }
@@ -658,11 +637,11 @@ void UpdateIFramePermissionsPolicyWithDelegationSupportForClientHints(
   // For client hints specifically, we need to allow the container policy
   // to overwrite the parent policy so that permissions policies set in HTML
   // via an accept-ch meta tag can be respected.
-  blink::ParsedPermissionsPolicy client_hints_container_policy;
+  network::ParsedPermissionsPolicy client_hints_container_policy;
   for (const auto& container_policy_item : container_policy) {
-    const auto& it = blink::GetPolicyFeatureToClientHintMap().find(
+    const auto& it = network::GetPolicyFeatureToClientHintMap().find(
         container_policy_item.feature);
-    if (it != blink::GetPolicyFeatureToClientHintMap().end()) {
+    if (it != network::GetPolicyFeatureToClientHintMap().end()) {
       client_hints_container_policy.push_back(container_policy_item);
 
       // We need to ensure `blink::EnabledClientHints` is updated where the
@@ -695,29 +674,34 @@ enum class ClientUaHeaderCallType {
 // Implementation of UpdateNavigationRequestClientUaHeaders().
 void UpdateNavigationRequestClientUaHeadersImpl(
     ClientHintsControllerDelegate* delegate,
-    bool override_ua,
-    FrameTreeNode* frame_tree_node,
+    bool is_ua_override_on,
+    FrameTreeNode* ftn_for_web_contents_override,
     ClientUaHeaderCallType call_type,
     net::HttpRequestHeaders* headers,
-    const blink::ParsedPermissionsPolicy& container_policy,
-    const std::optional<GURL>& request_url,
-    const ClientHintsExtendedData& data) {
+    const network::ParsedPermissionsPolicy& container_policy,
+    const ClientHintsExtendedData& data,
+    FrameTreeNode* ftn_for_devtools_override) {
   std::optional<blink::UserAgentMetadata> ua_metadata;
   bool disable_due_to_custom_ua = false;
-  if (override_ua) {
+  if (is_ua_override_on) {
     NavigatorDelegate* nav_delegate =
-        frame_tree_node ? frame_tree_node->navigator().GetDelegate() : nullptr;
-    ua_metadata =
-        nav_delegate ? nav_delegate->GetUserAgentOverride().ua_metadata_override
-                     : std::nullopt;
+        ftn_for_web_contents_override
+            ? ftn_for_web_contents_override->navigator().GetDelegate()
+            : nullptr;
+    ua_metadata = nav_delegate
+                      ? nav_delegate
+                            ->GetUserAgentOverride(
+                                ftn_for_web_contents_override->frame_tree())
+                            .ua_metadata_override
+                      : std::nullopt;
     // If a custom UA override is set, but no value is provided for UA client
     // hints, disable them.
     disable_due_to_custom_ua = !ua_metadata.has_value();
   }
 
-  if (frame_tree_node &&
-      devtools_instrumentation::ApplyUserAgentMetadataOverrides(frame_tree_node,
-                                                                &ua_metadata)) {
+  if (ftn_for_devtools_override &&
+      devtools_instrumentation::ApplyUserAgentMetadataOverrides(
+          ftn_for_devtools_override, &ua_metadata)) {
     // Likewise, if devtools says to override client hints but provides no
     // value, disable them. This overwrites previous decision from UI.
     disable_due_to_custom_ua = !ua_metadata.has_value();
@@ -844,14 +828,24 @@ void UpdateNavigationRequestClientUaHeaders(
     return;
   }
 
-  ClientHintsExtendedData data(origin, frame_tree_node, delegate, request_url);
+  // In usual navigation, use the common FrameTreeNode to look up DevTools for
+  // the DevTools UA override logic.
+  ClientHintsExtendedData data(origin, frame_tree_node, delegate);
   UpdateNavigationRequestClientUaHeadersImpl(
       delegate, override_ua, frame_tree_node,
-      ClientUaHeaderCallType::kAfterCreated, headers, {}, request_url, data);
+      ClientUaHeaderCallType::kAfterCreated, headers, {}, data,
+      /*ftn_for_devtools_override=*/frame_tree_node);
 }
-
 namespace {
 
+// The main logic of adding Client Hints headers to `headers`. `frame_tree_node`
+// is used for checking the client hints policies, looking up UA overrides in
+// the corresponding WebContents, and calculating client hints values like
+// ViewportWidth, whereas `ftn_for_devtools_override` only serves as source of
+// UA override by DevTools. The two FrameTreeNode parameters can differ in
+// prefetch navigation cases because the FrameTreeNode of the navigation target
+// is sometimes unavailable during prefetch, and we must find an alternative
+// FrameTreeNode for the DevTools UA override source in such cases.
 void AddRequestClientHintsHeaders(
     const url::Origin& origin,
     net::HttpRequestHeaders* headers,
@@ -859,9 +853,9 @@ void AddRequestClientHintsHeaders(
     ClientHintsControllerDelegate* delegate,
     bool is_ua_override_on,
     FrameTreeNode* frame_tree_node,
-    const blink::ParsedPermissionsPolicy& container_policy,
-    const std::optional<GURL>& request_url) {
-  ClientHintsExtendedData data(origin, frame_tree_node, delegate, request_url);
+    const network::ParsedPermissionsPolicy& container_policy,
+    FrameTreeNode* ftn_for_devtools_override) {
+  ClientHintsExtendedData data(origin, frame_tree_node, delegate);
   UpdateIFramePermissionsPolicyWithDelegationSupportForClientHints(
       data, container_policy);
 
@@ -906,8 +900,8 @@ void AddRequestClientHintsHeaders(
 
   UpdateNavigationRequestClientUaHeadersImpl(
       delegate, is_ua_override_on, frame_tree_node,
-      ClientUaHeaderCallType::kDuringCreation, headers, container_policy,
-      request_url, data);
+      ClientUaHeaderCallType::kDuringCreation, headers, container_policy, data,
+      ftn_for_devtools_override);
 
   if (ShouldAddClientHint(data, WebClientHintsType::kPrefersColorScheme)) {
     AddPrefersColorSchemeHeader(headers, frame_tree_node);
@@ -948,24 +942,20 @@ void AddPrefetchNavigationRequestClientHintsHeaders(
     BrowserContext* context,
     ClientHintsControllerDelegate* delegate,
     bool is_ua_override_on,
-    bool is_javascript_enabled) {
+    FrameTreeNode* ftn_for_devtools_override) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(network::kWebEffectiveConnectionTypeMappingCount,
-            net::EFFECTIVE_CONNECTION_TYPE_4G + 1u);
-  DCHECK_EQ(network::kWebEffectiveConnectionTypeMappingCount,
-            static_cast<size_t>(net::EFFECTIVE_CONNECTION_TYPE_LAST));
   DCHECK(context);
 
-  // Since prefetch navigation doesn't have a related frame tree node,
-  // |is_javascript_enabled| is passed in to get whether a typical frame tree
-  // node would support javascript.
-  if (!is_javascript_enabled ||
-      !ShouldAddClientHints(origin, nullptr, delegate)) {
+  if (!ShouldAddClientHints(origin, nullptr, delegate)) {
     return;
   }
 
+  // FrameTreeNode is nullptr because it is possible that no navigation has been
+  // committed yet. Nevertheless, `ftn_for_devtools_override` serves as a
+  // workaround for DevTools-initiated UA overrides.
   AddRequestClientHintsHeaders(origin, headers, context, delegate,
-                               is_ua_override_on, nullptr, {}, std::nullopt);
+                               is_ua_override_on, nullptr, {},
+                               ftn_for_devtools_override);
 }
 
 void AddNavigationRequestClientHintsHeaders(
@@ -975,22 +965,20 @@ void AddNavigationRequestClientHintsHeaders(
     ClientHintsControllerDelegate* delegate,
     bool is_ua_override_on,
     FrameTreeNode* frame_tree_node,
-    const blink::ParsedPermissionsPolicy& container_policy,
+    const network::ParsedPermissionsPolicy& container_policy,
     const std::optional<GURL>& request_url) {
   DCHECK(frame_tree_node);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(network::kWebEffectiveConnectionTypeMappingCount,
-            net::EFFECTIVE_CONNECTION_TYPE_4G + 1u);
-  DCHECK_EQ(network::kWebEffectiveConnectionTypeMappingCount,
-            static_cast<size_t>(net::EFFECTIVE_CONNECTION_TYPE_LAST));
   DCHECK(context);
   if (!ShouldAddClientHints(origin, frame_tree_node, delegate, request_url)) {
     return;
   }
 
-  AddRequestClientHintsHeaders(origin, headers, context, delegate,
-                               is_ua_override_on, frame_tree_node,
-                               container_policy, request_url);
+  // In usual navigation, use the common FrameTreeNode to look up DevTools for
+  // the DevTools UA override logic.
+  AddRequestClientHintsHeaders(
+      origin, headers, context, delegate, is_ua_override_on, frame_tree_node,
+      container_policy, /*ftn_for_devtools_override=*/frame_tree_node);
 }
 
 std::optional<std::vector<WebClientHintsType>>
@@ -1069,28 +1057,66 @@ std::vector<WebClientHintsType> LookupAcceptCHForCommit(
     return result;
   }
 
-  const ClientHintsExtendedData data(origin, frame_tree_node, delegate,
-                                     request_url);
+  const ClientHintsExtendedData data(origin, frame_tree_node, delegate);
   return data.hints.GetEnabledHints();
 }
 
-bool AreCriticalHintsMissing(
+CriticalHintsMissingStatus GetCriticalHintsMissingStatus(
     const url::Origin& origin,
     FrameTreeNode* frame_tree_node,
     ClientHintsControllerDelegate* delegate,
     const std::vector<WebClientHintsType>& critical_hints) {
-  ClientHintsExtendedData data(origin, frame_tree_node, delegate, std::nullopt);
+  ClientHintsExtendedData data(origin, frame_tree_node, delegate);
 
+  bool contains_not_allowed = false;
   // Note: these only check for per-hint origin/permissions policy settings, not
-  // origin-level or "browser-level" policies like disabiling JS or other
+  // origin-level or "browser-level" policies like disabling JS or other
   // features.
   for (auto hint : critical_hints) {
-    if (IsClientHintAllowed(data, hint) && !IsClientHintEnabled(data, hint)) {
-      return true;
+    if (!IsClientHintAllowed(data, hint)) {
+      contains_not_allowed = true;
+      continue;
+    }
+    if (!IsClientHintEnabled(data, hint)) {
+      return CriticalHintsMissingStatus::kMissing;
     }
   }
 
-  return false;
+  return contains_not_allowed
+             ? CriticalHintsMissingStatus::kPresentButContainsNotAllowed
+             : CriticalHintsMissingStatus::kPresent;
+}
+
+network::ResourceRequest::TrustedParams::EnabledClientHints
+GetEnabledClientHints(const url::Origin& origin,
+                      FrameTreeNode* frame_tree_node,
+                      ClientHintsControllerDelegate* delegate) {
+  ClientHintsExtendedData data(origin, frame_tree_node, delegate);
+
+  network::ResourceRequest::TrustedParams::EnabledClientHints
+      enabled_client_hints;
+  enabled_client_hints.is_outermost_main_frame = data.is_outermost_main_frame;
+  const auto& client_hints_map = network::GetClientHintToNameMap();
+  // Note: these only check for per-hint origin/permissions policy settings, not
+  // origin-level or "browser-level" policies like disabling JS or other
+  // features.
+  for (const auto& [hint, _] : client_hints_map) {
+    // `enabled_client_hints.hints` are client hints that are enabled for the
+    // origin and allowed to be attached to the request.
+    if (ShouldAddClientHint(data, hint)) {
+      enabled_client_hints.hints.push_back(hint);
+    }
+    // `enabled_client_hints.not_allowed_hints` are client hints that are
+    // currently not allowed to be attached to the request.
+    if (base::FeatureList::IsEnabled(
+            network::features::kOffloadAcceptCHFrameCheck) &&
+        network::features::kAcceptCHFrameOffloadNotAllowedHints.Get() &&
+        !IsClientHintAllowed(data, hint)) {
+      enabled_client_hints.not_allowed_hints.push_back(hint);
+    }
+  }
+  enabled_client_hints.origin = data.main_frame_origin;
+  return enabled_client_hints;
 }
 
 }  // namespace content

@@ -41,20 +41,14 @@ apps::AppLaunchParams WebAppUiManager::CreateAppLaunchParamsWithoutWindowConfig(
     const webapps::AppId& app_id,
     const base::CommandLine& command_line,
     const base::FilePath& current_directory,
-    const std::optional<GURL>& url_handler_launch_url,
     const std::optional<GURL>& protocol_handler_launch_url,
     const std::optional<GURL>& file_launch_url,
     const std::vector<base::FilePath>& launch_files) {
   // At most one of these parameters should be non-empty.
-  DCHECK_LE(url_handler_launch_url.has_value() +
-                protocol_handler_launch_url.has_value() + !launch_files.empty(),
-            1);
+  DCHECK_LE(protocol_handler_launch_url.has_value() + !launch_files.empty(), 1);
 
   apps::LaunchSource launch_source = apps::LaunchSource::kFromCommandLine;
-
-  if (url_handler_launch_url.has_value()) {
-    launch_source = apps::LaunchSource::kFromUrlHandler;
-  } else if (!launch_files.empty()) {
+  if (!launch_files.empty()) {
     DCHECK(file_launch_url.has_value());
     launch_source = apps::LaunchSource::kFromFileManager;
   }
@@ -72,7 +66,6 @@ apps::AppLaunchParams WebAppUiManager::CreateAppLaunchParamsWithoutWindowConfig(
   params.command_line = command_line;
   params.current_directory = current_directory;
   params.launch_files = launch_files;
-  params.url_handler_launch_url = url_handler_launch_url;
   params.protocol_handler_launch_url = protocol_handler_launch_url;
   if (file_launch_url) {
     params.override_url = *file_launch_url;

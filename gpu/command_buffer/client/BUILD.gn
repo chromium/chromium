@@ -2,31 +2,25 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/nacl/toolchain.gni")
+import("//build/config/ozone.gni")
+import("//skia/features.gni")
 import("//ui/gl/features.gni")
-
-if (!is_nacl && !is_minimal_toolchain) {
-  import("//skia/features.gni")
-}
 
 declare_args() {
   # Enable GPU client logging without DCHECK being on.
   enable_gpu_client_logging = false
 }
 
+config("implementation") {
+  defines = [ "GPU_COMMAND_BUFFER_CLIENT_IMPLEMENTATION" ]
+  configs = [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
 # The files here go into the "gpu" component in a component build (with
 # "command_buffer_client" and "gles2_cmd_helper" just forwarding) and goes into
 # separate static libraries in non-component build.
-group("client") {
-  if (is_component_build) {
-    public_deps = [ "//gpu" ]
-  } else {
-    public_deps = [ ":client_sources" ]
-  }
-}
-
-group("client_gmb_manager") {
-  public_deps = [ ":client_gmb_manager_sources" ]
+component("client") {
+  public_deps = [ ":client_sources" ]
 }
 
 group("gles2_cmd_helper") {
@@ -53,16 +47,20 @@ group("webgpu") {
   }
 }
 
+source_set("export") {
+  sources = [ "gpu_command_buffer_client_export.h" ]
+}
+
 source_set("client_sources") {
   # External code should depend on this via //gpu/client above rather than
   # depending on this directly or the component build will break.
-  visibility = [ "//gpu/*" ]
+  visibility = [ ":client" ]
 
   sources = [
     "client_discardable_manager.cc",
     "client_discardable_manager.h",
-    "client_discardable_texture_manager.cc",
-    "client_discardable_texture_manager.h",
+    "client_shared_image.cc",
+    "client_shared_image.h",
     "cmd_buffer_helper.cc",
     "cmd_buffer_helper.h",
     "fenced_allocator.cc",
@@ -72,69 +70,43 @@ source_set("client_sources") {
     "gl_helper_scaling.cc",
     "gl_helper_scaling.h",
     "gpu_control.h",
-    "image_decode_accelerator_interface.h",
     "mapped_memory.cc",
     "mapped_memory.h",
     "ring_buffer.cc",
     "ring_buffer.h",
+    "shared_image_interface.cc",
+    "shared_image_interface.h",
+    "shared_image_pool.cc",
+    "shared_image_pool.h",
     "transfer_buffer.cc",
     "transfer_buffer.h",
     "transfer_buffer_cmd_copy_helpers.h",
   ]
-  configs += [ "//gpu:gpu_implementation" ]
+  configs += [ ":implementation" ]
 
   all_dependent_configs = [ "//third_party/khronos:khronos_headers" ]
 
   public_deps = [
-    ":client_gmb_manager",
     "//base",
+    "//components/viz/common/resources:shared_image_format",
+    "//skia",
   ]
   deps = [
+    ":export",
     ":gles2_interface",
-    "//gpu/command_buffer/common:common_sources",
+    ":webgpu_interface",
+    "//gpu/command_buffer/client/internal",
+    "//gpu/command_buffer/common",
+    "//gpu/ipc/common",
+    "//gpu/ipc/common:surface_handle_type",
+    "//skia:buildflags",
+    "//third_party/dawn/include/dawn:cpp_headers_gen",
+    "//third_party/dawn/src/dawn/wire",
     "//ui/gfx:memory_buffer",
     "//ui/gfx/geometry",
   ]
-
-  if (!is_nacl) {
-    deps += [ "//gpu/ipc/common:surface_handle_type" ]
-  }
-
-  # These files now rely on Skia which isn't allowed as a dependency in nacl builds.
-  if (!is_nacl && !is_minimal_toolchain) {
-    sources += [
-      "client_shared_image.cc",
-      "client_shared_image.h",
-      "shared_image_interface.cc",
-      "shared_image_interface.h",
-    ]
-
-    public_deps += [
-      "//components/viz/common:shared_image_format",
-      "//skia",
-    ]
-
-    deps += [
-      "//gpu/ipc/common:ipc_common_sources",
-      "//skia:buildflags",
-    ]
-  }
-}
-
-source_set("client_gmb_manager_sources") {
-  # External code should depend on this via //gpu/client_gmb_manager above
-  # rather than depending on this directly or the component build will break.
-  visibility = [ "//gpu/*" ]
-  sources = [ "gpu_memory_buffer_manager.h" ]
-  configs += [ "//gpu:gpu_implementation" ]
-  all_dependent_configs = [ "//third_party/khronos:khronos_headers" ]
-  deps = [
-    "//base",
-    "//ui/gfx:memory_buffer",
-    "//ui/gfx/geometry",
-  ]
-  if (!is_nacl) {
-    deps += [ "//gpu/ipc/common:surface_handle_type" ]
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
   }
 }
 
@@ -213,6 +185,10 @@ source_set("gles2_interface") {
   sources = [
     "gles2_interface.cc",
     "gles2_interface.h",
+    "gles2_interface_stub.cc",
+    "gles2_interface_stub.h",
+    "gles2_interface_stub_autogen.h",
+    "gles2_interface_stub_impl_autogen.h",
   ]
   public_configs = [ "//third_party/khronos:khronos_headers" ]
   deps = [
@@ -230,10 +206,10 @@ source_set("raster_interface") {
   deps = [
     ":interface_base",
     "//base",
-    "//components/viz/common:shared_image_format",
+    "//components/viz/common/resources:shared_image_format",
     "//gpu/command_buffer/common",
     "//gpu/command_buffer/common:raster",
-    "//skia:skia",
+    "//skia",
     "//ui/gfx:buffer_types",
   ]
 }
@@ -267,20 +243,14 @@ component("gles2_implementation") {
     ":gles2_cmd_helper",
     ":gles2_interface",
     "//base",
-    "//components/nacl/common:buildflags",
+    "//components/viz/common/resources:shared_image_format",
     "//gpu/command_buffer/common",
     "//gpu/command_buffer/common:gles2",
     "//gpu/command_buffer/common:gles2_utils",
+    "//ui/gfx:color_space",
     "//ui/gfx/geometry",
+    "//ui/gfx/ipc/color",
   ]
-
-  if (!is_nacl && !is_minimal_toolchain) {
-    deps += [
-      "//components/viz/common:shared_image_format",
-      "//ui/gfx:color_space",
-      "//ui/gfx/ipc/color",
-    ]
-  }
 }
 
 source_set("raster_sources") {
@@ -296,8 +266,7 @@ source_set("raster_sources") {
     ":gles2_interface",
     "//base",
     "//cc/paint",
-    "//components/miracle_parameter/common",
-    "//components/viz/common:shared_image_format",
+    "//components/viz/common/resources:shared_image_format",
     "//gpu/command_buffer/common",
     "//gpu/command_buffer/common:gles2",
     "//gpu/command_buffer/common:gles2_utils",
@@ -318,8 +287,6 @@ source_set("raster_sources") {
     "raster_implementation.cc",
     "raster_implementation.h",
     "raster_implementation_autogen.h",
-    "raster_implementation_gles.cc",
-    "raster_implementation_gles.h",
     "raster_implementation_impl_autogen.h",
   ]
 }
@@ -369,21 +336,15 @@ component("gles2_implementation_no_check") {
     ":gles2_cmd_helper",
     ":gles2_interface",
     "//base",
-    "//components/nacl/common:buildflags",
+    "//cc/paint",
     "//gpu/command_buffer/common",
     "//gpu/command_buffer/common:gles2",
     "//gpu/command_buffer/common:gles2_utils",
     "//ui/gfx",
+    "//ui/gfx:color_space",
     "//ui/gfx/geometry",
+    "//ui/gfx/ipc/color",
   ]
-
-  if (!is_nacl) {
-    deps += [
-      "//cc/paint",
-      "//ui/gfx:color_space",
-      "//ui/gfx/ipc/color",
-    ]
-  }
 }
 
 component("gles2_c_lib") {

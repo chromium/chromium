@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/json/json_parser.h"
+
+#include <array>
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
@@ -485,11 +482,11 @@ TEST(JSONParserTest, Reading) {
   ASSERT_FALSE(root.get());
   // U+00A0 NO-BREAK SPACE is not allowed
   UChar invalid_space_1[] = {0x5b, 0x00a0, 0x5d};  // [<U+00A0>]
-  root = ParseJSON(String(invalid_space_1, std::size(invalid_space_1)));
+  root = ParseJSON(String(base::span(invalid_space_1)));
   ASSERT_FALSE(root.get());
   // U+3000 IDEOGRAPHIC SPACE is not allowed
   UChar invalid_space_2[] = {0x5b, 0x3000, 0x5d};  // [<U+3000>]
-  root = ParseJSON(String(invalid_space_2, std::size(invalid_space_2)));
+  root = ParseJSON(String(base::span(invalid_space_2)));
   ASSERT_FALSE(root.get());
 
   // Test nesting
@@ -612,14 +609,14 @@ TEST(JSONParserTest, Reading) {
   EXPECT_EQ(JSONValue::kTypeString, root->GetType());
   EXPECT_TRUE(root->AsString(&str_val));
   UChar tmp2[] = {0x20ac, 0x33, 0x2c, 0x31, 0x34};
-  EXPECT_EQ(String(tmp2, std::size(tmp2)), str_val);
+  EXPECT_EQ(String(base::span(tmp2)), str_val);
 
   root = ParseJSON("\"\\ud83d\\udca9\\ud83d\\udc6c\"");
   ASSERT_TRUE(root.get());
   EXPECT_EQ(JSONValue::kTypeString, root->GetType());
   EXPECT_TRUE(root->AsString(&str_val));
   UChar tmp3[] = {0xd83d, 0xdca9, 0xd83d, 0xdc6c};
-  EXPECT_EQ(String(tmp3, std::size(tmp3)), str_val);
+  EXPECT_EQ(String(base::span(tmp3)), str_val);
 
   // Invalid unicode in a string literal after applying escape sequences.
   root = ParseJSON("\n\n    \"\\ud800\"", &error);
@@ -631,7 +628,7 @@ TEST(JSONParserTest, Reading) {
 
   // Invalid unicode in a JSON itself.
   UChar tmp4[] = {0x22, 0xd800, 0x22};  // "?"
-  root = ParseJSON(String(tmp4, std::size(tmp4)), &error);
+  root = ParseJSON(String(base::span(tmp4)), &error);
   EXPECT_FALSE(root.get());
   EXPECT_EQ(
       "Line: 1, column: 1, Unsupported encoding. JSON and all string literals "
@@ -640,7 +637,7 @@ TEST(JSONParserTest, Reading) {
 
   // Invalid unicode in a JSON itself.
   UChar tmp5[] = {0x7b, 0x22, 0xd800, 0x22, 0x3a, 0x31, 0x7d};  // {"?":1}
-  root = ParseJSON(String(tmp5, std::size(tmp5)), &error);
+  root = ParseJSON(String(base::span(tmp5)), &error);
   EXPECT_FALSE(root.get());
   EXPECT_EQ(
       "Line: 1, column: 2, Unsupported encoding. JSON and all string literals "
@@ -669,12 +666,12 @@ TEST(JSONParserTest, Reading) {
 }
 
 TEST(JSONParserTest, InvalidSanity) {
-  const char* const kInvalidJson[] = {
-      "/* test *", "{\"foo\"", "{\"foo\":", "  [", "\"\\u123g\"", "{\n\"eh:\n}",
-      "////",      "*/**/",    "/**/",      "/*/", "//**/",       "\"\\"};
+  constexpr auto kInvalidJson = std::to_array<const char* const>(
+      {"/* test *", "{\"foo\"", "{\"foo\":", "  [", "\"\\u123g\"",
+       "{\n\"eh:\n}", "////", "*/**/", "/**/", "/*/", "//**/", "\"\\"});
 
-  for (size_t i = 0; i < std::size(kInvalidJson); ++i) {
-    std::unique_ptr<JSONValue> result = ParseJSON(kInvalidJson[i]);
+  for (const auto* invalid_json : kInvalidJson) {
+    std::unique_ptr<JSONValue> result = ParseJSON(invalid_json);
     EXPECT_FALSE(result.get());
   }
 }

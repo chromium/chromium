@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash, "Firware update App is ash-chrome only")
+assert(is_chromeos, "Firware update App is ChromeOS only")
 
 static_library("firmware_update_ui") {
   sources = [
@@ -18,15 +16,15 @@ static_library("firmware_update_ui") {
     "//ash/constants",
     "//ash/webui/common:trusted_types_util",
     "//ash/webui/firmware_update_ui/mojom",
-    "//ash/webui/firmware_update_ui/resources:resources",
+    "//ash/webui/firmware_update_ui/resources",
     "//chromeos/ash/components/fwupd",
     "//chromeos/strings/",
     "//content/public/browser",
     "//dbus",
-    "//ui/chromeos:chromeos",
-    "//ui/resources:webui_resources_grd_grit",
-    "//ui/web_dialogs:web_dialogs",
+    "//ui/chromeos",
+    "//ui/web_dialogs",
     "//ui/webui",
+    "//ui/webui/resources:resources_grit",
   ]
 }
 

@@ -42,6 +42,7 @@ class NumberInputType final : public TextFieldInputType {
   explicit NumberInputType(HTMLInputElement& element)
       : TextFieldInputType(Type::kNumber, element) {}
   bool TypeMismatchFor(const String&) const;
+  CORE_EXPORT static String NormalizeFullWidthNumberChars(const String& input);
 
  private:
   void CountUsage() override;
@@ -53,12 +54,10 @@ class NumberInputType final : public TextFieldInputType {
   void SetValueAsDouble(double,
                         TextFieldEventBehavior,
                         ExceptionState&) const override;
-  void SetValueAsDecimal(const Decimal&,
-                         TextFieldEventBehavior,
-                         ExceptionState&) const override;
+  void SetValueAsDecimal(const Decimal&, TextFieldEventBehavior) const override;
   bool TypeMismatch() const override;
-  bool SizeShouldIncludeDecoration(int default_size,
-                                   int& preferred_size) const override;
+  bool GetSizeWithDecoration(int default_size,
+                             int& preferred_size) const override;
   StepRange CreateStepRange(AnyStepHandling) const override;
   void HandleKeydownEvent(KeyboardEvent&) override;
   void HandleBeforeTextInsertedEvent(BeforeTextInsertedEvent&) override;

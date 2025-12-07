@@ -15,11 +15,11 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.autofill.payments.CardDetail;
 import org.chromium.components.autofill.payments.LegalMessageLine;
@@ -30,10 +30,10 @@ import org.chromium.components.infobars.InfoBarLayout;
 import org.chromium.ui.UiUtils;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /** An infobar for saving credit card information. */
+@NullMarked
 public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
 
     private final @Nullable String mAccountFooterEmail;
@@ -41,11 +41,10 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
     private final long mNativeAutofillSaveCardInfoBar;
     private final List<CardDetail> mCardDetails = new ArrayList<>();
     private int mIconDrawableId = -1;
-    private String mTitleText;
-    private String mDescriptionText;
-    private boolean mIsGooglePayBrandingEnabled;
-    private final LinkedList<LegalMessageLine> mLegalMessageLines =
-            new LinkedList<LegalMessageLine>();
+    private final String mTitleText;
+    private @Nullable String mDescriptionText;
+    private final boolean mIsGooglePayBrandingEnabled;
+    private final List<LegalMessageLine> mLegalMessageLines = new ArrayList<>();
 
     /**
      * Creates a new instance of the infobar.
@@ -57,10 +56,10 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
      * @param linkText Link text to display in addition to the message.
      * @param buttonOk String to display on the OK button.
      * @param buttonCancel String to display on the Cancel button.
-     * @param accountFooterEmail The email to be shown on the footer, or null. The footer is
-     * only shown if both this and |accountFooterAvatar| are provided.
-     * @param accountFooterAvatar The avatar to be shown on the footer, or null. The footer is
-     * only shown if both this and |accountFooterEmail| are provided.
+     * @param accountFooterEmail The email to be shown on the footer, or null. The footer is only
+     *     shown if both this and |accountFooterAvatar| are provided.
+     * @param accountFooterAvatar The avatar to be shown on the footer, or null. The footer is only
+     *     shown if both this and |accountFooterEmail| are provided.
      */
     private AutofillSaveCardInfoBar(
             long nativeAutofillSaveCardInfoBar,
@@ -174,7 +173,10 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
      */
     @CalledByNative
     private void addLinkToLastLegalMessageLine(int start, int end, String url) {
-        mLegalMessageLines.getLast().links.add(new LegalMessageLine.Link(start, end, url));
+        mLegalMessageLines
+                .get(mLegalMessageLines.size() - 1)
+                .links
+                .add(new LegalMessageLine.Link(start, end, url));
     }
 
     @Override
@@ -212,9 +214,7 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
                             public void onClick(View view) {
                                 AutofillSaveCardInfoBarJni.get()
                                         .onLegalMessageLinkClicked(
-                                                mNativeAutofillSaveCardInfoBar,
-                                                AutofillSaveCardInfoBar.this,
-                                                link.url);
+                                                mNativeAutofillSaveCardInfoBar, link.url);
                             }
                         },
                         link.start,
@@ -227,7 +227,6 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
         if (mAccountFooterEmail != null && mAccountFooterAvatar != null) {
             Resources res = layout.getResources();
             int smallIconSize = res.getDimensionPixelSize(R.dimen.infobar_small_icon_size);
-            int padding = res.getDimensionPixelOffset(R.dimen.infobar_padding);
 
             LinearLayout footer =
                     (LinearLayout)
@@ -252,7 +251,6 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
 
     @NativeMethods
     interface Natives {
-        void onLegalMessageLinkClicked(
-                long nativeAutofillSaveCardInfoBar, AutofillSaveCardInfoBar caller, String url);
+        void onLegalMessageLinkClicked(long nativeAutofillSaveCardInfoBar, String url);
     }
 }

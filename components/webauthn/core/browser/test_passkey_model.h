@@ -6,8 +6,10 @@
 #define COMPONENTS_WEBAUTHN_CORE_BROWSER_TEST_PASSKEY_MODEL_H_
 
 #include <string>
+#include <vector>
 
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
@@ -19,6 +21,8 @@ class TestPasskeyModel : public PasskeyModel {
   TestPasskeyModel();
   ~TestPasskeyModel() override;
 
+  void SetReady(bool is_ready);
+
   // PasskeyModel:
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
@@ -27,18 +31,33 @@ class TestPasskeyModel : public PasskeyModel {
   bool IsReady() const override;
   bool IsEmpty() const override;
   base::flat_set<std::string> GetAllSyncIds() const override;
-  std::vector<sync_pb::WebauthnCredentialSpecifics> GetAllPasskeys()
-      const override;
+  std::vector<sync_pb::WebauthnCredentialSpecifics> GetPasskeys(
+      std::variant<AnyRp, std::string_view> rp_id,
+      ShadowedCredentials shadowed_credentials) const override;
+  std::optional<sync_pb::WebauthnCredentialSpecifics> GetPasskey(
+      std::variant<AnyRp, std::string_view> rp_id,
+      std::string_view credential_id,
+      ShadowedCredentials shadowed_credentials) const override;
   std::optional<sync_pb::WebauthnCredentialSpecifics> GetPasskeyByCredentialId(
       const std::string& rp_id,
       const std::string& credential_id) const override;
-  std::vector<sync_pb::WebauthnCredentialSpecifics>
-  GetPasskeysForRelyingPartyId(const std::string& rp_id) const override;
+  std::optional<sync_pb::WebauthnCredentialSpecifics> GetPasskeyByUserId(
+      const std::string& rp_id,
+      const std::string& user_id) const override;
   bool DeletePasskey(const std::string& credential_id,
                      const base::Location& location) override;
+  bool HidePasskey(const std::string& credential_id,
+                   base::Time hidden_time) override;
+  bool UnhidePasskey(const std::string& credential_id) override;
   void DeleteAllPasskeys() override;
   bool UpdatePasskey(const std::string& credential_id,
-                     PasskeyUpdate change) override;
+                     PasskeyUpdate change,
+                     bool updated_by_user) override;
+  bool UpdatePasskeyTimestamp(const std::string& credential_id,
+                              base::Time last_used_time) override;
+  bool UpdatePasskeyEncryptedBlob(
+      const std::string& credential_id,
+      const std::string& new_encrypted_blob) override;
   sync_pb::WebauthnCredentialSpecifics CreatePasskey(
       std::string_view rp_id,
       const UserEntity& user_entity,
@@ -56,6 +75,7 @@ class TestPasskeyModel : public PasskeyModel {
 
   std::vector<sync_pb::WebauthnCredentialSpecifics> credentials_;
   base::ObserverList<Observer> observers_;
+  bool is_ready_ = true;
 };
 
 }  // namespace webauthn

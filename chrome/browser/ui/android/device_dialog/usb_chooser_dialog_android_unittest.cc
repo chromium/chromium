@@ -16,7 +16,7 @@
 #include "services/device/public/mojom/usb_enumeration_options.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/usb/web_usb_service.mojom-blink.h"
+#include "third_party/blink/public/mojom/usb/web_usb_service.mojom.h"
 #include "ui/android/window_android.h"
 
 namespace {
@@ -47,12 +47,9 @@ TEST_F(UsbChooserDialogAndroidTest, FrameTree) {
 
   base::MockCallback<UsbChooserDialogAndroid::CreateJavaDialogCallback>
       mock_callback;
-  auto origin_predicate =
-      [&](const base::android::JavaRef<jstring>& java_string) {
-        return base::android::ConvertJavaStringToUTF16(
-                   base::android::AttachCurrentThread(), java_string) ==
-               u"https://main-frame.com";
-      };
+  auto origin_predicate = [&](const std::u16string& java_string) {
+    return java_string == u"https://main-frame.com";
+  };
   EXPECT_CALL(mock_callback, Run(/*env=*/_, /*window_android=*/_,
                                  testing::Truly(origin_predicate),
                                  /*security_level=*/_, /*profile=*/_,

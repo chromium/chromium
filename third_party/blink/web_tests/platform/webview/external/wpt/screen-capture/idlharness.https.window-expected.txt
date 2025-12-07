@@ -13,10 +13,4 @@ This is a testharness.js-based test.
   assert_own_property: self does not have own property "CaptureController" expected property "CaptureController" missing
 [FAIL] CaptureController interface: operation setFocusBehavior(CaptureStartFocusBehavior)
   assert_own_property: self does not have own property "CaptureController" expected property "CaptureController" missing
-[FAIL] MediaDevices interface: operation getDisplayMedia(optional DisplayMediaStreamOptions)
-  assert_own_property: interface prototype object missing non-static operation expected property "getDisplayMedia" missing
-[FAIL] MediaDevices interface: navigator.mediaDevices must inherit property "getDisplayMedia(optional DisplayMediaStreamOptions)" with the proper type
-  assert_inherits: property "getDisplayMedia" not found in prototype chain
-[FAIL] MediaDevices interface: calling getDisplayMedia(optional DisplayMediaStreamOptions) on navigator.mediaDevices with too few arguments must throw TypeError
-  assert_inherits: property "getDisplayMedia" not found in prototype chain
 Harness: the test ran to completion.

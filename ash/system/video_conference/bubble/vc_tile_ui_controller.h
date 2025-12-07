@@ -5,8 +5,11 @@
 #ifndef ASH_SYSTEM_VIDEO_CONFERENCE_BUBBLE_VC_TILE_UI_CONTROLLER_H_
 #define ASH_SYSTEM_VIDEO_CONFERENCE_BUBBLE_VC_TILE_UI_CONTROLLER_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 #include "ash/system/unified/feature_tile.h"
+#include "ash/system/video_conference/effects/video_conference_tray_effects_manager.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
@@ -25,7 +28,9 @@ namespace video_conference {
 // `ash::VcEffectsDelegate`.
 //
 // Note: This class is only used when `VcDlcUi` is enabled.
-class ASH_EXPORT VcTileUiController : public DlcserviceClient::Observer {
+class ASH_EXPORT VcTileUiController
+    : public DlcserviceClient::Observer,
+      public VideoConferenceTrayEffectsManager::Observer {
  public:
   explicit VcTileUiController(const VcHostedEffect* effect);
   VcTileUiController(const VcTileUiController&) = delete;
@@ -86,6 +91,9 @@ class ASH_EXPORT VcTileUiController : public DlcserviceClient::Observer {
   // DlcserviceClient::Observer:
   void OnDlcStateChanged(const dlcservice::DlcState& dlc_state) override;
 
+  // VideoConferenceTrayEffectsManager::Observer:
+  void OnEffectChanged(VcEffectId effect_id, bool is_on) override;
+
   // Called when the `FeatureTile` associated with this controller is pressed.
   void OnPressed(const ui::Event& event);
 
@@ -122,6 +130,9 @@ class ASH_EXPORT VcTileUiController : public DlcserviceClient::Observer {
   // saved because the `VcTileUiController` may outlive its dependencies.
   base::WeakPtr<const VcEffectState> effect_state_;
   base::WeakPtr<const VcHostedEffect> effect_;
+
+  // The initial label for `effect_state_`, used for debugging.
+  std::u16string effect_state_label_for_debug_;
 
   // A list of ids for the DLCs associated with the tile managed by this
   // controller. This is empty for tiles not associated with any DLC.

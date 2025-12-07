@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_COMPUTE_PRESSURE_PRESSURE_SERVICE_FOR_FRAME_H_
 #define CONTENT_BROWSER_COMPUTE_PRESSURE_PRESSURE_SERVICE_FOR_FRAME_H_
 
-#include "base/functional/callback.h"
 #include "content/browser/compute_pressure/pressure_service_base.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"
@@ -26,14 +25,20 @@ class CONTENT_EXPORT PressureServiceForFrame
   // PressureServiceBase override.
   bool CanCallAddClient() const override;
   bool ShouldDeliverUpdate() const override;
+  double CalculateOwnContributionEstimate(
+      double global_cpu_utilization) override;
   std::optional<base::UnguessableToken> GetTokenFor(
       device::mojom::PressureSource) const override;
+  RenderFrameHost* GetRenderFrameHost() const override;
 
  private:
   explicit PressureServiceForFrame(RenderFrameHost* render_frame_host);
 
   friend DocumentUserData;
   DOCUMENT_USER_DATA_KEY_DECL();
+
+  // |metrics_| is used to gather process based metrics.
+  std::unique_ptr<base::ProcessMetrics> metrics_;
 };
 
 }  // namespace content

@@ -1,0 +1,22 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("messages") {
+  sources = [
+    "duration.proto",
+    "empty.proto",
+    "field_mask.proto",
+    "network_traversal_service.proto",
+    "operating_system_info.proto",
+    "remote_access_host.proto",
+    "remote_access_service.proto",
+    "service_account_info.proto",
+    "session_authz_service.proto",
+    "session_policies.proto",
+    "tachyon_account_info.proto",
+    "timestamp.proto",
+  ]
+}

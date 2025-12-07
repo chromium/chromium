@@ -55,10 +55,12 @@ ChromeSpeechRecognitionClient::ChromeSpeechRecognitionClient(
 ChromeSpeechRecognitionClient::~ChromeSpeechRecognitionClient() = default;
 
 void ChromeSpeechRecognitionClient::AddAudio(
-    scoped_refptr<media::AudioBuffer> buffer) {
+    scoped_refptr<media::AudioBuffer> buffer,
+    std::optional<base::TimeDelta> media_start_pts) {
   DCHECK(buffer);
   send_audio_callback_.Run(
-      ConvertToAudioDataS16(std::move(buffer), is_multichannel_supported_));
+      ConvertToAudioDataS16(std::move(buffer), is_multichannel_supported_),
+      std::move(media_start_pts));
 }
 
 void ChromeSpeechRecognitionClient::AddAudio(const media::AudioBus& audio_bus) {
@@ -215,21 +217,23 @@ void ChromeSpeechRecognitionClient::AddAudioBusOnMainSequence(
     media::ChannelLayout channel_layout) {
   DCHECK(audio_bus);
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  send_audio_callback_.Run(ConvertToAudioDataS16(*audio_bus.get(), sample_rate,
-                                                 channel_layout,
-                                                 is_multichannel_supported_));
+  send_audio_callback_.Run(
+      ConvertToAudioDataS16(*audio_bus.get(), sample_rate, channel_layout,
+                            is_multichannel_supported_),
+      std::nullopt);
 
   if (audio_bus_pool_) {
     audio_bus_pool_->InsertAudioBus(std::move(audio_bus));
   }
 }
 void ChromeSpeechRecognitionClient::SendAudioToSpeechRecognitionService(
-    media::mojom::AudioDataS16Ptr audio_data) {
+    media::mojom::AudioDataS16Ptr audio_data,
+    std::optional<base::TimeDelta> media_start_pts) {
   DCHECK(audio_data);
   if (speech_recognition_recognizer_.is_bound() &&
       IsSpeechRecognitionAvailable()) {
     speech_recognition_recognizer_->SendAudioToSpeechRecognitionService(
-        std::move(audio_data));
+        std::move(audio_data), std::move(media_start_pts));
   }
 }
 

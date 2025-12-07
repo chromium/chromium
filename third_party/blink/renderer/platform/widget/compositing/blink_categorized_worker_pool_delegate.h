@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_COMPOSITING_BLINK_CATEGORIZED_WORKER_POOL_DELEGATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_COMPOSITING_BLINK_CATEGORIZED_WORKER_POOL_DELEGATE_H_
 
-#include "base/functional/callback.h"
 #include "cc/raster/categorized_worker_pool.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 

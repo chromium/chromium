@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/common/extension_id.h"
 
 namespace base {
 class FilePath;
@@ -56,10 +57,10 @@ class ShellExtensionSystem : public ExtensionSystem {
   // Finish initialization for the shell extension system.
   void FinishInitialization();
 
-  // Launch the app with id |extension_id|.
+  // Launch the app with id `extension_id`.
   void LaunchApp(const ExtensionId& extension_id);
 
-  // Reloads the extension with id |extension_id|.
+  // Reloads the extension with id `extension_id`.
   void ReloadExtension(const ExtensionId& extension_id);
 
   // KeyedService implementation:
@@ -82,16 +83,14 @@ class ShellExtensionSystem : public ExtensionSystem {
   ContentVerifier* content_verifier() override;
   std::unique_ptr<ExtensionSet> GetDependentExtensions(
       const Extension* extension) override;
-  void InstallUpdate(const std::string& extension_id,
+  void InstallUpdate(const ExtensionId& extension_id,
                      const std::string& public_key,
                      const base::FilePath& temp_dir,
                      bool install_immediately,
                      InstallUpdateCallback install_update_callback) override;
   void PerformActionBasedOnOmahaAttributes(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       const base::Value::Dict& attributes) override;
-  bool FinishDelayedInstallationIfReady(const std::string& extension_id,
-                                        bool install_immediately) override;
 
  private:
   raw_ptr<content::BrowserContext> browser_context_;  // Not owned.

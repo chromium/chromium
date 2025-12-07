@@ -4,14 +4,14 @@
 
 import 'chrome://personalization/strings.m.js';
 
-import {DefaultUserImage, Paths, UserImage, UserPreviewElement} from 'chrome://personalization/js/personalization_app.js';
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
+import type {DefaultUserImage, UserImage} from 'chrome://personalization/js/personalization_app.js';
+import {Paths, UserPreviewElement} from 'chrome://personalization/js/personalization_app.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
-import {TestPersonalizationStore} from './test_personalization_store.js';
-import {TestUserProvider} from './test_user_interface_provider.js';
+import type {TestPersonalizationStore} from './test_personalization_store.js';
+import type {TestUserProvider} from './test_user_interface_provider.js';
 
 suite('UserPreviewElementTest', function() {
   let userPreviewElement: UserPreviewElement|null;
@@ -38,15 +38,15 @@ suite('UserPreviewElementTest', function() {
   test('displays user info when set', async () => {
     personalizationStore.data.user.info = userProvider.info;
     userPreviewElement = initElement(UserPreviewElement);
-    await waitAfterNextRender(userPreviewElement!);
+    await waitAfterNextRender(userPreviewElement);
 
     assertEquals(
         userProvider.info.email,
-        userPreviewElement!.shadowRoot!.getElementById('email')!.innerText);
+        userPreviewElement.shadowRoot!.getElementById('email')!.innerText);
 
     assertEquals(
         userProvider.info.name,
-        userPreviewElement!.shadowRoot!.getElementById('name')!.innerText);
+        userPreviewElement.shadowRoot!.getElementById('name')!.innerText);
   });
 
   test('displays edit icon when not managed', async () => {
@@ -55,23 +55,22 @@ suite('UserPreviewElementTest', function() {
     userPreviewElement = initElement(UserPreviewElement, {path: Paths.ROOT});
     await waitAfterNextRender(userPreviewElement);
 
-    const avatarImage =
-        userPreviewElement!.shadowRoot!.getElementById('avatar');
+    const avatarImage = userPreviewElement.shadowRoot!.getElementById('avatar');
     assertFalse(avatarImage!.classList.contains('managed'));
     // Does show edit icon.
     assertTrue(
-        !!userPreviewElement!.shadowRoot!.getElementById('iconContainer'));
+        !!userPreviewElement.shadowRoot!.getElementById('iconContainer'));
     // Does not show enterprise icon.
-    assertFalse(!!userPreviewElement!.shadowRoot!.getElementById(
+    assertFalse(!!userPreviewElement.shadowRoot!.getElementById(
         'enterpriseIconContainer'));
   });
 
   test('displays user image from default image', async () => {
     personalizationStore.data.user.image = userProvider.image;
     userPreviewElement = initElement(UserPreviewElement, {path: Paths.ROOT});
-    await waitAfterNextRender(userPreviewElement!);
+    await waitAfterNextRender(userPreviewElement);
 
-    const avatarImage = userPreviewElement!.shadowRoot!.getElementById(
+    const avatarImage = userPreviewElement.shadowRoot!.getElementById(
                             'avatar') as HTMLImageElement;
     assertEquals(
         userProvider.image.defaultImage?.url!.url, avatarImage.src,
@@ -82,9 +81,9 @@ suite('UserPreviewElementTest', function() {
     personalizationStore.data.user.image = {profileImage: {}} as UserImage;
     personalizationStore.data.user.profileImage = userProvider.profileImage;
     userPreviewElement = initElement(UserPreviewElement, {path: Paths.ROOT});
-    await waitAfterNextRender(userPreviewElement!);
+    await waitAfterNextRender(userPreviewElement);
 
-    const avatarImage = userPreviewElement!.shadowRoot!.getElementById(
+    const avatarImage = userPreviewElement.shadowRoot!.getElementById(
                             'avatar') as HTMLImageElement;
     assertEquals(
         userProvider.profileImage.url, avatarImage.src,
@@ -111,7 +110,7 @@ suite('UserPreviewElementTest', function() {
     userPreviewElement = initElement(UserPreviewElement, {path: Paths.ROOT});
     await waitAfterNextRender(userPreviewElement);
 
-    const avatarImage = userPreviewElement!.shadowRoot!.getElementById(
+    const avatarImage = userPreviewElement.shadowRoot!.getElementById(
                             'avatar') as HTMLImageElement;
 
     assertTrue(
@@ -128,7 +127,7 @@ suite('UserPreviewElementTest', function() {
         url: {
           url: 'https://www.gstatic.com/',
         },
-        title: stringToMojoString16('the remains of the day'),
+        title: 'the remains of the day',
         index: 1,
         sourceInfo: null,
       },
@@ -137,7 +136,7 @@ suite('UserPreviewElementTest', function() {
     userPreviewElement = initElement(UserPreviewElement, {path: Paths.ROOT});
     await waitAfterNextRender(userPreviewElement);
 
-    const avatarImage = userPreviewElement!.shadowRoot!.getElementById(
+    const avatarImage = userPreviewElement.shadowRoot!.getElementById(
                             'avatar') as HTMLImageElement;
 
     assertTrue(
@@ -149,9 +148,9 @@ suite('UserPreviewElementTest', function() {
 
   test('do not display image if user image is not ready yet', async () => {
     userPreviewElement = initElement(UserPreviewElement, {path: Paths.ROOT});
-    await waitAfterNextRender(userPreviewElement!);
+    await waitAfterNextRender(userPreviewElement);
 
-    const avatarImage = userPreviewElement!.shadowRoot!.getElementById(
+    const avatarImage = userPreviewElement.shadowRoot!.getElementById(
                             'avatar') as HTMLImageElement;
     assertEquals(
         null, avatarImage,
@@ -161,9 +160,9 @@ suite('UserPreviewElementTest', function() {
   test('displays placeholder image if user image is invalid', async () => {
     personalizationStore.data.user.image = {invalidImage: {}} as UserImage;
     userPreviewElement = initElement(UserPreviewElement, {path: Paths.ROOT});
-    await waitAfterNextRender(userPreviewElement!);
+    await waitAfterNextRender(userPreviewElement);
 
-    const avatarImage = userPreviewElement!.shadowRoot!.getElementById(
+    const avatarImage = userPreviewElement.shadowRoot!.getElementById(
                             'avatar') as HTMLImageElement;
     assertEquals(
         'chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE', avatarImage.src,
@@ -175,7 +174,7 @@ suite('UserPreviewElementTest', function() {
     userPreviewElement = initElement(UserPreviewElement, {path: Paths.USER});
     await waitAfterNextRender(userPreviewElement);
 
-    const avatarImage = userPreviewElement!.shadowRoot!.getElementById(
+    const avatarImage = userPreviewElement.shadowRoot!.getElementById(
                             'avatar2') as HTMLImageElement;
     assertEquals(
         userProvider.image.defaultImage?.url!.url, avatarImage.src,
@@ -188,14 +187,13 @@ suite('UserPreviewElementTest', function() {
     userPreviewElement = initElement(UserPreviewElement, {path: Paths.ROOT});
     await waitAfterNextRender(userPreviewElement);
 
-    const avatarImage =
-        userPreviewElement!.shadowRoot!.getElementById('avatar');
+    const avatarImage = userPreviewElement.shadowRoot!.getElementById('avatar');
     assertTrue(avatarImage!.classList.contains('managed'));
     // Does not show edit icon.
     assertFalse(
-        !!userPreviewElement!.shadowRoot!.getElementById('iconContainer'));
+        !!userPreviewElement.shadowRoot!.getElementById('iconContainer'));
     // Does show enterprise icon.
-    assertTrue(!!userPreviewElement!.shadowRoot!.getElementById(
+    assertTrue(!!userPreviewElement.shadowRoot!.getElementById(
         'enterpriseIconContainer'));
   });
 
@@ -209,10 +207,10 @@ suite('UserPreviewElementTest', function() {
 
     const deprecatedDefaultImage: DefaultUserImage = {
       index: 2,
-      title: stringToMojoString16('title'),
+      title: 'title',
       url: {url: 'data://test_url'},
       sourceInfo: {
-        author: stringToMojoString16('author example'),
+        author: 'author example',
         website: {url: 'website example'},
       },
     };

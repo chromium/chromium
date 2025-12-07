@@ -8,27 +8,42 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/config/linux/dbus/buildflags.h"
 #include "components/embedder_support/user_agent_utils.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/common/user_agent.h"
 #include "headless/lib/browser/headless_browser_context_impl.h"
+#include "headless/lib/browser/headless_platform_delegate.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/command_line.h"
+#include "components/os_crypt/async/browser/dpapi_key_provider.h"
 #include "headless/public/switches.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
-#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
+#if BUILDFLAG(IS_APPLE)
+#include "components/os_crypt/async/browser/keychain_key_provider.h"
+#endif
+
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+#include "base/command_line.h"
+#include "components/os_crypt/async/browser/freedesktop_secret_key_provider.h"
+#include "components/password_manager/core/browser/password_manager_switches.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(IS_POSIX)
+#include "components/os_crypt/async/browser/posix_key_provider.h"  // nogncheck
 #endif
 
 #if defined(HEADLESS_USE_PREFS)
@@ -53,12 +68,9 @@
 namespace headless {
 
 namespace {
+
 // Product name for building the default user agent string.
 const char kHeadlessProductName[] = "HeadlessChrome";
-constexpr gfx::Size kDefaultWindowSize(800, 600);
-
-constexpr gfx::FontRenderParams::Hinting kDefaultFontRenderHinting =
-    gfx::FontRenderParams::Hinting::HINTING_FULL;
 
 #if defined(HEADLESS_USE_PREFS)
 const base::FilePath::CharType kLocalStateFilename[] =
@@ -67,101 +79,19 @@ const base::FilePath::CharType kLocalStateFilename[] =
 
 }  // namespace
 
-using Options = HeadlessBrowser::Options;
-using Builder = HeadlessBrowser::Options::Builder;
+HeadlessBrowser::Options::Options()
+    : user_agent(embedder_support::BuildUnifiedPlatformUserAgentFromProduct(
+          HeadlessBrowser::GetProductNameAndVersion())) {}
 
-Options::Options()
-    : user_agent(content::BuildUserAgentFromProduct(
-          HeadlessBrowser::GetProductNameAndVersion())),
-      window_size(kDefaultWindowSize),
-      font_render_hinting(kDefaultFontRenderHinting) {}
+HeadlessBrowser::Options::Options(Options&& options) = default;
 
-Options::Options(Options&& options) = default;
+HeadlessBrowser::Options::~Options() = default;
 
-Options::~Options() = default;
+HeadlessBrowser::Options& HeadlessBrowser::Options::operator=(
+    Options&& options) = default;
 
-Options& Options::operator=(Options&& options) = default;
-
-bool Options::DevtoolsServerEnabled() {
+bool HeadlessBrowser::Options::DevtoolsServerEnabled() {
   return (devtools_pipe_enabled || devtools_port.has_value());
-}
-
-Builder::Builder() = default;
-
-Builder::~Builder() = default;
-
-Builder& Builder::SetUserAgent(const std::string& agent) {
-  options_.user_agent = agent;
-  return *this;
-}
-
-Builder& Builder::SetEnableLazyLoading(bool enable) {
-  options_.lazy_load_enabled = enable;
-  return *this;
-}
-
-Builder& Builder::SetAcceptLanguage(const std::string& language) {
-  options_.accept_language = language;
-  return *this;
-}
-
-Builder& Builder::SetEnableBeginFrameControl(bool enable) {
-  options_.enable_begin_frame_control = enable;
-  return *this;
-}
-
-Builder& Builder::EnableDevToolsServer(int port) {
-  options_.devtools_port = port;
-  return *this;
-}
-
-Builder& Builder::EnableDevToolsPipe() {
-  options_.devtools_pipe_enabled = true;
-  return *this;
-}
-
-Builder& Builder::SetProxyConfig(std::unique_ptr<net::ProxyConfig> config) {
-  options_.proxy_config = std::move(config);
-  return *this;
-}
-
-Builder& Builder::SetUserDataDir(const base::FilePath& dir) {
-  options_.user_data_dir = dir;
-  return *this;
-}
-
-Builder& Builder::SetDiskCacheDir(const base::FilePath& dir) {
-  options_.disk_cache_dir = dir;
-  return *this;
-}
-
-Builder& Builder::SetWindowSize(const gfx::Size& size) {
-  options_.window_size = size;
-  return *this;
-}
-
-Builder& Builder::SetIncognitoMode(bool incognito) {
-  options_.incognito_mode = incognito;
-  return *this;
-}
-
-Builder& Builder::SetBlockNewWebContents(bool block) {
-  options_.block_new_web_contents = block;
-  return *this;
-}
-
-Builder& Builder::SetFontRenderHinting(gfx::FontRenderParams::Hinting hinting) {
-  options_.font_render_hinting = hinting;
-  return *this;
-}
-
-Builder& Builder::SetForceNewBrowsingInstance(bool force) {
-  options_.force_new_browsing_instance = force;
-  return *this;
-}
-
-Options Builder::Build() {
-  return std::move(options_);
 }
 
 /// static
@@ -171,14 +101,13 @@ std::string HeadlessBrowser::GetProductNameAndVersion() {
 
 /// static
 blink::UserAgentMetadata HeadlessBrowser::GetUserAgentMetadata() {
-  auto metadata = embedder_support::GetUserAgentMetadata(nullptr);
+  auto metadata = embedder_support::GetUserAgentMetadata();
   // Skip override brand version information if components' API returns a blank
   // UserAgentMetadata.
   if (metadata == blink::UserAgentMetadata()) {
     return metadata;
   }
   std::string significant_version = version_info::GetMajorVersionNumber();
-  constexpr bool kEnableUpdatedGreaseByPolicy = true;
 
   // Use the major version number as a greasing seed
   int seed = 1;
@@ -187,19 +116,18 @@ blink::UserAgentMetadata HeadlessBrowser::GetUserAgentMetadata() {
 
   // Rengenerate the brand version lists with kHeadlessProductName.
   metadata.brand_version_list = embedder_support::GenerateBrandVersionList(
-      seed, kHeadlessProductName, significant_version, std::nullopt,
-      std::nullopt, kEnableUpdatedGreaseByPolicy,
+      seed, kHeadlessProductName, significant_version,
       blink::UserAgentBrandVersionType::kMajorVersion);
   metadata.brand_full_version_list = embedder_support::GenerateBrandVersionList(
-      seed, kHeadlessProductName, metadata.full_version, std::nullopt,
-      std::nullopt, kEnableUpdatedGreaseByPolicy,
+      seed, kHeadlessProductName, metadata.full_version,
       blink::UserAgentBrandVersionType::kFullVersion);
   return metadata;
 }
 
 HeadlessBrowserImpl::HeadlessBrowserImpl(
     base::OnceCallback<void(HeadlessBrowser*)> on_start_callback)
-    : on_start_callback_(std::move(on_start_callback)) {}
+    : on_start_callback_(std::move(on_start_callback)),
+      platform_delegate_(std::make_unique<HeadlessPlatformDelegate>()) {}
 
 HeadlessBrowserImpl::~HeadlessBrowserImpl() = default;
 
@@ -225,10 +153,7 @@ void HeadlessBrowserImpl::Shutdown() {
   // Make sure GetAllBrowserContexts is sane if called after this point.
   auto tmp = std::move(browser_contexts_);
   tmp.clear();
-  if (system_request_context_manager_) {
-    content::GetIOThreadTaskRunner({})->DeleteSoon(
-        FROM_HERE, system_request_context_manager_.release());
-  }
+  system_request_context_manager_.reset();
   // We might have posted task during shutdown, let these run
   // before quitting the message loop. See ~HeadlessWebContentsImpl
   // for additional context.
@@ -287,7 +212,8 @@ void HeadlessBrowserImpl::SetDefaultBrowserContext(
   if (default_browser_context_ && !system_request_context_manager_) {
     system_request_context_manager_ =
         HeadlessRequestContextManager::CreateSystemContext(
-            HeadlessBrowserContextImpl::From(browser_context)->options());
+            HeadlessBrowserContextImpl::From(browser_context)->options(),
+            os_crypt_async());
   }
 }
 
@@ -298,17 +224,6 @@ HeadlessBrowserContext* HeadlessBrowserImpl::GetDefaultBrowserContext() {
 base::WeakPtr<HeadlessBrowserImpl> HeadlessBrowserImpl::GetWeakPtr() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return weak_ptr_factory_.GetWeakPtr();
-}
-
-HeadlessWebContents* HeadlessBrowserImpl::GetWebContentsForDevToolsAgentHostId(
-    const std::string& devtools_agent_host_id) {
-  for (HeadlessBrowserContext* context : GetAllBrowserContexts()) {
-    HeadlessWebContents* web_contents =
-        context->GetWebContentsForDevToolsAgentHostId(devtools_agent_host_id);
-    if (web_contents)
-      return web_contents;
-  }
-  return nullptr;
 }
 
 HeadlessWebContentsImpl* HeadlessBrowserImpl::GetWebContentsForWindowId(
@@ -343,8 +258,9 @@ bool HeadlessBrowserImpl::ShouldStartDevToolsServer() {
   if (!IsRemoteDebuggingAllowed(local_state_.get())) {
     // Follow content/browser/devtools/devtools_http_handler.cc that reports its
     // remote debugging port on stderr for symmetry.
-    fputs("\nDevTools remote debugging is disallowed by the system admin.\n",
-          stderr);
+    UNSAFE_TODO(fputs(
+        "\nDevTools remote debugging is disallowed by the system admin.\n",
+        stderr));
     fflush(stderr);
     return false;
   }
@@ -353,13 +269,16 @@ bool HeadlessBrowserImpl::ShouldStartDevToolsServer() {
 }
 
 void HeadlessBrowserImpl::PreMainMessageLoopRun() {
-  PlatformInitialize();
+  CreateOSCryptAsync();
+
+  platform_delegate_->Initialize(options_.value());
 
   // We don't support the tethering domain on this agent host.
   agent_host_ = content::DevToolsAgentHost::CreateForBrowser(
       nullptr, content::DevToolsAgentHost::CreateServerSocketCallback());
 
-  PlatformStart();
+  platform_delegate_->Start();
+
   std::move(on_start_callback_).Run(this);
 }
 
@@ -368,6 +287,7 @@ void HeadlessBrowserImpl::WillRunMainMessageLoop(base::RunLoop& run_loop) {
 }
 
 void HeadlessBrowserImpl::PostMainMessageLoopRun() {
+  os_crypt_async_.reset();
 #if defined(HEADLESS_USE_PREFS)
   if (local_state_) {
     local_state_->CommitPendingWrite();
@@ -380,6 +300,22 @@ void HeadlessBrowserImpl::PostMainMessageLoopRun() {
     policy_connector_.reset(nullptr);
   }
 #endif
+}
+
+void HeadlessBrowserImpl::InitializeWebContents(
+    HeadlessWebContentsImpl* web_contents) {
+  platform_delegate_->InitializeWebContents(web_contents);
+}
+
+void HeadlessBrowserImpl::SetWebContentsBounds(
+    HeadlessWebContentsImpl* web_contents,
+    const gfx::Rect& bounds) {
+  platform_delegate_->SetWebContentsBounds(web_contents, bounds);
+}
+
+ui::Compositor* HeadlessBrowserImpl::GetCompositor(
+    HeadlessWebContentsImpl* web_contents) {
+  return platform_delegate_->GetCompositor(web_contents);
 }
 
 #if defined(HEADLESS_USE_POLICY)
@@ -460,5 +396,36 @@ PrefService* HeadlessBrowserImpl::GetPrefs() {
   return local_state_.get();
 }
 #endif  // defined(HEADLESS_USE_PREFS)
+
+void HeadlessBrowserImpl::CreateOSCryptAsync() {
+  std::vector<std::pair<size_t, std::unique_ptr<os_crypt_async::KeyProvider>>>
+      providers;
+#if BUILDFLAG(IS_WIN) && defined(HEADLESS_USE_PREFS)
+  if (local_state_) {
+    providers.emplace_back(std::make_pair(
+        /*precedence=*/10u, std::make_unique<os_crypt_async::DPAPIKeyProvider>(
+                                local_state_.get())));
+  }
+#elif BUILDFLAG(IS_APPLE)
+  providers.emplace_back(std::make_pair(
+      /*precedence=*/10u,
+      std::make_unique<os_crypt_async::KeychainKeyProvider>()));
+#elif BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+  base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
+  const auto password_store =
+      cmd_line->GetSwitchValueASCII(password_manager::kPasswordStore);
+  providers.emplace_back(
+      /*precedence=*/10u,
+      std::make_unique<os_crypt_async::FreedesktopSecretKeyProvider>(
+          password_store, kHeadlessProductName, nullptr));
+#endif
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
+  providers.emplace_back(
+      /*precedence=*/5u, std::make_unique<os_crypt_async::PosixKeyProvider>());
+#endif
+  os_crypt_async_ =
+      std::make_unique<os_crypt_async::OSCryptAsync>(std::move(providers));
+}
 
 }  // namespace headless

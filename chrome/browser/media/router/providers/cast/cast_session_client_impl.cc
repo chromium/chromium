@@ -4,10 +4,17 @@
 
 #include "chrome/browser/media/router/providers/cast/cast_session_client_impl.h"
 
+#include <optional>
+#include <string>
 #include <vector>
 
+#include "base/json/json_writer.h"
 #include "chrome/browser/media/router/data_decoder_util.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/providers/cast/app_activity.h"
+#include "chrome/browser/media/router/providers/cast/cast_internal_message_util.h"
+#include "components/media_router/common/mojom/debugger.mojom.h"
+#include "components/media_router/common/mojom/logger.mojom.h"
 #include "components/media_router/common/providers/cast/channel/enum_table.h"
 
 using blink::mojom::PresentationConnectionCloseReason;
@@ -17,6 +24,31 @@ using blink::mojom::PresentationConnectionState;
 namespace media_router {
 
 namespace {
+
+void LogCastInternalMessage(mojom::Logger& logger,
+                            const CastInternalMessage& message) {
+  std::optional<std::string> json;
+  std::string message_type;
+  std::string session_id;
+  switch (message.type()) {
+    case CastInternalMessage::Type::kAppMessage:
+      session_id = message.session_id();
+      message_type = message.app_message_namespace();
+      json = base::WriteJson(message.app_message_body(), 10);
+      break;
+    case CastInternalMessage::Type::kV2Message:
+      session_id = message.session_id();
+      message_type = message.v2_message_type();
+      json = base::WriteJson(message.v2_message_body(), 10);
+      break;
+    default:
+      message_type = CastInternalMessageTypeToString(message.type());
+      break;
+  }
+  logger.LogInfo(media_router::mojom::LogCategory::kRoute,
+                 "Cast::HandleParsedClientMessage", json.value_or(""),
+                 message.client_id(), message_type, session_id);
+}
 
 void ReportClientMessageParseError(const MediaRoute::Id& route_id,
                                    const std::string& error) {
@@ -49,14 +81,19 @@ void RemoveNullFields(base::Value& value) {
 
 }  // namespace
 
-CastSessionClientImpl::CastSessionClientImpl(const std::string& client_id,
-                                             const url::Origin& origin,
-                                             int frame_tree_node_id,
-                                             AutoJoinPolicy auto_join_policy,
-                                             CastActivity* activity)
+CastSessionClientImpl::CastSessionClientImpl(
+    const std::string& client_id,
+    const url::Origin& origin,
+    content::FrameTreeNodeId frame_tree_node_id,
+    AutoJoinPolicy auto_join_policy,
+    CastActivity* activity,
+    mojo::Remote<mojom::Logger>& logger,
+    mojo::Remote<mojom::Debugger>& debugger)
     : CastSessionClient(client_id, origin, frame_tree_node_id),
       auto_join_policy_(auto_join_policy),
-      activity_(activity) {}
+      activity_(activity),
+      logger_(logger),
+      debugger_(debugger) {}
 
 CastSessionClientImpl::~CastSessionClientImpl() = default;
 
@@ -74,6 +111,12 @@ mojom::RoutePresentationConnectionPtr CastSessionClientImpl::Init() {
 
 void CastSessionClientImpl::SendMessageToClient(
     PresentationConnectionMessagePtr message) {
+  if (IsCastMessageLoggingEnabled() && message->is_message()) {
+    logger_.get()->LogInfo(media_router::mojom::LogCategory::kRoute,
+                           "Cast::SendMessageToClient", message->get_message(),
+                           client_id(), origin().Serialize(),
+                           session_id().value_or(""));
+  }
   connection_remote_->OnMessage(std::move(message));
 }
 
@@ -98,7 +141,7 @@ void CastSessionClientImpl::SendMediaMessageToClient(
 
 bool CastSessionClientImpl::MatchesAutoJoinPolicy(
     url::Origin other_origin,
-    int other_frame_tree_node_id) const {
+    content::FrameTreeNodeId other_frame_tree_node_id) const {
   switch (auto_join_policy_) {
     case AutoJoinPolicy::kPageScoped:
       return false;
@@ -112,8 +155,9 @@ bool CastSessionClientImpl::MatchesAutoJoinPolicy(
 
 void CastSessionClientImpl::OnMessage(
     PresentationConnectionMessagePtr message) {
-  if (!message->is_message())
+  if (!message->is_message()) {
     return;
+  }
 
   GetDataDecoder().ParseJson(
       message->get_message(),
@@ -176,6 +220,10 @@ void CastSessionClientImpl::HandleParsedClientMessage(
                 << activity_->session_id().value_or("<missing>")
                 << ", got: " << cast_message->session_id();
     return;
+  }
+
+  if (IsCastMessageLoggingEnabled()) {
+    LogCastInternalMessage(*(logger_->get()), *cast_message);
   }
 
   switch (cast_message->type()) {
@@ -269,15 +317,17 @@ void CastSessionClientImpl::SendResultResponse(int sequence_number,
 
 void CastSessionClientImpl::CloseConnection(
     PresentationConnectionCloseReason close_reason) {
-  if (connection_remote_)
+  if (connection_remote_) {
     connection_remote_->DidClose(close_reason);
+  }
   TearDownPresentationConnection();
   activity_->CloseConnectionOnReceiver(client_id(), close_reason);
 }
 
 void CastSessionClientImpl::TerminateConnection() {
-  if (connection_remote_)
+  if (connection_remote_) {
     connection_remote_->DidChangeState(PresentationConnectionState::TERMINATED);
+  }
 
   TearDownPresentationConnection();
 }

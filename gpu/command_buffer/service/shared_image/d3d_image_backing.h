@@ -8,6 +8,7 @@
 #include <windows.h>
 
 #include <d3d11.h>
+#include <d3d12.h>
 #include <dcomp.h>
 #include <dxgi1_2.h>
 #include <wrl/client.h>
@@ -16,6 +17,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/waitable_event_watcher.h"
@@ -24,12 +26,10 @@
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
-#include "gpu/command_buffer/service/shared_image/dawn_shared_texture_holder.h"
+#include "gpu/command_buffer/service/shared_image/dawn_shared_texture_cache.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/texture_manager.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 #include "ui/gfx/win/d3d_shared_fence.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/scoped_egl_image.h"
@@ -40,6 +40,8 @@ class ColorSpace;
 }  // namespace gfx
 
 namespace gpu {
+class D3D11ImageSameAdapterCopyStrategy;
+class SharedContextState;
 struct Mailbox;
 
 // Implementation of SharedImageBacking that holds buffer (front buffer/back
@@ -48,6 +50,7 @@ struct Mailbox;
 class GPU_GLES2_EXPORT D3DImageBacking final
     : public ClearTrackingSharedImageBacking {
  public:
+  friend class D3D11ImageSameAdapterCopyStrategy;
   // Create a backing wrapping given D3D11 texture, optionally with a shared
   // handle and keyed mutex state. Array slice is used to specify index in
   // texture array used by video decoder.
@@ -61,15 +64,24 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       gpu::SharedImageUsageSet usage,
       std::string debug_label,
       Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-      Microsoft::WRL::ComPtr<IDCompositionTexture> dcomp_texture,
       scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state,
       const GLFormatCaps& gl_format_caps,
       GLenum texture_target,
       size_t array_slice,
       bool use_update_subresource1 = false,
-      bool is_thread_safe = false);
+      bool want_dcomp_texture = false,
+      bool is_thread_safe = false,
+      bool share_dxgi_handle_with_other_backings = true);
 
-  static std::unique_ptr<D3DImageBacking> CreateFromSwapChainBuffer(
+  // Creation method meant for buffer resources originating as ID3D12Resources.
+  static std::unique_ptr<D3DImageBacking> CreateFromD3D12Resource(
+      const Mailbox& mailbox,
+      const gfx::Size& size,
+      gpu::SharedImageUsageSet usage,
+      std::string debug_label,
+      Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource);
+
+  static std::unique_ptr<D3DImageBacking> CreateFromSwapChainBuffers(
       const Mailbox& mailbox,
       viz::SharedImageFormat format,
       const gfx::Size& size,
@@ -77,10 +89,10 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       gpu::SharedImageUsageSet usage,
-      Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
+      Microsoft::WRL::ComPtr<ID3D11Texture2D> back_buffer_texture,
+      Microsoft::WRL::ComPtr<ID3D11Texture2D> front_buffer_texture,
       Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
-      const GLFormatCaps& gl_format_caps,
-      bool is_back_buffer);
+      const GLFormatCaps& gl_format_caps);
 
   D3DImageBacking(const D3DImageBacking&) = delete;
   D3DImageBacking& operator=(const D3DImageBacking&) = delete;
@@ -94,7 +106,6 @@ class GPU_GLES2_EXPORT D3DImageBacking final
   bool ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) override;
   void ReadbackToMemoryAsync(const std::vector<SkPixmap>& pixmaps,
                              base::OnceCallback<void(bool)> callback) override;
-  bool PresentSwapChain() override;
   std::unique_ptr<DawnImageRepresentation> ProduceDawn(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
@@ -106,8 +117,10 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       scoped_refptr<gfx::D3DSharedFence> external_fence) override;
 
   bool BeginAccessD3D11(Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
-                        bool write_access);
-  void EndAccessD3D11(Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
+                        bool write_access,
+                        bool is_overlay_access = false);
+  void EndAccessD3D11(Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
+                      bool is_overlay_access = false);
 
   wgpu::Texture BeginAccessDawn(const wgpu::Device& device,
                                 wgpu::BackendType backend_type,
@@ -116,12 +129,40 @@ class GPU_GLES2_EXPORT D3DImageBacking final
                                 std::vector<wgpu::TextureFormat> view_formats);
   void EndAccessDawn(const wgpu::Device& device, wgpu::Texture texture);
 
+  std::vector<scoped_refptr<SkiaImageRepresentation::GraphiteTextureHolder>>
+  CreateGraphiteTextureHolders(
+      wgpu::Device device,
+      wgpu::Texture texture,
+      std::vector<skgpu::graphite::BackendTexture> backend_textures);
+
+  std::unique_ptr<DawnBufferRepresentation> ProduceDawnBuffer(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker,
+      const wgpu::Device& device,
+      wgpu::BackendType backend_type,
+      scoped_refptr<SharedContextState> context_state) override;
+  wgpu::Buffer BeginAccessDawnBuffer(const wgpu::Device& device,
+                                     wgpu::BackendType backend_type,
+                                     wgpu::BufferUsage usage);
+  void EndAccessDawnBuffer(const wgpu::Device& device, wgpu::Buffer buffer);
+
+  std::unique_ptr<WebNNTensorRepresentation> ProduceWebNNTensor(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker) override;
+
+  Microsoft::WRL::ComPtr<ID3D12Resource> GetD3D12Buffer() const;
+
+  std::optional<scoped_refptr<gfx::D3DSharedFence>> BeginAccessWebNN();
+  void EndAccessWebNN(scoped_refptr<gfx::D3DSharedFence> signaled_fence);
+
   std::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage();
 
   bool has_keyed_mutex() const {
     return dxgi_shared_handle_state_ &&
            dxgi_shared_handle_state_->has_keyed_mutex();
   }
+
+  bool SupportsDeferredGraphiteSubmit() const;
 
   // Holds a gles2::TexturePassthrough and corresponding egl image.
   class GLTextureHolder : public base::RefCounted<GLTextureHolder> {
@@ -160,13 +201,10 @@ class GPU_GLES2_EXPORT D3DImageBacking final
 
   static scoped_refptr<GLTextureHolder> CreateGLTexture(
       const GLFormatDesc& gl_format_desc,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
       Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
       GLenum texture_target = GL_TEXTURE_2D,
       unsigned array_slice = 0u,
-      unsigned plane_index = 0u,
-      Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain = nullptr);
+      unsigned plane_index = 0u);
 
   // Only for test use.
   bool HasStagingTextureForTesting() const;
@@ -203,10 +241,10 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       scoped_refptr<SharedContextState> context_state) override;
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
 
-  std::unique_ptr<VideoDecodeImageRepresentation> ProduceVideoDecode(
+  std::unique_ptr<VideoImageRepresentation> ProduceVideo(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
-      VideoDecodeDevice device) override;
+      VideoDevice device) override;
 
  private:
   using D3DSharedFenceSet = base::flat_set<scoped_refptr<gfx::D3DSharedFence>>;
@@ -219,15 +257,20 @@ class GPU_GLES2_EXPORT D3DImageBacking final
                   gpu::SharedImageUsageSet usage,
                   std::string debug_label,
                   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-                  Microsoft::WRL::ComPtr<IDCompositionTexture> dcomp_texture,
                   scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state,
                   const GLFormatCaps& gl_format_caps,
                   GLenum texture_target = GL_TEXTURE_2D,
                   size_t array_slice = 0u,
-                  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain = nullptr,
-                  bool is_back_buffer = false,
                   bool use_update_subresource1 = false,
-                  bool is_thread_safe = false);
+                  bool want_dcomp_texture = false,
+                  bool is_thread_safe = false,
+                  bool share_dxgi_handle_with_other_backings = true);
+
+  D3DImageBacking(const Mailbox& mailbox,
+                  const gfx::Size& size,
+                  gpu::SharedImageUsageSet usage,
+                  std::string debug_label,
+                  Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource);
 
   bool use_cross_device_fence_synchronization() const {
     // Fences are needed if we're sharing between devices and there's no keyed
@@ -238,6 +281,8 @@ class GPU_GLES2_EXPORT D3DImageBacking final
 
   // Helper to retrieve internal EGLImage for WebGPU GLES compat backend.
   void* GetEGLImage() const;
+
+  bool PresentSwapChain();
 
   // Returns a staging texture for CPU uploads/readback, creating one if needed.
   ID3D11Texture2D* GetOrCreateStagingTexture() EXCLUSIVE_LOCKS_REQUIRED(lock_);
@@ -256,6 +301,35 @@ class GPU_GLES2_EXPORT D3DImageBacking final
   void EndAccessCommon(const D3DSharedFenceSet& fences)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
+  // State tracking for DComp texture access. Each Begin/End pair implies a
+  // DComp visual tree that `dcomp_texture_` is attached to.
+  void BeginDCompTextureAccess();
+  void EndDCompTextureAccess();
+
+  void CheckForDawnDeviceLoss(const wgpu::Device& device,
+                              const wgpu::SharedTextureMemory& texture_memory)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  void InitPersistentGraphiteDawnAccess(
+      scoped_refptr<SharedContextState> context_state,
+      const wgpu::Device device,
+      const wgpu::SharedTextureMemory& shared_texture_memory,
+      const std::vector<wgpu::TextureFormat>& view_formats)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  wgpu::Texture GetOrCreateDawnTexture(
+      const wgpu::Device device,
+      const wgpu::SharedTextureMemory& shared_texture_memory,
+      wgpu::TextureUsage wgpu_usage,
+      wgpu::TextureUsage wgpu_internal_usage,
+      const std::vector<wgpu::TextureFormat>& view_formats)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void NotifyGraphiteAboutInitializedStatus() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  // Flush pending graphite submits. It will call Graphite's Context::submit.
+  void FlushGraphiteCommandsIfNeeded() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  void InvalidatePersistentGraphiteDawnAccess() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
   // Get a list of fences to wait on in BeginAccessD3D11/Dawn. If the waiting
   // device is backed by D3D11 (ANGLE or Dawn), |wait_d3d11_device| can be
   // specified to skip over fences for the same device since the wait will be a
@@ -267,7 +341,7 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       const wgpu::Device& wait_dawn_device,
       bool write_access) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  // Uses either DXGISharedHandleState or internal |dawn_shared_texture_holder_|
+  // Uses either DXGISharedHandleState or internal |dawn_shared_texture_cache_|
   // depending on whether the texture has a shared handle or not.
   wgpu::SharedTextureMemory GetSharedTextureMemory(const wgpu::Device& device)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
@@ -285,9 +359,23 @@ class GPU_GLES2_EXPORT D3DImageBacking final
   // Texture could be nullptr if an empty backing is needed for testing.
   const Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture_;
 
+  // Null unless created via CreateFromSwapBuffers().
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> swap_chain_front_buffer_texture_;
+
+  // Set if this backing is used for a D3D12 resource, otherwise will be
+  // nullptr.
+  const Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource_;
+
   // Set if this backing was used for |DCompTextureOverlayImageRepresentation|.
   // Once set, this is cached and reused for future overlay representations.
   const Microsoft::WRL::ComPtr<IDCompositionTexture> dcomp_texture_;
+  // If set, `dcomp_texture_` was previously in a DComp visual tree and this
+  // fence must be waited on before performing any writes. This fence becomes
+  // invalid on begin overlay access.
+  scoped_refptr<gfx::D3DSharedFence> dcomp_texture_available_fence_;
+  // Number of concurrent DWM readers for this backing. This implies the number
+  // of separate windows that `dcomp_texture_` is attached to.
+  int num_dcomp_texture_readers_ = 0;
 
   // Holds DXGI shared handle and the keyed mutex if present.  Can be shared
   // between plane shared image backings of a multi-plane texture, or between
@@ -310,13 +398,15 @@ class GPU_GLES2_EXPORT D3DImageBacking final
   const size_t array_slice_;
 
   // Swap chain corresponding to this backing.
-  const Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain_;
-
-  // Set if this backing corresponds to the back buffer of |swap_chain_|.
-  const bool is_back_buffer_;
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain_;
 
   // True if using UpdateSubresource1() in UploadFromMemory() is allowed.
   const bool use_update_subresource1_;
+
+  // Set in ctor to indicate whether DXGISharedHandle is shared with other
+  // backings. If this flag is false, the DXGISharedHandle will be exclusively
+  // owned by this backing, and certain optimizations could be enabled.
+  const bool share_dxgi_handle_with_other_backings_ = true;
 
   // Staging texture used for copy to/from shared memory GMB.
   Microsoft::WRL::ComPtr<ID3D11Texture2D> staging_texture_ GUARDED_BY(lock_);
@@ -353,13 +443,18 @@ class GPU_GLES2_EXPORT D3DImageBacking final
                  scoped_refptr<gfx::D3DSharedFence>>
       d3d11_signaled_fence_map_ GUARDED_BY(lock_);
 
-  // DawnSharedTextureHolder that keeps an internal cache of per-device
+  // DawnSharedTextureCache that keeps an internal cache of per-device
   // SharedTextureData that vends WebGPU textures for the underlying d3d
   // texture. Only used if the backing doesn't have a shared handle.
-  DawnSharedTextureHolder dawn_shared_texture_holder_ GUARDED_BY(lock_);
+  scoped_refptr<DawnSharedTextureCache> dawn_shared_texture_cache_
+      GUARDED_BY(lock_);
+
+  // Dawn SharedBufferMemory will exist when backing is being used for buffer
+  // interop.
+  wgpu::SharedBufferMemory dawn_shared_buffer_memory_ GUARDED_BY(lock_);
 
   // TODO(crbug.com/348598119, hitawala): Move texture begin/end access tracking
-  // to DawnSharedTextureHolder. Tracks the number of currently-ongoing accesses
+  // to DawnSharedTextureCache. Tracks the number of currently-ongoing accesses
   // to a given WGPU texture.
   base::flat_map<WGPUTexture, int> wgpu_texture_ongoing_accesses_
       GUARDED_BY(lock_);
@@ -371,6 +466,15 @@ class GPU_GLES2_EXPORT D3DImageBacking final
 
   std::optional<base::WaitableEventWatcher> pending_copy_event_watcher_
       GUARDED_BY(lock_);
+
+  // Persistent Graphite's Dawn's access. Calls Dawn's BeginAccess in ctor and
+  // EndAccess in dtor. This is only used when the backing is not shared across
+  // devices. Since no cross device synchronization is needed, it is also safe
+  // to keep this scoped access indefinitely as long as the backing is alive.
+  class PersistentGraphiteDawnAccess;
+  scoped_refptr<PersistentGraphiteDawnAccess> persistent_graphite_dawn_access_;
+
+  class GraphiteTextureHolder;
 
   base::WeakPtrFactory<D3DImageBacking> weak_ptr_factory_{this};
 };

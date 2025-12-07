@@ -5,7 +5,7 @@
 // https://url.spec.whatwg.org/#interface-urlsearchparams
 
 [
-    Exposed=(Window,Worker)
+    Exposed=(Window,Worker,ShadowRealm) // TODO(crbug.com/41480387): This should be Exposed=*
 ] interface URLSearchParams {
     [RaisesException] constructor(optional (sequence<sequence<USVString>> or record<USVString, USVString> or USVString) init = "");
     readonly attribute unsigned long size;

@@ -60,7 +60,7 @@ const char* FamilyUserDeviceMetrics::GetGaiaUsersCountHistogramNameForTest() {
 }
 
 void FamilyUserDeviceMetrics::OnNewDay() {
-  const user_manager::UserList& users = user_manager_->GetUsers();
+  const user_manager::UserList& users = user_manager_->GetPersistedUsers();
   int family_link_users_count = 0;
   int gaia_users_count = 0;
 

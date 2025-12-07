@@ -24,10 +24,12 @@ import {flush, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/
 
 import {getTemplate} from './address_edit_dialog.html.js';
 import * as uiComponents from './address_edit_dialog_components.js';
+import type {CountryDetailManagerProxy} from './country_detail_manager_proxy.js';
+import {CountryDetailManagerProxyImpl} from './country_detail_manager_proxy.js';
 
 export interface SettingsAddressEditDialogElement {
   $: {
-    accountSourceNotice: HTMLElement,
+    accountRecordTypeNotice: HTMLElement,
     cancelButton: CrButtonElement,
     country: HTMLSelectElement,
     dialog: CrDialogElement,
@@ -38,8 +40,9 @@ export interface SettingsAddressEditDialogElement {
 type CountryEntry = chrome.autofillPrivate.CountryEntry;
 type AddressEntry = chrome.autofillPrivate.AddressEntry;
 type AccountInfo = chrome.autofillPrivate.AccountInfo;
-type AddressComponents = chrome.autofillPrivate.AddressComponents;
-const AddressSource = chrome.autofillPrivate.AddressSource;
+type AddressComponent = chrome.autofillPrivate.AddressComponent;
+type AddressComponentRow = chrome.autofillPrivate.AddressComponentRow;
+const AddressRecordType = chrome.autofillPrivate.AddressRecordType;
 const FieldType = chrome.autofillPrivate.FieldType;
 const SettingsAddressEditDialogElementBase = I18nMixin(PolymerElement);
 
@@ -71,9 +74,11 @@ export class SettingsAddressEditDialogElement extends
         observer: 'onCountryCodeChanged_',
       },
 
-      components_: Array,
-      phoneNumber_: String,
-      email_: String,
+      components_: {
+        type: Array,
+        value: () => [],
+      },
+
       canSave_: Boolean,
 
       isAccountAddress_: {
@@ -82,34 +87,35 @@ export class SettingsAddressEditDialogElement extends
         value: false,
       },
 
-      accountAddressSourceNotice_: {
+      accountAddressRecordTypeNotice_: {
         type: String,
-        computed: 'getAccountAddressSourceNotice_(address, accountInfo)',
+        computed: 'getAccountAddressRecordTypeNotice_(address, accountInfo)',
       },
     };
   }
 
-  address: AddressEntry;
-  accountInfo?: AccountInfo;
+  declare address: AddressEntry;
+  declare accountInfo?: AccountInfo;
 
   /**
    * Original address is a snapshot of the address made at initialization,
    * it is a referce for soft (or "dont make it worse") validation, which
    * basically means skipping validation for fields that are already invalid.
    */
-  private title_: string;
-  private validationError_?: string;
-  private countries_: CountryEntry[];
+  declare private title_: string;
+  declare private validationError_?: string;
+  declare private countries_: CountryEntry[];
   private addressFields_:
       Map<chrome.autofillPrivate.FieldType, string|undefined> = new Map();
   private originalAddressFields_?:
       Map<chrome.autofillPrivate.FieldType, string|undefined>;
-  private countryCode_: string|undefined;
-  private components_: uiComponents.AddressComponentUi[][] = [];
-  private canSave_: boolean;
-  private isAccountAddress_: boolean;
-  private countryInfo_: CountryDetailManager =
-      CountryDetailManagerImpl.getInstance();
+  declare private countryCode_: string|undefined;
+  declare private components_: uiComponents.AddressComponentUi[][];
+  declare private canSave_: boolean;
+  declare private isAccountAddress_: boolean;
+  declare private accountAddressRecordTypeNotice_: string;
+  private countryDetailManager_: CountryDetailManagerProxy =
+      CountryDetailManagerProxyImpl.getInstance();
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -119,10 +125,10 @@ export class SettingsAddressEditDialogElement extends
       this.addressFields_.set(entry.type, entry.value);
     }
 
-    const forAccountAddressProfile = !!this.address.guid &&
+    const forAccountStorage = !!this.address.guid &&
         this.address.metadata !== undefined &&
-        this.address.metadata.source === AddressSource.ACCOUNT;
-    this.countryInfo_.getCountryList(forAccountAddressProfile)
+        this.address.metadata.recordType === AddressRecordType.ACCOUNT;
+    this.countryDetailManager_.getCountryList(forAccountStorage)
         .then(countryList => {
           this.countries_ = countryList;
 
@@ -162,62 +168,58 @@ export class SettingsAddressEditDialogElement extends
   /**
    * Updates the wrapper that represents this address in the country's format.
    */
-  private updateAddressComponents_(): void {
+  private async updateAddressComponents_(): Promise<void> {
     // Default to the last country used if no country code is provided.
     const countryCode = this.countryCode_ || this.countries_[0].countryCode;
-    this.countryInfo_.getAddressFormat(countryCode as string).then(format => {
-      this.address.languageCode = format.languageCode;
-      // TODO(crbug.com/40253382): validation is performed for addresses from
-      // the user account only now, this flag should be removed when it
-      // becomes the only type of addresses
-      const skipValidation = !this.isAccountAddress_;
+    const format = await this.countryDetailManager_.getAddressFormat(
+        countryCode as string);
+    this.address.languageCode = format.languageCode;
+    // TODO(crbug.com/40253382): validation is performed for addresses
+    // from the user account only now, this flag should be removed when it
+    // becomes the only type of addresses
+    const skipValidation = !this.isAccountAddress_;
 
-      this.components_ = [];
-      for (const row of format.components) {
-        this.components_.push(row.row.map(
-            component => new uiComponents.AddressComponentUi(
-                this.addressFields_, this.originalAddressFields_,
-                component.field, component.fieldName,
-                component.isLongField ? 'long' : '',
-                component.field === FieldType.ADDRESS_HOME_STREET_ADDRESS,
-                skipValidation, component.isRequired)));
-      }
+    this.components_ = format.components.map(
+        (componentRow: AddressComponentRow, rowIndex: number) => {
+          return componentRow.row.map(
+              (component: AddressComponent, colIndex: number) => {
+                return new uiComponents.AddressComponentUi(
+                    this.addressFields_, this.originalAddressFields_,
+                    component.field, component.fieldName,
+                    this.notifyComponentValidity_.bind(
+                        this, rowIndex, colIndex),
+                    component.isLongField ? 'long' : '',
+                    component.field === FieldType.ADDRESS_HOME_STREET_ADDRESS,
+                    skipValidation, component.isRequired);
+              });
+        });
 
-      // Phone and email do not come in the address format as fields, but
-      // should be editable and saveable in the resulting address.
-      this.components_.push([
-        new uiComponents.AddressComponentUi(
-            this.addressFields_, this.originalAddressFields_,
-            FieldType.PHONE_HOME_WHOLE_NUMBER, this.i18n('addressPhone'),
-            'last-row'),
-        new uiComponents.AddressComponentUi(
-            this.addressFields_, this.originalAddressFields_,
-            FieldType.EMAIL_ADDRESS, this.i18n('addressEmail'),
-            'long last-row'),
-      ]);
+    // Phone and email do not come in the address format as fields, but
+    // should be editable and saveable in the resulting address.
+    const contactsRowIndex = this.components_.length;
+    this.components_.push([
+      new uiComponents.AddressComponentUi(
+          this.addressFields_, this.originalAddressFields_,
+          FieldType.PHONE_HOME_WHOLE_NUMBER, this.i18n('addressPhone'),
+          this.notifyComponentValidity_.bind(this, contactsRowIndex, 0),
+          'last-row'),
+      new uiComponents.AddressComponentUi(
+          this.addressFields_, this.originalAddressFields_,
+          FieldType.EMAIL_ADDRESS, this.i18n('addressEmail'),
+          this.notifyComponentValidity_.bind(this, contactsRowIndex, 1),
+          'long last-row'),
+    ]);
 
-      // Because of potentially added honorific field the resulting components
-      // structure my be different from the original format, that is why
-      // the onValueUpdateListener with row/col indices is updated after.
-      for (let rowIndex = 0; rowIndex < this.components_.length; ++rowIndex) {
-        const row = this.components_[rowIndex];
-        for (let colIndex = 0; colIndex < row.length; ++colIndex) {
-          this.components_[rowIndex][colIndex].onValueUpdateListener =
-              this.notifyComponentValidity_.bind(this, rowIndex, colIndex);
-        }
-      }
+    // Flush dom before resize and savability updates.
+    flush();
 
-      // Flush dom before resize and savability updates.
-      flush();
+    this.updateCanSave_();
 
-      this.updateCanSave_();
+    this.fire_('on-update-address-wrapper');  // For easier testing.
 
-      this.fire_('on-update-address-wrapper');  // For easier testing.
-
-      if (!this.$.dialog.open) {
-        this.$.dialog.showModal();
-      }
-    });
+    if (!this.$.dialog.open) {
+      this.$.dialog.showModal();
+    }
   }
 
   /**
@@ -290,24 +292,33 @@ export class SettingsAddressEditDialogElement extends
     return !country.countryCode;
   }
 
+  private getPhoneNumberInputClass_(
+    fieldType: chrome.autofillPrivate.FieldType): string {
+  if (fieldType ===
+      chrome.autofillPrivate.FieldType.PHONE_HOME_WHOLE_NUMBER) {
+    return 'phone-number-input';
+  }
+  return '';
+}
+
   private isAddressStoredInAccount_(): boolean {
     if (this.address.guid) {
       return this.address.metadata !== undefined &&
-          this.address.metadata.source === AddressSource.ACCOUNT;
+          this.address.metadata.recordType === AddressRecordType.ACCOUNT;
     }
 
     return !!this.accountInfo?.isEligibleForAddressAccountStorage;
   }
 
-  private getAccountAddressSourceNotice_(): string|undefined {
+  private getAccountAddressRecordTypeNotice_(): string {
     if (this.accountInfo) {
       return this.i18n(
-          this.address.guid ? 'editAccountAddressSourceNotice' :
-                              'newAccountAddressSourceNotice',
+          this.address.guid ? 'editAccountAddressRecordTypeNotice' :
+                              'newAccountAddressRecordTypeNotice',
           this.accountInfo.email);
     }
 
-    return undefined;
+    return '';
   }
 
   /**
@@ -374,8 +385,8 @@ export class SettingsAddressEditDialogElement extends
     this.$.dialog.close();
   }
 
-  private onCountryCodeChanged_(): void {
-    this.updateAddressComponents_();
+  private async onCountryCodeChanged_(): Promise<void> {
+    await this.updateAddressComponents_();
   }
 
   /**
@@ -397,40 +408,3 @@ declare global {
 
 customElements.define(
     SettingsAddressEditDialogElement.is, SettingsAddressEditDialogElement);
-
-export interface CountryDetailManager {
-  /**
-   * Gets the list of available countries.
-   * The default country will be first, followed by a separator, followed by
-   * an alphabetized list of countries available.
-   */
-  getCountryList(forAccountAddressProfile: boolean): Promise<CountryEntry[]>;
-
-  /**
-   * Gets the address format for a given country code.
-   */
-  getAddressFormat(countryCode: string): Promise<AddressComponents>;
-}
-
-/**
- * Default implementation. Override for testing.
- */
-export class CountryDetailManagerImpl implements CountryDetailManager {
-  getCountryList(forAccountAddressProfile: boolean): Promise<CountryEntry[]> {
-    return chrome.autofillPrivate.getCountryList(forAccountAddressProfile);
-  }
-
-  getAddressFormat(countryCode: string): Promise<AddressComponents> {
-    return chrome.autofillPrivate.getAddressComponents(countryCode);
-  }
-
-  static getInstance(): CountryDetailManager {
-    return instance || (instance = new CountryDetailManagerImpl());
-  }
-
-  static setInstance(obj: CountryDetailManager): void {
-    instance = obj;
-  }
-}
-
-let instance: CountryDetailManager|null = null;

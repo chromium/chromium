@@ -1,0 +1,33 @@
+This is a testharness.js-based test.
+[FAIL] X448 key derivation checks for all-zero value result with a key of order 0
+  assert_true: Private key should be valid. expected true got false
+[FAIL] X448 key derivation checks for all-zero value result with a key of order 1
+  assert_true: Private key should be valid. expected true got false
+[FAIL] X448 key derivation checks for all-zero value result with a key of order p-1 (order 2)
+  assert_true: Private key should be valid. expected true got false
+[FAIL] X448 key derivation checks for all-zero value result with a key of order p (=0, order 4)
+  assert_true: Private key should be valid. expected true got false
+[FAIL] X448 key derivation checks for all-zero value result with a key of order p+1 (=1, order 1)
+  assert_true: Private key should be valid. expected true got false
+[FAIL] X448 good parameters
+  assert_unreached: deriveBits failed with error TypeError: Failed to execute 'deriveBits' on 'SubtleCrypto': parameter 2 is not of type 'CryptoKey'. Reached unreachable code
+[FAIL] X448 mixed case parameters
+  assert_unreached: deriveBits failed with error TypeError: Failed to execute 'deriveBits' on 'SubtleCrypto': parameter 2 is not of type 'CryptoKey'. Reached unreachable code
+[FAIL] X448 short result
+  assert_unreached: deriveBits failed with error TypeError: Failed to execute 'deriveBits' on 'SubtleCrypto': parameter 2 is not of type 'CryptoKey'. Reached unreachable code
+[FAIL] X448 non-multiple of 8 bits
+  assert_unreached: deriveBits failed with error TypeError: Failed to execute 'deriveBits' on 'SubtleCrypto': parameter 2 is not of type 'CryptoKey'. Reached unreachable code
+[FAIL] X448 mismatched algorithms
+  assert_equals: Should throw correct error, not TypeError: Failed to execute 'deriveBits' on 'SubtleCrypto': parameter 2 is not of type 'CryptoKey'. expected "InvalidAccessError" but got "TypeError"
+[FAIL] X448 no deriveBits usage for base key
+  assert_equals: Should throw correct error, not TypeError: Failed to execute 'deriveBits' on 'SubtleCrypto': parameter 2 is not of type 'CryptoKey'. expected "InvalidAccessError" but got "TypeError"
+[FAIL] X448 base key is not a private key
+  assert_equals: Should throw correct error, not TypeError: Failed to execute 'deriveBits' on 'SubtleCrypto': parameter 2 is not of type 'CryptoKey'. expected "InvalidAccessError" but got "TypeError"
+[FAIL] X448 public property value is a private key
+  assert_equals: Should throw correct error, not TypeError: Failed to execute 'deriveBits' on 'SubtleCrypto': parameter 2 is not of type 'CryptoKey'. expected "InvalidAccessError" but got "TypeError"
+[FAIL] X448 public property value is a secret key
+  assert_equals: Should throw correct error, not TypeError: Failed to execute 'deriveBits' on 'SubtleCrypto': parameter 2 is not of type 'CryptoKey'. expected "InvalidAccessError" but got "TypeError"
+[FAIL] X448 asking for too many bits
+  assert_equals: Should throw correct error, not TypeError: Failed to execute 'deriveBits' on 'SubtleCrypto': parameter 2 is not of type 'CryptoKey'. expected "OperationError" but got "TypeError"
+Harness: the test ran to completion.
+

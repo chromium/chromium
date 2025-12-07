@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/viz/common/hit_test/aggregated_hit_test_region.h"
+#include "components/viz/common/hit_test/hit_test_query.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/service/hit_test/hit_test_manager.h"
@@ -26,7 +27,7 @@ struct HitTestRegion;
 // information is obtained from the HitTestManager. The resulting list is sent
 // to HitTestQuery for event targeting. This is intended to be created in the
 // viz or GPU process.
-class VIZ_SERVICE_EXPORT HitTestAggregator {
+class VIZ_SERVICE_EXPORT HitTestAggregator : public HitTestQuery::DataProvider {
  public:
   // |delegate| owns and outlives HitTestAggregator.
   HitTestAggregator(
@@ -40,12 +41,19 @@ class VIZ_SERVICE_EXPORT HitTestAggregator {
   HitTestAggregator(const HitTestAggregator&) = delete;
   HitTestAggregator& operator=(const HitTestAggregator&) = delete;
 
-  ~HitTestAggregator();
+  ~HitTestAggregator() override;
 
   // Called after surfaces have been aggregated into the DisplayFrame.
   // In this call HitTestRegionList structures received from active surfaces
   // are aggregated into |hit_test_data_|.
   void Aggregate(const SurfaceId& display_surface_id);
+
+  // HitTestQuery::DataProvider override.
+  const std::vector<AggregatedHitTestRegion>& GetHitTestData() const override;
+
+  base::SafeRef<HitTestQuery::DataProvider> GetDataProviderSafeRef() {
+    return weak_ptr_factory_.GetSafeRef();
+  }
 
  private:
   friend class TestHitTestAggregator;
@@ -74,7 +82,7 @@ class VIZ_SERVICE_EXPORT HitTestAggregator {
   // This is used in order to ensure that the flow between receiving hit-test
   // data and aggregating is included only once per submission.
   std::optional<int64_t> GetTraceIdIfUpdated(const SurfaceId& surface_id,
-                                             uint64_t active_frame_index);
+                                             uint32_t active_frame_index);
 
   const raw_ptr<const HitTestManager> hit_test_manager_;
 
@@ -104,7 +112,7 @@ class VIZ_SERVICE_EXPORT HitTestAggregator {
   // but only at the same hierarchy level.
   base::flat_set<FrameSinkId> referenced_child_regions_;
 
-  base::flat_map<FrameSinkId, uint64_t> last_active_frame_index_;
+  base::flat_map<FrameSinkId, uint32_t> last_active_frame_index_;
   uint64_t last_submit_hit_test_region_list_index_ = 0;
 
   // Handles the case when this object is deleted after

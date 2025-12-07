@@ -8,6 +8,7 @@
 
 #include "base/containers/span.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
@@ -32,8 +33,8 @@ class DummySharedDictionaryWriter : public SharedDictionaryWriter {
       delete;
 
   // SharedDictionaryWriter
-  void Append(const char* buf, int num_bytes) override {
-    data_.emplace_back(buf, num_bytes);
+  void Append(base::span<const uint8_t> data) override {
+    data_.emplace_back(base::as_string_view(data));
   }
   void Finish() override { finished_ = true; }
 

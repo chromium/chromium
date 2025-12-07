@@ -88,6 +88,15 @@ test(t => {
 
 test(t => {
   let data = createDefaultAudioData();
+  data.close();
+  assert_equals(data.sampleRate, 0);
+  assert_equals(data.numberOfFrames, 0);
+  assert_equals(data.numberOfChannels, 0);
+  assert_equals(data.format, null);
+}, 'AudioData close');
+
+test(t => {
+  let data = createDefaultAudioData();
 
   let clone = data.clone();
 
@@ -128,6 +137,20 @@ test(t => {
   assert_equals(data.timestamp, -10, 'timestamp');
   data.close();
 }, 'Test we can construct AudioData with a negative timestamp.');
+
+test(t => {
+  var data = new Float32Array([0]);
+  let audio_data_init = {
+    timestamp: 0,
+    data: data,
+    numberOfFrames: 1,
+    numberOfChannels: 1,
+    sampleRate: 44100,
+    format: 'f32',
+  };
+  let audioData = new AudioData(audio_data_init);
+  assert_not_equals(data.length, 0, "Input data is copied when constructing an AudioData");
+}, 'Test input array is copied on construction');
 
 test(t => {
   let audio_data_init = {

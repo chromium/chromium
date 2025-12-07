@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/power/ml/user_activity_manager.h"
 
 #include <cmath>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -16,21 +17,18 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/tab_contents/form_interaction_tab_helper.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/constants/devicetype.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "components/prefs/pref_service.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "ui/aura/client/aura_constants.h"
 
@@ -58,11 +56,6 @@ void LogPowerMLModelDimResult(FinalResult result) {
 
 void LogPowerMLModelNoDimResult(FinalResult result) {
   UMA_HISTOGRAM_ENUMERATION("PowerML.ModelNoDim.Result", result);
-}
-
-void LogWebPageInfoSource(WebPageInfoSource source) {
-  UMA_HISTOGRAM_ENUMERATION("PowerML.SmartDimFeature.WebPageInfoSource",
-                            source);
 }
 
 void LogPowerMLSmartDimModelRequestCancel(base::TimeDelta time) {
@@ -97,31 +90,6 @@ void LogMetricsToUMA(const UserActivityEvent& event) {
 
   LogPowerMLDimImminentAction(DimImminentAction::kModelNoDim);
   LogPowerMLModelNoDimResult(result);
-}
-
-// True if the first browser window in mru windows list is from Lacros.
-bool ShouldUseLacrosFeatures() {
-  if (ash::Shell::HasInstance()) {
-    std::vector<raw_ptr<aura::Window, VectorExperimental>> mru_windows =
-        ash::Shell::Get()->mru_window_tracker()->BuildMruWindowList(
-            ash::kActiveDesk);
-    for (aura::Window* window : mru_windows) {
-      if (!window->IsVisible()) {
-        continue;
-      }
-
-      chromeos::AppType app_type = window->GetProperty(chromeos::kAppTypeKey);
-
-      if (app_type == chromeos::AppType::BROWSER) {
-        return false;
-      }
-      if (app_type == chromeos::AppType::LACROS) {
-        return true;
-      }
-    }
-  }
-
-  return false;
 }
 
 int GetRoundedOrInvalidEngagementScore(content::WebContents* contents) {
@@ -188,23 +156,9 @@ UserActivityManager::UserActivityManager(
   } else {
     device_type_ = UserActivityEvent::Features::UNKNOWN_DEVICE;
   }
-
-  if (crosapi::CrosapiManager::IsInitialized()) {
-    crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->web_page_info_factory_ash()
-        ->AddObserver(this);
-  }
 }
 
-UserActivityManager::~UserActivityManager() {
-  if (crosapi::CrosapiManager::IsInitialized()) {
-    crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->web_page_info_factory_ash()
-        ->RemoveObserver(this);
-  }
-}
+UserActivityManager::~UserActivityManager() = default;
 
 void UserActivityManager::OnUserActivity(const ui::Event* /* event */) {
   MaybeLogEvent(UserActivityEvent::Event::REACTIVATE,
@@ -300,9 +254,7 @@ void UserActivityManager::UpdateAndGetSmartDimDecision(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::TimeDelta now = boot_clock_.GetTimeSinceBoot();
   if (waiting_for_final_action_) {
-    if (waiting_for_lacros_features_) {
-      CancelLacrosWebPageInfoRequest();
-    } else if (waiting_for_model_decision_) {
+    if (waiting_for_model_decision_) {
       CancelDimDecisionRequest();
     } else {
       // Smart dim request comes again after an earlier request event without
@@ -317,42 +269,7 @@ void UserActivityManager::UpdateAndGetSmartDimDecision(
   screen_off_occurred_ = false;
   screen_lock_occurred_ = false;
 
-  if (!lacros_remote_id_.has_value() || !ShouldUseLacrosFeatures()) {
-    // Extracts `features_` synchronously (without asking lacros for web page
-    // info) and request ml-service for decision.
-    UpdateFeaturesWithLacrosIfApplicableAndDoRequest(
-        activity_data, std::move(callback), nullptr);
-  } else {
-    // Makes an async call to lacros for web page info, `lacros_callback` will
-    // combine it with other features and request ml-service for decision.
-    lacros_web_page_info_callback_.Reset(base::BindOnce(
-        &UserActivityManager::UpdateFeaturesWithLacrosIfApplicableAndDoRequest,
-        weak_ptr_factory_.GetWeakPtr(), activity_data, std::move(callback)));
-    waiting_for_lacros_features_ = true;
-    crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->web_page_info_factory_ash()
-        ->RequestCurrentWebPageInfo(lacros_remote_id_.value(),
-                                    lacros_web_page_info_callback_.callback());
-  }
-}
-
-void UserActivityManager::UpdateFeaturesWithLacrosIfApplicableAndDoRequest(
-    const IdleEventNotifier::ActivityData& activity_data,
-    base::OnceCallback<void(bool)> callback,
-    crosapi::mojom::WebPageInfoPtr lacros_web_page_info) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  waiting_for_lacros_features_ = false;
-  // TODO(alanlxl): source ids from ash & lacros don't match, e.g. a blank
-  // newtab gets different source_ids.
-  // This may have a negative influence on the model performance.
-  if (lacros_web_page_info) {
-    LogWebPageInfoSource(WebPageInfoSource::kLacros);
-  } else {
-    LogWebPageInfoSource(WebPageInfoSource::kAsh);
-  }
-
-  ExtractFeatures(activity_data, std::move(lacros_web_page_info));
+  ExtractFeatures(activity_data);
 
   // Default is to enable smart dim, unless user profile specifically says
   // otherwise. If there are multiple users, the primary one may have
@@ -375,6 +292,10 @@ void UserActivityManager::UpdateFeaturesWithLacrosIfApplicableAndDoRequest(
     waiting_for_model_decision_ = true;
     SmartDimMlAgent::GetInstance()->RequestDimDecision(
         features_, std::move(request_callback));
+  } else {
+    // Smart Dim feature is unsupported or disabled by policy => the dim
+    // decision defaults to false (i.e. do not defer screen dim).
+    std::move(callback).Run(false);
   }
 
   waiting_for_final_action_ = true;
@@ -382,25 +303,38 @@ void UserActivityManager::UpdateFeaturesWithLacrosIfApplicableAndDoRequest(
 
 void UserActivityManager::HandleSmartDimDecision(
     base::OnceCallback<void(bool)> callback,
-    UserActivityEvent::ModelPrediction prediction) {
+    std::optional<UserActivityEvent::ModelPrediction> prediction) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   waiting_for_model_decision_ = false;
+
+  if (!prediction.has_value()) {
+    // No decision from Smart Dim (e.g. it was canceled). Return default value
+    // (false means "allow dim") to the D-bus caller.
+    std::move(callback).Run(false);
+    return;
+  }
+
+  // Smart Dim model actually ran:
+
   const base::TimeDelta wait_time =
       base::TimeTicks::Now() - time_dim_decision_requested_;
   LogPowerMLSmartDimModelRequestComplete(wait_time);
   time_dim_decision_requested_ = base::TimeTicks();
+
   // Only defer the dim if the model predicts so and also if the dim was not
   // previously deferred.
-  if (prediction.response() == UserActivityEvent::ModelPrediction::NO_DIM &&
+  if (prediction->response() == UserActivityEvent::ModelPrediction::NO_DIM &&
       !dim_deferred_) {
     dim_deferred_ = true;
-    prediction.set_model_applied(true);
+    prediction->set_model_applied(true);
   } else {
     // Either model predicts dim or model fails, or it was previously dimmed.
+    // TODO(amoylan): Are the below in the wrong order?! dim_deferred_ has no
+    //                effect in the second line...
     dim_deferred_ = false;
-    prediction.set_model_applied(prediction.response() ==
-                                     UserActivityEvent::ModelPrediction::DIM &&
-                                 !dim_deferred_);
+    prediction->set_model_applied(prediction->response() ==
+                                      UserActivityEvent::ModelPrediction::DIM &&
+                                  !dim_deferred_);
   }
   model_prediction_ = prediction;
   std::move(callback).Run(dim_deferred_);
@@ -415,17 +349,6 @@ void UserActivityManager::OnSessionStateChanged() {
   if (!was_locked && screen_is_locked_) {
     screen_lock_occurred_ = true;
   }
-}
-
-void UserActivityManager::OnLacrosInstanceRegistered(
-    const mojo::RemoteSetElementId& remote_id) {
-  lacros_remote_id_ = remote_id;
-}
-
-void UserActivityManager::OnLacrosInstanceDisconnected(
-    const mojo::RemoteSetElementId& remote_id) {
-  if (lacros_remote_id_.has_value() && lacros_remote_id_.value() == remote_id)
-    lacros_remote_id_.reset();
 }
 
 void UserActivityManager::OnReceiveSwitchStates(
@@ -446,8 +369,7 @@ void UserActivityManager::OnReceiveInactivityDelays(
 }
 
 void UserActivityManager::ExtractFeatures(
-    const IdleEventNotifier::ActivityData& activity_data,
-    crosapi::mojom::WebPageInfoPtr lacros_web_page_info) {
+    const IdleEventNotifier::ActivityData& activity_data) {
   // Set transition times for dim and screen-off.
   if (!screen_dim_delay_.is_zero()) {
     features_.set_on_to_dim_sec(std::ceil(screen_dim_delay_.InSecondsF()));
@@ -535,72 +457,51 @@ void UserActivityManager::ExtractFeatures(
   features_.set_previous_positive_actions_count(
       previous_positive_actions_count_);
 
-  if (lacros_web_page_info) {
-    if (lacros_web_page_info->source_id == -1)
-      return;
+  const TabProperty ash_tab_property = UpdateOpenTabURL();
 
-    features_.set_source_id(lacros_web_page_info->source_id);
-
-    if (!lacros_web_page_info->domain.empty())
-      features_.set_tab_domain(lacros_web_page_info->domain);
-
-    if (lacros_web_page_info->engagement_score != -1)
-      features_.set_engagement_score(lacros_web_page_info->engagement_score);
-
-    features_.set_has_form_entry(lacros_web_page_info->has_form_entry);
-  } else {
-    const TabProperty ash_tab_property = UpdateOpenTabURL();
-
-    if (ash_tab_property.source_id == -1)
-      return;
-
-    features_.set_source_id(ash_tab_property.source_id);
-
-    if (!ash_tab_property.domain.empty())
-      features_.set_tab_domain(ash_tab_property.domain);
-
-    if (ash_tab_property.engagement_score != -1)
-      features_.set_engagement_score(ash_tab_property.engagement_score);
-
-    features_.set_has_form_entry(ash_tab_property.has_form_entry);
+  if (ash_tab_property.source_id == -1) {
+    return;
   }
+
+  features_.set_source_id(ash_tab_property.source_id);
+
+  if (!ash_tab_property.domain.empty()) {
+    features_.set_tab_domain(ash_tab_property.domain);
+  }
+
+  if (ash_tab_property.engagement_score != -1) {
+    features_.set_engagement_score(ash_tab_property.engagement_score);
+  }
+
+  features_.set_has_form_entry(ash_tab_property.has_form_entry);
 }
 
 TabProperty UserActivityManager::UpdateOpenTabURL() {
-  TabProperty property;
-
-  // Find the active tab in the visible focused or topmost browser.
-  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    if (!browser->window()->GetNativeWindow()->IsVisible())
-      continue;
-
-    // We only need the visible focused or topmost browser.
-    if (browser->profile()->IsOffTheRecord())
-      return property;
-
-    const TabStripModel* const tab_strip_model = browser->tab_strip_model();
-    DCHECK(tab_strip_model);
-
-    content::WebContents* contents = tab_strip_model->GetActiveWebContents();
-
-    if (contents) {
-      ukm::SourceId source_id =
-          contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
-      if (source_id == ukm::kInvalidSourceId)
-        return property;
-
-      property.source_id = source_id;
-
-      // Domain could be empty.
-      property.domain = contents->GetLastCommittedURL().host();
-      // Engagement score could be -1 if engagement service is disabled.
-      property.engagement_score = GetRoundedOrInvalidEngagementScore(contents);
-      property.has_form_entry =
-          FormInteractionTabHelper::FromWebContents(contents)
-              ->had_form_interaction();
-    }
-    return property;
+  BrowserDelegate* browser =
+      BrowserController::GetInstance()->GetLastUsedVisibleBrowser();
+  if (!browser || browser->IsOffTheRecord()) {
+    return TabProperty{};
   }
+
+  content::WebContents* contents = browser->GetActiveWebContents();
+  if (!contents) {
+    return TabProperty{};
+  }
+
+  ukm::SourceId source_id =
+      contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  if (source_id == ukm::kInvalidSourceId) {
+    return TabProperty{};
+  }
+
+  TabProperty property;
+  property.source_id = source_id;
+  // Domain could be empty.
+  property.domain = contents->GetLastCommittedURL().GetHost();
+  // Engagement score could be -1 if engagement service is disabled.
+  property.engagement_score = GetRoundedOrInvalidEngagementScore(contents);
+  property.has_form_entry = FormInteractionTabHelper::FromWebContents(contents)
+                                ->had_form_interaction();
   return property;
 }
 
@@ -713,13 +614,6 @@ void UserActivityManager::ResetAfterLogging() {
   model_prediction_ = std::nullopt;
 
   previous_idle_event_data_.reset();
-}
-
-void UserActivityManager::CancelLacrosWebPageInfoRequest() {
-  LOG(WARNING) << "Cancelling pending lacros web page info request.";
-  lacros_web_page_info_callback_.Cancel();
-  waiting_for_lacros_features_ = false;
-  // TODO(alanlxl): Maybe log elapsed time when request gets cancelled.
 }
 
 void UserActivityManager::CancelDimDecisionRequest() {

@@ -207,7 +207,8 @@ suite('PasswordManagerAppTest', function() {
     assertTrue(undoButton.hidden);
   });
 
-  test('Test password moved toast', async () => {
+  // TODO(crbug.com/408513732): Re-enable this test once the flakiness is fixed.
+  test.skip('Test password moved toast', async () => {
     const testEmail = 'test.user@gmail.com';
     const group = createCredentialGroup({
       name: 'test.com',
@@ -238,7 +239,7 @@ suite('PasswordManagerAppTest', function() {
     assertTrue(!!button);
     assertFalse(isVisible(button));
     assertTrue(app.$.toast.querySelector<HTMLElement>(
-                              '#toast-message')!.textContent!.trim()
+                              '#toast-message')!.textContent.trim()
                    .includes(testEmail));
   });
 
@@ -287,7 +288,7 @@ suite('PasswordManagerAppTest', function() {
     assertTrue(!!button);
     assertFalse(isVisible(button));
     assertTrue(app.$.toast.querySelector<HTMLElement>(
-                              '#toast-message')!.textContent!.trim()
+                              '#toast-message')!.textContent.trim()
                    .includes(VALUE_COPIED_TOAST_LABEL));
   });
 
@@ -322,7 +323,7 @@ suite('PasswordManagerAppTest', function() {
     assertTrue(!!button);
     assertFalse(isVisible(button));
     assertTrue(app.$.toast.querySelector<HTMLElement>(
-                              '#toast-message')!.textContent!.trim()
+                              '#toast-message')!.textContent.trim()
                    .includes(testEmail));
   });
 
@@ -357,11 +358,12 @@ suite('PasswordManagerAppTest', function() {
     assertTrue(!!button);
     assertFalse(isVisible(button));
     assertTrue(app.$.toast.querySelector<HTMLElement>(
-                              '#toast-message')!.textContent!.trim()
+                              '#toast-message')!.textContent.trim()
                    .includes(testEmail));
   });
 
-  test('import can be triggered from empty state', async function() {
+  // TODO(crbug.com/408513732): Re-enable this test once the flakiness is fixed.
+  test.skip('import can be triggered from empty state', async function() {
     // This is done to avoid flakiness.
     Router.getInstance().navigateTo(Page.PASSWORDS);
     await flushTasks();
@@ -389,9 +391,9 @@ suite('PasswordManagerAppTest', function() {
         settingsSection.shadowRoot!.querySelector('passwords-importer');
     assertTrue(!!importer);
 
-    const spinner = importer.shadowRoot!.querySelector('paper-spinner-lite');
+    const spinner = importer.shadowRoot!.querySelector('.spinner');
     assertTrue(!!spinner);
-    assertTrue(spinner.active);
+    assertTrue(isVisible(spinner));
   });
 
   test(
@@ -401,4 +403,18 @@ suite('PasswordManagerAppTest', function() {
         await passwordManager.whenCalled(
             'dismissSafetyHubPasswordMenuNotification');
       });
+
+  test('change password page', async function() {
+    // Simulate direct navigation.
+    Router.getInstance().navigateTo(Page.PASSWORD_CHANGE);
+    await flushTasks();
+
+    const passwordsSection =
+        app.shadowRoot!.querySelector('password-change-details');
+    assertTrue(!!passwordsSection);
+    passwordsSection?.$.back.click();
+    await flushTasks();
+
+    assertEquals(Page.SETTINGS, Router.getInstance().currentRoute.page);
+  });
 });

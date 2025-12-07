@@ -4,7 +4,7 @@
 
 #include "ui/linux/linux_ui_delegate.h"
 
-#include "base/functional/callback.h"
+#include "base/check_op.h"
 #include "base/notreached.h"
 
 namespace ui {
@@ -27,21 +27,12 @@ LinuxUiDelegate::~LinuxUiDelegate() {
   instance_ = nullptr;
 }
 
-bool LinuxUiDelegate::ExportWindowHandle(
-    uint32_t parent_widget,
-    base::OnceCallback<void(const std::string&)> callback) {
-  // This function should not be called when using a platform that doesn't
-  // implement it.
-  NOTREACHED_IN_MIGRATION();
-  return false;
-}
-
 void LinuxUiDelegate::SetTransientWindowForParent(
     gfx::AcceleratedWidget parent,
     gfx::AcceleratedWidget transient) {
   // This function should not be called when using a platform that doesn't
   // implement it.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace ui

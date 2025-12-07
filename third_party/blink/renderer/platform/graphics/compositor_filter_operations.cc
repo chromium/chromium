@@ -6,8 +6,8 @@
 
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
@@ -39,8 +39,9 @@ void CompositorFilterOperations::AppendHueRotateFilter(float amount) {
 void CompositorFilterOperations::AppendColorMatrixFilter(Vector<float> values) {
   DCHECK_EQ(values.size(), 20u);
   cc::FilterOperation::Matrix matrix = {};
-  for (WTF::wtf_size_t i = 0; i < values.size(); ++i)
+  for (wtf_size_t i = 0; i < values.size(); ++i) {
     matrix[i] = values[i];
+  }
   filter_operations_.Append(
       cc::FilterOperation::CreateColorMatrixFilter(matrix));
 }
@@ -108,13 +109,9 @@ bool CompositorFilterOperations::IsEmpty() const {
   return filter_operations_.IsEmpty();
 }
 
-gfx::RectF CompositorFilterOperations::MapRect(
-    const gfx::RectF& input_rect) const {
-  return gfx::RectF(filter_operations_.MapRect(
-      gfx::ToEnclosingRect(input_rect),
-      RuntimeEnabledFeatures::NewFilterMapRectEnabled()
-          ? std::nullopt
-          : std::make_optional(SkMatrix::I())));
+gfx::Rect CompositorFilterOperations::MapRect(
+    const gfx::Rect& input_rect) const {
+  return filter_operations_.MapRect(input_rect);
 }
 
 bool CompositorFilterOperations::HasFilterThatMovesPixels() const {
@@ -132,8 +129,8 @@ bool CompositorFilterOperations::operator==(
 }
 
 String CompositorFilterOperations::ToString() const {
-  return String(filter_operations_.ToString()) + " at " +
-         String(reference_box_.ToString());
+  return StrCat({String(filter_operations_.ToString()), " at ",
+                 String(reference_box_.ToString())});
 }
 
 }  // namespace blink

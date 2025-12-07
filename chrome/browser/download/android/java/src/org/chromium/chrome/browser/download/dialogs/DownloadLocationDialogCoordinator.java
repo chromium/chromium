@@ -4,14 +4,18 @@
 
 package org.chromium.chrome.browser.download.dialogs;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.DirectoryOption;
 import org.chromium.chrome.browser.download.DownloadDialogBridge;
 import org.chromium.chrome.browser.download.DownloadDirectoryProvider;
@@ -36,32 +40,39 @@ import java.util.ArrayList;
  * The factory class that contains all dependencies for the download location dialog.
  * Also provides the public functionalties to interact with dialog.
  */
+@NullMarked
 public class DownloadLocationDialogCoordinator implements ModalDialogProperties.Controller {
-    @NonNull private DownloadLocationDialogController mController;
-    private PropertyModel mDialogModel;
-    private PropertyModel mDownloadLocationDialogModel;
-    private PropertyModelChangeProcessor<PropertyModel, DownloadLocationCustomView, PropertyKey>
+    private DownloadLocationDialogController mController;
+    private @Nullable PropertyModel mDialogModel;
+    private @Nullable PropertyModel mDownloadLocationDialogModel;
+    private @Nullable
+            PropertyModelChangeProcessor<PropertyModel, DownloadLocationCustomView, PropertyKey>
             mPropertyModelChangeProcessor;
-    private DownloadLocationCustomView mCustomView;
-    private ModalDialogManager mModalDialogManager;
+    private @Nullable DownloadLocationCustomView mCustomView;
+    private @Nullable ModalDialogManager mModalDialogManager;
+
     private long mTotalBytes;
     private @DownloadLocationDialogType int mDialogType;
-    private String mSuggestedPath;
-    private Context mContext;
+    private @Nullable String mSuggestedPath;
+    private @Nullable Context mContext;
+
     private boolean mHasMultipleDownloadLocations;
-    private Profile mProfile;
+    private @Nullable Profile mProfile;
+
     private boolean mLocationDialogManaged;
 
     /**
      * Initializes the download location dialog.
      * @param controller Receives events from download location dialog.
      */
+    @Initializer
     public void initialize(DownloadLocationDialogController controller) {
         mController = controller;
     }
 
     /**
-     * Shows the download location dialog.
+     * Attempts to show the download location dialog. It may not actually be shown if there is only
+     * one directory available, or if dialog is already showing.
      *
      * @param context The {@link Context} for the dialog.
      * @param modalDialogManager {@link ModalDialogManager} to control the dialog.
@@ -107,6 +118,7 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
 
     @Override
     public void onClick(PropertyModel model, int buttonType) {
+        if (mModalDialogManager == null) return;
         switch (buttonType) {
             case ModalDialogProperties.ButtonType.POSITIVE:
                 mModalDialogManager.dismissDialog(
@@ -121,9 +133,10 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
     }
 
     @Override
-    public void onDismiss(PropertyModel model, int dismissalCause) {
+    public void onDismiss(@Nullable PropertyModel model, int dismissalCause) {
         switch (dismissalCause) {
             case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
+                if (mCustomView == null) break;
                 handleResponses(
                         mCustomView.getFileName(),
                         mCustomView.getDirectoryOption(),
@@ -142,6 +155,11 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
      * @param dirs An list of available download directories.
      */
     private void onDirectoryOptionsRetrieved(ArrayList<DirectoryOption> dirs) {
+        assertNonNull(mContext);
+        assertNonNull(mModalDialogManager);
+        assertNonNull(mSuggestedPath);
+        assertNonNull(mProfile);
+
         // If there is only one directory available, don't show the default dialog, and set the
         // download directory to default. Dialog will still show for other types of dialogs, like
         // name conflict or disk error or if Incognito download warning is needed.
@@ -151,9 +169,10 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
                 && !mProfile.isOffTheRecord()) {
             final DirectoryOption dir = dirs.get(0);
             if (dir.type == DirectoryOption.DownloadLocationDirectoryType.DEFAULT) {
-                assert (!TextUtils.isEmpty(dir.location));
+                assert !TextUtils.isEmpty(dir.location);
                 DownloadDialogBridge.setDownloadAndSaveFileDefaultDirectory(mProfile, dir.location);
-                mController.onDownloadLocationDialogComplete(mSuggestedPath);
+                mController.onDownloadLocationDialogComplete(
+                        mSuggestedPath, /* didUserConfirm= */ false);
             }
             return;
         }
@@ -174,7 +193,7 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
                 mTotalBytes,
                 (isChecked) -> {
                     DownloadDialogBridge.setPromptForDownloadAndroid(
-                            mProfile,
+                            assertNonNull(mProfile),
                             isChecked
                                     ? DownloadPromptStatus.DONT_SHOW
                                     : DownloadPromptStatus.SHOW_PREFERENCE);
@@ -212,6 +231,10 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
     }
 
     private PropertyModel getLocationDialogModel() {
+        assumeNonNull(mContext);
+        assumeNonNull(mSuggestedPath);
+        assumeNonNull(mProfile);
+
         boolean isInitial =
                 DownloadDialogBridge.getPromptForDownloadAndroid(mProfile)
                         == DownloadPromptStatus.SHOW_INITIAL;
@@ -295,6 +318,8 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
     }
 
     private String getDefaultTitle() {
+        assumeNonNull(mContext);
+        assumeNonNull(mProfile);
         return mContext.getString(
                 mLocationDialogManaged
                                 || (mProfile.isOffTheRecord() && !mHasMultipleDownloadLocations)
@@ -310,13 +335,16 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
      * @param dontShowAgain Whether the user wants the "Save download to..." dialog shown again.
      */
     private void handleResponses(
-            String fileName, DirectoryOption directoryOption, boolean dontShowAgain) {
+            @Nullable String fileName,
+            @Nullable DirectoryOption directoryOption,
+            boolean dontShowAgain) {
         // If there's no file location, treat as a cancellation.
         if (directoryOption == null || directoryOption.location == null || fileName == null) {
             cancel();
             return;
         }
 
+        assumeNonNull(mProfile);
         // Update native with new path.
         DownloadDialogBridge.setDownloadAndSaveFileDefaultDirectory(
                 mProfile, directoryOption.location);
@@ -329,7 +357,8 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
         File file = new File(directoryOption.location, fileName);
 
         assert mController != null;
-        mController.onDownloadLocationDialogComplete(file.getAbsolutePath());
+        mController.onDownloadLocationDialogComplete(
+                file.getAbsolutePath(), /* didUserConfirm= */ true);
 
         // Update preference to show prompt based on whether checkbox is checked only when the user
         // click the positive button.

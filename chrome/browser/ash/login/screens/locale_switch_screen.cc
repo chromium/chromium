@@ -7,7 +7,6 @@
 #include <optional>
 #include <string>
 
-#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
@@ -68,20 +67,21 @@ class GetLocaleOAuth2PeopleAPICall : public OAuth2ApiCallFlow {
 
   std::string CreateApiCallBody() override { return std::string(""); }
 
-  void ProcessApiCallSuccess(const network::mojom::URLResponseHead* head,
-                             std::unique_ptr<std::string> body) override {
-    std::string response_body;
-    if (body) {
-      response_body = std::move(*body);
+  void ProcessApiCallSuccess(
+      const network::mojom::URLResponseHead* head,
+      std::optional<std::string> response_body) override {
+    if (!response_body.has_value()) {
+      response_body.emplace();
     }
 
-    std::optional<base::Value> value = base::JSONReader::Read(response_body);
-    if (!value || !value->is_dict()) {
+    std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+        *response_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+    if (!value) {
       LOG(ERROR) << __func__ << " Bad response format";
       std::move(failure_callback_).Run();
       return;
     }
-    base::Value::List* locales_list = value->GetDict().FindList("locales");
+    base::Value::List* locales_list = value->FindList("locales");
     if (!locales_list) {
       LOG(ERROR) << __func__ << " No locales available";
       std::move(failure_callback_).Run();
@@ -107,7 +107,7 @@ class GetLocaleOAuth2PeopleAPICall : public OAuth2ApiCallFlow {
   // false. |head| or |body| might be null.
   void ProcessApiCallFailure(int net_error,
                              const network::mojom::URLResponseHead* head,
-                             std::unique_ptr<std::string> body) override {
+                             std::optional<std::string> body) override {
     LOG(ERROR) << __func__
                << " Failed to get preferred user locale, net_error = "
                << net_error;
@@ -236,9 +236,7 @@ void LocaleSwitchScreen::ShowImpl() {
 
   identity_manager_ = IdentityManagerFactory::GetForProfile(profile);
   if (!identity_manager_) {
-    NOTREACHED_IN_MIGRATION();
-    exit_callback_.Run(Result::kNotApplicable);
-    return;
+    NOTREACHED();
   }
 
   CoreAccountId primary_account_id =
@@ -314,12 +312,6 @@ void LocaleSwitchScreen::OnRefreshTokensLoaded() {
 }
 
 void LocaleSwitchScreen::FetchPreferredUserLocaleAndSwitchAsync() {
-  // Choose scopes to obtain for the access token.
-  signin::ScopeSet scopes;
-  scopes.insert(GaiaConstants::kPeopleApiReadOnlyOAuth2Scope);
-  scopes.insert(GaiaConstants::kGoogleUserInfoProfile);
-  scopes.insert(GaiaConstants::kProfileLanguageReadOnlyOAuth2Scope);
-
   // Choose the mode in which to fetch the access token:
   // see AccessTokenFetcher::Mode below for definitions.
   auto mode =
@@ -328,7 +320,7 @@ void LocaleSwitchScreen::FetchPreferredUserLocaleAndSwitchAsync() {
   // Create the fetcher.
   access_token_fetcher_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-          "LocaleSwitchScreen", identity_manager_, scopes,
+          signin::OAuthConsumerId::kLocaleSwitchScreen, identity_manager_,
           base::BindOnce(&LocaleSwitchScreen::OnAccessTokenRequestCompleted,
                          weak_factory_.GetWeakPtr()),
           mode, signin::ConsentLevel::kSignin);
@@ -381,12 +373,15 @@ void LocaleSwitchScreen::SwitchLocale() {
     return;
   }
 
+  auto* user_manager = user_manager::UserManager::Get();
+  const auto* user = user_manager->GetActiveUser();
+  // Set fetched locale into user's `user_manager::User::account_locale_`.
+  user_manager->UpdateUserAccountLocale(user->GetAccountId(), locale_);
+
   // Types of users that have a GAIA account and could be used during the
   // "Add Person" flow.
   static constexpr user_manager::UserType kAddPersonUserTypes[] = {
       user_manager::UserType::kRegular, user_manager::UserType::kChild};
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->GetActiveUser();
   // Don't show notification for the ephemeral logins, proceed with the default
   // flow.
   if (!chrome_user_manager_util::IsManagedGuestSessionOrEphemeralLogin() &&
@@ -432,7 +427,9 @@ void LocaleSwitchScreen::HideImpl() {
   // timer, stop observing `IdentintyManager` and cancel the ongoing request to
   // fetch the locale.
   if (timeout_waiter_.IsRunning()) {
-    CHECK_IS_TEST();
+    LOG(WARNING) << __func__
+                 << " while LocaleSwitchScreen is still executing requests. "
+                    "Ignore if tests advance to next OOBE screens directly.";
     timeout_waiter_.Stop();
     identity_manager_observer_.Reset();
     AbandonPeopleAPICall();
@@ -445,7 +442,9 @@ void LocaleSwitchScreen::OnLanguageChangedCallback(
   // Return early when the screen is already hidden for tests. Check comment in
   // `LocaleSwitchScreen::HideImpl` for more information.
   if (is_hidden()) {
-    CHECK_IS_TEST();
+    LOG(WARNING) << __func__
+                 << " when LocaleSwitchScreen is already hidden. "
+                    "Ignore if tests advance to next OOBE screens directly.";
     return;
   }
 

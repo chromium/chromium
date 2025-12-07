@@ -5,12 +5,13 @@
 #ifndef CHROME_BROWSER_DISPLAY_CAPTURE_CAPTURED_SURFACE_CONTROL_PERMISSION_CONTEXT_H_
 #define CHROME_BROWSER_DISPLAY_CAPTURE_CAPTURED_SURFACE_CONTROL_PERMISSION_CONTEXT_H_
 
-#include "components/permissions/permission_context_base.h"
+#include "components/permissions/content_setting_permission_context_base.h"
+#include "components/permissions/permission_request_data.h"
 
 namespace permissions {
 
 class CapturedSurfaceControlPermissionContext
-    : public permissions::PermissionContextBase {
+    : public permissions::ContentSettingPermissionContextBase {
  public:
   explicit CapturedSurfaceControlPermissionContext(
       content::BrowserContext* browser_context);
@@ -21,16 +22,6 @@ class CapturedSurfaceControlPermissionContext
   CapturedSurfaceControlPermissionContext& operator=(
       const CapturedSurfaceControlPermissionContext&) = delete;
 
-  bool UsesAutomaticEmbargo() const override;
-
- protected:
-  void UpdateContentSetting(const GURL& requesting_origin,
-                            const GURL& embedding_origin,
-                            ContentSetting content_setting,
-                            bool is_one_time) override;
-
- private:
-  const bool sticky_permissions_;
 };
 
 }  // namespace permissions

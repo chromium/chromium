@@ -5,340 +5,183 @@
 #ifndef UI_VIEWS_METADATA_VIEW_FACTORY_H_
 #define UI_VIEWS_METADATA_VIEW_FACTORY_H_
 
+#include <concepts>
 #include <functional>
 #include <map>
 #include <memory>
 #include <optional>
+#include <string>
 #include <string_view>
+#include <type_traits>
 #include <utility>
+#include <variant>
 #include <vector>
 
-#include "base/functional/bind.h"
 #include "base/macros/concat.h"
+#include "base/macros/remove_parens.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/class_property.h"
 #include "ui/base/metadata/base_type_conversion.h"
+#include "ui/compositor/layer_type.h"
+#include "ui/views/background.h"
+#include "ui/views/border.h"
 #include "ui/views/metadata/view_factory_internal.h"
+#include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/views_export.h"
+
+class SkPath;
+
+namespace ax {
+enum class DescriptionFrom;
+enum class NameFrom;
+enum class Role;
+}  // namespace ax
+
+namespace gfx {
+class Point;
+class Rect;
+class Size;
+class Transform;
+}  // namespace gfx
 
 namespace views {
 
-template <typename Builder>
-class BaseViewBuilderT : public internal::ViewBuilderCore {
- public:
-  using ViewClass_ = typename internal::ViewClassTrait<Builder>::ViewClass_;
-  using AfterBuildCallback = base::OnceCallback<void(ViewClass_*)>;
-  using ConfigureCallback = base::OnceCallback<void(ViewClass_*)>;
-  BaseViewBuilderT() { view_ = std::make_unique<ViewClass_>(); }
-  explicit BaseViewBuilderT(std::unique_ptr<ViewClass_> view) {
-    view_ = std::move(view);
-  }
-  explicit BaseViewBuilderT(ViewClass_* root_view) : root_view_(root_view) {}
-  BaseViewBuilderT(BaseViewBuilderT&&) = default;
-  BaseViewBuilderT& operator=(BaseViewBuilderT&&) = default;
-  ~BaseViewBuilderT() override = default;
-
-  // Schedule `after_build_callback` to run after View and its children have
-  // been constructed. Calling this multiple times will chain the callbacks.
-  Builder& AfterBuild(AfterBuildCallback after_build_callback) & {
-    // Allow multiple after build callbacks by chaining them.
-    if (after_build_callback_) {
-      after_build_callback_ = base::BindOnce(
-          [](AfterBuildCallback previous_callback,
-             AfterBuildCallback current_callback, ViewClass_* root_view) {
-            std::move(previous_callback).Run(root_view);
-            std::move(current_callback).Run(root_view);
-          },
-          std::move(after_build_callback_), std::move(after_build_callback));
-    } else {
-      after_build_callback_ = std::move(after_build_callback);
-    }
-    return *static_cast<Builder*>(this);
-  }
-
-  Builder&& AfterBuild(AfterBuildCallback after_build_callback) && {
-    return std::move(this->AfterBuild(std::move(after_build_callback)));
-  }
-
-  template <typename ViewPtr>
-  Builder& CopyAddressTo(ViewPtr* view_address) & {
-    *view_address = view_ ? view_.get() : root_view_.get();
-    return *static_cast<Builder*>(this);
-  }
-
-  template <typename ViewPtr>
-  Builder&& CopyAddressTo(ViewPtr* view_address) && {
-    return std::move(this->CopyAddressTo(view_address));
-  }
-
-  // Schedule `configure_callback` to run after the View is constructed and
-  // properties have been set. Calling this multiple times will chain the
-  // callbacks.
-  Builder& CustomConfigure(ConfigureCallback configure_callback) & {
-    // Allow multiple configure callbacks by chaining them.
-    if (configure_callback_) {
-      configure_callback_ = base::BindOnce(
-          [](ConfigureCallback current_callback,
-             ConfigureCallback previous_callback, ViewClass_* root_view) {
-            std::move(current_callback).Run(root_view);
-            std::move(previous_callback).Run(root_view);
-          },
-          std::move(configure_callback), std::move(configure_callback_));
-    } else {
-      configure_callback_ = std::move(configure_callback);
-    }
-    return *static_cast<Builder*>(this);
-  }
-
-  Builder&& CustomConfigure(ConfigureCallback configure_callback) && {
-    return std::move(this->CustomConfigure(std::move(configure_callback)));
-  }
-
-  template <typename Child>
-  Builder& AddChild(Child&& child) & {
-    children_.emplace_back(std::make_pair(child.Release(), std::nullopt));
-    return *static_cast<Builder*>(this);
-  }
-
-  template <typename Child>
-  Builder&& AddChild(Child&& child) && {
-    return std::move(this->AddChild(std::move(child)));
-  }
-
-  template <typename Child>
-  Builder& AddChildAt(Child&& child, size_t index) & {
-    children_.emplace_back(std::make_pair(child.Release(), index));
-    return *static_cast<Builder*>(this);
-  }
-
-  template <typename Child>
-  Builder&& AddChildAt(Child&& child, size_t index) && {
-    return std::move(this->AddChildAt(std::move(child), index));
-  }
-
-  template <typename Child, typename... Types>
-  Builder& AddChildren(Child&& child, Types&&... args) & {
-    return AddChildrenImpl(&child, &args...);
-  }
-
-  template <typename Child, typename... Types>
-  Builder&& AddChildren(Child&& child, Types&&... args) && {
-    return std::move(this->AddChildrenImpl(&child, &args...));
-  }
-
-  [[nodiscard]] std::unique_ptr<ViewClass_> Build() && {
-    DCHECK(!root_view_) << "Root view specified. Use BuildChildren() instead.";
-    DCHECK(view_);
-    SetProperties(view_.get());
-    DoCustomConfigure(view_.get());
-    CreateChildren(view_.get());
-    DoAfterBuild(view_.get());
-    return std::move(view_);
-  }
-
-  void BuildChildren() && {
-    DCHECK(!view_) << "Default constructor called. Use Build() instead.";
-    DCHECK(root_view_);
-    SetProperties(root_view_);
-    DoCustomConfigure(root_view_);
-    CreateChildren(root_view_);
-    DoAfterBuild(root_view_);
-  }
-
-  template <typename T>
-  Builder& SetProperty(const ui::ClassProperty<T>* property,
-                       ui::metadata::ArgType<T> value) & {
-    auto setter =
-        std::make_unique<internal::ClassPropertyValueSetter<ViewClass_, T>>(
-            property, value);
-    internal::ViewBuilderCore::AddPropertySetter(std::move(setter));
-    return *static_cast<Builder*>(this);
-  }
-
-  template <typename T>
-  Builder&& SetProperty(const ui::ClassProperty<T>* property,
-                        ui::metadata::ArgType<T> value) && {
-    return std::move(this->SetProperty(property, value));
-  }
-
-  template <typename T>
-  Builder& SetProperty(const ui::ClassProperty<T*>* property,
-                       ui::metadata::ArgType<T> value) & {
-    auto setter =
-        std::make_unique<internal::ClassPropertyMoveSetter<ViewClass_, T>>(
-            property, value);
-    internal::ViewBuilderCore::AddPropertySetter(std::move(setter));
-    return *static_cast<Builder*>(this);
-  }
-
-  template <typename T>
-  Builder&& SetProperty(const ui::ClassProperty<T*>* property,
-                        ui::metadata::ArgType<T> value) && {
-    return std::move(this->SetProperty(property, value));
-  }
-
-  template <typename T>
-  Builder& SetProperty(const ui::ClassProperty<T*>* property, T&& value) & {
-    auto setter =
-        std::make_unique<internal::ClassPropertyMoveSetter<ViewClass_, T>>(
-            property, std::move(value));
-    internal::ViewBuilderCore::AddPropertySetter(std::move(setter));
-    return *static_cast<Builder*>(this);
-  }
-
-  template <typename T>
-  Builder&& SetProperty(const ui::ClassProperty<T*>* property, T&& value) && {
-    return std::move(this->SetProperty(property, value));
-  }
-
-  template <typename T>
-  Builder& SetProperty(const ui::ClassProperty<T*>* property,
-                       std::unique_ptr<T> value) & {
-    auto setter =
-        std::make_unique<internal::ClassPropertyUniquePtrSetter<ViewClass_, T>>(
-            property, std::move(value));
-    internal::ViewBuilderCore::AddPropertySetter(std::move(setter));
-    return *static_cast<Builder*>(this);
-  }
-
-  template <typename T>
-  Builder&& SetProperty(const ui::ClassProperty<T*>* property,
-                        std::unique_ptr<T> value) && {
-    return std::move(this->SetProperty(property, std::move(value)));
-  }
-
- protected:
-  // Internal implementation which iterates over all the parameters without
-  // resorting to recursion which can lead to more code generation.
-  template <typename... Args>
-  Builder& AddChildrenImpl(Args*... args) & {
-    std::vector<internal::ViewBuilderCore*> children = {args...};
-    for (auto* child : children)
-      children_.emplace_back(std::make_pair(child->Release(), std::nullopt));
-    return *static_cast<Builder*>(this);
-  }
-
-  void DoAfterBuild(ViewClass_* view) {
-    if (after_build_callback_) {
-      std::move(after_build_callback_).Run(view);
-    }
-  }
-
-  void DoCustomConfigure(ViewClass_* view) {
-    if (configure_callback_)
-      std::move(configure_callback_).Run(view);
-  }
-
-  std::unique_ptr<View> DoBuild() override { return std::move(*this).Build(); }
-
-  // Optional callback invoked right after calling `CreateChildren()`. This
-  // allows additional configuration of the view not easily covered by the
-  // builder after all addresses have been copied, properties have been set,
-  // and children have themselves been built and added.
-  AfterBuildCallback after_build_callback_;
-
-  // Optional callback invoked right before calling CreateChildren. This allows
-  // any additional configuration of the view not easily covered by the builder.
-  ConfigureCallback configure_callback_;
-
-  // Owned and meaningful during the Builder building process. Its
-  // ownership will be transferred out upon Build() call.
-  std::unique_ptr<ViewClass_> view_;
-
-  // Unowned root view. Used for creating a builder with an existing root
-  // instance.
-  raw_ptr<ViewClass_> root_view_ = nullptr;
-};
+using internal::Builder;
 
 }  // namespace views
 
-// Example of builder class generated by the following macros.
+// Example of builder classes generated by the following macro usage:
+// ```
+// BEGIN_VIEW_BUILDER(, XYZView, views::View)
+// VIEW_BUILDER_PROPERTY(bool, Enabled)
+// VIEW_BUILDER_PROPERTY(bool, Visible)
+// END_VIEW_BUILDER
 //
-// template <typename Builder, typename ViewClass>
-// class ViewBuilderT : public BaseViewBuilderT<Builder, ViewClass> {
+// DEFINE_VIEW_BUILDER(, XYZView)
+// ```
+//
+// =>
+//
+// ```
+// template <typename BuilderT>
+// class XYZViewBuilderT : public views::ViewBuilderT<BuilderT> {
+//  private:
+//   using ViewClass_ = XYZView;
+//
 //  public:
-//   ViewBuilderT() = default;
-//   ViewBuilderT(const ViewBuilderT&&) = default;
-//   ViewBuilderT& operator=(const ViewBuilderT&&) = default;
+//   XYZViewBuilderT() = default;
+//   explicit XYZViewBuilderT(
+//       typename ::views::internal::ViewClassTrait<BuilderT>::ViewClass_* view)
+//       : views::ViewBuilderT<BuilderT>(view) {}
+//   explicit XYZViewBuilderT(
+//       std::unique_ptr<
+//           typename ::views::internal::ViewClassTrait<BuilderT>::ViewClass_>
+//           view)
+//       : views::ViewBuilderT<BuilderT>(std::move(view)) {}
+//   template <typename OtherBuilder>
+//     requires(
+//         !std::same_as<BuilderT, OtherBuilder> &&
+//         std::convertible_to<
+//             typename internal::BaseViewBuilderT<OtherBuilder>::ViewClass_*,
+//             ViewClass_*>)
+//   view_class##BuilderT(internal::BaseViewBuilderT<OtherBuilder> && other)
+//       : ancestor##BuilderT<BuilderT>(std::move(other)) {}
+//   ViewBuilderT(ViewBuilderT&&) = default;
+//   ViewBuilderT& operator=(ViewBuilderT&&) = default;
 //   ~ViewBuilderT() override = default;
 //
-//   Builder& SetEnabled(bool value) {
-//     auto setter = std::make_unique<
-//         PropertySetter<ViewClass, bool, decltype(&ViewClass::SetEnabled),
-//         &ViewClass::SetEnabled>>(value);
-//     ViewBuilderCore::AddPropertySetter(std::move(setter));
-//     return *static_cast<Builder*>(this);
+//   BuilderT& SetEnabled(::ui::metadata::ArgType<bool> value)& {
+//     auto setter = std::make_unique<::views::internal::PropertySetter<
+//         ViewClass, ::ui::metadata::ArgType<bool>,
+//         decltype(&ViewClass_::SetEnabled),
+//         &ViewClass_::SetEnabled>>(std::move(value));
+//     ::views::internal::ViewBuilderCore::AddPropertySetter(std::move(setter));
+//     return *static_cast<BuilderT*>(this);
 //   }
 //
-//   Builder& SetVisible(bool value) {
-//     auto setter = std::make_unique<
-//         PropertySetter<ViewClass, bool, &ViewClass::SetVisible>>(value);
-//     ViewBuilderCore::AddPropertySetter(std::move(setter));
-//     return *static_cast<Builder*>(this);
+//   BuilderT& SetVisible(::ui::metadata::ArgType<bool> value) {
+//     auto setter = std::make_unique<::views::internal::PropertySetter<
+//         ViewClass, ::ui::metadata::ArgType<bool>,
+//         decltype(&ViewClass_::SetVisible),
+//         &ViewClass::SetVisible>>(std::move(value));
+//     ::views::internal::ViewBuilderCore::AddPropertySetter(std::move(setter));
+//     return *static_cast<BuilderT*>(this);
 //   }
 // };
 //
-// class VIEWS_EXPORT ViewBuilderTest
-//     : public ViewBuilderT<ViewBuilderTest, View> {};
+// namespace views {
+// template <>
+// class Builder<XYZView> : public XYZViewBuilderT<Builder<XYZView>> {
+//  private:
+//   using ViewClass_ = XYZView;
 //
-// template <typename Builder, typename ViewClass>
-// class LabelButtonBuilderT : public ViewBuilderT<Builder, ViewClass> {
 //  public:
-//   LabelButtonBuilderT() = default;
-//   LabelButtonBuilderT(LabelButtonBuilderT&&) = default;
-//   LabelButtonBuilderT& operator=(LabelButtonBuilderT&&) = default;
-//   ~LabelButtonBuilderT() override = default;
-//
-//   Builder& SetIsDefault(bool value) {
-//     auto setter = std::make_unique<
-//         PropertySetter<ViewClass, bool, decltype(&ViewClass::SetIsDefault),
-//         &ViewClass::SetIsDefault>>(value);
-//     ViewBuilderCore::AddPropertySetter(std::move(setter));
-//     return *static_cast<Builder*>(this);
+//   Builder() = default;
+//   explicit Builder(ViewClass_* view) : XYZViewBuilderT<Builder>(view) {}
+//   explicit Builder(std::unique_ptr<ViewClass_> view)
+//       : XYZViewBuilderT<Builder>(std::move(view)) {}
+//   template <typename OtherBuilder>
+//     requires(!std::same_as<Builder, OtherBuilder> &&
+//              std::convertible_to<
+//                  typename
+//                  internal::BaseViewBuilderT<OtherBuilder>::ViewClass_*,
+//                  ViewClass_*>)
+//   Builder(internal::BaseViewBuilderT<OtherBuilder>&& other)
+//       : view_class##BuilderT<Builder>(std::move(other)) {}
+//   Builder(Builder&&) = default;
+//   Builder& operator=(Builder&&) = default;
+//   ~Builder() = default;
+//   [[nodiscard]] std::unique_ptr<internal::ViewBuilderCore> Release()
+//       override {
+//     return std::make_unique<Builder>(std::move(*this));
 //   }
 // };
-//
-// class VIEWS_EXPORT LabelButtonBuilder
-//     : public LabelButtonBuilderT<LabelButtonBuilder, LabelButton> {};
+// }  // namespace views
+// ```
 
-// The maximum number of overloaded params is 10. This should be overkill since
-// a function with 10 params is well into the "suspect" territory anyway.
-// TODO(kylixrd@): Evaluate whether a max of 5 may be more reasonable.
-#define NUM_ARGS_IMPL(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, N, ...) N
-#define NUM_ARGS(...) NUM_ARGS_IMPL(__VA_ARGS__, _10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
+// The maximum number of overloaded params is currently 3, which is more than
+// any callsite uses. Extend these macros if you need more.
+#define NUM_ARGS_IMPL(_1, _2, _3, N, ...) N
+#define NUM_ARGS(...) NUM_ARGS_IMPL(__VA_ARGS__, 3, 2, 1)
 
 // This will expand the list of types into a parameter declaration list.
-// eg: DECL_PARAMS(int, char, float, double) will expand to:
-// int param4, char param3, float param2, double param1
+// e.g. `DECL_PARAMS(int&, const char*, T&&)` will expand to:
+// `int& param3, const char* param2, T&& param1`
 #define DECL_PARAM1(type) type param1
 #define DECL_PARAM2(type, ...) type param2, DECL_PARAM1(__VA_ARGS__)
 #define DECL_PARAM3(type, ...) type param3, DECL_PARAM2(__VA_ARGS__)
-#define DECL_PARAM4(type, ...) type param4, DECL_PARAM3(__VA_ARGS__)
-#define DECL_PARAM5(type, ...) type param5, DECL_PARAM4(__VA_ARGS__)
-#define DECL_PARAM6(type, ...) type param6, DECL_PARAM5(__VA_ARGS__)
-#define DECL_PARAM7(type, ...) type param7, DECL_PARAM6(__VA_ARGS__)
-#define DECL_PARAM8(type, ...) type param8, DECL_PARAM7(__VA_ARGS__)
-#define DECL_PARAM9(type, ...) type param9, DECL_PARAM8(__VA_ARGS__)
-#define DECL_PARAM10(type, ...) type param10, DECL_PARAM9(__VA_ARGS__)
 #define DECL_PARAMS(...) \
   BASE_CONCAT(DECL_PARAM, NUM_ARGS(__VA_ARGS__))(__VA_ARGS__)
 
 // This will expand into list of parameters suitable for calling a function
 // using the same param names from the above expansion.
-// eg: PASS_PARAMS(int, char, float, double)
-// param4, param3, param2, param1
-#define PASS_PARAM1(type) param1
-#define PASS_PARAM2(type, ...) param2, PASS_PARAM1(__VA_ARGS__)
-#define PASS_PARAM3(type, ...) param3, PASS_PARAM2(__VA_ARGS__)
-#define PASS_PARAM4(type, ...) param4, PASS_PARAM3(__VA_ARGS__)
-#define PASS_PARAM5(type, ...) param5, PASS_PARAM4(__VA_ARGS__)
-#define PASS_PARAM6(type, ...) param6, PASS_PARAM5(__VA_ARGS__)
-#define PASS_PARAM7(type, ...) param7, PASS_PARAM6(__VA_ARGS__)
-#define PASS_PARAM8(type, ...) param8, PASS_PARAM7(__VA_ARGS__)
-#define PASS_PARAM9(type, ...) param9, PASS_PARAM8(__VA_ARGS__)
-#define PASS_PARAM10(type, ...) param10, PASS_PARAM9(__VA_ARGS__)
+// eg: `PASS_PARAMS(int&, const char*, T&&)` will expand to:
+// `static_cast<int&>(param3), static_cast<const char*>(param2),
+//  static_cast<T&&>(param1)`
+// The casts look unnecessary, but actually achieve perfect forwarding: if a
+// parameter is declared as `T&&` with `T` being a template type,
+// `std::forward<T>()` is equivalent to `static_cast<T&&>()`. In any case where
+// the type of the parameter is not an rvalue ref, the cast is a no-op.
+#define PASS_PARAM1(type) static_cast<type>(param1)
+#define PASS_PARAM2(type, ...) \
+  static_cast<type>(param2), PASS_PARAM1(__VA_ARGS__)
+#define PASS_PARAM3(type, ...) \
+  static_cast<type>(param3), PASS_PARAM2(__VA_ARGS__)
 #define PASS_PARAMS(...) \
   BASE_CONCAT(PASS_PARAM, NUM_ARGS(__VA_ARGS__))(__VA_ARGS__)
+
+// Ensures the supplied args are surrounded by angle brackets.
+#define CHECK_TEMPLATE_TYPES_SYNTAX(...) \
+  CHECK_TEMPLATE_TYPES_SYNTAX_EXPANDED(__VA_ARGS__)
+#define CHECK_TEMPLATE_TYPES_SYNTAX_EXPANDED(...)                              \
+  static_assert(                                                               \
+      [] {                                                                     \
+        constexpr auto a = std::string_view(#__VA_ARGS__);                     \
+        return a.length() >= 2 && a.front() == '<' && a.back() == '>';         \
+      }(),                                                                     \
+      "Template type arg is not surrounded by angle brackets; did you supply " \
+      "multiple types without wrapping the whole arg in parens?")
 
 // BEGIN_VIEW_BUILDER, END_VIEW_BUILDER and VIEW_BUILDER_XXXX macros should
 // be placed into the same namespace as the 'view_class' parameter.
@@ -352,14 +195,23 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
    public:                                                                    \
     view_class##BuilderT() = default;                                         \
     explicit view_class##BuilderT(                                            \
-        typename ::views::internal::ViewClassTrait<BuilderT>::ViewClass_*     \
-            root_view)                                                        \
-        : ancestor##BuilderT<BuilderT>(root_view) {}                          \
+        typename ::views::internal::ViewClassTrait<BuilderT>::ViewClass_ *    \
+        view)                                                                 \
+        : ancestor##BuilderT<BuilderT>(view) {}                               \
     explicit view_class##BuilderT(                                            \
         std::unique_ptr<                                                      \
             typename ::views::internal::ViewClassTrait<BuilderT>::ViewClass_> \
             view)                                                             \
         : ancestor##BuilderT<BuilderT>(std::move(view)) {}                    \
+    template <typename OtherBuilder>                                          \
+      requires(                                                               \
+          !std::same_as<BuilderT, OtherBuilder> &&                            \
+          std::convertible_to<typename ::views::internal::BaseViewBuilderT<   \
+                                  OtherBuilder>::ViewClass_*,                 \
+                              ViewClass_*>)                                   \
+    explicit view_class##BuilderT(                                            \
+        ::views::internal::BaseViewBuilderT<OtherBuilder> && other)           \
+        : ancestor##BuilderT<BuilderT>(std::move(other)) {}                   \
     view_class##BuilderT(view_class##BuilderT&&) = default;                   \
     view_class##BuilderT& operator=(view_class##BuilderT&&) = default;        \
     ~view_class##BuilderT() override = default;
@@ -392,10 +244,45 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
     return std::move(this->Set##property_name(std::move(value)));             \
   }
 
-#define GET_VB_MACRO(_1, _2, _3, macro_name, ...) macro_name
-#define VIEW_BUILDER_PROPERTY(...)                                          \
-  GET_VB_MACRO(__VA_ARGS__, VIEW_BUILDER_PROPERTY3, VIEW_BUILDER_PROPERTY2) \
+#define VIEW_BUILDER_PROPERTY(...)                                           \
+  NUM_ARGS_IMPL(__VA_ARGS__, VIEW_BUILDER_PROPERTY3, VIEW_BUILDER_PROPERTY2) \
   (__VA_ARGS__)
+
+// For use with templated setters. Supply the template type list, in angle
+// brackets, in the first arg; if there are multiple template args, wrap in
+// parens so the preprocessor keeps everything in one arg. After the property
+// name, list the param types. For example:
+// ```
+//   template <typename T>
+//   void SetValue(T value);
+//
+//   template <typename T, typename U>
+//   void SetProperty(const ui::ClassProperty<T>* property, U&& value);
+//
+// =>
+//
+//   VIEW_BUILDER_TEMPLATED_PROPERTY(<typename T>, Value, T)
+//   VIEW_BUILDER_TEMPLATED_PROPERTY((<typename T, typename U>),
+//                                   Property,
+//                                   const ui::ClassProperty<T>*,
+//                                   U&&)
+#define VIEW_BUILDER_TEMPLATED_PROPERTY(template_types, property_name, ...)   \
+  CHECK_TEMPLATE_TYPES_SYNTAX(BASE_REMOVE_PARENS(template_types));            \
+  template BASE_REMOVE_PARENS(template_types)                                 \
+      BuilderT& Set##property_name(DECL_PARAMS(__VA_ARGS__))& {               \
+    auto caller = std::make_unique<::views::internal::ClassMethodCaller<      \
+        ViewClass_,                                                           \
+        decltype(static_cast<void (ViewClass_::*)(__VA_ARGS__)>(              \
+            &ViewClass_::Set##property_name)),                                \
+        &ViewClass_::Set##property_name, __VA_ARGS__>>(                       \
+        PASS_PARAMS(__VA_ARGS__));                                            \
+    ::views::internal::ViewBuilderCore::AddPropertySetter(std::move(caller)); \
+    return *static_cast<BuilderT*>(this);                                     \
+  }                                                                           \
+  template BASE_REMOVE_PARENS(template_types)                                 \
+      BuilderT&& Set##property_name(DECL_PARAMS(__VA_ARGS__))&& {             \
+    return std::move(this->Set##property_name(PASS_PARAMS(__VA_ARGS__)));     \
+  }
 
 // Sometimes the method being called is on the ancestor to ViewClass_. This
 // macro will ensure the overload casts function correctly by specifying the
@@ -407,8 +294,8 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
   BuilderT& method_name(DECL_PARAMS(__VA_ARGS__))& {                          \
     auto caller = std::make_unique<::views::internal::ClassMethodCaller<      \
         ViewClass_,                                                           \
-        decltype((static_cast<void (class_name::*)(__VA_ARGS__)>(             \
-            &ViewClass_::method_name))),                                      \
+        decltype(static_cast<void (class_name::*)(__VA_ARGS__)>(              \
+            &ViewClass_::method_name)),                                       \
         &class_name::method_name, __VA_ARGS__>>(PASS_PARAMS(__VA_ARGS__));    \
     ::views::internal::ViewBuilderCore::AddPropertySetter(std::move(caller)); \
     return *static_cast<BuilderT*>(this);                                     \
@@ -503,39 +390,107 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
     return std::move(this->Set##property_name(value));                         \
   }
 
-// Turn off clang-format due to it messing up the following macro. Places the
-// semi-colon on a separate line.
+// clang-format places the semi-colon on a separate line.
 // clang-format off
-
 #define END_VIEW_BUILDER };
+// clang-format on
 
 // Unlike the above macros, DEFINE_VIEW_BUILDER must be placed in the global
 // namespace. Unless 'view_class' is already in the 'views' namespace, it should
 // be fully qualified with the namespace in which it lives.
+#define DEFINE_VIEW_BUILDER(export, view_class)                             \
+  namespace views {                                                         \
+  template <>                                                               \
+  class export Builder<view_class>                                          \
+      : public view_class##BuilderT<Builder<view_class>> {                  \
+   private:                                                                 \
+    using ViewClass_ = view_class;                                          \
+                                                                            \
+   public:                                                                  \
+    Builder() = default;                                                    \
+    explicit Builder(ViewClass_ * view)                                     \
+        : view_class##BuilderT<Builder>(view) {}                            \
+    explicit Builder(std::unique_ptr<ViewClass_> view)                      \
+        : view_class##BuilderT<Builder>(std::move(view)) {}                 \
+    template <typename OtherBuilder>                                        \
+      requires(                                                             \
+          !std::same_as<Builder, OtherBuilder> &&                           \
+          std::convertible_to<typename ::views::internal::BaseViewBuilderT< \
+                                  OtherBuilder>::ViewClass_*,               \
+                              ViewClass_*>)                                 \
+    explicit Builder(::views::internal::BaseViewBuilderT<OtherBuilder> &&   \
+                     other)                                                 \
+        : view_class##BuilderT<Builder>(std::move(other)) {}                \
+    Builder(Builder&&) = default;                                           \
+    Builder& operator=(Builder&&) = default;                                \
+    ~Builder() = default;                                                   \
+    [[nodiscard]] std::unique_ptr<internal::ViewBuilderCore> Release()      \
+        override {                                                          \
+      return std::make_unique<Builder>(std::move(*this));                   \
+    }                                                                       \
+  };                                                                        \
+  }  // namespace views
 
-#define DEFINE_VIEW_BUILDER(export, view_class)                         \
-namespace views {                                                       \
-  template <>                                                           \
-  class export Builder<view_class>                                      \
-      : public view_class##BuilderT<Builder<view_class>> {              \
-   private:                                                             \
-    using ViewClass_ = view_class;                                      \
-   public:                                                              \
-    Builder() = default;                                                \
-    explicit Builder(ViewClass_* root_view)                             \
-        : view_class##BuilderT<Builder<ViewClass_>>(root_view) {}       \
-    explicit Builder(std::unique_ptr<ViewClass_> view)                  \
-        : view_class##BuilderT<Builder<ViewClass_>>(std::move(view)) {} \
-    Builder(Builder&&) = default;                                       \
-    Builder<ViewClass_>& operator=(Builder<ViewClass_>&&) = default;    \
-    ~Builder() = default;                                               \
-    [[nodiscard]] std::unique_ptr<internal::ViewBuilderCore> Release()  \
-        override {                                                      \
-      return std::make_unique<Builder<view_class>>(std::move(*this));   \
-    }                                                                   \
-  };                                                                    \
+namespace views {
+
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, View, internal::BaseView)
+template <typename LayoutManager>
+BuilderT& SetLayoutManager(std::unique_ptr<LayoutManager> layout_manager) & {
+  auto setter = std::make_unique<::views::internal::PropertySetter<
+      ViewClass_, std::unique_ptr<LayoutManager>,
+      decltype((static_cast<LayoutManager* (
+                    ViewClass_::*)(std::unique_ptr<LayoutManager>)>(
+          &ViewClass_::SetLayoutManager))),
+      &ViewClass_::SetLayoutManager>>(std::move(layout_manager));
+  ::views::internal::ViewBuilderCore::AddPropertySetter(std::move(setter));
+  return *static_cast<BuilderT*>(this);
+}
+template <typename LayoutManager>
+BuilderT&& SetLayoutManager(std::unique_ptr<LayoutManager> layout_manager) && {
+  return std::move(this->SetLayoutManager(std::move(layout_manager)));
+}
+
+VIEW_BUILDER_OVERLOAD_METHOD(SetAccessibleName, const std::u16string&)
+VIEW_BUILDER_OVERLOAD_METHOD(SetAccessibleName, View*)
+VIEW_BUILDER_OVERLOAD_METHOD(SetAccessibleName,
+                             std::u16string,
+                             ax::mojom::NameFrom)
+VIEW_BUILDER_OVERLOAD_METHOD(SetAccessibleDescription, const std::u16string&)
+VIEW_BUILDER_OVERLOAD_METHOD(SetAccessibleDescription, View*)
+VIEW_BUILDER_OVERLOAD_METHOD(SetAccessibleDescription,
+                             const std::u16string&,
+                             ax::mojom::DescriptionFrom)
+VIEW_BUILDER_OVERLOAD_METHOD(SetAccessibleRole, ax::mojom::Role)
+VIEW_BUILDER_OVERLOAD_METHOD(SetAccessibleRole,
+                             ax::mojom::Role,
+                             const std::u16string&)
+VIEW_BUILDER_PROPERTY(std::unique_ptr<Background>, Background)
+VIEW_BUILDER_PROPERTY(std::unique_ptr<Border>, Border)
+VIEW_BUILDER_PROPERTY(gfx::Rect, BoundsRect)
+VIEW_BUILDER_PROPERTY(gfx::Size, Size)
+VIEW_BUILDER_PROPERTY(gfx::Point, Position)
+VIEW_BUILDER_PROPERTY(int, X)
+VIEW_BUILDER_PROPERTY(int, Y)
+VIEW_BUILDER_PROPERTY(gfx::Size, PreferredSize)
+VIEW_BUILDER_PROPERTY(SkPath, ClipPath)
+VIEW_BUILDER_PROPERTY_DEFAULT(ui::LayerType, PaintToLayer, ui::LAYER_TEXTURED)
+VIEW_BUILDER_PROPERTY(bool, Enabled)
+VIEW_BUILDER_PROPERTY(bool, FlipCanvasOnPaintForRTLUI)
+VIEW_BUILDER_PROPERTY(views::View::FocusBehavior, FocusBehavior)
+VIEW_BUILDER_PROPERTY(int, Group)
+VIEW_BUILDER_PROPERTY(int, OwnedGroup)
+VIEW_BUILDER_PROPERTY(int, ID)
+VIEW_BUILDER_PROPERTY(bool, Mirrored)
+VIEW_BUILDER_PROPERTY(bool, NotifyEnterExitOnChild)
+VIEW_BUILDER_PROPERTY(gfx::Transform, Transform)
+VIEW_BUILDER_PROPERTY(bool, Visible)
+VIEW_BUILDER_PROPERTY(bool, CanProcessEventsWithinSubtree)
+VIEW_BUILDER_PROPERTY(bool, UseDefaultFillLayout)
+VIEW_BUILDER_PROPERTY(bool, ClipLayerToVisibleBounds)
+END_VIEW_BUILDER
+
 }  // namespace views
 
-// clang-format on
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, View)
 
 #endif  // UI_VIEWS_METADATA_VIEW_FACTORY_H_

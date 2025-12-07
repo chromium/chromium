@@ -10,6 +10,7 @@
 #include "third_party/metrics_proto/system_profile.pb.h"
 
 namespace metrics {
+namespace {
 
 class EnvironmentRecorderTest : public testing::Test {
  public:
@@ -20,7 +21,7 @@ class EnvironmentRecorderTest : public testing::Test {
   EnvironmentRecorderTest(const EnvironmentRecorderTest&) = delete;
   EnvironmentRecorderTest& operator=(const EnvironmentRecorderTest&) = delete;
 
-  ~EnvironmentRecorderTest() override {}
+  ~EnvironmentRecorderTest() override = default;
 
  protected:
   TestingPrefServiceSimple prefs_;
@@ -72,4 +73,5 @@ TEST_F(EnvironmentRecorderTest, LoadEnvironmentFromPrefs) {
   }
 }
 
+}   // namespace
 }  // namespace metrics

@@ -37,7 +37,7 @@ class IntWrapper : public blink::GarbageCollected<IntWrapper> {
     return other.Value() == Value();
   }
 
-  unsigned GetHash() { return WTF::GetHash(x_); }
+  unsigned GetHash() { return blink::GetHash(x_); }
 
   explicit IntWrapper(int x) : x_(x) {}
 
@@ -47,17 +47,17 @@ class IntWrapper : public blink::GarbageCollected<IntWrapper> {
   int x_;
 };
 
-static_assert(WTF::IsTraceable<IntWrapper>::value,
+static_assert(blink::IsTraceableV<IntWrapper>,
               "IsTraceable<> template failed to recognize trace method.");
 
 }  // namespace
 
-using IntVector = blink::HeapVector<blink::Member<IntWrapper>>;
-using IntDeque = blink::HeapDeque<blink::Member<IntWrapper>>;
-using IntMap = blink::HeapHashMap<blink::Member<IntWrapper>, int>;
-// TODO(sof): decide if this ought to be a global trait specialization.
-// (i.e., for HeapHash*<T>.)
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(IntVector)
+using IntVector = blink::GCedHeapVector<blink::Member<IntWrapper>>;
+using IntDeque = blink::GCedHeapDeque<blink::Member<IntWrapper>>;
+using IntMap = blink::GCedHeapHashMap<blink::Member<IntWrapper>, int>;
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::HeapVector<blink::Member<IntWrapper>>)
 
 namespace blink {
 
@@ -107,12 +107,12 @@ TEST_F(HeapCompactTest, CompactHashMap) {
 TEST_F(HeapCompactTest, CompactVectorOfVector) {
   ClearOutOldGarbage();
 
-  using IntVectorVector = HeapVector<IntVector>;
+  using IntVectorVector = GCedHeapVector<HeapVector<Member<IntWrapper>>>;
 
   Persistent<IntVectorVector> int_vector_vector =
       MakeGarbageCollected<IntVectorVector>();
   for (size_t i = 0; i < 10; ++i) {
-    IntVector vector;
+    blink::HeapVector<blink::Member<IntWrapper>> vector;
     for (wtf_size_t j = 0; j < 10; ++j) {
       IntWrapper* val = IntWrapper::Create(j);
       vector.push_back(val);
@@ -123,7 +123,7 @@ TEST_F(HeapCompactTest, CompactVectorOfVector) {
   EXPECT_EQ(10u, int_vector_vector->size());
   {
     int i = 0;
-    for (auto vector : *int_vector_vector) {
+    for (auto& vector : *int_vector_vector) {
       EXPECT_EQ(10u, vector.size());
       for (auto item : vector) {
         EXPECT_EQ(item->Value(), i % 10);
@@ -137,7 +137,7 @@ TEST_F(HeapCompactTest, CompactVectorOfVector) {
   {
     int i = 0;
     EXPECT_EQ(10u, int_vector_vector->size());
-    for (auto vector : *int_vector_vector) {
+    for (auto& vector : *int_vector_vector) {
       EXPECT_EQ(10u, vector.size());
       for (auto item : vector) {
         EXPECT_EQ(item->Value(), i % 10);
@@ -150,7 +150,7 @@ TEST_F(HeapCompactTest, CompactVectorOfVector) {
 TEST_F(HeapCompactTest, CompactHashPartVector) {
   ClearOutOldGarbage();
 
-  using IntVectorMap = HeapHashMap<int, Member<IntVector>>;
+  using IntVectorMap = GCedHeapHashMap<int, Member<IntVector>>;
 
   Persistent<IntVectorMap> int_vector_map =
       MakeGarbageCollected<IntVectorMap>();
@@ -198,7 +198,7 @@ TEST_F(HeapCompactTest, CompactDeques) {
 }
 
 TEST_F(HeapCompactTest, CompactLinkedHashSet) {
-  using OrderedHashSet = HeapLinkedHashSet<Member<IntWrapper>>;
+  using OrderedHashSet = GCedHeapLinkedHashSet<Member<IntWrapper>>;
   Persistent<OrderedHashSet> set = MakeGarbageCollected<OrderedHashSet>();
   for (int i = 0; i < 13; ++i) {
     IntWrapper* value = IntWrapper::Create(i);
@@ -238,7 +238,7 @@ TEST_F(HeapCompactTest, CompactLinkedHashSet) {
 }
 
 TEST_F(HeapCompactTest, CompactLinkedHashSetVector) {
-  using OrderedHashSet = HeapLinkedHashSet<Member<IntVector>>;
+  using OrderedHashSet = GCedHeapLinkedHashSet<Member<IntVector>>;
   Persistent<OrderedHashSet> set = MakeGarbageCollected<OrderedHashSet>();
   for (int i = 0; i < 13; ++i) {
     IntWrapper* value = IntWrapper::Create(i);
@@ -263,8 +263,8 @@ TEST_F(HeapCompactTest, CompactLinkedHashSetVector) {
 }
 
 TEST_F(HeapCompactTest, CompactLinkedHashSetMap) {
-  using Inner = HeapHashSet<Member<IntWrapper>>;
-  using OrderedHashSet = HeapLinkedHashSet<Member<Inner>>;
+  using Inner = GCedHeapHashSet<Member<IntWrapper>>;
+  using OrderedHashSet = GCedHeapLinkedHashSet<Member<Inner>>;
 
   Persistent<OrderedHashSet> set = MakeGarbageCollected<OrderedHashSet>();
   for (int i = 0; i < 13; ++i) {
@@ -293,8 +293,8 @@ TEST_F(HeapCompactTest, CompactLinkedHashSetMap) {
 }
 
 TEST_F(HeapCompactTest, CompactLinkedHashSetNested) {
-  using Inner = HeapLinkedHashSet<Member<IntWrapper>>;
-  using OrderedHashSet = HeapLinkedHashSet<Member<Inner>>;
+  using Inner = GCedHeapLinkedHashSet<Member<IntWrapper>>;
+  using OrderedHashSet = GCedHeapLinkedHashSet<Member<Inner>>;
 
   Persistent<OrderedHashSet> set = MakeGarbageCollected<OrderedHashSet>();
   for (int i = 0; i < 13; ++i) {
@@ -334,8 +334,8 @@ TEST_F(HeapCompactTest, CompactInlinedBackingStore) {
   // more than elements are added no out-of-line allocation is triggered.
   // The internal forwarding pointer to the inlined storage needs to be handled
   // by compaction.
-  using Value = HeapVector<Member<IntWrapper>, 64>;
-  using MapWithInlinedBacking = HeapHashMap<Key, Member<Value>>;
+  using Value = GCedHeapVector<Member<IntWrapper>, 64>;
+  using MapWithInlinedBacking = GCedHeapHashMap<Key, Member<Value>>;
 
   Persistent<MapWithInlinedBacking> map =
       MakeGarbageCollected<MapWithInlinedBacking>();
@@ -393,16 +393,10 @@ struct NestedType final {
 
 size_t NestedType::num_dtor_checks = 0;
 
-}  // namespace blink
-
-namespace WTF {
 template <>
-struct VectorTraits<blink::NestedType> : VectorTraitsBase<blink::NestedType> {
+struct VectorTraits<NestedType> : VectorTraitsBase<NestedType> {
   static constexpr bool kCanClearUnusedSlotsWithMemset = true;
 };
-}  // namespace WTF
-
-namespace blink {
 
 TEST_F(HeapCompactTest, AvoidCompactionWhenTraitsProhibitMemcpy) {
   // Regression test: https://crbug.com/1478343
@@ -410,14 +404,14 @@ TEST_F(HeapCompactTest, AvoidCompactionWhenTraitsProhibitMemcpy) {
   // This test checks that compaction does not happen in cases where
   // `VectorTraits<T>::kCanMoveWithMemcpy` doesn't hold.
 
-  static_assert(WTF::VectorTraits<NestedType>::kCanMoveWithMemcpy == false,
+  static_assert(VectorTraits<NestedType>::kCanMoveWithMemcpy == false,
                 "should not allow move using memcpy");
   // Create a vector with a backing store that immediately gets reclaimed. The
   // backing store leaves free memory to be reused for compaction.
-  MakeGarbageCollected<HeapVector<NestedType>>()->emplace_back();
+  MakeGarbageCollected<GCedHeapVector<NestedType>>()->emplace_back();
   // The vector that is actually connected.
-  Persistent<HeapVector<NestedType>> vec =
-      MakeGarbageCollected<HeapVector<NestedType>>();
+  Persistent<GCedHeapVector<NestedType>> vec =
+      MakeGarbageCollected<GCedHeapVector<NestedType>>();
   vec->emplace_back();
   PerformHeapCompaction();
   vec = nullptr;

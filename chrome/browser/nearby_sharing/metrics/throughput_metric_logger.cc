@@ -14,7 +14,7 @@
 namespace nearby::share::metrics {
 
 ThroughputMetricLogger::ThroughputMetricLogger() = default;
-ThroughputMetricLogger::~ThroughputMetricLogger() {}
+ThroughputMetricLogger::~ThroughputMetricLogger() = default;
 
 void ThroughputMetricLogger::OnTransferStarted(const ShareTarget& share_target,
                                                long total_bytes) {
@@ -28,8 +28,6 @@ void ThroughputMetricLogger::OnTransferStarted(const ShareTarget& share_target,
   }
 }
 
-// TODO(b/266739400): Test this once there is Structured Metrics unittesting
-// infrastructure available.
 void ThroughputMetricLogger::OnTransferUpdated(const ShareTarget& share_target,
                                                float percentage_complete) {
   base::TimeTicks current_update = base::TimeTicks::Now();

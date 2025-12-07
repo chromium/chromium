@@ -29,10 +29,12 @@
  */
 
 #include "third_party/blink/public/web/web_frame_serializer.h"
+
+#include <vector>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_frame_serializer_client.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
@@ -53,9 +55,9 @@ class SimpleWebFrameSerializerClient final : public WebFrameSerializerClient {
   String ToString() { return builder_.ToString(); }
 
  private:
-  void DidSerializeDataForFrame(const WebVector<char>& data,
+  void DidSerializeDataForFrame(const std::vector<char>& data,
                                 FrameSerializationStatus) final {
-    builder_.Append(data.data(), static_cast<unsigned>(data.size()));
+    builder_.Append(base::as_byte_span(data));
   }
 
   StringBuilder builder_;

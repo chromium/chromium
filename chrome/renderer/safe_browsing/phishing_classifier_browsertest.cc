@@ -4,26 +4,30 @@
 
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_classifier.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
-#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_discardable_memory_allocator.h"
+#include "base/test/test_future.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/renderer/chrome_content_renderer_client.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/murmurhash3_util.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
 #include "components/safe_browsing/core/common/fbs/client_model_generated.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/renderer/render_frame.h"
@@ -42,12 +46,26 @@ namespace safe_browsing {
 
 class TestChromeContentRendererClient : public ChromeContentRendererClient {
  public:
-  TestChromeContentRendererClient() {}
-  ~TestChromeContentRendererClient() override {}
+  TestChromeContentRendererClient() = default;
+  ~TestChromeContentRendererClient() override = default;
   // Since visited_link_reader_ in ChromeContentRenderClient never get
-  // initiated, overrides VisitedLinkedHash() function to prevent crashing.
+  // initiated, overrides visited link functions to prevent crashing.
   uint64_t VisitedLinkHash(std::string_view canonical_url) override {
     return 0;
+  }
+
+  uint64_t PartitionedVisitedLinkFingerprint(
+      std::string_view canonical_link_url,
+      const net::SchemefulSite& top_level_site,
+      const url::Origin& frame_origin) override {
+    return 0;
+  }
+
+  bool IsLinkVisited(uint64_t link_hash) override { return false; }
+
+  void AddOrUpdateVisitedLinkSalt(const url::Origin& origin,
+                                  uint64_t salt) override {
+    return;
   }
 };
 
@@ -59,9 +77,7 @@ class PhishingClassifierTest
       : url_tld_token_net_(features::kUrlTldToken + std::string("net")),
         page_link_domain_phishing_(features::kPageLinkDomain +
                                    std::string("phishing.com")),
-        page_term_login_(features::kPageTerm + std::string("login")),
-        page_text_(
-            base::MakeRefCounted<const base::RefCountedString16>(u"login")) {}
+        page_term_login_(features::kPageTerm + std::string("login")) {}
 
   void SetUp() override {
     ChromeRenderViewTest::SetUp();
@@ -72,7 +88,7 @@ class PhishingClassifierTest
   }
 
   void PrepareFlatModel() {
-    flatbuffers::FlatBufferBuilder builder(1024);
+    flatbuffers::FlatBufferBuilder builder(2048);
     std::vector<flatbuffers::Offset<flat::Hash>> hashes;
     // Make sure this is sorted.
     std::vector<std::string> original_hashes_vector = {
@@ -90,7 +106,7 @@ class PhishingClassifierTest
     std::vector<int> indices_map_from_original;
     for (const auto& original_hash : original_hashes_vector) {
       indices_map_from_original.push_back(
-          base::ranges::find(hashes_vector, original_hash) -
+          std::ranges::find(hashes_vector, original_hash) -
           hashes_vector.begin());
     }
     for (std::string& feature : hashes_vector) {
@@ -160,10 +176,21 @@ class PhishingClassifierTest
                          flat::TfLiteModelMetadata_::CreateThresholdDirect(
                              builder, "c9a8640be09f97f170f1a2708058c48f", 2.0),
                          flat::TfLiteModelMetadata_::CreateThresholdDirect(
-                             builder, "953255ea26aa8578d06593ff33e99298", 2.0)};
+                             builder, "953255ea26aa8578d06593ff33e99298", 2.0),
+                         flat::TfLiteModelMetadata_::CreateThresholdDirect(
+                             builder, "c9a8640be09f97f170f1a2708058c48f", 2.0),
+                         flat::TfLiteModelMetadata_::CreateThresholdDirect(
+                             builder, "c9a8640be09f97f170f1a2708058c48f", 2.0),
+                         flat::TfLiteModelMetadata_::CreateThresholdDirect(
+                             builder, "c9a8640be09f97f170f1a2708058c48f", 2.0),
+                         flat::TfLiteModelMetadata_::CreateThresholdDirect(
+                             builder, "c9a8640be09f97f170f1a2708058c48f", 2.0)};
     flatbuffers::Offset<flat::TfLiteModelMetadata> tflite_metadata_flat =
         flat::CreateTfLiteModelMetadataDirect(builder, 0, &thresholds_vector,
                                               48, 48);
+    flatbuffers::Offset<flat::TfLiteModelMetadata> img_embedding_metadata_flat =
+        flat::CreateTfLiteModelMetadataDirect(builder, 0, &thresholds_vector,
+                                              289, 289);
 
     flat::ClientSideModelBuilder csd_model_builder(builder);
     csd_model_builder.add_hashes(hashes_flat);
@@ -175,6 +202,7 @@ class PhishingClassifierTest
     csd_model_builder.add_max_shingles_per_page(100);
     csd_model_builder.add_shingle_size(3);
     csd_model_builder.add_tflite_metadata(tflite_metadata_flat);
+    csd_model_builder.add_img_embedding_metadata(img_embedding_metadata_flat);
     csd_model_builder.add_dom_model_version(123);
 
     builder.Finish(csd_model_builder.Finish());
@@ -184,15 +212,27 @@ class PhishingClassifierTest
     mapped_region_ =
         base::ReadOnlySharedMemoryRegion::Create(model_str.length());
     ASSERT_TRUE(mapped_region_.IsValid());
-    memcpy(mapped_region_.mapping.memory(), model_str.data(),
-           model_str.length());
+    mapped_region_.mapping.GetMemoryAsSpan<char>().copy_from(model_str);
     base::File tflite_model;
     base::FilePath tflite_path;
     GetTfliteModelPath(&tflite_path),
         tflite_model = base::File(
             tflite_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-    ScorerStorage::GetInstance()->SetScorer(Scorer::Create(
-        mapped_region_.region.Duplicate(), std::move(tflite_model)));
+    base::File img_embedding_model;
+    base::FilePath img_embedding_path;
+    GetImgEmbeddingPath(&img_embedding_path),
+        img_embedding_model = base::File(
+            img_embedding_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+    ScorerStorage::GetInstance()->SetScorer(
+        Scorer::CreateScorerWithImageEmbeddingModel(
+            mapped_region_.region.Duplicate(), std::move(tflite_model),
+            std::move(img_embedding_model)));
+  }
+
+  void GetImgEmbeddingPath(base::FilePath* path) {
+    ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, path));
+    *path = path->AppendASCII("safe_browsing")
+                .AppendASCII("image_embedding.tflite");
   }
 
   void GetTfliteModelPath(base::FilePath* path) {
@@ -211,27 +251,12 @@ class PhishingClassifierTest
   }
 
   // Helper method to start phishing classification.
-  void RunPhishingClassifier(
-      scoped_refptr<const base::RefCountedString16> page_text) {
-    feature_map_.Clear();
-
-    classifier_->BeginClassification(
-        page_text,
-        base::BindOnce(&PhishingClassifierTest::ClassificationFinished,
-                       base::Unretained(this)));
-    run_loop_.Run();
-  }
-
-  // Completion callback for classification.
-  void ClassificationFinished(
-      const ClientPhishingRequest& verdict,
-      PhishingClassifier::Result phishing_classifier_result) {
-    verdict_ = verdict;
-    for (int i = 0; i < verdict.feature_map_size(); ++i) {
-      feature_map_.AddRealFeature(verdict.feature_map(i).name(),
-                                  verdict.feature_map(i).value());
-    }
-    run_loop_.Quit();
+  void RunPhishingClassifier() {
+    base::test::TestFuture<const ClientPhishingRequest&,
+                           PhishingClassifier::Result>
+        test_future;
+    classifier_->BeginClassification(test_future.GetCallback());
+    verdict_ = test_future.Get<0>();
   }
 
   void LoadHtml(const GURL& url, const std::string& content) {
@@ -246,97 +271,29 @@ class PhishingClassifierTest
 
   std::string response_content_;
   std::unique_ptr<PhishingClassifier> classifier_;
-  base::RunLoop run_loop_;
   base::MappedReadOnlyRegion mapped_region_;
 
   // Features that are in the model.
   const std::string url_tld_token_net_;
   const std::string page_link_domain_phishing_;
   const std::string page_term_login_;
-  scoped_refptr<const base::RefCountedString16> page_text_;
 
   // Outputs of phishing classifier.
   ClientPhishingRequest verdict_;
-  FeatureMap feature_map_;
 
   // A DiscardableMemoryAllocator is needed for certain Skia operations.
   base::TestDiscardableMemoryAllocator test_allocator_;
 };
 
-TEST_F(PhishingClassifierTest, TestClassificationOfPhishingDotComHttp) {
-  LoadHtml(
-      GURL("http://host.net"),
-      "<html><body><a href=\"http://phishing.com/\">login</a></body></html>");
-  RunPhishingClassifier(page_text_);
-
-  // Note: features.features() might contain other features that simply aren't
-  // in the model.
-  EXPECT_THAT(feature_map_.features(),
-              AllOf(Contains(Pair(url_tld_token_net_, 1.0)),
-                    Contains(Pair(page_link_domain_phishing_, 1.0)),
-                    Contains(Pair(page_term_login_, 1.0))));
-  EXPECT_FLOAT_EQ(0.5, verdict_.client_score());
-  EXPECT_TRUE(verdict_.is_phishing());
-}
-
-TEST_F(PhishingClassifierTest, TestClassificationOfPhishingDotComHttps) {
-  // Host the target page on HTTPS.
-  LoadHtml(
-      GURL("https://host.net"),
-      "<html><body><a href=\"http://phishing.com/\">login</a></body></html>");
-  RunPhishingClassifier(page_text_);
-
-  // Note: features.features() might contain other features that simply aren't
-  // in the model.
-  EXPECT_THAT(feature_map_.features(),
-              AllOf(Contains(Pair(url_tld_token_net_, 1.0)),
-                    Contains(Pair(page_link_domain_phishing_, 1.0)),
-                    Contains(Pair(page_term_login_, 1.0))));
-  EXPECT_FLOAT_EQ(0.5, verdict_.client_score());
-  EXPECT_TRUE(verdict_.is_phishing());
-}
-
-TEST_F(PhishingClassifierTest, TestClassificationOfSafeDotComHttp) {
-  // Change the link domain to something non-phishy.
-  LoadHtml(GURL("http://host.net"),
-           "<html><body><a href=\"http://safe.com/\">login</a></body></html>");
-  RunPhishingClassifier(page_text_);
-
-  EXPECT_THAT(feature_map_.features(),
-              AllOf(Contains(Pair(url_tld_token_net_, 1.0)),
-                    Contains(Pair(page_term_login_, 1.0))));
-  EXPECT_THAT(feature_map_.features(),
-              Not(Contains(Pair(page_link_domain_phishing_, 1.0))));
-  EXPECT_GE(verdict_.client_score(), 0.0);
-  EXPECT_LT(verdict_.client_score(), 0.5);
-  EXPECT_FALSE(verdict_.is_phishing());
-}
-
-TEST_F(PhishingClassifierTest, TestClassificationOfSafeDotComHttps) {
+TEST_F(PhishingClassifierTest,
+       TestClassificationOfSafeDotComHttpsWithOnlyVisualExtractions) {
   // Host target page in HTTPS and change the link domain to something
   // non-phishy.
   LoadHtml(GURL("https://host.net"),
            "<html><body><a href=\"http://safe.com/\">login</a></body></html>");
-  RunPhishingClassifier(page_text_);
+  RunPhishingClassifier();
 
-  EXPECT_THAT(feature_map_.features(),
-              AllOf(Contains(Pair(url_tld_token_net_, 1.0)),
-                    Contains(Pair(page_term_login_, 1.0))));
-  EXPECT_THAT(feature_map_.features(),
-              Not(Contains(Pair(page_link_domain_phishing_, 1.0))));
-  EXPECT_GE(verdict_.client_score(), 0.0);
-  EXPECT_LT(verdict_.client_score(), 0.5);
-  EXPECT_FALSE(verdict_.is_phishing());
-}
-
-TEST_F(PhishingClassifierTest, TestClassificationWhenNoTld) {
-  // Extraction should fail for this case since there is no TLD.
-  LoadHtml(GURL("http://localhost"), "<html><body>content</body></html>");
-  RunPhishingClassifier(page_text_);
-
-  EXPECT_EQ(0U, feature_map_.features().size());
-  EXPECT_EQ(PhishingClassifier::kClassifierFailed,
-            static_cast<int>(verdict_.client_score()));
+  EXPECT_FLOAT_EQ(0.0, verdict_.client_score());
   EXPECT_FALSE(verdict_.is_phishing());
 }
 
@@ -344,9 +301,7 @@ TEST_F(PhishingClassifierTest, TestClassificationWhenSchemeNotSupported) {
   // Extraction should also fail for this case because the URL is not http or
   // https.
   LoadHtml(GURL("file://host.net"), "<html><body>content</body></html>");
-  RunPhishingClassifier(page_text_);
-
-  EXPECT_EQ(0U, feature_map_.features().size());
+  RunPhishingClassifier();
   EXPECT_EQ(PhishingClassifier::kClassifierFailed,
             static_cast<int>(verdict_.client_score()));
   EXPECT_FALSE(verdict_.is_phishing());
@@ -359,36 +314,40 @@ TEST_F(PhishingClassifierTest, DisableDetection) {
   EXPECT_FALSE(classifier_->is_ready());
 }
 
-TEST_F(PhishingClassifierTest, TestPhishingPagesAreDomMatches) {
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(PhishingClassifierTest, TestImageEmbeddingMatchPopulatesEmbedding) {
   LoadHtml(
       GURL("http://host.net"),
       "<html><body><a href=\"http://phishing.com/\">login</a></body></html>");
-  RunPhishingClassifier(page_text_);
 
-  EXPECT_NE(PhishingClassifier::kClassifierFailed, verdict_.client_score());
-  EXPECT_TRUE(verdict_.is_phishing());
-  EXPECT_TRUE(verdict_.is_dom_match());
+  classifier_->SetClientSideDetectionType(
+      safe_browsing::mojom::ClientSideDetectionType::kImageEmbeddingMatch);
+
+  RunPhishingClassifier();
+
+  // Verify that image_feature_embedding is populated.
+  ASSERT_TRUE(verdict_.has_image_feature_embedding());
+
+  // Depending on the test model, you might be able to assert on the size
+  // or contents of embedding_value.
+  EXPECT_GT(verdict_.image_feature_embedding().embedding_value_size(), 0);
 }
 
-TEST_F(PhishingClassifierTest, TestSafePagesAreNotDomMatches) {
-  LoadHtml(GURL("http://host.net"),
-           "<html><body><a href=\"http://safe.com/\">login</a></body></html>");
-  RunPhishingClassifier(page_text_);
-
-  EXPECT_NE(PhishingClassifier::kClassifierFailed, verdict_.client_score());
-  EXPECT_FALSE(verdict_.is_phishing());
-  EXPECT_FALSE(verdict_.is_dom_match());
-}
-
-TEST_F(PhishingClassifierTest, TestDomModelVersionPopulated) {
+TEST_F(PhishingClassifierTest,
+       TestNonImageEmbeddingMatchDoesNotPopulateEmbedding) {
   LoadHtml(
       GURL("http://host.net"),
       "<html><body><a href=\"http://phishing.com/\">login</a></body></html>");
-  RunPhishingClassifier(page_text_);
 
-  EXPECT_EQ(verdict_.dom_model_version(), 123);
+  classifier_->SetClientSideDetectionType(
+      safe_browsing::mojom::ClientSideDetectionType::kTriggerModels);
+
+  RunPhishingClassifier();
+
+  // Verify that image_feature_embedding is not populated.
+  ASSERT_FALSE(verdict_.has_image_feature_embedding());
 }
-
+#endif
 // TODO(jialiul): Add test to verify that classification only starts on GET
 // method. It seems there is no easy way to simulate a HTTP POST in
 // ChromeRenderViewTest.

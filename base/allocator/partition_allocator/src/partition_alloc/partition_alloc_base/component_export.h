@@ -39,7 +39,7 @@
 #define PA_COMPONENT_IMPORT_ANNOTATION __declspec(dllimport)
 #else  // defined(WIN32)
 #define PA_COMPONENT_EXPORT_ANNOTATION __attribute__((visibility("default")))
-#define PA_COMPONENT_IMPORT_ANNOTATION
+#define PA_COMPONENT_IMPORT_ANNOTATION __attribute__((visibility("default")))
 #endif  // defined(WIN32)
 #else   // defined(COMPONENT_BUILD)
 #define PA_COMPONENT_EXPORT_ANNOTATION

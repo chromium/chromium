@@ -14,6 +14,7 @@
 
 #include <delayimp.h>
 #include <stddef.h>
+
 #include <set>
 #include <string>
 
@@ -109,10 +110,11 @@ PIMAGE_SECTION_HEADER PEImage::GetSectionHeader(WORD section) const {
   PIMAGE_NT_HEADERS nt_headers = GetNTHeaders();
   PIMAGE_SECTION_HEADER first_section = IMAGE_FIRST_SECTION(nt_headers);
 
-  if (section < nt_headers->FileHeader.NumberOfSections)
+  if (section < nt_headers->FileHeader.NumberOfSections) {
     return first_section + section;
-  else
+  } else {
     return nullptr;
+  }
 }
 
 WORD PEImage::GetNumSections() const {
@@ -140,8 +142,9 @@ PIMAGE_SECTION_HEADER PEImage::GetImageSectionFromAddr(PVOID address) const {
 
     DWORD size = section->Misc.VirtualSize;
 
-    if ((start <= target) && (start + size > target))
+    if ((start <= target) && (start + size > target)) {
       return section;
+    }
   }
 
   return nullptr;
@@ -149,8 +152,9 @@ PIMAGE_SECTION_HEADER PEImage::GetImageSectionFromAddr(PVOID address) const {
 
 PIMAGE_SECTION_HEADER PEImage::GetImageSectionHeaderByName(
     LPCSTR section_name) const {
-  if (section_name == nullptr)
+  if (section_name == nullptr) {
     return nullptr;
+  }
 
   WORD num_sections = GetNumSections();
   for (WORD i = 0; i < num_sections; ++i) {
@@ -173,27 +177,34 @@ bool PEImage::GetDebugId(LPGUID guid,
   PIMAGE_DEBUG_DIRECTORY debug_directory =
       reinterpret_cast<PIMAGE_DEBUG_DIRECTORY>(
           GetImageDirectoryEntryAddr(IMAGE_DIRECTORY_ENTRY_DEBUG));
-  if (!debug_directory)
+  if (!debug_directory) {
     return false;
+  }
 
   size_t directory_count = debug_directory_size / sizeof(IMAGE_DEBUG_DIRECTORY);
   for (size_t index = 0; index < directory_count; ++index) {
     const IMAGE_DEBUG_DIRECTORY& entry = debug_directory[index];
-    if (entry.Type != IMAGE_DEBUG_TYPE_CODEVIEW)
+    if (entry.Type != IMAGE_DEBUG_TYPE_CODEVIEW) {
       continue;  // Unsupported debugging info format.
-    if (entry.SizeOfData < sizeof(PdbInfo))
+    }
+    if (entry.SizeOfData < sizeof(PdbInfo)) {
       continue;  // The data is too small to hold PDB info.
+    }
     const PdbInfo* pdb_info =
         reinterpret_cast<const PdbInfo*>(RVAToAddr(entry.AddressOfRawData));
-    if (!pdb_info)
+    if (!pdb_info) {
       continue;  // The data is not present in a mapped section.
-    if (pdb_info->Signature != kPdbInfoSignature)
+    }
+    if (pdb_info->Signature != kPdbInfoSignature) {
       continue;  // Unsupported PdbInfo signature
+    }
 
-    if (guid)
+    if (guid) {
       *guid = pdb_info->Guid;
-    if (age)
+    }
+    if (age) {
       *age = pdb_info->Age;
+    }
     if (pdb_filename) {
       const size_t length_max =
           entry.SizeOfData - offsetof(PdbInfo, PdbFileName);
@@ -214,12 +225,14 @@ bool PEImage::GetDebugId(LPGUID guid,
 PDWORD PEImage::GetExportEntry(LPCSTR name) const {
   PIMAGE_EXPORT_DIRECTORY exports = GetExportDirectory();
 
-  if (nullptr == exports)
+  if (nullptr == exports) {
     return nullptr;
+  }
 
   WORD ordinal = 0;
-  if (!GetProcOrdinal(name, &ordinal))
+  if (!GetProcOrdinal(name, &ordinal)) {
     return nullptr;
+  }
 
   PDWORD functions =
       reinterpret_cast<PDWORD>(RVAToAddr(exports->AddressOfFunctions));
@@ -229,32 +242,37 @@ PDWORD PEImage::GetExportEntry(LPCSTR name) const {
 
 FARPROC PEImage::GetProcAddress(LPCSTR function_name) const {
   PDWORD export_entry = GetExportEntry(function_name);
-  if (nullptr == export_entry)
+  if (nullptr == export_entry) {
     return nullptr;
+  }
 
   PBYTE function = reinterpret_cast<PBYTE>(RVAToAddr(*export_entry));
 
   PBYTE exports = reinterpret_cast<PBYTE>(
       GetImageDirectoryEntryAddr(IMAGE_DIRECTORY_ENTRY_EXPORT));
   DWORD size = GetImageDirectoryEntrySize(IMAGE_DIRECTORY_ENTRY_EXPORT);
-  if (!exports || !size)
+  if (!exports || !size) {
     return nullptr;
+  }
 
   // Check for forwarded exports as a special case.
-  if (exports <= function && exports + size > function)
+  if (exports <= function && exports + size > function) {
     return reinterpret_cast<FARPROC>(-1);
+  }
 
   return reinterpret_cast<FARPROC>(function);
 }
 
 bool PEImage::GetProcOrdinal(LPCSTR function_name, WORD* ordinal) const {
-  if (nullptr == ordinal)
+  if (nullptr == ordinal) {
     return false;
+  }
 
   PIMAGE_EXPORT_DIRECTORY exports = GetExportDirectory();
 
-  if (nullptr == exports)
+  if (nullptr == exports) {
     return false;
+  }
 
   if (IsOrdinal(function_name)) {
     *ordinal = ToOrdinal(function_name);
@@ -278,14 +296,16 @@ bool PEImage::GetProcOrdinal(LPCSTR function_name, WORD* ordinal) const {
         break;
       }
 
-      if (cmp > 0)
+      if (cmp > 0) {
         lower = middle + 1;
-      else
+      } else {
         upper = middle;
+      }
     }
 
-    if (cmp != 0)
+    if (cmp != 0) {
       return false;
+    }
 
     PWORD ordinals =
         reinterpret_cast<PWORD>(RVAToAddr(exports->AddressOfNameOrdinals));
@@ -305,8 +325,9 @@ bool PEImage::EnumSections(EnumSectionsFunction callback, PVOID cookie) const {
     PVOID section_start = RVAToAddr(section->VirtualAddress);
     DWORD size = section->Misc.VirtualSize;
 
-    if (!callback(*this, section, section_start, size, cookie))
+    if (!callback(*this, section, section_start, size, cookie)) {
       return false;
+    }
   }
 
   return true;
@@ -317,8 +338,9 @@ bool PEImage::EnumExports(EnumExportsFunction callback, PVOID cookie) const {
   DWORD size = GetImageDirectoryEntrySize(IMAGE_DIRECTORY_ENTRY_EXPORT);
 
   // Check if there are any exports at all.
-  if (!directory || !size)
+  if (!directory || !size) {
     return true;
+  }
 
   PIMAGE_EXPORT_DIRECTORY exports =
       reinterpret_cast<PIMAGE_EXPORT_DIRECTORY>(directory);
@@ -333,8 +355,9 @@ bool PEImage::EnumExports(EnumExportsFunction callback, PVOID cookie) const {
 
   for (UINT count = 0; count < num_funcs; count++) {
     PVOID func = RVAToAddr(functions[count]);
-    if (nullptr == func)
+    if (nullptr == func) {
       continue;
+    }
 
     // Check for a name.
     LPCSTR name = nullptr;
@@ -346,8 +369,9 @@ bool PEImage::EnumExports(EnumExportsFunction callback, PVOID cookie) const {
       }
     }
 
-    if (name == nullptr)
+    if (name == nullptr) {
       hint = 0;
+    }
 
     // Check for forwarded exports.
     LPCSTR forward = nullptr;
@@ -359,8 +383,9 @@ bool PEImage::EnumExports(EnumExportsFunction callback, PVOID cookie) const {
     }
 
     if (!callback(*this, ordinal_base + count, hint, name, func, forward,
-                  cookie))
+                  cookie)) {
       return false;
+    }
   }
 
   return true;
@@ -370,8 +395,9 @@ bool PEImage::EnumRelocs(EnumRelocsFunction callback, PVOID cookie) const {
   PVOID directory = GetImageDirectoryEntryAddr(IMAGE_DIRECTORY_ENTRY_BASERELOC);
   DWORD size = GetImageDirectoryEntrySize(IMAGE_DIRECTORY_ENTRY_BASERELOC);
 
-  if (!directory || !size)
+  if (!directory || !size) {
     return true;
+  }
 
   PIMAGE_BASE_RELOCATION base =
       reinterpret_cast<PIMAGE_BASE_RELOCATION>(directory);
@@ -385,8 +411,9 @@ bool PEImage::EnumRelocs(EnumRelocsFunction callback, PVOID cookie) const {
       WORD type = *reloc >> 12;
       PVOID address = RVAToAddr(base->VirtualAddress + (*reloc & 0x0FFF));
 
-      if (!callback(*this, type, address, cookie))
+      if (!callback(*this, type, address, cookie)) {
         return false;
+      }
     }
 
     size -= base->SizeOfBlock;
@@ -403,8 +430,9 @@ bool PEImage::EnumImportChunks(EnumImportChunksFunction callback,
   DWORD size = GetImageDirectoryEntrySize(IMAGE_DIRECTORY_ENTRY_IMPORT);
   PIMAGE_IMPORT_DESCRIPTOR import = GetFirstImportChunk();
 
-  if (import == nullptr || size < sizeof(IMAGE_IMPORT_DESCRIPTOR))
+  if (import == nullptr || size < sizeof(IMAGE_IMPORT_DESCRIPTOR)) {
     return true;
+  }
 
   for (; import->FirstThunk; import++) {
     LPCSTR module_name = reinterpret_cast<LPCSTR>(RVAToAddr(import->Name));
@@ -415,8 +443,9 @@ bool PEImage::EnumImportChunks(EnumImportChunksFunction callback,
 
     if (target_module_name == nullptr ||
         (lstrcmpiA(module_name, target_module_name) == 0)) {
-      if (!callback(*this, module_name, name_table, iat, cookie))
+      if (!callback(*this, module_name, name_table, iat, cookie)) {
         return false;
+      }
     }
   }
 
@@ -428,8 +457,9 @@ bool PEImage::EnumOneImportChunk(EnumImportsFunction callback,
                                  PIMAGE_THUNK_DATA name_table,
                                  PIMAGE_THUNK_DATA iat,
                                  PVOID cookie) const {
-  if (nullptr == name_table)
+  if (nullptr == name_table) {
     return false;
+  }
 
   for (; name_table && name_table->u1.Ordinal; name_table++, iat++) {
     LPCSTR name = nullptr;
@@ -446,8 +476,9 @@ bool PEImage::EnumOneImportChunk(EnumImportsFunction callback,
       name = reinterpret_cast<LPCSTR>(&import->Name);
     }
 
-    if (!callback(*this, module_name, ordinal, name, hint, iat, cookie))
+    if (!callback(*this, module_name, ordinal, name, hint, iat, cookie)) {
       return false;
+    }
   }
 
   return true;
@@ -467,8 +498,9 @@ bool PEImage::EnumDelayImportChunks(EnumDelayImportChunksFunction callback,
       GetImageDirectoryEntryAddr(IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT);
   DWORD size = GetImageDirectoryEntrySize(IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT);
 
-  if (!directory || !size)
+  if (!directory || !size) {
     return true;
+  }
 
   PImgDelayDescr delay_descriptor = reinterpret_cast<PImgDelayDescr>(directory);
   for (; delay_descriptor->rvaHmod; delay_descriptor++) {
@@ -511,14 +543,16 @@ bool PEImage::EnumDelayImportChunks(EnumDelayImportChunksFunction callback,
         if (module_ == CURRENT_MODULE() && !LDR_IS_RESOURCE(module_)) {
           static base::NoDestructor<std::set<std::string>> loaded_dlls;
           // pair.second is true if this is a new element
-          if (loaded_dlls.get()->emplace(module_name).second)
+          if (loaded_dlls.get()->emplace(module_name).second) {
             ::__HrLoadAllImportsForDll(module_name);
+          }
         }
       }
 
       if (!callback(*this, delay_descriptor, module_name, name_table, iat,
-                    cookie))
+                    cookie)) {
         return false;
+      }
     }
   }
 
@@ -554,8 +588,9 @@ bool PEImage::EnumOneDelayImportChunk(EnumImportsFunction callback,
       name = reinterpret_cast<LPCSTR>(&import->Name);
     }
 
-    if (!callback(*this, module_name, ordinal, name, hint, iat, cookie))
+    if (!callback(*this, module_name, ordinal, name, hint, iat, cookie)) {
       return false;
+    }
   }
 
   return true;
@@ -572,20 +607,24 @@ bool PEImage::EnumAllDelayImports(EnumImportsFunction callback,
 bool PEImage::VerifyMagic() const {
   PIMAGE_DOS_HEADER dos_header = GetDosHeader();
 
-  if (dos_header->e_magic != IMAGE_DOS_SIGNATURE)
+  if (dos_header->e_magic != IMAGE_DOS_SIGNATURE) {
     return false;
+  }
 
   PIMAGE_NT_HEADERS nt_headers = GetNTHeaders();
 
-  if (nt_headers->Signature != IMAGE_NT_SIGNATURE)
+  if (nt_headers->Signature != IMAGE_NT_SIGNATURE) {
     return false;
+  }
 
   if (nt_headers->FileHeader.SizeOfOptionalHeader !=
-      sizeof(IMAGE_OPTIONAL_HEADER))
+      sizeof(IMAGE_OPTIONAL_HEADER)) {
     return false;
+  }
 
-  if (nt_headers->OptionalHeader.Magic != IMAGE_NT_OPTIONAL_HDR_MAGIC)
+  if (nt_headers->OptionalHeader.Magic != IMAGE_NT_OPTIONAL_HDR_MAGIC) {
     return false;
+  }
 
   return true;
 }
@@ -598,13 +637,15 @@ bool PEImage::ImageRVAToOnDiskOffset(uintptr_t rva,
 
 bool PEImage::ImageAddrToOnDiskOffset(LPVOID address,
                                       DWORD* on_disk_offset) const {
-  if (nullptr == address)
+  if (nullptr == address) {
     return false;
+  }
 
   // Get the section that this address belongs to.
   PIMAGE_SECTION_HEADER section_header = GetImageSectionFromAddr(address);
-  if (nullptr == section_header)
+  if (nullptr == section_header) {
     return false;
+  }
 
   // Don't follow the virtual RVAToAddr, use the one on the base.
   DWORD offset_within_section =
@@ -617,8 +658,9 @@ bool PEImage::ImageAddrToOnDiskOffset(LPVOID address,
 }
 
 PVOID PEImage::RVAToAddr(uintptr_t rva) const {
-  if (rva == 0)
+  if (rva == 0) {
     return nullptr;
+  }
 
   return reinterpret_cast<char*>(module_) + rva;
 }
@@ -627,8 +669,9 @@ const IMAGE_DATA_DIRECTORY* PEImage::GetDataDirectory(UINT directory) const {
   PIMAGE_NT_HEADERS nt_headers = GetNTHeaders();
 
   // Does the image report that it includes this directory entry?
-  if (directory >= nt_headers->OptionalHeader.NumberOfRvaAndSizes)
+  if (directory >= nt_headers->OptionalHeader.NumberOfRvaAndSizes) {
     return nullptr;
+  }
 
   // Is there space for this directory entry in the optional header?
   if (nt_headers->FileHeader.SizeOfOptionalHeader <
@@ -641,14 +684,16 @@ const IMAGE_DATA_DIRECTORY* PEImage::GetDataDirectory(UINT directory) const {
 }
 
 PVOID PEImageAsData::RVAToAddr(uintptr_t rva) const {
-  if (rva == 0)
+  if (rva == 0) {
     return nullptr;
+  }
 
   PVOID in_memory = PEImage::RVAToAddr(rva);
   DWORD disk_offset;
 
-  if (!ImageAddrToOnDiskOffset(in_memory, &disk_offset))
+  if (!ImageAddrToOnDiskOffset(in_memory, &disk_offset)) {
     return nullptr;
+  }
 
   return PEImage::RVAToAddr(disk_offset);
 }

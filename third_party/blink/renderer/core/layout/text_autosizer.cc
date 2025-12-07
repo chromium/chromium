@@ -34,7 +34,9 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -43,10 +45,10 @@
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
+#include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
-#include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
-#include "third_party/blink/renderer/core/layout/layout_ruby_column.h"
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/list/layout_list_item.h"
@@ -58,19 +60,48 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "ui/gfx/geometry/rect.h"
+
+namespace blink {
+namespace {
+struct FingerprintSourceData;
+}
+}  // namespace blink
+
+// `FingerprintSourceData` contains a float, but its sign is normalized before
+// the object is hashed, so it's safe to hash; allow conversion to a byte span
+// to facilitate this.
+namespace base {
+template <>
+inline constexpr bool
+    kCanSafelyConvertToByteSpan<::blink::FingerprintSourceData> = true;
+}
 
 namespace blink {
 
 namespace {
 
+struct FingerprintSourceData {
+  STACK_ALLOCATED();
+
+ public:
+  unsigned parent_hash_ = 0;
+  unsigned qualified_name_hash_ = 0;
+  // Style specific selection of signals
+  unsigned packed_style_properties_ = 0;
+  unsigned column_ = 0;
+  float width_ = 0;
+};
+// Ensures efficient hashing using StringHasher.
+static_assert(!(sizeof(FingerprintSourceData) % sizeof(UChar)),
+              "sizeof(FingerprintSourceData) must be a multiple of UChar");
+
 inline int GetLayoutInlineSize(const Document& document,
                                const LocalFrameView& main_frame_view) {
   gfx::Size size = main_frame_view.GetLayoutSize();
-  const LayoutView* layout_view = document.GetLayoutView();
-  if (IsHorizontalWritingMode(layout_view->StyleRef().GetWritingMode()))
-    return size.width();
-  return size.height();
+  return document.GetLayoutView()->IsHorizontalWritingMode() ? size.width()
+                                                             : size.height();
 }
 
 }  // namespace
@@ -184,6 +215,11 @@ static bool BlockIsRowOfLinks(const LayoutBlock* block) {
   return (link_count >= 3);
 }
 
+static inline bool HasAnySizingKeyword(const Length& length) {
+  return length.HasAutoOrContentOrIntrinsic() || length.HasStretch() ||
+         length.IsNone();
+}
+
 static bool BlockHeightConstrained(const LayoutBlock* block) {
   // FIXME: Propagate constrainedness down the tree, to avoid inefficiently
   // walking back up from each box.
@@ -196,7 +232,8 @@ static bool BlockHeightConstrained(const LayoutBlock* block) {
         style.OverflowY() != EOverflow::kHidden) {
       return false;
     }
-    if (style.Height().IsSpecified() || style.MaxHeight().IsSpecified() ||
+    if (!HasAnySizingKeyword(style.Height()) ||
+        !HasAnySizingKeyword(style.MaxHeight()) ||
         block->IsOutOfFlowPositioned()) {
       // Some sites (e.g. wikipedia) set their html and/or body elements to
       // height:100%, without intending to constrain the height of the content
@@ -240,13 +277,18 @@ static bool BlockSuppressesAutosizing(const LayoutBlock* block) {
   if (BlockHeightConstrained(block))
     return true;
 
+  if (block->IsFlexItem()) {
+    block->GetDocument().CountUse(WebFeature::kTextAutoSizingDisabledOnFlexbox);
+    return true;
+  }
+
   return false;
 }
 
 static bool HasExplicitWidth(const LayoutBlock* block) {
   // FIXME: This heuristic may need to be expanded to other ways a block can be
   // wider or narrower than its parent containing block.
-  return block->Style() && block->StyleRef().Width().IsSpecified();
+  return block->Style() && !HasAnySizingKeyword(block->StyleRef().Width());
 }
 
 static LayoutObject* GetParent(const LayoutObject* object) {
@@ -369,11 +411,6 @@ void TextAutosizer::BeginLayout(LayoutBlock* block) {
   if (PrepareForLayout(block) == kStopLayout)
     return;
 
-  // Skip ruby's inner blocks, because these blocks already are inflated.
-  if (block->IsRubyColumn() || block->IsRubyBase() || block->IsRubyText()) {
-    return;
-  }
-
   DCHECK(!cluster_stack_.empty() || IsA<LayoutView>(block));
   if (cluster_stack_.empty())
     did_check_cross_site_use_count_ = false;
@@ -446,15 +483,8 @@ float TextAutosizer::Inflate(LayoutObject* parent,
   bool has_text_child = false;
 
   LayoutObject* child = nullptr;
-  if (parent->IsRuby()) {
-    // Skip LayoutRubyColumn which is inline-block.
-    // Inflate its inner blocks.
-    if (auto* column = DynamicTo<LayoutRubyColumn>(parent->SlowFirstChild())) {
-      child = column->FirstChild();
-      behavior = kDescendToInnerBlocks;
-    }
-  } else if (parent->IsLayoutBlock() &&
-             (parent->ChildrenInline() || behavior == kDescendToInnerBlocks)) {
+  if (parent->IsLayoutBlock() &&
+      (parent->ChildrenInline() || behavior == kDescendToInnerBlocks)) {
     child = To<LayoutBlock>(parent)->FirstChild();
   } else if (parent->IsLayoutInline()) {
     child = To<LayoutInline>(parent)->FirstChild();
@@ -626,7 +656,8 @@ void TextAutosizer::UpdatePageInfo() {
 
   PageInfo previous_page_info(page_info_);
   page_info_.setting_enabled_ =
-      document_->GetSettings()->GetTextAutosizingEnabled();
+      document_->GetSettings()->GetTextAutosizingEnabled() &&
+      !base::FeatureList::IsEnabled(blink::features::kForceOffTextAutosizing);
 
   if (!page_info_.setting_enabled_ || document_->Printing()) {
     page_info_.page_needs_autosizing_ = false;
@@ -653,8 +684,8 @@ void TextAutosizer::UpdatePageInfo() {
       page_info_.shared_info_.main_frame_layout_width =
           GetLayoutInlineSize(*document_, *main_frame.View());
 
-      // If the page has a meta viewport or @viewport, don't apply the device
-      // scale adjustment.
+      // If the page has a meta viewport, don't apply the device scale
+      // adjustment.
       if (!main_frame.GetDocument()
                ->GetViewportData()
                .GetViewportDescription()
@@ -666,9 +697,9 @@ void TextAutosizer::UpdatePageInfo() {
       }
     }
     // TODO(pdr): Accessibility should be moved out of the text autosizer.
-    // See: crbug.com/645717. We keep the font scale factor available even
-    // when the AccessibilityPageZoom feature is enabled so sites that rely on
-    // text-size-adjust can still determine the user's desired text scaling.
+    // See: crbug.com/645717. We keep the font scale factor available so
+    // sites that rely on the now deprecated text-size-adjust can still
+    // determine the user's desired text scaling.
     page_info_.accessibility_font_scale_factor_ =
         document_->GetSettings()->GetAccessibilityFontScaleFactor();
 
@@ -853,7 +884,7 @@ TextAutosizer::Fingerprint TextAutosizer::ComputeFingerprint(
   if (LayoutObject* parent = ParentElementLayoutObject(layout_object))
     data.parent_hash_ = GetFingerprint(parent);
 
-  data.qualified_name_hash_ = WTF::GetHash(element->TagQName());
+  data.qualified_name_hash_ = GetHash(element->TagQName());
 
   if (const ComputedStyle* style = layout_object->Style()) {
     data.packed_style_properties_ = static_cast<unsigned>(style->Direction());
@@ -869,7 +900,7 @@ TextAutosizer::Fingerprint TextAutosizer::ComputeFingerprint(
 
     // TODO(kojii): The width can be computed from style only when it's fixed.
     // consider for adding: writing mode, padding.
-    data.width_ = width.IsFixed() ? width.GetFloatValue() : .0f;
+    data.width_ = width.IsFixed() ? NormalizeSign(width.Pixels()) : 0.0f;
   }
 
   // Use nodeIndex as a rough approximation of column number
@@ -878,7 +909,7 @@ TextAutosizer::Fingerprint TextAutosizer::ComputeFingerprint(
   if (layout_object->IsTableCell())
     data.column_ = layout_object->GetNode()->NodeIndex();
 
-  return StringHasher::HashMemory(&data, sizeof(data));
+  return StringHasher::HashMemory(base::byte_span_from_ref(data));
 }
 
 TextAutosizer::Cluster* TextAutosizer::MaybeCreateCluster(LayoutBlock* block) {
@@ -1042,8 +1073,9 @@ float TextAutosizer::WidthFromBlock(const LayoutBlock* block) const {
     float width;
     Length specified_width = block->StyleRef().LogicalWidth();
     if (specified_width.IsFixed()) {
-      if ((width = specified_width.Value()) > 0)
+      if ((width = specified_width.Pixels()) > 0) {
         return width;
+      }
     }
     if (specified_width.HasPercent()) {
       if (float container_width = ContentInlineSize(block->ContainingBlock())) {
@@ -1064,7 +1096,7 @@ float TextAutosizer::MultiplierFromBlock(const LayoutBlock* block) {
 // containing block, and wasn't marked as needing layout.
 #if DCHECK_IS_ON()
   DCHECK(blocks_that_have_begun_layout_.Contains(block) ||
-         !block->NeedsLayout() || IsA<LayoutMultiColumnFlowThread>(block));
+         !block->NeedsLayout());
 #endif
   // Block width, in CSS pixels.
   float block_width = WidthFromBlock(block);
@@ -1210,23 +1242,9 @@ void TextAutosizer::ApplyMultiplier(LayoutObject* layout_object,
   DCHECK(layout_object);
   const ComputedStyle& current_style = layout_object->StyleRef();
   if (!current_style.GetTextSizeAdjust().IsAuto()) {
-    if (RuntimeEnabledFeatures::TextSizeAdjustImprovementsEnabled()) {
-      // Non-auto values of text-size-adjust should fully disable automatic
-      // text size adjustment, including the accessibility font scale factor.
-      multiplier = 1;
-    } else {
-      // The accessibility font scale factor is applied by the autosizer so we
-      // need to apply that scale factor on top of the text-size-adjust
-      // multiplier. Only apply the accessibility factor if the autosizer has
-      // determined a multiplier should be applied so that text-size-adjust:none
-      // does not cause a multiplier to be applied when it wouldn't be
-      // otherwise.
-      bool should_apply_accessibility_font_scale_factor = multiplier > 1;
-      multiplier = current_style.GetTextSizeAdjust().Multiplier();
-      if (should_apply_accessibility_font_scale_factor) {
-        multiplier *= page_info_.accessibility_font_scale_factor_;
-      }
-    }
+    // Non-auto values of text-size-adjust should fully disable automatic text
+    // size adjustment, including the accessibility font scale factor.
+    multiplier = 1;
   } else if (multiplier < 1) {
     // Unlike text-size-adjust, the text autosizer should only inflate fonts.
     multiplier = 1;
@@ -1448,13 +1466,17 @@ TextAutosizer::DeferUpdatePageInfo::DeferUpdatePageInfo(Page* page)
   }
 }
 
-// static
-void TextAutosizer::MaybeRegisterInlineSize(const LayoutBlock& ng_block,
-                                            LayoutUnit inline_size) {
-  if (auto* text_autosizer = ng_block.GetDocument().GetTextAutosizer()) {
-    if (text_autosizer->ShouldHandleLayout())
-      text_autosizer->RegisterInlineSize(ng_block, inline_size);
+void TextAutosizer::ForceInlineSizeForColumn(
+    const BlockNode& multicol_container,
+    LayoutUnit inline_size) {
+  auto* text_autosizer = multicol_container.GetDocument().GetTextAutosizer();
+  if (!text_autosizer || !text_autosizer->ShouldHandleLayout()) {
+    return;
   }
+  auto iter = text_autosizer->inline_size_map_.find(
+      To<LayoutBlock>(multicol_container.GetLayoutBox()));
+  DCHECK(iter != text_autosizer->inline_size_map_.end());
+  iter.Get()->value = inline_size;
 }
 
 TextAutosizer::NGLayoutScope::NGLayoutScope(LayoutBox* box,
@@ -1569,8 +1591,6 @@ void TextAutosizer::CheckSuperclusterConsistency() {
 }
 
 float TextAutosizer::ContentInlineSize(const LayoutBlock* block) const {
-  if (!block->IsLayoutNGObject())
-    return block->ContentLogicalWidth().ToFloat();
   auto iter = inline_size_map_.find(block);
   if (iter == inline_size_map_.end())
     return block->ContentLogicalWidth().ToFloat();

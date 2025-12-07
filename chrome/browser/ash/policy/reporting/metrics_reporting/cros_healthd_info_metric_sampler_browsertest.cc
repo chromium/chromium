@@ -6,12 +6,10 @@
 #include <optional>
 
 #include "base/functional/bind.h"
+#include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_info_metric_sampler_test_utils.h"
-#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
-#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/dbus/missive/missive_client_test_observer.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
@@ -70,8 +68,11 @@ class BusInfoSamplerBrowserTest : public policy::DevicePolicyCrosBrowserTest {
 
   void SetUpOnMainThread() override {
     policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        ::ash::kReportDeviceSecurityStatus, true);
+
+    auto device_policy_update = device_state_.RequestDevicePolicyUpdate();
+    device_policy_update->policy_payload()
+        ->mutable_device_reporting()
+        ->set_report_security_status(true);
   }
 
   // Is the given record about Bus info metric?
@@ -80,9 +81,6 @@ class BusInfoSamplerBrowserTest : public policy::DevicePolicyCrosBrowserTest {
     return record_data.has_value() &&
            record_data.value().info_data().has_bus_device_info();
   }
-
- private:
-  ::ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 IN_PROC_BROWSER_TEST_F(BusInfoSamplerBrowserTest, Thunderbolt) {
@@ -132,8 +130,11 @@ class CpuInfoSamplerBrowserTest : public policy::DevicePolicyCrosBrowserTest {
 
   void SetUpOnMainThread() override {
     policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        ::ash::kReportDeviceCpuInfo, true);
+
+    auto device_policy_update = device_state_.RequestDevicePolicyUpdate();
+    device_policy_update->policy_payload()
+        ->mutable_device_reporting()
+        ->set_report_cpu_info(true);
   }
 
   // Is the given record about CPU info metric?
@@ -142,9 +143,6 @@ class CpuInfoSamplerBrowserTest : public policy::DevicePolicyCrosBrowserTest {
     return record_data.has_value() &&
            record_data.value().info_data().has_cpu_info();
   }
-
- private:
-  ::ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 IN_PROC_BROWSER_TEST_F(CpuInfoSamplerBrowserTest, KeylockerUnsupported) {
@@ -205,8 +203,10 @@ class MemoryInfoSamplerBrowserTest
 
   void SetUpOnMainThread() override {
     policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        ::ash::kReportDeviceMemoryInfo, true);
+    auto device_policy_update = device_state_.RequestDevicePolicyUpdate();
+    device_policy_update->policy_payload()
+        ->mutable_device_reporting()
+        ->set_report_memory_info(true);
   }
 
   // Is the given record about memory info metric?
@@ -225,9 +225,6 @@ class MemoryInfoSamplerBrowserTest
     ASSERT_TRUE(metric_data.has_info_data());
     ::reporting::test::AssertMemoryInfo(metric_data, GetParam());
   }
-
- private:
-  ::ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 IN_PROC_BROWSER_TEST_P(MemoryInfoSamplerBrowserTest, ReportMemoryInfo) {
@@ -275,8 +272,11 @@ class InputInfoSamplerBrowserTest : public policy::DevicePolicyCrosBrowserTest {
 
   void SetUpOnMainThread() override {
     policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        ::ash::kReportDeviceGraphicsStatus, true);
+
+    auto device_policy_update = device_state_.RequestDevicePolicyUpdate();
+    device_policy_update->policy_payload()
+        ->mutable_device_reporting()
+        ->set_report_graphics_status(true);
   }
 
   // Is the given record about touchscreen info metric?
@@ -285,9 +285,6 @@ class InputInfoSamplerBrowserTest : public policy::DevicePolicyCrosBrowserTest {
     return record_data.has_value() &&
            record_data.value().info_data().has_touch_screen_info();
   }
-
- private:
-  ::ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 IN_PROC_BROWSER_TEST_F(InputInfoSamplerBrowserTest,
@@ -368,8 +365,11 @@ class DisplayInfoSamplerBrowserTest
 
   void SetUpOnMainThread() override {
     policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        ::ash::kReportDeviceGraphicsStatus, true);
+
+    auto device_policy_update = device_state_.RequestDevicePolicyUpdate();
+    device_policy_update->policy_payload()
+        ->mutable_device_reporting()
+        ->set_report_graphics_status(true);
   }
 
   // Is the given record about display info metric?
@@ -378,9 +378,6 @@ class DisplayInfoSamplerBrowserTest
     return record_data.has_value() &&
            record_data.value().info_data().has_display_info();
   }
-
- private:
-  ::ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 IN_PROC_BROWSER_TEST_F(DisplayInfoSamplerBrowserTest, MultipleDisplays) {
@@ -392,24 +389,32 @@ IN_PROC_BROWSER_TEST_F(DisplayInfoSamplerBrowserTest, MultipleDisplays) {
   static constexpr int kDisplayModelId = 54321;
   static constexpr char kExternalDisplayName[] = "External display";
   static constexpr char kInternalDisplayName[] = "Internal display";
+  static constexpr char kEdidVersion1[] = "V1.0";
+  static constexpr uint32_t kSerialNumber1 = 1231245324;
+  static constexpr char kEdidVersion2[] = "V1.4";
+  static constexpr uint32_t kSerialNumber2 = 1231245325;
+  static constexpr char kEdidVersion3[] = "V2.0";
+  static constexpr uint32_t kSerialNumber3 = 1231245326;
 
   // Create display results
   std::vector<cros_healthd::ExternalDisplayInfoPtr> external_displays;
   external_displays.push_back(::reporting::test::CreateExternalDisplay(
       kDisplayWidth, kDisplayHeight, /*resolution_horizontal*/ 1000,
       /*resolution_vertical*/ 500, /*refresh_rate*/ 100, kDisplayManufacture,
-      kDisplayModelId, kDisplayManufactureYear, kExternalDisplayName));
+      kDisplayModelId, kDisplayManufactureYear, kExternalDisplayName,
+      kEdidVersion1, kSerialNumber1));
   external_displays.push_back(::reporting::test::CreateExternalDisplay(
       kDisplayWidth, kDisplayHeight, /*resolution_horizontal*/ 1000,
       /*resolution_vertical*/ 500, /*refresh_rate*/ 100, kDisplayManufacture,
-      kDisplayModelId, kDisplayManufactureYear, kExternalDisplayName));
+      kDisplayModelId, kDisplayManufactureYear, kExternalDisplayName,
+      kEdidVersion2, kSerialNumber2));
   auto display_result = ::reporting::test::CreateDisplayResult(
       ::reporting::test::CreateEmbeddedDisplay(
           kPrivacyScreenSupported, kDisplayWidth, kDisplayHeight,
           /*resolution_horizontal*/ 1000,
           /*resolution_vertical*/ 500, /*refresh_rate*/ 100,
           kDisplayManufacture, kDisplayModelId, kDisplayManufactureYear,
-          kInternalDisplayName),
+          kInternalDisplayName, kEdidVersion3, kSerialNumber3),
       std::move(external_displays));
   ::ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(display_result);
@@ -437,6 +442,8 @@ IN_PROC_BROWSER_TEST_F(DisplayInfoSamplerBrowserTest, MultipleDisplays) {
   EXPECT_EQ(internal_display.display_height(), kDisplayHeight);
   EXPECT_EQ(internal_display.model_id(), kDisplayModelId);
   EXPECT_EQ(internal_display.manufacture_year(), kDisplayManufactureYear);
+  EXPECT_EQ(internal_display.edid_version(), kEdidVersion3);
+  EXPECT_EQ(internal_display.serial_number(), kSerialNumber3);
 
   auto external_display_1 = info_data.display_info().display_device(1);
   EXPECT_EQ(external_display_1.display_name(), kExternalDisplayName);
@@ -445,6 +452,8 @@ IN_PROC_BROWSER_TEST_F(DisplayInfoSamplerBrowserTest, MultipleDisplays) {
   EXPECT_EQ(external_display_1.display_height(), kDisplayHeight);
   EXPECT_EQ(external_display_1.model_id(), kDisplayModelId);
   EXPECT_EQ(external_display_1.manufacture_year(), kDisplayManufactureYear);
+  EXPECT_EQ(external_display_1.edid_version(), kEdidVersion1);
+  EXPECT_EQ(external_display_1.serial_number(), kSerialNumber1);
 
   auto external_display_2 = info_data.display_info().display_device(2);
   EXPECT_EQ(external_display_2.display_name(), kExternalDisplayName);
@@ -453,5 +462,7 @@ IN_PROC_BROWSER_TEST_F(DisplayInfoSamplerBrowserTest, MultipleDisplays) {
   EXPECT_EQ(external_display_2.display_height(), kDisplayHeight);
   EXPECT_EQ(external_display_2.model_id(), kDisplayModelId);
   EXPECT_EQ(external_display_2.manufacture_year(), kDisplayManufactureYear);
+  EXPECT_EQ(external_display_2.edid_version(), kEdidVersion2);
+  EXPECT_EQ(external_display_2.serial_number(), kSerialNumber2);
 }
 }  // namespace reporting

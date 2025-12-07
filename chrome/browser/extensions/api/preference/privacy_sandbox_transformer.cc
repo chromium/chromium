@@ -5,6 +5,9 @@
 #include "chrome/browser/extensions/api/preference/privacy_sandbox_transformer.h"
 
 #include "base/values.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

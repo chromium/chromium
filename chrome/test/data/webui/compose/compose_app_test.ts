@@ -8,12 +8,12 @@ import {CrFeedbackOption} from '//resources/cr_elements/cr_feedback_buttons/cr_f
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {ComposeAppElement, ComposeAppState} from 'chrome-untrusted://compose/app.js';
 import type {ComposeState} from 'chrome-untrusted://compose/compose.mojom-webui.js';
-import { CloseReason, StyleModifier, UserFeedback } from 'chrome-untrusted://compose/compose.mojom-webui.js';
+import {CloseReason, InputMode, StyleModifier, UserFeedback} from 'chrome-untrusted://compose/compose.mojom-webui.js';
 import {ComposeApiProxyImpl} from 'chrome-untrusted://compose/compose_api_proxy.js';
 import {ComposeStatus} from 'chrome-untrusted://compose/compose_enums.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome-untrusted://webui-test/polymer_test_util.js';
-import {isVisible, whenCheck} from 'chrome-untrusted://webui-test/test_util.js';
+import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {TestComposeApiProxy} from './test_compose_api_proxy.js';
 
@@ -119,7 +119,7 @@ suite('ComposeApp', () => {
     await testProxy.whenCalled('acceptComposeResult');
   });
 
-  test('OnlyOneErrorShows', async () => {
+  test('OnlyOneErrorShows', () => {
     mockInput('x'.repeat(2501));
     app.$.submitButton.click();
     assertTrue(app.$.submitButton.disabled);
@@ -140,12 +140,12 @@ suite('ComposeApp', () => {
     const appWithTextSelected =
         await initializeNewAppWithTextSelectedState(true);
     assertStringContains(
-        appWithTextSelected.$.acceptButton.textContent!, 'Replace');
+        appWithTextSelected.$.acceptButton.textContent, 'Replace');
 
     const appWithNoTextSelected =
         await initializeNewAppWithTextSelectedState(false);
     assertStringContains(
-        appWithNoTextSelected.$.acceptButton.textContent!, 'Insert');
+        appWithNoTextSelected.$.acceptButton.textContent, 'Insert');
   });
 
   test('FirstRunAndMsbbStateDetermineViewState', async () => {
@@ -343,8 +343,44 @@ suite('ComposeApp', () => {
     assertEquals('true', feedbackButtons.$.thumbsUp.ariaPressed);
   });
 
-  test('SavesState', async () => {
-    assertEquals(0, testProxy.getCallCount('saveWebuiState'), 'es');
+  test('InitializesWithInputModeStateAndUpdatesMode', async () => {
+    async function initializeNewAppWithInputMode(mode: InputMode):
+        Promise<ComposeAppElement> {
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      const compose_app_state: ComposeAppState = {
+        input: '',
+        inputMode: mode,
+      };
+      const state: Partial<ComposeState> = {
+        webuiState: JSON.stringify(compose_app_state),
+      };
+      testProxy.setOpenMetadata({}, state);
+      const newApp = document.createElement('compose-app');
+      document.body.appendChild(newApp);
+      await flushTasks();
+      return newApp;
+    }
+
+    // Initial input
+    const appWithInputMode =
+        await initializeNewAppWithInputMode(InputMode.kElaborate);
+    assertTrue(
+        appWithInputMode.$.elaborateChip.selected,
+        'Elaborate mode chip should be selected.');
+    assertFalse(appWithInputMode.$.polishChip.selected);
+    assertFalse(appWithInputMode.$.formalizeChip.selected);
+
+    // Change the selected input mode
+    appWithInputMode.$.formalizeChip.click();
+    assertTrue(
+        appWithInputMode.$.formalizeChip.selected,
+        'Formalize mode chip should be selected.');
+    assertFalse(appWithInputMode.$.polishChip.selected);
+    assertFalse(appWithInputMode.$.elaborateChip.selected);
+  });
+
+  test('InputModesSaveState', async () => {
+    assertEquals(0, testProxy.getCallCount('saveWebuiState'));
 
     async function assertSavedState(expectedState: ComposeAppState) {
       const savedState = await testProxy.whenCalled('saveWebuiState');
@@ -352,68 +388,17 @@ suite('ComposeApp', () => {
       testProxy.resetResolver('saveWebuiState');
     }
 
-    // Changing input saves state.
     mockInput('Here is my input');
-    await assertSavedState({input: 'Here is my input'});
-
-    // Visibilitychange event saves state.
-    Object.defineProperty(
-        document, 'visibilityState', {value: 'hidden', writable: true});
-    document.dispatchEvent(new CustomEvent('visibilitychange'));
-    await assertSavedState({input: 'Here is my input'});
-
-    // Hitting submit saves state.
-    app.$.submitButton.click();
-    await assertSavedState({input: 'Here is my input'});
-
-    // Hitting edit button saves state.
-    app.$.textarea.dispatchEvent(
-        new CustomEvent('edit-click', {composed: true, bubbles: true}));
-    await assertSavedState({
-      editedInput: 'Here is my input',
-      input: 'Here is my input',
-      isEditingSubmittedInput: true,
-    });
-
-    // Updating edit textarea saves state.
-    app.$.editTextarea.value = 'Here is my new input';
-    app.$.editTextarea.dispatchEvent(new CustomEvent('value-changed'));
-    await assertSavedState({
-      editedInput: 'Here is my new input',
-      input: 'Here is my input',
-      isEditingSubmittedInput: true,
-    });
-
-    // Canceling reverts state back to before editing.
-    app.$.cancelEditButton.click();
-    await assertSavedState({input: 'Here is my input'});
-
-    // Submitting edited textarea saves state.
-    app.$.textarea.dispatchEvent(
-        new CustomEvent('edit-click', {composed: true, bubbles: true}));
-    app.$.editTextarea.value = 'Here is my new input!!!!';
-    app.$.editTextarea.dispatchEvent(new CustomEvent('value-changed'));
-    testProxy.resetResolver('saveWebuiState');
-    app.$.submitEditButton.click();
-    await assertSavedState({input: 'Here is my new input!!!!'});
-  });
-
-  test('DebouncesSavingState', async () => {
-    mockInput('Here is my input');
-    mockInput('Here is my input 2');
-    await flushTasks();
-    const savedState = await testProxy.whenCalled('saveWebuiState');
-    assertEquals(1, testProxy.getCallCount('saveWebuiState'));
-    assertEquals(JSON.stringify({input: 'Here is my input 2'}), savedState);
-  });
-
-  test('DebouncesSavingState', async () => {
-    mockInput('Here is my input');
-    mockInput('Here is my input 2');
-    await flushTasks();
-    const savedState = await testProxy.whenCalled('saveWebuiState');
-    assertEquals(1, testProxy.getCallCount('saveWebuiState'));
-    assertEquals(JSON.stringify({input: 'Here is my input 2'}), savedState);
+    // Changing the mode saves state.
+    app.$.elaborateChip.click();
+    await assertSavedState(
+        {input: 'Here is my input', inputMode: InputMode.kElaborate});
+    app.$.formalizeChip.click();
+    await assertSavedState(
+        {input: 'Here is my input', inputMode: InputMode.kFormalize});
+    app.$.polishChip.click();
+    await assertSavedState(
+        {input: 'Here is my input', inputMode: InputMode.kPolish});
   });
 
   test('CloseButton', async () => {
@@ -439,8 +424,6 @@ suite('ComposeApp', () => {
       },
       webuiState: JSON.stringify({
         input: 'initial input',
-        selectedLength: Number(StyleModifier.kUnset),
-        selectedTone: Number(StyleModifier.kUnset),
       }),
       feedback: UserFeedback.kUserFeedbackPositive,
     });
@@ -453,7 +436,7 @@ suite('ComposeApp', () => {
     await mockResponse('', ComposeStatus.kFiltered, false, true);
 
     assertTrue(isVisible(app.$.errorFooter));
-    assertStringContains(app.$.errorFooter.textContent!, errorMessage);
+    assertStringContains(app.$.errorFooter.textContent, errorMessage);
     assertTrue(isVisible(app.$.errorGoBackButton));
 
     app.$.errorGoBackButton.click();
@@ -478,7 +461,7 @@ suite('ComposeApp', () => {
       await mockResponse('', status);
 
       assertTrue(isVisible(app.$.errorFooter));
-      assertStringContains(app.$.errorFooter.textContent!, errorMessage);
+      assertStringContains(app.$.errorFooter.textContent, errorMessage);
     }
 
     await testError(ComposeStatus.kFiltered, 'errorFiltered');
@@ -598,8 +581,6 @@ suite('ComposeApp', () => {
       },
       webuiState: JSON.stringify({
         input: 'my old input',
-        selectedLength: Number(StyleModifier.kLonger),
-        selectedTone: Number(StyleModifier.kCasual),
       }),
       feedback: UserFeedback.kUserFeedbackPositive,
     });
@@ -617,9 +598,6 @@ suite('ComposeApp', () => {
     assertTrue(isVisible(appWithUndo.$.resultContainer));
     assertStringContains(
         appWithUndo.$.resultText.$.root.innerText, 'some undone result');
-    assertEquals(
-      StyleModifier.kLonger, Number(appWithUndo.$.lengthMenu.value));
-    assertEquals(StyleModifier.kCasual, Number(appWithUndo.$.toneMenu.value));
     assertEquals(
         CrFeedbackOption.THUMBS_UP,
         appWithUndo.$.feedbackButtons.selectedOption);
@@ -654,8 +632,6 @@ suite('ComposeApp', () => {
       },
       webuiState: JSON.stringify({
         input: 'some future input',
-        selectedLength: Number(StyleModifier.kLonger),
-        selectedTone: Number(StyleModifier.kCasual),
       }),
       feedback: UserFeedback.kUserFeedbackPositive,
     });
@@ -673,8 +649,6 @@ suite('ComposeApp', () => {
     assertTrue(isVisible(appWithRedo.$.resultContainer));
     assertStringContains(
         appWithRedo.$.resultText.$.root.innerText, 'some future result');
-    assertEquals(StyleModifier.kLonger, Number(appWithRedo.$.lengthMenu.value));
-    assertEquals(StyleModifier.kCasual, Number(appWithRedo.$.toneMenu.value));
     assertEquals(
         CrFeedbackOption.THUMBS_UP,
         appWithRedo.$.feedbackButtons.selectedOption);
@@ -734,188 +708,6 @@ suite('ComposeApp', () => {
         'on-device footer should be shown');
     assertEquals(app.$.resultText.$.root.innerText.trim(), 'some response');
   });
-});
-
-suite('ComposeAppLegacyUi', () => {
-  let app: ComposeAppElement;
-  let testProxy: TestComposeApiProxy;
-
-  suiteSetup(function() {
-    if (loadTimeData.getBoolean('enableRefinedUi')) {
-      this.skip();
-    }
-  });
-
-  setup(async () => {
-    testProxy = new TestComposeApiProxy();
-    ComposeApiProxyImpl.setInstance(testProxy);
-
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    app = document.createElement('compose-app');
-    document.body.appendChild(app);
-
-    await testProxy.whenCalled('requestInitialState');
-    return flushTasks();
-  });
-
-  function mockInput(input: string) {
-    app.$.textarea.value = input;
-    app.$.textarea.dispatchEvent(new CustomEvent('value-changed'));
-  }
-
-  function mockResponse(
-      result: string = 'some response',
-      status: ComposeStatus = ComposeStatus.kOk, onDeviceEvaluationUsed = false,
-      triggeredFromModifier = false): Promise<void> {
-    testProxy.remote.responseReceived({
-      status: status,
-      undoAvailable: false,
-      redoAvailable: false,
-      providedByUser: false,
-      result,
-      onDeviceEvaluationUsed,
-      triggeredFromModifier,
-    });
-    return testProxy.remote.$.flushForTesting();
-  }
-
-  test('RefreshesResult', async () => {
-    // Submit the input once so the refresh button shows up.
-    mockInput('Input to refresh.');
-    app.$.submitButton.click();
-    await mockResponse();
-
-    testProxy.resetResolver('rewrite');
-    assertTrue(
-        isVisible(app.$.refreshButton), 'Refresh button should be visible.');
-
-    // Click the refresh button and assert compose is called with the same args.
-    app.$.refreshButton.click();
-    assertTrue(
-        isVisible(app.$.loading), 'Loading indicator should be visible.');
-
-    const args = await testProxy.whenCalled('rewrite');
-    await mockResponse('Refreshed output.');
-
-    assertEquals(StyleModifier.kRetry, args);
-
-    // Verify UI has updated with refreshed results.
-    assertFalse(isVisible(app.$.loading));
-    assertTrue(
-        isVisible(app.$.resultContainer),
-        'App result container should be visible.');
-    assertStringContains(
-        app.$.resultText.$.root.innerText, 'Refreshed output.');
-  });
-
-  test('UpdatesScrollableBodyAfterResize', async () => {
-    assertEquals(app.$.body, app.getContainer());
-
-    mockInput('Some fake input.');
-    app.$.submitButton.click();
-
-    // Mock a height on results to get body to scroll. The body should not yet
-    // be scrollable though because result has not been fetched yet.
-    app.$.resultContainer.style.minHeight = '500px';
-    assertFalse(app.$.body.classList.contains('can-scroll'));
-
-    await testProxy.whenCalled('compose');
-    await mockResponse();
-    await whenCheck(
-        app.$.body, () => app.$.body.classList.contains('can-scroll'));
-    assertEquals(220, app.$.body.offsetHeight);
-    assertTrue(220 < app.$.body.scrollHeight);
-
-    // Mock resizing result container down to a 50px height. This should result
-    // in the body changing height, triggering the updates to the CSS classes.
-    // At this point, 50px is too short to scroll, so it should not have the
-    // 'can-scroll' class.
-    app.$.resultContainer.style.minHeight = '50px';
-    app.$.resultContainer.style.height = '50px';
-    app.$.resultContainer.style.overflow = 'hidden';
-    await whenCheck(
-        app.$.body, () => !app.$.body.classList.contains('can-scroll'));
-  });
-
-  test('ComposeWithLengthToneOptionResult', async () => {
-    // Submit the input once so the refresh button shows up.
-    mockInput('Input to refresh.');
-    app.$.submitButton.click();
-    await mockResponse();
-
-    testProxy.resetResolver('rewrite');
-
-    assertTrue(isVisible(app.$.lengthMenu), 'Length menu should be visible.');
-    assertEquals(
-        2, app.$.lengthMenu.querySelectorAll('option:not([disabled])').length);
-
-    app.$.lengthMenu.value = `${StyleModifier.kShorter}`;
-    app.$.lengthMenu.dispatchEvent(new CustomEvent('change'));
-
-    const args = await testProxy.whenCalled('rewrite');
-    await mockResponse();
-
-    assertEquals(StyleModifier.kShorter, args);
-
-    testProxy.resetResolver('rewrite');
-
-    assertTrue(isVisible(app.$.toneMenu), 'Tone menu should be visible.');
-    assertEquals(
-        2, app.$.toneMenu.querySelectorAll('option:not([disabled])').length);
-
-    app.$.toneMenu.value = `${StyleModifier.kCasual}`;
-    app.$.toneMenu.dispatchEvent(new CustomEvent('change'));
-
-    const args2 = await testProxy.whenCalled('rewrite');
-    await mockResponse();
-
-    assertEquals(StyleModifier.kCasual, args2);
-  });
-});
-
-
-suite('ComposeAppRefinedUi', () => {
-  let app: ComposeAppElement;
-  let testProxy: TestComposeApiProxy;
-
-  suiteSetup(function() {
-    if (!loadTimeData.getBoolean('enableRefinedUi')) {
-      this.skip();
-    }
-  });
-
-  setup(async () => {
-    testProxy = new TestComposeApiProxy();
-    ComposeApiProxyImpl.setInstance(testProxy);
-
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    app = document.createElement('compose-app');
-    document.body.appendChild(app);
-
-    await testProxy.whenCalled('requestInitialState');
-    return flushTasks();
-  });
-
-  function mockInput(input: string) {
-    app.$.textarea.value = input;
-    app.$.textarea.dispatchEvent(new CustomEvent('value-changed'));
-  }
-
-  function mockResponse(
-      result: string = 'some response',
-      status: ComposeStatus = ComposeStatus.kOk, onDeviceEvaluationUsed = false,
-      triggeredFromModifier = false): Promise<void> {
-    testProxy.remote.responseReceived({
-      status: status,
-      undoAvailable: false,
-      redoAvailable: false,
-      providedByUser: false,
-      result,
-      onDeviceEvaluationUsed,
-      triggeredFromModifier,
-    });
-    return testProxy.remote.$.flushForTesting();
-  }
 
   test('RefreshesResult', async () => {
     // Submit the input once so that modifier menu is visible.
@@ -948,39 +740,6 @@ suite('ComposeAppRefinedUi', () => {
         app.$.resultText.$.root.innerText, 'Refreshed output.');
   });
 
-  test('UpdatesScrollableResultContainerAfterResize', async () => {
-    // Assert scrolling container is set correctly.
-    assertEquals(app.$.resultTextContainer, app.getContainer());
-    mockInput('Some fake input.');
-    app.$.submitButton.click();
-
-    // The results text should not yet be visible because the result has not
-    // been fetched yet.
-    assertFalse(isVisible(app.$.resultTextContainer));
-
-    // Results text should be scrollable when a long response is received.
-    await testProxy.whenCalled('compose');
-    const longResponse = 'x'.repeat(1000);
-    await mockResponse(longResponse);
-    await whenCheck(
-        app.$.resultTextContainer,
-        () => app.$.resultTextContainer.classList.contains('can-scroll'));
-    assertEquals(220, app.$.body.offsetHeight);
-    assertTrue(
-        220 < app.$.resultTextContainer.scrollHeight,
-        'Scroll height (' + app.$.resultTextContainer.scrollHeight +
-            ' should be bigger than 220.');
-
-    // Results text should not be scrollable when a short response is received.
-    app.$.modifierMenu.value = `${StyleModifier.kRetry}`;
-    app.$.modifierMenu.dispatchEvent(new CustomEvent('change'));
-    await testProxy.whenCalled('rewrite');
-    await mockResponse('Refreshed output.');
-    await whenCheck(
-        app.$.resultTextContainer,
-        () => !app.$.resultTextContainer.classList.contains('can-scroll'));
-  });
-
   test('ComposeWithModifierResult', async () => {
     // Submit the input once so that modifier menu is visible.
     mockInput('Input to refresh.');
@@ -1002,5 +761,209 @@ suite('ComposeAppRefinedUi', () => {
     await mockResponse();
 
     assertEquals(StyleModifier.kShorter, args);
+  });
+});
+
+suite('ComposeAppLegacyUi', () => {
+  let app: ComposeAppElement;
+  let testProxy: TestComposeApiProxy;
+
+  suiteSetup(function() {
+    if (loadTimeData.getBoolean('enableUpfrontInputModes')) {
+      this.skip();
+    }
+  });
+
+  setup(async () => {
+    testProxy = new TestComposeApiProxy();
+    ComposeApiProxyImpl.setInstance(testProxy);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    app = document.createElement('compose-app');
+    document.body.appendChild(app);
+
+    await testProxy.whenCalled('requestInitialState');
+    return flushTasks();
+  });
+
+  function mockInput(input: string) {
+    app.$.textarea.value = input;
+    app.$.textarea.dispatchEvent(new CustomEvent('value-changed'));
+  }
+
+  test('SavesState', async () => {
+    assertEquals(0, testProxy.getCallCount('saveWebuiState'));
+
+    async function assertSavedState(expectedState: ComposeAppState) {
+      const savedState = await testProxy.whenCalled('saveWebuiState');
+      assertDeepEquals(expectedState, JSON.parse(savedState));
+      testProxy.resetResolver('saveWebuiState');
+    }
+
+    // Changing input saves state.
+    mockInput('Here is my input');
+    await assertSavedState(
+        {input: 'Here is my input', inputMode: InputMode.kUnset});
+
+    // Visibilitychange event saves state.
+    Object.defineProperty(
+        document, 'visibilityState', {value: 'hidden', writable: true});
+    document.dispatchEvent(new CustomEvent('visibilitychange'));
+    await assertSavedState(
+        {input: 'Here is my input', inputMode: InputMode.kUnset});
+
+    // Hitting submit saves state.
+    app.$.submitButton.click();
+    await assertSavedState(
+        {input: 'Here is my input', inputMode: InputMode.kUnset});
+
+    // Hitting edit button saves state.
+    app.$.textarea.dispatchEvent(
+        new CustomEvent('edit-click', {composed: true, bubbles: true}));
+    await assertSavedState({
+      editedInput: 'Here is my input',
+      input: 'Here is my input',
+      inputMode: InputMode.kUnset,
+      isEditingSubmittedInput: true,
+    });
+
+    // Updating edit textarea saves state.
+    app.$.editTextarea.value = 'Here is my new input';
+    app.$.editTextarea.dispatchEvent(new CustomEvent('value-changed'));
+    await assertSavedState({
+      editedInput: 'Here is my new input',
+      input: 'Here is my input',
+      inputMode: InputMode.kUnset,
+      isEditingSubmittedInput: true,
+    });
+
+    // Canceling reverts state back to before editing.
+    app.$.cancelEditButton.click();
+    await assertSavedState(
+        {input: 'Here is my input', inputMode: InputMode.kUnset});
+
+    // Submitting edited textarea saves state.
+    app.$.textarea.dispatchEvent(
+        new CustomEvent('edit-click', {composed: true, bubbles: true}));
+    app.$.editTextarea.value = 'Here is my new input!!!!';
+    app.$.editTextarea.dispatchEvent(new CustomEvent('value-changed'));
+    testProxy.resetResolver('saveWebuiState');
+    app.$.submitEditButton.click();
+    await assertSavedState(
+        {input: 'Here is my new input!!!!', inputMode: InputMode.kUnset});
+  });
+
+  test('DebouncesSavingState', async () => {
+    mockInput('Here is my input');
+    mockInput('Here is my input 2');
+    await flushTasks();
+    const savedState = await testProxy.whenCalled('saveWebuiState');
+    assertEquals(1, testProxy.getCallCount('saveWebuiState'));
+    assertEquals(
+        JSON.stringify(
+            {input: 'Here is my input 2', inputMode: InputMode.kUnset}),
+        savedState);
+  });
+});
+
+suite('ComposeAppLegacyInputModesUi', () => {
+  let app: ComposeAppElement;
+  let testProxy: TestComposeApiProxy;
+
+  suiteSetup(function() {
+    if (!loadTimeData.getBoolean('enableUpfrontInputModes')) {
+      this.skip();
+    }
+  });
+
+  setup(async () => {
+    testProxy = new TestComposeApiProxy();
+    ComposeApiProxyImpl.setInstance(testProxy);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    app = document.createElement('compose-app');
+    document.body.appendChild(app);
+
+    await testProxy.whenCalled('requestInitialState');
+    return flushTasks();
+  });
+
+  function mockInput(input: string) {
+    app.$.textarea.value = input;
+    app.$.textarea.dispatchEvent(new CustomEvent('value-changed'));
+  }
+
+  test('SavesState', async () => {
+    assertEquals(0, testProxy.getCallCount('saveWebuiState'));
+
+    async function assertSavedState(expectedState: ComposeAppState) {
+      const savedState = await testProxy.whenCalled('saveWebuiState');
+      assertDeepEquals(expectedState, JSON.parse(savedState));
+      testProxy.resetResolver('saveWebuiState');
+    }
+
+    // Changing input saves state.
+    mockInput('Here is my input');
+    await assertSavedState(
+        {input: 'Here is my input', inputMode: InputMode.kPolish});
+
+    // Visibilitychange event saves state.
+    Object.defineProperty(
+        document, 'visibilityState', {value: 'hidden', writable: true});
+    document.dispatchEvent(new CustomEvent('visibilitychange'));
+    await assertSavedState(
+        {input: 'Here is my input', inputMode: InputMode.kPolish});
+
+    // Hitting submit saves state.
+    app.$.submitButton.click();
+    await assertSavedState(
+        {input: 'Here is my input', inputMode: InputMode.kPolish});
+
+    // Hitting edit button saves state.
+    app.$.textarea.dispatchEvent(
+        new CustomEvent('edit-click', {composed: true, bubbles: true}));
+    await assertSavedState({
+      editedInput: 'Here is my input',
+      input: 'Here is my input',
+      inputMode: InputMode.kPolish,
+      isEditingSubmittedInput: true,
+    });
+
+    // Updating edit textarea saves state.
+    app.$.editTextarea.value = 'Here is my new input';
+    app.$.editTextarea.dispatchEvent(new CustomEvent('value-changed'));
+    await assertSavedState({
+      editedInput: 'Here is my new input',
+      input: 'Here is my input',
+      inputMode: InputMode.kPolish,
+      isEditingSubmittedInput: true,
+    });
+
+    // Canceling reverts state back to before editing.
+    app.$.cancelEditButton.click();
+    await assertSavedState(
+        {input: 'Here is my input', inputMode: InputMode.kPolish});
+
+    // Submitting edited textarea saves state.
+    app.$.textarea.dispatchEvent(
+        new CustomEvent('edit-click', {composed: true, bubbles: true}));
+    app.$.editTextarea.value = 'Here is my new input!!!!';
+    app.$.editTextarea.dispatchEvent(new CustomEvent('value-changed'));
+    testProxy.resetResolver('saveWebuiState');
+    app.$.submitEditButton.click();
+    await assertSavedState(
+        {input: 'Here is my new input!!!!', inputMode: InputMode.kPolish});
+  });
+
+  test('DebouncesSavingState', async () => {
+    mockInput('Here is my input');
+    mockInput('Here is my input 2');
+    await flushTasks();
+    const savedState = await testProxy.whenCalled('saveWebuiState');
+    assertEquals(1, testProxy.getCallCount('saveWebuiState'));
+    assertEquals(
+        JSON.stringify(
+            {input: 'Here is my input 2', inputMode: InputMode.kPolish}),
+        savedState);
   });
 });

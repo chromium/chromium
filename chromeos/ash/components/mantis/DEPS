@@ -1,0 +1,12 @@
+include_rules = [
+  # Individual components must explicitly declare their dependencies
+  # on other components.
+  "+chromeos/ash/components/mojo_service_manager",
+  "+chromeos/ash/components/specialized_features",
+  "+chromeos/services/machine_learning/public",
+  "+components/signin/public/identity_manager",
+
+  # TODO(crbug.com/402346171): Components should not have dependencies to //ash.
+  # Resolve it.
+  "+ash/webui/media_app_ui/media_app_ui_untrusted.mojom.h",
+]

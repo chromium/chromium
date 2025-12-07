@@ -2,23 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/system/focus_mode/focus_mode_util.h"
+
+#include <array>
+#include <string>
+#include <utility>
 
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/system_textfield.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
+#include "ash/system/focus_mode/focus_mode_histogram_names.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "base/check_op.h"
 #include "base/i18n/time_formatting.h"
 #include "base/i18n/unicodestring.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "third_party/icu/source/i18n/unicode/measfmt.h"
 #include "third_party/icu/source/i18n/unicode/measunit.h"
 #include "third_party/icu/source/i18n/unicode/measure.h"
@@ -27,8 +30,8 @@
 namespace ash::focus_mode_util {
 namespace {
 
-constexpr std::pair<int, std::u16string>
-    congratulatory_pair[kCongratulatoryTitleNum] = {
+constexpr std::array<std::pair<int, std::u16string>, kCongratulatoryTitleNum>
+    congratulatory_pair = {
         std::make_pair(IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE,
                        u"🎉"),
         std::make_pair(IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE_1,
@@ -43,7 +46,9 @@ constexpr std::pair<int, std::u16string>
                        u"☑"),
 };
 
-}
+constexpr const char* kYouTubeMusicUrl = "music.youtube.com";
+
+}  // namespace
 
 SelectedPlaylist::SelectedPlaylist() = default;
 
@@ -140,18 +145,10 @@ std::string GetSourceTitleForMediaControls(const SelectedPlaylist& playlist) {
     return "";
   }
 
-  std::string playlist_type = l10n_util::GetStringUTF8(
-      playlist.type == SoundType::kYouTubeMusic
-          ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_YOUTUBE_MUSIC_BUTTON
-          : IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_SOUNDSCAPE_BUTTON);
-
-  if (playlist.title.empty()) {
-    return playlist_type;
-  }
-
-  return l10n_util::GetStringFUTF8(
-      IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_MEDIA_CONTROLS_SOURCE_TITLE,
-      base::UTF8ToUTF16(playlist_type), base::UTF8ToUTF16(playlist.title));
+  return playlist.type == SoundType::kYouTubeMusic
+             ? kYouTubeMusicUrl
+             : l10n_util::GetStringUTF8(
+                   IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_SOUNDSCAPE_BUTTON);
 }
 
 std::u16string GetCongratulatoryText(const size_t index) {
@@ -168,6 +165,46 @@ std::u16string GetCongratulatoryTextAndEmoji(const size_t index) {
   CHECK_LT(index, kCongratulatoryTitleNum);
   return base::JoinString(
       {GetCongratulatoryText(index), GetCongratulatoryEmoji(index)}, u" ");
+}
+
+int GetNextProgressStep(double current_progress) {
+  CHECK_GE(current_progress, 0.0);
+  CHECK_LE(current_progress, 1.0);
+  return std::min(
+      (int)(std::floor(current_progress * kProgressIndicatorSteps) + 1),
+      kProgressIndicatorSteps);
+}
+
+void RecordHistogramForApiStatus(const std::string& method,
+                                 const google_apis::ApiErrorCode error_code) {
+  base::UmaHistogramSparse(
+      base::StringPrintf(focus_mode_histogram_names::kApiStatus,
+                         method.c_str()),
+      error_code);
+}
+
+void RecordHistogramForApiLatency(const std::string& method,
+                                  const base::TimeDelta latency) {
+  base::UmaHistogramTimes(
+      base::StringPrintf(focus_mode_histogram_names::kApiLatency,
+                         method.c_str()),
+      latency);
+}
+
+void RecordHistogramForApiResult(const std::string& method,
+                                 const bool successful) {
+  base::UmaHistogramBoolean(
+      base::StringPrintf(focus_mode_histogram_names::kApiResult,
+                         method.c_str()),
+      successful);
+}
+
+void RecordHistogramForApiRetryCount(const std::string& method,
+                                     const int retry_count) {
+  base::UmaHistogramCounts100(
+      base::StringPrintf(focus_mode_histogram_names::kApiRetryCount,
+                         method.c_str()),
+      retry_count);
 }
 
 }  // namespace ash::focus_mode_util

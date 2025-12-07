@@ -11,14 +11,18 @@
 
 namespace autofill::autofill_metrics {
 
-// The below issuer and network names are used for logging purposes. The issuer
-// names must be consistent with the Autofill.CreditCardIssuerId in the
-// autofill/histograms.xml file.
+// The below issuer, network, and benefit source names are used for logging
+// purposes. The issuers, networks, and benefit sources must be consistent with
+// the Autofill.CreditCardIssuerId, Autofill.CreditCardNetwork, and
+// Autofill.CreditCardBenefitSource respectively, in the
+// tools/metrics/histograms/metadata/autofill/histograms.xml file.
 constexpr std::string_view kAmericanExpress = "Amex";
 constexpr std::string_view kAnz = "Anz";
+constexpr std::string_view kBmo = "Bmo";
 constexpr std::string_view kCapitalOne = "CapitalOne";
 constexpr std::string_view kChase = "Chase";
 constexpr std::string_view kCiti = "Citi";
+constexpr std::string_view kCurinos = "Curinos";
 constexpr std::string_view kDiscover = "Discover";
 constexpr std::string_view kLloyds = "Lloyds";
 constexpr std::string_view kMarqeta = "Marqeta";
@@ -36,6 +40,9 @@ constexpr std::string_view kProductNameAndArtImageNotShownSuffix =
     "MetadataNotShown";
 
 // Enum for different types of form events. Used for metrics logging.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class CardMetadataLoggingEvent {
   // Suggestions were shown.
   kShown = 0,
@@ -50,10 +57,93 @@ enum class CardMetadataLoggingEvent {
   kMaxValue = kSubmitted,
 };
 
+// LINT.IfChange(CardBenefitFormEvent)
+
+// All server cards with card benefit available Form Events are logged once per
+// page load.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class CardBenefitFormEvent {
+  // Suggestions containing cards with a benefit available were shown.
+  kSuggestionWithBenefitShown = 0,
+
+  // Suggestions containing cards with a benefit available were shown when the
+  // user had two or more server cards.
+  kSuggestionWithBenefitShownWithMultipleServerCards = 1,
+
+  // A suggestion of a masked server card with a benefit available was selected.
+  kSuggestionWithBenefitSelected = 2,
+
+  // `kSuggestionWithoutBenefitSelected` was planned to be an enum with the
+  // value "3". This enum will not be implemented anymore since there is no
+  // possible single card use case for it. This form event enum would be logged
+  // when a masked server card without a benefit available was selected, and at
+  // least one masked server card with a benefit available was present in the
+  // suggestions. `kSuggestionWithoutBenefitSelectedWithMultipleServerCards` is
+  // already being logged for this.
+
+  // A suggestion of a masked server card with a benefit available was selected
+  // when the user had two or more server cards.
+  kSuggestionWithBenefitSelectedWithMultipleServerCards = 4,
+
+  // A suggestion of a masked server card without a benefit available was
+  // selected when the user had two or more server cards, and at least one had a
+  // benefit available.
+  kSuggestionWithoutBenefitSelectedWithMultipleServerCards = 5,
+
+  // A suggestion of a masked server card with a benefit available was filled.
+  kSuggestionWithBenefitFilled = 6,
+
+  // `kSuggestionWithoutBenefitFilled` was planned to be an enum with the
+  // value "7". This enum will not be implemented anymore since there is no
+  // possible single card use case for it. This form event enum would be logged
+  // when a masked server card without a benefit available was filled, and at
+  // least one masked server card with a benefit available was present in the
+  // suggestions. `kSuggestionWithoutBenefitFilledWithMultipleServerCards` is
+  // already being logged for this.
+
+  // A suggestion of a masked server card with a benefit available was filled
+  // when the user had two or more server cards.
+  kSuggestionWithBenefitFilledWithMultipleServerCards = 8,
+
+  // A suggestion of a masked server card without a benefit available was
+  // filled when the user had two or more server cards, and at least one had a
+  // benefit available.
+  kSuggestionWithoutBenefitFilledWithMultipleServerCards = 9,
+
+  // A suggestion of a masked server card with a benefit available was
+  // submitted.
+  kSuggestionWithBenefitSubmitted = 10,
+
+  // `kSuggestionWithoutBenefitSubmitted` was planned to be an enum with the
+  // value "11". This enum will not be implemented anymore since there is no
+  // possible single card use case for it. This form event enum would be logged
+  // when a masked server card without a benefit available was submitted, and at
+  // least one masked server card with a benefit available was present in the
+  // suggestions. `kSuggestionWithoutBenefitSubmittedWithMultipleServerCards` is
+  // already being logged for this.
+
+  // A suggestion of a masked server card with a benefit available was submitted
+  // when the user had two or more server cards.
+  kSuggestionWithBenefitSubmittedWithMultipleServerCards = 12,
+
+  // A suggestion of a masked server card without a benefit available was
+  // submitted when the user had two or more server cards, and at least one had
+  // a benefit available.
+  kSuggestionWithoutBenefitSubmittedWithMultipleServerCards = 13,
+
+  kMaxValue = kSuggestionWithoutBenefitSubmittedWithMultipleServerCards
+};
+
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:CardBenefitFormEvent)
+
 using HasBeenLogged = base::StrongAlias<class HasBeenLoggedTag, bool>;
 
-// Struct that groups metadata-related information together for some set of
-// credit cards. Used for metrics logging.
+// Struct that groups metadata-related information together for some
+// set of credit cards. Used for metrics logging whether metadata is
+// available and/or shown with credit card suggestions, including
+// product descriptions, card art images, and card benefits.
 struct CardMetadataLoggingContext {
   CardMetadataLoggingContext();
   CardMetadataLoggingContext(const CardMetadataLoggingContext&);
@@ -102,25 +192,32 @@ struct CardMetadataLoggingContext {
   std::optional<base::flat_map<std::string, bool>>
       selected_issuer_or_network_to_metadata_availability;
 
-  // Keeps record of the instrument ids to issuer ids for credit card
+  // Keeps record of the instrument ids to benefit sources for credit card
   // suggestions shown to the user with a card benefit.
   base::flat_map<int64_t, std::string>
-      instrument_ids_to_issuer_ids_with_benefits_available;
+      instrument_ids_to_available_benefit_sources;
 
-  // Keeps record of the issuer of a selected card suggestion.
-  std::string selected_issuer_id;
+  // Keeps record of the selected card benefit source for later events logging.
+  std::string selected_benefit_source;
 
   // Keeps record of the selected card instrument id for later events logging.
   int64_t selected_card_instrument_id;
+
+  // Keeps record of the number of masked server card suggestions.
+  uint8_t masked_server_card_count = 0;
 };
 
-// Get histogram suffix based on given card issuer id or network.
+// Get histogram suffix based on a given card issuer id or network.
 std::string_view GetCardIssuerIdOrNetworkSuffix(
-    const std::string& card_issuer_id_or_network);
+    std::string_view card_issuer_id_or_network);
+
+// Get histogram suffix based on a given card benefit source.
+std::string_view GetCardBenefitSourceSuffix(
+    std::string_view card_benefit_source);
 
 // Get the CardMetadataLoggingContext for the given credit cards.
 CardMetadataLoggingContext GetMetadataLoggingContext(
-    const std::vector<CreditCard>& cards);
+    base::span<const CreditCard> cards);
 
 // Log the suggestion event regarding card metadata. `has_been_logged` indicates
 // whether the event has already been logged since last page load.
@@ -129,11 +226,10 @@ void LogCardWithMetadataFormEventMetric(
     const CardMetadataLoggingContext& context,
     HasBeenLogged has_been_logged);
 
-// Log the suggestion event for card benefits on an issuer level. Metrics are
-// only logged once per page load.
-void LogCardWithBenefitFormEventMetric(
-    CardMetadataLoggingEvent event,
-    const CardMetadataLoggingContext& context);
+// Log the suggestion event for card benefits on a credit card level and benefit
+// or issuer level. Metrics are only logged once per page load.
+void LogCardBenefitFormEventMetrics(CardMetadataLoggingEvent event,
+                                    const CardMetadataLoggingContext& context);
 
 // Log the latency between suggestions being shown and a suggestion was
 // selected, in milliseconds, and it is broken down by metadata availability
@@ -145,14 +241,33 @@ void LogAcceptanceLatency(base::TimeDelta latency,
 // Logs if credit card benefits are enabled when a new profile is launched.
 void LogIsCreditCardBenefitsEnabledAtStartup(bool enabled);
 
-void LogBenefitFormEventToIssuerHistogram(const std::string& issuer_id,
-                                          FormEvent event);
-
-// Log the given `event` for every issuer with card with benefits available
-// shown.
-void LogBenefitFormEventForAllIssuersWithBenefitAvailable(
+// Log the given `event` to the general benefit histogram, as well as to the
+// benefit-source-specific subhistogram for all benefit sources present in the
+// suggestion list.
+void LogBenefitFormEventToAllBenefitHistograms(
     const base::flat_map<int64_t, std::string>&
-        instrument_ids_to_issuer_ids_with_benefits_available,
+        instrument_ids_to_available_benefit_sources,
+    CardBenefitFormEvent event);
+
+// Log the given `event` to the general benefit histogram, as well as to the
+// `benefit_source`'s specific subhistogram.
+void LogBenefitFormEventToAllBenefitHistograms(std::string_view benefit_source,
+                                               CardBenefitFormEvent event);
+
+// Log the given `event` for card benefits on a benefit source level.
+// TODO(crbug.com/417228483): Remove this function after adding benefit form
+// event enums to a new histogram with a new enum class.
+void LogBenefitFormEventToBenefitSourceHistogramDeprecated(
+    std::string_view benefit_source,
+    FormEvent event);
+
+// Log the given `event` for every card benefit source with benefits available
+// shown.
+// TODO(crbug.com/417228483): Remove this function after adding benefit form
+// event enums to a new histogram with a new enum class.
+void LogBenefitFormEventForAllBenefitSourcesWithBenefitAvailableDeprecated(
+    const base::flat_map<int64_t, std::string>&
+        instrument_ids_to_available_benefit_sources,
     FormEvent event);
 
 }  // namespace autofill::autofill_metrics

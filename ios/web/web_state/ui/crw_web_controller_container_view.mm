@@ -6,11 +6,17 @@
 
 #import "base/check.h"
 #import "base/notreached.h"
+#import "base/time/time.h"
 #import "ios/web/common/crw_content_view.h"
 #import "ios/web/common/crw_viewport_adjustment_container.h"
 #import "ios/web/common/crw_web_view_content_view.h"
 #import "ios/web/common/features.h"
 #import "ios/web/web_state/ui/crw_web_view_proxy_impl.h"
+
+namespace {
+// Delay to fix the zoomScale after a rotation or window size change.
+constexpr base::TimeDelta kFixZoomScaleOnRotationDelay = base::Seconds(0.1);
+}  // namespace
 
 @interface CRWWebControllerContainerView () <CRWViewportAdjustmentContainer>
 
@@ -35,20 +41,32 @@
     DCHECK(delegate);
     _delegate = delegate;
     self.backgroundColor = [UIColor whiteColor];
-    self.autoresizingMask =
-        UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    self.autoresizingMask = UIViewAutoresizingFlexibleWidth |
+                            UIViewAutoresizingFlexibleHeight |
+                            UIViewAutoresizingFlexibleTopMargin |
+                            UIViewAutoresizingFlexibleLeftMargin;
+    if (@available(iOS 17, *)) {
+      __weak __typeof(self) weakSelf = self;
+      UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                       UITraitCollection* previousCollection) {
+        [weakSelf updateUIOnTraitChange:previousCollection];
+      };
+      NSArray<UITrait>* traits = @[
+        UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class,
+        UITraitPreferredContentSizeCategory.class
+      ];
+      [self registerForTraitChanges:traits withHandler:handler];
+    }
   }
   return self;
 }
 
 - (instancetype)initWithCoder:(NSCoder*)decoder {
-  NOTREACHED_IN_MIGRATION();
-  return nil;
+  NOTREACHED();
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
-  NOTREACHED_IN_MIGRATION();
-  return nil;
+  NOTREACHED();
 }
 
 - (void)dealloc {
@@ -80,28 +98,16 @@
 
 #pragma mark Layout
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  if ((self.traitCollection.verticalSizeClass !=
-       previousTraitCollection.verticalSizeClass) ||
-      (self.traitCollection.horizontalSizeClass !=
-       previousTraitCollection.horizontalSizeClass) ||
-      self.traitCollection.preferredContentSizeCategory !=
-          previousTraitCollection.preferredContentSizeCategory) {
-    // Reset zoom scale when the window is resized (portrait to landscape,
-    // landscape to portrait or multi-window resizing), or if text size is
-    // modified as websites can adjust to the preferred content size (using
-    // font: -apple-system-body;). It avoids being in a different zoomed
-    // position from where the user initially zoomed.
-    UIScrollView* scrollView = self.contentViewProxy.contentView.scrollView;
-    scrollView.zoomScale = scrollView.minimumZoomScale;
+  if (@available(iOS 17, *)) {
+    return;
   }
-  if (previousTraitCollection.preferredContentSizeCategory !=
-      self.traitCollection.preferredContentSizeCategory) {
-    // In case the preferred content size changes, the layout is dirty.
-    [self setNeedsLayout];
-  }
+
+  [self updateUIOnTraitChange:previousTraitCollection];
 }
+#endif
 
 - (void)layoutSubviews {
   [super layoutSubviews];
@@ -122,11 +128,13 @@
 }
 
 - (void)updateWebViewContentViewForContainerWindow:(UIWindow*)containerWindow {
-  if (!base::FeatureList::IsEnabled(web::features::kKeepsRenderProcessAlive))
+  if (!base::FeatureList::IsEnabled(web::features::kKeepsRenderProcessAlive)) {
     return;
+  }
 
-  if (!self.webViewContentView)
+  if (!self.webViewContentView) {
     return;
+  }
 
   // If there's a containerWindow or `webViewContentView` is inactive, put it
   // back where it belongs.
@@ -193,12 +201,46 @@
   if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
     [self.webViewContentView setFrame:self.bounds];
   } else {
+    // TODO(crbug.com/425651125): There appears to be a timing issue causing UI
+    // glitches when a website uses viewport-fit=cover. We suspect this is
+    // because our JavaScript injection, which detects viewport-fit=cover, isn't
+    // always resizing the container at the optimal moment. We aim to eliminate
+    // these glitches once viewport-fit=cover can be directly managed by the web
+    // view.
     if (self.cover) {
       [self.webViewContentView setFrame:self.bounds];
     } else {
       [self.webViewContentView
           setFrame:UIEdgeInsetsInsetRect(self.bounds, self.safeAreaInsets)];
     }
+  }
+}
+
+//
+- (void)updateUIOnTraitChange:(UITraitCollection*)previousTraitCollection {
+  if ((self.traitCollection.verticalSizeClass !=
+       previousTraitCollection.verticalSizeClass) ||
+      (self.traitCollection.horizontalSizeClass !=
+       previousTraitCollection.horizontalSizeClass) ||
+      self.traitCollection.preferredContentSizeCategory !=
+          previousTraitCollection.preferredContentSizeCategory) {
+    // Reset zoom scale when the window is resized (portrait to landscape,
+    // landscape to portrait or multi-window resizing), or if text size is
+    // modified as websites can adjust to the preferred content size (using
+    // font: -apple-system-body;). It avoids being in a different zoomed
+    // position from where the user initially zoomed.
+    __weak UIScrollView* weakScrollView =
+        self.contentViewProxy.contentView.scrollView;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
+                                 kFixZoomScaleOnRotationDelay.InNanoseconds()),
+                   dispatch_get_main_queue(), ^{
+                     weakScrollView.zoomScale = weakScrollView.minimumZoomScale;
+                   });
+  }
+  if (previousTraitCollection.preferredContentSizeCategory !=
+      self.traitCollection.preferredContentSizeCategory) {
+    // In case the preferred content size changes, the layout is dirty.
+    [self setNeedsLayout];
   }
 }
 

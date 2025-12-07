@@ -9,25 +9,39 @@ import './cra/cra-icon-button.js';
 import './genai-error.js';
 import './genai-feedback-buttons.js';
 import './genai-placeholder.js';
+import './spoken-message.js';
 
 import {Chip} from 'chrome://resources/cros_components/chip/chip.js';
 import {
+  createRef,
   css,
   html,
   map,
+  nothing,
   PropertyDeclarations,
+  ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
-import {ModelResponse} from '../core/on_device_model/types.js';
+import {usePlatformHandler} from '../core/lit/context.js';
+import {
+  GenaiResultType,
+  ModelResponse,
+} from '../core/on_device_model/types.js';
 import {
   ComputedState,
   ReactiveLitElement,
   ScopedAsyncComputed,
 } from '../core/reactive/lit.js';
-import {assertExhaustive, assertInstanceof} from '../core/utils/assert.js';
+import {HELP_URL} from '../core/url_constants.js';
+import {
+  assertExhaustive,
+  assertExists,
+  assertInstanceof,
+} from '../core/utils/assert.js';
 
-import {GenaiResultType} from './genai-error.js';
+import {CraIconButton} from './cra/cra-icon-button.js';
+import {withTooltip} from './directives/with-tooltip.js';
 
 /**
  * The title suggestion popup in playback page of Recorder App.
@@ -35,28 +49,31 @@ import {GenaiResultType} from './genai-error.js';
 export class RecordingTitleSuggestion extends ReactiveLitElement {
   static override styles = css`
     :host {
+      display: block;
+      z-index: 10;
+    }
+
+    #container {
       background-color: var(--cros-sys-base_elevated);
       border-radius: 12px;
       box-shadow: var(--cros-sys-app_elevation3);
-      display: block;
 
       /* To have the border-radius applied to content. */
       overflow: hidden;
-      z-index: 30;
+      max-width: inherit;
+      min-width: inherit;
+      resize: horizontal;
+
+      & > cra-icon-button {
+        position: absolute;
+        right: 4px;
+        top: 4px;
+      }
     }
 
     #header {
-      align-items: flex-end;
-      display: flex;
-      flex-flow: row;
       font: var(--cros-title-1-font);
-      justify-content: space-between;
-      padding: 4px 4px 0 16px;
-      position: relative;
-
-      & > cra-icon-button {
-        margin: 0;
-      }
+      padding: 16px 8px 0 16px;
     }
 
     #loading {
@@ -73,6 +90,10 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
       flex-flow: column;
       gap: 8px;
       padding: 16px 16px 24px;
+
+      & > cros-chip {
+        max-width: 100%;
+      }
     }
 
     #footer {
@@ -99,9 +120,9 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
       --background-color: var(--cros-sys-app_base_shaded);
 
       bottom: -8px;
-      inset-area: top span-left;
       position: absolute;
       position-anchor: --footer;
+      position-area: top span-left;
       z-index: 1;
 
       &::part(bottom-left-corner) {
@@ -112,90 +133,170 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
 
   static override properties: PropertyDeclarations = {
     suggestedTitles: {attribute: false},
+    transcription: {attribute: false},
+    wordCount: {attribute: false},
   };
 
   suggestedTitles: ScopedAsyncComputed<ModelResponse<string[]>|null>|null =
     null;
 
+  transcription: string|null = null;
+
+  wordCount = 0;
+
+  private readonly closeButtonRef = createRef<CraIconButton>();
+
+  private readonly platformHandler = usePlatformHandler();
+
+  get firstSuggestedTitleForTest(): Chip {
+    return assertExists(this.shadowRoot?.querySelector('.suggestion'));
+  }
+
+  nthSuggestedTitleForTest(index: number): Chip {
+    const allSuggestions = assertExists(
+      this.shadowRoot?.querySelectorAll('.suggestion'),
+    );
+    return assertInstanceof(allSuggestions[index], Chip);
+  }
+
+  override firstUpdated(): void {
+    // Automatically focus on the close button when the dialog is opened to make
+    // screen reader speak the content in the dialog.
+    const closeButton = assertExists(this.closeButtonRef.value);
+    closeButton.updateComplete.then(() => {
+      closeButton.focus();
+    });
+  }
+
+  private sendSuggestTitleEvent(
+    suggestionAccepted: boolean,
+    acceptedIndex = -1,
+  ) {
+    // Skip sending the event if there is no transcription or suggested titles.
+    const suggestedTitle = this.suggestedTitles?.value;
+    if (suggestedTitle === null || suggestedTitle === undefined) {
+      return;
+    }
+
+    const hasError = suggestedTitle.kind === 'error';
+    this.platformHandler.eventsSender.sendSuggestTitleEvent({
+      acceptedSuggestionIndex: acceptedIndex,
+      responseError: hasError ? suggestedTitle.error : null,
+      suggestionAccepted,
+      wordCount: this.wordCount,
+    });
+  }
+
   private onCloseClick() {
     this.dispatchEvent(new Event('close'));
+    this.sendSuggestTitleEvent(/* suggestionAccepted= */ false);
   }
 
-  private onSuggestionClick(ev: PointerEvent) {
-    const target = assertInstanceof(ev.target, Chip);
-    this.dispatchEvent(new CustomEvent('change', {detail: target.label}));
+  private onSuggestionClick(label: string, index: number) {
+    this.dispatchEvent(new CustomEvent('change', {detail: label}));
+    this.sendSuggestTitleEvent(/* suggestionAccepted= */ true, index);
   }
 
-  private renderSuggestion(suggestion: string) {
-    // TODO: b/336963138 - Handle when the suggestion is too long to fit in one
-    // line. Currently the cros-chip (and underlying md-chip) can't handle
-    // either multiline or setting width / text-overflow: ellipsis, so we might
-    // need to change to use our own component.
+  private renderSuggestion(suggestion: string, index: number) {
     return html`<cros-chip
+      show-tooltip-when-truncated
       type="input"
       label=${suggestion}
       class="suggestion"
-      @click=${this.onSuggestionClick}
+      @click=${() => this.onSuggestionClick(suggestion, index)}
     ></cros-chip>`;
   }
 
-  private renderSuggestionFooter() {
+  private renderSuggestionFooter(result: string) {
     return html`
       <div id="footer">
         ${i18n.genAiDisclaimerText}
-        <!-- TODO: b/336963138 - Add correct link -->
-        <a href="javascript:;">${i18n.genAiLearnMoreLink}</a>
+        <a
+          href=${HELP_URL}
+          target="_blank"
+          aria-label=${i18n.genAiLearnMoreLinkTooltip}
+        >
+          ${i18n.genAiLearnMoreLink}
+        </a>
       </div>
-      <genai-feedback-buttons></genai-feedback-buttons>
+      <genai-feedback-buttons
+        .resultType=${GenaiResultType.TITLE_SUGGESTION}
+        .result=${result}
+        .transcription=${this.transcription}
+      ></genai-feedback-buttons>
     `;
   }
 
   private renderContent() {
-    // TODO(pihsun): There should also be a consent / download model / loading
-    // state for title suggestion too. Implement it when the UI spec is done.
     if (this.suggestedTitles === null ||
         this.suggestedTitles.state !== ComputedState.DONE ||
         this.suggestedTitles.value === null) {
-      // TOOD(pihsun): Handle error.
       return html`<div id="loading">
-        <genai-placeholder></genai-placeholder>
+        <genai-placeholder
+          aria-label=${i18n.titleSuggestionStartedStatusMessage}
+          aria-live="polite"
+          role="status"
+          tabindex="-1"
+        ></genai-placeholder>
       </div>`;
     }
     const suggestedTitles = this.suggestedTitles.value;
     switch (suggestedTitles.kind) {
       case 'error': {
-        return html`<genai-error
-          .error=${suggestedTitles.error}
-          .resultType=${GenaiResultType.TITLE_SUGGESTION}
-        ></genai-error>`;
+        return html`<spoken-message role="status" aria-live="polite">
+            ${i18n.titleSuggestionFailedStatusMessage}
+          </spoken-message>
+          <genai-error
+            .error=${suggestedTitles.error}
+            .resultType=${GenaiResultType.TITLE_SUGGESTION}
+          ></genai-error>`;
       }
       case 'success': {
         const suggestions = map(
           suggestedTitles.result,
-          (s) => this.renderSuggestion(s),
+          (s, index) => this.renderSuggestion(s, index),
         );
-        return html`<div id="suggestions">${suggestions}</div>
-          ${this.renderSuggestionFooter()}`;
+        const concatenatedTitles =
+          suggestedTitles.result.map((title) => '- ' + title).join('\n');
+        return html`<spoken-message role="status" aria-live="polite">
+            ${i18n.titleSuggestionFinishedStatusMessage}
+          </spoken-message>
+          <div id="suggestions">${suggestions}</div>
+          ${this.renderSuggestionFooter(concatenatedTitles)}`;
       }
       default:
         assertExhaustive(suggestedTitles);
     }
   }
 
+  private renderHeader(): RenderResult {
+    if (this.suggestedTitles?.value?.kind === 'error') {
+      return nothing;
+    }
+    return html`<div id="header">${i18n.titleSuggestionHeader}</div>`;
+  }
+
   override render(): RenderResult {
     return html`
-      <div id="header">
-        <span>${i18n.titleSuggestionHeader}</span>
+      <div
+        id="container"
+        role="dialog"
+        aria-label=${i18n.titleSuggestionHeader}
+      >
+        ${this.renderHeader()}
         <cra-icon-button
           buttonstyle="floating"
           size="small"
           shape="circle"
           @click=${this.onCloseClick}
+          aria-label=${i18n.closeDialogButtonTooltip}
+          ${ref(this.closeButtonRef)}
+          ${withTooltip()}
         >
           <cra-icon slot="icon" name="close"></cra-icon>
         </cra-icon-button>
+        ${this.renderContent()}
       </div>
-      ${this.renderContent()}
     `;
   }
 }

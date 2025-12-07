@@ -73,22 +73,21 @@ void CommonSavedAccountManagerBubbleController::OnCredentialEdited(
 
 void CommonSavedAccountManagerBubbleController::
     OnGooglePasswordManagerLinkClicked(
-        password_manager::ManagePasswordsReferrer refferer) {
+        password_manager::ManagePasswordsReferrer referrer) {
   if (delegate_) {
-    delegate_->NavigateToPasswordManagerSettingsPage(refferer);
+    delegate_->NavigateToPasswordManagerSettingsPage(referrer);
   }
 }
 
 std::u16string
 CommonSavedAccountManagerBubbleController::GetPrimaryAccountEmail() {
-  Profile* profile = GetProfile();
-  return GetPrimaryAccountEmailFromProfile(profile);
+  return GetPrimaryAccountEmailFromProfile(GetProfile());
 }
 
 void CommonSavedAccountManagerBubbleController::OnUserAuthenticationCompleted(
     base::OnceCallback<void(bool)> completion,
     bool authentication_result) {
-  if (authentication_result) {
+  if (authentication_result && delegate_) {
     delegate_->OnPasswordsRevealed();
   }
   std::move(completion).Run(authentication_result);

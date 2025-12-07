@@ -7,9 +7,11 @@
 #include <memory>
 #include <ostream>
 
+#include "base/time/clock.h"
+#include "chrome/browser/web_applications/locks/partitioned_lock_holder.h"
+#include "chrome/browser/web_applications/locks/partitioned_lock_manager.h"
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
@@ -73,10 +75,44 @@ WebContentsManager& Lock::web_contents_manager() {
   return lock_manager_->provider().web_contents_manager();
 }
 
-Lock::Lock(std::unique_ptr<content::PartitionedLockHolder> holder,
-           base::WeakPtr<WebAppLockManager> lock_manager)
-    : holder_(std::move(holder)), lock_manager_(std::move(lock_manager)) {}
+VisitedManifestManager& Lock::visited_manifest_manager() {
+  CHECK(lock_manager_);
+  return lock_manager_->provider().visited_manifest_manager();
+}
 
+WebAppOriginAssociationManager& Lock::origin_association_manager() {
+  CHECK(lock_manager_);
+  return lock_manager_->provider().origin_association_manager();
+}
+
+base::Clock& Lock::clock() {
+  CHECK(lock_manager_);
+  return lock_manager_->provider().clock();
+}
+
+Lock::Lock() = default;
 Lock::~Lock() = default;
+
+bool Lock::IsGranted() const {
+  return !!lock_manager_;
+}
+
+PartitionedLockHolder& Lock::InitializeLockHolderForAcquire(
+    base::PassKey<WebAppLockManager>) {
+  holder_ = std::make_unique<PartitionedLockHolder>();
+  return *holder_;
+}
+
+PartitionedLockHolder& Lock::InitializeLockHolderForUpgrade(
+    std::unique_ptr<Lock> from_lock,
+    base::PassKey<WebAppLockManager>) {
+  holder_ = std::move(from_lock->holder_);
+  return *holder_;
+}
+
+void Lock::GrantLockResources(WebAppLockManager& lock_manager) {
+  CHECK(!lock_manager_);
+  lock_manager_ = lock_manager.GetWeakPtr();
+}
 
 }  // namespace web_app

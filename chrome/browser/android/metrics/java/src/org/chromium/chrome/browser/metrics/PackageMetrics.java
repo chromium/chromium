@@ -7,23 +7,23 @@ import android.app.usage.StorageStats;
 import android.app.usage.StorageStatsManager;
 import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.os.Build;
 import android.os.Environment;
 import android.os.Process;
 import android.os.storage.StorageManager;
 import android.os.storage.StorageVolume;
 
-import androidx.annotation.RequiresApi;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 
 import java.io.IOException;
 import java.util.UUID;
 
 /** Records UMA about the size of data, cache, and code size on disk for Android. */
+@NullMarked
 public class PackageMetrics {
     private static final String TAG = "PackageMetrics";
 
@@ -33,8 +33,7 @@ public class PackageMetrics {
         public long cacheSize;
     }
 
-    @RequiresApi(26)
-    private static PackageMetricsData getPackageStatsForAndroidO() {
+    private static @Nullable PackageMetricsData getPackageStatsForAndroidO() {
         Context context = ContextUtils.getApplicationContext();
         StorageManager storageManager = context.getSystemService(StorageManager.class);
         StorageStatsManager storageStatsManager =
@@ -75,12 +74,10 @@ public class PackageMetrics {
     }
 
     /**
-     * Records UMA about the size of data, cache, and code size on disk for Android.
-     * Should be called on background thread since some of the API calls can be slow.
+     * Records UMA about the size of data, cache, and code size on disk for Android. Should be
+     * called on background thread since some of the API calls can be slow.
      */
     public static void recordPackageStats() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
-
         PackageMetricsData data = getPackageStatsForAndroidO();
         if (data != null) {
             RecordHistogram.recordCustomCountHistogram(

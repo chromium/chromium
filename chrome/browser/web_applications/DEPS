@@ -1,10 +1,11 @@
 include_rules = {
+  "+ash/edusumer",
   "+base",
   "+chrome/browser",
   "+chrome/common/chromeos/extensions",
-  "+components/services/storage/indexed_db/locks",
   "+components/web_package",
   "+components/webapps/services/web_app_origin_association",
+  "+components/webapps/isolated_web_apps",
   "+content/browser/background_fetch",
   "+mojo/core/embedder",
   "+mojo/public/cpp/bindings",
@@ -13,4 +14,10 @@ include_rules = {
   "+third_party/fuzztest",
   "+third_party/liburlpattern",
   "+url",
+}
+
+specific_include_rules = {
+  "system_media_controls_bridge_browsertest.cc": [
+    "+components/system_media_controls/system_media_controls.h",
+  ],
 }

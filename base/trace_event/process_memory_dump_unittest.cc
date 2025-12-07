@@ -2,12 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "base/trace_event/process_memory_dump.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/memory/aligned_memory.h"
 #include "base/memory/ptr_util.h"
@@ -24,20 +31,19 @@
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
-#include "winbase.h"
+#include "base/win/winbase_shim.h"
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <sys/mman.h>
 #endif
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 namespace {
 
 const MemoryDumpArgs kDetailedDumpArgs = {MemoryDumpLevelOfDetail::kDetailed};
-const char* const kTestDumpNameAllowlist[] = {
+constexpr std::string_view kTestDumpNameAllowlist[] = {
     "Allowlisted/TestName", "Allowlisted/TestName_0x?",
-    "Allowlisted/0x?/TestName", "Allowlisted/0x?", nullptr};
+    "Allowlisted/0x?/TestName", "Allowlisted/0x?"};
 
 void* Map(size_t size) {
 #if BUILDFLAG(IS_WIN)
@@ -60,7 +66,7 @@ void Unmap(void* addr, size_t size) {
 }
 
 std::optional<size_t> CountResidentBytesInSharedMemory(
-    const WritableSharedMemoryMapping& mapping) {
+    WritableSharedMemoryMapping& mapping) {
   // SAFETY: We need the actual mapped memory size here. There's no public
   // method to get this as a span, so we need to construct it unsafely. The
   // mapped_size() is larger than `mem.size()` but represents the actual memory
@@ -154,74 +160,10 @@ TEST(ProcessMemoryDumpTest, Clear) {
   ASSERT_EQ(nullptr, pmd1->GetAllocatorDump("mad2"));
   ASSERT_EQ(mad3, pmd1->GetAllocatorDump("mad3"));
   ASSERT_EQ(shared_mad1, pmd1->GetSharedGlobalAllocatorDump(shared_mad_guid1));
-  ASSERT_EQ(MemoryAllocatorDump::Flags::DEFAULT, shared_mad1->flags());
+  ASSERT_EQ(MemoryAllocatorDump::Flags::kDefault, shared_mad1->flags());
   ASSERT_EQ(shared_mad2, pmd1->GetSharedGlobalAllocatorDump(shared_mad_guid2));
-  ASSERT_EQ(MemoryAllocatorDump::Flags::WEAK, shared_mad2->flags());
+  ASSERT_EQ(MemoryAllocatorDump::Flags::kWeak, shared_mad2->flags());
 
-  traced_value = std::make_unique<TracedValue>();
-  pmd1->SerializeAllocatorDumpsInto(traced_value.get());
-
-  pmd1.reset();
-}
-
-TEST(ProcessMemoryDumpTest, TakeAllDumpsFrom) {
-  std::unique_ptr<TracedValue> traced_value(new TracedValue);
-  std::unordered_map<AllocationContext, AllocationMetrics> metrics_by_context;
-  metrics_by_context[AllocationContext()] = {1, 1};
-  TraceEventMemoryOverhead overhead;
-
-  std::unique_ptr<ProcessMemoryDump> pmd1(
-      new ProcessMemoryDump(kDetailedDumpArgs));
-  auto* mad1_1 = pmd1->CreateAllocatorDump("pmd1/mad1");
-  auto* mad1_2 = pmd1->CreateAllocatorDump("pmd1/mad2");
-  pmd1->AddOwnershipEdge(mad1_1->guid(), mad1_2->guid());
-  pmd1->DumpHeapUsage(metrics_by_context, overhead, "pmd1/heap_dump1");
-  pmd1->DumpHeapUsage(metrics_by_context, overhead, "pmd1/heap_dump2");
-
-  std::unique_ptr<ProcessMemoryDump> pmd2(
-      new ProcessMemoryDump(kDetailedDumpArgs));
-  auto* mad2_1 = pmd2->CreateAllocatorDump("pmd2/mad1");
-  auto* mad2_2 = pmd2->CreateAllocatorDump("pmd2/mad2");
-  pmd2->AddOwnershipEdge(mad2_1->guid(), mad2_2->guid());
-  pmd2->DumpHeapUsage(metrics_by_context, overhead, "pmd2/heap_dump1");
-  pmd2->DumpHeapUsage(metrics_by_context, overhead, "pmd2/heap_dump2");
-
-  MemoryAllocatorDumpGuid shared_mad_guid1(1);
-  MemoryAllocatorDumpGuid shared_mad_guid2(2);
-  auto* shared_mad1 = pmd2->CreateSharedGlobalAllocatorDump(shared_mad_guid1);
-  auto* shared_mad2 =
-      pmd2->CreateWeakSharedGlobalAllocatorDump(shared_mad_guid2);
-
-  pmd1->TakeAllDumpsFrom(pmd2.get());
-
-  // Make sure that pmd2 is empty but still usable after it has been emptied.
-  ASSERT_TRUE(pmd2->allocator_dumps().empty());
-  ASSERT_TRUE(pmd2->allocator_dumps_edges().empty());
-  pmd2->CreateAllocatorDump("pmd2/this_mad_stays_with_pmd2");
-  ASSERT_EQ(1u, pmd2->allocator_dumps().size());
-  ASSERT_EQ(1u, pmd2->allocator_dumps().count("pmd2/this_mad_stays_with_pmd2"));
-  pmd2->AddOwnershipEdge(MemoryAllocatorDumpGuid(42),
-                         MemoryAllocatorDumpGuid(4242));
-
-  // Check that calling serialization routines doesn't cause a crash.
-  pmd2->SerializeAllocatorDumpsInto(traced_value.get());
-
-  // Free the |pmd2| to check that the memory ownership of the two MAD(s)
-  // has been transferred to |pmd1|.
-  pmd2.reset();
-
-  // Now check that |pmd1| has been effectively merged.
-  ASSERT_EQ(6u, pmd1->allocator_dumps().size());
-  ASSERT_EQ(1u, pmd1->allocator_dumps().count("pmd1/mad1"));
-  ASSERT_EQ(1u, pmd1->allocator_dumps().count("pmd1/mad2"));
-  ASSERT_EQ(1u, pmd1->allocator_dumps().count("pmd2/mad1"));
-  ASSERT_EQ(1u, pmd1->allocator_dumps().count("pmd1/mad2"));
-  ASSERT_EQ(2u, pmd1->allocator_dumps_edges().size());
-  ASSERT_EQ(shared_mad1, pmd1->GetSharedGlobalAllocatorDump(shared_mad_guid1));
-  ASSERT_EQ(shared_mad2, pmd1->GetSharedGlobalAllocatorDump(shared_mad_guid2));
-  ASSERT_TRUE(MemoryAllocatorDump::Flags::WEAK & shared_mad2->flags());
-
-  // Check that calling serialization routines doesn't cause a crash.
   traced_value = std::make_unique<TracedValue>();
   pmd1->SerializeAllocatorDumpsInto(traced_value.get());
 
@@ -307,7 +249,7 @@ TEST(ProcessMemoryDumpTest, Suballocations) {
 
   // Same here, but this time create an allocation with an explicit guid.
   auto* pic2_dump = pmd->CreateAllocatorDump("picturemanager/picture2",
-                                            MemoryAllocatorDumpGuid(0x42));
+                                             MemoryAllocatorDumpGuid(0x42));
   pmd->AddSuballocation(pic2_dump->guid(), allocator_dump_name);
 
   // Now check that AddSuballocation() has created anonymous child dumps under
@@ -322,7 +264,7 @@ TEST(ProcessMemoryDumpTest, Suballocations) {
 
   // Finally check that AddSuballocation() has created also the
   // edges between the pictures and the anonymous allocator child dumps.
-  bool found_edge[2]{false, false};
+  std::array<bool, 2> found_edge = {false, false};
   for (const auto& e : pmd->allocator_dumps_edges()) {
     found_edge[0] |= (e.first == pic1_dump->guid() &&
                       e.second.target == anon_node_1_it->second->guid());
@@ -333,7 +275,7 @@ TEST(ProcessMemoryDumpTest, Suballocations) {
   ASSERT_TRUE(found_edge[1]);
 
   // Check that calling serialization routines doesn't cause a crash.
-  std::unique_ptr<TracedValue> traced_value(new TracedValue);
+  auto traced_value = std::make_unique<TracedValue>();
   pmd->SerializeAllocatorDumpsInto(traced_value.get());
 
   pmd.reset();
@@ -345,23 +287,23 @@ TEST(ProcessMemoryDumpTest, GlobalAllocatorDumpTest) {
   MemoryAllocatorDumpGuid shared_mad_guid(1);
   auto* shared_mad1 = pmd->CreateWeakSharedGlobalAllocatorDump(shared_mad_guid);
   ASSERT_EQ(shared_mad_guid, shared_mad1->guid());
-  ASSERT_EQ(MemoryAllocatorDump::Flags::WEAK, shared_mad1->flags());
+  ASSERT_EQ(MemoryAllocatorDump::Flags::kWeak, shared_mad1->flags());
 
   auto* shared_mad2 = pmd->GetSharedGlobalAllocatorDump(shared_mad_guid);
   ASSERT_EQ(shared_mad1, shared_mad2);
-  ASSERT_EQ(MemoryAllocatorDump::Flags::WEAK, shared_mad1->flags());
+  ASSERT_EQ(MemoryAllocatorDump::Flags::kWeak, shared_mad1->flags());
 
   auto* shared_mad3 = pmd->CreateWeakSharedGlobalAllocatorDump(shared_mad_guid);
   ASSERT_EQ(shared_mad1, shared_mad3);
-  ASSERT_EQ(MemoryAllocatorDump::Flags::WEAK, shared_mad1->flags());
+  ASSERT_EQ(MemoryAllocatorDump::Flags::kWeak, shared_mad1->flags());
 
   auto* shared_mad4 = pmd->CreateSharedGlobalAllocatorDump(shared_mad_guid);
   ASSERT_EQ(shared_mad1, shared_mad4);
-  ASSERT_EQ(MemoryAllocatorDump::Flags::DEFAULT, shared_mad1->flags());
+  ASSERT_EQ(MemoryAllocatorDump::Flags::kDefault, shared_mad1->flags());
 
   auto* shared_mad5 = pmd->CreateWeakSharedGlobalAllocatorDump(shared_mad_guid);
   ASSERT_EQ(shared_mad1, shared_mad5);
-  ASSERT_EQ(MemoryAllocatorDump::Flags::DEFAULT, shared_mad1->flags());
+  ASSERT_EQ(MemoryAllocatorDump::Flags::kDefault, shared_mad1->flags());
 }
 
 TEST(ProcessMemoryDumpTest, SharedMemoryOwnershipTest) {
@@ -488,7 +430,6 @@ TEST(ProcessMemoryDumpTest, GuidsTest) {
   ASSERT_EQ(mad1->guid(), pmd1.GetDumpId("foo"));
 }
 
-#if defined(COUNT_RESIDENT_BYTES_SUPPORTED)
 #if BUILDFLAG(IS_FUCHSIA)
 // TODO(crbug.com/42050620): Counting resident bytes is not supported on
 // Fuchsia.
@@ -582,7 +523,5 @@ TEST(ProcessMemoryDumpTest, MAYBE_CountResidentBytesInSharedMemory) {
     ASSERT_EQ(res3.value(), kTouchedMemorySize);
   }
 }
-#endif  // defined(COUNT_RESIDENT_BYTES_SUPPORTED)
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

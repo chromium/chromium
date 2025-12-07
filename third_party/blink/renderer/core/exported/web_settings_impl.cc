@@ -30,6 +30,8 @@
 
 #include "third_party/blink/renderer/core/exported/web_settings_impl.h"
 
+#include <optional>
+
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -149,11 +151,6 @@ void WebSettingsImpl::SetRequireTransientActivationForShowFileOrDirectoryPicker(
       required);
 }
 
-void WebSettingsImpl::SetRequireTransientActivationForHtmlFullscreen(
-    bool required) {
-  settings_->SetRequireTransientActivationForHtmlFullscreen(required);
-}
-
 void WebSettingsImpl::SetAutoZoomFocusedEditableToLegibleScale(
     bool auto_zoom_focused_editable_to_legible_scale) {
   auto_zoom_focused_editable_to_legible_scale_ =
@@ -164,8 +161,9 @@ void WebSettingsImpl::SetTextAutosizingEnabled(bool enabled) {
   dev_tools_emulator_->SetTextAutosizingEnabled(enabled);
 }
 
+// TODO(pdr): Rename this OSTextScaleFactor.
 void WebSettingsImpl::SetAccessibilityFontScaleFactor(float font_scale_factor) {
-  settings_->SetAccessibilityFontScaleFactor(font_scale_factor);
+  dev_tools_emulator_->SetAccessibilityFontScaleFactor(font_scale_factor);
 }
 
 void WebSettingsImpl::SetAccessibilityTextSizeContrastFactor(
@@ -273,7 +271,7 @@ void WebSettingsImpl::SetShouldReuseGlobalForUnownedMainFrame(bool enabled) {
 }
 
 void WebSettingsImpl::SetPluginsEnabled(bool enabled) {
-  dev_tools_emulator_->SetPluginsEnabled(enabled);
+  settings_->SetPluginsEnabled(enabled);
 }
 
 void WebSettingsImpl::SetAvailablePointerTypes(int pointers) {
@@ -330,6 +328,10 @@ void WebSettingsImpl::SetAllowScriptsToCloseWindows(bool allow) {
   settings_->SetAllowScriptsToCloseWindows(allow);
 }
 
+void WebSettingsImpl::SetAllowWindowFocusWithoutUserGesture(bool allow) {
+  settings_->SetAllowWindowFocusWithoutUserGesture(allow);
+}
+
 void WebSettingsImpl::SetWideViewportQuirkEnabled(
     bool wide_viewport_quirk_enabled) {
   settings_->SetWideViewportQuirkEnabled(wide_viewport_quirk_enabled);
@@ -352,6 +354,10 @@ void WebSettingsImpl::SetDoubleTapToZoomEnabled(
 
 void WebSettingsImpl::SetDownloadableBinaryFontsEnabled(bool enabled) {
   settings_->SetDownloadableBinaryFontsEnabled(enabled);
+}
+
+void WebSettingsImpl::SetDynamicSafeAreaInsetsEnabled(bool enabled) {
+  settings_->SetDynamicSafeAreaInsetsEnabled(enabled);
 }
 
 void WebSettingsImpl::SetJavaScriptCanAccessClipboard(bool enabled) {
@@ -549,8 +555,12 @@ void WebSettingsImpl::SetStrictlyBlockBlockableMixedContent(bool enabled) {
   settings_->SetStrictlyBlockBlockableMixedContent(enabled);
 }
 
-void WebSettingsImpl::SetPasswordEchoEnabled(bool flag) {
-  settings_->SetPasswordEchoEnabled(flag);
+void WebSettingsImpl::SetPasswordEchoEnabledPhysical(bool flag) {
+  settings_->SetPasswordEchoEnabledPhysical(flag);
+}
+
+void WebSettingsImpl::SetPasswordEchoEnabledTouch(bool flag) {
+  settings_->SetPasswordEchoEnabledTouch(flag);
 }
 
 void WebSettingsImpl::SetPasswordEchoDurationInSeconds(
@@ -639,8 +649,8 @@ void WebSettingsImpl::SetTargetBlankImpliesNoOpenerEnabledWillBeRemoved(
   settings_->SetTargetBlankImpliesNoOpenerEnabledWillBeRemoved(enabled);
 }
 
-void WebSettingsImpl::SetAllowNonEmptyNavigatorPlugins(bool enabled) {
-  settings_->SetAllowNonEmptyNavigatorPlugins(enabled);
+void WebSettingsImpl::SetIgnorePermissionForDeviceChangedEvent(bool enabled) {
+  settings_->SetIgnorePermissionForDeviceChangedEvent(enabled);
 }
 
 void WebSettingsImpl::SetCaretBrowsingEnabled(bool enabled) {
@@ -790,6 +800,10 @@ void WebSettingsImpl::SetSelectionClipboardBufferAvailable(bool available) {
   settings_->SetSelectionClipboardBufferAvailable(available);
 }
 
+void WebSettingsImpl::SetMiddleClickPasteAllowed(bool allowed) {
+  settings_->SetMiddleClickPasteAllowed(allowed);
+}
+
 void WebSettingsImpl::SetAccessibilityIncludeSvgGElement(bool include) {
   settings_->SetAccessibilityIncludeSvgGElement(include);
 }
@@ -808,6 +822,11 @@ void WebSettingsImpl::
         bool is_required) {
   settings_->SetRequireTransientActivationAndAuthorizationForSubAppsAPI(
       is_required);
+}
+
+void WebSettingsImpl::SetRootScrollbarThemeColor(
+    std::optional<SkColor> theme_color) {
+  settings_->SetRootScrollbarThemeColor(theme_color);
 }
 
 }  // namespace blink

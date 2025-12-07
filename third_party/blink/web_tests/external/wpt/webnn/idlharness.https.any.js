@@ -1,4 +1,4 @@
-// META: global=window,dedicatedworker
+// META: global=window,worker
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
 // META: script=./resources/utils.js
@@ -28,11 +28,9 @@ idl_test(
 
     self.context = await navigator.ml.createContext();
     self.builder = new MLGraphBuilder(self.context);
-    self.input =
-        builder.input('input', {dataType: 'float32', dimensions: [2, 3]});
+    self.input = builder.input('input', {dataType: 'float32', shape: [2, 3]});
     self.constant = builder.constant(
-        {dataType: 'float32', dimensions: [2, 3]},
-        new Float32Array(2 * 3).fill(1));
+        {dataType: 'float32', shape: [2, 3]}, new Float32Array(2 * 3).fill(1));
 
     self.output = builder.add(input, constant);
 

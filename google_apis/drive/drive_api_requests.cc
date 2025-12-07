@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -16,7 +18,6 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -112,6 +113,7 @@ void AttachProperties(const Properties& properties,
 std::string CreateMultipartUploadMetadataJson(
     const std::string& title,
     const std::string& parent_resource_id,
+    std::optional<std::string_view> converted_mime_type,
     const base::Time& modified_date,
     const base::Time& last_viewed_by_me_date,
     const Properties& properties) {
@@ -126,6 +128,10 @@ std::string CreateMultipartUploadMetadataJson(
     root.Set("parents", base::Value(std::move(parents)));
   }
 
+  if (converted_mime_type.has_value()) {
+    root.Set("mimeType", *converted_mime_type);
+  }
+
   if (!modified_date.is_null()) {
     root.Set("modifiedDate",
              google_apis::util::FormatTimeAsString(modified_date));
@@ -137,9 +143,7 @@ std::string CreateMultipartUploadMetadataJson(
   }
 
   AttachProperties(properties, root);
-  std::string json_string;
-  base::JSONWriter::Write(root, &json_string);
-  return json_string;
+  return base::WriteJson(root).value_or("");
 }
 
 }  // namespace
@@ -356,7 +360,7 @@ bool FilesInsertRequest::GetContentData(std::string* upload_content_type,
     root.Set("title", title_);
 
   AttachProperties(properties_, root);
-  base::JSONWriter::Write(root, upload_content);
+  *upload_content = base::WriteJson(root).value_or("");
 
   DVLOG(1) << "FilesInsert data: " << *upload_content_type << ", ["
            << *upload_content << "]";
@@ -426,7 +430,7 @@ bool FilesPatchRequest::GetContentData(std::string* upload_content_type,
   }
 
   AttachProperties(properties_, root);
-  base::JSONWriter::Write(root, upload_content);
+  *upload_content = base::WriteJson(root).value_or("");
 
   DVLOG(1) << "FilesPatch data: " << *upload_content_type << ", ["
            << *upload_content << "]";
@@ -479,7 +483,7 @@ bool FilesCopyRequest::GetContentData(std::string* upload_content_type,
   if (!title_.empty())
     root.Set("title", title_);
 
-  base::JSONWriter::Write(root, upload_content);
+  *upload_content = base::WriteJson(root).value_or("");
   DVLOG(1) << "FilesCopy data: " << *upload_content_type << ", ["
            << *upload_content << "]";
   return true;
@@ -662,7 +666,7 @@ bool ChildrenInsertRequest::GetContentData(std::string* upload_content_type,
   base::Value::Dict root;
   root.Set("id", id_);
 
-  base::JSONWriter::Write(root, upload_content);
+  *upload_content = base::WriteJson(root).value_or("");
   DVLOG(1) << "InsertResource data: " << *upload_content_type << ", ["
            << *upload_content << "]";
   return true;
@@ -737,7 +741,7 @@ bool InitiateUploadNewFileRequest::GetContentData(
   }
 
   AttachProperties(properties_, root);
-  base::JSONWriter::Write(root, upload_content);
+  *upload_content = base::WriteJson(root).value_or("");
 
   DVLOG(1) << "InitiateUploadNewFile data: " << *upload_content_type << ", ["
            << *upload_content << "]";
@@ -808,7 +812,7 @@ bool InitiateUploadExistingFileRequest::GetContentData(
     return false;
 
   *upload_content_type = util::kContentTypeApplicationJson;
-  base::JSONWriter::Write(root, upload_content);
+  *upload_content = base::WriteJson(root).value_or("");
   DVLOG(1) << "InitiateUploadExistingFile data: " << *upload_content_type
            << ", [" << *upload_content << "]";
   return true;
@@ -875,6 +879,7 @@ MultipartUploadNewFileDelegate::MultipartUploadNewFileDelegate(
     const std::string& title,
     const std::string& parent_resource_id,
     const std::string& content_type,
+    std::optional<std::string_view> converted_mime_type,
     int64_t content_length,
     const base::Time& modified_date,
     const base::Time& last_viewed_by_me_date,
@@ -887,6 +892,7 @@ MultipartUploadNewFileDelegate::MultipartUploadNewFileDelegate(
           task_runner,
           CreateMultipartUploadMetadataJson(title,
                                             parent_resource_id,
+                                            converted_mime_type,
                                             modified_date,
                                             last_viewed_by_me_date,
                                             properties),
@@ -896,12 +902,14 @@ MultipartUploadNewFileDelegate::MultipartUploadNewFileDelegate(
           std::move(callback),
           progress_callback),
       has_modified_date_(!modified_date.is_null()),
+      convert_(converted_mime_type.has_value()),
       url_generator_(url_generator) {}
 
 MultipartUploadNewFileDelegate::~MultipartUploadNewFileDelegate() = default;
 
 GURL MultipartUploadNewFileDelegate::GetURL() const {
-  return url_generator_.GetMultipartUploadNewFileUrl(has_modified_date_);
+  return url_generator_.GetMultipartUploadNewFileUrl(has_modified_date_,
+                                                     convert_);
 }
 
 HttpRequestMethod MultipartUploadNewFileDelegate::GetRequestType() const {
@@ -925,18 +933,19 @@ MultipartUploadExistingFileDelegate::MultipartUploadExistingFileDelegate(
     const DriveApiUrlGenerator& url_generator,
     FileResourceCallback callback,
     ProgressCallback progress_callback)
-    : MultipartUploadRequestBase(
-          task_runner,
-          CreateMultipartUploadMetadataJson(title,
-                                            parent_resource_id,
-                                            modified_date,
-                                            last_viewed_by_me_date,
-                                            properties),
-          content_type,
-          content_length,
-          local_file_path,
-          std::move(callback),
-          progress_callback),
+    : MultipartUploadRequestBase(task_runner,
+                                 CreateMultipartUploadMetadataJson(
+                                     title,
+                                     parent_resource_id,
+                                     /*converted_mime_type=*/std::nullopt,
+                                     modified_date,
+                                     last_viewed_by_me_date,
+                                     properties),
+                                 content_type,
+                                 content_length,
+                                 local_file_path,
+                                 std::move(callback),
+                                 progress_callback),
       resource_id_(resource_id),
       etag_(etag),
       has_modified_date_(!modified_date.is_null()),
@@ -1042,7 +1051,7 @@ bool PermissionsInsertRequest::GetContentData(std::string* upload_content_type,
       break;
   }
   root.Set("value", value_);
-  base::JSONWriter::Write(root, upload_content);
+  *upload_content = base::WriteJson(root).value_or("");
   return true;
 }
 
@@ -1149,7 +1158,7 @@ void BatchUploadRequest::OnChildRequestPrepared(RequestID request_id,
                                                 ApiErrorCode result) {
   DCHECK(CalledOnValidThread());
   auto const child = GetChildEntry(request_id);
-  CHECK(child != child_requests_.end(), base::NotFatalUntil::M130);
+  CHECK(child != child_requests_.end());
   if (IsSuccessfulDriveApiErrorCode(result)) {
     (*child)->prepared = true;
   } else {
@@ -1214,8 +1223,8 @@ void BatchUploadRequest::MayCompletePrepare() {
     HttpRequestMethod method = child->request->GetRequestType();
     const std::string header = base::StringPrintf(
         kBatchUploadRequestFormat, HttpRequestMethodToString(method).c_str(),
-        url.path().c_str(), url_generator_.GetBatchUploadUrl().host().c_str(),
-        type.c_str());
+        url.GetPath().c_str(),
+        url_generator_.GetBatchUploadUrl().GetHost().c_str(), type.c_str());
 
     child->data_offset = header.size();
     child->data_size = data.size();

@@ -8,6 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
+#include "content/browser/file_system_access/features.h"
 #include "content/browser/file_system_access/file_path_watcher/file_path_watcher_kqueue.h"
 
 #if !BUILDFLAG(IS_IOS)
@@ -18,12 +19,19 @@ namespace content {
 
 namespace {
 
+// From experiment, we determined that the max calls to FSEventStreamCreate per
+// process is 512. There is a higher system wide limit (at least 970), but we
+// use the process limit since we'll hit it first.
+constexpr size_t kMaxCreateFSEventCalls = 512u;
+
 class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
  public:
   FilePathWatcherImpl() = default;
   FilePathWatcherImpl(const FilePathWatcherImpl&) = delete;
   FilePathWatcherImpl& operator=(const FilePathWatcherImpl&) = delete;
   ~FilePathWatcherImpl() override = default;
+
+  size_t current_usage() const override { return impl_->current_usage(); }
 
   bool Watch(const base::FilePath& path,
              Type type,
@@ -44,6 +52,15 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
     return impl_->Watch(path, type, callback);
   }
 
+  bool WatchWithChangeInfo(
+      const base::FilePath& path,
+      const WatchOptions& options,
+      const FilePathWatcher::CallbackWithChangeInfo& callback,
+      const FilePathWatcher::UsageChangeCallback& usage_callback) override {
+    impl_ = std::make_unique<FilePathWatcherFSEvents>();
+    return impl_->WatchWithChangeInfo(path, options, callback, usage_callback);
+  }
+
   void Cancel() override {
     if (impl_.get()) {
       impl_->Cancel();
@@ -59,5 +76,14 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
 
 FilePathWatcher::FilePathWatcher()
     : FilePathWatcher(std::make_unique<FilePathWatcherImpl>()) {}
+
+// static
+size_t FilePathWatcher::GetQuotaLimitImpl() {
+  // TODO(crbug.com/383148762): This is only applicable to the
+  // `FilePathWatcherFSEvents` implementation. `FilePathWatcherKQueue` is unused
+  // so this shouldn't matter.
+  return kMaxCreateFSEventCalls *
+         features::kFileSystemObserverQuotaLimitMacPercent.Get();
+}
 
 }  // namespace content

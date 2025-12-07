@@ -7,15 +7,19 @@ package org.chromium.chrome.browser.payments;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AutofillAddress;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /** The class to observe address changes in 'settings/Autofill and payment'. */
+@NullMarked
 public class SettingsAutofillAndPaymentsObserver {
     private static final List<Observer> sObservers = new ArrayList<>();
-    private static SettingsAutofillAndPaymentsObserver sSettingsAutofillAndPaymentsObserver;
+    private static @Nullable SettingsAutofillAndPaymentsObserver
+            sSettingsAutofillAndPaymentsObserver;
 
     /** The interface to observe address and card changes in 'settings/Autofill and payment'. */
     public interface Observer {

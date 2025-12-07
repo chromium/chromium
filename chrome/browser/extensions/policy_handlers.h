@@ -9,8 +9,10 @@
 
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace policy {
 class PolicyMap;
@@ -36,10 +38,10 @@ class ExtensionListPolicyHandler : public policy::ListPolicyHandler {
  protected:
   // ListPolicyHandler methods:
 
-  // Checks whether |value| contains a valid extension id (or a wildcard).
+  // Checks whether `value` contains a valid extension id (or a wildcard).
   bool CheckListEntry(const base::Value& value) override;
 
-  // Sets |prefs| at pref_path() to |filtered_list|.
+  // Sets `prefs` at pref_path() to `filtered_list`.
   void ApplyList(base::Value::List filtered_list, PrefValueMap* prefs) override;
 
  private:
@@ -52,8 +54,6 @@ class ExtensionListPolicyHandler : public policy::ListPolicyHandler {
 // On ChromeOS the policy values will be filtered before updating the prefs,
 // such that the prefs on Ash only contain the extensions that must be force
 // installed on Ash.
-// Similarly the prefs on Lacros will only contain the extensions that must
-// be force installed on Lacros.
 class ExtensionInstallForceListPolicyHandler
     : public policy::TypeCheckingPolicyHandler {
  public:
@@ -70,26 +70,6 @@ class ExtensionInstallForceListPolicyHandler
   void ApplyPolicySettings(const policy::PolicyMap& policies,
                            PrefValueMap* prefs) override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Returns a `base::Value::Dict` with the extensions that must be force
-  // installed in Ash. If Lacros is disabled this is the full extensions list,
-  // and if Lacros is enabled this only contains the extensions that must run on
-  // the Ash side.
-  //
-  // Returns nullopt if the policy is unset.
-  std::optional<base::Value::Dict> GetAshPolicyDict(
-      const policy::PolicyMap& policy_map);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Returns a `base::Value::Dict` with the extensions that must be force
-  // installed in Lacros.
-  //
-  // Returns nullopt if the policy is unset.
-  std::optional<base::Value::Dict> GetLacrosPolicyDict(
-      const policy::PolicyMap& policy_map);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
   // Returns a `base::Value::Dict` with the extensions that must be force
   // installed.
   //
@@ -98,7 +78,7 @@ class ExtensionInstallForceListPolicyHandler
       const policy::PolicyMap& policy_map);
 
  private:
-  // Parses the data in |policy_value| and writes them to |extension_dict|.
+  // Parses the data in `policy_value` and writes them to `extension_dict`.
   bool ParseList(const base::Value* policy_value,
                  base::Value::Dict* extension_dict,
                  policy::PolicyErrorMap* errors);
@@ -170,8 +150,8 @@ class ExtensionSettingsPolicyHandler
 
  private:
   // Performs sanitization for both Check/ApplyPolicySettings(). If an entry
-  // in |dict_value| doesn't pass validation, that entry is removed from the
-  // dictionary. Validation errors are stored in |errors| if non-null.
+  // in `dict_value` doesn't pass validation, that entry is removed from the
+  // dictionary. Validation errors are stored in `errors` if non-null.
   void SanitizePolicySettings(base::Value* dict_value,
                               policy::PolicyErrorMap* errors);
 };

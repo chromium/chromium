@@ -57,12 +57,12 @@ TEST_F(LayoutQuoteTest, Locale) {
   )HTML");
 
   // The "ja" element should be "ja".
-  // Its `::before`/`::after` pseudo elements should be parent lang "en".
+  // Its `::before`/`::after` pseudo-elements should be parent lang "en".
   // Its text child should be "ja".
   LayoutQuoteTest::CheckQuoteLayoutObjectChildrenLang("ja", "ja", "en");
 
   // The "fr" element should be "fr".
-  // Its pseudo elements should be parent lang "ja".
+  // Its pseudo-elements should be parent lang "ja".
   // Its text child should be "fr".
   LayoutQuoteTest::CheckQuoteLayoutObjectChildrenLang("fr", "fr", "ja");
 

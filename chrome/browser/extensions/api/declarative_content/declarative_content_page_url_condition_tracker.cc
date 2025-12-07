@@ -7,12 +7,14 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "components/url_matcher/url_matcher_factory.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/declarative/declarative_constants.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -178,7 +180,7 @@ void DeclarativeContentPageUrlConditionTracker::TrackForWebContents(
     content::WebContents* contents) {
   per_web_contents_tracker_[contents] = std::make_unique<PerWebContentsTracker>(
       contents, &url_matcher_,
-      base::BindRepeating(&Delegate::RequestEvaluation,
+      base::BindRepeating(&Delegate::NotifyPredicateStateUpdated,
                           base::Unretained(delegate_)),
       base::BindOnce(&DeclarativeContentPageUrlConditionTracker::
                          DeletePerWebContentsTracker,
@@ -204,7 +206,7 @@ bool DeclarativeContentPageUrlConditionTracker::EvaluatePredicate(
   const DeclarativeContentPageUrlPredicate* typed_predicate =
       static_cast<const DeclarativeContentPageUrlPredicate*>(predicate);
   auto loc = per_web_contents_tracker_.find(tab);
-  CHECK(loc != per_web_contents_tracker_.end(), base::NotFatalUntil::M130);
+  CHECK(loc != per_web_contents_tracker_.end());
   const std::set<base::MatcherStringPattern::ID>& web_contents_id_matches =
       loc->second->matches();
   return base::Contains(web_contents_id_matches,

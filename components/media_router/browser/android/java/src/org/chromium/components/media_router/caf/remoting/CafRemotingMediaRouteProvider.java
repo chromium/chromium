@@ -4,10 +4,13 @@
 
 package org.chromium.components.media_router.caf.remoting;
 
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.mediarouter.media.MediaRouter;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.media_router.BrowserMediaRouter;
 import org.chromium.components.media_router.DiscoveryCallback;
 import org.chromium.components.media_router.FlingingController;
@@ -21,6 +24,7 @@ import org.chromium.components.media_router.caf.CafBaseMediaRouteProvider;
 import java.util.Map;
 
 /** A {@link MediaRouteProvider} implementation for remoting, using Cast v3 API. */
+@NullMarked
 public class CafRemotingMediaRouteProvider extends CafBaseMediaRouteProvider {
     private static final String TAG = "RmtMRP";
 
@@ -33,7 +37,7 @@ public class CafRemotingMediaRouteProvider extends CafBaseMediaRouteProvider {
     }
 
     @Override
-    protected MediaSource getSourceFromId(String sourceId) {
+    protected @Nullable MediaSource getSourceFromId(String sourceId) {
         return RemotingMediaSource.from(sourceId);
     }
 
@@ -61,8 +65,7 @@ public class CafRemotingMediaRouteProvider extends CafBaseMediaRouteProvider {
     }
 
     @Override
-    @Nullable
-    public FlingingController getFlingingController(String routeId) {
+    public @Nullable FlingingController getFlingingController(String routeId) {
         if (!sessionController().isConnected()) {
             return null;
         }
@@ -74,14 +77,14 @@ public class CafRemotingMediaRouteProvider extends CafBaseMediaRouteProvider {
 
     @Override
     protected void updateSessionMediaSourceIfNeeded(
-            DiscoveryCallback callback, MediaSource source) {
+            @Nullable DiscoveryCallback callback, MediaSource source) {
         var controller = sessionController();
 
         // There is no active remote playback media route.
         if (!hasSession() || controller.getFlingingController() == null) return;
 
         // Do not update media source for a detached session.
-        if (!mRoutes.containsKey(controller.getRouteCreationInfo().routeId)) return;
+        if (!mRoutes.containsKey(assumeNonNull(controller.getRouteCreationInfo()).routeId)) return;
 
         // Do not update media source if we are still observing the original media
         // source for remote playback.

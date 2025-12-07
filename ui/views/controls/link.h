@@ -8,10 +8,12 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/callback.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/metadata/view_factory.h"
@@ -78,9 +80,9 @@ class VIEWS_EXPORT Link : public Label {
   void OnFocus() override;
   void OnBlur() override;
   void SetFontList(const gfx::FontList& font_list) override;
-  void SetText(const std::u16string& text) override;
+  void SetText(std::u16string_view text) override;
   void OnThemeChanged() override;
-  void SetEnabledColor(SkColor color) override;
+  void SetEnabledColor(ui::ColorVariant color) override;
   bool IsSelectionSupported() const override;
 
  private:

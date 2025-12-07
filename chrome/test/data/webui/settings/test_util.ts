@@ -4,7 +4,7 @@
 
 // clang-format off
 import type {CrTooltipElement, StorageAccessEmbeddingException, StorageAccessSiteException, ChooserException, DefaultContentSetting, OriginInfo, RawChooserException, RawSiteException, SiteException, SiteGroup} from 'chrome://settings/lazy_load.js';
-import {ChooserType, ContentSetting, ContentSettingProvider, ContentSettingsTypes, SiteSettingSource} from 'chrome://settings/lazy_load.js';
+import {ChooserType, ContentSetting, DefaultSettingSource, ContentSettingsTypes, SiteSettingSource} from 'chrome://settings/lazy_load.js';
 import type {Route} from 'chrome://settings/settings.js';
 import {Router} from 'chrome://settings/settings.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
@@ -34,7 +34,7 @@ export function createDefaultContentSetting(
   return Object.assign(
       {
         setting: ContentSetting.ASK,
-        source: ContentSettingProvider.PREFERENCE,
+        source: DefaultSettingSource.PREFERENCE,
       },
       override || {});
 }
@@ -125,7 +125,8 @@ export function createSiteSettingsPrefs(
   defaults[ContentSettingsTypes.COOKIES].setting = ContentSetting.ALLOW;
   defaults[ContentSettingsTypes.IMAGES].setting = ContentSetting.ALLOW;
   defaults[ContentSettingsTypes.JAVASCRIPT].setting = ContentSetting.ALLOW;
-  defaults[ContentSettingsTypes.JAVASCRIPT_JIT].setting = ContentSetting.ALLOW;
+  defaults[ContentSettingsTypes.JAVASCRIPT_OPTIMIZER].setting =
+      ContentSetting.ALLOW;
   defaults[ContentSettingsTypes.SOUND].setting = ContentSetting.ALLOW;
   defaults[ContentSettingsTypes.POPUPS].setting = ContentSetting.BLOCK;
   defaults[ContentSettingsTypes.PROTOCOL_HANDLERS].setting =
@@ -231,6 +232,10 @@ export function getContentSettingsTypeFromChooserType(chooserType: ChooserType):
       return ContentSettingsTypes.USB_DEVICES;
     case ChooserType.BLUETOOTH_DEVICES:
       return ContentSettingsTypes.BLUETOOTH_DEVICES;
+    // <if expr="is_chromeos">
+    case ChooserType.SMART_CARD_READERS_DEVICES:
+      return ContentSettingsTypes.SMART_CARD_READERS;
+    // </if>
     default:
       return null;
   }

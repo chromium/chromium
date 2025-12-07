@@ -9,12 +9,12 @@
 
 #include <algorithm>
 #include <cmath>
+#include <numeric>
 
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
@@ -81,10 +81,12 @@ class XModifierStateWatcher {
       else
         state_ = static_cast<int>(key->state) & ~mask;
     } else if (auto* device = xev.As<x11::Input::DeviceEvent>()) {
-      if (device->opcode == x11::Input::DeviceEvent::KeyPress)
-        state_ = device->mods.effective | mask;
-      else if (device->opcode == x11::Input::DeviceEvent::KeyPress)
-        state_ = device->mods.effective & ~mask;
+      uint32_t state = ui::GetXI2StateFromEvent(*device);
+      if (device->opcode == x11::Input::DeviceEvent::KeyPress) {
+        state_ = state | mask;
+      } else if (device->opcode == x11::Input::DeviceEvent::KeyRelease) {
+        state_ = state & ~mask;
+      }
     }
   }
 
@@ -167,7 +169,10 @@ int GetEventFlagsFromXGenericEvent(const x11::Event& x11_event) {
   DCHECK(xievent);
   DCHECK(xievent->opcode == x11::Input::DeviceEvent::KeyPress ||
          xievent->opcode == x11::Input::DeviceEvent::KeyRelease);
-  return GetEventFlagsFromXState(xievent->mods.effective) |
+  bool is_repeat =
+      static_cast<bool>(xievent->flags & x11::Input::KeyEventFlags::KeyRepeat);
+  uint32_t state = ui::GetXI2StateFromEvent(*xievent);
+  return GetEventFlagsFromXState(state) | (is_repeat ? ui::EF_IS_REPEAT : 0) |
          (x11_event.send_event() ? ui::EF_FINAL : 0);
 }
 
@@ -252,9 +257,8 @@ ui::EventType GetTouchEventType(const x11::Event& x11_event) {
         return ui::EventType::kTouchMoved;
       return ui::EventType::kUnknown;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return ui::EventType::kUnknown;
 }
 
 double GetParamFromXEvent(const x11::Event& xev,
@@ -347,8 +351,7 @@ base::TimeTicks TimeTicksFromXEvent(const x11::Event& xev) {
     }
     return TimeTicksFromXEventTime(device->time);
   }
-  NOTREACHED_IN_MIGRATION();
-  return base::TimeTicks();
+  NOTREACHED();
 }
 
 // This is ported from libxi's FP1616toDBL in XExtInt.c
@@ -466,10 +469,10 @@ EventType EventTypeFromXEvent(const x11::Event& xev) {
   return EventType::kUnknown;
 }
 
-int GetEventFlagsFromXKeyEvent(const x11::KeyEvent& key, bool send_event) {
-  const auto state = static_cast<int>(key.state);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+int GetEventFlagsFromXEvent(x11::KeyCode keycode,
+                            uint32_t state,
+                            bool send_event) {
+#if BUILDFLAG(IS_CHROMEOS)
   const int ime_fabricated_flag = 0;
 #else
   // XIM fabricates key events for the character compositions by XK_Multi_key.
@@ -481,10 +484,10 @@ int GetEventFlagsFromXKeyEvent(const x11::KeyEvent& key, bool send_event) {
   //
   // We have to send these fabricated key events to XIM so it can correctly
   // handle the character compositions.
-  const auto detail = static_cast<uint8_t>(key.detail);
   const auto shift_lock_mask =
-      static_cast<int>(x11::KeyButMask::Shift | x11::KeyButMask::Lock);
-  const bool fabricated_by_xim = detail == 0 && (state & ~shift_lock_mask) == 0;
+      static_cast<uint32_t>(x11::KeyButMask::Shift | x11::KeyButMask::Lock);
+  const bool fabricated_by_xim =
+      keycode == x11::KeyCode{} && (state & ~shift_lock_mask) == 0;
   const int ime_fabricated_flag =
       fabricated_by_xim ? ui::EF_IME_FABRICATED_KEY : 0;
 #endif
@@ -496,7 +499,8 @@ int GetEventFlagsFromXKeyEvent(const x11::KeyEvent& key, bool send_event) {
 int EventFlagsFromXEvent(const x11::Event& xev) {
   if (auto* key = xev.As<x11::KeyEvent>()) {
     XModifierStateWatcher::GetInstance()->UpdateStateFromXEvent(xev);
-    return GetEventFlagsFromXKeyEvent(*key, xev.send_event());
+    return GetEventFlagsFromXEvent(
+        key->detail, static_cast<uint32_t>(key->state), xev.send_event());
   }
   if (auto* button = xev.As<x11::ButtonEvent>()) {
     int flags = GetEventFlagsFromXState(button->state);
@@ -574,7 +578,7 @@ gfx::Point EventLocationFromXEvent(const x11::Event& xev) {
   if (auto* xievent = xev.As<x11::Input::DeviceEvent>()) {
     float x = Fp1616ToDouble(xievent->event_x);
     float y = Fp1616ToDouble(xievent->event_y);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     switch (xievent->opcode) {
       case x11::Input::DeviceEvent::TouchBegin:
       case x11::Input::DeviceEvent::TouchUpdate:
@@ -585,7 +589,7 @@ gfx::Point EventLocationFromXEvent(const x11::Event& xev) {
       default:
         break;
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     return gfx::Point(static_cast<int>(x), static_cast<int>(y));
   }
   return gfx::Point();
@@ -853,6 +857,18 @@ bool IsAltPressed() {
 
 int GetModifierKeyState() {
   return XModifierStateWatcher::GetInstance()->state();
+}
+
+uint32_t XkbStateFromXI2Event(const x11::Input::DeviceEvent& xievent) {
+  uint32_t mods = xievent.mods.effective & 0xff;
+  uint8_t buttons = std::reduce(xievent.button_mask.begin(),
+                                xievent.button_mask.end(), 0, std::bit_or<>());
+  // For some reason, the XInput2 button mask needs to be right-shifted by one
+  // to match the XKB button mask.
+  buttons = (buttons >> 1) & 0x1f;
+  // The group (bits 13-14 of the XKB state) is deliberately omitted because
+  // it's not used by GdkModifierType.
+  return (static_cast<uint32_t>(buttons) << 8) | mods;
 }
 
 void ResetTimestampRolloverCountersForTesting() {

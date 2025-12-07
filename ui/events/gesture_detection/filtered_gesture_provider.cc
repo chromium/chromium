@@ -7,6 +7,7 @@
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/notreached.h"
+#include "ui/events/gesture_detection/gesture_detector.h"
 #include "ui/events/velocity_tracker/motion_event.h"
 
 namespace ui {
@@ -97,6 +98,24 @@ void FilteredGestureProvider::SetDoubleTapSupportForPageEnabled(bool enabled) {
 
 const ui::MotionEvent* FilteredGestureProvider::GetCurrentDownEvent() const {
   return gesture_provider_->current_down_event();
+}
+
+const ui::MotionEvent* FilteredGestureProvider::GetLastEventWithoutHistory()
+    const {
+  return gesture_provider_->last_event_without_history();
+}
+
+void FilteredGestureProvider::OnUnconfirmedTapConvertedToTap() {
+  gesture_provider_->OnUnconfirmedTapConvertedToTap();
+}
+
+bool FilteredGestureProvider::HasPendingTapTimeoutForTesting() const {
+  if (!gesture_provider_->GetGestureDetectorForTesting()) {  // IN-TEST
+    return false;
+  }
+  return gesture_provider_
+      ->GetGestureDetectorForTesting()     // IN-TEST
+      ->HasPendingTapTimeoutForTesting();  // IN-TEST
 }
 
 void FilteredGestureProvider::OnGestureEvent(const GestureEventData& event) {

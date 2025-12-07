@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/user_education/recent_session_policy.h"
 
 RecentSessionObserverImpl::RecentSessionObserverImpl(

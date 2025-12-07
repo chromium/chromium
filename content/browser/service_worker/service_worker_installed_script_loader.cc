@@ -12,6 +12,7 @@
 #include "content/browser/service_worker/service_worker_version.h"
 #include "net/base/ip_endpoint.h"
 #include "net/cert/cert_status_flags.h"
+#include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 
@@ -96,8 +97,7 @@ void ServiceWorkerInstalledScriptLoader::OnFinished(FinishedReason reason) {
       net_error = net::ERR_FAILED;
       break;
     case FinishedReason::kNotFinished:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   client_->OnComplete(network::URLLoaderCompletionStatus(net_error));
 }
@@ -109,21 +109,13 @@ void ServiceWorkerInstalledScriptLoader::FollowRedirect(
     const std::optional<GURL>& new_url) {
   // This class never returns a redirect response to its client, so should never
   // be asked to follow one.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ServiceWorkerInstalledScriptLoader::SetPriority(
     net::RequestPriority priority,
     int32_t intra_priority_value) {
   // Ignore: this class doesn't have a concept of priority.
-}
-
-void ServiceWorkerInstalledScriptLoader::PauseReadingBodyFromNet() {
-  // Ignore: this class doesn't read from network.
-}
-
-void ServiceWorkerInstalledScriptLoader::ResumeReadingBodyFromNet() {
-  // Ignore: this class doesn't read from network.
 }
 
 }  // namespace content

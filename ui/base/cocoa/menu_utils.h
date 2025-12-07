@@ -7,8 +7,11 @@
 
 #include <Foundation/Foundation.h>
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/gfx/geometry/point.h"
 
 @class NSEvent;
 @class NSMenu;
@@ -45,6 +48,11 @@ void ShowContextMenu(NSMenu* menu,
                      NSView* view,
                      bool allow_nested_tasks,
                      ElementContext context = ElementContext());
+
+// Returns the anchor location of the active menu in screen coordinate, if there
+// is one.
+COMPONENT_EXPORT(UI_BASE)
+std::optional<gfx::Point> GetActiveCocoaMenuAnchorLocation();
 
 }  // namespace ui
 

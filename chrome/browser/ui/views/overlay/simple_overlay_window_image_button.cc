@@ -32,11 +32,13 @@ void SimpleOverlayWindowImageButton::SetVisible(bool visible) {
 
 void SimpleOverlayWindowImageButton::OnBoundsChanged(
     const gfx::Rect& previous_bounds) {
-  if (!size().IsEmpty())
+  if (!size().IsEmpty()) {
     last_visible_size_ = size();
+  }
 
-  if (size() == previous_bounds.size())
+  if (size() == previous_bounds.size()) {
     return;
+  }
 
   UpdateImage();
 }
@@ -46,6 +48,9 @@ void SimpleOverlayWindowImageButton::UpdateImage() {
   SetImageModel(views::Button::STATE_NORMAL,
                 ui::ImageModel::FromVectorIcon(
                     *icon_, kColorPipWindowForeground, icon_size));
+  SetImageModel(views::Button::STATE_DISABLED,
+                ui::ImageModel::FromVectorIcon(
+                    *icon_, kColorPipWindowForegroundInactive, icon_size));
 }
 
 BEGIN_METADATA(SimpleOverlayWindowImageButton)

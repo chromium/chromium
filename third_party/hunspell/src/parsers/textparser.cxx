@@ -1,6 +1,8 @@
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
+ * Copyright (C) 2002-2022 Németh László
+ *
  * The contents of this file are subject to the Mozilla Public License Version
  * 1.1 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -11,12 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is Hunspell, based on MySpell.
- *
- * The Initial Developers of the Original Code are
- * Kevin Hendricks (MySpell) and Németh László (Hunspell).
- * Portions created by the Initial Developers are Copyright (C) 2002-2005
- * the Initial Developers. All Rights Reserved.
+ * Hunspell is based on MySpell which is Copyright (C) 2002 Kevin Hendricks.
  *
  * Contributor(s): David Einstein, Davide Prina, Giuseppe Modugno,
  * Gianluca Turconi, Simon Brouwer, Noll János, Bíró Árpád,
@@ -80,18 +77,19 @@ TextParser::~TextParser() {}
 int TextParser::is_wordchar(const char* w) {
   if (*w == '\0')
     return 0;
+  size_t cache_index = (*w + 256) % 256;
   if (utf8) {
-    std::vector<w_char> wc;
-    unsigned short idx;
-    u8_u16(wc, w);
-    if (wc.empty())
+    const bool use_cache = cache_index < 0x80;
+    if (use_cache)
+      return wordcharacters[cache_index];
+    if (u8_u16(wc, w, true) < 1)
         return 0;
-    idx = (wc[0].h << 8) + wc[0].l;
-    return (unicodeisalpha(idx) ||
-            (wordchars_utf16 &&
-             std::binary_search(wordchars_utf16, wordchars_utf16 + wclen, wc[0])));
+    unsigned short idx = (unsigned short)wc[0];
+    return unicodeisalpha(idx) ||
+           (wordchars_utf16 &&
+            std::binary_search(wordchars_utf16, wordchars_utf16 + wclen, wc[0]));
   } else {
-    return wordcharacters[(*w + 256) % 256];
+    return wordcharacters[cache_index];
   }
 }
 
@@ -115,26 +113,35 @@ void TextParser::init(const char* wordchars) {
   checkurl = 0;
   wordchars_utf16 = NULL;
   wclen = 0;
-  unsigned int j;
-  for (j = 0; j < 256; j++) {
-    wordcharacters[j] = 0;
-  }
+  wordcharacters.resize(256, 0);
   if (!wordchars)
     wordchars = "qwertzuiopasdfghjklyxcvbnmQWERTZUIOPASDFGHJKLYXCVBNM";
-  for (j = 0; j < strlen(wordchars); j++) {
+  for (unsigned int j = 0; j < strlen(wordchars); ++j) {
     wordcharacters[(wordchars[j] + 256) % 256] = 1;
   }
 }
 
-void TextParser::init(const w_char* wc, int len) {
+void TextParser::init(const w_char* wc_utf8, int len) {
   actual = 0;
   head = 0;
   token = 0;
   state = 0;
   utf8 = 1;
   checkurl = 0;
-  wordchars_utf16 = wc;
+  wordchars_utf16 = wc_utf8;
   wclen = len;
+
+  // build a cache for the simple cases
+  wordcharacters.resize(0x80);
+  w_char wc2;
+  wc2.h = 0;
+  for (unsigned char idx = 0; idx < 0x80; ++idx) {
+    wc2.l = idx;
+    int cache = unicodeisalpha(idx) ||
+                (wordchars_utf16 &&
+                 std::binary_search(wordchars_utf16, wordchars_utf16 + wclen, wc2));
+    wordcharacters[idx] = cache;
+  }
 }
 
 int TextParser::next_char(const char* ln, size_t* pos) {
@@ -187,13 +194,13 @@ bool TextParser::next_token(std::string &t) {
       case 1:  // wordchar
         if ((latin1 = get_latin1(line[actual].c_str() + head))) {
           head += strlen(latin1);
-        } else if ((is_wordchar((char*)APOSTROPHE) ||
-                    (is_utf8() && is_wordchar((char*)UTF8_APOS))) &&
+        } else if ((is_wordchar(APOSTROPHE) ||
+                    (is_utf8() && is_wordchar(UTF8_APOS))) &&
                    !line[actual].empty() && line[actual][head] == '\'' &&
                    is_wordchar(line[actual].c_str() + head + 1)) {
           head++;
         } else if (is_utf8() &&
-                   is_wordchar((char*)APOSTROPHE) &&  // add Unicode apostrophe
+                   is_wordchar(APOSTROPHE) &&  // add Unicode apostrophe
                                                       // to the WORDCHARS, if
                                                       // needed
                    strncmp(line[actual].c_str() + head, UTF8_APOS, strlen(UTF8_APOS)) ==
@@ -226,6 +233,10 @@ int TextParser::change_token(const char* word) {
     return 1;
   }
   return 0;
+}
+
+std::string TextParser::get_word(const std::string &tok) {
+  return tok;
 }
 
 void TextParser::check_urls() {

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/fido/cable/fido_ble_frames.h"
 
 #include <algorithm>
@@ -14,10 +9,11 @@
 #include <tuple>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace device {
 
@@ -46,8 +42,7 @@ bool FidoBleFrame::IsValid() const {
     case FidoBleDeviceCommand::kError:
       return data_.size() == 1;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 FidoBleFrame::KeepaliveCode FidoBleFrame::GetKeepaliveCode() const {
@@ -69,8 +64,8 @@ FidoBleFrame::ToFragments(size_t max_fragment_size) const {
   DCHECK_GE(max_fragment_size, 3u);
 
   // Cast is necessary to ignore too high bits.
-  auto data_view =
-      base::make_span(data_.data(), static_cast<uint16_t>(data_.size()));
+  auto data_view = UNSAFE_TODO(
+      base::span(data_.data(), static_cast<uint16_t>(data_.size())));
 
   // Subtract 3 to account for CMD, HLEN and LLEN bytes.
   const size_t init_fragment_size =
@@ -114,11 +109,12 @@ bool FidoBleFrameInitializationFragment::Parse(
 
   const auto command = static_cast<FidoBleDeviceCommand>(data[0]);
   const uint16_t data_length = (static_cast<uint16_t>(data[1]) << 8) + data[2];
-  if (static_cast<size_t>(data_length) + 3 < data.size())
+  if (size_t{data_length} + 3 < data.size()) {
     return false;
+  }
 
-  *fragment =
-      FidoBleFrameInitializationFragment(command, data_length, data.subspan(3));
+  *fragment = FidoBleFrameInitializationFragment(command, data_length,
+                                                 data.subspan<3>());
   return true;
 }
 
@@ -137,7 +133,7 @@ bool FidoBleFrameContinuationFragment::Parse(
   if (data.empty())
     return false;
   const uint8_t sequence = data[0];
-  *fragment = FidoBleFrameContinuationFragment(data.subspan(1), sequence);
+  *fragment = FidoBleFrameContinuationFragment(data.subspan<1>(), sequence);
   return true;
 }
 

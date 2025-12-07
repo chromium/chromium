@@ -42,24 +42,29 @@ namespace {
 sync_pb::SyncEnums::GetUpdatesOrigin GetOriginFromReason(
     ConfigureReason reason) {
   switch (reason) {
-    case CONFIGURE_REASON_RECONFIGURATION:
+    case ConfigureReason::kReconfiguration:
       return sync_pb::SyncEnums::RECONFIGURATION;
-    case CONFIGURE_REASON_MIGRATION:
+    case ConfigureReason::kMigration:
       return sync_pb::SyncEnums::MIGRATION;
-    case CONFIGURE_REASON_NEW_CLIENT:
+    case ConfigureReason::kNewClient:
       return sync_pb::SyncEnums::NEW_CLIENT;
-    case CONFIGURE_REASON_NEWLY_ENABLED_DATA_TYPE:
-    case CONFIGURE_REASON_CRYPTO:
+    case ConfigureReason::kExistingClientRestart:
+    case ConfigureReason::kCrypto:
+      // Mapping these cases to NEWLY_SUPPORTED_DATATYPE is rather wrong, as it
+      // includes common cases like sync being unpaused or a crypto error having
+      // been resolved, if initial sync didn't complete earlier (or data was
+      // cleared while paused). The legacy behavior is kept until a better
+      // solution is found.
       return sync_pb::SyncEnums::NEWLY_SUPPORTED_DATATYPE;
-    case CONFIGURE_REASON_PROGRAMMATIC:
+    case ConfigureReason::kProgrammatic:
       return sync_pb::SyncEnums::PROGRAMMATIC;
-    case CONFIGURE_REASON_UNKNOWN:
-      NOTREACHED_IN_MIGRATION();
+    case ConfigureReason::kUnknown:
+      NOTREACHED();
   }
   return sync_pb::SyncEnums::UNKNOWN_ORIGIN;
 }
 
-const char kSyncServerSyncPath[] = "/command/";
+constexpr char kSyncServerSyncPath[] = "/command/";
 
 std::string StripTrailingSlash(const std::string& s) {
   int stripped_end_pos = s.size();
@@ -73,7 +78,7 @@ std::string StripTrailingSlash(const std::string& s) {
 GURL MakeConnectionURL(const GURL& sync_server, const std::string& client_id) {
   DCHECK_EQ(kSyncServerSyncPath[0], '/');
   std::string full_path =
-      StripTrailingSlash(sync_server.path()) + kSyncServerSyncPath;
+      StripTrailingSlash(sync_server.GetPath()) + kSyncServerSyncPath;
 
   GURL::Replacements path_replacement;
   path_replacement.SetPathStr(full_path);
@@ -261,8 +266,9 @@ void SyncManagerImpl::UpdateCredentials(const SyncCredentials& credentials) {
   cycle_context_->set_account_name(credentials.email);
 
   observing_network_connectivity_changes_ = true;
-  if (!connection_manager_->SetAccessToken(credentials.access_token))
+  if (!connection_manager_->SetAccessToken(credentials.access_token)) {
     return;  // Auth token is known to be invalid, so exit early.
+  }
 
   scheduler_->OnCredentialsUpdated();
 
@@ -303,12 +309,13 @@ void SyncManagerImpl::ShutdownOnSyncThread() {
 
   RemoveObserver(&debug_info_event_listener_);
 
-  // |connection_manager_| may end up being null here in tests (in synchronous
+  // `connection_manager_` may end up being null here in tests (in synchronous
   // initialization mode).
   //
   // TODO(akalin): Fix this behavior.
-  if (connection_manager_)
+  if (connection_manager_) {
     connection_manager_->RemoveListener(this);
+  }
   connection_manager_.reset();
 
   network_connection_tracker_->RemoveNetworkConnectionObserver(this);
@@ -487,10 +494,6 @@ std::string SyncManagerImpl::bag_of_chips() {
   DCHECK(initialized_);
   DCHECK(cycle_context_);
   return cycle_context_->bag_of_chips();
-}
-
-DataTypeSet SyncManagerImpl::GetTypesWithUnsyncedData() {
-  return data_type_registry_->GetTypesWithUnsyncedData();
 }
 
 bool SyncManagerImpl::HasUnsyncedItemsForTest() {

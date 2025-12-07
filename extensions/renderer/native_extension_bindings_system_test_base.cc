@@ -4,7 +4,8 @@
 
 #include "extensions/renderer/native_extension_bindings_system_test_base.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/run_loop.h"
 #include "content/public/test/mock_render_thread.h"
 #include "extensions/common/manifest.h"
@@ -93,8 +94,8 @@ ScriptContext* NativeExtensionBindingsSystemUnittest::CreateScriptContext(
 
 void NativeExtensionBindingsSystemUnittest::OnWillDisposeContext(
     v8::Local<v8::Context> context) {
-  auto iter = base::ranges::find(raw_script_contexts_, context,
-                                 &ScriptContext::v8_context);
+  auto iter = std::ranges::find(raw_script_contexts_, context,
+                                &ScriptContext::v8_context);
   if (iter == raw_script_contexts_.end()) {
     ASSERT_TRUE(allow_unregistered_contexts_);
     return;

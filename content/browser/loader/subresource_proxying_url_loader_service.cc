@@ -24,7 +24,7 @@
 namespace content {
 
 SubresourceProxyingURLLoaderService::BindContext::BindContext(
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     scoped_refptr<network::SharedURLLoaderFactory> factory,
     base::WeakPtr<RenderFrameHostImpl> render_frame_host,
     scoped_refptr<PrefetchedSignedExchangeCache>
@@ -55,7 +55,7 @@ SubresourceProxyingURLLoaderService::SubresourceProxyingURLLoaderService(
 base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext>
 SubresourceProxyingURLLoaderService::GetFactory(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     scoped_refptr<network::SharedURLLoaderFactory>
         subresource_proxying_factory_bundle,
     base::WeakPtr<RenderFrameHostImpl> render_frame_host,
@@ -109,7 +109,7 @@ void SubresourceProxyingURLLoaderService::CreateLoaderAndStart(
   }
 
   if (resource_request_in.browsing_topics &&
-      !base::FeatureList::IsEnabled(blink::features::kBrowsingTopics)) {
+      !base::FeatureList::IsEnabled(network::features::kBrowsingTopics)) {
     loader_factory_receivers_.ReportBadMessage(
         "Unexpected `resource_request_in` in "
         "SubresourceProxyingURLLoaderService::CreateLoaderAndStart(): "
@@ -118,7 +118,7 @@ void SubresourceProxyingURLLoaderService::CreateLoaderAndStart(
   }
 
   if (resource_request_in.ad_auction_headers &&
-      !base::FeatureList::IsEnabled(blink::features::kInterestGroupStorage)) {
+      !base::FeatureList::IsEnabled(network::features::kInterestGroupStorage)) {
     loader_factory_receivers_.ReportBadMessage(
         "Unexpected `resource_request_in` in "
         "SubresourceProxyingURLLoaderService::CreateLoaderAndStart(): "

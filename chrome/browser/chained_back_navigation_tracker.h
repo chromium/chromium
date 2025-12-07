@@ -9,8 +9,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
-namespace chrome {
-
 // This class tracks chained back navigations (consecutive back navigations with
 // a short interval between them) by observing navigation events from
 // WebContents and providing functions to record back button clicks.
@@ -84,7 +82,5 @@ class ChainedBackNavigationTracker
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
-
-}  // namespace chrome
 
 #endif  // CHROME_BROWSER_CHAINED_BACK_NAVIGATION_TRACKER_H_

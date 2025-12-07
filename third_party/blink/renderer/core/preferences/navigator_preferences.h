@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -17,17 +16,14 @@ class PreferenceManager;
 // Spec:
 // https://wicg.github.io/web-preferences-api/#extensions-to-the-navigator-interface
 class CORE_EXPORT NavigatorPreferences final
-    : public GarbageCollected<NavigatorPreferences>,
-      public Supplement<Navigator> {
+    : public GarbageCollected<NavigatorPreferences> {
  public:
-  static const char kSupplementName[];
-
   static PreferenceManager* preferences(Navigator& navigator);
   PreferenceManager* preferences();
 
   explicit NavigatorPreferences(Navigator&);
 
-  void Trace(Visitor*) const override;
+  void Trace(Visitor*) const;
 
  private:
   static NavigatorPreferences& From(Navigator&);

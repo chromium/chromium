@@ -8,6 +8,11 @@
 #import <Foundation/Foundation.h>
 #import <UserNotifications/UserNotifications.h>
 
+#import <optional>
+
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+
+class ProfileIOS;
 @class UIApplication;
 @class UNNotificationCategory;
 @class UNNotificationSettings;
@@ -22,7 +27,8 @@ enum class SettingsAuthorizationStatus {
   AUTHORIZED,
   PROVISIONAL,
   EPHEMERAL,
-  kMaxValue = EPHEMERAL
+  INVALID,
+  kMaxValue = INVALID
 };
 }  // namespace push_notification
 
@@ -35,10 +41,11 @@ enum class SettingsAuthorizationStatus {
 // didRegisterForNotificationsWithDeviceToken function is called if the device
 // was successfully registered with APNS. If the device's registration was
 // unsuccessful, then AppDelegate's didRegisterForNotificationsWithError
-// function is called. `contentNotificationAvailability` is YES when content
-// notification is enabled or need to be registered.
-+ (void)registerDeviceWithAPNSWithContentNotificationsAvailable:
-    (BOOL)contentNotificationAvailability;
+// function is called. `provisionalNotificationsAvailable` is YES when a
+// notification type that can deliver provisional notifications (Content or
+// SendTab) notification is enabled or need to be registered.
++ (void)registerDeviceWithAPNSWithProvisionalNotificationsAvailable:
+    (BOOL)provisionalNotificationsAvailable;
 
 // The function registers the set of `UNNotificationCategory` objects with iOS'
 // UNNotificationCenter.
@@ -83,11 +90,29 @@ enum class SettingsAuthorizationStatus {
 // status changes on notification permissions.
 + (UNAuthorizationStatus)getSavedPermissionSettings;
 
+// Gets the authorization status from iOS and updates prefs if needed.
++ (void)updateAuthorizationStatusPref;
+
 // This function updates the value stored in the prefService that represents the
 // user's iOS settings permission status for push notifications. If there is a
 // difference between the prefService's previous value and the new value, the
 // change is logged to UMA.
 + (void)updateAuthorizationStatusPref:(UNAuthorizationStatus)status;
+
+// Returns the corresponding SettingsAuthorizationStatus value for the given
+// `status`.
++ (push_notification::SettingsAuthorizationStatus)
+    getNotificationSettingsStatusFrom:(UNAuthorizationStatus)status;
+
+// This function maps a chime client id from a payload (`userInfo`) to a single
+// PushNotificationClient.
++ (std::optional<PushNotificationClientId>)
+    mapToPushNotificationClientIdFromUserInfo:
+        (NSDictionary<NSString*, id>*)userInfo;
+
+// YES if provisional notifications are allowed by policy for the given profile.
++ (BOOL)provisionalAllowedByPolicyForProfile:(ProfileIOS*)profile;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_UTIL_H_

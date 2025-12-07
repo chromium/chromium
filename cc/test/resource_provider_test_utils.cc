@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 
 namespace cc {
 
@@ -17,15 +18,17 @@ const std::
         const std::vector<viz::ResourceId>& resource_ids,
         viz::DisplayResourceProvider* resource_provider,
         viz::ClientResourceProvider* child_resource_provider,
-        viz::RasterContextProvider* child_context_provider) {
+        gpu::SharedImageInterface* shared_image_interface) {
   DCHECK(resource_provider);
   DCHECK(child_resource_provider);
   // Transfer resources to the parent.
   std::vector<viz::TransferableResource> send_to_parent;
   int child_id =
       resource_provider->CreateChild(base::DoNothing(), viz::SurfaceId());
+
+  CHECK(shared_image_interface);
   child_resource_provider->PrepareSendToParent(resource_ids, &send_to_parent,
-                                               child_context_provider);
+                                               shared_image_interface);
   resource_provider->ReceiveFromChild(child_id, send_to_parent);
 
   // Delete them in the child so they won't be leaked, and will be released once

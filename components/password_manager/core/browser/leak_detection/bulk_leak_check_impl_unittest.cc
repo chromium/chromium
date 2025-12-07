@@ -17,6 +17,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "crypto/sha2.h"
+#include "net/base/net_errors.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -290,7 +291,7 @@ TEST_F(BulkLeakCheckTest, CheckCredentialsDecryptionError) {
       "trash_bytes";
   response->encrypted_leak_match_prefixes.push_back(
       crypto::SHA256HashString(*CipherEncryptWithKey(
-          *ScryptHashUsernameAndPassword("another_username", kTestPassword),
+          ScryptHashUsernameAndPassword("another_username", kTestPassword),
           key_server)));
 
   EXPECT_CALL(delegate(), OnError(LeakDetectionError::kHashingFailure));
@@ -317,7 +318,7 @@ TEST_F(BulkLeakCheckTest, CheckCredentialsNotLeaked) {
       *CipherReEncrypt(payload_and_callback.payload, &key_server);
   response->encrypted_leak_match_prefixes.push_back(
       crypto::SHA256HashString(*CipherEncryptWithKey(
-          *ScryptHashUsernameAndPassword("another_username", kTestPassword),
+          ScryptHashUsernameAndPassword("another_username", kTestPassword),
           key_server)));
 
   EXPECT_EQ(1u, bulk_check().GetPendingChecksCount());
@@ -349,7 +350,7 @@ TEST_F(BulkLeakCheckTest, CheckCredentialsLeaked) {
       *CipherReEncrypt(payload_and_callback.payload, &key_server);
   response->encrypted_leak_match_prefixes.push_back(
       crypto::SHA256HashString(*CipherEncryptWithKey(
-          *ScryptHashUsernameAndPassword("abc", kTestPassword), key_server)));
+          ScryptHashUsernameAndPassword("abc", kTestPassword), key_server)));
 
   EXPECT_EQ(1u, bulk_check().GetPendingChecksCount());
   leaked_credential = TestCredential(u"abc");

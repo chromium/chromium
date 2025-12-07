@@ -37,12 +37,12 @@ import {TestRunner} from 'test_runner';
 
   TestRunner.runTestSuite([
     function checkNotAutosizedWithoutPageAgent(next) {
-      TestRunner.PageAgent.disable();
+      TestRunner.PageAgent.invoke_disable();
       assertAutosizingResult(false, next);
     },
 
     function checkNotAutosizedWithPageAgent(next) {
-      TestRunner.PageAgent.enable();
+      TestRunner.PageAgent.invoke_enable({});
       assertAutosizingResult(false, next);
     },
 
@@ -59,7 +59,7 @@ import {TestRunner} from 'test_runner';
     },
 
     function checkCleanupOverrides(next) {
-      TestRunner.PageAgent.clearDeviceMetricsOverride();
+      TestRunner.PageAgent.invoke_clearDeviceMetricsOverride();
       assertAutosizingResult(false);
       TestRunner.evaluateInPage('document.getElementById(\'measure\').remove();', next);
     }

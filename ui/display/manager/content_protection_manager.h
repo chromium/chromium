@@ -62,7 +62,8 @@ class DISPLAY_MANAGER_EXPORT ContentProtectionManager
     ~Observer() override = default;
 
     // Called after the secure state of a display has been changed.
-    virtual void OnDisplaySecurityChanged(int64_t display_id, bool secure) = 0;
+    virtual void OnDisplaySecurityMaybeChanged(int64_t display_id,
+                                               bool secure) = 0;
   };
 
   // Returns whether display configuration is disabled, in which case API calls

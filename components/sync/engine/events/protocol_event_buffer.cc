@@ -13,7 +13,6 @@
 
 namespace syncer {
 
-const size_t ProtocolEventBuffer::kDefaultBufferSize = 6;
 
 namespace {
 

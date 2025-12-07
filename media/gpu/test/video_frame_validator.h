@@ -14,6 +14,7 @@
 #include "base/files/file.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread.h"
@@ -21,6 +22,10 @@
 #include "media/base/video_types.h"
 #include "media/gpu/test/video_frame_helpers.h"
 #include "ui/gfx/geometry/rect.h"
+
+namespace gpu {
+class TestSharedImageInterface;
+}  // namespace gpu
 
 namespace media {
 
@@ -119,6 +124,8 @@ class VideoFrameValidator : public VideoFrameProcessor {
   // An optional video frame processor that all corrupted frames will be
   // forwarded to. This can be used to e.g. write corrupted frames to disk.
   std::unique_ptr<VideoFrameProcessor> corrupt_frame_processor_;
+
+  scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
 
   // If |crop_helper_| is runnable, then ShouldCrop() will return true and
   // CloneAndCropFrame() can be used.

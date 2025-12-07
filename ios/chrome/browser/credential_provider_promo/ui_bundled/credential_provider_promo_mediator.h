@@ -7,12 +7,11 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_constants.h"
+#import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 
 @protocol CredentialProviderPromoConsumer;
 
-class PrefService;
 class PromosManager;
 
 namespace feature_engagement {
@@ -29,9 +28,8 @@ class Tracker;
 @property(nonatomic, assign) feature_engagement::Tracker* tracker;
 
 // Designated initializer. Initializes the mediator with the
-// PromosManager, presenter, and PrefService.
+// PromosManager.
 - (instancetype)initWithPromosManager:(PromosManager*)promosManager
-                          prefService:(PrefService*)prefService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

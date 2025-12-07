@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_VARIATIONS_ANDROID_VARIATIONS_SEED_BRIDGE_H_
 #define COMPONENTS_VARIATIONS_ANDROID_VARIATIONS_SEED_BRIDGE_H_
 
-#include <jni.h>
 #include <stdint.h>
 
 #include <memory>

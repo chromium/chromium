@@ -55,7 +55,7 @@ struct AgentWithSimpleFields {
         field1_(&agent_state_, /*default_value=*/0.0),
         multiplier_(&agent_state_, /*default_value=*/1.0),
         counter_(&agent_state_, /*default_value=*/1),
-        message_(&agent_state_, /*default_value=*/WTF::String()),
+        message_(&agent_state_, /*default_value=*/String()),
         bytes_(&agent_state_, /*default_value=*/{}) {}
 
   InspectorAgentState agent_state_;
@@ -143,7 +143,7 @@ TEST(InspectorSessionStateTest, SimpleFields) {
 struct AgentWithMapFields {
   AgentWithMapFields()
       : agent_state_("map_agents"),
-        strings_(&agent_state_, /*default_value=*/WTF::String()),
+        strings_(&agent_state_, /*default_value=*/String()),
         doubles_(&agent_state_, /*default_value=*/0.0) {}
 
   InspectorAgentState agent_state_;
@@ -162,14 +162,14 @@ TEST(InspectorSessionStateTest, MapFields) {
     EXPECT_TRUE(maps_agent.strings_.IsEmpty());
 
     maps_agent.strings_.Set("key1", "Hello, world.");
-    maps_agent.strings_.Set("key2", WTF::String::FromUTF8("I ❤ Unicode."));
+    maps_agent.strings_.Set("key2", String::FromUTF8("I ❤ Unicode."));
 
     EXPECT_FALSE(maps_agent.strings_.IsEmpty());
 
     EXPECT_THAT(maps_agent.strings_.Keys(),
                 UnorderedElementsAre("key1", "key2"));
     EXPECT_EQ("Hello, world.", maps_agent.strings_.Get("key1"));
-    EXPECT_EQ(WTF::String::FromUTF8("I ❤ Unicode."),
+    EXPECT_EQ(String::FromUTF8("I ❤ Unicode."),
               maps_agent.strings_.Get("key2"));
     EXPECT_TRUE(maps_agent.strings_.Get("key3").IsNull());
 
@@ -185,7 +185,7 @@ TEST(InspectorSessionStateTest, MapFields) {
     EXPECT_THAT(maps_agent.strings_.Keys(),
                 UnorderedElementsAre("key1", "key2"));
     EXPECT_EQ("Hello, world.", maps_agent.strings_.Get("key1"));
-    EXPECT_EQ(WTF::String::FromUTF8("I ❤ Unicode."),
+    EXPECT_EQ(String::FromUTF8("I ❤ Unicode."),
               maps_agent.strings_.Get("key2"));
     EXPECT_TRUE(maps_agent.strings_.Get("key3").IsNull());
 
@@ -236,10 +236,8 @@ TEST(InspectorSessionStateTest, MultipleAgents) {
   // Show that the keys for the field values are prefixed with the domain name
   // passed to AgentState so that the stored values won't collide.
   DevToolsSessionStatePtr cookie = dev_tools_session.CloneCookie();
-  Vector<WTF::String> keys;
-  WTF::CopyKeysToVector(cookie->entries, keys);
-
-  EXPECT_THAT(keys, UnorderedElementsAre("map_agents.1/Pi", "simple_agent.4/"));
+  EXPECT_THAT(cookie->entries.Keys(),
+              UnorderedElementsAre("map_agents.1/Pi", "simple_agent.4/"));
 
   {  // Renderer session, maps_agent clears its fields, and show that it will
     // clear the agent's fields, but no other fields.

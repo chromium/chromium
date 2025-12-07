@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "cc/base/math_util.h"
 #include "cc/debug/debug_colors.h"
+#include "cc/layers/append_quads_context.h"
 #include "cc/layers/append_quads_data.h"
 #include "cc/paint/element_id.h"
 #include "cc/paint/filter_operations.h"
@@ -37,8 +38,11 @@ RenderSurfaceImpl::RenderSurfaceImpl(LayerTreeImpl* layer_tree_impl,
                                      ElementId id)
     : layer_tree_impl_(layer_tree_impl),
       id_(id),
-      effect_tree_index_(kInvalidPropertyNodeId) {
+      effect_tree_index_(kInvalidPropertyNodeId),
+      stable_id_for_shared_quad_state_(
+          LayerImpl::GetNextStableIdForSharedQuadState()) {
   DCHECK(id);
+  DCHECK(stable_id_for_shared_quad_state_);
   damage_tracker_ = DamageTracker::Create();
 }
 
@@ -135,7 +139,7 @@ const FilterOperations& RenderSurfaceImpl::BackdropFilters() const {
   return OwningEffectNode()->backdrop_filters;
 }
 
-std::optional<gfx::RRectF> RenderSurfaceImpl::BackdropFilterBounds() const {
+std::optional<SkPath> RenderSurfaceImpl::BackdropFilterBounds() const {
   return OwningEffectNode()->backdrop_filter_bounds;
 }
 
@@ -161,8 +165,16 @@ bool RenderSurfaceImpl::ShouldCacheRenderSurface() const {
 
 bool RenderSurfaceImpl::CopyOfOutputRequired() const {
   return HasCopyRequest() || ShouldCacheRenderSurface() ||
-         SubtreeCaptureId().is_valid() ||
-         OwningEffectNode()->view_transition_element_resource_id.IsValid();
+         SubtreeCaptureId().is_valid() || IsViewTransitionElement();
+}
+
+bool RenderSurfaceImpl::IsViewTransitionElement() const {
+  return ViewTransitionElementResourceId().IsValid();
+}
+
+const viz::ViewTransitionElementResourceId&
+RenderSurfaceImpl::ViewTransitionElementResourceId() const {
+  return OwningEffectNode()->view_transition_element_resource_id;
 }
 
 int RenderSurfaceImpl::TransformTreeIndex() const {
@@ -211,7 +223,7 @@ gfx::Rect RenderSurfaceImpl::CalculateExpandedClipForFilters(
     const gfx::Transform& target_to_surface) {
   gfx::Rect clip_in_surface_space =
       MathUtil::ProjectEnclosingClippedRect(target_to_surface, clip_rect());
-  gfx::Rect expanded_clip_in_surface_space = Filters().MapRect(
+  gfx::Rect expanded_clip_in_surface_space = Filters().ExpandRect(
       clip_in_surface_space, gfx::TransformToFlattenedSkMatrix(SurfaceScale()));
   gfx::Rect expanded_clip_in_target_space = MathUtil::MapEnclosingClippedRect(
       draw_transform(), expanded_clip_in_surface_space);
@@ -270,6 +282,15 @@ void RenderSurfaceImpl::CalculateContentRectFromAccumulatedContentRect(
   // Root render surface use viewport, and does not calculate content rect.
   DCHECK_NE(render_target(), this);
 
+  for (LayerImpl* layer : deferred_contributing_layers_) {
+    DCHECK(layer->draws_content());
+    accumulated_content_rect_.Union(layer->visible_drawable_content_rect());
+    view_transition_capture_content_rect_.Union(
+        layer->visible_drawable_content_rect());
+  }
+
+  deferred_contributing_layers_.clear();
+
   // Surface's content rect is the clipped accumulated content rect. By default
   // use accumulated content rect, and then try to clip it.
   gfx::Rect surface_content_rect = CalculateClippedAccumulatedContentRect();
@@ -277,11 +298,19 @@ void RenderSurfaceImpl::CalculateContentRectFromAccumulatedContentRect(
   // Render passes induced for elements participating in a ViewTransition
   // shouldn't be larger than max texture size.
 #if DCHECK_IS_ON()
-  if (OwningEffectNode()->view_transition_element_resource_id.IsValid()) {
+  if (IsViewTransitionElement()) {
     DCHECK_LE(surface_content_rect.width(), max_texture_size);
     DCHECK_LE(surface_content_rect.height(), max_texture_size);
   }
 #endif
+
+  if (surface_content_rect.width() > max_texture_size ||
+      surface_content_rect.height() > max_texture_size) {
+    VLOG(1) << "Max texture width or height (" << max_texture_size
+            << ") exceeded for render surface of width "
+            << surface_content_rect.width() << " and height "
+            << surface_content_rect.height();
+  }
 
   // The RenderSurfaceImpl backing texture cannot exceed the maximum supported
   // texture size.
@@ -291,11 +320,17 @@ void RenderSurfaceImpl::CalculateContentRectFromAccumulatedContentRect(
       std::min(surface_content_rect.height(), max_texture_size));
 
   SetContentRect(surface_content_rect);
+
+  view_transition_capture_content_rect_.set_width(std::min(
+      view_transition_capture_content_rect_.width(), max_texture_size));
+  view_transition_capture_content_rect_.set_height(std::min(
+      view_transition_capture_content_rect_.height(), max_texture_size));
 }
 
 void RenderSurfaceImpl::SetContentRectToViewport() {
   // Only root render surface use viewport as content rect.
   DCHECK_EQ(render_target(), this);
+  DCHECK(deferred_contributing_layers_.empty());
   gfx::Rect viewport = gfx::ToEnclosingRect(
       layer_tree_impl_->property_trees()->clip_tree().ViewportClip());
   SetContentRect(viewport);
@@ -303,10 +338,13 @@ void RenderSurfaceImpl::SetContentRectToViewport() {
 
 void RenderSurfaceImpl::ClearAccumulatedContentRect() {
   accumulated_content_rect_ = gfx::Rect();
+  view_transition_capture_content_rect_ = gfx::Rect();
 }
 
 void RenderSurfaceImpl::AccumulateContentRectFromContributingLayer(
-    LayerImpl* layer) {
+    LayerImpl* layer,
+    const base::flat_set<blink::ViewTransitionToken>&
+        capture_view_transition_tokens) {
   DCHECK(layer->draws_content());
   DCHECK_EQ(this, layer->render_target());
 
@@ -315,29 +353,63 @@ void RenderSurfaceImpl::AccumulateContentRectFromContributingLayer(
   if (render_target() == this)
     return;
 
-  accumulated_content_rect_.Union(layer->visible_drawable_content_rect());
+  // Contributions from view-transition capture layers are deferred until
+  // their surface content rect is computed.
+  if (layer->ViewTransitionResourceId().IsValid()) {
+    // If the token doesn't match, then we will accumulate the rect later (defer
+    // for now). If the token does match, we don't need to accumulate the rect
+    // at all since the corresponding ViewTransitionContentLayerImpl won't
+    // append its quads and not contribute to the content of this render
+    // surface.
+    // TODO(vmpstr): This can be simplified when we remove the
+    // ViewTransitionContentLayerImpls for capture phase view transitions.
+    if (!layer->ViewTransitionResourceId().MatchesToken(
+            capture_view_transition_tokens)) {
+      deferred_contributing_layers_.push_back(layer);
+    }
+  } else {
+    accumulated_content_rect_.Union(layer->visible_drawable_content_rect());
+    view_transition_capture_content_rect_.Union(
+        layer->visible_drawable_content_rect());
+  }
 }
 
 void RenderSurfaceImpl::AccumulateContentRectFromContributingRenderSurface(
-    RenderSurfaceImpl* contributing_surface) {
+    RenderSurfaceImpl* contributing_surface,
+    const base::flat_set<blink::ViewTransitionToken>&
+        capture_view_transition_tokens) {
   DCHECK_NE(this, contributing_surface);
   DCHECK_EQ(this, contributing_surface->render_target());
 
   // Root render surface doesn't accumulate content rect, it always uses
   // viewport for content rect.
-  if (render_target() == this)
+  if (render_target() == this) {
     return;
+  }
 
-  // If this surface is a shared element id then it is being used to generate an
-  // independent snapshot and won't contribute to its target surface.
-  if (contributing_surface->OwningEffectNode()
-          ->view_transition_element_resource_id.IsValid())
+  // If the contributing surface is a non-capture view transition surface, then
+  // it will drawn independently and not need to contribute to this surface.
+  if (contributing_surface->IsViewTransitionElement() &&
+      !contributing_surface->ViewTransitionElementResourceId().MatchesToken(
+          capture_view_transition_tokens)) {
     return;
+  }
 
   // The content rect of contributing surface is in its own space. Instead, we
   // will use contributing surface's DrawableContentRect which is in target
   // space (local space for this render surface) as required.
   accumulated_content_rect_.Union(
+      gfx::ToEnclosedRect(contributing_surface->DrawableContentRect()));
+
+  // Now if contributing surface is a *matching* view transition element,
+  // meaning that we're doing a capture, then above we ensure that we can use
+  // the content rect to draw the frame, but we don't need that surface to
+  // contribute for capture.
+  if (contributing_surface->IsViewTransitionElement()) {
+    return;
+  }
+
+  view_transition_capture_content_rect_.Union(
       gfx::ToEnclosedRect(contributing_surface->DrawableContentRect()));
 }
 
@@ -356,7 +428,7 @@ bool RenderSurfaceImpl::AncestorPropertyChanged() const {
   return ancestor_property_changed_ || property_trees->full_tree_damaged() ||
          property_trees->transform_tree()
              .Node(TransformTreeIndex())
-             ->transform_changed ||
+             ->transform_changed() ||
          property_trees->effect_tree().Node(EffectTreeIndex())->effect_changed;
 }
 
@@ -371,8 +443,9 @@ bool RenderSurfaceImpl::HasDamageFromeContributingContent() const {
 gfx::Rect RenderSurfaceImpl::GetDamageRect() const {
   gfx::Rect damage_rect;
   bool is_valid_rect = damage_tracker_->GetDamageRectIfValid(&damage_rect);
-  if (!is_valid_rect)
+  if (!is_valid_rect) {
     return content_rect();
+  }
   return damage_rect;
 }
 
@@ -392,44 +465,103 @@ void RenderSurfaceImpl::ResetPropertyChangedFlags() {
   ancestor_property_changed_ = false;
 }
 
+std::unique_ptr<viz::CompositorRenderPass> RenderSurfaceImpl::CreateRenderPass(
+    const base::flat_set<blink::ViewTransitionToken>&
+        capture_view_transition_tokens) {
+  auto pass = CreateRenderPassCommon(render_pass_id(), content_rect());
+  // If we have a subtree_capture_id, it would only be a part of the regular
+  // render pass.
+  pass->subtree_capture_id = SubtreeCaptureId();
+  // We never cache the capture render pass, so it's only specified here.
+  pass->cache_render_pass = ShouldCacheRenderSurface();
+
+  // We only set the view transition tokens on a regular pass that don't match
+  // the capture phase tokens. The capture phase tokens will only be set on the
+  // view transition render pass.
+  if (!ViewTransitionElementResourceId().MatchesToken(
+          capture_view_transition_tokens)) {
+    pass->view_transition_element_resource_id =
+        ViewTransitionElementResourceId();
+  }
+  return pass;
+}
+
 std::unique_ptr<viz::CompositorRenderPass>
-RenderSurfaceImpl::CreateRenderPass() {
+RenderSurfaceImpl::CreateViewTransitionCaptureRenderPass(
+    const base::flat_set<blink::ViewTransitionToken>&
+        capture_view_transition_tokens) {
+  auto pass = CreateRenderPassCommon(view_transition_capture_render_pass_id(),
+                                     view_transition_capture_content_rect_);
+
+  DCHECK(IsViewTransitionElement() ||
+         has_view_transition_capture_contributions());
+  pass->view_transition_element_resource_id = ViewTransitionElementResourceId();
+  return pass;
+}
+
+std::unique_ptr<viz::CompositorRenderPass>
+RenderSurfaceImpl::CreateRenderPassCommon(viz::CompositorRenderPassId id,
+                                          const gfx::Rect& output_rect) {
   std::unique_ptr<viz::CompositorRenderPass> pass =
       viz::CompositorRenderPass::Create(num_contributors_);
   gfx::Rect damage_rect = GetDamageRect();
-  damage_rect.Intersect(content_rect());
-  pass->SetNew(render_pass_id(), content_rect(), damage_rect,
+  damage_rect.Intersect(output_rect);
+  pass->SetNew(id, output_rect, damage_rect,
                draw_properties_.screen_space_transform);
   pass->filters = Filters();
   pass->backdrop_filters = BackdropFilters();
   pass->backdrop_filter_bounds = BackdropFilterBounds();
   pass->generate_mipmap = TrilinearFiltering();
-  pass->subtree_capture_id = SubtreeCaptureId();
   // The subtree size may be slightly larger than our content rect during
   // some animations, so we clamp it here.
   pass->subtree_size = SubtreeSize();
-  pass->subtree_size.SetToMin(content_rect().size());
-  pass->cache_render_pass = ShouldCacheRenderSurface();
+  pass->subtree_size.SetToMin(output_rect.size());
   pass->has_damage_from_contributing_content =
       HasDamageFromeContributingContent();
-  pass->view_transition_element_resource_id =
-      OwningEffectNode()->view_transition_element_resource_id;
   return pass;
 }
 
-void RenderSurfaceImpl::AppendQuads(DrawMode draw_mode,
+void RenderSurfaceImpl::AppendQuads(const AppendQuadsContext& context,
                                     viz::CompositorRenderPass* render_pass,
                                     AppendQuadsData* append_quads_data) {
-  gfx::Rect unoccluded_content_rect =
-      occlusion_in_content_space().GetUnoccludedContentRect(content_rect());
-  if (unoccluded_content_rect.IsEmpty())
+  // There are several cases to consider if we are a ViewTransition element:
+  // We're doing a regular append (not for capture) and the token matches:
+  //   - We should append the quad, because we're producing a regular draw
+  //     frame.
+  // We're doing a regular append (not for capture) and the token doesn't match:
+  //   - We should skip: this is the regular view transition skip in a
+  //     non-capture phase.
+  // We're doing a for-capture append and the token matches
+  //   - We should skip: this is a for capture render pass, so we need to
+  //     extract the render pass into its own set without contributing to the
+  //     parent.
+  // We're doing a for-capture append and the token doesn't match
+  //   - We should skip: this is the regular view transition skip in a
+  //     non-capture phase.
+  // Overall, we only append in the case that we are doing a regular append
+  // (not for capture) and the token matches. All other cases return here.
+  // Note that we only omit real ViewTransition render passes, since passes that
+  // has_view_transition_capture_contributions may also have contributions
+  // from non-view-transition items that need to be included.
+  if (IsViewTransitionElement() &&
+      (context.for_view_transition_capture ||
+       !ViewTransitionElementResourceId().MatchesToken(
+           context.capture_view_transition_tokens))) {
     return;
+  }
 
-  // If this render surface has a valid |view_transition_element_resource_id|
-  // then its being used to produce live content. Its content will be drawn to
-  // its actual position in the Viz process.
-  if (OwningEffectNode()->view_transition_element_resource_id.IsValid())
+  gfx::Rect output_rect = context.for_view_transition_capture &&
+                                  has_view_transition_capture_contributions()
+                              ? view_transition_capture_content_rect_
+                              : content_rect();
+  gfx::Rect unoccluded_output_rect =
+      occlusion_in_content_space().GetUnoccludedContentRect(output_rect);
+  // Contributions to the output rect from a reference filter are not included
+  // in the unoccluded_output_rect, so do not skip the quad or the target
+  // surface will be missing the reference filter content.
+  if (unoccluded_output_rect.IsEmpty() && !Filters().HasReferenceFilter()) {
     return;
+  }
 
   const PropertyTrees* property_trees = layer_tree_impl_->property_trees();
   int sorting_context_id = property_trees->transform_tree()
@@ -443,16 +575,18 @@ void RenderSurfaceImpl::AppendQuads(DrawMode draw_mode,
     clip_rect = draw_properties_.clip_rect;
   }
   shared_quad_state->SetAll(
-      draw_transform(), content_rect(), content_rect(), mask_filter_info(),
-      clip_rect, contents_opaque, draw_properties_.draw_opacity, BlendMode(),
-      sorting_context_id, /*layer_id=*/0u, is_fast_rounded_corner());
+      draw_transform(), output_rect, output_rect, mask_filter_info(), clip_rect,
+      contents_opaque, draw_properties_.draw_opacity, BlendMode(),
+      sorting_context_id,
+      static_cast<uint32_t>(stable_id_for_shared_quad_state_),
+      is_fast_rounded_corner());
 
   if (layer_tree_impl_->debug_state().show_debug_borders.test(
           DebugBorderType::RENDERPASS)) {
     auto* debug_border_quad =
         render_pass->CreateAndAppendDrawQuad<viz::DebugBorderDrawQuad>();
-    debug_border_quad->SetNew(shared_quad_state, content_rect(),
-                              unoccluded_content_rect, GetDebugBorderColor(),
+    debug_border_quad->SetNew(shared_quad_state, output_rect,
+                              unoccluded_output_rect, GetDebugBorderColor(),
                               GetDebugBorderWidth());
   }
 
@@ -463,7 +597,7 @@ void RenderSurfaceImpl::AppendQuads(DrawMode draw_mode,
   gfx::Vector2dF surface_contents_scale =
       OwningEffectNode()->surface_contents_scale;
   // Resourceless mode does not support masks.
-  if (draw_mode != DRAW_MODE_RESOURCELESS_SOFTWARE && mask_layer &&
+  if (context.draw_mode != DRAW_MODE_RESOURCELESS_SOFTWARE && mask_layer &&
       mask_layer->draws_content() && !mask_layer->bounds().IsEmpty()) {
     // The software renderer applies mask layer and blending in the wrong
     // order but kDstIn doesn't commute with masking. It is okay to not
@@ -487,26 +621,31 @@ void RenderSurfaceImpl::AppendQuads(DrawMode draw_mode,
     // Convert content_rect from target space to normalized mask UV space.
     // Where |unclipped_mask_target_size| maps to |mask_uv_size|.
     mask_uv_rect = gfx::ScaleRect(
-        // Translate content_rect into mask resource's space.
-        gfx::RectF(content_rect()) - mask_offset,
+        // Translate output_rect into mask resource's space.
+        gfx::RectF(output_rect) - mask_offset,
         mask_uv_size.width() / unclipped_mask_target_size.width(),
         mask_uv_size.height() / unclipped_mask_target_size.height());
   }
 
-  gfx::RectF tex_coord_rect(gfx::Rect(content_rect().size()));
+  gfx::RectF tex_coord_rect(gfx::Rect(output_rect.size()));
   auto* quad =
       render_pass->CreateAndAppendDrawQuad<viz::CompositorRenderPassDrawQuad>();
+  const auto& append_render_pass_id =
+      context.for_view_transition_capture &&
+              has_view_transition_capture_contributions()
+          ? view_transition_capture_render_pass_id()
+          : render_pass_id();
   quad->SetAll(
-      shared_quad_state, content_rect(), unoccluded_content_rect,
-      /*needs_blending=*/true, render_pass_id(), mask_resource_id, mask_uv_rect,
-      mask_texture_size, surface_contents_scale, gfx::PointF(), tex_coord_rect,
-      !layer_tree_impl_->settings().enable_edge_anti_aliasing,
+      shared_quad_state, output_rect, unoccluded_output_rect,
+      /*needs_blending=*/true, append_render_pass_id, mask_resource_id,
+      mask_uv_rect, mask_texture_size, surface_contents_scale, gfx::PointF(),
+      tex_coord_rect, !layer_tree_impl_->settings().enable_edge_anti_aliasing,
       OwningEffectNode()->backdrop_filter_quality, intersects_damage_under_);
 }
 
 bool RenderSurfaceImpl::ShouldClip() const {
   return !HasCopyRequest() && !ShouldCacheRenderSurface() &&
-         !OwningEffectNode()->view_transition_element_resource_id.IsValid();
+         !IsViewTransitionElement();
 }
 
 }  // namespace cc

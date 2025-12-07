@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_observer.h"
@@ -38,7 +37,7 @@ class ThemeInstalledInfoBarDelegate : public ConfirmInfoBarDelegate,
   friend class InfoBarUiTest;
 
   // Creates a theme installed infobar and delegate and adds the infobar to
-  // |infobar_manager|, replacing any previous theme infobar.
+  // `infobar_manager`, replacing any previous theme infobar.
   static void Create(
       infobars::ContentInfoBarManager* infobar_manager,
       ThemeService* theme_service,

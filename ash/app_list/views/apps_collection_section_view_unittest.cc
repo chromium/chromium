@@ -13,6 +13,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_model_provider.h"
+#include "ash/app_list/apps_collections_controller.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/model/app_list_test_model.h"
@@ -22,9 +23,12 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view_utils.h"
 
@@ -37,11 +41,11 @@ class AppsCollectionSectionViewTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {app_list_features::kAppsCollections,
-         app_list_features::kForceShowAppsCollections},
-        {});
+    scoped_feature_list_.InitWithFeatures({app_list_features::kAppsCollections},
+                                          {});
     AshTestBase::SetUp();
+    AppsCollectionsController::Get()->ForceAppsCollectionsForTesting(
+        /*force=*/true);
   }
 
   void ShowAppList() {
@@ -155,6 +159,26 @@ TEST_F(AppsCollectionSectionViewTest, ClickOrTapOnCollectionApp) {
   // The item was activated.
   EXPECT_EQ(1, GetTestAppListClient()->activate_item_count());
   EXPECT_EQ("id1", GetTestAppListClient()->activate_item_last_id());
+}
+
+TEST_F(AppsCollectionSectionViewTest, AccessibleDescription) {
+  AddAppListItemWithCollection("id1", AppCollection::kEntertainment);
+  AddAppListItemWithCollection("id2", AppCollection::kEntertainment);
+  AddAppListItemWithCollection("id3", AppCollection::kEntertainment);
+  AddAppListItemWithCollection("id4", AppCollection::kEntertainment);
+
+  ShowAppList();
+
+  AppsCollectionSectionView* collection =
+      GetViewForCollection(AppCollection::kEntertainment);
+  ASSERT_TRUE(collection);
+  ASSERT_GT(collection->GetItemViewCount(), 0u);
+
+  views::View* view = GetAppItemAtIndex(collection, 0);
+
+  EXPECT_EQ(view->GetViewAccessibility().GetCachedDescription(),
+            l10n_util::GetStringUTF16(
+                IDS_ASH_LAUNCHER_APPS_COLLECTIONS_ENTERTAINMENT_NAME));
 }
 
 TEST_F(AppsCollectionSectionViewTest, AttemptTouchDragApp) {

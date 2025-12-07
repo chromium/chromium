@@ -41,6 +41,7 @@ class SetFileEnumerator : public FileSystemFileUtil::AbstractFileEnumerator {
       if (platform_file.empty()) {
         recursive_enumerator_.reset();
       } else {
+        name_ = recursive_enumerator_->GetName();
         file_info_.is_directory = recursive_enumerator_->IsDirectory();
         file_info_.size = recursive_enumerator_->Size();
         file_info_.last_modified = recursive_enumerator_->LastModifiedTime();
@@ -48,6 +49,7 @@ class SetFileEnumerator : public FileSystemFileUtil::AbstractFileEnumerator {
       }
     }
     if (file_iter_ != files_.end()) {
+      name_ = base::FilePath::FromUTF8Unsafe(file_iter_->name);
       base::FilePath platform_file = (file_iter_++)->path;
       NativeFileUtil::GetFileInfo(platform_file, &file_info_);
       if (recursive_ && file_info_.is_directory) {
@@ -58,6 +60,7 @@ class SetFileEnumerator : public FileSystemFileUtil::AbstractFileEnumerator {
     }
     return base::FilePath();
   }
+  base::FilePath GetName() override { return name_; }
   int64_t Size() override { return file_info_.size; }
   bool IsDirectory() override { return file_info_.is_directory; }
   base::Time LastModifiedTime() override { return file_info_.last_modified; }
@@ -66,6 +69,7 @@ class SetFileEnumerator : public FileSystemFileUtil::AbstractFileEnumerator {
   const std::vector<FileInfo> files_;
   const bool recursive_;
   std::vector<FileInfo>::const_iterator file_iter_;
+  base::FilePath name_;
   base::File::Info file_info_;
   std::unique_ptr<FileSystemFileUtil::AbstractFileEnumerator>
       recursive_enumerator_;

@@ -118,7 +118,7 @@ TEST_F(LocalDomainResolverTest, ResolveDomainA) {
 
   EXPECT_CALL(*this, AddressCallbackInternal(true, "1.2.3.4", ""));
 
-  socket_factory_.SimulateReceive(kSamplePacketA, sizeof(kSamplePacketA));
+  socket_factory_.SimulateReceive(kSamplePacketA);
 }
 
 TEST_F(LocalDomainResolverTest, ResolveDomainAAAA) {
@@ -134,7 +134,7 @@ TEST_F(LocalDomainResolverTest, ResolveDomainAAAA) {
 
   EXPECT_CALL(*this, AddressCallbackInternal(true, "", "a::1:2:3:4"));
 
-  socket_factory_.SimulateReceive(kSamplePacketAAAA, sizeof(kSamplePacketAAAA));
+  socket_factory_.SimulateReceive(kSamplePacketAAAA);
 }
 
 TEST_F(LocalDomainResolverTest, ResolveDomainAnyOneAvailable) {
@@ -148,7 +148,7 @@ TEST_F(LocalDomainResolverTest, ResolveDomainAnyOneAvailable) {
 
   resolver.Start();
 
-  socket_factory_.SimulateReceive(kSamplePacketAAAA, sizeof(kSamplePacketAAAA));
+  socket_factory_.SimulateReceive(kSamplePacketAAAA);
 
   EXPECT_CALL(*this, AddressCallbackInternal(true, "", "a::1:2:3:4"));
 
@@ -169,9 +169,9 @@ TEST_F(LocalDomainResolverTest, ResolveDomainAnyBothAvailable) {
 
   EXPECT_CALL(*this, AddressCallbackInternal(true, "1.2.3.4", "a::1:2:3:4"));
 
-  socket_factory_.SimulateReceive(kSamplePacketAAAA, sizeof(kSamplePacketAAAA));
+  socket_factory_.SimulateReceive(kSamplePacketAAAA);
 
-  socket_factory_.SimulateReceive(kSamplePacketA, sizeof(kSamplePacketA));
+  socket_factory_.SimulateReceive(kSamplePacketA);
 }
 
 TEST_F(LocalDomainResolverTest, ResolveDomainNone) {

@@ -152,7 +152,7 @@ class SafeRef {
 
   // Construction from a from a WeakPtr's internals. Will CHECK() if the WeakPtr
   // is already invalid.
-  explicit SafeRef(internal::WeakReference&& ref, T* ptr)
+  SafeRef(internal::WeakReference&& ref, T* ptr)
       : ref_(std::move(ref)), ptr_(ptr) {
     CHECK(ref_.IsValid());
   }

@@ -14,7 +14,7 @@
 #include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class Profile;
 
@@ -102,8 +102,6 @@ class ParentPermissionDialog {
       gfx::NativeWindow window,
       const gfx::ImageSkia& icon,
       const extensions::Extension* extension,
-      SupervisedUserExtensionParentApprovalEntryPoint
-          extension_approval_entry_point,
       ParentPermissionDialog::DoneCallback done_callback);
 };
 

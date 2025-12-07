@@ -16,7 +16,6 @@ class MockPrivacySandboxSettings
  public:
   MockPrivacySandboxSettings();
   ~MockPrivacySandboxSettings() override;
-  void SetUpDefaultResponse();
 
   // PrivacySandboxSettings:
   MOCK_METHOD(bool, IsTopicsAllowed, (), (override, const));
@@ -90,6 +89,12 @@ class MockPrivacySandboxSettings
               (const url::Origin&, const url::Origin&, std::string*, bool*),
               (override, const));
   MOCK_METHOD(bool,
+              IsFencedStorageReadAllowed,
+              (const url::Origin&,
+               const url::Origin&,
+               content::RenderFrameHost*),
+              (override, const));
+  MOCK_METHOD(bool,
               IsPrivateAggregationAllowed,
               (const url::Origin&, const url::Origin&, bool*),
               (override, const));
@@ -100,11 +105,6 @@ class MockPrivacySandboxSettings
   MOCK_METHOD(privacy_sandbox::TpcdExperimentEligibility,
               GetCookieDeprecationExperimentCurrentEligibility,
               (),
-              (override, const));
-  MOCK_METHOD(bool, IsCookieDeprecationLabelAllowed, (), (override, const));
-  MOCK_METHOD(bool,
-              IsCookieDeprecationLabelAllowedForContext,
-              (const url::Origin&, const url::Origin&),
               (override, const));
   MOCK_METHOD(void, SetAllPrivacySandboxAllowedForTesting, (), (override));
   MOCK_METHOD(void, SetTopicsBlockedForTesting, (), (override));

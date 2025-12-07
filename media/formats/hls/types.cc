@@ -4,13 +4,13 @@
 
 #include "media/formats/hls/types.h"
 
+#include <algorithm>
 #include <cmath>
 #include <functional>
 #include <limits>
 
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "media/formats/hls/parse_status.h"
@@ -32,6 +32,18 @@ ParseStatus::Or<base::TimeDelta> TimeDelta::Parse(ResolvedSourceString str) {
         return duration;
       });
 }
+
+ByteRangeExpression::ByteRangeExpression(
+    types::DecimalInteger length,
+    std::optional<types::DecimalInteger> offset)
+    : length(std::move(length)), offset(std::move(offset)) {}
+ByteRangeExpression::ByteRangeExpression(const ByteRangeExpression& other) =
+    default;
+ByteRangeExpression::ByteRangeExpression(ByteRangeExpression&& other) = default;
+ByteRangeExpression& ByteRangeExpression::operator=(
+    const ByteRangeExpression& other) = default;
+ByteRangeExpression& ByteRangeExpression::operator=(
+    ByteRangeExpression&& other) = default;
 
 // static
 ParseStatus::Or<ByteRangeExpression> ByteRangeExpression::Parse(
@@ -59,8 +71,16 @@ ParseStatus::Or<ByteRangeExpression> ByteRangeExpression::Parse(
     offset = std::move(offset_result).value();
   }
 
-  return ByteRangeExpression{.length = std::move(length).value(),
-                             .offset = offset};
+  return ByteRangeExpression(std::move(length).value(), offset);
+}
+
+// static
+ParseStatus::Or<base::Time> ISO8601Date::Parse(ResolvedSourceString str) {
+  base::Time time;
+  if (base::Time::FromString(str.Str().data(), &time)) {
+    return time;
+  }
+  return ParseStatusCode::kMalformedDate;
 }
 
 // static
@@ -69,8 +89,25 @@ ParseStatus::Or<ResolvedSourceString> RawStr::Parse(ResolvedSourceString str) {
 }
 
 // static
+ParseStatus::Or<DecimalInteger> RawInt::Parse(ResolvedSourceString str) {
+  return ParseDecimalInteger(str);
+}
+
+// static
+ParseStatus::Or<DecimalFloatingPoint> RawFloat::Parse(
+    ResolvedSourceString str) {
+  return ParseDecimalFloatingPoint(str);
+}
+
+// static
 ParseStatus::Or<bool> YesOrNo::Parse(ResolvedSourceString str) {
   return str.Str() == "YES";
+}
+
+// static
+ParseStatus::Or<::media::hls::types::DecimalResolution>
+DecimalResolution::Parse(ResolvedSourceString str) {
+  return ::media::hls::types::DecimalResolution::Parse(str);
 }
 
 }  // namespace parsing
@@ -93,7 +130,7 @@ std::optional<SourceString> ExtractAttributeName(SourceString* source_str) {
   };
 
   // Extract the substring where `is_char_valid` succeeds
-  auto end = base::ranges::find_if_not(str.Str(), is_char_valid);
+  auto end = std::ranges::find_if_not(str.Str(), is_char_valid);
   const auto name = str.Consume(end - str.Str().cbegin());
 
   // At least one character must have matched
@@ -363,7 +400,7 @@ AttributeMap::AttributeMap(base::span<Item> sorted_items)
   // tries to access the stored value after filling by the index of a subsequent
   // duplicate key, rather than the first.
   DCHECK(
-      base::ranges::is_sorted(items_, std::less(), &AttributeMap::Item::first));
+      std::ranges::is_sorted(items_, std::less(), &AttributeMap::Item::first));
 }
 
 ParseStatus::Or<AttributeListIterator::Item> AttributeMap::Fill(
@@ -379,11 +416,11 @@ ParseStatus::Or<AttributeListIterator::Item> AttributeMap::Fill(
 
     auto item = std::move(result).value();
 
-    // Look up the item. `base::ranges::lower_bound` performs a binary search to
+    // Look up the item. `std::ranges::lower_bound` performs a binary search to
     // find the first entry where the name does not compare less than the given
     // value.
-    auto entry = base::ranges::lower_bound(items_, item.name.Str(), std::less(),
-                                           &AttributeMap::Item::first);
+    auto entry = std::ranges::lower_bound(items_, item.name.Str(), std::less(),
+                                          &AttributeMap::Item::first);
     if (entry == items_.end()) {
       return item;
     }
@@ -435,7 +472,7 @@ ParseStatus::Or<StableId> StableId::Parse(ResolvedSourceString str) {
     return base::IsAsciiAlphaNumeric(c) || IsOneOf(c, "+/=.-_");
   };
 
-  if (str.Empty() || !base::ranges::all_of(str.Str(), is_char_valid)) {
+  if (str.Empty() || !std::ranges::all_of(str.Str(), is_char_valid)) {
     return ParseStatusCode::kFailedToParseStableId;
   }
 
@@ -514,8 +551,8 @@ ParseStatus::Or<AudioChannels> AudioChannels::Parse(ResolvedSourceString str) {
 
     // Each string must be non-empty and consist only of the allowed characters
     if (identifier.Empty() ||
-        !base::ranges::all_of(identifier.Str(),
-                              is_valid_coding_identifier_char)) {
+        !std::ranges::all_of(identifier.Str(),
+                             is_valid_coding_identifier_char)) {
       return ParseStatusCode::kFailedToParseAudioChannels;
     }
 
@@ -524,6 +561,16 @@ ParseStatus::Or<AudioChannels> AudioChannels::Parse(ResolvedSourceString str) {
 
   // Ignore any remaining parameters for forward-compatibility
   return AudioChannels(max_channels, std::move(audio_coding_identifiers));
+}
+
+DecimalInteger DecimalResolution::Szudzik() const {
+  if (width > (1 << 16) || height > (1 << 16)) {
+    // resolutions greater than 32768 are not allowed!
+    return 0;
+  }
+  // See http://szudzik.com/ElegantPairing.pdf for the math
+  return (width >= height) ? (width * width + width + height)
+                           : (height * height + width);
 }
 
 }  // namespace media::hls::types

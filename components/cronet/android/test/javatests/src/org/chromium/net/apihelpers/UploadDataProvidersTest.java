@@ -22,8 +22,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.CallbackException;
+import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule;
-import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.NativeTestServer;
 import org.chromium.net.TestUrlRequestCallback;
@@ -42,17 +42,17 @@ import java.nio.ByteBuffer;
 public class UploadDataProvidersTest {
     private static final String LOREM =
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin elementum, libero"
-                    + " laoreet fringilla faucibus, metus tortor vehicula ante, lacinia lorem eros vel"
-                    + " sapien.";
+                + " laoreet fringilla faucibus, metus tortor vehicula ante, lacinia lorem eros vel"
+                + " sapien.";
     @Rule public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
     private File mFile;
+    private NativeTestServer mNativeTestServer;
 
     @Before
     public void setUp() throws Exception {
-        assertThat(
-                        NativeTestServer.startNativeTestServer(
-                                mTestRule.getTestFramework().getContext()))
-                .isTrue();
+        mNativeTestServer =
+                NativeTestServer.createNativeTestServer(mTestRule.getTestFramework().getContext());
+        mNativeTestServer.start();
         // Add url interceptors after native application context is initialized.
         mFile =
                 new File(
@@ -68,7 +68,7 @@ public class UploadDataProvidersTest {
 
     @After
     public void tearDown() throws Exception {
-        NativeTestServer.shutdownNativeTestServer();
+        mNativeTestServer.close();
         assertThat(mFile.delete()).isTrue();
     }
 
@@ -81,7 +81,7 @@ public class UploadDataProvidersTest {
                         .getTestFramework()
                         .getEngine()
                         .newUrlRequestBuilder(
-                                NativeTestServer.getRedirectToEchoBody(),
+                                mNativeTestServer.getRedirectToEchoBody(),
                                 callback,
                                 callback.getExecutor());
         UploadDataProvider dataProvider = UploadDataProviders.create(mFile);
@@ -105,7 +105,7 @@ public class UploadDataProvidersTest {
                         .getTestFramework()
                         .getEngine()
                         .newUrlRequestBuilder(
-                                NativeTestServer.getRedirectToEchoBody(),
+                                mNativeTestServer.getRedirectToEchoBody(),
                                 callback,
                                 callback.getExecutor());
         UploadDataProvider dataProvider = UploadDataProviders.create(descriptor);
@@ -126,7 +126,7 @@ public class UploadDataProvidersTest {
                         .getTestFramework()
                         .getEngine()
                         .newUrlRequestBuilder(
-                                NativeTestServer.getRedirectToEchoBody(),
+                                mNativeTestServer.getRedirectToEchoBody(),
                                 callback,
                                 callback.getExecutor());
         ParcelFileDescriptor[] pipe = ParcelFileDescriptor.createPipe();
@@ -152,7 +152,7 @@ public class UploadDataProvidersTest {
                         .getTestFramework()
                         .getEngine()
                         .newUrlRequestBuilder(
-                                NativeTestServer.getRedirectToEchoBody(),
+                                mNativeTestServer.getRedirectToEchoBody(),
                                 callback,
                                 callback.getExecutor());
         UploadDataProvider dataProvider = UploadDataProviders.create(LOREM.getBytes("UTF-8"));
@@ -178,7 +178,7 @@ public class UploadDataProvidersTest {
                         .getTestFramework()
                         .getEngine()
                         .newUrlRequestBuilder(
-                                NativeTestServer.getEchoBodyURL(),
+                                mNativeTestServer.getEchoBodyURL(),
                                 callback,
                                 callback.getExecutor());
         builder.addHeader("Content-Type", "useless/string");
@@ -230,7 +230,7 @@ public class UploadDataProvidersTest {
                         .getTestFramework()
                         .getEngine()
                         .newUrlRequestBuilder(
-                                NativeTestServer.getEchoBodyURL(),
+                                mNativeTestServer.getEchoBodyURL(),
                                 callback,
                                 callback.getExecutor());
         final ConditionVariable first = new ConditionVariable();
@@ -271,7 +271,7 @@ public class UploadDataProvidersTest {
                         .getTestFramework()
                         .getEngine()
                         .newUrlRequestBuilder(
-                                NativeTestServer.getEchoBodyURL(),
+                                mNativeTestServer.getEchoBodyURL(),
                                 callback,
                                 callback.getExecutor());
         final ConditionVariable first = new ConditionVariable();
@@ -317,7 +317,7 @@ public class UploadDataProvidersTest {
                         .getTestFramework()
                         .getEngine()
                         .newUrlRequestBuilder(
-                                NativeTestServer.getRedirectToEchoBody(),
+                                mNativeTestServer.getRedirectToEchoBody(),
                                 callback,
                                 callback.getExecutor());
         builder.addHeader("Content-Type", "useless/string");

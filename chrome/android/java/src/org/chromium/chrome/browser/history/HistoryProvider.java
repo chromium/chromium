@@ -5,19 +5,23 @@
 package org.chromium.chrome.browser.history;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.List;
 
 /** Provides methods needed for querying and managing browsing history. */
+@NullMarked
 public interface HistoryProvider {
     /** Observer to be notified of browsing history events. */
-    public interface BrowsingHistoryObserver {
+    interface BrowsingHistoryObserver {
         /**
          * Called after {@link BrowsingHistoryBridge#queryHistory(String, long)} is complete.
+         *
          * @param items The items that matched the #queryHistory() parameters.
          * @param hasMorePotentialMatches Whether there are more items that match the query text.
-         *                                This will be false once the entire local history database
-         *                                and remote web history has been searched.
+         *     This will be false once the entire local history database and remote web history has
+         *     been searched.
          */
         void onQueryHistoryComplete(List<HistoryItem> items, boolean hasMorePotentialMatches);
 
@@ -56,7 +60,7 @@ public interface HistoryProvider {
      * @param appId The package name of the app to filter the query result visited by CCT. Can be
      *     null for the results visited by BrApp.
      */
-    void queryHistory(String query, String appId);
+    void queryHistory(String query, @Nullable String appId);
 
     /**
      * Query browsing history for a particular host. Only one query may be in-flight at any time.

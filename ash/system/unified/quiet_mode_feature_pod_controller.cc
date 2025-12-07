@@ -56,7 +56,6 @@ std::unique_ptr<FeatureTile> QuietModeFeaturePodController::CreateTile(
     TrackVisibilityUMA();
   }
 
-  // TODO(b/263416361): Update vector icon to its newer version.
   tile_->SetVectorIcon(kUnifiedMenuDoNotDisturbIcon);
   tile_->SetLabel(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_DO_NOT_DISTURB));

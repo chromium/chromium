@@ -28,6 +28,10 @@ bool MenuModel::IsNewFeatureAt(size_t index) const {
   return false;
 }
 
+bool MenuModel::GetForceShowAcceleratorForItemAt(size_t index) const {
+  return false;
+}
+
 ElementIdentifier MenuModel::GetElementIdentifierAt(size_t index) const {
   return ElementIdentifier();
 }

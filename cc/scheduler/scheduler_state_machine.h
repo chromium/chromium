@@ -7,11 +7,11 @@
 
 #include <stdint.h>
 
+#include "base/time/time.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "cc/cc_export.h"
 #include "cc/scheduler/commit_earlyout_reason.h"
 #include "cc/scheduler/draw_result.h"
-#include "cc/scheduler/redraw_reason.h"
 #include "cc/scheduler/scheduler_settings.h"
 #include "cc/tiles/tile_priority.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -68,6 +68,7 @@ class CC_EXPORT SchedulerStateMachine {
   // The scheduler uses a deadline to wait for main thread updates before
   // submitting a compositor frame. BeginImplFrameDeadlineMode specifies when
   // the deadline should run.
+  // LINT.IfChange(BeginImplFrameDeadlineMode)
   enum class BeginImplFrameDeadlineMode {
     NONE = 0,       // No deadline should be scheduled e.g. for synchronous
                     // compositor.
@@ -82,6 +83,8 @@ class CC_EXPORT SchedulerStateMachine {
                   // frame arrives.
     kMaxValue = BLOCKED,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/compositing/enums.xml:BeginImplFrameDeadlineMode)
+
   // TODO(nuskos): Update Scheduler::ScheduleBeginImplFrameDeadline event to
   // used typed macros so we can remove this ToString function.
   static const char* BeginImplFrameDeadlineModeToString(
@@ -114,6 +117,11 @@ class CC_EXPORT SchedulerStateMachine {
       ForcedRedrawOnTimeoutStateToProtozeroEnum(
           ForcedRedrawOnTimeoutState state);
 
+  // Public for testing.
+  // Semi-arbitrary delay, chosen to be similar to Android's platform behavior.
+  static constexpr base::TimeDelta kUrgentBoostDuration =
+      base::Milliseconds(1500);
+
   BeginMainFrameState begin_main_frame_state() const {
     return begin_main_frame_state_;
   }
@@ -140,7 +148,6 @@ class CC_EXPORT SchedulerStateMachine {
     DRAW_IF_POSSIBLE,
     DRAW_FORCED,
     DRAW_ABORT,
-    UPDATE_DISPLAY_TREE,
     BEGIN_LAYER_TREE_FRAME_SINK_CREATION,
     PREPARE_TILES,
     INVALIDATE_LAYER_TREE_FRAME_SINK,
@@ -162,7 +169,6 @@ class CC_EXPORT SchedulerStateMachine {
   void DidPostCommit();
   void WillActivate();
   void WillDraw();
-  void WillUpdateDisplayTree();
   void WillBeginLayerTreeFrameSinkCreation();
   void WillPrepareTiles();
   void WillInvalidateLayerTreeFrameSink();
@@ -185,7 +191,7 @@ class CC_EXPORT SchedulerStateMachine {
   // Indicates that the system has entered and left a BeginImplFrame callback.
   // The scheduler will not draw more than once in a given BeginImplFrame
   // callback nor send more than one BeginMainFrame message.
-  void OnBeginImplFrame(const viz::BeginFrameId& frame_id, bool animate_only);
+  void OnBeginImplFrame(const viz::BeginFrameArgs& args);
   // Indicates that the scheduler has entered the draw phase. The scheduler
   // will not draw more than once in a single draw phase.
   // TODO(sunnyps): Rename OnBeginImplFrameDeadline to OnDraw or similar.
@@ -209,15 +215,19 @@ class CC_EXPORT SchedulerStateMachine {
 
   bool IsDrawThrottled() const;
 
+  // May throttle main frame updates, but not compositor frames.
+  void FrameIntervalUpdated(base::TimeDelta frame_interval);
+
+  // Returns the main frame throttle interval computed based on the
+  // static throttle feature and the renderer settings.
+  base::TimeDelta MainFrameThrottledInterval() const;
+
   // Indicates whether the LayerTreeHostImpl is visible.
   void SetVisible(bool visible);
   bool visible() const { return visible_; }
 
   // Indicates that warming up is requested to create a new LayerTreeFrameSink
-  // even if the LayerTreeHost is invisible. This is an experimental function
-  // and only used if `kWarmUpCompositor` is enabled. Currently, this will be
-  // requested only from prerendered pages. Please see crbug.com/40240492 for
-  // more details.
+  // even if the LayerTreeHost is invisible.
   void SetShouldWarmUp();
 
   void SetBeginFrameSourcePaused(bool paused);
@@ -228,14 +238,9 @@ class CC_EXPORT SchedulerStateMachine {
   // changes in the impl tree has not been activated yet, then |needs_redraw()|
   // can return false. For checking any invalidations, check
   // |did_invalidate_layer_tree_frame_sink()|.
-  void SetNeedsRedraw(RedrawReason reason);
+  void SetNeedsRedraw();
   bool needs_redraw() const { return needs_redraw_; }
-  RedrawReasonSet GetRedrawReasons() const;
 
-  // Indicates that the display tree needs an update, implying that the active
-  // tree has changed in some meaningful way since the last update.
-  void SetNeedsUpdateDisplayTree();
-  bool needs_update_display_tree() const { return needs_update_display_tree_; }
 
   bool did_invalidate_layer_tree_frame_sink() const {
     return did_invalidate_layer_tree_frame_sink_;
@@ -259,7 +264,8 @@ class CC_EXPORT SchedulerStateMachine {
   // Indicates whether to prioritize impl thread latency (i.e., animation
   // smoothness) over new content activation.
   void SetTreePrioritiesAndScrollState(TreePriority tree_priority,
-                                       ScrollHandlerState scroll_handler_state);
+                                       ScrollHandlerState scroll_handler_state,
+                                       bool is_current_scroll_main_painted);
 
   // Indicates if the main thread will likely respond within 1 vsync.
   void SetCriticalBeginMainFrameToActivateIsFast(bool is_fast);
@@ -271,7 +277,13 @@ class CC_EXPORT SchedulerStateMachine {
   // Indicates that a new begin main frame flow needs to be performed, either
   // to pull updates from the main thread to the impl, or to push deltas from
   // the impl thread to main.
-  void SetNeedsBeginMainFrame();
+  //
+  // If `now` is true, then the BeginMainFrame() update is not throttled, and
+  // the next BeginMainFrame() will be sent at the next opportunity, regardless
+  // of the interval since the last one. This is to be used in cases where
+  // `SetThrottleMainFrames()` has been called, and we have an "urgent" update
+  // that should not wait more than necessary.
+  void SetNeedsBeginMainFrame(bool now = false);
   bool needs_begin_main_frame() const { return needs_begin_main_frame_; }
 
   void SetMainThreadWantsBeginMainFrameNotExpectedMessages(bool new_state);
@@ -326,8 +338,7 @@ class CC_EXPORT SchedulerStateMachine {
   // painted until they are done.
   void NotifyPaintWorkletStateChange(PaintWorkletState state);
 
-  void SetNeedsImplSideInvalidation(bool needs_first_draw_on_activation,
-                                    RedrawReason reason);
+  void SetNeedsImplSideInvalidation(bool needs_first_draw_on_activation);
 
   bool has_pending_tree() const { return has_pending_tree_; }
   bool active_tree_needs_first_draw() const {
@@ -348,6 +359,8 @@ class CC_EXPORT SchedulerStateMachine {
   void SetPauseRendering(bool pause_rendering);
 
   void SetVideoNeedsBeginFrames(bool video_needs_begin_frames);
+
+  bool ShouldThrottleSendBeginMainFrame() const;
 
   bool did_submit_in_last_frame() const { return did_submit_in_last_frame_; }
   bool draw_succeeded_in_last_frame() const {
@@ -382,6 +395,11 @@ class CC_EXPORT SchedulerStateMachine {
     waiting_for_scroll_event_ = waiting_for_scroll_event;
   }
 
+  void SetShouldThrottleFrameRate(bool flag);
+
+  // Virtual for testing.
+  virtual base::TimeTicks Now() const;
+
  protected:
   bool BeginFrameRequiredForAction() const;
   bool BeginFrameNeededForVideo() const;
@@ -410,7 +428,6 @@ class CC_EXPORT SchedulerStateMachine {
 
   bool ShouldBeginLayerTreeFrameSinkCreation() const;
   bool ShouldDraw() const;
-  bool ShouldUpdateDisplayTree() const;
   bool ShouldActivateSyncTree() const;
   bool ShouldSendBeginMainFrame() const;
   bool ShouldCommit() const;
@@ -425,10 +442,6 @@ class CC_EXPORT SchedulerStateMachine {
   void DidDrawInternal(DrawResult draw_result);
 
   const SchedulerSettings settings_;
-
-  RedrawReasonSet impl_side_invalidation_reasons_;
-  RedrawReasonSet activate_reasons_;
-  RedrawReasonSet redraw_reasons_;
 
   LayerTreeFrameSinkState layer_tree_frame_sink_state_ =
       LayerTreeFrameSinkState::NONE;
@@ -451,6 +464,12 @@ class CC_EXPORT SchedulerStateMachine {
   int last_frame_number_begin_main_frame_sent_ = -1;
   int last_frame_number_invalidate_layer_tree_frame_sink_performed_ = -1;
 
+  base::TimeTicks last_begin_impl_frame_time_;
+  base::TimeTicks last_sent_begin_main_frame_time_;
+  base::TimeDelta main_frame_throttled_interval_;
+  base::TimeDelta unthrottled_frame_interval_;
+  base::TimeTicks last_urgent_main_frame_request_;
+
   // Inputs from the last impl frame that are required for decisions made in
   // this impl frame. The values from the last frame are cached before being
   // reset in OnBeginImplFrame.
@@ -463,7 +482,6 @@ class CC_EXPORT SchedulerStateMachine {
   // These are used to ensure that an action only happens once per frame,
   // deadline, etc.
   bool did_draw_ = false;
-  bool did_update_display_tree_ = false;
   bool did_send_begin_main_frame_for_current_frame_ = true;
 
   // Initialized to true to prevent begin main frame before begin frames have
@@ -484,7 +502,6 @@ class CC_EXPORT SchedulerStateMachine {
   bool needs_begin_main_frame_ = false;
   bool needs_one_begin_impl_frame_ = false;
   bool needs_post_commit_ = false;
-  bool needs_update_display_tree_ = false;
   bool visible_ = false;
   bool should_warm_up_ = false;
   bool begin_frame_source_paused_ = false;
@@ -498,6 +515,7 @@ class CC_EXPORT SchedulerStateMachine {
   TreePriority tree_priority_ = NEW_CONTENT_TAKES_PRIORITY;
   ScrollHandlerState scroll_handler_state_ =
       ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER;
+  bool is_current_scroll_main_painted_ = false;
   bool critical_begin_main_frame_to_activate_is_fast_ = true;
   bool main_thread_missed_last_deadline_ = false;
   bool defer_begin_main_frame_ = false;
@@ -545,6 +563,8 @@ class CC_EXPORT SchedulerStateMachine {
   // expecting some. Once `is_scrolling_` is false, we are no longer expecting
   // scroll events to arrive.
   bool waiting_for_scroll_event_ = false;
+
+  bool throttle_frame_rate_ = false;
 };
 
 }  // namespace cc

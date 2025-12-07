@@ -15,9 +15,9 @@ package omnibox;
 message AnswerData {
   optional FormattedString headline = 1;
   optional FormattedString subhead = 2;
-  optional FormattedString metadata = 3;
-  optional FormattedString description = 4;
   optional Image image = 5;
+
+  reserved 3, 4;
 }
 
 message FormattedString {
@@ -42,39 +42,9 @@ message FormattedString {
     // The text of the fragment.
     optional string text = 2;
     optional ColorType color = 3;
-    optional bool is_bolded = 4;
-    optional bool is_italicized = 5;
-    optional bool is_underlined = 6;
-    // The type of unicode icon.
-    optional UnicodeSymbolType unicode_symbol_type = 7;
-    repeated FormationOption formation_options = 9;
-    // The URL to navigate to when clicking on this link.
-    optional string embedded_url = 8;
-  }
 
-  // The type of unicode character.
-  enum UnicodeSymbolType {
-    TYPE_UNKNOWN = 0;
-    TYPE_RATING_STARS = 1;
-    // Up arrow used in finance answer to indicate positive price change.
-    // https://screenshot.googleplex.com/5urEU4arjtgfydg
-    TYPE_UP_ARROW = 2;
-    // Down arrow used in finance answer to indicate negative price change.
-    // https://screenshot.googleplex.com/8iz6ADMznY232pE
-    TYPE_DOWN_ARROW = 3;
+    reserved 4 to 9;
   }
-
-  // The formation options.
-  enum FormationOption {
-    NOT_SET = 0;
-    // This field is used if there is an icon fragment before the current
-    // fragment. https://screenshot.googleplex.com/6E7fTQASHA4z3fh
-    ICONIZED_TEXT = 1;
-    // This field is used if the text fragment needs to be boxed.
-    // https://screenshot.googleplex.com/3uTwuEwirW4foud
-    BOXED_TEXT = 2;
-  }
-
   enum ColorType {
     COLOR_UNKNOWN = 0;
     COLOR_CANVAS = 1;
@@ -96,18 +66,12 @@ message FormattedString {
 message Image {
   optional string url = 1;
   optional ImageType type = 2;
-  // The readaloud text for the image.
-  optional string a11y_text = 3;
-  // A dominant-pixel-colored placeholder used during image loading to ensure
-  // that the placeholder color is shown immediately before the entity image
-  // fully loads from the url.
-  // This is a dynamic color based on the image and is the same across
-  // verticals.
-  optional string dominant_color = 4;
 
   enum ImageType {
     TYPE_UNKNOWN = 0;
     TYPE_LARGE = 1;
     TYPE_SMALL = 2;
   }
+
+  reserved 3, 4;
 }

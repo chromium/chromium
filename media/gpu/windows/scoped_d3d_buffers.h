@@ -22,9 +22,7 @@ class MEDIA_GPU_EXPORT ScopedD3DBuffer {
  public:
   explicit ScopedD3DBuffer(base::span<uint8_t> data = {});
   virtual ~ScopedD3DBuffer();
-  uint8_t* data() { return data_.data(); }
-  size_t size() const { return data_.size(); }
-  bool empty() const { return data_.empty(); }
+  base::span<uint8_t> data() { return data_; }
 
   // Declare that we have done the access to the buffer. It will also
   // automatically be called when this object destructs. In a
@@ -45,8 +43,8 @@ class MEDIA_GPU_EXPORT D3DInputBuffer {
  public:
   explicit D3DInputBuffer(std::unique_ptr<ScopedD3DBuffer> buffer);
   virtual ~D3DInputBuffer();
-  size_t size() const { return buffer_->size(); }
-  bool empty() const { return buffer_->empty(); }
+  size_t size() const { return buffer_->data().size(); }
+  bool empty() const { return buffer_->data().empty(); }
   [[nodiscard]] virtual bool Commit();
 
  protected:
@@ -62,7 +60,7 @@ class MEDIA_GPU_EXPORT ScopedRandomAccessD3DInputBuffer
       std::unique_ptr<ScopedD3DBuffer> buffer)
       : D3DInputBuffer(std::move(buffer)) {}
   ~ScopedRandomAccessD3DInputBuffer() override = default;
-  uint8_t* data() const { return buffer_->data(); }
+  base::span<uint8_t> data() const { return buffer_->data(); }
 };
 
 // A sequence buffer, which provides only a sequential Write() method like a

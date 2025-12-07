@@ -33,15 +33,22 @@ source_set("screen_ai") {
     "//mojo/public/cpp/bindings",
     "//sandbox/policy",
     "//services/metrics/public/cpp:metrics_cpp",
-    "//services/metrics/public/cpp:ukm_builders",
     "//services/screen_ai/buildflags",
     "//services/screen_ai/proto",
+    "//services/screen_ai/public/cpp:metrics",
     "//services/screen_ai/public/cpp:utilities",
+    "//services/screen_ai/public/mojom",
     "//services/screen_ai/public/mojom:factory",
-    "//services/screen_ai/public/mojom:mojom",
     "//skia",
-    "//ui/accessibility:accessibility",
+    "//ui/accessibility",
   ]
+
+  if (is_linux) {
+    deps += [
+      "//base/allocator/partition_allocator:buildflags",
+      "//base/allocator/partition_allocator/src/partition_alloc:allocator_shim",
+    ]
+  }
 
   if (!use_fake_screen_ai) {
     deps += [ "//components/crash/core/common:crash_key" ]
@@ -62,6 +69,10 @@ if (is_chromeos) {
       "//skia",
       "//ui/gfx/codec",
     ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }
 
@@ -75,7 +86,9 @@ if (is_linux || is_chromeos) {
     deps = [
       "//base",
       "//components/component_updater",
+      "//components/crash/core/common:crash_key",
       "//sandbox/linux:sandbox_services",
+      "//services/screen_ai/buildflags",
       "//services/screen_ai/public/cpp:utilities",
       "//ui/accessibility:ax_base",
     ]
@@ -83,6 +96,10 @@ if (is_linux || is_chromeos) {
     public_deps = [ "//sandbox/policy" ]
 
     configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }
 
@@ -110,7 +127,6 @@ source_set("unit_tests") {
     ":screen_ai",
     "//base/test:proto_test_support",
     "//base/test:test_support",
-    "//components/ukm:test_support",
     "//services/screen_ai/proto",
     "//services/screen_ai/public/cpp:metrics",
     "//testing/gtest",
@@ -118,19 +134,4 @@ source_set("unit_tests") {
   ]
 
   data_deps = [ ":test_support_data" ]
-}
-
-source_set("test_support") {
-  testonly = true
-
-  sources = [
-    "public/test/fake_screen_ai_annotator.cc",
-    "public/test/fake_screen_ai_annotator.h",
-  ]
-
-  deps = [
-    "//base/test:test_support",
-    "//services/screen_ai/public/mojom",
-    "//ui/accessibility:test_support",
-  ]
 }

@@ -33,13 +33,27 @@ def _merge_steps_argument_parser(*args, **kwargs):
       '--profile-merge-timeout',
       default=3600,
       help='Timeout (sec) for the call to merge profiles. Defaults to 3600.')
+  parser.add_argument(
+      '--weight',
+      action='append',
+      default=[],
+      help='The weight to use for a particular benchmark. Format '
+      'is benchmark:weight. Matching of benchmark is done using ends with.')
   return parser
 
 
 def main():
-  desc = "Merge profdata files in <--input-dir> into a single profdata."
+  desc = 'Merge profdata files in <--input-dir> into a single profdata.'
   parser = _merge_steps_argument_parser(description=desc)
   params = parser.parse_args()
+
+  weights = {}
+  for name_and_weight in params.weight:
+    parts = name_and_weight.split(':')
+    if len(parts) != 2:
+      logging.error('Invalid weight:\n%r', name_and_weight)
+      return 1
+    weights[parts[0]] = parts[1]
 
   # counter overflow profiles should be logged as warnings as part of the
   # merger.merge_profiles call.
@@ -50,9 +64,10 @@ def main():
       params.llvm_profdata,
       params.profdata_filename_pattern,
       sparse=params.sparse,
-      merge_timeout=params.profile_merge_timeout)
+      merge_timeout=params.profile_merge_timeout,
+      weights=weights)
   if invalid_profiles:
-    logging.error('Invalid profiles were generated:\n%r' % invalid_profiles)
+    logging.error('Invalid profiles were generated:\n%r', invalid_profiles)
     return 1
 
   return 0

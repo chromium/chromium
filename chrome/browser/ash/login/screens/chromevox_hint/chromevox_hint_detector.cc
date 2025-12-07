@@ -4,12 +4,11 @@
 
 #include "chrome/browser/ash/login/screens/chromevox_hint/chromevox_hint_detector.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "chrome/browser/ash/idle_detector.h"
+#include "chromeos/ash/experiences/idle_detector/idle_detector.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 
 namespace ash {
@@ -27,11 +26,10 @@ ChromeVoxHintDetector::ChromeVoxHintDetector(const base::TickClock* clock,
   StartIdleDetection();
 }
 
-ChromeVoxHintDetector::~ChromeVoxHintDetector() {}
+ChromeVoxHintDetector::~ChromeVoxHintDetector() = default;
 
 void ChromeVoxHintDetector::StartIdleDetection() {
-  if (!features::IsOobeChromeVoxHintEnabled() ||
-      switches::IsOOBEChromeVoxHintTimerDisabledForTesting()) {
+  if (switches::IsOOBEChromeVoxHintTimerDisabledForTesting()) {
     return;
   }
 

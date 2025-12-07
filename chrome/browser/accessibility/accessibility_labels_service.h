@@ -46,6 +46,9 @@ class AccessibilityLabelsService
 #endif
 {
  public:
+  // Use |AccessibilityLabelsServiceFactory::GetForProfile(..)| to get
+  // an instance of this service.
+  explicit AccessibilityLabelsService(Profile* profile);
   AccessibilityLabelsService(const AccessibilityLabelsService&) = delete;
   AccessibilityLabelsService& operator=(const AccessibilityLabelsService&) =
       delete;
@@ -82,10 +85,6 @@ class AccessibilityLabelsService
 
  private:
   friend class AccessibilityLabelsServiceFactory;
-
-  // Use |AccessibilityLabelsServiceFactory::GetForProfile(..)| to get
-  // an instance of this service.
-  explicit AccessibilityLabelsService(Profile* profile);
 
   // Returns true if the profile preference is set and, in the case of Android,
   // the device is on Wi-Fi or the "Only on Wi-Fi" preference is not set.

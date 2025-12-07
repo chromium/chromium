@@ -24,6 +24,7 @@
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace offline_pages {
 
@@ -237,8 +238,8 @@ StartupMaintenanceTask::StartupMaintenanceTask(OfflinePageMetadataStore* store,
 StartupMaintenanceTask::~StartupMaintenanceTask() = default;
 
 void StartupMaintenanceTask::Run() {
-  TRACE_EVENT_ASYNC_BEGIN0("offline_pages", "StartupMaintenanceTask running",
-                           this);
+  TRACE_EVENT_BEGIN("offline_pages", "StartupMaintenanceTask running",
+                    perfetto::Track::FromPointer(this));
   store_->Execute(
       base::BindOnce(&StartupMaintenanceSync,
                      archive_manager_->GetTemporaryArchivesDir(),
@@ -249,8 +250,10 @@ void StartupMaintenanceTask::Run() {
 }
 
 void StartupMaintenanceTask::OnStartupMaintenanceDone(bool result) {
-  TRACE_EVENT_ASYNC_END1("offline_pages", "StartupMaintenanceTask running",
-                         this, "result", result);
+  TRACE_EVENT_END(
+      "offline_pages",
+      /* StartupMaintenanceTask running */ perfetto::Track::FromPointer(this),
+      "result", result);
   TaskComplete();
 }
 

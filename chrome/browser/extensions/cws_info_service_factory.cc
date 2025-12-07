@@ -13,6 +13,9 @@
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registry_factory.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -33,8 +36,8 @@ CWSInfoServiceFactory::CWSInfoServiceFactory()
           "CWSInfoService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kRedirectedToOriginal)
-              // TODO(crbug.com/40257657): Check if this service is needed in
-              // Guest mode.
+              // TODO(crbug.com/40257657): Audit whether these should be
+              // redirected or should have their own instance.
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.
@@ -47,9 +50,6 @@ CWSInfoServiceFactory::CWSInfoServiceFactory()
 std::unique_ptr<KeyedService>
 CWSInfoServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (base::FeatureList::IsEnabled(kCWSInfoService) == false) {
-    return nullptr;
-  }
   return std::make_unique<CWSInfoService>(Profile::FromBrowserContext(context));
 }
 

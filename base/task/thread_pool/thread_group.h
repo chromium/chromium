@@ -5,6 +5,8 @@
 #ifndef BASE_TASK_THREAD_POOL_THREAD_GROUP_H_
 #define BASE_TASK_THREAD_POOL_THREAD_GROUP_H_
 
+#include <stddef.h>
+
 #include <memory>
 #include <optional>
 #include <string>
@@ -12,6 +14,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -207,13 +210,15 @@ class BASE_EXPORT ThreadGroup {
   class ThreadGroupWorkerDelegate;
 
  protected:
+  static constexpr size_t kMaxNumberOfWorkers = 256;
+
   ThreadGroup(std::string_view histogram_label,
               std::string_view thread_group_label,
               ThreadType thread_type_hint,
               TrackedRef<TaskTracker> task_tracker,
               TrackedRef<Delegate> delegate);
 
-  void StartImpl(
+  void StartImplLockRequired(
       size_t max_tasks,
       size_t max_best_effort_tasks,
       TimeDelta suggested_reclaim_time,
@@ -221,8 +226,8 @@ class BASE_EXPORT ThreadGroup {
       WorkerThreadObserver* worker_thread_observer,
       WorkerEnvironment worker_environment,
       bool synchronous_thread_start_for_testing = false,
-      std::optional<TimeDelta> may_block_threshold =
-          std::optional<TimeDelta>());
+      std::optional<TimeDelta> may_block_threshold = std::optional<TimeDelta>())
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Derived classes must implement a ScopedCommandsExecutor that derives from
   // this to perform operations at the end of a scope, when all locks have been
@@ -237,8 +242,6 @@ class BASE_EXPORT ThreadGroup {
     void ScheduleStart(scoped_refptr<WorkerThread> worker);
     void ScheduleAdjustMaxTasks();
     void ScheduleReleaseTaskSource(RegisteredTaskSource task_source);
-    // Unlocks held_lock. Flushes this executor.
-    void FlushWorkerCreation(CheckedLock* held_lock);
 
    protected:
     explicit BaseScopedCommandsExecutor(ThreadGroup* outer);
@@ -256,7 +259,6 @@ class BASE_EXPORT ThreadGroup {
     absl::InlinedVector<scoped_refptr<WorkerThread>, 2> workers_to_start_;
     bool must_schedule_adjust_max_tasks_ = false;
   };
-  virtual std::unique_ptr<BaseScopedCommandsExecutor> GetExecutor() = 0;
 
   // Allows a task source to be pushed to a ThreadGroup's PriorityQueue at the
   // end of a scope, when all locks have been released.
@@ -332,24 +334,11 @@ class BASE_EXPORT ThreadGroup {
   void PushTaskSourceAndWakeUpWorkersImpl(
       BaseScopedCommandsExecutor* executor,
       RegisteredTaskSourceAndTransaction transaction_with_task_source);
-  void OnShutDownStartedImpl(BaseScopedCommandsExecutor* executor);
-
-  virtual ThreadGroupWorkerDelegate* GetWorkerDelegate(
-      WorkerThread* worker) = 0;
 
   // Returns the desired number of awake workers, given current workload and
   // concurrency limits.
   size_t GetDesiredNumAwakeWorkersLockRequired() const
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
-
-  // Examines the list of WorkerThreads and increments |max_tasks_| for each
-  // worker that has been within the scope of a MAY_BLOCK ScopedBlockingCall for
-  // more than BlockedThreshold(). Reschedules a call if necessary.
-  void AdjustMaxTasks();
-
-  // Schedules AdjustMaxTasks() if required.
-  void MaybeScheduleAdjustMaxTasksLockRequired(
-      BaseScopedCommandsExecutor* executor) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Enqueues all task sources from `new_priority_queue` into this thread group.
   void EnqueueAllTaskSources(PriorityQueue* new_priority_queue);
@@ -367,9 +356,18 @@ class BASE_EXPORT ThreadGroup {
     return after_start().blocked_workers_poll_period;
   }
 
+  // Schedules AdjustMaxTasks() if required.
+  void MaybeScheduleAdjustMaxTasksLockRequired(
+      BaseScopedCommandsExecutor* executor) EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
   // Starts calling AdjustMaxTasks() periodically on
   // |service_thread_task_runner_|.
-  void ScheduleAdjustMaxTasks();
+  virtual void ScheduleAdjustMaxTasks() = 0;
+
+  // Examines the list of WorkerThreads and increments |max_tasks_| for each
+  // worker that has been within the scope of a MAY_BLOCK ScopedBlockingCall for
+  // more than BlockedThreshold(). Reschedules a call if necessary.
+  virtual void AdjustMaxTasks() = 0;
 
   // Returns true if AdjustMaxTasks() should periodically be called on
   // |service_thread_task_runner_|.
@@ -403,8 +401,12 @@ class BASE_EXPORT ThreadGroup {
     ~InitializedInStart();
 
 #if DCHECK_IS_ON()
-    // Set after all members of this struct are set.
+    // Set after all members of this struct are set to ensure
+    // `InitializedInStart` is read-only after initialization.
     bool initialized = false;
+    // Set to ensure Start() is only called once and that `ThreadGroup`
+    // operations only occur after it is called.
+    bool start_called = false;
 #endif
 
     // Initial value of |max_tasks_|.
@@ -412,7 +414,6 @@ class BASE_EXPORT ThreadGroup {
 
     // Suggested reclaim time for workers.
     TimeDelta suggested_reclaim_time;
-    bool no_worker_reclaim = false;
 
     // Environment to be initialized per worker.
     WorkerEnvironment worker_environment = WorkerEnvironment::NONE;
@@ -429,19 +430,15 @@ class BASE_EXPORT ThreadGroup {
     // The period between calls to AdjustMaxTasks() when the thread group is at
     // capacity.
     TimeDelta blocked_workers_poll_period;
-
-    // The max number of workers that a ThreadGroupSemaphore will create in any
-    // one EnsureEnoughWorkers() call.
-    int max_num_workers_created = 2;
   } initialized_in_start_;
 
-  InitializedInStart& in_start() {
+  InitializedInStart& in_start() LIFETIME_BOUND {
 #if DCHECK_IS_ON()
     DCHECK(!initialized_in_start_.initialized);
 #endif
     return initialized_in_start_;
   }
-  const InitializedInStart& after_start() const {
+  const InitializedInStart& after_start() const LIFETIME_BOUND {
 #if DCHECK_IS_ON()
     DCHECK(initialized_in_start_.initialized);
 #endif
@@ -479,7 +476,7 @@ class BASE_EXPORT ThreadGroup {
   std::atomic<YieldSortKey> max_allowed_sort_key_ GUARDED_BY(lock_){
       kMaxYieldSortKey};
 
-  const std::string histogram_label_;
+  const std::string unnecessary_wakeup_histogram_label_;
   const std::string thread_group_label_;
   const ThreadType thread_type_hint_;
 

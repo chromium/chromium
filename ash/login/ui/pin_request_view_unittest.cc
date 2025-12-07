@@ -39,7 +39,7 @@
 #include "ui/events/event.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -95,6 +95,7 @@ class PinRequestViewTest : public LoginTestBase,
     request.help_button_enabled = true;
     request.obscure_pin = false;
     request.pin_length = pin_length;
+    request.title = u"Sample Title";
     request.on_pin_request_done = base::DoNothing();
     view_ = new PinRequestView(std::move(request), this);
 
@@ -524,6 +525,16 @@ TEST_F(PinRequestViewTest, BackwardTabKeyTraversal) {
 
   generator->PressKey(ui::KeyboardCode::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_TRUE(HasFocusInAnyChildView(test_api.access_code_view()));
+}
+
+TEST_F(PinRequestViewTest, AccessibleProperties) {
+  StartView();
+  ui::AXNodeData data;
+
+  view_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(ax::mojom::Role::kDialog, data.role);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"Sample Title");
 }
 
 class PinRequestWidgetTest : public PinRequestViewTest {

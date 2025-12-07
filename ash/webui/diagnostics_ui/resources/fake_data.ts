@@ -2,41 +2,43 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
-
-import {CellularNetwork, EthernetNetwork, NetworkGuidInfo, WiFiNetwork} from './diagnostics_types.js';
-import {ConnectionType, KeyboardInfo, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey} from './input.mojom-webui.js';
-import {TouchDeviceInfo, TouchDeviceType} from './input_data_provider.mojom-webui.js';
-import {AuthenticationType, LockType, NetworkState, NetworkType, RoamingState, SecurityType, WiFiStateProperties} from './network_health_provider.mojom-webui.js';
-import {BatteryChargeStatus, BatteryHealth, BatteryInfo, BatteryState, CpuUsage, ExternalPowerSource, MemoryUsage, SystemInfo} from './system_data_provider.mojom-webui.js';
+import type {CellularNetwork, EthernetNetwork, NetworkGuidInfo, WiFiNetwork} from './diagnostics_types.js';
+import type {KeyboardInfo} from './input.mojom-webui.js';
+import {BottomLeftLayout, BottomRightLayout, ConnectionType, MechanicalLayout, NumberPadPresence, NumpadLayout, PhysicalLayout, TopRightKey, TopRowKey} from './input.mojom-webui.js';
+import type {TouchDeviceInfo} from './input_data_provider.mojom-webui.js';
+import {TouchDeviceType} from './input_data_provider.mojom-webui.js';
+import type {WiFiStateProperties} from './network_health_provider.mojom-webui.js';
+import {AuthenticationType, LockType, NetworkState, NetworkType, RoamingState, SecurityType} from './network_health_provider.mojom-webui.js';
+import type {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, MemoryUsage, SystemInfo} from './system_data_provider.mojom-webui.js';
+import {BatteryState, ExternalPowerSource} from './system_data_provider.mojom-webui.js';
 
 export const fakeBatteryChargeStatus: BatteryChargeStatus[] = [
   {
     chargeNowMilliampHours: 4200,
     currentNowMilliamps: 1123,
     powerAdapterStatus: ExternalPowerSource.kAc,
-    powerTime: stringToMojoString16('3h 15m'),
+    powerTime: '3h 15m',
     batteryState: BatteryState.kCharging,
   },
   {
     chargeNowMilliampHours: 4500,
     currentNowMilliamps: 1123,
     powerAdapterStatus: ExternalPowerSource.kDisconnected,
-    powerTime: stringToMojoString16('3h 01m'),
+    powerTime: '3h 01m',
     batteryState: BatteryState.kDischarging,
   },
   {
     chargeNowMilliampHours: 4800,
     currentNowMilliamps: 1123,
     powerAdapterStatus: ExternalPowerSource.kDisconnected,
-    powerTime: stringToMojoString16('2h 45m'),
+    powerTime: '2h 45m',
     batteryState: BatteryState.kDischarging,
   },
   {
     chargeNowMilliampHours: 5700,
     currentNowMilliamps: 1123,
     powerAdapterStatus: ExternalPowerSource.kAc,
-    powerTime: stringToMojoString16('2h 45m'),
+    powerTime: '2h 45m',
     batteryState: BatteryState.kFull,
   },
 ];
@@ -46,7 +48,7 @@ export const fakeBatteryChargeStatus2: BatteryChargeStatus[] = [{
   chargeNowMilliampHours: 4200,
   currentNowMilliamps: 1123,
   powerAdapterStatus: ExternalPowerSource.kDisconnected,
-  powerTime: stringToMojoString16('3h 15m'),
+  powerTime: '3h 15m',
 }];
 
 export const fakeBatteryHealth2: BatteryHealth[] = [
@@ -63,7 +65,7 @@ export const fakeBatteryChargeStatus3: BatteryChargeStatus[] = [{
   chargeNowMilliampHours: 0,
   currentNowMilliamps: 0,
   powerAdapterStatus: ExternalPowerSource.kDisconnected,
-  powerTime: stringToMojoString16('0m'),
+  powerTime: '0m',
 }];
 
 export const fakeBatteryHealth3: BatteryHealth[] = [
@@ -345,7 +347,7 @@ export const fakeWifiNetworkNoNameServers: WiFiNetwork = {
     ipAddress: '192.168.86.197',
     gateway: '192.168.86.1',
     routingPrefix: 24,
-    nameServers: undefined,
+    nameServers: null,
   },
 };
 
@@ -444,9 +446,11 @@ export const fakeWifiNetworkNoIpAddress: WiFiNetwork = {
 export const fakeDisconnectedWifiNetwork: WiFiNetwork = {
   state: NetworkState.kNotConnected,
   type: NetworkType.kWiFi,
+  typeProperties: null,
   observerGuid: 'wifiDisconnectedGuid',
   name: '',
   macAddress: '84:C5:A6:30:3F:31',
+  ipConfig: null,
 };
 
 export const fakePortalWifiNetwork: WiFiNetwork = {
@@ -494,9 +498,11 @@ export const fakeEthernetNetwork: EthernetNetwork = {
 export const fakeConnectingEthernetNetwork: EthernetNetwork = {
   state: NetworkState.kConnecting,
   type: NetworkType.kEthernet,
+  typeProperties: null,
   observerGuid: 'ethernetGuid',
   name: 'ethernetName',
   macAddress: '81:C5:A6:30:3F:33',
+  ipConfig: null,
 };
 
 export const fakeDisconnectedEthernetNetwork: EthernetNetwork = {
@@ -510,6 +516,7 @@ export const fakeDisconnectedEthernetNetwork: EthernetNetwork = {
   observerGuid: 'ethernetDisconnectedGuid',
   name: 'ethernetName',
   macAddress: '81:C5:A6:30:3F:32',
+  ipConfig: null,
 };
 
 export const fakeCellularNetwork: CellularNetwork = {
@@ -533,7 +540,7 @@ export const fakeCellularNetwork: CellularNetwork = {
   ipConfig: {
     ipAddress: '192.168.86.197',
     gateway: '',
-    nameServers: undefined,
+    nameServers: null,
     routingPrefix: 0,
   },
 };
@@ -567,20 +574,21 @@ export const fakeCellularWithIpConfigNetwork: CellularNetwork = {
 export const fakeCellularDisabledNetwork: CellularNetwork = {
   state: NetworkState.kDisabled,
   type: NetworkType.kCellular,
+  typeProperties: null,
   observerGuid: 'cellularDisabledGuid',
   name: 'cellularName',
   macAddress: '85:C5:A6:30:3F:31',
-  ipConfig: undefined,
+  ipConfig: null,
 };
 
 export const fakeCellularDisconnectedNetwork: CellularNetwork = {
   state: NetworkState.kNotConnected,
   type: NetworkType.kCellular,
-  typeProperties: undefined,
+  typeProperties: null,
   observerGuid: 'cellularDisconnectedGuid',
   name: 'cellularName',
   macAddress: '85:C5:A6:30:3F:31',
-  ipConfig: undefined,
+  ipConfig: null,
 };
 
 export const fakeKeyboards: KeyboardInfo[] = [
@@ -606,6 +614,9 @@ export const fakeKeyboards: KeyboardInfo[] = [
     ],
     topRightKey: TopRightKey.kPower,
     numberPadPresent: NumberPadPresence.kPresent,
+    bottomLeftLayout: BottomLeftLayout.kUnknown,
+    bottomRightLayout: BottomRightLayout.kUnknown,
+    numpadLayout: NumpadLayout.kUnknown,
   },
 ];
 

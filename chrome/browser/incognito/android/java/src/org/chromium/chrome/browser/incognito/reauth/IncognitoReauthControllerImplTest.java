@@ -26,13 +26,13 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -53,19 +53,16 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 public class IncognitoReauthControllerImplTest {
     public static final int TASK_ID = 123;
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcherMock;
     @Mock private LayoutStateProvider mLayoutStateProviderMock;
     @Mock private TabModelSelector mTabModelSelectorMock;
     @Mock private TabModel mIncognitoTabModelMock;
-    @Mock private TabModel mRegularTabModelMock;
     @Mock private Profile mProfileMock;
     @Mock private IncognitoReauthCoordinatorFactory mIncognitoReauthCoordinatorFactoryMock;
     @Mock private IncognitoReauthCoordinator mIncognitoReauthCoordinatorMock;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private PrefService mPrefServiceMock;
-    @Mock private Runnable mBackPressInReauthFullScreenRunnableMock;
     @Mock private IncognitoReauthManager.IncognitoReauthCallback mIncognitoReauthCallbackMock;
     @Mock private TabSwitcherCustomViewManager mTabSwitcherCustomViewManager;
 
@@ -96,9 +93,7 @@ public class IncognitoReauthControllerImplTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
-        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfileMock)).thenReturn(mPrefServiceMock);
         when(mPrefServiceMock.getBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID))
                 .thenReturn(true);
@@ -122,7 +117,6 @@ public class IncognitoReauthControllerImplTest {
                 .getModel(/* incognito= */ true);
         doReturn(0).when(mIncognitoTabModelMock).getCount();
         doReturn(true).when(mIncognitoTabModelMock).isIncognito();
-        doReturn(false).when(mRegularTabModelMock).isIncognito();
         doReturn(false).when(mLayoutStateProviderMock).isLayoutVisible(LayoutType.TAB_SWITCHER);
         doReturn(mIncognitoReauthCoordinatorMock)
                 .when(mIncognitoReauthCoordinatorFactoryMock)

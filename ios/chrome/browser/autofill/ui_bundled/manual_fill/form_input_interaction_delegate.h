@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_FORM_INPUT_INTERACTION_DELEGATE_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_FORM_INPUT_INTERACTION_DELEGATE_H_
 
-#import "components/autofill/core/browser/filling_product.h"
+#import "components/autofill/core/browser/filling/filling_product.h"
 
 // Delegate informing the manual fallback classes about any user interactions
 // with the form.

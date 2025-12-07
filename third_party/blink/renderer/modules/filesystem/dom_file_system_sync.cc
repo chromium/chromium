@@ -149,7 +149,7 @@ File* DOMFileSystemSync::CreateFile(const FileEntrySync* file_entry,
   if (result->failed_) {
     file_error::ThrowDOMException(
         exception_state, result->error_,
-        "Could not create '" + file_entry->name() + "'.");
+        StrCat({"Could not create '", file_entry->name(), "'."}));
     return nullptr;
   }
   return result->file_.Get();
@@ -165,11 +165,11 @@ FileWriterSync* DOMFileSystemSync::CreateWriter(
   auto* sync_helper = MakeGarbageCollected<FileWriterCallbacksSyncHelper>();
 
   auto success_callback_wrapper =
-      WTF::BindOnce(&FileWriterCallbacksSyncHelper::OnSuccess,
-                    WrapPersistentIfNeeded(sync_helper));
+      BindOnce(&FileWriterCallbacksSyncHelper::OnSuccess,
+               WrapPersistentIfNeeded(sync_helper));
   auto error_callback_wrapper =
-      WTF::BindOnce(&FileWriterCallbacksSyncHelper::OnError,
-                    WrapPersistentIfNeeded(sync_helper));
+      blink::BindOnce(&FileWriterCallbacksSyncHelper::OnError,
+                      WrapPersistentIfNeeded(sync_helper));
 
   auto callbacks = std::make_unique<FileWriterCallbacks>(
       file_writer, std::move(success_callback_wrapper),

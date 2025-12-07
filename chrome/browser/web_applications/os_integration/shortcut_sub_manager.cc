@@ -10,7 +10,6 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
+#include "chrome/browser/web_applications/proto/web_app_os_integration_state.equal.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -54,7 +54,7 @@ ShortcutSubManager::~ShortcutSubManager() = default;
 
 void ShortcutSubManager::Configure(
     const webapps::AppId& app_id,
-    proto::WebAppOsIntegrationState& desired_state,
+    proto::os_state::WebAppOsIntegration& desired_state,
     base::OnceClosure configure_done) {
   DCHECK(!desired_state.has_shortcut());
 
@@ -79,8 +79,8 @@ void ShortcutSubManager::Configure(
 void ShortcutSubManager::Execute(
     const webapps::AppId& app_id,
     const std::optional<SynchronizeOsOptions>& synchronize_options,
-    const proto::WebAppOsIntegrationState& desired_state,
-    const proto::WebAppOsIntegrationState& current_state,
+    const proto::os_state::WebAppOsIntegration& desired_state,
+    const proto::os_state::WebAppOsIntegration& current_state,
     base::OnceClosure callback) {
   base::FilePath shortcut_data_dir = GetOsIntegrationResourcesDirectoryForApp(
       profile_->GetPath(), app_id,
@@ -93,7 +93,7 @@ void ShortcutSubManager::Execute(
       synchronize_options.has_value() &&
       synchronize_options.value().force_update_shortcuts;
 
-  const bool force_create_shortcuts =
+  bool force_create_shortcuts =
       synchronize_options.has_value() &&
       synchronize_options.value().force_create_shortcuts;
 
@@ -105,6 +105,14 @@ void ShortcutSubManager::Execute(
   }
 
   CHECK_OS_INTEGRATION_ALLOWED();
+
+#if BUILDFLAG(IS_MAC)
+  // On Mac, sometimes the AppShimRegistry and the `current_state` get out of
+  // sync. If so, force the shortcut creation.
+  force_create_shortcuts |= current_state.has_shortcut() &&
+                            !AppShimRegistry::Get()->IsAppInstalledInProfile(
+                                app_id, profile_->GetPath());
+#endif
 
   // Second, handle shortcut creation if either one of the following conditions
   // match:
@@ -183,10 +191,8 @@ void ShortcutSubManager::Execute(
                      std::move(callback_for_update)));
 
   // Shortcut update detection.
-  std::string desired, current;
-  desired = desired_state.shortcut().SerializeAsString();
-  current = current_state.shortcut().SerializeAsString();
-  if (desired != current || force_update_shortcuts) {
+  if (force_update_shortcuts ||
+      desired_state.shortcut() != current_state.shortcut()) {
     std::move(do_update).Run();
     return;
   }
@@ -201,13 +207,10 @@ void ShortcutSubManager::Execute(
     return;
   }
   if (desired_state.has_protocols_handled() &&
-      current_state.has_protocols_handled()) {
-    desired = desired_state.protocols_handled().SerializeAsString();
-    current = current_state.protocols_handled().SerializeAsString();
-    if (desired != current) {
-      std::move(do_update).Run();
-      return;
-    }
+      current_state.has_protocols_handled() &&
+      desired_state.protocols_handled() != current_state.protocols_handled()) {
+    std::move(do_update).Run();
+    return;
   }
 #endif
 
@@ -219,13 +222,10 @@ void ShortcutSubManager::Execute(
     std::move(do_update).Run();
     return;
   }
-  if (desired_state.has_file_handling() && current_state.has_file_handling()) {
-    desired = desired_state.file_handling().SerializeAsString();
-    current = current_state.file_handling().SerializeAsString();
-    if (desired != current) {
-      std::move(do_update).Run();
-      return;
-    }
+  if (desired_state.has_file_handling() && current_state.has_file_handling() &&
+      desired_state.file_handling() != current_state.file_handling()) {
+    std::move(do_update).Run();
+    return;
   }
 #endif
 
@@ -291,7 +291,14 @@ void ShortcutSubManager::UpdateShortcut(
         synchronize_options->add_shortcut_to_desktop;
     creation_locations.in_quick_launch_bar =
         synchronize_options->add_to_quick_launch_bar;
-    locations = creation_locations;
+    // Leaving `locations` as null if there are no creation locations will avoid
+    // creating duplicates of existing shortcuts because the creation locations
+    // don't match the existing locations (e.g., UpdatePlatformShortcuts in
+    // web_app_shortcut_win.cc).
+    if (creation_locations.in_quick_launch_bar ||
+        creation_locations.on_desktop) {
+      locations = creation_locations;
+    }
   }
 
   base::FilePath shortcut_data_dir =
@@ -333,7 +340,7 @@ void ShortcutSubManager::OnShortcutsDeleted(const webapps::AppId& app_id,
 }
 
 void ShortcutSubManager::StoreIconDataFromDisk(
-    proto::ShortcutDescription* shortcut,
+    proto::os_state::ShortcutDescription* shortcut,
     base::flat_map<SquareSizePx, base::Time> time_map) {
   for (const auto& [size, time] : time_map) {
     auto* shortcut_icon_data = shortcut->add_icon_data_any();

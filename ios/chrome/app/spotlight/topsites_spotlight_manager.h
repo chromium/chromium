@@ -7,7 +7,7 @@
 
 #import "ios/chrome/app/spotlight/base_spotlight_manager.h"
 
-class ChromeBrowserState;
+class ProfileIOS;
 
 // This spotlight manager handles indexing of sites shown on the NTP. Because of
 // privacy concerns, only sites shown on the NTP are indexed; therefore, this
@@ -17,8 +17,8 @@ class ChromeBrowserState;
 
 @interface TopSitesSpotlightManager : BaseSpotlightManager
 
-+ (TopSitesSpotlightManager*)topSitesSpotlightManagerWithBrowserState:
-    (ChromeBrowserState*)browserState;
++ (TopSitesSpotlightManager*)topSitesSpotlightManagerWithProfile:
+    (ProfileIOS*)profile;
 
 - (instancetype)init NS_UNAVAILABLE;
 

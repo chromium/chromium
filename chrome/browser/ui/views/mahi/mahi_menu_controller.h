@@ -10,11 +10,12 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/chromeos/read_write_cards/read_write_card_controller.h"
+#include "chrome/browser/ui/ash/read_write_cards/read_write_card_controller.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_events_proxy.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
+class ApplicationLocaleStorage;
 class Profile;
 
 namespace chromeos {
@@ -27,7 +28,9 @@ namespace mahi {
 class MahiMenuController : public chromeos::ReadWriteCardController,
                            public chromeos::MahiMediaAppEventsProxy::Observer {
  public:
-  explicit MahiMenuController(
+  // `application_locale_storage` must be non-null and must outlive `this`.
+  MahiMenuController(
+      const ApplicationLocaleStorage* application_locale_storage,
       chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller);
   MahiMenuController(const MahiMenuController&) = delete;
   MahiMenuController& operator=(const MahiMenuController&) = delete;
@@ -41,7 +44,7 @@ class MahiMenuController : public chromeos::ReadWriteCardController,
   void OnAnchorBoundsChanged(const gfx::Rect& anchor_bounds) override;
   void OnDismiss(bool is_other_command_executed) override;
 
-  // chromeos::MahiMediaAppEvnetsProxy::Observer
+  // chromeos::MahiMediaAppEventsProxy::Observer
   void OnPdfContextMenuShown(const gfx::Rect& anchor) override;
   void OnPdfContextMenuHide() override;
 
@@ -59,6 +62,8 @@ class MahiMenuController : public chromeos::ReadWriteCardController,
   }
 
  private:
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
+
   const raw_ref<ReadWriteCardsUiController> read_write_cards_ui_controller_;
   views::UniqueWidgetPtr menu_widget_;
 

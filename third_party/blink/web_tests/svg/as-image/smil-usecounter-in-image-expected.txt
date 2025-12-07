@@ -1,6 +1,0 @@
-PASS internals.isUseCounted(document, SVGSMILAnimationInImageRegardlessOfCache) is false
-PASS internals.isUseCounted(document, SVGSMILAnimationInImageRegardlessOfCache) is true
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

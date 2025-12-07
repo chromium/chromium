@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("oobe_quick_start_pref_names") {
   sources = [
@@ -27,8 +25,8 @@ static_library("oobe_quick_start") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/nearby:quick_start_connectivity_service",
-    "//chrome/common:channel_info",
     "//chromeos/ash/components/attestation",
+    "//chromeos/ash/components/channel",
     "//chromeos/ash/components/dbus/attestation:attestation_proto",
     "//chromeos/ash/components/dbus/constants",
     "//chromeos/ash/components/quick_start",
@@ -57,11 +55,11 @@ source_set("unit_tests") {
 
   deps = [
     ":oobe_quick_start",
+    ":oobe_quick_start_pref_names",
     "connectivity:test_support",
     "connectivity:unit_tests",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/nearby:test_support",
     "//chrome/test:test_support",
@@ -77,6 +75,6 @@ source_set("unit_tests") {
     "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
-    "//ui/chromeos:chromeos",
+    "//ui/chromeos",
   ]
 }

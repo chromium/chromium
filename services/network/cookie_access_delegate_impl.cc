@@ -9,7 +9,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/functional/callback_forward.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
@@ -49,6 +48,17 @@ net::CookieAccessSemantics CookieAccessDelegateImpl::GetAccessSemantics(
       return cookie_settings_->GetCookieAccessSemanticsForDomain(
           cookie.Domain());
   }
+}
+
+net::CookieScopeSemantics CookieAccessDelegateImpl::GetScopeSemantics(
+    const std::string_view domain) const {
+  if (!cookie_settings_) {
+    return net::CookieScopeSemantics::UNKNOWN;
+  }
+  // TODO(crbug.com/378827534)  finish propagating string_view thru cookie
+  // settings.
+  return cookie_settings_->GetCookieScopeSemanticsForDomain(
+      std::string(domain));
 }
 
 bool CookieAccessDelegateImpl::ShouldIgnoreSameSiteRestrictions(

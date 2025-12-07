@@ -10,7 +10,7 @@ import {RateLimiter} from '../../../common/js/async_util.js';
 import {crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
 import {entriesToURLs, isTeamDriveRoot} from '../../../common/js/entry_utils.js';
-import {getType, isAudio, isEncrypted, isImage, isRaw, isVideo} from '../../../common/js/file_type.js';
+import {getType, isAudio, isEncrypted, isImage, isPDF, isRaw, isVideo} from '../../../common/js/file_type.js';
 import type {FilesAppEntry} from '../../../common/js/files_app_entry_types.js';
 import {isDlpEnabled} from '../../../common/js/flags.js';
 import {getEntryLabel, str, strf} from '../../../common/js/translations.js';
@@ -605,7 +605,7 @@ export class FileTable extends Table {
   private onThumbnailLoaded_(event: ThumbnailLoadedEvent) {
     const listItem = this.getListItemByIndex(event.detail.index);
     if (listItem) {
-      const box = listItem.querySelector<HTMLDivElement>('.detail-thumbnail');
+      const box = listItem.querySelector<HTMLElement>('.detail-thumbnail');
       if (box) {
         if (event.detail.dataUrl) {
           this.setThumbnailImage_(box, event.detail.dataUrl);
@@ -759,8 +759,8 @@ export class FileTable extends Table {
    * @return Created element.
    */
   private renderName_(entry: Entry, _columnId: string, _table: Table):
-      HTMLDivElement {
-    const label = this.ownerDocument.createElement('div');
+      HTMLElement {
+    const label: HTMLElement = this.ownerDocument.createElement('div');
 
     const metadata = this.metadataModel_!.getCache(
         [entry], ['contentMimeType', 'isDlpRestricted'])[0]!;
@@ -768,14 +768,15 @@ export class FileTable extends Table {
     const locationInfo = this.volumeManager_!.getLocationInfo(entry);
     const icon =
         renderFileTypeIcon(this.ownerDocument, entry, locationInfo, mimeType);
-    if (isImage(entry, mimeType) || isVideo(entry, mimeType) ||
-        isAudio(entry, mimeType) || isRaw(entry, mimeType)) {
+    if (isImage(entry, mimeType) || isPDF(entry, mimeType) ||
+        isVideo(entry, mimeType) || isAudio(entry, mimeType) ||
+        isRaw(entry, mimeType)) {
       icon.appendChild(this.renderThumbnail_(entry, icon));
     }
     icon.appendChild(this.renderCheckmark_());
     label.appendChild(icon);
     label.appendChild(renderIconBadge(this.ownerDocument));
-    (label as HTMLDivElement & {entry: Entry}).entry = entry;
+    (label as HTMLElement & {entry: Entry}).entry = entry;
     label.className = 'detail-name';
     label.appendChild(
         renderFileNameLabel(this.ownerDocument, entry, locationInfo));
@@ -813,7 +814,7 @@ export class FileTable extends Table {
    * @return Created element.
    */
   private renderSize_(entry: Entry, _columnId: string, _table: Table):
-      HTMLDivElement {
+      HTMLElement {
     const div = this.ownerDocument.createElement('div');
     div.className = 'size';
     this.updateSize_(div, entry);
@@ -845,7 +846,7 @@ export class FileTable extends Table {
    * @return Created element.
    */
   private renderType_(entry: Entry, _columnId: string, _table: Table):
-      HTMLDivElement {
+      HTMLElement {
     const div = this.ownerDocument.createElement('div');
     div.className = 'type';
 
@@ -866,7 +867,7 @@ export class FileTable extends Table {
    * @return Created element.
    */
   private renderDate_(entry: Entry, _columnId: string, _table: Table):
-      HTMLDivElement {
+      HTMLElement {
     const div = this.ownerDocument.createElement('div');
 
     div.className = 'dateholder';
@@ -1035,8 +1036,7 @@ export class FileTable extends Table {
    * @param parent The parent DOM element.
    * @return Created element.
    */
-  private renderThumbnail_(entry: Entry, parent: HTMLDivElement):
-      HTMLDivElement {
+  private renderThumbnail_(entry: Entry, parent: HTMLElement): HTMLElement {
     const box = this.ownerDocument.createElement('div');
     box.className = 'detail-thumbnail';
 
@@ -1057,7 +1057,7 @@ export class FileTable extends Table {
    * @param box Detail thumbnail div element.
    * @param dataUrl Data url of thumbnail.
    */
-  private setThumbnailImage_(box: HTMLDivElement, dataUrl: string) {
+  private setThumbnailImage_(box: HTMLElement, dataUrl: string) {
     const thumbnail = box.ownerDocument.createElement('div');
     thumbnail.classList.add('thumbnail');
     thumbnail.style.backgroundImage = 'url(' + dataUrl + ')';
@@ -1074,7 +1074,7 @@ export class FileTable extends Table {
    * Clears thumbnail image from the box.
    * @param box Detail thumbnail div element.
    */
-  private clearThumbnailImage_(box: HTMLDivElement) {
+  private clearThumbnailImage_(box: HTMLElement) {
     const oldThumbnails = box.querySelectorAll('.thumbnail');
 
     for (let i = 0; i < oldThumbnails.length; i++) {
@@ -1086,7 +1086,7 @@ export class FileTable extends Table {
    * Renders the selection checkmark in the detail table.
    * @return Created element.
    */
-  private renderCheckmark_(): HTMLDivElement {
+  private renderCheckmark_(): HTMLElement {
     const checkmark = this.ownerDocument.createElement('div');
     checkmark.className = 'detail-checkmark';
     return checkmark;
@@ -1097,7 +1097,7 @@ export class FileTable extends Table {
    * @param isDlpRestricted Whether the icon should be shown.
    * @return Created element.
    */
-  private renderDlpManagedIcon_(isDlpRestricted: boolean): HTMLDivElement {
+  private renderDlpManagedIcon_(isDlpRestricted: boolean): HTMLElement {
     const icon = this.ownerDocument.createElement('div');
     icon.className = 'dlp-managed-icon';
     icon.toggleAttribute('has-tooltip');
@@ -1117,7 +1117,7 @@ export class FileTable extends Table {
    * CSE files.
    * @return Created element.
    */
-  private renderEncryptedIcon_(): HTMLDivElement {
+  private renderEncryptedIcon_(): HTMLElement {
     const icon = this.ownerDocument.createElement('div');
     icon.className = 'encrypted-icon';
     icon.role = 'image';

@@ -70,6 +70,8 @@ constexpr char kThirdPartyTechnologiesSourceLocationRegexString[] =
     "|(googlesyndication\\.com/[^\"]+/(?:ufs_web_display|reactive_library_fy))"
     // Funding Choices
     "|(fundingchoicesmessages\\.google\\.com)"
+    // Slider Revolution
+    "|(/wp-content/plugins/revslider)"
     // WordPress
     "|(/wp-(?:content|includes)/"
     "|wp-embed\\.min\\.js)";
@@ -98,6 +100,7 @@ ThirdPartyScriptDetector::Technology GetTechnologyFromGroupIndex(int index) {
                             Technology::kGooglePublisherTag,
                             Technology::kGoogleAdsLibraries,
                             Technology::kFundingChoices,
+                            Technology::kSliderRevolution,
                             Technology::kWordPress};
                         return vector;
                       }()));
@@ -106,36 +109,24 @@ ThirdPartyScriptDetector::Technology GetTechnologyFromGroupIndex(int index) {
 }  // namespace
 
 // static
-const char ThirdPartyScriptDetector::kSupplementName[] =
-    "ThirdPartyScriptDetector";
-
-// static
 ThirdPartyScriptDetector& ThirdPartyScriptDetector::From(
     LocalDOMWindow& window) {
-  ThirdPartyScriptDetector* supplement =
-      Supplement<LocalDOMWindow>::From<ThirdPartyScriptDetector>(window);
+  ThirdPartyScriptDetector* supplement = window.GetThirdPartyScriptDetector();
   if (!supplement) {
-    supplement = MakeGarbageCollected<ThirdPartyScriptDetector>(window);
-    ProvideTo(window, supplement);
+    supplement = MakeGarbageCollected<ThirdPartyScriptDetector>();
+    window.SetThirdPartyScriptDetector(supplement);
   }
   return *supplement;
 }
 
-ThirdPartyScriptDetector::ThirdPartyScriptDetector(LocalDOMWindow& window)
-    : Supplement<LocalDOMWindow>(window),
-      precompiled_detection_regex__(
+ThirdPartyScriptDetector::ThirdPartyScriptDetector()
+    : precompiled_detection_regex__(
           kThirdPartyTechnologiesSourceLocationRegexString) {}
 
-void ThirdPartyScriptDetector::Trace(Visitor* visitor) const {
-  Supplement<LocalDOMWindow>::Trace(visitor);
-}
+void ThirdPartyScriptDetector::Trace(Visitor* visitor) const {}
 
 ThirdPartyScriptDetector::Technology ThirdPartyScriptDetector::Detect(
-    const WTF::String url) {
-  if (!base::FeatureList::IsEnabled(features::kThirdPartyScriptDetection)) {
-    return Technology::kNone;
-  }
-
+    const String url) {
   if (!url) {
     // Early exit if the script is first party.
     return Technology::kNone;

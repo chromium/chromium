@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "outlined_class.h"
+#include "ios/chrome/test/swift_interop/include/outlined_class.h"
 
 Outlined::Outlined() : sum_(0) {}
 

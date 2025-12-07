@@ -6,7 +6,6 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_ASSOCIATED_RECEIVER_SET_H_
 
 #include "mojo/public/cpp/bindings/associated_receiver.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 

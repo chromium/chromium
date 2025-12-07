@@ -78,7 +78,10 @@ CreateAutomatedMountErrorNotification(Profile& profile) {
 void ShowAutomatedMountErrorNotification(Profile& profile) {
   std::unique_ptr<message_center::Notification> notification =
       CreateAutomatedMountErrorNotification(profile);
+  // Set never_timeout with the highest priority, SYSTEM_PRIORITY, so that the
+  // notification never times out.
   notification->set_never_timeout(true);
+  notification->SetSystemPriority();
   NotificationDisplayServiceFactory::GetForProfile(&profile)->Display(
       NotificationHandler::Type::TRANSIENT, *notification,
       /*metadata=*/nullptr);

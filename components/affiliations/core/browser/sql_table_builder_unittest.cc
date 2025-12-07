@@ -4,6 +4,7 @@
 
 #include "components/affiliations/core/browser/sql_table_builder.h"
 
+#include <variant>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -14,9 +15,9 @@
 #include "base/test/mock_callback.h"
 #include "sql/database.h"
 #include "sql/statement.h"
+#include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace affiliations {
 namespace {
@@ -27,7 +28,7 @@ using ::testing::UnorderedElementsAre;
 constexpr char kChildTable[] = "child_table";
 constexpr char kMyLoginTable[] = "my_logins_table";
 
-using ColumnValue = absl::variant<int, std::string>;
+using ColumnValue = std::variant<int, std::string>;
 using TableRow = std::vector<ColumnValue>;
 
 void CheckTableContent(sql::Database& db,
@@ -39,10 +40,10 @@ void CheckTableContent(sql::Database& db,
   for (const TableRow& row : expected_rows) {
     EXPECT_TRUE(table_check.Step());
     for (unsigned col = 0; col < row.size(); ++col) {
-      if (const int* int_value = absl::get_if<int>(&row[col])) {
+      if (const int* int_value = std::get_if<int>(&row[col])) {
         EXPECT_EQ(*int_value, table_check.ColumnInt(col)) << col;
       } else if (const std::string* string_value =
-                     absl::get_if<std::string>(&row[col])) {
+                     std::get_if<std::string>(&row[col])) {
         EXPECT_EQ(*string_value, table_check.ColumnString(col)) << col;
       } else {
         EXPECT_TRUE(false) << "Unknown type " << col;
@@ -82,7 +83,7 @@ class SQLTableBuilderTest : public testing::Test {
   // statement details.
   void PrintDBError(int code, sql::Statement* statement);
 
-  sql::Database db_;
+  sql::Database db_{sql::test::kTestTag};
   SQLTableBuilder builder_;
   SQLTableBuilder child_builder_;
 };

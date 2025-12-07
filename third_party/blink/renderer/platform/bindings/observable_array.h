@@ -74,7 +74,7 @@ namespace bindings {
 class PLATFORM_EXPORT ObservableArrayBase : public ScriptWrappable {
  public:
   ObservableArrayBase(
-      ScriptWrappable* platform_object,
+      GarbageCollectedMixin* platform_object,
       ObservableArrayExoticObject* observable_array_exotic_object);
   ~ObservableArrayBase() override = default;
 
@@ -90,13 +90,13 @@ class PLATFORM_EXPORT ObservableArrayBase : public ScriptWrappable {
   void Trace(Visitor* visitor) const override;
 
  protected:
-  ScriptWrappable* GetPlatformObject() { return platform_object_.Get(); }
+  GarbageCollectedMixin* GetPlatformObject() { return platform_object_.Get(); }
 
   virtual v8::Local<v8::FunctionTemplate> GetProxyHandlerFunctionTemplate(
       ScriptState* script_state) = 0;
 
  private:
-  Member<ScriptWrappable> platform_object_;  // IDL attribute owner
+  Member<GarbageCollectedMixin> platform_object_;  // IDL attribute owner
   Member<ObservableArrayExoticObject> observable_array_exotic_object_;
 };
 
@@ -116,7 +116,7 @@ class ObservableArrayImplHelper : public bindings::ObservableArrayBase {
   using const_reverse_iterator =
       typename BackingListType::const_reverse_iterator;
 
-  explicit ObservableArrayImplHelper(ScriptWrappable* platform_object)
+  explicit ObservableArrayImplHelper(GarbageCollectedMixin* platform_object)
       : bindings::ObservableArrayBase(
             platform_object,
             MakeGarbageCollected<ObservableArrayExoticObject>(this)) {}

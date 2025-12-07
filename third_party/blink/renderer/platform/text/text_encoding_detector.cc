@@ -47,13 +47,12 @@
 
 namespace blink {
 
-bool DetectTextEncoding(const char* data,
-                        uint32_t length,
+bool DetectTextEncoding(base::span<const uint8_t> bytes,
                         const char* hint_encoding_name,
                         const KURL& hint_url,
                         const char* hint_user_language,
-                        WTF::TextEncoding* detected_encoding) {
-  *detected_encoding = WTF::TextEncoding();
+                        TextEncoding* detected_encoding) {
+  *detected_encoding = TextEncoding();
   // In general, do not use language hint. This helps get more
   // deterministic encoding detection results across devices. Note that local
   // file resources can still benefit from the hint.
@@ -62,17 +61,18 @@ bool DetectTextEncoding(const char* data,
     LanguageFromCode(hint_user_language, &language);
   int consumed_bytes;
   bool is_reliable;
+  auto chars = base::as_chars(bytes);
   Encoding encoding = CompactEncDet::DetectEncoding(
-      data, length, hint_url.GetString().Ascii().c_str(), nullptr, nullptr,
-      EncodingNameAliasToEncoding(hint_encoding_name), language,
+      chars.data(), chars.size(), hint_url.GetString().Ascii().c_str(), nullptr,
+      nullptr, EncodingNameAliasToEncoding(hint_encoding_name), language,
       CompactEncDet::WEB_CORPUS,
       false,  // Include 7-bit encodings to detect ISO-2022-JP
       &consumed_bytes, &is_reliable);
 
   if (encoding == UNKNOWN_ENCODING)
-    *detected_encoding = WTF::UnknownEncoding();
+    *detected_encoding = UnknownEncoding();
   else
-    *detected_encoding = WTF::TextEncoding(MimeEncodingName(encoding));
+    *detected_encoding = TextEncoding(MimeEncodingName(encoding));
 
   // Should return false if the detected encoding is UTF8. This helps prevent
   // modern web sites from neglecting proper encoding labelling and simply

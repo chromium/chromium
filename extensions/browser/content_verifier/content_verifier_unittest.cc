@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "extensions/browser/content_verifier/content_verifier.h"
+
 #include <memory>
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
+#include "base/test/icu_test_util.h"
 #include "base/values.h"
-#include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_utils.h"
-#include "extensions/browser/content_verifier/content_verifier.h"
 #include "extensions/browser/content_verifier/content_verifier_utils.h"
 #include "extensions/browser/content_verifier/test_utils.h"
 #include "extensions/browser/extension_registry.h"
@@ -37,13 +37,9 @@ enum class BackgroundManifestType {
   kBackgroundPage,
 };
 
-const std::string kDotSpaceSuffixList[] = {
-    ".", ". ", " .", "..", ".. ", " ..", " . ",
-};
-
-base::FilePath kBackgroundScriptPath(FILE_PATH_LITERAL("foo/bg.txt"));
-base::FilePath kContentScriptPath(FILE_PATH_LITERAL("foo/content.txt"));
-base::FilePath kBackgroundPagePath(FILE_PATH_LITERAL("foo/page.txt"));
+base::FilePath kBackgroundScriptPath(FILE_PATH_LITERAL("foo/bg.js"));
+base::FilePath kContentScriptPath(FILE_PATH_LITERAL("foo/content.js"));
+base::FilePath kBackgroundPagePath(FILE_PATH_LITERAL("foo/page.html"));
 base::FilePath kScriptFilePath(FILE_PATH_LITERAL("bar/code.js"));
 base::FilePath kUnknownTypeFilePath(FILE_PATH_LITERAL("bar/code.txt"));
 base::FilePath kHTMLFilePath(FILE_PATH_LITERAL("bar/page.html"));
@@ -65,10 +61,6 @@ base::FilePath ToFirstLetterUppercasePath(const base::FilePath& path) {
     }
   }
   return base::FilePath(path_copy);
-}
-base::FilePath AppendSuffix(const base::FilePath& path,
-                            const std::string& suffix) {
-  return base::FilePath::FromUTF8Unsafe(path.AsUTF8Unsafe().append(suffix));
 }
 
 class TestContentVerifierDelegate : public MockContentVerifierDelegate {
@@ -106,8 +98,9 @@ struct FilePathVariants {
   explicit FilePathVariants(const base::FilePath& path) : original_path(path) {
     auto insert_if_non_empty_and_different =
         [&path](std::set<base::FilePath>* container, base::FilePath new_path) {
-          if (!new_path.empty() && new_path != path)
+          if (!new_path.empty() && new_path != path) {
             container->insert(new_path);
+          }
         };
 
     // 1. Case variant 1/2: All uppercase.
@@ -115,32 +108,12 @@ struct FilePathVariants {
     // 2. Case variant 2/2: First letter uppercase.
     insert_if_non_empty_and_different(&case_variants,
                                       ToFirstLetterUppercasePath(path));
-    // 3. Dot-space suffix variants:
-    for (const auto& dot_space_suffix : kDotSpaceSuffixList) {
-      insert_if_non_empty_and_different(&dot_space_suffix_variants,
-                                        AppendSuffix(path, dot_space_suffix));
-    }
-    // 4. Case variants that also have dot-space suffix:
-    for (const auto& case_variant : case_variants) {
-      for (const auto& suffix : kDotSpaceSuffixList) {
-        insert_if_non_empty_and_different(&case_and_dot_space_suffix_variants,
-                                          AppendSuffix(case_variant, suffix));
-      }
-    }
   }
 
   base::FilePath original_path;
 
   // Case variants of |original_path| that are *not* equal to |original_path|.
   std::set<base::FilePath> case_variants;
-
-  // Dot space suffix added variants of |original_path| that are *not* equal to
-  // |original_path|.
-  std::set<base::FilePath> dot_space_suffix_variants;
-
-  // Case variants appended with dot space suffix to |original_path| that are
-  // *not* equal to |original_path|.
-  std::set<base::FilePath> case_and_dot_space_suffix_variants;
 };
 
 }  // namespace
@@ -199,6 +172,35 @@ class ContentVerifierTest : public ExtensionsTest {
     return background_manifest_type_;
   }
 
+  void TestPathsForCaseInsensitiveHandling(std::string_view lower,
+                                           std::string_view upper) {
+    const auto lower_path = base::FilePath::FromUTF8Unsafe(lower);
+    const auto upper_path = base::FilePath::FromUTF8Unsafe(upper);
+    UpdateBrowserImagePaths({});
+
+    // The path would be treated as unclassified resource, so it gets verified.
+    EXPECT_TRUE(ShouldVerifySinglePath(lower_path))
+        << "for lower_path " << lower_path;
+    EXPECT_TRUE(ShouldVerifySinglePath(upper_path))
+        << "for upper_path " << upper_path;
+
+    // If the path is specified as browser image, it doesn't get verified.
+    UpdateBrowserImagePaths({lower_path});
+    EXPECT_FALSE(ShouldVerifySinglePath(lower_path))
+        << "for lower_path " << lower_path;
+    EXPECT_FALSE(ShouldVerifySinglePath(upper_path))
+        << "for upper_path " << upper_path;
+
+    // The case of the image path shouldn't matter.
+    UpdateBrowserImagePaths({upper_path});
+    EXPECT_FALSE(ShouldVerifySinglePath(lower_path))
+        << "for lower_path " << lower_path;
+    EXPECT_FALSE(ShouldVerifySinglePath(upper_path))
+        << "for upper_path " << upper_path;
+
+    UpdateBrowserImagePaths({});
+  }
+
  protected:
   BackgroundManifestType background_manifest_type_ =
       BackgroundManifestType::kNone;
@@ -215,12 +217,13 @@ class ContentVerifierTest : public ExtensionsTest {
     if (background_manifest_type_ ==
         BackgroundManifestType::kBackgroundScript) {
       base::Value::List background_scripts;
-      background_scripts.Append("foo/bg.txt");
+      background_scripts.Append(kBackgroundScriptPath.AsUTF8Unsafe());
       manifest.SetByDottedPath(manifest_keys::kBackgroundScripts,
                                std::move(background_scripts));
     } else if (background_manifest_type_ ==
                BackgroundManifestType::kBackgroundPage) {
-      manifest.SetByDottedPath(manifest_keys::kBackgroundPage, "foo/page.txt");
+      manifest.SetByDottedPath(manifest_keys::kBackgroundPage,
+                               kBackgroundPagePath.AsUTF8Unsafe());
     }
 
     base::Value::List content_scripts;
@@ -238,7 +241,7 @@ class ContentVerifierTest : public ExtensionsTest {
     base::FilePath path;
     EXPECT_TRUE(base::PathService::Get(DIR_TEST_DATA, &path));
 
-    std::string error;
+    std::u16string error;
     scoped_refptr<Extension> extension(
         Extension::Create(path, mojom::ManifestLocation::kInternal, manifest,
                           Extension::NO_FLAGS, &error));
@@ -269,22 +272,10 @@ class ContentVerifierTestWithBackgroundType
 // some file paths even if those paths are specified as browser images.
 TEST_P(ContentVerifierTestWithBackgroundType, BrowserImagesShouldBeVerified) {
   std::vector<base::FilePath> files_to_be_verified = {
-      kContentScriptPath, kScriptFilePath, kHTMLFilePath, kHTMFilePath};
+      kContentScriptPath, kScriptFilePath,       kHTMLFilePath,
+      kHTMFilePath,       kBackgroundScriptPath, kBackgroundPagePath};
   std::vector<base::FilePath> files_not_to_be_verified{kIconPath,
                                                        kUnknownTypeFilePath};
-
-  if (GetBackgroundManifestType() ==
-      BackgroundManifestType::kBackgroundScript) {
-    files_to_be_verified.push_back(kBackgroundScriptPath);
-    files_not_to_be_verified.push_back(kBackgroundPagePath);
-  } else if (GetBackgroundManifestType() ==
-             BackgroundManifestType::kBackgroundPage) {
-    files_to_be_verified.push_back(kBackgroundPagePath);
-    files_not_to_be_verified.push_back(kBackgroundScriptPath);
-  } else {
-    files_not_to_be_verified.push_back(kBackgroundScriptPath);
-    files_not_to_be_verified.push_back(kBackgroundPagePath);
-  }
 
   auto generate_test_cases = [](const std::vector<base::FilePath>& input) {
     std::set<base::FilePath> output;
@@ -331,13 +322,21 @@ TEST_F(ContentVerifierTest, NormalizeRelativePath) {
 // This macro helps avoid wrapped lines in the test structs.
 #define FPL(x) FILE_PATH_LITERAL(x)
   struct TestData {
-    base::FilePath::StringPieceType input;
-    base::FilePath::StringPieceType expected;
-  } test_cases[] = {{FPL("foo/bar"), FPL("foo/bar")},
-                    {FPL("foo//bar"), FPL("foo/bar")},
-                    {FPL("foo/bar/"), FPL("foo/bar/")},
-                    {FPL("foo/bar//"), FPL("foo/bar/")},
-                    {FPL("foo/options.html/"), FPL("foo/options.html/")}};
+    base::FilePath::StringViewType input;
+    base::FilePath::StringViewType expected;
+  } test_cases[] = {
+      {FPL("foo/bar"), FPL("foo/bar")},
+      {FPL("foo//bar"), FPL("foo/bar")},
+      {FPL("foo/bar/"), FPL("foo/bar/")},
+      {FPL("foo/bar//"), FPL("foo/bar/")},
+      {FPL("foo/options.html/"), FPL("foo/options.html/")},
+      {FPL("foo/./bar"), FPL("foo/bar")},
+      {FPL("foo/../bar"), FPL("bar")},
+      {FPL("foo/../.."), FPL("")},
+      {FPL("./foo"), FPL("foo")},
+      {FPL("../foo"), FPL("foo")},
+      {FPL("foo/../../bar"), FPL("bar")},
+  };
 #undef FPL
   for (const auto& test_case : test_cases) {
     base::FilePath input(test_case.input);
@@ -351,20 +350,71 @@ TEST_F(ContentVerifierTest, NormalizeRelativePath) {
 // extension case isn't lower cased or even if they are specified as browser
 // image paths.
 TEST_F(ContentVerifierTest, JSAndHTMLAlwaysVerified) {
-  std::vector<std::string> paths = {
-      "a.js",  "b.html", "c.htm",  "a.JS",  "b.HTML",
-      "c.HTM", "a.Js",   "b.Html", "c.Htm",
+  std::vector<std::string> exts_lowercase = {
+      // Common extensions.
+      "js",
+      "html",
+      "htm",
+      // Less common extensions.
+      "mjs",
+      "shtml",
+      "shtm",
   };
 
-  for (const auto& path_str : paths) {
-    const base::FilePath path = base::FilePath().AppendASCII(path_str);
-    UpdateBrowserImagePaths({});
-    // |path| would be treated as unclassified resource, so it gets verified.
-    EXPECT_TRUE(ShouldVerifySinglePath(path)) << "for path " << path;
-    // Even if |path| was specified as browser image, as |path| is JS/html
-    // (sensitive) resource, it would still get verified.
-    UpdateBrowserImagePaths({path});
-    EXPECT_TRUE(ShouldVerifySinglePath(path)) << "for path " << path;
+  for (const auto& ext_lowercase : exts_lowercase) {
+    auto ext_uppercase = base::ToUpperASCII(ext_lowercase);
+    auto ext_capitalized = ext_lowercase;
+    ext_capitalized[0] = base::ToUpperASCII(ext_capitalized[0]);
+    for (const auto& ext : {ext_lowercase, ext_uppercase, ext_capitalized}) {
+      const auto path =
+          base::FilePath(FILE_PATH_LITERAL("x")).AddExtensionASCII(ext);
+      UpdateBrowserImagePaths({});
+      // |path| would be treated as unclassified resource, so it gets verified.
+      EXPECT_TRUE(ShouldVerifySinglePath(path)) << "for path " << path;
+      // Even if |path| was specified as browser image, as |path| is JS/html
+      // (sensitive) resource, it would still get verified.
+      UpdateBrowserImagePaths({path});
+      EXPECT_TRUE(ShouldVerifySinglePath(path)) << "for path " << path;
+    }
+  }
+}
+
+TEST_F(ContentVerifierTest, CaseInsensitivePaths) {
+  if (content_verifier_utils::IsFileAccessCaseSensitive()) {
+    return;
+  }
+
+  std::vector<std::pair<std::string, std::string>> lower_upper = {
+      {"a.png", "A.png"},
+      {"ä.png", "Ä.png"},
+      {"æ.png", "Æ.png"},
+      {"ф.png", "Ф.png"},
+  };
+
+  for (const auto& [lower, upper] : lower_upper) {
+    TestPathsForCaseInsensitiveHandling(lower, upper);
+  }
+}
+
+TEST_F(ContentVerifierTest, CaseInsensitivePathsLocaleIndependent) {
+  if (content_verifier_utils::IsFileAccessCaseSensitive()) {
+    return;
+  }
+
+  std::vector<std::pair<std::string, std::string>> lower_upper = {
+      // Locale-depended Turkish conversion may normalize these file names
+      // differently, which would be undesirable.
+      {"icon.png", "Icon.png"},
+  };
+
+  std::vector<std::string> locales = {"en_US", "tr"};
+
+  for (const auto& locale : locales) {
+    base::test::ScopedRestoreICUDefaultLocale restore_locale(locale);
+
+    for (const auto& [lower, upper] : lower_upper) {
+      TestPathsForCaseInsensitiveHandling(lower, upper);
+    }
   }
 }
 
@@ -386,27 +436,6 @@ TEST_F(ContentVerifierTest, AlwaysVerifiedPathsWithVariants) {
     for (const auto& case_variant : test_case.case_variants) {
       EXPECT_TRUE(ShouldVerifySinglePath({case_variant}))
           << " case_variant = " << case_variant;
-    }
-
-    // If OS ignores dot-space suffix, then dot-space suffix added paths would
-    // always be verified. Otherwise, they would be treated as unclassified
-    // resource, so they also get verified.
-    // e.g. "always.js." is always verified on win as it is treated as
-    // "always.js". In non-win, it is treated as an arbitrary resource, so it
-    // also gets verified. Also note that even if "always.js." is listed as
-    // browser image, it's OK.
-    for (const auto& dot_space_variant : test_case.dot_space_suffix_variants) {
-      EXPECT_TRUE(ShouldVerifySinglePath({dot_space_variant}))
-          << "dot_space_variant = " << dot_space_variant;
-    }
-
-    // Similar test case with both case variant with dot-space suffix added to
-    // them.
-    // e.g. "Always.js." is verified in win, and also in other OS. Also note
-    // that even if "always.js." is listed as browser image, it's OK.
-    for (const auto& path : test_case.case_and_dot_space_suffix_variants) {
-      EXPECT_TRUE(ShouldVerifySinglePath({path}))
-          << "case_and_dot_space_suffix_variant = " << path;
     }
   }
 }
@@ -438,26 +467,6 @@ TEST_F(ContentVerifierTest, NeverVerifiedPaths) {
       EXPECT_EQ(content_verifier_utils::IsFileAccessCaseSensitive(),
                 ShouldVerifySinglePath({case_variant}))
           << " case_variant = " << case_variant;
-    }
-
-    // If OS ignores dot-space suffix, then dot-space suffix added paths would
-    // be ignored for verification. Those would verified otherwise.
-    // e.g. "manifest.json." is not verified only in win, but is verified in
-    // others.
-    for (const auto& dot_space_variant : test_case.dot_space_suffix_variants) {
-      EXPECT_EQ(!content_verifier_utils::IsDotSpaceFilenameSuffixIgnored(),
-                ShouldVerifySinglePath({dot_space_variant}))
-          << "dot_space_variant = " << dot_space_variant;
-    }
-
-    // Similar test case with both case variant with dot-space suffix added to
-    // them.
-    // e.g. "Manifest.json." is not verified only in win, but is verified in
-    // others.
-    for (const auto& path : test_case.case_and_dot_space_suffix_variants) {
-      EXPECT_EQ(!content_verifier_utils::IsDotSpaceFilenameSuffixIgnored(),
-                ShouldVerifySinglePath({path}))
-          << "case_and_dot_space_suffix_variant = " << path;
     }
   }
 }

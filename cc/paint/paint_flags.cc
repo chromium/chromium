@@ -9,6 +9,7 @@
 
 #include "base/memory/values_equivalent.h"
 #include "base/notreached.h"
+#include "base/strings/stringprintf.h"
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_op.h"
 #include "cc/paint/paint_op_buffer.h"
@@ -164,17 +165,38 @@ SkPaint PaintFlags::ToSkPaint() const {
 
 SkSamplingOptions PaintFlags::FilterQualityToSkSamplingOptions(
     PaintFlags::FilterQuality filter_quality) {
+  return FilterQualityToSkSamplingOptions(filter_quality,
+                                          ScalingOperation::kDefault);
+}
+
+SkSamplingOptions PaintFlags::FilterQualityToSkSamplingOptions(
+    PaintFlags::FilterQuality filter_quality,
+    PaintFlags::ScalingOperation scaling_op) {
   switch (filter_quality) {
     case PaintFlags::FilterQuality::kHigh:
-      return SkSamplingOptions(SkCubicResampler::CatmullRom());
+      switch (scaling_op) {
+        case PaintFlags::ScalingOperation::kDefault:
+          return SkSamplingOptions(SkCubicResampler::CatmullRom());
+        case PaintFlags::ScalingOperation::kUnknown:
+          return SkSamplingOptions(SkFilterMode::kLinear,
+                                   SkMipmapMode::kLinear);
+        case PaintFlags::ScalingOperation::kUpscale:
+          return SkSamplingOptions(SkCubicResampler::Mitchell());
+      }
     case PaintFlags::FilterQuality::kMedium:
-      return SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kNearest);
+      switch (scaling_op) {
+        case PaintFlags::ScalingOperation::kDefault:
+          return SkSamplingOptions(SkFilterMode::kLinear,
+                                   SkMipmapMode::kNearest);
+        case PaintFlags::ScalingOperation::kUnknown:
+        case PaintFlags::ScalingOperation::kUpscale:
+          return SkSamplingOptions(SkFilterMode::kLinear,
+                                   SkMipmapMode::kLinear);
+      }
     case PaintFlags::FilterQuality::kLow:
       return SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kNone);
     case PaintFlags::FilterQuality::kNone:
       return SkSamplingOptions(SkFilterMode::kNearest, SkMipmapMode::kNone);
-    default:
-      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -221,6 +243,20 @@ bool PaintFlags::HasDiscardableImages(
     has_discardable_images = true;
   }
   return has_discardable_images;
+}
+
+float PaintFlags::DynamicRangeLimitMixture::ComputeEffectiveHdrHeadroom(
+    float target_hdr_headroom) const {
+  // It would make more sense to store only `high_mix` and `constrained_mix`,
+  // since `standard_mix` is multiplied by zero.
+  const float high_mix = 1.f - constrained_high_mix - standard_mix;
+  constexpr float kConstrainedMax = 1.f;  // Constrained allows at most 1 stop
+  return constrained_high_mix * std::min(kConstrainedMax, target_hdr_headroom) +
+         high_mix * target_hdr_headroom;
+}
+
+std::string PaintFlags::DynamicRangeLimitMixture::ToString() const {
+  return base::StringPrintf("%f, %f", standard_mix, constrained_high_mix);
 }
 
 }  // namespace cc

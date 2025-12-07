@@ -9,7 +9,7 @@
 #import "base/apple/foundation_util.h"
 #include "base/apple/owned_objc.h"
 #include "base/check_op.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/strings/sys_string_conversions.h"
 #import "components/remote_cocoa/app_shim/drag_drop_client.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
@@ -283,17 +283,36 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   return current == [super inputContext];
 }
 
-// If |point| is classified as a draggable background (HTCAPTION), return nil so
-// that it can lead to a window drag or double-click in the title bar. Dragging
-// could be optimized by telling the window server which regions should be
-// instantly draggable without asking (tracked at https://crbug.com/830962).
+// NSWindow calls -[contentView hitTest:] to determine the target NSView for
+// mouse up and down events. The default implementation recursively calls
+// hitTest: on each subview until it finds a non-nil target.
 - (NSView*)hitTest:(NSPoint)point {
-  gfx::Point flippedPoint(point.x, NSHeight(self.superview.bounds) - point.y);
-  bool isDraggableBackground = false;
-  _bridge->host()->GetIsDraggableBackgroundAt(flippedPoint,
-                                              &isDraggableBackground);
-  if (isDraggableBackground)
+  // `point` is in superview's coordinate. Convert it to local coordinate.
+  // This is important when the window has a native titlebar, in which case the
+  // superview is taller than the contentView.
+  NSPoint pointInView = [self convertPoint:point fromView:self.superview];
+  gfx::Point flippedPoint(point.x, NSHeight(self.frame) - pointInView.y);
+  remote_cocoa::mojom::HitTestResult hitTestResult;
+  _bridge->host()->GetHitTestResult(flippedPoint, &hitTestResult);
+
+  // If `point` is classified as a draggable background (HTCAPTION), return nil
+  // so that it can lead to a window drag or double-click in the title bar.
+  // Dragging could be optimized by telling the window server which regions
+  // should be instantly draggable without asking (tracked at
+  // https://crbug.com/830962).
+  if (hitTestResult ==
+      remote_cocoa::mojom::HitTestResult::kDraggableBackground) {
     return nil;
+  }
+
+  // Send event to views::RootView.
+  if (hitTestResult == remote_cocoa::mojom::HitTestResult::kRootView) {
+    // Most commonly this NSView is NSWindow's contentView. However in immersive
+    // fullscreen, the view may be a subview of another AppKit-owned view in the
+    // titlebar.
+    return self;
+  }
+
   return [super hitTest:point];
 }
 
@@ -335,7 +354,23 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
     event_location =
         MovePointToWindow(theEvent.locationInWindow, source, target);
   }
-  [self updateTooltipIfRequiredAt:event_location];
+
+  // The tooltip update event should be forwarded to the window where the event
+  // occurs. This is how it works with Aura, and the backend logic expects that
+  // the mouse location is in the coordinate system of the window from which the
+  // event originated.
+  auto* event_window =
+      base::apple::ObjCCast<NativeWidgetMacNSWindow>(theEvent.window);
+  remote_cocoa::NativeWidgetNSWindowBridge* event_bridge =
+      [event_window bridge];
+  if (event_bridge) {
+    gfx::Point location_in_source_content = MovePointToView(
+        theEvent.locationInWindow, source, event_bridge->ns_view());
+    [self updateTooltipIfRequiredAt:location_in_source_content
+                             bridge:event_bridge];
+  } else {
+    [self updateTooltipIfRequiredAt:event_location bridge:_bridge];
+  }
 
   if (isScrollEvent) {
     auto event =
@@ -350,10 +385,12 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   }
 }
 
-- (void)updateTooltipIfRequiredAt:(const gfx::Point&)locationInContent {
-  DCHECK(_bridge);
+- (void)updateTooltipIfRequiredAt:(const gfx::Point&)locationInContent
+                           bridge:(remote_cocoa::NativeWidgetNSWindowBridge*)
+                                      bridge {
+  DCHECK(bridge);
   __weak BridgedContentView* weakSelf = self;
-  _bridge->host()->GetTooltipTextAt(
+  bridge->host()->GetTooltipTextAt(
       locationInContent,
       base::BindOnce(
           [](__weak BridgedContentView* weakView,
@@ -662,7 +699,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 
   // Aura updates tooltips with the help of aura::Window::AddPreTargetHandler().
   // Mac hooks in here.
-  [self updateTooltipIfRequiredAt:event->location()];
+  [self updateTooltipIfRequiredAt:event->location() bridge:_bridge];
   _bridge->host()->OnMouseEvent(std::move(event));
 }
 
@@ -873,7 +910,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 
   // Aura updates tooltips with the help of aura::Window::AddPreTargetHandler().
   // Mac hooks in here.
-  [self updateTooltipIfRequiredAt:event->location()];
+  [self updateTooltipIfRequiredAt:event->location() bridge:_bridge];
   _bridge->host()->OnScrollEvent(std::move(event));
 }
 
@@ -1358,45 +1395,35 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
           eventFlags:0];
 }
 
-// Support for Services in context menus.
-// Currently we only support reading and writing plain strings.
 - (id)validRequestorForSendType:(NSString*)sendType
                      returnType:(NSString*)returnType {
-  BOOL canWrite = [sendType isEqualToString:NSPasteboardTypeString] &&
-                  [self selectedRange].length > 0;
-  BOOL canRead = [returnType isEqualToString:NSPasteboardTypeString];
-  // Valid if (sendType, returnType) is either (string, nil), (nil, string),
-  // or (string, string).
-  BOOL valid =
-      [self hasTextInputClient] && ((canWrite && (canRead || !returnType)) ||
-                                    (canRead && (canWrite || !sendType)));
-  return valid
-             ? self
-             : [super validRequestorForSendType:sendType returnType:returnType];
+  UTType* sendUTType = ui::UTTypeForServicesType(sendType);
+  UTType* acceptUTType = ui::UTTypeForServicesType(returnType);
+
+  const BOOL hasTextInputClient = [self hasTextInputClient];
+  const BOOL canSendText = [sendUTType isEqual:UTTypeUTF8PlainText] &&
+                           hasTextInputClient &&
+                           [self selectedRange].length > 0;
+  const BOOL canAcceptText =
+      [acceptUTType isEqual:UTTypeUTF8PlainText] && hasTextInputClient;
+
+  // This is a valid requestor if the send/accept types can be fulfilled or if
+  // they are `nil` (and therefore not the wrong type).
+  if ((canSendText && !acceptUTType) || (!sendUTType && canAcceptText) ||
+      (canSendText && canAcceptText)) {
+    return self;
+  }
+  return [super validRequestorForSendType:sendType returnType:returnType];
 }
 
 // NSServicesMenuRequestor protocol
 
 - (BOOL)writeSelectionToPasteboard:(NSPasteboard*)pboard types:(NSArray*)types {
-  // /!\ Compatibility hack!
-  //
-  // The NSServicesMenuRequestor protocol does not pass in the correct
-  // NSPasteboardType constants in the `types` array, verified through macOS 13
-  // (FB11838671). To keep the code below clean, if an obsolete type is passed
-  // in, rewrite the array.
-  //
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  if ([types containsObject:NSStringPboardType] &&
-      ![types containsObject:NSPasteboardTypeString]) {
-    types = [types arrayByAddingObject:NSPasteboardTypeString];
-  }
-#pragma clang diagnostic pop
-  // /!\ End compatibility hack.
+  NSSet<UTType*>* typeSet = ui::UTTypesForServicesTypeArray(types);
 
   bool wasAbleToWriteAtLeastOneType = false;
 
-  if ([types containsObject:NSPasteboardTypeString]) {
+  if ([typeSet containsObject:UTTypeUTF8PlainText]) {
     bool result = false;
     std::u16string selection_text;
     if (_bridge)

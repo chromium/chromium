@@ -18,6 +18,12 @@ enum WebPrintingSides {
   kTwoSidedShortEdge
 };
 
+enum WebPrintQuality {
+  kDraft,
+  kNormal,
+  kHigh
+};
+
 enum WebPrintColorMode {
   kColor,
   kMonochrome
@@ -84,6 +90,9 @@ enum WebPrinterStateReason {
 // Basic description of a single printer.
 struct WebPrinterInfo {
   string printer_name;
+  // Opaque representation of the printer id.
+  // Unique per printer even if the name is not.
+  string printer_id;
   pending_remote<WebPrinter> printer_remote;
 };
 
@@ -154,12 +163,19 @@ struct WebPrinterAttributes {
   WebPrintColorMode print_color_mode_default;
   array<WebPrintColorMode> print_color_mode_supported;
 
+  WebPrintQuality? print_quality_default;
+  array<WebPrintQuality> print_quality_supported;
+
   WebPrinterState printer_state;
   string printer_state_message;
   array<WebPrinterStateReason> printer_state_reasons;
 
   WebPrintingSides? sides_default;
   array<WebPrintingSides> sides_supported;
+
+  // Opaque representation of the printer id.
+  // Unique per printer even if the name is not.
+  string printer_id;
 };
 
 // Represents the requested media-col entry for a print job. Note that this
@@ -190,6 +206,7 @@ struct WebPrintJobTemplateAttributes {
   WebPrintingOrientationRequested? orientation_requested;
   gfx.mojom.Size? printer_resolution;
   WebPrintColorMode? print_color_mode;
+  WebPrintQuality? print_quality;
   WebPrintingSides? sides;
 };
 

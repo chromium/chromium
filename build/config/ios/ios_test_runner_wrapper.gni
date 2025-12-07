@@ -68,9 +68,9 @@ template("ios_test_runner_wrapper") {
     _rebased_xcode_path = rebase_path("//Xcode.app", root_build_dir)
     _rebased_ios_runtime_cache_prefix =
         rebase_path("//Runtime-ios-", root_build_dir)
+    _rebased_out_dir =
+        rebase_path("${root_build_dir}/ios-test-results", root_build_dir)
 
-    # --out-dir argument is specified in gn_isolate_map.pyl because
-    # ${ISOLATED_OUTDIR} doesn't get resolved through this wrapper.
     executable_args += [
       "--xcode-path",
       "@WrappedPath(${_rebased_xcode_path})",
@@ -78,6 +78,13 @@ template("ios_test_runner_wrapper") {
       "@WrappedPath(${_rebased_mac_toolchain})",
       "--runtime-cache-prefix",
       "@WrappedPath(${_rebased_ios_runtime_cache_prefix})",
+
+      # To make the generated script easier to run locally, tentatively set an
+      # `--out-dir` at build time. If the command line contains multiple
+      # `--out-dir`s, the last option wins, so the bots can override this at
+      # runtime when `${ISOLATED_OUTDIR}` is resolved.
+      "--out-dir",
+      "@WrappedPath(${_rebased_out_dir})",
     ]
 
     # Default retries to 3

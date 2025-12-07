@@ -20,7 +20,6 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/browser/media/router/media_router_feature.h"
@@ -32,6 +31,8 @@
 #include "chrome/browser/media/router/test/mock_mojo_media_router.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
 #include "components/media_router/common/media_source.h"
+#include "components/media_router/common/mojom/debugger.mojom.h"
+#include "components/media_router/common/mojom/logger.mojom.h"
 #include "components/media_router/common/providers/cast/channel/cast_message_util.h"
 #include "components/media_router/common/providers/cast/channel/cast_test_util.h"
 #include "components/media_router/common/test/mock_logger.h"
@@ -52,7 +53,6 @@ using testing::_;
 using testing::AnyNumber;
 using testing::ByRef;
 using testing::ElementsAre;
-using testing::Invoke;
 using testing::IsEmpty;
 using testing::NiceMock;
 using testing::Not;
@@ -66,8 +66,10 @@ constexpr int kChannelId = 42;
 constexpr int kChannelId2 = 43;
 constexpr char kClientId[] = "theClientId";
 constexpr char kOrigin[] = "https://google.com";
-constexpr int kFrameTreeNodeId = 123;
-constexpr int kFrameTreeNodeId2 = 234;
+constexpr content::FrameTreeNodeId kFrameTreeNodeId =
+    content::FrameTreeNodeId(123);
+constexpr content::FrameTreeNodeId kFrameTreeNodeId2 =
+    content::FrameTreeNodeId(234);
 constexpr char kAppId1[] = "ABCDEFGH";
 constexpr char kAppId2[] = "BBBBBBBB";
 constexpr char kAppParams[] = R"(
@@ -154,9 +156,13 @@ class CastActivityManagerTest : public testing::Test,
     session_tracker_.reset(
         new CastSessionTracker(&media_sink_service_, &message_handler_,
                                socket_service_.task_runner()));
+
+    logger_receiver_ = std::make_unique<mojo::Receiver<mojom::Logger>>(
+        &mock_logger_, logger_.BindNewPipeAndPassReceiver());
+
     manager_ = std::make_unique<CastActivityManager>(
         &media_sink_service_, session_tracker_.get(), &message_handler_,
-        router_remote_.get(), &logger_, "theHashToken");
+        router_remote_.get(), logger_, debugger_, "theHashToken");
 
     ON_CALL(message_handler_, StopSession)
         .WillByDefault(WithArg<3>([this](auto callback) {
@@ -235,7 +241,8 @@ class CastActivityManagerTest : public testing::Test,
       mojom::MediaRouteProvider::CreateRouteCallback callback) {
     ExpectSingleRouteUpdate();
     // A launch session request is sent to the sink.
-    const std::optional<base::Value> json = base::JSONReader::Read(app_params);
+    const std::optional<base::Value> json = base::JSONReader::Read(
+        app_params, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     EXPECT_CALL(message_handler_,
                 LaunchSession(kChannelId, app_id, kDefaultLaunchTimeout,
                               testing::ElementsAre("WEB"),
@@ -466,9 +473,9 @@ class CastActivityManagerTest : public testing::Test,
   // move `route_id_to_move` to `frame_id_after`, and that results in the
   // termination of `route_id_to_terminate`.
   void UpdateRouteSourceTabInRoutesMap(
-      int frame_id_before,
+      content::FrameTreeNodeId frame_id_before,
       const MediaRoute::Id& route_id_to_move,
-      int frame_id_after,
+      content::FrameTreeNodeId frame_id_after,
       const MediaRoute::Id& route_id_to_terminate) {
     EXPECT_EQ(2u, manager_->GetRoutes().size());
 
@@ -537,9 +544,12 @@ class CastActivityManagerTest : public testing::Test,
   const MediaSource::Id route_query_ = "theRouteQuery";
   std::optional<MediaRoute> updated_route_;
   cast_channel::Result stop_session_callback_arg_ = cast_channel::Result::kOk;
-  NiceMock<MockLogger> logger_;
   mojom::RoutePresentationConnectionPtr presentation_connections_;
   const std::string cast_streaming_app_id_;
+  NiceMock<MockLogger> mock_logger_;
+  mojo::Remote<mojom::Logger> logger_;
+  std::unique_ptr<mojo::Receiver<mojom::Logger>> logger_receiver_;
+  mojo::Remote<mojom::Debugger> debugger_;
 };
 
 TEST_F(CastActivityManagerTest, LaunchAppSession) {

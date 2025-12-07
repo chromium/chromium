@@ -5,46 +5,35 @@
 package org.chromium.media;
 
 import android.annotation.SuppressLint;
-import android.media.AudioFormat;
 import android.media.MediaCodec;
 import android.media.MediaCodec.CryptoInfo;
 import android.media.MediaCrypto;
 import android.media.MediaDrm;
 import android.media.MediaFormat;
-import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.view.Surface;
-
-import androidx.annotation.RequiresApi;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
+import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
-import java.util.LinkedList;
+import java.util.ArrayDeque;
 import java.util.Queue;
 
 /** A MediaCodec wrapper for adapting the API and catching exceptions. */
 @JNINamespace("media")
+@NullMarked
 class MediaCodecBridge {
     private static final String TAG = "MediaCodecBridge";
-
-    // After a flush(), dequeueOutputBuffer() can often produce empty presentation timestamps
-    // for several frames. As a result, the player may find that the time does not increase
-    // after decoding a frame. To detect this, we check whether the presentation timestamp from
-    // dequeueOutputBuffer() is larger than input_timestamp - MAX_PRESENTATION_TIMESTAMP_SHIFT_US
-    // after a flush. And we set the presentation timestamp from dequeueOutputBuffer() to be
-    // non-decreasing for the remaining frames.
-    private static final long MAX_PRESENTATION_TIMESTAMP_SHIFT_US = 100000;
-
-    // We use only one output audio format (PCM16) that has 2 bytes per sample
-    private static final int PCM16_BYTES_PER_SAMPLE = 2;
 
     private static final int MEDIA_CODEC_UNKNOWN_CIPHER_MODE = -1;
 
@@ -55,7 +44,8 @@ class MediaCodecBridge {
     private static final String KEY_CROP_TOP = "crop-top";
 
     protected MediaCodec mMediaCodec;
-    private @BitrateAdjuster.Type int mBitrateAdjuster;
+
+    private String mMediaCodecName = "unknown";
 
     // The maximum input size this codec was configured with.
     private int mMaxInputSize;
@@ -68,20 +58,128 @@ class MediaCodecBridge {
     // Once the callback has been set on MediaCodec, these variables must only
     // be accessed from synchronized(this) blocks since MediaCodecCallback may
     // execute on an arbitrary thread.
-    private boolean mUseAsyncApi;
+    private final boolean mUseAsyncApi;
     private Queue<MediaFormatWrapper> mPendingFormat;
-    private MediaFormatWrapper mCurrentFormat;
+    private @Nullable MediaFormatWrapper mCurrentFormat;
     private boolean mPendingError;
+    private int mPendingErrorCode; // only valid if mPendingError = true
     private boolean mPendingStart;
     private long mNativeMediaCodecBridge;
     private int mSequenceCounter;
     private Queue<DequeueInputResult> mPendingInputBuffers;
     private Queue<DequeueOutputResult> mPendingOutputBuffers;
 
+    // Cache for codec name array that is passed to LinearBlock.obtain().
+    private String @Nullable [] mObtainBlockNames;
+
     // Set by tests which don't have a Java MessagePump to ensure the MediaCodec
     // callbacks are actually delivered. Always null in production.
-    private static HandlerThread sCallbackHandlerThread;
-    private static Handler sCallbackHandler;
+    private static @Nullable HandlerThread sCallbackHandlerThread;
+    private static @Nullable Handler sCallbackHandler;
+
+    // |errorCode| is the error reported by MediaCodec.CryptoException.
+    // As of API 31 (Android S) it returns MediaDrm.ErrorCodes
+    // (https://developer.android.com/reference/android/media/MediaDrm.ErrorCodes).
+    // Pre Android S exceptions are still compatible with this ordering, as MediaDrm.ErrorCodes and
+    // MediaCodec.CryptoException.ErrorCodes are kept in sync.
+    // (https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/media/java/android/media/MediaDrm.java;l=304-306)
+    // Not all possible values are handled here, only the ones specified as being returned by
+    // getErrorCode
+    // (https://developer.android.com/reference/android/media/MediaCodec.CryptoException#getErrorCode())
+    // Translated values are defined in media/base/android/media_codec_bridge.h.
+    private static int translateCryptoException(int errorCode) {
+        switch (errorCode) {
+            case MediaDrm.ErrorCodes.ERROR_NO_KEY:
+                return MediaCodecStatus.NO_KEY;
+            case MediaDrm.ErrorCodes.ERROR_KEY_EXPIRED:
+                return MediaCodecStatus.KEY_EXPIRED;
+            case MediaDrm.ErrorCodes.ERROR_RESOURCE_BUSY:
+                return MediaCodecStatus.RESOURCE_BUSY;
+            case MediaDrm.ErrorCodes.ERROR_INSUFFICIENT_OUTPUT_PROTECTION:
+                return MediaCodecStatus.INSUFFICIENT_OUTPUT_PROTECTION;
+            case MediaDrm.ErrorCodes.ERROR_SESSION_NOT_OPENED:
+                return MediaCodecStatus.SESSION_NOT_OPENED;
+            case MediaDrm.ErrorCodes.ERROR_UNSUPPORTED_OPERATION:
+                return MediaCodecStatus.UNSUPPORTED_OPERATION;
+            case MediaDrm.ErrorCodes.ERROR_INSUFFICIENT_SECURITY:
+                return MediaCodecStatus.INSUFFICIENT_SECURITY;
+            case MediaDrm.ErrorCodes.ERROR_FRAME_TOO_LARGE:
+                return MediaCodecStatus.FRAME_TOO_LARGE;
+            case MediaDrm.ErrorCodes.ERROR_LOST_STATE:
+                return MediaCodecStatus.LOST_STATE;
+            case MediaDrm.ErrorCodes.ERROR_CERTIFICATE_MALFORMED:
+                return MediaCodecStatus.CERTIFICATE_MALFORMED;
+            case MediaDrm.ErrorCodes.ERROR_CERTIFICATE_MISSING:
+                return MediaCodecStatus.CERTIFICATE_MISSING;
+            case MediaDrm.ErrorCodes.ERROR_CRYPTO_LIBRARY:
+                return MediaCodecStatus.CRYPTO_LIBRARY;
+            case MediaDrm.ErrorCodes.ERROR_GENERIC_OEM:
+                return MediaCodecStatus.GENERIC_OEM;
+            case MediaDrm.ErrorCodes.ERROR_GENERIC_PLUGIN:
+                return MediaCodecStatus.GENERIC_PLUGIN;
+            case MediaDrm.ErrorCodes.ERROR_INIT_DATA:
+                return MediaCodecStatus.INIT_DATA;
+            case MediaDrm.ErrorCodes.ERROR_KEY_NOT_LOADED:
+                return MediaCodecStatus.KEY_NOT_LOADED;
+            case MediaDrm.ErrorCodes.ERROR_LICENSE_PARSE:
+                return MediaCodecStatus.LICENSE_PARSE;
+            case MediaDrm.ErrorCodes.ERROR_LICENSE_POLICY:
+                return MediaCodecStatus.LICENSE_POLICY;
+            case MediaDrm.ErrorCodes.ERROR_LICENSE_RELEASE:
+                return MediaCodecStatus.LICENSE_RELEASE;
+            case MediaDrm.ErrorCodes.ERROR_LICENSE_REQUEST_REJECTED:
+                return MediaCodecStatus.LICENSE_REQUEST_REJECTED;
+            case MediaDrm.ErrorCodes.ERROR_LICENSE_RESTORE:
+                return MediaCodecStatus.LICENSE_RESTORE;
+            case MediaDrm.ErrorCodes.ERROR_LICENSE_STATE:
+                return MediaCodecStatus.LICENSE_STATE;
+            case MediaDrm.ErrorCodes.ERROR_MEDIA_FRAMEWORK:
+                return MediaCodecStatus.MEDIA_FRAMEWORK;
+            case MediaDrm.ErrorCodes.ERROR_PROVISIONING_CERTIFICATE:
+                return MediaCodecStatus.PROVISIONING_CERTIFICATE;
+            case MediaDrm.ErrorCodes.ERROR_PROVISIONING_CONFIG:
+                return MediaCodecStatus.PROVISIONING_CONFIG;
+            case MediaDrm.ErrorCodes.ERROR_PROVISIONING_PARSE:
+                return MediaCodecStatus.PROVISIONING_PARSE;
+            case MediaDrm.ErrorCodes.ERROR_PROVISIONING_REQUEST_REJECTED:
+                return MediaCodecStatus.PROVISIONING_REQUEST_REJECTED;
+            case MediaDrm.ErrorCodes.ERROR_PROVISIONING_RETRY:
+                return MediaCodecStatus.PROVISIONING_RETRY;
+            case MediaDrm.ErrorCodes.ERROR_SECURE_STOP_RELEASE:
+                return MediaCodecStatus.SECURE_STOP_RELEASE;
+            case MediaDrm.ErrorCodes.ERROR_STORAGE_READ:
+                return MediaCodecStatus.STORAGE_READ;
+            case MediaDrm.ErrorCodes.ERROR_STORAGE_WRITE:
+                return MediaCodecStatus.STORAGE_WRITE;
+            case MediaDrm.ErrorCodes.ERROR_ZERO_SUBSAMPLES:
+                return MediaCodecStatus.ZERO_SUBSAMPLES;
+            default:
+                Log.e(TAG, "Unknown MediaDrm.ErrorCodes error: " + errorCode);
+                return MediaCodecStatus.UNKNOWN_MEDIADRM_EXCEPTION;
+        }
+    }
+
+    private static int convertCryptoException(MediaCodec.CryptoException e) {
+        return translateCryptoException(e.getErrorCode());
+    }
+
+    private static int convertCodecException(MediaCodec.CodecException e) {
+        // https://developer.android.com/reference/android/media/MediaCodec.CodecException
+        switch (e.getErrorCode()) {
+            case MediaCodec.CodecException.ERROR_INSUFFICIENT_RESOURCE:
+                return MediaCodecStatus.INSUFFICIENT_RESOURCE;
+            case MediaCodec.CodecException.ERROR_RECLAIMED:
+                return MediaCodecStatus.RECLAIMED;
+            default:
+                Log.e(TAG, "Unknown CodecException error: " + e.getErrorCode());
+                if (e.getErrorCode() < 0) {
+                    RecordHistogram.recordSparseHistogram(
+                            "Media.MediaCodecError.NegativeCodecExceptionErrorCode",
+                            e.getErrorCode());
+                }
+                return MediaCodecStatus.UNKNOWN_CODEC_EXCEPTION;
+        }
+    }
 
     private static class DequeueInputResult {
         private final int mStatus;
@@ -100,6 +198,42 @@ class MediaCodecBridge {
         @CalledByNative("DequeueInputResult")
         private int index() {
             return mIndex;
+        }
+    }
+
+    private static class ObtainBlockResult {
+        private MediaCodec.@Nullable LinearBlock mBlock;
+        private @Nullable ByteBuffer mBuffer;
+
+        private ObtainBlockResult(
+                MediaCodec.@Nullable LinearBlock block, @Nullable ByteBuffer buffer) {
+            mBlock = block;
+            mBuffer = buffer;
+            assert (mBlock == null && mBuffer == null) || (mBlock != null && mBuffer != null);
+        }
+
+        @CalledByNative("ObtainBlockResult")
+        private MediaCodec.@Nullable LinearBlock block() {
+            return mBlock;
+        }
+
+        @CalledByNative("ObtainBlockResult")
+        private @Nullable ByteBuffer buffer() {
+            return mBuffer;
+        }
+
+        @CalledByNative("ObtainBlockResult")
+        @SuppressLint("NewApi")
+        private void recycle() {
+            if (mBlock != null) {
+                try {
+                    mBlock.recycle();
+                } catch (IllegalStateException ise) {
+                    Log.e(TAG, "Failed to recyle LinearBlock: ", ise);
+                }
+                mBlock = null;
+                mBuffer = null;
+            }
         }
     }
 
@@ -197,20 +331,6 @@ class MediaCodecBridge {
         }
 
         @CalledByNative("MediaFormatWrapper")
-        private int stride() {
-            // Missing stride means a 16x16 resolution alignment is required. See configureVideo().
-            if (!mFormat.containsKey(MediaFormat.KEY_STRIDE)) return width();
-            return mFormat.getInteger(MediaFormat.KEY_STRIDE);
-        }
-
-        @CalledByNative("MediaFormatWrapper")
-        private int yPlaneHeight() {
-            // Missing stride means a 16x16 resolution alignment is required. See configureVideo().
-            if (!mFormat.containsKey(MediaFormat.KEY_SLICE_HEIGHT)) return height();
-            return mFormat.getInteger(MediaFormat.KEY_SLICE_HEIGHT);
-        }
-
-        @CalledByNative("MediaFormatWrapper")
         private int colorStandard() {
             if (!mFormat.containsKey(MediaFormat.KEY_COLOR_STANDARD)) return -1;
             return mFormat.getInteger(MediaFormat.KEY_COLOR_STANDARD);
@@ -232,45 +352,91 @@ class MediaCodecBridge {
     // Warning: This class may execute on an arbitrary thread for the lifetime
     // of the MediaCodec. The MediaCodecBridge methods it calls are synchronized
     // to avoid race conditions.
-    class MediaCodecCallback extends MediaCodec.Callback {
-        private MediaCodecBridge mMediaCodecBridge;
+    static class MediaCodecCallback extends MediaCodec.Callback {
+        private final WeakReference<MediaCodecBridge> mMediaCodecBridgeRef;
 
         MediaCodecCallback(MediaCodecBridge bridge) {
-            mMediaCodecBridge = bridge;
+            mMediaCodecBridgeRef = new WeakReference<>(bridge);
+        }
+
+        @Override
+        public void onCryptoError(MediaCodec codec, MediaCodec.CryptoException e) {
+            MediaCodecBridge bridge = mMediaCodecBridgeRef.get();
+            if (bridge == null) {
+                Log.d(TAG, "MediaCodecBridge was garbage collected, ignoring onCryptoError");
+                return;
+            }
+
+            Log.e(TAG, "MediaCodec.onCryptoError: %s", e.getMessage());
+            bridge.onError(convertCryptoException(e));
         }
 
         @Override
         public void onError(MediaCodec codec, MediaCodec.CodecException e) {
             // TODO(dalecurtis): We may want to drop transient errors here.
+            MediaCodecBridge bridge = mMediaCodecBridgeRef.get();
+            if (bridge == null) {
+                Log.d(TAG, "MediaCodecBridge was garbage collected, ignoring onError");
+                return;
+            }
+
             Log.e(TAG, "MediaCodec.onError: %s", e.getDiagnosticInfo());
-            mMediaCodecBridge.onError(e);
+            bridge.onError(convertCodecException(e));
         }
 
         @Override
         public void onInputBufferAvailable(MediaCodec codec, int index) {
-            mMediaCodecBridge.onInputBufferAvailable(index);
+            MediaCodecBridge bridge = mMediaCodecBridgeRef.get();
+            if (bridge == null) {
+                Log.d(
+                        TAG,
+                        "MediaCodecBridge was garbage collected, ignoring onInputBufferAvailable");
+                return;
+            }
+
+            bridge.onInputBufferAvailable(index);
         }
 
         @Override
         public void onOutputBufferAvailable(
                 MediaCodec codec, int index, MediaCodec.BufferInfo info) {
-            mMediaCodecBridge.onOutputBufferAvailable(index, info);
+            MediaCodecBridge bridge = mMediaCodecBridgeRef.get();
+            if (bridge == null) {
+                Log.d(
+                        TAG,
+                        "MediaCodecBridge was garbage collected, ignoring onOutputBufferAvailable");
+                return;
+            }
+
+            bridge.onOutputBufferAvailable(index, info);
         }
 
         @Override
         public void onOutputFormatChanged(MediaCodec codec, MediaFormat format) {
-            mMediaCodecBridge.onOutputFormatChanged(format);
+            MediaCodecBridge bridge = mMediaCodecBridgeRef.get();
+            if (bridge == null) {
+                Log.d(
+                        TAG,
+                        "MediaCodecBridge was garbage collected, ignoring onOutputFormatChanged");
+                return;
+            }
+
+            bridge.onOutputFormatChanged(format);
         }
     }
     ;
 
-    MediaCodecBridge(
-            MediaCodec mediaCodec, @BitrateAdjuster.Type int bitrateAdjuster, boolean useAsyncApi) {
+    MediaCodecBridge(MediaCodec mediaCodec, boolean useAsyncApi) {
         assert mediaCodec != null;
         mMediaCodec = mediaCodec;
-        mBitrateAdjuster = bitrateAdjuster;
-        mUseAsyncApi = useAsyncApi;
 
+        try {
+            mMediaCodecName = mediaCodec.getName();
+        } catch (IllegalStateException e) {
+            Log.e(TAG, "Cannot get codec name", e);
+        }
+
+        mUseAsyncApi = useAsyncApi;
         if (!mUseAsyncApi) return;
 
         enableAsyncApi();
@@ -279,9 +445,9 @@ class MediaCodecBridge {
 
     private void enableAsyncApi() {
         mPendingError = false;
-        mPendingFormat = new LinkedList<MediaFormatWrapper>();
-        mPendingInputBuffers = new LinkedList<DequeueInputResult>();
-        mPendingOutputBuffers = new LinkedList<DequeueOutputResult>();
+        mPendingFormat = new ArrayDeque<MediaFormatWrapper>();
+        mPendingInputBuffers = new ArrayDeque<DequeueInputResult>();
+        mPendingOutputBuffers = new ArrayDeque<DequeueOutputResult>();
         mMediaCodec.setCallback(new MediaCodecCallback(this), sCallbackHandler);
     }
 
@@ -310,13 +476,13 @@ class MediaCodecBridge {
 
     private synchronized void notifyBuffersAvailable() {
         if (mNativeMediaCodecBridge != 0) {
-            MediaCodecBridgeJni.get()
-                    .onBuffersAvailable(mNativeMediaCodecBridge, MediaCodecBridge.this);
+            MediaCodecBridgeJni.get().onBuffersAvailable(mNativeMediaCodecBridge);
         }
     }
 
-    public synchronized void onError(MediaCodec.CodecException e) {
+    public synchronized void onError(int errorCode) {
         mPendingError = true;
+        mPendingErrorCode = errorCode;
         mPendingInputBuffers.clear();
         mPendingOutputBuffers.clear();
         notifyBuffersAvailable();
@@ -367,9 +533,8 @@ class MediaCodecBridge {
             }
         }
         try {
-            String codecName = mMediaCodec.getName();
             // This logging is to help us identify hung MediaCodecs in crash reports.
-            Log.w(TAG, "Releasing: %s", codecName);
+            Log.w(TAG, "Releasing: %s", mMediaCodecName);
             mMediaCodec.release();
             Log.w(TAG, "Codec released");
         } catch (IllegalStateException e) {
@@ -377,7 +542,6 @@ class MediaCodecBridge {
             // the surface.
             Log.e(TAG, "Cannot release media codec", e);
         }
-        mMediaCodec = null;
     }
 
     // TODO(sanfin): Move this to constructor or builder.
@@ -389,7 +553,7 @@ class MediaCodecBridge {
                     if (mPendingError) return false;
 
                     class CompletePendingStartTask implements Runnable {
-                        private int mThisSequence;
+                        private final int mThisSequence;
 
                         CompletePendingStartTask(int sequence) {
                             mThisSequence = sequence;
@@ -413,11 +577,17 @@ class MediaCodecBridge {
             }
 
             mMediaCodec.start();
+        } catch (MediaCodec.CodecException e) {
+            Log.e(TAG, "Cannot start the media codec", e);
+            mPendingErrorCode = convertCodecException(e);
+            return false;
         } catch (IllegalStateException e) {
             Log.e(TAG, "Cannot start the media codec", e);
+            mPendingErrorCode = MediaCodecStatus.ILLEGAL_STATE;
             return false;
         } catch (IllegalArgumentException e) {
             Log.e(TAG, "Cannot start the media codec", e);
+            mPendingErrorCode = MediaCodecStatus.ERROR;
             return false;
         }
         return true;
@@ -427,7 +597,9 @@ class MediaCodecBridge {
     private DequeueInputResult dequeueInputBuffer(long timeoutUs) {
         if (mUseAsyncApi) {
             synchronized (this) {
-                if (mPendingError) return new DequeueInputResult(MediaCodecStatus.ERROR, -1);
+                if (mPendingError) {
+                    return new DequeueInputResult(mPendingErrorCode, -1);
+                }
                 if (mPendingStart || mPendingInputBuffers.isEmpty()) {
                     return new DequeueInputResult(MediaCodecStatus.TRY_AGAIN_LATER, -1);
                 }
@@ -448,10 +620,42 @@ class MediaCodecBridge {
                 Log.e(TAG, "Unexpected index_or_status: %d", indexOrStatus);
                 assert false;
             }
+        } catch (MediaCodec.CodecException e) {
+            Log.e(TAG, "Failed to dequeue input buffer", e);
+            status = convertCodecException(e);
         } catch (Exception e) {
             Log.e(TAG, "Failed to dequeue input buffer", e);
         }
         return new DequeueInputResult(status, index);
+    }
+
+    @CalledByNative
+    @SuppressLint("NewApi")
+    private ObtainBlockResult obtainBlock(int capacity) {
+        MediaCodec.LinearBlock block = null;
+        ByteBuffer buffer = null;
+        try {
+            if (mObtainBlockNames == null) {
+                mObtainBlockNames = new String[1];
+                mObtainBlockNames[0] = mMediaCodecName;
+            }
+            block = MediaCodec.LinearBlock.obtain(capacity < 16 ? 16 : capacity, mObtainBlockNames);
+            if (block != null) {
+                buffer = block.map();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to obtain LinearBlock", e);
+            if (block != null) {
+                assert buffer == null;
+                try {
+                    block.recycle();
+                } catch (IllegalStateException ise) {
+                    Log.e(TAG, "Failed to recyle LinearBlock after map failure: ", ise);
+                }
+                block = null;
+            }
+        }
+        return new ObtainBlockResult(block, buffer);
     }
 
     @CalledByNative
@@ -466,8 +670,13 @@ class MediaCodecBridge {
             // clears mPendingStart to start accepting new buffers.
             if (mUseAsyncApi) {
                 prepareAsyncApiForRestart();
-                if (!start()) return MediaCodecStatus.ERROR;
+                if (!start()) {
+                    return mPendingErrorCode;
+                }
             }
+        } catch (MediaCodec.CodecException e) {
+            Log.e(TAG, "Failed to flush MediaCodec", e);
+            return convertCodecException(e);
         } catch (Exception e) {
             Log.e(TAG, "Failed to flush MediaCodec", e);
             return MediaCodecStatus.ERROR;
@@ -489,17 +698,21 @@ class MediaCodecBridge {
 
     @CalledByNative
     private String getName() {
-        String codecName = "unknown";
-        try {
-            codecName = mMediaCodec.getName();
-        } catch (IllegalStateException e) {
-            Log.e(TAG, "Cannot get codec name", e);
-        }
-        return codecName;
+        return mMediaCodecName;
     }
 
     @CalledByNative
-    private MediaFormatWrapper getOutputFormat() {
+    private boolean isSoftwareCodec() {
+        try {
+            return MediaCodecUtil.isSoftwareCodec(mMediaCodec.getCodecInfo());
+        } catch (IllegalStateException e) {
+            Log.e(TAG, "Cannot get codec info", e);
+            return false;
+        }
+    }
+
+    @CalledByNative
+    private @Nullable MediaFormatWrapper getOutputFormat() {
         if (mUseAsyncApi && mCurrentFormat != null) return mCurrentFormat;
 
         try {
@@ -511,20 +724,9 @@ class MediaCodecBridge {
         return null;
     }
 
-    @CalledByNative
-    private MediaFormatWrapper getInputFormat() {
-        try {
-            MediaFormat format = mMediaCodec.getInputFormat();
-            if (format != null) return new MediaFormatWrapper(format);
-        } catch (IllegalStateException e) {
-            Log.e(TAG, "Failed to get input format", e);
-        }
-        return null;
-    }
-
     /** Returns null if MediaCodec throws IllegalStateException. */
     @CalledByNative
-    private ByteBuffer getInputBuffer(int index) {
+    private @Nullable ByteBuffer getInputBuffer(int index) {
         if (mUseAsyncApi) {
             synchronized (this) {
                 if (mPendingError) return null;
@@ -540,7 +742,7 @@ class MediaCodecBridge {
 
     /** Returns null if MediaCodec throws IllegalStateException. */
     @CalledByNative
-    protected ByteBuffer getOutputBuffer(int index) {
+    protected @Nullable ByteBuffer getOutputBuffer(int index) {
         try {
             return mMediaCodec.getOutputBuffer(index);
         } catch (IllegalStateException e) {
@@ -554,6 +756,12 @@ class MediaCodecBridge {
             int index, int offset, int size, long presentationTimeUs, int flags) {
         try {
             mMediaCodec.queueInputBuffer(index, offset, size, presentationTimeUs, flags);
+        } catch (MediaCodec.CodecException e) {
+            Log.e(TAG, "Failed to queue input buffer", e);
+            return convertCodecException(e);
+        } catch (MediaCodec.CryptoException e) {
+            Log.e(TAG, "Failed to queue input buffer", e);
+            return convertCryptoException(e);
         } catch (Exception e) {
             Log.e(TAG, "Failed to queue input buffer", e);
             return MediaCodecStatus.ERROR;
@@ -562,27 +770,96 @@ class MediaCodecBridge {
     }
 
     @CalledByNative
-    private void setVideoBitrate(int bps, int frameRate) {
-        int targetBps = BitrateAdjuster.getTargetBitrate(mBitrateAdjuster, bps, frameRate);
-        Bundle b = new Bundle();
-        b.putInt(MediaCodec.PARAMETER_KEY_VIDEO_BITRATE, targetBps);
+    @SuppressLint("NewApi")
+    private int queueInputBlock(
+            int index,
+            MediaCodec.LinearBlock block,
+            int offset,
+            int size,
+            long presentationTimeUs,
+            int flags) {
         try {
-            mMediaCodec.setParameters(b);
-        } catch (IllegalStateException e) {
-            Log.e(TAG, "Failed to set MediaCodec parameters", e);
+            MediaCodec.QueueRequest request = mMediaCodec.getQueueRequest(index);
+            request.setLinearBlock(block, offset, size);
+            request.setPresentationTimeUs(presentationTimeUs);
+            request.setFlags(flags);
+            request.queue();
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to queue input block", e);
+            return MediaCodecStatus.INPUT_SLOT_UNAVAILABLE;
         }
-        Log.v(TAG, "setVideoBitrate: input %dbps@%d, targetBps %d", bps, frameRate, targetBps);
+        return MediaCodecStatus.OK;
     }
 
+    private static final String QUEUE_SECURE_INPUT_BLOCK_ERR_MSG =
+            "Failed to queue secure input block: ";
+
     @CalledByNative
-    private void requestKeyFrameSoon() {
-        Bundle b = new Bundle();
-        b.putInt(MediaCodec.PARAMETER_KEY_REQUEST_SYNC_FRAME, 0);
+    @SuppressLint("NewApi")
+    private int queueSecureInputBlock(
+            int index,
+            MediaCodec.LinearBlock block,
+            int offset,
+            int size,
+            byte[] iv,
+            byte[] keyId,
+            int[] numBytesOfClearData,
+            int[] numBytesOfEncryptedData,
+            int numSubSamples,
+            int cipherMode,
+            int patternEncrypt,
+            int patternSkip,
+            long presentationTimeUs,
+            int flags) {
         try {
-            mMediaCodec.setParameters(b);
+            cipherMode = translateEncryptionSchemeValue(cipherMode);
+
+            var status = validateCryptoInfo(cipherMode, patternEncrypt, patternSkip);
+            if (status != MediaCodecStatus.OK) {
+                return status;
+            }
+
+            var cryptoInfo =
+                    generateCryptoInfo(
+                            iv,
+                            keyId,
+                            numBytesOfClearData,
+                            numBytesOfEncryptedData,
+                            numSubSamples,
+                            cipherMode,
+                            patternEncrypt,
+                            patternSkip);
+            assert cryptoInfo != null;
+
+            MediaCodec.QueueRequest request = mMediaCodec.getQueueRequest(index);
+            request.setEncryptedLinearBlock(block, offset, size, cryptoInfo);
+            request.setPresentationTimeUs(presentationTimeUs);
+            request.setFlags(flags);
+            request.queue();
+        } catch (MediaCodec.CryptoException e) {
+            if (e.getErrorCode() == MediaDrm.ErrorCodes.ERROR_NO_KEY) {
+                Log.d(TAG, QUEUE_SECURE_INPUT_BLOCK_ERR_MSG + "CryptoException.ERROR_NO_KEY");
+                return MediaCodecStatus.NO_KEY;
+            }
+            // Anything other than ERROR_NO_KEY is unexpected.
+            Log.e(TAG, QUEUE_SECURE_INPUT_BLOCK_ERR_MSG, e);
+            return convertCryptoException(e);
+        } catch (MediaCodec.CodecException e) {
+            Log.e(TAG, QUEUE_SECURE_INPUT_BLOCK_ERR_MSG, e.getDiagnosticInfo());
+            return convertCodecException(e);
+        } catch (IllegalArgumentException e) {
+            // IllegalArgumentException can occur when release() is called on the MediaCrypto
+            // object, but the MediaCodecBridge is unaware of the change.
+            Log.e(TAG, QUEUE_SECURE_INPUT_BLOCK_ERR_MSG, e);
+            return MediaCodecStatus.ERROR;
         } catch (IllegalStateException e) {
-            Log.e(TAG, "Failed to set MediaCodec parameters", e);
+            Log.e(TAG, QUEUE_SECURE_INPUT_BLOCK_ERR_MSG, e);
+            return MediaCodecStatus.ILLEGAL_STATE;
+        } catch (Exception e) {
+            Log.e(TAG, QUEUE_SECURE_INPUT_BLOCK_ERR_MSG, e);
+            return MediaCodecStatus.INPUT_SLOT_UNAVAILABLE;
         }
+        return MediaCodecStatus.OK;
     }
 
     // Incoming |native| values are as defined in media/base/encryption_scheme.h. Translated values
@@ -602,79 +879,37 @@ class MediaCodecBridge {
         }
     }
 
-    // |errorCode| is the error reported by MediaCodec.CryptoException
-    // (https://developer.android.com/reference/android/media/MediaCodec.CryptoException)
-    // Translated values are defined in media/base/android/media_codec_bridge.h.
-    // MediaCodec.CryptoException error codes were deprecated in API 31 (Android S) and replaced by
-    // MediaDrm error codes.
-    private int translateCryptoExceptionPreS(int errorCode) {
-        switch (errorCode) {
-            case MediaCodec.CryptoException.ERROR_NO_KEY:
-                return MediaCodecStatus.NO_KEY;
-            case MediaCodec.CryptoException.ERROR_KEY_EXPIRED:
-                return MediaCodecStatus.KEY_EXPIRED;
-            case MediaCodec.CryptoException.ERROR_RESOURCE_BUSY:
-                return MediaCodecStatus.RESOURCE_BUSY;
-            case MediaCodec.CryptoException.ERROR_INSUFFICIENT_OUTPUT_PROTECTION:
-                return MediaCodecStatus.INSUFFICIENT_OUTPUT_PROTECTION;
-            case MediaCodec.CryptoException.ERROR_SESSION_NOT_OPENED:
-                return MediaCodecStatus.SESSION_NOT_OPENED;
-            case MediaCodec.CryptoException.ERROR_UNSUPPORTED_OPERATION:
-                return MediaCodecStatus.UNSUPPORTED_OPERATION;
-            case 7: // ERROR_INSUFFICIENT_SECURITY, added in API 29
-                return MediaCodecStatus.INSUFFICIENT_SECURITY;
-            case 8: // ERROR_FRAME_TOO_LARGE, added in API 29
-                return MediaCodecStatus.FRAME_TOO_LARGE;
-            case 9: // ERROR_LOST_STATE, added in API 29
-                return MediaCodecStatus.LOST_STATE;
-            default:
-                Log.e(TAG, "Unknown CryptoException error code: " + errorCode);
-                return MediaCodecStatus.ERROR;
+    private int validateCryptoInfo(int cipherMode, int patternEncrypt, int patternSkip) {
+        if (cipherMode == MEDIA_CODEC_UNKNOWN_CIPHER_MODE) {
+            return MediaCodecStatus.UNKNOWN_CIPHER_MODE;
         }
+        if (cipherMode != MediaCodec.CRYPTO_MODE_AES_CBC
+                && patternEncrypt != 0
+                && patternSkip != 0) {
+            Log.e(TAG, "Pattern encryption only supported for 'cbcs' scheme (CBC mode).");
+            return MediaCodecStatus.PATTERN_ENCRYPTION_NOT_SUPPORTED;
+        }
+        return MediaCodecStatus.OK;
     }
 
-    // |errorCode| is the error reported by MediaCodec.CryptoException.
-    // As of API 31 (Android S) it returns MediaDrm.ErrorCodes
-    // (https://developer.android.com/reference/android/media/MediaDrm.ErrorCodes).
-    // Not all possible values are handled here, only the ones specified as being returned by
-    // getErrorCode
-    // (https://developer.android.com/reference/android/media/MediaCodec.CryptoException#getErrorCode())
-    // Translated values are defined in media/base/android/media_codec_bridge.h.
-    @RequiresApi(Build.VERSION_CODES.S)
-    private int translateCryptoExceptionPostS(int errorCode) {
-        switch (errorCode) {
-            case MediaDrm.ErrorCodes.ERROR_NO_KEY:
-                return MediaCodecStatus.NO_KEY;
-            case MediaDrm.ErrorCodes.ERROR_KEY_EXPIRED:
-                return MediaCodecStatus.KEY_EXPIRED;
-            case MediaDrm.ErrorCodes.ERROR_RESOURCE_BUSY:
-                return MediaCodecStatus.RESOURCE_BUSY;
-            case MediaDrm.ErrorCodes.ERROR_INSUFFICIENT_OUTPUT_PROTECTION:
-                return MediaCodecStatus.INSUFFICIENT_OUTPUT_PROTECTION;
-            case MediaDrm.ErrorCodes.ERROR_SESSION_NOT_OPENED:
-                return MediaCodecStatus.SESSION_NOT_OPENED;
-            case MediaDrm.ErrorCodes.ERROR_UNSUPPORTED_OPERATION:
-                return MediaCodecStatus.UNSUPPORTED_OPERATION;
-            case MediaDrm.ErrorCodes.ERROR_INSUFFICIENT_SECURITY:
-                return MediaCodecStatus.INSUFFICIENT_SECURITY;
-            case MediaDrm.ErrorCodes.ERROR_FRAME_TOO_LARGE:
-                return MediaCodecStatus.FRAME_TOO_LARGE;
-            case MediaDrm.ErrorCodes.ERROR_LOST_STATE:
-                return MediaCodecStatus.LOST_STATE;
-            case MediaDrm.ErrorCodes.ERROR_GENERIC_OEM:
-                return MediaCodecStatus.GENERIC_OEM;
-            case MediaDrm.ErrorCodes.ERROR_GENERIC_PLUGIN:
-                return MediaCodecStatus.GENERIC_PLUGIN;
-            case MediaDrm.ErrorCodes.ERROR_LICENSE_PARSE:
-                return MediaCodecStatus.LICENSE_PARSE;
-            case MediaDrm.ErrorCodes.ERROR_MEDIA_FRAMEWORK:
-                return MediaCodecStatus.MEDIA_FRAMEWORK;
-            case MediaDrm.ErrorCodes.ERROR_ZERO_SUBSAMPLES:
-                return MediaCodecStatus.ZERO_SUBSAMPLES;
-            default:
-                Log.e(TAG, "Unknown MediaDrm.ErrorCodes error: " + errorCode);
-                return MediaCodecStatus.ERROR;
+    private CryptoInfo generateCryptoInfo(
+            byte[] iv,
+            byte[] keyId,
+            int[] numBytesOfClearData,
+            int[] numBytesOfEncryptedData,
+            int numSubSamples,
+            int cipherMode,
+            int patternEncrypt,
+            int patternSkip) {
+        var cryptoInfo = new CryptoInfo();
+        cryptoInfo.set(
+                numSubSamples, numBytesOfClearData, numBytesOfEncryptedData, keyId, iv, cipherMode);
+        if (cipherMode == MediaCodec.CRYPTO_MODE_AES_CBC
+                && patternEncrypt != 0
+                && patternSkip != 0) {
+            cryptoInfo.setPattern(new CryptoInfo.Pattern(patternEncrypt, patternSkip));
         }
+        return cryptoInfo;
     }
 
     @SuppressLint("WrongConstant") // False positive on logging statement.
@@ -693,30 +928,26 @@ class MediaCodecBridge {
             long presentationTimeUs) {
         try {
             cipherMode = translateEncryptionSchemeValue(cipherMode);
-            if (cipherMode == MEDIA_CODEC_UNKNOWN_CIPHER_MODE) {
-                return MediaCodecStatus.UNKNOWN_CIPHER_MODE;
+
+            var status = validateCryptoInfo(cipherMode, patternEncrypt, patternSkip);
+            if (status != MediaCodecStatus.OK) {
+                return status;
             }
-            boolean usesCbcs = cipherMode == MediaCodec.CRYPTO_MODE_AES_CBC;
-            CryptoInfo cryptoInfo = new CryptoInfo();
-            cryptoInfo.set(
-                    numSubSamples,
-                    numBytesOfClearData,
-                    numBytesOfEncryptedData,
-                    keyId,
-                    iv,
-                    cipherMode);
-            if (patternEncrypt != 0 && patternSkip != 0) {
-                if (usesCbcs) {
-                    // Above platform check ensured that setting the pattern is indeed supported.
-                    MediaCodecUtil.setPatternIfSupported(cryptoInfo, patternEncrypt, patternSkip);
-                } else {
-                    Log.e(TAG, "Pattern encryption only supported for 'cbcs' scheme (CBC mode).");
-                    return MediaCodecStatus.PATTERN_ENCRYPTION_NOT_SUPPORTED;
-                }
-            }
+
+            var cryptoInfo =
+                    generateCryptoInfo(
+                            iv,
+                            keyId,
+                            numBytesOfClearData,
+                            numBytesOfEncryptedData,
+                            numSubSamples,
+                            cipherMode,
+                            patternEncrypt,
+                            patternSkip);
+            assert cryptoInfo != null;
             mMediaCodec.queueSecureInputBuffer(index, offset, cryptoInfo, presentationTimeUs, 0);
         } catch (MediaCodec.CryptoException e) {
-            if (e.getErrorCode() == MediaCodec.CryptoException.ERROR_NO_KEY) {
+            if (e.getErrorCode() == MediaDrm.ErrorCodes.ERROR_NO_KEY) {
                 Log.d(TAG, "Failed to queue secure input buffer: CryptoException.ERROR_NO_KEY");
                 return MediaCodecStatus.NO_KEY;
             }
@@ -725,13 +956,11 @@ class MediaCodecBridge {
                     TAG,
                     "Failed to queue secure input buffer, CryptoException.ErrorCode: "
                             + e.getErrorCode());
-            return (Build.VERSION.SDK_INT < Build.VERSION_CODES.S)
-                    ? translateCryptoExceptionPreS(e.getErrorCode())
-                    : translateCryptoExceptionPostS(e.getErrorCode());
+            return convertCryptoException(e);
         } catch (MediaCodec.CodecException e) {
             Log.e(TAG, "Failed to queue secure input buffer.", e);
             Log.e(TAG, "Diagnostic: %s", e.getDiagnosticInfo());
-            return MediaCodecStatus.ERROR;
+            return convertCodecException(e);
         } catch (IllegalArgumentException e) {
             // IllegalArgumentException can occur when release() is called on the MediaCrypto
             // object, but the MediaCodecBridge is unaware of the change.
@@ -739,13 +968,21 @@ class MediaCodecBridge {
             return MediaCodecStatus.ERROR;
         } catch (IllegalStateException e) {
             Log.e(TAG, "Failed to queue secure input buffer.", e);
-            return MediaCodecStatus.ERROR;
+            return MediaCodecStatus.ILLEGAL_STATE;
         }
         return MediaCodecStatus.OK;
     }
 
     @CalledByNative
     protected void releaseOutputBuffer(int index, boolean render) {
+        if (mUseAsyncApi) {
+            synchronized (this) {
+                if (mPendingError) {
+                    Log.e(TAG, "Skipping releaseOutputBuffer() due to codec errors.");
+                    return;
+                }
+            }
+        }
         try {
             mMediaCodec.releaseOutputBuffer(index, render);
         } catch (IllegalStateException e) {
@@ -760,7 +997,7 @@ class MediaCodecBridge {
         if (mUseAsyncApi) {
             synchronized (this) {
                 if (mPendingError) {
-                    return new DequeueOutputResult(MediaCodecStatus.ERROR, -1, 0, 0, 0, 0);
+                    return new DequeueOutputResult(mPendingErrorCode, -1, 0, 0, 0, 0);
                 }
                 if (mPendingOutputBuffers.isEmpty()) {
                     return new DequeueOutputResult(
@@ -780,7 +1017,6 @@ class MediaCodecBridge {
         int index = -1;
         try {
             int indexOrStatus = dequeueOutputBufferInternal(info, timeoutUs);
-
             if (indexOrStatus >= 0) { // index!
                 status = MediaCodecStatus.OK;
                 index = indexOrStatus;
@@ -795,7 +1031,7 @@ class MediaCodecBridge {
                 assert false;
             }
         } catch (IllegalStateException e) {
-            status = MediaCodecStatus.ERROR;
+            status = MediaCodecStatus.ILLEGAL_STATE;
             Log.e(TAG, "Failed to dequeue output buffer", e);
         }
 
@@ -807,59 +1043,32 @@ class MediaCodecBridge {
         return mMediaCodec.dequeueOutputBuffer(info, timeoutUs);
     }
 
-    private static int alignDown(int size, int alignment) {
-        return size & ~(alignment - 1);
-    }
-
-    boolean configureVideo(MediaFormat format, Surface surface, MediaCrypto crypto, int flags) {
+    @SuppressLint("NewApi")
+    boolean configureVideo(
+            MediaFormat format,
+            @Nullable Surface surface,
+            @Nullable MediaCrypto crypto,
+            int flags) {
         try {
+            if ((flags & MediaCodec.CONFIGURE_FLAG_USE_BLOCK_MODEL) != 0) {
+                format.removeKey(MediaFormat.KEY_MAX_INPUT_SIZE);
+            }
+
             mMediaCodec.configure(format, surface, crypto, flags);
 
             MediaFormat inputFormat = mMediaCodec.getInputFormat();
 
-            // This is always provided by MediaFormatBuilder, but we should see if the input
-            // format has the real value.
-            mMaxInputSize = format.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE);
-            if (flags != MediaCodec.CONFIGURE_FLAG_ENCODE) {
+            if ((flags & MediaCodec.CONFIGURE_FLAG_USE_BLOCK_MODEL) != 0) {
+                mMaxInputSize = Integer.MAX_VALUE;
+            } else {
+                // This is always provided by MediaFormatBuilder, but we should see if the input
+                // format has the real value.
+                mMaxInputSize = format.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE);
                 if (inputFormat.containsKey(MediaFormat.KEY_MAX_INPUT_SIZE)) {
                     mMaxInputSize = inputFormat.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE);
                 }
-                return true;
             }
 
-            // Non 16x16 aligned resolutions don't work well with the MediaCodec encoder
-            // unfortunately, see https://crbug.com/1084702 for details. It seems they
-            // only work when the stride and slice height information are provided.
-            boolean requireAlignedResolution =
-                    !inputFormat.containsKey(MediaFormat.KEY_STRIDE)
-                            || !inputFormat.containsKey(MediaFormat.KEY_SLICE_HEIGHT);
-
-            if (!requireAlignedResolution) return true;
-
-            int currentWidth = inputFormat.getInteger(MediaFormat.KEY_WIDTH);
-            int alignedWidth = alignDown(currentWidth, 16);
-
-            int currentHeight = inputFormat.getInteger(MediaFormat.KEY_HEIGHT);
-            int alignedHeight = alignDown(currentHeight, 16);
-
-            if (alignedHeight == 0 || alignedWidth == 0) {
-                Log.e(
-                        TAG,
-                        "MediaCodec requires 16x16 alignment, which is not possible for: "
-                                + currentWidth
-                                + "x"
-                                + currentHeight);
-                return false;
-            }
-
-            if (alignedWidth == currentWidth && alignedHeight == currentHeight) return true;
-
-            // We must reconfigure the MediaCodec now since setParameters() doesn't work
-            // consistently across devices and versions of Android.
-            mMediaCodec.reset();
-            format.setInteger(MediaFormat.KEY_WIDTH, alignedWidth);
-            format.setInteger(MediaFormat.KEY_HEIGHT, alignedHeight);
-            mMediaCodec.configure(format, surface, crypto, flags);
             return true;
         } catch (IllegalArgumentException e) {
             Log.e(TAG, "Cannot configure the video codec, wrong format or surface", e);
@@ -876,6 +1085,10 @@ class MediaCodecBridge {
     @CalledByNative
     private boolean setSurface(Surface surface) {
         try {
+            if (surface == null || !surface.isValid()) {
+                Log.e(TAG, "Refusing to set an invalid surface.");
+                return false;
+            }
             mMediaCodec.setOutputSurface(surface);
         } catch (IllegalArgumentException | IllegalStateException e) {
             Log.e(TAG, "Cannot set output surface", e);
@@ -901,24 +1114,6 @@ class MediaCodecBridge {
         return false;
     }
 
-    @SuppressWarnings("deprecation")
-    private int getAudioFormat(int channelCount) {
-        switch (channelCount) {
-            case 1:
-                return AudioFormat.CHANNEL_OUT_MONO;
-            case 2:
-                return AudioFormat.CHANNEL_OUT_STEREO;
-            case 4:
-                return AudioFormat.CHANNEL_OUT_QUAD;
-            case 6:
-                return AudioFormat.CHANNEL_OUT_5POINT1;
-            case 8:
-                return AudioFormat.CHANNEL_OUT_7POINT1_SURROUND;
-            default:
-                return AudioFormat.CHANNEL_OUT_DEFAULT;
-        }
-    }
-
     @CalledByNative
     private int getMaxInputSize() {
         return mMaxInputSize;
@@ -935,6 +1130,6 @@ class MediaCodecBridge {
 
     @NativeMethods
     interface Natives {
-        void onBuffersAvailable(long nativeMediaCodecBridge, MediaCodecBridge caller);
+        void onBuffersAvailable(long nativeMediaCodecBridge);
     }
 }

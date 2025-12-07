@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "components/filename_generation/filename_generation.h"
+
+#include <array>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -15,7 +13,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -42,10 +39,11 @@ base::FilePath GetLongNamePathInDirectory(
 
 }  // namespace
 
-static const struct {
+struct ExtensionTestCases {
   const base::FilePath::CharType* page_title;
   const base::FilePath::CharType* expected_name;
-} kExtensionTestCases[] = {
+};
+static const auto kExtensionTestCases = std::to_array<ExtensionTestCases>({
     // Extension is preserved if it is already proper for HTML.
     {FPL("filename.html"), FPL("filename.html")},
     {FPL("filename.HTML"), FPL("filename.HTML")},
@@ -59,7 +57,7 @@ static const struct {
     // ".htm" is added if the name doesn't have an extension.
     {FPL("helloworld"), FPL("helloworld") FPL_HTML_EXTENSION},
     {FPL("helloworld."), FPL("helloworld.") FPL_HTML_EXTENSION},
-};
+});
 
 // Crashing on Windows, see http://crbug.com/79365
 #if BUILDFLAG(IS_WIN)
@@ -85,36 +83,37 @@ TEST(FilenameGenerationTest, MAYBE_TestEnsureHtmlExtension) {
 #define MAYBE_TestEnsureMimeExtension TestEnsureMimeExtension
 #endif
 TEST(FilenameGenerationTest, MAYBE_TestEnsureMimeExtension) {
-  static const struct {
+  struct ExtensionTests {
     const base::FilePath::CharType* page_title;
     const base::FilePath::CharType* expected_name;
     const char* contents_mime_type;
-  } kExtensionTests[] = {
-    {FPL("filename.html"), FPL("filename.html"), "text/html"},
-    {FPL("filename.htm"), FPL("filename.htm"), "text/html"},
-    {FPL("filename.xhtml"), FPL("filename.xhtml"), "text/html"},
-#if BUILDFLAG(IS_WIN)
-    {FPL("filename"), FPL("filename.htm"), "text/html"},
-#else   // BUILDFLAG(IS_WIN)
-    {FPL("filename"), FPL("filename.html"), "text/html"},
-#endif  // BUILDFLAG(IS_WIN)
-    {FPL("filename.html"), FPL("filename.html"), "text/xml"},
-    {FPL("filename.xml"), FPL("filename.xml"), "text/xml"},
-    {FPL("filename"), FPL("filename.xml"), "text/xml"},
-    {FPL("filename.xhtml"), FPL("filename.xhtml"), "application/xhtml+xml"},
-    {FPL("filename.html"), FPL("filename.html"), "application/xhtml+xml"},
-    {FPL("filename"), FPL("filename.xhtml"), "application/xhtml+xml"},
-    {FPL("filename.txt"), FPL("filename.txt"), "text/plain"},
-    {FPL("filename"), FPL("filename.txt"), "text/plain"},
-    {FPL("filename.css"), FPL("filename.css"), "text/css"},
-    {FPL("filename"), FPL("filename.css"), "text/css"},
-    {FPL("filename.mhtml"), FPL("filename.mhtml"), "multipart/related"},
-    {FPL("filename.html"), FPL("filename.html.mhtml"), "multipart/related"},
-    {FPL("filename.txt"), FPL("filename.txt.mhtml"), "multipart/related"},
-    {FPL("filename"), FPL("filename.mhtml"), "multipart/related"},
-    {FPL("filename.abc"), FPL("filename.abc"), "unknown/unknown"},
-    {FPL("filename"), FPL("filename"), "unknown/unknown"},
   };
+  static const auto kExtensionTests = std::to_array<ExtensionTests>({
+      {FPL("filename.html"), FPL("filename.html"), "text/html"},
+      {FPL("filename.htm"), FPL("filename.htm"), "text/html"},
+      {FPL("filename.xhtml"), FPL("filename.xhtml"), "text/html"},
+#if BUILDFLAG(IS_WIN)
+      {FPL("filename"), FPL("filename.htm"), "text/html"},
+#else   // BUILDFLAG(IS_WIN)
+      {FPL("filename"), FPL("filename.html"), "text/html"},
+#endif  // BUILDFLAG(IS_WIN)
+      {FPL("filename.html"), FPL("filename.html"), "text/xml"},
+      {FPL("filename.xml"), FPL("filename.xml"), "text/xml"},
+      {FPL("filename"), FPL("filename.xml"), "text/xml"},
+      {FPL("filename.xhtml"), FPL("filename.xhtml"), "application/xhtml+xml"},
+      {FPL("filename.html"), FPL("filename.html"), "application/xhtml+xml"},
+      {FPL("filename"), FPL("filename.xhtml"), "application/xhtml+xml"},
+      {FPL("filename.txt"), FPL("filename.txt"), "text/plain"},
+      {FPL("filename"), FPL("filename.txt"), "text/plain"},
+      {FPL("filename.css"), FPL("filename.css"), "text/css"},
+      {FPL("filename"), FPL("filename.css"), "text/css"},
+      {FPL("filename.mhtml"), FPL("filename.mhtml"), "multipart/related"},
+      {FPL("filename.html"), FPL("filename.html.mhtml"), "multipart/related"},
+      {FPL("filename.txt"), FPL("filename.txt.mhtml"), "multipart/related"},
+      {FPL("filename"), FPL("filename.mhtml"), "multipart/related"},
+      {FPL("filename.abc"), FPL("filename.abc"), "unknown/unknown"},
+      {FPL("filename"), FPL("filename"), "unknown/unknown"},
+  });
   for (uint32_t i = 0; i < std::size(kExtensionTests); ++i) {
     base::FilePath original = base::FilePath(kExtensionTests[i].page_title);
     base::FilePath expected = base::FilePath(kExtensionTests[i].expected_name);
@@ -133,35 +132,37 @@ TEST(FilenameGenerationTest, MAYBE_TestEnsureMimeExtension) {
 // http://www.foo.com/a/path/name.txt will turn into file:
 // "http www.foo.com a path name.txt", when we want to save it as "name.txt".
 
-static const struct GenerateFilenameTestCase {
+struct GenerateFilenameTestCase {
   const char* page_url;
   const std::u16string page_title;
   const base::FilePath::CharType* expected_name;
   bool ensure_html_extension;
-} kGenerateFilenameCases[] = {
-    // Title overrides the URL.
-    {"http://foo.com", u"A page title", FPL("A page title") FPL_HTML_EXTENSION,
-     true},
-    // Extension is preserved.
-    {"http://foo.com", u"A page title with.ext", FPL("A page title with.ext"),
-     false},
-    // If the title matches the URL, use the last component of the URL.
-    {"http://foo.com/bar", u"foo.com/bar", FPL("bar"), false},
-    // A URL with escaped special characters, when title matches the URL.
-    {"http://foo.com/%40.txt", u"foo.com/%40.txt", FPL("@.txt"), false},
-    // A URL with unescaped special characters, when title matches the URL.
-    {"http://foo.com/@.txt", u"foo.com/@.txt", FPL("@.txt"), false},
-    // A URL with punycode in the host name, when title matches the URL.
-    {"http://xn--bcher-kva.com", u"bücher.com", FPL("bücher.com"), false},
-    // If the title matches the URL, but there is no "filename" component,
-    // use the domain.
-    {"http://foo.com", u"foo.com", FPL("foo.com"), false},
-    // Make sure fuzzy matching works.
-    {"http://foo.com/bar", u"foo.com/bar", FPL("bar"), false},
-    // A URL-like title that does not match the title is respected in full.
-    {"http://foo.com", u"http://www.foo.com/path/title.txt",
-     FPL("http___www.foo.com_path_title.txt"), false},
 };
+static const auto kGenerateFilenameCases =
+    std::to_array<GenerateFilenameTestCase>({
+        // Title overrides the URL.
+        {"http://foo.com", u"A page title",
+         FPL("A page title") FPL_HTML_EXTENSION, true},
+        // Extension is preserved.
+        {"http://foo.com", u"A page title with.ext",
+         FPL("A page title with.ext"), false},
+        // If the title matches the URL, use the last component of the URL.
+        {"http://foo.com/bar", u"foo.com/bar", FPL("bar"), false},
+        // A URL with escaped special characters, when title matches the URL.
+        {"http://foo.com/%40.txt", u"foo.com/%40.txt", FPL("@.txt"), false},
+        // A URL with unescaped special characters, when title matches the URL.
+        {"http://foo.com/@.txt", u"foo.com/@.txt", FPL("@.txt"), false},
+        // A URL with punycode in the host name, when title matches the URL.
+        {"http://xn--bcher-kva.com", u"bücher.com", FPL("bücher.com"), false},
+        // If the title matches the URL, but there is no "filename" component,
+        // use the domain.
+        {"http://foo.com", u"foo.com", FPL("foo.com"), false},
+        // Make sure fuzzy matching works.
+        {"http://foo.com/bar", u"foo.com/bar", FPL("bar"), false},
+        // A URL-like title that does not match the title is respected in full.
+        {"http://foo.com", u"http://www.foo.com/path/title.txt",
+         FPL("http___www.foo.com_path_title.txt"), false},
+    });
 
 // Crashing on Windows, see http://crbug.com/79365
 #if BUILDFLAG(IS_WIN)
@@ -194,7 +195,7 @@ TEST(FilenameGenerationTest, TestBasicTruncation) {
 
 // The file path will only be truncated o the platforms that have known
 // encoding. Otherwise no truncation will be performed.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
   // The file name length is truncated to max_length.
   EXPECT_TRUE(TruncateFilename(&truncated_path, max_length));
   EXPECT_EQ(size_t(max_length), truncated_path.BaseName().value().size());

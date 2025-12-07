@@ -1,0 +1,5 @@
+Tests that printing PDF to a tiny page returns error.
+{
+    code : -32602
+    message : invalid print parameters: content area is empty
+}

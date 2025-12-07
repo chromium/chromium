@@ -31,8 +31,8 @@ BackgroundTaskUpdateScheduler::BackgroundTaskUpdateScheduler() {
 BackgroundTaskUpdateScheduler::~BackgroundTaskUpdateScheduler() = default;
 
 void BackgroundTaskUpdateScheduler::Schedule(
-    const base::TimeDelta& initial_delay,
-    const base::TimeDelta& delay,
+    base::TimeDelta initial_delay,
+    base::TimeDelta delay,
     const UserTask& user_task,
     const OnStopTaskCallback& on_stop) {
   user_task_ = user_task;
@@ -48,9 +48,7 @@ void BackgroundTaskUpdateScheduler::Stop() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-void BackgroundTaskUpdateScheduler::OnStartTask(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+void BackgroundTaskUpdateScheduler::OnStartTask(JNIEnv* env) {
   // Component registration is async. Add some delay to give some time for the
   // registration.
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -60,9 +58,7 @@ void BackgroundTaskUpdateScheduler::OnStartTask(
       kOnStartTaskDelay);
 }
 
-void BackgroundTaskUpdateScheduler::OnStopTask(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+void BackgroundTaskUpdateScheduler::OnStopTask(JNIEnv* env) {
   DCHECK(on_stop_);
   on_stop_.Run();
 }
@@ -81,3 +77,5 @@ void BackgroundTaskUpdateScheduler::OnStartTaskDelayed() {
 }
 
 }  // namespace component_updater
+
+DEFINE_JNI(UpdateScheduler)

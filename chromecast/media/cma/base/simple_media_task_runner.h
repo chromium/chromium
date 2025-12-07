@@ -5,7 +5,7 @@
 #ifndef CHROMECAST_MEDIA_CMA_BASE_SIMPLE_MEDIA_TASK_RUNNER_H_
 #define CHROMECAST_MEDIA_CMA_BASE_SIMPLE_MEDIA_TASK_RUNNER_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "chromecast/media/cma/base/media_task_runner.h"
 
 namespace base {

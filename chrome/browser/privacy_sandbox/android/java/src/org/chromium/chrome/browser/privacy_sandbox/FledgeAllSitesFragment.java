@@ -8,33 +8,44 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.favicon.LargeIconBridge;
 
 import java.util.List;
 
 /** Fragment to display all the allowed Fledge sites. */
+@NullMarked
 public class FledgeAllSitesFragment extends PrivacySandboxSettingsBaseFragment
         implements Preference.OnPreferenceClickListener {
     private PreferenceScreen mPreferenceScreen;
-    private LargeIconBridge mLargeIconBridge;
+    private @Nullable LargeIconBridge mLargeIconBridge;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         super.onCreatePreferences(bundle, s);
-        getActivity().setTitle(R.string.settings_fledge_all_sites_sub_page_title);
+        mPageTitle.set(getString(R.string.settings_fledge_all_sites_sub_page_title));
         mPreferenceScreen = getPreferenceManager().createPreferenceScreen(getStyledContext());
         setPreferenceScreen(mPreferenceScreen);
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         // Disable animations of preference changes.
@@ -42,8 +53,8 @@ public class FledgeAllSitesFragment extends PrivacySandboxSettingsBaseFragment
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         getPrivacySandboxBridge().getFledgeJoiningEtldPlusOneForDisplay(this::populateSites);
     }
 
@@ -57,7 +68,7 @@ public class FledgeAllSitesFragment extends PrivacySandboxSettingsBaseFragment
     }
 
     @Override
-    public boolean onPreferenceClick(@NonNull Preference preference) {
+    public boolean onPreferenceClick(Preference preference) {
         if (preference instanceof FledgePreference) {
             getPrivacySandboxBridge()
                     .setFledgeJoiningAllowed(((FledgePreference) preference).getSite(), false);
@@ -99,4 +110,12 @@ public class FledgeAllSitesFragment extends PrivacySandboxSettingsBaseFragment
     private Context getStyledContext() {
         return getPreferenceManager().getContext();
     }
+
+    @Override
+    public @SettingsFragment.AnimationType int getAnimationType() {
+        return SettingsFragment.AnimationType.PROPERTY;
+    }
+
+    public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new ChromeBaseSearchIndexProvider(FledgeAllSitesFragment.class.getName(), 0);
 }

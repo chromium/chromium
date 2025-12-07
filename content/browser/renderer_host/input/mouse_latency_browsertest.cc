@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/test/test_timeouts.h"
 #include "base/test/values_test_util.h"
+#include "base/trace_event/trace_config.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_widget_host_factory.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
@@ -92,8 +93,7 @@ class TracingRenderWidgetHost : public RenderWidgetHostImpl {
                              std::move(site_instance_group),
                              routing_id,
                              hidden,
-                             renderer_initiated_creation,
-                             std::make_unique<FrameTokenMessageQueue>()) {}
+                             renderer_initiated_creation) {}
 
   void OnMouseEventAck(
       const input::MouseEventWithLatencyInfo& event,

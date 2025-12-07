@@ -18,6 +18,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
 
 namespace ash {
@@ -53,7 +54,7 @@ SwitchAccessMenuButton::SwitchAccessMenuButton(std::string action_name,
                        .SetText(label_text)
                        .SetTextContext(views::style::CONTEXT_BUTTON)
                        .SetAutoColorReadabilityEnabled(false)
-                       .SetEnabledColorId(kColorAshTextColorPrimary)
+                       .SetEnabledColor(kColorAshTextColorPrimary)
                        .SetMultiLine(true)
                        .SetMaximumWidth(kLabelMaxWidthDip))
       .BuildChildren();
@@ -85,13 +86,9 @@ SwitchAccessMenuButton::SwitchAccessMenuButton(std::string action_name,
   GetViewAccessibility().SetValue(action_name);
 }
 
-void SwitchAccessMenuButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  views::Button::GetAccessibleNodeData(node_data);
-}
-
 void SwitchAccessMenuButton::OnButtonPressed() {
-  NotifyAccessibilityEvent(ax::mojom::Event::kClicked,
-                           /*send_native_event=*/false);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kClicked,
+                                     /*send_native_event=*/false);
 }
 
 BEGIN_METADATA(SwitchAccessMenuButton)

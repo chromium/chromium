@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 // This file contains internal routines that are called by other files in
 // base/process/.
 
@@ -50,14 +55,16 @@ bool ReadProcFile(const FilePath& file, std::string* buffer);
 // a process, convert it to a pid_t.
 // Returns 0 on failure.
 // e.g. /proc/self/ will return 0, whereas /proc/1234 will return 1234.
-pid_t ProcDirSlotToPid(const char* d_name);
+pid_t ProcDirSlotToPid(std::string_view d_name);
 
-// Read |filename| in /proc/<pid>/, split the entries into key/value pairs, and
-// trim the key and value. On success, return true and write the trimmed
-// key/value pairs into |key_value_pairs|.
-bool ReadProcFileToTrimmedStringPairs(pid_t pid,
-                                      std::string_view filename,
-                                      StringPairs* key_value_pairs);
+// Read `filename` in /proc/<pid>/, split the entries into key/value pairs, and
+// trim the key and value. On success, writes the file contents into `buffer`
+// and returns the trimmed key/value pairs as views into that buffer. On
+// failure, returns nullopt (the buffer contents may or may not be changed).
+std::optional<StringViewPairs> ReadProcFileToTrimmedStringPairs(
+    pid_t pid,
+    std::string_view filename,
+    std::string* buffer);
 
 // Read /proc/<pid>/status and return the value for |field|, or 0 on failure.
 // Only works for fields in the form of "Field: value kB".
@@ -74,11 +81,11 @@ bool ReadProcStatusAndGetFieldAsUint64(pid_t pid,
 // and is non-empty.
 bool ReadProcStats(pid_t pid, std::string* buffer);
 
-// Takes |stats_data| and populates |proc_stats| with the values split by
-// spaces. Taking into account the 2nd field may, in itself, contain spaces.
-// Returns true if successful.
-bool ParseProcStats(const std::string& stats_data,
-                    std::vector<std::string>* proc_stats);
+// Takes `stats_data` and populates `proc_stats` with the values split by
+// spaces, as views into `stats_data`, taking into account the 2nd field may
+// itself contain spaces. Returns true if successful.
+bool ParseProcStats(std::string_view stats_data,
+                    std::vector<std::string_view>* proc_stats);
 
 // Fields from /proc/<pid>/stat, 0-based. See man 5 proc.
 // If the ordering ever changes, carefully review functions that use these
@@ -101,18 +108,18 @@ enum ProcStatsFields {
 // Reads the |field_num|th field from |proc_stats|. Returns 0 on failure.
 // This version does not handle the first 3 values, since the first value is
 // simply |pid|, and the next two values are strings.
-int64_t GetProcStatsFieldAsInt64(const std::vector<std::string>& proc_stats,
+int64_t GetProcStatsFieldAsInt64(base::span<std::string_view> proc_stats,
                                  ProcStatsFields field_num);
 
 // Reads the `field_num`th field from `proc_stats`. Asserts that `field_num` is
 // a valid index into `proc_stats`. Returns nullopt if the field doesn't contain
 // a valid integer.
 std::optional<int64_t> GetProcStatsFieldAsOptionalInt64(
-    base::span<const std::string> proc_stats,
+    base::span<std::string_view> proc_stats,
     ProcStatsFields field_num);
 
 // Same as GetProcStatsFieldAsInt64(), but for size_t values.
-size_t GetProcStatsFieldAsSizeT(const std::vector<std::string>& proc_stats,
+size_t GetProcStatsFieldAsSizeT(base::span<std::string_view> proc_stats,
                                 ProcStatsFields field_num);
 
 // Convenience wrappers around GetProcStatsFieldAsInt64(), ParseProcStats() and
@@ -123,8 +130,7 @@ int64_t ReadProcStatsAndGetFieldAsInt64(pid_t pid, ProcStatsFields field_num);
 int64_t ReadProcSelfStatsAndGetFieldAsInt64(ProcStatsFields field_num);
 
 // Same as ReadProcStatsAndGetFieldAsInt64() but for size_t values.
-size_t ReadProcStatsAndGetFieldAsSizeT(pid_t pid,
-                                       ProcStatsFields field_num);
+size_t ReadProcStatsAndGetFieldAsSizeT(pid_t pid, ProcStatsFields field_num);
 
 // Returns the time that the OS started. Clock ticks are relative to this.
 Time GetBootTime();
@@ -144,17 +150,21 @@ void ForEachProcessTask(base::ProcessHandle process, Lambda&& lambda) {
   FilePath fd_path = GetProcPidDir(process).Append("task");
 
   DirReaderPosix dir_reader(fd_path.value().c_str());
-  if (!dir_reader.IsValid())
+  if (!dir_reader.IsValid()) {
     return;
+  }
 
   for (; dir_reader.Next();) {
     const char* tid_str = dir_reader.name();
-    if (strcmp(tid_str, ".") == 0 || strcmp(tid_str, "..") == 0)
+    if (strcmp(tid_str, ".") == 0 || strcmp(tid_str, "..") == 0) {
       continue;
+    }
 
-    PlatformThreadId tid;
-    if (!StringToInt(tid_str, &tid))
+    PlatformThreadId::UnderlyingType tid_value;
+    if (!StringToInt(tid_str, &tid_value)) {
       continue;
+    }
+    PlatformThreadId tid(tid_value);
 
     FilePath task_path = fd_path.Append(tid_str);
     lambda(tid, task_path);

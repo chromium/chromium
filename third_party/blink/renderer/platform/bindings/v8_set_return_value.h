@@ -8,7 +8,6 @@
 #include <optional>
 #include <type_traits>
 
-#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
@@ -70,7 +69,7 @@ struct V8ReturnValue {
   }
   static v8::Local<v8::Object> GetReceiver(
       const v8::PropertyCallbackInfo<v8::Value>& info) {
-    return info.Holder();
+    return info.HolderV2();
   }
   // Helper function for ScriptWrappable
   template <FunctionCallbackInfoOrPropertyCallbackInfo CallbackInfo>
@@ -154,7 +153,7 @@ PLATFORM_EXPORT inline void V8SetReturnValue(
       info.GetReturnValue().Set(value == NamedPropertyDeleterResult::kDeleted);
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // nullptr
@@ -213,11 +212,10 @@ void V8SetReturnValue(const CallbackInfo& info, double value) {
 template <FunctionCallbackInfoOrPropertyCallbackInfo CallbackInfo,
           typename BlinkType,
           typename IdlType>
-inline typename std::enable_if_t<std::is_arithmetic<BlinkType>::value ||
-                                 std::is_enum<BlinkType>::value>
-V8SetReturnValue(const CallbackInfo& info,
-                 BlinkType value,
-                 V8ReturnValue::PrimitiveType<IdlType>) {
+  requires(std::is_arithmetic_v<BlinkType> || std::is_enum_v<BlinkType>)
+inline void V8SetReturnValue(const CallbackInfo& info,
+                             BlinkType value,
+                             V8ReturnValue::PrimitiveType<IdlType>) {
   V8SetReturnValue(info, IdlType(value));
 }
 
@@ -260,20 +258,6 @@ void V8SetReturnValue(const CallbackInfo& info,
 
 template <FunctionCallbackInfoOrPropertyCallbackInfo CallbackInfo>
 void V8SetReturnValue(const CallbackInfo& info,
-                      const WebString& string,
-                      v8::Isolate* isolate,
-                      V8ReturnValue::NonNullable) {
-  if (string.IsEmpty()) {
-    info.GetReturnValue().SetEmptyString();
-    return;
-  }
-  DCHECK(!string.IsNull());  // Null strings are empty.
-  V8PerIsolateData::From(isolate)->GetStringCache()->SetReturnValueFromString(
-      info.GetReturnValue(), static_cast<String>(string).Impl());
-}
-
-template <FunctionCallbackInfoOrPropertyCallbackInfo CallbackInfo>
-void V8SetReturnValue(const CallbackInfo& info,
                       const AtomicString& string,
                       v8::Isolate* isolate,
                       V8ReturnValue::Nullable) {
@@ -302,22 +286,6 @@ void V8SetReturnValue(const CallbackInfo& info,
   }
   V8PerIsolateData::From(isolate)->GetStringCache()->SetReturnValueFromString(
       info.GetReturnValue(), string.Impl());
-}
-
-template <FunctionCallbackInfoOrPropertyCallbackInfo CallbackInfo>
-void V8SetReturnValue(const CallbackInfo& info,
-                      const WebString& string,
-                      v8::Isolate* isolate,
-                      V8ReturnValue::Nullable) {
-  if (string.IsNull()) {
-    info.GetReturnValue().SetNull();
-    return;
-  } else if (string.IsEmpty()) {
-    info.GetReturnValue().SetEmptyString();
-    return;
-  }
-  V8PerIsolateData::From(isolate)->GetStringCache()->SetReturnValueFromString(
-      info.GetReturnValue(), static_cast<String>(string).Impl());
 }
 
 // ScriptWrappable
@@ -425,57 +393,21 @@ void V8SetReturnValue(const CallbackInfo& info,
   V8ReturnValue::SetWrapper(info, wrappable, context);
 }
 
-template <FunctionCallbackInfoOrPropertyCallbackInfo CallbackInfo>
-void V8SetReturnValue(const CallbackInfo& info,
-                      const ScriptWrappable& value,
-                      const ScriptWrappable* receiver,
-                      V8ReturnValue::MaybeCrossOrigin) {
-  ScriptWrappable* wrappable = const_cast<ScriptWrappable*>(&value);
-  if (DOMDataStore::SetReturnValueFast(info.GetReturnValue(), wrappable,
-                                       V8ReturnValue::GetReceiver(info),
-                                       receiver)) {
-    return;
-  }
-  // Check whether the creation context is available, and if not, use the
-  // current context. When a cross-origin Window is associated with a
-  // v8::Context::NewRemoteContext(), there is no creation context in the usual
-  // sense. It's ok to use the current context in that case because:
-  // 1) The Window objects must have their own creation context and must never
-  //    need a creation context to be specified.
-  // 2) Even though a v8::Context is not necessary in case
-  //    of Window objects, v8::Isolate and DOMWrapperWorld are still necessary
-  //    to create an appropriate wrapper object, and the ScriptState associated
-  //    with the current context will still have the correct v8::Isolate and
-  //    DOMWrapperWorld.
-  v8::Local<v8::Context> context;
-  if (!V8ReturnValue::GetReceiver(info)->GetCreationContext().ToLocal(
-          &context)) {
-    context = info.GetIsolate()->GetCurrentContext();
-  }
-  V8ReturnValue::SetWrapper(info, wrappable, context);
-}
-
+// This `current_context` variant is for static operations where there is no
+// receiver object.
 template <FunctionCallbackInfoOrPropertyCallbackInfo CallbackInfo>
 void V8SetReturnValue(const CallbackInfo& info,
                       const ScriptWrappable* value,
-                      v8::Local<v8::Context> creation_context) {
+                      v8::Local<v8::Context> current_context) {
   if (!value) [[unlikely]] {
     return info.GetReturnValue().SetNull();
   }
   ScriptWrappable* wrappable = const_cast<ScriptWrappable*>(value);
-  if (DOMDataStore::SetReturnValue(info.GetReturnValue(), wrappable))
+  if (DOMDataStore::SetReturnValue(info.GetReturnValue(), wrappable,
+                                   current_context)) {
     return;
-  V8ReturnValue::SetWrapper(info, wrappable, creation_context);
-}
-
-template <FunctionCallbackInfoOrPropertyCallbackInfo CallbackInfo>
-void V8SetReturnValue(const CallbackInfo& info,
-                      ScriptWrappable& value,
-                      v8::Local<v8::Context> creation_context) {
-  ScriptWrappable* wrappable = const_cast<ScriptWrappable*>(&value);
-  if (DOMDataStore::SetReturnValue(info.GetReturnValue(), wrappable))
-    return;
-  V8ReturnValue::SetWrapper(info, wrappable, creation_context);
+  }
+  V8ReturnValue::SetWrapper(info, wrappable, current_context);
 }
 
 // EnumerationBase
@@ -485,8 +417,7 @@ void V8SetReturnValue(const CallbackInfo& info,
                       const bindings::EnumerationBase& value,
                       v8::Isolate* isolate,
                       ExtraArgs... extra_args) {
-  V8PerIsolateData::From(isolate)->GetStringCache()->SetReturnValueFromString(
-      info.GetReturnValue(), value.AsString().Impl());
+  info.GetReturnValue().Set(V8AtomicString(isolate, value.AsCStr()));
 }
 
 // Nullable types
@@ -519,14 +450,14 @@ inline void V8SetReturnValue(const v8::PropertyCallbackInfo<v8::Value>& info,
                              const WrapperTypeInfo* wrapper_type_info,
                              V8ReturnValue::InterfaceObject) {
   info.GetReturnValue().Set(GetExposedInterfaceObject(
-      info.GetIsolate(), info.Holder(), wrapper_type_info));
+      info.GetIsolate(), info.HolderV2(), wrapper_type_info));
 }
 
 inline void V8SetReturnValue(const v8::PropertyCallbackInfo<v8::Value>& info,
                              const WrapperTypeInfo* wrapper_type_info,
                              V8ReturnValue::NamespaceObject) {
   info.GetReturnValue().Set(GetExposedNamespaceObject(
-      info.GetIsolate(), info.Holder(), wrapper_type_info));
+      info.GetIsolate(), info.HolderV2(), wrapper_type_info));
 }
 
 }  // namespace blink::bindings

@@ -13,7 +13,8 @@ import shutil
 import socket
 import subprocess
 
-import psutil
+# vpython-provided modules.
+import psutil  # pylint: disable=import-error
 
 PROD_DIR_ID = '#PROD_DIR#'
 CRD_ID = 'chrome-remote-desktop'  # Used in a few file/folder names

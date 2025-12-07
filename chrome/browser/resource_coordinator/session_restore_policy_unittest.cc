@@ -43,7 +43,7 @@ class TestDelegate : public SessionRestorePolicy::Delegate {
   TestDelegate(const TestDelegate&) = delete;
   TestDelegate& operator=(const TestDelegate&) = delete;
 
-  ~TestDelegate() override {}
+  ~TestDelegate() override = default;
 
   size_t GetNumberOfCores() const override { return number_of_cores_; }
   size_t GetFreeMemoryMiB() const override { return free_memory_mb_; }
@@ -112,7 +112,7 @@ class TestSessionRestorePolicy : public SessionRestorePolicy {
   TestSessionRestorePolicy(const TestSessionRestorePolicy&) = delete;
   TestSessionRestorePolicy& operator=(const TestSessionRestorePolicy&) = delete;
 
-  ~TestSessionRestorePolicy() override {}
+  ~TestSessionRestorePolicy() override = default;
 
   using RescoreTabCallback =
       base::RepeatingCallback<bool(content::WebContents*, TabData*)>;
@@ -148,7 +148,7 @@ class SessionRestorePolicyTest : public ChromeRenderViewHostTestHarness {
   SessionRestorePolicyTest(const SessionRestorePolicyTest&) = delete;
   SessionRestorePolicyTest& operator=(const SessionRestorePolicyTest&) = delete;
 
-  ~SessionRestorePolicyTest() override {}
+  ~SessionRestorePolicyTest() override = default;
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -235,7 +235,8 @@ class SessionRestorePolicyTest : public ChromeRenderViewHostTestHarness {
     policy_->max_tabs_to_restore_ = 30;
     policy_->mb_free_memory_per_tab_to_restore_ = 150;
     policy_->max_time_since_last_use_to_restore_ = base::Hours(6);
-    policy_->min_site_engagement_to_restore_ = 15;
+    policy_->min_site_engagement_to_restore_ =
+        SessionRestorePolicy::kMinSiteEngagementToRestore;
 
     // Ensure the simultaneous tab loads is properly calculated wrt the above
     // parameters.
@@ -252,8 +253,8 @@ class SessionRestorePolicyTest : public ChromeRenderViewHostTestHarness {
   void WaitForFinalTabScores() {
     base::RunLoop run_loop;
     EXPECT_CALL(mock_, NotifyTabScoreChanged(nullptr, 0.0))
-        .WillOnce(::testing::Invoke(
-            [&run_loop](content::WebContents*, float) { run_loop.Quit(); }));
+        .WillOnce(
+            [&run_loop](content::WebContents*, float) { run_loop.Quit(); });
     run_loop.Run();
   }
 
@@ -371,16 +372,16 @@ TEST_F(SessionRestorePolicyTest, ShouldLoadFeatureEnabled) {
 
   // Reset and impose a site engagement policy.
   policy_->SetTabLoadsStartedForTesting(0);
-  constexpr size_t kEngagementLimit = 15;
-  policy_->min_site_engagement_to_restore_ = kEngagementLimit;
-  policy_->UpdateSiteEngagementScoreForTesting(contents1_.get(),
-                                               kEngagementLimit + 1);
+  policy_->min_site_engagement_to_restore_ =
+      SessionRestorePolicy::kMinSiteEngagementToRestore;
+  policy_->UpdateSiteEngagementScoreForTesting(
+      contents1_.get(), SessionRestorePolicy::kMinSiteEngagementToRestore + 1);
   EXPECT_TRUE(policy_->ShouldLoad(contents1_.get()));
-  policy_->UpdateSiteEngagementScoreForTesting(contents1_.get(),
-                                               kEngagementLimit);
+  policy_->UpdateSiteEngagementScoreForTesting(
+      contents1_.get(), SessionRestorePolicy::kMinSiteEngagementToRestore);
   EXPECT_TRUE(policy_->ShouldLoad(contents1_.get()));
-  policy_->UpdateSiteEngagementScoreForTesting(contents1_.get(),
-                                               kEngagementLimit - 1);
+  policy_->UpdateSiteEngagementScoreForTesting(
+      contents1_.get(), SessionRestorePolicy::kMinSiteEngagementToRestore - 1);
   EXPECT_FALSE(policy_->ShouldLoad(contents1_.get()));
 }
 
@@ -428,16 +429,16 @@ TEST_F(SessionRestorePolicyTest, ShouldLoadBackgroundData) {
   policy_->mb_free_memory_per_tab_to_restore_ = 0;
   policy_->max_time_since_last_use_to_restore_ = base::TimeDelta();
 
-  constexpr size_t kEngagementLimit = 15;
-  policy_->min_site_engagement_to_restore_ = kEngagementLimit;
-  policy_->UpdateSiteEngagementScoreForTesting(contents1_.get(),
-                                               kEngagementLimit + 1);
+  policy_->min_site_engagement_to_restore_ =
+      SessionRestorePolicy::kMinSiteEngagementToRestore;
+  policy_->UpdateSiteEngagementScoreForTesting(
+      contents1_.get(), SessionRestorePolicy::kMinSiteEngagementToRestore + 1);
   EXPECT_TRUE(policy_->ShouldLoad(contents1_.get()));
-  policy_->UpdateSiteEngagementScoreForTesting(contents1_.get(),
-                                               kEngagementLimit);
+  policy_->UpdateSiteEngagementScoreForTesting(
+      contents1_.get(), SessionRestorePolicy::kMinSiteEngagementToRestore);
   EXPECT_TRUE(policy_->ShouldLoad(contents1_.get()));
-  policy_->UpdateSiteEngagementScoreForTesting(contents1_.get(),
-                                               kEngagementLimit - 1);
+  policy_->UpdateSiteEngagementScoreForTesting(
+      contents1_.get(), SessionRestorePolicy::kMinSiteEngagementToRestore - 1);
   EXPECT_FALSE(policy_->ShouldLoad(contents1_.get()));
 
   // Mark the tab as using background communication mechanisms, and expect the
@@ -624,24 +625,13 @@ TEST_F(SessionRestorePolicyTest, FeatureUsageSetUsedInBgBit) {
 
   // Indicates that |contents1_| might update its title while in background,
   // this should set the |used_in_bg_| bit.
-
-  base::RunLoop run_loop;
-  performance_manager::PerformanceManager::CallOnGraph(
-      FROM_HERE, base::BindOnce(
-                     [](base::WeakPtr<performance_manager::PageNode> page_node,
-                        base::OnceClosure closure) {
-                       EXPECT_TRUE(page_node);
-                       auto* impl =
-                           performance_manager::GetSiteDataImplForPageNode(
-                               page_node.get());
-                       EXPECT_TRUE(impl);
-                       impl->NotifyUpdatesTitleInBackground();
-                       std::move(closure).Run();
-                     },
-                     performance_manager::PerformanceManager::
-                         GetPrimaryPageNodeForWebContents(contents1_.get()),
-                     run_loop.QuitClosure()));
-  run_loop.Run();
+  base::WeakPtr<performance_manager::PageNode> page_node =
+      performance_manager::PerformanceManager::GetPrimaryPageNodeForWebContents(
+          contents1_.get());
+  EXPECT_TRUE(page_node);
+  auto* impl = performance_manager::GetSiteDataImplForPageNode(page_node.get());
+  EXPECT_TRUE(impl);
+  impl->NotifyUpdatesTitleInBackground();
 
   // Adding/Removing the tab for scoring will cause the callback to be called a
   // few times, ignore this.
@@ -672,27 +662,16 @@ TEST_F(SessionRestorePolicyTest, UnknownUsageSetUsedInBgBit) {
   CreatePolicy(true);
   WaitForFinalTabScores();
 
-  base::RunLoop run_loop;
-  performance_manager::PerformanceManager::CallOnGraph(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::WeakPtr<performance_manager::PageNode> page_node,
-             base::OnceClosure closure) {
-            EXPECT_TRUE(page_node);
-            auto* impl = performance_manager::GetSiteDataImplForPageNode(
-                page_node.get());
-            EXPECT_TRUE(impl);
-            performance_manager::SiteFeatureUsage title_feature_usage =
-                impl->UpdatesTitleInBackground();
-            EXPECT_EQ(
-                performance_manager::SiteFeatureUsage::kSiteFeatureUsageUnknown,
-                title_feature_usage);
-            std::move(closure).Run();
-          },
-          performance_manager::PerformanceManager::
-              GetPrimaryPageNodeForWebContents(contents.get()),
-          run_loop.QuitClosure()));
-  run_loop.Run();
+  base::WeakPtr<performance_manager::PageNode> page_node =
+      performance_manager::PerformanceManager::GetPrimaryPageNodeForWebContents(
+          contents.get());
+  EXPECT_TRUE(page_node);
+  auto* impl = performance_manager::GetSiteDataImplForPageNode(page_node.get());
+  EXPECT_TRUE(impl);
+  performance_manager::SiteFeatureUsage title_feature_usage =
+      impl->UpdatesTitleInBackground();
+  EXPECT_EQ(performance_manager::SiteFeatureUsage::kSiteFeatureUsageUnknown,
+            title_feature_usage);
 
   auto iter = policy_->tab_data_.find(contents.get());
   EXPECT_TRUE(iter != policy_->tab_data_.end());

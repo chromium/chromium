@@ -8,7 +8,6 @@ following aspects:
 - Code Structure
 - Additional Details
 - Embedding of the component
-- Differences between Chrome and WebLayer intent launching
 - Opportunities for code health improvements in the component
 
 Throughout this document we will be using Chrome's exercising of this component
@@ -196,32 +195,6 @@ the embedder-level object that holds a WebContents).
 
 There are two interfaces that the embedder must implement in order to embed the
 component: InterceptNavigationDelegateClient and ExternalNavigationDelegate.
-
-
-# Differences between Chrome and WebLayer Embedding
-
-In this section we highlight differences between the Chrome and WebLayer
-embeddings of this component, all of which are encapsulated in the
-implementations of the above-mentioned interfaces:
-
-- Chrome has significant logic for handling interactions with handling of
-  incoming intents (i.e., Chrome itself having been started via an intent).
-  WebLayer's production use cases do not support being launched via intents,
-  which simplifies WebLayer's implementations of
-  InterceptNavigationDelegateClient and ExternalNavigationDelegate.
-- WebLayer does not implement all of the integrations that Chrome does,
-  notably with Android Instant Apps and Google Authenticator.
-- WebLayer and Chrome Custom Tabs both have the notion of an
-  "externally-initiated navigation": WebLayer via its public API surface, and
-  CCT via an intent. However, as these mechanisms are different, the two
-  embedders have different means of achieving similar semantics for these
-  navigations: https://bugs.chromium.org/p/chromium/issues/detail?id=1087434.
-- Chrome and WebLayer have different mechanisms for getting the last user
-  interaction time, as documented here:
-  https://source.chromium.org/chromium/chromium/src/+/main:weblayer/browser/java/org/chromium/weblayer_private/InterceptNavigationDelegateClientImpl.java;l=71?q=InterceptNavigationDelegateClientImpl&ss=chromium&originalUrl=https:%2F%2Fcs.chromium.org%2F
-
-There are almost certainly further smaller differences, but those are the major
-highlights.
 
 # Opportunities for Code Health Improvements
 - For historical reasons, there is overlap between the

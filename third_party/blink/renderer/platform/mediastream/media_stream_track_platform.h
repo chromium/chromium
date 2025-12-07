@@ -16,8 +16,10 @@
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
 #include "third_party/blink/renderer/platform/audio/audio_frame_stats_accumulator.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 class WebMediaStreamAudioSink;
@@ -50,11 +52,10 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
     String group_id;
     FacingMode facing_mode = FacingMode::kNone;
     String resize_mode;
-    std::optional<bool> echo_cancellation;
+    std::optional<EchoCancellationMode> echo_cancellation;
     std::optional<bool> auto_gain_control;
     std::optional<bool> noise_supression;
     std::optional<bool> voice_isolation;
-    String echo_cancellation_type;
     int32_t sample_rate = -1;
     int32_t sample_size = -1;
     int32_t channel_count = -1;
@@ -65,6 +66,11 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
     std::optional<bool> logical_surface;
     std::optional<media::mojom::CursorCaptureType> cursor;
     std::optional<bool> suppress_local_audio_playback;
+    std::optional<bool> restrict_own_audio;
+
+    // Captured Surface Resolution API
+    std::optional<gfx::Size> physical_frame_size;
+    std::optional<float> device_scale_factor;
   };
 
   struct VideoFrameStats {
@@ -150,8 +156,7 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
 
   virtual VideoFrameStats GetVideoFrameStats() const {
     // This method is only callable on video tracks.
-    NOTREACHED_IN_MIGRATION();
-    return {};
+    NOTREACHED();
   }
 
   // Gets the audio frame stats if the platform is an audio track. This also
@@ -160,21 +165,22 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
   // consecutive but non-overlaping intervals.
   virtual void TransferAudioFrameStatsTo(AudioFrameStats& destination) {
     // This method is only callable on audio tracks.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   virtual CaptureHandle GetCaptureHandle();
 
-  // Adds a one off callback that will be invoked when observing the first frame
-  // where |metadata.sub_capture_target_version >= sub_capture_target_version|.
-  virtual void AddSubCaptureTargetVersionCallback(
-      uint32_t sub_capture_target_version,
-      base::OnceClosure callback) {}
+  // Adds a one off callback that will be invoked when either:
+  // - The first frame satisfying |metadata.capture_version >= capture_version|
+  //   is observed.
+  // - A message is received guaranteeing that all subsequent frames will
+  //   satisfy this property.
+  virtual void AddCaptureVersionCallback(media::CaptureVersion capture_version,
+                                         base::OnceClosure callback) {}
 
-  // Removes the callback that was associated with this
-  // |sub_capture_target_version|, if any.
-  virtual void RemoveSubCaptureTargetVersionCallback(
-      uint32_t sub_capture_target_version) {}
+  // Removes the callback that was associated with this |capture_version|.
+  virtual void RemoveCaptureVersionCallback(
+      media::CaptureVersion capture_version) {}
 
   bool is_local_track() const { return is_local_track_; }
 
@@ -184,9 +190,7 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
   // Add an audio sink to the track. This function must only be called for audio
   // tracks. It will trigger a OnSetFormat() call on the |sink| before the first
   // chunk of audio is delivered.
-  virtual void AddSink(WebMediaStreamAudioSink* sink) {
-    NOTREACHED_IN_MIGRATION();
-  }
+  virtual void AddSink(WebMediaStreamAudioSink* sink) { NOTREACHED(); }
   // Add a video sink to track. This function must only be called for video
   // tracks.  The |sink| will receive video track state changes on the main
   // render thread and video frames in the |callback| method on the IO-thread.
@@ -195,7 +199,7 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
                        const VideoCaptureDeliverFrameCB& callback,
                        MediaStreamVideoSink::IsSecure is_secure,
                        MediaStreamVideoSink::UsesAlpha uses_alpha) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
  private:

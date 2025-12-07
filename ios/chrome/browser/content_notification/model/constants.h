@@ -21,12 +21,4 @@ extern const char kFeedActivityKey[];
 // kContentNotificationsEnrollmentEligibility.
 extern const char kNewUserKey[];
 
-// User enrollment type for content notifications.
-extern const char kEnrollmentTypePromoEnabled[];
-extern const char kEnrollmentTypePromoRegistered[];
-extern const char kEnrollmentTypeProvisionalEnabled[];
-extern const char kEnrollmentTypeProvisionalRegistered[];
-extern const char kEnrollmentTypeSetUpListEnabled[];
-extern const char kEnrollmentTypeSetUpListRegistered[];
-
 #endif  // IOS_CHROME_BROWSER_CONTENT_NOTIFICATION_MODEL_CONSTANTS_H_

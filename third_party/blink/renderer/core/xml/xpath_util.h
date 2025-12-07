@@ -27,11 +27,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_XML_XPATH_UTIL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_XML_XPATH_UTIL_H_
 
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
 
 namespace blink {
 
@@ -44,7 +41,7 @@ bool IsRootDomNode(Node*);
 
 // @return the 'string-value' of the given node as specified by
 // http://www.w3.org/TR/xpath
-WTF::String StringValue(Node*);
+String StringValue(Node*);
 
 // @return whether the given node is a valid context node
 bool IsValidContextNode(Node*);

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "third_party/blink/renderer/core/animation/interpolable_scrollbar_color.h"
+#include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
@@ -26,9 +27,9 @@ std::optional<StyleColor> ColorFromKeyword(CSSValueID css_value_id) {
     return std::nullopt;
   }
 
-  Color color = StyleColor::ColorFromKeyword(css_value_id,
-                                             mojom::blink::ColorScheme::kLight,
-                                             /*color_provider=*/nullptr);
+  Color color = StyleColor::ColorFromKeyword(
+      css_value_id, mojom::blink::ColorScheme::kLight,
+      /*color_provider=*/nullptr, /*is_in_web_app_scope=*/false);
   return (StyleColor(color));
 }
 
@@ -48,13 +49,9 @@ std::optional<StyleColor> MaybeResolveColor(const CSSValue& value) {
 class CSSScrollbarColorNonInterpolableValue final
     : public NonInterpolableValue {
  public:
+  explicit CSSScrollbarColorNonInterpolableValue(bool has_value)
+      : has_value_(has_value) {}
   ~CSSScrollbarColorNonInterpolableValue() final = default;
-
-  static scoped_refptr<CSSScrollbarColorNonInterpolableValue> Create(
-      const StyleScrollbarColor* scrollbar_color) {
-    return base::AdoptRef(
-        new CSSScrollbarColorNonInterpolableValue(scrollbar_color));
-  }
 
   bool HasValue() const { return has_value_; }
 
@@ -69,9 +66,6 @@ class CSSScrollbarColorNonInterpolableValue final
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
-  explicit CSSScrollbarColorNonInterpolableValue(bool has_value)
-      : has_value_(has_value) {}
-
   bool has_value_;
 };
 
@@ -125,7 +119,8 @@ InterpolationValue CSSScrollbarColorInterpolationType::MaybeConvertInitial(
           .UsedScrollbarColor();
   return InterpolationValue(
       CreateScrollbarColorValue(initial_scrollbar_color),
-      CSSScrollbarColorNonInterpolableValue::Create(initial_scrollbar_color));
+      MakeGarbageCollected<CSSScrollbarColorNonInterpolableValue>(
+          initial_scrollbar_color));
 }
 
 InterpolationValue CSSScrollbarColorInterpolationType::MaybeConvertInherit(
@@ -147,12 +142,13 @@ InterpolationValue CSSScrollbarColorInterpolationType::MaybeConvertInherit(
 
   return InterpolationValue(
       CreateScrollbarColorValue(inherited_scrollbar_color),
-      CSSScrollbarColorNonInterpolableValue::Create(inherited_scrollbar_color));
+      MakeGarbageCollected<CSSScrollbarColorNonInterpolableValue>(
+          inherited_scrollbar_color));
 }
 
 InterpolationValue CSSScrollbarColorInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
   // https://drafts.csswg.org/css-scrollbars/#scrollbar-color
   // scrollbar-color: auto | <color>{2}
@@ -179,7 +175,8 @@ InterpolationValue CSSScrollbarColorInterpolationType::MaybeConvertValue(
 
   return InterpolationValue(
       InterpolableScrollbarColor::Create(*scrollbar_color),
-      CSSScrollbarColorNonInterpolableValue::Create(scrollbar_color));
+      MakeGarbageCollected<CSSScrollbarColorNonInterpolableValue>(
+          scrollbar_color));
 }
 
 PairwiseInterpolationValue
@@ -202,7 +199,7 @@ CSSScrollbarColorInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
     const ComputedStyle& style) const {
   return InterpolationValue(
       CreateScrollbarColorValue(style.UsedScrollbarColor()),
-      CSSScrollbarColorNonInterpolableValue::Create(
+      MakeGarbageCollected<CSSScrollbarColorNonInterpolableValue>(
           style.UsedScrollbarColor()));
 }
 
@@ -215,7 +212,7 @@ void CSSScrollbarColorInterpolationType::Composite(
            *underlying_value_owner.Value().non_interpolable_value)
            .IsCompatibleWith(To<CSSScrollbarColorNonInterpolableValue>(
                *value.non_interpolable_value))) {
-    underlying_value_owner.Set(*this, value);
+    underlying_value_owner.Set(this, value);
   }
 
   auto& underlying = To<InterpolableScrollbarColor>(

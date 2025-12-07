@@ -21,7 +21,7 @@ function testKeyPaths()
 {
     preamble();
 
-    transaction = evalAndLog("transaction = db.transaction('store', 'readwrite', {durability: 'relaxed'})");
+    transaction = evalAndLog("transaction = db.transaction('store', 'readwrite')");
     transaction.onabort = unexpectedAbortCallback;
     store = evalAndLog("store = transaction.objectStore('store')");
 

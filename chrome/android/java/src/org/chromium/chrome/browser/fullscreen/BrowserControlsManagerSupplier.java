@@ -4,25 +4,21 @@
 
 package org.chromium.chrome.browser.fullscreen;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.UnownedUserDataSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * A {@link UnownedUserDataSupplier} which manages the supplier and UnownedUserData for a
- * {@link BrowserControlsManager}.
- */
-public class BrowserControlsManagerSupplier
-        extends UnownedUserDataSupplier<BrowserControlsManager> {
-    private static final UnownedUserDataKey<BrowserControlsManagerSupplier> KEY =
-            new UnownedUserDataKey<BrowserControlsManagerSupplier>(
-                    BrowserControlsManagerSupplier.class);
+/** A class which manages the supplier and UnownedUserData for a {@link BrowserControlsManager}. */
+@NullMarked
+public class BrowserControlsManagerSupplier {
+    private static final UnownedUserDataKey<ObservableSupplier<BrowserControlsManager>> KEY =
+            new UnownedUserDataKey<>();
 
     /** Return {@link TabModelSelector} supplier associated with the given {@link WindowAndroid}. */
-    public static ObservableSupplier<BrowserControlsManager> from(
+    public static @Nullable ObservableSupplier<BrowserControlsManager> from(
             @Nullable WindowAndroid windowAndroid) {
         if (windowAndroid == null) return null;
         return KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
@@ -38,8 +34,19 @@ public class BrowserControlsManagerSupplier
         return supplier == null ? null : supplier.get();
     }
 
-    /** Constructs a BrowserControlsManagerSupplier and attaches it to the {@link WindowAndroid} */
-    public BrowserControlsManagerSupplier() {
-        super(KEY);
+    /**
+     * Attach to the specified host.
+     *
+     * @param host The host to attach the supplier to.
+     */
+    public static void attach(
+            UnownedUserDataHost host, ObservableSupplier<BrowserControlsManager> supplier) {
+        KEY.attachToHost(host, supplier);
     }
+
+    public static void destroy(ObservableSupplier<BrowserControlsManager> supplier) {
+        KEY.detachFromAllHosts(supplier);
+    }
+
+    private BrowserControlsManagerSupplier() {}
 }

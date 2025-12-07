@@ -9,9 +9,11 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/io_buffer.h"
@@ -57,7 +59,7 @@ class SocketBuffer {
   void Write(const char* data, size_t len) {
     DCHECK(data);
     DCHECK_GT(len, 0u);
-    data_.insert(data_.end(), data, data + len);
+    data_.insert(data_.end(), data, UNSAFE_TODO(data + len));
     if (!pending_read_callback_.is_null()) {
       int result = ReadInternal(pending_read_data_, pending_read_len_);
       pending_read_data_ = nullptr;
@@ -79,7 +81,7 @@ class SocketBuffer {
     DCHECK(data);
     DCHECK_GT(len, 0u);
     len = std::min(len, data_.size());
-    std::memcpy(data, data_.data(), len);
+    UNSAFE_TODO(std::memcpy(data, data_.data(), len));
     data_.erase(data_.begin(), data_.begin() + len);
     return len;
   }
@@ -98,7 +100,7 @@ class SocketBuffer {
   }
 
   std::vector<char> data_;
-  char* pending_read_data_;
+  raw_ptr<char> pending_read_data_;
   size_t pending_read_len_;
   net::CompletionOnceCallback pending_read_callback_;
   bool eos_ = false;
@@ -202,7 +204,7 @@ bool FakeStreamSocket::WasEverUsed() const {
 }
 
 net::NextProto FakeStreamSocket::GetNegotiatedProtocol() const {
-  return net::kProtoUnknown;
+  return net::NextProto::kProtoUnknown;
 }
 
 bool FakeStreamSocket::GetSSLInfo(net::SSLInfo* /* ssl_info */) {

@@ -1,0 +1,38 @@
+<!--
+@BLINK-ALLOW:details*
+@EXECUTE-AND-WAIT-FOR:switchReference()
+@EXECUTE-AND-WAIT-FOR:removeReference()
+@EXECUTE-AND-WAIT-FOR:restoreReference()
+-->
+<!DOCTYPE html>
+<html>
+  <body>
+    <main aria-details="id1"></main>
+    <!-- Different roles are used here to distinguish between the referenced elements in the expectations file -->
+    <p role="paragraph" id="id1">Paragraph</p>
+    <p role="article" id="id2">Article</p>
+    <script>
+      function switchReference() {
+        // Switch the IDs around. Now the relation points to the article.
+        document.querySelector("p[role=paragraph]").id = "id2";
+        document.querySelector("p[role=article]").id = "id1";
+        document.title = "switch-reference";
+        return "switch-reference";
+      }
+
+      function removeReference() {
+        // Remove the id on the relation target. Now the relation is empty.
+        document.querySelector("p[role=article]").removeAttribute('id');
+        document.title = "remove-reference";
+        return "remove-reference";
+      }
+
+      function restoreReference() {
+        // Restore the original relation pointing to the paragraph.
+        document.querySelector("p[role=paragraph]").id = "id1";
+        document.title = "restore-reference";
+        return "restore-reference";
+      }
+    </script>
+  </body>
+</html>

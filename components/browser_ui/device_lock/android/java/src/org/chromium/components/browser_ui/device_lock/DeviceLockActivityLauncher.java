@@ -6,34 +6,39 @@ package org.chromium.components.browser_ui.device_lock;
 
 import android.content.Context;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Allows for launching {@link DeviceLockActivity} in modularized code. */
+@NullMarked
 public interface DeviceLockActivityLauncher {
 
     /**
      * Enum representing the flow user took to arrive at the device lock UI that corresponds with
      * the right histogram name.
      */
-    @StringDef({Source.FIRST_RUN, Source.SYNC_CONSENT, Source.ACCOUNT_PICKER, Source.AUTOFILL})
+    // LINT.IfChange(DeviceLockSource)
+    @StringDef({Source.FIRST_RUN, Source.ACCOUNT_PICKER, Source.AUTOFILL, Source.FULLSCREEN_SIGNIN})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface Source {
+    @interface Source {
         String FIRST_RUN = "FirstRun";
-        String SYNC_CONSENT = "SyncConsent";
         String ACCOUNT_PICKER = "AccountPicker";
         String AUTOFILL = "Autofill";
+        String FULLSCREEN_SIGNIN = "FullscreenSignin";
     }
 
-    public static boolean isSignInFlow(@Source String source) {
+    // LINT.ThenChange(/tools/metrics/histograms/metadata/android/histograms.xml:DeviceLockSource)
+
+    static boolean isSignInFlow(@Source String source) {
         return source.equals(Source.FIRST_RUN)
-                || source.equals(Source.SYNC_CONSENT)
-                || source.equals(Source.ACCOUNT_PICKER);
+                || source.equals(Source.ACCOUNT_PICKER)
+                || source.equals(Source.FULLSCREEN_SIGNIN);
     }
 
     /**

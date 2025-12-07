@@ -18,8 +18,14 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
+OSSettingsSystemAppDelegate::OSSettingsSystemAppDelegate(Profile* profile)
+    : ash::SystemWebAppDelegate(ash::SystemWebAppType::SETTINGS,
+                                "OSSettings",
+                                GURL(chrome::kChromeUISettingsURL),
+                                profile) {}
+
 std::unique_ptr<web_app::WebAppInstallInfo>
-CreateWebAppInfoForOSSettingsSystemWebApp() {
+OSSettingsSystemAppDelegate::GetWebAppInfo() const {
   GURL start_url = GURL(chrome::kChromeUIOSSettingsURL);
   auto info =
       web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
@@ -43,17 +49,6 @@ CreateWebAppInfoForOSSettingsSystemWebApp() {
   return info;
 }
 
-OSSettingsSystemAppDelegate::OSSettingsSystemAppDelegate(Profile* profile)
-    : ash::SystemWebAppDelegate(ash::SystemWebAppType::SETTINGS,
-                                "OSSettings",
-                                GURL(chrome::kChromeUISettingsURL),
-                                profile) {}
-
-std::unique_ptr<web_app::WebAppInstallInfo>
-OSSettingsSystemAppDelegate::GetWebAppInfo() const {
-  return CreateWebAppInfoForOSSettingsSystemWebApp();
-}
-
 bool OSSettingsSystemAppDelegate::ShouldCaptureNavigations() const {
   return true;
 }
@@ -64,11 +59,7 @@ gfx::Size OSSettingsSystemAppDelegate::GetMinimumWindowSize() const {
 
 std::vector<std::string>
 OSSettingsSystemAppDelegate::GetAppIdsToUninstallAndReplace() const {
-  return {web_app::kSettingsAppId, ash::kInternalAppIdSettings};
-}
-
-bool OSSettingsSystemAppDelegate::PreferManifestBackgroundColor() const {
-  return true;
+  return {ash::kSettingsAppId, ash::kInternalAppIdSettings};
 }
 
 bool OSSettingsSystemAppDelegate::ShouldAnimateThemeChanges() const {

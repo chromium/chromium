@@ -11,7 +11,6 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
@@ -33,6 +32,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia_rep.h"
@@ -43,6 +43,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/table_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 namespace {
@@ -64,7 +65,7 @@ ScreenshotCapturedBubble::ScreenshotCapturedBubble(
       image_(image),
       web_contents_(web_contents->GetWeakPtr()),
       profile_(profile) {
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetTitle(IDS_BROWSER_SHARING_SCREENSHOT_POST_CAPTURE_TITLE);
 }
 
@@ -167,11 +168,12 @@ void ScreenshotCapturedBubble::Init() {
 /*static*/
 const std::u16string ScreenshotCapturedBubble::GetFilenameForURL(
     const GURL& url) {
-  if (!url.has_host() || url.HostIsIPAddress())
+  if (!url.has_host() || url.HostIsIPAddress()) {
     return u"chrome_screenshot.png";
+  }
 
   return base::ASCIIToUTF16(
-      base::StrCat({"chrome_screenshot_", url.host(), ".png"}));
+      base::StrCat({"chrome_screenshot_", url.GetHost(), ".png"}));
 }
 
 void ScreenshotCapturedBubble::DownloadButtonPressed() {
@@ -180,8 +182,9 @@ void ScreenshotCapturedBubble::DownloadButtonPressed() {
       image_view_->GetImage().GetRepresentation(1.0f).GetBitmap();
   const GURL data_url = GURL(webui::GetBitmapDataUrl(bitmap));
 
-  if (!web_contents_)
+  if (!web_contents_) {
     return;
+  }
 
   Browser* browser = chrome::FindBrowserWithTab(web_contents_.get());
   content::DownloadManager* download_manager =

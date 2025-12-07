@@ -14,6 +14,13 @@ function waitForNextFrame() {
   });
 }
 
+// Wait for event handler to be dispatched on a given target
+function waitForEvent(eventTarget, type) {
+  return new Promise(resolve => {
+    eventTarget.addEventListener(type, resolve, { once: true });
+  });
+}
+
 // creates div element, appends it to the document body and
 // removes the created element during test cleanup
 function createDiv(test, doc) {

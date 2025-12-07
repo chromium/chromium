@@ -55,7 +55,7 @@
 </div>
 
 <p><a href="https://quirks.spec.whatwg.org/#the-collapsing-table-quirk">The collapsing table quirk</a></p>
-<p class="error">Chrome Legacy/Edge/Safari ignore the quirk, FF does not. <b>Proposal: depreciate the quirk</b></p>
+<p class="error">Chrome Legacy/Edge/Safari ignore the quirk, FF does not. <b>Proposal: deprecate the quirk</b></p>
 <table style="border: 20px solid green" data-expected-height=40 data-expected-width=40></table>
 
 <p><a href="https://quirks.spec.whatwg.org/#the-table-cell-width-calculation-quirk">The table cell width calculation quirk</a></p>
@@ -72,5 +72,5 @@
   test(_ => {
     assert_equals(window.getComputedStyle(document.querySelector("#notitalic")).fontStyle, "normal");
   }, "decoration does not propagate into table");
-  checkLayout("table");
+  document.fonts.ready.then(() => checkLayout("table"));
 </script>

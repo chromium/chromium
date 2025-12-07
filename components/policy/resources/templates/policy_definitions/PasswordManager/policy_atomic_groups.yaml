@@ -6,3 +6,5 @@ PasswordManager:
   - PasswordManagerAllowShowPasswords
   - PasswordSharingEnabled
   - ThirdPartyPasswordManagersAllowed
+  - PasswordManagerPasskeysEnabled
+  - PasswordManagerBlocklist

@@ -13,7 +13,7 @@
 #include <optional>
 #include <utility>
 
-#include "base/containers/id_map.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/lru_cache.h"
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
@@ -22,7 +22,6 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "media/base/callback_registry.h"
 #include "media/base/cdm_context.h"
 #include "media/base/status.h"
@@ -35,7 +34,6 @@
 #include "media/gpu/vaapi/vaapi_status.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/hdr_metadata.h"
 
 namespace media {
@@ -255,8 +253,7 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   // libva vaDestroySurfaces(): "Surfaces can only be destroyed after all
   // contexts using these surfaces have been destroyed."
   // TODO(crbug.com/1040291): remove this keep-alive when using SharedImages.
-  base::IDMap<std::unique_ptr<ScopedVASurface>,
-              decltype(gfx::GpuMemoryBufferId::id)>
+  base::flat_map<base::UnguessableToken, std::unique_ptr<ScopedVASurface>>
       allocated_va_surfaces_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // We need to use a CdmContextRef so that we destruct
@@ -273,7 +270,7 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
 
   EncryptionScheme encryption_scheme_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // To keep the CdmContext event callback registered.
   std::unique_ptr<CallbackRegistration> cdm_event_cb_registration_
       GUARDED_BY_CONTEXT(sequence_checker_);

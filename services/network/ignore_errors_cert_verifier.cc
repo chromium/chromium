@@ -4,15 +4,15 @@
 
 #include "services/network/ignore_errors_cert_verifier.h"
 
+#include <algorithm>
 #include <iterator>
 #include <string_view>
 #include <utility>
 
 #include "base/base64.h"
 #include "base/memory/ref_counted.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
@@ -59,39 +59,20 @@ int IgnoreErrorsCertVerifier::Verify(const RequestParams& params,
                                      net::CompletionOnceCallback callback,
                                      std::unique_ptr<Request>* out_req,
                                      const net::NetLogWithSource& net_log) {
-  SPKIHashSet spki_fingerprints;
-  std::string_view cert_spki;
-  SHA256HashValue hash;
-  if (net::asn1::ExtractSPKIFromDERCert(
-          net::x509_util::CryptoBufferAsStringPiece(
-              params.certificate()->cert_buffer()),
-          &cert_spki)) {
-    crypto::SHA256HashString(cert_spki, &hash, sizeof(SHA256HashValue));
-    spki_fingerprints.insert(hash);
-  }
-  for (const auto& intermediate :
-       params.certificate()->intermediate_buffers()) {
+  std::vector<SHA256HashValue> public_key_hashes;
+  for (const auto& buffer : params.certificate()->cert_buffers()) {
+    std::string_view cert_spki;
     if (net::asn1::ExtractSPKIFromDERCert(
-            net::x509_util::CryptoBufferAsStringPiece(intermediate.get()),
+            net::x509_util::CryptoBufferAsStringPiece(buffer.get()),
             &cert_spki)) {
-      crypto::SHA256HashString(cert_spki, &hash, sizeof(SHA256HashValue));
-      spki_fingerprints.insert(hash);
+      public_key_hashes.push_back(crypto::hash::Sha256(cert_spki));
     }
   }
 
   // Intersect SPKI hashes from the chain with the allowlist.
-  auto allowlist_begin = allowlist_.begin();
-  auto allowlist_end = allowlist_.end();
-  auto fingerprints_begin = spki_fingerprints.begin();
-  auto fingerprints_end = spki_fingerprints.end();
   bool ignore_errors = false;
-  while (allowlist_begin != allowlist_end &&
-         fingerprints_begin != fingerprints_end) {
-    if (*allowlist_begin < *fingerprints_begin) {
-      ++allowlist_begin;
-    } else if (*fingerprints_begin < *allowlist_begin) {
-      ++fingerprints_begin;
-    } else {
+  for (const auto& spki : public_key_hashes) {
+    if (allowlist_.contains(spki)) {
       ignore_errors = true;
       break;
     }
@@ -100,9 +81,7 @@ int IgnoreErrorsCertVerifier::Verify(const RequestParams& params,
   if (ignore_errors) {
     verify_result->Reset();
     verify_result->verified_cert = params.certificate();
-    base::ranges::transform(
-        spki_fingerprints, std::back_inserter(verify_result->public_key_hashes),
-        [](const SHA256HashValue& v) { return HashValue(v); });
+    verify_result->public_key_hashes = std::move(public_key_hashes);
     if (!params.ocsp_response().empty()) {
       verify_result->ocsp_result.response_status =
           bssl::OCSPVerifyResult::PROVIDED;
@@ -114,6 +93,16 @@ int IgnoreErrorsCertVerifier::Verify(const RequestParams& params,
 
   return verifier_->Verify(params, verify_result, std::move(callback), out_req,
                            net_log);
+}
+
+void IgnoreErrorsCertVerifier::Verify2QwacBinding(
+    const std::string& binding,
+    const std::string& hostname,
+    const scoped_refptr<X509Certificate>& tls_cert,
+    base::OnceCallback<void(const scoped_refptr<X509Certificate>&)> callback,
+    const net::NetLogWithSource& net_log) {
+  verifier_->Verify2QwacBinding(binding, hostname, tls_cert,
+                                std::move(callback), net_log);
 }
 
 void IgnoreErrorsCertVerifier::SetConfig(const Config& config) {

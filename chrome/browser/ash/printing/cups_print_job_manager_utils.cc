@@ -5,15 +5,21 @@
 #include "chrome/browser/ash/printing/cups_print_job_manager_utils.h"
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/printing/cups_print_job.h"
 #include "chrome/browser/chromeos/printing/printer_error_codes.h"
+#include "components/device_event_log/device_event_log.h"
 #include "printing/backend/cups_jobs.h"
 #include "printing/printed_document.h"
 #include "printing/printer_status.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace ash {
 
@@ -26,7 +32,7 @@ using ::chromeos::PrinterErrorCodeFromPrinterStatusReasons;
 // acknowledged. CUPS has a timeout of ~25s.
 constexpr base::TimeDelta kMinElaspedPrintJobTimeout = base::Seconds(30);
 
-// Returns the equivalient CupsPrintJob#State from a CupsJob#JobState.
+// Returns the equivalent CupsPrintJob#State from a CupsJob#JobState.
 CupsPrintJob::State ConvertState(::printing::CupsJob::JobState state) {
   switch (state) {
     case ::printing::CupsJob::PENDING:
@@ -47,9 +53,54 @@ CupsPrintJob::State ConvertState(::printing::CupsJob::JobState state) {
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
+}
 
-  return CupsPrintJob::State::STATE_NONE;
+// Returns a string description of CUPS printer-state names
+std::string_view PrinterStateName(ipp_pstate_t state) {
+  switch (state) {
+    case IPP_PSTATE_IDLE:
+      return "idle";
+    case IPP_PSTATE_PROCESSING:
+      return "processing";
+    case IPP_PSTATE_STOPPED:
+      return "stopped";
+    default:
+      return "unknown";
+  }
+}
+
+// Returns a string description of CUPS job-state names
+std::string_view JobStateName(::printing::CupsJob::JobState state) {
+  switch (state) {
+    case ::printing::CupsJob::PENDING:
+      return "pending";
+    case ::printing::CupsJob::HELD:
+      return "held";
+    case ::printing::CupsJob::PROCESSING:
+      return "processing";
+    case ::printing::CupsJob::CANCELED:
+      return "canceled";
+    case ::printing::CupsJob::COMPLETED:
+      return "completed";
+    case ::printing::CupsJob::STOPPED:
+      return "stopped";
+    case ::printing::CupsJob::ABORTED:
+      return "aborted";
+    case ::printing::CupsJob::UNKNOWN:
+      return "unknown";
+  }
+
+  NOTREACHED();
+}
+
+std::string GetStateDescription(const ::printing::PrinterStatus& printer_status,
+                                const ::printing::CupsJob& job) {
+  return base::StringPrintf("job=%s[%s] printer=%s[%s]",
+                            JobStateName(job.state),
+                            base::JoinString(job.state_reasons, ";"),
+                            PrinterStateName(printer_status.state),
+                            printer_status.AllReasonsAsString());
 }
 
 // Update the current printed page.  Returns true of the page has been updated.
@@ -94,9 +145,28 @@ void UpdateProcessingJob(const ::printing::PrinterStatus& printer_status,
   }
 }
 
-void UpdateCompletedJob(const ::printing::CupsJob& job,
+void UpdateCompletedJob(const ::printing::PrinterStatus& printer_status,
+                        const ::printing::CupsJob& job,
                         CupsPrintJob* print_job) {
-  DCHECK_GE(job.current_pages, print_job->total_page_number());
+  if (job.ContainsStateReason(
+          ::printing::CupsJob::JobStateReason::kJobCanceledByUser) ||
+      job.ContainsStateReason(
+          ::printing::CupsJob::JobStateReason::kJobCanceledByOperator) ||
+      job.ContainsStateReason(
+          ::printing::CupsJob::JobStateReason::kJobCanceledAtDevice)) {
+    print_job->set_error_code(
+        PrinterErrorCodeFromPrinterStatusReasons(printer_status));
+    print_job->set_state(CupsPrintJob::State::STATE_CANCELLED);
+    return;
+  }
+
+  if (job.current_pages < print_job->total_page_number() &&
+      !job.ContainsStateReason(
+          ::printing::CupsJob::JobStateReason::kJobCompletedSuccessfully)) {
+    PRINTER_LOG(ERROR) << base::StringPrintf(
+        "%s: job %d finished without completing all pages: %s", job.printer_id,
+        job.id, job.state_message);
+  }
   print_job->set_error_code(PrinterErrorCode::NO_ERROR);
   print_job->set_state(CupsPrintJob::State::STATE_DOCUMENT_DONE);
 }
@@ -130,6 +200,8 @@ void UpdateHeldJob(const ::printing::CupsJob& job, CupsPrintJob* print_job) {
 bool UpdatePrintJob(const ::printing::PrinterStatus& printer_status,
                     const ::printing::CupsJob& job,
                     CupsPrintJob* print_job) {
+  static absl::flat_hash_map<int, std::string> old_status;
+
   DCHECK_EQ(job.id, print_job->job_id());
 
   CupsPrintJob::State old_state = print_job->state();
@@ -140,7 +212,7 @@ bool UpdatePrintJob(const ::printing::PrinterStatus& printer_status,
       UpdateProcessingJob(printer_status, job, print_job, &pages_updated);
       break;
     case ::printing::CupsJob::COMPLETED:
-      UpdateCompletedJob(job, print_job);
+      UpdateCompletedJob(printer_status, job, print_job);
       break;
     case ::printing::CupsJob::STOPPED:
       UpdateStoppedJob(job, print_job);
@@ -158,7 +230,41 @@ bool UpdatePrintJob(const ::printing::PrinterStatus& printer_status,
       break;
   }
 
-  return print_job->state() != old_state || pages_updated;
+  // If the status has changed since the last time the job was polled, log the
+  // new status.  The printer-state-reasons and job-state-reasons can change
+  // even if the job-state doesn't change, so this is based on matching the
+  // previous status message instead of looking at just the state.
+  bool updated = print_job->state() != old_state || pages_updated;
+  if (!base::Contains(old_status, job.id)) {
+    PRINTER_LOG(EVENT) << base::StringPrintf(
+        "%s: job %d created with total_pages: %d, title: %s", job.printer_id,
+        job.id, print_job->total_page_number(), print_job->document_title());
+  }
+  std::string status = base::StringPrintf(
+      "%s: job %d changed to page %d/%d with state: %s", job.printer_id, job.id,
+      print_job->printed_page_number(), print_job->total_page_number(),
+      GetStateDescription(printer_status, job));
+  if (status != old_status[job.id]) {
+    if (updated) {
+      PRINTER_LOG(EVENT) << status;
+    } else {
+      PRINTER_LOG(DEBUG) << status;
+    }
+    old_status[job.id] = status;
+  }
+  if (job.state == ::printing::CupsJob::COMPLETED ||
+      job.state == ::printing::CupsJob::CANCELED ||
+      job.state == ::printing::CupsJob::ABORTED) {
+    PRINTER_LOG(EVENT) << base::StringPrintf(
+        "%s: job %d finished in final state: %s", job.printer_id, job.id,
+        JobStateName(job.state));
+
+    // No need to save statuses for terminal states, since no more updates are
+    // expected.
+    old_status.erase(job.id);
+  }
+
+  return updated;
 }
 
 int CalculatePrintJobTotalPages(const ::printing::PrintedDocument* document) {

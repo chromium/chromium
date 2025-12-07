@@ -15,12 +15,11 @@ namespace mojo {
 template <>
 struct COMPONENT_EXPORT(MOJO_BASE_TRAITS)
     EnumTraits<mojo_base::mojom::MemoryPressureLevel,
-               base::MemoryPressureListener::MemoryPressureLevel> {
+               base::MemoryPressureLevel> {
   static mojo_base::mojom::MemoryPressureLevel ToMojom(
-      base::MemoryPressureListener::MemoryPressureLevel input);
-  static bool FromMojom(
-      mojo_base::mojom::MemoryPressureLevel input,
-      base::MemoryPressureListener::MemoryPressureLevel* output);
+      base::MemoryPressureLevel input);
+  static bool FromMojom(mojo_base::mojom::MemoryPressureLevel input,
+                        base::MemoryPressureLevel* output);
 };
 
 }  // namespace mojo

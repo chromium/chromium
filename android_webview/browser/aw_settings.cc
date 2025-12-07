@@ -35,6 +35,7 @@
 #include "content/public/browser/renderer_preferences_util.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "net/http/http_util.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/common/features.h"
@@ -49,7 +50,7 @@
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using blink::web_pref::WebPreferences;
 
@@ -103,10 +104,9 @@ class AwSettingsUserData : public base::SupportsUserData::Data {
 };
 
 AwSettings::AwSettings(JNIEnv* env,
-                       jobject obj,
+                       const jni_zero::JavaRef<jobject>& obj,
                        content::WebContents* web_contents)
     : WebContentsObserver(web_contents),
-      xrw_allowlist_matcher_(base::MakeRefCounted<AwContentsOriginMatcher>()),
       aw_settings_(env, obj) {
   web_contents->SetUserData(kAwSettingsUserDataKey,
                             std::make_unique<AwSettingsUserData>(this));
@@ -153,7 +153,7 @@ bool AwSettings::IsBackForwardCacheEnabled() {
   return bfcache_enabled_in_java_settings_;
 }
 
-void AwSettings::Destroy(JNIEnv* env, const JavaParamRef<jobject>& obj) {
+void AwSettings::Destroy(JNIEnv* env, const JavaRef<jobject>& obj) {
   delete this;
 }
 
@@ -166,38 +166,17 @@ bool AwSettings::GetAllowSniffingFileUrls() {
   return Java_AwSettings_getAllowSniffingFileUrls(env);
 }
 
-AwSettings::RequestedWithHeaderMode
-AwSettings::GetDefaultRequestedWithHeaderMode() {
-  // If the control feature is not enabled, the default is the old behavior,
-  // which is to send the app package name.
-  if (!base::FeatureList::IsEnabled(
-          features::kWebViewXRequestedWithHeaderControl))
-    return AwSettings::RequestedWithHeaderMode::APP_PACKAGE_NAME;
-
-  int configuredValue = features::kWebViewXRequestedWithHeaderMode.Get();
-  switch (configuredValue) {
-    case AwSettings::RequestedWithHeaderMode::CONSTANT_WEBVIEW:
-      return AwSettings::RequestedWithHeaderMode::CONSTANT_WEBVIEW;
-    case AwSettings::RequestedWithHeaderMode::NO_HEADER:
-      return AwSettings::RequestedWithHeaderMode::NO_HEADER;
-    default:
-      // If the field trial config is broken for some reason, use the
-      // package name.
-      return AwSettings::RequestedWithHeaderMode::APP_PACKAGE_NAME;
-  }
-}
-
 AwRenderViewHostExt* AwSettings::GetAwRenderViewHostExt() {
   if (!web_contents())
-    return NULL;
+    return nullptr;
   AwContents* contents = AwContents::FromWebContents(web_contents());
   if (!contents)
-    return NULL;
+    return nullptr;
   return contents->render_view_host_ext();
 }
 
 void AwSettings::ResetScrollAndScaleState(JNIEnv* env,
-                                          const JavaParamRef<jobject>& obj) {
+                                          const JavaRef<jobject>& obj) {
   AwRenderViewHostExt* rvhe = GetAwRenderViewHostExt();
   if (!rvhe)
     return;
@@ -215,7 +194,7 @@ void AwSettings::UpdateEverything() {
 }
 
 void AwSettings::UpdateEverythingLocked(JNIEnv* env,
-                                        const JavaParamRef<jobject>& obj) {
+                                        const JavaRef<jobject>& obj) {
   base::AutoReset<bool> auto_reset(&in_update_everything_locked_, true);
   UpdateInitialPageScaleLocked(env, obj);
   UpdateWebkitPreferencesLocked(env, obj);
@@ -231,11 +210,12 @@ void AwSettings::UpdateEverythingLocked(JNIEnv* env,
   UpdateAttributionBehaviorLocked(env, obj);
   UpdateSpeculativeLoadingAllowedLocked(env, obj);
   UpdateBackForwardCacheEnabledLocked(env, obj);
+  UpdateBackForwardCacheSettingsLocked(env, obj);
   UpdateGeolocationEnabledLocked(env, obj);
 }
 
 void AwSettings::UpdateUserAgentLocked(JNIEnv* env,
-                                       const JavaParamRef<jobject>& obj) {
+                                       const JavaRef<jobject>& obj) {
   if (!web_contents())
     return;
 
@@ -296,9 +276,8 @@ void AwSettings::UpdateUserAgentLocked(JNIEnv* env,
     controller.GetEntryAtIndex(i)->SetIsOverridingUserAgent(ua_overidden);
 }
 
-void AwSettings::UpdateWebkitPreferencesLocked(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+void AwSettings::UpdateWebkitPreferencesLocked(JNIEnv* env,
+                                               const JavaRef<jobject>& obj) {
   if (!web_contents())
     return;
   AwRenderViewHostExt* render_view_host_ext = GetAwRenderViewHostExt();
@@ -308,9 +287,8 @@ void AwSettings::UpdateWebkitPreferencesLocked(
   web_contents()->OnWebPreferencesChanged();
 }
 
-void AwSettings::UpdateInitialPageScaleLocked(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+void AwSettings::UpdateInitialPageScaleLocked(JNIEnv* env,
+                                              const JavaRef<jobject>& obj) {
   AwRenderViewHostExt* rvhe = GetAwRenderViewHostExt();
   if (!rvhe)
     return;
@@ -321,14 +299,15 @@ void AwSettings::UpdateInitialPageScaleLocked(
     rvhe->SetInitialPageScale(-1);
   } else {
     float dip_scale =
-        static_cast<float>(Java_AwSettings_getDIPScaleLocked(env, obj));
+        static_cast<float>(Java_AwSettings_getDipScaleLocked(env, obj));
     rvhe->SetInitialPageScale(initial_page_scale_percent / dip_scale / 100.0f);
+    initial_page_scale_is_non_default_ = true;
   }
 }
 
 void AwSettings::UpdateWillSuppressErrorStateLocked(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+    const JavaRef<jobject>& obj) {
   AwRenderViewHostExt* rvhe = GetAwRenderViewHostExt();
   if (!rvhe)
     return;
@@ -337,9 +316,8 @@ void AwSettings::UpdateWillSuppressErrorStateLocked(
   rvhe->SetWillSuppressErrorPage(suppress);
 }
 
-void AwSettings::UpdateRendererPreferencesLocked(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+void AwSettings::UpdateRendererPreferencesLocked(JNIEnv* env,
+                                                 const JavaRef<jobject>& obj) {
   if (!web_contents())
     return;
 
@@ -358,6 +336,11 @@ void AwSettings::UpdateRendererPreferencesLocked(
     update_prefs = true;
   }
 
+  if (!prefs->uses_platform_autofill) {
+    prefs->uses_platform_autofill = true;
+    update_prefs = true;
+  }
+
   if (update_prefs)
     web_contents()->SyncRendererPrefs();
 
@@ -370,13 +353,17 @@ void AwSettings::UpdateRendererPreferencesLocked(
         aw_browser_context->GetDefaultStoragePartition();
     std::string expanded_language_list =
         net::HttpUtil::ExpandLanguageList(prefs->accept_languages);
+    std::string accept_language_header =
+        net::HttpUtil::GenerateAcceptLanguageHeader(expanded_language_list);
     storage_partition->GetNetworkContext()->SetAcceptLanguage(
-        net::HttpUtil::GenerateAcceptLanguageHeader(expanded_language_list));
+        accept_language_header);
+    aw_browser_context->UpdatePrefetchServiceDelegateAcceptLanguageHeader(
+        accept_language_header);
   }
 }
 
 void AwSettings::UpdateCookiePolicyLocked(JNIEnv* env,
-                                          const JavaParamRef<jobject>& obj) {
+                                          const JavaRef<jobject>& obj) {
   if (!web_contents())
     return;
 
@@ -384,18 +371,16 @@ void AwSettings::UpdateCookiePolicyLocked(JNIEnv* env,
       Java_AwSettings_getAcceptThirdPartyCookiesLocked(env, obj);
 }
 
-void AwSettings::UpdateJavaScriptPolicyLocked(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+void AwSettings::UpdateJavaScriptPolicyLocked(JNIEnv* env,
+                                              const JavaRef<jobject>& obj) {
   if (!web_contents())
     return;
 
   javascript_enabled_ = Java_AwSettings_getJavaScriptEnabledLocked(env, obj);
 }
 
-void AwSettings::UpdateOffscreenPreRasterLocked(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+void AwSettings::UpdateOffscreenPreRasterLocked(JNIEnv* env,
+                                                const JavaRef<jobject>& obj) {
   AwContents* contents = AwContents::FromWebContents(web_contents());
   if (contents) {
     contents->SetOffscreenPreRaster(
@@ -404,16 +389,15 @@ void AwSettings::UpdateOffscreenPreRasterLocked(
 }
 
 void AwSettings::UpdateAllowFileAccessLocked(JNIEnv* env,
-                                             const JavaParamRef<jobject>& obj) {
+                                             const JavaRef<jobject>& obj) {
   if (!web_contents())
     return;
 
   allow_file_access_ = Java_AwSettings_getAllowFileAccess(env, obj);
 }
 
-void AwSettings::UpdateMixedContentModeLocked(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+void AwSettings::UpdateMixedContentModeLocked(JNIEnv* env,
+                                              const JavaRef<jobject>& obj) {
   if (!web_contents())
     return;
 
@@ -421,9 +405,8 @@ void AwSettings::UpdateMixedContentModeLocked(
       Java_AwSettings_getMixedContentMode(env, obj));
 }
 
-void AwSettings::UpdateAttributionBehaviorLocked(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+void AwSettings::UpdateAttributionBehaviorLocked(JNIEnv* env,
+                                                 const JavaRef<jobject>& obj) {
   if (!web_contents()) {
     return;
   }
@@ -446,7 +429,7 @@ void AwSettings::UpdateAttributionBehaviorLocked(
 
 void AwSettings::UpdateSpeculativeLoadingAllowedLocked(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+    const JavaRef<jobject>& obj) {
   SpeculativeLoadingAllowedFlags previous = speculative_loading_allowed_flags_;
   speculative_loading_allowed_flags_ =
       static_cast<SpeculativeLoadingAllowedFlags>(
@@ -492,7 +475,7 @@ void AwSettings::UpdateSpeculativeLoadingAllowedLocked(
 
 void AwSettings::UpdateBackForwardCacheEnabledLocked(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+    const JavaRef<jobject>& obj) {
   bool bfcache_enabled_by_feature_flag =
       base::FeatureList::IsEnabled(features::kWebViewBackForwardCache);
   bool previous_enabled =
@@ -528,9 +511,40 @@ void AwSettings::UpdateBackForwardCacheEnabledLocked(
   }
 }
 
-void AwSettings::UpdateGeolocationEnabledLocked(
+void AwSettings::UpdateBackForwardCacheSettingsLocked(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+    const JavaRef<jobject>& obj) {
+  auto settings_obj = Java_AwSettings_getBackForwardCacheSettings(env, obj);
+  if (!settings_obj) {
+    return;
+  }
+  AwBackForwardCacheSettings settings =
+      AwBackForwardCacheSettings::FromJavaAwBackForwardCacheSettings(
+          env, settings_obj);
+  if (web_contents()) {
+    if (!aw_back_forward_cache_settings_.has_value() ||
+        settings.max_pages_in_cache() !=
+            aw_back_forward_cache_settings_->max_pages_in_cache()) {
+      web_contents()
+          ->GetController()
+          .GetBackForwardCache()
+          .SetEmbedderSuppliedCacheSize(settings.max_pages_in_cache());
+    }
+    if (!aw_back_forward_cache_settings_.has_value() ||
+        settings.timeout_in_seconds() !=
+            aw_back_forward_cache_settings_->timeout_in_seconds()) {
+      web_contents()
+          ->GetController()
+          .GetBackForwardCache()
+          .SetEmbedderSuppliedTimeToLive(
+              base::Seconds(settings.timeout_in_seconds()));
+    }
+  }
+  aw_back_forward_cache_settings_.emplace(settings);
+}
+
+void AwSettings::UpdateGeolocationEnabledLocked(JNIEnv* env,
+                                                const JavaRef<jobject>& obj) {
   if (!web_contents()) {
     return;
   }
@@ -561,7 +575,7 @@ void AwSettings::PopulateWebPreferences(WebPreferences* web_prefs) {
 }
 
 void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
-                                              const JavaParamRef<jobject>& obj,
+                                              const JavaRef<jobject>& obj,
                                               jlong web_prefs_ptr) {
   AwRenderViewHostExt* render_view_host_ext = GetAwRenderViewHostExt();
   if (!render_view_host_ext)
@@ -571,7 +585,8 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
   PopulateFixedWebPreferences(web_prefs);
 
   web_prefs->text_autosizing_enabled =
-      Java_AwSettings_getTextAutosizingEnabledLocked(env, obj);
+      Java_AwSettings_getTextAutosizingEnabledLocked(env, obj) &&
+      !base::FeatureList::IsEnabled(blink::features::kForceOffTextAutosizing);
 
   int text_size_percent = Java_AwSettings_getTextSizePercentLocked(env, obj);
   if (web_prefs->text_autosizing_enabled) {
@@ -635,10 +650,10 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
       Java_AwSettings_getJavaScriptEnabledLocked(env, obj);
 
   web_prefs->allow_universal_access_from_file_urls =
-      Java_AwSettings_getAllowUniversalAccessFromFileURLsLocked(env, obj);
+      Java_AwSettings_getAllowUniversalAccessFromFileUrlsLocked(env, obj);
 
   allow_file_access_from_file_urls_ =
-      Java_AwSettings_getAllowFileAccessFromFileURLsLocked(env, obj);
+      Java_AwSettings_getAllowFileAccessFromFileUrlsLocked(env, obj);
   web_prefs->allow_file_access_from_file_urls =
       allow_file_access_from_file_urls_;
 
@@ -652,9 +667,6 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
 
   web_prefs->local_storage_enabled =
       Java_AwSettings_getDomStorageEnabledLocked(env, obj);
-
-  web_prefs->databases_enabled =
-      Java_AwSettings_getDatabaseEnabledLocked(env, obj);
 
   web_prefs->wide_viewport_quirk = true;
   web_prefs->use_wide_viewport =
@@ -674,13 +686,16 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
   web_prefs->initialize_at_minimum_page_scale =
       Java_AwSettings_getLoadWithOverviewModeLocked(env, obj);
 
+  initial_page_scale_is_non_default_ |=
+      (web_prefs->initialize_at_minimum_page_scale);
+
   web_prefs->autoplay_policy =
       Java_AwSettings_getMediaPlaybackRequiresUserGestureLocked(env, obj)
           ? blink::mojom::AutoplayPolicy::kUserGestureRequired
           : blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
 
   ScopedJavaLocalRef<jstring> url =
-      Java_AwSettings_getDefaultVideoPosterURLLocked(env, obj);
+      Java_AwSettings_getDefaultVideoPosterUrlLocked(env, obj);
   web_prefs->default_video_poster_url =
       url.obj() ? GURL(ConvertJavaStringToUTF8(url)) : GURL();
 
@@ -697,8 +712,11 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
   web_prefs->reuse_global_for_unowned_main_frame =
       Java_AwSettings_getAllowEmptyDocumentPersistenceLocked(env, obj);
 
-  web_prefs->password_echo_enabled =
-      Java_AwSettings_getPasswordEchoEnabledLocked(env, obj);
+  web_prefs->password_echo_enabled_physical =
+      Java_AwSettings_getPasswordEchoEnabledPhysicalLocked(env, obj);
+  web_prefs->password_echo_enabled_touch =
+      Java_AwSettings_getPasswordEchoEnabledTouchLocked(env, obj);
+
   web_prefs->spatial_navigation_enabled =
       Java_AwSettings_getSpatialNavigationLocked(env, obj);
 
@@ -736,7 +754,7 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
       Java_AwSettings_getDoNotUpdateSelectionOnMutatingSelectionRange(env, obj);
 
   web_prefs->css_hex_alpha_color_enabled =
-      Java_AwSettings_getCSSHexAlphaColorEnabledLocked(env, obj);
+      Java_AwSettings_getCssHexAlphaColorEnabledLocked(env, obj);
 
   // Keep spellcheck disabled on html elements unless the spellcheck="true"
   // attribute is explicitly specified. This "opt-in" behavior is for backward
@@ -760,10 +778,13 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
   if (Java_AwSettings_getWebauthnSupportLocked(env, obj) != 0) {
     web_prefs->disable_webauthn = false;
   }
+
+  web_prefs->payment_request_enabled =
+      Java_AwSettings_getPaymentRequestEnabled(env, obj) &&
+      base::FeatureList::IsEnabled(::features::kWebPayments);
 }
 
-bool AwSettings::IsForceDarkApplied(JNIEnv* env,
-                                    const JavaParamRef<jobject>& obj) {
+bool AwSettings::IsForceDarkApplied(JNIEnv* env, const JavaRef<jobject>& obj) {
   if (AwDarkMode* aw_dark_mode = AwDarkMode::FromWebContents(web_contents())) {
     return aw_dark_mode->is_force_dark_applied();
   }
@@ -771,7 +792,7 @@ bool AwSettings::IsForceDarkApplied(JNIEnv* env,
 }
 
 bool AwSettings::PrefersDarkFromTheme(JNIEnv* env,
-                                      const JavaParamRef<jobject>& obj) {
+                                      const JavaRef<jobject>& obj) {
   if (AwDarkMode* aw_dark_mode = AwDarkMode::FromWebContents(web_contents())) {
     return aw_dark_mode->prefers_dark_from_theme();
   }
@@ -785,14 +806,14 @@ base::android::ScopedJavaLocalRef<jobject> AwSettings::GetJavaObject() {
 
 void AwSettings::SetEnterpriseAuthenticationAppLinkPolicyEnabled(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
+    const JavaRef<jobject>& obj,
     jboolean enabled) {
   enterprise_authentication_app_link_policy_enabled_ = enabled;
 }
 
 bool AwSettings::GetEnterpriseAuthenticationAppLinkPolicyEnabled(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+    const JavaRef<jobject>& obj) {
   return enterprise_authentication_app_link_policy_enabled();
 }
 
@@ -804,24 +825,9 @@ bool AwSettings::GetAllowFileAccessFromFileURLs() {
   return allow_file_access_from_file_urls_;
 }
 
-base::android::ScopedJavaLocalRef<jobjectArray>
-AwSettings::UpdateXRequestedWithAllowListOriginMatcher(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobjectArray>& jrules) {
-  std::vector<std::string> rules;
-  base::android::AppendJavaStringArrayToStringVector(env, jrules, &rules);
-  std::vector<std::string> bad_rules =
-      xrw_allowlist_matcher_->UpdateRuleList(rules);
-  return base::android::ToJavaArrayOfStrings(env, bad_rules);
-}
-
-scoped_refptr<AwContentsOriginMatcher> AwSettings::xrw_allowlist_matcher() {
-  return xrw_allowlist_matcher_;
-}
-
 static jlong JNI_AwSettings_Init(JNIEnv* env,
-                                 const JavaParamRef<jobject>& obj,
-                                 const JavaParamRef<jobject>& web_contents) {
+                                 const JavaRef<jobject>& obj,
+                                 const JavaRef<jobject>& web_contents) {
   content::WebContents* contents =
       content::WebContents::FromJavaWebContents(web_contents);
   AwSettings* settings = new AwSettings(env, obj, contents);
@@ -830,7 +836,7 @@ static jlong JNI_AwSettings_Init(JNIEnv* env,
 
 static ScopedJavaLocalRef<jobject> JNI_AwSettings_FromWebContents(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jweb_contents) {
+    const base::android::JavaRef<jobject>& jweb_contents) {
   base::android::ScopedJavaLocalRef<jobject> jaw_settings;
 
   content::WebContents* web_contents =
@@ -856,3 +862,5 @@ static ScopedJavaLocalRef<jobject> JNI_AwSettings_GetDefaultUserAgentMetadata(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwSettings)

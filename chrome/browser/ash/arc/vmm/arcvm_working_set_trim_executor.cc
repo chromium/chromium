@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/arc/vmm/arcvm_working_set_trim_executor.h"
 
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/memory/arc_memory_bridge.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/memory/arc_memory_bridge.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace arc {

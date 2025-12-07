@@ -17,7 +17,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeFuchsia
     : public AXPlatformNodeBase {
  public:
   AXPlatformNodeFuchsia();
-  ~AXPlatformNodeFuchsia() override;
 
   AXPlatformNodeFuchsia(const AXPlatformNodeFuchsia&) = delete;
   AXPlatformNodeFuchsia& operator=(const AXPlatformNodeFuchsia&) = delete;

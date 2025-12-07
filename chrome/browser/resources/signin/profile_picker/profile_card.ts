@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import './profile_card_menu.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
@@ -14,6 +14,7 @@ import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_in
 import type {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {ManageProfilesBrowserProxy, ProfileState} from './manage_profiles_browser_proxy.js';
@@ -51,11 +52,13 @@ export class ProfileCardElement extends ProfileCardElementBase {
     return {
       profileState: {type: Object},
       pattern_: {type: String},
+      disabled: {type: Boolean},
     };
   }
 
-  profileState: ProfileState = createDummyProfileState();
-  protected pattern_: string = '.*\\S.*';
+  accessor profileState: ProfileState = createDummyProfileState();
+  accessor disabled: boolean = false;
+  protected accessor pattern_: string = '.*\\S.*';
   private manageProfilesBrowserProxy_: ManageProfilesBrowserProxy =
       ManageProfilesBrowserProxyImpl.getInstance();
 
@@ -72,9 +75,11 @@ export class ProfileCardElement extends ProfileCardElementBase {
       const target = this.$.tooltip.target;
       assert(target);
       const inputElement = (target as CrInputElement).inputElement;
+
       // Disable tooltip if the local name editing is in progress.
-      if (this.isNameTruncated_(inputElement) &&
-          !this.$.nameInput.hasAttribute('focused_')) {
+      if ((this.isNameTruncated_(inputElement) &&
+           !this.$.nameInput.hasAttribute('focused_')) ||
+          this.profileState.hasEnterpriseLabel) {
         this.$.tooltip.show();
         return;
       }
@@ -109,23 +114,30 @@ export class ProfileCardElement extends ProfileCardElementBase {
     this.$.gaiaNameTooltip.addEventListener('mouseenter', hideTooltip);
   }
 
+  protected getNameInputTooltipText(): string {
+    if (this.profileState.hasEnterpriseLabel) {
+      return loadTimeData.getString('controlledSettingPolicy');
+    }
+    return this.profileState.localProfileName;
+  }
+
   private isNameTruncated_(element: HTMLElement): boolean {
     return !!element && element.scrollWidth > element.offsetWidth;
   }
 
   protected onProfileClick_() {
+    this.fire('disable-all-picker-buttons');
+
     this.manageProfilesBrowserProxy_.launchSelectedProfile(
         this.profileState.profilePath);
   }
 
   protected onNameInputPointerEnter_() {
-    this.dispatchEvent(new CustomEvent(
-        'toggle-drag', {composed: true, detail: {toggle: false}}));
+    this.fire('toggle-drag', {toggle: false});
   }
 
   protected onNameInputPointerLeave_() {
-    this.dispatchEvent(new CustomEvent(
-        'toggle-drag', {composed: true, detail: {toggle: true}}));
+    this.fire('toggle-drag', {toggle: true});
   }
 
   /**

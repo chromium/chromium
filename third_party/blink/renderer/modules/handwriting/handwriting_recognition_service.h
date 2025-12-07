@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -22,10 +21,8 @@ class ScriptState;
 
 class HandwritingRecognitionService final
     : public GarbageCollected<HandwritingRecognitionService>,
-      public Supplement<Navigator> {
+      public GarbageCollectedMixin {
  public:
-  static const char kSupplementName[];
-
   explicit HandwritingRecognitionService(Navigator&);
 
   static HandwritingRecognitionService& From(Navigator&);
@@ -60,6 +57,7 @@ class HandwritingRecognitionService final
                              const HandwritingModelConstraint* constraint,
                              ExceptionState&);
 
+  Member<Navigator> navigator_;
   HeapMojoRemote<handwriting::mojom::blink::HandwritingRecognitionService>
       remote_service_;
 };

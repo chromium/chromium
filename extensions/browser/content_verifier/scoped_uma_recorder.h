@@ -21,8 +21,9 @@ class ScopedUMARecorder {
   ScopedUMARecorder& operator=(const ScopedUMARecorder&) = delete;
 
   ~ScopedUMARecorder() {
-    if (recorded_)
+    if (recorded_) {
       return;
+    }
     RecordImpl(false);
   }
 
@@ -34,8 +35,9 @@ class ScopedUMARecorder {
  private:
   void RecordImpl(bool succeeded) {
     UMA_HISTOGRAM_BOOLEAN(RESULT_HISTOGRAM_NAME, succeeded);
-    if (succeeded)
+    if (succeeded) {
       UMA_HISTOGRAM_TIMES(TIME_HISTOGRAM_NAME, timer_.Elapsed());
+    }
   }
 
   bool recorded_ = false;

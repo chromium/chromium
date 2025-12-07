@@ -7,16 +7,16 @@
 
 #include <concepts>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
-#include "components/autofill/core/browser/data_model/autofill_data_model.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
-#include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "components/autofill/core/browser/webdata/payments/server_cvc.h"
 
 namespace autofill {
 
@@ -40,14 +40,30 @@ class AutocompleteChange {
 using AutocompleteChangeList = std::vector<AutocompleteChange>;
 
 // Change notification details for Autofill related changes.
-// TODO(crbug.com/40928146): Update the name for `AutofillDataModelChange` as it
-// now captures non data model changes.
 template <typename DataType, typename KeyType>
-  requires std::derived_from<DataType, AutofillDataModel> ||
+  requires std::same_as<DataType, AutofillProfile> ||
+           std::same_as<DataType, EntityInstance> ||
+           std::same_as<DataType, EntityInstance::EntityMetadata> ||
+           std::same_as<DataType, CreditCard> || std::same_as<DataType, Iban> ||
            std::same_as<DataType, ServerCvc>
 class AutofillDataModelChange {
  public:
-  enum Type { ADD, UPDATE, REMOVE };
+  // The difference between `REMOVE` and `HIDE_IN_AUTOFILL` is that the
+  // `HIDE_IN_AUTOFILL`:
+  // - For kAccount, kAccountHome and kAccountWork profiles, does not
+  // actually remove the profile from the server, but instead marks it as
+  // uninteresting to Chrome. This profile may become visible again if it is
+  // updated in a different product.
+  //
+  // - For kAccountNameEmail profile, removes the profile for the duration of
+  // the sign out or autofill sync toggle being off, but the profile may
+  // reappear once the user is signed in and autofill sync toggle is enabled
+  // again. See `AccountNameEmailStore` for the detailed description of this
+  // behaviour.
+  //
+  // - For kLocalOrSyncable profile, there is no difference.
+  // TODO(crbug.com/40100455): Consider renaming `HIDE_IN_AUTOFILL`.
+  enum Type { ADD, UPDATE, REMOVE, HIDE_IN_AUTOFILL };
 
   // The `type` input specifies the change type.  The `key` input is the key
   // that identifies the `data_model`; it is the GUID of the entry for local
@@ -61,12 +77,12 @@ class AutofillDataModelChange {
     }
     if constexpr (std::same_as<DataType, Iban>) {
       if (data_model_.record_type() == Iban::RecordType::kLocalIban) {
-        CHECK(absl::holds_alternative<std::string>(key_) &&
-              absl::get<std::string>(key_) == data_model_.guid());
+        CHECK(std::holds_alternative<std::string>(key_) &&
+              std::get<std::string>(key_) == data_model_.guid());
       } else {
         CHECK(data_model_.record_type() == Iban::RecordType::kServerIban);
-        CHECK(absl::holds_alternative<int64_t>(key_) &&
-              absl::get<int64_t>(key_) == data_model_.instrument_id());
+        CHECK(std::holds_alternative<int64_t>(key_) &&
+              std::get<int64_t>(key_) == data_model_.instrument_id());
       }
     } else if constexpr (std::same_as<DataType, ServerCvc>) {
       CHECK(data_model_.instrument_id == key_);
@@ -74,6 +90,12 @@ class AutofillDataModelChange {
       // TODO(crbug.com/40927747): Use `instrument_id()` for credit cards and
       // merge the `Iban` and `CreditCard` cases.
       CHECK(data_model_.guid() == key_ || data_model_.server_id() == key_);
+    } else if constexpr (std::same_as<DataType,
+                                      std::optional<EntityInstance>>) {
+      CHECK(data_model_ && data_model_->guid() == key_);
+    } else if constexpr (std::same_as<DataType,
+                                      EntityInstance::EntityMetadata>) {
+      CHECK(data_model_.guid == key_);
     } else {
       CHECK(data_model_.guid() == key_);
     }
@@ -101,6 +123,15 @@ class AutofillDataModelChange {
 using AutofillProfileChange =
     AutofillDataModelChange<AutofillProfile, std::string>;
 
+// Identified by `EntityInstance::guid()`.
+using EntityInstanceChange =
+    AutofillDataModelChange<EntityInstance, EntityInstance::EntityId>;
+
+// Identified by `EntityInstance::guid()`.
+using EntityInstanceMetadataChange =
+    AutofillDataModelChange<EntityInstance::EntityMetadata,
+                            EntityInstance::EntityId>;
+
 // Identified by `CreditCard::guid()` for local cards and
 // `CreditCard::server_id()` for server cards.
 // TODO(crbug.com/40927747): For server cards, an instrument id should be used.
@@ -109,7 +140,7 @@ using CreditCardChange = AutofillDataModelChange<CreditCard, std::string>;
 // Identified by `Iban::guid()` for local IBANs and `Iban::instrument_id()` for
 // server IBANs.
 using IbanChange =
-    AutofillDataModelChange<Iban, absl::variant<std::string, int64_t>>;
+    AutofillDataModelChange<Iban, std::variant<std::string, int64_t>>;
 
 // Identified by `ServerCvc::instrument_id`.
 using ServerCvcChange = AutofillDataModelChange<ServerCvc, int64_t>;

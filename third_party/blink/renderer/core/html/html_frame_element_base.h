@@ -69,16 +69,15 @@ class CORE_EXPORT HTMLFrameElementBase : public HTMLFrameOwnerElement {
       const override;
 
  private:
-  bool SupportsFocus(UpdateBehavior update_behavior =
-                         UpdateBehavior::kStyleAndLayout) const final;
+  FocusableState SupportsFocus(UpdateBehavior update_behavior) const final {
+    return FocusableState::kFocusable;
+  }
   int DefaultTabIndex() const final;
   void SetFocused(bool, mojom::blink::FocusType) final;
 
   bool IsURLAttribute(const Attribute&) const final;
   bool HasLegalLinkAttribute(const QualifiedName&) const final;
   bool IsHTMLContentAttribute(const Attribute&) const final;
-
-  bool AreAuthorShadowsAllowed() const final { return false; }
 
   void SetLocation(const String&);
   void SetNameAndOpenURL();

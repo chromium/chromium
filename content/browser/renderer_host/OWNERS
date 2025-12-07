@@ -4,6 +4,8 @@ kenrb@chromium.org
 
 # Touch input and gesture relatated code.
 jonross@chromium.org
+amanvr@google.com
+kartarsingh@google.com
 
 # Surface ID propagation and synchronization, and compositing embedding
 # via DelegatedFrame*.
@@ -11,7 +13,6 @@ jonross@chromium.org
 
 # RenderFrameHost and navigation-related code.
 alexmos@chromium.org
-altimin@chromium.org
 arthursonzogni@chromium.org
 creis@chromium.org
 nasko@chromium.org
@@ -21,8 +22,8 @@ rakina@chromium.org
 per-file *aura*=jonross@chromium.org
 
 # Mac platform GPU-related code.
-per-file *mac*=kbr@chromium.org
 per-file *mac*=ccameron@chromium.org
+per-file *mac*=jonross@chromium.org
 
 # Android platform code.
 per-file *android*=boliu@chromium.org
@@ -36,11 +37,7 @@ per-file dwrite_*=drott@chromium.org
 per-file back_forward_cache*=file://content/browser/BACK_FORWARD_CACHE_OWNERS
 
 # Clipboard
-per-file *clipboard_host_impl*=asully@chromium.org
-per-file *clipboard_host_impl*=ayui@chromium.org
-per-file *clipboard_host_impl*=christinesm@chromium.org
-per-file *clipboard_host_impl*=dcheng@chromium.org
-per-file *clipboard_host_impl*=estade@chromium.org
+per-file *clipboard_host_impl*=file://ui/base/clipboard/OWNERS
 
 # AgentSchedulingGroup (MBI)
 per-file agent_scheduling_group*=dom@chromium.org
@@ -55,3 +52,9 @@ per-file *_sandboxed*.*=set noparent
 per-file *_sandboxed*.*=file://sandbox/OWNERS
 
 per-file render_process_host_sandbox_policy_win_browsertest.cc=file://sandbox/win/OWNERS
+
+# View transitions test.
+per-file view_transition_browsertest.cc=vmpstr@chromium.org
+
+# Local Network Access
+per-file private_network_access*.*=file://content/browser/security/local_network_access/OWNERS

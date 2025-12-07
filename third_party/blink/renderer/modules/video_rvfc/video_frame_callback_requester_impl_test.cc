@@ -23,7 +23,6 @@
 
 using testing::_;
 using testing::ByMove;
-using testing::Invoke;
 using testing::Return;
 
 namespace blink {
@@ -41,7 +40,7 @@ class MockWebMediaPlayer : public EmptyWebMediaPlayer {
                std::unique_ptr<VideoFramePresentationMetadata>());
 };
 
-class MockFunction : public ScriptFunction::Callable {
+class MockFunction : public ScriptFunction {
  public:
   MockFunction() = default;
 
@@ -106,7 +105,7 @@ class VfcRequesterParameterVerifierCallback
       : loader_(loader) {}
   ~VfcRequesterParameterVerifierCallback() override = default;
 
-  void Invoke(double now, const VideoFrameMetadata* metadata) override {
+  void Invoke(double now, const VideoFrameCallbackMetadata* metadata) override {
     was_invoked_ = true;
     now_ = now;
 
@@ -218,8 +217,7 @@ class VideoFrameCallbackRequesterImplTest : public PageTestBase {
   V8VideoFrameRequestCallback* GetCallback(ScriptState* script_state,
                                            MockFunction* function) {
     return V8VideoFrameRequestCallback::Create(
-        MakeGarbageCollected<ScriptFunction>(script_state, function)
-            ->V8Function());
+        function->ToV8Function(script_state));
   }
 
   void RegisterCallbackDirectly(

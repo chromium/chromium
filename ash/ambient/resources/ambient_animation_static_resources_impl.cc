@@ -98,8 +98,8 @@ AssetIdToResourceIdMap GetAssetIdToResourceIdMapForTheme(AmbientTheme theme) {
 scoped_refptr<cc::SkottieWrapper> CreateSkottieWrapper(
     int lottie_json_resource_id,
     bool serializable) {
-  std::string_view animation_json =
-      ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
+  std::string animation_json =
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           lottie_json_resource_id);
   DCHECK(!animation_json.empty());
   base::span<const uint8_t> lottie_data_bytes =

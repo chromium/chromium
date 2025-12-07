@@ -7,6 +7,8 @@ package org.chromium.components.media_router;
 import androidx.mediarouter.media.MediaRouteSelector;
 import androidx.mediarouter.media.MediaRouter;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -17,11 +19,12 @@ import java.util.Set;
  * media sinks were requested for. Once a route is added or removed, updates the
  * {@link BrowserMediaRouter} with the new routes.
  */
+@NullMarked
 public class DiscoveryCallback extends MediaRouter.Callback {
     private final DiscoveryDelegate mDiscoveryDelegate;
     private final MediaRouteSelector mRouteSelector;
-    private Set<String> mSourceUrns = new HashSet<String>();
-    private List<MediaSink> mSinks = new ArrayList<MediaSink>();
+    private final Set<String> mSourceUrns = new HashSet<>();
+    private List<MediaSink> mSinks = new ArrayList<>();
 
     public DiscoveryCallback(
             String sourceUrn, DiscoveryDelegate delegate, MediaRouteSelector selector) {
@@ -44,7 +47,7 @@ public class DiscoveryCallback extends MediaRouter.Callback {
 
     public void addSourceUrn(String sourceUrn) {
         if (mSourceUrns.add(sourceUrn)) {
-            mDiscoveryDelegate.onSinksReceived(sourceUrn, new ArrayList<MediaSink>(mSinks));
+            mDiscoveryDelegate.onSinksReceived(sourceUrn, new ArrayList<>(mSinks));
         }
     }
 
@@ -98,7 +101,7 @@ public class DiscoveryCallback extends MediaRouter.Callback {
 
     private void updateBrowserMediaRouter() {
         for (String sourceUrn : mSourceUrns) {
-            mDiscoveryDelegate.onSinksReceived(sourceUrn, new ArrayList<MediaSink>(mSinks));
+            mDiscoveryDelegate.onSinksReceived(sourceUrn, new ArrayList<>(mSinks));
         }
     }
 }

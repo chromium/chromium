@@ -4,17 +4,25 @@
 
 #include "chrome/browser/ui/webauthn/passkey_saved_confirmation_controller.h"
 
+#include <string>
+#include <utility>
+
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/passwords/bubble_controllers/password_bubble_controller_base.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
 PasskeySavedConfirmationController::PasskeySavedConfirmationController(
-    base::WeakPtr<PasswordsModelDelegate> delegate)
+    base::WeakPtr<PasswordsModelDelegate> delegate,
+    std::string passkey_rp_id)
     : PasswordBubbleControllerBase(
           std::move(delegate),
           /*display_disposition=*/password_manager::metrics_util::
-              AUTOMATIC_PASSKEY_SAVED_CONFIRMATION) {}
+              AUTOMATIC_PASSKEY_SAVED_CONFIRMATION),
+      passkey_rp_id_(std::move(passkey_rp_id)) {}
 
 PasskeySavedConfirmationController::~PasskeySavedConfirmationController() {
   OnBubbleClosing();
@@ -27,16 +35,12 @@ std::u16string PasskeySavedConfirmationController::GetTitle() const {
           : IDS_WEBAUTHN_GPM_PASSKEY_SAVED_TITLE);
 }
 
-std::u16string PasskeySavedConfirmationController::GetUsername() const {
-  return delegate_->GetRecentlySavedPasskeyUsername();
-}
-
 void PasskeySavedConfirmationController::OnGooglePasswordManagerLinkClicked() {
   dismissal_reason_ = password_manager::metrics_util::CLICKED_MANAGE;
   if (delegate_) {
-    delegate_->NavigateToPasswordManagerSettingsPage(
-        password_manager::ManagePasswordsReferrer::
-            kPasskeySavedConfirmationBubble);
+    delegate_->NavigateToPasswordDetailsPageInPasswordManager(
+        passkey_rp_id_, password_manager::ManagePasswordsReferrer::
+                            kPasskeySavedConfirmationBubble);
   }
 }
 

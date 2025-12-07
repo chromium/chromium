@@ -5,7 +5,10 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 #import "base/memory/weak_ptr.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 
 @implementation ChromeCoordinator {
   base::WeakPtr<Browser> _browser;
@@ -13,12 +16,11 @@
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser {
-  if (self = [super init]) {
+  CHECK(browser);
+  if ((self = [super init])) {
     _baseViewController = viewController;
     _childCoordinators = [MutableCoordinatorArray array];
-    if (browser) {
-      _browser = browser->AsWeakPtr();
-    }
+    _browser = browser->AsWeakPtr();
   }
   return self;
 }
@@ -32,7 +34,32 @@
 }
 
 - (Browser*)browser {
+  // Browser can only be nil after -stop. Coordinators should typically not
+  // execute any code after this point, and definitely should not refer to
+  // browser.
+  CHECK(_browser.get(), base::NotFatalUntil::M147);
   return _browser.get();
+}
+
+- (ProfileIOS*)profile {
+  ProfileIOS* profile = self.browser->GetProfile();
+  // Profile can only be nil after -stop. Coordinators should typically not
+  // execute any code after this point, and definitely should not refer to
+  // profile.
+  CHECK(profile, base::NotFatalUntil::M147);
+  return profile;
+}
+
+- (BOOL)isOffTheRecord {
+  CHECK(self.profile);
+  return self.profile->IsOffTheRecord();
+}
+
+- (SceneState*)sceneState {
+  if (!self.browser) {
+    return nil;
+  }
+  return self.browser->GetSceneState();
 }
 
 #pragma mark - Public

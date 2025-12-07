@@ -6,22 +6,25 @@ package org.chromium.chrome.test.transit.hub;
 
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.hamcrest.CoreMatchers.allOf;
+import static org.chromium.base.test.transit.Condition.whetherEquals;
+import static org.chromium.base.test.transit.SimpleConditions.uiThreadCondition;
 
-import static org.chromium.base.test.transit.ViewSpec.viewSpec;
-
+import android.content.res.ColorStateList;
+import android.graphics.drawable.GradientDrawable;
 import android.view.View;
+import android.widget.FrameLayout;
 
-import org.hamcrest.Matcher;
+import androidx.annotation.Nullable;
 
-import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.ViewElement;
+import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupExistsCondition;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUtil;
+import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,35 +38,90 @@ import java.util.List;
  * ActivityElement is matched to an Activity because the Activity needs to be used as context to get
  * the expected background color to build the matcher.
  */
-public class TabSwitcherGroupCardFacility extends Facility<TabSwitcherStation> {
-    public static final Matcher<View> CARD = withId(R.id.card_view);
+public class TabSwitcherGroupCardFacility extends TabSwitcherCardFacility {
+    /**
+     * Expect the default title "N tabs".
+     *
+     * <p>Equivalent to using the constructor {@link #TabSwitcherGroupCardFacility(Integer, List)}.
+     */
+    public static final String DEFAULT_N_TABS_TITLE = "_DEFAULT_N_TABS_TITLE";
 
     private final List<Integer> mTabIdsToGroup;
-    private final String mTitle;
+    public ViewElement<View> menuButtonElement;
 
-    public TabSwitcherGroupCardFacility(List<Integer> tabIdsToGroup) {
-        this(tabIdsToGroup, TabGroupUtil.getNumberOfTabsString(tabIdsToGroup.size()));
+    public TabSwitcherGroupCardFacility(@Nullable Integer cardIndex, List<Integer> tabIdsToGroup) {
+        this(cardIndex, tabIdsToGroup, DEFAULT_N_TABS_TITLE);
     }
 
-    public TabSwitcherGroupCardFacility(List<Integer> tabIdsToGroup, String title) {
+    public TabSwitcherGroupCardFacility(@Nullable Integer cardIndex, List<Integer> tabIdsToGroup, String title) {
+        super(
+                cardIndex,
+                title.equals(DEFAULT_N_TABS_TITLE) || title.isEmpty()
+                        ? TabGroupUtil.getNumberOfTabsString(tabIdsToGroup.size())
+                        : title);
         assert !tabIdsToGroup.isEmpty();
 
         mTabIdsToGroup = new ArrayList<>(tabIdsToGroup);
         Collections.sort(mTabIdsToGroup);
-        mTitle = title;
     }
 
     @Override
-    public void declareElements(Elements.Builder elements) {
-        String titleElementId = "Tab Group card title: " + mTitle;
-        elements.declareView(
-                viewSpec(allOf(withText(mTitle), withId(R.id.tab_title), withParent(CARD))),
-                ViewElement.elementIdOption(titleElementId));
+    public void declareExtraElements() {
+        super.declareExtraElements();
+        menuButtonElement = declareActionButton();
 
-        elements.declareEnterCondition(
+        declareEnterCondition(
                 new TabGroupExistsCondition(
-                        mHostStation.isIncognito(),
-                        mTabIdsToGroup,
-                        mHostStation.getTabModelSelectorSupplier()));
+                        mHostStation.tabGroupModelFilterElement, mTabIdsToGroup));
+    }
+
+    /** Clicks the group card to open the tab group dialog. */
+    public TabGroupDialogFacility<TabSwitcherStation> clickCard() {
+        return titleElement.clickTo().enterFacility(new TabGroupDialogFacility<>(mTabIdsToGroup));
+    }
+
+    /** Clicks the ("...") action button on a tab group to open the overflow menu. */
+    public TabSwitcherGroupCardAppMenuFacility openAppMenu() {
+        boolean isIncognito = mHostStation.isIncognito();
+        return menuButtonElement
+                .clickTo()
+                .enterFacility(new TabSwitcherGroupCardAppMenuFacility(isIncognito, mTitle));
+    }
+
+    /**
+     * Waits for the tab group card to have a specific color.
+     *
+     * @param color The expected {@link TabGroupColorId}.
+     * @return The {@link TabGroupCardColorFacility} for the given color.
+     */
+    public TabGroupCardColorFacility expectColor(@TabGroupColorId int color) {
+        return noopTo().enterFacility(new TabGroupCardColorFacility(color));
+    }
+
+    public class TabGroupCardColorFacility extends Facility<TabSwitcherStation> {
+        public final ViewElement<FrameLayout> colorViewElement;
+
+        public TabGroupCardColorFacility(@TabGroupColorId int color) {
+            ColorStateList expectedColor =
+                    ColorStateList.valueOf(
+                            TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
+                                    TabSwitcherGroupCardFacility.this.mHostStation.getActivity(),
+                                    color,
+                                    false));
+
+            ViewSpec<View> colorContainerSpec =
+                    cardViewElement.descendant(withId(R.id.tab_group_color_view_container));
+            colorViewElement =
+                    declareView(FrameLayout.class, withParent(colorContainerSpec.getViewMatcher()));
+            declareEnterCondition(
+                    uiThreadCondition(
+                            "Tab group color should be " + expectedColor,
+                            colorViewElement,
+                            colorView -> {
+                                return whetherEquals(
+                                        expectedColor,
+                                        ((GradientDrawable) colorView.getBackground()).getColor());
+                            }));
+        }
     }
 }

@@ -4,11 +4,15 @@
 
 package org.chromium.components.webapk.lib.client;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -25,6 +29,7 @@ import java.util.regex.Pattern;
  * WebApkVerifySignature reads in the APK file and verifies the WebApk signature. It reads the
  * signature from the zip comment and verifies that it was signed by the public key passed.
  */
+@NullMarked
 public class WebApkVerifySignature {
     /** Errors codes. */
     @IntDef({
@@ -108,20 +113,20 @@ public class WebApkVerifySignature {
     private int mEndOfCentralDirOffset;
 
     /** The zip archive comment as a UTF-8 string. */
-    private String mComment;
+    private @Nullable String mComment;
 
     /**
      * Sorted list of 'blocks' of memory we will cryptographically hash. We sort the blocks by
      * filename to ensure a repeatable order.
      */
-    private ArrayList<Block> mBlocks;
+    private @Nullable ArrayList<Block> mBlocks;
 
     /** Block contains metadata about a zip entry. */
     private static class Block implements Comparable<Block> {
-        String mFilename;
-        int mPosition;
+        final String mFilename;
+        final int mPosition;
         int mHeaderSize;
-        int mCompressedSize;
+        final int mCompressedSize;
 
         Block(String filename, int position, int compressedSize) {
             mFilename = filename;
@@ -137,7 +142,7 @@ public class WebApkVerifySignature {
         }
 
         /** Comparator for sorting the list by position ascending. */
-        public static Comparator<Block> positionComparator =
+        public static final Comparator<Block> POSITION_COMPARATOR =
                 new Comparator<Block>() {
                     @Override
                     public int compare(Block b1, Block b2) {
@@ -222,6 +227,7 @@ public class WebApkVerifySignature {
      * @param sig Signature object you can call update on.
      */
     public @Error int calculateHash(Signature sig) throws Exception {
+        assumeNonNull(mBlocks);
         Collections.sort(mBlocks);
         int metaInfCount = 0;
         for (Block block : mBlocks) {
@@ -273,7 +279,7 @@ public class WebApkVerifySignature {
      *
      * @return the bytes of the signature.
      */
-    static byte[] parseCommentSignature(String comment) {
+    static byte @Nullable [] parseCommentSignature(@Nullable String comment) {
         Matcher m = WEBAPK_COMMENT_PATTERN.matcher(comment);
         if (!m.find()) {
             return null;
@@ -347,7 +353,7 @@ public class WebApkVerifySignature {
         }
 
         // We need blocks to be sorted by position at this point.
-        Collections.sort(mBlocks, Block.positionComparator);
+        Collections.sort(mBlocks, Block.POSITION_COMPARATOR);
         int lastByte = 0;
 
         // Read the 'local file header' block to the size of the header in bytes.
@@ -474,7 +480,7 @@ public class WebApkVerifySignature {
      * Convert a hex string into bytes. We store hex in the signature as zip tools often don't like
      * binary strings.
      */
-    static byte[] hexToBytes(String s) {
+    static byte @Nullable [] hexToBytes(String s) {
         int len = s.length();
         if (len % 2 != 0) {
             // Odd number of nibbles.

@@ -19,7 +19,7 @@ bool IsDisallowedHttpResponseCode(int response_code) {
 }
 
 bool IsSameSite(const GURL& target_url, const url::Origin& origin) {
-  return target_url.scheme() == origin.scheme() &&
+  return target_url.GetScheme() == origin.scheme() &&
          net::registry_controlled_domains::SameDomainOrHost(
              target_url, origin,
              net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);

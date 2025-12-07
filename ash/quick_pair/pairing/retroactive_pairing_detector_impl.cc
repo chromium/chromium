@@ -162,6 +162,19 @@ void RetroactivePairingDetectorImpl::OnDevicePaired(
     RemoveDeviceInformation(device->classic_address().value());
     return;
   }
+  // With the introduction of BLE Fast Pair devices, some devices could be
+  // paired with their BLE address. Check BLE address for false positives as
+  // well.
+  if (ash::features::IsFastPairKeyboardsEnabled() &&
+      base::Contains(potential_retroactive_addresses_, device->ble_address())) {
+    CD_LOG(VERBOSE, Feature::FP)
+        << __func__
+        << ": encountered a false positive for a potential retroactive pairing "
+           "device. Removing device at address = "
+        << device->ble_address();
+    RemoveDeviceInformation(device->ble_address());
+    return;
+  }
 }
 
 void RetroactivePairingDetectorImpl::DevicePairedChanged(
@@ -232,12 +245,10 @@ void RetroactivePairingDetectorImpl::AttemptRetroactivePairing(
 
   CD_LOG(VERBOSE, Feature::FP) << __func__ << ": device = " << classic_address;
 
-  // For BLE devices, check it supports Fast Pair. Then, since the message
-  // stream is optional for BLE HIDs, and the BLE address is already known, the
-  // only remaining parameter needed is the model ID, which we retrieve via GATT
-  // characteristic.
-  if (ash::features::IsFastPairHIDEnabled() &&
-      // Fast Pair HID only works on Floss.
+  // For BLE devices, since the message stream is optional for BLE HIDs, and the
+  // BLE address is already known, the only remaining parameter needed is the
+  // model ID, which we retrieve via GATT characteristic.
+  if (  // Fast Pair HID only works on Floss.
       floss::features::IsFlossEnabled() &&
       device->GetType() == device::BLUETOOTH_TRANSPORT_LE &&
       base::Contains(device->GetUUIDs(), kFastPairBluetoothUuid)) {

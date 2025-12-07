@@ -1,6 +1,7 @@
 # Chromium Objective-C and Objective-C++ style guide
 
-_For other languages, please see the [Chromium style guides](https://chromium.googlesource.com/chromium/src/+/main/styleguide/styleguide.md)._
+*For other languages, please see the
+[Chromium style guides](https://chromium.googlesource.com/chromium/src/+/main/styleguide/styleguide.md).*
 
 Chromium follows the
 [Google Objective-C style guide](https://google.github.io/styleguide/objcguide.html)
@@ -50,7 +51,7 @@ the ordering of `UIViewController` subclass methods doesn't match the UIKit
 header).
 
 ```objective-c
-@interface ExampleViewController : UIViewController<ExampleConsumer, 
+@interface ExampleViewController : UIViewController<ExampleConsumer,
                                                     UITableViewDelegate>
 
 ...
@@ -124,7 +125,16 @@ C++ style.
 source code in the `ios/` directory. This differs from the Google Objective-C
 Style Guide, which requires using #include directive for C++ headers.
 
+## Nullability annotations in the `ios/` directory
+
+Nullability annotations, such as `nonnull` and `nullable`, may not be used in
+the `ios/` directory. This differs from the Google Objective-C Style Guide,
+which permits these annotations. This is done to avoid a 'ripple effect' where
+these annotations would need to be propagated throughout the directory. Prefer
+runtime checks (e.g., `CHECK(myObject);`) instead.
+
 ## Disambiguating Symbols
+
 Where needed to avoid ambiguity, use backticks to quote variable names and
 symbols in comments in preference to using quotation marks or naming the symbols
 inline.

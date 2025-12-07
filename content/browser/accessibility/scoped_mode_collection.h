@@ -8,8 +8,9 @@
 #include <list>
 #include <memory>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
+#include "base/types/pass_key.h"
 #include "content/common/content_export.h"
 #include "ui/accessibility/ax_mode.h"
 
@@ -21,20 +22,34 @@ class ScopedAccessibilityMode;
 // an always up-to-date view of the union of all contained scopers, accessible
 // via `accessibility_mode()`. Any change to this value (via calls to `Add()` to
 // add a new item to the collection or via destruction of a scoper belonging to
-// the collection) results in running the callback provided at construction. It
-// is permissible for the collection to be destroyed while scopers minted from
-// it remain alive.
+// the collection) results in notifying the delegate. The delegate may filter
+// mode flags during recomputation of the effective mode. It is permissible for
+// the collection to be destroyed while scopers minted from it remain alive.
 class CONTENT_EXPORT ScopedModeCollection {
  public:
-  // The type of a callback that is run when the effective mode for the
-  // collection changes (i.e., when the union of all mode flags indicated by
-  // the scopers in the collection changes).
-  using OnModeChangedCallback =
-      base::RepeatingCallback<void(ui::AXMode old_mode, ui::AXMode new_mode)>;
+  class Delegate {
+   public:
+    // Called when the effective mode for the collection changes (i.e., when the
+    // union of all mode flags indicated by the scopers in the collection
+    // changes).
+    virtual void OnModeChanged(ui::AXMode old_mode, ui::AXMode new_mode) = 0;
 
-  // `on_mode_changed` is run on any change to the collection that results in
-  // a different combined accessibility mode.
-  explicit ScopedModeCollection(OnModeChangedCallback on_mode_changed);
+    // Filters `mode`, returning some subset of `mode`. Called once for each
+    // scoper in the collection while computing the collection's effective mode.
+    virtual ui::AXMode FilterModeFlags(ui::AXMode mode) = 0;
+
+   protected:
+    Delegate() = default;
+    ~Delegate() = default;
+
+    // Returns a PassKey for use by the Delegate so that it may force
+    // recomputation if its filtering policy changes.
+    static base::PassKey<Delegate> MakePassKey() {
+      return base::PassKey<Delegate>();
+    }
+  };
+
+  explicit ScopedModeCollection(Delegate& delegate);
   ScopedModeCollection(const ScopedModeCollection&) = delete;
   ScopedModeCollection& operator=(const ScopedModeCollection&) = delete;
   ~ScopedModeCollection();
@@ -54,6 +69,10 @@ class CONTENT_EXPORT ScopedModeCollection {
   // Returns true if the collection is empty.
   bool empty() const { return scopers_.empty(); }
 
+  // Forces a recomputation of the collection's effective mode. To be called by
+  // the delegate when the behavior of the delegate's filter function changes.
+  void Recompute(base::PassKey<Delegate>);
+
  private:
   class ScopedAccessibilityModeImpl;
 
@@ -69,9 +88,7 @@ class CONTENT_EXPORT ScopedModeCollection {
   // scopers. Runs `on_mode_changed` if there is a change.
   void RecalculateEffectiveModeAndNotify();
 
-  // Run on any change to the collection that results in a different combined
-  // accessibility mode.
-  const OnModeChangedCallback on_mode_changed_;
+  const raw_ref<Delegate> delegate_;
 
   // The collection of ScopedAccessibilityMode instances.
   ScoperContainer scopers_;

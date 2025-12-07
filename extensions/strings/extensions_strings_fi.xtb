@@ -5,7 +5,6 @@
 <translation id="1140871961407805696">Ympäristöä kuvaava</translation>
 <translation id="1196338895211115272">Yksityisen avaimen vienti epäonnistui.</translation>
 <translation id="132960226125594336">Sisältöskriptin tiedostoa <ph name="RELATIVE_PATH" /> ei voitu ladata, koska se ylittäisi skriptin enimmäiskoon tai laajennuksen sisältöskriptin enimmäiskoon.</translation>
-<translation id="1420684932347524586">Hups! Satunnaisen yksityisen RSA-avaimen luominen epäonnistui.</translation>
 <translation id="1445572445564823378">Tämä laajennus hidastaa tuotetta <ph name="PRODUCT_NAME" />. Poista laajennus käytöstä tehostaaksesi tuotteen <ph name="PRODUCT_NAME" /> toimintaa.</translation>
 <translation id="1468038450257740950">WebGL:ää ei tueta.</translation>
 <translation id="1610570795592207282">CSS-tiedostoa <ph name="RELATIVE_PATH" /> ei voitu ladata skriptille.</translation>
@@ -19,13 +18,11 @@
 <translation id="3115238746683532089">Tuntematon tuote <ph name="PRODUCT_ID" /> toimittajalta <ph name="VENDOR_ID" /> (sarjanumero <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">CRX-tiedoston korvaaminen epäonnistui. Tarkista, onko tiedosto käytössä.</translation>
 <translation id="3163201441334626963">Tuntematon tuote <ph name="PRODUCT_ID" /> toimittajalta <ph name="VENDOR_ID" /></translation>
-<translation id="3369521687965833290">Laajennuksen purkaminen epäonnistui. Voit purkaa laajennuksen määrittämällä polun profiilihakemistoon, joka alkaa kiintolevyn kirjaimella eikä sisällä liitos- tai liityntäkohtaa tai symlink-määritettä. Profiilissasi ei ole kyseistä polkua.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (sarjanumero <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> toimittajalta <ph name="VENDOR_ID" /> (sarjanumero <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Yksityisen avaimen syötearvon täytyy olla kelvollinen polku.</translation>
 <translation id="388442998277590542">Asetussivun <ph name="OPTIONS_PAGE" /> lataaminen epäonnistui.</translation>
 <translation id="3984413272403535372">Virhe allekirjoittaessa varmennetta.</translation>
-<translation id="4115165561519362854">Tämän laitteen järjestelmänvalvoja edellyttää laajennuksen <ph name="EXTENSION_NAME" /> version olevan vähintään <ph name="EXTENSION_VERSION" />. Laajennusta ei voida ottaa käyttöön ennen kuin se on päivitetty kyseiseen tai sitä uudempaan versioon.</translation>
 <translation id="4233778200880751280">Tietosivun <ph name="ABOUT_PAGE" /> lataus epäonnistui.</translation>
 <translation id="471800408830181311">Yksityisen avaimen tulostus ei onnistunut.</translation>
 <translation id="4811956658694082538">Pakettia ei voi asentaa, koska apuohjelmaprosessi kaatui. Käynnistä Chrome uudelleen ja yritä uudelleen.</translation>
@@ -39,7 +36,6 @@
 <translation id="5972529113578162692">Tämän laitteen järjestelmänvalvoja on määrittänyt, että laitteessa täytyy olla <ph name="EXTENSION_NAME" />. Laajennusta ei voi poistaa.</translation>
 <translation id="6027032947578871493">Tuntematon laite <ph name="PRODUCT_ID" /> toimittajalta <ph name="VENDOR_NAME" /> (sarjanumero <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> toimittajalta <ph name="VENDOR_ID" /></translation>
-<translation id="6143635259298204954">Laajennuksen purkaminen epäonnistui. Voit purkaa laajennuksen määrittämällä polun profiilihakemistoon, joka ei sisällä symlink-määritettä. Profiilissasi ei ole kyseistä polkua.</translation>
 <translation id="6322279351188361895">Yksityisen avaimen lukeminen epäonnistui.</translation>
 <translation id="6391538222494443604">Syöttöhakemistoa ei ole olemassa.</translation>
 <translation id="641087317769093025">Laajennuksen purkaminen epäonnistui</translation>
@@ -52,12 +48,14 @@
 <translation id="7068383018033524534">Luettelotiedosto on virheellinen.</translation>
 <translation id="7217838517480956708">Koneen ylläpitäjä vaatii laajennuksen <ph name="EXTENSION_NAME" /> asennusta. Sitä ei voi poistaa tai muuttaa.</translation>
 <translation id="7612608473764576263">Yksityisen avaimen syöttöarvon on oltava kelvollisessa muodossa (PEM-merkkijärjestelmää käyttävä PKCS#8-muotoinen RSA-avain).</translation>
+<translation id="7876803335449432072">Tiedostoa <ph name="RELATIVE_PATH" /> ei voitu ladata sisältöskriptille. Sisältöskriptin tyylisivut voidaan ladata vain tuetuista tyylisivutiedostoista, kuten .css-tiedostoista.</translation>
 <translation id="7939686037314084444">Laajennus ei latautunut oikein. Se ei välttämättä havaitse verkkopyyntöjä.</translation>
 <translation id="7972881773422714442">Vaihtoehdot: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Käyttäjää kuvaava</translation>
 <translation id="8047248493720652249">Laajennus ei voinut antaa lataukselle nimeä <ph name="ATTEMPTED_FILENAME" />, koska toinen laajennus (<ph name="EXTENSION_NAME" />) määritti toisen tiedostonimen (<ph name="ACTUAL_FILENAME" />).</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> myyjältä <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Luettelotiedosto puuttuu tai sitä ei voi lukea.</translation>
+<translation id="8621383749470166852">Tiedostoa <ph name="RELATIVE_PATH" /> ei voitu ladata sisältöskriptille. Sisältöskriptit voidaan ladata vain tuetuista JavaScript-tiedostoista, kuten .js-tiedostoista.</translation>
 <translation id="8636666366616799973">Paketti on virheellinen. Tietoja: <ph name="ERROR_MESSAGE" />.</translation>
 <translation id="8761756413268424715"><ph name="APP_NAME" /> pyytää oikeutta käyttää yhtä laitteistasi:</translation>
 <translation id="8885905466771744233">Kyseiselle laajennukselle on jo olemassa yksityinen avain. Käytä tätä avainta tai poista se ensin.</translation>

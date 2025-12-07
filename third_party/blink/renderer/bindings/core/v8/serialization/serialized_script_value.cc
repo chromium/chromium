@@ -28,21 +28,17 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/containers/span.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/expected_macros.h"
+#include "base/types/optional_util.h"
 #include "third_party/blink/public/web/web_serialized_script_value_version.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -67,7 +63,7 @@
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
@@ -113,8 +109,9 @@ scoped_refptr<SerializedScriptValue> SerializedScriptValue::Create(
     const String& data) {
   base::CheckedNumeric<size_t> data_buffer_size = data.length();
   data_buffer_size *= 2;
-  if (!data_buffer_size.IsValid())
+  if (!data_buffer_size.IsValid()) {
     return Create();
+  }
 
   DataBufferPtr data_buffer = AllocateBuffer(data_buffer_size.ValueOrDie());
   // TODO(danakj): This cast is valid, since it's at the start of the allocation
@@ -122,7 +119,11 @@ scoped_refptr<SerializedScriptValue> SerializedScriptValue::Create(
   // byte pointers to other types is problematic and can cause UB. String should
   // provide a way to copy directly to a byte array without forcing the caller
   // to do this case.
-  data.CopyTo(reinterpret_cast<UChar*>(data_buffer.data()), 0, data.length());
+  // SAFETY: The preceding code ensures that `data.length()` matches
+  // `data_buffer.data()` as a `UChar*`.
+  data.CopyTo(UNSAFE_BUFFERS(base::span(
+                  reinterpret_cast<UChar*>(data_buffer.data()), data.length())),
+              0);
 
   return base::AdoptRef(new SerializedScriptValue(std::move(data_buffer)));
 }
@@ -150,7 +151,7 @@ inline static constexpr bool IsV0VersionTag(uint8_t tag) {
 }
 
 // Versions 16 and below (prior to April 2017) used ntohs() to byte-swap SSV
-// data when converting it to the wire format. This was a historical accient.
+// data when converting it to the wire format. This was a historical accident.
 //
 // As IndexedDB stores SSVs to disk indefinitely, we still need to keep around
 // the code needed to deserialize the old format.
@@ -172,42 +173,33 @@ inline static bool IsByteSwappedWiredData(base::span<const uint8_t> data) {
   // v1-16 (byte-swapped) - [v,    0xFF, ...], v = version (1 <= v <= 16)
   // v17+                 - [0xFF, v,    ...], v = first byte of version varint
 
-  if (data[0] == kVersionTag) {
-    // The only case where byte-swapped data can have 0xFF in byte zero is
-    // version 0. This can only happen if byte one is a tag (supported in
-    // version 0) that takes in extra data, and the first byte of extra data is
-    // 0xFF. These tags cannot be used as version numbers in the Blink-side SSV
-    // envelope.
-    //
-    // Why we care about version 0:
-    //
-    // IndexedDB stores values using the SSV format. Currently, IndexedDB does
-    // not do any sort of migration, so a value written with a SSV version will
-    // be stored with that version until it is removed via an update or delete.
-    //
-    // IndexedDB was shipped in Chrome 11, which was released on April 27, 2011.
-    // SSV version 1 was added in WebKit r91698, which was shipped in Chrome 14,
-    // which was released on September 16, 2011.
-    static_assert(
-        !IsV0VersionTag(SerializedScriptValue::kWireFormatVersion),
-        "Using a burned version will prevent us from reading SSV version 0");
-    // TODO(pwnall): Add UMA metric here.
-    return IsV0VersionTag(data[1]);
+  if (data[0] != kVersionTag) {
+    // Pre-version 17, thus byte-swapped.
+    return true;
   }
 
-  if (data[1] == kVersionTag) {
-    // The last SSV format that used byte-swapping was version 16. The version
-    // number is stored (before byte-swapping) after a serialization tag, which
-    // is 0xFF.
-    return data[0] != kVersionTag;
-  }
-
-  // If kVersionTag isn't in any of the first two bytes, this is SSV version 0,
-  // which was byte-swapped.
-  return true;
+  // The only case where byte-swapped data can have 0xFF in byte zero is version
+  // 0. This can only happen if byte one is a tag (supported in version 0) that
+  // takes in extra data, and the first byte of extra data is 0xFF. These tags
+  // cannot be used as version numbers in the Blink-side SSV envelope.
+  //
+  // Why we care about version 0:
+  //
+  // IndexedDB stores values using the SSV format. Currently, IndexedDB does not
+  // do any sort of migration, so a value written with a SSV version will be
+  // stored with that version until it is removed via an update or delete.
+  //
+  // IndexedDB was shipped in Chrome 11, which was released on April 27, 2011.
+  // SSV version 1 was added in WebKit r91698, which was shipped in Chrome 14,
+  // which was released on September 16, 2011.
+  static_assert(
+      !IsV0VersionTag(SerializedScriptValue::kWireFormatVersion),
+      "Using a burned version will prevent us from reading SSV version 0");
+  // TODO(pwnall): Add UMA metric here.
+  return IsV0VersionTag(data[1]);
 }
 
-static void SwapWiredDataIfNeeded(base::span<uint8_t> buffer) {
+static void SwapWiredDataByteOrderIfNeeded(base::span<uint8_t> buffer) {
   if (buffer.size() % sizeof(UChar)) {
     return;
   }
@@ -216,9 +208,9 @@ static void SwapWiredDataIfNeeded(base::span<uint8_t> buffer) {
     return;
   }
 
-  static_assert(sizeof(UChar) == 2u);
-  for (size_t i = 0u; i < buffer.size(); i += 2u) {
-    std::swap(buffer[i], buffer[i + 1u]);
+  static_assert(sizeof(UChar) == 2);
+  for (size_t i = 0; i < buffer.size(); i += 2) {
+    std::swap(buffer[i], buffer[i + 1]);
   }
 }
 
@@ -229,8 +221,14 @@ scoped_refptr<SerializedScriptValue> SerializedScriptValue::Create(
 
   DataBufferPtr data_buffer = AllocateBuffer(data.size());
   data_buffer.as_span().copy_from(data);
-  SwapWiredDataIfNeeded(data_buffer.as_span());
+  return Create(std::move(data_buffer));
+}
 
+scoped_refptr<SerializedScriptValue> SerializedScriptValue::Create(
+    DataBufferPtr&& data_buffer) {
+  DCHECK(!data_buffer.empty());
+
+  SwapWiredDataByteOrderIfNeeded(data_buffer.as_span());
   return base::AdoptRef(new SerializedScriptValue(std::move(data_buffer)));
 }
 
@@ -251,9 +249,17 @@ SerializedScriptValue::DataBufferPtr SerializedScriptValue::AllocateBuffer(
   // SAFETY: BufferMalloc() always returns a pointer to at least
   // `buffer_size` bytes.
   return UNSAFE_BUFFERS(DataBufferPtr::FromOwningPointer(
-      static_cast<uint8_t*>(WTF::Partitions::BufferMalloc(
+      static_cast<uint8_t*>(Partitions::BufferMalloc(
           buffer_size, "SerializedScriptValue buffer")),
       buffer_size));
+}
+
+SerializedScriptValue::DataBufferPtr
+SerializedScriptValue::ConsumeAndTakeBuffer() && {
+  CHECK(HasOneRef());
+  auto buffer = std::move(data_buffer_);
+  Release();
+  return buffer;
 }
 
 SerializedScriptValue::~SerializedScriptValue() {
@@ -261,9 +267,8 @@ SerializedScriptValue::~SerializedScriptValue() {
   // likely used in a context other than Worker's onmessage environment and the
   // presence of current v8 context is not guaranteed. Avoid calling v8 then.
   if (has_registered_external_allocation_) {
-    DCHECK(v8::Isolate::GetCurrent());
-    v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-        -static_cast<int64_t>(DataLengthInBytes()));
+    DCHECK_NE(isolate_, nullptr);
+    external_memory_accounter_.Decrease(isolate_.get(), DataLengthInBytes());
   }
 }
 
@@ -286,13 +291,9 @@ String SerializedScriptValue::ToWireString() const {
   // This requires direct use of uninitialized strings, though.
   auto string_size_bytes = base::checked_cast<wtf_size_t>(
       base::bits::AlignUp(data_buffer_.size(), sizeof(UChar)));
-  UChar* backing_ptr;
-  String wire_string = String::CreateUninitialized(
-      string_size_bytes / sizeof(UChar), backing_ptr);
-  auto backing =
-      // TODO(crbug.com/40284755): CreateUninitialized should return a span
-      // pointing to the string backing, instead of a pointer.
-      UNSAFE_BUFFERS(base::span(backing_ptr, wire_string.length()));
+  base::span<UChar> backing;
+  String wire_string =
+      String::CreateUninitialized(string_size_bytes / sizeof(UChar), backing);
   auto [content, padding] =
       base::as_writable_bytes(backing).split_at(data_buffer_.size());
   content.copy_from(data_buffer_);
@@ -315,10 +316,10 @@ SerializedScriptValue::TransferImageBitmapContents(
 
   for (wtf_size_t i = 0; i < image_bitmaps.size(); ++i) {
     if (image_bitmaps[i]->IsNeutered()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
-                                        "ImageBitmap at index " +
-                                            String::Number(i) +
-                                            " is already detached.");
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataCloneError,
+          StrCat({"ImageBitmap at index ", String::Number(i),
+                  " is already detached."}));
       return contents;
     }
   }
@@ -353,17 +354,17 @@ void SerializedScriptValue::TransferOffscreenCanvas(
     if (visited.Contains(offscreen_canvases[i].Get()))
       continue;
     if (offscreen_canvases[i]->IsNeutered()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
-                                        "OffscreenCanvas at index " +
-                                            String::Number(i) +
-                                            " is already detached.");
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataCloneError,
+          StrCat({"OffscreenCanvas at index ", String::Number(i),
+                  " is already detached."}));
       return;
     }
     if (offscreen_canvases[i]->RenderingContext()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        "OffscreenCanvas at index " +
-                                            String::Number(i) +
-                                            " has an associated context.");
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          StrCat({"OffscreenCanvas at index ", String::Number(i),
+                  " has an associated context."}));
       return;
     }
     visited.insert(offscreen_canvases[i].Get());
@@ -481,11 +482,10 @@ void SerializedScriptValue::CloneSharedArrayBuffers(
 
   HeapHashSet<Member<DOMArrayBufferBase>> visited;
   shared_array_buffers_contents_.Grow(array_buffers.size());
-  wtf_size_t i = 0;
-  for (auto it = array_buffers.begin(); it != array_buffers.end(); ++it) {
-    DOMSharedArrayBuffer* shared_array_buffer = *it;
-    if (visited.Contains(shared_array_buffer))
+  for (wtf_size_t i = 0; const auto& shared_array_buffer : array_buffers) {
+    if (visited.Contains(shared_array_buffer)) {
       continue;
+    }
     visited.insert(shared_array_buffer);
     shared_array_buffer->ShareContentsWith(shared_array_buffers_contents_[i]);
     i++;
@@ -519,28 +519,27 @@ bool SerializedScriptValue::HasPackedContents() const {
 
 bool SerializedScriptValue::ExtractTransferables(
     v8::Isolate* isolate,
-    const HeapVector<ScriptValue>& object_sequence,
+    const HeapVector<ScriptObject>& object_sequence,
     Transferables& transferables,
     ExceptionState& exception_state) {
   auto& factory = SerializedScriptValueFactory::Instance();
   wtf_size_t i = 0;
-  for (const auto& script_value : object_sequence) {
-    v8::Local<v8::Value> value = script_value.V8Value();
+  for (const auto& script_object : object_sequence) {
     // Validation of non-null objects, per HTML5 spec 10.3.3.
-    if (IsUndefinedOrNull(value)) {
+    if (script_object.IsNull()) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataCloneError,
-          "Value at index " + String::Number(i) + " is an untransferable " +
-              (value->IsUndefined() ? "'undefined'" : "'null'") + " value.");
+          StrCat({"Value at index ", String::Number(i),
+                  " is an untransferable 'null' value."}));
       return false;
     }
-    if (!factory.ExtractTransferable(isolate, value, i, transferables,
-                                     exception_state)) {
+    if (!factory.ExtractTransferable(isolate, script_object.V8Object(), i,
+                                     transferables, exception_state)) {
       if (!exception_state.HadException()) {
         exception_state.ThrowDOMException(
             DOMExceptionCode::kDataCloneError,
-            "Value at index " + String::Number(i) +
-                " does not have a transferable type.");
+            StrCat({"Value at index ", String::Number(i),
+                    " does not have a transferable type."}));
       }
       return false;
     }
@@ -579,17 +578,15 @@ SerializedScriptValue::TransferArrayBufferContents(
   if (!array_buffers.size())
     return ArrayBufferContentsArray();
 
-  for (auto it = array_buffers.begin(); it != array_buffers.end(); ++it) {
-    DOMArrayBufferBase* array_buffer = *it;
+  for (wtf_size_t i = 0; const auto& array_buffer : array_buffers) {
     if (array_buffer->IsDetached()) {
-      wtf_size_t index =
-          static_cast<wtf_size_t>(std::distance(array_buffers.begin(), it));
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
-                                        "ArrayBuffer at index " +
-                                            String::Number(index) +
-                                            " is already detached.");
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataCloneError,
+          StrCat({"ArrayBuffer at index ", String::Number(i),
+                  " is already detached."}));
       return ArrayBufferContentsArray();
     }
+    i++;
   }
 
   contents.Grow(array_buffers.size());
@@ -604,34 +601,32 @@ SerializedScriptValue::TransferArrayBufferContents(
       static_cast<HeapHashSet<Member<DOMArrayBufferBase>>*>(buffer)->clear();
     }
   } promptly_free_array_buffers{&visited};
-  for (auto it = array_buffers.begin(); it != array_buffers.end(); ++it) {
-    DOMArrayBufferBase* array_buffer_base = *it;
+  for (wtf_size_t i = 0; auto& array_buffer_base : array_buffers) {
+    auto index = i++;
     if (visited.Contains(array_buffer_base))
       continue;
     visited.insert(array_buffer_base);
 
-    wtf_size_t index =
-        static_cast<wtf_size_t>(std::distance(array_buffers.begin(), it));
     if (array_buffer_base->IsShared()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
-                                        "SharedArrayBuffer at index " +
-                                            String::Number(index) +
-                                            " is not transferable.");
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataCloneError,
+          StrCat({"SharedArrayBuffer at index ", String::Number(index),
+                  " is not transferable."}));
       return ArrayBufferContentsArray();
     } else {
       DOMArrayBuffer* array_buffer =
-          static_cast<DOMArrayBuffer*>(array_buffer_base);
+          static_cast<DOMArrayBuffer*>(array_buffer_base.Get());
 
       if (!array_buffer->IsDetachable(isolate)) {
         exception_state.ThrowTypeError(
-            "ArrayBuffer at index " + String::Number(index) +
-            " is not detachable and could not be transferred.");
+            StrCat({"ArrayBuffer at index ", String::Number(index),
+                    " is not detachable and could not be transferred."}));
         return ArrayBufferContentsArray();
       } else if (array_buffer->IsDetached()) {
-        exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
-                                          "ArrayBuffer at index " +
-                                              String::Number(index) +
-                                              " could not be transferred.");
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kDataCloneError,
+            StrCat({"ArrayBuffer at index ", String::Number(index),
+                    " could not be transferred."}));
         return ArrayBufferContentsArray();
       } else if (!array_buffer->Transfer(isolate, contents.at(index),
                                          exception_state)) {
@@ -645,8 +640,8 @@ SerializedScriptValue::TransferArrayBufferContents(
 void SerializedScriptValue::
     UnregisterMemoryAllocatedWithCurrentScriptContext() {
   if (has_registered_external_allocation_) {
-    v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-        -static_cast<int64_t>(DataLengthInBytes()));
+    DCHECK_NE(isolate_, nullptr);
+    external_memory_accounter_.Decrease(isolate_.get(), DataLengthInBytes());
     has_registered_external_allocation_ = false;
   }
 }
@@ -654,19 +649,24 @@ void SerializedScriptValue::
 void SerializedScriptValue::RegisterMemoryAllocatedWithCurrentScriptContext() {
   if (has_registered_external_allocation_)
     return;
-
+  DCHECK_EQ(isolate_, nullptr);
+  DCHECK_NE(v8::Isolate::GetCurrent(), nullptr);
   has_registered_external_allocation_ = true;
-  int64_t diff = static_cast<int64_t>(DataLengthInBytes());
-  DCHECK_GE(diff, 0);
-  v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(diff);
+  isolate_ = v8::Isolate::GetCurrent();
+  external_memory_accounter_.Increase(isolate_.get(), DataLengthInBytes());
+}
+
+const v8::SharedValueConveyor*
+SerializedScriptValue::MaybeGetSharedValueConveyor() const {
+  return base::OptionalToPtr(shared_value_conveyor_);
 }
 
 bool SerializedScriptValue::IsLockedToAgentCluster() const {
   return !wasm_modules_.empty() || !shared_array_buffers_contents_.empty() ||
-         base::ranges::any_of(attachments_,
-                              [](const auto& entry) {
-                                return entry.value->IsLockedToAgentCluster();
-                              }) ||
+         std::ranges::any_of(attachments_,
+                             [](const auto& entry) {
+                               return entry.value->IsLockedToAgentCluster();
+                             }) ||
          shared_value_conveyor_.has_value();
 }
 
@@ -680,7 +680,7 @@ bool SerializedScriptValue::CanDeserializeIn(
   RETURN_IF_ERROR(reader.SkipToTrailer(), [](auto) { return false; });
   RETURN_IF_ERROR(reader.Read(), [](auto) { return false; });
   auto& factory = SerializedScriptValueFactory::Instance();
-  bool result = base::ranges::all_of(
+  bool result = std::ranges::all_of(
       reader.required_exposed_interfaces(), [&](SerializationTag tag) {
         return factory.ExecutionContextExposesInterface(execution_context, tag);
       });

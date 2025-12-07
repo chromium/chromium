@@ -1,0 +1,73 @@
+{
+  "ios-device": {
+    "additional_compile_targets": [
+      "all"
+    ],
+    "isolated_scripts": [
+      {
+        "args": [
+          "--restart",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "17a400",
+          "--xctest"
+        ],
+        "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//base:base_unittests",
+        "module_scheme": "gtest",
+        "name": "base_unittests iPhone 15 Pro 18",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
+            }
+          ],
+          "dimensions": {
+            "cpu": "x86|arm64",
+            "device": "iPhone16,1",
+            "os": "iOS-18"
+          },
+          "expiration": 21600,
+          "named_caches": [
+            {
+              "name": "xcode_ios_17a400",
+              "path": "Xcode.app"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "base_unittests",
+        "test_id_prefix": "ninja://base:base_unittests/",
+        "variant_id": "iPhone 15 Pro 18"
+      }
+    ],
+    "scripts": [
+      {
+        "args": [
+          "--restart",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xctest"
+        ],
+        "module_name": "check_static_initializers",
+        "module_scheme": "single",
+        "name": "check_static_initializers",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "script": "check_static_initializers.py"
+      }
+    ]
+  }
+}

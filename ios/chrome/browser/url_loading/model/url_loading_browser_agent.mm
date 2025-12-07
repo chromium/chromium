@@ -5,16 +5,19 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 
 #import "base/compiler_specific.h"
+#import "base/debug/dump_without_crashing.h"
+#import "base/functional/callback_helpers.h"
 #import "base/immediate_crash.h"
 #import "base/strings/string_number_conversions.h"
+#import "base/task/bind_post_task.h"
 #import "base/task/thread_pool.h"
 #import "ios/chrome/browser/crash_report/model/crash_reporter_url_observer.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
-#import "ios/chrome/browser/prerender/model/prerender_service.h"
-#import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
+#import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/prerender/model/prerender_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
@@ -26,8 +29,6 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_util.h"
 #import "ios/chrome/browser/web/model/load_timing_tab_helper.h"
 #import "net/base/url_util.h"
-
-BROWSER_USER_DATA_KEY_IMPL(UrlLoadingBrowserAgent)
 
 namespace {
 
@@ -63,7 +64,14 @@ NOINLINE void InduceBrowserCrash(const GURL& url) {
     }
   }
 
-#if !TARGET_IPHONE_SIMULATOR  // Leaking memory does not cause UTE on simulator.
+  std::string dump_without_crashing;
+  if (net::GetValueForKeyInQuery(url, "dwc", &dump_without_crashing) &&
+      (dump_without_crashing == "" || dump_without_crashing == "true")) {
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
+
+#if !TARGET_OS_SIMULATOR  // Leaking memory does not cause UTE on simulator.
   std::string leak_string;
   if (net::GetValueForKeyInQuery(url, "leak", &leak_string) &&
       (leak_string == "" || leak_string == "true")) {
@@ -90,6 +98,23 @@ NOINLINE void InduceBrowserCrash(const GURL& url) {
     return;
   }
 
+#if DCHECK_IS_ON()
+  std::string use_after_free_string;
+  if (net::GetValueForKeyInQuery(url, "uaf", &use_after_free_string) &&
+      (use_after_free_string == "" || use_after_free_string == "true")) {
+    for (int i = 0; i < 1000000000; ++i) {
+      auto allocation = std::make_unique<int>();
+      volatile int* allocation_ptr = allocation.get();
+      allocation.reset();
+      // Cause a UAF.
+      [[maybe_unused]] int load = *allocation_ptr;
+    }
+
+    // If no one (gwp, asan, etc) catches the UAF, crash regardless.
+    base::ImmediateCrash();
+  }
+#endif
+
   std::string crash_string;
   if (!net::GetValueForKeyInQuery(url, "crash", &crash_string) ||
       (crash_string == "" || crash_string == "true")) {
@@ -100,7 +125,7 @@ NOINLINE void InduceBrowserCrash(const GURL& url) {
 }  // namespace
 
 UrlLoadingBrowserAgent::UrlLoadingBrowserAgent(Browser* browser)
-    : browser_(browser),
+    : BrowserUserData(browser),
       notifier_(UrlLoadingNotifierBrowserAgent::FromBrowser(browser_)) {
   DCHECK(notifier_);
 }
@@ -159,7 +184,7 @@ void UrlLoadingBrowserAgent::Dispatch(const UrlLoadParams& params) {
 void UrlLoadingBrowserAgent::LoadUrlInCurrentTab(const UrlLoadParams& params) {
   web::NavigationManager::WebLoadParams web_params = params.web_params;
 
-  ChromeBrowserState* browser_state = browser_->GetBrowserState();
+  ProfileIOS* profile = browser_->GetProfile();
 
   notifier_->TabWillLoadUrl(web_params.url, web_params.transition_type);
 
@@ -169,7 +194,7 @@ void UrlLoadingBrowserAgent::LoadUrlInCurrentTab(const UrlLoadParams& params) {
   // NOTE: This check for the Crash Host URL is here to avoid the URL from
   // ending up in the history causing the app to crash at every subsequent
   // restart.
-  if (web_params.url.host() == kChromeUIBrowserCrashHost) {
+  if (web_params.url.GetHost() == kChromeUIBrowserCrashHost) {
     CrashReporterURLObserver::GetSharedInstance()->RecordURL(
         web_params.url, current_web_state, /*pending=*/true);
     InduceBrowserCrash(web_params.url);
@@ -179,24 +204,24 @@ void UrlLoadingBrowserAgent::LoadUrlInCurrentTab(const UrlLoadParams& params) {
     return;
   }
 
-  PrerenderService* prerender_service =
-      PrerenderServiceFactory::GetForBrowserState(browser_state);
+  PrerenderBrowserAgent* prerender_browser_agent =
+      PrerenderBrowserAgent::FromBrowser(browser_);
 
   // Some URLs are not allowed while in incognito.  If we are in incognito and
   // load a disallowed URL, instead create a new tab not in the incognito state.
   // Also if there's no current web state, that means there is no current tab
   // to open in, so this also redirects to a new tab.
-  if (!current_web_state || (browser_state->IsOffTheRecord() &&
-                             !IsURLAllowedInIncognito(web_params.url))) {
-    if (prerender_service) {
-      prerender_service->CancelPrerender();
+  if (!current_web_state ||
+      (profile->IsOffTheRecord() && !IsURLAllowedInIncognito(web_params.url))) {
+    if (prerender_browser_agent) {
+      prerender_browser_agent->CancelPrerender();
     }
     notifier_->TabFailedToLoadUrl(web_params.url, web_params.transition_type);
 
     if (!current_web_state) {
       UrlLoadParams fixed_params = params;
       fixed_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-      fixed_params.in_incognito = browser_state->IsOffTheRecord();
+      fixed_params.in_incognito = profile->IsOffTheRecord();
       Load(fixed_params);
     } else {
       UrlLoadParams fixed_params = UrlLoadParams::InNewTab(web_params);
@@ -209,9 +234,9 @@ void UrlLoadingBrowserAgent::LoadUrlInCurrentTab(const UrlLoadParams& params) {
 
   // Ask the prerender service to load this URL if it can, and return if it does
   // so.
-  if (prerender_service &&
-      prerender_service->MaybeLoadPrerenderedURL(
-          web_params.url, web_params.transition_type, browser_)) {
+  if (prerender_browser_agent &&
+      prerender_browser_agent->ValidatePrerender(web_params.url,
+                                                 web_params.transition_type)) {
     notifier_->TabDidPrerenderUrl(web_params.url, web_params.transition_type);
     return;
   }
@@ -259,11 +284,11 @@ void UrlLoadingBrowserAgent::SwitchToTab(const UrlLoadParams& params) {
       Load(UrlLoadParams::InCurrentTab(web_params));
     } else {
       // Load the URL in foreground.
-      ChromeBrowserState* browser_state = browser_->GetBrowserState();
+      ProfileIOS* profile = browser_->GetProfile();
       UrlLoadParams new_tab_params =
           UrlLoadParams::InNewTab(web_params.url, web_params.virtual_url);
       new_tab_params.web_params.referrer = web::Referrer();
-      new_tab_params.in_incognito = browser_state->IsOffTheRecord();
+      new_tab_params.in_incognito = profile->IsOffTheRecord();
       new_tab_params.append_to = OpenPosition::kCurrentTab;
       scene_service_->LoadUrlInNewTab(new_tab_params);
     }
@@ -279,7 +304,7 @@ void UrlLoadingBrowserAgent::SwitchToTab(const UrlLoadParams& params) {
   // empty tabs.
   if (old_tab_is_ntp_without_history) {
     web_state_list->CloseWebStateAt(old_web_state_index,
-                                    WebStateList::CLOSE_USER_ACTION);
+                                    WebStateList::ClosingReason::kUserAction);
   }
 
   notifier_->DidSwitchToTabWithUrl(web_params.url, new_web_state_index);
@@ -290,25 +315,44 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
   DCHECK(delegate_);
   DCHECK(browser_);
 
-  if (params.in_incognito) {
-    IncognitoReauthSceneAgent* reauth_agent =
-        [IncognitoReauthSceneAgent agentFromScene:browser_->GetSceneState()];
-    DCHECK(!reauth_agent.authenticationRequired);
+  ProfileIOS* profile = browser_->GetProfile();
+  if (!IsAddNewTabAllowedByPolicy(profile->GetPrefs(), params.in_incognito)) {
+    return;
   }
 
-  ChromeBrowserState* browser_state = browser_->GetBrowserState();
-  ChromeBrowserState* active_browser_state =
-      scene_service_->GetCurrentBrowser()->GetBrowserState();
+  // Only open tab in incognito if re-authentication is not needed.
+  IncognitoReauthSceneAgent* reauth_agent =
+      [IncognitoReauthSceneAgent agentFromScene:browser_->GetSceneState()];
+  if (params.in_incognito && reauth_agent.authenticationRequired) {
+    base::OnceCallback<void(BOOL)> load_url_on_auth_success = base::BindOnce(
+        [](base::OnceClosure closure, BOOL success) {
+          if (success) {
+            std::move(closure).Run();
+          }
+        },
+        base::BindOnce(&UrlLoadingBrowserAgent::LoadUrlInNewTab,
+                       weak_ptr_factory_.GetWeakPtr(), params));
+    [reauth_agent
+        authenticateIncognitoContentWithCompletionBlock:
+            base::CallbackToBlock(std::move(load_url_on_auth_success))];
+    return;
+  }
+
+  ProfileIOS* active_profile =
+      scene_service_->GetCurrentBrowser()->GetProfile();
 
   // Two UrlLoadingServices exist per scene, normal and incognito.  Handle two
-  // special cases that need to be sent up to the SceneUrlLoadingService: 1) The
-  // URL needs to be loaded by the UrlLoadingService for the other mode. 2) The
-  // URL will be loaded in a foreground tab by this UrlLoadingService, but the
-  // UI associated with this UrlLoadingService is not currently visible, so the
-  // SceneUrlLoadingService needs to switch modes before loading the URL.
-  if (params.in_incognito != browser_state->IsOffTheRecord() ||
-      (!params.in_background() &&
-       params.in_incognito != active_browser_state->IsOffTheRecord())) {
+  // special cases that need to be sent up to the SceneUrlLoadingService:
+  // 1) The URL needs to be loaded by the UrlLoadingService for the other mode.
+  if (params.in_incognito != profile->IsOffTheRecord()) {
+    scene_service_->GetBrowserAgent(params.in_incognito)->Load(params);
+    return;
+  }
+  // 2) The URL will be loaded in a foreground tab by this UrlLoadingService,
+  // but the UI associated with this UrlLoadingService is not currently visible,
+  // so the SceneUrlLoadingService needs to switch modes before loading the URL.
+  if (params.switch_mode_if_needed && !params.in_background() &&
+      params.in_incognito != active_profile->IsOffTheRecord()) {
     // When sending a load request that switches modes, ensure the tab
     // ends up appended to the end of the model, not just next to what is
     // currently selected in the other mode. This is done with the `append_to`
@@ -327,45 +371,49 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
   }
 
   if (!params.in_background()) {
-    LoadUrlInNewTabImpl(params, std::nullopt);
+    LoadUrlInNewTabImpl(params, web::WebStateID());
   } else {
-    __block void* hint = nullptr;
-    __block UrlLoadParams saved_params = params;
-    __block base::WeakPtr<UrlLoadingBrowserAgent> weak_ptr =
-        weak_ptr_factory_.GetWeakPtr();
-
+    web::WebStateID active_tab_id;
     if (params.append_to == OpenPosition::kCurrentTab) {
-      hint = browser_->GetWebStateList()->GetActiveWebState();
+      if (web::WebState* active_web_state =
+              browser_->GetWebStateList()->GetActiveWebState()) {
+        active_tab_id = active_web_state->GetUniqueIdentifier();
+      }
     }
 
-    [delegate_ animateOpenBackgroundTabFromParams:params
-                                       completion:^{
-                                         if (weak_ptr) {
-                                           weak_ptr->LoadUrlInNewTabImpl(
-                                               saved_params, hint);
-                                         }
-                                       }];
+    // If the tab should open in background in a different mode, dispatch the
+    // load to ensure that if there are several tabs opened at the same time the
+    // foreground one has time to be opened first.
+    bool should_dispatch_load =
+        params.in_incognito != active_profile->IsOffTheRecord();
+    base::OnceClosure load_url_closure =
+        base::BindOnce(&UrlLoadingBrowserAgent::LoadUrlInNewTabImpl,
+                       weak_ptr_factory_.GetWeakPtr(), params, active_tab_id);
+    if (should_dispatch_load) {
+      load_url_closure =
+          base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                             std::move(load_url_closure));
+    }
+    [delegate_
+        animateOpenBackgroundTabFromParams:params
+                                completion:base::CallbackToBlock(
+                                               std::move(load_url_closure))];
   }
 }
 
-void UrlLoadingBrowserAgent::LoadUrlInNewTabImpl(const UrlLoadParams& params,
-                                                 std::optional<void*> hint) {
+void UrlLoadingBrowserAgent::LoadUrlInNewTabImpl(
+    const UrlLoadParams& params,
+    web::WebStateID active_tab_id) {
   web::WebState* parent_web_state = nullptr;
   if (params.append_to == OpenPosition::kCurrentTab) {
     parent_web_state = browser_->GetWebStateList()->GetActiveWebState();
 
-    // Detect whether the active tab changed during the animation of opening
-    // a tab in the background. This is only needed when opening in background
-    // (thus the use of optional).
-    //
-    // This compare the value read before vs after the animation (as `void*`
-    // to prevent trying to dereference a potentially dangling pointer). This
-    // is not 100% fool proof as the WebState could have been destroyed, then
-    // a new one allocated at the same address and inserted as the active tab.
-    // However, this is highly likely to happen. Even if it were to happen, it
-    // would be benign as the only drawback is that the wrong tab would be
-    // selected upon closing the newly opened tab.
-    if (hint && hint.value() != parent_web_state) {
+    // Detecting whether the active tab change is done by comparing the
+    // WebStateID. This is cheap, does not require passing a pointer that could
+    // become dangling, nor creating a WeakPtr which is expensive, when the only
+    // thing we are interested is detecting a change.
+    if (active_tab_id.valid() && parent_web_state &&
+        parent_web_state->GetUniqueIdentifier() != active_tab_id) {
       parent_web_state = nullptr;
     }
   }
@@ -385,6 +433,7 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTabImpl(const UrlLoadParams& params,
   insertion_params.inherit_opener = params.inherit_opener;
   insertion_params.should_skip_new_tab_animation = params.from_external;
   insertion_params.placeholder_title = params.placeholder_title;
+  insertion_params.insert_pinned = params.load_pinned;
   insertion_params.insert_in_group = params.load_in_group;
   insertion_params.tab_group = params.tab_group;
 

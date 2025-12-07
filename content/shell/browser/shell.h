@@ -11,16 +11,14 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/session_storage_namespace.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/shell/browser/shell_platform_delegate.h"
-#include "ipc/ipc_channel.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class GURL;
 
@@ -117,13 +115,14 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
       const OpenURLParams& params,
       base::OnceCallback<void(content::NavigationHandle&)>
           navigation_handle_callback) override;
-  void AddNewContents(WebContents* source,
-                      std::unique_ptr<WebContents> new_contents,
-                      const GURL& target_url,
-                      WindowOpenDisposition disposition,
-                      const blink::mojom::WindowFeatures& window_features,
-                      bool user_gesture,
-                      bool* was_blocked) override;
+  WebContents* AddNewContents(
+      WebContents* source,
+      std::unique_ptr<WebContents> new_contents,
+      const GURL& target_url,
+      WindowOpenDisposition disposition,
+      const blink::mojom::WindowFeatures& window_features,
+      bool user_gesture,
+      bool* was_blocked) override;
   void LoadingStateChanged(WebContents* source,
                            bool should_show_loading_ui) override;
 #if BUILDFLAG(IS_ANDROID)
@@ -141,6 +140,10 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
                                const std::string& protocol,
                                const GURL& url,
                                bool user_gesture) override;
+  void UnregisterProtocolHandler(RenderFrameHost* requesting_frame,
+                                 const std::string& protocol,
+                                 const GURL& url,
+                                 bool user_gesture) override;
 #endif
   void RequestPointerLock(WebContents* web_contents,
                           bool user_gesture,
@@ -180,7 +183,8 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
                           const base::FilePath& path) override;
   bool IsBackForwardCacheSupported(WebContents& contents) override;
   PreloadingEligibility IsPrerender2Supported(
-      WebContents& web_contents) override;
+      WebContents& web_contents,
+      PreloadingTriggerType trigger_type) override;
   bool ShouldAllowRunningInsecureContent(WebContents* web_contents,
                                          bool allowed_per_prefs,
                                          const url::Origin& origin,

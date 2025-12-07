@@ -1,0 +1,29 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++group ispopup=auto
+++++++++textField
+++++++++++genericContainer
+++++++button hasInterestFor name='Button' detailsFrom=interestFor detailsIds=group
+++++++++staticText name='Button'
+++++++++++inlineTextBox name='Button'
+++++++button name='Button'
+++++++++staticText name='Button'
+++++++++++inlineTextBox name='Button'
+++++++group ispopup=auto
+++++++++textField
+++++++++++genericContainer
+++++++group ispopup=auto
+++++++++staticText name='Plain #3'
+++++++++++inlineTextBox name='Plain #3'
+++++++button name='Plain #3'
+++++++group ispopup=auto
+++++++++staticText name='Plain #4'
+++++++++++inlineTextBox name='Plain #4'
+++++++button description='Plain #4' name='Button' descriptionFrom=interestFor describedbyIds=group
+++++++++staticText name='Button'
+++++++++++inlineTextBox name='Button'
+++++++genericContainer
+++++++++staticText name='Plain #5'
+++++++++++inlineTextBox name='Plain #5'
+++++++button name='Plain #5'

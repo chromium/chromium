@@ -9,7 +9,8 @@ import("//build/config/coverage/coverage.gni")
 enable_libs_and_assets_verification =
     !enable_chrome_android_internal && !is_component_build &&
     !use_jacoco_coverage && is_official_build &&
-    (target_cpu == "arm64" && android_channel == "stable")
+    ((target_cpu == "arm64" || target_cpu == "x64") &&
+     android_channel == "stable")
 
 # enable_chrome_android_internal: Manifest merging of play services deps vary.
 # use_jacoco_coverage: Adds proguard flags.
@@ -17,4 +18,5 @@ enable_libs_and_assets_verification =
 # target_cpu: android:versionCode varies.
 enable_manifest_verification =
     !is_java_debug && !enable_chrome_android_internal && !use_jacoco_coverage &&
-    (target_cpu == "arm64" && android_channel == "stable")
+    ((target_cpu == "arm64" || target_cpu == "x64") &&
+     android_channel == "stable")

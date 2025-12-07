@@ -1,0 +1,21 @@
+Nested @starting-style with nested rule
+Dumping matched rules: 
+*div* {    regular
+    padding: 10px; @[3:12-3:26]
+    transition: background-color 1s ease; @[4:12-4:49]
+    display: inline-block; @[5:12-5:34]
+    padding-top: 10px; @[undefined-undefined]
+    padding-right: 10px; @[undefined-undefined]
+    padding-bottom: 10px; @[undefined-undefined]
+    padding-left: 10px; @[undefined-undefined]
+    transition-behavior: normal; @[undefined-undefined]
+    transition-duration: 1s; @[undefined-undefined]
+    transition-timing-function: ease; @[undefined-undefined]
+    transition-delay: 0s; @[undefined-undefined]
+    transition-property: background-color; @[undefined-undefined]
+    display: inline-block; @[undefined-undefined]
+}
+Dumping inherited rules: 
+*body* {    regular
+}
+

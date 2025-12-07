@@ -7,6 +7,7 @@
 #include <limits>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/trace_event/trace_event.h"
@@ -158,8 +159,7 @@ MojoResult MessagePipeDispatcher::WriteMessage(
       return MOJO_RESULT_FAILED_PRECONDITION;
     }
 
-    NOTREACHED_IN_MIGRATION();
-    return MOJO_RESULT_UNKNOWN;
+    NOTREACHED();
   }
 
   // We may need to update anyone watching our signals in case we just exceeded
@@ -181,8 +181,7 @@ MojoResult MessagePipeDispatcher::ReadMessage(
         rv == ports::ERROR_PORT_STATE_UNEXPECTED)
       return MOJO_RESULT_INVALID_ARGUMENT;
 
-    NOTREACHED_IN_MIGRATION();
-    return MOJO_RESULT_UNKNOWN;
+    NOTREACHED();
   }
 
   if (!*message) {
@@ -322,7 +321,7 @@ bool MessagePipeDispatcher::EndSerialize(void* destination,
   SerializedState* state = static_cast<SerializedState*>(destination);
   state->pipe_id = pipe_id_;
   state->endpoint = static_cast<int8_t>(endpoint_);
-  memset(state->padding, 0, sizeof(state->padding));
+  UNSAFE_TODO(memset(state->padding, 0, sizeof(state->padding)));
   ports[0] = port_.name();
   return true;
 }

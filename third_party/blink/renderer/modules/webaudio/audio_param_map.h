@@ -40,12 +40,10 @@ class AudioParamMap final : public ScriptWrappable,
 
  private:
   PairSyncIterable<AudioParamMap>::IterationSource* CreateIterationSource(
-      ScriptState*,
-      ExceptionState&) override;
+      ScriptState*) override;
   bool GetMapEntry(ScriptState*,
                    const String& key,
-                   AudioParam*& value,
-                   ExceptionState&) override;
+                   AudioParam*& value) override;
 
   const MapType parameter_map_;
 };

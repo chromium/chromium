@@ -11,7 +11,6 @@
 
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
-#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/gles2_cmd_validation.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
@@ -36,7 +35,7 @@ class GPU_GLES2_EXPORT FeatureInfo : public base::RefCounted<FeatureInfo> {
   struct FeatureFlags {
     FeatureFlags();
 
-    GpuMemoryBufferFormatSet gpu_memory_buffer_formats = {
+    gfx::GpuMemoryBufferFormatSet gpu_memory_buffer_formats = {
         gfx::BufferFormat::BGR_565,   gfx::BufferFormat::RGBA_4444,
         gfx::BufferFormat::RGBA_8888, gfx::BufferFormat::RGBX_8888,
         gfx::BufferFormat::YVU_420,   gfx::BufferFormat::YUV_420_BIPLANAR,
@@ -86,7 +85,7 @@ class GPU_GLES2_EXPORT FeatureInfo : public base::RefCounted<FeatureInfo> {
     bool map_buffer_range = false;
     bool ext_discard_framebuffer = false;
     bool angle_depth_texture = false;
-    bool is_swiftshader_for_webgl = false;
+    bool is_software_webgl = false;
     bool angle_texture_usage = false;
     bool ext_texture_storage = false;
     bool blend_equation_advanced = false;
@@ -147,6 +146,7 @@ class GPU_GLES2_EXPORT FeatureInfo : public base::RefCounted<FeatureInfo> {
     bool angle_polygon_mode = false;
     bool ext_clip_control = false;
     bool ext_polygon_offset_clamp = false;
+    bool angle_blob_cache = false;
   };
 
   FeatureInfo();
@@ -161,8 +161,10 @@ class GPU_GLES2_EXPORT FeatureInfo : public base::RefCounted<FeatureInfo> {
   // Initializes the feature information. Needs a current GL context.
   void Initialize(ContextType context_type,
                   bool is_passthrough_cmd_decoder,
-                  const DisallowedFeatures& disallowed_features,
-                  bool force_reinitialize = false);
+                  const DisallowedFeatures& disallowed_features);
+
+  // Same as above, but allows reinitialization.
+  void ForceReinitialize();
 
   // Helper that defaults to no disallowed features and a GLES2 context.
   void InitializeForTesting();

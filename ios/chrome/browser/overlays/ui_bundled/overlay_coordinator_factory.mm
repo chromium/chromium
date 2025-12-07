@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/infobar_banner_overlay_coordinator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/translate/translate_infobar_placeholder_overlay_coordinator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/autofill_address_profile/save_address_profile_infobar_modal_overlay_coordinator.h"
-#import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/parcel_tracking/parcel_tracking_infobar_modal_overlay_coordinator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/passwords/password_infobar_modal_overlay_coordinator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/permissions/permissions_infobar_modal_overlay_coordinator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/save_card/save_card_infobar_modal_overlay_coordinator.h"
@@ -25,13 +24,13 @@
 #import "ios/chrome/browser/overlays/ui_bundled/web_content_area/alerts/alert_overlay_coordinator.h"
 
 @implementation OverlayRequestCoordinatorFactory {
-  raw_ptr<Browser> _browser;
+  raw_ptr<Browser, DanglingUntriaged> _browser;
   OverlayModality _modality;
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser
                        modality:(OverlayModality)modality {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _browser = browser;
     DCHECK(_browser);
 
@@ -60,7 +59,6 @@
 
 // Returns the OverlayRequestCoordinator subclass responsible for showing
 // `request`'s overlay UI.
-// TODO(crbug.com/40268990): Clean the switch when the default flow is added.
 - (Class)coordinatorClassForRequest:(OverlayRequest*)request {
   if (DefaultInfobarOverlayRequestConfig::RequestSupport()->IsRequestSupported(
           request)) {
@@ -79,7 +77,7 @@
       // OverlayModality::kTesting.
       // TODO(crbug.com/40120484): Remove requirement once modalities are
       // converted to no longer use enums.
-      NOTREACHED_NORETURN() << "Received unsupported modality.";
+      NOTREACHED() << "Received unsupported modality.";
     case OverlayModality::kWebContentArea:
       return [AlertOverlayCoordinator class];
     case OverlayModality::kInfobarBanner:
@@ -95,7 +93,7 @@
       }
       break;
   }
-  NOTREACHED_NORETURN() << "Received unsupported request type.";
+  NOTREACHED() << "Received unsupported request type.";
 }
 
 // Returns the coordinator class corresponding to the given `infobarType`.
@@ -106,10 +104,9 @@
       // OverlayModality::kTesting.
       // TODO(crbug.com/40120484): Remove requirement once modalities are
       // converted to no longer use enums.
-      NOTREACHED_NORETURN() << "Received unsupported modality.";
+      NOTREACHED() << "Received unsupported modality.";
     case OverlayModality::kWebContentArea:
-      NOTREACHED_NORETURN()
-          << "None implemented yet. Received unsupported modality.";
+      NOTREACHED() << "None implemented yet. Received unsupported modality.";
     case OverlayModality::kInfobarBanner:
       return [InfobarBannerOverlayCoordinator class];
     case OverlayModality::kInfobarModal:
@@ -123,13 +120,11 @@
           return [SaveCardInfobarModalOverlayCoordinator class];
         case InfobarType::kInfobarTypeTranslate:
           return [TranslateInfobarModalOverlayCoordinator class];
-        case InfobarType::kInfobarTypeParcelTracking:
-          return [ParcelTrackingInfobarModalOverlayCoordinator class];
         default:
           break;
       }
   }
-  NOTREACHED_NORETURN() << "Received unsupported infobar type.";
+  NOTREACHED() << "Received unsupported infobar type.";
 }
 
 @end

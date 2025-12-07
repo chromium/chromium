@@ -109,8 +109,9 @@ TEST(Yama, GetStatus) {
   EXPECT_EQ(static_cast<bool>(status1 & Yama::STATUS_PRESENT),
             Yama::IsPresent());
 
-  fprintf(stdout, "Yama present: %s - enforcing: %s\n",
-          Yama::IsPresent() ? "Y" : "N", Yama::IsEnforcing() ? "Y" : "N");
+  UNSAFE_TODO(fprintf(stdout, "Yama present: %s - enforcing: %s\n",
+                      Yama::IsPresent() ? "Y" : "N",
+                      Yama::IsEnforcing() ? "Y" : "N"));
 }
 
 SANDBOX_TEST(Yama, RestrictPtraceSucceedsWhenYamaPresent) {

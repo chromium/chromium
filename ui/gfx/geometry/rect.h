@@ -16,7 +16,8 @@
 #include <iosfwd>
 #include <string>
 
-#include "base/check.h"
+#include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
@@ -34,7 +35,7 @@ typedef struct CGRect CGRect;
 
 namespace gfx {
 
-class GEOMETRY_EXPORT Rect {
+class COMPONENT_EXPORT(GEOMETRY) Rect {
  public:
   constexpr Rect() = default;
   constexpr Rect(int width, int height) : size_(width, height) {}
@@ -229,6 +230,9 @@ class GEOMETRY_EXPORT Rect {
   // Returns the center of this rectangle.
   Point CenterPoint() const;
 
+  // Becomes a rectangle that has the same center point but with a |size|.
+  void ToCenteredSize(const Size& size);
+
   // Becomes a rectangle that has the same center point but with a size capped
   // at given |size|.
   void ClampToCenteredSize(const Size& size);
@@ -260,6 +264,8 @@ class GEOMETRY_EXPORT Rect {
 
   bool ApproximatelyEqual(const Rect& rect, int tolerance) const;
 
+  friend bool operator==(const Rect&, const Rect&) = default;
+
  private:
   // Clamp the width/height to avoid integer overflow in bottom() and right().
   // This returns the clamped width/height given an |x_or_y| and a
@@ -275,25 +281,19 @@ class GEOMETRY_EXPORT Rect {
   gfx::Size size_;
 };
 
-inline bool operator==(const Rect& lhs, const Rect& rhs) {
-  return lhs.origin() == rhs.origin() && lhs.size() == rhs.size();
-}
-
-inline bool operator!=(const Rect& lhs, const Rect& rhs) {
-  return !(lhs == rhs);
-}
-
-GEOMETRY_EXPORT Rect operator+(const Rect& lhs, const Vector2d& rhs);
-GEOMETRY_EXPORT Rect operator-(const Rect& lhs, const Vector2d& rhs);
+COMPONENT_EXPORT(GEOMETRY) Rect operator+(const Rect& lhs, const Vector2d& rhs);
+COMPONENT_EXPORT(GEOMETRY) Rect operator-(const Rect& lhs, const Vector2d& rhs);
 
 inline Rect operator+(const Vector2d& lhs, const Rect& rhs) {
   return rhs + lhs;
 }
 
-GEOMETRY_EXPORT Rect IntersectRects(const Rect& a, const Rect& b);
-GEOMETRY_EXPORT Rect UnionRects(const Rect& a, const Rect& b);
-GEOMETRY_EXPORT Rect UnionRectsEvenIfEmpty(const Rect& a, const Rect& b);
-GEOMETRY_EXPORT Rect SubtractRects(const Rect& a, const Rect& b);
+COMPONENT_EXPORT(GEOMETRY) Rect IntersectRects(const Rect& a, const Rect& b);
+COMPONENT_EXPORT(GEOMETRY) Rect UnionRects(const Rect& a, const Rect& b);
+COMPONENT_EXPORT(GEOMETRY) Rect UnionRects(base::span<const Rect> rects);
+COMPONENT_EXPORT(GEOMETRY)
+Rect UnionRectsEvenIfEmpty(const Rect& a, const Rect& b);
+COMPONENT_EXPORT(GEOMETRY) Rect SubtractRects(const Rect& a, const Rect& b);
 
 // Constructs a rectangle with |p1| and |p2| as opposite corners.
 //
@@ -301,7 +301,7 @@ GEOMETRY_EXPORT Rect SubtractRects(const Rect& a, const Rect& b);
 // points", except that we consider points on the right/bottom edges of the
 // rect to be outside the rect.  So technically one or both points will not be
 // contained within the rect, because they will appear on one of these edges.
-GEOMETRY_EXPORT Rect BoundingRect(const Point& p1, const Point& p2);
+COMPONENT_EXPORT(GEOMETRY) Rect BoundingRect(const Point& p1, const Point& p2);
 
 // Scales the rect and returns the enclosing rect. The components are clamped
 // if they would overflow.
@@ -367,12 +367,14 @@ inline Rect ScaleToRoundedRect(const Rect& rect, float scale) {
 // the distance between the edge and the nearest integer grid is smaller than
 // `error`, the edge is snapped to the integer grid.  The default error is 0.001
 // , which is used by cc/viz. Use this when scaling the window/layer size.
-GEOMETRY_EXPORT Rect ScaleToEnclosingRectIgnoringError(const Rect& rect,
-                                                       float scale,
-                                                       float error = 0.001f);
+COMPONENT_EXPORT(GEOMETRY)
+Rect ScaleToEnclosingRectIgnoringError(const Rect& rect,
+                                       float scale,
+                                       float error = 0.001f);
 
 // Return a maximum rectangle that is covered by the a or b.
-GEOMETRY_EXPORT Rect MaximumCoveredRect(const Rect& a, const Rect& b);
+COMPONENT_EXPORT(GEOMETRY)
+Rect MaximumCoveredRect(const Rect& a, const Rect& b);
 
 // This is declared here for use in gtest-based unit tests but is defined in
 // the //ui/gfx:test_support target. Depend on that to use this in your unit

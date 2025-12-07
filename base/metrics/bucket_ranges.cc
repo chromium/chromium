@@ -4,6 +4,7 @@
 
 #include "base/metrics/bucket_ranges.h"
 
+#include <algorithm>
 #include <cmath>
 
 #include "base/containers/span.h"
@@ -11,9 +12,31 @@
 
 namespace base {
 
+namespace {
+
+constexpr bool is_sorted_and_unique(
+    base::span<const HistogramBase::Sample32> c) {
+  // Return true if we cannot find any adjacent pair {a, b} where a >= b.
+  return std::adjacent_find(c.begin(), c.end(),
+                            std::greater_equal<HistogramBase::Sample32>()) ==
+         c.end();
+}
+
+}  // namespace
+
 BucketRanges::BucketRanges(size_t num_ranges)
-    : ranges_(num_ranges, 0),
-      checksum_(0) {}
+    : ranges_(num_ranges, 0), checksum_(0) {}
+
+BucketRanges::BucketRanges(base::span<const HistogramBase::Sample32> data)
+    : ranges_(data.begin(), data.end()), checksum_(0) {
+  // Because the range values must be in sorted order, it suffices to only
+  // validate that the first one is non-negative.
+  if (!ranges_.empty() && ranges_[0] >= 0 && is_sorted_and_unique(ranges_)) {
+    ResetChecksum();
+  } else {
+    ranges_.clear();
+  }
+}
 
 BucketRanges::~BucketRanges() = default;
 
@@ -22,8 +45,9 @@ uint32_t BucketRanges::CalculateChecksum() const {
   // take the address of ranges_[0] which will fail for an empty vector even
   // if that address is never used.
   const size_t ranges_size = ranges_.size();
-  if (ranges_size == 0)
+  if (ranges_size == 0) {
     return 0;
+  }
 
   // Checksum is seeded with the ranges "size".
   return Crc32(static_cast<uint32_t>(ranges_size), base::as_byte_span(ranges_));
@@ -38,15 +62,7 @@ void BucketRanges::ResetChecksum() {
 }
 
 bool BucketRanges::Equals(const BucketRanges* other) const {
-  if (checksum_ != other->checksum_)
-    return false;
-  if (ranges_.size() != other->ranges_.size())
-    return false;
-  for (size_t index = 0; index < ranges_.size(); ++index) {
-    if (ranges_[index] != other->ranges_[index])
-      return false;
-  }
-  return true;
+  return checksum_ == other->checksum_ && ranges_ == other->ranges_;
 }
 
 }  // namespace base

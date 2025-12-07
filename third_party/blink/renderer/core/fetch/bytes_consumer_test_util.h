@@ -21,7 +21,7 @@ class BytesConsumerTestUtil {
  public:
   class MockBytesConsumer : public BytesConsumer {
    public:
-    MOCK_METHOD2(BeginRead, Result(const char**, size_t*));
+    MOCK_METHOD1(BeginRead, Result(base::span<const char>&));
     MOCK_METHOD1(EndRead, Result(size_t));
     MOCK_METHOD1(DrainAsBlobDataHandle,
                  scoped_refptr<BlobDataHandle>(BlobSizePolicy));
@@ -67,8 +67,6 @@ class BytesConsumerTestUtil {
       DidFetchDataLoadedFormDataMock(FormData);
     }
   };
-
-  static String CharVectorToString(const Vector<char>&);
 };
 
 }  // namespace blink

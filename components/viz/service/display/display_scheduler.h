@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
@@ -27,7 +28,8 @@ class HintSessionFactory;
 
 class VIZ_SERVICE_EXPORT DisplayScheduler
     : public DisplaySchedulerBase,
-      public DynamicBeginFrameDeadlineOffsetSource {
+      public DynamicBeginFrameDeadlineOffsetSource,
+      public BeginFrameSource::SchedulerClient {
  public:
   // `max_pending_swaps_120hz`, if positive, is used as the number of pending
   // swaps while running at 120hz. Otherwise, this will fallback to
@@ -47,14 +49,17 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
   void SetDamageTracker(DisplayDamageTracker* damage_tracker) override;
   void SetVisible(bool visible) override;
   void ForceImmediateSwapIfPossible() override;
-  void SetNeedsOneBeginFrame(bool needs_draw) override;
+  void SetNeedsOneBeginFrame(const BeginFrameArgs& args,
+                             bool needs_draw) override;
   void DidSwapBuffers() override;
   void DidReceiveSwapBuffersAck() override;
   void OutputSurfaceLost() override;
-  void ReportFrameTime(base::TimeDelta frame_time,
-                       base::flat_set<base::PlatformThreadId> thread_ids,
-                       base::TimeTicks draw_start,
-                       HintSession::BoostType boost_type) override;
+  void ReportFrameTime(
+      base::TimeDelta frame_time,
+      base::flat_set<base::PlatformThreadId> animation_thread_ids,
+      base::flat_set<base::PlatformThreadId> renderer_main_thread_ids,
+      base::TimeTicks draw_start,
+      HintSession::BoostType boost_type) override;
 
   // DisplayDamageTracker::Delegate implementation.
   void OnDisplayDamaged(SurfaceId surface_id) override;
@@ -63,6 +68,9 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
 
   // DynamicBeginFrameDeadlineOffsetSource:
   base::TimeDelta GetDeadlineOffset(base::TimeDelta interval) const override;
+
+  // BeginFrameSource::SchedulerClient implementation.
+  void OnBeginFrameForScheduling(const BeginFrameArgs& args) override;
 
  protected:
   class BeginFrameObserver;
@@ -119,8 +127,9 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
   void DidFinishFrame(bool did_draw);
   // Updates |has_pending_surfaces_| and returns whether its value changed.
   bool UpdateHasPendingSurfaces();
-  void MaybeCreateHintSession(
-      base::flat_set<base::PlatformThreadId> thread_ids);
+  void MaybeCreateHintSessions(
+      base::flat_set<base::PlatformThreadId> animation_thread_ids,
+      base::flat_set<base::PlatformThreadId> renderer_main_thread_ids);
 
   std::unique_ptr<BeginFrameObserver> begin_frame_observer_;
   raw_ptr<BeginFrameSource> begin_frame_source_;
@@ -149,9 +158,18 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
   bool observing_begin_frame_source_;
 
   const raw_ptr<HintSessionFactory> hint_session_factory_;
-  base::flat_set<base::PlatformThreadId> current_thread_ids_;
-  std::unique_ptr<HintSession> hint_session_;
-  bool create_session_for_current_thread_ids_failed_ = false;
+
+  struct AdpfSessionState {
+    base::flat_set<base::PlatformThreadId> thread_ids;
+    std::unique_ptr<HintSession> hint_session;
+    bool create_session_for_current_thread_ids_failed = false;
+    HintSession::SessionType type;
+
+    explicit AdpfSessionState(HintSession::SessionType type);
+    AdpfSessionState(AdpfSessionState&&);
+    ~AdpfSessionState();
+  };
+  std::vector<AdpfSessionState> session_states_;
 
   base::WeakPtrFactory<DisplayScheduler> weak_ptr_factory_{this};
 };

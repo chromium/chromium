@@ -4,13 +4,15 @@
 
 package org.chromium.base.test.transit;
 
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assertNonNull;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatus.Status;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.concurrent.Callable;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Represents a logical expression that has to be true to consider the Station active and false to
@@ -18,9 +20,9 @@ import java.util.function.Function;
  *
  * <p>The logical expression is passed in as a |checkFunction|.
  *
- * <p>LogicalElements should be declared by calling {@link
- * Elements.Builder#declareLogicalElement(LogicalElement)} passing in an instance created by one of
- * the factory methods here such as {@link #uiThreadLogicalElement(String, Function, Supplier)}.
+ * <p>LogicalElements should be declared by calling {@link Elements.Builder#declareElement(Element)}
+ * passing in an instance created by one of the factory methods here such as {@link
+ * #uiThreadLogicalElement(String, Function, Supplier)}.
  *
  * <p>Generates ENTER and EXIT Conditions for the ConditionalState to ensure the LogicalElement is
  * in the right state.
@@ -30,29 +32,12 @@ import java.util.function.Function;
  *
  * @param <ParamT> type of parameter the |checkFunction| requires.
  */
+@NullMarked
 public class LogicalElement<ParamT> extends Element<Void> {
-
-    private static final ConditionWithResult<Void> CONDITION_WITH_NULL_RESULT =
-            new ConditionWithResult<>(/* isRunOnUiThread= */ false) {
-                @Override
-                public String buildDescription() {
-                    return "Supplier of null";
-                }
-
-                @Override
-                public boolean hasValue() {
-                    return true;
-                }
-
-                @Override
-                protected ConditionStatusWithResult<Void> resolveWithSuppliers() {
-                    return fulfilled().withResult(null);
-                }
-            };
     private final boolean mIsRunOnUiThread;
     private final String mDescription;
     private final Function<ParamT, ConditionStatus> mCheckFunction;
-    private final Supplier<ParamT> mParamSupplier;
+    private final @Nullable Supplier<@Nullable ParamT> mParamSupplier;
 
     /**
      * Create a LogicalElement that runs the check on the UI Thread.
@@ -64,7 +49,7 @@ public class LogicalElement<ParamT> extends Element<Void> {
     public static <T> LogicalElement<T> uiThreadLogicalElement(
             String description,
             Function<T, ConditionStatus> checkFunction,
-            Supplier<T> paramSupplier,
+            Supplier<@Nullable T> paramSupplier,
             String id) {
         return new LogicalElement<>(
                 /* isRunOnUiThread= */ true, description, checkFunction, paramSupplier, id);
@@ -77,7 +62,7 @@ public class LogicalElement<ParamT> extends Element<Void> {
     public static <T> LogicalElement<T> uiThreadLogicalElement(
             String description,
             Function<T, ConditionStatus> checkFunction,
-            Supplier<T> paramSupplier) {
+            Supplier<@Nullable T> paramSupplier) {
         return new LogicalElement<>(
                 /* isRunOnUiThread= */ true,
                 description,
@@ -96,7 +81,7 @@ public class LogicalElement<ParamT> extends Element<Void> {
                 /* isRunOnUiThread= */ true,
                 description,
                 new CallableAsFunction(checkCallable),
-                CONDITION_WITH_NULL_RESULT,
+                /* paramSupplier= */ null,
                 /* id= */ null);
     }
 
@@ -110,7 +95,7 @@ public class LogicalElement<ParamT> extends Element<Void> {
     public static <T> LogicalElement<T> instrumentationThreadLogicalElement(
             String description,
             Function<T, ConditionStatus> checkFunction,
-            Supplier<T> paramSupplier,
+            Supplier<@Nullable T> paramSupplier,
             String id) {
         return new LogicalElement<>(
                 /* isRunOnUiThread= */ false, description, checkFunction, paramSupplier, id);
@@ -123,7 +108,7 @@ public class LogicalElement<ParamT> extends Element<Void> {
     public static <T> LogicalElement<T> instrumentationThreadLogicalElement(
             String description,
             Function<T, ConditionStatus> checkFunction,
-            Supplier<T> paramSupplier) {
+            Supplier<@Nullable T> paramSupplier) {
         return new LogicalElement<>(
                 /* isRunOnUiThread= */ false,
                 description,
@@ -142,7 +127,7 @@ public class LogicalElement<ParamT> extends Element<Void> {
                 /* isRunOnUiThread= */ false,
                 description,
                 new CallableAsFunction(checkCallable),
-                CONDITION_WITH_NULL_RESULT,
+                null,
                 /* id= */ null);
     }
 
@@ -150,7 +135,7 @@ public class LogicalElement<ParamT> extends Element<Void> {
             boolean isRunOnUiThread,
             String description,
             Function<ParamT, ConditionStatus> checkFunction,
-            Supplier<ParamT> paramSupplier,
+            @Nullable Supplier<@Nullable ParamT> paramSupplier,
             @Nullable String id) {
         super("LE/" + (id != null ? id : description));
         mIsRunOnUiThread = isRunOnUiThread;
@@ -160,7 +145,7 @@ public class LogicalElement<ParamT> extends Element<Void> {
     }
 
     @Override
-    public ConditionWithResult<Void> createEnterCondition() {
+    public @Nullable ConditionWithResult<Void> createEnterCondition() {
         return new EnterCondition(mIsRunOnUiThread);
     }
 
@@ -172,12 +157,14 @@ public class LogicalElement<ParamT> extends Element<Void> {
     private class EnterCondition extends ConditionWithResult<Void> {
         private EnterCondition(boolean isRunOnUiThread) {
             super(isRunOnUiThread);
-            dependOnSupplier(mParamSupplier, "Param");
+            if (mParamSupplier != null) {
+                dependOnSupplier(mParamSupplier, "Param");
+            }
         }
 
         @Override
         protected ConditionStatusWithResult<Void> resolveWithSuppliers() {
-            return mCheckFunction.apply(mParamSupplier.get()).withoutResult();
+            return callCheckFunction().withoutResult();
         }
 
         @Override
@@ -189,12 +176,14 @@ public class LogicalElement<ParamT> extends Element<Void> {
     private class ExitCondition extends Condition {
         private ExitCondition(boolean isRunOnUiThread) {
             super(isRunOnUiThread);
-            dependOnSupplier(mParamSupplier, "Param");
+            if (mParamSupplier != null) {
+                dependOnSupplier(mParamSupplier, "Param");
+            }
         }
 
         @Override
         protected ConditionStatus checkWithSuppliers() {
-            ConditionStatus functionResult = mCheckFunction.apply(mParamSupplier.get());
+            ConditionStatus functionResult = callCheckFunction();
             return new ConditionStatus(
                     invertStatus(functionResult.getStatus()), functionResult.getMessage());
         }
@@ -203,6 +192,12 @@ public class LogicalElement<ParamT> extends Element<Void> {
         public String buildDescription() {
             return "False: " + mDescription;
         }
+    }
+
+    @SuppressWarnings("NullAway") // Passes null to apply(), which expects non-null.
+    private ConditionStatus callCheckFunction() {
+        ParamT param = mParamSupplier == null ? null : assertNonNull(mParamSupplier.get());
+        return mCheckFunction.apply(param);
     }
 
     private @Status int invertStatus(@Status int status) {
@@ -224,7 +219,7 @@ public class LogicalElement<ParamT> extends Element<Void> {
         }
 
         @Override
-        public ConditionStatus apply(Void voidParam) {
+        public ConditionStatus apply(Void unused) {
             try {
                 return mCheckCallable.call();
             } catch (Exception e) {

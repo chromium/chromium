@@ -25,7 +25,7 @@ import * as Console from 'devtools/panels/console/console.js';
       ConsoleTestRunner.evaluateInConsole('1+1', step1);
 
       function step1() {
-        Console.ConsoleView.ConsoleView.clearConsole();
+        Console.ConsoleView.ConsoleView.instance().clearConsole();
         TestRunner.deprecatedRunAfterPendingDispatches(step2);
       }
 

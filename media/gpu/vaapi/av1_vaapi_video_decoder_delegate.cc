@@ -15,15 +15,16 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "build/chromeos_buildflags.h"
 #include "media/gpu/av1_picture.h"
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_decode_surface_handler.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "third_party/libgav1/src/src/obu_parser.h"
+#include "third_party/libgav1/src/src/utils/common.h"
 #include "third_party/libgav1/src/src/utils/types.h"
 #include "third_party/libgav1/src/src/warp_prediction.h"
 
@@ -192,7 +193,7 @@ void FillFilmGrainInfo(VAFilmGrainStructAV1& va_film_grain_info,
 }
 
 void FillGlobalMotionInfo(
-    VAWarpedMotionParamsAV1 va_warped_motion[7],
+    base::span<VAWarpedMotionParamsAV1, 7> va_warped_motion,
     const std::array<libgav1::GlobalMotion, libgav1::kNumReferenceFrameTypes>&
         global_motion) {
   // global_motion[0] (for kReferenceFrameIntra) is not used.
@@ -215,9 +216,8 @@ void FillGlobalMotionInfo(
         va_warped_motion[i].wmtype = VAAV1TransformationAffine;
         break;
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Invalid global motion transformation type, "
-            << va_warped_motion[i].wmtype;
+        NOTREACHED() << "Invalid global motion transformation type, "
+                     << va_warped_motion[i].wmtype;
     }
     static_assert(ARRAY_SIZE(va_warped_motion[i].wmmat) == 8 &&
                       ARRAY_SIZE(gm.params) == 6,
@@ -428,9 +428,8 @@ void FillLoopRestorationInfo(VADecPictureParameterBufferAV1& va_pic_param,
       case libgav1::LoopRestorationType::kLoopRestorationTypeSgrProj:
         return 2;
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Invalid restoration type" << base::strict_cast<int>(lr_type);
-        return 0;
+        NOTREACHED() << "Invalid restoration type"
+                     << base::strict_cast<int>(lr_type);
     }
   };
   static_assert(
@@ -494,9 +493,9 @@ bool FillAV1PictureParameter(const AV1Picture& pic,
       va_pic_param.bit_depth_idx = 2;
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unknown bit depth: "
-          << base::strict_cast<int>(sequence_header.color_config.bitdepth);
+      NOTREACHED() << "Unknown bit depth: "
+                   << base::strict_cast<int>(
+                          sequence_header.color_config.bitdepth);
   }
   switch (sequence_header.color_config.matrix_coefficients) {
     case libgav1::kMatrixCoefficientsIdentity:
@@ -550,9 +549,9 @@ bool FillAV1PictureParameter(const AV1Picture& pic,
                           sequence_header.color_config.color_range));
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unknown color range: "
-          << static_cast<int>(sequence_header.color_config.color_range);
+      NOTREACHED() << "Unknown color range: "
+                   << static_cast<int>(
+                          sequence_header.color_config.color_range);
   }
 #undef COPY_SEQ_FILED2
 
@@ -659,9 +658,8 @@ bool FillAV1PictureParameter(const AV1Picture& pic,
           base::strict_cast<uint32_t>(frame_header.frame_type);
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unknown frame type: "
-          << base::strict_cast<int>(frame_header.frame_type);
+      NOTREACHED() << "Unknown frame type: "
+                   << base::strict_cast<int>(frame_header.frame_type);
   }
   va_pic_info_fields.disable_cdf_update = !frame_header.enable_cdf_update;
   va_pic_info_fields.disable_frame_end_update_cdf =
@@ -793,7 +791,7 @@ DecodeStatus AV1VaapiVideoDecoderDelegate::SubmitDecode(
     base::span<const uint8_t> data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const DecryptConfig* decrypt_config = pic.decrypt_config();
   if (decrypt_config && !SetDecryptConfig(decrypt_config->Clone()))
     return DecodeStatus::kFail;
@@ -823,7 +821,7 @@ DecodeStatus AV1VaapiVideoDecoderDelegate::SubmitDecode(
         return DecodeStatus::kFail;
     }
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // libgav1 ensures that tile_columns is >= 0 and <= MAX_TILE_COLS.
   DCHECK_LE(0, pic.frame_header.tile_info.tile_columns);
@@ -869,7 +867,7 @@ DecodeStatus AV1VaapiVideoDecoderDelegate::SubmitDecode(
       {{picture_params_->id(),
         {picture_params_->type(), picture_params_->size(), &pic_param}}};
   buffers.reserve(3 + slice_params.size());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (IsTranscrypted()) {
     CHECK(decrypt_config);
     CHECK_EQ(decrypt_config->subsamples().size(), 2u);
@@ -894,7 +892,7 @@ DecodeStatus AV1VaapiVideoDecoderDelegate::SubmitDecode(
          {encoded_data->type(), encoded_data->size(),
           data.data() + decrypt_config->subsamples()[0].clear_bytes}});
   } else {
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     encoded_data = vaapi_wrapper_->CreateVABuffer(VASliceDataBufferType,
                                                   data.size_bytes());
     if (!encoded_data)
@@ -902,14 +900,14 @@ DecodeStatus AV1VaapiVideoDecoderDelegate::SubmitDecode(
     buffers.push_back(
         {encoded_data->id(),
          {encoded_data->type(), encoded_data->size(), data.data()}});
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   }
   if (uses_crypto) {
     buffers.push_back(
         {crypto_params_->id(),
          {crypto_params_->type(), crypto_params_->size(), &crypto_param}});
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   for (size_t i = 0; i < slice_params.size(); ++i) {
     buffers.push_back({slice_params_va_buffers[i]->id(),

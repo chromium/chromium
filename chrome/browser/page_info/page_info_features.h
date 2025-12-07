@@ -12,23 +12,10 @@ namespace page_info {
 // enabled.
 bool IsAboutThisSiteFeatureEnabled();
 
-// Returns true if kAboutThisSiteAsyncFetching and dependent features are
-// enabled.
-bool IsAboutThisSiteAsyncFetchingEnabled();
+// Enables the privacy policy insights Learning Experiment UI.
+BASE_DECLARE_FEATURE(kPrivacyPolicyInsights);
 
-// Enables usage of the async fetching method for cacao and caching fetched
-// metadata in a TabHelper.
-BASE_DECLARE_FEATURE(kAboutThisSiteAsyncFetching);
-
-#if !BUILDFLAG(IS_ANDROID)
-// Returns true if kAboutThisSitePersistentSidePanelEntry and dependent
-// features are enabled.
-bool IsPersistentSidePanelEntryFeatureEnabled();
-
-// Enables the persistent "About this site" entry in the side panel.
-BASE_DECLARE_FEATURE(kAboutThisSitePersistentSidePanelEntry);
-
-#endif
+bool IsMerchantTrustFeatureEnabled();
 
 }  // namespace page_info
 

@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_ASH_ARC_IDLE_MANAGER_ARC_WINDOW_OBSERVER_H_
 
 #include "base/scoped_observation.h"
-#include "chrome/browser/ash/arc/util/arc_window_watcher.h"
-#include "chrome/browser/ash/throttle_observer.h"
+#include "chromeos/ash/components/throttle/throttle_observer.h"
+#include "chromeos/ash/experiences/arc/window/arc_window_watcher.h"
 
 namespace arc {
 
-constexpr char kArcWindowObserverName[] = "ArcWindowObserver";
+inline constexpr char kArcWindowObserverName[] = "ArcWindowObserver";
 
 // Listens to ARC Window count and blocks Doze Mode when windows are present.
 class ArcWindowObserver : public ash::ThrottleObserver,

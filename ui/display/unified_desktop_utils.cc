@@ -4,14 +4,13 @@
 
 #include "ui/display/unified_desktop_utils.h"
 
+#include <algorithm>
 #include <map>
 #include <set>
 
 #include "base/containers/contains.h"
 #include "base/containers/stack.h"
 #include "base/logging.h"
-#include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "ui/display/types/display_constants.h"
 
 namespace display {
@@ -86,10 +85,9 @@ UnifiedDesktopLayoutMatrix BuildDisplayMatrix(const DisplayLayout& layout) {
     base::stack<DisplayPlacement> unhandled_displays;
     while (displays_cells.count(current_display_id) == 0) {
       auto placement_iter =
-          base::ranges::find(layout.placement_list, current_display_id,
-                             &DisplayPlacement::display_id);
-      CHECK(placement_iter != layout.placement_list.end(),
-            base::NotFatalUntil::M130);
+          std::ranges::find(layout.placement_list, current_display_id,
+                            &DisplayPlacement::display_id);
+      CHECK(placement_iter != layout.placement_list.end());
       unhandled_displays.emplace(*placement_iter);
       current_display_id = placement_iter->parent_display_id;
     }

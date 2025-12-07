@@ -13,7 +13,10 @@
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/updater/extension_downloader_delegate.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 
@@ -53,8 +56,10 @@ class ForceInstalledMetrics : public ForceInstalledTracker::Observer {
     // USER_TYPE_ARC_KIOSK_APP_DEPRECATED = 7,
     USER_TYPE_ACTIVE_DIRECTORY = 8,
     USER_TYPE_WEB_KIOSK_APP = 9,
+    USER_TYPE_KIOSK_IWA = 10,
+    USER_TYPE_KIOSK_ARCVM_APP = 11,
     // Maximum histogram value.
-    kMaxValue = USER_TYPE_WEB_KIOSK_APP
+    kMaxValue = USER_TYPE_KIOSK_ARCVM_APP
   };
 
   // ForceInstalledTracker::Observer overrides:
@@ -74,12 +79,18 @@ class ForceInstalledMetrics : public ForceInstalledTracker::Observer {
       ExtensionDownloaderDelegate::CacheStatus cache_status) override;
 
  private:
-
   // Reports disable reasons for the extensions which are installed but not
   // loaded.
   void ReportDisableReason(const ExtensionId& extension_id);
 
-  // If |kInstallationTimeout| report time elapsed for extensions load,
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  // Reports whether the greylisted force-installed extensions are enabled in
+  // high/low trust environments.
+  void ReportGreylistedStateByTrustLevel(const ExtensionId& extension_id,
+                                         bool is_low_trust_environment);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+  // If `kInstallationTimeout` report time elapsed for extensions load,
   // otherwise amount of not yet loaded extensions and reasons
   // why they were not installed.
   void ReportMetrics();

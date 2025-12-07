@@ -9,8 +9,10 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
+#include "base/syslog_logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/policy/value_validation/onc_user_policy_value_validator.h"
+#include "chromeos/ash/components/dbus/session_manager/policy_descriptor.h"
 #include "components/ownership/owner_key_util.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/external_data_fetcher.h"
@@ -30,14 +32,16 @@ DeviceLocalAccountPolicyStore::DeviceLocalAccountPolicyStore(
     const std::string& account_id,
     ash::SessionManagerClient* session_manager_client,
     ash::DeviceSettingsService* device_settings_service,
-    scoped_refptr<base::SequencedTaskRunner> background_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> first_load_task_runner)
     : UserCloudPolicyStoreBase(background_task_runner,
                                PolicyScope::POLICY_SCOPE_USER),
+      first_load_task_runner_(first_load_task_runner),
       account_id_(account_id),
       session_manager_client_(session_manager_client),
       device_settings_service_(device_settings_service) {}
 
-DeviceLocalAccountPolicyStore::~DeviceLocalAccountPolicyStore() {}
+DeviceLocalAccountPolicyStore::~DeviceLocalAccountPolicyStore() = default;
 
 void DeviceLocalAccountPolicyStore::Load() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -45,8 +49,10 @@ void DeviceLocalAccountPolicyStore::Load() {
   // Cancel all pending requests.
   weak_factory_.InvalidateWeakPtrs();
 
-  session_manager_client_->RetrieveDeviceLocalAccountPolicy(
-      account_id_,
+  login_manager::PolicyDescriptor descriptor = ash::MakeChromePolicyDescriptor(
+      login_manager::ACCOUNT_TYPE_DEVICE_LOCAL_ACCOUNT, account_id_);
+  session_manager_client_->RetrievePolicy(
+      descriptor,
       base::BindOnce(&DeviceLocalAccountPolicyStore::ValidateLoadedPolicyBlob,
                      weak_factory_.GetWeakPtr(),
                      true /*validate_in_background*/));
@@ -78,9 +84,10 @@ void DeviceLocalAccountPolicyStore::LoadImmediately() {
   weak_factory_.InvalidateWeakPtrs();
 
   std::string policy_blob;
+  login_manager::PolicyDescriptor descriptor = ash::MakeChromePolicyDescriptor(
+      login_manager::ACCOUNT_TYPE_DEVICE_LOCAL_ACCOUNT, account_id_);
   RetrievePolicyResponseType response =
-      session_manager_client_->BlockingRetrieveDeviceLocalAccountPolicy(
-          account_id_, &policy_blob);
+      session_manager_client_->BlockingRetrievePolicy(descriptor, &policy_blob);
   ValidateLoadedPolicyBlob(false /*validate_in_background*/, response,
                            policy_blob);
 }
@@ -111,6 +118,7 @@ void DeviceLocalAccountPolicyStore::ValidateLoadedPolicyBlob(
     std::unique_ptr<em::PolicyFetchResponse> policy(
         new em::PolicyFetchResponse());
     if (policy->ParseFromString(policy_blob)) {
+      SYSLOG(INFO) << "Loaded policy parsed, account_id: " << account_id_;
       CheckKeyAndValidate(
           false, std::move(policy), validate_in_background,
           base::BindOnce(&DeviceLocalAccountPolicyStore::UpdatePolicy,
@@ -125,9 +133,11 @@ void DeviceLocalAccountPolicyStore::ValidateLoadedPolicyBlob(
 void DeviceLocalAccountPolicyStore::UpdatePolicy(
     const std::string& signature_validation_public_key,
     UserCloudPolicyValidator* validator) {
+  SYSLOG(INFO) << "Update policy for account: " << account_id_;
   // Validator is not created when device ownership is not set up yet. Do not
   // propagate the error in such case since it is recoverable.
   if (!validator) {
+    LOG(ERROR) << "Validator is not created";
     status_ = CloudPolicyStore::STATUS_BAD_STATE;
     NotifyStoreLoaded();
     return;
@@ -142,9 +152,9 @@ void DeviceLocalAccountPolicyStore::UpdatePolicy(
     return;
   }
 
-  InstallPolicy(
-      std::move(validator->policy()), std::move(validator->policy_data()),
-      std::move(validator->payload()), signature_validation_public_key);
+  InstallPolicy(std::move(validator->policy_data()),
+                std::move(validator->payload()),
+                signature_validation_public_key);
   status_ = STATUS_OK;
   NotifyStoreLoaded();
 }
@@ -195,14 +205,17 @@ void DeviceLocalAccountPolicyStore::CheckKeyAndValidate(
     bool validate_in_background,
     ValidateCompletionCallback callback) {
   if (validate_in_background) {
+    SYSLOG(INFO) << "Device ownership status: "
+                 << device_settings_service_->GetOwnershipStatus();
     device_settings_service_->GetOwnershipStatusAsync(base::BindOnce(
         &DeviceLocalAccountPolicyStore::Validate, weak_factory_.GetWeakPtr(),
-        valid_timestamp_required, std::move(policy), std::move(callback)));
+        valid_timestamp_required, std::move(policy), std::move(callback),
+        validate_in_background));
   } else {
     ash::DeviceSettingsService::OwnershipStatus ownership_status =
         device_settings_service_->GetOwnershipStatus();
     Validate(valid_timestamp_required, std::move(policy), std::move(callback),
-             ownership_status);
+             validate_in_background, ownership_status);
   }
 }
 
@@ -210,6 +223,7 @@ void DeviceLocalAccountPolicyStore::Validate(
     bool valid_timestamp_required,
     std::unique_ptr<em::PolicyFetchResponse> policy_response,
     ValidateCompletionCallback callback,
+    bool validate_in_background,
     ash::DeviceSettingsService::OwnershipStatus ownership_status) {
   DCHECK_NE(ash::DeviceSettingsService::OwnershipStatus::kOwnershipUnknown,
             ownership_status);
@@ -230,7 +244,7 @@ void DeviceLocalAccountPolicyStore::Validate(
   }
 
   auto validator = std::make_unique<UserCloudPolicyValidator>(
-      std::move(policy_response), background_task_runner());
+      std::move(policy_response), GetValidationTaskRunner());
   validator->ValidateUsername(account_id_);
   validator->ValidatePolicyType(dm_protocol::kChromePublicAccountPolicyType);
   // The timestamp is verified when storing a new policy downloaded from the
@@ -255,10 +269,30 @@ void DeviceLocalAccountPolicyStore::Validate(
   validator->ValidatePayload();
   validator->ValidateSignature(key->as_string());
 
-  validator->RunValidation();
-  std::move(callback).Run(
-      /*signature_validation_public_key=*/key->as_string(),
-      /*validator=*/validator.get());
+  if (validate_in_background) {
+    // TODO(b/336629900): Remove the log when the root cause is identified.
+    SYSLOG(INFO) << "Start validation for account: " << account_id_;
+    UserCloudPolicyValidator::StartValidation(
+        std::move(validator),
+        base::BindOnce(std::move(callback), key->as_string()));
+  } else {
+    validator->RunValidation();
+    std::move(callback).Run(
+        /*signature_validation_public_key=*/key->as_string(),
+        /*validator=*/validator.get());
+  }
+}
+
+scoped_refptr<base::SequencedTaskRunner>
+DeviceLocalAccountPolicyStore::GetValidationTaskRunner() const {
+  // Before the store has policies, this returns the high priority
+  // `first_load_task_runner_`. Once the store gets policies, this returns the
+  // low priority `background_task_runner()`.
+  //
+  // This is necessary because MGS launch blocks on device local account policy
+  // load, so policy tasks should run in a high USER_VISIBLE priority runner.
+  // See crbug.com/263949579.
+  return has_policy() ? background_task_runner() : first_load_task_runner_;
 }
 
 }  // namespace policy

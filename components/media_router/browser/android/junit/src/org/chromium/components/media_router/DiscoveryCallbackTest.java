@@ -47,9 +47,8 @@ public class DiscoveryCallbackTest extends BrowserMediaRouterTestBase {
     @Test
     @Feature({"MediaRouter"})
     public void testInitCallbackWithEmptyKnownSinks() {
-        List<MediaSink> knownSinks = new ArrayList<MediaSink>();
-        DiscoveryCallback callback =
-                new DiscoveryCallback(SOURCE_ID1, knownSinks, mDiscoveryDelegate, null);
+        List<MediaSink> knownSinks = new ArrayList<>();
+        new DiscoveryCallback(SOURCE_ID1, knownSinks, mDiscoveryDelegate, null);
 
         verify(mDiscoveryDelegate).onSinksReceived(eq(SOURCE_ID1), eq(knownSinks));
     }
@@ -57,10 +56,9 @@ public class DiscoveryCallbackTest extends BrowserMediaRouterTestBase {
     @Test
     @Feature({"MediaRouter"})
     public void testInitCallbackWithNonemptyKnownSinks() {
-        List<MediaSink> knownSinks = new ArrayList<MediaSink>();
-        MediaSink sink = new MediaSink(SINK_ID1, SINK_NAME1, null);
-        DiscoveryCallback callback =
-                new DiscoveryCallback(SOURCE_ID1, knownSinks, mDiscoveryDelegate, null);
+        List<MediaSink> knownSinks = new ArrayList<>();
+        new MediaSink(SINK_ID1, SINK_NAME1, null);
+        new DiscoveryCallback(SOURCE_ID1, knownSinks, mDiscoveryDelegate, null);
 
         verify(mDiscoveryDelegate).onSinksReceived(eq(SOURCE_ID1), eq(knownSinks));
     }
@@ -68,12 +66,12 @@ public class DiscoveryCallbackTest extends BrowserMediaRouterTestBase {
     @Test
     @Feature({"MediaRouter"})
     public void testCallbackAddOneSink() {
-        List<MediaSink> knownSinks = new ArrayList<MediaSink>();
+        List<MediaSink> knownSinks = new ArrayList<>();
         DiscoveryCallback callback =
                 new DiscoveryCallback(SOURCE_ID1, knownSinks, mDiscoveryDelegate, null);
 
         callback.onRouteAdded(null, createMockRouteInfo(SINK_ID1, SINK_NAME1));
-        List<MediaSink> expectedSinks = new ArrayList<MediaSink>();
+        List<MediaSink> expectedSinks = new ArrayList<>();
         expectedSinks.add(new MediaSink(SINK_ID1, SINK_NAME1, null));
         verify(mDiscoveryDelegate).onSinksReceived(eq(SOURCE_ID1), eq(expectedSinks));
     }
@@ -81,13 +79,13 @@ public class DiscoveryCallbackTest extends BrowserMediaRouterTestBase {
     @Test
     @Feature({"MediaRouter"})
     public void testCallbackAddTwoSinks() {
-        List<MediaSink> knownSinks = new ArrayList<MediaSink>();
+        List<MediaSink> knownSinks = new ArrayList<>();
         DiscoveryCallback callback =
                 new DiscoveryCallback(SOURCE_ID1, knownSinks, mDiscoveryDelegate, null);
 
         callback.onRouteAdded(null, createMockRouteInfo(SINK_ID1, SINK_NAME1));
         callback.onRouteAdded(null, createMockRouteInfo(SINK_ID2, SINK_NAME2));
-        List<MediaSink> expectedSinks = new ArrayList<MediaSink>();
+        List<MediaSink> expectedSinks = new ArrayList<>();
         expectedSinks.add(new MediaSink(SINK_ID1, SINK_NAME1, null));
         expectedSinks.add(new MediaSink(SINK_ID2, SINK_NAME2, null));
         verify(mDiscoveryDelegate).onSinksReceived(eq(SOURCE_ID1), eq(expectedSinks));
@@ -96,13 +94,13 @@ public class DiscoveryCallbackTest extends BrowserMediaRouterTestBase {
     @Test
     @Feature({"MediaRouter"})
     public void testCallbackAddDuplicateSink() {
-        List<MediaSink> knownSinks = new ArrayList<MediaSink>();
+        List<MediaSink> knownSinks = new ArrayList<>();
         DiscoveryCallback callback =
                 new DiscoveryCallback(SOURCE_ID1, knownSinks, mDiscoveryDelegate, null);
 
         callback.onRouteAdded(null, createMockRouteInfo(SINK_ID1, SINK_NAME1));
         callback.onRouteAdded(null, createMockRouteInfo(SINK_ID1, SINK_NAME1));
-        List<MediaSink> expectedSinks = new ArrayList<MediaSink>();
+        List<MediaSink> expectedSinks = new ArrayList<>();
         expectedSinks.add(new MediaSink(SINK_ID1, SINK_NAME1, null));
         // Only expect one time. The duplicate add will not be notified.
         verify(mDiscoveryDelegate).onSinksReceived(eq(SOURCE_ID1), eq(expectedSinks));
@@ -111,14 +109,14 @@ public class DiscoveryCallbackTest extends BrowserMediaRouterTestBase {
     @Test
     @Feature({"MediaRouter"})
     public void testCallbackRemoveSink() {
-        List<MediaSink> knownSinks = new ArrayList<MediaSink>();
+        List<MediaSink> knownSinks = new ArrayList<>();
         DiscoveryCallback callback =
                 new DiscoveryCallback(SOURCE_ID1, knownSinks, mDiscoveryDelegate, null);
 
         callback.onRouteAdded(null, createMockRouteInfo(SINK_ID1, SINK_NAME1));
         callback.onRouteRemoved(null, createMockRouteInfo(SINK_ID1, SINK_NAME1));
 
-        List<MediaSink> expectedSinks = new ArrayList<MediaSink>();
+        List<MediaSink> expectedSinks = new ArrayList<>();
         // One time for init, one time for remove.
         verify(mDiscoveryDelegate, times(2)).onSinksReceived(eq(SOURCE_ID1), eq(expectedSinks));
     }
@@ -126,14 +124,14 @@ public class DiscoveryCallbackTest extends BrowserMediaRouterTestBase {
     @Test
     @Feature({"MediaRouter"})
     public void testCallbackRemoveNonexistingSink() {
-        List<MediaSink> knownSinks = new ArrayList<MediaSink>();
+        List<MediaSink> knownSinks = new ArrayList<>();
         DiscoveryCallback callback =
                 new DiscoveryCallback(SOURCE_ID1, knownSinks, mDiscoveryDelegate, null);
 
         callback.onRouteAdded(null, createMockRouteInfo(SINK_ID1, SINK_NAME1));
         callback.onRouteRemoved(null, createMockRouteInfo(SINK_ID2, SINK_NAME2));
 
-        List<MediaSink> expectedSinks = new ArrayList<MediaSink>();
+        List<MediaSink> expectedSinks = new ArrayList<>();
         // Only one time for init.
         verify(mDiscoveryDelegate, times(1)).onSinksReceived(eq(SOURCE_ID1), eq(expectedSinks));
     }
@@ -141,12 +139,12 @@ public class DiscoveryCallbackTest extends BrowserMediaRouterTestBase {
     @Test
     @Feature({"MediaRouter"})
     public void testCallbackChangeRouteAddsOneSink() {
-        List<MediaSink> knownSinks = new ArrayList<MediaSink>();
+        List<MediaSink> knownSinks = new ArrayList<>();
         DiscoveryCallback callback =
                 new DiscoveryCallback(SOURCE_ID1, knownSinks, mDiscoveryDelegate, null);
 
         callback.onRouteChanged(null, createMockRouteInfo(SINK_ID1, SINK_NAME1));
-        List<MediaSink> expectedSinks = new ArrayList<MediaSink>();
+        List<MediaSink> expectedSinks = new ArrayList<>();
         expectedSinks.add(new MediaSink(SINK_ID1, SINK_NAME1, null));
         verify(mDiscoveryDelegate).onSinksReceived(eq(SOURCE_ID1), eq(expectedSinks));
     }
@@ -154,7 +152,7 @@ public class DiscoveryCallbackTest extends BrowserMediaRouterTestBase {
     @Test
     @Feature({"MediaRouter"})
     public void testCallbackRemoveSinkAfterRouteChanged() {
-        List<MediaSink> knownSinks = new ArrayList<MediaSink>();
+        List<MediaSink> knownSinks = new ArrayList<>();
         DiscoveryCallback callback =
                 new DiscoveryCallback(SOURCE_ID1, knownSinks, mDiscoveryDelegate, null);
 
@@ -164,7 +162,7 @@ public class DiscoveryCallbackTest extends BrowserMediaRouterTestBase {
         doReturn(false).when(info).matchesSelector((MediaRouteSelector) isNull());
         callback.onRouteChanged(null, info);
 
-        List<MediaSink> expectedSinks = new ArrayList<MediaSink>();
+        List<MediaSink> expectedSinks = new ArrayList<>();
         // One time for init, one time for remove.
         verify(mDiscoveryDelegate, times(2)).onSinksReceived(eq(SOURCE_ID1), eq(expectedSinks));
     }
@@ -172,14 +170,14 @@ public class DiscoveryCallbackTest extends BrowserMediaRouterTestBase {
     @Test
     @Feature({"MediaRouter"})
     public void testCallbackAddSourceUrn() {
-        List<MediaSink> knownSinks = new ArrayList<MediaSink>();
+        List<MediaSink> knownSinks = new ArrayList<>();
         DiscoveryCallback callback =
                 new DiscoveryCallback(SOURCE_ID1, knownSinks, mDiscoveryDelegate, null);
 
         callback.onRouteAdded(null, createMockRouteInfo(SINK_ID1, SINK_NAME1));
         callback.addSourceUrn(SOURCE_ID2);
 
-        List<MediaSink> expectedSinks = new ArrayList<MediaSink>();
+        List<MediaSink> expectedSinks = new ArrayList<>();
         expectedSinks.add(new MediaSink(SINK_ID1, SINK_NAME1, null));
         verify(mDiscoveryDelegate).onSinksReceived(eq(SOURCE_ID2), eq(expectedSinks));
     }
@@ -187,14 +185,14 @@ public class DiscoveryCallbackTest extends BrowserMediaRouterTestBase {
     @Test
     @Feature({"MediaRouter"})
     public void testCallbackAddDuplicateSourceUrn() {
-        List<MediaSink> knownSinks = new ArrayList<MediaSink>();
+        List<MediaSink> knownSinks = new ArrayList<>();
         DiscoveryCallback callback =
                 new DiscoveryCallback(SOURCE_ID1, knownSinks, mDiscoveryDelegate, null);
 
         callback.onRouteAdded(null, createMockRouteInfo(SINK_ID1, SINK_NAME1));
         callback.addSourceUrn(SOURCE_ID1);
 
-        List<MediaSink> expectedSinks = new ArrayList<MediaSink>();
+        List<MediaSink> expectedSinks = new ArrayList<>();
         expectedSinks.add(new MediaSink(SINK_ID1, SINK_NAME1, null));
         // Only the one time after onRouteAdded().
         verify(mDiscoveryDelegate).onSinksReceived(eq(SOURCE_ID1), eq(expectedSinks));
@@ -203,7 +201,7 @@ public class DiscoveryCallbackTest extends BrowserMediaRouterTestBase {
     @Test
     @Feature({"MediaRouter"})
     public void testCallbackRemoveSourceUrn() {
-        List<MediaSink> knownSinks = new ArrayList<MediaSink>();
+        List<MediaSink> knownSinks = new ArrayList<>();
         DiscoveryCallback callback =
                 new DiscoveryCallback(SOURCE_ID1, knownSinks, mDiscoveryDelegate, null);
 
@@ -212,7 +210,7 @@ public class DiscoveryCallbackTest extends BrowserMediaRouterTestBase {
         callback.removeSourceUrn(SOURCE_ID1);
         assertFalse(callback.containsSourceUrn(SOURCE_ID1));
 
-        List<MediaSink> expectedSinks = new ArrayList<MediaSink>();
+        List<MediaSink> expectedSinks = new ArrayList<>();
         // Only the one time for init.
         verify(mDiscoveryDelegate).onSinksReceived(eq(SOURCE_ID1), eq(expectedSinks));
     }
@@ -220,14 +218,14 @@ public class DiscoveryCallbackTest extends BrowserMediaRouterTestBase {
     @Test
     @Feature({"MediaRouter"})
     public void testCallbackRemoveNonexistingSourceUrn() {
-        List<MediaSink> knownSinks = new ArrayList<MediaSink>();
+        List<MediaSink> knownSinks = new ArrayList<>();
         DiscoveryCallback callback =
                 new DiscoveryCallback(SOURCE_ID1, knownSinks, mDiscoveryDelegate, null);
 
         callback.onRouteAdded(null, createMockRouteInfo(SINK_ID1, SINK_NAME1));
         callback.removeSourceUrn(SOURCE_ID2);
 
-        List<MediaSink> expectedSinks = new ArrayList<MediaSink>();
+        List<MediaSink> expectedSinks = new ArrayList<>();
         // Only the one time for init.
         verify(mDiscoveryDelegate, never()).onSinksReceived(eq(SOURCE_ID2), eq(expectedSinks));
     }

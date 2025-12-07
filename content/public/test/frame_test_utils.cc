@@ -7,12 +7,12 @@
 #include "base/strings/strcat.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace content {
 
@@ -20,7 +20,7 @@ namespace {
 
 void ArrangeFramesAndNavigate(WebContents* web_contents,
                               net::EmbeddedTestServer* server,
-                              const std::string& frame_tree) {
+                              std::string_view frame_tree) {
   ASSERT_TRUE(NavigateToURL(
       web_contents,
       server->GetURL(
@@ -43,13 +43,9 @@ RenderFrameHostImpl* SelectDescendentFrame(WebContents* web_contents,
 std::string ArrangeFramesAndGetContentFromLeaf(
     WebContents* web_contents,
     net::EmbeddedTestServer* server,
-    const std::string& frame_tree_pattern,
-    const std::vector<int>& leaf_path,
-    const GURL& leaf_url) {
-  ArrangeFramesAndNavigate(
-      web_contents, server,
-      base::StringPrintfNonConstexpr(frame_tree_pattern.c_str(),
-                                     leaf_url.spec().c_str()));
+    std::string_view frame_tree,
+    const std::vector<int>& leaf_path) {
+  ArrangeFramesAndNavigate(web_contents, server, frame_tree);
   return EvalJs(SelectDescendentFrame(web_contents, leaf_path),
                 "document.body.textContent")
       .ExtractString();
@@ -58,23 +54,9 @@ std::string ArrangeFramesAndGetContentFromLeaf(
 std::vector<net::CanonicalCookie> ArrangeFramesAndGetCanonicalCookiesForLeaf(
     WebContents* web_contents,
     net::EmbeddedTestServer* server,
-    const std::string& frame_tree_pattern,
-    const GURL& leaf_url) {
-  return ArrangeFramesAndGetCanonicalCookiesForLeaf(
-      web_contents, server, frame_tree_pattern, leaf_url,
-      url::Origin::Create(leaf_url).GetURL());
-}
-
-std::vector<net::CanonicalCookie> ArrangeFramesAndGetCanonicalCookiesForLeaf(
-    WebContents* web_contents,
-    net::EmbeddedTestServer* server,
-    const std::string& frame_tree_pattern,
-    const GURL& leaf_url,
+    std::string_view frame_tree,
     const GURL& cookie_url) {
-  ArrangeFramesAndNavigate(
-      web_contents, server,
-      base::StringPrintfNonConstexpr(frame_tree_pattern.c_str(),
-                                     leaf_url.spec().c_str()));
+  ArrangeFramesAndNavigate(web_contents, server, frame_tree);
   return GetCanonicalCookies(web_contents->GetBrowserContext(), cookie_url);
 }
 

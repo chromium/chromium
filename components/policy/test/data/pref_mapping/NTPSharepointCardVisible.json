@@ -1,0 +1,23 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "NTPSharepointCardVisible": false
+        },
+        "prefs": {
+          "NewTabPage.SharepointModuleVisible": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

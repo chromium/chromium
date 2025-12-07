@@ -42,21 +42,18 @@ class AccountChooserDialogAndroid : public content::WebContentsObserver {
 
   // Closes the dialog and propagates that no credentials was chosen.
   // Destroys |this|.
-  void CancelDialog(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& obj);
+  void CancelDialog(JNIEnv* env);
 
   // Propagates the credentials chosen by the user.
   // Results in |this| being destroyed only when the credential handling
   // finishes.
   void OnCredentialClicked(JNIEnv* env,
-                           const base::android::JavaParamRef<jobject>& obj,
                            jint credential_item,
                            jboolean sign_button_clicked);
 
   // Opens new tab with page which explains the Smart Lock branding.
   // Destroys |this|.
-  void OnLinkClicked(JNIEnv* env,
-                     const base::android::JavaParamRef<jobject>& obj);
+  void OnLinkClicked(JNIEnv* env);
 
   // content::WebContentsObserver overrides:
   void WebContentsDestroyed() override;

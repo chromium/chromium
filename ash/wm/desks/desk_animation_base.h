@@ -13,7 +13,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "ui/compositor/throughput_tracker.h"
+#include "ui/aura/window_occlusion_tracker.h"
+#include "ui/compositor/compositor_metrics_tracker.h"
 
 namespace ash {
 
@@ -64,11 +65,6 @@ class ASH_EXPORT DeskAnimationBase
   void OnStartingDeskScreenshotTaken(int ending_desk_index) override;
   void OnEndingDeskScreenshotTaken() override;
   void OnDeskSwitchAnimationFinished() override;
-
-  void set_finished_callback(base::OnceClosure finished_callback) {
-    DCHECK(finished_callback_.is_null());
-    finished_callback_ = std::move(finished_callback);
-  }
 
   void set_skip_notify_controller_on_animation_finished_for_testing(bool val) {
     skip_notify_controller_on_animation_finished_for_testing_ = val;
@@ -161,8 +157,9 @@ class ASH_EXPORT DeskAnimationBase
   // test scenario.
   bool skip_notify_controller_on_animation_finished_for_testing_ = false;
 
-  // Callback for when the animation is finished.
-  base::OnceClosure finished_callback_;
+  // Used to pause occlusion updates while taking starting desk screenshot.
+  std::unique_ptr<aura::WindowOcclusionTracker::ScopedPause>
+      pauser_for_screenshot_;
 };
 
 }  // namespace ash

@@ -5,7 +5,7 @@
 #ifndef CHROMECAST_MEDIA_CMA_BACKEND_PROXY_CMA_PROXY_HANDLER_H_
 #define CHROMECAST_MEDIA_CMA_BACKEND_PROXY_CMA_PROXY_HANDLER_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "chromecast/media/cma/backend/proxy/audio_channel_push_buffer_handler.h"
 #include "chromecast/media/cma/backend/proxy/buffer_id_manager.h"
 

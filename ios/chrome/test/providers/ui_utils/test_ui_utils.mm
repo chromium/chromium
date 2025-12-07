@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
-
 #import <CoreGraphics/CoreGraphics.h>
+
+#import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
 
 namespace ios {
 namespace provider {
@@ -13,8 +13,11 @@ void InitializeUI() {
   // Tests do not have global UI state.
 }
 
-id<LogoVendor> CreateLogoVendor(Browser* browser, web::WebState* web_state) {
-  // Tests do not use LogoVendor.
+UIImageView* CreateAnimatedImageView() {
+  return [[UIImageView alloc] init];
+}
+
+UIImage* CreateAnimatedImageFromData(NSData* data) {
   return nil;
 }
 

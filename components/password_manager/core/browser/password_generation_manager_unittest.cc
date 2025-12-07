@@ -104,6 +104,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
       bool update_password) override;
 
   MOCK_METHOD(bool, PromptUserToSaveOrUpdatePasswordMock, (bool), ());
+  MOCK_METHOD(bool, IsPasswordChangeOngoing, (), ());
 
   std::unique_ptr<PasswordFormManagerForUI> MoveForm() {
     return std::move(form_to_save_);
@@ -186,7 +187,7 @@ void PasswordGenerationManagerTest::ForwardByMinute() {
 }
 
 void PasswordGenerationManagerTest::SetAccountStoreEnabled(bool is_enabled) {
-  ON_CALL(*client().GetPasswordFeatureManager(), IsOptedInForAccountStorage())
+  ON_CALL(*client().GetPasswordFeatureManager(), IsAccountStorageEnabled())
       .WillByDefault(testing::Return(is_enabled));
 }
 
@@ -369,6 +370,31 @@ TEST_F(PasswordGenerationManagerTest, PresaveGeneratedPassword_WithConflict) {
   EXPECT_CALL(store(), AddLogin(generated_with_date, _));
   manager().PresaveGeneratedPassword(generated, {&saved}, &form_saver());
   EXPECT_TRUE(manager().HasGeneratedPassword());
+}
+
+TEST_F(PasswordGenerationManagerTest,
+       PresaveGeneratedPassword_WithConflict_DuringPasswordChange) {
+  PasswordForm generated = CreateGenerated();
+  generated.username_element = u"username";
+
+  PasswordForm saved = CreateSaved();
+  saved.username_value = generated.username_value;
+  PasswordForm empty_username = CreateSaved();
+  empty_username.username_value = u"";
+
+  EXPECT_CALL(client(), IsPasswordChangeOngoing)
+      .WillOnce(testing::Return(true));
+
+  PasswordForm generated_with_date;
+  EXPECT_CALL(store(), AddLogin)
+      .WillOnce(testing::SaveArg<0>(&generated_with_date));
+
+  manager().PresaveGeneratedPassword(generated, {&saved, &empty_username},
+                                     &form_saver());
+
+  EXPECT_TRUE(manager().HasGeneratedPassword());
+  EXPECT_NE(generated_with_date.username_element, generated.username_element);
+  EXPECT_TRUE(generated_with_date.username_value.empty());
 }
 
 // Check that presaving a password with an unknown username saves it as is.

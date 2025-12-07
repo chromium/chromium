@@ -81,9 +81,10 @@ class CONTENT_EXPORT StoragePartitionConfig {
   }
   std::optional<StoragePartitionConfig> GetFallbackForBlobUrls() const;
 
-  bool operator<(const StoragePartitionConfig& rhs) const;
-  bool operator==(const StoragePartitionConfig& rhs) const;
-  bool operator!=(const StoragePartitionConfig& rhs) const;
+  friend bool operator==(const StoragePartitionConfig&,
+                         const StoragePartitionConfig&) = default;
+  friend auto operator<=>(const StoragePartitionConfig&,
+                          const StoragePartitionConfig&) = default;
 
  private:
   friend StoragePartitionConfig CreateStoragePartitionConfigForTesting(

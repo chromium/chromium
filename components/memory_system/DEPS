@@ -4,5 +4,6 @@ include_rules = [
   "+components/gwp_asan",
   "+components/heap_profiling",
   "+components/services/heap_profiling/public/cpp/profiling_client.h",
+  "+components/sampling_profiler/process_type.h",
   "+components/version_info/channel.h",
 ]

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/webrtc/webrtc_internals_ui.h"
 
 #include "content/browser/webrtc/resources/grit/webrtc_internals_resources.h"
@@ -25,8 +20,7 @@ void CreateAndAddWebRTCInternalsHTMLSource(BrowserContext* browser_context) {
       browser_context, kChromeUIWebRTCInternalsHost);
 
   source->UseStringsJs();
-  source->AddResourcePaths(base::make_span(kWebrtcInternalsResources,
-                                           kWebrtcInternalsResourcesSize));
+  source->AddResourcePaths(kWebrtcInternalsResources);
   source->SetDefaultResource(IDR_WEBRTC_INTERNALS_WEBRTC_INTERNALS_HTML);
 }
 

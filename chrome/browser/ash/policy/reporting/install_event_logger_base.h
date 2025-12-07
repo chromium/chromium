@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REPORTING_INSTALL_EVENT_LOGGER_BASE_H_
 #define CHROME_BROWSER_ASH_POLICY_REPORTING_INSTALL_EVENT_LOGGER_BASE_H_
 
-#include "ash/components/arc/arc_prefs.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/system/sys_info.h"
@@ -14,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_service.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
@@ -67,15 +67,15 @@ class InstallEventLoggerBase {
   static std::unique_ptr<Event> AddDiskSpaceInfoToEvent(
       std::unique_ptr<Event> event,
       const base::FilePath& stateful_path) {
-    const int64_t stateful_total =
+    const std::optional<int64_t> stateful_total =
         base::SysInfo::AmountOfTotalDiskSpace(stateful_path);
-    if (stateful_total >= 0) {
-      event->set_stateful_total(stateful_total);
+    if (stateful_total.has_value()) {
+      event->set_stateful_total(*stateful_total);
     }
-    const int64_t stateful_free =
+    const std::optional<int64_t> stateful_free =
         base::SysInfo::AmountOfFreeDiskSpace(stateful_path);
-    if (stateful_free >= 0) {
-      event->set_stateful_free(stateful_free);
+    if (stateful_free.has_value()) {
+      event->set_stateful_free(*stateful_free);
     }
     return event;
   }

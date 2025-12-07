@@ -13,12 +13,12 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -116,9 +116,6 @@ class BlockingLoginTest
   }
 
   void OnProfileAdded(Profile* profile) override {
-    if (ash::ProfileHelper::IsLockScreenAppProfile(profile)) {
-      return;
-    }
     ASSERT_EQ(profile_added_, nullptr);
     profile_added_ = profile;
   }
@@ -155,7 +152,7 @@ class BlockingLoginTest
     std::unique_ptr<net::test_server::HttpResponse> response;
 
     GaiaUrls* gaia = GaiaUrls::GetInstance();
-    if (request.relative_url == gaia->oauth2_token_url().path() ||
+    if (request.relative_url == gaia->oauth2_token_url().GetPath() ||
         base::StartsWith(request.relative_url, kDMRegisterRequest,
                          base::CompareCase::SENSITIVE) ||
         base::StartsWith(request.relative_url, kDMPolicyRequest,

@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -16,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
@@ -48,10 +46,6 @@ namespace printing {
 class PrintQueriesQueue;
 class PrinterQuery;
 
-// TODO(crbug.com/41487419): Remove this emergency off switch after a safe
-// rollout.
-BASE_DECLARE_FEATURE(kCheckPrintRfhIsActive);
-
 // Base class for managing the print commands for a WebContents.
 class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
  public:
@@ -78,11 +72,6 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
   PrintViewManagerBase& operator=(const PrintViewManagerBase&) = delete;
 
   ~PrintViewManagerBase() override;
-
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Disables the blocking of third-party modules in the browser process.
-  static void DisableThirdPartyBlocking();
-#endif
 
   // Prints the current document immediately. Since the rendering is
   // asynchronous, the actual printing will not be completed on the return of

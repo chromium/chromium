@@ -10,7 +10,11 @@
 
 // Notifies the Contextual Panel Entrypoint that the IPH (in-product help) was
 // dismissed.
-- (void)contextualPanelEntrypointIPHWasDismissed;
+- (void)notifyContextualPanelEntrypointIPHDismissed;
+
+// Cancels any ongoing or future Contextual Panel Entrypoint loud moments for
+// the current navigation.
+- (void)cancelContextualPanelEntrypointLoudMoment;
 
 @end
 

@@ -58,6 +58,13 @@ class SafeArchiveAnalyzer : public chrome::mojom::SafeArchiveAnalyzer {
       mojo::PendingRemote<chrome::mojom::TemporaryFileGetter> temp_file_getter,
       AnalyzeSevenZipFileCallback callback) override;
 
+  void AnalyzeObfuscatedZipFile(
+      base::File zip_file,
+      const std::optional<std::string>& password,
+      chrome::mojom::ObfuscatedFileUtilHeaderDataPtr header_data,
+      mojo::PendingRemote<chrome::mojom::TemporaryFileGetter> temp_file_getter,
+      AnalyzeObfuscatedZipFileCallback callback) override;
+
   // Uses `temp_file_getter_` to supply a temporary file to callback.
   void RequestTemporaryFile(GetTempFileCallback callback);
 

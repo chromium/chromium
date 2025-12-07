@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "services/device/hid/hid_service_mac.h"
 
@@ -20,7 +16,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -38,12 +33,12 @@ bool TryGetHidDataProperty(io_service_t service,
                            std::vector<uint8_t>* result) {
   base::apple::ScopedCFTypeRef<CFDataRef> ref(base::apple::CFCast<CFDataRef>(
       IORegistryEntryCreateCFProperty(service, key, kCFAllocatorDefault, 0)));
-  if (!ref)
+  if (!ref) {
     return false;
+  }
 
-  base::STLClearObject(result);
-  const uint8_t* bytes = CFDataGetBytePtr(ref.get());
-  result->insert(result->begin(), bytes, bytes + CFDataGetLength(ref.get()));
+  auto data_span = base::apple::CFDataToSpan(ref.get());
+  result->assign(data_span.begin(), data_span.end());
   return true;
 }
 
@@ -87,7 +82,7 @@ scoped_refptr<HidDeviceInfo> CreateDeviceInfo(
 }  // namespace
 
 HidServiceMac::HidServiceMac() : weak_factory_(this) {
-  notify_port_.reset(IONotificationPortCreate(kIOMasterPortDefault));
+  notify_port_.reset(IONotificationPortCreate(kIOMainPortDefault));
   CFRunLoopAddSource(CFRunLoopGetMain(),
                      IONotificationPortGetRunLoopSource(notify_port_.get()),
                      kCFRunLoopDefaultMode);
@@ -163,8 +158,8 @@ HidServiceMac::OpenOnBlockingThread(scoped_refptr<HidDeviceInfo> device_info) {
 
   // IOServiceGetMatchingService consumes a reference to the matching dictionary
   // passed to it.
-  base::mac::ScopedIOObject<io_service_t> service(IOServiceGetMatchingService(
-      kIOMasterPortDefault, matching_dict.release()));
+  base::mac::ScopedIOObject<io_service_t> service(
+      IOServiceGetMatchingService(kIOMainPortDefault, matching_dict.release()));
   if (!service.get()) {
     HID_LOG(DEBUG) << "IOService not found for ID: " << platform_device_id;
     return base::apple::ScopedCFTypeRef<IOHIDDeviceRef>();

@@ -24,7 +24,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_FILTERS_LIGHT_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_FILTERS_LIGHT_SOURCE_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
@@ -47,7 +46,7 @@ class PLATFORM_EXPORT LightSource : public RefCounted<LightSource> {
   virtual ~LightSource();
 
   LightType GetType() const { return type_; }
-  virtual WTF::TextStream& ExternalRepresentation(WTF::TextStream&) const = 0;
+  virtual StringBuilder& ExternalRepresentation(StringBuilder&) const = 0;
 
   virtual bool SetAzimuth(float) { return false; }
   virtual bool SetElevation(float) { return false; }

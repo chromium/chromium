@@ -10,6 +10,8 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/span.h"
+
 namespace reporting {
 
 static constexpr size_t kKeySize = 32u;
@@ -22,26 +24,26 @@ static constexpr size_t kSignKeySize = 64u;
 // from its private key and peer public value. Returns true, shared secret and
 // public value from the generated pair in case of success. Otherwise returns
 // false.
-bool ComputeSharedSecret(const uint8_t peer_public_value[kKeySize],
-                         uint8_t shared_secret[kKeySize],
-                         uint8_t generated_public_value[kKeySize]);
+bool ComputeSharedSecret(base::span<const uint8_t, kKeySize> peer_public_value,
+                         base::span<uint8_t, kKeySize> shared_secret,
+                         base::span<uint8_t, kKeySize> generated_public_value);
 
 // Produces symmetric key from shared secret using HKDF.
-bool ProduceSymmetricKey(const uint8_t shared_secret[kKeySize],
-                         uint8_t symmetric_key[kKeySize]);
+bool ProduceSymmetricKey(base::span<const uint8_t, kKeySize> shared_secret,
+                         base::span<uint8_t, kKeySize> symmetric_key);
 
 // Performs AEAD encryption with Chacha20Poly1305 key.
 // Returns true and filled in encrypted |output_data|, if successful.
 // Otherwise returns false.
-bool PerformSymmetricEncryption(const uint8_t symmetric_key[kKeySize],
+bool PerformSymmetricEncryption(base::span<const uint8_t, kKeySize> key,
                                 std::string_view input_data,
                                 std::string* output_data);
 
 // Verifies ED25519 |signature| of the |message|. Returns true if successful,
 // false otherwise.
-bool VerifySignature(const uint8_t verification_key[kKeySize],
+bool VerifySignature(base::span<const uint8_t, kKeySize> key,
                      std::string_view message,
-                     const uint8_t signature[kSignatureSize]);
+                     base::span<const uint8_t, kSignatureSize> signature);
 
 }  // namespace reporting
 

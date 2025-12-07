@@ -4,10 +4,11 @@
 
 #include "partition_alloc/partition_alloc_base/files/file_path.h"
 
-#include <algorithm>
 #include <cstring>
 
 #include "partition_alloc/partition_alloc_base/check.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/cxx_wrapper/algorithm.h"
 
 #if PA_BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -76,7 +77,7 @@ FilePath& FilePath::operator=(FilePath&& that) noexcept = default;
 // static
 bool FilePath::IsSeparator(CharType character) {
   for (size_t i = 0; i < kSeparatorsLength - 1; ++i) {
-    if (character == kSeparators[i]) {
+    if (character == PA_UNSAFE_TODO(kSeparators[i])) {
       return true;
     }
   }

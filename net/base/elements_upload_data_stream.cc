@@ -24,12 +24,11 @@ ElementsUploadDataStream::ElementsUploadDataStream(
 ElementsUploadDataStream::~ElementsUploadDataStream() = default;
 
 std::unique_ptr<UploadDataStream> ElementsUploadDataStream::CreateWithReader(
-    std::unique_ptr<UploadElementReader> reader,
-    int64_t identifier) {
+    std::unique_ptr<UploadElementReader> reader) {
   std::vector<std::unique_ptr<UploadElementReader>> readers;
   readers.push_back(std::move(reader));
   return std::make_unique<ElementsUploadDataStream>(std::move(readers),
-                                                    identifier);
+                                                    /*identifier=*/0);
 }
 
 int ElementsUploadDataStream::InitInternal(const NetLogWithSource& net_log) {

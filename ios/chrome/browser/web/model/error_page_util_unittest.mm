@@ -21,7 +21,7 @@ namespace {
 
 // URL string passed from ios/web layer to ios/chrome and rendered on the error
 // page.
-NSString* kTestUrl = @"https://chromium.test/";
+NSString* const kTestUrl = @"https://chromium.test/";
 
 // Returns string for the given error code.
 NSString* ErrorAsString(int net_error) {
@@ -61,10 +61,10 @@ TEST_F(ErrorPageUtilTest, NonPostNonOtrError) {
 
 // Tests error page for POST and non-OTR error. Error pages for POST requests do
 // not have Reload button. The expected strings are: error code and failing
-// url.
+// url's host.
 TEST_F(ErrorPageUtilTest, PostNonOtrError) {
-  NSString* html = GetErrorPage(GURL(base::SysNSStringToUTF8(kTestUrl)),
-                                CreateTestError(NSURLErrorTimedOut),
+  GURL test_url = GURL(base::SysNSStringToUTF8(kTestUrl));
+  NSString* html = GetErrorPage(test_url, CreateTestError(NSURLErrorTimedOut),
                                 /*is_post=*/true,
                                 /*is_off_the_record=*/false);
 
@@ -72,7 +72,8 @@ TEST_F(ErrorPageUtilTest, PostNonOtrError) {
   EXPECT_TRUE([html containsString:@"<head>"]);
 
   EXPECT_TRUE([html containsString:ErrorAsString(ERR_CONNECTION_TIMED_OUT)]);
-  EXPECT_TRUE([html containsString:kTestUrl]);
+  EXPECT_TRUE(
+      [html containsString:base::SysUTF8ToNSString(test_url.GetHost())]);
   EXPECT_FALSE([html containsString:GetNSString(IDS_ERRORPAGES_BUTTON_RELOAD)]);
 }
 
@@ -95,10 +96,10 @@ TEST_F(ErrorPageUtilTest, NonPostOtrError) {
 
 // Tests error page for OST and OTR error. On iOS OTR error pages are the same
 // as non-OTR. Error pages for POST requests do not have Reload button. The
-// expected strings are: error code and failing url.
+// expected strings are: error code and failing url's host.
 TEST_F(ErrorPageUtilTest, PostOtrError) {
-  NSString* html = GetErrorPage(GURL(base::SysNSStringToUTF8(kTestUrl)),
-                                CreateTestError(NSURLErrorTimedOut),
+  GURL test_url = GURL(base::SysNSStringToUTF8(kTestUrl));
+  NSString* html = GetErrorPage(test_url, CreateTestError(NSURLErrorTimedOut),
                                 /*is_post=*/true,
                                 /*is_off_the_record=*/true);
 
@@ -106,7 +107,8 @@ TEST_F(ErrorPageUtilTest, PostOtrError) {
   EXPECT_TRUE([html containsString:@"<head>"]);
 
   EXPECT_TRUE([html containsString:ErrorAsString(ERR_CONNECTION_TIMED_OUT)]);
-  EXPECT_TRUE([html containsString:kTestUrl]);
+  EXPECT_TRUE(
+      [html containsString:base::SysUTF8ToNSString(test_url.GetHost())]);
   EXPECT_FALSE([html containsString:GetNSString(IDS_ERRORPAGES_BUTTON_RELOAD)]);
 }
 

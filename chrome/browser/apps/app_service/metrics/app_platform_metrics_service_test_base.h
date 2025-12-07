@@ -13,9 +13,9 @@
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/sync/test/test_sync_service.h"
@@ -137,21 +137,26 @@ class AppPlatformMetricsServiceTestBase : public ::testing::Test {
     return test_ukm_recorder_.get();
   }
 
-  // Creates test user and profile with the specified email for testing
+  // Returns an instance of all the required testing factories.
+  TestingProfile::TestingFactories GetTestingFactories();
+
+  // Creates test user and profile with the specified account id for testing
   // purposes.
-  void AddRegularUser(const std::string& email);
+  void AddRegularUser(const AccountId::Literal& account_id);
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
+
+ protected:
+  std::unique_ptr<AppPlatformMetricsService> app_platform_metrics_service_;
+  bool start_app_platform_metrics_service_on_init_ = true;
 
  private:
-  std::unique_ptr<TestingProfile> testing_profile_;
+  raw_ptr<TestingProfile> testing_profile_;
   raw_ptr<syncer::TestSyncService> sync_service_ = nullptr;
   base::HistogramTester histogram_tester_;
-  std::unique_ptr<AppPlatformMetricsService> app_platform_metrics_service_;
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> fake_user_manager_;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  user_manager::ScopedUserManager user_manager_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   apps::AppServiceTest app_service_test_;
 };

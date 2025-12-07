@@ -13,6 +13,7 @@
 #include "components/user_education/common/user_education_class_properties.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
@@ -42,9 +43,8 @@ class ToolbarButtonHighlightPathGenerator
     const int radii = ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
         views::Emphasis::kMaximum, rect.size());
 
-    SkPath path;
-    path.addRoundRect(gfx::RectToSkRect(rect), radii, radii);
-    return path;
+    return SkPath::RRect(
+        SkRRect::MakeRectXY(gfx::RectToSkRect(rect), radii, radii));
   }
 };
 
@@ -54,8 +54,9 @@ gfx::Insets GetToolbarInkDropInsets(const views::View* host_view) {
   gfx::Insets margin_insets;
   gfx::Insets* const internal_padding =
       host_view->GetProperty(views::kInternalPaddingKey);
-  if (internal_padding)
+  if (internal_padding) {
     margin_insets = *internal_padding;
+  }
 
   // Inset the inkdrop insets so that the end result matches the target inkdrop
   // dimensions.

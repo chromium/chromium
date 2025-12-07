@@ -53,8 +53,6 @@ def validate_property(prop, props_by_name):
         'Only longhands can be valid_for_cue [%s]' % name
     assert not prop.valid_for_marker or prop.is_longhand, \
         'Only longhands can be valid_for_marker [%s]' % name
-    assert not prop.valid_for_highlight_legacy or prop.is_longhand, \
-        'Only longhands can be valid_for_highlight_legacy [%s]' % name
     assert not prop.valid_for_highlight or prop.is_longhand, \
         'Only longhands can be valid_for_highlight [%s]' % name
     assert not prop.is_internal or prop.computable is None, \
@@ -69,10 +67,6 @@ def validate_property(prop, props_by_name):
                 subprop = props_by_name[subprop_name]
                 assert subprop.supports_incremental_style, \
                     '%s must be incrementally applicable when its shorthand %s is' % (subprop_name, name)
-    assert not prop.valid_for_formatted_text or prop.is_longhand, \
-        'Only longhands can be valid_for_formatted_text [%s]' % name
-    assert not prop.valid_for_formatted_text_run or prop.is_longhand, \
-        'Only longhands can be valid_for_formatted_text_run [%s]' % name
     if prop.alias_for:
         assert not prop.is_internal, \
             'Internal aliases not supported [%s]' % name
@@ -308,14 +302,22 @@ class CSSProperties(object):
             if (not property_.alias_for and not property_.longhands)
         ]
 
-        # Sort the properties by priority, then alphabetically. Ensure that
-        # the resulting order is deterministic.
-        # Sort properties by priority, then alphabetically.
+        # Sort the properties by priority, then internal-visited first,
+        # then alphabetically. Ensures that the resulting order is deterministic.
+        # (internal-visited is because we want to fit their number into an
+        # uint8_t for kPropertyVisitedIDs.)
         for property_ in self._longhands + self._shorthands:
             name_without_leading_dash = property_.name.original
             if name_without_leading_dash.startswith('-'):
                 name_without_leading_dash = name_without_leading_dash[1:]
+            internal_visited_order = 1
+            if name_without_leading_dash.startswith(
+                    'internal-visited-'
+            ) or name_without_leading_dash.startswith(
+                    'internal-forced-visited-'):
+                internal_visited_order = 0
             property_.sorting_key = (-property_.priority,
+                                     internal_visited_order,
                                      name_without_leading_dash)
 
         sorting_keys = {}
@@ -367,6 +369,12 @@ class CSSProperties(object):
         assert not unvisited_property.visited_property, \
             'A property may not have multiple visited properties'
         unvisited_property.visited_property = property_
+        # NOTE: Currently, we note that a property is valid for :visited
+        # iff it has a corresponding -internal-visited-* property
+        # (i.e., some other property is visited_property_for it). Once
+        # those properties go away, we will need to make this flag explicit
+        # on the (unvisited) property instead.
+        unvisited_property.valid_for_visited = True
 
     def set_derived_surrogate_attributes(self, property_):
         if not property_.surrogate_for:
@@ -562,6 +570,10 @@ class CSSProperties(object):
         property_.in_origin_trial = property_.runtime_flag and \
             property_.runtime_flag in self._origin_trial_features
 
+        assert not property_.is_shorthand or not property_.in_origin_trial, \
+            'Shorthand property [%s] cannot be controlled by an origin trial. See https://crbug.com/425974279' \
+            % property_.name
+
         self.set_derived_visited_attributes(property_)
         self.set_derived_surrogate_attributes(property_)
         self.set_derived_alternative_attributes(property_)
@@ -606,6 +618,10 @@ class CSSProperties(object):
 
         return sorted(unprefixed, key=sorting_name) + \
             sorted(prefixed, key=sorting_name)
+
+    @property
+    def includes_currentcolor(self):
+        return [p for p in self._longhands if p.includes_currentcolor]
 
     @property
     def shorthands(self):

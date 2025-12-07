@@ -67,9 +67,10 @@ class MockVideoTrackInterface : public VideoTrackInterface {
   MOCK_METHOD1(set_enabled, bool(bool));
   MOCK_METHOD1(set_state, bool(TrackState));
   MOCK_METHOD2(AddOrUpdateSink,
-               void(rtc::VideoSinkInterface<webrtc::VideoFrame>*,
-                    const rtc::VideoSinkWants&));
-  MOCK_METHOD1(RemoveSink, void(rtc::VideoSinkInterface<webrtc::VideoFrame>*));
+               void(webrtc::VideoSinkInterface<webrtc::VideoFrame>*,
+                    const webrtc::VideoSinkWants&));
+  MOCK_METHOD1(RemoveSink,
+               void(webrtc::VideoSinkInterface<webrtc::VideoFrame>*));
   MOCK_CONST_METHOD0(GetSource, VideoTrackSourceInterface*());
 
  private:
@@ -91,7 +92,7 @@ class MediaStreamTrackMetricsTest : public testing::Test {
 
   void SetUp() override {
     metrics_ = std::make_unique<MockMediaStreamTrackMetrics>();
-    stream_ = new rtc::RefCountedObject<blink::MockMediaStream>("stream");
+    stream_ = new webrtc::RefCountedObject<blink::MockMediaStream>("stream");
     signaling_thread_.Start();
   }
 
@@ -102,11 +103,11 @@ class MediaStreamTrackMetricsTest : public testing::Test {
   }
 
   scoped_refptr<MockAudioTrackInterface> MakeAudioTrack(const std::string& id) {
-    return new rtc::RefCountedObject<MockAudioTrackInterface>(id);
+    return new webrtc::RefCountedObject<MockAudioTrackInterface>(id);
   }
 
   scoped_refptr<MockVideoTrackInterface> MakeVideoTrack(const std::string& id) {
-    return new rtc::RefCountedObject<MockVideoTrackInterface>(id);
+    return new webrtc::RefCountedObject<MockVideoTrackInterface>(id);
   }
 
   test::TaskEnvironment task_environment_;

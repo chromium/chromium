@@ -1,0 +1,8 @@
+include_rules = [
+  "+ios/chrome/browser/signin/model/authentication_service_factory.h",
+  "+ios/chrome/browser/sync/model/sync_service_factory.h",
+  "+ios/chrome/browser/signin/model/authentication_service.h",
+  "+ios/chrome/browser/sync/model/sync_observer_bridge.h",
+  "+ios/chrome/browser/keyboard/ui_bundled/key_command_actions.h",
+]
+

@@ -187,8 +187,12 @@ TEST(VotingTest, ChangeNonExisting) {
   voting::VoterId<TestVote> voter_id = voting_channel.voter_id();
 
   EXPECT_FALSE(observer.HasVote(voter_id, kDummyContext1));
-  EXPECT_DCHECK_DEATH(
-      voting_channel.ChangeVote(kDummyContext1, TestVote(5, kReason)));
+  // TODO(pbos): This is a DCHECK-build-only CHECK, see voting.h. This should
+  // probably be either a DCHECK or a CHECK outside DCHECK builds.
+  if (DCHECK_IS_ON()) {
+    EXPECT_CHECK_DEATH(
+        voting_channel.ChangeVote(kDummyContext1, TestVote(5, kReason)));
+  }
 }
 
 // Tests that calling InvalidateVote() for a context before a vote was submitted

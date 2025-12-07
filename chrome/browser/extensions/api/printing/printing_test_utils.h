@@ -12,9 +12,9 @@
 #include "chrome/browser/printing/browser_printing_context_factory_for_test.h"
 #include "printing/buildflags/buildflags.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/callback_list.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
@@ -23,7 +23,7 @@
 
 class Profile;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace ash {
 class TestCupsPrintJobManager;
 class FakeCupsPrintersManager;
@@ -77,7 +77,7 @@ class PrintingBackendInfrastructureHelper {
   printing::BrowserPrintingContextFactoryForTest test_printing_context_factory_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class PrintingTestHelper {
  public:
   // BrowserContextDependencyManager subscriptions should be established before
@@ -105,7 +105,7 @@ class PrintingTestHelper {
  private:
   // Creates test factories for ash::TestCupsPrintJobManager and
   // ash::FakeCupsPrintersManager.
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context);
+  void SetUpBrowserContextKeyedServices(content::BrowserContext* context);
 
   raw_ptr<Profile> profile_ = nullptr;
 

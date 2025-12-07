@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "ui/gfx/image/image.h"
 
 struct AccountInfo;
@@ -22,8 +22,11 @@ struct AutofillSaveCardUiInfo {
   bool is_for_upload;
   // The resource ID for the logo displayed for the dialog.
   int logo_icon_id;
+  // Accessibility description for the logo.
+  std::u16string logo_icon_description;
   // The resource ID for the icon that identifies the issuer of the card.
   int issuer_icon_id;
+  std::u16string card_network;
   LegalMessageLines legal_message_lines;
   std::u16string card_label;
   std::u16string card_sub_label;
@@ -31,6 +34,7 @@ struct AutofillSaveCardUiInfo {
   std::u16string cardholder_name;
   std::u16string expiration_date_month;
   std::u16string expiration_date_year;
+  std::u16string card_cvc;
   // Accessibility description for a card chip containing the card icon, label
   // and sub label.
   std::u16string card_description;
@@ -45,6 +49,8 @@ struct AutofillSaveCardUiInfo {
   // Accessibility description when a loading spinner is shown.
   std::u16string loading_description;
   bool is_google_pay_branding_enabled;
+  // True if this UI info is for a bottom sheet on IOS.
+  bool is_for_bottom_sheet = false;
 
   AutofillSaveCardUiInfo();
   ~AutofillSaveCardUiInfo();
@@ -59,14 +65,14 @@ struct AutofillSaveCardUiInfo {
 
   // Create the ui info for a local save prompt.
   // Requires that `options.card_save_type` is not equal to
-  // `AutofillClient::CardSaveType::kCvcSaveOnly`
+  // `payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly`
   static AutofillSaveCardUiInfo CreateForLocalSave(
-      AutofillClient::SaveCreditCardOptions options,
+      payments::PaymentsAutofillClient::SaveCreditCardOptions options,
       const CreditCard& card);
 
   // Create the ui info for a server save prompt.
   static AutofillSaveCardUiInfo CreateForUploadSave(
-      AutofillClient::SaveCreditCardOptions options,
+      payments::PaymentsAutofillClient::SaveCreditCardOptions options,
       const CreditCard& card,
       const LegalMessageLines& legal_message_lines,
       const AccountInfo& displayed_target_account);
@@ -75,14 +81,25 @@ struct AutofillSaveCardUiInfo {
   //
   // This function allows specifying whether google pay branding is enabled.
   // Requires `options.card_save_type` not equal to
-  // `AutofillClient::CardSaveType::kCvcSaveOnly`.
+  // `payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly`.
   static AutofillSaveCardUiInfo CreateForUploadSave(
-      AutofillClient::SaveCreditCardOptions options,
+      payments::PaymentsAutofillClient::SaveCreditCardOptions options,
       const CreditCard& card,
       const LegalMessageLines& legal_message_lines,
       const AccountInfo& displayed_target_account,
       bool is_google_pay_branding_enabled);
 };
+
+#if BUILDFLAG(IS_IOS)
+// Returns true if the bottom sheet UI should be shown for saving a credit card.
+// This is the case if the bottom sheet feature is enabled, there are no strikes
+// against the card, and no fix flows are required.
+bool ShouldShowSaveCardBottomSheet(
+    payments::PaymentsAutofillClient::CardSaveType card_save_type,
+    int num_strikes,
+    bool should_request_name_from_user,
+    bool should_request_expiration_date_from_user);
+#endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace autofill
 

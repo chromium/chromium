@@ -23,14 +23,16 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/extension_icon_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/url_pattern_set.h"
 #include "ui/gfx/image/image.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace content {
 class BrowserContext;
@@ -52,14 +54,14 @@ class MenuItem {
   using OwnedList = std::vector<std::unique_ptr<MenuItem>>;
 
   // Key used to identify which extension a menu item belongs to.  A menu item
-  // can also belong to a <webview>, in which case |webview_embedder_process_id|
-  // |webview_embedder_frame_id|, and |webview_instance_id| will be non-zero.
-  // When two ExtensionKeys are compared, an empty |extension_id| will match any
+  // can also belong to a <webview>, in which case `webview_embedder_process_id`
+  // `webview_embedder_frame_id`, and `webview_instance_id` will be non-zero.
+  // When two ExtensionKeys are compared, an empty `extension_id` will match any
   // other extension ID. This allows menu items belonging to webviews to be
-  // found with only the |webview_embedder_process_id| and |webview_instance_id|
+  // found with only the `webview_embedder_process_id` and `webview_instance_id`
   // when the extension ID is not known. This is currently done from
   // ChromeExtensionsBrowserClient::CleanUpWebView(). The
-  // |webview_embedder_frame_id| is only used to get the <webview>'s embedder
+  // `webview_embedder_frame_id` is only used to get the <webview>'s embedder
   // RenderFrameHost.
   struct ExtensionKey {
     std::string extension_id;
@@ -75,7 +77,6 @@ class MenuItem {
                  int webview_instance_id);
 
     bool operator==(const ExtensionKey& other) const;
-    bool operator!=(const ExtensionKey& other) const;
     bool operator<(const ExtensionKey& other) const;
 
     bool empty() const;
@@ -90,8 +91,7 @@ class MenuItem {
     Id(bool incognito, const ExtensionKey& extension_key);
     ~Id();
 
-    bool operator==(const Id& other) const;
-    bool operator!=(const Id& other) const;
+    friend bool operator==(const Id&, const Id&) = default;
     bool operator<(const Id& other) const;
 
     bool incognito;
@@ -129,21 +129,14 @@ class MenuItem {
   // A list of Contexts for an item.
   class ContextList {
    public:
-    ContextList() : value_(0) {}
+    ContextList() = default;
     explicit ContextList(Context context) : value_(context) {}
-    ContextList(const ContextList& other) : value_(other.value_) {}
+    ContextList(const ContextList& other) = default;
 
-    void operator=(const ContextList& other) {
-      value_ = other.value_;
-    }
+    ContextList& operator=(const ContextList& other) = default;
 
-    bool operator==(const ContextList& other) const {
-      return value_ == other.value_;
-    }
-
-    bool operator!=(const ContextList& other) const {
-      return !(*this == other);
-    }
+    friend constexpr bool operator==(const ContextList&,
+                                     const ContextList&) = default;
 
     bool Contains(Context context) const {
       return (value_ & context) > 0;
@@ -165,7 +158,7 @@ class MenuItem {
     }
 
    private:
-    uint32_t value_;  // A bitmask of Context values.
+    uint32_t value_ = 0;  // A bitmask of Context values.
   };
 
   MenuItem(const Id& id,
@@ -215,24 +208,24 @@ class MenuItem {
     target_url_patterns_ = patterns.Clone();
   }
 
-  // Returns the title with any instances of %s replaced by |selection|. The
-  // result will be no longer than |max_length|.
+  // Returns the title with any instances of %s replaced by `selection`. The
+  // result will be no longer than `max_length`.
   std::u16string TitleWithReplacement(const std::u16string& selection,
                                       size_t max_length) const;
 
-  // Sets the checked state to |checked|. Returns true if successful.
+  // Sets the checked state to `checked`. Returns true if successful.
   bool SetChecked(bool checked);
 
   // Converts to Value for serialization to preferences.
   base::Value::Dict ToValue() const;
 
-  // Returns a new MenuItem created from |value|, or NULL if there is
+  // Returns a new MenuItem created from `value`, or NULL if there is
   // an error.
   static std::unique_ptr<MenuItem> Populate(const std::string& extension_id,
                                             const base::Value::Dict& value,
                                             std::string* error);
 
-  // Sets any document and target URL patterns from |properties|.
+  // Sets any document and target URL patterns from `properties`.
   bool PopulateURLPatterns(
       const std::vector<std::string>* document_url_patterns,
       const std::vector<std::string>* target_url_patterns,
@@ -241,14 +234,14 @@ class MenuItem {
  protected:
   friend class MenuManager;
 
-  // Adds |item| and sets its parent_id_.
+  // Adds `item` and sets its parent_id_.
   void AddChild(std::unique_ptr<MenuItem> item);
 
   // Removes the child item from this parent and returns it.
   std::unique_ptr<MenuItem> ReleaseChild(const Id& child_id, bool recursive);
 
   // Recursively appends all descendant items (children, grandchildren, etc.)
-  // to the output |list|.
+  // to the output `list`.
   void GetFlattenedSubtree(MenuItem::List* list);
 
   // Recursively removes all descendant items (children, grandchildren, etc.),
@@ -322,7 +315,7 @@ class MenuManager : public ProfileObserver,
   std::set<MenuItem::ExtensionKey> ExtensionIds();
 
   // Returns a list of all the *top-level* menu items (added via AddContextItem)
-  // for the given extension specified by |extension_key|, *not* including child
+  // for the given extension specified by `extension_key`, *not* including child
   // items (added via AddChildItem); although those can be reached via the
   // top-level items' children. A view can then decide how to display these,
   // including whether to put them into a submenu if there are more than 1.
@@ -337,7 +330,7 @@ class MenuManager : public ProfileObserver,
     return list ? list->size() : 0;
   }
 
-  // Adds a top-level menu item for an extension, requiring the |extension|
+  // Adds a top-level menu item for an extension, requiring the `extension`
   // pointer so it can load the icon for the extension. Returns a boolean
   // indicating success or failure.
   bool AddContextItem(const Extension* extension,
@@ -348,11 +341,11 @@ class MenuManager : public ProfileObserver,
   bool AddChildItem(const MenuItem::Id& parent_id,
                     std::unique_ptr<MenuItem> child);
 
-  // Makes existing item with |child_id| a child of the item with |parent_id|.
+  // Makes existing item with `child_id` a child of the item with `parent_id`.
   // If the child item was already a child of another parent, this will remove
   // it from that parent first. It is an error to try and move an item to be a
   // child of one of its own descendants. It is legal to pass NULL for
-  // |parent_id|, which means the item should be moved to the top-level.
+  // `parent_id`, which means the item should be moved to the top-level.
   bool ChangeParent(const MenuItem::Id& child_id,
                     const MenuItem::Id* parent_id);
 
@@ -361,10 +354,10 @@ class MenuManager : public ProfileObserver,
   // and removed or false otherwise.
   bool RemoveContextMenuItem(const MenuItem::Id& id);
 
-  // Removes all items for the given extension specified by |extension_key|.
+  // Removes all items for the given extension specified by `extension_key`.
   void RemoveAllContextItems(const MenuItem::ExtensionKey& extension_key);
 
-  // Returns the item with the given |id| or NULL.
+  // Returns the item with the given `id` or NULL.
   MenuItem* GetItemById(const MenuItem::Id& id) const;
 
   // Notify the MenuManager that an item has been updated not through
@@ -381,7 +374,7 @@ class MenuManager : public ProfileObserver,
                       const MenuItem::Id& menu_item_id);
 
   // This returns a image of width/height kFaviconSize, loaded through the
-  // MenuIconLoader associated with the |extension_key|.
+  // MenuIconLoader associated with the `extension_key`.
   gfx::Image GetIconForExtensionKey(
       const MenuItem::ExtensionKey& extension_key);
 
@@ -409,11 +402,11 @@ class MenuManager : public ProfileObserver,
   // Removes all "incognito" "split" mode context items.
   void RemoveAllIncognitoContextItems();
 
-  // Associates |extension_key| with the given |menu_icon_loader|.
+  // Associates `extension_key` with the given `menu_icon_loader`.
   void SetMenuIconLoader(MenuItem::ExtensionKey extension_key,
                          std::unique_ptr<MenuIconLoader> menu_icon_loader);
 
-  // Returns the MenuIconLoader associated with |extension_key|.
+  // Returns the MenuIconLoader associated with `extension_key`.
   MenuIconLoader* GetMenuIconLoader(MenuItem::ExtensionKey extension_key);
 
   void AddObserver(TestObserver* observer);
@@ -433,7 +426,7 @@ class MenuManager : public ProfileObserver,
   // the last one will get selected.
   void SanitizeRadioListsInMenu(const MenuItem::OwnedList& item_list);
 
-  // Returns true if item is a descendant of an item with id |ancestor_id|.
+  // Returns true if item is a descendant of an item with id `ancestor_id`.
   bool DescendantOf(MenuItem* item, const MenuItem::Id& ancestor_id);
 
   void WriteToStorageInternal(const MenuItem::ExtensionKey& extension_key);
@@ -444,7 +437,7 @@ class MenuManager : public ProfileObserver,
   // This lets us make lookup by id fast. It maps id to MenuItem* for
   // all items the menu manager knows about, including all children of top-level
   // items.
-  std::map<MenuItem::Id, MenuItem*> items_by_id_;
+  std::map<MenuItem::Id, raw_ptr<MenuItem, CtnExperimental>> items_by_id_;
 
   // The scheduled tasks to write the menu items to storage.
   std::map<MenuItem::ExtensionKey, base::OneShotTimer> write_tasks_;

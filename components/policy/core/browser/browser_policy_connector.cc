@@ -48,6 +48,8 @@ const char kDefaultRealtimeReportingServerUrl[] =
 // Server receives the requests on this URL.
 const char kFileStorageServerUploadUrlSuffixForDMServer[] = "/upload";
 
+DeviceManagementService* g_device_management_service_for_testing = nullptr;
+
 }  // namespace
 
 BrowserPolicyConnector::BrowserPolicyConnector(
@@ -133,6 +135,17 @@ std::string BrowserPolicyConnector::GetUrlOverride(
       LOG(WARNING) << flag << " not supported on this channel";
   }
   return std::string(default_value);
+}
+
+DeviceManagementService*
+BrowserPolicyConnector::GetTestDeviceManagementService() {
+  return g_device_management_service_for_testing;
+}
+
+// static
+void BrowserPolicyConnector::SetDeviceManagementServiceForTesting(
+    DeviceManagementService* device_management_service) {
+  g_device_management_service_for_testing = device_management_service;
 }
 
 // static

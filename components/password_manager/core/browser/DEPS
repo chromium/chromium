@@ -1,6 +1,7 @@
 include_rules = [
   "+components/affiliations",
   "+components/autofill/core/browser",
+  "+components/credential_management",
   "+components/device_reauth",
   "+components/favicon/core",
   "+components/favicon_base",
@@ -27,7 +28,9 @@ include_rules = [
   "+components/version_info",
   "+components/webauthn",
   "+components/webdata/common",
+  "+content/public/browser",
   "+crypto",
+  "+device/fido/public/features.h",
   "+google_apis",
   "+grit",
   "+mojo/public/cpp/bindings",
@@ -46,6 +49,11 @@ specific_include_rules = {
   ],
   "http_credentials_cleaner_unittest\.cc": [
     "+services/network",
+  ],
+  "password_manager_blocklist_policy\.(cc|h)": [
+    "+components/keyed_service/content",
+    "+components/policy/core/browser",
+    "+components/user_prefs",
   ],
   ".*unit_test\.cc": [
     "+components/autofill/core/browser/test_utils",

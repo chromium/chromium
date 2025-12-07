@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link href="./resources/consistent-rendering.css" rel="stylesheet" />
+  <script src="../resources/testharness.js"></script>
+  <script src="../resources/testharnessreport.js"></script>
+  <script src="./resources/content-extraction-test-helpers.js"></script>
+  <script src="../resources/ahem.js"></script>
+
+  <script>
+    function runTest() {
+      finishTest(dumpContentNodeTree(document));
+    }
+  </script>
+</head>
+
+<body onload="runTest()" style="margin:8px;">
+  <input type='checkbox' id='myCheckbox'/>
+  <label for='myCheckbox'>Check me!</label>
+</body>
+</html>
+

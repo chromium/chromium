@@ -108,7 +108,7 @@ class ChangeList():
     assert self.gerrit_url is not None
     assert self.largest_patchset is not None
     assert self.ran_trybot is not None
-    s = '%s (%s)' % (self.revision, self.gerrit_url)
+    s = f'{self.revision} ({self.gerrit_url})'
     if not self.ran_trybot:
       s += ' <<<< Did not run trybot'
     return s
@@ -130,12 +130,12 @@ def QueryTrybotsForCl(cl_number, project):
       'bq',
       'query',
       '--format=json',
-      '--project_id=%s' % project,
+      f'--project_id={project}',
       '--max_rows=500',
       '--use_legacy_sql=false',
       query,
   ]
-  with open('/dev/null', 'w') as devnull:
+  with open('/dev/null', 'w', encoding='utf-8') as devnull:
     stdout = subprocess.check_output(cmd, stderr=devnull)
   return json.loads(stdout)
 
@@ -150,7 +150,7 @@ def FillTrybotRuns(blamelist, trybot, project):
   """
   total_cls = len(blamelist)
   for i, entry in enumerate(blamelist):
-    print('Getting data for CL %s/%s' % (i + 1, total_cls))
+    print(f'Getting data for CL {i + 1}/{total_cls}')
     largest_patchset = 0
     all_trybots = QueryTrybotsForCl(entry.cl_number, project)
     assert all_trybots
@@ -159,8 +159,7 @@ def FillTrybotRuns(blamelist, trybot, project):
     # into a dict doesn't preserve ordering, so find the largest patchset now.
     for tryjob in all_trybots:
       patchset = int(tryjob['patchset'])
-      if patchset > largest_patchset:
-        largest_patchset = patchset
+      largest_patchset = max(largest_patchset, patchset)
     entry.largest_patchset = largest_patchset
 
     for tryjob in all_trybots:
@@ -212,7 +211,7 @@ def GetBlamelist(start_revision, end_revision):
       'git',
       'log',
       '--pretty=oneline',
-      '%s~1..%s' % (start_revision, end_revision),
+      f'{start_revision}~1..{end_revision}',
   ]
   stdout = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
 

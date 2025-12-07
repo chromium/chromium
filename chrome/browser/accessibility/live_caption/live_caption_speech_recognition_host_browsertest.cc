@@ -18,6 +18,7 @@
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/live_translate_controller.h"
 #include "components/live_caption/pref_names.h"
+#include "components/live_caption/translation_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/browser/render_frame_host.h"
@@ -28,29 +29,42 @@
 #include "net/test/embedded_test_server/http_response.h"
 
 namespace {
-FullscreenEventsWaiter::FullscreenEventsWaiter(
-    content::WebContents* web_contents)
-    : WebContentsObserver(web_contents) {}
+// A WebContentsObserver that allows waiting for some media to start or stop
+// playing fullscreen.
+class FullscreenEventsWaiter : public content::WebContentsObserver {
+ public:
+  explicit FullscreenEventsWaiter(content::WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+  FullscreenEventsWaiter(const FullscreenEventsWaiter& rhs) = delete;
+  FullscreenEventsWaiter& operator=(const FullscreenEventsWaiter& rhs) = delete;
+  ~FullscreenEventsWaiter() override = default;
 
-FullscreenEventsWaiter::~FullscreenEventsWaiter() = default;
-
-void FullscreenEventsWaiter::MediaEffectivelyFullscreenChanged(bool value) {
-  if (run_loop_) {
-    run_loop_->Quit();
+  void MediaEffectivelyFullscreenChanged(bool value) override {
+    if (run_loop_) {
+      run_loop_->Quit();
+    }
   }
-}
 
-void FullscreenEventsWaiter::Wait() {
-  run_loop_ = std::make_unique<base::RunLoop>();
-  run_loop_->Run();
-}
+  // Wait for the current media playing fullscreen mode to be equal to
+  // |expected_media_fullscreen_mode|.
+  void Wait() {
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
+  }
+
+ private:
+  std::unique_ptr<base::RunLoop> run_loop_;
+};
 }  // namespace
 
 namespace captions {
 MockLiveTranslateController::MockLiveTranslateController(
     PrefService* profile_prefs,
     content::BrowserContext* browser_context)
-    : LiveTranslateController(profile_prefs, browser_context) {}
+    : LiveTranslateController(
+          profile_prefs,
+          std::make_unique<TranslationDispatcher>("dummy_api_key",
+                                                  browser_context)) {}
 
 MockLiveTranslateController::~MockLiveTranslateController() = default;
 
@@ -58,9 +72,9 @@ void MockLiveTranslateController::GetTranslation(
     const std::string& result,
     std::string source_language,
     std::string target_language,
-    OnTranslateEventCallback callback) {
+    TranslateEventCallback callback) {
   translation_requests_.push_back(result);
-  std::move(callback).Run(result);
+  std::move(callback).Run(TranslateEvent(result));
 }
 
 std::vector<std::string> MockLiveTranslateController::GetTranslationRequests() {

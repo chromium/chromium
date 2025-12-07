@@ -9,6 +9,7 @@
 #include "content/web_test/browser/web_test_control_host.h"
 #include "content/web_test/browser/web_test_javascript_dialog_manager.h"
 #include "content/web_test/common/web_test_switches.h"
+#include "third_party/blink/public/mojom/input/pointer_lock_result.mojom.h"
 
 namespace content {
 

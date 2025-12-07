@@ -23,7 +23,7 @@ namespace content {
 
 AttributionInputEventTrackerAndroid::AttributionInputEventTrackerAndroid(
     WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents);
 
   // Lazy initialization
   std::ignore = static_cast<WebContentsImpl*>(web_contents)
@@ -31,7 +31,7 @@ AttributionInputEventTrackerAndroid::AttributionInputEventTrackerAndroid(
                     ->GetOrCreateEventForwarder(/*env=*/nullptr);
   ui::EventForwarder* event_forwarder =
       web_contents->GetNativeView()->event_forwarder();
-  DCHECK(event_forwarder);
+  CHECK(event_forwarder);
   // `this` will outlive `event_forwarder` in non-test code, therefore
   // the observer doesn't need to be removed.
   event_forwarder->AddObserver(this);
@@ -67,10 +67,10 @@ AttributionInputEventTrackerAndroid::GetMostRecentEvent() {
 
 void AttributionInputEventTrackerAndroid::RemoveObserverForTesting(
     WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents);
   ui::EventForwarder* event_forwarder =
       web_contents->GetNativeView()->event_forwarder();
-  DCHECK(event_forwarder);
+  CHECK(event_forwarder);
   event_forwarder->RemoveObserver(this);
 }
 

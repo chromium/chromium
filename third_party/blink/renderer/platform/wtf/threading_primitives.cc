@@ -7,7 +7,7 @@
 #include "base/check.h"
 #include "base/threading/platform_thread.h"
 
-namespace WTF {
+namespace blink {
 
 void RecursiveMutex::lock() {
   auto thread_id = base::PlatformThread::CurrentId();
@@ -57,4 +57,4 @@ void RecursiveMutex::UpdateStateAfterLockAcquired(
   owner_.store(thread_id, std::memory_order_relaxed);
 }
 
-}  // namespace WTF
+}  // namespace blink

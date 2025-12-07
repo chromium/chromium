@@ -5,7 +5,6 @@
 <translation id="1140871961407805696">Caméra arrière</translation>
 <translation id="1196338895211115272">Échec d'exportation de la clé privée</translation>
 <translation id="132960226125594336">Impossible de charger le fichier "<ph name="RELATIVE_PATH" />" pour le script de contenu, car il dépasserait la taille maximale de script ou la taille totale maximale de script de contenu de l'extension.</translation>
-<translation id="1420684932347524586">Échec de génération de clé privée RSA aléatoire</translation>
 <translation id="1445572445564823378">Cette extension ralentit <ph name="PRODUCT_NAME" />. Vous devez la désactiver pour rétablir les performances de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL n'est pas compatible.</translation>
 <translation id="1610570795592207282">Impossible de charger le fichier CSS "<ph name="RELATIVE_PATH" />" du script.</translation>
@@ -19,13 +18,11 @@
 <translation id="3115238746683532089">Produit inconnu <ph name="PRODUCT_ID" /> du fournisseur <ph name="VENDOR_ID" /> (numéro de série : <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Échec lors du remplacement du fichier CRX. Vérifiez qu'il n'est pas en cours d'utilisation.</translation>
 <translation id="3163201441334626963">Produit inconnu <ph name="PRODUCT_ID" /> du fournisseur <ph name="VENDOR_ID" /></translation>
-<translation id="3369521687965833290">Impossible d'extraire les fichiers de l'extension. Pour effectuer cette opération en toute sécurité, vous devez disposer d'un chemin d'accès à votre répertoire de profils commençant par une lettre de lecteur et ne contenant ni jonction, ni point de montage, ni lien symbolique. Aucun chemin de ce type n'existe pour votre profil.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (numéro de série : <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> du fournisseur <ph name="VENDOR_ID" /> (numéro de série : <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Vous devez indiquer un chemin valide comme valeur de clé privée.</translation>
 <translation id="388442998277590542">Impossible de charger la page d'options "<ph name="OPTIONS_PAGE" />".</translation>
 <translation id="3984413272403535372">Erreur lors de la signature de l'extension</translation>
-<translation id="4115165561519362854">L'administrateur de cette machine exige que <ph name="EXTENSION_NAME" /> dispose, au minimum, de la version <ph name="EXTENSION_VERSION" />. L'activation sera impossible tant que la mise à jour vers cette version (ou une version ultérieure) n'aura pas été effectuée.</translation>
 <translation id="4233778200880751280">Impossible de charger la page "À propos" <ph name="ABOUT_PAGE" />.</translation>
 <translation id="471800408830181311">Échec de création de clé privée</translation>
 <translation id="4811956658694082538">Impossible d'installer le package en raison du plantage d'un processus associé à un utilitaire. Veuillez redémarrer Chrome, puis réessayer.</translation>
@@ -39,7 +36,6 @@
 <translation id="5972529113578162692">L'administrateur de cet ordinateur exige que l'extension <ph name="EXTENSION_NAME" /> soit installée. Cette extension ne pourra pas être désinstallée.</translation>
 <translation id="6027032947578871493">Produit inconnu <ph name="PRODUCT_ID" /> fourni par <ph name="VENDOR_NAME" /> (numéro de série : <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> du fournisseur <ph name="VENDOR_ID" /></translation>
-<translation id="6143635259298204954">Impossible d'extraire les fichiers de l'extension. Pour effectuer cette opération en toute sécurité, vous devez disposer d'un chemin d'accès à votre répertoire de profils ne contenant pas de lien symbolique. Aucun chemin de ce type n'existe pour votre profil.</translation>
 <translation id="6322279351188361895">Échec de lecture de la clé privée</translation>
 <translation id="6391538222494443604">Le répertoire d'extensions est obligatoire.</translation>
 <translation id="641087317769093025">Impossible de décompresser l'extension.</translation>
@@ -52,12 +48,14 @@
 <translation id="7068383018033524534">Le fichier manifeste est incorrect</translation>
 <translation id="7217838517480956708">L'administrateur de cet ordinateur exige que l'extension <ph name="EXTENSION_NAME" /> soit installée. Celle-ci ne peut pas être supprimée ni modifiée.</translation>
 <translation id="7612608473764576263">Vous devez indiquer un format valide comme valeur de clé privée (clé RSA encodée PEM format PKCS#8).</translation>
+<translation id="7876803335449432072">Impossible de charger le fichier "<ph name="RELATIVE_PATH" />" pour le script de contenu. Les feuilles de style de scripts de contenu ne peuvent être chargées qu'à partir des fichiers de feuilles de style compatibles, tels que les fichiers .css.</translation>
 <translation id="7939686037314084444">Échec du chargement de l'extension, laquelle risque de ne pas pouvoir intercepter les demandes réseau.</translation>
 <translation id="7972881773422714442">Options : <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Caméra frontale</translation>
 <translation id="8047248493720652249">Échec de l'attribution du nom "<ph name="ATTEMPTED_FILENAME" />" au fichier téléchargé via l'extension, car un nom de fichier différent, "<ph name="ACTUAL_FILENAME" />", a été attribué via une autre extension (<ph name="EXTENSION_NAME" />).</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> de <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Fichier manifeste absent ou illisible</translation>
+<translation id="8621383749470166852">Impossible de charger le fichier "<ph name="RELATIVE_PATH" />" pour le script de contenu. Les scripts de contenu ne peuvent être chargés qu'à partir de fichiers JavaScript compatibles, tels que les fichiers .js.</translation>
 <translation id="8636666366616799973">Package incorrect. Détails : "<ph name="ERROR_MESSAGE" />".</translation>
 <translation id="8761756413268424715"><ph name="APP_NAME" /> demande l'accès à l'un de vos appareils :</translation>
 <translation id="8885905466771744233">L'extension indiquée est déjà associée à une clé privée. Utilisez cette clé ou supprimez-la.</translation>

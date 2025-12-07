@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/site_per_process_browsertest.h"
-
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
+#include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
+#include "content/browser/site_per_process_browsertest.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/common/content_navigation_policy.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -219,6 +222,67 @@ class SitePerProcessIsolatedSandboxedIframeTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// A test class to test IsolatedSandboxedIframes with and without
+// kOriginKeyedProcessesByDefault enabled.
+class OriginKeyedProcessIsolatedSandboxedIframeTest
+    : public SitePerProcessBrowserTestBase,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  OriginKeyedProcessIsolatedSandboxedIframeTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    if (GetParam()) {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{blink::features::kIsolateSandboxedIframes,
+                                blink::features::
+                                    kOriginAgentClusterDefaultEnabled,
+                                features::kOriginKeyedProcessesByDefault},
+          /*disabled_features=*/{});
+    } else {
+      // Note: we don't explicitly disable kOriginAgentClusterDefaultEnabled
+      // below, since by itself it shouldn't affect any process model decisions.
+      // It's included above since kOriginKeyedProcessesByDefault requires it.
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{blink::features::kIsolateSandboxedIframes},
+          /*disabled_features=*/{features::kOriginKeyedProcessesByDefault});
+    }
+  }
+
+ protected:
+  void SetUpOnMainThread() override {
+    SitePerProcessBrowserTestBase::SetUpOnMainThread();
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+    https_server()->AddDefaultHandlers(GetTestDataFilePath());
+    ASSERT_TRUE(https_server()->Start());
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SitePerProcessBrowserTestBase::SetUpCommandLine(command_line);
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+
+    // This is needed for this test to run properly on platforms where
+    //  --site-per-process isn't the default, such as Android.
+    IsolateAllSitesForTesting(command_line);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    SitePerProcessBrowserTestBase::SetUpInProcessBrowserTestFixture();
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    SitePerProcessBrowserTestBase::TearDownInProcessBrowserTestFixture();
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+  }
+
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  // Need an https server because origin-keyed processes require HTTPS.
+  net::EmbeddedTestServer https_server_;
+  content::ContentMockCertVerifier mock_cert_verifier_;
+};
+
 class SitePerProcessNotIsolatedSandboxedIframeTest
     : public SitePerProcessBrowserTest {
  public:
@@ -344,6 +408,123 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessNotIsolatedSandboxedIframeTest,
   ASSERT_TRUE(WaitForLoadStop(web_contents()));
 }
 
+// Test that a sandboxed data url is loaded correctly (i.e. doesn't crash) both
+// with and without kOriginKeyedProcessesByDefault enabled.
+IN_PROC_BROWSER_TEST_P(OriginKeyedProcessIsolatedSandboxedIframeTest,
+                       DataUrlLoadsWithoutCrashing) {
+  bool origin_keyed_processes_by_default_enabled = GetParam();
+  EXPECT_EQ(origin_keyed_processes_by_default_enabled,
+            SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault());
+  GURL main_url(https_server()->GetURL("foo.a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Create sandboxed srcdoc child frame, with csp sandbox.
+  TestNavigationObserver iframe_observer(shell()->web_contents());
+  EXPECT_TRUE(ExecJs(shell(),
+                     "var frame = document.createElement('iframe'); "
+                     "frame.sandbox = ''; "
+                     "frame.src = 'data:text/html,foo'; "
+                     "document.body.appendChild(frame);"));
+  iframe_observer.Wait();
+  EXPECT_TRUE(iframe_observer.last_navigation_succeeded());
+
+  // Check frame-tree.
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  ASSERT_EQ(1U, root->child_count());
+  FrameTreeNode* child = root->child_at(0);
+  EXPECT_EQ(network::mojom::WebSandboxFlags::kAll,
+            child->current_frame_host()->active_sandbox_flags());
+  EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
+            child->current_frame_host()->GetSiteInstance());
+
+  const SiteInfo& root_site_info =
+      root->current_frame_host()->GetSiteInstance()->GetSiteInfo();
+  const SiteInfo& child_site_info =
+      child->current_frame_host()->GetSiteInstance()->GetSiteInfo();
+
+  GURL expected_root_site_url = origin_keyed_processes_by_default_enabled
+                                    ? url::Origin::Create(main_url).GetURL()
+                                    : GURL("https://a.com/");
+  if (origin_keyed_processes_by_default_enabled) {
+    EXPECT_TRUE(root_site_info.agent_cluster_key().IsOriginKeyed());
+    EXPECT_EQ(AgentClusterKey::OACStatus::kOriginKeyedByDefault,
+              root_site_info.oac_status());
+  } else {
+    EXPECT_FALSE(root_site_info.agent_cluster_key().IsOriginKeyed());
+    EXPECT_EQ(AgentClusterKey::OACStatus::kSiteKeyedByDefault,
+              root_site_info.oac_status());
+  }
+  EXPECT_EQ(expected_root_site_url, root_site_info.site_url());
+  EXPECT_FALSE(root_site_info.is_sandboxed());
+
+  // Note: unless IsolateSandboxedIframes is disabled, we expect the sandboxed
+  // data-url frame to still have the full origin, since that is what the
+  // frame got from its initiator.
+  GURL expected_child_site_url =
+      (origin_keyed_processes_by_default_enabled ||
+       SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled())
+          ? url::Origin::Create(main_url).GetURL()
+          : GURL("https://a.com/");
+  if (origin_keyed_processes_by_default_enabled) {
+    EXPECT_TRUE(child_site_info.agent_cluster_key().IsOriginKeyed());
+    EXPECT_EQ(AgentClusterKey::OACStatus::kOriginKeyedByDefault,
+              root_site_info.oac_status());
+  } else {
+    EXPECT_FALSE(child_site_info.agent_cluster_key().IsOriginKeyed());
+    EXPECT_EQ(AgentClusterKey::OACStatus::kSiteKeyedByDefault,
+              root_site_info.oac_status());
+  }
+  EXPECT_EQ(expected_child_site_url, child_site_info.site_url());
+  EXPECT_TRUE(child_site_info.is_sandboxed());
+}
+
+IN_PROC_BROWSER_TEST_P(OriginKeyedProcessIsolatedSandboxedIframeTest,
+                       DataUrlLoadsInFileURL) {
+  bool origin_keyed_processes_by_default_enabled = GetParam();
+  EXPECT_EQ(origin_keyed_processes_by_default_enabled,
+            SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault());
+  GURL main_url(GetTestUrl("", "title1.html"));
+  ASSERT_TRUE(main_url.SchemeIsFile());
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Create sandboxed srcdoc child frame.
+  TestNavigationObserver iframe_observer(shell()->web_contents());
+  EXPECT_TRUE(ExecJs(shell(),
+                     "var frame = document.createElement('iframe'); "
+                     "frame.sandbox = ''; "
+                     "frame.src = 'data:text/html,foo'; "
+                     "document.body.appendChild(frame);"));
+  iframe_observer.Wait();
+  EXPECT_TRUE(iframe_observer.last_navigation_succeeded());
+
+  // Check frame-tree.
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  ASSERT_EQ(1U, root->child_count());
+  FrameTreeNode* child = root->child_at(0);
+  EXPECT_EQ(network::mojom::WebSandboxFlags::kAll,
+            child->current_frame_host()->active_sandbox_flags());
+  EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
+            child->current_frame_host()->GetSiteInstance());
+
+  const SiteInfo& root_site_info =
+      root->current_frame_host()->GetSiteInstance()->GetSiteInfo();
+  const SiteInfo& child_site_info =
+      child->current_frame_host()->GetSiteInstance()->GetSiteInfo();
+
+  GURL expected_root_site_url = GURL("file:///");
+  EXPECT_FALSE(root_site_info.agent_cluster_key().IsOriginKeyed());
+  EXPECT_EQ(AgentClusterKey::OACStatus::kSiteKeyedByDefault,
+            root_site_info.oac_status());
+  EXPECT_EQ(expected_root_site_url, root_site_info.site_url());
+  EXPECT_FALSE(root_site_info.is_sandboxed());
+
+  GURL expected_child_site_url = GURL("file:///");
+  EXPECT_FALSE(child_site_info.agent_cluster_key().IsOriginKeyed());
+  EXPECT_EQ(AgentClusterKey::OACStatus::kSiteKeyedByDefault,
+            root_site_info.oac_status());
+  EXPECT_EQ(expected_child_site_url, child_site_info.site_url());
+  EXPECT_TRUE(child_site_info.is_sandboxed());
+}
 // Test that a srcdoc iframe that receives its sandbox flags from the CSP
 // attribute also gets process isolation. This test starts the same as
 // SitePerProcessNotIsolatedSandboxedIframeTest.SrcdocSandboxFlagsCheck, but in
@@ -795,7 +976,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessPerOriginIsolatedSandboxedIframeTest,
       child->current_frame_host()->GetSiteInstance();
   EXPECT_NE(site_instance_root, site_instance2);
   EXPECT_NE(site_instance1, site_instance2);
-  EXPECT_NE(site_instance1->GetProcess(), site_instance2->GetProcess());
+  EXPECT_NE(site_instance1->GetOrCreateProcessForTesting(),
+            site_instance2->GetProcess());
 }
 
 // Test that navigating cross-origin from a non-sandboxed iframe to a CSP
@@ -1091,6 +1273,45 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
                    .is_sandboxed());
 }
 
+// Ensure a navigation that is from the initial empty document, is main frame,
+// cross-SiteInstance and same-SiteInstanceGroup succeeds.
+IN_PROC_BROWSER_TEST_P(SitePerProcessNotIsolatedSandboxedIframeTest,
+                       CrossSiteInstanceNavigationFromInitialEmptyDocument) {
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Create sandboxed data: URL which allows scripts and popups.
+  std::string js_str = base::StringPrintf(
+      "var frame = document.createElement('iframe'); "
+      "frame.sandbox = 'allow-scripts allow-popups'; "
+      "frame.src = 'data:text/html,foo'; "
+      "document.body.appendChild(frame);");
+  EXPECT_TRUE(ExecJs(shell(), js_str));
+  ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // The data: subframe opens a popup, which inherits the sandbox bit.
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  ASSERT_EQ(1U, root->child_count());
+  FrameTreeNode* child = root->child_at(0);
+  ShellAddedObserver new_shell_observer;
+  std::string js_open_popup = base::StringPrintf("var popup = window.open();");
+  EXPECT_TRUE(ExecJs(child, js_open_popup));
+  Shell* popup_shell = new_shell_observer.GetShell();
+  EXPECT_TRUE(popup_shell);
+
+  // Navigate the popup to the same URL as the main frame. Though the URL is the
+  // same, the sandbox bit means it is not same-SiteInstance.
+  // This navigation is cross-SiteInstance, same-SiteInstanceGroup,
+  // local-to-local, starts from the initial empty document and does not depend
+  // on RenderDocument level.
+  GURL url1(embedded_test_server()->GetURL("a.com", "/title2.html"));
+  std::string js_navigate_popup1 =
+      base::StringPrintf("popup.location = '%s';", url1.spec().c_str());
+  TestNavigationObserver observer2(popup_shell->web_contents());
+  EXPECT_TRUE(ExecJs(child, js_navigate_popup1));
+  observer2.Wait();
+}
+
 // Test to make sure that javascript: urls don't execute in a sandboxed iframe.
 IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
                        SandboxedIframeWithJSUrl) {
@@ -1153,6 +1374,15 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
   FrameTreeNode* child = root->child_at(0);
   EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
             child->current_frame_host()->GetSiteInstance());
+
+  // Because the subframe is a data: URL, the process should be locked to the
+  // initiator origin's site, which is the parent in this case. Unlike the
+  // parent, the data: subframe process should be sandboxed.
+  EXPECT_EQ(child->current_frame_host()
+                ->GetProcess()
+                ->GetProcessLock()
+                .GetProcessLockURL(),
+            root->current_frame_host()->GetLastCommittedOrigin().GetURL());
   EXPECT_TRUE(child->current_frame_host()
                   ->GetSiteInstance()
                   ->GetSiteInfo()
@@ -1285,16 +1515,21 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
     ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
   }
 
-  // Verify parent and child frames share a non-sandboxed SiteInstance.
+  // Verify parent and child frames share a non-sandboxed SiteInstanceGroup.
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   ASSERT_EQ(1U, root->child_count());
+  SiteInstanceImpl* root_site_instance =
+      root->current_frame_host()->GetSiteInstance();
   FrameTreeNode* child = root->child_at(0);
-  EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
-            child->current_frame_host()->GetSiteInstance());
-  EXPECT_FALSE(child->current_frame_host()
-                   ->GetSiteInstance()
-                   ->GetSiteInfo()
-                   .is_sandboxed());
+  SiteInstanceImpl* child_site_instance =
+      child->current_frame_host()->GetSiteInstance();
+  EXPECT_EQ(root_site_instance->group(), child_site_instance->group());
+  if (ShouldCreateSiteInstanceForDataUrls()) {
+    EXPECT_NE(root_site_instance, child_site_instance);
+  } else {
+    EXPECT_EQ(root_site_instance, child_site_instance);
+  }
+  EXPECT_FALSE(child_site_instance->GetSiteInfo().is_sandboxed());
 
   // Now make the subframe sandboxed.
   {
@@ -1305,6 +1540,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
   }
   NavigateFrameToURL(child,
                      embedded_test_server()->GetURL("b.com", "/title1.html"));
+  url::Origin b_origin = child->current_frame_host()->GetLastCommittedOrigin();
 
   // Child should now be in a different, sandboxed SiteInstance.
   EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
@@ -1313,6 +1549,14 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
                   ->GetSiteInstance()
                   ->GetSiteInfo()
                   .is_sandboxed());
+
+  // The child process should be in a process of its initiator origin.
+  EXPECT_EQ(child->current_frame_host()
+                ->GetProcess()
+                ->GetProcessLock()
+                .agent_cluster_key()
+                .GetSite(),
+            b_origin.GetTupleOrPrecursorTupleIfOpaque().GetURL());
 
   // Go back and ensure the data: URL remains sandboxed, and committed in a
   // different SiteInstance from the original navigation. From the spec:
@@ -2589,6 +2833,14 @@ IN_PROC_BROWSER_TEST_F(BaseUrlInheritanceIframeTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessIsolatedSandboxedIframeTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    OriginKeyedProcessIsolatedSandboxedIframeTest,
+    testing::Bool(),
+    [](const testing::TestParamInfo<bool>& info) {
+      return info.param ? "OriginKeyedProcessesByDefault_enabled"
+                        : "OriginKeyedProcessesByDefault_disabled";
+    });
 INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessNotIsolatedSandboxedIframeTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));

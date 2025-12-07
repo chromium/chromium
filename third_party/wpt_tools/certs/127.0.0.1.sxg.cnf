@@ -1,5 +1,0 @@
-[ req ]
-default_keyfile = 127.0.0.1.sxg.key
-distinguished_name = req_distinguished_name
-
-[ req_distinguished_name ]

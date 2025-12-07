@@ -7,14 +7,14 @@
 
 #include <memory>
 
-#include "chrome/browser/ui/safety_hub/safety_hub_service.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "components/prefs/pref_service.h"
 
 // The result of the periodic password status checks for compromised passwords
 // in Clank. This result will be used to show a notifcication on the magic
 // stack. Whenever any compromised passwords is detected, the stored number
 // should be updated.
-class PasswordStatusCheckResultAndroid : public SafetyHubService::Result {
+class PasswordStatusCheckResultAndroid : public SafetyHubResult {
  public:
   PasswordStatusCheckResultAndroid() = delete;
 
@@ -26,7 +26,7 @@ class PasswordStatusCheckResultAndroid : public SafetyHubService::Result {
 
   ~PasswordStatusCheckResultAndroid() override;
 
-  static std::optional<std::unique_ptr<SafetyHubService::Result>> GetResult(
+  static std::optional<std::unique_ptr<SafetyHubResult>> GetResult(
       const PrefService* pref_service);
 
   int GetCompromisedPasswordsCount() const {
@@ -35,9 +35,9 @@ class PasswordStatusCheckResultAndroid : public SafetyHubService::Result {
 
   void UpdateCompromisedPasswordCount(int count);
 
-  // SafetyHubService::Result implementation
+  // SafetyHubResult implementation
 
-  std::unique_ptr<SafetyHubService::Result> Clone() const override;
+  std::unique_ptr<SafetyHubResult> Clone() const override;
 
   base::Value::Dict ToDictValue() const override;
 

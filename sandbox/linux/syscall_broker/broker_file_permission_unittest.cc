@@ -121,7 +121,7 @@ void CheckPerm(const BrokerFilePermission& perm,
       break;
     default:
       // Bad test case
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
 // O_SYNC can be defined as (__O_SYNC|O_DSYNC)

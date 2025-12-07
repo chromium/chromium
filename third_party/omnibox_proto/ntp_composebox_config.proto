@@ -1,0 +1,74 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto2';
+
+option optimize_for = LITE_RUNTIME;
+option java_package = 'org.chromium.components.omnibox';
+option java_outer_classname = 'NtpComposeboxConfigProto';
+
+package omnibox;
+
+// Configuration for customizing the NTP Composebox.
+// Next ID: 3
+message NTPComposeboxConfig {
+  // Next ID: 2
+  message EntryPoint {
+    optional int32 num_page_load_animations = 1;
+  }
+  optional EntryPoint entry_point = 1;
+  // Next ID: 4
+  message PlaceholderConfig {
+    // Supported placeholder texts.
+    enum Placeholder {
+      ASK = 0;
+      PLAN = 1;
+      COMPARE = 2;
+      RESEARCH = 3;
+      TEACH = 4;
+      WRITE = 5;
+      IMAGE = 6;
+      ASK_TAB = 7;
+    }
+    repeated Placeholder placeholders = 1;
+    // How often the animation should repeat in milliseconds.
+    optional uint32 change_text_animation_interval_ms = 2;
+    // How long it takes for the animation to complete in milliseconds.
+    optional uint32 fade_text_animation_duration_ms = 3;
+  }
+  // Next ID: 9
+  message Composebox {
+    optional bool close_by_escape = 1;
+    optional bool close_by_click_outside = 2;
+    // Next ID: 7
+    message ImageUpload {
+      optional bool enable_webp_encoding = 1;
+      optional int32 downscale_max_image_size = 2;
+      optional int32 downscale_max_image_width = 3;
+      optional int32 downscale_max_image_height = 4;
+      optional int32 image_compression_quality = 5;
+      // A comma separated list of mime types.
+      // Ex. "image/jpeg,image/png".
+      optional string mime_types_allowed = 6;
+    }
+    optional ImageUpload image_upload = 3;
+    // Next ID: 3
+    message AttachmentUpload {
+      // Sets the max file size for all file types.
+      optional int32 max_size_bytes = 1;
+      // A comma separated list of mime types.
+      // Ex. "pdf".
+      optional string mime_types_allowed = 2;
+    }
+    optional AttachmentUpload attachment_upload = 4;
+    optional int32 max_num_files = 5;
+    // `input_placeholder_text` must be a string literal
+    // and should not be set on a config that applies
+    // outside of en-*.
+    optional string input_placeholder_text = 6;
+    optional bool is_pdf_upload_enabled = 7;
+    optional PlaceholderConfig placeholder_config = 8;
+  }
+  optional Composebox composebox = 2;
+}

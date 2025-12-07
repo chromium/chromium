@@ -2,20 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/network/network_events_observer.h"
+
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
+#include "chrome/browser/ash/login/test/scoped_policy_update.h"
+#include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_mixin.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
-#include "chrome/browser/ash/policy/reporting/metrics_reporting/network/network_events_observer.h"
-#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -71,6 +73,9 @@ class NetworkEventsBrowserTest : public ::policy::DevicePolicyCrosBrowserTest {
  protected:
   NetworkEventsBrowserTest() {
     crypto_home_mixin_.MarkUserAsExisting(affiliation_mixin_.account_id());
+    crypto_home_mixin_.ApplyAuthConfig(
+        affiliation_mixin_.account_id(),
+        ash::test::UserAuthConfig::Create(ash::test::kDefaultAuthSetup));
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -111,24 +116,30 @@ class NetworkEventsBrowserTest : public ::policy::DevicePolicyCrosBrowserTest {
   }
 
   void EnablePolicy() {
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        ash::kDeviceReportNetworkEvents, true);
+    auto* policy = policy_helper();
+    policy->device_policy()
+        ->payload()
+        .mutable_device_reporting()
+        ->set_report_network_events(true);
+    policy->RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
+        {ash::kDeviceReportNetworkEvents});
   }
 
   void SetWifiSignalEventDrivenPolicy() {
-    base::Value::List telemetry_list;
-    telemetry_list.Append("network_telemetry");
-    scoped_testing_cros_settings_.device_settings()->Set(
-        ash::kReportDeviceSignalStrengthEventDrivenTelemetry,
-        base::Value(std::move(telemetry_list)));
+    auto* policy = policy_helper();
+    policy->device_policy()
+        ->payload()
+        .mutable_device_reporting()
+        ->mutable_report_signal_strength_event_driven_telemetry()
+        ->add_entries("network_telemetry");
+    policy->RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
+        {ash::kReportDeviceSignalStrengthEventDrivenTelemetry});
   }
 
   std::unique_ptr<::ash::NetworkHandlerTestHelper> network_handler_test_helper_;
 
-  ::policy::DevicePolicyCrosTestHelper test_helper_;
-  ::policy::AffiliationMixin affiliation_mixin_{&mixin_host_, &test_helper_};
+  ::policy::AffiliationMixin affiliation_mixin_{&mixin_host_, policy_helper()};
   ash::CryptohomeMixin crypto_home_mixin_{&mixin_host_};
-  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 IN_PROC_BROWSER_TEST_F(NetworkEventsBrowserTest,
@@ -173,8 +184,12 @@ IN_PROC_BROWSER_TEST_F(NetworkEventsBrowserTest,
       base::StringPrintf(kWifiConfig, kWifiGuid, kLowSignalStrengthRssi);
   network_handler_test_helper_->ConfigureService(service_config_low_signal);
 
-  EnablePolicy();
+  // EnablePolicy() below triggers a metric event, which is expected/observed by
+  // `missive_telemetry_observer` above. It is necessary to enable the
+  // wifi-signal policy beforehand, otherwise the event will be discarded.
   SetWifiSignalEventDrivenPolicy();
+  EnablePolicy();
+
   ash::ShillServiceClient::Get()->GetTestInterface()->SetServiceProperty(
       kWifiServicePath, shill::kSignalStrengthProperty,
       base::Value(kSignalStrength));

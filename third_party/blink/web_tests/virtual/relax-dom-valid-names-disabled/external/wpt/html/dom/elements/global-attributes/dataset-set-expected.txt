@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Setting element.dataset[';foo'] should not throw.
+  Failed to set a named property ';foo' on 'DOMStringMap': 'data-;foo' is not a valid attribute name.
+Harness: the test ran to completion.
+

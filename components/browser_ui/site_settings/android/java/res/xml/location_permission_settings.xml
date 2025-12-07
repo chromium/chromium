@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="page_description"
+        app:allowDividerBelow="false"
+        app:iconSpaceReserved="false"
+        android:summary="@string/website_settings_permissions_geolocation_description" />
+
+    <org.chromium.components.browser_ui.site_settings.LocationPermissionOptionsPreference
+        android:key="radio_button_group"
+        app:allowDividerBelow="false" />
+</PreferenceScreen>

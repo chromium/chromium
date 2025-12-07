@@ -10,6 +10,8 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/global_media_controls/media_view_utils.h"
+#include "components/global_media_controls/public/format_duration.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -18,11 +20,13 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace global_media_controls {
 
@@ -92,7 +96,7 @@ ChapterItemView::ChapterItemView(
                                   {"Google Sans"}, gfx::Font::NORMAL, 13,
                                   gfx::Font::Weight::NORMAL))
                               .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                              .SetEnabledColorId(
+                              .SetEnabledColor(
                                   theme_.primary_foreground_color_id),
                           views::Builder<views::Label>()
                               .SetText(
@@ -102,7 +106,7 @@ ChapterItemView::ChapterItemView(
                                   {"Google Sans"}, gfx::Font::NORMAL, 12,
                                   gfx::Font::Weight::NORMAL))
                               .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                              .SetEnabledColorId(
+                              .SetEnabledColor(
                                   theme_.secondary_foreground_color_id))))
       .BuildChildren();
 
@@ -125,7 +129,7 @@ void ChapterItemView::UpdateArtwork(const gfx::ImageSkia& image) {
   artwork_view_->SetImage(ui::ImageModel::FromImageSkia(image));
 
   // Draws the image with rounded corners.
-  auto path = SkPath().addRoundRect(
+  const auto path = SkPath::RRect(
       RectToSkRect(gfx::Rect(kImageSize.width(), kImageSize.height())),
       kDefaultArtworkCornerRadius, kDefaultArtworkCornerRadius);
   artwork_view_->SetClipPath(path);

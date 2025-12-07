@@ -15,9 +15,28 @@
 
 namespace font_service {
 
+// Wikpedia's main country selection page activates 21 fallback fonts,
+// doubling this we should be on the generous side as an upper bound,
+// but nevertheless not have the typeface cache grow excessively.
+constexpr const size_t kMaxTypefacesCached = 42;
+
+std::size_t SkFontConfigInterfaceFontIdentityHash::operator()(
+    const SkFontConfigInterface::FontIdentity& sp) const {
+  std::hash<std::string> stringhash;
+  std::hash<int> inthash;
+  size_t r = inthash(sp.fID);
+  r = r * 41 + inthash(sp.fTTCIndex);
+  r = r * 41 + stringhash(sp.fString.c_str());
+  r = r * 41 + inthash(sp.fStyle.weight());
+  r = r * 41 + inthash(sp.fStyle.slant());
+  r = r * 41 + inthash(sp.fStyle.width());
+  return r;
+}
+
 FontLoader::FontLoader(
     mojo::PendingRemote<mojom::FontService> pending_font_service)
-    : thread_(base::MakeRefCounted<internal::FontServiceThread>()) {
+    : thread_(base::MakeRefCounted<internal::FontServiceThread>()),
+      typeface_cache_(kMaxTypefacesCached) {
   thread_->Init(std::move(pending_font_service));
 }
 
@@ -38,7 +57,7 @@ SkStreamAsset* FontLoader::openStream(const FontIdentity& identity) {
   TRACE_EVENT2("fonts", "FontLoader::openStream", "identity", identity.fID,
                "name", TRACE_STR_COPY(identity.fString.c_str()));
   {
-    base::AutoLock lock(lock_);
+    base::AutoLock lock(mapped_font_files_lock_);
     auto mapped_font_files_it = mapped_font_files_.find(identity.fID);
     if (mapped_font_files_it != mapped_font_files_.end())
       return mapped_font_files_it->second->CreateMemoryStream();
@@ -53,7 +72,7 @@ SkStreamAsset* FontLoader::openStream(const FontIdentity& identity) {
   mapped_font_file->set_observer(this);
 
   {
-    base::AutoLock lock(lock_);
+    base::AutoLock lock(mapped_font_files_lock_);
     auto mapped_font_files_it =
         mapped_font_files_
             .insert(std::make_pair(mapped_font_file->font_id(),
@@ -66,7 +85,24 @@ SkStreamAsset* FontLoader::openStream(const FontIdentity& identity) {
 sk_sp<SkTypeface> FontLoader::makeTypeface(const FontIdentity& identity,
                                            sk_sp<SkFontMgr> mgr) {
   TRACE_EVENT0("fonts", "FontServiceThread::makeTypeface");
-  return SkFontConfigInterface::makeTypeface(identity, mgr);
+  {
+    base::AutoLock lock(typeface_cache_lock_);
+    auto typeface_cache_it = typeface_cache_.Get(identity);
+    if (typeface_cache_it != typeface_cache_.end()) {
+      return typeface_cache_it->second;
+    }
+  }
+
+  auto typeface = mgr->makeFromStream(
+      std::unique_ptr<SkStreamAsset>(this->openStream(identity)),
+      identity.fTTCIndex);
+
+  {
+    base::AutoLock lock(typeface_cache_lock_);
+    auto typeface_cache_insert_it =
+        typeface_cache_.Put(identity, std::move(typeface));
+    return typeface_cache_insert_it->second;
+  }
 }
 
 // Additional cross-thread accessible methods.
@@ -111,12 +147,16 @@ void FontLoader::MatchFontWithFallback(std::string family,
   thread_->MatchFontWithFallback(std::move(family), is_bold, is_italic, charset,
                                  fallback_family_type, out_font_file_handle);
 }
+
+std::vector<std::string> FontLoader::ListFamilies() {
+  return thread_->ListFamilies();
+}
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 void FontLoader::OnMappedFontFileDestroyed(internal::MappedFontFile* f) {
   TRACE_EVENT1("fonts", "FontLoader::OnMappedFontFileDestroyed", "identity",
                f->font_id());
-  base::AutoLock lock(lock_);
+  base::AutoLock lock(mapped_font_files_lock_);
   mapped_font_files_.erase(f->font_id());
 }
 

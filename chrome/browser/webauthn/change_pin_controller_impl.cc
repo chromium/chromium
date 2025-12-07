@@ -10,34 +10,28 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
-#include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "device/fido/features.h"
 
 using Step = AuthenticatorRequestDialogModel::Step;
 
 ChangePinControllerImpl::ChangePinControllerImpl(
     content::RenderFrameHost* render_frame_host)
-    : content::DocumentUserData<ChangePinControllerImpl>(render_frame_host),
-      enclave_enabled_(
-          base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)) {
-  if (!enclave_enabled_) {
-    return;
-  }
+    : content::DocumentUserData<ChangePinControllerImpl>(render_frame_host) {
   Profile* profile =
       Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
   enclave_manager_ =
       EnclaveManagerFactory::GetAsEnclaveManagerForProfile(profile);
-  model_ = std::make_unique<AuthenticatorRequestDialogModel>(render_frame_host);
+  model_ =
+      base::MakeRefCounted<AuthenticatorRequestDialogModel>(render_frame_host);
   model_observation_.Observe(model_.get());
 }
 
@@ -49,10 +43,6 @@ ChangePinControllerImpl::~ChangePinControllerImpl() {
 
 void ChangePinControllerImpl::IsChangePinFlowAvailable(
     PinAvailableCallback callback) {
-  if (!enclave_enabled_) {
-    std::move(callback).Run(false);
-    return;
-  }
   if (enclave_manager_->is_loaded()) {
     NotifyPinAvailability(std::move(callback));
     return;

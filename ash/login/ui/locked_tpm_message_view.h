@@ -8,7 +8,6 @@
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "ui/gfx/canvas.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view.h"

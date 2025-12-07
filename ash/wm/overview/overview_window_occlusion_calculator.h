@@ -32,14 +32,13 @@ class ASH_EXPORT OverviewWindowOcclusionCalculator
       const OverviewWindowOcclusionCalculator&) = delete;
   ~OverviewWindowOcclusionCalculator() override;
 
-  // This may return a null pointer if:
-  // * The `DeskBarWindowOcclusionOptimization` experiment is disabled.
-  // * An overview session is not active or is in the process of ending.
+  // This may return a null pointer if an overview session is not active or is
+  // in the process of ending.
   base::WeakPtr<WindowOcclusionCalculator> GetCalculator();
 
  private:
   // OverviewObserver:
-  void OnOverviewModeWillStart() override;
+  void OnOverviewModeStarting() override;
   void OnOverviewModeStartingAnimationComplete(bool canceled) override;
   void OnOverviewModeEnding(OverviewSession* overview_session) override;
 

@@ -8,6 +8,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string_view>
+
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
+
 class GURL;
 
 namespace url {
@@ -15,7 +19,6 @@ class Origin;
 }
 
 namespace autofill::payments {
-
 // Returns true if production Payments URLs should be used or false if sandbox
 // should be used.
 bool IsPaymentsProductionEnabled();
@@ -27,17 +30,21 @@ GURL GetBaseSecureUrl();
 url::Origin GetGooglePayScriptOrigin();
 
 // Returns the URL to navigate to in order to allow the user to edit or delete
-// payment instruments (credit cards) or addresses, respectively.
+// payment instruments (credit cards, loyalty cards) or addresses, respectively.
 // `GetManageInstrumentsUrl` redirects to the top level page that contains a
 // list of instruments while `GetManageInstrumentUrl` redirects to the detail
 // page for a particular instrument given the `instrument_id`.
 GURL GetManageInstrumentsUrl();
 GURL GetManageInstrumentUrl(int64_t instrument_id);
+GURL GetManageLoyaltyCardsUrl();
 GURL GetManageAddressesUrl();
 
 // Returns the support URL for users to learn more about virtual cards during
 // the virtual card enrollment bubble.
 GURL GetVirtualCardEnrollmentSupportUrl();
+
+// Returns the support URL for the BNPL issuer terms for issuer_id.
+GURL GetBnplTermsUrl(autofill::BnplIssuer::IssuerId issuer_id);
 
 }  // namespace autofill::payments
 

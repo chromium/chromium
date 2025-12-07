@@ -9,21 +9,20 @@
 #include "chrome/browser/ui/webui/privacy_sandbox/private_state_tokens/private_state_tokens.mojom.h"
 #include "content/public/browser/web_ui.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/network_context.mojom-forward.h"
 
 class PrivateStateTokensHandler
     : public private_state_tokens::mojom::PrivateStateTokensPageHandler {
  public:
-  explicit PrivateStateTokensHandler(
+  PrivateStateTokensHandler(
       content::WebUI* web_ui,
       mojo::PendingReceiver<
           private_state_tokens::mojom::PrivateStateTokensPageHandler> receiver);
-
-  ~PrivateStateTokensHandler() override;
-
   PrivateStateTokensHandler(const PrivateStateTokensHandler&) = delete;
   PrivateStateTokensHandler& operator=(const PrivateStateTokensHandler&) =
       delete;
+  ~PrivateStateTokensHandler() override;
+
   void GetIssuerTokenCounts(GetIssuerTokenCountsCallback callback) override;
 
  private:

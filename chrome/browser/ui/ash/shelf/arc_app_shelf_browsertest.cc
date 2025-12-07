@@ -2,21 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <memory>
 #include <string>
 #include <tuple>
 #include <vector>
 
-#include "ash/components/arc/metrics/arc_metrics_constants.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/components/arc/test/arc_util_test_support.h"
-#include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/shelf/shelf.h"
@@ -24,6 +14,7 @@
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget_test_helper.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -44,6 +35,11 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_test_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
+#include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
+#include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/test/shell_surface_builder.h"
@@ -321,8 +317,9 @@ class ArcAppShelfBrowserTest : public extensions::ExtensionBrowserTest {
   }
 
   void StopInstance() {
-    if (app_instance_)
+    if (app_instance_) {
       arc_brige_service()->app()->CloseInstance(app_instance_.get());
+    }
     arc_session_manager()->Shutdown();
   }
 
@@ -764,13 +761,14 @@ IN_PROC_BROWSER_TEST_F(ArcAppShelfBrowserTest, LogicalWindow) {
 
   // Second logical window
   for (int task_id = 3; task_id <= 5; task_id++) {
-    app_host()->OnTaskCreated(
-        task_id, info->package_name, info->activity, info->name,
-        CreateIntentUriWithShelfGroupAndLogicalWindow(
-            kTestShelfGroups[task_id], kTestLogicalWindows[task_id]),
-        0 /* session_id */);
+    app_host()->OnTaskCreated(task_id, info->package_name, info->activity,
+                              info->name,
+                              CreateIntentUriWithShelfGroupAndLogicalWindow(
+                                  UNSAFE_TODO(kTestShelfGroups[task_id]),
+                                  UNSAFE_TODO(kTestLogicalWindows[task_id])),
+                              0 /* session_id */);
     app_host()->OnTaskDescriptionChanged(
-        task_id, kTestWindowTitles[task_id],
+        task_id, UNSAFE_TODO(kTestWindowTitles[task_id]),
         arc_instance()->GenerateIconResponse(kGeneratedIconSize,
                                              false /* app_icon */),
         0, 0);

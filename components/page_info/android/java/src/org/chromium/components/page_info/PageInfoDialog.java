@@ -4,6 +4,8 @@
 
 package org.chromium.components.page_info;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -12,44 +14,48 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.LinearLayout;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.content.res.AppCompatResources;
+import androidx.annotation.GravityInt;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modaldialog.ModalDialogProperties.Controller;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Represents the dialog containing the page info view. */
+@NullMarked
 public class PageInfoDialog {
     private static final int ENTER_START_DELAY_MS = 100;
     private static final int ENTER_EXIT_DURATION_MS = 200;
     private static final int CLOSE_CLEANUP_DELAY_MS = 10;
 
-    @NonNull private final PageInfoContainer mPageInfoContainer;
-    @NonNull private final ViewGroup mScrollView;
+    private final PageInfoContainer mPageInfoContainer;
+    private final ViewGroup mScrollView;
 
-    private final boolean mIsSheet;
     // The dialog implementation.
     // mSheetDialog is set if the dialog appears as a sheet. Otherwise, mModalDialog is set.
-    private final Dialog mSheetDialog;
-    private final PropertyModel mModalDialogModel;
-    @NonNull private final ModalDialogManager mManager;
-    @NonNull private final ModalDialogProperties.Controller mController;
+    private final @Nullable Dialog mSheetDialog;
+    private final @Nullable PropertyModel mModalDialogModel;
+    private final ModalDialogManager mManager;
+    private final ModalDialogProperties.Controller mController;
 
     // Animation which is currently running, if there is one.
-    private Animator mCurrentAnimation;
+    private @Nullable Animator mCurrentAnimation;
 
     private boolean mDismissWithoutAnimation;
+    private final @GravityInt int mDialogPosition;
 
     /**
      * Creates a new page info dialog. The dialog can appear as a sheet (using Android dialogs) or a
@@ -60,19 +66,20 @@ public class PageInfoDialog {
      * @param isSheet Whether the dialog should appear as a sheet.
      * @param manager The dialog's manager used for modal dialogs.
      * @param controller The dialog's controller.
-     *
+     * @param dialogPosition The position of the dialog, either TOP or BOTTOM.
      */
     public PageInfoDialog(
             Context context,
-            @NonNull PageInfoContainer pageInfoContainer,
+            PageInfoContainer pageInfoContainer,
             View containerView,
             boolean isSheet,
-            @NonNull ModalDialogManager manager,
-            @NonNull ModalDialogProperties.Controller controller) {
+            ModalDialogManager manager,
+            Controller controller,
+            @GravityInt int dialogPosition) {
         mPageInfoContainer = pageInfoContainer;
-        mIsSheet = isSheet;
         mManager = manager;
         mController = controller;
+        mDialogPosition = dialogPosition;
 
         if (isSheet) {
             // On smaller screens, make the dialog fill the width of the screen.
@@ -113,9 +120,10 @@ public class PageInfoDialog {
 
     /** Shows the dialogs. */
     public void show() {
-        if (mIsSheet) {
+        if (mSheetDialog != null) {
             mSheetDialog.show();
         } else {
+            assumeNonNull(mModalDialogModel);
             mManager.showDialog(mModalDialogModel, ModalDialogManager.ModalDialogType.APP);
         }
     }
@@ -127,9 +135,10 @@ public class PageInfoDialog {
      */
     public void dismiss(boolean animated) {
         mDismissWithoutAnimation = !animated;
-        if (mIsSheet) {
+        if (mSheetDialog != null) {
             mSheetDialog.dismiss();
         } else {
+            assumeNonNull(mModalDialogModel);
             mManager.dismissDialog(mModalDialogModel, DialogDismissalCause.UNKNOWN);
         }
     }
@@ -175,11 +184,14 @@ public class PageInfoDialog {
         sheetDialog.setCanceledOnTouchOutside(true);
 
         Window window = sheetDialog.getWindow();
-        window.setGravity(Gravity.TOP);
+        assumeNonNull(window);
+        window.setGravity(mDialogPosition);
         window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
+        // TODO(agrieve): The assumeNonNull(null) should probably be replaced by making
+        // ModalDialogProperties.Controller encode nullity via a generic type argument.
         sheetDialog.setOnDismissListener(
-                dialog -> mController.onDismiss(null, DialogDismissalCause.UNKNOWN));
+                dialog -> mController.onDismiss(assumeNonNull(null), DialogDismissalCause.UNKNOWN));
 
         sheetDialog.addContentView(
                 container,
@@ -206,14 +218,43 @@ public class PageInfoDialog {
         return new FadingEdgeScrollView(context, null) {
             {
                 if (mPageInfoContainer != null) {
-                    int padding =
+                    int cornerRadius =
                             (int)
                                     context.getResources()
                                             .getDimension(R.dimen.page_info_popup_corners_radius);
-                    Drawable background =
-                            AppCompatResources.getDrawable(getContext(), R.drawable.page_info_bg);
+                    GradientDrawable background = new GradientDrawable();
+                    float[] radii;
+                    if (mDialogPosition == Gravity.TOP) {
+                        radii =
+                                new float[] {
+                                    /*Top-left*/ 0,
+                                    0,
+                                    /*Top-right*/ 0,
+                                    0,
+                                    /*Bottom-left*/ cornerRadius,
+                                    cornerRadius,
+                                    /*Bottom-right*/ cornerRadius,
+                                    cornerRadius
+                                };
+                        setPadding(0, 0, 0, cornerRadius);
+                    } else {
+                        radii =
+                                new float[] {
+                                    /*Top-left*/ cornerRadius,
+                                    cornerRadius,
+                                    /*Top-right*/ cornerRadius,
+                                    cornerRadius,
+                                    /*Bottom-left*/ 0,
+                                    0,
+                                    /*Bottom-right*/ 0,
+                                    0
+                                };
+                        setPadding(0, cornerRadius, 0, 0);
+                    }
+
+                    background.setCornerRadii(radii);
+                    background.setColor(SemanticColorUtils.getColorSurface(getContext()));
                     setBackground(background);
-                    setPadding(0, 0, 0, padding);
                 }
             }
 
@@ -229,13 +270,16 @@ public class PageInfoDialog {
     }
 
     /**
-     * Create an animator to show/hide the entire dialog as a slide animation.
-     * On phones the dialog is slid in as a sheet. Otherwise, the default fade-in is used.
+     * Create an animator to show/hide the entire dialog as a slide animation. On phones the dialog
+     * is slid in as a sheet. Otherwise, the default fade-in is used.
      */
-    private Animator createDialogSlideAnimaton(boolean isEnter, Runnable onAnimationEnd) {
+    private Animator createDialogSlideAnimaton(boolean isEnter, @Nullable Runnable onAnimationEnd) {
         Animator dialogAnimation;
-        if (mIsSheet) {
-            final float animHeight = -mScrollView.getHeight();
+        if (mSheetDialog != null) {
+            final float animHeight =
+                    mDialogPosition == Gravity.TOP
+                            ? -mScrollView.getHeight()
+                            : mScrollView.getHeight();
             ObjectAnimator translateAnim;
             if (isEnter) {
                 mScrollView.setTranslationY(animHeight);
@@ -254,6 +298,21 @@ public class PageInfoDialog {
         if (isEnter) dialogAnimation.setStartDelay(ENTER_START_DELAY_MS);
         dialogAnimation.addListener(
                 new AnimatorListenerAdapter() {
+                    {
+                        // Do not show the dialog until we are ready to animate.
+                        // This is because the Height computed above will likely change when the
+                        // dialog re-calculates its size to accommodate the content.
+                        // We don't want any part of the dialog to be partially visible while the
+                        // scrim is fading in, and before this animation begins, so we start with
+                        // an invisible state, that is updated the moment animation begins.
+                        if (isEnter) mScrollView.setVisibility(View.INVISIBLE);
+                    }
+
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                        if (isEnter) mScrollView.setVisibility(View.VISIBLE);
+                    }
+
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         mCurrentAnimation = null;

@@ -10,6 +10,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/i18n/streaming_utf8_validator.h"
@@ -22,11 +23,11 @@
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/authenticator_supported_options.h"
-#include "device/fido/features.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
-#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/opaque_attestation_statement.h"
+#include "device/fido/public/features.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
 
 namespace device {
 
@@ -267,8 +268,8 @@ std::optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
     if (key.size() != response.large_blob_key->size()) {
       return std::nullopt;
     }
-    memcpy(response.large_blob_key->data(), key.data(),
-           response.large_blob_key->size());
+    UNSAFE_TODO(memcpy(response.large_blob_key->data(), key.data(),
+                       response.large_blob_key->size()));
   }
 
   it = response_map.find(CBOR(0x08));
@@ -344,13 +345,13 @@ std::optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
     return std::nullopt;
   }
   if (GetResponseCode(buffer) != CtapDeviceResponseCode::kSuccess) {
-    FIDO_LOG(ERROR) << "-> (GetInfo CTAP2 error code " << +buffer[0] << ")";
+    FIDO_LOG(DEBUG) << "-> (GetInfo CTAP2 error code " << +buffer[0] << ")";
     return std::nullopt;
   }
 
   cbor::Reader::DecoderError error;
   std::optional<CBOR> decoded_response =
-      cbor::Reader::Read(buffer.subspan(1), &error);
+      cbor::Reader::Read(buffer.subspan<1>(), &error);
 
   if (!decoded_response) {
     FIDO_LOG(ERROR) << "-> (CBOR parse error from GetInfo response '"
@@ -407,14 +408,18 @@ std::optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
   }
 
   it = response_map.find(CBOR(0x03));
-  if (it == response_map.end() || !it->second.is_bytestring() ||
-      it->second.GetBytestring().size() != kAaguidLength) {
+  if (it == response_map.end() || !it->second.is_bytestring()) {
     return std::nullopt;
   }
 
-  AuthenticatorGetInfoResponse response(
-      std::move(protocol_versions), ctap2_versions,
-      base::make_span<kAaguidLength>(it->second.GetBytestring()));
+  auto aaguid_span =
+      base::span(it->second.GetBytestring()).to_fixed_extent<kAaguidLength>();
+  if (!aaguid_span) {
+    return std::nullopt;
+  }
+
+  AuthenticatorGetInfoResponse response(std::move(protocol_versions),
+                                        ctap2_versions, *aaguid_span);
 
   bool cred_blob_extension_seen = false;
   bool large_blob_key_extension_seen = false;
@@ -816,7 +821,7 @@ static std::optional<std::string> FixInvalidUTF8String(
   size_t longest_valid_prefix_len = 0;
 
   for (size_t i = 0; i < utf8_bytes.size(); i++) {
-    state = validator.AddBytes(utf8_bytes.subspan(i, 1));
+    state = validator.AddBytes(utf8_bytes.subspan(i, 1u));
     switch (state) {
       case base::StreamingUtf8Validator::VALID_ENDPOINT:
         longest_valid_prefix_len = i + 1;
@@ -842,8 +847,7 @@ static std::optional<std::string> FixInvalidUTF8String(
     case base::StreamingUtf8Validator::INVALID:
       // This shouldn't happen because we should return immediately if
       // |INVALID| occurs.
-      NOTREACHED_IN_MIGRATION();
-      return std::nullopt;
+      NOTREACHED();
 
     case base::StreamingUtf8Validator::VALID_MIDPOINT: {
       // This string has been truncated. This is the case that we expect to
@@ -1007,6 +1011,17 @@ std::optional<PINUVAuthProtocol> ToPINUVAuthProtocol(int64_t in) {
     return std::nullopt;
   }
   return static_cast<PINUVAuthProtocol>(in);
+}
+
+cbor::Value RedactCtapGetAssertionResponse(const cbor::Value& cbor) {
+  using fido_parsing_utils::ToCborVector;
+  constexpr int kSignature = 0x03;
+  constexpr int kLargeBlobKey = 0x07;
+  constexpr int kExtension = 0x08;
+  return fido_parsing_utils::RedactCbor(
+      cbor, std::array{ToCborVector(kSignature), ToCborVector(kLargeBlobKey),
+                       ToCborVector(kExtension, kExtensionPRF, "results"),
+                       ToCborVector(kExtension, kExtensionLargeBlob)});
 }
 
 }  // namespace device

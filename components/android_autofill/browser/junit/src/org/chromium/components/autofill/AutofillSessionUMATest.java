@@ -38,7 +38,7 @@ public class AutofillSessionUMATest {
 
     /** Testing parameters. */
     public static class AutofillSessionParams implements ParameterProvider {
-        private static List<ParameterSet> sParams =
+        private static final List<ParameterSet> sParams =
                 Arrays.asList(
                         new ParameterSet().value(NO_SUGGESTION).name(NO_SUGGESTION),
                         new ParameterSet()
@@ -90,8 +90,7 @@ public class AutofillSessionUMATest {
                 mAutofillUMA.onSuggestionDisplayed(/* suggestionTimeMillis= */ 0);
                 break;
             default:
-                assert false; // NOTREACHED()
-                break;
+                throw new AssertionError(); // NOTREACHED()
         }
 
         HistogramWatcher histogramWatcher =
@@ -134,8 +133,7 @@ public class AutofillSessionUMATest {
                 mAutofillUMA.onSuggestionDisplayed(/* suggestionTimeMillis= */ 0);
                 break;
             default:
-                assert false; // NOTREACHED()
-                break;
+                throw new AssertionError(); // NOTREACHED()
         }
 
         HistogramWatcher histogramWatcher =
@@ -178,8 +176,7 @@ public class AutofillSessionUMATest {
                 mAutofillUMA.onSuggestionDisplayed(/* suggestionTimeMillis= */ 0);
                 break;
             default:
-                assert false; // NOTREACHED()
-                break;
+                throw new AssertionError(); // NOTREACHED()
         }
 
         HistogramWatcher histogramWatcher =
@@ -221,8 +218,7 @@ public class AutofillSessionUMATest {
                 mAutofillUMA.onSuggestionDisplayed(/* suggestionTimeMillis= */ 0);
                 break;
             default:
-                assert false; // NOTREACHED()
-                break;
+                throw new AssertionError(); // NOTREACHED()
         }
 
         HistogramWatcher histogramWatcher =

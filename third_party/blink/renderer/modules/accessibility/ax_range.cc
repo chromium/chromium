@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -73,16 +74,13 @@ AXRange AXRange::RangeOfContents(const AXObject& container) {
 String AXRange::ToString() const {
   if (!IsValid())
     return "Invalid AXRange";
-  return "AXRange from " + Start().ToString() + " to " + End().ToString();
+  return StrCat(
+      {"AXRange from ", Start().ToString(), " to ", End().ToString()});
 }
 
 bool operator==(const AXRange& a, const AXRange& b) {
   DCHECK(a.IsValid() && b.IsValid());
   return a.Start() == b.Start() && a.End() == b.End();
-}
-
-bool operator!=(const AXRange& a, const AXRange& b) {
-  return !(a == b);
 }
 
 std::ostream& operator<<(std::ostream& ostream, const AXRange& range) {

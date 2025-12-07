@@ -29,6 +29,7 @@
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 const char kViewClassName[] = "PerformanceInterventionBubble";
@@ -99,7 +100,10 @@ views::BubbleDialogModelHost* PerformanceInterventionBubble::CreateBubble(
       std::move(dialog_model), anchor_view, views::BubbleBorder::TOP_RIGHT);
   auto* const bubble = bubble_unique.get();
 
-  views::BubbleDialogDelegate::CreateBubble(std::move(bubble_unique))->Show();
+  views::Widget* widget =
+      views::BubbleDialogDelegate::CreateBubble(std::move(bubble_unique));
+  widget->widget_delegate()->SetEnableArrowKeyTraversal(true);
+  widget->Show();
   button_controller->OnBubbleShown();
 
   return bubble;
@@ -113,36 +117,45 @@ void PerformanceInterventionBubble::CloseBubble(
 }
 
 DialogStrings PerformanceInterventionBubble::GetStrings(int count) {
-  switch (
-      performance_manager::features::kInterventionDialogStringVersion.Get()) {
-    case 1:
+  const std::u16string body_text = l10n_util::GetStringUTF16(
+      count > 1 ? IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_V1
+                : IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_SINGULAR_V1);
+
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::
+              kPerformanceInterventionNotificationStringImprovements)) {
+    const int string_version =
+        performance_manager::features::kNotificationStringVersion.Get();
+    if (string_version == 1) {
       return {
-          l10n_util::GetStringUTF16(
-              IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_V1),
-          l10n_util::GetStringUTF16(
-              count > 1 ? IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_V1
-                        : IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_SINGULAR_V1),
-          l10n_util::GetStringUTF16(
-              IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_V1)};
-    case 2:
+          l10n_util::GetPluralStringFUTF16(
+              IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_UPDATED_V1, count),
+          body_text,
+          l10n_util::GetPluralStringFUTF16(
+              IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_UPDATED_V1,
+              count)};
+    } else if (string_version == 2) {
       return {
-          l10n_util::GetStringUTF16(
-              IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_V2),
-          l10n_util::GetStringUTF16(
-              count > 1 ? IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_V2
-                        : IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_SINGULAR_V2),
-          l10n_util::GetStringUTF16(
-              IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_V2)};
-    case 3:
+          l10n_util::GetPluralStringFUTF16(
+              IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_UPDATED_V2, count),
+          body_text,
+          l10n_util::GetPluralStringFUTF16(
+              IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_UPDATED_V2,
+              count)};
+    } else {
       return {
-          l10n_util::GetStringUTF16(
-              IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_V3),
-          l10n_util::GetStringUTF16(
-              count > 1 ? IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_V3
-                        : IDS_PERFORMANCE_INTERVENTION_DIALOG_BODY_SINGULAR_V3),
-          l10n_util::GetStringUTF16(
-              IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_V3)};
-    default:
-      NOTREACHED_NORETURN();
+          l10n_util::GetPluralStringFUTF16(
+              IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_UPDATED_V3, count),
+          body_text,
+          l10n_util::GetPluralStringFUTF16(
+              IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_UPDATED_V2,
+              count)};
+    }
+  } else {
+    return {
+        l10n_util::GetStringUTF16(IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_V1),
+        body_text,
+        l10n_util::GetStringUTF16(
+            IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_V1)};
   }
 }

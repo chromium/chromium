@@ -62,6 +62,9 @@ def __parse(ctx, cfg_file):
 
         if line.startswith("server_address="):
             reproxy_config["server_address"] = line.removeprefix("server_address=")
+
+        if line.startswith("toolchain_inputs="):
+            reproxy_config["toolchain_inputs"] = line.removeprefix("toolchain_inputs=").split(",")
     return reproxy_config
 
 rewrapper_cfg = module(

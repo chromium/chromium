@@ -1,6 +1,7 @@
 include_rules = [
   "+components/services/filesystem",
   "+chrome/utility/safe_browsing",
+  "+components/enterprise/obfuscation/core",
   "+components/safe_browsing/buildflags.h",
   "+components/safe_browsing/core/common",
   "+extensions/buildflags",

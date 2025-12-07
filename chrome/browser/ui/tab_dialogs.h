@@ -10,7 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/supports_user_data.h"
 #include "extensions/common/extension_id.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class Browser;
 
@@ -26,7 +26,7 @@ class ProfileSigninConfirmationDelegate;
 // A cross-platform interface for invoking various tab modal dialogs/bubbles.
 class TabDialogs : public base::SupportsUserData::Data {
  public:
-  ~TabDialogs() override {}
+  ~TabDialogs() override = default;
 
   // Creates a platform specific instance, and attaches it to |contents|.
   // If an instance is already attached, does nothing.

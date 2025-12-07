@@ -78,15 +78,14 @@ base::FilePath FakeDriveFsLauncherClient::MaybeMountDriveFs(
     const std::vector<std::string>& mount_options) {
   GURL source_url(source_path);
   DCHECK(source_url.is_valid());
-  if (source_url.scheme() != "drivefs") {
+  if (source_url.GetScheme() != "drivefs") {
     return {};
   }
-  const auto identity = base::FilePath(source_url.path()).BaseName().value();
+  const auto identity = base::FilePath(source_url.GetPath()).BaseName().value();
   std::string datadir_suffix;
   for (const auto& option : mount_options) {
-    if (base::StartsWith(option, "datadir=", base::CompareCase::SENSITIVE)) {
-      auto datadir =
-          base::FilePath(std::string_view(option).substr(strlen("datadir=")));
+    if (auto maybe_removed = base::RemovePrefix(option, "datadir=")) {
+      auto datadir = base::FilePath(*maybe_removed);
       CHECK(datadir.IsAbsolute());
       CHECK(!datadir.ReferencesParent());
       datadir_suffix = datadir.BaseName().value();

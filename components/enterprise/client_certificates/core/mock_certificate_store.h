@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "components/enterprise/client_certificates/core/certificate_store.h"
+#include "components/enterprise/client_certificates/core/client_identity.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
 #include "components/enterprise/client_certificates/core/private_key_factory.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
@@ -20,6 +21,7 @@ class MockCertificateStore : public CertificateStore {
   MockCertificateStore();
   ~MockCertificateStore() override;
 
+  // CertificateStore:
   MOCK_METHOD(
       void,
       CreatePrivateKey,
@@ -45,6 +47,11 @@ class MockCertificateStore : public CertificateStore {
       (const std::string&,
        base::OnceCallback<void(StoreErrorOr<std::optional<ClientIdentity>>)>),
       (override));
+  MOCK_METHOD(void,
+              DeleteIdentities,
+              (const std::vector<std::string>&,
+               base::OnceCallback<void(std::optional<StoreError>)>),
+              (override));
 };
 
 }  // namespace client_certificates

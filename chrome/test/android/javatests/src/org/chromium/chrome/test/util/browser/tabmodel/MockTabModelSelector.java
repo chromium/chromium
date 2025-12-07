@@ -8,12 +8,13 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
+import org.chromium.chrome.browser.tabmodel.IncognitoTabModelInternal;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelHolderFactory;
+import org.chromium.chrome.browser.tabmodel.TabModelInternal;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 /**
@@ -24,7 +25,7 @@ public class MockTabModelSelector extends TabModelSelectorBase {
     public static final int ID_OFFSET = 100000;
     public static final int INCOGNITO_ID_OFFSET = 200000;
     private static int sCurTabOffset;
-    private int mTabCount;
+    private final int mTabCount;
 
     public MockTabModelSelector(
             Profile profile,
@@ -32,9 +33,13 @@ public class MockTabModelSelector extends TabModelSelectorBase {
             int tabCount,
             int incognitoTabCount,
             MockTabModel.MockTabModelDelegate delegate) {
-        super(null, TabGroupModelFilter::new, false);
+        super(new MockTabCreatorManager(), false);
+        ((MockTabCreatorManager) getTabCreatorManager()).initialize(this);
         initialize(
-                new MockTabModel(profile, delegate), new MockTabModel(incognitoProfile, delegate));
+                TabModelHolderFactory.createTabModelHolderForTesting(
+                        new MockTabModel(profile, delegate)),
+                TabModelHolderFactory.createIncognitoTabModelHolderForTesting(
+                        new MockTabModel(incognitoProfile, delegate)));
         for (int i = 0; i < tabCount; i++) {
             addMockTab();
         }
@@ -49,13 +54,17 @@ public class MockTabModelSelector extends TabModelSelectorBase {
 
     /**
      * Exposed to allow tests to initialize the selector with different tab models.
+     *
      * @param normalModel The normal tab model.
      * @param incognitoModel The incognito tab model.
      */
-    public void initializeTabModels(TabModel normalModel, IncognitoTabModel incognitoModel) {
+    public void initializeTabModels(
+            TabModelInternal normalModel, IncognitoTabModelInternal incognitoModel) {
         destroy();
-        getTabModelFilterProvider().resetTabModelFilterListForTesting();
-        initialize(normalModel, incognitoModel);
+        getTabGroupModelFilterProvider().resetTabGroupModelFilterListForTesting();
+        initialize(
+                TabModelHolderFactory.createTabModelHolderForTesting(normalModel),
+                TabModelHolderFactory.createIncognitoTabModelHolderForTesting(incognitoModel));
     }
 
     private static int nextIdOffset() {
@@ -77,11 +86,6 @@ public class MockTabModelSelector extends TabModelSelectorBase {
     }
 
     @Override
-    public void closeAllTabs() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public int getTotalTabCount() {
         return mTabCount;
     }
@@ -92,8 +96,8 @@ public class MockTabModelSelector extends TabModelSelectorBase {
     }
 
     @Override
-    public boolean isSessionRestoreInProgress() {
-        return false;
+    public boolean isTabModelRestored() {
+        return true;
     }
 
     @Override

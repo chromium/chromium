@@ -54,7 +54,7 @@ class AppActivityTest : public CastActivityTestBase {
     activity_ = std::make_unique<AppActivity>(
         MediaRoute(kRouteId, MediaSource("https://example.com/receiver.html"),
                    kSinkId, "", false),
-        kAppId, &message_handler_, &session_tracker_);
+        kAppId, &message_handler_, &session_tracker_, logger_, debugger_);
   }
 
   void SetUpSession() { activity_->SetOrUpdateSession(*session_, sink_, ""); }
@@ -66,8 +66,9 @@ class AppActivityTest : public CastActivityTestBase {
   MediaRoute& route() const { return activity_->route_; }
 
   MockCastSessionClient* AddMockClient(const std::string& client_id) {
-    return CastActivityTestBase::AddMockClient(activity_.get(), client_id,
-                                               tab_id_counter_++);
+    return CastActivityTestBase::AddMockClient(
+        activity_.get(), client_id,
+        content::FrameTreeNodeId(tab_id_counter_++));
   }
 
   int tab_id_counter_ = 239;  // Arbitrary number.

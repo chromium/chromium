@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/sessions/core/tab_restore_service_client.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 
 class Profile;
 
@@ -29,7 +30,7 @@ class ChromeTabRestoreServiceClient : public sessions::TabRestoreServiceClient {
       sessions::SessionWindow::WindowType type,
       const std::string& app_name,
       const gfx::Rect& bounds,
-      ui::WindowShowState show_state,
+      ui::mojom::WindowShowState show_state,
       const std::string& workspace,
       const std::string& user_title,
       const std::map<std::string, std::string>& extra_data) override;

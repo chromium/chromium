@@ -64,7 +64,9 @@ class MEDIA_MOJO_EXPORT MojoAudioDecoderService final
   void OnInitialized(InitializeCallback callback, DecoderStatus status);
 
   // Called by |mojo_decoder_buffer_reader_| when read is finished.
-  void OnReadDone(DecodeCallback callback, scoped_refptr<DecoderBuffer> buffer);
+  void OnReadDone(mojo::ReportBadMessageCallback bad_message_callback,
+                  DecodeCallback callback,
+                  scoped_refptr<DecoderBuffer> buffer);
 
   // Called by |mojo_decoder_buffer_reader_| when reset is finished.
   void OnReaderFlushDone(ResetCallback callback);
@@ -104,6 +106,9 @@ class MEDIA_MOJO_EXPORT MojoAudioDecoderService final
   std::unique_ptr<media::AudioDecoder> decoder_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+
+  // Last DecodeStatus seen by OnDecodeStatus(). Collected for logging purposes.
+  std::optional<DecoderStatus> last_decode_status_;
 
   base::WeakPtr<MojoAudioDecoderService> weak_this_;
   base::WeakPtrFactory<MojoAudioDecoderService> weak_factory_{this};

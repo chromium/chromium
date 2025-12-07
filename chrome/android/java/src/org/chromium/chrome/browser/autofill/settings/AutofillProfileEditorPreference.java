@@ -8,10 +8,14 @@ import android.content.Context;
 
 import androidx.preference.DialogPreference;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AutofillEditorBase;
 
 /** Launches the UI to edit, create or delete an Autofill profile entry. */
+@NullMarked
 public class AutofillProfileEditorPreference extends DialogPreference {
+
     public AutofillProfileEditorPreference(Context context) {
         super(context);
     }
@@ -19,7 +23,7 @@ public class AutofillProfileEditorPreference extends DialogPreference {
     /**
      * @return ID of the profile to edit when this preference is selected.
      */
-    public String getGUID() {
+    public @Nullable String getGUID() {
         return getExtras().getString(AutofillEditorBase.AUTOFILL_GUID);
     }
 }

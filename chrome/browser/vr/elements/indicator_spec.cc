@@ -35,7 +35,7 @@ IndicatorSpec::IndicatorSpec(const IndicatorSpec& other)
       potential_resource_string(other.potential_resource_string),
       signal(other.signal) {}
 
-IndicatorSpec::~IndicatorSpec() {}
+IndicatorSpec::~IndicatorSpec() = default;
 
 // clang-format off
 std::vector<IndicatorSpec> GetIndicatorSpecs() {
@@ -75,7 +75,8 @@ std::vector<IndicatorSpec> GetIndicatorSpecs() {
        &CapturingStateModel::bluetooth_connected},
 
       {kScreenCaptureIndicator, kWebVrScreenCaptureIndicator,
-       vector_icons::kScreenShareIcon,
+       // TODO(crbug.com/413285138): Update to kScreenShareIcon
+       vector_icons::kScreenShareOldIcon,
        IDS_VR_SHELL_SITE_IS_SHARING_SCREEN,
        IDS_VR_SHELL_BG_IS_SHARING_SCREEN,
        IDS_VR_SHELL_SITE_CAN_SHARE_SCREEN,

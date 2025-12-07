@@ -49,9 +49,9 @@ ScriptCacheConsumer::ScriptCacheConsumer(
                                                    script_url_string_);
         });
 
-    worker_pool::PostTask(FROM_HERE, WTF::CrossThreadBindOnce(
-                                         &ScriptCacheConsumer::RunTaskOffThread,
-                                         WrapCrossThreadWeakPersistent(this)));
+    worker_pool::PostTask(
+        FROM_HERE, CrossThreadBindOnce(&ScriptCacheConsumer::RunTaskOffThread,
+                                       WrapCrossThreadWeakPersistent(this)));
   } else {
     // If the consume task failed to be created, consider the consumption
     // immediately completed. TakeV8ConsumeTask will return nullptr, but this is
@@ -100,7 +100,7 @@ ScriptCacheConsumer::State ScriptCacheConsumer::AdvanceState(
 }
 
 void ScriptCacheConsumer::RunTaskOffThread() {
-  DCHECK(!WTF::IsMainThread());
+  DCHECK(!IsMainThread());
 
   TRACE_EVENT_WITH_FLOW1(
       "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
@@ -128,16 +128,16 @@ void ScriptCacheConsumer::RunTaskOffThread() {
 }
 
 void ScriptCacheConsumer::PostFinishCallbackTask() {
-  DCHECK(!WTF::IsMainThread());
+  DCHECK(!IsMainThread());
   CHECK(finish_callback_task_runner_);
   PostCrossThreadTask(
       *finish_callback_task_runner_, FROM_HERE,
-      WTF::CrossThreadBindOnce(&ScriptCacheConsumer::CallFinishCallback,
-                               WrapCrossThreadWeakPersistent(this)));
+      CrossThreadBindOnce(&ScriptCacheConsumer::CallFinishCallback,
+                          WrapCrossThreadWeakPersistent(this)));
 }
 
 void ScriptCacheConsumer::RunMergeTaskOffThread() {
-  DCHECK(!WTF::IsMainThread());
+  DCHECK(!IsMainThread());
   DCHECK_EQ(state_, State::kFinishedAndReady);
 
   TRACE_EVENT_WITH_FLOW1(
@@ -165,7 +165,7 @@ void ScriptCacheConsumer::NotifyClientWaiting(
     ScriptCacheConsumerClient* client,
     ClassicScript* classic_script,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  DCHECK(WTF::IsMainThread());
+  DCHECK(IsMainThread());
 
   CHECK(!finish_callback_client_);
   finish_callback_client_ = client;
@@ -202,8 +202,8 @@ void ScriptCacheConsumer::NotifyClientWaiting(
 
       worker_pool::PostTask(
           FROM_HERE,
-          WTF::CrossThreadBindOnce(&ScriptCacheConsumer::RunMergeTaskOffThread,
-                                   WrapCrossThreadWeakPersistent(this)));
+          CrossThreadBindOnce(&ScriptCacheConsumer::RunMergeTaskOffThread,
+                              WrapCrossThreadWeakPersistent(this)));
     } else {
       AdvanceState(State::kMergeDoneOrNotNeededBit);
       CallFinishCallback();
@@ -212,7 +212,7 @@ void ScriptCacheConsumer::NotifyClientWaiting(
 }
 
 void ScriptCacheConsumer::CallFinishCallback() {
-  DCHECK(WTF::IsMainThread());
+  DCHECK(IsMainThread());
 
   ScriptCacheConsumerClient* client = finish_callback_client_.Get();
 

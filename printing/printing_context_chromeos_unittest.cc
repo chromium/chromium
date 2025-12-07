@@ -6,12 +6,16 @@
 
 #include <string>
 
+#include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "printing/backend/cups_ipp_constants.h"
 #include "printing/backend/mock_cups_printer.h"
 #include "printing/mojom/print.mojom.h"
+#include "printing/printing_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -60,9 +64,19 @@ class TestPrintSettings : public PrintSettings {
   TestPrintSettings() { set_duplex_mode(mojom::DuplexMode::kSimplex); }
 };
 
-class PrintingContextTest : public testing::Test,
+class PrintingContextTest : public testing::TestWithParam<bool>,
                             public PrintingContext::Delegate {
  public:
+  PrintingContextTest() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(features::kApiPrintingMarginsAndScale);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          features::kApiPrintingMarginsAndScale);
+    }
+  }
+  ~PrintingContextTest() override = default;
+
   void SetDefaultSettings(bool send_user_info, const std::string& uri) {
     auto unique_connection = std::make_unique<MockCupsConnection>();
     auto* connection = unique_connection.get();
@@ -72,7 +86,7 @@ class PrintingContextTest : public testing::Test,
     EXPECT_CALL(*connection, GetPrinter(kPrinterName))
         .WillOnce(Return(ByMove(std::move(unique_printer))));
     printing_context_ = PrintingContextChromeos::CreateForTesting(
-        this, PrintingContext::ProcessBehavior::kOopDisabled,
+        this, PrintingContext::OutOfProcessBehavior::kDisabled,
         std::move(unique_connection));
     auto settings = std::make_unique<PrintSettings>();
     settings->set_device_name(kPrinterName16);
@@ -90,7 +104,7 @@ class PrintingContextTest : public testing::Test,
     for (ipp_attribute_t* attr = ippFirstAttribute(attributes); attr;
          attr = ippNextAttribute(attributes)) {
       const char* name = ippGetName(attr);
-      if (name && !strcmp(attr_name, name)) {
+      if (name && UNSAFE_TODO(!strcmp(attr_name, name))) {
         EXPECT_EQ(nullptr, ret)
             << "Multiple attributes with name " << attr_name << " found.";
         ret = attr;
@@ -121,7 +135,8 @@ class PrintingContextTest : public testing::Test,
     void* value = ippGetOctetString(attr, 0, &length);
     ASSERT_EQ(expected_value.size(), static_cast<size_t>(length));
     ASSERT_TRUE(value);
-    EXPECT_EQ(0, memcmp(expected_value.data(), value, expected_value.size()));
+    EXPECT_EQ(0, UNSAFE_TODO(memcmp(expected_value.data(), value,
+                                    expected_value.size())));
   }
 
   void TestResolutionOptionValue(const char* attr_name,
@@ -176,6 +191,8 @@ class PrintingContextTest : public testing::Test,
     return ippGetCount(attr);
   }
 
+  bool IsPrintingMarginsAndScaleEnabled() const { return GetParam(); }
+
   TestPrintSettings settings_;
   gfx::Rect printable_area_;
 
@@ -183,18 +200,19 @@ class PrintingContextTest : public testing::Test,
   gfx::NativeView GetParentView() override { return gfx::NativeView(); }
   std::string GetAppLocale() override { return std::string(); }
 
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<PrintingContextChromeos> printing_context_;
   raw_ptr<MockCupsPrinter> printer_;
 };
 
-TEST_F(PrintingContextTest, SettingsToIPPOptions_Color) {
+TEST_P(PrintingContextTest, SettingsToIPPOptions_Color) {
   settings_.set_color(mojom::ColorModel::kGray);
   TestStringOptionValue(kIppColor, "monochrome");
   settings_.set_color(mojom::ColorModel::kColor);
   TestStringOptionValue(kIppColor, "color");
 }
 
-TEST_F(PrintingContextTest, SettingsToIPPOptions_Duplex) {
+TEST_P(PrintingContextTest, SettingsToIPPOptions_Duplex) {
   settings_.set_duplex_mode(mojom::DuplexMode::kSimplex);
   TestStringOptionValue(kIppDuplex, "one-sided");
   settings_.set_duplex_mode(mojom::DuplexMode::kLongEdge);
@@ -203,7 +221,7 @@ TEST_F(PrintingContextTest, SettingsToIPPOptions_Duplex) {
   TestStringOptionValue(kIppDuplex, "two-sided-short-edge");
 }
 
-TEST_F(PrintingContextTest, SettingsToIPPOptions_MediaCol) {
+TEST_P(PrintingContextTest, SettingsToIPPOptions_MediaCol) {
   settings_.set_requested_media(
       {gfx::Size(297000, 420000), "iso_a3_297x420mm"});
   printable_area_ =
@@ -211,7 +229,55 @@ TEST_F(PrintingContextTest, SettingsToIPPOptions_MediaCol) {
   TestMediaColValue(gfx::Size(29700, 42000), 100, 200, 300, 400);
 }
 
-TEST_F(PrintingContextTest, SettingsToIPPOptionsMediaColLandscape) {
+TEST_P(PrintingContextTest, SettingsToIPPOptions_MediaColCustomMargins) {
+  settings_.set_requested_media(
+      {gfx::Size(297000, 420000), "iso_a3_297x420mm"});
+  settings_.SetCustomMargins({0, 0, 50, 30, 40, 60});
+  ASSERT_EQ(settings_.margin_type(), mojom::MarginType::kCustomMargins);
+  printable_area_ =
+      gfx::Rect(2000, 1000, 297000 - (2000 + 3000), 420000 - (1000 + 4000));
+  // If custom margins are set, they mustn't be used for print job regardless
+  // of the feature flag.
+  TestMediaColValue(gfx::Size(29700, 42000), 100, 200, 300, 400);
+
+  // If precomputed margins for backend are set, they must only be used if the
+  // feature is enabled.
+  {
+    settings_.SetCustomMarginsForBackend({0, 0, 50, 30, 40, 60});
+    ASSERT_EQ(settings_.margin_type(),
+              mojom::MarginType::kPrecomputedMarginsForBackend);
+    if (IsPrintingMarginsAndScaleEnabled()) {
+      TestMediaColValue(gfx::Size(29700, 42000), 6, 5, 3, 4);
+    } else {
+      TestMediaColValue(gfx::Size(29700, 42000), 100, 200, 300, 400);
+    }
+  }
+}
+
+// All margins should be zero regardless of the feature flag.
+TEST_P(PrintingContextTest, SettingsToIPPOptions_MediaColZeroMargins) {
+  settings_.set_requested_media(
+      {gfx::Size(297000, 420000), "iso_a3_297x420mm"});
+  printable_area_ = gfx::Rect(0, 0, 297000, 420000);
+
+  // Set custom margins to zero
+  settings_.SetCustomMargins({0, 0, 0, 0, 0, 0});
+  settings_.set_borderless(true);
+  ASSERT_EQ(settings_.margin_type(), mojom::MarginType::kCustomMargins);
+  TestMediaColValue(gfx::Size(29700, 42000), 0, 0, 0, 0);
+
+  // Set precomputed margins for backend as zero.
+  settings_.SetCustomMarginsForBackend({0, 0, 0, 0, 0, 0});
+  ASSERT_EQ(settings_.margin_type(),
+            mojom::MarginType::kPrecomputedMarginsForBackend);
+  TestMediaColValue(gfx::Size(29700, 42000), 0, 0, 0, 0);
+
+  // Set margins type to `kNoMargins`.
+  settings_.set_margin_type(mojom::MarginType::kNoMargins);
+  TestMediaColValue(gfx::Size(29700, 42000), 0, 0, 0, 0);
+}
+
+TEST_P(PrintingContextTest, SettingsToIPPOptionsMediaColLandscape) {
   settings_.set_requested_media(
       {gfx::Size(148000, 200000), "om_200030x148170um_200x148mm"});
   // Use margins (LBRT) of 500, 700, 200, and 1000.
@@ -224,24 +290,24 @@ TEST_F(PrintingContextTest, SettingsToIPPOptionsMediaColLandscape) {
   TestMediaColValue(gfx::Size(20000, 14800), 50, 100, 70, 20);
 }
 
-TEST_F(PrintingContextTest, SettingsToIPPOptions_Copies) {
+TEST_P(PrintingContextTest, SettingsToIPPOptions_Copies) {
   settings_.set_copies(3);
   TestIntegerOptionValue(kIppCopies, 3);
 }
 
-TEST_F(PrintingContextTest, SettingsToIPPOptions_Collate) {
+TEST_P(PrintingContextTest, SettingsToIPPOptions_Collate) {
   TestStringOptionValue(kIppCollate, "separate-documents-uncollated-copies");
   settings_.set_collate(true);
   TestStringOptionValue(kIppCollate, "separate-documents-collated-copies");
 }
 
-TEST_F(PrintingContextTest, SettingsToIPPOptions_Pin) {
+TEST_P(PrintingContextTest, SettingsToIPPOptions_Pin) {
   EXPECT_FALSE(HasAttribute(kIppPin));
   settings_.set_pin_value("1234");
-  TestOctetStringOptionValue(kIppPin, base::make_span("1234", 4u));
+  TestOctetStringOptionValue(kIppPin, base::span_from_cstring("1234"));
 }
 
-TEST_F(PrintingContextTest, SettingsToIPPOptions_Resolution) {
+TEST_P(PrintingContextTest, SettingsToIPPOptions_Resolution) {
   EXPECT_FALSE(HasAttribute(kIppResolution));
   settings_.set_dpi_xy(0, 300);
   EXPECT_FALSE(HasAttribute(kIppResolution));
@@ -253,7 +319,7 @@ TEST_F(PrintingContextTest, SettingsToIPPOptions_Resolution) {
   TestResolutionOptionValue(kIppResolution, 600, 1200);
 }
 
-TEST_F(PrintingContextTest, SettingsToIPPOptions_SendUserInfo_Secure) {
+TEST_P(PrintingContextTest, SettingsToIPPOptions_SendUserInfo_Secure) {
   ipp_status_t status = ipp_status_t::IPP_STATUS_OK;
   std::u16string document_name = kDocumentName16;
   SetDefaultSettings(/*send_user_info=*/true, "ipps://test-uri");
@@ -277,7 +343,7 @@ TEST_F(PrintingContextTest, SettingsToIPPOptions_SendUserInfo_Secure) {
   EXPECT_EQ(start_document_username, kUsername);
 }
 
-TEST_F(PrintingContextTest, SettingsToIPPOptions_SendUserInfo_Insecure) {
+TEST_P(PrintingContextTest, SettingsToIPPOptions_SendUserInfo_Insecure) {
   ipp_status_t status = ipp_status_t::IPP_STATUS_OK;
   std::u16string document_name = kDocumentName16;
   std::string default_username = "chronos";
@@ -303,7 +369,7 @@ TEST_F(PrintingContextTest, SettingsToIPPOptions_SendUserInfo_Insecure) {
   EXPECT_EQ(start_document_username, default_username);
 }
 
-TEST_F(PrintingContextTest, SettingsToIPPOptions_DoNotSendUserInfo) {
+TEST_P(PrintingContextTest, SettingsToIPPOptions_DoNotSendUserInfo) {
   ipp_status_t status = ipp_status_t::IPP_STATUS_OK;
   std::u16string document_name = kDocumentName16;
   SetDefaultSettings(/*send_user_info=*/false, "ipps://test-uri");
@@ -327,7 +393,7 @@ TEST_F(PrintingContextTest, SettingsToIPPOptions_DoNotSendUserInfo) {
   EXPECT_EQ(start_document_username, "");
 }
 
-TEST_F(PrintingContextTest, SettingsToIPPOptionsClientInfo) {
+TEST_P(PrintingContextTest, SettingsToIPPOptionsClientInfo) {
   mojom::IppClientInfo client_info(
       mojom::IppClientInfo::ClientType::kOperatingSystem, "a-", "B_", "1.",
       "a.1-B_");
@@ -358,10 +424,10 @@ TEST_F(PrintingContextTest, SettingsToIPPOptionsClientInfo) {
   void* version = ippGetOctetString(attr, 0, &length);
   ASSERT_TRUE(version);
   EXPECT_EQ(6, length);
-  EXPECT_EQ(0, memcmp("a.1-B_", version, 6));
+  EXPECT_EQ(0, UNSAFE_TODO(memcmp("a.1-B_", version, 6)));
 }
 
-TEST_F(PrintingContextTest, SettingsToIPPOptionsClientInfoSomeValid) {
+TEST_P(PrintingContextTest, SettingsToIPPOptionsClientInfoSomeValid) {
   mojom::IppClientInfo valid_client_info(
       mojom::IppClientInfo::ClientType::kOperatingSystem, "aB.1-_", "aB.1-_",
       "aB.1-_", "aB.1-_");
@@ -375,7 +441,7 @@ TEST_F(PrintingContextTest, SettingsToIPPOptionsClientInfoSomeValid) {
   EXPECT_EQ(GetAttrValueCount(kIppClientInfo), 2);
 }
 
-TEST_F(PrintingContextTest, SettingsToIPPOptionsClientInfoEmpty) {
+TEST_P(PrintingContextTest, SettingsToIPPOptionsClientInfoEmpty) {
   settings_.set_client_infos({});
   EXPECT_FALSE(HasAttribute(kIppClientInfo));
 
@@ -385,6 +451,35 @@ TEST_F(PrintingContextTest, SettingsToIPPOptionsClientInfoEmpty) {
   settings_.set_client_infos({invalid_client_info});
   EXPECT_FALSE(HasAttribute(kIppClientInfo));
 }
+
+TEST_P(PrintingContextTest, SettingsToIPPOptionsPrintScaling) {
+  // Define test cases for print scaling
+  struct PrintScalingTestCase {
+    mojom::PrintScalingType scaling_type;
+    const char* expected_value;
+  } constexpr kTestCases[] = {
+      {mojom::PrintScalingType::kUnknownPrintScalingType, nullptr},
+      {mojom::PrintScalingType::kAuto, "auto"},
+      {mojom::PrintScalingType::kAutoFit, "auto-fit"},
+      {mojom::PrintScalingType::kFill, "fill"},
+      {mojom::PrintScalingType::kFit, "fit"},
+      {mojom::PrintScalingType::kNone, "none"},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    settings_.set_print_scaling(test_case.scaling_type);
+    if (test_case.scaling_type ==
+        mojom::PrintScalingType::kUnknownPrintScalingType) {
+      EXPECT_FALSE(HasAttribute(kIppPrintScaling));
+    } else {
+      TestStringOptionValue(kIppPrintScaling, test_case.expected_value);
+    }
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(PrintingContextTest,
+                         PrintingContextTest,
+                         testing::Bool());
 
 }  // namespace
 

@@ -4,9 +4,9 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {TraceReportAppElement} from './app.js';
+import type {TracesAppElement} from './app.js';
 
-export function getHtml(this: TraceReportAppElement) {
+export function getHtml(this: TracesAppElement) {
   // clang-format off
   return html`
   <cr-tabs .tabNames="${this.tabNames_}" .selected="${this.selected_}"
@@ -16,6 +16,7 @@ export function getHtml(this: TraceReportAppElement) {
   <cr-page-selector .selected="${this.selected_}">
     <trace-report-list></trace-report-list>
     <tracing-scenarios-config></tracing-scenarios-config>
+    <trace-recorder></trace-recorder>
   </cr-page-selector>`;
   // clang-format on
 }

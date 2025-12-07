@@ -50,6 +50,7 @@ class CORE_EXPORT ScriptElementBase : public GarbageCollectedMixin {
   virtual String EventAttributeValue() const = 0;
   virtual String ForAttributeValue() const = 0;
   virtual String IntegrityAttributeValue() const = 0;
+  virtual String SignatureAttributeValue() const = 0;
   virtual String LanguageAttributeValue() const = 0;
   virtual bool NomoduleAttributeValue() const = 0;
   virtual String SourceAttributeValue() const = 0;
@@ -76,7 +77,7 @@ class CORE_EXPORT ScriptElementBase : public GarbageCollectedMixin {
   // synchronously to ensure the correct Javascript world is used for CSP
   // checks.
   virtual bool AllowInlineScriptForCSP(const AtomicString& nonce,
-                                       const WTF::OrdinalNumber&,
+                                       const OrdinalNumber&,
                                        const String& script_content) = 0;
 
   // GetDocument() is "element document", to which the script element belongs

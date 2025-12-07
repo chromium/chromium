@@ -48,6 +48,7 @@
   font-weight: var(--mwb-secondary-text-font-weight);
   height: 100%;
   justify-content: space-between;
+  margin-inline-start: 1px;
   position: absolute;
   width: 100%;
 }

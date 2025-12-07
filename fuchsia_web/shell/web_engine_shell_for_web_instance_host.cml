@@ -8,7 +8,6 @@
 {
   include: [
     "//fuchsia_web/webinstance_host/web_instance_host.shard.cml",
-    "syslog/client.shard.cml",
   ],
   program: {
     runner: "elf",
@@ -26,7 +25,10 @@
       protocol: [ "fuchsia.element.GraphicalPresenter" ],
       availability: "optional",
     },
-
+    {
+      protocol: "fuchsia.logger.LogSink",
+      from: "parent/diagnostics",
+    },
     // Used to hold the cdm_data directory passed to web_instance.
     {
       storage: "data",

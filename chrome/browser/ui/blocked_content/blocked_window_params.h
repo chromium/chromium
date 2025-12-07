@@ -5,15 +5,17 @@
 #ifndef CHROME_BROWSER_UI_BLOCKED_CONTENT_BLOCKED_WINDOW_PARAMS_H_
 #define CHROME_BROWSER_UI_BLOCKED_CONTENT_BLOCKED_WINDOW_PARAMS_H_
 
-#include "chrome/browser/ui/browser_navigator_params.h"
 #include "content/public/common/referrer.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
+struct NavigateParams;
+
 namespace content {
 class RenderProcessHost;
+class SiteInstance;
 class WebContents;
 }  // namespace content
 

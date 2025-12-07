@@ -19,14 +19,12 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/transforms/transform_operations.h"
 
 #include <algorithm>
+#include <array>
+
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/geometry/blend.h"
 #include "third_party/blink/renderer/platform/transforms/interpolated_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_3d_transform_operation.h"
@@ -176,7 +174,7 @@ TransformOperations TransformOperations::Blend(
 
   bool success = true;
   TransformOperations result = ApplyFunctionToMatchingPrefix(
-      WTF::BindRepeating(
+      BindRepeating(
           [](double progress, TransformOperation* from,
              TransformOperation* to) {
             // Where the lists matched but one was longer, the shorter list is
@@ -212,7 +210,7 @@ TransformOperations TransformOperations::Accumulate(
 
   // Accumulate matching pairs of transform functions.
   TransformOperations result = ApplyFunctionToMatchingPrefix(
-      WTF::BindRepeating([](TransformOperation* from, TransformOperation* to) {
+      BindRepeating([](TransformOperation* from, TransformOperation* to) {
         if (to && from)
           return from->Accumulate(*to);
         // Where the lists matched but one was longer, the shorter list is
@@ -249,7 +247,7 @@ TransformOperations TransformOperations::Accumulate(
 static void FindCandidatesInPlane(double px,
                                   double py,
                                   double nz,
-                                  double* candidates,
+                                  base::span<double> candidates,
                                   int* num_candidates) {
   // The angle that this point is rotated with respect to the plane nz
   double phi = atan2(px, py);
@@ -275,9 +273,6 @@ static void BoundingBoxForArc(const gfx::Point3F& point,
                               double min_progress,
                               double max_progress,
                               gfx::BoxF& box) {
-  double candidates[6];
-  int num_candidates = 0;
-
   gfx::Vector3dF axis = from_transform.Axis();
   double from_degrees = from_transform.Angle();
   double to_degrees = to_transform.Angle();
@@ -304,6 +299,8 @@ static void BoundingBoxForArc(const gfx::Point3F& point,
 
   box.ExpandTo(to_matrix.MapPoint(point));
 
+  std::array<double, 6> candidates;
+  int num_candidates = 0;
   switch (from_transform.GetType()) {
     case TransformOperation::kRotateX:
       FindCandidatesInPlane(point.y(), point.z(), from_transform.X(),

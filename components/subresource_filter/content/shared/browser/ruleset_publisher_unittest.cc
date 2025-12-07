@@ -10,12 +10,14 @@
 #include <tuple>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
@@ -31,14 +33,12 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
-#include "ipc/ipc_platform_file.h"
-#include "ipc/ipc_test_sink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
 class RenderProcessHost;
-} // namespace content
+}  // namespace content
 
 namespace subresource_filter {
 
@@ -53,15 +53,16 @@ class NotifyingMockRenderProcessHost : public content::MockRenderProcessHost {
       content::BrowserContext* browser_context,
       content::RenderProcessHostCreationObserver* observer)
       : content::MockRenderProcessHost(browser_context) {
-    if (observer)
+    if (observer) {
       observer->OnRenderProcessHostCreated(this);
+    }
   }
 };
 
 std::string ReadFileContentsToString(base::File* file) {
   size_t length = base::checked_cast<size_t>(file->GetLength());
   std::string contents(length, 0);
-  file->Read(0, &contents[0], base::checked_cast<int>(length));
+  file->Read(0, base::as_writable_byte_span(contents));
   return contents;
 }
 
@@ -148,7 +149,8 @@ class MockRulesetPublisher : public RulesetPublisher {
 
  private:
   size_t sent_count_ = 0;
-  std::map<content::RenderProcessHost*, base::File*> last_file_;
+  std::map<content::RenderProcessHost*, raw_ptr<base::File, CtnExperimental>>
+      last_file_;
 };
 
 TEST_F(SubresourceFilterRulesetPublisherTest, NoRuleset_NoIPCMessages) {
@@ -197,8 +199,7 @@ TEST_F(SubresourceFilterRulesetPublisherTest,
       service.RulesetFileForProcess(&second_renderer), kTestFileContents));
 }
 
-TEST_F(SubresourceFilterRulesetPublisherTest,
-       PublishesRulesetInOnePostTask) {
+TEST_F(SubresourceFilterRulesetPublisherTest, PublishesRulesetInOnePostTask) {
   // Regression test for crbug.com/817308. Test verifies that ruleset is
   // published on browser startup via exactly one PostTask.
 
@@ -225,7 +226,7 @@ TEST_F(SubresourceFilterRulesetPublisherTest,
   const base::FilePath version_dir_path =
       IndexedRulesetLocator::GetSubdirectoryPathForVersion(base_dir,
                                                            current_version);
-  ASSERT_EQ(RulesetService::IndexAndWriteRulesetResult::SUCCESS,
+  ASSERT_EQ(RulesetService::IndexAndWriteRulesetResult::kSuccess,
             RulesetService::WriteRuleset(version_dir_path,
                                          /* license_path =*/base::FilePath(),
                                          ruleset.indexed.contents));

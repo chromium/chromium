@@ -6,11 +6,13 @@ package org.chromium.components.browsing_data.content;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.url.Origin;
 
 import java.io.Serializable;
 
 /** Browsing Data information for a given origin. */
+@NullMarked
 public class BrowsingDataInfo implements Serializable {
     private final Origin mOrigin;
     private final int mCookieCount;

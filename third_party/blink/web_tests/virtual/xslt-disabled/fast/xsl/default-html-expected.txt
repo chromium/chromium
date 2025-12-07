@@ -1,0 +1,6 @@
+CONSOLE WARNING: XSLTProcessor and XSLT Processing Instructions have been removed in this browser. See https://chromestatus.com/feature/4709671889534976.
+CONSOLE ERROR: Uncaught NotSupportedError: Failed to construct 'XSLTProcessor': XSLT is disabled
+Test for bug 11694: XSLT output method does not default to HTML when the target document is HTML.
+
+Should be green:
+Should be black:

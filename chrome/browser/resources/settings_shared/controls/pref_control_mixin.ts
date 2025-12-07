@@ -28,7 +28,7 @@ export const PrefControlMixin = dedupingMixin(
           };
         }
 
-        pref?: chrome.settingsPrivate.PrefObject;
+        declare pref?: chrome.settingsPrivate.PrefObject;
 
         override connectedCallback() {
           super.connectedCallback();

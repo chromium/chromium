@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.share.qrcode;
 
 import android.graphics.Bitmap;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** A Java API for calling the native QR Code Generator. */
+@NullMarked
 public class QRCodeGenerator {
     public static @Nullable Bitmap generateBitmap(String data) {
         return QRCodeGeneratorJni.get().generateBitmap(data);
@@ -18,7 +20,7 @@ public class QRCodeGenerator {
 
     @NativeMethods
     interface Natives {
-        @Nullable
-        Bitmap generateBitmap(String data);
+
+        @Nullable Bitmap generateBitmap(String data);
     }
 }

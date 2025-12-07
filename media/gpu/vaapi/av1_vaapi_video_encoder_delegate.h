@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <vector>
 
 #include "media/base/video_bitrate_allocation.h"
@@ -19,6 +20,7 @@ class AV1RateControlRTC;
 }  // namespace aom
 
 namespace media {
+class SVCLayers;
 
 class AV1VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
  public:
@@ -41,9 +43,9 @@ class AV1VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
     // https://github.com/intel/libva-utils/blob/master/encode/av1encode.c
     // TODO: we may want to tune these parameters.
     uint8_t cdef_y_pri_strength[8] = {9, 12, 0, 6, 2, 4, 1, 2};
-    uint8_t cdef_y_sec_strength[8] = {0, 2, 0, 0, 0, 1, 0, 1};
-    uint8_t cdef_uv_pri_strength[8] = {9, 12, 0, 6, 2, 4, 1, 2};
-    uint8_t cdef_uv_sec_strength[8] = {0, 2, 0, 0, 0, 1, 0, 1};
+    std::array<uint8_t, 8> cdef_y_sec_strength = {0, 2, 0, 0, 0, 1, 0, 1};
+    std::array<uint8_t, 8> cdef_uv_pri_strength = {9, 12, 0, 6, 2, 4, 1, 2};
+    std::array<uint8_t, 8> cdef_uv_sec_strength = {0, 2, 0, 0, 0, 1, 0, 1};
   };
 
   AV1VaapiVideoEncoderDelegate(scoped_refptr<VaapiWrapper> vaapi_wrapper,
@@ -70,17 +72,22 @@ class AV1VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   PrepareEncodeJobResult PrepareEncodeJob(EncodeJob& encode_job) override;
   void BitrateControlUpdate(const BitstreamBufferMetadata& metadata) override;
 
-  bool SubmitTemporalDelimiter(size_t& temporal_delimiter_obu_size);
+  bool SubmitTemporalDelimiter(size_t& temporal_delimiter_obu_size,
+                               std::optional<uint8_t> temporal_idx);
   bool SubmitSequenceHeader(size_t& sequence_header_obu_size);
   bool SubmitSequenceParam();
   bool SubmitSequenceHeaderOBU(size_t& sequence_header_obu_size);
-  bool SubmitFrame(const EncodeJob& job, size_t frame_header_obu_offset);
+  bool SubmitFrame(const EncodeJob& job,
+                   size_t frame_header_obu_offset,
+                   std::optional<uint8_t> temporal_idx);
+  void UpdateReferenceFrames(scoped_refptr<AV1Picture> picture);
   bool FillPictureParam(VAEncPictureParameterBufferAV1& pic_param,
                         VAEncSegMapBufferAV1& segment_map_param,
                         const EncodeJob& job,
                         const AV1Picture& pic);
   bool SubmitFrameOBU(const VAEncPictureParameterBufferAV1& pic_param,
-                      size_t& frame_header_obu_size_offset);
+                      size_t& frame_header_obu_size_offset,
+                      std::optional<uint8_t> temporal_idx);
   bool SubmitPictureParam(const VAEncPictureParameterBufferAV1& pic_param);
   bool SubmitSegmentMap(const VAEncSegMapBufferAV1& segment_map_param);
   bool SubmitTileGroup();
@@ -93,11 +100,15 @@ class AV1VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   gfx::Size coded_size_;
   // TODO(b:274756117): In tuning this encoder, we may decide we want multiple
   // reference frames, not just the most recent.
-  scoped_refptr<AV1Picture> last_frame_ = nullptr;
   AV1BitstreamBuilder::SequenceHeader sequence_header_;
   std::unique_ptr<aom::AV1RateControlRTC> rate_ctrl_;
   std::vector<uint8_t> segmentation_map_{};
   uint32_t seg_size_;
+
+  std::array<scoped_refptr<AV1Picture>, libgav1::kNumReferenceFrameTypes>
+      ref_frames_;
+  std::unique_ptr<SVCLayers> svc_layers_;
+  uint8_t num_temporal_layers_ = 1;
 };
 
 }  // namespace media

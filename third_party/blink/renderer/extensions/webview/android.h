@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/extensions/webview/extensions_webview_export.h"
-#include "third_party/blink/renderer/extensions/webview/web_view.h"
+#include "third_party/blink/renderer/extensions/webview/web_view_android.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
@@ -18,7 +18,7 @@ class EXTENSIONS_WEBVIEW_EXPORT Android : public ScriptWrappable {
  public:
   Android();
 
-  WebView* webview(ExecutionContext*);
+  WebViewAndroid* webview(ExecutionContext*);
 
   void Trace(Visitor*) const override;
 };

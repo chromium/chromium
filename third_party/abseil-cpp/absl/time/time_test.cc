@@ -14,29 +14,35 @@
 
 #include "absl/time/time.h"
 
-#include <cstdint>
-#include <ios>
-
 #include "absl/time/civil_time.h"
 
 #if defined(_MSC_VER)
 #include <winsock2.h>  // for timeval
 #endif
 
+#include "absl/base/config.h"
+
+// For feature testing and determining which headers can be included.
+#if ABSL_INTERNAL_CPLUSPLUS_LANG >= 202002L
+#include <version>
+#endif
+
 #include <chrono>  // NOLINT(build/c++11)
-
-#ifdef __cpp_impl_three_way_comparison
+#ifdef __cpp_lib_three_way_comparison
 #include <compare>
-#endif  // __cpp_impl_three_way_comparison
-
+#endif  // __cpp_lib_three_way_comparison
+#include <cstdint>
 #include <cstring>
 #include <ctime>
 #include <iomanip>
+#include <ios>
 #include <limits>
 #include <string>
+#include <type_traits>
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
+#include "absl/hash/hash_testing.h"
 #include "absl/numeric/int128.h"
 #include "absl/strings/str_format.h"
 #include "absl/time/clock.h"
@@ -86,6 +92,8 @@ MATCHER_P(TimevalMatcher, tv, "") {
 }
 
 TEST(Time, ConstExpr) {
+  static_assert(std::is_trivially_destructible<absl::Time>::value,
+                "Time is documented as being trivially destructible");
   constexpr absl::Time t0 = absl::UnixEpoch();
   static_assert(t0 == absl::UnixEpoch(), "UnixEpoch");
   constexpr absl::Time t1 = absl::InfiniteFuture();
@@ -213,7 +221,7 @@ TEST(Time, RelationalOperators) {
   static_assert(t1 >= t1, "");
   static_assert(t3 >= t1, "");
 
-#ifdef __cpp_impl_three_way_comparison
+#ifdef ABSL_INTERNAL_TIME_HAS_THREE_WAY_COMPARISON
 
   static_assert((t1 <=> t1) == std::strong_ordering::equal, "");
   static_assert((t2 <=> t2) == std::strong_ordering::equal, "");
@@ -227,7 +235,7 @@ TEST(Time, RelationalOperators) {
   static_assert((t3 <=> t2) == std::strong_ordering::greater, "");
   static_assert((t3 <=> t1) == std::strong_ordering::greater, "");
 
-#endif  // __cpp_impl_three_way_comparison
+#endif  // ABSL_INTERNAL_TIME_HAS_THREE_WAY_COMPARISON
 }
 
 TEST(Time, Infinity) {
@@ -239,14 +247,14 @@ TEST(Time, Infinity) {
   static_assert(ipast < ifuture, "");
   static_assert(ifuture > ipast, "");
 
-#ifdef __cpp_impl_three_way_comparison
+#ifdef ABSL_INTERNAL_TIME_HAS_THREE_WAY_COMPARISON
 
   static_assert((ifuture <=> ifuture) == std::strong_ordering::equal, "");
   static_assert((ipast <=> ipast) == std::strong_ordering::equal, "");
   static_assert((ipast <=> ifuture) == std::strong_ordering::less, "");
   static_assert((ifuture <=> ipast) == std::strong_ordering::greater, "");
 
-#endif  // __cpp_impl_three_way_comparison
+#endif  // ABSL_INTERNAL_TIME_HAS_THREE_WAY_COMPARISON
 
   // Arithmetic saturates
   EXPECT_EQ(ifuture, ifuture + absl::Seconds(1));
@@ -263,14 +271,14 @@ TEST(Time, Infinity) {
   static_assert(t < ifuture, "");
   static_assert(t > ipast, "");
 
-#ifdef __cpp_impl_three_way_comparison
+#ifdef ABSL_INTERNAL_TIME_HAS_THREE_WAY_COMPARISON
 
   static_assert((t <=> ifuture) == std::strong_ordering::less, "");
   static_assert((t <=> ipast) == std::strong_ordering::greater, "");
   static_assert((ipast <=> t) == std::strong_ordering::less, "");
   static_assert((ifuture <=> t) == std::strong_ordering::greater, "");
 
-#endif  // __cpp_impl_three_way_comparison
+#endif  // ABSL_INTERNAL_TIME_HAS_THREE_WAY_COMPARISON
 
   EXPECT_EQ(ifuture, t + absl::InfiniteDuration());
   EXPECT_EQ(ipast, t - absl::InfiniteDuration());
@@ -1327,6 +1335,31 @@ TEST(Time, AbslStringify) {
   // verify that StrFormat("%v", t) works as expected.
   absl::Time t = absl::Now();
   EXPECT_EQ(absl::StrFormat("%v", t), absl::FormatTime(t));
+}
+
+TEST(Time, SupportsHash) {
+  EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly({
+      absl::UTCTimeZone(),
+      absl::FixedTimeZone(-8 * 60 * 60),
+      absl::UTCTimeZone(),
+  }));
+
+  EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly({
+      absl::Now(),
+      absl::UnixEpoch(),
+      absl::UnixEpoch() + absl::Seconds(60),
+      absl::UnixEpoch() + absl::Minutes(1),
+      absl::InfiniteFuture(),
+      absl::InfinitePast(),
+  }));
+
+  EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly({
+      absl::Seconds(1),
+      absl::Seconds(60),
+      absl::Minutes(1),
+      absl::InfiniteDuration(),
+      -absl::InfiniteDuration(),
+  }));
 }
 
 }  // namespace

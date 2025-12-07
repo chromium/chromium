@@ -33,7 +33,7 @@
 #include "media/capture/video/video_capture_device_descriptor.h"
 #include "media/capture/video/video_capture_feedback.h"
 #include "media/capture/video_capture_types.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <mfobjects.h>
@@ -43,6 +43,10 @@
 namespace base {
 class Location;
 }  // namespace base
+
+namespace gpu {
+class ClientSharedImage;
+}
 
 namespace media {
 
@@ -98,7 +102,6 @@ struct CAPTURE_EXPORT CapturedExternalVideoBuffer {
 class CAPTURE_EXPORT VideoCaptureDevice
     : public VideoFrameConsumerFeedbackObserver {
  public:
-
   // Interface defining the methods that clients of VideoCapture must have. It
   // is actually two-in-one: clients may implement OnIncomingCapturedData() or
   // ReserveOutputBuffer() + OnIncomingCapturedVideoFrame(), or all of them.
@@ -195,6 +198,7 @@ class CAPTURE_EXPORT VideoCaptureDevice
         base::TimeTicks reference_time,
         base::TimeDelta timestamp,
         std::optional<base::TimeTicks> capture_begin_timestamp,
+        const std::optional<VideoFrameMetadata>& metadata,
         int frame_feedback_id) = 0;
     // Convenience wrapper that passes in 0 as |frame_feedback_id|.
     void OnIncomingCapturedData(
@@ -206,32 +210,35 @@ class CAPTURE_EXPORT VideoCaptureDevice
         bool flip_y,
         base::TimeTicks reference_time,
         base::TimeDelta timestamp,
-        std::optional<base::TimeTicks> capture_begin_timestamp);
+        std::optional<base::TimeTicks> capture_begin_timestamp,
+        const std::optional<VideoFrameMetadata>& metadata);
 
     // Captured a new video frame, data for which is stored in the
-    // GpuMemoryBuffer pointed to by |buffer|.  The format of the frame is
-    // described by |frame_format|.  Since the memory buffer pointed to by
-    // |buffer| may be allocated with some size/address alignment requirement,
-    // this method takes into consideration the size and offset of each plane in
-    // |buffer| when creating the content of the output buffer.
-    // |clockwise_rotation|, |reference_time|, |timestamp|, and
+    // shared image pointed to by |shared_image|.  The format of the frame is
+    // described by |frame_format|.  Since the shared image pointed to by
+    // |shared_image| may be allocated with some size/address alignment
+    // requirement, this method takes into consideration the size and offset of
+    // each plane in |shared_image| when creating the content of the output
+    // buffer. |clockwise_rotation|, |reference_time|, |timestamp|, and
     // |frame_feedback_id| serve the same purposes as in OnIncomingCapturedData.
-    virtual void OnIncomingCapturedGfxBuffer(
-        gfx::GpuMemoryBuffer* buffer,
+    virtual void OnIncomingCapturedImage(
+        scoped_refptr<gpu::ClientSharedImage> shared_image,
         const VideoCaptureFormat& frame_format,
         int clockwise_rotation,
         base::TimeTicks reference_time,
         base::TimeDelta timestamp,
         std::optional<base::TimeTicks> capture_begin_timestamp,
+        const std::optional<VideoFrameMetadata>& metadata,
         int frame_feedback_id) = 0;
     // Convenience wrapper that passes in 0 as |frame_feedback_id|.
-    void OnIncomingCapturedGfxBuffer(
-        gfx::GpuMemoryBuffer* buffer,
+    void OnIncomingCapturedImage(
+        scoped_refptr<gpu::ClientSharedImage> shared_image,
         const VideoCaptureFormat& frame_format,
         int clockwise_rotation,
         base::TimeTicks reference_time,
         base::TimeDelta timestamp,
-        std::optional<base::TimeTicks> capture_begin_timestamp);
+        std::optional<base::TimeTicks> capture_begin_timestamp,
+        const std::optional<VideoFrameMetadata>& metadata);
 
     // Captured a new video frame. The data for this frame is in
     // |buffer.handle|, which is owned by the platform-specific capture device.
@@ -241,13 +248,16 @@ class CAPTURE_EXPORT VideoCaptureDevice
     // CVPixelBufferPool, and gfx::ScopedInUseIOSurface is used to prevent reuse
     // of buffers until all consumers have consumed them. |visible_rect|
     // specifies the region in the memory pointed to by |buffer.handle| that
-    // contains the captured content.
+    // contains the captured content. |metadata| is used for storing an initial
+    // metadata and if not provided, then the initial metadata used would be the
+    // default values of VideoFrameMetadata.
     virtual void OnIncomingCapturedExternalBuffer(
         CapturedExternalVideoBuffer buffer,
         base::TimeTicks reference_time,
         base::TimeDelta timestamp,
         std::optional<base::TimeTicks> capture_begin_timestamp,
-        const gfx::Rect& visible_rect) = 0;
+        const gfx::Rect& visible_rect,
+        const std::optional<VideoFrameMetadata>& metadata) = 0;
 
     // Reserve an output buffer into which contents can be captured directly.
     // The returned |buffer| will always be allocated with a memory size
@@ -280,7 +290,8 @@ class CAPTURE_EXPORT VideoCaptureDevice
         const VideoCaptureFormat& format,
         base::TimeTicks reference_time,
         base::TimeDelta timestamp,
-        std::optional<base::TimeTicks> capture_begin_timestamp) = 0;
+        std::optional<base::TimeTicks> capture_begin_timestamp,
+        const std::optional<VideoFrameMetadata>& metadata) = 0;
 
     // Extended version of OnIncomingCapturedBuffer() allowing clients to
     // pass a custom |visible_rect| and |additional_metadata|.
@@ -292,7 +303,7 @@ class CAPTURE_EXPORT VideoCaptureDevice
         base::TimeDelta timestamp,
         std::optional<base::TimeTicks> capture_begin_timestamp,
         gfx::Rect visible_rect,
-        const VideoFrameMetadata& additional_metadata) = 0;
+        const std::optional<VideoFrameMetadata>& additional_metadata) = 0;
 
     // An error has occurred that cannot be handled and VideoCaptureDevice must
     // be StopAndDeAllocate()-ed. |reason| is a text description of the error.

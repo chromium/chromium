@@ -1,0 +1,121 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "download_manager_consumer.h",
+    "download_manager_state.h",
+    "download_manager_state_view.h",
+    "download_manager_state_view.mm",
+    "download_manager_view_controller+Testing.h",
+    "download_manager_view_controller.h",
+    "download_manager_view_controller.mm",
+    "download_manager_view_controller_delegate.h",
+    "download_manager_view_controller_protocol.h",
+    "radial_progress_view.h",
+    "radial_progress_view.mm",
+    "unopened_downloads_tracker.h",
+    "unopened_downloads_tracker.mm",
+  ]
+  deps = [
+    ":constants",
+    ":features",
+    "//base",
+    "//components/strings:components_strings_grit",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/download/coordinator/activities",
+    "//ios/chrome/browser/download/model",
+    "//ios/chrome/browser/fullscreen/ui_bundled",
+    "//ios/chrome/browser/fullscreen/ui_bundled:ui",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//net",
+    "//ui/base",
+  ]
+  public_deps = [ "//ios/web/public/download" ]
+  frameworks = [
+    "ContactsUI.framework",
+    "Contacts.framework",
+    "QuickLook.framework",
+    "SafariServices.framework",
+    "ARKit.framework",
+    "StoreKit.framework",
+    "UIKit.framework",
+  ]
+}
+
+source_set("constants") {
+  sources = [
+    "download_manager_constants.h",
+    "download_manager_constants.mm",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+
+  sources = [
+    "ar_quick_look_egtest.mm",
+    "download_manager_egtest.mm",
+    "pass_kit_egtest.mm",
+    "safari_download_egtest.mm",
+  ]
+
+  deps = [
+    ":constants",
+    ":features",
+    ":test_util",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/download/model:eg_test_support+eg2",
+    "//ios/chrome/browser/download/model:mime_types",
+    "//ios/chrome/browser/download/model:test_support",
+    "//ios/chrome/browser/infobars/ui_bundled/banners:public",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/utils",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing:embedded_test_server_support",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:launch_configuration",
+    "//ios/web/common",
+    "//ios/web/public/test:element_selector",
+    "//net:test_support",
+    "//ui/base",
+  ]
+
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("test_util") {
+  testonly = true
+
+  sources = [
+    "download_egtest_util.h",
+    "download_egtest_util.mm",
+  ]
+
+  deps = [
+    "//ios/chrome/browser/download/ui:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+  ]
+}
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  deps = [ "//base" ]
+}

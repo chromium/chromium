@@ -3,14 +3,23 @@
 [TOC]
 
 This document covers the best practices on using user actions in code and
-documenting them for the dashboard. User actions come with only a name and
-a timestamp. They are best used when you care about a sequence—which actions
-happen in what order. If you don't care about the order, you should be using
+documenting them for the dashboard. (You can find user actions on the dashboard
+by typing "user actions" in the Metrics/Histograms search bar and selecting it.)
+User actions come with only a name and a timestamp. They are best used when you
+care about a sequence—which actions happen in what order. If you don't care
+about the order, you should be using
 [histograms](https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md)
-(likely [enumerated histograms](https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms)).
+(likely
+[enumerated histograms](https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms)).
 
 Often, you want both user actions and histogram logging in your code. They
 enable different analyses. They're complementary.
+
+## Permitted Metrics
+
+Google has policies restricting what data can be collected and for what purpose.
+Googlers, see go/uma-privacy#principles to verify your desired user action
+adheres to those policies.
 
 ## Coding (emitting to user actions)
 
@@ -115,11 +124,11 @@ for details.
 See also `chrome://metrics-internals` ([docs](https://chromium.googlesource.com/chromium/src/+/master/components/metrics/debug/README.md))
 for more thorough manual testing if needed.
 
-### Verify Action Suffixes
+### Verify Action Variants
 
-If you have <action-suffix> entries that need to be updated to match code,
-you can use
-[ActionSuffixReader](https://cs.chromium.org/chromium/src/base/test/metrics/action_suffix_reader.h)
+If you have actions with `<variant>` entries that need to be updated to match
+code, you can use functions from
+[`action_variants_reader.h`](https://cs.chromium.org/chromium/src/base/test/metrics/action_variants_reader.h)
 to read and verify the expected values in a unit test. This prevents a mismatch
 between code and action data from slipping through CQ.
 

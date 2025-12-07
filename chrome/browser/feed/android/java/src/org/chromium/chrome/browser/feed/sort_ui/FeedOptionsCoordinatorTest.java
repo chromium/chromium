@@ -17,13 +17,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
+import org.chromium.chrome.browser.feed.FeedServiceBridgeJni;
 import org.chromium.chrome.browser.feed.v2.ContentOrder;
 import org.chromium.components.browser_ui.widget.chips.ChipProperties;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
@@ -36,21 +37,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class FeedOptionsCoordinatorTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
     @Mock private FeedOptionsView mView;
     @Mock private ChipView mChipView;
     @Mock private TextView mTextView;
-
-    @Rule public JniMocker mMocker = new JniMocker();
 
     private FeedOptionsCoordinator mCoordinator;
     private Context mContext;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mContext = Robolectric.buildActivity(Activity.class).get();
-        mMocker.mock(FeedServiceBridge.getTestHooksForTesting(), mFeedServiceBridgeJniMock);
+        FeedServiceBridgeJni.setInstanceForTesting(mFeedServiceBridgeJniMock);
         when(mFeedServiceBridgeJniMock.getContentOrderForWebFeed())
                 .thenReturn(ContentOrder.REVERSE_CHRON);
         when(mView.createNewChip()).thenReturn(mChipView);

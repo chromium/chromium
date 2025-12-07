@@ -18,18 +18,18 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/commerce/android/shopping_service_jni/PriceTrackingUtils_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace commerce {
 
-void JNI_PriceTrackingUtils_SetPriceTrackingStateForBookmark(
+static void JNI_PriceTrackingUtils_SetPriceTrackingStateForBookmark(
     JNIEnv* env,
     Profile* profile,
     jlong bookmark_id,
     jboolean enabled,
-    const JavaParamRef<jobject>& j_callback,
+    const JavaRef<jobject>& j_callback,
     jboolean bookmark_created_by_price_tracking) {
   CHECK(profile);
 
@@ -54,11 +54,11 @@ void JNI_PriceTrackingUtils_SetPriceTrackingStateForBookmark(
       bookmark_created_by_price_tracking);
 }
 
-void JNI_PriceTrackingUtils_IsBookmarkPriceTracked(
+static void JNI_PriceTrackingUtils_IsBookmarkPriceTracked(
     JNIEnv* env,
     Profile* profile,
     jlong bookmark_id,
-    const JavaParamRef<jobject>& j_callback) {
+    const JavaRef<jobject>& j_callback) {
   CHECK(profile);
 
   ShoppingService* service =
@@ -82,3 +82,5 @@ void JNI_PriceTrackingUtils_IsBookmarkPriceTracked(
 }
 
 }  // namespace commerce
+
+DEFINE_JNI(PriceTrackingUtils)

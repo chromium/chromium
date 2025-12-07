@@ -9,8 +9,10 @@
 #include "base/containers/contains.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/trace_test_utils.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
 #include "gin/public/isolate_holder.h"
 #include "gin/test/v8_test.h"
@@ -35,6 +37,15 @@ class V8MemoryDumpProviderWorkerTest : public V8MemoryDumpProviderTest {
     return std::make_unique<gin::IsolateHolder>(
         base::SingleThreadTaskRunner::GetCurrentDefault(),
         gin::IsolateHolder::IsolateType::kBlinkWorkerThread);
+  }
+};
+
+class V8MemoryDumpProviderBackgroundModeTest
+    : public V8MemoryDumpProviderTest,
+      public ::testing::WithParamInterface<IsolateHolder::IsolateType> {
+  std::unique_ptr<IsolateHolder> CreateIsolateHolder() const override {
+    return std::make_unique<gin::IsolateHolder>(
+        base::SingleThreadTaskRunner::GetCurrentDefault(), GetParam());
   }
 };
 
@@ -144,11 +155,11 @@ TEST_F(V8MemoryDumpProviderWorkerTest, DumpContextStatistics) {
 }
 
 TEST_F(V8MemoryDumpProviderTest, DumpCodeStatistics) {
+  base::test::TracingEnvironment tracing_environment;
   // Code stats are disabled unless this category is enabled.
   base::trace_event::TraceLog::GetInstance()->SetEnabled(
       base::trace_event::TraceConfig(
-          TRACE_DISABLED_BY_DEFAULT("memory-infra.v8.code_stats"), ""),
-      base::trace_event::TraceLog::RECORDING_MODE);
+          TRACE_DISABLED_BY_DEFAULT("memory-infra.v8.code_stats"), ""));
 
   base::trace_event::MemoryDumpArgs dump_args = {
       base::trace_event::MemoryDumpLevelOfDetail::kLight};
@@ -213,5 +224,23 @@ TEST_F(V8MemoryDumpProviderTest, Deterministic) {
   // GC reclaimed the object.
   ASSERT_TRUE(weak_ref.IsEmpty());
 }
+
+TEST_P(V8MemoryDumpProviderBackgroundModeTest, AllowList) {
+  // Things that are dumped at the background mode level of detail must be
+  // in the allowlist in base/trace_event/memory_infra_background_allowlist.cc
+  base::trace_event::MemoryDumpArgs dump_args = {
+      base::trace_event::MemoryDumpLevelOfDetail::kBackground};
+  std::unique_ptr<base::trace_event::ProcessMemoryDump> process_memory_dump(
+      new base::trace_event::ProcessMemoryDump(dump_args));
+  instance_->isolate_memory_dump_provider_for_testing()->OnMemoryDump(
+      dump_args, process_memory_dump.get());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no label */,
+    V8MemoryDumpProviderBackgroundModeTest,
+    testing::Values(IsolateHolder::IsolateType::kBlinkMainThread,
+                    IsolateHolder::IsolateType::kBlinkWorkerThread,
+                    IsolateHolder::IsolateType::kUtility));
 
 }  // namespace gin

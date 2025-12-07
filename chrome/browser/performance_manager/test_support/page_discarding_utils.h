@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_TEST_SUPPORT_PAGE_DISCARDING_UTILS_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_TEST_SUPPORT_PAGE_DISCARDING_UTILS_H_
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/performance_manager/mechanisms/page_discarder.h"
+#include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "chrome/browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.h"
 #include "components/performance_manager/graph/graph_impl.h"
@@ -23,6 +26,41 @@ class ProcessNodeImpl;
 
 namespace testing {
 
+// Make sure that |page_node| is discardable.
+void MakePageNodeDiscardable(PageNodeImpl* page_node,
+                             content::BrowserTaskEnvironment& task_env);
+
+class GraphTestHarnessWithDiscardablePage : public GraphTestHarness {
+ public:
+  GraphTestHarnessWithDiscardablePage();
+  ~GraphTestHarnessWithDiscardablePage() override;
+  GraphTestHarnessWithDiscardablePage(
+      const GraphTestHarnessWithDiscardablePage& other) = delete;
+  GraphTestHarnessWithDiscardablePage& operator=(
+      const GraphTestHarnessWithDiscardablePage&) = delete;
+
+  void SetUp() override;
+  void TearDown() override;
+
+ protected:
+  // Deletes and recreates page/process/frame nodes.
+  void RecreateNodes();
+
+  PageNodeImpl* page_node() { return page_node_.get(); }
+  ProcessNodeImpl* process_node() { return process_node_.get(); }
+  FrameNodeImpl* frame_node() { return main_frame_node_.get(); }
+  void ResetFrameNode() { main_frame_node_.reset(); }
+
+ private:
+  performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>
+      page_node_;
+  performance_manager::TestNodeWrapper<performance_manager::ProcessNodeImpl>
+      process_node_;
+  performance_manager::TestNodeWrapper<performance_manager::FrameNodeImpl>
+      main_frame_node_;
+};
+
+#if !BUILDFLAG(IS_ANDROID)
 // Mock version of a performance_manager::mechanism::PageDiscarder.
 class LenientMockPageDiscarder
     : public performance_manager::mechanism::PageDiscarder {
@@ -35,17 +73,16 @@ class LenientMockPageDiscarder
   MOCK_METHOD1(DiscardPageNodeImpl, bool(const PageNode* page_node));
 
  private:
-  void DiscardPageNodes(
-      const std::vector<const PageNode*>& page_nodes,
-      ::mojom::LifecycleUnitDiscardReason discard_reason,
-      base::OnceCallback<void(const std::vector<DiscardEvent>&)>
-          post_discard_cb) override;
+  std::optional<base::ByteCount> DiscardPageNode(
+      const PageNode* page_node,
+      ::mojom::LifecycleUnitDiscardReason discard_reason) override;
 };
 using MockPageDiscarder = ::testing::StrictMock<LenientMockPageDiscarder>;
 
 // Specialization of a GraphTestHarness that uses a MockPageDiscarder to
 // do the discard attempts.
-class GraphTestHarnessWithMockDiscarder : public GraphTestHarness {
+class GraphTestHarnessWithMockDiscarder
+    : public GraphTestHarnessWithDiscardablePage {
  public:
   GraphTestHarnessWithMockDiscarder();
   ~GraphTestHarnessWithMockDiscarder() override;
@@ -58,11 +95,7 @@ class GraphTestHarnessWithMockDiscarder : public GraphTestHarness {
   void TearDown() override;
 
  protected:
-  PageNodeImpl* page_node() { return page_node_.get(); }
-  ProcessNodeImpl* process_node() { return process_node_.get(); }
-  FrameNodeImpl* frame_node() { return main_frame_node_.get(); }
   SystemNodeImpl* system_node() { return graph()->GetSystemNodeImpl(); }
-  void ResetFrameNode() { main_frame_node_.reset(); }
   testing::MockPageDiscarder* discarder() { return mock_discarder_; }
 
  private:
@@ -70,17 +103,58 @@ class GraphTestHarnessWithMockDiscarder : public GraphTestHarness {
   performance_manager::user_tuning::TestUserPerformanceTuningManagerEnvironment
       user_performance_tuning_manager_environment_;
   raw_ptr<testing::MockPageDiscarder> mock_discarder_;
-  performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>
-      page_node_;
-  performance_manager::TestNodeWrapper<performance_manager::ProcessNodeImpl>
-      process_node_;
-  performance_manager::TestNodeWrapper<performance_manager::FrameNodeImpl>
-      main_frame_node_;
 };
 
-// Make sure that |page_node| is discardable.
-void MakePageNodeDiscardable(PageNodeImpl* page_node,
-                             content::BrowserTaskEnvironment& task_env);
+// Scoped helper object to unconditionally always discard pages in tests, for
+// the duration of the object's life. This object is not nestable.
+class ScopedSetAllPagesDiscardableForTesting {
+ public:
+  ScopedSetAllPagesDiscardableForTesting() {
+    auto* policy = policies::DiscardEligibilityPolicy::GetFromGraph();
+    CHECK(policy);
+    policy->set_always_discard_for_testing(true);
+  }
+
+  ~ScopedSetAllPagesDiscardableForTesting() {
+    auto* policy = policies::DiscardEligibilityPolicy::GetFromGraph();
+    CHECK(policy);
+    policy->set_always_discard_for_testing(false);
+  }
+};
+
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+// Checks DiscardEligibilityPolicy::CanDiscard() returns kEligible for each
+// discard reason in |discard_reasons|.
+void ExpectCanDiscardEligible(
+    const PageNode* page_node,
+    std::vector<policies::DiscardEligibilityPolicy::DiscardReason>
+        discard_reasons,
+    base::TimeDelta minimum_time_in_background =
+        policies::kNonVisiblePagesUrgentProtectionTime);
+
+// Checks DiscardEligibilityPolicy::CanDiscard() returns kEligible for all
+// discard reasons.
+void ExpectCanDiscardEligibleAllReasons(
+    const PageNode* page_node,
+    base::TimeDelta minimum_time_in_background =
+        policies::kNonVisiblePagesUrgentProtectionTime);
+
+// Checks DiscardEligibilityPolicy::CanDiscard() returns kProtected for each
+// discard reason in |discard_reasons|. Checks the returned
+// CannotDiscardReason vector contains |protected_reason|.
+void ExpectCanDiscardProtected(
+    const PageNode* page_node,
+    std::vector<policies::DiscardEligibilityPolicy::DiscardReason>
+        discard_reasons,
+    policies::CannotDiscardReason protected_reason);
+
+// Checks DiscardEligibilityPolicy::CanDiscard() returns kProtected for all
+// discard reasons. Checks the returned CannotDiscardReason vector contains
+// |disallowed_reason|.
+void ExpectCanDiscardDisallowedAllReasons(
+    const PageNode* page_node,
+    policies::CannotDiscardReason disallowed_reason);
 
 }  // namespace testing
 }  // namespace performance_manager

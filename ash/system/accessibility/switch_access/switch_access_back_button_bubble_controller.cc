@@ -48,7 +48,7 @@ void SwitchAccessBackButtonBubbleController::ShowBackButton(
 
     bubble_view_ = new TrayBubbleView(init_params);
     bubble_view_->SetArrow(views::BubbleBorder::BOTTOM_RIGHT);
-    bubble_view_->AddChildView(back_button_view_.get());
+    bubble_view_->AddChildViewRaw(back_button_view_.get());
 
     // Only call `SetPaintToLayer()` when necessary since a layer could have
     // been created for `ViewShadow` and re-creating here breaks the z-order set
@@ -68,8 +68,8 @@ void SwitchAccessBackButtonBubbleController::ShowBackButton(
   back_button_view_->SetFocusRing(show_focus_ring);
   bubble_view_->ChangeAnchorRect(AdjustAnchorRect(anchor));
   widget_->Show();
-  bubble_view_->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
-                                         true);
+  bubble_view_->NotifyAccessibilityEventDeprecated(
+      ax::mojom::Event::kChildrenChanged, true);
 }
 
 void SwitchAccessBackButtonBubbleController::HideFocusRing() {
@@ -80,8 +80,8 @@ void SwitchAccessBackButtonBubbleController::Hide() {
   if (widget_)
     widget_->Hide();
   if (bubble_view_)
-    bubble_view_->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
-                                           true);
+    bubble_view_->NotifyAccessibilityEventDeprecated(
+        ax::mojom::Event::kChildrenChanged, true);
 }
 
 void SwitchAccessBackButtonBubbleController::BubbleViewDestroyed() {
@@ -122,7 +122,7 @@ gfx::Rect SwitchAccessBackButtonBubbleController::AdjustAnchorRect(
   adjusted_anchor.Offset(0, offset_height);
 
   gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetDisplayMatching(anchor).bounds();
+      display::Screen::Get()->GetDisplayMatching(anchor).bounds();
   // Ensure that the back button displays onscreen.
   display_bounds.Inset(gfx::Insets::TLBR(button_size.height(), 0, 0, 0));
 

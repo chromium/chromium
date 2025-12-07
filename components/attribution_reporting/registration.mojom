@@ -72,25 +72,9 @@ struct EventReportWindows {
   array<mojo_base.mojom.TimeDelta> end_times;
 };
 
-struct TriggerSpec {
-  EventReportWindows event_report_windows;
-};
-
-// https://wicg.github.io/attribution-reporting-api/#trigger-specs-header
-//
-// The index-list representation here goes against Mojo guidelines, but mirrors
-// the representation of the C++ type of the same name, which was chosen for
-// efficiency and utility as both an in-memory type and an on-disk structure.
-// See https://crrev.com/c/4994870/comment/5071077b_37dae2d1/ for details.
-struct TriggerSpecs {
-  array<TriggerSpec> specs;
-
-  // Keys are trigger data. Values are indices into `specs`.
-  map<uint32, uint8> trigger_data_indices;
-
-  // Specifies how many event-level reports can be generated across all trigger
-  // specs for the source.
-  int32 max_event_level_reports;
+// https://wicg.github.io/attribution-reporting-api/#trigger-data-set
+struct TriggerDataSet {
+  array<uint32> trigger_data;
 };
 
 // Aggregatable contribution for aggregatable debug types.
@@ -123,14 +107,18 @@ struct AttributionScopesData {
   AttributionScopesSet attribution_scopes_set;
 
   // Represents the number of distinct attribution scopes allowed per
-  // destination for a source's reporting origin. If attribution_scope_limit is
-  // null, it indicates that scopes are not set for this source registration and
-  // that max_event_states is its default value.
-  uint32? attribution_scope_limit;
+  // destination for a source's reporting origin.
+  uint32 attribution_scope_limit;
 
   // Represents the maximum number of trigger states for an event source type
   // sources per destination for a source's reporting origin.
   uint32 max_event_states;
+};
+
+// Defines aggregatable names and their associated budget for a trigger to
+// selectively contribute to.
+struct AggregatableNamedBudgetDefs {
+  map<string, int32> budgets;
 };
 
 struct SourceRegistration {
@@ -142,7 +130,13 @@ struct SourceRegistration {
   // Specifies how long this source is eligible for attribution.
   mojo_base.mojom.TimeDelta expiry;
 
-  TriggerSpecs trigger_specs;
+  TriggerDataSet trigger_data;
+
+  EventReportWindows event_report_windows;
+
+  // Specifies how many event-level reports can be generated across all trigger
+  // specs for the source.
+  int32 max_event_level_reports;
 
   // Specifies how long after source registration an aggregatable
   // report can be generated with this source.
@@ -178,8 +172,13 @@ struct SourceRegistration {
   int64 destination_limit_priority;
 
   // Controls the scopes the source can be attributed to along with the amount
-  // limit of scopes and the max number of event states.
-  AttributionScopesData attribution_scopes_data;
+  // limit of scopes and the max number of event states. Logic pertaining to
+  // scopes are ignored if this field is null.
+  AttributionScopesData? attribution_scopes_data;
+
+  // Specifies how the aggregatable budget should be allocated across specified
+  // names for triggers to selectively contribute to.
+  AggregatableNamedBudgetDefs aggregatable_named_budget_defs;
 };
 
 // Mojo representation of the trigger configuration provided by a reporting
@@ -219,6 +218,15 @@ struct AggregatableValues {
   // A map of aggregation key identifier and the corresponding aggregatable
   // values value.
   map<string, AggregatableValuesValue> values;
+
+  FilterPair filters;
+};
+
+struct AggregatableNamedBudgetCandidate {
+  // Name to allocate budget towards as specified by the source registration. If
+  // no name is provided the trigger's contribution will subtract from the total
+  // budget.
+  string? name;
 
   FilterPair filters;
 };
@@ -272,6 +280,10 @@ struct TriggerRegistration {
 
   // Specifies the scopes that this trigger can attribute to.
   AttributionScopesSet attribution_scopes;
+
+  // List of all aggregatable named budgets for matching with source side
+  // budgets to contribute to.
+  array<AggregatableNamedBudgetCandidate> aggregatable_named_budget_candidates;
 };
 
 // Represents a source or trigger registration item that will be passed to the OS, if supported.

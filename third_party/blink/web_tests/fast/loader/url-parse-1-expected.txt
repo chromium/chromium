@@ -32,7 +32,7 @@ x-webkit:	x-webkit:
 x-webkit:test	x-webkit:test		test
 x-webkit:/	x-webkit:/		/
 x-webkit:/test	x-webkit:/test		/test
-x-webkit://	x-webkit://		//
-x-webkit://test	x-webkit://test		//test
-x-webkit:///	x-webkit:///		///
-x-webkit:///test	x-webkit:///test		///test
+x-webkit://	x-webkit://		
+x-webkit://test	x-webkit://test	test	
+x-webkit:///	x-webkit:///		/
+x-webkit:///test	x-webkit:///test		/test

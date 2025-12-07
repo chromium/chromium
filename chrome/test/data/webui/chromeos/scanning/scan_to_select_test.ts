@@ -7,7 +7,7 @@ import 'chrome://scanning/scan_to_select.js';
 
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {ScanToSelectElement} from 'chrome://scanning/scan_to_select.js';
+import type {ScanToSelectElement} from 'chrome://scanning/scan_to_select.js';
 import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
@@ -59,8 +59,8 @@ suite('scanToSelectTest', function() {
     assertTrue(!!select);
     assertFalse(select.disabled);
     assertEquals(2, select.length);
-    assertEquals(myFiles, getOption(0).textContent!.trim());
-    assertEquals(selectFolderText, getOption(1).textContent!.trim());
+    assertEquals(myFiles, getOption(0).textContent.trim());
+    assertEquals(selectFolderText, getOption(1).textContent.trim());
   });
 
   // Verifies the 'Scan To' dropdown updates when the user chooses a folder in
@@ -80,7 +80,7 @@ suite('scanToSelectTest', function() {
     assertEquals(myDownloads, scanToSelect.selectedFolder);
     assertEquals(myDownloadsPath, scanToSelect.selectedFilePath);
     assertEquals(
-        myDownloads, getOption(select.selectedIndex).textContent!.trim());
+        myDownloads, getOption(select.selectedIndex).textContent.trim());
     assertEquals(0, select.selectedIndex);
 
     scanningBrowserProxy.setSelectedPath(
@@ -89,7 +89,7 @@ suite('scanToSelectTest', function() {
     assertEquals(googleDrive, scanToSelect.selectedFolder);
     assertEquals(googleDrivePath, scanToSelect.selectedFilePath);
     assertEquals(
-        googleDrive, getOption(select.selectedIndex).textContent!.trim());
+        googleDrive, getOption(select.selectedIndex).textContent.trim());
     assertEquals(0, select.selectedIndex);
   });
 
@@ -108,7 +108,7 @@ suite('scanToSelectTest', function() {
     assertEquals(myDownloads, scanToSelect.selectedFolder);
     assertEquals(myDownloadsPath, scanToSelect.selectedFilePath);
     assertEquals(
-        myDownloads, getOption(select.selectedIndex).textContent!.trim());
+        myDownloads, getOption(select.selectedIndex).textContent.trim());
     assertEquals(0, select.selectedIndex);
 
     // Simulate canceling the select dialog
@@ -117,7 +117,7 @@ suite('scanToSelectTest', function() {
     assertEquals(myDownloads, scanToSelect.selectedFolder);
     assertEquals(myDownloadsPath, scanToSelect.selectedFilePath);
     assertEquals(
-        myDownloads, getOption(select.selectedIndex).textContent!.trim());
+        myDownloads, getOption(select.selectedIndex).textContent.trim());
     assertEquals(0, select.selectedIndex);
   });
 });

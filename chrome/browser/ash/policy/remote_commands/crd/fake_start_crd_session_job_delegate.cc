@@ -15,10 +15,9 @@ constexpr char FakeStartCrdSessionJobDelegate::kTestAccessCode[];
 FakeStartCrdSessionJobDelegate::FakeStartCrdSessionJobDelegate() = default;
 FakeStartCrdSessionJobDelegate::~FakeStartCrdSessionJobDelegate() = default;
 
-void FakeStartCrdSessionJobDelegate::TerminateCrdSession(
-    const base::TimeDelta& session_duration) {
+void FakeStartCrdSessionJobDelegate::TerminateCrdSession() {
   if (session_finished_callback_.has_value()) {
-    std::move(session_finished_callback_.value()).Run(session_duration);
+    std::move(session_finished_callback_.value()).Run();
   }
 }
 

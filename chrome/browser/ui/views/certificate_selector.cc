@@ -5,17 +5,20 @@
 #include "chrome/browser/ui/views/certificate_selector.h"
 
 #include <stddef.h>  // For size_t.
+
 #include <string>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/certificate_viewer.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/common/buildflags.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
@@ -25,20 +28,54 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/table_model.h"
 #include "ui/base/models/table_model_observer.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/certificate_provider/certificate_provider_service.h"
-#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_factory.h"
 #endif
 
-namespace chrome {
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#endif
+
+#if BUILDFLAG(ENABLE_GLIC)
+namespace {
+
+// Checks that `contents` is for glic.
+bool IsForGlic(content::WebContents* contents) {
+  content::WebContents* outer = contents->GetOutermostWebContents();
+  glic::GlicKeyedService* glic_service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+          outer->GetBrowserContext());
+  return glic_service && (glic_service->IsGlicWebUi(contents) ||
+                          glic_service->IsGlicWebUi(outer));
+}
+
+// Combines IsForGlic with glic dev switch.
+bool UseGlicDevFlow(content::WebContents* contents) {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+             ::switches::kGlicDev) &&
+         IsForGlic(contents);
+}
+
+}  // namespace
+#endif
 
 const int CertificateSelector::kTableViewWidth = 500;
 const int CertificateSelector::kTableViewHeight = 150;
@@ -78,8 +115,7 @@ CertificateSelector::CertificateTableModel::CertificateTableModel(
     row.issuer = base::UTF8ToUTF16(cert->issuer().GetDisplayName());
     row.provider = base::UTF8ToUTF16(provider_names[i]);
     if (cert->serial_number().size() < std::numeric_limits<size_t>::max() / 2) {
-      row.serial = base::UTF8ToUTF16(base::HexEncode(
-          cert->serial_number().data(), cert->serial_number().size()));
+      row.serial = base::UTF8ToUTF16(base::HexEncode(cert->serial_number()));
     }
     rows_.push_back(row);
   }
@@ -105,7 +141,7 @@ std::u16string CertificateSelector::CertificateTableModel::GetText(
     case IDS_CERT_SELECTOR_SERIAL_COLUMN:
       return row.serial;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -116,7 +152,7 @@ CertificateSelector::CertificateSelector(net::ClientCertIdentityList identities,
                                          content::WebContents* web_contents)
     : web_contents_(web_contents) {
   SetCanResize(true);
-  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetModalType(ui::mojom::ModalType::kChild);
   CHECK(web_contents_);
 
   view_cert_button_ = SetExtraView(std::make_unique<views::MdTextButton>(
@@ -130,7 +166,7 @@ CertificateSelector::CertificateSelector(net::ClientCertIdentityList identities,
   // |provider_names| and |identities_| are parallel arrays.
   // The entry at index |i| is the provider name for |identities_[i]|.
   std::vector<std::string> provider_names;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   chromeos::CertificateProviderService* service =
       chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
           web_contents->GetBrowserContext());
@@ -177,6 +213,12 @@ CertificateSelector::~CertificateSelector() {
 
 // static
 bool CertificateSelector::CanShow(content::WebContents* web_contents) {
+#if BUILDFLAG(ENABLE_GLIC)
+  if (UseGlicDevFlow(web_contents)) {
+    return true;
+  }
+#endif
+
   content::WebContents* top_level_web_contents =
       constrained_window::GetTopLevelWebContents(web_contents);
   return web_modal::WebContentsModalDialogManager::FromWebContents(
@@ -184,6 +226,27 @@ bool CertificateSelector::CanShow(content::WebContents* web_contents) {
 }
 
 void CertificateSelector::Show() {
+#if BUILDFLAG(ENABLE_GLIC)
+  // In the event that glic is showing and glic-dev is enabled, always show the
+  // certificate picker on the glic window. This is not fully correct, but
+  // satisfies the main dev use case with minimal overhead.
+  if (UseGlicDevFlow(web_contents_)) {
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+    Browser* browser = chrome::FindLastActiveWithProfile(profile);
+    if (browser) {
+      SetModalType(ui::mojom::ModalType::kWindow);
+      constrained_window::CreateBrowserModalDialogViews(
+          this, browser->GetBrowserView().GetNativeWindow())
+          ->Show();
+    } else {
+      LOG(ERROR) << "Dev error. Make sure there's a browser window of the "
+                    "matching profile open.";
+    }
+    return;
+  }
+#endif
+
   constrained_window::ShowWebModalDialogViews(this, web_contents_);
 
   // TODO(isandrk): A certificate that was previously provided by *both* the
@@ -215,16 +278,16 @@ void CertificateSelector::InitWithText(
   AddChildView(std::move(text_label));
 
   std::vector<ui::TableColumn> columns;
-  columns.push_back(ui::TableColumn(IDS_CERT_SELECTOR_SUBJECT_COLUMN,
-                                    ui::TableColumn::LEFT, -1, 0.4f));
-  columns.push_back(ui::TableColumn(IDS_CERT_SELECTOR_ISSUER_COLUMN,
-                                    ui::TableColumn::LEFT, -1, 0.2f));
+  columns.emplace_back(IDS_CERT_SELECTOR_SUBJECT_COLUMN, ui::TableColumn::LEFT,
+                       -1, 0.4f);
+  columns.emplace_back(IDS_CERT_SELECTOR_ISSUER_COLUMN, ui::TableColumn::LEFT,
+                       -1, 0.2f);
   if (show_provider_column_) {
-    columns.push_back(ui::TableColumn(IDS_CERT_SELECTOR_PROVIDER_COLUMN,
-                                      ui::TableColumn::LEFT, -1, 0.4f));
+    columns.emplace_back(IDS_CERT_SELECTOR_PROVIDER_COLUMN,
+                         ui::TableColumn::LEFT, -1, 0.4f);
   }
-  columns.push_back(ui::TableColumn(IDS_CERT_SELECTOR_SERIAL_COLUMN,
-                                    ui::TableColumn::LEFT, -1, 0.2f));
+  columns.emplace_back(IDS_CERT_SELECTOR_SERIAL_COLUMN, ui::TableColumn::LEFT,
+                       -1, 0.2f);
   for (auto& column : columns) {
     column.sortable = true;
   }
@@ -244,16 +307,18 @@ ui::TableModel* CertificateSelector::table_model_for_testing() const {
 
 net::ClientCertIdentity* CertificateSelector::GetSelectedCert() const {
   const std::optional<size_t> selected = table_->GetFirstSelectedRow();
-  if (!selected.has_value())
+  if (!selected.has_value()) {
     return nullptr;
+  }
   DCHECK_LT(selected.value(), identities_.size());
   return identities_[selected.value()].get();
 }
 
 bool CertificateSelector::Accept() {
   const std::optional<size_t> selected = table_->GetFirstSelectedRow();
-  if (!selected.has_value())
+  if (!selected.has_value()) {
     return false;
+  }
 
   DCHECK_LT(selected.value(), identities_.size());
   AcceptCertificate(std::move(identities_[selected.value()]));
@@ -264,8 +329,9 @@ std::u16string CertificateSelector::GetWindowTitle() const {
   return l10n_util::GetStringUTF16(IDS_CLIENT_CERT_DIALOG_TITLE);
 }
 
-bool CertificateSelector::IsDialogButtonEnabled(ui::DialogButton button) const {
-  return button != ui::DIALOG_BUTTON_OK || GetSelectedCert();
+bool CertificateSelector::IsDialogButtonEnabled(
+    ui::mojom::DialogButton button) const {
+  return button != ui::mojom::DialogButton::kOk || GetSelectedCert();
 }
 
 views::View* CertificateSelector::GetInitiallyFocusedView() {
@@ -275,8 +341,9 @@ views::View* CertificateSelector::GetInitiallyFocusedView() {
 
 void CertificateSelector::ViewCertButtonPressed() {
   net::ClientCertIdentity* const cert = GetSelectedCert();
-  if (!cert)
+  if (!cert) {
     return;
+  }
   ShowCertificateViewerForClientAuth(web_contents_,
                                      web_contents_->GetTopLevelNativeWindow(),
                                      cert->certificate());
@@ -287,11 +354,10 @@ void CertificateSelector::OnSelectionChanged() {
 }
 
 void CertificateSelector::OnDoubleClick() {
-  if (GetSelectedCert())
+  if (GetSelectedCert()) {
     AcceptDialog();
+  }
 }
 
 BEGIN_METADATA(CertificateSelector)
 END_METADATA
-
-}  // namespace chrome

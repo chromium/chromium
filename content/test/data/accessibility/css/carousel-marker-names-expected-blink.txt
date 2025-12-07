@@ -1,0 +1,21 @@
+rootWebArea focusable name='Done'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer focusable
+++++++++genericContainer name='one'
+++++++++++staticText name='One'
+++++++++++++inlineTextBox name='One'
+++++++++genericContainer name='two'
+++++++++++staticText name='Two'
+++++++++++++inlineTextBox name='Two'
+++++++++genericContainer name='scroll target name'
+++++++++++staticText name='Three'
+++++++++++++inlineTextBox name='Three'
+++++++++genericContainer
+++++++++++staticText name='Four'
+++++++++++++inlineTextBox name='Four'
+++++++navigation controlsIds=genericContainer
+++++++++link focusable name='alt text name' detailsIds=genericContainer
+++++++++link focusable name='<<content text name2' detailsIds=genericContainer
+++++++++link focusable name='scroll target name' detailsIds=genericContainer
+++++++++link focusable detailsIds=genericContainer

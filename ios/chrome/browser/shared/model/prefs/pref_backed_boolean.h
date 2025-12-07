@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import <string_view>
+
 #import "ios/chrome/browser/shared/model/utils/observable_boolean.h"
 
 class PrefService;
@@ -14,11 +16,12 @@ class PrefService;
 // An observable boolean backed by a pref from a PrefService.
 @interface PrefBackedBoolean : NSObject <ObservableBoolean>
 
+- (instancetype)init NS_UNAVAILABLE;
+
 // Returns a PrefBackedBoolean backed by `prefName` from `prefs`.
 - (instancetype)initWithPrefService:(PrefService*)prefs
-                           prefName:(const char*)prefName
+                           prefName:(std::string_view)prefName
     NS_DESIGNATED_INITIALIZER;
-- (instancetype)init NS_UNAVAILABLE;
 
 // Stop observing the pref. Can be called before -dealloc to ensure
 // that the pref is no longer observed, even if the object survives

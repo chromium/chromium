@@ -4,20 +4,146 @@
 
 module blink.mojom;
 
+import "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom";
 import "third_party/blink/public/mojom/on_device_translation/translator.mojom";
 
-// The manager for on-device translation.
+struct TranslatorLanguageCode {
+  // BCP 47 language code used for the Translator API.
+  // This code may be hardcoded in Chrome or passed from the JS API.
+  string code;
+};
+
+// TODO(crbug.com/421228289): Update naming of `CanCreateTranslatorResult` to
+// `TranslationAvailableResult`.
+//
+// The result of TranslationManager's TranslationAvailable IPC.
+enum CanCreateTranslatorResult {
+  // Both the library and the language pack are ready.
+  kReadily = 0,
+
+  // The language packs are ready, but the library needs to be downloaded.
+  kAfterDownloadLibraryNotReady = 1,
+
+  // The library is ready, but the language packs need to be downloaded.
+  kAfterDownloadLanguagePackNotReady = 2,
+
+  // Both the library and the language packs need to be downloaded.
+  kAfterDownloadLibraryAndLanguagePackNotReady = 3,
+
+  // The resources for translation are downloaded and a translator needs to be
+  // created for the translation to become readily available.
+  kAfterDownloadTranslatorCreationRequired = 4,
+
+  // The translator cannot be created because the transltion for the specified
+  // language pair is not supported.
+  kNoNotSupportedLanguage = 5,
+
+  // The translator cannot be created, because the translator service crashed.
+  kNoServiceCrashed = 6,
+
+  // The translator cannot be created, because the use of Translator API is
+  // disallowed by `TranslatorAPIAllowed` Enterprise policy
+  kNoDisallowedByPolicy = 7,
+
+  // The translator cannot be created, because the number of services exceeds
+  // the limitation.
+  kNoExceedsServiceCountLimitation = 8,
+
+  // The translator cannot be created, because the API was accessed from an
+  // invalid storage partition.
+  kNoInvalidStoragePartition = 9,
+};
+
+// The error of TranslationManager's CreateTranslator IPC.
+enum CreateTranslatorError {
+  // The translator cannot be created because the library binary failed to
+  // loaded.
+  kInvalidBinary = 1,
+
+  // The translator cannot be created because the function pointer of the
+  // library is invalid.
+  kInvalidFunctionPointer = 2,
+
+  // The translator cannot be created because the library failed to initialize.
+  kFailedToInitialize = 3,
+
+  // The translator cannot be created because the library failed to create the
+  // translator.
+  kFailedToCreateTranslator = 4,
+
+  // The translator cannot be created, because the translator service crashed.
+  kServiceCrashed = 5,
+
+  // The translator cannot be created, because the use of Translator API is
+  // disallowed by `TranslatorAPIAllowed` Enterprise policy
+  kDisallowedByPolicy = 6,
+
+  // The translator cannot be created, because the number of services exceeds
+  // the limitation.
+  kExceedsServiceCountLimitation = 7,
+
+  // The translator cannot be created, because the number of pending tasks
+  // exceeds the limitation.
+  kExceedsPendingTaskCountLimitation =  8,
+
+  // The translator cannot be created, because the library version is invalid.
+  kInvalidVersion = 9,
+
+  // The translator cannot be created, because the API was accessed from an invalid
+  // storage partition.
+  kInvalidStoragePartition = 10,
+};
+
+// The result of TranslationManager's CreateTranslator IPC.
+union CreateTranslatorResult {
+  // The translator's mojo interface.
+  pending_remote<blink.mojom.Translator> translator;
+  // The error of creating the translator.
+  CreateTranslatorError error;
+};
+
+// The client interface that receives a Translator from a TranslationManager.
+interface TranslationManagerCreateTranslatorClient {
+  // Called with a created Translator's mojo interface as a result for the
+  // CreateTranslator() method of the TranslationManager. When failed to create
+  // a Translator, this method is called with an error result.
+  OnResult(CreateTranslatorResult result,
+           TranslatorLanguageCode? source_lang,
+           TranslatorLanguageCode? target_lang);
+};
+
+// This is used when creating a new Translator for Translator API.
+// https://github.com/WICG/translation-api/
+// Both `source_lang` and `target_lang` are passed from JS via
+// `translation.createTranslator()` method. They will be used in the translation
+// service process to load appropriate language packages and create a
+// translator.
+struct TranslatorCreateOptions {
+  // This is `TranslatorCreateOptions` dictionary's `sourceLanguage` of
+  // Translator API.
+  TranslatorLanguageCode source_lang;
+  // This is `TranslatorCreateOptions` dictionary's `targetLanguage` of
+  // Translator API.
+  TranslatorLanguageCode target_lang;
+  // A remote to the `CreateMonitor` that we can report download progress
+  // events to.
+  pending_remote<ModelDownloadProgressObserver>? observer_remote;
+};
+
+// Interface to manage translation between languages on-device. Process called
+// from the renderer and used to implement the translation in the browser
+// process.
 interface TranslationManager {
-  // Returns if it is supported to create a translator that could translate
-  // texts from `source_lang` to `target_lang`.
-  CanCreateTranslator(
-    string source_lang, string target_lang
-  ) => (bool can_create);
   // Creates a translator that could translate texts from `source_lang`
-  // to `target_lang`. The translator will be bound to the `receiver`, and the
-  // result will be passed to the callback.
+  // to `target_lang` of the passed `options`. When the passed client is
+  // disconnected, the creation process will be aborted.
   CreateTranslator(
-    string source_lang, string target_lang,
-    pending_receiver<blink.mojom.Translator> receiver
-  ) => (bool success);
+      pending_remote<TranslationManagerCreateTranslatorClient> client,
+      TranslatorCreateOptions options,
+      bool add_fake_download_delay);
+
+  // Returns the availability of the language pair translation.
+  TranslationAvailable(
+      TranslatorLanguageCode source_lang, TranslatorLanguageCode target_lang)
+      => (CanCreateTranslatorResult result);
 };

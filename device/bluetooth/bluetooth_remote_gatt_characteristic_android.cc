@@ -13,17 +13,16 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "device/bluetooth/bluetooth_adapter_android.h"
 #include "device/bluetooth/bluetooth_remote_gatt_descriptor_android.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service_android.h"
-
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "device/bluetooth/jni_headers/ChromeBluetoothRemoteGattCharacteristic_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 namespace device {
@@ -152,7 +151,7 @@ void BluetoothRemoteGattCharacteristicAndroid::ReadRemoteCharacteristic(
 }
 
 void BluetoothRemoteGattCharacteristicAndroid::WriteRemoteCharacteristic(
-    const std::vector<uint8_t>& value,
+    base::span<const uint8_t> value,
     WriteType write_type,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
@@ -191,7 +190,7 @@ void BluetoothRemoteGattCharacteristicAndroid::WriteRemoteCharacteristic(
 }
 
 void BluetoothRemoteGattCharacteristicAndroid::
-    DeprecatedWriteRemoteCharacteristic(const std::vector<uint8_t>& value,
+    DeprecatedWriteRemoteCharacteristic(base::span<const uint8_t> value,
                                         base::OnceClosure callback,
                                         ErrorCallback error_callback) {
   if (read_pending_ || write_pending_) {
@@ -220,17 +219,15 @@ void BluetoothRemoteGattCharacteristicAndroid::
 
 void BluetoothRemoteGattCharacteristicAndroid::OnChanged(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller,
-    const JavaParamRef<jbyteArray>& value) {
+    const JavaRef<jbyteArray>& value) {
   base::android::JavaByteArrayToByteVector(env, value, &value_);
   adapter_->NotifyGattCharacteristicValueChanged(this, value_);
 }
 
 void BluetoothRemoteGattCharacteristicAndroid::OnRead(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller,
     int32_t status,
-    const JavaParamRef<jbyteArray>& value) {
+    const JavaRef<jbyteArray>& value) {
   read_pending_ = false;
 
   // Clear callbacks before calling to avoid reentrancy issues.
@@ -248,10 +245,8 @@ void BluetoothRemoteGattCharacteristicAndroid::OnRead(
   }
 }
 
-void BluetoothRemoteGattCharacteristicAndroid::OnWrite(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller,
-    int32_t status) {
+void BluetoothRemoteGattCharacteristicAndroid::OnWrite(JNIEnv* env,
+                                                       int32_t status) {
   write_pending_ = false;
 
   // Clear callbacks before calling to avoid reentrancy issues.
@@ -269,12 +264,11 @@ void BluetoothRemoteGattCharacteristicAndroid::OnWrite(
 
 void BluetoothRemoteGattCharacteristicAndroid::CreateGattRemoteDescriptor(
     JNIEnv* env,
-    const JavaParamRef<jobject>& caller,
-    const JavaParamRef<jstring>& instanceId,
-    const JavaParamRef<jobject>& /* BluetoothGattDescriptorWrapper */
-    bluetooth_gatt_descriptor_wrapper,
-    const JavaParamRef<jobject>& /* ChromeBluetoothDevice */
-    chrome_bluetooth_device) {
+    const JavaRef<jstring>& instanceId,
+    const JavaRef<jobject>& /* BluetoothGattDescriptorWrapper */
+        bluetooth_gatt_descriptor_wrapper,
+    const JavaRef<jobject>& /* ChromeBluetoothDevice */
+        chrome_bluetooth_device) {
   std::string instanceIdString = ConvertJavaStringToUTF8(env, instanceId);
 
   DCHECK(!base::Contains(descriptors_, instanceIdString));
@@ -343,3 +337,5 @@ void BluetoothRemoteGattCharacteristicAndroid::EnsureDescriptorsCreated()
 }
 
 }  // namespace device
+
+DEFINE_JNI(ChromeBluetoothRemoteGattCharacteristic)

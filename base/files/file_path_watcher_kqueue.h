@@ -44,8 +44,8 @@ class FilePathWatcherKQueue : public FilePathWatcher::PlatformDelegate {
   class EventData {
    public:
     EventData(const FilePath& path, const FilePath::StringType& subdir)
-        : path_(path), subdir_(subdir) { }
-    FilePath path_;  // Full path to this item.
+        : path_(path), subdir_(subdir) {}
+    FilePath path_;                // Full path to this item.
     FilePath::StringType subdir_;  // Path to any sub item.
   };
 

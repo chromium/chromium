@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -105,6 +106,9 @@ std::u16string GetBlockReasonMessage(FilesPolicyDialog::BlockReason reason,
                        ? IDS_POLICY_DLP_FILES_POLICY_BLOCK_SINGLE_FILE_MESSAGE
                        : IDS_POLICY_DLP_FILES_POLICY_BLOCK_MESSAGE;
       break;
+    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsScanFailed:
+      return l10n_util::GetPluralStringFUTF16(
+          IDS_DEEP_SCANNING_DIALOG_UPLOAD_FAIL_CLOSED_MESSAGE, file_count);
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsEncryptedFile:
       return l10n_util::GetPluralStringFUTF16(
           IDS_DEEP_SCANNING_DIALOG_ENCRYPTED_FILE_FAILURE_MESSAGE, file_count);
@@ -141,6 +145,9 @@ std::u16string GetBlockReasonMessage(FilesPolicyDialog::BlockReason reason,
     case FilesPolicyDialog::BlockReason::kDlp:
       message_id = IDS_POLICY_DLP_FILES_POLICY_BLOCK_MESSAGE;
       break;
+    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsScanFailed:
+      return l10n_util::GetPluralStringFUTF16(
+          IDS_DEEP_SCANNING_DIALOG_UPLOAD_FAIL_CLOSED_MESSAGE, /*number=*/1);
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsEncryptedFile:
       return l10n_util::GetPluralStringFUTF16(
           IDS_DEEP_SCANNING_DIALOG_ENCRYPTED_FILE_FAILURE_MESSAGE,

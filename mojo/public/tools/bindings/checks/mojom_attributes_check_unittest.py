@@ -42,7 +42,7 @@ class MojoBindingsCheckTest(MojomParserTestCase):
     mojoms = []
     self.WriteFile(filename, content)
     mojoms.append(filename)
-    with self.assertRaisesRegexp(check.CheckException, regexp):
+    with self.assertRaisesRegex(check.CheckException, regexp):
       self._ParseAndGenerate(mojoms)
 
   def testLoads(self):
@@ -68,8 +68,9 @@ class MojoBindingsCheckTest(MojomParserTestCase):
     # the attribute check's validation.
     self._testValid(
         "a.mojom", """
-      [JavaConstantsClassName="FakeClass",JavaPackage="org.chromium.Fake"]
-      module a;
+      [JavaConstantsClassName="FakeClass",JavaPackage="org.chromium.Fake",
+      IncludeSendValidation]
+      module mojo.test;
       [Stable, Extensible]
       enum Hello { [Default] kValue, kValue2, [MinVersion=2] kValue3 };
       [Native]
@@ -96,6 +97,21 @@ class MojoBindingsCheckTest(MojomParserTestCase):
       interface FooMethodFeatureControlled {
         [RuntimeFeature=test.mojom.FeatureName]
         MethodWithFeature() => (bool c);
+      };
+
+      interface FooMethodValidation {
+        [SendValidation=test.mojom.FeatureName]
+        MethodWithSendValidation(Thingy thing);
+      };
+
+      [DirectReceiver]
+      interface FooWithDirectReceiver {
+        Method();
+      };
+
+      [VendorSpecified="foo=bar"]
+      interface InterfaceWithVendorSpecifiedStringAttribute {
+        Method();
       };
     """)
 

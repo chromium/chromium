@@ -10,7 +10,6 @@
 
 #include <string>
 
-#include "build/chromeos_buildflags.h"
 
 namespace content {
 
@@ -30,8 +29,7 @@ TtsPlatform* TtsPlatform::GetInstance() {
   // trying to do TTS on a platform where the content client implementation
   // is not provided, that's probably not intended. It's not important
   // if this is hit in something like a content-only unit test.
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 #else
   return TtsPlatformImpl::GetInstance();
 #endif
@@ -58,9 +56,5 @@ void TtsPlatformImpl::SetError(const std::string& error) {
 void TtsPlatformImpl::Shutdown() {}
 
 void TtsPlatformImpl::FinalizeVoiceOrdering(std::vector<VoiceData>& voices) {}
-
-ExternalPlatformDelegate* TtsPlatformImpl::GetExternalPlatformDelegate() {
-  return nullptr;
-}
 
 }  // namespace content

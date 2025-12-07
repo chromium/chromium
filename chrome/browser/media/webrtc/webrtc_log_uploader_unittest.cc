@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "chrome/browser/media/webrtc/webrtc_log_uploader.h"
 
@@ -14,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -35,7 +32,7 @@ const char kTestLocalId[] = "local-id";
 
 class WebRtcLogUploaderTest : public testing::Test {
  public:
-  WebRtcLogUploaderTest() {}
+  WebRtcLogUploaderTest() = default;
 
   bool VerifyNumberOfLines(int expected_lines) {
     std::vector<std::string> lines = GetLinesFromListFile();
@@ -103,22 +100,22 @@ class WebRtcLogUploaderTest : public testing::Test {
       return false;
 
     for (int i = 0; i < number_of_lines; ++i) {
-      EXPECT_EQ(static_cast<int>(sizeof(kTestTime)) - 1,
-                test_list_file.WriteAtCurrentPos(kTestTime,
-                                                 sizeof(kTestTime) - 1));
-      EXPECT_EQ(1, test_list_file.WriteAtCurrentPos(",", 1));
-      EXPECT_EQ(static_cast<int>(sizeof(kTestReportId)) - 1,
-                test_list_file.WriteAtCurrentPos(kTestReportId,
-                                                 sizeof(kTestReportId) - 1));
-      EXPECT_EQ(1, test_list_file.WriteAtCurrentPos(",", 1));
-      EXPECT_EQ(static_cast<int>(sizeof(kTestLocalId)) - 1,
-                test_list_file.WriteAtCurrentPos(kTestLocalId,
-                                                 sizeof(kTestLocalId) - 1));
-      EXPECT_EQ(1, test_list_file.WriteAtCurrentPos(",", 1));
-      EXPECT_EQ(static_cast<int>(sizeof(kTestTime)) - 1,
-                test_list_file.WriteAtCurrentPos(kTestTime,
-                                                 sizeof(kTestTime) - 1));
-      EXPECT_EQ(1, test_list_file.WriteAtCurrentPos("\n", 1));
+      EXPECT_TRUE(test_list_file.WriteAtCurrentPosAndCheck(
+          base::byte_span_from_cstring(kTestTime)));
+      EXPECT_TRUE(test_list_file.WriteAtCurrentPosAndCheck(
+          base::byte_span_from_cstring(",")));
+      EXPECT_TRUE(test_list_file.WriteAtCurrentPosAndCheck(
+          base::byte_span_from_cstring(kTestReportId)));
+      EXPECT_TRUE(test_list_file.WriteAtCurrentPosAndCheck(
+          base::byte_span_from_cstring(",")));
+      EXPECT_TRUE(test_list_file.WriteAtCurrentPosAndCheck(
+          base::byte_span_from_cstring(kTestLocalId)));
+      EXPECT_TRUE(test_list_file.WriteAtCurrentPosAndCheck(
+          base::byte_span_from_cstring(",")));
+      EXPECT_TRUE(test_list_file.WriteAtCurrentPos(
+          base::byte_span_from_cstring(kTestTime)));
+      EXPECT_TRUE(test_list_file.WriteAtCurrentPosAndCheck(
+          base::byte_span_from_cstring("\n")));
     }
     return true;
   }
@@ -351,10 +348,8 @@ TEST_F(WebRtcLogUploaderTest, DisableUploadOfMultipartData) {
   const std::string incoming_dump_content = "dummy incoming";
   const std::string outgoing_dump_content = "dummy outgoing";
 
-  base::WriteFile(incoming_dump, &incoming_dump_content[0],
-                  incoming_dump_content.size());
-  base::WriteFile(outgoing_dump, &outgoing_dump_content[0],
-                  outgoing_dump_content.size());
+  base::WriteFile(incoming_dump, incoming_dump_content);
+  base::WriteFile(outgoing_dump, outgoing_dump_content);
 
   WebRtcLogUploader::UploadDoneData upload_done_data;
 

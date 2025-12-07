@@ -41,6 +41,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/system/wait.h"
+#include "net/base/net_errors.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -168,10 +169,9 @@ void FileReaderLoader::OnCalculatedSize(uint64_t total_size,
   if (IsSyncLoad()) {
     OnDataPipeReadable(MOJO_RESULT_OK);
   } else {
-    handle_watcher_.Watch(
-        consumer_handle_.get(), MOJO_HANDLE_SIGNAL_READABLE,
-        WTF::BindRepeating(&FileReaderLoader::OnDataPipeReadable,
-                           WrapWeakPersistent(this)));
+    handle_watcher_.Watch(consumer_handle_.get(), MOJO_HANDLE_SIGNAL_READABLE,
+                          BindRepeating(&FileReaderLoader::OnDataPipeReadable,
+                                        WrapWeakPersistent(this)));
   }
 }
 
@@ -197,7 +197,11 @@ void FileReaderLoader::OnComplete(int32_t status, uint64_t data_length) {
 
 void FileReaderLoader::OnDataPipeReadable(MojoResult result) {
   if (result != MOJO_RESULT_OK) {
-    if (!received_all_data_) {
+    if (!received_all_data_ && result != MOJO_RESULT_FAILED_PRECONDITION) {
+      // Whatever caused a `MOJO_RESULT_FAILED_PRECONDITION` will also prevent
+      // `BlobDataHandle` from writing to the pipe, so we expect a call to
+      // `OnComplete()` soon with a more specific error that we will then pass
+      // to the client.
       base::UmaHistogramExactLinear(
           "Storage.Blob.FileReaderLoader.DataPipeNotReadableMojoError", result,
           MOJO_RESULT_SHOULD_WAIT + 1);

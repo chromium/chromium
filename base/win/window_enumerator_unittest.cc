@@ -18,9 +18,9 @@ TEST(WindowEnumeratorTest, EnumerateTopLevelWindows) {
   EnumerateChildWindows(
       ::GetDesktopWindow(), base::BindLambdaForTesting([&](HWND hwnd) {
         const std::wstring window_class = GetWindowClass(hwnd);
-        EXPECT_EQ(window_class, [&]() {
+        EXPECT_EQ(window_class, [&] {
           constexpr int kMaxWindowClassNameLength = 256;
-          wchar_t buffer[kMaxWindowClassNameLength + 1] = {0};
+          wchar_t buffer[kMaxWindowClassNameLength + 1] = {};
           const int name_len = ::GetClassName(hwnd, buffer, std::size(buffer));
           if (name_len <= 0 || name_len > kMaxWindowClassNameLength) {
             return std::wstring();
@@ -37,7 +37,7 @@ TEST(WindowEnumeratorTest, EnumerateTopLevelWindows) {
                   window_class == L"Button" ||
                       window_class == L"Shell_TrayWnd" ||
                       window_class == L"Shell_SecondaryTrayWnd");
-        EXPECT_EQ(GetWindowTextString(hwnd), [&]() {
+        EXPECT_EQ(GetWindowTextString(hwnd), [&] {
           const int num_chars = ::GetWindowTextLength(hwnd);
           if (!num_chars) {
             return std::wstring();

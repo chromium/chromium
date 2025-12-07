@@ -15,24 +15,32 @@
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/permissions/permission_set.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::mojom::APIPermissionID;
 
 namespace extensions {
 namespace {
 constexpr char kExtensionId[] = "abcdefghijklmnopabcdefghijklmnop";
+
 constexpr char kExtensionSettingsWithUpdateUrlBlocking[] = R"({
   "update_url:https://clients2.google.com/service/update2/crx": {
     "installation_mode": "blocked"
@@ -53,16 +61,32 @@ constexpr char kExtensionSettingsWithIdBlocked[] = R"({
 
 }  // namespace
 
-class ExtensionInstallStatusTest : public BrowserWithTestWindowTest {
+class ExtensionInstallStatusTest : public testing::Test {
  public:
   ExtensionInstallStatusTest() = default;
 
   ExtensionInstallStatusTest(const ExtensionInstallStatusTest&) = delete;
   ExtensionInstallStatusTest& operator=(const ExtensionInstallStatusTest&) =
       delete;
+  ~ExtensionInstallStatusTest() override = default;
 
-  std::string GenerateArgs(const char* id) {
-    return base::StringPrintf(R"(["%s"])", id);
+  // testing::Test:
+  void SetUp() override {
+    // These tests rely on more elaborate Profile setup than a generic
+    // TestingProfile provides. Use TestingProfileManager to make the Profile.
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+    // `profile_manager_` owns the returned Profile.
+    profile_ = profile_manager_->CreateTestingProfile(
+        TestingProfile::kDefaultProfileUserName, /*prefs=*/nullptr,
+        /*user_name=*/std::u16string(),
+        /*avatar_id=*/0, /*testing_factories=*/{});
+  }
+
+  void TearDown() override {
+    profile_ = nullptr;
+    profile_manager_.reset();
   }
 
   scoped_refptr<const Extension> CreateExtension(const ExtensionId& id) {
@@ -70,8 +94,8 @@ class ExtensionInstallStatusTest : public BrowserWithTestWindowTest {
   }
 
   void SetExtensionSettings(const std::string& settings_string) {
-    std::optional<base::Value> settings =
-        base::JSONReader::Read(settings_string);
+    std::optional<base::Value> settings = base::JSONReader::Read(
+        settings_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(settings);
     SetPolicy(pref_names::kExtensionManagement,
               base::Value::ToUniquePtrValue(std::move(*settings)));
@@ -94,6 +118,13 @@ class ExtensionInstallStatusTest : public BrowserWithTestWindowTest {
     profile()->GetTestingPrefService()->SetDict(
         prefs::kCloudExtensionRequestIds, std::move(id_values));
   }
+
+  TestingProfile* profile() { return profile_; }
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
+  raw_ptr<TestingProfile> profile_ = nullptr;
 };
 
 TEST_F(ExtensionInstallStatusTest, ExtensionEnabled) {
@@ -105,13 +136,6 @@ TEST_F(ExtensionInstallStatusTest, ExtensionEnabled) {
 TEST_F(ExtensionInstallStatusTest, ExtensionDisabled) {
   ExtensionRegistry::Get(profile())->AddDisabled(CreateExtension(kExtensionId));
   EXPECT_EQ(ExtensionInstallStatus::kDisabled,
-            GetWebstoreExtensionInstallStatus(kExtensionId, profile()));
-}
-
-TEST_F(ExtensionInstallStatusTest, ExtensionInstalledButDisabledByPolicy) {
-  ExtensionRegistry::Get(profile())->AddDisabled(CreateExtension(kExtensionId));
-  SetExtensionSettings(kExtensionSettingsWithIdBlocked);
-  EXPECT_EQ(ExtensionInstallStatus::kBlockedByPolicy,
             GetWebstoreExtensionInstallStatus(kExtensionId, profile()));
 }
 
@@ -131,6 +155,13 @@ TEST_F(ExtensionInstallStatusTest, ExtensionBlocklisted) {
 
 TEST_F(ExtensionInstallStatusTest, ExtensionAllowed) {
   EXPECT_EQ(ExtensionInstallStatus::kInstallable,
+            GetWebstoreExtensionInstallStatus(kExtensionId, profile()));
+}
+
+TEST_F(ExtensionInstallStatusTest, ExtensionInstalledButDisabledByPolicy) {
+  ExtensionRegistry::Get(profile())->AddDisabled(CreateExtension(kExtensionId));
+  SetExtensionSettings(kExtensionSettingsWithIdBlocked);
+  EXPECT_EQ(ExtensionInstallStatus::kBlockedByPolicy,
             GetWebstoreExtensionInstallStatus(kExtensionId, profile()));
 }
 
@@ -202,7 +233,7 @@ TEST_F(ExtensionInstallStatusTest, ExtensionBlockByIdWithRequestEnabled) {
             GetWebstoreExtensionInstallStatus(kExtensionId, profile()));
 }
 
-TEST_F(ExtensionInstallStatusTest, PendingExtenisonIsWaitingToBeReviewed) {
+TEST_F(ExtensionInstallStatusTest, PendingExtensionIsWaitingToBeReviewed) {
   SetPolicy(prefs::kCloudExtensionRequestEnabled,
             std::make_unique<base::Value>(true));
   std::vector<ExtensionId> ids = {kExtensionId};
@@ -214,7 +245,7 @@ TEST_F(ExtensionInstallStatusTest, PendingExtenisonIsWaitingToBeReviewed) {
             GetWebstoreExtensionInstallStatus(kExtensionId, profile()));
 }
 
-TEST_F(ExtensionInstallStatusTest, PendingExtenisonIsApproved) {
+TEST_F(ExtensionInstallStatusTest, PendingExtensionIsApproved) {
   // Extension is approved but not installed, returns as INSTALLABLE.
   SetPolicy(prefs::kCloudExtensionRequestEnabled,
             std::make_unique<base::Value>(true));
@@ -228,7 +259,7 @@ TEST_F(ExtensionInstallStatusTest, PendingExtenisonIsApproved) {
             GetWebstoreExtensionInstallStatus(kExtensionId, profile()));
 }
 
-TEST_F(ExtensionInstallStatusTest, PendingExtenisonIsRejected) {
+TEST_F(ExtensionInstallStatusTest, PendingExtensionIsRejected) {
   // Extension is rejected, it should be moved from the pending list soon.
   SetPolicy(prefs::kCloudExtensionRequestEnabled,
             std::make_unique<base::Value>(true));
@@ -553,7 +584,32 @@ TEST_F(ExtensionInstallStatusTest, NonWebstoreUpdateUrlPolicy) {
                               URLPatternSet(), URLPatternSet())));
 }
 
-TEST_F(ExtensionInstallStatusTest, ManifestVersionIsBlocked) {
+// These tests have dependencies on ManifestV2ExperimentManager which is not
+// supported on Android (which only supports manifest V3).
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+class ExtensionInstallStatusTestWithoutMv2Deprecation
+    : public ExtensionInstallStatusTest {
+ public:
+  ExtensionInstallStatusTestWithoutMv2Deprecation() {
+    // This test assumes MV2 is not blocked by Chrome. Versions with MV2
+    // blocked by Chrome are exercised in
+    // `ExtensionInstallStatusTestWithMV2Deprecation`.
+    feature_list_.InitWithFeatures(
+        {}, {extensions_features::kExtensionManifestV2Disabled,
+             extensions_features::kExtensionManifestV2Unsupported});
+  }
+  ExtensionInstallStatusTestWithoutMv2Deprecation(
+      const ExtensionInstallStatusTestWithoutMv2Deprecation&) = delete;
+  ExtensionInstallStatusTestWithoutMv2Deprecation& operator=(
+      const ExtensionInstallStatusTestWithoutMv2Deprecation&) = delete;
+  ~ExtensionInstallStatusTestWithoutMv2Deprecation() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(ExtensionInstallStatusTestWithoutMv2Deprecation,
+       ManifestVersionIsBlocked) {
   EXPECT_EQ(ExtensionInstallStatus::kInstallable,
             GetWebstoreExtensionInstallStatus(
                 kExtensionId, profile(), Manifest::Type::TYPE_EXTENSION,
@@ -575,7 +631,7 @@ TEST_F(ExtensionInstallStatusTest, ManifestVersionIsBlocked) {
                 PermissionSet(), /*manifest_version=*/3));
 }
 
-TEST_F(ExtensionInstallStatusTest,
+TEST_F(ExtensionInstallStatusTestWithoutMv2Deprecation,
        ManifestVersionIsBlockedWithExtensionRequest) {
   SetPolicy(prefs::kCloudExtensionRequestEnabled,
             std::make_unique<base::Value>(true));
@@ -599,28 +655,20 @@ TEST_F(ExtensionInstallStatusTest,
                 kExtensionId, profile(), Manifest::Type::TYPE_EXTENSION,
                 PermissionSet(), /*manifest_version=*/3));
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+// If an existing, installed extension is disabled due to corruption, then
+// GetWebstoreExtensionInstallStatus() should return kCorrupted.
+TEST_F(ExtensionInstallStatusTest, ExtensionCorrupted) {
+  ExtensionRegistry::Get(profile())->AddDisabled(CreateExtension(kExtensionId));
+  ExtensionPrefs::Get(profile())->AddDisableReason(
+      kExtensionId, extensions::disable_reason::DISABLE_CORRUPTED);
+  EXPECT_EQ(ExtensionInstallStatus::kCorrupted,
+            GetWebstoreExtensionInstallStatus(kExtensionId, profile()));
+}
 
 class SupervisedUserExtensionInstallStatusTest
-    : public ExtensionInstallStatusTest {
- public:
-  SupervisedUserExtensionInstallStatusTest() {
-    std::vector<base::test::FeatureRef> enabled_features;
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-    enabled_features.push_back(
-        supervised_user::
-            kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-    enabled_features.push_back(
-        supervised_user::
-            kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
-    enabled_features.push_back(
-        supervised_user::kExposedParentalControlNeededForExtensionInstallation);
-    feature_list_.InitWithFeatures(enabled_features, /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
+    : public ExtensionInstallStatusTest {};
 
 // If a supervised user requires parent approval to install a new extension that
 // has not received parental approval before, then
@@ -673,14 +721,24 @@ TEST_F(
             GetWebstoreExtensionInstallStatus(kExtensionId, profile()));
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // A test suite to toggle the behavior of the MV2 deprecation experiment.
 class ExtensionInstallStatusTestWithMV2Deprecation
     : public ExtensionInstallStatusTest,
       public testing::WithParamInterface<bool> {
  public:
   ExtensionInstallStatusTestWithMV2Deprecation() {
-    feature_list_.InitWithFeatureState(
-        extensions_features::kExtensionManifestV2Disabled, GetParam());
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features(
+        {extensions_features::kExtensionManifestV2Unsupported});
+    if (GetParam()) {
+      enabled_features.push_back(
+          extensions_features::kExtensionManifestV2Disabled);
+    } else {
+      disabled_features.push_back(
+          extensions_features::kExtensionManifestV2Disabled);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
   ~ExtensionInstallStatusTestWithMV2Deprecation() override = default;
 
@@ -768,5 +826,6 @@ TEST_P(ExtensionInstallStatusTestWithMV2DeprecationEnabled,
                 kExtensionId, profile(), Manifest::Type::TYPE_EXTENSION,
                 PermissionSet(), /*manifest_version=*/2));
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace extensions

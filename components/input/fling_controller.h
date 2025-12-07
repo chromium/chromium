@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_INPUT_FLING_CONTROLLER_H_
 #define COMPONENTS_INPUT_FLING_CONTROLLER_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -27,7 +29,7 @@ inline constexpr float kDefaultPixelsPerInch = 96.0f;
 // events.
 class COMPONENT_EXPORT(INPUT) FlingControllerEventSenderClient {
  public:
-  virtual ~FlingControllerEventSenderClient() {}
+  virtual ~FlingControllerEventSenderClient() = default;
 
   virtual void SendGeneratedWheelEvent(
       const MouseWheelEventWithLatencyInfo& wheel_event) = 0;
@@ -42,7 +44,7 @@ class COMPONENT_EXPORT(INPUT) FlingControllerEventSenderClient {
 // Interface with which the fling progress gets scheduled.
 class COMPONENT_EXPORT(INPUT) FlingControllerSchedulerClient {
  public:
-  virtual ~FlingControllerSchedulerClient() {}
+  virtual ~FlingControllerSchedulerClient() = default;
 
   virtual void ScheduleFlingProgress(
       base::WeakPtr<FlingController> fling_controller) = 0;
@@ -50,7 +52,7 @@ class COMPONENT_EXPORT(INPUT) FlingControllerSchedulerClient {
   virtual void DidStopFlingingOnBrowser(
       base::WeakPtr<FlingController> fling_controller) = 0;
 
-  virtual bool NeedsBeginFrameForFlingProgress() = 0;
+  virtual bool ProgressFlingOnFlingStart() = 0;
 
   virtual bool ShouldUseMobileFlingCurve() = 0;
 
@@ -91,7 +93,9 @@ class COMPONENT_EXPORT(INPUT) FlingController {
   ~FlingController();
 
   // Used to progress an active fling on every begin frame.
-  void ProgressFling(base::TimeTicks current_time);
+  void ProgressFling(base::TimeTicks current_time,
+                     std::optional<base::TimeTicks>
+                         first_coalesced_frame_begin_time = std::nullopt);
 
   // Used to halt an active fling progress whenever needed.
   void StopFling();

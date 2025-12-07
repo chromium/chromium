@@ -1,0 +1,53 @@
+/*
+ * Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ *
+ * Copy of transition.css with modifications for ScopedViewTransitions.
+ * TODO(crbug.com/394052227): Replace transition.css with this file after
+ * ScopedViewTransitions has launched.
+ */
+
+@namespace "http://www.w3.org/1999/xhtml";
+
+::view-transition {
+  position: absolute;
+  inset: 0;
+}
+
+::view-transition-group(*) {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+::view-transition-image-pair(*),
+::view-transition-group-children(*) {
+  position: absolute;
+  inset: 0;
+
+  animation-delay: inherit;
+  animation-timing-function: inherit;
+  animation-iteration-count: inherit;
+  animation-direction: inherit;
+  animation-play-state: inherit;
+}
+
+::view-transition-group-children(*) {
+  border-style: solid;
+  border-color: transparent;
+}
+
+::view-transition-new(*),
+::view-transition-old(*) {
+  position: absolute;
+  inset-block-start: 0;
+  inline-size: 100%;
+  block-size: auto;
+
+  animation-delay: inherit;
+  animation-timing-function: inherit;
+  animation-iteration-count: inherit;
+  animation-direction: inherit;
+  animation-play-state: inherit;
+}

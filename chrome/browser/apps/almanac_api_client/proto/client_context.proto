@@ -123,6 +123,9 @@ message ClientUserContext {
 
   // The type of user account making this request.
   optional UserType user_type = 2;
+
+  // Flags to enable optional/experimental features in the Almanac server.
+  repeated int32 flag_ids = 3;
 }
 
 // Wrapper message for ClientDeviceContext and ClientUserContext.

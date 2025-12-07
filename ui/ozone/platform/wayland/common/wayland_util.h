@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_COMMON_WAYLAND_UTIL_H_
 #define UI_OZONE_PLATFORM_WAYLAND_COMMON_WAYLAND_UTIL_H_
 
+#include <variant>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -12,12 +13,10 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/events/platform_event.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/platform_window/platform_window_init_properties.h"
@@ -117,11 +116,6 @@ void SkColorToWlArray(const SkColor& color, wl_array& array);
 // Converts SkColor4f into wl_array.
 void SkColorToWlArray(const SkColor4f& color, wl_array& array);
 
-// Converts Transform into wl_array.
-void TransformToWlArray(
-    const absl::variant<gfx::OverlayTransform, gfx::Transform>& transform,
-    wl_array& array);
-
 // Converts `milliseconds`, which is server dependent, to base::TimeTicks.
 base::TimeTicks EventMillisecondsToTimeTicks(uint32_t milliseconds);
 
@@ -137,6 +131,10 @@ float ClampScale(float scale);
 bool MaybeHandlePlatformEventForDrag(const ui::PlatformEvent& event,
                                      bool start_drag_ack_received,
                                      base::OnceClosure cancel_drag_cb);
+bool EventShouldCancelDrag(const ui::PlatformEvent& event);
+
+// Logs connection state to UMA.
+void RecordConnectionMetrics(wl_display* display);
 
 }  // namespace wl
 

@@ -8,8 +8,6 @@ import argparse
 import unittest
 import unittest.mock as mock
 
-from io import StringIO
-
 import publish_package
 
 _PACKAGES = ['test_package']
@@ -24,10 +22,21 @@ class PublishPackageTest(unittest.TestCase):
         self._ffx_mock = self._ffx_patcher.start()
         self.addCleanup(self._ffx_mock.stop)
 
+
     def test_new_repo(self) -> None:
         """Test setting |new_repo| to True in |publish_packages|."""
 
-        publish_package.publish_packages(_PACKAGES, _REPO, True)
+        publish_package.ensure_repository(
+            argparse.Namespace(**{
+                'repo': _REPO,
+                'no_repo_init': False,
+            }))
+        publish_package.publish_packages(
+            _PACKAGES,
+            argparse.Namespace(**{
+                'repo': _REPO,
+                'no_repo_init': False,
+            }))
         self.assertEqual(self._ffx_mock.call_count, 2)
         first_call, second_call = self._ffx_mock.call_args_list
         self.assertEqual(['repository', 'create', _REPO],
@@ -36,82 +45,59 @@ class PublishPackageTest(unittest.TestCase):
             'repository', 'publish', '--package-archive', _PACKAGES[0], _REPO
         ], second_call.kwargs['cmd'])
 
-    def test_no_new_repo(self) -> None:
+    @mock.patch('os.path.exists', return_value=False)
+    def test_new_repo_if_not_existing(self, *_) -> None:
+        """Always initialize the repo if it's not existing."""
+
+        publish_package.ensure_repository(
+            argparse.Namespace(**{
+                'repo': _REPO,
+                'no_repo_init': False,
+            }))
+        self.assertEqual(self._ffx_mock.call_count, 1)
+        first_call = self._ffx_mock.call_args
+        self.assertEqual(['repository', 'create', _REPO],
+                         first_call.kwargs['cmd'])
+
+    @mock.patch('os.path.exists', return_value=True)
+    @mock.patch('os.path.isdir', return_value=True)
+    def test_no_new_repo(self, *_) -> None:
         """Test setting |new_repo| to False in |publish_packages|."""
 
-        publish_package.publish_packages(['test_package'], 'test_repo', False)
+        publish_package.ensure_repository(
+            argparse.Namespace(**{
+                'repo': _REPO,
+                'no_repo_init': True,
+            }))
+        publish_package.publish_packages(
+            _PACKAGES,
+            argparse.Namespace(**{
+                'repo': _REPO,
+                'no_repo_init': True,
+            }))
         self.assertEqual(self._ffx_mock.call_count, 1)
+
+
+    @mock.patch('os.path.exists', return_value=True)
+    @mock.patch('os.path.isdir', return_value=False)
+    def test_not_a_dir(self, *_) -> None:
+        """Test using a non-directory for repo."""
+
+        with self.assertRaises(AssertionError):
+            publish_package.ensure_repository(
+                argparse.Namespace(**{
+                    'repo': _REPO,
+                    'no_repo_init': True,
+                }))
 
 
     def test_allow_temp_repo(self) -> None:
         """Test setting |allow_temp_repo| to True in |register_package_args|."""
 
         parser = argparse.ArgumentParser()
-        publish_package.register_package_args(parser, True)
+        publish_package.register_package_args(parser)
         args = parser.parse_args(['--no-repo-init'])
         self.assertEqual(args.no_repo_init, True)
-
-    @mock.patch('sys.stderr', new_callable=StringIO)
-    def test_not_allow_temp_repo(self, mock_stderr) -> None:
-        """Test setting |allow_temp_repo| to False in
-        |register_package_args|."""
-
-        parser = argparse.ArgumentParser()
-        publish_package.register_package_args(parser)
-        with self.assertRaises(SystemExit):
-            parser.parse_args(['--no-repo-init'])
-        self.assertRegex(mock_stderr.getvalue(), 'unrecognized arguments')
-
-    def test_main_no_repo_flag(self) -> None:
-        """Tests that not specifying packages raise a ValueError."""
-
-        with mock.patch('sys.argv', ['publish_package.py', '--repo', _REPO]):
-            with self.assertRaises(ValueError):
-                publish_package.main()
-
-    def test_main_no_packages_flag(self) -> None:
-        """Tests that not specifying directory raise a ValueError."""
-
-        with mock.patch('sys.argv',
-                        ['publish_package.py', '--packages', _PACKAGES[0]]):
-            with self.assertRaises(ValueError):
-                publish_package.main()
-
-    def test_main_no_out_dir_flag(self) -> None:
-        """Tests |main| with `out_dir` omitted."""
-
-        with mock.patch('sys.argv', [
-                'publish_package.py', '--packages', _PACKAGES[0], '--repo',
-                _REPO
-        ]):
-            publish_package.main()
-            self.assertEqual(self._ffx_mock.call_count, 1)
-
-    @mock.patch('publish_package.read_package_paths')
-    def test_main(self, read_mock) -> None:
-        """Tests |main|."""
-
-        read_mock.return_value = ['out/test/package/path']
-        with mock.patch('sys.argv', [
-                'publish_package.py', '--packages', _PACKAGES[0], '--repo',
-                _REPO, '--out-dir', 'out/test'
-        ]):
-            publish_package.main()
-            self.assertEqual(self._ffx_mock.call_count, 1)
-
-    @mock.patch('publish_package.read_package_paths')
-    @mock.patch('publish_package.make_clean_directory')
-    def test_purge_repo(self, read_mock, make_clean_directory_mock) -> None:
-        """Tests purge_repo flag."""
-
-        read_mock.return_value = ['out/test/package/path']
-        with mock.patch('sys.argv', [
-                'publish_package.py', '--packages', _PACKAGES[0], '--repo',
-                _REPO, '--out-dir', 'out/test', '--purge-repo'
-        ]):
-            publish_package.main()
-            self.assertEqual(self._ffx_mock.call_count, 2)
-            self.assertEqual(make_clean_directory_mock.call_count, 1)
 
 
 if __name__ == '__main__':

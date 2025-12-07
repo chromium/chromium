@@ -52,7 +52,6 @@ class CORE_EXPORT FilterOperations {
   FilterOperations& operator=(FilterOperations&&) = default;
 
   bool operator==(const FilterOperations&) const;
-  bool operator!=(const FilterOperations& o) const { return !(*this == o); }
 
   void clear() { operations_.clear(); }
 

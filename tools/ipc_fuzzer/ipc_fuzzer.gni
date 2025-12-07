@@ -8,9 +8,8 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
 
 declare_args() {
-  # Build IPC fuzzer by default if it's a supported configuration. For
-  # sanitizer builds, this needs to be enabled explicitly as they can be slow
-  # (especially MSan).
+  # Legacy: Build IPC fuzzer by default if it's a supported configuration.
+  # Currently only controls whether a mojo JS dump is produced.
   enable_ipc_fuzzer = is_clang && !is_component_build && !is_official_build &&
                       !using_sanitizer &&
                       ((is_linux && !is_castos) || is_chromeos || is_mac ||

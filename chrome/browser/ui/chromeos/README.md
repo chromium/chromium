@@ -1,6 +1,5 @@
-This holder contains code that is used for both Lacros and Ash UI but not on
-other platforms. This should only include the common interface or
-implementation between Lacros and Ash. Platform-specific implementation should
-live in chrome/browser/ui/lacros for Lacros and chrome/browser/ui/ash for Ash.
+# chrome/browser/ui/chromeos
 
-Non-UI code belongs in chrome/browser/chromeos.
+Ths directory contains code that is used to implement UI aspects of browser
+functionality on ChromeOS. UI code for ChromeOS non-browser functionality (e.g.
+shelf) belongs in chrome/browser/ui/ash instead.

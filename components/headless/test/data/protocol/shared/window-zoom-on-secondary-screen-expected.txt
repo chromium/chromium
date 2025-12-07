@@ -1,0 +1,3 @@
+Tests window zoom on a secondary screen.
+1600,0 1200x1600 maximized
+1600,0 1200x1600 fullscreen

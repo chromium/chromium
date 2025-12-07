@@ -18,7 +18,7 @@ class BluetoothServiceDataMap final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  using MapType = HashMap<String, WTF::Vector<uint8_t>>;
+  using MapType = HashMap<String, Vector<uint8_t>>;
 
   explicit BluetoothServiceDataMap(const MapType&);
 
@@ -31,11 +31,10 @@ class BluetoothServiceDataMap final : public ScriptWrappable,
 
  private:
   PairSyncIterable<BluetoothServiceDataMap>::IterationSource*
-  CreateIterationSource(ScriptState*, ExceptionState&) override;
+  CreateIterationSource(ScriptState*) override;
   bool GetMapEntry(ScriptState*,
                    const String& key,
-                   NotShared<DOMDataView>& value,
-                   ExceptionState&) override;
+                   NotShared<DOMDataView>& value) override;
 
   const MapType parameter_map_;
 };

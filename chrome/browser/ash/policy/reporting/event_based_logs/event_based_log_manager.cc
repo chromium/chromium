@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/ash/policy/reporting/event_based_logs/event_observer_base.h"
+#include "chrome/browser/ash/policy/reporting/event_based_logs/event_observers/fatal_crash_event_log_observer.h"
 #include "chrome/browser/ash/policy/reporting/event_based_logs/event_observers/os_update_event_observer.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
@@ -22,7 +23,7 @@ namespace {
 // list of available enum values.
 constexpr ash::reporting::TriggerEventType kAllTriggerEventTypes[] = {
     ash::reporting::TRIGGER_EVENT_TYPE_UNSPECIFIED,
-    ash::reporting::OS_UPDATE_FAILED};
+    ash::reporting::OS_UPDATE_FAILED, ash::reporting::FATAL_CRASH};
 
 }  // namespace
 
@@ -78,10 +79,14 @@ void EventBasedLogManager::MaybeAddAllEventObservers() {
         event_observers_.emplace(event_type,
                                  std::make_unique<OsUpdateEventObserver>());
         break;
+      case ash::reporting::TriggerEventType::FATAL_CRASH:
+        event_observers_.emplace(
+            event_type, std::make_unique<FatalCrashEventLogObserver>());
+        break;
       case ash::reporting::TRIGGER_EVENT_TYPE_UNSPECIFIED:
         continue;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 }

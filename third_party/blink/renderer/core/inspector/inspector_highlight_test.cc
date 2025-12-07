@@ -55,7 +55,7 @@ void InspectorHighlightTest::SetUp() {
 }
 
 TEST_F(InspectorHighlightTest, BuildSnapContainerInfoNoSnapAreas) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id="target">test</div>
   )HTML");
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
@@ -64,7 +64,7 @@ TEST_F(InspectorHighlightTest, BuildSnapContainerInfoNoSnapAreas) {
 }
 
 TEST_F(InspectorHighlightTest, BuildSnapContainerInfoSnapAreas) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       #snap {
         background-color: white;
@@ -115,7 +115,7 @@ TEST_F(InspectorHighlightTest, BuildSnapContainerInfoSnapAreas) {
 }
 
 TEST_F(InspectorHighlightTest, BuildSnapContainerInfoTopLevelSnapAreas) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       :root {
         scroll-snap-type: y mandatory;
@@ -159,7 +159,7 @@ TEST_F(InspectorHighlightTest, BuildSnapContainerInfoTopLevelSnapAreas) {
 
 TEST_F(InspectorHighlightTest,
        BuildContainerQueryContainerInfoWithoutDescendants) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       #container {
         width: 400px;
@@ -189,7 +189,7 @@ TEST_F(InspectorHighlightTest,
 
 TEST_F(InspectorHighlightTest,
        BuildContainerQueryContainerInfoWithDescendants) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       #container {
         width: 400px;
@@ -238,7 +238,7 @@ TEST_F(InspectorHighlightTest,
 }
 
 TEST_F(InspectorHighlightTest, BuildIsolatedElementInfo) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       #element {
         width: 400px;
@@ -304,7 +304,7 @@ static std::string GetBackgroundColorFromElementInfo(Element* element) {
 }
 
 TEST_F(InspectorHighlightTest, BuildElementInfo_Colors) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
       div {
         width: 400px;
@@ -354,7 +354,7 @@ TEST_F(InspectorHighlightTest, BuildElementInfo_Colors) {
 }
 
 TEST_F(InspectorHighlightTest, GridLineNames) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
     #grid {
       display: grid;
@@ -396,7 +396,7 @@ TEST_F(InspectorHighlightTest, GridLineNames) {
       protocol::DictionaryValue* current_value =
           static_cast<protocol::DictionaryValue*>(row_or_column_list->at(i));
 
-      WTF::String string_value;
+      String string_value;
       EXPECT_TRUE(current_value->getString("name", &string_value));
       ret.push_back(string_value);
     }
@@ -410,7 +410,7 @@ TEST_F(InspectorHighlightTest, GridLineNames) {
 }
 
 TEST_F(InspectorHighlightTest, GridAreaNames) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
     #grid {
       display: grid;
@@ -450,8 +450,8 @@ TEST_F(InspectorHighlightTest, GridAreaNames) {
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
   auto CompareAreaNames = [](protocol::DictionaryValue* area_names,
-                             WTF::Vector<WTF::String>& expected_names) -> void {
-    for (WTF::String& name : expected_names) {
+                             Vector<String>& expected_names) -> void {
+    for (String& name : expected_names) {
       EXPECT_TRUE(area_names->get(name));
     }
   };
@@ -465,7 +465,7 @@ TEST_F(InspectorHighlightTest, GridAreaNames) {
       grid_info->getObject("areaNames");
   EXPECT_EQ(grid_area_names->size(), 3u);
 
-  WTF::Vector<WTF::String> expected_grid_area_names = {"a", "b", "c"};
+  Vector<String> expected_grid_area_names = {"a", "b", "c"};
   CompareAreaNames(grid_area_names, expected_grid_area_names);
 
   Node* subgrid = GetDocument().getElementById(AtomicString("subgrid"));
@@ -478,8 +478,7 @@ TEST_F(InspectorHighlightTest, GridAreaNames) {
       subgrid_info->getObject("areaNames");
   EXPECT_EQ(subgrid_area_names->size(), 6u);
 
-  WTF::Vector<WTF::String> expected_subgrid_area_names = {"a", "b", "c",
-                                                          "d", "e", "f"};
+  Vector<String> expected_subgrid_area_names = {"a", "b", "c", "d", "e", "f"};
   CompareAreaNames(subgrid_area_names, expected_subgrid_area_names);
 }
 

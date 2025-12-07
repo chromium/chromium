@@ -11,6 +11,7 @@ import "mojo/public/mojom/base/read_only_buffer.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/cert_verifier_service.mojom";
 import "services/network/public/mojom/cert_verifier_service_updater.mojom";
+import "services/network/public/mojom/ct_policy.mojom";
 import "services/network/public/mojom/network_param.mojom";
 
 [EnableIf=is_ct_supported]
@@ -19,24 +20,20 @@ import "services/network/public/mojom/ct_log_info.mojom";
 // Parameters to specify how the net::CertVerifier and net::CertVerifyProc
 // objects should be instantiated.
 struct CertVerifierCreationParams {
-  // Specifies the path to the directory where NSS will store its database.
-  // Example: /home/chronos/u-<hash>
-  [EnableIf=is_chromeos_ash]
-  mojo_base.mojom.FilePath? nss_path;
-
-  // Specifies the path to the software NSS database.
-  // Example: /home/chronos/u-<hash>/.pki/nssdb
-  [EnableIf=is_chromeos_lacros]
-  mojo_base.mojom.FilePath? nss_full_path;
-
-  // This is used in combination with nss_path, to ensure that the NSS database
-  // isn't opened multiple times for NetworkContexts in the same profie.
-  [EnableIf=is_chromeos_ash]
-  string username_hash;
-
   // Initial additional certificates that will be used for certificate
   // validation.
   AdditionalCertificates? initial_additional_certificates;
+
+  // If true, verifier should wait for a call to
+  // CertVeriferServiceUpdater.UpdateAdditionalCertificates
+  // before processing any verifications.
+  // TODO(crbug.com/370696616): Also see if verifications can be blocked until
+  // PKIMetadata component updates are finished.
+  bool wait_for_update = false;
+
+  // Initial certificate transparency policies.
+  [EnableIf=is_ct_supported]
+  network.mojom.CTPolicy? ct_policy;
 };
 
 // Information about a certificate in the Chrome Root Store
@@ -50,19 +47,24 @@ struct ChromeRootCertInfo {
 struct ChromeRootStoreInfo {
   int64 version;
   array<ChromeRootCertInfo> root_cert_info;
+  // TODO(crbug.com/462227032): include MTC anchor info here, and show it in
+  // the certificate manager UI.
 };
 
+[EnableIf=is_platform_root_store_info_supported]
 enum CertificateTrust {
   kUnspecified,
   kDistrusted,
   kTrusted,
 };
 
+[EnableIf=is_platform_root_store_info_supported]
 struct PlatformCertInfo {
   array<uint8> cert;
   CertificateTrust trust_setting;
 };
 
+[EnableIf=is_platform_root_store_info_supported]
 struct PlatformRootStoreInfo {
   array<PlatformCertInfo> user_added_certs;
 };
@@ -93,11 +95,22 @@ interface CertVerifierServiceFactory {
   UpdateCtLogList(array<network.mojom.CTLogInfo> log_list,
                   mojo_base.mojom.Time update_time) => ();
 
+  // Disables CT Enforcement until the next UpdateCtLogList call.
+  [EnableIf=is_ct_supported]
+  DisableCtEnforcement() => ();
+
   // Updates the ChromeRootStore used by the CertVerifierServiceFactory with a
   // new version. The callback will be run once the update has been processed
   // (regardless if it was updated successfully or the update was ignored.)
   [EnableIf=is_chrome_root_store_supported]
   UpdateChromeRootStore(mojo_base.mojom.ProtoWrapper new_root_store) => ();
+
+  // Updates the Merkle Tree Certificate metadata used by the
+  // CertVerifierServiceFactory with a new version. The callback will be run
+  // once the update has been processed (regardless if it was updated
+  // successfully or the update was ignored.)
+  [EnableIf=is_chrome_root_store_supported]
+  UpdateMtcMetadata(mojo_base.mojom.ProtoWrapper new_mtc_metadata) => ();
 
   // Sets whether verification should use the Chrome Root Store or not. All
   // CertVerifierServices created by the CertVerifierServiceFactory, including
@@ -110,6 +123,15 @@ interface CertVerifierServiceFactory {
   GetChromeRootStoreInfo() => (ChromeRootStoreInfo root_store_info);
 
   // Returns information about the current Platform Root Store.
-  [EnableIf=is_chrome_root_store_supported]
+  [EnableIf=is_platform_root_store_info_supported]
   GetPlatformRootStoreInfo() => (PlatformRootStoreInfo root_store_info);
+
+  // Updates the time used for certificate verification. After this is called,
+  // the system time will be recorded along with a known time passed in as
+  // `current_time`. Future verification attempts will estimate the real time
+  // based on how much the system clock has advanced since the last update.
+  // This only has an effect when the built-in verifier is being used.
+  UpdateNetworkTime(mojo_base.mojom.Time system_time,
+                    mojo_base.mojom.TimeTicks system_ticks,
+                    mojo_base.mojom.Time current_time);
 };

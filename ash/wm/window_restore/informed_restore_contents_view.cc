@@ -23,8 +23,10 @@
 #include "ash/wm/window_restore/informed_restore_items_container_view.h"
 #include "ash/wm/window_restore/informed_restore_screenshot_icon_row_view.h"
 #include "ash/wm/window_restore/window_restore_metrics.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/display_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
@@ -43,6 +45,7 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/wm/core/window_animations.h"
@@ -68,6 +71,9 @@ constexpr gfx::Insets kContextMenuLabelInsets = gfx::Insets::VH(0, 16);
 // Width of the actions container, which includes multiple buttons that users
 // can take actions to change their settings.
 constexpr int kActionsContainerWidth = 300;
+constexpr int kActionsContainerWidthSmallScreen = 200;
+constexpr int kSmallScreenThreshold = 800;
+
 // Height of the container that holds the items view.
 constexpr int kItemsViewContainerHeight = 240;
 // Minimum height of the container that holds the screenshot.
@@ -79,7 +85,7 @@ constexpr int kScreenshotMinHeight = 88;
 
 InformedRestoreContentsView::InformedRestoreContentsView() :
     creation_time_(base::TimeTicks::Now()) {
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevated, kContentsRounding));
   SetBetweenChildSpacing(kContentsChildSpacing);
   SetInsideBorderInsets(kContentsInsets);
@@ -122,7 +128,7 @@ std::unique_ptr<views::Widget> InformedRestoreContentsView::Create(
   contents_bounds.ClampToCenteredSize(contents_view->GetPreferredSize());
 
   aura::Window* root = Shell::GetRootWindowForDisplayId(
-      display::Screen::GetScreen()->GetDisplayMatching(contents_bounds).id());
+      display::Screen::Get()->GetDisplayMatching(contents_bounds).id());
 
   views::Widget::InitParams params(
       views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
@@ -144,9 +150,9 @@ std::unique_ptr<views::Widget> InformedRestoreContentsView::Create(
 
   // Add blur to help with contrast between the background and the text. Uses
   // the same settings as the Quick Settings menu, i.e., `TrayBubbleView`.
-  if (features::IsBackgroundBlurEnabled()) {
-    layer->SetRoundedCornerRadius(gfx::RoundedCornersF(kContentsRounding));
-    layer->SetIsFastRoundedCorner(true);
+  layer->SetRoundedCornerRadius(gfx::RoundedCornersF(kContentsRounding));
+  layer->SetIsFastRoundedCorner(true);
+  if (chromeos::features::IsSystemBlurEnabled()) {
     layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   }
@@ -155,6 +161,7 @@ std::unique_ptr<views::Widget> InformedRestoreContentsView::Create(
 }
 
 void InformedRestoreContentsView::UpdateOrientation() {
+  primary_container_view_ = nullptr;
   settings_button_ = nullptr;
   preview_container_view_ = nullptr;
   items_container_view_ = nullptr;
@@ -181,6 +188,21 @@ void InformedRestoreContentsView::UpdateContents() {
         std::make_unique<InformedRestoreScreenshotIconRowView>(apps_infos));
     UpdateIconRowClipArea();
   }
+}
+
+void InformedRestoreContentsView::UpdatePrimaryContainerPreferredWidth(
+    aura::Window* root_window,
+    std::optional<bool> is_landscape) {
+  const bool landscape_mode =
+      is_landscape.value_or(display::Screen::Get()
+                                ->GetDisplayNearestWindow(root_window)
+                                .is_landscape());
+  const int preferred_width =
+      landscape_mode && root_window->bounds().width() < kSmallScreenThreshold
+          ? kActionsContainerWidthSmallScreen
+          : kActionsContainerWidth;
+  primary_container_view_->SetPreferredSize(gfx::Size(
+      preferred_width, primary_container_view_->GetPreferredSize().height()));
 }
 
 void InformedRestoreContentsView::OnRestoreButtonPressed() {
@@ -244,7 +266,7 @@ void InformedRestoreContentsView::OnSettingsButtonPressed() {
   context_label->SetBorder(views::CreateEmptyBorder(kContextMenuLabelInsets));
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
                                         *context_label);
-  context_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+  context_label->SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant);
   container->AddChildView(std::move(context_label));
 
   // Set the label container's a11y name to be the same as the label text so
@@ -253,10 +275,11 @@ void InformedRestoreContentsView::OnSettingsButtonPressed() {
 
   menu_runner_ =
       std::make_unique<views::MenuRunner>(std::move(root_menu_item), run_types);
-  menu_runner_->RunMenuAt(
-      settings_button_->GetWidget(), /*button_controller=*/nullptr,
-      settings_button_->GetBoundsInScreen(),
-      views::MenuAnchorPosition::kBubbleRight, ui::MENU_SOURCE_NONE);
+  menu_runner_->RunMenuAt(settings_button_->GetWidget(),
+                          /*button_controller=*/nullptr,
+                          settings_button_->GetBoundsInScreen(),
+                          views::MenuAnchorPosition::kBubbleRight,
+                          ui::mojom::MenuSourceType::kNone);
 }
 
 views::Builder<views::ImageButton>
@@ -268,7 +291,7 @@ InformedRestoreContentsView::CreateSettingsButtonBuilder() {
                      weak_ptr_factory_.GetWeakPtr()),
                  kSettingsIcon, kSettingsIconSize))
       .CopyAddressTo(&settings_button_)
-      .SetBackground(views::CreateThemedRoundedRectBackground(
+      .SetBackground(views::CreateRoundedRectBackground(
           cros_tokens::kCrosSysSystemOnBase, kSettingsIconSize))
       .SetID(informed_restore::kSettingsButtonID)
       .SetTooltipText(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SETTINGS));
@@ -299,10 +322,9 @@ InformedRestoreContentsView::CreateButtonContainerBuilder() {
 }
 
 void InformedRestoreContentsView::CreateChildViews() {
+  aura::Window* root = Shell::GetPrimaryRootWindow();
   const bool landscape_mode =
-      display::Screen::GetScreen()
-          ->GetDisplayNearestWindow(Shell::GetPrimaryRootWindow())
-          .is_landscape();
+      display::Screen::Get()->GetDisplayNearestWindow(root).is_landscape();
 
   SetOrientation(landscape_mode ? views::BoxLayout::Orientation::kHorizontal
                                 : views::BoxLayout::Orientation::kVertical);
@@ -326,7 +348,7 @@ void InformedRestoreContentsView::CreateChildViews() {
       break;
   }
 
-  auto* primary_container_view = AddChildView(
+  primary_container_view_ = AddChildView(
       // In landscape mode, this box layout view is the container for the left
       // hand side (in LTR) of the contents view. It contains the title,
       // description, buttons container, and settings button. In portrait mode,
@@ -340,7 +362,7 @@ void InformedRestoreContentsView::CreateChildViews() {
               // Title.
               views::Builder<views::Label>()
                   .SetAccessibleRole(ax::mojom::Role::kHeading)
-                  .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+                  .SetEnabledColor(cros_tokens::kCrosSysOnSurface)
                   .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                   .SetMultiLine(true)
                   .SetText(l10n_util::GetStringUTF16(title_message_id))
@@ -350,7 +372,7 @@ void InformedRestoreContentsView::CreateChildViews() {
                   })),
               // Description.
               views::Builder<views::Label>()
-                  .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+                  .SetEnabledColor(cros_tokens::kCrosSysOnSurface)
                   .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                   .SetMultiLine(true)
                   .SetText(l10n_util::GetStringUTF16(description_message_id))
@@ -397,7 +419,7 @@ void InformedRestoreContentsView::CreateChildViews() {
                 views::Builder<views::ImageView>()
                     .CopyAddressTo(&image_view_)
                     .SetPaintToLayer()
-                    .SetImage(image)
+                    .SetImage(ui::ImageModel::FromImageSkia(image))
                     .SetImageSize(screenshot_size))
             .Build());
 
@@ -415,13 +437,14 @@ void InformedRestoreContentsView::CreateChildViews() {
   views::View* spacer;
   if (landscape_mode) {
     // Add the buttons to the left hand side container view.
-    primary_container_view->AddChildView(
+    primary_container_view_->AddChildView(
         CreateButtonContainerBuilder()
             .SetProperty(views::kMarginsKey, kButtonContainerChildMargins)
             .Build());
     spacer =
-        primary_container_view->AddChildView(std::make_unique<views::View>());
-    primary_container_view->AddChildView(CreateSettingsButtonBuilder().Build());
+        primary_container_view_->AddChildView(std::make_unique<views::View>());
+    primary_container_view_->AddChildView(
+        CreateSettingsButtonBuilder().Build());
   } else {
     // Add a footer view that contains the buttons.
     AddChildView(
@@ -448,10 +471,11 @@ void InformedRestoreContentsView::CreateChildViews() {
           ? kItemsViewContainerHeight
           : std::max(kScreenshotContainerMinHeight, screenshot_height);
 
-  primary_container_view->SetPreferredSize(gfx::Size(
+  primary_container_view_->SetPreferredSize(gfx::Size(
       kActionsContainerWidth,
       landscape_mode ? primary_container_height
-                     : primary_container_view->GetPreferredSize().height()));
+                     : primary_container_view_->GetPreferredSize().height()));
+  UpdatePrimaryContainerPreferredWidth(root, landscape_mode);
 
   // Set the screenshot preview container vertical margin based on the height of
   // the screenshot.

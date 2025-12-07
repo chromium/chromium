@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/message_center_types.h"
@@ -58,6 +59,9 @@ class MESSAGE_CENTER_EXPORT MessageCenter {
   static void Initialize();
   // Creates the global message center object with custom LockScreenController.
   static void Initialize(std::unique_ptr<LockScreenController> controller);
+  // Sets the global message center for testing.
+  static void InitializeForTesting(
+      std::unique_ptr<MessageCenter> message_center);
 
   // Returns the global message center object. Returns null if Initialize is
   // not called.
@@ -175,7 +179,7 @@ class MESSAGE_CENTER_EXPORT MessageCenter {
   virtual void ClickOnNotificationButtonWithReply(
       const std::string& id,
       int button_index,
-      const std::u16string& reply) = 0;
+      std::u16string_view reply) = 0;
 
   // Called by the UI classes when the settings buttons is clicked
   // to trigger the notification's delegate and update the message
@@ -268,6 +272,8 @@ class MESSAGE_CENTER_EXPORT MessageCenter {
   // Called when a message view associated with `notification_id` is hovered on.
   virtual void OnMessageViewHovered(const std::string& notification_id) = 0;
 
+  virtual ~MessageCenter();
+
  protected:
   friend class ::DownloadNotification;
   friend class ::DownloadNotificationTestBase;
@@ -282,7 +288,6 @@ class MESSAGE_CENTER_EXPORT MessageCenter {
   virtual void DisableTimersForTest() = 0;
 
   MessageCenter();
-  virtual ~MessageCenter();
 };
 
 }  // namespace message_center

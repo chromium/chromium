@@ -57,6 +57,9 @@ void GetMostRepeatedSearchTermsFromEnumerator(
     const size_t count,
     KeywordSearchTermVisitList* search_terms);
 
+// Normalizes the given term (collapse whitespace and lowercase the term).
+std::u16string NormalizeTerm(const std::u16string& term);
+
 }  // namespace history
 
 #endif  // COMPONENTS_HISTORY_CORE_BROWSER_KEYWORD_SEARCH_TERM_UTIL_H_

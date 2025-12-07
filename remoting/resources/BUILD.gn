@@ -38,7 +38,7 @@ action("verify_resources") {
          ] + rebase_path(sources_to_verify, root_build_dir)
 }
 
-grit("strings") {
+grit_strings("strings") {
   source = "remoting_strings.grd"
   output_name = "remoting_strings"
 
@@ -46,15 +46,13 @@ grit("strings") {
   # generated file root.
   output_dir = root_gen_dir
 
-  outputs = [ "remoting/base/string_resources.h" ]
+  outputs =
+      [ "remoting/base/string_resources.h" ] + remoting_resources_locale_files
 
   # The grd produces a *.pak file and a messages.json file (this one uses
   # underscores instead of hyphens) for each locale.
-  outputs +=
-      process_file_template(remoting_locales_with_pseudolocales,
-                            [ "remoting/resources/{{source_name_part}}.pak" ])
-
-  outputs += remoting_resources_locale_files
+  locales = remoting_locales_with_pseudolocales
+  output_prefix = "remoting/resources/"
 
   if (is_official_build) {
     defines = [ "_official_build" ]
@@ -68,21 +66,38 @@ action("copy_locales") {
   # replacement over the locales. Here, we can do this in GN script by
   # pretending the locale list is a list of files. The {{source_name_part}}
   # will just expand to the locale name.
-  inputs = process_file_template(
-          remoting_locales,
-          [ "$root_gen_dir/remoting/resources/{{source_name_part}}.pak" ])
+  inputs = []
+  foreach(locale, remoting_locales) {
+    foreach(_gender_suffix, gender_suffixes) {
+      inputs +=
+          [ "$root_gen_dir/remoting/resources/${locale}${_gender_suffix}.pak" ]
+    }
+  }
 
   # Likewise, process the outputs in the same way as the inputs.
+  outputs = []
   if (is_apple) {
     # On mac, use underscores instead of hyphens and put the files in a
     # different place.
-    outputs = process_file_template(
-            remoting_locales_with_underscores,
-            [ "$root_out_dir/remoting/resources/{{source_name_part}}.lproj/locale.pak" ])
+    foreach(locale, remoting_locales_with_underscores) {
+      foreach(_gender_suffix, gender_suffixes) {
+        outputs += [ "$root_out_dir/remoting/resources/${locale}${_gender_suffix}.lproj/locale.pak" ]
+      }
+    }
   } else {
-    outputs = process_file_template(
-            remoting_locales,
-            [ "$root_out_dir/remoting_locales/{{source_name_part}}.pak" ])
+    foreach(locale, remoting_locales) {
+      foreach(_gender_suffix, gender_suffixes) {
+        outputs +=
+            [ "$root_out_dir/remoting_locales/${locale}${_gender_suffix}.pak" ]
+      }
+    }
+  }
+
+  _locales = []
+  foreach(_locale, remoting_locales) {
+    foreach(_gender_suffix, gender_suffixes) {
+      _locales += [ "${_locale}${_gender_suffix}" ]
+    }
   }
 
   args = [
@@ -92,7 +107,7 @@ action("copy_locales") {
            rebase_path(root_gen_dir, root_build_dir),
            "-x",
            rebase_path(root_out_dir, root_build_dir),
-         ] + remoting_locales
+         ] + _locales
 
   deps = [ ":strings" ]
 }

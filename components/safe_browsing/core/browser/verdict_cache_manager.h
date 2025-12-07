@@ -54,6 +54,13 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
 
   ~VerdictCacheManager() override;
 
+  struct DictionaryCounts {
+    // The number of entries in a dictionary before removal due to expiry.
+    size_t num_entries = 0;
+    // The number of entries removed from the dictionary due to expiry.
+    size_t num_removed_expired_entries = 0;
+  };
+
   base::WeakPtr<VerdictCacheManager> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
@@ -100,6 +107,13 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   safe_browsing::ClientSideDetectionType
   GetCachedRealTimeUrlClientSideDetectionType(const GURL& url);
 
+  // Returns true if the most matching verdict to the provided url contains a
+  // LlamaForcedTriggerInfo. |out_llama_forced_trigger_info| will hold the cache
+  // result.
+  bool GetCachedRealTimeLlamaForcedTriggerInfo(
+      const GURL& url,
+      safe_browsing::LlamaForcedTriggerInfo* out_llama_forced_trigger_info);
+
   // Creates a page load token that is tied with the hostname of the |url|.
   // The token is stored in memory.
   ChromeUserPopulation::PageLoadToken CreatePageLoadToken(const GURL& url);
@@ -145,6 +159,7 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   friend class SafeBrowsingBlockingPageHashRealTimeCheckTest;
   friend class VerdictCacheManagerTest;
   friend class ArtificialHashRealTimeVerdictCacheManagerTest;
+  friend class ArtificialEnterpriseVerdictCacheManagerTest;
   FRIEND_TEST_ALL_PREFIXES(VerdictCacheManagerTest, TestCleanUpExpiredVerdict);
   FRIEND_TEST_ALL_PREFIXES(VerdictCacheManagerTest,
                            TestCleanUpExpiredVerdictWithInvalidEntry);
@@ -157,8 +172,18 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
                            TestCleanUpExpiredVerdictInBackground);
   FRIEND_TEST_ALL_PREFIXES(VerdictCacheManagerTest,
                            TestCleanUpVerdictOlderThanUpperBound);
+  FRIEND_TEST_ALL_PREFIXES(VerdictCacheManagerTest,
+                           TestCleanUpTooManyExpiredRealTimeUrlEntries);
+  FRIEND_TEST_ALL_PREFIXES(VerdictCacheManagerTest,
+                           TestCleanupWithInvalidRealTimeUrlCacheDictionary);
+  FRIEND_TEST_ALL_PREFIXES(VerdictCacheManagerTest,
+                           TestSkipRealTimeUrlCleanupOptimization);
   FRIEND_TEST_ALL_PREFIXES(ArtificialHashRealTimeVerdictCacheManagerTest,
                            TestCachePopulated);
+  FRIEND_TEST_ALL_PREFIXES(ArtificialEnterpriseVerdictCacheManagerTest,
+                           TestArtificialEnterpriseBlockCache);
+  FRIEND_TEST_ALL_PREFIXES(ArtificialEnterpriseVerdictCacheManagerTest,
+                           TestArtificialEnterpriseWarnCache);
 
   // Enum representing the reason why page load tokens are cleared. Used to log
   // histograms. Entries must not be removed or reordered.
@@ -180,25 +205,43 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   void CleanUpAllPageLoadTokens(ClearReason reason);
   void CleanUpExpiredHashPrefixRealTimeLookupResults();
 
+  // Returns the default max entries that can be removed in a cleanup task.
+  // The maximum can be modified by tests.
+  int GetMaxRemovedEntriesCount();
+
   // Helper method to remove content settings when URLs are deleted. If
   // |all_history| is true, removes all cached verdicts. Otherwise it removes
   // all verdicts associated with the deleted URLs in |deleted_rows|.
   void RemoveContentSettingsOnURLsDeleted(bool all_history,
                                           const history::URLRows& deleted_rows);
+
+  // Removes expired verdicts from a sub-dictionary within the
+  // `cache_dictionary`.
+  void RemoveExpiredVerdictsFromSubDict(
+      base::Value::Dict& cache_dictionary,
+      const char* sub_dict_key,
+      std::optional<size_t>& stored_verdict_count,
+      size_t& verdicts_removed,
+      std::vector<std::string>& keys_to_remove);
+
   bool RemoveExpiredPhishGuardVerdicts(
       LoginReputationClientRequest::TriggerType trigger_type,
       base::Value::Dict& cache_dictionary);
-  bool RemoveExpiredRealTimeUrlCheckVerdicts(
-      base::Value::Dict& cache_dictionary);
+  // Computes the number of entries in `cache_dictionary`. If
+  // `remove_expired_verdicts` is true, it will also remove any expired entries
+  // from `cache_dictionary` and return the number of removed entries.
+  DictionaryCounts ComputeCountsAndMaybeRemoveExpiredRealTimeUrlCheckVerdicts(
+      base::Value::Dict& cache_dictionary,
+      bool remove_expired_verdicts);
 
   size_t GetPhishGuardVerdictCountForURL(
       const GURL& url,
       LoginReputationClientRequest::TriggerType trigger_type);
-  // This method is only used for testing.
-  size_t GetRealTimeUrlCheckVerdictCountForURL(const GURL& url);
-  // Gets the total number of RealTimeUrlCheck verdicts we cached
-  // for this profile. This counts both expired and active verdicts.
-  size_t GetStoredRealTimeUrlCheckVerdictCount();
+
+  // Given a trigger type, return a pointer to the corresponding stored verdict
+  // count.
+  std::optional<size_t>* GetStoredVerdictCountForTrigger(
+      LoginReputationClientRequest::TriggerType trigger_type);
 
   // This adds a cached verdict for a URL that has artificially been marked as
   // unsafe using the command line flag "mark_as_real_time_phishing". This
@@ -206,10 +249,12 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   void CacheArtificialUnsafeRealTimeUrlVerdictFromSwitch();
 
   // This adds a cached verdict for a URL that has artificially been marked as
-  // safe or unsafe (depending on |is_unsafe|). This applies to URL real-time
-  // lookups.
-  void CacheArtificialRealTimeUrlVerdict(const std::string& url_string,
-                                         bool is_unsafe);
+  // safe or unsafe (depending on |verdict_type| and |threat_type|). This
+  // applies to URL real-time lookups.
+  void CacheArtificialRealTimeUrlVerdict(
+      const std::string& url_string,
+      RTLookupResponse::ThreatInfo::VerdictType verdict_type,
+      std::optional<RTLookupResponse::ThreatInfo::ThreatType> threat_type);
 
   // This adds a cached verdict for a URL that has artificially been marked as
   // unsafe using the command line flag "mark_as_phish_guard_phishing". This
@@ -228,21 +273,42 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   void CacheArtificialHashRealTimeLookupVerdict(const std::string& url_spec,
                                                 bool is_unsafe);
 
+  // This adds a cached verdict for a URL that has artificially been marked as
+  // blocked for Enterprise Url Filtering by using the command line flag
+  // "mark_as_enterprise_blocked".
+  void CacheArtificialEnterpriseBlockedVerdictFromSwitch();
+
+  // This adds a cached verdict for a URL that has artificially been marked as
+  // flagged for Enterprise Url Filtering by using the command line flag
+  // "mark_as_enterprise_warned".
+  void CacheArtificialEnterpriseWarnedVerdictFromSwitch();
+
   // Resets the value of |has_artificial_cached_url_| back to false. If a unit
   // test sets an artificial URL, it is responsible for resetting the value
   // when the test completes so that it's not still true when later unit tests
   // run.
   static void ResetHasArtificialCachedUrlForTesting();
 
-  // Number of verdict stored for this profile for password on focus pings.
+  // Number of verdicts stored for this profile for password on focus pings.
   std::optional<size_t> stored_verdict_count_password_on_focus_;
 
-  // Number of verdict stored for this profile for protected password entry
+  // Number of verdicts stored for this profile for protected password entry
   // pings.
   std::optional<size_t> stored_verdict_count_password_entry_;
 
-  // Number of verdict stored for this profile for real time url check pings.
-  std::optional<size_t> stored_verdict_count_real_time_url_check_;
+  // Number of verdicts stored for this profile for one time password pings.
+  std::optional<size_t> stored_verdict_count_one_time_password_;
+
+  // Whether there might be any verdicts stored for this profile for real time
+  // url check pings. This property is an optimization to avoid unneeded
+  // cleanups if nothing is stored. There are cases where this value can be true
+  // but there are no stored verdicts (e.g. if a verdict was cached, but the
+  // specific URL's history gets wiped).
+  bool has_stored_verdicts_real_time_url_check_;
+
+  // Used only for tests. Defaults to false. Can be set to true to simulate
+  // that the real-time URL verdict `cache_dictionary` has corrupt data.
+  bool corrupt_real_time_cache_dictionary_override_;
 
   // A map of page load tokens, keyed by the hostname.
   base::flat_map<std::string, ChromeUserPopulation::PageLoadToken>
@@ -266,6 +332,8 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
       std::make_unique<HashRealTimeCache>();
 
   bool is_shut_down_ = false;
+
+  std::optional<int> max_removed_entries_count_override_;
 
   base::WeakPtrFactory<VerdictCacheManager> weak_factory_{this};
 

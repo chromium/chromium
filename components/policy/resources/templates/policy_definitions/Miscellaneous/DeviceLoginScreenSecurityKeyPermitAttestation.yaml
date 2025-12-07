@@ -1,0 +1,25 @@
+caption: URLs/domains automatically permitted direct Security Key attestation on the login screen
+desc: |-
+  Setting the policy specifies WebAuthn RP IDs for which no prompt appears when attestation certificates from security keys are requested on the login screen. A signal is also sent to the security key indicating that enterprise attestation may be used. Without this, when sites request attestation of security keys, users are prompted.
+
+  This device policy is equivalent to the existing user policy <ph name="SECURITY_KEY_PERMIT_ATTESTATION_POLICY_NAME">SecurityKeyPermitAttestation</ph>, but applies to the sign-in profile on the login screen instead.
+example_value:
+- example.com
+features:
+  dynamic_refresh: true
+  per_profile: false
+owners:
+- agl@chromium.org
+- martinkr@google.com
+- file://components/webauthn/OWNERS
+- chrome-webauthn@google.com
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome_os:140-
+tags:
+- website-sharing
+type: list
+device_only: true

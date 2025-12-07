@@ -5,6 +5,11 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_GEO_SUBKEY_REQUESTER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_GEO_SUBKEY_REQUESTER_H_
 
+#include <memory>
+#include <string>
+#include <string_view>
+#include <vector>
+
 #include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "third_party/libaddressinput/chromium/chrome_address_validator.h"
@@ -30,12 +35,12 @@ class SubKeyRequester : public LoadRulesListener {
   class Request {
    public:
     virtual void OnRulesLoaded() = 0;
-    virtual ~Request() {}
+    virtual ~Request() = default;
   };
 
   SubKeyRequester(std::unique_ptr<::i18n::addressinput::Source> source,
                   std::unique_ptr<::i18n::addressinput::Storage> storage,
-                  const std::string& language);
+                  std::string_view language);
 
   SubKeyRequester(const SubKeyRequester&) = delete;
   SubKeyRequester& operator=(const SubKeyRequester&) = delete;
@@ -69,18 +74,17 @@ class SubKeyRequester : public LoadRulesListener {
 
   // Starts loading the rules for the specified |region_code| for the further
   // subkey request.
-  void LoadRulesForSubKeys(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& region_code);
+  void LoadRulesForSubKeys(JNIEnv* env,
+                           const base::android::JavaRef<jstring>& region_code);
 
   // Gets the subkeys for the region with |jregion_code| code, if the
   // |jregion_code| rules have finished loading. Otherwise, sets up a task to
   // get the subkeys, when the rules are loaded.
   void StartRegionSubKeysRequest(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& jregion_code,
+      const base::android::JavaRef<jstring>& jregion_code,
       jint jtimeout_seconds,
-      const base::android::JavaParamRef<jobject>& jdelegate);
+      const base::android::JavaRef<jobject>& jdelegate);
 
   // Cancels the pending subkey request task.
   void CancelPendingGetSubKeys(JNIEnv* env);

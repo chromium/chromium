@@ -1,7 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
+import os
 
 
 def Run(os_path=None, args=None):
@@ -18,11 +20,16 @@ def Run(os_path=None, args=None):
   finally:
     sys.path = old_sys_path
 
-  return node.RunNode([
+  # When '--config' is passed, ESLint uses cwd as the base path for all
+  # 'ignorePatterns' (v8 config) or 'ignores' (v9 config), and cannot correctly
+  # navigate parent directories via '../'. We must set the repository's root as
+  # the cwd.
+  os.chdir(_SRC_PATH)
+  return node.RunNodeRaw([
       node_modules.PathToEsLint(),
       '--quiet',
-      '--resolve-plugins-relative-to',
-      os_path.join(_NODE_PATH, 'node_modules'),
+      '--config',
+      os_path.join(_HERE_PATH, 'eslint.config.mjs'),
   ] + args)
 
 

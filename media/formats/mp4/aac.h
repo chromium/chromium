@@ -63,10 +63,15 @@ class MEDIA_EXPORT AAC {
   // header. The size of the returned array is `buffer.size` +
   // `adts_header_size`. Returns an empty HeapArray<uint8_t> on failure.
   base::HeapArray<uint8_t> CreateAdtsFromEsds(base::span<const uint8_t> buffer,
-                                              int* adts_header_size) const;
+                                              size_t* adts_header_size) const;
 
   // If known, returns the AudioCodecProfile.
   AudioCodecProfile GetProfile() const;
+
+  // If true CreateAdtsFromEsds() will return a valid ADTS packing.
+  bool fits_in_adts() const {
+    return profile_ != kXHeAAcType && frequency_index_ != 0xF;
+  }
 
   // Returns the codec specific data needed by android MediaCodec.
   std::vector<uint8_t> codec_specific_data() const {
@@ -83,9 +88,9 @@ class MEDIA_EXPORT AAC {
 
   // The following variables store the AAC specific configuration information
   // that are used to generate the ADTS header.
-  uint8_t profile_;
-  uint8_t frequency_index_;
-  uint8_t channel_config_;
+  uint8_t profile_ = 0;
+  uint8_t frequency_index_ = 0;
+  uint8_t channel_config_ = 0;
 
   // The codec specific data needed by the android MediaCodec.
   std::vector<uint8_t> codec_specific_data_;
@@ -94,9 +99,9 @@ class MEDIA_EXPORT AAC {
   // can be used by Chromium. They are based on the AAC specific
   // configuration but can be overridden by extensions in elementary
   // stream descriptor.
-  int frequency_;
-  int extension_frequency_;
-  ChannelLayout channel_layout_;
+  uint32_t frequency_ = 0;
+  uint32_t extension_frequency_ = 0;
+  ChannelLayout channel_layout_ = CHANNEL_LAYOUT_UNSUPPORTED;
 };
 
 }  // namespace mp4

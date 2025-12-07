@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -16,7 +15,6 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
-#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/global_media_controls/cast_device_list_host.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_producer.h"
 #include "chrome/browser/ui/global_media_controls/test_helper.h"
@@ -24,7 +22,9 @@
 #include "chrome/browser/ui/media_router/media_route_starter.h"
 #include "chrome/browser/ui/media_router/query_result_manager.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/global_media_controls/public/media_session_item_producer.h"
 #include "components/global_media_controls/public/media_session_notification_item.h"
@@ -44,7 +44,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/crosapi/test_crosapi_environment.h"
 #endif
 
@@ -67,9 +67,7 @@ using testing::Expectation;
 using testing::NiceMock;
 using testing::Return;
 
-namespace {
-
-}  // namespace
+namespace {}  // namespace
 
 class MediaNotificationServiceTest : public ChromeRenderViewHostTestHarness {
  public:
@@ -81,7 +79,7 @@ class MediaNotificationServiceTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     crosapi_environment_.SetUp();
 #endif
     media_router::ChromeMediaRouterFactory::GetInstance()->SetTestingFactory(
@@ -92,7 +90,7 @@ class MediaNotificationServiceTest : public ChromeRenderViewHostTestHarness {
   void TearDown() override {
     SimulateCloseDialog();
     service_.reset();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     crosapi_environment_.TearDown();
 #endif
     ChromeRenderViewHostTestHarness::TearDown();
@@ -187,8 +185,11 @@ class MediaNotificationServiceTest : public ChromeRenderViewHostTestHarness {
 
  private:
   std::unique_ptr<MediaNotificationService> service_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  crosapi::TestCrosapiEnvironment crosapi_environment_;
+#if BUILDFLAG(IS_CHROMEOS)
+  TestingProfileManager testing_profile_manager_{
+      TestingBrowserProcess::GetGlobal()};
+  crosapi::TestCrosapiEnvironment crosapi_environment_{
+      &testing_profile_manager_};
 #endif
 };
 
@@ -199,9 +200,6 @@ class MediaNotificationServiceTest : public ChromeRenderViewHostTestHarness {
 class MediaNotificationServiceCastTest : public MediaNotificationServiceTest {
  public:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        media_router::kGlobalMediaControlsCastStartStop);
-
     presentation_manager_ =
         std::make_unique<NiceMock<MockWebContentsPresentationManager>>();
     media_router::WebContentsPresentationManager::SetTestInstance(
@@ -320,14 +318,13 @@ class MediaNotificationServiceCastTest : public MediaNotificationServiceTest {
 
  private:
   std::unique_ptr<MockWebContentsPresentationManager> presentation_manager_;
-  base::test::ScopedFeatureList feature_list_;
   base::MockCallback<base::OnceClosure> remote_disconnect_handler_;
   base::MockCallback<base::OnceClosure> receiver_disconnect_handler_;
 };
 
 // CastMediaNotificationProducer is owned by
 // CastMediaNotificationProducerKeyedService in Ash.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(MediaNotificationServiceCastTest,
        ShowCastSessionsForPresentationRequest) {
   NiceMock<global_media_controls::test::MockMediaDialogDelegate>

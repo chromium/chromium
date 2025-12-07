@@ -28,7 +28,7 @@
 #include "ui/events/gestures/gesture_types.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui {
 class Event;
@@ -129,6 +129,9 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
 
   void OnHostLostMouseGrab();
   void OnCursorMovedToRootLocation(const gfx::Point& root_location);
+
+  // Invoked when mouse exit the underlying window tree host.
+  void OnHostCursorExit();
 
   // TODO(beng): This is only needed because this cleanup needs to happen after
   //             all other observers are notified of OnWindowDestroying() but

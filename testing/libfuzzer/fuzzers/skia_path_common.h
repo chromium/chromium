@@ -23,9 +23,6 @@ static bool read(const uint8_t** data, size_t* size, T* value) {
   return true;
 }
 
-void BuildPath(const uint8_t** data,
-               size_t* size,
-               SkPath* path,
-               int last_verb);
+SkPath BuildPath(const uint8_t** data, size_t* size, int last_verb);
 
 #endif  // TESTING_LIBFUZZER_FUZZERS_SKIA_PATH_COMMON_H_

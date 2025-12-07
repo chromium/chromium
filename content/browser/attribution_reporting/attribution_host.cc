@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -17,12 +18,16 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/attribution_reporting/data_host.mojom.h"
 #include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/registration_eligibility.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "components/metrics/dwa/dwa_builders.h"
+#include "components/metrics/dwa/dwa_recorder.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
@@ -41,8 +46,9 @@
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/url_request/url_request.h"
-#include "services/network/public/cpp/features.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -96,7 +102,27 @@ class InsecureTaintTracker
 };
 NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(InsecureTaintTracker);
 
+void ClientBounceHistogram(std::string_view user_interaction_type,
+                           std::string_view timeout,
+                           int value) {
+  base::UmaHistogramCounts100(
+      base::StrCat({"Conversions.NumDataHostsRegisteredOnClientBounce.",
+                    user_interaction_type, ".", timeout}),
+      value);
+}
+
 }  // namespace
+
+AttributionHost::PrimaryMainFrameData::PrimaryMainFrameData() = default;
+
+AttributionHost::PrimaryMainFrameData::PrimaryMainFrameData(
+    PrimaryMainFrameData&&) = default;
+
+AttributionHost::PrimaryMainFrameData&
+AttributionHost::PrimaryMainFrameData::operator=(PrimaryMainFrameData&&) =
+    default;
+
+AttributionHost::PrimaryMainFrameData::~PrimaryMainFrameData() = default;
 
 AttributionHost::AttributionHost(WebContents* web_contents)
     : WebContentsObserver(web_contents),
@@ -106,11 +132,8 @@ AttributionHost::AttributionHost(WebContents* web_contents)
       attribution_reporting::features::kConversionMeasurement));
 
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          network::features::kAttributionReportingCrossAppWeb)) {
-    input_event_tracker_android_ =
-        std::make_unique<AttributionInputEventTrackerAndroid>(web_contents);
-  }
+  input_event_tracker_android_ =
+      std::make_unique<AttributionInputEventTrackerAndroid>(web_contents);
 #endif
 }
 
@@ -133,16 +156,27 @@ AttributionInputEvent AttributionHost::GetMostRecentNavigationInputEvent()
 }
 
 void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
+  // Impression navigations need to navigate the primary main frame to be valid.
+  // Impressions should never be attached to same-document navigations but can
+  // be the result of a bad renderer.
+
+  // A navigation is considered client bounce if it navigates the current page
+  // away within a short period of time without any user interaction with the
+  // page, and the navigation is not user initiated. Client bounce detection
+  // only cares about primary main frame and non-same-document navigations.
+
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      navigation_handle->IsSameDocument()) {
+    return;
+  }
+
+  MaybeLogClientBounce(navigation_handle);
+
   const auto& impression = navigation_handle->GetImpression();
 
   // TODO(crbug.com/40262156): Consider checking for navigations taking place in
   // a prerendered main frame.
-
-  // Impression navigations need to navigate the primary main frame to be valid.
-  // Impressions should never be attached to same-document navigations but can
-  // be the result of a bad renderer.
-  if (!impression || !navigation_handle->IsInPrimaryMainFrame() ||
-      navigation_handle->IsSameDocument()) {
+  if (!impression) {
     return;
   }
   RenderFrameHostImpl* initiator_frame_host =
@@ -154,9 +188,6 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
 
   // The initiator frame host may be deleted by this point. In that case, ignore
   // this navigation and drop the impression associated with it.
-
-  UMA_HISTOGRAM_BOOLEAN("Conversions.ImpressionNavigationHasDeadInitiator",
-                        initiator_frame_host == nullptr);
 
   // Look up the initiator root's origin which will be used as the impression
   // origin. This works because we won't update the origin for the initiator RFH
@@ -181,7 +212,8 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
       // The devtools_navigation_token is going to be used as the
       // navigation's request devtools inspector ID if there is an enabled
       // agent host.
-      navigation_request->devtools_navigation_token().ToString());
+      navigation_request->devtools_navigation_token().ToString(),
+      navigation_handle->WasStartedFromContextMenu());
   auto [_, inserted] = ongoing_registration_eligible_navigations_.emplace(
       navigation_handle->GetNavigationId());
   CHECK(inserted);
@@ -193,6 +225,42 @@ void AttributionHost::DidRedirectNavigation(
 }
 
 void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
+  auto* attribution_manager =
+      AttributionManager::FromWebContents(web_contents());
+
+  base::Time now = base::Time::Now();
+
+  if (navigation_handle->IsInPrimaryMainFrame()) {
+    if (!navigation_handle->IsSameDocument()) {
+      if (primary_main_frame_data_.has_value()) {
+        // Resets for further client redirects.
+        primary_main_frame_data_->num_data_hosts_registered = 0;
+        primary_main_frame_data_->num_data_hosts_registered_by_reporting_origin
+            .clear();
+      }
+
+      // Sets current time to detect further client redirects.
+      last_navigation_time_ = now;
+
+      if (navigation_handle->HasCommitted()) {
+        primary_main_frame_data_ = PrimaryMainFrameData();
+      }
+    }
+
+    if (navigation_handle->HasCommitted()) {
+      // Note that we cache the UKM source ID of the most recently navigated
+      // primary page as a workaround for prerendered pages.
+      // `RenderFrameHost::GetPageUkmSourceId()` would return the UKM source ID
+      // for the prerendering navigation even after the page is activated which
+      // is not associated with any URL for privacy reasons. See
+      // //content/browser/preloading/prerender/README.md#ukm-source-ids for
+      // more details.
+      last_primary_frame_ukm_source_id_ =
+          ukm::ConvertToSourceId(navigation_handle->GetNavigationId(),
+                                 ukm::SourceIdType::NAVIGATION_ID);
+    }
+  }
+
   const auto& impression = navigation_handle->GetImpression();
   if (!impression.has_value()) {
     return;
@@ -200,15 +268,32 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
 
   NotifyNavigationRegistrationData(navigation_handle);
 
-  auto* attribution_manager =
-      AttributionManager::FromWebContents(web_contents());
   CHECK(attribution_manager);
   attribution_manager->GetDataHostManager()
       ->NotifyNavigationRegistrationCompleted(
-          impression->attribution_src_token);
+          impression->attribution_src_token,
+          navigation_handle->GetNavigationId());
 
   ongoing_registration_eligible_navigations_.erase(
       navigation_handle->GetNavigationId());
+}
+
+void AttributionHost::FrameReceivedUserActivation(
+    RenderFrameHost* render_frame_host) {
+  // We consider user activation from all frames in the page. This event tracks
+  // clicks, taps, types, but not scrolls.
+  // https://html.spec.whatwg.org/multipage/interaction.html#tracking-user-activation
+  if (primary_main_frame_data_.has_value()) {
+    primary_main_frame_data_->has_user_activation = true;
+  }
+}
+
+void AttributionHost::DidGetUserInteraction(const blink::WebInputEvent& event) {
+  // This event tracks clicks, taps, types, and scrolls, see
+  // `IsUserInteractionInputType()`.
+  if (primary_main_frame_data_.has_value()) {
+    primary_main_frame_data_->has_user_interaction = true;
+  }
 }
 
 void AttributionHost::NotifyNavigationRegistrationData(
@@ -223,9 +308,9 @@ void AttributionHost::NotifyNavigationRegistrationData(
   // If there is an ongoing_registration_eligible_navigation, the navigation
   // must have an associated impression, be in the primary main frame and not in
   // the same document.
-  DCHECK(impression.has_value());
-  DCHECK(navigation_handle->IsInPrimaryMainFrame());
-  DCHECK(!navigation_handle->IsSameDocument());
+  CHECK(impression.has_value());
+  CHECK(navigation_handle->IsInPrimaryMainFrame());
+  CHECK(!navigation_handle->IsSameDocument());
 
   // Populates `is_final_response` based on the headers to handle the case of an
   // intercepted redirect. See https://crbug.com/1520612.
@@ -247,7 +332,7 @@ void AttributionHost::NotifyNavigationRegistrationData(
   if (redirect_chain.size() < offset) {
     return;
   }
-  GURL reporting_url = redirect_chain[redirect_chain.size() - offset];
+  const GURL& reporting_url = redirect_chain[redirect_chain.size() - offset];
   // Pass the suitability as a proxy for the potentially trustworthy check, as
   // redirects should only happen for HTTP-based navigations.
   auto* tracker =
@@ -259,12 +344,12 @@ void AttributionHost::NotifyNavigationRegistrationData(
 
   auto* attribution_manager =
       AttributionManager::FromWebContents(web_contents());
-  DCHECK(attribution_manager);
+  CHECK(attribution_manager);
 
   bool had_header =
       attribution_manager->GetDataHostManager()
           ->NotifyNavigationRegistrationData(impression->attribution_src_token,
-                                             headers, std::move(reporting_url));
+                                             headers, reporting_url);
 
   if (had_header) {
     tracker->NotifySecureRegistrationAttempt();
@@ -275,11 +360,23 @@ void AttributionHost::RegisterDataHost(
     mojo::PendingReceiver<attribution_reporting::mojom::DataHost> data_host,
     attribution_reporting::mojom::RegistrationEligibility
         registration_eligibility,
-    bool is_for_background_requests) {
+    bool is_for_background_requests,
+    const std::vector<url::Origin>& reporting_origins) {
   auto suitable_context = AttributionSuitableContext::Create(
       static_cast<RenderFrameHostImpl*>(receivers_.GetCurrentTargetFrame()));
   if (!suitable_context.has_value()) {
     return;
+  }
+
+  if (primary_main_frame_data_.has_value()) {
+    primary_main_frame_data_->num_data_hosts_registered++;
+    for (const url::Origin& reporting_origin : reporting_origins) {
+      auto [it, _] =
+          primary_main_frame_data_
+              ->num_data_hosts_registered_by_reporting_origin.try_emplace(
+                  reporting_origin, 0);
+      it->second++;
+    }
   }
 
   AttributionDataHostManager* manager = suitable_context->data_host_manager();
@@ -323,6 +420,131 @@ void AttributionHost::RegisterNavigationDataHost(
         "Renderer attempted to register a data host with a duplicate "
         "AttributionSrcToken.");
     return;
+  }
+}
+
+void AttributionHost::MaybeLogClientBounce(
+    NavigationHandle* navigation_handle) const {
+  if (!primary_main_frame_data_.has_value()) {
+    return;
+  }
+
+  // Note that `NavigationHandle::HasUserGesture()` does not capture
+  // browser-initiated navigations. The negation of
+  // `NavigationHandle::IsRendererInitiated()` tells us whether the navigation
+  // is browser-initiated.
+  //
+  // A user gesture indicates no client-redirect.
+  if (navigation_handle->HasUserGesture() ||
+      !navigation_handle->IsRendererInitiated()) {
+    return;
+  }
+
+  int num_data_hosts_registered =
+      primary_main_frame_data_->num_data_hosts_registered;
+  if (num_data_hosts_registered == 0) {
+    return;
+  }
+
+  static constexpr std::string_view kUserActivationStr = "UserActivation";
+  static constexpr std::string_view kUserInteractionStr = "UserInteraction";
+
+  static constexpr std::string_view k1sStr = "1s";
+  static constexpr std::string_view k5sStr = "5s";
+  static constexpr std::string_view k10sStr = "10s";
+
+  // We don't consider a client-redirect to be a bounce if there was user
+  // activation/interaction on the page or if we timed out on the client bounce
+  // detection timers.
+  CHECK(last_navigation_time_.has_value());
+  base::TimeDelta time_since_last_navigation =
+      base::Time::Now() - *last_navigation_time_;
+
+  int64_t num_data_hosts_registered_bucket =
+      ukm::GetExponentialBucketMinForCounts1000(num_data_hosts_registered);
+
+  ukm::builders::Conversions_ClientBounce ukm_builder(GetPageUkmSourceId());
+
+  if (!primary_main_frame_data_->has_user_activation) {
+    if (time_since_last_navigation < base::Seconds(1)) {
+      ClientBounceHistogram(kUserActivationStr, k1sStr,
+                            num_data_hosts_registered);
+      ukm_builder.SetUserActivation_1s(num_data_hosts_registered_bucket);
+    }
+    if (time_since_last_navigation < base::Seconds(5)) {
+      ClientBounceHistogram(kUserActivationStr, k5sStr,
+                            num_data_hosts_registered);
+      ukm_builder.SetUserActivation_5s(num_data_hosts_registered_bucket);
+    }
+    if (time_since_last_navigation < base::Seconds(10)) {
+      ClientBounceHistogram(kUserActivationStr, k10sStr,
+                            num_data_hosts_registered);
+      ukm_builder.SetUserActivation_10s(num_data_hosts_registered_bucket);
+    }
+  }
+
+  if (!primary_main_frame_data_->has_user_interaction) {
+    if (time_since_last_navigation < base::Seconds(1)) {
+      ClientBounceHistogram(kUserInteractionStr, k1sStr,
+                            num_data_hosts_registered);
+      ukm_builder.SetUserInteraction_1s(num_data_hosts_registered_bucket);
+    }
+    if (time_since_last_navigation < base::Seconds(5)) {
+      ClientBounceHistogram(kUserInteractionStr, k5sStr,
+                            num_data_hosts_registered);
+      ukm_builder.SetUserInteraction_5s(num_data_hosts_registered_bucket);
+    }
+    if (time_since_last_navigation < base::Seconds(10)) {
+      ClientBounceHistogram(kUserInteractionStr, k10sStr,
+                            num_data_hosts_registered);
+      ukm_builder.SetUserInteraction_10s(num_data_hosts_registered_bucket);
+    }
+  }
+
+  ukm_builder.Record(ukm::UkmRecorder::Get());
+
+  for (const auto& [reporting_origin,
+                    num_data_hosts_registered_for_reporting_origin] :
+       primary_main_frame_data_
+           ->num_data_hosts_registered_by_reporting_origin) {
+    const int64_t num_data_hosts_registered_for_reporting_origin_bucket =
+        ukm::GetExponentialBucketMinForCounts1000(
+            num_data_hosts_registered_for_reporting_origin);
+
+    dwa::builders::AttributionConversionsClientBounce dwa_builder;
+
+    if (!primary_main_frame_data_->has_user_activation) {
+      if (time_since_last_navigation < base::Seconds(1)) {
+        dwa_builder.SetUserActivation_1s(
+            num_data_hosts_registered_for_reporting_origin_bucket);
+      }
+      if (time_since_last_navigation < base::Seconds(5)) {
+        dwa_builder.SetUserActivation_5s(
+            num_data_hosts_registered_for_reporting_origin_bucket);
+      }
+      if (time_since_last_navigation < base::Seconds(10)) {
+        dwa_builder.SetUserActivation_10s(
+            num_data_hosts_registered_for_reporting_origin_bucket);
+      }
+    }
+
+    if (!primary_main_frame_data_->has_user_interaction) {
+      if (time_since_last_navigation < base::Seconds(1)) {
+        dwa_builder.SetUserInteraction_1s(
+            num_data_hosts_registered_for_reporting_origin_bucket);
+      }
+      if (time_since_last_navigation < base::Seconds(5)) {
+        dwa_builder.SetUserInteraction_5s(
+            num_data_hosts_registered_for_reporting_origin_bucket);
+      }
+      if (time_since_last_navigation < base::Seconds(10)) {
+        dwa_builder.SetUserInteraction_10s(
+            num_data_hosts_registered_for_reporting_origin_bucket);
+      }
+    }
+
+    dwa_builder.SetContent(reporting_origin.Serialize())
+        .Record(metrics::dwa::DwaRecorder::Get());
   }
 }
 

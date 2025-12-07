@@ -5,28 +5,15 @@
 #include "gpu/ipc/common/gpu_surface_tracker.h"
 
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/functional/overloaded.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/gl/android/scoped_java_surface.h"
 
 namespace gpu {
-
-GpuSurfaceTracker::SurfaceRecord::SurfaceRecord(
-    gl::ScopedJavaSurface surface,
-    bool can_be_used_with_surface_control)
-    : surface_variant(std::move(surface)),
-      can_be_used_with_surface_control(can_be_used_with_surface_control) {}
-
-GpuSurfaceTracker::SurfaceRecord::SurfaceRecord(
-    gl::ScopedJavaSurfaceControl surface_control)
-    : surface_variant(std::move(surface_control)),
-      can_be_used_with_surface_control(true) {}
-
-GpuSurfaceTracker::SurfaceRecord::~SurfaceRecord() = default;
-GpuSurfaceTracker::SurfaceRecord::SurfaceRecord(SurfaceRecord&&) = default;
 
 GpuSurfaceTracker::GpuSurfaceTracker()
     : next_surface_handle_(1) {
@@ -60,24 +47,24 @@ void GpuSurfaceTracker::RemoveSurface(gpu::SurfaceHandle surface_handle) {
   surface_map_.erase(surface_handle);
 }
 
-GpuSurfaceTracker::JavaSurfaceVariant GpuSurfaceTracker::AcquireJavaSurface(
-    gpu::SurfaceHandle surface_handle,
-    bool* can_be_used_with_surface_control) {
+SurfaceRecord GpuSurfaceTracker::AcquireJavaSurface(
+    gpu::SurfaceHandle surface_handle) {
   base::AutoLock lock(surface_map_lock_);
   SurfaceMap::const_iterator it = surface_map_.find(surface_handle);
   if (it == surface_map_.end())
-    return gl::ScopedJavaSurface();
+    return SurfaceRecord(gl::ScopedJavaSurface(),
+                         /*can_be_used_with_surface_control=*/false);
 
-  *can_be_used_with_surface_control =
-      it->second.can_be_used_with_surface_control;
-  return absl::visit(
-      base::Overloaded{
+  return std::visit(
+      absl::Overload{
           [&](const gl::ScopedJavaSurface& surface) {
             DCHECK(surface.IsValid());
-            return JavaSurfaceVariant(surface.CopyRetainOwnership());
+            return SurfaceRecord(surface.CopyRetainOwnership(),
+                                 it->second.can_be_used_with_surface_control,
+                                 it->second.host_input_token);
           },
           [&](const gl::ScopedJavaSurfaceControl& surface_control) {
-            return JavaSurfaceVariant(surface_control.CopyRetainOwnership());
+            return SurfaceRecord(surface_control.CopyRetainOwnership());
           }},
       it->second.surface_variant);
 }

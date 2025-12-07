@@ -45,7 +45,6 @@
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
 #include "third_party/blink/renderer/core/page/event_with_hit_test_results.h"
 #include "third_party/blink/renderer/core/page/touch_adjustment.h"
-#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace ui {
@@ -85,6 +84,20 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
 
   void Clear();
 
+  void NodeChildrenWillBeRemoved(ContainerNode& container) {
+    mouse_event_manager_->NodeChildrenWillBeRemoved(container);
+    pointer_event_manager_->NodeChildrenWillBeRemoved(container);
+  }
+
+  void NodeWillBeRemoved(Node& node) {
+    mouse_event_manager_->NodeWillBeRemoved(node);
+    pointer_event_manager_->NodeWillBeRemoved(node);
+  }
+
+  PointerEventManager* GetPointerEventManagerForTesting() {
+    return pointer_event_manager_;
+  }
+
   void UpdateSelectionForMouseDrag();
   void StartMiddleClickAutoscroll(LayoutObject*);
 
@@ -107,6 +120,7 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
   bool IsMousePositionUnknown() const {
     return mouse_event_manager_->IsMousePositionUnknown();
   }
+  void ResetLastMousePositionForWebTest();
   void ClearMouseEventManager() const { mouse_event_manager_->Clear(); }
 
   WebInputEventResult UpdateDragAndDrop(const WebMouseEvent&, DataTransfer*);
@@ -204,10 +218,13 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
       Element* override_target_element = nullptr,
       WebMenuSourceType = kMenuSourceNone);
 
+  // See PointerEventManager::AppendTouchIdForCanceledPointerDown().
+  void AppendTouchIdForCanceledPointerDown(uint32_t unique_touch_event_id);
+
   // Returns whether pointerId is active or not
   bool IsPointerEventActive(PointerId);
 
-  void SetPointerCapture(PointerId, Element*, bool explicit_capture = false);
+  void SetPointerCapture(PointerId, Element*);
   void ReleasePointerCapture(PointerId, Element*);
   void ReleaseMousePointerCapture();
   bool HasPointerCapture(PointerId, const Element*) const;
@@ -244,6 +261,7 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
   // Clears drag target and related states. It is called when drag is done or
   // canceled.
   void ClearDragState();
+  void ReportDragEnd();
 
   EventHandlerRegistry& GetEventHandlerRegistry() const {
     return *event_handler_registry_;
@@ -285,6 +303,10 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
   TaskHandle& GetDelayedNavigationTaskHandle();
 
   base::debug::CrashKeyString* CrashKeyForBug1519197() const;
+
+  // Testing helper: Returns the LocalFrame from a target node for drag/drop.
+  // This exposes the logic of LocalFrameFromTargetNode for testing purposes.
+  static LocalFrame* LocalFrameFromTargetNodeForTesting(Node* target);
 
  private:
   WebInputEventResult HandleMouseMoveOrLeaveEvent(

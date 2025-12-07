@@ -11,6 +11,9 @@ export BAZEL_LSP=...
 git clone https://github.com/cameron-martin/bazel-lsp.git $BAZEL_LSP
 ```
 
+Note: These instructions are known to work on this commit in the bazel-lsp repo:
+`98382215c44745485ed9ab7c1d13472a5acc0350`
+
 The Chromium src path should be exported to the `CHROMIUM_SRC` environment
 variable.
 

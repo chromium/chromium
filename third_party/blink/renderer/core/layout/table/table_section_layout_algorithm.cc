@@ -164,8 +164,7 @@ const LayoutResult* TableSectionLayoutAlgorithm::Layout() {
   }
 
   if (InvolvedInBlockFragmentation(container_builder_)) [[unlikely]] {
-    BreakStatus status = FinishFragmentation(
-        /*trailing_border_padding=*/LayoutUnit(), &container_builder_);
+    BreakStatus status = FinishFragmentation(&container_builder_);
     DCHECK_EQ(status, BreakStatus::kContinue);
   }
 

@@ -9,7 +9,9 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_variant.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -162,7 +164,8 @@ void NotificationControlButtonsView::SetButtonIconSize(int size) {
   icon_size_ = size;
 }
 
-void NotificationControlButtonsView::SetButtonIconColors(SkColor color) {
+void NotificationControlButtonsView::SetButtonIconColors(
+    ui::ColorVariant color) {
   if (color == icon_color_)
     return;
   icon_color_ = color;
@@ -228,7 +231,7 @@ void NotificationControlButtonsView::UpdateButtonIconColors() {
 
 SkColor NotificationControlButtonsView::DetermineButtonIconColor() const {
   const SkColor icon_color =
-      icon_color_.value_or(GetColorProvider()->GetColor(ui::kColorIcon));
+      icon_color_.value_or(ui::kColorIcon).ResolveToSkColor(GetColorProvider());
   if (SkColorGetA(background_color_) != SK_AlphaOPAQUE)
     return icon_color;
 

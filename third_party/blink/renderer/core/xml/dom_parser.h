@@ -24,17 +24,16 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
 class Document;
-class ParseFromStringOptions;
+class ExceptionState;
 class LocalDOMWindow;
 class ScriptState;
+class V8SupportedType;
+class V8UnionStringOrTrustedHTML;
 
 class CORE_EXPORT DOMParser final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -46,9 +45,11 @@ class CORE_EXPORT DOMParser final : public ScriptWrappable {
 
   explicit DOMParser(ScriptState*);
 
-  Document* parseFromString(const WTF::String&,
-                            const WTF::String& type,
-                            const ParseFromStringOptions* options);
+  Document* ParseFromStringWithoutTrustedTypes(const String&,
+                                               const V8SupportedType& type);
+  Document* parseFromString(const V8UnionStringOrTrustedHTML*,
+                            const V8SupportedType& type,
+                            ExceptionState&);
 
   void Trace(Visitor*) const override;
 

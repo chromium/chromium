@@ -32,6 +32,7 @@ class MakoBubbleCoordinator {
   void LoadEditorUI(Profile* profile,
                     MakoEditorMode mode,
                     bool can_fallback_to_center_position,
+                    bool feedback_enabled,
                     std::optional<std::string_view> preset_query_id,
                     std::optional<std::string_view> freeform_text);
   void ShowUI();

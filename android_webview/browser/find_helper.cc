@@ -118,13 +118,11 @@ void FindHelper::NotifyResults(int active_ordinal,
 
   // Safeguard in case of errors to prevent reporting -1 to the API listeners.
   if (match_count == -1) {
-    NOTREACHED_IN_MIGRATION();
-    match_count = 0;
+    NOTREACHED();
   }
 
   if (active_ordinal == -1) {
-    NOTREACHED_IN_MIGRATION();
-    active_ordinal = 0;
+    NOTREACHED();
   }
 
   // WebView.FindListener active match ordinals are 0-based while WebKit sends

@@ -4,21 +4,24 @@
 
 package org.chromium.chrome.browser.autofill.save_card;
 
-import com.google.common.collect.ImmutableList;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
+@NullMarked
 /*package*/ class AutofillSaveCardBottomSheetProperties {
     /** Legal messages. */
     static class LegalMessage {
         /** Legal message lines. */
-        final ImmutableList<LegalMessageLine> mLines;
+        final List<LegalMessageLine> mLines;
 
         /** The link for the legal message. */
         final Consumer<String> mLink;
@@ -26,12 +29,12 @@ import java.util.function.Consumer;
         /**
          * Constructs legal messages.
          *
-         * @param lines The legal message lines.
-         * @param link The link for the legal message.
+         * @param lines The legal message lines. Must not be {@code null}.
+         * @param link The link for the legal message. Must not be {@code null}.
          */
-        LegalMessage(ImmutableList<LegalMessageLine> lines, Consumer<String> link) {
-            mLines = lines;
-            mLink = link;
+        LegalMessage(List<LegalMessageLine> lines, Consumer<String> link) {
+            mLines = Objects.requireNonNull(lines, "List of legal message lines can't be null");
+            mLink = Objects.requireNonNull(link, "Link consumer can't be null");
         }
     }
 
@@ -43,6 +46,10 @@ import java.util.function.Consumer;
 
     /** The icon for the logo of the server upload save card. */
     static final ReadableIntPropertyKey LOGO_ICON = new ReadableIntPropertyKey();
+
+    /** The accessibility description for the logo of the server upload save card bottom sheet. */
+    static final ReadableObjectPropertyKey<String> LOGO_ICON_DESCRIPTION =
+            new ReadableObjectPropertyKey<>();
 
     /** The description for the card. */
     static final ReadableObjectPropertyKey<String> CARD_DESCRIPTION =
@@ -81,6 +88,7 @@ import java.util.function.Consumer;
         TITLE,
         DESCRIPTION,
         LOGO_ICON,
+        LOGO_ICON_DESCRIPTION,
         CARD_DESCRIPTION,
         CARD_ICON,
         CARD_LABEL,

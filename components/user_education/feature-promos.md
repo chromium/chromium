@@ -85,7 +85,7 @@ Useful things to know:
 ### Anchoring your IPH
 
 More information on defining a new help bubble anchor is provided on the
-[Help Bubbles](./help_bubbles.md) page.
+[Help Bubbles](./help-bubbles.md) page.
 
 ### Toasts and accessible strings
 
@@ -202,7 +202,7 @@ Because of the sheer number of promotions that feature teams put into Chrome,
 and the potential for significant disruption for users, great care has been
 taken to limit the number and frequency of certain promotions.
 
-> We are enumerating these restrictions here because there are no exceptions. 
+> We are enumerating these restrictions here because there are no exceptions.
 If triggering logic causes an IPH to run afoul of one or more of these
 restrictions and the IPH is not shown (or is shown less than would be desired),
 it is up to the feature developer to rework the triggering logic and/or to
@@ -273,7 +273,7 @@ trigger your IPH. Verify it shows when it should, and then verify that it does
 not reshow when dismissed or after your feature is used.
 
 If you want to see or clear the data around your IPH feature (including whether
-it has been permanently dismissed) go to `chrome://internals/user-education`,
+it has been permanently dismissed) go to `chrome://user-education-internals`,
 find your feature, and expand the trays underneath to see and optionally clear
 the recorded data. Clearing the data can allow you to trigger your feature over
 and over on the same profile.
@@ -293,7 +293,7 @@ logic is getting called in the right place.
 ### Manual approach 3: Tester Page
 
 If you just want to preview what your help bubble will look like, you can go to
-the tester page at `chrome://internals/user-education`, find your promo, and
+the tester page at `chrome://user-education-internals`, find your promo, and
 click the "Launch" button. This will attempt to show your IPH in the current UI.
 Note that if your IPH anchors to an element that is not present, it will not be
 able to show.
@@ -308,7 +308,7 @@ when you want it to.
 To test your IPH, use `InteractiveFeaturePromoTest` as your test's base class.
 If you already have a test class for your feature you want to inherit from that
 derives from `InProcessBrowserTest`, use
-`InteractiveFeaturePromoTestT<YourTestClass>` instead.
+`InteractiveFeaturePromoTestMixin<YourTestClass>` instead.
 
 Then, write a [Kombucha](https://goto.google.com/kombucha-playbook) test which
 performs the steps that would trigger your IPH, with a `WaitForPromo` to verify

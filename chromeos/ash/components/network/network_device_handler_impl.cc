@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/network/network_device_handler_impl.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -148,7 +144,7 @@ void NetworkDeviceHandlerImpl::SetDeviceProperty(
       shill::kCellularPolicyAllowRoamingProperty};
 
   for (size_t i = 0; i < std::size(blocked_properties); ++i) {
-    if (property_name == blocked_properties[i]) {
+    if (property_name == UNSAFE_TODO(blocked_properties[i])) {
       InvokeErrorCallback(
           device_path, std::move(error_callback),
           "SetDeviceProperty called on blocked property " + property_name);
@@ -314,7 +310,6 @@ void NetworkDeviceHandlerImpl::DeviceListChanged() {
   ApplyCellularAllowRoamingToShill();
   ApplyMACAddressRandomizationToShill();
   ApplyUsbEthernetMacAddressSourceToShill();
-  ApplyUseAttachApnToShill();
   ApplyWakeOnWifiAllowedToShill();
 }
 
@@ -457,25 +452,6 @@ void NetworkDeviceHandlerImpl::ApplyUsbEthernetMacAddressSourceToShill() {
           primary_enabled_usb_ethernet_device_path_,
           primary_enabled_usb_ethernet_device_state->mac_address(),
           usb_ethernet_mac_address_source_, network_handler::ErrorCallback()));
-}
-
-void NetworkDeviceHandlerImpl::ApplyUseAttachApnToShill() {
-  NetworkStateHandler::DeviceStateList list;
-  network_state_handler_->GetDeviceListByType(NetworkTypePattern::Cellular(),
-                                              &list);
-  if (list.empty()) {
-    NET_LOG(DEBUG) << "No cellular device available.";
-    return;
-  }
-  for (NetworkStateHandler::DeviceStateList::const_iterator it = list.begin();
-       it != list.end(); ++it) {
-    const DeviceState* device_state = *it;
-
-    SetDevicePropertyInternal(device_state->path(),
-                              shill::kUseAttachAPNProperty,
-                              /*value=*/base::Value(true), base::DoNothing(),
-                              network_handler::ErrorCallback());
-  }
 }
 
 void NetworkDeviceHandlerImpl::OnSetUsbEthernetMacAddressSourceError(

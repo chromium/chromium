@@ -8,12 +8,14 @@
 #include <lib/zx/eventpair.h>
 #include <zircon/types.h>
 
+#include <variant>
+
 #include "base/check_op.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/functional/bind.h"
-#include "base/not_fatal_until.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/ozone/platform/flatland/flatland_connection.h"
@@ -94,12 +96,7 @@ OverlayTransformFlatlandProperties OverlayTransformToFlatlandProperties(
     case gfx::OVERLAY_TRANSFORM_INVALID:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return {
-      .translation = {rounded_bounds.x(), rounded_bounds.y()},
-      .orientation = fuchsia::ui::composition::Orientation::CCW_0_DEGREES,
-      .image_flip = fuchsia::ui::composition::ImageFlip::NONE,
-  };
+  NOTREACHED();
 }
 
 // Converts a gfx size to the associated Fuchsia size, and accounts for any
@@ -199,7 +196,7 @@ void FlatlandSurface::Present(
         overlay.pixmap.get(), /*is_primary_plane=*/false);
     const auto image_id = flatland_ids.image_id;
     const auto transform_id = flatland_ids.transform_id;
-    const auto overlay_plane_transform = absl::get<gfx::OverlayTransform>(
+    const auto overlay_plane_transform = std::get<gfx::OverlayTransform>(
         overlay.overlay_plane_data.plane_transform);
 
     if (overlay.gpu_fence) {
@@ -223,6 +220,7 @@ void FlatlandSurface::Present(
     // `crop_rect` is in normalized coordinates, but Flatland expects it to be
     // given in image coordinates.
     gfx::RectF sample_region = overlay.overlay_plane_data.crop_rect;
+    sample_region.Intersect(gfx::RectF(1.0, 1.0));
     const gfx::Size& buffer_size = overlay.pixmap->GetBufferSize();
     sample_region.Scale(buffer_size.width(), buffer_size.height());
     flatland_.flatland()->SetImageSampleRegion(
@@ -243,9 +241,9 @@ void FlatlandSurface::Present(
       CreateOrGetFlatlandIds(primary_plane_pixmap.get(),
                              /*is_primary_plane=*/true)
           .image_id;
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-      "viz", "FlatlandSurface::Present", TRACE_ID_LOCAL(this),
-      "primary_plane_image_id", primary_plane_image_id.value);
+  TRACE_EVENT_BEGIN("viz", "FlatlandSurface::Present",
+                    perfetto::Track::FromPointer(this),
+                    "primary_plane_image_id", primary_plane_image_id.value);
   child_transforms_[0] = primary_plane_transform_id_;
   flatland_.flatland()->SetContent(primary_plane_transform_id_,
                                    primary_plane_image_id);
@@ -335,7 +333,7 @@ void FlatlandSurface::RemovePixmapResources(FlatlandPixmapId ids) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   auto iter = pixmap_ids_to_flatland_ids_.find(ids);
-  CHECK(iter != pixmap_ids_to_flatland_ids_.end(), base::NotFatalUntil::M130);
+  CHECK(iter != pixmap_ids_to_flatland_ids_.end());
   flatland_.flatland()->ReleaseImage(iter->second.image_id);
   if (iter->second.transform_id.value) {
     flatland_.flatland()->ReleaseTransform(iter->second.transform_id);
@@ -347,9 +345,9 @@ void FlatlandSurface::OnPresentComplete(
     base::TimeTicks actual_presentation_time,
     base::TimeDelta presentation_interval) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  TRACE_EVENT_NESTABLE_ASYNC_END1("viz", "FlatlandSurface::PresentFrame",
-                                  TRACE_ID_LOCAL(this), "image_id",
-                                  pending_frames_.front().image_id.value);
+  TRACE_EVENT_END("viz", /* FlatlandSurface::Present */
+                  perfetto::Track::FromPointer(this), "image_id",
+                  pending_frames_.front().image_id.value);
 
   auto& frame = pending_frames_.front();
 

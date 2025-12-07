@@ -30,6 +30,7 @@ found in the LICENSE file.
       <div slot="tab">Event Logs</div>
       <div slot="tab">Models</div>
       <div slot="tab">Client Ids</div>
+      <div slot="tab">MQLS Logs</div>
 
       <div slot="panel" id="tabpanel-event-logs">
         <div>
@@ -83,6 +84,26 @@ found in the LICENSE file.
               <thead>
                 <tr>
                   <th class="logged-client-ids">Client Id</th>
+                </tr>
+              </thead>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div slot="panel" id="tabpanel-mqls-logs">
+        <div>
+          <div>
+            <h2 class="row-sep">
+              <span>MQLS Logs</span>
+              <button id="mqls-logs-refresh">Refresh</button>
+            </h2>
+            <table id="mqls-logs-container">
+              <thead>
+                <tr>
+                  <th class="mqls-logs-feature">Feature</th>
+                  <th class="mqls-logs-proto">Proto</th>
+                  <th class="mqls-logs-status">Status</th>
                 </tr>
               </thead>
             </table>

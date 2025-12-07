@@ -2,15 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {getSingleTab} from '/_test_resources/test_util/tabs_util.js';
+
 function injectedFunction() {
   return location.pathname;
-}
-
-// Returns the single tab matching the given `query`.
-async function getSingleTab(query) {
-  const tabs = await chrome.tabs.query(query);
-  chrome.test.assertEq(1, tabs.length);
-  return tabs[0];
 }
 
 chrome.test.runTests([

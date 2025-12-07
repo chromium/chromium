@@ -6,6 +6,7 @@
 #define COMPONENTS_SEARCH_START_SUGGEST_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -32,12 +33,8 @@ class SharedURLLoaderFactory;
 
 class QuerySuggestion {
  public:
-  bool operator==(const QuerySuggestion& other) const {
-    return query == other.query && destination_url == other.destination_url;
-  }
-  bool operator!=(const QuerySuggestion& other) const {
-    return !(this == &other);
-  }
+  friend bool operator==(const QuerySuggestion&,
+                         const QuerySuggestion&) = default;
 
   // Query suggestion.
   std::u16string query;
@@ -87,7 +84,7 @@ class StartSuggestService : public KeyedService {
   // Handles request response from the server.
   void SuggestResponseLoaded(network::SimpleURLLoader* loader,
                              SuggestResultCallback callback,
-                             std::unique_ptr<std::string> response);
+                             std::optional<std::string> response);
   void SuggestionsParsed(SuggestResultCallback callback,
                          data_decoder::DataDecoder::ValueOrError result);
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_worker_static.h"
 
 #include <stdint.h>
@@ -16,6 +11,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/json/json_writer.h"
@@ -41,8 +37,8 @@
 #include "chrome/browser/ash/platform_keys/mock_platform_keys_service.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chromeos/ash/components/dbus/attestation/fake_attestation_client.h"
+#include "chromeos/ash/components/platform_keys/platform_keys.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -129,8 +125,6 @@ constexpr char kCertProfileId[] = "cert_profile_1";
 constexpr char kCertProfileName[] = "Certificate Profile 1";
 constexpr char kCertProfileVersion[] = "cert_profile_version_1";
 constexpr base::TimeDelta kCertProfileRenewalPeriod = base::Seconds(0);
-// Prefix + certificate profile name.
-constexpr char kInvalidationTopic[] = "fake_invalidation_topic_1";
 constexpr char kChallenge[] = "fake_va_challenge_1";
 constexpr char kChallengeResponse[] = "fake_va_challenge_response_1";
 constexpr unsigned int kNonVaKeyModulusLengthBits = 2048;
@@ -170,8 +164,8 @@ std::vector<uint8_t> GetSignatureBin() {
 
 std::vector<uint8_t> GetCertProfileIdBin() {
   // -1 because of '\0'.
-  return std::vector<uint8_t>(kCertProfileId,
-                              kCertProfileId + sizeof(kCertProfileId) - 1);
+  return std::vector<uint8_t>(
+      kCertProfileId, UNSAFE_TODO(kCertProfileId + sizeof(kCertProfileId) - 1));
 }
 
 void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
@@ -219,68 +213,65 @@ void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
         .WillOnce(RunOnceCallback<0>(register_key_result));               \
   }
 
-#define EXPECT_START_CSR_OK(START_CSR_FUNC, HASHING_ALGO)            \
-  {                                                                  \
-    EXPECT_CALL(cert_provisioning_client_, START_CSR_FUNC)           \
-        .Times(1)                                                    \
-        .WillOnce(RunOnceCallback<1>(                                \
-            policy::DeviceManagementStatus::DM_STATUS_SUCCESS,       \
-            /*response_error=*/std::nullopt,                         \
-            /*try_again_later_ms=*/std::nullopt, kInvalidationTopic, \
-            kChallenge, HASHING_ALGO, GetDataToSign()));             \
+#define EXPECT_START_CSR_OK(START_CSR_FUNC, HASHING_ALGO)                  \
+  {                                                                        \
+    EXPECT_CALL(cert_provisioning_client_, START_CSR_FUNC)                 \
+        .Times(1)                                                          \
+        .WillOnce(RunOnceCallback<1>(                                      \
+            policy::DeviceManagementStatus::DM_STATUS_SUCCESS,             \
+            /*response_error=*/std::nullopt,                               \
+            /*try_again_later_ms=*/std::nullopt, kChallenge, HASHING_ALGO, \
+            GetDataToSign()));                                             \
   }
 
-#define EXPECT_START_CSR_OK_WITHOUT_VA(START_CSR_FUNC, HASHING_ALGO) \
-  {                                                                  \
-    EXPECT_CALL(cert_provisioning_client_, START_CSR_FUNC)           \
-        .Times(1)                                                    \
-        .WillOnce(RunOnceCallback<1>(                                \
-            policy::DeviceManagementStatus::DM_STATUS_SUCCESS,       \
-            /*response_error=*/std::nullopt,                         \
-            /*try_again_later_ms=*/std::nullopt, kInvalidationTopic, \
-            /*va_challenge=*/"", HASHING_ALGO, GetDataToSign()));    \
+#define EXPECT_START_CSR_OK_WITHOUT_VA(START_CSR_FUNC, HASHING_ALGO)  \
+  {                                                                   \
+    EXPECT_CALL(cert_provisioning_client_, START_CSR_FUNC)            \
+        .Times(1)                                                     \
+        .WillOnce(RunOnceCallback<1>(                                 \
+            policy::DeviceManagementStatus::DM_STATUS_SUCCESS,        \
+            /*response_error=*/std::nullopt,                          \
+            /*try_again_later_ms=*/std::nullopt, /*va_challenge=*/"", \
+            HASHING_ALGO, GetDataToSign()));                          \
   }
 
-#define EXPECT_START_CSR_TRY_LATER(START_CSR_FUNC, DELAY_MS)       \
-  {                                                                \
-    EXPECT_CALL(cert_provisioning_client_, START_CSR_FUNC)         \
-        .Times(1)                                                  \
-        .WillOnce(RunOnceCallback<1>(                              \
-            policy::DeviceManagementStatus::DM_STATUS_SUCCESS,     \
-            /*response_error=*/std::nullopt,                       \
-            /*try_again_later_ms=*/(DELAY_MS), kInvalidationTopic, \
-            /*va_challenge=*/"",                                   \
-            enterprise_management::HashingAlgorithm::              \
-                HASHING_ALGORITHM_UNSPECIFIED,                     \
-            /*data_to_sign=*/std::vector<uint8_t>()));             \
+#define EXPECT_START_CSR_TRY_LATER(START_CSR_FUNC, DELAY_MS)        \
+  {                                                                 \
+    EXPECT_CALL(cert_provisioning_client_, START_CSR_FUNC)          \
+        .Times(1)                                                   \
+        .WillOnce(RunOnceCallback<1>(                               \
+            policy::DeviceManagementStatus::DM_STATUS_SUCCESS,      \
+            /*response_error=*/std::nullopt,                        \
+            /*try_again_later_ms=*/(DELAY_MS), /*va_challenge=*/"", \
+            enterprise_management::HashingAlgorithm::               \
+                HASHING_ALGORITHM_UNSPECIFIED,                      \
+            /*data_to_sign=*/std::vector<uint8_t>()));              \
   }
 
-#define EXPECT_START_CSR_INVALID_REQUEST(START_CSR_FUNC)                    \
-  {                                                                         \
-    EXPECT_CALL(cert_provisioning_client_, START_CSR_FUNC)                  \
-        .Times(1)                                                           \
-        .WillOnce(RunOnceCallback<1>(                                       \
-            policy::DeviceManagementStatus::DM_STATUS_REQUEST_INVALID,      \
-            /*response_error=*/std::nullopt,                                \
-            /*try_again_later_ms=*/std::nullopt, /*invalidation_topic=*/"", \
-            /*va_challenge=*/"",                                            \
-            enterprise_management::HashingAlgorithm::                       \
-                HASHING_ALGORITHM_UNSPECIFIED,                              \
-            /*data_to_sign=*/std::vector<uint8_t>()));                      \
+#define EXPECT_START_CSR_INVALID_REQUEST(START_CSR_FUNC)               \
+  {                                                                    \
+    EXPECT_CALL(cert_provisioning_client_, START_CSR_FUNC)             \
+        .Times(1)                                                      \
+        .WillOnce(RunOnceCallback<1>(                                  \
+            policy::DeviceManagementStatus::DM_STATUS_REQUEST_INVALID, \
+            /*response_error=*/std::nullopt,                           \
+            /*try_again_later_ms=*/std::nullopt, /*va_challenge=*/"",  \
+            enterprise_management::HashingAlgorithm::                  \
+                HASHING_ALGORITHM_UNSPECIFIED,                         \
+            /*data_to_sign=*/std::vector<uint8_t>()));                 \
   }
 
-#define EXPECT_START_CSR_CA_ERROR(START_CSR_FUNC)                           \
-  {                                                                         \
-    EXPECT_CALL(cert_provisioning_client_, START_CSR_FUNC)                  \
-        .Times(1)                                                           \
-        .WillOnce(RunOnceCallback<1>(                                       \
-            policy::DeviceManagementStatus::DM_STATUS_SUCCESS,              \
-            /*response_error=*/CertProvisioningResponseError::CA_ERROR,     \
-            /*try_again_later_ms=*/std::nullopt, /*invalidation_topic=*/"", \
-            /*va_challenge=*/"",                                            \
-            enterprise_management::HashingAlgorithm::                       \
-                HASHING_ALGORITHM_UNSPECIFIED,                              \
-            /*data_to_sign=*/std::vector<uint8_t>()));                      \
+#define EXPECT_START_CSR_CA_ERROR(START_CSR_FUNC)                       \
+  {                                                                     \
+    EXPECT_CALL(cert_provisioning_client_, START_CSR_FUNC)              \
+        .Times(1)                                                       \
+        .WillOnce(RunOnceCallback<1>(                                   \
+            policy::DeviceManagementStatus::DM_STATUS_SUCCESS,          \
+            /*response_error=*/CertProvisioningResponseError::CA_ERROR, \
+            /*try_again_later_ms=*/std::nullopt, /*va_challenge=*/"",   \
+            enterprise_management::HashingAlgorithm::                   \
+                HASHING_ALGORITHM_UNSPECIFIED,                          \
+            /*data_to_sign=*/std::vector<uint8_t>()));                  \
   }
 
 #define EXPECT_START_CSR_TEMPORARY_UNAVAILABLE(START_CSR_FUNC)               \
@@ -290,41 +281,38 @@ void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
         .WillOnce(RunOnceCallback<1>(                                        \
             policy::DeviceManagementStatus::DM_STATUS_TEMPORARY_UNAVAILABLE, \
             /*response_error=*/std::nullopt,                                 \
-            /*try_again_later_ms=*/std::nullopt, /*invalidation_topic=*/"",  \
-            /*va_challenge=*/"",                                             \
+            /*try_again_later_ms=*/std::nullopt, /*va_challenge=*/"",        \
             enterprise_management::HashingAlgorithm::                        \
                 HASHING_ALGORITHM_UNSPECIFIED,                               \
             /*data_to_sign=*/std::vector<uint8_t>()));                       \
   }
 
-#define EXPECT_START_CSR_SERVICE_ACTIVATION_PENDING(START_CSR_FUNC)            \
-  {                                                                            \
-    EXPECT_CALL(cert_provisioning_client_, START_CSR_FUNC)                     \
-        .Times(1)                                                              \
-        .WillOnce(                                                             \
-            RunOnceCallback<1>(policy::DeviceManagementStatus::                \
-                                   DM_STATUS_SERVICE_ACTIVATION_PENDING,       \
-                               /*response_error=*/std::nullopt,                \
-                               /*try_again_later_ms=*/std::nullopt,            \
-                               /*invalidation_topic=*/"", /*va_challenge=*/"", \
-                               enterprise_management::HashingAlgorithm::       \
-                                   HASHING_ALGORITHM_UNSPECIFIED,              \
-                               /*data_to_sign=*/std::vector<uint8_t>()));      \
+#define EXPECT_START_CSR_SERVICE_ACTIVATION_PENDING(START_CSR_FUNC)   \
+  {                                                                   \
+    EXPECT_CALL(cert_provisioning_client_, START_CSR_FUNC)            \
+        .Times(1)                                                     \
+        .WillOnce(RunOnceCallback<1>(                                 \
+            policy::DeviceManagementStatus::                          \
+                DM_STATUS_SERVICE_ACTIVATION_PENDING,                 \
+            /*response_error=*/std::nullopt,                          \
+            /*try_again_later_ms=*/std::nullopt, /*va_challenge=*/"", \
+            enterprise_management::HashingAlgorithm::                 \
+                HASHING_ALGORITHM_UNSPECIFIED,                        \
+            /*data_to_sign=*/std::vector<uint8_t>()));                \
   }
 
-#define EXPECT_START_CSR_INCONSISTENT_DATA(START_CSR_FUNC)                  \
-  {                                                                         \
-    EXPECT_CALL(cert_provisioning_client_, START_CSR_FUNC)                  \
-        .Times(1)                                                           \
-        .WillOnce(RunOnceCallback<1>(                                       \
-            policy::DeviceManagementStatus::                                \
-                DM_STATUS_SUCCESS, /*response_error=*/                      \
-            CertProvisioningResponseError::INCONSISTENT_DATA,               \
-            /*try_again_later_ms=*/std::nullopt, /*invalidation_topic=*/"", \
-            /*va_challenge=*/"",                                            \
-            enterprise_management::HashingAlgorithm::                       \
-                HASHING_ALGORITHM_UNSPECIFIED,                              \
-            /*data_to_sign=*/std::vector<uint8_t>()));                      \
+#define EXPECT_START_CSR_INCONSISTENT_DATA(START_CSR_FUNC)            \
+  {                                                                   \
+    EXPECT_CALL(cert_provisioning_client_, START_CSR_FUNC)            \
+        .Times(1)                                                     \
+        .WillOnce(RunOnceCallback<1>(                                 \
+            policy::DeviceManagementStatus::                          \
+                DM_STATUS_SUCCESS, /*response_error=*/                \
+            CertProvisioningResponseError::INCONSISTENT_DATA,         \
+            /*try_again_later_ms=*/std::nullopt, /*va_challenge=*/"", \
+            enterprise_management::HashingAlgorithm::                 \
+                HASHING_ALGORITHM_UNSPECIFIED,                        \
+            /*data_to_sign=*/std::vector<uint8_t>()));                \
   }
 
 #define EXPECT_START_CSR_NO_OP(START_CSR_FUNC) \
@@ -582,7 +570,7 @@ TEST_F(CertProvisioningWorkerStaticTest, Success) {
   base::HistogramTester histogram_tester;
 
   const CertProfile cert_profile(
-      kCertProfileId, kCertProfileName, kCertProfileVersion,
+      kCertProfileId, kCertProfileName, kCertProfileVersion, KeyType::kRsa,
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
       ProtocolVersion::kStatic);
   const std::string process_id = GenerateCertProvisioningId();
@@ -624,9 +612,7 @@ TEST_F(CertProvisioningWorkerStaticTest, Success) {
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
         .WillOnce(VerifyNoBackendErrorsSeen);
 
-    EXPECT_CALL(*mock_invalidator,
-                Register(kInvalidationTopic, listener_type, _))
-        .Times(1);
+    EXPECT_CALL(*mock_invalidator, Register(listener_type, _)).Times(1);
 
     EXPECT_SIGN_CHALLENGE_OK(*mock_tpm_challenge_key,
                              StartSignChallengeStep(kChallenge,
@@ -707,18 +693,13 @@ TEST_F(CertProvisioningWorkerStaticTest, Success) {
   histogram_tester.ExpectBucketCount(
       "ChromeOS.CertProvisioning.Event.User",
       CertProvisioningEvent::kWorkerRetrySucceededWithoutInvalidation, 1);
-  histogram_tester.ExpectTotalCount(
-      "ChromeOS.CertProvisioning.KeypairGenerationTime.User", 1);
-  histogram_tester.ExpectTotalCount("ChromeOS.CertProvisioning.VaTime.User", 1);
-  histogram_tester.ExpectTotalCount(
-      "ChromeOS.CertProvisioning.CsrSignTime.User", 1);
 }
 
 // Checks that the worker makes all necessary requests to other modules during
 // success scenario when VA challenge is not received.
 TEST_F(CertProvisioningWorkerStaticTest, NoVaSuccess) {
   const CertProfile cert_profile(
-      kCertProfileId, kCertProfileName, kCertProfileVersion,
+      kCertProfileId, kCertProfileName, kCertProfileVersion, KeyType::kRsa,
       /*is_va_enabled=*/false, kCertProfileRenewalPeriod,
       ProtocolVersion::kStatic);
   const std::string process_id = GenerateCertProvisioningId();
@@ -793,7 +774,7 @@ TEST_F(CertProvisioningWorkerStaticTest, NoVaSuccess) {
 // hashing_algorithm=NO_HASH to platform_keys.
 TEST_F(CertProvisioningWorkerStaticTest, NoHashInStartCsr) {
   const CertProfile cert_profile(
-      kCertProfileId, kCertProfileName, kCertProfileVersion,
+      kCertProfileId, kCertProfileName, kCertProfileVersion, KeyType::kRsa,
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
       ProtocolVersion::kStatic);
   const std::string process_id = GenerateCertProvisioningId();
@@ -827,9 +808,7 @@ TEST_F(CertProvisioningWorkerStaticTest, NoHashInStartCsr) {
         em::HashingAlgorithm::NO_HASH);
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
 
-    EXPECT_CALL(*mock_invalidator,
-                Register(kInvalidationTopic, listener_type, _))
-        .Times(1);
+    EXPECT_CALL(*mock_invalidator, Register(listener_type, _)).Times(1);
 
     EXPECT_SIGN_CHALLENGE_OK(*mock_tpm_challenge_key,
                              StartSignChallengeStep(kChallenge,
@@ -890,7 +869,7 @@ TEST_F(CertProvisioningWorkerStaticTest, NoHashInStartCsr) {
 
 TEST_F(CertProvisioningWorkerStaticTest, PublicKeyMismatch) {
   const CertProfile cert_profile(
-      kCertProfileId, kCertProfileName, kCertProfileVersion,
+      kCertProfileId, kCertProfileName, kCertProfileVersion, KeyType::kRsa,
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
       ProtocolVersion::kStatic);
   const std::string process_id = GenerateCertProvisioningId();
@@ -975,7 +954,7 @@ TEST_F(CertProvisioningWorkerStaticTest, PublicKeyMismatch) {
 // retry a request when it asked to continue the provisioning.
 TEST_F(CertProvisioningWorkerStaticTest, TryLaterManualRetry) {
   const CertProfile cert_profile(
-      kCertProfileId, kCertProfileName, kCertProfileVersion,
+      kCertProfileId, kCertProfileName, kCertProfileVersion, KeyType::kRsa,
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
       ProtocolVersion::kStatic);
   const std::string process_id = GenerateCertProvisioningId();
@@ -1093,7 +1072,7 @@ TEST_F(CertProvisioningWorkerStaticTest, TryLaterManualRetry) {
 // automatically retry a request after some time.
 TEST_F(CertProvisioningWorkerStaticTest, TryLaterWait) {
   const CertProfile cert_profile(
-      kCertProfileId, kCertProfileName, kCertProfileVersion,
+      kCertProfileId, kCertProfileName, kCertProfileVersion, KeyType::kRsa,
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
       ProtocolVersion::kStatic);
   const std::string process_id = GenerateCertProvisioningId();
@@ -1225,7 +1204,7 @@ TEST_F(CertProvisioningWorkerStaticTest, TryLaterWait) {
 // on the request.
 TEST_F(CertProvisioningWorkerStaticTest, ServiceActivationPendingResponse) {
   const CertProfile cert_profile(
-      kCertProfileId, kCertProfileName, kCertProfileVersion,
+      kCertProfileId, kCertProfileName, kCertProfileVersion, KeyType::kRsa,
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
       ProtocolVersion::kStatic);
   const std::string process_id = GenerateCertProvisioningId();
@@ -1420,7 +1399,7 @@ TEST_F(CertProvisioningWorkerStaticTest, TryLaterWaitForInvalidation) {
       kCertProvisioningUseOnlyInvalidationsForTesting};
 
   const CertProfile cert_profile(
-      kCertProfileId, kCertProfileName, kCertProfileVersion,
+      kCertProfileId, kCertProfileName, kCertProfileVersion, KeyType::kRsa,
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
       ProtocolVersion::kStatic);
   const std::string process_id = GenerateCertProvisioningId();
@@ -1557,7 +1536,7 @@ TEST_F(CertProvisioningWorkerStaticTest, TryLaterWaitForInvalidation) {
 // invalidation is triggered.
 TEST_F(CertProvisioningWorkerStaticTest, InvalidationRespected) {
   const CertProfile cert_profile(
-      kCertProfileId, kCertProfileName, kCertProfileVersion,
+      kCertProfileId, kCertProfileName, kCertProfileVersion, KeyType::kRsa,
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
       ProtocolVersion::kStatic);
   const std::string process_id = GenerateCertProvisioningId();
@@ -1608,9 +1587,8 @@ TEST_F(CertProvisioningWorkerStaticTest, InvalidationRespected) {
     EXPECT_START_CSR_OK(
         StartCsr(Eq(std::ref(provisioning_process)), /*callback=*/_),
         em::HashingAlgorithm::SHA256);
-    EXPECT_CALL(*mock_invalidator,
-                Register(kInvalidationTopic, listener_type, _))
-        .WillOnce(SaveArg<2>(&on_invalidation_event_callback));
+    EXPECT_CALL(*mock_invalidator, Register(listener_type, _))
+        .WillOnce(SaveArg<1>(&on_invalidation_event_callback));
 
     EXPECT_SIGN_CHALLENGE_OK(*mock_tpm_challenge_key,
                              StartSignChallengeStep(kChallenge,
@@ -1694,7 +1672,7 @@ TEST_F(CertProvisioningWorkerStaticTest, InvalidationRespected) {
 TEST_F(CertProvisioningWorkerStaticTest, StatusErrorHandling) {
   const CertScope kCertScope = CertScope::kUser;
   const CertProfile cert_profile(
-      kCertProfileId, kCertProfileName, kCertProfileVersion,
+      kCertProfileId, kCertProfileName, kCertProfileVersion, KeyType::kRsa,
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
       ProtocolVersion::kStatic);
   const std::string process_id = GenerateCertProvisioningId();
@@ -1742,7 +1720,7 @@ TEST_F(CertProvisioningWorkerStaticTest, ResponseErrorHandling) {
   base::HistogramTester histogram_tester;
 
   const CertProfile cert_profile(
-      kCertProfileId, kCertProfileName, kCertProfileVersion,
+      kCertProfileId, kCertProfileName, kCertProfileVersion, KeyType::kRsa,
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
       ProtocolVersion::kStatic);
   const std::string process_id = GenerateCertProvisioningId();
@@ -1792,7 +1770,7 @@ TEST_F(CertProvisioningWorkerStaticTest, ResponseErrorHandling) {
 TEST_F(CertProvisioningWorkerStaticTest, InconsistentDataErrorHandling) {
   const CertScope kCertScope = CertScope::kUser;
   const CertProfile cert_profile(
-      kCertProfileId, kCertProfileName, kCertProfileVersion,
+      kCertProfileId, kCertProfileName, kCertProfileVersion, KeyType::kRsa,
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
       ProtocolVersion::kStatic);
   const std::string process_id = GenerateCertProvisioningId();
@@ -1832,7 +1810,7 @@ TEST_F(CertProvisioningWorkerStaticTest, InconsistentDataErrorHandling) {
 // worker will automatically retry a request using exponential backoff strategy.
 TEST_F(CertProvisioningWorkerStaticTest, BackoffStrategy) {
   const CertProfile cert_profile(
-      kCertProfileId, kCertProfileName, kCertProfileVersion,
+      kCertProfileId, kCertProfileName, kCertProfileVersion, KeyType::kRsa,
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
       ProtocolVersion::kStatic);
 
@@ -1900,7 +1878,7 @@ TEST_F(CertProvisioningWorkerStaticTest, BackoffStrategy) {
 // worker will update its BackendServerError attribute.
 TEST_F(CertProvisioningWorkerStaticTest, ProcessBackendServerErrorResponse) {
   const CertProfile cert_profile(
-      kCertProfileId, kCertProfileName, kCertProfileVersion,
+      kCertProfileId, kCertProfileName, kCertProfileVersion, KeyType::kRsa,
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
       ProtocolVersion::kStatic);
   const std::string process_id = GenerateCertProvisioningId();
@@ -1956,7 +1934,7 @@ TEST_F(CertProvisioningWorkerStaticTest, ProcessBackendServerErrorResponse) {
 // cleared.
 TEST_F(CertProvisioningWorkerStaticTest, ClearBackendServerError) {
   const CertProfile cert_profile(
-      kCertProfileId, kCertProfileName, kCertProfileVersion,
+      kCertProfileId, kCertProfileName, kCertProfileVersion, KeyType::kRsa,
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
       ProtocolVersion::kStatic);
   const std::string process_id = GenerateCertProvisioningId();
@@ -1998,7 +1976,7 @@ TEST_F(CertProvisioningWorkerStaticTest, RemoveRegisteredKey) {
   base::HistogramTester histogram_tester;
 
   const CertProfile cert_profile(
-      kCertProfileId, kCertProfileName, kCertProfileVersion,
+      kCertProfileId, kCertProfileName, kCertProfileVersion, KeyType::kRsa,
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
       ProtocolVersion::kStatic);
   const std::string process_id = GenerateCertProvisioningId();
@@ -2032,9 +2010,7 @@ TEST_F(CertProvisioningWorkerStaticTest, RemoveRegisteredKey) {
         StartCsr(Eq(std::ref(provisioning_process)), /*callback=*/_),
         em::HashingAlgorithm::SHA256);
 
-    EXPECT_CALL(*mock_invalidator,
-                Register(kInvalidationTopic, listener_type, _))
-        .Times(1);
+    EXPECT_CALL(*mock_invalidator, Register(listener_type, _)).Times(1);
 
     EXPECT_SIGN_CHALLENGE_OK(*mock_tpm_challenge_key,
                              StartSignChallengeStep(kChallenge,
@@ -2079,7 +2055,7 @@ TEST_F(CertProvisioningWorkerStaticTest, RemoveRegisteredKey) {
 TEST_F(CertProvisioningWorkerStaticTest, ResetWorker) {
   const CertScope kCertScope = CertScope::kDevice;
   const CertProfile cert_profile(
-      kCertProfileId, kCertProfileName, kCertProfileVersion,
+      kCertProfileId, kCertProfileName, kCertProfileVersion, KeyType::kRsa,
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
       ProtocolVersion::kStatic);
   const std::string process_id = GenerateCertProvisioningId();
@@ -2121,7 +2097,7 @@ class PrefServiceObserver {
 TEST_F(CertProvisioningWorkerStaticTest, SerializationSuccess) {
   const base::TimeDelta kRenewalPeriod = base::Seconds(1200300);
   const CertProfile cert_profile(
-      kCertProfileId, kCertProfileName, kCertProfileVersion,
+      kCertProfileId, kCertProfileName, kCertProfileVersion, KeyType::kRsa,
       /*is_va_enabled=*/true, kRenewalPeriod, ProtocolVersion::kStatic);
   const CertScope kCertScope = CertScope::kUser;
   const std::string process_id = GenerateCertProvisioningId();
@@ -2170,7 +2146,6 @@ TEST_F(CertProvisioningWorkerStaticTest, SerializationSuccess) {
               "renewal_period": 1200300
             },
             "cert_scope": 0,
-            "invalidation_topic": "",
             "process_id": "%s",
             "public_key": "%s",
             "state": 1
@@ -2216,9 +2191,7 @@ TEST_F(CertProvisioningWorkerStaticTest, SerializationSuccess) {
     pref_val = ParseJsonDict("{}");
     EXPECT_CALL(pref_observer, OnPrefValueUpdated(IsJson(pref_val))).Times(1);
 
-    EXPECT_CALL(*mock_invalidator,
-                Register(kInvalidationTopic, listener_type, _))
-        .Times(1);
+    EXPECT_CALL(*mock_invalidator, Register(listener_type, _)).Times(1);
 
     EXPECT_SIGN_CHALLENGE_OK(*mock_tpm_challenge_key,
                              StartSignChallengeStep(kChallenge,
@@ -2255,7 +2228,6 @@ TEST_F(CertProvisioningWorkerStaticTest, SerializationSuccess) {
               "renewal_period": 1200300
             },
             "cert_scope": 0,
-            "invalidation_topic": "fake_invalidation_topic_1",
             "process_id": "%s",
             "public_key": "%s",
             "state": 7
@@ -2272,9 +2244,7 @@ TEST_F(CertProvisioningWorkerStaticTest, SerializationSuccess) {
     testing::InSequence seq;
 
     mock_invalidator_obj = MakeInvalidator(&mock_invalidator);
-    EXPECT_CALL(*mock_invalidator,
-                Register(kInvalidationTopic, listener_type, _))
-        .Times(1);
+    EXPECT_CALL(*mock_invalidator, Register(listener_type, _)).Times(1);
 
     mock_tpm_challenge_key = PrepareTpmChallengeKey();
     EXPECT_CALL(*mock_tpm_challenge_key,
@@ -2318,7 +2288,7 @@ TEST_F(CertProvisioningWorkerStaticTest, SerializationSuccess) {
 TEST_F(CertProvisioningWorkerStaticTest, SerializationOnFailure) {
   const CertScope kCertScope = CertScope::kUser;
   const CertProfile cert_profile(
-      kCertProfileId, kCertProfileName, kCertProfileVersion,
+      kCertProfileId, kCertProfileName, kCertProfileVersion, KeyType::kRsa,
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
       ProtocolVersion::kStatic);
 
@@ -2356,7 +2326,6 @@ TEST_F(CertProvisioningWorkerStaticTest, SerializationOnFailure) {
               "va_enabled": true
             },
             "cert_scope": 0,
-            "invalidation_topic": "",
             "process_id": "%s",
             "public_key": "%s",
             "state": 1
@@ -2384,7 +2353,7 @@ TEST_F(CertProvisioningWorkerStaticTest, SerializationOnFailure) {
 TEST_F(CertProvisioningWorkerStaticTest, InformationalGetters) {
   const CertScope kCertScope = CertScope::kUser;
   const CertProfile cert_profile(
-      kCertProfileId, kCertProfileName, kCertProfileVersion,
+      kCertProfileId, kCertProfileName, kCertProfileVersion, KeyType::kRsa,
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
       ProtocolVersion::kStatic);
   const std::string process_id = GenerateCertProvisioningId();
@@ -2439,7 +2408,7 @@ TEST_F(CertProvisioningWorkerStaticTest, CancelDeviceWorker) {
 
   const CertScope kCertScope = CertScope::kDevice;
   const CertProfile cert_profile(
-      kCertProfileId, kCertProfileName, kCertProfileVersion,
+      kCertProfileId, kCertProfileName, kCertProfileVersion, KeyType::kRsa,
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
       ProtocolVersion::kStatic);
 
@@ -2478,7 +2447,6 @@ TEST_F(CertProvisioningWorkerStaticTest, CancelDeviceWorker) {
               "va_enabled": true
             },
             "cert_scope": 1,
-            "invalidation_topic": "",
             "process_id": "%s",
             "public_key": "%s",
             "state": 1

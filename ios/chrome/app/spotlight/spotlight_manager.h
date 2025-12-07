@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-class ChromeBrowserState;
+class ProfileIOS;
 
 // Allows Chrome to add the bookmarks of `bookmarkModel` in the systemwide
 // Spotlight search index.
@@ -19,12 +19,11 @@ class ChromeBrowserState;
 // and reindex the first 1000 bookmarks.
 @interface SpotlightManager : NSObject
 
-// Creates a SpotlightManager tracking and indexing various browser state
+// Creates a SpotlightManager tracking and indexing various profile
 // elements such as most actives and bookmarks.
-// `browserState` must not be nil.
-// There should be only one SpotlightManager observing `browserState`.
-+ (SpotlightManager*)spotlightManagerWithBrowserState:
-    (ChromeBrowserState*)browserState;
+// `profile` must not be nil.
+// There should be only one SpotlightManager observing `profile`.
++ (SpotlightManager*)spotlightManagerWithProfile:(ProfileIOS*)profile;
 
 // Resyncs the index if necessary
 - (void)resyncIndex;

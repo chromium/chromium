@@ -5,13 +5,11 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_INSECURE_CREDENTIALS_TABLE_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_INSECURE_CREDENTIALS_TABLE_H_
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/sync/password_store_sync.h"
-#include "url/gurl.h"
 
 namespace sql {
 class Database;

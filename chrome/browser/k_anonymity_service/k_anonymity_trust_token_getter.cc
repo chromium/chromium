@@ -4,12 +4,15 @@
 
 #include "chrome/browser/k_anonymity_service/k_anonymity_trust_token_getter.h"
 
+#include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/json/json_writer.h"
 #include "base/json/values_util.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_metrics.h"
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_urls.h"
@@ -20,7 +23,6 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
@@ -120,14 +122,11 @@ KAnonymityTrustTokenGetter::~KAnonymityTrustTokenGetter() = default;
 
 void KAnonymityTrustTokenGetter::TryGetTrustTokenAndKey(
     TryGetTrustTokenAndKeyCallback callback) {
-  if ((!base::FeatureList::IsEnabled(network::features::kPrivateStateTokens) &&
-       !base::FeatureList::IsEnabled(network::features::kFledgePst)) ||
-      !identity_manager_ ||
+  if (!identity_manager_ ||
       !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     std::move(callback).Run(std::nullopt);
     return;
   }
-
   RecordTrustTokenGetterAction(
       KAnonymityTrustTokenGetterAction::kTryGetTrustTokenAndKey);
   bool currently_fetching = pending_callbacks_.size() > 0;
@@ -156,10 +155,6 @@ void KAnonymityTrustTokenGetter::RequestAccessToken() {
   RecordTrustTokenGetterAction(
       KAnonymityTrustTokenGetterAction::kRequestAccessToken);
 
-  // Choose scopes to obtain for the access token.
-  signin::ScopeSet scopes;
-  scopes.insert(GaiaConstants::kKAnonymityServiceOAuth2Scope);
-
   // Choose the mode in which to fetch the access token:
   // see AccessTokenFetcher::Mode below for definitions.
   auto mode =
@@ -168,7 +163,7 @@ void KAnonymityTrustTokenGetter::RequestAccessToken() {
   // Create the fetcher.
   access_token_fetcher_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-          /*consumer_name=*/"KAnonymityService", identity_manager_, scopes,
+          signin::OAuthConsumerId::kKAnonymityService, identity_manager_,
           base::BindOnce(
               &KAnonymityTrustTokenGetter::OnAccessTokenRequestCompleted,
               weak_ptr_factory_.GetWeakPtr()),
@@ -225,7 +220,7 @@ void KAnonymityTrustTokenGetter::FetchNonUniqueUserId() {
 }
 
 void KAnonymityTrustTokenGetter::OnFetchedNonUniqueUserId(
-    std::unique_ptr<std::string> response) {
+    std::optional<std::string> response) {
   url_loader_.reset();
   if (!response) {
     RecordTrustTokenGetterAction(
@@ -294,7 +289,7 @@ void KAnonymityTrustTokenGetter::FetchTrustTokenKeyCommitment(
 
 void KAnonymityTrustTokenGetter::OnFetchedTrustTokenKeyCommitment(
     int non_unique_user_id,
-    std::unique_ptr<std::string> response) {
+    std::optional<std::string> response) {
   if (url_loader_->NetError() != net::OK) {
     url_loader_.reset();
     RecordTrustTokenGetterAction(
@@ -444,8 +439,8 @@ void KAnonymityTrustTokenGetter::OnParsedTrustTokenKeyCommitment(
   base::Value::Dict outer_commitment;
   outer_commitment.Set(*maybe_version, std::move(key_commitment_value));
 
-  std::string key_commitment_str;
-  base::JSONWriter::Write(outer_commitment, &key_commitment_str);
+  std::string key_commitment_str =
+      base::WriteJson(outer_commitment).value_or("");
 
   KeyAndNonUniqueUserIdWithExpiration key_commitment{
       KeyAndNonUniqueUserId{key_commitment_str, non_unique_user_id},

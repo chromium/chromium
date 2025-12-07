@@ -97,7 +97,7 @@ bool DocumentInit::IsAboutBlankDocument() const {
 const KURL& DocumentInit::FallbackBaseURL() const {
   DCHECK(IsSrcdocDocument() || IsAboutBlankDocument() ||
          IsInitialEmptyDocument() || is_for_javascript_url_ ||
-         fallback_base_url_.IsEmpty())
+         is_for_discard_ || fallback_base_url_.IsEmpty())
       << " url = " << url_ << ", fallback_base_url = " << fallback_base_url_;
   return fallback_base_url_;
 }
@@ -156,16 +156,22 @@ DocumentInit::Type DocumentInit::ComputeDocumentType(
     LocalFrame* frame,
     const String& mime_type,
     bool* is_for_external_handler) {
-  if (frame && frame->InViewSourceMode())
+  if (frame && frame->InViewSourceMode()) {
     return Type::kViewSource;
+  }
 
   // Plugins cannot take HTML and XHTML from us, and we don't even need to
   // initialize the plugin database for those.
-  if (mime_type == "text/html")
+  if (mime_type == "text/html") {
     return Type::kHTML;
-
-  if (mime_type == "application/xhtml+xml")
+  }
+  if (mime_type == "application/xhtml+xml") {
     return Type::kXHTML;
+  }
+
+  if (mime_type == "image/svg+xml") {
+    return Type::kSVG;
+  }
 
   // multipart/x-mixed-replace is only supported for images.
   if (MIMETypeRegistry::IsSupportedImageResourceMIMEType(mime_type) ||
@@ -173,10 +179,12 @@ DocumentInit::Type DocumentInit::ComputeDocumentType(
     return Type::kImage;
   }
 
-  if (HTMLMediaElement::GetSupportsType(ContentType(mime_type)))
+  if (HTMLMediaElement::GetSupportsType(ContentType(mime_type))) {
     return Type::kMedia;
+  }
 
-  if (frame && frame->GetPage() && frame->Loader().AllowPlugins()) {
+  if (frame && frame->GetPage() && frame->Loader().AllowPlugins())
+      [[unlikely]] {
     PluginData* plugin_data = GetPluginData(frame);
 
     // Everything else except text/plain can be overridden by plugins.
@@ -194,7 +202,6 @@ DocumentInit::Type DocumentInit::ComputeDocumentType(
           *is_for_external_handler = true;
         return Type::kHTML;
       }
-
       return Type::kPlugin;
     }
   }
@@ -205,11 +212,9 @@ DocumentInit::Type DocumentInit::ComputeDocumentType(
     return Type::kText;
   }
 
-  if (mime_type == "image/svg+xml")
-    return Type::kSVG;
-
-  if (MIMETypeRegistry::IsXMLMIMEType(mime_type))
+  if (MIMETypeRegistry::IsXMLMIMEType(mime_type)) {
     return Type::kXML;
+  }
 
   return Type::kHTML;
 }
@@ -286,6 +291,15 @@ DocumentInit& DocumentInit::WithJavascriptURL(bool is_for_javascript_url) {
   return *this;
 }
 
+DocumentInit& DocumentInit::ForDiscard(bool is_for_discard) {
+  is_for_discard_ = is_for_discard;
+  return *this;
+}
+
+bool DocumentInit::IsForDiscard() const {
+  return is_for_discard_;
+}
+
 DocumentInit& DocumentInit::WithUkmSourceId(ukm::SourceId ukm_source_id) {
   ukm_source_id_ = ukm_source_id;
   return *this;
@@ -326,19 +340,16 @@ Document* DocumentInit::CreateDocument() const {
     case Type::kViewSource:
       return MakeGarbageCollected<HTMLViewSourceDocument>(*this);
     case Type::kText: {
-      if (MIMETypeRegistry::IsJSONMimeType(mime_type_) &&
-          RuntimeEnabledFeatures::PrettyPrintJSONDocumentEnabled()) {
+      if (MIMETypeRegistry::IsJSONMimeType(mime_type_)) {
         return MakeGarbageCollected<JSONDocument>(*this);
       }
       return MakeGarbageCollected<TextDocument>(*this);
     }
     case Type::kUnspecified:
-      [[fallthrough]];
     default:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 }  // namespace blink

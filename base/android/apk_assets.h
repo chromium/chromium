@@ -26,9 +26,8 @@ namespace android {
 BASE_EXPORT int OpenApkAsset(const std::string& file_path,
                              const std::string& split_name,
                              base::MemoryMappedFile::Region* region);
-BASE_EXPORT int OpenApkAsset(
-    const std::string& file_path,
-    base::MemoryMappedFile::Region* region);
+BASE_EXPORT int OpenApkAsset(const std::string& file_path,
+                             base::MemoryMappedFile::Region* region);
 
 // Registers an uncompressed asset from within the apk in the
 // FileDescriptorStore.

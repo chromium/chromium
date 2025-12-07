@@ -33,7 +33,8 @@ IN_PROC_BROWSER_TEST_F(TopFramePopulationBrowsertest, FromTopFrame) {
       base::BindLambdaForTesting(
           [&](const network::mojom::URLLoaderFactoryParams* params,
               const url::Origin& unused_origin,
-              bool unused_is_for_isolated_world) {
+              bool unused_is_for_isolated_world,
+              bool unused_is_for_service_worker) {
             ASSERT_TRUE(params);
 
             // Ignore URLLoaderFactoryParams for the initial empty document.
@@ -83,7 +84,8 @@ IN_PROC_BROWSER_TEST_F(TopFramePopulationBrowsertest, FromNestedFrame) {
       base::BindLambdaForTesting(
           [&](const network::mojom::URLLoaderFactoryParams* params,
               const url::Origin& unused_origin,
-              bool unused_is_for_isolated_world) {
+              bool unused_is_for_isolated_world,
+              bool unused_is_for_service_worker) {
             ASSERT_TRUE(params);
 
             // Ignore URLLoaderFactoryParams for the initial empty document.

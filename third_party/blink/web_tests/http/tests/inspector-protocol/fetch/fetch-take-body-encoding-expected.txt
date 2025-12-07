@@ -1,0 +1,20 @@
+Tests that non-utf8 content is returned base64-encoded
+
+Running test: bound runTestCase
+data: 9eXr6+7z base64: true
+
+Running test: bound runTestCase
+data: Hello base64: false
+
+Running test: bound runTestCase
+data: Hello base64: false
+
+Running test: bound runTestCase
+data: QYvK9TIXnCdasXe2xNs59eggusc= base64: true
+
+Running test: bound runTestCase
+data: MTIzNDU2Nzg5MTIzNDU2Nzg54KA= base64: true
+
+Running test: bound runTestCase
+data: 123456789123456789ࠀ base64: false
+

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.download;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.download.DownloadSnackbarController.INVALID_NOTIFICATION_ID;
 
 import android.app.Notification;
@@ -21,6 +23,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.DownloadNotificationService.DownloadStatus;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
@@ -32,6 +36,7 @@ import org.chromium.components.browser_ui.notifications.NotificationWrapperBuild
  * Foreground service implementation of {@link DownloadContinuityManager} that starts and stops a
  * foreground service when there are active downloads. Only active for Android versions < U.
  */
+@NullMarked
 public class DownloadForegroundServiceManager extends DownloadContinuityManager {
     private static final String TAG = "DownloadFgsm";
     // Delay to ensure start/stop foreground doesn't happen too quickly (b/74236718).
@@ -62,13 +67,7 @@ public class DownloadForegroundServiceManager extends DownloadContinuityManager 
     private boolean mStartForegroundCalled;
 
     // This is non-null when onServiceConnected has been called (aka service is active).
-    private DownloadForegroundServiceImpl mBoundService;
-
-    private static <T> void checkNotNull(T reference) {
-        if (reference == null) {
-            throw new NullPointerException();
-        }
-    }
+    private @Nullable DownloadForegroundServiceImpl mBoundService;
 
     public DownloadForegroundServiceManager() {}
 
@@ -199,13 +198,13 @@ public class DownloadForegroundServiceManager extends DownloadContinuityManager 
         int notificationId = update.mNotificationId;
         Notification notification = update.mNotification;
 
-        // On O+, we must call startForeground or Android will crash. If the last update
+        // We must call startForeground or Android will crash. If the last update
         // is DownloadStatus.CANCELLED, then create an empty notification. See crbug.com/1121096.
         // Notices the empty notification will be cancelled immediately in
         // DownloadNotificationService afterward.
-        if (VERSION.SDK_INT >= VERSION_CODES.O && notification == null && !mStartForegroundCalled) {
+        if (notification == null && !mStartForegroundCalled) {
             assert update.mDownloadStatus == DownloadStatus.CANCELLED;
-            notification = createEmptyNotification(notificationId, update.mContext);
+            notification = createEmptyNotification(notificationId);
         }
 
         if (mBoundService != null
@@ -235,7 +234,7 @@ public class DownloadForegroundServiceManager extends DownloadContinuityManager 
     }
 
     // Creates an empty notification to feed to startForeground().
-    private Notification createEmptyNotification(int notificationId, Context context) {
+    private @Nullable Notification createEmptyNotification(int notificationId) {
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
                         ChromeChannelDefinitions.ChannelId.DOWNLOADS,
@@ -250,7 +249,7 @@ public class DownloadForegroundServiceManager extends DownloadContinuityManager 
     @VisibleForTesting
     void stopAndUnbindService(@DownloadNotificationService.DownloadStatus int downloadStatus) {
         Log.w(TAG, "stopAndUnbindService status: " + downloadStatus);
-        checkNotNull(mBoundService);
+        assertNonNull(mBoundService);
         mIsServiceBound = false;
 
         @DownloadForegroundServiceImpl.StopForegroundNotification int stopForegroundNotification;
@@ -279,7 +278,8 @@ public class DownloadForegroundServiceManager extends DownloadContinuityManager 
     void stopAndUnbindServiceInternal(
             @DownloadForegroundServiceImpl.StopForegroundNotification int stopForegroundStatus,
             int pinnedNotificationId,
-            Notification pinnedNotification) {
+            @Nullable Notification pinnedNotification) {
+        assumeNonNull(mBoundService);
         mBoundService.stopDownloadForegroundService(
                 stopForegroundStatus, pinnedNotificationId, pinnedNotification);
         ContextUtils.getApplicationContext().unbindService(mConnection);

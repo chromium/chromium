@@ -169,7 +169,7 @@ class MergingTest(unittest.TestCase):  # pragma: no cover
     }}))
 
   def test_merge_tries_unmergable(self):
-    with six.assertRaisesRegex(self, results_merger.MergeException, "a:b"):
+    with six.assertRaisesRegex(self, results_merger.MergeException, 'a:b'):
       results_merger.merge_tries({'a': {'b': 'A'}}, {'a': {'b': 'C'}})
 
   def test_merge_metadata(self):

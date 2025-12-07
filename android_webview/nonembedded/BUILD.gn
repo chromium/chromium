@@ -4,6 +4,7 @@
 
 import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 generate_jni("nonembedded_jni_headers") {
   sources = [
@@ -41,10 +42,10 @@ android_library("nonembedded_java") {
     "//base:base_java",
     "//base/version_info/android:version_constants_java",
     "//build/android:build_java",
-    "//components/about_ui/android:aboutui_java",
     "//components/crash/android:java",
     "//components/embedder_support/android:application_java",
     "//components/minidump_uploader:minidump_uploader_java",
+    "//components/webui/about/android:aboutui_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -174,6 +175,11 @@ android_library("crash_java") {
 }
 
 source_set("nonembedded") {
+  # Ensure deps go through our component() target.
+  visibility = [
+    "//android_webview",
+    "//android_webview/test:*",
+  ]
   sources = [
     "component_updater/aw_component_installer_policy.cc",
     "component_updater/aw_component_installer_policy.h",
@@ -198,6 +204,7 @@ source_set("nonembedded") {
     "//android_webview/common",
     "//base",
     "//components/component_updater",
+    "//components/component_updater/android:embedded_component_loader",
     "//components/component_updater/installer_policies:installer_policies_no_content_deps",
     "//components/prefs",
     "//components/update_client",
@@ -209,7 +216,7 @@ source_set("nonembedded") {
     "//url",
 
     # Called via JNI by LicenseContentProvider in :nonembedded_java.
-    "//components/about_ui:about_ui_android",
+    "//components/webui/about:about_ui_android",
   ]
 
   # Disallow depending on content.
@@ -267,12 +274,6 @@ android_resources("devui_resources") {
   ]
 }
 
-android_resources("devui_launcher_icon_resources") {
-  sources = []
-  android_manifest = "java/DeveloperUiLauncherManifest.xml"
-}
-
-android_resources("monochrome_devui_launcher_icon_resources") {
-  sources = []
-  android_manifest = "java/MonochromeDeveloperUiLauncherManifest.xml"
+java_group("devui_launcher_icon_resources") {
+  mergeable_android_manifests = [ "java/DeveloperUiLauncherManifest.xml" ]
 }

@@ -11,16 +11,15 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/app_window/app_window.h"
-#include "extensions/common/mojom/app_window.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/window/non_client_view.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
@@ -45,21 +44,18 @@ void NativeAppWindowViews::Init(
       create_params.GetContentMaximumSize(gfx::Insets()));
   Observe(app_window_->web_contents());
 
-  // TODO(pbos): See if this can retain SetOwnedByWidget(true) and get deleted
-  // through WidgetDelegate::DeleteDelegate(). It's not clear to me how this
-  // ends up destructed, but the below preserves a previous DialogDelegate
-  // override that did not end with a direct `delete this;`.
-  SetOwnedByWidget(false);
-  RegisterDeleteDelegateCallback(base::BindOnce(
-      [](NativeAppWindowViews* dialog) {
-        dialog->widget_->RemoveObserver(dialog);
-        dialog->app_window_->OnNativeClose();
-      },
-      this));
+  // TODO(pbos): It's not clear to me how this ends up destructed.
+  RegisterDeleteDelegateCallback(RegisterDeleteCallbackPassKey(),
+                                 base::BindOnce(
+                                     [](NativeAppWindowViews* dialog) {
+                                       dialog->widget_->RemoveObserver(dialog);
+                                       dialog->app_window_->OnNativeClose();
+                                     },
+                                     this));
   web_view_ = AddChildView(std::make_unique<views::WebView>(nullptr));
   web_view_->SetWebContents(app_window_->web_contents());
 
-  SetCanMinimize(!app_window_->show_on_lock_screen());
+  SetCanMinimize(true);
   SetCanMaximize(GetCanMaximizeWindow());
   // Intentionally the same as maximize.
   SetCanFullscreen(GetCanMaximizeWindow());
@@ -68,6 +64,10 @@ void NativeAppWindowViews::Init(
   widget_ = new views::Widget;
   widget_->AddObserver(this);
   InitializeWindow(app_window, create_params);
+
+  if (frameless_) {
+    app_window_->web_contents()->SetSupportsDraggableRegions(true);
+  }
 
   OnViewWasResized();
 }
@@ -124,13 +124,13 @@ gfx::Rect NativeAppWindowViews::GetRestoredBounds() const {
   return widget_->GetRestoredBounds();
 }
 
-ui::WindowShowState NativeAppWindowViews::GetRestoredState() const {
+ui::mojom::WindowShowState NativeAppWindowViews::GetRestoredState() const {
   // Stub implementation. See also ChromeNativeAppWindowViews.
   if (IsMaximized())
-    return ui::SHOW_STATE_MAXIMIZED;
+    return ui::mojom::WindowShowState::kMaximized;
   if (IsFullscreen())
-    return ui::SHOW_STATE_FULLSCREEN;
-  return ui::SHOW_STATE_NORMAL;
+    return ui::mojom::WindowShowState::kFullscreen;
+  return ui::mojom::WindowShowState::kNormal;
 }
 
 gfx::Rect NativeAppWindowViews::GetBounds() const {
@@ -223,8 +223,9 @@ bool NativeAppWindowViews::ShouldSaveWindowPlacement() const {
   return true;
 }
 
-void NativeAppWindowViews::SaveWindowPlacement(const gfx::Rect& bounds,
-                                               ui::WindowShowState show_state) {
+void NativeAppWindowViews::SaveWindowPlacement(
+    const gfx::Rect& bounds,
+    ui::mojom::WindowShowState show_state) {
   views::WidgetDelegate::SaveWindowPlacement(bounds, show_state);
   app_window_->OnNativeWindowChanged();
 }
@@ -272,18 +273,6 @@ void NativeAppWindowViews::RenderFrameCreated(
 
   if (app_window_->requested_alpha_enabled() && CanHaveAlphaEnabled()) {
     render_frame_host->GetView()->SetBackgroundColor(SK_ColorTRANSPARENT);
-  } else if (app_window_->show_on_lock_screen()) {
-    // When shown on the lock screen, app windows will be shown on top of black
-    // background - to avoid a white flash while launching the app window,
-    // initialize it with black background color.
-    render_frame_host->GetView()->SetBackgroundColor(SK_ColorBLACK);
-  }
-
-  if (frameless_) {
-    mojo::Remote<extensions::mojom::AppWindow> app_window;
-    render_frame_host->GetRemoteInterfaces()->GetInterface(
-        app_window.BindNewPipeAndPassReceiver());
-    app_window->SetSupportsDraggableRegions(true);
   }
 }
 

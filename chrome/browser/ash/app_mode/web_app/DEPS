@@ -16,26 +16,31 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/apps/app_service",
   "+chrome/browser/ash/app_mode",
-  "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/policy/core",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/chromeos/app_mode",
   "+chrome/browser/extensions/extension_special_storage_policy.h",
-  "+chrome/browser/image_decoder",
   "+chrome/browser/net",
-  "+chrome/browser/profiles",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/web_applications",
   "+chrome/browser/web_applications/external_install_options.h",
   "+chrome/browser/web_applications/externally_managed_app_manager.h",
   "+chrome/browser/web_applications/test",
   "+chrome/browser/web_applications/web_app_constants.h",
+  "+chrome/browser/web_applications/web_app_management_type.h",
   "+chrome/browser/web_applications/web_app_helpers.h",
+  "+chrome/browser/web_applications/web_app_icon_generator.h",
   "+chrome/browser/web_applications/web_app_install_info.h",
   "+chrome/browser/web_applications/web_app_provider.h",
   "+chrome/browser/web_applications/web_app_registrar.h",
   "+chrome/browser/web_applications/web_app_registry_update.h",
   "+chrome/browser/web_applications/web_app_ui_manager.h",
   "+chrome/common/chrome_paths.h",
+  "+chrome/common/pref_names.h",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "kiosk_web_app_data_browsertest\\.cc": [
+    "+chrome/browser/browser_process.h",
+  ],
+}

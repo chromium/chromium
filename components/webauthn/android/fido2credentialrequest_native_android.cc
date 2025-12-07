@@ -4,13 +4,18 @@
 
 #include <jni.h>
 
+#include <optional>
+#include <string>
+
 #include "base/android/jni_array.h"
 #include "base/android/jni_bytebuffer.h"
 #include "base/android/jni_string.h"
+#include "base/android/scoped_java_ref.h"
+#include "base/check.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/numerics/safe_conversions.h"
+#include "base/values.h"
 #include "components/webauthn/json/value_conversions.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 
@@ -25,13 +30,12 @@ namespace {
 template <typename MojoClass>
 static base::android::ScopedJavaLocalRef<jstring> MojoClassToJSON(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& byte_buffer) {
-  auto span = base::android::JavaByteBufferToSpan(env, byte_buffer.obj());
+    const base::android::JavaRef<jobject>& byte_buffer) {
+  auto span = base::android::JavaByteBufferToSpan(env, byte_buffer);
   auto options = MojoClass::New();
   CHECK(MojoClass::Deserialize(span.data(), span.size(), &options));
   base::Value value = webauthn::ToValue(options);
-  std::string json;
-  base::JSONWriter::Write(value, &json);
+  std::string json = base::WriteJson(value).value_or("");
   return base::android::ConvertUTF8ToJavaString(env, json);
 }
 
@@ -42,7 +46,7 @@ template <typename MojoClass, typename ParseFuncType>
 static base::android::ScopedJavaLocalRef<jbyteArray> MojoClassFromJSON(
     JNIEnv* env,
     ParseFuncType parse_func,
-    const base::android::JavaParamRef<jstring>& jjson) {
+    const base::android::JavaRef<jstring>& jjson) {
   const std::string json = base::android::ConvertJavaStringToUTF8(env, jjson);
   const std::optional<base::Value> parsed =
       base::JSONReader::Read(json, base::JSON_PARSE_RFC);
@@ -63,7 +67,7 @@ static base::android::ScopedJavaLocalRef<jbyteArray> MojoClassFromJSON(
 static base::android::ScopedJavaLocalRef<jstring>
 JNI_Fido2CredentialRequest_CreateOptionsToJson(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& byte_buffer) {
+    const base::android::JavaRef<jobject>& byte_buffer) {
   return MojoClassToJSON<blink::mojom::PublicKeyCredentialCreationOptions>(
       env, byte_buffer);
 }
@@ -71,7 +75,7 @@ JNI_Fido2CredentialRequest_CreateOptionsToJson(
 static base::android::ScopedJavaLocalRef<jbyteArray>
 JNI_Fido2CredentialRequest_MakeCredentialResponseFromJson(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jjson) {
+    const base::android::JavaRef<jstring>& jjson) {
   return MojoClassFromJSON<blink::mojom::MakeCredentialAuthenticatorResponse>(
       env, webauthn::MakeCredentialResponseFromValue, jjson);
 }
@@ -79,7 +83,7 @@ JNI_Fido2CredentialRequest_MakeCredentialResponseFromJson(
 static base::android::ScopedJavaLocalRef<jstring>
 JNI_Fido2CredentialRequest_GetOptionsToJson(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& byte_buffer) {
+    const base::android::JavaRef<jobject>& byte_buffer) {
   return MojoClassToJSON<blink::mojom::PublicKeyCredentialRequestOptions>(
       env, byte_buffer);
 }
@@ -87,9 +91,19 @@ JNI_Fido2CredentialRequest_GetOptionsToJson(
 static base::android::ScopedJavaLocalRef<jbyteArray>
 JNI_Fido2CredentialRequest_GetCredentialResponseFromJson(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jjson) {
+    const base::android::JavaRef<jstring>& jjson) {
   return MojoClassFromJSON<blink::mojom::GetAssertionAuthenticatorResponse>(
       env, webauthn::GetAssertionResponseFromValue, jjson);
 }
 
+static base::android::ScopedJavaLocalRef<jstring>
+JNI_Fido2CredentialRequest_ReportOptionsToJson(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& byte_buffer) {
+  return MojoClassToJSON<blink::mojom::PublicKeyCredentialReportOptions>(
+      env, byte_buffer);
+}
+
 }  // namespace webauthn
+
+DEFINE_JNI(Fido2CredentialRequest)

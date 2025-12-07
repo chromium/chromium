@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.messages.snackbar;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.os.Handler;
 import android.util.Pair;
@@ -11,26 +13,27 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ObserverList;
-import org.chromium.base.UnownedUserData;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeSupplier;
-import org.chromium.ui.InsetObserver;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.util.TokenHolder;
 
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 /**
  * Manager for the snackbar showing at the bottom of activity. There should be only one
@@ -42,10 +45,10 @@ import java.util.Stack;
  * milliseconds, it will call {@link SnackbarController#onDismissNoAction(Object)}. Note, snackbars
  * of {@link Snackbar#TYPE_PERSISTENT} do not get automatically dismissed after a timeout.
  */
+@NullMarked
 public class SnackbarManager
         implements OnClickListener,
                 ActivityStateListener,
-                UnownedUserData,
                 InsetObserver.WindowInsetObserver,
                 SnackbarStateProvider {
     /** Interface that shows the ability to provide a snackbar manager. */
@@ -63,15 +66,19 @@ public class SnackbarManager
     public interface SnackbarController {
         /**
          * Called when the user clicks the action button on the snackbar.
-         * @param actionData Data object passed when showing this specific snackbar.
+         *
+         * @param actionData Data object passed when showing this specific snackbar. Will be null if
+         *     action data was not set on the snackbar.
          */
-        default void onAction(Object actionData) {}
+        default void onAction(@Nullable Object actionData) {}
 
         /**
          * Called when the snackbar is dismissed by timeout or UI environment change.
-         * @param actionData Data object associated with the dismissed snackbar entry.
+         *
+         * @param actionData Data object associated with the dismissed snackbar entry. Will be null
+         *     if action data was not set on the snackbar.
          */
-        default void onDismissNoAction(Object actionData) {}
+        default void onDismissNoAction(@Nullable Object actionData) {}
     }
 
     public static final int DEFAULT_SNACKBAR_DURATION_MS = 3000;
@@ -86,8 +93,8 @@ public class SnackbarManager
     private static int sTypeActionSnackbarDurationsMs = DEFAULT_TYPE_ACTION_SNACKBAR_DURATION_MS;
 
     private final Activity mActivity;
-    private final @NonNull WindowAndroid mWindowAndroid;
-    private final @NonNull Handler mUIThreadHandler;
+    private final @Nullable WindowAndroid mWindowAndroid;
+    private final Handler mUiThreadHandler;
     private final Runnable mHideRunnable =
             new Runnable() {
                 @Override
@@ -98,16 +105,16 @@ public class SnackbarManager
             };
     private final ObservableSupplierImpl<Boolean> mIsShowingSupplier =
             new ObservableSupplierImpl<>();
-    private final @NonNull ViewGroup mOriginalParentView;
-    private final Stack<Pair<Integer, ViewGroup>> mParentViewOverrideStack = new Stack<>();
+    private final ViewGroup mOriginalParentView;
+    private final Deque<Pair<Integer, ViewGroup>> mParentViewOverrideStack = new ArrayDeque<>();
     protected final ObserverList<SnackbarStateProvider.Observer> mObservers = new ObserverList<>();
     private final TokenHolder mTokenHolder = new TokenHolder(this::onTokenHolderChanged);
+    private final SnackbarCollection mSnackbars = new SnackbarCollection();
 
-    private SnackbarView mView;
-    private SnackbarCollection mSnackbars = new SnackbarCollection();
+    private final @Nullable ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+    private @Nullable SnackbarView mView;
     private boolean mActivityInForeground;
     private boolean mIsDisabledForTesting;
-    private @Nullable EdgeToEdgeSupplier mEdgeToEdgeSupplier;
 
     /**
      * Constructs a SnackbarManager to show snackbars in the given window.
@@ -117,12 +124,32 @@ public class SnackbarManager
      * @param windowAndroid The WindowAndroid used for starting animation. If it is null,
      *     Animator#start is called instead.
      */
+    // TODO: Clean up this ctor.
+    @Deprecated
     public SnackbarManager(
-            @NonNull Activity activity,
-            @NonNull ViewGroup snackbarParentView,
+            Activity activity,
+            ViewGroup snackbarParentView,
             @Nullable WindowAndroid windowAndroid) {
+        this(activity, snackbarParentView, windowAndroid, null);
+    }
+
+    /**
+     * Constructs a SnackbarManager to show snackbars in the given window.
+     *
+     * @param activity The embedding activity.
+     * @param snackbarParentView The ViewGroup used to display this snackbar.
+     * @param windowAndroid The WindowAndroid used for starting animation. If it is null,
+     *     Animator#start is called instead.
+     * @param edgeToEdgeControllerSupplier The supplier publishes the changes of the edge-to-edge
+     *     state and the expected bottom paddings when edge-to-edge is on.
+     */
+    public SnackbarManager(
+            Activity activity,
+            ViewGroup snackbarParentView,
+            @Nullable WindowAndroid windowAndroid,
+            @Nullable ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
         mActivity = activity;
-        mUIThreadHandler = new Handler();
+        mUiThreadHandler = new Handler();
         mOriginalParentView = snackbarParentView;
         mWindowAndroid = windowAndroid;
 
@@ -133,6 +160,7 @@ public class SnackbarManager
         }
 
         mIsShowingSupplier.set(isShowing());
+        mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
     }
 
     @Override
@@ -171,7 +199,8 @@ public class SnackbarManager
 
         mSnackbars.add(snackbar);
         updateView();
-        mView.announceforAccessibility();
+        assumeNonNull(mView);
+        mView.updateAccessibilityPaneTitle();
     }
 
     /** Dismisses all snackbars. */
@@ -207,10 +236,19 @@ public class SnackbarManager
         }
     }
 
+    /** Resets the timeout to hide the snackbar. */
+    public void resetSnackbarTimeout() {
+        mUiThreadHandler.removeCallbacks(mHideRunnable);
+        Snackbar currentSnackbar = mSnackbars.getCurrent();
+        if (currentSnackbar != null && !currentSnackbar.isTypePersistent()) {
+            int durationMs = getDuration(currentSnackbar);
+            mUiThreadHandler.postDelayed(mHideRunnable, durationMs);
+        }
+    }
+
     /** Handles click event for action button at end of snackbar. */
     @Override
     public void onClick(View v) {
-        mView.announceActionForAccessibility();
         mSnackbars.removeCurrentDueToAction();
         updateView();
     }
@@ -223,7 +261,7 @@ public class SnackbarManager
     public void onAddInfoBar() {
         // Bring Snackbars to the foreground so that it's not blocked by infobars.
         if (isShowing()) {
-            mView.bringToFront();
+            assumeNonNull(mView).bringToFront();
         }
     }
 
@@ -234,10 +272,10 @@ public class SnackbarManager
      * @param parentView The new parent for snackbars, must be non-null.
      * @return A token to be used when calling a corresponding pop.
      */
-    public int pushParentViewToOverrideStack(@NonNull ViewGroup parentView) {
+    public int pushParentViewToOverrideStack(ViewGroup parentView) {
         assert parentView != null;
         int overrideToken = mTokenHolder.acquireToken();
-        mParentViewOverrideStack.push(new Pair<Integer, ViewGroup>(overrideToken, parentView));
+        mParentViewOverrideStack.addFirst(new Pair<>(overrideToken, parentView));
         overrideParent(parentView);
         return overrideToken;
     }
@@ -251,15 +289,15 @@ public class SnackbarManager
      * @param token The token passed from #pushParentViewToOverrideStack. This is used to ensure
      *     that the push/pop methods are matching.
      */
-    public void popParentViewFromOverrideStack(@NonNull int token) {
+    public void popParentViewFromOverrideStack(int token) {
         assert token != TokenHolder.INVALID_TOKEN;
-        Pair<Integer, ViewGroup> parentViewPair = mParentViewOverrideStack.pop();
+        Pair<Integer, ViewGroup> parentViewPair = mParentViewOverrideStack.removeFirst();
         assert parentViewPair.first.equals(token);
         mTokenHolder.releaseToken(token);
         overrideParent(
-                mParentViewOverrideStack.empty()
+                mParentViewOverrideStack.isEmpty()
                         ? mOriginalParentView
-                        : mParentViewOverrideStack.peek().second);
+                        : mParentViewOverrideStack.peekFirst().second);
     }
 
     /**
@@ -274,14 +312,6 @@ public class SnackbarManager
      */
     public boolean isShowing() {
         return mView != null && mView.isShowing();
-    }
-
-    /**
-     * @param supplier The supplier publishes the changes of the edge-to-edge state and the expected
-     *     bottom paddings when edge-to-edge is on.
-     */
-    public void setEdgeToEdgeSupplier(@Nullable EdgeToEdgeSupplier supplier) {
-        mEdgeToEdgeSupplier = supplier;
     }
 
     /**
@@ -306,7 +336,7 @@ public class SnackbarManager
         if (!mActivityInForeground) return;
         Snackbar currentSnackbar = mSnackbars.getCurrent();
         if (currentSnackbar == null) {
-            mUIThreadHandler.removeCallbacks(mHideRunnable);
+            mUiThreadHandler.removeCallbacks(mHideRunnable);
             if (mView != null) {
                 mView.dismiss();
                 mView = null;
@@ -321,33 +351,35 @@ public class SnackbarManager
                                 currentSnackbar,
                                 mOriginalParentView,
                                 mWindowAndroid,
-                                mEdgeToEdgeSupplier,
+                                mEdgeToEdgeControllerSupplier != null
+                                        ? mEdgeToEdgeControllerSupplier.get()
+                                        : null,
                                 isTablet());
                 mView.show();
 
                 // If there is a temporary parent set, reparent accordingly. We override here
                 // instead of instantiating the new SnackbarView with the temporary parent, so
                 // that overriding with <code>null</code> will reparent to mSnackbarParentView.
-                if (!mParentViewOverrideStack.empty()) {
-                    mView.overrideParent(mParentViewOverrideStack.peek().second);
+                if (!mParentViewOverrideStack.isEmpty()) {
+                    mView.overrideParent(mParentViewOverrideStack.peekFirst().second);
                 }
             } else {
                 viewChanged = mView.update(currentSnackbar);
             }
 
             if (viewChanged) {
-                mUIThreadHandler.removeCallbacks(mHideRunnable);
+                mUiThreadHandler.removeCallbacks(mHideRunnable);
                 if (!currentSnackbar.isTypePersistent()) {
                     int durationMs = getDuration(currentSnackbar);
-                    mUIThreadHandler.postDelayed(mHideRunnable, durationMs);
+                    mUiThreadHandler.postDelayed(mHideRunnable, durationMs);
                 }
-                mView.announceforAccessibility();
+                mView.updateAccessibilityPaneTitle();
             }
         }
 
         for (Observer observer : mObservers) {
             if (isShowing()) {
-                observer.onSnackbarStateChanged(true, mView.getBackgroundColor());
+                observer.onSnackbarStateChanged(true, assumeNonNull(mView).getBackgroundColor());
             } else {
                 observer.onSnackbarStateChanged(false, null);
             }
@@ -444,10 +476,20 @@ public class SnackbarManager
         return mSnackbars.getCurrent();
     }
 
-    /**
-     * @return The currently showing snackbar view. For testing only.
-     */
-    public SnackbarView getCurrentSnackbarViewForTesting() {
+    /** Returns the currently showing snackbar view. For testing only. */
+    public @Nullable SnackbarView getCurrentSnackbarViewForTesting() {
         return mView;
+    }
+
+    // ============================================================================================
+    // Flags
+    // ============================================================================================
+
+    /**
+     * Whether floating snackbar is enabled. When enabled, the snackbar will float on top of the web
+     * content.
+     */
+    public static boolean isFloatingSnackbarEnabled() {
+        return ChromeFeatureList.sFloatingSnackbar.isEnabled();
     }
 }

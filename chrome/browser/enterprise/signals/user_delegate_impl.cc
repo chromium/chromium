@@ -8,7 +8,6 @@
 
 #include "base/check.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -16,9 +15,9 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace enterprise_signals {
 
@@ -40,24 +39,23 @@ policy::PolicyScope ToPolicyScope(DTCPolicyLevel policy_level) {
 UserDelegateImpl::UserDelegateImpl(
     Profile* profile,
     signin::IdentityManager* identity_manager,
-    enterprise_connectors::DeviceTrustConnectorService*
-        device_trust_connector_service)
+    SignalsDependencyDelegate* signals_dependency_delegate)
     : profile_(profile),
       identity_manager_(identity_manager),
-      device_trust_connector_service_(device_trust_connector_service) {
+      signals_dependency_delegate_(signals_dependency_delegate) {
   CHECK(profile_);
 }
 
 UserDelegateImpl::~UserDelegateImpl() = default;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool UserDelegateImpl::IsSigninContext() const {
   return ash::ProfileHelper::IsSigninProfile(profile_);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool UserDelegateImpl::IsAffiliated() const {
-  return chrome::enterprise_util::IsProfileAffiliated(profile_);
+  return enterprise_util::IsProfileAffiliated(profile_);
 }
 
 bool UserDelegateImpl::IsManagedUser() const {
@@ -70,7 +68,7 @@ bool UserDelegateImpl::IsManagedUser() const {
   return profile_policy_connector->IsManaged();
 }
 
-bool UserDelegateImpl::IsSameUser(const std::string& gaia_id) const {
+bool UserDelegateImpl::IsSameUser(const GaiaId& gaia_id) const {
   return identity_manager_ &&
          identity_manager_->GetPrimaryAccountId(
              signin::ConsentLevel::kSignin) ==
@@ -81,9 +79,9 @@ bool UserDelegateImpl::IsSameUser(const std::string& gaia_id) const {
 std::set<policy::PolicyScope> UserDelegateImpl::GetPolicyScopesNeedingSignals()
     const {
   std::set<policy::PolicyScope> policy_scopes;
-  if (device_trust_connector_service_) {
+  if (signals_dependency_delegate_) {
     for (const auto policy_level :
-         device_trust_connector_service_->GetEnabledInlinePolicyLevels()) {
+         signals_dependency_delegate_->GetSignalsPolicyScope()) {
       policy_scopes.insert(ToPolicyScope(policy_level));
     }
   }

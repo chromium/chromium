@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
+#include "base/metrics/persistent_histogram_allocator.h"
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/persistent_memory_allocator.h"
 
 struct Environment {
@@ -21,7 +18,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static Environment env;
 
   // Copy data into a non-const vector.
-  std::vector<uint8_t> data_copy(data, data + size);
+  std::vector<uint8_t> data_copy(data, UNSAFE_TODO(data + size));
 
   // PersistentMemoryAllocator segments must be aligned and an acceptable size.
   if (!base::PersistentMemoryAllocator::IsMemoryAcceptable(

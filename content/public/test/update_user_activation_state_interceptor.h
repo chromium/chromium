@@ -6,7 +6,6 @@
 #define CONTENT_PUBLIC_TEST_UPDATE_USER_ACTIVATION_STATE_INTERCEPTOR_H_
 
 #include "base/functional/callback_forward.h"
-#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"
 

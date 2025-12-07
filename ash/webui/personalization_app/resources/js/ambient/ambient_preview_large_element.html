@@ -258,12 +258,12 @@
       </cr-icon-button>
     </div>
     <template is="dom-if" if="[[loading_]]" restamp>
-      <div id="imagePlaceholder" class="placeholder"></div>
-      <div id="thumbnailPlaceholder" class="placeholder"></div>
+      <div id="imagePlaceholder" class$="[[getPlaceholderClasses_(shouldShowLoadingAnimation_)]]"></div>
+      <div id="thumbnailPlaceholder" class$="[[getPlaceholderClasses_(shouldShowLoadingAnimation_)]]"></div>
       <div id="textPlaceholder"
           class="preview-text-placeholder album-info-mainpage">
-        <div class="placeholder"></div>
-        <div class="placeholder"></div>
+        <div class$="[[getPlaceholderClasses_(shouldShowLoadingAnimation_)]]"></div>
+        <div class$="[[getPlaceholderClasses_(shouldShowLoadingAnimation_)]]"></div>
       </div>
     </template>
     <template is="dom-if" if="[[!loading_]]">
@@ -313,7 +313,7 @@
               </div>
             </template>
           </div>
-          <h3 aria-label$="[[getPreviewTextAriaLabel_(firstPreviewAlbum_, topicSource_, previewAlbums_)]]"
+          <div aria-label$="[[getPreviewTextAriaLabel_(firstPreviewAlbum_, topicSource_, previewAlbums_)]]"
               class="preview-text-container album-info-mainpage"
               id="textContainer">
             <span aria-hidden="true"
@@ -324,7 +324,7 @@
             <span aria-hidden="true" id="albumDescription">
               [[getAlbumDescription_(topicSource_, previewAlbums_)]]
             </span>
-          </h3>
+          </div>
         </template>
       </template>
     </template>

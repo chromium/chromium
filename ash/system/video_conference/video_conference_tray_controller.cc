@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 
+#include <array>
 #include <string>
 
 #include "ash/constants/ash_features.h"
@@ -39,7 +35,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/session_manager_types.h"
@@ -88,7 +83,7 @@ constexpr char kShowCreateWithAiButtonAnimation[] =
 
 // VC nudge ids vector that is iterated whenever `CloseAllVcNudges()` is
 // called. Please keep in sync whenever adding/removing/updating a nudge id.
-const char* const kNudgeIds[] = {
+constexpr std::array<const char*, 6> kNudgeIds = {
     kVideoConferenceTraySpeakOnMuteOptInNudgeId,
     kVideoConferenceTraySpeakOnMuteDetectedNudgeId,
     kVideoConferenceTrayMicrophoneUseWhileHWDisabledNudgeId,
@@ -357,15 +352,13 @@ void VideoConferenceTrayController::OnSpeakOnMuteNudgeOptInAction(bool opt_in) {
       l10n_util::GetStringUTF16(
           opt_in
               ? IDS_ASH_VIDEO_CONFERENCE_NUDGE_SPEAK_ON_MUTE_OPT_IN_CONFIRMATION_BODY
-              : IDS_ASH_VIDEO_CONFERENCE_NUDGE_SPEAK_ON_MUTE_OPT_OUT_CONFIRMATION_BODY),
-      ToastData::kDefaultToastDuration,
-      /*visible_on_lock_screen=*/false,
-      /*has_dismiss_button=*/true,
-      l10n_util::GetStringUTF16(
-          IDS_ASH_VIDEO_CONFERENCE_NUDGE_SPEAK_ON_MUTE_OPT_IN_CONFIRMATION_BUTTON));
+              : IDS_ASH_VIDEO_CONFERENCE_NUDGE_SPEAK_ON_MUTE_OPT_OUT_CONFIRMATION_BODY));
   toast_data.persist_on_hover = true;
   toast_data.show_on_all_root_windows = true;
-  toast_data.dismiss_callback = base::BindRepeating([]() {
+  toast_data.button_type = ToastData::ButtonType::kTextButton;
+  toast_data.button_text = l10n_util::GetStringUTF16(
+      IDS_ASH_VIDEO_CONFERENCE_NUDGE_SPEAK_ON_MUTE_OPT_IN_CONFIRMATION_BUTTON);
+  toast_data.button_callback = base::BindRepeating([]() {
     Shell::Get()
         ->system_tray_model()
         ->client()
@@ -514,7 +507,7 @@ void VideoConferenceTrayController::OnCameraHWPrivacySwitchStateChanged(
   if (video_conference_manager_) {
     video_conference_manager_->SetSystemMediaDeviceStatus(
         crosapi::mojom::VideoConferenceMediaDevice::kCamera,
-        /*disabled=*/GetCameraMuted());
+        /*enabled=*/!GetCameraMuted());
   }
 
   // Attempt recording "Use while disabled" nudge action when camera is unmuted.
@@ -541,7 +534,7 @@ void VideoConferenceTrayController::OnCameraSWPrivacySwitchStateChanged(
   if (video_conference_manager_) {
     video_conference_manager_->SetSystemMediaDeviceStatus(
         crosapi::mojom::VideoConferenceMediaDevice::kCamera,
-        /*disabled=*/GetCameraMuted());
+        /*enabled=*/!GetCameraMuted());
   }
 
   // Attempt recording "Use while disabled" nudge action when camera is unmuted.
@@ -577,7 +570,7 @@ void VideoConferenceTrayController::OnInputMuteChanged(
   if (video_conference_manager_) {
     video_conference_manager_->SetSystemMediaDeviceStatus(
         crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
-        /*disabled=*/mute_on);
+        /*enabled=*/!mute_on);
   }
 
   microphone_muted_by_hardware_switch_ =
@@ -939,8 +932,7 @@ void VideoConferenceTrayController::DisplayUsedWhileDisabledNudge(
       anchor_view = active_vc_tray->audio_icon();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   AnchoredNudgeData nudge_data(
@@ -966,8 +958,7 @@ VideoConferenceTrayController::GetUsedWhileDisabledNudgeType(
           kMicrophone;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      type = VideoConferenceTrayController::UsedWhileDisabledNudgeType::kCamera;
+      NOTREACHED();
   }
 
   return type;

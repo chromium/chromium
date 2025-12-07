@@ -4,15 +4,18 @@
 
 #include "chrome/browser/ui/views/frame/system_menu_model_delegate.h"
 
+#include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/prefs/pref_service.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -23,17 +26,19 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "chrome/common/pref_names.h"
-#include "components/prefs/pref_service.h"
+#endif
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #endif
 
 SystemMenuModelDelegate::SystemMenuModelDelegate(
     ui::AcceleratorProvider* provider,
     Browser* browser)
-    : provider_(provider),
-      browser_(browser) {
-}
+    : provider_(provider), browser_(browser) {}
 
-SystemMenuModelDelegate::~SystemMenuModelDelegate() {}
+SystemMenuModelDelegate::~SystemMenuModelDelegate() = default;
 
 bool SystemMenuModelDelegate::IsCommandIdChecked(int command_id) const {
 #if BUILDFLAG(IS_LINUX)
@@ -48,17 +53,20 @@ bool SystemMenuModelDelegate::IsCommandIdChecked(int command_id) const {
 bool SystemMenuModelDelegate::IsCommandIdEnabled(int command_id) const {
 #if BUILDFLAG(IS_CHROMEOS)
   if (command_id == chromeos::MoveToDesksMenuModel::kMenuCommandId) {
-    return chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(
-        browser_->window()->GetNativeWindow());
+    return chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu();
+  }
+#endif
+#if BUILDFLAG(ENABLE_GLIC)
+  // Disable the glic toggle pin if it is showing and glic is not enabled.
+  if (command_id == IDC_GLIC_TOGGLE_PIN) {
+    return glic::GlicEnabling::IsEnabledForProfile(browser_->profile());
   }
 #endif
   return chrome::IsCommandEnabled(browser_, command_id);
 }
 
 bool SystemMenuModelDelegate::IsCommandIdVisible(int command_id) const {
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   bool is_maximized = browser_->window()->IsMaximized();
   switch (command_id) {
     case IDC_MAXIMIZE_WINDOW:
@@ -69,8 +77,12 @@ bool SystemMenuModelDelegate::IsCommandIdVisible(int command_id) const {
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
   if (command_id == chromeos::MoveToDesksMenuModel::kMenuCommandId) {
-    return chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(
-        browser_->window()->GetNativeWindow());
+    return chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu();
+  }
+#endif
+#if BUILDFLAG(ENABLE_GLIC)
+  if (command_id == IDC_GLIC_TOGGLE_PIN) {
+    return glic::GlicEnabling::IsEnabledForProfile(browser_->profile());
   }
 #endif
   return true;
@@ -83,31 +95,77 @@ bool SystemMenuModelDelegate::GetAcceleratorForCommandId(
 }
 
 bool SystemMenuModelDelegate::IsItemForCommandIdDynamic(int command_id) const {
-  return command_id == IDC_RESTORE_TAB;
+  return std::set{IDC_RESTORE_TAB, IDC_GLIC_TOGGLE_PIN,
+                  IDC_TOGGLE_VERTICAL_TABS}
+      .contains(command_id);
 }
 
 std::u16string SystemMenuModelDelegate::GetLabelForCommandId(
     int command_id) const {
-  DCHECK_EQ(command_id, IDC_RESTORE_TAB);
+  DCHECK(IsItemForCommandIdDynamic(command_id));
 
-  int string_id = IDS_RESTORE_TAB;
-  if (IsCommandIdEnabled(command_id)) {
-    sessions::TabRestoreService* trs =
-        TabRestoreServiceFactory::GetForProfile(browser_->profile());
-    DCHECK(trs);
-    trs->LoadTabsFromLastSession();
-    if (!trs->entries().empty()) {
-      if (trs->entries().front()->type == sessions::tab_restore::Type::WINDOW) {
-        string_id = IDS_REOPEN_WINDOW;
-      } else if (trs->entries().front()->type ==
-                 sessions::tab_restore::Type::GROUP) {
-        string_id = IDS_REOPEN_GROUP;
+  int string_id;
+  switch (command_id) {
+    case IDC_RESTORE_TAB:
+      string_id = IDS_RESTORE_TAB;
+      if (IsCommandIdEnabled(command_id)) {
+        sessions::TabRestoreService* trs =
+            TabRestoreServiceFactory::GetForProfile(browser_->profile());
+        DCHECK(trs);
+        trs->LoadTabsFromLastSession();
+        if (!trs->entries().empty()) {
+          if (trs->entries().front()->type ==
+              sessions::tab_restore::Type::WINDOW) {
+            string_id = IDS_REOPEN_WINDOW;
+          } else if (trs->entries().front()->type ==
+                     sessions::tab_restore::Type::GROUP) {
+            string_id = IDS_REOPEN_GROUP;
+          }
+        }
       }
-    }
+      break;
+    case IDC_TOGGLE_VERTICAL_TABS:
+      string_id = browser_->browser_window_features()
+                          ->vertical_tab_strip_state_controller()
+                          ->ShouldDisplayVerticalTabs()
+                      ? IDS_SWITCH_TO_HORIZONTAL_TAB
+                      : IDS_SWITCH_TO_VERTICAL_TAB;
+      break;
+#if BUILDFLAG(ENABLE_GLIC)
+    case IDC_GLIC_TOGGLE_PIN:
+      string_id = browser_->profile()->GetPrefs()->GetBoolean(
+                      glic::prefs::kGlicPinnedToTabstrip)
+                      ? IDS_GLIC_UNPIN
+                      : IDS_GLIC_PIN;
+      break;
+#endif
+    default:
+      NOTREACHED();
   }
   return l10n_util::GetStringUTF16(string_id);
 }
 
 void SystemMenuModelDelegate::ExecuteCommand(int command_id, int event_flags) {
+  switch (command_id) {
+    case IDC_BOOKMARK_ALL_TABS:
+      base::RecordAction(
+          base::UserMetricsAction("SystemContextMenu_BookmarkAllTabs"));
+      break;
+    case IDC_NEW_TAB:
+      base::RecordAction(base::UserMetricsAction("SystemContextMenu_NewTab"));
+      break;
+    case IDC_RESTORE_TAB:
+      base::RecordAction(
+          base::UserMetricsAction("SystemContextMenu_RestoreTab"));
+      break;
+    case IDC_GROUP_UNGROUPED_TABS:
+      base::RecordAction(
+          base::UserMetricsAction("SystemContextMenu_GroupAllTabs"));
+      break;
+    case IDC_NAME_WINDOW:
+      base::RecordAction(
+          base::UserMetricsAction("SystemContextMenu_NameWindow"));
+      break;
+  }
   chrome::ExecuteCommand(browser_, command_id);
 }

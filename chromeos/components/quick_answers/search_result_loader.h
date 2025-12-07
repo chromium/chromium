@@ -34,7 +34,7 @@ class SearchResultLoader : public ResultLoader {
   void BuildRequest(const PreprocessedOutput& preprocessed_output,
                     BuildRequestCallback callback) const override;
   void ProcessResponse(const PreprocessedOutput& preprocessed_output,
-                       std::unique_ptr<std::string> response_body,
+                       std::optional<std::string> response_body,
                        ResponseParserCallback complete_callback) override;
 
  private:

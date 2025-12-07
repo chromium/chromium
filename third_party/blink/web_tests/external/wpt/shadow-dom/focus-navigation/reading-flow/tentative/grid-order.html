@@ -45,8 +45,8 @@
   </div>
 </div>
 
-<div class="test-case" data-expect="c3,a3,b3,d3,f3,e3"
-      data-description="Grid items with `order` property and tabindex">
+<div class="test-case" data-expect="a3,c3,b3,f3,e3,d3,h3,h32,h31,g3,g31,g32"
+      data-description="Grid items with `order` property and tabindex. Positive tabindex doesn't reorder reading flow item, but can affect its descendants.">
   <div class="wrapper">
     <button id="a3" style="order: -1">Item A</button>
     <button id="b3" style="order: 0">Item B</button>
@@ -57,32 +57,14 @@
     <button id="e3" tabindex="2" style="order: 0">Item E</button>
     <button id="f3" tabindex="2" style="order: -1">Item F</button>
   </div>
-</div>
-
-<div class="test-case" data-expect="order1,order2,order3,order4"
-     data-description="Items in display contents are sorted in same grid container.">
   <div class="wrapper">
-    <div style="display: contents">
-      <button id="order3" style="order: 3">Order 3</button>
-      <button id="order1" style="order: 1">Order 1</button>
-      <div style="display: contents">
-        <button id="order4" style="order: 4">Order 4</button>
-        <button id="order2" style="order: 2">Order 2</button>
-      </div>
+    <div id="g3" style="order: 2" tabindex="0">G
+      <div id="g31" tabindex="1">Item G1</div>
+      <div id="g32" tabindex="2">Item G2</div>
     </div>
-  </div>
-</div>
-
-<div class="test-case" data-expect="order1B,order2B,order3B,order4B,div1B,div2B"
-     data-description="Items in display contents are sorted in same grid container, with focusable display contents divs at the end of the focus sequence.">
-  <div class="wrapper">
-    <div id="div1B" style="display: contents" tabindex="0">
-      <button id="order3B" style="order: 3">Order 3</button>
-      <button id="order1B" style="order: 1">Order 1</button>
-      <div id="div2B" style="display: contents" tabindex="0">
-        <button id="order4B" style="order: 4">Order 4</button>
-        <button id="order2B" style="order: 2">Order 2</button>
-      </div>
+    <div id="h3" style="order: 1" tabindex="0">H
+      <div id="h31" tabindex="0">Item H1</div>
+      <div id="h32" tabindex="1">Item H2</div>
     </div>
   </div>
 </div>

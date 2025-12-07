@@ -1,12 +1,8 @@
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/scheduler/test/fuzzer/thread_manager.h"
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
@@ -272,7 +268,8 @@ void ThreadManager::ExecuteSetQueueEnabledAction(
         chosen_task_queue->queue.get()->CreateQueueEnabledVoter());
   }
 
-  wtf_size_t voter_index = action.voter_id() % chosen_task_queue->voters.size();
+  blink::wtf_size_t voter_index =
+      action.voter_id() % chosen_task_queue->voters.size();
   chosen_task_queue->voters[voter_index]->SetVoteToEnable(action.enabled());
 }
 
@@ -305,9 +302,10 @@ void ThreadManager::ExecuteShutdownTaskQueueAction(
   AutoLock lock(lock_);
   // We always want to have a default task queue.
   if (task_queues_.size() > 1) {
-    wtf_size_t queue_index = action.task_queue_id() % task_queues_.size();
+    blink::wtf_size_t queue_index =
+        action.task_queue_id() % task_queues_.size();
     task_queues_[queue_index].reset();
-    task_queues_.erase(task_queues_.begin() + queue_index);
+    task_queues_.erase(UNSAFE_TODO(task_queues_.begin() + queue_index));
   }
 }
 
@@ -322,13 +320,13 @@ void ThreadManager::ExecuteCancelTaskAction(
 
   AutoLock lock(lock_);
   if (!pending_tasks_.empty()) {
-    wtf_size_t task_index = action.task_id() % pending_tasks_.size();
+    blink::wtf_size_t task_index = action.task_id() % pending_tasks_.size();
     pending_tasks_[task_index]->weak_ptr_factory_.InvalidateWeakPtrs();
 
     // If it is already running, it is a parent task and will be deleted when
     // it is done.
     if (!pending_tasks_[task_index]->is_running_) {
-      pending_tasks_.erase(pending_tasks_.begin() + task_index);
+      pending_tasks_.erase(UNSAFE_TODO(pending_tasks_.begin() + task_index));
     }
   }
 }
@@ -398,12 +396,12 @@ void ThreadManager::ExecuteTask(
 
 void ThreadManager::DeleteTask(Task* task) {
   AutoLock lock(lock_);
-  wtf_size_t i = 0;
+  blink::wtf_size_t i = 0;
   while (i < pending_tasks_.size() && task != pending_tasks_[i].get()) {
     i++;
   }
   if (i < pending_tasks_.size())
-    pending_tasks_.erase(pending_tasks_.begin() + i);
+    pending_tasks_.erase(UNSAFE_TODO(pending_tasks_.begin() + i));
 }
 
 scoped_refptr<TaskQueueWithVoters> ThreadManager::GetTaskQueueFor(
@@ -421,12 +419,12 @@ scoped_refptr<SingleThreadTaskRunner> ThreadManager::GetTaskRunnerFor(
       ->queue->task_runner();
 }
 
-const Vector<SequenceManagerFuzzerProcessor::TaskForTest>&
+const blink::Vector<SequenceManagerFuzzerProcessor::TaskForTest>&
 ThreadManager::ordered_tasks() const {
   return ordered_tasks_;
 }
 
-const Vector<SequenceManagerFuzzerProcessor::ActionForTest>&
+const blink::Vector<SequenceManagerFuzzerProcessor::ActionForTest>&
 ThreadManager::ordered_actions() const {
   return ordered_actions_;
 }

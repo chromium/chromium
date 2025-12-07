@@ -19,7 +19,8 @@ namespace web_app {
 class WebApp;
 class WebAppRegistrar;
 
-constexpr SquareSizePx kIdentitySizes[] = {kInstallIconSize, kLauncherIconSize};
+inline constexpr SquareSizePx kIdentitySizes[] = {kInstallIconSize,
+                                                  kLauncherIconSize};
 
 // This enum is recorded by UMA, the numeric values must not change.
 enum class ManifestUpdateResult {
@@ -79,9 +80,6 @@ std::ostream& operator<<(std::ostream& os, ManifestUpdateCheckResult result);
 ManifestUpdateResult FinalResultFromManifestUpdateCheckResult(
     ManifestUpdateCheckResult check_result);
 
-void RecordIconDownloadMetrics(IconsDownloadedResult result,
-                               DownloadedIconsHttpResults icons_http_results);
-
 bool CanWebAppSilentlyUpdateIdentity(const WebApp& web_app);
 bool CanShowIdentityUpdateConfirmationDialog(const WebAppRegistrar& registrar,
                                              const WebApp& web_app);
@@ -138,6 +136,8 @@ struct ManifestDataChanges {
 
 // `existing_app_icon_bitmaps` and `existing_shortcuts_menu_icon_bitmaps` are
 // optional and will not be checked if not provided.
+// TODO(crbug.com/414851433): Remove this if manifest_update_check_command is
+// not in use.
 ManifestDataChanges GetManifestDataChanges(
     const WebApp& existing_web_app,
     const IconBitmaps* existing_app_icon_bitmaps,

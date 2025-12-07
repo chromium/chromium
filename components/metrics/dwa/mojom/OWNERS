@@ -1,0 +1,5 @@
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS
+file://base/metrics/OWNERS
+rizvis@google.com
+zhouzj@google.com

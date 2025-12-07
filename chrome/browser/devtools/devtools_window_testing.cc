@@ -4,29 +4,35 @@
 
 #include "chrome/browser/devtools/devtools_window_testing.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/lazy_instance.h"
-#include "base/ranges/algorithm.h"
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/devtools_window.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_utils.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
 
 const char kHarnessScript[] = "Tests.js";
 
 typedef std::vector<DevToolsWindowTesting*> DevToolsWindowTestings;
-base::LazyInstance<DevToolsWindowTestings>::Leaky
-    g_devtools_window_testing_instances = LAZY_INSTANCE_INITIALIZER;
+DevToolsWindowTestings& GetDevToolsWindowTestingInstances() {
+  static base::NoDestructor<DevToolsWindowTestings> instances;
+  return *instances;
+}
 }
 
 DevToolsWindowTesting::DevToolsWindowTesting(DevToolsWindow* window)
@@ -34,21 +40,22 @@ DevToolsWindowTesting::DevToolsWindowTesting(DevToolsWindow* window)
   DCHECK(window);
   window->close_callback_ =
       base::BindOnce(&DevToolsWindowTesting::WindowClosed, window);
-  g_devtools_window_testing_instances.Get().push_back(this);
+  GetDevToolsWindowTestingInstances().push_back(this);
 }
 
 DevToolsWindowTesting::~DevToolsWindowTesting() {
-  DevToolsWindowTestings* instances =
-      g_devtools_window_testing_instances.Pointer();
-  auto it = base::ranges::find(*instances, this);
-  CHECK(it != instances->end());
-  instances->erase(it);
+  DevToolsWindowTestings& instances = GetDevToolsWindowTestingInstances();
+  auto it = std::ranges::find(instances, this);
+  CHECK(it != instances.end());
+  instances.erase(it);
   if (!close_callback_.is_null())
     std::move(close_callback_).Run();
 
+#if !BUILDFLAG(IS_ANDROID)
   // Needed for Chrome_DevToolsADBThread to shut down gracefully in tests.
   ChromeDevToolsManagerDelegate::GetInstance()
       ->ResetAndroidDeviceManagerForTesting();
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 // static
@@ -61,18 +68,15 @@ DevToolsWindowTesting* DevToolsWindowTesting::Get(DevToolsWindow* window) {
 
 // static
 DevToolsWindowTesting* DevToolsWindowTesting::Find(DevToolsWindow* window) {
-  if (!g_devtools_window_testing_instances.IsCreated())
-    return nullptr;
-  DevToolsWindowTestings* instances =
-      g_devtools_window_testing_instances.Pointer();
-  for (auto it(instances->begin()); it != instances->end(); ++it) {
-    if ((*it)->devtools_window_ == window)
-      return *it;
+  for (auto& instance : GetDevToolsWindowTestingInstances()) {
+    if (instance->devtools_window_ == window) {
+      return instance;
+    }
   }
   return nullptr;
 }
 
-Browser* DevToolsWindowTesting::browser() {
+BrowserWindowInterface* DevToolsWindowTesting::browser() {
   return devtools_window_->browser_;
 }
 
@@ -138,10 +142,7 @@ DevToolsWindow* DevToolsWindowTesting::OpenDevToolsWindowSync(
       "{\"isUnderTest\": true, \"currentDockState\":\"\\\"bottom\\\"\"}" :
       "{\"isUnderTest\": true, \"currentDockState\":\"\\\"undocked\\\"\"}";
   scoped_refptr<content::DevToolsAgentHost> agent(
-      base::FeatureList::IsEnabled(::features::kDevToolsTabTarget)
-          ? content::DevToolsAgentHost::GetOrCreateForTab(
-                inspected_web_contents)
-          : content::DevToolsAgentHost::GetOrCreateFor(inspected_web_contents));
+      content::DevToolsAgentHost::GetOrCreateForTab(inspected_web_contents));
   DevToolsWindow::ToggleDevToolsWindow(inspected_web_contents, profile, true,
                                        DevToolsToggleAction::Show(), settings);
   DevToolsWindow* window = DevToolsWindow::FindDevToolsWindow(agent.get());
@@ -159,13 +160,15 @@ DevToolsWindow* DevToolsWindowTesting::OpenDevToolsWindowSync(
       is_docked);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // static
 DevToolsWindow* DevToolsWindowTesting::OpenDevToolsWindowSync(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     bool is_docked) {
   return OpenDevToolsWindowSync(
-      browser->tab_strip_model()->GetActiveWebContents(), is_docked);
+      browser->GetTabStripModel()->GetActiveWebContents(), is_docked);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // static
 DevToolsWindow* DevToolsWindowTesting::OpenDevToolsWindowSync(
@@ -193,7 +196,11 @@ void DevToolsWindowTesting::CloseDevToolsWindow(
   if (window->is_docked_) {
     window->CloseWindow();
   } else {
-    window->browser_->window()->Close();
+#if BUILDFLAG(IS_ANDROID)
+    window->main_web_contents_->Close();
+#else
+    window->browser_->GetWindow()->Close();
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 }
 

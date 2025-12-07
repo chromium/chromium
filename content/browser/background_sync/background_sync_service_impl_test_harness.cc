@@ -5,6 +5,7 @@
 #include "content/browser/background_sync/background_sync_service_impl_test_harness.h"
 
 #include <stdint.h>
+
 #include <utility>
 
 #include "base/check_deref.h"
@@ -13,10 +14,13 @@
 #include "base/run_loop.h"
 #include "content/browser/background_sync/background_sync_manager.h"
 #include "content/browser/background_sync/background_sync_network_observer.h"
+#include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/test/background_sync_test_util.h"
 #include "content/public/test/mock_permission_manager.h"
+#include "content/public/test/permissions_test_utils.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/storage_partition_test_helpers.h"
 #include "content/test/test_background_sync_context.h"
@@ -135,9 +139,21 @@ void BackgroundSyncServiceImplTestHarness::CreateTestHelper() {
       std::make_unique<EmbeddedWorkerTestHelper>((base::FilePath()));
   std::unique_ptr<MockPermissionManager> mock_permission_manager =
       std::make_unique<testing::NiceMock<MockPermissionManager>>();
+  ON_CALL(
+      *mock_permission_manager,
+      GetPermissionResultForWorker(PermissionDescriptorToPermissionTypeMatcher(
+                                       blink::PermissionType::BACKGROUND_SYNC),
+                                   _, _))
+      .WillByDefault(testing::Return(
+          PermissionResult(blink::mojom::PermissionStatus::GRANTED)));
   ON_CALL(*mock_permission_manager,
-          GetPermissionStatus(blink::PermissionType::BACKGROUND_SYNC, _, _))
-      .WillByDefault(testing::Return(blink::mojom::PermissionStatus::GRANTED));
+          GetPermissionResultForWorker(
+              PermissionDescriptorToPermissionTypeMatcher(
+                  blink::PermissionType::PERIODIC_BACKGROUND_SYNC),
+              _, _))
+      .WillByDefault(testing::Return(
+          PermissionResult(blink::mojom::PermissionStatus::GRANTED)));
+
   TestBrowserContext::FromBrowserContext(
       embedded_worker_helper_->browser_context())
       ->SetPermissionControllerDelegate(std::move(mock_permission_manager));

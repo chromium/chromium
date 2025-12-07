@@ -3,31 +3,22 @@
 // found in the LICENSE file.
 
 #include <map>
+#include <string>
+#include <string_view>
+#include <utility>
 
 #include "base/auto_reset.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/string_util.h"
 #include "base/test/gtest_tags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
-#include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
-#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
-#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/test/browser_test.h"
@@ -37,6 +28,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/test_management_policy.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/manifest.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
@@ -44,23 +36,48 @@
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
+#include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/test/base/ui_test_utils.h"
+#endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 using extensions::Extension;
 using extensions::Manifest;
 using extensions::mojom::ManifestLocation;
 
 namespace {
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-// Find a browser other than |browser|.
-Browser* FindOtherBrowser(Browser* browser) {
-  Browser* found = nullptr;
-  for (Browser* b : *BrowserList::GetInstance()) {
-    if (b == browser)
-      continue;
-    found = b;
-  }
-  return found;
-}
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// Used in tests for apps, which are not supported on Android.
+constexpr char kManifest[] =
+    R"({
+          "name": "Management API Test",
+          "version": "0.1",
+          "manifest_version": 2,
+          "background": {
+            "scripts": ["background.js"],
+            "persistent": true
+          },
+          "replacement_web_app": "%s"
+        })";
 
 bool ExpectChromeAppsDefaultEnabled() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -69,21 +86,27 @@ bool ExpectChromeAppsDefaultEnabled() {
   return true;
 #endif
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
 
-using ContextType = extensions::ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class ExtensionManagementApiTest
     : public extensions::ExtensionApiTest,
       public testing::WithParamInterface<ContextType> {
  public:
-  ExtensionManagementApiTest()
-      : ExtensionApiTest(GetParam()),
-        enable_chrome_apps_(
-            &extensions::testing::g_enable_chrome_apps_for_testing,
-            true) {}
+  ExtensionManagementApiTest() : ExtensionApiTest(GetParam()) {
+#if !BUILDFLAG(IS_ANDROID)
+    enable_chrome_apps_ = std::make_unique<base::AutoReset<bool>>(
+        &extensions::testing::g_enable_chrome_apps_for_testing, true);
+#endif
+#if BUILDFLAG(IS_CHROMEOS)
+    scoped_feature_list_.InitAndEnableFeature(
+        apps::chrome_app_deprecation::kAllowUserInstalledChromeApps);
+
+#endif
+  }
   ~ExtensionManagementApiTest() override = default;
   ExtensionManagementApiTest& operator=(const ExtensionManagementApiTest&) =
       delete;
@@ -142,20 +165,32 @@ class ExtensionManagementApiTest
   std::map<std::string, std::string> extension_ids_;
 
  protected:
-  base::AutoReset<bool> enable_chrome_apps_;
+  std::unique_ptr<base::AutoReset<bool>> enable_chrome_apps_;
+#if !BUILDFLAG(IS_ANDROID)
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
+#endif
+#if BUILDFLAG(IS_CHROMEOS)
+  base::test::ScopedFeatureList scoped_feature_list_;
+#endif
 };
 
+#if !BUILDFLAG(IS_ANDROID)
+// Android does not support persistent background pages.
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          ExtensionManagementApiTest,
                          ::testing::Values(ContextType::kPersistentBackground));
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ExtensionManagementApiTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, Basics) {
+#if !BUILDFLAG(IS_ANDROID)
+  // Android does not provide the XmlUnitTestResultPrinter this method needs.
   base::AddFeatureIdTagToTestResult(
       "screenplay-7a245632-83b2-4dc8-a1db-283ef595e2df");
+#endif
 
   LoadExtensions();
 
@@ -171,7 +206,13 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, Basics) {
   ASSERT_TRUE(RunExtensionTest("management/basics"));
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, NoPermission) {
+// TODO(crbug.com/371332103): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_NoPermission DISABLED_NoPermission
+#else
+#define MAYBE_NoPermission NoPermission
+#endif
+IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, MAYBE_NoPermission) {
   LoadExtensions();
   ASSERT_TRUE(RunExtensionTest("management/no_permission"));
 }
@@ -184,6 +225,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, Uninstall) {
   ASSERT_TRUE(RunExtensionTest("management/uninstall"));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// Skipped on Android because it does not support Chrome apps.
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, CreateAppShortcut) {
   LoadExtensions();
   base::FilePath basedir = test_data_dir_.AppendASCII("management");
@@ -193,11 +236,17 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, CreateAppShortcut) {
   ASSERT_TRUE(RunExtensionTest("management/create_app_shortcut"));
 }
 
+// Skipped on Android because it does not support Chrome apps.
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, GenerateAppForLink) {
   web_app::test::WaitUntilReady(web_app::WebAppProvider::GetForTest(profile()));
   ASSERT_TRUE(RunExtensionTest("management/generate_app_for_link"));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/371332103): Determine if this needs to be supported on desktop
+// Android. Chrome apps are not supported, but the replacement_web_app key can
+// be used (rarely) by extensions.
 class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
  public:
   InstallReplacementWebAppApiTest()
@@ -205,9 +254,6 @@ class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
   ~InstallReplacementWebAppApiTest() override = default;
 
  protected:
-  static const char kManifest[];
-  static const char kAppManifest[];
-
   void SetUpOnMainThread() override {
     ExtensionManagementApiTest::SetUpOnMainThread();
     https_test_server_.ServeFilesFromDirectory(test_data_dir_);
@@ -217,13 +263,14 @@ class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
         web_app::WebAppProvider::GetForTest(profile()));
   }
 
-  void RunTest(const char* manifest,
-               const char* web_app_path,
-               const char* background_script,
+  void RunTest(std::string manifest,
+               std::string_view web_app_path,
+               std::string_view background_script,
                bool from_webstore) {
     extensions::TestExtensionDir extension_dir;
-    extension_dir.WriteManifest(base::StringPrintfNonConstexpr(
-        manifest, https_test_server_.GetURL(web_app_path).spec().c_str()));
+    base::ReplaceFirstSubstringAfterOffset(
+        &manifest, 0, "%s", https_test_server_.GetURL(web_app_path).spec());
+    extension_dir.WriteManifest(manifest);
     extension_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
                             background_script);
     extensions::ResultCatcher catcher;
@@ -239,9 +286,9 @@ class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
     ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
   }
 
-  void RunInstallableWebAppTest(const char* manifest,
-                                const char* web_app_url,
-                                const char* web_app_start_url) {
+  void RunInstallableWebAppTest(std::string manifest,
+                                std::string_view web_app_url,
+                                std::string_view web_app_start_url) {
     static constexpr char kInstallReplacementWebApp[] =
         R"(chrome.test.runWithUserGesture(function() {
              chrome.management.installReplacementWebApp(function() {
@@ -250,12 +297,13 @@ class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
              });
            });)";
 
-    web_app::SetAutoAcceptPWAInstallConfirmationForTesting(true);
+    auto auto_accept_pwa_install_confirmation =
+        web_app::SetAutoAcceptPWAInstallConfirmationForTesting();
     const GURL start_url = https_test_server_.GetURL(web_app_start_url);
     webapps::AppId web_app_id =
         web_app::GenerateAppId(/*manifest_id_path=*/std::nullopt, start_url);
-    auto* provider = web_app::WebAppProvider::GetForTest(browser()->profile());
-    EXPECT_TRUE(provider->registrar_unsafe().IsNotInRegistrar(web_app_id));
+    auto* provider = web_app::WebAppProvider::GetForTest(profile());
+    EXPECT_FALSE(provider->registrar_unsafe().IsInRegistrar(web_app_id));
     EXPECT_EQ(0, static_cast<int>(
                      provider->ui_manager().GetNumWindowsForApp(web_app_id)));
 
@@ -267,14 +315,12 @@ class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
                      provider->ui_manager().GetNumWindowsForApp(web_app_id)));
 
     // Call API again. It should launch the app.
-    RunTest(manifest, web_app_url, kInstallReplacementWebApp,
+    RunTest(std::move(manifest), web_app_url, kInstallReplacementWebApp,
             true /* from_webstore */);
     EXPECT_EQ(provider->registrar_unsafe().GetInstallState(web_app_id),
               web_app::proto::INSTALLED_WITH_OS_INTEGRATION);
     EXPECT_EQ(2, static_cast<int>(
                      provider->ui_manager().GetNumWindowsForApp(web_app_id)));
-
-    web_app::SetAutoAcceptPWAInstallConfirmationForTesting(false);
   }
 
   net::EmbeddedTestServer https_test_server_;
@@ -286,29 +332,6 @@ INSTANTIATE_TEST_SUITE_P(PersistentBackground,
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          InstallReplacementWebAppApiTest,
                          ::testing::Values(ContextType::kServiceWorker));
-
-const char InstallReplacementWebAppApiTest::kManifest[] =
-    R"({
-          "name": "Management API Test",
-          "version": "0.1",
-          "manifest_version": 2,
-          "background": {
-            "scripts": ["background.js"],
-            "persistent": true
-          },
-          "replacement_web_app": "%s"
-        })";
-
-const char InstallReplacementWebAppApiTest::kAppManifest[] =
-    R"({
-          "name": "Management API Test",
-          "version": "0.1",
-          "manifest_version": 2,
-          "app": {
-            "background": { "scripts": ["background.js"] }
-          },
-          "replacement_web_app": "%s"
-        })";
 
 IN_PROC_BROWSER_TEST_P(InstallReplacementWebAppApiTest, NotWebstore) {
   static constexpr char kBackground[] = R"(
@@ -353,20 +376,12 @@ IN_PROC_BROWSER_TEST_P(InstallReplacementWebAppApiTest, NotInstallableWebApp) {
           kBackground, true /* from_webstore */);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/40211465): Run these tests on Chrome OS with both Ash and
-// Lacros processes active.
 IN_PROC_BROWSER_TEST_P(InstallReplacementWebAppApiTest, InstallableWebApp) {
   static constexpr char kGoodWebAppURL[] =
       "/management/install_replacement_web_app/acceptable_web_app/index.html";
 
   RunInstallableWebAppTest(kManifest, kGoodWebAppURL, kGoodWebAppURL);
 }
-#endif
-
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/40211465): Run these tests on Chrome OS with both Ash and
-// Lacros processes active.
 
 // Check that web app still installs and launches correctly when start_url does
 // not match replacement_web_app_url.
@@ -386,12 +401,22 @@ IN_PROC_BROWSER_TEST_P(InstallReplacementWebAppApiTest,
 
 IN_PROC_BROWSER_TEST_P(InstallReplacementWebAppApiTest,
                        InstallableWebAppInPlatformApp) {
+  static constexpr char kAppManifest[] =
+      R"({
+          "name": "Management API Test",
+          "version": "0.1",
+          "manifest_version": 2,
+          "app": {
+            "background": { "scripts": ["background.js"] }
+          },
+          "replacement_web_app": "%s"
+        })";
   static constexpr char kGoodWebAppURL[] =
       "/management/install_replacement_web_app/acceptable_web_app/index.html";
 
   RunInstallableWebAppTest(kAppManifest, kGoodWebAppURL, kGoodWebAppURL);
 }
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests actions on extensions when no management policy is in place.
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, ManagementPolicyAllowed) {
@@ -399,13 +424,14 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, ManagementPolicyAllowed) {
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::ACCEPT);
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
+      extensions::ExtensionRegistry::Get(profile());
   EXPECT_TRUE(registry->enabled_extensions().GetByID(
       extension_ids_["enabled_extension"]));
 
   // Ensure that all actions are allowed.
-  extensions::ExtensionSystem::Get(
-      browser()->profile())->management_policy()->UnregisterAllProviders();
+  extensions::ExtensionSystem::Get(profile())
+      ->management_policy()
+      ->UnregisterAllProviders();
 
   ASSERT_TRUE(RunExtensionTest("management/management_policy",
                                {.custom_arg = "runAllowedTests"}));
@@ -419,13 +445,13 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, ManagementPolicyAllowed) {
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, ManagementPolicyProhibited) {
   LoadExtensions();
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
+      extensions::ExtensionRegistry::Get(profile());
   EXPECT_TRUE(registry->enabled_extensions().GetByID(
       extension_ids_["enabled_extension"]));
 
   // Prohibit status changes.
-  extensions::ManagementPolicy* policy = extensions::ExtensionSystem::Get(
-      browser()->profile())->management_policy();
+  extensions::ManagementPolicy* policy =
+      extensions::ExtensionSystem::Get(profile())->management_policy();
   policy->UnregisterAllProviders();
   extensions::TestManagementPolicyProvider provider(
       extensions::TestManagementPolicyProvider::PROHIBIT_MODIFY_STATUS |
@@ -436,10 +462,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, ManagementPolicyProhibited) {
                                {.custom_arg = "runProhibitedTests"}));
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/40211465): Run these tests on Chrome OS with both Ash and
-// Lacros processes active.
-
+#if !BUILDFLAG(IS_ANDROID)
+// Skipped on Android because it does not support Chrome apps.
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, LaunchPanelApp) {
   // Load an extension that calls launchApp() on any app that gets
   // installed.
@@ -454,25 +478,29 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, LaunchPanelApp) {
   ASSERT_FALSE(HasFatalFailure());  // Stop the test if any ASSERT failed.
 
   // Find the app's browser.  Check that it is a popup.
-  ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
-  Browser* app_browser = FindOtherBrowser(browser());
-  ASSERT_TRUE(app_browser->is_type_app());
+  ASSERT_EQ(2u, extensions::browsertest_util::GetWindowControllerCountInProfile(
+                    profile()));
+  BrowserWindowInterface* app_browser_window =
+      ui_test_utils::GetBrowserNotInSet({browser()});
+  ASSERT_TRUE(app_browser_window->GetType() ==
+              BrowserWindowInterface::TYPE_APP);
 
   // Close the app panel.
-  CloseBrowserSynchronously(app_browser);
+  CloseBrowserSynchronously(app_browser_window);
 
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
+      extensions::ExtensionRegistry::Get(profile());
   // Unload the extension.
   UninstallExtension(app_id);
-  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+  ASSERT_EQ(1u, extensions::browsertest_util::GetWindowControllerCountInProfile(
+                    profile()));
   ASSERT_FALSE(registry->GetExtensionById(
       app_id, extensions::ExtensionRegistry::EVERYTHING));
 
   // Set a pref indicating that the user wants to launch in a regular tab.
   // This should be ignored, because panel apps always load in a popup.
-  extensions::SetLaunchType(browser()->profile(), app_id,
-                            extensions::LAUNCH_TYPE_REGULAR);
+  extensions::SetLaunchType(profile(), app_id,
+                            extensions::LaunchType::kRegular);
 
   // Load the extension again.
   std::string app_id_new;
@@ -484,11 +512,14 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, LaunchPanelApp) {
 
   // Find the app's browser.  Apps that should load in a panel ignore
   // prefs, so we should still see the launch in a popup.
-  ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
-  app_browser = FindOtherBrowser(browser());
-  ASSERT_TRUE(app_browser->is_type_app());
+  ASSERT_EQ(2u, extensions::browsertest_util::GetWindowControllerCountInProfile(
+                    profile()));
+  app_browser_window = ui_test_utils::GetBrowserNotInSet({browser()});
+  ASSERT_TRUE(app_browser_window->GetType() ==
+              BrowserWindowInterface::TYPE_APP);
 }
 
+// Skipped on Android because it does not support Chrome apps.
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, LaunchTabApp) {
   // Load an extension that calls launchApp() on any app that gets
   // installed.
@@ -499,7 +530,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, LaunchTabApp) {
 
   // Code below assumes that the test starts with a single browser window
   // hosting one tab.
-  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+  ASSERT_EQ(1u, extensions::browsertest_util::GetWindowControllerCountInProfile(
+                    profile()));
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
 
   // Load an app with app.launch.container = "tab".
@@ -508,20 +540,21 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, LaunchTabApp) {
   ASSERT_FALSE(HasFatalFailure());
 
   // Check that the app opened in a new tab of the existing browser.
-  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+  ASSERT_EQ(1u, extensions::browsertest_util::GetWindowControllerCountInProfile(
+                    profile()));
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
 
   extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
+      extensions::ExtensionRegistry::Get(profile());
   // Unload the extension.
   UninstallExtension(app_id);
-  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+  ASSERT_EQ(1u, extensions::browsertest_util::GetWindowControllerCountInProfile(
+                    profile()));
   ASSERT_FALSE(registry->GetExtensionById(
       app_id, extensions::ExtensionRegistry::EVERYTHING));
 
   // Set a pref indicating that the user wants to launch in a window.
-  extensions::SetLaunchType(browser()->profile(), app_id,
-                            extensions::LAUNCH_TYPE_WINDOW);
+  extensions::SetLaunchType(profile(), app_id, extensions::LaunchType::kWindow);
 
   std::string app_id_new;
   LoadAndWaitForLaunch("management/launch_app_tab", &app_id_new);
@@ -532,28 +565,35 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, LaunchTabApp) {
 
   // Find the app's browser.  Opening in a new window will create
   // a new browser.
-  ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
-  Browser* app_browser = FindOtherBrowser(browser());
-  ASSERT_TRUE(app_browser->is_type_app());
+  ASSERT_EQ(2u, extensions::browsertest_util::GetWindowControllerCountInProfile(
+                    profile()));
+  BrowserWindowInterface* app_browser_window =
+      ui_test_utils::GetBrowserNotInSet({browser()});
+  ASSERT_TRUE(app_browser_window->GetType() ==
+              BrowserWindowInterface::TYPE_APP);
 }
 
+// Skipped on Android because it does not support Chrome apps.
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest,
                        NoLaunchPanelAppsDeprecated) {
   extensions::testing::g_enable_chrome_apps_for_testing = false;
   // Load an extension that calls launchApp() on any app that gets
   // installed.
   ExtensionTestMessageListener launcher_loaded("launcher loaded");
-  ASSERT_TRUE(LoadExtension(
-      test_data_dir_.AppendASCII("management/launch_on_install")));
+  auto* extension =
+      LoadExtension(test_data_dir_.AppendASCII("management/launch_on_install"));
+  ASSERT_TRUE(extension);
   ASSERT_TRUE(launcher_loaded.WaitUntilSatisfied());
 
   // Load an app with app.launch.container = "panel". This is a chrome app, so
   // it shouldn't be launched where that functionality has been deprecated.
   ExtensionTestMessageListener launched_app("launched app");
   ExtensionTestMessageListener chrome_apps_error("got_chrome_apps_error");
-  ASSERT_TRUE(
+  auto* app =
       LoadExtension(test_data_dir_.AppendASCII("management/launch_app_panel"),
-                    {.context_type = ContextType::kFromManifest}));
+                    {.context_type = ContextType::kFromManifest});
+  ASSERT_TRUE(app);
+
   if (ExpectChromeAppsDefaultEnabled()) {
     EXPECT_TRUE(launched_app.WaitUntilSatisfied());
     EXPECT_FALSE(chrome_apps_error.was_satisfied());
@@ -563,6 +603,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest,
   }
 }
 
+// Skipped on Android because it does not support Chrome apps.
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, NoLaunchTabAppDeprecated) {
   extensions::testing::g_enable_chrome_apps_for_testing = false;
   // Load an extension that calls launchApp() on any app that gets
@@ -574,16 +615,19 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, NoLaunchTabAppDeprecated) {
 
   // Code below assumes that the test starts with a single browser window
   // hosting one tab.
-  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+  ASSERT_EQ(1u, extensions::browsertest_util::GetWindowControllerCountInProfile(
+                    profile()));
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
 
   // Load an app with app.launch.container = "tab". This is a chrome app, so
   // it shouldn't be launched where that functionality has been deprecated.
   ExtensionTestMessageListener launched_app("launched app");
   ExtensionTestMessageListener chrome_apps_error("got_chrome_apps_error");
-  ASSERT_TRUE(
+  auto* app =
       LoadExtension(test_data_dir_.AppendASCII("management/launch_app_tab"),
-                    {.context_type = ContextType::kFromManifest}));
+                    {.context_type = ContextType::kFromManifest});
+  ASSERT_TRUE(app);
+
   if (ExpectChromeAppsDefaultEnabled()) {
     EXPECT_TRUE(launched_app.WaitUntilSatisfied());
     EXPECT_FALSE(chrome_apps_error.was_satisfied());
@@ -592,7 +636,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, NoLaunchTabAppDeprecated) {
     EXPECT_FALSE(launched_app.was_satisfied());
   }
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Flaky on MacOS: crbug.com/915339
 #if BUILDFLAG(IS_MAC)

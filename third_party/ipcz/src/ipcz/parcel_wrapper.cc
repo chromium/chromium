@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #include "ipcz/parcel_wrapper.h"
-
 #include "ipcz/driver_object.h"
 #include "ipcz/driver_transport.h"
 #include "ipcz/ipcz.h"
 #include "ipcz/node.h"
 #include "ipcz/node_link.h"
 #include "util/ref_counted.h"
+#include "util/unsafe_buffers.h"
 
 namespace ipcz {
 
@@ -71,7 +71,7 @@ IpczResult ParcelWrapper::Get(IpczGetFlags flags,
     return IPCZ_RESULT_RESOURCE_EXHAUSTED;
   }
 
-  memcpy(data, parcel_->data_view().data(), data_size);
+  IPCZ_UNSAFE_TODO(memcpy(data, parcel_->data_view().data(), data_size));
   parcel_->ConsumeHandles(absl::MakeSpan(handles, handles_size));
 
   if (parcel) {

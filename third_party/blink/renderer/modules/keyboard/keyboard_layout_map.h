@@ -33,12 +33,8 @@ class KeyboardLayoutMap final : public ScriptWrappable,
  private:
   // Maplike implementation.
   PairSyncIterable<KeyboardLayoutMap>::IterationSource* CreateIterationSource(
-      ScriptState*,
-      ExceptionState&) override;
-  bool GetMapEntry(ScriptState*,
-                   const String& key,
-                   String& value,
-                   ExceptionState&) override;
+      ScriptState*) override;
+  bool GetMapEntry(ScriptState*, const String& key, String& value) override;
 
   const HashMap<String, String> layout_map_;
 };

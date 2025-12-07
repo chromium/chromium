@@ -7,6 +7,7 @@
  * the browser.
  */
 
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
 export interface RegulatoryInfo {
@@ -50,7 +51,6 @@ export interface AboutPageUpdateInfo {
 export interface EndOfLifeInfo {
   hasEndOfLife: boolean;
   aboutPageEndOfLifeMessage: string;
-  shouldShowEndOfLifeIncentive: boolean;
   shouldShowOfferText: boolean;
   isExtendedUpdatesDatePassed: boolean;
   isExtendedUpdatesOptInRequired: boolean;
@@ -111,6 +111,8 @@ export function browserChannelToI18nId(
       return 'aboutChannelLongTermSupportCandidate';
     case BrowserChannel.LTS:
       return 'aboutChannelLongTermSupport';
+    default:
+      assertNotReached();
   }
 }
 
@@ -137,7 +139,7 @@ export interface AboutPageBrowserProxy {
   /**
    * Applies deferred update if it exists.
    */
-  applyDeferredUpdate(): void;
+  applyDeferredUpdateAdvanced(): void;
 
   /**
    * Indicates to the browser that the page is ready.
@@ -200,6 +202,8 @@ export interface AboutPageBrowserProxy {
    */
   getChannelInfo(): Promise<ChannelInfo>;
 
+  canChangeFirmware(): Promise<boolean>;
+
   canChangeChannel(): Promise<boolean>;
 
   getVersionInfo(): Promise<VersionInfo>;
@@ -211,11 +215,6 @@ export interface AboutPageBrowserProxy {
    * receive updates.
    */
   getEndOfLifeInfo(): Promise<EndOfLifeInfo>;
-
-  /**
-   * Called when the end of life incentive button is clicked.
-   */
-  endOfLifeIncentiveButtonClicked(): void;
 
   /**
    * Request TPM firmware update status from the browser. It results in one or
@@ -266,8 +265,8 @@ export class AboutPageBrowserProxyImpl implements AboutPageBrowserProxy {
     instance = obj;
   }
 
-  applyDeferredUpdate(): void {
-    chrome.send('applyDeferredUpdate');
+  applyDeferredUpdateAdvanced(): void {
+    chrome.send('applyDeferredUpdateAdvanced');
   }
 
   pageReady(): void {
@@ -324,6 +323,10 @@ export class AboutPageBrowserProxyImpl implements AboutPageBrowserProxy {
     return sendWithPromise('getChannelInfo');
   }
 
+  canChangeFirmware(): Promise<boolean> {
+    return sendWithPromise('canChangeFirmware');
+  }
+
   canChangeChannel(): Promise<boolean> {
     return sendWithPromise('canChangeChannel');
   }
@@ -338,10 +341,6 @@ export class AboutPageBrowserProxyImpl implements AboutPageBrowserProxy {
 
   getEndOfLifeInfo(): Promise<EndOfLifeInfo> {
     return sendWithPromise('getEndOfLifeInfo');
-  }
-
-  endOfLifeIncentiveButtonClicked(): void {
-    chrome.send('openEndOfLifeIncentive');
   }
 
   checkInternetConnection(): Promise<boolean> {

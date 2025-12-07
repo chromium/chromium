@@ -18,7 +18,6 @@
 #include "ash/wm/window_preview_view.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_constants.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -28,6 +27,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
 
@@ -82,6 +82,9 @@ WindowCycleItemView::WindowCycleItemView(aura::Window* window)
   // to make this a layer.
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
+
+  layer_tree_synchronizer_ =
+      std::make_unique<LayerTreeSynchronizer>(/*restore_tree=*/false);
 }
 
 WindowCycleItemView::~WindowCycleItemView() = default;
@@ -141,15 +144,6 @@ void WindowCycleItemView::Layout(PassKey) {
   SetBackdropVisibility(preview_max_bounds.size() !=
                         preview_area_bounds.size());
 
-  if (!chromeos::features::IsRoundedWindowsEnabled()) {
-    return;
-  }
-
-  if (!layer_tree_synchronizer_) {
-    layer_tree_synchronizer_ = std::make_unique<ScopedLayerTreeSynchronizer>(
-        layer(), /*restore_tree=*/false);
-  }
-
   // In order to draw the final result without requiring the rendering of
   // surfaces, the rounded corners bounds of the layer tree, that is rooted at
   // WindowCycleItemView, are synchronized.
@@ -159,7 +153,7 @@ void WindowCycleItemView::Layout(PassKey) {
   // surfaces would be necessary. However, by matching (synchronizing) the
   // radii, the need for render surfaces is eliminated.
   layer_tree_synchronizer_->SynchronizeRoundedCorners(
-      layer(),
+      layer(), /*root_layer=*/layer(),
       gfx::RRectF(gfx::RectF(preview_max_bounds),
                   window_util::GetMiniWindowRoundedCorners(
                       source_window(), /*include_header_rounding=*/false)));
@@ -235,15 +229,79 @@ GroupContainerCycleView::GroupContainerCycleView(SnapGroup* snap_group)
           kInsideContainerBorderInset, kBetweenCycleItemsSpacing));
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
+  GetViewAccessibility().SetDescription(
+      l10n_util::GetStringUTF16(IDS_ASH_SNAP_GROUP_WINDOW_CYCLE_DESCRIPTION));
+  for (WindowCycleItemView* mini_view : mini_views_) {
+    focus_changed_callback_.push_back(mini_view->AddFocusedChangedCallback(
+        base::BindRepeating(&GroupContainerCycleView::OnChildFocusChanged,
+                            weak_ptr_factory_.GetWeakPtr())));
+  }
 }
 
 GroupContainerCycleView::~GroupContainerCycleView() = default;
 
+// `WindowCycleItemView` inherits from `WindowMiniView` which sets the name and
+// ignored a11y properties of the focused mini view.
+void GroupContainerCycleView::OnChildFocusChanged() {
+  for (WindowCycleItemView* mini_view : mini_views_) {
+    if (mini_view->is_mini_view_focused()) {
+      UpdateAccessibleName(
+          base::UTF16ToUTF8(mini_view->GetViewAccessibility().GetCachedName()));
+      GetViewAccessibility().SetIsIgnored(
+          mini_view->GetViewAccessibility().GetIsIgnored());
+
+      name_changed_subscription_ =
+          mini_view->GetViewAccessibility().AddStringAttributeChangedCallback(
+              ax::mojom::StringAttribute::kName,
+              base::BindRepeating(&GroupContainerCycleView::OnAXNameChanged,
+                                  weak_ptr_factory_.GetWeakPtr()));
+      ignored_state_changed_callback_ =
+          mini_view->GetViewAccessibility().AddStateChangedCallback(
+              ax::mojom::State::kIgnored,
+              base::BindRepeating(
+                  &GroupContainerCycleView::OnAccessibleIgnoredStateChanged,
+                  weak_ptr_factory_.GetWeakPtr()));
+
+      return;
+    }
+  }
+
+  name_changed_subscription_ = base::CallbackListSubscription();
+  ignored_state_changed_callback_ = base::CallbackListSubscription();
+  // If none of of the `mini_view_` are focused we should clear the old
+  // properties.
+  GetViewAccessibility().RemoveName();
+  GetViewAccessibility().SetIsIgnored(false);
+}
+
+void GroupContainerCycleView::UpdateAccessibleName(const std::string& name) {
+  if (name.empty()) {
+    GetViewAccessibility().SetName(
+        std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  } else {
+    GetViewAccessibility().SetName(name);
+  }
+}
+
+void GroupContainerCycleView::OnAXNameChanged(
+    ax::mojom::StringAttribute attribute,
+    const std::optional<std::string>& name) {
+  UpdateAccessibleName(name.value_or(""));
+}
+
+void GroupContainerCycleView::OnAccessibleIgnoredStateChanged(
+    ax::mojom::State state,
+    const bool value) {
+  GetViewAccessibility().SetIsIgnored(value);
+}
+
 bool GroupContainerCycleView::Contains(aura::Window* window) const {
-  return base::ranges::any_of(mini_views_,
-                              [window](const WindowCycleItemView* mini_view) {
-                                return mini_view->Contains(window);
-                              });
+  return std::ranges::any_of(mini_views_,
+                             [window](const WindowCycleItemView* mini_view) {
+                               return mini_view->Contains(window);
+                             });
 }
 
 aura::Window* GroupContainerCycleView::GetWindowAtPoint(
@@ -294,20 +352,8 @@ int GroupContainerCycleView::TryRemovingChildItem(
   }
 
   RefreshItemVisuals();
+  OnChildFocusChanged();
   return mini_views_.size();
-}
-
-void GroupContainerCycleView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  for (WindowCycleItemView* mini_view : mini_views_) {
-    if (mini_view->is_mini_view_focused()) {
-      mini_view->GetAccessibleNodeData(node_data);
-      break;
-    }
-  }
-
-  node_data->SetDescription(
-      l10n_util::GetStringUTF16(IDS_ASH_SNAP_GROUP_WINDOW_CYCLE_DESCRIPTION));
-  node_data->role = ax::mojom::Role::kGroup;
 }
 
 gfx::RoundedCornersF GroupContainerCycleView::GetRoundedCorners() const {
@@ -354,14 +400,14 @@ void GroupContainerCycleView::SetSelectedWindowForFocus(aura::Window* window) {
   if (old_is_first_focus_selection_request &&
       window_util::GetActiveWindow() == mini_views_[1]->source_window()) {
     mini_views_[0]->UpdateFocusState(/*focus=*/true);
-    NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelection, true);
   } else {
     // For normal use case, follow the window cycle order and `UpdateFocusState`
     // on the cycle item that contains the target window.
     for (WindowCycleItemView* mini_view : mini_views_) {
       if (mini_view->Contains(window)) {
         mini_view->UpdateFocusState(/*focus=*/true);
-        NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
+        NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelection, true);
         break;
       }
     }

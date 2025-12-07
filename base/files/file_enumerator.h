@@ -50,6 +50,22 @@ class BASE_EXPORT FileEnumerator {
   class BASE_EXPORT FileInfo {
    public:
     FileInfo();
+#if BUILDFLAG(IS_ANDROID)
+    // Android has both posix paths, and Content-URIs. It will use the linux /
+    // posix code for posix paths where a FileInfo() object is constructed and
+    // then `stat_` is populated via fstat() and used for IsDirectory(),
+    // GetSize(), GetLastModifiedTime(). Content-URIs provide all values in this
+    // constructor and writes `is_directory`, `size` and `time` to `stat_`.
+    FileInfo(base::FilePath content_uri,
+             base::FilePath filename,
+             bool is_directory,
+             off_t size,
+             Time time);
+#endif
+    FileInfo(const FileInfo& that);
+    FileInfo& operator=(const FileInfo& that);
+    FileInfo(FileInfo&& that);
+    FileInfo& operator=(FileInfo&& that);
     ~FileInfo();
 
     bool IsDirectory() const;
@@ -58,6 +74,11 @@ class BASE_EXPORT FileEnumerator {
     // is in constrast to the value returned by FileEnumerator.Next() which
     // includes the |root_path| passed into the FileEnumerator constructor.
     FilePath GetName() const;
+
+#if BUILDFLAG(IS_ANDROID)
+    // Display names of subdirs.
+    const std::vector<std::string>& subdirs() const { return subdirs_; }
+#endif
 
     int64_t GetSize() const;
 
@@ -78,14 +99,20 @@ class BASE_EXPORT FileEnumerator {
    private:
     friend class FileEnumerator;
 
+#if BUILDFLAG(IS_ANDROID)
+    FilePath content_uri_;
+    std::vector<std::string> subdirs_;
+#endif
 #if BUILDFLAG(IS_WIN)
-    CHROME_WIN32_FIND_DATA find_data_;
+    CHROME_WIN32_FIND_DATA find_data_ = {};
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     stat_wrapper_t stat_;
     FilePath filename_;
 #endif
   };
 
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.base
+  // GENERATED_JAVA_IS_FLAG: true
   enum FileType {
     FILES = 1 << 0,
     DIRECTORIES = 1 << 1,
@@ -215,7 +242,7 @@ class BASE_EXPORT FileEnumerator {
 
   // True when find_data_ is valid.
   bool has_find_data_ = false;
-  CHROME_WIN32_FIND_DATA find_data_;
+  CHROME_WIN32_FIND_DATA find_data_ = {};
   HANDLE find_handle_ = INVALID_HANDLE_VALUE;
 
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -253,6 +280,12 @@ class BASE_EXPORT FileEnumerator {
   // A stack that keeps track of which subdirectories we still need to
   // enumerate in the breadth-first search.
   base::stack<FilePath> pending_paths_;
+#if BUILDFLAG(IS_ANDROID)
+  // Matches pending_paths_, but with display names.
+  base::stack<std::vector<std::string>> pending_subdirs_;
+  // Display names of subdirs of the current entry.
+  std::vector<std::string> subdirs_;
+#endif
 };
 
 }  // namespace base

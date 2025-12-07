@@ -65,8 +65,8 @@ public class OmniboxUrlEmphasizerTest {
 
     /** Convenience class for testing a URL emphasized by OmniboxUrlEmphasizer.emphasizeUrl(). */
     private static class EmphasizedUrlSpanHelper {
-        UrlEmphasisSpan mSpan;
-        Spannable mParent;
+        final UrlEmphasisSpan mSpan;
+        final Spannable mParent;
 
         private EmphasizedUrlSpanHelper(UrlEmphasisSpan span, Spannable parent) {
             mSpan = span;
@@ -148,7 +148,7 @@ public class OmniboxUrlEmphasizerTest {
         EmphasizedUrlSpanHelper[] spans = EmphasizedUrlSpanHelper.getSpansForEmphasizedUrl(url);
         Arrays.sort(
                 spans,
-                new Comparator<EmphasizedUrlSpanHelper>() {
+                new Comparator<>() {
                     @Override
                     public int compare(EmphasizedUrlSpanHelper o1, EmphasizedUrlSpanHelper o2) {
                         return o1.getStartIndex() - o2.getStartIndex();

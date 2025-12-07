@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+    <style name="ComposeplateViewButton" parent="LocationBarActionButton">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">@drawable/home_surface_search_box_background</item>
+        <item name="android:foreground">@drawable/rounded_rectangle_ripple_100</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:scaleType">center</item>
+    </style>
+
+    <style name="TextAppearance.ComposeplateTextMedium" parent="TextAppearance.TextMediumThick">
+        <item name="android:textColor">@macro/ntp_search_box_hint</item>
+    </style>
+
+    <style name="TextAppearance.ComposeplateTextMediumDark" parent="TextAppearance.ComposeplateTextMedium">
+        <item name="android:textColor">@color/default_text_color_dark</item>
+    </style>
+</resources>

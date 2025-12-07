@@ -3,24 +3,21 @@
  * Copyright The Closure Library Authors.
  * SPDX-License-Identifier: Apache-2.0
  */
-
-goog.provide('goog.Thenable');
+goog.module('goog.Thenable');
+goog.module.declareLegacyNamespace();
 
 /** @suppress {extraRequire} used in complex type */
-goog.requireType('goog.Promise');  // for the type reference.
-
-
+const GoogPromise = goog.requireType('goog.Promise');  // for the type reference.
 
 /**
  * Provides a more strict interface for Thenables in terms of
- * http://promisesaplus.com for interop with {@see goog.Promise}.
+ * http://promisesaplus.com for interop with {@see GoogPromise}.
  *
  * @interface
  * @extends {IThenable<TYPE>}
  * @template TYPE
  */
-goog.Thenable = function() {};
-
+function Thenable() {}
 
 /**
  * Adds callbacks that will operate on the result of the Thenable, returning a
@@ -65,55 +62,50 @@ goog.Thenable = function() {};
  *  =:
  *
  */
-goog.Thenable.prototype.then = function(
+Thenable.prototype.then = function(
     opt_onFulfilled, opt_onRejected, opt_context) {};
-
 
 /**
  * An expando property to indicate that an object implements
- * `goog.Thenable`.
+ * `Thenable`.
  *
  * {@see addImplementation}.
  *
  * @const
  */
-goog.Thenable.IMPLEMENTED_BY_PROP = '$goog_Thenable';
-
+Thenable.IMPLEMENTED_BY_PROP = '$goog_Thenable';
 
 /**
  * Marks a given class (constructor) as an implementation of Thenable, so
  * that we can query that fact at runtime. The class must have already
  * implemented the interface.
  * Exports a 'then' method on the constructor prototype, so that the objects
- * also implement the extern {@see goog.Thenable} interface for interop with
+ * also implement the extern {@see Thenable} interface for interop with
  * other Promise implementations.
- * @param {function(new:goog.Thenable,...?)} ctor The class constructor. The
+ * @param {function(new:Thenable,...?)} ctor The class constructor. The
  *     corresponding class must have already implemented the interface.
  */
-goog.Thenable.addImplementation = function(ctor) {
-  'use strict';
+Thenable.addImplementation = function(ctor) {
   if (COMPILED) {
-    ctor.prototype[goog.Thenable.IMPLEMENTED_BY_PROP] = true;
+    ctor.prototype[Thenable.IMPLEMENTED_BY_PROP] = true;
   } else {
     // Avoids dictionary access in uncompiled mode.
     ctor.prototype.$goog_Thenable = true;
   }
 };
 
-
 /**
  * @param {?} object
- * @return {boolean} Whether a given instance implements `goog.Thenable`.
+ * @return {boolean} Whether a given instance implements `Thenable`.
  *     The class/superclass of the instance must call `addImplementation`.
  */
-goog.Thenable.isImplementedBy = function(object) {
-  'use strict';
+Thenable.isImplementedBy = function(object) {
   if (!object) {
     return false;
   }
   try {
     if (COMPILED) {
-      return !!object[goog.Thenable.IMPLEMENTED_BY_PROP];
+      return !!object[Thenable.IMPLEMENTED_BY_PROP];
     }
     return !!object.$goog_Thenable;
   } catch (e) {
@@ -121,3 +113,5 @@ goog.Thenable.isImplementedBy = function(object) {
     return false;
   }
 };
+
+exports = Thenable;

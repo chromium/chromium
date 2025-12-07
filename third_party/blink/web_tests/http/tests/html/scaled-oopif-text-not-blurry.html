@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <link rel=author href="mailto:wjmaclean@chromium.org">
+  <!-- The pixel differences below appear to be text kerning changes
+       between same-process and cross-process iframes. -->
+  <meta name="fuzzy" content="maxDifference=0-255; totalPixels=0-181">
+  <body>
+    <h1>Mainframe with text and an out-of-process iframe</h1>
+    <div style="transform: scale(0.9)">
+      This is some mainframe text.<p>
+      <!--  use of localhost below will make the iframe an OOPIF -->
+      <iframe src="http://localhost:8080/html/resources/scaled-oopif-text.html"
+              style="border: 1px solid black;"></iframe>
+    </div>
+  </body>
+  <script>
+    if (window.testRunner) {
+      testRunner.waitUntilDone();
+    }
+    onload = () => {
+      if (window.testRunner) {
+        // This test is flaky because the test does not wait for the oopif to
+        // paint. Work around this by waiting for a frame.
+        requestAnimationFrame(()=> {
+          requestAnimationFrame(()=> {
+            testRunner.notifyDone();
+          });
+        });
+      }
+    }
+  </script>
+</html>

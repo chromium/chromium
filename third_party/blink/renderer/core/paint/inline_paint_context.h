@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/paint/decorating_box.h"
+#include "third_party/blink/renderer/core/style/applied_text_decoration.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -55,7 +56,7 @@ class CORE_EXPORT InlinePaintContext {
 
    private:
     InlinePaintContext* inline_context_ = nullptr;
-    const Vector<AppliedTextDecoration, 1>* last_decorations_ = nullptr;
+    const AppliedTextDecorationVector* last_decorations_ = nullptr;
     DecoratingBoxList saved_decorating_boxes_;
     wtf_size_t push_count_ = 0;
   };
@@ -100,14 +101,13 @@ class CORE_EXPORT InlinePaintContext {
   };
 
  private:
-  wtf_size_t SyncDecoratingBox(
-      const FragmentItem& item,
-      DecoratingBoxList* saved_decorating_boxes = nullptr);
+  wtf_size_t SyncDecoratingBox(const FragmentItem& item,
+                               DecoratingBoxList& saved_decorating_boxes);
 
   DecoratingBoxList decorating_boxes_;
   // The last |AppliedTextDecorations| |this| was synchronized with.
-  const Vector<AppliedTextDecoration, 1>* last_decorations_ = nullptr;
-  const Vector<AppliedTextDecoration, 1>* line_decorations_ = nullptr;
+  const AppliedTextDecorationVector* last_decorations_ = nullptr;
+  const AppliedTextDecorationVector* line_decorations_ = nullptr;
   std::optional<InlineCursor> line_cursor_;
   PhysicalOffset paint_offset_;
 };

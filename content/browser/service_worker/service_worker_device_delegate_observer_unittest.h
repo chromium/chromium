@@ -36,7 +36,7 @@ class ServiceWorkerDeviceDelegateObserverTest : public testing::Test {
 
   EmbeddedWorkerTestHelper* helper() { return helper_.get(); }
   ServiceWorkerContextCore* context() { return helper_->context(); }
-  ServiceWorkerRegistry* registry() { return context()->registry(); }
+  ServiceWorkerRegistry& registry() { return context()->registry(); }
 
  private:
   void InitializeTestHelper();

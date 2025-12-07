@@ -125,7 +125,7 @@ public class RequestGeneratorTest {
             RequestData data = new RequestData(sendInstallEvent, 0, requestId, INSTALL_SOURCE);
             xml = generator.generateXML(sessionId, version, installAge, dateLastActive, data);
         } catch (RequestFailureException e) {
-            Assert.fail("XML generation failed.");
+            throw new AssertionError("XML generation failed.", e);
         }
 
         checkForAttributeAndValue(xml, "request", "sessionid", "{" + sessionId + "}");

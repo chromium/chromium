@@ -5,8 +5,12 @@
 #ifndef CONTENT_BROWSER_MANIFEST_MANIFEST_MANAGER_HOST_H_
 #define CONTENT_BROWSER_MANIFEST_MANIFEST_MANAGER_HOST_H_
 
+#include <optional>
+
 #include "base/containers/id_map.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
+#include "content/public/browser/page_manifest_manager.h"
 #include "content/public/browser/page_user_data.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -21,6 +25,7 @@ namespace content {
 // IPC messaging with the child process.
 // TODO(mlamouri): keep a cached version and a dirty bit here.
 class ManifestManagerHost : public PageUserData<ManifestManagerHost>,
+                            public PageManifestManager,
                             public blink::mojom::ManifestUrlChangeObserver {
  public:
   ManifestManagerHost(const ManifestManagerHost&) = delete;
@@ -38,6 +43,9 @@ class ManifestManagerHost : public PageUserData<ManifestManagerHost>,
   // have an empty manifest.
   void GetManifest(GetManifestCallback callback);
 
+  base::CallbackListSubscription GetSpecifiedManifest(
+      ManifestCallbackList::CallbackType callback) override;
+
   void RequestManifestDebugInfo(
       blink::mojom::ManifestManager::RequestManifestDebugInfoCallback callback);
 
@@ -54,6 +62,11 @@ class ManifestManagerHost : public PageUserData<ManifestManagerHost>,
 
   blink::mojom::ManifestManager& GetManifestManager();
 
+  // If it is a bad message, returns an unpopulated Manifest instance.
+  blink::mojom::ManifestPtr ValidateAndMaybeOverrideManifest(
+      blink::mojom::ManifestRequestResult result,
+      blink::mojom::ManifestPtr manifest);
+
   std::vector<GetManifestCallback> ExtractPendingCallbacks();
   void OnConnectionError();
 
@@ -61,17 +74,31 @@ class ManifestManagerHost : public PageUserData<ManifestManagerHost>,
                                  blink::mojom::ManifestRequestResult result,
                                  const GURL& url,
                                  blink::mojom::ManifestPtr manifest);
+  void OnRequestManifestAndErrors(
+      base::expected<blink::mojom::ManifestPtr,
+                     blink::mojom::RequestManifestErrorPtr>);
 
   // blink::mojom::ManifestUrlChangeObserver:
   void ManifestUrlChanged(const GURL& manifest_url) override;
 
+  void MaybeFetchManifestForSubscriptions();
+
+  void NotifySubscriptionsIfSuccessCached();
+
+  PAGE_USER_DATA_KEY_DECL();
+
   mojo::Remote<blink::mojom::ManifestManager> manifest_manager_;
   CallbackMap callbacks_;
+
+  std::optional<blink::mojom::ManifestPtr> last_manifest_success_result_ =
+      std::nullopt;
+
+  ManifestCallbackList developer_manifest_callback_list_;
 
   mojo::AssociatedReceiver<blink::mojom::ManifestUrlChangeObserver>
       manifest_url_change_observer_receiver_{this};
 
-  PAGE_USER_DATA_KEY_DECL();
+  base::WeakPtrFactory<ManifestManagerHost> weak_factory_{this};
 };
 
 }  // namespace content

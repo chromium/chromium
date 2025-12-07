@@ -15,13 +15,14 @@
 #include "components/manta/anchovy/anchovy_proto_helper.h"
 #include "components/manta/anchovy/anchovy_requests.h"
 #include "components/manta/base_provider.h"
+#include "components/manta/features.h"
 #include "components/manta/manta_service_callbacks.h"
 
 namespace manta {
 
 namespace {
 
-constexpr char kOauthConsumerName[] = "manta_orca";
+constexpr base::TimeDelta kTimeout = base::Seconds(30);
 
 }  // namespace
 
@@ -40,11 +41,12 @@ void AnchovyProvider::GetImageDescription(
   auto proto_request = anchovy::AnchovyProtoHelper::ComposeRequest(request);
 
   RequestInternal(
-      GURL(GetProviderEndpoint(/*use_prod=*/false)), kOauthConsumerName,
+      GURL(GetProviderEndpoint(features::IsAnchovyUseProdServerEnabled())),
       traffic_annotation, proto_request, MantaMetricType::kAnchovy,
       base::BindOnce(
           &anchovy::AnchovyProtoHelper::HandleImageDescriptionResponse,
-          std::move(done_callback)));
+          std::move(done_callback)),
+      kTimeout);
 }
 
 }  // namespace manta

@@ -93,7 +93,7 @@ void ExtensionsSyncPerfTest::RemoveExtensions(int profile) {
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionsSyncPerfTest, P0) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   int num_default_extensions = GetExtensionCount(0);
   int expected_extension_count = num_default_extensions + kNumExtensions;
 

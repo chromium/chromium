@@ -1,0 +1,160 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/commerce/coupons/DiscountsBottomSheetContentCoordinator.java",
+    "java/src/org/chromium/chrome/browser/commerce/coupons/DiscountsBottomSheetContentMediator.java",
+    "java/src/org/chromium/chrome/browser/commerce/coupons/DiscountsBottomSheetContentProperties.java",
+    "java/src/org/chromium/chrome/browser/commerce/coupons/DiscountsBottomSheetContentViewBinder.java",
+    "java/src/org/chromium/chrome/browser/commerce/coupons/DiscountsButtonController.java",
+  ]
+
+  deps = [
+    ":java_resources",
+    "//base:callback_java",
+    "//base:metrics_java",
+    "//base:supplier_java",
+    "//chrome/browser/commerce/android:commerce_bottom_sheet_content_java",
+    "//chrome/browser/commerce/android:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/toolbar:java",
+    "//chrome/browser/user_education:java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/commerce/core/android:core_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//ui/android:ui_java",
+    "//url:url_java",
+  ]
+
+  resources_package = "org.chromium.chrome.browser.commerce.coupons"
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/drawable/discount_code_background.xml",
+    "java/res/drawable/discount_item_container_background.xml",
+    "java/res/layout/discount_item_container.xml",
+    "java/res/layout/discounts_content_container.xml",
+    "java/res/values/dimens.xml",
+    "java/res/values/styles.xml",
+  ]
+
+  deps = [
+    "//chrome/android:chrome_app_java_resources",
+    "//components/strings:components_strings_grd",
+  ]
+}
+
+android_library("unit_device_javatests") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.commerce.coupons"
+
+  sources = [ "javatests/src/org/chromium/chrome/browser/commerce/coupons/DiscountsBottomSheetContentRenderTest.java" ]
+
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/settings:test_support_java",
+    "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/notifications/android:utils_java",
+    "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/widget/android:test_support_java",
+    "//components/payments/content/android:java",
+    "//components/prefs/android:java",
+    "//components/signin/public/android:java",
+    "//content/public/android:content_full_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+    "//ui/android:ui_recycler_view_java",
+  ]
+}
+
+robolectric_library("junit") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.commerce.coupons"
+
+  sources = [
+    "junit/src/org/chromium/chrome/browser/commerce/coupons/DiscountsBottomSheetContentMediatorTest.java",
+    "junit/src/org/chromium/chrome/browser/commerce/coupons/DiscountsButtonControllerTest.java",
+  ]
+
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/commerce/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/toolbar:java",
+    "//chrome/browser/ui/messages/android:java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/commerce/core/android:core_java",
+    "//content/public/android:content_full_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/jni_zero:gendeps_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+    "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_junit_test_support",
+    "//url:url_java",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.commerce.coupons"
+
+  sources = [ "javatests/src/org/chromium/chrome/browser/commerce/coupons/DiscountsIntegrationTest.java" ]
+
+  deps = [
+    ":java_resources",
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/commerce/android:java",
+    "//chrome/browser/commerce/android:java_resources",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/tab:java",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//chrome/test/android:chrome_java_transit",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/commerce/core/android:core_java",
+    "//net/android:net_java_test_support",
+    "//third_party/androidx:androidx_test_espresso_espresso_core_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//url:url_java",
+  ]
+}

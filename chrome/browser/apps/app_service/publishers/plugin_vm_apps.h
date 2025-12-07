@@ -25,8 +25,6 @@ class Profile;
 
 namespace apps {
 
-class PublisherHost;
-
 struct AppLaunchParams;
 
 // An app publisher (in the App Service sense) of Plugin VM apps.
@@ -41,11 +39,9 @@ class PluginVmApps : public AppPublisher,
   PluginVmApps(const PluginVmApps&) = delete;
   PluginVmApps& operator=(const PluginVmApps&) = delete;
 
- private:
-  friend class PublisherHost;
-
   void Initialize();
 
+ private:
   // apps::AppPublisher overrides.
   void GetCompressedIconData(const std::string& app_id,
                              int32_t size_in_dip,

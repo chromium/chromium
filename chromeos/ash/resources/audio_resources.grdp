@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <!-- Resources for Scalable IPH. -->
+    <include name="IDR_SOUND_FOCUS_MODE_ENDING_MOMENT_FLAC" file="../resources/public/sounds/focus_mode_ending_moment.flac" type="BINDATA" />
+    <include name="IDR_SOUND_CHARGE_HIGH_BATTERY_FLAC" file="../resources/public/sounds/power/charging_started_high.flac" type="BINDATA" />
+    <include name="IDR_SOUND_CHARGE_MEDIUM_BATTERY_FLAC" file="../resources/public/sounds/power/charging_started_medium.flac" type="BINDATA" />
+    <include name="IDR_SOUND_CHARGE_LOW_BATTERY_FLAC" file="../resources/public/sounds/power/charging_started_low.flac" type="BINDATA" />
+    <include name="IDR_SOUND_NO_CHARGE_LOW_BATTERY_FLAC" file="../resources/public/sounds/power/low_battery.flac" type="BINDATA" />
+</grit-part>

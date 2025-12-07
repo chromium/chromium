@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "ash/constants/ash_features.h"
 #include "ash/root_window_controller.h"
@@ -21,6 +22,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
@@ -32,14 +34,12 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/secure_channel/nearby_connector_factory.h"
 #include "chrome/browser/ash/secure_channel/secure_channel_client_provider.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/channel_info.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #include "chromeos/ash/services/secure_channel/presence_monitor_impl.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/presence_monitor_client_impl.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/presence_monitor.h"
@@ -48,6 +48,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/user_manager/user_manager.h"
 #include "components/version_info/channel.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/gfx/image/image.h"
@@ -189,7 +190,7 @@ void EcheAppManagerFactory::ShowNotification(
 
   if (info->category() ==
       LaunchAppHelper::NotificationInfo::Category::kNative) {
-    if (absl::get<LaunchAppHelper::NotificationInfo::NotificationType>(
+    if (std::get<LaunchAppHelper::NotificationInfo::NotificationType>(
             info->type()) ==
         LaunchAppHelper::NotificationInfo::NotificationType::kScreenLock) {
       weak_ptr->notification_controller_->ShowScreenLockNotification(
@@ -322,7 +323,7 @@ std::unique_ptr<SystemInfo> EcheAppManagerFactory::GetSystemInfo(
   const std::u16string device_type = ui::GetChromeOSDeviceName();
   const user_manager::User* user =
       ProfileHelper::Get()->GetUserByProfile(profile);
-  std::string gaia_id;
+  GaiaId gaia_id;
   if (user) {
     std::u16string given_name = user->GetGivenName();
     if (!given_name.empty()) {
@@ -341,10 +342,8 @@ std::unique_ptr<SystemInfo> EcheAppManagerFactory::GetSystemInfo(
       .SetGaiaId(gaia_id)
       .SetDeviceType(base::UTF16ToUTF8(device_type));
 
-  if (features::IsEcheMetricsRevampEnabled()) {
-    system_info.SetOsVersion(base::SysInfo::OperatingSystemVersion())
-        .SetChannel(chrome::GetChannelName(chrome::WithExtendedStable(true)));
-  }
+  system_info.SetOsVersion(base::SysInfo::OperatingSystemVersion())
+      .SetChannel(chrome::GetChannelName(chrome::WithExtendedStable(true)));
 
   return system_info.Build();
 }

@@ -35,7 +35,7 @@ public class PaymentRequestShowPromiseDigitalGoodsTest {
         mRule.addPaymentAppFactory(
                 "https://bobpay.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
         mRule.executeJavaScriptAndWaitForResult("create('https://bobpay.test');");
-        mRule.triggerUIAndWait("buy", mRule.getResultReady());
+        mRule.triggerUiAndWait("buy", mRule.getResultReady());
 
         mRule.expectResultContains(new String[] {"\"total\":\"1.00\""});
     }
@@ -50,7 +50,7 @@ public class PaymentRequestShowPromiseDigitalGoodsTest {
                 FactorySpeed.SLOW_FACTORY,
                 AppSpeed.SLOW_APP);
         mRule.executeJavaScriptAndWaitForResult("create('https://bobpay.test');");
-        mRule.triggerUIAndWait("buy", mRule.getResultReady());
+        mRule.triggerUiAndWait("buy", mRule.getResultReady());
 
         mRule.expectResultContains(new String[] {"\"total\":\"1.00\""});
     }
@@ -58,7 +58,7 @@ public class PaymentRequestShowPromiseDigitalGoodsTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
-    public void testSkipUIFastApp() throws TimeoutException {
+    public void testSkipUiFastApp() throws TimeoutException {
         mRule.addPaymentAppFactory(
                 "https://bobpay.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
         mRule.executeJavaScriptAndWaitForResult("create('https://bobpay.test');");
@@ -70,7 +70,7 @@ public class PaymentRequestShowPromiseDigitalGoodsTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
-    public void testSkipUISlowApp() throws TimeoutException {
+    public void testSkipUiSlowApp() throws TimeoutException {
         mRule.addPaymentAppFactory(
                 "https://bobpay.test",
                 AppPresence.HAVE_APPS,

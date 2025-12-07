@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/mojo/common/audio_data_s16_converter.h"
 
+#include <array>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
@@ -29,8 +26,8 @@ static const int kSampleRate = 48000;
 static const int16_t kTestVectorContents[kTestVectorSize] = {
     INT16_MIN,     0, INT16_MAX, INT16_MIN, INT16_MAX / 2,
     INT16_MIN / 2, 0, INT16_MAX, 0,         0};
-static const int16_t kExpectedMixedVectorContents[kTestVectorSize / 2] = {
-    INT16_MIN / 2, 0, 0, INT16_MAX / 2, 0};
+static const std::array<int16_t, kTestVectorSize / 2>
+    kExpectedMixedVectorContents = {INT16_MIN / 2, 0, 0, INT16_MAX / 2, 0};
 
 }  // namespace
 
@@ -59,7 +56,7 @@ TEST_F(AudioDataS16ConverterTest, ConvertToAudioDataS16_MONO) {
 
   // Compare.
   for (int i = 0; i < result->frame_count; i++) {
-    ASSERT_EQ(kTestVectorContents[i], result->data[i]);
+    UNSAFE_TODO(ASSERT_EQ(kTestVectorContents[i], result->data[i]));
   }
 }
 

@@ -51,12 +51,12 @@ static_library("browser") {
   deps = [
     "//base",
     "//base:i18n",
-    "//build:chromeos_buildflags",
     "//components/assist_ranker",
     "//components/assist_ranker/proto",
     "//components/keyed_service/core",
     "//components/language/core/browser",
     "//components/language/core/common",
+    "//components/language_detection/core",
     "//components/metrics",
     "//components/pref_registry",
     "//components/prefs",
@@ -69,7 +69,7 @@ static_library("browser") {
     "//net",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//third_party/icu",
     "//third_party/metrics_proto",
     "//ui/base",
@@ -78,28 +78,14 @@ static_library("browser") {
 
   public_deps = [ ":translate_pref_names" ]
 
-  if (is_ios || is_android) {
+  if (is_ios) {
     sources += [
       "translate_infobar_delegate.cc",
       "translate_infobar_delegate.h",
     ]
+
     public_deps += [ "//components/infobars/core" ]
   }
-}
-
-static_library("translate_model_service") {
-  sources = [
-    "translate_model_service.cc",
-    "translate_model_service.h",
-  ]
-  deps = [
-    ":browser",
-    "//base",
-    "//components/keyed_service/core",
-    "//components/optimization_guide/core",
-    "//components/optimization_guide/proto:optimization_guide_proto",
-    "//mojo/public/cpp/bindings",
-  ]
 }
 
 source_set("translate_pref_names") {
@@ -125,14 +111,14 @@ source_set("unit_tests") {
     ":browser",
     ":test_support",
     "//base",
-    "//build:chromeos_buildflags",
     "//components/assist_ranker",
     "//components/assist_ranker/proto",
     "//components/infobars/core",
     "//components/language/core/browser",
     "//components/language/core/browser:test_support",
-    "//components/language/core/common:common",
-    "//components/pref_registry:pref_registry",
+    "//components/language/core/common",
+    "//components/language_detection/core",
+    "//components/pref_registry",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
@@ -145,11 +131,11 @@ source_set("unit_tests") {
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network:test_support",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//ui/base",
   ]
 
-  if (is_ios || is_android) {
+  if (is_ios) {
     sources += [ "translate_infobar_delegate_unittest.cc" ]
   }
 }
@@ -168,7 +154,6 @@ source_set("test_support") {
   ]
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//components/infobars/core",
     "//components/language/core/browser",
     "//components/sync_preferences",
@@ -178,11 +163,11 @@ source_set("test_support") {
     "//services/metrics/public/cpp:metrics_cpp",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/metrics_proto:metrics_proto",
+    "//third_party/metrics_proto",
     "//url",
   ]
 
-  if (is_ios || is_android) {
+  if (is_ios) {
     sources += [
       "mock_translate_infobar_delegate.cc",
       "mock_translate_infobar_delegate.h",

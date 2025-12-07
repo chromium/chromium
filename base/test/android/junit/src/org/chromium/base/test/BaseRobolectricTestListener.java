@@ -4,19 +4,18 @@
 
 package org.chromium.base.test;
 
-import com.google.auto.service.AutoService;
-
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunListener;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.ServiceImpl;
 import org.chromium.testing.local.JunitTestMain;
 
 /**
  * Provides a way to know when test suites are started/finished that works with
  * ParameterizedRobolectricTestRunner.
  */
-@AutoService(JunitTestMain.ExtraRunListenerProvider.class)
+@ServiceImpl(JunitTestMain.ExtraRunListenerProvider.class)
 public class BaseRobolectricTestListener extends RunListener
         implements JunitTestMain.ExtraRunListenerProvider {
     private Description mActiveSuite;

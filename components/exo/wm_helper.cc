@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/exo/wm_helper.h"
 
 #include "ash/frame_throttler/frame_throttling_controller.h"
@@ -14,6 +9,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -318,7 +314,8 @@ const std::vector<uint8_t>& WMHelper::GetDisplayIdentificationData(
         // should derive it from the display info of this DisplaySnapshot..
         static const std::vector<uint8_t> kFablicatedFallbackEDID(
             kFablicatedFallbackEDIDData,
-            kFablicatedFallbackEDIDData + sizeof(kFablicatedFallbackEDIDData));
+            UNSAFE_TODO(kFablicatedFallbackEDIDData +
+                        sizeof(kFablicatedFallbackEDIDData)));
         return kFablicatedFallbackEDID;
       }
       return display->edid();
@@ -379,7 +376,7 @@ double WMHelper::GetDeviceScaleFactorForWindow(aura::Window* window) const {
   if (default_scale_cancellation_) {
     return GetDefaultDeviceScaleFactor();
   }
-  const display::Screen* screen = display::Screen::GetScreen();
+  const display::Screen* screen = display::Screen::Get();
   display::Display display = screen->GetDisplayNearestWindow(window);
   return display.device_scale_factor();
 }

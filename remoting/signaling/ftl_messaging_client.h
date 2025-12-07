@@ -29,8 +29,9 @@ class SharedURLLoaderFactory;
 
 namespace remoting {
 
+class FtlMessageChannelStrategy;
+class MessageChannel;
 class ProtobufHttpClient;
-class MessageReceptionChannel;
 class OAuthTokenGetter;
 class RegistrationManager;
 class ScopedProtobufHttpRequest;
@@ -69,17 +70,19 @@ class FtlMessagingClient final : public MessagingClient {
 
   FtlMessagingClient(std::unique_ptr<ProtobufHttpClient> client,
                      RegistrationManager* registration_manager,
-                     std::unique_ptr<MessageReceptionChannel> channel);
+                     SignalingTracker* signaling_tracker,
+                     std::unique_ptr<FtlMessageChannelStrategy> strategy);
 
   template <typename CallbackFunctor>
   void ExecuteRequest(const net::NetworkTrafficAnnotationTag& tag,
                       const std::string& path,
+                      bool enable_retries,
                       std::unique_ptr<google::protobuf::MessageLite> request,
                       CallbackFunctor callback_functor,
                       DoneCallback on_done);
 
   void OnSendMessageResponse(DoneCallback on_done,
-                             const ProtobufHttpStatus& status,
+                             const HttpStatus& status,
                              std::unique_ptr<ftl::InboxSendResponse> response);
 
   void BatchAckMessages(const ftl::BatchAckMessagesRequest& request,
@@ -87,14 +90,14 @@ class FtlMessagingClient final : public MessagingClient {
 
   void OnBatchAckMessagesResponse(
       DoneCallback on_done,
-      const ProtobufHttpStatus& status,
+      const HttpStatus& status,
       std::unique_ptr<ftl::BatchAckMessagesResponse> response);
 
   std::unique_ptr<ScopedProtobufHttpRequest> OpenReceiveMessagesStream(
       base::OnceClosure on_channel_ready,
       const base::RepeatingCallback<
           void(std::unique_ptr<ftl::ReceiveMessagesResponse>)>& on_incoming_msg,
-      base::OnceCallback<void(const ProtobufHttpStatus&)> on_channel_closed);
+      base::OnceCallback<void(const HttpStatus&)> on_channel_closed);
 
   void RunMessageCallbacks(const ftl::InboxMessage& message);
 
@@ -102,7 +105,7 @@ class FtlMessagingClient final : public MessagingClient {
 
   std::unique_ptr<ProtobufHttpClient> client_;
   raw_ptr<RegistrationManager> registration_manager_;
-  std::unique_ptr<MessageReceptionChannel> reception_channel_;
+  std::unique_ptr<MessageChannel> message_channel_;
   MessageCallbackList callback_list_;
   MessageTracker message_tracker_;
 };

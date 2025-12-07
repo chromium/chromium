@@ -4,13 +4,13 @@
 
 #include "chromeos/ash/services/multidevice_setup/host_backend_delegate_impl.h"
 
+#include <algorithm>
 #include <sstream>
 
 #include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/multidevice/software_feature.h"
 #include "chromeos/ash/components/multidevice/software_feature_state.h"
@@ -120,12 +120,8 @@ void HostBackendDelegateImpl::AttemptToSetMultiDeviceHostOnBackend(
   timer_->Stop();
 
   if (host_device) {
-    if (features::ShouldUseV1DeviceSync()) {
-      SetPendingHostRequest(host_device->GetDeviceId());
-    } else {
-      DCHECK(!host_device->instance_id().empty());
-      SetPendingHostRequest(host_device->instance_id());
-    }
+    DCHECK(!host_device->instance_id().empty());
+    SetPendingHostRequest(host_device->instance_id());
   } else {
     SetPendingHostRequest(kPendingRemovalOfCurrentHost);
   }
@@ -223,12 +219,8 @@ std::optional<multidevice::RemoteDeviceRef>
 HostBackendDelegateImpl::FindDeviceById(const std::string& id) const {
   DCHECK(!id.empty());
   for (const auto& remote_device : device_sync_client_->GetSyncedDevices()) {
-    if (features::ShouldUseV1DeviceSync()) {
-      if (id == remote_device.GetDeviceId())
-        return remote_device;
-    } else {
-      if (id == remote_device.instance_id())
-        return remote_device;
+    if (id == remote_device.instance_id()) {
+      return remote_device;
     }
   }
 
@@ -257,33 +249,15 @@ void HostBackendDelegateImpl::AttemptNetworkRequest(bool is_retry) {
                << (should_enable ? "enable" : "disable")
                << " the host: " << device_to_set.GetInstanceIdDeviceIdForLogs();
 
-  if (features::ShouldUseV1DeviceSync()) {
-    // Even if the |device_to_set| has a non-trivial Instance ID, we still
-    // invoke the v1 DeviceSync RPC to set the feature state. This ensures that
-    // GmsCore will be notified of the change regardless of what version of
-    // DeviceSync it is running. The v1 and v2 RPCs to change feature states
-    // ultimately update the same backend database entry. Note: The
-    // RemoteDeviceProvider guarantees that every device will have a public key
-    // while v1 DeviceSync is enabled.
-    DCHECK(!device_to_set.public_key().empty());
-    device_sync_client_->SetSoftwareFeatureState(
-        device_to_set.public_key(),
-        multidevice::SoftwareFeature::kBetterTogetherHost,
-        should_enable /* enabled */, should_enable /* is_exclusive */,
-        base::BindOnce(
-            &HostBackendDelegateImpl::OnSetHostNetworkRequestFinished,
-            weak_ptr_factory_.GetWeakPtr(), device_to_set, should_enable));
-  } else {
-    DCHECK(!device_to_set.instance_id().empty());
-    device_sync_client_->SetFeatureStatus(
-        device_to_set.instance_id(),
-        multidevice::SoftwareFeature::kBetterTogetherHost,
-        should_enable ? device_sync::FeatureStatusChange::kEnableExclusively
-                      : device_sync::FeatureStatusChange::kDisable,
-        base::BindOnce(
-            &HostBackendDelegateImpl::OnSetHostNetworkRequestFinished,
-            weak_ptr_factory_.GetWeakPtr(), device_to_set, should_enable));
-  }
+  DCHECK(!device_to_set.instance_id().empty());
+  device_sync_client_->SetFeatureStatus(
+      device_to_set.instance_id(),
+      multidevice::SoftwareFeature::kBetterTogetherHost,
+      should_enable ? device_sync::FeatureStatusChange::kEnableExclusively
+                    : device_sync::FeatureStatusChange::kDisable,
+      base::BindOnce(&HostBackendDelegateImpl::OnSetHostNetworkRequestFinished,
+                     weak_ptr_factory_.GetWeakPtr(), device_to_set,
+                     should_enable));
 }
 
 void HostBackendDelegateImpl::OnNewDevicesSynced() {
@@ -318,7 +292,7 @@ std::optional<multidevice::RemoteDeviceRef>
 HostBackendDelegateImpl::GetHostFromDeviceSync() {
   multidevice::RemoteDeviceRefList synced_devices =
       device_sync_client_->GetSyncedDevices();
-  auto it = base::ranges::find(
+  auto it = std::ranges::find(
       synced_devices, multidevice::SoftwareFeatureState::kEnabled,
       [](const auto& remote_device) {
         return remote_device.GetSoftwareFeatureState(

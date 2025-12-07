@@ -6,8 +6,11 @@
 
 #include "base/containers/contains.h"
 #include "services/network/public/cpp/client_hints.h"
+#include "services/network/public/cpp/permissions_policy/client_hints_permissions_policy_mapping.h"
+#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
-#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
@@ -59,26 +62,27 @@ void UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints(
   // Build vector of client hint permission policies to update.
   auto* const current_policy =
       local_dom_window->GetSecurityContext().GetPermissionsPolicy();
-  ParsedPermissionsPolicy container_policy;
+  network::ParsedPermissionsPolicy container_policy;
   for (const auto& pair : parsed_ch.map) {
-    const auto& policy_name = GetClientHintToPolicyFeatureMap().at(pair.first);
+    const auto& policy_name =
+        network::GetClientHintToPolicyFeatureMap().at(pair.first);
 
     // We need to retain any preexisting settings, just adding new origins.
     const auto& allow_list =
         current_policy->GetAllowlistForFeature(policy_name);
-    std::set<blink::OriginWithPossibleWildcards> origin_set(
+    std::set<network::OriginWithPossibleWildcards> origin_set(
         allow_list.AllowedOrigins().begin(), allow_list.AllowedOrigins().end());
     for (const auto& origin : pair.second) {
       if (auto origin_with_possible_wildcards =
-              blink::OriginWithPossibleWildcards::FromOrigin(origin);
+              network::OriginWithPossibleWildcards::FromOrigin(origin);
           origin_with_possible_wildcards.has_value()) {
         origin_set.insert(*origin_with_possible_wildcards);
       }
     }
-    auto declaration = ParsedPermissionsPolicyDeclaration(
+    auto declaration = network::ParsedPermissionsPolicyDeclaration(
         policy_name,
-        std::vector<blink::OriginWithPossibleWildcards>(origin_set.begin(),
-                                                        origin_set.end()),
+        std::vector<network::OriginWithPossibleWildcards>(origin_set.begin(),
+                                                          origin_set.end()),
         allow_list.SelfIfMatches(), allow_list.MatchesAll(),
         allow_list.MatchesOpaqueSrc());
     container_policy.push_back(declaration);
@@ -91,7 +95,7 @@ void UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints(
 }
 
 void UpdateIFrameContainerPolicyWithDelegationSupportForClientHints(
-    ParsedPermissionsPolicy& container_policy,
+    network::ParsedPermissionsPolicy& container_policy,
     LocalDOMWindow* local_dom_window) {
   if (!local_dom_window ||
       !local_dom_window->GetSecurityContext().GetPermissionsPolicy()) {
@@ -101,8 +105,8 @@ void UpdateIFrameContainerPolicyWithDelegationSupportForClientHints(
   // To avoid the following section from being consistently O(n^2) we need to
   // break the container_policy vector into a map. We keep only the first policy
   // seen for each feature per PermissionsPolicy::InheritedValueForFeature.
-  std::map<mojom::blink::PermissionsPolicyFeature,
-           ParsedPermissionsPolicyDeclaration>
+  std::map<network::mojom::PermissionsPolicyFeature,
+           network::ParsedPermissionsPolicyDeclaration>
       feature_to_container_policy;
   for (const auto& candidate_policy : container_policy) {
     if (!base::Contains(feature_to_container_policy,
@@ -113,7 +117,8 @@ void UpdateIFrameContainerPolicyWithDelegationSupportForClientHints(
 
   // Promote client hint features to container policy so any modified by HTML
   // via an accept-ch meta tag can propagate to the iframe.
-  for (const auto& feature_and_hint : GetPolicyFeatureToClientHintMap()) {
+  for (const auto& feature_and_hint :
+       network::GetPolicyFeatureToClientHintMap()) {
     // This is the policy which may have been overridden by the meta tag via
     // UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints we want
     // the iframe loader to use instead of the one it got earlier.
@@ -128,7 +133,8 @@ void UpdateIFrameContainerPolicyWithDelegationSupportForClientHints(
     // If the container policy already has a parsed policy for the client hint
     // then use the first instance found and remove the others since that's
     // what `PermissionsPolicy::InheritedValueForFeature` pays attention to.
-    ParsedPermissionsPolicyDeclaration merged_policy(feature_and_hint.first);
+    network::ParsedPermissionsPolicyDeclaration merged_policy(
+        feature_and_hint.first);
     auto it = feature_to_container_policy.find(feature_and_hint.first);
     if (it != feature_to_container_policy.end()) {
       merged_policy = it->second;
@@ -143,7 +149,7 @@ void UpdateIFrameContainerPolicyWithDelegationSupportForClientHints(
         maybe_window_allow_list.value().MatchesAll();
     merged_policy.matches_opaque_src |=
         maybe_window_allow_list.value().MatchesOpaqueSrc();
-    std::set<blink::OriginWithPossibleWildcards> origin_set;
+    std::set<network::OriginWithPossibleWildcards> origin_set;
     if (!merged_policy.matches_all_origins) {
       origin_set.insert(merged_policy.allowed_origins.begin(),
                         merged_policy.allowed_origins.end());

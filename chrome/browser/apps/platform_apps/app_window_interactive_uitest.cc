@@ -8,6 +8,7 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -439,9 +440,11 @@ class AppWindowHiddenKeepAliveTest : public extensions::PlatformAppBrowserTest {
 // A window that becomes hidden should not keep Chrome alive.
 IN_PROC_BROWSER_TEST_F(AppWindowHiddenKeepAliveTest, ShownThenHidden) {
   LoadAndLaunchPlatformApp("minimal", "Launched");
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    browser->window()->Close();
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [](BrowserWindowInterface* browser_window_interface) {
+        browser_window_interface->GetWindow()->Close();
+        return true;
+      });
   EXPECT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
       KeepAliveOrigin::CHROME_APP_DELEGATE));
   GetFirstAppWindow()->Hide();
@@ -458,9 +461,11 @@ IN_PROC_BROWSER_TEST_F(AppWindowHiddenKeepAliveTest, ShownThenHiddenThenShown) {
 
   EXPECT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
       KeepAliveOrigin::CHROME_APP_DELEGATE));
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    browser->window()->Close();
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [](BrowserWindowInterface* browser_window_interface) {
+        browser_window_interface->GetWindow()->Close();
+        return true;
+      });
   EXPECT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
       KeepAliveOrigin::CHROME_APP_DELEGATE));
   app_window->GetBaseWindow()->Close();
@@ -473,9 +478,11 @@ IN_PROC_BROWSER_TEST_F(AppWindowHiddenKeepAliveTest, StaysHidden) {
   AppWindow* app_window = GetFirstAppWindow();
   EXPECT_TRUE(app_window->is_hidden());
 
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    browser->window()->Close();
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [](BrowserWindowInterface* browser_window_interface) {
+        browser_window_interface->GetWindow()->Close();
+        return true;
+      });
 
   RunUntilBrowserProcessQuits();
 }
@@ -490,9 +497,11 @@ IN_PROC_BROWSER_TEST_F(AppWindowHiddenKeepAliveTest, HiddenThenShown) {
   EXPECT_TRUE(app_window->is_hidden());
 
   // Close all browser windows.
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    browser->window()->Close();
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [](BrowserWindowInterface* browser_window_interface) {
+        browser_window_interface->GetWindow()->Close();
+        return true;
+      });
 
   // The app window will show after 3 seconds.
   ExtensionTestMessageListener shown_listener("Shown");

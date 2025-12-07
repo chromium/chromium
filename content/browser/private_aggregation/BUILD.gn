@@ -7,7 +7,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojo_bindings") {
   sources = [ "private_aggregation_internals.mojom" ]
   public_deps = [
-    "//mojo/public/mojom/base:base",
+    "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_origin",
   ]
   webui_module_path = "/"
@@ -43,6 +43,9 @@ mojom("mojo_bindings") {
 group("for_content_tests") {
   visibility = [ "//content/test/*" ]
   if (!is_component_build) {
-    public_deps = [ ":mojo_bindings" ]
+    public_deps = [
+      ":mojo_bindings",
+      "proto:private_aggregation_budgets_proto",
+    ]
   }
 }

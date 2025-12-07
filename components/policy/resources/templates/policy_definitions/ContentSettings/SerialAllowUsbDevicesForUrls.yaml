@@ -23,6 +23,7 @@ features:
   dynamic_refresh: true
   per_profile: false
 future_on:
+- android
 - fuchsia
 owners:
 - reillyg@chromium.org

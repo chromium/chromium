@@ -14,8 +14,9 @@
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/cors/cors.h"
-#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/loading_params.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "storage/browser/blob/blob_data_handle.h"
 #include "storage/browser/blob/mojo_blob_reader.h"
@@ -119,11 +120,7 @@ SignedExchangeInnerResponseURLLoader::GetHeaderString(
     const network::mojom::URLResponseHead& response,
     const std::string& header_name) {
   DCHECK(response.headers);
-  std::string header_value;
-  if (!response.headers->GetNormalizedHeader(header_name, &header_value)) {
-    return std::nullopt;
-  }
-  return header_value;
+  return response.headers->GetNormalizedHeader(header_name);
 }
 
 void SignedExchangeInnerResponseURLLoader::
@@ -172,7 +169,7 @@ void SignedExchangeInnerResponseURLLoader::FollowRedirect(
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
     const std::optional<GURL>& new_url) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SignedExchangeInnerResponseURLLoader::SetPriority(
@@ -182,16 +179,6 @@ void SignedExchangeInnerResponseURLLoader::SetPriority(
   // reading a blob.
 }
 
-void SignedExchangeInnerResponseURLLoader::PauseReadingBodyFromNet() {
-  // There is nothing to do, because we don't fetch the resource from the
-  // network.
-}
-
-void SignedExchangeInnerResponseURLLoader::ResumeReadingBodyFromNet() {
-  // There is nothing to do, because we don't fetch the resource from the
-  // network.
-}
-
 void SignedExchangeInnerResponseURLLoader::SendResponseBody() {
   mojo::ScopedDataPipeProducerHandle pipe_producer_handle;
   mojo::ScopedDataPipeConsumerHandle pipe_consumer_handle;
@@ -199,8 +186,7 @@ void SignedExchangeInnerResponseURLLoader::SendResponseBody() {
   options.struct_size = sizeof(MojoCreateDataPipeOptions);
   options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
   options.element_num_bytes = 1;
-  options.capacity_num_bytes =
-      network::features::GetDataPipeDefaultAllocationSize();
+  options.capacity_num_bytes = network::GetDataPipeDefaultAllocationSize();
   MojoResult rv = mojo::CreateDataPipe(&options, pipe_producer_handle,
                                        pipe_consumer_handle);
   if (rv != MOJO_RESULT_OK) {

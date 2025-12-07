@@ -46,10 +46,6 @@ class VaapiJpegDecoder : public VaapiImageDecoder {
   std::unique_ptr<ScopedVAImage> GetImage(uint32_t preferred_image_fourcc,
                                           VaapiImageDecodeStatus* status);
 
-  // Returns the supported image profile.
-  static std::optional<gpu::ImageDecodeAcceleratorSupportedProfile>
-  GetSupportedProfile();
-
  private:
   friend class fuzzing::VaapiJpegDecoderWrapper;
 

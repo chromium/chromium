@@ -5,6 +5,7 @@
 #ifndef MEDIA_GPU_ANDROID_POOLED_SHARED_IMAGE_VIDEO_PROVIDER_H_
 #define MEDIA_GPU_ANDROID_POOLED_SHARED_IMAGE_VIDEO_PROVIDER_H_
 
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequence_bound.h"
@@ -89,6 +90,8 @@ class MEDIA_GPU_EXPORT PooledSharedImageVideoProvider
   // Record of on image from |provider|.
   class PooledImage : public base::RefCounted<PooledImage> {
    public:
+    REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
     PooledImage(const ImageSpec& spec, ImageRecord record);
 
     ImageSpec spec;
@@ -96,9 +99,8 @@ class MEDIA_GPU_EXPORT PooledSharedImageVideoProvider
     ImageRecord record;
 
    private:
-    virtual ~PooledImage();
-
     friend class base::RefCounted<PooledImage>;
+    virtual ~PooledImage();
   };
 
   // One request from the client that's pending an image.

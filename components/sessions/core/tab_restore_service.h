@@ -27,7 +27,6 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/base/window_open_disposition.h"
-#include "ui/gfx/geometry/rect.h"
 
 namespace sessions {
 

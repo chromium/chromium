@@ -7,6 +7,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/sync/tab_contents_synced_tab_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 
@@ -17,11 +18,13 @@ BrowserListRouterHelper::BrowserListRouterHelper(
     Profile* profile)
     : router_(router), profile_(profile) {
   BrowserList* browser_list = BrowserList::GetInstance();
-  for (Browser* browser : *browser_list) {
-    if (browser->profile() == profile_) {
-      browser->tab_strip_model()->AddObserver(this);
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this](BrowserWindowInterface* browser) {
+        if (browser->GetProfile() == profile_) {
+          browser->GetTabStripModel()->AddObserver(this);
+        }
+        return true;
+      });
   browser_list->AddObserver(this);
 }
 
@@ -46,22 +49,26 @@ void BrowserListRouterHelper::OnTabStripModelChanged(
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
   std::vector<content::WebContents*> web_contents;
-  if (change.type() == TabStripModelChange::kInserted) {
-    for (const TabStripModelChange::ContentsWithIndex& contents :
-         change.GetInsert()->contents) {
-      web_contents.push_back(contents.contents);
-    }
-  } else if (change.type() == TabStripModelChange::kReplaced) {
-    web_contents.push_back(change.GetReplace()->new_contents);
-  } else {
-    return;
+  switch (change.type()) {
+    case TabStripModelChange::kInserted:
+      for (const TabStripModelChange::ContentsWithIndex& contents :
+           change.GetInsert()->contents) {
+        web_contents.push_back(contents.contents);
+      }
+      break;
+    case TabStripModelChange::kReplaced:
+      web_contents.push_back(change.GetReplace()->new_contents);
+      break;
+    case TabStripModelChange::kRemoved:
+      router_->NotifyTabClosed();
+      return;
+    case TabStripModelChange::kSelectionOnly:
+    case TabStripModelChange::kMoved:
+      return;
   }
 
   for (content::WebContents* contents : web_contents) {
-    if (Profile::FromBrowserContext(contents->GetBrowserContext()) ==
-        profile_) {
-      router_->NotifyTabModified(contents, false);
-    }
+    router_->NotifyTabModified(contents, false);
   }
 }
 

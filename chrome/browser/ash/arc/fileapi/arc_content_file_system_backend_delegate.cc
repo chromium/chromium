@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_backend_delegate.h"
 
+#include "base/notimplemented.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_async_file_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_file_stream_reader.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_url_util.h"

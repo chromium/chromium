@@ -42,7 +42,8 @@
     dp.Network.onRequestWillBeSent(event => record(event.params.requestId, {requestWillBeSent: event.params})),
     await Promise.all([
       dp.Network.enable(),
-      dp.Page.enable()
+      dp.Page.enable(),
+      dp.Runtime.runIfWaitingForDebugger(),
     ]);
   }
 

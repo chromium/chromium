@@ -10,7 +10,9 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "components/enterprise/data_controls/core/browser/data_controls_dialog.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace content {
@@ -18,8 +20,7 @@ class WebContents;
 }  // namespace content
 
 namespace views {
-class Label;
-class BoxLayoutView;
+class DialogDelegate;
 }  // namespace views
 
 namespace data_controls {
@@ -28,7 +29,6 @@ class DesktopDataControlsDialogFactory;
 
 // Desktop implementation of `DataControlsDialog`, done using views.
 class DesktopDataControlsDialog : public DataControlsDialog,
-                                  public views::DialogDelegate,
                                   public content::WebContentsObserver {
  public:
   // Test observer to validate the dialog was shown/closed at appropriate
@@ -39,17 +39,19 @@ class DesktopDataControlsDialog : public DataControlsDialog,
     TestObserver();
     ~TestObserver();
 
-    // Called as the last statement in the `DesktopDataControlsDialog`
-    // constructor.
-    virtual void OnConstructed(DesktopDataControlsDialog* dialog) {}
+    // Called as the last statement in the `views::DialogDelegate` constructor.
+    virtual void OnConstructed(DesktopDataControlsDialog* dialog,
+                               views::DialogDelegate* dialog_delegate) {}
 
-    // Called when OnWidgetInitialized is called. This is used to give the test
-    // a proper hook to close the dialog after it's first shown.
-    virtual void OnWidgetInitialized(DesktopDataControlsDialog* dialog) {}
+    // Called when `DialogDelegate::OnWidgetInitialized` is called. This is used
+    // to give the test a proper hook to close the dialog after it's first
+    // shown.
+    virtual void OnWidgetInitialized(DesktopDataControlsDialog* dialog,
+                                     views::DialogDelegate* dialog_delegate) {}
 
-    // Called as the last statement in the `DesktopDataControlsDialog`
-    // destructor. As such, do not keep `dialog` after this function returns,
-    // only use it locally to validate test assertions.
+    // Called as the last statement in the `views::DialogDelegate` destructor.
+    // As such, do not keep references to `dialog` or `dialog_delegate` after
+    // this function returns, only use it locally to validate test assertions.
     virtual void OnDestructed(DesktopDataControlsDialog* dialog) {}
   };
   static void SetObserverForTesting(TestObserver* observer);
@@ -57,14 +59,6 @@ class DesktopDataControlsDialog : public DataControlsDialog,
   void Show(base::OnceClosure on_destructed) override;
 
   ~DesktopDataControlsDialog() override;
-
-  // views::DialogDelegate:
-  std::u16string GetWindowTitle() const override;
-  views::View* GetContentsView() override;
-  views::Widget* GetWidget() override;
-  ui::ModalType GetModalType() const override;
-  bool ShouldShowCloseButton() const override;
-  void OnWidgetInitialized() override;
 
   // TODO(b/351342878): These methods might be applicable to Clank as well,
   // consider refactoring this to a shared class between desktop and Clank
@@ -79,12 +73,14 @@ class DesktopDataControlsDialog : public DataControlsDialog,
   DesktopDataControlsDialog(Type type,
                             content::WebContents* web_contents,
                             base::OnceCallback<void(bool bypassed)> callback);
+  void CloseDialog(views::Widget::ClosedReason reason);
 
-  // Helpers to create sub-views of the dialog.
-  std::unique_ptr<views::View> CreateEnterpriseIcon() const;
-  std::unique_ptr<views::Label> CreateMessage() const;
+  std::unique_ptr<views::DialogDelegate> dialog_delegate_;
+  std::unique_ptr<views::Widget> widget_;
 
-  raw_ptr<views::BoxLayoutView> contents_view_ = nullptr;
+  // Optional closure to re-enable input events, if they were ignored.
+  std::optional<content::WebContents::ScopedIgnoreInputEvents>
+      scoped_ignore_input_events_;
 
   base::OnceClosure on_destructed_;
 };

@@ -1,0 +1,31 @@
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/google_apis/gaia/CoreAccountId.java",
+    "java/src/org/chromium/google_apis/gaia/GaiaId.java",
+    "java/src/org/chromium/google_apis/gaia/GoogleServiceAuthError.java",
+  ]
+  deps = [
+    "//build/android:build_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+  srcjar_deps = [
+    ":google_apis_enum_javagen",
+    ":jni_headers",
+  ]
+}
+
+java_cpp_enum("google_apis_enum_javagen") {
+  sources = [ "../google_service_auth_error.h" ]
+}
+
+generate_jni("jni_headers") {
+  sources = [
+    "java/src/org/chromium/google_apis/gaia/CoreAccountId.java",
+    "java/src/org/chromium/google_apis/gaia/GaiaId.java",
+    "java/src/org/chromium/google_apis/gaia/GoogleServiceAuthError.java",
+  ]
+}

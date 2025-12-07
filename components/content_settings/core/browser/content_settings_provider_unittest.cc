@@ -21,8 +21,7 @@ TEST(ContentSettingsProviderTest, Mock) {
   MockProvider mock_provider(false);
   mock_provider.SetWebsiteSetting(
       pattern, pattern, ContentSettingsType::NOTIFICATIONS,
-      base::Value(CONTENT_SETTING_BLOCK), /*constraints=*/{},
-      PartitionKey::GetDefaultForTesting());
+      base::Value(CONTENT_SETTING_BLOCK), /*constraints=*/{});
 
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
@@ -43,8 +42,7 @@ TEST(ContentSettingsProviderTest, Mock) {
 
   bool owned = mock_provider.SetWebsiteSetting(
       pattern, pattern, ContentSettingsType::NOTIFICATIONS,
-      base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{},
-      PartitionKey::GetDefaultForTesting());
+      base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{});
   EXPECT_TRUE(owned);
   EXPECT_EQ(
       CONTENT_SETTING_ALLOW,
@@ -54,8 +52,7 @@ TEST(ContentSettingsProviderTest, Mock) {
   mock_provider.set_read_only(true);
   owned = mock_provider.SetWebsiteSetting(
       pattern, pattern, ContentSettingsType::NOTIFICATIONS,
-      base::Value(CONTENT_SETTING_BLOCK), /*constraints=*/{},
-      PartitionKey::GetDefaultForTesting());
+      base::Value(CONTENT_SETTING_BLOCK), /*constraints=*/{});
   EXPECT_FALSE(owned);
   EXPECT_EQ(
       CONTENT_SETTING_ALLOW,
@@ -67,8 +64,7 @@ TEST(ContentSettingsProviderTest, Mock) {
   mock_provider.set_read_only(false);
   owned = mock_provider.SetWebsiteSetting(
       pattern, pattern, ContentSettingsType::NOTIFICATIONS,
-      base::Value(CONTENT_SETTING_BLOCK), /*constraints=*/{},
-      PartitionKey::GetDefaultForTesting());
+      base::Value(CONTENT_SETTING_BLOCK), /*constraints=*/{});
   EXPECT_TRUE(owned);
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,

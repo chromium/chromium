@@ -4,7 +4,10 @@
 
 package org.chromium.components.external_intents;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Contains all of the command line switches for external intent launching. */
+@NullMarked
 public abstract class ExternalIntentsSwitches {
     /** Never forward URL requests to external intents. */
     public static final String DISABLE_EXTERNAL_INTENT_REQUESTS =

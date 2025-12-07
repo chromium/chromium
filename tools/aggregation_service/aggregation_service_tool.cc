@@ -5,18 +5,20 @@
 #include "tools/aggregation_service/aggregation_service_tool.h"
 
 #include <functional>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/abseil_string_number_conversions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/default_clock.h"
 #include "base/values.h"
@@ -32,22 +34,10 @@ namespace aggregation_service {
 namespace {
 
 std::optional<content::TestAggregationService::Operation> ConvertToOperation(
-    const std::string& operation_string) {
-  if (operation_string == "histogram")
+    std::string_view operation_string) {
+  if (operation_string == "histogram") {
     return content::TestAggregationService::Operation::kHistogram;
-
-  return std::nullopt;
-}
-
-std::optional<content::TestAggregationService::AggregationMode>
-ConvertToAggregationMode(const std::string& aggregation_mode_string) {
-  if (aggregation_mode_string == "tee-based")
-    return content::TestAggregationService::AggregationMode::kTeeBased;
-  if (aggregation_mode_string == "experimental-poplar")
-    return content::TestAggregationService::AggregationMode::
-        kExperimentalPoplar;
-  if (aggregation_mode_string == "default")
-    return content::TestAggregationService::AggregationMode::kDefault;
+  }
 
   return std::nullopt;
 }
@@ -74,17 +64,14 @@ void AggregationServiceTool::SetDisablePayloadEncryption(bool should_disable) {
   agg_service_->SetDisablePayloadEncryption(should_disable);
 }
 
-bool AggregationServiceTool::SetPublicKeys(
-    const std::vector<UrlKeyFile>& key_files) {
-  // Send each url's specified public keys to the tool's storage.
-  for (const auto& key_file : key_files) {
-    if (!network::IsUrlPotentiallyTrustworthy(key_file.url)) {
-      LOG(ERROR) << "Invalid processing url: " << key_file.url;
-      return false;
-    }
+bool AggregationServiceTool::SetPublicKeys(const UrlKeyFile& key_file) {
+  if (!network::IsUrlPotentiallyTrustworthy(key_file.url)) {
+    LOG(ERROR) << "Invalid processing url: " << key_file.url;
+    return false;
+  }
 
-    if (!SetPublicKeysFromFile(key_file.url, key_file.key_file))
-      return false;
+  if (!SetPublicKeysFromFile(key_file.url, key_file.key_file)) {
+    return false;
   }
 
   return true;
@@ -92,7 +79,7 @@ bool AggregationServiceTool::SetPublicKeys(
 
 bool AggregationServiceTool::SetPublicKeysFromFile(
     const GURL& url,
-    const std::string& json_file_path) {
+    std::string_view json_file_path) {
 #if BUILDFLAG(IS_WIN)
   base::FilePath json_file(base::UTF8ToWide(json_file_path));
 #else
@@ -119,9 +106,8 @@ base::Value::Dict AggregationServiceTool::AssembleReport(
     std::string operation_str,
     std::string bucket_str,
     std::string value_str,
-    std::string aggregation_mode_str,
     url::Origin reporting_origin,
-    std::vector<GURL> processing_urls,
+    GURL processing_url,
     bool is_debug_mode_enabled,
     base::Value::Dict additional_fields,
     std::string api_version,
@@ -147,23 +133,16 @@ base::Value::Dict AggregationServiceTool::AssembleReport(
     return result;
   }
 
-  std::optional<content::TestAggregationService::AggregationMode>
-      aggregation_mode = ConvertToAggregationMode(aggregation_mode_str);
-  if (!aggregation_mode.has_value()) {
-    LOG(ERROR) << "Invalid aggregation mode: " << aggregation_mode_str;
-    return result;
-  }
-
   if (reporting_origin.opaque()) {
     LOG(ERROR) << "Invalid reporting origin: " << reporting_origin;
     return result;
   }
 
   content::TestAggregationService::AssembleRequest request(
-      operation.value(), bucket, value, aggregation_mode.value(),
-      std::move(reporting_origin), std::move(processing_urls),
-      is_debug_mode_enabled, std::move(additional_fields),
-      std::move(api_version), std::move(api_identifier));
+      operation.value(), bucket, value, std::move(reporting_origin),
+      std::move(processing_url), is_debug_mode_enabled,
+      std::move(additional_fields), std::move(api_version),
+      std::move(api_identifier));
 
   base::RunLoop run_loop;
   agg_service_->AssembleReport(
@@ -210,11 +189,10 @@ bool AggregationServiceTool::WriteReportToFile(const base::Value& contents,
     return false;
   }
 
-  std::string contents_json;
-  JSONStringValueSerializer serializer(&contents_json);
-  CHECK(serializer.Serialize(contents));
+  std::optional<std::string> contents_json = base::WriteJson(contents);
+  CHECK(contents_json);
 
-  return base::WriteFile(filename, contents_json);
+  return base::WriteFile(filename, *contents_json);
 }
 
 }  // namespace aggregation_service

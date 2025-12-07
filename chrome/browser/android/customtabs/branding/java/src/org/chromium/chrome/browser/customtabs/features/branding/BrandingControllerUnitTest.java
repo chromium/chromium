@@ -5,10 +5,16 @@
 package org.chromium.chrome.browser.customtabs.features.branding;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.customtabs.features.branding.BrandingController.BRANDING_CADENCE_MS;
 import static org.chromium.chrome.browser.customtabs.features.branding.BrandingController.MAX_BLANK_TOOLBAR_TIMEOUT_MS;
@@ -26,6 +32,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -37,17 +45,17 @@ import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowSystemClock;
 import org.robolectric.shadows.ShadowToast;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.TimeUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.customtabs.features.branding.proto.AccountMismatchData.CloseType;
 import org.chromium.ui.widget.Toast;
 import org.chromium.ui.widget.ToastManager;
 
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 /** Unit test for {@link BrandingController} and {@link SharedPreferencesBrandingTimeStorage}. */
@@ -61,7 +69,8 @@ public class BrandingControllerUnitTest {
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
     @Mock ToolbarBrandingDelegate mToolbarBrandingDelegate;
-
+    @Mock MismatchNotificationChecker mMismatchNotificationChecker;
+    @Captor ArgumentCaptor<Callback<MismatchNotificationData>> mCloseCallbackCaptor;
     private BrandingController mBrandingController;
     private ShadowPostTask.TestImpl mShadowPostTaskImpl;
 
@@ -85,7 +94,7 @@ public class BrandingControllerUnitTest {
     @After
     public void tearDown() {
         mFakeTimeTestRule.resetTimes();
-        SharedPreferencesBrandingTimeStorage.getInstance().resetSharedPref();
+        SharedPreferencesBrandingTimeStorage.getInstance().resetSharedPrefForTesting();
         ShadowSystemClock.reset();
         ShadowToast.reset();
         ToastManager.resetForTesting();
@@ -103,9 +112,6 @@ public class BrandingControllerUnitTest {
                 .assertShownEmptyLocationBar(true)
                 .assertShownBrandingLocationBar(false)
                 .assertShownRegularLocationBar(true);
-
-        ShadowLooper.idleMainLooper();
-        assertTotalNumberOfPackageRecorded(1); // 1 new package
     }
 
     @Test
@@ -126,6 +132,30 @@ public class BrandingControllerUnitTest {
                 .assertShownEmptyLocationBar(true)
                 .assertShownBrandingLocationBar(false)
                 .assertShownRegularLocationBar(true);
+    }
+
+    @Test
+    public void testBrandingWorkflow_MismatchPrecedenceOverBranding() {
+        new BrandingCheckTester()
+                .newBrandingController()
+                .setMaybeShowMismatchNotification(true)
+                .idleMainLooper()
+                .onToolbarInitialized()
+                // Mismatch notification overwrites the decision and gets shown instead.
+                .assertBrandingDecisionMade(BrandingDecision.MIM)
+                .invokeMimCloseCallback()
+                .idleMainLooper()
+                .assertLastShowTimeGlobalUpdated()
+                .assertMimDataUpdated()
+                .assertShownToastBranding(false)
+                .advanceMills(BRANDING_CADENCE_MS + 1)
+                .newBrandingController()
+                .setMaybeShowMismatchNotification(false)
+                .idleMainLooper()
+                .onToolbarInitialized()
+                // The branding decision is respected if mismatch notification doesn't show.
+                .assertBrandingDecisionMade(BrandingDecision.TOOLBAR)
+                .assertShownBrandingLocationBar(true);
     }
 
     @Test
@@ -188,6 +218,21 @@ public class BrandingControllerUnitTest {
     }
 
     @Test
+    public void testBrandingWorkflow_AuthTab() {
+        new BrandingCheckTester()
+                .newAuthTabBrandingController()
+                .onToolbarInitialized()
+                .idleMainLooper()
+                .assertBrandingDecisionMade(BrandingDecision.TOAST)
+                .assertShownToastBranding(true)
+                .newAuthTabBrandingController()
+                .idleMainLooper()
+                .assertBrandingDecisionMade(BrandingDecision.TOAST)
+                .onToolbarInitialized()
+                .assertShownToastBranding(true);
+    }
+
+    @Test
     public void testDestroy() {
         // Inspired by https://crbug.com/1362437. Make sure callback are canceled once the branding
         // controller is destroyed.
@@ -243,8 +288,6 @@ public class BrandingControllerUnitTest {
                 .onToolbarInitialized()
                 .idleMainLooper() // Finish Branding checker.
                 .assertShownToastBranding(true);
-        ShadowLooper.idleMainLooper();
-        assertTotalNumberOfPackageRecorded(4); // 3 old package + 1 new package
     }
 
     class BrandingCheckTester {
@@ -253,8 +296,27 @@ public class BrandingControllerUnitTest {
             mBrandingController =
                     new BrandingController(
                             new ContextThemeWrapper(context, R.style.Theme_Chromium_Activity),
-                            context.getPackageName(),
                             "appName",
+                            context.getPackageName(),
+                            R.string.twa_running_in_chrome_template,
+                            () -> mMismatchNotificationChecker,
+                            null);
+
+            // Always initialize a new mock, as some tests were testing multiple branding runs.
+            mToolbarBrandingDelegate = mock(ToolbarBrandingDelegate.class);
+            ShadowToast.reset(); // Reset the shadow toast so the toast shown count resets.
+            return this;
+        }
+
+        public BrandingCheckTester newAuthTabBrandingController() {
+            Context context = ContextUtils.getApplicationContext();
+            mBrandingController =
+                    new BrandingController(
+                            new ContextThemeWrapper(context, R.style.Theme_Chromium_Activity),
+                            /* appId= */ null,
+                            context.getPackageName(),
+                            R.string.auth_tab_secured_by_chrome_template,
+                            () -> null,
                             null);
 
             // Always initialize a new mock, as some tests were testing multiple branding runs.
@@ -282,7 +344,7 @@ public class BrandingControllerUnitTest {
             assertEquals(
                     "BrandingDecision is different.",
                     decision,
-                    mBrandingController.getBrandingDecisionForTest());
+                    mBrandingController.getBrandingDecision());
             return this;
         }
 
@@ -292,6 +354,12 @@ public class BrandingControllerUnitTest {
                     shown ? 1 : 0,
                     ShadowToast.shownToastCount());
             ToastManager.resetForTesting();
+            return this;
+        }
+
+        public BrandingCheckTester assertLastShowTimeGlobalUpdated() {
+            long ts = SharedPreferencesBrandingTimeStorage.getInstance().getLastShowTimeGlobal();
+            assertTrue("Global last-show-time was not updated", ts >= 0);
             return this;
         }
 
@@ -311,17 +379,35 @@ public class BrandingControllerUnitTest {
             return this;
         }
 
+        public BrandingCheckTester setMaybeShowMismatchNotification(boolean show) {
+            when(mMismatchNotificationChecker.maybeShow(
+                            anyString(), anyLong(), any(), mCloseCallbackCaptor.capture()))
+                    .thenReturn(show);
+            return this;
+        }
+
+        public BrandingCheckTester invokeMimCloseCallback() {
+            final String appId = "org.cities.gotham";
+            final String accountId = "batman@gmail.com";
+            var mimData = new MismatchNotificationData();
+            var appData = new MismatchNotificationData.AppUiData();
+            appData.showCount = 32;
+            appData.closeType = CloseType.ACCEPTED.getNumber();
+            mimData.setAppData(accountId, appId, appData);
+            mCloseCallbackCaptor.getValue().onResult(mimData);
+            return this;
+        }
+
+        public BrandingCheckTester assertMimDataUpdated() {
+            assertNotNull(
+                    "MimData should be updated",
+                    SharedPreferencesBrandingTimeStorage.getInstance().getMimData());
+            return this;
+        }
+
         public BrandingCheckTester destroyController() {
             mBrandingController.destroy();
             return this;
         }
-    }
-
-    private void assertTotalNumberOfPackageRecorded(int sample) {
-        String histogram = "CustomTabs.Branding.NumberOfClients";
-        assertEquals(
-                String.format(Locale.US, "<%s> not recorded for count <%d>", histogram, sample),
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(histogram, sample));
     }
 }

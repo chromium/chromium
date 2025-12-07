@@ -24,7 +24,7 @@
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler_delegate_impl.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/ui/ash/system_tray_client_impl.h"
+#include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/pref_names.h"
@@ -218,8 +218,7 @@ void MinimumVersionPolicyHandler::OnPolicyChanged() {
       cros_settings_->PrepareTrustedValues(
           base::BindOnce(&MinimumVersionPolicyHandler::OnPolicyChanged,
                          weak_factory_.GetWeakPtr()));
-  if (status != ash::CrosSettingsProvider::TRUSTED || !IsPolicyApplicable() ||
-      !ash::features::IsMinimumChromeVersionEnabled()) {
+  if (status != ash::CrosSettingsProvider::TRUSTED || !IsPolicyApplicable()) {
     VLOG(1) << "Ignore policy change - policy is not applicable or settings "
                "are not trusted.";
     return;
@@ -506,8 +505,7 @@ void MinimumVersionPolicyHandler::MaybeShowNotification(
     VLOG(2) << "Showing no network notification.";
     button_click_callback = base::BindOnce(&OpenNetworkSettings);
   } else {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   notification_handler_->Show(type, warning, manager, device_type,
                               std::move(button_click_callback),

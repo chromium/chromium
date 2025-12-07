@@ -20,6 +20,8 @@
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_host_test_helper.h"
+#include "extensions/browser/extension_registry_test_helper.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/gfx/geometry/point.h"
@@ -32,19 +34,140 @@ using MediapipeGesture = FaceGazeTestUtils::MediapipeGesture;
 namespace {
 
 const char* kDefaultDisplaySize = "1200x800";
-constexpr char kMediapipeTestFilePath[] =
-    "resources/chromeos/accessibility/accessibility_common/third_party/"
+constexpr char kMediapipeMV3TestFilePath[] =
+    "resources/chromeos/accessibility/accessibility_common/mv3/third_party/"
     "mediapipe_task_vision";
 const int kMouseDeviceId = 1;
-constexpr char kTestSupportPath[] =
-    "chrome/browser/resources/chromeos/accessibility/accessibility_common/"
+constexpr char kTestSupportMV3Path[] =
+    "chrome/browser/resources/chromeos/accessibility/accessibility_common/mv3/"
     "facegaze/facegaze_test_support.js";
 
 PrefService* GetPrefs() {
   return AccessibilityManager::Get()->profile()->GetPrefs();
 }
 
-std::string ToString(const FaceGazeGesture& gesture) {
+}  // namespace
+
+FaceGazeTestUtils::Config::Config() = default;
+FaceGazeTestUtils::Config::~Config() = default;
+
+FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::Default() {
+  forehead_location_ = gfx::PointF(0.1, 0.2);
+  cursor_location_ = gfx::Point(600, 400);
+  cursor_speeds_ = {/*up=*/20, /*down=*/20, /*left=*/20, /*right=*/20};
+  buffer_size_ = 1;
+  use_cursor_acceleration_ = false;
+  use_landmark_weights_ = false;
+  use_velocity_threshold_ = false;
+  dialog_accepted_ = true;
+
+  // For simplicity, allow tests to recognize gestures instantly rather than
+  // requiring a valid duration.
+  use_gesture_duration_ = false;
+
+  return *this;
+}
+
+FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithForeheadLocation(
+    const gfx::PointF& location) {
+  forehead_location_ = location;
+  return *this;
+}
+
+FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithCursorLocation(
+    const gfx::Point& location) {
+  cursor_location_ = location;
+  return *this;
+}
+
+FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithBufferSize(int size) {
+  buffer_size_ = size;
+  return *this;
+}
+
+FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithCursorAcceleration(
+    bool acceleration) {
+  use_cursor_acceleration_ = acceleration;
+  return *this;
+}
+
+FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithDialogAccepted(
+    bool accepted) {
+  dialog_accepted_ = accepted;
+  return *this;
+}
+
+FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithBindings(
+    const base::flat_map<FaceGazeGesture, MacroName>& gestures_to_macros,
+    const base::flat_map<FaceGazeGesture, int>& gesture_confidences) {
+  gestures_to_macros_ = std::move(gestures_to_macros);
+  gesture_confidences_ = std::move(gesture_confidences);
+  return *this;
+}
+
+FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithCursorSpeeds(
+    const CursorSpeeds& speeds) {
+  cursor_speeds_ = speeds;
+  return *this;
+}
+
+FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithGestureRepeatDelayMs(
+    int delay) {
+  gesture_repeat_delay_ms_ = delay;
+  return *this;
+}
+
+FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithLandmarkWeights(
+    bool use_weights) {
+  use_landmark_weights_ = use_weights;
+  return *this;
+}
+
+FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithVelocityThreshold(
+    bool use_threshold) {
+  use_velocity_threshold_ = use_threshold;
+  return *this;
+}
+
+FaceGazeTestUtils::MockFaceLandmarkerResult::MockFaceLandmarkerResult() =
+    default;
+FaceGazeTestUtils::MockFaceLandmarkerResult::~MockFaceLandmarkerResult() =
+    default;
+
+FaceGazeTestUtils::MockFaceLandmarkerResult&
+FaceGazeTestUtils::MockFaceLandmarkerResult::WithNormalizedForeheadLocation(
+    const std::pair<double, double>& location) {
+  forehead_location_.Set("x", location.first);
+  forehead_location_.Set("y", location.second);
+  return *this;
+}
+
+FaceGazeTestUtils::MockFaceLandmarkerResult&
+FaceGazeTestUtils::MockFaceLandmarkerResult::WithGesture(
+    const MediapipeGesture& gesture,
+    int confidence) {
+  // For readability and consistency with the gesture confidence pref, this
+  // method accepts confidence values [0, 100]. However, the FaceLandmarker
+  // receives confidence scores as values [0, 1], so we need to convert the
+  // confidence to a decimal before processing it.
+  recognized_gestures_.Append(
+      base::Value::Dict()
+          .Set("categoryName", ToString(gesture))
+          .Set("score", static_cast<double>(confidence) / 100.0));
+  return *this;
+}
+
+FaceGazeTestUtils::MockFaceLandmarkerResult&
+FaceGazeTestUtils::MockFaceLandmarkerResult::WithLatency(int latency) {
+  latency_ = latency;
+  return *this;
+}
+
+FaceGazeTestUtils::FaceGazeTestUtils() = default;
+FaceGazeTestUtils::~FaceGazeTestUtils() = default;
+
+// static.
+std::string FaceGazeTestUtils::ToString(const FaceGazeGesture& gesture) {
   switch (gesture) {
     case FaceGazeGesture::BROW_INNER_UP:
       return "browInnerUp";
@@ -85,7 +208,8 @@ std::string ToString(const FaceGazeGesture& gesture) {
   }
 }
 
-std::string ToString(const MediapipeGesture& gesture) {
+// static.
+std::string FaceGazeTestUtils::ToString(const MediapipeGesture& gesture) {
   switch (gesture) {
     case MediapipeGesture::BROW_DOWN_LEFT:
       return "browDownLeft";
@@ -142,104 +266,6 @@ std::string ToString(const MediapipeGesture& gesture) {
   }
 }
 
-}  // namespace
-
-FaceGazeTestUtils::Config::Config() = default;
-FaceGazeTestUtils::Config::~Config() = default;
-
-FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::Default() {
-  forehead_location_ = gfx::PointF(0.1, 0.2);
-  cursor_location_ = gfx::Point(600, 400);
-  buffer_size_ = 1;
-  use_cursor_acceleration_ = false;
-  return *this;
-}
-
-FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithForeheadLocation(
-    const gfx::PointF& location) {
-  forehead_location_ = location;
-  return *this;
-}
-
-FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithCursorLocation(
-    const gfx::Point& location) {
-  cursor_location_ = location;
-  return *this;
-}
-
-FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithBufferSize(int size) {
-  buffer_size_ = size;
-  return *this;
-}
-
-FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithCursorAcceleration(
-    bool acceleration) {
-  use_cursor_acceleration_ = acceleration;
-  return *this;
-}
-
-FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithGesturesToMacros(
-    const base::flat_map<FaceGazeGesture, MacroName>& gestures_to_macros) {
-  gestures_to_macros_ = std::move(gestures_to_macros);
-  return *this;
-}
-
-FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithGestureConfidences(
-    const base::flat_map<FaceGazeGesture, int>& gesture_confidences) {
-  gesture_confidences_ = std::move(gesture_confidences);
-  return *this;
-}
-
-FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithCursorSpeeds(
-    const CursorSpeeds& speeds) {
-  cursor_speeds_ = speeds;
-  return *this;
-}
-
-FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithGestureRepeatDelayMs(
-    int delay) {
-  gesture_repeat_delay_ms_ = delay;
-  return *this;
-}
-
-FaceGazeTestUtils::MockFaceLandmarkerResult::MockFaceLandmarkerResult() =
-    default;
-FaceGazeTestUtils::MockFaceLandmarkerResult::~MockFaceLandmarkerResult() =
-    default;
-
-FaceGazeTestUtils::MockFaceLandmarkerResult&
-FaceGazeTestUtils::MockFaceLandmarkerResult::WithNormalizedForeheadLocation(
-    double x,
-    double y) {
-  forehead_location_.Set("x", x);
-  forehead_location_.Set("y", y);
-  return *this;
-}
-
-FaceGazeTestUtils::MockFaceLandmarkerResult&
-FaceGazeTestUtils::MockFaceLandmarkerResult::WithGesture(
-    const MediapipeGesture& gesture,
-    int confidence) {
-  // For readability and consistency with the gesture confidence pref, this
-  // method accepts confidence values [0, 100]. However, the FaceLandmarker
-  // receives confidence scores as values [0, 1], so we need to convert the
-  // confidence to a decimal before processing it.
-  recognized_gestures_.Append(
-      base::Value::Dict()
-          .Set("categoryName", ToString(gesture))
-          .Set("score", static_cast<double>(confidence) / 100.0));
-  return *this;
-}
-
-FaceGazeTestUtils::MockFaceLandmarkerResult&
-FaceGazeTestUtils::MockFaceLandmarkerResult::WithLatency(int latency) {
-  latency_ = latency;
-  return *this;
-}
-
-FaceGazeTestUtils::FaceGazeTestUtils() = default;
-FaceGazeTestUtils::~FaceGazeTestUtils() = default;
-
 void FaceGazeTestUtils::EnableFaceGaze(const Config& config) {
   // TODO(b/309121742): Add display size to Config so that tests can configure
   // it.
@@ -248,22 +274,34 @@ void FaceGazeTestUtils::EnableFaceGaze(const Config& config) {
   event_generator_ = std::make_unique<ui::test::EventGenerator>(
       Shell::Get()->GetPrimaryRootWindow());
 
-  FaceGazeTestUtils::SetUpMediapipeDir();
-  ASSERT_FALSE(AccessibilityManager::Get()->IsFaceGazeEnabled());
+  // Before enabling FaceGaze, ensure that the dialog accepted pref matches
+  // what is specified in the config.
+  GetPrefs()->SetBoolean(
+      prefs::kAccessibilityFaceGazeAcceleratorDialogHasBeenAccepted,
+      config.dialog_accepted());
 
-  // Use ExtensionHostTestHelper to detect when the accessibility common
-  // extension loads.
-  extensions::ExtensionHostTestHelper host_helper(
-      AccessibilityManager::Get()->profile(),
-      extension_misc::kAccessibilityCommonExtensionId);
+  FaceGazeTestUtils::SetUpMediapipeDir(kMediapipeMV3TestFilePath);
+  ASSERT_FALSE(AccessibilityManager::Get()->IsFaceGazeEnabled());
+  // Watch events from an MV3 extension which runs in a service worker.
+  extensions::ExtensionRegistryTestHelper observer(
+      extension_misc::kAccessibilityCommonExtensionId,
+      AccessibilityManager::Get()->profile());
   AccessibilityManager::Get()->EnableFaceGaze(true);
-  host_helper.WaitForHostCompletedFirstLoad();
+  observer.WaitForServiceWorkerStart();
 
   WaitForJSReady();
-  SkipInitializeWebCamFaceLandmarker();
-  SetUpJSTestSupport();
+  SetUpJSTestSupport(kTestSupportMV3Path);
+  if (config.dialog_accepted()) {
+    // The FaceLandmarker will be automatically initialized after the dialog has
+    // been accepted.
+    WaitForFaceLandmarker();
+    // There can be issues during teardown of the webcam stack in manifest
+    // v3. Since the webcam is not actually used during these tests, we
+    // preemptively turn it off.
+    StopWebCam();
+  }
+
   CancelMouseControllerInterval();
-  CreateFaceLandmarker();
   ConfigureFaceGaze(config);
 }
 
@@ -306,7 +344,13 @@ void FaceGazeTestUtils::MoveMouseTo(const gfx::Point& location) {
 
 void FaceGazeTestUtils::AssertCursorAt(const gfx::Point& location) {
   WaitForCursorPosition(location);
-  ASSERT_EQ(location, display::Screen::GetScreen()->GetCursorScreenPoint());
+  ASSERT_EQ(location, display::Screen::Get()->GetCursorScreenPoint());
+}
+
+void FaceGazeTestUtils::AssertScrollMode(bool active) {
+  std::string true_script = "faceGazeTestSupport.assertScrollMode(true);";
+  std::string false_script = "faceGazeTestSupport.assertScrollMode(false);";
+  ExecuteAccessibilityCommonScript(active ? true_script : false_script);
 }
 
 void FaceGazeTestUtils::ExecuteAccessibilityCommonScript(
@@ -317,13 +361,12 @@ void FaceGazeTestUtils::ExecuteAccessibilityCommonScript(
       /*script=*/script);
 }
 
-void FaceGazeTestUtils::SetUpMediapipeDir() {
+void FaceGazeTestUtils::SetUpMediapipeDir(const char* mediapipe_dir) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath gen_root_dir;
   ASSERT_TRUE(
       base::PathService::Get(base::DIR_OUT_TEST_DATA_ROOT, &gen_root_dir));
-  base::FilePath test_file_path =
-      gen_root_dir.AppendASCII(kMediapipeTestFilePath);
+  base::FilePath test_file_path = gen_root_dir.AppendASCII(mediapipe_dir);
   ASSERT_TRUE(base::PathExists(test_file_path));
   AccessibilityManager::Get()->SetDlcPathForTest(test_file_path);
 }
@@ -331,7 +374,7 @@ void FaceGazeTestUtils::SetUpMediapipeDir() {
 void FaceGazeTestUtils::WaitForJSReady() {
   std::string script = base::StringPrintf(R"JS(
     (async function() {
-      window.accessibilityCommon.setFeatureLoadCallbackForTest('facegaze',
+      globalThis.accessibilityCommon.setFeatureLoadCallbackForTest('facegaze',
           () => {
             chrome.test.sendScriptResult('ready');
           });
@@ -340,22 +383,11 @@ void FaceGazeTestUtils::WaitForJSReady() {
   ExecuteAccessibilityCommonScript(script);
 }
 
-void FaceGazeTestUtils::SkipInitializeWebCamFaceLandmarker() {
-  std::string script = base::StringPrintf(R"JS(
-    (function() {
-      window.accessibilityCommon.getFaceGazeForTest()
-          .setSkipInitializeWebCamFaceLandmarkerForTesting(true);
-      chrome.test.sendScriptResult('ready');
-    })();
-  )JS");
-  ExecuteAccessibilityCommonScript(script);
-}
-
-void FaceGazeTestUtils::SetUpJSTestSupport() {
+void FaceGazeTestUtils::SetUpJSTestSupport(const char* test_support_dir) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath source_dir;
   CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_dir));
-  auto test_support_path = source_dir.AppendASCII(kTestSupportPath);
+  auto test_support_path = source_dir.AppendASCII(test_support_dir);
   std::string script;
   ASSERT_TRUE(base::ReadFileToString(test_support_path, &script))
       << test_support_path;
@@ -367,8 +399,13 @@ void FaceGazeTestUtils::CancelMouseControllerInterval() {
   ExecuteAccessibilityCommonScript(script);
 }
 
-void FaceGazeTestUtils::CreateFaceLandmarker() {
-  std::string script = "faceGazeTestSupport.createFaceLandmarker();";
+void FaceGazeTestUtils::WaitForFaceLandmarker() {
+  std::string script = "faceGazeTestSupport.waitForFaceLandmarker();";
+  ExecuteAccessibilityCommonScript(script);
+}
+
+void FaceGazeTestUtils::StopWebCam() {
+  std::string script = "faceGazeTestSupport.stopWebCam();";
   ExecuteAccessibilityCommonScript(script);
 }
 
@@ -390,6 +427,9 @@ void FaceGazeTestUtils::ConfigureFaceGaze(const Config& config) {
   // Set required configuration properties.
   SetBufferSize(config.buffer_size());
   SetCursorAcceleration(config.use_cursor_acceleration());
+  SetLandmarkWeights(config.use_landmark_weights());
+  SetVelocityThreshold(config.use_velocity_threshold());
+  SetGestureDuration(config.use_gesture_duration());
 
   // By default the cursor is placed at the center of the screen. To
   // initialize FaceGaze, move the cursor somewhere, then move it to the
@@ -406,8 +446,8 @@ void FaceGazeTestUtils::ConfigureFaceGaze(const Config& config) {
   // initially, and upcoming forehead locations will be computed relative to
   // this.
   ProcessFaceLandmarkerResult(
-      MockFaceLandmarkerResult().WithNormalizedForeheadLocation(
-          config.forehead_location().x(), config.forehead_location().y()));
+      MockFaceLandmarkerResult().WithNormalizedForeheadLocation(std::make_pair(
+          config.forehead_location().x(), config.forehead_location().y())));
   TriggerMouseControllerInterval();
   AssertCursorAt(config.cursor_location());
 }
@@ -424,14 +464,29 @@ void FaceGazeTestUtils::SetCursorSpeeds(const CursorSpeeds& speeds) {
 }
 
 void FaceGazeTestUtils::SetBufferSize(int size) {
-  GetPrefs()->SetInteger(prefs::kAccessibilityFaceGazeCursorSmoothing, size);
-  GetPrefs()->CommitPendingWrite();
+  std::string script =
+      base::StringPrintf("faceGazeTestSupport.setBufferSize(%d);", size);
+  ExecuteAccessibilityCommonScript(script);
 }
 
 void FaceGazeTestUtils::SetCursorAcceleration(bool use_acceleration) {
   GetPrefs()->SetBoolean(prefs::kAccessibilityFaceGazeCursorUseAcceleration,
                          use_acceleration);
   GetPrefs()->CommitPendingWrite();
+}
+
+void FaceGazeTestUtils::SetLandmarkWeights(bool use_weights) {
+  std::string true_script = "faceGazeTestSupport.setLandmarkWeights(true);";
+  std::string false_script = "faceGazeTestSupport.setLandmarkWeights(false);";
+  ExecuteAccessibilityCommonScript(use_weights ? true_script : false_script);
+}
+
+void FaceGazeTestUtils::SetVelocityThreshold(bool use_threshold) {
+  // TODO(b/309121742): Update this to set the pref value after a pref for
+  // velocity threshold has been added.
+  std::string true_script = "faceGazeTestSupport.setVelocityThreshold(true);";
+  std::string false_script = "faceGazeTestSupport.setVelocityThreshold(false);";
+  ExecuteAccessibilityCommonScript(use_threshold ? true_script : false_script);
 }
 
 void FaceGazeTestUtils::SetGesturesToMacros(
@@ -464,6 +519,12 @@ void FaceGazeTestUtils::SetGestureRepeatDelayMs(int delay) {
   std::string script = base::StringPrintf(
       "faceGazeTestSupport.setGestureRepeatDelayMs(%d);", delay);
   ExecuteAccessibilityCommonScript(script);
+}
+
+void FaceGazeTestUtils::SetGestureDuration(bool use_duration) {
+  std::string true_script = "faceGazeTestSupport.setGestureDuration(true);";
+  std::string false_script = "faceGazeTestSupport.setGestureDuration(false);";
+  ExecuteAccessibilityCommonScript(use_duration ? true_script : false_script);
 }
 
 }  // namespace ash

@@ -8,19 +8,20 @@
  */
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Constructor} from '../common/types.js';
+import type {Constructor} from '../common/types.js';
 
 import {getDisplayApi} from './device_page_browser_proxy.js';
-import {DragMixin, DragMixinInterface, Position} from './drag_mixin.js';
+import type {DragMixinInterface} from './drag_mixin.js';
+import {DragMixin} from './drag_mixin.js';
+import type {Position} from './drag_mixin.js';
 
 import Bounds = chrome.system.display.Bounds;
 import DisplayLayout = chrome.system.display.DisplayLayout;
 import DisplayUnitInfo = chrome.system.display.DisplayUnitInfo;
 import LayoutPosition = chrome.system.display.LayoutPosition;
-
-export {Position};
 
 export interface LayoutMixinInterface extends DragMixinInterface {
   /**
@@ -379,6 +380,8 @@ export const LayoutMixin = dedupingMixin(
               case LayoutPosition.LEFT:
                 left -= width;
                 top += layout.offset;
+                break;
+              default:
                 break;
             }
           }

@@ -1,0 +1,19 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package apps.proto;
+
+import "chrome/browser/apps/almanac_api_client/proto/client_context.proto";
+
+// This proto is used for unit tests and is not included in non-test builds.
+
+message TestRequest {
+  optional string package_id = 1;
+  optional ClientDeviceContext device_context = 2;
+  optional ClientUserContext user_context = 3;
+}

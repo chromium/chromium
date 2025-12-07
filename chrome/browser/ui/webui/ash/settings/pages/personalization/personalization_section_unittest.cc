@@ -14,6 +14,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -35,9 +36,6 @@ class PersonalizationSectionTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        ash::features::kOsSettingsRevampWayfinding);
-
     ASSERT_TRUE(test_profile_manager_.SetUp());
     user_manager_ = std::make_unique<FakeChromeUserManager>();
     user_manager_->Initialize();
@@ -64,15 +62,18 @@ class PersonalizationSectionTest : public testing::Test {
     user_manager_->AddUser(account_id);
     user_manager_->LoginUser(account_id);
     user_manager_->SwitchActiveUser(account_id);
+    AnnotatedAccountId::Set(profile_, account_id,
+                            /*for_test=*/true);
     task_environment_.RunUntilIdle();
   }
 
   void LoginGuestUser() {
     user_manager::User* guest_user = user_manager_->AddGuestUser();
     const AccountId account_id = guest_user->GetAccountId();
-    test_profile_manager_.CreateTestingProfile(account_id.GetUserEmail());
     user_manager_->LoginUser(account_id);
     user_manager_->SwitchActiveUser(account_id);
+    AnnotatedAccountId::Set(profile_, account_id,
+                            /*for_test=*/true);
     task_environment_.RunUntilIdle();
   }
 

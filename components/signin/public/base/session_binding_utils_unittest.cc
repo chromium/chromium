@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/base64url.h"
+#include "base/containers/span.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
@@ -18,19 +19,41 @@
 #include "base/values.h"
 #include "components/signin/public/base/hybrid_encryption_key.h"
 #include "components/signin/public/base/hybrid_encryption_key_test_utils.h"
+#include "components/signin/public/base/session_binding_test_utils.h"
 #include "crypto/signature_verifier.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+using testing::ElementsAre;
 
 namespace signin {
 
 namespace {
 
+constexpr auto kValidDerSignature = std::to_array<uint8_t>(
+    {0x30, 0x45, 0x02, 0x20, 0x74, 0xa0, 0x6f, 0x6b, 0x2b, 0x0e, 0x82, 0x0e,
+     0x03, 0x3b, 0x6e, 0x98, 0xfc, 0x89, 0x9c, 0xf3, 0x30, 0xb5, 0x56, 0xd3,
+     0x29, 0x89, 0xb5, 0x82, 0x33, 0x5f, 0x9d, 0x97, 0xfb, 0x65, 0x64, 0x90,
+     0x02, 0x21, 0x00, 0xbc, 0xb5, 0xee, 0x42, 0xe2, 0x5a, 0x87, 0xae, 0x21,
+     0x18, 0xda, 0x7e, 0x68, 0x65, 0x30, 0xbe, 0xe5, 0x69, 0x3d, 0xc5, 0x5f,
+     0xd5, 0x62, 0x45, 0x3e, 0x8d, 0x0b, 0x05, 0x1a, 0x33, 0x79, 0x8d});
+constexpr auto kValidP256Spki = std::to_array<uint8_t>(
+    {0x30, 0x59, 0x30, 0x13, 0x06, 0x07, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02,
+     0x01, 0x06, 0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x03, 0x01, 0x07, 0x03,
+     0x42, 0x00, 0x04, 0xc3, 0xee, 0x3a, 0x2c, 0x33, 0x80, 0x07, 0x2b, 0x9b,
+     0x2a, 0x59, 0xfe, 0xd2, 0xca, 0xda, 0x65, 0x12, 0x18, 0x06, 0xe2, 0x2c,
+     0x4f, 0x4f, 0x8a, 0x25, 0xe7, 0x40, 0xfc, 0x3e, 0x54, 0xd7, 0x5d, 0x86,
+     0xc2, 0x00, 0x29, 0x8e, 0x6d, 0xfc, 0x16, 0x11, 0xd1, 0x85, 0xee, 0xdb,
+     0xdb, 0x3c, 0x26, 0x61, 0xb0, 0xeb, 0x04, 0x41, 0xf7, 0xfd, 0x57, 0xc9,
+     0x0d, 0x08, 0x11, 0x2e, 0x9a, 0xe7, 0x1c});
+
 base::Value Base64UrlEncodedJsonToValue(std::string_view input) {
   std::string json;
   EXPECT_TRUE(base::Base64UrlDecode(
       input, base::Base64UrlDecodePolicy::DISALLOW_PADDING, &json));
-  std::optional<base::Value> result = base::JSONReader::Read(json);
+  std::optional<base::Value> result =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(result.has_value());
   return std::move(*result);
 }
@@ -43,6 +66,37 @@ std::string Base64UrlEncode(std::string_view input) {
 }
 
 }  // namespace
+
+TEST(SessionBindingUtilsTest, SignatureAlgorithmFromString) {
+  using enum crypto::SignatureVerifier::SignatureAlgorithm;
+  EXPECT_EQ(SignatureAlgorithmFromString("ES256"), ECDSA_SHA256);
+  EXPECT_EQ(SignatureAlgorithmFromString("es256"), ECDSA_SHA256);
+
+  EXPECT_EQ(SignatureAlgorithmFromString("RS256"), RSA_PKCS1_SHA256);
+  EXPECT_EQ(SignatureAlgorithmFromString("rs256"), RSA_PKCS1_SHA256);
+
+  EXPECT_EQ(SignatureAlgorithmFromString("ES256 blah"), std::nullopt);
+  EXPECT_EQ(SignatureAlgorithmFromString("AB512"), std::nullopt);
+  EXPECT_EQ(SignatureAlgorithmFromString(""), std::nullopt);
+}
+
+TEST(SessionBindingUtilsTest, ParseSignatureAlgorithmList) {
+  using enum crypto::SignatureVerifier::SignatureAlgorithm;
+  EXPECT_THAT(ParseSignatureAlgorithmList("ES256 RS256"),
+              ElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
+  // Extra whitespace is ignored.
+  EXPECT_THAT(ParseSignatureAlgorithmList("   ES256      RS256   "),
+              ElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
+  // Order is preserved.
+  EXPECT_THAT(ParseSignatureAlgorithmList("RS256 ES256"),
+              ElementsAre(RSA_PKCS1_SHA256, ECDSA_SHA256));
+  // Unknown algorithms are skipped.
+  EXPECT_THAT(ParseSignatureAlgorithmList("WAT1 ES256 WAT2 RS256 WAT3"),
+              ElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
+  EXPECT_THAT(ParseSignatureAlgorithmList(""), ElementsAre());
+  // All unknown -- empty result.
+  EXPECT_THAT(ParseSignatureAlgorithmList("WAT1 WAT2 WAT3"), ElementsAre());
+}
 
 TEST(SessionBindingUtilsTest,
      CreateKeyRegistrationHeaderAndPayloadForTokenBinding) {
@@ -133,7 +187,8 @@ TEST_P(SessionBindingUtilsEphemeralKeyParamTest,
       crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
       std::vector<uint8_t>({1, 2, 3}), "test_client_id", "test_challenge",
       GURL("https://accounts.google.com/VerifyKey"), "test_namespace",
-      base::OptionalToPtr(ephemeral_key));
+      ephemeral_key.has_value() ? ephemeral_key->ExportPublicKey()
+                                : std::string_view());
   ASSERT_TRUE(result.has_value());
 
   std::vector<std::string_view> header_and_payload = base::SplitStringPiece(
@@ -184,26 +239,19 @@ TEST(SessionBindingUtilsTest, AppendSignatureToHeaderAndPayload) {
   std::optional<std::string> result = AppendSignatureToHeaderAndPayload(
       "abc.efg",
       crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
-      std::vector<uint8_t>({1, 2, 3}));
+      /*pubkey_spki=*/{}, std::vector<uint8_t>({1, 2, 3}));
   EXPECT_EQ(result, "abc.efg.AQID");
 }
 
 TEST(SessionBindingUtilsTest,
      AppendSignatureToHeaderAndPayloadValidECDSASignature) {
-  const std::vector<uint8_t> kDerSignature = {
-      0x30, 0x45, 0x02, 0x20, 0x74, 0xa0, 0x6f, 0x6b, 0x2b, 0x0e, 0x82, 0x0e,
-      0x03, 0x3b, 0x6e, 0x98, 0xfc, 0x89, 0x9c, 0xf3, 0x30, 0xb5, 0x56, 0xd3,
-      0x29, 0x89, 0xb5, 0x82, 0x33, 0x5f, 0x9d, 0x97, 0xfb, 0x65, 0x64, 0x90,
-      0x02, 0x21, 0x00, 0xbc, 0xb5, 0xee, 0x42, 0xe2, 0x5a, 0x87, 0xae, 0x21,
-      0x18, 0xda, 0x7e, 0x68, 0x65, 0x30, 0xbe, 0xe5, 0x69, 0x3d, 0xc5, 0x5f,
-      0xd5, 0x62, 0x45, 0x3e, 0x8d, 0x0b, 0x05, 0x1a, 0x33, 0x79, 0x8d};
   constexpr std::string_view kRawSignatureBase64UrlEncoded =
       "dKBvaysOgg4DO26Y_Imc8zC1VtMpibWCM1-dl_tlZJC8te5C4lqHriEY2n5oZTC-5Wk9xV_"
       "VYkU-jQsFGjN5jQ";
 
   std::optional<std::string> result = AppendSignatureToHeaderAndPayload(
       "abc.efg", crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
-      kDerSignature);
+      kValidP256Spki, kValidDerSignature);
   EXPECT_EQ(result, base::StrCat({"abc.efg.", kRawSignatureBase64UrlEncoded}));
 }
 
@@ -211,8 +259,28 @@ TEST(SessionBindingUtilsTest,
      AppendSignatureToHeaderAndPayloadInvalidECDSASignature) {
   std::optional<std::string> result = AppendSignatureToHeaderAndPayload(
       "abc.efg", crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
-      std::vector<uint8_t>({1, 2, 3}));
+      kValidP256Spki, /*signature=*/std::vector<uint8_t>({1, 2, 3}));
   EXPECT_EQ(result, std::nullopt);
+}
+
+TEST(SessionBindingUtilsTest, AppendSignatureToHeaderAndPayloadInvalidSpki) {
+  std::optional<std::string> result = AppendSignatureToHeaderAndPayload(
+      "abc.efg", crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
+      /*pubkey_spki=*/std::vector<uint8_t>({1, 2, 3}), kValidDerSignature);
+  EXPECT_EQ(result, std::nullopt);
+}
+
+TEST(SessionBindingUtilsTest, DecryptValueWithEphemeralKey) {
+  static constexpr std::string_view kValue = "test_value";
+  HybridEncryptionKey key = CreateHybridEncryptionKeyForTesting();
+  std::string encrypted_value = EncryptValueWithEphemeralKey(key, "test_value");
+  EXPECT_EQ(DecryptValueWithEphemeralKey(key, encrypted_value), kValue);
+}
+
+TEST(SessionBindingUtilsTest, DecryptValueWithEphemeralKeyFailure) {
+  static constexpr std::string_view kBogusEncryptedValue = "abcdef";
+  HybridEncryptionKey key = CreateHybridEncryptionKeyForTesting();
+  EXPECT_TRUE(DecryptValueWithEphemeralKey(key, kBogusEncryptedValue).empty());
 }
 
 }  // namespace signin

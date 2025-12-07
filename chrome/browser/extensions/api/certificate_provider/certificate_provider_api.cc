@@ -14,10 +14,10 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/values.h"
-#include "chrome/browser/certificate_provider/certificate_provider_service.h"
-#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
-#include "chrome/browser/certificate_provider/pin_dialog_manager.h"
-#include "chrome/browser/certificate_provider/security_token_pin_dialog_host.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
+#include "chrome/browser/ash/certificate_provider/pin_dialog_manager.h"
+#include "chrome/browser/ash/certificate_provider/security_token_pin_dialog_host.h"
 #include "chrome/common/extensions/api/certificate_provider.h"
 #include "chrome/common/extensions/api/certificate_provider_internal.h"
 #include "chromeos/components/security_token_pin/constants.h"
@@ -50,8 +50,7 @@ PinErrorLabel GetErrorLabelForDialog(api_cp::PinRequestErrorType error_type) {
       return PinErrorLabel::kNone;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return PinErrorLabel::kNone;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -202,8 +201,7 @@ bool ParseCertificateInfo(
         out_info->supported_algorithms.push_back(SSL_SIGN_RSA_PKCS1_SHA512);
         break;
       case api_cp::Hash::kNone:
-        NOTREACHED_IN_MIGRATION();
-        return false;
+        NOTREACHED();
     }
   }
   if (out_info->supported_algorithms.empty()) {
@@ -260,8 +258,7 @@ bool ParseClientCertificateInfo(
         out_info->supported_algorithms.push_back(SSL_SIGN_RSA_PSS_RSAE_SHA512);
         break;
       case api_cp::Algorithm::kNone:
-        NOTREACHED_IN_MIGRATION();
-        return false;
+        NOTREACHED();
     }
   }
   if (out_info->supported_algorithms.empty()) {
@@ -277,7 +274,7 @@ const int api::certificate_provider::kMaxClosedDialogsPerMinute = 10;
 const int api::certificate_provider::kMaxClosedDialogsPer10Minutes = 30;
 
 CertificateProviderInternalReportCertificatesFunction::
-    ~CertificateProviderInternalReportCertificatesFunction() {}
+    ~CertificateProviderInternalReportCertificatesFunction() = default;
 
 ExtensionFunction::ResponseAction
 CertificateProviderInternalReportCertificatesFunction::Run() {
@@ -397,7 +394,7 @@ void CertificateProviderStopPinRequestFunction::OnPinRequestStopped() {
 }
 
 CertificateProviderRequestPinFunction::
-    ~CertificateProviderRequestPinFunction() {}
+    ~CertificateProviderRequestPinFunction() = default;
 
 bool CertificateProviderRequestPinFunction::ShouldSkipQuotaLimiting() const {
   chromeos::CertificateProviderService* const service =
@@ -568,7 +565,7 @@ CertificateProviderSetCertificatesFunction::Run() {
 }
 
 CertificateProviderInternalReportSignatureFunction::
-    ~CertificateProviderInternalReportSignatureFunction() {}
+    ~CertificateProviderInternalReportSignatureFunction() = default;
 
 ExtensionFunction::ResponseAction
 CertificateProviderInternalReportSignatureFunction::Run() {

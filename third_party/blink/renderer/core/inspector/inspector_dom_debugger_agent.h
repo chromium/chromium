@@ -80,16 +80,16 @@ class CORE_EXPORT InspectorDOMDebuggerAgent final
                                          const String& type) override;
   protocol::Response setEventListenerBreakpoint(
       const String& event_name,
-      protocol::Maybe<String> target_name) override;
+      std::optional<String> target_name) override;
   protocol::Response removeEventListenerBreakpoint(
       const String& event_name,
-      protocol::Maybe<String> target_name) override;
+      std::optional<String> target_name) override;
   protocol::Response setXHRBreakpoint(const String& url) override;
   protocol::Response removeXHRBreakpoint(const String& url) override;
   protocol::Response getEventListeners(
       const String& object_id,
-      protocol::Maybe<int> depth,
-      protocol::Maybe<bool> pierce,
+      std::optional<int> depth,
+      std::optional<bool> pierce,
       std::unique_ptr<protocol::Array<protocol::DOMDebugger::EventListener>>*
           listeners) override;
 

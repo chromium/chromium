@@ -6,8 +6,10 @@ package org.chromium.content.browser;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -18,38 +20,40 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content.browser.webcontents.WebContentsImplJni;
 import org.chromium.content_public.browser.NavigationController;
-import org.chromium.ui.MotionEventUtils;
 import org.chromium.ui.base.EventForwarder;
+import org.chromium.ui.base.MotionEventTestUtils;
+import org.chromium.ui.util.MotionEventUtils;
 
 /** Unit tests for {@link ContentUiEventHandler} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ContentUiEventHandlerTest {
-    private static final int NATIVE_WEB_CONTENTS_ANDROID = 1;
-    private static final int NATIVE_CONTENT_UI_EVENT_HANDLER = 2;
+    private static final long NATIVE_WEB_CONTENTS_ANDROID = 1;
+    private static final long NATIVE_CONTENT_UI_EVENT_HANDLER = 2;
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private NavigationController mNavigationController;
     @Mock private WebContentsImpl.Natives mWebContentsJniMock;
     @Mock private ContentUiEventHandler.Natives mContentUiEventHandlerJniMock;
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     private ContentUiEventHandler mContentUiEventHandler;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(WebContentsImplJni.TEST_HOOKS, mWebContentsJniMock);
-        mJniMocker.mock(ContentUiEventHandlerJni.TEST_HOOKS, mContentUiEventHandlerJniMock);
+        WebContentsImplJni.setInstanceForTesting(mWebContentsJniMock);
+        ContentUiEventHandlerJni.setInstanceForTesting(mContentUiEventHandlerJniMock);
 
         WebContentsImpl webContentsImpl =
                 spy(WebContentsImpl.create(NATIVE_WEB_CONTENTS_ANDROID, mNavigationController));
@@ -83,30 +87,21 @@ public class ContentUiEventHandlerTest {
     public void testOnGenericMotionEventSendsTrackpadClicksToNative() {
         MotionEvent trackpadLeftClickEvent = getTrackpadLeftClickEvent();
         mContentUiEventHandler.onGenericMotionEvent(getTrackpadLeftClickEvent());
-        verifySendMouseEvent(trackpadLeftClickEvent);
 
         MotionEvent trackpadRightClickEvent = getTrackRightClickEvent();
         mContentUiEventHandler.onGenericMotionEvent(getTrackRightClickEvent());
-        verifySendMouseEvent(trackpadRightClickEvent);
-    }
 
-    private void verifySendMouseEvent(MotionEvent event) {
-        verify(mContentUiEventHandlerJniMock)
+        ArgumentCaptor<MotionEvent> captor = ArgumentCaptor.forClass(MotionEvent.class);
+        verify(mContentUiEventHandlerJniMock, times(2))
                 .sendMouseEvent(
-                        NATIVE_CONTENT_UI_EVENT_HANDLER,
-                        mContentUiEventHandler,
-                        MotionEventUtils.getEventTimeNanos(event),
-                        event.getActionMasked(),
-                        event.getX(),
-                        event.getY(),
-                        event.getPointerId(0),
-                        event.getPressure(0),
-                        event.getOrientation(0),
-                        event.getAxisValue(MotionEvent.AXIS_TILT, 0),
-                        EventForwarder.getMouseEventActionButton(event),
-                        event.getButtonState(),
-                        event.getMetaState(),
-                        MotionEvent.TOOL_TYPE_MOUSE);
+                        eq(NATIVE_CONTENT_UI_EVENT_HANDLER),
+                        captor.capture(),
+                        eq(MotionEventUtils.getEventTimeNanos(trackpadLeftClickEvent)),
+                        eq(EventForwarder.getMouseEventActionButton(trackpadLeftClickEvent)),
+                        eq(MotionEvent.TOOL_TYPE_MOUSE));
+
+        MotionEventTestUtils.assertEquals(captor.getAllValues().get(0), trackpadLeftClickEvent);
+        MotionEventTestUtils.assertEquals(captor.getAllValues().get(1), trackpadRightClickEvent);
     }
 
     private static MotionEvent getTrackpadLeftClickEvent() {

@@ -7,11 +7,11 @@ import 'chrome://webui-test/cr_elements/cr_policy_strings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {ChooserExceptionListEntryElement} from 'chrome://settings/lazy_load.js';
-import {ChooserType, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {ChooserType, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
+import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 import {assertTooltipIsHidden, createChooserException, createSiteException} from './test_util.js';
 // clang-format on
 
@@ -28,12 +28,12 @@ suite('ChooserExceptionListEntry', function() {
   /**
    * The mock proxy object to use during test.
    */
-  let browserProxy: TestSiteSettingsPrefsBrowserProxy;
+  let browserProxy: TestSiteSettingsBrowserProxy;
 
   // Initialize a chooser-exception-list-entry before each test.
   setup(function() {
-    browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
+    browserProxy = new TestSiteSettingsBrowserProxy();
+    SiteSettingsBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('chooser-exception-list-entry');
     document.body.appendChild(testElement);
@@ -54,18 +54,12 @@ suite('ChooserExceptionListEntry', function() {
             testElement.shadowRoot!.querySelector('site-list-entry');
         assertTrue(!!siteListEntry);
 
-        // Ensure that the action menu button container is hidden.
-        const dotsMenu = siteListEntry!.$.actionMenuButton;
-        assertTrue(dotsMenu.hidden);
-
-        // Ensure that the reset button is not hidden.
-        const resetButton = siteListEntry!.$.resetSite;
-        assertFalse(resetButton.hidden);
-
-        // Ensure that the policy enforced indicator is hidden.
-        const policyIndicator = siteListEntry!.shadowRoot!.querySelector(
-            'cr-policy-pref-indicator');
-        assertFalse(!!policyIndicator);
+        // Ensure that the action menu button is not visible.
+        assertFalse(isChildVisible(siteListEntry, '#actionMenuButton'));
+        // Ensure that the reset button is visible.
+        assertTrue(isChildVisible(siteListEntry, '#resetSite'));
+        // Ensure that the policy enforced indicator is not visible.
+        assertFalse(isChildVisible(siteListEntry, 'cr-policy-pref-indicator'));
       });
 
   test(
@@ -87,18 +81,12 @@ suite('ChooserExceptionListEntry', function() {
             testElement.shadowRoot!.querySelector('site-list-entry');
         assertTrue(!!siteListEntry);
 
-        // Ensure that the action menu button container is hidden.
-        const dotsMenu = siteListEntry!.$.actionMenuButton;
-        assertTrue(dotsMenu.hidden);
-
-        // Ensure that the reset button is hidden.
-        const resetButton = siteListEntry!.$.resetSite;
-        assertTrue(resetButton.hidden);
-
-        // Ensure that the policy enforced indicator is not hidden.
-        const policyIndicator = siteListEntry!.shadowRoot!.querySelector(
-            'cr-policy-pref-indicator');
-        assertTrue(!!policyIndicator);
+        // Ensure that the action menu button is not visible.
+        assertFalse(isChildVisible(siteListEntry, '#actionMenuButton'));
+        // Ensure that the reset button is not visible.
+        assertFalse(isChildVisible(siteListEntry, '#resetSite'));
+        // Ensure that the policy enforced indicator is visible.
+        assertTrue(isChildVisible(siteListEntry, 'cr-policy-pref-indicator'));
       });
 
   test(
@@ -124,30 +112,16 @@ suite('ChooserExceptionListEntry', function() {
         assertEquals(siteListEntries.length, 2);
 
         // The first entry should be policy enforced.
-        const firstDotsMenu = siteListEntries[0]!.$.actionMenuButton;
-        assertTrue(!!firstDotsMenu);
-        assertTrue(firstDotsMenu!.hidden);
-
-        const firstResetButton = siteListEntries[0]!.$.resetSite;
-        assertTrue(firstResetButton!.hidden);
-
-        const firstPolicyIndicator =
-            siteListEntries[0]!.shadowRoot!.querySelector(
-                'cr-policy-pref-indicator');
-        assertTrue(!!firstPolicyIndicator);
+        assertFalse(isChildVisible(siteListEntries[0]!, '#actionMenuButton'));
+        assertFalse(isChildVisible(siteListEntries[0]!, '#resetSite'));
+        assertTrue(
+            isChildVisible(siteListEntries[0]!, 'cr-policy-pref-indicator'));
 
         // The second entry should be user granted.
-        const secondDotsMenu = siteListEntries[1]!.$.actionMenuButton;
-        assertTrue(!!secondDotsMenu);
-        assertTrue(secondDotsMenu!.hidden);
-
-        const secondResetButton = siteListEntries[1]!.$.resetSite;
-        assertFalse(secondResetButton!.hidden);
-
-        const secondPolicyIndicator =
-            siteListEntries[1]!.shadowRoot!.querySelector(
-                'cr-policy-pref-indicator');
-        assertFalse(!!secondPolicyIndicator);
+        assertFalse(isChildVisible(siteListEntries[1]!, '#actionMenuButton'));
+        assertTrue(isChildVisible(siteListEntries[1]!, '#resetSite'));
+        assertFalse(
+            isChildVisible(siteListEntries[1]!, 'cr-policy-pref-indicator'));
       });
 
   test(
@@ -168,15 +142,15 @@ suite('ChooserExceptionListEntry', function() {
             testElement.shadowRoot!.querySelector('site-list-entry');
         assertTrue(!!siteListEntry);
 
-        const policyIndicator = siteListEntry!.shadowRoot!.querySelector(
-            'cr-policy-pref-indicator');
+        const policyIndicator =
+            siteListEntry.shadowRoot!.querySelector('cr-policy-pref-indicator');
         assertTrue(!!policyIndicator);
 
         const icon =
-            policyIndicator!.shadowRoot!.querySelector('cr-tooltip-icon');
+            policyIndicator.shadowRoot!.querySelector('cr-tooltip-icon');
         assertTrue(!!icon);
 
-        const crTooltip = icon!.shadowRoot!.querySelector('cr-tooltip');
+        const crTooltip = icon.shadowRoot.querySelector('cr-tooltip');
         assertTrue(!!crTooltip);
 
         // This tooltip is never shown since a common tooltip will be used.
@@ -184,7 +158,7 @@ suite('ChooserExceptionListEntry', function() {
         assertTooltipIsHidden(crTooltip);
 
         const wait = eventToPromise('show-tooltip', document);
-        icon!.$.indicator.dispatchEvent(
+        icon.$.indicator.dispatchEvent(
             new MouseEvent('mouseenter', {bubbles: true, composed: true}));
         return wait.then(() => {
           assertTooltipIsHidden(crTooltip);
@@ -206,15 +180,15 @@ suite('ChooserExceptionListEntry', function() {
             testElement.shadowRoot!.querySelector('site-list-entry');
         assertTrue(!!siteListEntry);
 
-        // Ensure that the action menu button is hidden.
-        const dotsMenu = siteListEntry!.$.actionMenuButton;
-        assertTrue(dotsMenu.hidden);
+        // Ensure that the action menu button is not visible.
+        assertFalse(isChildVisible(siteListEntry, '#actionMenuButton'));
 
-        // Ensure that the reset button is not hidden.
-        const resetButton = siteListEntry!.$.resetSite;
-        assertFalse(resetButton.hidden);
+        const resetButton =
+            siteListEntry.shadowRoot!.querySelector<HTMLElement>('#resetSite');
+        assertTrue(!!resetButton);
+        assertTrue(isVisible(resetButton));
 
-        resetButton!.click();
+        resetButton.click();
         const args =
             await browserProxy.whenCalled('resetChooserExceptionForSite');
 

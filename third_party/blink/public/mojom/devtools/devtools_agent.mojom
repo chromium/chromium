@@ -99,6 +99,7 @@ interface DevToolsAgent {
                         pending_associated_receiver<DevToolsSession> session,
                         pending_receiver<DevToolsSession> io_session,
                         DevToolsSessionState? reattach_session_state,
+                        string script_to_evaluate_on_load,
                         bool client_expects_binary_responses,
                         bool client_is_trusted,
                         string session_id,
@@ -167,6 +168,9 @@ interface DevToolsSession {
   DispatchProtocolCommand(int32 call_id,
                           string method,
                           mojo_base.mojom.ReadOnlyBuffer message);
+
+  // Disables all breakpoints and terminates script currently executing.
+  UnpauseAndTerminate();
 };
 
 // A peer of DevToolsSession representing a remote debugging client

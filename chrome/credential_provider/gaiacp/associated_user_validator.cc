@@ -16,6 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "base/win/ntsecapi_shim.h"
 #include "base/win/win_util.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/gaia_credential_provider.h"
@@ -80,16 +81,16 @@ unsigned __stdcall CheckReauthStatus(void* param) {
     }
 
     std::string_view response_string(response.data(), response.size());
-    std::optional<base::Value> properties_val = base::JSONReader::Read(
+    std::optional<base::Value::Dict> properties = base::JSONReader::ReadDict(
         response_string, base::JSON_ALLOW_TRAILING_COMMAS);
-    if (!properties_val || !properties_val->is_dict()) {
-      LOGFN(ERROR) << "base::JSONReader::Read failed forcing reauth";
+    if (!properties) {
+      LOGFN(ERROR) << "base::JSONReader::ReadDict failed forcing reauth";
       return 0;
     }
 
-    const auto& properties = properties_val->GetDict();
-    std::optional<int> expires_in = properties.FindInt("expires_in");
-    if (properties.contains("error") || !expires_in || expires_in.value() < 0) {
+    std::optional<int> expires_in = properties->FindInt("expires_in");
+    if (properties->contains("error") || !expires_in ||
+        expires_in.value() < 0) {
       LOGFN(VERBOSE) << "Needs reauth sid=" << reauth_info->sid;
       return 0;
     }
@@ -105,8 +106,9 @@ bool TokenHandleNeedsUpdate(const base::Time& last_refresh) {
 
 bool WaitForQueryResult(const base::win::ScopedHandle& thread_handle,
                         const base::Time& until) {
-  if (!thread_handle.IsValid())
+  if (!thread_handle.is_valid()) {
     return true;
+  }
 
   DWORD time_left = std::max<DWORD>(
       static_cast<DWORD>((until - base::Time::Now()).InMilliseconds()), 0);
@@ -131,6 +133,11 @@ bool WaitForQueryResult(const base::win::ScopedHandle& thread_handle,
 HRESULT ModifyUserAccess(const std::unique_ptr<ScopedLsaPolicy>& policy,
                          const std::wstring& sid,
                          bool allow) {
+  if (!policy) {
+    LOGFN(ERROR) << "Invalid pointer to ScopedLsaPolicy";
+    return E_INVALIDARG;
+  }
+
   OSUserManager* manager = OSUserManager::Get();
   wchar_t username[kWindowsUsernameBufferLength];
   wchar_t domain[kWindowsDomainBufferLength];
@@ -361,6 +368,11 @@ bool AssociatedUserValidator::DenySigninForUsersWithInvalidTokenHandles(
   }
 
   auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
+  if (!policy) {
+    hr = HRESULT_FROM_WIN32(::GetLastError());
+    LOGFN(ERROR) << "ScopedLsaPolicy::Create hr=" << putHR(hr);
+    return false;
+  }
 
   bool user_denied_signin = false;
   OSUserManager* manager = OSUserManager::Get();
@@ -393,6 +405,11 @@ HRESULT AssociatedUserValidator::RestoreUserAccess(const std::wstring& sid) {
 
   if (locked_user_sids_.erase(sid)) {
     auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
+    if (!policy) {
+      HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
+      LOGFN(ERROR) << "ScopedLsaPolicy::Create hr=" << putHR(hr);
+      return hr;
+    }
     return ModifyUserAccess(policy, sid, true);
   }
 
@@ -414,8 +431,17 @@ void AssociatedUserValidator::AllowSigninForAllAssociatedUsers(
   }
 
   auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
-  for (const auto& sid_to_handle : sids_to_handle)
-    ModifyUserAccess(policy, sid_to_handle.first, true);
+  if (!policy) {
+    hr = HRESULT_FROM_WIN32(::GetLastError());
+    LOGFN(ERROR) << "ScopedLsaPolicy::Create hr=" << putHR(hr);
+    return;
+  }
+  for (const auto& sid_to_handle : sids_to_handle) {
+    hr = ModifyUserAccess(policy, sid_to_handle.first, true);
+    if (FAILED(hr)) {
+      LOGFN(ERROR) << "ModifyUserAccess hr=" << putHR(hr);
+    }
+  }
 
   locked_user_sids_.clear();
 }
@@ -425,6 +451,11 @@ void AssociatedUserValidator::AllowSigninForUsersWithInvalidTokenHandles() {
 
   LOGFN(VERBOSE);
   auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
+  if (!policy) {
+    HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
+    LOGFN(ERROR) << "ScopedLsaPolicy::Create hr=" << putHR(hr);
+    return;
+  }
   for (auto& sid : locked_user_sids_) {
     HRESULT hr = ModifyUserAccess(policy, sid, true);
     if (FAILED(hr))
@@ -480,7 +511,7 @@ void AssociatedUserValidator::CheckTokenHandleValidity(
     auto existing_validity_it = user_to_token_handle_info_.find(it->first);
     if (existing_validity_it != user_to_token_handle_info_.end() &&
         !existing_validity_it->second->is_valid &&
-        !existing_validity_it->second->pending_query_thread.IsValid()) {
+        !existing_validity_it->second->pending_query_thread.is_valid()) {
       continue;
     }
 
@@ -584,6 +615,11 @@ AssociatedUserValidator::GetAuthEnforceReason(const std::wstring& sid) {
   if (PasswordRecoveryEnabled()) {
     std::wstring store_key = GetUserPasswordLsaStoreKey(sid);
     auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
+    if (!policy) {
+      HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
+      LOGFN(ERROR) << "ScopedLsaPolicy::Create hr=" << putHR(hr);
+      return AssociatedUserValidator::EnforceAuthReason::NOT_ENFORCED;
+    }
     if (!policy->PrivateDataExists(store_key.c_str())) {
       LOGFN(VERBOSE) << "Enforcing re-auth due to missing password lsa store "
                         "data for user "
@@ -638,7 +674,7 @@ bool AssociatedUserValidator::IsTokenHandleValidForUser(
   CheckTokenHandleValidity({{sid, validity_it->second->queried_token_handle}});
 
   // If a query is still pending, wait for it and update the validity.
-  if (validity_it->second->pending_query_thread.IsValid()) {
+  if (validity_it->second->pending_query_thread.is_valid()) {
     validity_it->second->is_valid =
         WaitForQueryResult(validity_it->second->pending_query_thread,
                            validity_it->second->last_update);

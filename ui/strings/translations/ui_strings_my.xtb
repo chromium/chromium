@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{ပြီးခဲ့သော ၁ ရက်}other{ပြီးခဲ့သော # ရက်}}</translation>
 <translation id="1181037720776840403">ဖယ်ရှားရန်</translation>
 <translation id="1243314992276662751">အာပ်လုဒ် လုပ်ရန်</translation>
+<translation id="1253734725326687145">တို့ထိရမည့် နေရာသည် ညာဘက်အပေါ်သို့ ရွေ့သွားပါပြီ။ ဤနေရာကို တို့ပါ။</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> ကို မျှဝေ၍မရပါ။</translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">စာသားကို ပိုသေးသော အပိုင်းများအဖြစ် မျှဝေကြည့်ပါ။</translation>
@@ -38,6 +39,7 @@
 <translation id="19085484004813472">၎င်းသည် ဝန်ဆောင်မှုအသစ်ဖြစ်သည်</translation>
 <translation id="2006524834898217237">ဤစက်သည် အင်တာနက်ချိတ်ထားမှု ရှိမရှိ စစ်ဆေးပါ။</translation>
 <translation id="208586643495776849">ထပ်လုပ်ကြည့်ပါ</translation>
+<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />ရုပ်ဖျက်မုဒ်တွင် ခွင့်ပြုရန်<ph name="END_BOLD" /> ဖွင့်ပါ</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{၁ ရက်}other{# ရက်}}</translation>
 <translation id="2148716181193084225">ယနေ့</translation>
 <translation id="2168039046890040389">စာမျက်နှာ အပေါ်သို့</translation>
@@ -48,12 +50,14 @@
 <translation id="2289052229480071835">သင်၏စခရင်ပေါ်မှ ထိမည့်နေရာများကို တို့ပါ။</translation>
 <translation id="2295140143284145483">စစ်တမ်း</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{ID ပါသော နောက်ဆက်တွဲကို <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ရှာမတွေ့ပါ။ သင့်စီမံခန့်ခွဲသူထံ ဆက်သွယ်ပါ။}other{ID ပါသော နောက်ဆက်တွဲများကို <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ရှာမတွေ့ပါ။ သင့်စီမံခန့်ခွဲသူထံ ဆက်သွယ်ပါ။}}</translation>
 <translation id="2353636109065292463">သင်၏ အင်တာနက်ချိတ်ဆက်မှုကို စစ်ဆေးခြင်း</translation>
 <translation id="2359808026110333948">ဆက်လုပ်ရန်</translation>
 <translation id="2388990488038464401">သင့်ဖုန်းမှနေ၍ ဤနံပါတ်ကို ခေါ်လိုပါသလား။</translation>
 <translation id="2435457462613246316">စကားဝှက်ကို ပြပါ</translation>
 <translation id="24452542372838207">အကြောင်းကြားချက်ကို ချဲ့ရန်</translation>
 <translation id="2445449901874883781">သိပ်သည်းဆအမြင့် သုံးရန်</translation>
+<translation id="2448407890032181691">တို့ထိရမည့် နေရာသည် ညာဘက်အောက်ခြေသို့ ရွေ့သွားပါပြီ။ ဤနေရာကို တို့ပါ။</translation>
 <translation id="2482878487686419369">အကြောင်းကြားစာ</translation>
 <translation id="2497284189126895209">ဖိုင်များ အားလုံး</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -70,6 +74,7 @@
 <translation id="2878511608894704031">အားလုံး ဖျက်ရန်</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{၁ရက် အတွင်း}other{#ရက် အတွင်း}}</translation>
 <translation id="2922712708897119705"><ph name="COLUMN_NAME" /> ကော်လံကို ကြီးစဉ်ငယ်လိုက် စီထားသည်။</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{နောက်ဆက်တွဲ ရှာမတွေ့ပါ}other{နောက်ဆက်တွဲများ ရှာမတွေ့ပါ}}</translation>
 <translation id="3036649622769666520">ဖိုင်များ ဖွင့်ရန်</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3087734570205094154">အောက်ခြေပိုင်း</translation>
@@ -82,6 +87,7 @@
 <translation id="3295886253693811851">အောက်ပါမှ ခေါ်ဆိုခြင်း−</translation>
 <translation id="3306688585798492231">အသင့်ပါ ဖန်သားပြင်ပြသမှု</translation>
 <translation id="335581015389089642">စကားပြောမှု</translation>
+<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />အသေးစိတ်<ph name="END_BOLD" /> ကိုနှိပ်ပါ</translation>
 <translation id="3389286852084373014">စာသား အလွန်ကြီးနေသည်</translation>
 <translation id="3406306243914553062">HTML အကြောင်းအရာ</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{၁ ရက်ကျန်၏}other{# ရက်ကျန်၏}}</translation>
@@ -102,7 +108,9 @@
 <translation id="3994749195054421561"><ph name="COLUMN_NAME" /> ကော်လံကို ငယ်စဉ်ကြီးလိုက် စီထားသည်။</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{မဖတ်ရသေးသော အကြောင်းကြားချက် ၁ ခု}other{မဖတ်ရသေးသော အကြောင်းကြားချက် # ခု}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{‘ရုပ်ဖျက်မုဒ်’ တွင် အောက်ပါနောက်ဆက်တွဲကို ဖွင့်ရန်-}other{‘ရုပ်ဖျက်မုဒ်’ တွင် အောက်ပါနောက်ဆက်တွဲများကို ဖွင့်ရန်-}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{ပြီးခံသည့် ၁ လ}other{ပြီးခဲ့သည့် # လ}}</translation>
+<translation id="4277033906326892359"><ph name="COLUMN_NAME" /> ကော်လံကို ငယ်စဉ်ကြီးလိုက် စီထားသည်</translation>
 <translation id="4289300219472526559">စတင် စကားပြော</translation>
 <translation id="4289540628985791613">အကျဉ်းချုပ်</translation>
 <translation id="4491109536499578614">ပုံ</translation>
@@ -113,6 +121,8 @@
 <translation id="4729257764711776855">နံပါတ်</translation>
 <translation id="4746179598275229723">‘နောက်ဆက်တွဲ’ ပင်ဖြုတ်ပြီးပြီ</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{၁ လ ကျန်သည်}other{# လ ကျန်သည်}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{‘ရုပ်ဖျက်မုဒ်’ သုံးရန် သင့်အဖွဲ့အစည်းက နောက်ဆက်တွဲတစ်ခု လိုအပ်သည်}other{‘ရုပ်ဖျက်မုဒ်’ သုံးရန် သင့်အဖွဲ့အစည်းက နောက်ဆက်တွဲအချို့ လိုအပ်သည်}}</translation>
+<translation id="482932175346970750">သင့်ဘရောင်ဇာတွင် <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> ကိုရိုက်ထည့်ပါ</translation>
 <translation id="4888938634149558681">ဖုန်းခေါ်ရန်</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />၊ <ph name="TYPE_2" />၊ <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{၁ စက္ကန့်}other{# စက္ကန့်}}</translation>
@@ -121,6 +131,7 @@
 <translation id="5076340679995252485">&amp;ကူးထည့်ရန်</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">ပို့၍ မရပါ</translation>
+<translation id="5283101102242354279">‘ရုပ်ဖျက်မုဒ်’ တွင် နောက်ဆက်တွဲဖွင့်ရန်-</translation>
 <translation id="528468243742722775">အဆုံး</translation>
 <translation id="5329858601952122676">&amp;ဖျက်ရန်</translation>
 <translation id="5361107212971249203">စာတို</translation>
@@ -129,13 +140,16 @@
 <translation id="5528053674512161860">ဆော့ဖ်ဝဲအင်ဂျင်နီယာ UI မော်ဂျူး (dev_ui) ထည့်သွင်းမထားသောကြောင့် စာမျက်နှာကို ဖွင့်၍မရပါ</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> စနစ်</translation>
 <translation id="5583640892426849032">နောက်ပြန်</translation>
+<translation id="5606865426897221650">တဘ်</translation>
 <translation id="5613020302032141669">ဘယ်မြှား</translation>
 <translation id="5633029987065897167">မရှိပါ</translation>
+<translation id="5651438382973553530">တို့ထိရမည့် နေရာသည် ဘယ်ဘက်အောက်ခြေသို့ ရွေ့သွားပါပြီ။ ဤနေရာကို တို့ပါ။</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{၁ မိနစ်}other{# မိနစ်}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{ယနေ့ အသုံးပြုထားသည်}=1{ပြီးခဲ့သော ၁ ရက်က အသုံးပြုထားသည်}other{ပြီးခဲ့သော # ရက်က အသုံးပြုထားသည်}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{၁ ရက်နှင့် }other{# ရက်နှင့် }}</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5843690142429128814">ပုံ။</translation>
+<translation id="5860491529813859533">ဖွင့်ရန်</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{၁နှစ် အတွင်း}other{#နှစ် အတွင်း}}</translation>
 <translation id="588258955323874662">မျက်နှာပြင် အပြည့်</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{၁ စက္ကန့်ကျန်၏}other{# စက္ကန့်ကျန်၏}}</translation>
@@ -151,6 +165,7 @@
 <translation id="6264365405983206840">အားလုံး  &amp;ရွေးရန်</translation>
 <translation id="6346952829206698721">ကလစ်ဘုတ်မှ ကူးထည့်ရန်</translation>
 <translation id="6364916375976753737">ဘယ်သို့ လှိမ့်ရန်</translation>
+<translation id="63712816010840859">လက်ရှိဖန်သားပြင်သည် တို့ထိမျက်နှာပြင် မဟုတ်ပါက Esc ကို နှိပ်ပါ။</translation>
 <translation id="6394627529324717982">ကော်မာ</translation>
 <translation id="6397363302884558537">စကားပြောဆိုမှု ရပ်ရန်</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{၁ စက္ကန့်အကြာက}other{# စက္ကန့်အကြာက}}</translation>
@@ -162,6 +177,8 @@
 <translation id="6612467943526193239">တိုင်းတာချိန်ညှိမှုမှ ထွက်ရန် Esc ကို နှိပ်ပါ။</translation>
 <translation id="6620110761915583480">ဖိုင် သိမ်းရန်</translation>
 <translation id="6699343763173986273">နောက်ထပ်သီချင်းပုဒ် မီဒီယာ</translation>
+<translation id="6738856801552481343">ဤဖန်သားပြင်သည် တို့ထိမျက်နှာပြင် မဟုတ်ပါက Esc ကို နှိပ်ပါ။</translation>
+<translation id="6807086321996342431">ကော်လံ <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">Media Stop</translation>
 <translation id="6845383723252244143">ဖိုင်တွဲ ရွေးရန်</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{ 1 နာရီကျန်၏}other{# နာရီကျန်၏}}</translation>
@@ -176,6 +193,7 @@
 <translation id="7170202025028120564">သင့်အပလီကေးရှင်း၏ ဖန်သားပြင်ပြသမှုဆက်တင်များသည် နောက်တစ်ကြိမ် ပြန်လည်စတင်သည့်အခါ အကျိုးသက်ရောက်မှုရှိပါမည်။</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{၁ မိနစ်ကျန်၏}other{# မိနစ်ကျန်၏}}</translation>
+<translation id="7252604552361840748">အပေါ်တွင် နောက်ဆက်တွဲကို ရှာပါ</translation>
 <translation id="7363164521834647158">ပြန်ကြားချက်ပို့ရန်</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{၁ မိနစ်အကြာက}other{# မိနစ်အကြာက}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
@@ -192,16 +210,15 @@
 <translation id="7969046989155602842">ကွန်မန်း</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{မဖတ်ရသေးသော အကြောင်းကြားချက် ၁ ခုထက်ပိုရှိသည်}other{မဖတ်ရသေးသော အကြောင်းကြားချက် # ခုထက်ပိုရှိသည်}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{၁မိနစ် အတွင်း}other{#မိနစ် အတွင်း}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568"><ph name="ORIGIN" /> မှ နံပါတ်</translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{၁ နာရီ အကြာက}other{# နာရီ အကြာက}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{၁ စက္ကန့်ကျန်၏}other{# စက္ကန့်ကျန်၏}}</translation>
 <translation id="8134065097954893699">ဤစာမျက်နှာကို ပြန်လည် စတင်နေသည်</translation>
+<translation id="813785873406874127"><ph name="COLUMN_NAME" /> ကော်လံကို စီမထားပါ</translation>
 <translation id="815598010540052116">အောက်ကို လှိမ့်ဆင်းရန်</translation>
 <translation id="8179976553408161302">အင်တာ</translation>
 <translation id="8210608804940886430">စာမျက်နှာ အောက်သို့</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />၊ <ph name="TYPE_2" /></translation>
-<translation id="8245914219290430011">Tab ကီးခလုတ်</translation>
 <translation id="8259556432390118667">Hex အရောင် အညွှန်းကိန်း</translation>
 <translation id="8328145009876646418">ဘယ် အစွန်း</translation>
 <translation id="8331626408530291785">အပေါ်ကို လှိမ့်သွား</translation>
@@ -209,6 +226,7 @@
 <translation id="8393700583063109961">မက်ဆေ့ဂျ်ပို့ရန်</translation>
 <translation id="8394908167088220973">မီဒီယာ ဖွင့်ရန်/ဆိုင်းငံ့ထားရန်</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{၁ နှစ်}other{# နှစ်}}</translation>
+<translation id="8582972250170726813"><ph name="COLUMN_NAME" /> ကော်လံကို ကြီးစဉ်ငယ်လိုက် စီထားသည်</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> ဖိုင် (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>
@@ -225,6 +243,8 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{၁ စက္ကန့်}other{ # စက္ကန့်}}</translation>
 <translation id="9059834730836941392">အကြောင်းကြားချက်ကို လျှော့ပြရန်</translation>
 <translation id="9170848237812810038">&amp;တစ်ဆင့်နောက်ပြန်ရန်</translation>
+<translation id="9195990613383871904">မနက်ဖြန်</translation>
+<translation id="928628199082367701">Super</translation>
 <translation id="932327136139879170">ပင်မ</translation>
 <translation id="944069440740578670">မဖတ်ရသေးသော အကြောင်းကြားချက်များ</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{ပြီးခဲ့သော ၁ စက္ကန့်}other{ပြီးခဲ့သော # စက္ကန့်}}</translation>

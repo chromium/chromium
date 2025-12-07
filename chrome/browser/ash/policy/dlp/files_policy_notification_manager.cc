@@ -14,11 +14,12 @@
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/types/optional_util.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/extensions/file_manager/system_notification_manager.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
@@ -34,8 +35,7 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
 #include "components/enterprise/data_controls/core/browser/dlp_histogram_helper.h"
 #include "components/strings/grit/components_strings.h"
@@ -384,10 +384,10 @@ void FilesPolicyNotificationManager::ShowDialog(
   DCHECK(profile);
 
   // Get the last active Files app window.
-  Browser* browser =
-      FindSystemWebAppBrowser(profile, ash::SystemWebAppType::FILE_MANAGER);
+  ash::BrowserDelegate* browser = FindSystemWebAppBrowser(
+      profile, ash::SystemWebAppType::FILE_MANAGER, ash::BrowserType::kApp);
   gfx::NativeWindow modal_parent =
-      browser ? browser->window()->GetNativeWindow() : nullptr;
+      browser ? browser->GetNativeWindow() : nullptr;
   if (modal_parent) {
     ShowDialogForIOTask(task_id, type, modal_parent);
     return;
@@ -530,7 +530,7 @@ void FilesPolicyNotificationManager::HandleDlpWarningNotificationClick(
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -579,7 +579,7 @@ void FilesPolicyNotificationManager::HandleDlpErrorNotificationClick(
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -845,7 +845,7 @@ void FilesPolicyNotificationManager::HandleFilesPolicyErrorNotificationClick(
       }
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -921,7 +921,7 @@ void FilesPolicyNotificationManager::LaunchFilesApp(
     std::unique_ptr<DialogInfo> info) {
   // Start observing the browser list only if the queue is empty.
   if (pending_dialogs_.empty()) {
-    BrowserList::AddObserver(this);
+    ash::BrowserController::GetInstance()->AddObserver(this);
   }
   // Start timer.
   info->timeout_timer.SetTaskRunner(task_runner_);
@@ -949,8 +949,10 @@ void FilesPolicyNotificationManager::LaunchFilesApp(
                                ash::SystemWebAppType::FILE_MANAGER, params);
 }
 
-void FilesPolicyNotificationManager::OnBrowserAdded(Browser* browser) {
-  if (!ash::IsBrowserForSystemWebApp(browser,
+void FilesPolicyNotificationManager::OnBrowserCreated(
+    ash::BrowserDelegate* browser_delegate) {
+  // TODO(crbug.com/440947120): Migrate away from using Browser* here.
+  if (!ash::IsBrowserForSystemWebApp(&browser_delegate->GetBrowser(),
                                      ash::SystemWebAppType::FILE_MANAGER)) {
     LOG(WARNING) << "Browser did not match Files app";
     return;
@@ -959,7 +961,7 @@ void FilesPolicyNotificationManager::OnBrowserAdded(Browser* browser) {
   // Files app successfully opened.
   data_controls::DlpBooleanHistogram(
       data_controls::dlp::kFilesAppOpenTimedOutUMA, /*value=*/false);
-  ShowPendingDialog(browser->window()->GetNativeWindow());
+  ShowPendingDialog(browser_delegate->GetNativeWindow());
 }
 
 void FilesPolicyNotificationManager::SetTaskRunnerForTesting(
@@ -1021,18 +1023,18 @@ bool FilesPolicyNotificationManager::HasWarning(
 }
 
 bool FilesPolicyNotificationManager::HasNonIOTask(
-    const std::string notification_id) const {
+    const std::string& notification_id) const {
   return base::Contains(non_io_tasks_, notification_id);
 }
 
 bool FilesPolicyNotificationManager::HasBlockedFiles(
-    const std::string notification_id) const {
+    const std::string& notification_id) const {
   return HasNonIOTask(notification_id) &&
          !non_io_tasks_.at(notification_id).block_info_map().empty();
 }
 
 bool FilesPolicyNotificationManager::HasWarning(
-    const std::string notification_id) const {
+    const std::string& notification_id) const {
   return HasNonIOTask(notification_id) &&
          non_io_tasks_.at(notification_id).HasWarningInfo();
 }
@@ -1337,9 +1339,9 @@ void FilesPolicyNotificationManager::ShowPendingDialog(
   CHECK(pending_dialogs_.front()->dialog_callback);
   std::move(pending_dialogs_.front()->dialog_callback).Run(modal_parent);
   pending_dialogs_.pop();
-  // If this was the last dialog, stop observing the browser list.
+  // If this was the last dialog, stop observing the browser controller.
   if (pending_dialogs_.empty()) {
-    BrowserList::RemoveObserver(this);
+    ash::BrowserController::GetInstance()->RemoveObserver(this);
   }
 }
 

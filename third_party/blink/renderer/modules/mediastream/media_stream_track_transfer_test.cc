@@ -7,6 +7,7 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_state.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/mediastream/browser_capture_media_stream_track.h"
@@ -18,13 +19,13 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 namespace {
 
 mojom::blink::MediaDevicesDispatcherHost* UnusedMediaDevicesDispatcherHost() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void SignalSourceReady(
@@ -64,8 +65,8 @@ class MockUserMediaProcessor : public UserMediaProcessor {
     source->SetDevice(device);
     // RunUntilIdle is required for this task to complete.
     scheduler::GetSingleThreadTaskRunnerForTesting()->PostTask(
-        FROM_HERE, base::BindOnce(&SignalSourceReady, std::move(source_ready),
-                                  source.get()));
+        FROM_HERE, blink::BindOnce(&SignalSourceReady, std::move(source_ready),
+                                   Unretained(source.get())));
     return source;
   }
 };
@@ -90,7 +91,7 @@ class UserMediaClientUnderTest : public UserMediaClient {
 class ScopedMockUserMediaClient {
  public:
   explicit ScopedMockUserMediaClient(LocalDOMWindow* window)
-      : original_(Supplement<LocalDOMWindow>::From<UserMediaClient>(window)) {
+      : original_(window->GetUserMediaClient()) {
     auto* user_media_processor =
         MakeGarbageCollected<MockUserMediaProcessor>(window->GetFrame());
     auto* display_user_media_processor =
@@ -102,20 +103,16 @@ class ScopedMockUserMediaClient {
     temp_ = MakeGarbageCollected<UserMediaClientUnderTest>(
         window->GetFrame(), user_media_processor, display_user_media_processor,
         scheduler::GetSingleThreadTaskRunnerForTesting());
-    Supplement<LocalDOMWindow>::ProvideTo<UserMediaClient>(*window,
-                                                           temp_.Get());
+    window->SetUserMediaClient(temp_.Get());
   }
 
   ~ScopedMockUserMediaClient() {
-    auto* window = temp_->GetSupplementable();
-    if (Supplement<LocalDOMWindow>::From<UserMediaClient>(window) ==
-        temp_.Get()) {
+    LocalDOMWindow* window = temp_->GetLocalDOMWindow();
+    if (window->GetUserMediaClient() == temp_.Get()) {
       if (original_) {
-        Supplement<LocalDOMWindow>::ProvideTo<UserMediaClient>(*window,
-                                                               original_.Get());
+        window->SetUserMediaClient(original_.Get());
       } else {
-        window->Supplementable<LocalDOMWindow>::RemoveSupplement<
-            UserMediaClient>();
+        window->SetUserMediaClient(nullptr);
       }
     }
   }
@@ -167,23 +164,14 @@ TEST(MediaStreamTrackTransferTest, TabCaptureVideoFromTransferredStateBasic) {
   ScopedMockUserMediaClient scoped_user_media_client(&scope.GetWindow());
 
   auto data = TransferredValuesTabCaptureVideo();
-#if BUILDFLAG(IS_ANDROID)
-  data.track_impl_subtype = MediaStreamTrack::GetStaticWrapperTypeInfo();
-  data.sub_capture_target_version = std::nullopt;
-#endif
   scoped_user_media_client.display_mock_media_stream_dispatcher_host
       .SetStreamDevices(DevicesTabCaptureVideo(data.session_id));
 
   auto* new_track =
       MediaStreamTrack::FromTransferredState(scope.GetScriptState(), data);
 
-#if BUILDFLAG(IS_ANDROID)
-  EXPECT_EQ(new_track->GetWrapperTypeInfo(),
-            MediaStreamTrack::GetStaticWrapperTypeInfo());
-#else
   EXPECT_EQ(new_track->GetWrapperTypeInfo(),
             BrowserCaptureMediaStreamTrack::GetStaticWrapperTypeInfo());
-#endif
   EXPECT_EQ(new_track->Component()->GetSourceName(), "device_name");
   // TODO(crbug.com/1288839): the ID needs to be set correctly
   // EXPECT_EQ(new_track->id(), "component_id");
@@ -197,7 +185,7 @@ TEST(MediaStreamTrackTransferTest, TabCaptureVideoFromTransferredStateBasic) {
   // EXPECT_EQ(new_track->muted(), true);
   // TODO(crbug.com/1288839): the content hint needs to be set correctly
   // EXPECT_EQ(new_track->ContentHint(), "motion");
-  EXPECT_EQ(new_track->readyState(), "live");
+  EXPECT_EQ(new_track->readyState(), V8MediaStreamTrackState::Enum::kLive);
 
   platform->RunUntilIdle();
   ThreadState::Current()->CollectAllGarbageForTesting();
@@ -255,7 +243,7 @@ TEST(MediaStreamTrackTransferTest, TabCaptureAudioFromTransferredState) {
   // EXPECT_EQ(new_track->muted(), true);
   // TODO(crbug.com/1288839): the content hint needs to be set correctly
   // EXPECT_EQ(new_track->ContentHint(), "speech");
-  EXPECT_EQ(new_track->readyState(), "live");
+  EXPECT_EQ(new_track->readyState(), V8MediaStreamTrackState::Enum::kLive);
 
   base::RunLoop().RunUntilIdle();
   ThreadState::Current()->CollectAllGarbageForTesting();

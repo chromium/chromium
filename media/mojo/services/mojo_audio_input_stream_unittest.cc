@@ -9,8 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
-#include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/run_loop.h"
 #include "base/sync_socket.h"
 #include "base/test/task_environment.h"
@@ -105,7 +104,7 @@ class MockClient : public mojom::AudioInputStreamClient {
   MockClient(const MockClient&) = delete;
   MockClient& operator=(const MockClient&) = delete;
 
-  void Initialized(mojom::ReadOnlyAudioDataPipePtr data_pipe,
+  void Initialized(mojom::ReadWriteAudioDataPipePtr data_pipe,
                    bool initially_muted) {
     ASSERT_TRUE(data_pipe->shared_memory.IsValid());
     ASSERT_TRUE(data_pipe->socket.is_valid());
@@ -127,7 +126,7 @@ class MockClient : public mojom::AudioInputStreamClient {
   MOCK_METHOD1(OnError, void(mojom::InputStreamErrorCode));
 
  private:
-  base::ReadOnlySharedMemoryRegion region_;
+  base::UnsafeSharedMemoryRegion region_;
   std::unique_ptr<base::CancelableSyncSocket> socket_;
 };
 
@@ -136,7 +135,7 @@ std::unique_ptr<AudioInputDelegate> CreateNoDelegate(
   return nullptr;
 }
 
-void NotCalled(mojom::ReadOnlyAudioDataPipePtr data_pipe,
+void NotCalled(mojom::ReadWriteAudioDataPipePtr data_pipe,
                bool initially_muted) {
   EXPECT_TRUE(false) << "The StreamCreated callback was called despite the "
                         "test expecting it not to.";
@@ -174,7 +173,7 @@ class MojoAudioInputStreamTest : public Test {
         base::WrapUnique(delegate_.get()));
     EXPECT_TRUE(
         base::CancelableSyncSocket::CreatePair(&local_, foreign_socket_.get()));
-    mem_ = base::ReadOnlySharedMemoryRegion::Create(kShmemSize).region;
+    mem_ = base::UnsafeSharedMemoryRegion::Create(kShmemSize);
     EXPECT_TRUE(mem_.IsValid());
     EXPECT_CALL(mock_delegate_factory_, MockCreateDelegate(NotNull()))
         .WillOnce(SaveArg<0>(&delegate_event_handler_));
@@ -183,17 +182,14 @@ class MojoAudioInputStreamTest : public Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::CancelableSyncSocket local_;
   std::unique_ptr<TestCancelableSyncSocket> foreign_socket_;
-  base::ReadOnlySharedMemoryRegion mem_;
-  raw_ptr<StrictMock<MockDelegate>, DanglingUntriaged> delegate_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AudioInputDelegate::EventHandler* delegate_event_handler_ =
-      nullptr;
+  base::UnsafeSharedMemoryRegion mem_;
   StrictMock<MockDelegateFactory> mock_delegate_factory_;
   StrictMock<MockDeleter> deleter_;
   StrictMock<MockClient> client_;
   mojo::Receiver<media::mojom::AudioInputStreamClient> client_receiver_;
   std::unique_ptr<MojoAudioInputStream> impl_;
+  raw_ptr<StrictMock<MockDelegate>> delegate_ = nullptr;
+  raw_ptr<AudioInputDelegate::EventHandler> delegate_event_handler_ = nullptr;
 };
 
 TEST_F(MojoAudioInputStreamTest, NoDelegate_SignalsError) {
@@ -238,6 +234,11 @@ TEST_F(MojoAudioInputStreamTest, DestructWithCallPending_Safe) {
                                            std::move(foreign_socket_),
                                            kInitiallyNotMuted);
   audio_input->Record();
+
+  // Depends on `impl_` so must be cleared before it is destroyed.
+  delegate_event_handler_ = nullptr;
+  delegate_ = nullptr;
+
   impl_.reset();
   base::RunLoop().RunUntilIdle();
 }

@@ -15,7 +15,7 @@ mod ffi {
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub fn rust_calling_cpp() {
     assert_eq!(ffi::mul_by_2_in_cpp_library(3), 6);
 }

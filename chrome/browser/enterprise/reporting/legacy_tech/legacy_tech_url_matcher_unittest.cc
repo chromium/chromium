@@ -153,4 +153,14 @@ TEST_F(LegacyURLMatcherTest, Chrome) {
             *matcher.GetMatchedURL(GURL("chrome://policy/log")));
 }
 
+TEST_F(LegacyURLMatcherTest, LongestPathMatchAfterUpdate) {
+  LegacyTechURLMatcher matcher{profile()};
+  SetPolicy({"example.com", "example.com/p1"});
+  EXPECT_EQ("example.com/p1",
+            *matcher.GetMatchedURL(GURL("https://example.com/p1")));
+  SetPolicy({"example.com/p1", "example.com"});
+  EXPECT_EQ("example.com/p1",
+            *matcher.GetMatchedURL(GURL("https://example.com/p1")));
+}
+
 }  // namespace enterprise_reporting

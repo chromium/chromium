@@ -14,12 +14,10 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/version.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/update_client/update_client.h"
-#include "url/gurl.h"
 
 class ComponentsHandler;
 class PluginObserver;
@@ -53,14 +51,14 @@ class AutotestPrivateLoadSmartDimComponentFunction;
 namespace component_updater {
 
 // Called when a non-blocking call in this module completes.
-using Callback = update_client::Callback;
+using Callback = ::update_client::Callback;
 
 class OnDemandUpdater;
 class UpdateScheduler;
 
-using Configurator = update_client::Configurator;
-using CrxComponent = update_client::CrxComponent;
-using CrxUpdateItem = update_client::CrxUpdateItem;
+using Configurator = ::update_client::Configurator;
+using CrxComponent = ::update_client::CrxComponent;
+using CrxUpdateItem = ::update_client::CrxUpdateItem;
 
 struct ComponentInfo {
   ComponentInfo(const std::string& id,
@@ -134,7 +132,9 @@ struct ComponentRegistration {
 // All methods are safe to call ONLY from the browser's main sequence.
 class ComponentUpdateService {
  public:
-  using Observer = update_client::UpdateClient::Observer;
+  using Observer = ::update_client::UpdateClient::Observer;
+
+  virtual ~ComponentUpdateService() = default;
 
   // Adds an observer for this class. An observer should not be added more
   // than once. The caller retains the ownership of the observer object.
@@ -153,7 +153,7 @@ class ComponentUpdateService {
   virtual base::Version GetMaxPreviousProductVersion(
       const std::string& app_id) = 0;
 
-  // Add component to be checked for updates.
+  // Adds component to be checked for updates.
   virtual bool RegisterComponent(const ComponentRegistration& component) = 0;
 
   // Unregisters the component with the given ID. This means that the component
@@ -179,8 +179,8 @@ class ComponentUpdateService {
   // proactively triggered outside the normal component update service schedule.
   virtual OnDemandUpdater& GetOnDemandUpdater() = 0;
 
-  // This method is used to trigger an on-demand update for component |id|.
-  // This can be used when loading a resource that depends on this component.
+  // Triggers an on-demand update for component |id|. This can be used when
+  // loading a resource that depends on this component.
   //
   // |callback| is called on the main sequence once the on-demand update is
   // complete, regardless of success. |callback| may be called immediately
@@ -194,19 +194,16 @@ class ComponentUpdateService {
   virtual void MaybeThrottle(const std::string& id,
                              base::OnceClosure callback) = 0;
 
-  virtual ~ComponentUpdateService() = default;
-
- private:
   // Returns details about registered component in the |item| parameter. The
   // function returns true in case of success and false in case of errors.
   virtual bool GetComponentDetails(const std::string& id,
                                    CrxUpdateItem* item) const = 0;
 
+ private:
   friend class screen_ai::ScreenAIDownloaderNonChromeOS;
   friend class speech::SodaInstallerImpl;
   friend class ::ComponentsHandler;
   FRIEND_TEST_ALL_PREFIXES(ComponentInstallerTest, RegisterComponent);
-  FRIEND_TEST_ALL_PREFIXES(ComponentUpdaterTest, ComponentDetails);
   FRIEND_TEST_ALL_PREFIXES(ComponentUpdaterTest, UpdatesDisabled);
 };
 
@@ -225,15 +222,19 @@ class OnDemandUpdater {
   friend class OnDemandTester;
   friend class policy::ComponentUpdaterPolicyTest;
   friend class ::ComponentsHandler;
+  friend class OptimizationGuideOnDeviceModelInstallerPolicy;
   friend class ::PluginObserver;
   friend class SwReporterOnDemandFetcher;
   friend class SodaComponentInstallerPolicy;
   friend class SodaLanguagePackComponentInstallerPolicy;
+  friend class TranslateKitComponentInstallerPolicy;
+  friend class TranslateKitLanguagePackComponentInstallerPolicy;
   friend class ::extensions::AutotestPrivateLoadSmartDimComponentFunction;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   friend class ash::SmartDimComponentIntegrationTest;
   friend class CrOSComponentInstaller;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  friend class IwaKeyDistributionComponentInstallerPolicy;
 
   // Triggers an update check for a component. |id| is a value
   // returned by GetCrxComponentID(). If an update for this component is already

@@ -1,0 +1,7 @@
+{
+  "mac-updater-builder-dbg": {
+    "additional_compile_targets": [
+      "chrome/updater:all"
+    ]
+  }
+}

@@ -5,12 +5,15 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_DIALOG_VIEW_H_
 
+#include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/privacy_sandbox/notice/notice.mojom-forward.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace content {
 class WebContents;
@@ -26,22 +29,31 @@ class PrivacySandboxDialogView : public views::View {
   METADATA_HEADER(PrivacySandboxDialogView, views::View)
 
  public:
-  PrivacySandboxDialogView(Browser* browser,
-                           PrivacySandboxService::PromptType dialog_type);
+  static std::unique_ptr<PrivacySandboxDialogView>
+  CreateDialogViewForPromptType(BrowserWindowInterface* browser,
+                                PrivacySandboxService::PromptType prompt_type);
 
-  void Close();
-
- private:
-  void ResizeNativeView(int height);
-  void ShowNativeView();
-  void OpenPrivacySandboxSettings();
-  void OpenPrivacySandboxAdMeasurementSettings();
-  friend class PrivacySandboxDialogViewBrowserTest;
   content::WebContents* GetWebContentsForTesting();
 
+  void CloseNativeView();
+  void ResizeNativeView(int height);
+  void ShowNativeView(
+      base::OnceCallback<void()> view_shown_callback = base::DoNothing());
+  BrowserWindowInterface* GetBrowser();
+  void OpenPrivacySandboxSettings();
+  void OpenPrivacySandboxAdMeasurementSettings();
+
+ private:
+  friend class PrivacySandboxQueueTestNotice;
+
+  explicit PrivacySandboxDialogView(BrowserWindowInterface* browser);
+  void InitializeDialogUIForPromptType(
+      PrivacySandboxService::PromptType prompt_type);
+  void AdsDialogNoArgsCallback(
+      PrivacySandboxService::AdsDialogCallbackNoArgsEvents event);
+
   raw_ptr<views::WebView> web_view_;
-  raw_ptr<Browser> browser_;
-  base::TimeTicks dialog_created_time_;
+  raw_ptr<BrowserWindowInterface> browser_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_DIALOG_VIEW_H_

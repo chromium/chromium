@@ -1,0 +1,4 @@
+harringtond@chromium.org
+dfried@chromium.org
+
+per-file mock_glic_window_controller.h,mock_glic_window_controller.cc,mock_local_hotkey_panel.h,mock_local_hotkey_panel.cc=file://chrome/browser/glic/widget/OWNERS

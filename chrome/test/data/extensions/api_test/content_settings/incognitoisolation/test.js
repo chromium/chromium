@@ -24,7 +24,7 @@ var settings = [
   'notifications',
   'microphone',
   'camera',
-  'automaticDownloads'
+  'automaticDownloads',
 ];
 
 // Settings that do not support site-specific exceptions.

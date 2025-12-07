@@ -13,6 +13,8 @@
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "components/crash/core/common/crash_key.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
+#include "components/session_manager/core/session_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -88,7 +90,8 @@ class AuthEventsRecorderTest : public ::testing::Test {
  public:
   AuthEventsRecorderTest() {
     crash_reporter::InitializeCrashKeysForTesting();
-    session_manager_ = std::make_unique<session_manager::SessionManager>();
+    session_manager_ = std::make_unique<session_manager::SessionManager>(
+        std::make_unique<session_manager::FakeSessionManagerDelegate>());
     recorder_ = AuthEventsRecorder::CreateForTesting();
   }
 
@@ -295,6 +298,9 @@ TEST_F(AuthEventsRecorderTest, RecordSessionAuthFactors) {
       "Ash.OSAuth.Login.ConfiguredAuthFactors.SmartCard", 0, 1);
   histogram_tester.ExpectBucketCount(
       "Ash.OSAuth.Login.ConfiguredAuthFactors.LocalPassword", 0, 1);
+
+  // The logged-in user has a password factor.
+  histogram_tester.ExpectBucketCount("Ash.OSAuth.Login.Passwordless", 0, 1);
 }
 
 TEST_F(AuthEventsRecorderTest, RecordSessionAuthFactorsLocalPassword) {
@@ -319,6 +325,9 @@ TEST_F(AuthEventsRecorderTest, RecordSessionAuthFactorsLocalPassword) {
       "Ash.OSAuth.Login.ConfiguredAuthFactors.SmartCard", 0, 1);
   histogram_tester.ExpectBucketCount(
       "Ash.OSAuth.Login.ConfiguredAuthFactors.GaiaPassword", 0, 1);
+
+  // The logged-in user has a password factor.
+  histogram_tester.ExpectBucketCount("Ash.OSAuth.Login.Passwordless", 0, 1);
 }
 
 TEST_F(AuthEventsRecorderTest, RecordSessionAuthFactorsLegacyPassword) {
@@ -343,31 +352,80 @@ TEST_F(AuthEventsRecorderTest, RecordSessionAuthFactorsLegacyPassword) {
       "Ash.OSAuth.Login.ConfiguredAuthFactors.SmartCard", 0, 1);
   histogram_tester.ExpectBucketCount(
       "Ash.OSAuth.Login.ConfiguredAuthFactors.LocalPassword", 0, 1);
+
+  // The logged-in user has a password factor.
+  histogram_tester.ExpectBucketCount("Ash.OSAuth.Login.Passwordless", 0, 1);
+}
+
+TEST_F(AuthEventsRecorderTest, RecordSessionAuthFactorsCryptohomePin) {
+  base::HistogramTester histogram_tester;
+
+  SessionAuthFactors factors({MakePinAuthFactor(), MakeRecoveryFactor()});
+  recorder_->OnAuthenticationSurfaceChange(
+      AuthEventsRecorder::AuthenticationSurface::kLogin);
+  recorder_->RecordSessionAuthFactors(factors);
+
+  // The following factors are recorded with `true`.
+  histogram_tester.ExpectBucketCount(
+      "Ash.OSAuth.Login.ConfiguredAuthFactors.CryptohomePin", 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.OSAuth.Login.ConfiguredAuthFactors.Recovery", 1, 1);
+
+  // The following factors are recorded with `false`.
+  histogram_tester.ExpectBucketCount(
+      "Ash.OSAuth.Login.ConfiguredAuthFactors.SmartCard", 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.OSAuth.Login.ConfiguredAuthFactors.GaiaPassword", 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.OSAuth.Login.ConfiguredAuthFactors.LocalPassword", 0, 1);
+
+  // The logged-in user has no password factor.
+  histogram_tester.ExpectBucketCount("Ash.OSAuth.Login.Passwordless", 1, 1);
 }
 
 TEST_F(AuthEventsRecorderTest, OnRecoveryDone) {
   base::HistogramTester histogram_tester;
 
+  SessionAuthFactors factors(
+      {MakeLocalPasswordFactor(), MakePinAuthFactor(), MakeRecoveryFactor()});
+
   auto one_second = base::Seconds(1);
   recorder_->OnRecoveryDone(
-      AuthEventsRecorder::CryptohomeRecoveryResult::kSucceeded, one_second);
+      AuthEventsRecorder::CryptohomeRecoveryResult::kSucceeded, factors,
+      one_second);
   histogram_tester.ExpectBucketCount(
       "Login.CryptohomeRecoveryResult",
       static_cast<int>(
           AuthEventsRecorder::CryptohomeRecoveryResult::kSucceeded),
       1);
+
+  histogram_tester.ExpectBucketCount(
+      "Login.CryptohomePasswordlessRecoveryResult",
+      static_cast<int>(
+          AuthEventsRecorder::CryptohomeRecoveryResult::kSucceeded),
+      0);
+
   histogram_tester.ExpectTimeBucketCount(
       "Login.CryptohomeRecoveryDuration.Success", one_second, 1);
+
+  SessionAuthFactors passwordless_factors(
+      {MakePinAuthFactor(), MakeRecoveryFactor()});
 
   auto two_seconds = base::Seconds(2);
   recorder_->OnRecoveryDone(
       AuthEventsRecorder::CryptohomeRecoveryResult::kRecoveryFatalError,
-      two_seconds);
+      passwordless_factors, two_seconds);
   histogram_tester.ExpectBucketCount(
       "Login.CryptohomeRecoveryResult",
       static_cast<int>(
           AuthEventsRecorder::CryptohomeRecoveryResult::kRecoveryFatalError),
       1);
+  histogram_tester.ExpectBucketCount(
+      "Login.CryptohomePasswordlessRecoveryResult",
+      static_cast<int>(
+          AuthEventsRecorder::CryptohomeRecoveryResult::kRecoveryFatalError),
+      1);
+
   histogram_tester.ExpectTimeBucketCount(
       "Login.CryptohomeRecoveryDuration.Failure", two_seconds, 1);
 }

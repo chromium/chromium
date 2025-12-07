@@ -7,15 +7,13 @@
 #import "base/functional/bind.h"
 #import "base/memory/weak_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
-#import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
 #import "components/autofill/core/browser/payments/test_legal_message_line.h"
 #import "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
 #import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model_test_api.h"
-#import "components/autofill/core/common/autofill_payments_features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/virtual_card_enrollment_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -134,24 +132,23 @@ TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest, SetsCardDataOnConsumer) {
 
   VirtualCardEnrollmentBottomSheetData* data = consumer.cardData;
   EXPECT_TRUE(data != nil);
-  EXPECT_TRUE([data.title isEqual:@"Title"]);
-  EXPECT_TRUE(
-      [data.explanatoryMessage isEqual:@"Explanatory message. Learn More"]);
-  EXPECT_TRUE([data.acceptActionText isEqual:@"Accept action"]);
-  EXPECT_TRUE([data.cancelActionText isEqual:@"Cancel action"]);
-  EXPECT_TRUE([data.learnMoreLinkText isEqual:@"Learn more"]);
+  EXPECT_NSEQ(data.title, @"Title");
+  EXPECT_NSEQ(data.explanatoryMessage, @"Explanatory message. Learn More");
+  EXPECT_NSEQ(data.acceptActionText, @"Accept action");
+  EXPECT_NSEQ(data.cancelActionText, @"Cancel action");
+  EXPECT_NSEQ(data.learnMoreLinkText, @"Learn more");
   EXPECT_EQ(1u, [data.paymentServerLegalMessageLines count]);
   for (SaveCardMessageWithLinks* line in data.paymentServerLegalMessageLines) {
-    EXPECT_TRUE([line.messageText isEqual:@"Google legal message"]);
-    EXPECT_TRUE([line.linkRanges
-        isEqualToArray:@[ [NSValue valueWithRange:NSMakeRange(2, 1)] ]]);
+    EXPECT_NSEQ(line.messageText, @"Google legal message");
+    EXPECT_NSEQ(line.linkRanges,
+                @[ [NSValue valueWithRange:NSMakeRange(2, 1)] ]);
     EXPECT_EQ(line.linkURLs, std::vector<GURL>({GURL("https://google.test")}));
   }
   EXPECT_EQ(1u, [data.issuerLegalMessageLines count]);
   for (SaveCardMessageWithLinks* line in data.issuerLegalMessageLines) {
-    EXPECT_TRUE([line.messageText isEqual:@"Issuer legal message"]);
-    EXPECT_TRUE([line.linkRanges
-        isEqualToArray:@[ [NSValue valueWithRange:NSMakeRange(4, 5)] ]]);
+    EXPECT_NSEQ(line.messageText, @"Issuer legal message");
+    EXPECT_NSEQ(line.linkRanges,
+                @[ [NSValue valueWithRange:NSMakeRange(4, 5)] ]);
     EXPECT_EQ(line.linkURLs, std::vector<GURL>({GURL("https://issuer.test")}));
   }
 }
@@ -208,28 +205,9 @@ TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
   [mediator didAccept];
 }
 
-// Test that pushing accept calls the browser coordinator to dismiss virtual
-// card enrollment.
-TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
-       AcceptButtonPushedDismissesVirtualCardEnrollment) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
-  VirtualCardEnrollmentBottomSheetMediator* mediator =
-      MakeMediator(MakeModel());
-
-  OCMExpect([mock_browser_coordinator_handler_
-      dismissVirtualCardEnrollmentBottomSheet]);
-
-  [mediator didAccept];
-
-  EXPECT_OCMOCK_VERIFY((id)mock_browser_coordinator_handler_);
-}
-
+// Test that pushing accept calls the consume to show the loading state.
 TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
        AcceptButtonPushedEntersLoadingState) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
   id<VirtualCardEnrollmentBottomSheetConsumer> mock_consumer =
       OCMProtocolMock(@protocol(VirtualCardEnrollmentBottomSheetConsumer));
   VirtualCardEnrollmentBottomSheetMediator* mediator =
@@ -243,26 +221,9 @@ TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
   EXPECT_OCMOCK_VERIFY((id)mock_consumer);
 }
 
-TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
-       AcceptButtonPushedLogsLoadingViewNotShown) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
-  VirtualCardEnrollmentBottomSheetMediator* mediator =
-      MakeMediator(MakeModel());
-
-  [mediator didAccept];
-
-  // Expect 1 sample with `is_shown` (sample) being false.
-  histogram_tester_.ExpectUniqueSample(
-      "Autofill.VirtualCardEnrollBubble.LoadingShown", /*sample=*/false,
-      /*expected_count=*/1);
-}
-
+// Test that pushing accept records the loading shown histogram.
 TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
        AcceptButtonPushedLogsLoadingViewShown) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
   VirtualCardEnrollmentBottomSheetMediator* mediator =
       MakeMediator(MakeModel());
 
@@ -331,8 +292,6 @@ TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest, LogsCancelledMetric) {
 
 TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
        ShowsConfirmationWhenEnrolled) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
   id<VirtualCardEnrollmentBottomSheetConsumer> mock_consumer =
       OCMProtocolMock(@protocol(VirtualCardEnrollmentBottomSheetConsumer));
   VirtualCardEnrollmentBottomSheetMediator* mediator =
@@ -349,8 +308,6 @@ TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
 
 TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
        LogsConfirmationShownWhenEnrolled) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
   // Hold a strong reference to the mediator during the duration of the test.
   [[maybe_unused]] VirtualCardEnrollmentBottomSheetMediator* mediator =
       MakeMediator(MakeModel());
@@ -367,8 +324,6 @@ TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
 
 TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
        DelayAfterShowingConfirmation) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
   // Hold a strong reference to the mediator during the duration of the test.
   [[maybe_unused]] VirtualCardEnrollmentBottomSheetMediator* unused_mediator =
       MakeMediator(MakeModel());
@@ -386,8 +341,6 @@ TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
 
 TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
        DismissAfterConfirmationAndDelay) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
   // Hold a strong reference to the mediator during the duration of the test.
   [[maybe_unused]] VirtualCardEnrollmentBottomSheetMediator* unused_mediator =
       MakeMediator(MakeModel());
@@ -404,8 +357,6 @@ TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
 
 TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
        DismissesWhenEnrollmentFailed) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
   // Hold a strong reference to the mediator during the duration of the test.
   [[maybe_unused]] VirtualCardEnrollmentBottomSheetMediator* unused_mediator =
       MakeMediator(MakeModel());
@@ -421,8 +372,6 @@ TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
 
 TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
        LogsConfirmationShownWhenEnrollmentFailed) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
   // Hold a strong reference to the mediator during the duration of the test.
   [[maybe_unused]] VirtualCardEnrollmentBottomSheetMediator* unused_mediator =
       MakeMediator(MakeModel());

@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import logging
-import sys
 from core import perf_benchmark
 from core import platforms as core_platforms
 
@@ -20,15 +19,20 @@ RENDERING_BENCHMARK_UMA = [
     'EventLatency.FirstGestureScrollUpdate.TotalLatency2',
     'EventLatency.GestureScrollUpdate.Touchscreen.TotalLatency',
     'EventLatency.GestureScrollUpdate.TotalLatency2',
-    'Graphics.Smoothness.Checkerboarding3.AllAnimations',
-    'Graphics.Smoothness.Checkerboarding3.AllInteractions',
-    'Graphics.Smoothness.Checkerboarding3.AllSequences',
+    'Graphics.Smoothness.Checkerboarding4.AllAnimations',
+    'Graphics.Smoothness.Checkerboarding4.AllInteractions',
+    'Graphics.Smoothness.Checkerboarding4.AllSequences',
+    'Graphics.Smoothness.CheckerboardingNeedRaster4.AllSequences',
+    'Graphics.Smoothness.CheckerboardingNeedRecord4.AllSequences',
     'Graphics.Smoothness.Jank3.AllAnimations',
     'Graphics.Smoothness.Jank3.AllInteractions',
     'Graphics.Smoothness.Jank3.AllSequences',
     'Graphics.Smoothness.PercentDroppedFrames3.AllAnimations',
     'Graphics.Smoothness.PercentDroppedFrames3.AllInteractions',
     'Graphics.Smoothness.PercentDroppedFrames3.AllSequences',
+    'Graphics.Smoothness.PercentDroppedFrames4.AllAnimations',
+    'Graphics.Smoothness.PercentDroppedFrames4.AllInteractions',
+    'Graphics.Smoothness.PercentDroppedFrames4.AllSequences',
     'Memory.GPU.PeakMemoryUsage2.Scroll',
     'Memory.GPU.PeakMemoryUsage2.PageLoad',
     'Event.Jank.PredictorJankyFramePercentage2',
@@ -123,9 +127,8 @@ class RenderingDesktop(_RenderingBenchmark):
   def Name(cls):
     return 'rendering.desktop'
 
-  def SetExtraBrowserOptions(self, options):
-    super(RenderingDesktop, self).SetExtraBrowserOptions(options)
-    if sys.platform == 'darwin':
+  def SetExtraBrowserOptionsWithBrowser(self, options, possible_browser):
+    if possible_browser.platform.GetOSName() == 'mac':
       # Mac bots without a physical display fallbacks to SRGB. This flag forces
       # them to use a color profile (P3), which matches the usual color profile
       # on Mac monitors and changes the cost of some overlay operations to match

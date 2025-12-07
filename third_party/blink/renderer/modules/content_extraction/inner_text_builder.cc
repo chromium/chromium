@@ -137,7 +137,6 @@ mojom::blink::InnerTextFramePtr InnerTextPassagesBuilder::Build(
 }
 
 InnerTextPassagesBuilder::InnerTextPassagesBuilder(
-    const mojom::blink::InnerTextParams& params)
-    : params_(params) {}
+    const mojom::blink::InnerTextParams& params) {}
 
 }  // namespace blink

@@ -14,7 +14,7 @@
 #include "ui/base/x/selection_utils.h"
 #include "ui/base/x/x11_drag_context.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace ui {

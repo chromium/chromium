@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chromecast/browser/cast_content_window.h"

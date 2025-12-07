@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -51,11 +52,13 @@ class BoundSessionCookieControllerImpl
       const BoundSessionCookieControllerImpl&) = delete;
 
   // BoundSessionCookieController:
-  void Initialize() override;
+  void Initialize(bool is_new_session) override;
   void HandleRequestBlockedOnCookie(
       chrome::mojom::BoundSessionRequestThrottledHandler::
           HandleRequestBlockedOnCookieCallback resume_blocked_request) override;
+  void StopCookieRotation() override;
   bool ShouldPauseThrottlingRequests() const override;
+  bound_session_credentials::RotationDebugInfo TakeDebugInfo() override;
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
@@ -69,15 +72,16 @@ class BoundSessionCookieControllerImpl
       base::RepeatingCallback<std::unique_ptr<BoundSessionRefreshCookieFetcher>(
           network::mojom::CookieManager* cookie_manager,
           const GURL& url,
-          base::flat_set<std::string> cookie_names)>;
+          base::flat_set<std::string> cookie_names,
+          BoundSessionRefreshCookieFetcher::Trigger trigger)>;
 
-  std::unique_ptr<BoundSessionRefreshCookieFetcher> CreateRefreshCookieFetcher()
-      const;
+  std::unique_ptr<BoundSessionRefreshCookieFetcher> CreateRefreshCookieFetcher(
+      BoundSessionRefreshCookieFetcher::Trigger trigger) const;
   void CreateBoundCookiesObservers();
 
   bool AreAllCookiesFresh();
   bool CanCreateRefreshCookieFetcher() const;
-  void MaybeRefreshCookie();
+  void MaybeRefreshCookie(BoundSessionRefreshCookieFetcher::Trigger trigger);
 
   void SetCookieExpirationTimeAndNotify(const std::string& cookie_name,
                                         base::Time expiration_time);
@@ -86,7 +90,9 @@ class BoundSessionCookieControllerImpl
       BoundSessionRefreshCookieFetcher::Result result);
   void RecordCookieRotationOutageMetricsIfNeeded(bool periodic);
   void ResetCookieFetcherBackoff();
-  void MaybeScheduleCookieRotation();
+  void MaybeScheduleCookieRotation(
+      BoundSessionRefreshCookieFetcher::Trigger trigger);
+  void MaybeStartResumeBlockedRequestsTimer();
   void ResumeBlockedRequests(
       chrome::mojom::ResumeBlockedRequestsTrigger trigger);
   void OnResumeBlockedRequestsTimeout();
@@ -135,6 +141,15 @@ class BoundSessionCookieControllerImpl
   // Used to release blocked requests after a timeout.
   base::OneShotTimer resume_blocked_requests_timer_;
   size_t successive_timeout_ = 0;
+
+  // Once set to `true`, the cookies rotation is stopped and all requests are
+  // throttled until the session is terminated (i.e. this field is never flipped
+  // back to `false`).
+  bool rotation_stopped_ = false;
+
+  // Used to call `OnCookieRotationStoppedTimeout` after the session has been
+  // stopped for more than a timeout threshold.
+  base::OneShotTimer rotation_stopped_timer_;
 
   RefreshCookieFetcherFactoryForTesting
       refresh_cookie_fetcher_factory_for_testing_;

@@ -6,14 +6,14 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_CARD_UNMASK_PROMPT_CONTROLLER_IMPL_H_
 
 #include <string>
+#include <string_view>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
@@ -41,22 +41,14 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
 
   virtual ~CardUnmaskPromptControllerImpl();
 
-  // This should be OnceCallback<unique_ptr<CardUnmaskPromptView>> but there are
-  // tests which don't do the ownership correctly.
-  using CardUnmaskPromptViewFactory =
-      base::OnceCallback<CardUnmaskPromptView*()>;
-
-  // Functions called by ChromeAutofillClient.
-  // It is guaranteed that |view_factory| is called before this function
-  // returns, i.e., the callback will not outlive the stack frame of ShowPrompt.
-  virtual void ShowPrompt(CardUnmaskPromptViewFactory view_factory);
   // The CVC the user entered went through validation.
   void OnVerificationResult(
       payments::PaymentsAutofillClient::PaymentsRpcResult result);
 
   // CardUnmaskPromptController implementation.
+  void ShowPrompt(CardUnmaskPromptViewFactory view_factory) override;
   void OnUnmaskDialogClosed() override;
-  void OnUnmaskPromptAccepted(const std::u16string& cvc,
+  void OnUnmaskPromptAccepted(std::u16string_view cvc,
                               const std::u16string& exp_month,
                               const std::u16string& exp_year,
                               bool enable_fido_auth,
@@ -81,7 +73,7 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
   bool GetWebauthnOfferStartState() const override;
   std::u16string GetCvcImageAnnouncement() const override;
 #endif
-  bool InputCvcIsValid(const std::u16string& input_text) const override;
+  bool InputCvcIsValid(std::u16string_view input_text) const override;
   bool InputExpirationIsValid(const std::u16string& month,
                               const std::u16string& year) const override;
   int GetExpectedCvcLength() const override;

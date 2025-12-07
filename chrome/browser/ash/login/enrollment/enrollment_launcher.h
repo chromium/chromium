@@ -124,13 +124,18 @@ class EnrollmentLauncher {
                                       const std::string& location) = 0;
 
   // Clears authentication data from the profile (if EnrollUsingProfile was
-  // used) and revokes fetched tokens.
+  // used) and conditionally revokes fetched tokens.
   // Does not revoke the additional token if enrollment finished successfully.
   // Calls `callback` on completion.
-  virtual void ClearAuth(base::OnceClosure callback) = 0;
+  virtual void ClearAuth(base::OnceClosure callback,
+                         bool revoke_oauth2_tokens) = 0;
 
   // Returns true if enrollment is in progress.
   virtual bool InProgress() const = 0;
+
+  // Returns the OAuth2 Refresh Token fetched during enrollment.
+  // Make sure to call this after OnDeviceEnrolled() and before ClearAuth().
+  virtual std::string GetOAuth2RefreshToken() const = 0;
 
  protected:
   // The user of this class is responsible for clearing auth data in some cases

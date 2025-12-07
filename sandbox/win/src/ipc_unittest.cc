@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "sandbox/win/src/crosscall_client.h"
 #include "sandbox/win/src/crosscall_server.h"
@@ -26,7 +22,7 @@ IPCControl* MakeChannels(size_t channel_size,
                          size_t* base_start) {
   // Allocate memory
   char* mem = new char[total_shared_size];
-  memset(mem, 0, total_shared_size);
+  UNSAFE_TODO(memset(mem, 0, total_shared_size));
   // Calculate how many channels we can fit in the shared memory.
   total_shared_size -= offsetof(IPCControl, channels);
   size_t channel_count =
@@ -47,7 +43,7 @@ void FixChannels(IPCControl* client_control,
                  size_t channel_size,
                  TestFixMode mode) {
   for (size_t ix = 0; ix != client_control->channels_count; ++ix) {
-    ChannelControl& channel = client_control->channels[ix];
+    ChannelControl& channel = UNSAFE_TODO(client_control->channels[ix]);
     channel.channel_base = base_start;
     channel.state = kFreeChannel;
     if (mode != FIX_NO_EVENTS) {
@@ -61,7 +57,7 @@ void FixChannels(IPCControl* client_control,
 
 void CloseChannelEvents(IPCControl* client_control) {
   for (size_t ix = 0; ix != client_control->channels_count; ++ix) {
-    ChannelControl& channel = client_control->channels[ix];
+    ChannelControl& channel = UNSAFE_TODO(client_control->channels[ix]);
     ::CloseHandle(channel.ping_event);
     ::CloseHandle(channel.pong_event);
   }
@@ -96,57 +92,61 @@ TEST(IPCTest, ClientLockUnlock) {
 
   // Test that we lock the first 3 channels in sequence.
   void* buff0 = client.GetBuffer();
-  EXPECT_TRUE(mem + client_control->channels[0].channel_base == buff0);
+  EXPECT_TRUE(
+      UNSAFE_TODO(mem + client_control->channels[0].channel_base == buff0));
   EXPECT_EQ(kBusyChannel, client_control->channels[0].state);
-  EXPECT_EQ(kFreeChannel, client_control->channels[1].state);
-  EXPECT_EQ(kFreeChannel, client_control->channels[2].state);
-  EXPECT_EQ(kFreeChannel, client_control->channels[3].state);
-  EXPECT_EQ(kFreeChannel, client_control->channels[4].state);
-  EXPECT_EQ(kFreeChannel, client_control->channels[5].state);
+  EXPECT_EQ(kFreeChannel, UNSAFE_TODO(client_control->channels[1]).state);
+  EXPECT_EQ(kFreeChannel, UNSAFE_TODO(client_control->channels[2]).state);
+  EXPECT_EQ(kFreeChannel, UNSAFE_TODO(client_control->channels[3]).state);
+  EXPECT_EQ(kFreeChannel, UNSAFE_TODO(client_control->channels[4]).state);
+  EXPECT_EQ(kFreeChannel, UNSAFE_TODO(client_control->channels[5]).state);
 
   void* buff1 = client.GetBuffer();
-  EXPECT_TRUE(mem + client_control->channels[1].channel_base == buff1);
+  EXPECT_TRUE(
+      UNSAFE_TODO(mem + client_control->channels[1].channel_base == buff1));
   EXPECT_EQ(kBusyChannel, client_control->channels[0].state);
-  EXPECT_EQ(kBusyChannel, client_control->channels[1].state);
-  EXPECT_EQ(kFreeChannel, client_control->channels[2].state);
-  EXPECT_EQ(kFreeChannel, client_control->channels[3].state);
-  EXPECT_EQ(kFreeChannel, client_control->channels[4].state);
-  EXPECT_EQ(kFreeChannel, client_control->channels[5].state);
+  EXPECT_EQ(kBusyChannel, UNSAFE_TODO(client_control->channels[1]).state);
+  EXPECT_EQ(kFreeChannel, UNSAFE_TODO(client_control->channels[2]).state);
+  EXPECT_EQ(kFreeChannel, UNSAFE_TODO(client_control->channels[3]).state);
+  EXPECT_EQ(kFreeChannel, UNSAFE_TODO(client_control->channels[4]).state);
+  EXPECT_EQ(kFreeChannel, UNSAFE_TODO(client_control->channels[5]).state);
 
   void* buff2 = client.GetBuffer();
-  EXPECT_TRUE(mem + client_control->channels[2].channel_base == buff2);
+  EXPECT_TRUE(
+      UNSAFE_TODO(mem + client_control->channels[2].channel_base == buff2));
   EXPECT_EQ(kBusyChannel, client_control->channels[0].state);
-  EXPECT_EQ(kBusyChannel, client_control->channels[1].state);
-  EXPECT_EQ(kBusyChannel, client_control->channels[2].state);
-  EXPECT_EQ(kFreeChannel, client_control->channels[3].state);
-  EXPECT_EQ(kFreeChannel, client_control->channels[4].state);
-  EXPECT_EQ(kFreeChannel, client_control->channels[5].state);
+  EXPECT_EQ(kBusyChannel, UNSAFE_TODO(client_control->channels[1]).state);
+  EXPECT_EQ(kBusyChannel, UNSAFE_TODO(client_control->channels[2]).state);
+  EXPECT_EQ(kFreeChannel, UNSAFE_TODO(client_control->channels[3]).state);
+  EXPECT_EQ(kFreeChannel, UNSAFE_TODO(client_control->channels[4]).state);
+  EXPECT_EQ(kFreeChannel, UNSAFE_TODO(client_control->channels[5]).state);
 
   // Test that we unlock and re-lock the right channel.
   client.FreeBuffer(buff1);
   EXPECT_EQ(kBusyChannel, client_control->channels[0].state);
-  EXPECT_EQ(kFreeChannel, client_control->channels[1].state);
-  EXPECT_EQ(kBusyChannel, client_control->channels[2].state);
-  EXPECT_EQ(kFreeChannel, client_control->channels[3].state);
-  EXPECT_EQ(kFreeChannel, client_control->channels[4].state);
-  EXPECT_EQ(kFreeChannel, client_control->channels[5].state);
+  EXPECT_EQ(kFreeChannel, UNSAFE_TODO(client_control->channels[1]).state);
+  EXPECT_EQ(kBusyChannel, UNSAFE_TODO(client_control->channels[2]).state);
+  EXPECT_EQ(kFreeChannel, UNSAFE_TODO(client_control->channels[3]).state);
+  EXPECT_EQ(kFreeChannel, UNSAFE_TODO(client_control->channels[4]).state);
+  EXPECT_EQ(kFreeChannel, UNSAFE_TODO(client_control->channels[5]).state);
 
   void* buff2b = client.GetBuffer();
-  EXPECT_TRUE(mem + client_control->channels[1].channel_base == buff2b);
+  EXPECT_TRUE(
+      UNSAFE_TODO(mem + client_control->channels[1].channel_base == buff2b));
   EXPECT_EQ(kBusyChannel, client_control->channels[0].state);
-  EXPECT_EQ(kBusyChannel, client_control->channels[1].state);
-  EXPECT_EQ(kBusyChannel, client_control->channels[2].state);
-  EXPECT_EQ(kFreeChannel, client_control->channels[3].state);
-  EXPECT_EQ(kFreeChannel, client_control->channels[4].state);
-  EXPECT_EQ(kFreeChannel, client_control->channels[5].state);
+  EXPECT_EQ(kBusyChannel, UNSAFE_TODO(client_control->channels[1]).state);
+  EXPECT_EQ(kBusyChannel, UNSAFE_TODO(client_control->channels[2]).state);
+  EXPECT_EQ(kFreeChannel, UNSAFE_TODO(client_control->channels[3]).state);
+  EXPECT_EQ(kFreeChannel, UNSAFE_TODO(client_control->channels[4]).state);
+  EXPECT_EQ(kFreeChannel, UNSAFE_TODO(client_control->channels[5]).state);
 
   client.FreeBuffer(buff0);
   EXPECT_EQ(kFreeChannel, client_control->channels[0].state);
-  EXPECT_EQ(kBusyChannel, client_control->channels[1].state);
-  EXPECT_EQ(kBusyChannel, client_control->channels[2].state);
-  EXPECT_EQ(kFreeChannel, client_control->channels[3].state);
-  EXPECT_EQ(kFreeChannel, client_control->channels[4].state);
-  EXPECT_EQ(kFreeChannel, client_control->channels[5].state);
+  EXPECT_EQ(kBusyChannel, UNSAFE_TODO(client_control->channels[1]).state);
+  EXPECT_EQ(kBusyChannel, UNSAFE_TODO(client_control->channels[2]).state);
+  EXPECT_EQ(kFreeChannel, UNSAFE_TODO(client_control->channels[3]).state);
+  EXPECT_EQ(kFreeChannel, UNSAFE_TODO(client_control->channels[4]).state);
+  EXPECT_EQ(kFreeChannel, UNSAFE_TODO(client_control->channels[5]).state);
 
   delete[] reinterpret_cast<char*>(client_control);
 }
@@ -166,7 +166,7 @@ TEST(IPCTest, CrossCallStrPacking) {
 
   CrossCallReturn answer;
   IpcTag tag1 = IpcTag::PING1;
-  const wchar_t* text = L"98765 - 43210";
+  std::wstring_view text = L"98765 - 43210";
   std::wstring copied_text;
   CrossCallParamsEx* actual_params;
 
@@ -175,12 +175,12 @@ TEST(IPCTest, CrossCallStrPacking) {
   EXPECT_EQ(1u, actual_params->GetParamsCount());
   EXPECT_EQ(tag1, actual_params->GetTag());
   EXPECT_TRUE(actual_params->GetParameterStr(0, &copied_text));
-  EXPECT_STREQ(text, copied_text.c_str());
+  EXPECT_EQ(text, copied_text);
   copied_text.clear();
 
   // Check with an empty string.
   IpcTag tag2 = IpcTag::PING2;
-  const wchar_t* null_text = nullptr;
+  std::wstring_view null_text;
   CrossCall(client, tag2, null_text, &answer);
   actual_params = reinterpret_cast<CrossCallParamsEx*>(client.GetBuffer());
   EXPECT_EQ(1u, actual_params->GetParamsCount());
@@ -211,20 +211,20 @@ TEST(IPCTest, CrossCallStrPacking) {
   EXPECT_TRUE(actual_params->GetParameterStr(0, &copied_text));
   EXPECT_TRUE(copied_text.empty());
   EXPECT_TRUE(actual_params->GetParameterStr(1, &copied_text));
-  EXPECT_STREQ(text, copied_text.c_str());
+  EXPECT_EQ(text, copied_text);
 
   param_size = 1;
   std::wstring copied_text_p0, copied_text_p2;
 
-  const wchar_t* text2 = L"AeFG";
+  std::wstring_view text2 = L"AeFG";
   CrossCall(client, tag1, text2, null_text, text, &answer);
   actual_params = reinterpret_cast<CrossCallParamsEx*>(client.GetBuffer());
   EXPECT_EQ(3u, actual_params->GetParamsCount());
   EXPECT_EQ(tag1, actual_params->GetTag());
   EXPECT_TRUE(actual_params->GetParameterStr(0, &copied_text_p0));
-  EXPECT_STREQ(text2, copied_text_p0.c_str());
+  EXPECT_EQ(text2, copied_text_p0);
   EXPECT_TRUE(actual_params->GetParameterStr(2, &copied_text_p2));
-  EXPECT_STREQ(text, copied_text_p2.c_str());
+  EXPECT_EQ(text, copied_text_p2);
   type = INVALID_TYPE;
   param_addr = actual_params->GetRawParameter(1, &param_size, &type);
   EXPECT_TRUE(param_addr);
@@ -245,7 +245,7 @@ TEST(IPCTest, CrossCallIntPacking) {
 
   IpcTag tag1 = IpcTag::PING1;
   IpcTag tag2 = IpcTag::PING2;
-  const wchar_t* text = L"godzilla";
+  std::wstring_view text = L"godzilla";
   CrossCallParamsEx* actual_params;
 
   char* mem = reinterpret_cast<char*>(client_control);
@@ -263,7 +263,7 @@ TEST(IPCTest, CrossCallIntPacking) {
   ASSERT_EQ(sizeof(dw), param_size);
   EXPECT_EQ(UINT32_TYPE, type);
   ASSERT_TRUE(param_addr);
-  EXPECT_EQ(0, memcmp(&dw, param_addr, param_size));
+  EXPECT_EQ(0, UNSAFE_TODO(memcmp(&dw, param_addr, param_size)));
 
   // Check handling for windows HANDLES.
   HANDLE h = HANDLE(0x70000500);
@@ -276,7 +276,7 @@ TEST(IPCTest, CrossCallIntPacking) {
   ASSERT_EQ(sizeof(h), param_size);
   EXPECT_EQ(VOIDPTR_TYPE, type);
   ASSERT_TRUE(param_addr);
-  EXPECT_EQ(0, memcmp(&h, param_addr, param_size));
+  EXPECT_EQ(0, UNSAFE_TODO(memcmp(&h, param_addr, param_size)));
 
   // Check combination of 32 and 64 bits.
   CrossCall(client, tag2, h, dw, h, &answer);
@@ -288,19 +288,19 @@ TEST(IPCTest, CrossCallIntPacking) {
   ASSERT_EQ(sizeof(h), param_size);
   EXPECT_EQ(VOIDPTR_TYPE, type);
   ASSERT_TRUE(param_addr);
-  EXPECT_EQ(0, memcmp(&h, param_addr, param_size));
+  EXPECT_EQ(0, UNSAFE_TODO(memcmp(&h, param_addr, param_size)));
   type = INVALID_TYPE;
   param_addr = actual_params->GetRawParameter(1, &param_size, &type);
   ASSERT_EQ(sizeof(dw), param_size);
   EXPECT_EQ(UINT32_TYPE, type);
   ASSERT_TRUE(param_addr);
-  EXPECT_EQ(0, memcmp(&dw, param_addr, param_size));
+  EXPECT_EQ(0, UNSAFE_TODO(memcmp(&dw, param_addr, param_size)));
   type = INVALID_TYPE;
   param_addr = actual_params->GetRawParameter(2, &param_size, &type);
   ASSERT_EQ(sizeof(h), param_size);
   EXPECT_EQ(VOIDPTR_TYPE, type);
   ASSERT_TRUE(param_addr);
-  EXPECT_EQ(0, memcmp(&h, param_addr, param_size));
+  EXPECT_EQ(0, UNSAFE_TODO(memcmp(&h, param_addr, param_size)));
 
   CloseChannelEvents(client_control);
   delete[] reinterpret_cast<char*>(client_control);
@@ -425,9 +425,9 @@ TEST(IPCTest, ClientFastServer) {
   SharedMemIPCClient client(mem);
 
   ServerEvents events = {0};
-  events.ping = client_control->channels[1].ping_event;
-  events.pong = client_control->channels[1].pong_event;
-  events.state = &client_control->channels[1].state;
+  events.ping = UNSAFE_TODO(client_control->channels[1]).ping_event;
+  events.pong = UNSAFE_TODO(client_control->channels[1]).pong_event;
+  events.state = &UNSAFE_TODO(client_control->channels[1]).state;
 
   HANDLE t1 =
       ::CreateThread(nullptr, 0, QuickResponseServer, &events, 0, nullptr);
@@ -435,18 +435,20 @@ TEST(IPCTest, ClientFastServer) {
   ::CloseHandle(t1);
 
   void* buff0 = client.GetBuffer();
-  EXPECT_TRUE(mem + client_control->channels[0].channel_base == buff0);
+  EXPECT_TRUE(
+      UNSAFE_TODO(mem + client_control->channels[0].channel_base == buff0));
   EXPECT_EQ(kBusyChannel, client_control->channels[0].state);
-  EXPECT_EQ(kFreeChannel, client_control->channels[1].state);
-  EXPECT_EQ(kFreeChannel, client_control->channels[2].state);
+  EXPECT_EQ(kFreeChannel, UNSAFE_TODO(client_control->channels[1]).state);
+  EXPECT_EQ(kFreeChannel, UNSAFE_TODO(client_control->channels[2]).state);
 
   void* buff1 = client.GetBuffer();
-  EXPECT_TRUE(mem + client_control->channels[1].channel_base == buff1);
+  EXPECT_TRUE(
+      UNSAFE_TODO(mem + client_control->channels[1].channel_base == buff1));
   EXPECT_EQ(kBusyChannel, client_control->channels[0].state);
-  EXPECT_EQ(kBusyChannel, client_control->channels[1].state);
-  EXPECT_EQ(kFreeChannel, client_control->channels[2].state);
+  EXPECT_EQ(kBusyChannel, UNSAFE_TODO(client_control->channels[1]).state);
+  EXPECT_EQ(kFreeChannel, UNSAFE_TODO(client_control->channels[2]).state);
 
-  EXPECT_EQ(IpcTag::UNUSED, client_control->channels[1].ipc_tag);
+  EXPECT_EQ(IpcTag::UNUSED, UNSAFE_TODO(client_control->channels[1]).ipc_tag);
 
   IpcTag tag = IpcTag::PING1;
   CrossCallReturn answer;
@@ -458,10 +460,10 @@ TEST(IPCTest, ClientFastServer) {
     client.FreeBuffer(buff1);
 
   EXPECT_TRUE(SBOX_ALL_OK == result);
-  EXPECT_EQ(tag, client_control->channels[1].ipc_tag);
+  EXPECT_EQ(tag, UNSAFE_TODO(client_control->channels[1]).ipc_tag);
   EXPECT_EQ(kBusyChannel, client_control->channels[0].state);
-  EXPECT_EQ(kFreeChannel, client_control->channels[1].state);
-  EXPECT_EQ(kFreeChannel, client_control->channels[2].state);
+  EXPECT_EQ(kFreeChannel, UNSAFE_TODO(client_control->channels[1]).state);
+  EXPECT_EQ(kFreeChannel, UNSAFE_TODO(client_control->channels[2]).state);
 
   HANDLE t2 =
       ::CreateThread(nullptr, 0, QuickResponseServer, &events, 0, nullptr);
@@ -484,8 +486,8 @@ TEST(IPCTest, ClientFastServer) {
   EXPECT_TRUE(SBOX_ALL_OK == result);
   EXPECT_EQ(tag, client_control->channels[0].ipc_tag);
   EXPECT_EQ(kFreeChannel, client_control->channels[0].state);
-  EXPECT_EQ(kFreeChannel, client_control->channels[1].state);
-  EXPECT_EQ(kFreeChannel, client_control->channels[2].state);
+  EXPECT_EQ(kFreeChannel, UNSAFE_TODO(client_control->channels[1]).state);
+  EXPECT_EQ(kFreeChannel, UNSAFE_TODO(client_control->channels[2]).state);
 
   CloseChannelEvents(client_control);
   ::CloseHandle(client_control->server_alive);

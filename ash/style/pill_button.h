@@ -5,12 +5,20 @@
 #ifndef ASH_STYLE_PILL_BUTTON_H_
 #define ASH_STYLE_PILL_BUTTON_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_variant.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/metadata/view_factory.h"
+
+namespace views {
+enum class PropertyEffects;
+}  // namespace views
 
 namespace ash {
 
@@ -23,8 +31,6 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   METADATA_HEADER(PillButton, views::LabelButton)
 
  public:
-  using ColorVariant = absl::variant<SkColor, ui::ColorId>;
-
   static constexpr int kPillButtonHorizontalSpacing = 16;
   static constexpr int kPaddingReductionForIcon = 4;
 
@@ -180,21 +186,19 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   // views::LabelButton:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  int GetHeightForWidth(int width) const override;
   gfx::Insets GetInsets() const override;
   void UpdateBackgroundColor() override;
   views::PropertyEffects UpdateStyleToIndicateDefaultStatus() override;
-  std::u16string GetTooltipText(const gfx::Point& p) const override;
+  void SetText(std::u16string_view text) override;
+  void OnSetTooltipText(const std::u16string& tooltip_text) override;
 
   // Sets the button's background color, text's color or icon's color. Note, do
   // this only when the button wants to have different colors from the default
   // ones.
-  void SetBackgroundColor(const SkColor background_color);
-  void SetBackgroundColorId(ui::ColorId background_color_id);
-  void SetButtonTextColor(const SkColor text_color);
-  void SetButtonTextColorId(ui::ColorId text_color_id);
-  void SetIconColor(const SkColor icon_color);
-  void SetIconColorId(ui::ColorId icon_color_id);
+  void SetBackgroundColor(ui::ColorVariant background_color);
+  void SetButtonTextColor(ui::ColorVariant text_color);
+  void SetIconColor(ui::ColorVariant icon_color);
+
   // TODO(b/290639214): This method is deprecating. Try not to change button
   // type afterward. If a new button type is needed, please create a new
   // instance.
@@ -224,6 +228,8 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   // smaller to make the spacing on two sides visually look the same.
   int GetHorizontalSpacingWithIcon() const;
 
+  void UpdateTooltipText();
+
   Type type_;
   const raw_ptr<const gfx::VectorIcon> icon_;
 
@@ -235,9 +241,9 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   int padding_reduction_for_icon_;
 
   // Custom colors and color IDs.
-  ColorVariant background_color_ = gfx::kPlaceholderColor;
-  ColorVariant text_color_ = gfx::kPlaceholderColor;
-  ColorVariant icon_color_ = gfx::kPlaceholderColor;
+  std::optional<ui::ColorVariant> background_color_;
+  std::optional<ui::ColorVariant> text_color_;
+  std::optional<ui::ColorVariant> icon_color_;
 
   bool enable_background_blur_ = false;
   std::unique_ptr<BlurredBackgroundShield> blurred_background_;
@@ -245,17 +251,18 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   // Indicates if we are going to use the label contents for tooltip as default.
   bool use_label_as_default_tooltip_ = true;
 
+  // When the tooltip becomes equal to Label's Text, this variable holds the
+  // original value of the tooltip text if the Label's Text was not used.
+  std::u16string original_tooltip_text_;
+
   // Called to update background color when the button is enabled/disabled.
   base::CallbackListSubscription enabled_changed_subscription_;
 };
 
 BEGIN_VIEW_BUILDER(ASH_EXPORT, PillButton, views::LabelButton)
-VIEW_BUILDER_PROPERTY(const SkColor, BackgroundColor)
-VIEW_BUILDER_PROPERTY(ui::ColorId, BackgroundColorId)
-VIEW_BUILDER_PROPERTY(const SkColor, ButtonTextColor)
-VIEW_BUILDER_PROPERTY(ui::ColorId, ButtonTextColorId)
-VIEW_BUILDER_PROPERTY(const SkColor, IconColor)
-VIEW_BUILDER_PROPERTY(ui::ColorId, IconColorId)
+VIEW_BUILDER_PROPERTY(ui::ColorVariant, BackgroundColor)
+VIEW_BUILDER_PROPERTY(ui::ColorVariant, ButtonTextColor)
+VIEW_BUILDER_PROPERTY(ui::ColorVariant, IconColor)
 VIEW_BUILDER_PROPERTY(PillButton::Type, PillButtonType)
 VIEW_BUILDER_PROPERTY(bool, EnableBackgroundBlur)
 VIEW_BUILDER_PROPERTY(int, TextWithStringId)

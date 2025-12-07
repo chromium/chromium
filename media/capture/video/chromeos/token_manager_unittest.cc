@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/files/file_util.h"
 #include "base/unguessable_token.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

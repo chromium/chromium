@@ -4,7 +4,7 @@
 
 #include "components/paint_preview/player/android/convert_to_java_bitmap.h"
 
-#include "base/functional/bind.h"
+#include "base/test/bind.h"
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -21,15 +21,13 @@ TEST(PaintPreviewConvertToJavaBitmap, Success) {
   bool called = false;
 
   ConvertToJavaBitmap(
-      base::BindOnce(
-          [](bool* called, JavaBitmapResult result) {
-            *called = true;
-            EXPECT_EQ(result.status,
-                      mojom::PaintPreviewCompositor::BitmapStatus::kSuccess);
-            EXPECT_EQ(result.bytes, 4U * 50U * 100U);
-            EXPECT_TRUE(result.java_bitmap);
-          },
-          base::Unretained(&called)),
+      base::BindLambdaForTesting([&](JavaBitmapResult result) {
+        called = true;
+        EXPECT_EQ(result.status,
+                  mojom::PaintPreviewCompositor::BitmapStatus::kSuccess);
+        EXPECT_EQ(result.bytes, 4U * 50U * 100U);
+        EXPECT_TRUE(result.java_bitmap);
+      }),
       mojom::PaintPreviewCompositor::BitmapStatus::kSuccess, bitmap);
 
   ASSERT_TRUE(called);
@@ -40,16 +38,13 @@ TEST(PaintPreviewConvertToJavaBitmap, MojoFailure) {
   bool called = false;
 
   ConvertToJavaBitmap(
-      base::BindOnce(
-          [](bool* called, JavaBitmapResult result) {
-            *called = true;
-            EXPECT_EQ(
-                result.status,
-                mojom::PaintPreviewCompositor::BitmapStatus::kMissingFrame);
-            EXPECT_EQ(result.bytes, 0U);
-            EXPECT_FALSE(result.java_bitmap);
-          },
-          base::Unretained(&called)),
+      base::BindLambdaForTesting([&](JavaBitmapResult result) {
+        called = true;
+        EXPECT_EQ(result.status,
+                  mojom::PaintPreviewCompositor::BitmapStatus::kMissingFrame);
+        EXPECT_EQ(result.bytes, 0U);
+        EXPECT_FALSE(result.java_bitmap);
+      }),
       mojom::PaintPreviewCompositor::BitmapStatus::kMissingFrame, bitmap);
 
   ASSERT_TRUE(called);
@@ -60,16 +55,13 @@ TEST(PaintPreviewConvertToJavaBitmap, AssumeAllocFailed) {
   bool called = false;
 
   ConvertToJavaBitmap(
-      base::BindOnce(
-          [](bool* called, JavaBitmapResult result) {
-            *called = true;
-            EXPECT_EQ(
-                result.status,
-                mojom::PaintPreviewCompositor::BitmapStatus::kAllocFailed);
-            EXPECT_EQ(result.bytes, 0U);
-            EXPECT_FALSE(result.java_bitmap);
-          },
-          base::Unretained(&called)),
+      base::BindLambdaForTesting([&](JavaBitmapResult result) {
+        called = true;
+        EXPECT_EQ(result.status,
+                  mojom::PaintPreviewCompositor::BitmapStatus::kAllocFailed);
+        EXPECT_EQ(result.bytes, 0U);
+        EXPECT_FALSE(result.java_bitmap);
+      }),
       mojom::PaintPreviewCompositor::BitmapStatus::kSuccess, bitmap);
 
   ASSERT_TRUE(called);

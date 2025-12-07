@@ -52,8 +52,9 @@ function handleEvent(eventName, prepareArgsForDispatch, resultReporter) {
     // and that the provided result matches the callback schema. In case of
     // an error it throws an exception.
     var reportResult = function(result) {
-      if (responded)
+      if (responded) {
         throw new Error('Event callback must not be called more than once.');
+      }
 
       var finalResult = null;
       try {
@@ -79,8 +80,9 @@ function handleEvent(eventName, prepareArgsForDispatch, resultReporter) {
 }
 
 function getPrintDataCallback(callback, blobs) {
-  if (callback)
+  if (callback) {
     callback(blobs ? blobs[0] : null);
+  }
 }
 
 // Sets up printJob.document property for a print request.

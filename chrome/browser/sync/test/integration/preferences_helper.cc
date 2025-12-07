@@ -133,8 +133,7 @@ const sync_pb::PreferenceSpecifics& GetPreferenceFromEntity(
     case syncer::OS_PRIORITY_PREFERENCES:
       return entity.specifics().os_priority_preference().preference();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return entity.specifics().preference();
+      NOTREACHED();
   }
 }
 
@@ -155,31 +154,28 @@ std::optional<sync_pb::PreferenceSpecifics> GetPreferenceInFakeServer(
 }
 
 std::string ConvertPrefValueToValueInSpecifics(const base::Value& value) {
-  std::string result;
-  bool success = base::JSONWriter::Write(value, &result);
-  DCHECK(success);
-  return result;
+  return base::WriteJson(value).value();
 }
 
 }  // namespace preferences_helper
 
-BooleanPrefValueChecker::BooleanPrefValueChecker(PrefService* pref_service,
-                                                 const char* path,
-                                                 bool expected_value)
+PrefValueChecker::PrefValueChecker(PrefService* pref_service,
+                                   const char* path,
+                                   base::Value expected_value)
     : path_(path),
-      expected_value_(expected_value),
+      expected_value_(std::move(expected_value)),
       pref_service_(pref_service) {
   pref_change_registrar_.Init(pref_service_);
   pref_change_registrar_.Add(
-      path_, base::BindRepeating(&BooleanPrefValueChecker::CheckExitCondition,
+      path_, base::BindRepeating(&PrefValueChecker::CheckExitCondition,
                                  base::Unretained(this)));
 }
 
-BooleanPrefValueChecker::~BooleanPrefValueChecker() = default;
+PrefValueChecker::~PrefValueChecker() = default;
 
-bool BooleanPrefValueChecker::IsExitConditionSatisfied(std::ostream* os) {
+bool PrefValueChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Waiting for pref '" << path_ << "' to be " << expected_value_;
-  return pref_service_->GetBoolean(path_) == expected_value_;
+  return pref_service_->GetValue(path_) == expected_value_;
 }
 
 PrefMatchChecker::PrefMatchChecker(const char* path) : path_(path) {

@@ -4,15 +4,57 @@
   }
 
   #regionSelectionCanvas {
-    top: 0;
+    background: transparent;
     left: 0;
     position: absolute;
+    top: 0;
+  }
+
+  /* Add a scrim, initially transparent, so that it can fade in when the
+   * user starts selecting. */
+  :host([border-glow-enabled]) #regionSelectionCanvas {
+    opacity: 0;
+    transition: opacity 166ms cubic-bezier(0.3, 0, 1, 1);
+  }
+
+  :host([border-glow-enabled][is-selecting]) #regionSelectionCanvas {
+    /* 30% scrim */
+    background: rgba(0, 0, 0, 0.3);
+    opacity: 1;
+  }
+
+  :host([border-glow-enabled][has-selected]) #regionSelectionCanvas {
+    /* 20% scrim */
+    background: rgba(0, 0, 0, 0.1);
+    opacity: 1;
+  }
+
+  #keyboardSelection {
+    inset: 0px;
+    pointer-events: none;
+    position: absolute;
+    z-index: 6; /* Keep aligned with cursor and context menu. */
+  }
+
+  #keyboardSelection:focus-visible {
+    outline: 3px solid var(--cr-focus-outline-color);
+    outline-offset: -3px;
+  }
+
+  :host(:not([display-keyboard-selection])) #keyboardSelection {
+    display: none;
   }
 </style>
-<canvas id="regionSelectionCanvas" height="[[canvasPhysicalHeight]]"
+<canvas
+  id="regionSelectionCanvas"
+  height="[[canvasPhysicalHeight]]"
   width="[[canvasPhysicalWidth]]"
-  style$="height: [[canvasHeight]]px; width: [[canvasWidth]]px;"></canvas>
+  style$="height: [[canvasHeight]]px; width: [[canvasWidth]]px;"
+></canvas>
 <!-- Provides image source for canvas; element is not displayed. -->
 <div id="highlightImgContainer">
-  <img id="highlightImg" src="[[screenshotDataUri]]">
+  <canvas id="highlightImgCanvas"></canvas>
 </div>
+<div on-keyup="onKeyboardSelection"
+  id="keyboardSelection" tabindex="0" role="button"
+  aria-label="$i18n{searchScreenshot}"></div>

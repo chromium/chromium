@@ -4,11 +4,12 @@
 
 #include "components/policy/test_support/test_server_helpers.h"
 
+#include <algorithm>
 #include <ranges>
 #include <utility>
 
-#include "base/ranges/algorithm.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -21,6 +22,8 @@ using ::net::test_server::BasicHttpResponse;
 using ::net::test_server::HttpRequest;
 using ::net::test_server::HttpResponse;
 
+namespace em = enterprise_management;
+
 namespace {
 
 // C++ does not offer a mechanism to check if a given status code is present in
@@ -31,6 +34,17 @@ constexpr net::HttpStatusCode kStandardHttpStatusCodes[] = {
 #include "net/http/http_status_code_list.h"
 #undef HTTP_STATUS_ENUM_VALUE
 };
+
+std::unique_ptr<HttpResponse> CreateHttpResponse(
+    net::HttpStatusCode code,
+    const std::string& content,
+    const std::string& content_type) {
+  auto response = std::make_unique<CustomHttpResponse>();
+  response->set_content_type(content_type);
+  response->set_code(code);
+  response->set_content(content);
+  return response;
+}
 
 }  // namespace
 
@@ -43,8 +57,9 @@ void CustomHttpResponse::SendResponse(
   // HTTP code is used.
   // TODO(crbug.com/40209048): Make GetHttpReasonPhrase support custom codes
   // instead.
-  if (base::ranges::lower_bound(kStandardHttpStatusCodes, code()) !=
-      std::ranges::end(kStandardHttpStatusCodes)) {
+  if (std::find(std::begin(kStandardHttpStatusCodes),
+                std::end(kStandardHttpStatusCodes),
+                code()) != std::end(kStandardHttpStatusCodes)) {
     reason = BasicHttpResponse::reason();
   }
   delegate->SendHeadersContentAndFinish(code(), reason, BuildHeaders(),
@@ -94,13 +109,28 @@ bool GetGoogleLoginFromRequest(const net::test_server::HttpRequest& request,
                                    dm_protocol::kOAuthTokenHeaderPrefix, out);
 }
 
-std::unique_ptr<HttpResponse> CreateHttpResponse(net::HttpStatusCode code,
-                                                 const std::string& content) {
-  auto response = std::make_unique<CustomHttpResponse>();
-  response->set_content_type("text/plain");
-  response->set_code(code);
-  response->set_content(content);
-  return response;
+bool GetProfileIdFromRequest(const net::test_server::HttpRequest& request,
+                             std::string* out) {
+  std::string profile_id =
+      KeyValueFromUrl(request.GetURL(), dm_protocol::kParamProfileID);
+  if (profile_id.empty()) {
+    return false;
+  }
+  *out = profile_id;
+  return true;
+}
+
+std::unique_ptr<HttpResponse> CreateHttpResponse(
+    net::HttpStatusCode code,
+    const em::DeviceManagementResponse& proto_content) {
+  return CreateHttpResponse(code, proto_content.SerializeAsString(),
+                            "application/x-protobuffer");
+}
+
+std::unique_ptr<HttpResponse> CreateHttpResponse(
+    net::HttpStatusCode code,
+    const std::string& text_content) {
+  return CreateHttpResponse(code, text_content, "text/plain");
 }
 
 }  // namespace policy

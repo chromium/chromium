@@ -10,6 +10,8 @@
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -156,8 +158,7 @@ class HttpRequest {
     SendRequest(path, headers);
   }
 
-  ~HttpRequest() {
-  }
+  ~HttpRequest() = default;
 
   void DoSendRequest(int result) {
     while (result != net::ERR_IO_PENDING) {
@@ -201,7 +202,7 @@ class HttpRequest {
     std::string request = base::StrCat(pieces);
     auto base_buffer =
         base::MakeRefCounted<net::IOBufferWithSize>(request.size());
-    memcpy(base_buffer->data(), request.data(), request.size());
+    base_buffer->span().copy_from(base::as_byte_span(request));
     request_ = base::MakeRefCounted<net::DrainableIOBuffer>(
         std::move(base_buffer), request.size());
     timeout_timer_.Start(
@@ -249,9 +250,9 @@ class HttpRequest {
 
           int expected_body_size = 0;
 
-          std::string content_length;
-          if (headers->GetNormalizedHeader("Content-Length", &content_length)) {
-            if (!base::StringToInt(content_length, &expected_body_size)) {
+          if (std::optional<std::string> content_length =
+                  headers->GetNormalizedHeader("Content-Length")) {
+            if (!base::StringToInt(*content_length, &expected_body_size)) {
               CheckNetResultOrDie(net::ERR_FAILED);
               return;
             }
@@ -273,9 +274,9 @@ class HttpRequest {
         if (!command_callback_.is_null()) {
           std::move(command_callback_).Run(net::OK, body);
         } else {
-          std::string sec_websocket_extensions;
-          headers->GetNormalizedHeader("Sec-WebSocket-Extensions",
-                                       &sec_websocket_extensions);
+          std::string sec_websocket_extensions =
+              headers->GetNormalizedHeader("Sec-WebSocket-Extensions")
+                  .value_or(std::string());
           std::move(http_upgrade_callback_)
               .Run(net::OK, sec_websocket_extensions, body,
                    std::move(socket_));
@@ -374,13 +375,14 @@ class DevicesRequest : public base::RefCountedThreadSafe<DevicesRequest> {
         base::BindOnce(std::move(callback_), std::move(descriptors_)));
   }
 
-  using Serials = std::vector<std::string>;
+  using Serials = std::vector<std::pair<std::string, DeviceInfo::ConnectedState>>;
 
   void ProcessSerials(scoped_refptr<DeviceProvider> provider, Serials serials) {
     for (auto it = serials.begin(); it != serials.end(); ++it) {
       descriptors_->resize(descriptors_->size() + 1);
       descriptors_->back().provider = provider;
-      descriptors_->back().serial = *it;
+      descriptors_->back().serial = it->first;
+      descriptors_->back().connected_state = it->second;
     }
   }
 
@@ -406,23 +408,18 @@ AndroidDeviceManager::BrowserInfo::BrowserInfo(const BrowserInfo& other) =
 AndroidDeviceManager::BrowserInfo& AndroidDeviceManager::BrowserInfo::operator=(
     const BrowserInfo& other) = default;
 
-AndroidDeviceManager::DeviceInfo::DeviceInfo()
-    : model(kModelOffline), connected(false) {
-}
+AndroidDeviceManager::DeviceInfo::DeviceInfo() : model(kModelOffline) {}
 
 AndroidDeviceManager::DeviceInfo::DeviceInfo(const DeviceInfo& other) = default;
 
-AndroidDeviceManager::DeviceInfo::~DeviceInfo() {
-}
+AndroidDeviceManager::DeviceInfo::~DeviceInfo() = default;
 
-AndroidDeviceManager::DeviceDescriptor::DeviceDescriptor() {
-}
+AndroidDeviceManager::DeviceDescriptor::DeviceDescriptor() = default;
 
 AndroidDeviceManager::DeviceDescriptor::DeviceDescriptor(
     const DeviceDescriptor& other) = default;
 
-AndroidDeviceManager::DeviceDescriptor::~DeviceDescriptor() {
-}
+AndroidDeviceManager::DeviceDescriptor::~DeviceDescriptor() = default;
 
 void AndroidDeviceManager::DeviceProvider::SendJsonRequest(
     const std::string& serial,
@@ -449,11 +446,9 @@ void AndroidDeviceManager::DeviceProvider::ReleaseDevice(
     const std::string& serial) {
 }
 
-AndroidDeviceManager::DeviceProvider::DeviceProvider() {
-}
+AndroidDeviceManager::DeviceProvider::DeviceProvider() = default;
 
-AndroidDeviceManager::DeviceProvider::~DeviceProvider() {
-}
+AndroidDeviceManager::DeviceProvider::~DeviceProvider() = default;
 
 void AndroidDeviceManager::Device::QueryDeviceInfo(
     DeviceInfoCallback callback) {
@@ -504,12 +499,13 @@ void AndroidDeviceManager::Device::HttpUpgrade(const std::string& socket_name,
 AndroidDeviceManager::Device::Device(
     scoped_refptr<base::SingleThreadTaskRunner> device_task_runner,
     scoped_refptr<DeviceProvider> provider,
-    const std::string& serial)
+    const std::string& serial, const DeviceInfo::ConnectedState connected_state)
     : RefCountedDeleteOnSequence<Device>(
           base::SingleThreadTaskRunner::GetCurrentDefault()),
       task_runner_(device_task_runner),
       provider_(provider),
-      serial_(serial) {}
+      serial_(serial),
+      connected_state_(connected_state) {}
 
 AndroidDeviceManager::Device::~Device() {
   task_runner_->PostTask(
@@ -617,9 +613,10 @@ void AndroidDeviceManager::UpdateDevices(
     if (found == devices_.end() || !found->second ||
         found->second->provider_.get() != it->provider.get()) {
       device =
-          new Device(handler_thread_->message_loop(), it->provider, it->serial);
+          new Device(handler_thread_->message_loop(), it->provider, it->serial, it->connected_state);
     } else {
       device = found->second.get();
+      device->connected_state_ = it->connected_state;
     }
     response.push_back(device);
     new_devices[it->serial] = device->weak_factory_.GetWeakPtr();

@@ -28,3 +28,15 @@ void PersistentPrefStore::CommitPendingWrite(
 bool PersistentPrefStore::IsInMemoryPrefStore() const {
   return false;
 }
+
+PrefFilter* PersistentPrefStore::GetFilter() {
+  return nullptr;
+}
+
+PrefFilter* PersistentPrefStore::GetDefaultStoreFilter() {
+  return nullptr;
+}
+
+PrefFilter* PersistentPrefStore::GetSelectedStoreFilter() {
+  return nullptr;
+}

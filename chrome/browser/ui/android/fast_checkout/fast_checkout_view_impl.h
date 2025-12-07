@@ -7,8 +7,8 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/fast_checkout/fast_checkout_view.h"
 
 class FastCheckoutController;
@@ -24,8 +24,8 @@ class FastCheckoutViewImpl : public FastCheckoutView {
 
   void OnOptionsSelected(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& autofill_profile_java,
-      const base::android::JavaParamRef<jobject>& credit_card_java);
+      const base::android::JavaRef<jobject>& autofill_profile_java,
+      const base::android::JavaRef<jobject>& credit_card_java);
   void OnDismiss(JNIEnv* env);
   void OpenAutofillProfileSettings(JNIEnv* env);
   void OpenCreditCardSettings(JNIEnv* env);
@@ -33,7 +33,7 @@ class FastCheckoutViewImpl : public FastCheckoutView {
   // FastCheckoutView:
   void Show(
       const std::vector<const autofill::AutofillProfile*>& autofill_profiles,
-      const std::vector<autofill::CreditCard*>& credit_cards) override;
+      const std::vector<const autofill::CreditCard*>& credit_cards) override;
 
  private:
   // Returns either true if the java counterpart of this bridge is initialized

@@ -124,6 +124,12 @@
       baseIndent += 4;
     }
 
+    const startingStyles = rule.startingStyles || [];
+    if (startingStyles.length) {
+      this._indentLog(baseIndent, '@starting-style');
+      baseIndent += 4;
+    }
+
     var selectorLine = '';
     var selectors = rule.selectorList.selectors;
     for (var i = 0; i < selectors.length; ++i) {

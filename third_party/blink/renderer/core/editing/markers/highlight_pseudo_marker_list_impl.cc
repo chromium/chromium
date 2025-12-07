@@ -15,7 +15,8 @@ bool HighlightPseudoMarkerListImpl::IsEmpty() const {
 
 void HighlightPseudoMarkerListImpl::Add(DocumentMarker* marker) {
   DCHECK(marker->GetType() == DocumentMarker::kCustomHighlight ||
-         marker->GetType() == DocumentMarker::kTextFragment);
+         marker->GetType() == DocumentMarker::kTextFragment ||
+         marker->GetType() == DocumentMarker::kGlic);
   OverlappingDocumentMarkerListEditor::AddMarker(&markers_, marker);
 }
 

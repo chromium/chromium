@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/user_education/browser_help_bubble_event_relay.h"
 
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if USE_AURA
 #include "ui/aura/window.h"
@@ -47,7 +47,7 @@ std::unique_ptr<WindowHelpBubbleEventRelay> CreateWindowHelpBubbleEventRelay(
 #elif BUILDFLAG(IS_MAC)
   return std::make_unique<WindowHelpBubbleEventRelayMac>(source_widget);
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif
 }
 

@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -18,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/test/values_test_util.h"
@@ -96,21 +96,20 @@ class DnsLookupClient : public network::mojom::ResolveHostClient {
     receiver_.set_disconnect_handler(base::BindOnce(
         &DnsLookupClient::OnComplete, base::Unretained(this),
         net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
-        /*resolved_addresses=*/std::nullopt,
-        /*endpoint_results_with_metadata=*/std::nullopt));
+        net::AddressList(), net::HostResolverEndpointResults()));
   }
-  ~DnsLookupClient() override {}
+  ~DnsLookupClient() override = default;
 
   // network::mojom::ResolveHostClient:
-  void OnComplete(int32_t error,
-                  const net::ResolveErrorInfo& resolve_error_info,
-                  const std::optional<net::AddressList>& resolved_addresses,
-                  const std::optional<net::HostResolverEndpointResults>&
-                      endpoint_results_with_metadata) override {
+  void OnComplete(
+      int32_t error,
+      const net::ResolveErrorInfo& resolve_error_info,
+      const net::AddressList& resolved_addresses,
+      const net::HostResolverEndpointResults& alternative_endpoints) override {
     std::string result;
     if (error == net::OK) {
-      CHECK(resolved_addresses->size() == 1);
-      result = resolved_addresses.value()[0].ToStringWithoutPort();
+      CHECK(resolved_addresses.size() == 1);
+      result = resolved_addresses[0].ToStringWithoutPort();
     } else {
       result = net::ErrorToString(resolve_error_info.error);
     }
@@ -134,8 +133,8 @@ class NetworkContextForTesting : public network::TestNetworkContext {
 
   // This is a mock network context for testing.
   // Only "*.com" is registered to this resolver. And especially for
-  // http2/http3/multihost.com, results include endpoint_results_with_metadata
-  // as well as resolved_addresses.
+  // http2/http3/multihost.com, results include alternative_endpoints as well as
+  // resolved_addresses.
   void ResolveHost(
       network::mojom::HostResolverHostPtr host,
       const net::NetworkAnonymizationKey& network_anonymization_key,
@@ -151,8 +150,8 @@ class NetworkContextForTesting : public network::TestNetworkContext {
       response_client->OnComplete(
           net::ERR_NAME_NOT_RESOLVED,
           net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED),
-          /*resolved_addresses=*/std::nullopt,
-          /*endpoint_results_with_metadata=*/std::nullopt);
+          /*resolved_addresses=*/{},
+          /*alternative_endpoints=*/{});
     }
 
     const net::IPAddress first_localhost{127, 0, 0, 1};
@@ -177,10 +176,9 @@ class NetworkContextForTesting : public network::TestNetworkContext {
       first_endpoint_metadata.supported_protocol_alpns = {"http/1.1", "h2"};
       first_endpoint_metadata.ech_config_list = {0x01, 0x02, 0x03, 0x04};
     } else {
-      response_client->OnComplete(
-          0, net::ResolveErrorInfo(net::OK),
-          net::AddressList(first_ip_endpoint),
-          /*endpoint_results_with_metadata=*/std::nullopt);
+      response_client->OnComplete(0, net::ResolveErrorInfo(net::OK),
+                                  net::AddressList(first_ip_endpoint),
+                                  /*alternative_endpoints=*/{});
     }
 
     if (hostname == "multihost.com") {
@@ -376,8 +374,9 @@ void NetInternalsTest::MessageHandler::DnsLookup(
   ASSERT_TRUE(browser());
 
   auto resolve_host_parameters = network::mojom::ResolveHostParameters::New();
-  if (local)
+  if (local) {
     resolve_host_parameters->source = net::HostResolverSource::LOCAL_ONLY;
+  }
   mojo::PendingRemote<network::mojom::ResolveHostClient> client;
   // DnsLookupClient owns itself.
   new DnsLookupClient(
@@ -410,7 +409,7 @@ void NetInternalsTest::MessageHandler::RgisterTestSharedDictionary(
   CHECK(dictionary_json_string);
   base::Value::Dict dict = base::test::ParseJsonDict(*dictionary_json_string);
   net::SHA256HashValue hash_value;
-  base::HexStringToSpan(*dict.FindString("hash"), hash_value.data);
+  base::HexStringToSpan(*dict.FindString("hash"), hash_value);
   const std::string* id_string = dict.FindString("id");
   network_context_for_testing_.RegisterTestSharedDictionary(
       net::SharedDictionaryIsolationKey(

@@ -31,7 +31,6 @@
 
 #include <memory>
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/audio/hrtf_elevation.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -41,7 +40,7 @@ namespace blink {
 
 class HRTFKernel;
 
-class HRTFDatabase {
+class HRTFDatabase final {
   USING_FAST_MALLOC(HRTFDatabase);
 
  public:

@@ -7,16 +7,62 @@
 #import "base/apple/bundle_locations.h"
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "base/feature_list.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/policy/proto/device_management_backend.pb.h"
+#import "ios/chrome/browser/policy/model/reporting/features.h"
+#import "ios/chrome/browser/policy/model/reporting/reporting_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/common/channel_info.h"
 
 namespace em = ::enterprise_management;
 
 namespace enterprise_reporting {
+
+namespace {
+
+std::vector<std::string> GetKnownProfilesNames(ProfileManagerIOS* manager) {
+  std::vector<std::string> names;
+  manager->GetProfileAttributesStorage()->IterateOverProfileAttributes(
+      base::BindRepeating(
+          [](std::vector<std::string>& names,
+             const ProfileAttributesIOS& attrs) {
+            names.push_back(attrs.GetProfileName());
+          },
+          std::ref(names)));
+  return names;
+}
+
+std::vector<BrowserReportGenerator::ReportedProfileData>
+GetReportDataForKnownProfiles(ProfileManagerIOS* manager) {
+  std::vector<BrowserReportGenerator::ReportedProfileData> result;
+  std::ranges::transform(GetKnownProfilesNames(manager),
+                         std::back_inserter(result),
+                         [](const std::string& name) {
+                           return BrowserReportGenerator::ReportedProfileData(
+                               SanitizeProfilePath(name), name);
+                         });
+  return result;
+}
+
+std::vector<BrowserReportGenerator::ReportedProfileData>
+GetReportDataForLoadedProfiles(ProfileManagerIOS* manager) {
+  std::vector<BrowserReportGenerator::ReportedProfileData> result;
+  std::ranges::transform(manager->GetLoadedProfiles(),
+                         std::back_inserter(result), [](ProfileIOS* profile) {
+                           CHECK(!profile->IsOffTheRecord());
+                           return BrowserReportGenerator::ReportedProfileData(
+                               SanitizeProfilePath(profile->GetProfileName()),
+                               profile->GetProfileName());
+                         });
+  return result;
+}
+
+}  // namespace
 
 BrowserReportGeneratorIOS::BrowserReportGeneratorIOS() = default;
 
@@ -33,19 +79,15 @@ version_info::Channel BrowserReportGeneratorIOS::GetChannel() {
 
 std::vector<BrowserReportGenerator::ReportedProfileData>
 BrowserReportGeneratorIOS::GetReportedProfiles() {
-  std::vector<BrowserReportGenerator::ReportedProfileData> reportedProfileData;
-  for (const auto* browser_state : GetApplicationContext()
-                                       ->GetChromeBrowserStateManager()
-                                       ->GetLoadedBrowserStates()) {
-    // ChromeBrowserStateManager should not return off-the-record BrowserStates.
-    CHECK(!browser_state->IsOffTheRecord());
-    reportedProfileData.push_back({
-        browser_state->GetStatePath().AsUTF8Unsafe(),
-        browser_state->GetBrowserStateName(),
-    });
-  }
+  ProfileManagerIOS* profile_manager =
+      GetApplicationContext()->GetProfileManager();
 
-  return reportedProfileData;
+  if (base::FeatureList::IsEnabled(
+          enterprise_reporting::kBrowserReportIncludeAllProfiles)) {
+    return GetReportDataForKnownProfiles(profile_manager);
+  } else {
+    return GetReportDataForLoadedProfiles(profile_manager);
+  }
 }
 
 bool BrowserReportGeneratorIOS::IsExtendedStableChannel() {

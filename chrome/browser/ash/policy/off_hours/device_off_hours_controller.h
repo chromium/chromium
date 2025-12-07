@@ -48,7 +48,7 @@ class DeviceOffHoursController : public ash::SystemClockClient::Observer {
     virtual void OnOffHoursEndTimeChanged() {}
 
    protected:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   // Creates a device off hours controller instance.

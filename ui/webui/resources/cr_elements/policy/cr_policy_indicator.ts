@@ -5,7 +5,7 @@
 /** @fileoverview Lit element for indicating policies by type. */
 import './cr_tooltip_icon.js';
 
-import {assertNotReached} from '//resources/js/assert.js';
+import {assertNotReachedCase} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './cr_policy_indicator.css.js';
@@ -43,9 +43,9 @@ export class CrPolicyIndicatorElement extends CrLitElement {
     };
   }
 
-  iconAriaLabel: string = '';
-  indicatorType: CrPolicyIndicatorType = CrPolicyIndicatorType.NONE;
-  indicatorSourceName: string = '';
+  accessor iconAriaLabel: string = '';
+  accessor indicatorType: CrPolicyIndicatorType = CrPolicyIndicatorType.NONE;
+  accessor indicatorSourceName: string = '';
 
   /**
    * @return True if the indicator should be shown.
@@ -75,7 +75,7 @@ export class CrPolicyIndicatorElement extends CrLitElement {
       case CrPolicyIndicatorType.CHILD_RESTRICTION:
         return 'cr20:kite';
       default:
-        assertNotReached();
+        assertNotReachedCase(this.indicatorType);
     }
   }
 
@@ -96,7 +96,7 @@ export class CrPolicyIndicatorElement extends CrLitElement {
             CrPolicyStrings.controlledSettingExtension!.replace(
                 '$1', this.indicatorSourceName) :
             CrPolicyStrings.controlledSettingExtensionWithoutName!;
-      // <if expr="chromeos_ash">
+      // <if expr="is_chromeos">
       case CrPolicyIndicatorType.PRIMARY_USER:
         return CrPolicyStrings.controlledSettingShared!.replace(
             '$1', this.indicatorSourceName);
@@ -115,8 +115,13 @@ export class CrPolicyIndicatorElement extends CrLitElement {
         return CrPolicyStrings.controlledSettingParent!;
       case CrPolicyIndicatorType.CHILD_RESTRICTION:
         return CrPolicyStrings.controlledSettingChildRestriction!;
+      case CrPolicyIndicatorType.NONE:
+      case CrPolicyIndicatorType.OWNER:
+      case CrPolicyIndicatorType.PRIMARY_USER:
+        return '';
+      default:
+        assertNotReachedCase(this.indicatorType);
     }
-    return '';
   }
 }
 

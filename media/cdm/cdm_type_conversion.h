@@ -50,6 +50,11 @@ MEDIA_EXPORT CdmKeyInformation::KeyStatus ToMediaKeyStatus(
     cdm::KeyStatus status);
 MEDIA_EXPORT cdm::KeyStatus ToCdmKeyStatus(CdmKeyInformation::KeyStatus status);
 
+MEDIA_EXPORT CdmKeyInformation::KeyStatus ToMediaKeyStatus(
+    cdm::KeyStatus_2 status);
+MEDIA_EXPORT cdm::KeyStatus_2 ToCdmKeyStatus_2(
+    CdmKeyInformation::KeyStatus status);
+
 MEDIA_EXPORT cdm::EncryptionScheme ToCdmEncryptionScheme(
     EncryptionScheme scheme);
 

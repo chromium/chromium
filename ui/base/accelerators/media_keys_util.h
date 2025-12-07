@@ -24,8 +24,8 @@ enum class MediaHardwareKeyAction {
 };
 
 // The name of the histogram that records |MediaHardwareKeyAction|.
-COMPONENT_EXPORT(UI_BASE)
-extern const char kMediaHardwareKeyActionHistogramName[];
+inline constexpr char kMediaHardwareKeyActionHistogramName[] =
+    "Media.HardwareKeyPressed";
 
 // Records a media hardware key action to the
 // |kMediaHardwareKeyActionHistogramName| histogram.

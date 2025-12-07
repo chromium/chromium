@@ -64,13 +64,13 @@ class SimpleEntryOperation {
   static SimpleEntryOperation CloseOperation(SimpleEntryImpl* entry);
   static SimpleEntryOperation ReadOperation(SimpleEntryImpl* entry,
                                             int index,
-                                            int offset,
+                                            int64_t offset,
                                             int length,
                                             net::IOBuffer* buf,
                                             CompletionOnceCallback callback);
   static SimpleEntryOperation WriteOperation(SimpleEntryImpl* entry,
                                              int index,
-                                             int offset,
+                                             int64_t offset,
                                              int length,
                                              net::IOBuffer* buf,
                                              bool truncate,
@@ -78,20 +78,20 @@ class SimpleEntryOperation {
                                              CompletionOnceCallback callback);
   static SimpleEntryOperation ReadSparseOperation(
       SimpleEntryImpl* entry,
-      int64_t sparse_offset,
-      int length,
+      uint64_t sparse_offset,
+      size_t sparse_length,
       net::IOBuffer* buf,
       CompletionOnceCallback callback);
   static SimpleEntryOperation WriteSparseOperation(
       SimpleEntryImpl* entry,
-      int64_t sparse_offset,
-      int length,
+      uint64_t sparse_offset,
+      size_t sparse_length,
       net::IOBuffer* buf,
       CompletionOnceCallback callback);
   static SimpleEntryOperation GetAvailableRangeOperation(
       SimpleEntryImpl* entry,
-      int64_t sparse_offset,
-      int length,
+      uint64_t sparse_offset,
+      size_t sparse_length,
       RangeResultCallback callback);
   static SimpleEntryOperation DoomOperation(SimpleEntryImpl* entry,
                                             CompletionOnceCallback callback);
@@ -111,9 +111,10 @@ class SimpleEntryOperation {
 
   OpenEntryIndexEnum index_state() const { return index_state_; }
   int index() const { return index_; }
-  int offset() const { return offset_; }
+  int64_t offset() const { return offset_; }
   int64_t sparse_offset() const { return sparse_offset_; }
   int length() const { return length_; }
+  size_t sparse_length() const { return sparse_length_; }
   net::IOBuffer* buf() { return buf_.get(); }
   bool truncate() const { return truncate_; }
   bool optimistic() const { return optimistic_; }
@@ -122,9 +123,10 @@ class SimpleEntryOperation {
   SimpleEntryOperation(SimpleEntryImpl* entry,
                        net::IOBuffer* buf,
                        CompletionOnceCallback callback,
-                       int offset,
-                       int64_t sparse_offset,
+                       int64_t offset,
+                       uint64_t sparse_offset,
                        int length,
+                       size_t sparse_length,
                        EntryOperationType type,
                        OpenEntryIndexEnum index_state,
                        int index,
@@ -141,9 +143,10 @@ class SimpleEntryOperation {
   EntryResultState entry_result_state_;
 
   // Used in write and read operations.
-  const int offset_;
+  const int64_t offset_;
   const int64_t sparse_offset_;
   const int length_;
+  const size_t sparse_length_;
 
   // Used in get available range operations.
   RangeResultCallback range_callback_;

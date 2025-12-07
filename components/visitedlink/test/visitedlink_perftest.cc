@@ -100,7 +100,7 @@ GURL TestURL(const char* prefix, int i) {
 // We have no readers, so all methods on this listener are a no-ops.
 class DummyVisitedLinkEventListener : public VisitedLinkWriter::Listener {
  public:
-  DummyVisitedLinkEventListener() {}
+  DummyVisitedLinkEventListener() = default;
   void NewTable(base::ReadOnlySharedMemoryRegion*) override {}
   void Add(VisitedLinkCommon::Fingerprint) override {}
   void Reset(bool invalidate_hashes) override {}

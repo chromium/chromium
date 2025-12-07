@@ -10,10 +10,6 @@
 
 class Profile;
 
-namespace enterprise_connectors {
-class DeviceTrustConnectorService;
-}  // namespace enterprise_connectors
-
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -24,20 +20,20 @@ class UserDelegateImpl : public device_signals::UserDelegate {
  public:
   UserDelegateImpl(Profile* profile,
                    signin::IdentityManager* identity_manager,
-                   enterprise_connectors::DeviceTrustConnectorService*
-                       device_trust_connector_service);
+                   SignalsDependencyDelegate* device_trust_connector_service);
+
   ~UserDelegateImpl() override;
 
   UserDelegateImpl(const UserDelegateImpl&) = delete;
   UserDelegateImpl& operator=(const UserDelegateImpl&) = delete;
 
   // UserDelegate:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool IsSigninContext() const override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   bool IsAffiliated() const override;
   bool IsManagedUser() const override;
-  bool IsSameUser(const std::string& gaia_id) const override;
+  bool IsSameUser(const GaiaId& gaia_id) const override;
   std::set<policy::PolicyScope> GetPolicyScopesNeedingSignals() const override;
 
  private:
@@ -47,8 +43,8 @@ class UserDelegateImpl : public device_signals::UserDelegate {
   // The connector service in charge of giving information about whether the
   // Device Trust connector is enabled or not. Can be nullptr if the
   // browser/profile is in an unsupported context (e.g. incognito).
-  const raw_ptr<enterprise_connectors::DeviceTrustConnectorService>
-      device_trust_connector_service_;
+  const raw_ptr<SignalsDependencyDelegate> signals_dependency_delegate_ =
+      nullptr;
 };
 
 }  // namespace enterprise_signals

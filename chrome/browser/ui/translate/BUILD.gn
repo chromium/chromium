@@ -1,0 +1,58 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+source_set("translate") {
+  sources = [
+    "partial_translate_bubble_model.h",
+    "partial_translate_bubble_model_impl.cc",
+    "partial_translate_bubble_model_impl.h",
+    "partial_translate_bubble_ui_action_logger.cc",
+    "partial_translate_bubble_ui_action_logger.h",
+    "source_language_combobox_model.cc",
+    "source_language_combobox_model.h",
+    "target_language_combobox_model.cc",
+    "target_language_combobox_model.h",
+    "translate_bubble_model.h",
+    "translate_bubble_model_impl.cc",
+    "translate_bubble_model_impl.h",
+    "translate_language_list_model.h",
+  ]
+
+  if (!is_android) {
+    sources += [ "translate_bubble_factory.h" ]
+  }
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/translate",
+    "//components/translate/core/browser",
+    "//components/translate/core/common",
+    "//ui/base",
+  ]
+
+  deps = [ "//components/language_detection/core" ]
+}
+
+if (!is_android) {
+  source_set("impl") {
+    sources = [ "translate_bubble_factory.cc" ]
+    deps = [
+      ":translate",
+      "//components/translate/core/browser",
+    ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  }
+}
+
+if (toolkit_views) {
+  source_set("test_support") {
+    sources = [
+      # This test header is included because it contains forward declarations
+      # needed for "friend" statements for use in tests.
+      "translate_bubble_test_utils.h",
+    ]
+  }
+}

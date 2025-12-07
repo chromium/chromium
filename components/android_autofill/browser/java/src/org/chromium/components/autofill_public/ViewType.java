@@ -4,9 +4,15 @@
 
 package org.chromium.components.autofill_public;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.view.autofill.AutofillId;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * This class is used to send the server and computed view type to the autofill service. The valid
@@ -14,20 +20,21 @@ import android.view.autofill.AutofillId;
  * components/autofill/core/browser/field_types.cc. Note that the list of possibly returned strings
  * can and will change in the future.
  */
+@NullMarked
 public class ViewType implements Parcelable {
     /** The AutofillId of the view that types are for. */
-    public final AutofillId mAutofillId;
+    public final @Nullable AutofillId mAutofillId;
 
     /** The type from Chrome autofill server. */
     public final String mServerType;
 
     /** The type computed overall type. The valid types are the same as for mServerType. */
-    public final String mComputedType;
+    public final String mOverallType;
 
-    private String[] mServerPredictions;
+    private final String[] mServerPredictions;
 
     public static final Parcelable.Creator<ViewType> CREATOR =
-            new Parcelable.Creator<ViewType>() {
+            new Parcelable.Creator<>() {
                 @Override
                 public ViewType createFromParcel(Parcel in) {
                     return new ViewType(in);
@@ -40,18 +47,21 @@ public class ViewType implements Parcelable {
             };
 
     public ViewType(
-            AutofillId id, String serverType, String computedType, String[] serverPredictions) {
+            @Nullable AutofillId id,
+            String serverType,
+            String overallType,
+            String[] serverPredictions) {
         mAutofillId = id;
         mServerType = serverType;
-        mComputedType = computedType;
+        mOverallType = overallType;
         mServerPredictions = serverPredictions;
     }
 
     private ViewType(Parcel in) {
         mAutofillId = AutofillId.CREATOR.createFromParcel(in);
-        mServerType = in.readString();
-        mComputedType = in.readString();
-        in.readStringArray(mServerPredictions);
+        mServerType = assertNonNull(in.readString());
+        mOverallType = assertNonNull(in.readString());
+        mServerPredictions = assertNonNull(in.createStringArray());
     }
 
     @Override
@@ -61,9 +71,12 @@ public class ViewType implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
+        // When null-annotating this class, it was the case that tests were creating instances
+        // with null ids, but not exercising the parcelling code.
+        assumeNonNull(mAutofillId);
         mAutofillId.writeToParcel(parcel, flags);
         parcel.writeString(mServerType);
-        parcel.writeString(mComputedType);
+        parcel.writeString(mOverallType);
         parcel.writeStringArray(mServerPredictions);
     }
 

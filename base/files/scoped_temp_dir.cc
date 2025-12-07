@@ -11,7 +11,7 @@ namespace base {
 
 namespace {
 
-constexpr FilePath::CharType kScopedDirPrefix[] =
+constexpr FilePath::CharType kDefaultScopedDirPrefix[] =
     FILE_PATH_LITERAL("scoped_dir");
 
 }  // namespace
@@ -22,58 +22,69 @@ ScopedTempDir::ScopedTempDir(ScopedTempDir&& other) noexcept
     : path_(other.Take()) {}
 
 ScopedTempDir& ScopedTempDir::operator=(ScopedTempDir&& other) {
-  if (!path_.empty() && !Delete())
+  if (!path_.empty() && !Delete()) {
     DLOG(WARNING) << "Could not delete temp dir in operator=().";
+  }
   path_ = other.Take();
   return *this;
 }
 
 ScopedTempDir::~ScopedTempDir() {
-  if (!path_.empty() && !Delete())
+  if (!path_.empty() && !Delete()) {
     DLOG(WARNING) << "Could not delete temp dir in dtor.";
+  }
 }
 
-bool ScopedTempDir::CreateUniqueTempDir() {
-  if (!path_.empty())
+bool ScopedTempDir::CreateUniqueTempDir(FilePath::StringViewType prefix) {
+  if (!path_.empty()) {
     return false;
+  }
 
-  // This "scoped_dir" prefix is only used on Windows and serves as a template
-  // for the unique name.
-  if (!CreateNewTempDirectory(kScopedDirPrefix, &path_))
+  // The `prefix` serves as a template for the unique name.
+  if (!CreateNewTempDirectory(prefix, &path_)) {
     return false;
+  }
 
   return true;
 }
 
-bool ScopedTempDir::CreateUniqueTempDirUnderPath(const FilePath& base_path) {
-  if (!path_.empty())
+bool ScopedTempDir::CreateUniqueTempDirUnderPath(
+    const FilePath& base_path,
+    FilePath::StringViewType prefix) {
+  if (!path_.empty()) {
     return false;
+  }
 
   // If |base_path| does not exist, create it.
-  if (!CreateDirectory(base_path))
+  if (!CreateDirectory(base_path)) {
     return false;
+  }
 
   // Create a new, uniquely named directory under |base_path|.
-  if (!CreateTemporaryDirInDir(base_path, kScopedDirPrefix, &path_))
+  if (!CreateTemporaryDirInDir(base_path, prefix, &path_)) {
     return false;
+  }
 
   return true;
 }
 
 bool ScopedTempDir::Set(const FilePath& path) {
-  if (!path_.empty())
+  if (!path_.empty()) {
     return false;
+  }
 
-  if (!DirectoryExists(path) && !CreateDirectory(path))
+  if (!DirectoryExists(path) && !CreateDirectory(path)) {
     return false;
+  }
 
   path_ = path;
   return true;
 }
 
 bool ScopedTempDir::Delete() {
-  if (path_.empty())
+  if (path_.empty()) {
     return false;
+  }
 
   bool ret = DeletePathRecursively(path_);
   if (ret) {
@@ -98,8 +109,8 @@ bool ScopedTempDir::IsValid() const {
 }
 
 // static
-const FilePath::CharType* ScopedTempDir::GetTempDirPrefix() {
-  return kScopedDirPrefix;
+const FilePath::CharType* ScopedTempDir::GetDefaultTempDirPrefix() {
+  return kDefaultScopedDirPrefix;
 }
 
 }  // namespace base

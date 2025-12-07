@@ -4,6 +4,7 @@
 
 #include "components/download/public/common/download_item_rename_handler.h"
 
+#include "base/files/file_path.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
 

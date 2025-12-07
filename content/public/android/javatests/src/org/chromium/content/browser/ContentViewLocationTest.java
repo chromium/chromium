@@ -11,6 +11,7 @@ import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +22,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
@@ -47,7 +49,9 @@ public class ContentViewLocationTest {
                         new Runnable() {
                             @Override
                             public void run() {
-                                mActivityTestRule.getWebContents().onHide();
+                                mActivityTestRule
+                                        .getWebContents()
+                                        .updateWebContentsVisibility(Visibility.HIDDEN);
                             }
                         });
     }
@@ -58,7 +62,9 @@ public class ContentViewLocationTest {
                         new Runnable() {
                             @Override
                             public void run() {
-                                mActivityTestRule.getWebContents().onShow();
+                                mActivityTestRule
+                                        .getWebContents()
+                                        .updateWebContentsVisibility(Visibility.VISIBLE);
                             }
                         });
     }
@@ -105,7 +111,7 @@ public class ContentViewLocationTest {
             mActivityTestRule.launchContentShellWithUrlSync(
                     "content/test/data/android/geolocation.html");
         } catch (Throwable t) {
-            Assert.fail();
+            throw new RuntimeException(t);
         }
 
         mTestCallbackHelperContainer =
@@ -165,6 +171,7 @@ public class ContentViewLocationTest {
     @Test
     @MediumTest
     @Feature({"Location"})
+    @Ignore("https://crbug.com/447442632")
     public void testWatchHideNewWatchShow() throws Throwable {
         startGeolocationWatchPosition();
         pollForPositionCallback();

@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
 
 #include <algorithm>
+#include <iterator>
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/test/chromedriver/chrome/ui_events.h"
@@ -32,7 +28,7 @@ struct KeyCodeAndXKeyCode {
 // X key code. This list is not complete.
 // TODO(kkania): Merge this table with the existing one in
 // keyboard_code_conversion_x.cc.
-KeyCodeAndXKeyCode kKeyCodeToXKeyCode[] = {
+constexpr KeyCodeAndXKeyCode kKeyCodeToXKeyCode[] = {
     {ui::VKEY_BACK, 22},      {ui::VKEY_TAB, 23},
     {ui::VKEY_RETURN, 36},    {ui::VKEY_SHIFT, 50},
     {ui::VKEY_CONTROL, 37},   {ui::VKEY_MENU, 64},
@@ -83,22 +79,18 @@ KeyCodeAndXKeyCode kKeyCodeToXKeyCode[] = {
     {ui::VKEY_OEM_4, 34},     {ui::VKEY_OEM_5, 51},
     {ui::VKEY_OEM_6, 35},     {ui::VKEY_OEM_7, 48}};
 
-// Uses to compare two KeyCodeAndXKeyCode structs based on their key code.
-bool operator<(const KeyCodeAndXKeyCode& a, const KeyCodeAndXKeyCode& b) {
-  return a.key_code < b.key_code;
-}
-
 // Returns the equivalent X key code for the given key code. Returns -1 if
 // no X equivalent was found.
 int KeyboardCodeToXKeyCode(ui::KeyboardCode key_code) {
-  KeyCodeAndXKeyCode find;
-  find.key_code = key_code;
-  const KeyCodeAndXKeyCode* found = std::lower_bound(
-      kKeyCodeToXKeyCode, kKeyCodeToXKeyCode + std::size(kKeyCodeToXKeyCode),
-      find);
-  if (found >= kKeyCodeToXKeyCode + std::size(kKeyCodeToXKeyCode) ||
-      found->key_code != key_code)
+  KeyCodeAndXKeyCode find = {.key_code = key_code};
+  const KeyCodeAndXKeyCode* found = std::ranges::lower_bound(
+      kKeyCodeToXKeyCode, find,
+      [](const KeyCodeAndXKeyCode& a, const KeyCodeAndXKeyCode& b) {
+        return a.key_code < b.key_code;
+      });
+  if (found >= std::end(kKeyCodeToXKeyCode) || found->key_code != key_code) {
     return -1;
+  }
   return found->x_key_code;
 }
 

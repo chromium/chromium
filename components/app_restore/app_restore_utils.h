@@ -28,9 +28,6 @@ constexpr int32_t kParentToHiddenContainer = -1;
 // Returns true if `window` is an ARC window. Otherwise, returns false.
 bool IsArcWindow(aura::Window* window);
 
-// Returns true if `window` is a Lacros window. Otherwise, returns false.
-bool IsLacrosWindow(aura::Window* window);
-
 // Returns true if there is a window info for `restore_window_id` from desk
 // templates or full restore, depending on which one is thought to be launching
 // apps currently. Otherwise, returns false. This interface can't be used for
@@ -42,7 +39,7 @@ bool HasWindowInfo(int32_t restore_window_id);
 // This is called from `GetWindowInfo()` when window is
 // created, or from the ArcReadHandler when a task is ready for a full
 // restore window that has already been created.
-// TODO(sammiequon): Change the two arguments to references.
+// TODO(dandersson): Change the two arguments to references.
 COMPONENT_EXPORT(APP_RESTORE)
 void ApplyProperties(WindowInfo* window_info,
                      ui::PropertyHandler* property_handler);
@@ -83,13 +80,6 @@ int32_t GetArcRestoreWindowIdForSessionId(int32_t session_id);
 // Remove the "_crx_" prefix from a given `app_name` to get the app id.
 COMPONENT_EXPORT(APP_RESTORE)
 std::string GetAppIdFromAppName(const std::string& app_name);
-
-// Returns the Lacros window id for `window`.
-const std::string GetLacrosWindowId(aura::Window* window);
-
-// Returns the restore window id for the Lacros window with `lacros_window_id`.
-COMPONENT_EXPORT(APP_RESTORE)
-int32_t GetLacrosRestoreWindowId(const std::string& lacros_window_id);
 
 // Returns a tuple containing the window count, tab count, and total count, in
 // that order. Note that tab count data is not saved for full restore, which

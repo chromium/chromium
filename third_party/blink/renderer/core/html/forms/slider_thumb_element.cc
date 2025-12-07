@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/core/html/forms/slider_thumb_element.h"
 
 #include "third_party/blink/renderer/core/dom/events/event.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/events/touch_event.h"
@@ -45,6 +44,7 @@
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/flex/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "ui/base/ui_base_features.h"
 
@@ -114,14 +114,15 @@ void SliderThumbElement::SetPositionFromPoint(const PhysicalOffset& point) {
   PhysicalOffset thumb_offset =
       thumb_box->LocalToAncestorPoint(PhysicalOffset(), input_box) -
       track_box->LocalToAncestorPoint(PhysicalOffset(), input_box);
+  PhysicalSize size = thumb_box->StitchedSize();
   if (!writing_direction.IsHorizontal()) {
-    track_size = track_box->ContentHeight() - thumb_box->Size().height;
-    position = point_in_track.top - thumb_box->Size().height / 2;
+    track_size = track_box->ContentHeight() - size.height;
+    position = point_in_track.top - size.height / 2;
     position -= is_flipped ? thumb_box->MarginBottom() : thumb_box->MarginTop();
     current_position = thumb_offset.top;
   } else {
-    track_size = track_box->ContentWidth() - thumb_box->Size().width;
-    position = point_in_track.left - thumb_box->Size().width / 2;
+    track_size = track_box->ContentWidth() - size.width;
+    position = point_in_track.left - size.width / 2;
     position -= is_flipped ? thumb_box->MarginRight() : thumb_box->MarginLeft();
     current_position = thumb_offset.left;
   }
@@ -272,10 +273,10 @@ const AtomicString& SliderThumbElement::ShadowPseudoId() const {
 
   const ComputedStyle& slider_style = input->GetLayoutObject()->StyleRef();
   switch (slider_style.EffectiveAppearance()) {
-    case kMediaSliderPart:
-    case kMediaSliderThumbPart:
-    case kMediaVolumeSliderPart:
-    case kMediaVolumeSliderThumbPart:
+    case AppearanceValue::kMediaSlider:
+    case AppearanceValue::kMediaSliderThumb:
+    case AppearanceValue::kMediaVolumeSlider:
+    case AppearanceValue::kMediaVolumeSliderThumb:
       return shadow_element_names::kPseudoMediaSliderThumb;
     default:
       return shadow_element_names::kPseudoSliderThumb;
@@ -287,16 +288,19 @@ void SliderThumbElement::AdjustStyle(ComputedStyleBuilder& builder) {
   DCHECK(host);
   const ComputedStyle& host_style = host->ComputedStyleRef();
 
-  if (host_style.EffectiveAppearance() == kSliderVerticalPart &&
+  if (host_style.EffectiveAppearance() == AppearanceValue::kSliderVertical &&
       RuntimeEnabledFeatures::
           NonStandardAppearanceValueSliderVerticalEnabled()) {
-    builder.SetEffectiveAppearance(kSliderThumbVerticalPart);
-  } else if (host_style.EffectiveAppearance() == kSliderHorizontalPart) {
-    builder.SetEffectiveAppearance(kSliderThumbHorizontalPart);
-  } else if (host_style.EffectiveAppearance() == kMediaSliderPart) {
-    builder.SetEffectiveAppearance(kMediaSliderThumbPart);
-  } else if (host_style.EffectiveAppearance() == kMediaVolumeSliderPart) {
-    builder.SetEffectiveAppearance(kMediaVolumeSliderThumbPart);
+    builder.SetEffectiveAppearance(AppearanceValue::kSliderThumbVertical);
+  } else if (host_style.EffectiveAppearance() ==
+             AppearanceValue::kSliderHorizontal) {
+    builder.SetEffectiveAppearance(AppearanceValue::kSliderThumbHorizontal);
+  } else if (host_style.EffectiveAppearance() ==
+             AppearanceValue::kMediaSlider) {
+    builder.SetEffectiveAppearance(AppearanceValue::kMediaSliderThumb);
+  } else if (host_style.EffectiveAppearance() ==
+             AppearanceValue::kMediaVolumeSlider) {
+    builder.SetEffectiveAppearance(AppearanceValue::kMediaVolumeSliderThumb);
   }
   if (builder.HasEffectiveAppearance())
     LayoutTheme::GetTheme().AdjustSliderThumbSize(builder);
@@ -419,10 +423,10 @@ const AtomicString& SliderContainerElement::ShadowPseudoId() const {
   const ComputedStyle& slider_style =
       OwnerShadowHost()->GetLayoutObject()->StyleRef();
   switch (slider_style.EffectiveAppearance()) {
-    case kMediaSliderPart:
-    case kMediaSliderThumbPart:
-    case kMediaVolumeSliderPart:
-    case kMediaVolumeSliderThumbPart:
+    case AppearanceValue::kMediaSlider:
+    case AppearanceValue::kMediaSliderThumb:
+    case AppearanceValue::kMediaVolumeSlider:
+    case AppearanceValue::kMediaVolumeSliderThumb:
       return shadow_element_names::kPseudoMediaSliderContainer;
     default:
       return shadow_element_names::kPseudoSliderContainer;
@@ -445,6 +449,7 @@ void SliderContainerElement::UpdateTouchEventHandlerRegistry() {
 }
 
 void SliderContainerElement::DidMoveToNewDocument(Document& old_document) {
+  has_touch_event_handler_ = false;
   UpdateTouchEventHandlerRegistry();
   HTMLElement::DidMoveToNewDocument(old_document);
 }

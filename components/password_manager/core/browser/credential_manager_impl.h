@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "components/credential_management/credential_manager_interface.h"
 #include "components/password_manager/core/browser/credential_manager_password_form_manager.h"
 #include "components/password_manager/core/browser/credential_manager_pending_prevent_silent_access_task.h"
 #include "components/password_manager/core/browser/credential_manager_pending_request_task.h"
@@ -34,19 +35,22 @@ using GetCallback =
 class CredentialManagerImpl
     : public CredentialManagerPendingPreventSilentAccessTaskDelegate,
       public CredentialManagerPendingRequestTaskDelegate,
-      public CredentialManagerPasswordFormManagerDelegate {
+      public CredentialManagerPasswordFormManagerDelegate,
+      public credential_management::CredentialManagerInterface {
  public:
   explicit CredentialManagerImpl(PasswordManagerClient* client);
   CredentialManagerImpl(const CredentialManagerImpl&) = delete;
   CredentialManagerImpl& operator=(const CredentialManagerImpl&) = delete;
   ~CredentialManagerImpl() override;
 
-  void Store(const CredentialInfo& credential, StoreCallback callback);
-  void PreventSilentAccess(PreventSilentAccessCallback callback);
+  // credential_management::CredentialManagerInterface:
+  void Store(const CredentialInfo& credential, StoreCallback callback) override;
+  void PreventSilentAccess(PreventSilentAccessCallback callback) override;
   void Get(CredentialMediationRequirement mediation,
            bool include_passwords,
            const std::vector<GURL>& federations,
-           GetCallback callback);
+           GetCallback callback) override;
+  void ResetAfterDisconnecting() override;
 
   // CredentialManagerPendingRequestTaskDelegate:
   // Exposed publicly for testing.
@@ -96,6 +100,11 @@ class CredentialManagerImpl
 
   // Helper for making the requests on leak detection.
   LeakDetectionDelegate leak_delegate_;
+
+  // Last form that Password Manager considers submitted. Set in
+  // `Store` (if it was available) and reset in `OnProvisionalSaveComplete`.
+  // Only used on desktop.
+  std::optional<PasswordForm> last_submitted_form_;
 };
 
 }  // namespace password_manager

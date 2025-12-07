@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/security_state/core/security_state.h"
 
 class AutocompleteClassifier;
@@ -50,10 +50,6 @@ class LocationBarModelDelegate {
   // Returns whether the URL for the current navigation entry should be
   // in the location bar.
   virtual bool ShouldDisplayURL() const;
-
-  // Returns whether the omnibox should use the new security indicators for
-  // secure HTTPS connections.
-  virtual bool ShouldUseUpdatedConnectionSecurityIndicators() const;
 
   // Returns the underlying security level of the page without regard to any
   // user edits that may be in progress.
@@ -98,7 +94,7 @@ class LocationBarModelDelegate {
   virtual TemplateURLService* GetTemplateURLService();
 
  protected:
-  virtual ~LocationBarModelDelegate() {}
+  virtual ~LocationBarModelDelegate() = default;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_LOCATION_BAR_MODEL_DELEGATE_H_

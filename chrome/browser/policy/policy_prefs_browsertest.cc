@@ -21,12 +21,12 @@
 #include "base/run_loop.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/browser/policy_pref_mapping_test.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -38,12 +38,13 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/common/chrome_features.h"
 #else
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace policy {
 
@@ -100,6 +101,12 @@ class PolicyPrefsTest : public PlatformBrowserTest {
         true /* is_first_policy_load_complete_return */);
     BrowserPolicyConnector::SetPolicyProviderForTesting(
         GetMockPolicyProvider());
+
+#if BUILDFLAG(IS_ANDROID)
+    // Intentionally leak the mock provider on Android. See comment in
+    // GetMockPolicyProvider() for details.
+    ::testing::Mock::AllowLeak(GetMockPolicyProvider());
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   void TearDownOnMainThread() override { ClearProviderPolicy(); }
@@ -141,13 +148,20 @@ class PolicyPrefsTest : public PlatformBrowserTest {
 class ChunkedPolicyPrefsTest : public PolicyPrefsTest,
                                public ::testing::WithParamInterface<size_t> {
  public:
-  ChunkedPolicyPrefsTest() = default;
+  ChunkedPolicyPrefsTest() {
+#if BUILDFLAG(IS_CHROMEOS)
+    feature_list_.InitAndEnableFeature(features::kCameraCloudStorage);
+#endif
+  }
   ChunkedPolicyPrefsTest(const ChunkedPolicyPrefsTest&) = delete;
   ChunkedPolicyPrefsTest& operator=(const ChunkedPolicyPrefsTest&) = delete;
   ~ChunkedPolicyPrefsTest() override = default;
 
  protected:
   PrefMappingChunkInfo chunk_info_{GetParam(), GetNumChunks()};
+#if BUILDFLAG(IS_CHROMEOS)
+  base::test::ScopedFeatureList feature_list_;
+#endif
 };
 
 // Verifies that policies make their corresponding preferences become managed,
@@ -160,10 +174,10 @@ class ChunkedPolicyPrefsTest : public PolicyPrefsTest,
 IN_PROC_BROWSER_TEST_P(ChunkedPolicyPrefsTest, PolicyToPrefsMapping) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   policy::FakeBrowserDMTokenStorage storage;
   policy::BrowserDMTokenStorage::SetForTesting(&storage);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   PrefService* local_state = g_browser_process->local_state();
   PrefService* user_prefs = ProfileManager::GetLastUsedProfileIfLoaded()
@@ -180,7 +194,7 @@ INSTANTIATE_TEST_SUITE_P(Chunked,
                          ::testing::Range(/* start= */ static_cast<size_t>(0),
                                           /* end= */ GetNumChunks()));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 // Class used to check policy to pref mappings for policies that are mapped into
 // the sign-in profile (usually via LoginProfilePolicyProvider).
@@ -211,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(SigninPolicyPrefsTest, PolicyToPrefsMapping) {
                              GetMockPolicyProvider());
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // For WebUI integration tests, see cr_policy_indicator_tests.js and
 // cr_policy_pref_indicator_tests.js.

@@ -9,8 +9,16 @@
 #include <cstdint>
 #include <string>
 
+namespace base {
+class Time;
+}
+
 namespace sync_pb {
 class CookieSpecifics;
+}
+
+namespace syncer {
+struct EntityData;
 }
 
 namespace ash::floating_sso {
@@ -23,20 +31,29 @@ inline constexpr char kPathForTests[] = "/baz";
 inline constexpr char kTopLevelSiteForTesting[] = "https://toplevelsite.com";
 inline constexpr char kUrlForTesting[] =
     "https://www.example.com/test/foo.html";
-// 2024-04-12 18:07:42.798591 UTC, in microseconds from Windows epoch
-inline constexpr int64_t kCreationTimeForTesting = 13357418862798591;
-// 2024-04-12 18:07:42.799017 UTC, in microseconds from Windows epoch
-inline constexpr int64_t kLastUpdateTimeForTesting = 13357418862799017;
 inline constexpr int kPortForTests = 19;
 
 // Returns a cookie proto with a name `kNamesForTests[i]` and a key
-// `kUniqueKeysForTests[i]`, other fields will always be the same regardless of
-// the value of `i`.
-sync_pb::CookieSpecifics CreatePredefinedCookieSpecificsForTest(size_t i = 0);
-// Creates a cookie proto with the provided unique key and name.
+// `kUniqueKeysForTests[i]`, other fields don't depend on the value of `i`. By
+// default returns a session cookie, setting `persistent` to true will make it
+// return a persistent cookie which expires in 10 days after `creation_time`.
+sync_pb::CookieSpecifics CreatePredefinedCookieSpecificsForTest(
+    size_t i,
+    const base::Time& creation_time,
+    bool persistent = false);
+
+// Creates a cookie proto with the provided unique key and name. By default
+// returns a session cookie, setting `persistent` to true will make it return a
+// persistent cookie which expires in 10 days after `creation_time`.
 sync_pb::CookieSpecifics CreateCookieSpecificsForTest(
     const std::string& unique_key,
-    const std::string& name);
+    const std::string& name,
+    const base::Time& creation_time,
+    bool persistent = false,
+    const std::string& domain = kDomainForTests);
+
+syncer::EntityData CreateEntityDataForTest(
+    const sync_pb::CookieSpecifics& specifics);
 
 }  // namespace ash::floating_sso
 

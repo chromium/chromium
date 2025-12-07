@@ -14,14 +14,17 @@
 #import "components/autofill/core/browser/logging/log_manager.h"
 #import "components/autofill/core/browser/logging/log_router.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
+#import "components/password_manager/core/browser/password_manager_interface.h"
 #import "components/password_manager/core/browser/password_sync_util.h"
+#import "components/sync/base/user_selectable_type.h"
+#import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_reuse_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/password_manager_log_router_factory.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/safe_browsing/model/chrome_password_protection_service.h"
 #import "ios/chrome/browser/safe_browsing/model/chrome_password_protection_service_factory.h"
-#import "ios/chrome/browser/safe_browsing/model/features.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -32,17 +35,13 @@ using password_manager::metrics_util::PasswordType;
 IOSChromePasswordReuseDetectionManagerClient::
     IOSChromePasswordReuseDetectionManagerClient(
         id<IOSChromePasswordReuseDetectionManagerClientBridge> bridge)
-    : bridge_(bridge), password_reuse_detection_manager_(this) {
-  log_manager_ = autofill::LogManager::Create(
-      ios::PasswordManagerLogRouterFactory::GetForBrowserState(
-          bridge_.browserState),
-      base::RepeatingClosure());
-
-  if (IsPasswordReuseDetectionEnabled()) {
-    web_state_observation_.Observe(bridge_.webState);
-    input_event_observation_.Observe(
-        PasswordProtectionJavaScriptFeature::GetInstance());
-  }
+    : bridge_(bridge),
+      password_reuse_detection_manager_(this),
+      log_router_(ios::PasswordManagerLogRouterFactory::GetForProfile(
+          bridge_.profile)) {
+  web_state_observation_.Observe(bridge_.webState);
+  input_event_observation_.Observe(
+      PasswordProtectionJavaScriptFeature::GetInstance());
 }
 
 IOSChromePasswordReuseDetectionManagerClient::
@@ -50,8 +49,7 @@ IOSChromePasswordReuseDetectionManagerClient::
 
 password_manager::PasswordReuseManager*
 IOSChromePasswordReuseDetectionManagerClient::GetPasswordReuseManager() const {
-  return IOSChromePasswordReuseManagerFactory::GetForBrowserState(
-      bridge_.browserState);
+  return IOSChromePasswordReuseManagerFactory::GetForProfile(bridge_.profile);
 }
 
 const GURL& IOSChromePasswordReuseDetectionManagerClient::GetLastCommittedURL()
@@ -60,29 +58,31 @@ const GURL& IOSChromePasswordReuseDetectionManagerClient::GetLastCommittedURL()
 }
 
 autofill::LogManager*
-IOSChromePasswordReuseDetectionManagerClient::GetLogManager() {
+IOSChromePasswordReuseDetectionManagerClient::GetCurrentLogManager() {
+  if (!log_manager_ && log_router_ && log_router_->HasReceivers()) {
+    log_manager_ =
+        autofill::LogManager::Create(log_router_, base::RepeatingClosure());
+  }
   return log_manager_.get();
 }
 
 safe_browsing::PasswordProtectionService*
 IOSChromePasswordReuseDetectionManagerClient::GetPasswordProtectionService()
     const {
-  return ChromePasswordProtectionServiceFactory::GetForBrowserState(
-      bridge_.browserState);
+  return ChromePasswordProtectionServiceFactory::GetForProfile(bridge_.profile);
 }
 
 bool IOSChromePasswordReuseDetectionManagerClient::IsHistorySyncAccountEmail(
     const std::string& username) {
   // Password reuse detection is tied to history sync.
   syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForBrowserState(bridge_.browserState);
-  if (!sync_service || !sync_service->GetPreferredDataTypes().Has(
-                           syncer::HISTORY_DELETE_DIRECTIVES)) {
+      SyncServiceFactory::GetForProfile(bridge_.profile);
+  if (!sync_service || !sync_service->GetUserSettings()->GetSelectedTypes().Has(
+                           syncer::UserSelectableType::kHistory)) {
     return false;
   }
   return password_manager::sync_util::IsSyncAccountEmail(
-      username,
-      IdentityManagerFactory::GetForBrowserState(bridge_.browserState),
+      username, IdentityManagerFactory::GetForProfile(bridge_.profile),
       signin::ConsentLevel::kSignin);
 }
 

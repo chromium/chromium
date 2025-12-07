@@ -35,9 +35,10 @@ StorageNotificationServiceFactory::GetInstance() {
 }
 
 // static
-KeyedService* StorageNotificationServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+StorageNotificationServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* browser_context) const {
-  return BuildInstanceFor(browser_context).release();
+  return BuildInstanceFor(browser_context);
 }
 
 std::unique_ptr<KeyedService>

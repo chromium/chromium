@@ -28,15 +28,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/audio/up_sampler.h"
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/fdlibm/ieee754.h"
 
@@ -116,13 +112,14 @@ void UpSampler::Process(const float* source_p,
   DCHECK_LE(half_size, source_frames_to_process);
 
   // Copy source samples to 2nd half of input buffer.
-  float* input_p = input_buffer_.Data() + source_frames_to_process;
-  memcpy(input_p, source_p, sizeof(float) * source_frames_to_process);
+  float* input_p = UNSAFE_TODO(input_buffer_.Data() + source_frames_to_process);
+  UNSAFE_TODO(
+      memcpy(input_p, source_p, sizeof(float) * source_frames_to_process));
 
   // Copy even sample-frames 0,2,4,6... (delayed by the linear phase delay)
   // directly into destP.
   for (unsigned i = 0; i < source_frames_to_process; ++i) {
-    dest_p[i * 2] = *((input_p - half_size) + i);
+    UNSAFE_TODO(dest_p[i * 2]) = *(UNSAFE_TODO((input_p - half_size) + i));
   }
 
   // Compute odd sample-frames 1,3,5,7...
@@ -136,17 +133,21 @@ void UpSampler::Process(const float* source_p,
   }
 
   for (unsigned i = 0; i < source_frames_to_process; ++i) {
-    dest_p[i * 2 + 1] = odd_samples_p[i];
+    UNSAFE_TODO(dest_p[i * 2 + 1]) = UNSAFE_TODO(odd_samples_p[i]);
   }
 
   // Copy 2nd half of input buffer to 1st half.
-  memcpy(input_buffer_.Data(), input_p,
-         sizeof(float) * source_frames_to_process);
+  UNSAFE_TODO(memcpy(input_buffer_.Data(), input_p,
+                     sizeof(float) * source_frames_to_process));
 }
 
 void UpSampler::Reset() {
-  direct_convolver_.reset();
-  simple_fft_convolver_.reset();
+  if (direct_convolver_) {
+    direct_convolver_->Reset();
+  }
+  if (simple_fft_convolver_) {
+    simple_fft_convolver_->Reset();
+  }
   input_buffer_.Zero();
 }
 

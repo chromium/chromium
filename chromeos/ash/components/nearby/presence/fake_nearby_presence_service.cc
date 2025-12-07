@@ -4,6 +4,9 @@
 
 #include "chromeos/ash/components/nearby/presence/fake_nearby_presence_service.h"
 
+#include "base/functional/callback_helpers.h"
+#include "base/notimplemented.h"
+
 namespace ash::nearby::presence {
 
 FakeNearbyPresenceService::FakeNearbyPresenceService() = default;

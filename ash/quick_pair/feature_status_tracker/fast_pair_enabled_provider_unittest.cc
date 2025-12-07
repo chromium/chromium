@@ -90,8 +90,7 @@ TEST_F(FastPairEnabledProviderTest, ProviderCallbackIsInvokedOnBTChanges) {
 TEST_F(FastPairEnabledProviderTest, IsEnabledWhenExpected) {
   base::test::ScopedFeatureList feature_list;
   const base::flat_map<base::test::FeatureRef, bool> feature_states{
-      {features::kFastPair, true},
-      {features::kFastPairSoftwareScanningSupport, true}};
+      {features::kFastPair, true}};
   feature_list.InitWithFeatureStates(feature_states);
 
   auto* bluetooth_enabled_provider = new MockBluetoothEnabledProvider();
@@ -140,8 +139,7 @@ class FastPairEnabledProviderTestNoCrashOnNullInputs
 TEST_P(FastPairEnabledProviderTestNoCrashOnNullInputs, NoCrashOnNullInputs) {
   base::test::ScopedFeatureList feature_list;
   const base::flat_map<base::test::FeatureRef, bool> feature_states{
-      {features::kFastPair, true},
-      {features::kFastPairSoftwareScanningSupport, true}};
+      {features::kFastPair, true}};
   feature_list.InitWithFeatureStates(feature_states);
 
   size_t args_mask = GetParam();

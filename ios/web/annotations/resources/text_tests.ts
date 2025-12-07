@@ -10,18 +10,18 @@ import {TestTextAnnotationList} from '//ios/web/annotations/resources/text_annot
 import {TestTextClick} from '//ios/web/annotations/resources/text_click_test.js';
 import {TestTextDecoration} from '//ios/web/annotations/resources/text_decoration_test.js';
 import {TestTextDecorator} from '//ios/web/annotations/resources/text_decorator_test.js';
-import {TestTextDOMObserver} from '//ios/web/annotations/resources/text_dom_observer_test.js';
+import {TestTextDomObserver} from '//ios/web/annotations/resources/text_dom_observer_test.js';
 import {TestDomUtils} from '//ios/web/annotations/resources/text_dom_utils_test.js';
 import {TestTextExtractor} from '//ios/web/annotations/resources/text_extractor_test.js';
 import {TestTextIntersectionObserver} from '//ios/web/annotations/resources/text_intersection_observer_test.js';
 import {TestTextTasks} from '//ios/web/annotations/resources/text_tasks_test.js';
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 function testAll() {
   return [
     ...new TestDomUtils().run(),
     ...new TestTextTasks().run(),
-    ...new TestTextDOMObserver().run(),
+    ...new TestTextDomObserver().run(),
     ...new TestTextIntersectionObserver().run(),
     ...new TestTextExtractor().run(),
     ...new TestTextDecorator().run(),
@@ -31,6 +31,8 @@ function testAll() {
   ];
 }
 
-gCrWeb.textTests = {
-  testAll,
-};
+const textTests = new CrWebApi();
+
+textTests.addFunction('testAll', testAll);
+
+gCrWeb.registerApi('textTests', textTests);

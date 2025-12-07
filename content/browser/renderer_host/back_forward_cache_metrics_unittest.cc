@@ -260,6 +260,7 @@ TEST_F(BackForwardCacheMetricsTest, AllFeaturesCovered) {
       /* WebSchedulerTrackedFeature::kWakeLock =*/35,
       /* WebSchedulerTrackedFeature::kWebFileSystem =*/39,
       /* WebSchedulerTrackedFeature::kAppBanner =*/42,
+      /* WebSchedulerTrackedFeature::kWebDatabase =*/44,
       /* WebSchedulerTrackedFeature::kPortal =*/46,
       /* WebSchedulerTrackedFeature::kSpeechSynthesis =*/50,
       /* WebSchedulerTrackedFeature::kMediaSessionImplOnServiceCreated =*/56};

@@ -28,13 +28,15 @@ if str(_JAVALANG_SRC_PATH) not in sys.path:
     sys.path.insert(1, str(_JAVALANG_SRC_PATH))
 import javalang
 from javalang.tree import (Annotation, ClassDeclaration, CompilationUnit,
-                           MethodDeclaration, PackageDeclaration)
+                           Import, MethodDeclaration, PackageDeclaration)
 
 _TEST_ANNOTATION = 'Test'
 _DISABLED_TEST_ANNOTATION = 'DisabledTest'
 _DISABLE_IF_TEST_ANNOTATION = 'DisableIf'
 
 _DISABLE_IF_TEST_PATTERN = re.compile(_DISABLE_IF_TEST_ANNOTATION + r'\.\w+')
+
+_TAG_PUBLIC_TRANSIT = 'tagPublicTransit'
 
 
 @dataclasses.dataclass(frozen=True)
@@ -49,7 +51,11 @@ class JavaTestHealth:
     tests_count: int
     """The total number of test cases."""
     disabled_tests: List[str]
+    """List of all test cases annotated with @DisabledTest"""
     disable_if_tests: List[str]
+    """List of all test cases annotated with @DisableIf"""
+    tags: List[str]
+    """Tags to classify the test class."""
 
 
 def get_java_test_health(test_path: pathlib.Path) -> JavaTestHealth:
@@ -104,11 +110,30 @@ def _get_java_test_health(java_ast: CompilationUnit) -> JavaTestHealth:
     disabled_test_list = []
     disable_if_test_list = []
 
+    tags = set()
+    # Don't consider these deps to mean it's a Public Transit test,
+    # it can be a test that only had entry points migrated.
+    SHALLOW_PUBLIC_TRANSIT_DEPS = set([
+        'org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule',
+        'org.chromium.chrome.test.transit.ChromeTransitTestRules',
+        'org.chromium.chrome.test.transit.ReusedCtaTransitTestRule',
+        'org.chromium.chrome.test.transit.FreshCtaTransitTestRule',
+        'org.chromium.chrome.test.transit.page.PageStation',
+        'org.chromium.chrome.test.transit.page.WebPageStation',
+    ])
+    for i in java_ast.imports:
+        if ('org.chromium.chrome.test.transit.' in i.path
+                and not i.path in SHALLOW_PUBLIC_TRANSIT_DEPS):
+            print(i.path)
+            tags.add(_TAG_PUBLIC_TRANSIT)
+            break
+
     java_classes: List[ClassDeclaration] = java_ast.types
     for java_class in java_classes:
         if any(annotation.name == _DISABLED_TEST_ANNOTATION
                for annotation in java_class.annotations):
             all_test_methods = _collect_all_test_methods(java_class)
+            annotation_counter[_TEST_ANNOTATION] += len(all_test_methods)
             annotation_counter[_DISABLED_TEST_ANNOTATION] += len(
                 all_test_methods)
             for test_method in all_test_methods:
@@ -121,6 +146,7 @@ def _get_java_test_health(java_ast: CompilationUnit) -> JavaTestHealth:
                 re.fullmatch(_DISABLE_IF_TEST_PATTERN, annotation.name)
                 for annotation in java_class.annotations):
             all_test_methods = _collect_all_test_methods(java_class)
+            annotation_counter[_TEST_ANNOTATION] += len(all_test_methods)
             annotation_counter[_DISABLE_IF_TEST_ANNOTATION] += len(
                 all_test_methods)
             for test_method in all_test_methods:
@@ -155,6 +181,7 @@ def _get_java_test_health(java_ast: CompilationUnit) -> JavaTestHealth:
         disable_if_tests_count=annotation_counter[_DISABLE_IF_TEST_ANNOTATION],
         tests_count=annotation_counter[_TEST_ANNOTATION],
         disable_if_tests=disable_if_test_list,
+        tags=sorted(tags),
     )
 
 

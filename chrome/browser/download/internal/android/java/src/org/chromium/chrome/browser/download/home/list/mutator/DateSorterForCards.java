@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.download.home.list.mutator;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.home.list.ListItem;
 import org.chromium.chrome.browser.download.home.list.ListUtils;
 import org.chromium.chrome.browser.download.home.list.UiUtils;
@@ -19,9 +21,10 @@ import java.util.Map;
  * items grouped in a card, the timestamp of the most recent item will be used for comparison
  * purposes. Note, the input list must contain only offline items.
  */
+@NullMarked
 public class DateSorterForCards implements ListConsumer {
-    private ListConsumer mListConsumer;
-    private Map<String, Long> mTimestampForCard = new HashMap<>();
+    private @Nullable ListConsumer mListConsumer;
+    private final Map<String, Long> mTimestampForCard = new HashMap<>();
 
     @Override
     public ListConsumer setListConsumer(ListConsumer consumer) {
@@ -76,6 +79,7 @@ public class DateSorterForCards implements ListConsumer {
         OfflineItem offlineItem = ((ListItem.OfflineItemListItem) listItem).item;
         if (ListUtils.canGroup(listItem)) {
             String domain = UiUtils.getDomainForItem(offlineItem);
+            assert mTimestampForCard.get(domain) != null;
             return mTimestampForCard.get(domain);
         }
         return offlineItem.creationTimeMs;

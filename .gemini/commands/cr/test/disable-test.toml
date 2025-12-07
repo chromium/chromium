@@ -1,0 +1,74 @@
+description = "Disable a test given the bug ID, or test name."
+prompt = """
+# Task: Disable a test given the test name and/or bug ID.
+
+Your task is to disable a failing or flaky test.
+
+**The user's command is appended below your instructions.**
+
+{{args}}
+
+## Workflow:
+
+1. **Parse Arguments:**
+
+   - Identify if the user input contains `<bug_id>` and optional `<test_name>`.
+   - If the user input does not contain `<test_name>`, try to read the
+     `<bug_id>` from "https://crbug.com/<bug_id>".
+   - Example input: `/cr:test:disable-test 1234554 MyTest.MyTestCase`
+   - **If you can't parse the required arguments for bug ID:** Do not proceed
+     with this task and print out the missing arguments to the user.
+
+2. **Locate and read the Test File:**
+
+   - Use remote code search to find the file containing the `<test_name>`. The
+     test name might be split into the suite and the test case. For example
+     `MyTestSuite.MyTestCase` should be searched as `"MyTestSuite.*MyTestCase"`.
+
+3. **Disable the test:**
+
+   - If the test is C++ test, rename the test by adding the `DISABLED_` prefix.,
+     then add the `// https://crbug.com/<bug_id>` comment ) above the test
+     method.
+     - `TEST_F(MySuite, testMyFeature)` ->
+       `TEST_F(MySuite, DISABLED_testMyFeature)`
+     - `TEST_P(MySuite, testMyFeature)` ->
+       `TEST_P(MySuite, DISABLED_testMyFeature)`
+     - `IN_PROC_BROWSER_TEST_F(MySuite, testMyFeature)` ->
+       `IN_PROC_BROWSER_TEST_F(MySuite, DISABLED_testMyFeature)`
+   - If the test is Java test, add the
+     `@DisabledTest(message = "crbug.com/...")` annotation above the test
+     method. Check if `org.chromium.base.test.util.DisabledTest` is imported. If
+     not, add the import.
+    ```
+    @Test
+    public void testMyTest() {
+      // ...
+    }
+    ```
+    ->
+    ```
+    @Test
+    @DisabledTest(message = "crbug.com/...")
+    public void testMyTest() {
+      // ...
+    }
+    ```
+
+4. **Make the code changes:**
+
+   - Apply the silencing change to the test file.
+   - Format the changes with `git cl format`.
+   - Commit the change with the following message:
+     ```
+     Disable <test_name>
+
+     Bug: <bug_id>
+     ```
+
+5. **Finish and wrap up:**
+
+   - Summarize the changes being made.
+   - Print out the command `git cl upload -f -d` so user can upload the change.
+     Do not run the command automatically.
+"""

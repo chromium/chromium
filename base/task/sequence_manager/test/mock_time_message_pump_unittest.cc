@@ -9,13 +9,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace sequence_manager {
+namespace base::sequence_manager {
 namespace {
 
 using ::testing::DoAll;
 using ::testing::Eq;
-using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::SetArgPointee;
 using ::testing::StrictMock;
@@ -49,9 +47,7 @@ TEST(MockMessagePumpTest, KeepsRunningIfNotAllowedToAdvanceTime) {
       .WillOnce(Return(NextWorkInfo(TimeTicks())))
       .WillOnce(Return(NextWorkInfo(TimeTicks())))
       .WillOnce(Return(NextWorkInfo(kFutureTime)));
-  EXPECT_CALL(delegate, DoIdleWork).WillOnce(Invoke([&] {
-    pump.Quit();
-  }));
+  EXPECT_CALL(delegate, DoIdleWork).WillOnce([&] { pump.Quit(); });
 
   pump.Run(&delegate);
 
@@ -68,9 +64,9 @@ TEST(MockMessagePumpTest, AdvancesTimeAsAllowed) {
 
   pump.SetAllowTimeToAutoAdvanceUntil(kEndTime);
   pump.SetStopWhenMessagePumpIsIdle(true);
-  EXPECT_CALL(delegate, DoWork).Times(3).WillRepeatedly(Invoke([&]() {
+  EXPECT_CALL(delegate, DoWork).Times(3).WillRepeatedly([&] {
     return NextWorkInfo(mock_clock.NowTicks() + Seconds(1));
-  }));
+  });
   EXPECT_CALL(delegate, DoIdleWork).Times(3);
 
   pump.Run(&delegate);
@@ -182,5 +178,4 @@ TEST(MockMessagePumpTest,
 }
 
 }  // namespace
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager

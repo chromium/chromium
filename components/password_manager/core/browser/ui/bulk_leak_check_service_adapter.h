@@ -50,9 +50,9 @@ class BulkLeakCheckServiceAdapter : public SavedPasswordsPresenter::Observer {
   // Weak handles to a presenter and service, respectively. These must be not
   // null and must outlive the adapter.
   raw_ptr<SavedPasswordsPresenter> presenter_ = nullptr;
-  raw_ptr<BulkLeakCheckServiceInterface> service_ = nullptr;
+  raw_ptr<BulkLeakCheckServiceInterface, DanglingUntriaged> service_ = nullptr;
 
-  raw_ptr<PrefService> prefs_ = nullptr;
+  raw_ptr<PrefService, DanglingUntriaged> prefs_ = nullptr;
 };
 
 }  // namespace password_manager

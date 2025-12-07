@@ -1,0 +1,172 @@
+=== Accessibility tree before go() pass 1 ===
+rootWebArea htmlTag='#document' name='Material Web Text Field Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-filled-text-field'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++++staticText name='Test Text Field'
+++++++++++++++++++++++++++++inlineTextBox name='Test Text Field'
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++textField className='input' htmlTag='input' name='Test Text Field'
+++++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 1 ===
+rootWebArea htmlTag='#document' name='Material Web Text Field Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-filled-text-field'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++++genericContainer className='label floating' htmlTag='span' <<<<<< CHANGED
+++++++++++++++++++++++++++staticText name='Test Text Field'
+++++++++++++++++++++++++++++inlineTextBox name='Test Text Field'
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++textField className='input' htmlTag='input' name='Test Text Field' value='Hello' <<<<<< CHANGED
+++++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++++++++staticText name='Hello' <<<<<< CHANGED
+++++++++++++++++++++++++++++++++inlineTextBox name='Hello' <<<<<< CHANGED
+++++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 2 ===
+rootWebArea htmlTag='#document' name='Material Web Text Field Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-filled-text-field'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++++genericContainer className='label floating' htmlTag='span'
+++++++++++++++++++++++++++staticText name='Test Text Field'
+++++++++++++++++++++++++++++inlineTextBox name='Test Text Field'
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++textField className='input' htmlTag='input' name='Test Text Field' value='Hello'
+++++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++++++++staticText name='Hello'
+++++++++++++++++++++++++++++++++inlineTextBox name='Hello'
+++++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 2 ===
+rootWebArea htmlTag='#document' name='Material Web Text Field Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-filled-text-field'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++++genericContainer className='label floating' htmlTag='span'
+++++++++++++++++++++++++++staticText name='Test Text Field'
+++++++++++++++++++++++++++++inlineTextBox name='Test Text Field'
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++textField className='input' htmlTag='input' name='Test Text Field' value='Hello World' <<<<<< CHANGED
+++++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++++++++staticText name='Hello World' <<<<<< CHANGED
+++++++++++++++++++++++++++++++++inlineTextBox name='Hello World' <<<<<< CHANGED
+++++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 3 ===
+rootWebArea htmlTag='#document' name='Material Web Text Field Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-filled-text-field'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++++genericContainer className='label floating' htmlTag='span'
+++++++++++++++++++++++++++staticText name='Test Text Field'
+++++++++++++++++++++++++++++inlineTextBox name='Test Text Field'
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++textField className='input' htmlTag='input' name='Test Text Field' value='Hello World'
+++++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++++++++staticText name='Hello World'
+++++++++++++++++++++++++++++++++inlineTextBox name='Hello World'
+++++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 3 ===
+rootWebArea htmlTag='#document' name='Material Web Text Field Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-filled-text-field'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++++genericContainer className='label resting' htmlTag='span' <<<<<< CHANGED
+++++++++++++++++++++++++++staticText name='Test Text Field'
+++++++++++++++++++++++++++++inlineTextBox name='Test Text Field'
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++textField className='input' htmlTag='input' name='Test Text Field' <<<<<< CHANGED
+++++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored
+=== End accessibility tree ===

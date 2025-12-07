@@ -26,7 +26,7 @@ class SampleCommand final : public CompositeEditCommand {
                         Node* ref_child,
                         EditingState*,
                         ShouldAssumeContentIsAlwaysEditable =
-                            kDoNotAssumeContentIsAlwaysEditable);
+                            ShouldAssumeContentIsAlwaysEditable(false));
   void InsertNodeAfter(Node*, Node*, EditingState*);
 
   void MoveParagraphContentsToNewBlockIfNecessary(const Position&,
@@ -88,20 +88,20 @@ TEST_F(CompositeEditCommandTest, insertNodeBefore) {
   SetBodyContent("<div contenteditable><b></b></div>");
   SampleCommand& sample = *MakeGarbageCollected<SampleCommand>(GetDocument());
   Node* insert_child = GetDocument().createTextNode("foo");
-  Element* ref_child = GetDocument().QuerySelector(AtomicString("b"));
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* ref_child = QuerySelector("b");
+  Element* div = QuerySelector("div");
 
   EditingState editing_state;
   sample.InsertNodeBefore(insert_child, ref_child, &editing_state);
   EXPECT_FALSE(editing_state.IsAborted());
-  EXPECT_EQ("foo<b></b>", div->innerHTML());
+  EXPECT_EQ("foo<b></b>", div->GetInnerHTMLString());
 }
 
 TEST_F(CompositeEditCommandTest, insertNodeBeforeInUneditable) {
   SetBodyContent("<div><b></b></div>");
   SampleCommand& sample = *MakeGarbageCollected<SampleCommand>(GetDocument());
   Node* insert_child = GetDocument().createTextNode("foo");
-  Element* ref_child = GetDocument().QuerySelector(AtomicString("b"));
+  Element* ref_child = QuerySelector("b");
 
   EditingState editing_state;
   sample.InsertNodeBefore(insert_child, ref_child, &editing_state);
@@ -112,14 +112,14 @@ TEST_F(CompositeEditCommandTest, insertNodeBeforeDisconnectedNode) {
   SetBodyContent("<div><b></b></div>");
   SampleCommand& sample = *MakeGarbageCollected<SampleCommand>(GetDocument());
   Node* insert_child = GetDocument().createTextNode("foo");
-  Element* ref_child = GetDocument().QuerySelector(AtomicString("b"));
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* ref_child = QuerySelector("b");
+  Element* div = QuerySelector("div");
   div->remove();
 
   EditingState editing_state;
   sample.InsertNodeBefore(insert_child, ref_child, &editing_state);
   EXPECT_FALSE(editing_state.IsAborted());
-  EXPECT_EQ("<b></b>", div->innerHTML())
+  EXPECT_EQ("<b></b>", div->GetInnerHTMLString())
       << "InsertNodeBeforeCommand does nothing for disconnected node";
 }
 
@@ -127,14 +127,14 @@ TEST_F(CompositeEditCommandTest, insertNodeBeforeWithDirtyLayoutTree) {
   SetBodyContent("<div><b></b></div>");
   SampleCommand& sample = *MakeGarbageCollected<SampleCommand>(GetDocument());
   Node* insert_child = GetDocument().createTextNode("foo");
-  Element* ref_child = GetDocument().QuerySelector(AtomicString("b"));
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* ref_child = QuerySelector("b");
+  Element* div = QuerySelector("div");
   div->setAttribute(html_names::kContenteditableAttr, keywords::kTrue);
 
   EditingState editing_state;
   sample.InsertNodeBefore(insert_child, ref_child, &editing_state);
   EXPECT_FALSE(editing_state.IsAborted());
-  EXPECT_EQ("foo<b></b>", div->innerHTML());
+  EXPECT_EQ("foo<b></b>", div->GetInnerHTMLString());
 }
 
 TEST_F(CompositeEditCommandTest,
@@ -156,7 +156,7 @@ TEST_F(CompositeEditCommandTest,
       "<div><br></div>"
       "<style>div{-webkit-user-modify:read-only;user-select:none;}</style>"
       "foo",
-      body->innerHTML());
+      body->GetInnerHTMLString());
 }
 
 TEST_F(CompositeEditCommandTest,
@@ -165,7 +165,7 @@ TEST_F(CompositeEditCommandTest,
   base::RunLoop().RunUntilIdle();
 
   SampleCommand& sample = *MakeGarbageCollected<SampleCommand>(GetDocument());
-  Element* input = GetDocument().QuerySelector(AtomicString("input"));
+  Element* input = QuerySelector("input");
   Position pos = Position::BeforeNode(*input);
   EditingState editing_state;
 
@@ -173,7 +173,7 @@ TEST_F(CompositeEditCommandTest,
   sample.MoveParagraphContentsToNewBlockIfNecessary(pos, &editing_state);
   EXPECT_FALSE(editing_state.IsAborted());
   EXPECT_EQ("<object contenteditable=\"\"><div><input></div></object>",
-            GetDocument().body()->innerHTML());
+            GetDocument().body()->GetInnerHTMLString());
 }
 
 TEST_F(CompositeEditCommandTest,
@@ -182,7 +182,7 @@ TEST_F(CompositeEditCommandTest,
   SetBodyContent("<span></span><button><meter></meter></button>");
 
   SampleCommand& sample = *MakeGarbageCollected<SampleCommand>(GetDocument());
-  Element* button = GetDocument().QuerySelector(AtomicString("button"));
+  Element* button = QuerySelector("button");
   Position pos = Position(button, 0);
   EditingState editing_state;
 
@@ -190,32 +190,14 @@ TEST_F(CompositeEditCommandTest,
   sample.MoveParagraphContentsToNewBlockIfNecessary(pos, &editing_state);
   EXPECT_FALSE(editing_state.IsAborted());
   EXPECT_EQ("<div></div><span></span><button><meter></meter></button>",
-            GetDocument().body()->innerHTML());
-}
-
-TEST_F(CompositeEditCommandTest,
-       MoveParagraphContentsToNewBlockWithButtonAndBr) {
-  GetDocument().setDesignMode("on");
-  InsertStyleElement("br { content: 'x'; }");
-  SetBodyContent("<button><br></button>");
-
-  SampleCommand& sample = *MakeGarbageCollected<SampleCommand>(GetDocument());
-  Element* button = GetDocument().QuerySelector(AtomicString("button"));
-  Position pos = Position(button, 0);
-  EditingState editing_state;
-
-  // Should not crash
-  sample.MoveParagraphContentsToNewBlockIfNecessary(pos, &editing_state);
-  EXPECT_FALSE(editing_state.IsAborted());
-  EXPECT_EQ("<button><div><br></div><br></button>",
-            GetDocument().body()->innerHTML());
+            GetDocument().body()->GetInnerHTMLString());
 }
 
 TEST_F(CompositeEditCommandTest, InsertNodeOnDisconnectedParent) {
   SetBodyContent("<p><b></b></p>");
   SampleCommand& sample = *MakeGarbageCollected<SampleCommand>(GetDocument());
-  Node* insert_child = GetDocument().QuerySelector(AtomicString("b"));
-  Element* ref_child = GetDocument().QuerySelector(AtomicString("p"));
+  Node* insert_child = QuerySelector("b");
+  Element* ref_child = QuerySelector("p");
   ref_child->remove();
   EditingState editing_state_before;
   // editing state should abort here.
@@ -233,9 +215,9 @@ TEST_F(CompositeEditCommandTest, MoveParagraphsWithBr) {
 
   EditingState editing_state;
   SampleCommand& sample = *MakeGarbageCollected<SampleCommand>(GetDocument());
-  Element* li = GetDocument().QuerySelector(AtomicString("li"));
-  Element* br1 = GetDocument().QuerySelector(AtomicString("ol br"));
-  Element* br2 = GetDocument().QuerySelector(AtomicString("ol + br"));
+  Element* li = QuerySelector("li");
+  Element* br1 = QuerySelector("ol br");
+  Element* br2 = QuerySelector("ol + br");
   br1->setTextContent("x");
   UpdateAllLifecyclePhasesForTest();
 
@@ -255,7 +237,7 @@ TEST_F(CompositeEditCommandTest, MoveParagraphsWithBr) {
   sample.MoveParagraphs(start, end, destination, &editing_state);
   EXPECT_FALSE(editing_state.IsAborted());
   EXPECT_EQ("<ol><li><span><br></span></li></ol><br>",
-            GetDocument().body()->innerHTML());
+            GetDocument().body()->GetInnerHTMLString());
 }
 
 TEST_F(CompositeEditCommandTest, MoveParagraphsWithInlineBlocks) {
@@ -264,10 +246,10 @@ TEST_F(CompositeEditCommandTest, MoveParagraphsWithInlineBlocks) {
 
   EditingState editing_state;
   SampleCommand& sample = *MakeGarbageCollected<SampleCommand>(GetDocument());
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
-  Element* span1 = GetDocument().QuerySelector(AtomicString("span"));
-  Element* span2 = GetDocument().QuerySelector(AtomicString("span + span"));
-  Element* br = GetDocument().QuerySelector(AtomicString("br"));
+  Element* div = QuerySelector("div");
+  Element* span1 = QuerySelector("span");
+  Element* span2 = QuerySelector("span + span");
+  Element* br = QuerySelector("br");
 
   // The start precedes the end, but when using MostFor/BackwardCaretPosition
   // to constrain the range, the resulting end would precede the start.
@@ -285,7 +267,7 @@ TEST_F(CompositeEditCommandTest, MoveParagraphsWithInlineBlocks) {
   sample.MoveParagraphs(start, end, destination, &editing_state);
   EXPECT_FALSE(editing_state.IsAborted());
   EXPECT_EQ("<div><span></span><span></span> </div><br>",
-            GetDocument().body()->innerHTML());
+            GetDocument().body()->GetInnerHTMLString());
 }
 
 TEST_F(CompositeEditCommandTest, MoveParagraphsWithTableAndCaption) {
@@ -311,8 +293,8 @@ TEST_F(CompositeEditCommandTest, MoveParagraphsWithTableAndCaption) {
   // Should not crash. See http://crbug.com/1310613
   sample.MoveParagraphs(start, end, destination, &editing_state);
   EXPECT_FALSE(editing_state.IsAborted());
-  EXPECT_EQ("<table><caption><div><input><br></div></caption></table>",
-            GetDocument().body()->innerHTML());
+  EXPECT_EQ("<table><caption><div><input></div></caption></table>",
+            GetDocument().body()->GetInnerHTMLString());
 }
 
 TEST_F(CompositeEditCommandTest,
@@ -328,7 +310,8 @@ TEST_F(CompositeEditCommandTest,
   sample.MoveParagraphContentsToNewBlockIfNecessary(Position(body, 0),
                                                     &editing_state);
   EXPECT_TRUE(editing_state.IsAborted());
-  EXPECT_EQ("<div contenteditable=\"false\"><br></div>", body->innerHTML());
+  EXPECT_EQ("<div contenteditable=\"false\"><br></div>",
+            body->GetInnerHTMLString());
 }
 
 TEST_F(CompositeEditCommandTest,
@@ -345,7 +328,7 @@ TEST_F(CompositeEditCommandTest,
   sample.MoveParagraphContentsToNewBlockIfNecessary(Position(body, 0),
                                                     &editing_state);
   EXPECT_TRUE(editing_state.IsAborted());
-  EXPECT_EQ("<div><br></div><input>", body->innerHTML());
+  EXPECT_EQ("<div><br></div><input>", body->GetInnerHTMLString());
 }
 
 }  // namespace blink

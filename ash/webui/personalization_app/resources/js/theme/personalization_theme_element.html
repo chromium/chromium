@@ -75,14 +75,27 @@
     overflow: visible;
   }
 
-  .warning-tooltip {
+  .consumer-tooltip {
+    --cr-icon-size: 22px;
     --cr-tooltip-icon-fill-color: var(--cros-sys-primary_container);
-    box-shadow: inset 0 0 0 3px var(--cros-sys-primary_container);
+
     border-radius: 50%;
     inset-block-end: -2px;
     inset-inline-end: -2px;
     position: absolute;
-    stroke: var(--cros-text-color-primary);
+    box-shadow: inset 0 0 0 4px var(--cros-sys-primary_container);
+  }
+
+  .managed-tooltip {
+    --cr-icon-size: 16px;
+    --cr-tooltip-icon-fill-color: var(--cros-button-background-color-primary);
+
+    border-radius: 50%;
+    inset-block-end: -0px;
+    inset-inline-end: -0px;
+    position: absolute;
+    box-shadow: 0 0 0 4px var(--cros-sys-primary_container);
+    background-color: var(--cros-sys-primary_container);
   }
 </style>
 <div id="container">
@@ -125,13 +138,24 @@
     <template is="dom-if"
         if="[[computeShouldShowTooltipIcon_(colorModeAutoScheduleEnabled_, geolocationPermissionEnabled_)]]"
         restamp>
-      <cr-tooltip-icon
-          id="locationDeniedInfoIcon"
-          icon-class="cr:error"
-          tooltip-text="$i18n{errorTooltipAutoColorMode}"
-          icon-aria-label="$i18n{errorTooltipAutoColorMode}"
-          class="warning-tooltip">
-      </cr-tooltip-icon>
+      <template is="dom-if" if="[[geolocationIsUserModifiable_]]">
+        <cr-tooltip-icon
+            id="locationDeniedInfoIcon"
+            icon-class="cr:error"
+            tooltip-text="$i18n{errorTooltipAutoColorMode}"
+            icon-aria-label="$i18n{errorTooltipAutoColorMode}"
+            class="consumer-tooltip">
+        </cr-tooltip-icon>
+      </template>
+      <template is="dom-if" if="[[!geolocationIsUserModifiable_]]">
+        <cr-tooltip-icon
+            id="locationDeniedInfoIcon"
+            icon-class="personalization:managed"
+            tooltip-text="$i18n{managedErrorTooltipAutoColorMode}"
+            icon-aria-label="$i18n{managedErrorTooltipAutoColorMode}"
+            class="managed-tooltip">
+        </cr-tooltip-icon>
+      </template>
     </template>
   </iron-selector>
 </div>

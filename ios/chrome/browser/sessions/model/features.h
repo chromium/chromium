@@ -13,11 +13,9 @@ namespace session::features {
 // lower than the next SessionID.
 BASE_DECLARE_FEATURE(kSessionRestorationSessionIDCheck);
 
-// Feature flag to enable the session serialization optimizations.
-BASE_DECLARE_FEATURE(kEnableSessionSerializationOptimizations);
-
-// When true, session serialization optimizations should be enabled.
-bool UseSessionSerializationOptimizations();
+// Feature flag to control whether all tabs (enabled) or only pinned and
+// active tabs (disabled) get their full navigation history converted.
+BASE_DECLARE_FEATURE(kSessionRestorationFullConversion);
 
 }  // namespace session::features
 

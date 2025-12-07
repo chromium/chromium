@@ -127,7 +127,7 @@
       "x": 8.0,
       "y": 8.0
    },
-   "childNodeIndexes": [ 13, 14, 16, 17, 26, 27, 49 ],
+   "childNodeIndexes": [ 13, 14, 16, 17, 26, 27, 49, 50, 52 ],
    "layoutNodeIndex": 3,
    "nodeName": "DIV",
    "nodeType": 1,
@@ -690,5 +690,24 @@
    "backendNodeId": "?",
    "nodeName": "#text",
    "nodeType": 3,
-   "nodeValue": "\n\n\n"
+   "nodeValue": "\n"
+}
+{
+   "backendNodeId": "?",
+   "childNodeIndexes": [ 51 ],
+   "nodeName": "SCRIPT",
+   "nodeType": 1,
+   "nodeValue": ""
+}
+{
+   "backendNodeId": "?",
+   "nodeName": "#text",
+   "nodeType": 3,
+   "nodeValue": "\n  fetch(\"/hello.html\");\n"
+}
+{
+   "backendNodeId": "?",
+   "nodeName": "#text",
+   "nodeType": 3,
+   "nodeValue": "\n\n\n\n"
 }

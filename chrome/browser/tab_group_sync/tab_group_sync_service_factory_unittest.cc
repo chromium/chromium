@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "chrome/test/base/testing_profile.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,22 +21,24 @@ class TabGroupSyncServiceFactoryTest : public testing::Test {
 
   ~TabGroupSyncServiceFactoryTest() override = default;
 
-  void SetUp() override { profile_ = TestingProfile::Builder().Build(); }
+  void InitService() { profile_ = TestingProfile::Builder().Build(); }
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
 };
 
 TEST_F(TabGroupSyncServiceFactoryTest, ServiceCreatedInRegularProfile) {
+  InitService();
   TabGroupSyncService* service =
       TabGroupSyncServiceFactory::GetForProfile(profile_.get());
   EXPECT_TRUE(service);
 }
 
 TEST_F(TabGroupSyncServiceFactoryTest, ServiceNotCreatedInIncognito) {
+  InitService();
   Profile* otr_profile = profile_.get()->GetOffTheRecordProfile(
       Profile::OTRProfileID::PrimaryID(), /*create_if_needed=*/true);
-  EXPECT_DEATH(TabGroupSyncServiceFactory::GetForProfile(otr_profile), "");
+  EXPECT_FALSE(TabGroupSyncServiceFactory::GetForProfile(otr_profile));
 }
 
 }  // namespace

@@ -12,7 +12,6 @@
 #include "base/json/json_writer.h"
 #include "base/strings/escape.h"
 #include "base/values.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 
 namespace file_manager {
@@ -136,8 +135,7 @@ GURL GetFileManagerMainPageUrlWithParams(
     arg_value.Set("volumeFilter", std::move(volume_filter_list));
   }
 
-  std::string json_args;
-  base::JSONWriter::Write(arg_value, &json_args);
+  std::string json_args = base::WriteJson(arg_value).value_or("");
 
   std::string url =
       GetFileManagerMainPageUrl().spec() + '?' +

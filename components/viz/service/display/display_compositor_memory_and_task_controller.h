@@ -15,15 +15,10 @@ namespace base {
 class WaitableEvent;
 }
 
-namespace gpu {
-class SharedImageInterface;
-class SharedImageInterfaceInProcess;
-}  // namespace gpu
-
 namespace viz {
 class SkiaOutputSurfaceDependency;
 
-// This class holds onwership of task posting sequence to the gpu thread and
+// This class holds ownership of task posting sequence to the gpu thread and
 // memory tracking for the display compositor. This class has a 1:1 relationship
 // to the display compositor class. This class is only used for gpu compositing.
 // TODO(weiliangc): This should merge with SkiaOutputSurfaceDependency.
@@ -48,8 +43,6 @@ class VIZ_SERVICE_EXPORT DisplayCompositorMemoryAndTaskController {
     return controller_on_gpu_.get();
   }
 
-  gpu::SharedImageInterface* shared_image_interface();
-
  private:
   void InitializeOnGpu(SkiaOutputSurfaceDependency* skia_dependency,
                        base::WaitableEvent* event);
@@ -63,9 +56,6 @@ class VIZ_SERVICE_EXPORT DisplayCompositorMemoryAndTaskController {
   // Accessed on the gpu thread.
   std::unique_ptr<gpu::DisplayCompositorMemoryAndTaskControllerOnGpu>
       controller_on_gpu_;
-
-  // Accessed on the compositor thread.
-  scoped_refptr<gpu::SharedImageInterfaceInProcess> shared_image_interface_;
 };
 
 }  // namespace viz

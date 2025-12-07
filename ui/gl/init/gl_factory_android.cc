@@ -5,6 +5,7 @@
 #include "ui/gl/init/gl_factory.h"
 
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gl/android/scoped_a_native_window.h"
@@ -18,6 +19,7 @@
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_surface_stub.h"
+#include "ui/gl/gl_utils.h"
 
 namespace gl {
 namespace init {
@@ -72,9 +74,14 @@ bool GLNonOwnedContext::IsCurrent(GLSurface* surface) {
 }  // namespace
 
 std::vector<GLImplementationParts> GetAllowedGLImplementations() {
+  static bool use_passthrough =
+      gl::UsePassthroughCommandDecoder(base::CommandLine::ForCurrentProcess());
   std::vector<GLImplementationParts> impls;
-  impls.emplace_back(kGLImplementationEGLGLES2);
-  impls.emplace_back(kGLImplementationEGLANGLE);
+  if (use_passthrough) {
+    impls.emplace_back(kGLImplementationEGLANGLE);
+  } else {
+    impls.emplace_back(kGLImplementationEGLGLES2);
+  }
   return impls;
 }
 
@@ -107,8 +114,7 @@ scoped_refptr<GLContext> CreateGLContext(GLShareGroup* share_group,
       return stub_context;
     }
     case kGLImplementationDisabled:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
     default:
       if (compatible_surface->GetHandle() ||
           compatible_surface->IsSurfaceless()) {
@@ -136,8 +142,7 @@ scoped_refptr<GLSurface> CreateViewGLSurface(GLDisplay* display,
         return InitializeGLSurface(new GLSurfaceStub());
       }
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -160,8 +165,7 @@ scoped_refptr<GLSurface> CreateOffscreenGLSurface(GLDisplay* display,
     case kGLImplementationStubGL:
       return InitializeGLSurface(new GLSurfaceStub());
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -177,7 +181,7 @@ void SetDisabledExtensionsPlatform(const std::string& disabled_extensions) {
     case kGLImplementationStubGL:
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -193,8 +197,7 @@ bool InitializeExtensionSettingsOneOffPlatform(GLDisplay* display) {
     case kGLImplementationStubGL:
       return true;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 

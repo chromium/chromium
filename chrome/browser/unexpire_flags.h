@@ -5,8 +5,7 @@
 #ifndef CHROME_BROWSER_UNEXPIRE_FLAGS_H_
 #define CHROME_BROWSER_UNEXPIRE_FLAGS_H_
 
-#include "base/feature_list.h"
-#include "base/functional/callback.h"
+#include <string>
 
 namespace flags_ui {
 class FlagsStorage;

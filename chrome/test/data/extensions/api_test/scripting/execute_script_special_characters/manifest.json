@@ -1,0 +1,12 @@
+{
+  "name": "executeScript scripts with special characters",
+  "version": "1.0",
+  "manifest_version": 3,
+  "description": "ExecuteScript scripts that contain special characters are loaded correctly.",
+  "background": {
+    "service_worker": "worker.js",
+    "type": "module"
+  },
+  "permissions": ["scripting", "tabs"],
+  "host_permissions": ["*://example.com/*"]
+}

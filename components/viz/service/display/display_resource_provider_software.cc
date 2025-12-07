@@ -7,10 +7,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/feature_list.h"
-#include "base/synchronization/waitable_event.h"
-#include "components/viz/common/features.h"
-#include "components/viz/service/display/shared_bitmap_manager.h"
+#include "base/functional/callback_helpers.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -18,37 +15,32 @@
 namespace viz {
 
 DisplayResourceProviderSoftware::DisplayResourceProviderSoftware(
-    SharedBitmapManager* shared_bitmap_manager,
     gpu::SharedImageManager* shared_image_manager,
-    gpu::SyncPointManager* sync_point_manager,
     gpu::Scheduler* scheduler)
     : DisplayResourceProvider(DisplayResourceProvider::kSoftware),
-      shared_bitmap_manager_(shared_bitmap_manager),
       shared_image_manager_(shared_image_manager),
-      sync_point_manager_(sync_point_manager),
-      gpu_scheduler_(scheduler),
-      sync_point_order_data_(
-          (sync_point_manager_ &&
-           base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage))
-              ? sync_point_manager_->CreateSyncPointOrderData()
-              : nullptr) {
-  DCHECK(shared_bitmap_manager);
-
+      gpu_scheduler_(scheduler) {
   memory_tracker_ = std::make_unique<gpu::MemoryTypeTracker>(nullptr);
 }
 
 DisplayResourceProviderSoftware::~DisplayResourceProviderSoftware() {
   Destroy();
-  if (sync_point_order_data_) {
-    sync_point_order_data_->Destroy();
-  }
 }
 
 std::unique_ptr<gpu::MemoryImageRepresentation>
 DisplayResourceProviderSoftware::GetSharedImageRepresentation(
     const gpu::Mailbox& mailbox,
     const gpu::SyncToken& sync_token) {
-  WaitSyncToken(sync_token);
+  if (!blocking_sequence_runner_) {
+    // There are cases where a nullptr `gpu_scheduler_` is used. In such cases,
+    // this method shouldn't be called.
+    CHECK(gpu_scheduler_);
+    blocking_sequence_runner_ =
+        std::make_unique<gpu::BlockingSequenceRunner>(gpu_scheduler_);
+  }
+  blocking_sequence_runner_->AddTask(base::OnceClosure(base::DoNothing()),
+                                     {sync_token}, gpu::SyncToken());
+  blocking_sequence_runner_->RunAllTasks();
   return shared_image_manager_->ProduceMemory(mailbox, memory_tracker_.get());
 }
 
@@ -59,36 +51,20 @@ DisplayResourceProviderSoftware::LockForRead(ResourceId id) {
 
   // Determine whether this resource is using a software SharedImage or a legacy
   // shared bitmap.
-  if (resource->transferable.IsSoftwareSharedImage()) {
-    DCHECK(shared_image_manager_ && sync_point_manager_);
-    auto it = resource_shared_images_.find(id);
-    if (it == resource_shared_images_.end()) {
-      const gpu::Mailbox& mailbox = resource->transferable.mailbox();
-      auto access = std::make_unique<SharedImageAccess>();
-      access->representation = GetSharedImageRepresentation(
-          mailbox, resource->transferable.sync_token());
-      if (!access->representation) {
-        return nullptr;
-      }
+  DCHECK(shared_image_manager_);
+  auto it = resource_shared_images_.find(id);
+  if (it == resource_shared_images_.end()) {
+    const gpu::Mailbox& mailbox = resource->transferable.mailbox();
+    auto access = std::make_unique<SharedImageAccess>();
+    access->representation = GetSharedImageRepresentation(
+        mailbox, resource->transferable.sync_token());
+    if (!access->representation) {
+      return nullptr;
+    }
 
-      access->read_access = access->representation->BeginScopedReadAccess();
-      resource_shared_images_.emplace(id, std::move(access));
-    }
-  } else {
-    if (!resource->shared_bitmap) {
-      const SharedBitmapId& shared_bitmap_id =
-          resource->transferable.shared_bitmap_id();
-      std::unique_ptr<SharedBitmap> bitmap =
-          shared_bitmap_manager_->GetSharedBitmapFromId(
-              resource->transferable.size, resource->transferable.format,
-              shared_bitmap_id);
-      if (bitmap) {
-        resource->shared_bitmap = std::move(bitmap);
-        resource->shared_bitmap_tracing_guid =
-            shared_bitmap_manager_->GetSharedBitmapTracingGUIDFromId(
-                shared_bitmap_id);
-      }
-    }
+    access->read_access = access->representation->BeginScopedReadAccess();
+    resource_shared_images_.emplace(id, std::move(access));
+    resource->shared_image_representation_created_and_set = true;
   }
 
   resource->lock_for_read_count++;
@@ -157,23 +133,9 @@ DisplayResourceProviderSoftware::DeleteAndReturnUnusedResourcesToChildImpl(
   return to_return;
 }
 
-void DisplayResourceProviderSoftware::PopulateSkBitmapWithResource(
-    SkBitmap* sk_bitmap,
-    const ChildResource* resource,
-    SkAlphaType alpha_type) {
-  DCHECK(resource->transferable.format.IsBitmapFormatSupported());
-  SkImageInfo info =
-      SkImageInfo::MakeN32(resource->transferable.size.width(),
-                           resource->transferable.size.height(), alpha_type);
-  bool pixels_installed = sk_bitmap->installPixels(
-      info, resource->shared_bitmap->pixels(), info.minRowBytes());
-  DCHECK(pixels_installed);
-}
-
 DisplayResourceProviderSoftware::ScopedReadLockSkImage::ScopedReadLockSkImage(
     DisplayResourceProviderSoftware* resource_provider,
-    ResourceId resource_id,
-    SkAlphaType alpha_type)
+    ResourceId resource_id)
     : resource_provider_(resource_provider), resource_id_(resource_id) {
   const ChildResource* resource = resource_provider->LockForRead(resource_id);
   if (!resource) {
@@ -191,49 +153,21 @@ DisplayResourceProviderSoftware::ScopedReadLockSkImage::ScopedReadLockSkImage(
   auto si_image_it =
       resource_provider->resource_shared_images_.find(resource_id);
 
-  if (resource->shared_bitmap) {
-    SkBitmap sk_bitmap;
-    resource_provider->PopulateSkBitmapWithResource(&sk_bitmap, resource,
-                                                    alpha_type);
-    sk_bitmap.setImmutable();
-    sk_image_ = SkImages::RasterFromBitmap(sk_bitmap);
-    resource_provider_->resource_sk_images_[resource_id] = sk_image_;
-  } else if (si_image_it != resource_provider->resource_shared_images_.end()) {
+  if (si_image_it != resource_provider->resource_shared_images_.end()) {
     sk_image_ = SkImages::RasterFromPixmap(
         si_image_it->second->read_access->pixmap(), nullptr, nullptr);
     resource_provider_->resource_sk_images_[resource_id] = sk_image_;
   } else {
-    // If a CompositorFrameSink is destroyed, it destroys all SharedBitmapIds
-    // that it registered. In this case, a CompositorFrame can be drawn with
-    // SharedBitmapIds that are not known in the viz service. As well, a
-    // misbehaved client can use SharedBitampIds that it did not report to
-    // the service. Then the |shared_bitmap| will be null, and this read lock
-    // will not be valid. Software-compositing users of this read lock must
-    // check for valid() to deal with this scenario.
+    // If a CompositorFrameSink is destroyed, it destroys all reported
+    // resource_shared_images_. In this case, a CompositorFrame can be drawn
+    // with Mailboxes that are not known in the viz service. As well, a
+    // misbehaved client can use software shared_image that it did not report to
+    // the service. Then this read lock will not be valid. Software-compositing
+    // users of this read lock must check for valid() to deal with this
+    // scenario.
     sk_image_ = nullptr;
     return;
   }
-}
-
-void DisplayResourceProviderSoftware::WaitSyncToken(gpu::SyncToken sync_token) {
-  uint32_t order_num = sync_point_order_data_->GenerateUnprocessedOrderNumber();
-  base::WaitableEvent completion;
-  if (sync_point_manager_->Wait(
-          sync_token, sync_point_order_data_->sequence_id(), order_num,
-          base::BindOnce(&base::WaitableEvent::Signal,
-                         base::Unretained(&completion)))) {
-    gpu::SequenceId release_sequence_id =
-        sync_point_manager_->GetSyncTokenReleaseSequenceId(sync_token);
-    gpu::Scheduler::ScopedAddWaitingPriority waiting(
-        gpu_scheduler_, release_sequence_id, gpu::SchedulingPriority::kHigh);
-
-    completion.Wait();
-  }
-
-  // We don't have any tasks to run here, but we need to mark order number as
-  // complete.
-  sync_point_order_data_->BeginProcessingOrderNumber(order_num);
-  sync_point_order_data_->FinishProcessingOrderNumber(order_num);
 }
 
 DisplayResourceProviderSoftware::ScopedReadLockSkImage::

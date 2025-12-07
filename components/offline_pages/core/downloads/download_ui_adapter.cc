@@ -215,7 +215,7 @@ void DownloadUIAdapter::GetShareInfoForItem(const ContentId& id,
 void DownloadUIAdapter::RenameItem(const ContentId& id,
                                    const std::string& name,
                                    RenameCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void DownloadUIAdapter::OnPageGetForVisuals(
@@ -404,6 +404,10 @@ void DownloadUIAdapter::ResumeDownload(const ContentId& id) {
   request_coordinator_->GetAllRequests(
       base::BindOnce(&DownloadUIAdapter::ResumeDownloadContinuation,
                      weak_ptr_factory_.GetWeakPtr(), id.id));
+}
+
+void DownloadUIAdapter::ValidateDangerousDownload(const ContentId& id) {
+  NOTREACHED();
 }
 
 void DownloadUIAdapter::ResumeDownloadContinuation(

@@ -32,8 +32,14 @@ specific_include_rules = {
     # For using DisabledReasonId.
     "+components/back_forward_cache/disabled_reason_id.h",
   ],
+  "frame_token_message_queue.cc": [
+    "+components/viz/common/quads/compositor_frame_metadata.h",
+  ],
   "embedded_frame_sink_provider_impl_unittest\.cc": [
     "+components/viz/service",
+  ],
+  "navigation_transitions/navigation_transition_utils\.cc": [
+    "+gpu/command_buffer/client/client_shared_image.h",
   ],
   "render_process_host_impl(_receiver_bindings)?\.cc": [
     "+google_apis/gaia/gaia_config.h",
@@ -42,12 +48,20 @@ specific_include_rules = {
     # embedded in mus won't be able to talk to the native ozone.
     "+ui/ozone/public/ozone_switches.h",
   ],
+  "render_widget_host_view_aura_unittest\.cc": [
+    "+ui/ozone/public/ozone_platform.h",
+    "+components/stylus_handwriting/win/features.h",
+  ],
+  "render_widget_host_view_aura\.cc": [
+    "+ui/ozone/public/ozone_platform.h",
+  ],
   "render_widget_host_view_base\.cc": [
     "+ui/ozone/public/ozone_platform.h",
   ],
   "render_widget_host_view_mac\.mm": [
     "+components/device_event_log/device_event_log.h",
     "+content/public/browser/web_contents.h",
+    "+ui/menus/cocoa/text_services_context_menu.h",
   ],
   "popup_menu_helper_mac.mm": [
     "+content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h",

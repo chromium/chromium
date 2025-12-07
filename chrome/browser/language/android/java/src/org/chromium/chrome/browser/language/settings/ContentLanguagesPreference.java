@@ -4,13 +4,14 @@
 
 package org.chromium.chrome.browser.language.settings;
 
-import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItem;
-import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItemWithEndIcon;
+import static org.chromium.components.browser_ui.widget.ListItemBuilder.buildSimpleMenuItem;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -18,6 +19,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.R;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -25,6 +29,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.listmenu.ListMenu;
@@ -33,6 +38,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 /** A preference that displays the current accept language list. */
+@NullMarked
 public class ContentLanguagesPreference extends Preference {
     private static class LanguageListAdapter extends LanguageListBaseAdapter
             implements LanguagesManager.AcceptLanguageObserver {
@@ -59,16 +65,18 @@ public class ContentLanguagesPreference extends Preference {
             if (mPrefService.getBoolean(Pref.OFFER_TRANSLATE_ENABLED)
                     && !ChromeFeatureList.isEnabled(ChromeFeatureList.DETAILED_LANGUAGE_SETTINGS)) {
                 // Set this row checked if the language is unblocked.
-                int endIconResId =
+                boolean enabled = info.isTranslateSupported();
+                @DrawableRes
+                int endIconRes =
                         TranslateBridge.isBlockedLanguage(getProfile(), info.getCode())
-                                ? 0
+                                ? Resources.ID_NULL
                                 : R.drawable.ic_check_googblue_24dp;
                 ListItem item =
-                        buildMenuListItemWithEndIcon(
-                                R.string.languages_item_option_offer_to_translate,
-                                0,
-                                endIconResId,
-                                info.isTranslateSupported());
+                        new ListItemBuilder()
+                                .withTitleRes(R.string.languages_item_option_offer_to_translate)
+                                .withEndIconRes(endIconRes)
+                                .withEnabled(enabled)
+                                .build();
                 item.model.set(
                         ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID,
                         R.color.default_icon_color_accent1_tint_list);
@@ -79,22 +87,26 @@ public class ContentLanguagesPreference extends Preference {
 
             int languageCount = getItemCount();
             // Enable "Remove" option if there are multiple accept languages.
-            menuItems.add(buildMenuListItem(R.string.remove, 0, 0, languageCount > 1));
+            menuItems.add(
+                    new ListItemBuilder()
+                            .withTitleRes(R.string.remove)
+                            .withEnabled(languageCount > 1)
+                            .build());
 
             // Add movement options even if not in accessibility mode https://crbug.com/1440469.
             // Add "Move to top" and "Move up" menu when it's not the first one.
             if (position > 0) {
-                menuItems.add(buildMenuListItem(R.string.menu_item_move_to_top, 0, 0));
-                menuItems.add(buildMenuListItem(R.string.menu_item_move_up, 0, 0));
+                menuItems.add(buildSimpleMenuItem(R.string.menu_item_move_to_top));
+                menuItems.add(buildSimpleMenuItem(R.string.menu_item_move_up));
             }
 
             // Add "Move down" menu when it's not the last one.
             if (position < (languageCount - 1)) {
-                menuItems.add(buildMenuListItem(R.string.menu_item_move_down, 0, 0));
+                menuItems.add(buildSimpleMenuItem(R.string.menu_item_move_down));
             }
 
             ListMenu.Delegate delegate =
-                    (model) -> {
+                    (model, view) -> {
                         int textId = model.get(ListMenuItemProperties.TITLE_ID);
                         if (textId == R.string.languages_item_option_offer_to_translate) {
                             // Toggle current blocked state of this language.
@@ -150,8 +162,8 @@ public class ContentLanguagesPreference extends Preference {
         }
     }
 
-    private TextView mAddLanguageButton;
-    private RecyclerView mRecyclerView;
+    private @Nullable TextView mAddLanguageButton;
+    private @Nullable RecyclerView mRecyclerView;
     private LanguageListAdapter mAdapter;
     private SelectLanguageFragment.Launcher mLauncher;
     private LanguagesManager mLanguagesManager;
@@ -169,6 +181,7 @@ public class ContentLanguagesPreference extends Preference {
      * @param profile The current {@link Profile} for this session.
      * @param prefService Allows accessing the contextually appropriate prefs.
      */
+    @Initializer
     void initialize(
             SelectLanguageFragment.Launcher launcher, Profile profile, PrefService prefService) {
         mLauncher = launcher;

@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/observer_list_types.h"
+#include "url/gurl.h"
 
 namespace content {
 class WebContents;
@@ -29,6 +30,7 @@ void IsDistillablePageForDetector(content::WebContents* web_contents,
                                   base::OnceCallback<void(bool)> callback);
 
 struct DistillabilityResult {
+  GURL url;
   bool is_distillable;
   bool is_last;
   bool is_long_article;

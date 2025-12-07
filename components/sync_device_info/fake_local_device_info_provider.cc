@@ -4,6 +4,7 @@
 
 #include "components/sync_device_info/fake_local_device_info_provider.h"
 
+#include "base/notimplemented.h"
 #include "base/time/time.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/protocol/sync_enums.pb.h"
@@ -36,7 +37,7 @@ FakeLocalDeviceInfoProvider::FakeLocalDeviceInfoProvider()
           /*paask_info=*/std::nullopt,
           /*fcm_registration_token=*/std::string(),
           /*interested_data_types=*/DataTypeSet(),
-          /*floating_workspace_last_signin_timestamp=*/std::nullopt) {}
+          /*auto_sign_out_last_signin_timestamp=*/std::nullopt) {}
 
 FakeLocalDeviceInfoProvider::~FakeLocalDeviceInfoProvider() = default;
 
@@ -53,6 +54,25 @@ base::CallbackListSubscription
 FakeLocalDeviceInfoProvider::RegisterOnInitializedCallback(
     const base::RepeatingClosure& callback) {
   return closure_list_.Add(callback);
+}
+
+void FakeLocalDeviceInfoProvider::Initialize(
+    const std::string& cache_guid,
+    const std::string& client_name,
+    const std::string& manufacturer_name,
+    const std::string& model_name,
+    const std::string& full_hardware_class,
+    const DeviceInfo* device_info_restored_from_store) {}
+
+void FakeLocalDeviceInfoProvider::Clear() {}
+
+void FakeLocalDeviceInfoProvider::UpdateClientName(
+    const std::string& client_name) {
+  device_info_.set_client_name(client_name);
+}
+
+void FakeLocalDeviceInfoProvider::UpdateRecentSignInTime(base::Time time) {
+  device_info_.set_auto_sign_out_last_signin_timestamp(time);
 }
 
 void FakeLocalDeviceInfoProvider::SetReady(bool ready) {

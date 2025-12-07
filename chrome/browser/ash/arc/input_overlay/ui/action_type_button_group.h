@@ -7,6 +7,7 @@
 
 #include "ash/style/option_button_base.h"
 #include "ash/style/option_button_group.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_type_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"

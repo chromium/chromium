@@ -21,9 +21,11 @@
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/oblivious_http_request.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
@@ -37,13 +39,9 @@ const size_t kMaxBackOffResetDurationInSeconds = 30 * 60;  // 30 minutes.
 
 const size_t kLookupTimeoutDurationInSeconds = 3;
 
-void LogThreatInfoSize(int num_full_hash_matches, bool is_source_local_cache) {
+void LogThreatInfoSize(int num_full_hash_matches) {
   base::UmaHistogramCounts100("SafeBrowsing.HPRT.ThreatInfoSize",
                               num_full_hash_matches);
-  std::string breakout_histogram =
-      is_source_local_cache ? "SafeBrowsing.HPRT.ThreatInfoSize.LocalCache"
-                            : "SafeBrowsing.HPRT.ThreatInfoSize.NetworkRequest";
-  base::UmaHistogramCounts100(breakout_histogram, num_full_hash_matches);
 }
 
 SBThreatType MapFullHashDetailToSbThreatType(
@@ -66,9 +64,8 @@ SBThreatType MapFullHashDetailToSbThreatType(
     default:
       // Using "default" because exhaustive switch statements are not
       // recommended for proto3 enums.
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected ThreatType encountered: " << detail.threat_type();
-      return SBThreatType::SB_THREAT_TYPE_UNUSED;
+      NOTREACHED() << "Unexpected ThreatType encountered: "
+                   << detail.threat_type();
   }
 }
 
@@ -222,9 +219,8 @@ int HashRealTimeService::GetThreatSeverity(
     default:
       // Using "default" because exhaustive switch statements are not
       // recommended for proto3 enums.
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected ThreatType encountered: " << detail.threat_type();
-      return kLeastSeverity;
+      NOTREACHED() << "Unexpected ThreatType encountered: "
+                   << detail.threat_type();
   }
 }
 bool HashRealTimeService::IsHashDetailMoreSevere(
@@ -303,8 +299,7 @@ void HashRealTimeService::StartLookupInternal(
   if (hash_prefixes_to_request.empty()) {
     SBThreatInfo sb_threat_info =
         DetermineSBThreatInfo(url, cached_full_hashes);
-    LogThreatInfoSize(sb_threat_info.num_full_hash_matches,
-                      /*is_source_local_cache=*/true);
+    LogThreatInfoSize(sb_threat_info.num_full_hash_matches);
     lookup_completer->CompleteLookup(/*is_lookup_successful=*/true,
                                      sb_threat_info.threat_type,
                                      OperationOutcome::kResultInLocalCache);
@@ -424,28 +419,10 @@ void HashRealTimeService::OnURLLoaderComplete(
   base::UmaHistogramTimes("SafeBrowsing.HPRT.Network.Time", network_time);
   RecordHttpResponseOrErrorCode("SafeBrowsing.HPRT.Network.Result", net_error,
                                 response_code);
-  if (net_error == net::ERR_INTERNET_DISCONNECTED) {
-    base::UmaHistogramSparse(
-        "SafeBrowsing.HPRT.Network.HttpResponseCode.InternetDisconnected",
-        response_code);
-  }
-  if (net_error == net::ERR_NETWORK_CHANGED) {
-    base::UmaHistogramSparse(
-        "SafeBrowsing.HPRT.Network.HttpResponseCode.NetworkChanged",
-        response_code);
-  }
   if (net_error == net::ERR_FAILED) {
     base::UmaHistogramBoolean(
         "SafeBrowsing.HPRT.FailedNetResultIsFromEarlyOhttpClientDestruct",
         ohttp_client_destructed_early);
-  }
-  if (net_error == net::ERR_NAME_NOT_RESOLVED) {
-    base::UmaHistogramTimes("SafeBrowsing.HPRT.Network.Time.NameNotResolved",
-                            network_time);
-  }
-  if (net_error == net::ERR_CONNECTION_CLOSED) {
-    base::UmaHistogramTimes("SafeBrowsing.HPRT.Network.Time.ConnectionClosed",
-                            network_time);
   }
 
   base::expected<std::unique_ptr<V5::SearchHashesResponse>, OperationOutcome>
@@ -464,14 +441,13 @@ void HashRealTimeService::OnURLLoaderComplete(
     }
 
     // Merge together the results from the cache and from the response.
-    for (const auto& response_hash : response.value()->full_hashes()) {
-      result_full_hashes.push_back(response_hash);
-    }
+    result_full_hashes.insert(result_full_hashes.end(),
+                              response.value()->full_hashes().begin(),
+                              response.value()->full_hashes().end());
     SBThreatInfo sb_threat_info =
         DetermineSBThreatInfo(url, result_full_hashes);
     sb_threat_type = sb_threat_info.threat_type;
-    LogThreatInfoSize(sb_threat_info.num_full_hash_matches,
-                      /*is_source_local_cache=*/false);
+    LogThreatInfoSize(sb_threat_info.num_full_hash_matches);
   }
 
   lookup_completer->CompleteLookup(

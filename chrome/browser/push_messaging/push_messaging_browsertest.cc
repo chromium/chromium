@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
@@ -20,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -37,14 +33,14 @@
 #include "chrome/browser/permissions/crowd_deny_preload_data.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/push_messaging/push_messaging_app_identifier.h"
-#include "chrome/browser/push_messaging/push_messaging_constants.h"
-#include "chrome/browser/push_messaging/push_messaging_features.h"
 #include "chrome/browser/push_messaging/push_messaging_service_factory.h"
 #include "chrome/browser/push_messaging/push_messaging_service_impl.h"
+#include "chrome/browser/push_messaging/push_messaging_unsubscribed_entry.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -62,8 +58,12 @@
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/push_messaging/app_identifier.h"
+#include "components/push_messaging/app_identifier_test_support.h"
+#include "components/push_messaging/push_messaging_constants.h"
+#include "components/push_messaging/push_messaging_features.h"
+#include "components/push_messaging/push_messaging_utils.h"
 #include "components/site_engagement/content/site_engagement_score.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/browsing_data_remover.h"
@@ -74,7 +74,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/prerender_test_util.h"
-#include "content/public/test/test_utils.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -84,11 +83,11 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/message_center/public/cpp/notification.h"
 
-#if BUILDFLAG(ENABLE_BACKGROUND_MODE)
-#include "chrome/browser/background/background_mode_manager.h"
-#endif
-
 namespace {
+
+using testing::ElementsAre;
+using testing::IsEmpty;
+using testing::Property;
 
 const char kManifestSenderId[] = "1234567890";
 const int32_t kApplicationServerKeyLength = 65;
@@ -125,9 +124,8 @@ std::string GetTestApplicationServerKey(bool base64_url_encoded = false) {
                           base::Base64UrlEncodePolicy::OMIT_PADDING,
                           &application_server_key);
   } else {
-    application_server_key =
-        std::string(kApplicationServerKey,
-                    kApplicationServerKey + std::size(kApplicationServerKey));
+    application_server_key = std::string(std::begin(kApplicationServerKey),
+                                         std::end(kApplicationServerKey));
   }
 
   return application_server_key;
@@ -167,7 +165,9 @@ void InstanceIDResultCallback(base::OnceClosure done_callback,
 
 }  // namespace
 
-class PushMessagingBrowserTestBase : public InProcessBrowserTest {
+class PushMessagingBrowserTestBase
+    : public InProcessBrowserTest,
+      public push_messaging::AppIdentifierTestSupport {
  public:
   PushMessagingBrowserTestBase()
       : scoped_testing_factory_installer_(
@@ -186,6 +186,8 @@ class PushMessagingBrowserTestBase : public InProcessBrowserTest {
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
     https_server_->ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+    // Used for PushMessagingPartitionedBrowserTest.CrossOriginFrame.
+    https_server_->SetCertHostnames({"embedder.com", "requester.com"});
     content::SetupCrossSiteRedirector(https_server_.get());
 
     site_engagement::SiteEngagementScore::SetParamValuesForTesting();
@@ -195,10 +197,6 @@ class PushMessagingBrowserTestBase : public InProcessBrowserTest {
     // Enable experimental features for subscription restrictions.
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
-
-    // HTTPS server only serves a valid cert for localhost, so this is needed to
-    // load webby domains like "embedded.com" without an interstitial.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
   // InProcessBrowserTest:
@@ -276,7 +274,7 @@ class PushMessagingBrowserTestBase : public InProcessBrowserTest {
   }
 
   gcm::GCMAppHandler* GetAppHandler() {
-    return gcm_driver_->GetAppHandler(kPushMessagingAppIdentifierPrefix);
+    return gcm_driver_->GetAppHandler(push_messaging::kAppIdentifierPrefix);
   }
 
   permissions::PermissionRequestManager* GetPermissionRequestManager() {
@@ -314,7 +312,7 @@ class PushMessagingBrowserTestBase : public InProcessBrowserTest {
                        std::string* out_token = nullptr);
 
   blink::mojom::PushSubscriptionPtr GetSubscriptionForAppIdentifier(
-      const PushMessagingAppIdentifier& app_identifier) {
+      const push_messaging::AppIdentifier& app_identifier) {
     blink::mojom::PushSubscriptionPtr result;
     base::RunLoop run_loop;
     push_service_->GetPushSubscriptionFromAppIdentifier(
@@ -329,15 +327,15 @@ class PushMessagingBrowserTestBase : public InProcessBrowserTest {
   }
 
   // Deletes an Instance ID from the GCM Store but keeps the push subscription
-  // stored in the PushMessagingAppIdentifier map and Service Worker DB.
+  // stored in the push_messaging::AppIdentifier map and Service Worker DB.
   // Calls should be wrapped in the ASSERT_NO_FATAL_FAILURE() macro.
   void DeleteInstanceIDAsIfGCMStoreReset(const std::string& app_id);
 
-  PushMessagingAppIdentifier GetAppIdentifierForServiceWorkerRegistration(
+  push_messaging::AppIdentifier GetAppIdentifierForServiceWorkerRegistration(
       int64_t service_worker_registration_id);
 
   void SendMessageAndWaitUntilHandled(
-      const PushMessagingAppIdentifier& app_identifier,
+      const push_messaging::AppIdentifier& app_identifier,
       const gcm::IncomingMessage& message);
 
   net::EmbeddedTestServer* https_server() const { return https_server_.get(); }
@@ -453,7 +451,7 @@ void PushMessagingBrowserTestBase::SubscribeSuccessfully(
           out_token));
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -480,7 +478,7 @@ void PushMessagingBrowserTestBase::SetupOrphanedPushSubscription(
       base::BindOnce(&DidRegister, run_loop.QuitClosure()));
   run_loop.Run();
 
-  PushMessagingAppIdentifier app_identifier =
+  push_messaging::AppIdentifier app_identifier =
       PushMessagingAppIdentifier::FindByServiceWorker(
           GetBrowser()->profile(), requesting_origin,
           service_worker_registration_id);
@@ -501,9 +499,8 @@ void PushMessagingBrowserTestBase::LegacySubscribeSuccessfully(
   GURL requesting_origin =
       https_server()->GetURL("/").DeprecatedGetOriginAsURL();
   int64_t service_worker_registration_id = 0LL;
-  PushMessagingAppIdentifier app_identifier =
-      PushMessagingAppIdentifier::LegacyGenerateForTesting(
-          requesting_origin, service_worker_registration_id);
+  push_messaging::AppIdentifier app_identifier = LegacyGenerateForTesting(
+      requesting_origin, service_worker_registration_id);
   push_service_->IncreasePushSubscriptionCount(1, true /* is_pending */);
 
   std::string subscription_id;
@@ -518,7 +515,8 @@ void PushMessagingBrowserTestBase::LegacySubscribeSuccessfully(
     ASSERT_EQ(gcm::GCMClient::SUCCESS, register_result);
   }
 
-  app_identifier.PersistToPrefs(GetBrowser()->profile());
+  PushMessagingAppIdentifier::PersistToPrefs(app_identifier,
+                                             GetBrowser()->profile());
   push_service_->IncreasePushSubscriptionCount(1, false /* is_pending */);
   push_service_->DecreasePushSubscriptionCount(1, true /* was_pending */);
 
@@ -541,8 +539,15 @@ void PushMessagingBrowserTestBase::EndpointToToken(const std::string& endpoint,
   size_t last_slash = endpoint.rfind('/');
   ASSERT_NE(last_slash, std::string::npos);
 
-  ASSERT_EQ(features::kPushMessagingGcmEndpointUrl.Get(),
+  ASSERT_EQ(push_messaging::GetGcmEndpointForChannel(chrome::GetChannel()),
             endpoint.substr(0, last_slash + 1));
+  if (base::FeatureList::IsEnabled(features::kPushMessagingGcmEndpointWebpushPath)) {
+    ASSERT_TRUE(endpoint.substr(0, last_slash + 1) == kPushMessagingWebpushEndpoint ||
+                endpoint.substr(0, last_slash + 1) == kPushMessagingStagingWebpushEndpoint);
+  } else {
+    ASSERT_TRUE(endpoint.substr(0, last_slash + 1) == kPushMessagingGcmEndpoint ||
+                endpoint.substr(0, last_slash + 1) == kPushMessagingStagingGcmEndpoint);
+  }
 
   ASSERT_LT(last_slash + 1, endpoint.length());  // Token must not be empty.
 
@@ -550,11 +555,11 @@ void PushMessagingBrowserTestBase::EndpointToToken(const std::string& endpoint,
     *out_token = endpoint.substr(last_slash + 1);
 }
 
-PushMessagingAppIdentifier
+push_messaging::AppIdentifier
 PushMessagingBrowserTestBase::GetAppIdentifierForServiceWorkerRegistration(
     int64_t service_worker_registration_id) {
   GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
-  PushMessagingAppIdentifier app_identifier =
+  push_messaging::AppIdentifier app_identifier =
       PushMessagingAppIdentifier::FindByServiceWorker(
           GetBrowser()->profile(), origin, service_worker_registration_id);
   EXPECT_FALSE(app_identifier.is_null());
@@ -564,7 +569,7 @@ PushMessagingBrowserTestBase::GetAppIdentifierForServiceWorkerRegistration(
 void PushMessagingBrowserTestBase::DeleteInstanceIDAsIfGCMStoreReset(
     const std::string& app_id) {
   // Delete the Instance ID directly, keeping the push subscription stored in
-  // the PushMessagingAppIdentifier map and the Service Worker database. This
+  // the push_messaging::AppIdentifier map and the Service Worker database. This
   // simulates the GCM Store getting reset but failing to clear push
   // subscriptions, either because the store got reset before
   // 93ec793ac69a542b2213297737178a55d069fd0d (Chrome 56), or because a race
@@ -587,7 +592,7 @@ void PushMessagingBrowserTestBase::DeleteInstanceIDAsIfGCMStoreReset(
 }
 
 void PushMessagingBrowserTestBase::SendMessageAndWaitUntilHandled(
-    const PushMessagingAppIdentifier& app_identifier,
+    const push_messaging::AppIdentifier& app_identifier,
     const gcm::IncomingMessage& message) {
   base::RunLoop run_loop;
   push_service()->SetMessageCallbackForTesting(run_loop.QuitClosure());
@@ -739,7 +744,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, SubscribeWithInvalidation) {
       SubscribeSuccessfully(PushSubscriptionKeyFormat::kBinary, &token2));
   ASSERT_EQ(token1, token2);
 
-  PushMessagingAppIdentifier app_identifier =
+  push_messaging::AppIdentifier app_identifier =
       PushMessagingAppIdentifier::FindByServiceWorker(
           GetBrowser()->profile(),
           https_server()->GetURL("/").DeprecatedGetOriginAsURL(),
@@ -1098,7 +1103,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, SubscribePersisted) {
   std::string token1;
   ASSERT_NO_FATAL_FAILURE(
       SubscribeSuccessfully(PushSubscriptionKeyFormat::kBinary, &token1));
-  PushMessagingAppIdentifier sw0_identifier =
+  push_messaging::AppIdentifier sw0_identifier =
       GetAppIdentifierForServiceWorkerRegistration(0LL);
   EXPECT_EQ(sw0_identifier.app_id(), gcm_driver_->last_gettoken_app_id());
 
@@ -1118,7 +1123,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, SubscribePersisted) {
   ASSERT_NO_FATAL_FAILURE(
       SubscribeSuccessfully(PushSubscriptionKeyFormat::kBinary, &token2));
   EXPECT_NE(token1, token2);
-  PushMessagingAppIdentifier sw2_identifier =
+  push_messaging::AppIdentifier sw2_identifier =
       GetAppIdentifierForServiceWorkerRegistration(2LL);
   EXPECT_EQ(sw2_identifier.app_id(), gcm_driver_->last_gettoken_app_id());
 
@@ -1128,7 +1133,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, SubscribePersisted) {
       SubscribeSuccessfully(PushSubscriptionKeyFormat::kBinary, &token3));
   EXPECT_NE(token1, token3);
   EXPECT_NE(token2, token3);
-  PushMessagingAppIdentifier sw1_identifier =
+  push_messaging::AppIdentifier sw1_identifier =
       GetAppIdentifierForServiceWorkerRegistration(1LL);
   EXPECT_EQ(sw1_identifier.app_id(), gcm_driver_->last_gettoken_app_id());
 
@@ -1187,7 +1192,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, AppHandlerOnlyIfSubscribed) {
 
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, PushEventSuccess) {
   ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
-  PushMessagingAppIdentifier app_identifier =
+  push_messaging::AppIdentifier app_identifier =
       GetAppIdentifierForServiceWorkerRegistration(0LL);
 
   ASSERT_EQ("false - is not controlled", RunScript("isControlled()"));
@@ -1211,7 +1216,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, PushEventSuccess) {
 
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, PushEventOnShutdown) {
   ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
-  PushMessagingAppIdentifier app_identifier =
+  push_messaging::AppIdentifier app_identifier =
       GetAppIdentifierForServiceWorkerRegistration(0LL);
 
   ASSERT_EQ("false - is not controlled", RunScript("isControlled()"));
@@ -1230,7 +1235,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, PushEventOnShutdown) {
 
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, PushEventWithoutPayload) {
   ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
-  PushMessagingAppIdentifier app_identifier =
+  push_messaging::AppIdentifier app_identifier =
       GetAppIdentifierForServiceWorkerRegistration(0LL);
 
   LoadTestPage();  // Reload to become controlled.
@@ -1246,7 +1251,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, PushEventWithoutPayload) {
 
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, LegacyPushEvent) {
   ASSERT_NO_FATAL_FAILURE(LegacySubscribeSuccessfully());
-  PushMessagingAppIdentifier app_identifier =
+  push_messaging::AppIdentifier app_identifier =
       GetAppIdentifierForServiceWorkerRegistration(0LL);
 
   LoadTestPage();  // Reload to become controlled.
@@ -1298,7 +1303,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, PushEventNoServiceWorker) {
       1);
 
   // |app_identifier| should no longer be stored in prefs.
-  PushMessagingAppIdentifier stored_app_identifier =
+  push_messaging::AppIdentifier stored_app_identifier =
       PushMessagingAppIdentifier::FindByAppId(GetBrowser()->profile(), app_id);
   EXPECT_TRUE(stored_app_identifier.is_null());
 }
@@ -1306,7 +1311,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, PushEventNoServiceWorker) {
 // Tests receiving messages for a subscription that no longer exists.
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, NoSubscription) {
   ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
-  PushMessagingAppIdentifier app_identifier =
+  push_messaging::AppIdentifier app_identifier =
       GetAppIdentifierForServiceWorkerRegistration(0LL);
 
   LoadTestPage();  // Reload to become controlled.
@@ -1345,7 +1350,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, NoSubscription) {
 // somehow still has a subscription (as happened in https://crbug.com/633310).
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, PushEventWithoutPermission) {
   ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
-  PushMessagingAppIdentifier app_identifier =
+  push_messaging::AppIdentifier app_identifier =
       GetAppIdentifierForServiceWorkerRegistration(0LL);
 
   LoadTestPage();  // Reload to become controlled.
@@ -1379,7 +1384,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, PushEventWithoutPermission) {
   EXPECT_EQ(app_identifier.app_id(), gcm_driver_->last_deletetoken_app_id());
   EXPECT_EQ("false - not subscribed", RunScript("hasSubscription()"));
   GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
-  PushMessagingAppIdentifier app_identifier_afterwards =
+  push_messaging::AppIdentifier app_identifier_afterwards =
       PushMessagingAppIdentifier::FindByServiceWorker(GetBrowser()->profile(),
                                                       origin, 0LL);
   EXPECT_TRUE(app_identifier_afterwards.is_null());
@@ -1393,7 +1398,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, PushEventWithoutPermission) {
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
                        PushEventEnforcesUserVisibleNotification) {
   ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
-  PushMessagingAppIdentifier app_identifier =
+  push_messaging::AppIdentifier app_identifier =
       GetAppIdentifierForServiceWorkerRegistration(0LL);
 
   ASSERT_EQ("false - is not controlled", RunScript("isControlled()"));
@@ -1494,7 +1499,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
                        PushEventAllowSilentPushCommandLineFlag) {
   ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
-  PushMessagingAppIdentifier app_identifier =
+  push_messaging::AppIdentifier app_identifier =
       GetAppIdentifierForServiceWorkerRegistration(0LL);
   EXPECT_EQ(app_identifier.app_id(), gcm_driver_->last_gettoken_app_id());
   EXPECT_EQ(kEncodedApplicationServerKey,
@@ -1614,7 +1619,7 @@ IN_PROC_BROWSER_TEST_F(
     PushMessagingBrowserTestWithAbusiveOriginPermissionRevocation,
     PushEventPermissionRevoked) {
   ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
-  PushMessagingAppIdentifier app_identifier =
+  push_messaging::AppIdentifier app_identifier =
       GetAppIdentifierForServiceWorkerRegistration(0LL);
 
   LoadTestPage();  // Reload to become controlled.
@@ -1647,7 +1652,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(app_identifier.app_id(), gcm_driver_->last_deletetoken_app_id());
   EXPECT_EQ("false - not subscribed", RunScript("hasSubscription()"));
   GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
-  PushMessagingAppIdentifier app_identifier_afterwards =
+  push_messaging::AppIdentifier app_identifier_afterwards =
       PushMessagingAppIdentifier::FindByServiceWorker(GetBrowser()->profile(),
                                                       origin, 0LL);
   EXPECT_TRUE(app_identifier_afterwards.is_null());
@@ -1677,7 +1682,7 @@ IN_PROC_BROWSER_TEST_F(
       SiteReputation::ABUSIVE_CONTENT);
 
   ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
-  PushMessagingAppIdentifier app_identifier =
+  push_messaging::AppIdentifier app_identifier =
       GetAppIdentifierForServiceWorkerRegistration(0LL);
 
   ASSERT_EQ("false - is not controlled", RunScript("isControlled()"));
@@ -1699,21 +1704,10 @@ IN_PROC_BROWSER_TEST_F(
       static_cast<int>(blink::mojom::PushEventStatus::SUCCESS), 1);
 }
 
-class PushMessagingBrowserTestWithNotificationTriggersEnabled
-    : public PushMessagingBrowserTestBase {
- public:
-  PushMessagingBrowserTestWithNotificationTriggersEnabled() {
-    feature_list_.InitAndEnableFeature(features::kNotificationTriggers);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTestWithNotificationTriggersEnabled,
+IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTestBase,
                        PushEventIgnoresScheduledNotificationsForEnforcement) {
   ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
-  PushMessagingAppIdentifier app_identifier =
+  push_messaging::AppIdentifier app_identifier =
       GetAppIdentifierForServiceWorkerRegistration(0LL);
 
   LoadTestPage();  // Reload to become controlled.
@@ -1758,7 +1752,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTestWithNotificationTriggersEnabled,
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
                        PushEventEnforcesUserVisibleNotificationAfterQueue) {
   ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
-  PushMessagingAppIdentifier app_identifier =
+  push_messaging::AppIdentifier app_identifier =
       GetAppIdentifierForServiceWorkerRegistration(0LL);
 
   ASSERT_EQ("false - is not controlled", RunScript("isControlled()"));
@@ -1805,7 +1799,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
       GetBrowser()->tab_strip_model()->GetActiveWebContents();
 
   ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
-  PushMessagingAppIdentifier app_identifier =
+  push_messaging::AppIdentifier app_identifier =
       GetAppIdentifierForServiceWorkerRegistration(0LL);
 
   ASSERT_EQ("false - is not controlled", RunScript("isControlled()"));
@@ -1957,6 +1951,8 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, UnsubscribeSuccess) {
       "PushMessaging.UnregistrationReason",
       static_cast<int>(blink::mojom::PushUnregistrationReason::JAVASCRIPT_API),
       1);
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+              IsEmpty());
 
   // Resolves false if there was no longer a subscription.
   EXPECT_EQ("unsubscribe result: false",
@@ -1965,6 +1961,8 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, UnsubscribeSuccess) {
       "PushMessaging.UnregistrationReason",
       static_cast<int>(blink::mojom::PushUnregistrationReason::JAVASCRIPT_API),
       2);
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+              IsEmpty());
 
   // TODO(johnme): Test that doesn't reject if there was a network error (should
   // deactivate subscription locally anyway).
@@ -2145,7 +2143,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, UnsubscribeOffline) {
   // retried, so the app handler shouldn't have been unregistered yet.
   EXPECT_EQ(push_service(), GetAppHandler());
   // But restarting the push service will unregister the app handler, since the
-  // subscription is no longer stored in the PushMessagingAppIdentifier map.
+  // subscription is no longer stored in the push_messaging::AppIdentifier map.
   ASSERT_NO_FATAL_FAILURE(RestartPushService());
   EXPECT_NE(push_service(), GetAppHandler());
 }
@@ -2174,11 +2172,14 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
 
   // We should not be able to look up the app id.
   GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
-  PushMessagingAppIdentifier app_identifier =
+  push_messaging::AppIdentifier app_identifier =
       PushMessagingAppIdentifier::FindByServiceWorker(
           GetBrowser()->profile(), origin,
           0LL /* service_worker_registration_id */);
   EXPECT_TRUE(app_identifier.is_null());
+
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+              IsEmpty());
 }
 
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
@@ -2205,6 +2206,94 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
 
   // There should not be any subscriptions left.
   EXPECT_EQ(PushMessagingAppIdentifier::GetCount(GetBrowser()->profile()), 0u);
+
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+              IsEmpty());
+}
+
+IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
+                       UnregisteringServiceWorkerDeletesUnsubscribedEntries) {
+  ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
+
+  EXPECT_EQ("true - subscribed", RunScript("hasSubscription()"));
+
+  GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
+
+  {
+    base::RunLoop run_loop;
+    push_service()->SetContentSettingChangedCallbackForTesting(
+        run_loop.QuitClosure());
+
+    HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
+        ->SetContentSettingDefaultScope(origin, GURL(),
+                                        ContentSettingsType::NOTIFICATIONS,
+                                        CONTENT_SETTING_BLOCK);
+    run_loop.Run();
+  }
+
+  // There should be no subscription but one unsubscribed entry.
+  EXPECT_EQ(PushMessagingAppIdentifier::GetCount(GetBrowser()->profile()), 0u);
+  EXPECT_THAT(
+      PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+      ElementsAre(Property(&PushMessagingUnsubscribedEntry::origin, origin)));
+
+  // Unregister service worker and wait for callback.
+  {
+    base::RunLoop run_loop;
+    push_service()->SetServiceWorkerUnregisteredCallbackForTesting(
+        run_loop.QuitClosure());
+    EXPECT_EQ("service worker unregistration status: true",
+              RunScript("unregisterServiceWorker()"));
+    run_loop.Run();
+  }
+
+  // There should be no subscription and no unsubscribed entry anymore.
+  EXPECT_EQ(PushMessagingAppIdentifier::GetCount(GetBrowser()->profile()), 0u);
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+              IsEmpty());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PushMessagingBrowserTest,
+    ServiceWorkerDatabaseDeletionDeletesUnsubscribedEntries) {
+  ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
+
+  EXPECT_EQ("true - subscribed", RunScript("hasSubscription()"));
+
+  GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
+
+  {
+    base::RunLoop run_loop;
+    push_service()->SetContentSettingChangedCallbackForTesting(
+        run_loop.QuitClosure());
+
+    HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
+        ->SetContentSettingDefaultScope(origin, GURL(),
+                                        ContentSettingsType::NOTIFICATIONS,
+                                        CONTENT_SETTING_BLOCK);
+    run_loop.Run();
+  }
+
+  // There should be no subscription but one unsubscribed entry.
+  EXPECT_EQ(PushMessagingAppIdentifier::GetCount(GetBrowser()->profile()), 0u);
+  EXPECT_THAT(
+      PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+      ElementsAre(Property(&PushMessagingUnsubscribedEntry::origin, origin)));
+
+  // Pretend as if the Service Worker database went away, and wait for callback
+  // to complete.
+  {
+    base::RunLoop run_loop;
+    push_service()->SetServiceWorkerDatabaseWipedCallbackForTesting(
+        run_loop.QuitClosure());
+    push_service()->DidDeleteServiceWorkerDatabase();
+    run_loop.Run();
+  }
+
+  // There should be no subscription and no unsubscribed entry anymore.
+  EXPECT_EQ(PushMessagingAppIdentifier::GetCount(GetBrowser()->profile()), 0u);
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+              IsEmpty());
 }
 
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
@@ -2212,7 +2301,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
 
   GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
-  PushMessagingAppIdentifier app_identifier1 =
+  push_messaging::AppIdentifier app_identifier1 =
       PushMessagingAppIdentifier::FindByServiceWorker(
           GetBrowser()->profile(), origin,
           0LL /* service_worker_registration_id */);
@@ -2224,7 +2313,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   // Push messaging should not yet be aware of the InstanceID being deleted.
   histogram_tester_.ExpectTotalCount("PushMessaging.UnregistrationReason", 0);
   // We should still be able to look up the app id.
-  PushMessagingAppIdentifier app_identifier2 =
+  push_messaging::AppIdentifier app_identifier2 =
       PushMessagingAppIdentifier::FindByServiceWorker(
           GetBrowser()->profile(), origin,
           0LL /* service_worker_registration_id */);
@@ -2241,11 +2330,14 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
                            GET_SUBSCRIPTION_STORAGE_CORRUPT),
       1);
   // We should no longer be able to look up the app id.
-  PushMessagingAppIdentifier app_identifier3 =
+  push_messaging::AppIdentifier app_identifier3 =
       PushMessagingAppIdentifier::FindByServiceWorker(
           GetBrowser()->profile(), origin,
           0LL /* service_worker_registration_id */);
   EXPECT_TRUE(app_identifier3.is_null());
+
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+              IsEmpty());
 }
 
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
@@ -2257,15 +2349,14 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   EXPECT_EQ("permission status - granted",
             RunScript("pushManagerPermissionState()"));
 
-  scoped_refptr<content::MessageLoopRunner> message_loop_runner =
-      new content::MessageLoopRunner;
+  base::RunLoop run_loop;
   push_service()->SetContentSettingChangedCallbackForTesting(
-      base::BarrierClosure(1, message_loop_runner->QuitClosure()));
+      run_loop.QuitClosure());
 
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
       ->ClearSettingsForOneType(ContentSettingsType::NOTIFICATIONS);
 
-  message_loop_runner->Run();
+  run_loop.Run();
 
   EXPECT_EQ("permission status - prompt",
             RunScript("pushManagerPermissionState()"));
@@ -2277,6 +2368,11 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
       static_cast<int>(
           blink::mojom::PushUnregistrationReason::PERMISSION_REVOKED),
       1);
+
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+              ElementsAre(Property(
+                  &PushMessagingUnsubscribedEntry::origin,
+                  https_server()->GetURL("/").DeprecatedGetOriginAsURL())));
 }
 
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
@@ -2288,10 +2384,9 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   EXPECT_EQ("permission status - granted",
             RunScript("pushManagerPermissionState()"));
 
-  scoped_refptr<content::MessageLoopRunner> message_loop_runner =
-      new content::MessageLoopRunner;
+  base::RunLoop run_loop;
   push_service()->SetContentSettingChangedCallbackForTesting(
-      base::BarrierClosure(1, message_loop_runner->QuitClosure()));
+      run_loop.QuitClosure());
 
   GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
@@ -2299,7 +2394,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
                                       ContentSettingsType::NOTIFICATIONS,
                                       CONTENT_SETTING_DEFAULT);
 
-  message_loop_runner->Run();
+  run_loop.Run();
 
   EXPECT_EQ("permission status - prompt",
             RunScript("pushManagerPermissionState()"));
@@ -2311,6 +2406,10 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
       static_cast<int>(
           blink::mojom::PushUnregistrationReason::PERMISSION_REVOKED),
       1);
+
+  EXPECT_THAT(
+      PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+      ElementsAre(Property(&PushMessagingUnsubscribedEntry::origin, origin)));
 }
 
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
@@ -2322,10 +2421,9 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   EXPECT_EQ("permission status - granted",
             RunScript("pushManagerPermissionState()"));
 
-  scoped_refptr<content::MessageLoopRunner> message_loop_runner =
-      new content::MessageLoopRunner;
+  base::RunLoop run_loop;
   push_service()->SetContentSettingChangedCallbackForTesting(
-      base::BarrierClosure(1, message_loop_runner->QuitClosure()));
+      run_loop.QuitClosure());
 
   GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
@@ -2333,7 +2431,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
                                       ContentSettingsType::NOTIFICATIONS,
                                       CONTENT_SETTING_BLOCK);
 
-  message_loop_runner->Run();
+  run_loop.Run();
 
   EXPECT_EQ("permission status - denied",
             RunScript("pushManagerPermissionState()"));
@@ -2345,6 +2443,10 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
       static_cast<int>(
           blink::mojom::PushUnregistrationReason::PERMISSION_REVOKED),
       1);
+
+  EXPECT_THAT(
+      PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+      ElementsAre(Property(&PushMessagingUnsubscribedEntry::origin, origin)));
 }
 
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
@@ -2356,15 +2458,14 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   EXPECT_EQ("permission status - granted",
             RunScript("pushManagerPermissionState()"));
 
-  scoped_refptr<content::MessageLoopRunner> message_loop_runner =
-      new content::MessageLoopRunner;
+  base::RunLoop run_loop;
   push_service()->SetContentSettingChangedCallbackForTesting(
-      base::BarrierClosure(1, message_loop_runner->QuitClosure()));
+      run_loop.QuitClosure());
 
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
       ->ClearSettingsForOneType(ContentSettingsType::NOTIFICATIONS);
 
-  message_loop_runner->Run();
+  run_loop.Run();
 
   EXPECT_EQ("permission status - prompt",
             RunScript("pushManagerPermissionState()"));
@@ -2376,6 +2477,11 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
       static_cast<int>(
           blink::mojom::PushUnregistrationReason::PERMISSION_REVOKED),
       1);
+
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+              ElementsAre(Property(
+                  &PushMessagingUnsubscribedEntry::origin,
+                  https_server()->GetURL("/").DeprecatedGetOriginAsURL())));
 }
 
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
@@ -2387,10 +2493,9 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   EXPECT_EQ("permission status - granted",
             RunScript("pushManagerPermissionState()"));
 
-  scoped_refptr<content::MessageLoopRunner> message_loop_runner =
-      new content::MessageLoopRunner;
+  base::RunLoop run_loop;
   push_service()->SetContentSettingChangedCallbackForTesting(
-      base::BarrierClosure(1, message_loop_runner->QuitClosure()));
+      run_loop.QuitClosure());
 
   GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
@@ -2398,7 +2503,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
                                       ContentSettingsType::NOTIFICATIONS,
                                       CONTENT_SETTING_DEFAULT);
 
-  message_loop_runner->Run();
+  run_loop.Run();
 
   EXPECT_EQ("permission status - prompt",
             RunScript("pushManagerPermissionState()"));
@@ -2410,6 +2515,10 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
       static_cast<int>(
           blink::mojom::PushUnregistrationReason::PERMISSION_REVOKED),
       1);
+
+  EXPECT_THAT(
+      PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+      ElementsAre(Property(&PushMessagingUnsubscribedEntry::origin, origin)));
 }
 
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
@@ -2421,10 +2530,9 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   EXPECT_EQ("permission status - granted",
             RunScript("pushManagerPermissionState()"));
 
-  scoped_refptr<content::MessageLoopRunner> message_loop_runner =
-      new content::MessageLoopRunner;
+  base::RunLoop run_loop;
   push_service()->SetContentSettingChangedCallbackForTesting(
-      base::BarrierClosure(1, message_loop_runner->QuitClosure()));
+      run_loop.QuitClosure());
 
   GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
@@ -2432,7 +2540,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
                                       ContentSettingsType::NOTIFICATIONS,
                                       CONTENT_SETTING_BLOCK);
 
-  message_loop_runner->Run();
+  run_loop.Run();
 
   EXPECT_EQ("permission status - denied",
             RunScript("pushManagerPermissionState()"));
@@ -2444,6 +2552,10 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
       static_cast<int>(
           blink::mojom::PushUnregistrationReason::PERMISSION_REVOKED),
       1);
+
+  EXPECT_THAT(
+      PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+      ElementsAre(Property(&PushMessagingUnsubscribedEntry::origin, origin)));
 }
 
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
@@ -2455,10 +2567,9 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   EXPECT_EQ("permission status - granted",
             RunScript("pushManagerPermissionState()"));
 
-  scoped_refptr<content::MessageLoopRunner> message_loop_runner =
-      new content::MessageLoopRunner;
+  base::RunLoop run_loop;
   push_service()->SetContentSettingChangedCallbackForTesting(
-      base::BarrierClosure(1, message_loop_runner->QuitClosure()));
+      run_loop.QuitClosure());
 
   GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
@@ -2466,7 +2577,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
                                       ContentSettingsType::NOTIFICATIONS,
                                       CONTENT_SETTING_ALLOW);
 
-  message_loop_runner->Run();
+  run_loop.Run();
 
   EXPECT_EQ("permission status - granted",
             RunScript("pushManagerPermissionState()"));
@@ -2474,6 +2585,9 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   EXPECT_EQ("true - subscribed", RunScript("hasSubscription()"));
 
   histogram_tester_.ExpectTotalCount("PushMessaging.UnregistrationReason", 0);
+
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+              IsEmpty());
 }
 
 // This test is testing some non-trivial content settings rules and make sure
@@ -2489,10 +2603,9 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   EXPECT_EQ("permission status - granted",
             RunScript("pushManagerPermissionState()"));
 
-  scoped_refptr<content::MessageLoopRunner> message_loop_runner =
-      new content::MessageLoopRunner;
+  base::RunLoop run_loop;
   push_service()->SetContentSettingChangedCallbackForTesting(
-      base::BarrierClosure(2, message_loop_runner->QuitClosure()));
+      base::BarrierClosure(2, run_loop.QuitClosure()));
 
   GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
@@ -2503,7 +2616,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
                                       ContentSettingsType::NOTIFICATIONS,
                                       CONTENT_SETTING_DEFAULT);
 
-  message_loop_runner->Run();
+  run_loop.Run();
 
   // The two first rules should give |origin| the permission to use Push even
   // if the rules it used to have have been reset.
@@ -2516,6 +2629,9 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   EXPECT_EQ("true - subscribed", RunScript("hasSubscription()"));
 
   histogram_tester_.ExpectTotalCount("PushMessaging.UnregistrationReason", 0);
+
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+              IsEmpty());
 }
 
 // Checks automatically unsubscribing due to a revoked permission after
@@ -2550,7 +2666,7 @@ IN_PROC_BROWSER_TEST_F(
   run_loop.Run();
 
   // |app_identifier| should no longer be stored in prefs.
-  PushMessagingAppIdentifier stored_app_identifier =
+  push_messaging::AppIdentifier stored_app_identifier =
       PushMessagingAppIdentifier::FindByAppId(GetBrowser()->profile(), app_id);
   EXPECT_TRUE(stored_app_identifier.is_null());
 
@@ -2669,11 +2785,11 @@ IN_PROC_BROWSER_TEST_F(PushMessagingIncognitoBrowserTest,
   // Start a prerender with the push messaging test URL.
   const GURL prerendering_url(
       https_server()->GetURL(GetTestURL() + "?prerendering"));
-  int host_id = prerender_helper_.AddPrerender(prerendering_url);
+  content::FrameTreeNodeId host_id =
+      prerender_helper_.AddPrerender(prerendering_url);
   content::test::PrerenderHostObserver prerender_observer(*web_contents(),
                                                           host_id);
-  ASSERT_NE(prerender_helper_.GetHostForUrl(prerendering_url),
-            content::RenderFrameHost::kNoFrameTreeNodeId);
+  ASSERT_TRUE(prerender_helper_.GetHostForUrl(prerendering_url));
 
   content::WebContentsConsoleObserver console_observer(web_contents());
   console_observer.SetPattern(kIncognitoWarningPattern);
@@ -2834,26 +2950,27 @@ IN_PROC_BROWSER_TEST_F(PushSubscriptionWithoutExpirationTimeTest,
   EXPECT_EQ("null", RunScript("documentSubscribePushGetExpirationTime()"));
 }
 
-class PushSubscriptionChangeEventTest : public PushMessagingBrowserTestBase {
+class PushSubscriptionChangeEventOnInvalidationTest
+    : public PushMessagingBrowserTestBase {
  public:
-  PushSubscriptionChangeEventTest() {
+  PushSubscriptionChangeEventOnInvalidationTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kPushSubscriptionChangeEvent,
+        {features::kPushSubscriptionChangeEventOnInvalidation,
          features::kPushSubscriptionWithExpirationTime},
         {});
   }
 
-  ~PushSubscriptionChangeEventTest() override = default;
+  ~PushSubscriptionChangeEventOnInvalidationTest() override = default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(PushSubscriptionChangeEventTest,
+IN_PROC_BROWSER_TEST_F(PushSubscriptionChangeEventOnInvalidationTest,
                        PushSubscriptionChangeEventSuccess) {
   // Create the |old_subscription| by subscribing and unsubscribing again
   ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
-  PushMessagingAppIdentifier app_identifier =
+  push_messaging::AppIdentifier app_identifier =
       GetAppIdentifierForServiceWorkerRegistration(0LL);
 
   blink::mojom::PushSubscriptionPtr old_subscription =
@@ -2880,7 +2997,7 @@ IN_PROC_BROWSER_TEST_F(PushSubscriptionChangeEventTest,
   ASSERT_EQ("true - is controlled", RunScript("isControlled()"));
 
   base::RunLoop run_loop;
-  push_service()->FirePushSubscriptionChange(
+  push_service()->FirePushSubscriptionChangeForAppIdentifier(
       app_identifier, run_loop.QuitClosure(), std::move(new_subscription),
       std::move(old_subscription));
   run_loop.Run();
@@ -2891,7 +3008,7 @@ IN_PROC_BROWSER_TEST_F(PushSubscriptionChangeEventTest,
   EXPECT_EQ(new_endpoint.spec(), RunScript("resultQueue.pop()"));
 }
 
-IN_PROC_BROWSER_TEST_F(PushSubscriptionChangeEventTest,
+IN_PROC_BROWSER_TEST_F(PushSubscriptionChangeEventOnInvalidationTest,
                        FiredAfterPermissionRevoked) {
   ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
 
@@ -2904,7 +3021,7 @@ IN_PROC_BROWSER_TEST_F(PushSubscriptionChangeEventTest,
   LoadTestPage();  // Reload to become controlled.
   ASSERT_EQ("true - is controlled", RunScript("isControlled()"));
 
-  PushMessagingAppIdentifier app_identifier =
+  push_messaging::AppIdentifier app_identifier =
       GetAppIdentifierForServiceWorkerRegistration(0LL);
   auto old_subscription = GetSubscriptionForAppIdentifier(app_identifier);
 
@@ -2927,7 +3044,8 @@ IN_PROC_BROWSER_TEST_F(PushSubscriptionChangeEventTest,
   EXPECT_EQ("null", RunScript("resultQueue.pop()"));
 }
 
-IN_PROC_BROWSER_TEST_F(PushSubscriptionChangeEventTest, OnInvalidation) {
+IN_PROC_BROWSER_TEST_F(PushSubscriptionChangeEventOnInvalidationTest,
+                       OnInvalidation) {
   ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
 
   EXPECT_EQ("true - subscribed", RunScript("hasSubscription()"));
@@ -2936,7 +3054,7 @@ IN_PROC_BROWSER_TEST_F(PushSubscriptionChangeEventTest, OnInvalidation) {
   LoadTestPage();  // Reload to become controlled.
   ASSERT_EQ("true - is controlled", RunScript("isControlled()"));
 
-  PushMessagingAppIdentifier app_identifier =
+  push_messaging::AppIdentifier app_identifier =
       GetAppIdentifierForServiceWorkerRegistration(0LL);
   ASSERT_FALSE(app_identifier.is_null());
 
@@ -2946,13 +3064,13 @@ IN_PROC_BROWSER_TEST_F(PushSubscriptionChangeEventTest, OnInvalidation) {
   run_loop.Run();
 
   // Old subscription should be gone
-  PushMessagingAppIdentifier deleted_identifier =
+  push_messaging::AppIdentifier deleted_identifier =
       PushMessagingAppIdentifier::FindByAppId(GetBrowser()->profile(),
                                               app_identifier.app_id());
   EXPECT_TRUE(deleted_identifier.is_null());
 
   // New subscription with a different app id should exist
-  PushMessagingAppIdentifier new_identifier =
+  push_messaging::AppIdentifier new_identifier =
       PushMessagingAppIdentifier::FindByServiceWorker(
           GetBrowser()->profile(), app_identifier.origin(),
           app_identifier.service_worker_registration_id());
@@ -2963,4 +3081,412 @@ IN_PROC_BROWSER_TEST_F(PushSubscriptionChangeEventTest, OnInvalidation) {
   // Expect `pushsubscriptionchange` event that is not null
   EXPECT_NE("null", RunScript("resultQueue.pop()"));
   EXPECT_NE("null", RunScript("resultQueue.pop()"));
+}
+
+using PushSubscriptionChangeEventOnResubscribeTest =
+    PushMessagingBrowserTestBase;
+
+IN_PROC_BROWSER_TEST_F(PushSubscriptionChangeEventOnResubscribeTest,
+                       FiredAfterPermissionBlockedAndRegranted) {
+  ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
+
+  EXPECT_EQ("true - subscribed", RunScript("hasSubscription()"));
+
+  EXPECT_EQ("permission status - granted",
+            RunScript("pushManagerPermissionState()"));
+
+  ASSERT_EQ("false - is not controlled", RunScript("isControlled()"));
+  LoadTestPage();  // Reload to become controlled.
+  ASSERT_EQ("true - is controlled", RunScript("isControlled()"));
+
+  push_messaging::AppIdentifier app_identifier =
+      GetAppIdentifierForServiceWorkerRegistration(0LL);
+
+  {
+    base::RunLoop run_loop;
+    push_service()->SetContentSettingChangedCallbackForTesting(
+        run_loop.QuitClosure());
+    HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
+        ->SetContentSettingDefaultScope(app_identifier.origin(), GURL(),
+                                        ContentSettingsType::NOTIFICATIONS,
+                                        CONTENT_SETTING_BLOCK);
+    run_loop.Run();
+  }
+
+  EXPECT_EQ("permission status - denied",
+            RunScript("pushManagerPermissionState()"));
+
+  {
+    base::RunLoop run_loop;
+    push_service()->SetContentSettingChangedCallbackForTesting(
+        run_loop.QuitClosure());
+    HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
+        ->SetContentSettingDefaultScope(app_identifier.origin(), GURL(),
+                                        ContentSettingsType::NOTIFICATIONS,
+                                        CONTENT_SETTING_ALLOW);
+    run_loop.Run();
+  }
+
+  histogram_tester_.ExpectBucketCount("PushMessaging.NumUnsubscribedEntries", 1,
+                                      1);
+  histogram_tester_.ExpectBucketCount(
+      "PushMessaging."
+      "PushSubscriptionChangeForNotificationPermissionChangeFired",
+      1, 1);
+
+  EXPECT_EQ("permission status - granted",
+            RunScript("pushManagerPermissionState()"));
+
+  // Check if the `pushsubscriptionchange` event arrived in the service worker.
+  // Upon firing the `pushsubscriptionchange` event, the service worker will
+  // respond to the test runner with the old and new endpoints. Both will be
+  // NULL when the event fires after permission has been reset, as the old
+  // subscription had already been deleted and no new subscription is created
+  // automatically.
+  EXPECT_EQ("null", RunScript("resultQueue.pop()"));
+  EXPECT_EQ("null", RunScript("resultQueue.pop()"));
+
+  // The unsubscribed entry should not be deleted yet, since the subscription
+  // has not been recreated.
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+              ElementsAre(Property(&PushMessagingUnsubscribedEntry::origin,
+                                   app_identifier.origin())));
+  EXPECT_EQ("false - not subscribed", RunScript("hasSubscription()"));
+
+  // Now resubscribe from the worker.
+  ASSERT_NO_FATAL_FAILURE(
+      EndpointToToken(RunScript("workerSubscribePush()").ExtractString(),
+                      true /* standard_protocol */));
+  EXPECT_EQ("true - subscribed", RunScript("hasSubscription()"));
+
+  // Now the unsubscribed entry should have been deleted.
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+              IsEmpty());
+}
+
+IN_PROC_BROWSER_TEST_F(PushSubscriptionChangeEventOnResubscribeTest,
+                       FiredAfterPermissionResetAndRegranted) {
+  ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
+
+  EXPECT_EQ("true - subscribed", RunScript("hasSubscription()"));
+
+  EXPECT_EQ("permission status - granted",
+            RunScript("pushManagerPermissionState()"));
+
+  ASSERT_EQ("false - is not controlled", RunScript("isControlled()"));
+  LoadTestPage();  // Reload to become controlled.
+  ASSERT_EQ("true - is controlled", RunScript("isControlled()"));
+
+  push_messaging::AppIdentifier app_identifier =
+      GetAppIdentifierForServiceWorkerRegistration(0LL);
+
+  {
+    base::RunLoop run_loop;
+    push_service()->SetContentSettingChangedCallbackForTesting(
+        run_loop.QuitClosure());
+    HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
+        ->SetContentSettingDefaultScope(app_identifier.origin(), GURL(),
+                                        ContentSettingsType::NOTIFICATIONS,
+                                        CONTENT_SETTING_ASK);
+    run_loop.Run();
+  }
+
+  EXPECT_EQ("permission status - prompt",
+            RunScript("pushManagerPermissionState()"));
+
+  {
+    base::RunLoop run_loop;
+    push_service()->SetContentSettingChangedCallbackForTesting(
+        run_loop.QuitClosure());
+    HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
+        ->SetContentSettingDefaultScope(app_identifier.origin(), GURL(),
+                                        ContentSettingsType::NOTIFICATIONS,
+                                        CONTENT_SETTING_ALLOW);
+    run_loop.Run();
+  }
+
+  histogram_tester_.ExpectBucketCount("PushMessaging.NumUnsubscribedEntries", 1,
+                                      1);
+  histogram_tester_.ExpectBucketCount(
+      "PushMessaging."
+      "PushSubscriptionChangeForNotificationPermissionChangeFired",
+      1, 1);
+
+  EXPECT_EQ("permission status - granted",
+            RunScript("pushManagerPermissionState()"));
+
+  // Check if the `pushsubscriptionchange` event arrived in the service worker.
+  // Upon firing the `pushsubscriptionchange` event, the service worker will
+  // respond to the test runner with the old and new endpoints. Both will be
+  // NULL when the event fires after permission has been reset, as the old
+  // subscription had already been deleted and no new subscription is created
+  // automatically.
+  EXPECT_EQ("null", RunScript("resultQueue.pop()"));
+  EXPECT_EQ("null", RunScript("resultQueue.pop()"));
+
+  // The unsubscribed entry should not be deleted yet, since the subscription
+  // has not been recreated.
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+              ElementsAre(Property(&PushMessagingUnsubscribedEntry::origin,
+                                   app_identifier.origin())));
+  EXPECT_EQ("false - not subscribed", RunScript("hasSubscription()"));
+
+  // Now resubscribe from the worker.
+  ASSERT_NO_FATAL_FAILURE(
+      EndpointToToken(RunScript("workerSubscribePush()").ExtractString(),
+                      true /* standard_protocol */));
+  EXPECT_EQ("true - subscribed", RunScript("hasSubscription()"));
+
+  // Now the unsubscribed entry should have been deleted.
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+              IsEmpty());
+}
+
+IN_PROC_BROWSER_TEST_F(PushSubscriptionChangeEventOnResubscribeTest,
+                       FiredAfterGlobalPermissionResetAndRegranted) {
+  ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
+
+  EXPECT_EQ("true - subscribed", RunScript("hasSubscription()"));
+
+  EXPECT_EQ("permission status - granted",
+            RunScript("pushManagerPermissionState()"));
+
+  ASSERT_EQ("false - is not controlled", RunScript("isControlled()"));
+  LoadTestPage();  // Reload to become controlled.
+  ASSERT_EQ("true - is controlled", RunScript("isControlled()"));
+
+  push_messaging::AppIdentifier app_identifier =
+      GetAppIdentifierForServiceWorkerRegistration(0LL);
+
+  {
+    base::RunLoop run_loop;
+    push_service()->SetContentSettingChangedCallbackForTesting(
+        run_loop.QuitClosure());
+    HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
+        ->ClearSettingsForOneType(ContentSettingsType::NOTIFICATIONS);
+
+    run_loop.Run();
+  }
+
+  EXPECT_EQ("permission status - prompt",
+            RunScript("pushManagerPermissionState()"));
+
+  {
+    base::RunLoop run_loop;
+    push_service()->SetContentSettingChangedCallbackForTesting(
+        run_loop.QuitClosure());
+    HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
+        ->SetContentSettingDefaultScope(app_identifier.origin(), GURL(),
+                                        ContentSettingsType::NOTIFICATIONS,
+                                        CONTENT_SETTING_ALLOW);
+    run_loop.Run();
+  }
+
+  histogram_tester_.ExpectBucketCount("PushMessaging.NumUnsubscribedEntries", 1,
+                                      1);
+  histogram_tester_.ExpectBucketCount(
+      "PushMessaging."
+      "PushSubscriptionChangeForNotificationPermissionChangeFired",
+      1, 1);
+
+  EXPECT_EQ("permission status - granted",
+            RunScript("pushManagerPermissionState()"));
+
+  // Check if the `pushsubscriptionchange` event arrived in the service worker.
+  // Upon firing the `pushsubscriptionchange` event, the service worker will
+  // respond to the test runner with the old and new endpoints. Both will be
+  // NULL when the event fires after permission has been reset, as the old
+  // subscription had already been deleted and no new subscription is created
+  // automatically.
+  EXPECT_EQ("null", RunScript("resultQueue.pop()"));
+  EXPECT_EQ("null", RunScript("resultQueue.pop()"));
+
+  // The unsubscribed entry should not be deleted yet, since the subscription
+  // has not been recreated.
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+              ElementsAre(Property(&PushMessagingUnsubscribedEntry::origin,
+                                   app_identifier.origin())));
+  EXPECT_EQ("false - not subscribed", RunScript("hasSubscription()"));
+
+  // Now resubscribe from the worker.
+  ASSERT_NO_FATAL_FAILURE(
+      EndpointToToken(RunScript("workerSubscribePush()").ExtractString(),
+                      true /* standard_protocol */));
+  EXPECT_EQ("true - subscribed", RunScript("hasSubscription()"));
+
+  // Now the unsubscribed entry should have been deleted.
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+              IsEmpty());
+}
+
+IN_PROC_BROWSER_TEST_F(PushSubscriptionChangeEventOnResubscribeTest,
+                       NotFiredForWildcardContentSettingRegranted) {
+  ASSERT_EQ("ok - service worker registered",
+            RunScript("registerServiceWorker()"));
+  ASSERT_EQ("manifest removed", RunScript("removeManifest()"));
+
+  {
+    base::RunLoop run_loop;
+    push_service()->SetContentSettingChangedCallbackForTesting(
+        run_loop.QuitClosure());
+    HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
+        ->SetContentSettingCustomScope(ContentSettingsPattern::Wildcard(),
+                                       ContentSettingsPattern::Wildcard(),
+                                       ContentSettingsType::NOTIFICATIONS,
+                                       CONTENT_SETTING_ALLOW);
+    run_loop.Run();
+  }
+
+  ASSERT_NO_FATAL_FAILURE(EndpointToToken(
+      RunScript("documentSubscribePush()").ExtractString(), true, nullptr));
+
+  EXPECT_EQ("true - subscribed", RunScript("hasSubscription()"));
+
+  EXPECT_EQ("permission status - granted",
+            RunScript("pushManagerPermissionState()"));
+
+  ASSERT_EQ("false - is not controlled", RunScript("isControlled()"));
+  LoadTestPage();  // Reload to become controlled.
+  ASSERT_EQ("true - is controlled", RunScript("isControlled()"));
+
+  push_messaging::AppIdentifier app_identifier =
+      GetAppIdentifierForServiceWorkerRegistration(0LL);
+
+  {
+    base::RunLoop run_loop;
+    push_service()->SetContentSettingChangedCallbackForTesting(
+        run_loop.QuitClosure());
+    HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
+        ->SetContentSettingCustomScope(ContentSettingsPattern::Wildcard(),
+                                       ContentSettingsPattern::Wildcard(),
+                                       ContentSettingsType::NOTIFICATIONS,
+                                       CONTENT_SETTING_BLOCK);
+    run_loop.Run();
+  }
+
+  EXPECT_EQ("permission status - denied",
+            RunScript("pushManagerPermissionState()"));
+  EXPECT_EQ("false - not subscribed", RunScript("hasSubscription()"));
+
+  // There should be one unsubscribed entry.
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+              ElementsAre(Property(&PushMessagingUnsubscribedEntry::origin,
+                                   app_identifier.origin())));
+
+  {
+    base::RunLoop run_loop;
+    push_service()->SetContentSettingChangedCallbackForTesting(
+        run_loop.QuitClosure());
+    HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
+        ->SetContentSettingCustomScope(ContentSettingsPattern::Wildcard(),
+                                       ContentSettingsPattern::Wildcard(),
+                                       ContentSettingsType::NOTIFICATIONS,
+                                       CONTENT_SETTING_ALLOW);
+    run_loop.Run();
+  }
+
+  EXPECT_EQ("permission status - granted",
+            RunScript("pushManagerPermissionState()"));
+
+  // The unsubscribed entry should not be deleted.
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+              ElementsAre(Property(&PushMessagingUnsubscribedEntry::origin,
+                                   app_identifier.origin())));
+
+  EXPECT_EQ("false - not subscribed", RunScript("hasSubscription()"));
+
+  // The `pushsubscriptionchange` event should not have been fired. Since it's
+  // difficult to deterministically check that that didn't happen, we instead
+  // rely on UMA metrics.
+  histogram_tester_.ExpectUniqueSample(
+      "PushMessaging."
+      "PushSubscriptionChangeForNotificationPermissionChangeFired",
+      0, 3);
+  histogram_tester_.ExpectBucketCount("PushMessaging.NumUnsubscribedEntries", 1,
+                                      0);
+  histogram_tester_.ExpectBucketCount("PushMessaging.NumUnsubscribedEntries", 0,
+                                      3);
+}
+
+class PushSubscriptionChangeEventOnResubscribeWithAutoResubscribeTest
+    : public PushSubscriptionChangeEventOnResubscribeTest {
+ protected:
+  std::string GetTestURL() override {
+    return PushSubscriptionChangeEventOnResubscribeTest::GetTestURL() +
+           "?autoResubscribe=true";
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PushSubscriptionChangeEventOnResubscribeWithAutoResubscribeTest,
+    ServiceWorkersResubscribesSuccessfullyAfterRegrant) {
+  ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
+
+  EXPECT_EQ("true - subscribed", RunScript("hasSubscription()"));
+
+  EXPECT_EQ("permission status - granted",
+            RunScript("pushManagerPermissionState()"));
+
+  ASSERT_EQ("false - is not controlled", RunScript("isControlled()"));
+  LoadTestPage();  // Reload to become controlled.
+  ASSERT_EQ("true - is controlled", RunScript("isControlled()"));
+
+  push_messaging::AppIdentifier app_identifier =
+      GetAppIdentifierForServiceWorkerRegistration(0LL);
+
+  {
+    base::RunLoop run_loop;
+    push_service()->SetContentSettingChangedCallbackForTesting(
+        run_loop.QuitClosure());
+    HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
+        ->SetContentSettingDefaultScope(app_identifier.origin(), GURL(),
+                                        ContentSettingsType::NOTIFICATIONS,
+                                        CONTENT_SETTING_BLOCK);
+    run_loop.Run();
+  }
+
+  EXPECT_EQ("permission status - denied",
+            RunScript("pushManagerPermissionState()"));
+
+  {
+    base::RunLoop run_loop;
+    push_service()->SetContentSettingChangedCallbackForTesting(
+        run_loop.QuitClosure());
+    HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
+        ->SetContentSettingDefaultScope(app_identifier.origin(), GURL(),
+                                        ContentSettingsType::NOTIFICATIONS,
+                                        CONTENT_SETTING_ALLOW);
+    run_loop.Run();
+  }
+
+  histogram_tester_.ExpectBucketCount("PushMessaging.NumUnsubscribedEntries", 1,
+                                      1);
+  histogram_tester_.ExpectBucketCount(
+      "PushMessaging."
+      "PushSubscriptionChangeForNotificationPermissionChangeFired",
+      1, 1);
+
+  EXPECT_EQ("permission status - granted",
+            RunScript("pushManagerPermissionState()"));
+
+  // Check if the `pushsubscriptionchange` event arrived in the service worker.
+  // Upon firing the `pushsubscriptionchange` event, the service worker will
+  // respond to the test runner with the old and new endpoints. Both will be
+  // NULL when the event fires after permission has been reset, as the old
+  // subscription had already been deleted and no new subscription is created
+  // automatically. Afterwards, the service worker will immediately try to
+  // resubscribe and send to the test runner the new endpoint.
+  EXPECT_EQ("null", RunScript("resultQueue.pop()"));
+  EXPECT_EQ("null", RunScript("resultQueue.pop()"));
+  auto got_new_endpoint = RunScript("resultQueue.pop()");
+
+  blink::mojom::PushSubscriptionPtr new_subscription =
+      GetSubscriptionForAppIdentifier(app_identifier);
+  EXPECT_EQ(new_subscription->endpoint, got_new_endpoint);
+
+  // Now the unsubscribed entry should have been deleted.
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+              IsEmpty());
+
+  EXPECT_EQ("true - subscribed", RunScript("hasSubscription()"));
 }

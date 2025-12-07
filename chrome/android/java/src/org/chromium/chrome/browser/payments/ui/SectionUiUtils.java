@@ -4,21 +4,21 @@
 
 package org.chromium.chrome.browser.payments.ui;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.text.Layout;
 import android.text.TextPaint;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.autofill.EditableOption;
 
-/**
- * Utility functions for PaymentRequestSection.
- * This class is not supposed to be instantiated.
- */
+/** Utility functions for PaymentRequestSection. This class is not supposed to be instantiated. */
+@NullMarked
 public class SectionUiUtils {
     /** Avoid instantiation by accident. */
     private SectionUiUtils() {}
@@ -60,7 +60,7 @@ public class SectionUiUtils {
                                 return;
                             }
 
-                            Layout layout = view.getLayout();
+                            Layout layout = assumeNonNull(view.getLayout());
                             if (layout.getEllipsisCount(0) > 0) {
                                 String summary =
                                         getSectionSummaryForPreviewInASingleLine(
@@ -85,7 +85,7 @@ public class SectionUiUtils {
         int optionCount = section.getSize();
         assert optionCount != 0;
 
-        EditableOption option = section.getItem(0);
+        EditableOption option = assumeNonNull(section.getItem(0));
         String labelSeparator = context.getString(R.string.autofill_address_summary_separator);
         String optionSummary = option.getPreviewString(labelSeparator, -1);
 

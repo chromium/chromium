@@ -4,11 +4,11 @@
 
 #include "calculator_provider.h"
 
+#include <algorithm>
 #include <limits>
 #include <vector>
 
 #include "base/check.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -17,9 +17,9 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
-#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/provider_state_service.h"
 #include "components/omnibox/browser/search_provider.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 
 CalculatorProvider::CalculatorProvider(AutocompleteProviderClient* client,
                                        AutocompleteProviderListener* listener,
@@ -64,13 +64,8 @@ void CalculatorProvider::Start(const AutocompleteInput& input,
   }
 }
 
-void CalculatorProvider::Stop(bool clear_cached_results,
-                              bool due_to_user_inactivity) {
-  done_ = true;
-}
-
 void CalculatorProvider::DeleteMatch(const AutocompleteMatch& match) {
-  auto it = base::ranges::find_if(Cache(), [&](const auto& cached) {
+  auto it = std::ranges::find_if(Cache(), [&](const auto& cached) {
     return cached.match.destination_url == match.destination_url;
   });
   if (it != Cache().end()) {
@@ -120,7 +115,7 @@ void CalculatorProvider::AddMatchToCache(AutocompleteMatch match) {
     Cache().pop_back();
 
   // Remove duplicates to avoid a repeated match reducing cache capacity.
-  auto duplicate = base::ranges::find_if(Cache(), [&](const auto& cached) {
+  auto duplicate = std::ranges::find_if(Cache(), [&](const auto& cached) {
     return cached.match.contents == match.contents;
   });
   if (duplicate != Cache().end())
@@ -150,10 +145,11 @@ void CalculatorProvider::AddMatches() {
   // Use copies instead of references to avoid dangling pointers. This provider
   // might be deleted before the cache (i.e. the window this provider belongs to
   // might be closed).
-  for (auto [match, _] : Cache()) {
+  for (const auto& [immutable_match, _] : Cache()) {
+    auto match = immutable_match;
     match.relevance = relevance++;
     match.provider = this;
-    matches_.push_back(match);
+    matches_.push_back(std::move(match));
   }
 }
 

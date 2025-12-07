@@ -59,9 +59,8 @@ void BaseButtonInputType::CreateShadowSubtree() {
       GetElement().GetDocument(), GetElement().ValueOrDefaultLabel()));
 }
 
-HTMLFormControlElement::PopoverTriggerSupport
-BaseButtonInputType::SupportsPopoverTriggering() const {
-  return HTMLFormControlElement::PopoverTriggerSupport::kSupported;
+PopoverTriggerSupport BaseButtonInputType::SupportsPopoverTriggering() const {
+  return PopoverTriggerSupport::kSupported;
 }
 
 void BaseButtonInputType::ValueAttributeChanged() {
@@ -74,13 +73,13 @@ bool BaseButtonInputType::ShouldSaveAndRestoreFormControlState() const {
 }
 
 bool BaseButtonInputType::IsAutoDirectionalityFormAssociated() const {
-  return RuntimeEnabledFeatures::DirnameMoreInputTypesEnabled();
+  return true;
 }
 
 void BaseButtonInputType::AppendToFormData(FormData&) const {}
 
-ControlPart BaseButtonInputType::AutoAppearance() const {
-  return kPushButtonPart;
+AppearanceValue BaseButtonInputType::AutoAppearance() const {
+  return AppearanceValue::kPushButton;
 }
 
 LayoutObject* BaseButtonInputType::CreateLayoutObject(

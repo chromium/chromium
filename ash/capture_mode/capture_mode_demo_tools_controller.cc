@@ -22,6 +22,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/location.h"
 #include "base/notreached.h"
+#include "ui/base/accelerators/ash/quick_insert_event_property.h"
 #include "ui/base/ime/constants.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
@@ -102,7 +103,8 @@ constexpr ui::KeyboardCode kNotNeedingModifierKeys[] = {
     ui::VKEY_LEFT,
     ui::VKEY_RIGHT,
     ui::VKEY_ASSISTANT,
-    ui::VKEY_SETTINGS};
+    ui::VKEY_SETTINGS,
+    ui::VKEY_QUICK_INSERT};
 
 // Returns true if `key_code` is a non-modifier key for which a `KeyComboViewer`
 // can be shown even if there are no modifier keys are currently pressed.
@@ -217,7 +219,7 @@ void CaptureModeDemoToolsController::OnTouchEvent(
       return;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -227,7 +229,12 @@ void CaptureModeDemoToolsController::OnTextInputStateChanged(
 }
 
 void CaptureModeDemoToolsController::OnKeyUpEvent(ui::KeyEvent* event) {
-  const ui::KeyboardCode key_code = event->key_code();
+  // The QuickInsert key is differentiated via the Quick insert proprerty
+  // attached to the event. If we see this property, we must overwrite the
+  // keycode for the purposes of showing the icon visually.
+  const ui::KeyboardCode key_code = ui::HasQuickInsertProperty(*event)
+                                        ? ui::VKEY_QUICK_INSERT
+                                        : event->key_code();
 
   if (IsKeyEventFromVirtualKeyboard(event)) {
     // The virtual keyboard does not send key up events for modifier keys, such
@@ -301,7 +308,11 @@ void CaptureModeDemoToolsController::OnKeyDownEvent(ui::KeyEvent* event) {
   }
 
   if (modifier_flag == ui::EF_NONE) {
-    last_non_modifier_key_ = key_code;
+    // The QuickInsert key is differentiated via the Quick insert proprerty
+    // attached to the event. If we see this property, we must overwrite the
+    // keycode for the purposes of showing the icon visually.
+    last_non_modifier_key_ =
+        ui::HasQuickInsertProperty(*event) ? ui::VKEY_QUICK_INSERT : key_code;
   }
 
   RefreshKeyComboViewer();

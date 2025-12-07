@@ -1,0 +1,6 @@
+Tests Bluetooth adding and removing service from a pheripheral
+After adding heart rate service: 0000180d-0000-1000-8000-00805f9b34fb
+After adding battery service: 0000180f-0000-1000-8000-00805f9b34fb,0000180d-0000-1000-8000-00805f9b34fb
+After removing battery service: 0000180d-0000-1000-8000-00805f9b34fb
+After removing heart rate service: No Services found in device.
+

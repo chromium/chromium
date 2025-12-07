@@ -5,6 +5,7 @@
 #include "chrome/browser/screen_ai/pref_names.h"
 
 #include "base/files/file_path.h"
+#include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace prefs {

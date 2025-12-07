@@ -1,5 +1,5 @@
 // META: title=test WebNN API reduction operations
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -19,13 +19,6 @@
 //
 // MLOperand reduceMax(MLOperand input, optional MLReduceOptions options = {});
 
-const getReductionOperatorsPrecisionTolerance = (graphResources) => {
-  return {
-    metricType: 'ULP',
-    value: 0,
-  };
-};
-
 const reduceMaxTests = [
   {
     'name': 'reduceMax float32 0D constant tensor default options',
@@ -33,7 +26,7 @@ const reduceMaxTests = [
       'inputs': {
         'reduceMaxInput': {
           'data': [32.16658401489258],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'},
+          'descriptor': {shape: [], dataType: 'float32'},
           'constant': true
         }
       },
@@ -45,7 +38,30 @@ const reduceMaxTests = [
       'expectedOutputs': {
         'reduceMaxOutput': {
           'data': 32.16658401489258,
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reduceMax float32 0D tensor default options',
+    'graph': {
+      'inputs': {
+        'reduceMaxInput': {
+          'data': [32.16658401489258],
+          'descriptor': {shape: [], dataType: 'float32'},
+          'constant': false
+        }
+      },
+      'operators': [{
+        'name': 'reduceMax',
+        'arguments': [{'input': 'reduceMaxInput'}],
+        'outputs': 'reduceMaxOutput'
+      }],
+      'expectedOutputs': {
+        'reduceMaxOutput': {
+          'data': 32.16658401489258,
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       }
     }
@@ -56,7 +72,7 @@ const reduceMaxTests = [
       'inputs': {
         'reduceMaxInput': {
           'data': [32.16658401489258],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'},
+          'descriptor': {shape: [], dataType: 'float32'},
           'constant': true
         }
       },
@@ -68,7 +84,53 @@ const reduceMaxTests = [
       'expectedOutputs': {
         'reduceMaxOutput': {
           'data': 32.16658401489258,
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reduceMax float32 0D tensor empty axes',
+    'graph': {
+      'inputs': {
+        'reduceMaxInput': {
+          'data': [32.16658401489258],
+          'descriptor': {shape: [], dataType: 'float32'},
+          'constant': false
+        }
+      },
+      'operators': [{
+        'name': 'reduceMax',
+        'arguments': [{'input': 'reduceMaxInput'}, {'options': {'axes': []}}],
+        'outputs': 'reduceMaxOutput'
+      }],
+      'expectedOutputs': {
+        'reduceMaxOutput': {
+          'data': 32.16658401489258,
+          'descriptor': {shape: [], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reduceMax float32 1D constant tensor empty axes',
+    'graph': {
+      'inputs': {
+        'reduceMaxInput': {
+          'data': [32.16658401489258, 32.16658401489257],
+          'descriptor': {shape: [2], dataType: 'float32'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'reduceMax',
+        'arguments': [{'input': 'reduceMaxInput'}, {'options': {'axes': []}}],
+        'outputs': 'reduceMaxOutput'
+      }],
+      'expectedOutputs': {
+        'reduceMaxOutput': {
+          'data': [32.16658401489258, 32.16658401489257],
+          'descriptor': {shape: [2], dataType: 'float32'}
         }
       }
     }
@@ -88,7 +150,7 @@ const reduceMaxTests = [
             -72.86485290527344,  -46.03200912475586, 20.253753662109375,
             -21.557384490966797, -51.28727340698242, -42.58832931518555
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'},
+          'descriptor': {shape: [24], dataType: 'float32'},
           'constant': true
         }
       },
@@ -100,7 +162,7 @@ const reduceMaxTests = [
       'expectedOutputs': {
         'reduceMaxOutput': {
           'data': 99.77313232421875,
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       }
     }
@@ -120,7 +182,7 @@ const reduceMaxTests = [
             -72.86485290527344,  -46.03200912475586, 20.253753662109375,
             -21.557384490966797, -51.28727340698242, -42.58832931518555
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -131,7 +193,7 @@ const reduceMaxTests = [
       'expectedOutputs': {
         'reduceMaxOutput': {
           'data': 99.77313232421875,
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       }
     }
@@ -151,7 +213,7 @@ const reduceMaxTests = [
             -72.86485290527344,  -46.03200912475586, 20.253753662109375,
             -21.557384490966797, -51.28727340698242, -42.58832931518555
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -162,7 +224,7 @@ const reduceMaxTests = [
       'expectedOutputs': {
         'reduceMaxOutput': {
           'data': 99.77313232421875,
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       }
     }
@@ -182,7 +244,7 @@ const reduceMaxTests = [
             -72.86485290527344,  -46.03200912475586, 20.253753662109375,
             -21.557384490966797, -51.28727340698242, -42.58832931518555
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -193,7 +255,7 @@ const reduceMaxTests = [
       'expectedOutputs': {
         'reduceMaxOutput': {
           'data': 99.77313232421875,
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       }
     }
@@ -213,7 +275,7 @@ const reduceMaxTests = [
             -72.86485290527344,  -46.03200912475586, 20.253753662109375,
             -21.557384490966797, -51.28727340698242, -42.58832931518555
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -224,7 +286,7 @@ const reduceMaxTests = [
       'expectedOutputs': {
         'reduceMaxOutput': {
           'data': 99.77313232421875,
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       }
     }
@@ -244,7 +306,7 @@ const reduceMaxTests = [
             -72.86485290527344,  -46.03200912475586, 20.253753662109375,
             -21.557384490966797, -51.28727340698242, -42.58832931518555
           ],
-          'descriptor': {'dimensions': [2, 1, 4, 1, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 1, 4, 1, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -255,7 +317,7 @@ const reduceMaxTests = [
       'expectedOutputs': {
         'reduceMaxOutput': {
           'data': 99.77313232421875,
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       }
     }
@@ -275,7 +337,7 @@ const reduceMaxTests = [
             -72.86485290527344,  -46.03200912475586, 20.253753662109375,
             -21.557384490966797, -51.28727340698242, -42.58832931518555
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -289,7 +351,7 @@ const reduceMaxTests = [
             90.42288208007812, 75.90379333496094, 94.99645233154297,
             96.55397033691406, 99.77313232421875, 20.253753662109375
           ],
-          'descriptor': {'dimensions': [2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3], dataType: 'float32'}
         }
       }
     }
@@ -309,7 +371,7 @@ const reduceMaxTests = [
             -72.86485290527344,  -46.03200912475586, 20.253753662109375,
             -21.557384490966797, -51.28727340698242, -42.58832931518555
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -324,7 +386,7 @@ const reduceMaxTests = [
             62.504642486572266, 96.55397033691406, 99.77313232421875,
             -21.557384490966797, 94.99645233154297, 37.28493118286133
           ],
-          'descriptor': {'dimensions': [2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3], dataType: 'float32'}
         }
       }
     }
@@ -344,7 +406,7 @@ const reduceMaxTests = [
             -72.86485290527344,  -46.03200912475586, 20.253753662109375,
             -21.557384490966797, -51.28727340698242, -42.58832931518555
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -357,7 +419,7 @@ const reduceMaxTests = [
       'expectedOutputs': {
         'reduceMaxOutput': {
           'data': 99.77313232421875,
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       }
     }
@@ -377,7 +439,7 @@ const reduceMaxTests = [
             -72.86485290527344,  -46.03200912475586, 20.253753662109375,
             -21.557384490966797, -51.28727340698242, -42.58832931518555
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -390,7 +452,7 @@ const reduceMaxTests = [
       'expectedOutputs': {
         'reduceMaxOutput': {
           'data': [99.77313232421875],
-          'descriptor': {'dimensions': [1, 1, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 1, 1], dataType: 'float32'}
         }
       }
     }
@@ -410,7 +472,7 @@ const reduceMaxTests = [
             -72.86485290527344,  -46.03200912475586, 20.253753662109375,
             -21.557384490966797, -51.28727340698242, -42.58832931518555
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -423,7 +485,7 @@ const reduceMaxTests = [
       'expectedOutputs': {
         'reduceMaxOutput': {
           'data': 99.77313232421875,
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       }
     }
@@ -443,7 +505,7 @@ const reduceMaxTests = [
             -72.86485290527344,  -46.03200912475586, 20.253753662109375,
             -21.557384490966797, -51.28727340698242, -42.58832931518555
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -456,7 +518,7 @@ const reduceMaxTests = [
       'expectedOutputs': {
         'reduceMaxOutput': {
           'data': [99.77313232421875],
-          'descriptor': {'dimensions': [1, 1, 1, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 1, 1, 1], dataType: 'float32'}
         }
       }
     }
@@ -477,7 +539,7 @@ const reduceMaxTests = [
             -72.86485290527344,  -46.03200912475586, 20.253753662109375,
             -21.557384490966797, -51.28727340698242, -42.58832931518555
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -494,7 +556,7 @@ const reduceMaxTests = [
             90.42288208007812, 94.99645233154297, 96.55397033691406,
             99.77313232421875
           ],
-          'descriptor': {'dimensions': [2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2], dataType: 'float32'}
         }
       }
     }
@@ -515,7 +577,7 @@ const reduceMaxTests = [
             -72.86485290527344,  -46.03200912475586, 20.253753662109375,
             -21.557384490966797, -51.28727340698242, -42.58832931518555
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -532,18 +594,492 @@ const reduceMaxTests = [
             90.42288208007812, 94.99645233154297, 96.55397033691406,
             99.77313232421875
           ],
-          'descriptor': {'dimensions': [2, 1, 2, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 1, 2, 1], dataType: 'float32'}
         }
       }
     }
   },
+
+  // float16 tests
+  {
+    'name': 'reduceMax float16 0D constant tensor default options',
+    'graph': {
+      'inputs': {
+        'reduceMaxInput': {
+          'data': [32.15625],
+          'descriptor': {shape: [], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'reduceMax',
+        'arguments': [{'input': 'reduceMaxInput'}],
+        'outputs': 'reduceMaxOutput'
+      }],
+      'expectedOutputs': {
+        'reduceMaxOutput':
+            {'data': [32.15625], 'descriptor': {shape: [], dataType: 'float16'}}
+      }
+    }
+  },
+  {
+    'name': 'reduceMax float16 0D tensor default options',
+    'graph': {
+      'inputs': {
+        'reduceMaxInput': {
+          'data': [32.15625],
+          'descriptor': {shape: [], dataType: 'float16'},
+          'constant': false
+        }
+      },
+      'operators': [{
+        'name': 'reduceMax',
+        'arguments': [{'input': 'reduceMaxInput'}],
+        'outputs': 'reduceMaxOutput'
+      }],
+      'expectedOutputs': {
+        'reduceMaxOutput':
+            {'data': [32.15625], 'descriptor': {shape: [], dataType: 'float16'}}
+      }
+    }
+  },
+  {
+    'name': 'reduceMax float16 0D constant tensor empty axes',
+    'graph': {
+      'inputs': {
+        'reduceMaxInput': {
+          'data': [32.15625],
+          'descriptor': {shape: [], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'reduceMax',
+        'arguments': [{'input': 'reduceMaxInput'}, {'options': {'axes': []}}],
+        'outputs': 'reduceMaxOutput'
+      }],
+      'expectedOutputs': {
+        'reduceMaxOutput':
+            {'data': [32.15625], 'descriptor': {shape: [], dataType: 'float16'}}
+      }
+    }
+  },
+  {
+    'name': 'reduceMax float16 0D tensor empty axes',
+    'graph': {
+      'inputs': {
+        'reduceMaxInput': {
+          'data': [32.15625],
+          'descriptor': {shape: [], dataType: 'float16'},
+          'constant': false
+        }
+      },
+      'operators': [{
+        'name': 'reduceMax',
+        'arguments': [{'input': 'reduceMaxInput'}, {'options': {'axes': []}}],
+        'outputs': 'reduceMaxOutput'
+      }],
+      'expectedOutputs': {
+        'reduceMaxOutput':
+            {'data': [32.15625], 'descriptor': {shape: [], dataType: 'float16'}}
+      }
+    }
+  },
+  {
+    'name': 'reduceMax float16 1D constant tensor default options',
+    'graph': {
+      'inputs': {
+        'reduceMaxInput': {
+          'data': [
+            32.15625,  90.4375,   -26.34375, -7.1484375, 75.875,
+            -48.21875, -53.09375, 66.6875,   -96.1875,   -88.3125,
+            95,        37.28125,  -42.21875, 96.5625,    0.880859375,
+            62.5,      36.65625,  99.75,     -72.875,    -46.03125,
+            20.25,     -21.5625,  -51.28125, -42.59375
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'reduceMax',
+        'arguments': [{'input': 'reduceMaxInput'}],
+        'outputs': 'reduceMaxOutput'
+      }],
+      'expectedOutputs': {
+        'reduceMaxOutput':
+            {'data': [99.75], 'descriptor': {shape: [], dataType: 'float16'}}
+      }
+    }
+  },
+  {
+    'name': 'reduceMax float16 1D tensor default options',
+    'graph': {
+      'inputs': {
+        'reduceMaxInput': {
+          'data': [
+            32.15625,  90.4375,   -26.34375, -7.1484375, 75.875,
+            -48.21875, -53.09375, 66.6875,   -96.1875,   -88.3125,
+            95,        37.28125,  -42.21875, 96.5625,    0.880859375,
+            62.5,      36.65625,  99.75,     -72.875,    -46.03125,
+            20.25,     -21.5625,  -51.28125, -42.59375
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reduceMax',
+        'arguments': [{'input': 'reduceMaxInput'}],
+        'outputs': 'reduceMaxOutput'
+      }],
+      'expectedOutputs': {
+        'reduceMaxOutput':
+            {'data': [99.75], 'descriptor': {shape: [], dataType: 'float16'}}
+      }
+    }
+  },
+  {
+    'name': 'reduceMax float16 2D tensor default options',
+    'graph': {
+      'inputs': {
+        'reduceMaxInput': {
+          'data': [
+            32.15625,  90.4375,   -26.34375, -7.1484375, 75.875,
+            -48.21875, -53.09375, 66.6875,   -96.1875,   -88.3125,
+            95,        37.28125,  -42.21875, 96.5625,    0.880859375,
+            62.5,      36.65625,  99.75,     -72.875,    -46.03125,
+            20.25,     -21.5625,  -51.28125, -42.59375
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reduceMax',
+        'arguments': [{'input': 'reduceMaxInput'}],
+        'outputs': 'reduceMaxOutput'
+      }],
+      'expectedOutputs': {
+        'reduceMaxOutput':
+            {'data': [99.75], 'descriptor': {shape: [], dataType: 'float16'}}
+      }
+    }
+  },
+  {
+    'name': 'reduceMax float16 3D tensor default options',
+    'graph': {
+      'inputs': {
+        'reduceMaxInput': {
+          'data': [
+            32.15625,  90.4375,   -26.34375, -7.1484375, 75.875,
+            -48.21875, -53.09375, 66.6875,   -96.1875,   -88.3125,
+            95,        37.28125,  -42.21875, 96.5625,    0.880859375,
+            62.5,      36.65625,  99.75,     -72.875,    -46.03125,
+            20.25,     -21.5625,  -51.28125, -42.59375
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reduceMax',
+        'arguments': [{'input': 'reduceMaxInput'}],
+        'outputs': 'reduceMaxOutput'
+      }],
+      'expectedOutputs': {
+        'reduceMaxOutput':
+            {'data': [99.75], 'descriptor': {shape: [], dataType: 'float16'}}
+      }
+    }
+  },
+  {
+    'name': 'reduceMax float16 4D tensor default options',
+    'graph': {
+      'inputs': {
+        'reduceMaxInput': {
+          'data': [
+            32.15625,  90.4375,   -26.34375, -7.1484375, 75.875,
+            -48.21875, -53.09375, 66.6875,   -96.1875,   -88.3125,
+            95,        37.28125,  -42.21875, 96.5625,    0.880859375,
+            62.5,      36.65625,  99.75,     -72.875,    -46.03125,
+            20.25,     -21.5625,  -51.28125, -42.59375
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reduceMax',
+        'arguments': [{'input': 'reduceMaxInput'}],
+        'outputs': 'reduceMaxOutput'
+      }],
+      'expectedOutputs': {
+        'reduceMaxOutput':
+            {'data': [99.75], 'descriptor': {shape: [], dataType: 'float16'}}
+      }
+    }
+  },
+  {
+    'name': 'reduceMax float16 5D tensor default options',
+    'graph': {
+      'inputs': {
+        'reduceMaxInput': {
+          'data': [
+            32.15625,  90.4375,   -26.34375, -7.1484375, 75.875,
+            -48.21875, -53.09375, 66.6875,   -96.1875,   -88.3125,
+            95,        37.28125,  -42.21875, 96.5625,    0.880859375,
+            62.5,      36.65625,  99.75,     -72.875,    -46.03125,
+            20.25,     -21.5625,  -51.28125, -42.59375
+          ],
+          'descriptor': {shape: [2, 1, 4, 1, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reduceMax',
+        'arguments': [{'input': 'reduceMaxInput'}],
+        'outputs': 'reduceMaxOutput'
+      }],
+      'expectedOutputs': {
+        'reduceMaxOutput':
+            {'data': [99.75], 'descriptor': {shape: [], dataType: 'float16'}}
+      }
+    }
+  },
+  {
+    'name': 'reduceMax float16 3D tensor options.axes',
+    'graph': {
+      'inputs': {
+        'reduceMaxInput': {
+          'data': [
+            32.15625,  90.4375,   -26.34375, -7.1484375, 75.875,
+            -48.21875, -53.09375, 66.6875,   -96.1875,   -88.3125,
+            95,        37.28125,  -42.21875, 96.5625,    0.880859375,
+            62.5,      36.65625,  99.75,     -72.875,    -46.03125,
+            20.25,     -21.5625,  -51.28125, -42.59375
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reduceMax',
+        'arguments': [{'input': 'reduceMaxInput'}, {'options': {'axes': [2]}}],
+        'outputs': 'reduceMaxOutput'
+      }],
+      'expectedOutputs': {
+        'reduceMaxOutput': {
+          'data': [90.4375, 75.875, 95, 96.5625, 99.75, 20.25],
+          'descriptor': {shape: [2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reduceMax float16 4D tensor options.axes',
+    'graph': {
+      'inputs': {
+        'reduceMaxInput': {
+          'data': [
+            32.15625,  90.4375,   -26.34375, -7.1484375, 75.875,
+            -48.21875, -53.09375, 66.6875,   -96.1875,   -88.3125,
+            95,        37.28125,  -42.21875, 96.5625,    0.880859375,
+            62.5,      36.65625,  99.75,     -72.875,    -46.03125,
+            20.25,     -21.5625,  -51.28125, -42.59375
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reduceMax',
+        'arguments':
+            [{'input': 'reduceMaxInput'}, {'options': {'axes': [0, 2]}}],
+        'outputs': 'reduceMaxOutput'
+      }],
+      'expectedOutputs': {
+        'reduceMaxOutput': {
+          'data': [62.5, 96.5625, 99.75, -21.5625, 95, 37.28125],
+          'descriptor': {shape: [2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reduceMax float16 3D tensor options.keepDimensions=false',
+    'graph': {
+      'inputs': {
+        'reduceMaxInput': {
+          'data': [
+            32.15625,  90.4375,   -26.34375, -7.1484375, 75.875,
+            -48.21875, -53.09375, 66.6875,   -96.1875,   -88.3125,
+            95,        37.28125,  -42.21875, 96.5625,    0.880859375,
+            62.5,      36.65625,  99.75,     -72.875,    -46.03125,
+            20.25,     -21.5625,  -51.28125, -42.59375
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reduceMax',
+        'arguments': [
+          {'input': 'reduceMaxInput'}, {'options': {'keepDimensions': false}}
+        ],
+        'outputs': 'reduceMaxOutput'
+      }],
+      'expectedOutputs': {
+        'reduceMaxOutput':
+            {'data': [99.75], 'descriptor': {shape: [], dataType: 'float16'}}
+      }
+    }
+  },
+  {
+    'name': 'reduceMax float16 3D tensor options.keepDimensions=true',
+    'graph': {
+      'inputs': {
+        'reduceMaxInput': {
+          'data': [
+            32.15625,  90.4375,   -26.34375, -7.1484375, 75.875,
+            -48.21875, -53.09375, 66.6875,   -96.1875,   -88.3125,
+            95,        37.28125,  -42.21875, 96.5625,    0.880859375,
+            62.5,      36.65625,  99.75,     -72.875,    -46.03125,
+            20.25,     -21.5625,  -51.28125, -42.59375
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reduceMax',
+        'arguments': [
+          {'input': 'reduceMaxInput'}, {'options': {'keepDimensions': true}}
+        ],
+        'outputs': 'reduceMaxOutput'
+      }],
+      'expectedOutputs': {
+        'reduceMaxOutput': {
+          'data': [99.75],
+          'descriptor': {shape: [1, 1, 1], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reduceMax float16 4D tensor options.keepDimensions=false',
+    'graph': {
+      'inputs': {
+        'reduceMaxInput': {
+          'data': [
+            32.15625,  90.4375,   -26.34375, -7.1484375, 75.875,
+            -48.21875, -53.09375, 66.6875,   -96.1875,   -88.3125,
+            95,        37.28125,  -42.21875, 96.5625,    0.880859375,
+            62.5,      36.65625,  99.75,     -72.875,    -46.03125,
+            20.25,     -21.5625,  -51.28125, -42.59375
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reduceMax',
+        'arguments': [
+          {'input': 'reduceMaxInput'}, {'options': {'keepDimensions': false}}
+        ],
+        'outputs': 'reduceMaxOutput'
+      }],
+      'expectedOutputs': {
+        'reduceMaxOutput':
+            {'data': [99.75], 'descriptor': {shape: [], dataType: 'float16'}}
+      }
+    }
+  },
+  {
+    'name': 'reduceMax float16 4D tensor options.keepDimensions=true',
+    'graph': {
+      'inputs': {
+        'reduceMaxInput': {
+          'data': [
+            32.15625,  90.4375,   -26.34375, -7.1484375, 75.875,
+            -48.21875, -53.09375, 66.6875,   -96.1875,   -88.3125,
+            95,        37.28125,  -42.21875, 96.5625,    0.880859375,
+            62.5,      36.65625,  99.75,     -72.875,    -46.03125,
+            20.25,     -21.5625,  -51.28125, -42.59375
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reduceMax',
+        'arguments': [
+          {'input': 'reduceMaxInput'}, {'options': {'keepDimensions': true}}
+        ],
+        'outputs': 'reduceMaxOutput'
+      }],
+      'expectedOutputs': {
+        'reduceMaxOutput': {
+          'data': [99.75],
+          'descriptor': {shape: [1, 1, 1, 1], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'reduceMax float16 4D tensor options.axes with options.keepDimensions=false',
+    'graph': {
+      'inputs': {
+        'reduceMaxInput': {
+          'data': [
+            32.15625,  90.4375,   -26.34375, -7.1484375, 75.875,
+            -48.21875, -53.09375, 66.6875,   -96.1875,   -88.3125,
+            95,        37.28125,  -42.21875, 96.5625,    0.880859375,
+            62.5,      36.65625,  99.75,     -72.875,    -46.03125,
+            20.25,     -21.5625,  -51.28125, -42.59375
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reduceMax',
+        'arguments': [
+          {'input': 'reduceMaxInput'},
+          {'options': {'axes': [1, 3], 'keepDimensions': false}}
+        ],
+        'outputs': 'reduceMaxOutput'
+      }],
+      'expectedOutputs': {
+        'reduceMaxOutput': {
+          'data': [90.4375, 95, 96.5625, 99.75],
+          'descriptor': {shape: [2, 2], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'reduceMax float16 4D tensor options.axes with options.keepDimensions=true',
+    'graph': {
+      'inputs': {
+        'reduceMaxInput': {
+          'data': [
+            32.15625,  90.4375,   -26.34375, -7.1484375, 75.875,
+            -48.21875, -53.09375, 66.6875,   -96.1875,   -88.3125,
+            95,        37.28125,  -42.21875, 96.5625,    0.880859375,
+            62.5,      36.65625,  99.75,     -72.875,    -46.03125,
+            20.25,     -21.5625,  -51.28125, -42.59375
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reduceMax',
+        'arguments': [
+          {'input': 'reduceMaxInput'},
+          {'options': {'axes': [1, 3], 'keepDimensions': true}}
+        ],
+        'outputs': 'reduceMaxOutput'
+      }],
+      'expectedOutputs': {
+        'reduceMaxOutput': {
+          'data': [90.4375, 95, 96.5625, 99.75],
+          'descriptor': {shape: [2, 1, 2, 1], dataType: 'float16'}
+        }
+      }
+    }
+  }
 ];
 
-if (navigator.ml) {
-  reduceMaxTests.forEach((test) => {
-    webnn_conformance_test(
-        buildGraphAndCompute, getReductionOperatorsPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    reduceMaxTests, buildAndExecuteGraph, getPrecisionTolerance);

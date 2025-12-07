@@ -38,8 +38,6 @@ std::unique_ptr<OverlayResponse> CreatePermissionsDialogResponse(
 
 #pragma mark - PermissionsDialogRequest
 
-OVERLAY_USER_DATA_SETUP_IMPL(PermissionsDialogRequest);
-
 PermissionsDialogRequest::PermissionsDialogRequest(
     const GURL& url,
     NSArray<NSNumber*>* requested_permissions) {
@@ -59,10 +57,11 @@ PermissionsDialogRequest::PermissionsDialogRequest(
     string_id_for_permission =
         IDS_IOS_PERMISSIONS_ALERT_DIALOG_PERMISSION_MICROPHONE;
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   message_ = l10n_util::GetNSStringF(
-      IDS_IOS_PERMISSIONS_ALERT_DIALOG_MESSAGE, base::UTF8ToUTF16(url.host()),
+      IDS_IOS_PERMISSIONS_ALERT_DIALOG_MESSAGE,
+      base::UTF8ToUTF16(url.GetHost()),
       l10n_util::GetStringUTF16(string_id_for_permission));
 }
 
@@ -84,8 +83,6 @@ void PermissionsDialogRequest::CreateAuxiliaryData(
 }
 
 #pragma mark - PermissionsDialogResponse
-
-OVERLAY_USER_DATA_SETUP_IMPL(PermissionsDialogResponse);
 
 PermissionsDialogResponse::PermissionsDialogResponse(bool capture_allow)
     : capture_allow_(capture_allow) {}

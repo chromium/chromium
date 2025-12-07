@@ -73,7 +73,7 @@ using MetaCHValues = Vector<MetaCHValue>;
 struct PendingPreloadData {
   MetaCHValues meta_ch_values;
   std::optional<ViewportDescription> viewport;
-  bool has_csp_meta_tag = false;
+  int csp_meta_tag_count = 0;
   bool has_located_potential_lcp_element = false;
   PreloadRequestStream requests;
 };
@@ -95,7 +95,6 @@ struct CORE_EXPORT CachedDocumentParameters {
   bool viewport_meta_zero_values_quirk;
   bool viewport_meta_enabled;
   network::mojom::ReferrerPolicy referrer_policy;
-  SubresourceIntegrity::IntegrityFeatures integrity_features;
   LocalFrame::LazyLoadImageSetting lazy_load_image_setting;
   // Work with the element locators. If the LCP candidate image is found and
   // that has a lazy loading indicator, ignore it and create preload request.
@@ -126,7 +125,7 @@ class TokenPreloadScanner {
             PreloadRequestStream& requests,
             MetaCHValues& meta_ch_values,
             std::optional<ViewportDescription>*,
-            bool* is_csp_meta_tag);
+            int* csp_meta_tag_counter);
 
   void SetPredictedBaseElementURL(const KURL& url) {
     predicted_base_element_url_ = url;
@@ -197,8 +196,8 @@ class CORE_EXPORT HTMLPreloadScanner final {
       HTMLParserOptions options,
       TokenPreloadScanner::ScannerType scanner_type);
 
-  using TakePreloadFn = WTF::CrossThreadRepeatingFunction<void(
-      std::unique_ptr<PendingPreloadData>)>;
+  using TakePreloadFn =
+      CrossThreadRepeatingFunction<void(std::unique_ptr<PendingPreloadData>)>;
 
   // Creates a HTMLPreloadScanner which will be bound to |task_runner|.
   struct Deleter {
@@ -223,8 +222,7 @@ class CORE_EXPORT HTMLPreloadScanner final {
                      std::unique_ptr<BackgroundHTMLScanner::ScriptTokenScanner>
                          script_token_scanner,
                      TakePreloadFn take_preload = TakePreloadFn(),
-                     Vector<ElementLocator> locators = {},
-                     bool disable_preload_scanning = false);
+                     Vector<ElementLocator> locators = {});
   HTMLPreloadScanner(const HTMLPreloadScanner&) = delete;
   HTMLPreloadScanner& operator=(const HTMLPreloadScanner&) = delete;
   ~HTMLPreloadScanner();
@@ -238,8 +236,6 @@ class CORE_EXPORT HTMLPreloadScanner final {
   void ScanInBackground(const String& source,
                         const KURL& document_base_element_url);
 
-  static bool IsSkipPreloadScanEnabled(const Document* document);
-
   base::WeakPtr<HTMLPreloadScanner> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -251,7 +247,6 @@ class CORE_EXPORT HTMLPreloadScanner final {
   std::unique_ptr<BackgroundHTMLScanner::ScriptTokenScanner>
       script_token_scanner_;
   TakePreloadFn take_preload_;
-  bool skip_preload_scanning_;
   base::WeakPtrFactory<HTMLPreloadScanner> weak_ptr_factory_{this};
 };
 

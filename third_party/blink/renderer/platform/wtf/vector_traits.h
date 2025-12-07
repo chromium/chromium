@@ -28,7 +28,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 
-namespace WTF {
+namespace blink {
 
 // Vector traits serve two purposes:
 // 1. Faster bulk operations: Instead of invoking proper constructors,
@@ -37,7 +37,7 @@ namespace WTF {
 //    possible.
 // 2. Garbage collection support: HeapVector requires certain traits to be set
 //    which is used to acknowledge that semantics are different from regular
-//    `WTF::Vector` and `std::vector`.
+//    `blink::Vector` and `std::vector`.
 template <typename T>
 struct VectorTraitsBase {
   using TraitType = T;
@@ -85,8 +85,8 @@ struct VectorTraitsBase {
   // on zeroed memory.
   static constexpr bool kCanClearUnusedSlotsWithMemset =
       std::is_trivially_destructible<T>::value &&
-      (!IsTraceable<T>::value || (std::is_trivially_constructible<T>::value &&
-                                  std::is_trivially_copyable<T>::value));
+      (!IsTraceableV<T> || (std::is_trivially_constructible<T>::value &&
+                            std::is_trivially_copyable<T>::value));
 
   // Garbage collection support: When true, the vector invokes `Trace()` methods
   // concurrently from the non-owning thread.
@@ -107,9 +107,9 @@ struct SimpleClassVectorTraits : VectorTraitsBase<T> {
   static const bool kCanCompareWithMemcmp = true;
 };
 
-// We know std::unique_ptr and RefPtr are simple enough that initializing to 0
-// and moving with memcpy (and then not destructing the original) will totally
-// work.
+// We know std::unique_ptr and scoped_refptr are simple enough that
+// initializing to 0 and moving with memcpy (and then not destructing the
+// original) will totally work.
 template <typename P>
 struct VectorTraits<scoped_refptr<P>>
     : SimpleClassVectorTraits<scoped_refptr<P>> {
@@ -146,10 +146,8 @@ struct VectorTraits<std::pair<First, Second>> {
   typedef VectorTraits<First> FirstTraits;
   typedef VectorTraits<Second> SecondTraits;
 
-  static_assert(!IsWeak<First>::value,
-                "Weak references are not allowed in Vector");
-  static_assert(!IsWeak<Second>::value,
-                "Weak references are not allowed in Vector");
+  static_assert(!IsWeakV<First>, "Weak references are not allowed in Vector");
+  static_assert(!IsWeakV<Second>, "Weak references are not allowed in Vector");
 
   static const bool kNeedsDestruction =
       FirstTraits::kNeedsDestruction || SecondTraits::kNeedsDestruction;
@@ -170,10 +168,10 @@ struct VectorTraits<std::pair<First, Second>> {
   static constexpr bool kCanTraceConcurrently = false;
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #define WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(ClassName)         \
-  namespace WTF {                                                             \
+  namespace blink {                                                           \
   static_assert(!std::is_trivially_default_constructible<ClassName>::value || \
                     !std::is_trivially_move_assignable<ClassName>::value ||   \
                     !std::is_scalar<ClassName>::value,                        \
@@ -183,7 +181,7 @@ struct VectorTraits<std::pair<First, Second>> {
   }
 
 #define WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(ClassName)                 \
-  namespace WTF {                                                             \
+  namespace blink {                                                           \
   static_assert(!std::is_trivially_default_constructible<ClassName>::value || \
                     !std::is_trivially_move_assignable<ClassName>::value,     \
                 "macro not needed");                                          \
@@ -196,7 +194,7 @@ struct VectorTraits<std::pair<First, Second>> {
   }
 
 #define WTF_ALLOW_INIT_WITH_MEM_FUNCTIONS(ClassName)                        \
-  namespace WTF {                                                           \
+  namespace blink {                                                         \
   static_assert(!std::is_trivially_default_constructible<ClassName>::value, \
                 "macro not needed");                                        \
   template <>                                                               \
@@ -207,7 +205,7 @@ struct VectorTraits<std::pair<First, Second>> {
   }
 
 #define WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(ClassName)          \
-  namespace WTF {                                                           \
+  namespace blink {                                                         \
   static_assert(!std::is_trivially_default_constructible<ClassName>::value, \
                 "macro not needed");                                        \
   template <>                                                               \
@@ -215,8 +213,5 @@ struct VectorTraits<std::pair<First, Second>> {
     static const bool kCanClearUnusedSlotsWithMemset = true;                \
   };                                                                        \
   }
-
-using WTF::VectorTraits;
-using WTF::SimpleClassVectorTraits;
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_VECTOR_TRAITS_H_

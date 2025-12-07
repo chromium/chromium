@@ -12,7 +12,6 @@
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
-#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
@@ -79,7 +78,6 @@ CaptureButtonState GetCaptureButtonState() {
                               ToRawRef(kCaptureModeVideoIcon)};
   }
 
-  DCHECK(features::IsGifRecordingEnabled());
   DCHECK_EQ(controller->recording_type(), RecordingType::kGif);
 
   return CaptureButtonState{IDS_ASH_SCREEN_CAPTURE_LABEL_GIF_RECORD,

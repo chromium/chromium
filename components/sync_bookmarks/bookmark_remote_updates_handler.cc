@@ -4,6 +4,7 @@
 
 #include "components/sync_bookmarks/bookmark_remote_updates_handler.h"
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <string>
@@ -14,7 +15,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -123,7 +123,7 @@ size_t ComputeChildNodeIndex(const bookmarks::BookmarkNode* parent,
   const syncer::UniquePosition position =
       syncer::UniquePosition::FromProto(unique_position);
 
-  auto iter = base::ranges::partition_point(
+  auto iter = std::ranges::partition_point(
       parent->children(),
       [bookmark_tracker,
        &position](const std::unique_ptr<bookmarks::BookmarkNode>& child) {
@@ -270,7 +270,7 @@ void BookmarkRemoteUpdatesHandler::Process(
 
     bool should_ignore_update = false;
     const SyncedBookmarkTrackerEntity* tracked_entity =
-        DetermineLocalTrackedEntityToUpdate(update_entity,
+        DetermineLocalTrackedEntityToUpdate(bookmark_tracker_, update_entity,
                                             &should_ignore_update);
     if (should_ignore_update) {
       continue;
@@ -497,8 +497,10 @@ BookmarkRemoteUpdatesHandler::ReorderValidUpdates(
   return ordered_updates;
 }
 
+// static
 const SyncedBookmarkTrackerEntity*
 BookmarkRemoteUpdatesHandler::DetermineLocalTrackedEntityToUpdate(
+    const SyncedBookmarkTracker* bookmark_tracker,
     const syncer::EntityData& update_entity,
     bool* should_ignore_update) {
   *should_ignore_update = false;
@@ -508,7 +510,7 @@ BookmarkRemoteUpdatesHandler::DetermineLocalTrackedEntityToUpdate(
   // tombstones (at least the LoopbackServer only sets the server ID).
   if (update_entity.originator_client_item_id.empty() &&
       update_entity.client_tag_hash.value().empty()) {
-    return bookmark_tracker_->GetEntityForSyncId(update_entity.id);
+    return bookmark_tracker->GetEntityForSyncId(update_entity.id);
   }
 
   // Parse the client tag hash in the update or infer it from the originator
@@ -522,9 +524,9 @@ BookmarkRemoteUpdatesHandler::DetermineLocalTrackedEntityToUpdate(
                     update_entity.originator_client_item_id));
 
   const SyncedBookmarkTrackerEntity* const tracked_entity_by_client_tag =
-      bookmark_tracker_->GetEntityForClientTagHash(client_tag_hash_in_update);
+      bookmark_tracker->GetEntityForClientTagHash(client_tag_hash_in_update);
   const SyncedBookmarkTrackerEntity* const tracked_entity_by_sync_id =
-      bookmark_tracker_->GetEntityForSyncId(update_entity.id);
+      bookmark_tracker->GetEntityForSyncId(update_entity.id);
 
   // The most common scenario is that both lookups, client-tag-based and
   // server-ID-based, refer to the same tracked entity or both lookups fail. In

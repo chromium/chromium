@@ -4,7 +4,10 @@
 
 package org.chromium.ui.base;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.ClipData;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.SparseArray;
@@ -19,16 +22,18 @@ import android.view.autofill.AutofillValue;
 import android.view.inputmethod.InputConnection;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.MarginLayoutParamsCompat;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragAndDropDelegateImpl;
 import org.chromium.ui.dragdrop.DragStateTracker;
@@ -37,25 +42,24 @@ import org.chromium.ui.mojom.CursorType;
 
 /** Class to acquire, position, and remove anchor views from the implementing View. */
 @JNINamespace("ui")
+@NullMarked
 public class ViewAndroidDelegate {
-    private static DragAndDropDelegate sDragAndDropDelegateForTesting;
+    private static @Nullable DragAndDropDelegate sDragAndDropDelegateForTesting;
     private final DragAndDropDelegateImpl mDragAndDropDelegateImpl;
 
-    /**
-     * The current container view. This view can be updated with
-     * {@link #setContainerView()}.
-     */
-    protected ViewGroup mContainerView;
+    /** The current container view. This view can be updated with {@link #setContainerView()}. */
+    protected @Nullable ViewGroup mContainerView;
 
     // Temporary storage for use as a parameter of getLocationOnScreen().
-    private int[] mTemporaryContainerLocation = new int[2];
+    private final int[] mTemporaryContainerLocation = new int[2];
 
     /** Notifies the observer when container view is updated. */
     public interface ContainerViewObserver {
-        void onUpdateContainerView(ViewGroup view);
+        void onUpdateContainerView(@Nullable ViewGroup view);
     }
 
-    private ObserverList<ContainerViewObserver> mContainerViewObservers = new ObserverList<>();
+    private final ObserverList<ContainerViewObserver> mContainerViewObservers =
+            new ObserverList<>();
 
     /** Notifies the listener of vertical scroll direction changes. */
     public interface VerticalScrollDirectionChangeListener {
@@ -70,7 +74,7 @@ public class ViewAndroidDelegate {
     private final ObserverList<VerticalScrollDirectionChangeListener>
             mVerticalScrollDirectionChangeListeners = new ObserverList<>();
 
-    private Callback<Boolean> mUpdateShouldShowStylusHoverIcon;
+    private @Nullable Callback<Boolean> mUpdateShouldShowStylusHoverIcon;
 
     /**
      * Sets a callback which should be called with the latest value of whether the element being
@@ -83,27 +87,37 @@ public class ViewAndroidDelegate {
 
     /**
      * Create and return a basic implementation of {@link ViewAndroidDelegate}.
+     *
      * @param containerView {@link ViewGroup} to be used as a container view.
      * @return a new instance of {@link ViewAndroidDelegate}.
      */
-    public static ViewAndroidDelegate createBasicDelegate(ViewGroup containerView) {
+    public static ViewAndroidDelegate createBasicDelegate(@Nullable ViewGroup containerView) {
         return new ViewAndroidDelegate(containerView);
     }
 
-    protected ViewAndroidDelegate(ViewGroup containerView) {
+    protected ViewAndroidDelegate(@Nullable ViewGroup containerView) {
         mContainerView = containerView;
         mDragAndDropDelegateImpl = new DragAndDropDelegateImpl();
     }
 
     /**
-     * Adds observer that needs notification when container view is updated. Note that
-     * there is no {@code removObserver} since the added observers are all supposed to
-     * go away with this object together.
-     * @param observer {@link ContainerViewObserver} object. The object should have
-     *        the lifetime same as this {@link ViewAndroidDelegate} to avoid gc issues.
+     * Adds observer that needs notification when container view is updated.
+     *
+     * @param observer {@link ContainerViewObserver} object. If {@code removObserver} is not used,
+     *     then the object should have the lifetime same as this {@link ViewAndroidDelegate} to
+     *     avoid gc issues.
      */
     public final void addObserver(ContainerViewObserver observer) {
         mContainerViewObservers.addObserver(observer);
+    }
+
+    /**
+     * Removes observer that does not need notification when container view is updated anymore.
+     *
+     * @param observer {@link ContainerViewObserver} object.
+     */
+    public final void removeObserver(ContainerViewObserver observer) {
+        mContainerViewObservers.removeObserver(observer);
     }
 
     /** Adds the provided {@link VerticalScrollDirectionChangeListener}. */
@@ -121,23 +135,27 @@ public class ViewAndroidDelegate {
     /**
      * Updates the current container view to which this class delegates.
      *
-     * <p>WARNING: This method can also be used to replace the existing container view,
-     * but you should only do it if you have a very good reason to. Replacing the
-     * container view has been designed to support fullscreen in the Webview so it
-     * might not be appropriate for other use cases.
+     * <p>WARNING: This method can also be used to replace the existing container view, but you
+     * should only do it if you have a very good reason to. Replacing the container view has been
+     * designed to support fullscreen in the Webview so it might not be appropriate for other use
+     * cases.
      *
-     * <p>This method only performs a small part of replacing the container view and
-     * embedders are responsible for:
+     * <p>This method only performs a small part of replacing the container view and embedders are
+     * responsible for:
+     *
      * <ul>
-     *     <li>Disconnecting the old container view from all the references</li>
-     *     <li>Updating the InternalAccessDelegate</li>
-     *     <li>Reconciling the state with the new container view</li>
-     *     <li>Tearing down and recreating the native GL rendering where appropriate</li>
-     *     <li>etc.</li>
+     *   <li>Disconnecting the old container view from all the references
+     *   <li>Updating the InternalAccessDelegate
+     *   <li>Reconciling the state with the new container view
+     *   <li>Tearing down and recreating the native GL rendering where appropriate
+     *   <li>etc.
      * </ul>
      */
-    public final void setContainerView(ViewGroup containerView) {
+    public final void setContainerView(@Nullable ViewGroup containerView) {
         ViewGroup oldContainerView = mContainerView;
+        if (oldContainerView != null) {
+            oldContainerView.setTooltipText("");
+        }
         mContainerView = containerView;
         updateAnchorViews(oldContainerView);
         for (ContainerViewObserver observer : mContainerViewObservers) {
@@ -170,13 +188,13 @@ public class ViewAndroidDelegate {
      *
      * @param oldContainerView Old container view just replaced by a new one.
      */
-    public void updateAnchorViews(ViewGroup oldContainerView) {}
+    public void updateAnchorViews(@Nullable ViewGroup oldContainerView) {}
 
     /**
      * @return An anchor view that can be used to anchor decoration views like Autofill popup.
      */
     @CalledByNative
-    public View acquireView() {
+    public @Nullable View acquireView() {
         ViewGroup containerView = getContainerViewGroup();
         if (containerView == null || containerView.getParent() == null) return null;
         View anchorView = new View(containerView.getContext());
@@ -261,13 +279,17 @@ public class ViewAndroidDelegate {
             int dragObjRectHeight) {
         ViewGroup containerView = getContainerViewGroup();
         if (containerView == null || windowAndroid == null) return false;
+        Context context = windowAndroid.getContext().get();
+        if (context == null) {
+            return false;
+        }
 
         return getDragAndDropDelegate()
                 .startDragAndDrop(
                         containerView,
                         shadowImage,
                         dropData,
-                        windowAndroid.getContext().get(),
+                        context,
                         cursorOffsetX,
                         cursorOffsetY,
                         dragObjRectWidth,
@@ -279,7 +301,7 @@ public class ViewAndroidDelegate {
     public void onCursorChangedToCustom(Bitmap customCursorBitmap, int hotspotX, int hotspotY) {
         PointerIcon icon = PointerIcon.create(customCursorBitmap, hotspotX, hotspotY);
 
-        getContainerViewGroup().setPointerIcon(icon);
+        assumeNonNull(getContainerViewGroup()).setPointerIcon(icon);
     }
 
     @VisibleForTesting
@@ -406,6 +428,7 @@ public class ViewAndroidDelegate {
                 break;
         }
         ViewGroup containerView = getContainerViewGroup();
+        assumeNonNull(containerView);
         PointerIcon icon = PointerIcon.getSystemIcon(containerView.getContext(), pointerIconType);
 
         containerView.setPointerIcon(icon);
@@ -454,10 +477,11 @@ public class ViewAndroidDelegate {
 
     /**
      * Called when root scroll direction changes.
+     *
      * @param directionUp whether the new scroll direction is up (true) or down (false).
-     * @param current_scroll_ratio the ratio of vertical scroll in [0, 1] range.
-     * Scroll at top of page is 0, and bottom of page is 1. It is defined as 0
-     * if page is not scrollable, though this should not be called in that case.
+     * @param currentScrollRatio the ratio of vertical scroll in [0, 1] range. Scroll at top of page
+     *     is 0, and bottom of page is 1. It is defined as 0 if page is not scrollable, though this
+     *     should not be called in that case.
      */
     @CalledByNative
     @CallSuper
@@ -474,11 +498,11 @@ public class ViewAndroidDelegate {
      * @return container view that the anchor views are added to. May be null.
      */
     @CalledByNative
-    public final View getContainerView() {
+    public final @Nullable View getContainerView() {
         return mContainerView;
     }
 
-    protected final ViewGroup getContainerViewGroup() {
+    protected final @Nullable ViewGroup getContainerViewGroup() {
         return mContainerView;
     }
 
@@ -555,6 +579,12 @@ public class ViewAndroidDelegate {
         if (containerView != null) ViewUtils.requestFocus(containerView);
     }
 
+    @CalledByNative
+    private void setTooltipText(@JniType("std::u16string") String text) {
+        View container = getContainerView();
+        if (container != null) container.setTooltipText(text);
+    }
+
     /**
      * @see InputConnection#performPrivateCommand(java.lang.String, android.os.Bundle)
      */
@@ -583,7 +613,7 @@ public class ViewAndroidDelegate {
     public void autofill(final SparseArray<AutofillValue> values) {}
 
     /**
-     * Check whether the Android can request a ViewStructure for Autofill.
+     * Check whether the Android Autofill Framework can request a ViewStructure for Autofill.
      *
      * @return true iff an AutofillProvider provides a ViewStructure when prompted.
      */

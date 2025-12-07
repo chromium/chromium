@@ -4,6 +4,7 @@
 
 #include "base/profiler/stack_copier_suspend.h"
 
+#include "base/profiler/register_context_registers.h"
 #include "base/profiler/stack_buffer.h"
 #include "base/profiler/suspendable_thread_delegate.h"
 
@@ -39,11 +40,13 @@ bool StackCopierSuspend::CopyStack(StackBuffer* stack_buffer,
     // counter or TSC register on x86/x86_64 so is reentrant.
     *timestamp = TimeTicks::Now();
 
-    if (!suspend_thread->WasSuccessful())
+    if (!suspend_thread->WasSuccessful()) {
       return false;
+    }
 
-    if (!thread_delegate_->GetThreadContext(thread_context))
+    if (!thread_delegate_->GetThreadContext(thread_context)) {
       return false;
+    }
 
     bottom = RegisterContextStackPointer(thread_context);
 
@@ -51,11 +54,13 @@ bool StackCopierSuspend::CopyStack(StackBuffer* stack_buffer,
     // largest stack region allocation on the platform, but check just in case
     // it isn't *and* the actual stack itself exceeds the buffer allocation
     // size.
-    if ((top - bottom) > stack_buffer->size())
+    if ((top - bottom) > stack_buffer->size()) {
       return false;
+    }
 
-    if (!thread_delegate_->CanCopyStack(bottom))
+    if (!thread_delegate_->CanCopyStack(bottom)) {
       return false;
+    }
 
     delegate->OnStackCopy();
 

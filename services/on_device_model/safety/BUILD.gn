@@ -1,0 +1,55 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/optimization_guide/features.gni")
+
+if (!is_fuchsia && build_with_tflite_lib) {
+  source_set("bert_safety_op_resolver") {
+    sources = [
+      "bert_safety_op_resolver.cc",
+      "bert_safety_op_resolver.h",
+    ]
+
+    deps = [
+      "//components/optimization_guide/core/inference:op_resolver",
+      "//third_party/tensorflow-text:shimed_bert_model_ops",
+      "//third_party/tflite",
+    ]
+  }
+
+  source_set("bert_safety_model") {
+    sources = [
+      "bert_safety_model.cc",
+      "bert_safety_model.h",
+    ]
+
+    deps = [
+      ":bert_safety_op_resolver",
+      ":safety_util",
+      "//base",
+      "//components/translate/core/language_detection",
+    ]
+
+    public_deps = [
+      "//mojo/public/cpp/bindings",
+      "//services/on_device_model/public/mojom",
+      "//third_party/tflite",
+      "//third_party/tflite_support",
+      "//third_party/tflite_support:tflite_support_proto",
+    ]
+  }
+}
+
+source_set("safety_util") {
+  sources = [
+    "safety_util.cc",
+    "safety_util.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/optimization_guide/core:features",
+    "//components/translate/core/language_detection",
+  ]
+}

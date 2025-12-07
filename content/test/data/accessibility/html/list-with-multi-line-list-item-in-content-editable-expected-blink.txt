@@ -1,0 +1,14 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++textField multiline name='Document content' value='%E2%80%A2 This is a list with a very very very long item that should be in several lines if nothing goeswrong. Let%C3%A2%E2%82%AC%E2%84%A2s hope we can read the lines one by one but more likely they are going to bedoing something.' nameFrom=attribute
+++++++++list
+++++++++++listItem
+++++++++++++listMarker name='%E2%80%A2 ' nameFrom=contents nextOnLineId=inlineTextBox:"This is a list with a very very very long item that should be in several lines if nothing goes"
+++++++++++++++staticText ignored
+++++++++++++staticText name='This is a list with a very very very long item that should be in several lines if nothing goes' nameFrom=contents previousOnLineId=staticText
+++++++++++++++inlineTextBox name='This is a list with a very very very long item that should be in several lines if nothing goes' nameFrom=contents previousOnLineId=staticText
+++++++++++++staticText name='wrong. Let%C3%A2%E2%82%AC%E2%84%A2s hope we can read the lines one by one but more likely they are going to be' nameFrom=contents
+++++++++++++++inlineTextBox name='wrong. Let%C3%A2%E2%82%AC%E2%84%A2s hope we can read the lines one by one but more likely they are going to be' nameFrom=contents
+++++++++++++staticText name='doing something.' nameFrom=contents
+++++++++++++++inlineTextBox name='doing something.' nameFrom=contents

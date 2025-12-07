@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/functional/bind.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test.h"
@@ -19,9 +21,53 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/create_websocket_handler.h"
+#include "net/test/embedded_test_server/websocket_connection.h"
+#include "net/test/embedded_test_server/websocket_handler.h"
 #include "net/test/test_data_directory.h"
 
 namespace extensions {
+
+namespace {
+
+// WebSocketHandler that expects to receive a single text message if "9", and
+// once it does, writes "ping" to the WebSocket 9 times, each write 250
+// milliseconds after the last one. Used by the
+// "ReceivingWebSocketMessagesResetsServiceWorkerIdleTime" test.
+class SendMessagesWebSocketHandler : public net::test_server::WebSocketHandler {
+ public:
+  explicit SendMessagesWebSocketHandler(
+      scoped_refptr<net::test_server::WebSocketConnection> connection)
+      : WebSocketHandler(std::move(connection)) {}
+
+  ~SendMessagesWebSocketHandler() override = default;
+
+  void OnTextMessage(std::string_view message) override {
+    EXPECT_EQ(message, "9");
+    EXPECT_EQ(remaining_messages_, 9);
+    SendMessage();
+    timer_.Start(FROM_HERE, base::Milliseconds(250),
+                 base::BindRepeating(&SendMessagesWebSocketHandler::SendMessage,
+                                     base::Unretained(this)));
+  }
+
+ private:
+  void SendMessage() {
+    CHECK_GT(remaining_messages_, 0);
+    CHECK(connection());
+    connection()->SendTextMessage("ping");
+    --remaining_messages_;
+    if (remaining_messages_ == 0) {
+      timer_.Stop();
+    }
+  }
+
+  int remaining_messages_ = 9;
+
+  base::RepeatingTimer timer_;
+};
+
+}  // namespace
 
 class ExtensionWebSocketApiTest : public ExtensionApiTest {
  public:
@@ -32,7 +78,10 @@ class ExtensionWebSocketApiTest : public ExtensionApiTest {
     ExtensionApiTest::SetUpOnMainThread();
 
     ASSERT_TRUE(StartEmbeddedTestServer());
-    ASSERT_TRUE(StartWebSocketServer(net::GetWebSocketTestDataDirectory()));
+
+    RegisterWebSocketHandler<SendMessagesWebSocketHandler>(
+        &GetWebSocketServer(), "/send-message-every-quarter-second");
+    ASSERT_TRUE(StartWebSocketServer());
   }
 
   // Runs a specific setup for service worker-based extensions. We open a web
@@ -49,7 +98,7 @@ void ExtensionWebSocketApiTest::RunServiceWorkerWebSocketTest(
     const char* test_directory) {
   ExtensionTestMessageListener socket_ready_listener("socket ready");
   service_worker_test_utils::TestServiceWorkerContextObserver observer(
-      browser()->profile());
+      profile());
   ResultCatcher catcher;
   const Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII(test_directory));
@@ -70,8 +119,7 @@ void ExtensionWebSocketApiTest::RunServiceWorkerWebSocketTest(
 
   // Set idle timeout to 1 second.
   content::ServiceWorkerContext* context =
-      util::GetServiceWorkerContextForExtensionId(extension->id(),
-                                                  browser()->profile());
+      util::GetServiceWorkerContextForExtensionId(extension->id(), profile());
   content::SetServiceWorkerIdleDelay(context, version_id, base::Seconds(1));
 
   // Wait for two seconds of web socket activity, after which the socket will

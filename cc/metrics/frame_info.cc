@@ -34,6 +34,7 @@ bool ValidateFinalStateIsForMainThread(FrameInfo::FrameFinalState state) {
     case FrameInfo::FrameFinalState::kPresentedAll:
     case FrameInfo::FrameFinalState::kNoUpdateDesired:
     case FrameInfo::FrameFinalState::kDropped:
+    case FrameInfo::FrameFinalState::kPresentedPartialWithoutWaiting:
       return true;
   }
 }
@@ -87,8 +88,24 @@ void FrameInfo::MergeWith(const FrameInfo& other) {
     main_update_was_dropped = final_state == FrameFinalState::kDropped ||
                               !compositor_only_change_included_new_main;
 
+    // If the compositor-only update did not have any updates. Or was not
+    // waiting for Main to submit content. Then we do not mark the Main update
+    // as dropped.
+    bool compositor_only_change_accounted_for_main_v4 =
+        other.final_state_v4 == FrameFinalState::kNoUpdateDesired ||
+        other.final_state_v4 == FrameFinalState::kPresentedAll ||
+        other.final_state_v4 == FrameFinalState::kPresentedPartialNewMain ||
+        other.final_state_v4 ==
+            FrameFinalState::kPresentedPartialWithoutWaiting;
+    main_update_was_dropped_v4 = final_state_v4 == FrameFinalState::kDropped ||
+                                 !compositor_only_change_accounted_for_main_v4;
+
     compositor_update_was_dropped =
         other.final_state == FrameFinalState::kDropped;
+    raster_property_was_dropped =
+        other.final_state_raster_property == FrameFinalState::kDropped;
+    raster_scroll_was_dropped =
+        other.final_state_raster_scroll == FrameFinalState::kDropped;
 
     compositor_final_state = other.final_state;
     compositor_termination_time = other.termination_time;
@@ -103,6 +120,10 @@ void FrameInfo::MergeWith(const FrameInfo& other) {
 
     main_update_was_dropped = other.final_state == FrameFinalState::kDropped;
     compositor_update_was_dropped = final_state == FrameFinalState::kDropped;
+    raster_property_was_dropped =
+        final_state_raster_property == FrameFinalState::kDropped;
+    raster_scroll_was_dropped =
+        final_state_raster_scroll == FrameFinalState::kDropped;
 
     compositor_final_state = final_state;
     compositor_termination_time = termination_time;
@@ -128,9 +149,14 @@ void FrameInfo::MergeWith(const FrameInfo& other) {
 
   checkerboarded_needs_raster |= other.checkerboarded_needs_raster;
   checkerboarded_needs_record |= other.checkerboarded_needs_record;
+  did_raster_inducing_scroll |= other.did_raster_inducing_scroll;
 
-  if (other.final_state == FrameFinalState::kDropped)
+  if (other.final_state == FrameFinalState::kDropped) {
     final_state = FrameFinalState::kDropped;
+  }
+  if (other.final_state_v4 == FrameFinalState::kDropped) {
+    final_state_v4 = FrameFinalState::kDropped;
+  }
 
   const bool is_compositor_smooth = IsCompositorSmooth(smooth_thread) ||
                                     IsCompositorSmooth(other.smooth_thread);
@@ -173,6 +199,28 @@ bool FrameInfo::WasSmoothCompositorUpdateDropped() const {
   return final_state == FrameFinalState::kDropped;
 }
 
+bool FrameInfo::WasSmoothRasterScrollUpdateDropped() const {
+  if (!IsCompositorSmooth(smooth_thread)) {
+    return false;
+  }
+
+  if (was_merged) {
+    return raster_scroll_was_dropped;
+  }
+  return final_state_raster_scroll == FrameFinalState::kDropped;
+}
+
+bool FrameInfo::WasSmoothRasterPropertyUpdateDropped() const {
+  if (!IsCompositorSmooth(smooth_thread_raster_property)) {
+    return false;
+  }
+
+  if (was_merged) {
+    return raster_property_was_dropped;
+  }
+  return final_state_raster_property == FrameFinalState::kDropped;
+}
+
 bool FrameInfo::WasSmoothMainUpdateDropped() const {
   if (!IsMainSmooth(smooth_thread))
     return false;
@@ -183,9 +231,39 @@ bool FrameInfo::WasSmoothMainUpdateDropped() const {
   switch (final_state) {
     case FrameFinalState::kDropped:
     case FrameFinalState::kPresentedPartialOldMain:
+    case FrameFinalState::kPresentedPartialWithoutWaiting:
       return true;
 
     case FrameFinalState::kPresentedPartialNewMain:
+      // Although this frame dropped the main-thread updates for this particular
+      // frame, it did include new main-thread update. So do not treat this as a
+      // dropped frame.
+      return false;
+
+    case FrameFinalState::kNoUpdateDesired:
+    case FrameFinalState::kPresentedAll:
+      return false;
+  }
+
+  return false;
+}
+
+bool FrameInfo::WasSmoothMainUpdateDroppedV4() const {
+  if (!IsMainSmooth(smooth_thread)) {
+    return false;
+  }
+
+  if (was_merged) {
+    return main_update_was_dropped_v4;
+  }
+
+  switch (final_state_v4) {
+    case FrameFinalState::kDropped:
+    case FrameFinalState::kPresentedPartialOldMain:
+      return true;
+
+    case FrameFinalState::kPresentedPartialNewMain:
+    case FrameFinalState::kPresentedPartialWithoutWaiting:
       // Although this frame dropped the main-thread updates for this particular
       // frame, it did include new main-thread update. So do not treat this as a
       // dropped frame.
@@ -214,6 +292,8 @@ bool FrameInfo::IsScrollPrioritizeFrameDropped() const {
       return WasSmoothMainUpdateDropped();
     case SmoothEffectDrivingThread::kUnknown:
       return IsDroppedAffectingSmoothness();
+    case SmoothEffectDrivingThread::kRaster:
+      return true;
   }
 }
 
@@ -227,6 +307,7 @@ FrameInfo::FrameFinalState FrameInfo::GetFinalStateForThread(
       return compositor_final_state;
     case SmoothEffectDrivingThread::kMain:
       return main_final_state;
+    case SmoothEffectDrivingThread::kRaster:
     case SmoothEffectDrivingThread::kUnknown:
       return final_state;
   }
@@ -243,6 +324,7 @@ base::TimeTicks FrameInfo::GetTerminationTimeForThread(
     case SmoothEffectDrivingThread::kMain:
       return main_termination_time;
     case SmoothEffectDrivingThread::kUnknown:
+    case SmoothEffectDrivingThread::kRaster:
       return termination_time;
   }
 }

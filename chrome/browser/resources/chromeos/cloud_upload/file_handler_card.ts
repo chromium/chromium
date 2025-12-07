@@ -24,8 +24,8 @@ export class BaseCardElement extends HTMLElement {
   }
 
   addStyles() {
-    this.$('#container')!.classList.add(
-        'margin-top', 'round-top', 'round-bottom');
+    this.$('#container')
+        .classList.add('margin-top', 'round-top', 'round-bottom');
     this.tabIndex = 0;
   }
 
@@ -50,9 +50,9 @@ export class AccordionTopCardElement extends BaseCardElement {
 
   override addStyles() {
     super.addStyles();
-    this.$('#icon')!.style.display = 'none';
-    this.$('#title')!.textContent = 'Other apps';
-    this.$('#right-icon')!.classList.add('chevron');
+    this.$('#icon').style.display = 'none';
+    this.$('#title').textContent = 'Other apps';
+    this.$('#right-icon').classList.add('chevron');
     this.ariaExpanded = 'false';
     this.role = 'button';
   }
@@ -60,14 +60,14 @@ export class AccordionTopCardElement extends BaseCardElement {
   toggleExpandedState(): boolean {
     this.expanded_ = !this.expanded_;
     if (this.expanded_) {
-      this.$('#container')!.classList.add('separator-bottom');
-      this.$('#container')!.classList.remove('round-bottom');
-      this.$('#right-icon')!.setAttribute('expanded', '');
+      this.$('#container').classList.add('separator-bottom');
+      this.$('#container').classList.remove('round-bottom');
+      this.$('#right-icon').setAttribute('expanded', '');
       this.ariaExpanded = 'true';
     } else {
-      this.$('#container')!.classList.remove('separator-bottom');
-      this.$('#container')!.classList.add('round-bottom');
-      this.$('#right-icon')!.removeAttribute('expanded');
+      this.$('#container').classList.remove('separator-bottom');
+      this.$('#container').classList.add('round-bottom');
+      this.$('#right-icon').removeAttribute('expanded');
       this.ariaExpanded = 'false';
     }
     return this.expanded_;
@@ -95,11 +95,11 @@ export class FileHandlerCardElement extends BaseCardElement {
   updateSelection(selected: boolean) {
     this.selected_ = selected;
     if (this.selected_) {
-      this.$('#card')!.setAttribute('selected', '');
+      this.$('#card').setAttribute('selected', '');
       this.ariaSelected = 'true';
       this.ariaCurrent = 'true';
     } else {
-      this.$('#card')!.removeAttribute('selected');
+      this.$('#card').removeAttribute('selected');
       this.ariaSelected = 'false';
       this.ariaCurrent = 'false';
     }
@@ -121,12 +121,12 @@ export class CloudProviderCardElement extends FileHandlerCardElement {
 
   setParameters(type: CloudProviderType, name: string, description: string) {
     this.type_ = type;
-    this.$('#title')!.textContent = name;
-    this.$('#description')!.textContent = description;
+    this.$('#title').textContent = name;
+    this.$('#description').textContent = description;
   }
 
   setIconClass(className: string) {
-    this.$('#icon')!.classList.add(className);
+    this.$('#icon').classList.add(className);
   }
 
   get type(): CloudProviderType {
@@ -141,12 +141,11 @@ export class LocalHandlerCardElement extends FileHandlerCardElement {
 
   setParameters(taskPosition: number, name: string) {
     this.taskPosition_ = taskPosition;
-    this.$('#title')!.textContent = name;
+    this.$('#title').textContent = name;
   }
 
   setIconUrl(url: string) {
-    this.$('#icon')!.setAttribute(
-        'style', 'background-image: url(' + url + ')');
+    this.$('#icon').setAttribute('style', 'background-image: url(' + url + ')');
   }
 
   show() {

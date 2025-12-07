@@ -26,12 +26,7 @@ chromeos::AppType GetDestination(views::Widget* target) {
 
   aura::Window* window = target->GetNativeWindow();
   DCHECK(window);
-  chromeos::AppType app_type = window->GetProperty(chromeos::kAppTypeKey);
-  // Use "BROWSER" for Lacros Chrome's pointer metrics.
-  if (app_type == chromeos::AppType::LACROS) {
-    return chromeos::AppType::BROWSER;
-  }
-  return app_type;
+  return window->GetProperty(chromeos::kAppTypeKey);
 }
 
 DownEventMetric2 FindCombination(chromeos::AppType destination,
@@ -54,7 +49,7 @@ void RecordUMA(ui::EventPointerType type, ui::EventTarget* event_target) {
   views::Widget* target = views::Widget::GetTopLevelWidgetForNativeView(
       static_cast<aura::Window*>(event_target));
   DownEventFormFactor form_factor = DownEventFormFactor::kClamshell;
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     chromeos::OrientationType screen_orientation =
         Shell::Get()->screen_orientation_controller()->GetCurrentOrientation();
     if (screen_orientation == chromeos::OrientationType::kLandscapePrimary ||

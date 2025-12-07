@@ -16,7 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "build/chromeos_buildflags.h"
 #include "components/feedback/feedback_common.h"
 #include "components/feedback/redaction_tool/redaction_tool.h"
 #include "components/feedback/system_logs/system_logs_source.h"
@@ -74,14 +73,6 @@ class SystemLogsFetcher {
   // callback_. After this it deletes this instance of the object.
   void AddResponse(const std::string& source_name,
                    std::unique_ptr<SystemLogsResponse> response);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Merges the log entries of crash report ids of Ash and Lacros in
-  // |response_|, so that lacros crash ids could be processed by the feedback
-  // pre-processor at the server side in the same way it does for ash crash ids.
-  // See details in crbug.com/1129051.
-  void MergeAshAndLacrosCrashReportIdsInReponse();
-#endif
 
   // Runs the callback provided to Fetch and posts a task to delete |this|.
   void RunCallbackAndDeleteSoon();

@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/location.h"
@@ -16,6 +17,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "net/base/ip_endpoint.h"
+#include "remoting/base/errors.h"
+#include "remoting/base/session_policies.h"
 #include "remoting/proto/internal.pb.h"
 #include "remoting/proto/video.pb.h"
 #include "remoting/protocol/authenticator.h"
@@ -51,9 +54,17 @@ class MockAuthenticator : public Authenticator {
               implementing_authenticator,
               (),
               (const, override));
+  MOCK_METHOD(const SessionPolicies*,
+              GetSessionPolicies,
+              (),
+              (const, override));
   MOCK_CONST_METHOD0(state, Authenticator::State());
   MOCK_CONST_METHOD0(started, bool());
   MOCK_CONST_METHOD0(rejection_reason, Authenticator::RejectionReason());
+  MOCK_METHOD(Authenticator::RejectionDetails,
+              rejection_details,
+              (),
+              (const, override));
   MOCK_CONST_METHOD0(GetAuthKey, const std::string&());
   MOCK_CONST_METHOD0(CreateChannelAuthenticatorPtr, ChannelAuthenticator*());
   MOCK_METHOD2(ProcessMessage,
@@ -89,7 +100,10 @@ class MockConnectionToClientEventHandler
   ~MockConnectionToClientEventHandler() override;
 
   MOCK_METHOD0(OnConnectionAuthenticating, void());
-  MOCK_METHOD0(OnConnectionAuthenticated, void());
+  MOCK_METHOD(void,
+              OnConnectionAuthenticated,
+              (const SessionPolicies*),
+              (override));
   MOCK_METHOD0(CreateMediaStreams, void());
   MOCK_METHOD0(OnConnectionChannelsConnected, void());
   MOCK_METHOD1(OnConnectionClosed, void(ErrorCode error));
@@ -179,6 +193,10 @@ class MockClientStub : public ClientStub {
 
   // CursorShapeStub mock implementation.
   MOCK_METHOD1(SetCursorShape, void(const CursorShapeInfo& cursor_shape));
+  MOCK_METHOD(void,
+              SetHostCursorPosition,
+              (const HostCursorPosition& position),
+              (override));
 
   // KeyboardLayoutStub mock implementation.
   MOCK_METHOD1(SetKeyboardLayout, void(const KeyboardLayout& layout));
@@ -228,7 +246,12 @@ class MockSession : public Session {
   MOCK_METHOD0(jid, const std::string&());
   MOCK_METHOD0(config, const SessionConfig&());
   MOCK_METHOD(const Authenticator&, authenticator, (), (const, override));
-  MOCK_METHOD1(Close, void(ErrorCode error));
+  MOCK_METHOD(void,
+              Close,
+              (ErrorCode error,
+               std::string_view error_details,
+               const SourceLocation& location),
+              (override));
   MOCK_METHOD1(AddPlugin, void(SessionPlugin* plugin));
 };
 

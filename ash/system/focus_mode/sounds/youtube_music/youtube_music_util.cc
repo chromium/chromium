@@ -31,28 +31,18 @@ std::vector<Image> GetImagesFromApiImages(
   return images;
 }
 
-std::optional<Playlist> GetPlaylistFromApiPlaylist(
-    const google_apis::youtube_music::Playlist* playlist) {
-  if (!playlist) {
-    return std::nullopt;
-  }
-
-  return Playlist(playlist->name(), playlist->title(),
-                  playlist->owner().title(),
-                  FindBestImage(GetImagesFromApiImages(playlist->images())));
+Playlist GetPlaylistFromApiPlaylist(
+    const google_apis::youtube_music::Playlist& playlist) {
+  return Playlist(playlist.name(), playlist.title(), playlist.owner().title(),
+                  FindBestImage(GetImagesFromApiImages(playlist.images())));
 }
 
-std::optional<std::vector<Playlist>>
-GetPlaylistsFromApiTopLevelMusicRecommendations(
-    const google_apis::youtube_music::TopLevelMusicRecommendations*
+std::vector<Playlist> GetPlaylistsFromApiTopLevelMusicRecommendations(
+    const google_apis::youtube_music::TopLevelMusicRecommendations&
         top_level_music_recommendations) {
-  if (!top_level_music_recommendations) {
-    return std::nullopt;
-  }
-
   std::vector<Playlist> playlists;
   for (auto& top_level_recommendation :
-       top_level_music_recommendations->top_level_music_recommendations()) {
+       top_level_music_recommendations.top_level_music_recommendations()) {
     for (auto& music_recommendation :
          top_level_recommendation->music_section().music_recommendations()) {
       auto& playlist = music_recommendation->playlist();
@@ -64,14 +54,10 @@ GetPlaylistsFromApiTopLevelMusicRecommendations(
   return playlists;
 }
 
-std::optional<PlaybackContext> GetPlaybackContextFromApiQueue(
-    const google_apis::youtube_music::Queue* queue) {
-  if (!queue) {
-    return std::nullopt;
-  }
-
-  auto& playback_context = queue->playback_context();
-  auto& track = playback_context.queue_item().track();
+PlaybackContext GetPlaybackContextFromApiQueue(
+    const google_apis::youtube_music::Queue& queue) {
+  const auto& playback_context = queue.playback_context();
+  const auto& track = playback_context.queue_item().track();
   // TODO(yongshun): Consider to add retry when there is no stream in the
   // response.
   GURL stream_url = GURL();
@@ -82,9 +68,16 @@ std::optional<PlaybackContext> GetPlaybackContextFromApiQueue(
     stream_url = stream->url();
     playback_reporting_token = stream->playback_reporting_token();
   }
-  return PlaybackContext(track.name(), track.title(), track.explicit_type(),
+
+  std::string track_artists;
+  for (size_t i = 0; i < track.artist_references().size(); i++) {
+    track_artists += (i ? ", " : "") + track.artist_references()[i]->title();
+  }
+
+  return PlaybackContext(track.name(), track.title(), track_artists,
+                         track.explicit_type(),
                          FindBestImage(GetImagesFromApiImages(track.images())),
-                         stream_url, playback_reporting_token, queue->name());
+                         stream_url, playback_reporting_token, queue.name());
 }
 
 Image FindBestImage(const std::vector<Image>& images) {

@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/link_capturing/apps_intent_picker_delegate.h"
@@ -14,6 +16,10 @@
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/apps/link_capturing/mac_intent_picker_helpers.h"
+#endif
 
 class Profile;
 
@@ -27,13 +33,13 @@ class WebAppProvider;
 
 namespace apps {
 
-#if BUILDFLAG(IS_MAC)
-using MacAppInfo = std::optional<IntentPickerAppInfo>;
-#endif  // BUILDFLAG(IS_MAC)
-
 class WebAppsIntentPickerDelegate : public AppsIntentPickerDelegate {
  public:
-  explicit WebAppsIntentPickerDelegate(Profile* profile);
+  // Since this class sometimes pre-caches icons for returned applications, all
+  // the icon sizes that might be passed to calls to `LoadSingleAppIcon` should
+  // be included in the `icon_sizes_in_dep` parameter.
+  WebAppsIntentPickerDelegate(Profile* profile,
+                              std::vector<int> icon_sizes_in_dep);
   ~WebAppsIntentPickerDelegate() override;
 
   WebAppsIntentPickerDelegate(const WebAppsIntentPickerDelegate&) = delete;
@@ -61,7 +67,8 @@ class WebAppsIntentPickerDelegate : public AppsIntentPickerDelegate {
   void LaunchApp(content::WebContents* web_contents,
                  const GURL& url,
                  const std::string& launch_name,
-                 PickerEntryType entry_type) override;
+                 PickerEntryType entry_type,
+                 base::OnceClosure callback = base::DoNothing()) override;
 
  private:
 #if BUILDFLAG(IS_MAC)
@@ -70,13 +77,14 @@ class WebAppsIntentPickerDelegate : public AppsIntentPickerDelegate {
   void CacheMacAppInfoAndPostFinalCallback(
       IntentPickerAppsCallback apps_callback,
       std::vector<IntentPickerAppInfo> apps,
-      MacAppInfo mac_app_info);
+      std::optional<MacAppInfo> mac_app_info);
 #endif  // BUILDFLAG(IS_MAC)
 
   raw_ref<Profile> profile_;
-  raw_ref<web_app::WebAppProvider> provider_;
+  raw_ptr<web_app::WebAppProvider> provider_;
+  std::vector<int> icon_sizes_in_dep_;
 #if BUILDFLAG(IS_MAC)
-  MacAppInfo mac_app_info_;
+  std::optional<MacAppInfo> mac_app_info_;
 #endif  // BUILDFLAG(IS_MAC)
   base::WeakPtrFactory<WebAppsIntentPickerDelegate> weak_ptr_factory{this};
 };

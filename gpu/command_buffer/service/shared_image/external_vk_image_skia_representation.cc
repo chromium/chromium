@@ -15,13 +15,13 @@
 #include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
-#include "third_party/skia/include/gpu/GrBackendSemaphore.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/MutableTextureState.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
-#include "third_party/skia/include/gpu/vk/GrVkTypes.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkTypes.h"
 #include "third_party/skia/include/gpu/vk/VulkanMutableTextureState.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 
@@ -78,8 +78,7 @@ ExternalVkImageSkiaImageRepresentation::BeginWriteAccess(
     // reuse the cached SkSurface.
     if (!surface || surface_props != surface->props() ||
         final_msaa_count != surface_msaa_count_) {
-      SkColorType sk_color_type = viz::ToClosestSkColorType(
-          /*gpu_compositing=*/true, format(), plane);
+      SkColorType sk_color_type = viz::ToClosestSkColorType(format(), plane);
       surface = SkSurfaces::WrapBackendTexture(
           gr_context, promise_texture->backendTexture(), surface_origin(),
           final_msaa_count, sk_color_type,

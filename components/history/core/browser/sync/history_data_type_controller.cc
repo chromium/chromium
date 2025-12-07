@@ -58,6 +58,7 @@ GetPreconditionStateFromManagedStatus(
           kMustStopAndClearData;
     case signin::AccountManagedStatusFinder::Outcome::kPending:
     case signin::AccountManagedStatusFinder::Outcome::kError:
+    case signin::AccountManagedStatusFinder::Outcome::kTimeout:
       // While the enterprise-ness of the account isn't known yet, or if the
       // detection failed, "stop and keep data" is a safe default.
       return syncer::DataTypeController::PreconditionState::
@@ -161,6 +162,10 @@ void HistoryDataTypeController::OnStateChanged(syncer::SyncService* sync) {
 
   // Most of these calls will be no-ops but SyncService handles that just fine.
   helper_.sync_service()->DataTypePreconditionChanged(type());
+}
+
+void HistoryDataTypeController::OnSyncShutdown(syncer::SyncService* sync) {
+  // Nothing to be done, `this` will be destructed imminently.
 }
 
 void HistoryDataTypeController::AccountTypeDetermined() {

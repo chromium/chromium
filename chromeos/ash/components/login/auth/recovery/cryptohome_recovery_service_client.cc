@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/login/auth/recovery/service_constants.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -207,7 +209,7 @@ void CryptohomeRecoveryServiceClient::FetchRecoveryResponse(
 void CryptohomeRecoveryServiceClient::OnFetchEpochComplete(
     const GaiaAccessToken& access_token,
     OnEpochResponseCallback callback,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   int net_error = simple_url_loader_->NetError();
   int response_code = -1;
@@ -250,7 +252,7 @@ void CryptohomeRecoveryServiceClient::OnFetchRecoveryResponseComplete(
     const std::string& request_data,
     const GaiaAccessToken& access_token,
     OnRecoveryResponseCallback callback,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   int net_error = simple_url_loader_->NetError();
   int response_code = -1;

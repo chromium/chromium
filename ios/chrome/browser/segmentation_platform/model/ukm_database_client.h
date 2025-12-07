@@ -12,7 +12,7 @@
 #import "base/thread_annotations.h"
 #import "components/segmentation_platform/internal/signals/ukm_observer.h"
 #import "components/segmentation_platform/internal/ukm_data_manager.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace ukm {
 class UkmRecorderImpl;
@@ -69,13 +69,13 @@ class UkmDatabaseClientHolder {
   // Always returns the main client instance, unless a client was set for
   // testing. Can be called with nullptr to get the main instance when `profile`
   // is not created.
-  static UkmDatabaseClient& GetClientInstance(ChromeBrowserState* profile);
+  static UkmDatabaseClient& GetClientInstance(ProfileIOS* profile);
 
   // Sets or removes the instance used by `profile` for testing. Thread safe,
   // and GetClientInstance() will return the new client based on the profile.
   // Note that if GetClientInstance() is called with nullptr, the main instance
   // will still be returned.
-  static void SetUkmClientForTesting(ChromeBrowserState* profile,
+  static void SetUkmClientForTesting(ProfileIOS* profile,
                                      UkmDatabaseClient* client);
 
   UkmDatabaseClientHolder(const UkmDatabaseClientHolder&) = delete;
@@ -88,12 +88,12 @@ class UkmDatabaseClientHolder {
   UkmDatabaseClientHolder();
   ~UkmDatabaseClientHolder();
 
-  void SetUkmClientForTestingInternal(ChromeBrowserState* profile,
+  void SetUkmClientForTestingInternal(ProfileIOS* profile,
                                       UkmDatabaseClient* client);
 
   base::Lock lock_;
-  std::map<raw_ptr<ChromeBrowserState>, raw_ptr<UkmDatabaseClient>>
-      clients_for_testing_ GUARDED_BY(lock_);
+  std::map<raw_ptr<ProfileIOS>, raw_ptr<UkmDatabaseClient>> clients_for_testing_
+      GUARDED_BY(lock_);
 
   std::unique_ptr<UkmDatabaseClient> main_client_;
 };

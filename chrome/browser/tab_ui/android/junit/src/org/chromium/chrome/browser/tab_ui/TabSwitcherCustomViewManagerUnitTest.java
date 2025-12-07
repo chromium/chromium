@@ -12,14 +12,14 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import android.view.View;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -28,6 +28,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabSwitcherCustomViewManagerUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TabSwitcherCustomViewManager.Delegate mDelegate;
     @Mock private View mView;
     @Mock private Runnable mBackPressRunnableMock;
@@ -36,7 +37,6 @@ public class TabSwitcherCustomViewManagerUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mTabSwitcherCustomViewManager = new TabSwitcherCustomViewManager();
         mTabSwitcherCustomViewManager.setDelegate(mDelegate);
     }
@@ -47,7 +47,6 @@ public class TabSwitcherCustomViewManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRequestView_InvokesDelegateAddingView() {
         doNothing()
                 .when(mDelegate)
@@ -58,7 +57,6 @@ public class TabSwitcherCustomViewManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRequestView_InvokesDelegateAddingView_DelegateSetAfter() {
         mTabSwitcherCustomViewManager.setDelegate(null);
         doNothing()
@@ -74,7 +72,6 @@ public class TabSwitcherCustomViewManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testReleaseView_InvokesDelegateRemoveView() {
         // Add the view.
         doNothing()
@@ -91,7 +88,6 @@ public class TabSwitcherCustomViewManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testReleaseView_InvokesDelegateRemoveView_DelegateMissing() {
         // Add the view.
         doNothing()
@@ -111,7 +107,6 @@ public class TabSwitcherCustomViewManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testResetDelegate() {
         // Add the view.
         doNothing()
@@ -135,7 +130,6 @@ public class TabSwitcherCustomViewManagerUnitTest {
     }
 
     @Test(expected = AssertionError.class)
-    @SmallTest
     public void testMultipleRequestView_withoutRelease_throwsError() {
         doNothing()
                 .when(mDelegate)
@@ -150,7 +144,6 @@ public class TabSwitcherCustomViewManagerUnitTest {
     }
 
     @Test(expected = AssertionError.class)
-    @SmallTest
     public void testReleaseView_BeforeRequesting_throwsError() {
         // This should throw an error because we have not requested the view yet.
         mTabSwitcherCustomViewManager.releaseView();

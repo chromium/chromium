@@ -171,6 +171,55 @@ TEST_F(ManagedCellularPrefHandlerTest, AddAndRemoveESimMetadata) {
   EXPECT_EQ(4, NumObserverEvents());
 }
 
+TEST_F(ManagedCellularPrefHandlerTest, AddAndRemovePolicyESimMetadata) {
+  Init();
+  SetDevicePrefs();
+
+  const policy_util::SmdxActivationCode activation_code(
+      policy_util::SmdxActivationCode::Type::SMDP,
+      HermesEuiccClient::Get()
+          ->GetTestInterface()
+          ->GenerateFakeActivationCode());
+
+  EXPECT_EQ(0, NumObserverEvents());
+  EXPECT_FALSE(managed_cellular_pref_handler()->GetESimMetadata(kIccid0));
+
+  managed_cellular_pref_handler()->AddESimMetadata(kIccid0, kName0,
+                                                   activation_code);
+  EXPECT_EQ(1, NumObserverEvents());
+
+  ExpectESimMetadata(kIccid0, kName0, activation_code);
+  EXPECT_TRUE(managed_cellular_pref_handler()->IsESimManaged(kIccid0));
+
+  // Reach into the prefs and manually erase the field used to communicate that
+  // an eSIM was installed by policy but is no longer managed.
+  base::Value::Dict prefs =
+      device_prefs()->GetDict(prefs::kManagedCellularESimMetadata).Clone();
+  ASSERT_TRUE(prefs.contains(kIccid0));
+  base::Value::Dict* esim_metadata = prefs.FindDict(kIccid0);
+  esim_metadata->Remove("PolicyMissing");
+  device_prefs()->SetDict(prefs::kManagedCellularESimMetadata,
+                          std::move(prefs));
+
+  // The eSIM metadata should still be considered managed even if the "policy
+  // missing" key is not found.
+  EXPECT_TRUE(managed_cellular_pref_handler()->IsESimManaged(kIccid0));
+
+  managed_cellular_pref_handler()->SetPolicyMissing(kIccid0);
+  EXPECT_EQ(2, NumObserverEvents());
+
+  ExpectESimMetadata(kIccid0, kName0, activation_code);
+  EXPECT_FALSE(managed_cellular_pref_handler()->IsESimManaged(kIccid0));
+
+  managed_cellular_pref_handler()->AddESimMetadata(kIccid0, kName0,
+                                                   activation_code);
+  EXPECT_EQ(3, NumObserverEvents());
+
+  // Whenever metadata is added it should always flag the eSIM as being managed.
+  ExpectESimMetadata(kIccid0, kName0, activation_code);
+  EXPECT_TRUE(managed_cellular_pref_handler()->IsESimManaged(kIccid0));
+}
+
 TEST_F(ManagedCellularPrefHandlerTest, AddApnMigratedIccid) {
   Init();
   SetDevicePrefs();

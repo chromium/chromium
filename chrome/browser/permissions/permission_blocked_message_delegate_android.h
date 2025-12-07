@@ -35,8 +35,8 @@ class PermissionBlockedMessageDelegate
   class Delegate {
    public:
     Delegate();
-    Delegate(const base::WeakPtr<permissions::PermissionPromptAndroid>&
-                 permission_prompt);
+    explicit Delegate(const base::WeakPtr<permissions::PermissionPromptAndroid>&
+                          permission_prompt);
     virtual ~Delegate();
     virtual void Accept();
     virtual void Deny();
@@ -47,6 +47,10 @@ class PermissionBlockedMessageDelegate
     virtual std::optional<permissions::PermissionUiSelector::QuietUiReason>
     ReasonForUsingQuietUi();
     virtual ContentSettingsType GetContentSettingsType();
+
+    permissions::PermissionPromptAndroid* permission_prompt() {
+      return permission_prompt_.get();
+    }
 
    private:
     base::WeakPtr<permissions::PermissionPromptAndroid> permission_prompt_;
@@ -72,9 +76,13 @@ class PermissionBlockedMessageDelegate
  private:
   friend class PermissionBlockedMessageDelegateAndroidTest;
 
-  void HandlePrimaryActionClick();
-  void HandleDismissCallback(messages::DismissReason reason);
+  void InitializeLoudUI();
+  void InitializeQuietUI();
+  void HandleQuietPrimaryActionClick();
+  void HandleQuietDismissCallback(messages::DismissReason reason);
   void HandleManageClick();
+  void HandleLoudPrimaryActionClick();
+  void HandleLoudDismissCallback(messages::DismissReason reason);
 
   void DismissInternal();
 

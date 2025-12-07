@@ -33,7 +33,7 @@ class CORE_EXPORT CSSHSL final : public CSSColorValue {
          CSSNumericValue*);
 
   // Getters and setters from the IDL
-  Member<CSSNumericValue> h() const { return h_; }
+  CSSNumericValue* h() const { return h_.Get(); }
   V8CSSNumberish* s() const;
   V8CSSNumberish* l() const;
   V8CSSNumberish* alpha() const;

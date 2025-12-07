@@ -24,47 +24,47 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/text/text_boundaries.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
 namespace blink {
 
-int FindNextWordForward(const UChar* chars, unsigned len, int position) {
-  TextBreakIterator* it = WordBreakIterator({chars, len});
+int FindNextWordForward(base::span<const UChar> chars, int position) {
+  TextBreakIterator* it = WordBreakIterator(chars);
 
+  int len = base::checked_cast<int>(chars.size());
   position = it->following(position);
   while (position != kTextBreakDone) {
     // We stop searching when the character preceeding the break
     // is alphanumeric or underscore.
-    if (position < static_cast<int>(len) &&
-        (WTF::unicode::IsAlphanumeric(chars[position - 1]) ||
-         chars[position - 1] == kLowLineCharacter))
+    const auto prev = base::checked_cast<size_t>(position - 1);
+    if (position < len && (unicode::IsAlphanumeric(chars[prev]) ||
+                           chars[prev] == uchar::kLowLine)) {
       return position;
+    }
 
     position = it->following(position);
   }
 
-  return static_cast<int>(len);
+  return len;
 }
 
-int FindNextWordBackward(const UChar* chars, unsigned len, int position) {
-  TextBreakIterator* it = WordBreakIterator({chars, len});
+int FindNextWordBackward(base::span<const UChar> chars, int position) {
+  TextBreakIterator* it = WordBreakIterator(chars);
 
   position = it->preceding(position);
   while (position != kTextBreakDone) {
     // We stop searching when the character following the break
     // is alphanumeric or underscore.
-    if (position > 0 && (WTF::unicode::IsAlphanumeric(chars[position]) ||
-                         chars[position] == kLowLineCharacter))
+    const auto cur = base::checked_cast<size_t>(position);
+    if (position > 0 && (unicode::IsAlphanumeric(chars[cur]) ||
+                         chars[cur] == uchar::kLowLine)) {
       return position;
+    }
 
     position = it->preceding(position);
   }
@@ -72,14 +72,14 @@ int FindNextWordBackward(const UChar* chars, unsigned len, int position) {
   return 0;
 }
 
-int FindWordStartBoundary(const UChar* chars, unsigned len, int position) {
-  TextBreakIterator* it = WordBreakIterator({chars, len});
+int FindWordStartBoundary(base::span<const UChar> chars, int position) {
+  TextBreakIterator* it = WordBreakIterator(chars);
   it->following(position);
   return it->previous();
 }
 
-int FindWordEndBoundary(const UChar* chars, unsigned len, int position) {
-  TextBreakIterator* it = WordBreakIterator({chars, len});
+int FindWordEndBoundary(base::span<const UChar> chars, int position) {
+  TextBreakIterator* it = WordBreakIterator(chars);
   int end = it->following(position);
   return end < 0 ? it->last() : end;
 }

@@ -7,6 +7,7 @@
 
 #include <map>
 #include <string>
+#include <string_view>
 
 extern "C" {
 struct _xmlTextReader;
@@ -22,7 +23,7 @@ class XmlReader {
   // Load a document into the reader from memory.  |input| must be UTF-8 and
   // exist for the lifetime of this object.  Returns false on error.
   // TODO(evanm): handle encodings other than UTF-8?
-  bool Load(const std::string& input);
+  bool Load(std::string_view input);
 
   // Load a document into the reader from a file.  Returns false on error.
   bool LoadFile(const std::string& file_path);

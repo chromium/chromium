@@ -27,10 +27,8 @@ class WorkletGlobalScope;
 // thread.
 class MODULES_EXPORT AnimationWorkletProxyClient
     : public GarbageCollected<AnimationWorkletProxyClient>,
-      public Supplement<WorkerClients>,
       public AnimationWorkletMutator {
  public:
-  static const char kSupplementName[];
   static const int8_t kNumStatelessGlobalScopes;
 
   // This client is hooked to the given |mutatee|, on the given
@@ -87,7 +85,7 @@ class MODULES_EXPORT AnimationWorkletProxyClient
         : mutator_dispatcher(std::move(mutator_dispatcher)),
           mutator_runner(std::move(mutator_runner)) {}
   };
-  WTF::Vector<MutatorItem> mutator_items_;
+  Vector<MutatorItem> mutator_items_;
 
   Vector<CrossThreadPersistent<AnimationWorkletGlobalScope>> global_scopes_;
   HashMap<String, int8_t> registered_animators_;

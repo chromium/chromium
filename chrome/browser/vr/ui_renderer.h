@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_VR_UI_RENDERER_H_
 #define CHROME_BROWSER_VR_UI_RENDERER_H_
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/vr_ui_export.h"
-#include "ui/gfx/geometry/rect_f.h"
 
 namespace vr {
 

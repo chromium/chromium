@@ -15,7 +15,6 @@
 #include "mojo/public/cpp/bindings/lib/message_fragment.h"
 #include "mojo/public/cpp/bindings/lib/template_util.h"
 #include "mojo/public/cpp/bindings/map_traits.h"
-#include "mojo/public/cpp/bindings/optional_as_pointer.h"
 #include "mojo/public/cpp/bindings/string_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/bindings/union_traits.h"
@@ -31,16 +30,9 @@ namespace internal {
 template <typename MojomType, typename MaybeConstUserType>
 struct Serializer;
 
-template <typename T>
-using IsAbslOptional = IsSpecializationOf<std::optional, std::decay_t<T>>;
-
-template <typename T>
-using IsOptionalAsPointer =
-    IsSpecializationOf<mojo::OptionalAsPointer, std::decay_t<T>>;
-
 template <typename MojomType, typename InputUserType, typename... Args>
 void Serialize(InputUserType&& input, Args&&... args) {
-  if constexpr (IsAbslOptional<InputUserType>::value) {
+  if constexpr (IsStdOptional<InputUserType>::value) {
     if (!input)
       return;
     Serialize<MojomType>(*input, std::forward<Args>(args)...);
@@ -59,7 +51,7 @@ template <typename MojomType,
           typename InputUserType,
           typename... Args>
 bool Deserialize(DataType&& input, InputUserType* output, Args&&... args) {
-  if constexpr (IsAbslOptional<InputUserType>::value) {
+  if constexpr (IsStdOptional<InputUserType>::value) {
     if (!input) {
       *output = std::nullopt;
       return true;

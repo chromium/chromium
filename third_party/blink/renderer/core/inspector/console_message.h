@@ -9,9 +9,10 @@
 
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
+#include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -22,6 +23,14 @@ class LocalFrame;
 class WorkerThread;
 struct WebConsoleMessage;
 
+// Represents a message to be shown in the DevTools console.
+//
+// Please familiarize yourself with http://goo.gle/devtools-console-policy prior
+// to introducing new console messages, and make sure that you understand the
+// implications on the developer experience. A good console message should be
+// actionable and relevant to what the developer is currently doing. Using the
+// DevTools Console panel as a means to advertise best practices or Chromium
+// agendas has shown to be counterproductive.
 class CORE_EXPORT ConsoleMessage final
     : public GarbageCollected<ConsoleMessage> {
  public:
@@ -36,18 +45,14 @@ class CORE_EXPORT ConsoleMessage final
                  DocumentLoader*,
                  uint64_t request_identifier);
   // Creates message from WorkerMessageSource.
-  ConsoleMessage(Level,
-                 const String& message,
-                 std::unique_ptr<SourceLocation>,
-                 WorkerThread*);
+  ConsoleMessage(Level, const String& message, SourceLocation*, WorkerThread*);
   // Creates a ConsoleMessage from a similar WebConsoleMessage.
   ConsoleMessage(const WebConsoleMessage&, LocalFrame*);
   // If provided, source_location must be non-null.
   ConsoleMessage(Source,
                  Level,
                  const String& message,
-                 std::unique_ptr<SourceLocation> source_location =
-                     CaptureSourceLocation());
+                 SourceLocation* source_location = CaptureSourceLocation());
   ~ConsoleMessage();
 
   SourceLocation* Location() const;
@@ -70,7 +75,7 @@ class CORE_EXPORT ConsoleMessage final
   Level level_;
   std::optional<mojom::blink::ConsoleMessageCategory> category_;
   String message_;
-  std::unique_ptr<SourceLocation> location_;
+  Member<SourceLocation> location_;
   String request_identifier_;
   double timestamp_;
   String worker_id_;

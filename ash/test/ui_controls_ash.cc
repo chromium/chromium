@@ -23,7 +23,7 @@ namespace {
 using ui_controls::MouseButton;
 using ui_controls::UIControlsAura;
 
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(UIControlsAura, kUIControlsKey, NULL)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(UIControlsAura, kUIControlsKey)
 
 // Returns the UIControls object for RootWindow.
 // kUIControlsKey is owned property and UIControls object
@@ -99,7 +99,7 @@ class UIControlsAsh : public UIControlsAura {
   bool SendMouseEvents(MouseButton type,
                        int button_state,
                        int accelerator_state) override {
-    gfx::Point p(display::Screen::GetScreen()->GetCursorScreenPoint());
+    gfx::Point p(display::Screen::Get()->GetCursorScreenPoint());
     UIControlsAura* ui_controls = GetUIControlsAt(p);
     return ui_controls &&
            ui_controls->SendMouseEvents(type, button_state, accelerator_state);
@@ -117,14 +117,9 @@ class UIControlsAsh : public UIControlsAura {
   }
 
   bool SendMouseClick(MouseButton type) override {
-    gfx::Point p(display::Screen::GetScreen()->GetCursorScreenPoint());
+    gfx::Point p(display::Screen::Get()->GetCursorScreenPoint());
     UIControlsAura* ui_controls = GetUIControlsAt(p);
     return ui_controls && ui_controls->SendMouseClick(type);
-  }
-
-  bool SendTouchEvents(int action, int id, int x, int y) override {
-    UIControlsAura* ui_controls = GetUIControlsAt(gfx::Point(x, y));
-    return ui_controls && ui_controls->SendTouchEvents(action, id, x, y);
   }
 
   bool SendTouchEventsNotifyWhenDone(int action,

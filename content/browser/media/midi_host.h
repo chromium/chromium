@@ -17,9 +17,9 @@
 #include "base/thread_annotations.h"
 #include "base/tuple.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/child_process_id.h"
 #include "media/midi/midi_manager.h"
 #include "media/midi/midi_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -34,6 +34,8 @@ class MidiMessageQueue;
 
 namespace content {
 
+class RenderFrameHost;
+
 class CONTENT_EXPORT MidiHost : public midi::MidiManagerClient,
                                 public midi::mojom::MidiSessionProvider,
                                 public midi::mojom::MidiSession {
@@ -46,8 +48,9 @@ class CONTENT_EXPORT MidiHost : public midi::MidiManagerClient,
   // Creates an instance of MidiHost and binds |receiver| to the instance using
   // a self owned receiver. Should be called on the IO thread.
   static void BindReceiver(
-      int render_process_id,
+      ChildProcessId render_process_id,
       midi::MidiService* midi_service,
+      RenderFrameHost* host,
       mojo::PendingReceiver<midi::mojom::MidiSessionProvider> receiver);
 
   // MidiManagerClient implementation. These methods can be called on any thread
@@ -76,7 +79,7 @@ class CONTENT_EXPORT MidiHost : public midi::MidiManagerClient,
                 base::TimeTicks timestamp) override;
 
  protected:
-  MidiHost(int renderer_process_id, midi::MidiService* midi_service);
+  MidiHost(ChildProcessId renderer_process_id, midi::MidiService* midi_service);
 
   void SetHasMidiPermissionForTesting(bool value) {
     has_midi_permission_ = value;
@@ -90,7 +93,7 @@ class CONTENT_EXPORT MidiHost : public midi::MidiManagerClient,
 
   void EndSession();
 
-  const int renderer_process_id_;
+  const ChildProcessId renderer_process_id_;
 
   // Represents if the renderer has a permission to send/receive MIDI messages.
   bool has_midi_permission_;

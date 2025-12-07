@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chromecast/media/cma/backend/audio_decoder_for_mixer.h"
 
 #include <algorithm>
@@ -75,8 +80,7 @@ int ToPlayoutChannel(AudioChannel audio_channel) {
     case AudioChannel::kRight:
       return 1;
   }
-  NOTREACHED_IN_MIGRATION();
-  return kChannelAll;
+  NOTREACHED();
 }
 
 int MaxQueuedFrames(int sample_rate) {
@@ -108,7 +112,7 @@ AudioDecoderForMixer::AudioDecoderForMixer(
       task_runner_(backend->GetTaskRunner()),
       buffer_pool_frames_(kInitialFillSizeFrames),
       pending_output_frames_(kNoPendingOutput),
-      pool_(new ::media::AudioBufferMemoryPool()),
+      pool_(base::MakeRefCounted<::media::AudioBufferMemoryPool>()),
       weak_factory_(this) {
   TRACE_FUNCTION_ENTRY0();
   DCHECK(backend_);
@@ -572,7 +576,7 @@ void AudioDecoderForMixer::WritePcm(scoped_refptr<DecoderBufferBase> buffer) {
                                 buffer->timestamp());
 }
 
-void AudioDecoderForMixer::FillNextBuffer(void* buffer,
+void AudioDecoderForMixer::FillNextBuffer(base::span<uint8_t> buffer,
                                           int frames,
                                           int64_t delay_timestamp,
                                           int64_t delay) {

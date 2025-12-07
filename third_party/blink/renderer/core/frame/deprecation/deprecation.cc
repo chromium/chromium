@@ -8,7 +8,6 @@
 #include "build/build_config.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/reporting/reporting.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
@@ -43,12 +42,11 @@ void SendToBrowser(ExecutionContext* context, const DeprecationInfo& info) {
 
   if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
     if (LocalFrame* frame = window->GetFrame()) {
-      std::unique_ptr<SourceLocation> source_location =
-          CaptureSourceLocation(context);
+      SourceLocation* source_location = CaptureSourceLocation(context);
       frame->GetLocalFrameHostRemote().SendLegacyTechEvent(
-          info.type_,
+          info.type_.ToString(),
           mojom::blink::LegacyTechEventCodeLocation::New(
-              source_location->Url() ? source_location->Url() : String(""),
+              source_location->Url() ? source_location->Url() : g_empty_string,
               source_location->LineNumber(), source_location->ColumnNumber()));
     }
   }
@@ -102,11 +100,6 @@ void Deprecation::CountDeprecation(ExecutionContext* context,
     if (window->GetFrame())
       deprecation = &window->GetFrame()->GetPage()->GetDeprecation();
   } else if (auto* scope = DynamicTo<WorkerOrWorkletGlobalScope>(context)) {
-    // TODO(crbug.com/1146824): Remove this once PlzDedicatedWorker and
-    // PlzServiceWorker ship.
-    if (!scope->IsInitialized()) {
-      return;
-    }
     deprecation = &scope->GetDeprecation();
   }
 
@@ -118,8 +111,9 @@ void Deprecation::CountDeprecation(ExecutionContext* context,
   context->CountUse(feature);
   const DeprecationInfo info = GetDeprecationInfo(feature);
 
+  String type = info.type_.ToString();
   // Send the deprecation message as a DevTools issue.
-  AuditsIssue::ReportDeprecationIssue(context, info.type_);
+  AuditsIssue::ReportDeprecationIssue(context, type);
 
   // Send the deprecation message to browser process for enterprise usage.
   SendToBrowser(context, info);
@@ -127,7 +121,7 @@ void Deprecation::CountDeprecation(ExecutionContext* context,
   // Send the deprecation report to the Reporting API and any
   // ReportingObservers.
   DeprecationReportBody* body = MakeGarbageCollected<DeprecationReportBody>(
-      info.type_, std::nullopt, info.message_);
+      type, std::nullopt, info.message_.ToString());
   Report* report = MakeGarbageCollected<Report>(ReportType::kDeprecation,
                                                 context->Url(), body);
   ReportingContext::From(context)->QueueReport(report);

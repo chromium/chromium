@@ -19,7 +19,7 @@ namespace net {
 // static
 void RedirectUtil::UpdateHttpRequest(
     const GURL& original_url,
-    const std::string& original_method,
+    std::string_view original_method,
     const RedirectInfo& redirect_info,
     const std::optional<std::vector<std::string>>& removed_headers,
     const std::optional<net::HttpRequestHeaders>& modified_headers,
@@ -35,6 +35,12 @@ void RedirectUtil::UpdateHttpRequest(
       request_headers->RemoveHeader(key);
   }
 
+  // The status code check and method updating to GET from step 12 of
+  // 4.4 HTTP-redirect fetch
+  // (https://fetch.spec.whatwg.org/#http-redirect-fetch) is handled in
+  // RedirectInfo::ComputeRedirectInfo. The remaining parts are implemented here
+  // by setting the flag to clear the request body and removing the
+  // "request-body-headers".
   if (redirect_info.new_method != original_method) {
     // TODO(davidben): This logic still needs to be replicated at the consumers.
     //
@@ -93,12 +99,7 @@ std::optional<std::string> RedirectUtil::GetReferrerPolicyHeader(
     const HttpResponseHeaders* response_headers) {
   if (!response_headers)
     return std::nullopt;
-  std::string referrer_policy_header;
-  if (!response_headers->GetNormalizedHeader("Referrer-Policy",
-                                             &referrer_policy_header)) {
-    return std::nullopt;
-  }
-  return referrer_policy_header;
+  return response_headers->GetNormalizedHeader("Referrer-Policy");
 }
 
 // static

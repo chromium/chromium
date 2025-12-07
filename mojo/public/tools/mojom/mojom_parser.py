@@ -12,7 +12,6 @@ generate usable language bindings.
 
 import argparse
 import builtins
-import codecs
 import errno
 import json
 import logging
@@ -38,7 +37,7 @@ if __name__ == '__main__' and sys.platform == 'darwin':
 _MULTIPROCESSING_USES_FORK = multiprocessing.get_start_method() == 'fork'
 
 
-def _ResolveRelativeImportPath(path, roots):
+def _ResolveRelativeImportPath(path, imported_by, roots):
   """Attempts to resolve a relative import path against a set of possible roots.
 
   Args:
@@ -58,7 +57,8 @@ def _ResolveRelativeImportPath(path, roots):
     if os.path.isfile(abs_path):
       return os.path.normcase(os.path.normpath(abs_path))
 
-  raise ValueError('"%s" does not exist in any of %s' % (path, roots))
+  raise ValueError('"%s", imported by %s, does not exist in any of %s' %
+                   (path, imported_by, roots))
 
 
 def RebaseAbsolutePath(path, roots):
@@ -111,7 +111,8 @@ def _GetModuleFilename(mojom_filename):
 
 
 def _EnsureInputLoaded(mojom_abspath, module_path, abs_paths, asts,
-                       dependencies, loaded_modules, module_metadata):
+                       dependencies, loaded_modules, module_metadata,
+                       is_chromeos: bool):
   """Recursively ensures that a module and its dependencies are loaded.
 
   Args:
@@ -126,6 +127,7 @@ def _EnsureInputLoaded(mojom_abspath, module_path, abs_paths, asts,
         modules that were pulled in as transitive dependencies of the inputs.
     module_metadata: Metadata to be attached to every module loaded by this
         helper.
+    is_chromeos: True when targetting ChromeOS and False otherwise.
 
   Returns:
     None
@@ -140,14 +142,16 @@ def _EnsureInputLoaded(mojom_abspath, module_path, abs_paths, asts,
   for dep_abspath, dep_path in sorted(dependencies[mojom_abspath]):
     if dep_abspath not in loaded_modules:
       _EnsureInputLoaded(dep_abspath, dep_path, abs_paths, asts, dependencies,
-                         loaded_modules, module_metadata)
+                         loaded_modules, module_metadata, is_chromeos)
 
   imports = {}
   for imp in asts[mojom_abspath].import_list:
     path = imp.import_filename
     imports[path] = loaded_modules[abs_paths[path]]
   loaded_modules[mojom_abspath] = translate.OrderedModule(
-      asts[mojom_abspath], module_path, imports)
+      asts[mojom_abspath], module_path, imports,
+      translate.ExtensibleEnumMode.RELAXED_FOR_CHROMEOS
+      if is_chromeos else translate.ExtensibleEnumMode.STRICT)
   loaded_modules[mojom_abspath].metadata = dict(module_metadata)
 
 
@@ -179,7 +183,7 @@ def _CollectAllowedImportsFromBuildMetadata(build_metadata_filename):
 
 # multiprocessing helper.
 def _ParseAstHelper(mojom_abspath, enabled_features):
-  with codecs.open(mojom_abspath, encoding='utf-8') as f:
+  with open(mojom_abspath, encoding='utf-8') as f:
     ast = parser.Parse(f.read(), mojom_abspath)
     conditional_features.RemoveDisabledDefinitions(ast, enabled_features)
     return mojom_abspath, ast
@@ -310,6 +314,7 @@ def _ParseMojoms(mojom_files,
     invalid_imports = []
     for imp in ast.import_list:
       import_abspath = _ResolveRelativeImportPath(imp.import_filename,
+                                                  mojom_abspath,
                                                   input_root_paths)
       if allowed_imports and import_abspath not in allowed_imports:
         invalid_imports.append(imp.import_filename)
@@ -328,7 +333,7 @@ def _ParseMojoms(mojom_files,
         # location.
         module_path = _GetModuleFilename(imp.import_filename)
         module_abspath = _ResolveRelativeImportPath(
-            module_path, module_root_paths + [output_root_path])
+            module_path, mojom_abspath, module_root_paths + [output_root_path])
         with open(module_abspath, 'rb') as module_file:
           loaded_modules[import_abspath] = module.Module.Load(module_file)
 
@@ -345,7 +350,8 @@ def _ParseMojoms(mojom_files,
   num_existing_modules_loaded = len(loaded_modules)
   for mojom_abspath, mojom_path in mojom_files_to_parse.items():
     _EnsureInputLoaded(mojom_abspath, mojom_path, abs_paths, loaded_mojom_asts,
-                       input_dependencies, loaded_modules, module_metadata)
+                       input_dependencies, loaded_modules, module_metadata,
+                       'is_chromeos' in enabled_features)
   assert (num_existing_modules_loaded +
           len(mojom_files_to_parse) == len(loaded_modules))
 

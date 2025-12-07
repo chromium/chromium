@@ -1,0 +1,9 @@
+include_rules = [
+  "+components/data_sharing/public",
+  "+components/data_sharing/test_support",
+  "+components/saved_tab_groups/public",
+  "+components/saved_tab_groups/test_support",
+  "+ios/chrome/browser/data_sharing/model",
+  "+ios/chrome/browser/share_kit/model",
+  "+ios/chrome/browser/signin/model",
+]

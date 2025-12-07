@@ -1,0 +1,32 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "bwg_location_view_controller.h",
+    "bwg_location_view_controller.mm",
+    "bwg_settings_consumer.h",
+    "bwg_settings_view_controller.h",
+    "bwg_settings_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/prefs",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/intelligence/bwg/metrics",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/settings/ui_bundled:settings_root",
+    "//ios/chrome/browser/settings/ui_bundled/bwg/coordinator:protocols",
+    "//ios/chrome/browser/shared/model/prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ui/base",
+    "//url",
+  ]
+}

@@ -14,7 +14,7 @@
 #include "pdf/pdf.h"
 #include "printing/emf_win.h"
 #include "printing/mojom/print.mojom.h"
-#include "ui/gfx/gdi_util.h"
+#include "ui/gfx/win/gdi_util.h"
 
 namespace printing {
 

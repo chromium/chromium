@@ -64,6 +64,8 @@ class CC_EXPORT AnimatedPaintWorkletTracker {
   // reset the property value in the map.
   void ClearUnusedInputProperties();
 
+  bool HasInputPropertiesAnimatedOnImpl() const;
+
  private:
   // PropertyState contains the state we track for each property that any
   // PaintWorklet depends on. This consists of:

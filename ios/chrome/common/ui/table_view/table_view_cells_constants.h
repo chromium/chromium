@@ -28,6 +28,9 @@ extern const CGFloat kTableViewVerticalSpacing;
 // The large vertical spacing between views and the container view of a cell.
 extern const CGFloat kTableViewLargeVerticalSpacing;
 
+// Padding between the top of the view and teh top of the image.
+extern const CGFloat kTopLargePadding;
+
 // The horizontal spacing between subviews within the container view.
 extern const CGFloat kTableViewSubViewHorizontalSpacing;
 
@@ -54,21 +57,15 @@ extern const CGFloat kTableViewImagePadding;
 // contentView.
 extern const CGFloat kTableViewTrailingContentPadding;
 
+// Padding between the top of the view and teh top of the image.
+extern const CGFloat kTopLargePadding;
+
 // A masked password string(e.g. "••••••••").
 extern NSString* const kMaskedPassword;
 
 // The accessibility identifier of the info button of the
-// TableViewInfoButtonCell.
+// TableView InfoButton.
 extern NSString* const kTableViewCellInfoButtonViewId;
-
-// The accessibility identifier of the TableViewTabsSearchSuggestedHistoryItem.
-extern NSString* const kTableViewTabsSearchSuggestedHistoryItemId;
-
-// Accessibility identifier for the badge icon.
-extern NSString* const kTableViewURLCellFaviconBadgeViewID;
-
-// Accessibility identifier for the metadata image view.
-extern NSString* const kTableViewURLCellMetadataImageID;
 
 // Returns a padding according to the width of the current device.
 extern CGFloat HorizontalPadding();

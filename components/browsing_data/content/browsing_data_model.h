@@ -7,6 +7,7 @@
 
 #include <iterator>
 #include <map>
+#include <variant>
 
 #include "base/containers/enum_set.h"
 #include "base/functional/callback_forward.h"
@@ -21,10 +22,9 @@
 #include "content/public/browser/private_aggregation_data_model.h"
 #include "content/public/browser/session_storage_usage_info.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/device_bound_sessions/session_key.h"
 #include "net/shared_dictionary/shared_dictionary_isolation_key.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/origin.h"
 
 namespace content {
@@ -40,8 +40,8 @@ class BrowsingDataModel {
  public:
   // The entity that logically owns a set of data. All browsing data will be
   // grouped by its owner.
-  using DataOwner = absl::variant<std::string,  // Hostname
-                                  url::Origin>;
+  using DataOwner = std::variant<std::string,  // Hostname
+                                 url::Origin>;
 
   // Storage types which are represented by the model. Some types have
   // incomplete implementations, and are marked as such.
@@ -59,9 +59,10 @@ class BrowsingDataModel {
     kSharedWorker,
     kCookie,
     kCdmStorage,
+    kDeviceBoundSession,
 
     kFirstType = kTrustTokens,
-    kLastType = kCdmStorage,
+    kLastType = kDeviceBoundSession,
     kExtendedDelegateRange =
         63,  // This is needed to include delegate values when adding delegate
              // browsing data to the model.
@@ -73,18 +74,19 @@ class BrowsingDataModel {
   // The information which uniquely identifies this browsing data. The set of
   // data an entry represents can be pulled from the relevant storage backends
   // using this information.
-  typedef absl::variant<url::Origin,        // Single origin, e.g. Trust Tokens
-                        blink::StorageKey,  // Partitioned JS storage
-                        content::InterestGroupManager::InterestGroupDataKey,
-                        content::AttributionDataModel::DataKey,
-                        content::PrivateAggregationDataModel::DataKey,
-                        content::SessionStorageUsageInfo,
-                        net::SharedDictionaryIsolationKey,
-                        browsing_data::SharedWorkerInfo,
-                        net::CanonicalCookie,
-                        webid::FederatedIdentityDataModel::DataKey
-                        // TODO(crbug.com/40205603): Additional backend keys.
-                        >
+  typedef std::variant<url::Origin,        // Single origin, e.g. Trust Tokens
+                       blink::StorageKey,  // Partitioned JS storage
+                       content::InterestGroupManager::InterestGroupDataKey,
+                       content::AttributionDataModel::DataKey,
+                       content::PrivateAggregationDataModel::DataKey,
+                       content::SessionStorageUsageInfo,
+                       net::SharedDictionaryIsolationKey,
+                       browsing_data::SharedWorkerInfo,
+                       net::CanonicalCookie,
+                       webid::FederatedIdentityDataModel::DataKey,
+                       net::device_bound_sessions::SessionKey
+                       // TODO(crbug.com/40205603): Additional backend keys.
+                       >
       DataKey;
 
   // Information about the data pointed at by a DataKey.
@@ -201,7 +203,6 @@ class BrowsingDataModel {
     ~Iterator();
     Iterator(const Iterator& iterator);
     bool operator==(const Iterator& other) const;
-    bool operator!=(const Iterator& other) const;
 
     // Input iterator functionality. These declarations allow STL functions to
     // make use of the iterator interface.

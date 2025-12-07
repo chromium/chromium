@@ -35,7 +35,6 @@ using base::ScopedTempDir;
 using base::test::TaskEnvironment;
 using leveldb_env::Options;
 using testing::_;
-using testing::Invoke;
 using testing::MakeMatcher;
 using testing::Matcher;
 using testing::MatcherInterface;

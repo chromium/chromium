@@ -5,7 +5,7 @@
 import 'chrome://password-manager/password_manager.js';
 
 // clang-format off
-import type {PasskeyDetailsCardElement, PasswordDetailsCardElement, PasswordDetailsSectionElement} from 'chrome://password-manager/password_manager.js';
+import type {PasskeyDetailsCardElement, BackupPasswordDetailsCardElement, PasswordDetailsCardElement, PasswordDetailsSectionElement} from 'chrome://password-manager/password_manager.js';
 import {Page, PasswordManagerImpl, PasswordViewPageInteractions, Router, SyncBrowserProxyImpl, UrlParam} from 'chrome://password-manager/password_manager.js';
 import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -48,7 +48,7 @@ suite('PasswordDetailsSectionTest', function() {
 
     const title = section.shadowRoot!.querySelector('#title');
     assertTrue(!!title);
-    assertEquals(group.name, title.textContent!.trim());
+    assertEquals(group.name, title.textContent.trim());
   });
 
   test('Navigating directly', async function() {
@@ -82,7 +82,7 @@ suite('PasswordDetailsSectionTest', function() {
 
     const title = section.$.title;
     assertTrue(!!title);
-    assertEquals('test.com', title.textContent!.trim());
+    assertEquals('test.com', title.textContent.trim());
   });
 
   test('Navigating directly fails when group is not found', async function() {
@@ -147,7 +147,11 @@ suite('PasswordDetailsSectionTest', function() {
       name: 'test.com',
       credentials: [
         createPasswordEntry({id: 0, username: 'test1'}),
-        createPasswordEntry({id: 1, username: 'test2'}),
+        createPasswordEntry({
+          id: 1,
+          username: 'test2',
+          backupPassword: {value: 'backup', creationDate: 'Mar 17'},
+        }),
         createPasswordEntry({isPasskey: true, id: 2, username: 'test3'}),
       ],
     });
@@ -162,9 +166,17 @@ suite('PasswordDetailsSectionTest', function() {
             'password-details-card');
     assertTrue(!!passwordEntries.length);
     assertEquals(passwordEntries.length, 2);
-    for (let index = 0; index < passwordEntries.length; ++index) {
+    // The last entry is a backup entry, do not compare it directly
+    for (let index = 0; index < passwordEntries.length - 1; ++index) {
       assertDeepEquals(passwordEntries[index]!.password, group.entries[index]);
     }
+
+    const backupPasswordEntries =
+        section.shadowRoot!.querySelectorAll<BackupPasswordDetailsCardElement>(
+            'backup-password-details-card');
+    assertTrue(!!backupPasswordEntries.length);
+    assertEquals(backupPasswordEntries.length, 1);
+    assertDeepEquals(backupPasswordEntries[0]!.password, group.entries[1]);
 
     const passkeyEntries =
         section.shadowRoot!.querySelectorAll<PasskeyDetailsCardElement>(
@@ -382,7 +394,7 @@ suite('PasswordDetailsSectionTest', function() {
 
     assertEquals(Page.PASSWORD_DETAILS, Router.getInstance().currentRoute.page);
     const title = section.$.title;
-    assertEquals('test.com', title.textContent!.trim());
+    assertEquals('test.com', title.textContent.trim());
 
     const entries =
         section.shadowRoot!.querySelectorAll<PasswordDetailsCardElement>(
@@ -413,7 +425,6 @@ suite('PasswordDetailsSectionTest', function() {
   // <if expr="_google_chrome">
   test('Register password sharing IPH for password card', async function() {
     syncProxy.syncInfo = {
-      isEligibleForAccountStorage: false,
       isSyncingPasswords: true,
     };
 
@@ -445,7 +456,6 @@ suite('PasswordDetailsSectionTest', function() {
       'Password sharing IPH is not registered with passkey card present',
       async function() {
         syncProxy.syncInfo = {
-          isEligibleForAccountStorage: false,
           isSyncingPasswords: true,
         };
 
@@ -475,9 +485,8 @@ suite('PasswordDetailsSectionTest', function() {
   // </if>
 
   test('should show button to move password', async function() {
-    passwordManager.data.isOptedInAccountStorage = true;
+    passwordManager.data.isAccountStorageEnabled = true;
     syncProxy.syncInfo = {
-      isEligibleForAccountStorage: true,
       isSyncingPasswords: false,
     };
 
@@ -502,14 +511,13 @@ suite('PasswordDetailsSectionTest', function() {
         section.shadowRoot!.querySelector<PasswordDetailsCardElement>(
             'password-details-card');
     assertTrue(!!passwordEntry);
-    assertTrue(isVisible(passwordEntry!.shadowRoot!.querySelector<HTMLElement>(
+    assertTrue(isVisible(passwordEntry.shadowRoot!.querySelector<HTMLElement>(
         '.move-password-container')));
   });
 
   test('should not show button to move password', async function() {
-    passwordManager.data.isOptedInAccountStorage = true;
+    passwordManager.data.isAccountStorageEnabled = true;
     syncProxy.syncInfo = {
-      isEligibleForAccountStorage: true,
       isSyncingPasswords: false,
     };
 
@@ -529,7 +537,7 @@ suite('PasswordDetailsSectionTest', function() {
         section.shadowRoot!.querySelector<PasswordDetailsCardElement>(
             'password-details-card');
     assertTrue(!!passwordEntry);
-    assertFalse(isVisible(passwordEntry!.shadowRoot!.querySelector<HTMLElement>(
+    assertFalse(isVisible(passwordEntry.shadowRoot!.querySelector<HTMLElement>(
         '.move-password-container')));
   });
 });

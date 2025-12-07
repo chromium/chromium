@@ -1,5 +1,6 @@
 include_rules = [
   "+chrome/grit/generated_resources.h",
+  "+content/public/browser/browser_thread.h",
   "+content/public/browser/service_process_host.h",
 
   "+third_party/libyuv",

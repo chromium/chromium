@@ -459,9 +459,11 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
     UpdateSoftNavigation(std::move(*soft_navigation_metrics));
   } else {
     if (!render_frame_host->GetParentOrOuterDocument()) {
-      // TODO(crbug.com/40065854): `client_->IsPageMainFrame()` didn't return
-      // the correct status.
-      base::debug::DumpWithoutCrashing();
+      // TODO(crbug.com/40065854): This can be removed once
+      // PageLoadMetricsUpdateDispatcher::IsPageMainFrame() is made consistent
+      // with the main-frame status reported by the RenderFrameHost.
+      LOG(ERROR) << "IsPageMainFrame() did not correctly identify the "
+                    "RenderFrameHost as a main frame.";
       return;
     }
 
@@ -506,15 +508,13 @@ void PageLoadMetricsUpdateDispatcher::UpdateFeatures(
   client_->UpdateFeaturesUsage(render_frame_host, new_features);
 }
 
-void PageLoadMetricsUpdateDispatcher::SetUpSharedMemoryForSmoothness(
+void PageLoadMetricsUpdateDispatcher::SetUpSharedMemoryForDroppedFrames(
     content::RenderFrameHost* render_frame_host,
-    base::ReadOnlySharedMemoryRegion shared_memory) {
+    base::ReadOnlySharedMemoryRegion dropped_frames_memory) {
   const bool is_main_frame = client_->IsPageMainFrame(render_frame_host);
   if (is_main_frame) {
-    client_->SetUpSharedMemoryForSmoothness(std::move(shared_memory));
-  } else {
-    // TODO(crbug.com/40144214): Merge smoothness metrics from OOPIFs with the
-    // main-frame.
+    client_->SetUpSharedMemoryForDroppedFrames(
+        std::move(dropped_frames_memory));
   }
 }
 
@@ -539,7 +539,7 @@ void PageLoadMetricsUpdateDispatcher::DidFinishSubFrameNavigation(
 }
 
 void PageLoadMetricsUpdateDispatcher::OnSubFrameDeleted(
-    int frame_tree_node_id) {
+    content::FrameTreeNodeId frame_tree_node_id) {
   subframe_navigation_start_offset_.erase(frame_tree_node_id);
 }
 
@@ -625,11 +625,10 @@ void PageLoadMetricsUpdateDispatcher::UpdateSoftNavigationIntervalLayoutShift(
 void PageLoadMetricsUpdateDispatcher::
     UpdateSoftNavigationIntervalResponsivenessMetrics(
         const mojom::InputTiming& input_timing_delta) {
-  if (input_timing_delta.num_interactions) {
+  if (!page_load_metrics::IsEmpty(input_timing_delta)) {
     soft_navigation_interval_responsiveness_metrics_normalization_
         .AddNewUserInteractionLatencies(
-            input_timing_delta.num_interactions,
-            *(input_timing_delta.max_event_durations));
+            input_timing_delta.user_interaction_latencies);
   }
 }
 
@@ -644,7 +643,8 @@ void PageLoadMetricsUpdateDispatcher::MaybeUpdateMainFrameIntersectionRect(
   // subframe_navigation_start_offset_ excludes untracked loads.
   // TODO(crbug.com/40679417): Document definition of untracked loads in page
   // load metrics.
-  const int frame_tree_node_id = render_frame_host->GetFrameTreeNodeId();
+  const content::FrameTreeNodeId frame_tree_node_id =
+      render_frame_host->GetFrameTreeNodeId();
   bool is_main_frame = client_->IsPageMainFrame(render_frame_host);
   if (!is_main_frame &&
       subframe_navigation_start_offset_.find(frame_tree_node_id) ==
@@ -757,26 +757,18 @@ void PageLoadMetricsUpdateDispatcher::UpdateMainFrameMetadata(
                                          main_frame_metadata_);
     MaybeUpdateMainFrameViewportRect(main_frame_metadata_);
 
-    client_->OnMainFrameImageAdRectsChanged(
-        main_frame_metadata_->main_frame_image_ad_rects);
+    client_->OnMainFrameAdRectsChanged(
+        main_frame_metadata_->main_frame_ad_rects);
   }
 }
 
 void PageLoadMetricsUpdateDispatcher::UpdatePageInputTiming(
     const mojom::InputTiming& input_timing_delta) {
-  // On the sending side, we ensure input_timing_delta.max_event_duration and
-  // input_timing_delta.total_event_durations are not null pointers otherwise
-  // VALIDATION_ERROR_UNEXPECTED_NULL_POINTER will be triggered on the receiving
-  // side. But in some tests where the whole input_timing_delta is set as the
-  // default state, input_timing_delta.max_event_durations or
-  // input_timing_delta.total_event_durations can be null.
-  if (input_timing_delta.num_interactions) {
+  if (!page_load_metrics::IsEmpty(input_timing_delta)) {
     responsiveness_metrics_normalization_.AddNewUserInteractionLatencies(
-        input_timing_delta.num_interactions,
-        *(input_timing_delta.max_event_durations));
-  }
-  if (input_timing_delta.num_interactions) {
-    client_->OnPageInputTimingChanged(input_timing_delta.num_interactions);
+        input_timing_delta.user_interaction_latencies);
+    client_->OnPageInputTimingChanged(
+        input_timing_delta.user_interaction_latencies.size());
   }
 }
 

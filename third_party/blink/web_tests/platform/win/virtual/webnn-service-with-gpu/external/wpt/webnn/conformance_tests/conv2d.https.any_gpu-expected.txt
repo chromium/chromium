@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] depthwise conv2d float32 4D input and filter tensors options.groups= input_channels
+  assert_less_than_equal: assert_array_approx_equals_ulp: test conv2d float32 actual 0 should be close enough to expected 1.165167212486267 by ULP distance: expected a number less than or equal to 8n but got 1066738739n
+Harness: the test ran to completion.
+

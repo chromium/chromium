@@ -83,7 +83,8 @@ class CONTENT_EXPORT NavigationLoaderInterceptor {
   };
 
   using LoaderCallback = base::OnceCallback<void(std::optional<Result>)>;
-  using FallbackCallback = base::OnceCallback<void(ResponseHeadUpdateParams)>;
+  using FallbackCallback = base::OnceCallback<network::mojom::URLLoaderFactory*(
+      ResponseHeadUpdateParams)>;
 
   // Asks this interceptor to handle this resource load request.
   // The interceptor must always invoke `callback`.
@@ -97,11 +98,12 @@ class CONTENT_EXPORT NavigationLoaderInterceptor {
   // MaybeCreateLoader().
   //
   // This interceptor might initially elect to handle the request, but later
-  // decide to fall back to the default behavior. In that case, it can invoke
-  // `fallback_callback_for_service_worker` to do so. An example of this is when
-  // a service worker decides to handle the request because it is in-scope, but
-  // the service worker JavaScript execution does not result in a response
-  // provided, so fallback to network is required.
+  // decide to fall back to the default loader. In that case, it should invoke
+  // `fallback_callback_for_service_worker` to get the fallback loader and
+  // switch to the fallback loader. An example of this is when a service worker
+  // decides to handle the request because it is in-scope, but the service
+  // worker JavaScript execution does not result in a response provided, so
+  // fallback to network is required.
   //
   // `fallback_callback_for_service_worker` is only for service workers to
   // fallback to the network after initially electing to intercept the request.
@@ -111,10 +113,6 @@ class CONTENT_EXPORT NavigationLoaderInterceptor {
   //
   // `callback` and `fallback_callback_for_service_worker` must not be invoked
   // after the destruction of this interceptor.
-  //
-  // TODO(crbug.com/40251638): Possibly remove
-  // `fallback_callback_for_service_worker` to simplify the ServiceWorker
-  // interception.
   virtual void MaybeCreateLoader(
       const network::ResourceRequest& tentative_resource_request,
       BrowserContext* browser_context,

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/ports/node.h"
 
 #include <string.h>
@@ -18,10 +13,10 @@
 #include <utility>
 #include <vector>
 
-#include "base/lazy_instance.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/not_fatal_until.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/synchronization/lock.h"
@@ -62,7 +57,7 @@ class RandomNameGenerator {
       base::RandBytes(base::as_writable_byte_span(cache_));
       cache_index_ = 0;
     }
-    return cache_[cache_index_++];
+    return UNSAFE_TODO(cache_[cache_index_++]);
   }
 
  private:
@@ -71,12 +66,8 @@ class RandomNameGenerator {
   size_t cache_index_ = kRandomNameCacheSize;
 };
 
-base::LazyInstance<RandomNameGenerator>::Leaky g_name_generator =
-    LAZY_INSTANCE_INITIALIZER;
-
 int DebugError(const char* message, int error_code) {
-  NOTREACHED_IN_MIGRATION() << "Oops: " << message;
-  return error_code;
+  NOTREACHED() << "Oops: " << message;
 }
 
 #define OOPS(x) DebugError(#x, x)
@@ -97,7 +88,8 @@ bool CanAcceptMoreMessages(const Port* port) {
 }
 
 void GenerateRandomPortName(PortName* name) {
-  *name = g_name_generator.Get().GenerateRandomPortName();
+  static base::NoDestructor<RandomNameGenerator> generator;
+  *name = generator->GenerateRandomPortName();
 }
 
 }  // namespace
@@ -1468,7 +1460,8 @@ void Node::ConvertToProxy(Port* port,
   port_descriptor->last_sequence_num_to_receive =
       port->last_sequence_num_to_receive;
   port_descriptor->peer_closed = port->peer_closed;
-  memset(port_descriptor->padding, 0, sizeof(port_descriptor->padding));
+  UNSAFE_TODO(
+      memset(port_descriptor->padding, 0, sizeof(port_descriptor->padding)));
 
   // Configure the local port to point to the new port.
   UpdatePortPeerAddress(local_port_name, port, to_node_name, new_port_name);
@@ -1548,7 +1541,7 @@ int Node::PrepareToForwardUserMessage(const PortRef& forwarding_port_ref,
     for (size_t i = 0; i < message->num_ports(); ++i) {
       const PortName& attached_port_name = message->ports()[i];
       auto iter = ports_.find(attached_port_name);
-      CHECK(iter != ports_.end(), base::NotFatalUntil::M130);
+      CHECK(iter != ports_.end());
       attached_port_refs[i] = PortRef(attached_port_name, iter->second);
       ports_to_lock[i + 1] = &attached_port_refs[i];
     }
@@ -1613,13 +1606,15 @@ int Node::PrepareToForwardUserMessage(const PortRef& forwarding_port_ref,
         // the amount of port churn in the system, as many port-carrying
         // events are routed at least 1 or 2 intra-node hops before (if ever)
         // being routed externally.
-        Event::PortDescriptor* port_descriptors = message->port_descriptors();
+        Event::PortDescriptor* port_descriptors =
+            message->port_descriptors().data();
         for (size_t i = 0; i < message->num_ports(); ++i) {
           auto* port = locker.GetPort(attached_port_refs[i]);
           PendingUpdatePreviousPeer update_event = {
               .from_port = attached_port_refs[i].name()};
-          ConvertToProxy(port, target_node_name, message->ports() + i,
-                         port_descriptors + i, &update_event);
+          ConvertToProxy(port, target_node_name,
+                         message->ports().subspan(i).data(),
+                         UNSAFE_TODO(port_descriptors + i), &update_event);
           peer_update_events.push(update_event);
         }
       }

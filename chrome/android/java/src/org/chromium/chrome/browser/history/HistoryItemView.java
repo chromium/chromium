@@ -18,6 +18,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.history.AppFilterCoordinator.AppInfo;
 import org.chromium.chrome.browser.history.HistoryContentManager.AppInfoCache;
@@ -32,9 +35,10 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectableListU
 import java.util.function.BooleanSupplier;
 
 /** The SelectableItemView for items displayed in the browsing history UI. */
+@NullMarked
 public class HistoryItemView extends SelectableItemView<HistoryItem> {
     private ImageButton mRemoveButton;
-    private VectorDrawableCompat mBlockedVisitDrawable;
+    private @Nullable VectorDrawableCompat mBlockedVisitDrawable;
     private AppInfoCache mAppInfoCache;
 
     private final RoundedIconGenerator mIconGenerator;
@@ -67,7 +71,7 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
 
         mRemoveButton = mEndButtonView;
         mRemoveButton.setImageResource(R.drawable.btn_delete_24dp);
-        mRemoveButton.setContentDescription(getContext().getString((R.string.remove)));
+        mRemoveButton.setContentDescription(getContext().getString(R.string.remove));
         ImageViewCompat.setImageTintList(
                 mRemoveButton,
                 AppCompatResources.getColorStateList(
@@ -82,7 +86,6 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
                         .getDimensionPixelSize(R.dimen.history_item_remove_button_lateral_padding),
                 getPaddingBottom());
 
-        findViewById(R.id.chip_description).setVisibility(View.VISIBLE);
         mChipView = findViewById(R.id.chip);
         mChipView.getPrimaryTextView().setEllipsize(TextUtils.TruncateAt.END);
     }
@@ -126,6 +129,7 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
         }
     }
 
+    @Initializer
     void initialize(AppInfoCache appInfoCache, BooleanSupplier showSourceApp) {
         mAppInfoCache = appInfoCache;
         // ItemView can be reused every time a new query is made. Use a supplier to
@@ -160,6 +164,7 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
     /**
      * @param helper The helper for fetching default favicons.
      */
+    @Initializer
     public void setFaviconHelper(DefaultFaviconHelper helper) {
         mFaviconHelper = helper;
     }
@@ -194,7 +199,7 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
 
     private void requestIcon() {
         HistoryItem item = getItem();
-        if (item.wasBlockedVisit()) return;
+        if (item == null || item.wasBlockedVisit()) return;
         item.getLargeIconForUrl(
                 mMinIconSize,
                 (icon, fallbackColor, isFallbackColorDefault, iconType) -> {

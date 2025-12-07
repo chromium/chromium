@@ -16,6 +16,7 @@
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -42,6 +43,7 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
 
 StarView::StarView(CommandUpdater* command_updater,
                    Browser* browser,
@@ -52,19 +54,19 @@ StarView::StarView(CommandUpdater* command_updater,
                          icon_label_bubble_delegate,
                          page_action_icon_delegate,
                          "BookmarksStar",
-                         false),
-      browser_(browser) {
-  DCHECK(browser_);
+                         kActionBookmarkThisTab,
+                         nullptr,
+                         false) {
+  DCHECK(browser);
 
   edit_bookmarks_enabled_.Init(
-      bookmarks::prefs::kEditBookmarksEnabled, browser_->profile()->GetPrefs(),
+      bookmarks::prefs::kEditBookmarksEnabled, browser->profile()->GetPrefs(),
       base::BindRepeating(&StarView::EditBookmarksPrefUpdated,
                           base::Unretained(this)));
   SetID(VIEW_ID_STAR_BUTTON);
   SetProperty(views::kElementIdentifierKey, kBookmarkStarViewElementId);
   SetActive(false);
-  GetViewAccessibility().SetProperties(
-      /*role*/ std::nullopt, l10n_util::GetStringUTF16(IDS_TOOLTIP_STAR));
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(IDS_TOOLTIP_STAR));
 }
 
 StarView::~StarView() = default;
@@ -83,9 +85,27 @@ void StarView::AfterPropertyChange(const void* key, int64_t old_value) {
   }
 }
 
+void StarView::OnWidgetDestroyed(views::Widget* widget) {
+  UpdateTooltipText();
+  if (scoped_observation_.IsObserving()) {
+    scoped_observation_.Reset();
+  }
+}
+
+void StarView::OnBubbleWidgetChanged(views::Widget* widget) {
+  CHECK(GetBubble() && widget);
+  UpdateTooltipText();
+  if (scoped_observation_.IsObserving()) {
+    scoped_observation_.Reset();
+  }
+
+  scoped_observation_.Observe(widget);
+}
+
 void StarView::UpdateImpl() {
-  SetVisible(browser_defaults::bookmarks_enabled &&
-             edit_bookmarks_enabled_.GetValue());
+  bool enabled =
+      browser_defaults::bookmarks_enabled && edit_bookmarks_enabled_.GetValue();
+  SetVisible(enabled && !delegate()->ShouldHidePageActionIcon(this));
 }
 
 void StarView::OnExecuting(PageActionIconView::ExecuteSource execute_source) {
@@ -104,18 +124,13 @@ void StarView::OnExecuting(PageActionIconView::ExecuteSource execute_source) {
   UMA_HISTOGRAM_ENUMERATION("Bookmarks.EntryPoint", entry_point);
 }
 
-void StarView::ExecuteCommand(ExecuteSource source) {
-  OnExecuting(source);
-  chrome::BookmarkCurrentTab(browser_);
-}
-
 views::BubbleDialogDelegate* StarView::GetBubble() const {
   return BookmarkBubbleView::bookmark_bubble();
 }
 
 const gfx::VectorIcon& StarView::GetVectorIcon() const {
-    return GetActive() ? omnibox::kStarActiveChromeRefreshIcon
-                       : omnibox::kStarChromeRefreshIcon;
+  return GetActive() ? omnibox::kStarActiveChromeRefreshIcon
+                     : omnibox::kStarChromeRefreshIcon;
 }
 
 std::u16string StarView::GetTextForTooltipAndAccessibleName() const {

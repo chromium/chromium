@@ -19,7 +19,10 @@ struct IncognitoInfo : public Extension::ManifestData {
 
   api::incognito::IncognitoMode mode;
 
-  // Return whether the |extension| should run in split incognito mode.
+  // Return whether the `extension` should run in spanning incognito mode.
+  static bool IsSpanningMode(const Extension* extension);
+
+  // Return whether the `extension` should run in split incognito mode.
   static bool IsSplitMode(const Extension* extension);
 
   // Return whether this extension can be run in incognito mode as specified

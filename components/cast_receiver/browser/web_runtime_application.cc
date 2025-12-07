@@ -10,7 +10,6 @@
 #include "components/url_rewrite/browser/url_request_rewrite_rules_manager.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_ui_controller_factory.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -39,16 +38,6 @@ void WebRuntimeApplication::Launch(StatusCallback callback) {
   DVLOG(1) << "Launching application: " << *this;
 
   SetContentPermissions(*embedder_application().GetWebContents());
-
-  // Register GrpcWebUI for handling Cast apps with URLs in the form
-  // chrome*://* that use WebUIs.
-  auto web_ui_controller_factory =
-      embedder_application().CreateWebUIControllerFactory(
-          {"home", "error", "cast_resources"});
-  if (web_ui_controller_factory) {
-    content::WebUIControllerFactory::RegisterFactory(
-        web_ui_controller_factory.release());
-  }
 
   embedder_application().GetAllBindings(base::BindPostTask(
       task_runner(),

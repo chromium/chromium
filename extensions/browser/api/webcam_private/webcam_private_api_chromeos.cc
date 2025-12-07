@@ -11,7 +11,6 @@
 #include "components/media_device_salt/media_device_salt_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/media_device_id.h"
-#include "content/public/browser/resource_context.h"
 #include "extensions/browser/api/serial/serial_port_manager.h"
 #include "extensions/browser/api/webcam_private/ip_webcam.h"
 #include "extensions/browser/api/webcam_private/v4l2_webcam.h"

@@ -6,7 +6,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/video_capture_service.h"
 #include "content/public/common/content_features.h"
@@ -210,8 +209,9 @@ IN_PROC_BROWSER_TEST_P(WebRtcVideoCaptureServiceEnumerationBrowserTest,
   DisconnectFromService();
 }
 
-// TODO: crbug.com/352672009 - Fix the flakiness on Mac.
-#if BUILDFLAG(IS_MAC)
+// TODO(https://crbug.com/352672009): Flaky on Mac.
+// TODO(https://crbug.com/352092989): Flaky on Windows.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_RemoveVirtualDeviceAfterItHasBeenEnumerated \
   DISABLED_RemoveVirtualDeviceAfterItHasBeenEnumerated
 #else

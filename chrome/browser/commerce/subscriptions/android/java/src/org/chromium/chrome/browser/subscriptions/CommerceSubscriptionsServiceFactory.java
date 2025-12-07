@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.subscriptions;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
@@ -12,9 +14,10 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 
 /** {@link CommerceSubscriptionsService} cached by {@link Profile}. */
+@NullMarked
 public class CommerceSubscriptionsServiceFactory {
-    private static CommerceSubscriptionsServiceFactory sInstance;
-    private static CommerceSubscriptionsService sSubscriptionsServiceForTesting;
+    private static @Nullable CommerceSubscriptionsServiceFactory sInstance;
+    private static @Nullable CommerceSubscriptionsService sSubscriptionsServiceForTesting;
 
     private final ProfileKeyedMap<CommerceSubscriptionsService> mProfileToSubscriptionsService;
 

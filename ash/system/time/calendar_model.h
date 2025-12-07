@@ -22,17 +22,6 @@
 
 namespace ash {
 
-namespace {
-// A cmp function is needed to create a set of
-// `google_apis::calendar::CalendarEvent`.
-struct CmpEvent {
-  bool operator()(const google_apis::calendar::CalendarEvent& event1,
-                  const google_apis::calendar::CalendarEvent& event2) const {
-    return event1.start_time().date_time() < event2.start_time().date_time();
-  }
-};
-}  // namespace
-
 class CalendarEventFetch;
 
 // A simple std::list of calendar events, used to store a single day's events

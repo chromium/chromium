@@ -4,6 +4,7 @@
 
 #include "components/page_load_metrics/browser/observers/third_party_metrics_observer.h"
 
+#include "base/byte_count.h"
 #include "base/memory/ptr_util.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_content_test_harness.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
@@ -13,6 +14,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "net/base/load_timing_info.h"
 #include "net/cookies/canonical_cookie.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -190,13 +192,11 @@ TEST_P(ThirdPartyMetricsObserverTest, BlockedCookiesRead_NotRecorded) {
                                   GURL("https://a.com"),
                                   GURL("https://top.com"),
                                   {net::CookieWithAccessResult()},
-                                  1u,
                                   true /* blocked_by_policy */});
   tester()->SimulateCookieAccess({content::CookieAccessDetails::Type::kRead,
                                   GURL("https://a.com"),
                                   GURL("https://top.com"),
                                   {net::CookieWithAccessResult()},
-                                  1u,
                                   false /* blocked_by_policy */});
 
   tester()->NavigateToUntrackedUrl();
@@ -214,7 +214,6 @@ TEST_P(ThirdPartyMetricsObserverTest,
                                   url,
                                   GURL("https://top.com"),
                                   {net::CookieWithAccessResult()},
-                                  1u,
                                   false /* blocked_by_policy */});
   tester()->NavigateToUntrackedUrl();
 
@@ -231,7 +230,6 @@ TEST_P(ThirdPartyMetricsObserverTest,
                                   url,
                                   GURL("https://top.com"),
                                   {net::CookieWithAccessResult()},
-                                  1u,
                                   false /* blocked_by_policy */});
   tester()->NavigateToUntrackedUrl();
 
@@ -246,7 +244,6 @@ TEST_P(ThirdPartyMetricsObserverTest,
                                   GURL("https://top.com"),
                                   GURL("http://top.com"),
                                   {net::CookieWithAccessResult()},
-                                  1u,
                                   false /* blocked_by_policy */});
   tester()->NavigateToUntrackedUrl();
 
@@ -260,7 +257,6 @@ TEST_P(ThirdPartyMetricsObserverTest, OnlyFirstPartyCookiesRead_NotRecorded) {
                                   GURL("https://top.com"),
                                   GURL("https://top.com"),
                                   {net::CookieWithAccessResult()},
-                                  1u,
                                   false /* blocked_by_policy */});
   tester()->NavigateToUntrackedUrl();
 
@@ -274,7 +270,6 @@ TEST_P(ThirdPartyMetricsObserverTest, OneCookieRead_OneRecorded) {
                                   GURL("https://a.com"),
                                   GURL("https://top.com"),
                                   {net::CookieWithAccessResult()},
-                                  1u,
                                   false /* blocked_by_policy */});
   tester()->NavigateToUntrackedUrl();
 
@@ -289,19 +284,16 @@ TEST_P(ThirdPartyMetricsObserverTest,
                                   GURL("https://a.com"),
                                   GURL("https://top.com"),
                                   {net::CookieWithAccessResult()},
-                                  1u,
                                   false /* blocked_by_policy */});
   tester()->SimulateCookieAccess({content::CookieAccessDetails::Type::kRead,
                                   GURL("https://a.com/foo"),
                                   GURL("https://top.com"),
                                   {net::CookieWithAccessResult()},
-                                  1u,
                                   false /* blocked_by_policy */});
   tester()->SimulateCookieAccess({content::CookieAccessDetails::Type::kRead,
                                   GURL("https://sub.a.com/bar"),
                                   GURL("https://top.com"),
                                   {net::CookieWithAccessResult()},
-                                  1u,
                                   false /* blocked_by_policy */});
 
   tester()->NavigateToUntrackedUrl();
@@ -318,19 +310,16 @@ TEST_P(ThirdPartyMetricsObserverTest,
                                   GURL("https://a.com"),
                                   GURL("https://top.com"),
                                   {net::CookieWithAccessResult()},
-                                  1u,
                                   false /* blocked_by_policy */});
   tester()->SimulateCookieAccess({content::CookieAccessDetails::Type::kRead,
                                   GURL("https://a.com"),
                                   GURL("https://top.com"),
                                   {net::CookieWithAccessResult()},
-                                  1u,
                                   false /* blocked_by_policy */});
   tester()->SimulateCookieAccess({content::CookieAccessDetails::Type::kRead,
                                   GURL("https://b.com"),
                                   GURL("https://top.com"),
                                   {net::CookieWithAccessResult()},
-                                  1u,
                                   false /* blocked_by_policy */});
   tester()->NavigateToUntrackedUrl();
 
@@ -344,7 +333,6 @@ TEST_P(ThirdPartyMetricsObserverTest, OneCookieChanged_OneRecorded) {
                                   GURL("https://a.com"),
                                   GURL("https://top.com"),
                                   {net::CookieWithAccessResult()},
-                                  1u,
                                   false /* blocked_by_policy */});
   tester()->NavigateToUntrackedUrl();
 
@@ -359,13 +347,11 @@ TEST_P(ThirdPartyMetricsObserverTest, ReadAndChangeCookies_BothRecorded) {
                                   GURL("https://a.com"),
                                   GURL("https://top.com"),
                                   {net::CookieWithAccessResult()},
-                                  1u,
                                   false /* blocked_by_policy */});
   tester()->SimulateCookieAccess({content::CookieAccessDetails::Type::kChange,
                                   GURL("https://b.com"),
                                   GURL("https://top.com"),
                                   {net::CookieWithAccessResult()},
-                                  1u,
                                   false /* blocked_by_policy */});
   tester()->NavigateToUntrackedUrl();
 
@@ -391,13 +377,15 @@ TEST_P(ThirdPartyMetricsObserverTest,
   NavigateAndCommit(GURL("https://foo.test"));
   tester()->SimulateTimingUpdate(timing);
 
-  int frame_tree_node_id = main_rfh()->GetFrameTreeNodeId();
+  content::FrameTreeNodeId frame_tree_node_id =
+      main_rfh()->GetFrameTreeNodeId();
   tester()->SimulateLoadedResource(
       {url::SchemeHostPort(GURL("https://bar.test")), net::IPEndPoint(),
-       frame_tree_node_id, false /* was_cached */,
-       1024 * 20 /* raw_body_bytes */, 0 /* original_network_content_length */,
+       frame_tree_node_id, /*was_cached=*/false,
+       /*raw_body_bytes=*/base::KiB(20),
+       /*original_network_content_length=*/base::ByteCount(0),
        network::mojom::RequestDestination::kFont, 0,
-       nullptr /* load_timing_info */},
+       /*load_timing_info=*/nullptr},
       content::GlobalRequestID());
 
   // Navigate again to force histogram recording.
@@ -429,13 +417,15 @@ TEST_P(ThirdPartyMetricsObserverTest,
   tester()->SimulateTimingUpdate(timing);
 
   // Load a same-site font, the histogram should not be recorded.
-  int frame_tree_node_id = main_rfh()->GetFrameTreeNodeId();
+  content::FrameTreeNodeId frame_tree_node_id =
+      main_rfh()->GetFrameTreeNodeId();
   tester()->SimulateLoadedResource(
       {url::SchemeHostPort(GURL("http://b.foo.test")), net::IPEndPoint(),
-       frame_tree_node_id, false /* was_cached */,
-       1024 * 20 /* raw_body_bytes */, 0 /* original_network_content_length */,
+       frame_tree_node_id, /*was_cached=*/false,
+       /*raw_body_bytes=*/base::KiB(20),
+       /*original_network_content_length=*/base::ByteCount(0),
        network::mojom::RequestDestination::kFont, 0,
-       nullptr /* load_timing_info */},
+       /*load_timing_info=*/nullptr},
       content::GlobalRequestID());
 
   // Navigate again to force histogram recording.
@@ -462,13 +452,15 @@ TEST_P(ThirdPartyMetricsObserverTest,
   NavigateAndCommit(GURL("https://foo.test"));
   tester()->SimulateTimingUpdate(timing);
 
-  int frame_tree_node_id = main_rfh()->GetFrameTreeNodeId();
+  content::FrameTreeNodeId frame_tree_node_id =
+      main_rfh()->GetFrameTreeNodeId();
   tester()->SimulateLoadedResource(
       {url::SchemeHostPort(GURL("https://bar.test")), net::IPEndPoint(),
-       frame_tree_node_id, false /* was_cached */,
-       1024 * 20 /* raw_body_bytes */, 0 /* original_network_content_length */,
+       frame_tree_node_id, /*was_cached=*/false,
+       /*raw_body_bytes=*/base::KiB(20),
+       /*original_network_content_length=*/base::ByteCount(0),
        network::mojom::RequestDestination::kFont, 0,
-       nullptr /* load_timing_info */},
+       /*load_timing_info=*/nullptr},
       content::GlobalRequestID());
 
   // Navigate again to force histogram recording.

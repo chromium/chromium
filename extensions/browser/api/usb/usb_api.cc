@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/api/usb/usb_api.h"
 
 #include <algorithm>
@@ -141,8 +136,7 @@ bool ConvertDirectionFromApi(const Direction& input,
       *output = UsbTransferDirection::OUTBOUND;
       return true;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -162,8 +156,7 @@ bool ConvertRequestTypeFromApi(const RequestType& input,
       *output = UsbControlTransferType::RESERVED;
       return true;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -183,8 +176,7 @@ bool ConvertRecipientFromApi(const Recipient& input,
       *output = UsbControlTransferRecipient::OTHER;
       return true;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -218,7 +210,7 @@ const char* ConvertTransferStatusToApi(const UsbTransferStatus status) {
     case UsbTransferStatus::SHORT_PACKET:
       return kErrorTransferLength;
     default:
-      NOTREACHED_IN_MIGRATION();
+      DUMP_WILL_BE_NOTREACHED();
       return "";
   }
 }
@@ -244,8 +236,7 @@ TransferType ConvertTransferTypeToApi(const UsbTransferType& input) {
     case UsbTransferType::BULK:
       return usb::TransferType::kBulk;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return usb::TransferType::kNone;
+      NOTREACHED();
   }
 }
 
@@ -256,8 +247,7 @@ Direction ConvertDirectionToApi(const UsbTransferDirection& input) {
     case UsbTransferDirection::OUTBOUND:
       return usb::Direction::kOut;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return usb::Direction::kNone;
+      NOTREACHED();
   }
 }
 
@@ -273,8 +263,7 @@ SynchronizationType ConvertSynchronizationTypeToApi(
     case UsbSynchronizationType::SYNCHRONOUS:
       return usb::SynchronizationType::kSynchronous;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return usb::SynchronizationType::kNone;
+      NOTREACHED();
   }
 }
 
@@ -293,8 +282,7 @@ usb::UsageType ConvertUsageTypeToApi(const UsbUsageType& input) {
     case UsbUsageType::RESERVED:
       return usb::UsageType::kNone;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return usb::UsageType::kNone;
+      NOTREACHED();
   }
 }
 
@@ -497,8 +485,8 @@ void UsbTransferFunction::OnCompleted(UsbTransferStatus status,
     error_args.Append(std::move(transfer_info));
     // Using ErrorWithArguments is discouraged but required to provide the
     // detailed transfer info as the transfer may have partially succeeded.
-    Respond(ErrorWithArguments(std::move(error_args),
-                               ConvertTransferStatusToApi(status)));
+    Respond(ErrorWithArgumentsDoNotUse(std::move(error_args),
+                                       ConvertTransferStatusToApi(status)));
   }
 }
 
@@ -1295,7 +1283,7 @@ void UsbIsochronousTransferFunction::OnTransferInCompleted(
   buffer.reserve(length);
 
   UsbTransferStatus status = UsbTransferStatus::COMPLETED;
-  const char* data_ptr = reinterpret_cast<const char*>(data.data());
+  size_t index = 0;
   for (const auto& packet : packets) {
     // Capture the error status of the first unsuccessful packet.
     if (status == UsbTransferStatus::COMPLETED &&
@@ -1303,9 +1291,10 @@ void UsbIsochronousTransferFunction::OnTransferInCompleted(
       status = packet->status;
     }
 
-    buffer.insert(buffer.end(), data_ptr,
-                  data_ptr + packet->transferred_length);
-    data_ptr += packet->length;
+    buffer.insert(buffer.end(), reinterpret_cast<const char*>(&data[index]),
+                  reinterpret_cast<const char*>(
+                      &data[index + packet->transferred_length]));
+    index += packet->transferred_length;
   }
 
   base::Value::Dict transfer_info;
@@ -1356,7 +1345,8 @@ void UsbResetDeviceFunction::OnComplete(bool success) {
     error_args.Append(false);
     // Using ErrorWithArguments is discouraged but required to maintain
     // compatibility with existing applications.
-    Respond(ErrorWithArguments(std::move(error_args), kErrorResetDevice));
+    Respond(
+        ErrorWithArgumentsDoNotUse(std::move(error_args), kErrorResetDevice));
   }
 }
 

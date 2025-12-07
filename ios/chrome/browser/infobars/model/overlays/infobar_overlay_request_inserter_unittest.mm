@@ -22,7 +22,7 @@ namespace {
 // The two infobar message text used in tests.  Both support badges.
 std::u16string kFirstInfobarMessageText = u"FakeInfobarDelegate1";
 std::u16string kSecondInfobarMessageText = u"FakeInfobarDelegate2";
-}
+}  // namespace
 
 using infobars::InfoBar;
 using infobars::InfoBarManager;
@@ -121,4 +121,31 @@ TEST_F(InfobarOverlayRequestInserterTest, AddBanner) {
   EXPECT_EQ(second_infobar, queue->GetRequest(1)
                                 ->GetConfig<InfobarOverlayRequestConfig>()
                                 ->infobar());
+}
+
+// Tests that the inserter suppresses the banner of InfobarType when requested.
+TEST_F(InfobarOverlayRequestInserterTest, SuppressBanner) {
+  OverlayRequestQueue* queue = GetQueue(InfobarOverlayType::kBanner);
+  ASSERT_EQ(0U, queue->size());
+
+  inserter()->SuppressNextInfobarOfType(InfobarType::kInfobarTypeConfirm);
+
+  // Insert `infobar` at front of queue and check that the queue is not updated.
+  InfoBar* infobar = CreateInfobar(kFirstInfobarMessageText);
+  InsertParams params(static_cast<InfoBarIOS*>(infobar));
+  params.overlay_type = InfobarOverlayType::kBanner;
+  params.insertion_index = 0;
+  params.source = InfobarOverlayInsertionSource::kInfoBarManager;
+  inserter()->InsertOverlayRequest(params);
+  EXPECT_EQ(0U, queue->size());
+
+  // Insert `inserted_infobar` in the queue and check that it is now
+  // the front request.
+  InfoBar* inserted_infobar = CreateInfobar(kSecondInfobarMessageText);
+  params.infobar = static_cast<InfoBarIOS*>(inserted_infobar);
+  inserter()->InsertOverlayRequest(params);
+  EXPECT_EQ(1U, queue->size());
+  EXPECT_EQ(inserted_infobar, queue->front_request()
+                                  ->GetConfig<InfobarOverlayRequestConfig>()
+                                  ->infobar());
 }

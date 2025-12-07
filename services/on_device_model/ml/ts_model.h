@@ -5,36 +5,36 @@
 #ifndef SERVICES_ON_DEVICE_MODEL_ML_TS_MODEL_H_
 #define SERVICES_ON_DEVICE_MODEL_ML_TS_MODEL_H_
 
-#include <memory>
-
+#include "base/files/memory_mapped_file.h"
 #include "base/memory/raw_ref.h"
+#include "base/threading/sequence_bound.h"
+#include "components/translate/core/language_detection/language_detection_model.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/on_device_model/ml/chrome_ml.h"
 #include "services/on_device_model/ml/chrome_ml_api.h"
-#include "services/on_device_model/ml/language_detector.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 
 namespace ml {
 
-class TsModel final {
+// TsHolder holds a single TsModel. Its operations may block.
+class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) TsHolder final {
  public:
-  explicit TsModel(const ChromeML& chrome_ml,
-                   ChromeMLTSModel model,
-                   scoped_refptr<LanguageDetector> language_detector);
-  ~TsModel();
+  // Note: Uses raw_ref arg so that Bind does not try to copy/move ChromeML.
+  explicit TsHolder(raw_ref<const ChromeML> chrome_ml);
+  ~TsHolder();
 
-  static std::unique_ptr<TsModel> Create(
-      const ChromeML& chrome_ml,
-      on_device_model::mojom::ModelAssetsPtr params,
-      scoped_refptr<LanguageDetector> language_detector);
+  static base::SequenceBound<TsHolder> Create(const ChromeML& chrome_ml);
 
-  on_device_model::mojom::SafetyInfoPtr ClassifyTextSafety(
-      const std::string& text);
+  void Reset(
+      on_device_model::mojom::TextSafetyModelParamsPtr params,
+      mojo::PendingReceiver<on_device_model::mojom::TextSafetyModel> model);
 
  private:
   const raw_ref<const ChromeML> chrome_ml_;
-  ChromeMLTSModel model_;
-  scoped_refptr<LanguageDetector> language_detector_;
+
+  // A connected model, once we've received assets.
+  mojo::UniqueReceiverSet<on_device_model::mojom::TextSafetyModel> model_;
 };
 
 }  // namespace ml

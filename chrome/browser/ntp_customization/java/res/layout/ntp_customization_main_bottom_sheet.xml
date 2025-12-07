@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ntp_customization_main_bottom_sheet_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom">
+
+    <include layout="@layout/ntp_customization_drag_handle_bar" />
+
+    <ImageView
+        android:id="@+id/edit_icon"
+        android:layout_width="@dimen/ntp_customization_edit_icon_background_size"
+        android:layout_height="@dimen/ntp_customization_edit_icon_background_size"
+        android:padding="@dimen/ntp_customization_edit_icon_padding"
+        android:layout_marginTop="@dimen/ntp_customization_edit_icon_margin"
+        android:importantForAccessibility="no"
+        app:srcCompat="@drawable/bookmark_edit_active"
+        app:tint="@macro/default_icon_color"
+        android:background="@drawable/edit_icon_circle_background"
+        app:layout_constraintTop_toBottomOf="@id/drag_handle_bar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <TextView
+        android:id="@+id/bottom_sheet_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.Headline.Primary"
+        android:layout_marginTop="@dimen/ntp_customization_edit_icon_margin"
+        android:layout_marginStart="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
+        android:layout_marginEnd="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
+        app:layout_constraintTop_toBottomOf="@id/edit_icon"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:focusable="true"
+        android:accessibilityHeading="true"
+        android:text="@string/ntp_customization_title"/>
+
+    <TextView
+        android:id="@+id/bottom_sheet_description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        app:layout_constraintTop_toBottomOf="@id/bottom_sheet_title"
+        app:layout_constraintStart_toStartOf="@id/bottom_sheet_title"
+        app:layout_constraintEnd_toEndOf="@id/bottom_sheet_title"
+        android:focusable="true"
+        android:text="@string/ntp_customization_subtitle" />
+
+    <org.chromium.chrome.browser.ntp_customization.BottomSheetListContainerView
+        android:id="@+id/ntp_customization_options_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/ntp_customization_ntp_cards_margin"
+        android:layout_marginHorizontal="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
+        app:layout_constraintTop_toBottomOf="@id/bottom_sheet_description"
+        app:layout_constraintStart_toStartOf="parent" >
+    </org.chromium.chrome.browser.ntp_customization.BottomSheetListContainerView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

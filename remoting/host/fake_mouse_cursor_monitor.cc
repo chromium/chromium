@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
@@ -17,30 +18,14 @@ FakeMouseCursorMonitor::FakeMouseCursorMonitor() : callback_(nullptr) {}
 
 FakeMouseCursorMonitor::~FakeMouseCursorMonitor() = default;
 
-void FakeMouseCursorMonitor::Init(
-    webrtc::MouseCursorMonitor::Callback* callback,
-    webrtc::MouseCursorMonitor::Mode mode) {
+void FakeMouseCursorMonitor::Init(MouseCursorMonitor::Callback* callback) {
   DCHECK(!callback_);
   DCHECK(callback);
 
   callback_ = callback;
 }
 
-void FakeMouseCursorMonitor::Capture() {
-  DCHECK(callback_);
-
-  const int kWidth = 32;
-  const int kHeight = 32;
-
-  std::unique_ptr<webrtc::DesktopFrame> desktop_frame(
-      new webrtc::BasicDesktopFrame(webrtc::DesktopSize(kWidth, kHeight)));
-  memset(desktop_frame->data(), 0xFF,
-         webrtc::DesktopFrame::kBytesPerPixel * kWidth * kHeight);
-
-  std::unique_ptr<webrtc::MouseCursor> mouse_cursor(new webrtc::MouseCursor(
-      desktop_frame.release(), webrtc::DesktopVector()));
-
-  callback_->OnMouseCursor(mouse_cursor.release());
-}
+void FakeMouseCursorMonitor::SetPreferredCaptureInterval(
+    base::TimeDelta interval) {}
 
 }  // namespace remoting

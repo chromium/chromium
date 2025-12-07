@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observation.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -28,27 +28,23 @@ DOMHighResTimeStamp ComputeIntersectionsContext::GetTimeStamp(
     const IntersectionObserver& observer) {
   ExecutionContext* context = observer.GetExecutionContext();
   CHECK(context);
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    if (context == implicit_root_execution_context_) {
-      return implicit_root_timestamp_;
-    }
-    if (context == explicit_root_execution_context_) {
-      return explicit_root_timestamp_;
-    }
+  if (context == implicit_root_execution_context_) {
+    return implicit_root_timestamp_;
+  }
+  if (context == explicit_root_execution_context_) {
+    return explicit_root_timestamp_;
   }
 
   DOMHighResTimeStamp timestamp =
-      DOMWindowPerformance::performance(To<LocalDOMWindow>(*context))
+      GlobalPerformance::performance(To<LocalDOMWindow>(*context))
           ->MonotonicTimeToDOMHighResTimeStamp(GetMonotonicTime());
 
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    if (observer.RootIsImplicit()) {
-      implicit_root_execution_context_ = context;
-      implicit_root_timestamp_ = timestamp;
-    } else {
-      explicit_root_execution_context_ = context;
-      explicit_root_timestamp_ = timestamp;
-    }
+  if (observer.RootIsImplicit()) {
+    implicit_root_execution_context_ = context;
+    implicit_root_timestamp_ = timestamp;
+  } else {
+    explicit_root_execution_context_ = context;
+    explicit_root_timestamp_ = timestamp;
   }
   return timestamp;
 }
@@ -58,18 +54,14 @@ ComputeIntersectionsContext::GetRootGeometry(
     const IntersectionObserver& observer,
     unsigned flags) {
   if (observer.RootIsImplicit()) {
-    if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-      if (&observer != implicit_root_geometry_observer_) {
-        implicit_root_geometry_observer_ = &observer;
-        if (implicit_root_geometry_) {
-          implicit_root_geometry_->UpdateMargin(
-              flags & IntersectionGeometry::kShouldReportRootBounds
-                  ? observer.RootMargin()
-                  : Vector<Length>());
-        }
+    if (&observer != implicit_root_geometry_observer_) {
+      implicit_root_geometry_observer_ = &observer;
+      if (implicit_root_geometry_) {
+        implicit_root_geometry_->UpdateMargin(
+            flags & IntersectionGeometry::kShouldReportRootBounds
+                ? observer.RootMargin()
+                : Vector<Length>());
       }
-    } else {
-      implicit_root_geometry_.reset();
     }
     return implicit_root_geometry_;
   }
@@ -82,6 +74,7 @@ ComputeIntersectionsContext::GetRootGeometry(
 }
 
 void ComputeIntersectionsContext::UpdateNextRunDelay(base::TimeDelta delay) {
+  CHECK(delay.is_positive());
   next_run_delay_ = std::min(next_run_delay_, delay);
 }
 
@@ -101,11 +94,10 @@ void IntersectionObserverController::PostTaskToDeliverNotifications() {
   DCHECK(GetExecutionContext());
   GetExecutionContext()
       ->GetTaskRunner(TaskType::kInternalIntersectionObserver)
-      ->PostTask(
-          FROM_HERE,
-          WTF::BindOnce(&IntersectionObserverController::DeliverNotifications,
-                        WrapWeakPersistent(this),
-                        IntersectionObserver::kPostTaskToDeliver));
+      ->PostTask(FROM_HERE,
+                 BindOnce(&IntersectionObserverController::DeliverNotifications,
+                          WrapWeakPersistent(this),
+                          IntersectionObserver::kPostTaskToDeliver));
 }
 
 void IntersectionObserverController::ScheduleIntersectionObserverForDelivery(
@@ -134,14 +126,35 @@ void IntersectionObserverController::DeliverNotifications(
   }
 }
 
-bool IntersectionObserverController::ComputeIntersections(
+void IntersectionObserverController::UpdateIntersectionObserverStatus() {
+  needs_occlusion_tracking_ = has_active_observations_ = false;
+  if (!GetExecutionContext()) {
+    return;
+  }
+
+  auto update = [&](IntersectionObserver& observer, const auto& observations) {
+    for (auto& observation : observations) {
+      needs_occlusion_tracking_ |= observer.trackVisibility();
+      has_active_observations_ |= observation->CanCompute();
+    }
+  };
+
+  for (auto& observer : tracked_explicit_root_observers_) {
+    update(*observer, observer->Observations());
+  }
+
+  for (auto& [observer, observations] : tracked_implicit_root_observations_) {
+    update(*observer, observations);
+  }
+}
+
+void IntersectionObserverController::ComputeIntersections(
     unsigned flags,
     LocalFrameView& frame_view,
     gfx::Vector2dF accumulated_scroll_delta_since_last_update,
     ComputeIntersectionsContext& context) {
-  needs_occlusion_tracking_ = false;
   if (!GetExecutionContext()) {
-    return false;
+    return;
   }
   TRACE_EVENT0("blink,devtools.timeline",
                "IntersectionObserverController::"
@@ -156,80 +169,71 @@ bool IntersectionObserverController::ComputeIntersections(
     metrics_timer.emplace(*metrics_aggregator);
   }
 
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    auto compute_observer_intersections = [&](IntersectionObserver& observer,
-                                              const auto& observations) {
-      CHECK(!observations.empty());
-      needs_occlusion_tracking_ |= observer.trackVisibility();
-      if (metrics_timer && observer.GetUkmMetricId()) {
-        metrics_timer->StartInterval(observer.GetUkmMetricId().value());
-      }
-      int64_t count = 0;
-      for (auto& observation : observations) {
-        count += observation->ComputeIntersection(
-            flags, accumulated_scroll_delta_since_last_update, context);
-      }
-      if (observer.IsInternal()) {
-        internal_observation_count += count;
-      } else {
-        javascript_observation_count += count;
-      }
-    };
+  auto compute_observer_intersections = [&](IntersectionObserver& observer,
+                                            const auto& observations) {
+    if (metrics_timer && observer.GetUkmMetricId()) {
+      metrics_timer->StartInterval(observer.GetUkmMetricId().value());
+    }
+    int64_t count = 0;
+    for (auto& observation : observations) {
+      count += observation->ComputeIntersection(
+          flags, accumulated_scroll_delta_since_last_update, context);
+    }
+    if (observer.IsInternal()) {
+      internal_observation_count += count;
+    } else {
+      javascript_observation_count += count;
+    }
+  };
 
-    HeapVector<Member<IntersectionObserver>> observers_to_remove;
-    for (auto& observer : tracked_explicit_root_observers_) {
-      DCHECK(!observer->RootIsImplicit());
-      if (observer->HasObservations()) {
-        compute_observer_intersections(*observer, observer->Observations());
-      } else {
-        observers_to_remove.push_back(observer);
-      }
-    }
-    for (auto& observer : observers_to_remove) {
-      tracked_explicit_root_observers_.erase(observer);
-    }
+  bool update_tracking = flags & IntersectionObservation::kUpdateTracking;
+  if (update_tracking) {
+    // If the root has disappeared, then this observer is toast. If the
+    // root is in another document, that document will take over updates.
+    tracked_explicit_root_observers_.erase_if(
+        [&frame_view](const auto& observer) {
+          return !observer->HasObservations() || !observer->root() ||
+                 observer->root()->GetDocument().GetFrame() !=
+                     &frame_view.GetFrame();
+        });
+  }
+  for (auto& observer : tracked_explicit_root_observers_) {
+    DCHECK(!observer->RootIsImplicit());
+    compute_observer_intersections(*observer, observer->Observations());
+  }
+  if (update_tracking) {
+    // If the root is not connected, then we should have just generated
+    // "not intersecting" notifications as needed, and there's nothing more to
+    // do with this observer until the root gets inserted.
+    tracked_explicit_root_observers_.erase_if([](const auto& observer) {
+      return !observer->root() || !observer->root()->isConnected();
+    });
+  }
 
-    for (auto& [observer, observations] : tracked_implicit_root_observations_) {
-      DCHECK(observer->RootIsImplicit());
-      compute_observer_intersections(*observer, observations);
+  for (auto& [observer, observations] : tracked_implicit_root_observations_) {
+    DCHECK(observer->RootIsImplicit());
+    if (update_tracking) {
+      // If the target has disappeared, then this observation is toast. If the
+      // target is in another document, that document will take over updates.
+      observations.erase_if([&frame_view](const auto& observation) {
+        return !observation->Target() ||
+               observation->Target()->GetDocument().GetFrame() !=
+                   &frame_view.GetFrame();
+      });
     }
-  } else {
-    HeapVector<Member<IntersectionObserver>> observers_to_process(
-        tracked_explicit_root_observers_);
-    HeapVector<Member<IntersectionObservation>> observations_to_process;
-    for (auto& observations : tracked_implicit_root_observations_.Values()) {
-      observations_to_process.AppendRange(observations.begin(),
-                                          observations.end());
+    compute_observer_intersections(*observer, observations);
+    if (update_tracking) {
+      // If the target is not connected, then we should have just generated a
+      // "not intersecting" notification if needed, and there's nothing more to
+      // do with this observation until the target gets inserted.
+      observations.erase_if([](const auto& observation) {
+        return !observation->Target() || !observation->Target()->isConnected();
+      });
     }
-    for (auto& observer : observers_to_process) {
-      DCHECK(!observer->RootIsImplicit());
-      if (observer->HasObservations()) {
-        if (metrics_timer && observer->GetUkmMetricId()) {
-          metrics_timer->StartInterval(observer->GetUkmMetricId().value());
-        }
-        int64_t count = observer->ComputeIntersections(flags, context);
-        if (observer->IsInternal())
-          internal_observation_count += count;
-        else
-          javascript_observation_count += count;
-        needs_occlusion_tracking_ |= observer->trackVisibility();
-      } else {
-        tracked_explicit_root_observers_.erase(observer);
-      }
-    }
-    for (auto& observation : observations_to_process) {
-      if (metrics_timer && observation->Observer()->GetUkmMetricId()) {
-        metrics_timer->StartInterval(
-            observation->Observer()->GetUkmMetricId().value());
-      }
-      int64_t count =
-          observation->ComputeIntersection(flags, gfx::Vector2dF(), context);
-      if (observation->Observer()->IsInternal())
-        internal_observation_count += count;
-      else
-        javascript_observation_count += count;
-      needs_occlusion_tracking_ |= observation->Observer()->trackVisibility();
-    }
+  }
+  if (update_tracking) {
+    tracked_implicit_root_observations_.erase_if(
+        [](const auto& entry) { return entry.value.empty(); });
   }
 
   if (metrics_aggregator) {
@@ -241,16 +245,11 @@ bool IntersectionObserverController::ComputeIntersections(
         javascript_observation_count);
   }
 
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    base::TimeDelta delay = context.GetAndResetNextRunDelay();
-    if (delay.is_positive()) {
-      // TODO(crbug.com/40873583): Handle the case that the frame becomes
-      // throttled during the delay,
-      frame_view.ScheduleAnimation(delay);
-    }
+  base::TimeDelta delay = context.GetAndResetNextRunDelay();
+  CHECK(delay.is_positive());
+  if (delay != base::TimeDelta::Max()) {
+    frame_view.ScheduleDelayedIntersection(delay);
   }
-
-  return needs_occlusion_tracking_;
 }
 
 void IntersectionObserverController::AddTrackedObserver(
@@ -260,7 +259,6 @@ void IntersectionObserverController::AddTrackedObserver(
     return;
   tracked_explicit_root_observers_.insert(&observer);
   if (observer.trackVisibility()) {
-    needs_occlusion_tracking_ = true;
     if (LocalFrameView* frame_view = observer.root()->GetDocument().View()) {
       if (FrameOwner* frame_owner = frame_view->GetFrame().Owner()) {
         // Set this bit as early as possible, rather than waiting for a
@@ -273,8 +271,9 @@ void IntersectionObserverController::AddTrackedObserver(
 
 void IntersectionObserverController::RemoveTrackedObserver(
     IntersectionObserver& observer) {
-  if (observer.RootIsImplicit())
+  if (observer.RootIsImplicit()) {
     return;
+  }
   // Note that we don't try to opportunistically turn off the 'needs occlusion
   // tracking' bit here, like the way we turn it on in AddTrackedObserver. The
   // bit will get recomputed on the next lifecycle update; there's no
@@ -293,7 +292,6 @@ void IntersectionObserverController::AddTrackedObservation(
       .insert(observer, HeapHashSet<Member<IntersectionObservation>>())
       .stored_value->value.insert(&observation);
   if (observer->trackVisibility()) {
-    needs_occlusion_tracking_ = true;
     if (LocalFrameView* frame_view =
             observation.Target()->GetDocument().View()) {
       if (FrameOwner* frame_owner = frame_view->GetFrame().Owner()) {

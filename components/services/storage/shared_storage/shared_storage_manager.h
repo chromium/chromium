@@ -6,7 +6,6 @@
 #define COMPONENTS_SERVICES_STORAGE_SHARED_STORAGE_SHARED_STORAGE_MANAGER_H_
 
 #include <memory>
-#include <queue>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -39,16 +38,18 @@ class SpecialStoragePolicy;
 // `content::StoragePartition::GetOrCreateSharedStorageManager()`.
 // Provides the database connection. Wrapper around
 // `AsyncSharedStorageDatabase`.
-class SharedStorageManager {
+class SharedStorageManager : public base::MemoryPressureListener {
  public:
   using InitStatus = SharedStorageDatabase::InitStatus;
   using SetBehavior = SharedStorageDatabase::SetBehavior;
   using OperationResult = SharedStorageDatabase::OperationResult;
+  using BatchUpdateResult = SharedStorageDatabase::BatchUpdateResult;
   using GetResult = SharedStorageDatabase::GetResult;
   using BudgetResult = SharedStorageDatabase::BudgetResult;
   using TimeResult = SharedStorageDatabase::TimeResult;
   using MetadataResult = SharedStorageDatabase::MetadataResult;
   using EntriesResult = SharedStorageDatabase::EntriesResult;
+  using DataClearSource = SharedStorageDatabase::DataClearSource;
 
   // A callback type to check if a given StorageKey matches a storage policy.
   // Can be passed empty/null where used, which means the StorageKey will always
@@ -72,7 +73,7 @@ class SharedStorageManager {
   SharedStorageManager(const SharedStorageManager&) = delete;
   SharedStorageManager& operator=(const SharedStorageManager&) = delete;
 
-  virtual ~SharedStorageManager();
+  ~SharedStorageManager() override;
 
   AsyncSharedStorageDatabase* database() { return database_.get(); }
 
@@ -95,9 +96,12 @@ class SharedStorageManager {
   }
 
   // Called when the system is under memory pressure.
+  void HandleMemoryPressure(base::OnceCallback<void()> callback,
+                            base::MemoryPressureLevel memory_pressure_level);
+
+  // base::MemoryPressureListener:
   void OnMemoryPressure(
-      base::OnceCallback<void()> callback,
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+      base::MemoryPressureLevel memory_pressure_level) override;
 
   // Tallies database errors, watching for consecutive ones. If the threshold
   // `max_allowed_consecutive_operation_errors_` is exceeded, then the database
@@ -165,6 +169,15 @@ class SharedStorageManager {
               std::u16string key,
               base::OnceCallback<void(OperationResult)> callback);
 
+  // Executes `methods_with_options` as a transaction. If any method fails, the
+  // entire batch operation is rolled back. The parameter of `callback` reports
+  // whether the operation is successful.
+  void BatchUpdate(
+      url::Origin context_origin,
+      std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+          methods_with_options,
+      base::OnceCallback<void(BatchUpdateResult)> callback);
+
   // The parameter of `callback` reports the number of entries for
   // `context_origin`, 0 if there are none, or -1 on operation failure.
   void Length(url::Origin context_origin,
@@ -195,7 +208,8 @@ class SharedStorageManager {
   // `browsing_data::SharedStorageHelper::DeleteOrigin()` in order to clear
   // browsing data via the Settings UI.
   void Clear(url::Origin context_origin,
-             base::OnceCallback<void(OperationResult)> callback);
+             base::OnceCallback<void(OperationResult)> callback,
+             DataClearSource source = DataClearSource::kSite);
 
   // The parameter of `callback` reports the number of bytes used by
   // `context_origin` in unexpired entries, 0 if the origin has no unexpired
@@ -354,7 +368,8 @@ class SharedStorageManager {
   int operation_sql_error_count_ = 0;
 
   // Listens for the system being under memory pressure.
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+  base::MemoryPressureListenerRegistration
+      memory_pressure_listener_registration_;
 
   // Callback to be run at the end of `OnDatabaseDestroyed()`.
   base::OnceCallback<void(bool)> on_db_destroyed_callback_for_testing_;

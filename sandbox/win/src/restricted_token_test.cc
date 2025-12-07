@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // Integration tests for restricted tokens.
 
 #include <stddef.h>
-#include <string>
 
 #include <optional>
+#include <string>
+
+#include "base/compiler_specific.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/access_token.h"
@@ -124,7 +121,7 @@ SBOX_TESTS_COMMAND int RestrictedTokenTest_openprocess(int argc,
   DWORD pid = _wtoi(argv[0]);
   if (pid == 0)
     return SBOX_TEST_NOT_FOUND;
-  DWORD desired_access = wcstoul(argv[1], nullptr, 0);
+  DWORD desired_access = UNSAFE_TODO(wcstoul(argv[1], nullptr, 0));
   base::win::ScopedHandle process_handle(
       ::OpenProcess(desired_access, false, pid));
   if (process_handle.is_valid()) {
@@ -139,7 +136,7 @@ SBOX_TESTS_COMMAND int RestrictedTokenTest_currentprocess_dup(int argc,
                                                               wchar_t** argv) {
   if (argc < 1)
     return SBOX_TEST_NOT_FOUND;
-  DWORD desired_access = wcstoul(argv[0], nullptr, 0);
+  DWORD desired_access = UNSAFE_TODO(wcstoul(argv[0], nullptr, 0));
 
   HANDLE dup_handle;
   if (!::DuplicateHandle(::GetCurrentProcess(), ::GetCurrentProcess(),

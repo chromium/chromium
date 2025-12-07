@@ -12,7 +12,7 @@
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
-#include "base/hash/md5.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -20,9 +20,10 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/extensions/api/image_writer_private.h"
+#include "crypto/obsolete/md5.h"
 #include "extensions/common/extension_id.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #endif
 
@@ -35,11 +36,11 @@ class FilePath;
 namespace extensions {
 namespace image_writer {
 
-const int kProgressComplete = 100;
+inline constexpr int kProgressComplete = 100;
 
 class OperationManager;
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 class ImageWriterUtilityClient;
 #endif
 
@@ -89,7 +90,7 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
   int GetProgress();
   image_writer_api::Stage GetStage();
 
-  // Posts |task| to Operation's |task_runner_|.
+  // Posts `task` to Operation's `task_runner_`.
   void PostTask(base::OnceClosure task);
 
  protected:
@@ -117,14 +118,14 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
   void Finish();
 
   // Generates an error.
-  // |error_message| is used to create an OnWriteError event which is
+  // `error_message` is used to create an OnWriteError event which is
   // sent to the extension
   void Error(const std::string& error_message);
 
-  // Set |progress_| and send an event.  Progress should be in the interval
+  // Set `progress_` and send an event.  Progress should be in the interval
   // [0,100]
   void SetProgress(int progress);
-  // Change to a new |stage_| and set |progress_| to zero.  Triggers a progress
+  // Change to a new `stage_` and set `progress_` to zero.  Triggers a progress
   // event.
   void SetStage(image_writer_api::Stage stage);
 
@@ -133,23 +134,20 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
 
   // Adds a callback that will be called during clean-up, whether the operation
   // is aborted, encounters and error, or finishes successfully.  These
-  // functions will be run on |task_runner_|.
+  // functions will be run on `task_runner_`.
   void AddCleanUpFunction(base::OnceClosure callback);
 
   // Completes the current operation (progress set to 100) and runs the
   // continuation.
   void CompleteAndContinue(base::OnceClosure continuation);
 
-  // If |file_size| is non-zero, only |file_size| bytes will be read from file,
+  // If `file_size` is non-zero, only `file_size` bytes will be read from file,
   // otherwise the entire file will be read.
-  // |progress_scale| is a percentage to which the progress will be scale, e.g.
+  // `progress_scale` is a percentage to which the progress will be scale, e.g.
   // a scale of 50 means it will increment from 0 to 50 over the course of the
-  // sum.  |progress_offset| is an percentage that will be added to the progress
-  // of the MD5 sum before updating |progress_| but after scaling.
+  // sum.  `progress_offset` is an percentage that will be added to the progress
+  // of the MD5 sum before updating `progress_` but after scaling.
   void GetMD5SumOfFile(const base::FilePath& file,
-                       int64_t file_size,
-                       int progress_offset,
-                       int progress_scale,
                        base::OnceCallback<void(const std::string&)> callback);
 
   bool IsRunningInCorrectSequence() const;
@@ -169,7 +167,7 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
   friend class ImageWriterUtilityClientTest;
   friend class WriteFromUrlOperationForTest;
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Ensures the client is started.  This may be called many times but will only
   // instantiate one client which should exist for the lifetime of the
   // Operation.
@@ -185,8 +183,8 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
   scoped_refptr<ImageWriterUtilityClient> image_writer_client_;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Unmounts all volumes on |device_path_|.
+#if BUILDFLAG(IS_CHROMEOS)
+  // Unmounts all volumes on `device_path_`.
   void UnmountVolumes(base::OnceClosure continuation);
   // Starts the write after unmounting.
   void UnmountVolumesCallback(base::OnceClosure continuation,
@@ -207,10 +205,9 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
 
   // Incrementally calculates the MD5 sum of a file.
   void MD5Chunk(base::File file,
-                int64_t bytes_processed,
-                int64_t bytes_total,
-                int progress_offset,
-                int progress_scale,
+                crypto::obsolete::Md5 md5,
+                size_t bytes_processed,
+                size_t bytes_total,
                 const base::OnceCallback<void(const std::string&)> callback);
 
   // Callbacks for Extractor.
@@ -221,17 +218,13 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
   // Runs all cleanup functions.
   void CleanUp();
 
-  // |stage_| and |progress_| are owned by the FILE thread, use |SetStage| and
-  // |SetProgress| to update.  Progress should be in the interval [0,100]
+  // `stage_` and `progress_` are owned by the FILE thread, use `SetStage` and
+  // `SetProgress` to update.  Progress should be in the interval [0,100]
   image_writer_api::Stage stage_;
   int progress_;
 
-  // MD5 contexts don't play well with smart pointers.  Just going to allocate
-  // memory here.  This requires that we only do one MD5 sum at a time.
-  base::MD5Context md5_context_;
-
   // Cleanup operations that must be run.  All these functions are run on
-  // |task_runner_|.
+  // `task_runner_`.
   std::vector<base::OnceClosure> cleanup_functions_;
 
   static constexpr base::TaskTraits blocking_task_traits() {

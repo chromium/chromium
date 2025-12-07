@@ -18,12 +18,12 @@ namespace views {
 ////////////////////////////////////////////////////////////////////////////////
 // NativeFrameView, public:
 
-NativeFrameView::NativeFrameView(Widget* frame) : frame_(frame) {}
+NativeFrameView::NativeFrameView(Widget* widget) : widget_(widget) {}
 
 NativeFrameView::~NativeFrameView() = default;
 
 ////////////////////////////////////////////////////////////////////////////////
-// NativeFrameView, NonClientFrameView overrides:
+// NativeFrameView, FrameView overrides:
 
 gfx::Rect NativeFrameView::GetBoundsForClientView() const {
   return gfx::Rect(0, 0, width(), height());
@@ -38,41 +38,21 @@ gfx::Rect NativeFrameView::GetWindowBoundsForClientBounds(
   // Enforce minimum size (1, 1) in case that |client_bounds| is passed with
   // empty size.
   gfx::Rect window_bounds = client_bounds;
-  if (window_bounds.IsEmpty())
+  if (window_bounds.IsEmpty()) {
     window_bounds.set_size(gfx::Size(1, 1));
+  }
   return window_bounds;
 #endif
 }
 
 int NativeFrameView::NonClientHitTest(const gfx::Point& point) {
-  return frame_->client_view()->NonClientHitTest(point);
-}
-
-void NativeFrameView::GetWindowMask(const gfx::Size& size,
-                                    SkPath* window_mask) {
-  // Nothing to do, we use the default window mask.
-}
-
-void NativeFrameView::ResetWindowControls() {
-  // Nothing to do.
-}
-
-void NativeFrameView::UpdateWindowIcon() {
-  // Nothing to do.
-}
-
-void NativeFrameView::UpdateWindowTitle() {
-  // Nothing to do.
-}
-
-void NativeFrameView::SizeConstraintsChanged() {
-  // Nothing to do.
+  return widget_->client_view()->NonClientHitTest(point);
 }
 
 gfx::Size NativeFrameView::CalculatePreferredSize(
     const SizeBounds& available_size) const {
   gfx::Size client_preferred_size =
-      frame_->client_view()->GetPreferredSize(available_size);
+      widget_->client_view()->GetPreferredSize(available_size);
 #if BUILDFLAG(IS_WIN)
   // Returns the client size. On Windows, this is the expected behavior for
   // native frames (see |NativeWidgetWin::WidgetSizeIsClientSize()|), while
@@ -80,18 +60,18 @@ gfx::Size NativeFrameView::CalculatePreferredSize(
   // |GetWindowBoundsForClientBounds()|.
   return client_preferred_size;
 #else
-  return frame_->non_client_view()
+  return widget_->non_client_view()
       ->GetWindowBoundsForClientBounds(gfx::Rect(client_preferred_size))
       .size();
 #endif
 }
 
 gfx::Size NativeFrameView::GetMinimumSize() const {
-  return frame_->client_view()->GetMinimumSize();
+  return widget_->client_view()->GetMinimumSize();
 }
 
 gfx::Size NativeFrameView::GetMaximumSize() const {
-  return frame_->client_view()->GetMaximumSize();
+  return widget_->client_view()->GetMaximumSize();
 }
 
 BEGIN_METADATA(NativeFrameView)

@@ -5,12 +5,17 @@
 #import "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_cocoa_controller.h"
 
 #import "base/apple/foundation_util.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"  // IDC_BOOKMARK_MENU
 #import "chrome/browser/app_controller_mac.h"
-#include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service_observer.h"
+#include "chrome/browser/bookmarks/bookmark_parent_folder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
@@ -19,11 +24,13 @@
 #include "chrome/browser/ui/browser_finder.h"
 #import "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_bridge.h"
 #import "chrome/browser/ui/cocoa/l10n_util.h"
+#include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #import "ui/base/cocoa/cocoa_base_utils.h"
-#import "ui/base/cocoa/menu_controller.h"
 #include "ui/base/window_open_disposition.h"
+#import "ui/menus/cocoa/menu_controller.h"
 
 using base::UserMetricsAction;
 using bookmarks::BookmarkModel;
@@ -37,10 +44,23 @@ namespace {
 NSMenuItem* GetItemWithSubmenu(NSMenu* submenu) {
   NSArray* parent_items = [[submenu supermenu] itemArray];
   for (NSMenuItem* item in parent_items) {
-    if ([item submenu] == submenu)
+    if ([item submenu] == submenu) {
       return item;
+    }
   }
   return nil;
+}
+
+const BookmarkNode* GetNodeByUuid(const BookmarkModel* model,
+                                  const base::Uuid& guid) {
+  CHECK(model);
+  const BookmarkNode* node = model->GetNodeByUuid(
+      guid, BookmarkModel::NodeTypeForUuidLookup::kAccountNodes);
+  if (!node) {
+    node = model->GetNodeByUuid(
+        guid, BookmarkModel::NodeTypeForUuidLookup::kLocalOrSyncableNodes);
+  }
+  return node;
 }
 
 void DoOpenBookmark(Profile* profile,
@@ -48,8 +68,9 @@ void DoOpenBookmark(Profile* profile,
                     const BookmarkNode* node) {
   DCHECK(profile);
   Browser* browser = chrome::FindTabbedBrowser(profile, true);
-  if (!browser)
+  if (!browser) {
     browser = Browser::Create(Browser::CreateParams(profile, true));
+  }
   OpenURLParams params(node->url(), Referrer(), disposition,
                        ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
   browser->OpenURL(params, /*navigation_handle_callback=*/{});
@@ -57,62 +78,65 @@ void DoOpenBookmark(Profile* profile,
                        profile_metrics::GetBrowserProfileType(profile));
 }
 
-// Waits for the BookmarkModelLoaded(), then calls DoOpenBookmark() on it.
+// Waits for the BookmarkMergedSurfaceServiceLoaded(), then calls
+// DoOpenBookmark() on it.
 //
 // Owned by itself. Allocate with `new`.
-class BookmarkRestorer : public bookmarks::BookmarkModelObserver {
+class BookmarkRestorer : public BookmarkMergedSurfaceServiceObserver {
  public:
   BookmarkRestorer(Profile* profile,
                    WindowOpenDisposition disposition,
                    base::Uuid guid);
   ~BookmarkRestorer() override = default;
 
-  // bookmarks::BookmarkModelObserver:
-  void BookmarkModelBeingDeleted() override;
-  void BookmarkModelLoaded(bool ids_reassigned) override;
-  void BookmarkNodeMoved(const BookmarkNode* old_parent,
+  // BookmarkMergedSurfaceServiceObserver:
+  void BookmarkMergedSurfaceServiceLoaded() override;
+  void BookmarkMergedSurfaceServiceBeingDeleted() override;
+  void BookmarkNodeAdded(const BookmarkParentFolder& parent,
+                         size_t index) override {}
+  void BookmarkNodesRemoved(
+      const BookmarkParentFolder& parent,
+      const base::flat_set<const bookmarks::BookmarkNode*>& nodes) override {}
+  void BookmarkNodeMoved(const BookmarkParentFolder& old_parent,
                          size_t old_index,
-                         const BookmarkNode* new_parent,
+                         const BookmarkParentFolder& new_parent,
                          size_t new_index) override {}
-  void BookmarkNodeAdded(const BookmarkNode* parent,
-                         size_t index,
-                         bool added_by_user) override {}
-  void BookmarkNodeRemoved(const BookmarkNode* parent,
-                           size_t old_index,
-                           const BookmarkNode* node,
-                           const std::set<GURL>& removed_urls,
-                           const base::Location& location) override {}
-  void BookmarkNodeChanged(const BookmarkNode* node) override {}
-  void BookmarkNodeFaviconChanged(const BookmarkNode* node) override {}
-  void BookmarkNodeChildrenReordered(const BookmarkNode* node) override {}
-  void BookmarkAllUserNodesRemoved(const std::set<GURL>& removed_urls,
-                                   const base::Location& location) override {}
+  void BookmarkNodeChanged(const bookmarks::BookmarkNode* node) override {}
+  void BookmarkNodeFaviconChanged(
+      const bookmarks::BookmarkNode* node) override {}
+  void BookmarkParentFolderChildrenReordered(
+      const BookmarkParentFolder& folder) override {}
+  void BookmarkAllUserNodesRemoved() override {}
 
  private:
   const raw_ptr<Profile> profile_;
   const WindowOpenDisposition disposition_;
   const base::Uuid guid_;
-  base::ScopedObservation<BookmarkModel, BookmarkModelObserver> observation_{
-      this};
+  raw_ptr<BookmarkMergedSurfaceService> bookmark_service_;
+  base::ScopedObservation<BookmarkMergedSurfaceService,
+                          BookmarkMergedSurfaceServiceObserver>
+      observation_{this};
 };
 
 BookmarkRestorer::BookmarkRestorer(Profile* profile,
                                    WindowOpenDisposition disposition,
                                    base::Uuid guid)
     : profile_(profile), disposition_(disposition), guid_(guid) {
-  observation_.Observe(BookmarkModelFactory::GetForBrowserContext(profile));
+  bookmark_service_ =
+      BookmarkMergedSurfaceServiceFactory::GetForProfile(profile);
+  CHECK(bookmark_service_);
+  observation_.Observe(bookmark_service_);
 }
 
-void BookmarkRestorer::BookmarkModelBeingDeleted() {
+void BookmarkRestorer::BookmarkMergedSurfaceServiceLoaded() {
+  const BookmarkModel* model = bookmark_service_->bookmark_model();
+  if (const BookmarkNode* node = GetNodeByUuid(model, guid_)) {
+    DoOpenBookmark(profile_, disposition_, node);
+  }
   delete this;
 }
 
-void BookmarkRestorer::BookmarkModelLoaded(bool ids_reassigned) {
-  const BookmarkModel* model = observation_.GetSource();
-  if (const BookmarkNode* node = model->GetNodeByUuid(
-          guid_, BookmarkModel::NodeTypeForUuidLookup::kLocalOrSyncableNodes)) {
-    DoOpenBookmark(profile_, disposition_, node);
-  }
+void BookmarkRestorer::BookmarkMergedSurfaceServiceBeingDeleted() {
   delete this;
 }
 
@@ -126,19 +150,19 @@ void OpenBookmarkByGUID(WindowOpenDisposition disposition,
     return;
   }
 
-  const BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(profile);
-  CHECK(model);
+  BookmarkMergedSurfaceService* bookmark_service =
+      BookmarkMergedSurfaceServiceFactory::GetForProfile(profile);
+  CHECK(bookmark_service);
 
-  if (!model->loaded()) {
-    // BookmarkModel hasn't loaded yet. Wait for BookmarkModelLoaded(), and
-    // *then* open it.
+  if (!bookmark_service->loaded()) {
+    // Bookmark service hasn't loaded yet. Wait for
+    // BookmarkMergedSurfaceServiceLoaded(), and *then* open it.
     std::ignore = new BookmarkRestorer(profile, disposition, std::move(guid));
     return;
   }
 
-  const BookmarkNode* node = model->GetNodeByUuid(
-      guid, BookmarkModel::NodeTypeForUuidLookup::kLocalOrSyncableNodes);
+  const BookmarkNode* node =
+      GetNodeByUuid(bookmark_service->bookmark_model(), guid);
   if (!node) {
     // Bookmark not known, ignore.
     return;
@@ -158,8 +182,9 @@ void OpenBookmarkByGUID(WindowOpenDisposition disposition,
 
 + (NSString*)tooltipForNode:(const BookmarkNode*)node {
   NSString* title = base::SysUTF16ToNSString(node->GetTitle());
-  if (node->is_folder())
+  if (node->is_folder()) {
     return title;
+  }
   std::string urlString = node->url().possibly_invalid_spec();
   NSString* url = base::SysUTF8ToNSString(urlString);
   return cocoa_l10n_util::TooltipForURLAndTitle(url, title);
@@ -179,19 +204,38 @@ void OpenBookmarkByGUID(WindowOpenDisposition disposition,
 
 // NSMenu delegate method: called just before menu is displayed.
 - (void)menuNeedsUpdate:(NSMenu*)menu {
-  NSMenuItem* item = GetItemWithSubmenu(menu);
   Profile* profile = _bridge->GetProfile();
   if (!profile) {
     // Unfortunately, we can't update a menu with a dead profile.
     return;
   }
 
+  // The root menu does not have a corresponding bookmark node.
+  if (_bridge->IsMenuRoot(menu)) {
+    _bridge->UpdateRootMenuIfInvalid();
+    return;
+  }
+
+  // Find the bookmark node corresponding to this menu.
   const BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(profile);
+      BookmarkMergedSurfaceServiceFactory::GetForProfile(profile)
+          ->bookmark_model();
+  NSMenuItem* item = GetItemWithSubmenu(menu);
   base::Uuid guid = _bridge->TagToGUID([item tag]);
-  const BookmarkNode* node = model->GetNodeByUuid(
-      guid, BookmarkModel::NodeTypeForUuidLookup::kLocalOrSyncableNodes);
-  _bridge->UpdateMenu(menu, node, /*recurse=*/false);
+  const BookmarkNode* node = GetNodeByUuid(model, guid);
+
+  if (!(node && node->is_folder())) {
+    // TODO(crbug.com/417269167): every non-root menu must correspond to a
+    // bookmark folder by construction.
+    SCOPED_CRASH_KEY_NUMBER("BookmarkMenuCocoaController", "NSMenuItem",
+                            [item tag]);
+    SCOPED_CRASH_KEY_STRING32("BookmarkMenuCocoaController", "NSMenuItem",
+                              base::SysNSStringToUTF8([item title]));
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
+
+  _bridge->UpdateNonRootMenu(menu, BookmarkParentFolder::FromFolderNode(node));
 }
 
 - (BOOL)menuHasKeyEquivalent:(NSMenu*)menu

@@ -1,0 +1,47 @@
+=== Accessibility tree before go() pass 1 ===
+[document web] name='Material Web Switch Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[toggle button] name='Test Switch' checkable checkable:true
+=== End accessibility tree ===
+STATE-CHANGE:CHECKED:TRUE role=ROLE_TOGGLE_BUTTON name='Test Switch' CHECKED,ENABLED,FOCUSABLE,SENSITIVE,SHOWING,VISIBLE,CHECKABLE
+=== Accessibility tree after go() pass 1 ===
+[document web] name='Material Web Switch Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[toggle button] name='Test Switch' checked checkable checkable:true <<<<<< CHANGED
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 2 ===
+[document web] name='Material Web Switch Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[toggle button] name='Test Switch' checked checkable checkable:true
+=== End accessibility tree ===
+STATE-CHANGE:CHECKED:FALSE role=ROLE_TOGGLE_BUTTON name='Test Switch' ENABLED,FOCUSABLE,SENSITIVE,SHOWING,VISIBLE,CHECKABLE
+=== Accessibility tree after go() pass 2 ===
+[document web] name='Material Web Switch Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[toggle button] name='Test Switch' checkable checkable:true <<<<<< CHANGED
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 3 ===
+[document web] name='Material Web Switch Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[toggle button] name='Test Switch' checkable checkable:true
+=== End accessibility tree ===
+STATE-CHANGE:CHECKED:TRUE role=ROLE_TOGGLE_BUTTON name='Test Switch' CHECKED,ENABLED,FOCUSABLE,SENSITIVE,SHOWING,VISIBLE,CHECKABLE
+=== Accessibility tree after go() pass 3 ===
+[document web] name='Material Web Switch Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[toggle button] name='Test Switch' checked checkable checkable:true <<<<<< CHANGED
+=== End accessibility tree ===

@@ -7,12 +7,18 @@ import logging
 import time
 from typing import Collection, Dict, Generator, Iterable, List, Optional, Tuple
 
+# vpython-provided modules.
+# pylint: disable=import-error
 from google.cloud import bigquery
 from google.cloud import bigquery_storage
 import pandas
+# pylint: enable=import-error
 
+# //third_party/catapult/third_party/typ imports.
 from typ import expectations_parser
 from typ import json_results
+
+# //testing imports.
 from unexpected_passes_common import constants
 from unexpected_passes_common import data_types
 from unexpected_passes_common import expectations
@@ -207,7 +213,9 @@ class BigQueryQuerier:
       A pandas.Series object for each row returned by the query. Columns can be
       accessed directly as attributes.
     """
-    client = bigquery.Client(project=self._project)
+    client = bigquery.Client(
+        project=self._project,
+        default_query_job_config=bigquery.QueryJobConfig(use_legacy_sql=False))
     job = client.query(query)
     row_iterator = job.result()
     # Using a Dataframe iterator instead of directly using |row_iterator| allows
@@ -314,6 +322,8 @@ class BigQueryQuerier:
     """
     raise NotImplementedError()
 
+  # Overridden by subclasses.
+  # pylint: disable=no-self-use
   def _ShouldSkipOverResult(self, result: QueryResult) -> bool:
     """Whether |result| should be ignored and skipped over.
 
@@ -325,6 +335,7 @@ class BigQueryQuerier:
     """
     del result
     return False
+  # pylint: enable=no-self-use
 
   def _StripPrefixFromTestId(self, test_id: str) -> str:
     """Strips the prefix from a test ID, leaving only the test case name.

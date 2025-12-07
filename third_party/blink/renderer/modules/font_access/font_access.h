@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_FONT_ACCESS_FONT_ACCESS_H_
 
 #include "base/memory/read_only_shared_memory_region.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/font_access/font_access.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -14,7 +13,6 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 class FontMetadata;
@@ -23,10 +21,8 @@ class QueryOptions;
 class ScriptState;
 
 class FontAccess final : public GarbageCollected<FontAccess>,
-                         public Supplement<LocalDOMWindow> {
+                         public GarbageCollectedMixin {
  public:
-  static const char kSupplementName[];
-
   explicit FontAccess(LocalDOMWindow* window);
 
   void Trace(blink::Visitor* visitor) const override;

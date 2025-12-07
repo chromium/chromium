@@ -8,6 +8,7 @@
 
 #include <optional>
 
+#include "base/containers/to_vector.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/win/scoped_hstring.h"
@@ -77,11 +78,11 @@ class DiscoveryNetworkListWinTest : public testing::Test {
       delete;
 
  protected:
-  const std::vector<uint8_t> kWiredMacAddressVector{
-      kWiredMacAddress, kWiredMacAddress + std::size(kWiredMacAddress)};
+  const std::vector<uint8_t> kWiredMacAddressVector =
+      base::ToVector(kWiredMacAddress);
 
-  const std::vector<uint8_t> kWifiMacAddressVector{
-      kWifiMacAddress, kWifiMacAddress + std::size(kWifiMacAddress)};
+  const std::vector<uint8_t> kWifiMacAddressVector =
+      base::ToVector(kWifiMacAddress);
 
   // Contains the fake Windows OS API implementations along with the network
   // adapters and connection profiles setup through Add*ConnectionProfile().

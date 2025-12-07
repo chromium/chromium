@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <gtest/gtest.h>
 #include <stddef.h>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/prefs/chrome_command_line_pref_store.h"
 #include "chrome/common/chrome_switches.h"
@@ -166,8 +162,8 @@ class ChromeCommandLinePrefStoreProxyTest
 
   void SetUp() override {
     for (size_t i = 0; i < std::size(GetParam().switches); i++) {
-      const char* name = GetParam().switches[i].name;
-      const char* value = GetParam().switches[i].value;
+      const char* name = UNSAFE_TODO(GetParam().switches[i]).name;
+      const char* value = UNSAFE_TODO(GetParam().switches[i]).value;
       if (name && value)
         command_line_.AppendSwitchASCII(name, value);
       else if (name)

@@ -27,8 +27,8 @@
 
 namespace {
 
-constexpr auto kInsets = gfx::Insets::VH(6, 15);
-constexpr gfx::Size kSize{400, 30};
+constexpr auto kInsets = gfx::Insets::VH(6, 10);
+constexpr gfx::Size kSize{400, 40};
 constexpr auto kBorderInsets = gfx::Insets::VH(4, 8);
 
 }  // anonymous namespace
@@ -73,8 +73,9 @@ MediaItemUILegacyCastFooterView::GetStopCastingButtonForTesting() {
 
 void MediaItemUILegacyCastFooterView::OnColorsChanged(SkColor foreground,
                                                       SkColor background) {
-  if (foreground == foreground_color_ && background == background_color_)
+  if (foreground == foreground_color_ && background == background_color_) {
     return;
+  }
 
   foreground_color_ = foreground;
   background_color_ = background;

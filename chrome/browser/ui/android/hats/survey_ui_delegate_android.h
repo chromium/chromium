@@ -9,7 +9,6 @@
 
 #include "base/android/jni_android.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 namespace messages {
@@ -53,9 +52,9 @@ class SurveyUiDelegateAndroid {
   // present at all.
   virtual void ShowSurveyInvitation(
       JNIEnv* env,
-      const JavaParamRef<jobject>& on_accepted_callback,
-      const JavaParamRef<jobject>& on_declined_callback,
-      const JavaParamRef<jobject>& on_presentation_failed_callback);
+      const JavaRef<jobject>& on_accepted_callback,
+      const JavaRef<jobject>& on_declined_callback,
+      const JavaRef<jobject>& on_presentation_failed_callback);
 
   // Dismiss the survey invitation.
   virtual void Dismiss(JNIEnv* env);

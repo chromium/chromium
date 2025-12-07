@@ -5,22 +5,17 @@
 #ifndef IOS_CHROME_BROWSER_PROMOS_MANAGER_MODEL_PROMOS_MANAGER_FACTORY_H_
 #define IOS_CHROME_BROWSER_PROMOS_MANAGER_MODEL_PROMOS_MANAGER_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "base/no_destructor.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
-class ChromeBrowserState;
+class ProfileIOS;
 class PromosManager;
 
-// Singleton that owns all PromosManagers and associates them with
-// ChromeBrowserState.
-class PromosManagerFactory : public BrowserStateKeyedServiceFactory {
+// Singleton that owns all PromosManagers and associates them with a Profile.
+class PromosManagerFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  static PromosManager* GetForBrowserState(ChromeBrowserState* browser_state);
-
+  static PromosManager* GetForProfile(ProfileIOS* profile);
   static PromosManagerFactory* GetInstance();
-
-  PromosManagerFactory(const PromosManagerFactory&) = delete;
-  PromosManagerFactory& operator=(const PromosManagerFactory&) = delete;
 
  private:
   friend class base::NoDestructor<PromosManagerFactory>;
@@ -28,11 +23,9 @@ class PromosManagerFactory : public BrowserStateKeyedServiceFactory {
   PromosManagerFactory();
   ~PromosManagerFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
-      web::BrowserState* state) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_PROMOS_MANAGER_MODEL_PROMOS_MANAGER_FACTORY_H_

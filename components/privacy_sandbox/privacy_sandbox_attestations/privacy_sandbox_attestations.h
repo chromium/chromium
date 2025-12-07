@@ -15,7 +15,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
-#include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
@@ -23,10 +22,6 @@
 #include "base/version.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings_impl.h"
 #include "net/base/schemeful_site.h"
-
-namespace content {
-class PrivacySandboxAttestationsObserver;
-}  // namespace content
 
 namespace privacy_sandbox {
 
@@ -41,6 +36,12 @@ using PrivacySandboxAttestationsGatedAPISet =
 // attested for all APIs".
 using PrivacySandboxAttestationsMap =
     base::flat_map<net::SchemefulSite, PrivacySandboxAttestationsGatedAPISet>;
+
+// The default behavior when attestations are not yet ready.
+enum class AttestationsDefaultBehavior {
+  kAllow,
+  kDeny,
+};
 
 class PrivacySandboxAttestations {
  public:
@@ -100,13 +101,19 @@ class PrivacySandboxAttestations {
 
   // Record the status returned by `IsSiteAttestedInternal` to a histogram, then
   // return the status.
+  // `attestations_default_behavior` optionally specifies the behavior when
+  // attestations are not yet ready. By default it depends on the feature
+  // `kDefaultAllowPrivacySandboxAttestations`, and when specified this
+  // parameter takes precedence over the feature status.
   // TODO(crbug.com/40940888): This method will occasionally return false
   // positives i.e. it may mark some sites as attested even when they are not.
   // This will occur for example, if the attestations file is corrupted on-disk,
   // or the file is otherwise unavailable.
   PrivacySandboxSettingsImpl::Status IsSiteAttested(
       const net::SchemefulSite& site,
-      PrivacySandboxAttestationsGatedAPI invoking_api) const;
+      PrivacySandboxAttestationsGatedAPI invoking_api,
+      std::optional<AttestationsDefaultBehavior> attestations_default_behavior =
+          std::nullopt) const;
 
   // Invoke `LoadAttestationsInternal()` to parse the attestations file
   // asynchronously on the SequencedTaskRunner `task_runner_` in the thread
@@ -157,11 +164,6 @@ class PrivacySandboxAttestations {
   // callback.
   void SetComponentRegistrationCallbackForTesting(base::OnceClosure callback);
 
-  // Returns true if the attestations have ever been loaded or if attestations
-  // are not enforced.
-  bool AddObserver(content::PrivacySandboxAttestationsObserver* observer);
-  void RemoveObserver(content::PrivacySandboxAttestationsObserver* observer);
-
   // Called when component installer finished registration and the check for
   // attestations file.
   void OnAttestationsFileCheckComplete();
@@ -202,19 +204,11 @@ class PrivacySandboxAttestations {
   void RunComponentRegistrationCallbackForTesting();
 
   // Called when attestations parsing finishes. Stores the parsed attestations
-  // map and its version. Also notifies the observers the attestations map has
-  // been loaded / updated.
+  // map and its version.
   void OnAttestationsParsed(base::Version version,
                             bool is_pre_installed,
                             base::expected<PrivacySandboxAttestationsMap,
                                            ParsingStatus> attestations_map);
-
-  // Notify observers that attestations have been loaded.
-  void NotifyObserversOnAttestationsLoaded();
-
-  // Returns whether attestations have ever been loaded. Also returns true
-  // if all Privacy Sandbox APIs are considered attested for testing.
-  bool IsEverLoaded() const;
 
   // Task runner used to execute the file opening and parsing.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
@@ -257,8 +251,6 @@ class PrivacySandboxAttestations {
 
   // Whether the attestation map is parsed from a pre-installed file.
   bool is_pre_installed_ = false;
-
-  base::ObserverList<content::PrivacySandboxAttestationsObserver> observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

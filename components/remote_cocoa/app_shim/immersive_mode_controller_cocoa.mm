@@ -10,13 +10,33 @@
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/mac/mac_util.h"
+#include "components/remote_cocoa/app_shim/features.h"
 #import "components/remote_cocoa/app_shim/immersive_mode_delegate_mac.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace {
 // Workaround for https://crbug.com/1369643
 const double kThinControllerHeight = 0.5;
+
+inline bool IsPermanentThinControllerEnabled() {
+  return base::mac::MacOSMajorVersion() >= 13;
+}
+
+void CloseNSPopovers(NSWindow* parent_window) {
+  // Close any NSPopover that may be open.
+  Class popover_class = NSClassFromString(@"_NSPopoverWindow");
+  CHECK(popover_class);
+  for (NSWindow* child in [parent_window.childWindows copy]) {
+    if ([child isKindOfClass:popover_class]) {
+      [child close];
+    }
+  }
+}
+
 }  // namespace
 
 // A stub NSWindowDelegate class that will be used to map the AppKit controlled
@@ -66,9 +86,8 @@ const double kThinControllerHeight = 0.5;
   }
 }
 
-// This is a private API method that will be used on macOS 11+.
-// Remove a small 1px blur between the overlay view and tabbed overlay view by
-// returning a blank NSView.
+// A private API method. Remove a small 1px blur between the overlay view and
+// tabbed overlay view by returning a blank NSView.
 - (NSView*)separatorView {
   return _blank_separator_view;
 }
@@ -150,8 +169,8 @@ bool IsNSToolbarFullScreenWindow(NSWindow* window) {
 }
 
 ImmersiveModeControllerCocoa::ImmersiveModeControllerCocoa(
-    NativeWidgetMacNSWindow* browser_window,
-    NativeWidgetMacNSWindow* overlay_window)
+    BrowserNativeWidgetWindow* browser_window,
+    NativeWidgetMacOverlayNSWindow* overlay_window)
     : weak_ptr_factory_(this) {
   browser_window_ = browser_window;
   overlay_window_ = overlay_window;
@@ -195,6 +214,10 @@ ImmersiveModeControllerCocoa::ImmersiveModeControllerCocoa(
   // Use a placeholder view since the content has been moved to the
   // ImmersiveModeTitlebarViewController.
   overlay_window_.contentView = [[OpaqueView alloc] init];
+  if (base::FeatureList::IsEnabled(
+          remote_cocoa::features::kImmersiveFullscreenOverlayWindowDebug)) {
+    [overlay_window_ debugWithColor:NSColor.greenColor];
+  }
 
   // The overlay window will become a child of NSToolbarFullScreenWindow and sit
   // above it in the z-order. Allow mouse events that are not handled by the
@@ -210,14 +233,7 @@ ImmersiveModeControllerCocoa::ImmersiveModeControllerCocoa(
   immersive_mode_titlebar_view_controller_.layoutAttribute =
       NSLayoutAttributeBottom;
 
-  thin_titlebar_view_controller_ =
-      [[NSTitlebarAccessoryViewController alloc] init];
-  thin_titlebar_view_controller_.view = [[NSView alloc] init];
-  thin_titlebar_view_controller_.view.wantsLayer = YES;
-  thin_titlebar_view_controller_.view.layer.backgroundColor =
-      NSColor.blackColor.CGColor;
-  thin_titlebar_view_controller_.layoutAttribute = NSLayoutAttributeBottom;
-  thin_titlebar_view_controller_.fullScreenMinHeight = kThinControllerHeight;
+  display_observation_.Observe(display::Screen::Get());
 }
 
 ImmersiveModeControllerCocoa::~ImmersiveModeControllerCocoa() {
@@ -225,7 +241,7 @@ ImmersiveModeControllerCocoa::~ImmersiveModeControllerCocoa() {
   StopObservingChildWindows(overlay_window_);
 
   // Rollback the view shuffling from enablement.
-  [thin_titlebar_view_controller_ removeFromParentViewController];
+  DisableThinControllerIfNecessary();
   [overlay_content_view_ removeFromSuperview];
   overlay_window_.contentView = overlay_content_view_;
   [immersive_mode_titlebar_view_controller_ removeFromParentViewController];
@@ -234,6 +250,13 @@ ImmersiveModeControllerCocoa::~ImmersiveModeControllerCocoa() {
 }
 
 void ImmersiveModeControllerCocoa::Init() {
+  // AppKit has a nullptr dereference bug that manifests as a crash when
+  // entering immersive fullscreen with a popover visible. This bug seems to
+  // have been fixed in macOS 26. See crbug.com/450581735.
+  if (base::mac::MacOSMajorVersion() < 26) {
+    CloseNSPopovers(browser_window_);
+  }
+
   DCHECK(!initialized_);
   initialized_ = true;
   [browser_window_ addTitlebarAccessoryViewController:
@@ -253,10 +276,7 @@ void ImmersiveModeControllerCocoa::Init() {
   [overlay_content_view_.centerYAnchor
       constraintEqualToAnchor:overlay_content_view_.superview.centerYAnchor]
       .active = YES;
-
-  thin_titlebar_view_controller_.hidden = YES;
-  [browser_window_
-      addTitlebarAccessoryViewController:thin_titlebar_view_controller_];
+  CreateThinControllerIfNecessary();
 }
 
 void ImmersiveModeControllerCocoa::FullscreenTransitionCompleted() {
@@ -278,7 +298,7 @@ void ImmersiveModeControllerCocoa::FullscreenTransitionCompleted() {
 
   NotifyBrowserWindowAboutToolbarRevealChanged();
   if (NativeWidgetNSWindowBridge* bridge =
-          NativeWidgetNSWindowBridge::GetFromNativeWindow(browser_window_)) {
+          NativeWidgetNSWindowBridge::GetFromNSWindow(browser_window_)) {
     NSScreen* screen = browser_window_.screen;
     // We have an autohiding menu bar if:
     // - We don't have a notch AND
@@ -301,7 +321,7 @@ void ImmersiveModeControllerCocoa::OnTopViewBoundsChanged(
     const gfx::Rect& bounds) {
   // Set the height of the AppKit fullscreen view. The width will be
   // automatically handled by AppKit.
-  NSRect frame = NSRectFromCGRect(bounds.ToCGRect());
+  NSRect frame = bounds.ToCGRect();
   NSView* overlay_view = immersive_mode_titlebar_view_controller_.view;
   NSSize size = overlay_view.window.frame.size;
   if (frame.size.height != size.height) {
@@ -319,6 +339,11 @@ void ImmersiveModeControllerCocoa::OnTopViewBoundsChanged(
     [immersive_mode_titlebar_view_controller_
         setVisibility:mojom::ToolbarVisibilityStyle::kAlways];
   }
+
+  // This is needed when entering split-view fullscreen. The other re-anchor
+  // signals (toolbar visibility change, reveal amount change) won't fire in
+  // this case.
+  Reanchor();
 }
 
 void ImmersiveModeControllerCocoa::UpdateToolbarVisibility(
@@ -389,6 +414,20 @@ void ImmersiveModeControllerCocoa::ForceToolbarVisibilityUpdate() {
   UpdateToolbarVisibility(std::exchange(last_used_style_, std::nullopt));
 }
 
+void ImmersiveModeControllerCocoa::OnPrimaryDisplayChanged() {
+  // During screen switching, the primary display (which contains the (0,0)
+  // origin) may change. However, NSScreen.screens.firstObject used for
+  // coordinate conversion may still refer to the old primary display. This can
+  // lead to incorrect cached bounds for the overlay widget.
+  // To address this, we force an update of the overlay's geometry to ensure it
+  // aligns with the new primary display.
+  // See https://crbug.com/365733574#comment28 for more details.
+  if (NativeWidgetNSWindowBridge* overlay_bridge =
+          NativeWidgetNSWindowBridge::GetFromNSWindow(overlay_window_)) {
+    overlay_bridge->UpdateWindowGeometry();
+  }
+}
+
 void ImmersiveModeControllerCocoa::ObserveChildWindows(NSWindow* window) {
   // Watch the Widget for addition and removal of child Widgets.
   NativeWidgetMacNSWindow* widget_window =
@@ -415,7 +454,7 @@ bool ImmersiveModeControllerCocoa::ShouldObserveChildWindow(NSWindow* child) {
 NSWindow* ImmersiveModeControllerCocoa::browser_window() {
   return browser_window_;
 }
-NSWindow* ImmersiveModeControllerCocoa::overlay_window() {
+NativeWidgetMacOverlayNSWindow* ImmersiveModeControllerCocoa::overlay_window() {
   return overlay_window_;
 }
 BridgedContentView* ImmersiveModeControllerCocoa::overlay_content_view() {
@@ -527,7 +566,7 @@ void ImmersiveModeControllerCocoa::OnToolbarRevealMaybeChanged() {
 void ImmersiveModeControllerCocoa::OnMenuBarRevealChanged() {
   Reanchor();
   if (NativeWidgetNSWindowBridge* bridge =
-          NativeWidgetNSWindowBridge::GetFromNativeWindow(browser_window_)) {
+          NativeWidgetNSWindowBridge::GetFromNSWindow(browser_window_)) {
     bridge->OnImmersiveFullscreenMenuBarRevealChanged(
         immersive_mode_titlebar_view_controller_.revealAmount);
   }
@@ -570,28 +609,27 @@ double ImmersiveModeControllerCocoa::GetOffscreenYOrigin() {
   // Get the height of the screen plus the browser window's y origin. Use this
   // as the y origin for the overlay windows, it will move them offscreen. The
   // browser window's y origin is especially important for external displays
-  // where the y origin is not 0, such as vertically aligned displays.
-  double y =
-      browser_window_.screen.frame.size.height + browser_window_.frame.origin.y;
-
-  // Make sure to make it past the safe area insets, otherwise some portion
-  // of the window may still be displayed.
-  if (@available(macOS 12.0, *)) {
-    y += browser_window_.screen.safeAreaInsets.top;
-  }
-
-  return y;
+  // where the y origin is not 0, such as vertically aligned displays. Make sure
+  // to make it past the safe area insets, otherwise some portion of the window
+  // may still be displayed.
+  return browser_window_.screen.frame.size.height +
+         browser_window_.frame.origin.y +
+         browser_window_.screen.safeAreaInsets.top;
 }
 
 void ImmersiveModeControllerCocoa::
     NotifyBrowserWindowAboutToolbarRevealChanged() {
   if (NativeWidgetNSWindowBridge* bridge =
-          NativeWidgetNSWindowBridge::GetFromNativeWindow(browser_window_)) {
+          NativeWidgetNSWindowBridge::GetFromNSWindow(browser_window_)) {
     bridge->OnImmersiveFullscreenToolbarRevealChanged(IsToolbarRevealed());
   }
 }
 
 void ImmersiveModeControllerCocoa::UpdateThinControllerVisibility() {
+  NSTitlebarAccessoryViewController* thin_controller =
+      IsPermanentThinControllerEnabled()
+          ? browser_window_.thinTitlebarViewController
+          : thin_titlebar_view_controller_;
   if (last_used_style_ == mojom::ToolbarVisibilityStyle::kNone &&
       immersive_mode_titlebar_view_controller_.revealAmount == 0) {
     // Needed when eventually exiting from content fullscreen and returning
@@ -614,12 +652,12 @@ void ImmersiveModeControllerCocoa::UpdateThinControllerVisibility() {
     // In short, when transitioning to `kNone` we need to take steps to
     // mitigate https://crbug.com/1369643 which is triggered when we
     // eventually transition out of `kNone`.
-    thin_titlebar_view_controller_.hidden = NO;
+    thin_controller.hidden = NO;
   } else {
     // The extra -setHidden:YES call is to clear a visual artifact when
     // transitioning from `kNone`.
-    thin_titlebar_view_controller_.hidden = YES;
-    thin_titlebar_view_controller_.hidden = IsToolbarRevealed();
+    thin_controller.hidden = YES;
+    thin_controller.hidden = IsToolbarRevealed();
   }
 }
 
@@ -661,6 +699,36 @@ void ImmersiveModeControllerCocoa::LayoutWindowWithAnchorView(
 
 void ImmersiveModeControllerCocoa::Reanchor() {
   LayoutWindowWithAnchorView(overlay_window_, overlay_content_view_);
+}
+
+void ImmersiveModeControllerCocoa::CreateThinControllerIfNecessary() {
+  if (IsPermanentThinControllerEnabled()) {
+    // In this arm, the thin controller is created in BrowserNativeWidgetWindow
+    // and owned by the window.
+    return;
+  }
+  thin_titlebar_view_controller_ =
+      [[NSTitlebarAccessoryViewController alloc] init];
+  thin_titlebar_view_controller_.view = [[NSView alloc] init];
+  thin_titlebar_view_controller_.view.wantsLayer = YES;
+  thin_titlebar_view_controller_.view.layer.backgroundColor =
+      NSColor.blackColor.CGColor;
+  thin_titlebar_view_controller_.layoutAttribute = NSLayoutAttributeBottom;
+  thin_titlebar_view_controller_.fullScreenMinHeight = kThinControllerHeight;
+  thin_titlebar_view_controller_.hidden = YES;
+  // Insert it in the front for consistency with the permanent thin
+  // controller path.
+  [browser_window_
+      insertTitlebarAccessoryViewController:thin_titlebar_view_controller_
+                                    atIndex:0];
+}
+
+void ImmersiveModeControllerCocoa::DisableThinControllerIfNecessary() {
+  if (IsPermanentThinControllerEnabled()) {
+    browser_window_.thinTitlebarViewController.hidden = YES;
+  } else {
+    [thin_titlebar_view_controller_ removeFromParentViewController];
+  }
 }
 
 }  // namespace remote_cocoa

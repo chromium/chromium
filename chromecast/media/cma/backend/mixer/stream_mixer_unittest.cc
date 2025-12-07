@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chromecast/media/cma/backend/mixer/stream_mixer.h"
+
 #include <algorithm>
 #include <cmath>
 #include <limits>
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -28,7 +30,8 @@
 #include "chromecast/media/cma/backend/mixer/mock_mixer_source.h"
 #include "chromecast/media/cma/backend/mixer/mock_post_processor_factory.h"
 #include "chromecast/media/cma/backend/mixer/mock_redirected_audio_output.h"
-#include "chromecast/media/cma/backend/mixer/stream_mixer.h"
+#include "chromecast/media/cma/base/decoder_config_adapter.h"
+#include "chromecast/public/media/decoder_config.h"
 #include "chromecast/public/media/mixer_output_stream.h"
 #include "chromecast/public/volume_control.h"
 #include "media/audio/audio_device_description.h"
@@ -160,8 +163,8 @@ std::unique_ptr<::media::AudioBus> GetTestData(size_t index) {
   CHECK_LT(index, NUM_DATA_SETS);
   int frames = NUM_SAMPLES / kNumChannels;
   auto data = ::media::AudioBus::Create(kNumChannels, frames);
-  data->FromInterleaved<::media::SignedInt32SampleTypeTraits>(kTestData[index],
-                                                              frames);
+  data->FromInterleaved<::media::SignedInt32SampleTypeTraits>(
+      UNSAFE_TODO(kTestData[index]), frames);
   return data;
 }
 
@@ -220,7 +223,7 @@ class MockMixerOutput : public MixerOutputStream {
                  int data_size,
                  bool* out_playback_interrupted) {
     *out_playback_interrupted = false;
-    data_.insert(data_.end(), data, data + data_size);
+    data_.insert(data_.end(), data, UNSAFE_TODO(data + data_size));
     return true;
   }
 
@@ -281,7 +284,7 @@ std::unique_ptr<::media::AudioBus> GetMixedAudioData(
   auto mixed = ::media::AudioBus::Create(num_channels, read_size);
   for (int c = 0; c < mixed->channels(); ++c) {
     for (int f = 0; f < read_size; ++f) {
-      float* result = mixed->channel(c) + f;
+      float* result = UNSAFE_TODO(mixed->channel_span(c).data() + f);
 
       // Sum the sample from each input stream, scaling each stream.
       *result = 0.0;
@@ -291,9 +294,9 @@ std::unique_ptr<::media::AudioBus> GetMixedAudioData(
         }
         if (input->data().frames() > f) {
           if (apply_volume) {
-            *result += *(input->data().channel(c) + f) * input->multiplier();
+            *result += input->data().channel_span(c)[f] * input->multiplier();
           } else {
-            *result += *(input->data().channel(c) + f);
+            *result += input->data().channel_span(c)[f];
           }
         }
       }
@@ -335,10 +338,10 @@ void CompareAudioData(const ::media::AudioBus& expected,
   ASSERT_EQ(expected.frames(), actual.frames());
 
   for (int c = 0; c < expected.channels(); ++c) {
-    const float* expected_data = expected.channel(c);
-    const float* actual_data = actual.channel(c);
+    auto expected_data = expected.channel_span(c);
+    auto actual_data = actual.channel_span(c);
     for (int f = 0; f < expected.frames(); ++f) {
-      EXPECT_NEAR(*expected_data++, *actual_data++, 0.0000001f)
+      EXPECT_NEAR(expected_data[f], actual_data[f], 0.0000001f)
           << c << " " << f << " " << token;
     }
   }
@@ -365,7 +368,7 @@ int64_t FramesToDelayUs(int64_t frames) {
 
 std::string DeathRegex(const std::string& regex) {
 // String arguments aren't passed to CHECK() in official builds.
-#if defined(OFFICIAL_BUILD) && defined(NDEBUG)
+#if BUILDFLAG(IS_ANDROID) || (defined(OFFICIAL_BUILD) && defined(NDEBUG))
   return "";
 #else
   return regex;
@@ -627,9 +630,13 @@ TEST_F(StreamMixerTest, OneStreamStereoInput6ChannelOutput) {
   auto expected = GetMixedAudioData(&input);
 
   // Upmix stereo input to 5.1 before comparing.
+  ::media::ChannelLayout input_layout =
+      DecoderConfigAdapter::ToMediaChannelLayout(ChannelLayout::STEREO);
+  ::media::ChannelLayout output_layout =
+      DecoderConfigAdapter::ToMediaChannelLayout(ChannelLayout::SURROUND_5_1);
   ::media::ChannelMixer channel_mixer(
-      ::media::ChannelLayout::CHANNEL_LAYOUT_STEREO,
-      ::media::ChannelLayout::CHANNEL_LAYOUT_5_1);
+      input_layout, ::media::ChannelLayoutToChannelCount(input_layout),
+      output_layout, ::media::ChannelLayoutToChannelCount(output_layout));
   auto expected_5_1 = ::media::AudioBus::Create(6, expected->frames());
   channel_mixer.Transform(expected.get(), expected_5_1.get());
   CompareAudioData(*expected_5_1, *actual);
@@ -681,9 +688,13 @@ TEST_F(StreamMixerTest, OneStreamStereoInput6ChannelFilters) {
   auto expected = GetMixedAudioData(&input);
 
   // Upmix stereo input to 5.1 before comparing.
+  ::media::ChannelLayout input_layout =
+      DecoderConfigAdapter::ToMediaChannelLayout(ChannelLayout::STEREO);
+  ::media::ChannelLayout output_layout =
+      DecoderConfigAdapter::ToMediaChannelLayout(ChannelLayout::SURROUND_5_1);
   ::media::ChannelMixer channel_mixer(
-      ::media::ChannelLayout::CHANNEL_LAYOUT_STEREO,
-      ::media::ChannelLayout::CHANNEL_LAYOUT_5_1);
+      input_layout, ::media::ChannelLayoutToChannelCount(input_layout),
+      output_layout, ::media::ChannelLayoutToChannelCount(output_layout));
   auto expected_5_1 = ::media::AudioBus::Create(6, expected->frames());
   channel_mixer.Transform(expected.get(), expected_5_1.get());
   CompareAudioData(*expected_5_1, *actual);
@@ -757,7 +768,7 @@ TEST_F(StreamMixerTest, OneStream10ChannelInputStereoOutput) {
   auto data = ::media::AudioBus::Create(10, kNumFrames);
   for (int c = 0; c < 10; ++c) {
     for (int f = 0; f < kNumFrames; ++f) {
-      data->channel(c)[f] = (c / 10 + f / kNumFrames) / 10;
+      data->channel_span(c)[f] = (c / 10 + f / kNumFrames) / 10;
     }
   }
   input.SetData(std::move(data));
@@ -804,8 +815,9 @@ TEST_F(StreamMixerTest, OneStream10ChannelInputAndOutput) {
   const int kNumFrames = 32;
   auto data = ::media::AudioBus::Create(10, kNumFrames);
   for (int c = 0; c < 10; ++c) {
+    auto channel_data = data->channel_span(c);
     for (int f = 0; f < kNumFrames; ++f) {
-      data->channel(c)[f] = (c / 10 + f / kNumFrames) / 10;
+      channel_data[f] = (c / 10 + f / kNumFrames) / 10;
     }
   }
   input.SetData(std::move(data));
@@ -1030,7 +1042,7 @@ TEST_F(StreamMixerTest, TwoUnscaledStreamsMixProperlyWithEdgeCases) {
   for (size_t i = 0; i < inputs.size(); ++i) {
     auto test_data = ::media::AudioBus::Create(kNumChannels, kNumFrames);
     test_data->FromInterleaved<::media::SignedInt32SampleTypeTraits>(
-        kEdgeData[i], kNumFrames);
+        UNSAFE_TODO(kEdgeData[i]), kNumFrames);
     inputs[i]->SetData(std::move(test_data));
     EXPECT_CALL(*inputs[i], FillAudioPlaybackFrames(_, _, _)).Times(1);
   }
@@ -1080,7 +1092,7 @@ TEST_F(StreamMixerTest, PostProcessorDelayListedDeviceId) {
   delays.push_back(common_delay + kTtsProcessorDelay);
 
   // Convert delay from frames to microseconds.
-  base::ranges::transform(delays, delays.begin(), &FramesToDelayUs);
+  std::ranges::transform(delays, delays.begin(), &FramesToDelayUs);
 
   for (size_t i = 0; i < inputs.size(); ++i) {
     EXPECT_CALL(*inputs[i], InitializeAudioPlayback(_, _)).Times(1);

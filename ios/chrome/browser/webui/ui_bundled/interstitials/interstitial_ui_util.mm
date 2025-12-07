@@ -4,19 +4,19 @@
 
 #import "ios/chrome/browser/webui/ui_bundled/interstitials/interstitial_ui_util.h"
 
-#import "base/atomic_sequence_num.h"
 #import "base/check_op.h"
 #import "base/memory/ref_counted_memory.h"
 #import "base/time/time.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/grit/dev_ui_components_resources.h"
 #import "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #import "components/security_interstitials/core/ssl_error_options_mask.h"
 #import "components/security_interstitials/core/unsafe_resource.h"
-#import "crypto/rsa_private_key.h"
+#import "ios/chrome/browser/enterprise/connectors/ios_enterprise_interstitial.h"
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_blocking_page.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/ssl/model/ios_captive_portal_blocking_page.h"
 #import "ios/chrome/browser/ssl/model/ios_ssl_blocking_page.h"
@@ -36,38 +36,26 @@
 namespace {
 
 scoped_refptr<net::X509Certificate> CreateFakeCert() {
-  // NSS requires that serial numbers be unique even for the same issuer;
-  // as all fake certificates will contain the same issuer name, it's
-  // necessary to ensure the serial number is unique, as otherwise
-  // NSS will fail to parse.
-  static base::AtomicSequenceNumber serial_number;
+  std::vector<uint8_t> cert_der =
+      net::x509_util::CreateUnusableCert("CN=Error");
 
-  std::unique_ptr<crypto::RSAPrivateKey> unused_key;
-  std::string cert_der;
-  if (!net::x509_util::CreateKeyAndSelfSignedCert(
-          "CN=Error", static_cast<uint32_t>(serial_number.GetNext()),
-          base::Time::Now() - base::Minutes(5),
-          base::Time::Now() + base::Minutes(5), &unused_key, &cert_der)) {
-    return nullptr;
-  }
-
-  return net::X509Certificate::CreateFromBytes(
-      base::as_bytes(base::make_span(cert_der)));
+  return net::X509Certificate::CreateFromBytes(cert_der);
 }
 
-}
+}  // namespace
 
 std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage>
 CreateSslBlockingPage(web::WebState* web_state, const GURL& url) {
-  DCHECK_EQ(kChromeInterstitialSslPath, url.path());
+  DCHECK_EQ(kChromeInterstitialSslPath, url.GetPath());
   // Fake parameters for SSL blocking page.
   GURL request_url("https://example.com");
   std::string url_param;
   if (net::GetValueForKeyInQuery(url, kChromeInterstitialSslUrlQueryKey,
                                  &url_param)) {
     GURL query_url_param(url_param);
-    if (query_url_param.is_valid())
+    if (query_url_param.is_valid()) {
       request_url = query_url_param;
+    }
   }
 
   bool overridable = false;
@@ -121,7 +109,7 @@ CreateSslBlockingPage(web::WebState* web_state, const GURL& url) {
           std::make_unique<
               security_interstitials::IOSBlockingPageMetricsHelper>(
               web_state, request_url, reporting_info),
-          GetApplicationContext()->GetApplicationLocale()));
+          GetApplicationContext()->GetApplicationLocaleStorage()->Get()));
 }
 
 std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage>
@@ -139,7 +127,7 @@ CreateCaptivePortalBlockingPage(web::WebState* web_state) {
           std::make_unique<
               security_interstitials::IOSBlockingPageMetricsHelper>(
               web_state, request_url, reporting_info),
-          GetApplicationContext()->GetApplicationLocale()));
+          GetApplicationContext()->GetApplicationLocaleStorage()->Get()));
 }
 
 std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage>
@@ -156,8 +144,9 @@ CreateSafeBrowsingBlockingPage(web::WebState* web_state, const GURL& url) {
   if (net::GetValueForKeyInQuery(
           url, kChromeInterstitialSafeBrowsingUrlQueryKey, &url_param)) {
     GURL query_url_param(url_param);
-    if (query_url_param.is_valid())
+    if (query_url_param.is_valid()) {
       request_url = query_url_param;
+    }
   }
 
   std::string type_param;
@@ -185,4 +174,30 @@ CreateSafeBrowsingBlockingPage(web::WebState* web_state, const GURL& url) {
   resource.threat_source = safe_browsing::ThreatSource::LOCAL_PVER4;
 
   return SafeBrowsingBlockingPage::Create(resource);
+}
+
+std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage>
+CreateEnterpriseBlockPage(web::WebState* web_state, const GURL& url) {
+  security_interstitials::UnsafeResource resource;
+  resource.url = url;
+  resource.threat_type =
+      safe_browsing::SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_BLOCK;
+  resource.weak_web_state = web_state->GetWeakPtr();
+  // Added to ensure that `threat_source` isn't considered UNKNOWN in this case.
+  resource.threat_source = safe_browsing::ThreatSource::LOCAL_PVER4;
+  return enterprise_connectors::IOSEnterpriseInterstitial::CreateBlockingPage(
+      resource);
+}
+
+std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage>
+CreateEnterpriseWarnPage(web::WebState* web_state, const GURL& url) {
+  security_interstitials::UnsafeResource resource;
+  resource.url = url;
+  resource.threat_type =
+      safe_browsing::SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_WARN;
+  resource.weak_web_state = web_state->GetWeakPtr();
+  // Added to ensure that `threat_source` isn't considered UNKNOWN in this case.
+  resource.threat_source = safe_browsing::ThreatSource::LOCAL_PVER4;
+  return enterprise_connectors::IOSEnterpriseInterstitial::CreateWarningPage(
+      resource);
 }

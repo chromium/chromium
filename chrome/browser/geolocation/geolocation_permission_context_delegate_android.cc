@@ -11,14 +11,18 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/webapps/installable/installed_webapp_bridge.h"
 #include "components/permissions/android/android_permission_util.h"
+#include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permission_util.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "content/public/browser/permission_descriptor_util.h"
+#include "content/public/browser/permission_request_description.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 GeolocationPermissionContextDelegateAndroid::
     GeolocationPermissionContextDelegateAndroid(Profile* profile)
@@ -28,13 +32,11 @@ GeolocationPermissionContextDelegateAndroid::
     ~GeolocationPermissionContextDelegateAndroid() = default;
 
 bool GeolocationPermissionContextDelegateAndroid::DecidePermission(
-    const permissions::PermissionRequestID& id,
-    const GURL& requesting_origin,
-    bool user_gesture,
+    const permissions::PermissionRequestData& request_data,
     permissions::BrowserPermissionCallback* callback,
     permissions::GeolocationPermissionContext* context) {
-  content::RenderFrameHost* rfh =
-      content::RenderFrameHost::FromID(id.global_render_frame_host_id());
+  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
+      request_data.id.global_render_frame_host_id());
   DCHECK(rfh);
 
   content::WebContents* web_contents =
@@ -43,20 +45,29 @@ bool GeolocationPermissionContextDelegateAndroid::DecidePermission(
 
   if (web_contents->GetDelegate() &&
       web_contents->GetDelegate()->GetInstalledWebappGeolocationContext()) {
+    auto data = permissions::PermissionRequestData(
+        context, request_data.id,
+        content::PermissionRequestDescription(
+            content::PermissionDescriptorUtil::
+                CreatePermissionDescriptorForPermissionType(
+                    blink::PermissionType::GEOLOCATION)),
+        request_data.requesting_origin,
+        permissions::PermissionUtil::GetLastCommittedOriginAsURL(
+            rfh->GetMainFrame()));
+    data.embedded_permission_request_descriptor =
+        request_data.embedded_permission_request_descriptor.Clone();
     InstalledWebappBridge::PermissionCallback permission_callback =
         base::BindOnce(
             &permissions::GeolocationPermissionContext::NotifyPermissionSet,
-            context->GetWeakPtr(), id, requesting_origin,
-            permissions::PermissionUtil::GetLastCommittedOriginAsURL(
-                rfh->GetMainFrame()),
-            std::move(*callback), false /* persist */);
+            context->GetWeakPtr(), std::move(data), std::move(*callback),
+            false /* persist */);
     InstalledWebappBridge::DecidePermission(
-        ContentSettingsType::GEOLOCATION, requesting_origin,
+        ContentSettingsType::GEOLOCATION, request_data.requesting_origin,
         web_contents->GetLastCommittedURL(), std::move(permission_callback));
     return true;
   }
   return GeolocationPermissionContextDelegate::DecidePermission(
-      id, requesting_origin, user_gesture, callback, context);
+      request_data, callback, context);
 }
 
 bool GeolocationPermissionContextDelegateAndroid::IsInteractable(
@@ -79,13 +90,10 @@ bool GeolocationPermissionContextDelegateAndroid::IsRequestingOriginDSE(
       TemplateURLServiceFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context));
   if (template_url_service) {
-    const TemplateURL* template_url =
-        template_url_service->GetDefaultSearchProvider();
-    if (template_url) {
-      dse_url = template_url->GenerateSearchURL(
-          template_url_service->search_terms_data());
-    }
+    url::Origin dse_origin =
+        template_url_service->GetDefaultSearchProviderOrigin();
+    return dse_origin.IsSameOriginWith(requesting_origin);
   }
 
-  return url::IsSameOriginWith(requesting_origin, dse_url);
+  return false;
 }

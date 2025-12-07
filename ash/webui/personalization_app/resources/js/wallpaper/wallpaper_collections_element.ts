@@ -14,24 +14,26 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
 import {WallpaperGridItemSelectedEvent} from 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
-import {isSeaPenEnabled, isSeaPenTextInputEnabled} from 'chrome://resources/ash/common/sea_pen/load_time_booleans.js';
+import {isManagedSeaPenEnabled, isSeaPenEnabled, isSeaPenTextInputEnabled} from 'chrome://resources/ash/common/sea_pen/load_time_booleans.js';
 import {cleanUpSeaPenQueryStates} from 'chrome://resources/ash/common/sea_pen/sea_pen_controller.js';
 import {getSeaPenStore} from 'chrome://resources/ash/common/sea_pen/sea_pen_store.js';
-import {isImageDataUrl, isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
+import {isImageDataUrl, isNonEmptyArray, isUrl} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
-import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import type {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {GooglePhotosEnablementState, WallpaperCollection, WallpaperImage} from '../../personalization_app.mojom-webui.js';
-import {isGooglePhotosIntegrationEnabled, isManagedSeaPenEnabled, isTimeOfDayWallpaperEnabled} from '../load_time_booleans.js';
+import type {WallpaperCollection, WallpaperImage} from '../../personalization_app.mojom-webui.js';
+import {GooglePhotosEnablementState} from '../../personalization_app.mojom-webui.js';
+import {isGooglePhotosIntegrationEnabled, isTimeOfDayWallpaperEnabled} from '../load_time_booleans.js';
 import {Paths, PersonalizationRouterElement} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {getCountText, isSelectionEvent} from '../utils.js';
 
-import {DefaultImageSymbol, kDefaultImageSymbol, kMaximumLocalImagePreviews} from './constants.js';
+import type {DefaultImageSymbol} from './constants.js';
+import {kDefaultImageSymbol, kMaximumLocalImagePreviews} from './constants.js';
 import {getLoadingPlaceholderAnimationDelay, getLoadingPlaceholders, getPathOrSymbol} from './utils.js';
 import {getTemplate} from './wallpaper_collections_element.html.js';
 import {fetchGooglePhotosEnabled, fetchLocalData, getDefaultImageThumbnail, initializeBackdropData} from './wallpaper_controller.js';
@@ -161,7 +163,7 @@ function getImages(
   for (const image of localImages) {
     const key = getPathOrSymbol(image);
     const data = localImageData[key];
-    if (isImageDataUrl(data)) {
+    if (isUrl(data) && isImageDataUrl(data)) {
       result.push(data);
     }
     // Add at most |kMaximumLocalImagePreviews| thumbnail urls.
@@ -202,7 +204,7 @@ function getLocalTile(
   // Count all images that failed to load and subtract them from "My Images"
   // count.
   const failureCount = Object.values(localImageData).reduce((result, next) => {
-    return !isImageDataUrl(next) ? result + 1 : result;
+    return (!isUrl(next) || !isImageDataUrl(next)) ? result + 1 : result;
   }, 0);
 
   const successCount = localImages.length - failureCount;
@@ -240,7 +242,7 @@ function getSeaPenPromptingTile(): SeaPenPromptingTile {
     type: TileType.SEA_PEN_PROMPTING,
     preview: [{
       url:
-          'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_tile.jpg',
+          'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_freeform.jpg',
     }],
   };
 }
@@ -402,7 +404,10 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
         },
       },
 
-      hasError_: Boolean,
+      hasError_: {
+        type: Boolean,
+        observer: 'onHasErrorChanged_',
+      },
 
       isSeaPenEnabled_: {
         type: Boolean,
@@ -493,18 +498,31 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
     return firstBackdropIndex;
   }
 
-  /**
-   * Notify that this element visibility has changed.
-   */
-  private async onHiddenChanged_(hidden: boolean) {
-    if (!hidden) {
-      document.title = this.i18n('wallpaperLabel');
-    }
+  private fireIronResize_() {
     afterNextRender(this, () => {
       this.$.grid.fire('iron-resize');
       (this.shadowRoot!.getElementById('promoted') as IronListElement | null)
           ?.fire('iron-resize');
     });
+  }
+
+  /**
+   * Notify that this element visibility has changed.
+   */
+  private onHiddenChanged_(hidden: boolean) {
+    if (!hidden) {
+      document.title = this.i18n('wallpaperLabel');
+    }
+    this.fireIronResize_();
+  }
+
+  private onHasErrorChanged_(hasError: boolean) {
+    if (hasError) {
+      // Skip updating visibility when `hasError` is true because the iron-list
+      // elements will already be hidden.
+      return;
+    }
+    this.fireIronResize_();
   }
 
   /**
@@ -832,7 +850,7 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
 
   private getSeaPenTemplatesTileLabel_(): string {
     return isSeaPenTextInputEnabled() ?
-        this.i18n('seaPenFreeformWallpaperTemplatesLabel') :
+        this.i18n('seaPenTemplatesWallpaperLabel') :
         this.i18n('seaPenLabel');
   }
 

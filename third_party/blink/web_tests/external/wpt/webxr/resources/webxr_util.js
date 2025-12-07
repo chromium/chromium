@@ -13,6 +13,8 @@
 // override this.
 var xr_debug = function(name, msg) {};
 
+let loaded = new Promise(resolve => document.addEventListener('DOMContentLoaded', resolve));
+
 function xr_promise_test(name, func, properties, glContextType, glContextProperties) {
   promise_test(async (t) => {
     if (glContextType === 'webgl2') {
@@ -60,6 +62,7 @@ function xr_promise_test(name, func, properties, glContextType, glContextPropert
     let canvas = null;
     if (glContextType) {
       canvas = document.createElement('canvas');
+      await loaded;
       document.body.appendChild(canvas);
       gl = canvas.getContext(glContextType, glContextProperties);
     }
@@ -167,13 +170,14 @@ function xr_session_promise_test(
     properties,
     'webgl',
     {alpha: false, antialias: false, ...glcontextProperties}
-    );
+  );
   xr_promise_test(
     name + ' - webgl2',
     runTest,
     properties,
     'webgl2',
-    {alpha: false, antialias: false, ...glcontextProperties});
+    {alpha: false, antialias: false, ...glcontextProperties}
+  );
 }
 
 

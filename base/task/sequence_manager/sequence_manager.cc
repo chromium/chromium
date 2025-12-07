@@ -6,12 +6,10 @@
 
 #include <utility>
 
-namespace base {
-namespace sequence_manager {
+namespace base::sequence_manager {
 
 namespace {
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
 perfetto::protos::pbzero::SequenceManagerTask::Priority
 DefaultTaskPriorityToProto(TaskQueue::QueuePriority priority) {
   DCHECK_EQ(priority, static_cast<TaskQueue::QueuePriority>(
@@ -19,7 +17,6 @@ DefaultTaskPriorityToProto(TaskQueue::QueuePriority priority) {
   return perfetto::protos::pbzero::SequenceManagerTask::Priority::
       NORMAL_PRIORITY;
 }
-#endif
 
 void CheckPriorities(TaskQueue::QueuePriority priority_count,
                      TaskQueue::QueuePriority default_priority) {
@@ -32,21 +29,13 @@ void CheckPriorities(TaskQueue::QueuePriority priority_count,
 
 }  // namespace
 
-SequenceManager::MetricRecordingSettings::MetricRecordingSettings(
-    double task_thread_time_sampling_rate)
-    : task_sampling_rate_for_recording_cpu_time(
-          base::ThreadTicks::IsSupported() ? task_thread_time_sampling_rate
-                                           : 0) {}
-
 // static
 SequenceManager::PrioritySettings
 SequenceManager::PrioritySettings::CreateDefault() {
   PrioritySettings settings(
       TaskQueue::DefaultQueuePriority::kQueuePriorityCount,
       TaskQueue::DefaultQueuePriority::kNormalPriority);
-#if BUILDFLAG(ENABLE_BASE_TRACING)
   settings.SetProtoPriorityConverter(&DefaultTaskPriorityToProto);
-#endif
   return settings;
 }
 
@@ -82,7 +71,6 @@ SequenceManager::PrioritySettings::PrioritySettings(
 }
 #endif
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
 perfetto::protos::pbzero::SequenceManagerTask::Priority
 SequenceManager::PrioritySettings::TaskPriorityToProto(
     TaskQueue::QueuePriority priority) const {
@@ -92,7 +80,6 @@ SequenceManager::PrioritySettings::TaskPriorityToProto(
       << "A tracing priority-to-proto-priority function was not provided";
   return proto_priority_converter_(priority);
 }
-#endif
 
 SequenceManager::PrioritySettings::~PrioritySettings() = default;
 
@@ -120,9 +107,8 @@ SequenceManager::Settings::Builder::SetMessagePumpType(
 }
 
 SequenceManager::Settings::Builder&
-SequenceManager::Settings::Builder::SetRandomisedSamplingEnabled(
-    bool randomised_sampling_enabled_val) {
-  settings_.randomised_sampling_enabled = randomised_sampling_enabled_val;
+SequenceManager::Settings::Builder::SetShouldSampleCPUTime(bool enable) {
+  settings_.sample_cpu_time = enable;
   return *this;
 }
 
@@ -150,6 +136,24 @@ SequenceManager::Settings::Builder&
 SequenceManager::Settings::Builder::SetPrioritySettings(
     SequenceManager::PrioritySettings settings) {
   settings_.priority_settings = std::move(settings);
+  return *this;
+}
+
+SequenceManager::Settings::Builder&
+SequenceManager::Settings::Builder::SetIsMainThread(bool is_main_thread_val) {
+  settings_.is_main_thread = is_main_thread_val;
+  return *this;
+}
+
+SequenceManager::Settings::Builder&
+SequenceManager::Settings::Builder::SetShouldReportLockMetrics(bool enable) {
+  settings_.should_report_lock_metrics = enable;
+  return *this;
+}
+
+SequenceManager::Settings::Builder&
+SequenceManager::Settings::Builder::SetShouldBlockOnScopedFences(bool enable) {
+  settings_.should_block_on_scoped_fences = enable;
   return *this;
 }
 
@@ -188,5 +192,8 @@ SequenceManager::Settings SequenceManager::Settings::Builder::Build() {
   return std::move(settings_);
 }
 
-}  // namespace sequence_manager
-}  // namespace base
+SequenceManagerSettings::SequenceManagerSettings(
+    SequenceManager::Settings settings)
+    : settings(std::move(settings)) {}
+
+}  // namespace base::sequence_manager

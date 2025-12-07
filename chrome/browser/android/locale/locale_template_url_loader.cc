@@ -11,28 +11,26 @@
 #include "base/debug/dump_without_crashing.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/util.h"
+#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/locale/jni_headers/LocaleTemplateUrlLoader_jni.h"
 
-using base::android::JavaParamRef;
-using base::android::ScopedJavaGlobalRef;
-using base::android::ScopedJavaLocalRef;
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
+using base::android::JavaRef;
+using base::android::ScopedJavaGlobalRef;
+using base::android::ScopedJavaLocalRef;
 
-static jlong JNI_LocaleTemplateUrlLoader_Init(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& jlocale,
-    Profile* profile) {
+static jlong JNI_LocaleTemplateUrlLoader_Init(JNIEnv* env,
+                                              std::string& locale,
+                                              Profile* profile) {
   return reinterpret_cast<intptr_t>(new LocaleTemplateUrlLoader(
-      ConvertJavaStringToUTF8(env, jlocale),
-      TemplateURLServiceFactory::GetForProfile(profile), profile));
+      locale, TemplateURLServiceFactory::GetForProfile(profile), profile));
 }
 
 LocaleTemplateUrlLoader::LocaleTemplateUrlLoader(const std::string& locale,
@@ -191,4 +189,6 @@ int LocaleTemplateUrlLoader::GetDesignatedSearchEngineForChina() {
   return TemplateURLPrepopulateData::sogou.id;
 }
 
-LocaleTemplateUrlLoader::~LocaleTemplateUrlLoader() {}
+LocaleTemplateUrlLoader::~LocaleTemplateUrlLoader() = default;
+
+DEFINE_JNI(LocaleTemplateUrlLoader)

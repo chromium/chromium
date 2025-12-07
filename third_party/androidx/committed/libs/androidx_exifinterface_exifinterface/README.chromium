@@ -1,0 +1,20 @@
+Name: ExifInterface
+Short Name: exifinterface
+URL: https://dl.google.com/dl/android/maven2/androidx/exifinterface/exifinterface/1.4.1/exifinterface-1.4.1.aar
+Version: 1.4.1
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+Android Support ExifInterface
+
+See also: https://developer.android.com/jetpack/androidx/releases/exifinterface#1.4.1
+
+
+Local Modifications:
+No modifications.

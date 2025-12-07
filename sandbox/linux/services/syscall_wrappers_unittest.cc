@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/linux/services/syscall_wrappers.h"
 
 #include <fcntl.h>
@@ -17,6 +12,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/page_size.h"
 #include "base/posix/eintr_wrapper.h"
@@ -98,8 +94,8 @@ TEST(SyscallWrappers, LinuxSigSet) {
   ASSERT_EQ(0, sigaddset(&sigset, LINUX_SIGSEGV));
   ASSERT_EQ(0, sigaddset(&sigset, LINUX_SIGBUS));
   uint64_t linux_sigset = 0;
-  std::memcpy(&linux_sigset, &sigset,
-              std::min(sizeof(sigset), sizeof(linux_sigset)));
+  UNSAFE_TODO(std::memcpy(&linux_sigset, &sigset,
+                          std::min(sizeof(sigset), sizeof(linux_sigset))));
   EXPECT_EQ((1ULL << (LINUX_SIGSEGV - 1)) | (1ULL << (LINUX_SIGBUS - 1)),
             linux_sigset);
 }
@@ -113,12 +109,13 @@ TEST(SyscallWrappers, Stat) {
   // will right-align them on a page, with a guard page after.
   char* two_pages = static_cast<char*>(TestUtils::MapPagesOrDie(2));
   TestUtils::MprotectLastPageOrDie(two_pages, 2);
-  char* page1_end = two_pages + base::GetPageSize();
+  char* page1_end = UNSAFE_TODO(two_pages + base::GetPageSize());
 
   // First, check that calling stat with |stat_buf| pointing to the last byte on
   // a page causes EFAULT.
-  int res = sys_stat(tmp_file.full_file_name(),
-                     reinterpret_cast<struct kernel_stat*>(page1_end - 1));
+  int res = sys_stat(
+      tmp_file.full_file_name(),
+      reinterpret_cast<struct kernel_stat*>(UNSAFE_TODO(page1_end - 1)));
   ASSERT_EQ(res, -1);
   if (res < 0 && errno == EOVERFLOW) {
     GTEST_SKIP();
@@ -127,9 +124,9 @@ TEST(SyscallWrappers, Stat) {
 
   // Now, check that we have the correctly sized stat structure.
   struct kernel_stat* sb = reinterpret_cast<struct kernel_stat*>(
-      page1_end - sizeof(struct kernel_stat));
+      UNSAFE_TODO(page1_end - sizeof(struct kernel_stat)));
   // Memset to c's so we can check the kernel zero'd the padding...
-  memset(sb, 'c', sizeof(struct kernel_stat));
+  UNSAFE_TODO(memset(sb, 'c', sizeof(struct kernel_stat)));
   res = sys_stat(tmp_file.full_file_name(), sb);
   ASSERT_EQ(res, 0);
 
@@ -184,20 +181,20 @@ TEST(SyscallWrappers, Stat64) {
   // will right-align them on a page, with a guard page after.
   char* two_pages = static_cast<char*>(TestUtils::MapPagesOrDie(2));
   TestUtils::MprotectLastPageOrDie(two_pages, 2);
-  char* page1_end = two_pages + base::GetPageSize();
+  char* page1_end = UNSAFE_TODO(two_pages + base::GetPageSize());
 
   // First, check that calling stat with |stat_buf| pointing to the last byte on
   // a page causes EFAULT.
-  int res =
-      sys_fstatat64(AT_FDCWD, tmp_file.full_file_name(),
-                    reinterpret_cast<struct kernel_stat64*>(page1_end - 1), 0);
+  int res = sys_fstatat64(
+      AT_FDCWD, tmp_file.full_file_name(),
+      reinterpret_cast<struct kernel_stat64*>(UNSAFE_TODO(page1_end - 1)), 0);
   ASSERT_EQ(res, -1);
   ASSERT_EQ(errno, EFAULT);
 
   // Now, check that we have the correctly sized stat structure.
   struct kernel_stat64* sb = reinterpret_cast<struct kernel_stat64*>(
-      page1_end - sizeof(struct kernel_stat64));
-  memset(sb, 0, sizeof(struct kernel_stat64));
+      UNSAFE_TODO(page1_end - sizeof(struct kernel_stat64)));
+  UNSAFE_TODO(memset(sb, 0, sizeof(struct kernel_stat64)));
   res = sys_fstatat64(AT_FDCWD, tmp_file.full_file_name(), sb, 0);
   ASSERT_EQ(res, 0);
 

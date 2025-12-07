@@ -5,7 +5,7 @@
 import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 
-assert(is_chromeos_ash, "Projector is ChromeOS only")
+assert(is_chromeos, "Projector is ChromeOS only")
 
 js_library("mock_app") {
   sources = [ "app_bin.js" ]

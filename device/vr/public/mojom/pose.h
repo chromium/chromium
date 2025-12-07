@@ -51,6 +51,8 @@ class COMPONENT_EXPORT(VR_PUBLIC_TYPEMAPS) Pose {
   // Returns the underlying matrix representation of the pose.
   const gfx::Transform& ToTransform() const;
 
+  std::string ToString() const;
+
  private:
   gfx::Point3F position_;
   gfx::Quaternion orientation_;

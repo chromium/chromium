@@ -1,0 +1,7 @@
+# TODO(crbug.com/417606867): Remove the \content\ allow-list below,
+# when test moves away from using it.
+specific_include_rules = {
+  "supplemental_device_picker_producer_unittest\.cc": [
+    "+content/public/test/browser_task_environment.h",
+  ],
+}

@@ -7,13 +7,14 @@
 
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
-namespace WTF {
+namespace blink {
 
 // The underlying storage that keeps the map of unique AtomicStrings. This is
 // thread safe and there is a single table for all threads. Adding and removing
@@ -41,16 +42,14 @@ class WTF_EXPORT AtomicStringTable final {
   // convert the string to save memory if possible.
   scoped_refptr<StringImpl> Add(StringImpl*);
   scoped_refptr<StringImpl> Add(scoped_refptr<StringImpl>&&);
-  scoped_refptr<StringImpl> Add(const LChar* chars, unsigned length);
-  scoped_refptr<StringImpl> Add(const UChar* chars,
-                                unsigned length,
+  scoped_refptr<StringImpl> Add(base::span<const LChar> chars);
+  scoped_refptr<StringImpl> Add(base::span<const UChar> chars,
                                 AtomicStringUCharEncoding encoding);
+  scoped_refptr<StringImpl> Add(const StringView& string_view);
 
   // Adding UTF8.
   // Returns null if the characters contain invalid utf8 sequences.
-  // Pass null for the charactersEnd to automatically detect the length.
-  scoped_refptr<StringImpl> AddUTF8(const char* characters_start,
-                                    const char* characters_end);
+  scoped_refptr<StringImpl> AddUTF8(base::span<const uint8_t> characters_span);
 
   // Returned as part of the WeakFind*() APIs below. Represents the result of
   // the non-creating lookup within the AtomicStringTable. See the WeakFind*()
@@ -157,8 +156,6 @@ inline bool operator==(const AtomicString& lhs,
   return lhs.Impl() == rhs;
 }
 
-}  // namespace WTF
-
-using WTF::AtomicStringTable;
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_ATOMIC_STRING_TABLE_H_

@@ -30,16 +30,6 @@ DeviceStatus::DeviceStatus(BatteryStatus battery,
       battery_percentage(battery_percentage),
       network_status(network) {}
 
-bool DeviceStatus::operator==(const DeviceStatus& rhs) const {
-  return network_status == rhs.network_status &&
-         battery_status == rhs.battery_status &&
-         battery_percentage == rhs.battery_percentage;
-}
-
-bool DeviceStatus::operator!=(const DeviceStatus& rhs) const {
-  return !(*this == rhs);
-}
-
 DeviceStatus::Result DeviceStatus::MeetsCondition(
     const SchedulingParams& params,
     int download_battery_percentage) const {
@@ -62,7 +52,7 @@ DeviceStatus::Result DeviceStatus::MeetsCondition(
           battery_status == BatteryStatus::CHARGING;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   switch (params.network_requirements) {
     case SchedulingParams::NetworkRequirements::NONE:
@@ -75,7 +65,7 @@ DeviceStatus::Result DeviceStatus::MeetsCondition(
           network_status == NetworkStatus::UNMETERED;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return result;
 }

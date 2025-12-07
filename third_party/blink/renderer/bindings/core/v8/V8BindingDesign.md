@@ -141,7 +141,7 @@ An isolated world is a world where a content script of a Chrome extension is
 executed.
 An isolate of the main thread has 1 main world and N isolated worlds.
 An isolate of a worker thread has 1 worker world and 0 isolated world.
-[This diagram](https://drive.google.com/file/d/0B1obCOyvTnPKQmJEWkVtOEN2TmM/view?usp=sharing)
+[This diagram](https://drive.google.com/file/d/0B1obCOyvTnPKQmJEWkVtOEN2TmM/view?usp=sharing&resourcekey=0-m_AA1o8fpD-1GKVgkKQQ4g)
 will be helpful to understand the relationship.
 
 All worlds in one isolate share underlying C++ DOM objects,
@@ -185,7 +185,7 @@ Each world has its own context.
 As a result, when we execute the main thread where N frames and M worlds
 are involved, there exists N * M contexts. In other words, one context is
 created for each pair of (frame, world).
-[This diagram](https://drive.google.com/file/d/0B1obCOyvTnPKSERSMmpRVjVKQWc/view?usp=sharing)
+[This diagram](https://drive.google.com/file/d/0B1obCOyvTnPKSERSMmpRVjVKQWc/view?resourcekey=0-uq2u_FEcWbEtoI3REw3C_w)
 will be helpful to understand the relationship.
 
 The main thread can have only one current context at one time,

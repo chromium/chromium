@@ -122,8 +122,8 @@ void KeyboardHandler::HandleKeyboardChange(const base::Value::List& args) {
 
 void KeyboardHandler::UpdateKeyboards() {
   bool physical_keyboard = false;
-  // In tablet mode, physical keybards are disabled / ignored.
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  // In tablet mode, physical keyboards are disabled / ignored.
+  if (!display::Screen::Get()->InTabletMode()) {
     physical_keyboard = true;
   }
   if (!physical_keyboard) {

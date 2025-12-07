@@ -26,7 +26,8 @@ namespace {
 // Parse a JSON query string into a base::Value.
 base::Value ParseJsonQueryString(const std::string& query) {
   const std::string json = base::UnescapeBinaryURLComponent(query);
-  std::optional<base::Value> value = base::JSONReader::Read(json);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   return value ? std::move(*value) : base::Value();
 }
 
@@ -62,8 +63,8 @@ TEST(FileManagerUrlUtilTest, GetFileManagerMainPageUrlWithParams_NoFileTypes) {
   EXPECT_EQ(url::Origin::Create(url).GetURL(),
             file_manager::util::GetFileManagerURL());
   // Confirm that "%20" is used instead of "+" in the query.
-  EXPECT_TRUE(url.query().find("+") == std::string::npos);
-  EXPECT_TRUE(url.query().find("%20") != std::string::npos);
+  EXPECT_TRUE(url.GetQuery().find("+") == std::string::npos);
+  EXPECT_TRUE(url.GetQuery().find("%20") != std::string::npos);
   // With DriveFS, Drive is always allowed where native paths are.
   EXPECT_EQ(base::StringPrintf(
                 "{\n"
@@ -77,7 +78,7 @@ TEST(FileManagerUrlUtilTest, GetFileManagerMainPageUrlWithParams_NoFileTypes) {
                 "   \"title\": \"some title\",\n"
                 "   \"type\": \"open-file\"\n"
                 "}\n"),
-            PrettyPrintEscapedJson(url.query()));
+            PrettyPrintEscapedJson(url.GetQuery()));
 }
 
 TEST(FileManagerUrlUtilTest,
@@ -101,13 +102,14 @@ TEST(FileManagerUrlUtilTest,
       // to the file manager URL launch parameters.
       {"foo", "bar"});
 
-  EXPECT_EQ(file_manager::util::GetFileManagerURL().scheme(), url.scheme());
+  EXPECT_EQ(file_manager::util::GetFileManagerURL().GetScheme(),
+            url.GetScheme());
   // URL path can be / or /main.html depending on which version of the app is
   // launched. For the legacy, we'd expect /main.html, otherwise, just /.
-  EXPECT_THAT(url.path(), ::testing::StartsWith("/"));
+  EXPECT_THAT(url.GetPath(), ::testing::StartsWith("/"));
   // Confirm that "%20" is used instead of "+" in the query.
-  EXPECT_TRUE(url.query().find("+") == std::string::npos);
-  EXPECT_TRUE(url.query().find("%20") != std::string::npos);
+  EXPECT_TRUE(url.GetQuery().find("+") == std::string::npos);
+  EXPECT_TRUE(url.GetQuery().find("%20") != std::string::npos);
   // The escaped query is hard to read. Pretty print the escaped JSON.
   EXPECT_EQ(
       "{\n"
@@ -133,7 +135,7 @@ TEST(FileManagerUrlUtilTest,
       "   } ],\n"
       "   \"volumeFilter\": [ \"foo\", \"bar\" ]\n"
       "}\n",
-      PrettyPrintEscapedJson(url.query()));
+      PrettyPrintEscapedJson(url.GetQuery()));
 }
 
 }  // namespace

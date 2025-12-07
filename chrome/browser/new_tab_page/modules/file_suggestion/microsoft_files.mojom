@@ -1,0 +1,20 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module file_suggestion.mojom;
+
+import "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion.mojom";
+
+// Browser-side handler for file retrieval requests from NTP Module UI.
+// The files come from a user's SharePoint and OneDrive.
+interface MicrosoftFilesPageHandler {
+  // Fetches list of document suggestions relevant to the user.
+  // Will return an empty list of files after `DismissModule()` has
+  // been recently called.
+  GetFiles() => (array<File> files);
+  // Dismiss module for fixed amount of time.
+  DismissModule();
+  // Restores the module immediately.
+  RestoreModule();
+};

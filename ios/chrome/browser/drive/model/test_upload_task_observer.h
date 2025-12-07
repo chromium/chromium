@@ -23,8 +23,8 @@ class TestUploadTaskObserver final : public UploadTaskObserver {
   void OnUploadUpdated(UploadTask* task) final;
   void OnUploadDestroyed(UploadTask* task) final;
 
-  raw_ptr<UploadTask> updated_upload_ = nullptr;
-  raw_ptr<UploadTask> destroyed_upload_ = nullptr;
+  raw_ptr<UploadTask, DanglingUntriaged> updated_upload_ = nullptr;
+  raw_ptr<UploadTask, DanglingUntriaged> destroyed_upload_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_DRIVE_MODEL_TEST_UPLOAD_TASK_OBSERVER_H_

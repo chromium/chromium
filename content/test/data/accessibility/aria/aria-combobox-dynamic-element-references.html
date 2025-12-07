@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<!--
+@BLINK-ALLOW:focus*
+@BLINK-ALLOW:haspopup*
+@EXECUTE-AND-WAIT-FOR:setActiveDescendant()
+@EXECUTE-AND-WAIT-FOR:addActiveDescendantToPage()
+-->
+<html>
+  <body>
+    <div tabindex="0" id="status" aria-label="Working"></div>
+    <div id="state_label">State</div>
+    <input id="combobox"
+        type="text"
+        role="combobox"
+        aria-autocomplete="list"
+        aria-expanded="true"
+        aria-haspopup="listbox"
+        aria-labelledby="state_label"
+        aria-owns="state_list"
+        aria-readonly="true"
+        autofocus>
+    <ul id="state_list" role="listbox" onclick="console.log('hi')">
+      <li id="state1" role="option">Alabama</li>
+    </ul>
+  </body>
+</html>
+<script>
+  let state2;
+
+  function setActiveDescendant() {
+    state2 = document.createElement('li');
+    state2.id = 'state2';
+    state2.setAttribute('role', 'option');
+    state2.innerText = 'Alaska';
+
+    combobox.ariaActiveDescendantElement = state2;
+    document.title='activedescendant';
+    return 'activedescendant';
+  }
+
+  function addActiveDescendantToPage() {
+    state_list.appendChild(state2);
+    document.title = 'done'
+    return 'done';
+  }
+
+</script>

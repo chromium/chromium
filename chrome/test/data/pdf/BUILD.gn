@@ -10,7 +10,6 @@ assert(enable_pdf, "enable_pdf check failed")
 build_webui_tests("build") {
   resource_path_prefix = "pdf"
 
-  ts_tsconfig_base = "../../../../tools/typescript/tsconfig_base_polymer.json"
   ts_path_mappings =
       [ "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/*|" +
         rebase_path("$root_gen_dir/chrome/browser/resources/pdf/tsc/*",
@@ -33,6 +32,7 @@ build_webui_tests("build") {
     "params_parser_test.ts",
     "plugin_controller_test.ts",
     "post_message_proxy_test.ts",
+    "save_controls_mixin_test.ts",
     "scroll_with_form_field_focused_test.ts",
     "swipe_detector_test.ts",
     "test_util.ts",
@@ -40,9 +40,11 @@ build_webui_tests("build") {
     "touch_handling_test.ts",
     "viewer_attachment_bar_test.ts",
     "viewer_attachment_test.ts",
+    "viewer_file_picker_test.ts",
     "viewer_password_dialog_test.ts",
     "viewer_pdf_sidenav_test.ts",
     "viewer_properties_dialog_test.ts",
+    "viewer_searchify_test.ts",
     "viewer_thumbnail_bar_test.ts",
     "viewer_thumbnail_test.ts",
     "viewer_toolbar_test.ts",
@@ -51,28 +53,60 @@ build_webui_tests("build") {
     "zoom_manager_test.ts",
   ]
 
-  if (enable_ink) {
-    files += [
-      "annotations_feature_enabled_test.ts",
-      "annotations_toolbar_test.ts",
-      "viewer_toolbar_dropdown_test.ts",
-    ]
-  }
-
   if (enable_pdf_ink2) {
     files += [
+      "caret_browsing_mode_test.ts",
+      "ink2_annotation_brush_mixin_test.ts",
+      "ink2_annotation_text_mixin_test.ts",
+      "ink2_before_unload_stroke_test.ts",
+      "ink2_before_unload_undo_test.ts",
+      "ink2_bottom_toolbar_dropdown_test.ts",
+      "ink2_bottom_toolbar_test.ts",
+      "ink2_brush_selector_test.ts",
+      "ink2_color_selector_test.ts",
+      "ink2_manager_test.ts",
       "ink2_save_test.ts",
       "ink2_side_panel_test.ts",
+      "ink2_size_selector_test.ts",
       "ink2_test.ts",
+      "ink2_text_alignment_selector_test.ts",
+      "ink2_text_bottom_toolbar_test.ts",
+      "ink2_text_box_test.ts",
+      "ink2_text_side_panel_test.ts",
+      "ink2_text_styles_selector_test.ts",
       "ink2_viewer_toolbar_test.ts",
+      "selectable_icon_button_test.ts",
     ]
 
-    if (!is_chromeos_ash) {
+    if (enable_pdf_save_to_drive) {
+      files += [
+        "ink2_save_to_drive_cancelled_before_unload_test.ts",
+        "ink2_save_to_drive_success_before_unload_test.ts",
+        "ink2_save_to_drive_uploading_more_edits_before_unload_test.ts",
+      ]
+    }
+
+    if (!is_chromeos) {
       files += [ "ink2_disabled_test.ts" ]
     }
   }
 
-  if (is_chromeos_ash) {
+  if (enable_pdf_save_to_drive) {
+    files += [
+      "circular_progress_ring_test.ts",
+      "save_to_drive_before_unload_uploading_test.ts",
+      "save_to_drive_bubble_test.ts",
+      "save_to_drive_controls_test.ts",
+      "save_to_drive_test.ts",
+      "test_pdf_viewer_private_proxy.ts",
+    ]
+  }
+
+  if (enable_pdf_ink2 || enable_pdf_save_to_drive) {
+    files += [ "test_before_unload_proxy.ts" ]
+  }
+
+  if (is_chromeos) {
     files += [ "printing_icon_test.ts" ]
   }
 
@@ -81,17 +115,14 @@ build_webui_tests("build") {
     "//tools/typescript/definitions/chrome_test.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/mime_handler_private.d.ts",
+    "//tools/typescript/definitions/pdf_viewer_private.d.ts",
     "//tools/typescript/definitions/pending.d.ts",
   ]
-  if (enable_ink) {
-    ts_definitions +=
-        [ "//chrome/browser/resources/pdf/ink/drawing_canvas.d.ts" ]
-  }
 
   ts_deps = [
     "../webui:build_ts",
     "//chrome/browser/resources/pdf:build_ts",
-    "//third_party/polymer/v3_0:library",
+    "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
 }

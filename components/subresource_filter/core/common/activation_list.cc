@@ -31,8 +31,7 @@ std::ostream& operator<<(std::ostream& os, const ActivationList& type) {
       os << "ABUSIVE";
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return os;
 }

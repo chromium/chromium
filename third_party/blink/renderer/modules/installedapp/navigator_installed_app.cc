@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "third_party/blink/renderer/bindings/core/v8/callback_promise_adapter.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -27,17 +26,12 @@ NavigatorInstalledApp::getInstalledRelatedApps(
     ExceptionState& exception_state) {
   // [SecureContext] from the IDL ensures this.
   DCHECK(ExecutionContext::From(script_state)->IsSecureContext());
-  auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolver<IDLSequence<RelatedApplication>>>(
-      script_state, exception_state.GetContext());
-  auto promise = resolver->Promise();
 
   if (!navigator.DomWindow()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The object is no longer associated to a document.");
-    resolver->Reject(exception_state);
-    return promise;
+    return EmptyPromise();
   }
 
   if (!navigator.DomWindow()->GetFrame()->IsOutermostMainFrame()) {
@@ -45,16 +39,15 @@ NavigatorInstalledApp::getInstalledRelatedApps(
         DOMExceptionCode::kInvalidStateError,
         "getInstalledRelatedApps() is only supported in "
         "top-level browsing contexts.");
-    resolver->Reject(exception_state);
-    return promise;
+    return EmptyPromise();
   }
 
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolver<IDLSequence<RelatedApplication>>>(
+      script_state, exception_state.GetContext());
   auto* app_controller = InstalledAppController::From(*navigator.DomWindow());
-  app_controller->GetInstalledRelatedApps(
-      std::make_unique<
-          CallbackPromiseAdapter<IDLSequence<RelatedApplication>, void>>(
-          resolver));
-  return promise;
+  app_controller->GetInstalledRelatedApps(resolver);
+  return resolver->Promise();
 }
 
 }  // namespace blink

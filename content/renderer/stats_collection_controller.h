@@ -20,7 +20,9 @@ namespace content {
 class StatsCollectionController
     : public gin::Wrappable<StatsCollectionController> {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {
+      {gin::kEmbedderNativeGin},
+      gin::kStatsCollectionController};
 
   StatsCollectionController(const StatsCollectionController&) = delete;
   StatsCollectionController& operator=(const StatsCollectionController&) =
@@ -28,13 +30,15 @@ class StatsCollectionController
 
   static void Install(blink::WebLocalFrame* frame);
 
- private:
-  StatsCollectionController();
-  ~StatsCollectionController() override;
+  // Make public for cppgc::MakeGarbageCollected.
+  StatsCollectionController() = default;
+  ~StatsCollectionController() override = default;
 
+ private:
   // gin::WrappableBase
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
+  const gin::WrapperInfo* wrapper_info() const override;
 
   // Retrieves a histogram and returns a JSON representation of it.
   std::string GetHistogram(const std::string& histogram_name);

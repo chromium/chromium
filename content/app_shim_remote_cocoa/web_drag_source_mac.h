@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/common/drop_data.h"
-#include "url/gurl.h"
 
 namespace content {
 struct DropData;

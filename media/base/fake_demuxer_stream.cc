@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/base/fake_demuxer_stream.h"
 
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <vector>
 
@@ -39,9 +36,25 @@ const int kDefaultStartWidth = 320;
 const int kDefaultStartHeight = 240;
 const int kDefaultWidthDelta = 4;
 const int kDefaultHeightDelta = 3;
-const uint8_t kKeyId[] = {0x00, 0x01, 0x02, 0x03};
-const uint8_t kIv[] = {0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27,
-                       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+const auto kKeyId = std::to_array<uint8_t>({0x00, 0x01, 0x02, 0x03});
+const auto kIv = std::to_array<uint8_t>({
+    0x20,
+    0x21,
+    0x22,
+    0x23,
+    0x24,
+    0x25,
+    0x26,
+    0x27,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+});
 
 FakeDemuxerStream::FakeDemuxerStream(int num_configs,
                                      int num_buffers_in_one_config,
@@ -85,8 +98,7 @@ void FakeDemuxerStream::Initialize() {
   next_read_num_ = 0;
 }
 
-// Only return one buffer at a time so we ignore the count.
-void FakeDemuxerStream::Read(uint32_t /*count*/, ReadCB read_cb) {
+void FakeDemuxerStream::Read(uint32_t count, ReadCB read_cb) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(!read_cb_);
 
@@ -96,11 +108,11 @@ void FakeDemuxerStream::Read(uint32_t /*count*/, ReadCB read_cb) {
     return;
 
   DCHECK(read_to_hold_ == -1 || read_to_hold_ > next_read_num_);
-  DoRead();
+  DoRead(count);
 }
 
 AudioDecoderConfig FakeDemuxerStream::audio_decoder_config() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 VideoDecoderConfig FakeDemuxerStream::video_decoder_config() {
@@ -183,9 +195,10 @@ void FakeDemuxerStream::UpdateVideoDecoderConfig() {
   next_size_.set_height(next_size_.height() + coded_size_delta_.y());
 }
 
-void FakeDemuxerStream::DoRead() {
+void FakeDemuxerStream::DoRead(int read_count) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(read_cb_);
+  DCHECK_GE(read_count, 1);
 
   next_read_num_++;
 
@@ -203,25 +216,35 @@ void FakeDemuxerStream::DoRead() {
     return;
   }
 
-  scoped_refptr<DecoderBuffer> buffer = CreateFakeVideoBufferForTest(
-      video_decoder_config_, current_timestamp_, duration_);
+  DemuxerStream::DecoderBufferVector output_buffers;
+  for (int i = 0; i < read_count; ++i) {
+    scoped_refptr<DecoderBuffer> buffer = CreateFakeVideoBufferForTest(
+        video_decoder_config_, current_timestamp_, duration_);
 
-  // TODO(xhwang): Output out-of-order buffers if needed.
-  if (is_encrypted_) {
-    buffer->set_decrypt_config(DecryptConfig::CreateCencConfig(
-        std::string(kKeyId, kKeyId + std::size(kKeyId)),
-        std::string(kIv, kIv + std::size(kIv)), std::vector<SubsampleEntry>()));
+    // TODO(xhwang): Output out-of-order buffers if needed.
+    if (is_encrypted_) {
+      buffer->set_decrypt_config(DecryptConfig::CreateCencConfig(
+          std::string(kKeyId.data(), base::span<const uint8_t>(kKeyId)
+                                         .subspan(std::size(kKeyId))
+                                         .data()),
+          std::string(
+              kIv.data(),
+              base::span<const uint8_t>(kIv).subspan(std::size(kIv)).data()),
+          std::vector<SubsampleEntry>()));
+    }
+    buffer->set_timestamp(current_timestamp_);
+    buffer->set_duration(duration_);
+    current_timestamp_ += duration_;
+
+    num_buffers_left_in_current_config_--;
+    if (num_buffers_left_in_current_config_ == 0) {
+      num_configs_left_--;
+    }
+
+    num_buffers_returned_++;
+    output_buffers.emplace_back(std::move(buffer));
   }
-  buffer->set_timestamp(current_timestamp_);
-  buffer->set_duration(duration_);
-  current_timestamp_ += duration_;
-
-  num_buffers_left_in_current_config_--;
-  if (num_buffers_left_in_current_config_ == 0)
-    num_configs_left_--;
-
-  num_buffers_returned_++;
-  std::move(read_cb_).Run(kOk, {std::move(buffer)});
+  std::move(read_cb_).Run(kOk, std::move(output_buffers));
 }
 
 FakeMediaResource::FakeMediaResource(int num_video_configs,

@@ -4,12 +4,12 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/secure_enclave_client.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/secure_enclave_client_impl.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/shared_command_constants.h"
 
@@ -26,8 +26,8 @@ std::unique_ptr<SecureEnclaveClient>* GetTestInstanceStorage() {
 // `wrapped_label`.
 bool CheckEqual(base::span<const uint8_t> wrapped_label,
                 const std::string& label) {
-  auto label_span = base::as_bytes(base::make_span(label));
-  return base::ranges::equal(wrapped_label, label_span);
+  auto label_span = base::as_byte_span(label);
+  return std::ranges::equal(wrapped_label, label_span);
 }
 
 }  // namespace
@@ -61,8 +61,7 @@ SecureEnclaveClient::GetTypeFromWrappedKey(
     return SecureEnclaveClient::KeyType::kTemporary;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 
 // static

@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_MEDIA_AUDIO_OUTPUT_STREAM_OBSERVER_IMPL_H_
 #define CONTENT_BROWSER_RENDERER_HOST_MEDIA_AUDIO_OUTPUT_STREAM_OBSERVER_IMPL_H_
 
+#include "base/sequence_checker.h"
 #include "content/public/browser/global_routing_id.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
 

@@ -7,6 +7,8 @@
 #include "base/time/time.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_handedness.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_target_ray_mode.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatcher.h"
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
@@ -140,31 +142,29 @@ XRInputSource::XRInputSource(const XRInputSource& other)
       mojo_from_input_(TryGetTransform(other.mojo_from_input_.get())),
       input_from_pointer_(TryGetTransform(other.input_from_pointer_.get())) {}
 
-const String XRInputSource::handedness() const {
+V8XRHandedness XRInputSource::handedness() const {
   switch (state_.handedness) {
     case device::mojom::XRHandedness::NONE:
-      return "none";
+      return V8XRHandedness(V8XRHandedness::Enum::kNone);
     case device::mojom::XRHandedness::LEFT:
-      return "left";
+      return V8XRHandedness(V8XRHandedness::Enum::kLeft);
     case device::mojom::XRHandedness::RIGHT:
-      return "right";
+      return V8XRHandedness(V8XRHandedness::Enum::kRight);
   }
 
-  NOTREACHED_IN_MIGRATION() << "Unknown handedness: " << state_.handedness;
+  NOTREACHED();
 }
 
-const String XRInputSource::targetRayMode() const {
+V8XRTargetRayMode XRInputSource::targetRayMode() const {
   switch (state_.target_ray_mode) {
     case device::mojom::XRTargetRayMode::GAZING:
-      return "gaze";
+      return V8XRTargetRayMode(V8XRTargetRayMode::Enum::kGaze);
     case device::mojom::XRTargetRayMode::POINTING:
-      return "tracked-pointer";
+      return V8XRTargetRayMode(V8XRTargetRayMode::Enum::kTrackedPointer);
     case device::mojom::XRTargetRayMode::TAPPING:
-      return "screen";
+      return V8XRTargetRayMode(V8XRTargetRayMode::Enum::kScreen);
   }
-
-  NOTREACHED_IN_MIGRATION()
-      << "Unknown target ray mode: " << state_.target_ray_mode;
+  NOTREACHED();
 }
 
 XRSpace* XRInputSource::targetRaySpace() const {

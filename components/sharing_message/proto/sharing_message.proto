@@ -19,25 +19,6 @@ package components_sharing_message;
 // Required in Chrome.
 option optimize_for = LITE_RUNTIME;
 
-// Enum for identifying a message type.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. Keep this in sync with
-// SharingMessageType in enums.xml.
-enum MessageType {
-  UNKNOWN_MESSAGE = 0;
-  PING_MESSAGE = 1;
-  ACK_MESSAGE = 2;
-  CLICK_TO_CALL_MESSAGE = 3;
-  SHARED_CLIPBOARD_MESSAGE = 4;
-  SMS_FETCH_REQUEST = 5;
-  REMOTE_COPY_MESSAGE = 6;
-  PEER_CONNECTION_OFFER_MESSAGE = 7;
-  PEER_CONNECTION_ICE_CANDIDATES_MESSAGE = 8;
-  DISCOVERY_REQUEST = 9;
-  WEB_RTC_SIGNALING_FRAME = 10;
-  OPTIMIZATION_GUIDE_PUSH_NOTIFICATION = 11;
-}
-
 // Message for sending between devices in Sharing.
 // Next tag: 17
 message SharingMessage {
@@ -77,7 +58,6 @@ message SharingMessage {
 
   // Identifier of the message.
   // required for message sent via Sync.
-  // optional for message sent via VAPID.
   string message_id = 15;
 }
 
@@ -110,14 +90,8 @@ message ResponseMessage {
 
 // FCM channel configuration. Message will be delivered as a FCM message.
 message FCMChannelConfiguration {
-  // FCM registration token of device subscribed using VAPID key. required.
-  string vapid_fcm_token = 1;
-
-  // Subscription public key required for RFC 8291 using VAPID key.
-  bytes vapid_p256dh = 2;
-
-  // Auth secret key required for RFC 8291 using VAPID key.
-  bytes vapid_auth_secret = 3;
+  reserved 1, 2, 3;
+  reserved "vapid_fcm_token", "vapid_p256dh", "vapid_auth_secret";
 
   // FCM registration token of device subscribed using sender ID. required.
   string sender_id_fcm_token = 4;

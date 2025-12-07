@@ -8,12 +8,15 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * A class that serves as a bridge to native code to check the status of feature switches.
  *
  * <p>Each subclass represents a set of related features. Each instance of such a class correlates
  * to a single C++ Feature.
  */
+@NullMarked
 @JNINamespace("base::android")
 public abstract class Features {
     private final String mName;
@@ -30,7 +33,7 @@ public abstract class Features {
     /** Returns true if the given feature is enabled. */
     public boolean isEnabled() {
         // FeatureFlags set for testing override the native default value.
-        Boolean testValue = FeatureList.getTestValueForFeature(getName());
+        Boolean testValue = FeatureOverrides.getTestValueForFeatureStrict(getName());
         if (testValue != null) return testValue;
         return FeaturesJni.get().isEnabled(getFeaturePointer());
     }
@@ -52,9 +55,8 @@ public abstract class Features {
      * Returns a field trial param as a string for the specified feature.
      *
      * @param paramName The name of the param.
-     * @param defaultValue The String value to use if the param is not available.
      * @return The parameter value as a String. Empty string if the feature does not exist or the
-     *         specified parameter does not exist.
+     *     specified parameter does not exist.
      */
     public String getFieldTrialParamByFeatureAsString(String paramName) {
         return FeaturesJni.get()

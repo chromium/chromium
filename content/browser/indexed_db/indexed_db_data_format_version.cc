@@ -7,11 +7,11 @@
 #include "third_party/blink/public/web/web_serialized_script_value_version.h"
 #include "v8/include/v8-value-serializer-version.h"
 
-namespace content {
+namespace content::indexed_db {
 
 // static
 IndexedDBDataFormatVersion IndexedDBDataFormatVersion::current_(
     v8::CurrentValueSerializerFormatVersion(),
     blink::kSerializedScriptValueVersion);
 
-}  // namespace content
+}  // namespace content::indexed_db

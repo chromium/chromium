@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MEDIA_HTML_MEDIA_TEST_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MEDIA_HTML_MEDIA_TEST_HELPER_H_
 
+#include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 
 namespace blink {

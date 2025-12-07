@@ -7,8 +7,9 @@
 
 #include <memory>
 
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake.h"
-
 #include "base/memory/scoped_refptr.h"
 
 namespace ash::quick_pair {

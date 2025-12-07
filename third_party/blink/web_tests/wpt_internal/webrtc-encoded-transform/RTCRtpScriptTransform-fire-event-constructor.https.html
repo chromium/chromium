@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>RTCRtpScriptTransform-fire-event-constructor-worker - Worker</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src=/resources/testdriver.js></script>
+<script src=/resources/testdriver-vendor.js></script>
+</head>
+<body>
+<script>
+
+promise_test(async t => {
+
+  const worker = new Worker('./RTCRtpScriptTransform-fire-event-constructor-worker.js')
+  t.add_cleanup(() => worker.terminate());
+
+  const defaultInit = {
+    timestamp: 1234,
+    channels: 2,
+    sampleRate: 8000,
+    frames: 100,
+  };
+
+  const localData = new Float32Array(defaultInit.channels * defaultInit.frames);
+
+  const audioDataInit = {
+    timestamp: defaultInit.timestamp,
+    data: localData,
+    numberOfFrames: defaultInit.frames,
+    numberOfChannels: defaultInit.channels,
+    sampleRate: defaultInit.sampleRate,
+    format: 'f32-planar',
+  }
+  const data = new AudioData(audioDataInit);
+  const transform = new RTCRtpScriptTransform(worker, data, [data]);
+
+  return new Promise(resolve => {
+    worker.onmessage = t.step_func(message => {
+        // check the message back is correct
+        assert_equals(message.data.timestamp, defaultInit.timestamp);
+        assert_equals(message.data.numberOfFrames, defaultInit.frames);
+        assert_equals(message.data.numberOfChannels, defaultInit.channels);
+        assert_equals(message.data.sampleRate, defaultInit.sampleRate);
+        assert_equals(message.data.format, 'f32-planar');
+
+        // check that the data got transfered
+        assert_equals(data.numberOfFrames, 0);
+        assert_equals(data.numberOfChannels, 0);
+        assert_equals(data.sampleRate, 0);
+        assert_equals(data.format, null);
+
+        resolve();
+    });
+  });
+}, 'Creating an RTCRtpScriptTransform with data fires a rtctransform event in the worker and correctly transfers the data');
+
+promise_test(async t => {
+
+  const worker = new Worker('./RTCRtpScriptTransform-fire-event-constructor-worker.js');
+  const channel = new MessageChannel;
+  const transform = new RTCRtpScriptTransform(worker, {port: channel.port2}, [channel.port2]);
+  transform.port = channel.port1;
+  channel.port1.start();
+  transform.port.postMessage("ping");
+  return new Promise(resolve => {
+    transform.port.onmessage = t.step_func(message => {
+      assert_equals(message.data, "pong");
+      resolve();
+    });
+  });
+}, 'Creating an RTCRtpScriptTransform with a MessagePort fires a rtctransform event in the worker and correctly transfers the MessagePort');
+
+
+promise_test(async t => {
+
+  const worker = new Worker('./RTCRtpScriptTransform-fire-event-constructor-worker.js')
+  t.add_cleanup(() => worker.terminate());
+  const transform = new RTCRtpScriptTransform(worker);
+  const expectedFrameData = null;
+  return new Promise(resolve => {
+    worker.onmessage = t.step_func(message => {
+      assert_equals(message.data, expectedFrameData);
+      resolve();
+    });
+  });
+}, 'Creating RTCRtpScriptTransform without data fires an rtctransform event in the worker and correctly sends a null options field');
+
+promise_test(async t => {
+
+  const worker = new Worker('./RTCRtpScriptTransform-fire-event-constructor-worker.js')
+  t.add_cleanup(() => worker.terminate());
+  const data = {
+    name: "xxx",
+    count: 4,
+  };
+  const transform = new RTCRtpScriptTransform(worker, data);
+  return new Promise(resolve => {
+    worker.onmessage = t.step_func(message => {
+        assert_equals(data.name, "xxx");
+        assert_equals(data.count, 4);
+        assert_equals(message.data.name, data.name);
+        assert_equals(message.data.count, data.count);
+        resolve();
+    });
+  });
+}, 'Creating RTCRtpScriptTransform with data fires an rtctransform event in the worker and correctly serializes data in the options field');
+
+</script>
+</body>
+</html>

@@ -6,10 +6,10 @@
 
 #include <optional>
 #include <string_view>
+#include <variant>
 
 #include "base/strings/string_util.h"
 #include "media/formats/hls/parse_status.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace media::hls {
 
@@ -38,14 +38,6 @@ TagItem GetTagItem(SourceString tag) {
 }
 
 }  // namespace
-
-std::string_view TagItem::GetNameStr() {
-  if (!name_.has_value()) {
-    return content_or_name_->Str();
-  }
-
-  return TagNameToString(*name_);
-}
 
 ParseStatus::Or<GetNextLineItemResult> GetNextLineItem(
     SourceLineIterator* src) {

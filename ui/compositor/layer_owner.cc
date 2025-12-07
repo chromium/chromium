@@ -13,6 +13,8 @@
 
 namespace ui {
 
+LayerOwner::LayerOwner() = default;
+
 LayerOwner::LayerOwner(std::unique_ptr<Layer> layer) {
   if (layer)
     SetLayer(std::move(layer));
@@ -86,8 +88,7 @@ std::unique_ptr<Layer> LayerOwner::RecreateLayer() {
   // state to the new layer.
   layer_->set_delegate(old_delegate);
 
-  for (auto& observer : observers_)
-    observer.OnLayerRecreated(old_layer.get());
+  observers_.Notify(&Observer::OnLayerRecreated, old_layer.get());
 
   return old_layer;
 }

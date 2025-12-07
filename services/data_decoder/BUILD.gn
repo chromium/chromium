@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
@@ -24,29 +23,20 @@ source_set("lib") {
     "data_decoder_service.h",
     "gzipper.cc",
     "gzipper.h",
-    "json_parser_impl.cc",
-    "json_parser_impl.h",
     "structured_headers_parser_impl.cc",
     "structured_headers_parser_impl.h",
     "xml_parser.cc",
     "xml_parser.h",
   ]
 
-  if (is_chromeos_ash) {
-    sources += [
-      "ble_scan_parser_impl.cc",
-      "ble_scan_parser_impl.h",
-    ]
-  }
-
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
+    "//build:blink_buildflags",
     "//components/cbor",
     "//components/facilitated_payments/core/mojom:pix_code_validator_mojom",
-    "//components/facilitated_payments/core/util",
+    "//components/facilitated_payments/core/validation",
     "//components/web_package",
     "//mojo/public/cpp/bindings",
     "//net",
@@ -77,15 +67,10 @@ source_set("tests") {
     "cbor_parser_unittest.cc",
     "gzipper_unittest.cc",
     "public/cpp/data_decoder_unittest.cc",
-    "public/cpp/json_sanitizer_unittest.cc",
     "public/cpp/safe_web_bundle_parser_unittest.cc",
     "public/cpp/safe_xml_parser_unittest.cc",
     "xml_parser_unittest.cc",
   ]
-
-  if (is_chromeos_ash) {
-    sources += [ "ble_scan_parser_impl_unittest.cc" ]
-  }
 
   deps = [
     ":lib",
@@ -93,6 +78,7 @@ source_set("tests") {
     "//base/test:test_support",
     "//components/cbor",
     "//components/web_package",
+    "//components/web_package/test_support",
     "//services/data_decoder/public/cpp",
     "//services/data_decoder/public/cpp:test_support",
     "//skia",
@@ -128,6 +114,15 @@ source_set("xml_parser_fuzzer_deps") {
   visibility = [
     ":run_xml_parser_fuzzer",
     ":xml_parser_fuzzer",
+    ":xml_parser_fuzzer__apk__compile_java",
+    ":xml_parser_fuzzer__apk__compile_resources",
+    ":xml_parser_fuzzer__apk__create",
+    ":xml_parser_fuzzer__apk__java",
+    ":xml_parser_fuzzer__apk__java__dex",
+    ":xml_parser_fuzzer__apk__java__header",
+    ":xml_parser_fuzzer__apk__java__validate",
+    ":xml_parser_fuzzer__library",
+    ":xml_parser_fuzzer__library__jni_registration__native_sources",
     ":xml_parser_fuzzer_executable",
   ]
   public_deps = [
@@ -143,11 +138,4 @@ fuzzer_test("xml_parser_fuzzer") {
   deps = [ ":xml_parser_fuzzer_deps" ]
   dict = "//third_party/libxml/fuzz/xml.dict"
   seed_corpus = "//third_party/libxml/fuzz/seed_corpus"
-}
-
-if (is_chromeos_ash) {
-  fuzzer_test("ble_scan_parser_fuzzer") {
-    sources = [ "ble_scan_parser_impl_fuzzer.cc" ]
-    deps = [ ":lib" ]
-  }
 }

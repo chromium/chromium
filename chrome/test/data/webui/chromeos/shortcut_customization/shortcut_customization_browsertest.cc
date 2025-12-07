@@ -89,9 +89,8 @@ IN_PROC_BROWSER_TEST_F(ShortcutCustomizationAppBrowserTest,
   RunTestAtPath("search_result_bolding_test.js");
 }
 
-// TODO(b/40287425): Tests are flaky.
 IN_PROC_BROWSER_TEST_F(ShortcutCustomizationAppBrowserTest,
-                       DISABLED_ShortcutCustomizationApp) {
+                       ShortcutCustomizationApp) {
   RunTestAtPath("shortcut_customization_test.js");
 }
 

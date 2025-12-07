@@ -14,7 +14,7 @@
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace content {
 class WebContentsAccessibility;
@@ -52,6 +52,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformTreeManagerDelegate {
   // Note that when accessibility is turned on, focus might behave differently,
   // including making some unfocusable UI elements to become focusable. See
   // `views::FocusBehavior`.
+  //
+  // TODO(accessibility): This method is about widget activation. Rename to
+  // `AccessibilityWidgetIsActive` or similar.
   virtual bool AccessibilityViewHasFocus() = 0;
 
   // Moves the focus inside the View` that contains the current accessibility
@@ -61,6 +64,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformTreeManagerDelegate {
   // Note that when accessibility is turned on, focus might behave differently,
   // including making some unfocusable UI elements to become focusable. See
   // `views::FocusBehavior`.
+  //
+  // TODO(accessibility): This method is about widget activation. Rename to
+  // `AccessibilityWidgetActivate` or similar.
   virtual void AccessibilityViewSetFocus() = 0;
 
   // Returns the bounds (in screen coordinates) of the `View` that contains the
@@ -81,15 +87,26 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformTreeManagerDelegate {
   // Returns a handle to the platform specific widget containing the current
   // accessibility tree. Example: the HWND of the widget containing the
   // currently displayed web contents on Windows.
+  //
+  // TODO(crbug.com/431097635): This only appears to be implemented on Windows,
+  // but there are callers on macOS and Linux that appear to indirectly rely on
+  // this. Either clean up the dead code on other platforms, or implement this
+  // method in subclasses.
   virtual gfx::AcceleratedWidget AccessibilityGetAcceleratedWidget() = 0;
 
   // Returns a pointer to the platform specific accessibility object containing
   // the current accessibility tree. Example: a pointer to a Cocoa object
   // conforming to the `NSAccessibility` protocol on macOS.
+  // TODO(accessibility): Rename to AccessibilityGetRootNativeAccessible to
+  // clarify we're returning the native root of the current accessibility tree.
   virtual gfx::NativeViewAccessible AccessibilityGetNativeViewAccessible() = 0;
 
   // Same as above but for the current window, e.g. the currently focused
   // `NSWindow` object on macOS.
+  //
+  // TODO(accessibility): Rename to AccessibilityGetWindowNativeAccessible to
+  // clarify we're returning the accessible object for the native window of the
+  // current accessibility tree.
   virtual gfx::NativeViewAccessible
   AccessibilityGetNativeViewAccessibleForWindow() = 0;
 
@@ -132,6 +149,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformTreeManagerDelegate {
   virtual bool ShouldSuppressAXLoadComplete() = 0;
   virtual content::WebContentsAccessibility*
   AccessibilityGetWebContentsAccessibility() = 0;
+
+  // Returns true if the current accessibility tree is for web content, false if
+  // it's for Views.
+  virtual bool AccessibilityIsWebContentSource() = 0;
 
  protected:
   AXPlatformTreeManagerDelegate() = default;

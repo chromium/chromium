@@ -8,17 +8,20 @@ found in the LICENSE file.
 <head>
   <meta charset="utf-8">
   <style>
-    html, body {
-      height: 100%;
-    }
     body {
+      background-color: black;
+      /* The following do not apply to <video> as it is fixed position. */
+      height: 100%;
       display: flex;
       margin: 0;
     }
     video {
-      background-color: black;
-      max-width: 100%;
-      height: auto;
+      width: 100vw;
+      height: 100vh;
+      object-fit: contain;
+      position: absolute;
+      top: 0;
+      left: 0;
     }
   </style>
 </head>

@@ -68,7 +68,7 @@ EvaluationTestScheduler::EvaluationTestScheduler()
                          kBatteryPercentageHigh,
                          net::NetworkChangeNotifier::CONNECTION_2G) {}
 
-EvaluationTestScheduler::~EvaluationTestScheduler() {}
+EvaluationTestScheduler::~EvaluationTestScheduler() = default;
 
 void EvaluationTestScheduler::Schedule(
     const TriggerConditions& trigger_conditions) {

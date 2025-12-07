@@ -13,7 +13,7 @@
 #import "components/ukm/debug/ukm_debug_data_extractor.h"
 #import "components/ukm/ukm_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/web/public/webui/url_data_source_ios.h"
 #import "ios/web/public/webui/web_ui_ios.h"
@@ -26,7 +26,7 @@ web::WebUIIOSDataSource* CreateUkmInternalsUIHTMLSource() {
   web::WebUIIOSDataSource* source =
       web::WebUIIOSDataSource::Create(kChromeUIURLKeyedMetricsHost);
 
-  source->AddResourcePaths(base::make_span(kUkmResources, kUkmResourcesSize));
+  source->AddResourcePaths(kUkmResources);
   source->SetDefaultResource(IDR_UKM_UKM_INTERNALS_HTML);
   return source;
 }
@@ -67,8 +67,9 @@ void UkmMessageHandler::HandleRequestUkmData(const base::Value::List& args) {
       ukm::debug::UkmDebugDataExtractor::GetStructuredData(ukm_service_);
 
   std::string callback_id;
-  if (!args.empty() && args[0].is_string())
+  if (!args.empty() && args[0].is_string()) {
     callback_id = args[0].GetString();
+  }
 
   web_ui()->ResolveJavascriptCallback(base::Value(callback_id),
                                       std::move(ukm_debug_data));
@@ -85,7 +86,7 @@ UkmInternalsUI::UkmInternalsUI(web::WebUIIOS* web_ui, const std::string& host)
   web_ui->AddMessageHandler(std::make_unique<UkmMessageHandler>(ukm_service));
 
   // Set up the chrome://ukm/ source.
-  web::WebUIIOSDataSource::Add(ChromeBrowserState::FromWebUIIOS(web_ui),
+  web::WebUIIOSDataSource::Add(ProfileIOS::FromWebUIIOS(web_ui),
                                CreateUkmInternalsUIHTMLSource());
 }
 

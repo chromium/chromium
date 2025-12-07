@@ -20,7 +20,8 @@
 #import "base/strings/stringprintf.h"
 #import "base/task/thread_pool.h"
 #import "components/reading_list/core/offline_url_utils.h"
-#import "ios/chrome/browser/dom_distiller/model/distiller_viewer.h"
+#import "ios/chrome/browser/dom_distiller/model/distiller_viewer_interface.h"
+#import "ios/chrome/browser/dom_distiller/model/offline_page_distiller_viewer.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_distiller_page.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_distiller_page_factory.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
@@ -96,8 +97,7 @@ std::pair<URLDownloader::SuccessState, int64_t> SavePDFFile(
                                                              path);
 
     if (base::Move(temporary_path, absolute_path)) {
-      int64_t pdf_file_size;
-      base::GetFileSize(absolute_path, &pdf_file_size);
+      int64_t pdf_file_size = base::GetFileSize(absolute_path).value_or(0);
       return {URLDownloader::DOWNLOAD_SUCCESS, pdf_file_size};
     } else {
       return {URLDownloader::ERROR, 0};
@@ -113,8 +113,7 @@ std::pair<URLDownloader::SuccessState, int64_t> SavePDFFile(
 std::string ReplaceImagesInHTML(
     const GURL& url,
     const std::string& html,
-    const std::vector<dom_distiller::DistillerViewerInterface::ImageInfo>&
-        images,
+    const std::vector<DistillerViewerInterface::ImageInfo>& images,
     const GURL& distilled_url,
     const std::string& csp_nonce) {
   std::string mutable_html = html;
@@ -150,7 +149,7 @@ std::string ReplaceImagesInHTML(
     std::string image_data;
     base::Value value(images[i].url.spec());
 
-    base::JSONWriter::Write(value, &image_url);
+    image_url = base::WriteJson(value).value_or("");
     image_data = base::Base64Encode(images[i].data);
 
     std::string src_with_data =
@@ -194,8 +193,7 @@ std::pair<bool, int64_t> SaveHTMLForURL(std::string html,
 // Saves distilled html to disk, including saving images and main file.
 std::pair<URLDownloader::SuccessState, int64_t> SaveDistilledHTML(
     const GURL& url,
-    const std::vector<dom_distiller::DistillerViewerInterface::ImageInfo>&
-        images,
+    const std::vector<DistillerViewerInterface::ImageInfo>& images,
     const std::string& html,
     const base::FilePath& base_directory,
     const GURL& distilled_url,
@@ -234,16 +232,14 @@ std::pair<URLDownloader::SuccessState, int64_t> SaveDistilledHTML(
 // URLDownloader
 
 URLDownloader::URLDownloader(
-    dom_distiller::DistillerFactory* distiller_factory,
+    DistillerService* distiller_service,
     reading_list::ReadingListDistillerPageFactory* distiller_page_factory,
-    PrefService* prefs,
     base::FilePath chrome_profile_path,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const DownloadCompletion& download_completion,
     const SuccessCompletion& delete_completion)
     : distiller_page_factory_(distiller_page_factory),
-      distiller_factory_(distiller_factory),
-      pref_service_(prefs),
+      distiller_service_(distiller_service),
       download_completion_(download_completion),
       delete_completion_(delete_completion),
       working_(false),
@@ -281,9 +277,7 @@ void URLDownloader::DownloadOfflineURL(const GURL& url) {
 }
 
 void URLDownloader::CancelDownloadOfflineURL(const GURL& url) {
-  tasks_.erase(
-      std::remove(tasks_.begin(), tasks_.end(), std::make_pair(DOWNLOAD, url)),
-      tasks_.end());
+  base::Erase(tasks_, std::make_pair(DOWNLOAD, url));
 }
 
 void URLDownloader::DownloadPDFOrHTMLCompletionHandler(
@@ -329,7 +323,7 @@ void URLDownloader::PostDelete(const GURL& url,
                                SuccessState success) {
   download_completion_.Run(url, distilled_url_, success, offline_path,
                            saved_size_, title);
-  distiller_.reset();
+  distiller_viewer_.reset();
   working_ = false;
   HandleNextTask();
 }
@@ -360,7 +354,7 @@ void URLDownloader::HandleNextTask() {
         base::BindOnce(&URLDownloader::DeleteCompletionHandler,
                        weak_factory_.GetWeakPtr(), url));
   } else if (task.first == DOWNLOAD) {
-    DCHECK(!distiller_);
+    DCHECK(!distiller_viewer_);
     OfflinePathExists(directory_path,
                       base::BindOnce(&URLDownloader::DownloadURL,
                                      weak_factory_.GetWeakPtr(), url));
@@ -381,9 +375,8 @@ void URLDownloader::DownloadURL(const GURL& url, bool offline_url_exists) {
       reading_list_distiller_page =
           distiller_page_factory_->CreateReadingListDistillerPage(url, this);
 
-  distiller_.reset(new dom_distiller::DistillerViewer(
-      distiller_factory_, std::move(reading_list_distiller_page), pref_service_,
-      url,
+  distiller_viewer_.reset(new OfflinePageDistillerViewer(
+      distiller_service_, std::move(reading_list_distiller_page), url,
       base::BindRepeating(&URLDownloader::DistillerCallback,
                           weak_factory_.GetWeakPtr())));
 }
@@ -426,7 +419,7 @@ void URLDownloader::OnURLLoadComplete(const GURL& original_url,
 
 void URLDownloader::CancelTask() {
   task_tracker_.TryCancelAll();
-  distiller_.reset();
+  distiller_viewer_.reset();
 }
 
 void URLDownloader::FetchPDFFile() {
@@ -435,6 +428,7 @@ void URLDownloader::FetchPDFFile() {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = pdf_url;
   resource_request->load_flags = net::LOAD_SKIP_CACHE_VALIDATION;
+  resource_request->site_for_cookies = net::SiteForCookies::FromUrl(pdf_url);
 
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  NO_TRAFFIC_ANNOTATION_YET);
@@ -447,8 +441,7 @@ void URLDownloader::FetchPDFFile() {
 void URLDownloader::DistillerCallback(
     const GURL& page_url,
     const std::string& html,
-    const std::vector<dom_distiller::DistillerViewerInterface::ImageInfo>&
-        images,
+    const std::vector<DistillerViewerInterface::ImageInfo>& images,
     const std::string& title,
     const std::string& csp_nonce) {
   if (html.empty()) {

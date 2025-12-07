@@ -2,21 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/paint/paint_shader.h"
 
 #include <algorithm>
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
+#include "base/compiler_specific.h"
+#include "base/hash/hash.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/types/optional_util.h"
 #include "cc/paint/image_provider.h"
+#include "cc/paint/paint_cache.h"
 #include "cc/paint/paint_image_builder.h"
 #include "cc/paint/paint_op_writer.h"
 #include "cc/paint/paint_record.h"
@@ -24,6 +23,8 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
+#include "third_party/skia/include/effects/SkRuntimeEffect.h"
+#include "ui/gfx/geometry/clamp_float_geometry.h"
 
 namespace cc {
 namespace {
@@ -99,7 +100,7 @@ sk_sp<PaintShader> PaintShader::MakeLinearGradient(
 
   // There are always two points, the start and the end.
   shader->start_point_ = points[0];
-  shader->end_point_ = points[1];
+  shader->end_point_ = UNSAFE_TODO(points[1]);
   shader->SetColorsAndPositions(colors, pos, count);
   shader->SetMatrixAndTiling(local_matrix, mode, mode);
   shader->SetFlagsAndFallback(flags, fallback_color);
@@ -225,6 +226,52 @@ sk_sp<PaintShader> PaintShader::MakePaintRecord(
   return shader;
 }
 
+// static:
+sk_sp<PaintShader> PaintShader::MakeSkSLCommand(
+    std::string_view sksl,
+    std::vector<FloatUniform> float_uniforms,
+    std::vector<Float2Uniform> float2_uniforms,
+    std::vector<Float4Uniform> float4_uniforms,
+    std::vector<IntUniform> int_uniforms,
+    sk_sp<PaintShader> cached_paint_shader) {
+  if (float_uniforms.size() > PaintShader::kMaxNumUniformsPerType ||
+      float2_uniforms.size() > PaintShader::kMaxNumUniformsPerType ||
+      float4_uniforms.size() > PaintShader::kMaxNumUniformsPerType ||
+      int_uniforms.size() > PaintShader::kMaxNumUniformsPerType) {
+    return nullptr;
+  }
+
+  sk_sp<SkRuntimeEffect> effect;
+  uint32_t hash = 0;
+  SkString cmd(sksl);
+  if (cached_paint_shader) {
+    effect = cached_paint_shader->cached_sk_runtime_effect_;
+    hash = cached_paint_shader->sk_runtime_effect_id_;
+    DCHECK_EQ(hash, base::PersistentHash(sksl))
+        << "`cached_paint_shader` does not align with `sksl`.";
+  } else {
+    // Use PersistentHash to get uint32_t, and use the hash as ID.
+    // TODO(crbug.com/404501097): We should use `SkRuntimeEffectHash::fHash`.
+    hash = base::PersistentHash(sksl);
+    auto result = SkRuntimeEffect::MakeForShader(cmd);
+    if (!result.effect) {
+      LOG(ERROR) << result.errorText.data();
+      return nullptr;
+    }
+    effect = result.effect;
+  }
+
+  sk_sp<PaintShader> shader(new PaintShader(Type::kSkSLCommand));
+  shader->sk_runtime_effect_id_ = hash;
+  shader->cached_sk_runtime_effect_ = std::move(effect);
+  shader->sksl_command_ = std::move(cmd);
+  shader->scalar_uniforms_ = std::move(float_uniforms);
+  shader->float2_uniforms_ = std::move(float2_uniforms);
+  shader->float4_uniforms_ = std::move(float4_uniforms);
+  shader->int_uniforms_ = std::move(int_uniforms);
+  return shader;
+}
+
 // static
 size_t PaintShader::GetSerializedSize(const PaintShader* shader) {
   if (!shader) {
@@ -254,7 +301,15 @@ size_t PaintShader::GetSerializedSize(const PaintShader* shader) {
           PaintOpWriter::SerializedSizeOfElements(shader->colors_.data(),
                                                   shader->colors_.size()) +
           PaintOpWriter::SerializedSizeOfElements(shader->positions_.data(),
-                                                  shader->positions_.size()))
+                                                  shader->positions_.size()) +
+          PaintOpWriter::SerializedSize(shader->sk_runtime_effect_id_) +
+          base::CheckedNumeric<size_t>(
+              PaintOpWriter::SerializedSize<PaintCacheEntryState>()) +
+          PaintOpWriter::SerializedSize(shader->sksl_command_) +
+          PaintOpWriter::SerializedSize(shader->scalar_uniforms_) +
+          PaintOpWriter::SerializedSize(shader->float2_uniforms_) +
+          PaintOpWriter::SerializedSize(shader->float4_uniforms_) +
+          PaintOpWriter::SerializedSize(shader->int_uniforms_))
       .ValueOrDie();
 }
 
@@ -270,6 +325,7 @@ bool PaintShader::HasDiscardableImages(
     case Type::kRadialGradient:
     case Type::kTwoPointConicalGradient:
     case Type::kSweepGradient:
+    case Type::kSkSLCommand:
       return false;
     case Type::kImage:
       if (image_ && !image_.IsTextureBacked()) {
@@ -290,7 +346,7 @@ bool PaintShader::HasDiscardableImages(
       }
       return false;
     case Type::kShaderCount:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -439,8 +495,8 @@ sk_sp<PaintShader> PaintShader::CreateDecodedImage(
 
 sk_sp<SkShader> PaintShader::GetSkShader(
     PaintFlags::FilterQuality quality) const {
-  SkSamplingOptions sampling(
-      PaintFlags::FilterQualityToSkSamplingOptions(quality));
+  SkSamplingOptions sampling(PaintFlags::FilterQualityToSkSamplingOptions(
+      quality, PaintFlags::ScalingOperation::kUnknown));
 
   switch (shader_type_) {
     case Type::kEmpty:
@@ -450,6 +506,10 @@ sk_sp<SkShader> PaintShader::GetSkShader(
       break;
     case Type::kLinearGradient: {
       SkPoint points[2] = {start_point_, end_point_};
+      points[0].fX = gfx::ClampFloatGeometry(points[0].fX);
+      points[0].fY = gfx::ClampFloatGeometry(points[0].fY);
+      points[1].fX = gfx::ClampFloatGeometry(points[1].fX);
+      points[1].fY = gfx::ClampFloatGeometry(points[1].fY);
       return SkGradientShader::MakeLinear(
           points, colors_.data(), nullptr /*sk_sp<SkColorSpace>*/,
           positions_.empty() ? nullptr : positions_.data(),
@@ -505,9 +565,27 @@ sk_sp<SkShader> PaintShader::GetSkShader(
         break;
       }
       break;
+    case Type::kSkSLCommand: {
+      if (!cached_sk_runtime_effect_) {
+        break;
+      }
+      SkRuntimeShaderBuilder builder(cached_sk_runtime_effect_);
+      for (const auto& [name, value] : scalar_uniforms_) {
+        builder.uniform(name.c_str()) = value;
+      }
+      for (const auto& [name, value] : float2_uniforms_) {
+        builder.uniform(name.c_str()) = value;
+      }
+      for (const auto& [name, value] : float4_uniforms_) {
+        builder.uniform(name.c_str()) = value;
+      }
+      for (const auto& [name, value] : int_uniforms_) {
+        builder.uniform(name.c_str()) = value;
+      }
+      return builder.makeShader();
+    }
     case Type::kShaderCount:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   // If we didn't create a shader for whatever reason, create a fallback
@@ -540,12 +618,12 @@ void PaintShader::SetColorsAndPositions(const SkColor4f* colors,
                                         int count) {
 #if DCHECK_IS_ON()
   static const int kMaxShaderColorsSupported = 10000;
-  DCHECK_GE(count, 2);
+  DCHECK_GE(count, 1);
   DCHECK_LE(count, kMaxShaderColorsSupported);
 #endif
-  colors_.assign(colors, colors + count);
+  colors_.assign(colors, UNSAFE_TODO(colors + count));
   if (positions)
-    positions_.assign(positions, positions + count);
+    positions_.assign(positions, UNSAFE_TODO(positions + count));
 }
 
 void PaintShader::SetMatrixAndTiling(const SkMatrix* matrix,
@@ -566,6 +644,10 @@ void PaintShader::SetFlagsAndFallback(uint32_t flags,
                                       SkColor4f fallback_color) {
   flags_ = flags;
   fallback_color_ = fallback_color;
+}
+
+const PaintRecord* PaintShader::paint_record() const {
+  return base::OptionalToPtr(record_);
 }
 
 bool PaintShader::IsOpaque() const {
@@ -599,9 +681,10 @@ bool PaintShader::IsOpaque() const {
       return false;
     case Type::kPaintRecord:
       return false;
+    case Type::kSkSLCommand:
+      return false;
     case Type::kShaderCount:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return fallback_color_.isOpaque();
 }
@@ -620,7 +703,7 @@ bool PaintShader::IsValid() const {
     case Type::kLinearGradient:
     case Type::kRadialGradient:
     case Type::kTwoPointConicalGradient:
-      return colors_.size() >= 2 &&
+      return colors_.size() >= 1 &&
              (positions_.empty() || positions_.size() == colors_.size());
     case Type::kImage:
       // We may not be able to decode the image, in which case it would be
@@ -628,6 +711,8 @@ bool PaintShader::IsValid() const {
       return true;
     case Type::kPaintRecord:
       return !!record_;
+    case Type::kSkSLCommand:
+      return !!cached_sk_runtime_effect_;
     case Type::kShaderCount:
       return false;
   }
@@ -694,11 +779,18 @@ bool PaintShader::EqualsForTesting(const PaintShader& other) const {
       // tile_ and record_ intentionally omitted since they are modified on the
       // serialized shader based on the ctm.
       break;
+    case Type::kSkSLCommand:
+      return sksl_command_ == other.sksl_command_;
     case Type::kShaderCount:
       break;
   }
 
   return true;
+}
+
+bool PaintShader::MatchingCachedRuntimeEffectForTesting(
+    const PaintShader& other) const {
+  return cached_sk_runtime_effect_ == other.cached_sk_runtime_effect_;
 }
 
 }  // namespace cc

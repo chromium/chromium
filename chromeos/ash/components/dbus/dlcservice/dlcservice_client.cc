@@ -107,16 +107,13 @@ class DlcserviceClientImpl : public DlcserviceClient {
                        std::move(progress_callback));
       return;
     }
+    // TODO(b/220053648): Cleanup all ash-client logic.
     if (installing_) {
-      LOG(WARNING) << "DLC install is getting queued for: " << id;
-      EnqueueTask(base::BindOnce(
-          &DlcserviceClientImpl::Install, weak_ptr_factory_.GetWeakPtr(),
-          std::move(install_request), std::move(install_callback),
-          std::move(progress_callback)));
-      return;
+      LOG(WARNING) << "First time DLC install is skipping queue for: " << id;
+    } else {
+      TaskStarted();
     }
 
-    TaskStarted();
     dbus::MethodCall method_call(dlcservice::kDlcServiceInterface,
                                  dlcservice::kInstallMethod);
     dbus::MessageWriter writer(&method_call);
@@ -198,6 +195,11 @@ class DlcserviceClientImpl : public DlcserviceClient {
 
   void RemoveObserver(Observer* observer) override {
     observers_.RemoveObserver(observer);
+  }
+
+  void WaitForServiceToBeAvailable(
+      base::OnceCallback<void(bool)> callback) override {
+    dlcservice_proxy_->WaitForServiceToBeAvailable(std::move(callback));
   }
 
   void Init(dbus::Bus* bus) {
@@ -348,7 +350,7 @@ class DlcserviceClientImpl : public DlcserviceClient {
         // pending install from the queue (would waste time checking).
         return;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     // Try to run a pending install since we have complete/failed the current
@@ -377,8 +379,7 @@ class DlcserviceClientImpl : public DlcserviceClient {
 
     std::string_view err = ParseError(err_response);
     if (err == dlcservice::kErrorBusy) {
-      // No need to log here, as it can be inferred from error response handler
-      // and the binded callback logging.
+      LOG(WARNING) << "DLC install is getting queued for: " << id;
       EnqueueTask(base::BindOnce(&DlcserviceClientImpl::Install,
                                  weak_ptr_factory_.GetWeakPtr(),
                                  install_request, std::move(install_callback),
@@ -438,7 +439,7 @@ class DlcserviceClientImpl : public DlcserviceClient {
 
   raw_ptr<dbus::ObjectProxy> dlcservice_proxy_;
 
-  // TODO(crbug.com/928805): Once platform dlcservice batches, can be removed.
+  // TODO(b/220053648): Once platform dlcservice batches, can be removed.
   // Specifically when platform dlcservice doesn't return a busy status.
   // Whether an install is currently in progress. Can be used to decide whether
   // to queue up incoming install requests.

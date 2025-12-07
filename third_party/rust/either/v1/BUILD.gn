@@ -13,33 +13,63 @@ cargo_crate("lib") {
   epoch = "1"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/either-1.13.0/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/either-v1/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/either-1.13.0/src/into_either.rs",
-    "//third_party/rust/chromium_crates_io/vendor/either-1.13.0/src/iterator.rs",
-    "//third_party/rust/chromium_crates_io/vendor/either-1.13.0/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/either-1.13.0/src/serde_untagged.rs",
-    "//third_party/rust/chromium_crates_io/vendor/either-1.13.0/src/serde_untagged_optional.rs",
+    "//third_party/rust/chromium_crates_io/vendor/either-v1/src/into_either.rs",
+    "//third_party/rust/chromium_crates_io/vendor/either-v1/src/iterator.rs",
+    "//third_party/rust/chromium_crates_io/vendor/either-v1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/either-v1/src/serde_untagged.rs",
+    "//third_party/rust/chromium_crates_io/vendor/either-v1/src/serde_untagged_optional.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
-  edition = "2018"
-  cargo_pkg_version = "1.13.0"
+  edition = "2021"
   cargo_pkg_authors = "bluss"
   cargo_pkg_name = "either"
   cargo_pkg_description = "The enum `Either` with variants `Left` and `Right` is a general purpose sum type with two cases."
-  library_configs -= [ "//build/config/compiler:chromium_code" ]
-  library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
-  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
-  proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
-  proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
-  features = [ "use_std" ]
+  cargo_pkg_repository = "https://github.com/rayon-rs/either"
+  cargo_pkg_version = "1.15.0"
+
+  allow_unsafe = true
+
+  features = [
+    "std",
+    "use_std",
+  ]
 
   # Only for usage from third-party crates. Add the crate to
   # //third_party/rust/chromium_crates_io/Cargo.toml to use
   # it from first-party code.
   visibility = [ "//third_party/rust/*" ]
-  testonly = true
+
+  #####################################################################
+  # Tweaking which GN `config`s apply to this target.
+
+  # Config changes that apply to all `//third_party/rust` crates.
+  _configs_to_remove = [
+    # We don't need code coverage data for any `chromium_crates_io` crates.
+    "//build/config/coverage:default_coverage",
+
+    # This is third-party code, so remove `chromium_code` config.  We are not
+    # at the same time adding `//build/config/compiler:no_chromium_code`,
+    # because 1) we don't want to pull how warnings are handled by that config
+    # and 2) that config doesn't have any non-warnings-related stuff.
+    "//build/config/compiler:chromium_code",
+  ]
+  _configs_to_add = []
+
+  # Changing (if needed) which configs apply to this specific crate (based on
+  # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
+  # `gnrt_config.toml`).
+  _configs_to_remove += []
+  _configs_to_add += []
+
+  # Applying config changes.
+  library_configs -= _configs_to_remove
+  library_configs += _configs_to_add
+  executable_configs -= _configs_to_remove
+  executable_configs += _configs_to_add
+  proc_macro_configs -= _configs_to_remove
+  proc_macro_configs += _configs_to_add
 }

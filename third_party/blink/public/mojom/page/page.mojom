@@ -3,19 +3,19 @@
 // found in the LICENSE file.
 
 module blink.mojom;
+
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
-import "skia/public/mojom/skcolor.mojom";
 import "services/network/public/mojom/attribution.mojom";
+import "skia/public/mojom/skcolor.mojom";
 import "third_party/blink/public/mojom/frame/frame_replication_state.mojom";
 import "third_party/blink/public/mojom/frame/remote_frame.mojom";
 import "third_party/blink/public/mojom/frame/view_transition_state.mojom";
 import "third_party/blink/public/mojom/navigation/was_activated_option.mojom";
-import "third_party/blink/public/mojom/page/browsing_context_group_info.mojom";
 import "third_party/blink/public/mojom/page/page_visibility_state.mojom";
+import "third_party/blink/public/mojom/renderer_preferences.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "third_party/blink/public/mojom/webpreferences/web_preferences.mojom";
-import "third_party/blink/public/mojom/renderer_preferences.mojom";
 import "ui/color/color_id.mojom";
 
 enum PagehideDispatch {
@@ -52,8 +52,8 @@ struct PageRestoreParams {
   // back-forward cache.
   mojo_base.mojom.TimeTicks navigation_start;
 
-  // The offset in the session history list for the page to be restored.
-  int32 pending_history_list_offset;
+  // The index in the session history list for the page to be restored.
+  int32 pending_history_list_index;
 
   // Total size of the session history list.
   int32 current_history_list_length;
@@ -81,9 +81,9 @@ struct PrerenderPageActivationParams {
   blink.mojom.WasActivatedOption was_user_activated;
 
   // Timestamp of the start of the activation navigation for use in
-  // PerformanceNavigationTiming. It is 0 if this blink::WebViewImpl does not
-  // host the main frame, to avoid sending the data cross-origin.
-  mojo_base.mojom.TimeTicks activation_start;
+  // PerformanceNavigationTiming. This is set only if this blink::WebViewImpl
+  // hosts a prerendered frame.
+  mojo_base.mojom.TimeTicks? activation_start;
 
   // Holds texture references (stored in the GPU process) and geometry state for
   // the previous Document displayed by this frame. This is used to support
@@ -123,8 +123,8 @@ interface PageBroadcast {
   // Updates renderer preferences.
   UpdateRendererPreferences(blink.mojom.RendererPreferences preferences);
 
-  // Set history offset and length.
-  SetHistoryOffsetAndLength(int32 offset, int32 length);
+  // Set history index and length.
+  SetHistoryIndexAndLength(int32 index, int32 length);
 
   // Sent to whole page, but should only be used by the main frame.
   SetPageBaseBackgroundColor(skia.mojom.SkColor? color);
@@ -147,19 +147,22 @@ interface PageBroadcast {
   //    Must not be used to look up a RenderFrameHostImpl or
   //    RenderFrameProxyHost in the browser process, as the token is shared,
   //    making the mapping ambiguous and non-authoritative.
+  // `navigation_metrics_token`: Identifies the navigation responsible for
+  //    creating this RemoteFrame, if any, for tracing/metrics purposes.
   CreateRemoteMainFrame(
     RemoteFrameToken token,
     FrameToken? opener_frame_token,
     FrameReplicationState replication_state,
     bool is_loading,
     mojo_base.mojom.UnguessableToken devtools_frame_token,
+    mojo_base.mojom.UnguessableToken? navigation_metrics_token,
     RemoteFrameInterfacesFromBrowser remote_frame_interfaces,
     RemoteMainFrameInterfaces remote_main_frame_interfaces);
 
   // Update the page's browsing context group, with the information contained
-  // in `browsing_context_group_info`.
+  // in `browsing_context_group_token`.
   UpdatePageBrowsingContextGroup(
-    blink.mojom.BrowsingContextGroupInfo browsing_context_group_info);
+    mojo_base.mojom.UnguessableToken browsing_context_group_token);
 
   // Allows the browser to inform the renderer about a change in attribution
   // support, e.g. when the OS indicates that the OS Attribution API is
@@ -173,4 +176,8 @@ interface PageBroadcast {
   // 2. The ColorProvider associated with the WebContents changes as a result
   // of theme changes.
   UpdateColorProviders(ColorProviderColorMaps color_provider_colors);
+
+  // Indicates that the page's main frame should collect draggable regions set
+  // using the app-region CSS property.
+  SetSupportsDraggableRegions(bool supports_draggable_regions);
 };

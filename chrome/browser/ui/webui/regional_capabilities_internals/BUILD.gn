@@ -1,0 +1,30 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("regional_capabilities_internals") {
+  sources = [
+    "regional_capabilities_internals_ui.cc",
+    "regional_capabilities_internals_ui.h",
+  ]
+
+  public_deps = [ "//content/public/browser" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/regional_capabilities",
+    "//chrome/common",
+    "//components/regional_capabilities",
+    "//components/regional_capabilities:country_access_reason",
+    "//components/resources",
+    "//components/strings",
+    "//components/webui/chrome_urls",
+    "//components/webui/regional_capabilities_internals:constants",
+    "//content/public/common",
+    "//ui/base",
+    "//ui/webui",
+    "//url",
+  ]
+}

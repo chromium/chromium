@@ -1,0 +1,15 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_STATICTEXT name='None selected listbox'
+++ROLE_SYSTEM_LIST name='None selected listbox' FOCUSABLE MULTISELECTABLE EXTSELECTABLE xml-roles:listbox
+++++ROLE_SYSTEM_LISTITEM name='Example 1' xml-roles:option
+++++ROLE_SYSTEM_LISTITEM name='Example 2' xml-roles:option
+++++ROLE_SYSTEM_LISTITEM name='Example 3' xml-roles:option
+++++ROLE_SYSTEM_LISTITEM name='Example 4' xml-roles:option
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_STATICTEXT name='Some selected listbox'
+++ROLE_SYSTEM_LIST name='Some selected listbox' FOCUSABLE MULTISELECTABLE EXTSELECTABLE xml-roles:listbox
+++++ROLE_SYSTEM_LISTITEM name='Example 1' xml-roles:option
+++++ROLE_SYSTEM_LISTITEM name='Example 2' SELECTED xml-roles:option
+++++ROLE_SYSTEM_LISTITEM name='Example 3' xml-roles:option
+++++ROLE_SYSTEM_LISTITEM name='Example 4' SELECTED xml-roles:option

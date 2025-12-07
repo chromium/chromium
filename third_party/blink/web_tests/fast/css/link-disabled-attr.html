@@ -51,7 +51,7 @@ shouldBeNonNull("link.sheet");
 link.sheet.disabled = true;
 shouldBeTrue("link.disabled");
 shouldBeTrue("link.sheet.disabled");
-shouldBeEqualToString("getComputedStyle(testElement).textDecoration", "none solid rgb(0, 0, 0)");
+shouldBeEqualToString("getComputedStyle(testElement).textDecoration", "none");
 
 link.disabled = false;
 shouldBeFalse("link.disabled");

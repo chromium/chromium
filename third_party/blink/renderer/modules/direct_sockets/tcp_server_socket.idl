@@ -3,9 +3,13 @@
 // found in the LICENSE file.
 
 [
-    Exposed=(Window,DedicatedWorker),
+    Exposed(
+      Window DirectSockets,
+      DedicatedWorker DirectSockets,
+      SharedWorker DirectSocketsInSharedWorkers,
+      ServiceWorker DirectSocketsInServiceWorkers
+    ),
     SecureContext,
-    RuntimeEnabled=DirectSockets,
     IsolatedContext
 ] interface TCPServerSocket {
   [CallWith=ScriptState, RaisesException, MeasureAs=TCPServerSocketConstructor]

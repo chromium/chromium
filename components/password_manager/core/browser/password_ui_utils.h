@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "build/branding_buildflags.h"
 #include "url/origin.h"
 
 namespace password_manager {
@@ -57,6 +58,15 @@ int GetPlatformAuthenticatorLabel();
 // Returns the username or a label appropriate for display if it is empty.
 std::u16string ToUsernameString(const std::u16string& username);
 std::u16string ToUsernameString(const std::string& username);
+
+// Returns whether to use Google Chrome branded strings.
+constexpr bool UsesPasswordManagerGoogleBranding() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return true;
+#else
+  return false;
+#endif
+}
 
 }  // namespace password_manager
 

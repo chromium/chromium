@@ -4,10 +4,13 @@
 
 #include "components/autofill/core/browser/form_structure_rationalization_engine.h"
 
+#include "base/containers/to_vector.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/browser/heuristic_source.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -15,6 +18,7 @@
 namespace autofill::rationalization {
 namespace {
 
+using ::testing::Contains;
 using ::testing::ElementsAre;
 
 BASE_FEATURE(kTestFeatureForFormStructureRationalizationEngine,
@@ -41,19 +45,33 @@ std::vector<std::unique_ptr<AutofillField>> CreateFields(
         result.emplace_back(std::make_unique<AutofillField>(FormFieldData()));
     f->set_name(t.name);
     f->set_label(t.label);
-    f->SetTypeTo(AutofillType(t.field_type));
-    DCHECK_EQ(f->Type().GetStorableType(), t.field_type);
+    f->SetTypeTo(AutofillType(t.field_type),
+                 AutofillPredictionSource::kHeuristics);
+    DCHECK(f->Type().GetTypes().contains(t.field_type));
+    DCHECK_EQ(f->Type().GetTypes(), FieldTypeSet({t.field_type}));
   }
   return result;
 }
 
-std::vector<FieldType> GetTypes(
+std::vector<FieldTypeSet> GetTypes(
     const std::vector<std::unique_ptr<AutofillField>>& fields) {
-  std::vector<FieldType> server_types;
-  base::ranges::transform(
-      fields, std::back_inserter(server_types),
-      [](const auto& field) { return field->Type().GetStorableType(); });
-  return server_types;
+  std::vector<FieldTypeSet> types;
+  for (const auto& field : fields) {
+    types.push_back(field->Type().GetTypes());
+  }
+  return types;
+}
+
+auto FieldTypesAre(auto... types) {
+  return ElementsAre(FieldTypeSet{types}...);
+}
+
+PatternFile GetPatternFile() {
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+  return PatternFile::kDefault;
+#else
+  return PatternFile::kLegacy;
+#endif
 }
 
 RationalizationRule CreateTestRule() {
@@ -96,7 +114,7 @@ TEST(FormStructureRationalizationEngine, TestBuilder) {
   EXPECT_EQ(rule.environment_condition->feature,
             &kTestFeatureForFormStructureRationalizationEngine);
   EXPECT_THAT(rule.environment_condition->country_list,
-              testing::ElementsAre(GeoIpCountryCode("MX")));
+              ElementsAre(GeoIpCountryCode("MX")));
 
   EXPECT_EQ(rule.trigger_field.location, FieldLocation::kTriggerField);
   EXPECT_EQ(rule.trigger_field.possible_overall_types,
@@ -125,9 +143,15 @@ TEST(FormStructureRationalizationEngine,
   GeoIpCountryCode kMX = GeoIpCountryCode("MX");
   GeoIpCountryCode kBR = GeoIpCountryCode("BR");
   GeoIpCountryCode kUS = GeoIpCountryCode("US");
-  ParsingContext kMXContext(kMX, LanguageCode("es"), PatternSource::kLegacy);
-  ParsingContext kBRContext(kBR, LanguageCode("pt"), PatternSource::kLegacy);
-  ParsingContext kUSContext(kUS, LanguageCode("en"), PatternSource::kLegacy);
+  ParsingContext kMXContext(std::vector<FormFieldData>{}, kMX,
+                            LanguageCode("es"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
+  ParsingContext kBRContext(std::vector<FormFieldData>{}, kBR,
+                            LanguageCode("pt"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
+  ParsingContext kUSContext(std::vector<FormFieldData>{}, kUS,
+                            LanguageCode("en"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
 
   EnvironmentCondition no_country_required =
       EnvironmentConditionBuilder().Build();
@@ -152,7 +176,9 @@ TEST(FormStructureRationalizationEngine,
      IsEnvironmentConditionFulfilled_CheckExperiment) {
   using internal::IsEnvironmentConditionFulfilled;
   GeoIpCountryCode kMX = GeoIpCountryCode("MX");
-  ParsingContext kMXContext(kMX, LanguageCode("es"), PatternSource::kLegacy);
+  ParsingContext kMXContext(std::vector<FormFieldData>{}, kMX,
+                            LanguageCode("es"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
 
   EnvironmentCondition no_experiment_required =
       EnvironmentConditionBuilder().Build();
@@ -186,7 +212,9 @@ TEST(FormStructureRationalizationEngine,
      IsFieldConditionFulfilledIgnoringLocation_CheckPossibleTypes) {
   using internal::IsFieldConditionFulfilledIgnoringLocation;
   GeoIpCountryCode kMX = GeoIpCountryCode("MX");
-  ParsingContext kMXContext(kMX, LanguageCode("es"), PatternSource::kLegacy);
+  ParsingContext kMXContext(std::vector<FormFieldData>{}, kMX,
+                            LanguageCode("es"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
 
   FieldCondition no_possible_types_required = {};
   FieldCondition requires_address_line1_type = {
@@ -196,7 +224,7 @@ TEST(FormStructureRationalizationEngine,
   AutofillField field;
 
   // Unknown type.
-  ASSERT_EQ(field.Type().GetStorableType(), UNKNOWN_TYPE);
+  ASSERT_EQ(field.Type().GetAddressType(), UNKNOWN_TYPE);
   EXPECT_TRUE(IsFieldConditionFulfilledIgnoringLocation(
       kMXContext, no_possible_types_required, field));
   EXPECT_FALSE(IsFieldConditionFulfilledIgnoringLocation(
@@ -204,7 +232,7 @@ TEST(FormStructureRationalizationEngine,
 
   // Non-matching type.
   field.set_heuristic_type(GetActiveHeuristicSource(), NAME_FIRST);
-  ASSERT_EQ(field.Type().GetStorableType(), NAME_FIRST);
+  ASSERT_EQ(field.Type().GetAddressType(), NAME_FIRST);
   EXPECT_TRUE(IsFieldConditionFulfilledIgnoringLocation(
       kMXContext, no_possible_types_required, field));
   EXPECT_FALSE(IsFieldConditionFulfilledIgnoringLocation(
@@ -212,7 +240,7 @@ TEST(FormStructureRationalizationEngine,
 
   // Matching type.
   field.set_heuristic_type(GetActiveHeuristicSource(), ADDRESS_HOME_LINE1);
-  ASSERT_EQ(field.Type().GetStorableType(), ADDRESS_HOME_LINE1);
+  ASSERT_EQ(field.Type().GetAddressType(), ADDRESS_HOME_LINE1);
   EXPECT_TRUE(IsFieldConditionFulfilledIgnoringLocation(
       kMXContext, no_possible_types_required, field));
   EXPECT_TRUE(IsFieldConditionFulfilledIgnoringLocation(
@@ -225,7 +253,9 @@ TEST(FormStructureRationalizationEngine,
      IsFieldConditionFulfilledIgnoringLocation_CheckRegex) {
   using internal::IsFieldConditionFulfilledIgnoringLocation;
   GeoIpCountryCode kMX = GeoIpCountryCode("MX");
-  ParsingContext kMXContext(kMX, LanguageCode("es"), PatternSource::kLegacy);
+  ParsingContext kMXContext(std::vector<FormFieldData>{}, kMX,
+                            LanguageCode("es"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
 
   FieldCondition no_regex_match_required = {};
   FieldCondition requires_dependent_locality_match = {
@@ -291,15 +321,16 @@ TEST(FormStructureRationalizationEngine, TestRulesAreApplied) {
   });
 
   GeoIpCountryCode kMX = GeoIpCountryCode("MX");
-  ParsingContext kMXContext(kMX, LanguageCode("es"), PatternSource::kLegacy);
+  ParsingContext kMXContext(fields, kMX, LanguageCode("es"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
   internal::ApplyRuleIfApplicable(kMXContext, CreateTestRule(), fields);
 
   EXPECT_THAT(
       GetTypes(fields),
-      ElementsAre(NAME_FIRST, NAME_LAST, COMPANY_NAME,
-                  /*changed*/ ADDRESS_HOME_STREET_ADDRESS,
-                  /*changed*/ ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_ZIP,
-                  ADDRESS_HOME_CITY, ADDRESS_HOME_STATE));
+      FieldTypesAre(NAME_FIRST, NAME_LAST, COMPANY_NAME,
+                    /*changed*/ ADDRESS_HOME_STREET_ADDRESS,
+                    /*changed*/ ADDRESS_HOME_DEPENDENT_LOCALITY,
+                    ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY, ADDRESS_HOME_STATE));
 }
 
 // Test that no actions are applied if the trigger field does not exist.
@@ -320,14 +351,15 @@ TEST(FormStructureRationalizationEngine,
   });
 
   GeoIpCountryCode kMX = GeoIpCountryCode("MX");
-  ParsingContext kMXContext(kMX, LanguageCode("es"), PatternSource::kLegacy);
+  ParsingContext kMXContext(fields, kMX, LanguageCode("es"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
   internal::ApplyRuleIfApplicable(kMXContext, CreateTestRule(), fields);
 
   EXPECT_THAT(
       GetTypes(fields),
-      ElementsAre(NAME_FIRST, NAME_LAST, COMPANY_NAME, ADDRESS_HOME_LINE1,
-                  /*ADDRESS_HOME_LINE2,*/ ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY,
-                  ADDRESS_HOME_STATE));
+      FieldTypesAre(NAME_FIRST, NAME_LAST, COMPANY_NAME, ADDRESS_HOME_LINE1,
+                    /*ADDRESS_HOME_LINE2,*/ ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY,
+                    ADDRESS_HOME_STATE));
 }
 
 // Test that no actions are applied if the additional condition field does not
@@ -349,14 +381,15 @@ TEST(FormStructureRationalizationEngine,
   });
 
   GeoIpCountryCode kMX = GeoIpCountryCode("MX");
-  ParsingContext kMXContext(kMX, LanguageCode("es"), PatternSource::kLegacy);
+  ParsingContext kMXContext(fields, kMX, LanguageCode("es"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
   internal::ApplyRuleIfApplicable(kMXContext, CreateTestRule(), fields);
 
   EXPECT_THAT(
       GetTypes(fields),
-      ElementsAre(NAME_FIRST, NAME_LAST, COMPANY_NAME, /*ADDRESS_HOME_LINE1,*/
-                  ADDRESS_HOME_LINE2, ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY,
-                  ADDRESS_HOME_STATE));
+      FieldTypesAre(NAME_FIRST, NAME_LAST, COMPANY_NAME, /*ADDRESS_HOME_LINE1,*/
+                    ADDRESS_HOME_LINE2, ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY,
+                    ADDRESS_HOME_STATE));
 }
 
 // Test that no actions are applied if the additional condition asks for
@@ -381,13 +414,14 @@ TEST(FormStructureRationalizationEngine,
   });
 
   GeoIpCountryCode kMX = GeoIpCountryCode("MX");
-  ParsingContext kMXContext(kMX, LanguageCode("es"), PatternSource::kLegacy);
+  ParsingContext kMXContext(fields, kMX, LanguageCode("es"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
   internal::ApplyRuleIfApplicable(kMXContext, CreateTestRule(), fields);
 
   EXPECT_THAT(GetTypes(fields),
-              ElementsAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_LINE1,
-                          COMPANY_NAME, ADDRESS_HOME_LINE2, ADDRESS_HOME_ZIP,
-                          ADDRESS_HOME_CITY, ADDRESS_HOME_STATE));
+              FieldTypesAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_LINE1,
+                            COMPANY_NAME, ADDRESS_HOME_LINE2, ADDRESS_HOME_ZIP,
+                            ADDRESS_HOME_CITY, ADDRESS_HOME_STATE));
 }
 
 // Test that the kLastClassifiedPredecessor can skip unclassified predecessors.
@@ -411,24 +445,22 @@ TEST(FormStructureRationalizationEngine,
   });
 
   GeoIpCountryCode kMX = GeoIpCountryCode("MX");
-  ParsingContext kMXContext(kMX, LanguageCode("es"), PatternSource::kLegacy);
+  ParsingContext kMXContext(fields, kMX, LanguageCode("es"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
   internal::ApplyRuleIfApplicable(kMXContext, CreateTestRule(), fields);
 
   EXPECT_THAT(
       GetTypes(fields),
-      ElementsAre(NAME_FIRST, NAME_LAST, COMPANY_NAME,
-                  /*changed*/ ADDRESS_HOME_STREET_ADDRESS, UNKNOWN_TYPE,
-                  /*changed*/ ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_ZIP,
-                  ADDRESS_HOME_CITY, ADDRESS_HOME_STATE));
+      FieldTypesAre(NAME_FIRST, NAME_LAST, COMPANY_NAME,
+                    /*changed*/ ADDRESS_HOME_STREET_ADDRESS, UNKNOWN_TYPE,
+                    /*changed*/ ADDRESS_HOME_DEPENDENT_LOCALITY,
+                    ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY, ADDRESS_HOME_STATE));
 }
 
 // Test that the actions are applied if all conditions are met.
 TEST(FormStructureRationalizationEngine, TestDEOverflowRuleIsApplied) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kTestFeatureForFormStructureRationalizationEngine,
-       features::kAutofillUseDEAddressModel},
-      {});
+  base::test::ScopedFeatureList feature_list{
+      kTestFeatureForFormStructureRationalizationEngine};
 
   std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
       {u"Name", u"n", NAME_FIRST},
@@ -440,24 +472,22 @@ TEST(FormStructureRationalizationEngine, TestDEOverflowRuleIsApplied) {
   });
 
   GeoIpCountryCode kDE = GeoIpCountryCode("DE");
-  ParsingContext kDEContext(kDE, LanguageCode("de"), PatternSource::kLegacy);
+  ParsingContext kDEContext(fields, kDE, LanguageCode("de"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
   ApplyRationalizationEngineRules(kDEContext, fields, nullptr);
 
   EXPECT_THAT(GetTypes(fields),
-              ElementsAre(NAME_FIRST, NAME_LAST,
-                          /*changed*/ ADDRESS_HOME_LINE1,
-                          /*changed*/ ADDRESS_HOME_LINE2, ADDRESS_HOME_ZIP,
-                          ADDRESS_HOME_CITY));
+              FieldTypesAre(NAME_FIRST, NAME_LAST,
+                            /*changed*/ ADDRESS_HOME_LINE1,
+                            /*changed*/ ADDRESS_HOME_LINE2, ADDRESS_HOME_ZIP,
+                            ADDRESS_HOME_CITY));
 }
 
 // Test that a house number field not followed by an apartment is treated
 // as a ADDRESS_HOME_HOUSE_NUMBER_AND_APT in Poland.
 TEST(FormStructureRationalizationEngine, TestPLHouseNumberAndAptChanged) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kTestFeatureForFormStructureRationalizationEngine,
-       features::kAutofillUsePLAddressModel},
-      {});
+  base::test::ScopedFeatureList feature_list{
+      kTestFeatureForFormStructureRationalizationEngine};
 
   std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
       {u"Imię", u"n", NAME_FIRST},
@@ -469,23 +499,21 @@ TEST(FormStructureRationalizationEngine, TestPLHouseNumberAndAptChanged) {
   });
 
   GeoIpCountryCode kPL = GeoIpCountryCode("PL");
-  ParsingContext kPLContext(kPL, LanguageCode("pl"), PatternSource::kLegacy);
+  ParsingContext kPLContext(fields, kPL, LanguageCode("pl"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
   ApplyRationalizationEngineRules(kPLContext, fields, nullptr);
 
   EXPECT_THAT(GetTypes(fields),
-              ElementsAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_STREET_NAME,
-                          /*changed*/ ADDRESS_HOME_HOUSE_NUMBER_AND_APT,
-                          ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY));
+              FieldTypesAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_STREET_NAME,
+                            /*changed*/ ADDRESS_HOME_HOUSE_NUMBER_AND_APT,
+                            ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY));
 }
 
 // Test that the actions are not applied since there is apartment related field
 // after ADDRESS_HOME_HOUSE_NUMBER (for Poland).
 TEST(FormStructureRationalizationEngine, TestPLHouseNumberAndAptNoChange) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kTestFeatureForFormStructureRationalizationEngine,
-       features::kAutofillUsePLAddressModel},
-      {});
+  base::test::ScopedFeatureList feature_list{
+      kTestFeatureForFormStructureRationalizationEngine};
 
   std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
       {u"Imię", u"n", NAME_FIRST},
@@ -498,23 +526,21 @@ TEST(FormStructureRationalizationEngine, TestPLHouseNumberAndAptNoChange) {
   });
 
   GeoIpCountryCode kPL = GeoIpCountryCode("PL");
-  ParsingContext kPLContext(kPL, LanguageCode("pl"), PatternSource::kLegacy);
+  ParsingContext kPLContext(fields, kPL, LanguageCode("pl"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
   ApplyRationalizationEngineRules(kPLContext, fields, nullptr);
 
   EXPECT_THAT(GetTypes(fields),
-              ElementsAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_STREET_NAME,
-                          ADDRESS_HOME_HOUSE_NUMBER, ADDRESS_HOME_APT_NUM,
-                          ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY));
+              FieldTypesAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_STREET_NAME,
+                            ADDRESS_HOME_HOUSE_NUMBER, ADDRESS_HOME_APT_NUM,
+                            ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY));
 }
 
 // Test that the actions are applied if there is no next field after
 // ADDRESS_HOME_HOUSE_NUMBER (for Poland).
 TEST(FormStructureRationalizationEngine, TestPLHouseNumberAndAptWithNoNext) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kTestFeatureForFormStructureRationalizationEngine,
-       features::kAutofillUsePLAddressModel},
-      {});
+  base::test::ScopedFeatureList feature_list{
+      kTestFeatureForFormStructureRationalizationEngine};
 
   std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
       {u"Imię", u"n", NAME_FIRST},
@@ -524,23 +550,21 @@ TEST(FormStructureRationalizationEngine, TestPLHouseNumberAndAptWithNoNext) {
   });
 
   GeoIpCountryCode kPL = GeoIpCountryCode("PL");
-  ParsingContext kPLContext(kPL, LanguageCode("pl"), PatternSource::kLegacy);
+  ParsingContext kPLContext(fields, kPL, LanguageCode("pl"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
   ApplyRationalizationEngineRules(kPLContext, fields, nullptr);
 
   EXPECT_THAT(GetTypes(fields),
-              ElementsAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_STREET_NAME,
-                          /*changed*/ ADDRESS_HOME_HOUSE_NUMBER_AND_APT));
+              FieldTypesAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_STREET_NAME,
+                            /*changed*/ ADDRESS_HOME_HOUSE_NUMBER_AND_APT));
 }
 
 // Verifies that fields classified as ADDRESS_HOME_LINE1 without a following
 // ADDRESS_HOME_LINE2 are reclassified as ADDRESS_HOME_STREET_ADDRESS for PL
 // forms.
 TEST(FormStructureRationalizationEngine, TestPLAddressLine1WithNoNext) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kTestFeatureForFormStructureRationalizationEngine,
-       features::kAutofillUsePLAddressModel},
-      {});
+  base::test::ScopedFeatureList feature_list{
+      kTestFeatureForFormStructureRationalizationEngine};
 
   std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
       {u"Imię", u"n", NAME_FIRST},
@@ -550,23 +574,21 @@ TEST(FormStructureRationalizationEngine, TestPLAddressLine1WithNoNext) {
   });
 
   GeoIpCountryCode kPL = GeoIpCountryCode("PL");
-  ParsingContext kPLContext(kPL, LanguageCode("pl"), PatternSource::kLegacy);
+  ParsingContext kPLContext(fields, kPL, LanguageCode("pl"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
   ApplyRationalizationEngineRules(kPLContext, fields, nullptr);
 
   EXPECT_THAT(GetTypes(fields),
-              ElementsAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_STREET_ADDRESS,
-                          /*changed*/ ADDRESS_HOME_ZIP));
+              FieldTypesAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_STREET_ADDRESS,
+                            /*changed*/ ADDRESS_HOME_ZIP));
 }
 
 // Verifies that fields classified as ADDRESS_HOME_LINE1 with a following
 // repeated ADDRESS_HOME_LINE1 are reclassified as ADDRESS_HOME_LINE1 and
 // ADDRESS_HOME_LINE2 for IT forms.
 TEST(FormStructureRationalizationEngine, TestITAddressLine1WithAL1Next) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kTestFeatureForFormStructureRationalizationEngine,
-       features::kAutofillUseITAddressModel},
-      {});
+  base::test::ScopedFeatureList feature_list{
+      kTestFeatureForFormStructureRationalizationEngine};
 
   std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
       {u"Nome", u"nome", NAME_FIRST},
@@ -577,23 +599,21 @@ TEST(FormStructureRationalizationEngine, TestITAddressLine1WithAL1Next) {
   });
 
   GeoIpCountryCode kIT = GeoIpCountryCode("IT");
-  ParsingContext kITContext(kIT, LanguageCode("it"), PatternSource::kLegacy);
+  ParsingContext kITContext(fields, kIT, LanguageCode("it"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
   ApplyRationalizationEngineRules(kITContext, fields, nullptr);
 
   EXPECT_THAT(GetTypes(fields),
-              ElementsAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_LINE1,
-                          /*changed*/ ADDRESS_HOME_LINE2, ADDRESS_HOME_ZIP));
+              FieldTypesAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_LINE1,
+                            /*changed*/ ADDRESS_HOME_LINE2, ADDRESS_HOME_ZIP));
 }
 
 // Verifies that fields classified as ADDRESS_HOME_LINE1 without a following
 // ADDRESS_HOME_LINE2 are reclassified as ADDRESS_HOME_STREET_ADDRESS for IT
 // forms.
 TEST(FormStructureRationalizationEngine, TestITAddressLine1WithNoNext) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kTestFeatureForFormStructureRationalizationEngine,
-       features::kAutofillUseITAddressModel},
-      {});
+  base::test::ScopedFeatureList feature_list{
+      kTestFeatureForFormStructureRationalizationEngine};
 
   std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
       {u"Nome", u"nome", NAME_FIRST},
@@ -603,13 +623,249 @@ TEST(FormStructureRationalizationEngine, TestITAddressLine1WithNoNext) {
   });
 
   GeoIpCountryCode kIT = GeoIpCountryCode("IT");
-  ParsingContext kITContext(kIT, LanguageCode("it"), PatternSource::kLegacy);
+  ParsingContext kITContext(fields, kIT, LanguageCode("it"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
   ApplyRationalizationEngineRules(kITContext, fields, nullptr);
 
   EXPECT_THAT(
       GetTypes(fields),
-      ElementsAre(NAME_FIRST, NAME_LAST,
-                  /*changed*/ ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_ZIP));
+      FieldTypesAre(NAME_FIRST, NAME_LAST,
+                    /*changed*/ ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_ZIP));
+}
+
+// Test that a house number field not followed by an apartment is treated
+// as a ADDRESS_HOME_HOUSE_NUMBER_AND_APT in the Netherlands.
+TEST(FormStructureRationalizationEngine, TestNLHouseNumberAndAptChanged) {
+  base::test::ScopedFeatureList feature_list{
+      kTestFeatureForFormStructureRationalizationEngine};
+
+  std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
+      {u"Voornaam", u"voornaam", NAME_FIRST},
+      {u"Achternaam", u"achternaam", NAME_LAST},
+      {u"Straat", u"straat", ADDRESS_HOME_STREET_NAME},
+      {u"Huisnummer", u"huisnummer", ADDRESS_HOME_HOUSE_NUMBER},
+      {u"Zipcode", u"zipcode", ADDRESS_HOME_ZIP},
+      {u"Plaats", u"plaats", ADDRESS_HOME_CITY},
+  });
+
+  GeoIpCountryCode kNL = GeoIpCountryCode("NL");
+  ParsingContext kNLContext(fields, kNL, LanguageCode("nl"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
+  ApplyRationalizationEngineRules(kNLContext, fields, nullptr);
+
+  EXPECT_THAT(GetTypes(fields),
+              FieldTypesAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_STREET_NAME,
+                            /*changed*/ ADDRESS_HOME_HOUSE_NUMBER_AND_APT,
+                            ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY));
+}
+
+// Test that the actions are not applied since there is apartment related field
+// after ADDRESS_HOME_HOUSE_NUMBER (for the Netherlands).
+TEST(FormStructureRationalizationEngine, TestNLHouseNumberAndAptNoChange) {
+  base::test::ScopedFeatureList feature_list{
+      kTestFeatureForFormStructureRationalizationEngine};
+
+  std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
+      {u"Voornaam", u"voornaam", NAME_FIRST},
+      {u"Achternaam", u"achternaam", NAME_LAST},
+      {u"Straat", u"straat", ADDRESS_HOME_STREET_NAME},
+      {u"Huisnummer", u"huisnummer", ADDRESS_HOME_HOUSE_NUMBER},
+      {u"Toevoeging", u"toevoeging", ADDRESS_HOME_APT_NUM},
+      {u"Zipcode", u"zipcode", ADDRESS_HOME_ZIP},
+      {u"Plaats", u"plaats", ADDRESS_HOME_CITY},
+  });
+
+  GeoIpCountryCode kNL = GeoIpCountryCode("NL");
+  ParsingContext kNLContext(fields, kNL, LanguageCode("nl"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
+  ApplyRationalizationEngineRules(kNLContext, fields, nullptr);
+
+  EXPECT_THAT(GetTypes(fields),
+              FieldTypesAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_STREET_NAME,
+                            ADDRESS_HOME_HOUSE_NUMBER, ADDRESS_HOME_APT_NUM,
+                            ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY));
+}
+
+// Test that the actions are applied if there is no next field after
+// ADDRESS_HOME_HOUSE_NUMBER (for the Netherlands).
+TEST(FormStructureRationalizationEngine, TestNLHouseNumberAndAptWithNoNext) {
+  base::test::ScopedFeatureList feature_list{
+      kTestFeatureForFormStructureRationalizationEngine};
+
+  std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
+      {u"Voornaam", u"voornaam", NAME_FIRST},
+      {u"Achternaam", u"achternaam", NAME_LAST},
+      {u"Straat", u"straat", ADDRESS_HOME_STREET_NAME},
+      {u"Huisnummer", u"huisnummer", ADDRESS_HOME_HOUSE_NUMBER},
+  });
+
+  GeoIpCountryCode kNL = GeoIpCountryCode("NL");
+  ParsingContext kNLContext(fields, kNL, LanguageCode("nl"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
+  ApplyRationalizationEngineRules(kNLContext, fields, nullptr);
+
+  EXPECT_THAT(GetTypes(fields),
+              FieldTypesAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_STREET_NAME,
+                            /*changed*/ ADDRESS_HOME_HOUSE_NUMBER_AND_APT));
+}
+
+// Tests that in India, if there is landmark field detected, but there is no
+// field for locality. The street address related field is set to
+// `ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY`.
+TEST(FormStructureRationalizationEngine, TestINStreetLocationWithNoLocality) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kTestFeatureForFormStructureRationalizationEngine,
+       features::kAutofillUseINAddressModel},
+      {});
+
+  std::vector<std::unique_ptr<AutofillField>> fields = CreateFields(
+      {{u"First name", u"first-name", NAME_FIRST},
+       {u"Last name", u"lastname", NAME_LAST},
+       {u"Street Address", u"street-address", ADDRESS_HOME_STREET_LOCATION},
+       {u"Landmark", u"landmark", ADDRESS_HOME_LANDMARK},
+       {u"City", u"city", ADDRESS_HOME_CITY}});
+
+  GeoIpCountryCode kIN = GeoIpCountryCode("IN");
+  ParsingContext kINContext(fields, kIN, LanguageCode("en"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
+  ApplyRationalizationEngineRules(kINContext, fields, nullptr);
+
+  EXPECT_THAT(
+      GetTypes(fields),
+      FieldTypesAre(NAME_FIRST, NAME_LAST,
+                    /*changed*/ ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY,
+                    ADDRESS_HOME_LANDMARK, ADDRESS_HOME_CITY));
+}
+
+// Tests that in India, if there is only one street address related field, it is
+// set to `ADDRESS_HOME_STREET_ADDRESS`.
+TEST(FormStructureRationalizationEngine, TestINAddressLine1WithNoNext) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kTestFeatureForFormStructureRationalizationEngine,
+       features::kAutofillUseINAddressModel},
+      {});
+
+  std::vector<std::unique_ptr<AutofillField>> fields =
+      CreateFields({{u"First name", u"first-name", NAME_FIRST},
+                    {u"Last name", u"lastname", NAME_LAST},
+                    {u"Street Address", u"street-address", ADDRESS_HOME_LINE1},
+                    {u"City", u"city", ADDRESS_HOME_CITY}});
+
+  GeoIpCountryCode kIN = GeoIpCountryCode("IN");
+  ParsingContext kINContext(fields, kIN, LanguageCode("en"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
+  ApplyRationalizationEngineRules(kINContext, fields, nullptr);
+
+  EXPECT_THAT(GetTypes(fields),
+              FieldTypesAre(NAME_FIRST, NAME_LAST,
+                            /*changed*/ ADDRESS_HOME_STREET_ADDRESS,
+                            ADDRESS_HOME_CITY));
+}
+
+// Tests that in India, if there is locality field detected, but there is no
+// field for landmark. The street address related field is set to
+// `ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK`.
+TEST(FormStructureRationalizationEngine, TestINStreetLocationWithNoLandmark) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kTestFeatureForFormStructureRationalizationEngine,
+       features::kAutofillUseINAddressModel},
+      {});
+
+  std::vector<std::unique_ptr<AutofillField>> fields = CreateFields(
+      {{u"First name", u"first-name", NAME_FIRST},
+       {u"Last name", u"lastname", NAME_LAST},
+       {u"Street Address", u"street-address", ADDRESS_HOME_LINE1},
+       {u"Locality", u"L=locality", ADDRESS_HOME_DEPENDENT_LOCALITY},
+       {u"City", u"city", ADDRESS_HOME_CITY}});
+
+  GeoIpCountryCode kIN = GeoIpCountryCode("IN");
+  ParsingContext kINContext(fields, kIN, LanguageCode("en"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
+  ApplyRationalizationEngineRules(kINContext, fields, nullptr);
+
+  EXPECT_THAT(
+      GetTypes(fields),
+      FieldTypesAre(NAME_FIRST, NAME_LAST,
+                    /*changed*/ ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK,
+                    ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_CITY));
+}
+
+// Tests that in India, if there is street location field detected, but there is
+// no field for landmark. The locality related field is set to
+// `ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK`.
+TEST(FormStructureRationalizationEngine,
+     TestINDependantLocalityWithNoLandmark) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kTestFeatureForFormStructureRationalizationEngine,
+       features::kAutofillUseINAddressModel},
+      {});
+
+  std::vector<std::unique_ptr<AutofillField>> fields = CreateFields(
+      {{u"First name", u"first-name", NAME_FIRST},
+       {u"Last name", u"lastname", NAME_LAST},
+       {u"Street Address", u"street-address", ADDRESS_HOME_STREET_LOCATION},
+       {u"Locality", u"locality", ADDRESS_HOME_DEPENDENT_LOCALITY},
+       {u"City", u"city", ADDRESS_HOME_CITY}});
+
+  GeoIpCountryCode kIN = GeoIpCountryCode("IN");
+  ParsingContext kINContext(fields, kIN, LanguageCode("en"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
+  ApplyRationalizationEngineRules(kINContext, fields, nullptr);
+
+  EXPECT_THAT(
+      GetTypes(fields),
+      FieldTypesAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_STREET_LOCATION,
+                    /*changed*/ ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK,
+                    ADDRESS_HOME_CITY));
+}
+
+// Tests that in Japan, if there are name fields duplicated, the second pair is
+// classified as alternative.
+TEST(FormStructureRationalizationEngine, TestJPAlternativeNames) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kTestFeatureForFormStructureRationalizationEngine,
+       features::kAutofillSupportPhoneticNameForJP},
+      {});
+
+  // Most common order of name fields in JP.
+  std::vector<std::unique_ptr<AutofillField>> fields = CreateFields(
+      {{u"Last name", u"lastname", NAME_LAST},
+       {u"First name", u"firstname", NAME_FIRST},
+       {u"Phonetic last name", u"lastname", NAME_LAST},
+       {u"Phonetic given name", u"firstname", NAME_FIRST},
+       {u"Street Address", u"street-address", ADDRESS_HOME_STREET_ADDRESS}});
+
+  GeoIpCountryCode kJP = GeoIpCountryCode("JP");
+  ParsingContext kJPContext(fields, kJP, LanguageCode("en"), GetPatternFile(),
+                            /*active_features=*/{}, /*log_manager=*/nullptr);
+
+  ApplyRationalizationEngineRules(kJPContext, fields, nullptr);
+  EXPECT_THAT(GetTypes(fields),
+              FieldTypesAre(NAME_LAST, NAME_FIRST,
+                            /*changed*/ ALTERNATIVE_FAMILY_NAME,
+                            /*changed*/ ALTERNATIVE_GIVEN_NAME,
+                            ADDRESS_HOME_STREET_ADDRESS));
+
+  // Check that the inversed order of name fields is also supported.
+  std::vector<std::unique_ptr<AutofillField>> given_name_first_fields =
+      CreateFields({{u"First name", u"firstname", NAME_FIRST},
+                    {u"Last name", u"lastname", NAME_LAST},
+                    {u"Phonetic given name", u"firstname", NAME_FIRST},
+                    {u"Phonetic last name", u"lastname", NAME_LAST},
+                    {u"Street Address", u"street-address",
+                     ADDRESS_HOME_STREET_ADDRESS}});
+
+  ApplyRationalizationEngineRules(kJPContext, given_name_first_fields, nullptr);
+  EXPECT_THAT(GetTypes(given_name_first_fields),
+              FieldTypesAre(NAME_FIRST, NAME_LAST,
+                            /*changed*/ ALTERNATIVE_GIVEN_NAME,
+                            /*changed*/ ALTERNATIVE_FAMILY_NAME,
+                            ADDRESS_HOME_STREET_ADDRESS));
 }
 
 }  // namespace

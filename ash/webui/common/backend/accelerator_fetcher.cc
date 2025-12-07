@@ -45,10 +45,6 @@ std::vector<mojom::StandardAcceleratorPropertiesPtr> GetAcceleratorsForActionId(
 }  // namespace
 
 AcceleratorFetcher::AcceleratorFetcher() {
-  if (!::features::IsShortcutCustomizationEnabled()) {
-    return;
-  }
-
   if (Shell::HasInstance()) {
     Shell::Get()
         ->accelerator_controller()
@@ -61,10 +57,6 @@ AcceleratorFetcher::AcceleratorFetcher() {
 }
 
 AcceleratorFetcher::~AcceleratorFetcher() {
-  if (!::features::IsShortcutCustomizationEnabled()) {
-    return;
-  }
-
   if (Shell::HasInstance()) {
     Shell::Get()
         ->accelerator_controller()
@@ -75,7 +67,6 @@ AcceleratorFetcher::~AcceleratorFetcher() {
 
 void AcceleratorFetcher::BindInterface(
     mojo::PendingReceiver<common::mojom::AcceleratorFetcher> receiver) {
-  CHECK(::features::IsShortcutCustomizationEnabled());
   if (accelerator_fetcher_receiver_.is_bound()) {
     accelerator_fetcher_receiver_.reset();
   }

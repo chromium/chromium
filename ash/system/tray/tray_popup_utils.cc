@@ -92,8 +92,7 @@ std::unique_ptr<views::LayoutManager> CreateDefaultLayoutManager(
       return CreateDefaultCenterLayoutManager(use_wide_layout);
   }
   // Required by some compilers.
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 // Configures the default size and flex value for the specified |container|
@@ -237,8 +236,7 @@ views::ImageView* TrayPopupUtils::CreateMainImageView(bool use_wide_layout) {
 
 std::unique_ptr<views::Painter> TrayPopupUtils::CreateFocusPainter() {
   return views::Painter::CreateSolidFocusPainter(
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kFocusRingColor),
+      AshColorProvider::Get()->GetColor(ui::kColorAshFocusRing),
       kFocusBorderThickness, gfx::InsetsF());
 }
 
@@ -252,7 +250,7 @@ void TrayPopupUtils::ConfigureHeader(views::View* view) {
 void TrayPopupUtils::ConfigureRowButtonInkdrop(views::InkDropHost* ink_drop) {
   ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);
   ink_drop->SetVisibleOpacity(1.0f);  // The colors already contain opacity
-  ink_drop->SetBaseColorId(cros_tokens::kCrosSysRippleNeutralOnSubtle);
+  ink_drop->SetBaseColor(cros_tokens::kCrosSysRippleNeutralOnSubtle);
 }
 
 views::LabelButton* TrayPopupUtils::CreateTrayPopupButton(
@@ -304,13 +302,8 @@ void TrayPopupUtils::InitializeAsCheckableRow(HoverHighlightView* container,
                                               bool checked,
                                               bool enterprise_managed) {
   const int dip_size = GetDefaultSizeOfVectorIcon(kCheckCircleIcon);
-  // The mapping of `cros_tokens::kCrosSysSystemOnPrimaryContainer` cannot
-  // accommodate `check_mark` and other components, so we still want to
-  // guard with Jelly flag here.
-  ui::ImageModel check_mark = CreateCheckMark(
-      chromeos::features::IsJellyEnabled()
-          ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-          : static_cast<ui::ColorId>(kColorAshIconColorProminent));
+  ui::ImageModel check_mark =
+      CreateCheckMark(cros_tokens::kCrosSysSystemOnPrimaryContainer);
   if (enterprise_managed) {
     ui::ImageModel enterprise_managed_icon = ui::ImageModel::FromVectorIcon(
         chromeos::kEnterpriseIcon, kColorAshIconColorBlocked, dip_size);

@@ -1,0 +1,21 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++staticText name='All of the following '
+++++++++++inlineTextBox name='All of the following '
+++++++++link name='links'
+++++++++++staticText name='links'
+++++++++++++inlineTextBox name='links'
+++++++++staticText name=' are included '
+++++++++++inlineTextBox name=' are included '
+++++++++link name='within'
+++++++++++staticText name='within'
+++++++++++++inlineTextBox name='within'
+++++++++staticText name=' one '
+++++++++++inlineTextBox name=' one '
+++++++++link name='span'
+++++++++++staticText name='span'
+++++++++++++inlineTextBox name='span'
+++++++++staticText name='.'
+++++++++++inlineTextBox name='.'

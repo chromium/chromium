@@ -70,7 +70,8 @@ DEFINE_PROTO_FUZZER(const host_cache_fuzzer_proto::JsonOrBytes& input) {
   if (env.kDumpNativeInput)
     LOG(INFO) << "native_input: " << native_input;
 
-  std::optional<base::Value> value = base::JSONReader::Read(native_input);
+  std::optional<base::Value> value = base::JSONReader::Read(
+      native_input, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value || !value->is_list())
     return;
   ++valid_json_count;

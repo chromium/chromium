@@ -12,7 +12,6 @@
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
 namespace storage {
 
@@ -37,14 +36,13 @@ void QuotaClientCallbackWrapper::GetBucketUsage(
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), 0));
 }
 
-void QuotaClientCallbackWrapper::GetStorageKeysForType(
-    blink::mojom::StorageType type,
-    GetStorageKeysForTypeCallback callback) {
+void QuotaClientCallbackWrapper::GetDefaultStorageKeys(
+    GetDefaultStorageKeysCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  wrapped_client_->GetStorageKeysForType(
-      type, mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-                std::move(callback), std::vector<blink::StorageKey>()));
+  wrapped_client_->GetDefaultStorageKeys(
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          std::move(callback), std::vector<blink::StorageKey>()));
 }
 
 void QuotaClientCallbackWrapper::DeleteBucketData(
@@ -59,12 +57,11 @@ void QuotaClientCallbackWrapper::DeleteBucketData(
 }
 
 void QuotaClientCallbackWrapper::PerformStorageCleanup(
-    blink::mojom::StorageType type,
     PerformStorageCleanupCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   wrapped_client_->PerformStorageCleanup(
-      type, mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback)));
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback)));
 }
 
 }  // namespace storage

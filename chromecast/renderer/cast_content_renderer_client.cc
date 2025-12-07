@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
@@ -130,13 +131,15 @@ void CastContentRendererClient::RenderThreadStarted() {
 
   std::string last_launched_app =
       command_line->GetSwitchValueNative(switches::kLastLaunchedApp);
-  if (!last_launched_app.empty())
+  if (!last_launched_app.empty()) {
     AppStateTracker::SetLastLaunchedApp(last_launched_app);
+  }
 
   std::string previous_app =
       command_line->GetSwitchValueNative(switches::kPreviousApp);
-  if (!previous_app.empty())
+  if (!previous_app.empty()) {
     AppStateTracker::SetPreviousApp(previous_app);
+  }
 }
 
 void CastContentRendererClient::RenderFrameCreated(
@@ -181,18 +184,18 @@ CastContentRendererClient::GetSupportedKeySystems(
 #else
   ::media::KeySystemInfos key_systems;
   media::AddChromecastKeySystems(&key_systems,
-                                 false /* enable_persistent_license_support */,
-                                 false /* enable_playready */);
+                                 false /* enable_persistent_license_support */);
   std::move(cb).Run(std::move(key_systems));
   return nullptr;
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-bool CastContentRendererClient::IsSupportedAudioType(
+bool CastContentRendererClient::IsDecoderSupportedAudioType(
     const ::media::AudioType& type) {
 #if BUILDFLAG(IS_ANDROID)
-  if (type.spatial_rendering)
+  if (type.spatial_rendering) {
     return false;
+  }
 
   // No ATV device we know of has (E)AC3 decoder, so it relies on the audio sink
   // device.
@@ -217,21 +220,24 @@ bool CastContentRendererClient::IsSupportedAudioType(
            supported_bitstream_audio_codecs_info_.codecs;
   }
 
-  return ::media::IsDefaultSupportedAudioType(type);
+  return ::media::IsDefaultDecoderSupportedAudioType(type);
 #else
-  if (type.profile == ::media::AudioCodecProfile::kXHE_AAC)
+  if (type.profile == ::media::AudioCodecProfile::kXHE_AAC) {
     return false;
+  }
 
   // If the HDMI sink supports bitstreaming the codec, then the vendor backend
   // does not need to support it.
-  if (CheckSupportedBitstreamAudioCodec(type.codec, type.spatial_rendering))
+  if (CheckSupportedBitstreamAudioCodec(type.codec, type.spatial_rendering)) {
     return true;
+  }
 
   media::AudioCodec codec = media::ToCastAudioCodec(type.codec);
   // Cast platform implements software decoding of Opus and FLAC, so only PCM
   // support is necessary in order to support Opus and FLAC.
-  if (codec == media::kCodecOpus || codec == media::kCodecFLAC)
+  if (codec == media::kCodecOpus || codec == media::kCodecFLAC) {
     codec = media::kCodecPCM;
+  }
 
   media::AudioConfig cast_audio_config;
   cast_audio_config.codec = codec;
@@ -240,7 +246,7 @@ bool CastContentRendererClient::IsSupportedAudioType(
 #endif
 }
 
-bool CastContentRendererClient::IsSupportedVideoType(
+bool CastContentRendererClient::IsDecoderSupportedVideoType(
     const ::media::VideoType& type) {
   // TODO(servolk): make use of eotf.
 
@@ -271,11 +277,13 @@ bool CastContentRendererClient::IsSupportedBitstreamAudioCodec(
 bool CastContentRendererClient::CheckSupportedBitstreamAudioCodec(
     ::media::AudioCodec codec,
     bool check_spatial_rendering) {
-  if (!IsSupportedBitstreamAudioCodec(codec))
+  if (!IsSupportedBitstreamAudioCodec(codec)) {
     return false;
+  }
 
-  if (!check_spatial_rendering)
+  if (!check_spatial_rendering) {
     return true;
+  }
 
   return IsSupportedBitstreamAudioCodecHelper(
       codec, supported_bitstream_audio_codecs_info_.spatial_rendering);
@@ -326,6 +334,9 @@ void CastContentRendererClient::
 void CastContentRendererClient::OnSupportedBitstreamAudioCodecsChanged(
     const BitstreamAudioCodecsInfo& info) {
   supported_bitstream_audio_codecs_info_ = info;
+#if BUILDFLAG(IS_ANDROID)
+  cast_audio_device_factory_->SetSupportedBitstreamAudioCodec(info);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>

@@ -49,9 +49,8 @@ void AudioDiscardHelper::Reset(size_t initial_discard) {
   delayed_discard_padding_ = DecoderBuffer::DiscardPadding();
 }
 
-bool AudioDiscardHelper::ProcessBuffers(
-    const DecoderBuffer::TimeInfo& time_info,
-    AudioBuffer* decoded_buffer) {
+bool AudioDiscardHelper::ProcessBuffers(const TimeInfo& time_info,
+                                        AudioBuffer* decoded_buffer) {
   DCHECK(time_info.timestamp != kNoTimestamp);
 
   // Issue a debug warning when we see non-monotonic timestamps.  Only a warning
@@ -70,8 +69,10 @@ bool AudioDiscardHelper::ProcessBuffers(
   if (!decoded_buffer) {
     // If there's a one buffer delay for decoding, we need to save it so it can
     // be processed with the next decoder buffer.
-    if (delayed_discard_)
-      delayed_discard_padding_ = time_info.discard_padding;
+    if (delayed_discard_) {
+      delayed_discard_padding_ =
+          time_info.discard_padding.value_or(DecoderBuffer::DiscardPadding());
+    }
     return false;
   }
 
@@ -80,7 +81,7 @@ bool AudioDiscardHelper::ProcessBuffers(
   // If there's a one buffer delay for decoding, pick up the last encoded
   // buffer's discard padding for processing with the current decoded buffer.
   DecoderBuffer::DiscardPadding current_discard_padding =
-      time_info.discard_padding;
+      time_info.discard_padding.value_or(DecoderBuffer::DiscardPadding());
   if (delayed_discard_) {
     // For simplicity disallow cases where decoder delay is present with delayed
     // discard (no codecs at present).  Doing so allows us to avoid complexity

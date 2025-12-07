@@ -4,13 +4,12 @@
 
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 
-#include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 
 namespace blink {
 
 void LayoutBlockFlow::Trace(Visitor* visitor) const {
-  visitor->Trace(multi_column_flow_thread_);
   visitor->Trace(inline_node_data_);
   LayoutBlock::Trace(visitor);
 }
@@ -20,20 +19,20 @@ bool LayoutBlockFlow::CreatesNewFormattingContext() const {
   NOT_DESTROYED();
   if (IsInline() || IsFloatingOrOutOfFlowPositioned() || IsScrollContainer() ||
       IsFlexItem() || IsCustomItem() || IsDocumentElement() || IsGridItem() ||
-      IsWritingModeRoot() || IsMathItem() ||
+      IsGridLanesItem() || IsWritingModeRoot() || IsMathItem() ||
       StyleRef().Display() == EDisplay::kFlowRoot ||
       StyleRef().Display() == EDisplay::kFlowRootListItem ||
       ShouldApplyPaintContainment() || ShouldApplyLayoutContainment() ||
+      StyleRef().IsContainerForSizeContainerQueries() ||
       StyleRef().HasLineClamp() || StyleRef().SpecifiesColumns() ||
       StyleRef().GetColumnSpan() == EColumnSpan::kAll) {
     // The specs require this object to establish a new formatting context.
     return true;
   }
 
-  if (RuntimeEnabledFeatures::ContainerTypeNoLayoutContainmentEnabled()) {
-    if (StyleRef().IsContainerForSizeContainerQueries()) {
-      return true;
-    }
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
+      Parent()->IsCanvas()) {
+    return true;
   }
 
   // https://drafts.csswg.org/css-align/#distribution-block
@@ -55,20 +54,22 @@ bool LayoutBlockFlow::CreatesNewFormattingContext() const {
 }
 
 DISABLE_CFI_PERF
-void LayoutBlockFlow::StyleDidChange(StyleDifference diff,
-                                     const ComputedStyle* old_style) {
+void LayoutBlockFlow::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutBlock::StyleDidChange(diff, old_style);
+  LayoutBlock::StyleDidChange(diff, old_style, style_change_context);
 
-  if (diff.NeedsFullLayout() || !old_style)
-    CreateOrDestroyMultiColumnFlowThreadIfNeeded(old_style);
+  if (diff.NeedsFullLayout() || !old_style) {
+    UpdateForMulticol();
+  }
   if (old_style) {
-    if (LayoutMultiColumnFlowThread* flow_thread = MultiColumnFlowThread()) {
-      if (!StyleRef().ColumnRuleEquivalent(*old_style)) {
-        // Column rules are painted by anonymous column set children of the
-        // multicol container. We need to notify them.
-        flow_thread->ColumnRuleStyleDidChange();
-      }
+    // We either gained or lost ::column style, trigger relayout to determine,
+    // if column pseudo-elements are needed.
+    if (old_style->CanGeneratePseudoElement(kPseudoIdColumn) !=
+        StyleRef().CanGeneratePseudoElement(kPseudoIdColumn)) {
+      SetNeedsLayout(layout_invalidation_reason::kStyleChange);
     }
   }
 
@@ -78,8 +79,8 @@ void LayoutBlockFlow::StyleDidChange(StyleDifference diff,
     // The `initial-letter` creates a special `InlineItem`. When it's turned
     // on/off, its parent IFC should run `CollectInlines()`.
     const ComputedStyle& new_style = StyleRef();
-    if (UNLIKELY(old_style->InitialLetter().IsNormal() !=
-                 new_style.InitialLetter().IsNormal())) {
+    if (old_style->InitialLetter().IsNormal() !=
+        new_style.InitialLetter().IsNormal()) [[unlikely]] {
       if (LayoutObject* parent = Parent()) {
         parent->SetNeedsCollectInlines();
       }

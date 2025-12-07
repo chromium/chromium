@@ -124,7 +124,7 @@ class CacheStorageBlobToDiskCacheTest : public testing::Test {
         /*file_operations=*/nullptr, base::FilePath(),
         (CacheStorageBlobToDiskCache::kBufferSize * 100) /* max bytes */,
         disk_cache::ResetHandling::kNeverReset, nullptr /* net log */,
-        base::DoNothing());
+        /*cache_encryption_delegate=*/nullptr, base::DoNothing());
     // The memory cache runs synchronously.
     EXPECT_EQ(net::OK, backend_result.net_error);
     cache_backend_ = std::move(backend_result.backend);

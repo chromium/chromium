@@ -36,9 +36,12 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.suggestions.groupseparator.GroupSeparatorProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
@@ -54,15 +57,15 @@ import java.util.List;
 /** Tests for {@link DropdownItemViewInfoListBuilder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class DropdownItemViewInfoListBuilderUnitTest {
+    private final Context mContext = ContextUtils.getApplicationContext();
+
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
-
-    private Context mContext = ContextUtils.getApplicationContext();
-
-    private @Mock AutocompleteController mAutocompleteController;
-    private @Mock SuggestionProcessor mMockSuggestionProcessor;
     private @Spy HeaderProcessor mMockHeaderProcessor = new HeaderProcessor(mContext);
 
-    private GroupSeparatorProcessor mGroupSeparatorProcessor =
+    private @Mock SuggestionProcessor mMockSuggestionProcessor;
+    private @Mock AutocompleteInput mInput;
+
+    private final GroupSeparatorProcessor mGroupSeparatorProcessor =
             new GroupSeparatorProcessor(mContext);
     DropdownItemViewInfoListBuilder mBuilder;
 
@@ -72,7 +75,11 @@ public class DropdownItemViewInfoListBuilderUnitTest {
                 .thenAnswer((mock) -> new PropertyModel(SuggestionCommonProperties.ALL_KEYS));
         when(mMockSuggestionProcessor.getViewTypeId()).thenReturn(OmniboxSuggestionUiType.DEFAULT);
 
-        mBuilder = new DropdownItemViewInfoListBuilder(() -> null, (url) -> false);
+        mBuilder =
+                new DropdownItemViewInfoListBuilder(
+                        () -> null,
+                        (url) -> false,
+                        new ObservableSupplierImpl<>(ControlsPosition.TOP));
         mBuilder.registerSuggestionProcessor(mMockSuggestionProcessor);
         mBuilder.setGroupSeparatorProcessorForTest(mGroupSeparatorProcessor);
         mBuilder.setHeaderProcessorForTest(mMockHeaderProcessor);
@@ -122,7 +129,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
                 List.of(horizontal, horizontal, vertical, vertical, horizontal, horizontal);
         var model =
                 mBuilder.buildDropdownViewInfoList(
-                        AutocompleteResult.fromCache(actualList, groupsDetails));
+                        mInput, AutocompleteResult.fromCache(actualList, groupsDetails));
 
         // 1 horizontal + 1 header + 2 vertical + 1 horizontal.
         Assert.assertEquals(5, model.size());
@@ -133,10 +140,12 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         verify(mMockSuggestionProcessor).doesProcessSuggestion(vertical, 2);
         verify(mMockSuggestionProcessor, atLeastOnce()).doesProcessSuggestion(horizontal, 3);
 
-        verify(mMockSuggestionProcessor, times(2)).populateModel(eq(horizontal), any(), eq(0));
-        verify(mMockSuggestionProcessor).populateModel(eq(vertical), any(), eq(1));
-        verify(mMockSuggestionProcessor).populateModel(eq(vertical), any(), eq(2));
-        verify(mMockSuggestionProcessor, times(2)).populateModel(eq(horizontal), any(), eq(3));
+        verify(mMockSuggestionProcessor, times(2))
+                .populateModel(eq(mInput), eq(horizontal), any(), eq(0));
+        verify(mMockSuggestionProcessor).populateModel(eq(mInput), eq(vertical), any(), eq(1));
+        verify(mMockSuggestionProcessor).populateModel(eq(mInput), eq(vertical), any(), eq(2));
+        verify(mMockSuggestionProcessor, times(2))
+                .populateModel(eq(mInput), eq(horizontal), any(), eq(3));
 
         // Other calls we expect to see.
         verify(mMockSuggestionProcessor).onSuggestionsReceived();
@@ -176,50 +185,50 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         final InOrder verifier = inOrder(mMockSuggestionProcessor, mMockHeaderProcessor);
         final List<DropdownItemViewInfo> model =
                 mBuilder.buildDropdownViewInfoList(
-                        AutocompleteResult.fromCache(actualList, groupsDetails));
+                        mInput, AutocompleteResult.fromCache(actualList, groupsDetails));
 
         verifier.verify(mMockSuggestionProcessor, times(1))
-                .populateModel(eq(suggestionWithNoGroup), any(), eq(0));
+                .populateModel(eq(mInput), eq(suggestionWithNoGroup), any(), eq(0));
         verifier.verify(mMockHeaderProcessor, times(1))
                 .populateModel(any(), eq(SECTION_2_WITH_HEADER.getHeaderText()));
         verifier.verify(mMockSuggestionProcessor, times(1))
-                .populateModel(eq(suggestionForGroup1), any(), eq(1));
+                .populateModel(eq(mInput), eq(suggestionForGroup1), any(), eq(1));
         verifier.verify(mMockSuggestionProcessor, times(1))
-                .populateModel(eq(suggestionForGroup1), any(), eq(2));
+                .populateModel(eq(mInput), eq(suggestionForGroup1), any(), eq(2));
         verifier.verify(mMockHeaderProcessor, times(1))
                 .populateModel(any(), eq(SECTION_3_WITH_HEADER.getHeaderText()));
         verifier.verify(mMockSuggestionProcessor, times(1))
-                .populateModel(eq(suggestionForGroup2), any(), eq(3));
+                .populateModel(eq(mInput), eq(suggestionForGroup2), any(), eq(3));
         verifier.verify(mMockSuggestionProcessor, times(1))
-                .populateModel(eq(suggestionForGroup2), any(), eq(4));
+                .populateModel(eq(mInput), eq(suggestionForGroup2), any(), eq(4));
         Assert.assertEquals(7, model.size()); // 2 headers + 5 suggestions.
 
         var defaultGroupConfig = GroupConfig.getDefaultInstance();
 
-        Assert.assertEquals(model.get(0).type, OmniboxSuggestionUiType.DEFAULT);
+        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(0).type);
         Assert.assertEquals(model.get(0).groupConfig, defaultGroupConfig);
         verifyRounding(model.get(0).model, true, true, false);
 
-        Assert.assertEquals(model.get(1).type, OmniboxSuggestionUiType.HEADER);
+        Assert.assertEquals(OmniboxSuggestionUiType.HEADER, model.get(1).type);
         Assert.assertEquals(model.get(1).groupConfig, SECTION_2_WITH_HEADER);
         verifyRounding(model.get(1).model, false, false, false);
 
-        Assert.assertEquals(model.get(2).type, OmniboxSuggestionUiType.DEFAULT);
+        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(2).type);
         Assert.assertEquals(model.get(2).groupConfig, SECTION_2_WITH_HEADER);
         verifyRounding(model.get(2).model, true, false, true);
 
-        Assert.assertEquals(model.get(3).type, OmniboxSuggestionUiType.DEFAULT);
+        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(3).type);
         Assert.assertEquals(model.get(3).groupConfig, SECTION_2_WITH_HEADER);
         verifyRounding(model.get(3).model, false, true, false);
 
-        Assert.assertEquals(model.get(4).type, OmniboxSuggestionUiType.HEADER);
+        Assert.assertEquals(OmniboxSuggestionUiType.HEADER, model.get(4).type);
         Assert.assertEquals(model.get(4).groupConfig, SECTION_3_WITH_HEADER);
         verifyRounding(model.get(4).model, false, false, false);
 
-        Assert.assertEquals(model.get(5).type, OmniboxSuggestionUiType.DEFAULT);
+        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(5).type);
         Assert.assertEquals(model.get(5).groupConfig, SECTION_3_WITH_HEADER);
         verifyRounding(model.get(5).model, true, false, true);
-        Assert.assertEquals(model.get(6).type, OmniboxSuggestionUiType.DEFAULT);
+        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(6).type);
         Assert.assertEquals(model.get(6).groupConfig, SECTION_3_WITH_HEADER);
         verifyRounding(model.get(6).model, false, true, false);
     }
@@ -255,20 +264,20 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         final InOrder verifier = inOrder(mMockSuggestionProcessor, mMockHeaderProcessor);
         final List<DropdownItemViewInfo> model =
                 mBuilder.buildDropdownViewInfoList(
-                        AutocompleteResult.fromCache(actualList, groupsDetails));
+                        mInput, AutocompleteResult.fromCache(actualList, groupsDetails));
 
         verifier.verify(mMockSuggestionProcessor, times(1))
-                .populateModel(eq(suggestionWithNoGroup), any(), eq(0));
+                .populateModel(eq(mInput), eq(suggestionWithNoGroup), any(), eq(0));
         verifier.verify(mMockSuggestionProcessor, times(1))
-                .populateModel(eq(suggestionForGroup1), any(), eq(1));
+                .populateModel(eq(mInput), eq(suggestionForGroup1), any(), eq(1));
         verifier.verify(mMockSuggestionProcessor, times(1))
-                .populateModel(eq(suggestionForGroup1), any(), eq(2));
+                .populateModel(eq(mInput), eq(suggestionForGroup1), any(), eq(2));
         verifier.verify(mMockHeaderProcessor, times(1))
                 .populateModel(any(), eq(SECTION_2_WITH_HEADER.getHeaderText()));
         verifier.verify(mMockSuggestionProcessor, times(1))
-                .populateModel(eq(suggestionForGroup2), any(), eq(3));
+                .populateModel(eq(mInput), eq(suggestionForGroup2), any(), eq(3));
         verifier.verify(mMockSuggestionProcessor, times(1))
-                .populateModel(eq(suggestionForGroup2), any(), eq(4));
+                .populateModel(eq(mInput), eq(suggestionForGroup2), any(), eq(4));
 
         // Make sure no other headers were ever constructed.
         verify(mMockHeaderProcessor, times(1)).populateModel(any(), any());
@@ -283,22 +292,22 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         // - 2 suggestions (grouped).
         Assert.assertEquals(7, model.size());
 
-        Assert.assertEquals(model.get(0).type, OmniboxSuggestionUiType.DEFAULT);
+        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(0).type);
         Assert.assertEquals(model.get(0).groupConfig, defaultGroupConfig);
 
-        Assert.assertEquals(model.get(1).type, OmniboxSuggestionUiType.GROUP_SEPARATOR);
+        Assert.assertEquals(OmniboxSuggestionUiType.GROUP_SEPARATOR, model.get(1).type);
         Assert.assertEquals(model.get(1).groupConfig, SECTION_1_NO_HEADER);
 
-        Assert.assertEquals(model.get(2).type, OmniboxSuggestionUiType.DEFAULT);
+        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(2).type);
         Assert.assertEquals(model.get(2).groupConfig, SECTION_1_NO_HEADER);
-        Assert.assertEquals(model.get(3).type, OmniboxSuggestionUiType.DEFAULT);
+        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(3).type);
         Assert.assertEquals(model.get(3).groupConfig, SECTION_1_NO_HEADER);
 
-        Assert.assertEquals(model.get(4).type, OmniboxSuggestionUiType.HEADER);
+        Assert.assertEquals(OmniboxSuggestionUiType.HEADER, model.get(4).type);
         Assert.assertEquals(model.get(4).groupConfig, SECTION_2_WITH_HEADER);
-        Assert.assertEquals(model.get(5).type, OmniboxSuggestionUiType.DEFAULT);
+        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(5).type);
         Assert.assertEquals(model.get(5).groupConfig, SECTION_2_WITH_HEADER);
-        Assert.assertEquals(model.get(6).type, OmniboxSuggestionUiType.DEFAULT);
+        Assert.assertEquals(OmniboxSuggestionUiType.DEFAULT, model.get(6).type);
         Assert.assertEquals(model.get(6).groupConfig, SECTION_2_WITH_HEADER);
     }
 
@@ -338,14 +347,14 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
         var result =
                 mBuilder.buildVerticalSuggestionsGroup(
-                        SECTION_1_NO_HEADER, null, matches, /* firstVerticalPosition= */ 5);
+                        mInput, SECTION_1_NO_HEADER, null, matches, /* firstVerticalPosition= */ 5);
 
         verify(mMockSuggestionProcessor, times(2)).createModel();
         verify(mMockSuggestionProcessor, atLeastOnce()).getViewTypeId();
         verify(mMockSuggestionProcessor).doesProcessSuggestion(match, 5);
-        verify(mMockSuggestionProcessor).populateModel(eq(match), any(), eq(5));
+        verify(mMockSuggestionProcessor).populateModel(eq(mInput), eq(match), any(), eq(5));
         verify(mMockSuggestionProcessor).doesProcessSuggestion(match, 6);
-        verify(mMockSuggestionProcessor).populateModel(eq(match), any(), eq(6));
+        verify(mMockSuggestionProcessor).populateModel(eq(mInput), eq(match), any(), eq(6));
 
         verifyNoMoreInteractions(mMockHeaderProcessor, mMockSuggestionProcessor);
 
@@ -364,6 +373,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
         var result =
                 mBuilder.buildVerticalSuggestionsGroup(
+                        mInput,
                         SECTION_1_NO_HEADER,
                         SECTION_2_WITH_HEADER,
                         matches,
@@ -372,9 +382,9 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         verify(mMockSuggestionProcessor, times(2)).createModel();
         verify(mMockSuggestionProcessor, atLeastOnce()).getViewTypeId();
         verify(mMockSuggestionProcessor).doesProcessSuggestion(match, 5);
-        verify(mMockSuggestionProcessor).populateModel(eq(match), any(), eq(5));
+        verify(mMockSuggestionProcessor).populateModel(eq(mInput), eq(match), any(), eq(5));
         verify(mMockSuggestionProcessor).doesProcessSuggestion(match, 6);
-        verify(mMockSuggestionProcessor).populateModel(eq(match), any(), eq(6));
+        verify(mMockSuggestionProcessor).populateModel(eq(mInput), eq(match), any(), eq(6));
 
         verifyNoMoreInteractions(mMockHeaderProcessor, mMockSuggestionProcessor);
 
@@ -396,7 +406,11 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
         var result =
                 mBuilder.buildVerticalSuggestionsGroup(
-                        SECTION_2_WITH_HEADER, null, matches, /* firstVerticalPosition= */ 7);
+                        mInput,
+                        SECTION_2_WITH_HEADER,
+                        null,
+                        matches,
+                        /* firstVerticalPosition= */ 7);
 
         verify(mMockHeaderProcessor).createModel();
         verify(mMockHeaderProcessor, atLeastOnce()).getViewTypeId();
@@ -406,9 +420,9 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         verify(mMockSuggestionProcessor, times(2)).createModel();
         verify(mMockSuggestionProcessor, atLeastOnce()).getViewTypeId();
         verify(mMockSuggestionProcessor).doesProcessSuggestion(match, 7);
-        verify(mMockSuggestionProcessor).populateModel(eq(match), any(), eq(7));
+        verify(mMockSuggestionProcessor).populateModel(eq(mInput), eq(match), any(), eq(7));
         verify(mMockSuggestionProcessor).doesProcessSuggestion(match, 8);
-        verify(mMockSuggestionProcessor).populateModel(eq(match), any(), eq(8));
+        verify(mMockSuggestionProcessor).populateModel(eq(mInput), eq(match), any(), eq(8));
 
         verifyNoMoreInteractions(mMockHeaderProcessor, mMockSuggestionProcessor);
 
@@ -430,14 +444,14 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
         var result =
                 mBuilder.buildHorizontalSuggestionsGroup(
-                        SECTION_1_NO_HEADER, matches, /* firstVerticalPosition= */ 5);
+                        mInput, SECTION_1_NO_HEADER, matches, /* position= */ 5);
 
         var captor = ArgumentCaptor.forClass(PropertyModel.class);
         verify(mMockSuggestionProcessor).getViewTypeId();
         verify(mMockSuggestionProcessor).createModel();
         verify(mMockSuggestionProcessor, atLeastOnce()).doesProcessSuggestion(match, 5);
         verify(mMockSuggestionProcessor, times(2))
-                .populateModel(eq(match), captor.capture(), eq(5));
+                .populateModel(eq(mInput), eq(match), captor.capture(), eq(5));
         verifyNoMoreInteractions(mMockHeaderProcessor, mMockSuggestionProcessor);
 
         assertEquals(/* 0 header + 1 suggestion row = */ 1, result.size());
@@ -460,7 +474,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
         var result =
                 mBuilder.buildHorizontalSuggestionsGroup(
-                        SECTION_2_WITH_HEADER, matches, /* firstVerticalPosition= */ 7);
+                        mInput, SECTION_2_WITH_HEADER, matches, /* position= */ 7);
 
         verify(mMockHeaderProcessor).createModel();
         verify(mMockHeaderProcessor, atLeastOnce()).getViewTypeId();
@@ -472,7 +486,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         verify(mMockSuggestionProcessor).createModel();
         verify(mMockSuggestionProcessor, atLeastOnce()).doesProcessSuggestion(match, 7);
         verify(mMockSuggestionProcessor, times(2))
-                .populateModel(eq(match), captor.capture(), eq(7));
+                .populateModel(eq(mInput), eq(match), captor.capture(), eq(7));
 
         verifyNoMoreInteractions(mMockHeaderProcessor, mMockSuggestionProcessor);
 

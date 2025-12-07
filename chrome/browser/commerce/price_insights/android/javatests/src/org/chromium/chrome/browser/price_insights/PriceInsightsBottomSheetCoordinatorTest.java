@@ -16,14 +16,16 @@ import static org.mockito.Mockito.verify;
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.ContextCompat;
+import androidx.annotation.IdRes;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +37,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordinator.PriceInsightsDelegate;
@@ -44,19 +48,26 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.ShoppingService.PriceInsightsInfo;
 import org.chromium.components.commerce.core.ShoppingService.PriceInsightsInfoCallback;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.components.commerce.core.ShoppingService.PricePoint;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.url.JUnitTestGURLs;
 
-import java.util.ArrayList;
-import java.util.Optional;
+import java.util.Arrays;
 
 /** Tests for {@link PriceInsightsBottomSheetCoordinator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-public class PriceInsightsBottomSheetCoordinatorTest extends BlankUiTestActivityTestCase {
+public class PriceInsightsBottomSheetCoordinatorTest {
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
+
     @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -67,8 +78,11 @@ public class PriceInsightsBottomSheetCoordinatorTest extends BlankUiTestActivity
     @Mock private ShoppingService mMockShoppingService;
     @Mock private Profile mMockProfile;
     @Mock private PriceInsightsDelegate mMockPriceInsightsDelegate;
+    @Mock private ObservableSupplier<Boolean> mMockPriceTrackingStateSupplier;
 
     @Captor private ArgumentCaptor<PriceInsightsBottomSheetContent> mBottomSheetContentCaptor;
+
+    @Captor private ArgumentCaptor<EmptyBottomSheetObserver> mBottomSheetObserverCaptor;
 
     private static final String PRODUCT_TITLE = "Testing Sneaker";
     private static final String PRICE_TRACKING_DESCRIPTION =
@@ -76,23 +90,46 @@ public class PriceInsightsBottomSheetCoordinatorTest extends BlankUiTestActivity
     private static final String PRICE_TRACKING_DISABLED_BUTTON_TEXT = "Track";
     private static final String PRICE_HISTORY_TITLE = "Price history across the web";
     private static final String OPEN_URL_TITLE = "Search buying options";
+    private static final PriceInsightsInfo PRICE_INSIGHTS_INFO =
+            new PriceInsightsInfo(
+                    null,
+                    "USD",
+                    null,
+                    null,
+                    null,
+                    Arrays.asList(new PricePoint("08-08-2024", 65000000L)),
+                    JUnitTestGURLs.EXAMPLE_URL,
+                    0,
+                    false);
 
-    private Activity mActivity;
+    private View mMockPriceHistoryChart;
     private PriceInsightsBottomSheetCoordinator mPriceInsightsCoordinator;
+
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
 
     @Before
     public void setUp() {
-        mActivity = getActivity();
         doReturn(mMockProfile).when(mMockTab).getProfile();
         doReturn(PRODUCT_TITLE).when(mMockTab).getTitle();
         setShoppingServiceGetPriceInsightsInfoForUrl();
         ShoppingServiceFactory.setShoppingServiceForTesting(mMockShoppingService);
+        mMockPriceHistoryChart = new View(sActivity);
+        doReturn(mMockPriceHistoryChart)
+                .when(mMockPriceInsightsDelegate)
+                .getPriceHistoryChartForPriceInsightsInfo(PRICE_INSIGHTS_INFO);
+        doReturn(false).when(mMockPriceTrackingStateSupplier).get();
+        doReturn(mMockPriceTrackingStateSupplier)
+                .when(mMockPriceInsightsDelegate)
+                .getPriceTrackingStateSupplier(mMockTab);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPriceInsightsCoordinator =
                             new PriceInsightsBottomSheetCoordinator(
-                                    mActivity,
+                                    sActivity,
                                     mMockBottomSheetController,
                                     mMockTab,
                                     mMockTabModelSelector,
@@ -118,40 +155,34 @@ public class PriceInsightsBottomSheetCoordinatorTest extends BlankUiTestActivity
                 });
         verify(mMockBottomSheetController, times(1))
                 .requestShowContent(mBottomSheetContentCaptor.capture(), eq(true));
-        TextView priceTrackingTitle = getTextView(R.id.price_tracking_title);
-        TextView priceTrackingDescription = getTextView(R.id.price_tracking_description);
-        TextView priceTrackingButton = getTextView(R.id.price_tracking_button);
+        verify(mMockBottomSheetController, times(1))
+                .addObserver(mBottomSheetObserverCaptor.capture());
+        ScrollView scrollView = (ScrollView) getView(R.id.scroll_view);
+        TextView priceTrackingTitle = (TextView) getView(R.id.price_tracking_title);
+        TextView priceTrackingDescription = (TextView) getView(R.id.price_tracking_description);
+        TextView priceTrackingButton = (TextView) getView(R.id.price_tracking_button);
         Drawable priceTrackingButtonDrawable =
                 priceTrackingButton.getCompoundDrawablesRelative()[0];
-        TextView priceHistoryTitleView = getTextView(R.id.price_history_title);
-        TextView openUrlButton = getTextView(R.id.open_jackpot_url_button);
+        TextView priceHistoryTitleView = (TextView) getView(R.id.price_history_title);
+        TextView openUrlButton = (TextView) getView(R.id.open_jackpot_url_button);
         Drawable openUrlButtonDrawable = openUrlButton.getCompoundDrawablesRelative()[2];
 
+        assertNotNull(scrollView);
         assertEquals(PRODUCT_TITLE, priceTrackingTitle.getText());
         assertEquals(PRICE_TRACKING_DESCRIPTION, priceTrackingDescription.getText());
         assertEquals(PRICE_TRACKING_DISABLED_BUTTON_TEXT, priceTrackingButton.getText());
         assertNotNull(priceTrackingButtonDrawable);
         assertEquals(
-                ContextCompat.getColor(
-                        mActivity,
-                        R.color
-                                .price_insights_sheet_price_tracking_ineligible_button_foreground_color),
+                sActivity.getColor(R.color.price_tracking_ineligible_button_foreground_color),
                 priceTrackingButton.getCurrentTextColor());
         assertEquals(
-                AppCompatResources.getColorStateList(
-                                mActivity,
-                                R.color
-                                        .price_insights_sheet_price_tracking_ineligible_button_foreground_color)
-                        .getDefaultColor(),
+                sActivity.getColor(R.color.price_tracking_ineligible_button_foreground_color),
                 priceTrackingButton.getCompoundDrawableTintList().getDefaultColor());
         assertEquals(
-                AppCompatResources.getColorStateList(
-                                mActivity,
-                                R.color
-                                        .price_insights_sheet_price_tracking_ineligible_button_bg_color)
-                        .getDefaultColor(),
+                sActivity.getColor(R.color.price_tracking_ineligible_button_background_color),
                 priceTrackingButton.getBackgroundTintList().getDefaultColor());
         assertEquals(PRICE_HISTORY_TITLE, priceHistoryTitleView.getText());
+        assertEquals(View.VISIBLE, openUrlButton.getVisibility());
         assertEquals(OPEN_URL_TITLE, openUrlButton.getText());
         assertNotNull(openUrlButtonDrawable);
     }
@@ -163,35 +194,45 @@ public class PriceInsightsBottomSheetCoordinatorTest extends BlankUiTestActivity
                 () -> {
                     mPriceInsightsCoordinator.requestShowContent();
                 });
+        verify(mMockBottomSheetController, times(1))
+                .requestShowContent(mBottomSheetContentCaptor.capture(), eq(true));
+        verify(mMockBottomSheetController, times(1))
+                .addObserver(mBottomSheetObserverCaptor.capture());
         mPriceInsightsCoordinator.closeContent();
         verify(mMockBottomSheetController, times(1))
-                .hideContent(mBottomSheetContentCaptor.capture(), eq(true));
+                .hideContent(eq(mBottomSheetContentCaptor.getValue()), eq(true));
+        verify(mMockBottomSheetController)
+                .removeObserver(eq(mBottomSheetObserverCaptor.getValue()));
     }
 
-    private TextView getTextView(int viewId) {
+    @Test
+    @SmallTest
+    public void testBottomSheetObserverOnContentSheetChanged() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPriceInsightsCoordinator.requestShowContent();
+                });
+        verify(mMockBottomSheetController, times(1))
+                .addObserver(mBottomSheetObserverCaptor.capture());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mBottomSheetObserverCaptor.getValue().onSheetContentChanged(null);
+                });
+        verify(mMockBottomSheetController)
+                .removeObserver(eq(mBottomSheetObserverCaptor.getValue()));
+    }
+
+    private View getView(@IdRes int viewId) {
         View view = mBottomSheetContentCaptor.getValue().getContentView();
         assertNotNull(view);
-
-        return (TextView) view.findViewById(viewId);
+        return view.findViewById(viewId);
     }
 
     private void setShoppingServiceGetPriceInsightsInfoForUrl() {
-        PriceInsightsInfo priceInsightsInfo =
-                new PriceInsightsInfo(
-                        Optional.empty(),
-                        "",
-                        Optional.empty(),
-                        Optional.empty(),
-                        Optional.empty(),
-                        new ArrayList<>(),
-                        Optional.of(JUnitTestGURLs.EXAMPLE_URL),
-                        0,
-                        false);
-
         doAnswer(
                         (InvocationOnMock invocation) -> {
                             ((PriceInsightsInfoCallback) invocation.getArgument(1))
-                                    .onResult(JUnitTestGURLs.EXAMPLE_URL, priceInsightsInfo);
+                                    .onResult(JUnitTestGURLs.EXAMPLE_URL, PRICE_INSIGHTS_INFO);
                             return null;
                         })
                 .when(mMockShoppingService)

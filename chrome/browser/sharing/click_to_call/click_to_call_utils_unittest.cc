@@ -19,7 +19,6 @@
 #include "components/sharing_message/sharing_handler_registry.h"
 #include "components/sharing_message/sharing_service.h"
 #include "components/sharing_message/sharing_sync_preference.h"
-#include "components/sharing_message/vapid_key_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

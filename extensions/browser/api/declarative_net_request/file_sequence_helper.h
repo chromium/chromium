@@ -12,6 +12,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/token.h"
 #include "base/version.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
@@ -80,7 +81,7 @@ class RulesetInfo {
   // The expected checksum of the indexed ruleset.
   std::optional<int> expected_checksum_;
 
-  // Stores the result of creating a verified matcher from the |source_|.
+  // Stores the result of creating a verified matcher from the `source_`.
   std::unique_ptr<RulesetMatcher> matcher_;
   std::optional<LoadRulesetResult> load_ruleset_result_;
 
@@ -94,7 +95,11 @@ class RulesetInfo {
 
 // Helper to pass information related to the ruleset being loaded.
 struct LoadRequestData {
-  LoadRequestData(ExtensionId extension_id, base::Version extension_version);
+  LoadRequestData() = delete;
+
+  LoadRequestData(ExtensionId extension_id,
+                  base::Version extension_version,
+                  LoadRulesetRequestSource request_source);
   LoadRequestData(const LoadRequestData&) = delete;
   LoadRequestData(LoadRequestData&&);
 
@@ -109,8 +114,15 @@ struct LoadRequestData {
   // The version of the extension that is trying to load `rulesets`.
   base::Version extension_version;
 
+  // The source which requested this ruleset load.
+  LoadRulesetRequestSource request_source;
+
   // The rulesets that are being loaded.
   std::vector<RulesetInfo> rulesets;
+
+  // A randomly generated ID for this load request. If this is invalid, then the
+  // load is no longer valid.
+  base::Token load_request_id;
 };
 
 //  Helper class for file sequence operations for the declarative net request
@@ -133,7 +145,7 @@ class FileSequenceHelper {
   void LoadRulesets(LoadRequestData load_data,
                     LoadRulesetsUICallback ui_callback) const;
 
-  // Updates dynamic rules for |load_data|. Invokes |ui_callback| on the UI
+  // Updates dynamic rules for `load_data`. Invokes `ui_callback` on the UI
   // thread once loading is done with the LoadRequestData and an optional error
   // string.
   using UpdateDynamicRulesUICallback =

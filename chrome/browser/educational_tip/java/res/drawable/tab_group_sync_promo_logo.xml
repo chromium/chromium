@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="72dp"
+    android:height="72dp"
+    android:viewportWidth="72"
+    android:viewportHeight="72">
+  <path
+      android:pathData="M19,40L33,40A2,2 0,0 1,35 42L35,58A2,2 0,0 1,33 60L19,60A2,2 0,0 1,17 58L17,42A2,2 0,0 1,19 40z"
+      android:fillColor="@color/educational_tip_card_logo_color_3"/>
+  <path
+      android:pathData="M39,40L53,40A2,2 0,0 1,55 42L55,58A2,2 0,0 1,53 60L39,60A2,2 0,0 1,37 58L37,42A2,2 0,0 1,39 40z"
+      android:fillColor="@color/educational_tip_card_logo_color_3"/>
+  <path
+      android:pathData="M39,18L53,18A2,2 0,0 1,55 20L55,36A2,2 0,0 1,53 38L39,38A2,2 0,0 1,37 36L37,20A2,2 0,0 1,39 18z"
+      android:fillColor="@color/educational_tip_card_logo_color_3"/>
+  <path
+      android:pathData="M19,18L33,18A2,2 0,0 1,35 20L35,36A2,2 0,0 1,33 38L19,38A2,2 0,0 1,17 36L17,20A2,2 0,0 1,19 18z"
+      android:fillColor="@color/educational_tip_card_logo_color_3"/>
+  <path
+      android:pathData="M16,15L30,15A2,2 0,0 1,32 17L32,33A2,2 0,0 1,30 35L16,35A2,2 0,0 1,14 33L14,17A2,2 0,0 1,16 15z"
+      android:fillColor="@color/material_primary_70"/>
+  <path
+      android:pathData="M42,37L56,37A2,2 0,0 1,58 39L58,55A2,2 0,0 1,56 57L42,57A2,2 0,0 1,40 55L40,39A2,2 0,0 1,42 37z"
+      android:fillColor="@color/material_primary_70"/>
+  <path
+      android:pathData="M13,12L27,12A2,2 0,0 1,29 14L29,30A2,2 0,0 1,27 32L13,32A2,2 0,0 1,11 30L11,14A2,2 0,0 1,13 12z"
+      android:fillColor="@color/educational_tip_card_logo_color_6"/>
+  <path
+      android:pathData="M45,34L59,34A2,2 0,0 1,61 36L61,52A2,2 0,0 1,59 54L45,54A2,2 0,0 1,43 52L43,36A2,2 0,0 1,45 34z"
+      android:fillColor="@color/educational_tip_card_logo_color_6"/>
+</vector>

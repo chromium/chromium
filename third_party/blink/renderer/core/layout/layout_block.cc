@@ -55,8 +55,8 @@
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/legacy_layout_tree_walking.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
+#include "third_party/blink/renderer/core/layout/masonry/layout_grid_lanes.h"
 #include "third_party/blink/renderer/core/layout/mathml/layout_mathml_block.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
@@ -76,13 +76,11 @@ namespace blink {
 
 struct SameSizeAsLayoutBlock : public LayoutBox {
   LayoutObjectChildList children;
-  uint32_t bitfields;
 };
 
 ASSERT_SIZE(LayoutBlock, SameSizeAsLayoutBlock);
 
-LayoutBlock::LayoutBlock(ContainerNode* node)
-    : LayoutBox(node), has_svg_text_descendants_(false) {
+LayoutBlock::LayoutBlock(ContainerNode* node) : LayoutBox(node) {
   // LayoutBlockFlow calls setChildrenInline(true).
   // By default, subclasses do not have inline children.
 }
@@ -92,16 +90,11 @@ void LayoutBlock::Trace(Visitor* visitor) const {
   LayoutBox::Trace(visitor);
 }
 
-bool LayoutBlock::IsLayoutNGObject() const {
-  NOT_DESTROYED();
-  return true;
-}
-
 void LayoutBlock::RemoveFromGlobalMaps() {
   NOT_DESTROYED();
-  if (has_svg_text_descendants_) {
+  if (HasSVGTextDescendants()) {
     View()->SvgTextDescendantsMap().erase(this);
-    has_svg_text_descendants_ = false;
+    SetHasSVGTextDescendants(false);
   }
 }
 
@@ -124,10 +117,11 @@ void LayoutBlock::WillBeDestroyed() {
 }
 
 void LayoutBlock::StyleWillChange(StyleDifference diff,
-                                  const ComputedStyle& new_style) {
+                                  const ComputedStyle& new_style,
+                                  StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
   SetIsAtomicInlineLevel(ShouldBeHandledAsInline(new_style));
-  LayoutBox::StyleWillChange(diff, new_style);
+  LayoutBox::StyleWillChange(diff, new_style, style_change_context);
 }
 
 // Compute a local version of the "font size scale factor" used by SVG
@@ -141,18 +135,20 @@ static double ComputeSquaredLocalFontSizeScalingFactor(
   return affine.XScaleSquared() + affine.YScaleSquared();
 }
 
-void LayoutBlock::StyleDidChange(StyleDifference diff,
-                                 const ComputedStyle* old_style) {
+void LayoutBlock::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
   // Computes old scaling factor before PaintLayer::UpdateTransform()
   // updates Layer()->Transform().
   double old_squared_scale = 1;
-  if (Layer() && diff.TransformChanged() && has_svg_text_descendants_) {
+  if (Layer() && diff.TransformChanged() && HasSVGTextDescendants()) {
     old_squared_scale =
         ComputeSquaredLocalFontSizeScalingFactor(Layer()->Transform());
   }
 
-  LayoutBox::StyleDidChange(diff, old_style);
+  LayoutBox::StyleDidChange(diff, old_style, style_change_context);
 
   const ComputedStyle& new_style = StyleRef();
 
@@ -176,7 +172,7 @@ void LayoutBlock::StyleDidChange(StyleDifference diff,
 
   PropagateStyleToAnonymousChildren();
 
-  if (diff.TransformChanged() && has_svg_text_descendants_) {
+  if (diff.TransformChanged() && HasSVGTextDescendants()) {
     const double new_squared_scale = ComputeSquaredLocalFontSizeScalingFactor(
         Layer() ? Layer()->Transform() : nullptr);
     // Compare local scale before and after.
@@ -204,10 +200,14 @@ bool LayoutBlock::RespectsCSSOverflow() const {
 void LayoutBlock::AddChildBeforeDescendant(LayoutObject* new_child,
                                            LayoutObject* before_descendant) {
   NOT_DESTROYED();
+  DCHECK(!IsLayoutBlockFlow());
+  DCHECK(!new_child->IsTablePart());
   DCHECK_NE(before_descendant->Parent(), this);
+
   LayoutObject* before_descendant_container = before_descendant->Parent();
-  while (before_descendant_container->Parent() != this)
+  while (before_descendant_container->Parent() != this) {
     before_descendant_container = before_descendant_container->Parent();
+  }
   DCHECK(before_descendant_container);
 
   // We really can't go on if what we have found isn't anonymous. We're not
@@ -215,28 +215,9 @@ void LayoutBlock::AddChildBeforeDescendant(LayoutObject* new_child,
   // That's a recipe for security issues.
   CHECK(before_descendant_container->IsAnonymous());
 
-  // If the requested insertion point is not one of our children, then this is
-  // because there is an anonymous container within this object that contains
-  // the beforeDescendant.
-  if (before_descendant_container->IsAnonymousBlock()) {
-    // Insert the child into the anonymous block box instead of here. Note that
-    // a LayoutOutsideListMarker is out-of-flow for tree building purposes, and
-    // that is not inline level, although IsInline() is true.
-    if ((new_child->IsInline() && !new_child->IsLayoutOutsideListMarker()) ||
-        (new_child->IsFloatingOrOutOfFlowPositioned() &&
-         (StyleRef().IsDeprecatedFlexboxUsingFlexLayout() ||
-          (!IsFlexibleBox() && !IsLayoutGrid()))) ||
-        before_descendant->Parent()->SlowFirstChild() != before_descendant) {
-      before_descendant_container->AddChild(new_child, before_descendant);
-    } else {
-      AddChild(new_child, before_descendant->Parent());
-    }
-    return;
-  }
-
-  DCHECK(before_descendant_container->IsTable());
-  if (new_child->IsTablePart()) {
-    // Insert into the anonymous table.
+  // Insert the child into the anonymous block box instead of here.
+  if (new_child->IsInline() &&
+      before_descendant_container->IsAnonymousBlockFlow()) {
     before_descendant_container->AddChild(new_child, before_descendant);
     return;
   }
@@ -245,12 +226,6 @@ void LayoutBlock::AddChildBeforeDescendant(LayoutObject* new_child,
       SplitAnonymousBoxesAroundChild(before_descendant);
 
   DCHECK_EQ(before_child->Parent(), this);
-  if (before_child->Parent() != this) {
-    // We should never reach here. If we do, we need to use the
-    // safe fallback to use the topmost beforeChild container.
-    before_child = before_descendant_container;
-  }
-
   AddChild(new_child, before_child);
 }
 
@@ -266,10 +241,7 @@ void LayoutBlock::AddChild(LayoutObject* new_child,
   // here.
   DCHECK(!ChildrenInline());
 
-  if (new_child->IsInline() ||
-      (new_child->IsFloatingOrOutOfFlowPositioned() &&
-       (StyleRef().IsDeprecatedFlexboxUsingFlexLayout() ||
-        (!IsFlexibleBox() && !IsLayoutGrid())))) {
+  if (new_child->IsInline()) {
     // If we're inserting an inline child but all of our children are blocks,
     // then we have to make sure it is put into an anomyous block box. We try to
     // use an existing anonymous box if possible, otherwise a new one is created
@@ -277,18 +249,16 @@ void LayoutBlock::AddChild(LayoutObject* new_child,
     LayoutObject* after_child =
         before_child ? before_child->PreviousSibling() : LastChild();
 
-    if (after_child && after_child->IsAnonymousBlock()) {
+    if (after_child && after_child->IsAnonymousBlockFlow()) {
       after_child->AddChild(new_child);
       return;
     }
 
-    if (new_child->IsInline()) {
-      // No suitable existing anonymous box - create a new one.
-      LayoutBlock* new_box = CreateAnonymousBlock();
-      LayoutBox::AddChild(new_box, before_child);
-      new_box->AddChild(new_child);
-      return;
-    }
+    // No suitable existing anonymous box - create a new one.
+    LayoutBlock* new_box = CreateAnonymousBlock();
+    LayoutBox::AddChild(new_box, before_child);
+    new_box->AddChild(new_child);
+    return;
   }
 
   LayoutBox::AddChild(new_child, before_child);
@@ -296,19 +266,14 @@ void LayoutBlock::AddChild(LayoutObject* new_child,
 
 void LayoutBlock::RemoveLeftoverAnonymousBlock(LayoutBlock* child) {
   NOT_DESTROYED();
-  DCHECK(child->IsAnonymousBlock());
+  DCHECK(child->IsAnonymousBlockFlow());
   DCHECK(!child->ChildrenInline());
   DCHECK_EQ(child->Parent(), this);
 
   // Promote all the leftover anonymous block's children (to become children of
   // this block instead). We still want to keep the leftover block in the tree
-  // for a moment, for notification purposes done further below (flow threads
-  // and grids).
+  // for a moment, for notification purposes done further below (grids).
   child->MoveAllChildrenTo(this, child->NextSibling());
-
-  // Remove all the information in the flow thread associated with the leftover
-  // anonymous block.
-  child->RemoveFromLayoutFlowThread();
 
   // Now remove the leftover anonymous block from the tree, and destroy it.
   // We'll rip it out manually from the tree before destroying it, because we
@@ -333,8 +298,8 @@ void LayoutBlock::Paint(const PaintInfo& paint_info) const {
          GetPhysicalFragment(0)->GetBreakToken()->IsRepeated());
 
   // Avoid painting dirty objects because descendants maybe already destroyed.
-  if (UNLIKELY(NeedsLayout() && !ChildLayoutBlockedByDisplayLock())) {
-    NOTREACHED_IN_MIGRATION();
+  if (NeedsLayout() && !ChildLayoutBlockedByDisplayLock()) [[unlikely]] {
+    DUMP_WILL_BE_NOTREACHED();
     return;
   }
 
@@ -345,7 +310,7 @@ void LayoutBlock::Paint(const PaintInfo& paint_info) const {
     return;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void LayoutBlock::InvalidatePaint(
@@ -434,7 +399,7 @@ void LayoutBlock::AddSvgTextDescendant(LayoutBox& svg_text) {
         MakeGarbageCollected<TrackedLayoutBoxLinkedHashSet>();
   }
   result.stored_value->value->insert(&svg_text);
-  has_svg_text_descendants_ = true;
+  SetHasSVGTextDescendants(true);
 }
 
 void LayoutBlock::RemoveSvgTextDescendant(LayoutBox& svg_text) {
@@ -448,7 +413,7 @@ void LayoutBlock::RemoveSvgTextDescendant(LayoutBox& svg_text) {
   descendants->erase(&svg_text);
   if (descendants->empty()) {
     map.erase(this);
-    has_svg_text_descendants_ = false;
+    SetHasSVGTextDescendants(false);
   }
 }
 
@@ -515,11 +480,12 @@ bool LayoutBlock::HitTestChildren(HitTestResult& result,
       continue;
 
     PhysicalOffset child_accumulated_offset =
-        scrolled_offset + child->PhysicalLocation(this);
+        scrolled_offset + child->PhysicalLocation();
     bool did_hit;
     if (child->IsFloating()) {
-      if (phase != HitTestPhase::kFloat || !IsLayoutNGObject())
+      if (phase != HitTestPhase::kFloat) {
         continue;
+      }
       // Hit-test the floats in regular tree order if this is LayoutNG. Only
       // legacy layout uses the FloatingObjects list.
       did_hit = child->HitTestAllPhases(result, hit_test_location,
@@ -543,8 +509,9 @@ PositionWithAffinity LayoutBlock::PositionForPointIfOutsideAtomicInlineLevel(
   NOT_DESTROYED();
   DCHECK(IsAtomicInlineLevel());
   LogicalOffset logical_offset =
-      point.ConvertToLogical({StyleRef().GetWritingMode(), ResolvedDirection()},
-                             PhysicalSize(Size()), PhysicalSize());
+      WritingModeConverter({StyleRef().GetWritingMode(), ResolvedDirection()},
+                           StitchedSize())
+          .ToLogical(point, PhysicalSize());
   if (logical_offset.inline_offset < 0)
     return FirstPositionInOrBeforeThis();
   if (logical_offset.inline_offset >= LogicalWidth())
@@ -561,8 +528,8 @@ PositionWithAffinity LayoutBlock::PositionForPoint(
   NOT_DESTROYED();
   // NG codepath requires |kPrePaintClean|.
   // |SelectionModifier| calls this only in legacy codepath.
-  DCHECK(!IsLayoutNGObject() || GetDocument().Lifecycle().GetState() >=
-                                    DocumentLifecycle::kPrePaintClean);
+  DCHECK(GetDocument().Lifecycle().GetState() >=
+         DocumentLifecycle::kPrePaintClean);
 
   if (IsAtomicInlineLevel()) {
     PositionWithAffinity position =
@@ -587,20 +554,23 @@ bool LayoutBlock::HasLineIfEmpty() const {
   return FirstLineStyleRef().HasLineIfEmpty();
 }
 
+// This function should return the distance from the block-start, not from
+// the line-over.
 std::optional<LayoutUnit> LayoutBlock::BaselineForEmptyLine() const {
   NOT_DESTROYED();
   const ComputedStyle* style = FirstLineStyle();
-  const SimpleFontData* font_data = style->GetFont().PrimaryFont();
+  const SimpleFontData* font_data = style->GetFont()->PrimaryFont();
   if (!font_data)
     return std::nullopt;
   const auto& font_metrics = font_data->GetFontMetrics();
   const auto baseline_type = style->GetFontBaseline();
   const LayoutUnit line_height = FirstLineHeight();
-  const LayoutUnit border_padding = style->IsHorizontalWritingMode()
-                                        ? BorderTop() + PaddingTop()
-                                        : BorderRight() + PaddingRight();
-  return LayoutUnit((font_metrics.Ascent(baseline_type) +
-                     (line_height - font_metrics.Height()) / 2 + border_padding)
+  int ascent_or_descent = IsFlippedLinesWritingMode(style->GetWritingMode())
+                              ? font_metrics.Descent(baseline_type)
+                              : font_metrics.Ascent(baseline_type);
+  return LayoutUnit((ascent_or_descent +
+                     (line_height - font_metrics.Height()) / 2 +
+                     BorderAndPaddingBlockStart())
                         .ToInt());
 }
 
@@ -629,8 +599,11 @@ const LayoutBlock* LayoutBlock::FirstLineStyleParentBlock() const {
   // If we are not the first in-flow child of our parent, we cannot get
   // ::first-line style from our ancestors.
   const LayoutObject* first_child = parent_layout_block->FirstChild();
-  while (first_child->IsFloatingOrOutOfFlowPositioned())
+  while (first_child->IsFloatingOrOutOfFlowPositioned() ||
+         (RuntimeEnabledFeatures::FirstLineOnListItemEnabled() &&
+          first_child->IsListMarker())) {
     first_child = first_child->NextSibling();
+  }
   if (first_child != first_line_block)
     return nullptr;
 
@@ -655,29 +628,27 @@ LayoutBlockFlow* LayoutBlock::NearestInnerBlockWithFirstLine() {
 // so the firstChild() is nullptr if the only child is an empty inline-block.
 inline bool LayoutBlock::IsInlineBoxWrapperActuallyChild() const {
   NOT_DESTROYED();
-  return IsInline() && IsAtomicInlineLevel() && !Size().IsEmpty() &&
+  return IsInline() && IsAtomicInlineLevel() && !StitchedSize().IsEmpty() &&
          GetNode() && EditingIgnoresContent(*GetNode());
 }
 
-PhysicalRect LayoutBlock::LocalCaretRect(
-    int caret_offset,
-    LayoutUnit* extra_width_to_end_of_line) const {
+PhysicalRect LayoutBlock::LocalCaretRect(int caret_offset,
+                                         CaretShape caret_shape) const {
   NOT_DESTROYED();
   // Do the normal calculation in most cases.
   if ((FirstChild() && !FirstChild()->IsPseudoElement()) ||
       IsInlineBoxWrapperActuallyChild()) {
-    return LayoutBox::LocalCaretRect(caret_offset, extra_width_to_end_of_line);
+    return LayoutBox::LocalCaretRect(caret_offset, caret_shape);
   }
 
   const ComputedStyle& style = StyleRef();
   const bool is_horizontal = style.IsHorizontalWritingMode();
 
-  LayoutUnit inline_size = is_horizontal ? Size().width : Size().height;
-  LogicalRect caret_rect =
-      LocalCaretRectForEmptyElement(inline_size, TextIndentOffset());
-  if (extra_width_to_end_of_line) {
-    *extra_width_to_end_of_line = inline_size - caret_rect.InlineEndOffset();
-  }
+  PhysicalSize stitched_size = StitchedSize();
+  LayoutUnit inline_size =
+      is_horizontal ? stitched_size.width : stitched_size.height;
+  LogicalRect caret_rect = LocalCaretRectForEmptyElement(
+      inline_size, TextIndentOffset(), caret_shape);
   return CreateWritingModeConverter().ToPhysical(caret_rect);
 }
 
@@ -697,7 +668,7 @@ void LayoutBlock::AddOutlineRects(OutlineRectCollector& collector,
 
   // For anonymous blocks, the children add outline rects.
   if (!IsAnonymous()) {
-    collector.AddRect(PhysicalRect(additional_offset, Size()));
+    collector.AddRect(PhysicalRect(additional_offset, StitchedSize()));
   }
 
   if (ShouldIncludeBlockInkOverflow(include_block_overflows) &&
@@ -717,8 +688,7 @@ LayoutBox* LayoutBlock::CreateAnonymousBoxWithSameTypeAs(
 
 const char* LayoutBlock::GetName() const {
   NOT_DESTROYED();
-  NOTREACHED_IN_MIGRATION();
-  return "LayoutBlock";
+  NOTREACHED();
 }
 
 LayoutBlock* LayoutBlock::CreateAnonymousWithParentAndDisplay(
@@ -735,6 +705,10 @@ LayoutBlock* LayoutBlock::CreateAnonymousWithParentAndDisplay(
     case EDisplay::kGrid:
     case EDisplay::kInlineGrid:
       new_display = EDisplay::kGrid;
+      break;
+    case EDisplay::kGridLanes:
+    case EDisplay::kInlineGridLanes:
+      new_display = EDisplay::kGridLanes;
       break;
     case EDisplay::kFlowRoot:
       new_display = EDisplay::kFlowRoot;
@@ -757,13 +731,13 @@ LayoutBlock* LayoutBlock::CreateAnonymousWithParentAndDisplay(
 
   LayoutBlock* layout_block;
   if (new_display == EDisplay::kFlex) {
-    layout_block =
-        MakeGarbageCollected<LayoutFlexibleBox>(/* element */ nullptr);
+    layout_block = MakeGarbageCollected<LayoutFlexibleBox>(/*element=*/nullptr);
   } else if (new_display == EDisplay::kGrid) {
-    layout_block = MakeGarbageCollected<LayoutGrid>(/* element */ nullptr);
+    layout_block = MakeGarbageCollected<LayoutGrid>(/*element=*/nullptr);
+  } else if (new_display == EDisplay::kGridLanes) {
+    layout_block = MakeGarbageCollected<LayoutGridLanes>(/*element=*/nullptr);
   } else if (new_display == EDisplay::kBlockMath) {
-    layout_block =
-        MakeGarbageCollected<LayoutMathMLBlock>(/* element */ nullptr);
+    layout_block = MakeGarbageCollected<LayoutMathMLBlock>(/*element=*/nullptr);
   } else {
     DCHECK(new_display == EDisplay::kBlock ||
            new_display == EDisplay::kFlowRoot);

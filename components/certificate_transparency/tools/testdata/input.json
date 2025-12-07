@@ -1,0 +1,40 @@
+{
+  "version": "55.5",
+  "log_list_timestamp": "2024-11-12T00:00:00Z",
+  "operators": [
+    {
+      "name": "Google",
+      "email": [
+        "google-ct-logs@googlegroups.com"
+      ],
+      "logs": [
+        {
+          "description": "Sample RFC6962 log",
+          "log_id": "7s3QZNXbGs7FXLedtM0TojKHRny87N7DUUhZRnEftZs=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEHblsqctplMVc5ramA7vSuNxUQxcomQwGAVAdnWTAWUYr3MgDHQW0LagJ95lB7QT75Ve6JgT2EVLOFGU7L3YrwA==",
+          "url": "https://ct.example.com/logs/rfc6962/",
+          "mmd": 86400,
+          "state": {
+            "usable": {
+              "timestamp": "2024-11-01T00:00:00Z"
+            }
+          }
+        }
+      ],
+      "tiled_logs": [
+        {
+          "description": "Static CT API log",
+          "log_id": "TnWjJ1yaEMM4W2zU3z9S6x3w4I4bjWnAsfpksWKaOd8=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIIKh+WdoqOTblJji4WiH5AltIDUzODyvFKrXCBjw/Rab0/98J4LUh7dOJEY7+66+yCNSICuqRAX+VPnV8R1Fmg==",
+          "url": "https://ct.example.com/logs/static_ct_api/",
+          "mmd": 86400,
+          "state": {
+            "usable": {
+              "timestamp": "2024-11-02T00:00:00Z"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

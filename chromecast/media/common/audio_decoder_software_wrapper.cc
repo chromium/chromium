@@ -198,7 +198,7 @@ void AudioDecoderSoftwareWrapper::OnKeyStatusChanged(const std::string& key_id,
 }
 
 void AudioDecoderSoftwareWrapper::OnVideoResolutionChanged(const Size& size) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace media

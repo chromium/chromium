@@ -14,13 +14,12 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
+#include "remoting/base/passthrough_oauth_token_getter.h"
 #include "remoting/host/it2me/it2me_host.h"
 #include "remoting/protocol/errors.h"
-#include "remoting/signaling/delegating_signal_strategy.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "remoting/host/native_messaging/log_message_handler.h"
 #endif
 
@@ -74,14 +73,12 @@ class It2MeNativeMessagingHost : public It2MeHost::Observer,
                     base::Value::Dict response) const;
   void ProcessConnect(base::Value::Dict message, base::Value::Dict response);
   void ProcessDisconnect(base::Value::Dict message, base::Value::Dict response);
-  void ProcessIncomingIq(base::Value::Dict message, base::Value::Dict response);
+  void ProcessUpdateAccessTokens(base::Value::Dict message,
+                                 base::Value::Dict response);
   void SendErrorAndExit(base::Value::Dict response,
                         const protocol::ErrorCode error_code) const;
   void SendPolicyErrorAndExit() const;
   void SendMessageToClient(base::Value::Dict message) const;
-
-  // Callback for DelegatingSignalStrategy.
-  void SendOutgoingIq(const std::string& iq);
 
   // Called when initial policies are read and when they change.
   void OnPolicyUpdate(base::Value::Dict policies);
@@ -91,11 +88,6 @@ class It2MeNativeMessagingHost : public It2MeHost::Observer,
 
   // Returns whether the request was successfully sent to the elevated host.
   bool DelegateToElevatedHost(base::Value::Dict message);
-
-  // Creates a delegated signal strategy from the values stored in |message|.
-  // Returns nullptr on failure.
-  std::unique_ptr<SignalStrategy> CreateDelegatedSignalStrategy(
-      const base::Value::Dict& message);
 
   // Extracts OAuth access token from the message passed from the client.
   std::string ExtractAccessToken(const base::Value::Dict& message);
@@ -117,12 +109,18 @@ class It2MeNativeMessagingHost : public It2MeHost::Observer,
 #endif  // BUILDFLAG(IS_WIN)
 
   raw_ptr<Client> client_ = nullptr;
-  DelegatingSignalStrategy::IqCallback incoming_message_callback_;
   std::unique_ptr<ChromotingHostContext> host_context_;
   std::unique_ptr<It2MeHostFactory> factory_;
   scoped_refptr<It2MeHost> it2me_host_;
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  // Token getters below are only used when native signaling is used.
+  // `signaling_token_getter_` is used for signaling, which may require a
+  // non-CRD token scope, while `api_token_getter_` is used for all other
+  // services, which require a CRD token scope.
+  PassthroughOAuthTokenGetter signaling_token_getter_;
+  PassthroughOAuthTokenGetter api_token_getter_;
+
+#if !BUILDFLAG(IS_CHROMEOS)
   // Don't install a log message handler on ChromeOS because we run in the
   // browser process and don't want to intercept all its log messages.
   std::unique_ptr<LogMessageHandler> log_message_handler_;

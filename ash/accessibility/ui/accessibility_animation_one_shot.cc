@@ -17,7 +17,7 @@ AccessibilityAnimationOneShot::AccessibilityAnimationOneShot(
     base::RepeatingCallback<bool(base::TimeTicks)> callback)
     : callback_(callback) {
   display::Display display =
-      display::Screen::GetScreen()->GetDisplayMatching(bounds_in_dip);
+      display::Screen::Get()->GetDisplayMatching(bounds_in_dip);
   aura::Window* root_window = Shell::GetRootWindowForDisplayId(display.id());
   if (!root_window) {
     // `root_window` can be invalid in some scenarios e.g. if an external

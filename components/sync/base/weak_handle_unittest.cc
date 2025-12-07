@@ -226,7 +226,7 @@ TEST_F(WeakHandleTest, WithDestroyedThread) {
   // Shouldn't do anything, since the thread is gone.
   b2.Call(FROM_HERE, &Base::Test);
 
-  // |b2| shouldn't leak when it's destroyed, even if the original
+  // `b2` shouldn't leak when it's destroyed, even if the original
   // thread is gone.
 }
 
@@ -272,7 +272,7 @@ TEST_F(WeakHandleTest, TypeConversionConstructor) {
   base_weak_handle.Call(FROM_HERE, &Base::Test);
 
   EXPECT_TRUE(derived_weak_handle.IsInitialized());
-  // Copy constructor shouldn't construct a new |core_|.
+  // Copy constructor shouldn't construct a new `core_`.
   EXPECT_EQ(weak_handle.core_.get(), derived_weak_handle.core_.get());
   derived_weak_handle.Call(FROM_HERE, &Base::Test);
 
@@ -303,7 +303,7 @@ TEST_F(WeakHandleTest, TypeConversionConstructorAssignment) {
 
   EXPECT_TRUE(base_weak_handle.IsInitialized());
   EXPECT_TRUE(derived_weak_handle.IsInitialized());
-  // Copy constructor shouldn't construct a new |core_|.
+  // Copy constructor shouldn't construct a new `core_`.
   EXPECT_EQ(weak_handle.core_.get(), derived_weak_handle.core_.get());
 }
 

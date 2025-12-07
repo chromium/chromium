@@ -1,0 +1,14 @@
+This tests that navigator.modelContextTesting.registerToolsChangedCallback works correctly.
+PASS: Initial tool list correct
+INFO: Tools changed callback invoked (count: 1)
+PASS: Callback fired after registerTool
+PASS: Tool list has 2 tools after registration
+INFO: Tools changed callback invoked (count: 2)
+PASS: Callback fired after unregisterTool
+PASS: Tool list back to 1 tool after unregistration
+INFO: Tools changed callback invoked (count: 3)
+PASS: Callback fired after provideContext
+INFO: Tools changed callback invoked (count: 4)
+PASS: Callback fired after clearContext
+PASS: Tool list empty after clearContext
+

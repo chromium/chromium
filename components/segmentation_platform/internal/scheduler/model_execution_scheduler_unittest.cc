@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler_impl.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/simple_test_clock.h"

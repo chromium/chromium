@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
-
-import {HelpContentList} from './feedback_types.js';
-import {FeedbackContext, HelpContentType, SearchRequest, SearchResponse} from './os_feedback_ui.mojom-webui.js';
+import type {HelpContentList} from './feedback_types.js';
+import type {FeedbackContext, SearchRequest, SearchResponse} from './os_feedback_ui.mojom-webui.js';
+import {HelpContentType} from './os_feedback_ui.mojom-webui.js';
 
 /**
  * @fileoverview
@@ -14,12 +13,12 @@ import {FeedbackContext, HelpContentType, SearchRequest, SearchResponse} from '.
 
 export const fakePopularHelpContentList: HelpContentList = [
   {
-    title: stringToMojoString16('fake article'),
+    title: 'fake article',
     url: {url: 'https://support.google.com/chromebook/?q=article'},
     contentType: HelpContentType.kArticle,
   },
   {
-    title: stringToMojoString16('fake forum'),
+    title: 'fake forum',
     url: {url: 'https://support.google.com/chromebook/?q=forum'},
     contentType: HelpContentType.kForum,
   },
@@ -27,29 +26,27 @@ export const fakePopularHelpContentList: HelpContentList = [
 
 export const fakeHelpContentList: HelpContentList = [
   {
-    title: stringToMojoString16('Fix connection problems'),
+    title: 'Fix connection problems',
     url: {url: 'https://support.google.com/chromebook/?q=6318213'},
     contentType: HelpContentType.kArticle,
   },
   {
-    title: stringToMojoString16(
-        'Why won\'t my wireless mouse with a USB piece wor...?'),
+    title: 'Why won\'t my wireless mouse with a USB piece wor...?',
     url: {url: 'https://support.google.com/chromebook/?q=123920509'},
     contentType: HelpContentType.kForum,
   },
   {
-    title: stringToMojoString16('Wifi Issues - only on Chromebooks'),
+    title: 'Wifi Issues - only on Chromebooks',
     url: {url: 'https://support.google.com/chromebook/?q=114174470'},
     contentType: HelpContentType.kForum,
   },
   {
-    title: stringToMojoString16('Network Connectivity Fault'),
+    title: 'Network Connectivity Fault',
     url: {url: 'https://support.google.com/chromebook/?q=131459420'},
     contentType: HelpContentType.kForum,
   },
   {
-    title: stringToMojoString16(
-        'Connected to WiFi but can\'t connect to the internet'),
+    title: 'Connected to WiFi but can\'t connect to the internet',
     url: {url: 'https://support.google.com/chromebook/?q=22864239'},
     contentType: HelpContentType.kUnknown,
   },
@@ -59,7 +56,7 @@ export const fakeEmptyHelpContentList: HelpContentList = [];
 
 export const fakeSearchRequest: SearchRequest = {
   maxResults: 5,
-  query: stringToMojoString16('wifi not working'),
+  query: 'wifi not working',
 };
 
 export const fakeSearchResponse: SearchResponse = {
@@ -73,14 +70,12 @@ export const fakeEmptySearchResponse: SearchResponse = {
 };
 
 export const fakeFeedbackContext: FeedbackContext = {
-  assistantDebugInfoAllowed: false,
   autofillMetadata: '',
   categoryTag: 'MediaApp',
   email: 'test.user2@test.com',
   extraDiagnostics: null,
-  fromAssistant: false,
   fromAutofill: false,
-  fromSettingsSearch: false,
+  settingsSearchDoNotRecordMetrics: true,
   hasLinkedCrossDevicePhone: false,
   isInternalAccount: false,
   pageUrl: {url: 'chrome://tab/'},
@@ -89,14 +84,12 @@ export const fakeFeedbackContext: FeedbackContext = {
 };
 
 export const fakeEmptyFeedbackContext: FeedbackContext = {
-  assistantDebugInfoAllowed: false,
   autofillMetadata: '',
   categoryTag: '',
   email: '',
   extraDiagnostics: null,
-  fromAssistant: false,
   fromAutofill: false,
-  fromSettingsSearch: false,
+  settingsSearchDoNotRecordMetrics: true,
   hasLinkedCrossDevicePhone: false,
   isInternalAccount: false,
   pageUrl: {url: ''},
@@ -106,14 +99,12 @@ export const fakeEmptyFeedbackContext: FeedbackContext = {
 
 /** Feedback context for login flow, i.e., on oobe or login screen. */
 export const fakeLoginFlowFeedbackContext: FeedbackContext = {
-  assistantDebugInfoAllowed: false,
   autofillMetadata: '',
   categoryTag: 'Login',
   email: '',
   extraDiagnostics: null,
-  fromAssistant: false,
   fromAutofill: false,
-  fromSettingsSearch: false,
+  settingsSearchDoNotRecordMetrics: true,
   hasLinkedCrossDevicePhone: false,
   isInternalAccount: false,
   pageUrl: {url: ''},
@@ -122,14 +113,12 @@ export const fakeLoginFlowFeedbackContext: FeedbackContext = {
 };
 
 export const fakeInternalUserFeedbackContext: FeedbackContext = {
-  assistantDebugInfoAllowed: false,
   autofillMetadata: '',
   categoryTag: '',
   email: 'test.user@google.com',
   extraDiagnostics: null,
-  fromAssistant: true,
   fromAutofill: false,
-  fromSettingsSearch: true,
+  settingsSearchDoNotRecordMetrics: false,
   hasLinkedCrossDevicePhone: true,
   isInternalAccount: true,
   pageUrl: {url: 'chrome://tab/'},
@@ -139,14 +128,12 @@ export const fakeInternalUserFeedbackContext: FeedbackContext = {
 
 export const fakeFeedbackContextWithoutLinkedCrossDevicePhone:
     FeedbackContext = {
-      assistantDebugInfoAllowed: false,
       autofillMetadata: '',
       categoryTag: '',
       email: 'test.user@google.com',
       extraDiagnostics: null,
-      fromAssistant: true,
       fromAutofill: false,
-      fromSettingsSearch: true,
+      settingsSearchDoNotRecordMetrics: false,
       hasLinkedCrossDevicePhone: false,
       isInternalAccount: true,
       pageUrl: {url: 'chrome://tab/'},
@@ -155,14 +142,12 @@ export const fakeFeedbackContextWithoutLinkedCrossDevicePhone:
     };
 
 export const fakeFeedbackContextWithExtraDiagnostics: FeedbackContext = {
-  assistantDebugInfoAllowed: false,
   autofillMetadata: '',
   categoryTag: '',
   email: 'test.user@google.com',
   extraDiagnostics: 'some extra info',
-  fromAssistant: true,
   fromAutofill: false,
-  fromSettingsSearch: true,
+  settingsSearchDoNotRecordMetrics: false,
   hasLinkedCrossDevicePhone: false,
   isInternalAccount: true,
   pageUrl: {url: 'chrome://tab/'},

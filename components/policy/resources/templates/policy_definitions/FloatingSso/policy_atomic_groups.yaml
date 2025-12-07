@@ -4,3 +4,4 @@ FloatingSso:
   - FloatingSsoEnabled
   - FloatingSsoDomainBlocklist
   - FloatingSsoDomainBlocklistExceptions
+  - FloatingSsoSessionCookiesIncluded

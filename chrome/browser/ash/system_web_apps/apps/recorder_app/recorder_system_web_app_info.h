@@ -7,10 +7,8 @@
 
 #include <memory>
 
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #include "ui/gfx/geometry/rect.h"
-
-class Browser;
 
 namespace web_app {
 struct WebAppInstallInfo;
@@ -24,13 +22,7 @@ class RecorderSystemAppDelegate : public ash::SystemWebAppDelegate {
   std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInfo() const override;
   bool ShouldCaptureNavigations() const override;
   gfx::Size GetMinimumWindowSize() const override;
+  bool IsAppEnabled() const override;
 };
-
-// Return a WebAppInstallInfo used to install the app.
-std::unique_ptr<web_app::WebAppInstallInfo>
-CreateWebAppInfoForRecorderSystemWebApp();
-
-// Returns the default bounds.
-gfx::Rect GetDefaultBoundsForRecorderApp(Browser*);
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_RECORDER_APP_RECORDER_SYSTEM_WEB_APP_INFO_H_

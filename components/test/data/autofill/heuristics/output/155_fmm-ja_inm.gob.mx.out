@@ -4,7 +4,7 @@ UNKNOWN_TYPE | numero_pasaporte | Número de pasaporte: |  | -default
 NAME_FIRST | nombres | Nombre(s): |  | -default
 NAME_LAST | apellidos | Apellido(s): |  | -default
 UNKNOWN_TYPE | nacionalidad | Nacionalidad: |  | -default
-UNKNOWN_TYPE | fecha_nacimiento | Fecha de nacimiento: |  | fecha_nacimiento_1
+UNKNOWN_TYPE | fecha_nacimiento | Fecha de nacimiento: |  | -default
 UNKNOWN_TYPE | sexo_pago | Sexo: |  | -default
 UNKNOWN_TYPE | sexo | Sexo: |  | -default
 UNKNOWN_TYPE | monto_tramite | Monto trámite: | 558.00 | -default
@@ -22,7 +22,7 @@ NAME_LAST | apellidos | 姓 |  | internacion_1
 UNKNOWN_TYPE | sexo | 性別 | 0 | internacion_1
 UNKNOWN_TYPE | fechaNacimiento | 生年月日 |  | internacion_1
 ADDRESS_HOME_COUNTRY | nacionalidad | 国籍(国名) | 0 | internacion_1
-ADDRESS_HOME_STATE | paisNacimiento | 出生国 | 0 | internacion_1
+ADDRESS_HOME_COUNTRY | paisNacimiento | 出生国 | 0 | internacion_1
 UNKNOWN_TYPE | tipoDocumento | 書類の種類 | 0 | internacion_1
 UNKNOWN_TYPE | numeroDocumento | 書類番号 |  | internacion_1
 UNKNOWN_TYPE | confirmarNumeroDocumento | 書類番号(再入力） |  | internacion_1

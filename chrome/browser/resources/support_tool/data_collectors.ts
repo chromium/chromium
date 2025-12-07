@@ -47,9 +47,9 @@ export class DataCollectorsElement extends DataCollectorsElementBase {
     };
   }
 
-  private dataCollectors_: DataCollectorItem[];
-  private enableScreenshot_: boolean;
-  private allSelected_: boolean;
+  declare private dataCollectors_: DataCollectorItem[];
+  declare private enableScreenshot_: boolean;
+  declare private allSelected_: boolean;
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   override connectedCallback() {

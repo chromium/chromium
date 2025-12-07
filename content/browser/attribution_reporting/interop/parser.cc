@@ -13,11 +13,11 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
 #include "base/functional/function_ref.h"
-#include "base/functional/overloaded.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -37,8 +37,8 @@
 #include "net/http/http_version.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/mojom/attribution.mojom.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -58,7 +58,7 @@ constexpr char kResponseKey[] = "response";
 constexpr char kResponsesKey[] = "responses";
 constexpr char kTimestampKey[] = "timestamp";
 
-using Context = absl::variant<std::string_view, size_t>;
+using Context = std::variant<std::string_view, size_t>;
 using ContextPath = std::vector<Context>;
 
 std::string TimeAsUnixMillisecondString(base::Time time) {
@@ -90,11 +90,11 @@ std::ostream& operator<<(std::ostream& out, const ContextPath& path) {
   }
 
   for (Context context : path) {
-    absl::visit(base::Overloaded{
-                    [&](std::string_view key) { out << "[\"" << key << "\"]"; },
-                    [&](size_t index) { out << '[' << index << ']'; },
-                },
-                context);
+    std::visit(absl::Overload{
+                   [&](std::string_view key) { out << "[\"" << key << "\"]"; },
+                   [&](size_t index) { out << '[' << index << ']'; },
+               },
+               context);
   }
   return out;
 }
@@ -173,12 +173,6 @@ class AttributionInteropParser {
       bool required) && {
     interop_config.needs_cross_app_web =
         ParseBool(dict, "needs_cross_app_web").value_or(false);
-    interop_config.needs_aggregatable_debug =
-        ParseBool(dict, "needs_aggregatable_debug").value_or(false);
-    interop_config.needs_source_destination_limit =
-        ParseBool(dict, "needs_source_destination_limit").value_or(false);
-    interop_config.needs_aggregatable_filtering_ids =
-        ParseBool(dict, "needs_aggregatable_filtering_ids").value_or(false);
 
     AttributionConfig& config = interop_config.attribution_config;
 
@@ -206,9 +200,18 @@ class AttributionInteropParser {
              required);
 
     ParseDouble(dict, "max_event_level_channel_capacity_navigation",
-                config.event_level_limit.max_navigation_info_gain, required);
+                config.privacy_math_config.max_channel_capacity_navigation,
+                required);
     ParseDouble(dict, "max_event_level_channel_capacity_event",
-                config.event_level_limit.max_event_info_gain, required);
+                config.privacy_math_config.max_channel_capacity_event,
+                required);
+    ParseDouble(
+        dict, "max_event_level_channel_capacity_scopes_navigation",
+        config.privacy_math_config.max_channel_capacity_scopes_navigation,
+        required);
+    ParseDouble(dict, "max_event_level_channel_capacity_scopes_event",
+                config.privacy_math_config.max_channel_capacity_scopes_event,
+                required);
 
     ParseUInt32(dict, "max_trigger_state_cardinality",
                 interop_config.max_trigger_state_cardinality, required);
@@ -277,6 +280,14 @@ class AttributionInteropParser {
           max_aggregatable_debug_reports_per_source;
     }
 
+    if (int max_aggregatable_reports_per_source;
+        ParseInt(dict, "max_aggregatable_reports_per_source",
+                 max_aggregatable_reports_per_source, required,
+                 /*allow_zero=*/false)) {
+      config.aggregate_limit.max_aggregatable_reports_per_source =
+          max_aggregatable_reports_per_source;
+    }
+
     {
       static constexpr char kAggregationCoordinatorOrigins[] =
           "aggregation_coordinator_origins";
@@ -300,7 +311,7 @@ class AttributionInteropParser {
     }
 
     if (has_error_) {
-      return base::unexpected(error_stream_.str());
+      return base::unexpected(std::move(error_stream_).str());
     }
     return base::ok();
   }
@@ -368,6 +379,13 @@ class AttributionInteropParser {
                   /*previous_time=*/events.empty() ? base::Time::Min()
                                                    : events.back().time,
                   /*strictly_greater=*/true);
+
+    if (dict.contains("connection")) {
+      bool connected = *dict.FindBool("connection");
+      events.emplace_back(time,
+                          AttributionSimulationEvent::Connection(connected));
+      return;
+    }
 
     std::optional<SuitableOrigin> context_origin;
     AttributionReportingEligibility eligibility;
@@ -443,7 +461,6 @@ class AttributionInteropParser {
                           std::move(randomized_response),
                           std::move(null_aggregatable_reports_days),
                           debug_permission));
-
                 });
           });
     }
@@ -776,7 +793,7 @@ class AttributionInteropParser {
     // uint32 and [0, INT64_MAX] encompasses the same values.
     if (ParseInteger(dict, key, result_64, &base::StringToInt64, required,
                      allow_zero)) {
-      if (base::internal::IsValueInRangeForNumericType<uint32_t>(result_64)) {
+      if (base::IsValueInRangeForNumericType<uint32_t>(result_64)) {
         result = static_cast<uint32_t>(result_64);
         return true;
       } else {

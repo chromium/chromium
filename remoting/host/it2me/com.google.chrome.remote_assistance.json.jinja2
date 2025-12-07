@@ -7,9 +7,8 @@
    # chrome/browser/extensions/api/messaging/native_message_host_chromeos.cc
    # to keep the two lists in sync. #}
   "allowed_origins": [
-    {# Chrome Extension (Prod) #}
-    "chrome-extension://inomeogfingihgjfjlpeplalcfajhgai/",
-    {# Chrome Extension (Dev Build) #}
-    "chrome-extension://hpodccmdligbeohchckkeajbfohibipg/"
+    {%- for id in COMPANION_EXTENSION_IDS %}
+      "chrome-extension://{{ id }}/"{% if not loop.last %},{% endif %}
+    {%- endfor %}
   ]
 }

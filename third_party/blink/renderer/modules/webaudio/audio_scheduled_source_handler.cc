@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webaudio/audio_scheduled_source_handler.h"
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
@@ -123,8 +119,8 @@ AudioScheduledSourceHandler::UpdateSchedulingInfo(size_t quantum_frame_size,
   // start time in the middle of the quantum.
   if (quantum_frame_offset) {
     for (unsigned i = 0; i < output_bus->NumberOfChannels(); ++i) {
-      memset(output_bus->Channel(i)->MutableData(), 0,
-             sizeof(float) * quantum_frame_offset);
+      UNSAFE_TODO(memset(output_bus->Channel(i)->MutableData(), 0,
+                         sizeof(float) * quantum_frame_offset));
     }
   }
 
@@ -151,8 +147,9 @@ AudioScheduledSourceHandler::UpdateSchedulingInfo(size_t quantum_frame_size,
       }
 
       for (unsigned i = 0; i < output_bus->NumberOfChannels(); ++i) {
-        memset(output_bus->Channel(i)->MutableData() + zero_start_frame, 0,
-               sizeof(float) * frames_to_zero);
+        UNSAFE_TODO(
+            memset(output_bus->Channel(i)->MutableData() + zero_start_frame, 0,
+                   sizeof(float) * frames_to_zero));
       }
     }
 

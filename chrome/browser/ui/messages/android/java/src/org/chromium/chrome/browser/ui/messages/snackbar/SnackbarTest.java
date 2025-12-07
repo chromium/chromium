@@ -21,12 +21,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.chrome.browser.ui.messages.test.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -34,13 +36,14 @@ import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 /** Tests for {@link SnackbarManager}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class SnackbarTest {
     private SnackbarManager mManager;
-    private SnackbarController mDefaultController =
+    private final SnackbarController mDefaultController =
             new SnackbarController() {
                 @Override
                 public void onDismissNoAction(Object actionData) {}
@@ -49,7 +52,7 @@ public class SnackbarTest {
                 public void onAction(Object actionData) {}
             };
 
-    private SnackbarController mDismissController =
+    private final SnackbarController mDismissController =
             new SnackbarController() {
                 @Override
                 public void onDismissNoAction(Object actionData) {
@@ -69,6 +72,15 @@ public class SnackbarTest {
     private static FrameLayout sAlternateParent1;
     private static FrameLayout sAlternateParent2;
     private boolean mDismissed;
+    private boolean mActionClicked;
+
+    private final SnackbarController mActionController =
+            new SnackbarController() {
+                @Override
+                public void onAction(Object actionData) {
+                    mActionClicked = true;
+                }
+            };
 
     @BeforeClass
     public static void setupSuite() {
@@ -109,6 +121,7 @@ public class SnackbarTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/439617848")
     public void testStackQueuePersistentOrder() {
         final Snackbar stackbar =
                 Snackbar.make(
@@ -352,7 +365,55 @@ public class SnackbarTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.FLOATING_SNACKBAR)
+    public void testOverrideParent_BeforeShowing_FloatingSnackbar() {
+        final Snackbar snackbar =
+                Snackbar.make(
+                        "stack",
+                        mDismissController,
+                        Snackbar.TYPE_ACTION,
+                        Snackbar.UMA_TEST_SNACKBAR);
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    mManager.overrideParent(sAlternateParent1);
+                    mManager.showSnackbar(snackbar);
+                });
+        pollSnackbarCondition(
+                "Snackbar's parent should not have been overridden, but was.",
+                () ->
+                        mManager.isShowing()
+                                && mManager.getCurrentSnackbarViewForTesting().mParent
+                                        == sMainParent);
+    }
+
+    @Test
+    @SmallTest
     public void testOverrideParent_WhileShowing() {
+        final Snackbar snackbar =
+                Snackbar.make(
+                        "stack",
+                        mDismissController,
+                        Snackbar.TYPE_ACTION,
+                        Snackbar.UMA_TEST_SNACKBAR);
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    mManager.showSnackbar(snackbar);
+                    mManager.overrideParent(sAlternateParent1);
+                });
+        pollSnackbarCondition(
+                "Snackbar's parent should have been overridden, but wasn't.",
+                () ->
+                        mManager.isShowing()
+                                && mManager.getCurrentSnackbarViewForTesting().mParent
+                                        == sAlternateParent1);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.FLOATING_SNACKBAR)
+    public void testOverrideParent_WhileShowing_FloatingSnackbar() {
         final Snackbar snackbar =
                 Snackbar.make(
                         "stack",
@@ -525,6 +586,32 @@ public class SnackbarTest {
                 "Snackbar isShowing() and isShowingSupplier().get() values are not "
                         + "both false after dismissing snackbar.",
                 () -> !mManager.isShowing() && !mManager.isShowingSupplier().get());
+    }
+
+    @Test
+    @SmallTest
+    public void testResetTimeoutOnTouch() throws InterruptedException {
+        int timeout = 200;
+        SnackbarManager.setDurationForTesting(timeout);
+        final Snackbar snackbar =
+                Snackbar.make(
+                        "persistent",
+                        mActionController,
+                        Snackbar.TYPE_ACTION,
+                        Snackbar.UMA_TEST_SNACKBAR);
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> mManager.showSnackbar(snackbar));
+        pollSnackbarCondition(
+                "Snackbar not shown.",
+                () -> mManager.isShowing() && mManager.getCurrentSnackbarForTesting() == snackbar);
+        TimeUnit.MILLISECONDS.sleep(timeout / 2);
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    mManager.resetSnackbarTimeout();
+                });
+        pollSnackbarCondition("Snackbar dismissed early.", () -> mManager.isShowing());
+        TimeUnit.MILLISECONDS.sleep(timeout);
+        pollSnackbarCondition("Snackbar did not time out.", () -> !mManager.isShowing());
     }
 
     void pollSnackbarCondition(String message, Supplier<Boolean> condition) {

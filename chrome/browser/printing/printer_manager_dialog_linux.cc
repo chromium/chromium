@@ -83,6 +83,7 @@ void DetectAndOpenPrinterConfigDialog() {
     case base::nix::DESKTOP_ENVIRONMENT_PANTHEON:
     case base::nix::DESKTOP_ENVIRONMENT_UNITY:
     case base::nix::DESKTOP_ENVIRONMENT_XFCE:
+    case base::nix::DESKTOP_ENVIRONMENT_COSMIC:
       opened = OpenPrinterConfigDialog(kSystemConfigPrinterCommand);
       break;
     case base::nix::DESKTOP_ENVIRONMENT_DEEPIN:

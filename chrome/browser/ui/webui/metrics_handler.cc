@@ -49,7 +49,7 @@ void MetricsHandler::RegisterMessages() {
 
 void MetricsHandler::HandleRecordAction(const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
-  std::string string_action = args[0].GetString();
+  const std::string& string_action = args[0].GetString();
   base::RecordComputedAction(string_action);
 }
 
@@ -69,18 +69,16 @@ void MetricsHandler::HandleRecordInHistogram(const base::Value::List& args) {
 
   // As |histogram_name| may change between calls, the UMA_HISTOGRAM_ENUMERATION
   // macro cannot be used here.
-  base::HistogramBase* counter =
-      base::LinearHistogram::FactoryGet(
-          histogram_name, 1, int_boundary_value, bucket_count + 1,
-          base::HistogramBase::kUmaTargetedHistogramFlag);
+  base::HistogramBase* counter = base::LinearHistogram::FactoryGet(
+      histogram_name, 1, int_boundary_value, bucket_count + 1,
+      base::HistogramBase::kUmaTargetedHistogramFlag);
   counter->Add(int_value);
 }
 
 void MetricsHandler::HandleRecordBooleanHistogram(
     const base::Value::List& args) {
   if (args.size() < 2 || !args[0].is_string() || !args[1].is_bool()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   const std::string histogram_name = args[0].GetString();
   const bool value = args[1].GetBool();

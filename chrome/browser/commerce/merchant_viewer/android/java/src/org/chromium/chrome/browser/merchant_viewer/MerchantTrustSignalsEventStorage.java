@@ -8,16 +8,20 @@ import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
 import java.util.List;
 
 /** Provides storage for merchant trust signals events. */
+@NullMarked
 public class MerchantTrustSignalsEventStorage {
     private long mNativeMerchantSignalDB;
     private static boolean sSkipNativeAssertionsForTesting;
@@ -39,7 +43,7 @@ public class MerchantTrustSignalsEventStorage {
 
     @MainThread
     @VisibleForTesting
-    public void saveWithCallback(MerchantTrustSignalsEvent event, Runnable onComplete) {
+    public void saveWithCallback(MerchantTrustSignalsEvent event, @Nullable Runnable onComplete) {
         makeNativeAssertion();
         MerchantTrustSignalsEventStorageJni.get()
                 .save(mNativeMerchantSignalDB, event.getKey(), event.getTimestamp(), onComplete);
@@ -117,22 +121,29 @@ public class MerchantTrustSignalsEventStorage {
 
     @NativeMethods
     interface Natives {
-        void init(MerchantTrustSignalsEventStorage caller, BrowserContextHandle handle);
+        void init(MerchantTrustSignalsEventStorage self, BrowserContextHandle handle);
 
-        void save(long nativeMerchantSignalDB, String key, long timestamp, Runnable onComplete);
+        void save(
+                long nativeMerchantSignalDB,
+                @JniType("std::string") String key,
+                long timestamp,
+                @Nullable Runnable onComplete);
 
         void load(
                 long nativeMerchantSignalDB,
-                String key,
+                @JniType("std::string") String key,
                 Callback<MerchantTrustSignalsEvent> callback);
 
         void loadWithPrefix(
                 long nativeMerchantSignalDB,
-                String prefix,
+                @JniType("std::string") String prefix,
                 Callback<List<MerchantTrustSignalsEvent>> callback);
 
-        void delete(long nativeMerchantSignalDB, String key, Runnable onComplete);
+        void delete(
+                long nativeMerchantSignalDB,
+                @JniType("std::string") String key,
+                @Nullable Runnable onComplete);
 
-        void deleteAll(long nativeMerchantSignalDB, Runnable onComplete);
+        void deleteAll(long nativeMerchantSignalDB, @Nullable Runnable onComplete);
     }
 }

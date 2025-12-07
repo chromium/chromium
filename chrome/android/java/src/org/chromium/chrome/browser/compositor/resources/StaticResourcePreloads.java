@@ -6,9 +6,9 @@ package org.chromium.chrome.browser.compositor.resources;
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
-import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.Arrays;
@@ -17,6 +17,7 @@ import java.util.Arrays;
  * Tracks all high priority resources that should be loaded at startup to be used by CC layers.
  * TODO(dtrainor): Add the high priority and low priority resources here as they get ported over.
  */
+@NullMarked
 public class StaticResourcePreloads {
     /** A list of resources to load synchronously once the compositor is initialized. */
     private static final int[] sSynchronousResources =
@@ -49,10 +50,8 @@ public class StaticResourcePreloads {
                 DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
                         ? sAsynchronousResources
                         : sEmptyList;
-        if (ToolbarFeatures.shouldSuppressCaptures()) {
-            resources = Arrays.copyOf(resources, resources.length + 1);
-            resources[resources.length - 1] = sUrlBarResourceId;
-        }
+        resources = Arrays.copyOf(resources, resources.length + 1);
+        resources[resources.length - 1] = sUrlBarResourceId;
 
         return resources;
     }

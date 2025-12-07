@@ -4,13 +4,14 @@
 
 #include "third_party/blink/renderer/modules/direct_sockets/udp_readable_stream_wrapper.h"
 
-#include "base/functional/callback_forward.h"
+#include "base/metrics/histogram_functions.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_underlying_source.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_udp_message.h"
+#include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event_target_impl.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -42,17 +43,19 @@ UDPReadableStreamWrapper::UDPReadableStreamWrapper(
     CloseOnceCallback on_close,
     const Member<UDPSocketMojoRemote> udp_socket,
     mojo::PendingReceiver<network::mojom::blink::UDPSocketListener>
-        socket_listener)
+        socket_listener,
+    uint64_t inspector_id)
     : ReadableStreamDefaultWrapper(script_state),
       on_close_(std::move(on_close)),
       udp_socket_(udp_socket),
-      socket_listener_(this, ExecutionContext::From(script_state)) {
+      socket_listener_(this, ExecutionContext::From(script_state)),
+      inspector_id_(inspector_id) {
   socket_listener_.Bind(std::move(socket_listener),
                         ExecutionContext::From(script_state)
                             ->GetTaskRunner(TaskType::kNetworking));
   socket_listener_.set_disconnect_handler(
-      WTF::BindOnce(&UDPReadableStreamWrapper::ErrorStream,
-                    WrapWeakPersistent(this), net::ERR_CONNECTION_ABORTED));
+      BindOnce(&UDPReadableStreamWrapper::ErrorStream, WrapWeakPersistent(this),
+               net::ERR_CONNECTION_ABORTED));
 
   ScriptState::Scope scope(script_state);
 
@@ -90,13 +93,18 @@ void UDPReadableStreamWrapper::CloseStream() {
 
   socket_listener_.reset();
 
-  std::move(on_close_).Run(/*exception=*/ScriptValue());
+  std::move(on_close_).Run(/*exception=*/v8::Local<v8::Value>(),
+                           /*net_error=*/net::OK);
 }
 
 void UDPReadableStreamWrapper::ErrorStream(int32_t error_code) {
   if (GetState() != State::kOpen) {
     return;
   }
+
+  // Error codes are negative.
+  base::UmaHistogramSparse("DirectSockets.UDPReadableStreamError", -error_code);
+
   SetState(State::kAborted);
 
   socket_listener_.reset();
@@ -106,16 +114,14 @@ void UDPReadableStreamWrapper::ErrorStream(int32_t error_code) {
   // ScriptValue.
   ScriptState::Scope scope{script_state};
 
-  auto exception = ScriptValue(
-      script_state->GetIsolate(),
-      V8ThrowDOMException::CreateOrDie(script_state->GetIsolate(),
-                                       DOMExceptionCode::kNetworkError,
-                                       String{"Stream aborted by the remote: " +
-                                              net::ErrorToString(error_code)}));
+  auto exception = V8ThrowDOMException::CreateOrDie(
+      script_state->GetIsolate(), DOMExceptionCode::kNetworkError,
+      String{"Stream aborted by the remote: " +
+             net::ErrorToString(error_code)});
 
-  Controller()->Error(exception.V8Value());
+  Controller()->Error(exception);
 
-  std::move(on_close_).Run(exception);
+  std::move(on_close_).Run(exception, error_code);
 }
 
 // Invoked when data is received.
@@ -139,7 +145,21 @@ void UDPReadableStreamWrapper::OnReceived(
     int32_t result,
     const std::optional<::net::IPEndPoint>& src_addr,
     std::optional<::base::span<const ::uint8_t>> data) {
-  if (result != net::Error::OK) {
+  if (result != net::OK) {
+    if (result == net::ERR_MSG_TOO_BIG) {
+      // TODO(crbug.com/362145407): Figure out the root cause.
+      // Error codes are negative.
+      base::UmaHistogramSparse("DirectSockets.UDPReadableStreamError", -result);
+
+      DCHECK_GT(pending_receive_requests_, 0);
+      pending_receive_requests_--;
+
+      // For the success case pulling happens automatically after Enqueue();
+      // however, here we have to pull manually to request one more packet.
+      Pull();
+      return;
+    }
+
     ErrorStream(result);
     return;
   }
@@ -148,15 +168,26 @@ void UDPReadableStreamWrapper::OnReceived(
   DCHECK_GT(pending_receive_requests_, 0);
   pending_receive_requests_--;
 
-  auto* buffer = DOMUint8Array::Create(data->data(), data->size_bytes());
-
+  auto* buffer = DOMUint8Array::Create(data.value());
   auto* message = UDPMessage::Create();
   message->setData(MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
       NotShared<DOMUint8Array>(buffer)));
+
+  std::optional<String> probe_remote_addr;
+  std::optional<uint16_t> probe_remote_port;
+
   if (src_addr) {
-    message->setRemoteAddress(String{src_addr->ToStringWithoutPort()});
+    auto remote_address = String{src_addr->ToStringWithoutPort()};
+    message->setRemoteAddress(remote_address);
     message->setRemotePort(src_addr->port());
+
+    probe_remote_addr = remote_address;
+    probe_remote_port = src_addr->port();
   }
+
+  probe::DirectUDPSocketChunkReceived(
+      *GetScriptState(), inspector_id_, data.value(),
+      std::move(probe_remote_addr), std::move(probe_remote_port));
 
   Controller()->Enqueue(message);
 }

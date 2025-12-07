@@ -3,7 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Looks for crash reports in tools/clang/crashreports and uploads them to GCS.
+"""Looks for crash reports in out/clang-crashreports and uploads them to GCS.
 """
 
 from __future__ import print_function
@@ -22,7 +22,8 @@ import tempfile
 
 GCS_BUCKET = 'chrome-clang-crash-reports'
 THIS_DIR = os.path.dirname(__file__)
-CRASHREPORTS_DIR = os.path.join(THIS_DIR, '..', 'crashreports')
+CRASHREPORTS_DIR = os.path.abspath(
+    os.path.join(THIS_DIR, '..', '..', '..', 'out', 'clang-crashreports'))
 GSUTIL = os.path.join(
     THIS_DIR, '..', '..', '..', 'third_party', 'depot_tools', 'gsutil.py')
 
@@ -82,7 +83,7 @@ def DeleteCrashFiles():
       shutil.rmtree(os.path.join(root, d))
     for f in files:
       if f != '.gitignore':
-        print('removing', f)
+        print('removing', os.path.join(root, f))
         os.remove(os.path.join(root, f))
     del dirs[:]  # Abort os.walk() after one level.
 

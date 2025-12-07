@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 
 config("network_config") {
   defines = [ "IS_CHROMEOS_NETWORK_IMPL" ]
@@ -13,7 +11,6 @@ config("network_config") {
 component("network") {
   configs += [ ":network_config" ]
   deps = [
-    "//ash/components/arc:prefs",
     "//ash/constants",
     "//base",
     "//chromeos/ash/components/cryptohome",
@@ -25,6 +22,7 @@ component("network") {
     "//chromeos/ash/components/network/metrics",
     "//chromeos/ash/components/network/onc",
     "//chromeos/ash/components/network/proxy",
+    "//chromeos/ash/experiences/arc:prefs",
     "//chromeos/ash/services/cellular_setup/public/mojom",
     "//chromeos/ash/services/hotspot_config/public/cpp",
     "//chromeos/ash/services/hotspot_config/public/mojom",
@@ -39,6 +37,7 @@ component("network") {
     "//components/onc",
     "//components/pref_registry",
     "//components/prefs",
+    "//components/server_certificate_database",
     "//components/url_formatter",
     "//components/user_manager",
     "//crypto",
@@ -108,8 +107,9 @@ component("network") {
     "fake_network_state_handler.h",
     "fast_transition_observer.cc",
     "fast_transition_observer.h",
-    "geolocation_handler.cc",
     "geolocation_handler.h",
+    "geolocation_handler_impl.cc",
+    "geolocation_handler_impl.h",
     "hermes_metrics_util.cc",
     "hermes_metrics_util.h",
     "hidden_network_handler.cc",
@@ -171,6 +171,8 @@ component("network") {
     "network_handler_callbacks.h",
     "network_ip_config.cc",
     "network_ip_config.h",
+    "network_login_screen_protocol_handler_observer.cc",
+    "network_login_screen_protocol_handler_observer.h",
     "network_metadata_observer.cc",
     "network_metadata_observer.h",
     "network_metadata_store.cc",
@@ -223,6 +225,31 @@ component("network") {
     "traffic_counters_handler.cc",
     "traffic_counters_handler.h",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+# This is separate from :network to prevent a dependency cycle due to:
+#  //chromeos/ash/services/network_config:in_process_instance ->
+#  //chromeos/ash/components/network:network
+component("vpn_providers_observer") {
+  configs += [ ":network_config" ]
+
+  sources = [
+    "vpn_providers_observer.cc",
+    "vpn_providers_observer.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chromeos/services/network_config/public/cpp",
+    "//chromeos/services/network_config/public/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  deps = [ "//chromeos/ash/services/network_config:in_process_instance" ]
 }
 
 source_set("test_support") {
@@ -236,7 +263,7 @@ source_set("test_support") {
   deps = [
     "//ash/constants",
     "//base",
-    "//chromeos:test_utils",
+    "//chromeos:test_support",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/install_attributes:test_support",
     "//chromeos/components/onc:test_support",
@@ -282,6 +309,8 @@ source_set("test_support") {
     "system_token_cert_db_storage_test_util.h",
     "test_cellular_esim_profile_handler.cc",
     "test_cellular_esim_profile_handler.h",
+    "test_support/technology_enablement_waiter.cc",
+    "test_support/technology_enablement_waiter.h",
   ]
 }
 
@@ -290,7 +319,6 @@ source_set("unit_tests") {
   deps = [
     ":network",
     ":test_support",
-    "//ash/components/arc:prefs",
     "//ash/constants",
     "//base",
     "//base:i18n",
@@ -305,6 +333,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/network/metrics:unit_tests",
     "//chromeos/ash/components/network/onc:unit_tests",
     "//chromeos/ash/components/network/proxy:unit_tests",
+    "//chromeos/ash/experiences/arc:prefs",
     "//chromeos/ash/services/cellular_setup/public/mojom",
     "//chromeos/ash/services/hotspot_config/public/cpp",
     "//chromeos/ash/services/hotspot_config/public/cpp:test_support",
@@ -320,6 +349,7 @@ source_set("unit_tests") {
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/proxy_config",
+    "//components/server_certificate_database:test_support",
     "//components/sync_preferences:test_support",
     "//components/user_manager:test_support",
     "//crypto",
@@ -350,7 +380,7 @@ source_set("unit_tests") {
     "ephemeral_network_configuration_handler_unittest.cc",
     "ephemeral_network_policies_enablement_handler_unittest.cc",
     "fast_transition_observer_unittest.cc",
-    "geolocation_handler_unittest.cc",
+    "geolocation_handler_impl_unittest.cc",
     "hidden_network_handler_unittest.cc",
     "hotspot_allowed_flag_handler_unittest.cc",
     "hotspot_capabilities_provider_unittest.cc",
@@ -388,4 +418,8 @@ source_set("unit_tests") {
     "text_message_provider_unittest.cc",
     "traffic_counters_handler_unittest.cc",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_PASSWORDS_BUBBLE_CONTROLLERS_RELAUNCH_CHROME_BUBBLE_CONTROLLER_H_
 #define CHROME_BROWSER_UI_PASSWORDS_BUBBLE_CONTROLLERS_RELAUNCH_CHROME_BUBBLE_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/password_bubble_controller_base.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"

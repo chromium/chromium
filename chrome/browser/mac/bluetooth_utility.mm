@@ -28,8 +28,8 @@ BluetoothAvailability GetBluetoothAvailability() {
 
   // IOServiceGetMatchingServices takes ownership of matching_dict.
   io_iterator_t iter;
-  int kr = IOServiceGetMatchingServices(
-      kIOMasterPortDefault, matching_dict.release(), &iter);
+  int kr = IOServiceGetMatchingServices(kIOMainPortDefault,
+                                        matching_dict.release(), &iter);
   if (kr != KERN_SUCCESS)
     return BLUETOOTH_NOT_AVAILABLE;
   base::mac::ScopedIOObject<io_iterator_t> scoped_iter(iter);

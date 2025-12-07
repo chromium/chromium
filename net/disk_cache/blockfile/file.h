@@ -10,6 +10,7 @@
 #include <stddef.h>
 
 #include "base/files/file.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/net_export.h"
 
@@ -54,15 +55,23 @@ class NET_EXPORT_PRIVATE File : public base::RefCounted<File> {
   bool IsValid() const;
 
   // Performs synchronous IO.
-  bool Read(void* buffer, size_t buffer_len, size_t offset);
-  bool Write(const void* buffer, size_t buffer_len, size_t offset);
+  //
+  // Read/Write the content from the file `offset` position, and the content
+  // will be placed in the `buffer`. If the read/write size is equal to the
+  // `buffer` size, it returns `true`, otherwise it returns `false`.
+  bool Read(base::span<uint8_t> buffer, size_t offset);
+  bool Write(base::span<const uint8_t> buffer, size_t offset);
 
   // Performs asynchronous IO. callback will be called when the IO completes,
   // as an APC on the thread that queued the operation.
-  bool Read(void* buffer, size_t buffer_len, size_t offset,
-            FileIOCallback* callback, bool* completed);
-  bool Write(const void* buffer, size_t buffer_len, size_t offset,
-             FileIOCallback* callback, bool* completed);
+  bool Read(base::span<uint8_t> buffer,
+            size_t offset,
+            FileIOCallback* callback,
+            bool* completed);
+  bool Write(base::span<const uint8_t> buffer,
+             size_t offset,
+             FileIOCallback* callback,
+             bool* completed);
 
   // Sets the file's length. The file is truncated or extended with zeros to
   // the new length.
@@ -84,12 +93,14 @@ class NET_EXPORT_PRIVATE File : public base::RefCounted<File> {
  private:
   // Performs the actual asynchronous write. If notify is set and there is no
   // callback, the call will be re-synchronized.
-  bool AsyncWrite(const void* buffer, size_t buffer_len, size_t offset,
-                  FileIOCallback* callback, bool* completed);
+  bool AsyncWrite(base::span<const uint8_t> buffer,
+                  size_t offset,
+                  FileIOCallback* callback,
+                  bool* completed);
 
   // Infrastructure for async IO.
-  int DoRead(void* buffer, size_t buffer_len, size_t offset);
-  int DoWrite(const void* buffer, size_t buffer_len, size_t offset);
+  int DoRead(base::raw_span<uint8_t> buffer, size_t offset);
+  int DoWrite(base::raw_span<const uint8_t> buffer, size_t offset);
   void OnOperationComplete(FileIOCallback* callback, int result);
 
   bool init_;

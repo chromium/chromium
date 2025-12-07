@@ -25,7 +25,7 @@ NativeWidgetNSWindowFullscreenController::
     : client_(client) {}
 
 NativeWidgetNSWindowFullscreenController::
-    ~NativeWidgetNSWindowFullscreenController() {}
+    ~NativeWidgetNSWindowFullscreenController() = default;
 
 void NativeWidgetNSWindowFullscreenController::EnterFullscreen(
     int64_t target_display_id) {
@@ -202,6 +202,15 @@ void NativeWidgetNSWindowFullscreenController::OnWindowDidEnterFullscreen() {
   if (!IsInFullscreenTransition()) {
     client_->FullscreenControllerTransitionComplete(
         /*target_fullscreen_state=*/true);
+  }
+}
+
+void NativeWidgetNSWindowFullscreenController::
+    OnWindowDidFailToEnterFullscreen() {
+  if (state_ != State::kWindowed) {
+    SetStateAndCancelPostedTasks(State::kWindowed);
+    client_->FullscreenControllerTransitionComplete(
+        /*is_fullscreen=*/false);
   }
 }
 

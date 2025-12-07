@@ -1,0 +1,26 @@
+description: Verify that only tests in the given file are triggered.
+owner: dmurph@
+prompts:
+  - >
+    Run all tests in file base/strings/strcat_unittest.cc only from the
+    Chromium code base, do not run any other tests. Tell me the total number of
+    test cases ran in the format of '"test_count": <number of tests>' and the
+    tests running command used.
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 300
+tests:
+  - assert:
+    - type: contains
+      value: base_unittests
+    - type: python
+      value: file://../../../testing/asserts/check_gtests.py:assert_test_count
+      config:
+        file: base/strings/strcat_unittest.cc
+    - type: model-graded-closedqa
+      value: Were the tests from the file actually triggered in the response?
+      provider: python:agents/testing/gemini_provider.py
+    metadata:
+      precompile_targets:
+      - base_unittests

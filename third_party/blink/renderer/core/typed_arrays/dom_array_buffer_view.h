@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_DOM_ARRAY_BUFFER_VIEW_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_DOM_ARRAY_BUFFER_VIEW_H_
 
@@ -33,6 +28,7 @@ class CORE_EXPORT DOMArrayBufferView : public ScriptWrappable {
     kTypeUint16,
     kTypeInt32,
     kTypeUint32,
+    kTypeFloat16,
     kTypeFloat32,
     kTypeFloat64,
     kTypeBigInt64,
@@ -67,40 +63,30 @@ class CORE_EXPORT DOMArrayBufferView : public ScriptWrappable {
     switch (GetType()) {
       case kTypeInt8:
         return "Int8";
-        break;
       case kTypeUint8:
         return "UInt8";
-        break;
       case kTypeUint8Clamped:
         return "UInt8Clamped";
-        break;
       case kTypeInt16:
         return "Int16";
-        break;
       case kTypeUint16:
         return "UInt16";
-        break;
       case kTypeInt32:
         return "Int32";
-        break;
       case kTypeUint32:
         return "Uint32";
-        break;
       case kTypeBigInt64:
         return "BigInt64";
-        break;
       case kTypeBigUint64:
         return "BigUint64";
-        break;
+      case kTypeFloat16:
+        return "Float16";
       case kTypeFloat32:
         return "Float32";
-        break;
       case kTypeFloat64:
         return "Float64";
-        break;
       case kTypeDataView:
         return "DataView";
-        break;
     }
   }
 
@@ -134,10 +120,7 @@ class CORE_EXPORT DOMArrayBufferView : public ScriptWrappable {
   }
 
   // ScriptWrappable overrides:
-  v8::Local<v8::Value> Wrap(ScriptState*) override {
-    NOTREACHED_IN_MIGRATION();
-    return v8::Local<v8::Value>();
-  }
+  v8::Local<v8::Value> Wrap(ScriptState*) override { NOTREACHED(); }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(dom_array_buffer_);
@@ -152,8 +135,10 @@ class CORE_EXPORT DOMArrayBufferView : public ScriptWrappable {
   DOMArrayBufferView(DOMArrayBufferBase* dom_array_buffer, size_t byte_offset)
       : raw_byte_offset_(byte_offset), dom_array_buffer_(dom_array_buffer) {
     DCHECK(dom_array_buffer_);
-    raw_base_address_ =
-        static_cast<char*>(dom_array_buffer_->DataMaybeShared()) + byte_offset;
+    // SAFETY: It is the subclasses' responsibility to ensure that the
+    // invariants here are maintained.
+    raw_base_address_ = UNSAFE_BUFFERS(
+        static_cast<char*>(dom_array_buffer_->DataMaybeShared()) + byte_offset);
   }
 
  private:

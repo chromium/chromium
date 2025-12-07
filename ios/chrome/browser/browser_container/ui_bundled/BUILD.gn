@@ -1,0 +1,197 @@
+# Copyright 2018 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/build/chrome_build.gni")
+
+source_set("ui_bundled") {
+  sources = [
+    "browser_container_coordinator.h",
+    "browser_container_coordinator.mm",
+    "browser_container_mediator.h",
+    "browser_container_mediator.mm",
+  ]
+
+  deps = [
+    ":edit_menu_alert_delegate",
+    ":ui",
+    "//base",
+    "//components/search_engines",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/enterprise/data_controls/model",
+    "//ios/chrome/browser/explain_with_gemini/coordinator",
+    "//ios/chrome/browser/fullscreen/ui_bundled",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/link_to_text/model",
+    "//ios/chrome/browser/link_to_text/ui_bundled",
+    "//ios/chrome/browser/main/model",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/web_content_area",
+    "//ios/chrome/browser/overlays/ui_bundled",
+    "//ios/chrome/browser/partial_translate/ui_bundled",
+    "//ios/chrome/browser/reader_mode/model",
+    "//ios/chrome/browser/screen_time/model:buildflags",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/search_with/ui_bundled",
+    "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/web/common:features",
+    "//ios/web/public",
+    "//ui/base",
+    "//ui/strings:ui_strings_grit",
+    "//url",
+  ]
+
+  if (ios_enable_screen_time) {
+    deps += [
+      "//ios/chrome/browser/screen_time/model:feature_flags",
+      "//ios/chrome/browser/screen_time/ui_bundled",
+    ]
+  }
+}
+
+source_set("ui") {
+  sources = [
+    "browser_container_consumer.h",
+    "browser_container_view_controller.h",
+    "browser_container_view_controller.mm",
+    "browser_container_view_controller_delegate.h",
+    "browser_edit_menu_handler.h",
+    "browser_edit_menu_handler.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/browser_container/model",
+    "//ios/chrome/browser/explain_with_gemini/coordinator",
+    "//ios/chrome/browser/link_to_text/ui_bundled",
+    "//ios/chrome/browser/partial_translate/ui_bundled",
+    "//ios/chrome/browser/search_with/ui_bundled",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/util",
+    "//ios/web/common:features",
+    "//ui/base",
+  ]
+}
+
+source_set("edit_menu_utils") {
+  sources = [
+    "browser_edit_menu_constants.h",
+    "browser_edit_menu_constants.mm",
+    "browser_edit_menu_utils.h",
+    "browser_edit_menu_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/intelligence/features",
+  ]
+}
+
+source_set("edit_menu_alert_delegate") {
+  sources = [
+    "edit_menu_alert_delegate.h",
+    "edit_menu_alert_delegate.mm",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "browser_container_coordinator_unittest.mm",
+    "browser_container_mediator_unittest.mm",
+    "browser_container_view_controller_unittest.mm",
+    "browser_edit_menu_handler_unittest.mm",
+  ]
+
+  deps = [
+    ":edit_menu_alert_delegate",
+    ":ui",
+    ":ui_bundled",
+    "//base/test:test_support",
+    "//components/search_engines",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/enterprise/data_controls/model",
+    "//ios/chrome/browser/enterprise/data_controls/model:test_support",
+    "//ios/chrome/browser/fullscreen/ui_bundled",
+    "//ios/chrome/browser/link_to_text/model",
+    "//ios/chrome/browser/link_to_text/ui_bundled",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/web_content_area",
+    "//ios/chrome/browser/overlays/model/test",
+    "//ios/chrome/browser/partial_translate/ui_bundled",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/search_with/ui_bundled",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/toolbar/ui_bundled/fullscreen",
+    "//ios/chrome/browser/web/model:web_internal",
+    "//ios/chrome/browser/web_selection/model",
+    "//ios/chrome/test:test_support",
+    "//ios/chrome/test/providers/partial_translate",
+    "//ios/components/enterprise/data_controls:features",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+    "//ui/strings:ui_strings_grit",
+  ]
+}
+
+source_set("eg_matchers") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "edit_menu_matchers.h",
+    "edit_menu_matchers.mm",
+  ]
+  deps = [
+    ":eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+
+  sources = [
+    "edit_menu_app_interface.h",
+    "edit_menu_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "edit_menu_app_interface.h",
+    "edit_menu_app_interface.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/test/app:test_support",
+    "//ios/testing/earl_grey:eg_app_support+eg2",
+    "//ios/third_party/earl_grey2:app_framework+link",
+    "//ui/base",
+  ]
+}

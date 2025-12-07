@@ -10,19 +10,21 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
-#include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/settings/cros_settings_holder.h"
-#include "chrome/browser/ash/settings/device_settings_cache.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
+#include "chrome/browser/ash/settings/scoped_test_device_settings_service.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
 #include "chrome/browser/metrics/profile_pref_names.h"
 #include "chrome/browser/net/fake_nss_service.h"
 #include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/policy/device_policy/device_policy_builder.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/device_settings_cache.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/metrics/test/test_metrics_service_client.h"
@@ -35,6 +37,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/test_web_ui.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -60,8 +63,9 @@ class TestUserMetricsServiceClient
     : public ::metrics::TestMetricsServiceClient {
  public:
   std::optional<bool> GetCurrentUserMetricsConsent() const override {
-    if (should_use_user_consent_)
+    if (should_use_user_consent_) {
       return current_user_metrics_consent_;
+    }
     return std::nullopt;
   }
 
@@ -118,7 +122,8 @@ class MetricsConsentHandlerTest : public testing::Test {
   ~MetricsConsentHandlerTest() override = default;
 
   std::unique_ptr<TestingProfile> RegisterOwner(const AccountId& account_id) {
-    DeviceSettingsService::Get()->SetSessionManager(
+    DeviceSettingsService::Get()->StartProcessing(
+        TestingBrowserProcess::GetGlobal()->local_state(),
         &fake_session_manager_client_, owner_keys);
     std::unique_ptr<TestingProfile> owner = CreateUser(kOwner, owner_keys);
     test_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
@@ -174,7 +179,8 @@ class MetricsConsentHandlerTest : public testing::Test {
 
     // Keys to be used for testing.
     non_owner_keys->SetPublicKeyFromPrivateKey(*device_policy_.GetSigningKey());
-    owner_keys->ImportPrivateKeyAndSetPublicKey(device_policy_.GetSigningKey());
+    owner_keys->ImportPrivateKeyAndSetPublicKey(
+        *device_policy_.GetSigningKey());
 
     content::RunAllTasksUntilIdle();
 
@@ -249,6 +255,13 @@ class MetricsConsentHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
 
+  // Set up stubs for StatsReportingController.
+  ScopedStubInstallAttributes scoped_install_attributes_;
+  FakeSessionManagerClient fake_session_manager_client_;
+  ScopedTestDeviceSettingsService scoped_device_settings_;
+  CrosSettingsHolder cros_settings_holder_{ash::DeviceSettingsService::Get(),
+                                           RegisterPrefs(&pref_service_)};
+
   std::unique_ptr<TestMetricsConsentHandler> handler_;
   std::unique_ptr<FakeChromeUserManager> test_user_manager_;
   std::unique_ptr<content::TestWebUI> web_ui_;
@@ -262,12 +275,6 @@ class MetricsConsentHandlerTest : public testing::Test {
   std::unique_ptr<TestUserMetricsServiceClient> test_metrics_service_client_;
   std::unique_ptr<metrics::MetricsService> test_metrics_service_;
 
-  // Set up stubs for StatsReportingController.
-  ScopedStubInstallAttributes scoped_install_attributes_;
-  FakeSessionManagerClient fake_session_manager_client_;
-  ScopedTestDeviceSettingsService scoped_device_settings_;
-  CrosSettingsHolder cros_settings_holder_{ash::DeviceSettingsService::Get(),
-                                           RegisterPrefs(&pref_service_)};
   policy::DevicePolicyBuilder device_policy_;
 
   scoped_refptr<ownership::MockOwnerKeyUtil> owner_keys{
@@ -277,7 +284,7 @@ class MetricsConsentHandlerTest : public testing::Test {
 };
 
 TEST_F(MetricsConsentHandlerTest, OwnerCanToggle) {
-  auto owner_id = AccountId::FromUserEmailGaiaId(kOwner, "2");
+  auto owner_id = AccountId::FromUserEmailGaiaId(kOwner, GaiaId("2"));
   std::unique_ptr<TestingProfile> owner = RegisterOwner(owner_id);
 
   // Owner should not use user consent, but local pref.
@@ -313,10 +320,10 @@ TEST_F(MetricsConsentHandlerTest, OwnerCanToggle) {
 }
 
 TEST_F(MetricsConsentHandlerTest, NonOwnerWithUserConsentCanToggle) {
-  auto owner_id = AccountId::FromUserEmailGaiaId(kOwner, "2");
+  auto owner_id = AccountId::FromUserEmailGaiaId(kOwner, GaiaId("2"));
   std::unique_ptr<TestingProfile> owner = RegisterOwner(owner_id);
 
-  auto non_owner_id = AccountId::FromUserEmailGaiaId(kNonOwner, "1");
+  auto non_owner_id = AccountId::FromUserEmailGaiaId(kNonOwner, GaiaId("1"));
   std::unique_ptr<TestingProfile> non_owner =
       CreateUser(kNonOwner, non_owner_keys);
   test_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
@@ -354,10 +361,10 @@ TEST_F(MetricsConsentHandlerTest, NonOwnerWithUserConsentCanToggle) {
 }
 
 TEST_F(MetricsConsentHandlerTest, NonOwnerWithoutUserConsentCannotToggle) {
-  auto owner_id = AccountId::FromUserEmailGaiaId(kOwner, "2");
+  auto owner_id = AccountId::FromUserEmailGaiaId(kOwner, GaiaId("2"));
   std::unique_ptr<TestingProfile> owner = RegisterOwner(owner_id);
 
-  auto non_owner_id = AccountId::FromUserEmailGaiaId(kNonOwner, "1");
+  auto non_owner_id = AccountId::FromUserEmailGaiaId(kNonOwner, GaiaId("1"));
   std::unique_ptr<TestingProfile> non_owner =
       CreateUser(kNonOwner, non_owner_keys);
   test_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
@@ -395,10 +402,10 @@ TEST_F(MetricsConsentHandlerTest, NonOwnerWithoutUserConsentCannotToggle) {
 }
 
 TEST_F(MetricsConsentHandlerTest, ChildUserCannotToggleAsNonOwner) {
-  auto owner_id = AccountId::FromUserEmailGaiaId(kOwner, "2");
+  auto owner_id = AccountId::FromUserEmailGaiaId(kOwner, GaiaId("2"));
   std::unique_ptr<TestingProfile> owner = RegisterOwner(owner_id);
 
-  auto child_id = AccountId::FromUserEmailGaiaId("child@user.com", "3");
+  auto child_id = AccountId::FromUserEmailGaiaId("child@user.com", GaiaId("3"));
   std::unique_ptr<TestingProfile> child =
       CreateUser("child@user.com", non_owner_keys);
   test_user_manager_->set_current_user_child(true);

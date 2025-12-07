@@ -6,12 +6,14 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/controls/webview/webview.h"
@@ -34,8 +36,9 @@ class SigninViewControllerDelegateViewsBrowserTest : public DialogBrowserTest {
         SigninViewControllerDelegateViews::CreateSyncConfirmationWebView(
             browser(), SyncConfirmationStyle::kDefaultModal,
             /*is_sync_promo=*/false),
-        browser(), ui::MODAL_TYPE_WINDOW, /*wait_for_size=*/!show_immediately,
-        false);
+        browser(), ui::mojom::ModalType::kWindow,
+        /*wait_for_size=*/!show_immediately, /*should_show_close_button=*/false,
+        /*animate_on_resize=*/true);
   }
 
   // Closes the dialog and checks that the web contents were not leaked.
@@ -57,7 +60,8 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerDelegateViewsBrowserTest,
 // Regression test for https://crbug.com/1233030.
 IN_PROC_BROWSER_TEST_F(SigninViewControllerDelegateViewsBrowserTest,
                        CloseImmediately) {
-  SigninViewController* controller = browser()->signin_view_controller();
+  SigninViewController* controller =
+      browser()->GetFeatures().signin_view_controller();
   controller->ShowModalSyncConfirmationDialog(
       /*is_signin_intercept=*/false, /*is_sync_promo=*/false);
   content::WebContentsDestroyedWatcher watcher(

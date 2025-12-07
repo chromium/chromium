@@ -11,10 +11,10 @@
 #include "base/test/mock_callback.h"
 #include "base/values.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page_factory.h"
 #include "components/safe_browsing/content/browser/safe_browsing_controller_client.h"
-#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -43,8 +43,13 @@
 using content::BrowserThread;
 
 static const char* kGoodURL = "https://www.good.com";
+static const char* kGoodIpAddress = "http://1.2.3.4/";
 static const char* kBadURL = "https://www.malware.com";
+static const char* kBadURLWithAlternateScheme = "http://www.malware.com";
 static const char* kBadURLWithPath = "https://www.malware.com/index.html";
+static const char* kIpAddress = "https://195.127.0.11/uploads";
+static const char* kIpAddressAlternatePathAndScheme =
+    "http://195.127.0.11/otherPath";
 static const char* kRedirectURL = "https://www.test1.com";
 static const char* kAnotherRedirectURL = "https://www.test2.com";
 
@@ -52,7 +57,7 @@ namespace safe_browsing {
 
 class SafeBrowsingCallbackWaiter {
  public:
-  SafeBrowsingCallbackWaiter() {}
+  SafeBrowsingCallbackWaiter() = default;
 
   bool callback_called() const { return callback_called_; }
   bool proceed() const { return proceed_; }
@@ -70,15 +75,6 @@ class SafeBrowsingCallbackWaiter {
     has_post_commit_interstitial_skipped_ =
         result.has_post_commit_interstitial_skipped;
     loop_.Quit();
-  }
-
-  void OnBlockingPageDoneOnIO(
-      security_interstitials::UnsafeResource::UrlCheckResult result) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&SafeBrowsingCallbackWaiter::OnBlockingPageDone,
-                       base::Unretained(this), result));
   }
 
   void WaitForCallback() {
@@ -119,19 +115,19 @@ class TestSafeBrowsingBlockingPage : public SafeBrowsingBlockingPage {
                 manager->default_safe_page(),
                 /*settings_helper=*/nullptr),
             BaseSafeBrowsingErrorUI::SBErrorDisplayOptions(
-                BaseBlockingPage::IsMainPageLoadPending(unsafe_resources),
+                BaseBlockingPage::IsMainPageResourceLoadPending(
+                    unsafe_resources),
                 false,                 // is_extended_reporting_opt_in_allowed
                 false,                 // is_off_the_record
                 false,                 // is_extended_reporting_enabled
                 false,                 // is_extended_reporting_policy_managed
                 false,                 // is_enhanced_protection_enabled
                 false,                 // is_proceed_anyway_disabled
-                true,                  // should_open_links_in_new_tab
+                false,                 // should_open_links_in_new_tab
                 true,                  // always_show_back_to_safety
                 false,                 // is_enhanced_protection_message_enabled
                 false,                 // is_safe_browsing_managed
                 "cpn_safe_browsing"),  // help_center_article_link
-            true,                      // should_trigger_reporting
             /*history_service=*/nullptr,
             /*navigation_observer_manager=*/nullptr,
             /*metrics_collector=*/nullptr,
@@ -159,20 +155,17 @@ class TestSafeBrowsingBlockingPageFactory
       content::WebContents* web_contents,
       const GURL& main_frame_url,
       const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources,
-      bool should_trigger_reporting,
       std::optional<base::TimeTicks> blocked_page_shown_timestamp) override {
     return new TestSafeBrowsingBlockingPage(delegate, web_contents,
                                             main_frame_url, unsafe_resources);
   }
-#if !BUILDFLAG(IS_ANDROID)
   security_interstitials::SecurityInterstitialPage* CreateEnterpriseWarnPage(
       BaseUIManager* ui_manager,
       content::WebContents* web_contents,
       const GURL& main_frame_url,
       const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources)
       override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   security_interstitials::SecurityInterstitialPage* CreateEnterpriseBlockPage(
@@ -181,10 +174,8 @@ class TestSafeBrowsingBlockingPageFactory
       const GURL& main_frame_url,
       const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources)
       override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
-#endif
 };
 
 class TestSafeBrowsingUIManagerDelegate
@@ -208,13 +199,11 @@ class TestSafeBrowsingUIManagerDelegate
       const GURL& page_url,
       const std::string& reason,
       int net_error_code) override {}
-#if !BUILDFLAG(IS_ANDROID)
   void TriggerUrlFilteringInterstitialExtensionEventIfDesired(
       content::WebContents* web_contents,
       const GURL& page_url,
       const std::string& threat_type,
       safe_browsing::RTLookupResponse rt_lookup_response) override {}
-#endif
   prerender::NoStatePrefetchContents* GetNoStatePrefetchContentsIfExists(
       content::WebContents* web_contents) override {
     return nullptr;
@@ -234,8 +223,6 @@ class TestSafeBrowsingUIManagerDelegate
     return nullptr;
   }
   bool IsMetricsAndCrashReportingEnabled() override { return false; }
-
-  bool IsSendingOfHitReportsEnabled() override { return false; }
 
   void set_is_hosting_extension(bool is_hosting_extension) {
     is_hosting_extension_ = is_hosting_extension;
@@ -258,15 +245,29 @@ class SafeBrowsingUIManagerTest : public content::RenderViewHostTestHarness {
         GURL("chrome://new-tab-page/"));
   }
 
-  ~SafeBrowsingUIManagerTest() override {}
+  ~SafeBrowsingUIManagerTest() override = default;
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
     SafeBrowsingUIManager::CreateAllowlistForTesting(web_contents());
   }
 
+  bool IsAllowlistedForMalware(const char* url) {
+    auto* primary_main_frame = web_contents()->GetPrimaryMainFrame();
+    return ui_manager_->IsAllowlisted(
+        GURL(url),
+        security_interstitials::UnsafeResourceLocator::
+            CreateForRenderFrameToken(
+                primary_main_frame->GetGlobalId().child_id,
+                primary_main_frame->GetFrameToken().value()),
+        /*navigation_id=*/std::nullopt,
+        SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
+  }
+
   bool IsAllowlisted(security_interstitials::UnsafeResource resource) {
-    return ui_manager_->IsAllowlisted(resource);
+    return ui_manager_->IsAllowlisted(resource.url, resource.rfh_locator,
+                                      resource.navigation_id,
+                                      resource.threat_type);
   }
 
   void AddToAllowlist(security_interstitials::UnsafeResource resource,
@@ -274,6 +275,12 @@ class SafeBrowsingUIManagerTest : public content::RenderViewHostTestHarness {
     ui_manager_->AddToAllowlistUrlSet(resource.url, resource.navigation_id,
                                       web_contents(), pending,
                                       resource.threat_type);
+  }
+
+  void AddToAllowlistForMalware(const char* url, bool pending) {
+    ui_manager_->AddToAllowlistUrlSet(GURL(url), /*navigation_id=*/std::nullopt,
+                                      web_contents(), pending,
+                                      SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
   }
 
   security_interstitials::UnsafeResource MakeUnsafeResource(
@@ -292,10 +299,16 @@ class SafeBrowsingUIManagerTest : public content::RenderViewHostTestHarness {
       const SBThreatType threat_type) {
     security_interstitials::UnsafeResource resource;
     resource.url = GURL(url);
-    resource.render_process_id = frame_id.child_id;
-    resource.render_frame_token = frame_token.value();
+    resource.rfh_locator = security_interstitials::UnsafeResourceLocator::
+        CreateForRenderFrameToken(frame_id.child_id, frame_token.value());
     resource.threat_type = threat_type;
     return resource;
+  }
+
+  void StartNavigation(const char* url) {
+    auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+        GURL(url), web_contents());
+    navigation->Start();
   }
 
   security_interstitials::UnsafeResource MakeUnsafeResourceAndStartNavigation(
@@ -304,9 +317,7 @@ class SafeBrowsingUIManagerTest : public content::RenderViewHostTestHarness {
 
     // The WC doesn't have a URL without a navigation. A main-frame malware
     // unsafe resource must be a pending navigation.
-    auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
-        GURL(url), web_contents());
-    navigation->Start();
+    StartNavigation(url);
     return resource;
   }
 
@@ -336,16 +347,14 @@ class SafeBrowsingUIManagerTest : public content::RenderViewHostTestHarness {
 };
 
 TEST_F(SafeBrowsingUIManagerTest, Allowlist) {
-  security_interstitials::UnsafeResource resource =
-      MakeUnsafeResourceAndStartNavigation(kBadURL);
-  AddToAllowlist(resource, /*pending=*/false);
-  EXPECT_TRUE(IsAllowlisted(resource));
+  StartNavigation(kBadURL);
+  AddToAllowlistForMalware(kBadURL, /*pending=*/false);
+  EXPECT_TRUE(IsAllowlistedForMalware(kBadURL));
 }
 
 TEST_F(SafeBrowsingUIManagerTest, AllowlistIgnoresSitesNotAdded) {
-  security_interstitials::UnsafeResource resource =
-      MakeUnsafeResourceAndStartNavigation(kGoodURL);
-  EXPECT_FALSE(IsAllowlisted(resource));
+  StartNavigation(kGoodURL);
+  EXPECT_FALSE(IsAllowlistedForMalware(kGoodURL));
 }
 
 TEST_F(SafeBrowsingUIManagerTest,
@@ -380,19 +389,16 @@ TEST_F(SafeBrowsingUIManagerTest,
 }
 
 TEST_F(SafeBrowsingUIManagerTest, AllowlistRemembersThreatType) {
-  security_interstitials::UnsafeResource resource =
-      MakeUnsafeResourceAndStartNavigation(kBadURL);
-  AddToAllowlist(resource, /*pending=*/false);
-  EXPECT_TRUE(IsAllowlisted(resource));
+  StartNavigation(kBadURL);
+  AddToAllowlistForMalware(kBadURL, /*pending=*/false);
+  EXPECT_TRUE(IsAllowlistedForMalware(kBadURL));
   SBThreatType threat_type;
   content::NavigationEntry* entry =
       web_contents()->GetController().GetVisibleEntry();
   ASSERT_TRUE(entry);
   EXPECT_TRUE(ui_manager()->IsUrlAllowlistedOrPendingForWebContents(
-      resource.url, entry,
-      unsafe_resource_util::GetWebContentsForResource(resource), true,
-      &threat_type));
-  EXPECT_EQ(resource.threat_type, threat_type);
+      GURL(kBadURL), entry, web_contents(), true, &threat_type));
+  EXPECT_EQ(SBThreatType::SB_THREAT_TYPE_URL_MALWARE, threat_type);
 }
 
 TEST_F(SafeBrowsingUIManagerTest, Allowlisted_RedirectChain) {
@@ -420,16 +426,32 @@ TEST_F(SafeBrowsingUIManagerTest, Allowlisted_RedirectChain) {
 }
 
 TEST_F(SafeBrowsingUIManagerTest, AllowlistIgnoresPath) {
-  security_interstitials::UnsafeResource resource =
-      MakeUnsafeResourceAndStartNavigation(kBadURL);
-  AddToAllowlist(resource, /*pending=*/false);
-  EXPECT_TRUE(IsAllowlisted(resource));
+  StartNavigation(kBadURL);
+  AddToAllowlistForMalware(kBadURL, /*pending=*/false);
+  EXPECT_TRUE(IsAllowlistedForMalware(kBadURL));
 
   content::WebContentsTester::For(web_contents())->CommitPendingNavigation();
+  EXPECT_TRUE(IsAllowlistedForMalware(kBadURLWithPath));
+}
 
-  security_interstitials::UnsafeResource resource_path =
-      MakeUnsafeResourceAndStartNavigation(kBadURLWithPath);
-  EXPECT_TRUE(IsAllowlisted(resource_path));
+TEST_F(SafeBrowsingUIManagerTest, AllowlistIgnoresScheme) {
+  StartNavigation(kBadURL);
+  AddToAllowlistForMalware(kBadURL, /*pending=*/false);
+  EXPECT_TRUE(IsAllowlistedForMalware(kBadURL));
+
+  content::WebContentsTester::For(web_contents())->CommitPendingNavigation();
+  EXPECT_TRUE(IsAllowlistedForMalware(kBadURLWithAlternateScheme));
+  EXPECT_FALSE(IsAllowlistedForMalware(kGoodURL));
+}
+
+TEST_F(SafeBrowsingUIManagerTest, AllowlistIPAddress) {
+  StartNavigation(kIpAddress);
+  AddToAllowlistForMalware(kIpAddress, /*pending=*/false);
+  EXPECT_TRUE(IsAllowlistedForMalware(kIpAddress));
+
+  content::WebContentsTester::For(web_contents())->CommitPendingNavigation();
+  EXPECT_TRUE(IsAllowlistedForMalware(kIpAddressAlternatePathAndScheme));
+  EXPECT_FALSE(IsAllowlistedForMalware(kGoodIpAddress));
 }
 
 TEST_F(SafeBrowsingUIManagerTest, AllowlistIgnoresThreatType) {
@@ -444,7 +466,7 @@ TEST_F(SafeBrowsingUIManagerTest, AllowlistIgnoresThreatType) {
   EXPECT_TRUE(IsAllowlisted(resource_phishing));
 }
 
-TEST_F(SafeBrowsingUIManagerTest, UICallbackProceed) {
+TEST_F(SafeBrowsingUIManagerTest, CallbackProceed) {
   security_interstitials::UnsafeResource resource =
       MakeUnsafeResourceAndStartNavigation(kBadURL);
   SafeBrowsingCallbackWaiter waiter;
@@ -478,54 +500,20 @@ TEST_F(SafeBrowsingUIManagerTest, UICallbackDontProceed) {
   EXPECT_FALSE(waiter.proceed());
 }
 
-TEST_F(SafeBrowsingUIManagerTest, IOCallbackProceed) {
-  security_interstitials::UnsafeResource resource =
-      MakeUnsafeResourceAndStartNavigation(kBadURL);
-  SafeBrowsingCallbackWaiter waiter;
-  resource.callback =
-      base::BindRepeating(&SafeBrowsingCallbackWaiter::OnBlockingPageDoneOnIO,
-                          base::Unretained(&waiter));
-  resource.callback_sequence = content::GetIOThreadTaskRunner({});
-  std::vector<security_interstitials::UnsafeResource> resources;
-  resources.push_back(resource);
-  SimulateBlockingPageDone(resources, true);
-  EXPECT_TRUE(IsAllowlisted(resource));
-  waiter.WaitForCallback();
-  EXPECT_TRUE(waiter.callback_called());
-  EXPECT_TRUE(waiter.proceed());
-}
-
-TEST_F(SafeBrowsingUIManagerTest, IOCallbackDontProceed) {
-  security_interstitials::UnsafeResource resource =
-      MakeUnsafeResourceAndStartNavigation(kBadURL);
-  SafeBrowsingCallbackWaiter waiter;
-  resource.callback =
-      base::BindRepeating(&SafeBrowsingCallbackWaiter::OnBlockingPageDoneOnIO,
-                          base::Unretained(&waiter));
-  resource.callback_sequence = content::GetIOThreadTaskRunner({});
-  std::vector<security_interstitials::UnsafeResource> resources;
-  resources.push_back(resource);
-  SimulateBlockingPageDone(resources, false);
-  EXPECT_FALSE(IsAllowlisted(resource));
-  waiter.WaitForCallback();
-  EXPECT_TRUE(waiter.callback_called());
-  EXPECT_FALSE(waiter.proceed());
-}
-
 namespace {
 
 // A WebContentsDelegate that records whether
 // VisibleSecurityStateChanged() was called.
 class SecurityStateWebContentsDelegate : public content::WebContentsDelegate {
  public:
-  SecurityStateWebContentsDelegate() {}
+  SecurityStateWebContentsDelegate() = default;
 
   SecurityStateWebContentsDelegate(const SecurityStateWebContentsDelegate&) =
       delete;
   SecurityStateWebContentsDelegate& operator=(
       const SecurityStateWebContentsDelegate&) = delete;
 
-  ~SecurityStateWebContentsDelegate() override {}
+  ~SecurityStateWebContentsDelegate() override = default;
 
   bool visible_security_state_changed() const {
     return visible_security_state_changed_;
@@ -555,7 +543,7 @@ TEST_F(SafeBrowsingUIManagerTest, VisibleSecurityStateChanged) {
   // Simulate a blocking page.
   security_interstitials::UnsafeResource resource = MakeUnsafeResource(kBadURL);
   // Needed for showing the blocking page.
-  resource.threat_source = safe_browsing::ThreatSource::REMOTE;
+  resource.threat_source = safe_browsing::ThreatSource::ANDROID_SAFEBROWSING;
 
   NavigateAndCommit(GURL(kBadURL));
 
@@ -567,9 +555,9 @@ TEST_F(SafeBrowsingUIManagerTest, VisibleSecurityStateChanged) {
   // Simulate proceeding through the blocking page.
   SafeBrowsingCallbackWaiter waiter;
   resource.callback =
-      base::BindRepeating(&SafeBrowsingCallbackWaiter::OnBlockingPageDoneOnIO,
+      base::BindRepeating(&SafeBrowsingCallbackWaiter::OnBlockingPageDone,
                           base::Unretained(&waiter));
-  resource.callback_sequence = content::GetIOThreadTaskRunner({});
+  resource.callback_sequence = content::GetUIThreadTaskRunner({});
   std::vector<security_interstitials::UnsafeResource> resources;
   resources.push_back(resource);
 
@@ -591,7 +579,7 @@ TEST_F(SafeBrowsingUIManagerTest, ShowBlockPageNoCallback) {
   // Simulate a blocking page.
   security_interstitials::UnsafeResource resource = MakeUnsafeResource(kBadURL);
   // Needed for showing the blocking page.
-  resource.threat_source = safe_browsing::ThreatSource::REMOTE;
+  resource.threat_source = safe_browsing::ThreatSource::ANDROID_SAFEBROWSING;
 
   // This call caused a crash in https://crbug.com/1058094. Just verify that we
   // don't crash anymore.
@@ -632,7 +620,7 @@ TEST_F(SafeBrowsingUIManagerTest, DisplayInterstitial) {
 
 TEST_F(SafeBrowsingUIManagerTest, DisplayInterstitial_PostCommitInterstitial) {
   security_interstitials::UnsafeResource resource = MakeUnsafeResource(kBadURL);
-  resource.threat_source = safe_browsing::ThreatSource::REMOTE;
+  resource.threat_source = safe_browsing::ThreatSource::ANDROID_SAFEBROWSING;
   // Make it a post commit interstitial.
   resource.threat_type = SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
 
@@ -657,8 +645,9 @@ TEST_F(SafeBrowsingUIManagerTest, InvalidRenderFrameHostId) {
   // (for the purposes of a WebContents lookup) which SafeBrowsing needs to
   // handle.
   content::GlobalRenderFrameHostId invalid_rfh_id;
-  resource.render_process_id = invalid_rfh_id.child_id;
-  resource.render_frame_token = base::UnguessableToken::Create();
+  resource.rfh_locator =
+      security_interstitials::UnsafeResourceLocator::CreateForRenderFrameToken(
+          invalid_rfh_id.child_id, base::UnguessableToken::Create());
   ASSERT_FALSE(unsafe_resource_util::GetWebContentsForResource(resource));
 
   EXPECT_FALSE(IsAllowlisted(resource));
@@ -724,6 +713,18 @@ TEST_F(SafeBrowsingUIManagerTest,
       unsafe_resource_util::GetWebContentsForResource(final_resource), false,
       &threat_type));
   EXPECT_EQ(threat_type, redirect_resource.threat_type);
+}
+
+TEST_F(SafeBrowsingUIManagerTest, AllowlistViewSource) {
+  const char* view_source_url = "view-source:https://www.malware.com";
+  StartNavigation(view_source_url);
+  AddToAllowlistForMalware(view_source_url, /*pending=*/false);
+  EXPECT_TRUE(IsAllowlistedForMalware(view_source_url));
+  EXPECT_FALSE(IsAllowlistedForMalware(kBadURL));
+
+  content::WebContentsTester::For(web_contents())->CommitPendingNavigation();
+  EXPECT_TRUE(IsAllowlistedForMalware(view_source_url));
+  EXPECT_FALSE(IsAllowlistedForMalware(kBadURL));
 }
 
 }  // namespace safe_browsing

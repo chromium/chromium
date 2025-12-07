@@ -49,6 +49,10 @@ class CSSPropertyValueSet;
 
 enum ChildrenOnly { kIncludeNode, kChildrenOnly };
 
+// ForceInertTemplate specifies whether the HTML parser should parse into an
+// inert (non-active) template document.
+enum class ForceInertTemplate { kDontForce, kForce };
+
 using ShadowRootSet = HeapHashSet<Member<ShadowRoot>>;
 struct ShadowRootInclusion final {
   STACK_ALLOCATED();
@@ -62,12 +66,8 @@ struct ShadowRootInclusion final {
     // Include any shadow root (open or closed) marked `serializable`. Also
     // include any shadow root in the include_shadow_roots list.
     kIncludeAnySerializableShadowRoots,
-    // TODO(crbug.com/1519972): This value is only used for the deprecated
-    // version of getInnerHTML() and can be removed once that is removed.
-    // This includes any *open* shadow root, regardless of whether it is
-    // serializable. Also include any shadow root in the
-    // include_shadow_roots list.
-    kIncludeAllOpenShadowRoots,
+    // Include all shadow roots for requests by the inspector.
+    kIncludeAllShadowRootsForInspector,
   };
 
   ShadowRootInclusion() = default;
@@ -97,6 +97,8 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
     ParserContentPolicy,
     Element::ParseDeclarativeShadowRoots parse_declarative_shadows,
     Element::ForceHtml force_html,
+    ForceInertTemplate force_inert,
+    CustomElementRegistry* registry,
     ExceptionState&);
 DocumentFragment* CreateFragmentForTransformToFragment(
     const String&,

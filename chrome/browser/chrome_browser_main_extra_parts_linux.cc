@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chrome_browser_main_extra_parts_linux.h"
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/environment.h"
 #include "base/metrics/histogram_functions.h"
@@ -54,16 +56,4 @@ ChromeBrowserMainExtraPartsLinux::~ChromeBrowserMainExtraPartsLinux() = default;
 void ChromeBrowserMainExtraPartsLinux::PostBrowserStart() {
   RecordDisplayServerProtocolSupport();
   ChromeBrowserMainExtraPartsOzone::PostBrowserStart();
-}
-
-// static
-void ChromeBrowserMainExtraPartsLinux::InitOzonePlatformHint() {
-#if BUILDFLAG(IS_LINUX)
-  auto* const command_line = base::CommandLine::ForCurrentProcess();
-  auto env = base::Environment::Create();
-  std::string desktop_startup_id;
-  if (env->GetVar("DESKTOP_STARTUP_ID", &desktop_startup_id)) {
-    command_line->AppendSwitchASCII("desktop-startup-id", desktop_startup_id);
-  }
-#endif  // BUILDFLAG(IS_LINUX)
 }

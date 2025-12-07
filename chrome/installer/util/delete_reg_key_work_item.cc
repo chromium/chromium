@@ -12,7 +12,7 @@
 
 using base::win::RegKey;
 
-DeleteRegKeyWorkItem::~DeleteRegKeyWorkItem() {}
+DeleteRegKeyWorkItem::~DeleteRegKeyWorkItem() = default;
 
 DeleteRegKeyWorkItem::DeleteRegKeyWorkItem(HKEY predefined_root,
                                            const std::wstring& path,

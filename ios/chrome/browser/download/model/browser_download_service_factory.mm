@@ -4,17 +4,26 @@
 
 #import "ios/chrome/browser/download/model/browser_download_service_factory.h"
 
-#import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "base/functional/bind.h"
 #import "ios/chrome/browser/download/model/browser_download_service.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/download/download_controller.h"
 
+namespace {
+
+// Default factory.
+std::unique_ptr<KeyedService> BuildBrowserDownloadService(ProfileIOS* profile) {
+  return std::make_unique<BrowserDownloadService>(
+      web::DownloadController::FromBrowserState(profile));
+}
+
+}  // namespace
+
 // static
-BrowserDownloadService* BrowserDownloadServiceFactory::GetForBrowserState(
-    web::BrowserState* browser_state) {
-  return static_cast<BrowserDownloadService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, /*create=*/true));
+BrowserDownloadService* BrowserDownloadServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<BrowserDownloadService>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -23,26 +32,22 @@ BrowserDownloadServiceFactory* BrowserDownloadServiceFactory::GetInstance() {
   return instance.get();
 }
 
+// static
+BrowserDownloadServiceFactory::TestingFactory
+BrowserDownloadServiceFactory::GetDefaultFactory() {
+  return base::BindOnce(&BuildBrowserDownloadService);
+}
+
 BrowserDownloadServiceFactory::BrowserDownloadServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "BrowserDownloadService",
-          BrowserStateDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactoryIOS("BrowserDownloadService",
+                                    ProfileSelection::kOwnInstanceInIncognito,
+                                    ServiceCreation::kCreateWithProfile,
+                                    TestingCreation::kNoServiceForTests) {}
 
 BrowserDownloadServiceFactory::~BrowserDownloadServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 BrowserDownloadServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* browser_state) const {
-  web::DownloadController* download_controller =
-      web::DownloadController::FromBrowserState(browser_state);
-  return std::make_unique<BrowserDownloadService>(download_controller);
-}
-
-bool BrowserDownloadServiceFactory::ServiceIsCreatedWithBrowserState() const {
-  return true;
-}
-
-web::BrowserState* BrowserDownloadServiceFactory::GetBrowserStateToUse(
-    web::BrowserState* browser_state) const {
-  return GetBrowserStateOwnInstanceInIncognito(browser_state);
+    ProfileIOS* profile) const {
+  return BuildBrowserDownloadService(profile);
 }

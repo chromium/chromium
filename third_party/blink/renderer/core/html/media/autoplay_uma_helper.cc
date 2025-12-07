@@ -174,12 +174,13 @@ void AutoplayUmaHelper::OnIntersectionChangedForMutedVideoOffscreenDuration(
 
 void AutoplayUmaHelper::Invoke(ExecutionContext* execution_context,
                                Event* event) {
-  if (event->type() == event_type_names::kPlaying)
+  if (event->type() == event_type_names::kPlaying) {
     HandlePlayingEvent();
-  else if (event->type() == event_type_names::kPause)
+  } else if (event->type() == event_type_names::kPause) {
     HandlePauseEvent();
-  else
-    NOTREACHED_IN_MIGRATION();
+  } else {
+    NOTREACHED();
+  }
 }
 
 void AutoplayUmaHelper::HandlePlayingEvent() {
@@ -209,7 +210,7 @@ void AutoplayUmaHelper::MaybeStartRecordingMutedVideoPlayMethodBecomeVisible() {
 
   muted_video_play_method_intersection_observer_ = IntersectionObserver::Create(
       element_->GetDocument(),
-      WTF::BindRepeating(
+      BindRepeating(
           &AutoplayUmaHelper::
               OnIntersectionChangedForMutedVideoPlayMethodBecomeVisible,
           WrapWeakPersistent(this)),
@@ -244,10 +245,9 @@ void AutoplayUmaHelper::MaybeStartRecordingMutedVideoOffscreenDuration() {
   muted_video_offscreen_duration_intersection_observer_ =
       IntersectionObserver::Create(
           element_->GetDocument(),
-          WTF::BindRepeating(
-              &AutoplayUmaHelper::
-                  OnIntersectionChangedForMutedVideoOffscreenDuration,
-              WrapWeakPersistent(this)),
+          BindRepeating(&AutoplayUmaHelper::
+                            OnIntersectionChangedForMutedVideoOffscreenDuration,
+                        WrapWeakPersistent(this)),
           LocalFrameUkmAggregator::kMediaIntersectionObserver,
           IntersectionObserver::Params{
               .thresholds = {IntersectionObserver::kMinimumThreshold}});
@@ -281,7 +281,7 @@ void AutoplayUmaHelper::MaybeStopRecordingMutedVideoOffscreenDuration() {
 
 void AutoplayUmaHelper::MaybeUnregisterContextDestroyedObserver() {
   // TODO(keishi): Remove IsIteratingOverObservers() check when
-  // HeapObserverSet() supports removal while iterating.
+  // HeapObserverList() supports removal while iterating.
   if (!ShouldListenToContextDestroyed() && !GetExecutionContext()
                                                 ->ContextLifecycleObserverSet()
                                                 .IsIteratingOverObservers()) {

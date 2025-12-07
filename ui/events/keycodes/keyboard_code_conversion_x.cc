@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/events/keycodes/keyboard_code_conversion_x.h"
 
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
@@ -32,6 +28,8 @@
 namespace ui {
 
 namespace {
+
+constexpr int kXkbGroupShift = 13;
 
 // MAP0 - MAP3:
 // These are the generated VKEY code maps from these layout datas on Windows:
@@ -135,7 +133,7 @@ namespace {
 //
 // Please refer to crbug.com/386066.
 //
-const struct MAP0 {
+constexpr struct MAP0 {
   uint32_t ch0;
   uint8_t vk;
   bool operator()(const MAP0& m1, const MAP0& m2) const {
@@ -195,7 +193,7 @@ const struct MAP0 {
     {0x03F3, 0xDC},  // XK_kcedilla: VKEY_OEM_5
 };
 
-const struct MAP1 {
+constexpr struct MAP1 {
   uint32_t ch0;
   unsigned sc;
   uint8_t vk;
@@ -384,7 +382,7 @@ const struct MAP1 {
     {0x03FE, 0x35, 0x58},  // XK_umacron+AB02: VKEY_X
 };
 
-const struct MAP2 {
+constexpr struct MAP2 {
   uint32_t ch0;
   unsigned sc;
   uint32_t ch1;
@@ -425,7 +423,7 @@ const struct MAP2 {
     {0x00FC, 0x22, 0x00E8, 0xBA},  // XK_udiaeresis+AD11+XK_egrave: VKEY_OEM_1
 };
 
-const struct MAP3 {
+constexpr struct MAP3 {
   uint32_t ch0;
   unsigned sc;
   uint32_t ch1;
@@ -535,12 +533,13 @@ const struct MAP3 {
      0xBA},  // XK_uogonek+AC10+XK_Uogonek+XK_Tcedilla: VKEY_OEM_1
 };
 
-template <class T_MAP>
-KeyboardCode FindVK(const T_MAP& key, const T_MAP* map, size_t size) {
+template <class T_MAP, size_t n>
+KeyboardCode FindVK(const T_MAP& key, const T_MAP (&map)[n]) {
   T_MAP comp = {0};
-  const T_MAP* p = std::lower_bound(map, map + size, key, comp);
-  if (p != map + size && !comp(*p, key) && !comp(key, *p))
+  const T_MAP* p = std::ranges::lower_bound(map, key, comp);
+  if (p != std::end(map) && !comp(*p, key) && !comp(key, *p)) {
     return static_cast<KeyboardCode>(p->vk);
+  }
   return VKEY_UNKNOWN;
 }
 
@@ -570,7 +569,7 @@ void GetKeycodeAndModifiers(const x11::Event& event,
                             uint32_t* modifiers) {
   if (auto* dev = event.As<x11::Input::DeviceEvent>()) {
     *keycode = dev->detail;
-    *modifiers = dev->mods.effective;
+    *modifiers = GetXI2StateFromEvent(*dev);
   } else if (auto* key = event.As<x11::KeyEvent>()) {
     *keycode = static_cast<uint32_t>(key->detail);
     *modifiers = static_cast<uint32_t>(key->state);
@@ -652,12 +651,12 @@ KeyboardCode KeyboardCodeFromXKeyEvent(const x11::Event& xev) {
       !IsCursorKey(keysym) && !IsPFKey(keysym) && !IsFunctionKey(keysym) &&
       !IsModifierKey(keysym)) {
     MAP0 key0 = {keysym & 0xFFFF, 0};
-    keycode = FindVK(key0, map0, std::size(map0));
+    keycode = FindVK(key0, map0);
     if (keycode != VKEY_UNKNOWN)
       return keycode;
 
     MAP1 key1 = {keysym & 0xFFFF, xkeycode, 0};
-    keycode = FindVK(key1, map1, std::size(map1));
+    keycode = FindVK(key1, map1);
     if (keycode != VKEY_UNKNOWN)
       return keycode;
 
@@ -665,7 +664,7 @@ KeyboardCode KeyboardCodeFromXKeyEvent(const x11::Event& xev) {
     modifiers |= static_cast<int>(x11::KeyButMask::Shift);
     keysym_shift = TranslateKey(xkeycode, modifiers);
     MAP2 key2 = {keysym & 0xFFFF, xkeycode, keysym_shift & 0xFFFF, 0};
-    keycode = FindVK(key2, map2, std::size(map2));
+    keycode = FindVK(key2, map2);
     if (keycode != VKEY_UNKNOWN)
       return keycode;
 
@@ -675,7 +674,7 @@ KeyboardCode KeyboardCodeFromXKeyEvent(const x11::Event& xev) {
     keysym_altgr = TranslateKey(xkeycode, modifiers);
     MAP3 key3 = {keysym & 0xFFFF, xkeycode, keysym_shift & 0xFFFF,
                  keysym_altgr & 0xFFFF, 0};
-    keycode = FindVK(key3, map3, std::size(map3));
+    keycode = FindVK(key3, map3);
     if (keycode != VKEY_UNKNOWN)
       return keycode;
 
@@ -683,11 +682,11 @@ KeyboardCode KeyboardCodeFromXKeyEvent(const x11::Event& xev) {
     // So if cannot find VKEY with (ch0+sc+ch1+ch2) in map3, tries to fallback
     // to just find VKEY with (ch0+sc+ch1). This is the best we could do.
     MAP3 key4 = {keysym & 0xFFFF, xkeycode, keysym_shift & 0xFFFF, 0, 0};
-    const MAP3* p =
-        std::lower_bound(map3, map3 + std::size(map3), key4, MAP3());
-    if (p != map3 + std::size(map3) && p->ch0 == key4.ch0 && p->sc == key4.sc &&
-        p->ch1 == key4.ch1)
+    const MAP3* p = std::ranges::lower_bound(map3, key4, MAP3());
+    if (p != std::end(map3) && p->ch0 == key4.ch0 && p->sc == key4.sc &&
+        p->ch1 == key4.ch1) {
       return static_cast<KeyboardCode>(p->vk);
+    }
   }
 
   keycode = KeyboardCodeFromXKeysym(keysym);
@@ -1028,7 +1027,7 @@ DomKey GetDomKeyFromXEvent(const x11::Event& xev) {
 KeyboardCode DefaultKeyboardCodeFromHardwareKeycode(
     unsigned int hardware_code) {
   // This function assumes that X11 is using evdev-based keycodes.
-  static const KeyboardCode kHardwareKeycodeMap[] = {
+  static constexpr auto kHardwareKeycodeMap = std::to_array<KeyboardCode>({
       // Please refer to below links for the table content:
       // http://www.w3.org/TR/DOM-Level-3-Events-code/#keyboard-101
       // https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent.keyCode
@@ -1169,7 +1168,7 @@ KeyboardCode DefaultKeyboardCodeFromHardwareKeycode(
       VKEY_LWIN,               // 0x85: KEY_LEFTMETA         Super_L
       VKEY_RWIN,               // 0x86: KEY_RIGHTMETA        Super_R
       VKEY_COMPOSE,            // 0x87: KEY_COMPOSE          Menu
-  };
+  });
 
   if (hardware_code >= std::size(kHardwareKeycodeMap)) {
     // Additional keycodes used by the Chrome OS top row special function keys.
@@ -1494,6 +1493,15 @@ unsigned int XKeyCodeForWindowsKeyCode(ui::KeyboardCode key_code,
   //
   return static_cast<uint8_t>(
       connection->KeysymToKeycode(XKeysymForWindowsKeyCode(key_code, false)));
+}
+
+uint32_t GetXI2StateFromEvent(const x11::Input::DeviceEvent& xievent) {
+  // XI2 state includes the base modifiers and the effective keyboard group.
+  return xievent.mods.effective | (xievent.group.effective << kXkbGroupShift);
+}
+
+int XkbGroupForCoreState(int state) {
+  return (state >> kXkbGroupShift) & 0x3;
 }
 
 }  // namespace ui

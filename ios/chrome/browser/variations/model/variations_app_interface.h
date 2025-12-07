@@ -16,8 +16,8 @@
 // Returns true if there is a field trial for the test seed study.
 + (BOOL)fieldTrialExistsForTestSeed;
 
-// Returns true if the variations safe seed pref is set.
-+ (BOOL)hasSafeSeed;
+// Calls `completion` with true if the variations safe seed pref is set.
++ (void)hasSafeSeed:(void (^)(BOOL hasSeed))completion;
 
 // Sets a test safe seed and signature pair.
 + (void)setTestSafeSeedAndSignature;

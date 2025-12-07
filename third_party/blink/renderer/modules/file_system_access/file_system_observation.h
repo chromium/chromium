@@ -32,8 +32,8 @@ class FileSystemObservation final
   void DisconnectReceiver();
 
   // blink::mojom::blink::FileSystemAccessObserver
-  void OnFileChanges(WTF::Vector<mojom::blink::FileSystemAccessChangePtr>
-                         mojo_changes) override;
+  void OnFileChanges(
+      Vector<mojom::blink::FileSystemAccessChangePtr> mojo_changes) override;
 
  private:
   void OnRemoteDisconnected();

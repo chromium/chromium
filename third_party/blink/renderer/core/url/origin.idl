@@ -1,0 +1,19 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/mikewest/origin-api/
+[
+  Exposed=(Window,Worker),
+  RuntimeEnabled=OriginAPI,
+  ImplementedAs=DOMOrigin
+] interface Origin {
+  constructor();
+
+  [CallWith=ScriptState, RaisesException, Measure] static Origin from(any value);
+
+  readonly attribute boolean opaque;
+
+  [Measure] boolean isSameOrigin(Origin other);
+  [Measure] boolean isSameSite(Origin other);
+};

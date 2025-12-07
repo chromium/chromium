@@ -240,16 +240,17 @@ LoginEventRecorder::Stats LoginEventRecorder::Stats::DeserializeFromString(
   if (source.empty())
     return Stats();
 
-  std::optional<base::Value> maybe_value = base::JSONReader::Read(source);
-  if (!maybe_value || !maybe_value->is_dict()) {
+  std::optional<base::Value::Dict> maybe_value =
+      base::JSONReader::ReadDict(source, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  if (!maybe_value) {
     LOG(ERROR) << "LoginEventRecorder::Stats::DeserializeFromString(): not a "
                   "dictionary: '"
                << source << "'";
     return Stats();
   }
 
-  auto* uptime = maybe_value->GetDict().FindString(kUptime);
-  auto* disk = maybe_value->GetDict().FindString(kDisk);
+  auto* uptime = maybe_value->FindString(kUptime);
+  auto* disk = maybe_value->FindString(kDisk);
   if (!uptime || !disk) {
     LOG(ERROR)
         << "LoginEventRecorder::Stats::DeserializeFromString(): format error: '"
@@ -417,6 +418,22 @@ void LoginEventRecorder::RunScheduledWriteLoginTimes() {
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(std::move(callback_), std::move(login_time_markers_)));
+}
+
+std::optional<base::TimeDelta> LoginEventRecorder::GetDuration(
+    const std::string& begin_marker_name,
+    const std::string& end_marker_name) {
+  std::optional<base::TimeTicks> begin, end;
+  for (const auto& m : login_time_markers_) {
+    if (m.name() == begin_marker_name) {
+      begin = m.time();
+    } else if (m.name() == end_marker_name) {
+      end = m.time();
+    }
+  }
+  return (begin && end)
+             ? std::make_optional<base::TimeDelta>(end.value() - begin.value())
+             : std::nullopt;
 }
 
 void LoginEventRecorder::WriteLogoutTimes(const std::string base_name,

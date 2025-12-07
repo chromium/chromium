@@ -5,8 +5,10 @@
 #include "chrome/browser/ui/views/webauthn/authenticator_multi_source_picker_view.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/hover_list_view.h"
@@ -15,12 +17,14 @@
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/view.h"
 
 namespace {
 
@@ -94,3 +98,6 @@ void AuthenticatorMultiSourcePickerView::RequestFocus() {
     secondary_passkeys_control_->RequestFocus();
   }
 }
+
+BEGIN_METADATA(AuthenticatorMultiSourcePickerView)
+END_METADATA

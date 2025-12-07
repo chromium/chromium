@@ -4,14 +4,18 @@
 
 package org.chromium.chrome.browser.download.home.list;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemAnimator;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 
+@NullMarked
 class ListPropertyViewBinder implements ViewBinder<PropertyModel, RecyclerView, PropertyKey> {
     @Override
     public void bind(PropertyModel model, RecyclerView view, PropertyKey propertyKey) {
@@ -33,10 +37,12 @@ class ListPropertyViewBinder implements ViewBinder<PropertyModel, RecyclerView, 
                 || propertyKey == ListProperties.CALLBACK_CANCEL
                 || propertyKey == ListProperties.CALLBACK_SHARE
                 || propertyKey == ListProperties.CALLBACK_REMOVE
+                || propertyKey == ListProperties.CALLBACK_SHOW_WARNING_BYPASS_DIALOG
                 || propertyKey == ListProperties.PROVIDER_VISUALS
                 || propertyKey == ListProperties.CALLBACK_SELECTION
                 || propertyKey == ListProperties.CALLBACK_RENAME
                 || propertyKey == ListProperties.SELECTION_MODE_ACTIVE) {
+            assumeNonNull(view.getAdapter());
             view.getAdapter().notifyItemRangeChanged(0, view.getAdapter().getItemCount());
         }
     }

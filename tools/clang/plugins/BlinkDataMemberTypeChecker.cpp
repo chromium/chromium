@@ -20,15 +20,15 @@ BlinkDataMemberTypeChecker::BlinkDataMemberTypeChecker(
       diagnostic_(instance.getDiagnostics()),
       discouraged_types_({
           {"GURL", "KURL"},
-          {"std::deque", "WTF::Deque"},
-          {"std::map", "WTF::HashMap or WTF::LinkedHashSet"},
+          {"std::deque", "blink::Deque"},
+          {"std::map", "blink::HashMap or blink::LinkedHashSet"},
           {"std::multimap",
-           "WTF::HashMap<K, WTF::Vector<V>> or WTF::HashCountedSet<T>"},
-          {"std::multiset", "WTF::HashCountedSet<T>"},
-          {"std::set", "WTF::HashSet or WTF::LinkedHashSet"},
-          {"std::unordered_set", "WTF::HashSet"},
-          {"std::unordered_map", "WTF::HashMap"},
-          {"std::vector", "WTF::Vector"},
+           "blink::HashMap<K, blink::Vector<V>> or blink::HashCountedSet<T>"},
+          {"std::multiset", "blink::HashCountedSet<T>"},
+          {"std::set", "blink::HashSet or blink::LinkedHashSet"},
+          {"std::unordered_set", "blink::HashSet"},
+          {"std::unordered_map", "blink::HashMap"},
+          {"std::vector", "blink::Vector"},
       }),
       included_filenames_regex_("/third_party/blink/renderer/"),
       excluded_filenames_regex_(
@@ -81,16 +81,6 @@ void BlinkDataMemberTypeChecker::CheckField(const FieldDecl* field) {
     if (auto* array = dyn_cast<ArrayType>(type)) {
       // Find the element type of the array type.
       type = array->getElementType().getTypePtr();
-      continue;
-    }
-    if (auto* elaborated = dyn_cast<ElaboratedType>(type)) {
-      // Find the underlying type of the elaborated type. E.g. for
-      // |TypeName v;| where |TypeName| is not a built-in type, v's type is an
-      // elaborated type enclosing the actual type named |TypeName|. Though
-      // getAsCXXRecordDecl() of this type can return the record decl of the
-      // root underlying type directly, we want to desugar the types
-      // step-by-step to check the intermediate typedef types.
-      type = elaborated->getNamedType().getTypePtr();
       continue;
     }
 

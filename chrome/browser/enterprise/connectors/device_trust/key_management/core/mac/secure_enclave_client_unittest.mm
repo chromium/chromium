@@ -21,6 +21,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/mock_secure_enclave_helper.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/secure_enclave_helper.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/shared_command_constants.h"
+#include "crypto/keypair.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -484,6 +485,12 @@ TEST_F(SecureEnclaveClientTest, ExportPublicKey) {
   EXPECT_TRUE(
       secure_enclave_client_->ExportPublicKey(test_key_.get(), output, &error));
   EXPECT_TRUE(output.size() > 0);
+
+  // Check that the generated result is a valid SubjectPublicKeyInfo containing
+  // an EC P-256 key.
+  auto imported = crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(output);
+  ASSERT_TRUE(imported);
+  EXPECT_TRUE(imported->IsEcP256());
 }
 
 // Tests that the SignDataWithKey method successfully creates a signature
@@ -493,7 +500,7 @@ TEST_F(SecureEnclaveClientTest, SignDataWithKey) {
   std::string data = "test_string";
   OSStatus error;
   EXPECT_TRUE(secure_enclave_client_->SignDataWithKey(
-      test_key_.get(), base::as_bytes(base::make_span(data)), output, &error));
+      test_key_.get(), base::as_byte_span(data), output, &error));
   EXPECT_TRUE(output.size() > 0);
 }
 

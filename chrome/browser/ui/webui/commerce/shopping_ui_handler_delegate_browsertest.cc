@@ -8,20 +8,28 @@
 #include "base/uuid.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/local_or_syncable_bookmark_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/webui/commerce/product_specifications_disclosure_dialog.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/commerce/core/commerce_utils.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/features.h"
+#include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 
 namespace {
-const char kExampleUrl[] = "http://example.com/";
+const char kExampleUrl[] = "https://example.com/";
 }  // namespace
 
 // Tests ShoppingUiHandlerDelegate.
@@ -29,8 +37,28 @@ class ShoppingUiHandlerDelegateBrowserTest : public InProcessBrowserTest {
  public:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
+
     profile_ = Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+    signin::ConsentLevel consent_level =
+        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+            ? signin::ConsentLevel::kSignin
+            : signin::ConsentLevel::kSync;
+    signin::MakePrimaryAccountAvailable(
+        IdentityManagerFactory::GetForProfile(profile_), "test@email.com",
+        consent_level);
+
     bookmark_model_ = BookmarkModelFactory::GetForBrowserContext(profile_);
+    bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
+
+    // If we are not syncing, we need to add account nodes in order to use the
+    // handler. If we are, we need to pretend sync is on for bookmarks.
+    if (consent_level == signin::ConsentLevel::kSignin) {
+      bookmark_model_->CreateAccountPermanentFolders();
+    } else {
+      LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(
+          browser()->profile())
+          ->SetIsTrackingMetadataForTesting();
+    }
   }
 
  protected:
@@ -57,12 +85,16 @@ class ShoppingUiHandlerDelegateBrowserTest : public InProcessBrowserTest {
 
   raw_ptr<Profile, DanglingUntriaged> profile_;
   raw_ptr<bookmarks::BookmarkModel, DanglingUntriaged> bookmark_model_;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  base::test::ScopedFeatureList feature_list_{
+      syncer::kReplaceSyncPromosWithSignInPromos};
+#endif
 };
 
 IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
                        TestGetCurrentUrl) {
   auto delegate =
-      std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr, profile_);
+      std::make_unique<commerce::ShoppingUiHandlerDelegate>(profile_);
   const GURL url = GURL(kExampleUrl);
   NavigateToURL(url);
 
@@ -73,40 +105,46 @@ IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
 IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
                        TestGetBookmarkForCurrentUrl) {
   auto delegate =
-      std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr, profile_);
+      std::make_unique<commerce::ShoppingUiHandlerDelegate>(profile_);
   const GURL url = GURL(kExampleUrl);
   NavigateToURL(url);
 
-  const bookmarks::BookmarkNode* other_node = bookmark_model_->other_node();
+  const bookmarks::BookmarkNode* parent =
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+          ? bookmark_model_->account_other_node()
+          : bookmark_model_->other_node();
   auto* existing_node = bookmark_model_->AddNewURL(
-      other_node, other_node->children().size(), u"test", url);
-  size_t bookmark_count = other_node->children().size();
+      parent, parent->children().size(), u"test", url);
+  size_t bookmark_count = parent->children().size();
 
   auto* node = delegate->GetOrAddBookmarkForCurrentUrl();
   ASSERT_EQ(existing_node->id(), node->id());
-  ASSERT_EQ(bookmark_count, other_node->children().size());
+  ASSERT_EQ(bookmark_count, parent->children().size());
 }
 
 IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
                        TestAddBookmarkForCurrentUrl) {
   auto delegate =
-      std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr, profile_);
+      std::make_unique<commerce::ShoppingUiHandlerDelegate>(profile_);
   const GURL url = GURL(kExampleUrl);
   NavigateToURL(url);
 
-  const bookmarks::BookmarkNode* other_node = bookmark_model_->other_node();
-  size_t bookmark_count = other_node->children().size();
+  const bookmarks::BookmarkNode* parent =
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+          ? bookmark_model_->account_other_node()
+          : bookmark_model_->other_node();
+  size_t bookmark_count = parent->children().size();
 
   auto* node = delegate->GetOrAddBookmarkForCurrentUrl();
 
   DCHECK(node);
-  ASSERT_EQ(bookmark_count + 1, other_node->children().size());
+  ASSERT_EQ(bookmark_count + 1, parent->children().size());
 }
 
 IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
                        TestSwitchToOrOpenTab_SwitchToExistingTab) {
   auto delegate =
-      std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr, profile_);
+      std::make_unique<commerce::ShoppingUiHandlerDelegate>(profile_);
   const GURL url_1 = GURL(kExampleUrl);
   NavigateToURL(url_1);
   const auto* web_contents_1 = web_contents();
@@ -126,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
 IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
                        TestSwitchToOrOpenTab_OpenNewTab) {
   auto delegate =
-      std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr, profile_);
+      std::make_unique<commerce::ShoppingUiHandlerDelegate>(profile_);
   const GURL url = GURL(kExampleUrl);
   NavigateToURL(url);
   const GURL url_2 = GURL("https://www.google.com");
@@ -145,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
 IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
                        TestSwitchToOrOpenTab_InvalidUrls) {
   auto delegate =
-      std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr, profile_);
+      std::make_unique<commerce::ShoppingUiHandlerDelegate>(profile_);
   const GURL invalid_url_1 = GURL("chrome://newtab");
   NavigateToURL(invalid_url_1);
   const GURL invalid_url_2 = GURL("file://foo");
@@ -172,9 +210,8 @@ IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
   EXPECT_EQ(valid_url, web_contents()->GetLastCommittedURL());
 }
 
-// The feedback dialog on CrOS & LaCrOS happens at the system level,
-// which cannot be easily tested here. LaCrOS has a separate feedback
-// browser test which gives us some coverage.
+// The feedback dialog on CrOS happens at the system level, which cannot be
+// easily tested here.
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
                        TestShowFeedbackForProductSpecifications) {
@@ -182,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
   ASSERT_EQ(nullptr, FeedbackDialog::GetInstanceForTest());
 
   auto delegate =
-      std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr, profile_);
+      std::make_unique<commerce::ShoppingUiHandlerDelegate>(profile_);
   delegate->ShowFeedbackForProductSpecifications(log_id);
 
   // Feedback dialog should be non-null with correct meta data.
@@ -190,75 +227,35 @@ IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
   EXPECT_EQ(chrome::kChromeUIFeedbackURL,
             FeedbackDialog::GetInstanceForTest()->GetDialogContentURL());
   std::optional<base::Value::Dict> meta_data = base::JSONReader::ReadDict(
-      FeedbackDialog::GetInstanceForTest()->GetDialogArgs());
+      FeedbackDialog::GetInstanceForTest()->GetDialogArgs(),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(meta_data.has_value());
-  ASSERT_EQ(*meta_data->FindString("categoryTag"), "product_specifications");
+  ASSERT_EQ(*meta_data->FindString("categoryTag"), "compare");
   std::optional<base::Value::Dict> ai_meta_data =
-      base::JSONReader::ReadDict(*meta_data->FindString("aiMetadata"));
+      base::JSONReader::ReadDict(*meta_data->FindString("aiMetadata"),
+                                 base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(ai_meta_data.has_value());
   ASSERT_EQ(*ai_meta_data->FindString("log_id"), log_id);
 }
+
+// When the user has the page saved locally, an account node is created instead
+// so that the feature can be used.
+IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
+                       TestGetLocalBookmarkCreatesNewAccountBookmark) {
+  auto delegate =
+      std::make_unique<commerce::ShoppingUiHandlerDelegate>(profile_);
+  const GURL url = GURL(kExampleUrl);
+  NavigateToURL(url);
+
+  auto* existing_node = bookmark_model_->AddNewURL(
+      bookmark_model_->other_node(),
+      bookmark_model_->other_node()->children().size(), u"test", url);
+  size_t account_bookmark_count =
+      bookmark_model_->account_other_node()->children().size();
+
+  auto* node = delegate->GetOrAddBookmarkForCurrentUrl();
+  EXPECT_NE(existing_node->id(), node->id());
+  EXPECT_EQ(account_bookmark_count + 1,
+            bookmark_model_->account_other_node()->children().size());
+}
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-
-IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
-                       TestShowProductSpecificationsDisclosureDialog) {
-  std::vector<GURL> urls = {GURL(kExampleUrl)};
-  std::string name = "test_name";
-  auto delegate =
-      std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr, profile_);
-  delegate->ShowProductSpecificationsDisclosureDialog(urls, name);
-
-  auto* dialog = commerce::ProductSpecificationsDisclosureDialog::
-      current_instance_for_testing();
-  ASSERT_TRUE(dialog);
-
-  // Check dialog args.
-  auto dict = base::JSONReader::ReadDict(dialog->GetDialogArgs());
-  ASSERT_TRUE(dict.has_value());
-  auto* set_name = dict->FindString(commerce::kDialogArgsName);
-  ASSERT_TRUE(set_name);
-  ASSERT_EQ(name, *set_name);
-  auto* url_list = dict->FindList(commerce::kDialogArgsUrls);
-  ASSERT_TRUE(url_list);
-  ASSERT_EQ(1u, url_list->size());
-  ASSERT_EQ(urls[0].spec(), (*url_list)[0].GetString());
-  auto new_tab = dict->FindBool(commerce::kDialogArgsInNewTab);
-  ASSERT_TRUE(new_tab.has_value());
-  ASSERT_FALSE(new_tab.value());
-}
-
-IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
-                       TestShowProductSpecificationsSetForUuid) {
-  const base::Uuid uuid = base::Uuid::GenerateRandomV4();
-  auto delegate =
-      std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr, profile_);
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
-
-  content::TestNavigationObserver observer_one(
-      commerce::GetProductSpecsTabUrlForID(uuid));
-  observer_one.WatchExistingWebContents();
-
-  delegate->ShowProductSpecificationsSetForUuid(uuid, false);
-
-  observer_one.Wait();
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
-  ASSERT_EQ(commerce::GetProductSpecsTabUrlForID(uuid),
-            browser()
-                ->tab_strip_model()
-                ->GetActiveWebContents()
-                ->GetLastCommittedURL());
-
-  content::TestNavigationObserver observer_two(
-      commerce::GetProductSpecsTabUrlForID(uuid));
-  observer_two.StartWatchingNewWebContents();
-
-  delegate->ShowProductSpecificationsSetForUuid(uuid, true);
-
-  observer_two.WaitForNavigationFinished();
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
-  ASSERT_EQ(commerce::GetProductSpecsTabUrlForID(uuid),
-            browser()
-                ->tab_strip_model()
-                ->GetActiveWebContents()
-                ->GetLastCommittedURL());
-}

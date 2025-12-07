@@ -5,20 +5,20 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_COMMAND_BUFFER_DIRECT_H_
 #define GPU_COMMAND_BUFFER_SERVICE_COMMAND_BUFFER_DIRECT_H_
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/service/command_buffer_service.h"
 #include "gpu/command_buffer/service/decoder_client.h"
-#include "gpu/gpu_export.h"
+#include "gpu/command_buffer/service/gpu_command_buffer_service_export.h"
 
 namespace gpu {
 
 class AsyncAPIInterface;
 
-class GPU_EXPORT CommandBufferDirect : public CommandBuffer,
-                                       public CommandBufferServiceClient,
-                                       public DecoderClient {
+class GPU_COMMAND_BUFFER_SERVICE_EXPORT CommandBufferDirect
+    : public CommandBuffer,
+      public CommandBufferServiceClient,
+      public DecoderClient {
  public:
   CommandBufferDirect();
   ~CommandBufferDirect() override;
@@ -56,9 +56,9 @@ class GPU_EXPORT CommandBufferDirect : public CommandBuffer,
   void OnFenceSyncRelease(uint64_t release) override;
   void OnDescheduleUntilFinished() override;
   void OnRescheduleAfterFinished() override;
-  void OnSwapBuffers(uint64_t swap_id, uint32_t flags) override;
   void ScheduleGrContextCleanup() override {}
   void HandleReturnData(base::span<const uint8_t> data) override;
+  bool ShouldYield() override;
 
   scoped_refptr<Buffer> CreateTransferBufferWithId(uint32_t size, int32_t id);
 

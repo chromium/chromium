@@ -14,7 +14,6 @@ class BorealisBetaBadge : public views::View {
   METADATA_HEADER(BorealisBetaBadge, views::View)
 
  public:
-
   BorealisBetaBadge();
   ~BorealisBetaBadge() override;
 

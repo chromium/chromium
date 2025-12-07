@@ -43,8 +43,8 @@ class PLATFORM_EXPORT FESpecularLighting final : public FELighting {
   float SpecularExponent() const;
   bool SetSpecularExponent(float);
 
-  WTF::TextStream& ExternalRepresentation(WTF::TextStream&,
-                                          int indention) const override;
+  StringBuilder& ExternalRepresentation(StringBuilder&,
+                                        wtf_size_t indent) const override;
 };
 
 }  // namespace blink

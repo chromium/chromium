@@ -9,7 +9,6 @@
 #include <string_view>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -31,6 +30,8 @@ void RegisterLocalState(PrefRegistrySimple* registry);
 
 void RegisterScreenshotPrefs(PrefRegistrySimple* registry);
 
+void RegisterGeminiSettingsPrefs(user_prefs::PrefRegistrySyncable* registry);
+
 // Register all prefs that will be used via a PrefService attached to a user
 // Profile using the locale of |g_browser_process|.
 void RegisterUserProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
@@ -40,7 +41,7 @@ void RegisterUserProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 void RegisterUserProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
                               const std::string& locale);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Register all prefs that will be used via a PrefService attached to the
 // sign-in profile using the locale of |g_browser_process|. |country| should be
 // the permanent country code stored for this client in lowercase ISO 3166-1

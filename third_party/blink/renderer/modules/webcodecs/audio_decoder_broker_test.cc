@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/audio_decoder_broker.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/files/file_util.h"
@@ -111,8 +112,8 @@ class FakeInterfaceFactory : public media::mojom::InterfaceFactory {
   void BindRequest(mojo::ScopedMessagePipeHandle handle) {
     receiver_.Bind(mojo::PendingReceiver<media::mojom::InterfaceFactory>(
         std::move(handle)));
-    receiver_.set_disconnect_handler(WTF::BindOnce(
-        &FakeInterfaceFactory::OnConnectionError, base::Unretained(this)));
+    receiver_.set_disconnect_handler(
+        BindOnce(&FakeInterfaceFactory::OnConnectionError, Unretained(this)));
   }
 
   void OnConnectionError() { receiver_.reset(); }
@@ -134,12 +135,13 @@ class FakeInterfaceFactory : public media::mojom::InterfaceFactory {
   // Stub out other mojom::InterfaceFactory interfaces.
   void CreateVideoDecoder(
       mojo::PendingReceiver<media::mojom::VideoDecoder> receiver,
-      mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
-          dst_video_decoder) override {}
+      mojo::PendingRemote<media::mojom::VideoDecoder> dst_video_decoder)
+      override {}
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-  void CreateStableVideoDecoder(
-      mojo::PendingReceiver<media::stable::mojom::StableVideoDecoder>
-          video_decoder) override {}
+  void CreateVideoDecoderWithTracker(
+      mojo::PendingReceiver<media::mojom::VideoDecoder> receiver,
+      mojo::PendingRemote<media::mojom::VideoDecoderTracker> tracker) override {
+  }
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
   void CreateDefaultRenderer(
       const std::string& audio_device_id,
@@ -150,12 +152,6 @@ class FakeInterfaceFactory : public media::mojom::InterfaceFactory {
       mojo::PendingReceiver<media::mojom::Renderer> receiver) override {}
 #endif
 #if BUILDFLAG(IS_ANDROID)
-  void CreateMediaPlayerRenderer(
-      mojo::PendingRemote<media::mojom::MediaPlayerRendererClientExtension>
-          client_extension_remote,
-      mojo::PendingReceiver<media::mojom::Renderer> receiver,
-      mojo::PendingReceiver<media::mojom::MediaPlayerRendererExtension>
-          renderer_extension_receiver) override {}
   void CreateFlingingRenderer(
       const std::string& presentation_id,
       mojo::PendingRemote<media::mojom::FlingingRendererClientExtension>
@@ -172,10 +168,7 @@ class FakeInterfaceFactory : public media::mojom::InterfaceFactory {
       mojo::PendingRemote<media::mojom::MediaLog> media_log_remote,
       mojo::PendingReceiver<media::mojom::Renderer> receiver,
       mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
-          renderer_extension_receiver,
-      mojo::PendingRemote<
-          ::media::mojom::MediaFoundationRendererClientExtension>
-          client_extension_remote) override {}
+          renderer_extension_receiver) override {}
 #endif  // BUILDFLAG(IS_WIN)
 
  private:
@@ -224,8 +217,8 @@ class AudioDecoderBrokerTest : public testing::Test {
     EXPECT_TRUE(
         Platform::Current()->GetBrowserInterfaceBroker()->SetBinderForTesting(
             media::mojom::InterfaceFactory::Name_,
-            WTF::BindRepeating(&FakeInterfaceFactory::BindRequest,
-                               base::Unretained(interface_factory_.get()))));
+            BindRepeating(&FakeInterfaceFactory::BindRequest,
+                          Unretained(interface_factory_.get()))));
   }
 
   void ConstructDecoder(ExecutionContext& execution_context) {
@@ -239,10 +232,10 @@ class AudioDecoderBrokerTest : public testing::Test {
                            media::DecoderStatus::Codes::kOk))));
     decoder_broker_->Initialize(
         config, nullptr /* cdm_context */,
-        WTF::BindOnce(&AudioDecoderBrokerTest::OnInitWithClosure,
-                      WTF::Unretained(this), run_loop.QuitClosure()),
-        WTF::BindRepeating(&AudioDecoderBrokerTest::OnOutput,
-                           WTF::Unretained(this)),
+        blink::BindOnce(&AudioDecoderBrokerTest::OnInitWithClosure,
+                        Unretained(this), run_loop.QuitClosure()),
+        blink::BindRepeating(&AudioDecoderBrokerTest::OnOutput,
+                             Unretained(this)),
         media::WaitingCB());
     run_loop.Run();
     testing::Mock::VerifyAndClearExpectations(this);
@@ -254,8 +247,9 @@ class AudioDecoderBrokerTest : public testing::Test {
     base::RunLoop run_loop;
     EXPECT_CALL(*this, OnDecodeDone(HasStatusCode(expected_status)));
     decoder_broker_->Decode(
-        buffer, WTF::BindOnce(&AudioDecoderBrokerTest::OnDecodeDoneWithClosure,
-                              WTF::Unretained(this), run_loop.QuitClosure()));
+        buffer,
+        blink::BindOnce(&AudioDecoderBrokerTest::OnDecodeDoneWithClosure,
+                        Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
     testing::Mock::VerifyAndClearExpectations(this);
   }
@@ -264,8 +258,8 @@ class AudioDecoderBrokerTest : public testing::Test {
     base::RunLoop run_loop;
     EXPECT_CALL(*this, OnResetDone());
     decoder_broker_->Reset(
-        WTF::BindOnce(&AudioDecoderBrokerTest::OnResetDoneWithClosure,
-                      WTF::Unretained(this), run_loop.QuitClosure()));
+        blink::BindOnce(&AudioDecoderBrokerTest::OnResetDoneWithClosure,
+                        Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
     testing::Mock::VerifyAndClearExpectations(this);
   }
@@ -305,10 +299,10 @@ TEST_F(AudioDecoderBrokerTest, Decode_Uninitialized) {
 media::AudioDecoderConfig MakeVorbisConfig() {
   std::string extradata_name = "vorbis-extradata";
   base::FilePath extradata_path = media::GetTestDataFilePath(extradata_name);
-  int64_t tmp = 0;
-  CHECK(base::GetFileSize(extradata_path, &tmp))
-      << "Failed to get file size for '" << extradata_name << "'";
-  int file_size = base::checked_cast<int>(tmp);
+  std::optional<int64_t> tmp = base::GetFileSize(extradata_path);
+  CHECK(tmp.has_value()) << "Failed to get file size for '" << extradata_name
+                         << "'";
+  int file_size = base::checked_cast<int>(tmp.value());
   std::vector<uint8_t> extradata(file_size);
   CHECK_EQ(file_size,
            base::ReadFile(extradata_path,

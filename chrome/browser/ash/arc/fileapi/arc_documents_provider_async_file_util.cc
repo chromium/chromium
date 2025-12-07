@@ -7,11 +7,12 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/arc_util.h"
 #include "base/check_op.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/files/safe_base_name.h"
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_size_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_file_system_url_util.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -50,7 +52,9 @@ void OnReadDirectoryOnUIThread(
   storage::AsyncFileUtil::EntryList entries;
   entries.reserve(files.size());
   for (const auto& file : files) {
-    entries.emplace_back(base::FilePath(file.name),
+    auto name = base::SafeBaseName::Create(file.name);
+    CHECK(name) << file.name;
+    entries.emplace_back(*name, std::string(),
                          file.is_directory
                              ? filesystem::mojom::FsFileType::DIRECTORY
                              : filesystem::mojom::FsFileType::REGULAR_FILE);
@@ -435,8 +439,7 @@ void ArcDocumentsProviderAsyncFileUtil::CopyInForeignFile(
     const storage::FileSystemURL& dest_url,
     StatusCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  NOTREACHED_IN_MIGRATION();  // Read-only file system.
-  std::move(callback).Run(base::File::FILE_ERROR_ACCESS_DENIED);
+  NOTREACHED();  // Read-only file system.
 }
 
 void ArcDocumentsProviderAsyncFileUtil::DeleteFile(

@@ -7,13 +7,12 @@ package org.chromium.base.task;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -30,7 +29,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SequencedTaskRunnerTaskMigrationTest {
-    @Rule public JniMocker mMocker = new JniMocker();
 
     // It might be tempting to use fake executor similar to Robolectric's scheduler that is driven
     // from the test's main thread. Unfortunately this approach means that only two states of the
@@ -62,13 +60,13 @@ public class SequencedTaskRunnerTaskMigrationTest {
         Executor noopExecutor = runnable -> {};
         FakeTaskRunnerImplNatives fakeTaskRunnerNatives =
                 new FakeTaskRunnerImplNatives(noopExecutor);
-        mMocker.mock(TaskRunnerImplJni.TEST_HOOKS, fakeTaskRunnerNatives);
+        TaskRunnerImplJni.setInstanceForTesting(fakeTaskRunnerNatives);
         BlockingTask preNativeTask = new BlockingTask();
         SequencedTaskRunnerImpl taskRunner = new SequencedTaskRunnerImpl(TaskTraits.USER_VISIBLE);
 
-        taskRunner.postTask(preNativeTask);
-        // Dummy task that is planned to be executed on native pool.
-        taskRunner.postTask(() -> {});
+        taskRunner.execute(preNativeTask);
+        // Empty task that is planned to be executed on native pool.
+        taskRunner.execute(CallbackUtils.emptyRunnable());
 
         // Ensure that first task is running on pre-native thread pool: avoid race between
         // starting the task and requesting native task runner's init.
@@ -84,13 +82,13 @@ public class SequencedTaskRunnerTaskMigrationTest {
     public void pendingTasksShouldBeExecutedOnNativeRunnerAfterInit() {
         FakeTaskRunnerImplNatives fakeTaskRunnerNatives =
                 new FakeTaskRunnerImplNatives(mConcurrentExecutor);
-        mMocker.mock(TaskRunnerImplJni.TEST_HOOKS, fakeTaskRunnerNatives);
+        TaskRunnerImplJni.setInstanceForTesting(fakeTaskRunnerNatives);
         BlockingTask preNativeTask = new BlockingTask();
         AwaitableTask nativeTask = new AwaitableTask();
         SequencedTaskRunnerImpl taskRunner = new SequencedTaskRunnerImpl(TaskTraits.USER_VISIBLE);
 
-        taskRunner.postTask(preNativeTask);
-        taskRunner.postTask(nativeTask);
+        taskRunner.execute(preNativeTask);
+        taskRunner.execute(nativeTask);
 
         // Ensure that first task is running on pre-native thread pool: avoid race between
         // starting the task and requesting native task runner's init.
@@ -113,13 +111,13 @@ public class SequencedTaskRunnerTaskMigrationTest {
     public void taskPostedAfterNativeInitShouldRunInNativePool() {
         FakeTaskRunnerImplNatives fakeTaskRunnerNatives =
                 new FakeTaskRunnerImplNatives(mConcurrentExecutor);
-        mMocker.mock(TaskRunnerImplJni.TEST_HOOKS, fakeTaskRunnerNatives);
+        TaskRunnerImplJni.setInstanceForTesting(fakeTaskRunnerNatives);
 
         SequencedTaskRunnerImpl taskRunner = new SequencedTaskRunnerImpl(TaskTraits.USER_VISIBLE);
         taskRunner.initNativeTaskRunner();
 
         AwaitableTask nativeTask = new AwaitableTask();
-        taskRunner.postTask(nativeTask);
+        taskRunner.execute(nativeTask);
 
         // Wait for the task to be started: avoid race between submitting task to the native task
         // runner and checking the state of the latter in assertion below.
@@ -184,15 +182,20 @@ public class SequencedTaskRunnerTaskMigrationTest {
         public void destroy(long nativeTaskRunnerAndroid) {}
 
         @Override
-        public void postDelayedTask(
-                long nativeTaskRunnerAndroid, Runnable task, long delay, String runnableClassName) {
+        public void postDelayedTask(long nativeTaskRunnerAndroid, long delay, int taskIndex) {
             mReceivedTasksCount.incrementAndGet();
-            mExecutor.execute(task);
+            TaskRunnerImpl.runTask(taskIndex);
         }
 
         @Override
-        public boolean belongsToCurrentThread(long nativeTaskRunnerAndroid) {
-            return false;
+        public void postDelayedTaskWithLocation(
+                long nativeTaskRunnerAndroid,
+                long delay,
+                int taskIndex,
+                String fileName,
+                String functionName,
+                int lineNumber) {
+            postDelayedTask(nativeTaskRunnerAndroid, delay, taskIndex);
         }
 
         public boolean hasReceivedTasks() {

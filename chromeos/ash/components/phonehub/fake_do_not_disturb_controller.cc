@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/components/phonehub/fake_do_not_disturb_controller.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 FakeDoNotDisturbController::FakeDoNotDisturbController() = default;
 
@@ -43,5 +42,4 @@ void FakeDoNotDisturbController::SetShouldRequestFail(
   should_request_fail_ = should_request_fail;
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

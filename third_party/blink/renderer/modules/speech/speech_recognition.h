@@ -26,22 +26,30 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SPEECH_SPEECH_RECOGNITION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SPEECH_SPEECH_RECOGNITION_H_
 
+#include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/speech_recognizer.mojom-blink.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_availability_status.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_observable_array_speech_recognition_phrase.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/speech/speech_grammar_list.h"
+#include "third_party/blink/renderer/modules/speech/speech_recognition_phrase.h"
 #include "third_party/blink/renderer/modules/speech/speech_recognition_result.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+
+namespace media {
+class AudioParameters;
+}  // namespace media
 
 namespace blink {
 
@@ -49,8 +57,9 @@ class ExceptionState;
 class ExecutionContext;
 class LocalDOMWindow;
 class MediaStreamTrack;
+class SpeechRecognitionOptions;
 class SpeechRecognitionController;
-class SpeechRecognitionMediaStreamAudioSink;
+class V8ObservableArraySpeechRecognitionPhrase;
 
 class MODULES_EXPORT SpeechRecognition final
     : public EventTarget,
@@ -66,10 +75,10 @@ class MODULES_EXPORT SpeechRecognition final
   SpeechRecognition(LocalDOMWindow*);
   ~SpeechRecognition() override;
 
-  // SpeechRecognition.idl implemementation.
-  // Attributes.
+  // SpeechRecognition.idl attributes implementation.
   SpeechGrammarList* grammars() const { return grammars_.Get(); }
   void setGrammars(SpeechGrammarList* grammars) { grammars_ = grammars; }
+  V8ObservableArraySpeechRecognitionPhrase* phrases() const { return phrases_; }
   String lang() const { return lang_; }
   void setLang(const String& lang) { lang_ = lang; }
   bool continuous() const { return continuous_; }
@@ -82,25 +91,27 @@ class MODULES_EXPORT SpeechRecognition final
   void setMaxAlternatives(unsigned max_alternatives) {
     max_alternatives_ = max_alternatives;
   }
-  void setLocalService(bool local_service) { local_service_ = local_service; }
-  bool localService() const { return local_service_; }
-  void setAllowCloudFallback(bool allow_cloud_fallback) {
-    allow_cloud_fallback_ = allow_cloud_fallback;
-  }
-  bool allowCloudFallback() const { return allow_cloud_fallback_; }
+  bool processLocally() const { return process_locally_; }
+  void setProcessLocally(bool process_locally);
 
-  // Callable by the user.
+  // Callable by the user. Methods may be called after the execution context is
+  // destroyed.
   void start(ExceptionState&);
   void start(MediaStreamTrack*, ExceptionState&);
   void stopFunction();
   void abort();
-  ScriptPromise<IDLBoolean> onDeviceWebSpeechAvailable(ScriptState*,
-                                                       String lang,
-                                                       ExceptionState&);
+  static ScriptPromise<V8AvailabilityStatus> available(
+      ScriptState*,
+      const blink::SpeechRecognitionOptions* options,
+      ExceptionState&);
+  static ScriptPromise<IDLBoolean> install(
+      ScriptState*,
+      const blink::SpeechRecognitionOptions* options,
+      ExceptionState&);
 
   // media::mojom::blink::SpeechRecognitionSessionClient
   void ResultRetrieved(
-      WTF::Vector<media::mojom::blink::WebSpeechRecognitionResultPtr> results)
+      Vector<media::mojom::blink::WebSpeechRecognitionResultPtr> results)
       override;
   void ErrorOccurred(
       media::mojom::blink::SpeechRecognitionErrorPtr error) override;
@@ -124,6 +135,8 @@ class MODULES_EXPORT SpeechRecognition final
   // PageVisibilityObserver
   void PageVisibilityChanged() override;
 
+  void OnPhrasesChanged();
+
   DEFINE_ATTRIBUTE_EVENT_LISTENER(audiostart, kAudiostart)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(soundstart, kSoundstart)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(speechstart, kSpeechstart)
@@ -139,19 +152,39 @@ class MODULES_EXPORT SpeechRecognition final
   void Trace(Visitor*) const override;
 
  private:
+  static void OnPhrasesSet(GarbageCollectedMixin*,
+                           ScriptState*,
+                           V8ObservableArraySpeechRecognitionPhrase&,
+                           uint32_t,
+                           Member<SpeechRecognitionPhrase>&);
+  static void OnPhrasesDelete(GarbageCollectedMixin*,
+                              ScriptState*,
+                              V8ObservableArraySpeechRecognitionPhrase&,
+                              uint32_t);
+
   void OnConnectionError();
-  void StartInternal(ExceptionState* exception_state);
+  void SchedulePhrasesUpdate();
+  void CheckAvailabilityAndStart(ExceptionState* exception_state);
+  void StartInternal();
+  void StartController(
+      mojo::PendingReceiver<media::mojom::blink::SpeechRecognitionSession>
+          session_receiver,
+      std::optional<media::AudioParameters> audio_parameters = std::nullopt,
+      mojo::PendingReceiver<
+          media::mojom::blink::SpeechRecognitionAudioForwarder>
+          audio_forwarder_receiver = mojo::NullReceiver());
+
   Member<MediaStreamTrack> stream_track_;
   Member<SpeechGrammarList> grammars_;
+  Member<V8ObservableArraySpeechRecognitionPhrase> phrases_;
   String lang_;
   bool continuous_ = false;
   bool interim_results_ = false;
   uint32_t max_alternatives_ = 1;
-  bool local_service_ = true;
-  bool allow_cloud_fallback_ = true;
+  bool process_locally_ = false;
 
-  Member<SpeechRecognitionMediaStreamAudioSink> sink_;
   Member<SpeechRecognitionController> controller_;
+  bool phrases_update_scheduled_ = false;
   bool started_ = false;
   bool stopping_ = false;
   HeapVector<Member<SpeechRecognitionResult>> final_results_;

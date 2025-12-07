@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/printing/history/print_job_info.pb.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
+#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -270,7 +271,7 @@ class PrintJobReportingServiceTest : public ::testing::Test {
   void SetUp() override {
     auto user_manager = std::make_unique<FakeChromeUserManager>();
     AccountId account_id(AccountId::FromUserEmail("user0@managed.com"));
-    user_manager->AddKioskAppUser(account_id);
+    user_manager->AddKioskChromeAppUser(account_id);
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(user_manager));
   }

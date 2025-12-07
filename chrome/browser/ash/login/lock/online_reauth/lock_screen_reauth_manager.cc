@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/syslog_logging.h"
 #include "base/time/default_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/login/auth/chrome_safe_mode_delegate.h"
@@ -40,6 +41,10 @@ namespace ash {
 namespace {
 constexpr char kLockScreenReauthHistogram[] =
     "ChromeOS.LockScreenReauth.LockScreenReauthReason";
+
+bool IsScreenLocked() {
+  return session_manager::SessionManager::Get()->IsScreenLocked();
+}
 }  // namespace
 
 LockScreenReauthManager::LockScreenReauthManager(Profile* primary_profile)
@@ -48,7 +53,7 @@ LockScreenReauthManager::LockScreenReauthManager(Profile* primary_profile)
       clock_(base::DefaultClock::GetInstance()),
       in_session_password_sync_manager_(
           InSessionPasswordSyncManager(primary_profile_)) {
-  DCHECK(primary_user_);
+  CHECK(primary_user_);
   auto* session_manager = session_manager::SessionManager::Get();
   // Extra check as SessionManager may be not initialized in some unit
   // tests
@@ -57,7 +62,7 @@ LockScreenReauthManager::LockScreenReauthManager(Profile* primary_profile)
   }
 
   screenlock_bridge_ = proximity_auth::ScreenlockBridge::Get();
-  DCHECK(screenlock_bridge_);
+  CHECK(screenlock_bridge_);
 }
 
 LockScreenReauthManager::~LockScreenReauthManager() {
@@ -92,7 +97,7 @@ void LockScreenReauthManager::MaybeForceReauthOnLockScreen(
     is_reauth_required_by_gaia_time_limit_policy_ = true;
   }
 
-  if (screenlock_bridge_->IsLocked()) {
+  if (IsScreenLocked()) {
     // On the lock screen: need to update the UI.
     ForceOnlineReauth();
   }
@@ -106,7 +111,7 @@ void LockScreenReauthManager::Shutdown() {}
 
 void LockScreenReauthManager::OnSessionStateChanged() {
   TRACE_EVENT0("login", "LockScreenReauthManager::OnSessionStateChanged");
-  if (!session_manager::SessionManager::Get()->IsScreenLocked()) {
+  if (!IsScreenLocked()) {
     // We are unlocking the session, no further action required.
     return;
   }
@@ -123,6 +128,7 @@ void LockScreenReauthManager::OnSessionStateChanged() {
 }
 
 void LockScreenReauthManager::ForceOnlineReauth() {
+  SYSLOG(INFO) << "(LOGIN) LoginScreenReauthManager::ForceOnlineReauth";
   const auto account_id = primary_user_->GetAccountId();
   screenlock_bridge_->lock_handler()->SetAuthType(
       account_id, proximity_auth::mojom::AuthType::ONLINE_SIGN_IN, u"");
@@ -130,8 +136,8 @@ void LockScreenReauthManager::ForceOnlineReauth() {
   const bool auto_start_reauth = primary_profile_->GetPrefs()->GetBoolean(
       ::prefs::kLockScreenAutoStartOnlineReauth);
   if (auto_start_reauth) {
-    // TODO(b/333882432): Remove this log after the bug fixed.
-    LOG(WARNING) << "b/333882432: LoginScreenReauthManager::ForceOnlineReauth";
+    SYSLOG(INFO) << "(LOGIN) LoginScreenReauthManager::ForceOnlineReauth "
+                    "ShowGaiaSignin()";
     Shell::Get()->login_screen_controller()->ShowGaiaSignin(
         /*prefilled_account=*/account_id);
   }
@@ -141,7 +147,12 @@ void LockScreenReauthManager::ResetOnlineReauth() {
   user_manager::UserManager::Get()->SaveForceOnlineSignin(
       primary_user_->GetAccountId(), false);
   user_manager::KnownUser known_user(g_browser_process->local_state());
-  known_user.SetLastOnlineSignin(primary_user_->GetAccountId(), clock_->Now());
+  base::Time current_time = clock_->Now();
+  known_user.SetLastOnlineSignin(primary_user_->GetAccountId(), current_time);
+  // Also adding this information to prefs, because ephemeral users cannot
+  // access local state properly.
+  primary_profile_->GetPrefs()->SetTime(prefs::kLastOnlineSignInTime,
+                                        current_time);
 }
 
 void LockScreenReauthManager::CheckCredentials(
@@ -165,7 +176,7 @@ void LockScreenReauthManager::CheckCredentials(
   }
 
   ProfileAuthData::Transfer(
-      lock_screen_partition, primary_profile_->GetDefaultStoragePartition(),
+      lock_screen_partition, primary_profile_,
       false /*transfer_auth_cookies_on_first_login*/,
       transfer_saml_auth_cookies_on_subsequent_login,
       base::BindOnce(&LockScreenReauthManager::OnCookiesTransferred,
@@ -213,17 +224,21 @@ void LockScreenReauthManager::OnAuthFailure(const AuthFailure& error) {
 }
 
 void LockScreenReauthManager::OnAuthSuccess(const UserContext& user_context) {
+  SYSLOG(INFO) << "(LOGIN) LoginScreenReauthManager::OnAuthSuccess";
   if (user_context.GetAccountId() != primary_user_->GetAccountId()) {
     // Tried to re-authenicate with non-primary user: the authentication was
     // successful but we are allowed to unlock only with valid credentials of
     // the user who locked the screen. In this case show customized version
     // of first re-auth flow dialog with an error message.
-    LOG(FATAL) << "Different user is unlocking the device";
+    const std::string msg = "(LOGIN) Different user is unlocking the device ";
+    SYSLOG(INFO) << msg;
+    LOG(FATAL) << msg;
   }
 
   ResetOnlineReauth();
   SendLockscreenReauthReason();
   if (is_reauth_required_by_saml_token_mismatch_) {
+    SYSLOG(INFO) << "(LOGIN) Reauth due to SAML token mismatch. Fetch token. ";
     in_session_password_sync_manager_.FetchTokenAsync();
   }
 
@@ -261,7 +276,7 @@ void LockScreenReauthManager::SendLockscreenReauthReason() {
 
 void LockScreenReauthManager::OnPasswordUpdateSuccess(
     std::unique_ptr<UserContext> user_context) {
-  DCHECK(user_context);
+  CHECK(user_context);
   OnAuthSuccess(*user_context);
 }
 

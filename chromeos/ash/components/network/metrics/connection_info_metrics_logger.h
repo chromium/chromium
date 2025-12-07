@@ -96,7 +96,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ConnectionInfoMetricsLogger
   };
 
   // NetworkStateHandlerObserver::
-  void ConnectToNetworkRequested(const std::string& service_path) override;
+  ConnectToNetworkRequestVerdict ConnectToNetworkRequested(
+      const std::string& service_path) override;
   void NetworkListChanged() override;
   void NetworkConnectionStateChanged(const NetworkState* network) override;
   void OnShuttingDown() override;

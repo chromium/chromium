@@ -4,7 +4,7 @@
 
 import("//services/screen_ai/buildflags/features.gni")
 
-assert(is_chromeos_ash, "AXMediaApp is ash-chrome only")
+assert(is_chromeos, "AXMediaApp is ChromeOS only")
 
 source_set("test_support") {
   testonly = true
@@ -13,8 +13,8 @@ source_set("test_support") {
     "../ax_media_app.h",
     "fake_ax_media_app.cc",
     "fake_ax_media_app.h",
-    "test_ax_media_app_untrusted_handler.cc",
-    "test_ax_media_app_untrusted_handler.h",
+    "test_ax_media_app_untrusted_service.cc",
+    "test_ax_media_app_untrusted_service.h",
   ]
 
   deps = [

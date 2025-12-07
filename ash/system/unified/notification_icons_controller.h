@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_UNIFIED_NOTIFICATION_ICONS_CONTROLLER_H_
 
 #include <cstdint>
+#include <optional>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
@@ -30,6 +31,8 @@ class QuietModeView;
 class TrayContainer;
 class TrayItemView;
 class UnifiedSystemTray;
+
+// NotificationIconTrayItemView ------------------------------------------------
 
 // Tray item view for notification icon shown in the tray.
 class ASH_EXPORT NotificationIconTrayItemView : public TrayItemView {
@@ -84,6 +87,8 @@ class ASH_EXPORT NotificationIconTrayItemView : public TrayItemView {
   const raw_ptr<NotificationIconsController, DanglingUntriaged> controller_;
 };
 
+// NotificationIconsController -------------------------------------------------
+
 // Controller for notification icons in `UnifiedSystemTray` button. This is used
 // in `NotificationCenterTray`, and has the added responsibility of letting the
 // `NotificationCenterTray` know when it may need to update its visibility. The
@@ -111,8 +116,8 @@ class ASH_EXPORT NotificationIconsController
   // Returns the number of notification icons showing in |tray_items_|.
   size_t TrayNotificationIconsCount() const;
 
-  // Returns a string describing the current state for accessibility.
-  std::u16string GetAccessibleNameString() const;
+  // Returns a string describing the current state for accessibility, if any.
+  std::optional<std::u16string> GetAccessibleNameString() const;
 
   // Iterate through the notifications in message center and update the icons
   // shown accordingly.

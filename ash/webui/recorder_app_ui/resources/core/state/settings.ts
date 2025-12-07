@@ -4,6 +4,7 @@
 
 import {bindSignal} from '../reactive/local_storage.js';
 import {signal} from '../reactive/signal.js';
+import {LanguageCode} from '../soda/language_info.js';
 import * as localStorage from '../utils/local_storage.js';
 import {Infer, z} from '../utils/schema.js';
 
@@ -146,15 +147,26 @@ export type ExportSettings = Infer<typeof exportSettingsSchema>;
 
 export const settingsSchema = z.object({
   exportSettings: exportSettingsSchema,
+  hasOpenedMicMenu: z.withDefault(z.boolean(), false),
   includeSystemAudio: z.boolean(),
+  keepScreenOn: z.withDefault(z.boolean(), false),
   onboardingDone: z.boolean(),
   recordingSortType: z.nativeEnum(RecordingSortType),
   transcriptionEnabled: z.nativeEnum(TranscriptionEnableState),
+  // Language selected by the user.
+  // Note that most usage should use `getSelectedLanguage` in PlatformHandler,
+  // to automatically fall back to default language when there's only one
+  // language available.
+  transcriptionLanguage: z.withDefault(
+    z.nullable(z.nativeEnum(LanguageCode)),
+    null,
+  ),
   summaryEnabled: z.nativeEnum(SummaryEnableState),
   speakerLabelEnabled: z.withDefault(
     z.nativeEnum(SpeakerLabelEnableState),
     SpeakerLabelEnableState.UNKNOWN,
   ),
+  systemAudioConsentDone: z.withDefault(z.boolean(), false),
 });
 
 type Settings = Infer<typeof settingsSchema>;
@@ -166,12 +178,16 @@ const defaultSettings: Settings = {
     transcription: false,
     transcriptionFormat: ExportTranscriptionFormat.TXT,
   },
+  hasOpenedMicMenu: false,
   includeSystemAudio: false,
+  keepScreenOn: false,
   onboardingDone: false,
   recordingSortType: RecordingSortType.DATE,
   transcriptionEnabled: TranscriptionEnableState.UNKNOWN,
+  transcriptionLanguage: null,
   summaryEnabled: SummaryEnableState.UNKNOWN,
   speakerLabelEnabled: SpeakerLabelEnableState.UNKNOWN,
+  systemAudioConsentDone: false,
 };
 
 export const settings = signal(defaultSettings);

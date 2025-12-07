@@ -29,6 +29,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace download {
 
@@ -119,17 +120,16 @@ class COMPONENTS_DOWNLOAD_EXPORT BaseFile {
   // Write a new chunk of data to the file. Returns a DownloadInterruptReason
   // indicating the result of the operation. Works only if |is_sparse_file| is
   // false.
-  DownloadInterruptReason AppendDataToFile(const char* data, size_t data_len);
+  DownloadInterruptReason AppendDataToFile(base::span<const uint8_t> data);
 
   // Write a new chunk of data to the file. Returns a DownloadInterruptReason
   // indicating the result of the operation.
   DownloadInterruptReason WriteDataToFile(int64_t offset,
-                                          const char* data,
-                                          size_t data_len);
+                                          base::span<const uint8_t> data);
 
   // Validates that the content starting from |offset| matches that of |data|
   // with the given length.
-  bool ValidateDataInFile(int64_t offset, const char* data, size_t data_len);
+  bool ValidateDataInFile(int64_t offset, base::span<const uint8_t> data);
 
   // Rename the download file. Returns a DownloadInterruptReason indicating the
   // result of the operation. A return code of NONE indicates that the rename
@@ -172,10 +172,15 @@ class COMPONENTS_DOWNLOAD_EXPORT BaseFile {
   //     that originated this download. Will be used to annotate source
   //     information and also to determine the relative danger level of the
   //     file.
+  //
+  // `request_initiator`: Initiating origin for the request. This will
+  //     be used in place of the `source_url` when the `source_url` is not
+  //     suitable for reporting to the OS.
   void AnnotateWithSourceInformation(
       const std::string& client_guid,
       const GURL& source_url,
       const GURL& referrer_url,
+      const std::optional<url::Origin>& request_initiator,
       mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine,
       OnAnnotationDoneCallback on_annotation_done_callback);
 

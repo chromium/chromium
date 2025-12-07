@@ -7,8 +7,11 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/values.h"
+#include "services/preferences/public/cpp/tracked/pref_names.h"
 #include "services/preferences/public/mojom/tracked_preference_validation_delegate.mojom.h"
 #include "services/preferences/tracked/pref_hash_store_transaction.h"
 
@@ -34,21 +37,30 @@ TrackedPreferenceType TrackedSplitPreference::GetType() const {
   return TrackedPreferenceType::SPLIT;
 }
 
+size_t TrackedSplitPreference::GetReportingId() const {
+  return helper_.GetReportingId();
+}
+
 void TrackedSplitPreference::OnNewValue(
     const base::Value* value,
-    PrefHashStoreTransaction* transaction) const {
+    PrefHashStoreTransaction* transaction,
+    const os_crypt_async::Encryptor* encryptor) const {
   if (value && !value->is_dict()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
-
   transaction->StoreSplitHash(pref_path_, value ? &value->GetDict() : nullptr);
+
+  if (encryptor) {
+    transaction->StoreSplitEncryptedHash(pref_path_,
+                                         value ? &value->GetDict() : nullptr);
+  }
 }
 
 bool TrackedSplitPreference::EnforceAndReport(
     base::Value::Dict& pref_store_contents,
     PrefHashStoreTransaction* transaction,
-    PrefHashStoreTransaction* external_validation_transaction) const {
+    PrefHashStoreTransaction* external_validation_transaction,
+    const os_crypt_async::Encryptor* encryptor) const {
   bool was_reset = false;
   base::Value* value = pref_store_contents.FindByDottedPath(pref_path_);
   if (value && !value->is_dict()) {
@@ -63,6 +75,11 @@ bool TrackedSplitPreference::EnforceAndReport(
   base::Value::Dict* dict_value = value ? &value->GetDict() : nullptr;
 
   std::vector<std::string> invalid_keys;
+  // TODO(zackhan@): Currently this function support dual-hash validation.
+  // Revisit and double check this function later on when the feature is fully
+  // rolled out and the hmac based validation is removed.
+  // transaction->CheckValue() (from CL1) is dual-hash aware and uses the
+  // encryptor with which `transaction` was initialized by PrefHashFilter.
   ValueState value_state =
       transaction->CheckSplitValue(pref_path_, dict_value, &invalid_keys);
 
@@ -88,24 +105,52 @@ bool TrackedSplitPreference::EnforceAndReport(
       helper_.GetAction(value_state);
   helper_.ReportAction(reset_action);
 
-  if (reset_action == TrackedPreferenceHelper::DO_RESET) {
-    if (value_state == ValueState::CHANGED) {
+  if (reset_action == TrackedPreferenceHelper::DO_RESET ||
+      reset_action == TrackedPreferenceHelper::DO_RESET_LEGACY ||
+      reset_action == TrackedPreferenceHelper::DO_RESET_ENCRYPTED) {
+    base::Value::List* reset_prefs_list =
+        pref_store_contents.EnsureList(user_prefs::kTrackedPreferencesReset);
+    if (value_state == ValueState::CHANGED ||
+        value_state == ValueState::CHANGED_VIA_HMAC_FALLBACK ||
+        value_state == ValueState::CHANGED_ENCRYPTED) {
       DCHECK(!invalid_keys.empty());
 
-      for (std::vector<std::string>::const_iterator it = invalid_keys.begin();
-           it != invalid_keys.end(); ++it) {
-        dict_value->Remove(*it);
+      // `dict_value` can be null here. This happens when the entire preference
+      // dictionary is missing from the pref store, but a hash for it still
+      // exists in the hash store. As a result of the inconsistency, the
+      // function reports this as `CHANGED`. This check prevents a crash when
+      // attempting to reset keys on a non-existent dictionary.
+      if (dict_value) {
+        for (const std::string& key : invalid_keys) {
+          base::Value new_path(pref_path_ + "." + key);
+          if (!base::Contains(*reset_prefs_list, new_path)) {
+            reset_prefs_list->Append(std::move(new_path));
+          }
+          dict_value->Remove(key);
+        }
       }
     } else {
+      if (value) {
+        base::Value new_path(pref_path_);
+        if (!base::Contains(*reset_prefs_list, new_path)) {
+          reset_prefs_list->Append(std::move(new_path));
+        }
+      }
       pref_store_contents.RemoveByDottedPath(pref_path_);
     }
     was_reset = true;
   }
 
-  if (value_state != ValueState::UNCHANGED) {
+  if (value_state != ValueState::UNCHANGED &&
+      value_state != ValueState::UNCHANGED_ENCRYPTED) {
     // Store the hash for the new value (whether it was reset or not).
     transaction->StoreSplitHash(
         pref_path_, pref_store_contents.FindDictByDottedPath(pref_path_));
+
+    if (encryptor) {
+      transaction->StoreSplitEncryptedHash(
+          pref_path_, pref_store_contents.FindDictByDottedPath(pref_path_));
+    }
   }
 
   // Update MACs in the external store if there is one and there either was a
@@ -114,6 +159,10 @@ bool TrackedSplitPreference::EnforceAndReport(
       (was_reset || external_validation_value_state != ValueState::UNCHANGED)) {
     external_validation_transaction->StoreSplitHash(
         pref_path_, pref_store_contents.FindDictByDottedPath(pref_path_));
+    if (encryptor) {
+      external_validation_transaction->StoreSplitEncryptedHash(
+          pref_path_, pref_store_contents.FindDictByDottedPath(pref_path_));
+    }
   }
 
   return was_reset;

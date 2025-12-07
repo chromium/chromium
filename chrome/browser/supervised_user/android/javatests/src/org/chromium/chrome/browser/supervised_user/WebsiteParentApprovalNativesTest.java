@@ -31,7 +31,9 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.superviseduser.FilteringBehavior;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
@@ -59,8 +61,8 @@ public class WebsiteParentApprovalNativesTest {
     // TODO(b/243916194): Expand the test coverage beyond the completion callback, up to the page
     // refresh.
 
-    public ChromeTabbedActivityTestRule mTabbedActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mTabbedActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
     public SigninTestRule mSigninTestRule = new SigninTestRule();
 
     // Destroy TabbedActivityTestRule before SigninTestRule to remove observers of
@@ -81,12 +83,13 @@ public class WebsiteParentApprovalNativesTest {
     private BottomSheetTestSupport mBottomSheetTestSupport;
 
     @Mock private ParentAuthDelegate mParentAuthDelegateMock;
+    private WebPageStation mPage;
 
     @Before
     public void setUp() throws TimeoutException {
-        mTestServer = mTabbedActivityTestRule.getEmbeddedTestServerRule().getServer();
+        mTestServer = mTabbedActivityTestRule.getTestServer();
         mBlockedUrl = mTestServer.getURL(TEST_PAGE);
-        mTabbedActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mTabbedActivityTestRule.startOnBlankPage();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeTabbedActivity activity = mTabbedActivityTestRule.getActivity();
@@ -129,7 +132,7 @@ public class WebsiteParentApprovalNativesTest {
                 HistogramWatcher.newBuilder()
                         .expectAnyRecord(
                                 "FamilyLinkUser.LocalWebApprovalCompleteRequestTotalDuration")
-                        .expectIntRecord("FamilyLinkUser.LocalWebApprovalResult", /* Approved= */ 0)
+                        .expectIntRecord("FamilyLinkUser.LocalWebApprovalResult", /* value= */ 0)
                         .build();
 
         WebsiteParentApprovalTestUtils.clickAskInPerson(mWebContents);
@@ -151,7 +154,7 @@ public class WebsiteParentApprovalNativesTest {
                 HistogramWatcher.newBuilder()
                         .expectAnyRecord(
                                 "FamilyLinkUser.LocalWebApprovalCompleteRequestTotalDuration")
-                        .expectIntRecord("FamilyLinkUser.LocalWebApprovalResult", /* Declined= */ 1)
+                        .expectIntRecord("FamilyLinkUser.LocalWebApprovalResult", /* value= */ 1)
                         .build();
 
         WebsiteParentApprovalTestUtils.clickAskInPerson(mWebContents);
@@ -171,7 +174,7 @@ public class WebsiteParentApprovalNativesTest {
         mTabbedActivityTestRule.loadUrl(mBlockedUrl);
         var histograms =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "FamilyLinkUser.LocalWebApprovalResult", /* Cancelled= */ 2);
+                        "FamilyLinkUser.LocalWebApprovalResult", /* value= */ 2);
 
         WebsiteParentApprovalTestUtils.clickAskInPerson(mWebContents);
 
@@ -191,8 +194,8 @@ public class WebsiteParentApprovalNativesTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 "FamilyLinkUser.LocalWebApprovalResult",
-                                /* Approved= */ 0,
-                                /* Cancelled= */ 2)
+                                /* values...= */ 0,
+                                /* Cancelled */ 2)
                         .build();
 
         WebsiteParentApprovalTestUtils.clickAskInPerson(mWebContents);

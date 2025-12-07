@@ -9,12 +9,13 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{एक दिन पहले}one{# दिन पहले}other{# दिन पहले}}</translation>
 <translation id="1181037720776840403">हटाएं</translation>
 <translation id="1243314992276662751">अपलोड करें</translation>
+<translation id="1253734725326687145">टच टारगेट (स्क्रीन के वे हिस्से जहां छूने पर कोई कार्रवाई होती है) को सबसे ऊपर दाईं ओर ले जाया गया. यहां टैप करें.</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> शेयर नहीं किया जा सका</translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">टेक्स्ट को छोटे-छोटे हिस्सों में शेयर करने की कोशिश करें.</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1368832886055348810">बाएं से दाएं</translation>
-<translation id="1383876407941801731">Search</translation>
+<translation id="1383876407941801731">खोजें</translation>
 <translation id="1398853756734560583">बड़ा करें</translation>
 <translation id="1432724887402139994">{SECONDS,plural, =1{एक मिनट पहले}one{# मिनट पहले}other{# मिनट पहले}}</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> शेयर नहीं किया जा सकता</translation>
@@ -38,6 +39,7 @@
 <translation id="19085484004813472">यह नई सुविधा है</translation>
 <translation id="2006524834898217237">पक्का करें कि यह डिवाइस इंटरनेट से कनेक्ट है.</translation>
 <translation id="208586643495776849">कृपया दोबारा कोशिश करें</translation>
+<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />गुप्त मोड में एक्सटेंशन इस्तेमाल करने की अनुमति दें<ph name="END_BOLD" /> को चालू करें</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1d}one{#d}other{#d}}</translation>
 <translation id="2148716181193084225">आज</translation>
 <translation id="2168039046890040389">पेज ऊपर</translation>
@@ -48,12 +50,14 @@
 <translation id="2289052229480071835">अपनी स्क्रीन पर स्पर्श लक्ष्य पर टैप करें.</translation>
 <translation id="2295140143284145483">सर्वे</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> आईडी वाला एक्सटेंशन नहीं मिला. अपने एडमिन से संपर्क करें.}one{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> आईडी वाला एक्सटेंशन नहीं मिला. अपने एडमिन से संपर्क करें.}other{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> आईडी वाले एक्सटेंशन नहीं मिले. अपने एडमिन से संपर्क करें.}}</translation>
 <translation id="2353636109065292463">आपके इंटरनेट कनेक्शन की जाँच की जा रही है</translation>
 <translation id="2359808026110333948">जारी रखें</translation>
 <translation id="2388990488038464401">अपने फ़ोन से इस नंबर पर कॉल करना चाहते हैं?</translation>
 <translation id="2435457462613246316">पासवर्ड दिखाएं</translation>
 <translation id="24452542372838207">पूरी सूचना दिखाएं</translation>
 <translation id="2445449901874883781">ज़्यादा सघनता का इस्तेमाल करें</translation>
+<translation id="2448407890032181691">टच टारगेट (स्क्रीन के वे हिस्से जहां छूने पर कोई कार्रवाई होती है) को सबसे नीचे दाईं ओर ले जाया गया. यहां टैप करें.</translation>
 <translation id="2482878487686419369">सूचनाएं</translation>
 <translation id="2497284189126895209">सभी फ़ाइलें</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -70,6 +74,7 @@
 <translation id="2878511608894704031">सभी आइटम मिटाएं</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 दिन में}one{# दिन में}other{# दिन में}}</translation>
 <translation id="2922712708897119705"><ph name="COLUMN_NAME" /> कॉलम को घटते क्रम में लगाया गया.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{एक्सटेंशन नहीं मिला}one{एक्सटेंशन नहीं मिला}other{एक्सटेंशन नहीं मिले}}</translation>
 <translation id="3036649622769666520">फ़ाइलें खोलें</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> एमबी</translation>
 <translation id="3087734570205094154">नीचे</translation>
@@ -77,11 +82,12 @@
 <translation id="3157931365184549694">वापस लाएं</translation>
 <translation id="3183922693828471536">यहां तक स्क्रोल करें</translation>
 <translation id="3234408098842461169">नीचे तीर</translation>
-<translation id="3240426699337459095">लिंक कॉपी की गई</translation>
+<translation id="3240426699337459095">लिंक कॉपी किया गया</translation>
 <translation id="3291688615589870984">{DAYS,plural, =1{1 दिन}one{# दिन}other{# दिन}}</translation>
 <translation id="3295886253693811851">कॉल करने के लिए एक विकल्प चुनें</translation>
 <translation id="3306688585798492231">पहले से मौजूद डिसप्ले</translation>
 <translation id="335581015389089642">बोली</translation>
+<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />जानकारी<ph name="END_BOLD" /> पर क्लिक करें</translation>
 <translation id="3389286852084373014">टेक्स्ट बहुत बड़ा है</translation>
 <translation id="3406306243914553062">एचटीएमएल कॉन्टेंट</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1 दिन शेष}one{# दिन शेष}other{# दिन शेष}}</translation>
@@ -102,7 +108,9 @@
 <translation id="3994749195054421561"><ph name="COLUMN_NAME" /> कॉलम को बढ़ते क्रम में लगाया गया.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 न पढ़ी गई सूचना}one{# न पढ़ी गई सूचनाएं}other{# न पढ़ी गई सूचनाएं}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{इस एक्सटेंशन को गुप्त मोड में चालू करें:}one{इस एक्सटेंशन को गुप्त मोड में चालू करें:}other{इन एक्सटेंशन को गुप्त मोड में चालू करें:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 महीने पहले}one{# महीने पहले}other{# महीने पहले}}</translation>
+<translation id="4277033906326892359"><ph name="COLUMN_NAME" /> कॉलम को बढ़ते क्रम में लगाया गया है</translation>
 <translation id="4289300219472526559">बोलना प्रारंभ करें</translation>
 <translation id="4289540628985791613">संक्षिप्त विवरण</translation>
 <translation id="4491109536499578614">इमेज</translation>
@@ -113,6 +121,8 @@
 <translation id="4729257764711776855">नंबर</translation>
 <translation id="4746179598275229723">एक्सटेंशन अनपिन किया गया</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 माह शेष}one{# माह शेष}other{# माह शेष}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{गुप्त मोड का इस्तेमाल करने के लिए, आपके संगठन को एक्सटेंशन की ज़रूरत है}one{गुप्त मोड का इस्तेमाल करने के लिए, आपके संगठन को एक्सटेंशन की ज़रूरत है}other{गुप्त मोड का इस्तेमाल करने के लिए, आपके संगठन को एक्सटेंशन की ज़रूरत है}}</translation>
+<translation id="482932175346970750">अपने ब्राउज़र में <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> टाइप करें</translation>
 <translation id="4888938634149558681">कॉल करें</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 सेकंड}one{# सेकंड}other{# सेकंड}}</translation>
@@ -121,6 +131,7 @@
 <translation id="5076340679995252485">&amp;चिपकाएं</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">भेजा नहीं जा सका</translation>
+<translation id="5283101102242354279">गुप्त मोड में कोई एक्सटेंशन चालू करने के लिए:</translation>
 <translation id="528468243742722775">खत्म</translation>
 <translation id="5329858601952122676">&amp;हटाएं</translation>
 <translation id="5361107212971249203">टेक्स्ट</translation>
@@ -129,13 +140,16 @@
 <translation id="5528053674512161860">पेज लोड नहीं हो पाया, क्योंकि डेवलपर यूज़र इंटरफ़ेस (यूआई) मॉड्यूल (dev_ui) इंस्टॉल नहीं है</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> सिस्टम</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5606865426897221650">टैब</translation>
 <translation id="5613020302032141669">बायां तीर</translation>
 <translation id="5633029987065897167">कोई भी एंट्री मौजूद नहीं है</translation>
+<translation id="5651438382973553530">टच टारगेट (स्क्रीन के वे हिस्से जहां छूने पर कोई कार्रवाई होती है) को सबसे नीचे बाईं ओर ले जाया गया. यहां टैप करें.</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 मिनट}one{# मिनट}other{# मिनट}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{आज चालू है}=1{1 दिन पहले चालू किया गया}one{# दिन पहले चालू किया गया}other{# दिन पहले चालू किया गया}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 दिन और }one{# दिन और }other{# दिन और }}</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5843690142429128814">इमेज.</translation>
+<translation id="5860491529813859533">चालू करें</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{1साल में}one{# साल में}other{# साल में}}</translation>
 <translation id="588258955323874662">पूर्णस्‍क्रीन</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 सेकंड शेष}one{# सेकंड शेष}other{# सेकंड शेष}}</translation>
@@ -151,6 +165,7 @@
 <translation id="6264365405983206840">&amp;सभी को चुनें</translation>
 <translation id="6346952829206698721">क्लिपबोर्ड से चिपकाएं</translation>
 <translation id="6364916375976753737">बाएं स्क्रोल करें</translation>
+<translation id="63712816010840859">अगर मौजूदा डिसप्ले टचस्क्रीन नहीं है, तो Esc बटन दबाएं.</translation>
 <translation id="6394627529324717982">अल्पविराम</translation>
 <translation id="6397363302884558537">बोलना रोकें</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{1 सेकंड पहले}one{# सेकंड पहले}other{# सेकंड पहले}}</translation>
@@ -162,6 +177,8 @@
 <translation id="6612467943526193239">कैलिब्रेशन से बाहर निकलने के लिए Esc दबाएं.</translation>
 <translation id="6620110761915583480">फ़ाइल सेव करें</translation>
 <translation id="6699343763173986273">मीडिया अगला ट्रैक</translation>
+<translation id="6738856801552481343">अगर यह डिसप्ले टचस्क्रीन नहीं है, तो Esc बटन दबाएं.</translation>
+<translation id="6807086321996342431"><ph name="COLUMN_NAME" /> कॉलम</translation>
 <translation id="6808150112686056157">मीडिया रोकें</translation>
 <translation id="6845383723252244143">फ़ोल्डर को चुनें</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 घंटा शेष}one{# घंटे शेष}other{# घंटे शेष}}</translation>
@@ -176,6 +193,7 @@
 <translation id="7170202025028120564">आपके ऐप्लिकेशन की डिसप्ले सेटिंग, रीस्टार्ट होने पर लागू होंगी.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 मिनट शेष}one{# मिनट शेष}other{# मिनट शेष}}</translation>
+<translation id="7252604552361840748">ऊपर दिया गया एक्सटेंशन ढूंढें</translation>
 <translation id="7363164521834647158">जवाब भेजें</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 मिनट पहले}one{# मिनट पहले}other{# मिनट पहले}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
@@ -192,16 +210,15 @@
 <translation id="7969046989155602842">निर्देश</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{1 से ज़्यादा न पढ़ी गई सूचना}one{# से ज़्यादा न पढ़ी गई सूचनाएं}other{# से ज़्यादा न पढ़ी गई सूचनाएं}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{1 मिनट में}one{# मिनट में}other{# मिनट में}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568"><ph name="ORIGIN" /> से नंबर</translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{1 घंटा पहले}one{# घंटे पहले}other{# घंटे पहले}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 सेकंड शेष}one{# सेकंड शेष}other{# सेकंड शेष}}</translation>
 <translation id="8134065097954893699">इस पेज को फिर से लोड करें</translation>
+<translation id="813785873406874127"><ph name="COLUMN_NAME" /> कॉलम को किसी क्रम में नहीं लगाया है</translation>
 <translation id="815598010540052116">नीचे स्क्रोल करें</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">पेज डाउन</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8245914219290430011">टैब</translation>
 <translation id="8259556432390118667">हेक्स रंग मान</translation>
 <translation id="8328145009876646418">बायां सिरा</translation>
 <translation id="8331626408530291785">ऊपर स्क्रोल करें</translation>
@@ -209,6 +226,7 @@
 <translation id="8393700583063109961">संदेश भेजें</translation>
 <translation id="8394908167088220973">मीडिया चलाएं/रोकें</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1y}one{#y}other{#y}}</translation>
+<translation id="8582972250170726813"><ph name="COLUMN_NAME" /> कॉलम को घटते क्रम में लगाया गया है</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> फ़ाइल (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> केबी/सेकंड</translation>
@@ -225,6 +243,8 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 सेकंड}one{# सेकंड}other{# सेकंड}}</translation>
 <translation id="9059834730836941392">सूचना को छोटा करें</translation>
 <translation id="9170848237812810038">&amp;पूर्ववत् करें</translation>
+<translation id="9195990613383871904">कल</translation>
+<translation id="928628199082367701">सुपर</translation>
 <translation id="932327136139879170">होम बटन</translation>
 <translation id="944069440740578670">न पढ़ी गई सूचनाएं</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{एक सेकंड पहले}one{# सेकंड पहले}other{# सेकंड पहले}}</translation>

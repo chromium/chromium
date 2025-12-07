@@ -1,0 +1,532 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//components/enterprise/buildflags/buildflags.gni")
+import("//components/safe_browsing/buildflags.gni")
+import("//components/services/on_device_translation/buildflags/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+import("//pdf/features.gni")
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+source_set("prefs") {
+  sources = [
+    "browser_prefs.h",
+    "chrome_command_line_pref_store.h",
+    "chrome_pref_model_associator_client.h",
+    "chrome_pref_service_factory.h",
+    "incognito_mode_prefs.h",
+    "pref_metrics_service.h",
+    "profile_pref_store_manager.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/sync",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/sync_preferences",
+    "//mojo/public/cpp/bindings",
+    "//services/preferences/public/mojom",
+    "//third_party/blink/public/mojom:mojom_platform_headers",
+    "//url",
+  ]
+
+  if (!is_android) {
+    sources += [
+      "persistent_renderer_prefs_manager.h",
+      "persistent_renderer_prefs_manager_factory.h",
+    ]
+  }
+}
+
+source_set("impl") {
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  sources = [
+    "browser_prefs.cc",
+    "chrome_command_line_pref_store.cc",
+    "chrome_pref_model_associator_client.cc",
+    "chrome_pref_service_factory.cc",
+    "incognito_mode_prefs.cc",
+    "pref_metrics_service.cc",
+    "profile_pref_store_manager.cc",
+  ]
+
+  deps = [
+    ":prefs",
+    ":util",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:flags",
+    "//chrome/browser/autocomplete:aim_eligibility_service",
+    "//chrome/browser/devtools",
+    "//chrome/browser/media/prefs",
+    "//chrome/browser/media/router:media_router_feature",
+    "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
+    "//chrome/browser/media/webrtc",
+    "//chrome/browser/permissions",
+    "//chrome/browser/platform_experience:prefs",
+    "//chrome/browser/preloading:prefs",
+    "//chrome/browser/privacy_sandbox/notice:core",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_util",
+    "//chrome/browser/search",
+    "//chrome/browser/search/background",
+    "//chrome/browser/serial",
+    "//chrome/browser/signin:signin_promo",
+    "//chrome/browser/subscription_eligibility",
+    "//chrome/browser/sync",
+    "//chrome/browser/task_manager",
+    "//chrome/browser/ui/hats",
+    "//chrome/browser/ui/prefs",
+    "//chrome/browser/ui/profiles",
+    "//chrome/browser/ui/safety_hub",
+    "//chrome/browser/ui/search_engines",
+    "//chrome/browser/ui/side_search",
+    "//chrome/browser/ui/startup",
+    "//chrome/browser/ui/startup:startup_tab",
+    "//chrome/browser/ui/toolbar",
+    "//chrome/browser/ui/toolbar/chrome_labs",
+    "//chrome/browser/ui/webui/accessibility",
+    "//chrome/browser/updates/announcement_notification",
+    "//chrome/browser/webauthn",
+    "//components/blocked_content",
+    "//components/bookmarks/common",
+    "//components/breadcrumbs/core:status",
+    "//components/browser_sync:switches",
+    "//components/browsing_data/core",
+    "//components/certificate_transparency",
+    "//components/collaboration/public:prefs",
+    "//components/commerce/core:prefs",
+    "//components/content_settings/core/browser",
+    "//components/contextual_search:public",
+    "//components/custom_handlers",
+    "//components/domain_reliability:prefs",
+    "//components/enterprise/browser/identifiers",
+    "//components/enterprise/browser/promotion:prefs",
+    "//components/enterprise/connectors/core",
+    "//components/feature_engagement/public:prefs",
+    "//components/history_clusters/core",
+    "//components/image_fetcher/core/cache",
+    "//components/invalidation:legacy_topics_cleanup",
+    "//components/language/content/browser",
+    "//components/language/content/browser/ulp_language_code_locator",
+    "//components/language/core/browser",
+    "//components/lens:buildflags",
+    "//components/lens:enterprise_policy",
+    "//components/lookalikes/core",
+    "//components/media_device_salt",
+    "//components/metrics/demographics",
+    "//components/network_time",
+    "//components/ntp_tiles:pref_names",
+    "//components/omnibox/browser",
+    "//components/optimization_guide/core:features",
+    "//components/password_manager/core/browser",
+    "//components/performance_manager",
+    "//components/permissions",
+    "//components/plus_addresses/core/common:prefs",
+    "//components/pref_registry",
+    "//components/privacy_sandbox:privacy_sandbox_prefs",
+    "//components/privacy_sandbox:tpcd",
+    "//components/proxy_config",
+    "//components/reading_list/core",
+    "//components/regional_capabilities",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safety_check:prefs",
+    "//components/saved_tab_groups/public:prefs",
+    "//components/security_interstitials/content:security_interstitial_page",
+    "//components/segmentation_platform/embedder/default_model",
+    "//components/signin/core/browser",
+    "//components/site_engagement/content",
+    "//components/subresource_filter/content/shared/browser",
+    "//components/subresource_filter/core/common",
+    "//components/supervised_user/core/browser",
+    "//components/sync_preferences",
+    "//components/sync_preferences/cross_device_pref_tracker/prefs",
+    "//components/sync_sessions",
+    "//components/tpcd/metadata/browser:prefs",
+    "//components/ukm",
+    "//components/update_client",
+    "//components/variations/service",
+    "//components/visited_url_ranking/internal:internal_url_grouping",
+    "//components/wallet/core/common:prefs",
+    "//components/webui/chrome_urls",
+    "//components/webui/flags",
+    "//services/preferences/public/cpp/tracked",
+    "//services/preferences/public/mojom",
+    "//services/preferences/tracked",
+    "//services/preferences/tracked:features",
+  ]
+
+  if (enable_extensions_core) {
+    deps += [ "//extensions/common" ]
+  }
+
+  if (enable_background_mode) {
+    deps += [ "//chrome/browser/background/extensions" ]
+  }
+
+  if (is_chromeos) {
+    deps += [
+      "//ash",
+      "//chrome/browser/apps/app_discovery_service",
+      "//chrome/browser/apps/app_preload_service",
+      "//chrome/browser/apps/app_service",
+      "//chrome/browser/ash/account_manager",
+      "//chrome/browser/ash/app_list",
+      "//chrome/browser/ash/app_list/arc",
+      "//chrome/browser/ash/app_mode",
+      "//chrome/browser/ash/app_restore",
+      "//chrome/browser/ash/apps",
+      "//chrome/browser/ash/apps/webapk:prefs",
+      "//chrome/browser/ash/arc/boot_phase_monitor",
+      "//chrome/browser/ash/arc/policy",
+      "//chrome/browser/ash/arc/session",
+      "//chrome/browser/ash/bluetooth",
+      "//chrome/browser/ash/borealis",
+      "//chrome/browser/ash/bruschetta",
+      "//chrome/browser/ash/cert_provisioning",
+      "//chrome/browser/ash/child_accounts",
+      "//chrome/browser/ash/child_accounts/parent_access_code",
+      "//chrome/browser/ash/child_accounts/time_limits",
+      "//chrome/browser/ash/crostini",
+      "//chrome/browser/ash/cryptauth",
+      "//chrome/browser/ash/customization",
+      "//chrome/browser/ash/device_name",
+      "//chrome/browser/ash/extensions",
+      "//chrome/browser/ash/file_manager",
+      "//chrome/browser/ash/file_system_provider",
+      "//chrome/browser/ash/first_run",
+      "//chrome/browser/ash/floating_workspace:utils",
+      "//chrome/browser/ash/guest_os",
+      "//chrome/browser/ash/kerberos",
+      "//chrome/browser/ash/login",
+      "//chrome/browser/ash/login/demo_mode",
+      "//chrome/browser/ash/login/quick_unlock",
+      "//chrome/browser/ash/login/reporting",
+      "//chrome/browser/ash/login/saml",
+      "//chrome/browser/ash/login/screens",
+      "//chrome/browser/ash/login/session",
+      "//chrome/browser/ash/login/signin",
+      "//chrome/browser/ash/login/users/avatar",
+      "//chrome/browser/ash/net",
+      "//chrome/browser/ash/performance",
+      "//chrome/browser/ash/platform_keys/key_permissions",
+      "//chrome/browser/ash/plugin_vm",
+      "//chrome/browser/ash/policy/core",
+      "//chrome/browser/ash/policy/enrollment",
+      "//chrome/browser/ash/policy/external_data/handlers",
+      "//chrome/browser/ash/policy/handlers",
+      "//chrome/browser/ash/policy/networking",
+      "//chrome/browser/ash/policy/remote_commands/crd",
+      "//chrome/browser/ash/policy/reporting",
+      "//chrome/browser/ash/policy/reporting/metrics_reporting",
+      "//chrome/browser/ash/policy/scheduled_task_handler",
+      "//chrome/browser/ash/policy/status_collector",
+      "//chrome/browser/ash/power",
+      "//chrome/browser/ash/power/auto_screen_brightness",
+      "//chrome/browser/ash/preferences",
+      "//chrome/browser/ash/printing",
+      "//chrome/browser/ash/printing/enterprise",
+      "//chrome/browser/ash/release_notes",
+      "//chrome/browser/ash/scanning",
+      "//chrome/browser/ash/settings",
+      "//chrome/browser/ash/system",
+      "//chrome/browser/ash/system_web_apps/apps/help_app",
+      "//chrome/browser/ash/system_web_apps/apps/media_app",
+      "//chrome/browser/ash/wallpaper_handlers",
+      "//chrome/browser/chromeos/enterprise/cloud_storage:cloud_storage_pref_utils",
+      "//chrome/browser/chromeos/extensions/echo_private:echo_private_api_util",
+      "//chrome/browser/chromeos/extensions/login_screen/login",
+      "//chrome/browser/chromeos/policy/dlp",
+      "//chrome/browser/chromeos/reporting",
+      "//chrome/browser/chromeos/upload_office_to_cloud",
+      "//chrome/browser/extensions/api/document_scan:profile_prefs_registry_util",
+      "//chrome/browser/extensions/api/enterprise_platform_keys:enterprise_platform_keys_registry_util",
+      "//chrome/browser/nearby_sharing/common",
+      "//chrome/browser/policy:onc",
+      "//chrome/browser/policy:system_features_disable_list",
+      "//chrome/browser/ui/ash/projector",
+      "//chrome/browser/ui/ash/shelf",
+      "//chrome/browser/ui/webui/ash/edu_coexistence",
+      "//chrome/browser/ui/webui/ash/login",
+      "//chrome/browser/ui/webui/ash/settings",
+      "//chrome/browser/ui/webui/signin/ash",
+      "//chromeos/ash/components/audio",
+      "//chromeos/ash/components/boca/babelorca",
+      "//chromeos/ash/components/boca/on_task",
+      "//chromeos/ash/components/carrier_lock",
+      "//chromeos/ash/components/demo_mode",
+      "//chromeos/ash/components/local_search_service",
+      "//chromeos/ash/components/network",
+      "//chromeos/ash/components/policy",
+      "//chromeos/ash/components/quickoffice",
+      "//chromeos/ash/components/report",
+      "//chromeos/ash/components/scheduler_config",
+      "//chromeos/ash/components/timezone",
+      "//chromeos/ash/experiences/arc:prefs",
+      "//chromeos/ash/services/assistant/public/cpp",
+      "//chromeos/ash/services/auth_factor_config",
+      "//chromeos/ash/services/bluetooth_config",
+      "//chromeos/ash/services/device_sync/public/cpp:prefs",
+      "//chromeos/ash/services/multidevice_setup",
+      "//chromeos/components/quick_answers/public/cpp:prefs",
+      "//chromeos/constants",
+      "//chromeos/ui/wm",
+      "//components/onc",
+      "//components/quirks",
+    ]
+  }
+
+  if (is_win || is_mac || is_linux) {
+    deps += [
+      "//chrome/browser/browser_switcher",
+      "//chrome/browser/ui/webui/whats_new",
+    ]
+  }
+
+  if (is_win) {
+    deps += [
+      "//chrome/browser/os_crypt",
+      "//chrome/browser/webnn",
+    ]
+  }
+
+  if (is_android) {
+    deps += [
+      "//chrome/browser/notifications",
+      "//chrome/browser/notifications:notifications_java_enum_srcjar",
+      "//chrome/browser/partnerbookmarks:android",
+      "//chrome/browser/password_manager/android:utils",
+      "//chrome/browser/readaloud/android:native",
+      "//chrome/browser/search_engines",
+    ]
+  } else {
+    deps += [
+      "//chrome/browser/actor/ui",
+      "//chrome/browser/contextual_cueing",
+      "//chrome/browser/device_identity",
+      "//chrome/browser/promos:utils",
+      "//chrome/browser/screen_ai:prefs",
+      "//chrome/browser/search_engine_choice",
+      "//chrome/browser/search_engines",
+      "//chrome/browser/sharing_hub",
+      "//chrome/browser/ui/commerce",
+      "//chrome/browser/ui/extensions",
+      "//chrome/browser/ui/performance_controls",
+      "//chrome/browser/ui/send_tab_to_self",
+      "//chrome/browser/ui/tabs",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/tabs/organization",
+      "//chrome/browser/ui/tabs/saved_tab_groups",
+      "//chrome/browser/ui/views/side_panel",
+      "//chrome/browser/user_education",
+      "//components/headless/policy",
+      "//components/live_caption",
+      "//components/live_caption:live_translate",
+    ]
+    sources += [
+      "persistent_renderer_prefs_manager.cc",
+      "persistent_renderer_prefs_manager_factory.cc",
+    ]
+  }
+
+  if (enable_extensions) {
+    deps += [
+      "//chrome/browser/apps/platform_apps",
+      "//extensions/browser/api/audio",
+      "//extensions/browser/api/runtime",
+    ]
+  }
+
+  if (enable_extensions_core) {
+    deps += [
+      "//chrome/browser/extensions",
+      "//extensions/browser",
+    ]
+  }
+
+  if (enable_on_device_translation) {
+    deps += [ "//chrome/browser/on_device_translation" ]
+  }
+
+  if (enterprise_data_controls) {
+    deps += [ "//components/enterprise/data_controls/core/browser" ]
+  }
+
+  if (enable_pdf) {
+    deps += [ "//chrome/browser/pdf:pdf_pref_names" ]
+  }
+
+  if (safe_browsing_mode != 0) {
+    deps += [ "//components/safe_browsing/content/common:file_type_policies" ]
+  }
+
+  if (is_mac) {
+    deps += [ "//chrome/browser/web_applications" ]
+  }
+
+  if (enable_glic) {
+    deps += [
+      "//chrome/browser/background/glic",
+      "//chrome/browser/glic",
+    ]
+  }
+
+  if (!is_android && !is_chromeos) {
+    deps += [ "//chrome/browser/ui/startup/default_browser_prompt" ]
+  }
+}
+
+# There are users of this util such as //c/b/ash/app_restore. If it's part of
+# the main target, circular dependency happens as :prefs also depends on that.
+source_set("util") {
+  sources = [
+    "pref_service_incognito_allowlist.h",
+    "pref_service_syncable_util.h",
+    "session_startup_pref.h",
+  ]
+
+  public_deps = [
+    "//components/prefs",
+    "//url",
+  ]
+}
+
+source_set("util_impl") {
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  sources = [
+    "pref_service_incognito_allowlist.cc",
+    "pref_service_syncable_util.cc",
+    "session_startup_pref.cc",
+  ]
+
+  deps = [
+    ":util",
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/startup:startup_tab",
+    "//chrome/common:constants",
+    "//components/bookmarks/common",
+    "//components/content_settings/core/common",
+    "//components/metrics:metrics_pref_names",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/reading_list/core",
+    "//components/sync_preferences",
+    "//components/ukm",
+    "//components/url_formatter",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "browser_prefs_unittest.cc",
+    "chrome_command_line_pref_store_proxy_unittest.cc",
+    "chrome_command_line_pref_store_ssl_manager_unittest.cc",
+    "chrome_command_line_pref_store_unittest.cc",
+    "chrome_pref_service_factory_unittest.cc",
+    "chrome_pref_service_unittest.cc",
+    "incognito_mode_prefs_unittest.cc",
+    "profile_pref_store_manager_unittest.cc",
+    "proxy_policy_unittest.cc",
+    "session_startup_pref_unittest.cc",
+  ]
+
+  deps = [
+    ":prefs",
+    ":util",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile_util",
+    "//chrome/browser/profiles:profiles_extra_parts",
+    "//chrome/common:constants",
+    "//chrome/common:non_code_constants",
+    "//chrome/test:test_support",
+    "//components/language/core/browser",
+    "//components/performance_manager",
+    "//components/policy:generated",
+    "//components/policy:policy_code_generate",
+    "//components/policy/core/common",
+    "//components/policy/core/common:common_constants",
+    "//components/policy/core/common:test_support",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/proxy_config",
+    "//components/sync/base",
+    "//components/sync_preferences",
+    "//components/sync_preferences:test_support",
+    "//content/public/browser",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//net:test_support",
+    "//services/cert_verifier/public/mojom",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//services/preferences/public/cpp/tracked",
+    "//services/preferences/public/cpp/tracked:test_support",
+    "//services/preferences/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public/common:headers",
+    "//ui/base",
+    "//url",
+  ]
+
+  if (!is_android) {
+    sources += [ "persistent_renderer_prefs_unittest.cc" ]
+  }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "pref_functional_browsertest.cc",
+      "pref_service_browsertest.cc",
+    ]
+
+    deps = [
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser",
+      "//chrome/browser/preloading:prefs",
+      "//chrome/browser/search_engines",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/common:constants",
+      "//chrome/common:non_code_constants",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/bookmarks/common",
+      "//components/content_settings/core/browser",
+      "//components/content_settings/core/common",
+      "//components/embedder_support",
+      "//components/safe_browsing/core/common:safe_browsing_prefs",
+      "//components/sync_preferences",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//testing/gmock",
+      "//ui/gfx/geometry",
+    ]
+  }
+}

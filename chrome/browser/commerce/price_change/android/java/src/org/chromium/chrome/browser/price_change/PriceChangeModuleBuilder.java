@@ -8,42 +8,44 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.magic_stack.ModuleConfigChecker;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.magic_stack.ModuleProviderBuilder;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** {@link ModuleProviderBuilder} that builds the price change module. */
+@NullMarked
 public class PriceChangeModuleBuilder implements ModuleProviderBuilder, ModuleConfigChecker {
     private final Context mContext;
-    private final ObservableSupplier<Profile> mProfileSupplier;
+    private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
     private final TabModelSelector mTabModelSelector;
 
     /** Pass in the dependencies needed to build {@link PriceChangeModuleCoordinator}. */
     public PriceChangeModuleBuilder(
-            @NonNull Context context,
-            @NonNull ObservableSupplier<Profile> profileSupplier,
-            @NonNull TabModelSelector tabModelSelector) {
+            Context context,
+            OneshotSupplier<ProfileProvider> profileProviderSupplier,
+            TabModelSelector tabModelSelector) {
         mContext = context;
-        mProfileSupplier = profileSupplier;
+        mProfileProviderSupplier = profileProviderSupplier;
         mTabModelSelector = tabModelSelector;
     }
 
     /** Build {@link ModuleProvider} for the price change module. */
     @Override
     public boolean build(
-            @NonNull ModuleDelegate moduleDelegate,
-            @NonNull Callback<ModuleProvider> onModuleBuiltCallback) {
+            ModuleDelegate moduleDelegate, Callback<ModuleProvider> onModuleBuiltCallback) {
+        var profileProvider = mProfileProviderSupplier.get();
+        if (profileProvider == null) return false;
+
         Profile profile = getRegularProfile();
         if (!PriceTrackingUtilities.isTrackPricesOnTabsEnabled(profile)) {
             return false;
@@ -57,7 +59,7 @@ public class PriceChangeModuleBuilder implements ModuleProviderBuilder, ModuleCo
 
     /** Create view for the price change module. */
     @Override
-    public ViewGroup createView(@NonNull ViewGroup parentView) {
+    public ViewGroup createView(ViewGroup parentView) {
         return (ViewGroup)
                 LayoutInflater.from(mContext)
                         .inflate(R.layout.price_change_module_layout, parentView, false);
@@ -65,10 +67,7 @@ public class PriceChangeModuleBuilder implements ModuleProviderBuilder, ModuleCo
 
     /** Bind the property model for the price change module. */
     @Override
-    public void bind(
-            @NonNull PropertyModel model,
-            @NonNull ViewGroup view,
-            @NonNull PropertyKey propertyKey) {
+    public void bind(PropertyModel model, ViewGroup view, PropertyKey propertyKey) {
         PriceChangeModuleViewBinder.bind(model, view, propertyKey);
     }
 
@@ -78,18 +77,16 @@ public class PriceChangeModuleBuilder implements ModuleProviderBuilder, ModuleCo
     public boolean isEligible() {
         // This function may be called by MainSettings when a profile hasn't been initialized yet.
         // See b/324138242.
-        if (!mProfileSupplier.hasValue()) return false;
+        var profileProvider = mProfileProviderSupplier.get();
+        if (profileProvider == null) return false;
 
         return PriceTrackingUtilities.isTrackPricesOnTabsEnabled(getRegularProfile());
     }
 
     /** Gets the regular profile if exists. */
-    @VisibleForTesting
-    Profile getRegularProfile() {
-        assert mProfileSupplier.hasValue();
+    private Profile getRegularProfile() {
+        assert mProfileProviderSupplier.get() != null;
 
-        Profile profile = mProfileSupplier.get();
-        // It is possible that an incognito profile is provided by the supplier. See b/326619334.
-        return profile.isOffTheRecord() ? profile.getOriginalProfile() : profile;
+        return mProfileProviderSupplier.get().getOriginalProfile();
     }
 }

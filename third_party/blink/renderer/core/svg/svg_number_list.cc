@@ -18,11 +18,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/svg/svg_number_list.h"
 
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
@@ -37,13 +32,14 @@ SVGNumberList::SVGNumberList() = default;
 SVGNumberList::~SVGNumberList() = default;
 
 template <typename CharType>
-SVGParsingError SVGNumberList::Parse(const CharType*& ptr,
-                                     const CharType* end) {
-  const CharType* list_start = ptr;
-  while (ptr < end) {
+SVGParsingError SVGNumberList::Parse(base::span<const CharType> span) {
+  const size_t list_start_size = span.size();
+  while (!span.empty()) {
     float number = 0;
-    if (!ParseNumber(ptr, end, number))
-      return SVGParsingError(SVGParseStatus::kExpectedNumber, ptr - list_start);
+    if (!ParseNumber(span, number)) {
+      return SVGParsingError(SVGParseStatus::kExpectedNumber,
+                             list_start_size - span.size());
+    }
     Append(MakeGarbageCollected<SVGNumber>(number));
   }
   return SVGParseStatus::kNoError;
@@ -58,9 +54,7 @@ SVGParsingError SVGNumberList::SetValueAsString(const String& value) {
   // Don't call |clear()| if an error is encountered. SVG policy is to use
   // valid items before error.
   // Spec: http://www.w3.org/TR/SVG/single-page.html#implnote-ErrorProcessing
-  return WTF::VisitCharacters(value, [&](const auto* chars, unsigned length) {
-    return Parse(chars, chars + length);
-  });
+  return VisitCharacters(value, [&](auto chars) { return Parse(chars); });
 }
 
 void SVGNumberList::Add(const SVGPropertyBase* other,

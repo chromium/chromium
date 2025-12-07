@@ -36,7 +36,7 @@ def get_current_os():
     return {
         'Windows': 'win64',
         'Linux': 'linux',
-        'Darwin': 'mac',
+        'Darwin': 'mac-arm64' if platform.machine() == 'arm64' else 'mac',
     }[platform.system()]
 
 
@@ -67,14 +67,25 @@ def get_release_metadata_by_version(version):
 
 
 def get_release_metadata_by_channel(release_info):
+    os_to_platform = {
+        'linux': 'linux',
+        'linux-debug': 'linux',
+        'mac': 'mac',
+        'mac-arm64': 'mac',
+        'win64': 'win64',
+    }
+    platform = os_to_platform[release_info.os]
     uri = (f'https://chromiumdash.appspot.com/fetch_releases'
-           f'?platform={release_info.os}'
+           f'?platform={platform}'
            f'&channel={release_info.channel}'
            f'&num=1&offset=0')
-    json_response = fetch_json(uri)[0]
-    release_info.branch_position = json_response[
-        'chromium_main_branch_position']
-    release_info.version = json_response['version']
+    json_response = fetch_json(uri)
+    if not json_response:
+        fail(f'No releases found for platform "{platform}" '
+             f'and channel "{release_info.channel}"')
+    release = json_response[0]
+    release_info.branch_position = release['chromium_main_branch_position']
+    release_info.version = release['version']
 
 
 def get_release_metadata(release_info):
@@ -117,11 +128,11 @@ def download_asan_chrome(release_info, download_dir, quiet, retries=100):
     os_to_path = {
         'win64': 'win32-release_x64/asan-win32-release_x64',
         'linux': 'linux-release/asan-linux-release',
-        'linux_debug': 'linux-debug/asan-linux-debug',
+        'linux-debug': 'linux-debug/asan-linux-debug',
         'mac': 'mac-release/asan-mac-release',
-        'mac_debug': 'mac-release/asan-mac-debug',
+        'mac-arm64': 'mac-release-arm64/asan-mac-release',
+        # 'mac_debug': 'mac-debug/asan-mac-debug',
         # 'ios': 'ios-release/asan-ios-release', # unsupported
-        'lacros': 'linux-release-chromeos/asan-linux-release',
         # android is currently unsupported
     }
 
@@ -178,7 +189,13 @@ if __name__ == '__main__':
                        help='Chromium channel, e.g. canary.')
     parser.add_argument(
         '--os',
-        choices=['linux', 'mac', 'win64', 'lacros'],
+        choices=[
+            'win64',
+            'linux',
+            'linux-debug',
+            'mac',
+            'mac-arm64',
+        ],
         help='Operating system type as defined by Chromium Dash.')
     parser.add_argument(
         '--download_directory',

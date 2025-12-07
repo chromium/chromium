@@ -7,10 +7,10 @@
 #include <string>
 #include <variant>
 
-#include "base/functional/overloaded.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include "base/posix/safe_strerror.h"
@@ -78,6 +78,8 @@ constexpr std::string DeviceManagementStatusToString(
       return "Illegal account for packaged EDU license";
     case policy::DM_STATUS_SERVICE_INVALID_PACKAGED_DEVICE_FOR_KIOSK:
       return "Packaged license device can't enroll KIOSK";
+    case policy::DM_STATUS_SERVICE_ORG_UNIT_ENROLLMENT_LIMIT_EXCEEEDED:
+      return "Organization unit initial enrollment limit has been exceeded";
   }
 }
 
@@ -94,9 +96,15 @@ constexpr std::string ApplicationErrorToString(ApplicationError error) {
     case ApplicationError::kMojoConnectionFailed:
       return "A Mojo IPC connection could not be established.";
     case ApplicationError::kInstallationFailed:
-      return "The application could not be installed.";
+      return "The application could not be installed/uninstalled.";
     case ApplicationError::kIpcCallerNotAllowed:
       return "The IPC caller is not allowed.";
+    case ApplicationError::kCOMInitializationFailed:
+      return "COM initialization failed.";
+    case ApplicationError::kCloudPolicyClientTimeout:
+      return "Cloud Policy Client timed out";
+    case ApplicationError::kInvalidEnrollmentToken:
+      return "The enrollment token is invalid";
   }
 }
 
@@ -122,7 +130,7 @@ PersistedError& PersistedError::operator=(PersistedError&&) = default;
 
 std::string EnterpriseCompanionStatus::description() const {
   return std::visit(
-      base::Overloaded{
+      absl::Overload{
           [](std::monostate) { return std::string("Success"); },
           [](const PersistedError& error) { return error.description; },
           [](policy::DeviceManagementStatus status) {

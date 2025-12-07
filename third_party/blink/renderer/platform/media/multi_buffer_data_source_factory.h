@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "base/types/pass_key.h"
@@ -25,8 +23,10 @@ class BufferedDataSourceHostImpl;
 class PLATFORM_EXPORT MultiBufferDataSourceFactory
     : public media::HlsDataSourceProviderImpl::DataSourceFactory {
  public:
-  using UrlDataCb = base::RepeatingCallback<
-      void(const GURL& url, base::OnceCallback<void(scoped_refptr<UrlData>)>)>;
+  using UrlDataCb = base::RepeatingCallback<void(
+      const GURL& url,
+      bool ignore_cache,
+      base::OnceCallback<void(scoped_refptr<UrlData>)>)>;
 
   ~MultiBufferDataSourceFactory() override;
   MultiBufferDataSourceFactory(
@@ -35,7 +35,7 @@ class PLATFORM_EXPORT MultiBufferDataSourceFactory
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
       const base::TickClock* tick_clock);
 
-  void CreateDataSource(GURL uri, DataSourceCb cb) override;
+  void CreateDataSource(GURL uri, bool ignore_cache, DataSourceCb cb) override;
 
  private:
   void OnUrlData(DataSourceCb cb,

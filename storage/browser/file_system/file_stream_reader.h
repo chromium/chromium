@@ -14,7 +14,6 @@
 #include "base/files/file.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/weak_ptr.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/file_access/scoped_file_access_delegate.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"

@@ -9,10 +9,13 @@
 
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
-#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/disconnect_reason.h"
 #include "mojo/public/cpp/bindings/interface_id.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
+
+namespace base {
+class SequencedTaskRunner;
+}  // namespace base
 
 namespace mojo {
 

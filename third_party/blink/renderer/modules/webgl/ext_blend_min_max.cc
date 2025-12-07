@@ -8,7 +8,8 @@
 
 namespace blink {
 
-EXTBlendMinMax::EXTBlendMinMax(WebGLRenderingContextBase* context)
+EXTBlendMinMax::EXTBlendMinMax(WebGLRenderingContextBase* context,
+                               ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled("GL_EXT_blend_minmax");
 }

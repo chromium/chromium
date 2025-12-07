@@ -10,6 +10,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
@@ -94,7 +95,11 @@ void ControlledFrameTestBase::StartContentServer(
 web_app::IsolatedWebAppUrlInfo
 ControlledFrameTestBase::CreateAndInstallEmptyApp(
     const web_app::ManifestBuilder& manifest_builder) {
-  app_ = web_app::IsolatedWebAppBuilder(manifest_builder).BuildBundle();
+  auto updated_manifest_builder = manifest_builder;
+  updated_manifest_builder.AddPermissionsPolicy(
+      network::mojom::PermissionsPolicyFeature::kControlledFrame, /*self=*/true,
+      /*origins=*/{});
+  app_ = web_app::IsolatedWebAppBuilder(updated_manifest_builder).BuildBundle();
   app_->TrustSigningKey();
   base::expected<web_app::IsolatedWebAppUrlInfo, std::string> url_info =
       app_->Install(profile());
@@ -127,12 +132,12 @@ std::pair<content::RenderFrameHost*, content::RenderFrameHost*>
 ControlledFrameTestBase::InstallAndOpenIwaThenCreateControlledFrame(
     std::optional<std::string_view> controlled_frame_host_name,
     std::string_view controlled_frame_src_relative_url,
-    web_app::ManifestBuilder manfest_buider) {
+    web_app::ManifestBuilder manfest_builder) {
   CHECK(embedded_https_test_server().Started())
       << "Controlled Frame content server has not been started.";
 
   web_app::IsolatedWebAppUrlInfo url_info =
-      CreateAndInstallEmptyApp(manfest_buider);
+      CreateAndInstallEmptyApp(manfest_builder);
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
   CHECK(app_frame);
 

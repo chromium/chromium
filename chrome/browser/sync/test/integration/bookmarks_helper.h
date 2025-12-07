@@ -28,6 +28,7 @@
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
 #include "components/sync/engine/nigori/cryptographer.h"
 #include "components/sync/test/fake_server.h"
+#include "components/sync_bookmarks/bookmark_model_view.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
@@ -45,65 +46,13 @@ class Image;
 
 namespace bookmarks_helper {
 
-MATCHER_P(HasUuid, expected_uuid, "") {
-  const bookmarks::BookmarkNode* actual_node = arg;
-  return actual_node->uuid() == expected_uuid;
-}
-
-// Helping matchers to check the hierarchy of bookmarks. All matchers work with
-// either raw or smart pointer to BookmarkNode and verify its |title|. Usage
-// example:
-// EXPECT_THAT(
-//     bookmark_bar->children(), ElementsAre(
-//         IsUrlBookmarkWithTitleAndUrl("Title", GURL("http://url.com")),
-//         IsFolderWithTitle("Folder title")));
-//
-// This example checks that the bookmark bar node has two children nodes: a URL
-// and a folder. For complex hierarchy checks IsFolderWithTitleAndChildrenAre
-// might be used to verify all children of the folder:
-// EXPECT_THAT(
-//     bookmark_bar->children(), ElementsAre(
-//         IsUrlBookmarkWithTitleAndUrl("Title", GURL("http://url.com")),
-//         IsFolderWithTitleAndChildrenAre("Folder title",
-//             IsUrlBookmarkWithTitleAndUrl("Title 2", GURL("http://url2.com")),
-//             IsUrlBookmarkWithTitleAndUrl("Title 3", GURL("http://url3.com"))
-// )));
-//
-// IsFolderWithTitleAndChildren provides more general approach to verify
-// folder's children using container matchers (e.g. UnorderedElementsAre,
-// IsEmpty, SizeIs, etc):
-// EXPECT_THAT(
-//     bookmark_bar->children(), ElementsAre(
-//         IsUrlBookmarkWithTitleAndUrl("Title", GURL("http://url.com")),
-//         IsFolderWithTitleAndChildren("Folder title",
-//             AllOf(SizeIs(2), Contains(
-//                 IsUrlBookmarkWithTitleAndUrl("Title 3", "http://url.com")
-// )))));
-
-MATCHER_P(IsFolderWithTitle, title, "") {
-  *result_listener << "the actual title is " << arg->GetTitle();
-  return arg->is_folder() && base::UTF16ToUTF8(arg->GetTitle()) == title;
-}
-
-MATCHER_P2(IsUrlBookmarkWithTitleAndUrl, title, url, "") {
-  *result_listener << "the actual title is " << arg->GetTitle()
-                   << " and URL is " << arg->url();
-  return arg->is_url() && base::UTF16ToUTF8(arg->GetTitle()) == title &&
-         arg->url() == GURL(url);
-}
-
-testing::Matcher<std::unique_ptr<bookmarks::BookmarkNode>>
-IsFolderWithTitleAndChildren(
-    const std::string& title,
-    testing::Matcher<bookmarks::BookmarkNode::TreeNodes> children_matcher);
-
-template <class... Args>
-testing::Matcher<std::unique_ptr<bookmarks::BookmarkNode>>
-IsFolderWithTitleAndChildrenAre(const std::string& title,
-                                Args... children_matchers) {
-  return IsFolderWithTitleAndChildren(
-      title, testing::ElementsAre(std::move(children_matchers)...));
-}
+// Represents the two underlying instances of Bookmarks, one for
+// the profile store (used when sync-the-feature is enabled) and the other one
+// for the account store (used otherwise).
+enum class StoreType {
+  kLocalOrSyncableStore,
+  kAccountStore,
+};
 
 // Used to access the bookmark undo service within a particular sync profile.
 [[nodiscard]] BookmarkUndoService* GetBookmarkUndoService(int index);
@@ -112,12 +61,19 @@ IsFolderWithTitleAndChildrenAre(const std::string& title,
 [[nodiscard]] bookmarks::BookmarkModel* GetBookmarkModel(int index);
 
 // Used to access the bookmark bar within a particular sync profile.
-[[nodiscard]] const bookmarks::BookmarkNode* GetBookmarkBarNode(int index);
+// TODO(crbug.com/353425612): Remove the default value for `store`.
+[[nodiscard]] const bookmarks::BookmarkNode* GetBookmarkBarNode(
+    int index,
+    StoreType store_type = StoreType::kLocalOrSyncableStore);
 
 // Used to access the "other bookmarks" node within a particular sync profile.
-[[nodiscard]] const bookmarks::BookmarkNode* GetOtherNode(int index);
+// TODO(crbug.com/353425612): Remove the default value for `store`.
+[[nodiscard]] const bookmarks::BookmarkNode* GetOtherNode(
+    int index,
+    StoreType store_type = StoreType::kLocalOrSyncableStore);
 
 // Used to access the "Synced Bookmarks" node within a particular sync profile.
+// TODO(crbug.com/353425612): Add StoreType parameter.
 [[nodiscard]] const bookmarks::BookmarkNode* GetSyncedBookmarksNode(int index);
 
 // Used to access the "Managed Bookmarks" node for the given profile.
@@ -125,17 +81,23 @@ IsFolderWithTitleAndChildrenAre(const std::string& title,
 
 // Adds a URL with address |url| and title |title| to the bookmark bar of
 // profile |profile|. Returns a pointer to the node that was added.
-const bookmarks::BookmarkNode* AddURL(int profile,
-                                      const std::string& title,
-                                      const GURL& url);
+// TODO(crbug.com/353425612): Remove the default value for `store`.
+const bookmarks::BookmarkNode* AddURL(
+    int profile,
+    const std::u16string& title,
+    const GURL& url,
+    StoreType store_type = StoreType::kLocalOrSyncableStore);
 
 // Adds a URL with address |url| and title |title| to the bookmark bar of
 // profile |profile| at position |index|. Returns a pointer to the node that
 // was added.
-const bookmarks::BookmarkNode* AddURL(int profile,
-                                      size_t index,
-                                      const std::string& title,
-                                      const GURL& url);
+// TODO(crbug.com/353425612): Remove the default value for `store`.
+const bookmarks::BookmarkNode* AddURL(
+    int profile,
+    size_t index,
+    const std::u16string& title,
+    const GURL& url,
+    StoreType store_type = StoreType::kLocalOrSyncableStore);
 
 // Adds a URL with address |url| and title |title| under the node |parent| of
 // profile |profile| at position |index|. Returns a pointer to the node that
@@ -143,18 +105,25 @@ const bookmarks::BookmarkNode* AddURL(int profile,
 const bookmarks::BookmarkNode* AddURL(int profile,
                                       const bookmarks::BookmarkNode* parent,
                                       size_t index,
-                                      const std::string& title,
+                                      const std::u16string& title,
                                       const GURL& url);
 
 // Adds a folder named |title| to the bookmark bar of profile |profile|.
 // Returns a pointer to the folder that was added.
-const bookmarks::BookmarkNode* AddFolder(int profile, const std::string& title);
+// TODO(crbug.com/353425612): Remove the default value for `store`.
+const bookmarks::BookmarkNode* AddFolder(
+    int profile,
+    const std::u16string& title,
+    StoreType store_type = StoreType::kLocalOrSyncableStore);
 
 // Adds a folder named |title| to the bookmark bar of profile |profile| at
 // position |index|. Returns a pointer to the folder that was added.
-const bookmarks::BookmarkNode* AddFolder(int profile,
-                                         size_t index,
-                                         const std::string& title);
+// TODO(crbug.com/353425612): Remove the default value for `store`.
+const bookmarks::BookmarkNode* AddFolder(
+    int profile,
+    size_t index,
+    const std::u16string& title,
+    StoreType store_type = StoreType::kLocalOrSyncableStore);
 
 // Adds a folder named |title| to the node |parent| in the bookmark model of
 // profile |profile| at position |index|. Returns a pointer to the node that
@@ -162,13 +131,13 @@ const bookmarks::BookmarkNode* AddFolder(int profile,
 const bookmarks::BookmarkNode* AddFolder(int profile,
                                          const bookmarks::BookmarkNode* parent,
                                          size_t index,
-                                         const std::string& title);
+                                         const std::u16string& title);
 
 // Changes the title of the node |node| in the bookmark model of profile
 // |profile| to |new_title|.
 void SetTitle(int profile,
               const bookmarks::BookmarkNode* node,
-              const std::string& new_title);
+              const std::u16string& new_title);
 
 // The source of the favicon.
 enum FaviconSource { FROM_UI, FROM_SYNC };
@@ -250,8 +219,9 @@ bool HasNodeWithURL(int profile, const GURL& url);
 
 // Returns the number of bookmarks in bookmark model of profile |profile|
 // whose titles match the string |title|.
-[[nodiscard]] size_t CountBookmarksWithTitlesMatching(int profile,
-                                                      const std::string& title);
+[[nodiscard]] size_t CountBookmarksWithTitlesMatching(
+    int profile,
+    const std::u16string& title);
 
 // Returns the number of bookmarks in bookmark model of profile |profile|
 // whose URLs match the |url|.
@@ -260,8 +230,9 @@ bool HasNodeWithURL(int profile, const GURL& url);
 
 // Returns the number of bookmark folders in the bookmark model of profile
 // |profile| whose titles contain the query string |title|.
-[[nodiscard]] size_t CountFoldersWithTitlesMatching(int profile,
-                                                    const std::string& title);
+[[nodiscard]] size_t CountFoldersWithTitlesMatching(
+    int profile,
+    const std::u16string& title);
 
 // Returns whether there exists a BookmarkNode in the bookmark model of
 // profile |profile| whose UUID matches `uuid`.
@@ -278,21 +249,21 @@ gfx::Image Create1xFaviconFromPNGFile(const std::string& path);
 std::string IndexedURL(size_t i);
 
 // Returns a URL title identifiable by |i|.
-std::string IndexedURLTitle(size_t i);
+std::u16string IndexedURLTitle(size_t i);
 
 // Returns a folder name identifiable by |i|.
-std::string IndexedFolderName(size_t i);
+std::u16string IndexedFolderName(size_t i);
 
 // Returns a subfolder name identifiable by |i|.
-std::string IndexedSubfolderName(size_t i);
+std::u16string IndexedSubfolderName(size_t i);
 
 // Returns a subsubfolder name identifiable by |i|.
-std::string IndexedSubsubfolderName(size_t i);
+std::u16string IndexedSubsubfolderName(size_t i);
 
 // Creates a server-side entity representing a bookmark with the given title and
 // URL.
 std::unique_ptr<syncer::LoopbackServerEntity> CreateBookmarkServerEntity(
-    const std::string& title,
+    const std::u16string& title,
     const GURL& url);
 
 // Helper class that reacts to any BookmarkModelObserver event by running a
@@ -355,7 +326,9 @@ class BookmarksMatchChecker : public BookmarkModelStatusChangeChecker {
 
   // StatusChangeChecker implementation.
   bool IsExitConditionSatisfied(std::ostream* os) override;
-  bool Wait() override;
+
+ protected:
+  void WillStartWaiting() override;
 };
 
 // Base class used for checkers that verify the state of a single BookmarkModel
@@ -402,7 +375,7 @@ class SingleBookmarksModelMatcherChecker
 class BookmarksTitleChecker : public SingleBookmarkModelStatusChangeChecker {
  public:
   BookmarksTitleChecker(int profile_index,
-                        const std::string& title,
+                        const std::u16string& title,
                         int expected_count);
 
   // StatusChangeChecker implementation.
@@ -410,7 +383,7 @@ class BookmarksTitleChecker : public SingleBookmarkModelStatusChangeChecker {
 
  private:
   const int profile_index_;
-  const std::string title_;
+  const std::u16string title_;
   const int expected_count_;
 };
 
@@ -437,7 +410,7 @@ class ServerBookmarksEqualityChecker
  public:
   struct ExpectedBookmark {
     // Used to check both legacy and full titles in specifics.
-    std::string title;
+    std::u16string title;
     GURL url;
   };
 
@@ -494,9 +467,13 @@ class BookmarksUuidChecker : public SingleBookmarksModelMatcherChecker {
 class BookmarkModelMatchesFakeServerChecker
     : public SingleClientStatusChangeChecker {
  public:
-  BookmarkModelMatchesFakeServerChecker(int profile,
-                                        syncer::SyncServiceImpl* service,
-                                        fake_server::FakeServer* fake_server);
+  // TODO(crbug.com/353425612): Remove the default value for `store`.
+  BookmarkModelMatchesFakeServerChecker(
+      bookmarks::BookmarkModel* model,
+      syncer::SyncServiceImpl* service,
+      fake_server::FakeServer* fake_server,
+      StoreType store_type = StoreType::kLocalOrSyncableStore);
+  ~BookmarkModelMatchesFakeServerChecker() override;
 
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
@@ -530,7 +507,7 @@ class BookmarkModelMatchesFakeServerChecker
       const;
 
   const raw_ptr<fake_server::FakeServer> fake_server_;
-  const int profile_index_;
+  const std::unique_ptr<sync_bookmarks::BookmarkModelView> model_view_;
 };
 
 }  // namespace bookmarks_helper

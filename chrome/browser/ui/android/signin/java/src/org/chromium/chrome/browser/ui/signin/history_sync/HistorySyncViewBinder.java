@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.ui.signin.history_sync;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.signin.MinorModeHelper;
 import org.chromium.chrome.browser.ui.signin.MinorModeHelper.ScreenMode;
 import org.chromium.components.signin.metrics.SyncButtonsType;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
+@NullMarked
 class HistorySyncViewBinder {
 
     private static boolean sMinorModeButtonShownMetricRecorded;
@@ -18,6 +20,10 @@ class HistorySyncViewBinder {
         if (key == HistorySyncProperties.PROFILE_DATA) {
             view.getAccountImageView()
                     .setImageDrawable(model.get(HistorySyncProperties.PROFILE_DATA).getImage());
+        } else if (key == HistorySyncProperties.TITLE_STRING) {
+            view.getTitle().setText(model.get(HistorySyncProperties.TITLE_STRING));
+        } else if (key == HistorySyncProperties.SUBTITLE_STRING) {
+            view.getSubtitle().setText(model.get(HistorySyncProperties.SUBTITLE_STRING));
         } else if (key == HistorySyncProperties.FOOTER_STRING) {
             view.getDetailsDescription().setText(model.get(HistorySyncProperties.FOOTER_STRING));
         } else if (key == HistorySyncProperties.MINOR_MODE_RESTRICTION_STATUS

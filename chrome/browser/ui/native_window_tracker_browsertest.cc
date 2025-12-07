@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/native_window_tracker.h"
+#include "ui/native_window_tracker/native_window_tracker.h"
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -18,9 +18,8 @@ IN_PROC_BROWSER_TEST_F(NativeWindowTrackerTest, Basic) {
 
   CreateBrowser(browser()->profile());
 
-  std::unique_ptr<views::NativeWindowTracker> tracker =
-      views::NativeWindowTracker::Create(
-          browser()->window()->GetNativeWindow());
+  std::unique_ptr<ui::NativeWindowTracker> tracker =
+      ui::NativeWindowTracker::Create(browser()->window()->GetNativeWindow());
   EXPECT_FALSE(tracker->WasNativeWindowDestroyed());
 
   browser()->window()->Close();

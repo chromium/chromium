@@ -6,7 +6,9 @@
 
 #include "base/files/file_error_or.h"
 #include "base/numerics/checked_math.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/types/expected_macros.h"
+#include "third_party/blink/renderer/core/dom/quota_exceeded_error.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_file_delegate.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
@@ -119,9 +121,8 @@ void FileSystemSyncAccessHandle::truncate(uint64_t size,
   RETURN_IF_ERROR(
       file_delegate()->SetLength(size), [&](base::File::Error error) {
         if (error == base::File::FILE_ERROR_NO_SPACE) {
-          exception_state.ThrowDOMException(
-              DOMExceptionCode::kQuotaExceededError,
-              "No space available for this operation");
+          QuotaExceededError::Throw(exception_state,
+                                    "No space available for this operation");
         } else if (error != base::File::FILE_OK) {
           exception_state.ThrowDOMException(
               DOMExceptionCode::kInvalidStateError, "truncate failed");
@@ -163,10 +164,9 @@ uint64_t FileSystemSyncAccessHandle::read(const AllowSharedBufferSource* buffer,
   return bytes_read;
 }
 
-uint64_t FileSystemSyncAccessHandle::write(
-    const AllowSharedBufferSource* buffer,
-    FileSystemReadWriteOptions* options,
-    ExceptionState& exception_state) {
+uint64_t FileSystemSyncAccessHandle::write(base::span<const uint8_t> buffer,
+                                           FileSystemReadWriteOptions* options,
+                                           ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!file_delegate()->IsValid() || is_closed_) {
@@ -189,8 +189,7 @@ uint64_t FileSystemSyncAccessHandle::write(
     return 0;
   }
 
-  auto buffer_span = AsByteSpan(*buffer);
-  size_t write_size = buffer_span.size();
+  size_t write_size = buffer.size();
   if (!base::CheckedNumeric<int>(write_size).IsValid()) {
     exception_state.ThrowTypeError("Cannot write more than 2GB");
   }
@@ -198,21 +197,19 @@ uint64_t FileSystemSyncAccessHandle::write(
   int64_t write_end_offset;
   if (!base::CheckAdd(file_offset, write_size)
            .AssignIfValid(&write_end_offset)) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kQuotaExceededError,
-        "No capacity available for this operation");
+    QuotaExceededError::Throw(exception_state,
+                              "No capacity available for this operation");
     return 0;
   }
   DCHECK_GE(write_end_offset, 0);
 
   ASSIGN_OR_RETURN(
-      int result, file_delegate()->Write(file_offset, buffer_span),
+      int result, file_delegate()->Write(file_offset, buffer),
       [&](base::File::Error error) {
         DCHECK_NE(error, base::File::FILE_OK);
         if (error == base::File::FILE_ERROR_NO_SPACE) {
-          exception_state.ThrowDOMException(
-              DOMExceptionCode::kQuotaExceededError,
-              "No space available for this operation");
+          QuotaExceededError::Throw(exception_state,
+                                    "No space available for this operation");
         } else {
           exception_state.ThrowDOMException(
               DOMExceptionCode::kInvalidStateError,
@@ -230,8 +227,8 @@ uint64_t FileSystemSyncAccessHandle::write(
   return bytes_written;
 }
 
-const char* FileSystemSyncAccessHandle::mode() {
-  return lock_mode_.AsCStr();
+String FileSystemSyncAccessHandle::mode() {
+  return lock_mode_.AsString();
 }
 
 }  // namespace blink

@@ -231,8 +231,8 @@ def main():
 
   cmd = [
       'java', '-jar',
-      os.path.join(host_paths.DIR_SOURCE_ROOT, 'third_party', 'jacoco', 'lib',
-                   'jacococli.jar'), 'report'
+      os.path.join(host_paths.DIR_SOURCE_ROOT, 'third_party', 'jacoco', 'cipd',
+                   'lib', 'jacococli.jar'), 'report'
   ] + coverage_files
 
   for source in fixed_source_dirs:

@@ -31,7 +31,7 @@ enum class SerializationFormat;
 
 class NativeExtensionBindingsSystem;
 class ScriptContextSetIterable;
-struct Message;
+class Message;
 struct MessageTarget;
 struct PortId;
 
@@ -87,7 +87,7 @@ class NativeRendererMessagingService : public GinPort::Delegate {
   using TabConnectionInfo = mojom::TabConnectionInfo;
   using ExternalConnectionInfo = mojom::ExternalConnectionInfo;
   // Dispatches the onConnect content script messaging event to some contexts
-  // in |context_set|. If |restrict_to_render_frame| is specified, only contexts
+  // in `context_set`. If `restrict_to_render_frame` is specified, only contexts
   // in that render frame will receive the message.
   void DispatchOnConnect(
       ScriptContextSetIterable* context_set,
@@ -103,7 +103,7 @@ class NativeRendererMessagingService : public GinPort::Delegate {
       ConnectCallback);
 
   // Delivers a message sent using content script messaging to some of the
-  // contexts in |bindings_context_set|. If |restrict_to_render_frame| is
+  // contexts in `bindings_context_set`. If `restrict_to_render_frame` is
   // specified, only contexts in that render view will receive the message.
   void DeliverMessage(ScriptContextSetIterable* context_set,
                       const PortId& target_port_id,
@@ -117,7 +117,7 @@ class NativeRendererMessagingService : public GinPort::Delegate {
                             content::RenderFrame* restrict_to_render_frame);
 
   // Creates and opens a new message port in the specified context.
-  gin::Handle<GinPort> Connect(ScriptContext* script_context,
+  GinPort* Connect(ScriptContext* script_context,
                                const MessageTarget& target,
                                const std::string& name,
                                mojom::SerializationFormat format);
@@ -140,7 +140,7 @@ class NativeRendererMessagingService : public GinPort::Delegate {
   void ClosePort(v8::Local<v8::Context> context,
                  const PortId& port_id) override;
 
-  gin::Handle<GinPort> CreatePortForTesting(
+  GinPort* CreatePortForTesting(
       ScriptContext* script_context,
       const std::string& channel_name,
       const mojom::ChannelType channel_type,
@@ -148,7 +148,7 @@ class NativeRendererMessagingService : public GinPort::Delegate {
       mojo::PendingAssociatedRemote<mojom::MessagePort>& message_port_remote,
       mojo::PendingAssociatedReceiver<mojom::MessagePortHost>&
           message_port_host_receiver);
-  gin::Handle<GinPort> GetPortForTesting(ScriptContext* script_context,
+  GinPort* GetPortForTesting(ScriptContext* script_context,
                                          const PortId& port_id);
   bool HasPortForTesting(ScriptContext* script_context, const PortId& port_id);
 
@@ -159,9 +159,20 @@ class NativeRendererMessagingService : public GinPort::Delegate {
       mojo::PendingAssociatedReceiver<mojom::MessagePortHost>&
           message_port_host_receiver);
 
+  // Closes the message port with the given `port_id` in the given
+  // `script_context`. If `close_channel` is true, the entire communication
+  // channel is torn down, which also disconnects the port on the other side.
   void CloseMessagePort(ScriptContext* script_context,
                         const PortId& port_id,
                         bool close_channel);
+
+  // Same as above, but it allows passing an error message that will be provided
+  // to the message port opener.
+  void CloseMessagePort(ScriptContext* script_context,
+                        const PortId& port_id,
+                        bool close_channel,
+                        const std::optional<std::string>& error_message);
+
   // Returns the associated MessagePortHost. This method asserts that it
   // exists.
   mojom::MessagePortHost* GetMessagePortHost(ScriptContext* script_context,
@@ -199,12 +210,12 @@ class NativeRendererMessagingService : public GinPort::Delegate {
                                            const std::string& error_message,
                                            ScriptContext* script_context);
 
-  // Returns true if the given |script_context| has a port with the given
-  // |port_id|.
+  // Returns true if the given `script_context` has a port with the given
+  // `port_id`.
   bool ContextHasMessagePort(ScriptContext* script_context,
                              const PortId& port_id);
 
-  // Dispatches the onConnect event to listeners in the given |script_context|.
+  // Dispatches the onConnect event to listeners in the given `script_context`.
   void DispatchOnConnectToListeners(ScriptContext* script_context,
                                     const PortId& target_port_id,
                                     const ExtensionId& target_extension_id,
@@ -214,29 +225,29 @@ class NativeRendererMessagingService : public GinPort::Delegate {
                                     const ExternalConnectionInfo& info,
                                     const std::string& event_name);
 
-  // Dispatches the onMessage event to listeners in the given |script_context|.
+  // Dispatches the onMessage event to listeners in the given `script_context`.
   // This will only be called if the context has a port with the given id.
   void DispatchOnMessageToListeners(ScriptContext* script_context,
                                     const Message& message,
                                     const PortId& target_port_id);
 
   // Dispatches the onDisconnect event to listeners in the given
-  // |script_context|. This will only be called if the context has a port
+  // `script_context`. This will only be called if the context has a port
   // with the given id.
   void DispatchOnDisconnectToListeners(ScriptContext* script_context,
                                        const PortId& port_id,
                                        const std::string& error);
 
-  // Creates a new port in the given context, with the specified |channel_name|
-  // and |port_id|. Assumes no such port exists.
-  gin::Handle<GinPort> CreatePort(ScriptContext* script_context,
+  // Creates a new port in the given context, with the specified `channel_name`
+  // and `port_id`. Assumes no such port exists.
+  GinPort* CreatePort(ScriptContext* script_context,
                                   const std::string& channel_name,
                                   const mojom::ChannelType channel_type,
                                   const PortId& port_id);
 
-  // Returns the port with the given |port_id| in the given |script_context|;
+  // Returns the port with the given `port_id` in the given `script_context`;
   // requires that such a port exists.
-  gin::Handle<GinPort> GetPort(ScriptContext* script_context,
+  GinPort* GetPort(ScriptContext* script_context,
                                const PortId& port_id);
 
   MessagePortScope* GetMessagePortScope(content::RenderFrame* render_frame);

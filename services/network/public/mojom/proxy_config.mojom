@@ -6,9 +6,11 @@ module network.mojom;
 
 import "mojo/public/mojom/base/big_string.mojom";
 import "services/network/public/mojom/network_param.mojom";
+import "url/mojom/scheme_host_port.mojom";
 
-// This corresponds to the string representation of net::ProxyConfigBypassRules.
-struct ProxyBypassRules {
+// This corresponds to the string representation of
+// `net::ProxyHostMatchingRules`.
+struct ProxyHostMatchingRules {
   array<string> rules;
 };
 
@@ -17,16 +19,16 @@ struct ProxyList {
   array<network.mojom.ProxyChain> proxies;
 };
 
-// This corresponds to net::ProxyConfig::ProxyRules::Type.
+// This corresponds to `net::ProxyConfig::ProxyRules::Type`.
 enum ProxyRulesType {
   EMPTY,
   PROXY_LIST,
   PROXY_LIST_PER_SCHEME,
 };
 
-// These fields mirror those of net::ProxyConfig::ProxyRules.
+// These fields mirror those of `net::ProxyConfig::ProxyRules`.
 struct ProxyRules {
-  ProxyBypassRules bypass_rules;
+  ProxyHostMatchingRules bypass_rules;
   bool reverse_bypass;
   ProxyRulesType type;
   ProxyList single_proxies;
@@ -36,15 +38,37 @@ struct ProxyRules {
   ProxyList fallback_proxies;
 };
 
-// These fields mirror those of net::ProxyConfig.
+// This corresponds to `net::ProxyConfig::ProxyOverrideRule::Result`.
+enum ProxyOverrideRuleResult {
+  kNotFound,
+  kResolved,
+};
+
+// This corresponds to `net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition`.
+struct DnsProbeCondition {
+  url.mojom.SchemeHostPort host;
+  ProxyOverrideRuleResult result;
+};
+
+// These fields mirror those of `net::ProxyConfig::ProxyOverrideRule`.
+struct ProxyOverrideRule {
+  ProxyHostMatchingRules destination_matchers;
+  ProxyHostMatchingRules exclude_destination_matchers;
+  array<DnsProbeCondition> dns_conditions;
+
+  ProxyList proxy_list;
+};
+
+// These fields mirror those of `net::ProxyConfig`.
 struct ProxyConfig {
+  array<ProxyOverrideRule> proxy_override_rules;
   bool auto_detect;
-  // If true, indicates that the ProxyConfig object was created from system
+  // If true, indicates that the `ProxyConfig` object was created from system
   // settings.
   bool from_system;
-  // Note that a |BigString| is used rather than a |url.mojom.Url|, since
-  // |url.mojom.Url| imposes a smaller limit on URL size than GURL, and
-  // ProxyConfig::pac_url may contain large data: URLs that exceed this limit.
+  // Note that a `BigString` is used rather than a `url.mojom.Url`, since
+  // `url.mojom.Url` imposes a smaller limit on URL size than GURL, and
+  // `ProxyConfig::pac_url` may contain large data: URLs that exceed this limit.
   mojo_base.mojom.BigString pac_url;
   bool pac_mandatory;
   ProxyRules proxy_rules;
@@ -60,6 +84,6 @@ enum IpProtectionProxyBypassPolicy {
   // bypassed.
   kFirstPartyToTopLevelFrame = 1,
   // Request to domains that are on a given exclusion list are bypassed. This
-  // exclusion list is set through NetworkService::UpdateMaskedDomainList.
+  // exclusion list is set through `NetworkService::UpdateMaskedDomainList`.
   kExclusionList = 2,
 };

@@ -42,6 +42,17 @@ bool GeometryPropertiesChanged(const ComputedStyle& old_style,
          old_style.R() != new_style.R();
 }
 
+bool TreatAsAuto(const Length& dimension, float resolved_value) {
+  if (dimension.IsAuto()) {
+    return true;
+  }
+  if (resolved_value < 0 &&
+      RuntimeEnabledFeatures::SvgIgnoreNegativeEllipseRadiiEnabled()) {
+    return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 LayoutSVGEllipse::LayoutSVGEllipse(SVGGeometryElement* node)
@@ -49,14 +60,27 @@ LayoutSVGEllipse::LayoutSVGEllipse(SVGGeometryElement* node)
 
 LayoutSVGEllipse::~LayoutSVGEllipse() = default;
 
-void LayoutSVGEllipse::StyleDidChange(StyleDifference diff,
-                                      const ComputedStyle* old_style) {
+void LayoutSVGEllipse::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutSVGShape::StyleDidChange(diff, old_style);
+  LayoutSVGShape::StyleDidChange(diff, old_style, style_change_context);
 
   if (old_style && GeometryPropertiesChanged(*old_style, StyleRef())) {
     SetNeedsShapeUpdate();
   }
+}
+
+bool LayoutSVGEllipse::CalculateGeometryDependsOnViewport() const {
+  const ComputedStyle& style = StyleRef();
+  if (style.Cx().HasPercent() || style.Cy().HasPercent()) {
+    return true;
+  }
+  if (IsA<SVGCircleElement>(*GetElement())) {
+    return style.R().HasPercent();
+  }
+  return style.Rx().HasPercent() || style.Ry().HasPercent();
 }
 
 gfx::RectF LayoutSVGEllipse::UpdateShapeFromElement() {
@@ -65,6 +89,7 @@ gfx::RectF LayoutSVGEllipse::UpdateShapeFromElement() {
   // Reset shape state.
   ClearPath();
   SetGeometryType(GeometryType::kEmpty);
+  SetGeometryDependsOnViewport(CalculateGeometryDependsOnViewport());
 
   // This will always update/reset |center_| and |radii_|.
   CalculateRadiiAndCenter();
@@ -96,14 +121,15 @@ void LayoutSVGEllipse::CalculateRadiiAndCenter() {
         VectorForLengthPair(style.Rx(), style.Ry(), viewport_resolver, style);
     radius_x_ = radii.x();
     radius_y_ = radii.y();
-    if (style.Rx().IsAuto())
+    if (TreatAsAuto(style.Rx(), radius_x_)) {
       radius_x_ = radius_y_;
-    else if (style.Ry().IsAuto())
+    } else if (TreatAsAuto(style.Ry(), radius_y_)) {
       radius_y_ = radius_x_;
+    }
   }
 
-  // Spec: "A negative value is an error. A value of zero disables rendering of
-  // the element."
+  // "Clamp any remaining negative values to zero to disable rendering. This
+  // shouldn't happen, but we still allow negative values to be parsed."
   radius_x_ = std::max(radius_x_, 0.f);
   radius_y_ = std::max(radius_y_, 0.f);
 }
@@ -146,7 +172,7 @@ bool LayoutSVGEllipse::ShapeDependentFillContains(
 
 bool LayoutSVGEllipse::HasContinuousStroke() const {
   NOT_DESTROYED();
-  return !StyleRef().HasDashArray();
+  return !StyleRef().StrokeDashArray();
 }
 
 }  // namespace blink

@@ -6,11 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_COMPOSITOR_THREAD_SCHEDULER_IMPL_H_
 
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/scoped_thread_priority.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/common/single_thread_idle_task_runner.h"
 #include "third_party/blink/renderer/platform/scheduler/public/compositor_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_type.h"
-#include "third_party/blink/renderer/platform/scheduler/worker/compositor_metrics_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_scheduler_base.h"
 
 namespace base {
@@ -52,8 +52,7 @@ class PLATFORM_EXPORT CompositorThreadSchedulerImpl
   void PostDelayedIdleTask(const base::Location&,
                            base::TimeDelta delay,
                            Thread::IdleTask) override;
-  void PostNonNestableIdleTask(const base::Location&,
-                               Thread::IdleTask) override;
+  void RemoveCancelledIdleTasks() override;
   base::TimeTicks MonotonicallyIncreasingVirtualTime() override;
   void SetV8Isolate(v8::Isolate* isolate) override;
   void Shutdown() override;
@@ -71,7 +70,8 @@ class PLATFORM_EXPORT CompositorThreadSchedulerImpl
   base::TimeTicks NowTicks() override;
 
  private:
-  CompositorMetricsHelper compositor_metrics_helper_;
+  std::optional<base::TaskMonitoringScopedBoostPriority>
+      scenario_priority_boost_;
 };
 
 }  // namespace scheduler

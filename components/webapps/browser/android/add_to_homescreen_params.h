@@ -22,11 +22,17 @@ struct AddToHomescreenParams {
   // A Java counterpart will be generated for this enum.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.webapps
   enum class AppType {
+    // Native Android app.
     NATIVE,
+    // WebAPK installed from websites with PWA manifest.
     WEBAPK,
+    // Shortcut, which opens in a new tab in Chrome browser app.
     SHORTCUT,
+    // WebAPK installed from websites without PWA manifest.
     WEBAPK_DIY,
-    kMaxValue = WEBAPK_DIY,
+    // Auto-minted TWA installed from websites with PWA manifest.
+    TWA,
+    kMaxValue = TWA,
   };
 
   AddToHomescreenParams() = delete;
@@ -45,6 +51,11 @@ struct AddToHomescreenParams {
   bool HasMaskablePrimaryIcon() const;
   bool IsWebApk() const;
   static bool IsWebApk(AppType type);
+
+  // Returns the AppType that should be used to install a web app that was
+  // determined to be installable. The argument `has_manifest` specifies whether
+  // the web app has PWA manifest.
+  static AppType GetWebAppInstallType(bool has_manifest);
 
   AppType app_type;
   SkBitmap primary_icon;

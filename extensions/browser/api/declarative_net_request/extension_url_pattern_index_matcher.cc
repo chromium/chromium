@@ -33,8 +33,9 @@ std::vector<url_pattern_index::UrlPatternIndexMatcher> GetMatchers(
 
   std::vector<url_pattern_index::UrlPatternIndexMatcher> matchers;
   matchers.reserve(flat::IndexType_count);
-  for (const flat_rule::UrlPatternIndex* index : *index_list)
+  for (const flat_rule::UrlPatternIndex* index : *index_list) {
     matchers.emplace_back(index);
+  }
   return matchers;
 }
 
@@ -49,8 +50,9 @@ bool IsExtraHeadersMatcherInternal(
 size_t GetRulesCountInternal(
     const std::vector<url_pattern_index::UrlPatternIndexMatcher>& matchers) {
   size_t rules_count = 0;
-  for (const auto& matcher : matchers)
+  for (const auto& matcher : matchers) {
     rules_count += matcher.GetRulesCount();
+  }
 
   return rules_count;
 }
@@ -110,8 +112,9 @@ ExtensionUrlPatternIndexMatcher::GetAllowAllRequestsAction(
       params, GetMatchersForStage(stage), flat::IndexType_allow_all_requests,
       FindRuleStrategy::kHighestPriority);
   ;
-  if (!rule)
+  if (!rule) {
     return std::nullopt;
+  }
 
   return CreateAllowAllRequestsAction(params, *rule);
 }
@@ -151,8 +154,9 @@ std::optional<RequestAction> ExtensionUrlPatternIndexMatcher::GetActionHelper(
       GetMatchingRule(params, matchers,
                       flat::IndexType_before_request_except_allow_all_requests,
                       FindRuleStrategy::kHighestPriority);
-  if (!rule)
+  if (!rule) {
     return std::nullopt;
+  }
 
   const flat::UrlRuleMetadata* metadata =
       metadata_list_->LookupByKey(rule->id());
@@ -170,7 +174,7 @@ std::optional<RequestAction> ExtensionUrlPatternIndexMatcher::GetActionHelper(
     case flat::ActionType_allow_all_requests:
     case flat::ActionType_modify_headers:
     case flat::ActionType_count:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   return std::nullopt;
@@ -226,8 +230,7 @@ ExtensionUrlPatternIndexMatcher::GetMatchersForStage(
       return headers_received_matchers_;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return before_request_matchers_;
+  NOTREACHED();
 }
 
 void ExtensionUrlPatternIndexMatcher::SetDisabledRuleIds(

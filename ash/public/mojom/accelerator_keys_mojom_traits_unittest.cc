@@ -58,7 +58,8 @@ TEST(AcceleratorKeysTraitsTest, SerializeAndDeserialize) {
        {mojom_vkey::kF14, ui::KeyboardCode::VKEY_F14},
        {mojom_vkey::kPrivacyScreenToggle,
         ui::KeyboardCode::VKEY_PRIVACY_SCREEN_TOGGLE},
-       {mojom_vkey::kAccessibility, ui::KeyboardCode::VKEY_ACCESSIBILITY}});
+       {mojom_vkey::kAccessibility, ui::KeyboardCode::VKEY_ACCESSIBILITY},
+       {mojom_vkey::kDoNotDisturb, ui::KeyboardCode::VKEY_DO_NOT_DISTURB}});
 
   TestKeyboardCodeToMojo(enums);
   TestMojoToKeyboardCode(enums);

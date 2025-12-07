@@ -6,24 +6,25 @@ import './cluster.js';
 import './history_clusters_shared_style.css.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.js';
+import '//resources/cr_elements/cr_infinite_list/cr_infinite_list.js';
 import '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
-import '//resources/polymer/v3_0/iron-list/iron-list.js';
 
 import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
-import type {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import type {CrInfiniteListElement} from '//resources/cr_elements/cr_infinite_list/cr_infinite_list.js';
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
-import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
 import {FocusOutlineManager} from '//resources/js/focus_outline_manager.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
-import type {IronListElement} from '//resources/polymer/v3_0/iron-list/iron-list.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
-import {getTemplate} from './clusters.html.js';
+import {getCss} from './clusters.css.js';
+import {getHtml} from './clusters.html.js';
 import type {Cluster, URLVisit} from './history_cluster_types.mojom-webui.js';
 import type {PageCallbackRouter, PageHandlerRemote, QueryResult} from './history_clusters.mojom-webui.js';
 
@@ -47,13 +48,12 @@ declare global {
   }
 }
 
-const HistoryClustersElementBase = I18nMixin(PolymerElement);
+const HistoryClustersElementBase = I18nMixinLit(CrLitElement);
 
 export interface HistoryClustersElement {
   $: {
-    clusters: IronListElement,
-    confirmationDialog: CrLazyRenderElement<CrDialogElement>,
-    confirmationToast: CrLazyRenderElement<CrToastElement>,
+    clusters: CrInfiniteListElement,
+    confirmationToast: CrToastElement,
   };
 }
 
@@ -62,77 +62,68 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
     return 'history-clusters';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
+
       /**
        * Whether the clusters are in the side panel.
        */
       inSidePanel_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('inSidePanel'),
-        reflectToAttribute: true,
+        reflect: true,
       },
 
       /**
        * The current query for which related clusters are requested and shown.
        */
-      query: {
-        type: String,
-        observer: 'onQueryChanged_',
-        value: '',
-      },
+      query: {type: String},
+      timeRangeStart: {type: Object},
 
-      timeRangeStart: {
-        type: Object,
-        observer: 'onQueryChanged_',
-      },
 
       /**
-       * The placeholder text to show when the results are empty.
+       * These 3 properties are components of the browser response to a request
+       * for the freshest clusters related to  a given query until an optional
+       * given end time (or the present time).
        */
-      placeholderText_: {
-        type: String,
-        computed: `computePlaceholderText_(result_.*)`,
-      },
-
-      /**
-       * The browser response to a request for the freshest clusters related to
-       * a given query until an optional given end time (or the present time).
-       */
-      result_: Object,
+      canLoadMore_: {type: Boolean},
+      clusters_: {type: Array},
+      hasResult_: {type: Boolean},
+      resultQuery_: {type: String},
 
       /**
        * Boolean determining if spinner shows instead of load more button.
        */
-      showSpinner_: {
-        type: Boolean,
-        value: false,
-      },
+      showSpinner_: {type: Boolean},
+      showConfirmationDialog_: {type: Boolean},
 
       /**
        * The list of visits to be removed. A non-empty array indicates a pending
        * remove request to the browser.
        */
-      visitsToBeRemoved_: {
-        type: Object,
-        value: () => [],
-      },
+      visitsToBeRemoved_: {type: Array},
 
-      scrollTarget: {
-        type: Object,
-        observer: 'onScrollTargetChanged_',
-      },
+      scrollOffset: {type: Number},
+      scrollTarget: {type: Object},
 
-      scrollOffset: Number,
+      // Whether this element is active, i.e. visible to the user. Defaults to
+      // true. Clients should set to false when this element is inactive,
+      // e.g. in a tabbed UI when the active tab doesn't contain this element.
+      isActive: {
+        type: Boolean,
+        reflect: true,
+      },
 
       isEmpty: {
         type: Boolean,
-        reflectToAttribute: true,
-        computed: 'computeIsEmpty_(result_.clusters.length)',
+        reflect: true,
       },
     };
   }
@@ -140,27 +131,42 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
   //============================================================================
   // Properties
   //============================================================================
-
-  isEmpty: boolean;
-  query: string;
-  scrollTarget: HTMLElement = document.documentElement;
-  scrollOffset: number = 0;
-  timeRangeStart?: Date;
+  accessor isActive: boolean = true;
+  accessor isEmpty: boolean = true;
+  accessor query: string = '';
+  accessor scrollOffset: number = 0;
+  accessor scrollTarget: HTMLElement = document.documentElement;
+  accessor timeRangeStart: Date|undefined;
+  protected accessor canLoadMore_: boolean = false;
+  protected accessor clusters_: Cluster[] = [];
+  protected accessor hasResult_: boolean = false;
+  protected accessor resultQuery_: string = '';
   private callbackRouter_: PageCallbackRouter;
-  private headerText_: string;
-  private inSidePanel_: boolean;
-  private scrollListener_: EventListener = () => this.onScroll_();
+  private accessor inSidePanel_: boolean =
+      loadTimeData.getBoolean('inSidePanel');
+  private lastOffsetHeight_: number = 0;
+  private resizeObserver_: ResizeObserver = new ResizeObserver(() => {
+    if (this.lastOffsetHeight_ === 0) {
+      this.lastOffsetHeight_ = this.scrollTarget.offsetHeight;
+      return;
+    }
+    if (this.scrollTarget.offsetHeight > this.lastOffsetHeight_) {
+      this.lastOffsetHeight_ = this.scrollTarget.offsetHeight;
+      this.onScrollOrResize_();
+    }
+  });
+  private scrollDebounce_: number = 200;
+  private scrollListener_: EventListener = () => this.onScrollOrResize_();
   private onClustersQueryResultListenerId_: number|null = null;
   private onClusterImageUpdatedListenerId_: number|null = null;
   private onVisitsRemovedListenerId_: number|null = null;
   private onHistoryDeletedListenerId_: number|null = null;
   private onQueryChangedByUserListenerId_: number|null = null;
   private pageHandler_: PageHandlerRemote;
-  private placeholderText_: string;
-  private result_: QueryResult;
-  private showSpinner_: boolean;
+  protected accessor showConfirmationDialog_: boolean = false;
+  protected accessor showSpinner_: boolean = false;
   private scrollTimeout_: number|null = null;
-  private visitsToBeRemoved_: URLVisit[];
+  private accessor visitsToBeRemoved_: URLVisit[] = [];
 
   //============================================================================
   // Overridden methods
@@ -214,56 +220,109 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
     assert(this.onQueryChangedByUserListenerId_);
     this.callbackRouter_.removeListener(this.onQueryChangedByUserListenerId_);
     this.onQueryChangedByUserListenerId_ = null;
+    assert(this.onClusterImageUpdatedListenerId_);
+    this.callbackRouter_.removeListener(this.onClusterImageUpdatedListenerId_);
+    this.onClusterImageUpdatedListenerId_ = null;
   }
 
-  // Notifies the iron-list of this element being potentially resized.
-  notifyResize() {
-    this.$.clusters.notifyResize();
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('query') ||
+        changedProperties.has('timeRangeStart')) {
+      this.onQueryChanged_();
+    }
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('hasResult_') ||
+        changedPrivateProperties.has('clusters_')) {
+      this.isEmpty = this.hasResult_ && this.clusters_.length === 0;
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('scrollTarget')) {
+      const oldTarget = changedProperties.get('scrollTarget');
+      // Remove old listeners. ResizeObserver always listens, scroll observer
+      // is only on when this element is active.
+      if (oldTarget) {
+        this.resizeObserver_.disconnect();
+        // Also remove the scroll listener if the element is currently active
+        // or was active and changed to inactive this lifecycle.
+        if (this.isActive || changedProperties.has('isActive')) {
+          oldTarget.removeEventListener('scroll', this.scrollListener_);
+        }
+      }
+      if (this.scrollTarget) {
+        this.resizeObserver_.observe(this.scrollTarget);
+        if (this.isActive) {
+          this.scrollTarget.addEventListener('scroll', this.scrollListener_);
+        }
+      }
+    } else if (changedProperties.has('isActive')) {
+      if (this.isActive) {
+        // Active changed from false to true. Add the scroll observer.
+        this.scrollTarget.addEventListener('scroll', this.scrollListener_);
+      } else {
+        // Active changed from true to false. Remove scroll observer.
+        this.scrollTarget.removeEventListener('scroll', this.scrollListener_);
+      }
+    }
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('clusters_')) {
+      const previous =
+          changedPrivateProperties.get('clusters_') as (Cluster[] | undefined);
+      const clustersRemoved =
+          previous && (previous.length > this.clusters_.length);
+      if (clustersRemoved && this.canLoadMore_ &&
+          this.$.clusters.offsetHeight < this.scrollTarget.offsetHeight) {
+        this.onLoadMoreButtonClick_();
+      }
+    }
   }
 
   //============================================================================
   // Event handlers
   //============================================================================
-
-  private onCancelButtonClick_() {
+  protected onCancelButtonClick_() {
     this.visitsToBeRemoved_ = [];
-    this.$.confirmationDialog.get().close();
+    this.getConfirmationDialog_().close();
   }
 
-  private onConfirmationDialogCancel_() {
+  protected onConfirmationDialogCancel_() {
     this.visitsToBeRemoved_ = [];
   }
 
-  private onLoadMoreButtonClick_() {
-    if (this.result_ && this.result_.canLoadMore) {
+  protected onLoadMoreButtonClick_() {
+    if (this.hasResult_ && this.canLoadMore_) {
       this.showSpinner_ = true;
       // Prevent sending further load-more requests until this one finishes.
-      this.set('result_.canLoadMore', false);
-      this.pageHandler_.loadMoreClusters(this.result_.query);
+      this.canLoadMore_ = false;
+      this.pageHandler_.loadMoreClusters(this.resultQuery_);
     }
   }
 
-  private onRemoveButtonClick_() {
-    this.pageHandler_.removeVisits(this.visitsToBeRemoved_).then(() => {
-      // The returned promise resolves with whether the request succeeded in the
-      // browser. That value may be used to show a toast but is ignored for now.
-      // Allow remove requests again.
-      this.visitsToBeRemoved_ = [];
-    });
-    this.$.confirmationDialog.get().close();
+  protected onRemoveButtonClick_() {
+    this.removeVisits_();
+    this.getConfirmationDialog_().close();
   }
 
   /**
    * Called with `event` received from a visit requesting to be hidden.
    */
-  private onHideVisit_(event: CustomEvent<URLVisit>) {
+  protected onHideVisit_(event: CustomEvent<URLVisit>) {
     this.pageHandler_.hideVisits([event.detail]);
   }
 
   /**
    * Called with `event` received from visits requesting to be hidden.
    */
-  private onHideVisits_(event: CustomEvent<URLVisit[]>) {
+  protected onHideVisits_(event: CustomEvent<URLVisit[]>) {
     this.pageHandler_.hideVisits(event.detail);
   }
 
@@ -271,35 +330,47 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
    * Called with `event` received from a cluster requesting to be removed from
    * the list when all its visits have been removed. Contains the cluster index.
    */
-  private onRemoveCluster_(event: CustomEvent<number>) {
+  protected onRemoveCluster_(event: CustomEvent<number>) {
     const index = event.detail;
-    this.splice('result_.clusters', index, 1);
+    this.clusters_ =
+        [...this.clusters_.slice(0, index), ...this.clusters_.slice(index + 1)];
   }
 
   /**
    * Called with `event` received from a visit requesting to be removed. `event`
    * may contain the related visits of the said visit, if applicable.
    */
-  private onRemoveVisits_(event: CustomEvent<URLVisit[]>) {
+  protected async onRemoveVisits_(event: CustomEvent<URLVisit[]>) {
     // Return early if there is a pending remove request.
     if (this.visitsToBeRemoved_.length) {
       return;
     }
 
     this.visitsToBeRemoved_ = event.detail;
-    if (this.visitsToBeRemoved_.length > 1) {
-      this.$.confirmationDialog.get().showModal();
-    } else {
-      // Bypass the confirmation dialog if removing one visit only.
-      this.onRemoveButtonClick_();
+
+    // Bypass the confirmation dialog if removing one visit only.
+    if (this.visitsToBeRemoved_.length === 1) {
+      this.removeVisits_();
+      return;
     }
+
+    // Show a confirmation dialog.
+    if (!this.showConfirmationDialog_) {
+      this.showConfirmationDialog_ = true;
+      await this.updateComplete;
+    }
+    this.getConfirmationDialog_().showModal();
+  }
+
+  setScrollDebounceForTest(debounce: number) {
+    this.scrollDebounce_ = debounce;
   }
 
   /**
    * Called when the scrollable area has been scrolled nearly to the bottom.
    */
   private onScrolledToBottom_() {
-    if (this.shadowRoot!.querySelector(':focus-visible')) {
+    if (this.shadowRoot.querySelector(':focus-visible')) {
       // If some element of ours is keyboard-focused, don't automatically load
       // more clusters. It loses the user's position and messes up screen
       // readers. Let the user manually click the "Load More" button, if needed.
@@ -315,16 +386,20 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
   //============================================================================
   // Helper methods
   //============================================================================
+  private getConfirmationDialog_(): CrDialogElement {
+    const dialog = this.shadowRoot.querySelector('cr-dialog');
+    assert(dialog);
+    return dialog;
+  }
 
-  private computePlaceholderText_(): string {
-    if (!this.result_) {
+  protected computePlaceholderText_(): string {
+    if (!this.hasResult_) {
       return '';
     }
-    return this.result_.clusters.length ?
+    return this.clusters_.length ?
         '' :
         loadTimeData.getString(
-            this.result_.query ? 'noSearchResults' :
-                                 'historyClustersNoResults');
+            this.resultQuery_ ? 'noSearchResults' : 'historyClustersNoResults');
   }
 
   /**
@@ -333,18 +408,16 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
    * state. This is because if the user is using the mouse, more clusters are
    * loaded before the user ever gets a chance to see this button.
    */
-  private getLoadMoreButtonHidden_(
-      _result: QueryResult, _resultClusters: Cluster[],
-      _resultCanLoadMore: Time): boolean {
-    return !this.result_ || this.result_.clusters.length === 0 ||
-        !this.result_.canLoadMore;
+  protected getLoadMoreButtonHidden_(): boolean {
+    return !this.hasResult_ || this.clusters_.length === 0 ||
+        !this.canLoadMore_;
   }
 
   /**
    * Returns whether the given index corresponds to the last cluster.
    */
-  private isLastCluster_(index: number): boolean {
-    return index === this.result_.clusters.length - 1;
+  protected isLastCluster_(index: number): boolean {
+    return index === this.clusters_.length - 1;
   }
 
   /**
@@ -359,15 +432,17 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
   }
 
   private onClustersQueryResult_(result: QueryResult) {
+    this.hasResult_ = true;
+    this.canLoadMore_ = result.canLoadMore;
     if (result.isContinuation) {
-      // Do not replace the existing result when `result` contains a partial
-      // set of clusters that should be appended to the existing ones.
-      this.push('result_.clusters', ...result.clusters);
-      this.set('result_.canLoadMore', result.canLoadMore);
+      // Append the new set of clusters to the existing ones, since this is a
+      // continuation of the existing clusters.
+      this.clusters_ = [...this.clusters_.slice(), ...result.clusters];
     } else {
       // Scroll to the top when `result` contains a new set of clusters.
       this.scrollTarget.scrollTop = 0;
-      this.result_ = result;
+      this.clusters_ = result.clusters;
+      this.resultQuery_ = result.query;
     }
 
     // Handle the "tall monitor" edge case: if the returned results are are
@@ -385,8 +460,9 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
     // Do this on browser idle to avoid jank and to give the DOM a chance to be
     // updated with the results we just got.
     this.onBrowserIdle_().then(() => {
-      if (this.scrollTarget.scrollHeight <= this.scrollTarget.clientHeight &&
-          this.result_.canLoadMore) {
+      if ((this.$.clusters.offsetHeight < this.scrollTarget.offsetHeight ||
+           this.scrollTarget.scrollHeight <= this.scrollTarget.clientHeight) &&
+          this.canLoadMore_) {
         this.onLoadMoreButtonClick_();
       }
     });
@@ -397,12 +473,13 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
    * Called when an image has become available for `clusterIndex`.
    */
   private onClusterImageUpdated_(clusterIndex: number, imageUrl: Url) {
-    const cluster = this.result_.clusters[clusterIndex];
+    const cluster = this.clusters_[clusterIndex];
     const newCluster = Object.assign({}, cluster) as unknown as Cluster;
     newCluster.imageUrl = imageUrl;
 
     // TODO(tommycli): Make deletions handle `clusterIndex` properly.
-    this.set(`result_.clusters.${clusterIndex}`, newCluster);
+    this.clusters_[clusterIndex] = newCluster;
+    this.requestUpdate();
   }
 
   /**
@@ -411,9 +488,9 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
    */
   private onQueryChanged_() {
     this.onBrowserIdle_().then(() => {
-      if (this.result_ && this.result_.canLoadMore) {
+      if (this.hasResult_ && this.canLoadMore_) {
         // Prevent sending further load-more requests until this one finishes.
-        this.set('result_.canLoadMore', false);
+        this.canLoadMore_ = false;
       }
       this.pageHandler_.startQueryClusters(
           this.query.trim(),
@@ -430,7 +507,7 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
     // Show the confirmation toast once done removing one visit only; since a
     // confirmation dialog was not shown prior to the action.
     if (removedVisits.length === 1) {
-      this.$.confirmationToast.get().show();
+      this.$.confirmationToast.show();
     }
   }
 
@@ -451,43 +528,34 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
     // Don't directly change the query, but instead let the containing element
     // update the searchbox UI. That in turn will cause this object to issue
     // a new query to the backend.
-    this.dispatchEvent(new CustomEvent('query-changed-by-user', {
-      bubbles: true,
-      composed: true,
-      detail: query,
-    }));
+    this.fire('query-changed-by-user', query);
   }
 
-  private onScrollTargetChanged_(_new: HTMLElement, oldTarget?: HTMLElement) {
-    this.notifyResize();
-
-    if (oldTarget) {
-      oldTarget.removeEventListener('scroll', this.scrollListener_);
-    }
-    if (this.scrollTarget) {
-      this.scrollTarget.addEventListener('scroll', this.scrollListener_);
-    }
-  }
-
-  private onScroll_() {
+  private onScrollOrResize_() {
     // Debounce by 200ms.
     if (this.scrollTimeout_) {
       clearTimeout(this.scrollTimeout_);
     }
-    this.scrollTimeout_ = setTimeout(() => this.onScrollTimeout_(), 200);
+    this.scrollTimeout_ =
+        setTimeout(() => this.onScrollTimeout_(), this.scrollDebounce_);
   }
 
   private onScrollTimeout_() {
     this.scrollTimeout_ = null;
-    const lowerScroll =
-        this.scrollTarget.offsetHeight - this.scrollTarget.scrollTop;
+    const lowerScroll = this.scrollTarget.scrollHeight -
+        this.scrollTarget.scrollTop - this.scrollTarget.offsetHeight;
     if (lowerScroll < 500) {
       this.onScrolledToBottom_();
     }
   }
 
-  private computeIsEmpty_() {
-    return this.result_.clusters.length === 0;
+  private removeVisits_() {
+    this.pageHandler_.removeVisits(this.visitsToBeRemoved_).then(() => {
+      // The returned promise resolves with whether the request succeeded in the
+      // browser. That value may be used to show a toast but is ignored for now.
+      // Allow remove requests again.
+      this.visitsToBeRemoved_ = [];
+    });
   }
 }
 

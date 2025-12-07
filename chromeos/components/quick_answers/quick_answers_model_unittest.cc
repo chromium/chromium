@@ -175,21 +175,8 @@ TEST(PhoneticsInfoTest, PhoneticsAudioUrl) {
   EXPECT_FALSE(phonetics_info.TtsAudioAvailable());
 }
 
-TEST(PhoneticsInfoTest, HasTtsAudioButDisabled) {
-  PhoneticsInfo phonetics_info;
-  ASSERT_FALSE(phonetics_info.tts_audio_enabled)
-      << "tts_audio_enabled is false by default";
-  phonetics_info.locale = kPhoneticsInfoLocale;
-  phonetics_info.query_text = kPhoneticsInfoQueryText;
-
-  EXPECT_FALSE(phonetics_info.PhoneticsInfoAvailable());
-  EXPECT_FALSE(phonetics_info.AudioUrlAvailable());
-  EXPECT_FALSE(phonetics_info.TtsAudioAvailable());
-}
-
 TEST(PhoneticsInfoTest, TtsAudio) {
   PhoneticsInfo phonetics_info;
-  phonetics_info.tts_audio_enabled = true;
   phonetics_info.locale = kPhoneticsInfoLocale;
   phonetics_info.query_text = kPhoneticsInfoQueryText;
 

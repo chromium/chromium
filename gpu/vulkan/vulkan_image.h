@@ -16,10 +16,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
-#include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "gpu/vulkan/vulkan_memory.h"
+#include "gpu/vulkan/vulkan_ycbcr_info.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 #include "ui/gfx/native_pixmap.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -83,7 +83,6 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
       VkImageTiling image_tiling,
       VkDeviceSize device_size,
       uint32_t memory_type_index,
-      std::optional<VulkanYCbCrInfo>& ycbcr_info,
       VkImageUsageFlags usage,
       VkImageCreateFlags flags);
 

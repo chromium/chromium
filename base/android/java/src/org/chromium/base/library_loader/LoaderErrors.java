@@ -6,10 +6,13 @@ package org.chromium.base.library_loader;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** These are the possible failures from the LibraryLoader */
+@NullMarked
 @IntDef({
     LoaderErrors.NORMAL_COMPLETION,
     LoaderErrors.FAILED_TO_REGISTER_JNI,

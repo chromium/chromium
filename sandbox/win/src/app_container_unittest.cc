@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <windows.h>
 
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -62,10 +58,10 @@ bool ValidSecurityCapabilities(
   for (DWORD index = 0; index < security_capabilities->CapabilityCount;
        ++index) {
     if (!capabilities[index].Equal(
-            security_capabilities->Capabilities[index].Sid)) {
+            UNSAFE_TODO(security_capabilities->Capabilities[index]).Sid)) {
       return false;
     }
-    if (security_capabilities->Capabilities[index].Attributes !=
+    if (UNSAFE_TODO(security_capabilities->Capabilities[index]).Attributes !=
         SE_GROUP_ENABLED) {
       return false;
     }
@@ -105,7 +101,7 @@ bool ProfileExist(const std::wstring& package_name) {
   return base::PathExists(profile_path);
 }
 
-bool FindAce(const std::optional<base::win::AccessControlList>& acl,
+bool FindAce(std::optional<base::win::AccessControlList>& acl,
              DWORD ace_type,
              const base::win::Sid& sid,
              DWORD flags,
@@ -284,24 +280,14 @@ TEST(AppContainerTest, SecurityCapabilities) {
       ValidSecurityCapabilities(&two_capabilities, package_sid, capabilities));
 }
 
-// TODO(crbug/347547524): re-enable the tests once they are passing on
-// Windows ARM64.
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
-#define MAYBE_CreateAndDeleteAppContainerProfile \
-  DISABLED_CreateAndDeleteAppContainerProfile
-#else
-#define MAYBE_CreateAndDeleteAppContainerProfile \
-  CreateAndDeleteAppContainerProfile
-#endif
-TEST(AppContainerTest, MAYBE_CreateAndDeleteAppContainerProfile) {
+TEST(AppContainerTest, CreateAndDeleteAppContainerProfile) {
   if (!features::IsAppContainerSandboxSupported())
     return;
 
   std::wstring package_name = GenerateRandomPackageName();
   EXPECT_FALSE(ProfileExist(package_name));
   std::unique_ptr<AppContainerBase> profile_container =
-      AppContainerBase::CreateProfile(package_name.c_str(), L"Name",
-                                      L"Description");
+      AppContainerBase::CreateProfile(package_name.c_str(), L"Name");
   ASSERT_NE(nullptr, profile_container.get());
   EXPECT_TRUE(ProfileExist(package_name));
   CheckProfileDirectoryLayout(profile_container.get());
@@ -309,22 +295,14 @@ TEST(AppContainerTest, MAYBE_CreateAndDeleteAppContainerProfile) {
   EXPECT_FALSE(ProfileExist(package_name));
 }
 
-// TODO(crbug/347529039): re-enable the tests once they are passing on
-// Windows ARM64.
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
-#define MAYBE_CreateAndOpenAppContainer DISABLED_CreateAndOpenAppContainer
-#else
-#define MAYBE_CreateAndOpenAppContainer CreateAndOpenAppContainer
-#endif
-TEST(AppContainerTest, MAYBE_CreateAndOpenAppContainer) {
+TEST(AppContainerTest, CreateAndOpenAppContainer) {
   if (!features::IsAppContainerSandboxSupported())
     return;
 
   std::wstring package_name = GenerateRandomPackageName();
   EXPECT_FALSE(ProfileExist(package_name));
   std::unique_ptr<AppContainerBase> profile_container =
-      AppContainerBase::CreateProfile(package_name.c_str(), L"Name",
-                                      L"Description");
+      AppContainerBase::CreateProfile(package_name.c_str(), L"Name");
   ASSERT_NE(nullptr, profile_container.get());
   EXPECT_TRUE(ProfileExist(package_name));
   CheckProfileDirectoryLayout(profile_container.get());
@@ -340,34 +318,19 @@ TEST(AppContainerTest, MAYBE_CreateAndOpenAppContainer) {
   EXPECT_FALSE(ProfileExist(package_name));
 }
 
-TEST(AppContainerTest, CreateAndDeleteAppContainerProfileNoFirewall) {
-  if (!features::IsAppContainerSandboxSupported()) {
-    return;
-  }
-  std::wstring package_name = GenerateRandomPackageName();
-  EXPECT_FALSE(AppContainerBase::ProfileExists(package_name.c_str()));
-  std::unique_ptr<AppContainerBase> profile_container =
-      AppContainerBase::CreateProfileNoFirewall(package_name.c_str(), L"Name");
-  ASSERT_NE(nullptr, profile_container.get());
-  EXPECT_TRUE(AppContainerBase::ProfileExists(package_name.c_str()));
-  CheckProfileDirectoryLayout(profile_container.get());
-  EXPECT_TRUE(AppContainerBase::DeleteNoFirewall(package_name.c_str()));
-  EXPECT_FALSE(AppContainerBase::ProfileExists(package_name.c_str()));
-}
-
-TEST(AppContainerTest, ReOpenAppContainerProfileNoFirewall) {
+TEST(AppContainerTest, ReOpenAppContainerProfile) {
   if (!features::IsAppContainerSandboxSupported()) {
     return;
   }
   std::wstring package_name = GenerateRandomPackageName();
   EXPECT_FALSE(ProfileExist(package_name));
   std::unique_ptr<AppContainerBase> profile_container =
-      AppContainerBase::CreateProfileNoFirewall(package_name.c_str(), L"Name");
+      AppContainerBase::CreateProfile(package_name.c_str(), L"Name");
   ASSERT_NE(nullptr, profile_container.get());
   EXPECT_TRUE(ProfileExist(package_name));
   CheckProfileDirectoryLayout(profile_container.get());
   std::unique_ptr<AppContainerBase> open_container =
-      AppContainerBase::CreateProfileNoFirewall(package_name.c_str(), L"Name");
+      AppContainerBase::CreateProfile(package_name.c_str(), L"Name");
   ASSERT_NE(nullptr, open_container.get());
   EXPECT_EQ(profile_container->GetPackageSid(),
             open_container->GetPackageSid());

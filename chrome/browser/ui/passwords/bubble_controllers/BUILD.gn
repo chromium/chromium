@@ -1,0 +1,167 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android)
+
+source_set("bubble_controllers") {
+  sources = [
+    "add_username_bubble_controller.h",
+    "auto_sign_in_bubble_controller.h",
+    "common_saved_account_manager_bubble_controller.h",
+    "manage_passwords_bubble_controller.h",
+    "move_to_account_store_bubble_controller.h",
+    "password_bubble_controller_base.h",
+    "post_save_compromised_bubble_controller.h",
+    "save_update_bubble_controller.h",
+    "shared_passwords_notifications_bubble_controller.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/password_manager/factories",
+    "//chrome/browser/ui/passwords",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser:metrics_util",
+    "//components/password_manager/core/browser:password_form",
+    "//ui/gfx",
+    "//ui/gfx/range",
+  ]
+
+  if (is_win || is_mac || is_chromeos) {
+    sources += [
+      "biometric_authentication_confirmation_bubble_controller.h",
+      "biometric_authentication_for_filling_bubble_controller.h",
+    ]
+  }
+
+  if (is_linux || is_mac) {
+    sources += [ "relaunch_chrome_bubble_controller.h" ]
+  }
+}
+
+source_set("impl") {
+  sources = []
+  deps = []
+
+  if (!is_android) {
+    sources += [
+      "add_username_bubble_controller.cc",
+      "auto_sign_in_bubble_controller.cc",
+      "common_saved_account_manager_bubble_controller.cc",
+      "manage_passwords_bubble_controller.cc",
+      "move_to_account_store_bubble_controller.cc",
+      "password_bubble_controller_base.cc",
+      "post_save_compromised_bubble_controller.cc",
+      "save_update_bubble_controller.cc",
+      "shared_passwords_notifications_bubble_controller.cc",
+    ]
+
+    deps += [
+      ":bubble_controllers",
+      "//base",
+      "//chrome/app:branded_strings",
+      "//chrome/app:generated_resources",
+      "//chrome/app/theme:theme_resources",
+      "//chrome/browser/favicon",
+      "//chrome/browser/password_manager/factories:password_factory_headers",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/profiles:profile_util",
+      "//chrome/browser/signin",
+      "//chrome/browser/sync",
+      "//chrome/browser/sync:factories",
+      "//chrome/browser/ui/passwords",
+      "//components/favicon/core",
+      "//components/password_manager/core/browser",
+      "//components/password_manager/core/browser:metrics_util",
+      "//components/password_manager/core/browser:password_form",
+      "//components/password_manager/core/browser/features:utils",
+      "//components/password_manager/core/browser/password_store:password_store_impl",
+      "//components/password_manager/core/browser/password_store:password_store_interface",
+      "//components/password_manager/core/browser/ui:credential_ui_entry",
+      "//components/password_manager/core/common",
+      "//components/prefs",
+      "//components/signin/public/base",
+      "//components/signin/public/identity_manager",
+      "//components/url_formatter",
+      "//content/public/browser",
+      "//ui/base",
+    ]
+  }
+
+  if (is_win || is_mac || is_chromeos) {
+    sources += [
+      "biometric_authentication_confirmation_bubble_controller.cc",
+      "biometric_authentication_for_filling_bubble_controller.cc",
+    ]
+  }
+
+  if (is_linux || is_mac) {
+    sources += [ "relaunch_chrome_bubble_controller.cc" ]
+  }
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = []
+  deps = []
+
+  if (!is_android) {
+    sources += [
+      "add_username_bubble_controller_unittest.cc",
+      "auto_sign_in_bubble_controller_unittest.cc",
+      "common_saved_account_manager_bubble_controller_unittest.cc",
+      "manage_passwords_bubble_controller_unittest.cc",
+      "move_to_account_store_bubble_controller_unittest.cc",
+      "post_save_compromised_bubble_controller_unittest.cc",
+      "save_update_bubble_controller_unittest.cc",
+      "shared_passwords_notifications_bubble_controller_unittest.cc",
+    ]
+
+    deps += [
+      ":bubble_controllers",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/app:generated_resources",
+      "//chrome/app/theme:theme_resources",
+      "//chrome/browser/password_manager/factories:password_factory_headers",
+      "//chrome/browser/signin",
+      "//chrome/browser/sync",
+      "//chrome/browser/sync:factories",
+      "//chrome/browser/ui/passwords:test_support_ui",
+      "//chrome/test:test_support",
+      "//components/password_manager/core/browser",
+      "//components/password_manager/core/browser:metrics_util",
+      "//components/password_manager/core/browser:password_form",
+      "//components/password_manager/core/browser:test_support",
+      "//components/password_manager/core/browser/features:utils",
+      "//components/password_manager/core/browser/password_store:password_store_interface",
+      "//components/password_manager/core/browser/password_store:test_support",
+      "//components/password_manager/core/common",
+      "//components/signin/public/identity_manager",
+      "//components/signin/public/identity_manager:test_support",
+      "//components/sync:test_support",
+      "//components/ukm:test_support",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//services/metrics/public/cpp:metrics_cpp",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//ui/base",
+      "//ui/gfx",
+      "//ui/gfx:test_support",
+    ]
+  }
+
+  if (is_win || is_mac || is_chromeos) {
+    sources += [
+      "biometric_authentication_confirmation_bubble_controller_unittest.cc",
+      "biometric_authentication_for_filling_bubble_controller_unittest.cc",
+    ]
+  }
+
+  if (is_mac || is_linux) {
+    sources += [ "relaunch_chrome_bubble_controller_unittest.cc" ]
+  }
+}

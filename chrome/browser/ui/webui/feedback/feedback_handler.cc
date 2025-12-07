@@ -21,6 +21,7 @@
 #include "content/public/common/url_constants.h"
 #include "extensions/common/api/feedback_private.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/widget/widget.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
@@ -47,8 +48,9 @@ void ShowChildPage(Profile* profile,
   auto delegate = std::make_unique<ui::WebDialogDelegate>();
   delegate->set_dialog_args(args);
   delegate->set_dialog_content_url(url);
-  delegate->set_dialog_modal_type(is_parent_modal ? ui::MODAL_TYPE_SYSTEM
-                                                  : ui::MODAL_TYPE_NONE);
+  delegate->set_dialog_modal_type(is_parent_modal
+                                      ? ui::mojom::ModalType::kSystem
+                                      : ui::mojom::ModalType::kNone);
   delegate->set_dialog_size(gfx::Size(dialog_width, dialog_height));
   delegate->set_dialog_title(title);
   delegate->set_minimum_dialog_size(gfx::Size(400, 120));

@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/platform/bindings/callback_function_base.h"
 
+#include "base/functional/callback.h"
 #include "third_party/blink/renderer/platform/bindings/binding_security_for_platform.h"
+#include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
@@ -15,7 +17,7 @@ CallbackFunctionBase::CallbackFunctionBase(
     v8::Local<v8::Object> callback_function) {
   DCHECK(!callback_function.IsEmpty());
 
-  v8::Isolate* isolate = callback_function->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   callback_function_.Reset(isolate, callback_function);
 
   incumbent_script_state_ =
@@ -60,11 +62,11 @@ ScriptState* CallbackFunctionBase::CallbackRelevantScriptStateOrReportError(
   ScriptState::Scope incumbent_scope(incumbent_script_state_);
   v8::TryCatch try_catch(GetIsolate());
   try_catch.SetVerbose(true);
-  ExceptionState exception_state(GetIsolate(), v8::ExceptionContext::kOperation,
-                                 interface_name, operation_name);
-  exception_state.ThrowSecurityError(
+  ExceptionState exception_state(GetIsolate());
+  exception_state.ThrowSecurityError(ExceptionMessages::FailedToExecute(
+      operation_name, interface_name,
       "An invocation of the provided callback failed due to cross origin "
-      "access.");
+      "access."));
   return nullptr;
 }
 
@@ -77,11 +79,11 @@ ScriptState* CallbackFunctionBase::CallbackRelevantScriptStateOrThrowException(
 
   // Throw a SecurityError due to a cross origin callback object.
   ScriptState::Scope incumbent_scope(incumbent_script_state_);
-  ExceptionState exception_state(GetIsolate(), v8::ExceptionContext::kOperation,
-                                 interface_name, operation_name);
-  exception_state.ThrowSecurityError(
+  ExceptionState exception_state(GetIsolate());
+  exception_state.ThrowSecurityError(ExceptionMessages::FailedToExecute(
+      operation_name, interface_name,
       "An invocation of the provided callback failed due to cross origin "
-      "access.");
+      "access."));
   return nullptr;
 }
 
@@ -104,7 +106,7 @@ void CallbackFunctionBase::EvaluateAsPartOfCallback(
 
 void CallbackFunctionWithTaskAttributionBase::Trace(Visitor* visitor) const {
   CallbackFunctionBase::Trace(visitor);
-  visitor->Trace(parent_task_);
+  visitor->Trace(task_state_);
 }
 
 }  // namespace blink

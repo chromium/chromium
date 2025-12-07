@@ -15,6 +15,7 @@
 #include "cc/cc_export.h"
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
+#include "components/viz/common/view_transition_element_resource_id.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "ui/gfx/display_color_spaces.h"
 
@@ -30,6 +31,9 @@ class CC_EXPORT ViewTransitionRequest {
                viz::CompositorRenderPassId>;
   using Type = viz::CompositorFrameTransitionDirective::Type;
 
+  using ViewTransitionContentRectMap = viz::ViewTransitionElementResourceRects;
+  using ViewTransitionCaptureCallback =
+      base::OnceCallback<void(const ViewTransitionContentRectMap&)>;
   // Creates a Type::kCapture type of request.
   // `transition_token` is an identifier that uniquely identifies each
   // transition.
@@ -39,7 +43,7 @@ class CC_EXPORT ViewTransitionRequest {
       const blink::ViewTransitionToken& transition_token,
       bool maybe_cross_frame_sink,
       std::vector<viz::ViewTransitionElementResourceId> capture_ids,
-      base::OnceClosure commit_callback);
+      ViewTransitionCaptureCallback commit_callback);
 
   // Creates a Type::kAnimateRenderer type of request.
   static std::unique_ptr<ViewTransitionRequest> CreateAnimateRenderer(
@@ -60,7 +64,7 @@ class CC_EXPORT ViewTransitionRequest {
   // able to begin the next step in the animation. In other words, when this
   // callback is invoked it can resolve a script promise that is gating this
   // step.
-  base::OnceClosure TakeFinishedCallback() {
+  ViewTransitionCaptureCallback TakeFinishedCallback() {
     return std::move(commit_callback_);
   }
 
@@ -73,11 +77,23 @@ class CC_EXPORT ViewTransitionRequest {
 
   // Returns the sequence id for this request.
   uint32_t sequence_id() const { return sequence_id_; }
+  // This is only called on the viz side where the request is constructed from
+  // mojo wire and the sequence id is originally created on the renderer side.
+  void set_sequence_id(uint32_t id) { sequence_id_ = id; }
 
   Type type() const { return type_; }
 
   // Testing / debugging functionality.
   std::string ToString() const;
+
+  const blink::ViewTransitionToken& token() const { return transition_token_; }
+
+  bool maybe_cross_frame_sink() const { return maybe_cross_frame_sink_; }
+
+  const std::vector<viz::ViewTransitionElementResourceId>&
+  capture_resource_ids() const {
+    return capture_resource_ids_;
+  }
 
  private:
   ViewTransitionRequest(
@@ -85,13 +101,13 @@ class CC_EXPORT ViewTransitionRequest {
       const blink::ViewTransitionToken& transition_token,
       bool maybe_cross_frame_sink,
       std::vector<viz::ViewTransitionElementResourceId> capture_ids,
-      base::OnceClosure commit_callback);
+      ViewTransitionCaptureCallback commit_callback);
 
   const Type type_;
   const blink::ViewTransitionToken transition_token_;
   const bool maybe_cross_frame_sink_;
-  base::OnceClosure commit_callback_;
-  const uint32_t sequence_id_;
+  ViewTransitionCaptureCallback commit_callback_;
+  uint32_t sequence_id_;
   const std::vector<viz::ViewTransitionElementResourceId> capture_resource_ids_;
 
   static uint32_t s_next_sequence_id_;

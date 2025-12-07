@@ -15,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "components/download/public/background_service/download_params.h"
 #include "content/public/browser/background_fetch_delegate.h"
-#include "ui/gfx/image/image.h"
 #include "url/origin.h"
 
 namespace content {

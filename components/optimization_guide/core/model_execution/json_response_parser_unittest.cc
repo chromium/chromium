@@ -21,9 +21,6 @@ namespace optimization_guide {
 
 class JsonResponseParserTest : public testing::Test {
  public:
-  JsonResponseParserTest() = default;
-  ~JsonResponseParserTest() override = default;
-
   base::test::TaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
@@ -31,9 +28,11 @@ class JsonResponseParserTest : public testing::Test {
 TEST_F(JsonResponseParserTest, Parse) {
   base::test::TestFuture<ResponseParser::Result> response_future;
   proto::OnDeviceModelExecutionOutputConfig config;
-  config.set_proto_type("optimization_guide.proto.TabOrganizationResponse");
-  JsonResponseParserFactory().CreateParser(config)->ParseAsync(
-      R"({
+  constexpr char proto_type[] =
+      "optimization_guide.proto.TabOrganizationResponse";
+  JsonResponseParser(proto_type)
+      .ParseAsync(
+          R"({
         "tabGroups": [
           {
             "label": "mylabel",
@@ -50,7 +49,7 @@ TEST_F(JsonResponseParserTest, Parse) {
           }
         ]
       })",
-      response_future.GetCallback());
+          response_future.GetCallback());
   auto response = response_future.Get();
   EXPECT_TRUE(response.has_value());
   EXPECT_EQ(

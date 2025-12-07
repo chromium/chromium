@@ -4,19 +4,21 @@
 
 #include "content/browser/file_system_access/file_system_chooser.h"
 
+#include <algorithm>
 #include <string>
 
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "content/browser/file_system_access/file_system_chooser.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/file_system_chooser_test_helpers.h"
 #include "content/public/test/web_contents_tester.h"
 #include "content/test/test_render_view_host.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -28,26 +30,35 @@ namespace content {
 
 class FileSystemChooserTest : public RenderViewHostImplTestHarness {
  public:
-  void TearDown() override {
-    RenderViewHostImplTestHarness::TearDown();
-    ui::SelectFileDialog::SetFactory(nullptr);
+  void SetUp() override {
+    RenderViewHostImplTestHarness::SetUp();
+    web_contents_ = CreateTestWebContents(GetBrowserContext());
   }
 
-  std::vector<FileSystemChooser::ResultEntry> SyncShowDialog(
-      WebContents* web_contents,
+  void TearDown() override {
+    ui::SelectFileDialog::SetFactory(nullptr);
+    web_contents_.reset();
+    RenderViewHostImplTestHarness::TearDown();
+  }
+
+  WebContents* web_contents() { return web_contents_.get(); }
+
+  std::vector<PathInfo> SyncShowDialog(
       std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
-      bool include_accepts_all) {
+      bool include_accepts_all,
+      base::FilePath default_directory = base::FilePath(),
+      base::FilePath suggested_name = base::FilePath()) {
     base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
-                           std::vector<FileSystemChooser::ResultEntry>>
+                           std::vector<PathInfo>>
         future;
     FileSystemChooser::CreateAndShow(
-        web_contents,
+        web_contents()->GetPrimaryMainFrame(),
         FileSystemChooser::Options(ui::SelectFileDialog::SELECT_OPEN_FILE,
                                    blink::mojom::AcceptsTypesInfo::New(
                                        std::move(accepts), include_accepts_all),
-                                   std::u16string(), base::FilePath(),
-                                   base::FilePath()),
-        future.GetCallback(), base::ScopedClosureRunner());
+                                   std::u16string(), default_directory,
+                                   suggested_name),
+        future.GetCallback(), FileSystemChooser::ScopedObjects());
     return std::get<1>(future.Take());
   }
 
@@ -59,6 +70,7 @@ class FileSystemChooserTest : public RenderViewHostImplTestHarness {
         browser_context, std::move(site_instance));
   }
 
+  std::unique_ptr<content::WebContents> web_contents_;
   // Must persist throughout TearDown().
   SelectFileDialogParams dialog_params_;
 };
@@ -66,7 +78,7 @@ class FileSystemChooserTest : public RenderViewHostImplTestHarness {
 TEST_F(FileSystemChooserTest, EmptyAccepts) {
   ui::SelectFileDialog::SetFactory(
       std::make_unique<CancellingSelectFileDialogFactory>(&dialog_params_));
-  SyncShowDialog(/*web_contents=*/nullptr, {}, /*include_accepts_all=*/true);
+  SyncShowDialog({}, /*include_accepts_all=*/true);
 
   ASSERT_TRUE(dialog_params_.file_types);
   EXPECT_TRUE(dialog_params_.file_types->include_all_files);
@@ -74,12 +86,15 @@ TEST_F(FileSystemChooserTest, EmptyAccepts) {
   EXPECT_EQ(0u,
             dialog_params_.file_types->extension_description_overrides.size());
   EXPECT_EQ(0, dialog_params_.file_type_index);
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(0u, dialog_params_.accept_types.size());
+#endif
 }
 
 TEST_F(FileSystemChooserTest, EmptyAcceptsIgnoresIncludeAcceptsAll) {
   ui::SelectFileDialog::SetFactory(
       std::make_unique<CancellingSelectFileDialogFactory>(&dialog_params_));
-  SyncShowDialog(/*web_contents=*/nullptr, {}, /*include_accepts_all=*/false);
+  SyncShowDialog({}, /*include_accepts_all=*/false);
 
   // Should still include_all_files, even though include_accepts_all was false.
   ASSERT_TRUE(dialog_params_.file_types);
@@ -88,6 +103,9 @@ TEST_F(FileSystemChooserTest, EmptyAcceptsIgnoresIncludeAcceptsAll) {
   EXPECT_EQ(0u,
             dialog_params_.file_types->extension_description_overrides.size());
   EXPECT_EQ(0, dialog_params_.file_type_index);
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(0u, dialog_params_.accept_types.size());
+#endif
 }
 
 TEST_F(FileSystemChooserTest, AcceptsMimeTypes) {
@@ -100,7 +118,7 @@ TEST_F(FileSystemChooserTest, AcceptsMimeTypes) {
   accepts.emplace_back(blink::mojom::ChooseFileSystemEntryAcceptsOption::New(
       u"Images", std::vector<std::string>({"image/*"}),
       std::vector<std::string>({})));
-  SyncShowDialog(/*web_contents=*/nullptr, std::move(accepts),
+  SyncShowDialog(std::move(accepts),
                  /*include_accepts_all=*/true);
 
   ASSERT_TRUE(dialog_params_.file_types);
@@ -129,6 +147,10 @@ TEST_F(FileSystemChooserTest, AcceptsMimeTypes) {
   EXPECT_EQ(u"", dialog_params_.file_types->extension_description_overrides[0]);
   EXPECT_EQ(u"Images",
             dialog_params_.file_types->extension_description_overrides[1]);
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_THAT(dialog_params_.accept_types,
+              testing::UnorderedElementsAre(u"image/*", u"tExt/Plain"));
+#endif
 }
 
 TEST_F(FileSystemChooserTest, AcceptsExtensions) {
@@ -138,7 +160,7 @@ TEST_F(FileSystemChooserTest, AcceptsExtensions) {
   accepts.emplace_back(blink::mojom::ChooseFileSystemEntryAcceptsOption::New(
       u"", std::vector<std::string>({}),
       std::vector<std::string>({"text", "js", "text"})));
-  SyncShowDialog(/*web_contents=*/nullptr, std::move(accepts),
+  SyncShowDialog(std::move(accepts),
                  /*include_accepts_all=*/true);
 
   ASSERT_TRUE(dialog_params_.file_types);
@@ -155,6 +177,10 @@ TEST_F(FileSystemChooserTest, AcceptsExtensions) {
   ASSERT_EQ(1u,
             dialog_params_.file_types->extension_description_overrides.size());
   EXPECT_EQ(u"", dialog_params_.file_types->extension_description_overrides[0]);
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_THAT(dialog_params_.accept_types,
+              testing::UnorderedElementsAre(u"text/plain", u"text/javascript"));
+#endif
 }
 
 TEST_F(FileSystemChooserTest, AcceptsExtensionsAndMimeTypes) {
@@ -164,7 +190,7 @@ TEST_F(FileSystemChooserTest, AcceptsExtensionsAndMimeTypes) {
   accepts.emplace_back(blink::mojom::ChooseFileSystemEntryAcceptsOption::New(
       u"", std::vector<std::string>({"image/*"}),
       std::vector<std::string>({"text", "jpg"})));
-  SyncShowDialog(/*web_contents=*/nullptr, std::move(accepts),
+  SyncShowDialog(std::move(accepts),
                  /*include_accepts_all=*/false);
 
   ASSERT_TRUE(dialog_params_.file_types);
@@ -181,12 +207,17 @@ TEST_F(FileSystemChooserTest, AcceptsExtensionsAndMimeTypes) {
                              FILE_PATH_LITERAL("gif")));
   EXPECT_TRUE(base::Contains(dialog_params_.file_types->extensions[0],
                              FILE_PATH_LITERAL("jpeg")));
-  EXPECT_EQ(1, base::ranges::count(dialog_params_.file_types->extensions[0],
-                                   FILE_PATH_LITERAL("jpg")));
+  EXPECT_EQ(1, std::ranges::count(dialog_params_.file_types->extensions[0],
+                                  FILE_PATH_LITERAL("jpg")));
 
   ASSERT_EQ(1u,
             dialog_params_.file_types->extension_description_overrides.size());
   EXPECT_EQ(u"", dialog_params_.file_types->extension_description_overrides[0]);
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_THAT(
+      dialog_params_.accept_types,
+      testing::UnorderedElementsAre(u"image/*", u"text/plain", u"image/jpeg"));
+#endif
 }
 
 TEST_F(FileSystemChooserTest, IgnoreShellIntegratedExtensions) {
@@ -197,7 +228,7 @@ TEST_F(FileSystemChooserTest, IgnoreShellIntegratedExtensions) {
       u"", std::vector<std::string>({}),
       std::vector<std::string>(
           {"lnk", "foo.lnk", "foo.bar.local", "text", "local", "scf", "url"})));
-  SyncShowDialog(/*web_contents=*/nullptr, std::move(accepts),
+  SyncShowDialog(std::move(accepts),
                  /*include_accepts_all=*/false);
 
   ASSERT_TRUE(dialog_params_.file_types);
@@ -212,6 +243,10 @@ TEST_F(FileSystemChooserTest, IgnoreShellIntegratedExtensions) {
   ASSERT_EQ(1u,
             dialog_params_.file_types->extension_description_overrides.size());
   EXPECT_EQ(u"", dialog_params_.file_types->extension_description_overrides[0]);
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_THAT(dialog_params_.accept_types,
+              testing::UnorderedElementsAre(u"text/plain"));
+#endif
 }
 
 TEST_F(FileSystemChooserTest, LocalPath) {
@@ -221,10 +256,10 @@ TEST_F(FileSystemChooserTest, LocalPath) {
   ui::SelectFileDialog::SetFactory(
       std::make_unique<FakeSelectFileDialogFactory>(
           std::vector<ui::SelectedFileInfo>{selected_file}));
-  auto results = SyncShowDialog(/*web_contents=*/nullptr, {},
+  auto results = SyncShowDialog({},
                                 /*include_accepts_all=*/true);
   ASSERT_EQ(results.size(), 1u);
-  EXPECT_EQ(results[0].type, FileSystemChooser::PathType::kLocal);
+  EXPECT_EQ(results[0].type, PathType::kLocal);
   EXPECT_EQ(results[0].path, local_path);
 }
 
@@ -238,10 +273,10 @@ TEST_F(FileSystemChooserTest, ExternalPath) {
   ui::SelectFileDialog::SetFactory(
       std::make_unique<FakeSelectFileDialogFactory>(
           std::vector<ui::SelectedFileInfo>{selected_file}));
-  auto results = SyncShowDialog(/*web_contents=*/nullptr, {},
+  auto results = SyncShowDialog({},
                                 /*include_accepts_all=*/true);
   ASSERT_EQ(results.size(), 1u);
-  EXPECT_EQ(results[0].type, FileSystemChooser::PathType::kExternal);
+  EXPECT_EQ(results[0].type, PathType::kExternal);
   EXPECT_EQ(results[0].path, virtual_path);
 }
 
@@ -264,7 +299,7 @@ TEST_F(FileSystemChooserTest, DescriptionSanitization) {
       u"Unbalanced RTL \u202e section in a otherwise "
       u"very long description that will be truncated",
       std::vector<std::string>({}), std::vector<std::string>({"js"})));
-  SyncShowDialog(/*web_contents=*/nullptr, std::move(accepts),
+  SyncShowDialog(std::move(accepts),
                  /*include_accepts_all=*/false);
 
   ASSERT_TRUE(dialog_params_.file_types);
@@ -280,20 +315,46 @@ TEST_F(FileSystemChooserTest, DescriptionSanitization) {
       u"Unbalanced RTL \u202e section in a "
       u"otherwise very long description t…\u202c",
       dialog_params_.file_types->extension_description_overrides[3]);
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_THAT(dialog_params_.accept_types,
+              testing::UnorderedElementsAre(u"text/plain", u"text/javascript"));
+#endif
 }
 
 TEST_F(FileSystemChooserTest, DialogCaller) {
-  std::unique_ptr<WebContents> web_contents =
-      CreateTestWebContents(GetBrowserContext());
   const GURL gurl("https://www.example.com");
-  content::WebContentsTester::For(web_contents.get())->NavigateAndCommit(gurl);
+  content::WebContentsTester::For(web_contents())->NavigateAndCommit(gurl);
 
   ui::SelectFileDialog::SetFactory(
       std::make_unique<CancellingSelectFileDialogFactory>(&dialog_params_));
-  SyncShowDialog(web_contents.get(), {}, /*include_accepts_all=*/true);
+  SyncShowDialog({}, /*include_accepts_all=*/true);
 
   ASSERT_TRUE(dialog_params_.caller.has_value());
   EXPECT_EQ(dialog_params_.caller.value(), gurl);
+}
+
+TEST_F(FileSystemChooserTest, DefaultPath) {
+  base::FilePath default_dir = base::FilePath(FILE_PATH_LITERAL("default"))
+                                   .Append(FILE_PATH_LITERAL("dir"));
+  base::FilePath suggested_name(FILE_PATH_LITERAL("suggested.txt"));
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<CancellingSelectFileDialogFactory>(&dialog_params_));
+
+  // Set only default-dir.
+  SyncShowDialog({}, /*include_accepts_all=*/true, default_dir,
+                 base::FilePath());
+  // Should end with a separator, so we can detect that suggested name is empty.
+  EXPECT_EQ(dialog_params_.default_path, default_dir.AsEndingWithSeparator());
+
+  // Set default-dir and suggested-name.
+  SyncShowDialog({}, /*include_accepts_all=*/true, default_dir,
+                 base::FilePath(FILE_PATH_LITERAL("suggested.txt")));
+  EXPECT_EQ(dialog_params_.default_path, default_dir.Append(suggested_name));
+
+  // Set only suggested-name.
+  SyncShowDialog({}, /*include_accepts_all=*/true, base::FilePath(),
+                 base::FilePath(FILE_PATH_LITERAL("suggested.txt")));
+  EXPECT_EQ(dialog_params_.default_path, suggested_name);
 }
 
 }  // namespace content

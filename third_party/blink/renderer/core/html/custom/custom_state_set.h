@@ -41,9 +41,7 @@ class CustomStateSet final : public ScriptWrappable,
 
  private:
   // blink::ValueSyncIterable override:
-  IterationSource* CreateIterationSource(
-      ScriptState* script_state,
-      ExceptionState& exception_state) override;
+  IterationSource* CreateIterationSource(ScriptState* script_state) override;
 
   void InvalidateStyle() const;
 

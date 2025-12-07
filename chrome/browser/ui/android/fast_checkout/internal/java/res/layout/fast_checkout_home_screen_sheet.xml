@@ -66,30 +66,42 @@ found in the LICENSE file.
             android:background="@drawable/fast_checkout_background_top"
             android:orientation="horizontal">
           <ImageView
+              android:id="@+id/fast_checkout_address_icon"
               android:layout_width="@dimen/fast_checkout_address_icon"
               android:layout_height="@dimen/fast_checkout_address_icon"
               android:background="@null"
               android:layout_marginStart="@dimen/fast_checkout_address_icon_margin_horizontal"
               android:layout_marginEnd="@dimen/fast_checkout_address_icon_margin_horizontal"
-              android:importantForAccessibility="no"
-              app:srcCompat="@drawable/gm_filled_location_on_24" />
+              android:importantForAccessibility="no" />
           <LinearLayout
             android:layout_height="wrap_content"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:orientation="vertical">
               <TextView
-                android:id="@+id/fast_checkout_home_sheet_profile_name"
+                android:id="@+id/fast_checkout_record_type"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.TextMedium.Primary"
-                android:textAlignment="viewStart" />
-              <TextView
-                android:id="@+id/fast_checkout_home_sheet_profile_street"
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+                android:textAlignment="viewStart"
+                android:layout_marginBottom="@dimen/fast_checkout_address_record_type_bottom"/>
+              <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.TextMedium.Primary"
-                android:textAlignment="viewStart" />
+                android:orientation="vertical">
+                <TextView
+                  android:id="@+id/fast_checkout_home_sheet_profile_name"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+                  android:textAlignment="viewStart" />
+                <TextView
+                  android:id="@+id/fast_checkout_home_sheet_profile_street"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+                  android:textAlignment="viewStart" />
+              </LinearLayout>
               <LinearLayout
                 android:id="@+id/fast_checkout_home_sheet_profile_sub_section"
                 android:layout_width="match_parent"
@@ -181,7 +193,7 @@ found in the LICENSE file.
       <!-- Action button -->
       <org.chromium.ui.widget.ButtonCompat
           android:id="@+id/fast_checkout_button_accept"
-          style="@style/FilledButton.Flat"
+          style="@style/FilledButton"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_marginTop="@dimen/fast_checkout_home_sheet_items_spacing"

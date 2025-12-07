@@ -5,9 +5,9 @@
 #include "third_party/blink/renderer/core/layout/geometry/logical_offset.h"
 
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
-#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
-#include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
+#include "third_party/blink/renderer/platform/geometry/physical_offset.h"
+#include "third_party/blink/renderer/platform/geometry/physical_size.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -21,7 +21,8 @@ PhysicalOffset LogicalOffset::ConvertToPhysical(
 }
 
 String LogicalOffset::ToString() const {
-  return String::Format("%d,%d", inline_offset.ToInt(), block_offset.ToInt());
+  return String::Format("%s,%s", inline_offset.ToString().Ascii().c_str(),
+                        block_offset.ToString().Ascii().c_str());
 }
 
 std::ostream& operator<<(std::ostream& os, const LogicalOffset& value) {

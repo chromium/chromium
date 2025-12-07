@@ -24,7 +24,7 @@ EncryptionScheme ToEncryptionScheme(::media::EncryptionScheme scheme) {
     case ::media::EncryptionScheme::kCbcs:
       return EncryptionScheme::kAesCbc;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -83,7 +83,7 @@ void DecoderBufferAdapter::set_timestamp(base::TimeDelta timestamp) {
 }
 
 const uint8_t* DecoderBufferAdapter::data() const {
-  return buffer_->data();
+  return base::span(*buffer_).data();
 }
 
 uint8_t* DecoderBufferAdapter::writable_data() const {

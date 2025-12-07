@@ -8,10 +8,13 @@
 
 #include "base/command_line.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "ui/accessibility/accessibility_features.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/views/widget/native_widget_private.h"
+#include "ui/views/window/default_frame_view.h"
 
 #if defined(USE_AURA)
+#include "ui/views/accessibility/tree/browser_views_ax_manager.h"
 #include "ui/views/touchui/touch_selection_menu_runner_views.h"
 #endif
 
@@ -27,7 +30,7 @@ ViewsDelegate::ViewsDelegate() {
   DCHECK(!views_delegate);
   views_delegate = this;
 
-#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_CHROMEOS)
   // TouchSelectionMenuRunnerViews is not supported on Mac or Cast.
   // It is also not used on Ash (the ChromeViewsDelegate() for Ash will
   // immediately replace this). But tests running without the Chrome layer
@@ -49,13 +52,14 @@ ViewsDelegate* ViewsDelegate::GetInstance() {
 void ViewsDelegate::SaveWindowPlacement(const Widget* widget,
                                         const std::string& window_name,
                                         const gfx::Rect& bounds,
-                                        ui::WindowShowState show_state) {}
+                                        ui::mojom::WindowShowState show_state) {
+}
 
 bool ViewsDelegate::GetSavedWindowPlacement(
     const Widget* widget,
     const std::string& window_name,
     gfx::Rect* bounds,
-    ui::WindowShowState* show_state) const {
+    ui::mojom::WindowShowState* show_state) const {
   return false;
 }
 
@@ -74,13 +78,6 @@ ViewsDelegate::ProcessAcceleratorWhileMenuShowing(
 bool ViewsDelegate::ShouldCloseMenuIfMouseCaptureLost() const {
   return true;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-bool ViewsDelegate::ShouldWindowHaveRoundedCorners(
-    const gfx::NativeWindow window) const {
-  return false;
-}
-#endif
 
 #if BUILDFLAG(IS_WIN)
 HICON ViewsDelegate::GetDefaultWindowIcon() const {
@@ -101,9 +98,9 @@ gfx::ImageSkia* ViewsDelegate::GetDefaultWindowIcon() const {
 }
 #endif
 
-std::unique_ptr<NonClientFrameView>
-ViewsDelegate::CreateDefaultNonClientFrameView(Widget* widget) {
-  return nullptr;
+std::unique_ptr<FrameView> ViewsDelegate::CreateDefaultFrameView(
+    Widget* widget) {
+  return std::make_unique<DefaultFrameView>(widget);
 }
 
 bool ViewsDelegate::IsShuttingDown() const {
@@ -120,6 +117,15 @@ void ViewsDelegate::OnBeforeWidgetInit(
 
 bool ViewsDelegate::WindowManagerProvidesTitleBar(bool maximized) {
   return false;
+}
+
+void ViewsDelegate::InitializeViewsAXManager() {
+#if BUILDFLAG(ENABLE_DESKTOP_AURA)
+  if (::features::IsAccessibilityTreeForViewsEnabled() &&
+      !browser_views_ax_manager_handle_) {
+    browser_views_ax_manager_handle_ = views::BrowserViewsAXManager::Create();
+  }
+#endif
 }
 
 #if BUILDFLAG(IS_MAC)

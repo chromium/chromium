@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/base/models/image_model.h"
@@ -28,8 +29,15 @@ class IntentPickerTabHelper
       public content::WebContentsUserData<IntentPickerTabHelper>,
       public web_app::WebAppInstallManagerObserver {
  public:
+  using ShowIntentPickerBubbleCallback = base::OnceCallback<void(bool)>;
+
   IntentPickerTabHelper(const IntentPickerTabHelper&) = delete;
   IntentPickerTabHelper& operator=(const IntentPickerTabHelper&) = delete;
+
+  // Updates visibility of the intent picker page action based on the current
+  // tab and whether the icon should be showed.
+  void UpdatePageAction(tabs::TabInterface* tab_interface,
+                        bool should_show_icon);
 
   ~IntentPickerTabHelper() override;
 
@@ -39,8 +47,13 @@ class IntentPickerTabHelper
 
   // Shows the intent picker bubble to present a choice between apps to handle
   // |url|. May launch directly into an app based on user preferences and
-  // installed apps.
-  void ShowIntentPickerBubbleOrLaunchApp(const GURL& url);
+  // installed apps. The callback will always be called asynchronously, and is
+  // called with true if the user chooses to launch the app, otherwise, false
+  // is called.
+  void ShowIntentPickerBubbleOrLaunchApp(
+      const GURL& url,
+      bool always_show = false,
+      ShowIntentPickerBubbleCallback callback = base::DoNothing());
 
   // Shows or hides the intent picker icon for |web_contents|. Always shows a
   // generic picker icon, even if MaybeShowIconForApps() had previously applied
@@ -64,7 +77,6 @@ class IntentPickerTabHelper
   }
 
   const ui::ImageModel& app_icon() const { return current_app_icon_; }
-
 
   // Sets a OnceClosure callback which will be called next time the icon is
   // updated. If include_latest_navigation is true, and the latest navigation
@@ -104,10 +116,13 @@ class IntentPickerTabHelper
 
   void ShowIntentPickerOrLaunchAppImpl(
       const GURL& url,
+      bool always_show,
+      ShowIntentPickerBubbleCallback callback,
       std::vector<apps::IntentPickerAppInfo> apps);
 
   void OnIntentPickerClosedMaybeLaunch(
       const GURL& url,
+      ShowIntentPickerBubbleCallback callback,
       const std::string& launch_name,
       apps::PickerEntryType entry_type,
       apps::IntentPickerCloseReason close_reason,

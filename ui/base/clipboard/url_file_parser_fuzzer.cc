@@ -4,6 +4,8 @@
 
 #include "ui/base/clipboard/url_file_parser.h"
 
+#include <stdint.h>
+
 #include <string_view>
 
 // Entry point for LibFuzzer.

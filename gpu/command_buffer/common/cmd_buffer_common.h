@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // This file contains the common parts of command buffer formats.
 
 #ifndef GPU_COMMAND_BUFFER_COMMON_CMD_BUFFER_COMMON_H_
@@ -16,7 +11,8 @@
 #include <stdint.h>
 
 #include "base/check_op.h"
-#include "gpu/gpu_export.h"
+#include "base/compiler_specific.h"
+#include "gpu/command_buffer/common/gpu_command_buffer_common_export.h"
 
 namespace gpu {
 
@@ -48,7 +44,8 @@ struct CommandHeader {
   uint32_t size:21;
   uint32_t command:11;
 
-  GPU_EXPORT static const int32_t kMaxSize = (1 << 21) - 1;
+  GPU_COMMAND_BUFFER_COMMON_EXPORT static const int32_t kMaxSize =
+      (1 << 21) - 1;
 
   void Init(uint32_t _command, int32_t _size) {
     DCHECK_LE(_size, kMaxSize);
@@ -122,7 +119,7 @@ template <typename T>
 void* ImmediateDataAddress(T* cmd) {
   static_assert(T::kArgFlags == cmd::kAtLeastN,
                 "T::kArgFlags should equal cmd::kAtLeastN");
-  return reinterpret_cast<char*>(cmd) + sizeof(*cmd);
+  return UNSAFE_TODO(reinterpret_cast<char*>(cmd) + sizeof(*cmd));
 }
 
 // Gets the address of the place to put the next command in a typesafe way.
@@ -133,7 +130,7 @@ template <typename T>
 void* NextCmdAddress(void* cmd) {
   static_assert(T::kArgFlags == cmd::kFixed,
                 "T::kArgFlags should equal cmd::kFixed");
-  return reinterpret_cast<char*>(cmd) + sizeof(T);
+  return UNSAFE_TODO(reinterpret_cast<char*>(cmd) + sizeof(T));
 }
 
 // Gets the address of the place to put the next command in a typesafe way.
@@ -145,8 +142,8 @@ template <typename T>
 void* NextImmediateCmdAddress(void* cmd, uint32_t size_of_data_in_bytes) {
   static_assert(T::kArgFlags == cmd::kAtLeastN,
                 "T::kArgFlags should equal cmd::kAtLeastN");
-  return reinterpret_cast<char*>(cmd) + sizeof(T) +   // NOLINT
-      RoundSizeToMultipleOfEntries(size_of_data_in_bytes);
+  return UNSAFE_TODO(reinterpret_cast<char*>(cmd) + sizeof(T) +  // NOLINT
+                     RoundSizeToMultipleOfEntries(size_of_data_in_bytes));
 }
 
 // Gets the address of the place to put the next command in a typesafe way.
@@ -160,8 +157,8 @@ void* NextImmediateCmdAddressTotalSize(void* cmd,
   static_assert(T::kArgFlags == cmd::kAtLeastN,
                 "T::kArgFlags should equal cmd::kAtLeastN");
   DCHECK_GE(total_size_in_bytes, sizeof(T));  // NOLINT
-  return reinterpret_cast<char*>(cmd) +
-      RoundSizeToMultipleOfEntries(total_size_in_bytes);
+  return UNSAFE_TODO(reinterpret_cast<char*>(cmd) +
+                     RoundSizeToMultipleOfEntries(total_size_in_bytes));
 }
 
 namespace cmd {
@@ -197,7 +194,7 @@ enum CommandId {
 
 static_assert(kNumCommands - 1 <= kLastCommonId, "too many commands");
 
-const char* GetCommandName(CommandId id);
+GPU_COMMAND_BUFFER_COMMON_EXPORT const char* GetCommandName(CommandId id);
 
 // A Noop command.
 struct Noop {

@@ -97,7 +97,6 @@ void OnRenderProcessGone(
           base::UmaHistogramEnumeration(
               kRenderProcessGoneHistogramName,
               RenderProcessGoneResult::kCrashNotHandled);
-          // Keeps this log unchanged, CTS test uses it to detect crash.
           std::string message = base::StringPrintf(
               "Render process (%d)'s crash wasn't handled by all associated  "
               "webviews, triggering application crash.",
@@ -115,8 +114,7 @@ void OnRenderProcessGone(
                      << " killing application.";
           kill(getpid(), SIGKILL);
         }
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case AwRenderProcessGoneDelegate::RenderProcessGoneResult::kHandled:
         // Don't log UMA yet. This WebView may be handled, but we need to wait
         // until we're out of the loop to know if all WebViews were handled.

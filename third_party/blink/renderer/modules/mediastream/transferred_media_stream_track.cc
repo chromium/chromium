@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_double_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_long_range.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_capabilities.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_settings.h"
@@ -118,11 +119,11 @@ void TransferredMediaStreamTrack::SetContentHint(const String& content_hint) {
   content_hint_list_.push_back(content_hint);
 }
 
-String TransferredMediaStreamTrack::readyState() const {
+V8MediaStreamTrackState TransferredMediaStreamTrack::readyState() const {
   if (track_) {
     return track_->readyState();
   }
-  return ReadyStateToString(data_.ready_state);
+  return ReadyStateToV8TrackState(data_.ready_state);
 }
 
 MediaStreamTrack* TransferredMediaStreamTrack::clone(
@@ -316,22 +317,14 @@ void TransferredMediaStreamTrack::UnregisterMediaStream(MediaStream* stream) {
   // initialized.
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-void TransferredMediaStreamTrack::SendWheel(
-    double relative_x,
-    double relative_y,
-    int wheel_delta_x,
-    int wheel_delta_y,
-    base::OnceCallback<void(DOMException*)> callback) {
-  NOTREACHED_NORETURN();
+void TransferredMediaStreamTrack::RegisterSink(
+    SpeechRecognitionMediaStreamAudioSink* sink) {
+  if (track_) {
+    track_->RegisterSink(sink);
+  }
+  // TODO(https://crbug.com/1288839): Save and forward to track_ once it's
+  // initialized.
 }
-
-void TransferredMediaStreamTrack::SetZoomLevel(
-    int zoom_level,
-    base::OnceCallback<void(DOMException*)> callback) {
-  NOTREACHED_NORETURN();
-}
-#endif
 
 // EventTarget
 const AtomicString& TransferredMediaStreamTrack::InterfaceName() const {

@@ -8,12 +8,14 @@
 
 #include "base/logging.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_dialogs.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/guest_view/browser/guest_view_base.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
 ChromeOSLoginAndLockMediaAccessHandler::
@@ -23,9 +25,12 @@ ChromeOSLoginAndLockMediaAccessHandler::
     ~ChromeOSLoginAndLockMediaAccessHandler() = default;
 
 bool ChromeOSLoginAndLockMediaAccessHandler::SupportsStreamType(
-    content::WebContents* web_contents,
+    content::RenderFrameHost* render_frame_host,
     const blink::mojom::MediaStreamType type,
     const extensions::Extension* extension) {
+  auto* web_contents = guest_view::GuestViewBase::GetTopLevelWebContents(
+      content::WebContents::FromRenderFrameHost(render_frame_host));
+
   if (!web_contents)
     return false;
   // Check if the `web_contents` corresponds to the login screen.

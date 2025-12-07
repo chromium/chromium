@@ -4,6 +4,8 @@
 
 #include "content/browser/service_worker/service_worker_single_script_update_checker.h"
 
+#include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -94,14 +96,14 @@ constexpr net::NetworkTrafficAnnotationTag kUpdateCheckTrafficAnnotation =
 class ServiceWorkerSingleScriptUpdateChecker::WrappedIOBuffer
     : public net::WrappedIOBuffer {
  public:
-  WrappedIOBuffer(const char* data, size_t size)
-      : net::WrappedIOBuffer(base::make_span(data, size)) {}
+  explicit WrappedIOBuffer(base::span<const char> data)
+      : net::WrappedIOBuffer(data) {}
 
  private:
   ~WrappedIOBuffer() override = default;
 
   // This is to make sure that the vtable is not merged with other classes.
-  virtual void dummy() { NOTREACHED_IN_MIGRATION(); }
+  virtual void dummy() { NOTREACHED(); }
 };
 
 ServiceWorkerSingleScriptUpdateChecker::ServiceWorkerSingleScriptUpdateChecker(
@@ -187,13 +189,13 @@ ServiceWorkerSingleScriptUpdateChecker::ServiceWorkerSingleScriptUpdateChecker(
 
   // Service worker update checking doesn't have a relevant frame and tab, so
   // that `web_contents_getter` returns nullptr and the frame id is set to
-  // kNoFrameTreeNodeId.
+  // an invalid FrameTreeNodeId.
   base::RepeatingCallback<WebContents*()> web_contents_getter =
       base::BindRepeating([]() -> WebContents* { return nullptr; });
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles =
       CreateContentBrowserURLLoaderThrottles(
           resource_request, browser_context, std::move(web_contents_getter),
-          /*navigation_ui_data=*/nullptr, RenderFrameHost::kNoFrameTreeNodeId,
+          /*navigation_ui_data=*/nullptr, FrameTreeNodeId(),
           /*navigation_id=*/std::nullopt);
 
   network_client_remote_.Bind(
@@ -244,13 +246,11 @@ void ServiceWorkerSingleScriptUpdateChecker::OnReceiveResponse(
   // https://w3c.github.io/ServiceWorker/#service-worker-script-response
   // Only main script needs the following check.
   if (is_main_script_) {
-    std::string service_worker_allowed;
-    bool has_header = response_head->headers->EnumerateHeader(
-        nullptr, ServiceWorkerConsts::kServiceWorkerAllowed,
-        &service_worker_allowed);
+    std::optional<std::string_view> service_worker_allowed =
+        response_head->headers->EnumerateHeader(
+            nullptr, ServiceWorkerConsts::kServiceWorkerAllowed);
     if (!service_worker_loader_helpers::IsPathRestrictionSatisfied(
-            scope_, script_url_, has_header ? &service_worker_allowed : nullptr,
-            &error_message)) {
+            scope_, script_url_, service_worker_allowed, &error_message)) {
       Fail(blink::ServiceWorkerStatusCode::kErrorSecurity, error_message,
            network::URLLoaderCompletionStatus(net::ERR_INSECURE_RESPONSE));
       return;
@@ -309,7 +309,7 @@ void ServiceWorkerSingleScriptUpdateChecker::OnUploadProgress(
     int64_t total_size,
     OnUploadProgressCallback ack_callback) {
   // The network request for update checking shouldn't have upload data.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ServiceWorkerSingleScriptUpdateChecker::OnTransferSizeUpdated(
@@ -350,9 +350,8 @@ void ServiceWorkerSingleScriptUpdateChecker::OnComplete(
         ServiceWorkerUpdatedScriptLoader::WriterState::kCompleted;
     switch (header_writer_state_) {
       case ServiceWorkerUpdatedScriptLoader::WriterState::kNotStarted:
-        NOTREACHED_IN_MIGRATION()
+        NOTREACHED()
             << "Response header should be received before OnComplete()";
-        break;
       case ServiceWorkerUpdatedScriptLoader::WriterState::kWriting:
         // Wait until it's written. OnWriteHeadersComplete() will call
         // Finish().
@@ -547,7 +546,7 @@ void ServiceWorkerSingleScriptUpdateChecker::OnNetworkDataAvailable(
       network_watcher_.ArmOrNotify();
       return;
   }
-  NOTREACHED_IN_MIGRATION() << static_cast<int>(result);
+  NOTREACHED() << static_cast<int>(result);
 }
 
 // |pending_buffer| is a buffer keeping a Mojo data pipe which is going to be
@@ -562,9 +561,9 @@ void ServiceWorkerSingleScriptUpdateChecker::CompareData(
       this, TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
 
   DCHECK(pending_buffer || bytes_to_compare == 0);
-  auto buffer = base::MakeRefCounted<WrappedIOBuffer>(
-      pending_buffer ? pending_buffer->buffer() : nullptr,
-      pending_buffer ? pending_buffer->size() : 0);
+  auto buffer = base::MakeRefCounted<WrappedIOBuffer>(UNSAFE_BUFFERS(
+      base::span(pending_buffer ? pending_buffer->buffer() : nullptr,
+                 pending_buffer ? pending_buffer->size() : 0)));
 
   // Compare the network data and the stored data.
   net::Error error = cache_writer_->MaybeWriteData(

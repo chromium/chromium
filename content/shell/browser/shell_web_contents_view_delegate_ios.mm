@@ -11,7 +11,10 @@
 #include "base/apple/foundation_util.h"
 #include "base/command_line.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notimplemented.h"
+#include "build/build_config.h"
 #include "content/public/browser/context_menu_params.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/shell/browser/shell_web_contents_view_delegate_creator.h"
@@ -81,7 +84,8 @@ enum {
         willEndForConfiguration:configuration
                        animator:animator];
   if (_webContents) {
-    _webContents->NotifyContextMenuClosed(_params.link_followed);
+    _webContents->NotifyContextMenuClosed(_params.link_followed,
+                                          _params.impression);
   }
 }
 
@@ -94,12 +98,16 @@ enum {
       case ShellContextMenuItemCopyTag:
         self->_webContents->Copy();
         break;
+#if BUILDFLAG(IS_IOS_TVOS)
+        TVOS_NOT_YET_IMPLEMENTED();
+#else
       case ShellContextMenuItemCopyLinkTag: {
         UIPasteboard* pasteboard = [UIPasteboard generalPasteboard];
         pasteboard.string = [NSString
             stringWithUTF8String:self->_params.link_url.spec().c_str()];
         break;
       }
+#endif
       case ShellContextMenuItemPasteTag:
         self->_webContents->Paste();
         break;
@@ -131,8 +139,12 @@ enum {
   if (hasLink) {
     [menuItems addObject:[self makeMenuItem:@"Go to the Link"
                                     menuTag:ShellContextMenuItemOpenLinkTag]];
+#if BUILDFLAG(IS_IOS_TVOS)
+    TVOS_NOT_YET_IMPLEMENTED();
+#else
     [menuItems addObject:[self makeMenuItem:@"Copy Link"
                                     menuTag:ShellContextMenuItemCopyLinkTag]];
+#endif
   }
 
   if (isEditable) {

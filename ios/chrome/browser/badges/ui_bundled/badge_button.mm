@@ -7,8 +7,8 @@
 #import <ostream>
 
 #import "base/notreached.h"
-#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_constants.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 
@@ -81,8 +81,7 @@ const CGFloat kButtonCircularCornerRadiusDivisor = 2.0;
 - (NSString*)accessibilityIdentifierForAcceptedState:(BOOL)accepted {
   switch (self.badgeType) {
     case kBadgeTypeNone:
-      NOTREACHED_IN_MIGRATION() << "A badge should not have kBadgeTypeNone";
-      return nil;
+      NOTREACHED() << "A badge should not have kBadgeTypeNone";
     case kBadgeTypePasswordSave:
       return accepted ? kBadgeButtonSavePasswordAcceptedAccessibilityIdentifier
                       : kBadgeButtonSavePasswordAccessibilityIdentifier;
@@ -112,10 +111,6 @@ const CGFloat kButtonCircularCornerRadiusDivisor = 2.0;
       return accepted
                  ? kBadgeButtonPermissionsMicrophoneAcceptedAccessibilityIdentifier
                  : kBadgeButtonPermissionsMicrophoneAccessibilityIdentifier;
-    case kBadgeTypeParcelTracking:
-      return accepted
-                 ? kBadgeButtonParcelTrackingAcceptedAccessibilityIdentifier
-                 : kBadgeButtonParcelTrackingAccessibilityIdentifier;
   }
 }
 

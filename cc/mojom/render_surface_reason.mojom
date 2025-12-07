@@ -1,0 +1,39 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module cc.mojom;
+
+// Describes the reason an EffectNode requires a render surface.
+// Maps to cc::RenderSurfaceReason. We are not using 4 byte Mojom enum in CC
+// code, because this type is used in a memory sensitive structure.
+enum RenderSurfaceReason {
+  kNone,
+  kRoot,
+  k3dTransformFlattening,
+  // Defines the scope of the backdrop for child blend mode or backdrop filter.
+  kBackdropScope,
+  kBlendMode,
+  kBlendModeDstIn,
+  kOpacity,
+  kOpacityAnimation,
+  kFilter,
+  kFilterAnimation,
+  kBackdropFilter,
+  kBackdropFilterAnimation,
+  kRoundedCorner,
+  kClipPath,
+  kClipAxisAlignment,
+  kMask,
+  kTrilinearFiltering,
+  kCache,
+  kCopyRequest,
+  kMirrored,
+  kSubtreeIsBeingCaptured,
+  kViewTransitionParticipant,
+  kGradientMask,
+  k2DScaleTransformWithCompositedDescendants,
+  // This must be the last value because it's used in tracing code to know the
+  // number of reasons.
+  kTest,
+};

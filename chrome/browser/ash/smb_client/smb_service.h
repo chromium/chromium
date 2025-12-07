@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_SMB_CLIENT_SMB_SERVICE_H_
 #define CHROME_BROWSER_ASH_SMB_CLIENT_SMB_SERVICE_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <unordered_map>

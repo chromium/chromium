@@ -4,7 +4,6 @@
 
 #include "content/browser/worker_host/dedicated_worker_service_impl.h"
 
-#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "content/browser/worker_host/dedicated_worker_host.h"
 #include "content/public/browser/browser_thread.h"
@@ -31,7 +30,7 @@ void DedicatedWorkerServiceImpl::EnumerateDedicatedWorkers(Observer* observer) {
     DedicatedWorkerHost* host = kv.second;
 
     observer->OnWorkerCreated(
-        dedicated_worker_token, host->GetProcessHost()->GetID(),
+        dedicated_worker_token, host->GetProcessHost()->GetDeprecatedID(),
         host->GetStorageKey().origin(), host->GetCreator());
     auto& maybe_url = host->GetFinalResponseURL();
     if (maybe_url) {
@@ -48,9 +47,9 @@ void DedicatedWorkerServiceImpl::NotifyWorkerCreated(
   DCHECK(inserted);
 
   for (Observer& observer : observers_) {
-    observer.OnWorkerCreated(host->GetToken(), host->GetProcessHost()->GetID(),
-                             host->GetStorageKey().origin(),
-                             host->GetCreator());
+    observer.OnWorkerCreated(
+        host->GetToken(), host->GetProcessHost()->GetDeprecatedID(),
+        host->GetStorageKey().origin(), host->GetCreator());
   }
 }
 
@@ -69,7 +68,7 @@ void DedicatedWorkerServiceImpl::NotifyWorkerFinalResponseURLDetermined(
     const blink::DedicatedWorkerToken& dedicated_worker_token,
     const GURL& url) {
   auto it = dedicated_worker_hosts_.find(dedicated_worker_token);
-  CHECK(it != dedicated_worker_hosts_.end(), base::NotFatalUntil::M130);
+  CHECK(it != dedicated_worker_hosts_.end());
 
   for (Observer& observer : observers_) {
     observer.OnFinalResponseURLDetermined(dedicated_worker_token, url);

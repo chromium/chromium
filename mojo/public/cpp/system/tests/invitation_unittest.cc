@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "base/containers/span.h"
+
+
 
 #include "mojo/public/cpp/system/invitation.h"
 
@@ -99,8 +98,7 @@ class MAYBE_InvitationCppTest
 
  protected:
   void LaunchChildTestClient(const std::string& test_client_name,
-                             ScopedMessagePipeHandle* primordial_pipes,
-                             size_t num_primordial_pipes,
+                             base::span<ScopedMessagePipeHandle> primordial_pipes,
                              InvitationType invitation_type,
                              TransportType transport_type,
                              const ProcessErrorCallback& error_callback = {}) {
@@ -159,7 +157,7 @@ class MAYBE_InvitationCppTest
 
     OutgoingInvitation invitation;
     if (invitation_type != InvitationType::kIsolated) {
-      for (uint64_t name = 0; name < num_primordial_pipes; ++name)
+      for (uint64_t name = 0; name < primordial_pipes.size(); ++name)
         primordial_pipes[name] = invitation.AttachMessagePipe(name);
     }
 
@@ -185,8 +183,8 @@ class MAYBE_InvitationCppTest
                                    child_process_.Handle(),
                                    std::move(channel_endpoint), error_callback);
         } else {
-          DCHECK(primordial_pipes);
-          DCHECK_EQ(num_primordial_pipes, 1u);
+          DCHECK(!primordial_pipes.empty());
+          DCHECK_EQ(primordial_pipes.size(), 1u);
           primordial_pipes[0] = OutgoingInvitation::SendIsolated(
               std::move(channel_endpoint), {}, child_process_.Handle());
         }
@@ -199,8 +197,8 @@ class MAYBE_InvitationCppTest
                                    child_process_.Handle(),
                                    std::move(server_endpoint), error_callback);
         } else {
-          DCHECK(primordial_pipes);
-          DCHECK_EQ(num_primordial_pipes, 1u);
+          DCHECK(!primordial_pipes.empty());
+          DCHECK_EQ(primordial_pipes.size(), 1u);
           // Provide the remote process handle when calling SendIsolated
           // function.
           primordial_pipes[0] = OutgoingInvitation::SendIsolated(
@@ -213,8 +211,8 @@ class MAYBE_InvitationCppTest
           OutgoingInvitation::Send(std::move(invitation), {},
                                    std::move(server_endpoint), error_callback);
         } else {
-          DCHECK(primordial_pipes);
-          DCHECK_EQ(num_primordial_pipes, 1u);
+          DCHECK(!primordial_pipes.empty());
+          DCHECK_EQ(primordial_pipes.size(), 1u);
           // Don't provide the remote process handle when calling SendIsolated
           // function.
           primordial_pipes[0] =
@@ -314,8 +312,8 @@ const char kTestMessage2[] = "hello";
 
 TEST_P(MAYBE_InvitationCppTest, Send) {
   ScopedMessagePipeHandle pipe;
-  LaunchChildTestClient("CppSendClient", &pipe, 1, InvitationType::kNormal,
-                        GetParam());
+  LaunchChildTestClient("CppSendClient", base::span_from_ref(pipe),
+                        InvitationType::kNormal, GetParam());
   WriteMessage(pipe, kTestMessage1);
   WaitForChildExit();
 }
@@ -328,7 +326,7 @@ DEFINE_TEST_CLIENT(CppSendClient) {
 
 TEST_P(MAYBE_InvitationCppTest, SendIsolated) {
   ScopedMessagePipeHandle pipe;
-  LaunchChildTestClient("CppSendIsolatedClient", &pipe, 1,
+  LaunchChildTestClient("CppSendIsolatedClient", base::span_from_ref(pipe),
                         InvitationType::kIsolated, GetParam());
   WriteMessage(pipe, kTestMessage1);
   WaitForChildExit();
@@ -342,7 +340,7 @@ DEFINE_TEST_CLIENT(CppSendIsolatedClient) {
 #if BUILDFLAG(IS_WIN)
 TEST_P(MAYBE_InvitationCppTest, SendElevated) {
   ScopedMessagePipeHandle pipe;
-  LaunchChildTestClient("CppSendElevatedClient", &pipe, 1,
+  LaunchChildTestClient("CppSendElevatedClient", base::span_from_ref(pipe),
                         InvitationType::kElevated, GetParam());
   WriteMessage(pipe, kTestMessage1);
   WaitForChildExit();
@@ -357,7 +355,7 @@ DEFINE_TEST_CLIENT(CppSendElevatedClient) {
 
 TEST_P(MAYBE_InvitationCppTest, SendWithMultiplePipes) {
   ScopedMessagePipeHandle pipes[2];
-  LaunchChildTestClient("CppSendWithMultiplePipesClient", pipes, 2,
+  LaunchChildTestClient("CppSendWithMultiplePipesClient", pipes,
                         InvitationType::kNormal, GetParam());
   WriteMessage(pipes[0], kTestMessage1);
   WriteMessage(pipes[1], kTestMessage2);
@@ -407,7 +405,8 @@ TEST_P(MAYBE_InvitationCppTest, MAYBE_ProcessErrors) {
 
   ScopedMessagePipeHandle pipe;
   LaunchChildTestClient(
-      "CppProcessErrorsClient", &pipe, 1, InvitationType::kNormal, GetParam(),
+      "CppProcessErrorsClient", base::span_from_ref(pipe),
+      InvitationType::kNormal, GetParam(),
       base::BindLambdaForTesting([&](const std::string& error_message) {
         ASSERT_TRUE(actual_error_callback);
         actual_error_callback.Run(error_message);

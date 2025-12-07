@@ -1,4 +1,4 @@
 rootWebArea htmlTag='#document'
-++genericContainer ignored htmlTag='html'
+++genericContainer ignored
 ++++genericContainer htmlTag='body'
-++++++genericContainer ignored htmlTag='div'
+++++++genericContainer ignored

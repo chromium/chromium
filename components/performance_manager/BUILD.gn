@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/guest_view/buildflags/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("site_data_proto") {
@@ -14,8 +15,12 @@ static_library("performance_manager") {
     "browser_child_process_host_proxy.cc",
     "browser_child_process_watcher.cc",
     "browser_child_process_watcher.h",
+    "decorators/frame_input_state_decorator.cc",
+    "decorators/frame_input_state_decorator.h",
     "decorators/frame_visibility_decorator.cc",
     "decorators/frame_visibility_decorator.h",
+    "decorators/important_frame_decorator.cc",
+    "decorators/important_frame_decorator.h",
     "decorators/page_aggregator.cc",
     "decorators/page_aggregator.h",
     "decorators/page_aggregator_data.cc",
@@ -33,22 +38,26 @@ static_library("performance_manager") {
     "decorators/process_priority_aggregator.h",
     "decorators/process_priority_aggregator_data.cc",
     "decorators/process_priority_aggregator_data.h",
+    "decorators/site_data_node_data.cc",
+    "decorators/site_data_node_data.h",
+    "decorators/site_data_recorder.cc",
     "decorators/tab_page_decorator.cc",
     "embedder/binders.h",
     "embedder/graph_features.h",
     "embedder/performance_manager_lifetime.h",
     "embedder/performance_manager_registry.h",
+    "embedder/scoped_global_scenario_memory.h",
     "execution_context/execution_context_impl.cc",
     "execution_context/execution_context_impl.h",
     "execution_context/execution_context_registry_impl.cc",
     "execution_context/execution_context_registry_impl.h",
-    "execution_context_priority/ad_frame_voter.cc",
-    "execution_context_priority/ad_frame_voter.h",
     "execution_context_priority/boosting_vote_aggregator.cc",
     "execution_context_priority/boosting_vote_aggregator.h",
+    "execution_context_priority/closing_page_voter.cc",
+    "execution_context_priority/closing_page_voter.h",
     "execution_context_priority/execution_context_priority.cc",
-    "execution_context_priority/execution_context_priority_decorator.cc",
-    "execution_context_priority/execution_context_priority_decorator.h",
+    "execution_context_priority/extension_service_worker_voter.cc",
+    "execution_context_priority/extension_service_worker_voter.h",
     "execution_context_priority/frame_audible_voter.cc",
     "execution_context_priority/frame_audible_voter.h",
     "execution_context_priority/frame_capturing_media_stream_voter.cc",
@@ -62,15 +71,13 @@ static_library("performance_manager") {
     "execution_context_priority/loading_page_voter.cc",
     "execution_context_priority/loading_page_voter.h",
     "execution_context_priority/max_vote_aggregator.cc",
-    "execution_context_priority/max_vote_aggregator.h",
     "execution_context_priority/override_vote_aggregator.cc",
-    "execution_context_priority/override_vote_aggregator.h",
+    "execution_context_priority/priority_voting_system.cc",
     "execution_context_priority/root_vote_observer.cc",
     "execution_context_priority/root_vote_observer.h",
-    "execution_context_priority/voter_base.h",
     "features.cc",
+    "frame_node_source.h",
     "freezing/cannot_freeze_reason.cc",
-    "freezing/cannot_freeze_reason.h",
     "freezing/freezer.cc",
     "freezing/freezer.h",
     "freezing/freezing.cc",
@@ -93,8 +100,6 @@ static_library("performance_manager") {
     "graph/graph_impl_util.h",
     "graph/graph_operations.cc",
     "graph/graph_registered.cc",
-    "graph/initializing_frame_node_observer.cc",
-    "graph/initializing_frame_node_observer.h",
     "graph/node.cc",
     "graph/node_attached_data.cc",
     "graph/node_attached_data_storage.cc",
@@ -117,10 +122,13 @@ static_library("performance_manager") {
     "graph/process_node_impl.h",
     "graph/process_node_impl_describer.cc",
     "graph/process_node_impl_describer.h",
+    "graph/properties.cc",
     "graph/properties.h",
     "graph/system_node.cc",
     "graph/system_node_impl.cc",
     "graph/system_node_impl.h",
+    "graph/tracing_observer.cc",
+    "graph/tracing_observer.h",
     "graph/worker_node.cc",
     "graph/worker_node_impl.cc",
     "graph/worker_node_impl.h",
@@ -128,6 +136,7 @@ static_library("performance_manager") {
     "graph/worker_node_impl_describer.h",
     "graph_features.cc",
     "metrics/metrics_collector.cc",
+    "metrics/page_resource_monitor.cc",
     "owned_objects.h",
     "performance_manager.cc",
     "performance_manager_feature_observer_client.cc",
@@ -140,20 +149,44 @@ static_library("performance_manager") {
     "performance_manager_registry_impl.h",
     "performance_manager_tab_helper.cc",
     "performance_manager_tab_helper.h",
+    "persistence/site_data/exponential_moving_average.cc",
+    "persistence/site_data/exponential_moving_average.h",
+    "persistence/site_data/leveldb_site_data_store.cc",
+    "persistence/site_data/leveldb_site_data_store.h",
+    "persistence/site_data/non_recording_site_data_cache.cc",
+    "persistence/site_data/non_recording_site_data_cache.h",
+    "persistence/site_data/noop_site_data_writer.cc",
+    "persistence/site_data/noop_site_data_writer.h",
+    "persistence/site_data/site_data_cache.h",
+    "persistence/site_data/site_data_cache_factory.cc",
+    "persistence/site_data/site_data_cache_factory.h",
+    "persistence/site_data/site_data_cache_impl.cc",
+    "persistence/site_data/site_data_cache_impl.h",
+    "persistence/site_data/site_data_cache_inspector.h",
+    "persistence/site_data/site_data_impl.cc",
+    "persistence/site_data/site_data_impl.h",
+    "persistence/site_data/site_data_reader.cc",
+    "persistence/site_data/site_data_store.h",
+    "persistence/site_data/site_data_writer.cc",
+    "persistence/site_data/site_data_writer.h",
+    "persistence/site_data/tab_visibility.h",
     "power/battery_level_provider_creator.cc",
-    "process_node_source.cc",
-    "process_node_source.h",
     "public/browser_child_process_host_id.h",
     "public/browser_child_process_host_proxy.h",
     "public/decorators/page_live_state_decorator.h",
     "public/decorators/page_load_tracker_decorator_helper.h",
     "public/decorators/process_metrics_decorator.h",
+    "public/decorators/site_data_recorder.h",
     "public/decorators/tab_page_decorator.h",
     "public/execution_context/execution_context.h",
     "public/execution_context/execution_context_attached_data.h",
     "public/execution_context/execution_context_registry.h",
     "public/execution_context_priority/execution_context_priority.h",
+    "public/execution_context_priority/max_vote_aggregator.h",
+    "public/execution_context_priority/override_vote_aggregator.h",
+    "public/execution_context_priority/priority_voting_system.h",
     "public/features.h",
+    "public/freezing/cannot_freeze_reason.h",
     "public/freezing/freezing.h",
     "public/graph/frame_node.h",
     "public/graph/graph.h",
@@ -168,16 +201,15 @@ static_library("performance_manager") {
     "public/graph/node_state.h",
     "public/graph/node_type.h",
     "public/graph/page_node.h",
-    "public/graph/policies/background_tab_loading_policy.h",
     "public/graph/process_node.h",
     "public/graph/system_node.h",
     "public/graph/worker_node.h",
     "public/metrics/metrics_collector.h",
+    "public/metrics/page_resource_monitor.h",
     "public/performance_manager.h",
-    "public/performance_manager_main_thread_mechanism.h",
-    "public/performance_manager_main_thread_observer.h",
-    "public/performance_manager_owned.h",
-    "public/performance_manager_registered.h",
+    "public/performance_manager_observer.h",
+    "public/persistence/site_data/feature_usage.h",
+    "public/persistence/site_data/site_data_reader.h",
     "public/power/battery_level_provider_creator.h",
     "public/render_frame_host_proxy.h",
     "public/render_process_host_id.h",
@@ -196,12 +228,14 @@ static_library("performance_manager") {
     "public/resource_attribution/resource_types.h",
     "public/resource_attribution/type_helpers.h",
     "public/resource_attribution/worker_context.h",
+    "public/scenarios/process_performance_scenario_observer.h",
+    "public/scenarios/process_performance_scenarios.h",
+    "public/tracing_support.h",
     "public/user_tuning/prefs.h",
     "public/user_tuning/tab_revisit_tracker.h",
     "public/v8_memory/v8_detailed_memory.h",
-    "public/v8_memory/v8_detailed_memory_any_seq.h",
     "public/v8_memory/web_memory.h",
-    "public/viewport_intersection_state.h",
+    "public/viewport_intersection.h",
     "public/voting/optional_voting_channel.h",
     "public/voting/voting.h",
     "registered_objects.h",
@@ -238,10 +272,24 @@ static_library("performance_manager") {
     "resource_attribution/worker_client_pages.cc",
     "resource_attribution/worker_client_pages.h",
     "resource_attribution/worker_context.cc",
+    "scenarios/browser_performance_scenarios.cc",
+    "scenarios/browser_performance_scenarios.h",
+    "scenarios/input_scenario_observer.cc",
+    "scenarios/input_scenario_observer.h",
+    "scenarios/loading_scenario_data.cc",
+    "scenarios/loading_scenario_data.h",
+    "scenarios/loading_scenario_observer.cc",
+    "scenarios/loading_scenario_observer.h",
+    "scenarios/performance_scenario_data.cc",
+    "scenarios/performance_scenario_data.h",
+    "scenarios/process_performance_scenario_observer.cc",
+    "scenarios/process_performance_scenarios.cc",
+    "scenarios/scoped_global_scenario_memory.cc",
     "service_worker_context_adapter.cc",
     "service_worker_context_adapter.h",
     "tab_helper_frame_node_source.cc",
     "tab_helper_frame_node_source.h",
+    "tracing_support.cc",
     "user_tuning/prefs.cc",
     "user_tuning/tab_revisit_tracker.cc",
     "v8_memory/v8_context_tracker.cc",
@@ -251,7 +299,6 @@ static_library("performance_manager") {
     "v8_memory/v8_context_tracker_internal.cc",
     "v8_memory/v8_context_tracker_internal.h",
     "v8_memory/v8_detailed_memory.cc",
-    "v8_memory/v8_detailed_memory_any_seq.cc",
     "v8_memory/v8_detailed_memory_decorator.cc",
     "v8_memory/v8_detailed_memory_decorator.h",
     "v8_memory/web_memory_aggregator.cc",
@@ -263,15 +310,18 @@ static_library("performance_manager") {
   ]
 
   deps = [
-    "//build:chromeos_buildflags",
     "//components/content_settings/core/common",
+    "//components/guest_view/buildflags",
     "//components/metrics",
-    "//components/pref_registry:pref_registry",
-    "//components/prefs:prefs",
+    "//components/performance_manager/scenario_api",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/system_cpu",
     "//third_party/blink/public/common:headers",
   ]
 
   public_deps = [
+    ":site_data_proto",
     "//base",
     "//base/allocator:buildflags",
     "//components/performance_manager/public/mojom",
@@ -279,51 +329,24 @@ static_library("performance_manager") {
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//third_party/blink/public/common",
+    "//third_party/leveldatabase",
     "//url",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
+  if (enable_guest_view) {
+    deps += [ "//components/guest_view/browser" ]
+  }
+
   if (!is_android) {
     sources += [
-      "decorators/site_data_node_data.cc",
-      "decorators/site_data_node_data.h",
-      "decorators/site_data_recorder.cc",
       "graph/policies/process_priority_policy.cc",
       "graph/policies/process_priority_policy.h",
-      "persistence/site_data/exponential_moving_average.cc",
-      "persistence/site_data/exponential_moving_average.h",
-      "persistence/site_data/leveldb_site_data_store.cc",
-      "persistence/site_data/leveldb_site_data_store.h",
-      "persistence/site_data/non_recording_site_data_cache.cc",
-      "persistence/site_data/non_recording_site_data_cache.h",
-      "persistence/site_data/noop_site_data_writer.cc",
-      "persistence/site_data/noop_site_data_writer.h",
-      "persistence/site_data/site_data_cache.h",
-      "persistence/site_data/site_data_cache_factory.cc",
-      "persistence/site_data/site_data_cache_factory.h",
-      "persistence/site_data/site_data_cache_impl.cc",
-      "persistence/site_data/site_data_cache_impl.h",
-      "persistence/site_data/site_data_cache_inspector.h",
-      "persistence/site_data/site_data_impl.cc",
-      "persistence/site_data/site_data_impl.h",
-      "persistence/site_data/site_data_reader.cc",
-      "persistence/site_data/site_data_store.h",
-      "persistence/site_data/site_data_writer.cc",
-      "persistence/site_data/site_data_writer.h",
-      "persistence/site_data/tab_visibility.h",
-      "public/decorators/site_data_recorder.h",
-      "public/persistence/site_data/feature_usage.h",
-      "public/persistence/site_data/site_data_reader.h",
-    ]
-
-    public_deps += [
-      ":site_data_proto",
-      "//third_party/leveldatabase",
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//chromeos/dbus/power",
       "//chromeos/dbus/power:power_manager_proto",
@@ -336,13 +359,6 @@ static_library("performance_manager") {
       "power/dbus_power_manager_sampling_event_source.h",
     ]
   }
-
-  if (is_win) {
-    sources += [
-      "graph/policies/prefetch_virtual_memory_policy.cc",
-      "graph/policies/prefetch_virtual_memory_policy.h",
-    ]
-  }
 }
 
 source_set("unit_tests") {
@@ -350,7 +366,9 @@ source_set("unit_tests") {
 
   sources = [
     "decorators/decorators_utils_unittest.cc",
+    "decorators/frame_input_state_decorator_unittest.cc",
     "decorators/frame_visibility_decorator_unittest.cc",
+    "decorators/important_frame_decorator_unittest.cc",
     "decorators/page_aggregator_unittest.cc",
     "decorators/page_live_state_decorator_unittest.cc",
     "decorators/page_load_tracker_decorator_unittest.cc",
@@ -360,9 +378,10 @@ source_set("unit_tests") {
     "decorators/tab_page_decorator_unittest.cc",
     "execution_context/execution_context_attached_data_unittest.cc",
     "execution_context/execution_context_registry_impl_unittest.cc",
-    "execution_context_priority/ad_frame_voter_unittest.cc",
     "execution_context_priority/boosting_vote_aggregator_unittest.cc",
+    "execution_context_priority/closing_page_voter_unittest.cc",
     "execution_context_priority/execution_context_priority_unittest.cc",
+    "execution_context_priority/extension_service_worker_voter_unittest.cc",
     "execution_context_priority/frame_audible_voter_unittest.cc",
     "execution_context_priority/frame_capturing_media_stream_voter_unittest.cc",
     "execution_context_priority/frame_visibility_voter_unittest.cc",
@@ -390,6 +409,7 @@ source_set("unit_tests") {
     "graph/worker_node_impl_unittest.cc",
     "graph_features_unittest.cc",
     "metrics/metrics_collector_unittest.cc",
+    "metrics/page_resource_monitor_unittest.cc",
     "owned_objects_unittest.cc",
     "performance_manager_impl_unittest.cc",
     "performance_manager_registry_impl_unittest.cc",
@@ -407,6 +427,10 @@ source_set("unit_tests") {
     "resource_attribution/resource_contexts_unittest.cc",
     "resource_attribution/type_helpers_unittest.cc",
     "resource_attribution/worker_context_unittest.cc",
+    "scenarios/browser_performance_scenarios_unittest.cc",
+    "scenarios/input_scenario_observer_unittest.cc",
+    "scenarios/loading_scenario_observer_unittest.cc",
+    "scenarios/process_performance_scenarios_unittest.cc",
     "test_support/mock_graphs_unittest.cc",
     "user_tuning/prefs_unittest.cc",
     "user_tuning/tab_revisit_tracker_unittest.cc",
@@ -425,10 +449,12 @@ source_set("unit_tests") {
 
   deps = [
     ":performance_manager",
-    "test_support:test_support",
+    "test_support",
     "test_support:test_support_common",
     "//base/test:test_support",
+    "//components/input",
     "//components/memory_pressure:test_support",
+    "//components/performance_manager/scenario_api",
     "//components/prefs:test_support",
     "//components/services/storage/public/cpp",
     "//components/ukm:test_support",
@@ -463,7 +489,7 @@ source_set("unit_tests") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//chromeos/dbus/power",
       "//chromeos/dbus/power:power_manager_proto",
@@ -471,6 +497,10 @@ source_set("unit_tests") {
 
     sources += [ "power/battery_level_provider_chromeos_unittest.cc" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("browser_tests") {
@@ -479,6 +509,7 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
+    "freezing/freezing_browsertest.cc",
     "performance_manager_browsertest.cc",
     "prerendering_browsertest.cc",
     "render_process_host_proxy_browsertest.cc",

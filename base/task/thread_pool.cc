@@ -16,7 +16,6 @@ namespace base {
 
 namespace {
 
-
 internal::ThreadPoolImpl* GetThreadPoolImpl() {
   auto* instance = ThreadPoolInstance::Get();
   DCHECK(instance)
@@ -113,5 +112,13 @@ scoped_refptr<SingleThreadTaskRunner> ThreadPool::CreateCOMSTATaskRunner(
   return GetThreadPoolImpl()->CreateCOMSTATaskRunner(traits, thread_mode);
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+// static
+scoped_refptr<SequencedTaskRunner>
+ThreadPool::CreateSequencedTaskRunnerForResource(const TaskTraits& traits,
+                                                 const base::FilePath& path) {
+  return GetThreadPoolImpl()->CreateSequencedTaskRunnerForResource(traits,
+                                                                   path);
+}
 
 }  // namespace base

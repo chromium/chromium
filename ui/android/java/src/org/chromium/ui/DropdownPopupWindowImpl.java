@@ -15,48 +15,42 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.widget.AnchoredPopupWindow;
-import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
 
 /**
  * The dropdown popup window for use on Lollipop+. Internally uses an AnchoredPopupWindow
  * anchored to a view to display a list of options.
  */
+@NullMarked
 class DropdownPopupWindowImpl
         implements AnchoredPopupWindow.LayoutObserver, DropdownPopupWindowInterface {
     private final Context mContext;
     private final View mAnchorView;
     private boolean mRtl;
     private int mInitialSelection = -1;
-    private OnLayoutChangeListener mLayoutChangeListener;
-    private CharSequence mDescription;
-    private AnchoredPopupWindow mAnchoredPopupWindow;
-    ListAdapter mAdapter;
+    private final OnLayoutChangeListener mLayoutChangeListener;
+    private @Nullable CharSequence mDescription;
+    private final AnchoredPopupWindow mAnchoredPopupWindow;
+    @Nullable ListAdapter mAdapter;
 
     private final ListView mListView;
-    private Drawable mBackground;
-    private int mHorizontalPadding;
-
-    public DropdownPopupWindowImpl(Context context, View anchorView) {
-        this(context, anchorView, null);
-    }
+    private final Drawable mBackground;
+    private final int mHorizontalPadding;
 
     /**
      * Creates an DropdownPopupWindowImpl with specified parameters.
      *
      * @param context Application context.
      * @param anchorView Popup view to be anchored.
-     * @param visibleWebContentsRectProvider The {@link RectProvider} which will be used for {@link
-     *     AnchoredPopupWindow}.
      */
     public DropdownPopupWindowImpl(
             Context context,
-            View anchorView,
-            @Nullable RectProvider visibleWebContentsRectProvider) {
+            View anchorView) {
         mContext = context;
         mAnchorView = anchorView;
 
@@ -102,8 +96,7 @@ class DropdownPopupWindowImpl
                         mAnchorView,
                         mBackground,
                         mListView,
-                        rectProvider,
-                        visibleWebContentsRectProvider);
+                        rectProvider);
         mAnchoredPopupWindow.addOnDismissListener(onDismissLitener);
         mAnchoredPopupWindow.setLayoutObserver(this);
         mAnchoredPopupWindow.setElevation(
@@ -135,8 +128,6 @@ class DropdownPopupWindowImpl
     public void onPreLayoutChange(
             boolean positionBelow, int x, int y, int width, int height, Rect anchorRect) {
         mBackground.setBounds(anchorRect);
-        mAnchoredPopupWindow.setBackgroundDrawable(
-                AppCompatResources.getDrawable(mContext, R.drawable.menu_bg_baseline));
     }
 
     /**

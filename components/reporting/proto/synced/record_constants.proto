@@ -127,6 +127,25 @@ enum Destination {
   // |CROS_SECURITY_FILE| is for events that read or modify sensitive files.
   CROS_SECURITY_FILE = 33;
 
+  // |USER_SESSION_ACTIVITY| is for user session start/end events and
+  // active/idle states during the session.
+  USER_SESSION_ACTIVITY = 34;
+
+  // |DESKTOP_STATUS_REPORT| is for collecting status report from the Android
+  // desktop devices.
+  DESKTOP_STATUS_REPORT = 35;
+
+  // |DESKTOP_USAGE_LOGS| is for usage logs events from the Android desktop
+  // devices.
+  DESKTOP_USAGE_LOGS = 36;
+
+  // |DESKTOP_INTERMEDIATE_STATUS_REPORT| is for holding a intermediate state of
+  // the desktop status report.
+  DESKTOP_INTERMEDIATE_STATUS_REPORT = 37;
+
+  // |DATA_LOST_ACTIVITY| is for reporting data lost activity.
+  DATA_LOST_ACTIVITY = 38;
+
   reserved 8;
 }
 

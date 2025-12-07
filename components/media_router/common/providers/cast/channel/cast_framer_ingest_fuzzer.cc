@@ -7,25 +7,24 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "components/media_router/common/providers/cast/channel/cast_channel_enum.h"
 #include "components/media_router/common/providers/cast/channel/cast_framer.h"
 #include "net/base/io_buffer.h"
 #include "third_party/openscreen/src/cast/common/channel/proto/cast_channel.pb.h"
 
-// Silence logging from the protobuf library.
-google::protobuf::LogSilencer log_silencer;
-
 namespace cast_channel {
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  if (size > MessageFramer::MessageHeader::max_message_size())
+  if (size > MessageFramer::MessageHeader::max_message_size()) {
     return 0;
+  }
 
   scoped_refptr<net::GrowableIOBuffer> buffer =
       base::MakeRefCounted<net::GrowableIOBuffer>();
   buffer->SetCapacity(MessageFramer::MessageHeader::max_message_size());
-  buffer->everything().copy_prefix_from(base::span(data, size));
+  buffer->everything().copy_prefix_from(UNSAFE_TODO(base::span(data, size)));
 
   std::unique_ptr<MessageFramer> framer =
       std::make_unique<MessageFramer>(buffer.get());

@@ -6,7 +6,6 @@
 #define EXTENSIONS_BROWSER_API_BLUETOOTH_BLUETOOTH_EXTENSION_FUNCTION_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "extensions/browser/extension_function.h"
 
 namespace device {
@@ -44,7 +43,7 @@ class BluetoothExtensionFunction : public ExtensionFunction {
   void RunOnAdapterReady(scoped_refptr<device::BluetoothAdapter> adapter);
 
   // Implemented by individual bluetooth extension functions, called
-  // automatically on the UI thread once |adapter| has been initialized.
+  // automatically on the UI thread once `adapter` has been initialized.
   virtual void DoWork(scoped_refptr<device::BluetoothAdapter> adapter) = 0;
 };
 

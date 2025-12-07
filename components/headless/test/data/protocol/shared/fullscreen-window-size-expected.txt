@@ -1,0 +1,2 @@
+Tests fullscreen browser window size.
+1600x1200

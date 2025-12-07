@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/media_session/public/cpp/media_session_service.h"
 
 namespace media_session {

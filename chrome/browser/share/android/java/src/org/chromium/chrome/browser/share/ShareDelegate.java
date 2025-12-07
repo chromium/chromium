@@ -6,10 +6,13 @@ package org.chromium.chrome.browser.share;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.share.ShareParams;
 
 /** Interface to expose sharing to external classes. */
+@NullMarked
 public interface ShareDelegate {
     // These values are persisted to logs. Entries should not be renumbered and numeric values
     // should never be reused. Ensure new values are also added to ShareOrigin in
@@ -24,12 +27,12 @@ public interface ShareDelegate {
         ShareOrigin.TAB_GROUP,
         ShareOrigin.WEBAPP_NOTIFICATION,
         ShareOrigin.FEED,
-        ShareOrigin.PAGE_INSIGHTS,
         ShareOrigin.GOOGLE_BOTTOM_BAR,
         ShareOrigin.CUSTOM_TAB_SHARE_BUTTON,
+        ShareOrigin.TAB_STRIP_CONTEXT_MENU,
         ShareOrigin.COUNT
     })
-    public @interface ShareOrigin {
+    @interface ShareOrigin {
         int OVERFLOW_MENU = 0;
         int TOP_TOOLBAR = 1;
         int CONTEXT_MENU = 2;
@@ -39,12 +42,12 @@ public interface ShareDelegate {
         int TAB_GROUP = 6;
         int WEBAPP_NOTIFICATION = 7;
         int FEED = 8;
-        int PAGE_INSIGHTS = 9;
         int GOOGLE_BOTTOM_BAR = 10;
         int CUSTOM_TAB_SHARE_BUTTON = 11;
+        int TAB_STRIP_CONTEXT_MENU = 12;
 
         // Must be the last one.
-        int COUNT = 12;
+        int COUNT = 13;
     }
 
     /**
@@ -64,7 +67,7 @@ public interface ShareDelegate {
      * @param shareDirectly If this share should be sent directly to the last used share target.
      * @param shareOrigin Where the share originated.
      */
-    void share(Tab currentTab, boolean shareDirectly, @ShareOrigin int shareOrigin);
+    void share(@Nullable Tab currentTab, boolean shareDirectly, @ShareOrigin int shareOrigin);
 
     /** Check if the custom share sheet is enabled. */
     boolean isSharingHubEnabled();

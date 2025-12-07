@@ -8,8 +8,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 const char16_t kFakeMobileProviderName[] = u"Fake Mobile Provider";
 
@@ -103,5 +102,4 @@ const Notification& CreateFakeNotification() {
   return *fake_notification;
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

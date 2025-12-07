@@ -24,13 +24,9 @@ test(() => {
   assert_throws_dom('NotFoundError', () => {
     control.i.setValidity({patternMismatch: true}, 'p', document.body);
   }, 'not a descendant');
-  assert_throws_dom('NotFoundError', () => {
-    control.i.setValidity({patternMismatch: true}, 'p', control);
-  }, 'self');
+  control.i.setValidity({patternMismatch: true}, 'p', control);
   control.innerHTML = '<span>';
-  assert_throws_dom('NotFoundError', () => {
-    control.i.setValidity({patternMismatch: true}, 'p', control);
-  }, 'self with a child');
+  control.i.setValidity({patternMismatch: true}, 'p', control);
 
   let shadow = control.attachShadow({mode:'open'});
   let anchor = document.createElement('div');

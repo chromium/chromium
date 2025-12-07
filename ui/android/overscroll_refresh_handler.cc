@@ -5,6 +5,7 @@
 #include "ui/android/overscroll_refresh_handler.h"
 
 #include "base/android/jni_android.h"
+#include "base/types/cxx23_to_underlying.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/android/overscroll_refresh.h"
@@ -18,21 +19,18 @@ namespace ui {
 OverscrollRefreshHandler::OverscrollRefreshHandler(
     const base::android::JavaRef<jobject>& j_overscroll_refresh_handler) {
   j_overscroll_refresh_handler_.Reset(AttachCurrentThread(),
-                                      j_overscroll_refresh_handler.obj());
+                                      j_overscroll_refresh_handler);
 }
 
 OverscrollRefreshHandler::~OverscrollRefreshHandler() {}
 
 bool OverscrollRefreshHandler::PullStart(
     OverscrollAction type,
-    float startx,
-    float starty,
     std::optional<BackGestureEventSwipeEdge> initiating_edge) {
-  CHECK_EQ(type == OverscrollAction::HISTORY_NAVIGATION,
+  CHECK_EQ(type == OverscrollAction::kHistoryNavigation,
            initiating_edge.has_value());
   return Java_OverscrollRefreshHandler_start(
-      AttachCurrentThread(), j_overscroll_refresh_handler_, type, startx,
-      starty,
+      AttachCurrentThread(), j_overscroll_refresh_handler_,  base::to_underlying(type),
       static_cast<int>(initiating_edge ? initiating_edge.value()
                                        : BackGestureEventSwipeEdge::RIGHT));
 }
@@ -53,3 +51,5 @@ void OverscrollRefreshHandler::PullReset() {
 }
 
 }  // namespace ui
+
+DEFINE_JNI(OverscrollRefreshHandler)

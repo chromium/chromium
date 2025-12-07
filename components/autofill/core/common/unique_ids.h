@@ -7,11 +7,13 @@
 
 #include <ostream>
 #include <string>
+#include <utility>
+#include <variant>
 
 #include "base/types/id_type.h"
+#include "base/types/strong_alias.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace autofill {
 
@@ -82,7 +84,7 @@ class TokenType
 // FrameTokens to any renderer process.
 using RemoteFrameToken = internal::TokenType<class RemoteFrameTokenMarker>;
 using LocalFrameToken = internal::TokenType<class LocalFrameTokenMarker>;
-using FrameToken = absl::variant<RemoteFrameToken, LocalFrameToken>;
+using FrameToken = std::variant<RemoteFrameToken, LocalFrameToken>;
 
 namespace internal {
 
@@ -139,6 +141,11 @@ struct GlobalId {
                           const GlobalId<RendererId>& rhs) = default;
   friend bool operator==(const GlobalId<RendererId>& lhs,
                          const GlobalId<RendererId>& rhs) = default;
+
+  template <typename H>
+  friend H AbslHashValue(H h, const GlobalId& id) {
+    return H::combine(std::move(h), id.frame_token, id.renderer_id);
+  }
 };
 
 }  // namespace internal

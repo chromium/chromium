@@ -40,18 +40,31 @@ from blinkpy.web_tests.models.typ_types import ResultType
 from blinkpy.web_tests.port.driver import DriverOutput
 
 
-def get_result(test_name, result_type=ResultType.Pass, run_time=0):
+def get_result(test_name,
+               result_type=ResultType.Pass,
+               expected=False,
+               run_time=0):
     failures = []
     dummy_1, dummy_2 = DriverOutput(None, None, None, None), DriverOutput(
         None, None, None, None)
+
+    if expected:
+        expected_results = frozenset([result_type])
+    elif result_type == ResultType.Pass:
+        expected_results = frozenset([ResultType.Failure])
+    else:
+        expected_results = frozenset([ResultType.Pass])
+
     if result_type == ResultType.Timeout:
         failures = [test_failures.FailureTimeout(dummy_1)]
     elif result_type == ResultType.Crash:
         failures = [test_failures.FailureCrash(dummy_1)]
     elif result_type == ResultType.Failure:
         failures = [test_failures.TestFailure(dummy_1, dummy_2)]
-    return test_results.TestResult(
-        test_name, failures=failures, test_run_time=run_time)
+    return test_results.TestResult(test_name,
+                                   failures=failures,
+                                   test_run_time=run_time,
+                                   expected=expected_results)
 
 
 def run_results(port, extra_skipped_tests=None):
@@ -77,61 +90,64 @@ def generate_results(port, expected, passing, flaky, extra_skipped_tests=None):
     initial_results = run_results(port, extra_skipped_tests)
     if expected:
         initial_results.add(
-            get_result('passes/text.html', ResultType.Pass), expected,
+            get_result('passes/text.html', ResultType.Pass, expected=True),
             test_is_slow)
         initial_results.add(
-            get_result('failures/expected/audio.html', ResultType.Failure),
-            expected, test_is_slow)
+            get_result('failures/expected/audio.html',
+                       ResultType.Failure,
+                       expected=True), test_is_slow)
         initial_results.add(
-            get_result('failures/expected/timeout.html', ResultType.Timeout),
-            expected, test_is_slow)
+            get_result('failures/expected/timeout.html',
+                       ResultType.Timeout,
+                       expected=True), test_is_slow)
         initial_results.add(
-            get_result('failures/expected/crash.html', ResultType.Crash),
-            expected, test_is_slow)
+            get_result('failures/expected/crash.html',
+                       ResultType.Crash,
+                       expected=True), test_is_slow)
         initial_results.add(
-            get_result('failures/expected/leak.html', ResultType.Failure),
-            expected, test_is_slow)
+            get_result('failures/expected/leak.html',
+                       ResultType.Failure,
+                       expected=True), test_is_slow)
     elif passing:
-        skipped_result = get_result('passes/skipped/skip.html')
+        skipped_result = test_results.TestResult('passes/skipped/skip.html',
+                                                 expected=frozenset(
+                                                     [ResultType.Skip]))
         skipped_result.type = ResultType.Skip
-        initial_results.add(skipped_result, True, test_is_slow)
+        initial_results.add(skipped_result, test_is_slow)
 
-        initial_results.add(
-            get_result('passes/text.html', run_time=1), expected, test_is_slow)
-        initial_results.add(
-            get_result('failures/expected/audio.html'), expected, test_is_slow)
-        initial_results.add(
-            get_result('failures/expected/timeout.html'), expected,
-            test_is_slow)
-        initial_results.add(
-            get_result('failures/expected/crash.html'), expected, test_is_slow)
-        initial_results.add(
-            get_result('failures/expected/leak.html'), expected, test_is_slow)
+        initial_results.add(get_result('passes/text.html', run_time=1),
+                            test_is_slow)
+        initial_results.add(get_result('failures/expected/audio.html'),
+                            test_is_slow)
+        initial_results.add(get_result('failures/expected/timeout.html'),
+                            test_is_slow)
+        initial_results.add(get_result('failures/expected/crash.html'),
+                            test_is_slow)
+        initial_results.add(get_result('failures/expected/leak.html'),
+                            test_is_slow)
     else:
         initial_results.add(
             get_result('passes/text.html', ResultType.Timeout, run_time=1),
-            expected, test_is_slow)
+            test_is_slow)
         initial_results.add(
-            get_result(
-                'failures/expected/audio.html',
-                ResultType.Crash,
-                run_time=0.049), expected, test_is_slow)
+            get_result('failures/expected/audio.html',
+                       ResultType.Crash,
+                       run_time=0.049), test_is_slow)
         initial_results.add(
-            get_result(
-                'failures/expected/timeout.html',
-                ResultType.Failure,
-                run_time=0.05), expected, test_is_slow)
+            get_result('failures/expected/timeout.html',
+                       ResultType.Failure,
+                       run_time=0.05), test_is_slow)
         initial_results.add(
             get_result('failures/expected/crash.html', ResultType.Timeout),
-            expected, test_is_slow)
+            test_is_slow)
         initial_results.add(
             get_result('failures/expected/leak.html', ResultType.Timeout),
-            expected, test_is_slow)
+            test_is_slow)
 
         # we only list keyboard.html here, since normally this is WontFix
         initial_results.add(
             get_result('failures/expected/keyboard.html', ResultType.Skip),
-            expected, test_is_slow)
+            test_is_slow)
 
         dummy_expected = DriverOutput(None, None, None, None)
         dummy_actual = DriverOutput(None, None, None, None)
@@ -144,7 +160,7 @@ def generate_results(port, expected, passing, flaky, extra_skipped_tests=None):
 
         initial_results.add(
             test_results.TestResult('failures/expected/text.html',
-                                    failures=[image_hash_failure]), expected,
+                                    failures=[image_hash_failure]),
             test_is_slow)
 
         all_retry_results = [
@@ -153,59 +169,61 @@ def generate_results(port, expected, passing, flaky, extra_skipped_tests=None):
             run_results(port, extra_skipped_tests)
         ]
 
-        def add_result_to_all_retries(new_result, expected):
+        def add_result_to_all_retries(new_result):
             for run_result in all_retry_results:
-                run_result.add(new_result, expected, test_is_slow)
+                run_result.add(new_result, test_is_slow)
 
         if flaky:
             add_result_to_all_retries(
-                get_result('passes/text.html', ResultType.Pass), True)
+                get_result('passes/text.html', ResultType.Pass, expected=True))
             add_result_to_all_retries(
-                get_result('failures/expected/audio.html', ResultType.Failure),
-                True)
+                get_result('failures/expected/audio.html',
+                           ResultType.Failure,
+                           expected=True))
             add_result_to_all_retries(
-                get_result('failures/expected/leak.html', ResultType.Failure),
-                True)
+                get_result('failures/expected/leak.html',
+                           ResultType.Failure,
+                           expected=True))
             add_result_to_all_retries(
                 get_result('failures/expected/timeout.html',
-                           ResultType.Failure), True)
+                           ResultType.Failure,
+                           expected=True))
 
             all_retry_results[0].add(
                 get_result('failures/expected/crash.html', ResultType.Failure),
-                False, test_is_slow)
+                test_is_slow)
             all_retry_results[1].add(
-                get_result('failures/expected/crash.html', ResultType.Crash),
-                True, test_is_slow)
+                get_result('failures/expected/crash.html',
+                           ResultType.Crash,
+                           expected=True), test_is_slow)
             all_retry_results[2].add(
                 get_result('failures/expected/crash.html', ResultType.Failure),
-                False, test_is_slow)
+                test_is_slow)
 
             all_retry_results[0].add(
-                get_result('failures/expected/text.html', ResultType.Failure),
-                True, test_is_slow)
+                get_result('failures/expected/text.html',
+                           ResultType.Failure,
+                           expected=True), test_is_slow)
 
         else:
             add_result_to_all_retries(
-                get_result('passes/text.html', ResultType.Timeout), False)
+                get_result('passes/text.html', ResultType.Timeout))
             add_result_to_all_retries(
-                get_result('failures/expected/audio.html', ResultType.Failure),
-                False)
+                get_result('failures/expected/audio.html', ResultType.Failure))
             add_result_to_all_retries(
-                get_result('failures/expected/crash.html', ResultType.Timeout),
-                False)
+                get_result('failures/expected/crash.html', ResultType.Timeout))
             add_result_to_all_retries(
-                get_result('failures/expected/leak.html', ResultType.Timeout),
-                False)
+                get_result('failures/expected/leak.html', ResultType.Timeout))
 
             all_retry_results[0].add(
                 get_result('failures/expected/timeout.html',
-                           ResultType.Failure), False, test_is_slow)
+                           ResultType.Failure), test_is_slow)
             all_retry_results[1].add(
                 get_result('failures/expected/timeout.html', ResultType.Crash),
-                False, test_is_slow)
+                test_is_slow)
             all_retry_results[2].add(
                 get_result('failures/expected/timeout.html',
-                           ResultType.Failure), False, test_is_slow)
+                           ResultType.Failure), test_is_slow)
 
     return initial_results, all_retry_results
 
@@ -253,13 +271,12 @@ class RunResultsWithSinkTest(unittest.TestCase):
 
     def testAddWithSink(self):
         self.results.result_sink = mock.Mock()
-        self.results.add(self.test, False, False)
-        self.results.result_sink.sink.assert_called_with(
-            False, self.test, self.expectations)
+        self.results.add(self.test, False)
+        self.results.result_sink.sink.assert_called_with(self.test)
 
     def testAddWithoutSink(self):
         self.results.result_sink = None
-        self.results.add(self.test, False, False)
+        self.results.add(self.test, False)
 
 
 class InterpretTestFailuresTest(unittest.TestCase):
@@ -506,20 +523,18 @@ class SummarizedResultsTest(unittest.TestCase):
         initial_results = test_run_results.TestRunResults(
             expectations, 1, None)
         initial_results.add(
-            get_result(test_name, ResultType.Timeout, run_time=1), False,
-            False)
+            get_result(test_name, ResultType.Timeout, run_time=1), False)
         all_retry_results = [
             test_run_results.TestRunResults(expectations, 1, None),
             test_run_results.TestRunResults(expectations, 1, None),
             test_run_results.TestRunResults(expectations, 1, None)
         ]
         all_retry_results[0].add(
-            get_result(test_name, ResultType.Failure, run_time=0.1), False,
-            False)
+            get_result(test_name, ResultType.Failure, run_time=0.1), False)
         all_retry_results[1].add(
-            get_result(test_name, ResultType.Pass, run_time=0.1), False, False)
+            get_result(test_name, ResultType.Pass, run_time=0.1), False)
         all_retry_results[2].add(
-            get_result(test_name, ResultType.Pass, run_time=0.1), False, False)
+            get_result(test_name, ResultType.Pass, run_time=0.1), False)
         summary = test_run_results.summarize_results(self.port, self.options,
                                                      expectations,
                                                      initial_results,
@@ -599,19 +614,18 @@ class SummarizedResultsTest(unittest.TestCase):
         expectations = test_expectations.TestExpectations(self.port)
         initial_results = test_run_results.TestRunResults(
             expectations, 1, None)
-        initial_results.add(
-            get_result(test_name, ResultType.Crash), False, False)
+        initial_results.add(get_result(test_name, ResultType.Crash), False)
         all_retry_results = [
             test_run_results.TestRunResults(expectations, 1, None),
             test_run_results.TestRunResults(expectations, 1, None),
             test_run_results.TestRunResults(expectations, 1, None)
         ]
-        all_retry_results[0].add(
-            get_result(test_name, ResultType.Timeout), False, False)
+        all_retry_results[0].add(get_result(test_name, ResultType.Timeout),
+                                 False)
         all_retry_results[1].add(
-            get_result(test_name, ResultType.Pass), True, False)
+            get_result(test_name, ResultType.Pass, expected=True), False)
         all_retry_results[2].add(
-            get_result(test_name, ResultType.Pass), True, False)
+            get_result(test_name, ResultType.Pass, expected=True), False)
         summary = test_run_results.summarize_results(self.port, self.options,
                                                      expectations,
                                                      initial_results,
@@ -631,19 +645,16 @@ class SummarizedResultsTest(unittest.TestCase):
         expectations = test_expectations.TestExpectations(self.port)
         initial_results = test_run_results.TestRunResults(
             expectations, 3, None)
-        initial_results.add(
-            get_result(test_name, ResultType.Crash), False, False)
-        initial_results.add(
-            get_result(test_name, ResultType.Failure), False, False)
-        initial_results.add(
-            get_result(test_name, ResultType.Timeout), False, False)
+        initial_results.add(get_result(test_name, ResultType.Crash), False)
+        initial_results.add(get_result(test_name, ResultType.Failure), False)
+        initial_results.add(get_result(test_name, ResultType.Timeout), False)
         all_retry_results = [
             test_run_results.TestRunResults(expectations, 2, None)
         ]
-        all_retry_results[0].add(
-            get_result(test_name, ResultType.Failure), False, False)
-        all_retry_results[0].add(
-            get_result(test_name, ResultType.Failure), False, False)
+        all_retry_results[0].add(get_result(test_name, ResultType.Failure),
+                                 False)
+        all_retry_results[0].add(get_result(test_name, ResultType.Failure),
+                                 False)
 
         summary = test_run_results.summarize_results(self.port, self.options,
                                                      expectations,

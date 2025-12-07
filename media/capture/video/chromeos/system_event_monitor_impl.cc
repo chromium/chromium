@@ -166,7 +166,7 @@ SystemEventMonitorImpl::DisplayObserver::DisplayObserver(
   // Therefore, we defer the observation and assume that |display::Screen| is
   // ready when |SystemEventMonitorImpl::AddDisplayObserver| is invoked and let
   // |DisplayObserver| observe it.
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   if (!screen) {
     // screen may be NULL in unittests.
     LOG(WARNING) << "Screen has not been initialized yet.";

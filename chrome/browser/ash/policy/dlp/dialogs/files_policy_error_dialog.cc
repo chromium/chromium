@@ -18,6 +18,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
@@ -80,8 +81,8 @@ FilesPolicyErrorDialog::FilesPolicyErrorDialog(
     : FilesPolicyDialog(dialog_info_map.size(), action, modal_parent) {
   SetAcceptCallback(base::BindOnce(&FilesPolicyErrorDialog::Dismiss,
                                    weak_factory_.GetWeakPtr()));
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, GetOkButton());
-  SetButtons(ui::DIALOG_BUTTON_OK);
+  SetButtonLabel(ui::mojom::DialogButton::kOk, GetOkButton());
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
 
   SetupBlockedFilesSections(dialog_info_map);
 
@@ -217,6 +218,9 @@ void FilesPolicyErrorDialog::SetupBlockedFilesSections(
                           dialog_info_map));
   }
 
+  AppendBlockedFilesSection(
+      FilesPolicyErrorDialog::BlockReason::kEnterpriseConnectorsScanFailed,
+      dialog_info_map);
   AppendBlockedFilesSection(
       FilesPolicyErrorDialog::BlockReason::kEnterpriseConnectorsEncryptedFile,
       dialog_info_map);

@@ -35,7 +35,7 @@ class PLATFORM_EXPORT RTCRtpReceiverPlatform {
   // Two |RTCRtpReceiverPlatform|s referencing the same WebRTC-layer receiver
   // have the same |id|.
   virtual uintptr_t Id() const = 0;
-  virtual rtc::scoped_refptr<webrtc::DtlsTransportInterface>
+  virtual webrtc::scoped_refptr<webrtc::DtlsTransportInterface>
   DtlsTransport() = 0;
   // Note: For convenience, DtlsTransportInformation always returns a value.
   // The information is only interesting if DtlsTransport() is non-null.

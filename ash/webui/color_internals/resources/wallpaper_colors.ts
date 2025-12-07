@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
+import type {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
-import {WallpaperCalculatedColors, WallpaperColorsHandler, WallpaperColorsObserverCallbackRouter} from './color_internals.mojom-webui.js';
+import type {WallpaperCalculatedColors} from './color_internals.mojom-webui.js';
+import {WallpaperColorsHandler, WallpaperColorsObserverCallbackRouter} from './color_internals.mojom-webui.js';
 import {getRGBAFromComputedStyle} from './utils.js';
 
 function rmChildren(node: HTMLElement) {

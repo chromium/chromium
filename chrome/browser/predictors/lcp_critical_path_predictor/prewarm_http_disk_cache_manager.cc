@@ -4,18 +4,16 @@
 
 #include "chrome/browser/predictors/lcp_critical_path_predictor/prewarm_http_disk_cache_manager.h"
 
-#include <tuple>
-
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/trace_event/base_tracing.h"
-#include "base/trace_event/common/trace_event_common.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/after_startup_task_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/common/features.h"
@@ -54,6 +52,12 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       policy_exception_justification: "This is not a network request."
   })");
 
+bool IsSameSite(const GURL& url1, const GURL& url2) {
+  return url1.SchemeIs(url2.GetScheme()) &&
+         net::registry_controlled_domains::SameDomainOrHost(
+             url1, url2,
+             net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+}
 }  // namespace
 
 PrewarmHttpDiskCacheManager::PrewarmHttpDiskCacheManager(
@@ -80,6 +84,7 @@ PrewarmHttpDiskCacheManager::~PrewarmHttpDiskCacheManager() {
 }
 
 void PrewarmHttpDiskCacheManager::MaybePrewarmResources(
+    const std::optional<url::Origin>& initiator_origin,
     const GURL& top_frame_main_resource_url,
     const std::vector<GURL>& top_frame_subresource_urls) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -90,18 +95,27 @@ void PrewarmHttpDiskCacheManager::MaybePrewarmResources(
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
 
   // Avoid making network service to be more busy during the browser startup.
-  if (blink::features::kHttpDiskCachePrewarmingSkipDuringBrowserStartup.Get() &&
+  const bool skip_during_browser_startup =
+      blink::features::kHttpDiskCachePrewarmingSkipDuringBrowserStartup.Get();
+  if (skip_during_browser_startup &&
       !AfterStartupTaskUtils::IsBrowserStartupComplete()) {
     return;
   }
 
+  static const bool prewarm_main_resource =
+      base::GetFieldTrialParamByFeatureAsBool(
+          blink::features::kHttpDiskCachePrewarming,
+          "http_disk_cache_prewarming_main_resource", true);
   url::Origin top_frame_origin =
       url::Origin::Create(top_frame_main_resource_url);
-  MaybeAddPrewarmJob(top_frame_origin, top_frame_main_resource_url,
-                     net::IsolationInfo::RequestType::kMainFrame);
+  if (prewarm_main_resource) {
+    MaybeAddPrewarmJob({initiator_origin, top_frame_origin,
+                        top_frame_main_resource_url,
+                        net::IsolationInfo::RequestType::kMainFrame});
+  }
   for (const GURL& url : top_frame_subresource_urls) {
-    MaybeAddPrewarmJob(top_frame_origin, url,
-                       net::IsolationInfo::RequestType::kOther);
+    MaybeAddPrewarmJob({top_frame_origin, top_frame_origin, url,
+                        net::IsolationInfo::RequestType::kOther});
   }
 
   if (!queued_jobs_.empty()) {
@@ -113,23 +127,71 @@ void PrewarmHttpDiskCacheManager::MaybePrewarmResources(
 
   base::UmaHistogramCounts100("Blink.LCPP.PrewarmHttpDiskCacheURL.Count",
                               top_frame_subresource_urls.size());
+  if (!top_frame_subresource_urls.empty()) {
+    size_t subresource_urls_same_site = 0;
+    size_t subresource_urls_cross_site = 0;
+    for (const GURL& url : top_frame_subresource_urls) {
+      if (IsSameSite(url, top_frame_main_resource_url)) {
+        ++subresource_urls_same_site;
+      } else {
+        ++subresource_urls_cross_site;
+      }
+    }
+    base::UmaHistogramCounts10000(
+        "Blink.LCPP.PrewarmHttpDiskCacheURL.Count.SameSite",
+        base::checked_cast<int>(subresource_urls_same_site));
+    base::UmaHistogramCounts10000(
+        "Blink.LCPP.PrewarmHttpDiskCacheURL.Count.CrossSite",
+        base::checked_cast<int>(subresource_urls_cross_site));
+    base::UmaHistogramPercentage(
+        "Blink.LCPP.PrewarmHttpDiskCacheURL.Count.SameSiteRatio",
+        base::checked_cast<int>(100 * subresource_urls_same_site /
+                                top_frame_subresource_urls.size()));
+  }
 }
 
+PrewarmHttpDiskCacheManager::PrewarmJob::PrewarmJob() = default;
+
+PrewarmHttpDiskCacheManager::PrewarmJob::PrewarmJob(
+    std::optional<url::Origin> initiator_origin,
+    url::Origin top_frame_origin,
+    GURL url,
+    net::IsolationInfo::RequestType request_type)
+    : initiator_origin(std::move(initiator_origin)),
+      top_frame_origin(std::move(top_frame_origin)),
+      url(std::move(url)),
+      request_type(request_type) {}
+
+PrewarmHttpDiskCacheManager::PrewarmJob::PrewarmJob(PrewarmJob&&) = default;
+
+PrewarmHttpDiskCacheManager::PrewarmJob&
+PrewarmHttpDiskCacheManager::PrewarmJob::operator=(PrewarmJob&&) = default;
+
+PrewarmHttpDiskCacheManager::PrewarmJob::PrewarmJob(const PrewarmJob&) =
+    default;
+
+PrewarmHttpDiskCacheManager::PrewarmJob&
+PrewarmHttpDiskCacheManager::PrewarmJob::operator=(const PrewarmJob&) = default;
+
+PrewarmHttpDiskCacheManager::PrewarmJob::~PrewarmJob() = default;
+
+bool PrewarmHttpDiskCacheManager::PrewarmJob::operator==(
+    const PrewarmJob&) const = default;
+
+auto PrewarmHttpDiskCacheManager::PrewarmJob::operator<=>(
+    const PrewarmJob&) const = default;
+
 void PrewarmHttpDiskCacheManager::MaybeAddPrewarmJob(
-    const url::Origin& top_frame_origin,
-    const GURL& url,
-    net::IsolationInfo::RequestType request_type) {
+    const PrewarmJob& prewarm_job) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  CHECK(url.is_valid() && url.SchemeIsHTTPOrHTTPS());
-  TRACE_EVENT_WITH_FLOW1(
-      "loading", "PrewarmHttpDiskCacheManager::MaybeAddPrewarmJob",
-      TRACE_ID_LOCAL(this),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url", url);
+  CHECK(prewarm_job.url.is_valid() && prewarm_job.url.SchemeIsHTTPOrHTTPS());
+  TRACE_EVENT_WITH_FLOW1("loading",
+                         "PrewarmHttpDiskCacheManager::MaybeAddPrewarmJob",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
+                         "url", prewarm_job.url);
   base::TimeTicks now = base::TimeTicks::Now();
-  std::tuple<url::Origin, GURL, net::IsolationInfo::RequestType>
-      origin_url_and_type =
-          std::make_tuple(top_frame_origin, url, request_type);
-  const auto& it = prewarm_history_.Peek(origin_url_and_type);
+  const auto& it = prewarm_history_.Peek(prewarm_job);
   if (it != prewarm_history_.end() && now - it->second < reprewarm_period_) {
     // Already processed recently.
     TRACE_EVENT_INSTANT1("loading",
@@ -140,8 +202,8 @@ void PrewarmHttpDiskCacheManager::MaybeAddPrewarmJob(
                          (now - it->second).InSeconds());
     return;
   }
-  prewarm_history_.Put(std::move(origin_url_and_type), now);
-  queued_jobs_.emplace(top_frame_origin, url, request_type);
+  queued_jobs_.push(prewarm_job);
+  prewarm_history_.Put(prewarm_job, now);
 }
 
 void PrewarmHttpDiskCacheManager::MaybeProcessNextQueuedJob() {
@@ -155,27 +217,41 @@ void PrewarmHttpDiskCacheManager::MaybeProcessNextQueuedJob() {
     // MaybeProcessNextQueuedJob() is called again.
     return;
   }
-  std::tuple<url::Origin, GURL, net::IsolationInfo::RequestType>
-      origin_url_and_type;
-  std::swap(origin_url_and_type, queued_jobs_.front());
+  PrewarmJob prewarm_job;
+  std::swap(prewarm_job, queued_jobs_.front());
   queued_jobs_.pop();
-  const auto& [origin, url, request_type] = origin_url_and_type;
   TRACE_EVENT_WITH_FLOW1(
       "loading", "PrewarmHttpDiskCacheManager::MaybeProcessNextQueuedJob",
       TRACE_ID_LOCAL(this),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url", url);
-  net::IsolationInfo isolation_info = net::IsolationInfo::Create(
-      request_type, origin, origin, net::SiteForCookies::FromOrigin(origin));
-  network::ResourceRequest::TrustedParams trusted_params;
-  trusted_params.isolation_info = isolation_info;
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url",
+      prewarm_job.url);
 
   // Load only from cache, and don't use cookies.
   auto request = std::make_unique<network::ResourceRequest>();
-  request->url = url;
+  request->url = prewarm_job.url;
   request->load_flags =
       net::LOAD_ONLY_FROM_CACHE | net::LOAD_SKIP_CACHE_VALIDATION;
-  request->trusted_params = trusted_params;
-  request->site_for_cookies = trusted_params.isolation_info.site_for_cookies();
+  if (base::FeatureList::IsEnabled(
+          blink::features::kAvoidTrustedParamsCopies)) {
+    request->trusted_params = network::ResourceRequest::TrustedParams();
+    request->trusted_params->isolation_info = net::IsolationInfo::Create(
+        prewarm_job.request_type, prewarm_job.top_frame_origin,
+        prewarm_job.top_frame_origin,
+        net::SiteForCookies::FromOrigin(prewarm_job.top_frame_origin));
+    request->site_for_cookies =
+        request->trusted_params->isolation_info.site_for_cookies();
+  } else {
+    net::IsolationInfo isolation_info = net::IsolationInfo::Create(
+        prewarm_job.request_type, prewarm_job.top_frame_origin,
+        prewarm_job.top_frame_origin,
+        net::SiteForCookies::FromOrigin(prewarm_job.top_frame_origin));
+    network::ResourceRequest::TrustedParams trusted_params;
+    trusted_params.isolation_info = isolation_info;
+    request->trusted_params = trusted_params;
+    request->site_for_cookies =
+        trusted_params.isolation_info.site_for_cookies();
+  }
+  request->request_initiator = std::move(prewarm_job.initiator_origin);
   request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   request->skip_service_worker = true;
   request->do_not_prompt_for_login = true;
@@ -219,7 +295,7 @@ void PrewarmHttpDiskCacheManager::OnComplete(bool success) {
 }
 
 void PrewarmHttpDiskCacheManager::OnRetry(base::OnceClosure start_retry) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void PrewarmHttpDiskCacheManager::OnHeadersOnly(

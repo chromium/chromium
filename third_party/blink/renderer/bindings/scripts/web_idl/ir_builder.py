@@ -645,7 +645,6 @@ class _IRBuilder(object):
                                    return_type='any',
                                    extended_attributes={
                                        'CallWith': 'ScriptState',
-                                       'RaisesException': None,
                                        'ImplementedAs': 'getForBinding',
                                    },
                                    node=node),
@@ -656,7 +655,6 @@ class _IRBuilder(object):
                                    return_type='boolean',
                                    extended_attributes={
                                        'CallWith': 'ScriptState',
-                                       'RaisesException': None,
                                        'ImplementedAs': 'hasForBinding',
                                    },
                                    node=node),
@@ -950,6 +948,7 @@ class _IRBuilder(object):
             'Uint32Array',
             'BigUint64Array',
             'Uint8ClampedArray',
+            'Float16Array',
             'Float32Array',
             'Float64Array',
         ])
@@ -1140,8 +1139,6 @@ class _IRBuilder(object):
                 extended_attributes=make_ext_attrs({
                     'CallWith':
                     'ScriptState',
-                    'RaisesException':
-                    None,
                     'ImplementedAs':
                     'entriesForBinding',
                 }),
@@ -1153,8 +1150,6 @@ class _IRBuilder(object):
                 extended_attributes=make_ext_attrs({
                     'CallWith':
                     'ScriptState',
-                    'RaisesException':
-                    None,
                     'ImplementedAs':
                     'keysForBinding',
                 }),
@@ -1166,8 +1161,6 @@ class _IRBuilder(object):
                 extended_attributes=make_ext_attrs({
                     'CallWith':
                     'ScriptState',
-                    'RaisesException':
-                    None,
                     'ImplementedAs':
                     'valuesForBinding',
                 }),

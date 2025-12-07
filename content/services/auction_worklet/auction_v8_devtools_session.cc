@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
@@ -128,6 +129,8 @@ class AuctionV8DevToolsSession::IOSession
         base::BindOnce(v8_thread_dispatch_, call_id, method,
                        std::vector<uint8_t>(message.begin(), message.end())));
   }
+
+  void UnpauseAndTerminate() override { NOTREACHED(); }
 
  private:
   IOSession(scoped_refptr<DebugCommandQueue> debug_command_queue,
@@ -255,6 +258,11 @@ void AuctionV8DevToolsSession::DispatchProtocolCommand(
   }
 }
 
+void AuctionV8DevToolsSession::UnpauseAndTerminate() {
+  // This is currently only invoked for frame targets.
+  NOTREACHED();
+}
+
 void AuctionV8DevToolsSession::sendResponse(
     int call_id,
     std::unique_ptr<v8_inspector::StringBuffer> message) {
@@ -345,7 +353,7 @@ blink::mojom::DevToolsMessagePtr AuctionV8DevToolsSession::FinalizeMessage(
     message_to_send = std::move(json);
   }
   auto mojo_msg = blink::mojom::DevToolsMessage::New();
-  mojo_msg->data = std::move(message_to_send);
+  mojo_msg->data = {message_to_send};
   return mojo_msg;
 }
 

@@ -7,6 +7,8 @@ import("//third_party/protobuf/proto_library.gni")
 
 proto_library("prediction_service_messages_proto") {
   sources = [
+    "permissions_aiv3_model_metadata.proto",
+    "permissions_aiv4_model_metadata.proto",
     "prediction_model_metadata.proto",
     "prediction_service_messages.proto",
   ]
@@ -14,6 +16,8 @@ proto_library("prediction_service_messages_proto") {
 
 source_set("prediction_service") {
   sources = [
+    "permission_ui_selector.cc",
+    "permission_ui_selector.h",
     "prediction_common.cc",
     "prediction_common.h",
     "prediction_request_features.h",
@@ -22,11 +26,11 @@ source_set("prediction_service") {
     "prediction_service_base.h",
   ]
   deps = [
-    "//build:chromeos_buildflags",
     "//components/keyed_service/content",
     "//components/permissions:permissions_common",
+    "//components/version_info",
     "//content/public/browser",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//third_party/protobuf:protobuf_lite",
   ]
   public_deps = [
@@ -37,19 +41,45 @@ source_set("prediction_service") {
 
   if (build_with_tflite_lib) {
     sources += [
+      "permissions_ai_encoder_base.cc",
+      "permissions_ai_encoder_base.h",
+      "permissions_aiv3_executor.cc",
+      "permissions_aiv3_executor.h",
+      "permissions_aiv3_handler.cc",
+      "permissions_aiv3_handler.h",
+      "permissions_aiv4_executor.cc",
+      "permissions_aiv4_executor.h",
+      "permissions_aiv4_handler.cc",
+      "permissions_aiv4_handler.h",
       "prediction_model_executor.cc",
       "prediction_model_executor.h",
       "prediction_model_handler.cc",
       "prediction_model_handler.h",
-      "prediction_model_handler_provider.cc",
-      "prediction_model_handler_provider.h",
+      "prediction_signature_model_executor.cc",
+      "prediction_signature_model_executor.h",
     ]
 
     deps += [
+      "//components/passage_embeddings",
+      "//skia",
       "//third_party/tflite:tflite_public_headers",
       "//third_party/tflite_support",
       "//third_party/tflite_support:tflite_support_proto",
     ]
+  }
+}
+
+if (build_with_tflite_lib) {
+  bundle_data("unit_tests_bundle_data") {
+    visibility = [ ":unit_tests" ]
+    testonly = true
+    sources = [
+      "//components/test/data/permissions/aiv3_ret_0.tflite",
+      "//components/test/data/permissions/aiv3_ret_0_5.tflite",
+      "//components/test/data/permissions/aiv3_ret_1.tflite",
+    ]
+    outputs = [ "{{bundle_resources_dir}}/" +
+                "{{source_root_relative_dir}}/{{source_file_part}}" ]
   }
 }
 
@@ -59,11 +89,28 @@ source_set("unit_tests") {
   deps = [
     ":prediction_service",
     "//base/test:test_support",
+    "//components/optimization_guide/core:test_support",
     "//components/permissions:permissions_common",
     "//services/network:test_support",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//testing/gtest",
     "//third_party/protobuf:protobuf_lite",
     "//ui/gfx",
   ]
+  if (build_with_tflite_lib) {
+    sources += [
+      "permissions_aiv3_handler_unittest.cc",
+      "permissions_aiv4_handler_unittest.cc",
+    ]
+    deps += [
+      ":unit_tests_bundle_data",
+      "//base",
+      "//components/permissions:test_support",
+    ]
+    data = [ "//components/test/data/permissions/" ]
+  }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

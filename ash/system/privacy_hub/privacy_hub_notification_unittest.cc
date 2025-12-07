@@ -4,6 +4,7 @@
 
 #include "ash/system/privacy_hub/privacy_hub_notification.h"
 
+#include <algorithm>
 #include <initializer_list>
 #include <memory>
 #include <string>
@@ -19,7 +20,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -48,7 +48,7 @@ class FakeSensorDisabledNotificationDelegate
   }
 
   void CloseApp(const std::u16string& app_name) {
-    auto it = base::ranges::find(apps_, app_name);
+    auto it = std::ranges::find(apps_, app_name);
     if (it != apps_.end()) {
       apps_.erase(it);
     }
@@ -169,7 +169,7 @@ class PrivacyHubNotificationTextTest
                   SensorDisabledNotificationDelegate::Sensor::kMicrophone};
         }
       }
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }();
   }
 
@@ -226,7 +226,7 @@ class PrivacyHubNotificationTextTest
             IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
             IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES};
       }
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }();
 
     const int max_size = 150;
@@ -484,7 +484,7 @@ TEST_P(PrivacyHubNotificationForScreenCaptureWithMicrophone, Test) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     PrivacyHubNotificationForScreenCaptureWithMicrophone,
-    testing::Combine(testing::Values(false),
+    testing::Combine(testing::Values(false, true),
                      testing::Values(NotificationType::MICROPHONE)));
 
 }  // namespace ash

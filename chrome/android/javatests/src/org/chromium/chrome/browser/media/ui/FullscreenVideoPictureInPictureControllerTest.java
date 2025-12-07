@@ -6,9 +6,6 @@ package org.chromium.chrome.browser.media.ui;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -22,9 +19,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -32,14 +27,14 @@ import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.media.MediaSwitches;
-import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.DeviceRestriction;
 
 /** Tests for FullscreenVideoPictureInPictureController and related methods. */
@@ -53,31 +48,26 @@ import org.chromium.ui.test.util.DeviceRestriction;
     RESTRICTION_TYPE_NON_LOW_END_DEVICE,
     DeviceRestriction.RESTRICTION_TYPE_NON_AUTO // PiP not supported on AAOS.
 })
-@RequiresApi(Build.VERSION_CODES.O)
 public class FullscreenVideoPictureInPictureControllerTest {
     // TODO(peconn): Add a test for exit on Tab Reparenting.
     private static final String TEST_PATH = "/chrome/test/data/media/bigbuck-player.html";
     private static final String VIDEO_ID = "video";
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
-    private EmbeddedTestServer mTestServer;
     private ChromeTabbedActivity mActivity;
 
     @Before
     public void setUp() {
-        mTestServer =
-                EmbeddedTestServer.createAndStartServer(
-                        InstrumentationRegistry.getInstrumentation().getContext());
-        mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(TEST_PATH));
+        mActivityTestRule.startOnTestServerUrl(TEST_PATH);
         mActivity = mActivityTestRule.getActivity();
     }
 
     /** Tests that we can detect when a video is playing fullscreen, a prerequisite for PiP. */
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     public void testFullscreenVideoDetected() throws Throwable {
         enterFullscreen();
     }
@@ -85,7 +75,6 @@ public class FullscreenVideoPictureInPictureControllerTest {
     /** Tests that fullscreen detection only applies to playing videos. */
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @DisabledTest(message = "https://crbug.com/335305496")
     public void testFullscreenVideoDetectedOnlyWhenPlaying() throws Throwable {
         enterFullscreen();
@@ -97,10 +86,7 @@ public class FullscreenVideoPictureInPictureControllerTest {
     /** Tests that we can enter PiP. */
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @DisableIf.Build(
-            sdk_is_greater_than = Build.VERSION_CODES.S_V2,
-            message = "https://crbug.com/339501283")
+    @DisabledTest(message = "https://crbug.com/339501283")
     public void testEnterPip() throws Throwable {
         enterFullscreen();
         triggerAutoPiPAndWait();
@@ -116,7 +102,6 @@ public class FullscreenVideoPictureInPictureControllerTest {
     /** Tests that PiP is left when we navigate the main page. */
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @DisabledTest(message = "https://crbug.com/1211930/")
     public void testExitPipOnNavigation() throws Throwable {
         testExitOn(
@@ -129,7 +114,6 @@ public class FullscreenVideoPictureInPictureControllerTest {
     /** Tests that PiP is left when the video leaves fullscreen. */
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @DisabledTest(message = "https://crbug.com/348618570")
     public void testExitOnLeaveFullscreen() throws Throwable {
         testExitOn(() -> DOMUtils.exitFullscreen(getWebContents()));
@@ -138,11 +122,10 @@ public class FullscreenVideoPictureInPictureControllerTest {
     /** Tests that PiP is left when the active Tab is closed. */
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @DisabledTest(message = "b/354013006")
     public void testExitOnCloseTab() throws Throwable {
         // We want 2 Tabs so we can close the first without any special behaviour.
-        mActivityTestRule.loadUrlInNewTab(mTestServer.getURL(TEST_PATH));
+        mActivityTestRule.loadUrlInNewTab(mActivityTestRule.getTestServer().getURL(TEST_PATH));
 
         testExitOn(() -> JavaScriptUtils.executeJavaScript(getWebContents(), "window.close()"));
     }
@@ -150,7 +133,6 @@ public class FullscreenVideoPictureInPictureControllerTest {
     /** Tests that PiP is left when the renderer crashes. */
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     public void testExitOnCrash() throws Throwable {
         testExitOn(() -> WebContentsUtils.simulateRendererKilled(getWebContents()));
     }
@@ -158,7 +140,6 @@ public class FullscreenVideoPictureInPictureControllerTest {
     /** Tests that PiP is left when a new Tab is created in the foreground. */
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @DisabledTest(message = "https://crbug.com/1429112")
     public void testExitOnNewForegroundTab() throws Throwable {
         testExitOn(
@@ -182,7 +163,6 @@ public class FullscreenVideoPictureInPictureControllerTest {
      */
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @DisabledTest(message = "https://crbug.com/1211930/#c10")
     public void testNoExitOnIframeNavigation() throws Throwable {
         // Add a TabObserver so we know when the iFrame navigation has occurred before we check that
@@ -209,7 +189,6 @@ public class FullscreenVideoPictureInPictureControllerTest {
     /** Tests that we can resume PiP after it has been cancelled. */
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @DisabledTest(message = "https://crbug.com/1429112")
     public void testReenterPip() throws Throwable {
         enterFullscreen();
@@ -223,7 +202,7 @@ public class FullscreenVideoPictureInPictureControllerTest {
     }
 
     private WebContents getWebContents() {
-        return mActivity.getCurrentWebContents();
+        return mActivityTestRule.getWebContents();
     }
 
     private void triggerAutoPiPAndWait() throws Throwable {
@@ -288,7 +267,6 @@ public class FullscreenVideoPictureInPictureControllerTest {
     /** Tests that we exit PiP whe device is locked. */
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @DisabledTest(message = "https://crbug.com/335422062")
     public void testExitPipWhenDeviceLocked() throws Throwable {
         AsyncInitializationActivity.interceptMoveTaskToBackForTesting();

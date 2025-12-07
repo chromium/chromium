@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/server/web_socket_encoder.h"
 
+#include <array>
 #include <limits>
 #include <string_view>
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/extend.h"
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "net/base/io_buffer.h"
+#include "net/base/net_export.h"
 #include "net/websockets/websocket_deflate_parameters.h"
 #include "net/websockets/websocket_extension.h"
 #include "net/websockets/websocket_extension_parser.h"
@@ -25,6 +25,7 @@
 
 namespace net {
 
+NET_EXPORT
 const char WebSocketEncoder::kClientExtensions[] =
     "permessage-deflate; client_max_window_bits";
 
@@ -34,34 +35,31 @@ const int kInflaterChunkSize = 16 * 1024;
 
 // Constants for hybi-10 frame format.
 
-const unsigned char kFinalBit = 0x80;
-const unsigned char kReserved1Bit = 0x40;
-const unsigned char kReserved2Bit = 0x20;
-const unsigned char kReserved3Bit = 0x10;
-const unsigned char kOpCodeMask = 0xF;
-const unsigned char kMaskBit = 0x80;
-const unsigned char kPayloadLengthMask = 0x7F;
+const uint8_t kFinalBit = 0x80;
+const uint8_t kReserved1Bit = 0x40;
+const uint8_t kReserved2Bit = 0x20;
+const uint8_t kReserved3Bit = 0x10;
+const uint8_t kOpCodeMask = 0xF;
+const uint8_t kMaskBit = 0x80;
+const uint8_t kPayloadLengthMask = 0x7F;
 
 const size_t kMaxSingleBytePayloadLength = 125;
 const size_t kTwoBytePayloadLengthField = 126;
 const size_t kEightBytePayloadLengthField = 127;
 const size_t kMaskingKeyWidthInBytes = 4;
 
-WebSocket::ParseResult DecodeFrameHybi17(std::string_view frame,
-                                         bool client_frame,
-                                         int* bytes_consumed,
-                                         std::string* output,
-                                         bool* compressed) {
-  size_t data_length = frame.length();
-  if (data_length < 2)
-    return WebSocket::FRAME_INCOMPLETE;
+WebSocketParseResult DecodeFrameHybi17(std::string_view frame,
+                                       bool client_frame,
+                                       int* bytes_consumed,
+                                       std::string* output,
+                                       bool* compressed) {
+  if (frame.size() < 2) {
+    return WebSocketParseResult::FRAME_INCOMPLETE;
+  }
 
-  const char* buffer_begin = const_cast<char*>(frame.data());
-  const char* p = buffer_begin;
-  const char* buffer_end = p + data_length;
-
-  unsigned char first_byte = *p++;
-  unsigned char second_byte = *p++;
+  uint8_t first_byte = frame[0];
+  uint8_t second_byte = frame[1];
+  std::string_view remaining = frame.substr(2);
 
   bool final = (first_byte & kFinalBit) != 0;
   bool reserved1 = (first_byte & kReserved1Bit) != 0;
@@ -71,7 +69,8 @@ WebSocket::ParseResult DecodeFrameHybi17(std::string_view frame,
   bool masked = (second_byte & kMaskBit) != 0;
   *compressed = reserved1;
   if (reserved2 || reserved3)
-    return WebSocket::FRAME_ERROR;  // Only compression extension is supported.
+    return WebSocketParseResult::FRAME_ERROR;  // Only compression extension is
+                                               // supported.
 
   bool closed = false;
   switch (op_code) {
@@ -89,28 +88,30 @@ WebSocket::ParseResult DecodeFrameHybi17(std::string_view frame,
     case WebSocketFrameHeader::OpCodeEnum::kOpCodeBinary:  // We don't support
                                                            // binary frames yet.
     default:
-      return WebSocket::FRAME_ERROR;
+      return WebSocketParseResult::FRAME_ERROR;
   }
 
   if (client_frame && !masked)  // In Hybi-17 spec client MUST mask its frame.
-    return WebSocket::FRAME_ERROR;
+    return WebSocketParseResult::FRAME_ERROR;
 
   uint64_t payload_length64 = second_byte & kPayloadLengthMask;
   if (payload_length64 > kMaxSingleBytePayloadLength) {
-    int extended_payload_length_size;
+    size_t extended_payload_length_size;
     if (payload_length64 == kTwoBytePayloadLengthField) {
       extended_payload_length_size = 2;
     } else {
       DCHECK(payload_length64 == kEightBytePayloadLengthField);
       extended_payload_length_size = 8;
     }
-    if (buffer_end - p < extended_payload_length_size)
-      return WebSocket::FRAME_INCOMPLETE;
-    payload_length64 = 0;
-    for (int i = 0; i < extended_payload_length_size; ++i) {
-      payload_length64 <<= 8;
-      payload_length64 |= static_cast<unsigned char>(*p++);
+    if (remaining.size() < extended_payload_length_size) {
+      return WebSocketParseResult::FRAME_INCOMPLETE;
     }
+    payload_length64 = 0;
+    for (size_t i = 0; i < extended_payload_length_size; ++i) {
+      payload_length64 <<= 8;
+      payload_length64 |= static_cast<uint8_t>(remaining[i]);
+    }
+    remaining.remove_prefix(extended_payload_length_size);
   }
 
   size_t actual_masking_key_length = masked ? kMaskingKeyWidthInBytes : 0;
@@ -119,37 +120,42 @@ WebSocket::ParseResult DecodeFrameHybi17(std::string_view frame,
   if (payload_length64 > max_payload_length ||
       payload_length64 + actual_masking_key_length > max_length) {
     // WebSocket frame length too large.
-    return WebSocket::FRAME_ERROR;
+    return WebSocketParseResult::FRAME_ERROR;
   }
   size_t payload_length = static_cast<size_t>(payload_length64);
 
   size_t total_length = actual_masking_key_length + payload_length;
-  if (static_cast<size_t>(buffer_end - p) < total_length)
-    return WebSocket::FRAME_INCOMPLETE;
+  if (remaining.size() < total_length) {
+    return WebSocketParseResult::FRAME_INCOMPLETE;
+  }
 
   if (masked) {
     output->resize(payload_length);
-    const char* masking_key = p;
-    char* payload = const_cast<char*>(p + kMaskingKeyWidthInBytes);
-    for (size_t i = 0; i < payload_length; ++i)  // Unmask the payload.
-      (*output)[i] = payload[i] ^ masking_key[i % kMaskingKeyWidthInBytes];
+    std::string_view masking_key = remaining.substr(0, kMaskingKeyWidthInBytes);
+    std::string_view payload_data =
+        remaining.substr(kMaskingKeyWidthInBytes, payload_length);
+    for (size_t i = 0; i < payload_length; ++i) {  // Unmask the payload.
+      (*output)[i] = payload_data[i] ^ masking_key[i % kMaskingKeyWidthInBytes];
+    }
+    remaining.remove_prefix(total_length);
   } else {
-    output->assign(p, p + payload_length);
+    output->assign(remaining.data(), payload_length);
+    remaining.remove_prefix(payload_length);
   }
 
-  size_t pos = p + actual_masking_key_length + payload_length - buffer_begin;
-  *bytes_consumed = pos;
+  *bytes_consumed = frame.size() - remaining.size();
 
   if (op_code == WebSocketFrameHeader::OpCodeEnum::kOpCodePing)
-    return WebSocket::FRAME_PING;
+    return WebSocketParseResult::FRAME_PING;
 
   if (op_code == WebSocketFrameHeader::OpCodeEnum::kOpCodePong)
-    return WebSocket::FRAME_PONG;
+    return WebSocketParseResult::FRAME_PONG;
 
   if (closed)
-    return WebSocket::FRAME_CLOSE;
+    return WebSocketParseResult::FRAME_CLOSE;
 
-  return final ? WebSocket::FRAME_OK_FINAL : WebSocket::FRAME_OK_MIDDLE;
+  return final ? WebSocketParseResult::FRAME_OK_FINAL
+               : WebSocketParseResult::FRAME_OK_MIDDLE;
 }
 
 void EncodeFrameHybi17(std::string_view message,
@@ -171,26 +177,26 @@ void EncodeFrameHybi17(std::string_view message,
     frame.push_back(data_length & 0xFF);
   } else {
     frame.push_back(kEightBytePayloadLengthField | mask_key_bit);
-    char extended_payload_length[8];
+    std::array<char, 8> extended_payload_length;
     size_t remaining = data_length;
     // Fill the length into extended_payload_length in the network byte order.
     for (int i = 0; i < 8; ++i) {
       extended_payload_length[7 - i] = remaining & 0xFF;
       remaining >>= 8;
     }
-    frame.insert(frame.end(), extended_payload_length,
-                 extended_payload_length + 8);
+    base::Extend(frame, extended_payload_length);
     DCHECK(!remaining);
   }
 
-  const char* data = const_cast<char*>(message.data());
   if (masking_key != 0) {
-    const char* mask_bytes = reinterpret_cast<char*>(&masking_key);
-    frame.insert(frame.end(), mask_bytes, mask_bytes + 4);
-    for (size_t i = 0; i < data_length; ++i)  // Mask the payload.
-      frame.push_back(data[i] ^ mask_bytes[i % kMaskingKeyWidthInBytes]);
+    std::string_view mask_bytes(reinterpret_cast<const char*>(&masking_key),
+                                kMaskingKeyWidthInBytes);
+    base::Extend(frame, mask_bytes);
+    for (size_t i = 0; i < data_length; ++i) {  // Mask the payload.
+      frame.push_back(message[i] ^ mask_bytes[i % kMaskingKeyWidthInBytes]);
+    }
   } else {
-    frame.insert(frame.end(), data, data + data_length);
+    base::Extend(frame, message);
   }
   *output = std::string(frame.data(), frame.size());
 }
@@ -206,14 +212,15 @@ std::unique_ptr<WebSocketEncoder> WebSocketEncoder::CreateServer() {
 std::unique_ptr<WebSocketEncoder> WebSocketEncoder::CreateServer(
     const std::string& extensions,
     WebSocketDeflateParameters* deflate_parameters) {
-  WebSocketExtensionParser parser;
-  if (!parser.Parse(extensions)) {
+  const std::vector<WebSocketExtension> parsed_extensions =
+      ParseWebSocketExtensions(extensions);
+  if (parsed_extensions.empty()) {
     // Failed to parse Sec-WebSocket-Extensions header. We MUST fail the
     // connection.
     return nullptr;
   }
 
-  for (const auto& extension : parser.extensions()) {
+  for (const auto& extension : parsed_extensions) {
     std::string failure_message;
     WebSocketDeflateParameters offer;
     if (!offer.Initialize(extension, &failure_message) ||
@@ -253,8 +260,9 @@ std::unique_ptr<WebSocketEncoder> WebSocketEncoder::CreateClient(
     const std::string& response_extensions) {
   // TODO(yhirano): Add a way to return an error.
 
-  WebSocketExtensionParser parser;
-  if (!parser.Parse(response_extensions)) {
+  const std::vector<WebSocketExtension> extensions =
+      ParseWebSocketExtensions(response_extensions);
+  if (extensions.empty()) {
     // Parse error. Note that there are two cases here.
     // 1) There is no Sec-WebSocket-Extensions header.
     // 2) There is a malformed Sec-WebSocketExtensions header.
@@ -262,12 +270,12 @@ std::unique_ptr<WebSocketEncoder> WebSocketEncoder::CreateClient(
     // fail the connection for the latter case.
     return base::WrapUnique(new WebSocketEncoder(FOR_CLIENT, nullptr, nullptr));
   }
-  if (parser.extensions().size() != 1) {
+  if (extensions.size() != 1) {
     // Only permessage-deflate extension is supported.
     // TODO (yhirano): Fail the connection.
     return base::WrapUnique(new WebSocketEncoder(FOR_CLIENT, nullptr, nullptr));
   }
-  const auto& extension = parser.extensions()[0];
+  const auto& extension = extensions[0];
   WebSocketDeflateParameters params;
   std::string failure_message;
   if (!params.Initialize(extension, &failure_message) ||
@@ -299,31 +307,31 @@ WebSocketEncoder::WebSocketEncoder(Type type,
 
 WebSocketEncoder::~WebSocketEncoder() = default;
 
-WebSocket::ParseResult WebSocketEncoder::DecodeFrame(std::string_view frame,
-                                                     int* bytes_consumed,
-                                                     std::string* output) {
+WebSocketParseResult WebSocketEncoder::DecodeFrame(std::string_view frame,
+                                                   int* bytes_consumed,
+                                                   std::string* output) {
   bool compressed;
   std::string current_output;
-  WebSocket::ParseResult result = DecodeFrameHybi17(
+  WebSocketParseResult result = DecodeFrameHybi17(
       frame, type_ == FOR_SERVER, bytes_consumed, &current_output, &compressed);
   switch (result) {
-    case WebSocket::FRAME_OK_FINAL:
-    case WebSocket::FRAME_OK_MIDDLE: {
+    case WebSocketParseResult::FRAME_OK_FINAL:
+    case WebSocketParseResult::FRAME_OK_MIDDLE: {
       if (continuation_message_frames_.empty())
         is_current_message_compressed_ = compressed;
       continuation_message_frames_.push_back(current_output);
 
-      if (result == WebSocket::FRAME_OK_FINAL) {
+      if (result == WebSocketParseResult::FRAME_OK_FINAL) {
         *output = base::StrCat(continuation_message_frames_);
         continuation_message_frames_.clear();
         if (is_current_message_compressed_ && !Inflate(output)) {
-          return WebSocket::FRAME_ERROR;
+          return WebSocketParseResult::FRAME_ERROR;
         }
       }
       break;
     }
 
-    case WebSocket::FRAME_PING:
+    case WebSocketParseResult::FRAME_PING:
       *output = current_output;
       break;
 
@@ -363,8 +371,9 @@ void WebSocketEncoder::EncodePongFrame(std::string_view frame,
 bool WebSocketEncoder::Inflate(std::string* message) {
   if (!inflater_)
     return false;
-  if (!inflater_->AddBytes(message->data(), message->length()))
+  if (!inflater_->AddBytes(base::as_byte_span(*message))) {
     return false;
+  }
   if (!inflater_->Finish())
     return false;
 
@@ -374,7 +383,7 @@ bool WebSocketEncoder::Inflate(std::string* message) {
         inflater_->GetOutput(inflater_->CurrentOutputSize());
     if (!chunk.get())
       return false;
-    output.insert(output.end(), chunk->data(), chunk->data() + chunk->size());
+    base::Extend(output, chunk->span());
   }
 
   *message =
@@ -385,7 +394,7 @@ bool WebSocketEncoder::Inflate(std::string* message) {
 bool WebSocketEncoder::Deflate(std::string_view message, std::string* output) {
   if (!deflater_)
     return false;
-  if (!deflater_->AddBytes(message.data(), message.length())) {
+  if (!deflater_->AddBytes(base::as_byte_span(message))) {
     deflater_->Finish();
     return false;
   }
@@ -395,7 +404,7 @@ bool WebSocketEncoder::Deflate(std::string_view message, std::string* output) {
       deflater_->GetOutput(deflater_->CurrentOutputSize());
   if (!buffer.get())
     return false;
-  *output = std::string(buffer->data(), buffer->size());
+  *output = std::string(base::as_string_view(buffer->span()));
   return true;
 }
 

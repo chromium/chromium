@@ -9,8 +9,6 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
-@protocol TableViewInfoButtonItemDelegate;
-
 // TableViewInfoButtonItem is a model class that uses TableViewInfoButtonCell.
 @interface TableViewInfoButtonItem : TableViewItem
 
@@ -19,9 +17,6 @@
 
 // The background color of the icon.
 @property(nonatomic, strong) UIColor* iconBackgroundColor;
-
-// The corner radius of the UIImage view.
-@property(nonatomic, assign) CGFloat iconCornerRadius;
 
 // The tint color of the icon.
 @property(nonatomic, strong) UIColor* iconTintColor;
@@ -44,12 +39,10 @@
 // The accessibility hint text string.
 @property(nonatomic, copy) NSString* accessibilityHint;
 
-// Boolean for if the info button is hidden.
-@property(nonatomic, assign) BOOL infoButtonIsHidden;
-
-// Accessibility delegate for custom accessibility actions.
-@property(nonatomic, weak) id<TableViewInfoButtonItemDelegate>
-    accessibilityDelegate;
+// Configuration for the button.
+@property(nonatomic, weak) id target;
+@property(nonatomic, assign) SEL selector;
+@property(nonatomic, assign) NSInteger tag;
 
 // Boolean for if the accessibility activation point should be on the button of
 // cell. The default value is YES. If value is changed to NO, the activation

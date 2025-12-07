@@ -70,11 +70,6 @@ const ShelfButtonClickMapping kShelfTargets[] = {
      LoginMetricsRecorder::LockScreenUserClickTarget::kTargetCount,
      LoginMetricsRecorder::LoginScreenUserClickTarget::kAddUserButton,
      LoginMetricsRecorder::OobeUserClickTarget::kTargetCount},
-    // |kCloseNoteButton|
-    {LoginMetricsRecorder::ShelfButtonClickTarget::kCloseNoteButton,
-     LoginMetricsRecorder::LockScreenUserClickTarget::kCloseNoteButton,
-     LoginMetricsRecorder::LoginScreenUserClickTarget::kTargetCount,
-     LoginMetricsRecorder::OobeUserClickTarget::kTargetCount},
     // |kParentAccessButton|
     {LoginMetricsRecorder::ShelfButtonClickTarget::kParentAccessButton,
      LoginMetricsRecorder::LockScreenUserClickTarget::kParentAccessButton,
@@ -133,11 +128,6 @@ const TrayClickMapping kTrayTargets[] = {
      LoginMetricsRecorder::LockScreenUserClickTarget::kNotificationTray,
      LoginMetricsRecorder::LoginScreenUserClickTarget::kTargetCount,
      LoginMetricsRecorder::OobeUserClickTarget::kTargetCount},
-    // |kTrayActionNoteButton|
-    {LoginMetricsRecorder::TrayClickTarget::kTrayActionNoteButton,
-     LoginMetricsRecorder::LockScreenUserClickTarget::kTrayActionNoteButton,
-     LoginMetricsRecorder::LoginScreenUserClickTarget::kTargetCount,
-     LoginMetricsRecorder::OobeUserClickTarget::kTargetCount},
 };
 
 bool ShouldRecordMetrics() {
@@ -180,13 +170,10 @@ void LoginMetricsRecorder::RecordUserTrayClick(TrayClickTarget target) {
         LogUserClickInOobe(el.oobe);
         return;
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Unexpected session state: " << static_cast<int>(state);
-        return;
+        NOTREACHED() << "Unexpected session state: " << static_cast<int>(state);
     }
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Tray click target wasn't found in the |kTrayTargets|.";
+  NOTREACHED() << "Tray click target wasn't found in the |kTrayTargets|.";
 }
 
 void LoginMetricsRecorder::RecordUserShelfButtonClick(
@@ -217,13 +204,10 @@ void LoginMetricsRecorder::RecordUserShelfButtonClick(
         LogUserClickInOobe(el.oobe);
         return;
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Unexpected session state: " << static_cast<int>(state);
-        return;
+        NOTREACHED() << "Unexpected session state: " << static_cast<int>(state);
     }
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Shelf click target wasn't found in the |kShelfTargets|.";
+  NOTREACHED() << "Shelf click target wasn't found in the |kShelfTargets|.";
 }
 
 }  // namespace ash

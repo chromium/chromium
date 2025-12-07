@@ -2,20 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
@@ -64,12 +59,12 @@ struct FeatureSessionTypesTestData {
 
 class TestExtensionAPI : public ExtensionAPI {
  public:
-  TestExtensionAPI() {}
+  TestExtensionAPI() = default;
 
   TestExtensionAPI(const TestExtensionAPI&) = delete;
   TestExtensionAPI& operator=(const TestExtensionAPI&) = delete;
 
-  ~TestExtensionAPI() override {}
+  ~TestExtensionAPI() override = default;
 
   void add_fake_schema(const std::string& name) { fake_schemas_.insert(name); }
 
@@ -96,14 +91,15 @@ TEST(ExtensionAPITest, Creation) {
 
   ExtensionAPI empty_instance;
 
-  struct {
+  struct TestData {
     raw_ptr<ExtensionAPI> api;
     bool expect_populated;
-  } test_data[] = {
-    { shared_instance, true },
-    { new_instance.get(), true },
-    { &empty_instance, false }
   };
+  auto test_data = std::to_array<TestData>({
+      {shared_instance, true},
+      {new_instance.get(), true},
+      {&empty_instance, false},
+  });
 
   for (size_t i = 0; i < std::size(test_data); ++i) {
     EXPECT_EQ(test_data[i].expect_populated,
@@ -112,16 +108,19 @@ TEST(ExtensionAPITest, Creation) {
 }
 
 TEST(ExtensionAPITest, SplitDependencyName) {
-  struct {
+  struct TestData {
     std::string input;
     std::string expected_feature_type;
     std::string expected_feature_name;
-  } test_data[] = {{"", "api", ""},  // assumes "api" when no type is present
-                   {"foo", "api", "foo"},
-                   {"foo:", "foo", ""},
-                   {":foo", "", "foo"},
-                   {"foo:bar", "foo", "bar"},
-                   {"foo:bar.baz", "foo", "bar.baz"}};
+  };
+  auto test_data = std::to_array<TestData>({
+      {"", "api", ""},  // assumes "api" when no type is present
+      {"foo", "api", "foo"},
+      {"foo:", "foo", ""},
+      {":foo", "", "foo"},
+      {"foo:bar", "foo", "bar"},
+      {"foo:bar.baz", "foo", "bar.baz"},
+  });
 
   for (size_t i = 0; i < std::size(test_data); ++i) {
     std::string feature_type;
@@ -134,12 +133,13 @@ TEST(ExtensionAPITest, SplitDependencyName) {
 }
 
 TEST(ExtensionAPITest, APIFeatures) {
-  struct {
+  struct TestData {
     std::string api_full_name;
     bool expect_is_available;
     mojom::ContextType context;
     GURL url;
-  } test_data[] = {
+  };
+  auto test_data = std::to_array<TestData>({
       {"test1", false, mojom::ContextType::kWebPage, GURL()},
       {"test1", true, mojom::ContextType::kPrivilegedExtension, GURL()},
       {"test1", true, mojom::ContextType::kUnprivilegedExtension, GURL()},
@@ -235,7 +235,8 @@ TEST(ExtensionAPITest, APIFeatures) {
       {"parent3.noparent.child", true, mojom::ContextType::kPrivilegedExtension,
        GURL()},
       {"parent3.noparent.child", true,
-       mojom::ContextType::kUnprivilegedExtension, GURL()}};
+       mojom::ContextType::kUnprivilegedExtension, GURL()},
+  });
 
   FeatureProvider api_feature_provider;
   AddUnittestAPIFeatures(&api_feature_provider);
@@ -334,13 +335,14 @@ TEST(ExtensionAPITest, IsAnyFeatureAvailableToContext) {
                            .Set("manifest_version", 2))
           .Build();
 
-  struct {
+  struct TestData {
     std::string api_full_name;
     bool expect_is_available;
     mojom::ContextType context;
     raw_ptr<const Extension> extension;
     GURL url;
-  } test_data[] = {
+  };
+  auto test_data = std::to_array<TestData>({
       {"test1", false, mojom::ContextType::kWebPage, nullptr, GURL()},
       {"test1", true, mojom::ContextType::kUnprivilegedExtension, nullptr,
        GURL()},
@@ -375,7 +377,7 @@ TEST(ExtensionAPITest, IsAnyFeatureAvailableToContext) {
        GURL("chrome-untrusted://other-test/")},
       {"test11", false, mojom::ContextType::kWebUi, nullptr,
        GURL("chrome://test/")},
-  };
+  });
 
   FeatureProvider api_feature_provider;
   AddUnittestAPIFeatures(&api_feature_provider);
@@ -493,7 +495,7 @@ scoped_refptr<Extension> CreateExtensionWithPermissions(
     manifest.Set("permissions", std::move(permissions_list));
   }
 
-  std::string error;
+  std::u16string error;
   scoped_refptr<Extension> extension(
       Extension::Create(base::FilePath(), mojom::ManifestLocation::kUnpacked,
                         manifest, Extension::NO_FLAGS, &error));
@@ -579,7 +581,7 @@ scoped_refptr<Extension> CreateHostedApp() {
                          base::Value(base::Value::Type::LIST));
   values.SetByDottedPath(manifest_keys::kLaunchWebURL,
                          "http://www.example.com");
-  std::string error;
+  std::u16string error;
   scoped_refptr<Extension> extension(
       Extension::Create(base::FilePath(), mojom::ManifestLocation::kInternal,
                         values, Extension::NO_FLAGS, &error));
@@ -607,7 +609,7 @@ scoped_refptr<Extension> CreatePackagedAppWithPermissions(
     manifest.Set("permissions", std::move(permissions_list));
   }
 
-  std::string error;
+  std::u16string error;
   scoped_refptr<Extension> extension(
       Extension::Create(base::FilePath(), mojom::ManifestLocation::kInternal,
                         manifest, Extension::NO_FLAGS, &error));
@@ -796,22 +798,23 @@ TEST(ExtensionAPITest, URLMatching) {
 }
 
 TEST(ExtensionAPITest, GetAPINameFromFullName) {
-  struct {
+  struct TestData {
     std::string input;
     std::string api_name;
     std::string child_name;
-  } test_data[] = {
-    { "", "", "" },
-    { "unknown", "", "" },
-    { "bookmarks", "bookmarks", "" },
-    { "bookmarks.", "bookmarks", "" },
-    { ".bookmarks", "", "" },
-    { "bookmarks.create", "bookmarks", "create" },
-    { "bookmarks.create.", "bookmarks", "create." },
-    { "bookmarks.create.monkey", "bookmarks", "create.monkey" },
-    { "bookmarkManagerPrivate", "bookmarkManagerPrivate", "" },
-    { "bookmarkManagerPrivate.copy", "bookmarkManagerPrivate", "copy" }
   };
+  auto test_data = std::to_array<TestData>({
+      {"", "", ""},
+      {"unknown", "", ""},
+      {"bookmarks", "bookmarks", ""},
+      {"bookmarks.", "bookmarks", ""},
+      {".bookmarks", "", ""},
+      {"bookmarks.create", "bookmarks", "create"},
+      {"bookmarks.create.", "bookmarks", "create."},
+      {"bookmarks.create.monkey", "bookmarks", "create.monkey"},
+      {"bookmarkManagerPrivate", "bookmarkManagerPrivate", ""},
+      {"bookmarkManagerPrivate.copy", "bookmarkManagerPrivate", "copy"},
+  });
 
   std::unique_ptr<ExtensionAPI> api(
       ExtensionAPI::CreateWithDefaultConfiguration());
@@ -834,10 +837,12 @@ TEST(ExtensionAPITest, DefaultConfigurationFeatures) {
       static_cast<const SimpleFeature*>(
           api->GetFeatureDependency("api:browserAction.setTitle"));
 
-  struct {
+  struct TestData {
     raw_ptr<const SimpleFeature> feature;
     // TODO(aa): More stuff to test over time.
-  } test_data[] = {{browser_action}, {browser_action_set_title}};
+  };
+  auto test_data =
+      std::to_array<TestData>({{browser_action}, {browser_action_set_title}});
 
   for (size_t i = 0; i < std::size(test_data); ++i) {
     const SimpleFeature* feature = test_data[i].feature;
@@ -941,10 +946,11 @@ TEST(ExtensionAPITest, TypesHaveNamespace) {
 
 // Tests API availability with an empty manifest.
 TEST(ExtensionAPITest, NoPermissions) {
-  const struct {
+  struct Tests {
     const char* permission_name;
     bool expect_success;
-  } kTests[] = {
+  };
+  const auto kTests = std::to_array<Tests>({
       // Test default module/package permission.
       {"extension", true},
       {"i18n", true},
@@ -983,7 +989,7 @@ TEST(ExtensionAPITest, NoPermissions) {
       // But other functions in those modules do.
       {"management.getPermissionWarningsById", false},
       {"runtime.connectNative", false},
-  };
+  });
 
   std::unique_ptr<ExtensionAPI> extension_api(
       ExtensionAPI::CreateWithDefaultConfiguration());

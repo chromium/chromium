@@ -36,7 +36,7 @@ const char kBluetoothAddress5[] = "01:01:01:01:01:05";
 }  // namespace
 
 class MultiDeviceSetupEligibleHostDevicesProviderImplTest
-    : public ::testing::TestWithParam<std::tuple<bool, bool, bool, bool>>,
+    : public ::testing::TestWithParam<std::tuple<bool, bool>>,
       public EligibleHostDevicesProvider::Observer {
  public:
   MultiDeviceSetupEligibleHostDevicesProviderImplTest(
@@ -56,8 +56,6 @@ class MultiDeviceSetupEligibleHostDevicesProviderImplTest
     std::vector<base::test::FeatureRef> disabled_features;
     use_get_devices_activity_status_ = std::get<0>(GetParam());
     use_connectivity_status_ = std::get<1>(GetParam());
-    always_use_active_eligible_devices_ = std::get<2>(GetParam());
-    use_last_activity_time_to_dedup_ = std::get<3>(GetParam());
     if (use_get_devices_activity_status_) {
       enabled_features.push_back(features::kCryptAuthV2DeviceActivityStatus);
     } else {
@@ -69,20 +67,6 @@ class MultiDeviceSetupEligibleHostDevicesProviderImplTest
     } else {
       disabled_features.push_back(
           features::kCryptAuthV2DeviceActivityStatusUseConnectivity);
-    }
-    if (always_use_active_eligible_devices_) {
-      enabled_features.push_back(
-          features::kCryptAuthV2AlwaysUseActiveEligibleHosts);
-    } else {
-      disabled_features.push_back(
-          features::kCryptAuthV2AlwaysUseActiveEligibleHosts);
-    }
-    if (use_last_activity_time_to_dedup_) {
-      enabled_features.push_back(
-          features::kCryptAuthV2DedupDeviceLastActivityTime);
-    } else {
-      disabled_features.push_back(
-          features::kCryptAuthV2DedupDeviceLastActivityTime);
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
@@ -161,18 +145,6 @@ class MultiDeviceSetupEligibleHostDevicesProviderImplTest
 
   bool use_connectivity_status() const { return use_connectivity_status_; }
 
-  // When the flags is enabled, GetEligibleHostDevices() is the same as
-  // GetEligibleActiveHostDevices() without the connectivity status.
-  bool always_use_active_eligible_devices() const {
-    return always_use_active_eligible_devices_;
-  }
-
-  // When the flag is enabled, only one of devices with same last_activity_time
-  // will be kept.
-  bool use_last_activity_time_to_dedup() const {
-    return use_last_activity_time_to_dedup_;
-  }
-
   bool notified_eligible_devices_synced() const {
     return notified_eligible_devices_synced_;
   }
@@ -186,8 +158,6 @@ class MultiDeviceSetupEligibleHostDevicesProviderImplTest
 
   bool use_get_devices_activity_status_;
   bool use_connectivity_status_;
-  bool always_use_active_eligible_devices_;
-  bool use_last_activity_time_to_dedup_;
   bool notified_eligible_devices_synced_ = false;
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -340,53 +310,20 @@ TEST_P(MultiDeviceSetupEligibleHostDevicesProviderImplTest, Sorting) {
     // GetDevicesActivityStatus), then by |last_update_time_millis| (from
     // RemoteDevice).
     if (use_connectivity_status()) {
-      if (use_last_activity_time_to_dedup()) {
-        // If the kCryptAuthV2DedupDeviceLastActivityTime flag is enabled, only
-        // the first one of devices sharing same last_activity_time will be
-        // kept, sorted by online/offline status, last_update_time, and
-        // last_update_time_millis.
-        EXPECT_EQ(3u, eligible_active_devices.size());
-        EXPECT_EQ(test_devices()[2], eligible_active_devices[0].remote_device);
-        EXPECT_EQ(test_devices()[3], eligible_active_devices[1].remote_device);
-        EXPECT_EQ(test_devices()[1], eligible_active_devices[2].remote_device);
-      } else {
-        EXPECT_EQ(5u, eligible_active_devices.size());
-        EXPECT_EQ(test_devices()[2], eligible_active_devices[0].remote_device);
-        EXPECT_EQ(test_devices()[3], eligible_active_devices[1].remote_device);
-        EXPECT_EQ(test_devices()[0], eligible_active_devices[2].remote_device);
-        EXPECT_EQ(test_devices()[4], eligible_active_devices[3].remote_device);
-        EXPECT_EQ(test_devices()[1], eligible_active_devices[4].remote_device);
-
-        // Verify connectivity statuses.
-        EXPECT_EQ(cryptauthv2::ConnectivityStatus::ONLINE,
-                  eligible_active_devices[0].connectivity_status);
-        EXPECT_EQ(cryptauthv2::ConnectivityStatus::ONLINE,
-                  eligible_active_devices[1].connectivity_status);
-        EXPECT_EQ(cryptauthv2::ConnectivityStatus::ONLINE,
-                  eligible_active_devices[2].connectivity_status);
-        EXPECT_EQ(cryptauthv2::ConnectivityStatus::ONLINE,
-                  eligible_active_devices[3].connectivity_status);
-        EXPECT_EQ(cryptauthv2::ConnectivityStatus::OFFLINE,
-                  eligible_active_devices[4].connectivity_status);
-      }
+      // Only the first one of devices sharing same last_activity_time will be
+      // kept, sorted by online/offline status, last_update_time, and
+      // last_update_time_millis.
+      EXPECT_EQ(3u, eligible_active_devices.size());
+      EXPECT_EQ(test_devices()[2], eligible_active_devices[0].remote_device);
+      EXPECT_EQ(test_devices()[3], eligible_active_devices[1].remote_device);
+      EXPECT_EQ(test_devices()[1], eligible_active_devices[2].remote_device);
     } else {
-      if (use_last_activity_time_to_dedup()) {
-        // If the kCryptAuthV2DedupDeviceLastActivityTime flag is enabled, only
-        // the first one of devices sharing same last_activity_time will be
-        // kept, sorted by last_update_time and last_update_time_millis.
-        EXPECT_EQ(3u, eligible_active_devices.size());
-        EXPECT_EQ(test_devices()[2], eligible_active_devices[0].remote_device);
-        EXPECT_EQ(test_devices()[1], eligible_active_devices[1].remote_device);
-        EXPECT_EQ(test_devices()[3], eligible_active_devices[2].remote_device);
-      } else {
-        EXPECT_EQ(5u, eligible_active_devices.size());
-        // Ignore online/offline statuses during sorting.
-        EXPECT_EQ(test_devices()[2], eligible_active_devices[0].remote_device);
-        EXPECT_EQ(test_devices()[1], eligible_active_devices[1].remote_device);
-        EXPECT_EQ(test_devices()[3], eligible_active_devices[2].remote_device);
-        EXPECT_EQ(test_devices()[0], eligible_active_devices[3].remote_device);
-        EXPECT_EQ(test_devices()[4], eligible_active_devices[4].remote_device);
-      }
+      // Only the first one of devices sharing same last_activity_time will be
+      // kept, sorted by last_update_time and last_update_time_millis.
+      EXPECT_EQ(3u, eligible_active_devices.size());
+      EXPECT_EQ(test_devices()[2], eligible_active_devices[0].remote_device);
+      EXPECT_EQ(test_devices()[1], eligible_active_devices[1].remote_device);
+      EXPECT_EQ(test_devices()[3], eligible_active_devices[2].remote_device);
     }
   } else {
     // Sorting solely based on RemoteDevice's |last_update_time_millis|.
@@ -402,12 +339,8 @@ TEST_P(MultiDeviceSetupEligibleHostDevicesProviderImplTest, Sorting) {
     }
   }
 
-  if (always_use_active_eligible_devices()) {
-    for (size_t i = 0; i < eligible_active_devices.size(); i++) {
-      EXPECT_EQ(eligible_devices[i], eligible_active_devices[i].remote_device);
-    }
-  } else {
-    EXPECT_EQ(5u, eligible_devices.size());
+  for (size_t i = 0; i < eligible_active_devices.size(); i++) {
+    EXPECT_EQ(eligible_devices[i], eligible_active_devices[i].remote_device);
   }
 
   // Verify connectivity statuses.
@@ -505,12 +438,10 @@ TEST_P(MultiDeviceSetupEligibleHostDevicesProviderImplTest,
   EXPECT_EQ(test_devices()[0], eligible_active_devices[1].remote_device);
   EXPECT_EQ(test_devices()[4], eligible_active_devices[2].remote_device);
 
-  if (always_use_active_eligible_devices()) {
-    multidevice::RemoteDeviceRefList eligible_devices =
-        provider()->GetEligibleHostDevices();
-    for (size_t i = 0; i < eligible_active_devices.size(); i++) {
-      EXPECT_EQ(eligible_devices[i], eligible_active_devices[i].remote_device);
-    }
+  multidevice::RemoteDeviceRefList eligible_devices =
+      provider()->GetEligibleHostDevices();
+  for (size_t i = 0; i < eligible_active_devices.size(); i++) {
+    EXPECT_EQ(eligible_devices[i], eligible_active_devices[i].remote_device);
   }
 
   EXPECT_TRUE(notified_eligible_devices_synced());
@@ -556,8 +487,6 @@ TEST_P(MultiDeviceSetupEligibleHostDevicesProviderImplTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          MultiDeviceSetupEligibleHostDevicesProviderImplTest,
                          ::testing::Combine(::testing::Bool(),
-                                            ::testing::Bool(),
-                                            ::testing::Bool(),
                                             ::testing::Bool()));
 
 }  // namespace multidevice_setup

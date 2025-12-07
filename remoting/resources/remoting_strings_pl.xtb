@@ -28,6 +28,7 @@ Jeśli opcja „<ph name="SERVICE_SCRIPT_NAME" />” jest już zaznaczona, odzna
 <translation id="2329392777730037872">Nie udało się otworzyć <ph name="URL" /> na kliencie.</translation>
 <translation id="2359808026110333948">Dalej</translation>
 <translation id="2366718077645204424">Nie można połączyć się z hostem. Problem prawdopodobnie wynika z konfiguracji Twojej sieci.</translation>
+<translation id="242591256144136845">Copyright 2025 Google LLC. Wszelkie prawa zastrzeżone.</translation>
 <translation id="2504109125669302160">Przyznaj uprawnienie „Ułatwienia dostępu” usłudze <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Połączono z: <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Chcesz udostępnić ten komputer innemu użytkownikowi, by mógł przeglądać jego zawartość i sterować nim?</translation>
@@ -39,6 +40,7 @@ Jeśli opcja „<ph name="SERVICE_SCRIPT_NAME" />” jest już zaznaczona, odzna
 <translation id="2758123043070977469">Podczas uwierzytelniania wystąpił problem. Zaloguj się ponownie.</translation>
 <translation id="2803375539583399270">Wpisz kod PIN</translation>
 <translation id="2919669478609886916">Obecnie udostępniasz ten komputer innemu użytkownikowi. Czy chcesz kontynuować udostępnianie?</translation>
+<translation id="2929683002824598593">Udostępnij urządzenie</translation>
 <translation id="2939145106548231838">Host wymaga uwierzytelnienia</translation>
 <translation id="3027681561976217984">Tryb dotykowy</translation>
 <translation id="3106379468611574572">Komputer zdalny nie odpowiada na żądania połączenia. Sprawdź, czy jest on podłączony do internetu i spróbuj ponownie.</translation>
@@ -91,6 +93,7 @@ Jeśli opcja „<ph name="SERVICE_SCRIPT_NAME" />” jest już zaznaczona, odzna
 <translation id="4987330545941822761">Pulpit zdalny Chrome nie może określić przeglądarki do lokalnego otwierania adresów URL. Wybierz ją z listy poniżej.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (offline)</translation>
 <translation id="507204348399810022">Na pewno chcesz wyłączyć połączenia zdalne z: <ph name="HOSTNAME" />?</translation>
+<translation id="5095424396646120601">Zgłaszanie awarii</translation>
 <translation id="5170982930780719864">Nieprawidłowy identyfikator hosta.</translation>
 <translation id="5204575267916639804">Najczęstsze pytania</translation>
 <translation id="5222676887888702881">Wyloguj się</translation>
@@ -116,10 +119,12 @@ Jeśli opcja „<ph name="SERVICE_SCRIPT_NAME" />” jest już zaznaczona, odzna
 <translation id="6178645564515549384">Host natywnego przesyłania komunikatów do pomocy zdalnej</translation>
 <translation id="618120821413932081">Zaktualizuj rozdzielczość pulpitu zdalnego, by pasowała do okna</translation>
 <translation id="6223301979382383752">Otwórz preferencje rejestrowania zawartości ekranu</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> prosi o dostęp umożliwiający wyświetlanie Twojego ekranu oraz sterowanie Twoją klawiaturą i myszą. Czy chcesz udostępnić swoje urządzenie?</translation>
 <translation id="6284412385303060032">Host uruchomiony na ekranie logowania konsoli został zamknięty, by umożliwić włączenie trybu kurtyny, przełączając się na hosta uruchomionego w sesji danego użytkownika.</translation>
 <translation id="6542902059648396432">Zgłoś problem…</translation>
 <translation id="6583902294974160967">Pomoc</translation>
 <translation id="6612717000975622067">Wyślij Ctrl-Alt-Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{Jeśli nie podejmiesz żadnych działań, urządzenie zacznie automatycznie udostępniać dane za # sekundę.}few{Jeśli nie podejmiesz żadnych działań, urządzenie zacznie automatycznie udostępniać dane za # sekundy.}many{Jeśli nie podejmiesz żadnych działań, urządzenie zacznie automatycznie udostępniać dane za # sekund.}other{Jeśli nie podejmiesz żadnych działań, urządzenie zacznie automatycznie udostępniać dane za # sekundy.}}</translation>
 <translation id="6654753848497929428">Udostępnij</translation>
 <translation id="677755392401385740">Uruchomiono host dla użytkownika: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Aplikacja pomocnicza do otwierania adresów URL na kliencie <ph name="PRODUCT_NAME" /></translation>
@@ -133,6 +138,7 @@ Jeśli opcja „<ph name="SERVICE_SCRIPT_NAME" />” jest już zaznaczona, odzna
 <translation id="7067321367069083429">Ekran działa jak ekran dotykowy</translation>
 <translation id="7116737094673640201">Witamy w Pulpicie zdalnym Chrome</translation>
 <translation id="7144878232160441200">Spróbuj jeszcze raz</translation>
+<translation id="7298392173540380852">Copyright 2025 Autorzy Chromium. Wszelkie prawa zastrzeżone.</translation>
 <translation id="7312846573060934304">Host jest offline.</translation>
 <translation id="7319983568955948908">Zatrzymaj udostępnianie</translation>
 <translation id="7359298090707901886">W wybranej przeglądarce nie można otwierać adresów URL na komputerze lokalnym.</translation>
@@ -149,7 +155,6 @@ Jeśli opcja „<ph name="SERVICE_SCRIPT_NAME" />” jest już zaznaczona, odzna
 <translation id="7693372326588366043">Odśwież listę hostów</translation>
 <translation id="7714222945760997814">Zgłoś to</translation>
 <translation id="7868137160098754906">Wpisz kod PIN komputera zdalnego.</translation>
-<translation id="7881455334687220899">Copyright 2024 Autorzy Chromium. Wszelkie prawa zastrzeżone.</translation>
 <translation id="7895403300744144251">Zasady bezpieczeństwa obowiązujące na komputerze zdalnym nie zezwalają na nawiązywanie połączeń z Twojego konta.</translation>
 <translation id="7936528439960309876">Zadokuj do prawej</translation>
 <translation id="7970576581263377361">Uwierzytelnianie nie powiodło się. Zaloguj się ponownie do Chromium.</translation>
@@ -181,7 +186,6 @@ Jeśli opcja „<ph name="SERVICE_SCRIPT_NAME" />” jest już zaznaczona, odzna
 <translation id="8747048596626351634">Sesja została zerwana lub nie udało się jej rozpocząć. Jeśli sesja ~/.chrome-remote-desktop-session istnieje na komputerze zdalnym, upewnij się, że spowodowała ona uruchomienie długotrwałego procesu na pierwszym planie, takiego jak środowisko pulpitu lub menedżer okien.</translation>
 <translation id="8804164990146287819">Polityka prywatności</translation>
 <translation id="8906511416443321782">Aby przechwytywać dźwięk i przesyłać go do klienta Pulpitu zdalnego Chrome, wymagany jest dostęp do mikrofonu.</translation>
-<translation id="9042277333359847053">Copyright 2024 Google LLC. Wszelkie prawa zastrzeżone.</translation>
 <translation id="9111855907838866522">Masz połączenie z urządzeniem zdalnym. Aby otworzyć menu, kliknij ekran czterema palcami.</translation>
 <translation id="9126115402994542723">Nie pytaj ponownie o kod PIN, gdy bieżące urządzenie będzie łączyć się z tym hostem.</translation>
 <translation id="916856682307586697">Uruchom domyślną sesję X</translation>

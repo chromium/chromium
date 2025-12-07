@@ -14,7 +14,7 @@ namespace gtk {
 
 class GtkEventLoopX11 {
  public:
-  explicit GtkEventLoopX11(GtkWidget* widget);
+  GtkEventLoopX11();
   ~GtkEventLoopX11();
 
   GtkEventLoopX11(const GtkEventLoopX11&) = delete;
@@ -22,7 +22,6 @@ class GtkEventLoopX11 {
 
  private:
   // This state is only used on GTK4.
-  raw_ptr<GdkSurface> surface_ = nullptr;
   ScopedGSignal signal_;
 
   // Only called on GTK3.

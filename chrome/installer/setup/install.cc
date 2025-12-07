@@ -28,8 +28,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/win/shortcut.h"
-#include "base/win/windows_version.h"
-#include "chrome/common/chrome_constants.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/setup/install_params.h"
@@ -88,15 +86,14 @@ void LogShortcutOperation(ShellUtil::ShortcutLocation location,
       message.append("Start menu ");
       break;
     case ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_DIR_DEPRECATED:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_APPS_DIR:
       message.append(
           "Start menu/" +
           base::WideToUTF8(InstallUtil::GetChromeAppsShortcutDirName()) + " ");
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   message.push_back('"');
@@ -303,8 +300,9 @@ bool HasVisualElementAssets(const base::FilePath& base_path,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 void LaunchOSUpdateHandlerIfNeeded(const InstallerState& installer_state,
                                    const std::wstring& installed_version) {
-  auto os_update_handler_cmd = GetOsUpdateHandlerCommand(
-      installer_state.target_path(), installed_version);
+  auto os_update_handler_cmd =
+      GetOsUpdateHandlerCommand(installer_state, installed_version,
+                                *base::CommandLine::ForCurrentProcess());
   if (!os_update_handler_cmd.has_value()) {
     return;
   }
@@ -349,23 +347,27 @@ bool CreateVisualElementsManifest(const base::FilePath& src_path,
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Returns a CommandLine to run if os_update_handler.exe should be run,
-// i.e.. a Windows update has been detected, absl::nullopt otherwise.
-// Note that the file version of kernel32.dll is used as a proxy for the Windows
-// version to avoid issues when compatibility mode is set.
+// i.e. a Windows update has been detected; null otherwise.
 std::optional<base::CommandLine> GetOsUpdateHandlerCommand(
-    const base::FilePath& target_path,
-    const std::wstring& installed_version) {
-  const auto current_os_version = base::ASCIIToWide(
-      base::win::OSInfo::GetInstance()->Kernel32BaseVersion().GetString());
-  const auto last_os_version = UpdateLastWindowsVersion(current_os_version);
-  if (last_os_version.empty() || last_os_version == current_os_version) {
+    const InstallerState& installer_state,
+    const std::wstring& installed_version,
+    const base::CommandLine& command_line) {
+  const auto args = command_line.GetArgs();
+  if (args.size() != 1) {
     return std::nullopt;
   }
-  base::CommandLine os_update_handler_cmd(
-      target_path.Append(installed_version).Append(kOsUpdateHandlerExe));
+  // Use the Windows version update string set by Omaha on the command line
+  // as the version update string to pass to os_update_handler.exe.
+  base::CommandLine os_update_handler_cmd(installer_state.target_path()
+                                              .Append(installed_version)
+                                              .Append(kOsUpdateHandlerExe));
   InstallUtil::AppendModeAndChannelSwitches(&os_update_handler_cmd);
-  os_update_handler_cmd.AppendArgNative(
-      base::StrCat({last_os_version, L"-", current_os_version}));
+  // args[0] has the form "<prev_windows_version>-<new_windows_version>".
+  os_update_handler_cmd.AppendArgNative(args[0]);
+
+  if (installer_state.system_install()) {
+    os_update_handler_cmd.AppendSwitch(installer::switches::kSystemLevel);
+  }
   return os_update_handler_cmd;
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -470,13 +472,8 @@ void CreateOrUpdateShortcuts(const base::FilePath& target,
                                  start_menu_properties, shortcut_operation);
 }
 
-// Registers Chrome on this machine.
-// If |make_chrome_default|, also attempts to make Chrome default where doing so
-// requires no more user interaction than a UAC prompt. In practice, this means
-// on versions of Windows prior to Windows 8.
-// |version| the current version of this install.
+// Registers Chrome on the system.
 void RegisterChromeOnMachine(const InstallerState& installer_state,
-                             bool make_chrome_default,
                              const base::Version& version) {
   // Try to add Chrome to Media Player shim inclusion list. We don't do any
   // error checking here because this operation will fail if user doesn't
@@ -488,20 +485,11 @@ void RegisterChromeOnMachine(const InstallerState& installer_state,
   if (installer_state.system_install())
     RegisterEventLogProvider(installer_state.target_path(), version);
 
-  // Make Chrome the default browser if desired when possible. Otherwise, only
-  // register it with Windows.
+  // Register Chrome as a browser with Windows.
   const base::FilePath chrome_exe(
       installer_state.target_path().Append(kChromeExe));
   VLOG(1) << "Registering Chrome as browser: " << chrome_exe.value();
-  if (make_chrome_default && install_static::SupportsSetAsDefaultBrowser() &&
-      ShellUtil::CanMakeChromeDefaultUnattended()) {
-    int level = ShellUtil::CURRENT_USER;
-    if (installer_state.system_install())
-      level = level | ShellUtil::SYSTEM_LEVEL;
-    ShellUtil::MakeChromeDefault(level, chrome_exe, true);
-  } else {
-    ShellUtil::RegisterChromeBrowserBestEffort(chrome_exe);
-  }
+  ShellUtil::RegisterChromeBrowserBestEffort(chrome_exe);
 }
 
 // Run a child process that will create/update a shortcut for an
@@ -608,27 +596,10 @@ InstallStatus InstallOrUpdateProduct(const InstallParams& install_params,
                           : std::nullopt,
         install_level, install_operation);
 
-    // Register Chrome and, if requested, make Chrome the default browser.
+    // Register Chrome on the system.
     installer_state.SetStage(REGISTERING_CHROME);
 
-    bool make_chrome_default = false;
-    prefs.GetBool(initial_preferences::kMakeChromeDefault,
-                  &make_chrome_default);
-
-    // If this is not the user's first Chrome install, but they have chosen
-    // Chrome to become their default browser on the download page, we must
-    // force it here because the initial preferences file will not get copied
-    // into the build.
-    bool force_chrome_default_for_user = false;
-    if (result == NEW_VERSION_UPDATED || result == INSTALL_REPAIRED ||
-        result == OLD_VERSION_DOWNGRADE || result == IN_USE_DOWNGRADE) {
-      prefs.GetBool(initial_preferences::kMakeChromeDefaultForUser,
-                    &force_chrome_default_for_user);
-    }
-
-    RegisterChromeOnMachine(
-        installer_state, make_chrome_default || force_chrome_default_for_user,
-        new_version);
+    RegisterChromeOnMachine(installer_state, new_version);
 
     if (!installer_state.system_install()) {
       UpdateDefaultBrowserBeaconForPath(
@@ -695,7 +666,7 @@ void HandleOsUpgradeForBrowser(const InstallerState& installer_state,
       INSTALL_SHORTCUT_REPLACE_EXISTING);
 
   // Adapt Chrome registrations to this new OS.
-  RegisterChromeOnMachine(installer_state, false, installed_version);
+  RegisterChromeOnMachine(installer_state, installed_version);
 
   // Active Setup registrations are sometimes lost across OS update, make sure
   // they're back in place. Note: when Active Setup registrations in HKLM are

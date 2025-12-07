@@ -2,31 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome-untrusted://lens/lens_overlay_app.js';
+import 'chrome-untrusted://lens-overlay/lens_overlay_app.js';
 
-import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
-import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
-import type {CursorTooltipElement} from 'chrome-untrusted://lens/cursor_tooltip.js';
-import type {LensPageRemote} from 'chrome-untrusted://lens/lens.mojom-webui.js';
-import type {LensOverlayAppElement} from 'chrome-untrusted://lens/lens_overlay_app.js';
-import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_overlay.js';
+import {BrowserProxyImpl} from 'chrome-untrusted://lens-overlay/browser_proxy.js';
+import type {CursorTooltipElement} from 'chrome-untrusted://lens-overlay/cursor_tooltip.js';
+import type {LensPageRemote} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
+import type {LensOverlayAppElement} from 'chrome-untrusted://lens-overlay/lens_overlay_app.js';
+import type {SelectionOverlayElement} from 'chrome-untrusted://lens-overlay/selection_overlay.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
-import {flushTasks, waitBeforeNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
 
+import {fakeScreenshotBitmap, waitForScreenshotRendered} from '../utils/image_utils.js';
 import {createObject} from '../utils/object_utils.js';
 import {simulateStartDrag} from '../utils/selection_utils.js';
 import {createLine, createParagraph, createText, createWord} from '../utils/text_utils.js';
 
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
-
-// Default screenshot data URI is a 1600x1 pink rectangle.
-const SCREENSHOT_DATA_URI =
-    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABkAAAAABCAYAAACG2GJUAAAA' +
-    'AXNSR0IArs4c6QAAADVJREFUWEft0AENAAAMAiDfP7T2+CAC17TBgAEDBgwYMGDAgAEDBg' +
-    'wYMGDAgAEDBgwYMPBoYOZdAv///pRmAAAAAElFTkSuQmCC';
 
 function isRendered(el: HTMLElement) {
   return isVisible(el) && getComputedStyle(el).visibility !== 'hidden';
@@ -64,26 +58,23 @@ suite('OverlayCursor', () => {
 
     lensOverlayElement = document.createElement('lens-overlay-app');
     document.body.appendChild(lensOverlayElement);
-    await waitBeforeNextRender(lensOverlayElement);
+    await waitAfterNextRender(lensOverlayElement);
 
     selectionOverlayElement = lensOverlayElement.$.selectionOverlay;
     cursorTooltip = lensOverlayElement.$.cursorTooltip;
     tooltipEl = cursorTooltip.$.cursorTooltip;
 
     // Send a fake screenshot to unhide the selection overlay.
-    const dataUriBytes = new TextEncoder().encode(SCREENSHOT_DATA_URI);
-    callbackRouterRemote.screenshotDataUriReceived({
-      data: {
-        bytes: Array.from(dataUriBytes),
-      } as BigBuffer,
-    });
+    testBrowserProxy.page.screenshotDataReceived(
+        fakeScreenshotBitmap(), /*isSidePanelOpen=*/ false);
+    await waitForScreenshotRendered(selectionOverlayElement);
 
     // Since the size of the Selection Overlay is based on the screenshot which
     // is not loaded in the test, we need to force the overlay to take up the
     // viewport.
     selectionOverlayElement.$.selectionOverlay.style.width = '100%';
     selectionOverlayElement.$.selectionOverlay.style.height = '100%';
-    await waitBeforeNextRender(lensOverlayElement);
+    await waitAfterNextRender(lensOverlayElement);
 
     await addWords();
     await addObjects();
@@ -140,49 +131,20 @@ suite('OverlayCursor', () => {
     };
     el.dispatchEvent(new PointerEvent('pointerenter'));
     el.dispatchEvent(new PointerEvent('pointermove', moveDetails));
-    return flushTasks();
+    return waitAfterNextRender(lensOverlayElement);
   }
 
   async function simulateUnhover(el: Element) {
     el.dispatchEvent(new PointerEvent('pointerleave'));
-    return flushTasks();
+    return waitAfterNextRender(lensOverlayElement);
   }
 
   async function simulateEnterViewport() {
     const appContainerEl =
         lensOverlayElement.shadowRoot!.querySelector('.app-container')!;
     simulateHover(appContainerEl);
-    return flushTasks();
+    return waitAfterNextRender(lensOverlayElement);
   }
-
-  test('Text', async () => {
-    await simulateEnterViewport();
-
-    // Hover over a text element.
-    const textLayer = selectionOverlayElement.$.textSelectionLayer;
-    const textElement = textLayer.shadowRoot!.querySelector('.word')!;
-    await simulateHover(textElement);
-
-    // Verify the cursor tooltip changed to text string.
-    assertTrue(isRendered(tooltipEl));
-    assertStringContains(tooltipEl.innerHTML, 'Select text');
-
-    // Verify the cursor changed to text and the cursor image changed to text
-    // icon.
-    assertEquals('text', document.body.style.cursor);
-    assertEquals(
-        'url("text.svg")',
-        selectionOverlayElement.style.getPropertyValue('--cursor-img-url'));
-
-    await simulateUnhover(textElement);
-
-    // Verify the cursor changed to unset and the cursor image is still Lens
-    // icon.
-    assertEquals('unset', document.body.style.cursor);
-    assertEquals(
-        'url("lens.svg")',
-        selectionOverlayElement.style.getPropertyValue('--cursor-img-url'));
-  });
 
   test('Object', async () => {
     await simulateEnterViewport();
@@ -224,8 +186,8 @@ suite('OverlayCursor', () => {
 
     // Start a drag that goes outside the overlay boundaries.
     const boundingRect = selectionOverlayElement.getBoundingClientRect();
-    simulateStartDrag(
-        selectionOverlayElement, {x: 0, y: 0},
+    await simulateStartDrag(
+        selectionOverlayElement, {x: 10, y: 10},
         {x: boundingRect.right + 2000, y: boundingRect.bottom + 2000});
 
     // Verify the cursor tooltip is still object string.
@@ -254,20 +216,6 @@ suite('OverlayCursor', () => {
 
   test('HideTooltip', async () => {
     await simulateEnterViewport();
-
-    // Hover over some text.
-    const textLayer = selectionOverlayElement.$.textSelectionLayer;
-    const textElement = textLayer.shadowRoot!.querySelector('.word')!;
-    await simulateHover(textElement);
-    assertTrue(isRendered(tooltipEl));
-
-    // Simulate changing hover from text to close button.
-    await simulateUnhover(textElement);
-    await simulateUnhover(selectionOverlayElement);
-    await simulateHover(lensOverlayElement.$.closeButton);
-
-    // Verify no tooltip.
-    assertFalse(isRendered(tooltipEl));
 
     // Hover over the background scrim.
     await simulateUnhover(lensOverlayElement.$.closeButton);

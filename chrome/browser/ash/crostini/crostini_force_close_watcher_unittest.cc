@@ -72,12 +72,11 @@ TEST_F(CrostiniForceCloseWatcherTest, CallsForceCloseAfterSecondCloseAttempt) {
   WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
 
   EXPECT_CALL(delegate_ref, GetClosableWidget).WillOnce(Return(widget.get()));
-  EXPECT_CALL(delegate_ref, Watched)
-      .WillOnce(testing::Invoke([](ForceCloseWatcher* watcher) {
-        watcher->OverrideDelayForTesting(base::Seconds(0));
-        watcher->OnCloseRequested();
-        watcher->OnCloseRequested();
-      }));
+  EXPECT_CALL(delegate_ref, Watched).WillOnce([](ForceCloseWatcher* watcher) {
+    watcher->OverrideDelayForTesting(base::Seconds(0));
+    watcher->OnCloseRequested();
+    watcher->OnCloseRequested();
+  });
   EXPECT_CALL(delegate_ref, Prompt).Times(1);
   EXPECT_CALL(delegate_ref, Hide).Times(1);
 
@@ -91,11 +90,10 @@ TEST_F(CrostiniForceCloseWatcherTest, NoForceCloseUntilDelayPassed) {
   WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
 
   EXPECT_CALL(delegate_ref, GetClosableWidget).WillOnce(Return(widget.get()));
-  EXPECT_CALL(delegate_ref, Watched)
-      .WillOnce(testing::Invoke([](ForceCloseWatcher* watcher) {
-        watcher->OnCloseRequested();
-        watcher->OnCloseRequested();
-      }));
+  EXPECT_CALL(delegate_ref, Watched).WillOnce([](ForceCloseWatcher* watcher) {
+    watcher->OnCloseRequested();
+    watcher->OnCloseRequested();
+  });
   EXPECT_CALL(delegate_ref, Hide).Times(1);
 
   ForceCloseWatcher::Watch(std::move(delegate));

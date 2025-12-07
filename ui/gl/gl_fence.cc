@@ -5,6 +5,7 @@
 #include "ui/gl/gl_fence.h"
 
 #include "base/compiler_specific.h"
+#include "base/notimplemented.h"
 #include "build/build_config.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
@@ -110,8 +111,7 @@ std::unique_ptr<GLFence> GLFence::CreateFromGpuFence(
 #elif BUILDFLAG(IS_WIN)
   return GLFenceWin::CreateFromGpuFence(gpu_fence);
 #else
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 #endif
 }
 
@@ -123,8 +123,7 @@ std::unique_ptr<GLFence> GLFence::CreateForGpuFence() {
 #elif BUILDFLAG(IS_WIN)
   return GLFenceWin::CreateForGpuFence();
 #else
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 #endif
 }
 

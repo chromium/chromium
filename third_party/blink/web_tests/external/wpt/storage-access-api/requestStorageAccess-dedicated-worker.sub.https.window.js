@@ -28,9 +28,14 @@
 
   promise_test(async (t) => {
     await MaybeSetStorageAccess("*", "*", "blocked");
-    await SetFirstPartyCookieAndUnsetStorageAccessPermission(altRoot);
+    await SetFirstPartyCookie(altRoot);
 
     const frame = await SetUpResponderFrame(t, altRootResponder);
+    if (CanAccessCookiesViaJS()) {
+      // Nothing to test here, as cookies are not blocked in cross-site frames.
+      // See https://github.com/privacycg/storage-access/issues/162.
+      return;
+    }
     assert_true(await RequestStorageAccessInFrame(frame), "requestStorageAccess resolves without requiring a gesture.");
     assert_true(await FrameHasStorageAccess(frame), "frame has storage access after request.");
     assert_true(await HasUnpartitionedCookie(frame), "frame has access to cookies after request.");
@@ -47,9 +52,13 @@
 
   promise_test(async (t) => {
     await MaybeSetStorageAccess("*", "*", "blocked");
-    await SetFirstPartyCookieAndUnsetStorageAccessPermission(altRoot);
+    await SetFirstPartyCookie(altRoot);
 
     const frame = await SetUpResponderFrame(t, altRootResponder);
+    if (CanAccessCookiesViaJS()) {
+      // Nothing to test here, as cookies are not blocked in cross-site frames.
+      return;
+    }
     assert_false(await FrameHasStorageAccess(frame), "frame lacks storage access before request.");
     assert_false(await HasUnpartitionedCookie(frame), "frame lacks access to cookies before request.");
 

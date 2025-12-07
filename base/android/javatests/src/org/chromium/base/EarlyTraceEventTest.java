@@ -212,7 +212,7 @@ public class EarlyTraceEventTest {
     @SmallTest
     @Feature({"Android-AppBase"})
     public void testEnableAtStartup() {
-        ThreadUtils.setThreadAssertsDisabledForTesting(true);
+        ThreadUtils.hasSubtleSideEffectsSetThreadAssertsDisabledForTesting(true);
         EarlyTraceEvent.maybeEnableInBrowserProcess();
         Assert.assertFalse(EarlyTraceEvent.enabled());
         EarlyTraceEvent.setBackgroundStartupTracingFlag(false);
@@ -230,7 +230,7 @@ public class EarlyTraceEventTest {
     @SmallTest
     @Feature({"Android-AppBase"})
     public void testUserOverrideBackgroundTracing() {
-        ThreadUtils.setThreadAssertsDisabledForTesting(true);
+        ThreadUtils.hasSubtleSideEffectsSetThreadAssertsDisabledForTesting(true);
         // Setting command line should disable the background tracing flag.
         CommandLine.getInstance().appendSwitch("trace-startup");
         EarlyTraceEvent.setBackgroundStartupTracingFlag(true);
@@ -245,7 +245,7 @@ public class EarlyTraceEventTest {
     @SmallTest
     @Feature({"Android-AppBase"})
     public void testEnableInChildProcess() {
-        ThreadUtils.setThreadAssertsDisabledForTesting(true);
+        ThreadUtils.hasSubtleSideEffectsSetThreadAssertsDisabledForTesting(true);
         EarlyTraceEvent.earlyEnableInChildWithoutCommandLine();
         Assert.assertTrue(EarlyTraceEvent.enabled());
         CommandLine.getInstance().appendSwitch("trace-early-java-in-child");
@@ -260,7 +260,7 @@ public class EarlyTraceEventTest {
     @SmallTest
     @Feature({"Android-AppBase"})
     public void testEnableInChildProcessCommandLineLaterOverrides() {
-        ThreadUtils.setThreadAssertsDisabledForTesting(true);
+        ThreadUtils.hasSubtleSideEffectsSetThreadAssertsDisabledForTesting(true);
         EarlyTraceEvent.earlyEnableInChildWithoutCommandLine();
         Assert.assertTrue(EarlyTraceEvent.enabled());
         CommandLine.getInstance().removeSwitch("trace-early-java-in-child");

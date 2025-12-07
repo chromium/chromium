@@ -2,19 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <memory>
 #import <string>
+#import <vector>
 
+#import "base/check.h"
+#import "base/strings/strcat.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
+#import "components/enterprise/common/proto/synced/browser_events.pb.h"
+#import "components/enterprise/common/proto/synced_from_google3/chrome_reporting_entity.pb.h"
+#import "components/enterprise/common/proto/upload_request_response.pb.h"
+#import "components/enterprise/connectors/core/common.h"
+#import "components/enterprise/connectors/core/connectors_prefs.h"
+#import "components/enterprise/connectors/core/realtime_reporting_test_environment.h"
+#import "components/policy/core/common/policy_loader_ios_constants.h"
+#import "components/policy/core/common/policy_types.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_ui.h"
-#import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
-#import "ios/chrome/browser/ui/settings/privacy/privacy_constants.h"
+#import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey.h"
+#import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey_ui.h"
+#import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
+#import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -28,10 +42,21 @@
 #import "net/test/embedded_test_server/http_response.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using ::chrome::cros::reporting::proto::Event;
+using ::chrome::cros::reporting::proto::EventResult;
+using ::chrome::cros::reporting::proto::SafeBrowsingInterstitialEvent;
+using InterstitialReason = ::chrome::cros::reporting::proto::
+    SafeBrowsingInterstitialEvent::InterstitialReason;
+using ::chrome::cros::reporting::proto::UploadEventsRequest;
+using ::chrome::cros::reporting::proto::UrlFilteringInterstitialEvent;
 using chrome_test_util::BackButton;
 using chrome_test_util::ForwardButton;
+using chrome_test_util::GREYAssertErrorNil;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::TappableBookmarkNodeWithLabel;
+using enterprise_connectors::test::RealtimeReportingTestEnvironment;
+using InterstitialThreatType = ::chrome::cros::reporting::proto::
+    UrlFilteringInterstitialEvent_InterstitialThreatType;
 
 namespace {
 
@@ -42,6 +67,28 @@ const char kPhishingWarningDetails[] =
 // Text that is found when expanding details on the malware warning page.
 const char kMalwareWarningDetails[] =
     "Google Safe Browsing, which recently found malware";
+
+// Policy name and value for setting a fake enterprise enrollment token.
+constexpr char kEnrollmentTokenPolicyName[] = "CloudManagementEnrollmentToken";
+constexpr char kEnrollmentToken[] = "fake-enrollment-token";
+
+// Text that is found on the enterprise warning page.
+const char kEnterpriseWarningPage[] =
+    "The site ahead is flagged by your organization";
+
+// Text that is found on the enterprise block page.
+const char kEnterpriseBlockPage[] =
+    "The site ahead is blocked by your organization";
+
+// Error message logged when the wrong number of Enterprise Reports were
+// received.
+NSString* const kWrongNumberOfReportsErrorMessage = @"Wrong number of reports.";
+
+// Id of the primary button in the security interstitial pages.
+NSString* const kPrimaryButtonID = @"primary-button";
+
+// Duration to wait for an enterprise security event report.
+constexpr base::TimeDelta kReportUploadTimeout = base::Seconds(15);
 
 // Request handler for net::EmbeddedTestServer that returns the request URL's
 // path as the body of the response if the request URL's path starts with
@@ -67,6 +114,17 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
                     grey_accessibilityLabel(buttonLabel), nil);
 }
 
+// Enables the prefs needed for testing Enterprise Url Filtering.
+void EnableEnterpriseUrlFilteringPrefs() {
+  [ChromeEarlGrey
+      setIntegerValue:enterprise_connectors::
+                          REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED
+          forUserPref:enterprise_connectors::kEnterpriseRealTimeUrlCheckMode];
+  [ChromeEarlGrey
+      setIntegerValue:policy::POLICY_SCOPE_MACHINE
+          forUserPref:enterprise_connectors::kEnterpriseRealTimeUrlCheckScope];
+}
+
 }  // namespace
 
 // Tests Safe Browsing URL blocking.
@@ -79,6 +137,15 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
   GURL _realTimePhishingURL;
   // Text that is found on the real-time phishing page.
   std::string _realTimePhishingContent;
+  // A URL that is flagged by Enterprise real-time lookups.
+  GURL _enterpriseWarnURL;
+  // Text that is found in the page flagged by Enterprise lookups.
+  std::string _enterpriseWarnContent;
+  // A URL that is blocked by Enterprise real-time lookups.
+  GURL _enterpriseBlockURL;
+  // Text that is found in the page blocked by Enterprise lookups.
+  std::string _enterpriseBlockContent;
+
   // A URL that is treated as an unsafe malware page.
   GURL _malwareURL;
   // Text that is found on the malware page.
@@ -101,6 +168,8 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
   BOOL _safeBrowsingEnhancedPrefDefault;
   // The default value for SafeBrowsingProceedAnywayDisabled pref.
   BOOL _proceedAnywayDisabledPrefDefault;
+  // Fake servers for testing enterprise security event reporting.
+  std::unique_ptr<RealtimeReportingTestEnvironment> _reportingEnvironment;
 }
 @end
 
@@ -125,7 +194,9 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
   if ([self
           isRunningTest:@selector(testRestoreToWarningPagePreservesHistory)] ||
       [self isRunningTest:@selector(testMalwarePage)] ||
-      [self isRunningTest:@selector(testProceedingPastMalwareWarning)]) {
+      [self isRunningTest:@selector(testProceedingPastMalwareWarning)] ||
+      [self
+          isRunningTest:@selector(testProceedingPastMalwareWarningReported)]) {
     config.additional_args.push_back(std::string(
         "--disable-features=SafeBrowsingHashPrefixRealTimeLookups"));
   } else {
@@ -133,12 +204,46 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
         std::string("--enable-features=SafeBrowsingHashPrefixRealTimeLookups"));
   }
 
-  config.additional_args.push_back(
-      std::string("--mark_as_real_time_phishing=") +
-      _realTimePhishingURL.spec());
+  if ([self isRunningEnterpriseReportingTest]) {
+    CHECK(_reportingEnvironment);
+    std::vector<std::string> reporting_args =
+        _reportingEnvironment->GetArguments();
+    config.additional_args.insert(config.additional_args.end(),
+                                  reporting_args.begin(), reporting_args.end());
+    config.additional_args.push_back(base::StrCat(
+        {"-", base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey)}));
+    config.additional_args.push_back(
+        base::StrCat({"<dict><key>", kEnrollmentTokenPolicyName,
+                      "</key><string>", kEnrollmentToken, "</string></dict>"}));
+  }
+
+  if ([self isRunningEntepriseUrlFilteringTest]) {
+    // Enable url filtering feature flag.
+    config.additional_args.push_back(
+        std::string("--enable-features=IOSEnterpriseRealtimeUrlFiltering"));
+  }
+
+  if ([self isRunningTest:@selector(testEnterpriseBlockingPage)]) {
+    config.additional_args.push_back(
+        std::string("--mark_as_enterprise_blocked=") +
+        _enterpriseBlockURL.spec());
+  } else if ([self isRunningTest:@selector(testEnterpriseWarningPage)] ||
+             [self isRunningTest:@selector(testEnterpriseWarningPageBypass)] ||
+             [self isRunningTest:@selector
+                   (testEnterpriseWarningPageRefreshedThenBypass)]) {
+    config.additional_args.push_back(
+        std::string("--mark_as_enterprise_warned=") +
+        _enterpriseWarnURL.spec());
+
+  } else {
+    config.additional_args.push_back(
+        std::string("--mark_as_real_time_phishing=") +
+        _realTimePhishingURL.spec());
+  }
+
   config.additional_args.push_back(
       std::string("--mark_as_allowlisted_for_real_time=") + _safeURL1.spec());
-  config.relaunch_policy = NoForceRelaunchAndResetState;
+  config.relaunch_policy = ForceRelaunchByKilling;
   return config;
 }
 
@@ -150,6 +255,12 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
 
   _realTimePhishingURL = self.testServer->GetURL("/echo_realtime_page");
   _realTimePhishingContent = "realtime_page";
+
+  _enterpriseWarnURL = self.testServer->GetURL("/echo_warn_page");
+  _enterpriseWarnContent = "echo_warn_page";
+
+  _enterpriseBlockURL = self.testServer->GetURL("/echo_block_page");
+  _enterpriseBlockContent = "echo_block_page";
 
   _malwareURL = self.testServer->GetURL("/echo_malware_page");
   _malwareContent = "malware_page";
@@ -173,6 +284,16 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
   _safeURL2 = _safeURL2.ReplaceComponents(replacements);
   _iframeWithPhishingURL =
       _iframeWithPhishingURL.ReplaceComponents(replacements);
+
+  if ([self isRunningEnterpriseReportingTest]) {
+    // `GREYAssertTrue` can't be used before the superclass's `-setUp` call is
+    // complete, so fall back to `CHECK()`.
+    _reportingEnvironment = RealtimeReportingTestEnvironment::Create(
+        {"interstitialEvent", "urlFilteringInterstitialEvent"},
+        {{"interstitialEvent", {"*"}}});
+    CHECK(_reportingEnvironment);
+    CHECK(_reportingEnvironment->Start());
+  }
 
   // `appConfigurationForTestCase` is called during [super setUp], and
   // depends on the URLs initialized above.
@@ -204,9 +325,14 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
   // Ensure that the real-time Safe Browsing opt-in starts in the default
   // (opted-out) state.
   [ChromeEarlGrey setURLKeyedAnonymizedDataCollectionEnabled:NO];
+
+  // Set up histograms for testing enterprise reporting.
+  GREYAssertErrorNil([MetricsAppInterface setupHistogramTester]);
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
+  GREYAssertErrorNil([MetricsAppInterface releaseHistogramTester]);
+
   // Ensure that Safe Browsing is reset to its original value.
   [ChromeEarlGrey setBoolValue:_safeBrowsingEnabledPrefDefault
                    forUserPref:prefs::kSafeBrowsingEnabled];
@@ -219,11 +345,17 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
   [ChromeEarlGrey setBoolValue:_proceedAnywayDisabledPrefDefault
                    forUserPref:prefs::kSafeBrowsingProceedAnywayDisabled];
 
+  // Restore Enteprise URL Filtering prefs to their default values.
+  [ChromeEarlGrey clearUserPrefWithName:enterprise_connectors::
+                                            kEnterpriseRealTimeUrlCheckMode];
+  [ChromeEarlGrey clearUserPrefWithName:enterprise_connectors::
+                                            kEnterpriseRealTimeUrlCheckScope];
+
   // Ensure that the real-time Safe Browsing opt-in is reset to its original
   // value.
   [ChromeEarlGrey setURLKeyedAnonymizedDataCollectionEnabled:NO];
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Helper methods
@@ -241,6 +373,103 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
   NSString* description = @"Enhanced Safe Browsing message.";
   return [ElementSelector selectorWithScript:selector
                          selectorDescription:description];
+}
+
+- (BOOL)isRunningEnterpriseReportingTest {
+  return [self isRunningTest:@selector
+               (testProceedingPastPhishingWarningReported)] ||
+         [self isRunningTest:@selector
+               (testProceedingPastMalwareWarningReported)] ||
+         [self isRunningTest:@selector(testEnterpriseBlockingPage)] ||
+         [self isRunningTest:@selector(testEnterpriseWarningPage)] ||
+         [self isRunningTest:@selector(testEnterpriseWarningPageBypass)] ||
+         [self isRunningTest:@selector
+               (testEnterpriseWarningPageRefreshedThenBypass)];
+}
+
+- (BOOL)isRunningEntepriseUrlFilteringTest {
+  return [self isRunningTest:@selector(testEnterpriseBlockingPage)] ||
+         [self isRunningTest:@selector(testEnterpriseWarningPage)] ||
+         [self isRunningTest:@selector(testEnterpriseWarningPageBypass)] ||
+         [self isRunningTest:@selector
+               (testEnterpriseWarningPageRefreshedThenBypass)];
+}
+- (void)waitForEnterpriseReports:(int)count {
+  // Use metrics to detect that the report upload completed. This is the best
+  // known way to wait because a task environment isn't available here for the
+  // server's request handler to post to.
+  GREYAssertTrue(
+      base::test::ios::WaitUntilConditionOrTimeout(
+          kReportUploadTimeout,
+          ^{
+            NSError* error = [MetricsAppInterface
+                expectTotalCount:count
+                    forHistogram:@"Enterprise.ReportingEventUploadSuccess"];
+            return error == nil;
+          }),
+      @"Timed out uploading security event.");
+  GREYAssertErrorNil([MetricsAppInterface
+      expectTotalCount:0
+          forHistogram:@"Enterprise.ReportingEventUploadFailure"]);
+}
+
+- (void)assertInterstitialEvent:(const UploadEventsRequest&)request
+                            url:(const GURL&)url
+                 clickedThrough:(BOOL)clickedThrough
+                    eventResult:(EventResult)eventResult
+                         reason:(InterstitialReason)reason {
+  GREYAssertEqual(std::string("iOS"), request.device().os_platform(),
+                  @"Wrong OS platform in report.");
+  GREYAssertEqual(1, request.events_size(), @"Wrong number of events.");
+
+  GREYAssertTrue(request.events(0).has_interstitial_event(),
+                 @"Wrong event type.");
+  const SafeBrowsingInterstitialEvent& event =
+      request.events(0).interstitial_event();
+  GREYAssertEqual(url, GURL(event.url()), @"Wrong interstitial event URL.");
+  if (clickedThrough) {
+    GREYAssertTrue(
+        event.clicked_through(),
+        @"Interstitial event unexpectedly not marked as clicked through.");
+  } else {
+    GREYAssertFalse(
+        event.clicked_through(),
+        @"Interstitial event unexpectedly marked as clicked through.");
+  }
+  GREYAssertEqual(eventResult, event.event_result(),
+                  @"Wrong interstitial event result.");
+  GREYAssertEqual(reason, event.reason(), @"Wrong interstitial event reason.");
+}
+
+// Asserts that the given `request` contains a UrlFilteringInterstitialEvent
+// with the given `url`, `clickedThrough`, `eventResult` and `threatType`.
+- (void)assertUrlFilteringInterstitialEvent:(const UploadEventsRequest&)request
+                                        url:(const GURL&)url
+                             clickedThrough:(BOOL)clickedThrough
+                                eventResult:(EventResult)eventResult
+                                 threatType:(InterstitialThreatType)threatType {
+  GREYAssertEqual(std::string("iOS"), request.device().os_platform(),
+                  @"Wrong OS platform in report.");
+  GREYAssertEqual(1, request.events_size(), @"Wrong number of events.");
+
+  GREYAssertTrue(request.events(0).has_url_filtering_interstitial_event(),
+                 @"Wrong event type.");
+  const UrlFilteringInterstitialEvent& event =
+      request.events(0).url_filtering_interstitial_event();
+  GREYAssertEqual(url, GURL(event.url()), @"Wrong interstitial event URL.");
+  if (clickedThrough) {
+    GREYAssertTrue(event.clicked_through(),
+                   @"Url filtering interstitial event unexpectedly not marked "
+                   @"as clicked through.");
+  } else {
+    GREYAssertFalse(event.clicked_through(),
+                    @"Url filtering interstitial event unexpectedly marked as "
+                    @"clicked through.");
+  }
+  GREYAssertEqual(eventResult, event.event_result(),
+                  @"Wrong url filtering interstitial event result.");
+  GREYAssertEqual(threatType, event.threat_type(),
+                  @"Wrong interstitial event reason.");
 }
 
 #pragma mark - Tests
@@ -263,7 +492,7 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
 
   // Tap on the "Back to safety" button and verify that the previous page's
   // contents are loaded.
-  [ChromeEarlGrey tapWebStateElementWithID:@"primary-button"];
+  [ChromeEarlGrey tapWebStateElementWithID:kPrimaryButtonID];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
 }
 
@@ -326,6 +555,50 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
                                                     IDS_SAFEBROWSING_HEADING)];
 }
 
+// Tests expanding the details on a phishing warning, and proceeding past the
+// warning is reported to an enterprise connector.
+- (void)testProceedingPastPhishingWarningReported {
+  [ChromeEarlGrey loadURL:_safeURL1];
+  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
+
+  // Load the phishing page and verify a warning is shown.
+  [ChromeEarlGrey loadURL:_phishingURL];
+  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
+                                                    IDS_SAFEBROWSING_HEADING)];
+
+  // Tap on the Details button and verify that warning details are shown.
+  [ChromeEarlGrey tapWebStateElementWithID:@"details-button"];
+  [ChromeEarlGrey waitForWebStateContainingText:kPhishingWarningDetails];
+
+  // Verify the server is notified the browser showed a warning.
+  [self waitForEnterpriseReports:1];
+  std::vector<UploadEventsRequest> requests =
+      _reportingEnvironment->reporting_server()->GetUploadedReports();
+  GREYAssertEqual(1U, requests.size(), kWrongNumberOfReportsErrorMessage);
+  [self assertInterstitialEvent:requests[0]
+                            url:_phishingURL
+                 clickedThrough:NO
+                    eventResult:EventResult::EVENT_RESULT_WARNED
+                         reason:SafeBrowsingInterstitialEvent::
+                                    SOCIAL_ENGINEERING];
+
+  // Tap on the link to proceed to the unsafe page, and verify that this page is
+  // loaded.
+  [ChromeEarlGrey tapWebStateElementWithID:@"proceed-link"];
+  [ChromeEarlGrey waitForWebStateContainingText:_phishingContent];
+
+  // Verify the server is notified the end user bypassed the warning.
+  [self waitForEnterpriseReports:2];
+  requests = _reportingEnvironment->reporting_server()->GetUploadedReports();
+  GREYAssertEqual(2U, requests.size(), kWrongNumberOfReportsErrorMessage);
+  [self assertInterstitialEvent:requests[1]
+                            url:_phishingURL
+                 clickedThrough:YES
+                    eventResult:EventResult::EVENT_RESULT_BYPASSED
+                         reason:SafeBrowsingInterstitialEvent::
+                                    SOCIAL_ENGINEERING];
+}
+
 // Tests that a malware page is blocked, and the "Back to safety" button on the
 // warning page works as expected.
 - (void)testMalwarePage {
@@ -339,7 +612,7 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
 
   // Tap on the "Back to safety" button and verify that the previous page's
   // contents are loaded.
-  [ChromeEarlGrey tapWebStateElementWithID:@"primary-button"];
+  [ChromeEarlGrey tapWebStateElementWithID:kPrimaryButtonID];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
 }
 
@@ -357,13 +630,6 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
   // Tap on the Details button and verify that warning details are shown.
   [ChromeEarlGrey tapWebStateElementWithID:@"details-button"];
   [ChromeEarlGrey waitForWebStateContainingText:kMalwareWarningDetails];
-
-  if (@available(iOS 15.1, *)) {
-  } else {
-    // Workaround https://bugs.webkit.org/show_bug.cgi?id=226323, which can
-    // break loading the unsafe page below.
-    return;
-  }
 
   // Tap on the link to proceed to the unsafe page, and verify that this page is
   // loaded.
@@ -401,13 +667,6 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
   [ChromeEarlGrey tapWebStateElementWithID:@"details-button"];
   [ChromeEarlGrey waitForWebStateContainingText:kMalwareWarningDetails];
 
-  if (@available(iOS 15.1, *)) {
-  } else {
-    // Workaround https://bugs.webkit.org/show_bug.cgi?id=226323, which can
-    // break loading the unsafe page below.
-    return;
-  }
-
   // Tap on the link to proceed to the unsafe page, and verify that this page is
   // loaded.
   [ChromeEarlGrey tapWebStateElementWithID:@"proceed-link"];
@@ -427,6 +686,48 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
   [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
   [ChromeEarlGrey waitForWebStateContainingText:_malwareContent];
+}
+
+// Tests expanding the details on a malware warning, and proceeding past the
+// warning is reported to an enterprise connector.
+- (void)testProceedingPastMalwareWarningReported {
+  [ChromeEarlGrey loadURL:_safeURL1];
+  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
+
+  // Load the malware page and verify a warning is shown.
+  [ChromeEarlGrey loadURL:_malwareURL];
+  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
+                                                    IDS_SAFEBROWSING_HEADING)];
+
+  // Tap on the Details button and verify that warning details are shown.
+  [ChromeEarlGrey tapWebStateElementWithID:@"details-button"];
+  [ChromeEarlGrey waitForWebStateContainingText:kMalwareWarningDetails];
+
+  // Verify the server is notified the browser showed a warning.
+  [self waitForEnterpriseReports:1];
+  std::vector<UploadEventsRequest> requests =
+      _reportingEnvironment->reporting_server()->GetUploadedReports();
+  GREYAssertEqual(1U, requests.size(), kWrongNumberOfReportsErrorMessage);
+  [self assertInterstitialEvent:requests[0]
+                            url:_malwareURL
+                 clickedThrough:NO
+                    eventResult:EventResult::EVENT_RESULT_WARNED
+                         reason:SafeBrowsingInterstitialEvent::MALWARE];
+
+  // Tap on the link to proceed to the unsafe page, and verify that this page is
+  // loaded.
+  [ChromeEarlGrey tapWebStateElementWithID:@"proceed-link"];
+  [ChromeEarlGrey waitForWebStateFrameContainingText:_malwareContent];
+
+  // Verify the server is notified the end user bypassed the warning.
+  [self waitForEnterpriseReports:2];
+  requests = _reportingEnvironment->reporting_server()->GetUploadedReports();
+  GREYAssertEqual(2U, requests.size(), kWrongNumberOfReportsErrorMessage);
+  [self assertInterstitialEvent:requests[1]
+                            url:_malwareURL
+                 clickedThrough:YES
+                    eventResult:EventResult::EVENT_RESULT_BYPASSED
+                         reason:SafeBrowsingInterstitialEvent::MALWARE];
 }
 
 // Tests that disabling and re-enabling Safe Browsing works as expected.
@@ -636,8 +937,12 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
 
 // Tests that performing session restoration to a Safe Browsing warning page
 // preserves navigation history.
-// TODO(crbug.com/41489568):  Test is flaky on device. Re-enable the test.
 - (void)testRestoreToWarningPagePreservesHistory {
+  // TODO(crbug.com/41489568): Test fails on iOS 18.4. Re-enable the test.
+  if (@available(iOS 18.4, *)) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iOS 18.4.");
+  }
+
   // Build up navigation history that consists of a safe URL, a warning page,
   // and another safe URL.
   [ChromeEarlGrey loadURL:_safeURL1];
@@ -650,7 +955,7 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
 
   // Tap on the "Back to safety" button and verify that the previous page's
   // contents are loaded.
-  [ChromeEarlGrey tapWebStateElementWithID:@"primary-button"];
+  [ChromeEarlGrey tapWebStateElementWithID:kPrimaryButtonID];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
 
   [ChromeEarlGrey goForward];
@@ -745,30 +1050,6 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
   [ChromeEarlGrey waitForWebStateContainingText:_realTimePhishingContent];
 }
 
-// Tests that a page identified as unsafe by real-time Safe Browsing is blocked
-// when loaded as part of session restoration.
-// TODO(crbug.com/41489568):  Test is flaky. Re-enable the test.
-- (void)DISABLED_testRestoreRealTimeWarning {
-  // Opt-in to real-time checks.
-  [ChromeEarlGrey setURLKeyedAnonymizedDataCollectionEnabled:YES];
-
-  // Visit two safe pages, followed by an unsafe page.
-  [ChromeEarlGrey loadURL:_safeURL1];
-  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
-  [ChromeEarlGrey loadURL:_safeURL2];
-  [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
-  [ChromeEarlGrey loadURL:_realTimePhishingURL];
-
-  // Verify that a warning is shown for the unsafe page.
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_SAFEBROWSING_HEADING)];
-
-  // Perform session restoration, and verify that a warning is still shown.
-  [self triggerRestoreByRestartingApplication];
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_SAFEBROWSING_HEADING)];
-}
-
 // Tests that when a page identified as unsafe by real-time Safe Browsing is
 // loaded using a bookmark, a warning is shown.
 - (void)testRealTimeWarningForBookmark {
@@ -792,6 +1073,174 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
 
   // Remove bookmarked phishing site.
   [BookmarkEarlGrey clearBookmarks];
+}
+
+// Verifies that the Enteprise warning interstitial is displayed for urls
+// flagged by Enterprise organizations.
+- (void)testEnterpriseWarningPage {
+  EnableEnterpriseUrlFilteringPrefs();
+
+  [ChromeEarlGrey loadURL:_safeURL1];
+  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
+
+  // Load the enterprise flagged page and verify a warning is shown.
+  [ChromeEarlGrey loadURL:_enterpriseWarnURL];
+  [ChromeEarlGrey waitForWebStateContainingText:kEnterpriseWarningPage];
+
+  // Verify the server is notified the browser blocked a navigation.
+  [self waitForEnterpriseReports:1];
+  std::vector<UploadEventsRequest> requests =
+      _reportingEnvironment->reporting_server()->GetUploadedReports();
+  GREYAssertEqual(1U, requests.size(), kWrongNumberOfReportsErrorMessage);
+  [self assertUrlFilteringInterstitialEvent:requests[0]
+                                        url:_enterpriseWarnURL
+                             clickedThrough:NO
+                                eventResult:EventResult::EVENT_RESULT_WARNED
+                                 threatType:UrlFilteringInterstitialEvent::
+                                                ENTERPRISE_WARNED_SEEN];
+
+  // Tap on the "Go back" button and verify that the previous page's
+  // contents are loaded.
+  [ChromeEarlGrey tapWebStateElementWithID:kPrimaryButtonID];
+  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
+}
+
+// Verifies that the Enteprise warning interstitial allows to bypass the warning
+// and navigate to urls flagged by Enterprise organizations.
+- (void)testEnterpriseWarningPageBypass {
+  EnableEnterpriseUrlFilteringPrefs();
+
+  [ChromeEarlGrey loadURL:_safeURL1];
+  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
+
+  // Load the enterprise flagged page and verify a warning is shown.
+  [ChromeEarlGrey loadURL:_enterpriseWarnURL];
+  [ChromeEarlGrey waitForWebStateContainingText:kEnterpriseWarningPage];
+
+  // Verify the server is notified the browser flagged a navigation.
+  [self waitForEnterpriseReports:1];
+  std::vector<UploadEventsRequest> requests =
+      _reportingEnvironment->reporting_server()->GetUploadedReports();
+  GREYAssertEqual(1U, requests.size(), kWrongNumberOfReportsErrorMessage);
+  [self assertUrlFilteringInterstitialEvent:requests[0]
+                                        url:_enterpriseWarnURL
+                             clickedThrough:NO
+                                eventResult:EventResult::EVENT_RESULT_WARNED
+                                 threatType:UrlFilteringInterstitialEvent::
+                                                ENTERPRISE_WARNED_SEEN];
+
+  [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
+  [ChromeEarlGrey waitForWebStateContainingText:_enterpriseWarnContent];
+
+  // Verify the server is notified about the user bypassing a flagged a
+  // navigation.
+  [self waitForEnterpriseReports:2];
+  requests = _reportingEnvironment->reporting_server()->GetUploadedReports();
+  GREYAssertEqual(2U, requests.size(), kWrongNumberOfReportsErrorMessage);
+  [self assertUrlFilteringInterstitialEvent:requests[1]
+                                        url:_enterpriseWarnURL
+                             clickedThrough:YES
+                                eventResult:EventResult::EVENT_RESULT_BYPASSED
+                                 threatType:UrlFilteringInterstitialEvent::
+                                                ENTERPRISE_WARNED_BYPASS];
+
+  // Load the enterprise flagged page should go directly to the page after the
+  // warning was bypassed.
+  [ChromeEarlGrey loadURL:_enterpriseWarnURL];
+  [ChromeEarlGrey waitForWebStateContainingText:_enterpriseWarnContent];
+}
+
+// Verifies that the Enteprise warning interstitial allows to bypass the warning
+// after refreshing the warning page and navigate to urls flagged by Enterprise
+// organizations.
+- (void)testEnterpriseWarningPageRefreshedThenBypass {
+  EnableEnterpriseUrlFilteringPrefs();
+
+  [ChromeEarlGrey loadURL:_safeURL1];
+  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
+
+  // Load the enterprise flagged page and verify a warning is shown.
+  [ChromeEarlGrey loadURL:_enterpriseWarnURL];
+  [ChromeEarlGrey waitForWebStateContainingText:kEnterpriseWarningPage];
+
+  // Verify the server is notified the browser flagged a navigation.
+  [self waitForEnterpriseReports:1];
+  std::vector<UploadEventsRequest> requests =
+      _reportingEnvironment->reporting_server()->GetUploadedReports();
+  GREYAssertEqual(1U, requests.size(), kWrongNumberOfReportsErrorMessage);
+  [self assertUrlFilteringInterstitialEvent:requests[0]
+                                        url:_enterpriseWarnURL
+                             clickedThrough:NO
+                                eventResult:EventResult::EVENT_RESULT_WARNED
+                                 threatType:UrlFilteringInterstitialEvent::
+                                                ENTERPRISE_WARNED_SEEN];
+
+  // Use javaScript command to refresh since iPad does not have pull-to-refresh.
+  NSString* script = @"location.reload();";
+  [ChromeEarlGrey evaluateJavaScriptForSideEffect:script];
+  [ChromeEarlGrey waitForWebStateContainingText:kEnterpriseWarningPage];
+
+  // Verify the server is notified the browser flagged a navigation.
+  [self waitForEnterpriseReports:2];
+  requests = _reportingEnvironment->reporting_server()->GetUploadedReports();
+  GREYAssertEqual(2U, requests.size(), kWrongNumberOfReportsErrorMessage);
+  [self assertUrlFilteringInterstitialEvent:requests[1]
+                                        url:_enterpriseWarnURL
+                             clickedThrough:NO
+                                eventResult:EventResult::EVENT_RESULT_WARNED
+                                 threatType:UrlFilteringInterstitialEvent::
+                                                ENTERPRISE_WARNED_SEEN];
+
+  [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
+  [ChromeEarlGrey waitForWebStateContainingText:_enterpriseWarnContent];
+
+  // Verify the server is notified about the user bypassing a flagged a
+  // navigation.
+  [self waitForEnterpriseReports:3];
+  requests = _reportingEnvironment->reporting_server()->GetUploadedReports();
+  GREYAssertEqual(3U, requests.size(), kWrongNumberOfReportsErrorMessage);
+  [self assertUrlFilteringInterstitialEvent:requests[2]
+                                        url:_enterpriseWarnURL
+                             clickedThrough:YES
+                                eventResult:EventResult::EVENT_RESULT_BYPASSED
+                                 threatType:UrlFilteringInterstitialEvent::
+                                                ENTERPRISE_WARNED_BYPASS];
+
+  // Load the enterprise flagged page should go directly to the page after the
+  // warning was bypassed.
+  [ChromeEarlGrey loadURL:_enterpriseWarnURL];
+  [ChromeEarlGrey waitForWebStateContainingText:_enterpriseWarnContent];
+}
+
+// Verifies that the Enteprise blocking interstitial is displayed for urls
+// blocked by Enterprise organizations.
+- (void)testEnterpriseBlockingPage {
+  EnableEnterpriseUrlFilteringPrefs();
+
+  [ChromeEarlGrey loadURL:_safeURL1];
+  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
+
+  // Load the enterprise blocked page and verify a blocking interstitial is
+  // shown.
+  [ChromeEarlGrey loadURL:_enterpriseBlockURL];
+  [ChromeEarlGrey waitForWebStateContainingText:kEnterpriseBlockPage];
+
+  // Verify the server is notified the browser blocked a navigation.
+  [self waitForEnterpriseReports:1];
+  std::vector<UploadEventsRequest> requests =
+      _reportingEnvironment->reporting_server()->GetUploadedReports();
+  GREYAssertEqual(1U, requests.size(), kWrongNumberOfReportsErrorMessage);
+  [self assertUrlFilteringInterstitialEvent:requests[0]
+                                        url:_enterpriseBlockURL
+                             clickedThrough:NO
+                                eventResult:EventResult::EVENT_RESULT_BLOCKED
+                                 threatType:UrlFilteringInterstitialEvent::
+                                                ENTERPRISE_BLOCKED_SEEN];
+
+  // Tap on the "Go back" button and verify that the previous page's
+  // contents are loaded.
+  [ChromeEarlGrey tapWebStateElementWithID:kPrimaryButtonID];
+  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
 }
 
 @end

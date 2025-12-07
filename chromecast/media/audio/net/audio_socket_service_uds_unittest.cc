@@ -27,7 +27,6 @@ namespace chromecast {
 namespace media {
 
 using ::testing::_;
-using ::testing::Invoke;
 
 namespace {
 
@@ -130,11 +129,11 @@ TEST_P(AudioSocketServiceTest, UseSocketDescriptor) {
   io_thread_->FlushForTesting();
 
   EXPECT_CALL(*delegate_, HandleAcceptedSocket(_))
-      .WillOnce(Invoke([this](std::unique_ptr<net::StreamSocket> socket) {
+      .WillOnce([this](std::unique_ptr<net::StreamSocket> socket) {
         EXPECT_TRUE(socket);
         EXPECT_TRUE(socket->IsConnected());
         run_loop_.Quit();
-      }));
+      });
 
   ConnectToAudioSocketService();
 }

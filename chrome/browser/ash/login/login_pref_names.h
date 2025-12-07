@@ -25,6 +25,10 @@ inline constexpr char kOobeMarketingOptInChoice[] = "OobeMarketingOptInChoice";
 // Time when new user has finished onboarding.
 inline constexpr char kOobeOnboardingTime[] = "oobe.onboarding_time";
 
+// A boolean pref to indicate if the gamgee perk is shown in OOBE for the user.
+inline constexpr char kOobePerksDiscoveryGamgeeShown[] =
+    "OobePerksDiscoveryGamgeeShown";
+
 // Indicates the amount of time for which a user authenticated against GAIA
 // without SAML can use offline authentication against a cached password
 // before being forced to go through online authentication against GAIA again.
@@ -183,6 +187,17 @@ inline constexpr char kOobeStatsReportingControllerReportedReset[] =
 inline constexpr char kAuthenticationFlowAutoReloadInterval[] =
     "AuthenticationFlowAutoReloadInterval";
 
+// A preference to keep track of the last time the user authenticated using
+// GAIA or SAML. The preference is updated whenever the user authenticates
+// again and is set to current time. The time is expressed as the
+// serialization obtained from PrefService::SetTime().
+inline constexpr char kLastOnlineSignInTime[] = "last_online_sign_in_time";
+
+// A boolean pref that indicates whether the auto enrollment check has
+// completed and exited. This is used to prevent OOBE completion if the
+// auto enrollment check was bypassed.
+inline constexpr char kAutoEnrollmentCheckExited[] =
+    "AutoEnrollmentCheckExited";
 }  // namespace ash::prefs
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_LOGIN_PREF_NAMES_H_

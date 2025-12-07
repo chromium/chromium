@@ -11,6 +11,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/preloading.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -24,10 +25,6 @@ class CONTENT_EXPORT PrefetchServiceDelegate {
 
   // Clears data for delegate associated with given |browser_context|.
   static void ClearData(BrowserContext* browser_context);
-
-  // Gets the major version of the embedder. Only the major version of embedder
-  // is included in the user agent for prefetch requests.
-  virtual std::string GetMajorVersionNumber() = 0;
 
   // Gets the accept language header to be included in prefetch requests.
   virtual std::string GetAcceptLanguageHeader() = 0;
@@ -70,11 +67,13 @@ class CONTENT_EXPORT PrefetchServiceDelegate {
   // Checks if the referring page is in the allow list to make prefetches.
   virtual bool IsDomainInPrefetchAllowList(const GURL& referring_url) = 0;
 
-  // Determines whether a referring URL is reasonably trusted to proceed without
-  // delay when processing cross-site prefetches.
-  virtual bool IsContaminationExempt(const GURL& referring_url) = 0;
+  // Determines whether a referring origin is reasonably trusted to proceed
+  // without delay when processing cross-site prefetches.
+  virtual bool IsContaminationExempt(const url::Origin& referring_origin) = 0;
 
   virtual void OnPrefetchLikely(WebContents* web_contents) = 0;
+
+  virtual void SetAcceptLanguageHeader(std::string accept_language_header) = 0;
 };
 
 }  // namespace content

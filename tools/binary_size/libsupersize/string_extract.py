@@ -53,10 +53,6 @@ import path_util
 
 _STRING_LITERAL_LENGTH_CUTOFF = 30
 
-_PRINTABLE_TABLE = [False] * 256
-for ch in string.printable:
-  _PRINTABLE_TABLE[ord(ch)] = True
-
 
 def LookupElfRodataInfo(elf_path):
   """Returns (address, offset, size) for the .rodata section."""
@@ -339,11 +335,16 @@ def ReadStringLiterals(symbols, elf_path, all_rodata=False):
 
 def GetNameOfStringLiteralBytes(b):
   """Converts string literal bytes to printable form, may be truncated."""
-  b = b.replace(b'\n', b'').replace(b'\t', b'').strip(b'\00')
-  is_printable = all(_PRINTABLE_TABLE[c] for c in b)
-  if is_printable:
-    s = b.decode('ascii')
+  # Do an extra initial truncation to make the ascii checks faster.
+  b = b[:_STRING_LITERAL_LENGTH_CUTOFF + 1]
+  if not b.isascii():
+    # file_format.py currently requires ascii (maybe unnecessarily...)
+    return models.STRING_LITERAL_NAME
+  b = b.replace(b'\r', b'').replace(b'\n', b'').replace(b'\t', b'')
+  b = b.rstrip(b'\00')
+  s = b.decode('ascii')
+  if s.isprintable():
     if len(s) > _STRING_LITERAL_LENGTH_CUTOFF:
-      return '"{}[...]"'.format(s[:_STRING_LITERAL_LENGTH_CUTOFF])
-    return '"{}"'.format(s)
+      return f'"{s[:_STRING_LITERAL_LENGTH_CUTOFF - 3]}"...'
+    return f'"{s}"'
   return models.STRING_LITERAL_NAME

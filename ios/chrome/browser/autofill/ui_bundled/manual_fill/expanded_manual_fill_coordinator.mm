@@ -5,8 +5,9 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/expanded_manual_fill_coordinator.h"
 
 #import "base/feature_list.h"
-#import "components/plus_addresses/features.h"
-#import "components/plus_addresses/plus_address_service.h"
+#import "base/metrics/user_metrics.h"
+#import "components/plus_addresses/core/browser/plus_address_service.h"
+#import "components/plus_addresses/core/common/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/address_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/expanded_manual_fill_view_controller.h"
@@ -17,16 +18,20 @@
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/plus_addresses/model/plus_address_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
+#import "ios/public/provider/chrome/browser/keyboard/keyboard_api.h"
 #import "ios/web/public/web_state.h"
+#import "ui/base/device_form_factor.h"
 #import "url/gurl.h"
 
 using manual_fill::ManualFillDataType;
 
 @interface ExpandedManualFillCoordinator () <
-    ExpandedManualFillViewControllerDelegate>
+    ExpandedManualFillViewControllerDelegate,
+    ManualFillPasswordCoordinatorConsumer>
 
 // Main view controller for this coordinator.
 @property(nonatomic, strong)
@@ -46,17 +51,21 @@ using manual_fill::ManualFillDataType;
 
   // Used to fetch the plus addresses.
   ManualFillPlusAddressMediator* _manualFillPlusAddressMediator;
+
+  // Used to show the manual fill passwords menu.
+  ManualFillPasswordCoordinator* _manualFillPasswordCoordinator;
 }
 
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                               forDataType:(ManualFillDataType)dataType
-                    reauthenticationModule:
-                        (ReauthenticationModule*)reauthenticationModule {
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)viewController
+                       browser:(Browser*)browser
+                   forDataType:(ManualFillDataType)dataType
+          focusedFieldDataType:(ManualFillDataType)focusedFieldDataType
+        reauthenticationModule:(ReauthenticationModule*)reauthenticationModule {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    _focusedFieldDataType = dataType;
     _selectedSegmentDataType = dataType;
+    _focusedFieldDataType = focusedFieldDataType;
     _reauthenticationModule = reauthenticationModule;
     _manualFillPlusAddressMediator = nil;
   }
@@ -67,15 +76,46 @@ using manual_fill::ManualFillDataType;
   self.expandedManualFillViewController =
       [[ExpandedManualFillViewController alloc]
           initWithDelegate:self
-               forDataType:_focusedFieldDataType];
+               forDataType:_selectedSegmentDataType];
 
-  [self showManualFillingOptionsForDataType:_focusedFieldDataType];
+  [self showManualFillingOptionsForDataType:_selectedSegmentDataType];
 }
 
 - (void)stop {
+  [super stop];
+
+  // On iPad, dismiss the popover.
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
+      self.viewController.presentingViewController) {
+    [self.viewController dismissViewControllerAnimated:true completion:nil];
+  }
+
   [self stopChildCoordinators];
   _manualFillPlusAddressMediator = nil;
   self.expandedManualFillViewController = nil;
+}
+
+- (void)presentFromButton:(UIButton*)button {
+  self.expandedManualFillViewController.modalPresentationStyle =
+      UIModalPresentationPopover;
+
+  // `topFrontWindow` is used in order to present above the keyboard. This way,
+  // the popover will be dismissed on keyboard interaction and it won't be
+  // covered when the keyboard is near the top of the screen.
+  UIWindow* topFrontWindow = ios::provider::GetKeyboardWindow();
+  [topFrontWindow.rootViewController presentViewController:self.viewController
+                                                  animated:YES
+                                                completion:nil];
+
+  UIPopoverPresentationController* popoverPresentationController =
+      self.viewController.popoverPresentationController;
+  popoverPresentationController.sourceView = button;
+  popoverPresentationController.sourceRect = button.bounds;
+  popoverPresentationController.permittedArrowDirections =
+      UIPopoverArrowDirectionUp | UIPopoverArrowDirectionDown;
+  popoverPresentationController.delegate = self;
+  popoverPresentationController.backgroundColor =
+      [UIColor colorNamed:kBackgroundColor];
 }
 
 - (UIViewController*)viewController {
@@ -101,8 +141,10 @@ using manual_fill::ManualFillDataType;
 
 - (void)fallbackCoordinatorDidDismissPopover:
     (FallbackCoordinator*)fallbackCoordinator {
-  // No-op as the expanded manual fill view is never presented as a popover for
-  // now.
+  // No-op. On phones, the expanded manual fill view is never presented as a
+  // popover. On tablets, it can be presented as a popoover, but fallback
+  // coordinators are subviews of the expanded manual fill view controller and
+  // can't dismiss this popup.
 }
 
 #pragma mark - FormInputInteractionDelegate
@@ -123,6 +165,31 @@ using manual_fill::ManualFillDataType;
   if (autofillFormButtonCurrentlyVisible != shouldAutofillFormButtonBeVisible) {
     [self showManualFillingOptionsForDataType:_selectedSegmentDataType];
   }
+}
+
+#pragma mark - ManualFillPasswordCoordinatorConsumer
+
+- (void)passwordsFetched {
+  // If a user has already switched to another menu while the passwords were
+  // being fetched, resulting in a different child coordinator being added here,
+  // no need to add the manual fill password coordinator as a child here
+  // anymore.
+  if ([self.childCoordinators count] != 0) {
+    return;
+  }
+
+  self.expandedManualFillViewController.childViewController =
+      _manualFillPasswordCoordinator.viewController;
+
+  [self.childCoordinators addObject:_manualFillPasswordCoordinator];
+}
+
+#pragma mark - UIPopoverPresentationControllerDelegate
+
+- (void)popoverPresentationControllerDidDismissPopover:
+    (UIPopoverPresentationController*)popoverPresentationController {
+  base::RecordAction(base::UserMetricsAction("ManualFallback_ClosePopover"));
+  [self.delegate expandedManualFillCoordinatorDidDismissPopover:self];
 }
 
 #pragma mark - Private
@@ -148,7 +215,7 @@ using manual_fill::ManualFillDataType;
       [self showAddressManualFillingOptions];
       break;
     case ManualFillDataType::kOther:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -160,22 +227,25 @@ using manual_fill::ManualFillDataType;
   CHECK(webStateList->GetActiveWebState());
   const GURL& URL = webStateList->GetActiveWebState()->GetLastCommittedURL();
 
-  ManualFillPasswordCoordinator* passwordCoordinator =
-      [[ManualFillPasswordCoordinator alloc]
-             initWithBaseViewController:self.baseViewController
-                                browser:self.browser
-          manualFillPlusAddressMediator:[self manualFillPlusAddressMediator]
-                                    URL:URL
-                       injectionHandler:self.injectionHandler
-               invokedOnObfuscatedField:self.invokedOnObfuscatedField
-                 showAutofillFormButton:(_focusedFieldDataType ==
-                                         ManualFillDataType::kPassword)];
-  passwordCoordinator.delegate = self.delegate;
+  _manualFillPasswordCoordinator = [[ManualFillPasswordCoordinator alloc]
+         initWithBaseViewController:self.baseViewController
+                            browser:self.browser
+      manualFillPlusAddressMediator:
+          [self manualFillPlusAddressMediatorForFallback:NO]
+                                URL:URL
+                   injectionHandler:self.injectionHandler
+           invokedOnObfuscatedField:self.invokedOnObfuscatedField
+             showAutofillFormButton:(_focusedFieldDataType ==
+                                     ManualFillDataType::kPassword)];
+  _manualFillPasswordCoordinator.delegate = self.delegate;
+  _manualFillPasswordCoordinator.consumer = self;
 
-  self.expandedManualFillViewController.childViewController =
-      passwordCoordinator.viewController;
-
-  [self.childCoordinators addObject:passwordCoordinator];
+  // Note: The ManualFillPasswordCoordinator object will be added as a child
+  // coordinator to this coordinator in the `passwordsFetched` function,
+  // which will be called only once passwords are fetched, to avoid showing a
+  // visible flicker where an empty passwords list appears briefly between the
+  // previous menu and the final passwords menu, where all available passwords
+  // are shown.
 }
 
 // Shows the payment method manual filling options.
@@ -204,7 +274,8 @@ using manual_fill::ManualFillDataType;
   AddressCoordinator* addressCoordinator = [[AddressCoordinator alloc]
          initWithBaseViewController:self.baseViewController
                             browser:self.browser
-      manualFillPlusAddressMediator:[self manualFillPlusAddressMediator]
+      manualFillPlusAddressMediator:
+          [self manualFillPlusAddressMediatorForFallback:YES]
                    injectionHandler:self.injectionHandler
              showAutofillFormButton:(_focusedFieldDataType ==
                                      ManualFillDataType::kAddress)];
@@ -217,9 +288,10 @@ using manual_fill::ManualFillDataType;
 }
 
 // Initializes `_manualFillPlusAddressMediator`.
-- (ManualFillPlusAddressMediator*)manualFillPlusAddressMediator {
+- (ManualFillPlusAddressMediator*)manualFillPlusAddressMediatorForFallback:
+    (BOOL)isAddressManualFallback {
   if (!base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressIOSManualFallbackEnabled)) {
+          plus_addresses::features::kPlusAddressesEnabled)) {
     return nil;
   }
 
@@ -227,23 +299,23 @@ using manual_fill::ManualFillDataType;
     return _manualFillPlusAddressMediator;
   }
 
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
   FaviconLoader* faviconLoader =
-      IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
+      IOSChromeFaviconLoaderFactory::GetForProfile(self.profile);
 
   WebStateList* webStateList = self.browser->GetWebStateList();
   CHECK(webStateList->GetActiveWebState());
   const GURL& URL = webStateList->GetActiveWebState()->GetLastCommittedURL();
 
   plus_addresses::PlusAddressService* plusAddressService =
-      PlusAddressServiceFactory::GetForBrowserState(browserState);
+      PlusAddressServiceFactory::GetForProfile(self.profile);
   CHECK(plusAddressService);
 
   _manualFillPlusAddressMediator = [[ManualFillPlusAddressMediator alloc]
-      initWithFaviconLoader:faviconLoader
-         plusAddressService:plusAddressService
-                        URL:URL
-             isOffTheRecord:browserState->IsOffTheRecord()];
+        initWithFaviconLoader:faviconLoader
+           plusAddressService:plusAddressService
+                          URL:URL
+               isOffTheRecord:self.isOffTheRecord
+      isAddressManualFallback:isAddressManualFallback];
 
   return _manualFillPlusAddressMediator;
 }

@@ -1,0 +1,50 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("scenario_api") {
+  sources = [
+    "performance_scenario_memory.cc",
+    "performance_scenario_memory.h",
+    "performance_scenario_memory_forward.h",
+    "performance_scenario_observer.cc",
+    "performance_scenario_observer.h",
+    "performance_scenarios.cc",
+    "performance_scenarios.h",
+  ]
+
+  defines = [ "IS_SCENARIO_API_IMPL" ]
+
+  public_deps = [ "//base" ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "performance_scenario_test_support.cc",
+    "performance_scenario_test_support.h",
+  ]
+
+  deps = [
+    ":scenario_api",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "performance_scenario_observer_unittest.cc",
+    "performance_scenarios_unittest.cc",
+  ]
+
+  deps = [
+    ":scenario_api",
+    ":test_support",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

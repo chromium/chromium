@@ -244,7 +244,7 @@ testSuite({
       stop: goog.partial(recorder, 'stop'),
       comment: goog.partial(recorder, 'comment'),
     });
-    const timestamp = goog.now() - 10;
+    const timestamp = Date.now() - 10;
     Trace.addComment('first', null, timestamp);
     validateRecordedListener([['comment', 'first', timestamp]], recorder);
   },
@@ -297,7 +297,7 @@ testSuite({
     const t1 = Trace.startTracer('second', 'XType');
     const t2 = Trace.startTracer('third');
     Trace.addComment('NoTime');
-    const currentTime = goog.now();
+    const currentTime = Date.now();
     Trace.addComment('WithTime', null, currentTime);
     Trace.addComment('NoTime', 'YType');
     Trace.stopTracer(t2);

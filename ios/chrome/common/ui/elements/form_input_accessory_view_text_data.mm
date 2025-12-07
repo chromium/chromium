@@ -13,6 +13,8 @@
                         (NSString*)nextButtonAccessibilityLabel
                 previousButtonAccessibilityLabel:
                     (NSString*)previousButtonAccessibilityLabel
+                           manualFillButtonTitle:
+                               (NSString*)manualFillButtonTitle
               manualFillButtonAccessibilityLabel:
                   (NSString*)manualFillButtonAccessibilityLabel
       passwordManualFillButtonAccessibilityLabel:
@@ -21,11 +23,12 @@
         (NSString*)creditCardManualFillButtonAccessibilityLabel
        addressManualFillButtonAccessibilityLabel:
            (NSString*)addressManualFillButtonAccessibilityLabel {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _closeButtonTitle = [closeButtonTitle copy];
     _closeButtonAccessibilityLabel = [closeButtonAccessibilityLabel copy];
     _nextButtonAccessibilityLabel = [nextButtonAccessibilityLabel copy];
     _previousButtonAccessibilityLabel = [previousButtonAccessibilityLabel copy];
+    _manualFillButtonTitle = [manualFillButtonTitle copy];
     _manualFillButtonAccessibilityLabel =
         [manualFillButtonAccessibilityLabel copy];
     _passwordManualFillButtonAccessibilityLabel =

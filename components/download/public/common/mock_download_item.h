@@ -46,7 +46,7 @@ class MockDownloadItem : public DownloadItem {
   MOCK_METHOD0(UpdateObservers, void());
   MOCK_METHOD0(ValidateDangerousDownload, void());
   MOCK_METHOD0(ValidateInsecureDownload, void());
-  MOCK_METHOD2(StealDangerousDownload, void(bool, AcquireFileCallback));
+  MOCK_METHOD1(CopyDownload, void(AcquireFileCallback));
   MOCK_METHOD0(Pause, void());
   MOCK_METHOD1(Resume, void(bool));
   MOCK_METHOD1(Cancel, void(bool));
@@ -103,7 +103,7 @@ class MockDownloadItem : public DownloadItem {
   MOCK_METHOD0(GetRenameHandler, DownloadItemRenameHandler*());
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD0(IsFromExternalApp, bool());
-  MOCK_METHOD0(IsMustDownload, bool());
+  MOCK_METHOD0(AllowAutoOpenAfterCompletion, bool());
 #endif  // BUILDFLAG(IS_ANDROID)
   MOCK_CONST_METHOD0(IsDangerous, bool());
   MOCK_CONST_METHOD0(IsInsecure, bool());

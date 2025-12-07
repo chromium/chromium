@@ -41,16 +41,12 @@ constexpr char kLanguagePackManifestName[] = "SODA %s Models";
 SodaLanguagePackComponentInstallerPolicy::
     SodaLanguagePackComponentInstallerPolicy(
         speech::SodaLanguagePackComponentConfig language_config,
-        PrefService* prefs,
         OnSodaLanguagePackComponentReadyCallback on_ready_callback)
     : language_config_(language_config),
-      prefs_(prefs),
       on_ready_callback_(std::move(on_ready_callback)) {}
 
 SodaLanguagePackComponentInstallerPolicy::
-    ~SodaLanguagePackComponentInstallerPolicy() {
-  prefs_ = nullptr;
-}
+    ~SodaLanguagePackComponentInstallerPolicy() = default;
 
 std::string SodaLanguagePackComponentInstallerPolicy::GetExtensionId(
     speech::LanguageCode language_code) {
@@ -128,9 +124,13 @@ void SodaLanguagePackComponentInstallerPolicy::ComponentReady(
           << install_dir.value();
 
 #if !BUILDFLAG(IS_ANDROID)
-  prefs_->SetFilePath(
-      language_config_.config_path_pref,
-      install_dir.Append(speech::kSodaLanguagePackDirectoryRelativePath));
+  // The component updater may post ready tasks during shutdown. Confirm that the
+  // `BrowserProcess` is still valid before setting the pref.
+  if (g_browser_process) {
+    g_browser_process->local_state()->SetFilePath(
+        language_config_.config_path_pref,
+        install_dir.Append(speech::kSodaLanguagePackDirectoryRelativePath));
+  }
 #endif  //! BUILDFLAG(IS_ANDROID)
 
   if (on_ready_callback_) {
@@ -163,13 +163,12 @@ SodaLanguagePackComponentInstallerPolicy::GetInstallerAttributes() const {
 void RegisterSodaLanguagePackComponent(
     speech::SodaLanguagePackComponentConfig language_config,
     ComponentUpdateService* cus,
-    PrefService* prefs,
     OnSodaLanguagePackComponentReadyCallback on_ready_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<SodaLanguagePackComponentInstallerPolicy>(
-          language_config, prefs, std::move(on_ready_callback)));
+          language_config, std::move(on_ready_callback)));
 
   installer->Register(
       cus, base::BindOnce(&SodaLanguagePackComponentInstallerPolicy::

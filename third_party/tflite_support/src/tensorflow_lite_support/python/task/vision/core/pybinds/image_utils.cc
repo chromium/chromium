@@ -44,7 +44,7 @@ PYBIND11_MODULE(image_utils, m) {
         int width = info.shape[1];
         int channels = info.ndim == 3 ? info.shape[2] : 1;
 
-        return ImageData{static_cast<uint8 *>(info.ptr), width, height,
+        return ImageData{static_cast<uint8_t *>(info.ptr), width, height,
                          channels};
       }))
       .def_readonly("width", &ImageData::width)
@@ -52,11 +52,11 @@ PYBIND11_MODULE(image_utils, m) {
       .def_readonly("channels", &ImageData::channels)
       .def_buffer([](ImageData &data) -> py::buffer_info {
         return py::buffer_info(
-            data.pixel_data, sizeof(uint8),
-            py::format_descriptor<uint8>::format(), 3,
+            data.pixel_data, sizeof(uint8_t),
+            py::format_descriptor<uint8_t>::format(), 3,
             {data.height, data.width, data.channels},
-            {sizeof(uint8) * size_t(data.width) * size_t(data.channels),
-             sizeof(uint8) * size_t(data.channels), sizeof(uint8)});
+            {sizeof(uint8_t) * size_t(data.width) * size_t(data.channels),
+             sizeof(uint8_t) * size_t(data.channels), sizeof(uint8_t)});
       });
 
   m.def("decode_image_from_file",

@@ -7,6 +7,7 @@
 
 #include <atomic>
 
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -42,6 +43,8 @@ class MojoVideoEncoderMetricsProviderFactory
     : public base::RefCountedThreadSafe<
           MojoVideoEncoderMetricsProviderFactory> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   MojoVideoEncoderMetricsProviderFactory(
       mojom::VideoEncoderUseCase use_case,
       mojo::PendingRemote<mojom::VideoEncoderMetricsProvider> pending_remote);

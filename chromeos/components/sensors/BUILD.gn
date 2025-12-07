@@ -2,34 +2,23 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
+assert(is_chromeos)
 
 component("sensors") {
   output_name = "chromeos_sensors"
   defines = [ "IS_CHROMEOS_SENSORS_IMPL" ]
   sources = [
+    "ash/sensor_hal_dispatcher.cc",
+    "ash/sensor_hal_dispatcher.h",
     "sensor_util.cc",
     "sensor_util.h",
   ]
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
+    "//chromeos/ash/components/mojo_service_manager",
     "//chromeos/components/sensors/mojom",
     "//mojo/public/cpp/bindings",
   ]
-  if (is_chromeos_ash) {
-    sources += [
-      "ash/sensor_hal_dispatcher.cc",
-      "ash/sensor_hal_dispatcher.h",
-    ]
-    deps += [ "//chromeos/ash/components/mojo_service_manager" ]
-  }
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-    ]
-  }
 }
 
 source_set("test_support") {
@@ -52,18 +41,16 @@ source_set("test_support") {
   ]
 }
 
-if (is_chromeos_ash) {
-  source_set("ash_unit_tests") {
-    testonly = true
-    sources = [ "ash/sensor_hal_dispatcher_unittest.cc" ]
-    deps = [
-      ":sensors",
-      ":test_support",
-      "//base/test:test_support",
-      "//chromeos/ash/components/mojo_service_manager",
-      "//chromeos/components/sensors/mojom",
-      "//mojo/public/cpp/bindings",
-      "//testing/gtest",
-    ]
-  }
+source_set("ash_unit_tests") {
+  testonly = true
+  sources = [ "ash/sensor_hal_dispatcher_unittest.cc" ]
+  deps = [
+    ":sensors",
+    ":test_support",
+    "//base/test:test_support",
+    "//chromeos/ash/components/mojo_service_manager",
+    "//chromeos/components/sensors/mojom",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
+  ]
 }

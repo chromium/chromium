@@ -1,0 +1,41 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++textField name='Invalid is true' invalidState=true errorMessageIds=paragraph
+++++++++++genericContainer
+++++++paragraph
+++++++++staticText name='Error for invalid input'
+++++++++++inlineTextBox name='Error for invalid input'
+++++++article
+++++++++staticText name='Another error for invalid input'
+++++++++++inlineTextBox name='Another error for invalid input'
+=== Start Continuation ===
+rootWebArea name='switch-referenced-element'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++textField name='Invalid is true' invalidState=true errorMessageIds=article
+++++++++++genericContainer
+++++++paragraph
+++++++++staticText name='Error for invalid input'
+++++++++++inlineTextBox name='Error for invalid input'
+++++++article
+++++++++staticText name='Another error for invalid input'
+++++++++++inlineTextBox name='Another error for invalid input'
+=== Start Continuation ===
+rootWebArea name='append-new-referenced-element'
+++genericContainer ignored
+++++genericContainer ignored
+++++++caption
+++++++++staticText name='Yet another error for invalid input'
+++++++++++inlineTextBox name='Yet another error for invalid input'
+++++++genericContainer
+++++++++textField name='Invalid is true' invalidState=true errorMessageIds=caption
+++++++++++genericContainer
+++++++paragraph
+++++++++staticText name='Error for invalid input'
+++++++++++inlineTextBox name='Error for invalid input'
+++++++article
+++++++++staticText name='Another error for invalid input'
+++++++++++inlineTextBox name='Another error for invalid input'

@@ -1,0 +1,202 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  height: 20px;
+  width: 20px;
+}
+
+.spinner-circle {
+  animation: spin 1.5s linear infinite;
+  fill: none;
+  stroke: var(--color-composebox-file-chip-spinner);
+  stroke-dasharray: 240;
+  stroke-dashoffset: 60;
+  stroke-linecap: round;
+  stroke-width: 10;
+  transform-origin: 50% 50%;
+}
+
+.img-thumbnail {
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  width: 100%;
+}
+
+#imgChip {
+  align-items: center;
+  border-radius: 8px;
+  display: flex;
+  height: var(--composebox-thumbnail-img-chip-size, 44px);
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  width: var(--composebox-thumbnail-img-chip-size, 44px);
+}
+
+.img-overlay {
+  background-color: var(--color-composebox-file-image-overlay);
+  height: 100%;
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+#removeImgButton {
+  --cr-icon-button-height: 100%;
+  --cr-icon-button-width: 100%;
+  --cr-icon-button-fill-color: white;
+  --cr-icon-button-icon-size: 20px;
+  --cr-icon-button-margin-start: 0px;
+  border-radius: 10px;
+  display: flex;
+}
+
+.chip {
+  align-items: center;
+  background-color: var(--color-composebox-file-chip-background);
+  border-radius: 8px;
+  display: flex;
+  gap: 6px;
+  height: 44px;
+  overflow: hidden;
+  padding: 0px 12px 0px 8px;
+  position: relative;
+  width: 154px;
+}
+
+.thumbnail {
+  align-items: center;
+  background-color: var(--color-composebox-file-chip-favicon-background);
+  border-radius: 4px;
+  display: flex;
+  flex-shrink: 0;
+  height: 16px;
+  justify-content: center;
+  padding: 6px;
+  position: relative;
+  width: 16px;
+}
+
+.pdf-icon {
+  background-color: var(--color-composebox-background);
+  box-sizing: border-box;
+  border-radius: 4px;
+  color: var(--color-composebox-pdf-chip-icon);
+  height: 100%;
+  width: 100%;
+}
+
+.chip-overlay {
+  border-radius: inherit;
+  inset: 0;
+  display: none;
+  pointer-events: none;
+  position: absolute;
+}
+
+.chip:hover .chip-overlay {
+  display: block;
+}
+
+.overlay {
+  align-items: center;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  opacity: 0;
+  position: absolute;
+  inset-inline-end: 0;
+  top: 0;
+  width: 44px;
+}
+
+.gradient-protection {
+  background: linear-gradient(
+    270deg,
+    var(--color-composebox-file-carousel-remove-gradient-start) 85.29%,
+    var(--color-composebox-file-carousel-remove-gradient-end) 123.53%
+  );
+  border-radius: 0 8px 8px 0;
+  inset-block: 0;
+  inset-inline-end: 0;
+  inline-size: 56px;
+  position: absolute;
+  pointer-events: none;
+}
+
+.remove-button {
+  --cr-icon-button-fill-color: var(--cr-composebox-file-thumbnail-remove-button-fill-color, black);
+  --cr-icon-button-hover-background-color: var(--color-composebox-file-carousel-remove-button);
+  --cr-icon-button-height: 24px;
+  --cr-icon-button-width: 24px;
+  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-margin-start: 0;
+  border-radius: 50%;
+  color: var(--color-composebox-pdf-chip-icon);
+  position: relative;
+}
+
+:host-context([dir='rtl']) .gradient-protection {
+  transform: scaleX(-1);
+}
+
+.title {
+  color: var(--color-composebox-file-chip-text);
+  font-family: inherit;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16px;
+  overflow: hidden;
+  position: relative;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#imgChip:hover .img-overlay,
+#imgChip:focus-within .img-overlay,
+.chip:hover .overlay,
+.chip:focus-within .overlay {
+  opacity: 1;
+}
+
+#tabThumbnail cr-composebox-tab-favicon {
+  border-radius: 50%;
+  height: 16px;
+  width: 16px;
+}
+
+.tabInfo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.url {
+  color: var(--color-composebox-file-carousel-url);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

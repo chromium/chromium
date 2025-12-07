@@ -7,6 +7,7 @@
 
 #include <string_view>
 
+#include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 
@@ -33,6 +34,7 @@ class NET_EXPORT CTVerifier {
   virtual void Verify(X509Certificate* cert,
                       std::string_view stapled_ocsp_response,
                       std::string_view sct_list_from_tls_extension,
+                      base::Time current_time,
                       SignedCertificateTimestampAndStatusList* output_scts,
                       const NetLogWithSource& net_log) const = 0;
 };

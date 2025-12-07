@@ -1,0 +1,83 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+assert(toolkit_views)
+
+source_set("sharing_hub") {
+  sources = [
+    "screenshot/screenshot_captured_bubble_controller.h",
+    "sharing_hub_bubble_controller.cc",
+    "sharing_hub_bubble_controller.h",
+    "sharing_hub_bubble_view.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/share",
+    "//chrome/browser/sharing_hub",
+    "//content/public/browser",
+  ]
+
+  if (is_chromeos) {
+    sources += [ "sharing_hub_bubble_controller_chromeos_impl.h" ]
+    public_deps += [
+      "//chrome/browser/sharesheet",
+      "//chromeos/components/sharesheet:constants",
+      "//ui/native_window_tracker",
+      "//ui/views",
+    ]
+  } else {
+    sources += [ "sharing_hub_bubble_controller_desktop_impl.h" ]
+  }
+}
+
+source_set("impl") {
+  sources = [ "screenshot/screenshot_captured_bubble_controller.cc" ]
+  deps = [
+    ":sharing_hub",
+    "//chrome/browser/image_editor",
+    "//chrome/browser/profiles:profile",
+  ]
+
+  if (is_chromeos) {
+    sources += [ "sharing_hub_bubble_controller_chromeos_impl.cc" ]
+    deps += [
+      "//chrome/browser/ui/views/interaction",
+      "//components/services/app_service/",
+      "//ui/views",
+    ]
+  } else {
+    sources += [ "sharing_hub_bubble_controller_desktop_impl.cc" ]
+    deps += [
+      "//chrome/app:command_ids",
+      "//chrome/app:generated_resources",
+      "//chrome/browser/favicon",
+      "//chrome/browser/ui/color:color_headers",
+      "//chrome/browser/ui/qrcode_generator",
+      "//chrome/browser/ui/send_tab_to_self",
+      "//components/media_router/browser",
+      "//ui/base",
+      "//ui/color:color_headers",
+      "//ui/native_theme",
+    ]
+  }
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+if (is_win || is_mac || is_linux) {
+  source_set("test_support_ui") {
+    testonly = true
+    sources = [
+      "fake_sharing_hub_bubble_controller.cc",
+      "fake_sharing_hub_bubble_controller.h",
+    ]
+
+    public_deps = [
+      ":sharing_hub",
+      "//testing/gmock",
+    ]
+  }
+}

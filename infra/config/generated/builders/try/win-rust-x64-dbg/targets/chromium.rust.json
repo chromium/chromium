@@ -1,0 +1,96 @@
+{
+  "win-rust-x64-dbg": {
+    "additional_compile_targets": [
+      "rust_build_tests"
+    ],
+    "gtest_tests": [
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//base:base_unittests",
+        "module_scheme": "gtest",
+        "name": "base_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "base_unittests",
+        "test_id_prefix": "ninja://base:base_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//testing/rust_gtest_interop:rust_gtest_interop_unittests",
+        "module_scheme": "gtest",
+        "name": "rust_gtest_interop_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "rust_gtest_interop_unittests",
+        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//build/rust/tests/test_cpp_including_rust:test_cpp_including_rust_unittests",
+        "module_scheme": "gtest",
+        "name": "test_cpp_including_rust_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "test_cpp_including_rust_unittests",
+        "test_id_prefix": "ninja://build/rust/tests/test_cpp_including_rust:test_cpp_including_rust_unittests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//build/rust/tests/test_serde_json_lenient:test_serde_json_lenient",
+        "module_scheme": "gtest",
+        "name": "test_serde_json_lenient",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "test_serde_json_lenient",
+        "test_id_prefix": "ninja://build/rust/tests/test_serde_json_lenient:test_serde_json_lenient/"
+      }
+    ],
+    "isolated_scripts": [
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//build/rust/tests:build_rust_tests",
+        "module_scheme": "flat",
+        "name": "build_rust_tests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "build_rust_tests",
+        "test_id_prefix": "ninja://build/rust/tests:build_rust_tests/"
+      }
+    ]
+  }
+}

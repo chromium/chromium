@@ -59,8 +59,9 @@ int64_t ClockNow(clockid_t clk_id) {
 std::optional<int64_t> MaybeClockNow(clockid_t clk_id) {
   struct timespec ts;
   int res = clock_gettime(clk_id, &ts);
-  if (res == 0)
+  if (res == 0) {
     return ConvertTimespecToMicros(ts);
+  }
   return std::nullopt;
 }
 
@@ -102,9 +103,14 @@ TimeTicks TimeTicksNowIgnoringOverride() {
 
 std::optional<TimeTicks> MaybeTimeTicksNowIgnoringOverride() {
   std::optional<int64_t> now = MaybeClockNow(CLOCK_MONOTONIC);
-  if (now.has_value())
+  if (now.has_value()) {
     return TimeTicks() + Microseconds(now.value());
+  }
   return std::nullopt;
+}
+
+TimeTicks TimeTicksLowResolutionNowIgnoringOverride() {
+  return TimeTicks() + Microseconds(ClockNow(CLOCK_MONOTONIC_COARSE));
 }
 }  // namespace subtle
 
@@ -131,8 +137,7 @@ ThreadTicks ThreadTicksNowIgnoringOverride() {
     BUILDFLAG(IS_ANDROID)
   return ThreadTicks() + Microseconds(ClockNow(CLOCK_THREAD_CPUTIME_ID));
 #else
-  NOTREACHED_IN_MIGRATION();
-  return ThreadTicks();
+  NOTREACHED();
 #endif
 }
 }  // namespace subtle

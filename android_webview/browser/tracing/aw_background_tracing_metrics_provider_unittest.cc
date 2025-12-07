@@ -10,9 +10,9 @@
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "content/public/browser/background_tracing_config.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/tracing_delegate.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/background_tracing_test_support.h"
 #include "content/public/test/browser_task_environment.h"
@@ -53,7 +53,7 @@ class AwBackgroundTracingMetricsProviderTest : public testing::Test {
     content::SetContentClient(&content_client_);
     content::SetBrowserClientForTesting(&browser_client_);
     background_tracing_manager_ =
-        content::BackgroundTracingManager::CreateInstance();
+        content::BackgroundTracingManager::CreateInstance(&tracing_delegate_);
   }
 
   ~AwBackgroundTracingMetricsProviderTest() override {
@@ -65,6 +65,7 @@ class AwBackgroundTracingMetricsProviderTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   content::ContentClient content_client_;
   content::ContentBrowserClient browser_client_;
+  content::TracingDelegate tracing_delegate_;
   std::unique_ptr<content::BackgroundTracingManager>
       background_tracing_manager_;
 };

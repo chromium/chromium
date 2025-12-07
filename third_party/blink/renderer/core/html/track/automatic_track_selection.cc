@@ -53,14 +53,15 @@ AutomaticTrackSelection::AutomaticTrackSelection(
     const Configuration& configuration)
     : configuration_(configuration) {}
 
-const AtomicString& AutomaticTrackSelection::PreferredTrackKind() const {
+std::optional<V8TextTrackKind::Enum>
+AutomaticTrackSelection::PreferredTrackKind() const {
   if (configuration_.text_track_kind_user_preference ==
       TextTrackKindUserPreference::kSubtitles)
-    return TextTrack::SubtitlesKeyword();
+    return V8TextTrackKind::Enum::kSubtitles;
   if (configuration_.text_track_kind_user_preference ==
       TextTrackKindUserPreference::kCaptions)
-    return TextTrack::CaptionsKeyword();
-  return g_null_atom;
+    return V8TextTrackKind::Enum::kCaptions;
+  return std::nullopt;
 }
 
 void AutomaticTrackSelection::PerformAutomaticTextTrackSelection(
@@ -167,18 +168,23 @@ void AutomaticTrackSelection::Perform(TextTrackList& text_tracks) {
     if (!text_track)
       continue;
 
-    String kind = text_track->kind();
     TrackGroup* current_group;
-    if (kind == TextTrack::SubtitlesKeyword() ||
-        kind == TextTrack::CaptionsKeyword()) {
-      current_group = &caption_and_subtitle_tracks;
-    } else if (kind == TextTrack::DescriptionsKeyword()) {
-      current_group = &description_tracks;
-    } else if (kind == TextTrack::ChaptersKeyword()) {
-      current_group = &chapter_tracks;
-    } else {
-      DCHECK_EQ(kind, TextTrack::MetadataKeyword());
-      current_group = &metadata_tracks;
+    switch (text_track->kind().AsEnum()) {
+      case V8TextTrackKind::Enum::kSubtitles:
+      case V8TextTrackKind::Enum::kCaptions:
+        current_group = &caption_and_subtitle_tracks;
+        break;
+      case V8TextTrackKind::Enum::kDescriptions:
+        current_group = &description_tracks;
+        break;
+      case V8TextTrackKind::Enum::kChapters:
+        current_group = &chapter_tracks;
+        break;
+      case V8TextTrackKind::Enum::kMetadata:
+        current_group = &metadata_tracks;
+        break;
+      default:
+        NOTREACHED();
     }
 
     if (!current_group->visible_track &&

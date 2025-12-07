@@ -19,6 +19,8 @@ import android.text.TextUtils.TruncateAt;
 import android.view.View;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.FileAccessPermissionHelper;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -30,6 +32,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 /**
  * QrCodeShareMediator is in charge of calculating and setting values for QrCodeShareViewProperties.
  */
+@NullMarked
 class QrCodeShareMediator {
     // QR code version 40 with M-level error correction can encode binary inputs of up to 2331
     // bytes, and digit-only inputs of up to 5596 bytes.  See
@@ -41,29 +44,29 @@ class QrCodeShareMediator {
 
     private final Context mContext;
     private final PropertyModel mPropertyModel;
-    private WindowAndroid mWindowAndroid;
+    private @Nullable WindowAndroid mWindowAndroid;
 
     // The number of times the user has attempted to download the QR code in this dialog.
     private int mNumDownloads;
 
     private boolean mIsDownloadInProgress;
-    private String mUrl;
-    private Runnable mCloseDialog;
+    private final String mUrl;
+    private final Runnable mCloseDialog;
 
     /**
      * The QrCodeScanMediator constructor.
+     *
      * @param context The context to use.
      * @param propertyModel The property model to use to communicate with views.
      * @param closeDialog The {@link Runnable} to close the dialog.
      * @param url The url to create the QRCode.
-     * @param permissionDelegate The delegate to help with downloading QRCode.
      */
     QrCodeShareMediator(
             Context context,
             PropertyModel propertyModel,
             Runnable closeDialog,
             String url,
-            WindowAndroid windowAndroid) {
+            @Nullable WindowAndroid windowAndroid) {
         mContext = context;
         mPropertyModel = propertyModel;
         mCloseDialog = closeDialog;
@@ -76,13 +79,14 @@ class QrCodeShareMediator {
 
     /**
      * Refreshes the QR Code bitmap for given data.
+     *
      * @param data The data to encode.
      */
-    protected void refreshQrCode(String data) {
+    protected void refreshQrCode(@Nullable String data) {
         if (TextUtils.isEmpty(data)) {
             mPropertyModel.set(
                     QrCodeShareViewProperties.ERROR_STRING,
-                    mContext.getResources().getString(R.string.qr_code_error_unknown));
+                    mContext.getString(R.string.qr_code_error_unknown));
             return;
         }
 
@@ -93,11 +97,9 @@ class QrCodeShareMediator {
         }
         String errorMessage;
         if (data != null && data.length() > MAX_URL_LENGTH) {
-            errorMessage =
-                    mContext.getResources()
-                            .getString(R.string.qr_code_error_too_long, MAX_URL_LENGTH);
+            errorMessage = mContext.getString(R.string.qr_code_error_too_long, MAX_URL_LENGTH);
         } else {
-            errorMessage = mContext.getResources().getString(R.string.qr_code_error_unknown);
+            errorMessage = mContext.getString(R.string.qr_code_error_unknown);
         }
         mPropertyModel.set(QrCodeShareViewProperties.ERROR_STRING, errorMessage);
     }
@@ -225,7 +227,7 @@ class QrCodeShareMediator {
     }
 
     // Helps to limit number of text lines and shows ellipsis for only the last line.
-    class FixedLineCountLayout extends DynamicLayout {
+    static class FixedLineCountLayout extends DynamicLayout {
         int mMaxLines;
 
         FixedLineCountLayout(

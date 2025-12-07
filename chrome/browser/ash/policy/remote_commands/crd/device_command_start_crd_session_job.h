@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/start_crd_session_job_delegate.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 
 namespace policy {
@@ -45,8 +46,8 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   void TerminateImpl() override;
 
  private:
-  void CheckManagedNetworkASync(base::OnceClosure on_success);
-  void StartCrdHostAndGetCode();
+  void CheckManagedNetworkASync(base::OnceCallback<void(bool)> on_success);
+  void StartCrdHostAndGetCode(bool is_in_managed_environment);
   void FinishWithSuccess(const std::string& access_code);
   // Finishes command with error code and optional message.
   void FinishWithError(ExtendedStartCrdSessionResultCode result_code,
@@ -56,6 +57,8 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   bool UserTypeSupportsCrd() const;
   CrdSessionType GetCrdSessionType() const;
   bool IsDeviceIdle() const;
+  bool IsRemoteSupportSession() const;
+  bool IsRemoteAccessSession() const;
 
   bool ShouldShowConfirmationDialog() const;
   bool ShouldTerminateUponInput() const;
@@ -63,8 +66,11 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   bool ShouldAllowTroubleshootingTools() const;
   bool ShouldShowTroubleshootingTools() const;
   bool ShouldAllowFileTransfer() const;
+  bool ShouldAutoAcceptSession(bool is_in_managed_environment) const;
 
   Delegate::ErrorCallback GetErrorCallback();
+
+  std::unique_ptr<crash_reporter::ScopedCrashKeyString> crd_crash_key_;
 
   // The callback that will be called when the access code was successfully
   // obtained or when this command failed.
@@ -81,6 +87,9 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
 
   // True if the admin requested a curtained remote access session.
   bool curtain_local_user_session_ = false;
+
+  // True if the host needs to allow the admin to start the session.
+  std::optional<bool> show_confirmation_dialog_;
 
   // The email address of the admin user who issued the remote command.
   std::optional<std::string> admin_email_;

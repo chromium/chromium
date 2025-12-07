@@ -13,12 +13,13 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/frame/reporting_observer.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
@@ -74,7 +75,7 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
       mojo::PendingRemote<mojom::blink::BlobURLStore> blob_url_store =
           mojo::NullRemote(),
       BeginFrameProviderParams begin_frame_provider_params = {},
-      const PermissionsPolicy* parent_permissions_policy = nullptr,
+      const network::PermissionsPolicy* parent_permissions_policy = nullptr,
       base::UnguessableToken agent_cluster_id = {},
       ukm::SourceId ukm_source_id = ukm::kInvalidSourceId,
       const std::optional<ExecutionContextToken>& parent_context_token =
@@ -87,7 +88,12 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
       const SecurityOrigin* top_level_frame_security_origin = nullptr,
       net::StorageAccessApiStatus parent_storage_access_api_status =
           net::StorageAccessApiStatus::kNone,
-      bool require_cross_site_request_for_cookies = false);
+      bool require_cross_site_request_for_cookies = false,
+      scoped_refptr<SecurityOrigin> origin_to_use = nullptr,
+      mojo::PendingReceiver<mojom::blink::ReportingObserver>
+          coep_reporting_observer = mojo::NullReceiver(),
+      mojo::PendingReceiver<mojom::blink::ReportingObserver>
+          dip_reporting_observer = mojo::NullReceiver());
   GlobalScopeCreationParams(const GlobalScopeCreationParams&) = delete;
   GlobalScopeCreationParams& operator=(const GlobalScopeCreationParams&) =
       delete;
@@ -148,6 +154,13 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
   // script loader uses Document's SecurityOrigin for security checks.
   scoped_refptr<const SecurityOrigin> starter_origin;
 
+  // The SecurityOrigin to be used by the worker, if it's pre-calculated
+  // already (e.g. passed down from the browser to the renderer). Only set
+  // for dedicated and shared workers. The origin is calculated in the browser
+  // process and sent to the renderer. This guarantees both the renderer and
+  // browser knows the exact origin used by the worker.
+  scoped_refptr<SecurityOrigin> origin_to_use;
+
   // Indicates if the Document creating a Worker/Worklet is a secure context.
   //
   // Worklets are defined to have a unique, opaque origin, so are not secure:
@@ -189,7 +202,7 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
 
   BeginFrameProviderParams begin_frame_provider_params;
 
-  std::unique_ptr<PermissionsPolicy> worker_permissions_policy;
+  std::unique_ptr<network::PermissionsPolicy> worker_permissions_policy;
 
   // Set when the worker/worklet has the same AgentClusterID as the execution
   // context that created it (e.g. for a dedicated worker).
@@ -243,6 +256,12 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
   // For context on usage see:
   // https://privacycg.github.io/saa-non-cookie-storage/shared-workers.html
   const bool require_cross_site_request_for_cookies;
+
+  // Used by COEP and DocumentIsolationPolicy reporting to trigger
+  // ReportingObserver events.
+  mojo::PendingReceiver<mojom::blink::ReportingObserver>
+      coep_reporting_observer;
+  mojo::PendingReceiver<mojom::blink::ReportingObserver> dip_reporting_observer;
 };
 
 }  // namespace blink

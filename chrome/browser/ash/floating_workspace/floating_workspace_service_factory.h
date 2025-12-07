@@ -8,8 +8,6 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
-class Profile;
-
 namespace ash {
 class FloatingWorkspaceService;
 }
@@ -25,7 +23,8 @@ class FloatingWorkspaceServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static FloatingWorkspaceServiceFactory* GetInstance();
 
-  static FloatingWorkspaceService* GetForProfile(Profile* profile);
+  static FloatingWorkspaceService* GetForProfile(
+      content::BrowserContext* browser_context);
 
  private:
   friend base::NoDestructor<FloatingWorkspaceServiceFactory>;

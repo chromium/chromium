@@ -16,20 +16,18 @@ namespace memory_pressure {
 // Report metrics related to memory pressure.
 class MemoryPressureLevelReporter {
  public:
-  using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
-
   explicit MemoryPressureLevelReporter(
-      MemoryPressureLevel initial_pressure_level);
+      base::MemoryPressureLevel initial_pressure_level);
   ~MemoryPressureLevelReporter();
 
   // Should be called whenever the current memory pressure level changes.
-  void OnMemoryPressureLevelChanged(MemoryPressureLevel new_level);
+  void OnMemoryPressureLevelChanged(base::MemoryPressureLevel new_level);
 
  private:
   void ReportHistogram(base::TimeTicks now);
   void StartPeriodicTimer();
 
-  MemoryPressureLevel current_pressure_level_;
+  base::MemoryPressureLevel current_pressure_level_;
   base::TimeTicks current_pressure_level_begin_ = base::TimeTicks::Now();
 
   // The reporting of the pressure level histogram is done in seconds, the
@@ -37,7 +35,7 @@ class MemoryPressureLevelReporter {
   // time will be truncated each time we send a report. This array is used to
   // accumulate the truncated time and add it to the reported value when it
   // exceeds one second.
-  std::array<base::TimeDelta, MemoryPressureLevel::kMaxValue + 1>
+  std::array<base::TimeDelta, base::MemoryPressureLevel::kMaxValue + 1>
       accumulator_buckets_;
 
   // Timer used to ensure a periodic reporting of the pressure level metric.

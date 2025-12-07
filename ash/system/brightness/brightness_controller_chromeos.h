@@ -72,13 +72,14 @@ class ASH_EXPORT BrightnessControllerChromeos
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
   void OnSessionStateChanged(session_manager::SessionState state) override;
-  void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
 
   // PowerManagerClient::Observer:
   void ScreenBrightnessChanged(
       const power_manager::BacklightBrightnessChange& change) override;
   void AmbientLightSensorEnabledChanged(
       const power_manager::AmbientLightSensorChange& change) override;
+  void LidEventReceived(chromeos::PowerManagerClient::LidState state,
+                        base::TimeTicks timestamp) override;
 
   // LoginDataDispatcher::Observer:
   void OnFocusPod(const AccountId& account_id) override;
@@ -87,8 +88,12 @@ class ASH_EXPORT BrightnessControllerChromeos
   void RecordHistogramForBrightnessAction(BrightnessAction brightness_action);
   void OnGetBrightnessAfterLogin(std::optional<double> brightness_percent);
   void OnGetHasAmbientLightSensor(std::optional<bool> has_sensor);
+  void OnGetSwitchStates(
+      std::optional<chromeos::PowerManagerClient::SwitchStates> switch_states);
   void RestoreBrightnessSettings(const AccountId& account_id);
+  void MaybeRestoreBrightnessSettings();
   void RestoreBrightnessSettingsOnFirstLogin();
+  bool IsInitialBrightnessSetByPolicy();
 
   raw_ptr<PrefService> local_state_;
   raw_ptr<SessionControllerImpl> session_controller_;
@@ -115,10 +120,10 @@ class ASH_EXPORT BrightnessControllerChromeos
   bool has_ambient_light_sensor_status_been_recorded_ = false;
 
   // True if device has an ambient light sensor.
-  bool has_sensor_ = false;
+  std::optional<bool> has_sensor_ = false;
 
-  // Used to re-enable ambient light sensor if source is not from settings app.
-  std::optional<base::Time> ambient_light_sensor_disabled_timestamp_;
+  chromeos::PowerManagerClient::LidState lid_state_ =
+      chromeos::PowerManagerClient::LidState::OPEN;
 
   // This PrefChangeRegistrar is used to check when the synced profile pref for
   // the ambient light sensor value has finished syncing.

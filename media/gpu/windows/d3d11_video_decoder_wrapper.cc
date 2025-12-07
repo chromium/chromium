@@ -12,7 +12,6 @@
 #include <d3d9.h>
 
 #include "base/check_op.h"
-#include "base/strings/string_number_conversions.h"
 #include "media/gpu/windows/d3d11_picture_buffer.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 
@@ -32,7 +31,7 @@ BufferTypeToD3D11BufferType(D3DVideoDecoderWrapper::BufferType type) {
     case D3DVideoDecoderWrapper::BufferType::kBitstream:
       return D3D11_VIDEO_DECODER_BUFFER_BITSTREAM;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 template <typename D3D11VideoContext, typename D3D11VideoDecoderBufferDesc>
@@ -93,6 +92,11 @@ class D3D11VideoDecoderWrapperImpl : public D3D11VideoDecoderWrapper {
     }
   }
 
+  D3D11Status SetPictureBuffers(
+      base::span<scoped_refptr<D3D11PictureBuffer>> picture_buffers) override {
+    return D3D11StatusCode::kOk;
+  }
+
   bool WaitForFrameBegins(D3D11PictureBuffer* output_picture) override {
     auto result = output_picture->AcquireOutputView();
     if (!result.has_value()) {
@@ -138,7 +142,7 @@ class D3D11VideoDecoderWrapperImpl : public D3D11VideoDecoderWrapper {
         return false;
       }
 
-      memcpy(buffer.data(), slice_info_bytes_.data(), slice_info_bytes_.size());
+      buffer.data().copy_prefix_from(slice_info_bytes_);
       slice_info_bytes_.clear();
 
       if (!buffer.Commit()) {
@@ -250,7 +254,7 @@ class ScopedD3D11DecoderBuffer : public ScopedD3DBuffer {
           status_code = D3D11StatusCode::kGetBitstreamBufferFailed;
           break;
         default:
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
       media_log_->NotifyError(
           D3D11Status{status_code, "D3D11 GetDecoderBuffer failed", hr});
@@ -292,7 +296,7 @@ class ScopedD3D11DecoderBuffer : public ScopedD3DBuffer {
           status_code = D3D11StatusCode::kReleaseBitstreamBufferFailed;
           break;
         default:
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
       media_log_->NotifyError(
           D3D11Status{status_code, "D3D11 ReleaseDecoderBuffer failed", hr});

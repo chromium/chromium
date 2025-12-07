@@ -4,51 +4,66 @@
 
 package org.chromium.chrome.test.transit.testhtmls;
 
-import org.chromium.base.test.transit.Elements;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.transit.page.PageStation;
+import org.chromium.chrome.test.transit.page.CctPageStation;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.PopupBlockedMessageFacility;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.content_public.browser.test.transit.HtmlElement;
 import org.chromium.content_public.browser.test.transit.HtmlElementSpec;
 
-/** PageStation for popup_on_click.html, which contains a link to open itself in a pop-up. */
+/**
+ * PageStation for popup_on_click.html, which contains links to open pop-ups with different
+ * parameters.
+ */
 public class PopupOnClickPageStation extends WebPageStation {
     public static final String PATH = "/chrome/test/data/android/popup_on_click.html";
 
-    public static final HtmlElementSpec LINK_TO_POPUP = new HtmlElementSpec("link");
-    private HtmlElement mLinkToPopup;
+    public HtmlElement linkToPopup;
+    public HtmlElement linkToPopupWithBounds;
 
-    protected <T extends PopupOnClickPageStation> PopupOnClickPageStation(Builder<T> builder) {
-        super(builder);
+    protected PopupOnClickPageStation(Config config) {
+        super(config);
+
+        linkToPopup =
+                declareElement(new HtmlElement(new HtmlElementSpec("link"), webContentsElement));
+        linkToPopupWithBounds =
+                declareElement(
+                        new HtmlElement(
+                                new HtmlElementSpec("link_with_bounds"), webContentsElement));
     }
 
     /** Load popup_on_click.html in current tab. */
     public static PopupOnClickPageStation loadInCurrentTab(
-            ChromeTabbedActivityTestRule activityTestRule, PageStation currentPageStation) {
+            ChromeTabbedActivityTestRule activityTestRule, CtaPageStation currentPageStation) {
         Builder<PopupOnClickPageStation> builder = new Builder<>(PopupOnClickPageStation::new);
 
         String url = activityTestRule.getTestServer().getURL(PATH);
         return currentPageStation.loadPageProgrammatically(url, builder);
     }
 
-    @Override
-    public void declareElements(Elements.Builder elements) {
-        super.declareElements(elements);
-
-        mLinkToPopup =
-                elements.declareElement(new HtmlElement(LINK_TO_POPUP, mWebContentsSupplier));
-    }
-
     /** Opens the same page as a pop-up (in Android, this means in a new tab). */
     public PopupOnClickPageStation clickLinkToOpenPopup() {
         PopupOnClickPageStation newPage =
-                new Builder<PopupOnClickPageStation>(PopupOnClickPageStation::new)
+                new Builder<>(PopupOnClickPageStation::new)
                         .initFrom(this)
-                        .withIsOpeningTabs(1)
-                        .withIsSelectingTabs(1)
+                        .initOpeningNewTab()
                         .build();
-        return travelToSync(newPage, mLinkToPopup::click);
+        return linkToPopup.clickTo().arriveAt(newPage);
+    }
+
+    /** Opens a sample page as a pop-up with bounds and expects a new window to open. */
+    public CctPageStation clickLinkToOpenPopupWithBoundsExpectNewWindow() {
+        return linkToPopupWithBounds
+                .clickTo()
+                .inNewTask()
+                .arriveAt(
+                        CctPageStation.newBuilder()
+                                .withEntryPoint()
+                                .withExpectedUrlSubstring("simple.html")
+                                .withExpectedTitle("Simple")
+                                .withIncognito(mIsIncognito)
+                                .build());
     }
 
     /**
@@ -56,7 +71,6 @@ public class PopupOnClickPageStation extends WebPageStation {
      * message to be shown.
      */
     public PopupBlockedMessageFacility clickLinkAndExpectPopupBlockedMessage() {
-        return enterFacilitySync(
-                new PopupBlockedMessageFacility<PopupOnClickPageStation>(1), mLinkToPopup::click);
+        return linkToPopup.clickTo().enterFacility(new PopupBlockedMessageFacility<>(1));
     }
 }

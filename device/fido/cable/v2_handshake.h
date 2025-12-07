@@ -11,27 +11,24 @@
 #include <memory>
 #include <optional>
 #include <string_view>
+#include <variant>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "components/cbor/values.h"
-#include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/cable/noise.h"
 #include "device/fido/cable/v2_constants.h"
-#include "device/fido/fido_constants.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "device/fido/public/cable_discovery_data.h"
+#include "device/fido/public/fido_constants.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 
 class GURL;
 
 namespace device::cablev2 {
 
-// The different types of digital credential requests. Current only presentment
-// is supported.
-enum CredentialRequestType {
-  kPresentation,
-};
-using RequestType = absl::variant<FidoRequestType, CredentialRequestType>;
+// The different types of digital credential requests.
+enum CredentialRequestType { kPresentation, kIssuance };
+using RequestType = std::variant<FidoRequestType, CredentialRequestType>;
 
 namespace tunnelserver {
 // ToKnownDomainID creates a KnownDomainID from a raw 16-bit value, or returns
@@ -191,6 +188,10 @@ void Derive(uint8_t* out,
 // hint about the type of request. This lets it craft better UI.
 COMPONENT_EXPORT(DEVICE_FIDO)
 const char* RequestTypeToString(RequestType request_type);
+
+// Whether the generated QR Code for hybrid flows should offer linking.
+COMPONENT_EXPORT(DEVICE_FIDO)
+bool ShouldOfferLinking(RequestType request_type);
 
 // RequestTypeFromString performs the inverse of `RequestTypeToString`. If the
 // value of `s` is unknown, `kGetAssertion` is returned.

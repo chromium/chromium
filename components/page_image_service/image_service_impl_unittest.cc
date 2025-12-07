@@ -15,13 +15,14 @@
 #include "build/build_config.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
-#include "components/optimization_guide/core/optimization_guide_decision.h"
+#include "components/optimization_guide/core/hints/hints_fetcher.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decision.h"
+#include "components/optimization_guide/core/hints/test_optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/test_optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/salient_image_metadata.pb.h"
-#include "components/page_image_service/features.h"
 #include "components/page_image_service/metrics_util.h"
 #include "components/page_image_service/mojom/page_image_service.mojom-shared.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
@@ -75,13 +76,9 @@ class ImageServiceImplTest : public testing::Test {
   ImageServiceImplTest() = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {kImageService, kImageServiceSuggestPoweredImages,
-         kImageServiceOptimizationGuideSalientImages},
-        {});
-
     remote_suggestions_service_ = std::make_unique<RemoteSuggestionsService>(
         /*document_suggestions_service=*/nullptr,
+        /*enterprise_search_aggregator_suggestions_service=*/nullptr,
         test_url_loader_factory_.GetSafeWeakWrapper());
     test_opt_guide_ =
         std::make_unique<optimization_guide::ImageServiceTestOptGuide>();
@@ -110,10 +107,9 @@ class ImageServiceImplTest : public testing::Test {
   ImageServiceImplTest& operator=(const ImageServiceImplTest&) = delete;
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::SingleThreadTaskEnvironment task_environment{
       base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -274,7 +270,7 @@ TEST_F(ImageServiceImplTest, SuggestBackendEndToEnd) {
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   GURL request_url = test_url_loader_factory_.GetPendingRequest(0)->request.url;
-  EXPECT_EQ(request_url.host(), "www.google.com");
+  EXPECT_EQ(request_url.GetHost(), "www.google.com");
 
   test_url_loader_factory_.AddResponse(request_url.spec(), R"([
   "santa monica",
@@ -384,10 +380,8 @@ TEST_F(ImageServiceImplTest, OptimizationGuideSalientImagesEndToEnd) {
     auto* thumbnail = salient_image_metadata.add_thumbnails();
     thumbnail->set_image_url("https://image-url.com/foo.png");
 
-    optimization_guide::proto::Any any;
-    any.set_type_url(salient_image_metadata.GetTypeName());
-    salient_image_metadata.SerializeToString(any.mutable_value());
-    decision.metadata.set_any_metadata(any);
+    decision.metadata.set_any_metadata(
+        optimization_guide::AnyWrapProto(salient_image_metadata));
   }
 
   // Verify the decision can be parsed and sent back to the original caller.
@@ -400,10 +394,8 @@ TEST_F(ImageServiceImplTest, OptimizationGuideSalientImagesEndToEnd) {
     auto* thumbnail = salient_image_metadata.add_thumbnails();
     thumbnail->set_image_url("http://image-url.com/foo.png");
 
-    optimization_guide::proto::Any any;
-    any.set_type_url(salient_image_metadata.GetTypeName());
-    salient_image_metadata.SerializeToString(any.mutable_value());
-    http_decision.metadata.set_any_metadata(any);
+    http_decision.metadata.set_any_metadata(
+        optimization_guide::AnyWrapProto(salient_image_metadata));
   }
 
   // Verify that the repeating callback can be called twice with the two
@@ -446,8 +438,7 @@ TEST_F(ImageServiceImplTest, OptimizationGuideBatchingRespectsMaxUrls) {
 
   std::vector<GURL> responses;
 
-  size_t max_batch = optimization_guide::features::
-      MaxUrlsForOptimizationGuideServiceHintsFetch();
+  size_t max_batch = optimization_guide::HintsFetcher::kMaxUrls;
   // Fetch one LESS than the max batch size, to verify no requests are sent.
   for (size_t i = 0; i < max_batch - 1; ++i) {
     image_service_->FetchImageFor(
@@ -471,43 +462,6 @@ TEST_F(ImageServiceImplTest, OptimizationGuideBatchingRespectsMaxUrls) {
                                 base::BindOnce(&AppendResponse, &responses));
   EXPECT_EQ(test_opt_guide_->requests_received_, 1U)
       << "Expect that making more request restarts the queue.";
-}
-
-class DisabledOptGuideImageServiceImplTest : public ImageServiceImplTest {
- public:
-  DisabledOptGuideImageServiceImplTest() = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{kImageService, kImageServiceSuggestPoweredImages},
-        /*disabled_features=*/{kImageServiceOptimizationGuideSalientImages});
-
-    remote_suggestions_service_ = std::make_unique<RemoteSuggestionsService>(
-        /*document_suggestions_service=*/nullptr,
-        test_url_loader_factory_.GetSafeWeakWrapper());
-    test_opt_guide_ =
-        std::make_unique<optimization_guide::ImageServiceTestOptGuide>();
-    test_sync_service_ = std::make_unique<syncer::TestSyncService>();
-    image_service_ = std::make_unique<ImageServiceImpl>(
-        search_engines_test_environment_.template_url_service(),
-        remote_suggestions_service_.get(), test_opt_guide_.get(),
-        test_sync_service_.get(), std::make_unique<TestSchemeClassifier>());
-  }
-};
-
-TEST_F(DisabledOptGuideImageServiceImplTest, DoesNotFetch) {
-  mojom::Options options;
-  options.suggest_images = false;
-  options.optimization_guide_images = true;
-
-  GURL image_url_response;
-  image_service_->FetchImageFor(
-      mojom::ClientId::Journeys, GURL("https://page-url.com"), options,
-      base::BindOnce(&StoreImageUrlResponse, &image_url_response));
-
-  // Verify that the OptimizationGuide backend did not get called.
-  EXPECT_EQ(test_opt_guide_->requests_received_, 0U);
-  EXPECT_EQ(image_url_response, GURL());
 }
 
 }  // namespace page_image_service

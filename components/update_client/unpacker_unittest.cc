@@ -26,13 +26,7 @@
 namespace update_client {
 
 class UnpackerTest : public testing::Test {
- public:
-  UnpackerTest() = default;
-  ~UnpackerTest() override = default;
-
-  void UnpackComplete(const Unpacker::Result& result);
-
- protected:
+ private:
   base::test::TaskEnvironment env_;
 };
 
@@ -40,6 +34,7 @@ TEST_F(UnpackerTest, UnpackFullCrx) {
   SEQUENCE_CHECKER(sequence_checker);
   base::RunLoop loop;
   Unpacker::Unpack(
+      "jebgalgnebhfojomionfpkfelancnnkf", "UnpackerTest",
       std::vector<uint8_t>(std::begin(jebg_hash), std::end(jebg_hash)),
       GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"),
       base::MakeRefCounted<update_client::UnzipChromiumFactory>(
@@ -55,13 +50,14 @@ TEST_F(UnpackerTest, UnpackFullCrx) {
         EXPECT_TRUE(base::DirectoryExists(unpack_path));
         EXPECT_EQ(result.public_key, jebg_public_key);
 
-        int64_t file_size = 0;
-        EXPECT_TRUE(base::GetFileSize(unpack_path.AppendASCII("component1.dll"),
-                                      &file_size));
-        EXPECT_EQ(file_size, 1024);
-        EXPECT_TRUE(base::GetFileSize(unpack_path.AppendASCII("manifest.json"),
-                                      &file_size));
-        EXPECT_EQ(file_size, 169);
+        std::optional<int64_t> file_size = base::GetFileSize(
+            unpack_path.Append(FILE_PATH_LITERAL("component1.dll")));
+        ASSERT_TRUE(file_size.has_value());
+        EXPECT_EQ(file_size.value(), 1024);
+        file_size = base::GetFileSize(
+            unpack_path.Append(FILE_PATH_LITERAL("manifest.json")));
+        ASSERT_TRUE(file_size.has_value());
+        EXPECT_EQ(file_size.value(), 169);
 
         EXPECT_TRUE(base::DeletePathRecursively(unpack_path));
         loop.Quit();
@@ -73,6 +69,7 @@ TEST_F(UnpackerTest, UnpackFileNotFound) {
   SEQUENCE_CHECKER(sequence_checker);
   base::RunLoop loop;
   Unpacker::Unpack(
+      "jebgalgnebhfojomionfpkfelancnnkf", "UnpackerTest",
       std::vector<uint8_t>(std::begin(jebg_hash), std::end(jebg_hash)),
       GetTestFilePath("file_not_found.crx"), nullptr,
       crx_file::VerifierFormat::CRX3,
@@ -94,6 +91,7 @@ TEST_F(UnpackerTest, UnpackFileHashMismatch) {
   SEQUENCE_CHECKER(sequence_checker);
   base::RunLoop loop;
   Unpacker::Unpack(
+      "jebgalgnebhfojomionfpkfelancnnkf", "UnpackerTest",
       std::vector<uint8_t>(std::begin(abag_hash), std::end(abag_hash)),
       GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), nullptr,
       crx_file::VerifierFormat::CRX3,
@@ -114,6 +112,7 @@ TEST_F(UnpackerTest, UnpackWithVerifiedContents) {
   SEQUENCE_CHECKER(sequence_checker);
   base::RunLoop loop;
   Unpacker::Unpack(
+      "gndmhdcefbhlchkhipcnnbkcmicncehk", "UnpackerTest",
       std::vector<uint8_t>(),
       GetTestFilePath("gndmhdcefbhlchkhipcnnbkcmicncehk_22_314.crx3"),
       base::MakeRefCounted<update_client::UnzipChromiumFactory>(
@@ -126,11 +125,11 @@ TEST_F(UnpackerTest, UnpackWithVerifiedContents) {
         base::FilePath unpack_path = result.unpack_path;
         EXPECT_FALSE(unpack_path.empty());
         EXPECT_TRUE(base::DirectoryExists(unpack_path));
-        int64_t file_size = 0;
-        EXPECT_TRUE(base::GetFileSize(
-            unpack_path.AppendASCII("_metadata/verified_contents.json"),
-            &file_size));
-        EXPECT_EQ(file_size, 1538);
+        std::optional<int64_t> file_size = base::GetFileSize(
+            unpack_path.Append(FILE_PATH_LITERAL("_metadata"))
+                .Append(FILE_PATH_LITERAL("verified_contents.json")));
+        ASSERT_TRUE(file_size.has_value());
+        EXPECT_EQ(file_size.value(), 1538);
         EXPECT_TRUE(base::DeletePathRecursively(unpack_path));
         loop.Quit();
       }));

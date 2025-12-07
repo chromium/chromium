@@ -1,0 +1,30 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module mojo_base.mojom;
+
+// Represents an error on the javascript side. All mojo interfaces hosted
+// in javascript that declares a result<T, E> return should use JsError for
+// their E parameter. Users are strongly discouraged against defining their
+// own E type in javascript because errors are typically loosely typed
+// in javascript. If mojo is unable to map the error emitted in javascript
+// to a wire format, mojo will close the pipe to avoid undefined
+// behaviour.
+//
+// JsError is primarily designed to propagate javascript Error objects to
+// the receiver, but is able to accept any javascript object as the input.
+//
+// Note that while JsError is able to *encode* any javascript object into
+// a mojo object, this does not mean that all details of a javascript
+// object will be propagated to the receiver. It will only read the
+// {name, cause, message} fields in the input object.
+struct JsError {
+  string? name;
+  string? cause;
+  // The primary method to communicate failures to the receiving end.
+  // Maps to the message field of the object. If no message is provided,
+  // an unknown error message is set. There is no guarantee about the unknown
+  // error message or its shape, besides that it is be set.
+  string? message;
+};

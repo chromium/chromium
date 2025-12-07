@@ -7,9 +7,6 @@
       // Access local storage.
       localStorage.setItem('bar', 'bar');
 
-      // Access web database.
-      window.openDatabase('bar', '1.0', 'bar DB', 1024);
-
       // Access file system.
       const file_system_promise = new Promise(function(resolve, reject) {
         window.webkitRequestFileSystem(TEMPORARY, 1024, fs => {

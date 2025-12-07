@@ -7,7 +7,7 @@ import("//printing/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("printing") {
   sources = [
@@ -93,12 +93,9 @@ static_library("printing") {
       "cups_print_job_manager_impl.cc",
       "cups_print_job_manager_utils.cc",
       "cups_print_job_manager_utils.h",
-      "cups_proxy_service_delegate_impl.cc",
-      "cups_proxy_service_delegate_impl.h",
-      "cups_proxy_service_manager.cc",
-      "cups_proxy_service_manager.h",
-      "cups_proxy_service_manager_factory.cc",
-      "cups_proxy_service_manager_factory.h",
+      "local_printer.h",
+      "local_printer_impl.cc",
+      "local_printer_impl.h",
       "printer_info_cups.cc",
     ]
   } else {
@@ -123,16 +120,15 @@ static_library("printing") {
     "//chrome/browser/ash/printing/oauth2",
     "//chrome/browser/ash/printing/print_management",
     "//chrome/browser/ash/profiles",
-    "//chrome/browser/scalable_iph:scalable_iph_factory",
+    "//chrome/browser/notifications",
     "//chrome/browser/sync:factories",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/channel",
     "//chromeos/ash/components/dbus",
-    "//chromeos/ash/components/dbus/cups_proxy",
     "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/dbus/printscanmgr",
-    "//chromeos/ash/components/scalable_iph",
     "//chromeos/ash/components/settings",
     "//chromeos/printing",
     "//chromeos/services/network_config/public/cpp",
@@ -144,7 +140,14 @@ static_library("printing") {
   ]
 
   if (use_cups) {
-    deps += [ "//chrome/services/cups_proxy" ]
+    deps += [
+      "//chrome/browser/ash/printing/oauth2",
+      "//chrome/browser/chromeos/printing",
+    ]
+  }
+
+  if (enable_oop_printing) {
+    deps += [ "//chrome/services/printing/public/mojom" ]
   }
 
   public_deps = [
@@ -157,6 +160,10 @@ static_library("printing") {
     "//chrome/browser/ash/printing/history",
     "//chrome/browser/ash/printing/print_management",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 static_library("test_support") {
@@ -205,16 +212,38 @@ source_set("unit_tests") {
 
   deps = [
     ":printing",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/public/cpp:test_support",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:test_support",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:test_support",
-    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/printing:test_support",
     "//chrome/browser/ash/printing/enterprise",
+    "//chrome/browser/ash/printing/history:print_job_info_proto",
     "//chrome/browser/ash/printing/oauth2",
     "//chrome/browser/ash/printing/oauth2:test_support",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/settings:test_support",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/debug_daemon",
+    "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/dbus/printscanmgr",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/services/network_config/public/cpp:test_support",
+    "//components/sync:test_support",
+    "//components/sync_preferences:test_support",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//services/device/public/cpp:test_support",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
     "//third_party/libipp",
   ]
 
@@ -234,8 +263,6 @@ fuzzer_test("zeroconf_printer_detector_fuzzer") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser/ash",
-    "//components/exo/wayland:test_controller_stub",
     "//components/exo/wayland:ui_controls_protocol_stub",
   ]
 }

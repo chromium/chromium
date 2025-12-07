@@ -1,0 +1,20 @@
+Name: Compose Navigation
+Short Name: navigation-compose-android
+URL: https://androidx.dev/snapshots/builds/14500233/artifacts/repository/androidx/navigation/navigation-compose-android/2.10.0-SNAPSHOT/navigation-compose-android-2.10.0-20251126.133552-1.aar
+Version: 2.10.0-SNAPSHOT
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+Compose integration with Navigation
+
+See also: https://developer.android.com/jetpack/androidx/releases/navigation#2.10.0-SNAPSHOT
+
+
+Local Modifications:
+No modifications.

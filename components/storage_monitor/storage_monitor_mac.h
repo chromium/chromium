@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "base/apple/scoped_cftyperef.h"
+#include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "components/storage_monitor/storage_monitor.h"
 
@@ -20,7 +21,8 @@ class ImageCaptureDeviceManager;
 
 // This class posts notifications to listeners when a new disk
 // is attached, removed, or changed.
-class StorageMonitorMac final : public StorageMonitor {
+class COMPONENT_EXPORT(STORAGE_MONITOR) StorageMonitorMac final
+    : public StorageMonitor {
  public:
   enum UpdateType {
     UPDATE_DEVICE_ADDED,

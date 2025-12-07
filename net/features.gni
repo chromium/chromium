@@ -2,17 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/features.gni")
+import("//extensions/buildflags/buildflags.gni")
 
 declare_args() {
   # Disables support for file URLs.  File URL support requires use of icu.
   # Cronet does not support file URLs.
   disable_file_support = is_cronet_build
 
-  # WebSockets and socket stream code are not used when blink is not used
-  # and are optional in cronet.
-  enable_websockets = use_blink
+  # WebSockets and socket stream code are not used when: either, blink is not
+  # used; or, Cronet is being built.
+  enable_websockets = use_blink && !is_cronet_build
 
   # Enable Kerberos authentication. It is disabled by default on iOS, Fuchsia
   # and Chromecast, at least for now. This feature needs configuration
@@ -23,11 +25,13 @@ declare_args() {
   # Do not disable brotli filter by default.
   disable_brotli_filter = false
 
-  # Do not disable zstd filter by default, except for Cronet builds.
-  disable_zstd_filter = is_cronet_build
+  # Do not disable zstd filter by default.
+  # TODO: https://crbug.com/40282397 - Consider dropping once Cronet default enables zstd.
+  disable_zstd_filter = false
 
-  # Multicast DNS.
-  enable_mdns = is_win || is_linux || is_chromeos || is_fuchsia || is_apple
+  # Multicast DNS. Enabled on desktop Android for the chrome.mdns extension API.
+  enable_mdns = is_win || is_linux || is_chromeos || is_fuchsia || is_apple ||
+                enable_desktop_android_extensions
 
   # Reporting not used on iOS.
   enable_reporting = !is_ios
@@ -38,7 +42,7 @@ declare_args() {
   # size footprint, this flag should not be disabled unless the embedder is
   # willing to take the responsibility to make sure that all important
   # connections use HTTPS.
-  include_transport_security_state_preload_list = true
+  include_transport_security_state_preload_list = !is_cronet_build
 
   # Platforms for which certificate verification can be performed either using
   # the builtin cert verifier with the Chrome Root Store, or with the platform
@@ -52,8 +56,26 @@ declare_args() {
   # the builtin cert verifier with the Chrome Root Store.
   chrome_root_store_only = is_win || is_mac || is_linux || is_chromeos
 
-  # DBSC is only supported on windows for now
-  enable_device_bound_sessions = is_win
+  # DBSC is only supported on Windows, Linux and Mac for now.
+  enable_device_bound_sessions = is_win || is_linux || is_mac
+
+  # Bracketed URIs parsing is only available for debug builds.
+  # TODO(crbug.com/365771838): Ensure tests are updated if needed if this
+  # feature is changed at all.
+  enable_bracketed_proxy_uris = is_debug
+
+  # General QUIC proxy support is only available for debug builds.
+  # TODO(crbug.com/367400641): If flag is changed or removed, ensure all
+  # TODOs for this bug are correctly modified.
+  enable_quic_proxy_support = is_debug
+
+  # The SQL disk cache backend is an experimental feature (crbug.com/422065015).
+  # It is enabled only in specific build configurations to avoid increasing the
+  # build size.
+  enable_disk_cache_sql_backend =
+      (is_linux && !is_castos) ||
+      (is_android && !is_cast_android && !is_cronet_build) || is_win ||
+      is_mac || is_chromeos
 }
 
 assert(!chrome_root_store_optional || !chrome_root_store_only,

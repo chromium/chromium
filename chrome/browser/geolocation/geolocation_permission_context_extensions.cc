@@ -6,6 +6,8 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "components/permissions/permission_decision.h"
+#include "content/public/browser/permission_result.h"
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -26,11 +28,12 @@ using extensions::ExtensionRegistry;
 namespace {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-void CallbackContentSettingWrapper(
-    base::OnceCallback<void(ContentSetting)> callback,
+void CallbackPermissionStatusWrapper(
+    base::OnceCallback<void(content::PermissionResult)> callback,
     bool allowed) {
-  std::move(callback).Run(allowed ? CONTENT_SETTING_ALLOW
-                                  : CONTENT_SETTING_BLOCK);
+  std::move(callback).Run(content::PermissionResult(
+      allowed ? PermissionStatus::GRANTED : PermissionStatus::DENIED,
+      content::PermissionStatusSource::UNSPECIFIED));
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -45,14 +48,13 @@ GeolocationPermissionContextExtensions::GeolocationPermissionContextExtensions(
 }
 
 GeolocationPermissionContextExtensions::
-~GeolocationPermissionContextExtensions() {
-}
+    ~GeolocationPermissionContextExtensions() = default;
 
 bool GeolocationPermissionContextExtensions::DecidePermission(
     const permissions::PermissionRequestID& request_id,
     const GURL& requesting_frame,
     bool user_gesture,
-    base::OnceCallback<void(ContentSetting)>* callback,
+    base::OnceCallback<void(content::PermissionResult)>* callback,
     bool* permission_set,
     bool* new_permission) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -70,7 +72,7 @@ bool GeolocationPermissionContextExtensions::DecidePermission(
   if (web_view_permission_helper) {
     web_view_permission_helper->RequestGeolocationPermission(
         requesting_frame, user_gesture,
-        base::BindOnce(&CallbackContentSettingWrapper, std::move(*callback)));
+        base::BindOnce(&CallbackPermissionStatusWrapper, std::move(*callback)));
     *permission_set = false;
     *new_permission = false;
     return true;

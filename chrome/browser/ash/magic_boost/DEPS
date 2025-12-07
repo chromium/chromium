@@ -21,17 +21,26 @@ include_rules = [
   # Magic Boost needs to access Orca code in input_method.
   "+chrome/browser/ash/input_method",
 
+  # Magic Boost needs to access Mahi code.
+  "+chrome/browser/ash/mahi",
+
   "+chrome/browser/profiles",
+  "+chrome/browser/signin",
 ]
 
 specific_include_rules = {
   "magic_boost_browsertest.cc": [
       "+chrome/browser/ash/mahi/mahi_test_util.h",
       "+chrome/browser/ash/mahi/mahi_ui_browser_test_base.h",
+      "+chrome/browser/ui/ash/magic_boost",
+      "+chrome/browser/ui/ash/editor_menu/editor_menu_view.h",
       "+chrome/browser/ui/browser.h",
-      "+chrome/browser/ui/chromeos/magic_boost",
+      "+chrome/browser/ui/views/mahi/mahi_menu_constants.h",
       "+chrome/browser/ui/views/mahi/mahi_menu_view.h",
       "+chrome/browser/ui/webui/ash/mako",
       "+chrome/test/base",
   ],
+  ".*unittest\\.cc": [
+    "+chrome/test/base/chrome_ash_test_base.h",
+  ]
 }

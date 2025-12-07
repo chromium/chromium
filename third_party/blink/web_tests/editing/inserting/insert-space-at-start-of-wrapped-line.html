@@ -15,7 +15,7 @@
 <div id="plaintext" contenteditable="plaintext-only"></div>
 <div id="richedit" contenteditable></div>
 <script>
-function runInElement(element, before, after, expected) {
+function runInElement(element, before, after) {
   test(() => {
     let offset = before.length;
     let acutal;
@@ -32,14 +32,14 @@ function runInElement(element, before, after, expected) {
       eventSender.keyDown(' ');
       actual = element.textContent;
     }
-    assert_equals(actual, before + (expected ? '\n ' : ' ') + after);
-  }, `Typing space at "${before}|${after}" ${expected ? 'should' : 'should not'} insert a line break in ${element.id}`);
+    assert_equals(actual, before + ' ' + after);
+  }, `Typing space at "${before}|${after}" should insert a space in ${element.id}`);
 }
 
-function run(before, after, expected) {
-  runInElement(textarea, before, after, expected);
-  runInElement(plaintext, before, after, expected);
-  runInElement(richedit, before, after, false);
+function run(before, after) {
+  runInElement(textarea, before, after);
+  runInElement(plaintext, before, after);
+  runInElement(richedit, before, after);
 }
 
 (function () {
@@ -50,9 +50,9 @@ function run(before, after, expected) {
     return;
   }
 
-  run('123456789 ', 'XY', true);
-  run('12345     ', 'XY', true);
-  run('12345        ', 'XY', true);
-  run('123456789-', 'XY', false);
+  run('123456789 ', 'XY');
+  run('12345     ', 'XY');
+  run('12345        ', 'XY');
+  run('123456789-', 'XY');
 })();
 </script>

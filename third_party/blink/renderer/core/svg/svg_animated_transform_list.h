@@ -55,6 +55,11 @@ class SVGAnimatedTransformList final
             MakeGarbageCollected<SVGTransformList>(),
             css_property_id) {}
 
+  const CSSValue* CssValue() const override {
+    DCHECK(HasPresentationAttributeMapping());
+    return CurrentValue()->CssValue();
+  }
+
   void Trace(Visitor* visitor) const override {
     SVGAnimatedProperty<SVGTransformList>::Trace(visitor);
     ScriptWrappable::Trace(visitor);

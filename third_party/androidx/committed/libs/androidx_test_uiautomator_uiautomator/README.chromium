@@ -1,0 +1,20 @@
+Name: UIAutomator
+Short Name: uiautomator
+URL: https://androidx.dev/snapshots/builds/14500233/artifacts/repository/androidx/test/uiautomator/uiautomator/2.4.0-SNAPSHOT/uiautomator-2.4.0-20251126.133552-1.aar
+Version: 2.4.0-SNAPSHOT
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: no
+Shipped: no
+License Android Compatible: yes
+
+Description:
+UI testing framework suitable for cross-app functional UI testing
+
+See also: https://developer.android.com/jetpack/androidx/releases/test-uiautomator#2.4.0-SNAPSHOT
+
+
+Local Modifications:
+No modifications.

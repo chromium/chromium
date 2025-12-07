@@ -4,38 +4,47 @@
 
 package org.chromium.chrome.browser.metrics;
 
-import android.Manifest;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.view.InputDevice;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.DefaultBrowserInfo;
-import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.AudioPermissionState;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.DefaultBrowserInfoUmaRecorder;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
+import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.variations.SyntheticTrialAnnotationMode;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.DeviceUtils;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.url.GURL;
 
 /**
  * Mainly sets up session stats for chrome. A session is defined as the duration when the
- * application is in the foreground.  Also used to communicate information between Chrome
- * and the framework's MetricService.
+ * application is in the foreground. Also used to communicate information between Chrome and the
+ * framework's MetricService.
  */
+@NullMarked
 public class UmaSessionStats {
     private static final String TAG = "UmaSessionStats";
 
@@ -43,13 +52,19 @@ public class UmaSessionStats {
 
     // TabModelSelector is needed to get the count of open tabs. We want to log the number of open
     // tabs on every page load.
-    private TabModelSelector mTabModelSelector;
-    private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
+    private @Nullable TabModelSelector mTabModelSelector;
+    private @Nullable TabModelSelectorTabObserver mTabModelSelectorTabObserver;
 
     private final Context mContext;
-    private ComponentCallbacks mComponentCallbacks;
+    private @Nullable ComponentCallbacks mComponentCallbacks;
 
     private boolean mKeyboardConnected;
+
+    private static final String TABBED_SESSION_CONTAINED_GOOGLE_SEARCH_HISTOGRAM =
+            "Session.Android.TabbedSessionContainedGoogleSearch";
+    private @ActivityType int mCurrentActivityType = ActivityType.PRE_FIRST_TAB;
+
+    private boolean mTabbedSessionContainedGoogleSearch;
 
     public UmaSessionStats(Context context) {
         mContext = context;
@@ -71,8 +86,7 @@ public class UmaSessionStats {
         if (connectedDevices.contains(InputDevice.SOURCE_MOUSE)) {
             UmaSessionStatsJni.get().recordPageLoadedWithMouse();
         }
-        if (EdgeToEdgeUtils.isLegacyWebsiteOptInEnabled()
-                && EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(tab)) {
+        if (EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(tab)) {
             UmaSessionStatsJni.get().recordPageLoadedWithToEdge();
         }
 
@@ -91,14 +105,20 @@ public class UmaSessionStats {
 
     /**
      * Starts a new session for logging.
+     *
+     * @param activityType The type of the Activity.
      * @param tabModelSelector A TabModelSelector instance for recording tab counts on page loads.
-     *        If null, UmaSessionStats does not record page loads and tab counts.
+     *     If null, UmaSessionStats does not record page loads and tab counts.
      * @param permissionDelegate The AndroidPermissionDelegate used for querying permission status.
-     *        If null, UmaSessionStats will not record permission status.
+     *     If null, UmaSessionStats will not record permission status.
      */
     public void startNewSession(
-            TabModelSelector tabModelSelector, AndroidPermissionDelegate permissionDelegate) {
+            @ActivityType int activityType,
+            @Nullable TabModelSelector tabModelSelector,
+            @Nullable AndroidPermissionDelegate permissionDelegate) {
         ensureNativeInitialized();
+        mTabbedSessionContainedGoogleSearch = false;
+        mCurrentActivityType = activityType;
 
         mTabModelSelector = tabModelSelector;
         if (mTabModelSelector != null) {
@@ -125,31 +145,22 @@ public class UmaSessionStats {
                         public void onPageLoadFinished(Tab tab, GURL url) {
                             recordPageLoadStats(tab);
                         }
+
+                        @Override
+                        public void onDidFinishNavigationInPrimaryMainFrame(
+                                Tab tab, NavigationHandle navigation) {
+                            if (!navigation.hasCommitted()) return;
+                            if (UrlUtilitiesJni.get().isGoogleSearchUrl(tab.getUrl().getSpec())) {
+                                mTabbedSessionContainedGoogleSearch = true;
+                            }
+                        }
                     };
         }
 
-        UmaSessionStatsJni.get().umaResumeSession(sNativeUmaSessionStats, UmaSessionStats.this);
+        UmaSessionStatsJni.get().umaResumeSession(sNativeUmaSessionStats);
         updatePreferences();
         updateMetricsServiceState();
-        DefaultBrowserInfo.logDefaultBrowserStats();
-        if (permissionDelegate != null) {
-            recordAudioPermissionState(permissionDelegate);
-        }
-    }
-
-    private void recordAudioPermissionState(AndroidPermissionDelegate permissionDelegate) {
-        @AudioPermissionState int permissionState;
-        if (permissionDelegate.hasPermission(Manifest.permission.RECORD_AUDIO)) {
-            permissionState = AudioPermissionState.GRANTED;
-        } else if (permissionDelegate.canRequestPermission(Manifest.permission.RECORD_AUDIO)) {
-            permissionState = AudioPermissionState.DENIED_CAN_ASK_AGAIN;
-        } else {
-            permissionState = AudioPermissionState.DENIED_CANNOT_ASK_AGAIN;
-        }
-        RecordHistogram.recordEnumeratedHistogram(
-                "VoiceInteraction.AudioPermissionEvent.SessionStart",
-                permissionState,
-                AudioPermissionState.NUM_ENTRIES);
+        DefaultBrowserInfoUmaRecorder.logDefaultBrowserStats();
     }
 
     private static void ensureNativeInitialized() {
@@ -164,11 +175,21 @@ public class UmaSessionStats {
     public void logAndEndSession() {
         if (mTabModelSelector != null) {
             mContext.unregisterComponentCallbacks(mComponentCallbacks);
+            assumeNonNull(mTabModelSelectorTabObserver);
             mTabModelSelectorTabObserver.destroy();
             mTabModelSelector = null;
         }
+        if (mCurrentActivityType == ActivityType.TABBED) {
+            RecordHistogram.recordBooleanHistogram(
+                    TABBED_SESSION_CONTAINED_GOOGLE_SEARCH_HISTOGRAM,
+                    mTabbedSessionContainedGoogleSearch);
+        }
 
-        UmaSessionStatsJni.get().umaEndSession(sNativeUmaSessionStats, UmaSessionStats.this);
+        UmaSessionStatsJni.get().umaEndSession(sNativeUmaSessionStats);
+    }
+
+    public void flushSession() {
+        UmaSessionStatsJni.get().flushSession(sNativeUmaSessionStats);
     }
 
     /**
@@ -279,8 +300,9 @@ public class UmaSessionStats {
         return ApplicationStatus.hasVisibleActivities();
     }
 
+    @VisibleForTesting
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         long init();
 
         void changeMetricsReportingConsent(boolean consent, int calledFrom);
@@ -293,15 +315,17 @@ public class UmaSessionStats {
 
         void updateMetricsServiceState(boolean mayUpload);
 
-        void umaResumeSession(long nativeUmaSessionStats, UmaSessionStats caller);
+        void umaResumeSession(long nativeUmaSessionStats);
 
-        void umaEndSession(long nativeUmaSessionStats, UmaSessionStats caller);
+        void umaEndSession(long nativeUmaSessionStats);
+
+        void flushSession(long nativeUmaSessionStats);
 
         void registerExternalExperiment(int[] experimentIds, boolean overrideExistingIds);
 
         void registerSyntheticFieldTrial(
-                String trialName,
-                String groupName,
+                @JniType("std::string") String trialName,
+                @JniType("std::string") String groupName,
                 @SyntheticTrialAnnotationMode int annotationMode);
 
         void recordTabCountPerLoad(int numTabsOpen);

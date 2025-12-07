@@ -4,41 +4,66 @@
 
 package org.chromium.chrome.test.transit.ntp;
 
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import org.chromium.base.test.transit.Elements;
-import org.chromium.base.test.transit.ViewSpec;
+import static org.chromium.base.test.transit.Condition.whether;
+
+import android.util.Pair;
+import android.view.View;
+
+import org.chromium.base.test.transit.Element;
+import org.chromium.base.test.transit.SimpleConditions;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
-import org.chromium.chrome.test.transit.page.PageStation;
+import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
+import org.chromium.chrome.browser.omnibox.UrlBar;
+import org.chromium.chrome.test.transit.SoftKeyboardFacility;
+import org.chromium.chrome.test.transit.omnibox.FakeOmniboxSuggestions;
+import org.chromium.chrome.test.transit.omnibox.OmniboxFacility;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
+import org.chromium.chrome.test.transit.page.NativePageCondition;
+import org.chromium.components.embedder_support.util.UrlConstants;
 
 /** The Incognito New Tab Page screen, with text about Incognito mode. */
-public class IncognitoNewTabPageStation extends PageStation {
-    public ViewSpec ICON = ViewSpec.viewSpec(withId(R.id.new_tab_incognito_icon));
+public class IncognitoNewTabPageStation extends CtaPageStation {
+    public ViewElement<UrlBar> urlBarElement;
+    public ViewElement<View> iconElement;
+    public ViewElement<View> goneIncognitoTextElement;
+    public Element<IncognitoNewTabPage> nativePageElement;
 
-    public ViewSpec GONE_INCOGNITO_TEXT = ViewSpec.viewSpec(withText("You’ve gone Incognito"));
+    public IncognitoNewTabPageStation(Config config) {
+        super(config.withIncognito(true).withExpectedUrlSubstring(UrlConstants.NTP_URL));
 
-    protected <T extends IncognitoNewTabPageStation> IncognitoNewTabPageStation(
-            Builder<T> builder) {
-        super(builder.withIncognito(true));
+        urlBarElement = declareView(URL_BAR);
+        iconElement = declareView(withId(R.id.new_tab_incognito_icon));
+        goneIncognitoTextElement = declareView(withText("You’ve gone Incognito"));
+        nativePageElement =
+                declareEnterConditionAsElement(
+                        new NativePageCondition<>(IncognitoNewTabPage.class, loadedTabElement));
+        declareEnterCondition(
+                SimpleConditions.uiThreadCondition(
+                        "Incognito NTP is loaded",
+                        nativePageElement,
+                        nativePage -> whether(nativePage.isLoadedForTests())));
     }
 
     public static Builder<IncognitoNewTabPageStation> newBuilder() {
         return new Builder<>(IncognitoNewTabPageStation::new);
     }
 
-    @Override
-    public void declareElements(Elements.Builder elements) {
-        super.declareElements(elements);
-        elements.declareView(ICON);
-        elements.declareView(GONE_INCOGNITO_TEXT);
-        elements.declareEnterCondition(new NtpLoadedCondition(mPageLoadedSupplier));
-    }
-
     /** Opens the app menu by pressing the toolbar "..." button */
     public IncognitoNewTabPageAppMenuFacility openAppMenu() {
-        return enterFacilitySync(
-                new IncognitoNewTabPageAppMenuFacility(), () -> MENU_BUTTON.perform(click()));
+        return menuButtonElement.clickTo().enterFacility(new IncognitoNewTabPageAppMenuFacility());
+    }
+
+    /** Click the URL bar to enter the Omnibox. */
+    public Pair<OmniboxFacility, SoftKeyboardFacility> openOmnibox(
+            FakeOmniboxSuggestions fakeSuggestions) {
+        OmniboxFacility omniboxFacility =
+                new OmniboxFacility(/* incognito= */ true, fakeSuggestions);
+        SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
+        urlBarElement.clickTo().enterFacilities(omniboxFacility, softKeyboard);
+        return Pair.create(omniboxFacility, softKeyboard);
     }
 }

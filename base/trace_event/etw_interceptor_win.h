@@ -12,6 +12,7 @@
 #include "base/trace_event/trace_logging_minimal_win.h"
 #include "third_party/perfetto/include/perfetto/tracing/interceptor.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_state_tracker.h"
+#include "third_party/perfetto/protos/perfetto/config/track_event/track_event_config.gen.h"  // nogncheck
 
 namespace base::trace_event {
 
@@ -45,6 +46,9 @@ class BASE_EXPORT ETWInterceptor
   perfetto::TrackEventStateTracker::SessionState session_state_;
   raw_ptr<TlmProvider> provider_;
 };
+
+BASE_EXPORT perfetto::protos::gen::TrackEventConfig
+ETWKeywordToTrackEventConfig(uint64_t keyword);
 
 }  // namespace base::trace_event
 

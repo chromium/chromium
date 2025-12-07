@@ -1,0 +1,362 @@
+This is a testharness.js-based test.
+Found 179 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Testing the empty string with color space 'limited-srgb' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing the empty string with color space 'limited-srgb' and with alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing the empty string with color space 'limited-srgb' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing the empty string with color space 'display-p3' and  without alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #000000\nExpected: color(display-p3 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing the empty string with color space 'display-p3' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing the empty string with color space 'display-p3' and with alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #000000\nExpected: color(display-p3 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing the empty string with color space 'display-p3' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing no value with color space 'limited-srgb' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing no value with color space 'limited-srgb' and with alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing no value with color space 'limited-srgb' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing no value with color space 'display-p3' and  without alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #000000\nExpected: color(display-p3 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing no value with color space 'display-p3' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing no value with color space 'display-p3' and with alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #000000\nExpected: color(display-p3 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing no value with color space 'display-p3' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#ffffff' with color space 'limited-srgb' and  without alpha (value)
+  Colors do not match.\nActual:   #ffffff\nExpected: color(srgb 1 1 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#ffffff' with color space 'limited-srgb' and with alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #ffffff\nExpected: color(srgb 1 1 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#ffffff' with color space 'limited-srgb' and with alpha (value)
+  Colors do not match.\nActual:   #ffffff\nExpected: color(srgb 1 1 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#ffffff' with color space 'display-p3' and  without alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #ffffff\nExpected: color(display-p3 1 1 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#ffffff' with color space 'display-p3' and  without alpha (value)
+  Colors do not match.\nActual:   #ffffff\nExpected: color(srgb 1 1 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#ffffff' with color space 'display-p3' and with alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #ffffff\nExpected: color(display-p3 1 1 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#ffffff' with color space 'display-p3' and with alpha (value)
+  Colors do not match.\nActual:   #ffffff\nExpected: color(srgb 1 1 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#ffffff08' with color space 'limited-srgb' and  without alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#ffffff" but got "#000000"
+[FAIL] Testing '#ffffff08' with color space 'limited-srgb' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 1 1 1 / 0.031373).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 4 got 0
+[FAIL] Testing '#ffffff08' with color space 'limited-srgb' and with alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#ffffff" but got "#000000"
+[FAIL] Testing '#ffffff08' with color space 'limited-srgb' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 1 1 1 / 0.031373).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 4 got 0
+[FAIL] Testing '#ffffff08' with color space 'display-p3' and  without alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#ffffff" but got "#000000"
+[FAIL] Testing '#ffffff08' with color space 'display-p3' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 1 1 1 / 0.031373).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 4 got 0
+[FAIL] Testing '#ffffff08' with color space 'display-p3' and with alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#ffffff" but got "#000000"
+[FAIL] Testing '#ffffff08' with color space 'display-p3' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 1 1 1 / 0.031373).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 4 got 0
+[FAIL] Testing '#FFFFFF' with color space 'limited-srgb' and  without alpha (value)
+  Colors do not match.\nActual:   #ffffff\nExpected: color(srgb 1 1 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#FFFFFF' with color space 'limited-srgb' and with alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #ffffff\nExpected: color(srgb 1 1 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#FFFFFF' with color space 'limited-srgb' and with alpha (value)
+  Colors do not match.\nActual:   #ffffff\nExpected: color(srgb 1 1 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#FFFFFF' with color space 'display-p3' and  without alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #ffffff\nExpected: color(display-p3 1 1 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#FFFFFF' with color space 'display-p3' and  without alpha (value)
+  Colors do not match.\nActual:   #ffffff\nExpected: color(srgb 1 1 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#FFFFFF' with color space 'display-p3' and with alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #ffffff\nExpected: color(display-p3 1 1 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#FFFFFF' with color space 'display-p3' and with alpha (value)
+  Colors do not match.\nActual:   #ffffff\nExpected: color(srgb 1 1 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#0F0F0F' with color space 'limited-srgb' and  without alpha (value)
+  Colors do not match.\nActual:   #0f0f0f\nExpected: color(srgb 0.058824 0.058824 0.058824).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#0F0F0F' with color space 'limited-srgb' and with alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #0f0f0f\nExpected: color(srgb 0.058824 0.058824 0.058824).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#0F0F0F' with color space 'limited-srgb' and with alpha (value)
+  Colors do not match.\nActual:   #0f0f0f\nExpected: color(srgb 0.058824 0.058824 0.058824).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#0F0F0F' with color space 'display-p3' and  without alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #0f0f0f\nExpected: color(display-p3 0.058824 0.058824 0.058824).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#0F0F0F' with color space 'display-p3' and  without alpha (value)
+  Colors do not match.\nActual:   #0f0f0f\nExpected: color(srgb 0.058824 0.058824 0.058824).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#0F0F0F' with color space 'display-p3' and with alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #0f0f0f\nExpected: color(display-p3 0.058824 0.058824 0.058824).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#0F0F0F' with color space 'display-p3' and with alpha (value)
+  Colors do not match.\nActual:   #0f0f0f\nExpected: color(srgb 0.058824 0.058824 0.058824).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#fff' with color space 'limited-srgb' and  without alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#ffffff" but got "#000000"
+[FAIL] Testing '#fff' with color space 'limited-srgb' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 1 1 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#fff' with color space 'limited-srgb' and with alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#ffffff" but got "#000000"
+[FAIL] Testing '#fff' with color space 'limited-srgb' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 1 1 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#fff' with color space 'display-p3' and  without alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#ffffff" but got "#000000"
+[FAIL] Testing '#fff' with color space 'display-p3' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 1 1 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#fff' with color space 'display-p3' and with alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#ffffff" but got "#000000"
+[FAIL] Testing '#fff' with color space 'display-p3' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 1 1 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'fffffff' with color space 'limited-srgb' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'fffffff' with color space 'limited-srgb' and with alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'fffffff' with color space 'limited-srgb' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'fffffff' with color space 'display-p3' and  without alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #000000\nExpected: color(display-p3 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'fffffff' with color space 'display-p3' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'fffffff' with color space 'display-p3' and with alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #000000\nExpected: color(display-p3 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'fffffff' with color space 'display-p3' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#gggggg' with color space 'limited-srgb' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#gggggg' with color space 'limited-srgb' and with alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#gggggg' with color space 'limited-srgb' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#gggggg' with color space 'display-p3' and  without alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #000000\nExpected: color(display-p3 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#gggggg' with color space 'display-p3' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#gggggg' with color space 'display-p3' and with alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #000000\nExpected: color(display-p3 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#gggggg' with color space 'display-p3' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'foobar' with color space 'limited-srgb' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'foobar' with color space 'limited-srgb' and with alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'foobar' with color space 'limited-srgb' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'foobar' with color space 'display-p3' and  without alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #000000\nExpected: color(display-p3 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'foobar' with color space 'display-p3' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'foobar' with color space 'display-p3' and with alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #000000\nExpected: color(display-p3 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'foobar' with color space 'display-p3' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#ffffff\0' with color space 'limited-srgb' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#ffffff\0' with color space 'limited-srgb' and with alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#ffffff\0' with color space 'limited-srgb' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#ffffff\0' with color space 'display-p3' and  without alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #000000\nExpected: color(display-p3 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#ffffff\0' with color space 'display-p3' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#ffffff\0' with color space 'display-p3' and with alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #000000\nExpected: color(display-p3 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#ffffff\0' with color space 'display-p3' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#ffffff;' with color space 'limited-srgb' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#ffffff;' with color space 'limited-srgb' and with alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#ffffff;' with color space 'limited-srgb' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#ffffff;' with color space 'display-p3' and  without alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #000000\nExpected: color(display-p3 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#ffffff;' with color space 'display-p3' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#ffffff;' with color space 'display-p3' and with alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #000000\nExpected: color(display-p3 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#ffffff;' with color space 'display-p3' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing ' #ffffff' with color space 'limited-srgb' and  without alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#ffffff" but got "#000000"
+[FAIL] Testing ' #ffffff' with color space 'limited-srgb' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 1 1 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing ' #ffffff' with color space 'limited-srgb' and with alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#ffffff" but got "#000000"
+[FAIL] Testing ' #ffffff' with color space 'limited-srgb' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 1 1 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing ' #ffffff' with color space 'display-p3' and  without alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#ffffff" but got "#000000"
+[FAIL] Testing ' #ffffff' with color space 'display-p3' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 1 1 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing ' #ffffff' with color space 'display-p3' and with alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#ffffff" but got "#000000"
+[FAIL] Testing ' #ffffff' with color space 'display-p3' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 1 1 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#ffffff ' with color space 'limited-srgb' and  without alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#ffffff" but got "#000000"
+[FAIL] Testing '#ffffff ' with color space 'limited-srgb' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 1 1 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#ffffff ' with color space 'limited-srgb' and with alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#ffffff" but got "#000000"
+[FAIL] Testing '#ffffff ' with color space 'limited-srgb' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 1 1 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#ffffff ' with color space 'display-p3' and  without alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#ffffff" but got "#000000"
+[FAIL] Testing '#ffffff ' with color space 'display-p3' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 1 1 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#ffffff ' with color space 'display-p3' and with alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#ffffff" but got "#000000"
+[FAIL] Testing '#ffffff ' with color space 'display-p3' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 1 1 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing ' #ffffff ' with color space 'limited-srgb' and  without alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#ffffff" but got "#000000"
+[FAIL] Testing ' #ffffff ' with color space 'limited-srgb' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 1 1 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing ' #ffffff ' with color space 'limited-srgb' and with alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#ffffff" but got "#000000"
+[FAIL] Testing ' #ffffff ' with color space 'limited-srgb' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 1 1 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing ' #ffffff ' with color space 'display-p3' and  without alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#ffffff" but got "#000000"
+[FAIL] Testing ' #ffffff ' with color space 'display-p3' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 1 1 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing ' #ffffff ' with color space 'display-p3' and with alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#ffffff" but got "#000000"
+[FAIL] Testing ' #ffffff ' with color space 'display-p3' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 1 1 1).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'crimson' with color space 'limited-srgb' and  without alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#dc143c" but got "#000000"
+[FAIL] Testing 'crimson' with color space 'limited-srgb' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0.862745 0.078431 0.235294).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'crimson' with color space 'limited-srgb' and with alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#dc143c" but got "#000000"
+[FAIL] Testing 'crimson' with color space 'limited-srgb' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0.862745 0.078431 0.235294).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'crimson' with color space 'display-p3' and  without alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#dc143c" but got "#000000"
+[FAIL] Testing 'crimson' with color space 'display-p3' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0.862745 0.078431 0.235294).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'crimson' with color space 'display-p3' and with alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#dc143c" but got "#000000"
+[FAIL] Testing 'crimson' with color space 'display-p3' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0.862745 0.078431 0.235294).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'bisque' with color space 'limited-srgb' and  without alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#ffe4c4" but got "#000000"
+[FAIL] Testing 'bisque' with color space 'limited-srgb' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 1 0.894118 0.768627).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'bisque' with color space 'limited-srgb' and with alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#ffe4c4" but got "#000000"
+[FAIL] Testing 'bisque' with color space 'limited-srgb' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 1 0.894118 0.768627).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'bisque' with color space 'display-p3' and  without alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#ffe4c4" but got "#000000"
+[FAIL] Testing 'bisque' with color space 'display-p3' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 1 0.894118 0.768627).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'bisque' with color space 'display-p3' and with alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#ffe4c4" but got "#000000"
+[FAIL] Testing 'bisque' with color space 'display-p3' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 1 0.894118 0.768627).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'currentColor' with color space 'limited-srgb' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'currentColor' with color space 'limited-srgb' and with alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'currentColor' with color space 'limited-srgb' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'currentColor' with color space 'display-p3' and  without alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #000000\nExpected: color(display-p3 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'currentColor' with color space 'display-p3' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'currentColor' with color space 'display-p3' and with alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #000000\nExpected: color(display-p3 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'currentColor' with color space 'display-p3' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'transparent' with color space 'limited-srgb' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0 / 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 4 got 0
+[FAIL] Testing 'transparent' with color space 'limited-srgb' and with alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0 / 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 4 got 0
+[FAIL] Testing 'transparent' with color space 'limited-srgb' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0 / 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 4 got 0
+[FAIL] Testing 'transparent' with color space 'display-p3' and  without alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #000000\nExpected: color(display-p3 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'transparent' with color space 'display-p3' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0 / 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 4 got 0
+[FAIL] Testing 'transparent' with color space 'display-p3' and with alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #000000\nExpected: color(display-p3 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'transparent' with color space 'display-p3' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0 / 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 4 got 0
+[FAIL] Testing 'inherit' with color space 'limited-srgb' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'inherit' with color space 'limited-srgb' and with alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'inherit' with color space 'limited-srgb' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'inherit' with color space 'display-p3' and  without alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #000000\nExpected: color(display-p3 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'inherit' with color space 'display-p3' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'inherit' with color space 'display-p3' and with alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #000000\nExpected: color(display-p3 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'inherit' with color space 'display-p3' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'rgb(1,1,1)' with color space 'limited-srgb' and  without alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#010101" but got "#000000"
+[FAIL] Testing 'rgb(1,1,1)' with color space 'limited-srgb' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0.003922 0.003922 0.003922).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'rgb(1,1,1)' with color space 'limited-srgb' and with alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#010101" but got "#000000"
+[FAIL] Testing 'rgb(1,1,1)' with color space 'limited-srgb' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0.003922 0.003922 0.003922).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'rgb(1,1,1)' with color space 'display-p3' and  without alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#010101" but got "#000000"
+[FAIL] Testing 'rgb(1,1,1)' with color space 'display-p3' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0.003922 0.003922 0.003922).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'rgb(1,1,1)' with color space 'display-p3' and with alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#010101" but got "#000000"
+[FAIL] Testing 'rgb(1,1,1)' with color space 'display-p3' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0.003922 0.003922 0.003922).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'rgb(1,1,1,1)' with color space 'limited-srgb' and  without alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#010101" but got "#000000"
+[FAIL] Testing 'rgb(1,1,1,1)' with color space 'limited-srgb' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0.003922 0.003922 0.003922).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'rgb(1,1,1,1)' with color space 'limited-srgb' and with alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#010101" but got "#000000"
+[FAIL] Testing 'rgb(1,1,1,1)' with color space 'limited-srgb' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0.003922 0.003922 0.003922).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'rgb(1,1,1,1)' with color space 'display-p3' and  without alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#010101" but got "#000000"
+[FAIL] Testing 'rgb(1,1,1,1)' with color space 'display-p3' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0.003922 0.003922 0.003922).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'rgb(1,1,1,1)' with color space 'display-p3' and with alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#010101" but got "#000000"
+[FAIL] Testing 'rgb(1,1,1,1)' with color space 'display-p3' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0.003922 0.003922 0.003922).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing 'rgb(1,1,1,0.5)' with color space 'limited-srgb' and  without alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#010101" but got "#000000"
+[FAIL] Testing 'rgb(1,1,1,0.5)' with color space 'limited-srgb' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0.003922 0.003922 0.003922 / 0.501961).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 4 got 0
+[FAIL] Testing 'rgb(1,1,1,0.5)' with color space 'limited-srgb' and with alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#010101" but got "#000000"
+[FAIL] Testing 'rgb(1,1,1,0.5)' with color space 'limited-srgb' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0.003922 0.003922 0.003922 / 0.501961).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 4 got 0
+[FAIL] Testing 'rgb(1,1,1,0.5)' with color space 'display-p3' and  without alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#010101" but got "#000000"
+[FAIL] Testing 'rgb(1,1,1,0.5)' with color space 'display-p3' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0.003922 0.003922 0.003922 / 0.501961).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 4 got 0
+[FAIL] Testing 'rgb(1,1,1,0.5)' with color space 'display-p3' and with alpha (setAttribute("value"))
+  assert_equals: value is hex expected "#010101" but got "#000000"
+[FAIL] Testing 'rgb(1,1,1,0.5)' with color space 'display-p3' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0.003922 0.003922 0.003922 / 0.501961).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 4 got 0
+[FAIL] Testing '#FFFFFὊ9' with color space 'limited-srgb' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#FFFFFὊ9' with color space 'limited-srgb' and with alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#FFFFFὊ9' with color space 'limited-srgb' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#FFFFFὊ9' with color space 'display-p3' and  without alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #000000\nExpected: color(display-p3 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#FFFFFὊ9' with color space 'display-p3' and  without alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#FFFFFὊ9' with color space 'display-p3' and with alpha (setAttribute("value"))
+  Colors do not match.\nActual:   #000000\nExpected: color(display-p3 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Testing '#FFFFFὊ9' with color space 'display-p3' and with alpha (value)
+  Colors do not match.\nActual:   #000000\nExpected: color(srgb 0 0 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
+[FAIL] Display P3 colors can be out-of-bounds
+  assert_equals: expected "color(display-p3 3 0 0.2 / 0.6)" but got "#000000"
+Harness: the test ran to completion.
+

@@ -1,5 +1,5 @@
 // META: title=test WebNN API tanh operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -14,15 +14,29 @@
 //
 // MLOperand hardSwish(MLOperand input);
 
-
-const getHardSwishPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 4, float16: 4};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
-
 const hardSwishTests = [
+  {
+    'name': 'hardSwish float32 0D tensor',
+    'graph': {
+      'inputs': {
+        'hardSwishInput': {
+          'data': [0.7341583371162415],
+          'descriptor': {shape: [], dataType: 'float32'}
+        }
+      },
+      'operators': [{
+        'name': 'hardSwish',
+        'arguments': [{'input': 'hardSwishInput'}],
+        'outputs': 'hardSwishOutput'
+      }],
+      'expectedOutputs': {
+        'hardSwishOutput': {
+          'data': [0.4569105803966522],
+          'descriptor': {shape: [], dataType: 'float32'}
+        }
+      }
+    }
+  },
   {
     'name': 'hardSwish float32 1D constant tensor',
     'graph': {
@@ -38,7 +52,7 @@ const hardSwishTests = [
             3.7802627086639404,  -6.071240425109863,  -9.909919738769531,
             -7.744259357452393,  -8.286120414733887,  8.083491325378418
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'},
+          'descriptor': {shape: [24], dataType: 'float32'},
           'constant': true
         }
       },
@@ -75,7 +89,7 @@ const hardSwishTests = [
             0,
             8.083491325378418
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -95,7 +109,7 @@ const hardSwishTests = [
             3.7802627086639404,  -6.071240425109863,  -9.909919738769531,
             -7.744259357452393,  -8.286120414733887,  8.083491325378418
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -131,7 +145,7 @@ const hardSwishTests = [
             0,
             8.083491325378418
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -151,7 +165,7 @@ const hardSwishTests = [
             3.7802627086639404,  -6.071240425109863,  -9.909919738769531,
             -7.744259357452393,  -8.286120414733887,  8.083491325378418
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -187,7 +201,7 @@ const hardSwishTests = [
             0,
             8.083491325378418
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       }
     }
@@ -207,7 +221,7 @@ const hardSwishTests = [
             3.7802627086639404,  -6.071240425109863,  -9.909919738769531,
             -7.744259357452393,  -8.286120414733887,  8.083491325378418
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -243,7 +257,7 @@ const hardSwishTests = [
             0,
             8.083491325378418
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -263,7 +277,7 @@ const hardSwishTests = [
             3.7802627086639404,  -6.071240425109863,  -9.909919738769531,
             -7.744259357452393,  -8.286120414733887,  8.083491325378418
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -299,7 +313,7 @@ const hardSwishTests = [
             0,
             8.083491325378418
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -319,7 +333,7 @@ const hardSwishTests = [
             3.7802627086639404,  -6.071240425109863,  -9.909919738769531,
             -7.744259357452393,  -8.286120414733887,  8.083491325378418
           ],
-          'descriptor': {'dimensions': [2, 1, 4, 1, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 1, 4, 1, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -355,18 +369,281 @@ const hardSwishTests = [
             0,
             8.083491325378418
           ],
-          'descriptor': {'dimensions': [2, 1, 4, 1, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 1, 4, 1, 3], dataType: 'float32'}
+        }
+      }
+    }
+  },
+
+  // float16 tests
+  {
+    'name': 'hardSwish float16 0D tensor',
+    'graph': {
+      'inputs': {
+        'hardSwishInput':
+            {'data': [0.734375], 'descriptor': {shape: [], dataType: 'float16'}}
+      },
+      'operators': [{
+        'name': 'hardSwish',
+        'arguments': [{'input': 'hardSwishInput'}],
+        'outputs': 'hardSwishOutput'
+      }],
+      'expectedOutputs': {
+        'hardSwishOutput': {
+          'data': [0.45703125],
+          'descriptor': {shape: [], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'hardSwish float16 1D constant tensor',
+    'graph': {
+      'inputs': {
+        'hardSwishInput': {
+          'data': [
+            0.734375,    9.1171875,   3.544921875, 2.62109375,   -6.4453125,
+            -1.68359375, 5.5234375,   -5.95703125, -9.171875,    6.421875,
+            -3.29296875, 1.041015625, -7.24609375, -0.947265625, -5.77734375,
+            3.185546875, -7.26171875, 4.17578125,  3.779296875,  -6.0703125,
+            -9.90625,    -7.74609375, -8.2890625,  8.0859375
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'hardSwish',
+        'arguments': [{'input': 'hardSwishInput'}],
+        'outputs': 'hardSwishOutput'
+      }],
+      'expectedOutputs': {
+        'hardSwishOutput': {
+          'data': [
+            0.45703125,  9.1171875,
+            3.544921875, 2.455078125,
+            0,           -0.369384765625,
+            5.5234375,   0,
+            0,           6.421875,
+            0,           0.701171875,
+            0,           -0.323974609375,
+            0,           3.185546875,
+            0,           4.17578125,
+            3.779296875, 0,
+            0,           0,
+            0,           8.0859375
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'hardSwish float16 1D tensor',
+    'graph': {
+      'inputs': {
+        'hardSwishInput': {
+          'data': [
+            0.734375,    9.1171875,   3.544921875, 2.62109375,   -6.4453125,
+            -1.68359375, 5.5234375,   -5.95703125, -9.171875,    6.421875,
+            -3.29296875, 1.041015625, -7.24609375, -0.947265625, -5.77734375,
+            3.185546875, -7.26171875, 4.17578125,  3.779296875,  -6.0703125,
+            -9.90625,    -7.74609375, -8.2890625,  8.0859375
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'hardSwish',
+        'arguments': [{'input': 'hardSwishInput'}],
+        'outputs': 'hardSwishOutput'
+      }],
+      'expectedOutputs': {
+        'hardSwishOutput': {
+          'data': [
+            0.45703125,  9.1171875,
+            3.544921875, 2.455078125,
+            0,           -0.369384765625,
+            5.5234375,   0,
+            0,           6.421875,
+            0,           0.701171875,
+            0,           -0.323974609375,
+            0,           3.185546875,
+            0,           4.17578125,
+            3.779296875, 0,
+            0,           0,
+            0,           8.0859375
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'hardSwish float16 2D tensor',
+    'graph': {
+      'inputs': {
+        'hardSwishInput': {
+          'data': [
+            0.734375,    9.1171875,   3.544921875, 2.62109375,   -6.4453125,
+            -1.68359375, 5.5234375,   -5.95703125, -9.171875,    6.421875,
+            -3.29296875, 1.041015625, -7.24609375, -0.947265625, -5.77734375,
+            3.185546875, -7.26171875, 4.17578125,  3.779296875,  -6.0703125,
+            -9.90625,    -7.74609375, -8.2890625,  8.0859375
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'hardSwish',
+        'arguments': [{'input': 'hardSwishInput'}],
+        'outputs': 'hardSwishOutput'
+      }],
+      'expectedOutputs': {
+        'hardSwishOutput': {
+          'data': [
+            0.45703125,  9.1171875,
+            3.544921875, 2.455078125,
+            0,           -0.369384765625,
+            5.5234375,   0,
+            0,           6.421875,
+            0,           0.701171875,
+            0,           -0.323974609375,
+            0,           3.185546875,
+            0,           4.17578125,
+            3.779296875, 0,
+            0,           0,
+            0,           8.0859375
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'hardSwish float16 3D tensor',
+    'graph': {
+      'inputs': {
+        'hardSwishInput': {
+          'data': [
+            0.734375,    9.1171875,   3.544921875, 2.62109375,   -6.4453125,
+            -1.68359375, 5.5234375,   -5.95703125, -9.171875,    6.421875,
+            -3.29296875, 1.041015625, -7.24609375, -0.947265625, -5.77734375,
+            3.185546875, -7.26171875, 4.17578125,  3.779296875,  -6.0703125,
+            -9.90625,    -7.74609375, -8.2890625,  8.0859375
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'hardSwish',
+        'arguments': [{'input': 'hardSwishInput'}],
+        'outputs': 'hardSwishOutput'
+      }],
+      'expectedOutputs': {
+        'hardSwishOutput': {
+          'data': [
+            0.45703125,  9.1171875,
+            3.544921875, 2.455078125,
+            0,           -0.369384765625,
+            5.5234375,   0,
+            0,           6.421875,
+            0,           0.701171875,
+            0,           -0.323974609375,
+            0,           3.185546875,
+            0,           4.17578125,
+            3.779296875, 0,
+            0,           0,
+            0,           8.0859375
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'hardSwish float16 4D tensor',
+    'graph': {
+      'inputs': {
+        'hardSwishInput': {
+          'data': [
+            0.734375,    9.1171875,   3.544921875, 2.62109375,   -6.4453125,
+            -1.68359375, 5.5234375,   -5.95703125, -9.171875,    6.421875,
+            -3.29296875, 1.041015625, -7.24609375, -0.947265625, -5.77734375,
+            3.185546875, -7.26171875, 4.17578125,  3.779296875,  -6.0703125,
+            -9.90625,    -7.74609375, -8.2890625,  8.0859375
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'hardSwish',
+        'arguments': [{'input': 'hardSwishInput'}],
+        'outputs': 'hardSwishOutput'
+      }],
+      'expectedOutputs': {
+        'hardSwishOutput': {
+          'data': [
+            0.45703125,  9.1171875,
+            3.544921875, 2.455078125,
+            0,           -0.369384765625,
+            5.5234375,   0,
+            0,           6.421875,
+            0,           0.701171875,
+            0,           -0.323974609375,
+            0,           3.185546875,
+            0,           4.17578125,
+            3.779296875, 0,
+            0,           0,
+            0,           8.0859375
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'hardSwish float16 5D tensor',
+    'graph': {
+      'inputs': {
+        'hardSwishInput': {
+          'data': [
+            0.734375,    9.1171875,   3.544921875, 2.62109375,   -6.4453125,
+            -1.68359375, 5.5234375,   -5.95703125, -9.171875,    6.421875,
+            -3.29296875, 1.041015625, -7.24609375, -0.947265625, -5.77734375,
+            3.185546875, -7.26171875, 4.17578125,  3.779296875,  -6.0703125,
+            -9.90625,    -7.74609375, -8.2890625,  8.0859375
+          ],
+          'descriptor': {shape: [2, 1, 4, 1, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'hardSwish',
+        'arguments': [{'input': 'hardSwishInput'}],
+        'outputs': 'hardSwishOutput'
+      }],
+      'expectedOutputs': {
+        'hardSwishOutput': {
+          'data': [
+            0.45703125,  9.1171875,
+            3.544921875, 2.455078125,
+            0,           -0.369384765625,
+            5.5234375,   0,
+            0,           6.421875,
+            0,           0.701171875,
+            0,           -0.323974609375,
+            0,           3.185546875,
+            0,           4.17578125,
+            3.779296875, 0,
+            0,           0,
+            0,           8.0859375
+          ],
+          'descriptor': {shape: [2, 1, 4, 1, 3], dataType: 'float16'}
         }
       }
     }
   }
 ];
 
-if (navigator.ml) {
-  hardSwishTests.forEach((test) => {
-    webnn_conformance_test(
-        buildGraphAndCompute, getHardSwishPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    hardSwishTests, buildAndExecuteGraph, getPrecisionTolerance);

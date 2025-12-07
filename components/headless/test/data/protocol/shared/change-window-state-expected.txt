@@ -1,0 +1,4 @@
+Tests window state is properly adjusted upon Browser.setWindowSize.
+Window state: 'minimized' (expected: 'minimized')
+Window state: 'maximized' (expected: 'maximized')
+Window state: 'fullscreen' (expected: 'fullscreen')

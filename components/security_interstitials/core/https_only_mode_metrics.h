@@ -102,8 +102,7 @@ enum class NavigationRequestSecurityLevel {
   // due to HSTS.
   kHstsUpgraded = 3,
 
-  // Request was for localhost, and thus no network
-  // due to HSTS.
+  // Request was for localhost, and thus nothing is exposed to the network.
   kLocalhost = 4,
 
   // Request was for an insecure (HTTP) resource, but was internally redirected
@@ -118,7 +117,7 @@ enum class NavigationRequestSecurityLevel {
   kAllowlisted = 7,
 
   // Request was insecure (HTTP), but was to a hostname that isn't globally
-  // unique (e.g. a bare RFC1918 IP address, single-label or .local hostname).
+  // unique (e.g. a bare RFC1918 IP address, or .test or .local hostname).
   // This bucket is recorded IN ADDITION to kInsecure/kAllowlisted.
   kNonUniqueHostname = 8,
 
@@ -129,7 +128,18 @@ enum class NavigationRequestSecurityLevel {
   // Request was for a captive portal login page.
   kCaptivePortalLogin = 10,
 
-  kMaxValue = kCaptivePortalLogin,
+  // Request was for a single-label hostname.
+  kSingleLabelHostname = 11,
+
+  // Request was for a URL with non-default ports.
+  kNonDefaultPorts = 12,
+
+  // The hostname was in the HTTPS-enforcement list because of the HFM+SE
+  // heuristic. Recorded regardless of whether there was a fallback navigation
+  // or an interstitial. Not recorded if the hostname is allowlisted.
+  kHttpsEnforcedOnHostname = 13,
+
+  kMaxValue = kHttpsEnforcedOnHostname,
 };
 
 // Recorded by the Site Engagement Heuristic logic, recording whether HFM should
@@ -230,7 +240,32 @@ enum class InterstitialReason {
   kMaxValue = kBalanced,
 };
 
+InterstitialReason GetInterstitialReason(
+    const HttpInterstitialState& interstitial_state);
+
 void RecordInterstitialReason(const HttpInterstitialState& interstitial_state);
+
+// Used for UKM. There is only a single BlockingResult per navigation.
+enum class BlockingResult {
+  kUnknown = 0,
+  // An insecure HTTP request was intercepted.
+  kInsecureRequest = 1,
+  // An insecure HTTP request was permitted because no variant of
+  // Ask-Before-HTTP prevented the navigation.
+  kInsecureRequestPermitted = 2,
+  // An insecure HTTP request was permitted because a user had previously
+  // proceeded through a warning on this origin.
+  kInsecureRequestAllowlisted = 3,
+  // An insecure HTTP request caused a warning to show, and the user proceeded
+  // through the warning.
+  kInterstitialProceed = 4,
+  // An insecure HTTP request caused a warning to show, and the user cancelled
+  // the navigation.
+  kInterstitialDontProceed = 5,
+  // Append new items to the end of the list above; do not modify or replace
+  // existing values. Comment out obsolete items.
+  kMaxValue = kInterstitialDontProceed,
+};
 
 }  // namespace security_interstitials::https_only_mode
 

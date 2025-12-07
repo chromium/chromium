@@ -17,6 +17,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
@@ -134,6 +135,7 @@ inline constexpr char kOnNameChanged[] = "OnNameChanged";
 inline constexpr char kOnDiscoverableChanged[] = "OnDiscoverableChanged";
 inline constexpr char kOnDeviceFound[] = "OnDeviceFound";
 inline constexpr char kOnDeviceCleared[] = "OnDeviceCleared";
+inline constexpr char kOnDeviceKeyMissing[] = "OnDeviceKeyMissing";
 inline constexpr char kOnDevicePropertiesChanged[] =
     "OnDevicePropertiesChanged";
 inline constexpr char kOnDiscoveringChanged[] = "OnDiscoveringChanged";
@@ -146,6 +148,7 @@ inline constexpr char kOnSdpSearchComplete[] = "OnSdpSearchComplete";
 inline constexpr char kOnSdpRecordCreated[] = "OnSdpRecordCreated";
 inline constexpr char kOnDeviceConnected[] = "OnDeviceConnected";
 inline constexpr char kOnDeviceDisconnected[] = "OnDeviceDisconnected";
+inline constexpr char kOnDeviceConnectionFailed[] = "OnDeviceConnectionFailed";
 
 inline constexpr char kOnScannerRegistered[] = "OnScannerRegistered";
 inline constexpr char kOnScanResult[] = "OnScanResult";
@@ -343,6 +346,7 @@ inline constexpr char kOnDevicePolicyEffectChanged[] =
 inline constexpr char kSetAllowedServices[] = "SetAllowedServices";
 inline constexpr char kGetAllowedServices[] = "GetAllowedServices";
 inline constexpr char kGetDevicePolicyEffect[] = "GetDevicePolicyEffect";
+inline constexpr char kSetSimpleSecurePairingEnabled[] = "SetAcceptSspRequest";
 }  // namespace admin
 
 namespace adapter_logging {
@@ -352,7 +356,6 @@ inline constexpr char kSetDebugLogging[] = "SetDebugLogging";
 
 namespace experimental {
 inline constexpr char kSetLLPrivacy[] = "SetLLPrivacy";
-inline constexpr char kSetDevCoredump[] = "SetDevCoredump";
 }  // namespace experimental
 
 // BluetoothDevice structure for DBus apis.
@@ -621,6 +624,12 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
       array.CloseContainer(&dict);
     }
     writer->CloseContainer(&array);
+  }
+
+  // Specialized write for base::span<const uint8_t>.
+  static void WriteDBusParam(dbus::MessageWriter* writer,
+                             base::span<const uint8_t> value) {
+    writer->AppendArrayOfBytes(value);
   }
 
   // Optional container type needs to be explicitly listed here.

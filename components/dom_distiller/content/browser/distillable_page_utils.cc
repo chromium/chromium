@@ -53,13 +53,15 @@ void IsDistillablePageForDetector(content::WebContents* web_contents,
 
 bool operator==(const DistillabilityResult& first,
                 const DistillabilityResult& second) {
-  return first.is_distillable == second.is_distillable &&
+  return first.url == second.url &&
+         first.is_distillable == second.is_distillable &&
          first.is_last == second.is_last &&
          first.is_mobile_friendly == second.is_mobile_friendly;
 }
 
 std::ostream& operator<<(std::ostream& os, const DistillabilityResult& result) {
-  os << "DistillabilityResult: { is_distillable: " << result.is_distillable
+  os << "DistillabilityResult: { url: " << result.url.spec()
+     << ", is_distillable: " << result.is_distillable
      << ", is_last: " << result.is_last
      << ", is_mobile_friendly: " << result.is_mobile_friendly << " }";
   return os;

@@ -4,8 +4,9 @@
 
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tags_manager.h"
 
+#include <algorithm>
+
 #include "base/memory/singleton.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_task_provider.h"
 
 namespace task_manager {
@@ -25,7 +26,7 @@ void WebContentsTagsManager::AddTag(WebContentsTag* tag) {
 
 void WebContentsTagsManager::RemoveTag(WebContentsTag* tag) {
   DCHECK(tag);
-  tracked_tags_.erase(base::ranges::find(tracked_tags_, tag));
+  tracked_tags_.erase(std::ranges::find(tracked_tags_, tag));
 
   // No need to inform the provider here. The provider will create an entry
   // for each WebContents it's tracking which is a WebContentsObserver and
@@ -57,7 +58,6 @@ WebContentsTagsManager::WebContentsTagsManager()
     : provider_(nullptr) {
 }
 
-WebContentsTagsManager::~WebContentsTagsManager() {
-}
+WebContentsTagsManager::~WebContentsTagsManager() = default;
 
 }  // namespace task_manager

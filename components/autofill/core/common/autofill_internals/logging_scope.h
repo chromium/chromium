@@ -42,7 +42,11 @@ class LogBuffer;
   /* Chrome Fast Checkout run. */                                      \
   T(FastCheckout)                                                      \
   /* Touch To Fill UI. */                                              \
-  T(TouchToFill)
+  T(TouchToFill)                                                       \
+  /* Autofill with AI. */                                              \
+  T(AutofillAi)                                                        \
+  /* Autofill Actor. */                                                \
+  T(AutofillActor)
 
 // Define a bunch of logging scopes: kContext, kParsing, ...
 #define AUTOFILL_TEMPLATE(NAME) k##NAME,

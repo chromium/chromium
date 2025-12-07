@@ -15,13 +15,11 @@
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
-#include "components/download/public/common/download_item_impl.h"
-#include "components/download/public/common/download_source.h"
 #include "components/download/public/common/resume_mode.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/http/http_response_headers.h"
-#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
 namespace net {
 class HttpRequestHeaders;
@@ -32,9 +30,10 @@ struct ResourceRequest;
 }
 
 namespace download {
+class DownloadItemImpl;
+class DownloadUrlParameters;
 struct DownloadCreateInfo;
 struct DownloadSaveInfo;
-class DownloadUrlParameters;
 
 // Used to check if the URL is safe. For most cases, this is
 // ChildProcessSecurityPolicy::CanRequestURL.
@@ -128,6 +127,14 @@ COMPONENTS_DOWNLOAD_EXPORT
 void DetermineLocalPath(DownloadItem* download,
                         const base::FilePath& virtual_path,
                         LocalPathCallback callback);
+
+#if BUILDFLAG(IS_ANDROID)
+// Determine the file path for the save package file given the `suggested_path`.
+COMPONENTS_DOWNLOAD_EXPORT
+void DetermineSavePackagePath(const GURL& url,
+                              const base::FilePath& suggested_path,
+                              LocalPathCallback callback);
+#endif
 
 // Finch parameter key value for number of bytes used for content validation
 // during resumption.

@@ -47,7 +47,7 @@ class CloseFullscreenButton : public views::Button {
     SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
     GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_EXIT_FULLSCREEN_MODE));
-    AddChildView(close_image_view.release());
+    AddChildViewRaw(close_image_view.release());
     SetLayoutManager(std::make_unique<views::FillLayout>());
   }
   CloseFullscreenButton(const CloseFullscreenButton&) = delete;

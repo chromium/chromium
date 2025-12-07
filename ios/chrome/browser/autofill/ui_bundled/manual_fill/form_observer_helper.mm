@@ -4,11 +4,12 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/form_observer_helper.h"
 
+#import "components/autofill/core/common/form_data.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 
-@interface FormObserverHelper ()<FormActivityObserver, WebStateListObserving>
+@interface FormObserverHelper () <FormActivityObserver, WebStateListObserving>
 // The WebStateList this instance is observing in order to update the
 // active WebState.
 @property(nonatomic, assign) WebStateList* webStateList;
@@ -65,19 +66,19 @@
 }
 
 - (void)webState:(web::WebState*)webState
-    didSubmitDocumentWithFormNamed:(const std::string&)formName
-                          withData:(const std::string&)formData
-                    hasUserGesture:(BOOL)hasUserGesture
-                           inFrame:(web::WebFrame*)frame {
+    didSubmitDocumentWithFormData:(const autofill::FormData&)formData
+                   hasUserGesture:(BOOL)hasUserGesture
+                          inFrame:(web::WebFrame*)frame
+                   perfectFilling:(BOOL)perfectFilling {
   if ([self.delegate respondsToSelector:@selector
                      (webState:
-                         didSubmitDocumentWithFormNamed:withData:hasUserGesture
-                                                       :inFrame:)]) {
+                         didSubmitDocumentWithFormData:hasUserGesture:inFrame
+                                                      :perfectFilling:)]) {
     [self.delegate webState:webState
-        didSubmitDocumentWithFormNamed:formName
-                              withData:formData
-                        hasUserGesture:hasUserGesture
-                               inFrame:frame];
+        didSubmitDocumentWithFormData:formData
+                       hasUserGesture:hasUserGesture
+                              inFrame:frame
+                       perfectFilling:perfectFilling];
   }
 }
 

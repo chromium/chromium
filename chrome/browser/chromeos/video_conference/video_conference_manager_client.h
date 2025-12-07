@@ -11,14 +11,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
-#include "build/chromeos_buildflags.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "content/public/browser/web_contents.h"
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#endif
+
+namespace ash {
+class VideoConferenceManagerAsh;
+}  // namespace ash
 
 namespace video_conference {
 
@@ -36,7 +34,9 @@ struct VideoConferencePermissions;
 class VideoConferenceManagerClientImpl
     : public crosapi::mojom::VideoConferenceManagerClient {
  public:
-  VideoConferenceManagerClientImpl();
+  // The passed `video_conference_manager_ash` must outlive this instance.
+  explicit VideoConferenceManagerClientImpl(
+      ash::VideoConferenceManagerAsh* video_conference_manager_ash);
 
   VideoConferenceManagerClientImpl(const VideoConferenceManagerClientImpl&) =
       delete;
@@ -108,10 +108,7 @@ class VideoConferenceManagerClientImpl
   std::map<base::UnguessableToken, raw_ptr<content::WebContents>>
       id_to_webcontents_;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  mojo::Remote<crosapi::mojom::VideoConferenceManager> remote_;
-  mojo::Receiver<crosapi::mojom::VideoConferenceManagerClient> receiver_{this};
-#endif
+  const raw_ref<ash::VideoConferenceManagerAsh> video_conference_manager_ash_;
 
   // Any `VideoConferenceWebApp` created by the client gets passed a callback
   // bound to `RemoveMediaApp`. In order to guard against situations where that

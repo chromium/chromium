@@ -16,22 +16,22 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
+#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-shared.h"
 
 namespace content {
 namespace {
 
 const PrivateAggregationRequestWithEventType
     kExpectedRequestWithReservedEventType(
-        auction_worklet::mojom::PrivateAggregationRequest::New(
-            auction_worklet::mojom::AggregatableReportContribution::
-                NewHistogramContribution(
-                    blink::mojom::AggregatableReportHistogramContribution::New(
-                        /*bucket=*/123,
-                        /*value=*/45,
-                        /*filtering_id=*/std::nullopt)),
-            blink::mojom::AggregationServiceMode::kDefault,
-            blink::mojom::DebugModeDetails::New()),
+        auction_worklet::mojom::FinalizedPrivateAggregationRequest::New(
+            blink::mojom::AggregatableReportHistogramContribution::New(
+                /*bucket=*/123,
+                /*value=*/45,
+                /*filtering_id=*/std::nullopt),
+            blink::mojom::DebugModeDetails::New(),
+            /*error_event=*/std::nullopt),
         /*event_type=*/std::nullopt);
 
 auction_worklet::mojom::SignalBucketPtr CreateSignalBucket(
@@ -65,16 +65,40 @@ auction_worklet::mojom::PrivateAggregationRequestPtr CreateHistogramRequest(
           NewHistogramContribution(
               blink::mojom::AggregatableReportHistogramContribution::New(
                   bucket, value, filtering_id)),
-      blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
 }
 
-auction_worklet::mojom::EventTypePtr Reserved(
-    auction_worklet::mojom::ReservedEventType reserved_event_type) {
-  return auction_worklet::mojom::EventType::NewReserved(reserved_event_type);
+// Creates a FinalizedPrivateAggregationRequest with histogram contribution
+// using uint128 `bucket` and int `value`.
+auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr
+CreateFinalizedHistogramRequest(
+    absl::uint128 bucket,
+    int32_t value,
+    std::optional<uint64_t> filtering_id = std::nullopt,
+    std::optional<blink::mojom::PrivateAggregationErrorEvent> error_event =
+        std::nullopt) {
+  return auction_worklet::mojom::FinalizedPrivateAggregationRequest::New(
+      blink::mojom::AggregatableReportHistogramContribution::New(bucket, value,
+                                                                 filtering_id),
+      blink::mojom::DebugModeDetails::New(), error_event);
 }
 
-auction_worklet::mojom::EventTypePtr NonReserved(
+using ReservedNonErrorEventType =
+    auction_worklet::mojom::ReservedNonErrorEventType;
+using ReservedErrorEventType = auction_worklet::mojom::ReservedErrorEventType;
+
+auction_worklet::mojom::EventTypePtr ToEventTypePtr(
+    ReservedNonErrorEventType reserved_event_type) {
+  return auction_worklet::mojom::EventType::NewReservedNonError(
+      reserved_event_type);
+}
+auction_worklet::mojom::EventTypePtr ToEventTypePtr(
+    ReservedErrorEventType reserved_event_type) {
+  return auction_worklet::mojom::EventType::NewReservedError(
+      reserved_event_type);
+}
+
+auction_worklet::mojom::EventTypePtr ToEventTypePtr(
     const std::string& event_type) {
   return auction_worklet::mojom::EventType::NewNonReserved(event_type);
 }
@@ -95,7 +119,6 @@ auction_worklet::mojom::PrivateAggregationRequestPtr CreateForEventRequest(
   return auction_worklet::mojom::PrivateAggregationRequest::New(
       auction_worklet::mojom::AggregatableReportContribution::
           NewForEventContribution(std::move(contribution)),
-      blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
 }
 
@@ -117,7 +140,6 @@ CreateForEventRequestWithBucketObject(
   return auction_worklet::mojom::PrivateAggregationRequest::New(
       auction_worklet::mojom::AggregatableReportContribution::
           NewForEventContribution(std::move(contribution)),
-      blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
 }
 
@@ -139,13 +161,12 @@ CreateForEventRequestWithValueObject(
   return auction_worklet::mojom::PrivateAggregationRequest::New(
       auction_worklet::mojom::AggregatableReportContribution::
           NewForEventContribution(std::move(contribution)),
-      blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
 }
 
 PrivateAggregationRequestWithEventType
 CreatePrivateAggregationRequestWithEventType(
-    auction_worklet::mojom::PrivateAggregationRequestPtr request,
+    auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr request,
     const std::optional<std::string>& event_type = std::nullopt) {
   PrivateAggregationRequestWithEventType result(std::move(request), event_type);
   return result;
@@ -169,45 +190,57 @@ TEST_F(InterestGroupPaReportUtilTest, HistogramContribution) {
           NewHistogramContribution(
               blink::mojom::AggregatableReportHistogramContribution::New(
                   /*bucket=*/123, /*value=*/45, /*filtering_id=*/std::nullopt)),
-      blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
 
   EXPECT_EQ(kExpectedRequestWithReservedEventType,
-            FillInPrivateAggregationRequest(
-                request.Clone(),
-                /*winning_bid=*/1, /*highest_scoring_other_bid=*/2,
-                /*reject_reason=*/std::nullopt, PrivateAggregationTimings(),
-                /*is_winner=*/true));
+            FillInPrivateAggregationRequest(request.Clone(),
+                                            /*winning_bid=*/1,
+                                            /*highest_scoring_other_bid=*/2,
+                                            /*reject_reason=*/std::nullopt,
+                                            PrivateAggregationParticipantData(),
+                                            PrivateAggregationTimings(),
+                                            /*is_winner=*/true));
 
   EXPECT_EQ(kExpectedRequestWithReservedEventType,
-            FillInPrivateAggregationRequest(
-                request.Clone(),
-                /*winning_bid=*/1, /*highest_scoring_other_bid=*/2,
-                /*reject_reason=*/std::nullopt, PrivateAggregationTimings(),
-                /*is_winner=*/false));
+            FillInPrivateAggregationRequest(request.Clone(),
+                                            /*winning_bid=*/1,
+                                            /*highest_scoring_other_bid=*/2,
+                                            /*reject_reason=*/std::nullopt,
+                                            PrivateAggregationParticipantData(),
+                                            PrivateAggregationTimings(),
+                                            /*is_winner=*/false));
 }
 
 // FillInPrivateAggregationRequest() sets returned request's
-// aggregation_mode and debug_mode_details correctly.
-TEST_F(InterestGroupPaReportUtilTest, AggregationModeAndDebugMode) {
+// debug_mode_details correctly.
+TEST_F(InterestGroupPaReportUtilTest, DebugMode) {
   auction_worklet::mojom::PrivateAggregationRequest request(
       auction_worklet::mojom::AggregatableReportContribution::
           NewHistogramContribution(
               blink::mojom::AggregatableReportHistogramContribution::New(
                   /*bucket=*/123, /*value=*/45, /*filtering_id=*/std::nullopt)),
-      blink::mojom::AggregationServiceMode::kExperimentalPoplar,
       blink::mojom::DebugModeDetails::New(
           /*is_enabled=*/true,
           /*debug_key=*/blink::mojom::DebugKey::New(1234u)));
 
+  auction_worklet::mojom::FinalizedPrivateAggregationRequest expected_request(
+      blink::mojom::AggregatableReportHistogramContribution::New(
+          /*bucket=*/123, /*value=*/45, /*filtering_id=*/std::nullopt),
+      blink::mojom::DebugModeDetails::New(
+          /*is_enabled=*/true,
+          /*debug_key=*/blink::mojom::DebugKey::New(1234u)),
+      /*error_event=*/std::nullopt);
+
   PrivateAggregationRequestWithEventType request_with_event_type(
-      request.Clone(), /*event_type=*/std::nullopt);
+      expected_request.Clone(), /*event_type=*/std::nullopt);
   EXPECT_EQ(std::move(request_with_event_type),
-            FillInPrivateAggregationRequest(
-                request.Clone(),
-                /*winning_bid=*/1, /*highest_scoring_other_bid=*/2,
-                /*reject_reason=*/std::nullopt, PrivateAggregationTimings(),
-                /*is_winner=*/true));
+            FillInPrivateAggregationRequest(request.Clone(),
+                                            /*winning_bid=*/1,
+                                            /*highest_scoring_other_bid=*/2,
+                                            /*reject_reason=*/std::nullopt,
+                                            PrivateAggregationParticipantData(),
+                                            PrivateAggregationTimings(),
+                                            /*is_winner=*/true));
 }
 
 TEST_F(InterestGroupPaReportUtilTest, ForEventContributionReservedEventType) {
@@ -217,10 +250,10 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionReservedEventType) {
           CreateForEventRequest(
               /*bucket=*/123, /*value=*/45,
               /*event_type=*/
-              Reserved(
-                  auction_worklet::mojom::ReservedEventType::kReservedAlways)),
+              ToEventTypePtr(ReservedNonErrorEventType::kReservedAlways)),
           /*winning_bid=*/1, /*highest_scoring_other_bid=*/2,
-          /*reject_reason=*/std::nullopt, PrivateAggregationTimings(),
+          /*reject_reason=*/std::nullopt, PrivateAggregationParticipantData(),
+          PrivateAggregationTimings(),
           /*is_winner=*/true));
   EXPECT_EQ(
       kExpectedRequestWithReservedEventType,
@@ -228,10 +261,10 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionReservedEventType) {
           CreateForEventRequest(
               /*bucket=*/123, /*value=*/45,
               /*event_type=*/
-              Reserved(
-                  auction_worklet::mojom::ReservedEventType::kReservedAlways)),
+              ToEventTypePtr(ReservedNonErrorEventType::kReservedAlways)),
           /*winning_bid=*/1, /*highest_scoring_other_bid=*/2,
-          /*reject_reason=*/std::nullopt, PrivateAggregationTimings(),
+          /*reject_reason=*/std::nullopt, PrivateAggregationParticipantData(),
+          PrivateAggregationTimings(),
           /*is_winner=*/false));
 
   EXPECT_EQ(
@@ -240,18 +273,19 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionReservedEventType) {
           CreateForEventRequest(
               /*bucket=*/123, /*value=*/45,
               /*event_type=*/
-              Reserved(
-                  auction_worklet::mojom::ReservedEventType::kReservedWin)),
+              ToEventTypePtr(ReservedNonErrorEventType::kReservedWin)),
           /*winning_bid=*/1, /*highest_scoring_other_bid=*/2,
-          /*reject_reason=*/std::nullopt, PrivateAggregationTimings(),
+          /*reject_reason=*/std::nullopt, PrivateAggregationParticipantData(),
+          PrivateAggregationTimings(),
           /*is_winner=*/true));
   EXPECT_FALSE(FillInPrivateAggregationRequest(
       CreateForEventRequest(
           /*bucket=*/123, /*value=*/45,
           /*event_type=*/
-          Reserved(auction_worklet::mojom::ReservedEventType::kReservedWin)),
+          ToEventTypePtr(ReservedNonErrorEventType::kReservedWin)),
       /*winning_bid=*/1, /*highest_scoring_other_bid=*/2,
-      /*reject_reason=*/std::nullopt, PrivateAggregationTimings(),
+      /*reject_reason=*/std::nullopt, PrivateAggregationParticipantData(),
+      PrivateAggregationTimings(),
       /*is_winner=*/false));
 
   EXPECT_EQ(
@@ -260,63 +294,86 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionReservedEventType) {
           CreateForEventRequest(
               /*bucket=*/123, /*value=*/45,
               /*event_type=*/
-              Reserved(
-                  auction_worklet::mojom::ReservedEventType::kReservedLoss)),
+              ToEventTypePtr(ReservedNonErrorEventType::kReservedLoss)),
           /*winning_bid=*/1, /*highest_scoring_other_bid=*/2,
-          /*reject_reason=*/std::nullopt, PrivateAggregationTimings(),
+          /*reject_reason=*/std::nullopt, PrivateAggregationParticipantData(),
+          PrivateAggregationTimings(),
           /*is_winner=*/false));
   EXPECT_FALSE(FillInPrivateAggregationRequest(
       CreateForEventRequest(
           /*bucket=*/123, /*value=*/45,
           /*event_type=*/
-          Reserved(auction_worklet::mojom::ReservedEventType::kReservedLoss)),
+          ToEventTypePtr(ReservedNonErrorEventType::kReservedLoss)),
       /*winning_bid=*/1, /*highest_scoring_other_bid=*/2,
-      /*reject_reason=*/std::nullopt, PrivateAggregationTimings(),
+      /*reject_reason=*/std::nullopt, PrivateAggregationParticipantData(),
+      PrivateAggregationTimings(),
       /*is_winner=*/true));
+
+  // reserved.once works and doesn't care about winner/loser.
+  for (const bool is_winner : {false, true}) {
+    EXPECT_EQ(
+        kExpectedRequestWithReservedEventType,
+        FillInPrivateAggregationRequest(
+            CreateForEventRequest(
+                /*bucket=*/123, /*value=*/45,
+                /*event_type=*/
+                ToEventTypePtr(ReservedNonErrorEventType::kReservedOnce)),
+            /*winning_bid=*/1, /*highest_scoring_other_bid=*/2,
+            /*reject_reason=*/std::nullopt, PrivateAggregationParticipantData(),
+            PrivateAggregationTimings(),
+            /*is_winner=*/is_winner));
+  }
 }
 
 TEST_F(InterestGroupPaReportUtilTest,
        ForEventContributionNonReservedEventType) {
-  EXPECT_EQ(CreatePrivateAggregationRequestWithEventType(
-                CreateHistogramRequest(/*bucket=*/123, /*value=*/45),
-                /*event_type=*/"click"),
-            FillInPrivateAggregationRequest(
-                CreateForEventRequest(/*bucket=*/123, /*value=*/45,
-                                      /*event_type=*/NonReserved("click")),
-                /*winning_bid=*/1, /*highest_scoring_other_bid=*/2,
-                /*reject_reason=*/std::nullopt, PrivateAggregationTimings(),
-                /*is_winner=*/true));
+  EXPECT_EQ(
+      CreatePrivateAggregationRequestWithEventType(
+          CreateFinalizedHistogramRequest(/*bucket=*/123, /*value=*/45),
+          /*event_type=*/"click"),
+      FillInPrivateAggregationRequest(
+          CreateForEventRequest(/*bucket=*/123, /*value=*/45,
+                                /*event_type=*/ToEventTypePtr("click")),
+          /*winning_bid=*/1, /*highest_scoring_other_bid=*/2,
+          /*reject_reason=*/std::nullopt, PrivateAggregationParticipantData(),
+          PrivateAggregationTimings(),
+          /*is_winner=*/true));
 
-  EXPECT_EQ(CreatePrivateAggregationRequestWithEventType(
-                CreateHistogramRequest(/*bucket=*/123, /*value=*/45),
-                /*event_type=*/"arbitrary.non.reserved"),
-            FillInPrivateAggregationRequest(
-                CreateForEventRequest(
-                    /*bucket=*/123, /*value=*/45,
-                    /*event_type=*/NonReserved("arbitrary.non.reserved")),
-                /*winning_bid=*/1, /*highest_scoring_other_bid=*/2,
-                /*reject_reason=*/std::nullopt, PrivateAggregationTimings(),
-                /*is_winner=*/true));
+  EXPECT_EQ(
+      CreatePrivateAggregationRequestWithEventType(
+          CreateFinalizedHistogramRequest(/*bucket=*/123, /*value=*/45),
+          /*event_type=*/"arbitrary.non.reserved"),
+      FillInPrivateAggregationRequest(
+          CreateForEventRequest(
+              /*bucket=*/123, /*value=*/45,
+              /*event_type=*/ToEventTypePtr("arbitrary.non.reserved")),
+          /*winning_bid=*/1, /*highest_scoring_other_bid=*/2,
+          /*reject_reason=*/std::nullopt, PrivateAggregationParticipantData(),
+          PrivateAggregationTimings(),
+          /*is_winner=*/true));
 
   // The prefix is "reserved", not "reserved.", so still a valid non-reserved
   // event type.
   EXPECT_EQ(
       CreatePrivateAggregationRequestWithEventType(
-          CreateHistogramRequest(/*bucket=*/123, /*value=*/45),
+          CreateFinalizedHistogramRequest(/*bucket=*/123, /*value=*/45),
           /*event_type=*/"reserved-no-dot"),
       FillInPrivateAggregationRequest(
-          CreateForEventRequest(/*bucket=*/123, /*value=*/45,
-                                /*event_type=*/NonReserved("reserved-no-dot")),
+          CreateForEventRequest(
+              /*bucket=*/123, /*value=*/45,
+              /*event_type=*/ToEventTypePtr("reserved-no-dot")),
           /*winning_bid=*/1, /*highest_scoring_other_bid=*/2,
-          /*reject_reason=*/std::nullopt, PrivateAggregationTimings(),
+          /*reject_reason=*/std::nullopt, PrivateAggregationParticipantData(),
+          PrivateAggregationTimings(),
           /*is_winner=*/true));
 
   // Requests of non-reserved event types are not kept for losing bidders.
   EXPECT_FALSE(FillInPrivateAggregationRequest(
       CreateForEventRequest(/*bucket=*/123, /*value=*/45,
-                            /*event_type=*/NonReserved("click")),
+                            /*event_type=*/ToEventTypePtr("click")),
       /*winning_bid=*/1, /*highest_scoring_other_bid=*/2,
-      /*reject_reason=*/std::nullopt, PrivateAggregationTimings(),
+      /*reject_reason=*/std::nullopt, PrivateAggregationParticipantData(),
+      PrivateAggregationTimings(),
       /*is_winner=*/false));
 }
 
@@ -330,10 +387,10 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionBaseValueWinningBid) {
                                  /*is_negative=*/false),
               /*value=*/45,
               /*event_type=*/
-              Reserved(
-                  auction_worklet::mojom::ReservedEventType::kReservedWin)),
+              ToEventTypePtr(ReservedNonErrorEventType::kReservedWin)),
           /*winning_bid=*/10, /*highest_scoring_other_bid=*/1,
-          /*reject_reason=*/std::nullopt, PrivateAggregationTimings(),
+          /*reject_reason=*/std::nullopt, PrivateAggregationParticipantData(),
+          PrivateAggregationTimings(),
           /*is_winner=*/true));
 
   // Value should be int(2.2 * 10) + 23 = 45.
@@ -344,10 +401,10 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionBaseValueWinningBid) {
               /*bucket=*/123,
               /*value=*/CreateSignalValue(/*scale=*/10, /*offset=*/23),
               /*event_type=*/
-              Reserved(
-                  auction_worklet::mojom::ReservedEventType::kReservedWin)),
+              ToEventTypePtr(ReservedNonErrorEventType::kReservedWin)),
           /*winning_bid=*/2.2, /*highest_scoring_other_bid=*/1,
-          /*reject_reason=*/std::nullopt, PrivateAggregationTimings(),
+          /*reject_reason=*/std::nullopt, PrivateAggregationParticipantData(),
+          PrivateAggregationTimings(),
           /*is_winner=*/true));
 }
 
@@ -364,10 +421,10 @@ TEST_F(InterestGroupPaReportUtilTest,
                   auction_worklet::mojom::BaseValue::kHighestScoringOtherBid),
               /*value=*/45,
               /*event_type=*/
-              Reserved(
-                  auction_worklet::mojom::ReservedEventType::kReservedWin)),
+              ToEventTypePtr(ReservedNonErrorEventType::kReservedWin)),
           /*winning_bid=*/15, /*highest_scoring_other_bid=*/14.6,
-          /*reject_reason=*/std::nullopt, PrivateAggregationTimings(),
+          /*reject_reason=*/std::nullopt, PrivateAggregationParticipantData(),
+          PrivateAggregationTimings(),
           /*is_winner=*/true));
 
   // Value should be int(6.8 * 10) - 23 = 45.
@@ -380,10 +437,10 @@ TEST_F(InterestGroupPaReportUtilTest,
                   /*scale=*/10.0, /*offset=*/-23, /*base_value=*/
                   auction_worklet::mojom::BaseValue::kHighestScoringOtherBid),
               /*event_type=*/
-              Reserved(
-                  auction_worklet::mojom::ReservedEventType::kReservedWin)),
+              ToEventTypePtr(ReservedNonErrorEventType::kReservedWin)),
           /*winning_bid=*/15, /*highest_scoring_other_bid=*/6.8,
-          /*reject_reason=*/std::nullopt, PrivateAggregationTimings(),
+          /*reject_reason=*/std::nullopt, PrivateAggregationParticipantData(),
+          PrivateAggregationTimings(),
           /*is_winner=*/true));
 }
 
@@ -404,12 +461,11 @@ TEST_F(InterestGroupPaReportUtilTest,
           CreateForEventRequestWithBucketObject(
               /*bucket=*/signal_bucket.Clone(), /*value=*/45,
               /*event_type=*/
-              Reserved(
-                  auction_worklet::mojom::ReservedEventType::kReservedLoss)),
+              ToEventTypePtr(ReservedNonErrorEventType::kReservedLoss)),
           /*winning_bid=*/0, /*highest_scoring_other_bid=*/0,
           /*reject_reason=*/
           auction_worklet::mojom::RejectReason::kPendingApprovalByExchange,
-          PrivateAggregationTimings(),
+          PrivateAggregationParticipantData(), PrivateAggregationTimings(),
           /*is_winner=*/false));
 
   // kInvalidBid is 1. Value should be int(1 * 39) + 6 = 45.
@@ -422,23 +478,20 @@ TEST_F(InterestGroupPaReportUtilTest,
                   /*scale=*/39.0, /*offset=*/6, /*base_value=*/
                   auction_worklet::mojom::BaseValue::kBidRejectReason),
               /*event_type=*/
-              Reserved(
-                  auction_worklet::mojom::ReservedEventType::kReservedLoss)),
+              ToEventTypePtr(ReservedNonErrorEventType::kReservedLoss)),
           /*winning_bid=*/0, /*highest_scoring_other_bid=*/0,
           /*reject_reason=*/auction_worklet::mojom::RejectReason::kInvalidBid,
-          PrivateAggregationTimings(),
+          PrivateAggregationParticipantData(), PrivateAggregationTimings(),
           /*is_winner=*/false));
 
   // kNotAvailable is also reported. kNotAvailable is 0, so bucket is 0 * 39 + 6
   PrivateAggregationRequestWithEventType expected_requests_with_event_type(
-      auction_worklet::mojom::PrivateAggregationRequest::New(
-          auction_worklet::mojom::AggregatableReportContribution::
-              NewHistogramContribution(
-                  blink::mojom::AggregatableReportHistogramContribution::New(
-                      /*bucket=*/6, /*value=*/45,
-                      /*filtering_id=*/std::nullopt)),
-          blink::mojom::AggregationServiceMode::kDefault,
-          blink::mojom::DebugModeDetails::New()),
+      auction_worklet::mojom::FinalizedPrivateAggregationRequest::New(
+          blink::mojom::AggregatableReportHistogramContribution::New(
+              /*bucket=*/6, /*value=*/45,
+              /*filtering_id=*/std::nullopt),
+          blink::mojom::DebugModeDetails::New(),
+          /*error_event=*/std::nullopt),
       /*event_type=*/std::nullopt);
   EXPECT_EQ(
       std::move(expected_requests_with_event_type),
@@ -446,11 +499,10 @@ TEST_F(InterestGroupPaReportUtilTest,
           CreateForEventRequestWithBucketObject(
               /*bucket=*/signal_bucket.Clone(), /*value=*/45,
               /*event_type=*/
-              Reserved(
-                  auction_worklet::mojom::ReservedEventType::kReservedLoss)),
+              ToEventTypePtr(ReservedNonErrorEventType::kReservedLoss)),
           /*winning_bid=*/2, /*highest_scoring_other_bid=*/1,
           /*reject_reason=*/auction_worklet::mojom::RejectReason::kNotAvailable,
-          PrivateAggregationTimings(),
+          PrivateAggregationParticipantData(), PrivateAggregationTimings(),
           /*is_winner=*/false));
 
   // FillInPrivateAggregationRequest() should return nullptr when its
@@ -460,9 +512,10 @@ TEST_F(InterestGroupPaReportUtilTest,
       CreateForEventRequestWithBucketObject(
           /*bucket=*/signal_bucket.Clone(), /*value=*/45,
           /*event_type=*/
-          Reserved(auction_worklet::mojom::ReservedEventType::kReservedLoss)),
+          ToEventTypePtr(ReservedNonErrorEventType::kReservedLoss)),
       /*winning_bid=*/0, /*highest_scoring_other_bid=*/0,
-      /*reject_reason=*/std::nullopt, PrivateAggregationTimings(),
+      /*reject_reason=*/std::nullopt, PrivateAggregationParticipantData(),
+      PrivateAggregationTimings(),
       /*is_winner=*/false));
 }
 
@@ -480,20 +533,19 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionBaseValueTimings) {
 
     // script-run-time is 10.5. Bucket should be uint128(10.5 * 2) + 6 =
     // 27.
-    EXPECT_EQ(
-        CreatePrivateAggregationRequestWithEventType(
-            CreateHistogramRequest(/*bucket=*/27, /*value=*/45),
-            /*event_type=*/std::nullopt),
-        FillInPrivateAggregationRequest(
-            CreateForEventRequestWithBucketObject(
-                /*bucket=*/signal_bucket_script.Clone(), /*value=*/45,
-                /*event_type=*/
-                Reserved(
-                    auction_worklet::mojom::ReservedEventType::kReservedLoss)),
-            /*winning_bid=*/0, /*highest_scoring_other_bid=*/0,
-            /*reject_reason=*/
-            auction_worklet::mojom::RejectReason::kNotAvailable, pa_timings,
-            /*is_winner=*/false));
+    EXPECT_EQ(CreatePrivateAggregationRequestWithEventType(
+                  CreateFinalizedHistogramRequest(/*bucket=*/27, /*value=*/45),
+                  /*event_type=*/std::nullopt),
+              FillInPrivateAggregationRequest(
+                  CreateForEventRequestWithBucketObject(
+                      /*bucket=*/signal_bucket_script.Clone(), /*value=*/45,
+                      /*event_type=*/
+                      ToEventTypePtr(ReservedNonErrorEventType::kReservedLoss)),
+                  /*winning_bid=*/0, /*highest_scoring_other_bid=*/0,
+                  /*reject_reason=*/
+                  auction_worklet::mojom::RejectReason::kNotAvailable,
+                  PrivateAggregationParticipantData(), pa_timings,
+                  /*is_winner=*/false));
   }
 
   {
@@ -506,20 +558,71 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionBaseValueTimings) {
 
     // signals-fetch-time is 20. Bucket should be uint128(20 * 3) + 1 =
     // 61.
-    EXPECT_EQ(
-        CreatePrivateAggregationRequestWithEventType(
-            CreateHistogramRequest(/*bucket=*/61, /*value=*/46),
-            /*event_type=*/std::nullopt),
-        FillInPrivateAggregationRequest(
-            CreateForEventRequestWithBucketObject(
-                /*bucket=*/signal_bucket_signals.Clone(), /*value=*/46,
-                /*event_type=*/
-                Reserved(
-                    auction_worklet::mojom::ReservedEventType::kReservedLoss)),
-            /*winning_bid=*/0, /*highest_scoring_other_bid=*/0,
-            /*reject_reason=*/
-            auction_worklet::mojom::RejectReason::kNotAvailable, pa_timings,
-            /*is_winner=*/false));
+    EXPECT_EQ(CreatePrivateAggregationRequestWithEventType(
+                  CreateFinalizedHistogramRequest(/*bucket=*/61, /*value=*/46),
+                  /*event_type=*/std::nullopt),
+              FillInPrivateAggregationRequest(
+                  CreateForEventRequestWithBucketObject(
+                      /*bucket=*/signal_bucket_signals.Clone(), /*value=*/46,
+                      /*event_type=*/
+                      ToEventTypePtr(ReservedNonErrorEventType::kReservedLoss)),
+                  /*winning_bid=*/0, /*highest_scoring_other_bid=*/0,
+                  /*reject_reason=*/
+                  auction_worklet::mojom::RejectReason::kNotAvailable,
+                  PrivateAggregationParticipantData(), pa_timings,
+                  /*is_winner=*/false));
+  }
+}
+
+TEST_F(InterestGroupPaReportUtilTest, ForEventContributionBaseParticipantData) {
+  PrivateAggregationParticipantData pa_data;
+  pa_data.participating_interest_group_count = 40;
+  pa_data.average_code_fetch_time = base::Milliseconds(4.5);
+  {
+    auction_worklet::mojom::SignalBucket signal_bucket_script(
+        /*base_value=*/auction_worklet::mojom::BaseValue::
+            kParticipatingInterestGroupCount,
+        /*scale=*/1,
+        /*offset=*/
+        auction_worklet::mojom::BucketOffset::New(/*value=*/0,
+                                                  /*is_negative=*/false));
+
+    EXPECT_EQ(CreatePrivateAggregationRequestWithEventType(
+                  CreateFinalizedHistogramRequest(/*bucket=*/40, /*value=*/45),
+                  /*event_type=*/std::nullopt),
+              FillInPrivateAggregationRequest(
+                  CreateForEventRequestWithBucketObject(
+                      /*bucket=*/signal_bucket_script.Clone(), /*value=*/45,
+                      /*event_type=*/
+                      ToEventTypePtr(ReservedNonErrorEventType::kReservedLoss)),
+                  /*winning_bid=*/0, /*highest_scoring_other_bid=*/0,
+                  /*reject_reason=*/
+                  auction_worklet::mojom::RejectReason::kNotAvailable, pa_data,
+                  PrivateAggregationTimings(),
+                  /*is_winner=*/false));
+  }
+
+  {
+    auction_worklet::mojom::SignalBucket signal_bucket_script(
+        /*base_value=*/auction_worklet::mojom::BaseValue::kAverageCodeFetchTime,
+        /*scale=*/1,
+        /*offset=*/
+        auction_worklet::mojom::BucketOffset::New(/*value=*/0,
+                                                  /*is_negative=*/false));
+
+    EXPECT_EQ(CreatePrivateAggregationRequestWithEventType(
+                  CreateFinalizedHistogramRequest(/*bucket=*/4, /*value=*/46),
+                  /*event_type=*/std::nullopt),
+              FillInPrivateAggregationRequest(
+                  CreateForEventRequestWithBucketObject(
+                      /*bucket=*/signal_bucket_script.Clone(), /*value=*/46,
+                      /*event_type=*/
+                      ToEventTypePtr(ReservedNonErrorEventType::kReservedLoss)),
+                  /*winning_bid=*/0, /*highest_scoring_other_bid=*/0,
+                  /*reject_reason=*/
+                  auction_worklet::mojom::RejectReason::kNotAvailable, pa_data,
+                  PrivateAggregationTimings(),
+                  /*is_winner=*/false));
   }
 }
 
@@ -529,21 +632,21 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionNegativeValue) {
   // tests that case.
   EXPECT_EQ(
       CreatePrivateAggregationRequestWithEventType(
-          CreateHistogramRequest(/*bucket=*/123, /*value=*/0)),
+          CreateFinalizedHistogramRequest(/*bucket=*/123, /*value=*/0)),
       FillInPrivateAggregationRequest(
           CreateForEventRequest(
               /*bucket=*/123, /*value=*/-10,
               /*event_type=*/
-              Reserved(
-                  auction_worklet::mojom::ReservedEventType::kReservedAlways)),
+              ToEventTypePtr(ReservedNonErrorEventType::kReservedAlways)),
           /*winning_bid=*/1, /*highest_scoring_other_bid=*/2,
-          /*reject_reason=*/std::nullopt, PrivateAggregationTimings(),
+          /*reject_reason=*/std::nullopt, PrivateAggregationParticipantData(),
+          PrivateAggregationTimings(),
           /*is_winner=*/false));
 
   // Calculated negative value should be clamped to 0.
   EXPECT_EQ(
       CreatePrivateAggregationRequestWithEventType(
-          CreateHistogramRequest(/*bucket=*/123, /*value=*/0)),
+          CreateFinalizedHistogramRequest(/*bucket=*/123, /*value=*/0)),
       FillInPrivateAggregationRequest(
           CreateForEventRequestWithValueObject(
               /*bucket=*/123, /*value=*/
@@ -551,10 +654,10 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionNegativeValue) {
                   /*scale=*/-10.0, /*offset=*/0, /*base_value=*/
                   auction_worklet::mojom::BaseValue::kHighestScoringOtherBid),
               /*event_type=*/
-              Reserved(
-                  auction_worklet::mojom::ReservedEventType::kReservedWin)),
+              ToEventTypePtr(ReservedNonErrorEventType::kReservedWin)),
           /*winning_bid=*/1, /*highest_scoring_other_bid=*/6.8,
-          /*reject_reason=*/std::nullopt, PrivateAggregationTimings(),
+          /*reject_reason=*/std::nullopt, PrivateAggregationParticipantData(),
+          PrivateAggregationTimings(),
           /*is_winner=*/true));
 }
 
@@ -570,10 +673,10 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionNoScaleOrOffset) {
           CreateForEventRequestWithBucketObject(
               /*bucket=*/bucket.Clone(), /*value=*/45,
               /*event_type=*/
-              Reserved(
-                  auction_worklet::mojom::ReservedEventType::kReservedWin)),
+              ToEventTypePtr(ReservedNonErrorEventType::kReservedWin)),
           /*winning_bid=*/123, /*highest_scoring_other_bid=*/1,
-          /*reject_reason=*/std::nullopt, PrivateAggregationTimings(),
+          /*reject_reason=*/std::nullopt, PrivateAggregationParticipantData(),
+          PrivateAggregationTimings(),
           /*is_winner=*/true));
 
   // No scale or offset are provided to value.
@@ -587,10 +690,10 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionNoScaleOrOffset) {
           CreateForEventRequestWithValueObject(
               /*bucket=*/123, value.Clone(),
               /*event_type=*/
-              Reserved(
-                  auction_worklet::mojom::ReservedEventType::kReservedWin)),
+              ToEventTypePtr(ReservedNonErrorEventType::kReservedWin)),
           /*winning_bid=*/45, /*highest_scoring_other_bid=*/1,
-          /*reject_reason=*/std::nullopt, PrivateAggregationTimings(),
+          /*reject_reason=*/std::nullopt, PrivateAggregationParticipantData(),
+          PrivateAggregationTimings(),
           /*is_winner=*/true));
 }
 
@@ -603,16 +706,16 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionZeroScale) {
   // Bucket should be 123 * 0
   EXPECT_EQ(
       CreatePrivateAggregationRequestWithEventType(
-          CreateHistogramRequest(/*bucket=*/0, /*value=*/45)),
+          CreateFinalizedHistogramRequest(/*bucket=*/0, /*value=*/45)),
       FillInPrivateAggregationRequest(
           CreateForEventRequestWithBucketObject(
               /*bucket=*/bucket.Clone(),
               /*value=*/45,
               /*event_type=*/
-              Reserved(
-                  auction_worklet::mojom::ReservedEventType::kReservedWin)),
+              ToEventTypePtr(ReservedNonErrorEventType::kReservedWin)),
           /*winning_bid=*/123, /*highest_scoring_other_bid=*/1,
-          /*reject_reason=*/std::nullopt, PrivateAggregationTimings(),
+          /*reject_reason=*/std::nullopt, PrivateAggregationParticipantData(),
+          PrivateAggregationTimings(),
           /*is_winner=*/true));
 
   auction_worklet::mojom::SignalValue value(
@@ -623,16 +726,16 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionZeroScale) {
   // Value should be 45 * 0 + 0
   EXPECT_EQ(
       CreatePrivateAggregationRequestWithEventType(
-          CreateHistogramRequest(/*bucket=*/123, /*value=*/0)),
+          CreateFinalizedHistogramRequest(/*bucket=*/123, /*value=*/0)),
       FillInPrivateAggregationRequest(
           CreateForEventRequestWithValueObject(
               /*bucket=*/123,
               /*value=*/value.Clone(),
               /*event_type=*/
-              Reserved(
-                  auction_worklet::mojom::ReservedEventType::kReservedWin)),
+              ToEventTypePtr(ReservedNonErrorEventType::kReservedWin)),
           /*winning_bid=*/45, /*highest_scoring_other_bid=*/1,
-          /*reject_reason=*/std::nullopt, PrivateAggregationTimings(),
+          /*reject_reason=*/std::nullopt, PrivateAggregationParticipantData(),
+          PrivateAggregationTimings(),
           /*is_winner=*/true));
 }
 
@@ -713,18 +816,19 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionCalculateBucket) {
                                    test_case.offset_is_negative),
                 /*value=*/45,
                 /*event_type=*/
-                Reserved(auction_worklet::mojom::ReservedEventType::
-                             kReservedAlways)),
+                ToEventTypePtr(ReservedNonErrorEventType::kReservedAlways)),
             /*winning_bid=*/test_case.base,
             /*highest_scoring_other_bid=*/0,
-            /*reject_reason=*/std::nullopt, PrivateAggregationTimings(),
+            /*reject_reason=*/std::nullopt, PrivateAggregationParticipantData(),
+            PrivateAggregationTimings(),
             /*is_winner=*/true);
     if (test_case.expected_bucket.has_value()) {
       ASSERT_TRUE(request.has_value());
-      EXPECT_EQ(CreatePrivateAggregationRequestWithEventType(
-                    CreateHistogramRequest(test_case.expected_bucket.value(),
-                                           /*value=*/45)),
-                request.value());
+      EXPECT_EQ(
+          CreatePrivateAggregationRequestWithEventType(
+              CreateFinalizedHistogramRequest(test_case.expected_bucket.value(),
+                                              /*value=*/45)),
+          request.value());
     } else {
       EXPECT_FALSE(request);
     }
@@ -787,54 +891,48 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionCalculateValue) {
                 /*bucket=*/123,
                 CreateSignalValue(test_case.scale, test_case.offset),
                 /*event_type=*/
-                Reserved(auction_worklet::mojom::ReservedEventType::
-                             kReservedAlways)),
+                ToEventTypePtr(ReservedNonErrorEventType::kReservedAlways)),
             /*winning_bid=*/test_case.base,
             /*highest_scoring_other_bid=*/0,
-            /*reject_reason=*/std::nullopt, PrivateAggregationTimings(),
+            /*reject_reason=*/std::nullopt, PrivateAggregationParticipantData(),
+            PrivateAggregationTimings(),
             /*is_winner=*/true);
 
     if (test_case.expected_value.has_value()) {
       ASSERT_TRUE(request.has_value());
-      EXPECT_EQ(
-          CreatePrivateAggregationRequestWithEventType(CreateHistogramRequest(
-              /*bucket=*/123, test_case.expected_value.value())),
-          request.value());
+      EXPECT_EQ(CreatePrivateAggregationRequestWithEventType(
+                    CreateFinalizedHistogramRequest(
+                        /*bucket=*/123, test_case.expected_value.value())),
+                request.value());
     } else {
       EXPECT_FALSE(request);
     }
   }
 }
 
-TEST_F(InterestGroupPaReportUtilTest,
-       FilteringIdPassedUnchangedIfFeatureEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      blink::features::kPrivateAggregationApiFilteringIds};
-
+TEST_F(InterestGroupPaReportUtilTest, FilteringIdPassedUnchanged) {
   const std::optional<uint64_t> kFilteringIdTestCases[] = {std::nullopt, 0, 1,
                                                            255};
   for (std::optional<uint64_t> filtering_id : kFilteringIdTestCases) {
     // Filtering ID here is expected to be unchanged
     std::optional<uint64_t> expected_filtering_id = filtering_id;
-    EXPECT_EQ(CreatePrivateAggregationRequestWithEventType(
-                  CreateHistogramRequest(/*bucket=*/123, /*value=*/45,
-                                         expected_filtering_id),
-                  /*event_type=*/"click"),
-              FillInPrivateAggregationRequest(
-                  CreateForEventRequest(
-                      /*bucket=*/123, /*value=*/45,
-                      /*event_type=*/NonReserved("click"), filtering_id),
-                  /*winning_bid=*/1, /*highest_scoring_other_bid=*/2,
-                  /*reject_reason=*/std::nullopt, PrivateAggregationTimings(),
-                  /*is_winner=*/true));
+    EXPECT_EQ(
+        CreatePrivateAggregationRequestWithEventType(
+            CreateFinalizedHistogramRequest(/*bucket=*/123, /*value=*/45,
+                                            expected_filtering_id),
+            /*event_type=*/"click"),
+        FillInPrivateAggregationRequest(
+            CreateForEventRequest(
+                /*bucket=*/123, /*value=*/45,
+                /*event_type=*/ToEventTypePtr("click"), filtering_id),
+            /*winning_bid=*/1, /*highest_scoring_other_bid=*/2,
+            /*reject_reason=*/std::nullopt, PrivateAggregationParticipantData(),
+            PrivateAggregationTimings(),
+            /*is_winner=*/true));
   }
 }
 
-TEST_F(InterestGroupPaReportUtilTest, HasValidFilteringId_FeatureEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      blink::features::kPrivateAggregationApiFilteringIds);
-
+TEST_F(InterestGroupPaReportUtilTest, HasValidFilteringId) {
   const struct {
     std::optional<uint64_t> filtering_id;
     bool expected_to_be_valid;
@@ -851,7 +949,7 @@ TEST_F(InterestGroupPaReportUtilTest, HasValidFilteringId_FeatureEnabled) {
     auction_worklet::mojom::PrivateAggregationRequestPtr
         for_event_contribution = CreateForEventRequest(
             /*bucket=*/123, /*value=*/45,
-            /*event_type=*/NonReserved("click"), test_case.filtering_id);
+            /*event_type=*/ToEventTypePtr("click"), test_case.filtering_id);
     auction_worklet::mojom::PrivateAggregationRequestPtr
         histogram_contribution = CreateHistogramRequest(
             /*bucket=*/123, /*value=*/45, test_case.filtering_id);
@@ -862,36 +960,85 @@ TEST_F(InterestGroupPaReportUtilTest, HasValidFilteringId_FeatureEnabled) {
   }
 }
 
-TEST_F(InterestGroupPaReportUtilTest, HasValidFilteringId_FeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      blink::features::kPrivateAggregationApiFilteringIds);
+TEST_F(InterestGroupPaReportUtilTest, ErrorEventContributionFilledInCorrectly) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      blink::features::kPrivateAggregationApiErrorReporting};
+  EXPECT_EQ(
+      CreatePrivateAggregationRequestWithEventType(
+          CreateFinalizedHistogramRequest(
+              /*bucket=*/123, /*value=*/45, /*filtering_id=*/std::nullopt,
+              blink::mojom::PrivateAggregationErrorEvent::kReportSuccess)),
+      FillInPrivateAggregationRequest(
+          CreateForEventRequest(
+              /*bucket=*/123, /*value=*/45,
+              /*event_type=*/
+              ToEventTypePtr(ReservedErrorEventType::kReportSuccess)),
+          /*winning_bid=*/1, /*highest_scoring_other_bid=*/2,
+          /*reject_reason=*/std::nullopt, PrivateAggregationParticipantData(),
+          PrivateAggregationTimings(),
+          /*is_winner=*/true));
 
-  const struct {
-    std::optional<uint64_t> filtering_id;
-    bool expected_to_be_valid;
-  } kTestCases[] = {
-      {.filtering_id = std::nullopt, .expected_to_be_valid = true},
-      {.filtering_id = 0, .expected_to_be_valid = false},
-      {.filtering_id = 1, .expected_to_be_valid = false},
-      {.filtering_id = 255, .expected_to_be_valid = false},
-      {.filtering_id = 256, .expected_to_be_valid = false},
-      {.filtering_id = std::numeric_limits<uint64_t>::max(),
-       .expected_to_be_valid = false}};
+  EXPECT_EQ(
+      CreatePrivateAggregationRequestWithEventType(
+          CreateFinalizedHistogramRequest(
+              /*bucket=*/123, /*value=*/45, /*filtering_id=*/std::nullopt,
+              blink::mojom::PrivateAggregationErrorEvent::
+                  kAlreadyTriggeredExternalError)),
+      FillInPrivateAggregationRequest(
+          CreateForEventRequest(
+              /*bucket=*/123, /*value=*/45,
+              /*event_type=*/
+              ToEventTypePtr(ReservedErrorEventType::kUncaughtError)),
+          /*winning_bid=*/1, /*highest_scoring_other_bid=*/2,
+          /*reject_reason=*/std::nullopt, PrivateAggregationParticipantData(),
+          PrivateAggregationTimings(),
+          /*is_winner=*/false));
+}
 
-  for (const auto& test_case : kTestCases) {
-    auction_worklet::mojom::PrivateAggregationRequestPtr
-        for_event_contribution = CreateForEventRequest(
-            /*bucket=*/123, /*value=*/45,
-            /*event_type=*/NonReserved("click"), test_case.filtering_id);
-    auction_worklet::mojom::PrivateAggregationRequestPtr
-        histogram_contribution = CreateHistogramRequest(
-            /*bucket=*/123, /*value=*/45, test_case.filtering_id);
-    EXPECT_EQ(HasValidFilteringId(for_event_contribution),
-              test_case.expected_to_be_valid);
-    EXPECT_EQ(HasValidFilteringId(histogram_contribution),
-              test_case.expected_to_be_valid);
-  }
+TEST_F(InterestGroupPaReportUtilTest, IsPrivateAggregationRequestReservedOnce) {
+  EXPECT_FALSE(IsPrivateAggregationRequestReservedOnce(*CreateForEventRequest(
+      /*bucket=*/123, /*value=*/45,
+      /*event_type=*/
+      ToEventTypePtr(ReservedNonErrorEventType::kReservedAlways))));
+  EXPECT_TRUE(IsPrivateAggregationRequestReservedOnce(*CreateForEventRequest(
+      /*bucket=*/123, /*value=*/45,
+      /*event_type=*/
+      ToEventTypePtr(ReservedNonErrorEventType::kReservedOnce))));
+  EXPECT_FALSE(IsPrivateAggregationRequestReservedOnce(
+      *CreateForEventRequest(/*bucket=*/123, /*value=*/45,
+                             /*event_type=*/ToEventTypePtr("click"))));
+  EXPECT_FALSE(IsPrivateAggregationRequestReservedOnce(
+      *CreateHistogramRequest(/*bucket=*/123, /*value=*/45)));
+  EXPECT_FALSE(IsPrivateAggregationRequestReservedOnce(*CreateForEventRequest(
+      /*bucket=*/123, /*value=*/45,
+      /*event_type=*/ToEventTypePtr(ReservedErrorEventType::kReportSuccess))));
+  EXPECT_FALSE(IsPrivateAggregationRequestReservedOnce(*CreateForEventRequest(
+      /*bucket=*/123, /*value=*/45,
+      /*event_type=*/
+      ToEventTypePtr(ReservedErrorEventType::kUncaughtError))));
+}
+
+TEST_F(InterestGroupPaReportUtilTest, ShouldKeepRequestOnlyIfReservedOnceRep) {
+  EXPECT_FALSE(ShouldKeepRequestOnlyIfReservedOnceRep(*CreateForEventRequest(
+      /*bucket=*/123, /*value=*/45,
+      /*event_type=*/
+      ToEventTypePtr(ReservedNonErrorEventType::kReservedAlways))));
+  EXPECT_TRUE(ShouldKeepRequestOnlyIfReservedOnceRep(*CreateForEventRequest(
+      /*bucket=*/123, /*value=*/45,
+      /*event_type=*/
+      ToEventTypePtr(ReservedNonErrorEventType::kReservedOnce))));
+  EXPECT_FALSE(ShouldKeepRequestOnlyIfReservedOnceRep(
+      *CreateForEventRequest(/*bucket=*/123, /*value=*/45,
+                             /*event_type=*/ToEventTypePtr("click"))));
+  EXPECT_FALSE(ShouldKeepRequestOnlyIfReservedOnceRep(
+      *CreateHistogramRequest(/*bucket=*/123, /*value=*/45)));
+  EXPECT_TRUE(ShouldKeepRequestOnlyIfReservedOnceRep(*CreateForEventRequest(
+      /*bucket=*/123, /*value=*/45,
+      /*event_type=*/ToEventTypePtr(ReservedErrorEventType::kReportSuccess))));
+  EXPECT_TRUE(ShouldKeepRequestOnlyIfReservedOnceRep(*CreateForEventRequest(
+      /*bucket=*/123, /*value=*/45,
+      /*event_type=*/
+      ToEventTypePtr(ReservedErrorEventType::kUncaughtError))));
 }
 
 }  // namespace content

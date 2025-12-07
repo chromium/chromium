@@ -11,16 +11,16 @@
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_gles2_export.h"
-#include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "gpu/vulkan/buildflags.h"
+#include "gpu/vulkan/vulkan_ycbcr_info.h"
 #include "skia/buildflags.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/gpu/GrContextOptions.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrContextOptions.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "third_party/skia/include/gpu/graphite/ContextOptions.h"
 
 #if BUILDFLAG(ENABLE_VULKAN)
-#include "third_party/skia/include/gpu/vk/GrVkTypes.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkTypes.h"
 namespace skgpu {
 struct VulkanYcbcrConversionInfo;
 }
@@ -52,7 +52,6 @@ class VulkanContextProvider;
 }  // namespace viz
 
 namespace skgpu::graphite {
-class Context;
 class Recorder;
 struct InsertRecordingInfo;
 }  // namespace skgpu::graphite
@@ -68,6 +67,7 @@ class FeatureInfo;
 }  // namespace gles2
 
 class SharedContextState;
+class GraphiteSharedContext;
 
 // Returns default GrContextOptions.
 GPU_GLES2_EXPORT GrContextOptions GetDefaultGrContextOptions();
@@ -82,7 +82,7 @@ GetDefaultGraphiteContextOptions(const GpuDriverBugWorkarounds& workarounds);
 // "skia/gpu_resources/gpu_main_graphite_image_provider{&recorder-clientImageProvider()}".
 // Designed for background dumps.
 void DumpBackgroundGraphiteMemoryStatistics(
-    const skgpu::graphite::Context* context,
+    const gpu::GraphiteSharedContext* context,
     const skgpu::graphite::Recorder* recorder,
     base::trace_event::ProcessMemoryDump* pmd);
 

@@ -35,8 +35,9 @@ void ColorProviderSourceObserver::Observe(ColorProviderSource* source) {
   color_provider_source_observation_.Reset();
   source_ = source;
 
-  if (source_)
+  if (source_) {
     color_provider_source_observation_.Observe(source);
+  }
 
   // Notify both when a new source is observed and when an observation is reset
   // (i.e. when Observe() is called with nullptr).

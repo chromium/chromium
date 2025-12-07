@@ -60,12 +60,13 @@ to thoroughly review.
 
 1. Create new release branch
 
-   Create the branch at
-   [Gerrit/branches](https://chromium-review.googlesource.com/admin/repos/chromium/deps/sqlite,branches). The branch name should
-   look like `chromium-version-3.40.0` and the initial revision will look something like `refs/tags/upstream/version-3.40.0`.
-
-   Note: To create a release branch, you must be listed as a member in the
-   [sqlite-owners Gerrit group](https://chromium-review.googlesource.com/admin/groups/3cb0e9e73693fd6377da67b63a28b815ef5c94cc,members)
+   Request creation of a new release branch via a
+   [Git Admin Request](https://issues.chromium.org/issues/new?component=1456263&template=1923295)
+   with a message along the lines of: "Please create branch
+   `chromium-version-3.50.0` in the `chromium/deps/sqlite` repo based on commit
+   `refs/tags/upstream/version-3.50.0`." See
+   [Gerrit/branches](https://chromium-review.googlesource.com/admin/repos/chromium/deps/sqlite,branches)
+   to view existing branches.
 
 2. Checkout the new Chromium release branch.
 
@@ -140,8 +141,8 @@ following:
     the sqlite_cherry_picker.py script is preferred. This script automates a
     few tasks such as:
 
-    * Identifying the correct Git commit hash to use if given the
-      Fossil commit hash. **note this is currently broken and a Git hash must be provided**
+    * Identifying the correct Git commit hash to use if given the Fossil commit
+      hash.
     * Automatically calculating Fossil manifest hashes.
     * Skipping conflicted binary files.
     * Generating the amalgamations.
@@ -208,19 +209,13 @@ exported by the linker and may be omitted.
 
 ```sh
 autoninja -C out/Default
-nm -B out/Default/libchromium_sqlite3.so | cut -c 18- | sort | grep '^T'
+nm -B out/Default/libthird_party_sqlite_chromium_sqlite3.so | cut -c 18- | sort | grep '^T'
 ```
 
 ### Running unit tests
 
 ```sh
 out/Default/sql_unittests
-```
-
-### Running web tests
-
-```sh
-third_party/blink/tools/run_web_tests.py -t Default storage/websql/
 ```
 
 ### Running SQLite's TCL test suite within the Chromium checkout.
@@ -266,3 +261,27 @@ rm -rf testdir
 git checkout amalgamation/sqlite3.c
 git checkout amalgamation_dev/sqlite3.c
 ```
+
+## Bisect SQLite
+
+When diagnosing the cause of an issue found in a fuzzer issue or while bringing
+up SQLite, you may want to bisect the SQLite repo.
+
+To find the SQLite commit that introduced an issue the `scripts/repro_tool.py`
+can be used in combination with `git bisect run`.
+
+For example, given a good commit of `9e45bccab2b8`, a bad commit of
+`c12b0d5b7135`, and a reproduction sql file `repro.sql`, running the following
+will pinpoint the commit that introduced the failure:
+
+```sh
+cd src
+git bisect start c12b0d5b7135 9e45bccab2b8
+git bisect run ../scripts/repro_tool.py repro.sql
+```
+
+The reproduction file can be omitted if it is a build error. `--should_build`
+can be passed to `repro_tool.py` if the issue is not a build error and we don't
+want to continue bisecting if a build does fail.
+
+See `scripts/repro_tool.py --help` for more information.

@@ -4,8 +4,9 @@
 
 #include "third_party/blink/renderer/modules/mediarecorder/key_frame_request_processor.h"
 
+#include <variant>
+
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,8 +34,7 @@ class KeyFrameRequestProcessorClockTest : public ::testing::Test {
 TEST(KeyFrameRequestProcessorTest, DefaultConfigurationIsUnconfigured) {
   test::TaskEnvironment task_environment;
   KeyFrameRequestProcessor::Configuration config;
-  ASSERT_TRUE(
-      absl::get_if<KeyFrameRequestProcessor::NotConfiguredTag>(&config));
+  ASSERT_TRUE(std::get_if<KeyFrameRequestProcessor::NotConfiguredTag>(&config));
 }
 
 TEST_F(KeyFrameRequestProcessorClockTest,

@@ -70,6 +70,10 @@ class DiagnosticsReporter {
                            const clang::CXXBaseSpecifier* base_spec);
   void TraceMethodForStackAllocatedClass(RecordInfo* parent,
                                          clang::CXXMethodDecl* trace);
+  void RedundantTraceDispatchMethod(RecordInfo* derived,
+                                    clang::CXXRecordDecl* base);
+  void RedundantFinalizeDispatchMethod(RecordInfo* derived,
+                                       clang::CXXRecordDecl* base);
 
   void NoteManualDispatchMethod(clang::CXXMethodDecl* dispatch);
   void NoteBaseRequiresTracing(BasePoint* base);
@@ -87,15 +91,21 @@ class DiagnosticsReporter {
   void UniquePtrUsedWithGC(const clang::Expr* expr,
                            const clang::FunctionDecl* bad_function,
                            const clang::CXXRecordDecl* gc_type);
-  void OptionalFieldUsedWithGC(const clang::FieldDecl* decl,
-                               const clang::CXXRecordDecl* optional,
-                               const clang::CXXRecordDecl* gc_type);
+  void OptionalDeclUsedWithGC(const clang::Decl* decl,
+                              const clang::CXXRecordDecl* optional,
+                              const clang::CXXRecordDecl* gc_type);
   void OptionalNewExprUsedWithGC(const clang::Expr* expr,
                                  const clang::CXXRecordDecl* optional,
                                  const clang::CXXRecordDecl* gc_type);
-  void RawPtrOrRefFieldUsedWithGC(const clang::FieldDecl* decl,
+  void OptionalDeclUsedWithMember(const clang::Decl* decl,
                                   const clang::CXXRecordDecl* optional,
-                                  const clang::CXXRecordDecl* gc_type);
+                                  const clang::CXXRecordDecl* member);
+  void OptionalNewExprUsedWithMember(const clang::Expr* expr,
+                                     const clang::CXXRecordDecl* optional,
+                                     const clang::CXXRecordDecl* member);
+  void RawPtrOrRefDeclUsedWithGC(const clang::Decl* decl,
+                                 const clang::CXXRecordDecl* optional,
+                                 const clang::CXXRecordDecl* gc_type);
   void RawPtrOrRefNewExprUsedWithGC(const clang::Expr* expr,
                                     const clang::CXXRecordDecl* optional,
                                     const clang::CXXRecordDecl* gc_type);
@@ -195,11 +205,15 @@ class DiagnosticsReporter {
   unsigned diag_mojo_receiver_in_gc_class_note;
   unsigned diag_mojo_associated_remote_in_gc_class_note;
   unsigned diag_mojo_associated_receiver_in_gc_class_note;
+  unsigned diag_redundant_trace_dispatch_method_;
+  unsigned diag_redundant_finalize_dispatch_method_;
 
   unsigned diag_unique_ptr_used_with_gc_;
-  unsigned diag_optional_field_used_with_gc_;
+  unsigned diag_optional_decl_used_with_gc_;
   unsigned diag_optional_new_expr_used_with_gc_;
-  unsigned diag_raw_ptr_or_ref_field_used_with_gc_;
+  unsigned diag_optional_decl_used_with_member_;
+  unsigned diag_optional_new_expr_used_with_member_;
+  unsigned diag_raw_ptr_or_ref_decl_used_with_gc_;
   unsigned diag_raw_ptr_or_ref_new_expr_used_with_gc_;
   unsigned diag_variant_used_with_gc_;
   unsigned diag_collection_of_gced_;

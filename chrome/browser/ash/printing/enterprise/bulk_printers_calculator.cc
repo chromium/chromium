@@ -160,7 +160,7 @@ class Restrictions : public base::RefCountedThreadSafe<Restrictions> {
 
  private:
   friend class base::RefCountedThreadSafe<Restrictions>;
-  ~Restrictions() {}
+  ~Restrictions() = default;
 
   // Returns true if we have enough data to compute the effective printer list.
   bool IsReady() const {
@@ -178,8 +178,7 @@ class Restrictions : public base::RefCountedThreadSafe<Restrictions> {
       case BulkPrintersCalculator::AccessMode::UNSET:
         return false;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   // Calculates resultant list of available printers.
@@ -192,8 +191,7 @@ class Restrictions : public base::RefCountedThreadSafe<Restrictions> {
 
     switch (mode_) {
       case BulkPrintersCalculator::UNSET:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case BulkPrintersCalculator::ALLOWLIST_ONLY:
         for (const auto& printer : *printers_cache_) {
           if (base::Contains(allowlist_, printer->id())) {

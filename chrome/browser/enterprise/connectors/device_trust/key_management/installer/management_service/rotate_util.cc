@@ -84,7 +84,7 @@ KeyRotationResult RotateDeviceTrustKey(
   // An invalid command is when `channel` is stable and the `hostname` of
   // the dm server url is not a prod hostname.
   auto valid_command = (channel != version_info::Channel::STABLE ||
-                        dm_server_url.host() == kStableChannelHostName);
+                        dm_server_url.GetHost() == kStableChannelHostName);
   if (!valid_command || !dm_server_url.SchemeIsHTTPOrHTTPS()) {
     RecordFailure(
         ManagementServiceError::kInvalidRotateCommand,

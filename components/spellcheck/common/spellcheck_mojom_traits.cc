@@ -17,8 +17,7 @@ EnumTraits<spellcheck::mojom::Decoration, SpellCheckResult::Decoration>::
     case SpellCheckResult::GRAMMAR:
       return spellcheck::mojom::Decoration::kGrammar;
   }
-  NOTREACHED_IN_MIGRATION();
-  return spellcheck::mojom::Decoration::kSpelling;
+  NOTREACHED();
 }
 
 bool EnumTraits<spellcheck::mojom::Decoration, SpellCheckResult::Decoration>::
@@ -32,8 +31,7 @@ bool EnumTraits<spellcheck::mojom::Decoration, SpellCheckResult::Decoration>::
       *output = SpellCheckResult::GRAMMAR;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool StructTraits<
@@ -44,6 +42,7 @@ bool StructTraits<
     return false;
   output->location = input.location();
   output->length = input.length();
+  output->should_hide_suggestion_menu = input.should_hide_suggestion_menu();
   if (!input.ReadReplacements(&output->replacements))
     return false;
   return true;

@@ -35,8 +35,7 @@ std::unique_ptr<HttpResponse> RequestHandlerForApiAuthorization::HandleRequest(
   em::DeviceManagementResponse device_management_response;
   device_management_response.mutable_service_api_access_response()
       ->set_auth_code(policy_storage()->robot_api_auth_code());
-  return CreateHttpResponse(net::HTTP_OK,
-                            device_management_response.SerializeAsString());
+  return CreateHttpResponse(net::HTTP_OK, device_management_response);
 }
 
 }  // namespace policy

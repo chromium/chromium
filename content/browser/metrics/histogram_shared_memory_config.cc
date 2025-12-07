@@ -40,12 +40,6 @@ std::optional<Config> GetHistogramSharedMemoryConfig(int process_type) {
     case PROCESS_TYPE_GPU:
       return Config{PROCESS_TYPE_GPU, "GpuMetrics", k256KB};
 
-    case PROCESS_TYPE_PPAPI_PLUGIN:
-      return Config{PROCESS_TYPE_PPAPI_PLUGIN, "PpapiPluginMetrics", k64KB};
-
-    case PROCESS_TYPE_PPAPI_BROKER:
-      return Config{PROCESS_TYPE_PPAPI_BROKER, "PpapiBrokerMetrics", k64KB};
-
     default:
       return std::nullopt;
   }

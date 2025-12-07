@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -25,7 +26,7 @@ const uint8_t kFakeIccData[] = {0x00, 0x00, 0x08, 0x90, 0x20, 0x20,
 
 // Full path to fake icc file in <tmp test directory>/display_profiles/.
 base::FilePath GetPathForIccFile(int64_t product_id) {
-  return QuirksManager::Get()->delegate()->GetDisplayProfileDirectory().Append(
+  return QuirksManager::Get()->display_profile_path().Append(
       quirks::IdToFileName(product_id));
 }
 
@@ -84,8 +85,7 @@ class QuirksBrowserTest : public InProcessBrowserTest {
     // called in `ChromeBrowserMainPartsAsh::PreMainMessageLoopRun()`.
 
     // Create display_profiles subdirectory under temp profile directory.
-    const base::FilePath path =
-        QuirksManager::Get()->delegate()->GetDisplayProfileDirectory();
+    const base::FilePath path = QuirksManager::Get()->display_profile_path();
     base::File::Error error = base::File::FILE_OK;
     bool created = base::CreateDirectoryAndGetError(path, &error);
     ASSERT_TRUE(created);
@@ -120,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(QuirksBrowserTest, DownloadIccFile) {
     EXPECT_TRUE(base::PathExists(path));
     char data[32];
     ReadFile(path, data, sizeof(data));
-    EXPECT_EQ(0, memcmp(data, kFakeIccData, sizeof(kFakeIccData)));
+    EXPECT_EQ(0, UNSAFE_TODO(memcmp(data, kFakeIccData, sizeof(kFakeIccData))));
   }
 
   // Retest same file, this time expect it to already exist.

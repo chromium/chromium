@@ -17,7 +17,6 @@
 #include "media/base/cdm_key_information.h"
 #include "media/base/eme_constants.h"
 #include "media/base/media_export.h"
-#include "url/gurl.h"
 
 namespace base {
 class Time;
@@ -110,6 +109,8 @@ class MEDIA_EXPORT ContentDecryptionModule
     : public base::RefCountedThreadSafe<ContentDecryptionModule,
                                         ContentDecryptionModuleTraits> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   ContentDecryptionModule(const ContentDecryptionModule&) = delete;
   ContentDecryptionModule& operator=(const ContentDecryptionModule&) = delete;
 

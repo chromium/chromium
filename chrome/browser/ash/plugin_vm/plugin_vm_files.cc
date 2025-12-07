@@ -4,13 +4,14 @@
 
 #include "chrome/browser/ash/plugin_vm/plugin_vm_files.h"
 
+#include <algorithm>
 #include <utility>
+#include <variant>
 
 #include "ash/public/cpp/shelf_model.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
@@ -103,8 +105,8 @@ void LaunchPluginVmAppImpl(Profile* profile,
   request.set_vm_name(registration->VmName());
   request.set_container_name(registration->ContainerName());
   request.set_desktop_file_id(registration->DesktopFileId());
-  base::ranges::move(file_paths, google::protobuf::RepeatedFieldBackInserter(
-                                     request.mutable_files()));
+  std::ranges::move(file_paths, google::protobuf::RepeatedFieldBackInserter(
+                                    request.mutable_files()));
 
   ash::CiceroneClient::Get()->LaunchContainerApplication(
       std::move(request),
@@ -160,17 +162,17 @@ void LaunchPluginVmApp(Profile* profile,
     return std::move(callback).Run(LaunchPluginVmAppResult::FAILED,
                                    "Could not get PluginVmManager");
   }
-  auto* share_path = guest_os::GuestOsSharePath::GetForProfile(profile);
+  auto* share_path = guest_os::GuestOsSharePathFactory::GetForProfile(profile);
   base::FilePath vm_mount = ChromeOSBaseDirectory();
 
   std::vector<std::string> launch_args;
   launch_args.reserve(args.size());
   for (const auto& arg : args) {
-    if (absl::holds_alternative<std::string>(arg)) {
-      launch_args.push_back(absl::get<std::string>(arg));
+    if (std::holds_alternative<std::string>(arg)) {
+      launch_args.push_back(std::get<std::string>(arg));
       continue;
     }
-    const storage::FileSystemURL& url = absl::get<storage::FileSystemURL>(arg);
+    const storage::FileSystemURL& url = std::get<storage::FileSystemURL>(arg);
     base::FilePath file_path;
     // Validate paths in MyFiles/PvmDefault, or are already shared, and convert.
     bool shared = GetDefaultSharedDir(profile).IsParent(url.path()) ||

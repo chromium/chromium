@@ -19,6 +19,7 @@
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/result.h"
 #include "components/segmentation_platform/public/trigger.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
@@ -43,7 +44,7 @@ struct TrainingLabels {
   ~TrainingLabels();
 
   // Name and sample of the output metric to be collected as training data.
-  std::optional<std::pair<std::string, base::HistogramBase::Sample>>
+  std::optional<std::pair<std::string, base::HistogramBase::Sample32>>
       output_metric;
 
   TrainingLabels(const TrainingLabels& other);
@@ -113,10 +114,25 @@ class SegmentationPlatformService : public KeyedService,
   virtual SegmentSelectionResult GetCachedSegmentResult(
       const std::string& segmentation_key) = 0;
 
+  // Get the set of input keys required for the model execution for
+  // `segmentation_key`.
+  virtual void GetInputKeysForModel(const std::string& segmentation_key,
+                                    InputContextKeysCallback callback) = 0;
+
   // Called to trigger training data collection for a given request ID. Request
-  // IDs are given when |GetClassificationResult| is called.
+  // IDs are given when |GetClassificationResult| is called. `param` is used to
+  // pass one additional output feature to be uploaded as training data. It is
+  // recommended that the additional feature is also recorded as UMA histogram.
+  // Optionally set `ukm_source_id` to attach the training data to the right
+  // URL. The source ID should be created by the caller. If the ID is invalid,
+  // the data will be uploaded with a no-URL UKM source.
   virtual void CollectTrainingData(proto::SegmentId segment_id,
                                    TrainingRequestId request_id,
+                                   const TrainingLabels& param,
+                                   SuccessCallback callback) = 0;
+  virtual void CollectTrainingData(proto::SegmentId segment_id,
+                                   TrainingRequestId request_id,
+                                   ukm::SourceId ukm_source_id,
                                    const TrainingLabels& param,
                                    SuccessCallback callback) = 0;
 

@@ -4,8 +4,12 @@
 
 package org.chromium.chrome.browser.paint_preview;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -19,10 +23,11 @@ import org.chromium.url.GURL;
  * Responsible for displaying the Paint Preview demo. When displaying, the Paint Preview will
  * overlay the associated {@link Tab}'s content view.
  */
+@NullMarked
 public class DemoPaintPreview implements PlayerManager.Listener {
-    private Tab mTab;
-    private TabbedPaintPreview mTabbedPaintPreview;
-    private DemoPaintPreviewTabObserver mTabObserver;
+    private final DemoPaintPreviewTabObserver mTabObserver;
+    private @Nullable Tab mTab;
+    private @Nullable TabbedPaintPreview mTabbedPaintPreview;
 
     public static void showForTab(Tab tab) {
         if (tab == null) return;
@@ -39,6 +44,7 @@ public class DemoPaintPreview implements PlayerManager.Listener {
 
     private void show() {
         PaintPreviewCompositorUtils.warmupCompositor();
+        assumeNonNull(mTabbedPaintPreview);
         mTabbedPaintPreview.capture(
                 success ->
                         PostTask.runOrPostTask(
@@ -46,6 +52,8 @@ public class DemoPaintPreview implements PlayerManager.Listener {
     }
 
     private void onCapturedPaintPreview(boolean captureSuccess) {
+        assumeNonNull(mTabbedPaintPreview);
+        assumeNonNull(mTab);
         boolean shown = false;
         if (captureSuccess) shown = mTabbedPaintPreview.maybeShow(this);
         int toastStringRes =
@@ -62,18 +70,23 @@ public class DemoPaintPreview implements PlayerManager.Listener {
     private void removePaintPreviewDemo() {
         if (mTab == null) return;
 
+        assumeNonNull(mTabbedPaintPreview);
         mTabbedPaintPreview.remove(false);
         destroy();
     }
 
     private void destroy() {
+        if (mTab != null) {
         mTab.removeObserver(mTabObserver);
         mTab = null;
+        }
         mTabbedPaintPreview = null;
     }
 
     @Override
     public void onCompositorError(int status) {
+        if (mTab == null) return;
+
         Toast.makeText(
                         mTab.getContext(),
                         R.string.paint_preview_demo_playback_failure,
@@ -84,6 +97,8 @@ public class DemoPaintPreview implements PlayerManager.Listener {
 
     @Override
     public void onViewReady() {
+        if (mTab == null) return;
+
         Toast.makeText(
                         mTab.getContext(),
                         R.string.paint_preview_demo_playback_start,
@@ -120,7 +135,7 @@ public class DemoPaintPreview implements PlayerManager.Listener {
 
     @Override
     public void onAccessibilityNotSupported() {
-        if (isAccessibilityEnabled()) {
+        if (isAccessibilityEnabled() && mTab != null) {
             Toast.makeText(
                             mTab.getContext(),
                             R.string.paint_preview_demo_no_accessibility,
@@ -133,7 +148,7 @@ public class DemoPaintPreview implements PlayerManager.Listener {
         @Override
         public void onDidStartNavigationInPrimaryMainFrame(
                 Tab tab, NavigationHandle navigationHandle) {
-            if (!mTabbedPaintPreview.isAttached()) return;
+            if (mTabbedPaintPreview == null || !mTabbedPaintPreview.isAttached()) return;
             removePaintPreviewDemo();
         }
     }

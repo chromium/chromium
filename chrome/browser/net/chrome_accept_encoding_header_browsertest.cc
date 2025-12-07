@@ -4,25 +4,14 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "media/media_buildflags.h"
-#include "net/base/features.h"
 #include "net/test/embedded_test_server/http_request.h"
 
-class ChromeAcceptEncodingHeaderTest : public InProcessBrowserTest {
- public:
-  ChromeAcceptEncodingHeaderTest() {
-    feature_list_.InitAndEnableFeature(net::features::kZstdContentEncoding);
-  }
-  ~ChromeAcceptEncodingHeaderTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
+using ChromeAcceptEncodingHeaderTest = InProcessBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(ChromeAcceptEncodingHeaderTest, Check) {
   net::EmbeddedTestServer server(net::EmbeddedTestServer::TYPE_HTTPS);

@@ -4,6 +4,7 @@
 
 #include "components/guest_os/guest_os_prefs.h"
 
+#include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace guest_os {

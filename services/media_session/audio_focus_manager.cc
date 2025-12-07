@@ -10,6 +10,7 @@
 
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/unguessable_token.h"
@@ -39,14 +40,14 @@ class MediaPowerDelegate : public base::PowerSuspendObserver {
  public:
   explicit MediaPowerDelegate(base::WeakPtr<AudioFocusManager> owner)
       : owner_(owner) {
-    base::PowerMonitor::AddPowerSuspendObserver(this);
+    base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
   }
 
   MediaPowerDelegate(const MediaPowerDelegate&) = delete;
   MediaPowerDelegate& operator=(const MediaPowerDelegate&) = delete;
 
   ~MediaPowerDelegate() override {
-    base::PowerMonitor::RemovePowerSuspendObserver(this);
+    base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
   }
 
   // base::PowerSuspendObserver:
@@ -282,6 +283,26 @@ void AudioFocusManager::RequestIdReleased(
   }
 }
 
+void AudioFocusManager::StartDuckingAllAudio(
+    const std::optional<base::UnguessableToken>& exempted_request_id) {
+  ducking_all_audio_ = true;
+  ducking_exempted_request_id_ = exempted_request_id;
+  EnforceAudioFocus();
+}
+
+void AudioFocusManager::StopDuckingAllAudio() {
+  ducking_all_audio_ = false;
+  EnforceAudioFocus();
+}
+
+void AudioFocusManager::FlushForTesting(FlushForTestingCallback callback) {
+  for (auto& row : audio_focus_stack_) {
+    row->FlushForTesting();  // IN-TEST
+  }
+  observers_.FlushForTesting();  // IN-TEST
+  std::move(callback).Run();
+}
+
 void AudioFocusManager::CreateActiveMediaController(
     mojo::PendingReceiver<mojom::MediaController> receiver) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -474,6 +495,11 @@ bool AudioFocusManager::ShouldSessionBeSuspended(
 bool AudioFocusManager::ShouldSessionBeDucked(
     const AudioFocusRequest* session,
     const EnforcementState& state) const {
+  if (ducking_all_audio_ && (!ducking_exempted_request_id_.has_value() ||
+                             *ducking_exempted_request_id_ != session->id())) {
+    return true;
+  }
+
   switch (enforcement_mode_) {
     case mojom::EnforcementMode::kSingleSession:
     case mojom::EnforcementMode::kSingleGroup:

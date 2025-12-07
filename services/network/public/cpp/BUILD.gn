@@ -7,6 +7,8 @@ import("//mojo/public/tools/bindings/mojom.gni")
 import("//net/features.gni")
 import("//services/network/public/cpp/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
+import("//testing/test.gni")
+import("//third_party/blink/renderer/build/scripts/scripts.gni")  # TODO(crbug.com/397934758)
 
 _is_directory_transfer_required = is_fuchsia
 buildflag_header("buildflags") {
@@ -15,6 +17,29 @@ buildflag_header("buildflags") {
     "IS_CT_SUPPORTED=$is_ct_supported",
     "IS_P2P_ENABLED=$is_p2p_enabled",
     "IS_DIRECTORY_TRANSFER_REQUIRED=$_is_directory_transfer_required",
+  ]
+}
+
+# TODO(crbug.com/397934758): Move `blink_python_runner` out of Blink and update
+# this action.
+blink_python_runner("make_generated_permissions_policy_features") {
+  script =
+      "//services/network/build/scripts/make_permissions_policy_features.py"
+
+  inputs = scripts_for_json5_files + [
+             "//services/network/build/scripts/make_permissions_policy_features.py",
+             "//services/network/public/cpp/permissions_policy/permissions_policy_features.json5",
+             "//services/network/build/scripts/templates/permissions_policy_features_generated.cc.tmpl",
+           ]
+  outputs = [ "$root_gen_dir/services/network/public/cpp/permissions_policy/permissions_policy_features_generated.cc" ]
+
+  args = [
+    rebase_path(
+        "//services/network/public/cpp/permissions_policy/permissions_policy_features.json5",
+        root_build_dir),
+    "--output_dir",
+    rebase_path("$root_gen_dir/services/network/public/cpp/permissions_policy",
+                root_build_dir),
   ]
 }
 
@@ -38,24 +63,16 @@ component("cpp") {
     "avail_language_header_parser.h",
     "browsing_topics_parser.cc",
     "browsing_topics_parser.h",
-    "client_hints.cc",
-    "client_hints.h",
     "constants.cc",
     "constants.h",
+    "content_decoding_interceptor.cc",
+    "content_decoding_interceptor.h",
     "content_language_parser.cc",
     "content_language_parser.h",
-    "content_security_policy/content_security_policy.cc",
-    "content_security_policy/content_security_policy.h",
-    "content_security_policy/csp_context.cc",
-    "content_security_policy/csp_context.h",
-    "content_security_policy/csp_source.cc",
-    "content_security_policy/csp_source.h",
-    "content_security_policy/csp_source_list.cc",
-    "content_security_policy/csp_source_list.h",
+    "cookie_encryption_provider_impl.cc",
+    "cookie_encryption_provider_impl.h",
     "cors/cors.cc",
     "cors/cors.h",
-    "cors/origin_access_entry.cc",
-    "cors/origin_access_entry.h",
     "cors/origin_access_list.cc",
     "cors/origin_access_list.h",
     "cross_origin_embedder_policy_parser.cc",
@@ -74,8 +91,6 @@ component("cpp") {
     "document_isolation_policy_parser.h",
     "empty_url_loader_client.cc",
     "empty_url_loader_client.h",
-    "features.cc",
-    "features.h",
     "fence_event_reporting_parser.cc",
     "fence_event_reporting_parser.h",
     "header_util.cc",
@@ -84,12 +99,10 @@ component("cpp") {
     "initiator_lock_compatibility.h",
     "ip_address_space_util.cc",
     "ip_address_space_util.h",
-    "is_potentially_trustworthy.cc",
-    "is_potentially_trustworthy.h",
     "link_header_parser.cc",
     "link_header_parser.h",
-    "load_info_util.cc",
-    "load_info_util.h",
+    "loading_params.cc",
+    "loading_params.h",
     "net_adapters.cc",
     "net_adapters.h",
     "network_connection_tracker.cc",
@@ -97,8 +110,8 @@ component("cpp") {
     "network_context_getter.h",
     "network_quality_tracker.cc",
     "network_quality_tracker.h",
-    "network_switches.cc",
-    "network_switches.h",
+    "network_service_task_priority.cc",
+    "network_service_task_priority.h",
     "no_vary_search_header_parser.cc",
     "no_vary_search_header_parser.h",
     "not_implemented_url_loader_factory.cc",
@@ -119,6 +132,8 @@ component("cpp") {
     "resolve_host_client_base.h",
     "self_deleting_url_loader_factory.cc",
     "self_deleting_url_loader_factory.h",
+    "sequence_manager_configurator.cc",
+    "sequence_manager_configurator.h",
     "session_cookie_delete_predicate.h",
     "shared_url_loader_factory.cc",
     "shared_url_loader_factory.h",
@@ -133,61 +148,50 @@ component("cpp") {
     "source_stream_to_data_pipe.h",
     "spki_hash_set.cc",
     "spki_hash_set.h",
+    "sri_message_signatures.cc",
+    "sri_message_signatures.h",
     "supports_loading_mode/supports_loading_mode_parser.cc",
     "supports_loading_mode/supports_loading_mode_parser.h",
     "timing_allow_origin_parser.cc",
     "timing_allow_origin_parser.h",
     "trust_token_http_headers.cc",
     "trust_token_http_headers.h",
+    "unencoded_digests.cc",
+    "unencoded_digests.h",
     "url_loader_factory_builder.cc",
     "url_loader_factory_builder.h",
     "url_util.cc",
     "url_util.h",
     "weak_wrapper_shared_url_loader_factory.cc",
     "weak_wrapper_shared_url_loader_factory.h",
-    "web_sandbox_flags.cc",
-    "web_sandbox_flags.h",
     "wrapper_shared_url_loader_factory.cc",
     "wrapper_shared_url_loader_factory.h",
     "x_frame_options_parser.cc",
     "x_frame_options_parser.h",
   ]
 
-  if (enable_websockets) {
-    sources += [
-      "server/http_connection.cc",
-      "server/http_connection.h",
-      "server/http_server.cc",
-      "server/http_server.h",
-      "server/http_server_request_info.cc",
-      "server/http_server_request_info.h",
-      "server/http_server_response_info.cc",
-      "server/http_server_response_info.h",
-      "server/web_socket.cc",
-      "server/web_socket.h",
-      "server/web_socket_encoder.cc",
-      "server/web_socket_encoder.h",
-    ]
-  }
-
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
     ":buildflags",
     ":cpp_base",
+    ":flags_and_switches",
+    ":is_potentially_trustworthy",
     "//net",
     "//services/network/public/mojom",
+    "//services/network/public/mojom:url_loader_base",
     "//url",
     "//url/ipc:url_ipc",
   ]
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//components/link_header_util",
-    "//components/miracle_parameter/common",
+    "//components/os_crypt/async/browser",
+    "//components/os_crypt/async/common",
     "//components/prefs",
     "//ipc",
+    "//net",
     "//services/proxy_resolver/public/mojom",
   ]
 
@@ -198,6 +202,8 @@ component("cpp") {
 # need to depend on mojom_ip_address does not depend on the entire cpp_base.
 component("ip_address_mojom_support") {
   sources = [
+    "address_family_mojom_traits.cc",
+    "address_family_mojom_traits.h",
     "address_list_mojom_traits.cc",
     "address_list_mojom_traits.h",
     "alternate_protocol_usage_mojom_traits.cc",
@@ -233,6 +239,67 @@ component("host_resolver_mojom_support") {
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
   defines = [ "IS_NETWORK_CPP_HOST_RESOLVER_IMPL" ]
+}
+
+component("integrity_metadata_mojom_support") {
+  sources = [
+    "integrity_metadata.cc",
+    "integrity_metadata.h",
+    "integrity_metadata_mojom_traits.cc",
+    "integrity_metadata_mojom_traits.h",
+  ]
+  deps = [
+    "//services/network/public/mojom:mojom_integrity_algorithm",
+    "//services/network/public/mojom:mojom_integrity_metadata_shared",
+  ]
+  defines = [ "IS_NETWORK_CPP_INTEGRITY_METADATA_IMPL" ]
+}
+
+component("integrity_policy") {
+  sources = [
+    "integrity_policy.cc",
+    "integrity_policy.h",
+    "integrity_policy_mojom_traits.cc",
+    "integrity_policy_mojom_traits.h",
+    "integrity_policy_parser.cc",
+    "integrity_policy_parser.h",
+  ]
+  deps = [
+    ":flags_and_switches",
+    "//net",
+    "//services/network/public/mojom:mojom_integrity_policy_shared",
+  ]
+  defines = [ "IS_NETWORK_CPP_INTEGRITY_POLICY_IMPL" ]
+}
+
+component("connection_allowlist") {
+  sources = [
+    "connection_allowlist.cc",
+    "connection_allowlist.h",
+    "connection_allowlist_mojom_traits.cc",
+    "connection_allowlist_mojom_traits.h",
+    "connection_allowlist_parser.cc",
+    "connection_allowlist_parser.h",
+  ]
+  deps = [
+    ":flags_and_switches",
+    "//net",
+    "//services/network/public/mojom:mojom_connection_allowlist_shared",
+  ]
+  public_deps = [ "//base" ]
+  defines = [ "IS_NETWORK_CPP_CONNECTION_ALLOWLIST_IMPL" ]
+}
+
+component("fetch_retry_options") {
+  sources = [
+    "fetch_retry_options.cc",
+    "fetch_retry_options.h",
+  ]
+  deps = [
+    "//net",
+    "//services/network/public/mojom:url_loader_base_shared",
+  ]
+  defines = [ "IS_NETWORK_CPP_FETCH_RETRY_OPTIONS_IMPL" ]
 }
 
 component("cookies_mojom_support") {
@@ -284,6 +351,7 @@ component("proxy_config_mojom_support") {
     "//mojo/public/mojom/base",
     "//net",
     "//services/network/public/mojom:mojom_proxy_config_shared",
+    "//url/mojom:mojom_traits",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
   defines = [ "IS_NETWORK_CPP_PROXY_CONFIG_IMPL" ]
@@ -302,6 +370,89 @@ component("structured_headers_mojom_support") {
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
   defines = [ "IS_NETWORK_CPP_STRUCTURED_HEADERS_IMPL" ]
+}
+
+component("flags_and_switches") {
+  sources = [
+    "features.cc",
+    "features.h",
+    "network_switches.cc",
+    "network_switches.h",
+    "web_sandbox_flags.cc",
+    "web_sandbox_flags.h",
+  ]
+  public_deps = [
+    "//base",
+    "//net",
+    "//services/network/public/mojom:mojom_web_sandbox_flags",
+    "//url",
+  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  defines = [ "IS_NETWORK_CPP_FLAGS_AND_SWITCHES_IMPL" ]
+}
+
+component("is_potentially_trustworthy") {
+  sources = [
+    "is_potentially_trustworthy.cc",
+    "is_potentially_trustworthy.h",
+  ]
+  public_deps = [
+    ":flags_and_switches",
+    "//base",
+    "//net",
+    "//url",
+  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  defines = [ "IS_NETWORK_CPP_IS_POTENTIALLY_TRUSTWORTHY_IMPL" ]
+}
+
+component("web_platform") {
+  sources = [
+    "client_hints.cc",
+    "client_hints.h",
+    "content_security_policy/content_security_policy.cc",
+    "content_security_policy/content_security_policy.h",
+    "content_security_policy/csp_context.cc",
+    "content_security_policy/csp_context.h",
+    "content_security_policy/csp_source.cc",
+    "content_security_policy/csp_source.h",
+    "content_security_policy/csp_source_list.cc",
+    "content_security_policy/csp_source_list.h",
+    "cors/origin_access_entry.cc",
+    "cors/origin_access_entry.h",
+    "permissions_policy/client_hints_permissions_policy_mapping.cc",
+    "permissions_policy/client_hints_permissions_policy_mapping.h",
+    "permissions_policy/fenced_frame_permissions_policies.h",
+    "permissions_policy/origin_with_possible_wildcards.cc",
+    "permissions_policy/origin_with_possible_wildcards.h",
+    "permissions_policy/permissions_policy.cc",
+    "permissions_policy/permissions_policy.h",
+    "permissions_policy/permissions_policy_declaration.cc",
+    "permissions_policy/permissions_policy_declaration.h",
+    "permissions_policy/permissions_policy_features.cc",
+    "permissions_policy/permissions_policy_features.h",
+    "permissions_policy/permissions_policy_features_bitset.cc",
+    "permissions_policy/permissions_policy_features_bitset.h",
+    "permissions_policy/permissions_policy_features_generated.h",
+    "permissions_policy/permissions_policy_features_internal.cc",
+    "permissions_policy/permissions_policy_features_internal.h",
+    "permissions_policy/permissions_policy_mojom_traits.cc",
+    "permissions_policy/permissions_policy_mojom_traits.h",
+  ]
+  sources += get_target_outputs(":make_generated_permissions_policy_features")
+  public_deps = [
+    ":flags_and_switches",
+    ":is_potentially_trustworthy",
+    ":make_generated_permissions_policy_features",
+    "//net",
+    "//services/network/public/mojom:mojom_content_security_policy",
+    "//services/network/public/mojom:mojom_cors_origin_pattern",
+    "//services/network/public/mojom:mojom_permissions_policy_shared",
+    "//services/network/public/mojom:url_loader_base_shared",
+    "//url",
+  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  defines = [ "IS_NETWORK_CPP_WEB_PLATFORM_IMPL" ]
 }
 
 # This component is separate from cpp_base as it is a dependency of
@@ -344,6 +495,69 @@ component("document_isolation_policy") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   defines = [ "IS_NETWORK_CPP_DOCUMENT_ISOLATION_IMPL" ]
+}
+
+source_set("ip_address_space_overrides_test_utils") {
+  testonly = true
+
+  sources = [
+    "ip_address_space_overrides_test_utils.cc",
+    "ip_address_space_overrides_test_utils.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//services/network/public/mojom:mojom_ip_address_shared",
+  ]
+
+  deps = [
+    ":cpp",
+    ":flags_and_switches",
+    "//base",
+    "//net:test_support",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+component("shared_storage_support") {
+  sources = [
+    "shared_storage_mojom_traits.cc",
+    "shared_storage_mojom_traits.h",
+    "shared_storage_utils.cc",
+    "shared_storage_utils.h",
+  ]
+  public_deps = [
+    ":flags_and_switches",
+    "//base",
+    "//mojo/public/mojom/base",
+    "//services/network/public/mojom:mojom_shared_storage",
+  ]
+
+  # TODO(crbug.com/40915226): Remove the need to ignore this warning.
+  if (is_win && is_component_build) {
+    ldflags = [ "/IGNORE:4217" ]
+  }
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  defines = [ "IS_NETWORK_CPP_SHARED_STORAGE_IMPL" ]
+}
+
+component("ad_auction_support") {
+  sources = [
+    "ad_auction/event_record.cc",
+    "ad_auction/event_record.h",
+    "ad_auction/event_record_mojom_traits.cc",
+    "ad_auction/event_record_mojom_traits.h",
+  ]
+  public_deps = [
+    "//base",
+    "//net",
+    "//services/network/public/mojom:mojom_ad_auction",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  defines = [ "IS_NETWORK_CPP_AD_AUCTION_IMPL" ]
 }
 
 # This component is separate from cpp_base as it is a dependency of
@@ -416,6 +630,8 @@ component("cpp_base") {
     "isolation_info_mojom_traits.h",
     "load_timing_info_mojom_traits.cc",
     "load_timing_info_mojom_traits.h",
+    "load_timing_internal_info_mojom_traits.cc",
+    "load_timing_internal_info_mojom_traits.h",
     "network_anonymization_key_mojom_traits.cc",
     "network_anonymization_key_mojom_traits.h",
     "network_interface_mojom_traits.cc",
@@ -432,6 +648,8 @@ component("cpp_base") {
     "resource_request.h",
     "resource_request_body.cc",
     "resource_request_body.h",
+    "source_type_mojom_traits.cc",
+    "source_type_mojom_traits.h",
     "transferable_directory.cc",
     "transferable_directory.h",
     "transferable_socket.cc",
@@ -452,16 +670,23 @@ component("cpp_base") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
+    ":ad_auction_support",
+    ":connection_allowlist",
     ":cookies_mojom_support",
     ":crash_keys",
     ":cross_origin_embedder_policy",
     ":document_isolation_policy",
+    ":fetch_retry_options",
+    ":integrity_metadata_mojom_support",
+    ":integrity_policy",
     ":ip_address_mojom_support",
     ":network_param_mojom_support",
     ":proxy_config_mojom_support",
     ":schemeful_site_mojom_support",
+    ":shared_storage_support",
     ":storage_access_api_mojom_support",
     ":structured_headers_mojom_support",
+    ":web_platform",
     "//services/network/public/mojom:url_loader_base",
     "//url/ipc:url_ipc",
     "//url/mojom:url_mojom_gurl",
@@ -528,16 +753,24 @@ source_set("test_support") {
     "//testing/gtest",
     "//url:url_test_support",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("tests") {
   testonly = true
 
   sources = [
+    "ad_auction/event_record_mojom_traits_unittest.cc",
+    "ad_auction/event_record_unittest.cc",
     "attribution_utils_unittest.cc",
     "avail_language_header_parser_unittest.cc",
     "browsing_topics_parser_unittest.cc",
     "client_hints_unittest.cc",
+    "connection_allowlist_unittest.cc",
+    "content_decoding_interceptor_unittest.cc",
     "content_language_parser_unittest.cc",
     "content_security_policy/content_security_policy_unittest.cc",
     "content_security_policy/csp_context_unittest.cc",
@@ -556,6 +789,7 @@ source_set("tests") {
     "cross_thread_pending_shared_url_loader_factory_unittest.cc",
     "data_pipe_to_source_stream_unittest.cc",
     "default_credentials_mojom_traits_unittest.cc",
+    "device_bound_sessions_mojom_traits_unittest.cc",
     "devtools_observer_unittest.cc",
     "digitally_signed_mojom_traits_unittest.cc",
     "document_isolation_policy_parser_unittest.cc",
@@ -567,11 +801,13 @@ source_set("tests") {
     "header_util_unittest.cc",
     "host_resolver_mojom_traits_unittest.cc",
     "initiator_lock_compatibility_unittest.cc",
+    "integrity_policy_parser_unittest.cc",
     "ip_address_mojom_traits_unittest.cc",
     "ip_address_space_util_unittest.cc",
     "is_potentially_trustworthy_unittest.cc",
     "isolation_info_mojom_traits_unittest.cc",
     "link_header_parser_unittest.cc",
+    "load_timing_internal_info_mojom_traits_unittest.cc",
     "mutable_network_traffic_annotation_tag_mojom_traits_unittest.cc",
     "mutable_partial_network_traffic_annotation_tag_mojom_traits_unittest.cc",
     "net_log_mojom_traits_unittest.cc",
@@ -585,21 +821,29 @@ source_set("tests") {
     "origin_agent_cluster_parser_unittest.cc",
     "parsed_headers_unittest.cc",
     "parsed_request_cookie_mojom_traits_unittest.cc",
+    "permissions_policy/origin_with_possible_wildcards_unittest.cc",
+    "permissions_policy/permissions_policy_declaration_unittest.cc",
+    "permissions_policy/permissions_policy_features_bitset_unittest.cc",
+    "permissions_policy/permissions_policy_mojom_traits_unittest.cc",
+    "permissions_policy/permissions_policy_unittest.cc",
     "proxy_config_mojom_traits_unittest.cc",
     "request_destination_unittest.cc",
     "schemeful_site_mojom_traits_unittest.cc",
     "self_deleting_url_loader_factory_unittest.cc",
     "shared_dictionary_isolation_key_mojom_traits_unittest.cc",
     "shared_dictionary_usage_info_mojom_traits_unittest.cc",
+    "shared_storage_mojom_traits_unittest.cc",
     "simple_host_resolver_unittest.cc",
     "simple_url_loader_unittest.cc",
     "source_stream_to_data_pipe_unittest.cc",
+    "sri_message_signatures_unittest.cc",
     "storage_access_api_mojom_traits_unittest.cc",
     "structured_headers_mojom_traits_unittest.cc",
     "supports_loading_mode/supports_loading_mode_parser_unittest.cc",
     "timing_allow_origin_parser_unittest.cc",
     "transferable_directory_unittest.cc",
     "transferable_socket_unittest.cc",
+    "unencoded_digests_unittest.cc",
     "url_loader_completion_status_mojom_traits_unittest.cc",
     "url_loader_factory_builder_unittest.cc",
     "url_request_mojom_traits_unittest.cc",
@@ -607,19 +851,14 @@ source_set("tests") {
     "x_frame_options_parser_unittest.cc",
   ]
 
-  if (enable_websockets) {
-    sources += [
-      "server/http_server_unittest.cc",
-      "server/web_socket_encoder_unittest.cc",
-    ]
-  }
-
   if (is_linux) {
     sources += [ "network_interface_change_listener_mojom_traits_unittest.cc" ]
   }
 
   deps = [
+    ":ad_auction_support",
     ":cpp",
+    ":shared_storage_support",
     ":test_interfaces",
     ":test_support",
     "//base",
@@ -630,10 +869,43 @@ source_set("tests") {
     "//services/network:network_service",
     "//services/network:test_support",
     "//services/network/public/cpp/cert_verifier:cert_verifier_tests",
+    "//services/network/public/mojom:mojom_ad_auction",
+    "//services/network/public/mojom:mojom_permissions_policy",
     "//testing/gtest",
   ]
 
   public_deps = [ ":buildflags" ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+source_set("perftests") {
+  testonly = true
+
+  sources = [ "url_request_mojom_traits_perftest.cc" ]
+
+  deps = [
+    ":cpp_base",
+    "//base",
+    "//base/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//net",
+    "//testing/gtest",
+    "//testing/perf",
+    "//third_party/google_benchmark",
+  ]
+}
+
+test("coep_fuzztest") {
+  sources = [ "cross_origin_embedder_policy_parser_fuzztest.cc" ]
+  fuzztests = [ "CrossOriginEmbedderPolicyParserTest.CrossOriginEmbedderPolicyParserFuzzerTest" ]
+  deps = [
+    ":cpp",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
 }
 
 fuzzer_test("coop_fuzzer") {

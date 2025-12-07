@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<title>Script Tools: mixing individual and batch tool registration</title>
+<link rel="author" href="mailto:brwalder@microsoft.com">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+promise_test(async () => {
+  async function echo(obj) {
+    return obj.text;
+  }
+
+  async function reverse(obj) {
+    return obj.text.split('').reverse().join('');
+  }
+
+  async function upper(obj) {
+    return obj.text.toUpperCase();
+  }
+
+  const modelContext = navigator.modelContext;
+
+  // First register tools via provideContext
+  modelContext.provideContext({
+    tools: [
+      {
+        execute: echo,
+        name: "echo",
+        description: "Echo tool"
+      },
+      {
+        execute: reverse,
+        name: "reverse",
+        description: "Reverse tool"
+      }
+    ]
+  });
+
+  // Then register individual tool
+  modelContext.registerTool({
+    execute: upper,
+    name: "upper",
+    description: "Uppercase tool"
+  });
+
+  // Unregister one tool that was registered via provideContext
+  modelContext.unregisterTool("echo");
+
+  // Unregister the individually registered tool
+  modelContext.unregisterTool("upper");
+
+  // Clean up remaining tool
+  modelContext.unregisterTool("reverse");
+}, "can mix provideContext and individual tool registration/unregistration");
+
+promise_test(async () => {
+  async function oldTool() {
+    return "old";
+  }
+
+  async function newTool1() {
+    return "new1";
+  }
+
+  async function newTool2() {
+    return "new2";
+  }
+
+  const modelContext = navigator.modelContext;
+
+  // Register initial tools via provideContext
+  modelContext.provideContext({
+    tools: [
+      {
+        execute: oldTool,
+        name: "tool_to_replace",
+        description: "Tool that will be replaced"
+      }
+    ]
+  });
+
+  // Use provideContext again to replace the tools
+  modelContext.provideContext({
+    tools: [
+      {
+        execute: newTool1,
+        name: "new_tool1",
+        description: "New tool 1"
+      },
+      {
+        execute: newTool2,
+        name: "new_tool2",
+        description: "New tool 2"
+      }
+    ]
+  });
+
+  // The old tool should be gone, only new tools should exist
+  assert_throws_dom(
+    'InvalidStateError',
+    () => {
+      modelContext.unregisterTool("tool_to_replace");
+    },
+    "old tool should not exist after provideContext replacement"
+  );
+
+  // Clean up new tools
+  modelContext.unregisterTool("new_tool1");
+  modelContext.unregisterTool("new_tool2");
+}, "provideContext replaces previously registered tools");
+</script>

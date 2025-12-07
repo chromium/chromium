@@ -17,7 +17,6 @@
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/common/ui/util/text_view_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
-#import "ios/web/public/browser_state.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "net/base/apple/url_conversions.h"
 #import "ui/base/device_form_factor.h"
@@ -436,16 +435,18 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
   if (shouldAddActionButtonToContainer) {
     // Right-align actionButton and add it below helpLabel when adding it to
     // the containerView.
-    if (self.actionButton.superview != self.containerView)
+    if (self.actionButton.superview != self.containerView) {
       [self.containerView addSubview:self.actionButton];
+    }
     actionButtonLayout.boundingWidth = CGRectGetWidth(containerBounds);
     actionButtonLayout.position = LayoutRectPositionMake(
         CGRectGetWidth(containerBounds) - actionButtonLayout.size.width,
         CGRectGetMaxY(self.footerLabel.frame) + kActionButtonTopPadding);
   } else {
     // Bottom-align the actionButton with the bounds specified by kLayoutInsets.
-    if (self.actionButton.superview != self)
+    if (self.actionButton.superview != self) {
       [self addSubview:self.actionButton];
+    }
     actionButtonLayout.boundingWidth = CGRectGetWidth(self.bounds);
     actionButtonLayout.position = LayoutRectPositionMake(
         UIEdgeInsetsGetLeading(kLayoutInsets),
@@ -508,17 +509,17 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
 
 #pragma mark - UITextViewDelegate
 
-- (BOOL)textView:(UITextView*)textView
-    shouldInteractWithURL:(NSURL*)URL
-                  inRange:(NSRange)characterRange
-              interaction:(UITextItemInteraction)interaction {
+- (UIAction*)textView:(UITextView*)textView
+    primaryActionForTextItem:(UITextItem*)textItem
+               defaultAction:(UIAction*)defaultAction {
   DCHECK(self.footerLabel == textView);
-  DCHECK(URL);
+  DCHECK(textItem.link);
 
-  [self.delegate sadTabView:self
-      showSuggestionsPageWithURL:net::GURLWithNSURL(URL)];
-  // Returns NO as the app is handling the opening of the URL.
-  return NO;
+  __weak __typeof(self) weakSelf = self;
+  return [UIAction actionWithHandler:^(UIAction* action) {
+    [weakSelf.delegate sadTabView:weakSelf
+        showSuggestionsPageWithURL:net::GURLWithNSURL(textItem.link)];
+  }];
 }
 
 @end

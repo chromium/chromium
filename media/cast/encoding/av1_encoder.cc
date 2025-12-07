@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/cast/encoding/av1_encoder.h"
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "media/base/video_encoder_metrics_provider.h"
@@ -18,7 +14,7 @@
 #include "media/cast/constants.h"
 #include "media/cast/encoding/encoding_util.h"
 #include "third_party/libaom/source/libaom/aom/aomcx.h"
-#include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
+#include "third_party/openscreen/src/cast/streaming/public/encoded_frame.h"
 
 namespace media {
 namespace cast {
@@ -93,8 +89,9 @@ Av1Encoder::Av1Encoder(
 
 Av1Encoder::~Av1Encoder() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (is_initialized())
+  if (is_initialized()) {
     aom_codec_destroy(&encoder_);
+  }
 }
 
 void Av1Encoder::Initialize() {
@@ -118,8 +115,9 @@ void Av1Encoder::ConfigureForNewFrameSize(const gfx::Size& frame_size) {
       config_.g_w = frame_size.width();
       config_.g_h = frame_size.height();
       config_.rc_min_quantizer = codec_params_->min_qp;
-      if (aom_codec_enc_config_set(&encoder_, &config_) == AOM_CODEC_OK)
+      if (aom_codec_enc_config_set(&encoder_, &config_) == AOM_CODEC_OK) {
         return;
+      }
       DVLOG(1) << "libaom rejected the attempt to use a smaller frame size in "
                   "the current instance.";
     }
@@ -208,8 +206,9 @@ void Av1Encoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
   // Initialize on-demand.  Later, if the video frame size has changed, update
   // the encoder configuration.
   const gfx::Size frame_size = video_frame->visible_rect().size();
-  if (!is_initialized() || gfx::Size(config_.g_w, config_.g_h) != frame_size)
+  if (!is_initialized() || gfx::Size(config_.g_w, config_.g_h) != frame_size) {
     ConfigureForNewFrameSize(frame_size);
+  }
 
   // Wrapper for aom_codec_encode() to access the YUV data in the |video_frame|.
   // Only the VISIBLE rectangle within |video_frame| is exposed to the codec.
@@ -273,16 +272,14 @@ void Av1Encoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
   const aom_codec_cx_pkt_t* pkt = nullptr;
   aom_codec_iter_t iter = nullptr;
   while ((pkt = aom_codec_get_cx_data(&encoder_, &iter)) != nullptr) {
-    if (pkt->kind != AOM_CODEC_CX_FRAME_PKT)
+    if (pkt->kind != AOM_CODEC_CX_FRAME_PKT) {
       continue;
-    if (pkt->data.frame.flags & AOM_FRAME_IS_KEY) {
-      // TODO(hubbe): Replace "dependency" with a "bool is_key_frame".
-      encoded_frame->dependency =
-          openscreen::cast::EncodedFrame::Dependency::kKeyFrame;
+    }
+
+    encoded_frame->is_key_frame = pkt->data.frame.flags & AOM_FRAME_IS_KEY;
+    if (encoded_frame->is_key_frame) {
       encoded_frame->referenced_frame_id = encoded_frame->frame_id;
     } else {
-      encoded_frame->dependency =
-          openscreen::cast::EncodedFrame::Dependency::kDependent;
       // Frame dependencies could theoretically be relaxed by looking for the
       // AOM_FRAME_IS_DROPPABLE flag, but in recent testing (Oct 2014), this
       // flag never seems to be set.
@@ -291,9 +288,10 @@ void Av1Encoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
     encoded_frame->rtp_timestamp =
         ToRtpTimeTicks(video_frame->timestamp(), kVideoFrequency);
     encoded_frame->reference_time = reference_time;
-    encoded_frame->data.assign(
-        static_cast<const uint8_t*>(pkt->data.frame.buf),
-        static_cast<const uint8_t*>(pkt->data.frame.buf) + pkt->data.frame.sz);
+    encoded_frame->data = base::HeapArray<uint8_t>::CopiedFrom(
+        UNSAFE_TODO(base::span<const uint8_t>(
+            static_cast<const uint8_t*>(pkt->data.frame.buf),
+            pkt->data.frame.sz)));
     break;  // Done, since all data is provided in one CX_FRAME_PKT packet.
   }
   if (encoded_frame->data.empty()) {
@@ -317,7 +315,6 @@ void Av1Encoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
   // used as the lossy utilization.
   const double actual_bitrate =
       encoded_frame->data.size() * 8.0 / predicted_frame_duration.InSecondsF();
-  encoded_frame->encoder_bitrate = actual_bitrate;
   const double target_bitrate = 1000.0 * config_.rc_target_bitrate;
   DCHECK_GT(target_bitrate, 0.0);
   const double bitrate_utilization = actual_bitrate / target_bitrate;
@@ -336,8 +333,7 @@ void Av1Encoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
            << ", lossiness: " << encoded_frame->lossiness
            << " (quantizer chosen by the encoder was " << quantizer << ')';
 
-  if (encoded_frame->dependency ==
-      openscreen::cast::EncodedFrame::Dependency::kKeyFrame) {
+  if (encoded_frame->is_key_frame) {
     key_frame_requested_ = false;
     encoding_speed_acc_.Reset(kHighestEncodingSpeed, video_frame->timestamp());
   } else {
@@ -386,18 +382,20 @@ void Av1Encoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
 void Av1Encoder::UpdateRates(uint32_t new_bitrate) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (!is_initialized())
+  if (!is_initialized()) {
     return;
+  }
 
   uint32_t new_bitrate_kbit = new_bitrate / 1000;
-  if (config_.rc_target_bitrate == new_bitrate_kbit)
+  if (config_.rc_target_bitrate == new_bitrate_kbit) {
     return;
+  }
 
   config_.rc_target_bitrate = bitrate_kbit_ = new_bitrate_kbit;
 
   // Update encoder context.
   if (aom_codec_enc_config_set(&encoder_, &config_)) {
-    NOTREACHED_IN_MIGRATION() << "Invalid return value";
+    NOTREACHED() << "Invalid return value";
   }
 
   VLOG(1) << "AV1 new rc_target_bitrate: " << new_bitrate_kbit << " kbps";

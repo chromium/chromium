@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views_test_api.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+#include <string_view>
+
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_controller.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_view.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views.h"
@@ -18,7 +20,7 @@
 namespace {
 
 bool IsDesktopMediaTabList(views::View* view) {
-  return !strcmp(view->GetClassName(), "DesktopMediaTabList");
+  return view->GetClassName() == "DesktopMediaTabList";
 }
 
 }  // namespace
@@ -33,8 +35,9 @@ void DesktopMediaPickerViewsTestApi::FocusSourceAtIndex(size_t index,
     source_view->RequestFocus();
   } else {
     GetTableView()->RequestFocus();
-    if (select)
+    if (select) {
       GetTableView()->Select(index);
+    }
   }
 }
 
@@ -51,8 +54,9 @@ void DesktopMediaPickerViewsTestApi::PressMouseOnSourceAtIndex(
     size_t index,
     bool double_click) {
   int flags = ui::EF_LEFT_MOUSE_BUTTON;
-  if (double_click)
+  if (double_click) {
     flags |= ui::EF_IS_DOUBLE_CLICK;
+  }
   views::View* source_view = GetSourceAtIndex(index);
   if (source_view) {
     source_view->OnMousePressed(
@@ -94,7 +98,7 @@ void DesktopMediaPickerViewsTestApi::DoubleTapSourceAtIndex(size_t index) {
 void DesktopMediaPickerViewsTestApi::SelectTabForSourceType(
     DesktopMediaList::Type source_type) {
   const auto& categories = picker_->dialog_->categories_;
-  const auto i = base::ranges::find(
+  const auto i = std::ranges::find(
       categories, source_type,
       &DesktopMediaPickerDialogView::DisplaySurfaceCategory::type);
   DCHECK(i != categories.cend());
@@ -119,8 +123,9 @@ std::optional<int> DesktopMediaPickerViewsTestApi::GetSelectedSourceId() const {
 
 bool DesktopMediaPickerViewsTestApi::HasSourceAtIndex(size_t index) const {
   const views::TableView* table = GetTableView();
-  if (table)
+  if (table) {
     return base::checked_cast<size_t>(table->GetRowCount()) > index;
+  }
   return !!GetSourceAtIndex(index);
 }
 
@@ -137,7 +142,7 @@ bool DesktopMediaPickerViewsTestApi::HasAudioShareControl() const {
   return GetActivePane() && GetActivePane()->AudioOffered();
 }
 
-std::u16string DesktopMediaPickerViewsTestApi::GetAudioLabelText() const {
+std::u16string_view DesktopMediaPickerViewsTestApi::GetAudioLabelText() const {
   return GetActivePane()->GetAudioLabelText();
 }
 
@@ -147,6 +152,22 @@ void DesktopMediaPickerViewsTestApi::SetAudioSharingApprovedByUser(bool allow) {
 
 bool DesktopMediaPickerViewsTestApi::IsAudioSharingApprovedByUser() const {
   return picker_->dialog_->IsAudioSharingApprovedByUser();
+}
+
+bool DesktopMediaPickerViewsTestApi::IsAudioSharingControlEnabled() const {
+  return picker_->dialog_->IsAudioSharingControlEnabled();
+}
+
+bool DesktopMediaPickerViewsTestApi::IsScreenAudioOffered() const {
+  return picker_->dialog_->is_screen_audio_offered_;
+}
+bool DesktopMediaPickerViewsTestApi::IsWindowAudioOffered() const {
+  return picker_->dialog_->window_audio_type_offered_ !=
+         content::DesktopMediaID::AudioType::kNone;
+}
+content::DesktopMediaID::AudioType
+DesktopMediaPickerViewsTestApi::GetWindowAudioType() const {
+  return picker_->dialog_->window_audio_type_offered_;
 }
 
 views::MdTextButton* DesktopMediaPickerViewsTestApi::GetReselectButton() {
@@ -176,15 +197,17 @@ void DesktopMediaPickerViewsTestApi::OnPermissionUpdate(bool has_permission) {
 const views::View* DesktopMediaPickerViewsTestApi::GetSourceAtIndex(
     size_t index) const {
   views::View* list = picker_->dialog_->GetSelectedController()->view_;
-  if (IsDesktopMediaTabList(list) || index >= list->children().size())
+  if (IsDesktopMediaTabList(list) || index >= list->children().size()) {
     return nullptr;
+  }
   return list->children()[index];
 }
 
 views::View* DesktopMediaPickerViewsTestApi::GetSourceAtIndex(size_t index) {
   views::View* list = picker_->dialog_->GetSelectedController()->view_;
-  if (IsDesktopMediaTabList(list) || index >= list->children().size())
+  if (IsDesktopMediaTabList(list) || index >= list->children().size()) {
     return nullptr;
+  }
   return list->children()[index];
 }
 

@@ -23,9 +23,7 @@ static const PowerPreference valid_power_preference_table[] = {
 };
 
 Validators::Validators()
-    : mailbox_flags(valid_mailbox_flags_table,
-                    std::size(valid_mailbox_flags_table)),
-      power_preference(valid_power_preference_table,
-                       std::size(valid_power_preference_table)) {}
+    : mailbox_flags(valid_mailbox_flags_table),
+      power_preference(valid_power_preference_table) {}
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_WEBGPU_CMD_VALIDATION_IMPLEMENTATION_AUTOGEN_H_

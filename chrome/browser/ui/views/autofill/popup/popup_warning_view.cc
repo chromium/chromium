@@ -5,10 +5,11 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_warning_view.h"
 
 #include <memory>
+#include <string>
 
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -17,11 +18,17 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace autofill {
 
-PopupWarningView::PopupWarningView(const Suggestion& suggestion)
-    : text_value_(suggestion.main_text.value) {
+PopupWarningView::PopupWarningView(const Suggestion& suggestion) {
+  const std::u16string& text_value = suggestion.main_text.value;
+
+  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
+  GetViewAccessibility().SetName(text_value);
+
   // TODO(crbug.com/327247047): SetUseDefaultFillLayout(true) ignore insets by
   // default. But we need insets for broder.
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -30,16 +37,13 @@ PopupWarningView::PopupWarningView(const Suggestion& suggestion)
                       PopupBaseView::ArrowHorizontalMargin())));
 
   AddChildView(views::Builder<views::Label>()
-                   .SetText(text_value_)
+                   .SetText(text_value)
                    .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
                    .SetTextStyle(ChromeTextStyle::STYLE_RED)
                    .SetMultiLine(true)
                    .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-                   .SetEnabledColorId(ui::kColorAlertHighSeverity)
+                   .SetEnabledColor(ui::kColorAlertHighSeverity)
                    .Build());
-
-  GetViewAccessibility().SetRole(ax::mojom::Role::kAlert);
-  GetViewAccessibility().SetName(text_value_);
 }
 
 PopupWarningView::~PopupWarningView() = default;

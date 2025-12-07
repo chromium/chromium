@@ -6,13 +6,13 @@
 
 #include "base/check.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "components/power_bookmarks/common/power_bookmark_metrics.h"
 #include "components/power_bookmarks/common/search_params.h"
-#include "components/power_bookmarks/storage/power_bookmark_sync_metadata_database.h"
 #include "components/sync/protocol/power_bookmark_specifics.pb.h"
 #include "sql/error_delegate_util.h"
 #include "sql/statement.h"
@@ -39,9 +39,8 @@ std::unique_ptr<Power> CreatePowerFromSpecifics(
     case sync_pb::PowerBookmarkSpecifics::POWER_TYPE_NOTE:
       return std::make_unique<Power>(specifics);
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return nullptr;
 }
 
 bool CheckIfPowerWithIdExists(sql::Database* db, const base::Uuid& guid) {
@@ -155,10 +154,9 @@ bool SqliteDatabaseTransaction::Commit() {
 
 PowerBookmarkDatabaseImpl::PowerBookmarkDatabaseImpl(
     const base::FilePath& database_dir)
-    : db_(sql::DatabaseOptions{.page_size = 4096, .cache_size = 128}),
+    : db_(sql::DatabaseOptions().set_cache_size(128),
+          /*tag=*/"PowerBookmarks"),
       database_path_(database_dir.Append(kDatabaseName)) {
-  sync_db_ =
-      std::make_unique<PowerBookmarkSyncMetadataDatabase>(&db_, &meta_table_);
 }
 
 PowerBookmarkDatabaseImpl::~PowerBookmarkDatabaseImpl() {
@@ -178,7 +176,6 @@ bool PowerBookmarkDatabaseImpl::Init() {
   db_.set_error_callback(
       base::BindRepeating(&PowerBookmarkDatabaseImpl::DatabaseErrorCallback,
                           base::Unretained(this)));
-  db_.set_histogram_tag("PowerBookmarks");
 
   const base::FilePath dir = database_path_.DirName();
   bool dir_exists = base::DirectoryExists(dir);
@@ -195,13 +192,6 @@ bool PowerBookmarkDatabaseImpl::Init() {
 
   if (!InitSchema()) {
     DLOG(ERROR) << "Failed to create schema for power bookmarks database: "
-                << db_.GetErrorMessage();
-    db_.Close();
-    return false;
-  }
-
-  if (!sync_db_->Init()) {
-    DLOG(ERROR) << "Failed to initialize sync metadata db: "
                 << db_.GetErrorMessage();
     db_.Close();
     return false;
@@ -345,8 +335,8 @@ std::vector<std::unique_ptr<Power>> PowerBookmarkDatabaseImpl::GetPowersForURL(
 
     std::optional<sync_pb::PowerBookmarkSpecifics> specifics =
         DeserializeOrDelete(
-            statement.ColumnString(1),
-            base::Uuid::ParseLowercase(statement.ColumnString(0)));
+            statement.ColumnStringView(1),
+            base::Uuid::ParseLowercase(statement.ColumnStringView(0)));
     if (!specifics.has_value())
       continue;
 
@@ -382,8 +372,8 @@ PowerBookmarkDatabaseImpl::GetPowerOverviewsForType(
 
     std::optional<sync_pb::PowerBookmarkSpecifics> specifics =
         DeserializeOrDelete(
-            statement.ColumnString(1),
-            base::Uuid::ParseLowercase(statement.ColumnString(0)));
+            statement.ColumnStringView(1),
+            base::Uuid::ParseLowercase(statement.ColumnStringView(0)));
     if (!specifics.has_value())
       continue;
 
@@ -417,8 +407,8 @@ PowerBookmarkDatabaseImpl::GetPowersForSearchParams(
 
     std::optional<sync_pb::PowerBookmarkSpecifics> specifics =
         DeserializeOrDelete(
-            statement.ColumnString(1),
-            base::Uuid::ParseLowercase(statement.ColumnString(0)));
+            statement.ColumnStringView(1),
+            base::Uuid::ParseLowercase(statement.ColumnStringView(0)));
     if (!specifics.has_value())
       continue;
     if (!MatchesSearchParams(specifics.value(), search_params))
@@ -487,8 +477,8 @@ PowerBookmarkDatabaseImpl::GetPowerOverviewsForSearchParams(
 
     std::optional<sync_pb::PowerBookmarkSpecifics> specifics =
         DeserializeOrDelete(
-            statement.ColumnString(1),
-            base::Uuid::ParseLowercase(statement.ColumnString(0)));
+            statement.ColumnStringView(1),
+            base::Uuid::ParseLowercase(statement.ColumnStringView(0)));
     if (!specifics.has_value()) {
       continue;
     }
@@ -600,67 +590,6 @@ bool PowerBookmarkDatabaseImpl::DeletePowersForURL(
   return true;
 }
 
-std::vector<std::unique_ptr<Power>>
-PowerBookmarkDatabaseImpl::GetPowersForGUIDs(
-    const std::vector<std::string>& guids) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  for (auto& guid : guids) {
-    DCHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
-  }
-  const std::string query =
-      base::StrCat({"SELECT blobs.id, blobs.specifics, saves.url "
-                    "FROM blobs JOIN saves ON blobs.id=saves.id "
-                    "WHERE saves.id IN ('",
-                    base::JoinString(guids, "','"), "')"});
-  db_.IsSQLValid(query);
-  sql::Statement statement(db_.GetUniqueStatement(query));
-  std::vector<std::unique_ptr<Power>> powers;
-  while (statement.Step()) {
-    DCHECK_EQ(3, statement.ColumnCount());
-
-    std::optional<sync_pb::PowerBookmarkSpecifics> specifics =
-        DeserializeOrDelete(
-            statement.ColumnString(1),
-            base::Uuid::ParseLowercase(statement.ColumnString(0)));
-    if (!specifics.has_value())
-      continue;
-
-    powers.emplace_back(CreatePowerFromSpecifics(specifics.value()));
-  }
-
-  return powers;
-}
-
-std::vector<std::unique_ptr<Power>> PowerBookmarkDatabaseImpl::GetAllPowers() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  static constexpr char kGetPowersSql[] =
-      // clang-format off
-      "SELECT blobs.id, blobs.specifics, saves.url "
-          "FROM blobs JOIN saves ON blobs.id=saves.id";
-  // clang-format on
-  DCHECK(db_.IsSQLValid(kGetPowersSql));
-
-  sql::Statement statement(
-      db_.GetCachedStatement(SQL_FROM_HERE, kGetPowersSql));
-  std::vector<std::unique_ptr<Power>> powers;
-  while (statement.Step()) {
-    DCHECK_EQ(3, statement.ColumnCount());
-
-    std::optional<sync_pb::PowerBookmarkSpecifics> specifics =
-        DeserializeOrDelete(
-            statement.ColumnString(1),
-            base::Uuid::ParseLowercase(statement.ColumnString(0)));
-    if (!specifics.has_value())
-      continue;
-
-    powers.emplace_back(CreatePowerFromSpecifics(specifics.value()));
-  }
-
-  return powers;
-}
-
 std::unique_ptr<Power> PowerBookmarkDatabaseImpl::GetPowerForGUID(
     const std::string& guid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -683,8 +612,8 @@ std::unique_ptr<Power> PowerBookmarkDatabaseImpl::GetPowerForGUID(
 
     std::optional<sync_pb::PowerBookmarkSpecifics> specifics =
         DeserializeOrDelete(
-            statement.ColumnString(1),
-            base::Uuid::ParseLowercase(statement.ColumnString(0)));
+            statement.ColumnStringView(1),
+            base::Uuid::ParseLowercase(statement.ColumnStringView(0)));
     if (!specifics.has_value())
       continue;
 
@@ -694,30 +623,8 @@ std::unique_ptr<Power> PowerBookmarkDatabaseImpl::GetPowerForGUID(
   return nullptr;
 }
 
-bool PowerBookmarkDatabaseImpl::CreateOrMergePowerFromSync(const Power& power) {
-  auto existing_power = GetPowerForGUID(power.guid_string());
-  if (existing_power) {
-    // The merged data is not sent back to sync in order to prevent sending data
-    // back and forth between two clients. Usually sync data from the server
-    // should override local data, which make it unnecessary to send data back.
-    existing_power->Merge(power);
-    return UpdatePowerInternal(*existing_power);
-  } else {
-    return CreatePowerInternal(power);
-  }
-}
-
-bool PowerBookmarkDatabaseImpl::DeletePowerFromSync(const std::string& guid) {
-  return DeletePower(base::Uuid::ParseLowercase(guid));
-}
-
-PowerBookmarkSyncMetadataDatabase*
-PowerBookmarkDatabaseImpl::GetSyncMetadataDatabase() {
-  return sync_db_.get();
-}
-
 std::optional<sync_pb::PowerBookmarkSpecifics>
-PowerBookmarkDatabaseImpl::DeserializeOrDelete(const std::string& data,
+PowerBookmarkDatabaseImpl::DeserializeOrDelete(std::string_view data,
                                                const base::Uuid& id) {
   sync_pb::PowerBookmarkSpecifics specifics;
   bool parse_success = specifics.ParseFromString(data);
@@ -839,7 +746,7 @@ bool PowerBookmarkDatabaseImpl::UpdatePowerInternal(const Power& power) {
   power.ToPowerBookmarkSpecifics(&specifics);
   bool success = specifics.SerializeToString(&data);
   DCHECK(success);
-  blob_statement.BindBlob(0, data);
+  blob_statement.BindBlob(0, std::move(data));
   blob_statement.BindString(1, power.guid_string());
   if (!blob_statement.Run()) {
     return false;

@@ -6,10 +6,13 @@
 #define CONTENT_BROWSER_HOST_ZOOM_MAP_IMPL_H_
 
 #include <map>
+#include <set>
 #include <string>
 #include <tuple>
 #include <vector>
 
+#include "base/callback_list.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "base/time/time.h"
@@ -17,8 +20,15 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/host_zoom_map.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include <jni.h>
+
+#include "base/android/scoped_java_ref.h"
+#endif
+
 namespace content {
 
+class RenderFrameHostImpl;
 class WebContentsImpl;
 
 // HostZoomMap lives on the UI thread.
@@ -60,11 +70,16 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
   // Returns the current zoom level for the specified WebContents. This may
   // be a temporary zoom level, depending on UsesTemporaryZoomLevel().
   double GetZoomLevelForWebContents(WebContentsImpl* web_contents_impl);
+  double GetZoomLevelForWebContents(WebContentsImpl* web_contents_impl,
+                                    GlobalRenderFrameHostId rfh_id);
 
   // Sets the zoom level for this WebContents. If this WebContents is using
   // a temporary zoom level, then level is only applied to this WebContents.
   // Otherwise, the level will be applied on a host level.
   void SetZoomLevelForWebContents(WebContentsImpl* web_contents_impl,
+                                  double level);
+  void SetZoomLevelForWebContents(WebContentsImpl* web_contents_impl,
+                                  GlobalRenderFrameHostId rfh_id,
                                   double level);
 
   // Returns the temporary zoom level that's only valid for the lifetime of
@@ -84,11 +99,25 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
   double GetZoomLevelForHostAndSchemeAndroid(const std::string& scheme,
                                              const std::string& host) override;
   void SetSystemFontScaleForTesting(float scale);
+  void SetShouldAdjustForOSLevelForTesting(bool shouldAdjustForOSLevel);
+
+  // Notifies all JNI observers about a zoom level change.
+  void NotifyJniObservers(const ZoomLevelChange& change);
+  // Manages the lifecycle of JNI observers.
+  jlong AddJniZoomLevelObserver(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& j_callback);
+  void RemoveJniZoomLevelObserver(jlong subscription_key);
 #endif
 
   double GetZoomLevelForPreviewAndHost(const std::string& host) override;
   void SetZoomLevelForPreviewAndHost(const std::string& host,
                                      double level) override;
+
+  void SetIndependentZoomForFrameTreeNode(WebContents* web_contents,
+                                          FrameTreeNodeId ftn_id) override;
+  void ClearIndependentZoomForFrameTreeNode(FrameTreeNodeId ftn_id) override;
+  bool IsIndependentZoomFrameTreeNode(FrameTreeNodeId ftn_id) const;
 
  private:
   struct ZoomLevel {
@@ -99,6 +128,7 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
   typedef std::map<std::string, HostZoomLevels> SchemeHostZoomLevels;
 
   typedef std::map<GlobalRenderFrameHostId, double> TemporaryZoomLevels;
+  typedef std::set<FrameTreeNodeId> IndependentZoomFrameTreeNodes;
 
   double GetZoomLevelForHost(const std::string& host) const;
 
@@ -107,6 +137,11 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
   void SetZoomLevelForHostInternal(const std::string& host,
                                    double level,
                                    base::Time last_modified);
+
+  // Internal helper for SetDefaultZoomLevel().
+  void SetDefaultZoomLevelInternal(double level,
+                                   WebContentsImpl* web_contents,
+                                   RenderFrameHostImpl* rfh);
 
   // Notifies the renderers from this browser context to change the zoom level
   // for the specified host and scheme.
@@ -120,6 +155,15 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
       zoom_level_changed_callbacks_;
 
 #if BUILDFLAG(IS_ANDROID)
+  // Map of unique keys to Java callbacks.
+  base::flat_map<int64_t, base::android::ScopedJavaGlobalRef<jobject>>
+      jni_callbacks_;
+  // A monotonically increasing unique integer assigned to each JNI callback
+  // subscription.
+  int64_t next_jni_subscription_key_ = 1;
+  // Subscription for the single C++ observer that fans out to Java observers.
+  base::CallbackListSubscription jni_callbacks_subscription_;
+
   // Callback called when Java-side UI updates the default zoom level.
   HostZoomMap::DefaultZoomChangedCallback default_zoom_level_pref_callback_;
 #endif
@@ -130,6 +174,13 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
   double default_zoom_level_;
 
   TemporaryZoomLevels temporary_zoom_levels_;
+  // Used to track which FrameTreeNodes have independent zoom. A FrameTreeNode
+  // can have a zoom level that is independent from the main frame when it is
+  // displaying content in a GuestView (or possibly a PDF in a OOPIF without a
+  // GuestView), and features::kGuestViewMPArch is enabled. When this feature is
+  // not enabled it means that GuestViews will have their own WebContents, and
+  // so the use of a single zoom level for an entire WebContents suffices.
+  IndependentZoomFrameTreeNodes independent_zoom_frame_tree_nodes_;
 
   HostZoomLevels host_zoom_levels_for_preview_;
 

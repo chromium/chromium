@@ -1,0 +1,14 @@
+{
+   "lang": "en",
+   "type": "Document",
+   "~children": [ {
+      "alt": "That cat is so cute",
+      "type": "Figure",
+      "~children": [ {
+         "type": "P",
+         "~children": [ {
+            "type": "NonStruct"
+         } ]
+      } ]
+   } ]
+}

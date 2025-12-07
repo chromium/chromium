@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_collector.h"
 
+#include "base/byte_count.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "components/performance_manager/public/resource_attribution/page_context.h"
 #include "components/performance_manager/public/resource_attribution/resource_types.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 
 namespace {
@@ -80,12 +82,12 @@ void TabResourceUsageCollector::OnResourceUsageUpdated(
           resource_attribution::AsContext<PageContext>(page_context)
               .GetWebContents();
       if (web_contents) {
-        auto* const tab_resource_usage_tab_helper =
-            TabResourceUsageTabHelper::FromWebContents(web_contents);
-        if (tab_resource_usage_tab_helper) {
-          tab_resource_usage_tab_helper->SetMemoryUsageInBytes(
-              memory_result->private_footprint_kb * 1024);
-          did_resource_update = true;
+        if (auto* tab =
+                tabs::TabInterface::MaybeGetFromContents(web_contents)) {
+          if (auto* const helper = TabResourceUsageTabHelper::From(tab)) {
+            helper->SetMemoryUsage(memory_result->private_footprint);
+            did_resource_update = true;
+          }
         }
       }
     }

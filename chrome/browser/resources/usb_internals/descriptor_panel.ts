@@ -266,7 +266,7 @@ export class DescriptorPanel {
    * @param offset The start offset of the Microsoft OS 2.0
    *     descriptor set information.
    */
-  private async renderMsOs20DescriptorVendorSpecific_(
+  private renderMsOs20DescriptorVendorSpecific_(
       rawData: Uint8Array, offset: number, item: CrTreeItemElement) {
     // Use the vendor specified code and the length of Microsoft OS 2.0
     // descriptor Set that contained in Microsoft OS 2.0 descriptor Set Info
@@ -301,7 +301,7 @@ export class DescriptorPanel {
    * @param offset The start offset of the Microsoft OS 2.0
    *     descriptor set information.
    */
-  private async renderMsOs20DescriptorSetAltEnum_(
+  private renderMsOs20DescriptorSetAltEnum_(
       rawData: Uint8Array, offset: number, item: CrTreeItemElement) {
     // Use the vendor specified code, alternate enumeration code to send a
     // Microsoft OS 2.0 set alternate enumeration command.
@@ -500,7 +500,7 @@ export class DescriptorPanel {
    * and raw form.
    * @param offset The start offset of the device descriptor.
    */
-  private async renderDeviceDescriptor_(
+  private renderDeviceDescriptor_(
       rawDataTreeRoot: CrTreeElement, rawDataByteElement: HTMLElement,
       rawData: Uint8Array, offset: number) {
     const fields = [
@@ -634,7 +634,7 @@ export class DescriptorPanel {
    * view and raw form.
    * @param offset The start offset of the configuration descriptor.
    */
-  private async renderConfigurationDescriptor_(
+  private renderConfigurationDescriptor_(
       rawDataTreeRoot: CrTreeElement, rawDataByteElement: HTMLElement,
       rawData: Uint8Array, offset: number) {
     const fields = [
@@ -1144,7 +1144,7 @@ export class DescriptorPanel {
    * tree view and raw form.
    * @param offset The start offset of the BOS descriptor.
    */
-  private async renderDeviceCapabilityDescriptor_(
+  private renderDeviceCapabilityDescriptor_(
       rawDataTreeRoot: CrTreeElement, rawDataByteElement: HTMLElement,
       rawData: Uint8Array, offset: number, indexDevCapability: number) {
     switch (rawData[offset + BOS_DESCRIPTOR_DEVICE_CAPABILITY_TYPE_OFFSET]) {
@@ -2248,7 +2248,7 @@ export class DescriptorPanel {
   /**
    * Renders a view to display response data in hex format.
    */
-  private async renderTestingData_(rawData: Uint8Array) {
+  private renderTestingData_(rawData: Uint8Array) {
     const displayElement = addNewDescriptorDisplayElement(this.rootElement_);
     const rawDataTreeRoot = displayElement.rawDataTreeRoot;
     rawDataTreeRoot.style.display = 'none';
@@ -2310,6 +2310,8 @@ export class DescriptorPanel {
         case INPUT_TYPE_HEX_BYTE:
           directionInputElement =
               inputTableRow.querySelector('#query-request-type');
+          break;
+        default:
           break;
       }
       assert(directionInputElement);
@@ -2438,8 +2440,9 @@ function getRequestType(inputRow: HTMLElement, inputType: number): string {
           return 'CLASS';
         case 2:
           return 'VENDOR';
+        default:
+          return '';
       }
-      return '';
     default:
       return '';
   }
@@ -2470,8 +2473,9 @@ function getRequestTypeRecipient(
           return 'ENDPOINT';
         case 3:
           return 'OTHER';
+        default:
+          return '';
       }
-      return '';
     default:
       return '';
   }
@@ -2499,8 +2503,9 @@ function getRequestTypeDirection(
           return 'Host-to-Device';
         case CONTROL_TRANSFER_DIRECTION_DEVICE_TO_HOST:
           return 'Device-to-Host';
+        default:
+          return 'Device-to-Host';
       }
-      return 'Device-to-Host';
     default:
       return 'Device-to-Host';
   }
@@ -2833,6 +2838,8 @@ function checkTransferSuccess(
     case UsbTransferStatus.PERMISSION_DENIED:
       failReason = 'Permission denied';
       break;
+    default:
+      break;
   }
   // Response data will be null if |status| is neither COMPLETED, BABBLE, or
   // SHORT_PACKET. Throws an error to stop rendering response data.
@@ -3075,8 +3082,9 @@ export function renderClassCodeWithDescription(classCode: number): string {
       return `${classCode} (Application Specific)`;
     case 0xFF:
       return `${classCode} (Vendor Specific)`;
+    default:
+      return `${classCode}`;
   }
-  return `${classCode}`;
 }
 
 /**

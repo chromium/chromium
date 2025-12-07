@@ -50,6 +50,9 @@ found in the LICENSE file.
     <PreferenceCategory
         android:key="site_permissions"
         android:title="@string/website_settings_permissions_category" />
+    <PreferenceCategory
+        android:key="file_editing_grants"
+        android:title="@string/website_settings_file_editing_grants_category" />
 
     <org.chromium.components.browser_ui.settings.ButtonPreference
         android:key="reset_site_button" />

@@ -46,7 +46,7 @@ class WinHttpUrlFetcher {
       const base::Value::Dict& request_dict,
       const base::TimeDelta& request_timeout,
       unsigned int request_retries,
-      std::optional<base::Value>* request_result);
+      std::optional<base::Value::Dict>* request_result);
 
   virtual ~WinHttpUrlFetcher();
 

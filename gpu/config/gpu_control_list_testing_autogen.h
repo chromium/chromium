@@ -11,11 +11,13 @@
 #ifndef GPU_CONFIG_GPU_CONTROL_LIST_TESTING_AUTOGEN_H_
 #define GPU_CONFIG_GPU_CONTROL_LIST_TESTING_AUTOGEN_H_
 
+#include <array>
+
 #include "gpu/config/gpu_control_list.h"
 
 namespace gpu {
-extern const size_t kGpuControlListTestingEntryCount;
-extern const GpuControlList::Entry kGpuControlListTestingEntries[];
+extern const std::array<GpuControlList::Entry, 87>&
+GetGpuControlListTestingEntries();
 }  // namespace gpu
 
 #endif  // GPU_CONFIG_GPU_CONTROL_LIST_TESTING_AUTOGEN_H_

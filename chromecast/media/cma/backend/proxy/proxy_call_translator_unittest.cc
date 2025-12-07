@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
@@ -201,8 +202,8 @@ TEST_F(ProxyCallTranslatorTest, TestExternalPushBuffer) {
   scoped_refptr<CastDecoderBufferImpl> buffer(
       new CastDecoderBufferImpl(3, StreamId::kPrimary));
   buffer->writable_data()[0] = 1;
-  buffer->writable_data()[1] = 2;
-  buffer->writable_data()[2] = 3;
+  UNSAFE_TODO(buffer->writable_data()[1]) = 2;
+  UNSAFE_TODO(buffer->writable_data()[2]) = 3;
   EXPECT_EQ(translator_.PushBuffer(buffer, 1),
             CmaBackend::BufferStatus::kBufferSuccess);
 

@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.ADD_CLICK_LISTENER;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.ANIMATION_BACKGROUND_COLOR;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.ANIMATION_SOURCE_VIEW;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.BINDING_TOKEN;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.APP_HEADER_HEIGHT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.BROWSER_CONTROLS_STATE_PROVIDER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.COLLAPSE_BUTTON_CONTENT_DESCRIPTION;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.COLLAPSE_CLICK_LISTENER;
@@ -24,18 +24,24 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProp
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.HAIRLINE_VISIBILITY;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.HEADER_TITLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.INITIAL_SCROLL_INDEX;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.IS_CONTENT_SENSITIVE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.IS_DIALOG_VISIBLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.IS_KEYBOARD_VISIBLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.IS_MAIN_CONTENT_VISIBLE;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.IS_SHARE_SHEET_VISIBLE;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.IS_TAB_GROUP_SHARED;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.MENU_CLICK_LISTENER;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.PAGE_KEY_LISTENER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.PRIMARY_COLOR;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SCRIMVIEW_CLICK_RUNNABLE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SEND_FEEDBACK_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SHARE_BUTTON_CLICK_LISTENER;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SHARE_BUTTON_STRING_RES;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SHARE_IMAGE_TILES_CLICK_LISTENER;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SHOW_IMAGE_TILES;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SHOW_SEND_FEEDBACK;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SHOW_SHARE_BUTTON;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.SUPPRESS_ACCESSIBILITY;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.TAB_GROUP_COLOR_ID;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.TINT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.TITLE_CURSOR_VISIBILITY;
@@ -44,15 +50,16 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProp
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.UNGROUP_BAR_STATUS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.VISIBILITY_LISTENER;
 
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.ui.base.ViewUtils;
@@ -60,17 +67,18 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** ViewBinder for TabGridDialog. */
+@NullMarked
 class TabGridDialogViewBinder {
     /** ViewHolder class to get access to all {@link View}s inside the TabGridDialog. */
     public static class ViewHolder {
         public final TabGridDialogToolbarView toolbarView;
-        public final RecyclerView contentView;
-        @Nullable public TabGridDialogView dialogView;
+        public final TabListRecyclerView contentView;
+        public final TabGridDialogView dialogView;
 
         ViewHolder(
                 TabGridDialogToolbarView toolbarView,
-                RecyclerView contentView,
-                @Nullable TabGridDialogView dialogView) {
+                TabListRecyclerView contentView,
+                TabGridDialogView dialogView) {
             this.toolbarView = toolbarView;
             this.contentView = contentView;
             this.dialogView = dialogView;
@@ -79,49 +87,18 @@ class TabGridDialogViewBinder {
 
     /**
      * Binds the given model to the given view, updating the payload in propertyKey.
-     * @param model The model to use.
+     *
+     * @param model The model the property was changed on.
      * @param viewHolder The ViewHolder to use.
      * @param propertyKey The key for the property to update for.
      */
     public static void bind(PropertyModel model, ViewHolder viewHolder, PropertyKey propertyKey) {
-        // The TabGridDialogView is effectively a singleton in the UI with multiple Mediators and
-        // PropertyModel's attempting to managed it. This BINDING_TOKEN system prevents collisions.
-        //
-        // Only one PropertyModel should be binding to the DialogView at a time. To enforce this
-        // the {@link TabGridDialogMediator} currently using the view must provide its hashCode as
-        // a BINDING_TOKEN.
-        final Integer bindingToken = model.get(BINDING_TOKEN);
-        final Integer oldBindingToken = viewHolder.dialogView.getBindingToken();
-        if (BINDING_TOKEN == propertyKey) {
-            if (oldBindingToken != null && oldBindingToken.equals(bindingToken)) {
-                return;
-            }
-
-            viewHolder.dialogView.setBindingToken(bindingToken);
-            if (bindingToken == null) return;
-
-            // Re-bind if the binding token ever changes.
-            for (PropertyKey key : TabGridDialogProperties.ALL_KEYS) {
-                if (BINDING_TOKEN == key) continue;
-
-                bind(model, viewHolder, key);
-            }
-        } else if (bindingToken == null || oldBindingToken == null) {
-            return;
-        } else if (!bindingToken.equals(oldBindingToken)) {
-            assert false
-                    : "Attempting to update a property of TabGridDialog without binding token.";
-            return;
-        }
-
         // The null checks in the following blocks are there for if
         // 1) The dialogView is not initialized.
-        // 2) ALL_KEYS are being re-bound upon changing BINDING_TOKEN and a value is unset in the
-        //    newly bound model.
         if (COLLAPSE_CLICK_LISTENER == propertyKey) {
-            viewHolder.toolbarView.setLeftButtonOnClickListener(model.get(COLLAPSE_CLICK_LISTENER));
+            viewHolder.toolbarView.setBackButtonOnClickListener(model.get(COLLAPSE_CLICK_LISTENER));
         } else if (ADD_CLICK_LISTENER == propertyKey) {
-            viewHolder.toolbarView.setRightButtonOnClickListener(model.get(ADD_CLICK_LISTENER));
+            viewHolder.toolbarView.setNewTabButtonOnClickListener(model.get(ADD_CLICK_LISTENER));
         } else if (HEADER_TITLE == propertyKey) {
             if (model.get(HEADER_TITLE) != null) {
                 viewHolder.toolbarView.setTitle(model.get(HEADER_TITLE));
@@ -132,6 +109,8 @@ class TabGridDialogViewBinder {
                 ((FrameLayout.LayoutParams) params).topMargin = model.get(CONTENT_TOP_MARGIN);
                 ViewUtils.requestLayout(viewHolder.contentView, "TabGridDialogViewBinder.bind");
             }
+        } else if (APP_HEADER_HEIGHT == propertyKey) {
+            viewHolder.dialogView.setAppHeaderHeight(model.get(APP_HEADER_HEIGHT));
         } else if (PRIMARY_COLOR == propertyKey) {
             viewHolder.toolbarView.setContentBackgroundColor(model.get(PRIMARY_COLOR));
             viewHolder.contentView.setBackgroundColor(model.get(PRIMARY_COLOR));
@@ -142,7 +121,7 @@ class TabGridDialogViewBinder {
         } else if (SCRIMVIEW_CLICK_RUNNABLE == propertyKey) {
             viewHolder.dialogView.setScrimClickRunnable(model.get(SCRIMVIEW_CLICK_RUNNABLE));
         } else if (IS_DIALOG_VISIBLE == propertyKey) {
-            if (model.get(IS_DIALOG_VISIBLE)) {
+            if (Boolean.TRUE.equals(model.get(IS_DIALOG_VISIBLE))) {
                 viewHolder.dialogView.resetDialog(viewHolder.toolbarView, viewHolder.contentView);
                 viewHolder.dialogView.showDialog();
             } else {
@@ -194,7 +173,7 @@ class TabGridDialogViewBinder {
             }
         } else if (INITIAL_SCROLL_INDEX == propertyKey) {
             if (model.get(INITIAL_SCROLL_INDEX) != null) {
-                int index = (Integer) model.get(INITIAL_SCROLL_INDEX);
+                int index = model.get(INITIAL_SCROLL_INDEX);
                 RecyclerView view = viewHolder.contentView;
                 if (view.getWidth() == 0 || view.getHeight() == 0) {
                     // If layout hasn't happened post the scroll index change until layout happens.
@@ -228,7 +207,7 @@ class TabGridDialogViewBinder {
         } else if (IS_KEYBOARD_VISIBLE == propertyKey) {
             viewHolder.toolbarView.updateKeyboardVisibility(model.get(IS_KEYBOARD_VISIBLE));
         } else if (COLLAPSE_BUTTON_CONTENT_DESCRIPTION == propertyKey) {
-            viewHolder.toolbarView.setLeftButtonContentDescription(
+            viewHolder.toolbarView.setBackButtonContentDescription(
                     model.get(COLLAPSE_BUTTON_CONTENT_DESCRIPTION));
         } else if (SHARE_BUTTON_CLICK_LISTENER == propertyKey) {
             viewHolder.toolbarView.setShareButtonClickListener(
@@ -236,36 +215,41 @@ class TabGridDialogViewBinder {
         } else if (SHARE_IMAGE_TILES_CLICK_LISTENER == propertyKey) {
             viewHolder.toolbarView.setImageTilesClickListener(
                     model.get(SHARE_IMAGE_TILES_CLICK_LISTENER));
-        } else if (IS_TAB_GROUP_SHARED == propertyKey) {
-            boolean isTabGroupShared = model.get(IS_TAB_GROUP_SHARED);
-            boolean isIncognito = model.get(IS_INCOGNITO);
-            boolean showShareButton = !isTabGroupShared && !isIncognito;
-            boolean showImageTiles = isTabGroupShared && !isIncognito;
-            viewHolder.toolbarView.setShareButtonVisibility(showShareButton);
-            viewHolder.toolbarView.setImageTilesVisibility(showImageTiles);
+        } else if (SHOW_SHARE_BUTTON == propertyKey) {
+            viewHolder.toolbarView.setShareButtonVisibility(model.get(SHOW_SHARE_BUTTON));
+        } else if (SHARE_BUTTON_STRING_RES == propertyKey) {
+            viewHolder.toolbarView.setShareButtonStringRes(model.get(SHARE_BUTTON_STRING_RES));
+        } else if (SHOW_IMAGE_TILES == propertyKey) {
+            viewHolder.toolbarView.setImageTilesVisibility(model.get(SHOW_IMAGE_TILES));
         } else if (TAB_GROUP_COLOR_ID == propertyKey) {
             viewHolder.toolbarView.setColorIconColor(
                     model.get(TAB_GROUP_COLOR_ID), model.get(IS_INCOGNITO));
         } else if (COLOR_ICON_CLICK_LISTENER == propertyKey) {
             viewHolder.toolbarView.setColorIconOnClickListener(
                     model.get(COLOR_ICON_CLICK_LISTENER));
-        } else if (IS_SHARE_SHEET_VISIBLE == propertyKey) {
-            if (!model.get(IS_SHARE_SHEET_VISIBLE) && model.get(IS_DIALOG_VISIBLE)) {
-                // Fit the scrim to the TabGridDialog again after the bottom sheet visibility
-                // changes.
-                viewHolder.dialogView.refreshScrim();
-            }
-        } else if (ANIMATION_BACKGROUND_COLOR == propertyKey) {
-            // Only set in LIST mode not GRID mode. Will always be set in LIST mode. Mode is not
-            // mutable without restarting the app.
-            if (model.get(ANIMATION_BACKGROUND_COLOR) != null) {
-                viewHolder.dialogView.updateAnimationBackgroundColor(
-                        model.get(ANIMATION_BACKGROUND_COLOR));
-            }
         } else if (FORCE_ANIMATION_TO_FINISH == propertyKey) {
             if (model.get(FORCE_ANIMATION_TO_FINISH)) {
                 viewHolder.dialogView.forceAnimationToFinish();
             }
+        } else if (IS_CONTENT_SENSITIVE == propertyKey) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                viewHolder.dialogView.setContentSensitivity(
+                        model.get(IS_CONTENT_SENSITIVE)
+                                ? View.CONTENT_SENSITIVITY_SENSITIVE
+                                : View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
+            }
+        } else if (SHOW_SEND_FEEDBACK == propertyKey) {
+            viewHolder.dialogView.setSendFeedbackVisible(model.get(SHOW_SEND_FEEDBACK));
+        } else if (SEND_FEEDBACK_RUNNABLE == propertyKey) {
+            viewHolder.dialogView.setSendFeedbackRunnable(model.get(SEND_FEEDBACK_RUNNABLE));
+        } else if (PAGE_KEY_LISTENER == propertyKey) {
+            viewHolder.contentView.setPageKeyListenerCallback(model.get(PAGE_KEY_LISTENER));
+        } else if (SUPPRESS_ACCESSIBILITY == propertyKey) {
+            int important =
+                    model.get(SUPPRESS_ACCESSIBILITY)
+                            ? View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
+                            : View.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+            viewHolder.dialogView.setImportantForAccessibility(important);
         }
     }
 
@@ -274,6 +258,7 @@ class TabGridDialogViewBinder {
             RecyclerView view,
             int index) {
         LinearLayoutManager layoutManager = (LinearLayoutManager) view.getLayoutManager();
+        assumeNonNull(layoutManager);
         int offset = computeOffset(view, layoutManager, browserControlsStateProvider);
         layoutManager.scrollToPositionWithOffset(index, offset);
     }
@@ -284,7 +269,7 @@ class TabGridDialogViewBinder {
             BrowserControlsStateProvider browserControlsStateProvider) {
         int width = view.getWidth();
         int height = view.getHeight();
-        int cardHeight = 0;
+        final int cardHeight;
         if (layoutManager instanceof GridLayoutManager) {
             int cardWidth = width / ((GridLayoutManager) layoutManager).getSpanCount();
             cardHeight =

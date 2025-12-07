@@ -4,13 +4,15 @@
 
 #import "ios/chrome/browser/sad_tab/ui_bundled/sad_tab_coordinator.h"
 
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/lens/model/lens_browser_agent.h"
+#import "ios/chrome/browser/sad_tab/ui_bundled/sad_tab_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
-#import "ios/chrome/browser/sad_tab/ui_bundled/sad_tab_view_controller.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -24,17 +26,21 @@
 class SadTabCoordinatorTest : public PlatformTest {
  protected:
   SadTabCoordinatorTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     base_view_controller_ = [[UIViewController alloc] init];
     UILayoutGuide* guide = [[NamedGuide alloc] initWithName:kContentAreaGuide];
     [base_view_controller_.view addLayoutGuide:guide];
     AddSameConstraints(guide, base_view_controller_.view);
     LensBrowserAgent::CreateForBrowser(browser_.get());
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
+    // FullscreenController depends on ToolbarsSizeBrowserAgent, so the agent
+    // must be created first. Please maintain this order.
+    ToolbarsSizeBrowserAgent::CreateForBrowser(browser_.get());
+    FullscreenController::CreateForBrowser(browser_.get());
   }
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   UIViewController* base_view_controller_;
 };
@@ -144,7 +150,8 @@ TEST_F(SadTabCoordinatorTest, FirstFailureInIncognito) {
   web::FakeWebState web_state;
   web_state.WasShown();
   std::unique_ptr<Browser> otr_browser = std::make_unique<TestBrowser>(
-      browser_->GetBrowserState()->GetOffTheRecordChromeBrowserState());
+      browser_->GetProfile()->GetOffTheRecordProfile());
+  FullscreenController::CreateForBrowser(otr_browser.get());
   SadTabCoordinator* coordinator = [[SadTabCoordinator alloc]
       initWithBaseViewController:base_view_controller_
                          browser:otr_browser.get()];
@@ -171,7 +178,8 @@ TEST_F(SadTabCoordinatorTest, FirstFailureInIncognito) {
 // Tests SadTabViewController state for the repeated failure in incognito mode.
 TEST_F(SadTabCoordinatorTest, ShowFirstFailureInIncognito) {
   std::unique_ptr<Browser> otr_browser = std::make_unique<TestBrowser>(
-      browser_->GetBrowserState()->GetOffTheRecordChromeBrowserState());
+      browser_->GetProfile()->GetOffTheRecordProfile());
+  FullscreenController::CreateForBrowser(otr_browser.get());
   SadTabCoordinator* coordinator = [[SadTabCoordinator alloc]
       initWithBaseViewController:base_view_controller_
                          browser:otr_browser.get()];

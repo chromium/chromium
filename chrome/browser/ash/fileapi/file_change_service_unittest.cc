@@ -9,7 +9,6 @@
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/fileapi/file_change_service_factory.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "mojo/public/cpp/system/string_data_source.h"
@@ -233,14 +233,15 @@ class FileChangeServiceTest : public BrowserWithTestWindowTest {
   ~FileChangeServiceTest() override = default;
 
   // Creates and returns a new profile for the specified `name`.
-  TestingProfile* CreateLoggedInUserProfile(const std::string& name) {
-    LogIn(name);
-    return CreateProfile(name);
+  TestingProfile* CreateLoggedInUserProfile(std::string_view name,
+                                            const GaiaId& gaia_id) {
+    LogIn(name, gaia_id);
+    return CreateProfile(std::string(name));
   }
 
  private:
   // BrowserWithTestWindowTest:
-  std::string GetDefaultProfileName() override {
+  std::optional<std::string> GetDefaultProfileName() override {
     return "promary_profile@test";
   }
 };
@@ -261,7 +262,9 @@ TEST_F(FileChangeServiceTest, CreatesServiceInstancesPerProfile) {
 
   // `FileChangeService` should be created as needed for additional profiles.
   constexpr char kSecondaryProfileName[] = "secondary_profile@test";
-  auto* secondary_profile = CreateLoggedInUserProfile(kSecondaryProfileName);
+  const GaiaId kFakeGaia2("fakegaia2");
+  auto* secondary_profile =
+      CreateLoggedInUserProfile(kSecondaryProfileName, kFakeGaia2);
   auto* secondary_profile_service = factory->GetService(secondary_profile);
   ASSERT_TRUE(secondary_profile_service);
 

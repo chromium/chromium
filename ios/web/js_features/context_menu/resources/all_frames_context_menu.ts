@@ -7,8 +7,8 @@
  */
 
 import {getSurroundingText} from '//ios/web/js_features/context_menu/resources/surrounding_text.js';
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
-import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js'
+import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 // The minimum opacity for an element to be considered as opaque. Elements
 // with a higher opacity will prevent selection of images underneath.
@@ -19,7 +19,7 @@ const OPACITY_THRESHOLD = 0.9;
 const TRANSPARENCY_THRESHOLD = 0.1;
 
 // The maximum depth to search for elements at any point.
-const MAX_SEARCH_DEPTH = 8;
+const MAX_SEARCH_DEPTH = 20;
 
 /**
  * Response from `findElementAtPoint` describing an image element.
@@ -96,8 +96,8 @@ type FindElementResult = FindElementImgResult|FindElementLinkResult|
  * Represents local `x` and `y` coordinates in `window` space.
  */
 class WindowCoordinates {
-  public readonly viewPortX: number;
-  public readonly viewPortY: number;
+  readonly viewPortX: number;
+  readonly viewPortY: number;
 
   constructor(public readonly x: number, public readonly y: number) {
     this.viewPortX = x - window.pageXOffset;
@@ -213,7 +213,7 @@ function findElementAtPointInPageCoordinates(
     requestId: string, x: number, y: number) {
   const hitCoordinates = spiralCoordinates(x, y);
   const processedElements = new Set<Element>();
-  for (let coordinates of hitCoordinates) {
+  for (const coordinates of hitCoordinates) {
     const coordinateDetails =
         new WindowCoordinates(coordinates.x, coordinates.y);
     const useViewPortCoordinates = elementFromPointIsUsingViewPortCoordinates();
@@ -251,7 +251,19 @@ function findElementAtPoint(
     requestId: string, root: Document|ShadowRoot,
     processedElements: Set<Element>, pointX: number, pointY: number,
     centerX: number, centerY: number): boolean {
+  // Make chrome_annotation temporary available for `elementsFromPoint`.
+  const annotations = document.querySelectorAll('chrome_annotation');
+  for (const annotation of annotations) {
+    if (annotation instanceof HTMLElement) {
+      annotation.style.pointerEvents = 'all';
+    }
+  }
   const elements = root.elementsFromPoint(pointX, pointY);
+  for (const annotation of annotations) {
+    if (annotation instanceof HTMLElement) {
+      annotation.style.pointerEvents = 'none';
+    }
+  }
   let foundLinkElement: HTMLAnchorElement|SVGAElement|null = null;
   let foundTextElement: Element|null = null;
   let foundImageElement: HTMLElement|null = null;
@@ -423,11 +435,13 @@ function processElementForFindElementAtPoint(
  * Returns true if given node has at least one non empty child text node.
  */
 function isTextElement(node: Node) {
-  if (!node.hasChildNodes())
+  if (!node.hasChildNodes()) {
     return false;
-  for (let subnode of node.childNodes) {
-    if (subnode.nodeType === Node.TEXT_NODE && subnode.textContent !== '')
+  }
+  for (const subnode of node.childNodes) {
+    if (subnode.nodeType === Node.TEXT_NODE && subnode.textContent !== '') {
       return true;
+    }
   }
   return false;
 }
@@ -630,10 +644,11 @@ window.addEventListener('message', function(message) {
   }
 });
 
-// Call contextMenuAllFrames on gCrWeb directly to prevent code duplication
-// that using export/import would create.
-gCrWeb.contextMenuAllFrames = {
-  findElementAtPointInPageCoordinates,
-  // For testing only:
-  getSurroundingText,
-};
+const contextMenuAllFrames = new CrWebApi();
+
+contextMenuAllFrames.addFunction(
+    'findElementAtPointInPageCoordinates', findElementAtPointInPageCoordinates);
+// For testing only
+contextMenuAllFrames.addFunction('getSurroundingText', getSurroundingText);
+
+gCrWeb.registerApi('contextMenuAllFrames', contextMenuAllFrames);

@@ -5,8 +5,6 @@
 #ifndef MEDIA_GPU_WINDOWS_D3D12_VIDEO_DECODER_WRAPPER_H_
 #define MEDIA_GPU_WINDOWS_D3D12_VIDEO_DECODER_WRAPPER_H_
 
-#include <wrl.h>
-
 #include <memory>
 
 #include "media/base/video_decoder_config.h"
@@ -24,7 +22,8 @@ class D3D12VideoDecoderWrapper : public D3DVideoDecoderWrapper {
       ComD3D12VideoDevice video_device,
       VideoDecoderConfig config,
       uint8_t bit_depth,
-      VideoChromaSampling chroma_sampling);
+      VideoChromaSampling chroma_sampling,
+      int max_decode_requests);
 
  protected:
   explicit D3D12VideoDecoderWrapper(MediaLog* media_log);

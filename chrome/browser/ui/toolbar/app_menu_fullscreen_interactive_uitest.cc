@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -68,10 +69,10 @@ class AppMenuFullscreenInteractiveTest : public InteractiveBrowserTest {
     fullscreen_accelerator_ =
         ui::Accelerator(ui::VKEY_F, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN);
 #else
-    chrome::AcceleratorProviderForBrowser(browser())
+    AcceleratorProviderForBrowser(browser())
         ->GetAcceleratorForCommandId(IDC_FULLSCREEN, &fullscreen_accelerator_);
 #endif
-    chrome::AcceleratorProviderForBrowser(browser())
+    AcceleratorProviderForBrowser(browser())
         ->GetAcceleratorForCommandId(IDC_CLOSE_TAB, &close_tab_accelerator_);
   }
 
@@ -101,8 +102,9 @@ class AppMenuFullscreenInteractiveTest : public InteractiveBrowserTest {
             [](std::unique_ptr<ui_test_utils::FullscreenWaiter>& waiter,
                bool is_fullscreen, Browser* browser,
                views::View* browser_view) {
-              auto* fullscreen_controller =
-                  browser->exclusive_access_manager()->fullscreen_controller();
+              auto* fullscreen_controller = browser->GetFeatures()
+                                                .exclusive_access_manager()
+                                                ->fullscreen_controller();
 
               // Wait for fullscreen transition complete.
               // Fullscreen transition is an async process on Mac, which
@@ -126,7 +128,7 @@ class AppMenuFullscreenInteractiveTest : public InteractiveBrowserTest {
               if (is_fullscreen) {
                 do {
                   auto display =
-                      display::Screen::GetScreen()->GetDisplayNearestWindow(
+                      display::Screen::Get()->GetDisplayNearestWindow(
                           browser->window()->GetNativeWindow());
                   auto display_size = display.bounds().size();
                   auto workarea_size = display.work_area().size();
@@ -200,16 +202,14 @@ IN_PROC_BROWSER_TEST_F(AppMenuFullscreenInteractiveTest, ContextMenu) {
       CheckFullscreenForBrowser(waiter1, true),
       // 4. Right click anywhere on the page to open the context menu. This
       // chooses the center of the browser window, which is fine.
-      MoveMouseTo(kBrowserViewElementId), ClickMouse(ui_controls::RIGHT),
-      // 5. Make sure context menu is displayed correctly at the expected
-      // location when chrome is in full screen mode.
-      // WaitForShow and FlushEvents is required to prevent re-enter
-      // views::MenuController::OpenMenu from the same call stack during the
-      // NotifyElementShown.
-      InAnyContext(WaitForShow(RenderViewContextMenu::kExitFullscreenMenuItem)),
-      FlushEvents(), CreateFullscreenWaiter(waiter2, false),
-      InAnyContext(
-          SelectMenuItem(RenderViewContextMenu::kExitFullscreenMenuItem)),
+      CreateFullscreenWaiter(waiter2, false),
+      MoveMouseTo(kBrowserViewElementId),
+      MayInvolveNativeContextMenu(
+          // 5. Make sure context menu is displayed correctly at the expected
+          // location when chrome is in full screen mode.
+          ClickMouse(ui_controls::RIGHT),
+          InAnyContext(
+              SelectMenuItem(RenderViewContextMenu::kExitFullscreenMenuItem))),
       CheckFullscreenForBrowser(waiter2, false));
 }
 

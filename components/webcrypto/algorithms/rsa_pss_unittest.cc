@@ -5,6 +5,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
+
 #include "base/strings/string_number_conversions.h"
 #include "components/webcrypto/algorithm_dispatch.h"
 #include "components/webcrypto/algorithms/test_helpers.h"
@@ -179,7 +181,7 @@ struct RsaPssKnownAnswer {
   const char* signature;
 };
 
-const RsaPssKnownAnswer kRsaPssKnownAnswers[] = {
+constexpr auto kRsaPssKnownAnswers = std::to_array<RsaPssKnownAnswer>({
     // Example 1.1 from pss-vect.txt in
     // ftp://ftp.rsasecurity.com/pub/pkcs/pkcs-1/pkcs-1v2-1-vec.zip
     {blink::kWebCryptoAlgorithmIdSha1, kKey1,
@@ -219,7 +221,7 @@ const RsaPssKnownAnswer kRsaPssKnownAnswers[] = {
      "070ebf79c33fd86c2d608be9438b3d420d09535b97cd3d846ecaf8f6551cdf93197e9f8fb"
      "048044473ab41a801e9f7fc983c62b324361dade9f71a65952bd35c59faaa4d6ff462f68a"
      "6c4ec0b428aa47336f2178aeb276136563b7d"},
-};
+});
 
 blink::WebCryptoKey RsaPssKeyFromBytes(blink::WebCryptoAlgorithmId hash,
                                        const char* key) {

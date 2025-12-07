@@ -34,7 +34,6 @@
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/prefs/pref_service.h"
-#include "components/variations/service/limited_entropy_synthetic_trial.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "components/variations/variations_associated_data.h"
@@ -48,8 +47,6 @@
 #include "chrome/browser/android/metrics/uma_session_stats.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
-#else
-#include "chrome/browser/ui/browser_list.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
@@ -60,14 +57,10 @@
 #include "components/crash/core/app/crashpad.h"
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
-#include "components/metrics/structured/recorder.h"               // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_params_proxy.h"
-#endif
+#include "components/metrics/structured/recorder.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace metrics {
 namespace internal {
@@ -97,22 +90,6 @@ const char kRateParamName[] = "sampling_rate_per_mille";
 }  // namespace metrics
 
 namespace {
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class UmaInitParamsResult {
-  // Both the client ID and entropy sources were found.
-  kClientIdAndEntropySources = 0,
-  // Only the client ID was found.
-  kClientIdOnly = 1,
-  // Only the entropy sources were found.
-  kEntropySourcesOnly = 2,
-  // Neither the client ID nor the entropy sources were found.
-  kNone = 3,
-  kMaxValue = kNone,
-};
-#endif
 
 // Posts |GoogleUpdateSettings::StoreMetricsClientInfo| on blocking pool thread
 // because it needs access to IO and cannot work from UI thread.
@@ -160,7 +137,7 @@ bool IsClientInSampleImpl(PrefService* local_state) {
       metrics::internal::kMetricsReportingFeature);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Callback to update the metrics reporting state when the Chrome OS metrics
 // reporting setting changes.
 void OnCrosMetricsReportingSettingChange(
@@ -192,7 +169,7 @@ class ChromeMetricsServicesManagerClient::ChromeEnabledStateProvider
   ChromeEnabledStateProvider& operator=(const ChromeEnabledStateProvider&) =
       delete;
 
-  ~ChromeEnabledStateProvider() override {}
+  ~ChromeEnabledStateProvider() override = default;
 
   bool IsConsentGiven() const override {
     return ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled(
@@ -216,7 +193,8 @@ ChromeMetricsServicesManagerClient::ChromeMetricsServicesManagerClient(
   DCHECK(local_state);
 }
 
-ChromeMetricsServicesManagerClient::~ChromeMetricsServicesManagerClient() {}
+ChromeMetricsServicesManagerClient::~ChromeMetricsServicesManagerClient() =
+    default;
 
 metrics::MetricsStateManager*
 ChromeMetricsServicesManagerClient::GetMetricsStateManagerForTesting() {
@@ -294,7 +272,7 @@ bool ChromeMetricsServicesManagerClient::GetSamplingRatePerMille(int* rate) {
   return true;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void ChromeMetricsServicesManagerClient::OnCrosSettingsCreated() {
   // Listen for changes to metrics reporting state.
   reporting_setting_subscription_ =
@@ -307,21 +285,14 @@ void ChromeMetricsServicesManagerClient::OnCrosSettingsCreated() {
 }
 #endif
 
-const metrics::EnabledStateProvider&
-ChromeMetricsServicesManagerClient::GetEnabledStateProviderForTesting() {
-  return *enabled_state_provider_;
-}
-
 std::unique_ptr<variations::VariationsService>
-ChromeMetricsServicesManagerClient::CreateVariationsService(
-    variations::SyntheticTrialRegistry* synthetic_trial_registry) {
+ChromeMetricsServicesManagerClient::CreateVariationsService() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return variations::VariationsService::Create(
       std::make_unique<ChromeVariationsServiceClient>(), local_state_,
       GetMetricsStateManager(), switches::kDisableBackgroundNetworking,
       chrome_variations::CreateUIStringOverrider(),
-      base::BindOnce(&content::GetNetworkConnectionTracker),
-      synthetic_trial_registry);
+      base::BindOnce(&content::GetNetworkConnectionTracker));
 }
 
 std::unique_ptr<metrics::MetricsServiceClient>
@@ -349,50 +320,6 @@ ChromeMetricsServicesManagerClient::GetMetricsStateManager() {
     startup_visibility = metrics::StartupVisibility::kForeground;
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    std::string client_id;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Read metrics service client id from ash chrome if it's present.
-    auto* init_params = chromeos::BrowserParamsProxy::Get();
-    const auto& ash_client_id = init_params->MetricsServiceClientId();
-    if (ash_client_id) {
-      client_id = ash_client_id.value();
-    }
-
-    // Sync the randomization seed from Ash Chrome so that the group assignment
-    // is the same on Lacros.
-    variations::LimitedEntropySyntheticTrial::SetSeedFromAsh(
-        local_state_, init_params->LimitedEntropySyntheticTrialSeed());
-
-    // Beginning M120 this should always be there. Note:
-    // The LES numbers are kept stable over the lifetime of the session.
-    // They get read when the system is statrting up in Ash. So they do not
-    // need to be updated at a later time in the session.
-    const crosapi::mojom::EntropySourcePtr& entropy_source =
-        init_params->EntropySource();
-    if (entropy_source) {
-      // This needs to be called before `metrics::MetricsStateManager::Create`.
-      metrics::EntropyState::SetExternalPrefs(
-          local_state_, entropy_source->low_entropy,
-          entropy_source->old_low_entropy, entropy_source->pseudo_low_entropy,
-          entropy_source->limited_entropy_randomization_source.has_value()
-              ? entropy_source->limited_entropy_randomization_source.value()
-              : std::string_view());
-    }
-
-    UmaInitParamsResult init_params_result;
-    if (ash_client_id && entropy_source) {
-      init_params_result = UmaInitParamsResult::kClientIdAndEntropySources;
-    } else if (ash_client_id) {
-      init_params_result = UmaInitParamsResult::kClientIdOnly;
-    } else if (entropy_source) {
-      init_params_result = UmaInitParamsResult::kEntropySourcesOnly;
-    } else {
-      init_params_result = UmaInitParamsResult::kNone;
-    }
-    base::UmaHistogramEnumeration("ChromeOS.Lacros.UmaInitParamsResult",
-                                  init_params_result);
-#endif
-
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
         local_state_, enabled_state_provider_.get(), GetRegistryBackupKey(),
         user_data_dir, startup_visibility,
@@ -401,11 +328,10 @@ ChromeMetricsServicesManagerClient::GetMetricsStateManager() {
                 metrics::EntropyProviderType::kDefault,
             .force_benchmarking_mode =
                 base::CommandLine::ForCurrentProcess()->HasSwitch(
-                    cc::switches::kEnableGpuBenchmarking),
+                    switches::kEnableGpuBenchmarking),
         },
         base::BindRepeating(&PostStoreMetricsClientInfo),
-        base::BindRepeating(&GoogleUpdateSettings::LoadMetricsClientInfo),
-        client_id);
+        base::BindRepeating(&GoogleUpdateSettings::LoadMetricsClientInfo));
   }
   return metrics_state_manager_.get();
 }
@@ -416,12 +342,9 @@ ChromeMetricsServicesManagerClient::GetURLLoaderFactory() {
       ->GetSharedURLLoaderFactory();
 }
 
-bool ChromeMetricsServicesManagerClient::IsMetricsReportingEnabled() {
-  return enabled_state_provider_->IsReportingEnabled();
-}
-
-bool ChromeMetricsServicesManagerClient::IsMetricsConsentGiven() {
-  return enabled_state_provider_->IsConsentGiven();
+const metrics::EnabledStateProvider&
+ChromeMetricsServicesManagerClient::GetEnabledStateProvider() {
+  return *enabled_state_provider_;
 }
 
 bool ChromeMetricsServicesManagerClient::IsOffTheRecordSessionActive() {
@@ -442,9 +365,7 @@ bool ChromeMetricsServicesManagerClient::IsOffTheRecordSessionActive() {
 
   return false;
 #else
-  // Depending directly on BrowserList, since that is the implementation
-  // that we get correct notifications for.
-  return BrowserList::IsOffTheRecordBrowserActive();
+  return ::IsOffTheRecordSessionActive();
 #endif
 }
 

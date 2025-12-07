@@ -41,8 +41,8 @@ import javax.net.ssl.SSLContext;
 public class WebServer implements AutoCloseable {
     private static final String TAG = "WebServer";
 
-    private static Set<WebServer> sInstances = new HashSet<>();
-    private static Set<WebServer> sSecureInstances = new HashSet<>();
+    private static final Set<WebServer> sInstances = new HashSet<>();
+    private static final Set<WebServer> sSecureInstances = new HashSet<>();
 
     private final ServerThread mServerThread;
     private String mServerUri;
@@ -299,7 +299,8 @@ public class WebServer implements AutoCloseable {
         }
     }
 
-    public void setServerHost(String hostname) {
+    /** Changes the host name - returns the fully qualified origin */
+    public String setServerHost(String hostname) {
         try {
             mServerUri =
                     new java.net.URI(
@@ -311,20 +312,20 @@ public class WebServer implements AutoCloseable {
                                     null,
                                     null)
                             .toString();
+            return mServerUri;
         } catch (java.net.URISyntaxException e) {
             Log.wtf(TAG, e.getMessage());
+            return null;
         }
     }
 
     /**
-     * Create and start a local HTTP server instance. Additional must only be true
-     * if an instance was already created. You are responsible for calling
-     * shutdown() on each instance you create.
+     * Create and start a local HTTP server instance. Additional must only be true if an instance
+     * was already created. You are responsible for calling shutdown() on each instance you create.
      *
      * @param port Port number the server must use, or 0 to automatically choose a free port.
      * @param ssl True if the server should be using secure sockets.
      * @param additional True if creating an additional server instance.
-     * @throws Exception
      */
     public WebServer(int port, boolean ssl, boolean additional) throws Exception {
         mPort = port;
@@ -370,7 +371,6 @@ public class WebServer implements AutoCloseable {
      *
      * @param port Port number the server must use, or 0 to automatically choose a free port.
      * @param ssl True if the server should be using secure sockets.
-     * @throws Exception
      */
     public WebServer(int port, boolean ssl) throws Exception {
         this(port, ssl, false);
@@ -421,7 +421,7 @@ public class WebServer implements AutoCloseable {
     }
 
     private class ServerThread extends Thread {
-        private final boolean mIsSsl;
+
         private ServerSocket mSocket;
         private SSLContext mSslContext;
 
@@ -514,7 +514,7 @@ public class WebServer implements AutoCloseable {
 
         public ServerThread(int port, boolean ssl) throws Exception {
             super("ServerThread");
-            mIsSsl = ssl;
+            boolean mIsSsl = ssl;
             // If tests are run back-to-back, it may take time for the port to become available.
             // Retry a few times with a sleep to wait for the port.
             int retry = 3;

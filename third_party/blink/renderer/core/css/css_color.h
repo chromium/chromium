@@ -29,6 +29,7 @@ class CORE_EXPORT CSSColor : public CSSValue {
   Color Value() const { return color_; }
 
   bool Equals(const CSSColor& other) const { return color_ == other.color_; }
+  unsigned CustomHash() const { return color_.GetHash(); }
 
   void TraceAfterDispatch(blink::Visitor* visitor) const {
     CSSValue::TraceAfterDispatch(visitor);

@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "chrome/browser/ui/tabs/tab_enums.h"
+#include "base/byte_count.h"
 #include "chrome/browser/ui/views/tabs/fade_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
@@ -15,16 +15,32 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
 
+namespace tabs {
+enum class TabAlert;
+}  // namespace tabs
+
 struct AlertFooterRowData {
-  std::optional<TabAlertState> alert_state;
+  std::optional<tabs::TabAlert> alert_state;
   bool should_show_discard_status = false;
-  int64_t memory_savings_in_bytes = 0;
+  base::ByteCount memory_savings_in_bytes;
 };
 
 struct PerformanceRowData {
   bool show_memory_usage = false;
   bool is_high_memory_usage = false;
-  int64_t memory_usage_in_bytes = 0;
+  base::ByteCount memory_usage_in_bytes;
+};
+
+struct CollaborationMessagingRowData {
+  bool should_show_collaboration_messaging = false;
+  std::u16string text;
+  ui::ImageModel avatar;
+
+  CollaborationMessagingRowData();
+  ~CollaborationMessagingRowData();
+  CollaborationMessagingRowData(const CollaborationMessagingRowData& other);
+  CollaborationMessagingRowData& operator=(
+      const CollaborationMessagingRowData& other);
 };
 
 template <typename T>
@@ -65,11 +81,20 @@ using FadeWrapper_View_PerformanceRowData =
     FadeWrapper<views::View, PerformanceRowData>;
 DECLARE_TEMPLATE_METADATA(FadeWrapper_View_PerformanceRowData, FadeWrapper);
 
+using FadeWrapper_View_CollaborationMessagingRowData =
+    FadeWrapper<views::View, CollaborationMessagingRowData>;
+DECLARE_TEMPLATE_METADATA(FadeWrapper_View_CollaborationMessagingRowData,
+                          FadeWrapper);
+
 using FooterRow_AlertFooterRowData = FooterRow<AlertFooterRowData>;
 DECLARE_TEMPLATE_METADATA(FooterRow_AlertFooterRowData, FooterRow);
 
 using FooterRow_PerformanceRowData = FooterRow<PerformanceRowData>;
 DECLARE_TEMPLATE_METADATA(FooterRow_PerformanceRowData, FooterRow);
+
+using FooterRow_CollaborationMessagingRowData =
+    FooterRow<CollaborationMessagingRowData>;
+DECLARE_TEMPLATE_METADATA(FooterRow_CollaborationMessagingRowData, FooterRow);
 
 class FadeAlertFooterRow : public FooterRow<AlertFooterRowData> {
   using FooterRowAlertFooterRowData = FooterRow<AlertFooterRowData>;
@@ -97,6 +122,22 @@ class FadePerformanceFooterRow : public FooterRow<PerformanceRowData> {
   void SetData(const PerformanceRowData& data) override;
 };
 
+class FadeCollaborationMessagingFooterRow
+    : public FooterRow<CollaborationMessagingRowData> {
+  using FooterRowCollaborationMessagingRowData =
+      FooterRow<CollaborationMessagingRowData>;
+  METADATA_HEADER(FadeCollaborationMessagingFooterRow,
+                  FooterRowCollaborationMessagingRowData)
+
+ public:
+  explicit FadeCollaborationMessagingFooterRow(bool is_fade_out_view)
+      : FooterRow<CollaborationMessagingRowData>(is_fade_out_view) {}
+  ~FadeCollaborationMessagingFooterRow() override = default;
+
+  // FadeWrapper:
+  void SetData(const CollaborationMessagingRowData& data) override;
+};
+
 class FooterView : public views::View {
   METADATA_HEADER(FooterView, views::View)
 
@@ -106,6 +147,10 @@ class FooterView : public views::View {
   using PerformanceFadeView = FadeView<FadePerformanceFooterRow,
                                        FadePerformanceFooterRow,
                                        PerformanceRowData>;
+  using CollaborationMessagingFadeView =
+      FadeView<FadeCollaborationMessagingFooterRow,
+               FadeCollaborationMessagingFooterRow,
+               CollaborationMessagingRowData>;
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHoverCardFooterElementId);
 
   FooterView();
@@ -113,6 +158,7 @@ class FooterView : public views::View {
 
   void SetAlertData(const AlertFooterRowData& data);
   void SetPerformanceData(const PerformanceRowData& data);
+  void SetCollaborationMessagingData(const CollaborationMessagingRowData& data);
   void SetFade(double percent);
 
   AlertFadeView* GetAlertRowForTesting() { return alert_row_; }
@@ -121,12 +167,18 @@ class FooterView : public views::View {
     return performance_row_;
   }
 
+  CollaborationMessagingFadeView* GetCollaborationMessagingRowForTesting() {
+    return collaboration_messaging_row_;
+  }
+
   views::FlexLayout* flex_layout() { return flex_layout_; }
 
  private:
   raw_ptr<views::FlexLayout> flex_layout_ = nullptr;
   raw_ptr<AlertFadeView> alert_row_ = nullptr;
   raw_ptr<PerformanceFadeView> performance_row_ = nullptr;
+  raw_ptr<CollaborationMessagingFadeView> collaboration_messaging_row_ =
+      nullptr;
 
   void UpdateVisibility();
 };

@@ -5,6 +5,7 @@
 #include "chromeos/ash/services/ime/ime_service.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -45,13 +46,13 @@ class TestDecoderState;
 // the only way to have a stateful fake is to have a global reference to it.
 TestDecoderState* g_test_decoder_state = nullptr;
 
-mojo::ScopedMessagePipeHandle MessagePipeHandleFromInt(uint32_t handle) {
+mojo::ScopedMessagePipeHandle MessagePipeHandleFromInt(uintptr_t handle) {
   return mojo::ScopedMessagePipeHandle(mojo::MessagePipeHandle(handle));
 }
 
 class TestDecoderState : public mojom::ConnectionFactory {
  public:
-  bool InitializeConnectionFactory(uint32_t receiver_pipe_handle) {
+  bool InitializeConnectionFactory(uintptr_t receiver_pipe_handle) {
     connection_factory_.reset();
     connection_factory_.Bind(mojo::PendingReceiver<mojom::ConnectionFactory>(
         MessagePipeHandleFromInt(receiver_pipe_handle)));
@@ -104,7 +105,7 @@ class TestImeSharedLibraryWrapper : public ImeSharedLibraryWrapper {
         .close_proto_mode = []() {},
         .proto_mode_supports =
             [](const char* ime_spec) {
-              return strcmp(kInvalidImeSpec, ime_spec) != 0;
+              return UNSAFE_TODO(strcmp(kInvalidImeSpec, ime_spec)) != 0;
             },
         .proto_mode_activate_ime =
             [](const char* ime_spec, ImeClientDelegate* delegate) {
@@ -114,7 +115,7 @@ class TestImeSharedLibraryWrapper : public ImeSharedLibraryWrapper {
         .init_mojo_mode = [](ImeCrosPlatform* platform) {},
         .close_mojo_mode = []() {},
         .mojo_mode_initialize_connection_factory =
-            [](uint32_t receiver_pipe_handle) {
+            [](uintptr_t receiver_pipe_handle) {
               return g_test_decoder_state->InitializeConnectionFactory(
                   receiver_pipe_handle);
             },
@@ -168,8 +169,8 @@ struct MockInputMethodHost : public mojom::InputMethodHost {
       mojom::KoreanSettingsPtr settings) override {}
   void DEPRECATED_ReportSuggestionOpportunity(
       AssistiveSuggestionMode mode) override {}
-  void ReportHistogramSample(base::Histogram* histogram,
-                             uint16_t value) override {}
+  void DEPRECATED_ReportHistogramSample(mojom::BucketedHistogramPtr histogram,
+                                        uint16_t value) override {}
   void UpdateQuickSettings(
       mojom::InputMethodQuickSettingsPtr settings) override {}
 
@@ -229,8 +230,8 @@ class ImeServiceTest : public testing::Test, public mojom::InputMethodHost {
       mojom::KoreanSettingsPtr settings) override {}
   void DEPRECATED_ReportSuggestionOpportunity(
       AssistiveSuggestionMode mode) override {}
-  void ReportHistogramSample(base::Histogram* histogram,
-                             uint16_t value) override {}
+  void DEPRECATED_ReportHistogramSample(mojom::BucketedHistogramPtr histogram,
+                                        uint16_t value) override {}
   void UpdateQuickSettings(
       mojom::InputMethodQuickSettingsPtr settings) override {}
 

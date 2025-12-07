@@ -5,11 +5,18 @@
 #ifndef EXTENSIONS_BROWSER_EXTENSIONS_BROWSER_INTERFACE_BINDERS_H_
 #define EXTENSIONS_BROWSER_EXTENSIONS_BROWSER_INTERFACE_BINDERS_H_
 
-#include "mojo/public/cpp/bindings/binder_map.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace content {
 class RenderFrameHost;
 }
+
+namespace mojo {
+template <typename>
+class BinderMapWithContext;
+}  // namespace mojo
 
 namespace extensions {
 

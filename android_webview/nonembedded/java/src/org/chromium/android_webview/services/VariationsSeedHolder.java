@@ -58,12 +58,12 @@ public class VariationsSeedHolder {
 
     // A Runnable which handles an individual request for the seed. Must run on mSeedThread.
     private class SeedWriter implements Runnable {
-        private ParcelFileDescriptor mDestination;
+        private final ParcelFileDescriptor mDestination;
 
         // mDestinationDate is the date field of the requester's current seed, in milliseconds since
         // epoch, or Long.MIN_VALUE if the requester has no seed. Only write our seed if our seed is
         // newer than mDestinationDate.
-        private long mDestinationDate;
+        private final long mDestinationDate;
 
         public SeedWriter(ParcelFileDescriptor destination, long date) {
             mDestination = destination;
@@ -100,8 +100,8 @@ public class VariationsSeedHolder {
 
     // A Runnable which updates both mSeed and the service's seed file. Must run on mSeedThread.
     private class SeedUpdater implements Runnable {
-        private SeedInfo mNewSeed;
-        private Runnable mOnFinished;
+        private final SeedInfo mNewSeed;
+        private final Runnable mOnFinished;
 
         public SeedUpdater(SeedInfo newSeed, Runnable onFinished) {
             mNewSeed = newSeed;

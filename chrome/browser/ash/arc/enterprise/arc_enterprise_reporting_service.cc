@@ -6,9 +6,6 @@
 
 #include <utility>
 
-#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
@@ -16,6 +13,9 @@
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 
 // Enable VLOG level 1.
 #undef ENABLED_VLOG_LEVEL
@@ -46,8 +46,7 @@ class ArcEnterpriseReportingServiceFactory
 const char* TimedCloudDpcOpToString(mojom::TimedCloudDpcOp op) {
   switch (op) {
     case mojom::TimedCloudDpcOp::UNKNOWN_OP:
-      NOTREACHED_IN_MIGRATION();  // handled by if-statement in calling method
-      return "";
+      NOTREACHED();  // handled by if-statement in calling method
     case mojom::TimedCloudDpcOp::SETUP_TOTAL:
       return "SetupService.Total";
     case mojom::TimedCloudDpcOp::SETUP_PULL_AND_APPLY_POLICIES:
@@ -70,8 +69,7 @@ const char* TimedCloudDpcOpToString(mojom::TimedCloudDpcOp op) {
       return ""; // Deprecated and unused
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 }  // namespace

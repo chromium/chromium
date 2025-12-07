@@ -29,7 +29,6 @@ using ::base::test::RunOnceCallbackRepeatedly;
 using ::testing::_;
 using ::testing::HasSubstr;
 using ::testing::InSequence;
-using ::testing::Invoke;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
 using ::testing::SaveArg;
@@ -40,7 +39,7 @@ namespace media {
 
 static const int kFakeBufferSize = 16;
 static const uint8_t kFakeKeyId[] = {0x4b, 0x65, 0x79, 0x20, 0x49, 0x44};
-static const uint8_t kFakeIv[DecryptConfig::kDecryptionKeySize] = {0};
+static const uint8_t kFakeIv[DecryptConfig::kDecryptionKeySize] = {};
 
 // Create a fake non-empty buffer in an encrypted stream. When |is_clear| is
 // true, the buffer is not encrypted (signaled by an empty IV).
@@ -240,9 +239,9 @@ class DecryptingDemuxerStreamTest : public testing::Test {
     EXPECT_CALL(*input_audio_stream_, OnRead(_))
         .WillRepeatedly(ReturnBuffer(encrypted_buffer_));
     EXPECT_CALL(*decryptor_, Decrypt(_, encrypted_buffer_, _))
-        .WillOnce(WithArg<2>(Invoke([&](Decryptor::DecryptCB callback) {
+        .WillOnce(WithArg<2>([&](Decryptor::DecryptCB callback) {
           pending_decrypt_cb_ = std::move(callback);
-        })));
+        }));
 
     demuxer_stream_->Read(
         1, base::BindOnce(&DecryptingDemuxerStreamTest::BufferReady,

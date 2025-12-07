@@ -15,7 +15,7 @@
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "url/gurl.h"
 
 namespace password_manager {
@@ -44,10 +44,7 @@ class AllPasswordsBottomSheetController
  public:
   using RequestsToFillPassword =
       base::StrongAlias<struct RequestsToFillPasswordTag, bool>;
-  using ShowMigrationWarningCallback = base::RepeatingCallback<void(
-      gfx::NativeWindow,
-      Profile*,
-      password_manager::metrics_util::PasswordMigrationWarningTriggers)>;
+
   // No-op constructor for tests.
   AllPasswordsBottomSheetController(
       base::PassKey<class AllPasswordsBottomSheetControllerTest>,
@@ -60,8 +57,7 @@ class AllPasswordsBottomSheetController
       autofill::mojom::FocusedFieldType focused_field_type,
       password_manager::PasswordManagerClient* client,
       safe_browsing::PasswordReuseDetectionManagerClient*
-          password_reuse_detection_manager_client,
-      ShowMigrationWarningCallback show_migration_warning_callback);
+          password_reuse_detection_manager_client);
 
   AllPasswordsBottomSheetController(
       content::WebContents* web_contents,
@@ -156,10 +152,6 @@ class AllPasswordsBottomSheetController
   // password has been reused.
   raw_ptr<safe_browsing::PasswordReuseDetectionManagerClient>
       password_reuse_detection_manager_client_ = nullptr;
-
-  // Callback invoked to try to show the password migration warning. Used
-  // to facilitate testing.
-  ShowMigrationWarningCallback show_migration_warning_callback_;
 
   // `PlusAddressService` is used to check which credentials have a plus address
   // as a username.

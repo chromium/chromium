@@ -7,6 +7,7 @@
 
 #include "ash/wm/desks/desk_action_context_menu.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
+#include "base/auto_reset.h"
 
 namespace aura {
 class Window;
@@ -54,8 +55,6 @@ class DesksTestApi {
       Desk* desk);
   static views::Label* GetDeskShortcutLabel(DeskMiniView* mini_view);
   static bool IsDeskShortcutViewVisible(DeskMiniView* mini_view);
-  static DeskProfilesButton* GetDeskProfileButton(DeskMiniView* mini_view);
-  static bool HasVerticalDotsButton();
   static bool DesksControllerHasDesk(Desk* desk);
   static bool DesksControllerCanUndoDeskRemoval();
 
@@ -69,11 +68,8 @@ class DesksTestApi {
   // Waits for `desk_bar_view` to finish its UI update.
   static void WaitForDeskBarUiUpdate(DeskBarViewBase* desk_bar_view);
 
-  // Invoke `done` when `desk_bar_view` finishes its UI updates.
-  static void SetDeskBarUiUpdateCallback(DeskBarViewBase* desk_bar_view,
-                                         base::OnceClosure done);
-
-  // Desk context menu related.
+  // Desk context menu related. `GetContextMenuForDesk()` and
+  // `GetContextMenuModelForDesk()` open a context menu.
   static DeskActionContextMenu* GetContextMenuForDesk(
       DeskBarViewBase::Type type,
       int index);
@@ -94,6 +90,14 @@ class DesksTestApi {
       DeskBarViewBase::Type bar_type,
       size_t index,
       DeskActionContextMenu::CommandId command_id);
+
+  static void MaybeCloseContextMenuForGrid(OverviewGrid* overview_grid);
+
+  static base::TimeDelta GetCloseAllWindowCloseTimeout();
+  static base::AutoReset<base::TimeDelta> SetCloseAllWindowCloseTimeout(
+      base::TimeDelta interval);
+  static base::AutoReset<base::TimeDelta> SetScrollTimeInterval(
+      base::TimeDelta interval);
 };
 
 }  // namespace ash

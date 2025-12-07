@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ash/webui/system_apps/public/system_web_app_type.h"
-#include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -49,8 +48,7 @@ WebUIType GetWebUIType(const GURL& url) {
     return WebUIType::kChrome;
   if (url.SchemeIs(content::kChromeUIUntrustedScheme))
     return WebUIType::kChromeUntrusted;
-  NOTREACHED_IN_MIGRATION();
-  return WebUIType::kChrome;
+  NOTREACHED();
 }
 
 // Assumes url is like "chrome://web-app/index.html". Returns "web-app";
@@ -108,6 +106,10 @@ UnittestingSystemAppDelegate::GetWebAppInfo() const {
   return info_factory_.Run();
 }
 
+bool UnittestingSystemAppDelegate::ShouldForceReinstall() const {
+  return should_force_reinstall_;
+}
+
 std::vector<std::string>
 UnittestingSystemAppDelegate::GetAppIdsToUninstallAndReplace() const {
   return uninstall_and_replace_;
@@ -116,7 +118,8 @@ UnittestingSystemAppDelegate::GetAppIdsToUninstallAndReplace() const {
 gfx::Size UnittestingSystemAppDelegate::GetMinimumWindowSize() const {
   return minimum_window_size_;
 }
-Browser* UnittestingSystemAppDelegate::GetWindowForLaunch(
+
+BrowserDelegate* UnittestingSystemAppDelegate::GetWindowForLaunch(
     Profile* profile,
     const GURL& url) const {
   return single_window_ ? SystemWebAppDelegate::GetWindowForLaunch(profile, url)
@@ -162,6 +165,9 @@ bool UnittestingSystemAppDelegate::ShouldAllowFullscreen() const {
 bool UnittestingSystemAppDelegate::ShouldHaveTabStrip() const {
   return has_tab_strip_;
 }
+bool UnittestingSystemAppDelegate::ShouldHideNewTabButton() const {
+  return hide_new_tab_button_;
+}
 bool UnittestingSystemAppDelegate::ShouldHaveReloadButtonInMinimalUi() const {
   return should_have_reload_button_in_minimal_ui_;
 }
@@ -173,14 +179,14 @@ UnittestingSystemAppDelegate::GetTimerInfo() const {
   return timer_info_;
 }
 gfx::Rect UnittestingSystemAppDelegate::GetDefaultBounds(
-    Browser* browser) const {
+    BrowserDelegate* browser) const {
   if (get_default_bounds_) {
     return get_default_bounds_.Run(browser);
   }
   return gfx::Rect();
 }
 
-Browser* UnittestingSystemAppDelegate::LaunchAndNavigateSystemWebApp(
+BrowserDelegate* UnittestingSystemAppDelegate::LaunchAndNavigateSystemWebApp(
     Profile* profile,
     web_app::WebAppProvider* provider,
     const GURL& url,
@@ -200,17 +206,16 @@ bool UnittestingSystemAppDelegate::IsUrlInSystemAppScope(
     const GURL& url) const {
   return url == url_in_system_app_scope_;
 }
-bool UnittestingSystemAppDelegate::PreferManifestBackgroundColor() const {
-  return prefer_manifest_background_color_;
-}
 bool UnittestingSystemAppDelegate::UseSystemThemeColor() const {
   return use_system_theme_color_;
 }
-#if BUILDFLAG(IS_CHROMEOS)
 bool UnittestingSystemAppDelegate::ShouldAnimateThemeChanges() const {
   return should_animate_theme_changes_;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
+
+void UnittestingSystemAppDelegate::SetShouldForceReinstall(bool value) {
+  should_force_reinstall_ = value;
+}
 
 void UnittestingSystemAppDelegate::SetAppIdsToUninstallAndReplace(
     const std::vector<webapps::AppId>& ids) {
@@ -258,6 +263,9 @@ void UnittestingSystemAppDelegate::SetShouldAllowMaximize(bool value) {
 void UnittestingSystemAppDelegate::SetShouldHaveTabStrip(bool value) {
   has_tab_strip_ = value;
 }
+void UnittestingSystemAppDelegate::SetShouldHideNewTabButton(bool value) {
+  hide_new_tab_button_ = value;
+}
 void UnittestingSystemAppDelegate::SetShouldHaveReloadButtonInMinimalUi(
     bool value) {
   should_have_reload_button_in_minimal_ui_ = value;
@@ -271,7 +279,7 @@ void UnittestingSystemAppDelegate::SetTimerInfo(
   timer_info_ = timer_info;
 }
 void UnittestingSystemAppDelegate::SetDefaultBounds(
-    base::RepeatingCallback<gfx::Rect(Browser*)> lambda) {
+    base::RepeatingCallback<gfx::Rect(BrowserDelegate*)> lambda) {
   get_default_bounds_ = std::move(lambda);
 }
 void UnittestingSystemAppDelegate::SetLaunchAndNavigateSystemWebApp(
@@ -284,18 +292,12 @@ void UnittestingSystemAppDelegate::SetIsAppEnabled(bool value) {
 void UnittestingSystemAppDelegate::SetUrlInSystemAppScope(const GURL& url) {
   url_in_system_app_scope_ = url;
 }
-void UnittestingSystemAppDelegate::SetPreferManifestBackgroundColor(
-    bool value) {
-  prefer_manifest_background_color_ = value;
-}
 void UnittestingSystemAppDelegate::SetUseSystemThemeColor(bool value) {
   use_system_theme_color_ = value;
 }
-#if BUILDFLAG(IS_CHROMEOS)
 void UnittestingSystemAppDelegate::SetShouldAnimateThemeChanges(bool value) {
   should_animate_theme_changes_ = value;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TestSystemWebAppInstallation::TestSystemWebAppInstallation(
     std::unique_ptr<UnittestingSystemAppDelegate> delegate)
@@ -423,7 +425,7 @@ TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp() {
           SystemWebAppType::SETTINGS, "OSSettings",
           GURL("chrome://test-system-app/pwa.html"),
           base::BindRepeating(&GenerateWebAppInstallInfoForTestApp));
-  delegate->SetUrlInSystemAppScope(GURL("http://example.com/in-scope"));
+  delegate->SetUrlInSystemAppScope(GURL("https://example.com/in-scope"));
 
   return base::WrapUnique(
       new TestSystemWebAppInstallation(std::move(delegate)));
@@ -576,7 +578,7 @@ TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation() {
             return info;
           })));
   auto factory = std::make_unique<TestSystemWebAppWebUIControllerFactory>(
-      kInitiatingAppUrl.host());
+      kInitiatingAppUrl.GetHost());
   installation->web_ui_controller_factories_.push_back(std::move(factory));
 
   return base::WrapUnique(installation);
@@ -643,13 +645,15 @@ TestSystemWebAppInstallation::SetupAppWithAllowScriptsToCloseWindows(
 
 // static
 std::unique_ptr<TestSystemWebAppInstallation>
-TestSystemWebAppInstallation::SetUpAppWithTabStrip(bool has_tab_strip) {
+TestSystemWebAppInstallation::SetUpAppWithTabStrip(bool has_tab_strip,
+                                                   bool hide_new_tab_button) {
   std::unique_ptr<UnittestingSystemAppDelegate> delegate =
       std::make_unique<UnittestingSystemAppDelegate>(
           SystemWebAppType::MEDIA, "Test",
           GURL("chrome://test-system-app/pwa.html"),
           base::BindRepeating(&GenerateWebAppInstallInfoForTestApp));
   delegate->SetShouldHaveTabStrip(has_tab_strip);
+  delegate->SetShouldHideNewTabButton(hide_new_tab_button);
 
   return base::WrapUnique(
       new TestSystemWebAppInstallation(std::move(delegate)));
@@ -664,8 +668,8 @@ TestSystemWebAppInstallation::SetUpAppWithDefaultBounds(
           SystemWebAppType::MEDIA, "Test",
           GURL("chrome://test-system-app/pwa.html"),
           base::BindRepeating(&GenerateWebAppInstallInfoForTestApp));
-  delegate->SetDefaultBounds(
-      base::BindLambdaForTesting([&](Browser*) { return default_bounds; }));
+  delegate->SetDefaultBounds(base::BindLambdaForTesting(
+      [&](BrowserDelegate*) { return default_bounds; }));
 
   return base::WrapUnique(
       new TestSystemWebAppInstallation(std::move(delegate)));
@@ -734,9 +738,11 @@ TestSystemWebAppInstallation::SetUpAppThatAbortsLaunch() {
           SystemWebAppType::OS_FEEDBACK, "Test",
           GURL("chrome://test-system-app/pwa.html"),
           base::BindRepeating(&GenerateWebAppInstallInfoForTestApp));
-  delegate->SetLaunchAndNavigateSystemWebApp(base::BindRepeating(
-      [](Profile*, web_app::WebAppProvider*, const GURL&,
-         const apps::AppLaunchParams&) -> Browser* { return nullptr; }));
+  delegate->SetLaunchAndNavigateSystemWebApp(
+      base::BindRepeating([](Profile*, web_app::WebAppProvider*, const GURL&,
+                             const apps::AppLaunchParams&) -> BrowserDelegate* {
+        return nullptr;
+      }));
 
   return base::WrapUnique(
       new TestSystemWebAppInstallation(std::move(delegate)));

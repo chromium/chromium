@@ -56,6 +56,10 @@ struct WebrtcVideoStream::FrameStats : public WebrtcVideoEncoder::FrameStats {
   FrameStats& operator=(const FrameStats&) = default;
   ~FrameStats() override = default;
 
+  std::unique_ptr<WebrtcVideoEncoder::FrameStats> Clone() const override {
+    return std::make_unique<FrameStats>(*this);
+  }
+
   // The input-event fields are only valid for the frame after an input event.
   InputEventTimestamps input_event_timestamps;
 
@@ -174,6 +178,11 @@ void WebrtcVideoStream::Core::OnCaptureResult(
     std::unique_ptr<webrtc::DesktopFrame> frame) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  if (!current_frame_stats_) {
+    LOG(WARNING) << "OnCaptureResult() was called before OnFrameCaptureStart()";
+    // Call OnFrameCaptureStart() to create the `current_frame_stats_`.
+    OnFrameCaptureStart();
+  }
   current_frame_stats_->capture_ended_time = base::TimeTicks::Now();
   current_frame_stats_->capture_delay =
       base::Milliseconds(frame ? frame->capture_time_ms() : 0);
@@ -267,7 +276,7 @@ WebrtcVideoStream::WebrtcVideoStream(const SessionOptions& session_options)
     : session_options_(session_options) {
 // TODO(joedow): Dig into the threading model on other platforms to see if they
 // can also be updated to run on a dedicated thread.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   core_task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
       {base::TaskPriority::HIGHEST},
       base::SingleThreadTaskRunnerThreadMode::DEDICATED);
@@ -284,6 +293,12 @@ WebrtcVideoStream::~WebrtcVideoStream() {
   }
 
   if (peer_connection_ && transceiver_) {
+    // Stop the video-stream before removing it from the peer-connection.
+    // Otherwise, it will continue to be listed in
+    // peer_connection_->GetSenders(), and may interfere with bandwidth
+    // estimation - b/366055325.
+    transceiver_->StopStandard();
+
     // Ignore any errors here, as this may return an error if the
     // peer-connection has been closed.
     peer_connection_->RemoveTrackOrError(transceiver_->sender());
@@ -307,10 +322,10 @@ void WebrtcVideoStream::Start(
   DCHECK(peer_connection_);
 
   std::string stream_name = StreamNameForId(screen_id);
-  video_track_source_ = new rtc::RefCountedObject<WebrtcVideoTrackSource>(
+  video_track_source_ = new webrtc::RefCountedObject<WebrtcVideoTrackSource>(
       base::BindRepeating(&WebrtcVideoStream::OnSinkAddedOrUpdated,
                           weak_factory_.GetWeakPtr()));
-  rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track =
+  webrtc::scoped_refptr<webrtc::VideoTrackInterface> video_track =
       peer_connection_factory->CreateVideoTrack(video_track_source_,
                                                 stream_name);
 
@@ -522,7 +537,8 @@ void WebrtcVideoStream::OnEncodedFrameSent(
   video_stats_dispatcher_->OnVideoFrameStats(result.frame_id, stats);
 }
 
-void WebrtcVideoStream::OnSinkAddedOrUpdated(const rtc::VideoSinkWants& wants) {
+void WebrtcVideoStream::OnSinkAddedOrUpdated(
+    const webrtc::VideoSinkWants& wants) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   auto framerate = wants.max_framerate_fps;

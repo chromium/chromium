@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 
 int no_body(int);  // No annotation
 

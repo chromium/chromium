@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
@@ -36,9 +37,6 @@ class AppControlsNotifierTest : public BrowserWithTestWindowTest {
  public:
   AppControlsNotifierTest() {
     scoped_feature_list_.InitAndEnableFeature(features::kOnDeviceAppControls);
-
-    statistics_provider_.SetMachineStatistic(ash::system::kRegionKey,
-                                             kEligibleDeviceRegionKey);
   }
   AppControlsNotifierTest(const AppControlsNotifierTest&) = delete;
   AppControlsNotifierTest& operator=(const AppControlsNotifierTest&) = delete;
@@ -47,6 +45,14 @@ class AppControlsNotifierTest : public BrowserWithTestWindowTest {
   // BrowserWithTestWindowTest:
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
+
+    settings_window_manager_ =
+        std::make_unique<chrome::SettingsWindowManager>();
+
+    statistics_provider_.emplace();
+    statistics_provider_->SetMachineStatistic(ash::system::kRegionKey,
+                                              kEligibleDeviceRegionKey);
+
     TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
         std::make_unique<SystemNotificationHelper>());
     tester_ = std::make_unique<NotificationDisplayServiceTester>(profile());
@@ -57,6 +63,8 @@ class AppControlsNotifierTest : public BrowserWithTestWindowTest {
     app_controls_notifier_.reset();
     tester_.reset();
     TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(nullptr);
+    statistics_provider_.reset();
+    settings_window_manager_.reset();
     BrowserWithTestWindowTest::TearDown();
   }
 
@@ -75,9 +83,11 @@ class AppControlsNotifierTest : public BrowserWithTestWindowTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
-  std::unique_ptr<AppControlsNotifier> app_controls_notifier_;
+  std::unique_ptr<chrome::SettingsWindowManager> settings_window_manager_;
+
+  std::optional<ash::system::ScopedFakeStatisticsProvider> statistics_provider_;
   std::unique_ptr<NotificationDisplayServiceTester> tester_;
-  ash::system::ScopedFakeStatisticsProvider statistics_provider_;
+  std::unique_ptr<AppControlsNotifier> app_controls_notifier_;
 };
 
 TEST_F(AppControlsNotifierTest, ShowAppControlsNotification) {

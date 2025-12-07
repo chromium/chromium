@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <string>
 
 namespace sync_pb {
@@ -15,6 +16,8 @@ class UniquePosition;
 }
 
 namespace syncer {
+
+class ClientTagHash;
 
 // A class to represent positions.
 //
@@ -31,24 +34,29 @@ namespace syncer {
 // UniquePosition value has to change to represent the new order, and all other
 // values can stay the same.
 //
-// Note that the unique suffixes must be exactly |kSuffixLength| bytes long.
+// Note that the unique suffixes must be exactly `kSuffixLength` bytes long.
 //
 // The cost for all these features is potentially unbounded space usage.  In
 // practice, however, most ordinals should be not much longer than the suffix.
-//
-// This class currently has several bookmarks-related assumptions built in,
-// though it could be adapted to be more generally useful.
 class UniquePosition {
  public:
+  // The suffix must be exactly the specified length, otherwise unique suffixes
+  // are not sufficient to guarantee unique positions (because prefix + suffix
+  // == p + refixsuffix).
   static constexpr size_t kSuffixLength = 28;
   static constexpr size_t kCompressBytesThreshold = 128;
 
-  static bool IsValidSuffix(const std::string& suffix);
+  using Suffix = std::array<uint8_t, kSuffixLength>;
+
+  static bool IsValidSuffix(const Suffix& suffix);
   static bool IsValidBytes(const std::string& bytes);
 
   // Returns a valid, but mostly random suffix.
   // Avoid using this; it can lead to inconsistent sort orderings if misused.
-  static std::string RandomSuffix();
+  static Suffix RandomSuffix();
+
+  // Returns a valid suffix based on the given client tag hash.
+  static Suffix GenerateSuffix(const ClientTagHash& client_tag_hash);
 
   // Converts from a 'sync_pb::UniquePosition' protobuf to a UniquePosition.
   // This may return an invalid position if the parsing fails.
@@ -56,22 +64,20 @@ class UniquePosition {
 
   // Creates a position with the given suffix.  Ordering among positions created
   // from this function is the same as that of the integer parameters that were
-  // passed in. |suffix| must be a valid suffix with length |kSuffixLength|.
-  static UniquePosition FromInt64(int64_t i, const std::string& suffix);
+  // passed in. `suffix` must be a valid suffix with length `kSuffixLength`.
+  static UniquePosition FromInt64(int64_t i, const Suffix& suffix);
 
-  // Returns a valid position. Its ordering is not defined. |suffix| must be a
-  // valid suffix with length |kSuffixLength|.
-  static UniquePosition InitialPosition(const std::string& suffix);
+  // Returns a valid position. Its ordering is not defined. `suffix` must be a
+  // valid suffix with length `kSuffixLength`.
+  static UniquePosition InitialPosition(const Suffix& suffix);
 
   // Returns positions compare smaller than, greater than, or between the input
-  // positions. |suffix| must be a valid suffix with length |kSuffixLength|.
-  static UniquePosition Before(const UniquePosition& x,
-                               const std::string& suffix);
-  static UniquePosition After(const UniquePosition& x,
-                              const std::string& suffix);
+  // positions. `suffix` must be a valid suffix with length `kSuffixLength`.
+  static UniquePosition Before(const UniquePosition& x, const Suffix& suffix);
+  static UniquePosition After(const UniquePosition& x, const Suffix& suffix);
   static UniquePosition Between(const UniquePosition& before,
                                 const UniquePosition& after,
-                                const std::string& suffix);
+                                const Suffix& suffix);
 
   // Creates an empty, invalid value.
   UniquePosition();
@@ -95,7 +101,7 @@ class UniquePosition {
   std::string ToDebugString() const;
 
   // Returns the suffix.
-  std::string GetSuffixForTest() const;
+  Suffix GetSuffixForTest() const;
 
   bool IsValid() const;
 
@@ -105,29 +111,29 @@ class UniquePosition {
  private:
   friend class UniquePositionTest;
 
-  // Returns a string X such that (X ++ |suffix|) < |str|.
-  // |str| must be a trailing substring of a valid ordinal.
-  // |suffix| must be a valid unique suffix.
+  // Returns a string X such that (X ++ `suffix`) < `str`.
+  // `str` must be a trailing substring of a valid ordinal.
+  // `suffix` must be a valid unique suffix.
   static std::string FindSmallerWithSuffix(const std::string& str,
-                                           const std::string& suffix);
-  // Returns a string X such that (X ++ |suffix|) > |str|.
-  // |str| must be a trailing substring of a valid ordinal.
-  // |suffix| must be a valid unique suffix.
+                                           const Suffix& suffix);
+  // Returns a string X such that (X ++ `suffix`) > `str`.
+  // `str` must be a trailing substring of a valid ordinal.
+  // `suffix` must be a valid unique suffix.
   static std::string FindGreaterWithSuffix(const std::string& str,
-                                           const std::string& suffix);
-  // Returns a string X such that |before| < (X ++ |suffix|) < |after|.
-  // |before| and after must be a trailing substrings of valid ordinals.
-  // |suffix| must be a valid unique suffix.
+                                           const Suffix& suffix);
+  // Returns a string X such that `before` < (X ++ `suffix`) < `after`.
+  // `before` and after must be a trailing substrings of valid ordinals.
+  // `suffix` must be a valid unique suffix.
   static std::string FindBetweenWithSuffix(const std::string& before,
                                            const std::string& after,
-                                           const std::string& suffix);
+                                           const Suffix& suffix);
 
   // Expects a run-length compressed string as input.  For internal use only.
   explicit UniquePosition(const std::string& compressed);
 
-  // Expects an uncompressed prefix and suffix as input.  The |suffix| parameter
-  // must be a suffix of |uncompressed|.  For internal use only.
-  UniquePosition(const std::string& uncompressed, const std::string& suffix);
+  // Expects an uncompressed prefix and suffix as input.  The `suffix` parameter
+  // must be a suffix of `uncompressed`.  For internal use only.
+  UniquePosition(const std::string& uncompressed, const Suffix& suffix);
 
   // Implementation of an order-preserving run-length compression scheme.
   static std::string Compress(const std::string& input);

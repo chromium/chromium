@@ -85,6 +85,17 @@ void ScoreLineBreaker::OptimalBreakPoints(const LeadingFloats& leading_floats,
       /* column_spanner_path */ nullptr, exclusion_space_);
   const int lines_until_clamp =
       space_.GetLineClampData().LinesUntilClamp().value_or(0);
+  // If we're line-clamping with ellipsis placed as part of line-breaking, we
+  // should use ParagraphLineBreaker instead. Score line breaking will be
+  // disabled in the InlineItemsBuilder for the line-clamp container itself,
+  // but not for its descendants, so we do it here.
+  if (RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled() &&
+      lines_until_clamp) {
+    context.SuspendUntilEndParagraph();
+    return;
+  }
+  DCHECK(!RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled() ||
+         lines_until_clamp == 0);
   for (;;) {
     LineInfo& line_info = line_info_list.Append();
     line_breaker.NextLine(&line_info);
@@ -181,7 +192,15 @@ bool ScoreLineBreaker::Optimize(const LineInfoList& line_info_list,
   if (candidates.size() >= 4) {
     // Increase penalties to minimize typographic orphans.
     constexpr float kOrphansPenalty = 10000;
-    candidates[candidates.size() - 2].penalty += kOrphansPenalty * zoom_;
+    const float orphans_penalty = kOrphansPenalty * zoom_;
+    const auto candidates_span =
+        base::span(candidates).first(candidates.size() - 1);
+    for (LineBreakCandidate& candidate : base::Reversed(candidates_span)) {
+      candidate.penalty += orphans_penalty;
+      if (!candidate.is_hyphenated) {
+        break;
+      }
+    }
   }
 
   ComputeLineWidths(line_info_list);

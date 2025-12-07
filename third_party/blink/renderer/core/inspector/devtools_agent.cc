@@ -9,10 +9,8 @@
 #include <memory>
 
 #include "base/debug/crash_logging.h"
-#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/exported/web_dev_tools_agent_impl.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -35,17 +33,6 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_mojo.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
-
-namespace WTF {
-
-using StatePtr = mojo::StructPtr<blink::mojom::blink::DevToolsSessionState>;
-template <>
-struct CrossThreadCopier<StatePtr>
-    : public CrossThreadCopierByValuePassThrough<StatePtr> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-}  // namespace WTF
 
 namespace blink {
 
@@ -120,9 +107,10 @@ class DevToolsAgent::IOAgent : public mojom::blink::DevToolsAgent {
           main_session,
       mojo::PendingReceiver<mojom::blink::DevToolsSession> io_session,
       mojom::blink::DevToolsSessionStatePtr reattach_session_state,
+      const String& script_to_evaluate_on_load,
       bool client_expects_binary_responses,
       bool client_is_trusted,
-      const WTF::String& session_id,
+      const String& session_id,
       bool session_waits_for_debugger) override {
     DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
     DCHECK(receiver_.is_bound());
@@ -130,13 +118,14 @@ class DevToolsAgent::IOAgent : public mojom::blink::DevToolsAgent {
         &::blink::DevToolsAgent::AttachDevToolsSessionImpl,
         MakeUnwrappingCrossThreadWeakHandle(agent_), std::move(host),
         std::move(main_session), std::move(io_session),
-        std::move(reattach_session_state), client_expects_binary_responses,
-        client_is_trusted, session_id, session_waits_for_debugger));
+        std::move(reattach_session_state), script_to_evaluate_on_load,
+        client_expects_binary_responses, client_is_trusted, session_id,
+        session_waits_for_debugger));
   }
 
   void InspectElement(const gfx::Point& point) override {
     // InspectElement on a worker doesn't make sense.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void ReportChildTargets(bool report,
@@ -191,6 +180,7 @@ DevToolsAgent::DevToolsAgent(
 DevToolsAgent::~DevToolsAgent() = default;
 
 void DevToolsAgent::Trace(Visitor* visitor) const {
+  visitor->Trace(client_);
   visitor->Trace(associated_receiver_);
   visitor->Trace(host_remote_);
   visitor->Trace(associated_host_remote_);
@@ -213,8 +203,8 @@ void DevToolsAgent::BindReceiverForWorker(
   DCHECK(!associated_receiver_.is_bound());
 
   host_remote_.Bind(std::move(host_remote), std::move(task_runner));
-  host_remote_.set_disconnect_handler(WTF::BindOnce(
-      &DevToolsAgent::CleanupConnection, WrapWeakPersistent(this)));
+  host_remote_.set_disconnect_handler(
+      BindOnce(&DevToolsAgent::CleanupConnection, WrapWeakPersistent(this)));
 
   io_agent_ = new IOAgent(io_task_runner_, inspector_task_runner_,
                           MakeCrossThreadWeakHandle(this), std::move(receiver));
@@ -227,8 +217,8 @@ void DevToolsAgent::BindReceiver(
   DCHECK(!associated_receiver_.is_bound());
   associated_receiver_.Bind(std::move(receiver), task_runner);
   associated_host_remote_.Bind(std::move(host_remote), task_runner);
-  associated_host_remote_.set_disconnect_handler(WTF::BindOnce(
-      &DevToolsAgent::CleanupConnection, WrapWeakPersistent(this)));
+  associated_host_remote_.set_disconnect_handler(
+      BindOnce(&DevToolsAgent::CleanupConnection, WrapWeakPersistent(this)));
 }
 
 namespace {
@@ -258,29 +248,27 @@ void DevToolsAgent::AttachDevToolsSessionImpl(
         session_receiver,
     mojo::PendingReceiver<mojom::blink::DevToolsSession> io_session_receiver,
     mojom::blink::DevToolsSessionStatePtr reattach_session_state,
+    const String& script_to_evaluate_on_load,
     bool client_expects_binary_responses,
     bool client_is_trusted,
-    const WTF::String& session_id,
+    const String& session_id,
     bool session_waits_for_debugger) {
   TRACE_EVENT0("devtools", "Agent::AttachDevToolsSessionImpl");
   client_->DebuggerTaskStarted();
   DevToolsSession* session = MakeGarbageCollected<DevToolsSession>(
       this, std::move(host), std::move(session_receiver),
       std::move(io_session_receiver), std::move(reattach_session_state),
-      client_expects_binary_responses, client_is_trusted, session_id,
-      session_waits_for_debugger,
+      script_to_evaluate_on_load, client_expects_binary_responses,
+      client_is_trusted, session_id, session_waits_for_debugger,
       // crbug.com/333093232: Mojo ignores the task runner passed to Bind for
       // channel associated interfaces but uses it for disconnect. Since
       // devtools relies on a disconnect handler for detaching and is sensitive
       // to reordering of detach and attach, there's a dependency between task
       // queues, which is not allowed. To get around this, use the same task
       // runner that mojo uses for incoming channel associated messages.
-      base::FeatureList::IsEnabled(
-          features::kBlinkSchedulerPrioritizeNavigationIPCs) &&
-              IsMainThread()
-          ? Thread::MainThread()->GetTaskRunner(
-                MainThreadTaskRunnerRestricted{})
-          : inspector_task_runner_->isolate_task_runner());
+      IsMainThread() ? Thread::MainThread()->GetTaskRunner(
+                           MainThreadTaskRunnerRestricted{})
+                     : inspector_task_runner_->isolate_task_runner());
   sessions_.insert(session);
   UpdateSessionCountCrashKey(1);
   client_->DebuggerTaskFinished();
@@ -297,9 +285,10 @@ void DevToolsAgent::AttachDevToolsSession(
         session_receiver,
     mojo::PendingReceiver<mojom::blink::DevToolsSession> io_session_receiver,
     mojom::blink::DevToolsSessionStatePtr reattach_session_state,
+    const String& script_to_evaluate_on_load,
     bool client_expects_binary_responses,
     bool client_is_trusted,
-    const WTF::String& session_id,
+    const String& session_id,
     bool session_waits_for_debugger) {
   TRACE_EVENT0("devtools", "Agent::AttachDevToolsSession");
   if (associated_receiver_.is_bound()) {
@@ -308,14 +297,15 @@ void DevToolsAgent::AttachDevToolsSession(
     AttachDevToolsSessionImpl(
         std::move(host), std::move(session_receiver),
         std::move(io_session_receiver), std::move(reattach_session_state),
-        client_expects_binary_responses, client_is_trusted, session_id,
+        script_to_evaluate_on_load, client_expects_binary_responses,
+        client_is_trusted, session_id,
         /* session_waits_for_debugger */ false);
   } else {
     io_agent_->AttachDevToolsSession(
         std::move(host), std::move(session_receiver),
         std::move(io_session_receiver), std::move(reattach_session_state),
-        client_expects_binary_responses, client_is_trusted, session_id,
-        session_waits_for_debugger);
+        script_to_evaluate_on_load, client_expects_binary_responses,
+        client_is_trusted, session_id, session_waits_for_debugger);
   }
 }
 
@@ -328,7 +318,7 @@ void DevToolsAgent::InspectElement(const gfx::Point& point) {
     client_->InspectElement(point);
   } else {
     // InspectElement on a worker doesn't make sense.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

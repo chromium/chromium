@@ -6,8 +6,8 @@
 #define CONTENT_PUBLIC_BROWSER_TTS_UTTERANCE_H_
 
 #include <memory>
-#include <set>
 
+#include "base/containers/flat_set.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
@@ -48,7 +48,7 @@ CONTENT_EXPORT bool IsFinalTtsEventType(TtsEventType event_type);
 // Class that wants to receive events on utterances.
 class CONTENT_EXPORT UtteranceEventDelegate {
  public:
-  virtual ~UtteranceEventDelegate() {}
+  virtual ~UtteranceEventDelegate() = default;
   // Called when the engine reaches a TTS event in an utterance. If |char_index|
   // or |length| are invalid or not applicable for the given |event_type|, they
   // should be set to -1.
@@ -117,16 +117,19 @@ class CONTENT_EXPORT TtsUtterance {
   virtual void SetShouldClearQueue(bool value) = 0;
   virtual bool GetShouldClearQueue() = 0;
 
-  virtual void SetRequiredEventTypes(const std::set<TtsEventType>& types) = 0;
-  virtual const std::set<TtsEventType>& GetRequiredEventTypes() = 0;
+  virtual void SetRequiredEventTypes(
+      const base::flat_set<TtsEventType>& types) = 0;
+  virtual const base::flat_set<TtsEventType>& GetRequiredEventTypes() = 0;
 
-  virtual void SetDesiredEventTypes(const std::set<TtsEventType>& types) = 0;
-  virtual const std::set<TtsEventType>& GetDesiredEventTypes() = 0;
+  virtual void SetDesiredEventTypes(
+      const base::flat_set<TtsEventType>& types) = 0;
+  virtual const base::flat_set<TtsEventType>& GetDesiredEventTypes() = 0;
 
   virtual void SetEngineId(const std::string& engine_id) = 0;
   virtual const std::string& GetEngineId() = 0;
 
-  virtual void SetEventDelegate(UtteranceEventDelegate* event_delegate) = 0;
+  virtual void SetEventDelegate(
+      std::unique_ptr<UtteranceEventDelegate> event_delegate) = 0;
   virtual UtteranceEventDelegate* GetEventDelegate() = 0;
 
   // Getters and setters for internal state.

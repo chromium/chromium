@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -114,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCleanupHandlerTest, Cleanup) {
   OpenNewBrowserPage("/unload.html", WindowOpenDisposition::NEW_WINDOW);
   OpenNewBrowserPage("/title1.html", WindowOpenDisposition::NEW_WINDOW);
 
-  ASSERT_EQ(3U, BrowserList::GetInstance()->size());
+  ASSERT_EQ(3U, chrome::GetTotalBrowserCount());
   ASSERT_EQ(5, GetHistorySize());
 
   RunBrowserCleanupHandler();

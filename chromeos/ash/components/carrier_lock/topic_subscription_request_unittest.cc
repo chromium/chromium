@@ -165,8 +165,9 @@ TEST_F(TopicSubscriptionRequestTest, RequestSubscriptionData) {
   const net::HttpRequestHeaders* headers =
       GetExtraHeadersForURL(kTopicSubscriptionURL);
   ASSERT_TRUE(headers != nullptr);
-  std::string auth_header;
-  headers->GetHeader(net::HttpRequestHeaders::kAuthorization, &auth_header);
+  std::string auth_header =
+      headers->GetHeader(net::HttpRequestHeaders::kAuthorization)
+          .value_or(std::string());
   base::StringTokenizer auth_tokenizer(auth_header, " :");
   ASSERT_TRUE(auth_tokenizer.GetNext());
   EXPECT_EQ(kLoginHeader, auth_tokenizer.token());
@@ -194,8 +195,9 @@ TEST_F(TopicSubscriptionRequestTest, RequestUnsubscriptionData) {
   const net::HttpRequestHeaders* headers =
       GetExtraHeadersForURL(kTopicSubscriptionURL);
   ASSERT_TRUE(headers != nullptr);
-  std::string auth_header;
-  headers->GetHeader(net::HttpRequestHeaders::kAuthorization, &auth_header);
+  std::string auth_header =
+      headers->GetHeader(net::HttpRequestHeaders::kAuthorization)
+          .value_or(std::string());
   base::StringTokenizer auth_tokenizer(auth_header, " :");
   ASSERT_TRUE(auth_tokenizer.GetNext());
   EXPECT_EQ(kLoginHeader, auth_tokenizer.token());

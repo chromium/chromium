@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/timing/profiler_group.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -172,7 +173,8 @@ Profiler* ProfilerGroup::CreateProfiler(ScriptState* script_state,
       V8String(isolate_, profiler_id),
       v8::CpuProfilingOptions(
           v8::kLeafNodeLineNumbers, init_options.maxBufferSize(),
-          static_cast<int>(sample_interval_us), script_state->GetContext()),
+          static_cast<int>(sample_interval_us), script_state->GetContext(),
+          v8::CpuProfileSource::kSelfProfiling),
       std::make_unique<DiscardedSamplesDelegate>(this, profiler_id));
 
   switch (status) {
@@ -318,8 +320,8 @@ void ProfilerGroup::CancelProfilerAsync(ScriptState* script_state,
   // associated context, dispatch a task to cleanup context-independent isolate
   // resources (rather than use the context's task runner).
   ThreadScheduler::Current()->V8TaskRunner()->PostTask(
-      FROM_HERE, WTF::BindOnce(&ProfilerGroup::StopDetachedProfiler,
-                               WrapPersistent(this), profiler->ProfilerId()));
+      FROM_HERE, BindOnce(&ProfilerGroup::StopDetachedProfiler,
+                          WrapPersistent(this), profiler->ProfilerId()));
 }
 
 void ProfilerGroup::StopDetachedProfiler(String profiler_id) {
@@ -327,7 +329,7 @@ void ProfilerGroup::StopDetachedProfiler(String profiler_id) {
 
   // we use a vector instead of a map because the expected number of profiler
   // is expected to be very small
-  auto it = base::ranges::find(detached_profiler_ids_, profiler_id);
+  auto it = std::ranges::find(detached_profiler_ids_, profiler_id);
 
   if (it == detached_profiler_ids_.end()) {
     // Profiler already stopped

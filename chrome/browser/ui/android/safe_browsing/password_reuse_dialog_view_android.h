@@ -38,10 +38,9 @@ class PasswordReuseDialogViewAndroid {
   void Show(ui::WindowAndroid* window_android);
 
   // Called from Java to native.
-  void CheckPasswords(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& obj);
-  void Ignore(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
-  void Close(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void CheckPasswords(JNIEnv* env);
+  void Ignore(JNIEnv* env);
+  void Close(JNIEnv* env);
 
  private:
   // The controller which owns this dialog and handles the dialog events.

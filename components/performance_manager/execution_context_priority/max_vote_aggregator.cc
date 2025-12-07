@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/performance_manager/execution_context_priority/max_vote_aggregator.h"
+#include "components/performance_manager/public/execution_context_priority/max_vote_aggregator.h"
 
 #include <algorithm>
 #include <tuple>
 
-#include "base/not_fatal_until.h"
 
 namespace performance_manager {
 namespace execution_context_priority {
@@ -21,7 +20,14 @@ VotingChannel MaxVoteAggregator::GetVotingChannel() {
 }
 
 void MaxVoteAggregator::SetUpstreamVotingChannel(VotingChannel channel) {
+  CHECK(!channel_.IsValid());
+  CHECK(channel.IsValid());
   channel_ = std::move(channel);
+}
+
+void MaxVoteAggregator::ResetUpstreamVotingChannel() {
+  CHECK(channel_.IsValid());
+  channel_.Reset();
 }
 
 void MaxVoteAggregator::OnVoteSubmitted(
@@ -110,7 +116,7 @@ MaxVoteAggregator::StampedVote::~StampedVote() = default;
 MaxVoteAggregator::VoteDataMap::iterator MaxVoteAggregator::GetVoteData(
     const ExecutionContext* execution_context) {
   auto it = vote_data_map_.find(execution_context);
-  CHECK(it != vote_data_map_.end(), base::NotFatalUntil::M130);
+  CHECK(it != vote_data_map_.end());
   return it;
 }
 
@@ -135,7 +141,7 @@ void MaxVoteAggregator::VoteData::AddVote(VoterId voter_id,
 void MaxVoteAggregator::VoteData::UpdateVote(VoterId voter_id,
                                              const Vote& new_vote) {
   auto it = heap_handles_.find(voter_id);
-  CHECK(it != heap_handles_.end(), base::NotFatalUntil::M130);
+  CHECK(it != heap_handles_.end());
   base::HeapHandle* heap_handle = it->second;
 
   votes_.Modify(*heap_handle, [&new_vote](StampedVote& element) {
@@ -145,7 +151,7 @@ void MaxVoteAggregator::VoteData::UpdateVote(VoterId voter_id,
 
 void MaxVoteAggregator::VoteData::RemoveVote(VoterId voter_id) {
   auto it = heap_handles_.find(voter_id);
-  CHECK(it != heap_handles_.end(), base::NotFatalUntil::M130);
+  CHECK(it != heap_handles_.end());
   base::HeapHandle* heap_handle = it->second;
   heap_handles_.erase(it);
 

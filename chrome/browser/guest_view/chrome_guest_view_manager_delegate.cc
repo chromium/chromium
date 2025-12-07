@@ -5,14 +5,26 @@
 #include "chrome/browser/guest_view/chrome_guest_view_manager_delegate.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
+#include "chrome/common/buildflags.h"
+#include "components/captive_portal/core/buildflags.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/host/guest_util.h"
+#endif
+
+#if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
+#include "chrome/browser/captive_portal/captive_portal_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
+#include "components/captive_portal/content/captive_portal_tab_helper.h"
+#endif
 
 namespace extensions {
 
@@ -29,14 +41,29 @@ void ChromeGuestViewManagerDelegate::OnGuestAdded(
   // manager.
   task_manager::WebContentsTags::CreateForGuestContents(guest_web_contents);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Notifies kiosk system session about the added guest.
-  // TODO(b/233167287): Implement guest view handling for Lacros.
-  ash::KioskSystemSession* session =
-      ash::KioskController::Get().GetKioskSystemSession();
-  if (session) {
-    session->OnGuestAdded(guest_web_contents);
-  }
+#if BUILDFLAG(IS_CHROMEOS)
+  // Notifies Kiosk controller about the added guest.
+  ash::KioskController::Get().OnGuestAdded(guest_web_contents);
+#endif
+
+#if BUILDFLAG(ENABLE_GLIC)
+  // Check if guest belongs to glic and apply specific customizations if so.
+  glic::OnGuestAdded(guest_web_contents);
+#endif
+
+#if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
+  // Attach Captive Portal helper to the WebView.
+  // TODO(crbug.com/40202416): update CaptivePortalTabHelper to handle MPArch
+  // guest pages.
+  Profile* profile =
+      Profile::FromBrowserContext(guest_web_contents->GetBrowserContext());
+  captive_portal::CaptivePortalTabHelper::CreateForWebContents(
+      guest_web_contents, CaptivePortalServiceFactory::GetForProfile(profile),
+      // tab_focus is false, because opening logging page here happens
+      // without user gesture.
+      base::BindRepeating(&ChromeSecurityBlockingPageFactory::
+                              OpenLoginPageInAnyTabbedBrowserOrCreateOne,
+                          profile, /*tab_focus=*/false));
 #endif
 }
 

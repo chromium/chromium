@@ -7,7 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "content/shell/browser/bluetooth/ios/shell_bluetooth_chooser_mediator.h"
 #import "content/shell/browser/bluetooth/ios/shell_bluetooth_device_list_view_controller.h"
-#import "ui/gfx/native_widget_types.h"
+#import "ui/gfx/native_ui_types.h"
 
 @implementation ShellBluetoothChooserCoordinator
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
@@ -20,13 +20,13 @@
 
   _deviceListViewController =
       [[ShellDeviceListViewController alloc] initWithTitle:title];
-  _deviceListViewController.modalPresentationStyle = UIModalPresentationPopover;
-  _deviceListViewController.popoverPresentationController.delegate =
+
+  // Set `modalPresentationStyle` to UIModalPresentationOverFullScreen available
+  // on iOS and tvOS.
+  _deviceListViewController.modalPresentationStyle =
+      UIModalPresentationOverFullScreen;
+  _deviceListViewController.presentationController.delegate =
       _deviceListViewController;
-  _deviceListViewController.popoverPresentationController.sourceView =
-      baseViewController.view;
-  _deviceListViewController.popoverPresentationController.sourceRect =
-      baseViewController.view.bounds;
 
   _bluetoothChooserMediator = [[ShellBluetoothChooserMediator alloc]
       initWithBluetoothChooser:bluetoothChooser];

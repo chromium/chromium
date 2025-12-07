@@ -11,7 +11,6 @@
 #include "base/threading/thread_checker.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_sample_collector.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/content_security_notifier.mojom-blink.h"
@@ -41,6 +40,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/fetch_client_settings_object_impl.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
+#include "third_party/blink/renderer/core/workers/worker_navigator.h"
 #include "third_party/blink/renderer/core/workers/worker_reporting_proxy.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -103,7 +103,7 @@ class OutsideSettingsCSPDelegate final
   void DisableEval(const String& error_message) override {}
   void SetWasmEvalErrorMessage(const String& error_message) override {}
 
-  std::unique_ptr<SourceLocation> GetSourceLocation() override {
+  SourceLocation* GetSourceLocation() override {
     DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
     // https://w3c.github.io/webappsec-csp/#create-violation-for-global
     // Step 2. If the user agent is currently executing script, and can extract
@@ -160,11 +160,11 @@ class OutsideSettingsCSPDelegate final
   void ReportBlockedScriptExecutionToInspector(
       const String& directive_text) override {
     // This shouldn't be called during top-level worker script fetch.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void DidAddContentSecurityPolicies(
-      WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr>) override {
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr>) override {
     DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
     // We do nothing here, because if the added policies should be reported to
     // LocalFrameClient, then they are already reported on the parent
@@ -177,6 +177,8 @@ class OutsideSettingsCSPDelegate final
     DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
     global_scope_for_logging_->AddInspectorIssue(std::move(issue));
   }
+
+  bool ScriptSrcExtendedHashesEnabled() override { return false; }
 
  private:
   const Member<const FetchClientSettingsObject> outside_settings_object_;
@@ -240,18 +242,14 @@ WorkerOrWorkletGlobalScope::WorkerOrWorkletGlobalScope(
   GetSecurityContext().SetSecurityOrigin(std::move(origin));
 
   SetPolicyContainer(PolicyContainer::CreateEmpty());
-  if (worker_clients_)
-    worker_clients_->ReattachThread();
 }
 
 WorkerOrWorkletGlobalScope::~WorkerOrWorkletGlobalScope() = default;
 
 // EventTarget
 const AtomicString& WorkerOrWorkletGlobalScope::InterfaceName() const {
-  NOTREACHED_IN_MIGRATION()
-      << "Each global scope that uses events should define its own "
-         "interface name.";
-  return g_null_atom;
+  NOTREACHED() << "Each global scope that uses events should define its own "
+                  "interface name.";
 }
 
 v8::Local<v8::Value> WorkerOrWorkletGlobalScope::Wrap(ScriptState*) {
@@ -279,8 +277,8 @@ void WorkerOrWorkletGlobalScope::CountUse(WebFeature feature) {
   if (IsContextDestroyed())
     return;
 
-  DCHECK_NE(WebFeature::kPageVisits, feature);
-  DCHECK_GT(WebFeature::kNumberOfFeatures, feature);
+  DCHECK_NE(feature, WebFeature::kPageVisits);
+  DCHECK_LE(feature, WebFeature::kMaxValue);
   if (used_features_[static_cast<size_t>(feature)])
     return;
   used_features_.set(static_cast<size_t>(feature));
@@ -336,8 +334,8 @@ void WorkerOrWorkletGlobalScope::CountWebDXFeature(WebDXFeature feature) {
     return;
   }
 
-  DCHECK_NE(WebDXFeature::kPageVisits, feature);
-  DCHECK_GT(WebDXFeature::kNumberOfFeatures, feature);
+  DCHECK_NE(feature, WebDXFeature::kPageVisits);
+  DCHECK_LE(feature, WebDXFeature::kMaxValue);
   if (used_webdx_features_[static_cast<size_t>(feature)]) {
     return;
   }
@@ -516,8 +514,6 @@ void WorkerOrWorkletGlobalScope::Dispose() {
     resource_fetcher->StopFetching();
     resource_fetcher->ClearContext();
   }
-  IdentifiabilitySampleCollector::Get()->FlushSource(UkmRecorder(),
-                                                     UkmSourceID());
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
@@ -549,7 +545,7 @@ void WorkerOrWorkletGlobalScope::InitContentSecurityPolicyFromVector(
         GetSecurityOrigin()->Protocol()));
 
     // Check if the embedder wants to add any default policies, and add them.
-    WebVector<WebContentSecurityPolicyHeader> embedder_default_csp;
+    std::vector<WebContentSecurityPolicyHeader> embedder_default_csp;
     Platform::Current()->AppendContentSecurityPolicy(WebURL(Url()),
                                                      &embedder_default_csp);
     for (const auto& header : embedder_default_csp) {
@@ -588,29 +584,25 @@ void WorkerOrWorkletGlobalScope::FetchModuleScript(
   // parser metadata is "not-parser-inserted,
   ParserDisposition parser_state = kNotParserInserted;
 
-  RejectCoepUnsafeNone reject_coep_unsafe_none(false);
-  if (ShouldRejectCoepUnsafeNoneTopModuleScript() &&
-      destination == network::mojom::RequestDestination::kWorker) {
-    DCHECK(!base::FeatureList::IsEnabled(features::kPlzDedicatedWorker));
-    reject_coep_unsafe_none = RejectCoepUnsafeNone(true);
-  }
-
   // credentials mode is credentials mode, and referrer policy is the empty
   // string.
   // Module worker scripts are fetched with fetchpriority kAuto.
-  ScriptFetchOptions options(
-      nonce, IntegrityMetadataSet(), integrity_attribute, parser_state,
-      credentials_mode, network::mojom::ReferrerPolicy::kDefault,
-      mojom::blink::FetchPriorityHint::kAuto,
-      RenderBlockingBehavior::kNonBlocking, reject_coep_unsafe_none);
+  ScriptFetchOptions options(nonce, IntegrityMetadataSet(), integrity_attribute,
+                             parser_state, credentials_mode,
+                             network::mojom::ReferrerPolicy::kDefault,
+                             mojom::blink::FetchPriorityHint::kAuto,
+                             RenderBlockingBehavior::kNonBlocking);
 
   Modulator* modulator = Modulator::From(ScriptController()->GetScriptState());
   // Step 3. "Perform the internal module script graph fetching procedure ..."
+  // The main script for a worker or worklet is always imported in the
+  // evaluation import phase.
   modulator->FetchTree(
-      module_url_record, ModuleType::kJavaScript,
+      module_url_record, ModuleType::kJavaScriptOrWasm,
       CreateOutsideSettingsFetcher(fetch_client_settings_object,
                                    resource_timing_notifier),
-      context_type, destination, options, custom_fetch_type, client);
+      context_type, destination, options, custom_fetch_type, client,
+      v8::ModuleImportPhase::kEvaluation);
 }
 
 void WorkerOrWorkletGlobalScope::SetDefersLoadingForResourceFetchers(

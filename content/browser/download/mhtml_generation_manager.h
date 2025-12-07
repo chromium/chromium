@@ -6,9 +6,9 @@
 
 #include <stdint.h>
 
+#include "base/functional/callback.h"
 #include "base/memory/singleton.h"
 #include "base/process/process.h"
-#include "content/public/browser/mhtml_generation_result.h"
 #include "content/public/common/mhtml_generation_params.h"
 
 namespace content {
@@ -28,11 +28,13 @@ class MHTMLGenerationManager {
   MHTMLGenerationManager(const MHTMLGenerationManager&) = delete;
   MHTMLGenerationManager& operator=(const MHTMLGenerationManager&) = delete;
 
+  using GenerateMHTMLCallback = base::OnceCallback<void(int64_t)>;
+
   // Instructs the RenderFrames in |web_contents| to generate a MHTML
   // representation of the current page.
   void SaveMHTML(WebContents* web_contents,
                  const MHTMLGenerationParams& params,
-                 MHTMLGenerationResult::GenerateMHTMLCallback callback);
+                 GenerateMHTMLCallback callback);
 
  private:
   friend struct base::DefaultSingletonTraits<MHTMLGenerationManager>;

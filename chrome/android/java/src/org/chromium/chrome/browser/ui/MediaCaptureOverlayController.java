@@ -8,33 +8,30 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataKey;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsOffsetHelper;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
- * This class manages the visibility of an overlay border when tab capture is ongoing.
- * The border will be visible if any of the captured/tracked tabs are user interactible
- * (e.g. visible with no overlays hiding the content), and hidden otherwise. It attempts
- * to respond to control state events to resize the UI as the size of the currently
- * visible captured tab is changed.
+ * This class manages the visibility of an overlay border when tab capture is ongoing. The border
+ * will be visible if any of the captured/tracked tabs are user interactible (e.g. visible with no
+ * overlays hiding the content), and hidden otherwise. It attempts to respond to control state
+ * events to resize the UI as the size of the currently visible captured tab is changed.
  */
-public class MediaCaptureOverlayController implements UnownedUserData {
+@NullMarked
+public class MediaCaptureOverlayController {
     private static final UnownedUserDataKey<MediaCaptureOverlayController> KEY =
-            new UnownedUserDataKey<MediaCaptureOverlayController>(
-                    MediaCaptureOverlayController.class);
+            new UnownedUserDataKey<>();
 
     private final CaptureOverlayTabObserver mTabObserver = new CaptureOverlayTabObserver();
 
     private View mOverlayView;
-    private SparseArray<Tab> mCapturedTabs = new SparseArray<Tab>();
-    private Tab mVisibleTab;
+    private final SparseArray<Tab> mCapturedTabs = new SparseArray<>();
+    private @Nullable Tab mVisibleTab;
 
     private class CaptureOverlayTabObserver extends EmptyTabObserver {
         /**
@@ -75,27 +72,25 @@ public class MediaCaptureOverlayController implements UnownedUserData {
     /**
      * Get the Activity's {@link MediaCaptureOverlayController} from the provided {@link
      * WindowAndroid}.
+     *
      * @param window The window to get the manager from.
      * @return The Activity's {@link MediaCaptureOverlayController}.
      */
-    public static @Nullable MediaCaptureOverlayController from(WindowAndroid window) {
+    public static @Nullable MediaCaptureOverlayController from(@Nullable WindowAndroid window) {
         if (window == null) return null;
         return KEY.retrieveDataFromHost(window.getUnownedUserDataHost());
     }
 
     /**
      * Make this instance of MediaCaptureOverlayController available through the activity's window.
+     *
      * @param window A {@link WindowAndroid} to attach to.
-     * @param manager The {@link MediaCaptureOverlayController} to attach.
      */
     private static void attach(WindowAndroid window, MediaCaptureOverlayController overlay) {
         KEY.attachToHost(window.getUnownedUserDataHost(), overlay);
     }
 
-    /**
-     * Detach the provided MediaCaptureOverlayController from any host it is associated with.
-     * @param manager The {@link MediaCaptureOverlayController} to detach.
-     */
+    /** Detach the provided MediaCaptureOverlayController from any host it is associated with. */
     private static void detach(MediaCaptureOverlayController overlay) {
         KEY.detachFromAllHosts(overlay);
     }
@@ -142,7 +137,7 @@ public class MediaCaptureOverlayController implements UnownedUserData {
      * when determining the size of the overlay to show. This also forces the overlay visible if it
      * is not.
      */
-    private void setVisibleTab(@NonNull Tab tab) {
+    private void setVisibleTab(Tab tab) {
         mVisibleTab = tab;
         updateMargins();
         mOverlayView.setVisibility(View.VISIBLE);
@@ -176,6 +171,7 @@ public class MediaCaptureOverlayController implements UnownedUserData {
      * used or queryable. Any overlays will be immediately hidden, and all tracked tabs will be
      * unsubscribed from.
      */
+    @SuppressWarnings("NullAway")
     public void destroy() {
         for (int i = 0; i < mCapturedTabs.size(); i++) {
             mCapturedTabs.valueAt(i).removeObserver(mTabObserver);

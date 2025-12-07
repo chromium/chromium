@@ -8,39 +8,18 @@
 #include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
-#include "third_party/skia/include/gpu/gl/GrGLInterface.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLInterface.h"
 
 using gpu::gles2::GLES2Interface;
 using gpu::ContextSupport;
 
 namespace {
 
-class ScopedCallingGLFromSkia {
- public:
-  ScopedCallingGLFromSkia(ContextSupport* context_support)
-      : context_support_(context_support) {
-    context_support_->WillCallGLFromSkia();
-  }
-  ~ScopedCallingGLFromSkia() { context_support_->DidCallGLFromSkia(); }
-
- private:
-  raw_ptr<ContextSupport> context_support_;
-};
-
 template <typename R, typename... Args>
 GrGLFunction<R GR_GL_FUNCTION_TYPE(Args...)> gles_bind(
     R (GLES2Interface::*func)(Args...),
     GLES2Interface* gles2_interface,
     ContextSupport* context_support) {
-  if (context_support->HasGrContextSupport()) {
-    return [func, context_support, gles2_interface](Args... args) {
-      ScopedCallingGLFromSkia guard(context_support);
-      return (gles2_interface->*func)(args...);
-    };
-  }
-
-  // This fallback binding should only be used by unit tests which do not care
-  // about GrContext::resetContext() getting called automatically.
   return [func, gles2_interface](Args... args) {
     return (gles2_interface->*func)(args...);
   };
@@ -196,6 +175,10 @@ sk_sp<GrGLInterface> CreateGLES2InterfaceBindings(
       gles_bind(&GLES2Interface::GetQueryivEXT, impl, context_support);
   functions->fGetQueryObjectuiv =
       gles_bind(&GLES2Interface::GetQueryObjectuivEXT, impl, context_support);
+  functions->fGetQueryObjecti64v =
+      gles_bind(&GLES2Interface::GetQueryObjecti64vEXT, impl, context_support);
+  functions->fGetQueryObjectui64v =
+      gles_bind(&GLES2Interface::GetQueryObjectui64vEXT, impl, context_support);
   functions->fGetShaderInfoLog =
       gles_bind(&GLES2Interface::GetShaderInfoLog, impl, context_support);
   functions->fGetShaderiv =
@@ -366,6 +349,8 @@ sk_sp<GrGLInterface> CreateGLES2InterfaceBindings(
       &GLES2Interface::GetRenderbufferParameteriv, impl, context_support);
   functions->fGenQueries =
       gles_bind(&GLES2Interface::GenQueriesEXT, impl, context_support);
+  functions->fQueryCounter =
+      gles_bind(&GLES2Interface::QueryCounterEXT, impl, context_support);
   functions->fRenderbufferStorage =
       gles_bind(&GLES2Interface::RenderbufferStorage, impl, context_support);
   functions->fRenderbufferStorageMultisample =

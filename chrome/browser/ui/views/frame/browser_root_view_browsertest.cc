@@ -4,22 +4,28 @@
 
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 
+#include <memory>
+#include <vector>
+
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/navigation_handle_observer.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/gfx/geometry/point_f.h"
 
 class BrowserRootViewBrowserTest : public InProcessBrowserTest {
  public:
@@ -50,23 +56,26 @@ class BrowserRootViewBrowserTest : public InProcessBrowserTest {
     browser_root_view()->OnMouseWheel(wheel_event);
   }
 
+  void WaitForDragStart(const ui::DropTargetEvent& event) {
+    base::RunLoop run_loop;
+    BrowserRootView* const root_view = browser_root_view();
+    root_view->SetOnFilteringCompleteClosureForTesting(run_loop.QuitClosure());
+    root_view->OnDragEntered(event);
+    run_loop.Run();
+  }
+
   void StartAndFinishDrag(const ui::OSExchangeData& data,
                           ui::mojom::DragOperation& out_drag_op) {
     ui::DropTargetEvent event(data, gfx::PointF(), gfx::PointF(),
                               ui::DragDropTypes::DRAG_COPY);
-    BrowserRootView* root_view = browser_root_view();
-
-    base::RunLoop run_loop;
-    root_view->SetOnFilteringCompleteClosureForTesting(run_loop.QuitClosure());
-    root_view->OnDragEntered(event);
+    WaitForDragStart(event);
 
     // At this point, the drag information will have been set, and a background
     // task will have been posted to process the dragged URLs
     // (`GetURLMimeTypes()` -> `FilterURLs()`). Ensure that all background
     // processing is complete before checking the drag operation or invoking the
     // drag callback.
-    run_loop.Run();
-
+    BrowserRootView* const root_view = browser_root_view();
     EXPECT_NE(ui::DragDropTypes::DRAG_NONE, root_view->OnDragUpdated(event));
 
     auto drop_cb = root_view->GetDropCallback(event);
@@ -75,10 +84,6 @@ class BrowserRootViewBrowserTest : public InProcessBrowserTest {
   }
 };
 
-// TODO(crbug.com/40186503): These tests produces wayland protocol error
-// wl_display.error(xdg_surface, 1, "popup parent not constructed") on LaCrOS
-// with Exo.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Clear drop info after performing drop. http://crbug.com/838791
 IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, ClearDropInfo) {
   ui::OSExchangeData data;
@@ -222,4 +227,285 @@ IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest,
   EXPECT_EQ(3, model->active_index());
 }
 
-#endif  // #if !BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/386194202): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_DropOrderingCorrect DISABLED_DropOrderingCorrect
+#else
+#define MAYBE_DropOrderingCorrect DropOrderingCorrect
+#endif
+IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, MAYBE_DropOrderingCorrect) {
+  TabStripModel* model = browser()->tab_strip_model();
+
+  // HELPER FUNCTION: Verify that the tabs in the current browser window match
+  // the expected list of tabs.
+  auto assert_tab_order = [model](std::vector<std::string_view> tab_urls,
+                                  std::optional<int> active_tab) {
+    ASSERT_EQ(static_cast<size_t>(model->count()), tab_urls.size());
+    for (size_t i = 0; i < tab_urls.size(); ++i) {
+      content::WebContents* contents = model->GetWebContentsAt(i);
+      EXPECT_TRUE(content::WaitForLoadStop(contents));
+      ASSERT_EQ(contents->GetURL(), GURL(tab_urls[i]));
+    }
+    if (active_tab.has_value()) {
+      EXPECT_EQ(model->active_index(), active_tab.value());
+    }
+  };
+
+  // HELPER FUNCTION: Reset to three tabs:
+  // [about:blank?1][about:blank?2][about:blank?3]
+  auto reset_tabs = [this, model, assert_tab_order]() {
+    ASSERT_TRUE(
+        AddTabAtIndex(0, GURL("about:blank?1"), ui::PAGE_TRANSITION_LINK));
+    ASSERT_TRUE(
+        AddTabAtIndex(1, GURL("about:blank?2"), ui::PAGE_TRANSITION_LINK));
+    ASSERT_TRUE(
+        AddTabAtIndex(2, GURL("about:blank?3"), ui::PAGE_TRANSITION_LINK));
+
+    while (model->count() > 3) {
+      model->DetachAndDeleteWebContentsAt(3);
+    }
+
+    assert_tab_order({"about:blank?1", "about:blank?2", "about:blank?3"},
+                     std::nullopt);
+  };
+
+  // HELPER FUNCTION: Generate a DropInfo pointer.
+  using BrowserRootView::DropIndex::RelativeToIndex::kInsertBeforeIndex;
+  using BrowserRootView::DropIndex::RelativeToIndex::kReplaceIndex;
+  auto make_drop_info =
+      [](std::vector<std::string_view> url_strings, int index,
+         BrowserRootView::DropIndex::RelativeToIndex relative_to_index) {
+        std::vector<GURL> urls;
+        for (const auto& url_string : url_strings) {
+          urls.emplace_back(url_string);
+        }
+        std::unique_ptr<BrowserRootView::DropInfo> drop_info;
+        drop_info = std::make_unique<BrowserRootView::DropInfo>();
+        drop_info->urls = std::move(urls);
+        drop_info->index.emplace();
+        drop_info->index->index = index;
+        drop_info->index->relative_to_index = relative_to_index;
+        return drop_info;
+      };
+
+  // A bunch of variables that are needed for the calls to NavigateToDroppedUrls
+  // but that aren't tested here.
+  OSExchangeData os_exchange_data;
+  ui::DropTargetEvent event(os_exchange_data, gfx::PointF(), gfx::PointF(),
+                            ui::DragDropTypes::DragOperation::DRAG_COPY);
+  ui::mojom::DragOperation drag_operation;
+  std::unique_ptr<BrowserRootView::DropInfo> drop_info;
+
+  // Finally, the actual tests!
+
+  {
+    SCOPED_TRACE("Insert single URL on left");
+    reset_tabs();
+    drop_info = make_drop_info({"about:blank?A"}, 0, kInsertBeforeIndex);
+    browser_root_view()->NavigateToDroppedUrls(std::move(drop_info), event,
+                                               drag_operation, nullptr);
+    assert_tab_order(
+        {"about:blank?A", "about:blank?1", "about:blank?2", "about:blank?3"},
+        0);
+  }
+  {
+    SCOPED_TRACE("Insert single URL between two tabs");
+    reset_tabs();
+    drop_info = make_drop_info({"about:blank?A"}, 1, kInsertBeforeIndex);
+    browser_root_view()->NavigateToDroppedUrls(std::move(drop_info), event,
+                                               drag_operation, nullptr);
+    assert_tab_order(
+        {"about:blank?1", "about:blank?A", "about:blank?2", "about:blank?3"},
+        1);
+  }
+  {
+    SCOPED_TRACE("Insert single URL on right");
+    reset_tabs();
+    drop_info = make_drop_info({"about:blank?A"}, 3, kInsertBeforeIndex);
+    browser_root_view()->NavigateToDroppedUrls(std::move(drop_info), event,
+                                               drag_operation, nullptr);
+    assert_tab_order(
+        {"about:blank?1", "about:blank?2", "about:blank?3", "about:blank?A"},
+        3);
+  }
+  {
+    SCOPED_TRACE("Insert multiple URLs on left");
+    reset_tabs();
+    drop_info =
+        make_drop_info({"about:blank?A", "about:blank?B", "about:blank?C"}, 0,
+                       kInsertBeforeIndex);
+    browser_root_view()->NavigateToDroppedUrls(std::move(drop_info), event,
+                                               drag_operation, nullptr);
+    assert_tab_order({"about:blank?A", "about:blank?B", "about:blank?C",
+                      "about:blank?1", "about:blank?2", "about:blank?3"},
+                     0);
+  }
+  {
+    SCOPED_TRACE("Insert multiple URLs between two tabs");
+    reset_tabs();
+    drop_info =
+        make_drop_info({"about:blank?A", "about:blank?B", "about:blank?C"}, 1,
+                       kInsertBeforeIndex);
+    browser_root_view()->NavigateToDroppedUrls(std::move(drop_info), event,
+                                               drag_operation, nullptr);
+    assert_tab_order({"about:blank?1", "about:blank?A", "about:blank?B",
+                      "about:blank?C", "about:blank?2", "about:blank?3"},
+                     1);
+  }
+  {
+    SCOPED_TRACE("Insert multiple URLs on right");
+    reset_tabs();
+    drop_info =
+        make_drop_info({"about:blank?A", "about:blank?B", "about:blank?C"}, 3,
+                       kInsertBeforeIndex);
+    browser_root_view()->NavigateToDroppedUrls(std::move(drop_info), event,
+                                               drag_operation, nullptr);
+    assert_tab_order({"about:blank?1", "about:blank?2", "about:blank?3",
+                      "about:blank?A", "about:blank?B", "about:blank?C"},
+                     3);
+  }
+  {
+    SCOPED_TRACE("Replace single URL on left");
+    reset_tabs();
+    drop_info = make_drop_info({"about:blank?A"}, 0, kReplaceIndex);
+    browser_root_view()->NavigateToDroppedUrls(std::move(drop_info), event,
+                                               drag_operation, nullptr);
+    assert_tab_order({"about:blank?A", "about:blank?2", "about:blank?3"}, 0);
+  }
+  {
+    SCOPED_TRACE("Replace single URL between two tabs");
+    reset_tabs();
+    drop_info = make_drop_info({"about:blank?A"}, 1, kReplaceIndex);
+    browser_root_view()->NavigateToDroppedUrls(std::move(drop_info), event,
+                                               drag_operation, nullptr);
+    assert_tab_order({"about:blank?1", "about:blank?A", "about:blank?3"}, 1);
+  }
+  {
+    SCOPED_TRACE("Replace single URL on right");
+    reset_tabs();
+    drop_info = make_drop_info({"about:blank?A"}, 2, kReplaceIndex);
+    browser_root_view()->NavigateToDroppedUrls(std::move(drop_info), event,
+                                               drag_operation, nullptr);
+    assert_tab_order({"about:blank?1", "about:blank?2", "about:blank?A"}, 2);
+  }
+  {
+    SCOPED_TRACE("Replace multiple URLs on left");
+    reset_tabs();
+    drop_info = make_drop_info(
+        {"about:blank?A", "about:blank?B", "about:blank?C"}, 0, kReplaceIndex);
+    browser_root_view()->NavigateToDroppedUrls(std::move(drop_info), event,
+                                               drag_operation, nullptr);
+    assert_tab_order({"about:blank?A", "about:blank?B", "about:blank?C",
+                      "about:blank?2", "about:blank?3"},
+                     0);
+  }
+  {
+    SCOPED_TRACE("Replace multiple URLs between two tabs");
+    reset_tabs();
+    drop_info = make_drop_info(
+        {"about:blank?A", "about:blank?B", "about:blank?C"}, 1, kReplaceIndex);
+    browser_root_view()->NavigateToDroppedUrls(std::move(drop_info), event,
+                                               drag_operation, nullptr);
+    assert_tab_order({"about:blank?1", "about:blank?A", "about:blank?B",
+                      "about:blank?C", "about:blank?3"},
+                     1);
+  }
+  {
+    SCOPED_TRACE("Replace multiple URLs on right");
+    reset_tabs();
+    drop_info = make_drop_info(
+        {"about:blank?A", "about:blank?B", "about:blank?C"}, 2, kReplaceIndex);
+    browser_root_view()->NavigateToDroppedUrls(std::move(drop_info), event,
+                                               drag_operation, nullptr);
+    assert_tab_order({"about:blank?1", "about:blank?2", "about:blank?A",
+                      "about:blank?B", "about:blank?C"},
+                     2);
+  }
+  {
+    SCOPED_TRACE("Error case: no index");
+    reset_tabs();
+    drop_info = make_drop_info({"about:blank?A"}, 0, kInsertBeforeIndex);
+    drop_info->index.reset();
+    browser_root_view()->NavigateToDroppedUrls(std::move(drop_info), event,
+                                               drag_operation, nullptr);
+    assert_tab_order({"about:blank?1", "about:blank?2", "about:blank?3"},
+                     std::nullopt);
+  }
+  {
+    SCOPED_TRACE("Error case: index too large");
+    reset_tabs();
+    drop_info = make_drop_info({"about:blank?A"}, 10, kInsertBeforeIndex);
+    browser_root_view()->NavigateToDroppedUrls(std::move(drop_info), event,
+                                               drag_operation, nullptr);
+    assert_tab_order({"about:blank?1", "about:blank?2", "about:blank?3"},
+                     std::nullopt);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest,
+                       InitiatorOriginForDroppedLink) {
+  TabStripModel* model = browser()->tab_strip_model();
+  ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
+  using BrowserRootView::DropIndex::RelativeToIndex::kReplaceIndex;
+  ui::mojom::DragOperation drag_operation;
+
+  // Set drop event data with initiator origin.
+  ui::OSExchangeData data;
+  GURL target_url("about:blank?1");
+  url::Origin initiator_origin =
+      url::Origin::Create(GURL("https://www.initiator.com/"));
+  data.SetURL(target_url, std::u16string());
+  data.MarkRendererTaintedFromOrigin(initiator_origin);
+
+  ui::DropTargetEvent event(data, gfx::PointF(), gfx::PointF(),
+                            ui::DragDropTypes::DRAG_COPY);
+
+  std::unique_ptr<BrowserRootView::DropInfo> drop_info =
+      std::make_unique<BrowserRootView::DropInfo>();
+  drop_info->urls.push_back(target_url);
+  drop_info->index.emplace();
+  drop_info->index->index = 0;
+  drop_info->index->relative_to_index = kReplaceIndex;
+
+  // Add observer to web contents to track the navigation.
+  content::WebContents* contents = model->GetActiveWebContents();
+  content::NavigationHandleObserver observer(contents, target_url);
+
+  // Call NavigateToDroppedUrls and verify the initiator origin.
+  browser_root_view()->NavigateToDroppedUrls(std::move(drop_info), event,
+                                             drag_operation, nullptr);
+  content::WaitForLoadStop(contents);
+
+  EXPECT_EQ(target_url, contents->GetLastCommittedURL());
+  EXPECT_TRUE(observer.last_initiator_origin().has_value());
+  EXPECT_EQ(initiator_origin, observer.last_initiator_origin().value());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, NavigateToUrlFromText) {
+  ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
+  using BrowserRootView::DropIndex::RelativeToIndex::kReplaceIndex;
+
+  ui::OSExchangeData data;
+  data.SetString(u"chrome://settings/");
+  ui::DropTargetEvent event(data, gfx::PointF(), gfx::PointF(),
+                            ui::DragDropTypes::DRAG_COPY);
+  WaitForDragStart(event);
+
+  EXPECT_EQ(ui::DragDropTypes::DRAG_COPY,
+            browser_root_view()->OnDragUpdated(event));
+}
+IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest,
+                       DoesNotNavigateToUrlFromRendererTaintedText) {
+  ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
+  using BrowserRootView::DropIndex::RelativeToIndex::kReplaceIndex;
+
+  ui::OSExchangeData data;
+  data.SetString(u"chrome://settings/");
+  data.MarkRendererTaintedFromOrigin(url::Origin());
+  ui::DropTargetEvent event(data, gfx::PointF(), gfx::PointF(),
+                            ui::DragDropTypes::DRAG_COPY);
+  WaitForDragStart(event);
+
+  EXPECT_EQ(ui::DragDropTypes::DRAG_NONE,
+            browser_root_view()->OnDragUpdated(event));
+}

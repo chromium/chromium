@@ -11,8 +11,9 @@
 #import "base/test/test_timeouts.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/js_test_util.h"
@@ -67,8 +68,8 @@ NSNumber* GetDefaultMaxLength() {
   return @524288;
 }
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 // Text fixture to test AutofillJavaScriptFeature.
 class AutofillJavaScriptFeatureTest : public PlatformTest {
@@ -77,9 +78,9 @@ class AutofillJavaScriptFeatureTest : public PlatformTest {
       : web_client_(std::make_unique<ChromeWebClient>()) {
     PlatformTest::SetUp();
 
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
 
-    web::WebState::CreateParams params(browser_state_.get());
+    web::WebState::CreateParams params(profile_.get());
     web_state_ = web::WebState::Create(params);
     web_state_->GetView();
     web_state_->SetKeepRenderProcessAlive(true);
@@ -123,8 +124,8 @@ class AutofillJavaScriptFeatureTest : public PlatformTest {
   }
 
   id ExecuteJavaScript(NSString* java_script) {
-    return web::test::ExecuteJavaScriptForFeature(web_state(), java_script,
-                                                  feature());
+    return web::test::ExecuteJavaScriptForFeatureAndReturnResult(
+        web_state(), java_script, feature());
   }
 
   autofill::AutofillJavaScriptFeature* feature() {
@@ -133,16 +134,18 @@ class AutofillJavaScriptFeatureTest : public PlatformTest {
 
   web::WebState* web_state() { return web_state_.get(); }
 
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
 };
 
 // Tests that `hasBeenInjected` returns YES after `inject` call.
 TEST_F(AutofillJavaScriptFeatureTest, InitAndInject) {
   LoadHtml(@"<html></html>");
-  EXPECT_NSEQ(@"object", ExecuteJavaScript(@"typeof __gCrWeb.autofill"));
+  EXPECT_NSEQ(@"object", ExecuteJavaScript(
+                             @"typeof __gCrWeb.getRegisteredApi('autofill')"));
 }
 
 // Tests forms extraction method
@@ -171,6 +174,7 @@ TEST_F(AutofillJavaScriptFeatureTest, ExtractForms) {
         @"id_attribute" : @"firstname",
         @"identifier" : @"firstname",
         @"form_control_type" : @"text",
+        @"pattern_attribute" : @"",
         @"placeholder_attribute" : @"",
         @"max_length" : GetDefaultMaxLength(),
         @"should_autocomplete" : @true,
@@ -189,6 +193,7 @@ TEST_F(AutofillJavaScriptFeatureTest, ExtractForms) {
         @"id_attribute" : @"lastname",
         @"identifier" : @"lastname",
         @"form_control_type" : @"text",
+        @"pattern_attribute" : @"",
         @"placeholder_attribute" : @"",
         @"max_length" : GetDefaultMaxLength(),
         @"should_autocomplete" : @true,
@@ -207,6 +212,7 @@ TEST_F(AutofillJavaScriptFeatureTest, ExtractForms) {
         @"id_attribute" : @"email",
         @"identifier" : @"email",
         @"form_control_type" : @"email",
+        @"pattern_attribute" : @"",
         @"placeholder_attribute" : @"",
         @"max_length" : GetDefaultMaxLength(),
         @"should_autocomplete" : @true,
@@ -270,6 +276,7 @@ TEST_F(AutofillJavaScriptFeatureTest, ExtractForms2) {
         @"id_attribute" : @"firstname",
         @"identifier" : @"firstname",
         @"form_control_type" : @"text",
+        @"pattern_attribute" : @"",
         @"placeholder_attribute" : @"",
         @"max_length" : GetDefaultMaxLength(),
         @"should_autocomplete" : @true,
@@ -288,6 +295,7 @@ TEST_F(AutofillJavaScriptFeatureTest, ExtractForms2) {
         @"id_attribute" : @"lastname",
         @"identifier" : @"lastname",
         @"form_control_type" : @"text",
+        @"pattern_attribute" : @"",
         @"placeholder_attribute" : @"",
         @"max_length" : GetDefaultMaxLength(),
         @"should_autocomplete" : @true,
@@ -306,6 +314,7 @@ TEST_F(AutofillJavaScriptFeatureTest, ExtractForms2) {
         @"id_attribute" : @"email",
         @"identifier" : @"email",
         @"form_control_type" : @"email",
+        @"pattern_attribute" : @"",
         @"placeholder_attribute" : @"",
         @"max_length" : GetDefaultMaxLength(),
         @"should_autocomplete" : @true,

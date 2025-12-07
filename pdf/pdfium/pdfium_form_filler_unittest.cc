@@ -39,8 +39,8 @@ class FormFillerTestClient : public TestClient {
   // Mock PDFiumEngineClient methods.
   MOCK_METHOD(void, Beep, (), (override));
   MOCK_METHOD(std::string, GetURL, (), (override));
-  MOCK_METHOD(void, ScrollToX, (int), (override));
-  MOCK_METHOD(void, ScrollToY, (int), (override));
+  MOCK_METHOD(void, ScrollToX, (int, bool), (override));
+  MOCK_METHOD(void, ScrollToY, (int, bool), (override));
   MOCK_METHOD(void,
               NavigateTo,
               (const std::string&, WindowOpenDisposition),
@@ -95,24 +95,17 @@ TEST_P(FormFillerTest, DoURIActionWithKeyboardModifier) {
   const char kUri[] = "https://www.google.com/";
   {
     InSequence sequence;
-    EXPECT_CALL(client, NavigateTo(kUri, WindowOpenDisposition::CURRENT_TAB))
-        .Times(1);
-    EXPECT_CALL(client, NavigateTo(kUri, WindowOpenDisposition::SAVE_TO_DISK))
-        .Times(1);
+    EXPECT_CALL(client, NavigateTo(kUri, WindowOpenDisposition::CURRENT_TAB));
+    EXPECT_CALL(client, NavigateTo(kUri, WindowOpenDisposition::SAVE_TO_DISK));
     EXPECT_CALL(client,
-                NavigateTo(kUri, WindowOpenDisposition::NEW_BACKGROUND_TAB))
-        .Times(1);
-    EXPECT_CALL(client, NavigateTo(kUri, WindowOpenDisposition::NEW_WINDOW))
-        .Times(1);
+                NavigateTo(kUri, WindowOpenDisposition::NEW_BACKGROUND_TAB));
+    EXPECT_CALL(client, NavigateTo(kUri, WindowOpenDisposition::NEW_WINDOW));
     EXPECT_CALL(client,
-                NavigateTo(kUri, WindowOpenDisposition::NEW_FOREGROUND_TAB))
-        .Times(1);
+                NavigateTo(kUri, WindowOpenDisposition::NEW_FOREGROUND_TAB));
     EXPECT_CALL(client,
-                NavigateTo(kUri, WindowOpenDisposition::NEW_BACKGROUND_TAB))
-        .Times(1);
+                NavigateTo(kUri, WindowOpenDisposition::NEW_BACKGROUND_TAB));
     EXPECT_CALL(client,
-                NavigateTo(kUri, WindowOpenDisposition::NEW_FOREGROUND_TAB))
-        .Times(1);
+                NavigateTo(kUri, WindowOpenDisposition::NEW_FOREGROUND_TAB));
   }
 
   constexpr blink::WebInputEvent::Modifiers kModifierKey =
@@ -167,10 +160,12 @@ TEST_P(FormFillerTest, FormOnFocusChange) {
 
     for (const auto& test_case : test_cases) {
       if (test_case.final_scroll_position.y() != 0) {
-        EXPECT_CALL(client, ScrollToY(test_case.final_scroll_position.y()));
+        EXPECT_CALL(client, ScrollToY(test_case.final_scroll_position.y(),
+                                      /*force_smooth_scroll=*/false));
       }
       if (test_case.final_scroll_position.x() != 0)
-        EXPECT_CALL(client, ScrollToX(test_case.final_scroll_position.x()));
+        EXPECT_CALL(client, ScrollToX(test_case.final_scroll_position.x(),
+                                      /*force_smooth_scroll=*/false));
     }
   }
 
@@ -179,7 +174,7 @@ TEST_P(FormFillerTest, FormOnFocusChange) {
     engine->ScrolledToXPosition(test_case.initial_position.x());
     engine->ScrolledToYPosition(test_case.initial_position.y());
 
-    PDFiumPage& page = GetPDFiumPageForTest(*engine, test_case.page_index);
+    PDFiumPage& page = GetPDFiumPage(*engine, test_case.page_index);
     ScopedFPDFAnnotation annot(
         FPDFPage_GetAnnot(page.GetPage(), test_case.annot_index));
     ASSERT_TRUE(annot);

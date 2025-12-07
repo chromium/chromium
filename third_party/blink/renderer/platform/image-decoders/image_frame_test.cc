@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/image-decoders/image_frame.h"
 
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/private/chromium/SkPMColor.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 
 namespace blink {
@@ -28,8 +25,8 @@ class ImageFrameTest : public testing::Test {
     src_8888_r = 0x40;
     src_8888_g = 0x50;
     src_8888_b = 0x60;
-    src_8888 = SkPackARGB32(src_8888_a, src_8888_r, src_8888_g, src_8888_b);
-    dst_8888 = SkPackARGB32(0xA0, 0x60, 0x70, 0x80);
+    src_8888 = SkPMColorSetARGB(src_8888_a, src_8888_r, src_8888_g, src_8888_b);
+    dst_8888 = SkPMColorSetARGB(0xA0, 0x60, 0x70, 0x80);
 
 #if SK_PMCOLOR_BYTE_ORDER(B, G, R, A)
     pixel_format_n32 = skcms_PixelFormat_BGRA_8888;
@@ -81,8 +78,9 @@ TEST_F(ImageFrameTest, BlendRGBARawF16Buffer) {
   ConvertF16ToF32(f32_from_blended_f16, blended_f16);
 
   for (int i = 0; i < 4; i++) {
-    ASSERT_TRUE(fabs(f32_from_blended_8888[i] - f32_from_blended_f16[i]) <
-                color_compoenent_tolerance);
+    UNSAFE_TODO(
+        ASSERT_TRUE(fabs(f32_from_blended_8888[i] - f32_from_blended_f16[i]) <
+                    color_compoenent_tolerance));
   }
 }
 
@@ -101,8 +99,9 @@ TEST_F(ImageFrameTest, BlendRGBAPremultipliedF16Buffer) {
   ConvertF16ToF32(f32_from_blended_f16, blended_f16);
 
   for (int i = 0; i < 4; i++) {
-    ASSERT_TRUE(fabs(f32_from_blended_8888[i] - f32_from_blended_f16[i]) <
-                color_compoenent_tolerance);
+    UNSAFE_TODO(
+        ASSERT_TRUE(fabs(f32_from_blended_8888[i] - f32_from_blended_f16[i]) <
+                    color_compoenent_tolerance));
   }
 }
 

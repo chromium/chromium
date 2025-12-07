@@ -71,16 +71,19 @@ enum BadMessageReason {
   EFH_NO_BACKGROUND_HOST_FOR_FRAME = 31,
   LEGACY_IPC_MISMATCH = 32,
   ER_SW_INVALID_LAZY_BACKGROUND_PARAM = 33,
+  SWH_BAD_WORKER_THREAD_ID = 34,
+  ER_INVALID_EXTENSION_ID_FOR_PROCESS = 35,
+  CEFH_INVALID_EXTENSION_ID_FOR_SCRIPT_INJECT_REQUEST = 36,
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. ExtensionHost becomes EH) plus a unique description of the
   // reason. After making changes, you MUST update histograms.xml by running:
-  // "python tools/metrics/histograms/update_bad_message_reasons.py"
+  // "vpython3 tools/metrics/histograms/update_bad_message_reasons.py"
   BAD_MESSAGE_MAX
 };
 
 // Called when the browser receives a bad IPC message from a normal or an
 // extension renderer. Logs the event, records a histogram metric for the
-// |reason|, and terminates the process for |host|/|render_process_id|.
+// `reason`, and terminates the process for `host`/`render_process_id`.
 void ReceivedBadMessage(content::RenderProcessHost* host,
                         BadMessageReason reason);
 

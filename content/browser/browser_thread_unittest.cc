@@ -36,8 +36,6 @@ namespace content {
 
 namespace {
 
-using ::testing::Invoke;
-
 class SequenceManagerThreadDelegate : public base::Thread::Delegate {
  public:
   SequenceManagerThreadDelegate() {
@@ -75,6 +73,10 @@ class SequenceManagerThreadDelegate : public base::Thread::Delegate {
   void BindToCurrentThread() override {
     ui_sequence_manager_->BindToMessagePump(
         base::MessagePump::Create(base::MessagePumpType::DEFAULT));
+  }
+
+  void AddTaskObserver(base::TaskObserver* observer) override {
+    ui_sequence_manager_->AddTaskObserver(observer);
   }
 
  private:
@@ -201,14 +203,6 @@ TEST_F(BrowserThreadTest, PostTask) {
   run_loop.Run();
 }
 
-TEST_F(BrowserThreadTest, Release) {
-  base::RunLoop run_loop;
-  ExpectRelease(run_loop.QuitWhenIdleClosure());
-  BrowserThread::ReleaseSoon(BrowserThread::IO, FROM_HERE,
-                             base::WrapRefCounted(this));
-  run_loop.Run();
-}
-
 TEST_F(BrowserThreadTest, ReleasedOnCorrectThread) {
   base::RunLoop run_loop;
   {
@@ -324,9 +318,7 @@ TEST_F(BrowserThreadWithCustomSchedulerTest, PostBestEffortTask) {
 
   BrowserTaskExecutor::OnStartupComplete();
   base::RunLoop run_loop;
-  EXPECT_CALL(best_effort_task, Run).WillOnce(Invoke([&]() {
-    run_loop.Quit();
-  }));
+  EXPECT_CALL(best_effort_task, Run).WillOnce([&]() { run_loop.Quit(); });
   run_loop.Run();
 }
 

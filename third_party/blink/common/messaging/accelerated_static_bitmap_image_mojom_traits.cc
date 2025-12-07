@@ -4,8 +4,11 @@
 
 #include "third_party/blink/public/common/messaging/accelerated_static_bitmap_image_mojom_traits.h"
 
+#include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "ui/gfx/color_space.h"
 
 namespace {
 
@@ -58,15 +61,11 @@ bool StructTraits<blink::mojom::AcceleratedStaticBitmapImage::DataView,
                   blink::AcceleratedImageInfo>::
     Read(blink::mojom::AcceleratedStaticBitmapImage::DataView data,
          blink::AcceleratedImageInfo* out) {
-  if (!data.ReadMailboxHolder(&out->mailbox_holder) ||
-      !data.ReadImageInfo(&out->image_info)) {
+  if (!data.ReadSharedImage(&out->shared_image) ||
+      !data.ReadSyncToken(&out->sync_token) ||
+      !data.ReadAlphaType(&out->alpha_type)) {
     return false;
   }
-
-  out->usage = data.usage();
-  out->is_origin_top_left = data.is_origin_top_left();
-  out->supports_display_compositing = data.supports_display_compositing();
-  out->is_overlay_candidate = data.is_overlay_candidate();
 
   auto callback = data.TakeReleaseCallback<
       mojo::PendingRemote<blink::mojom::ImageReleaseCallback>>();

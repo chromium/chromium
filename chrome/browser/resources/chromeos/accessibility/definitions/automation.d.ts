@@ -222,7 +222,6 @@ declare namespace chrome {
       FIGCAPTION = 'figcaption',
       FIGURE = 'figure',
       FOOTER = 'footer',
-      FOOTER_AS_NON_LANDMARK = 'footerAsNonLandmark',
       FORM = 'form',
       GENERIC_CONTAINER = 'genericContainer',
       GRAPHICS_DOCUMENT = 'graphicsDocument',
@@ -232,7 +231,6 @@ declare namespace chrome {
       GRID_CELL = 'gridCell',
       GROUP = 'group',
       HEADER = 'header',
-      HEADER_AS_NON_LANDMARK = 'headerAsNonLandmark',
       HEADING = 'heading',
       IFRAME = 'iframe',
       IFRAME_PRESENTATIONAL = 'iframePresentational',
@@ -314,6 +312,8 @@ declare namespace chrome {
       SEARCH = 'search',
       SEARCH_BOX = 'searchBox',
       SECTION = 'section',
+      SECTION_FOOTER = 'sectionFooter',
+      SECTION_HEADER = 'sectionHeader',
       SECTION_WITHOUT_NAME = 'sectionWithoutName',
       SLIDER = 'slider',
       SPIN_BUTTON = 'spinButton',
@@ -357,6 +357,8 @@ declare namespace chrome {
       EXPANDED = 'expanded',
       FOCUSABLE = 'focusable',
       FOCUSED = 'focused',
+      HAS_ACTIONS = 'hasActions',
+      HAS_INTEREST_FOR = 'hasInterestFor',
       HORIZONTAL = 'horizontal',
       HOVERED = 'hovered',
       IGNORED = 'ignored',
@@ -430,6 +432,7 @@ declare namespace chrome {
       ATTRIBUTE_EXPLICITLY_EMPTY = 'attributeExplicitlyEmpty',
       CAPTION = 'caption',
       CONTENTS = 'contents',
+      CSSALTTEXT = 'cssAltText',
       PLACEHOLDER = 'placeholder',
       POPOVER_ATTRIBUTE = 'popoverAttribute',
       PROHIBITED = 'prohibited',
@@ -629,7 +632,7 @@ declare namespace chrome {
     export interface AutomationIntent {
       command: IntentCommandType;
       textBoundary: IntentTextBoundaryType;
-      moveDirection: IntentMoveDirectionType;
+      moveDirection?: IntentMoveDirectionType;
     }
 
     export interface AutomationEvent {
@@ -830,9 +833,11 @@ declare namespace chrome {
       ariaColumnCount?: number;
       tableCellColumnIndex?: number;
       tableCellAriaColumnIndex?: number;
+      ariaCellColumnIndexText?: string;
       tableCellColumnSpan?: number;
       tableCellRowIndex?: number;
       tableCellAriaRowIndex?: number;
+      ariaCellRowIndexText?: string;
       tableCellRowSpan?: number;
       tableColumnHeader?: AutomationNode;
       tableRowHeader?: AutomationNode;
@@ -854,9 +859,6 @@ declare namespace chrome {
       autoComplete?: string;
       className?: string;
       modal?: boolean;
-      htmlAttributes?: {
-        [key: string]: any,
-      };
       inputType?: string;
       accessKey?: string;
       ariaInvalidValue?: string;
@@ -867,7 +869,7 @@ declare namespace chrome {
       hasPopup?: HasPopup;
       restriction?: string;
       checked?: string;
-      innerHtml?: string;
+      mathContent?: string;
       color?: number;
       backgroundColor?: number;
       colorValue?: number;

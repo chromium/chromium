@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//media/gpu/args.gni")
 import("//media/media_options.gni")
@@ -55,6 +53,14 @@ source_set("v4l2") {
     "v4l2_vp9_helpers.h",
   ]
 
+  # enable_av1_v4l2_decoder
+  if (use_av1_hw_decoder) {
+    sources += [
+      "v4l2_video_decoder_delegate_av1.cc",
+      "v4l2_video_decoder_delegate_av1.h",
+    ]
+  }
+
   if (enable_hevc_parser_and_hw_decoder) {
     sources += [
       "v4l2_video_decoder_delegate_h265.cc",
@@ -72,10 +78,6 @@ source_set("v4l2") {
 
   if (is_chromeos) {
     sources += [
-      # AV1 delegate depends on header files only in ChromeOS SDK
-      "v4l2_video_decoder_delegate_av1.cc",
-      "v4l2_video_decoder_delegate_av1.h",
-
       # TODO(crbug.com/901264): Encoders use hack for passing offset
       # within a DMA-buf, which is not supported upstream.
       "v4l2_video_encode_accelerator.cc",
@@ -101,6 +103,7 @@ source_set("v4l2") {
     "//gpu/ipc/service",
     "//media",
     "//media/gpu:buildflags",
+    "//media/gpu:command_buffer_helper",
     "//media/gpu:common",
     "//media/gpu:video_frame_mapper_common",
     "//media/gpu/chromeos:common",
@@ -110,7 +113,7 @@ source_set("v4l2") {
     "//ui/ozone",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "v4l2_jpeg_encode_accelerator.cc",
       "v4l2_jpeg_encode_accelerator.h",
@@ -125,6 +128,10 @@ source_set("v4l2") {
       "//media/gpu:video_frame_mapper_common",
     ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 # The v4l2 status functionality is in its own source set so that it can be
@@ -185,7 +192,7 @@ executable("v4l2_stateless_decoder") {
     ]
   }
 
-  if (is_chromeos) {
+  if (use_av1_hw_decoder) {
     sources += [
       "test/av1_decoder.cc",
       "test/av1_decoder.h",
@@ -194,12 +201,17 @@ executable("v4l2_stateless_decoder") {
 
   deps = [
     "//base",
+    "//crypto",
     "//media",
     "//media:test_support",
     "//media/gpu:common",
     "//third_party/libgav1:libgav1_parser",
     "//third_party/libyuv",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 test("v4l2_unittest") {
@@ -211,10 +223,14 @@ test("v4l2_unittest") {
     "//base/test:test_support",
     "//build/config/linux/libdrm",
     "//media:test_support",
-    "//media/gpu/chromeos:chromeos",
+    "//media/gpu/chromeos",
     "//testing/gtest",
     "//ui/gfx/linux:gbm",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (current_cpu == "arm" || current_cpu == "arm64") {
@@ -225,7 +241,7 @@ if (current_cpu == "arm" || current_cpu == "arm64") {
       "mt21/mt21_util_unittest.cc",
     ]
     deps = [
-      "//base:base",
+      "//base",
       "//base/test:test_support",
       "//testing/gtest",
     ]
@@ -240,13 +256,14 @@ if (current_cpu == "arm" || current_cpu == "arm64") {
       "mt21/mt21_util.h",
     ]
     deps = [
-      "//base:base",
+      "//base",
       "//base/test:test_support",
-      "//base/test:test_trace_processor",
       "//testing/gtest",
       "//testing/perf",
       "//third_party/libyuv",
       "//ui/gfx/geometry",
     ]
+
+    deps += [ "//base/test:test_trace_processor" ]
   }
 }

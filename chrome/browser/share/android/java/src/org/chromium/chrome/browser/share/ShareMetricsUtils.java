@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.share;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Class manage recording different metrics for share sheet. */
+@NullMarked
 public final class ShareMetricsUtils {
     /**
      * The type of share custom actions, in sync with ShareCustomAction in enums.xml. These values
@@ -32,6 +34,7 @@ public final class ShareMetricsUtils {
         ShareCustomAction.COPY_IMAGE_WITH_LINK,
         ShareCustomAction.PAGE_INFO,
         ShareCustomAction.REMOVE_PAGE_INFO,
+        ShareCustomAction.SHARE_AS_TAB_GROUP,
         ShareCustomAction.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -51,10 +54,11 @@ public final class ShareMetricsUtils {
         int COPY_IMAGE_WITH_LINK = 9;
         int PAGE_INFO = 10;
         int REMOVE_PAGE_INFO = 11;
+        int SHARE_AS_TAB_GROUP = 12;
 
         // Add new types here
 
-        int NUM_ENTRIES = 12;
+        int NUM_ENTRIES = 13;
     }
 
     /**
@@ -70,7 +74,7 @@ public final class ShareMetricsUtils {
                 "Sharing.SharingHubAndroid.CustomAction",
                 actionType,
                 ShareCustomAction.NUM_ENTRIES);
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "Sharing.SharingHubAndroid.TimeToCustomAction",
                 System.currentTimeMillis() - shareStartTime);
     }

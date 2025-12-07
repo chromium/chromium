@@ -9,7 +9,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/test_support_jni_headers/MockCertVerifierRuleAndroid_jni.h"
 
-jlong JNI_MockCertVerifierRuleAndroid_Init(JNIEnv* env) {
+static jlong JNI_MockCertVerifierRuleAndroid_Init(JNIEnv* env) {
   return reinterpret_cast<intptr_t>(new MockCertVerifierRuleAndroid());
 }
 
@@ -27,3 +27,5 @@ void MockCertVerifierRuleAndroid::SetUp(JNIEnv* env) {
 void MockCertVerifierRuleAndroid::TearDown(JNIEnv* env) {
   mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
 }
+
+DEFINE_JNI(MockCertVerifierRuleAndroid)

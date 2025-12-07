@@ -10,12 +10,12 @@
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "components/viz/common/buildflags.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/features.h"
 #include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
 #include "components/viz/service/display/overlay_processor_stub.h"
+#include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
 #include "ui/gfx/overlay_priority_hint.h"
 
 #if BUILDFLAG(IS_APPLE)
@@ -28,12 +28,32 @@
 #elif BUILDFLAG(IS_OZONE)
 #include "components/viz/service/display/overlay_processor_delegated.h"
 #include "components/viz/service/display/overlay_processor_ozone.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "ui/ozone/public/overlay_manager_ozone.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
 namespace viz {
 namespace {
+
+#if BUILDFLAG(IS_OZONE)
+class SharedImageManagerPixmapProvider
+    : public OverlayProcessorOzone::PixmapProvider {
+ public:
+  explicit SharedImageManagerPixmapProvider(gpu::SharedImageManager* manager)
+      : manager_(manager) {
+    CHECK(manager_);
+  }
+
+  scoped_refptr<gfx::NativePixmap> GetNativePixmap(
+      const gpu::Mailbox& mailbox) override {
+    return manager_->GetNativePixmap(mailbox);
+  }
+
+  const raw_ptr<gpu::SharedImageManager> manager_;
+};
+#endif
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class UnderlayDamage {
@@ -77,23 +97,13 @@ void OverlayProcessorInterface::RecordOverlayDamageRectHistograms(
   }
 }
 
-OverlayProcessorInterface::OutputSurfaceOverlayPlane::
-    OutputSurfaceOverlayPlane() = default;
-OverlayProcessorInterface::OutputSurfaceOverlayPlane::OutputSurfaceOverlayPlane(
-    const OutputSurfaceOverlayPlane&) = default;
-OverlayProcessorInterface::OutputSurfaceOverlayPlane&
-OverlayProcessorInterface::OutputSurfaceOverlayPlane::operator=(
-    const OutputSurfaceOverlayPlane&) = default;
-OverlayProcessorInterface::OutputSurfaceOverlayPlane::
-    ~OutputSurfaceOverlayPlane() = default;
-
 std::unique_ptr<OverlayProcessorInterface>
 OverlayProcessorInterface::CreateOverlayProcessor(
     OutputSurface* output_surface,
     gpu::SurfaceHandle surface_handle,
     const OutputSurface::Capabilities& capabilities,
     DisplayCompositorMemoryAndTaskController* display_controller,
-    gpu::SharedImageInterface* shared_image_interface,
+    gpu::SharedImageManager* shared_image_manager,
     const RendererSettings& renderer_settings,
     const DebugRendererSettings* debug_settings) {
   // If we are offscreen, we don't have overlay support.
@@ -110,10 +120,20 @@ OverlayProcessorInterface::CreateOverlayProcessor(
     return std::make_unique<OverlayProcessorStub>();
   }
 
+  DCHECK(display_controller);
+  DCHECK(display_controller->skia_dependency());
   return std::make_unique<OverlayProcessorWin>(
-      capabilities.dc_support_level, debug_settings,
+      capabilities.dc_support_level,
+      display_controller->skia_dependency()
+          ->GetGpuDriverBugWorkarounds()
+          .disable_direct_composition_letterbox_video_optimization,
+      debug_settings,
       std::make_unique<DCLayerOverlayProcessor>(
-          capabilities.allowed_yuv_overlay_count));
+          capabilities.allowed_yuv_overlay_count,
+          display_controller->skia_dependency()
+              ->GetGpuDriverBugWorkarounds()
+              .disable_video_overlay_if_moving));
+
 #elif BUILDFLAG(IS_OZONE)
 #if !BUILDFLAG(IS_CASTOS)
   // In tests and Ozone/X11, we do not expect surfaceless surface support.
@@ -122,27 +142,22 @@ OverlayProcessorInterface::CreateOverlayProcessor(
     return std::make_unique<OverlayProcessorStub>();
 #endif  // #if !BUILDFLAG(IS_CASTOS)
 
-  gpu::SharedImageInterface* sii = nullptr;
+  std::unique_ptr<OverlayProcessorOzone::PixmapProvider> pixmap_provider;
   auto* overlay_manager = ui::OzonePlatform::GetInstance()->GetOverlayManager();
   std::unique_ptr<ui::OverlayCandidatesOzone> overlay_candidates;
   if (overlay_manager) {
     overlay_candidates =
         overlay_manager->CreateOverlayCandidates(surface_handle);
     if (overlay_manager->allow_sync_and_real_buffer_page_flip_testing()) {
-      sii = shared_image_interface;
-      CHECK(shared_image_interface);
+      pixmap_provider = std::make_unique<SharedImageManagerPixmapProvider>(
+          shared_image_manager);
     }
   }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return std::make_unique<OverlayProcessorDelegated>(
-      std::move(overlay_candidates),
-      std::move(renderer_settings.overlay_strategies), sii);
-#else
   return std::make_unique<OverlayProcessorOzone>(
       std::move(overlay_candidates),
-      std::move(renderer_settings.overlay_strategies), sii);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+      std::move(renderer_settings.overlay_strategies),
+      std::move(pixmap_provider));
 
 #elif BUILDFLAG(IS_ANDROID)
   DCHECK(display_controller);
@@ -171,8 +186,7 @@ bool OverlayProcessorInterface::DisableSplittingQuads() const {
   return false;
 }
 
-OverlayProcessorInterface::OutputSurfaceOverlayPlane
-OverlayProcessorInterface::ProcessOutputSurfaceAsOverlay(
+OverlayCandidate OverlayProcessorInterface::ProcessOutputSurfaceAsOverlay(
     const gfx::Size& viewport_size,
     const gfx::Size& resource_size,
     const SharedImageFormat si_format,
@@ -180,16 +194,21 @@ OverlayProcessorInterface::ProcessOutputSurfaceAsOverlay(
     bool has_alpha,
     float opacity,
     const gpu::Mailbox& mailbox) {
-  OutputSurfaceOverlayPlane overlay_plane;
+  OverlayCandidate overlay_plane;
+  overlay_plane.is_root_render_pass = true;
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
+  overlay_plane.transform = gfx::Transform();
+#else
   overlay_plane.transform = gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE;
+#endif
   overlay_plane.uv_rect = gfx::RectF(
       0.f, 0.f,
       viewport_size.width() / static_cast<float>(resource_size.width()),
       viewport_size.height() / static_cast<float>(resource_size.height()));
-  overlay_plane.resource_size = resource_size;
+  overlay_plane.resource_size_in_pixels = resource_size;
   overlay_plane.format = si_format;
   overlay_plane.color_space = color_space;
-  overlay_plane.enable_blending = has_alpha;
+  overlay_plane.is_opaque = !has_alpha;
   overlay_plane.opacity = opacity;
   overlay_plane.mailbox = mailbox;
   overlay_plane.priority_hint = gfx::OverlayPriorityHint::kRegular;
@@ -201,9 +220,26 @@ OverlayProcessorInterface::ProcessOutputSurfaceAsOverlay(
 
 #if BUILDFLAG(ALWAYS_ENABLE_BLENDING_FOR_PRIMARY)
   // On Chromecast, always use RGBA as the scanout format for the primary plane.
-  overlay_plane.enable_blending = true;
+  overlay_plane.is_opaque = false;
 #endif
   return overlay_plane;
+}
+
+void OverlayProcessorInterface::ProcessForOverlays(
+    DisplayResourceProvider* resource_provider,
+    AggregatedRenderPassList* render_passes,
+    const SkM44& output_color_matrix,
+    SurfaceDamageRectList surface_damage_rect_list,
+    std::optional<OverlayCandidate>& primary_plane,
+    CandidateList* overlay_candidates,
+    gfx::Rect* damage_rect,
+    std::vector<gfx::Rect>* content_bounds) {
+  // By default, call the other overload with empty filter maps.
+  ProcessForOverlays(resource_provider, render_passes, output_color_matrix,
+                     /*render_pass_filters=*/{},
+                     /*render_pass_backdrop_filters=*/{},
+                     surface_damage_rect_list, primary_plane,
+                     overlay_candidates, damage_rect, content_bounds);
 }
 
 void OverlayProcessorInterface::ScheduleOverlays(

@@ -21,12 +21,14 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation_traits.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_base.h"
-#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/pin.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/fido_types.h"
 
 namespace device {
 
@@ -46,8 +48,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
  public:
   using RequestCallback = base::RepeatingCallback<void(const std::string&)>;
 
-  using AuthenticatorMap =
-      std::map<std::string, FidoAuthenticator*, std::less<>>;
+  using AuthenticatorMap = std::map<std::string,
+                                    raw_ptr<FidoAuthenticator, CtnExperimental>,
+                                    std::less<>>;
 
   // BLE adapter status.
   enum class BleStatus {
@@ -76,19 +79,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
   // components of TransportAvailabilityInfo is set,
   // AuthenticatorRequestClientDelegate should be notified.
   struct COMPONENT_EXPORT(DEVICE_FIDO) TransportAvailabilityInfo {
-    enum class ConditionalUITreatment {
-      kDefault = 0,
-      // kDontShowEmptyConditionalUI requests that, if there are no matching
-      // credentials for conditional UI, that the option to use a passkey from
-      // another device not be offered. This is for measurement and
-      // experimentation.
-      kDontShowEmptyConditionalUI,
-      // kNeverOfferPasskeyFromAnotherDevice requests that the option to use a
-      // passkey from another device is never offered in conditional UI. This is
-      // for measurement and experimentation.
-      kNeverOfferPasskeyFromAnotherDevice,
-    };
-
     TransportAvailabilityInfo();
     TransportAvailabilityInfo(const TransportAvailabilityInfo& other);
     TransportAvailabilityInfo& operator=(
@@ -100,10 +90,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     // Indicates whether this is a GetAssertion request with an empty allow
     // list.
     bool has_empty_allow_list = false;
-
-    // is_only_hybrid_or_internal is true if credentials in the allow-list only
-    // contain the hybrid or internal transports.
-    bool is_only_hybrid_or_internal = false;
 
     // True this process has iCloud Keychain support. Only meaningful on macOS.
     bool has_icloud_keychain = false;
@@ -153,10 +139,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     // Whether the platform can check biometrics and has biometrics configured.
     bool platform_has_biometrics = false;
 
-    // Indicates whether the request is occurring in an off-the-record
-    // BrowserContext (e.g. Chrome Incognito mode).
-    bool is_off_the_record_context = false;
-
     // Indicates the ResidentKeyRequirement of the current request. Only valid
     // if |request_type| is |RequestType::kMakeCredential|. Requests with a
     // value of |ResidentKeyRequirement::kPreferred| or
@@ -169,6 +151,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     // Indicates the UserVerificationRequirement of the current request.
     UserVerificationRequirement user_verification_requirement =
         UserVerificationRequirement::kDiscouraged;
+
+    // The attestation preference. Present if, and only if, |request_type| is
+    // |kMakeCredential|.
+    std::optional<AttestationConveyancePreference>
+        attestation_conveyance_preference;
 
     // transport_list_did_include_internal is set to true during a getAssertion
     // request if at least one element of the allowList included the "internal"
@@ -202,10 +189,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     // specific to makeCredential requests.
     std::optional<AuthenticatorAttachment> make_credential_attachment;
 
-    // conditional_ui_treatment_ controls how conditional UI will be handled for
-    // this request.
-    ConditionalUITreatment conditional_ui_treatment =
-        ConditionalUITreatment::kDefault;
+    // If true, the only available credential may be selected by default in
+    // immediate mediation requests.
+    // TODO(crbug.com/393055190): Remove this field while cleaning up
+    // WebAuthenticationImmediateGetAutoselect once the autoselect experiment is
+    // complete.
+    bool autoselect_in_immediate_mediation = false;
   };
 
   class COMPONENT_EXPORT(DEVICE_FIDO) Observer {
@@ -226,6 +215,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     };
 
     virtual ~Observer();
+
+    // `StartObserving` and `StopObserving` are called when the request handler
+    // is constructed and destructed, respectively.
+    virtual void StartObserving(FidoRequestHandlerBase* request_handler) = 0;
+    virtual void StopObserving(FidoRequestHandlerBase* request_handler) = 0;
 
     // This method will not be invoked until the observer is set.
     virtual void OnTransportAvailabilityEnumerated(
@@ -338,7 +332,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
 
   base::WeakPtr<FidoRequestHandlerBase> GetWeakPtr();
 
-  void set_observer(Observer* observer);
+  void SetObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Returns whether FidoAuthenticator with id equal to |authenticator_id|
   // exists. Fake FidoRequestHandler objects used in testing overrides this
@@ -449,5 +444,23 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
 };
 
 }  // namespace device
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<device::FidoRequestHandlerBase,
+                               device::FidoRequestHandlerBase::Observer> {
+  static void AddObserver(device::FidoRequestHandlerBase* source,
+                          device::FidoRequestHandlerBase::Observer* observer) {
+    source->SetObserver(observer);
+  }
+  static void RemoveObserver(
+      device::FidoRequestHandlerBase* source,
+      device::FidoRequestHandlerBase::Observer* observer) {
+    source->RemoveObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // DEVICE_FIDO_FIDO_REQUEST_HANDLER_BASE_H_

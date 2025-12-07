@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/frame/directive.h"
 
 #include "base/notreached.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_directive_type.h"
 
 namespace blink {
 
@@ -15,22 +16,17 @@ Directive::Type Directive::GetType() const {
   return type_;
 }
 
-String Directive::type() const {
-  DEFINE_STATIC_LOCAL(const String, text, ("text"));
-  DEFINE_STATIC_LOCAL(const String, selector, ("selector"));
-
+V8DirectiveType Directive::type() const {
   switch (type_) {
     case kUnknown:
-      NOTREACHED_IN_MIGRATION();
-      return String();
+      NOTREACHED();
     case kText:
-      return text;
+      return V8DirectiveType(V8DirectiveType::Enum::kText);
     case kSelector:
-      return selector;
+      return V8DirectiveType(V8DirectiveType::Enum::kSelector);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 String Directive::toString() const {

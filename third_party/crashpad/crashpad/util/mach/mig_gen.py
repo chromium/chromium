@@ -27,6 +27,7 @@ MigInterface = collections.namedtuple(
 def generate_interface(defs,
                        interface,
                        includes=[],
+                       defines=[],
                        sdk=None,
                        clang_path=None,
                        mig_path=None,
@@ -55,6 +56,8 @@ def generate_interface(defs,
         command.extend(['-isysroot', sdk])
     for include in includes:
         command.extend(['-I' + include])
+    for define in defines:
+        command.extend(['-D' + define])
     command.append(defs)
     subprocess.check_call(command)
 
@@ -78,6 +81,10 @@ def parse_args(args, multiple_arch=False):
         default=[],
         action='append',
         help='Additional include directory (may appear multiple times)')
+    parser.add_argument('--define',
+                        default=[],
+                        action='append',
+                        help='Additional define (may appear multiple times)')
     parser.add_argument('defs')
     parser.add_argument('user_c')
     parser.add_argument('server_c')
@@ -90,9 +97,9 @@ def main(args):
     parsed = parse_args(args)
     interface = MigInterface(parsed.user_c, parsed.server_c, parsed.user_h,
                              parsed.server_h)
-    generate_interface(parsed.defs, interface, parsed.include, parsed.sdk,
-                       parsed.clang_path, parsed.mig_path, parsed.migcom_path,
-                       parsed.arch)
+    generate_interface(parsed.defs, interface, parsed.include, parsed.define,
+                       parsed.sdk, parsed.clang_path, parsed.mig_path,
+                       parsed.migcom_path, parsed.arch)
 
 
 if __name__ == '__main__':

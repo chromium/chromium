@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/files/file_util.h"
 
+#include <algorithm>
 #include <string_view>
 
 #include "base/task/sequenced_task_runner.h"
@@ -19,6 +15,7 @@
 #endif
 #include <stdio.h>
 
+#include <algorithm>
 #include <fstream>
 #include <limits>
 #include <memory>
@@ -33,10 +30,10 @@
 #include "base/files/file_path.h"
 #include "base/functional/function_ref.h"
 #include "base/notreached.h"
+#include "base/numerics/checked_math.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -113,8 +110,12 @@ bool ReadStreamToSpanWithMaxSize(
   span<uint8_t> bytes_span = resize_span(chunk_size);
   DCHECK_EQ(bytes_span.size(), chunk_size);
 
-  while ((bytes_read_this_pass = fread(bytes_span.data() + bytes_read_so_far, 1,
-                                       chunk_size, stream)) > 0) {
+  // TODO(https://crbug.com/40284755): Replace `UNSAFE_TODO` with
+  // `UNSAFE_BUFFERS` after replacing pointer arithmetic with `span::subspan`
+  // and adding a comment explaining why `fread` calls are safe.
+  while ((bytes_read_this_pass = UNSAFE_TODO(fread(
+              bytes_span.data() + bytes_read_so_far, 1, chunk_size, stream))) >
+         0) {
     if ((max_size - bytes_read_so_far) < bytes_read_this_pass) {
       // Read more than max_size bytes, bail out.
       bytes_read_so_far = max_size;
@@ -199,33 +200,31 @@ bool CopyFileContents(File& infile, File& outfile) {
 #endif
 
   static constexpr size_t kBufferSize = 32768;
-  std::vector<char> buffer(kBufferSize);
+  std::vector<uint8_t> buffer(kBufferSize);
 
   for (;;) {
-    int bytes_read =
-        infile.ReadAtCurrentPos(buffer.data(), static_cast<int>(buffer.size()));
-    if (bytes_read < 0) {
+    std::optional<size_t> bytes_read = infile.ReadAtCurrentPos(buffer);
+    if (!bytes_read.has_value()) {
       return false;
     }
     if (bytes_read == 0) {
       return true;
     }
     // Allow for partial writes
-    int bytes_written_per_read = 0;
+    span<const uint8_t> bytes_to_write =
+        as_byte_span(buffer).first(*bytes_read);
     do {
-      int bytes_written_partial = outfile.WriteAtCurrentPos(
-          &buffer[static_cast<size_t>(bytes_written_per_read)],
-          bytes_read - bytes_written_per_read);
-      if (bytes_written_partial < 0) {
+      std::optional<size_t> bytes_written =
+          outfile.WriteAtCurrentPos(bytes_to_write);
+      if (!bytes_written.has_value()) {
         return false;
       }
 
-      bytes_written_per_read += bytes_written_partial;
-    } while (bytes_written_per_read < bytes_read);
+      bytes_to_write = bytes_to_write.subspan(*bytes_written);
+    } while (!bytes_to_write.empty());
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool ContentsEqual(const FilePath& filename1, const FilePath& filename2) {
@@ -253,17 +252,19 @@ bool ContentsEqual(const FilePath& filename1, const FilePath& filename2) {
   do {
     file1.read(buffer1, BUFFER_SIZE);
     file2.read(buffer2, BUFFER_SIZE);
+    if ((file1.eof() != file2.eof()) || (file1.gcount() != file2.gcount())) {
+      return false;
+    }
 
-    if ((file1.eof() != file2.eof()) || (file1.gcount() != file2.gcount()) ||
-        (memcmp(buffer1, buffer2, static_cast<size_t>(file1.gcount())))) {
-      file1.close();
-      file2.close();
+    span<const uint8_t> data1 =
+        as_byte_span(buffer1).first(checked_cast<size_t>(file1.gcount()));
+    span<const uint8_t> data2 =
+        as_byte_span(buffer2).first(checked_cast<size_t>(file2.gcount()));
+    if (data1 != data2) {
       return false;
     }
   } while (!file1.eof() || !file2.eof());
 
-  file1.close();
-  file2.close();
   return true;
 }
 
@@ -331,7 +332,7 @@ bool ReadStreamToStringWithMaxSize(FILE* stream,
   bool read_successs = ReadStreamToSpanWithMaxSize(
       stream, max_size, [&content_string](size_t size) {
         content_string.resize(size);
-        return as_writable_bytes(make_span(content_string));
+        return as_writable_byte_span(content_string);
       });
 
   if (contents) {
@@ -355,7 +356,7 @@ std::optional<std::vector<uint8_t>> ReadFileToBytes(const FilePath& path) {
                                    std::numeric_limits<size_t>::max(),
                                    [&bytes](size_t size) {
                                      bytes.resize(size);
-                                     return make_span(bytes);
+                                     return span(bytes);
                                    })) {
     return std::nullopt;
   }
@@ -410,13 +411,17 @@ bool CreateDirectory(const FilePath& full_path) {
   return CreateDirectoryAndGetError(full_path, nullptr);
 }
 
-bool GetFileSize(const FilePath& file_path, int64_t* file_size) {
+std::optional<int64_t> GetFileSize(const FilePath& file_path) {
   File::Info info;
   if (!GetFileInfo(file_path, &info)) {
-    return false;
+    return std::nullopt;
   }
-  *file_size = info.size;
-  return true;
+  return info.size;
+}
+
+OnceCallback<std::optional<int64_t>()> GetFileSizeCallback(
+    const FilePath& path) {
+  return BindOnce([](const FilePath& path) { return GetFileSize(path); }, path);
 }
 
 bool TouchFile(const FilePath& path,
@@ -481,23 +486,25 @@ int ReadFile(const FilePath& filename, char* data, int max_size) {
   if (max_size < 0) {
     return -1;
   }
-  std::optional<uint64_t> result =
-      ReadFile(filename, make_span(data, static_cast<uint32_t>(max_size)));
+  size_t unsigned_size = checked_cast<size_t>(max_size);
+
+  // SAFETY: Depending on the caller to provide valid `data` and `max_size`.
+  //
+  // TODO(https://crbug.com/40284755): Mark this overload of `ReadFile` with
+  // `UNSAFE_BUFFER_USAGE` and eventually remove it altogether (preferring the
+  // overload that takes a `span`).
+  span<char> chars_buffer = UNSAFE_TODO(span(data, unsigned_size));
+
+  span<uint8_t> bytes_buffer = as_writable_byte_span(chars_buffer);
+  std::optional<uint64_t> result = ReadFile(filename, bytes_buffer);
   if (!result) {
     return -1;
   }
   return checked_cast<int>(result.value());
 }
 
-bool WriteFile(const FilePath& filename, span<const uint8_t> data) {
-  int size = checked_cast<int>(data.size());
-  return WriteFile(filename, reinterpret_cast<const char*>(data.data()),
-                   size) == size;
-}
-
 bool WriteFile(const FilePath& filename, std::string_view data) {
-  int size = checked_cast<int>(data.size());
-  return WriteFile(filename, data.data(), size) == size;
+  return WriteFile(filename, as_byte_span(data));
 }
 
 FilePath GetUniquePath(const FilePath& path) {
@@ -505,22 +512,22 @@ FilePath GetUniquePath(const FilePath& path) {
 }
 
 FilePath GetUniquePathWithSuffixFormat(const FilePath& path,
-                                       cstring_view suffix_format) {
+                                       base::cstring_view suffix_format) {
   DCHECK(!path.empty());
-  DCHECK_EQ(base::ranges::count(suffix_format, '%'), 1);
+  DCHECK_EQ(std::ranges::count(suffix_format, '%'), 1);
   DCHECK(base::Contains(suffix_format, "%d"));
 
   if (!PathExists(path)) {
     return path;
   }
-  std::string number;
   for (int count = 1; count <= kMaxUniqueFiles; ++count) {
-    StringAppendF(&number, suffix_format.c_str(), count);
-    FilePath candidate_path = path.InsertBeforeExtensionASCII(number);
+    std::string suffix(suffix_format);
+    base::ReplaceFirstSubstringAfterOffset(&suffix, 0, "%d",
+                                           base::NumberToString(count));
+    FilePath candidate_path = path.InsertBeforeExtensionASCII(suffix);
     if (!PathExists(candidate_path)) {
       return candidate_path;
     }
-    number.clear();
   }
   return FilePath();
 }

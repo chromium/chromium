@@ -5,11 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_ANIMATION_FRAME_TIMING_MONITOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_ANIMATION_FRAME_TIMING_MONITOR_H_
 
+#include <variant>
+
 #include "base/task/sequence_manager/task_time_observer.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/timing/animation_frame_timing_info.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -33,7 +34,6 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
  public:
   class Client {
    public:
-    virtual void ReportLongAnimationFrameTiming(AnimationFrameTimingInfo*) = 0;
     virtual void ReportLongTaskTiming(base::TimeTicks start,
                                       base::TimeTicks end,
                                       ExecutionContext* context) = 0;
@@ -49,13 +49,16 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
 
   ~AnimationFrameTimingMonitor() override = default;
 
-  virtual void Trace(Visitor*) const;
+  void Trace(Visitor*) const;
 
   void Shutdown();
 
-  void BeginMainFrame(LocalDOMWindow& local_root_window);
+  void BeginMainFrame(LocalDOMWindow& local_root_window,
+                      viz::BeginFrameId frame_id);
   void WillPerformStyleAndLayoutCalculation();
-  void DidBeginMainFrame(LocalDOMWindow& local_root_window);
+  AnimationFrameTimingInfo* RecordRenderingUpdateEndTime(
+      LocalDOMWindow& local_root_window,
+      base::TimeTicks);
   void OnTaskCompleted(base::TimeTicks start_time,
                        base::TimeTicks end_time,
                        LocalFrame* frame);
@@ -72,11 +75,11 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   void WillHandlePromise(ScriptState*,
                          bool resolving,
                          const char* class_like,
-                         const String& property_like,
-                         const String& script_url);
+                         std::variant<const char*, String> property_like,
+                         LazySourceLocation* location);
   void Will(const probe::EvaluateScriptBlock&);
   void Did(const probe::EvaluateScriptBlock& probe_data) {
-    PopScriptEntryPoint(probe_data.script_state, &probe_data);
+    PopScriptEntryPoint(&probe_data.script_state, &probe_data);
   }
   void Will(const probe::ExecuteScript&);
   void Did(const probe::ExecuteScript& probe_data) {
@@ -91,8 +94,12 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   void Did(const probe::UpdateLayout&);
   void Will(const probe::InvokeCallback&);
   void Did(const probe::InvokeCallback& probe_data) {
-    PopScriptEntryPoint(probe_data.script_state, &probe_data);
+    PopScriptEntryPoint(&probe_data.script_state, &probe_data);
   }
+  void Will(const probe::FrameRelatedTask& probe) { probe.CaptureStartTime(); }
+  void Did(const probe::FrameRelatedTask& probe);
+  void Will(const probe::UserEntryPoint&);
+  void Did(const probe::UserEntryPoint&);
   void Will(const probe::InvokeEventHandler&);
   void Did(const probe::InvokeEventHandler&);
   void WillRunJavaScriptDialog();
@@ -103,6 +110,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
  private:
   Member<AnimationFrameTimingInfo> current_frame_timing_info_;
   HeapVector<Member<ScriptTimingInfo>> current_scripts_;
+  viz::BeginFrameId current_begin_frame_id_;
   struct PendingScriptInfo {
     ScriptTimingInfo::InvokerType invoker_type;
     base::TimeTicks start_time;
@@ -113,7 +121,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
     base::TimeDelta pause_duration;
     int layout_depth = 0;
     const char* class_like_name = nullptr;
-    String property_like_name;
+    std::variant<const char*, String> property_like_name;
     ScriptTimingInfo::ScriptSourceLocation source_location;
   };
 
@@ -121,6 +129,10 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
       ScriptState* script_state,
       const probe::ProbeBase* probe,
       base::TimeTicks end_time = base::TimeTicks());
+  ScriptTimingInfo* PopScriptEntryPointInternal(
+      ExecutionContext* context,
+      base::TimeTicks end_time,
+      const PendingScriptInfo& script_info);
 
   bool PushScriptEntryPoint(ScriptState*);
 
@@ -135,6 +147,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   void ApplyTaskDuration(base::TimeDelta task_duration);
 
   std::optional<PendingScriptInfo> pending_script_info_;
+  HashMap<size_t, PendingScriptInfo> user_entry_points_;
   Client& client_;
 
   enum class State {

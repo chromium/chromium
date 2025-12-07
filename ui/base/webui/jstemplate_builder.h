@@ -3,12 +3,10 @@
 // found in the LICENSE file.
 
 // This provides some helper methods for building and rendering an
-// internal html page.  The flow is as follows:
-// - instantiate a builder given a webframe that we're going to render content
-//   into
-// - load the template html and load the jstemplate javascript into the frame
-// - given a json data object, run the jstemplate javascript which fills in
-//   template values
+// internal html page.
+// Note: This file is named with the 'jstemplate_' prefix purely for historical
+// reasons, as it no longer uses jstemplate (see crbug.com/378692755 for
+// context).
 
 #ifndef UI_BASE_WEBUI_JSTEMPLATE_BUILDER_H_
 #define UI_BASE_WEBUI_JSTEMPLATE_BUILDER_H_
@@ -22,8 +20,9 @@
 namespace webui {
 
 // A helper function that generates a string of HTML to be loaded.  The
-// string includes the HTML and the javascript code necessary to generate the
-// full page with support for i18n Templates.
+// string includes
+// - the HTML with any ui::TemplateReplacements placeholders populated
+// - the javascript code necessary to load and populate `loadTimeData`
 COMPONENT_EXPORT(UI_BASE)
 std::string GetI18nTemplateHtml(std::string_view html_template,
                                 const base::Value::Dict& json);

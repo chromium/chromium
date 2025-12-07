@@ -23,8 +23,6 @@
 *.gn text eol=lf
 *.gni text eol=lf
 *.go text eol=lf
-*.gyp text eol=lf
-*.gypi text eol=lf
 *.h text eol=lf
 *.m text eol=lf
 *.md text eol=lf

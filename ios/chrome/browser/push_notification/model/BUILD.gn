@@ -2,43 +2,54 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("browser_state_service") {
+source_set("profile_service") {
   sources = [
-    "push_notification_browser_state_service.h",
-    "push_notification_browser_state_service.mm",
+    "provisional_push_notification_service.h",
+    "provisional_push_notification_service.mm",
+    "push_notification_profile_service.h",
+    "push_notification_profile_service.mm",
   ]
   deps = [
     ":push_notification_client",
+    ":push_notification_client_id",
     ":push_notification_service",
     ":push_notification_service_header",
+    ":push_notification_util",
     "//base",
-    "//components/keyed_service/core",
     "//components/prefs",
     "//components/signin/public/identity_manager",
+    "//components/sync_device_info",
     "//ios/chrome/browser/commerce/model",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/signin/model:system_identity",
     "//ios/web/public/thread",
   ]
+  frameworks = [ "UserNotifications.framework" ]
 }
 
-source_set("browser_state_service_factory") {
+source_set("profile_service_factory") {
   sources = [
-    "push_notification_browser_state_service_factory.h",
-    "push_notification_browser_state_service_factory.mm",
+    "provisional_push_notification_service_factory.h",
+    "provisional_push_notification_service_factory.mm",
+    "push_notification_profile_service_factory.h",
+    "push_notification_profile_service_factory.mm",
   ]
 
   deps = [
-    ":browser_state_service",
+    ":profile_service",
     ":push_notification_service",
     ":push_notification_service_header",
     "//base",
-    "//components/keyed_service/ios",
     "//ios/chrome/browser/commerce/model",
     "//ios/chrome/browser/commerce/model/push_notification",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:features",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
   ]
 }
 
@@ -46,37 +57,106 @@ source_set("push_notification_service_header") {
   sources = [ "push_notification_service.h" ]
 }
 
+source_set("push_notification_util") {
+  sources = [
+    "push_notification_util.h",
+    "push_notification_util.mm",
+  ]
+  deps = [
+    ":push_notification_client_id",
+    "//base",
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/web/public/thread",
+  ]
+  frameworks = [
+    "UserNotifications.framework",
+    "Foundation.framework",
+  ]
+}
+
+source_set("push_notification_delegate") {
+  sources = [
+    "notification_metrics_recorder.h",
+    "notification_metrics_recorder.mm",
+    "push_notification_delegate.h",
+    "push_notification_delegate.mm",
+  ]
+  deps = [
+    ":constants",
+    ":profile_service",
+    ":profile_service_factory",
+    ":push_notification_client_id",
+    ":push_notification_service",
+    ":push_notification_service_header",
+    ":push_notification_settings_util_header",
+    ":push_notification_util",
+    "//base",
+    "//components/prefs",
+    "//components/search_engines",
+    "//components/send_tab_to_self",
+    "//components/sync_device_info",
+    "//google_apis",
+    "//ios/chrome/app:change_profile_commands",
+    "//ios/chrome/app:change_profile_continuation",
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/app/startup:startup_basic",
+    "//ios/chrome/browser/content_notification/model:content_notification_nau_configuration",
+    "//ios/chrome/browser/content_notification/model:content_notification_service",
+    "//ios/chrome/browser/content_notification/model:content_notification_service_factory",
+    "//ios/chrome/browser/content_notification/model:util",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_observer",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_util",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:features",
+    "//ios/chrome/browser/shared/model/utils",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
+    "//ios/chrome/common/app_group",
+  ]
+}
+
 source_set("push_notification_service") {
   sources = [
-    "provisional_push_notification_util.h",
-    "provisional_push_notification_util.mm",
     "push_notification_account_context_manager.h",
     "push_notification_account_context_manager.mm",
     "push_notification_client_manager.h",
     "push_notification_client_manager.mm",
     "push_notification_configuration.h",
     "push_notification_configuration.mm",
-    "push_notification_delegate.h",
-    "push_notification_delegate.mm",
     "push_notification_service.mm",
-    "push_notification_settings_util.h",
     "push_notification_settings_util.mm",
-    "push_notification_util.h",
-    "push_notification_util.mm",
   ]
   deps = [
     ":constants",
-    ":push_notification_client",
+    ":push_notification_client_id",
     ":push_notification_service_header",
+    ":push_notification_settings_util_header",
+    ":push_notification_util",
     "//base",
     "//components/commerce/core:pref_names",
+    "//components/desktop_to_mobile_promos",
     "//components/optimization_guide/core:features",
     "//components/pref_registry",
     "//components/prefs",
     "//components/search_engines",
     "//components/send_tab_to_self",
+    "//components/sharing_message",
     "//components/sync_device_info",
-    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/app/profile",
     "//ios/chrome/app/startup:startup_basic",
     "//ios/chrome/browser/commerce/model/push_notification",
     "//ios/chrome/browser/content_notification/model:content_notification_client",
@@ -84,41 +164,67 @@ source_set("push_notification_service") {
     "//ios/chrome/browser/content_notification/model:content_notification_service",
     "//ios/chrome/browser/content_notification/model:content_notification_service_factory",
     "//ios/chrome/browser/content_notification/model:util",
+    "//ios/chrome/browser/cross_platform_promos/model:notification_client",
+    "//ios/chrome/browser/reminder_notifications/model:client",
     "//ios/chrome/browser/safety_check_notifications/model:notification_client",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/send_tab_to_self/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
-    "//ios/chrome/browser/shared/public/features:features",
-    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:features",
+    "//ios/chrome/browser/shared/model/utils",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
     "//ios/chrome/browser/tips_notifications/model:client",
     "//ios/chrome/common/app_group",
+    "//ios/web/public/thread",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+source_set("push_notification_settings_util_header") {
+  sources = [ "push_notification_settings_util.h" ]
 }
 
 source_set("push_notification_client") {
   sources = [
     "push_notification_client.h",
     "push_notification_client.mm",
-    "push_notification_client_id.h",
+    "push_notification_prefs.h",
+    "push_notification_prefs.mm",
   ]
   public_deps = [
     "//base",
-    "//ios/chrome/browser/shared/model/browser_state",
-    "//url:url",
+    "//url",
   ]
   deps = [
+    ":constants",
+    ":push_notification_client_id",
+    "//ios/chrome/browser/safety_check_notifications/utils:constants",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:features",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/tips_notifications/model:utils",
     "//ios/chrome/browser/url_loading/model",
     "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
   ]
+}
+
+source_set("push_notification_client_id") {
+  sources = [ "push_notification_client_id.h" ]
 }
 
 source_set("constants") {
@@ -126,40 +232,71 @@ source_set("constants") {
     "constants.h",
     "constants.mm",
   ]
+  deps = [ ":push_notification_client_id" ]
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "notification_metrics_recorder_unittest.mm",
     "push_notification_account_context_manager+testing.h",
     "push_notification_account_context_manager_unittest.mm",
     "push_notification_client_manager_unittest.mm",
+    "push_notification_client_unittest.mm",
+    "push_notification_delegate_unittest.mm",
     "push_notification_settings_util_unittest.mm",
     "push_notification_util+testing.h",
     "push_notification_util_unittest.mm",
   ]
   deps = [
+    ":constants",
+    ":profile_service",
+    ":profile_service_factory",
     ":push_notification_client",
+    ":push_notification_client_id",
+    ":push_notification_delegate",
     ":push_notification_service",
     ":push_notification_service_header",
+    ":push_notification_settings_util_header",
+    ":push_notification_util",
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/affiliations/core/browser:test_support",
     "//components/commerce/core:pref_names",
     "//components/prefs",
-    "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
-    "//ios/chrome/browser/push_notification/model:constants",
+    "//google_apis",
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/affiliations/model",
+    "//ios/chrome/browser/passwords/model",
+    "//ios/chrome/browser/profile/model:test_support",
+    "//ios/chrome/browser/safety_check/model:factory",
+    "//ios/chrome/browser/safety_check_notifications/utils",
+    "//ios/chrome/browser/safety_check_notifications/utils:constants",
+    "//ios/chrome/browser/send_tab_to_self/model",
+    "//ios/chrome/browser/shared/coordinator/scene/test",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
-    "//ios/chrome/browser/shared/public/features:features",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:features",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/tips_notifications/model:utils",
     "//ios/chrome/test:test_support",
+    "//ios/testing:block_swizzler",
     "//ios/web/public/test",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("test_support") {
@@ -170,6 +307,7 @@ source_set("test_support") {
 
   deps = [
     ":push_notification_client",
+    ":push_notification_client_id",
     ":push_notification_service",
     "//base",
   ]

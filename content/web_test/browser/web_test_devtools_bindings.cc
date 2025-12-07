@@ -73,8 +73,7 @@ GURL WebTestDevToolsBindings::MapTestURLIfNeeded(const GURL& test_url,
 
   base::FilePath dir_exe;
   if (!base::PathService::Get(base::DIR_EXE, &dir_exe)) {
-    NOTREACHED_IN_MIGRATION();
-    return GURL();
+    NOTREACHED();
   }
 #if BUILDFLAG(IS_MAC)
   // On Mac, the executable is in
@@ -104,10 +103,7 @@ GURL WebTestDevToolsBindings::MapTestURLIfNeeded(const GURL& test_url,
   url_string += "&inspected_test=" + test_url_string;
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kContentShellDevToolsTabTarget)) {
-    url_string += "&targetType=tab";
-  }
+  url_string += "&targetType=tab";
 #endif
   return GURL(url_string);
 }

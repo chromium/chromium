@@ -74,7 +74,7 @@ cast_source_set("renderer") {
     "//ipc",
     "//media/remoting:remoting_renderer",
     "//net",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//services/service_manager/public/cpp",
   ]
 

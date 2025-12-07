@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/services/speech/soda/cros_soda_client.h"
+
+#include "base/compiler_specific.h"
 #include "base/run_loop.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
@@ -49,8 +51,9 @@ void CrosSodaClient::AddAudio(const char* audio_buffer,
   DCHECK(IsInitialized()) << "Unable to add audio before starting.";
   const uint8_t* audio_buffer_casted =
       reinterpret_cast<const uint8_t*>(audio_buffer);
-  std::vector<uint8_t> audio(audio_buffer_casted,
-                             audio_buffer_casted + audio_buffer_size);
+  std::vector<uint8_t> audio(
+      audio_buffer_casted,
+      UNSAFE_TODO(audio_buffer_casted + audio_buffer_size));
   soda_recognizer_->AddAudio(audio);
 }
 

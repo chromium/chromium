@@ -15,23 +15,6 @@ namespace {
 const char kDatabaseKey[] = "config";
 }  // namespace
 
-CleanupItem::CleanupItem() = default;
-CleanupItem::CleanupItem(uint64_t name_hash,
-                         uint64_t event_hash,
-                         proto::SignalType signal_type,
-                         base::Time timestamp)
-    : name_hash(name_hash),
-      event_hash(event_hash),
-      signal_type(signal_type),
-      timestamp(timestamp) {}
-
-CleanupItem::~CleanupItem() = default;
-
-bool CleanupItem::operator==(const CleanupItem& other) const {
-  return other.name_hash == name_hash && other.event_hash == event_hash &&
-         other.signal_type == signal_type && other.timestamp == timestamp;
-}
-
 SignalStorageConfig::SignalStorageConfig(
     std::unique_ptr<SignalStorageConfigProtoDb> database,
     base::Clock* clock)

@@ -30,7 +30,7 @@
 class MockPlatformInfo(object):
     def __init__(self,
                  os_name='mac',
-                 os_version='mac11',
+                 os_version='mac15',
                  linux_distribution=None,
                  is_highdpi=False,
                  is_running_rosetta=False,

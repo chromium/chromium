@@ -1,0 +1,93 @@
+<ntp-module-header
+    header-text="${this.i18n('modulesTabGroupsTitle')}"
+    .menuItems="${this.getMenuItems_()}"
+    more-actions-text="${this.i18nRecursive(
+        '', 'modulesMoreActions', 'modulesTabGroupsTitle')}"
+    @disable-button-click="${this.onDisableButtonClick_}"
+    @dismiss-button-click="${this.onDismissButtonClick_}"
+    @info-button-click="${this.onInfoButtonClick_}">
+</ntp-module-header>
+<div id="tabGroups">
+  ${this.showZeroState ? html`
+    <div id="zeroTabGroupsContainer" class="tab-groups">
+      <div id="zeroTabGroupsImageContainer">
+        <img id="zeroTabGroupsImageLight" class="zero-tab-groups-image"
+            src="modules/tab_groups/icons/chrome_tab_groups_light.svg">
+        <img id="zeroTabGroupsImageDark" class="zero-tab-groups-image"
+            src="modules/tab_groups/icons/chrome_tab_groups_dark.svg">
+      </div>
+      <div id="zeroTabGroupsContentContainer">
+        <div id="zeroTabGroupsTextContainer">
+          <div id="zeroTabGroupsTitle">
+            ${this.i18n('modulesTabGroupsZeroStateTitle')}
+          </div>
+          <div id="zeroTabGroupsText">
+            ${this.i18n('modulesTabGroupsZeroStateText')}
+          </div>
+        </div>
+        <div id="zeroTabGroupsCreateNewTabGroup">
+          <cr-button id="createNewTabGroupButton" class="create-new-tab-group"
+              @click="${() => this.onCreateNewTabGroupClick_(true)}">
+            <cr-icon id="createNewTabGroupButtonIcon"
+                icon="tab_groups:create_new_tab_group" slot="prefix-icon">
+            </cr-icon>
+            <div id="createNewTabGroupButtonText">
+              ${this.i18n('modulesTabGroupsCreateNewTabGroup')}
+            </div>
+          </cr-button>
+        </div>
+      </div>
+    </div>
+  `: html`
+    <div id="tabGroupsContainer">
+      ${this.getTabGroups_().map((item, index) => html`
+        <cr-button class="tab-group"
+            @click="${() => this.onTabGroupClick_(item.id, index)}"
+            aria-label="${this.ariaLabels.get(item.id)}">
+          <div class="row-content">
+            <ntp-icon-container class="icon-container"
+                .style="background-color: var(${this.computeTabGroupColor_(item.color)})"
+                .faviconUrls="${this.getFaviconUrls_(item.faviconUrls)}"
+                .totalTabCount="${item.totalTabCount}">
+            </ntp-icon-container>
+            <div class="tab-group-info">
+              <div class="tab-group-title-row">
+                <div class="color-dot"
+                    style="background-color: var(${this.computeTabGroupDotColor_(item.color)})">
+                </div>
+                <div class="tab-group-title">${item.title}</div>
+              </div>
+              <div class="tab-group-description">${this.computeDescription_(item.updateTime, item.deviceName)}</div>
+            </div>
+            ${item.isSharedTabGroup ? html`
+              <cr-icon id="sharedTabGroupIcon"
+                  icon="tab_groups:shared_tab_group" slot="icon">
+              </cr-icon>
+            ` : ''}
+          </div>
+        </cr-button>
+      `)}
+      <div id="footer">
+        <div id="divider"></div>
+        <cr-button id="createNewTabGroupFooterButton"
+            class="create-new-tab-group"
+            @click="${() => this.onCreateNewTabGroupClick_(false)}">
+          <div class="row-content">
+            <cr-icon id="createNewTabGroupIcon"
+                icon="tab_groups:create_new_tab_group" slot="icon">
+            </cr-icon>
+            <div id="createNewTabGroupText" class="tab-group-title">
+              ${this.i18n('modulesTabGroupsCreateNewTabGroup')}
+            </div>
+          </div>
+        </cr-button>
+      </div>
+    </div>
+  `}
+</div>
+${this.showInfoDialog ? html`
+  <ntp-info-dialog show-on-attach
+      .innerHTML="${this.i18nAdvanced('modulesTabGroupsInfo')}"
+      @close="${this.onInfoDialogClose_}">
+  </ntp-info-dialog>
+` : ''}

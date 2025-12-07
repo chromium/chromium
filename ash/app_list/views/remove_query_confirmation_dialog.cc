@@ -13,6 +13,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view_class_properties.h"
@@ -24,7 +25,7 @@ RemoveQueryConfirmationDialog::RemoveQueryConfirmationDialog(
     RemovalConfirmationCallback confirm_callback,
     const std::u16string& result_title)
     : confirm_callback_(std::move(confirm_callback)) {
-  SetModalType(ui::MODAL_TYPE_WINDOW);
+  SetModalType(ui::mojom::ModalType::kWindow);
   SetTitleText(
       l10n_util::GetStringUTF16(IDS_REMOVE_ZERO_STATE_SUGGESTION_TITLE));
   SetDescription(l10n_util::GetStringFUTF16(

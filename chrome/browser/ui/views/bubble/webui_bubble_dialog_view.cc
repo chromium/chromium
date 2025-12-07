@@ -11,6 +11,7 @@
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -102,7 +103,7 @@ WebUIBubbleDialogView::WebUIBubbleDialogView(
 
   contents_wrapper_->web_contents()->WasShown();
 
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_margins(gfx::Insets());
   SetLayoutManager(std::make_unique<views::FillLayout>());
 }
@@ -112,8 +113,9 @@ WebUIBubbleDialogView::~WebUIBubbleDialogView() {
 }
 
 void WebUIBubbleDialogView::ClearContentsWrapper() {
-  if (!contents_wrapper_)
+  if (!contents_wrapper_) {
     return;
+  }
   DCHECK_EQ(this, contents_wrapper_->GetHost().get());
   DCHECK_EQ(web_view_->web_contents(), contents_wrapper_->web_contents());
   web_view_->SetWebContents(nullptr);
@@ -173,11 +175,11 @@ gfx::Rect WebUIBubbleDialogView::GetBubbleBounds() {
   return bubble_bounds;
 }
 
-std::unique_ptr<views::NonClientFrameView>
-WebUIBubbleDialogView::CreateNonClientFrameView(views::Widget* widget) {
+std::unique_ptr<views::FrameView> WebUIBubbleDialogView::CreateFrameView(
+    views::Widget* widget) {
   // TODO(tluk): Improve the current pattern used to compose functionality on
   // bubble frames and eliminate the need for static cast.
-  auto frame = BubbleDialogDelegateView::CreateNonClientFrameView(widget);
+  auto frame = BubbleDialogDelegateView::CreateFrameView(widget);
   static_cast<views::BubbleFrameView*>(frame.get())
       ->set_non_client_hit_test_cb(base::BindRepeating(
           &WebUIBubbleDialogView::NonClientHitTest, base::Unretained(this)));
@@ -185,6 +187,11 @@ WebUIBubbleDialogView::CreateNonClientFrameView(views::Widget* widget) {
 }
 
 void WebUIBubbleDialogView::ShowUI() {
+  if (!contents_wrapper_) {
+    // This widget is closing and/or being destroyed.
+    CHECK(!GetWidget() || GetWidget()->IsClosed());
+    return;
+  }
   DCHECK(GetWidget());
   GetWidget()->Show();
   web_view_->GetWebContents()->Focus();
@@ -223,8 +230,9 @@ bool WebUIBubbleDialogView::ShouldDescendIntoChildForEventHandling(
 }
 
 gfx::Rect WebUIBubbleDialogView::GetAnchorRect() const {
-  if (bubble_anchor_)
+  if (bubble_anchor_) {
     return bubble_anchor_.value();
+  }
   return BubbleDialogDelegateView::GetAnchorRect();
 }
 

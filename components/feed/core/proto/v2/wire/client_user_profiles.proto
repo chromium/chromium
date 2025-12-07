@@ -33,13 +33,7 @@ message DiscoverUserActionsProfile {
     optional uint64 mid = 2;
     repeated ActionCounts counts = 3;
   }
-  message CardCategoryXEntityActionCounts {
-    optional uint64 card_category = 1;
-    optional uint64 mid = 2;
-    repeated ActionCounts counts = 3;
-  }
   repeated ContentMediaXEntityActionCounts content_media_x_entity = 2;
-  repeated CardCategoryXEntityActionCounts card_category_x_entity = 3;
 }
 message ViewDemotionProfile {
   optional ViewDemotionProfileExtension view_demotion_profile = 1000;

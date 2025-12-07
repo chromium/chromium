@@ -7,18 +7,20 @@
 #include <memory>
 #include <vector>
 
-#include "base/test/metrics/histogram_tester.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
+namespace {
 
-const char kResultHistogramName[] =
-    "Signin.Extensions.GaiaRemoteConsentFlowResult";
+using testing::Eq;
 
-const char kGaiaId[] = "fake_gaia_id";
-const char kConsentResult[] = "CAESCUVOQ1JZUFRFRBoMZmFrZV9nYWlhX2lk";
+constexpr GaiaId::Literal kGaiaId("fake_gaia_id");
+constexpr char kConsentResult[] = "CAESCUVOQ1JZUFRFRBoMZmFrZV9nYWlhX2lk";
+
+}  // namespace
 
 class FakeWebAuthFlow : public WebAuthFlow {
  public:
@@ -54,8 +56,7 @@ class MockGaiaRemoteConsentFlowDelegate
   MOCK_METHOD1(OnGaiaRemoteConsentFlowFailed,
                void(GaiaRemoteConsentFlow::Failure failure));
   MOCK_METHOD2(OnGaiaRemoteConsentFlowApproved,
-               void(const std::string& consent_result,
-                    const std::string& gaia_id));
+               void(const std::string& consent_result, const GaiaId& gaia_id));
 };
 
 class IdentityGaiaRemoteConsentFlowTest : public testing::Test {
@@ -76,8 +77,8 @@ class IdentityGaiaRemoteConsentFlowTest : public testing::Test {
   std::unique_ptr<TestGaiaRemoteConsentFlow> CreateTestFlow(
       GaiaRemoteConsentFlow::Delegate* delegate) {
     CoreAccountInfo user_info;
-    user_info.account_id = CoreAccountId::FromGaiaId("account_id");
-    user_info.gaia = "account_id";
+    user_info.gaia = GaiaId("account_id");
+    user_info.account_id = CoreAccountId::FromGaiaId(user_info.gaia);
     user_info.email = "email";
 
     ExtensionTokenKey token_key("extension_id", user_info,
@@ -88,21 +89,16 @@ class IdentityGaiaRemoteConsentFlowTest : public testing::Test {
                                                        resolution_data);
   }
 
-  base::HistogramTester* histogram_tester() { return &histogram_tester_; }
-
  protected:
   base::test::TaskEnvironment task_env_;
-  base::HistogramTester histogram_tester_;
   testing::StrictMock<MockGaiaRemoteConsentFlowDelegate> delegate_;
 };
 
 TEST_F(IdentityGaiaRemoteConsentFlowTest, ConsentResult) {
   std::unique_ptr<TestGaiaRemoteConsentFlow> flow = CreateTestFlow();
   EXPECT_CALL(delegate_,
-              OnGaiaRemoteConsentFlowApproved(kConsentResult, kGaiaId));
+              OnGaiaRemoteConsentFlowApproved(kConsentResult, Eq(kGaiaId)));
   flow->ReactToConsentResult(kConsentResult);
-  histogram_tester()->ExpectUniqueSample(kResultHistogramName,
-                                         GaiaRemoteConsentFlow::NONE, 1);
 }
 
 TEST_F(IdentityGaiaRemoteConsentFlowTest, ConsentResult_TwoWindows) {
@@ -111,14 +107,13 @@ TEST_F(IdentityGaiaRemoteConsentFlowTest, ConsentResult_TwoWindows) {
   std::unique_ptr<TestGaiaRemoteConsentFlow> flow2 = CreateTestFlow(&delegate2);
 
   const char kConsentResult2[] = "CAESCkVOQ1JZUFRFRDI";
-  EXPECT_CALL(delegate2, OnGaiaRemoteConsentFlowApproved(kConsentResult2, ""));
+  EXPECT_CALL(delegate2,
+              OnGaiaRemoteConsentFlowApproved(kConsentResult2, GaiaId()));
   flow2->ReactToConsentResult(kConsentResult2);
 
   EXPECT_CALL(delegate_,
-              OnGaiaRemoteConsentFlowApproved(kConsentResult, kGaiaId));
+              OnGaiaRemoteConsentFlowApproved(kConsentResult, Eq(kGaiaId)));
   flow->ReactToConsentResult(kConsentResult);
-  histogram_tester()->ExpectUniqueSample(kResultHistogramName,
-                                         GaiaRemoteConsentFlow::NONE, 2);
 }
 
 TEST_F(IdentityGaiaRemoteConsentFlowTest, InvalidConsentResult) {
@@ -128,8 +123,6 @@ TEST_F(IdentityGaiaRemoteConsentFlowTest, InvalidConsentResult) {
               OnGaiaRemoteConsentFlowFailed(
                   GaiaRemoteConsentFlow::Failure::INVALID_CONSENT_RESULT));
   flow->ReactToConsentResult(kInvalidConsentResult);
-  histogram_tester()->ExpectUniqueSample(
-      kResultHistogramName, GaiaRemoteConsentFlow::INVALID_CONSENT_RESULT, 1);
 }
 
 TEST_F(IdentityGaiaRemoteConsentFlowTest, NoGrant) {
@@ -138,8 +131,6 @@ TEST_F(IdentityGaiaRemoteConsentFlowTest, NoGrant) {
   EXPECT_CALL(delegate_, OnGaiaRemoteConsentFlowFailed(
                              GaiaRemoteConsentFlow::Failure::NO_GRANT));
   flow->ReactToConsentResult(kNoGrantConsentResult);
-  histogram_tester()->ExpectUniqueSample(kResultHistogramName,
-                                         GaiaRemoteConsentFlow::NO_GRANT, 1);
 }
 
 TEST_F(IdentityGaiaRemoteConsentFlowTest, WebAuthFlowFailure_WindowClosed) {
@@ -147,8 +138,6 @@ TEST_F(IdentityGaiaRemoteConsentFlowTest, WebAuthFlowFailure_WindowClosed) {
   EXPECT_CALL(delegate_, OnGaiaRemoteConsentFlowFailed(
                              GaiaRemoteConsentFlow::Failure::WINDOW_CLOSED));
   flow->OnAuthFlowFailure(WebAuthFlow::Failure::WINDOW_CLOSED);
-  histogram_tester()->ExpectUniqueSample(
-      kResultHistogramName, GaiaRemoteConsentFlow::WINDOW_CLOSED, 1);
 }
 
 TEST_F(IdentityGaiaRemoteConsentFlowTest, WebAuthFlowFailure_LoadFailed) {
@@ -156,8 +145,6 @@ TEST_F(IdentityGaiaRemoteConsentFlowTest, WebAuthFlowFailure_LoadFailed) {
   EXPECT_CALL(delegate_, OnGaiaRemoteConsentFlowFailed(
                              GaiaRemoteConsentFlow::Failure::LOAD_FAILED));
   flow->OnAuthFlowFailure(WebAuthFlow::Failure::LOAD_FAILED);
-  histogram_tester()->ExpectUniqueSample(kResultHistogramName,
-                                         GaiaRemoteConsentFlow::LOAD_FAILED, 1);
 }
 
 }  // namespace extensions

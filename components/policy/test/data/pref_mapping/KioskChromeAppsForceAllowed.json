@@ -1,0 +1,16 @@
+[
+  {
+    "os": [
+      "chromeos"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "kiosk_chrome_apps_force_allowed",
+      "pref_location": "user_profile",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
+  }
+]

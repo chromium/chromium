@@ -21,7 +21,7 @@ import java.util.Objects;
  * @param <T> The actual type of the class extending CronetLogger.
  */
 public class CronetLoggerTestRule<T extends CronetLogger> implements TestRule {
-    private Class<T> mTestLoggerClazz;
+    private final Class<T> mTestLoggerClazz;
 
     // Expose the fake logger to the test.
     public T mTestLogger;

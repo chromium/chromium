@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<!--
+Writes directly into the current texture of the context using webgpu storage texture feature.
+We draw a simple gradient to prove that the write from compute occurred.
+-->
+<head>
+  <style type="text/css">
+    .nomargin {
+      margin: 0;
+    }
+  </style>
+  <script type="text/javascript">
+    var g_swapsBeforeAck = 15;
+
+    function waitForFinish() {
+      if (g_swapsBeforeAck == 0) {
+        sendResult("SUCCESS");
+      } else {
+        g_swapsBeforeAck--;
+        window.requestAnimationFrame(waitForFinish);
+      }
+    }
+
+    function sendResult(status) {
+      if (window.domAutomationController) {
+        window.domAutomationController.send(status);
+      } else {
+        console.log(status);
+      }
+    }
+
+    var g_swapsBeforeAck = 15;
+    function waitForFinish() {
+      if (g_swapsBeforeAck == 0) {
+        sendResult("SUCCESS");
+      } else {
+        g_swapsBeforeAck--;
+        window.requestAnimationFrame(waitForFinish);
+      }
+    }
+
+    async function main() {
+      const canvas = document.getElementById('canvas_gpu');
+      // The format 'rgba8unorm' is supported on all devices for texture storage usage.
+      // However it might not be universally performant (there may be a copy).
+      const canvasFormat = 'rgba8unorm';
+      const adapter = await navigator.gpu?.requestAdapter();
+      // Only if we neeed bgra do we need to request the feature
+      const device = await adapter?.requestDevice({});
+      const context = canvas.getContext('webgpu');
+      if (!device || !context) {
+        console.error("Failed to initialize WebGPU");
+        sendResult("FAILURE");
+      }
+
+
+      context.configure({
+        device: device,
+        format: canvasFormat,
+        // read and write from shader to our main framebuffer
+        usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.STORAGE_BINDING,
+      });
+
+      var CANVAS_FORMAT =  canvasFormat;
+      const shader = device.createShaderModule({
+        label: "storageTexTest",
+        code: `
+        @group(0) @binding(0) var fb: texture_storage_2d<${CANVAS_FORMAT}, write>;
+        @compute @workgroup_size(256)
+        fn main(@builtin(local_invocation_index) idx:u32,
+        @builtin( workgroup_id) wg_id:vec3u){
+          const conv = 1.0/255.0;
+          let col = vec4f(f32(idx)*conv, .5, f32(wg_id.x)*conv,0.0);
+          let p_pos = vec2u(idx, wg_id.x);
+          textureStore(fb, p_pos, col);
+        }
+        `
+      });
+
+      const bindGroupLayout = device.createBindGroupLayout({
+        label: "storageTexTest",
+        entries:[{ binding: 0, visibility: GPUShaderStage.COMPUTE,
+          storageTexture:{access: "write-only", format:CANVAS_FORMAT }
+        }]
+      });
+
+      const pipelineLayout = device.createPipelineLayout({
+        label:"storageTexTest",
+        bindGroupLayouts: [bindGroupLayout],
+      });
+      const computePipe = device.createComputePipeline({
+        label: "storageTexTest",
+        layout: pipelineLayout,
+        compute: {
+          module: shader,
+        }
+      });
+
+      let resView = context.getCurrentTexture().createView();
+      const compute_binding = device.createBindGroup({
+        label:"storageTexTest",
+        layout:bindGroupLayout,
+        entries: [{
+          binding: 0,
+          resource: resView,
+        }]
+      });
+
+      const commandEncoder = device.createCommandEncoder();
+      const computePass = commandEncoder.beginComputePass();
+      computePass.setPipeline(computePipe);
+      computePass.setBindGroup(0, compute_binding);
+      computePass.dispatchWorkgroups(256);
+      computePass.end();
+      device.queue.submit([commandEncoder.finish()]);
+
+      waitForFinish();
+    }
+  </script>
+</head>
+
+<body onload="main()" style="background:white;">
+  <canvas id="canvas_gpu" width=256 height=256 style=" position:absolute; top:0px; left:0px; background: rgb(19, 19, 19);"></canvas>
+  <div style="width:150px; height:100px; position:absolute; top:50px; left:50px; background: rgb(233, 232, 232);">
+    <p>Should be gradient with quadrants of orange, green, blue, pink </p>
+  </div>
+
+</body>
+
+</html>

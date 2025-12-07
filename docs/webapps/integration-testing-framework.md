@@ -18,7 +18,7 @@ How-tos / guides:
 * [Why is this test failing?][why-is-this-test-failing]
 
 Related:
-  * [WebAppProvider README.md](/chrome/browser/web_applications/README.md)
+  * [WebAppProvider README.md](/docs/webapps/README.md)
 
 ## When to add integration tests?
 Any web app feature (or any code in general) should have a combination of unit tests and browser tests that focus on testing the specific feature itself. Unit tests are the least likely to become flaky, and allow fine-grained testing of a system. Browser tests are more likely to be flaky but enable testing with most of the system running. Regular unit tests or browser tests should be used for testing system parts in isolation and for testing minute details like handling of error cases.
@@ -100,7 +100,11 @@ The first column of the test specifies which platforms the test should be create
 - `L` = Linux
 - `C` = ChromeOS
 
-This is because some tests need to be platform-specific. For example, all tests that involve "locally installing" an app are only applicable on Windows/Mac/Linux, as ChromeOS automatically locally installs all apps from sync. Because of this, tests must be able to specify which platforms they should be run on.
+This is because some tests need to be platform-specific. For example, all tests
+that involve triggering a full installation for a suggested app (e.g. via
+`InstallLocally`) are only applicable on Windows/Mac/Linux, as ChromeOS
+automatically fully installs all apps from sync. Because of this, tests must be
+able to specify which platforms they should be run on.
 
 ### Sync Partition and Default Partition
 Due to some browsertest support limitations, certain actions are only supported in the sync testing framework. Because of this, the script supports a separate "partition" of tests for any test that uses sync actions. This means that at test output time, a test will either go in the "sync" partition or the "default" partition.
@@ -186,7 +190,11 @@ The new tests can be triggered by adding the path to `browser_tests` or `sync_in
 
 To help debug or explore further, please see the [`graph_cli_tool.py`](graph_cli_tool.py) script which includes a number of command line utilities to process the various files.
 
-Both this file and the [`generate_framework_tests_and_coverage.py`](generate_framework_tests_and_coverage.py) file support the `-v` option to print out informational logging.
+Both this file and the [`generate_framework_tests_and_coverage.py`][generate-script] file support the `-v` option to print out informational logging.
+
+### Uploading test CLs
+
+Once the tests have been generated from the CUJs, always run [`generate_framework_tests_and_coverage.py`][generate-script] as a sanity check to ensure that this outputs nothing in the terminal. This means that the [critical user journeys][cuj-spreadsheet] and the generated tests across all files are in sync and no new tests need to be generated. If this outputs something on the terminal, perform the debugging steps outlined above to understand why the two converge.
 
 ## [`WebAppIntegrationTestDriver`][test-driver] and Browsertest Implementation
 
@@ -243,6 +251,10 @@ Running tests on these bots MAY have other random failures happening. That is no
 ### Disabling a Test
 
 Tests can be disabled in the same manner that other integration/browser tests are disabled, using macros. See [on disabling tests](/docs/testing/on_disabling_tests.md) for more information.
+
+### Modifying a test
+
+If you need to modify a test, that means you are changing a critical user journey on the platform. If that is intentional, then modifications must be done to the [critical-user-journey markdown file][cuj-spreadsheet], and not the tests - they are generated from this markdown and should always stay in-sync.
 
 ## Understanding and Implementing Test Cases
 

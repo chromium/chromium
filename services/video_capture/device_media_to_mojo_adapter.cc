@@ -11,7 +11,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/base/scoped_async_trace.h"
 #include "media/capture/video/video_capture_buffer_pool_impl.h"
 #include "media/capture/video/video_capture_buffer_pool_util.h"
@@ -21,7 +20,7 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/video_capture/public/cpp/receiver_mojo_to_media_adapter.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "media/capture/video/chromeos/scoped_video_capture_jpeg_decoder.h"
 #include "media/capture/video/chromeos/video_capture_jpeg_decoder_impl.h"
 #elif BUILDFLAG(IS_WIN)
@@ -33,7 +32,7 @@ namespace {
 using ScopedCaptureTrace =
     media::TypedScopedAsyncTrace<media::TraceCategory::kVideoAndImageCapture>;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 std::unique_ptr<media::VideoCaptureJpegDecoder> CreateGpuJpegDecoder(
     scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
     media::MojoMjpegDecodeAcceleratorFactoryCB jpeg_decoder_factory_callback,
@@ -45,7 +44,7 @@ std::unique_ptr<media::VideoCaptureJpegDecoder> CreateGpuJpegDecoder(
           std::move(decode_done_cb), std::move(send_log_message_cb)),
       decoder_task_runner);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void TakePhotoCallbackTrampoline(
     media::VideoCaptureDevice::TakePhotoCallback callback,
@@ -58,7 +57,7 @@ void TakePhotoCallbackTrampoline(
 
 namespace video_capture {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 DeviceMediaToMojoAdapter::DeviceMediaToMojoAdapter(
     std::unique_ptr<media::VideoCaptureDevice> device,
     media::MojoMjpegDecodeAcceleratorFactoryCB jpeg_decoder_factory_callback,
@@ -79,7 +78,7 @@ DeviceMediaToMojoAdapter::DeviceMediaToMojoAdapter(
 DeviceMediaToMojoAdapter::DeviceMediaToMojoAdapter(
     std::unique_ptr<media::VideoCaptureDevice> device)
     : device_(std::move(device)), device_started_(false) {}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 DeviceMediaToMojoAdapter::~DeviceMediaToMojoAdapter() {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -96,22 +95,19 @@ void DeviceMediaToMojoAdapter::Start(
                "DeviceMediaToMojoAdapter::Start");
   StartInternal(std::move(requested_settings),
                 std::move(video_frame_handler_pending_remote),
-                /*frame_handler=*/nullptr, /*start_in_process=*/false,
-                media::VideoEffectsContext({}));
+                /*frame_handler=*/nullptr, /*start_in_process=*/false);
 }
 
 void DeviceMediaToMojoAdapter::StartInProcess(
     const media::VideoCaptureParams& requested_settings,
-    const base::WeakPtr<media::VideoFrameReceiver>& frame_handler,
-    media::VideoEffectsContext context) {
+    const base::WeakPtr<media::VideoFrameReceiver>& frame_handler) {
   DCHECK(thread_checker_.CalledOnValidThread());
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "DeviceMediaToMojoAdapter::StartInProcess");
 
   StartInternal(std::move(requested_settings),
                 /*handler_pending_remote=*/std::nullopt,
-                std::move(frame_handler), /*start_in_process=*/true,
-                std::move(context));
+                std::move(frame_handler), /*start_in_process=*/true);
 }
 
 void DeviceMediaToMojoAdapter::StartInternal(
@@ -119,8 +115,7 @@ void DeviceMediaToMojoAdapter::StartInternal(
     std::optional<mojo::PendingRemote<mojom::VideoFrameHandler>>
         handler_pending_remote,
     const base::WeakPtr<media::VideoFrameReceiver>& frame_handler,
-    bool start_in_process,
-    media::VideoEffectsContext context) {
+    bool start_in_process) {
   DCHECK(thread_checker_.CalledOnValidThread());
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "DeviceMediaToMojoAdapter::StartInternal");
@@ -174,7 +169,7 @@ void DeviceMediaToMojoAdapter::StartInternal(
 #endif  // !BUILDFLAG(IS_WIN)
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   auto device_client = std::make_unique<media::VideoCaptureDeviceClient>(
       std::move(media_receiver), buffer_pool,
       base::BindRepeating(
@@ -185,10 +180,10 @@ void DeviceMediaToMojoAdapter::StartInternal(
               video_frame_receiver)),
           base::BindPostTaskToCurrentDefault(base::BindRepeating(
               &media::VideoFrameReceiver::OnLog, video_frame_receiver))));
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // BUILDFLAG(IS_CHROMEOS)
   auto device_client = std::make_unique<media::VideoCaptureDeviceClient>(
-      std::move(media_receiver), buffer_pool, std::move(context));
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+      std::move(media_receiver), buffer_pool);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   device_->AllocateAndStart(requested_settings, std::move(device_client));
   device_started_ = true;

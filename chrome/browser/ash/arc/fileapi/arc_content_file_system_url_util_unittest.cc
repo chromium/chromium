@@ -19,7 +19,7 @@ TEST(ArcContentFileSystemUrlUtilTest, EncodeAndDecodeExternalFileUrl) {
     GURL src("file://foo/bar/baz");
     GURL dest = ArcUrlToExternalFileUrl(src);
     EXPECT_TRUE(dest.is_valid());
-    EXPECT_EQ(content::kExternalFileScheme, dest.scheme());
+    EXPECT_EQ(content::kExternalFileScheme, dest.GetScheme());
     GURL result = ExternalFileUrlToArcUrl(dest);
     EXPECT_TRUE(result.is_valid());
     EXPECT_EQ(src, result);
@@ -28,7 +28,7 @@ TEST(ArcContentFileSystemUrlUtilTest, EncodeAndDecodeExternalFileUrl) {
     GURL src("content://org.chromium.foo/bar/baz");
     GURL dest = ArcUrlToExternalFileUrl(src);
     EXPECT_TRUE(dest.is_valid());
-    EXPECT_EQ(content::kExternalFileScheme, dest.scheme());
+    EXPECT_EQ(content::kExternalFileScheme, dest.GetScheme());
     GURL result = ExternalFileUrlToArcUrl(dest);
     EXPECT_TRUE(result.is_valid());
     EXPECT_EQ(src, result);
@@ -37,7 +37,7 @@ TEST(ArcContentFileSystemUrlUtilTest, EncodeAndDecodeExternalFileUrl) {
     GURL src("content://org.chromium.foo/bar/%19%20%21");
     GURL dest = ArcUrlToExternalFileUrl(src);
     EXPECT_TRUE(dest.is_valid());
-    EXPECT_EQ(content::kExternalFileScheme, dest.scheme());
+    EXPECT_EQ(content::kExternalFileScheme, dest.GetScheme());
     GURL result = ExternalFileUrlToArcUrl(dest);
     EXPECT_TRUE(result.is_valid());
     EXPECT_EQ(src, result);
@@ -46,7 +46,7 @@ TEST(ArcContentFileSystemUrlUtilTest, EncodeAndDecodeExternalFileUrl) {
     GURL src("content://org.chromium.foo/!@#$%^&*()_+|~-=\\`[]{};':\"<>?,./");
     GURL dest = ArcUrlToExternalFileUrl(src);
     EXPECT_TRUE(dest.is_valid());
-    EXPECT_EQ(content::kExternalFileScheme, dest.scheme());
+    EXPECT_EQ(content::kExternalFileScheme, dest.GetScheme());
     GURL result = ExternalFileUrlToArcUrl(dest);
     EXPECT_TRUE(result.is_valid());
     EXPECT_EQ(src, result);
@@ -59,7 +59,7 @@ TEST(ArcContentFileSystemUrlUtilTest, EncodeAndDecodeExternalFileUrl) {
     GURL src("content://org.chromium.foo/" + base::UTF16ToUTF8(utf16_string));
     GURL dest = ArcUrlToExternalFileUrl(src);
     EXPECT_TRUE(dest.is_valid());
-    EXPECT_EQ(content::kExternalFileScheme, dest.scheme());
+    EXPECT_EQ(content::kExternalFileScheme, dest.GetScheme());
     GURL result = ExternalFileUrlToArcUrl(dest);
     EXPECT_TRUE(result.is_valid());
     EXPECT_EQ(src, result);

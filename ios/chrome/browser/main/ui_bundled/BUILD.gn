@@ -1,0 +1,177 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/build/chrome_build.gni")
+
+source_set("default_browser_scene_agent") {
+  sources = [
+    "default_browser_promo_scene_agent.h",
+    "default_browser_promo_scene_agent.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/feature_engagement/public",
+    "//components/segmentation_platform/embedder/default_model",
+    "//components/segmentation_platform/public",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/default_browser/model:features",
+    "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/default_promo/ui_bundled/post_default_abandonment:features",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/promos_manager/model",
+    "//ios/chrome/browser/promos_manager/model:constants",
+    "//ios/chrome/browser/segmentation_platform/model",
+    "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/utils",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/common/app_group",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("incognito_blocker_scene_agent") {
+  sources = [
+    "incognito_blocker_scene_agent.h",
+    "incognito_blocker_scene_agent.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("scene") {
+  sources = [
+    "ui_blocker_scene_agent.h",
+    "ui_blocker_scene_agent.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/app:blocking_scene_commands",
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/blocking_overlay/ui_bundled",
+    "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
+    "//ios/chrome/browser/shared/public/commands",
+  ]
+
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("ui_bundled") {
+  sources = [
+    "browser_view_wrangler.h",
+    "browser_view_wrangler.mm",
+    "bvc_container_view_controller.h",
+    "bvc_container_view_controller.mm",
+    "wrangled_browser.h",
+    "wrangled_browser.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app:mode",
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/browser/browser_view/ui_bundled",
+    "//ios/chrome/browser/crash_report/model:model_internal",
+    "//ios/chrome/browser/device_sharing/model",
+    "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_scene_agent",
+    "//ios/chrome/browser/metrics/model:metrics_browser_agent",
+    "//ios/chrome/browser/sessions/model",
+    "//ios/chrome/browser/sessions/model:session_restoration_service",
+    "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
+    "//ios/chrome/browser/sessions/model:session_util",
+    "//ios/chrome/browser/settings/model/sync/utils",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/prototypes/diamond",
+    "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/tabs/model/inactive_tabs",
+    "//ios/chrome/browser/tabs/model/inactive_tabs:features",
+    "//ios/chrome/common/ui/colors",
+
+    # Note: the deps below are not directly used according to `gn check` since
+    # no headers from those target are included. They are however required as
+    # the target exist to break circular dependencies or to provide resources.
+    "//ios/chrome/app/resources:base_scene_storyboard",
+    "//ios/chrome/app/resources:launchscreen",
+    "//ios/chrome/browser/tabs/model:tabs_internal",
+  ]
+
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "browser_view_wrangler_unittest.mm",
+    "default_browser_promo_scene_agent_unittest.mm",
+    "incognito_blocker_scene_agent_unittest.mm",
+  ]
+  deps = [
+    ":default_browser_scene_agent",
+    ":incognito_blocker_scene_agent",
+    ":ui_bundled",
+    "//base",
+    "//base/test:test_support",
+    "//components/bookmarks/test",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/test:test_support",
+    "//components/signin/public/base",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/browser_view/ui_bundled",
+    "//ios/chrome/browser/default_browser/model:features",
+    "//ios/chrome/browser/default_browser/model:test_support",
+    "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/default_promo/ui_bundled/post_default_abandonment:features",
+    "//ios/chrome/browser/dom_distiller/model",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/prerender/model",
+    "//ios/chrome/browser/promos_manager/model:constants",
+    "//ios/chrome/browser/promos_manager/model:factory",
+    "//ios/chrome/browser/promos_manager/model:features",
+    "//ios/chrome/browser/promos_manager/model:test_support",
+    "//ios/chrome/browser/reader_mode/model",
+    "//ios/chrome/browser/reader_mode/model:features",
+    "//ios/chrome/browser/saved_tab_groups/model",
+    "//ios/chrome/browser/search_engines/model",
+    "//ios/chrome/browser/sessions/model:restoration_observer",
+    "//ios/chrome/browser/sessions/model:session_restoration_service",
+    "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
+    "//ios/chrome/browser/sessions/model:test_support",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_util_test_support",
+    "//ios/chrome/browser/shared/coordinator/scene/test",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:signin_util",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/tabs/model/inactive_tabs:features",
+    "//ios/chrome/common/app_group",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+  ]
+}

@@ -16,10 +16,8 @@ interface TestAction extends Action {
 }
 
 function reducer({value}: TestState, action: TestAction): TestState {
-  switch (action.name) {
-    case 'append':
-      return {value: value + action.value};
-  }
+  assertEquals('append', action.name);
+  return {value: value + action.value};
 }
 
 class TestObserver implements StoreObserver<TestState> {

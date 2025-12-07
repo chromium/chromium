@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ntp.cards;
 
+
 import android.content.Context;
 import android.text.format.DateUtils;
 
@@ -11,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
@@ -18,6 +20,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController;
+import org.chromium.chrome.browser.ui.signin.signin_promo.NtpSigninPromoDelegate;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
@@ -27,8 +30,10 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 /**
  * Superclass tracking whether a signin card could be shown.
  *
- * Subclasses are notified when relevant signin status changes.
+ * <p>Subclasses are notified when relevant signin status changes.
  */
+// TODO(crbug.com/352735671): Remove after uno phase 2 follow-up launch.
+@NullMarked
 public abstract class SignInPromo {
     /** Period for which promos are suppressed if signin is refused in FRE. */
     @VisibleForTesting static final long SUPPRESSION_PERIOD_MS = DateUtils.DAY_IN_MILLIS;
@@ -47,11 +52,14 @@ public abstract class SignInPromo {
     private final SigninManager mSigninManager;
     protected final SyncPromoController mSyncPromoController;
     protected final ProfileDataCache mProfileDataCache;
+    protected final IdentityManager mIdentityManager;
 
     protected SignInPromo(SigninManager signinManager, SyncPromoController syncPromoController) {
         Context context = ContextUtils.getApplicationContext();
         mSigninManager = signinManager;
-        mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
+        mIdentityManager = signinManager.getIdentityManager();
+        mProfileDataCache =
+                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context, mIdentityManager);
         mSyncPromoController = syncPromoController;
         mSigninObserver = new SigninObserver();
 
@@ -77,6 +85,7 @@ public abstract class SignInPromo {
      * @return Whether the {@link SignInPromo} should be created.
      */
     public static boolean shouldCreatePromo() {
+        NtpSigninPromoDelegate.resetNtpSyncPromoLimitsIfHiddenForTooLong();
         return !sDisablePromoForTests
                 && !ChromeSharedPreferences.getInstance()
                         .readBoolean(ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED, false)
@@ -98,9 +107,8 @@ public abstract class SignInPromo {
     }
 
     public boolean isUserSignedInButNotSyncing() {
-        IdentityManager identityManager = mSigninManager.getIdentityManager();
-        return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)
-                && !identityManager.hasPrimaryAccount(ConsentLevel.SYNC);
+        return mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)
+                && !mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC);
     }
 
     /** Notify that the content for this {@link SignInPromo} has changed. */
@@ -108,20 +116,14 @@ public abstract class SignInPromo {
 
     private void updateVisibility() {
         final boolean isAccountsCachePopulated =
-                AccountManagerFacadeProvider.getInstance().getCoreAccountInfos().isFulfilled();
+                AccountManagerFacadeProvider.getInstance().getAccounts().isFulfilled();
         boolean canShowPersonalizedSigninPromo =
                 mSigninManager.isSigninAllowed()
                         && mSyncPromoController.canShowSyncPromo()
                         && mCanShowPersonalizedSuggestions
                         && isAccountsCachePopulated
                         && mSigninManager.isSigninSupported(/* requireUpdatedPlayServices= */ true);
-        boolean canShowPersonalizedSyncPromo =
-                mSigninManager.isSyncOptInAllowed()
-                        && mSyncPromoController.canShowSyncPromo()
-                        && isUserSignedInButNotSyncing()
-                        && mCanShowPersonalizedSuggestions
-                        && isAccountsCachePopulated;
-        setVisibilityInternal(canShowPersonalizedSigninPromo || canShowPersonalizedSyncPromo);
+        setVisibilityInternal(canShowPersonalizedSigninPromo);
     }
 
     /**

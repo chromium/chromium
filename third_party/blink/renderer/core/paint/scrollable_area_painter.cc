@@ -25,17 +25,16 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scrollbar_display_item.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 
 namespace blink {
 
 namespace {
 
 bool VisibleToHitTesting(const LayoutBox& box) {
-  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    return ObjectPainter(box).GetHitTestOpaqueness() !=
-           cc::HitTestOpaqueness::kTransparent;
-  }
-  return box.VisibleToHitTesting();
+  return ObjectPainter(box).GetHitTestOpaqueness() !=
+         cc::HitTestOpaqueness::kTransparent;
 }
 
 }  // namespace
@@ -144,31 +143,33 @@ void ScrollableAreaPainter::DrawPlatformResizerImage(
   paint_flags.setStyle(cc::PaintFlags::kStroke_Style);
   paint_flags.setStrokeWidth(std::ceil(paint_scale));
 
-  SkPath line_path;
-
   AutoDarkMode auto_dark_mode(
       PaintAutoDarkMode(scrollable_area_.GetLayoutBox()->StyleRef(),
                         DarkModeFilter::ElementRole::kBackground));
 
   // Draw a dark line, to ensure contrast against a light background
-  line_path.moveTo(points[0].x(), points[0].y());
-  line_path.lineTo(points[1].x(), points[1].y());
-  line_path.moveTo(points[2].x(), points[2].y());
-  line_path.lineTo(points[3].x(), points[3].y());
+  const SkPath dark_line_path = SkPathBuilder()
+                                    .moveTo(points[0].x(), points[0].y())
+                                    .lineTo(points[1].x(), points[1].y())
+                                    .moveTo(points[2].x(), points[2].y())
+                                    .lineTo(points[3].x(), points[3].y())
+                                    .detach();
   paint_flags.setColor(SkColorSetARGB(153, 0, 0, 0));
-  context.DrawPath(line_path, paint_flags, auto_dark_mode);
+  context.DrawPath(dark_line_path, paint_flags, auto_dark_mode);
 
   // Draw a light line one pixel below the light line,
   // to ensure contrast against a dark background
   int v_offset = std::ceil(paint_scale);
   int h_offset = on_left ? -v_offset : v_offset;
-  line_path.reset();
-  line_path.moveTo(points[0].x(), points[0].y() + v_offset);
-  line_path.lineTo(points[1].x() + h_offset, points[1].y());
-  line_path.moveTo(points[2].x(), points[2].y() + v_offset);
-  line_path.lineTo(points[3].x() + h_offset, points[3].y());
+  const SkPath light_line_path =
+      SkPathBuilder()
+          .moveTo(points[0].x(), points[0].y() + v_offset)
+          .lineTo(points[1].x() + h_offset, points[1].y())
+          .moveTo(points[2].x(), points[2].y() + v_offset)
+          .lineTo(points[3].x() + h_offset, points[3].y())
+          .detach();
   paint_flags.setColor(SkColorSetARGB(153, 255, 255, 255));
-  context.DrawPath(line_path, paint_flags, auto_dark_mode);
+  context.DrawPath(light_line_path, paint_flags, auto_dark_mode);
 }
 
 bool ScrollableAreaPainter::PaintOverflowControls(
@@ -335,8 +336,7 @@ void ScrollableAreaPainter::PaintNativeScrollbar(GraphicsContext& context,
   if (scrollbar.GetTheme().AllowsHitTest()) {
     hit_test_opaqueness =
         ObjectPainter(*scrollable_area_.GetLayoutBox()).GetHitTestOpaqueness();
-    if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled() &&
-        hit_test_opaqueness == cc::HitTestOpaqueness::kMixed) {
+    if (hit_test_opaqueness == cc::HitTestOpaqueness::kMixed) {
       // A scrollbar is always opaque to hit test if it's visible to hit test,
       // which is assumed in cc for non-solid-color scrollbar layers.
       hit_test_opaqueness = cc::HitTestOpaqueness::kOpaque;
@@ -362,6 +362,18 @@ void ScrollableAreaPainter::PaintScrollCorner(
   if (!cull_rect.Intersects(visual_rect))
     return;
 
+  const auto& client = scrollable_area_.GetScrollCornerDisplayItemClient();
+
+  // Make sure to set up the effect node before painting custom or native
+  // scrollbar.
+  std::optional<ScopedPaintChunkProperties> chunk_properties;
+  const auto* properties =
+      scrollable_area_.GetLayoutBox()->FirstFragment().PaintProperties();
+  if (const auto* effect = properties->ScrollCornerEffect()) {
+    chunk_properties.emplace(context.GetPaintController(), *effect, client,
+                             DisplayItem::kScrollCorner);
+  }
+
   if (const auto* scroll_corner = scrollable_area_.ScrollCorner()) {
     CustomScrollbarTheme::PaintIntoRect(*scroll_corner, context,
                                         PhysicalRect(visual_rect));
@@ -381,26 +393,10 @@ void ScrollableAreaPainter::PaintScrollCorner(
   } else if (scrollable_area_.VerticalScrollbar()) {
     theme = &scrollable_area_.VerticalScrollbar()->GetTheme();
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
-  const auto& client = scrollable_area_.GetScrollCornerDisplayItemClient();
-
-  std::optional<ScopedPaintChunkProperties> chunk_properties;
-  const auto* properties =
-      scrollable_area_.GetLayoutBox()->FirstFragment().PaintProperties();
-  if (const auto* effect = properties->ScrollCornerEffect()) {
-    chunk_properties.emplace(context.GetPaintController(), *effect, client,
-                             DisplayItem::kScrollCorner);
-  }
-
-  mojom::blink::ColorScheme color_scheme =
-      scrollable_area_.UsedColorSchemeScrollbars();
-  const ui::ColorProvider* color_provider =
-      scrollable_area_.GetColorProvider(color_scheme);
-  theme->PaintScrollCorner(
-      context, scrollable_area_.VerticalScrollbar(), client, visual_rect,
-      color_scheme, scrollable_area_.InForcedColorsMode(), color_provider);
+  theme->PaintScrollCorner(context, scrollable_area_, client, visual_rect);
 }
 
 }  // namespace blink

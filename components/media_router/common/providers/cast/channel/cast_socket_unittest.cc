@@ -18,6 +18,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notimplemented.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -32,7 +33,7 @@
 #include "components/media_router/common/providers/cast/channel/cast_transport.h"
 #include "components/media_router/common/providers/cast/channel/logger.h"
 #include "content/public/test/browser_task_environment.h"
-#include "crypto/rsa_private_key.h"
+#include "crypto/evp.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/address_list.h"
 #include "net/base/net_errors.h"
@@ -61,7 +62,6 @@ const int64_t kDistantTimeoutMillis = 100000;  // 100 seconds (never hit).
 using ::testing::_;
 using ::testing::A;
 using ::testing::DoAll;
-using ::testing::Invoke;
 using ::testing::InvokeArgument;
 using ::testing::NotNull;
 using ::testing::Return;
@@ -142,7 +142,7 @@ class MockTCPSocket : public net::MockTCPClientSocket {
 
 class CompleteHandler {
  public:
-  CompleteHandler() {}
+  CompleteHandler() = default;
 
   CompleteHandler(const CompleteHandler&) = delete;
   CompleteHandler& operator=(const CompleteHandler&) = delete;
@@ -176,7 +176,7 @@ class TestCastSocketBase : public CastSocketImpl {
   TestCastSocketBase(const TestCastSocketBase&) = delete;
   TestCastSocketBase& operator=(const TestCastSocketBase&) = delete;
 
-  ~TestCastSocketBase() override {}
+  ~TestCastSocketBase() override = default;
 
   void SetVerifyChallengeResult(bool value) {
     verify_challenge_result_ = value;
@@ -225,7 +225,7 @@ class MockTestCastSocket : public TestCastSocketBase {
   MockTestCastSocket(const MockTestCastSocket&) = delete;
   MockTestCastSocket& operator=(const MockTestCastSocket&) = delete;
 
-  ~MockTestCastSocket() override {}
+  ~MockTestCastSocket() override = default;
 
   void SetupMockTransport() {
     mock_transport_ = new MockCastTransport;
@@ -279,7 +279,7 @@ class TestSocketFactory : public net::ClientSocketFactory {
     AddReadResult(net::MockRead(mode, result));
   }
   void AddReadResultForData(net::IoMode mode, const std::string& data) {
-    AddReadResult(net::MockRead(mode, data.c_str(), data.size()));
+    AddReadResult(net::MockRead(mode, data));
   }
 
   // Helpers for modifying other connection-related behaviors.
@@ -295,10 +295,11 @@ class TestSocketFactory : public net::ClientSocketFactory {
   }
 
   void Pause() {
-    if (socket_data_provider_)
+    if (socket_data_provider_) {
       socket_data_provider_->Pause();
-    else
+    } else {
       socket_data_provider_paused_ = true;
+    }
   }
 
   void Resume() { socket_data_provider_->Resume(); }
@@ -317,8 +318,9 @@ class TestSocketFactory : public net::ClientSocketFactory {
       net::NetworkQualityEstimator*,
       net::NetLog*,
       const net::NetLogSource&) override {
-    if (tcp_client_socket_)
+    if (tcp_client_socket_) {
       return std::move(tcp_client_socket_);
+    }
 
     if (tcp_unresponsive_) {
       socket_data_provider_ = std::make_unique<net::StaticSocketDataProvider>();
@@ -328,8 +330,9 @@ class TestSocketFactory : public net::ClientSocketFactory {
       socket_data_provider_ =
           std::make_unique<net::StaticSocketDataProvider>(reads_, writes_);
       socket_data_provider_->set_connect_data(*tcp_connect_data_);
-      if (socket_data_provider_paused_)
+      if (socket_data_provider_paused_) {
         socket_data_provider_->Pause();
+      }
       return std::unique_ptr<net::TransportClientSocket>(
           new MockTCPSocket(false, socket_data_provider_.get()));
     }
@@ -348,8 +351,9 @@ class TestSocketFactory : public net::ClientSocketFactory {
     ssl_socket_data_provider_ = std::make_unique<net::SSLSocketDataProvider>(
         ssl_connect_data_->mode, ssl_connect_data_->result);
 
-    if (tls_socket_created_)
+    if (tls_socket_created_) {
       std::move(tls_socket_created_).Run();
+    }
 
     return std::make_unique<net::MockSSLClientSocket>(
         std::move(nested_socket), net::HostPortPair(), net::SSLConfig(),
@@ -385,7 +389,7 @@ class CastSocketTestBase : public testing::Test {
   CastSocketTestBase(const CastSocketTestBase&) = delete;
   CastSocketTestBase& operator=(const CastSocketTestBase&) = delete;
 
-  ~CastSocketTestBase() override {}
+  ~CastSocketTestBase() override = default;
 
   void SetUp() override {
     EXPECT_CALL(*observer_, OnMessage(_, _)).Times(0);
@@ -425,7 +429,7 @@ class MockCastSocketTest : public CastSocketTestBase {
   MockCastSocketTest& operator=(const MockCastSocketTest&) = delete;
 
  protected:
-  MockCastSocketTest() {}
+  MockCastSocketTest() = default;
 
   void TearDown() override {
     if (socket_) {
@@ -466,7 +470,7 @@ class SslCastSocketTest : public CastSocketTestBase {
   SslCastSocketTest& operator=(const SslCastSocketTest&) = delete;
 
  protected:
-  SslCastSocketTest() {}
+  SslCastSocketTest() = default;
 
   void TearDown() override {
     if (socket_) {
@@ -486,7 +490,7 @@ class SslCastSocketTest : public CastSocketTestBase {
     server_private_key_ = ReadTestKeyFromPEM("self_signed.pem");
     ASSERT_TRUE(server_private_key_);
     server_context_ = CreateSSLServerContext(
-        server_cert_.get(), *server_private_key_, server_ssl_config_);
+        server_cert_.get(), server_private_key_.get(), server_ssl_config_);
 
     tcp_server_socket_ =
         std::make_unique<net::TCPServerSocket>(nullptr, net::NetLogSource());
@@ -536,8 +540,7 @@ class SslCastSocketTest : public CastSocketTestBase {
 
   void TcpConnectCallback(int result) { connect_result_ = result; }
 
-  std::unique_ptr<crypto::RSAPrivateKey> ReadTestKeyFromPEM(
-      std::string_view name) {
+  bssl::UniquePtr<EVP_PKEY> ReadTestKeyFromPEM(std::string_view name) {
     base::FilePath key_path = GetTestCertsDirectory().AppendASCII(name);
     std::string pem_data;
     if (!base::ReadFileToString(key_path, &pem_data)) {
@@ -549,11 +552,9 @@ class SslCastSocketTest : public CastSocketTestBase {
     if (!pem_tokenizer.GetNext()) {
       return nullptr;
     }
-    std::vector<uint8_t> key_vector(pem_tokenizer.data().begin(),
-                                    pem_tokenizer.data().end());
-    std::unique_ptr<crypto::RSAPrivateKey> key(
-        crypto::RSAPrivateKey::CreateFromPrivateKeyInfo(key_vector));
-    return key;
+
+    return crypto::evp::PrivateKeyFromBytes(
+        base::as_byte_span(pem_tokenizer.data()));
   }
 
   int ReadExactLength(net::IOBuffer* buffer,
@@ -604,7 +605,7 @@ class SslCastSocketTest : public CastSocketTestBase {
   // CastSocket over a real SSL socket.  The other members below are used to
   // initialize `server_socket_`.
   std::unique_ptr<net::SSLServerContext> server_context_;
-  std::unique_ptr<crypto::RSAPrivateKey> server_private_key_;
+  bssl::UniquePtr<EVP_PKEY> server_private_key_;
   scoped_refptr<net::X509Certificate> server_cert_;
   net::SSLServerConfig server_ssl_config_;
 

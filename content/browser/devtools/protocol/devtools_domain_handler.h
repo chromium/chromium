@@ -5,9 +5,10 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_PROTOCOL_DEVTOOLS_DOMAIN_HANDLER_H_
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_DEVTOOLS_DOMAIN_HANDLER_H_
 
+#include <string>
+
 #include "base/memory/raw_ptr.h"
 #include "content/browser/devtools/protocol/protocol.h"
-#include "content/browser/devtools/shared_worker_devtools_agent_host.h"
 
 namespace content {
 

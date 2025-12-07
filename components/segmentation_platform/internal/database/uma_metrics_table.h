@@ -34,6 +34,9 @@ class UmaMetricsTable {
   // Delete all metrics older than the provided `time`;
   bool DeleteEventsBeforeTimestamp(base::Time time);
 
+  bool CleanupItems(const std::string& profile_id,
+                    const std::vector<CleanupItem>& cleanup_items);
+
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 

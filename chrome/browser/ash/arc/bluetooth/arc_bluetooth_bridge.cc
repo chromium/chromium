@@ -11,14 +11,12 @@
 #include <stdint.h>
 #include <sys/socket.h>
 
+#include <algorithm>
 #include <iomanip>
 #include <optional>
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "ash/components/arc/bluetooth/bluetooth_type_converters.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
@@ -29,7 +27,7 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -37,9 +35,12 @@
 #include "chrome/browser/ash/arc/bluetooth/arc_floss_bridge.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/ash/bluetooth_pairing_dialog.h"
-#include "components/arc/common/intent_helper/arc_intent_helper_package.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "chrome/browser/ui/webui/ash/bluetooth/bluetooth_pairing_dialog.h"
+#include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "chromeos/ash/experiences/arc/bluetooth/bluetooth_type_converters.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_package.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
@@ -153,7 +154,7 @@ arc::mojom::BluetoothGattStatus ConvertGattErrorCodeToStatus(
 // Convert the last 4 characters of |identifier| to an
 // int, by interpreting them as hexadecimal digits.
 std::optional<uint16_t> ConvertGattIdentifierToId(
-    const std::string identifier) {
+    const std::string& identifier) {
   uint32_t result;
   if (identifier.size() < 4 ||
       !base::HexStringToUInt(identifier.substr(identifier.size() - 4), &result))
@@ -188,7 +189,7 @@ template <class RemoteGattAttribute>
 RemoteGattAttribute* FindGattAttributeByUuid(
     const std::vector<RemoteGattAttribute*>& attributes,
     const BluetoothUUID& uuid) {
-  auto it = base::ranges::find(attributes, uuid, &RemoteGattAttribute::GetUUID);
+  auto it = std::ranges::find(attributes, uuid, &RemoteGattAttribute::GetUUID);
   return it != attributes.end() ? *it : nullptr;
 }
 
@@ -1854,7 +1855,8 @@ void ArcBluetoothBridge::WriteGattDescriptor(
           device::BluetoothGattCharacteristic::NotificationType::kNotification,
           base::BindOnce(&ArcBluetoothBridge::OnGattNotifyStartDone,
                          weak_factory_.GetWeakPtr(),
-                         std::move(split_callback.first), char_id_str),
+                         std::move(split_callback.first),
+                         std::move(char_id_str)),
           base::BindOnce(&OnGattOperationError,
                          std::move(split_callback.second)));
       return;
@@ -1865,7 +1867,8 @@ void ArcBluetoothBridge::WriteGattDescriptor(
           device::BluetoothGattCharacteristic::NotificationType::kIndication,
           base::BindOnce(&ArcBluetoothBridge::OnGattNotifyStartDone,
                          weak_factory_.GetWeakPtr(),
-                         std::move(split_callback.first), char_id_str),
+                         std::move(split_callback.first),
+                         std::move(char_id_str)),
           base::BindOnce(&OnGattOperationError,
                          std::move(split_callback.second)));
       return;
@@ -1902,7 +1905,7 @@ void ArcBluetoothBridge::ExecuteWrite(mojom::BluetoothAddressPtr remote_addr,
 
 void ArcBluetoothBridge::OnGattNotifyStartDone(
     ArcBluetoothBridge::GattStatusCallback callback,
-    const std::string char_string_id,
+    std::string char_string_id,
     std::unique_ptr<BluetoothGattNotifySession> notify_session) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Hold on to |notify_session|. Destruction of |notify_session| is equivalent
@@ -2649,9 +2652,9 @@ ArcBluetoothBridge::GetDeviceProperties(mojom::BluetoothPropertyType type,
 std::vector<mojom::BluetoothPropertyPtr>
 ArcBluetoothBridge::GetAdapterProperties(
     mojom::BluetoothPropertyType type) const {
-  // TODO(crbug.com/40189401): Since this function is invoked from ARC side, it
-  // is possible that adapter is not present or powered here. It's not
-  // meaningful to return any property when that happens.
+  // Since this function is invoked from ARC side, it is possible that adapter
+  // is not present or powered here. It's not meaningful to return any property
+  // when that happens.
   const std::string adapter_address = bluetooth_adapter_->GetAddress();
   if (adapter_address.empty()) {
     LOG(ERROR) << "Bluetooth adapter does not have a valid address";

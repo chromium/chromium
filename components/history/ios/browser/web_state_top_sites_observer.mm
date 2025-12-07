@@ -25,8 +25,6 @@ WebStateTopSitesObserver::~WebStateTopSitesObserver() {
 void WebStateTopSitesObserver::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-  // TODO(crbug.com/41441240): Remove GetLastCommittedItem nil check once
-  // HasComitted has been fixed.
   if (top_sites_ && navigation_context->HasCommitted() &&
       web_state->GetNavigationManager()->GetLastCommittedItem()) {
     top_sites_->OnNavigationCommitted(
@@ -37,7 +35,5 @@ void WebStateTopSitesObserver::DidFinishNavigation(
 void WebStateTopSitesObserver::WebStateDestroyed(web::WebState* web_state) {
   web_state->RemoveObserver(this);
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(WebStateTopSitesObserver)
 
 }  // namespace history

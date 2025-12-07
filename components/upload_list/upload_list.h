@@ -47,7 +47,7 @@ class UploadList : public base::RefCountedThreadSafe<UploadList> {
                State state,
                int64_t file_size);
     UploadInfo(const std::string& upload_id, const base::Time& upload_time);
-    ~UploadInfo();
+    virtual ~UploadInfo();
 
     // These fields are only valid when |state| == UploadInfo::State::Uploaded.
     std::string upload_id;

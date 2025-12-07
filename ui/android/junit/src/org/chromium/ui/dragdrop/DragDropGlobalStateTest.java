@@ -14,7 +14,7 @@ import static org.mockito.Mockito.when;
 
 import android.view.DragEvent;
 import android.view.View.DragShadowBuilder;
-import java.util.concurrent.TimeUnit;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -27,18 +27,20 @@ import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.ui.dragdrop.DragDropGlobalState.TrackerToken;
 
+import java.util.concurrent.TimeUnit;
+
 @RunWith(org.chromium.base.test.BaseRobolectricTestRunner.class)
 public final class DragDropGlobalStateTest {
     private static final int INSTANCE_ID = 1;
     private static final int INVALID_INSTANCE_ID = -1;
-    private final String mText = "text";
+    private static final String M_TEXT = "text";
     @Rule public MockitoRule mMockitoProcessorRule = MockitoJUnit.rule();
     private DropDataAndroid mDropData;
     private TrackerToken mToken;
 
     @Before
     public void setup() {
-        mDropData = DropDataAndroid.create(mText, null, null, null, null);
+        mDropData = DropDataAndroid.create(M_TEXT, null, null, null, null);
     }
 
     @Test
@@ -50,7 +52,7 @@ public final class DragDropGlobalStateTest {
         DragDropGlobalState instance = DragDropGlobalState.getState(mToken);
         assertNotNull("Instance get should not be null", instance);
         assertTrue("SourceInstanceId should match.", instance.isDragSourceInstance(INSTANCE_ID));
-        assertEquals("Text being dragged should match.", mText, mDropData.text);
+        assertEquals("Text being dragged should match.", M_TEXT, mDropData.text);
 
         // Assert release token.
         DragDropGlobalState.clear(mToken);
@@ -69,7 +71,7 @@ public final class DragDropGlobalStateTest {
         DragDropGlobalState instance = DragDropGlobalState.getState(dropEvent);
         assertNotNull("Instance get should not be null", instance);
         assertTrue("SourceInstanceId should match.", instance.isDragSourceInstance(INSTANCE_ID));
-        assertEquals("Text being dragged should match.", mText, mDropData.text);
+        assertEquals("Text being dragged should match.", M_TEXT, mDropData.text);
         assertTrue("Instance should still exists.", DragDropGlobalState.hasValue());
 
         // Assert release token - no-op.

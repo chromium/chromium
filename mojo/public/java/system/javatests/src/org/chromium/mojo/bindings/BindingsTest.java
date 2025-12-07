@@ -24,7 +24,6 @@ import org.chromium.mojo.bindings.test.mojom.sample.Foo;
 import org.chromium.mojo.bindings.test.mojom.sample.InterfaceConstants;
 import org.chromium.mojo.bindings.test.mojom.sample.SampleServiceConstants;
 import org.chromium.mojo.bindings.test.mojom.test_structs.EmptyStruct;
-import org.chromium.mojo.bindings.test.mojom.test_structs.Rect;
 import org.chromium.mojo.system.DataPipe.ConsumerHandle;
 import org.chromium.mojo.system.DataPipe.ProducerHandle;
 import org.chromium.mojo.system.MessagePipeHandle;
@@ -78,15 +77,6 @@ public class BindingsTest {
         return foo;
     }
 
-    private static Rect createRect(int x, int y, int width, int height) {
-        Rect rect = new Rect();
-        rect.x = x;
-        rect.y = y;
-        rect.width = width;
-        rect.height = height;
-        return rect;
-    }
-
     private static <T> void checkConstantField(Field field, Class<T> expectedClass, T value)
             throws IllegalAccessException {
         Assert.assertEquals(expectedClass, field.getType());
@@ -126,12 +116,7 @@ public class BindingsTest {
         checkConstantField(Shape.class.getField("TRIANGLE"), int.class, 3);
     }
 
-    /**
-     * Testing default values on structs.
-     *
-     * @throws IllegalAccessException
-     * @throws IllegalArgumentException
-     */
+    /** Testing default values on structs. */
     @Test
     @SmallTest
     public void testStructDefaults()
@@ -173,11 +158,7 @@ public class BindingsTest {
         checkField(DefaultsTest.class.getField("a25"), long.class, test, -0x123456789L);
     }
 
-    /**
-     * Testing generation of the Foo class.
-     *
-     * @throws IllegalAccessException
-     */
+    /** Testing generation of the Foo class. */
     @Test
     @SmallTest
     public void testFooGeneration()

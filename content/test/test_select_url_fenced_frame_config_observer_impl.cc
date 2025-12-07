@@ -16,15 +16,26 @@ TestSelectURLFencedFrameConfigObserverImpl::
 TestSelectURLFencedFrameConfigObserverImpl::
     ~TestSelectURLFencedFrameConfigObserverImpl() = default;
 
+GlobalRenderFrameHostId
+TestSelectURLFencedFrameConfigObserverImpl::AssociatedFrameHostId() const {
+  return GlobalRenderFrameHostId();
+}
+
+bool TestSelectURLFencedFrameConfigObserverImpl::
+    ShouldReceiveAllSharedStorageReports() const {
+  return true;
+}
+
 void TestSelectURLFencedFrameConfigObserverImpl::OnSharedStorageAccessed(
-    const base::Time& access_time,
-    AccessType type,
-    int main_frame_id,
+    base::Time access_time,
+    AccessScope scope,
+    AccessMethod method,
+    GlobalRenderFrameHostId main_frame_id,
     const std::string& owner_origin,
     const SharedStorageEventParams& params) {}
 
-void TestSelectURLFencedFrameConfigObserverImpl::OnUrnUuidGenerated(
-    const GURL& urn_uuid) {
+void TestSelectURLFencedFrameConfigObserverImpl::
+    OnSharedStorageSelectUrlUrnUuidGenerated(const GURL& urn_uuid) {
   if (urn_uuid_.has_value()) {
     // This observer has already observed an urn::uuid.
     return;
@@ -32,8 +43,9 @@ void TestSelectURLFencedFrameConfigObserverImpl::OnUrnUuidGenerated(
   urn_uuid_ = urn_uuid;
 }
 
-void TestSelectURLFencedFrameConfigObserverImpl::OnConfigPopulated(
-    const std::optional<FencedFrameConfig>& config) {
+void TestSelectURLFencedFrameConfigObserverImpl::
+    OnSharedStorageSelectUrlConfigPopulated(
+        const std::optional<FencedFrameConfig>& config) {
   if (config_observed_ || !urn_uuid_.has_value() || !config.has_value() ||
       (urn_uuid_.value() != config->urn_uuid())) {
     // 1. This observer has already observed a config.
@@ -45,6 +57,16 @@ void TestSelectURLFencedFrameConfigObserverImpl::OnConfigPopulated(
   config_observed_ = true;
   config_ = config;
 }
+
+void TestSelectURLFencedFrameConfigObserverImpl::
+    OnSharedStorageWorkletOperationExecutionFinished(
+        base::Time finished_time,
+        base::TimeDelta execution_time,
+        AccessMethod method,
+        int operation_id,
+        const base::UnguessableToken& worklet_devtools_token,
+        GlobalRenderFrameHostId main_frame_id,
+        const std::string& owner_origin) {}
 
 const std::optional<GURL>&
 TestSelectURLFencedFrameConfigObserverImpl::GetUrnUuid() const {
@@ -64,8 +86,8 @@ TestSelectURLFencedFrameConfigObserver::TestSelectURLFencedFrameConfigObserver(
     StoragePartition* storage_partition)
     : storage_partition_(storage_partition),
       impl_(std::make_unique<TestSelectURLFencedFrameConfigObserverImpl>()) {
-  SharedStorageWorkletHostManager* manager =
-      GetSharedStorageWorkletHostManagerForStoragePartition(storage_partition_);
+  SharedStorageRuntimeManager* manager =
+      GetSharedStorageRuntimeManagerForStoragePartition(storage_partition_);
   DCHECK(manager);
 
   manager->AddSharedStorageObserver(impl_.get());
@@ -73,8 +95,8 @@ TestSelectURLFencedFrameConfigObserver::TestSelectURLFencedFrameConfigObserver(
 
 TestSelectURLFencedFrameConfigObserver::
     ~TestSelectURLFencedFrameConfigObserver() {
-  SharedStorageWorkletHostManager* manager =
-      GetSharedStorageWorkletHostManagerForStoragePartition(storage_partition_);
+  SharedStorageRuntimeManager* manager =
+      GetSharedStorageRuntimeManagerForStoragePartition(storage_partition_);
 
   manager->RemoveSharedStorageObserver(impl_.get());
 }

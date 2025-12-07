@@ -2,13 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
-#include "media/video/video_encode_accelerator_adapter.h"
-
+#include <array>
 #include <memory>
 #include <string>
 
@@ -33,6 +27,7 @@
 #include "media/base/video_encoder.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
+#include "media/video/video_encode_accelerator_adapter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libyuv/include/libyuv.h"
 
@@ -79,6 +74,7 @@ class SoftwareVideoEncoderTest
   SoftwareVideoEncoderTest() = default;
 
   void SetUp() override {
+    feature_list_.InitAndEnableFeature(kStandardizeVP9AndAV1Quantizer);
     auto args = GetParam();
     profile_ = args.profile;
     pixel_format_ = args.pixel_format;
@@ -253,39 +249,6 @@ class SoftwareVideoEncoderTest
     run_loop.Run(location);
   }
 
-  int CountDifferentPixels(VideoFrame& frame1, VideoFrame& frame2) {
-    int diff_cnt = 0;
-    uint8_t tolerance = 10;
-
-    if (frame1.format() != frame2.format() ||
-        frame1.visible_rect().size() != frame2.visible_rect().size()) {
-      return frame1.coded_size().GetArea();
-    }
-
-    VideoPixelFormat format = frame1.format();
-    size_t num_planes = VideoFrame::NumPlanes(format);
-    gfx::Size visible_size = frame1.visible_rect().size();
-    for (size_t plane = 0; plane < num_planes; ++plane) {
-      const uint8_t* data1 = frame1.visible_data(plane);
-      int stride1 = frame1.stride(plane);
-      const uint8_t* data2 = frame2.visible_data(plane);
-      int stride2 = frame2.stride(plane);
-      size_t rows = VideoFrame::Rows(plane, format, visible_size.height());
-      int row_bytes = VideoFrame::RowBytes(plane, format, visible_size.width());
-
-      for (size_t r = 0; r < rows; ++r) {
-        for (int c = 0; c < row_bytes; ++c) {
-          uint8_t b1 = data1[(stride1 * r) + c];
-          uint8_t b2 = data2[(stride2 * r) + c];
-          uint8_t diff = std::max(b1, b2) - std::min(b1, b2);
-          if (diff > tolerance)
-            diff_cnt++;
-        }
-      }
-    }
-    return diff_cnt;
-  }
-
   VideoPixelFormat GetExpectedOutputPixelFormat(VideoCodecProfile profile) {
     switch (profile) {
       case VP9PROFILE_PROFILE1:
@@ -304,6 +267,9 @@ class SoftwareVideoEncoderTest
     switch (codec) {
       case media::VideoCodec::kAV1:
       case media::VideoCodec::kVP9:
+        if (base::FeatureList::IsEnabled(kStandardizeVP9AndAV1Quantizer)) {
+          return {0, 255};
+        }
         return {0, 63};
       default:
         return {0, 0};
@@ -319,6 +285,23 @@ class SoftwareVideoEncoderTest
     return default_options;
   }
 
+  int AssignNextTemporalId(int frame_index, int number_temporal_layers) {
+    if (number_temporal_layers <= 1) {
+      return 0;
+    }
+    switch (number_temporal_layers) {
+      case 2: {
+        const static std::array<int, 2> kTwoTemporalLayers = {0, 1};
+        return kTwoTemporalLayers[frame_index % kTwoTemporalLayers.size()];
+      }
+      case 3: {
+        const static std::array<int, 4> kThreeTemporalLayers = {0, 2, 1, 2};
+        return kThreeTemporalLayers[frame_index % kThreeTemporalLayers.size()];
+      }
+    }
+    return 0;
+  }
+
  protected:
   VideoCodec codec_;
   VideoCodecProfile profile_;
@@ -332,10 +315,12 @@ class SoftwareVideoEncoderTest
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<VideoEncoder> encoder_;
   std::unique_ptr<VideoDecoder> decoder_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 class H264VideoEncoderTest : public SoftwareVideoEncoderTest {};
 class SVCVideoEncoderTest : public SoftwareVideoEncoderTest {};
+class ManualSVCVideoEncoderTest : public SoftwareVideoEncoderTest {};
 
 TEST_P(SoftwareVideoEncoderTest, StopCallbackWrapping) {
   VideoEncoder::Options options = CreateDefaultOptions();
@@ -548,7 +533,7 @@ TEST_P(SoftwareVideoEncoderTest, EncodeAndDecode) {
         EXPECT_EQ(decoded_frame->format(),
                   GetExpectedOutputPixelFormat(profile_));
         if (decoded_frame->format() == original_frame->format()) {
-          EXPECT_LE(CountDifferentPixels(*decoded_frame, *original_frame),
+          EXPECT_LE(CountDifferentPixels(*decoded_frame, *original_frame, 10),
                     original_frame->visible_rect().width());
         }
         ++total_decoded_frames;
@@ -639,7 +624,7 @@ TEST_P(SoftwareVideoEncoderTest, EncodeAndDecodeWithEnablingDrop) {
         EXPECT_EQ(decoded_frame->format(),
                   GetExpectedOutputPixelFormat(profile_));
         if (decoded_frame->format() == original_frame->format()) {
-          EXPECT_LE(CountDifferentPixels(*decoded_frame, *original_frame),
+          EXPECT_LE(CountDifferentPixels(*decoded_frame, *original_frame, 10),
                     original_frame->visible_rect().width());
         }
         ++total_decoded_frames;
@@ -722,9 +707,9 @@ TEST_P(SVCVideoEncoderTest, EncodeClipTemporalSvc) {
         num_temporal_layers = 3;
         break;
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Unsupported SVC: "
-            << GetScalabilityModeName(options.scalability_mode.value());
+        NOTREACHED() << "Unsupported SVC: "
+                     << GetScalabilityModeName(
+                            options.scalability_mode.value());
     }
   }
   // Try decoding saved outputs dropping varying number of layers
@@ -827,9 +812,9 @@ TEST_P(SVCVideoEncoderTest, EncodeClipTemporalSvcWithEnablingDrop) {
         num_temporal_layers = 3;
         break;
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Unsupported SVC: "
-            << GetScalabilityModeName(options.scalability_mode.value());
+        NOTREACHED() << "Unsupported SVC: "
+                     << GetScalabilityModeName(
+                            options.scalability_mode.value());
     }
   }
   // Try decoding saved outputs dropping varying number of layers
@@ -838,16 +823,14 @@ TEST_P(SVCVideoEncoderTest, EncodeClipTemporalSvcWithEnablingDrop) {
   // Layer Index 1: | | |2| | | |6| | | |10|  |  |
   // Layer Index 2: | |1| |3| |5| |7| |9|  |11|  |
   constexpr size_t kTemporalLayerCycle = 4;
-  constexpr int kTemporalLayerTable[][kTemporalLayerCycle] = {
-      {0, 0, 0, 0},
-      {0, 1, 0, 1},
-      {0, 2, 1, 2},
-  };
+  constexpr auto kTemporalLayerTable =
+      std::to_array({std::to_array({0, 0, 0, 0}), std::to_array({0, 1, 0, 1}),
+                     std::to_array({0, 2, 1, 2})});
   for (size_t i = 0; i < chunks.size(); ++i) {
     ASSERT_FALSE(chunks[i].data.empty());
-    EXPECT_EQ(
-        chunks[i].temporal_id,
-        kTemporalLayerTable[num_temporal_layers - 1][i % kTemporalLayerCycle]);
+    EXPECT_EQ(chunks[i].temporal_id,
+              kTemporalLayerTable[static_cast<size_t>(num_temporal_layers - 1)]
+                                 [i % kTemporalLayerCycle]);
   }
 
   for (int max_layer = 0; max_layer < num_temporal_layers; max_layer++) {
@@ -878,7 +861,7 @@ TEST_P(SVCVideoEncoderTest, EncodeClipTemporalSvcWithEnablingDrop) {
         continue;
       }
       const int temporal_id =
-          kTemporalLayerTable[num_temporal_layers - 1]
+          kTemporalLayerTable[static_cast<size_t>(num_temporal_layers - 1)]
                              [encoded_frame_index % kTemporalLayerCycle];
       encoded_frame_index++;
       if (temporal_id > max_layer) {
@@ -889,6 +872,142 @@ TEST_P(SVCVideoEncoderTest, EncodeClipTemporalSvcWithEnablingDrop) {
       auto decoded_frame = decoded_frames[decoded_frame_index];
       decoded_frame_index++;
       auto original_frame = frames_to_encode[i];
+      EXPECT_EQ(decoded_frame->timestamp(), original_frame->timestamp());
+    }
+  }
+}
+
+TEST_P(ManualSVCVideoEncoderTest, EncodeClipTemporalSvc) {
+  VideoEncoder::Options options = CreateDefaultOptions();
+  options.frame_size = gfx::Size(320, 200);
+  options.bitrate = Bitrate::ExternalRateControl();
+  options.framerate = 25;
+  options.manual_reference_buffer_control = true;
+  auto scalability_mode = GetParam().scalability_mode;
+  VideoEncoderInfo encoder_info;
+  if (codec_ == VideoCodec::kH264) {
+    options.avc.produce_annexb = true;
+  }
+  std::vector<scoped_refptr<VideoFrame>> frames_to_encode;
+
+  std::vector<VideoEncoderOutput> chunks;
+  size_t total_frames_count = 80;
+
+  // Encoder all frames with 3 temporal layers and put all outputs in |chunks|
+  auto frame_duration = base::Seconds(1.0 / options.framerate.value());
+
+  VideoEncoder::OutputCB encoder_output_cb = base::BindLambdaForTesting(
+      [&](VideoEncoderOutput output,
+          std::optional<VideoEncoder::CodecDescription> desc) {
+        chunks.push_back(std::move(output));
+      });
+
+  VideoEncoder::EncoderInfoCB encoder_info_cb = base::BindLambdaForTesting(
+      [&](const VideoEncoderInfo& info) { encoder_info = info; });
+
+  encoder_->Initialize(profile_, options, std::move(encoder_info_cb),
+                       std::move(encoder_output_cb),
+                       ValidateStatusThenQuitCB());
+  RunUntilQuit();
+  ASSERT_EQ(encoder_info.number_of_manual_reference_buffers, 3ul);
+
+  int num_temporal_layers = 0;
+  if (scalability_mode) {
+    switch (scalability_mode.value()) {
+      case SVCScalabilityMode::kL1T1:
+        num_temporal_layers = 1;
+        break;
+      case SVCScalabilityMode::kL1T2:
+        num_temporal_layers = 2;
+        break;
+      case SVCScalabilityMode::kL1T3:
+        num_temporal_layers = 3;
+        break;
+      default:
+        NOTREACHED() << "Unsupported SVC: "
+                     << GetScalabilityModeName(scalability_mode.value());
+    }
+  }
+
+  for (auto frame_index = 0u; frame_index < total_frames_count; frame_index++) {
+    auto timestamp = frame_index * frame_duration;
+    auto frame = CreateFrame(options.frame_size, pixel_format_, timestamp);
+    frames_to_encode.push_back(frame);
+    VideoEncoder::EncodeOptions encode_options(false);
+    switch (num_temporal_layers) {
+      case 0:
+        // No references, every frame is basically a key frame.
+        encode_options.update_buffer = 0;
+        break;
+      case 1:
+        // Each frame depends only on the previous one.
+        encode_options.update_buffer = 0;
+        encode_options.reference_buffers.push_back(0);
+        break;
+      case 2:
+        // Emulate L1T2 scalability mode
+        if (frame_index % 2 == 0) {
+          encode_options.update_buffer = 0;
+        }
+        encode_options.reference_buffers.push_back(0);
+        break;
+      case 3:
+        // Emulate L1T3 scalability mode
+        int index_in_cycle = frame_index % 4;
+        encode_options.reference_buffers.push_back(0);
+        if (index_in_cycle == 0) {
+          encode_options.update_buffer = 0;
+        } else if (index_in_cycle == 1) {
+          // Nothing to update.
+        } else if (index_in_cycle == 2) {
+          encode_options.update_buffer = 1;
+        } else {
+          encode_options.reference_buffers.push_back(1);
+        }
+        break;
+    }
+    encode_options.quantizer = 30;
+    encoder_->Encode(std::move(frame), encode_options,
+                     ValidateStatusThenQuitCB());
+    RunUntilQuit();
+  }
+
+  encoder_->Flush(ValidateStatusThenQuitCB());
+  RunUntilQuit();
+  EXPECT_EQ(chunks.size(), total_frames_count);
+
+  // Try decoding saved outputs dropping varying number of layers
+  // and check that decoded frames indeed match the pattern:
+  // Layer Index 0: |0| | | |4| | | |8| |  |  |12|
+  // Layer Index 1: | | |2| | | |6| | | |10|  |  |
+  // Layer Index 2: | |1| |3| |5| |7| |9|  |11|  |
+  for (int max_layer = 0; max_layer < num_temporal_layers; max_layer++) {
+    std::vector<scoped_refptr<VideoFrame>> decoded_frames;
+    VideoDecoder::OutputCB decoder_output_cb =
+        base::BindLambdaForTesting([&](scoped_refptr<VideoFrame> frame) {
+          decoded_frames.push_back(frame);
+        });
+    PrepareDecoder(options.frame_size, std::move(decoder_output_cb));
+
+    for (size_t frame_index = 0; frame_index < chunks.size(); frame_index++) {
+      auto& chunk = chunks[frame_index];
+      int temporal_id = AssignNextTemporalId(static_cast<int>(frame_index),
+                                             num_temporal_layers);
+      if (temporal_id <= max_layer && !chunk.data.empty()) {
+        auto buffer = DecoderBuffer::CopyFrom(chunk.data);
+        buffer->set_timestamp(chunk.timestamp);
+        buffer->set_is_key_frame(chunk.key_frame);
+        DecodeAndWaitForStatus(std::move(buffer));
+      }
+    }
+    DecodeAndWaitForStatus(DecoderBuffer::CreateEOSBuffer());
+
+    int rate_decimator = (1 << (num_temporal_layers - 1)) / (1 << max_layer);
+    ASSERT_EQ(decoded_frames.size(),
+              size_t{total_frames_count / rate_decimator});
+    for (auto i = 0u; i < decoded_frames.size(); i++) {
+      auto decoded_frame = decoded_frames[i];
+      auto original_frame = frames_to_encode[i * rate_decimator];
       EXPECT_EQ(decoded_frame->timestamp(), original_frame->timestamp());
     }
   }
@@ -1021,7 +1140,7 @@ TEST_P(H264VideoEncoderTest, ReconfigureWithResize) {
                   .is_ok());
           original_frame = i420_frame;
         }
-        EXPECT_LE(CountDifferentPixels(*frame, *original_frame),
+        EXPECT_LE(CountDifferentPixels(*frame, *original_frame, 10),
                   original_frame->visible_rect().width());
         ++total_decoded_frames;
       });
@@ -1105,8 +1224,8 @@ TEST_P(H264VideoEncoderTest, AvcExtraData) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
             H264ToAnnexBBitstreamConverter converter;
             mp4::AVCDecoderConfigurationRecord avc_config;
-            bool parse_ok = converter.ParseConfiguration(
-                desc->data(), desc->size(), &avc_config);
+            bool parse_ok =
+                converter.ParseConfiguration(desc.value(), &avc_config);
             EXPECT_TRUE(parse_ok);
             EXPECT_EQ(profile_, ProfileIDToVideoCodecProfile(
                                     avc_config.profile_indication));
@@ -1392,11 +1511,17 @@ INSTANTIATE_TEST_SUITE_P(Av1TemporalSvc,
                          SVCVideoEncoderTest,
                          ::testing::ValuesIn(kAv1SVCParams),
                          PrintTestParams);
+
+INSTANTIATE_TEST_SUITE_P(Av1ManualSvc,
+                         ManualSVCVideoEncoderTest,
+                         ::testing::ValuesIn(kAv1SVCParams),
+                         PrintTestParams);
 #endif  // ENABLE_LIBAOM
 
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(H264VideoEncoderTest);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(SVCVideoEncoderTest);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(SoftwareVideoEncoderTest);
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(ManualSVCVideoEncoderTest);
 
 TEST(SoftwareVideoEncoderTest, DefaultBitrate) {
   EXPECT_EQ(GetDefaultVideoEncodeBitrate({1280, 720}, 30u), 2'000'000u);

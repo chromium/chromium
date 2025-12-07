@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -20,7 +21,6 @@
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_listener.h"
-#include "ipc/ipc_message.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
@@ -102,7 +102,6 @@ class MockWorkerListener : public IPC::Listener,
               (override));
 
   // IPC::Listener implementation.
-  bool OnMessageReceived(const IPC::Message& message) override;
   void OnAssociatedInterfaceRequest(
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle handle) override;
@@ -111,11 +110,6 @@ class MockWorkerListener : public IPC::Listener,
   mojo::AssociatedReceiver<mojom::WorkerProcessControl> worker_process_control_{
       this};
 };
-
-bool MockWorkerListener::OnMessageReceived(const IPC::Message& message) {
-  ADD_FAILURE() << "Unexpected call to OnMessageReceived()";
-  return false;
-}
 
 void MockWorkerListener::OnAssociatedInterfaceRequest(
     const std::string& interface_name,
@@ -140,7 +134,6 @@ class WorkerProcessLauncherTest : public testing::Test, public IPC::Listener {
   void SetUp() override;
 
   // IPC::Listener implementation.
-  bool OnMessageReceived(const IPC::Message& message) override;
   void OnChannelConnected(int32_t peer_pid) override;
   void OnChannelError() override;
 
@@ -161,9 +154,6 @@ class WorkerProcessLauncherTest : public testing::Test, public IPC::Listener {
 
   // Disconnects the server end of the channel (the launcher's end).
   void DisconnectServer();
-
-  // Sends a message to the worker process.
-  void SendToProcess(IPC::Message* message);
 
   // Sends a fake message to the launcher.
   void SendFakeMessageToLauncher();
@@ -246,11 +236,6 @@ void WorkerProcessLauncherTest::SetUp() {
       .WillRepeatedly(Invoke(this, &WorkerProcessLauncherTest::KillProcess));
 }
 
-bool WorkerProcessLauncherTest::OnMessageReceived(const IPC::Message& message) {
-  ADD_FAILURE() << "Unexpected call to OnMessageReceived()";
-  return false;
-}
-
 void WorkerProcessLauncherTest::OnChannelConnected(int32_t peer_pid) {
   event_handler_->OnChannelConnected(peer_pid);
 }
@@ -299,14 +284,14 @@ void WorkerProcessLauncherTest::KillProcess() {
   event_handler_ = nullptr;
 
   DisconnectClient();
-  if (worker_process_.IsValid()) {
+  if (worker_process_.is_valid()) {
     TerminateProcess(worker_process_.Get(), CONTROL_C_EXIT);
     worker_process_.Close();
   }
 }
 
 void WorkerProcessLauncherTest::TerminateWorker(DWORD exit_code) {
-  if (worker_process_.IsValid()) {
+  if (worker_process_.is_valid()) {
     TerminateProcess(worker_process_.Get(), exit_code);
   }
 }
@@ -348,7 +333,8 @@ void WorkerProcessLauncherTest::DisconnectServer() {
 
 void WorkerProcessLauncherTest::SendFakeMessageToLauncher() {
   if (desktop_session_state_handler_) {
-    desktop_session_state_handler_->DisconnectSession(ErrorCode::OK);
+    desktop_session_state_handler_->DisconnectSession(
+        ErrorCode::OK, /* error_details= */ {}, FROM_HERE);
   }
 }
 
@@ -378,7 +364,7 @@ void WorkerProcessLauncherTest::QuitMainMessageLoop() {
 
 void WorkerProcessLauncherTest::DoLaunchProcess() {
   EXPECT_TRUE(event_handler_);
-  EXPECT_FALSE(worker_process_.IsValid());
+  EXPECT_FALSE(worker_process_.is_valid());
 
   WCHAR calc[MAX_PATH + 1];
   ASSERT_GT(ExpandEnvironmentStrings(L"\045SystemRoot\045\\system32\\calc.exe",
@@ -399,7 +385,7 @@ void WorkerProcessLauncherTest::DoLaunchProcess() {
                             &startup_info, &temp_process_info));
   base::win::ScopedProcessInformation process_information(temp_process_info);
   worker_process_.Set(process_information.TakeProcessHandle());
-  ASSERT_TRUE(worker_process_.IsValid());
+  ASSERT_TRUE(worker_process_.is_valid());
 
   mojo::MessagePipe pipe;
   client_channel_handle_ = std::move(pipe.handle0);

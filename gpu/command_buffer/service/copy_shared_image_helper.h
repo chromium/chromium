@@ -6,9 +6,10 @@
 #define GPU_COMMAND_BUFFER_SERVICE_COPY_SHARED_IMAGE_HELPER_H_
 
 #include <stdint.h>
+
+#include <array>
 #include <string>
 
-#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
 #include "gpu/command_buffer/common/gl2_types.h"
@@ -39,42 +40,15 @@ class GPU_GLES2_EXPORT CopySharedImageHelper {
       SharedContextState* shared_context_state);
   ~CopySharedImageHelper();
 
-  base::expected<void, GLError> ConvertRGBAToYUVAMailboxes(
-      GLenum yuv_color_space,
-      GLenum plane_config,
-      GLenum subsampling,
-      const volatile GLbyte* mailboxes_in);
-  base::expected<void, GLError> ConvertYUVAMailboxesToRGB(
-      GLint src_x,
-      GLint src_y,
-      GLsizei width,
-      GLsizei height,
-      GLenum yuv_color_space,
-      GLenum plane_config,
-      GLenum subsampling,
-      const volatile GLbyte* mailboxes_in);
-  base::expected<void, GLError> ConvertYUVAMailboxesToGLTexture(
-      GLuint texture,
-      GLenum target,
-      GLuint internal_format,
-      GLenum type,
-      GLint src_x,
-      GLint src_y,
-      GLsizei width,
-      GLsizei height,
-      bool flip_y,
-      GLenum yuv_color_space,
-      GLenum plane_config,
-      GLenum subsampling,
-      const volatile GLbyte* mailboxes_in);
   base::expected<void, GLError> CopySharedImage(
       GLint xoffset,
       GLint yoffset,
       GLint x,
       GLint y,
-      GLsizei width,
-      GLsizei height,
-      GLboolean unpack_flip_y,
+      GLsizei src_width,
+      GLsizei src_height,
+      GLsizei dst_width,
+      GLsizei dst_height,
       const volatile GLbyte* mailboxes);
   // Only used by passthrough decoder.
   // TODO(crbug.com/40064510): Handle this use-case for graphite.
@@ -87,7 +61,7 @@ class GPU_GLES2_EXPORT CopySharedImageHelper {
       GLint src_y,
       GLsizei width,
       GLsizei height,
-      GLboolean flip_y,
+      GrSurfaceOrigin dst_origin,
       const volatile GLbyte* src_mailbox);
   base::expected<void, GLError> ReadPixels(
       GLint src_x,
@@ -107,24 +81,6 @@ class GPU_GLES2_EXPORT CopySharedImageHelper {
           dest_scoped_access);
 
  private:
-  // Converts YUVA mailboxes in `bytes_in` to the RGB SKSurface `dest_surface`.
-  // Returns an error if the conversion did not succeed.
-  base::expected<void, GLError> ConvertYUVAMailboxesToSkSurface(
-      const char* function_name,
-      GLint src_x,
-      GLint src_y,
-      GLsizei width,
-      GLsizei height,
-      GLenum planes_yuv_color_space,
-      GLenum plane_config,
-      GLenum subsampling,
-      const volatile GLbyte* bytes_in,
-      SkSurface* dest_surface,
-      std::vector<GrBackendSemaphore>& begin_semaphores,
-      std::vector<GrBackendSemaphore>& end_semaphores,
-      sk_sp<SkColorSpace> src_rgb_color_space,
-      base::FunctionRef<void()> flush_dest_surface_function);
-
   raw_ptr<SharedImageRepresentationFactory> representation_factory_ = nullptr;
   raw_ptr<SharedContextState> shared_context_state_ = nullptr;
 };

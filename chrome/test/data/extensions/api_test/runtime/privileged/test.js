@@ -9,7 +9,7 @@ var succeed = chrome.test.succeed;
 
 const isServiceWorker = ('ServiceWorkerGlobalScope' in self);
 const extensionId = 'iegclhlplifhodhkoafiokenjoapiobj';
-const serviceWorkerScriptName = 'generated_service_worker__.js';
+const serviceWorkerScriptName = 'test.js';
 
 function checkIsDefined(prop) {
   if (!chrome.runtime) {
@@ -70,6 +70,14 @@ chrome.test.runTests([
     } else {
       assertEq(serviceWorkerScriptName, manifest.background.service_worker);
     }
+    succeed();
+  },
+
+  function testGetVersion() {
+    if (!checkIsDefined('getVersion'))
+      return;
+    var version = chrome.runtime.getVersion();
+    assertEq('1', version);
     succeed();
   },
 

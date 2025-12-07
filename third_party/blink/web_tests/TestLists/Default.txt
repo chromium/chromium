@@ -12,8 +12,6 @@ animations/animation-shorthand-overriding.html
 animations/stability/empty-keyframes.html
 animations/interpolation/border-image-slice-interpolation-stability.html
 animations/responsive/interpolation/offset-rotate-responsive.html
-animations/svg-attribute-composition/svg-bias-composition.html
-animations/svg-attribute-interpolation/svg-numOctaves-interpolation.html
 compositing/animation/animated-composited-inside-hidden.html
 compositing/animation/animation-compositing.html
 compositing/animation/computed-style-during-delay.html
@@ -868,7 +866,6 @@ svg/custom/svg-use-style-float-crash.svg
 svg/custom/use-invalid-font-face.svg
 svg/dispatch-event-crash-on-destruct.html
 svg/dom/smil-methods.svg
-svg/dom/SVGScriptElement/script-async-attr.svg
 svg/dom/SVGStyleElement/disable-svg-style-element.html
 svg/dom/SVGStyleElement/style-langspace.html
 svg/filters/feComponentTransfer-style-crash.xhtml
@@ -942,7 +939,6 @@ synthetic_gestures/smooth-scroll-tiny-delta.html
 
 virtual/prefer_compositing_to_lcd_text/scrollbars/custom-scroll-corner-crash.html
 virtual/prefer_compositing_to_lcd_text/scrollbars/viewport-scrollbar-corner-with-percent-padding-crash.html
-virtual/stable/fast/css3-text/css3-text-decoration/stable/getComputedStyle-text-decoration.html
 virtual/stable/http/tests/navigation/location-assign-adds-history-item.html
 virtual/stable/http/tests/navigation/replacestate-base-legal.html
 virtual/stable/http/tests/navigation/useragent.php

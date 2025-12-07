@@ -2,6 +2,7 @@ noparent = True
 include_rules = [
   "+base/android",
   "+base/test/android",
+  "+build/android",
   "+chrome/browser/profiles/android",
   "+chrome/browser/util",
   "+chrome/test/android",

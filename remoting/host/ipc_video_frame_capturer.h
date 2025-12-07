@@ -50,6 +50,7 @@ class IpcVideoFrameCapturer : public DesktopCapturer,
   void CaptureFrame() override;
   bool GetSourceList(SourceList* sources) override;
   bool SelectSource(SourceId id) override;
+  void SetComposeEnabled(bool enabled) override;
 
   // mojom::VideoCapturerEventHandler interface.
   void OnSharedMemoryRegionCreated(int id,

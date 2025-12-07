@@ -5,15 +5,43 @@
 #ifndef BASE_STRINGS_STRING_SPLIT_H_
 #define BASE_STRINGS_STRING_SPLIT_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 
 namespace base {
+
+// Splits a string at the first instance of `separator`, returning a pair of
+// `std::string_view`: `first` is the (potentially empty) part that comes before
+// the separator, and `second` is the (potentially empty) part that comes after.
+// If `separator` is not in `input`, returns `std::nullopt`.
+BASE_EXPORT std::optional<std::pair<std::string_view, std::string_view>>
+SplitStringOnce(std::string_view input LIFETIME_BOUND, char separator);
+
+// Similar to the above, but splits the string at the first instance of any
+// separator in `separators`.
+BASE_EXPORT std::optional<std::pair<std::string_view, std::string_view>>
+SplitStringOnce(std::string_view input LIFETIME_BOUND,
+                std::string_view separators);
+
+// Splits a string at the last instance of `separator`, returning a pair of
+// `std::string_view`: `first` is the (potentially empty) part that comes before
+// the separator, and `second` is the (potentially empty) part that comes after.
+// If `separator` is not in `input`, returns `std::nullopt`.
+BASE_EXPORT std::optional<std::pair<std::string_view, std::string_view>>
+RSplitStringOnce(std::string_view input LIFETIME_BOUND, char separator);
+
+// Similar to the above, but splits the string at the last instance of any
+// separator in `separators`.
+BASE_EXPORT std::optional<std::pair<std::string_view, std::string_view>>
+RSplitStringOnce(std::string_view input LIFETIME_BOUND,
+                 std::string_view separators);
 
 enum WhitespaceHandling {
   KEEP_WHITESPACE,
@@ -56,7 +84,7 @@ enum SplitResult {
     WhitespaceHandling whitespace,
     SplitResult result_type);
 
-// Like SplitString above except it returns a vector of StringPieces which
+// Like SplitString above except it returns a vector of std::string_views which
 // reference the original buffer without copying. Although you have to be
 // careful to keep the original string unmodified, this provides an efficient
 // way to iterate through tokens in a string.
@@ -71,17 +99,19 @@ enum SplitResult {
 //                               base::SPLIT_WANT_NONEMPTY)) {
 //     ...
 [[nodiscard]] BASE_EXPORT std::vector<std::string_view> SplitStringPiece(
-    std::string_view input,
+    std::string_view input LIFETIME_BOUND,
     std::string_view separators,
     WhitespaceHandling whitespace,
     SplitResult result_type);
 [[nodiscard]] BASE_EXPORT std::vector<std::u16string_view> SplitStringPiece(
-    std::u16string_view input,
+    std::u16string_view input LIFETIME_BOUND,
     std::u16string_view separators,
     WhitespaceHandling whitespace,
     SplitResult result_type);
 
 using StringPairs = std::vector<std::pair<std::string, std::string>>;
+using StringViewPairs =
+    std::vector<std::pair<std::string_view, std::string_view>>;
 
 // Splits |line| into key value pairs according to the given delimiters and
 // removes whitespace leading each key and trailing each value. Returns true
@@ -92,6 +122,14 @@ BASE_EXPORT bool SplitStringIntoKeyValuePairs(std::string_view input,
                                               char key_value_pair_delimiter,
                                               StringPairs* key_value_pairs);
 
+// Like SplitStringIntoKeyValuePairs above except it uses a vector of
+// std::string_views which reference the original buffer without copying.
+BASE_EXPORT bool SplitStringIntoKeyValueViewPairs(
+    std::string_view input,
+    char key_value_delimiter,
+    char key_value_pair_delimiter,
+    StringViewPairs* key_value_pairs);
+
 // Similar to SplitStringIntoKeyValuePairs, but use a substring
 // |key_value_pair_delimiter| instead of a single char.
 BASE_EXPORT bool SplitStringIntoKeyValuePairsUsingSubstr(
@@ -99,6 +137,14 @@ BASE_EXPORT bool SplitStringIntoKeyValuePairsUsingSubstr(
     char key_value_delimiter,
     std::string_view key_value_pair_delimiter,
     StringPairs* key_value_pairs);
+
+// Like SplitStringIntoKeyValuePairsUsingSubstr above except it uses a vector of
+// std::string_views which reference the original buffer without copying.
+BASE_EXPORT bool SplitStringIntoKeyValueViewPairsUsingSubstr(
+    std::string_view input,
+    char key_value_delimiter,
+    std::string_view key_value_pair_delimiter,
+    StringViewPairs* key_value_pairs);
 
 // Similar to SplitString, but use a substring delimiter instead of a list of
 // characters that are all possible delimiters.
@@ -126,12 +172,12 @@ BASE_EXPORT bool SplitStringIntoKeyValuePairsUsingSubstr(
 //                                     base::SPLIT_WANT_NONEMPTY)) {
 //     ...
 [[nodiscard]] BASE_EXPORT std::vector<std::u16string_view>
-SplitStringPieceUsingSubstr(std::u16string_view input,
+SplitStringPieceUsingSubstr(std::u16string_view input LIFETIME_BOUND,
                             std::u16string_view delimiter,
                             WhitespaceHandling whitespace,
                             SplitResult result_type);
 [[nodiscard]] BASE_EXPORT std::vector<std::string_view>
-SplitStringPieceUsingSubstr(std::string_view input,
+SplitStringPieceUsingSubstr(std::string_view input LIFETIME_BOUND,
                             std::string_view delimiter,
                             WhitespaceHandling whitespace,
                             SplitResult result_type);

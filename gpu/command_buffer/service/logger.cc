@@ -24,6 +24,9 @@ Logger::Logger(const DebugMarkerManager* debug_marker_manager,
   Logger* this_temp = this;
   this_in_hex_ = std::string("GroupMarkerNotSet(crbug.com/242999)!:") +
       base::HexEncode(&this_temp, sizeof(this_temp));
+  suppress_performance_logs_ =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kSuppressPerformanceLogs);
 }
 
 Logger::~Logger() = default;
@@ -53,6 +56,10 @@ void Logger::LogMessage(
 const std::string& Logger::GetLogPrefix() const {
   const std::string& prefix(debug_marker_manager_->GetMarker());
   return prefix.empty() ? this_in_hex_ : prefix;
+}
+
+bool Logger::SuppressPerformanceLogs() const {
+  return suppress_performance_logs_;
 }
 
 }  // namespace gles2

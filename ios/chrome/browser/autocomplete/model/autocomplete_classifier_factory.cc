@@ -7,38 +7,36 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/autocomplete_controller_config.h"
 #include "ios/chrome/browser/autocomplete/model/autocomplete_provider_client_impl.h"
 #include "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
 #include "ios/chrome/browser/autocomplete/model/in_memory_url_index_factory.h"
 #include "ios/chrome/browser/autocomplete/model/shortcuts_backend_factory.h"
 #include "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace ios {
 namespace {
 
-std::unique_ptr<KeyedService> BuildAutocompleteClassifier(
-    web::BrowserState* context) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+std::unique_ptr<KeyedService> BuildAutocompleteClassifier(ProfileIOS* profile) {
   return std::make_unique<AutocompleteClassifier>(
-      base::WrapUnique(new AutocompleteController(
-          base::WrapUnique(new AutocompleteProviderClientImpl(browser_state)),
-          AutocompleteClassifier::DefaultOmniboxProviders())),
-      base::WrapUnique(new AutocompleteSchemeClassifierImpl));
+      std::make_unique<AutocompleteController>(
+          std::make_unique<AutocompleteProviderClientImpl>(profile),
+          AutocompleteControllerConfig{
+              .provider_types =
+                  AutocompleteClassifier::DefaultOmniboxProviders()}),
+      std::make_unique<AutocompleteSchemeClassifierImpl>());
 }
 
 }  // namespace
 
 // static
-AutocompleteClassifier* AutocompleteClassifierFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  return static_cast<AutocompleteClassifier*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+AutocompleteClassifier* AutocompleteClassifierFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<AutocompleteClassifier>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -48,35 +46,26 @@ AutocompleteClassifierFactory* AutocompleteClassifierFactory::GetInstance() {
 }
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
+AutocompleteClassifierFactory::TestingFactory
 AutocompleteClassifierFactory::GetDefaultFactory() {
-  return base::BindRepeating(&BuildAutocompleteClassifier);
+  return base::BindOnce(&BuildAutocompleteClassifier);
 }
 
 AutocompleteClassifierFactory::AutocompleteClassifierFactory()
-    : BrowserStateKeyedServiceFactory(
-          "AutocompleteClassifier",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("AutocompleteClassifier",
+                                    ProfileSelection::kRedirectedInIncognito,
+                                    TestingCreation::kNoServiceForTests) {
   DependsOn(ios::InMemoryURLIndexFactory::GetInstance());
   DependsOn(ios::TemplateURLServiceFactory::GetInstance());
   DependsOn(ios::ShortcutsBackendFactory::GetInstance());
 }
 
-AutocompleteClassifierFactory::~AutocompleteClassifierFactory() {}
+AutocompleteClassifierFactory::~AutocompleteClassifierFactory() = default;
 
 std::unique_ptr<KeyedService>
 AutocompleteClassifierFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return BuildAutocompleteClassifier(context);
-}
-
-web::BrowserState* AutocompleteClassifierFactory::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  return GetBrowserStateRedirectedInIncognito(context);
-}
-
-bool AutocompleteClassifierFactory::ServiceIsNULLWhileTesting() const {
-  return true;
+    ProfileIOS* profile) const {
+  return BuildAutocompleteClassifier(profile);
 }
 
 }  // namespace ios

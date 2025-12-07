@@ -8,19 +8,16 @@
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/notifications/system_notification_helper.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/message_center/message_center.h"
 
 namespace {
 constexpr char kAdbSideloadingDisallowedNotificationId[] =
@@ -33,10 +30,12 @@ constexpr char kAdbSideloadingPowerwashOnRebootNotificationId[] =
 
 namespace ash {
 
+AdbSideloadingPolicyChangeNotification::AdbSideloadingPolicyChangeNotification(
+    const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash)
+    : browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)) {
+}
 AdbSideloadingPolicyChangeNotification::
-    AdbSideloadingPolicyChangeNotification() {}
-AdbSideloadingPolicyChangeNotification::
-    ~AdbSideloadingPolicyChangeNotification() {}
+    ~AdbSideloadingPolicyChangeNotification() = default;
 
 void AdbSideloadingPolicyChangeNotification::Show(Type type) {
   std::u16string title, text;
@@ -45,16 +44,13 @@ void AdbSideloadingPolicyChangeNotification::Show(Type type) {
   bool pinned = false;
   std::vector<message_center::ButtonInfo> notification_actions;
 
-  auto enterprise_manager =
-      base::UTF8ToUTF16(g_browser_process->platform_part()
-                            ->browser_policy_connector_ash()
-                            ->GetEnterpriseDomainManager());
+  auto enterprise_manager = base::UTF8ToUTF16(
+      browser_policy_connector_ash_->GetEnterpriseDomainManager());
   std::u16string device_type = ui::GetChromeOSDeviceName();
 
   switch (type) {
     case Type::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     case Type::kSideloadingDisallowed:
       title = l10n_util::GetStringUTF16(
           IDS_ADB_SIDELOADING_POLICY_CHANGE_SIDELOADING_DISALLOWED_NOTIFICATION_TITLE);
@@ -90,7 +86,7 @@ void AdbSideloadingPolicyChangeNotification::Show(Type type) {
       break;
   }
 
-  message_center::Notification notification = ash::CreateSystemNotification(
+  auto notification = ash::CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title, text,
       std::u16string() /*display_source*/, GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
@@ -102,11 +98,12 @@ void AdbSideloadingPolicyChangeNotification::Show(Type type) {
               weak_ptr_factory_.GetWeakPtr())),
       vector_icons::kBusinessIcon,
       message_center::SystemNotificationWarningLevel::WARNING);
-  notification.set_priority(message_center::SYSTEM_PRIORITY);
-  notification.set_pinned(pinned);
-  notification.set_buttons(notification_actions);
+  notification->set_priority(message_center::SYSTEM_PRIORITY);
+  notification->set_pinned(pinned);
+  notification->set_buttons(notification_actions);
 
-  SystemNotificationHelper::GetInstance()->Display(notification);
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
 }
 
 void AdbSideloadingPolicyChangeNotification::HandleNotificationClick(

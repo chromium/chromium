@@ -10,10 +10,12 @@
 #include "chrome/browser/ui/login/login_tab_helper.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/common/content_features.h"
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/browser/api/web_request/web_request_api.h"
+#include "content/public/browser/guest_page_holder.h"
+#include "extensions/browser/api/web_request/web_request_api.h"  // nogncheck
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #endif
 
@@ -30,18 +32,20 @@ HttpAuthCoordinator::CreateLoginDelegate(
     content::BrowserContext* browser_context,
     const net::AuthChallengeInfo& auth_info,
     const content::GlobalRequestID& request_id,
-    bool is_request_for_primary_main_frame,
+    bool is_request_for_primary_main_frame_navigation,
+    bool is_request_for_navigation,
     const GURL& url,
     scoped_refptr<net::HttpResponseHeaders> response_headers,
+    content::GuestPageHolder* guest,
     content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback) {
   auto flow_owned = std::make_unique<Flow>(
       this, web_contents, auth_info, request_id,
-      is_request_for_primary_main_frame, url, response_headers,
-      std::move(auth_required_callback));
+      is_request_for_primary_main_frame_navigation, is_request_for_navigation,
+      url, response_headers, std::move(auth_required_callback));
   Flow* flow = flow_owned.get();
   flows_[flow] = std::move(flow_owned);
 
-  if (!flow->ForwardToExtension(browser_context)) {
+  if (!flow->ForwardToExtension(guest, browser_context)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&Flow::ShowDialog, flow->GetWeakPtr()));
   }
@@ -73,14 +77,17 @@ HttpAuthCoordinator::Flow::Flow(
     content::WebContents* web_contents,
     const net::AuthChallengeInfo& auth_info,
     const content::GlobalRequestID& request_id,
-    bool is_request_for_primary_main_frame,
+    bool is_request_for_primary_main_frame_navigation,
+    bool is_request_for_navigation,
     const GURL& url,
     scoped_refptr<net::HttpResponseHeaders> response_headers,
     content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback)
     : coordinator_(coordinator),
       auth_info_(auth_info),
       request_id_(request_id),
-      is_request_for_primary_main_frame_(is_request_for_primary_main_frame),
+      is_request_for_primary_main_frame_navigation_(
+          is_request_for_primary_main_frame_navigation),
+      is_request_for_navigation_(is_request_for_navigation),
       url_(url),
       response_headers_(response_headers),
       callback_(std::move(auth_required_callback)) {
@@ -100,6 +107,7 @@ void HttpAuthCoordinator::Flow::WrapperDestroyed() {
 }
 
 bool HttpAuthCoordinator::Flow::ForwardToExtension(
+    content::GuestPageHolder* guest,
     content::BrowserContext* browser_context) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // If the WebRequest API wants to take a shot at intercepting this, we can
@@ -109,13 +117,26 @@ bool HttpAuthCoordinator::Flow::ForwardToExtension(
       extensions::BrowserContextKeyedAPIFactory<extensions::WebRequestAPI>::Get(
           browser_context);
   auto continuation = base::BindOnce(&Flow::OnExtensionResponse, GetWeakPtr());
-  if (api->MaybeProxyAuthRequest(
-          browser_context, auth_info_, response_headers_, request_id_,
-          is_request_for_primary_main_frame_, std::move(continuation),
-          extensions::WebViewGuest::FromWebContents(
-              web_contents_ ? web_contents_.get() : nullptr))) {
+
+  extensions::WebViewGuest* web_view_guest = nullptr;
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    if (guest) {
+      web_view_guest = extensions::WebViewGuest::FromRenderFrameHost(
+          guest->GetGuestMainFrame());
+    }
+  } else {
+    web_view_guest =
+        extensions::WebViewGuest::FromWebContents(web_contents_.get());
+  }
+
+  if (api->MaybeProxyAuthRequest(browser_context, auth_info_, response_headers_,
+                                 request_id_, is_request_for_navigation_,
+                                 std::move(continuation), web_view_guest)) {
     return true;
   }
+#else
+  // Suppress -Wunused-private-field warning.
+  (void)is_request_for_navigation_;
 #endif
   return false;
 }
@@ -142,7 +163,7 @@ void HttpAuthCoordinator::Flow::ShowDialog() {
     return;
   }
 
-  if (is_request_for_primary_main_frame_) {
+  if (is_request_for_primary_main_frame_navigation_) {
     // For main frame resources, create a login tab helper. The login tab helper
     // will take care of flows (3b) and (5b), see class comment.
     coordinator_->CreateLoginTabHelper(web_contents_.get());
@@ -189,7 +210,7 @@ void HttpAuthCoordinator::Flow::OnExtensionResponse(
     return;
   }
   if (should_cancel) {
-    if (is_request_for_primary_main_frame_) {
+    if (is_request_for_primary_main_frame_navigation_) {
       did_cancel_from_extension_ = true;
     }
     std::move(callback_).Run(std::nullopt);

@@ -10,12 +10,15 @@ import android.content.pm.PackageManager;
 import android.os.Looper;
 import android.util.Log;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.webapk.lib.common.WebApkCommonUtils;
 
 import java.io.File;
 import java.util.Scanner;
 
 /** Creates ClassLoader for WebAPK-specific dex file in Chrome APK's assets. */
+@NullMarked
 public class HostBrowserClassLoader {
     /** Directory for storing cached dex files. */
     public static final String DEX_DIR_NAME = "dex";
@@ -27,16 +30,16 @@ public class HostBrowserClassLoader {
      * The ClassLoader is re-created if the host browser is upgraded while the WebAPK is still
      * running.
      */
-    private static ClassLoader sClassLoader;
+    private static @Nullable ClassLoader sClassLoader;
 
     /**
      * Gets / creates ClassLoader for WebAPK dex.
      *
      * @param context WebAPK's context.
-     * @param canaryClassname Class to load to check that ClassLoader is valid.
+     * @param canaryClassName Class to load to check that ClassLoader is valid.
      * @return The ClassLoader.
      */
-    public static ClassLoader getClassLoaderInstance(
+    public static @Nullable ClassLoader getClassLoaderInstance(
             Context context, String hostBrowserPackage, String canaryClassName) {
         assertRunningOnUiThread();
         Context remoteContext = WebApkUtils.fetchRemoteContext(context, hostBrowserPackage);
@@ -61,7 +64,7 @@ public class HostBrowserClassLoader {
      * @param dexLoader DexLoader for creating ClassLoader.
      * @return The ClassLoader.
      */
-    public static ClassLoader createClassLoader(
+    public static @Nullable ClassLoader createClassLoader(
             Context context, Context remoteContext, DexLoader dexLoader, String canaryClassName) {
         SharedPreferences preferences = WebApkSharedPreferences.getPrefs(context);
 
@@ -97,7 +100,6 @@ public class HostBrowserClassLoader {
      * updates SharedPreferences.
      *
      * @param preferences WebAPK's SharedPreferences.
-     * @param remoteContext
      * @return The new "runtime dex" version number. -1 if there is no new version number.
      */
     private static int checkForNewRuntimeDexVersion(
@@ -135,7 +137,6 @@ public class HostBrowserClassLoader {
     /**
      * Returns the first integer in an asset file's contents.
      *
-     * @param context
      * @param assetName The name of the asset.
      * @return The first integer.
      */

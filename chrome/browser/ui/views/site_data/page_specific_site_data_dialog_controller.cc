@@ -28,8 +28,9 @@ views::View* PageSpecificSiteDataDialogController::GetDialogView(
       static_cast<PageSpecificSiteDataDialogController*>(
           web_contents->GetUserData(
               PageSpecificSiteDataDialogController::UserDataKey()));
-  if (!handle)
+  if (!handle) {
     return nullptr;
+  }
   return handle->GetDialogView();
 }
 
@@ -48,8 +49,9 @@ void PageSpecificSiteDataDialogController::CreateAndShowForWebContents(
   // dialog from its list of tracked dialogs, and therefore might not have any
   // active dialog. This should be rare enough that it's not worth trying to
   // re-open the dialog. See https://crbug.com/989888
-  if (instance->GetWidget()->IsClosed())
+  if (instance->GetWidget()->IsClosed()) {
     return;
+  }
 
   auto* dialog_manager =
       web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
@@ -64,6 +66,9 @@ PageSpecificSiteDataDialogController::PageSpecificSiteDataDialogController(
   views::Widget* const widget = ShowPageSpecificSiteDataDialog(web_contents);
   tracker_.SetView(widget->GetRootView());
 }
+
+PageSpecificSiteDataDialogController::~PageSpecificSiteDataDialogController() =
+    default;
 
 views::View* PageSpecificSiteDataDialogController::GetDialogView() {
   // TODO(crbug.com/40231917): Revisit this after the new dialog is launched.

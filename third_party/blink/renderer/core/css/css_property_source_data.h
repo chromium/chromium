@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PROPERTY_SOURCE_DATA_H_
 
 #include "third_party/blink/renderer/core/css/style_rule.h"
+#include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -43,12 +44,15 @@ class SourceRange {
   DISALLOW_NEW();
 
  public:
-  SourceRange();
-  SourceRange(unsigned start, unsigned end);
-  unsigned length() const;
+  SourceRange() = default;
+  SourceRange(unsigned start, unsigned end) : start(start), end(end) {}
+  unsigned length() const { return end - start; }
+  bool operator==(const SourceRange& o) const {
+    return start == o.start && end == o.end;
+  }
 
-  unsigned start;
-  unsigned end;
+  unsigned start = 0;
+  unsigned end = 0;
 };
 
 }  // namespace blink
@@ -90,10 +94,10 @@ class CSSRuleSourceData final : public GarbageCollected<CSSRuleSourceData> {
 
   bool HasProperties() const {
     return type == StyleRule::kStyle || type == StyleRule::kFontFace ||
-           type == StyleRule::kPage || type == StyleRule::kProperty ||
-           type == StyleRule::kKeyframe ||
+           type == StyleRule::kPage || type == StyleRule::kPageMargin ||
+           type == StyleRule::kProperty || type == StyleRule::kKeyframe ||
            type == StyleRule::kFontPaletteValues ||
-           type == StyleRule::kPositionTry;
+           type == StyleRule::kFontFeature || type == StyleRule::kPositionTry;
   }
 
   bool HasMedia() const {
@@ -111,9 +115,23 @@ class CSSRuleSourceData final : public GarbageCollected<CSSRuleSourceData> {
   // Range of the selector list in the enclosing source.
   SourceRange rule_header_range;
 
-  // Range of the rule body (e.g. style text for style rules) in the enclosing
-  // source.
+  // Range of the rule body, i.e. the range between {}.
   SourceRange rule_body_range;
+
+  // The range for the leading declarations. This may be different from
+  // `rule_body_range` for nested style rules, e.g.:
+  //
+  //   .a {
+  //     color: green; /* leading */
+  //     left: 10px;   /* leading */
+  //     & { }
+  //     opacity: 2px; /* not leading */
+  //   }
+  //
+  // Non-leading declarations are wrapped in child rules of type
+  // CSSNestedDeclarations, and therefore not considered part of the
+  // declarations for *this* rule.
+  SourceRange rule_declarations_range;
 
   // Only for CSSStyleRules.
   Vector<SourceRange> selector_ranges;
@@ -127,9 +145,13 @@ class CSSRuleSourceData final : public GarbageCollected<CSSRuleSourceData> {
   // Only for CSSMediaRules and CSSImportRules.
   // Source ranges for media query -> expression -> value.
   Vector<Vector<SourceRange>> media_query_exp_value_ranges;
+
+  // Only for FontFeatureValues sub-rules.
+  StyleRuleFontFeature::FeatureType font_feature_type;
 };
 
 using CSSRuleSourceDataList = HeapVector<Member<CSSRuleSourceData>>;
+using GCedCSSRuleSourceDataList = GCedHeapVector<Member<CSSRuleSourceData>>;
 
 }  // namespace blink
 

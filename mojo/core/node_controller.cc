@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/node_controller.h"
 
+#include <algorithm>
 #include <limits>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
@@ -18,7 +15,6 @@
 #include "base/logging.h"
 #include "base/process/process_handle.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
@@ -92,7 +88,7 @@ ports::ScopedEvent DeserializeEventMessage(
   auto message_event = ports::Event::Cast<ports::UserMessageEvent>(&event);
   auto message = UserMessageImpl::CreateFromChannelMessage(
       message_event.get(), std::move(channel_message),
-      static_cast<uint8_t*>(data) + event_size, size - event_size);
+      UNSAFE_TODO(static_cast<uint8_t*>(data) + event_size), size - event_size);
   if (!message)
     return nullptr;
 
@@ -141,7 +137,7 @@ class ThreadDestructionObserver
   base::OnceClosure callback_;
 };
 
-#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_FUCHSIA)
 std::optional<ConnectionParams> CreateSyncNodeConnectionParams(
     const base::Process& target_process,
     ConnectionParams connection_params,
@@ -168,7 +164,7 @@ std::optional<ConnectionParams> CreateSyncNodeConnectionParams(
 
   return node_connection_params;
 }
-#endif  // !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace
 
@@ -218,7 +214,7 @@ void NodeController::AcceptBrokerClientInvitation(
     ConnectionParams connection_params) {
   std::optional<PlatformHandle> broker_host_handle;
   DCHECK(!GetConfiguration().is_broker_process);
-#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_FUCHSIA)
   if (!connection_params.is_async()) {
     // Use the bootstrap channel for the broker and receive the node's channel
     // synchronously as the first message from the broker.
@@ -328,8 +324,7 @@ int NodeController::MergeLocalPorts(const ports::PortRef& port0,
 
 base::WritableSharedMemoryRegion NodeController::CreateSharedBuffer(
     size_t num_bytes) {
-#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_FUCHSIA) && \
-    !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
   // Shared buffer creation failure is fatal, so always use the broker when we
   // have one; unless of course the embedder forces us not to.
   if (!GetConfiguration().force_direct_shared_memory_allocation && broker_)
@@ -383,7 +378,7 @@ void NodeController::DeserializeRawBytesAsEventForFuzzer(
   void* payload;
   auto message = NodeChannel::CreateEventMessage(0, data.size(), &payload, 0);
   DCHECK(message);
-  base::ranges::copy(data, static_cast<unsigned char*>(payload));
+  std::ranges::copy(data, static_cast<unsigned char*>(payload));
   DeserializeEventMessage(ports::NodeName(), std::move(message));
 }
 
@@ -400,7 +395,7 @@ void NodeController::SendBrokerClientInvitationOnIOThread(
     const ProcessErrorCallback& process_error_callback) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
 
-#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_FUCHSIA)
   Channel::HandlePolicy handle_policy = Channel::HandlePolicy::kAcceptHandles;
   ConnectionParams node_connection_params;
 
@@ -471,12 +466,12 @@ void NodeController::SendBrokerClientInvitationOnIOThread(
   FinishSendBrokerClientInvitationOnIOThread(
       std::move(target_process), std::move(node_connection_params),
       temporary_node_name, handle_policy, process_error_callback);
-#else   // !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_FUCHSIA)
+#else   // !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_FUCHSIA)
   FinishSendBrokerClientInvitationOnIOThread(
       std::move(target_process), std::move(connection_params),
       temporary_node_name, Channel::HandlePolicy::kAcceptHandles,
       process_error_callback);
-#endif  // !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_FUCHSIA)
 }
 
 void NodeController::FinishSendBrokerClientInvitationOnIOThread(
@@ -1132,10 +1127,6 @@ void NodeController::OnAcceptBrokerClient(const ports::NodeName& from_node,
     }
   }
 #endif
-  if (inviter->HasLocalCapability(kNodeCapabilitySupportsUpgrade) &&
-      inviter->HasRemoteCapability(kNodeCapabilitySupportsUpgrade)) {
-    inviter->OfferChannelUpgrade();
-  }
 
   DVLOG(1) << "Client " << name_ << " accepted by broker " << broker_name;
 }
@@ -1270,11 +1261,6 @@ void NodeController::OnIntroduce(const ports::NodeName& from_node,
   AddPeer(name, channel, true /* start_channel */);
 
   channel->SetRemoteCapabilities(remote_capabilities);
-
-  if (channel->HasLocalCapability(kNodeCapabilitySupportsUpgrade) &&
-      channel->HasRemoteCapability(kNodeCapabilitySupportsUpgrade)) {
-    channel->OfferChannelUpgrade();
-  }
 }
 
 void NodeController::OnBroadcast(const ports::NodeName& from_node,
@@ -1451,8 +1437,8 @@ void NodeController::AttemptShutdownIfRequested() {
 
 void NodeController::ForceDisconnectProcessForTestingOnIOThread(
     base::ProcessId process_id) {
-#if BUILDFLAG(IS_NACL) || BUILDFLAG(IS_IOS)
-  NOTREACHED_IN_MIGRATION();
+#if BUILDFLAG(IS_IOS)
+  NOTREACHED();
 #else
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
   RequestContext request_context;

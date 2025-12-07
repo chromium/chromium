@@ -28,7 +28,7 @@ using PinnedTabServiceBrowserTest = InProcessBrowserTest;
 // http://crbug.com/71939
 IN_PROC_BROWSER_TEST_F(PinnedTabServiceBrowserTest, TabStripEmpty) {
   Profile* profile = browser()->profile();
-  GURL url("http://www.google.com");
+  GURL url("https://www.google.com");
   NavigateParams params(browser(), url, ui::PAGE_TRANSITION_TYPED);
   ui_test_utils::NavigateToURL(&params);
 
@@ -38,7 +38,7 @@ IN_PROC_BROWSER_TEST_F(PinnedTabServiceBrowserTest, TabStripEmpty) {
   PinnedTabCodec::WritePinnedTabs(profile);
   std::string result =
       PinnedTabTestUtils::TabsToString(PinnedTabCodec::ReadPinnedTabs(profile));
-  EXPECT_EQ("http://www.google.com/:pinned", result);
+  EXPECT_EQ("https://www.google.com/:pinned", result);
 
   // When tab strip is empty, browser window will be closed and PinnedTabService
   // must update data on this event.
@@ -62,7 +62,7 @@ IN_PROC_BROWSER_TEST_F(PinnedTabServiceBrowserTest, CloseWindow) {
   EXPECT_TRUE(PinnedTabServiceFactory::GetForProfile(profile));
   EXPECT_TRUE(profile->GetPrefs());
 
-  GURL url("http://www.google.com");
+  GURL url("https://www.google.com");
   NavigateParams params(browser(), url, ui::PAGE_TRANSITION_TYPED);
   ui_test_utils::NavigateToURL(&params);
 
@@ -77,5 +77,40 @@ IN_PROC_BROWSER_TEST_F(PinnedTabServiceBrowserTest, CloseWindow) {
 
   std::string result =
       PinnedTabTestUtils::TabsToString(PinnedTabCodec::ReadPinnedTabs(profile));
-  EXPECT_EQ("http://www.google.com/:pinned", result);
+  EXPECT_EQ("https://www.google.com/:pinned", result);
+}
+
+// Makes sure closing a popup triggers writing pinned tabs.
+IN_PROC_BROWSER_TEST_F(PinnedTabServiceBrowserTest, Popup) {
+  Profile* profile = browser()->profile();
+  EXPECT_TRUE(PinnedTabServiceFactory::GetForProfile(profile));
+  EXPECT_TRUE(profile->GetPrefs());
+
+  GURL url("https://www.google.com");
+  NavigateParams params(browser(), url, ui::PAGE_TRANSITION_TYPED);
+  ui_test_utils::NavigateToURL(&params);
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  tab_strip_model->SetTabPinned(0, true);
+
+  // Create a popup browser.
+  Browser* popup_browser = Browser::Create(
+      Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true));
+  ASSERT_TRUE(popup_browser->is_type_popup());
+
+  // Close the browser. This should trigger saving the tabs. No need to destroy
+  // the browser (this happens automatically in the test destructor).
+  browser()->OnWindowClosing();
+
+  std::string result =
+      PinnedTabTestUtils::TabsToString(PinnedTabCodec::ReadPinnedTabs(profile));
+  EXPECT_EQ("https://www.google.com/:pinned", result);
+
+  // Close the popup browser. This shouldn't reset the saved state.
+  popup_browser->tab_strip_model()->CloseAllTabs();
+
+  // Check the state to make sure it hasn't changed.
+  result =
+      PinnedTabTestUtils::TabsToString(PinnedTabCodec::ReadPinnedTabs(profile));
+  EXPECT_EQ("https://www.google.com/:pinned", result);
 }

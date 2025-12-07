@@ -7,8 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include <map>
-#include <string>
 #include <vector>
 
 // Input format for the `TabOpening` protocol.
@@ -16,7 +14,10 @@ enum class ApplicationModeForTabOpening {
   NORMAL,
   INCOGNITO,
   CURRENT,
-  UNDETERMINED
+  UNDETERMINED,
+  // An incognito and undetermined modes set by app switcher.
+  APP_SWITCHER_INCOGNITO,
+  APP_SWITCHER_UNDETERMINED,
 };
 
 enum TabOpeningPostOpeningAction {
@@ -43,11 +44,26 @@ enum TabOpeningPostOpeningAction {
   OPEN_LATEST_TAB,
   START_LENS_FROM_INTENTS,
   OPEN_CLEAR_BROWSING_DATA_DIALOG,
-  TAB_OPENING_POST_OPENING_ACTION_COUNT,
   ADD_BOOKMARKS,
   ADD_READING_LIST_ITEMS,
   EXTERNAL_ACTION_SHOW_BROWSER_SETTINGS,
+  START_LENS_FROM_SHARE_EXTENSION,
+  CREDENTIAL_EXCHANGE_IMPORT,
 };
+
+// Represents the status of a request to change the application mode.
+enum class ApplicationModeRequestStatus {
+  // TODO(crbug.com/374935368): Move to a separate file.
+  kUnavailable,
+  kRequested,
+  kAvailable,
+};
+
+// Type of the block invoked when an application mode request completes. It is
+// invoked asynchronously with the status of the operation as
+// `application_mode`.
+using AppModeRequestBlock =
+    void (^)(ApplicationModeForTabOpening application_mode);
 
 class GURL;
 
@@ -70,36 +86,30 @@ class GURL;
 // as `externalURL`.
 @property(nonatomic, readonly, assign) const std::vector<GURL>& URLs;
 
-// The URL query string parameters in the case that the app was launched as a
-// result of Universal Link navigation. The map associates query string
-// parameters with their corresponding value.
-@property(nonatomic, assign) std::map<std::string, std::string>
-    externalURLParams;
-
 // The list of inputted URLs to process. These URLs aren't automatically opened.
 // Used in the context of Siri shortcuts that allow URL inputs that are not
 // meant to be opened in new tabs automatically.
 @property(nonatomic, readwrite, strong) NSArray<NSURL*>* inputURLs;
 
-// The mode in which the tab must be opened. Defaults to UNDETERMINED.
-@property(nonatomic, assign) ApplicationModeForTabOpening applicationMode;
 // Action to be taken after loading the URL.
 @property(nonatomic, readwrite, assign)
     TabOpeningPostOpeningAction postOpeningAction;
-// Boolean to track if a Payment Request response is requested at startup.
-@property(nonatomic, readwrite, assign) BOOL completePaymentRequest;
 // When this flag is set, attempt to open `externalURL` in an existing tab.
 @property(nonatomic, readwrite, assign) BOOL openExistingTab;
 // Text query that should be executed on startup.
 @property(nonatomic, readwrite, copy) NSString* textQuery;
 // Data for UIImage for image query that should be executed on startup.
 @property(nonatomic, readwrite, strong) NSData* imageSearchData;
+// Token received from the OS during the app launch for the credential exchange
+// import, needed to be passed back to the OS to receive the credential data.
+@property(nonatomic, readwrite, copy) NSUUID* credentialExchangeImportUUID;
 // Boolean to track if the app is open in an user unexpected mode.
 // When a certain enterprise policy has been set, it's possible that one browser
 // mode is disabled. When the user intends to open an unavailable mode of
 // Chrome, the browser won't proceed in that disabled mode, and it will signal
 // to the user that a different mode is opened.
-@property(nonatomic, readwrite, getter=isUnexpectedMode) BOOL unexpectedMode;
+@property(nonatomic, readwrite, assign, getter=isUnexpectedMode)
+    BOOL unexpectedMode;
 // Boolean to track whether the app was opened via a custom scheme from another
 // first-party app.
 @property(nonatomic, readwrite, assign) BOOL openedViaFirstPartyScheme;
@@ -107,16 +117,40 @@ class GURL;
 @property(nonatomic, readwrite, assign) BOOL openedViaWidgetScheme;
 // Boolean to track whether the app was opened via URL.
 @property(nonatomic, readwrite, assign) BOOL openedWithURL;
+// Boolean to track whether the app was opened via share extension.
+@property(nonatomic, readwrite, assign) BOOL openedViaShareExtensionScheme;
 
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithExternalURL:(const GURL&)externalURL
                         completeURL:(const GURL&)completeURL
                     applicationMode:(ApplicationModeForTabOpening)mode
+               forceApplicationMode:(BOOL)forceApplicationMode
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithExternalURL:(const GURL&)externalURL
+                        completeURL:(const GURL&)completeURL
+                        sourceAppID:(NSString*)sourceAppID
+                    applicationMode:(ApplicationModeForTabOpening)mode
+               forceApplicationMode:(BOOL)forceApplicationMode
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithURLs:(const std::vector<GURL>&)URLs
-             applicationMode:(ApplicationModeForTabOpening)mode;
+             applicationMode:(ApplicationModeForTabOpening)mode
+        forceApplicationMode:(BOOL)forceApplicationMode;
+
+// Initiate the request for application mode if needed and invoke `block` when
+// the it becomes `kAvailable`.
+- (void)requestApplicationModeWithBlock:(AppModeRequestBlock)block;
+
+// Sets the application mode. The application mode will be forced if
+// `forceApplicationMode` is YES.
+- (void)setApplicationMode:(ApplicationModeForTabOpening)applicationMode
+      forceApplicationMode:(BOOL)forceApplicationMode;
+
+// A temporary getter for the `applicationMode`. Note: This getter will be
+// removed once the async version is fully launched.
+- (ApplicationModeForTabOpening)applicationMode;
 
 @end
 

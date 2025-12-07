@@ -101,11 +101,11 @@
 
     <!-- Message containers. Depending on the current state, only one of them
       is visible. -->
-    <div id="prompt-message" hidden="[[!eq_(state_, State.PROMPT)]]">
+    <div id="prompt-message" hidden="[[!eq_(state_, stateEnum_.PROMPT)]]">
       <span>$i18n{promptMessage} </span>
       <a href="$i18n{learnMoreUrl}" target="_blank">$i18n{learnMore}</a>
     </div>
-    <div id="configure-message" hidden="[[!eq_(state_, State.CONFIGURE)]]">
+    <div id="configure-message" hidden="[[!eq_(state_, stateEnum_.CONFIGURE)]]">
       <div id="configure-message-title">$i18n{configureMessage}</div>
       <cr-input label="$i18n{usernameLabel}" id="username" type="text"
           value="{{username_}}" maxlength="[[MAX_USERNAME_LENGTH]]"
@@ -151,7 +151,7 @@
         </template>
       </div>
     </div>
-    <div id="installing-message" hidden="[[!eq_(state_, State.INSTALLING)]]">
+    <div id="installing-message" hidden="[[!eq_(state_, stateEnum_.INSTALLING)]]">
       <div>[[getProgressMessage_(installerState_)]]</div>
       <paper-progress class="progress-bar" value="[[installerProgress_]]">
       </paper-progress>
@@ -159,18 +159,17 @@
     <div id="error-message" hidden="[[!showErrorMessage_(state_)]]">
       <div>[[errorMessage_]]</div>
     </div>
-    <div id="canceling-message" hidden="[[!eq_(state_, State.CANCELING)]]">
+    <div id="canceling-message" hidden="[[!eq_(state_, stateEnum_.CANCELING)]]">
       <div>$i18n{cancelingMessage}</div>
       <paper-progress class="progress-bar" indeterminate></paper-progress>
     </div>
   </div>
-  <!-- TODO(crbug.com/40668830): Should show an error image for state "error".
-      -->
+  <!-- Consider showing an error image for state "error_", see crbug.com/40668830. -->
   <img id="img-linux-illustration" src="images/linux_illustration.png" alt=""
-      hidden="[[eq_(state_, State.CONFIGURE)]]">
+      hidden="[[eq_(state_, stateEnum_.CONFIGURE)]]">
   <div id="button-container">
     <cr-button class="cancel-button" on-click="onCancelButtonClick_"
-        disabled="[[eq_(state_, State.CANCELING)]]">
+        disabled="[[eq_(state_, stateEnum_.CANCELING)]]">
       [[getCancelButtonLabel_(state_)]]
     </cr-button>
     <cr-button id="next" class="action-button" on-click="onNextButtonClick_"

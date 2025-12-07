@@ -74,6 +74,20 @@ constexpr char kAdminTemplateTabCountHistogramName[] =
 constexpr char kLaunchAdminTemplateHistogramName[] =
     "Ash.DeskTamplate.LaunchAdminTemplate";
 
+// Histogram names for saved desk buttons/menu options.
+constexpr char kSavedDeskButtonsShownHistogramName[] =
+    "Ash.DeskTemplate.SavedDeskButtonsShown";
+constexpr char kSavedDeskMenuOptionsShownHistogramName[] =
+    "Ash.DeskTemplate.SavedDeskMenuOptionsShown";
+constexpr char kSaveAsTemplatePressedHistogramName[] =
+    "Ash.DeskTemplate.SaveAsTemplatePressed";
+constexpr char kSaveForLaterPressedHistogramName[] =
+    "Ash.DeskTemplate.SaveForLaterPressed";
+constexpr char kShowSavedDeskButtonsRevampDisabledHistogramName[] =
+    "Ash.DeskTemplate.ShowSavedDeskButtonsRevampDisabled";
+constexpr char kShowSavedDeskButtonsRevampEnabledHistogramName[] =
+    "Ash.DeskTemplate.ShowSavedDeskButtonsRevampEnabled";
+
 // Wrappers calls base::uma with correct histogram name.
 void RecordLoadSavedDeskLibraryHistogram();
 void RecordDeleteSavedDeskHistogram(DeskTemplateType type);

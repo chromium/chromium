@@ -13,7 +13,6 @@
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/utils/spell_check_language.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace network {
 class SharedURLLoaderFactory;

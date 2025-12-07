@@ -6,13 +6,13 @@
 #define IOS_NET_HTTP_CACHE_HELPER_H_
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "net/base/completion_once_callback.h"
 
 namespace base {
 class TaskRunner;
 class Time;
-}
+}  // namespace base
 
 namespace net {
 class URLRequestContextGetter;

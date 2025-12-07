@@ -14,9 +14,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/affiliations/core/browser/affiliation_backend.h"
-#include "components/affiliations/core/browser/affiliation_fetcher_delegate.h"
 #include "components/affiliations/core/browser/affiliation_fetcher_factory_impl.h"
 #include "components/affiliations/core/browser/affiliation_fetcher_interface.h"
 #include "components/affiliations/core/browser/affiliation_prefetcher.h"
@@ -33,11 +33,11 @@ class NetworkConnectionTracker;
 class SharedURLLoaderFactory;
 }  // namespace network
 
-namespace url {
-class SchemeHostPort;
-}
-
 namespace affiliations {
+
+// Enables fetching of ePSL during the init of AffiliationServiceImpl. It's
+// later used to fetch change password urls properly.
+BASE_DECLARE_FEATURE(kCachePSLExtensions);
 
 extern const char kGetChangePasswordURLMetricName[];
 
@@ -57,18 +57,20 @@ enum class GetChangePasswordUrlMetric {
   kUrlOverrideUsed = 1,
   // Used when no override url was available.
   kNoUrlOverrideAvailable = 2,
-  // Used when a url was used, which corresponds to a site from within same
-  // FacetGroup.
-  kGroupUrlOverrideUsed = 3,
-  kMaxValue = kGroupUrlOverrideUsed,
+
+  // Fallback to arbitrary facet causes more bugs than good.
+  // Deprecated: kGroupUrlOverrideUsed = 3,
+
+  // Used when change password info was available for the main domain only.
+  kMainDomainUsed = 4,
+  kMaxValue = kMainDomainUsed,
 };
 
-class AffiliationServiceImpl : public AffiliationService,
-                               public AffiliationFetcherDelegate {
+class AffiliationServiceImpl : public AffiliationService {
  public:
   struct ChangePasswordUrlMatch {
     GURL change_password_url;
-    bool group_url_override;
+    bool main_domain_override;
   };
 
   explicit AffiliationServiceImpl(
@@ -91,12 +93,8 @@ class AffiliationServiceImpl : public AffiliationService,
   // map. Creates a unique fetcher and appends it to |pending_fetches_|
   // along with |urls| and |callback|. When prefetch is finished or a fetcher
   // gets destroyed as a result of Clear() a callback is run.
-  void PrefetchChangePasswordURLs(const std::vector<GURL>& urls,
-                                  base::OnceClosure callback) override;
-
-  // Clears the |change_password_urls_| map and cancels prefetch requests if
-  // still running.
-  void Clear() override;
+  void PrefetchChangePasswordURL(const GURL& url,
+                                 base::OnceClosure callback) override;
 
   // In case no valid URL was found, a method returns an empty URL.
   GURL GetChangePasswordURL(const GURL& url) const override;
@@ -106,14 +104,15 @@ class AffiliationServiceImpl : public AffiliationService,
     url_loader_factory_ = std::move(url_loader_factory);
   }
 
+#if defined(UNIT_TEST)
   void SetFetcherFactoryForTesting(
       std::unique_ptr<AffiliationFetcherFactory> fetcher_factory) {
-    fetcher_factory_ = std::move(fetcher_factory);
+    fetcher_manager_->SetFetcherFactoryForTesting(std::move(fetcher_factory));
   }
+#endif
 
   void GetAffiliationsAndBranding(
       const FacetURI& facet_uri,
-      AffiliationService::StrategyOnCacheMiss cache_miss_strategy,
       ResultCallback result_callback) override;
 
   void Prefetch(const FacetURI& facet_uri,
@@ -125,8 +124,8 @@ class AffiliationServiceImpl : public AffiliationService,
   void TrimUnusedCache(std::vector<FacetURI> facet_uris) override;
   void GetGroupingInfo(std::vector<FacetURI> facet_uris,
                        GroupsCallback callback) override;
-  void GetPSLExtensions(base::OnceCallback<void(std::vector<std::string>)>
-                            callback) const override;
+  void GetPSLExtensions(
+      base::OnceCallback<void(std::vector<std::string>)> callback) override;
   void UpdateAffiliationsAndBranding(const std::vector<FacetURI>& facets,
                                      base::OnceClosure callback) override;
   void RegisterSource(std::unique_ptr<AffiliationSource> source) override;
@@ -149,18 +148,18 @@ class AffiliationServiceImpl : public AffiliationService,
                                   std::forward<Args>(args)...));
   }
 
-  // AffiliationFetcherDelegate:
-  void OnFetchSucceeded(
-      AffiliationFetcherInterface* fetcher,
-      std::unique_ptr<AffiliationFetcherDelegate::Result> result) override;
-  void OnFetchFailed(AffiliationFetcherInterface* fetcher) override;
-  void OnMalformedResponse(AffiliationFetcherInterface* fetcher) override;
+  void OnFetchFinished(const FetchInfo& fetch_info,
+                       AffiliationFetcherInterface::FetchResult fetch_result);
+
+  void OnPSLExtensionsLoaded(
+      base::OnceCallback<void(std::vector<std::string>)> callback,
+      std::vector<std::string> psl_extensions);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  std::map<url::SchemeHostPort, ChangePasswordUrlMatch> change_password_urls_;
-  std::vector<FetchInfo> pending_fetches_;
-  std::unique_ptr<AffiliationFetcherFactory> fetcher_factory_;
+  std::map<FacetURI, ChangePasswordUrlMatch> change_password_urls_;
+  std::unique_ptr<AffiliationFetcherManager> fetcher_manager_;
   AffiliationPrefetcher prefetcher_{this};
+  base::flat_set<std::string> psl_extension_list_;
 
   // The backend, owned by this AffiliationService instance, but
   // living on the backend thread. It will be deleted asynchronously during

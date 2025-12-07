@@ -3,23 +3,24 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import 'chrome://resources/cr_elements/md_select.css.js';
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import './print_preview_shared.css.js';
 import './settings_section.js';
-import '../strings.m.js';
+import '/strings.m.js';
 
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {Range} from '../print_preview_utils.js';
 import {areRangesEqual} from '../print_preview_utils.js';
 
 import {InputMixin} from './input_mixin.js';
-import {getTemplate} from './pages_settings.html.js';
+import {getCss} from './pages_settings.css.js';
+import {getHtml} from './pages_settings.html.js';
 import {SelectMixin} from './select_mixin.js';
 import {SettingsMixin} from './settings_mixin.js';
 
@@ -58,7 +59,7 @@ export interface PrintPreviewPagesSettingsElement {
 }
 
 const PrintPreviewPagesSettingsElementBase =
-    WebUiListenerMixin(InputMixin(SettingsMixin(SelectMixin(PolymerElement))));
+    WebUiListenerMixinLit(InputMixin(SettingsMixin(SelectMixin(CrLitElement))));
 
 export class PrintPreviewPagesSettingsElement extends
     PrintPreviewPagesSettingsElementBase {
@@ -66,85 +67,43 @@ export class PrintPreviewPagesSettingsElement extends
     return 'print-preview-pages-settings';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      disabled: Boolean,
-
-      pageCount: {
-        type: Number,
-        observer: 'onPageCountChange_',
-      },
-
-      controlsDisabled_: {
-        type: Boolean,
-        computed: 'computeControlsDisabled_(disabled, hasError_)',
-      },
+      disabled: {type: Boolean},
+      pageCount: {type: Number},
+      controlsDisabled_: {type: Boolean},
 
       errorState_: {
         type: Number,
-        reflectToAttribute: true,
-        value: PagesInputErrorState.NO_ERROR,
+        reflect: true,
       },
 
-      hasError_: {
-        type: Boolean,
-        value: false,
-      },
-
-      inputString_: {
-        type: String,
-        value: '',
-      },
-
-      pagesToPrint_: {
-        type: Array,
-        value() {
-          return [];
-        },
-      },
-
-      rangesToPrint_: {
-        type: Array,
-        computed: 'computeRangesToPrint_(pagesToPrint_)',
-      },
-
-      selection_: {
-        type: Number,
-        value: PagesValue.ALL,
-        observer: 'onSelectionChange_',
-      },
-
-      /**
-       * Mirroring the enum so that it can be used from HTML bindings.
-       */
-      pagesValueEnum_: {
-        type: Object,
-        value: PagesValue,
-      },
+      hasError_: {type: Boolean},
+      inputString_: {type: String},
+      pagesToPrint_: {type: Array},
+      rangesToPrint_: {type: Array},
+      selection_: {type: Number},
     };
   }
 
-  static get observers() {
-    return [
-      'updatePagesToPrint_(inputString_)',
-      'onRangeChange_(errorState_, rangesToPrint_, settings.pages, ' +
-          'settings.pagesPerSheet.value)',
-    ];
-  }
-
-  disabled: boolean;
-  pageCount: number;
-  private controlsDisabled_: boolean;
-  private errorState_: PagesInputErrorState;
-  private hasError_: boolean;
-  private inputString_: string;
-  private pagesToPrint_: number[];
-  private rangesToPrint_: Range[];
-  private selection_: PagesValue;
+  accessor disabled: boolean = false;
+  accessor pageCount: number = 0;
+  protected accessor controlsDisabled_: boolean = false;
+  private accessor errorState_: PagesInputErrorState =
+      PagesInputErrorState.NO_ERROR;
+  protected accessor hasError_: boolean = false;
+  private accessor inputString_: string = '';
+  private accessor pagesToPrint_: number[] = [];
+  private accessor rangesToPrint_: Range[] = [];
+  private accessor selection_: PagesValue = PagesValue.ALL;
 
   /**
    * True if the user's last valid input should be restored to the custom
@@ -160,9 +119,7 @@ export class PrintPreviewPagesSettingsElement extends
    */
   private restorationValue_: PagesValue = PagesValue.ALL;
 
-  override ready() {
-    super.ready();
-
+  override firstUpdated() {
     this.addEventListener('input-change', e => this.onInputChange_(e));
   }
 
@@ -174,6 +131,50 @@ export class PrintPreviewPagesSettingsElement extends
     super.connectedCallback();
 
     this.selectedValue = PagesValue.ALL.toString();
+
+    this.addSettingObserver('pages', () => this.onRangeChange_());
+    this.addSettingObserver('pagesPerSheet.value', () => this.onRangeChange_());
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedProperties.has('disabled') ||
+        changedPrivateProperties.has('hasError_')) {
+      this.controlsDisabled_ = this.computeControlsDisabled_();
+    }
+
+    if (changedPrivateProperties.has('inputString_')) {
+      this.updatePagesToPrint_();
+    }
+
+    if (changedPrivateProperties.has('pagesToPrint_')) {
+      this.rangesToPrint_ = this.computeRangesToPrint_();
+    }
+
+    if (changedPrivateProperties.has('errorState_') ||
+        changedPrivateProperties.has('rangesToPrint_')) {
+      this.onRangeChange_();
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedProperties.has('pageCount')) {
+      this.onPageCountChange_(
+          this.pageCount, changedProperties.get('pageCount'));
+    }
+
+    if (changedPrivateProperties.has('selection_')) {
+      this.onSelectionChange_();
+    }
   }
 
   /** The cr-input field element for InputMixin. */
@@ -183,7 +184,7 @@ export class PrintPreviewPagesSettingsElement extends
 
   private setSelectedValue_(value: PagesValue) {
     this.selectedValue = value.toString();
-    this.shadowRoot!.querySelector('select')!.dispatchEvent(
+    this.shadowRoot.querySelector('select')!.dispatchEvent(
         new CustomEvent('change', {bubbles: true, composed: true}));
   }
 
@@ -198,7 +199,7 @@ export class PrintPreviewPagesSettingsElement extends
     this.selection_ = parseInt(value, 10);
   }
 
-  private onCollapseChanged_() {
+  protected onCollapseChanged_() {
     if (this.selection_ === PagesValue.CUSTOM) {
       this.$.pageSettingsCustomInput.inputElement.focus();
     }
@@ -254,8 +255,8 @@ export class PrintPreviewPagesSettingsElement extends
         return;
       }
 
-      let min = parseIntStrict(limits[0]);
-      if ((limits[0].length > 0 && Number.isNaN(min)) || min < 1) {
+      let min = parseIntStrict(limits[0]!);
+      if ((limits[0]!.length > 0 && Number.isNaN(min)) || min < 1) {
         this.errorState_ = PagesInputErrorState.INVALID_SYNTAX;
         this.onRangeChange_();
         return;
@@ -273,8 +274,8 @@ export class PrintPreviewPagesSettingsElement extends
         continue;
       }
 
-      let max = parseIntStrict(limits[1]);
-      if (Number.isNaN(max) && limits[1].length > 0) {
+      let max = parseIntStrict(limits[1]!);
+      if (Number.isNaN(max) && limits[1]!.length > 0) {
         this.errorState_ = PagesInputErrorState.INVALID_SYNTAX;
         this.onRangeChange_();
         return;
@@ -319,9 +320,9 @@ export class PrintPreviewPagesSettingsElement extends
       return [];
     }
 
-    let from = this.pagesToPrint_[0];
-    let to = this.pagesToPrint_[0];
-    const ranges = [];
+    let from = this.pagesToPrint_[0]!;
+    let to = this.pagesToPrint_[0]!;
+    const ranges: Range[] = [];
     for (const page of this.pagesToPrint_.slice(1)) {
       if (page === to + 1) {
         to = page;
@@ -359,10 +360,6 @@ export class PrintPreviewPagesSettingsElement extends
    * needed.
    */
   private onRangeChange_() {
-    if (this.settings === undefined || this.pagesToPrint_ === undefined) {
-      return;
-    }
-
     if (this.errorState_ === PagesInputErrorState.EMPTY) {
       this.setSettingValid('pages', true);
       this.hasError_ = false;
@@ -389,7 +386,7 @@ export class PrintPreviewPagesSettingsElement extends
     this.hasError_ = false;
   }
 
-  private onSelectBlur_(event: FocusEvent) {
+  protected onSelectBlur_(event: FocusEvent) {
     if (this.selection_ !== PagesValue.CUSTOM ||
         event.relatedTarget === this.$.pageSettingsCustomInput) {
       return;
@@ -398,13 +395,13 @@ export class PrintPreviewPagesSettingsElement extends
     this.onCustomInputBlur_();
   }
 
-  private async onCustomInputBlur_() {
+  protected async onCustomInputBlur_() {
     this.resetAndUpdate();
-    await this.shadowRoot!.querySelector('cr-input')!.updateComplete;
+    await this.shadowRoot.querySelector('cr-input')!.updateComplete;
 
     if (this.errorState_ === PagesInputErrorState.EMPTY) {
       // Update with all pages.
-      this.shadowRoot!.querySelector('cr-input')!.value =
+      this.shadowRoot.querySelector('cr-input')!.value =
           this.getAllPagesString_();
       this.inputString_ = this.getAllPagesString_();
       this.resetString();
@@ -417,7 +414,7 @@ export class PrintPreviewPagesSettingsElement extends
   /**
    * @return Message to show as hint.
    */
-  private getHintMessage_(): string {
+  protected getHintMessage_(): string {
     if (this.errorState_ === PagesInputErrorState.NO_ERROR ||
         this.errorState_ === PagesInputErrorState.EMPTY) {
       return '';
@@ -438,29 +435,21 @@ export class PrintPreviewPagesSettingsElement extends
   /**
    * @return Whether the document being printed has only one page.
    */
-  private isSinglePage_(): boolean {
+  protected isSinglePage_(): boolean {
     return this.pageCount === 1;
-  }
-
-  /**
-   * @return Whether to hide the hint.
-   */
-  private hintHidden_(): boolean {
-    return this.errorState_ === PagesInputErrorState.NO_ERROR ||
-        this.errorState_ === PagesInputErrorState.EMPTY;
   }
 
   /**
    * @return Whether to disable the custom input.
    */
-  private inputDisabled_(): boolean {
+  protected inputDisabled_(): boolean {
     return this.selection_ !== PagesValue.CUSTOM || this.controlsDisabled_;
   }
 
   /**
    * @return Whether to display the custom input.
    */
-  private shouldShowInput_(): boolean {
+  protected shouldShowInput_(): boolean {
     return this.selection_ === PagesValue.CUSTOM;
   }
 
@@ -481,13 +470,13 @@ export class PrintPreviewPagesSettingsElement extends
         this.errorState_ !== PagesInputErrorState.NO_ERROR) {
       this.restoreLastInput_ = true;
       this.inputString_ = '';
-      this.shadowRoot!.querySelector('cr-input')!.value = '';
+      this.shadowRoot.querySelector('cr-input')!.value = '';
       this.resetString();
     }
     this.updatePagesToPrint_();
   }
 
-  private onPageCountChange_(current: number, previous: number) {
+  private onPageCountChange_(current: number, previous: number|undefined) {
     // Remember non-custom page settings when the page count changes to 1, so
     // they can be re-applied if the page count exceeds 1 again.
     if (this.selection_ !== PagesValue.CUSTOM) {
@@ -508,7 +497,7 @@ export class PrintPreviewPagesSettingsElement extends
         (current < previous || !this.restoreLastInput_);
 
     if (resetCustom) {
-      this.shadowRoot!.querySelector('cr-input')!.value =
+      this.shadowRoot.querySelector('cr-input')!.value =
           this.getAllPagesString_();
       this.inputString_ = this.getAllPagesString_();
       this.resetString();
@@ -517,6 +506,8 @@ export class PrintPreviewPagesSettingsElement extends
     }
   }
 }
+
+export type PagesSettingsElement = PrintPreviewPagesSettingsElement;
 
 declare global {
   interface HTMLElementTagNameMap {

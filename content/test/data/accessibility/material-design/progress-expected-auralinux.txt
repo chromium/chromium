@@ -1,0 +1,55 @@
+[document web] name='Material Web Progress'
+++[section] name='Ready'
+++++[progress bar] current=0.000000 minimum=0.000000 maximum=1.000000
+++++[progress bar] current=0.500000 minimum=0.000000 maximum=1.000000
+++++[progress bar] current=0.600000 minimum=0.000000 maximum=1.000000
+++++[progress bar] indeterminate current=0.000000 minimum=0.000000 maximum=1.000000
+++++[progress bar] current=0.000000 minimum=0.000000 maximum=1.000000
+++++[progress bar] current=0.300000 minimum=0.000000 maximum=1.000000
+++++[progress bar] indeterminate current=0.000000 minimum=0.000000 maximum=1.000000
+++++[progress bar] current=0.000000 minimum=0.000000 maximum=1.000000
+=== Start Continuation ===
+[document web] name='Material Web Progress'
+++[section] name='Ready'
+++++[progress bar] current=0.300000 minimum=0.000000 maximum=1.000000
+++++[progress bar] current=0.500000 minimum=0.000000 maximum=1.000000
+++++[progress bar] current=0.600000 minimum=0.000000 maximum=1.000000
+++++[progress bar] indeterminate current=0.000000 minimum=0.000000 maximum=1.000000
+++++[progress bar] current=0.000000 minimum=0.000000 maximum=1.000000
+++++[progress bar] current=0.300000 minimum=0.000000 maximum=1.000000
+++++[progress bar] indeterminate current=0.000000 minimum=0.000000 maximum=1.000000
+++++[progress bar] current=0.000000 minimum=0.000000 maximum=1.000000
+++++[section]
+++++++[static] name='Progress Set to 30'
+=== Start Continuation ===
+[document web] name='Material Web Progress'
+++[section] name='Ready'
+++++[progress bar] current=0.700000 minimum=0.000000 maximum=1.000000
+++++[progress bar] current=0.500000 minimum=0.000000 maximum=1.000000
+++++[progress bar] current=0.600000 minimum=0.000000 maximum=1.000000
+++++[progress bar] indeterminate current=0.000000 minimum=0.000000 maximum=1.000000
+++++[progress bar] current=0.000000 minimum=0.000000 maximum=1.000000
+++++[progress bar] current=0.300000 minimum=0.000000 maximum=1.000000
+++++[progress bar] indeterminate current=0.000000 minimum=0.000000 maximum=1.000000
+++++[progress bar] current=0.000000 minimum=0.000000 maximum=1.000000
+++++[section]
+++++++[static] name='Progress Set to 30'
+++++[section]
+++++++[static] name='Progress Set to 70'
+=== Start Continuation ===
+[document web] name='Material Web Progress'
+++[section] name='Ready'
+++++[progress bar] current=1.000000 minimum=0.000000 maximum=1.000000
+++++[progress bar] current=0.500000 minimum=0.000000 maximum=1.000000
+++++[progress bar] current=0.600000 minimum=0.000000 maximum=1.000000
+++++[progress bar] indeterminate current=0.000000 minimum=0.000000 maximum=1.000000
+++++[progress bar] current=0.000000 minimum=0.000000 maximum=1.000000
+++++[progress bar] current=0.300000 minimum=0.000000 maximum=1.000000
+++++[progress bar] indeterminate current=0.000000 minimum=0.000000 maximum=1.000000
+++++[progress bar] current=0.000000 minimum=0.000000 maximum=1.000000
+++++[section]
+++++++[static] name='Progress Set to 30'
+++++[section]
+++++++[static] name='Progress Set to 70'
+++++[section]
+++++++[static] name='Progress Set to 100'

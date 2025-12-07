@@ -28,6 +28,8 @@ constexpr base::TimeDelta kVeryBigLocalChangeNudgeDelay = kDefaultPollInterval;
 
 constexpr base::TimeDelta kDefaultLocalChangeNudgeDelayForSessions =
     base::Seconds(15);
+constexpr base::TimeDelta kDefaultLocalChangeNudgeDelayForSavedTabGroup =
+    base::Seconds(11);
 
 // Nudge delay for remote invalidations. Common to all data types.
 constexpr base::TimeDelta kRemoteInvalidationDelay = base::Milliseconds(250);
@@ -55,7 +57,7 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(DataType data_type) {
       // and freshness.
       return kDefaultLocalChangeNudgeDelayForSessions;
     case SAVED_TAB_GROUP:
-      return syncer::kTabGroupsSaveCustomNudgeDelay.Get();
+      return kDefaultLocalChangeNudgeDelayForSavedTabGroup;
     case BOOKMARKS:
     case PREFERENCES:
     case PRODUCT_COMPARISON:
@@ -103,14 +105,19 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(DataType data_type) {
     case OS_PRIORITY_PREFERENCES:
     case WORKSPACE_DESK:
     case NIGORI:
-    case POWER_BOOKMARK:
     case WEBAUTHN_CREDENTIAL:
     case PLUS_ADDRESS:
     case PLUS_ADDRESS_SETTING:
+    case AUTOFILL_VALUABLE:
+    case AUTOFILL_VALUABLE_METADATA:
+    case ACCOUNT_SETTING:
+    case SHARED_TAB_GROUP_ACCOUNT_DATA:
+    case SHARED_COMMENT:
+    case AI_THREAD:
+    case CONTEXTUAL_TASK:
       return kMediumLocalChangeNudgeDelay;
     case UNSPECIFIED:
-      NOTREACHED_IN_MIGRATION();
-      return base::TimeDelta();
+      NOTREACHED();
   }
 }
 
@@ -121,6 +128,8 @@ bool CanGetCommitsFromExtensions(DataType data_type) {
     case EXTENSION_SETTINGS:         // chrome.storage.sync API.
     case APP_SETTINGS:               // chrome.storage.sync API.
     case HISTORY_DELETE_DIRECTIVES:  // chrome.history and chrome.browsingData.
+    // Accessible via navigator.credentials to both extensions and sites.
+    case WEBAUTHN_CREDENTIAL:
       return true;
     // For these types, extensions can delete existing data using a js API.
     // However, as they cannot generate new entities, the number of deletions is
@@ -165,8 +174,6 @@ bool CanGetCommitsFromExtensions(DataType data_type) {
     case WORKSPACE_DESK:
     case NIGORI:
     case SAVED_TAB_GROUP:
-    case POWER_BOOKMARK:
-    case WEBAUTHN_CREDENTIAL:
     case INCOMING_PASSWORD_SHARING_INVITATION:
     case OUTGOING_PASSWORD_SHARING_INVITATION:
     case SHARED_TAB_GROUP_DATA:
@@ -175,10 +182,16 @@ bool CanGetCommitsFromExtensions(DataType data_type) {
     case PLUS_ADDRESS_SETTING:
     case PRODUCT_COMPARISON:
     case COOKIES:
+    case AUTOFILL_VALUABLE:
+    case AUTOFILL_VALUABLE_METADATA:
+    case ACCOUNT_SETTING:
+    case SHARED_TAB_GROUP_ACCOUNT_DATA:
+    case SHARED_COMMENT:
+    case AI_THREAD:
+    case CONTEXTUAL_TASK:
       return false;
     case UNSPECIFIED:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -227,10 +240,6 @@ void DataTypeTracker::RecordSuccessfulCommitMessage() {
       base::UmaHistogramEnumeration(
           "Sync.DataTypeCommitMessageHasDepletedQuota",
           DataTypeHistogramValue(type_));
-      // Legacy equivalent, before the metric was renamed.
-      base::UmaHistogramEnumeration(
-          "Sync.ModelTypeCommitMessageHasDepletedQuota",
-          DataTypeHistogramValue(type_));
     }
   }
 }
@@ -258,7 +267,7 @@ void DataTypeTracker::RecordSuccessfulSyncCycleIfNotBlocked() {
   // sync cycle, before this method gets called (i.e. after a successful
   // "normal" sync cycle). However, in some cases the initial sync might not
   // have happened, e.g. if this one data type got blocked or throttled during
-  // the configure cycle. For those cases, also clear |initial_sync_required_|
+  // the configure cycle. For those cases, also clear `initial_sync_required_`
   // here.
   initial_sync_required_ = false;
 
@@ -317,7 +326,7 @@ void DataTypeTracker::FillGetUpdatesTriggersMessage(
 }
 
 bool DataTypeTracker::IsBlocked() const {
-  return wait_interval_.get() &&
+  return wait_interval_ &&
          (wait_interval_->mode == WaitInterval::BlockingMode::kThrottled ||
           wait_interval_->mode ==
               WaitInterval::BlockingMode::kExponentialBackoff);
@@ -331,8 +340,7 @@ base::TimeDelta DataTypeTracker::GetTimeUntilUnblock() const {
 base::TimeDelta DataTypeTracker::GetLastBackoffInterval() const {
   if (GetBlockingMode() !=
       WaitInterval::BlockingMode::kExponentialBackoffRetrying) {
-    NOTREACHED_IN_MIGRATION();
-    return base::Seconds(0);
+    NOTREACHED();
   }
   return wait_interval_->length;
 }
@@ -340,20 +348,18 @@ base::TimeDelta DataTypeTracker::GetLastBackoffInterval() const {
 void DataTypeTracker::ThrottleType(base::TimeDelta duration,
                                    base::TimeTicks now) {
   unblock_time_ = std::max(unblock_time_, now + duration);
-  wait_interval_ = std::make_unique<WaitInterval>(
-      WaitInterval::BlockingMode::kThrottled, duration);
+  wait_interval_.emplace(WaitInterval::BlockingMode::kThrottled, duration);
 }
 
 void DataTypeTracker::BackOffType(base::TimeDelta duration,
                                   base::TimeTicks now) {
   unblock_time_ = std::max(unblock_time_, now + duration);
-  wait_interval_ = std::make_unique<WaitInterval>(
-      WaitInterval::BlockingMode::kExponentialBackoff, duration);
+  wait_interval_.emplace(WaitInterval::BlockingMode::kExponentialBackoff, duration);
 }
 
 void DataTypeTracker::UpdateThrottleOrBackoffState() {
   if (base::TimeTicks::Now() >= unblock_time_) {
-    if (wait_interval_.get() &&
+    if (wait_interval_ &&
         (wait_interval_->mode ==
              WaitInterval::BlockingMode::kExponentialBackoff ||
          wait_interval_->mode ==
@@ -383,9 +389,6 @@ base::TimeDelta DataTypeTracker::GetLocalChangeNudgeDelay(
     bool is_single_client) const {
   if (quota_ && !quota_->HasTokensAvailable()) {
     base::UmaHistogramEnumeration("Sync.DataTypeCommitWithDepletedQuota",
-                                  DataTypeHistogramValue(type_));
-    // Legacy equivalent, before the metric was renamed.
-    base::UmaHistogramEnumeration("Sync.ModelTypeCommitWithDepletedQuota",
                                   DataTypeHistogramValue(type_));
     return depleted_quota_nudge_delay_;
   }

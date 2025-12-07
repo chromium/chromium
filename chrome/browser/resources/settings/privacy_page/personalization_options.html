@@ -1,4 +1,4 @@
-    <style include="settings-shared md-select iron-flex">
+    <style include="settings-shared md-select">
       :host(.list-frame) settings-toggle-button {
         padding-inline-end: 0;
         padding-inline-start: 0;
@@ -15,10 +15,10 @@
       }
 
       #chromeSigninUserChoiceSetting {
-        padding: 10px 0px 10px;
+        padding: var(--settings-signin-choice-padding, 10px 0px 10px);
       }
 
-      #label-wrapper {
+      #labelWrapper {
         margin-inline-end: 20px;
       }
 
@@ -28,7 +28,7 @@
     <div id="chromeSigninUserChoiceSetting" class="hr cr-row" role="group"
         hidden="[[!chromeSigninUserChoiceInfo_.shouldShowSettings]]"
         aria-label="$i18n{chromeSigninChoiceTitle}">
-      <div id="label-wrapper" class="flex">
+      <div id="labelWrapper" class="flex">
           <div>
             $i18n{chromeSigninChoiceTitle}
           </div>
@@ -54,7 +54,6 @@
           </option>
       </select>
     </div>
-    <!-- Signout is not supported yet on lacros, https://crbug.com/1217645 -->
     <settings-toggle-button id="signinAllowedToggle"
         class="hr"
         hidden="[[!signinAvailable_]]"
@@ -65,9 +64,9 @@
         on-settings-boolean-control-change="onSigninAllowedChange_"
         no-set-pref>
     </settings-toggle-button>
-</if><!-- not chromeos and not lacros -->
+</if><!-- not chromeos -->
 <if expr="_google_chrome">
-<if expr="chromeos_ash">
+<if expr="is_chromeos">
     <!-- Ash Browser settings show a link to the OS settings instead. -->
     <cr-link-row id="metricsReportingLink" class="hr"
         label="$i18n{enablePersonalizationLogging}"
@@ -75,7 +74,7 @@
         on-click="onMetricsReportingLinkClick_" external>
     </cr-link-row>
 </if><!-- chromeos -->
-<if expr="not chromeos_ash">
+<if expr="not is_chromeos">
     <settings-toggle-button id="metricsReportingControl"
         class="hr"
         pref="[[metricsReportingPref_]]"
@@ -97,27 +96,8 @@
         label="$i18n{urlKeyedAnonymizedDataCollection}"
         sub-label="$i18n{urlKeyedAnonymizedDataCollectionDesc}">
     </settings-toggle-button>
-    <template is="dom-if" if="[[enablePageContentSetting_]]">
-      <cr-link-row id="pageContentRow"
-          class="hr"
-          label="$i18n{pageContentToggleLabel}"
-          sub-label="[[computePageContentRowSublabel_(
-              prefs.page_content_collection.enabled.value)]]"
-          role-description="$i18n{subpageArrowRoleDescription}"
-          on-click="onPageContentRowClick_">
-      </cr-link-row>
-    </template>
-    <template is="dom-if" if="[[showHistorySearchControl_]]" restamp>
-      <cr-link-row id="historySearchRow"
-          class="hr"
-          label="$i18n{historySearchSettingLabel}"
-          sub-label="$i18n{historySearchSettingSublabel}"
-          role-description="$i18n{subpageArrowRoleDescription}"
-          on-click="onHistorySearchRowClick_">
-      </cr-link-row>
-    </template>
 <if expr="_google_chrome">
-<if expr="not chromeos_ash">
+<if expr="not is_chromeos">
     <settings-toggle-button id="spellCheckControl"
         class="hr"
         pref="{{prefs.spellcheck.use_spelling_service}}"
@@ -127,7 +107,7 @@
         hidden="[[!showSpellCheckControlToggle_(prefs.spellcheck.dictionaries)]]">
     </settings-toggle-button>
 </if>
-<if expr="chromeos_ash">
+<if expr="is_chromeos">
     <!-- On ChromeOS the toggle for spellcheck is shown in the OS settings,
          and Ash Browser settings show a link to the OS settings instead. -->
     <cr-link-row id="spellCheckLink"
@@ -147,13 +127,17 @@
           sub-label="$i18n{searchSuggestPrefDesc}">
       </settings-toggle-button>
     </template>
-    <template is="dom-if" if="[[shouldShowDriveSuggest_(
-        syncStatus, syncStatus.signedInState, syncStatus.statusAction)]]"
-        restamp>
-      <settings-toggle-button id="driveSuggestControl" class="hr"
-          pref="{{prefs.documentsuggest.enabled}}"
-          label="$i18n{driveSuggestPref}"
-          sub-label="$i18n{driveSuggestPrefDesc}">
+
+    <!-- This toggle is only shown for users with the appropriate enterprise
+        policy enabled. The state is not changeable by the user, so when shown,
+        it is alays selected but disabled. -->
+    <template is="dom-if" if="[[showSearchAggregatorSuggest_]]" restamp>
+      <settings-toggle-button id="searchAggregatorSuggestToggle"
+          pref="[[searchAggregatorSuggestFakePref_]]"
+          disabled
+          class="hr"
+          label="$i18n{searchAggregatorSuggestPref}"
+          sub-label="$i18n{searchAggregatorSuggestPrefDesc}">
       </settings-toggle-button>
     </template>
 
@@ -173,7 +157,7 @@
       </settings-signout-dialog>
     </template>
 
-<if expr="not chromeos_ash">
+<if expr="not is_chromeos">
     <cr-toast id="toast">
       <div>$i18n{restartToApplyChanges}</div>
       <cr-button on-click="onRestartClick_">$i18n{restart}</cr-button>
@@ -183,4 +167,7 @@
       <relaunch-confirmation-dialog restart-type="[[restartTypeEnum.RESTART]]"
           on-close="onRelaunchDialogClose"></relaunch-confirmation-dialog>
     </template>
+    <cr-toast id="chromeSigninUserChoiceToast" duration="5000">
+      <div>$i18n{chromeSigninChoiceToast}</div>
+    </cr-toast>
 </if>

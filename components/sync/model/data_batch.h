@@ -19,8 +19,8 @@ using KeyAndData = std::pair<std::string, std::unique_ptr<EntityData>>;
 // Interface used by the processor to read data requested from the service.
 class DataBatch {
  public:
-  DataBatch() {}
-  virtual ~DataBatch() {}
+  DataBatch() = default;
+  virtual ~DataBatch() = default;
 
   // Returns if the data batch has another pair or not.
   virtual bool HasNext() const = 0;

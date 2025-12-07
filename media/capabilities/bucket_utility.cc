@@ -2,18 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/capabilities/bucket_utility.h"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <iterator>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 
 namespace {
 
@@ -37,8 +34,12 @@ const int kSizeBuckets[] = {
 // information that is stored and exposed through the API. The pixel size
 // indices are used for logging, the pixel size buckets can therefore not be
 // changed unless the corresponding logging code is updated.
-constexpr int kWebrtcPixelsBuckets[] = {1280 * 720, 1920 * 1080, 2560 * 1440,
-                                        3840 * 2160};
+constexpr auto kWebrtcPixelsBuckets = std::to_array<int>({
+    1280 * 720,
+    1920 * 1080,
+    2560 * 1440,
+    3840 * 2160,
+});
 // The boundaries between buckets are calculated as the point between the two
 // buckets.
 constexpr int kWebrtcPixelsBoundaries[] = {
@@ -73,9 +74,9 @@ gfx::Size GetSizeBucket(const gfx::Size& raw_size) {
 
   // If no bucket is larger than the raw dimension, just use the last bucket.
   if (width_bound == std::end(kSizeBuckets))
-    --width_bound;
+    UNSAFE_TODO(--width_bound);
   if (height_bound == std::end(kSizeBuckets))
-    --height_bound;
+    UNSAFE_TODO(--height_bound);
 
   return gfx::Size(*width_bound, *height_bound);
 }
@@ -90,14 +91,14 @@ int GetFpsBucket(double raw_fps) {
 
   // If no bucket is larger than |rounded_fps|, just used the last bucket;
   if (upper_bound == std::end(kFrameRateBuckets))
-    return *(upper_bound - 1);
+    return *(UNSAFE_TODO(upper_bound - 1));
 
   // Return early if its the first bucket.
   if (upper_bound == std::begin(kFrameRateBuckets))
     return *upper_bound;
 
   int higher_bucket = *upper_bound;
-  int previous_bucket = *(upper_bound - 1);
+  int previous_bucket = *(UNSAFE_TODO(upper_bound - 1));
   if (std::abs(previous_bucket - rounded_fps) <
       std::abs(higher_bucket - rounded_fps)) {
     return previous_bucket;

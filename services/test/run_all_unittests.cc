@@ -14,6 +14,7 @@
 #include "mojo/core/embedder/configuration.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/base/ui_base_paths.h"
@@ -62,6 +63,8 @@ class ServiceTestSuite : public base::TestSuite {
 
     // base::TestSuite and ViewsInit both try to load icu. That's ok for tests.
     base::i18n::AllowMultipleInitializeCallsForTesting();
+
+    perfetto::internal::TrackRegistry::InitializeInstance();
   }
 
   void Shutdown() override {

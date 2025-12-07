@@ -10,7 +10,7 @@
 #include "base/time/time.h"
 #include "third_party/blink/public/common/origin_trials/trial_token.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
-#include "third_party/blink/public/mojom/origin_trial_state/origin_trial_state_host.mojom-blink.h"
+#include "third_party/blink/public/mojom/origin_trials/origin_trial_state_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -262,8 +262,7 @@ class CORE_EXPORT OriginTrialContext final
   HashSet<mojom::blink::OriginTrialFeature> enabled_features_;
   HashSet<mojom::blink::OriginTrialFeature> installed_features_;
   HashSet<mojom::blink::OriginTrialFeature> navigation_activated_features_;
-  WTF::HashMap<mojom::blink::OriginTrialFeature, base::Time>
-      feature_expiry_times_;
+  HashMap<mojom::blink::OriginTrialFeature, base::Time> feature_expiry_times_;
   std::unique_ptr<TrialTokenValidator> trial_token_validator_;
   Member<ExecutionContext> context_;
   // Stores raw origin trial token along with the parse result.

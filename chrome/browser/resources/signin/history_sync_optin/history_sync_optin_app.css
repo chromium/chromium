@@ -1,0 +1,186 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #include=cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  border-radius: 12px;
+  color: var(--cr-primary-text-color);
+  display: block;
+  overflow: hidden;
+}
+
+#contentContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  /* Take up the entire window height, so that the buttons appear
+      at the bottom of the page. */
+  min-height: 100vh;
+}
+
+:host([is-modal_]) #contentContainer {
+  min-height: auto;
+  padding: 20px;
+}
+
+#textContainer  {
+  /* Pushes the buttons at the bottom of the contentContainer.*/
+  margin-bottom: auto;
+  text-align: center;
+}
+
+:host([is-modal_]) #textContainer {
+  text-align: start;
+}
+
+#avatar {
+  /** The user avatar may be transparent, add a background */
+  background-color: var(--md-background-color);
+  border: solid var(--md-background-color);
+  border-radius: 50%;
+  height: 64px;
+  /* To place the avatar at the center of the background image,
+     place it at top left point of its parent,
+     then shift it back by half its width and height. */
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 64px;
+}
+
+.dialog-illustration {
+  content: url(./images/avatar_surrounding_illustration_light.svg);
+  width: 100%;
+}
+
+.window-left-banner-illustration {
+  content: url(./images/window_left_illustration.svg);
+  left: 0;
+}
+
+.window-right-banner-illustration {
+  content: url(./images/window_right_illustration.svg);
+  right: 0;
+}
+
+.window-right-banner-illustration,
+.window-left-banner-illustration {
+  max-width: 320px;
+  position: absolute;
+  top: 0;
+  width: 174px;
+}
+
+:host([is-modal_]) #illustrationContainer {
+  margin-top: auto;
+}
+
+#illustrationContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 0;
+  position: relative;
+}
+
+#imageContainer {
+  align-self: center;
+  display: flex;
+  /* The height must be set so that the height of this relatively positioned
+  container is taken into account in the height calculator of the entire screen. */
+  height: 162px;
+  justify-content: center;
+  /* Margin for the window case. */
+  margin-top: 142px;
+  /* Establishes a positioning context for absolute children. */
+  position: relative;
+}
+
+:host([is-modal_]) #imageContainer {
+  margin-top: auto;
+}
+
+#buttonRow {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+
+  /* Window case style. */
+  box-sizing: border-box;
+  padding: 20px;
+  width: 100%;
+}
+
+:host([is-modal_]) #buttonRow {
+  box-sizing: content-box;
+  padding: 0;
+  width: auto;
+}
+
+#modalDescription {
+  /* colors */
+  background-color: var(--cr-fallback-color-neutral-container);
+  border-top: 1px solid var(--cr-fallback-color-neutral-outline);
+  /* fonts */
+  font-size: 11px;
+  line-height: 20px;
+  /* layout */
+  padding: 12px 20px 12px 20px;
+}
+
+h1 {
+  font-size: 36px;
+  font-weight: 500;
+  margin-top: 24px;
+}
+
+:host([is-modal_]) h1 {
+  font-size: 16px;
+  margin-top: 0;
+}
+
+#subtitle {
+  font-size: 20px;
+  margin-top: 16px;
+}
+
+:host([is-modal_]) #subtitle {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+#description {
+  font-size: 12px;
+  margin-top: 24px;
+}
+
+:host([is-modal_]) #description {
+  font-size: inherit;
+  margin-top: inherit;
+}
+
+.visibility-hidden {
+  visibility: hidden;
+}
+
+@media (prefers-color-scheme: dark) {
+  .dialog-illustration {
+   content: url(./images/avatar_surrounding_illustration_dark.svg);
+  }
+
+  .window-left-banner-illustration {
+   content: url(./images/window_left_illustration_dark.svg);
+  }
+
+  .window-right-banner-illustration {
+   content: url(./images/window_right_illustration_dark.svg);
+  }
+}

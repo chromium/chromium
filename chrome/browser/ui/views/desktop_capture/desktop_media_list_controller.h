@@ -72,7 +72,8 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   std::unique_ptr<views::View> CreateView(
       DesktopMediaSourceViewStyle generic_style,
       DesktopMediaSourceViewStyle single_style,
-      const std::u16string& accessible_name);
+      const std::u16string& accessible_name,
+      DesktopMediaList::Type type);
 
   std::unique_ptr<views::View> CreateTabListView(
       const std::u16string& accessible_name);
@@ -83,6 +84,8 @@ class DesktopMediaListController : public DesktopMediaListObserver,
 
   // Focuses this controller's view.
   void FocusView();
+
+  void ShowDelegatedList();
 
   void HideView();
 
@@ -99,6 +102,8 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   // Returns the DesktopMediaID corresponding to the current selection in this
   // controller's view, if there is one.
   std::optional<content::DesktopMediaID> GetSelection() const;
+
+  bool HasSelectedChromiumWindow() const;
 
   void ClearSelection();
 
@@ -168,9 +173,11 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   // Auto-selection. Used only in tests.
   const std::string auto_select_tab_;        // Only tabs, by title.
   const std::string auto_select_window_;     // Only windows, by title.
+  const bool auto_select_any_screen_;        // Any screen.
   const std::string auto_select_source_;     // Any source by its title.
   const bool auto_accept_this_tab_capture_;  // Only for current-tab capture.
   const bool auto_reject_this_tab_capture_;  // Only for current-tab capture.
+  const bool auto_reject_capture_;           // Applies to any capture.
 
   base::WeakPtrFactory<DesktopMediaListController> weak_factory_{this};
 };

@@ -13,8 +13,8 @@
 
 namespace blink {
 
+class ScriptObject;
 class ScriptState;
-class ScriptValue;
 
 // https://w3c.github.io/compute-pressure/#the-pressurerecord-interface
 
@@ -24,18 +24,21 @@ class MODULES_EXPORT PressureRecord final : public ScriptWrappable {
  public:
   PressureRecord(V8PressureSource::Enum,
                  V8PressureState::Enum,
+                 const double own_contribution_estimate,
                  const DOMHighResTimeStamp);
   ~PressureRecord() override;
 
   V8PressureSource source() const;
   V8PressureState state() const;
+  std::optional<double> ownContributionEstimate() const;
   DOMHighResTimeStamp time() const;
 
-  ScriptValue toJSON(ScriptState*) const;
+  ScriptObject toJSON(ScriptState*) const;
 
  private:
   const V8PressureSource::Enum source_;
   const V8PressureState::Enum state_;
+  const double own_contribution_estimate_;
   const DOMHighResTimeStamp time_;
 };
 

@@ -2,22 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
+#include "net/filter/gzip_source_stream.h"
 
+#include <stdint.h>
+
+#include <array>
 #include <string>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_view_util.h"
 #include "net/base/io_buffer.h"
 #include "net/base/test_completion_callback.h"
 #include "net/filter/filter_source_stream_test_util.h"
-#include "net/filter/gzip_source_stream.h"
+#include "net/filter/gzip_header.h"
 #include "net/filter/mock_source_stream.h"
+#include "net/filter/source_stream_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/zlib.h"
 
@@ -57,6 +60,8 @@ struct GzipTestParam {
 
 }  // namespace
 
+// Note that these tests cover GZipHeader::HasGZipHeader(), to avoid duplicating
+// data passed to the method.
 class GzipSourceStreamTest : public ::testing::TestWithParam<GzipTestParam> {
  protected:
   GzipSourceStreamTest() : output_buffer_size_(GetParam().buffer_size) {}
@@ -64,17 +69,16 @@ class GzipSourceStreamTest : public ::testing::TestWithParam<GzipTestParam> {
   // Helpful function to initialize the test fixture.|type| specifies which type
   // of GzipSourceStream to create. It must be one of TYPE_GZIP and
   // TYPE_DEFLATE.
-  void Init(SourceStream::SourceType type) {
-    EXPECT_TRUE(SourceStream::TYPE_GZIP == type ||
-                SourceStream::TYPE_DEFLATE == type);
+  void Init(SourceStreamType type) {
+    EXPECT_TRUE(SourceStreamType::kGzip == type ||
+                SourceStreamType::kDeflate == type);
     source_data_len_ = kBigBufferSize - kEOFMargin;
 
     for (size_t i = 0; i < source_data_len_; i++)
       source_data_[i] = i % 256;
 
-    encoded_data_len_ = kBigBufferSize;
-    CompressGzip(source_data_, source_data_len_, encoded_data_,
-                 &encoded_data_len_, type != SourceStream::TYPE_DEFLATE);
+    encoded_data_ =
+        CompressGzip(source_data_view(), type != SourceStreamType::kDeflate);
 
     output_buffer_ =
         base::MakeRefCounted<IOBufferWithSize>(output_buffer_size_);
@@ -101,15 +105,13 @@ class GzipSourceStreamTest : public ::testing::TestWithParam<GzipTestParam> {
     return previous_result;
   }
 
-  char* source_data() { return source_data_; }
-  size_t source_data_len() { return source_data_len_; }
+  // Returns `source_data_` as a string view, for comparison.
+  std::string_view source_data_view() const {
+    return base::as_string_view(source_data_).substr(0, source_data_len_);
+  }
+  size_t source_data_len() const { return source_data_len_; }
 
-  char* encoded_data() { return encoded_data_; }
-  size_t encoded_data_len() { return encoded_data_len_; }
-
-  IOBuffer* output_buffer() { return output_buffer_.get(); }
-  char* output_data() { return output_buffer_->data(); }
-  size_t output_buffer_size() { return output_buffer_size_; }
+  base::span<uint8_t> encoded_span() { return encoded_data_; }
 
   MockSourceStream* source() { return source_; }
   GzipSourceStream* stream() { return stream_.get(); }
@@ -121,7 +123,7 @@ class GzipSourceStreamTest : public ::testing::TestWithParam<GzipTestParam> {
     int bytes_read = 0;
     while (true) {
       TestCompletionCallback callback;
-      int rv = stream_->Read(output_buffer(), output_buffer_size(),
+      int rv = stream_->Read(output_buffer_.get(), output_buffer_size_,
                              callback.callback());
       if (rv == ERR_IO_PENDING)
         rv = CompleteReadsIfAsync(rv, &callback, source());
@@ -131,17 +133,16 @@ class GzipSourceStreamTest : public ::testing::TestWithParam<GzipTestParam> {
         return rv;
       EXPECT_GT(rv, OK);
       bytes_read += rv;
-      output->append(output_data(), rv);
+      output->append(base::as_string_view(output_buffer_->first(rv)));
     }
     return bytes_read;
   }
 
  private:
-  char source_data_[kBigBufferSize];
+  std::array<uint8_t, kBigBufferSize> source_data_;
   size_t source_data_len_;
 
-  char encoded_data_[kBigBufferSize];
-  size_t encoded_data_len_;
+  std::vector<uint8_t> encoded_data_;
 
   scoped_refptr<IOBuffer> output_buffer_;
   const int output_buffer_size_;
@@ -179,205 +180,204 @@ INSTANTIATE_TEST_SUITE_P(
                                     ReadResultType::ONE_BYTE_AT_A_TIME)));
 
 TEST_P(GzipSourceStreamTest, EmptyStream) {
-  Init(SourceStream::TYPE_DEFLATE);
-  source()->AddReadResult(nullptr, 0, OK, GetParam().mode);
+  Init(SourceStreamType::kDeflate);
+  source()->AddReadResult(base::span<uint8_t>(), OK, GetParam().mode);
   TestCompletionCallback callback;
   std::string actual_output;
   int result = ReadStream(&actual_output);
   EXPECT_EQ(OK, result);
   EXPECT_EQ("DEFLATE", stream()->Description());
+  EXPECT_FALSE(GZipHeader::HasGZipHeader(base::span<uint8_t>()));
 }
 
 TEST_P(GzipSourceStreamTest, DeflateOneBlock) {
-  Init(SourceStream::TYPE_DEFLATE);
-  source()->AddReadResult(encoded_data(), encoded_data_len(), OK,
-                          GetParam().mode);
-  source()->AddReadResult(nullptr, 0, OK, GetParam().mode);
+  Init(SourceStreamType::kDeflate);
+  source()->AddReadResult(encoded_span(), OK, GetParam().mode);
+  source()->AddReadResult(base::span<uint8_t>(), OK, GetParam().mode);
   std::string actual_output;
   int rv = ReadStream(&actual_output);
   EXPECT_EQ(static_cast<int>(source_data_len()), rv);
-  EXPECT_EQ(std::string(source_data(), source_data_len()), actual_output);
+  EXPECT_EQ(source_data_view(), actual_output);
   EXPECT_EQ("DEFLATE", stream()->Description());
+  EXPECT_FALSE(GZipHeader::HasGZipHeader(encoded_span()));
 }
 
 TEST_P(GzipSourceStreamTest, GzipOneBloc) {
-  Init(SourceStream::TYPE_GZIP);
-  source()->AddReadResult(encoded_data(), encoded_data_len(), OK,
-                          GetParam().mode);
-  source()->AddReadResult(nullptr, 0, OK, GetParam().mode);
+  Init(SourceStreamType::kGzip);
+  source()->AddReadResult(encoded_span(), OK, GetParam().mode);
+  source()->AddReadResult(base::span<uint8_t>(), OK, GetParam().mode);
   std::string actual_output;
   int rv = ReadStream(&actual_output);
   EXPECT_EQ(static_cast<int>(source_data_len()), rv);
-  EXPECT_EQ(std::string(source_data(), source_data_len()), actual_output);
+  EXPECT_EQ(source_data_view(), actual_output);
   EXPECT_EQ("GZIP", stream()->Description());
+  EXPECT_TRUE(GZipHeader::HasGZipHeader(encoded_span()));
 }
 
 TEST_P(GzipSourceStreamTest, DeflateTwoReads) {
-  Init(SourceStream::TYPE_DEFLATE);
-  source()->AddReadResult(encoded_data(), 10, OK, GetParam().mode);
-  source()->AddReadResult(encoded_data() + 10, encoded_data_len() - 10, OK,
-                          GetParam().mode);
-  source()->AddReadResult(nullptr, 0, OK, GetParam().mode);
+  Init(SourceStreamType::kDeflate);
+  source()->AddReadResult(encoded_span().first(10u), OK, GetParam().mode);
+  source()->AddReadResult(encoded_span().subspan(10u), OK, GetParam().mode);
+  source()->AddReadResult(base::span<uint8_t>(), OK, GetParam().mode);
   std::string actual_output;
   int rv = ReadStream(&actual_output);
   EXPECT_EQ(static_cast<int>(source_data_len()), rv);
-  EXPECT_EQ(std::string(source_data(), source_data_len()), actual_output);
+  EXPECT_EQ(source_data_view(), actual_output);
   EXPECT_EQ("DEFLATE", stream()->Description());
 }
 
 // Check that any extra bytes after the end of the gzipped data are silently
 // ignored.
 TEST_P(GzipSourceStreamTest, IgnoreDataAfterEof) {
-  Init(SourceStream::TYPE_DEFLATE);
+  Init(SourceStreamType::kDeflate);
   const char kExtraData[] = "Hello, World!";
-  std::string encoded_data_with_trailing_data(encoded_data(),
-                                              encoded_data_len());
+  std::string encoded_data_with_trailing_data(encoded_span().begin(),
+                                              encoded_span().end());
   encoded_data_with_trailing_data.append(kExtraData, sizeof(kExtraData));
-  source()->AddReadResult(encoded_data_with_trailing_data.c_str(),
-                          encoded_data_with_trailing_data.length(), OK,
-                          GetParam().mode);
-  source()->AddReadResult(nullptr, 0, OK, GetParam().mode);
+  source()->AddReadResult(base::as_byte_span(encoded_data_with_trailing_data),
+                          OK, GetParam().mode);
+  source()->AddReadResult(base::span<uint8_t>(), OK, GetParam().mode);
   // Compressed and uncompressed data get returned as separate Read() results,
   // so this test has to call Read twice.
   std::string actual_output;
   int rv = ReadStream(&actual_output);
-  std::string expected_output(source_data(), source_data_len());
-  EXPECT_EQ(static_cast<int>(expected_output.size()), rv);
-  EXPECT_EQ(expected_output, actual_output);
+  EXPECT_EQ(static_cast<int>(source_data_len()), rv);
+  EXPECT_EQ(source_data_view(), actual_output);
   EXPECT_EQ("DEFLATE", stream()->Description());
 }
 
 TEST_P(GzipSourceStreamTest, MissingZlibHeader) {
-  Init(SourceStream::TYPE_DEFLATE);
+  Init(SourceStreamType::kDeflate);
   const size_t kZlibHeaderLen = 2;
-  source()->AddReadResult(encoded_data() + kZlibHeaderLen,
-                          encoded_data_len() - kZlibHeaderLen, OK,
+  source()->AddReadResult(encoded_span().subspan(kZlibHeaderLen), OK,
                           GetParam().mode);
-  source()->AddReadResult(nullptr, 0, OK, GetParam().mode);
+  source()->AddReadResult(base::span<uint8_t>(), OK, GetParam().mode);
   std::string actual_output;
   int rv = ReadStream(&actual_output);
   EXPECT_EQ(static_cast<int>(source_data_len()), rv);
-  EXPECT_EQ(std::string(source_data(), source_data_len()), actual_output);
+  EXPECT_EQ(source_data_view(), actual_output);
   EXPECT_EQ("DEFLATE", stream()->Description());
+  EXPECT_FALSE(GZipHeader::HasGZipHeader(encoded_span().first(kZlibHeaderLen)));
 }
 
 TEST_P(GzipSourceStreamTest, CorruptGzipHeader) {
-  Init(SourceStream::TYPE_GZIP);
-  encoded_data()[1] = 0;
-  int read_len = encoded_data_len();
+  Init(SourceStreamType::kGzip);
+  encoded_span()[1] = 0;
+  auto read_span = encoded_span();
   // Needed to a avoid a DCHECK that all reads were consumed.
   if (GetParam().read_result_type == ReadResultType::ONE_BYTE_AT_A_TIME)
-    read_len = 2;
-  source()->AddReadResult(encoded_data(), read_len, OK, GetParam().mode);
+    read_span = read_span.first(2u);
+  source()->AddReadResult(read_span, OK, GetParam().mode);
   std::string actual_output;
   int rv = ReadStream(&actual_output);
   EXPECT_EQ(ERR_CONTENT_DECODING_FAILED, rv);
   EXPECT_EQ("GZIP", stream()->Description());
+  EXPECT_FALSE(GZipHeader::HasGZipHeader(encoded_span()));
 }
 
 // This test checks that the gzip stream source works correctly on 'golden' data
 // as produced by gzip(1).
 TEST_P(GzipSourceStreamTest, GzipCorrectness) {
-  Init(SourceStream::TYPE_GZIP);
+  Init(SourceStreamType::kGzip);
   const char kDecompressedData[] = "Hello, World!";
-  const unsigned char kGzipData[] = {
+  const uint8_t kGzipData[] = {
       // From:
       //   echo -n 'Hello, World!' | gzip | xxd -i | sed -e 's/^/  /'
       // The footer is the last 8 bytes.
       0x1f, 0x8b, 0x08, 0x00, 0x2b, 0x02, 0x84, 0x55, 0x00, 0x03, 0xf3,
       0x48, 0xcd, 0xc9, 0xc9, 0xd7, 0x51, 0x08, 0xcf, 0x2f, 0xca, 0x49,
       0x51, 0x04, 0x00, 0xd0, 0xc3, 0x4a, 0xec, 0x0d, 0x00, 0x00, 0x00};
-  source()->AddReadResult(reinterpret_cast<const char*>(kGzipData),
-                          sizeof(kGzipData), OK, GetParam().mode);
-  source()->AddReadResult(nullptr, 0, OK, GetParam().mode);
+  source()->AddReadResult(kGzipData, OK, GetParam().mode);
+  source()->AddReadResult(base::span<uint8_t>(), OK, GetParam().mode);
   std::string actual_output;
   int rv = ReadStream(&actual_output);
   EXPECT_EQ(static_cast<int>(strlen(kDecompressedData)), rv);
   EXPECT_EQ(kDecompressedData, actual_output);
   EXPECT_EQ("GZIP", stream()->Description());
+  EXPECT_TRUE(GZipHeader::HasGZipHeader(base::as_byte_span(kGzipData)));
 }
 
 // Same as GzipCorrectness except that last 8 bytes are removed to test that the
 // implementation can handle missing footer.
 TEST_P(GzipSourceStreamTest, GzipCorrectnessWithoutFooter) {
-  Init(SourceStream::TYPE_GZIP);
+  Init(SourceStreamType::kGzip);
   const char kDecompressedData[] = "Hello, World!";
-  const unsigned char kGzipData[] = {
+  const uint8_t kGzipData[] = {
       // From:
       //   echo -n 'Hello, World!' | gzip | xxd -i | sed -e 's/^/  /'
       // with the 8 footer bytes removed.
       0x1f, 0x8b, 0x08, 0x00, 0x2b, 0x02, 0x84, 0x55, 0x00,
       0x03, 0xf3, 0x48, 0xcd, 0xc9, 0xc9, 0xd7, 0x51, 0x08,
       0xcf, 0x2f, 0xca, 0x49, 0x51, 0x04, 0x00};
-  source()->AddReadResult(reinterpret_cast<const char*>(kGzipData),
-                          sizeof(kGzipData), OK, GetParam().mode);
-  source()->AddReadResult(nullptr, 0, OK, GetParam().mode);
+  source()->AddReadResult(kGzipData, OK, GetParam().mode);
+  source()->AddReadResult(base::span<uint8_t>(), OK, GetParam().mode);
   std::string actual_output;
   int rv = ReadStream(&actual_output);
   EXPECT_EQ(static_cast<int>(strlen(kDecompressedData)), rv);
   EXPECT_EQ(kDecompressedData, actual_output);
   EXPECT_EQ("GZIP", stream()->Description());
+  EXPECT_TRUE(GZipHeader::HasGZipHeader(base::as_byte_span(kGzipData)));
 }
 
 // Test with the same compressed data as the above tests, but uses deflate with
 // header and checksum. Tests the Z_STREAM_END case in
 // STATE_SNIFFING_DEFLATE_HEADER.
 TEST_P(GzipSourceStreamTest, DeflateWithAdler32) {
-  Init(SourceStream::TYPE_DEFLATE);
+  Init(SourceStreamType::kDeflate);
   const char kDecompressedData[] = "Hello, World!";
-  const unsigned char kGzipData[] = {0x78, 0x01, 0xf3, 0x48, 0xcd, 0xc9, 0xc9,
-                                     0xd7, 0x51, 0x08, 0xcf, 0x2f, 0xca, 0x49,
-                                     0x51, 0x04, 0x00, 0x1f, 0x9e, 0x04, 0x6a};
-  source()->AddReadResult(reinterpret_cast<const char*>(kGzipData),
-                          sizeof(kGzipData), OK, GetParam().mode);
-  source()->AddReadResult(nullptr, 0, OK, GetParam().mode);
+  const uint8_t kGzipData[] = {0x78, 0x01, 0xf3, 0x48, 0xcd, 0xc9, 0xc9,
+                               0xd7, 0x51, 0x08, 0xcf, 0x2f, 0xca, 0x49,
+                               0x51, 0x04, 0x00, 0x1f, 0x9e, 0x04, 0x6a};
+  source()->AddReadResult(kGzipData, OK, GetParam().mode);
+  source()->AddReadResult(base::span<uint8_t>(), OK, GetParam().mode);
   std::string actual_output;
   int rv = ReadStream(&actual_output);
   EXPECT_EQ(static_cast<int>(strlen(kDecompressedData)), rv);
   EXPECT_EQ(kDecompressedData, actual_output);
   EXPECT_EQ("DEFLATE", stream()->Description());
+  EXPECT_FALSE(GZipHeader::HasGZipHeader(base::as_byte_span(kGzipData)));
 }
 
 TEST_P(GzipSourceStreamTest, DeflateWithBadAdler32) {
-  Init(SourceStream::TYPE_DEFLATE);
-  const unsigned char kGzipData[] = {0x78, 0x01, 0xf3, 0x48, 0xcd, 0xc9, 0xc9,
-                                     0xd7, 0x51, 0x08, 0xcf, 0x2f, 0xca, 0x49,
-                                     0x51, 0x04, 0x00, 0xFF, 0xFF, 0xFF, 0xFF};
-  source()->AddReadResult(reinterpret_cast<const char*>(kGzipData),
-                          sizeof(kGzipData), OK, GetParam().mode);
+  Init(SourceStreamType::kDeflate);
+  const uint8_t kGzipData[] = {0x78, 0x01, 0xf3, 0x48, 0xcd, 0xc9, 0xc9,
+                               0xd7, 0x51, 0x08, 0xcf, 0x2f, 0xca, 0x49,
+                               0x51, 0x04, 0x00, 0xFF, 0xFF, 0xFF, 0xFF};
+  source()->AddReadResult(kGzipData, OK, GetParam().mode);
   std::string actual_output;
   int rv = ReadStream(&actual_output);
   EXPECT_EQ(ERR_CONTENT_DECODING_FAILED, rv);
   EXPECT_EQ("DEFLATE", stream()->Description());
+  EXPECT_FALSE(GZipHeader::HasGZipHeader(base::as_byte_span(kGzipData)));
 }
 
 TEST_P(GzipSourceStreamTest, DeflateWithoutHeaderWithAdler32) {
-  Init(SourceStream::TYPE_DEFLATE);
+  Init(SourceStreamType::kDeflate);
   const char kDecompressedData[] = "Hello, World!";
-  const unsigned char kGzipData[] = {0xf3, 0x48, 0xcd, 0xc9, 0xc9, 0xd7, 0x51,
-                                     0x08, 0xcf, 0x2f, 0xca, 0x49, 0x51, 0x04,
-                                     0x00, 0x1f, 0x9e, 0x04, 0x6a};
-  source()->AddReadResult(reinterpret_cast<const char*>(kGzipData),
-                          sizeof(kGzipData), OK, GetParam().mode);
-  source()->AddReadResult(nullptr, 0, OK, GetParam().mode);
+  const uint8_t kGzipData[] = {0xf3, 0x48, 0xcd, 0xc9, 0xc9, 0xd7, 0x51,
+                               0x08, 0xcf, 0x2f, 0xca, 0x49, 0x51, 0x04,
+                               0x00, 0x1f, 0x9e, 0x04, 0x6a};
+  source()->AddReadResult(kGzipData, OK, GetParam().mode);
+  source()->AddReadResult(base::span<uint8_t>(), OK, GetParam().mode);
   std::string actual_output;
   int rv = ReadStream(&actual_output);
   EXPECT_EQ(static_cast<int>(strlen(kDecompressedData)), rv);
   EXPECT_EQ(kDecompressedData, actual_output);
   EXPECT_EQ("DEFLATE", stream()->Description());
+  EXPECT_FALSE(GZipHeader::HasGZipHeader(base::as_byte_span(kGzipData)));
 }
 
 TEST_P(GzipSourceStreamTest, DeflateWithoutHeaderWithBadAdler32) {
-  Init(SourceStream::TYPE_DEFLATE);
-  const unsigned char kGzipData[] = {0xf3, 0x48, 0xcd, 0xc9, 0xc9, 0xd7, 0x51,
-                                     0x08, 0xcf, 0x2f, 0xca, 0x49, 0x51, 0x04,
-                                     0x00, 0xFF, 0xFF, 0xFF, 0xFF};
-  source()->AddReadResult(reinterpret_cast<const char*>(kGzipData),
-                          sizeof(kGzipData), OK, GetParam().mode);
+  Init(SourceStreamType::kDeflate);
+  const uint8_t kGzipData[] = {0xf3, 0x48, 0xcd, 0xc9, 0xc9, 0xd7, 0x51,
+                               0x08, 0xcf, 0x2f, 0xca, 0x49, 0x51, 0x04,
+                               0x00, 0xFF, 0xFF, 0xFF, 0xFF};
+  source()->AddReadResult(kGzipData, OK, GetParam().mode);
   std::string actual_output;
   int rv = ReadStream(&actual_output);
   EXPECT_EQ(ERR_CONTENT_DECODING_FAILED, rv);
   EXPECT_EQ("DEFLATE", stream()->Description());
+  EXPECT_FALSE(GZipHeader::HasGZipHeader(base::as_byte_span(kGzipData)));
 }
 
 }  // namespace net

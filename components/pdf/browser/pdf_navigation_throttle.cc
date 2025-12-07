@@ -55,15 +55,21 @@ PdfNavigationThrottle::WillProcessResponse() {
     return PROCEED;
   }
 
-  stream_delegate_->OnPdfEmbedderSandboxed(
-      navigation_handle()->GetFrameTreeNodeId());
+  // If there is a PDF stream, then the navigation is for a PDF in a sandboxed
+  // iframe and should be canceled. Otherwise, the navigation is for PDFs that
+  // are not meant to be viewed inline (e.g. downloads) and should be allowed to
+  // proceed.
+  if (!stream_delegate_->MaybeDeleteSandboxedStream(
+          navigation_handle()->GetFrameTreeNodeId())) {
+    return PROCEED;
+  }
   return ThrottleCheckResult(CANCEL, net::ERR_BLOCKED_BY_CLIENT);
 }
 
 PdfNavigationThrottle::PdfNavigationThrottle(
-    content::NavigationHandle* navigation_handle,
+    content::NavigationThrottleRegistry& registry,
     std::unique_ptr<PdfStreamDelegate> stream_delegate)
-    : content::NavigationThrottle(navigation_handle),
+    : content::NavigationThrottle(registry),
       stream_delegate_(std::move(stream_delegate)) {
   DCHECK(stream_delegate_);
 }
@@ -79,10 +85,13 @@ PdfNavigationThrottle::WillStartRequest() {
   // Intercepts navigations to a PDF stream URL in a PDF content frame and
   // re-navigates to the original PDF URL.
 
-  // Skip main frame navigations, as the main frame should never be navigating
-  // to the stream URL.
+  // The main frame may contain the PDF extension for non-PdfOopif cases; it
+  // should never be navigated away from the extension.
   if (navigation_handle()->IsInMainFrame()) {
-    return PROCEED;
+    return stream_delegate_->ShouldAllowPdfExtensionFrameNavigation(
+               navigation_handle())
+               ? PROCEED
+               : BLOCK_REQUEST;
   }
 
   // Skip unless navigating to the stream URL.
@@ -144,7 +153,9 @@ PdfNavigationThrottle::WillStartRequest() {
           [](content::GlobalRenderFrameHostId frame_id,
              const content::OpenURLParams& params) {
             auto* embedder_frame = content::RenderFrameHost::FromID(frame_id);
-            if (!embedder_frame) {
+            if (!embedder_frame || embedder_frame->IsInLifecycleState(
+                                       content::RenderFrameHost::
+                                           LifecycleState::kPendingDeletion)) {
               return;
             }
 
@@ -156,10 +167,8 @@ PdfNavigationThrottle::WillStartRequest() {
             // `MimeHandlerViewGuest` navigates its embedder for calls to
             // `WebContents::OpenURL()`, so use `LoadURLWithParams()` directly
             // instead.
-            content::WebContents::FromRenderFrameHost(embedder_frame)
-                ->GetController()
-                .LoadURLWithParams(
-                    content::NavigationController::LoadURLParams(new_params));
+            embedder_frame->GetController().LoadURLWithParams(
+                content::NavigationController::LoadURLParams(new_params));
 
             // Note that we don't need to register the stream's URL loader as a
             // subresource, as `MimeHandlerViewGuest::ReadyToCommitNavigation()`

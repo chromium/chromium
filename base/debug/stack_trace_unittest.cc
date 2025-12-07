@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/allocator/buildflags.h"
-#include "base/containers/span.h"
+#include "base/containers/contains.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/immediate_crash.h"
 #include "base/logging.h"
@@ -23,6 +23,7 @@
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "partition_alloc/partition_alloc.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
@@ -33,8 +34,7 @@
 #include "base/test/multiprocess_test.h"
 #endif
 
-namespace base {
-namespace debug {
+namespace base::debug {
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 typedef MultiProcessTest StackTraceTest;
@@ -71,10 +71,11 @@ TEST_F(StackTraceTest, OutputToStream) {
         // BUILDFLAG(IS_FUCHSIA))
 
   ASSERT_GT(addresses.size(), 5u) << "Too few frames found.";
-  ASSERT_TRUE(addresses[0]);
+  ASSERT_NE(nullptr, addresses[0]);
 
-  if (!StackTrace::WillSymbolizeToStreamForTesting())
+  if (!StackTrace::WillSymbolizeToStreamForTesting()) {
     return;
+  }
 
   // Check if the output has symbol initialization warning.  If it does, fail.
   ASSERT_EQ(backtrace_message.find("Dumping unresolved backtrace"),
@@ -173,40 +174,27 @@ namespace {
 // In an actual implementation, this could cause infinite recursion into the
 // signal handler or other problems. Because malloc() is not guaranteed to be
 // async signal safe.
-void* BadMalloc(const allocator_shim::AllocatorDispatch*, size_t, void*) {
+void* BadMalloc(size_t, void*) {
   base::ImmediateCrash();
 }
 
-void* BadCalloc(const allocator_shim::AllocatorDispatch*,
-                size_t,
-                size_t,
-                void* context) {
+void* BadCalloc(size_t, size_t, void* context) {
   base::ImmediateCrash();
 }
 
-void* BadAlignedAlloc(const allocator_shim::AllocatorDispatch*,
-                      size_t,
-                      size_t,
-                      void*) {
+void* BadAlignedAlloc(size_t, size_t, void*) {
   base::ImmediateCrash();
 }
 
-void* BadAlignedRealloc(const allocator_shim::AllocatorDispatch*,
-                        void*,
-                        size_t,
-                        size_t,
-                        void*) {
+void* BadAlignedRealloc(void*, size_t, size_t, void*) {
   base::ImmediateCrash();
 }
 
-void* BadRealloc(const allocator_shim::AllocatorDispatch*,
-                 void*,
-                 size_t,
-                 void*) {
+void* BadRealloc(void*, size_t, void*) {
   base::ImmediateCrash();
 }
 
-void BadFree(const allocator_shim::AllocatorDispatch*, void*, void*) {
+void BadFree(void*, void*) {
   base::ImmediateCrash();
 }
 
@@ -214,16 +202,19 @@ allocator_shim::AllocatorDispatch g_bad_malloc_dispatch = {
     &BadMalloc,         /* alloc_function */
     &BadMalloc,         /* alloc_unchecked_function */
     &BadCalloc,         /* alloc_zero_initialized_function */
+    &BadCalloc,         /* alloc_zero_initialized_unchecked_function */
     &BadAlignedAlloc,   /* alloc_aligned_function */
     &BadRealloc,        /* realloc_function */
     &BadRealloc,        /* realloc_unchecked_function */
     &BadFree,           /* free_function */
+    nullptr,            /* free_with_size_function */
+    nullptr,            /* free_with_alignment_function */
+    nullptr,            /* free_with_size_and_alignment_function */
     nullptr,            /* get_size_estimate_function */
     nullptr,            /* good_size_function */
     nullptr,            /* claimed_address_function */
     nullptr,            /* batch_malloc_function */
     nullptr,            /* batch_free_function */
-    nullptr,            /* free_definite_size_function */
     nullptr,            /* try_free_default_function */
     &BadAlignedAlloc,   /* aligned_malloc_function */
     &BadAlignedAlloc,   /* aligned_malloc_unchecked_function */
@@ -256,12 +247,16 @@ TEST_F(StackTraceDeathTest, StackDumpSignalHandlerIsMallocFree) {
 namespace {
 
 std::string itoa_r_wrapper(intptr_t i, size_t sz, int base, size_t padding) {
-  char buffer[1024];
-  CHECK_LE(sz, sizeof(buffer));
-
-  char* result = internal::itoa_r(i, buffer, sz, base, padding);
-  EXPECT_TRUE(result);
-  return std::string(buffer);
+  std::array<char, 1024> buffer;
+  internal::itoa_r(i, base, padding, base::span(buffer).first(sz));
+  EXPECT_NE(buffer[0], '\0');
+  for (char c : buffer) {
+    if (c == '\0') {
+      return std::string(buffer.data());
+    }
+  }
+  ADD_FAILURE() << "buffer is not NUL terminated";
+  return std::string("");
 }
 
 }  // namespace
@@ -303,14 +298,21 @@ TEST_F(StackTraceTest, itoa_r) {
   EXPECT_EQ("deadbeef", itoa_r_wrapper(0xdeadbeef, 128, 16, 0));
 
   // Check that itoa_r respects passed buffer size limit.
-  char buffer[1024];
-  EXPECT_TRUE(internal::itoa_r(0xdeadbeef, buffer, 10, 16, 0));
-  EXPECT_TRUE(internal::itoa_r(0xdeadbeef, buffer, 9, 16, 0));
-  EXPECT_FALSE(internal::itoa_r(0xdeadbeef, buffer, 8, 16, 0));
-  EXPECT_FALSE(internal::itoa_r(0xdeadbeef, buffer, 7, 16, 0));
-  EXPECT_TRUE(internal::itoa_r(0xbeef, buffer, 5, 16, 4));
-  EXPECT_FALSE(internal::itoa_r(0xbeef, buffer, 5, 16, 5));
-  EXPECT_FALSE(internal::itoa_r(0xbeef, buffer, 5, 16, 6));
+  std::array<char, 1024> buffer;
+  internal::itoa_r(0xdeadbeef, 16, 0, base::span(buffer).first(10u));
+  EXPECT_NE(buffer[0u], '\0');
+  internal::itoa_r(0xdeadbeef, 16, 0, base::span(buffer).first(9u));
+  EXPECT_NE(buffer[0u], '\0');
+  internal::itoa_r(0xdeadbeef, 16, 0, base::span(buffer).first(8u));
+  EXPECT_EQ(buffer[0u], '\0');
+  internal::itoa_r(0xdeadbeef, 16, 0, base::span(buffer).first(7u));
+  EXPECT_EQ(buffer[0u], '\0');
+  internal::itoa_r(0xbeef, 16, 4, base::span(buffer).first(5u));
+  EXPECT_NE(buffer[0u], '\0');
+  internal::itoa_r(0xbeef, 16, 5, base::span(buffer).first(5u));
+  EXPECT_EQ(buffer[0u], '\0');
+  internal::itoa_r(0xbeef, 16, 6, base::span(buffer).first(5u));
+  EXPECT_EQ(buffer[0u], '\0');
 
   // Test padding.
   EXPECT_EQ("1", itoa_r_wrapper(1, 128, 10, 0));
@@ -398,10 +400,12 @@ TEST_F(StackTraceTest, MAYBE_StackEnd) {
 
 #if !defined(ADDRESS_SANITIZER) && !defined(UNDEFINED_SANITIZER)
 
-#if !defined(ARCH_CPU_ARM_FAMILY)
+#if defined(ARCH_CPU_X86_FAMILY)
+// Division by zero raising SIGFPE is mostly a x86 specific thing.
 // On Arm architecture invalid math operations such as division by zero are not
 // trapped and do not trigger a SIGFPE.
-// Hence disable the test for Arm platforms.
+// On RISC-V architecture, division by zero does not trigger SIGFPE.
+// Hence enable the test only for x86 platform
 TEST(CheckExitCodeAfterSignalHandlerDeathTest, CheckSIGFPE) {
   // Values are volatile to prevent reordering of instructions, i.e. for
   // optimization. Reordering may lead to tests erroneously failing due to
@@ -413,7 +417,7 @@ TEST(CheckExitCodeAfterSignalHandlerDeathTest, CheckSIGFPE) {
   EXPECT_EXIT(result = nominator / denominator,
               ::testing::KilledBySignal(SIGFPE), "");
 }
-#endif  // !defined(ARCH_CPU_ARM_FAMILY)
+#endif  // defined(ARCH_CPU_X86_FAMILY)
 
 TEST(CheckExitCodeAfterSignalHandlerDeathTest, CheckSIGSEGV) {
   // Pointee and pointer are volatile to prevent reordering of instructions,
@@ -443,11 +447,13 @@ TEST(CheckExitCodeAfterSignalHandlerDeathTest,
 #endif  // #if !defined(ADDRESS_SANITIZER) && !defined(UNDEFINED_SANITIZER)
 
 TEST(CheckExitCodeAfterSignalHandlerDeathTest, CheckSIGILL) {
-  auto const raise_sigill = []() {
+  auto const raise_sigill = [] {
 #if defined(ARCH_CPU_X86_FAMILY)
     asm("ud2");
 #elif defined(ARCH_CPU_ARM_FAMILY)
     asm("udf 0");
+#elif defined(ARCH_CPU_RISCV_FAMILY)
+    asm("unimp");
 #else
 #error Unsupported platform!
 #endif
@@ -458,5 +464,26 @@ TEST(CheckExitCodeAfterSignalHandlerDeathTest, CheckSIGILL) {
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
 
-}  // namespace debug
-}  // namespace base
+#if BUILDFLAG(IS_WIN)
+TEST(StackTraceTest, EnabledStackTraces) {
+  // This is slightly pointless as this is also enabled by the test harness, but
+  // it ensures we are exercising the InProcessStackDumpingEnabled() path.
+  EXPECT_TRUE(base::debug::EnableInProcessStackDumping());
+  EXPECT_TRUE(base::debug::InProcessStackDumpingEnabled());
+}
+
+TEST(StackTraceTest, UnsymbolizedStackTraces) {
+  EXPECT_TRUE(base::debug::DisableInProcessStackDumpingForTesting());
+  EXPECT_FALSE(base::debug::InProcessStackDumpingEnabled());
+
+  StackTrace trace;
+  auto as_string = trace.ToString();
+  EXPECT_THAT(as_string,
+              ::testing::ContainsRegex("Dumping unresolved backtrace"));
+
+  // Restore global state.
+  EXPECT_TRUE(base::debug::EnableInProcessStackDumping());
+}
+#endif  // BUILDFLAG(IS_WIN)
+
+}  // namespace base::debug

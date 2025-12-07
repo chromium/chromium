@@ -7,37 +7,48 @@ package org.chromium.chrome.browser.privacy_sandbox;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.favicon.LargeIconBridge;
 
 import java.util.List;
 
 /** Fragment for the blocked Fledge sites. */
+@NullMarked
 public class FledgeBlockedSitesFragment extends PrivacySandboxSettingsBaseFragment
         implements Preference.OnPreferenceClickListener {
     private static final String BLOCKED_SITES_PREFERENCE = "block_list";
 
     private PreferenceCategory mBlockedSitesCategory;
-    private LargeIconBridge mLargeIconBridge;
+    private @Nullable LargeIconBridge mLargeIconBridge;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         super.onCreatePreferences(bundle, s);
-        getActivity().setTitle(R.string.settings_fledge_page_blocked_sites_sub_page_title);
+        mPageTitle.set(getString(R.string.settings_fledge_page_blocked_sites_sub_page_title));
         SettingsUtils.addPreferencesFromResource(this, R.xml.block_list_preference);
 
         mBlockedSitesCategory = findPreference(BLOCKED_SITES_PREFERENCE);
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         // Disable animations of preference changes
@@ -45,8 +56,8 @@ public class FledgeBlockedSitesFragment extends PrivacySandboxSettingsBaseFragme
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         populateSites();
         updateBlockedSitesDescription();
     }
@@ -61,7 +72,7 @@ public class FledgeBlockedSitesFragment extends PrivacySandboxSettingsBaseFragme
     }
 
     @Override
-    public boolean onPreferenceClick(@NonNull Preference preference) {
+    public boolean onPreferenceClick(Preference preference) {
         if (preference instanceof FledgePreference) {
             getPrivacySandboxBridge()
                     .setFledgeJoiningAllowed(((FledgePreference) preference).getSite(), true);
@@ -109,4 +120,13 @@ public class FledgeBlockedSitesFragment extends PrivacySandboxSettingsBaseFragme
                         ? R.string.settings_fledge_page_blocked_sites_description_empty
                         : R.string.settings_fledge_page_blocked_sites_description);
     }
+
+    @Override
+    public @SettingsFragment.AnimationType int getAnimationType() {
+        return SettingsFragment.AnimationType.PROPERTY;
+    }
+
+    public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new ChromeBaseSearchIndexProvider(
+                    FledgeBlockedSitesFragment.class.getName(), R.xml.block_list_preference);
 }

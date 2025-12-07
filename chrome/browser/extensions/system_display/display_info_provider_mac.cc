@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/system_display/display_info_provider_mac.h"
 
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "chrome/browser/extensions/system_display/display_info_provider.h"
 
 namespace extensions {

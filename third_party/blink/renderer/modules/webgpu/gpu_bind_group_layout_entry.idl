@@ -3,6 +3,7 @@
 dictionary GPUBindGroupLayoutEntry {
     required GPUIndex32 binding;
     required GPUShaderStageFlags visibility;
+    [RuntimeEnabled=WebGPUExperimentalFeatures] GPUSize32 bindingArraySize = 1;
 
     GPUBufferBindingLayout buffer;
     GPUSamplerBindingLayout sampler;

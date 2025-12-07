@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
-import("//build/config/locales.gni")
 import("//tools/grit/grit_rule.gni")
 import("current_version/current_version.gni")
 import("generate_manifest_for_upload_outputs.gni")
@@ -28,7 +27,7 @@ mustache_pass("generate_chromeos_manifest_for_upload") {
       get_path_info(generate_chromeos_manifest_for_upload_output, "dir")
   extra_variables = [
     "shell_apk_version=$current_shell_apk_version",
-    "use_new_splash=false",
+    "is_arc_chromeos=true",
   ]
 }
 
@@ -37,7 +36,7 @@ mustache_pass("generate_manifest_for_upload") {
   output_dir = get_path_info(generate_manifest_for_upload_output, "dir")
   extra_variables = [
     "shell_apk_version=$current_shell_apk_version",
-    "use_new_splash=true",
+    "is_arc_chromeos=false",
   ]
 }
 
@@ -53,7 +52,6 @@ template("webapk_java") {
                            ])
 
     sources = [
-      "src/org/chromium/webapk/shell_apk/ChooseHostBrowserDialog.java",
       "src/org/chromium/webapk/shell_apk/DexLoader.java",
       "src/org/chromium/webapk/shell_apk/HostBrowserClassLoader.java",
       "src/org/chromium/webapk/shell_apk/HostBrowserLauncher.java",
@@ -198,7 +196,6 @@ template("webapk_tmpl") {
       "res/drawable-xxxhdpi/splash_icon.xml",
       "res/layout-night-v31/splash_screen_view.xml",
       "res/layout-v31/splash_screen_view.xml",
-      "res/layout/choose_host_browser_dialog.xml",
       "res/layout/host_browser_list_item.xml",
       "res/mipmap-anydpi-v26/ic_launcher.xml",
       "res/mipmap-hdpi/ic_launcher.xml",
@@ -228,14 +225,12 @@ template("webapk_tmpl") {
       "res/values-night-v31/dimens.xml",
       "res/values-night-v31/styles.xml",
       "res/values-v17/styles.xml",
-      "res/values-v24/default_enabled_activity.xml",
       "res/values-v31/dimens.xml",
       "res/values-v31/styles.xml",
       "res/values-xhdpi/is_splash_icon_maskable_bool.xml",
       "res/values-xxhdpi/is_splash_icon_maskable_bool.xml",
       "res/values-xxxhdpi/is_splash_icon_maskable_bool.xml",
       "res/values/colors.xml",
-      "res/values/default_enabled_activity.xml",
       "res/values/dimens.xml",
       "res/xml/shortcuts.xml",
     ]
@@ -288,11 +283,6 @@ template("webapk_tmpl") {
 
 java_strings_grd("webapk_strings_grd") {
   grd_file = "//chrome/android/webapk/strings/android_webapk_strings.grd"
-
-  outputs = [ "values/android_webapk_strings.xml" ] +
-            process_file_template(
-                android_bundle_locales_as_resources,
-                [ "values-{{source_name_part}}/android_webapk_strings.xml" ])
 }
 
 # Template for WebAPK. When a WebAPK is generated:
@@ -382,6 +372,7 @@ robolectric_binary("webapk_shell_apk_junit_tests") {
     "//chrome/android/webapk/test:junit_test_support",
     "//components/webapk/android/libs/common:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_core_java",
   ]
 }
 
@@ -401,6 +392,7 @@ robolectric_binary("webapk_shell_apk_h2o_junit_tests") {
     "//chrome/android/webapk/libs/common:common_java",
     "//chrome/android/webapk/test:junit_test_support",
     "//components/webapk/android/libs/common:java",
+    "//third_party/androidx:androidx_test_core_java",
   ]
   data_deps = [ ":${h2o_junit_manifest_target_name}" ]
 }

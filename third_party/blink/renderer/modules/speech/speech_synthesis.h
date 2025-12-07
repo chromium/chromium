@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SPEECH_SPEECH_SYNTHESIS_H_
 
 #include "third_party/blink/public/mojom/speech/speech_synthesis.mojom-blink-forward.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_speech_synthesis_error_code.h"
 #include "third_party/blink/renderer/core/speech/speech_synthesis_base.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -37,7 +38,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -46,13 +46,10 @@ class LocalDOMWindow;
 class MODULES_EXPORT SpeechSynthesis final
     : public EventTarget,
       public SpeechSynthesisBase,
-      public Supplement<LocalDOMWindow>,
       public mojom::blink::SpeechSynthesisVoiceListObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
-
   static SpeechSynthesisBase* Create(LocalDOMWindow&);
   static SpeechSynthesis* speechSynthesis(LocalDOMWindow&);
   static void CreateForTesting(
@@ -122,7 +119,7 @@ class MODULES_EXPORT SpeechSynthesis final
 
   void FireErrorEvent(SpeechSynthesisUtterance*,
                       uint32_t char_index,
-                      const String& error);
+                      V8SpeechSynthesisErrorCode::Enum error);
 
   // Returns the utterance at the front of the queue.
   SpeechSynthesisUtterance* CurrentSpeechUtterance() const;
@@ -133,12 +130,11 @@ class MODULES_EXPORT SpeechSynthesis final
 
   bool IsAllowedToStartByAutoplay() const;
 
-  void RecordVoicesForIdentifiability() const;
-
   void SetMojomSynthesisForTesting(
       mojo::PendingRemote<mojom::blink::SpeechSynthesis>);
   mojom::blink::SpeechSynthesis* TryEnsureMojomSynthesis();
 
+  Member<LocalDOMWindow> local_dom_window_;
   HeapMojoReceiver<mojom::blink::SpeechSynthesisVoiceListObserver,
                    SpeechSynthesis>
       receiver_;

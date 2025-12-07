@@ -2,19 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/gles2_cmd_copy_texture_chromium.h"
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <unordered_map>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/gles2_cmd_copy_texture_chromium_utils.h"
 #include "gpu/command_buffer/service/context_state.h"
@@ -33,7 +29,7 @@ namespace {
 
 enum {
   SAMPLER_2D,
-  SAMPLER_RECTANGLE_ARB,
+  SAMPLER_RECTANGLE_ANGLE,
   SAMPLER_EXTERNAL_OES,
   NUM_SAMPLERS
 };
@@ -132,15 +128,14 @@ ShaderId GetFragmentShaderId(unsigned glslVersion,
     case GL_TEXTURE_2D:
       targetIndex = SAMPLER_2D;
       break;
-    case GL_TEXTURE_RECTANGLE_ARB:
-      targetIndex = SAMPLER_RECTANGLE_ARB;
+    case GL_TEXTURE_RECTANGLE_ANGLE:
+      targetIndex = SAMPLER_RECTANGLE_ANGLE;
       break;
     case GL_TEXTURE_EXTERNAL_OES:
       targetIndex = SAMPLER_EXTERNAL_OES;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   switch (source_format) {
@@ -190,9 +185,8 @@ ShaderId GetFragmentShaderId(unsigned glslVersion,
       sourceFormatIndex = S_FORMAT_RGB10_A2;
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid source format "
-                                << gl::GLEnums::GetStringEnum(source_format);
-      break;
+      NOTREACHED() << "Invalid source format "
+                   << gl::GLEnums::GetStringEnum(source_format);
   }
 
   switch (dest_format) {
@@ -287,9 +281,8 @@ ShaderId GetFragmentShaderId(unsigned glslVersion,
       destFormatIndex = D_FORMAT_RGB10_A2;
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid destination format "
-                                << gl::GLEnums::GetStringEnum(dest_format);
-      break;
+      NOTREACHED() << "Invalid destination format "
+                   << gl::GLEnums::GetStringEnum(dest_format);
   }
 
   ShaderId id = 0;
@@ -417,12 +410,11 @@ std::string GetFragmentShaderSource(unsigned glslVersion,
       case GL_TEXTURE_EXTERNAL_OES:
         source += "#define TextureLookup texture2D\n";
         break;
-      case GL_TEXTURE_RECTANGLE_ARB:
+      case GL_TEXTURE_RECTANGLE_ANGLE:
         source += "#define TextureLookup texture2DRect\n";
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   } else {
     source +=
@@ -437,15 +429,14 @@ std::string GetFragmentShaderSource(unsigned glslVersion,
     case GL_TEXTURE_2D:
       source += "#define SamplerType sampler2D\n";
       break;
-    case GL_TEXTURE_RECTANGLE_ARB:
+    case GL_TEXTURE_RECTANGLE_ANGLE:
       source += "#define SamplerType sampler2DRect\n";
       break;
     case GL_TEXTURE_EXTERNAL_OES:
       source += "#define SamplerType samplerExternalOES\n";
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   // Main shader source.
@@ -508,7 +499,7 @@ bool BindFramebufferTexture2D(GLenum target,
       gpu::gles2::GLES2Util::GLFaceTargetToTextureTarget(target);
 
   DCHECK(binding_target == GL_TEXTURE_2D ||
-         binding_target == GL_TEXTURE_RECTANGLE_ARB ||
+         binding_target == GL_TEXTURE_RECTANGLE_ANGLE ||
          binding_target == GL_TEXTURE_CUBE_MAP);
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(binding_target, texture_id);
@@ -520,7 +511,7 @@ bool BindFramebufferTexture2D(GLenum target,
   glTexParameterf(binding_target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glTexParameteri(binding_target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri(binding_target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, framebuffer);
+  glBindFramebufferEXT(GL_FRAMEBUFFER, framebuffer);
   glFramebufferTexture2DEXT(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, target,
                             texture_id, level);
 
@@ -606,7 +597,7 @@ void DoCopyTexSubImage2D(
     GLuint framebuffer,
     gpu::gles2::CopyTexImageResourceManager* luma_emulation_blitter) {
   DCHECK(source_target == GL_TEXTURE_2D ||
-         source_target == GL_TEXTURE_RECTANGLE_ARB);
+         source_target == GL_TEXTURE_RECTANGLE_ANGLE);
   GLenum dest_binding_target =
       gpu::gles2::GLES2Util::GLFaceTargetToTextureTarget(dest_target);
   DCHECK(dest_binding_target == GL_TEXTURE_2D ||
@@ -651,10 +642,10 @@ void convertToRGB(const uint8_t* source,
                   unsigned length) {
   for (unsigned i = 0; i < length; ++i) {
     destination[0] = source[0];
-    destination[1] = source[1];
-    destination[2] = source[2];
-    source += 4;
-    destination += 3;
+    UNSAFE_TODO(destination[1]) = UNSAFE_TODO(source[1]);
+    UNSAFE_TODO(destination[2]) = UNSAFE_TODO(source[2]);
+    UNSAFE_TODO(source += 4);
+    UNSAFE_TODO(destination += 3);
   }
 }
 
@@ -665,10 +656,10 @@ void convertToRGBFloat(const uint8_t* source,
   const float scaleFactor = 1.0f / 255.0f;
   for (unsigned i = 0; i < length; ++i) {
     destination[0] = source[0] * scaleFactor;
-    destination[1] = source[1] * scaleFactor;
-    destination[2] = source[2] * scaleFactor;
-    source += 4;
-    destination += 3;
+    UNSAFE_TODO(destination[1]) = UNSAFE_TODO(source[1]) * scaleFactor;
+    UNSAFE_TODO(destination[2]) = UNSAFE_TODO(source[2]) * scaleFactor;
+    UNSAFE_TODO(source += 4);
+    UNSAFE_TODO(destination += 3);
   }
 }
 
@@ -711,7 +702,7 @@ void PrepareUnpackBuffer(GLuint buffer[2],
     bytes_per_group =
         gpu::gles2::GLES2Util::ComputeImageGroupSize(format, type);
     buf_size = pixel_num * bytes_per_group;
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, buffer[1]);
+    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, UNSAFE_TODO(buffer[1]));
     glBufferData(GL_PIXEL_UNPACK_BUFFER, buf_size, data.data(), GL_STATIC_DRAW);
 #else
     glBindBuffer(GL_PIXEL_PACK_BUFFER, buffer[0]);
@@ -720,7 +711,7 @@ void PrepareUnpackBuffer(GLuint buffer[2],
     void* pixels =
         glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, buf_size, GL_MAP_READ_BIT);
 
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, buffer[1]);
+    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, UNSAFE_TODO(buffer[1]));
     bytes_per_group =
         gpu::gles2::GLES2Util::ComputeImageGroupSize(format, type);
     buf_size = pixel_num * bytes_per_group;
@@ -748,7 +739,7 @@ void PrepareUnpackBuffer(GLuint buffer[2],
     return;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 enum TexImageCommandType {
@@ -800,8 +791,7 @@ void DoReadbackAndTexImage(TexImageCommandType command_type,
       case GL_SRGB8_ALPHA8:
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
 
     // TODO(qiankun.miao@intel.com): PIXEL_PACK_BUFFER and PIXEL_UNPACK_BUFFER
@@ -1010,8 +1000,8 @@ void CopyTextureResourceManagerImpl::Destroy() {
   glDeleteFramebuffersEXT(1, &framebuffer_);
   framebuffer_ = 0;
 
-  base::ranges::for_each(vertex_shaders_, DeleteShader);
-  base::ranges::for_each(fragment_shaders_, DeleteShader);
+  std::ranges::for_each(vertex_shaders_, DeleteShader);
+  std::ranges::for_each(fragment_shaders_, DeleteShader);
 
   for (ProgramMap::const_iterator it = programs_.begin(); it != programs_.end();
        ++it) {
@@ -1218,10 +1208,10 @@ void CopyTextureResourceManagerImpl::DoCopyTextureInternal(
     bool unpremultiply_alpha,
     gpu::gles2::CopyTexImageResourceManager* luma_emulation_blitter) {
   DCHECK(source_target == GL_TEXTURE_2D ||
-         source_target == GL_TEXTURE_RECTANGLE_ARB ||
+         source_target == GL_TEXTURE_RECTANGLE_ANGLE ||
          source_target == GL_TEXTURE_EXTERNAL_OES);
   DCHECK(dest_target == GL_TEXTURE_2D ||
-         dest_target == GL_TEXTURE_RECTANGLE_ARB ||
+         dest_target == GL_TEXTURE_RECTANGLE_ANGLE ||
          (dest_target >= GL_TEXTURE_CUBE_MAP_POSITIVE_X &&
           dest_target <= GL_TEXTURE_CUBE_MAP_NEGATIVE_Z));
   DCHECK_GE(source_level, 0);
@@ -1312,7 +1302,7 @@ void CopyTextureResourceManagerImpl::DoCopyTextureInternal(
   // The target subrange in the source texture has coordinates [x, x + width].
   // The full source texture has range [0, source_width]. We need to transform
   // the subrange into texture space ([0, M]), assuming that [0, source_width]
-  // gets mapped to [0, M]. If source_target == GL_TEXTURE_RECTANGLE_ARB, M =
+  // gets mapped to [0, M]. If source_target == GL_TEXTURE_RECTANGLE_ANGLE, M =
   // source_width. Otherwise, M = 1.
   //
   // We want to find A and B such that:
@@ -1341,8 +1331,8 @@ void CopyTextureResourceManagerImpl::DoCopyTextureInternal(
   //   A = (-w/2) * M / source_width
   //
   // So everything is the same but the sign of A is flipped.
-  GLfloat m_x = source_target == GL_TEXTURE_RECTANGLE_ARB ? source_width : 1;
-  GLfloat m_y = source_target == GL_TEXTURE_RECTANGLE_ARB ? source_height : 1;
+  GLfloat m_x = source_target == GL_TEXTURE_RECTANGLE_ANGLE ? source_width : 1;
+  GLfloat m_y = source_target == GL_TEXTURE_RECTANGLE_ANGLE ? source_height : 1;
   GLfloat sign_a = flip_y ? -1 : 1;
   glUniform2f(info->vertex_source_mult_handle, width / 2.f * m_x / source_width,
               height / 2.f * m_y / source_height * sign_a);

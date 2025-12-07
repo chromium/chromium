@@ -4,7 +4,6 @@
 
 package org.chromium.tools.errorprone.plugin;
 
-import com.google.auto.service.AutoService;
 import com.google.errorprone.BugPattern;
 import com.google.errorprone.VisitorState;
 import com.google.errorprone.bugpatterns.BugChecker;
@@ -13,8 +12,10 @@ import com.google.errorprone.matchers.Matcher;
 import com.google.errorprone.matchers.Matchers;
 import com.sun.source.tree.AnnotationTree;
 
+import org.chromium.build.annotations.ServiceImpl;
+
 /** Assert androidx.annotation.Nullable is used instead of javax.annotation.Nullable. */
-@AutoService(BugChecker.class)
+@ServiceImpl(BugChecker.class)
 @BugPattern(
         name = "AndroidNullableCheck",
         summary = "Use androidx.annotation.Nullable instead of javax.annotation.Nullable.",

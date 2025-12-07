@@ -8,15 +8,15 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/test/simple_test_clock.h"
-#import "base/test/task_environment.h"
-#import "components/optimization_guide/core/tab_url_provider.h"
+#import "components/optimization_guide/core/hints/tab_url_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -36,14 +36,13 @@ class TabUrlProviderImplTest : public PlatformTest {
   ~TabUrlProviderImplTest() override = default;
 
   void SetUp() override {
-    TestChromeBrowserState::Builder builder;
-    browser_state_ = std::move(builder).Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
-    other_browser_ = std::make_unique<TestBrowser>(browser_state_.get());
-    incognito_browser_ = std::make_unique<TestBrowser>(
-        browser_state_->GetOffTheRecordChromeBrowserState());
-    browser_list_ =
-        BrowserListFactory::GetForBrowserState(browser_state_.get());
+    TestProfileIOS::Builder builder;
+    profile_ = std::move(builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
+    other_browser_ = std::make_unique<TestBrowser>(profile_.get());
+    incognito_browser_ =
+        std::make_unique<TestBrowser>(profile_->GetOffTheRecordProfile());
+    browser_list_ = BrowserListFactory::GetForProfile(profile_.get());
     browser_list_->AddBrowser(browser_.get());
     browser_list_->AddBrowser(other_browser_.get());
     browser_list_->AddBrowser(incognito_browser_.get());
@@ -74,8 +73,8 @@ class TabUrlProviderImplTest : public PlatformTest {
   base::SimpleTestClock* clock() { return &clock_; }
 
  private:
-  base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<ProfileIOS> profile_;
   base::SimpleTestClock clock_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<TestBrowser> other_browser_;

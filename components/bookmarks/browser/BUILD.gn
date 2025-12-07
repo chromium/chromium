@@ -16,6 +16,7 @@ static_library("browser") {
     "bookmark_client.h",
     "bookmark_codec.h",
     "bookmark_model.h",
+    "bookmark_model_load_waiter.h",
     "bookmark_model_observer.h",
     "bookmark_node.h",
     "bookmark_node_data.h",
@@ -40,6 +41,7 @@ static_library("browser") {
     "bookmark_load_details.cc",
     "bookmark_load_details.h",
     "bookmark_model.cc",
+    "bookmark_model_load_waiter.cc",
     "bookmark_node.cc",
     "bookmark_node_data.cc",
     "bookmark_storage.cc",
@@ -63,9 +65,11 @@ static_library("browser") {
     "//base:i18n",
     "//components/favicon_base",
     "//components/keyed_service/core",
+    "//components/omnibox/common",
     "//components/pref_registry",
     "//components/prefs",
     "//components/query_parser",
+    "//components/signin/public/base",
     "//components/strings",
     "//components/sync/base:features",
     "//components/url_formatter",
@@ -121,6 +125,7 @@ bundle_data("unit_tests_bundle_data") {
   testonly = true
   sources = [
     "//components/test/data/bookmarks/meta_info_as_string.json",
+    "//components/test/data/bookmarks/model_nested_user_folders.json",
     "//components/test/data/bookmarks/model_with_duplicate_ids.json",
     "//components/test/data/bookmarks/model_with_sync_metadata_1.json",
     "//components/test/data/bookmarks/model_with_sync_metadata_2.json",
@@ -135,6 +140,7 @@ source_set("unit_tests") {
   sources = [
     "bookmark_codec_unittest.cc",
     "bookmark_load_details_unittest.cc",
+    "bookmark_model_load_waiter_unittest.cc",
     "bookmark_model_unittest.cc",
     "bookmark_storage_unittest.cc",
     "bookmark_utils_unittest.cc",
@@ -147,7 +153,6 @@ source_set("unit_tests") {
     ":browser",
     ":unit_tests_bundle_data",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/bookmarks/common",
     "//components/bookmarks/test",
     "//components/favicon_base",
@@ -155,6 +160,7 @@ source_set("unit_tests") {
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/query_parser",
+    "//components/signin/public/base",
     "//components/sync/base:features",
     "//testing/gtest",
     "//ui/base",
@@ -165,7 +171,6 @@ source_set("unit_tests") {
 
   if (toolkit_views) {
     sources += [ "bookmark_node_data_unittest.cc" ]
-    deps += [ "//build:chromeos_buildflags" ]
   }
 }
 

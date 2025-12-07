@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
@@ -70,9 +71,6 @@ struct SingleUsernameVoteData {
 
   // Predictions for the form which contains a field with |renderer_id|.
   FormPredictions form_predictions;
-
-  // Type of the value seen in the single username candidate field.
-  autofill::AutofillUploadContents::ValueType value_type;
 
   // Information about username edits in a save/update prompt. Not calculated on
   // Android, because it's not possible to edit credentials in prompts on
@@ -163,10 +161,11 @@ class VotesUploader {
 
   // Tries to set all votes (e.g. autofill field types, generation vote) to
   // a |FormStructure| and upload it to the server. Returns true on success.
-  bool UploadPasswordVote(const PasswordForm& form_to_upload,
-                          const PasswordForm& submitted_form,
-                          const autofill::FieldType password_type,
-                          const std::string& login_form_signature);
+  bool UploadPasswordVote(
+      const PasswordForm& form_to_upload,
+      const PasswordForm& submitted_form,
+      const autofill::FieldType password_type,
+      std::optional<autofill::FormSignature> login_form_signature);
 
   // Sends USERNAME and PASSWORD votes, when a credential is used to login for
   // the first time. |form_to_upload| is the submitted login form.
@@ -196,7 +195,8 @@ class VotesUploader {
   // field in |form_structure|.
   void SetInitialHashValueOfUsernameField(
       autofill::FieldRendererId username_element_renderer_id,
-      autofill::FormStructure* form_structure);
+      const autofill::FormStructure& form_structure,
+      autofill::EncodeUploadRequestOptions& options);
 
   // Sends single username vote if |single_username_vote_data_| or
   // |forgot_password_vote_data_| is set.
@@ -291,7 +291,8 @@ class VotesUploader {
   };
 
   // Adds a vote on password generation usage to |form_structure|.
-  void AddGeneratedVote(autofill::FormStructure* form_structure);
+  void AddGeneratedVote(autofill::FormStructure& form_structure,
+                        autofill::EncodeUploadRequestOptions& options);
 
   // Sets the known-value flag for each field, indicating that the field
   // contained a previously stored credential on submission.
@@ -309,8 +310,7 @@ class VotesUploader {
   // information that needs to be sent to the Autofill server.
   std::vector<autofill::AutofillUploadContents> EncodeUploadRequest(
       autofill::FormStructure& form,
-      const autofill::FieldTypeSet& available_field_types,
-      std::string_view login_form_signature,
+      const autofill::EncodeUploadRequestOptions& options,
       std::optional<PasswordAttributesMetadata> password_attributes,
       bool should_set_passwords_were_revealed);
 
@@ -318,8 +318,7 @@ class VotesUploader {
   // `true` if the vote is sent, `false` otherwise.
   bool SendUploadRequest(
       autofill::FormStructure& form_to_upload,
-      const autofill::FieldTypeSet& available_field_types,
-      const std::string& login_form_signature,
+      const autofill::EncodeUploadRequestOptions& options,
       std::optional<PasswordAttributesMetadata> password_attributes,
       bool should_set_passwords_were_revealed);
 
@@ -331,20 +330,11 @@ class VotesUploader {
   bool SetSingleUsernameVoteOnUsernameForm(
       autofill::AutofillField* field,
       const SingleUsernameVoteData& single_username,
-      autofill::FieldTypeSet* available_field_types,
+      autofill::EncodeUploadRequestOptions& options,
       autofill::FormSignature form_signature,
       autofill::IsMostRecentSingleUsernameCandidate
           is_most_recent_single_username_candidate,
       bool is_forgot_password_vote);
-
-  // On username first flow votes are uploaded both for the single username form
-  // and for the single password form. This method sets the data needed to
-  // upload vote on the password form. The vote is based on whether there was
-  // a username form that preceded the password form, and on the type of user
-  // input it had (e.g. email-like, phone-like, arbitrary string).
-  void SetSingleUsernameVoteOnPasswordForm(
-      const SingleUsernameVoteData& vote_data,
-      autofill::FormStructure& form_structure);
 
   // Returns whether `IN_FORM_OVERRULE` vote should be sent. `IN_FORM_OVERRULE`
   // signal can be either positive or negative. If positive (`autofill_type` is
@@ -386,7 +376,7 @@ class VotesUploader {
       bool is_forgot_password_vote);
 
   // The client which implements embedder-specific PasswordManager operations.
-  raw_ptr<PasswordManagerClient> client_ = nullptr;
+  raw_ptr<PasswordManagerClient, DanglingUntriaged> client_ = nullptr;
 
   // Whether generation popup was shown at least once.
   bool generation_popup_was_shown_ = false;

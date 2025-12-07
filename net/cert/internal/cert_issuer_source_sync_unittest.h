@@ -10,42 +10,21 @@
 #include "net/cert/internal/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
-#include "third_party/boringssl/src/pki/cert_errors.h"
 #include "third_party/boringssl/src/pki/cert_issuer_source.h"
 
 namespace net {
 
 namespace {
 
-::testing::AssertionResult ReadTestPem(const std::string& file_name,
-                                       const std::string& block_name,
-                                       std::string* result) {
-  const PemBlockMapping mappings[] = {
-      {block_name.c_str(), result},
-  };
-
-  return ReadTestDataFromPemFile(file_name, mappings);
-}
-
 ::testing::AssertionResult ReadTestCert(
     const std::string& file_name,
     std::shared_ptr<const bssl::ParsedCertificate>* result) {
-  std::string der;
-  ::testing::AssertionResult r =
-      ReadTestPem("net/data/cert_issuer_source_static_unittest/" + file_name,
-                  "CERTIFICATE", &der);
-  if (!r) {
-    return r;
-  }
-  bssl::CertErrors errors;
-  *result = bssl::ParsedCertificate::Create(
-      bssl::UniquePtr<CRYPTO_BUFFER>(CRYPTO_BUFFER_new(
-          reinterpret_cast<const uint8_t*>(der.data()), der.size(), nullptr)),
-      {}, &errors);
+  const std::string path =
+      "net/data/cert_issuer_source_static_unittest/" + file_name;
+  *result = ReadCertFromFile(path);
   if (!*result) {
     return ::testing::AssertionFailure()
-           << "ParsedCertificate::Create() failed:\n"
-           << errors.ToDebugString();
+           << "ReadCertFromFile(" << path << ") failed";
   }
   return ::testing::AssertionSuccess();
 }

@@ -1,5 +1,0 @@
-include_rules = [
-  "+ash/public",
-  "+content/public/common",
-  "+services/service_manager/public",
-]

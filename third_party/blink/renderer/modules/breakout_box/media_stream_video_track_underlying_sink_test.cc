@@ -153,25 +153,31 @@ TEST_F(MediaStreamVideoTrackUnderlyingSinkTest, WriteInvalidDataFails) {
                   v8::Integer::New(script_state->GetIsolate(), 0));
 
   // Writing something that is not a VideoFrame to the sink should fail.
-  DummyExceptionStateForTesting dummy_exception_state;
-  sink->write(script_state, v8_integer, nullptr, dummy_exception_state);
-  EXPECT_TRUE(dummy_exception_state.HadException());
+  {
+    DummyExceptionStateForTesting dummy_exception_state;
+    sink->write(script_state, v8_integer, nullptr, dummy_exception_state);
+    EXPECT_TRUE(dummy_exception_state.HadException());
+  }
 
   // Writing a null value to the sink should fail.
-  dummy_exception_state.ClearException();
-  EXPECT_FALSE(dummy_exception_state.HadException());
-  sink->write(script_state, ScriptValue::CreateNull(v8_scope.GetIsolate()),
-              nullptr, dummy_exception_state);
-  EXPECT_TRUE(dummy_exception_state.HadException());
+  {
+    DummyExceptionStateForTesting dummy_exception_state;
+    EXPECT_FALSE(dummy_exception_state.HadException());
+    sink->write(script_state, ScriptValue::CreateNull(v8_scope.GetIsolate()),
+                nullptr, dummy_exception_state);
+    EXPECT_TRUE(dummy_exception_state.HadException());
+  }
 
   // Writing a destroyed VideoFrame to the sink should fail.
-  dummy_exception_state.ClearException();
-  VideoFrame* video_frame = nullptr;
-  auto chunk = CreateVideoFrameChunk(script_state, &video_frame);
-  video_frame->close();
-  EXPECT_FALSE(dummy_exception_state.HadException());
-  sink->write(script_state, chunk, nullptr, dummy_exception_state);
-  EXPECT_TRUE(dummy_exception_state.HadException());
+  {
+    DummyExceptionStateForTesting dummy_exception_state;
+    VideoFrame* video_frame = nullptr;
+    auto chunk = CreateVideoFrameChunk(script_state, &video_frame);
+    video_frame->close();
+    EXPECT_FALSE(dummy_exception_state.HadException());
+    sink->write(script_state, chunk, nullptr, dummy_exception_state);
+    EXPECT_TRUE(dummy_exception_state.HadException());
+  }
 }
 
 TEST_F(MediaStreamVideoTrackUnderlyingSinkTest, WriteToAbortedSinkFails) {
@@ -193,16 +199,6 @@ TEST_F(MediaStreamVideoTrackUnderlyingSinkTest, WriteToAbortedSinkFails) {
   EXPECT_TRUE(dummy_exception_state.HadException());
   EXPECT_EQ(dummy_exception_state.Code(),
             static_cast<ExceptionCode>(DOMExceptionCode::kInvalidStateError));
-}
-
-TEST_F(MediaStreamVideoTrackUnderlyingSinkTest, GetGmbManager) {
-  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform_;
-  V8TestingScope v8_scope;
-  ScriptState* script_state = v8_scope.GetScriptState();
-  auto* underlying_sink = CreateUnderlyingSink(script_state);
-  EXPECT_EQ(!!underlying_sink->gmb_manager(),
-            WebGraphicsContext3DVideoFramePool::
-                IsGpuMemoryBufferReadbackFromTextureEnabled());
 }
 
 TEST_F(MediaStreamVideoTrackUnderlyingSinkTest,

@@ -9,6 +9,9 @@
 
 #include "base/values.h"
 #include "chrome/browser/extensions/cws_item_service.pb.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -16,12 +19,6 @@ class WebstoreDataFetcherDelegate {
  public:
   // Invoked when the web store data request failed.
   virtual void OnWebstoreRequestFailure(const std::string& extension_id) = 0;
-
-  // Invoked when the web store response parsing is successful after the item
-  // JSON API is called to retrieve the extension's webstore data.
-  virtual void OnWebstoreItemJSONAPIResponseParseSuccess(
-      const std::string& extension_id,
-      const base::Value::Dict& webstore_data) = 0;
 
   // Invoked when the web store response parsing is successful after the new
   // item snippet API is called to retrieve the extension's webstore data.
@@ -52,7 +49,7 @@ class WebstoreDataFetcherDelegate {
   static const char kInvalidWebstoreResponseError[];
 
  protected:
-  virtual ~WebstoreDataFetcherDelegate() {}
+  virtual ~WebstoreDataFetcherDelegate() = default;
 };
 
 }  // namespace extensions

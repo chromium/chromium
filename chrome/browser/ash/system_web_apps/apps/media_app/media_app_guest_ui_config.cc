@@ -8,18 +8,21 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/media_app_ui/url_constants.h"
+#include "base/functional/bind.h"
 #include "base/version.h"
-#include "chrome/browser/accessibility/media_app/ax_media_app_handler_factory.h"
+#include "chrome/browser/accessibility/media_app/ax_media_app_service_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ash/mahi/media_app/mahi_media_app_handler_factory.h"
+#include "chrome/browser/ash/mahi/media_app/mahi_media_app_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/common/channel_info.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/ash/components/channel/channel_info.h"
+#include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -61,9 +64,6 @@ bool PhotosIntegrationSupported(const apps::AppUpdate& update) {
 }
 
 bool IsLensInGalleryEnabled(Profile* profile, PrefService* pref_service) {
-  if (!base::FeatureList::IsEnabled(ash::features::kMediaAppLens)) {
-    return false;
-  }
   if (!pref_service->GetBoolean(prefs::kMediaAppLensEnabled)) {
     return false;
   }
@@ -100,50 +100,87 @@ void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
       });
 
   source->AddString("appLocale", g_browser_process->GetApplicationLocale());
+
+  source->AddBoolean("mantisExpandBackground",
+                     base::FeatureList::IsEnabled(
+                         ash::features::kMediaAppImageMantisExpandBackground));
+  source->AddBoolean("mantisRemoveBackground",
+                     base::FeatureList::IsEnabled(
+                         ash::features::kMediaAppImageMantisRemoveBackground));
+  source->AddBoolean("mantisReimagine",
+                     base::FeatureList::IsEnabled(
+                         ash::features::kMediaAppImageMantisReimagine));
+  source->AddBoolean(
+      "mantisErase",
+      base::FeatureList::IsEnabled(ash::features::kMediaAppImageMantisErase));
+  source->AddBoolean("mantisMakeASticker",
+                     base::FeatureList::IsEnabled(
+                         ash::features::kMediaAppImageMantisMakeASticker));
+
   source->AddBoolean("lensInGallery",
                      IsLensInGalleryEnabled(profile, pref_service));
   source->AddBoolean("pdfReadonly",
                      !pref_service->GetBoolean(prefs::kPdfAnnotationsEnabled));
-  version_info::Channel channel = chrome::GetChannel();
+  version_info::Channel channel = ash::GetChannel();
   source->AddBoolean("colorThemes", true);
   source->AddBoolean("photosAvailableForImage", photos_integration_supported);
   source->AddBoolean("photosAvailableForVideo", photos_integration_supported);
-  source->AddBoolean("pdfA11yOcr", base::FeatureList::IsEnabled(
-                                       ash::features::kMediaAppPdfA11yOcr));
 
-  // TODO(b:356518781): rename the boolean to e.g. pdfContextMenu.
-  // If true, show a context menu on right click on PDF surface. And if Mahi
-  // message pipe is connected (see `CreateAndBindMahiHandler` below), also show
-  // the Mahi card for the user to use HelpMeRead feature for the PDF.
+  // If true and the Mahi message pipe is connected (see
+  // `CreateAndBindMahiUntrustedService` below), shows the entry point for Mahi
+  // when the user triggers the right click context menu.
   source->AddBoolean(
       "pdfMahi", base::FeatureList::IsEnabled(ash::features::kMediaAppPdfMahi));
+
+  source->AddBoolean(
+      "mantisInGallery",
+      base::FeatureList::IsEnabled(ash::features::kMediaAppImageMantis));
 
   source->AddBoolean("flagsMenu", channel != version_info::Channel::BETA &&
                                       channel != version_info::Channel::STABLE);
   source->AddBoolean("isDevChannel", channel == version_info::Channel::DEV);
+  source->AddString("mantisModel",
+                    ash::features::kMediaAppImageMantisModelParams.GetName(
+                        ash::features::kMediaAppImageMantisModelParams.Get()));
 }
 
-void ChromeMediaAppGuestUIDelegate::CreateAndBindOcrHandler(
+std::unique_ptr<specialized_features::FeatureAccessChecker>
+ChromeMediaAppGuestUIDelegate::GetFeatureAccessChecker(
+    specialized_features::FeatureAccessConfig config,
+    content::WebUI* web_ui) const {
+  return std::make_unique<specialized_features::FeatureAccessChecker>(
+      std::move(config), Profile::FromWebUI(web_ui)->GetPrefs(),
+      IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui)),
+      base::BindRepeating(
+          []() { return g_browser_process->variations_service(); }));
+}
+
+PrefService* ChromeMediaAppGuestUIDelegate::GetPrefService(
+    content::WebUI* web_ui) {
+  return Profile::FromWebUI(web_ui)->GetPrefs();
+}
+
+void ChromeMediaAppGuestUIDelegate::CreateAndBindOcrUntrustedService(
     content::BrowserContext& context,
     gfx::NativeWindow native_window,
-    mojo::PendingReceiver<ash::media_app_ui::mojom::OcrUntrustedPageHandler>
+    mojo::PendingReceiver<ash::media_app_ui::mojom::OcrUntrustedService>
         receiver,
     mojo::PendingRemote<ash::media_app_ui::mojom::OcrUntrustedPage> page) {
-  ash::AXMediaAppHandlerFactory::GetInstance()
-      ->CreateAXMediaAppUntrustedHandler(context, native_window,
+  ash::AXMediaAppServiceFactory::GetInstance()
+      ->CreateAXMediaAppUntrustedService(context, native_window,
                                          std::move(receiver), std::move(page));
 }
 
-void ChromeMediaAppGuestUIDelegate::CreateAndBindMahiHandler(
-    mojo::PendingReceiver<ash::media_app_ui::mojom::MahiUntrustedPageHandler>
+void ChromeMediaAppGuestUIDelegate::CreateAndBindMahiUntrustedService(
+    mojo::PendingReceiver<ash::media_app_ui::mojom::MahiUntrustedService>
         receiver,
     mojo::PendingRemote<ash::media_app_ui::mojom::MahiUntrustedPage> page,
     const std::string& file_name,
     aura::Window* window) {
   if (chromeos::MahiManager::Get() &&
       chromeos::MahiManager::Get()->IsEnabled()) {
-    ash::MahiMediaAppHandlerFactory::GetInstance()
-        ->CreateMahiMediaAppUntrustedHandler(
+    ash::MahiMediaAppServiceFactory::GetInstance()
+        ->CreateMahiMediaAppUntrustedService(
             std::move(receiver), std::move(page), file_name, window);
   }
 }

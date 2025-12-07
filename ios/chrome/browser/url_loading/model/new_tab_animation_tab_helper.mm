@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/url_loading/model/new_tab_animation_tab_helper.h"
 
-WEB_STATE_USER_DATA_KEY_IMPL(NewTabAnimationTabHelper)
-
 NewTabAnimationTabHelper::NewTabAnimationTabHelper(web::WebState* web_state)
     : animation_disabled_(false) {}
 

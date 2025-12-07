@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/hid/hid_chooser_controller.h"
+
+#include <array>
 #include <memory>
 #include <set>
 #include <string>
@@ -18,7 +21,6 @@
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/hid/mock_hid_device_observer.h"
-#include "chrome/browser/ui/hid/hid_chooser_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -43,7 +45,8 @@ namespace {
 
 constexpr char kDefaultTestUrl[] = "https://www.google.com/";
 
-const char* const kTestPhysicalDeviceIds[] = {"1", "2", "3"};
+constexpr auto kTestPhysicalDeviceIds =
+    std::to_array<const char*>({"1", "2", "3"});
 
 constexpr uint16_t kVendorYubico = 0x1050;
 constexpr uint16_t kProductYubicoGnubby = 0x0200;
@@ -1252,6 +1255,36 @@ TEST_P(HidChooserControllerFidoTest, FidoDeviceShownWithPrivilegedOrigin) {
   EXPECT_EQ(device::mojom::kPageFido, collection->usage->usage_page);
   EXPECT_EQ(1u, collection->input_reports.size());
   EXPECT_EQ(1u, collection->output_reports.size());
+}
+
+TEST_F(HidChooserControllerTest, FlakyDeviceName) {
+  base::RunLoop device_added_loop1;
+  base::RunLoop device_added_loop2;
+  base::RunLoop device_added_loop3;
+  EXPECT_CALL(device_observer(), OnDeviceAdded(_))
+      .WillOnce(RunClosure(device_added_loop1.QuitClosure()))
+      .WillOnce(RunClosure(device_added_loop2.QuitClosure()))
+      .WillOnce(RunClosure(device_added_loop3.QuitClosure()));
+
+  base::RunLoop options_initialized_loop;
+  EXPECT_CALL(view(), OnOptionsInitialized())
+      .WillOnce(RunClosure(options_initialized_loop.QuitClosure()));
+
+  // Connect a device with an empty product name string.
+  CreateAndAddFakeHidDevice(kTestPhysicalDeviceIds[0], 1, 1, "", "001");
+  device_added_loop1.Run();
+
+  CreateAndAddFakeHidDevice(kTestPhysicalDeviceIds[0], 1, 1, "a", "001");
+  device_added_loop2.Run();
+
+  CreateAndAddFakeHidDevice(kTestPhysicalDeviceIds[0], 1, 1, "", "001");
+  device_added_loop3.Run();
+
+  auto hid_chooser_controller = CreateHidChooserController({});
+  options_initialized_loop.Run();
+
+  EXPECT_EQ(1u, hid_chooser_controller->NumOptions());
+  EXPECT_EQ(u"a", hid_chooser_controller->GetOption(0));
 }
 
 INSTANTIATE_TEST_SUITE_P(HidChooserControllerFidoTests,

@@ -70,6 +70,7 @@ source_set("unittests") {
     "//ios/web/public/test:javascript_test",
     "//ios/web/public/test:test_fixture",
     "//ios/web/test/fakes",
+    "//net:test_support",
     "//testing/gtest",
   ]
 

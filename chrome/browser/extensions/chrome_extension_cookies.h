@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -16,12 +15,15 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/cookie_store_factory.h"
+#include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/cookies/cookie_store.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "services/network/cookie_settings.h"
 #include "services/network/public/mojom/cookie_manager.mojom-forward.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 
@@ -52,20 +54,20 @@ class ChromeExtensionCookies
   ChromeExtensionCookies(const ChromeExtensionCookies&) = delete;
   ChromeExtensionCookies& operator=(const ChromeExtensionCookies&) = delete;
 
-  // Gets (or creates) an appropriate instance for given |context| from
+  // Gets (or creates) an appropriate instance for given `context` from
   // ChromeExtensionCookiesFactory.
   static ChromeExtensionCookies* Get(content::BrowserContext* context);
 
   // Creates a RestrictedCookieManager for a chrome-extension:// URL
-  // with origin |origin|, bound to |receiver|. Whether this will use disk
-  // storage or not depends on the Profile |this| was created for.
+  // with origin `origin`, bound to `receiver`. Whether this will use disk
+  // storage or not depends on the Profile `this` was created for.
   void CreateRestrictedCookieManager(
       const url::Origin& origin,
       const net::IsolationInfo& isolation_info,
       mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver);
 
-  // Deletes all cookies matching the host of |origin| and
-  // synchronously invokes |done_callback| once all cookies are deleted.
+  // Deletes all cookies matching the host of `origin` and
+  // synchronously invokes `done_callback` once all cookies are deleted.
   void ClearCookies(const GURL& origin, base::OnceClosure done_callback);
 
   // Test-only method to get the raw underlying test store. This can only be
@@ -98,8 +100,8 @@ class ChromeExtensionCookies
         mojo::PendingReceiver<network::mojom::RestrictedCookieManager>
             receiver);
 
-    // Asynchronously deletes all cookie info matching |origin| and
-    // synchronously invokes |done_callback| once all cookie info is deleted.
+    // Asynchronously deletes all cookie info matching `origin` and
+    // synchronously invokes `done_callback` once all cookie info is deleted.
     void ClearCookies(const GURL& origin,
                       net::CookieStore::DeleteCallback done_callback);
 
@@ -109,7 +111,7 @@ class ChromeExtensionCookies
     net::CookieStore* GetOrCreateCookieStore();
 
    private:
-    // Syncs |mojo_cookie_settings_| -> |network_cookie_settings_|.
+    // Syncs `mojo_cookie_settings_` -> `network_cookie_settings_`.
     void UpdateNetworkCookieSettings();
 
     // Asynchronously creates a RestrictedCookieManager.
@@ -125,8 +127,8 @@ class ChromeExtensionCookies
     // Cookie blocking preferences in form RestrictedCookieManager needs.
     network::CookieSettings network_cookie_settings_;
 
-    // Intermediate form needed for |cookie_settings|_ ->
-    // |network_cookie_settings_| conversion.
+    // Intermediate form needed for `cookie_settings`_ ->
+    // `network_cookie_settings_` conversion.
     network::mojom::CookieManagerParamsPtr mojo_cookie_settings_;
 
     mojo::UniqueReceiverSet<network::mojom::RestrictedCookieManager>

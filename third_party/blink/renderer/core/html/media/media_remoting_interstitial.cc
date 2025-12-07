@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace {
 
@@ -84,14 +85,14 @@ void MediaRemotingInterstitial::Hide(int error_code) {
     return;
   if (toggle_interstitial_timer_.IsActive())
     toggle_interstitial_timer_.Stop();
-  if (error_code == WebMediaPlayerClient::kMediaRemotingStopNoText) {
+  if (error_code == MediaPlayerClient::kMediaRemotingStopNoText) {
     state_ = kHidden;
   } else {
     String stop_text =
         GetVideoElement().GetLocale().QueryString(IDS_MEDIA_REMOTING_STOP_TEXT);
     if (error_code != IDS_MEDIA_REMOTING_STOP_TEXT) {
-      stop_text = GetVideoElement().GetLocale().QueryString(error_code) + ", " +
-                  stop_text;
+      stop_text = StrCat({GetVideoElement().GetLocale().QueryString(error_code),
+                          ", ", stop_text});
     }
     toast_message_->setInnerText(stop_text);
     state_ = kToast;

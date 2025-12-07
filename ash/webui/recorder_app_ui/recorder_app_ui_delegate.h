@@ -5,7 +5,10 @@
 #ifndef ASH_WEBUI_RECORDER_APP_UI_RECORDER_APP_UI_DELEGATE_H_
 #define ASH_WEBUI_RECORDER_APP_UI_RECORDER_APP_UI_DELEGATE_H_
 
+#include <string>
+
 #include "components/soda/constants.h"
+#include "components/sync/protocol/user_consent_types.pb.h"
 
 namespace content {
 class BrowserContext;
@@ -22,8 +25,21 @@ class RecorderAppUIDelegate {
  public:
   virtual void InstallSoda(speech::LanguageCode language_code) = 0;
 
+  virtual std::u16string GetLanguageDisplayName(
+      speech::LanguageCode language_code) = 0;
+
+  virtual std::string GetDefaultTranscriptionLanguage() = 0;
+
   virtual void OpenAiFeedbackDialog(
       const std::string& description_template) = 0;
+
+  virtual bool CanUseGenerativeAiForCurrentProfile() = 0;
+
+  virtual bool CanUseSpeakerLabelForCurrentProfile() = 0;
+
+  virtual void RecordSpeakerLabelConsent(
+      const sync_pb::UserConsentTypes::RecorderSpeakerLabelConsent&
+          consent) = 0;
 
   virtual ~RecorderAppUIDelegate() = default;
 

@@ -25,6 +25,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/extensions/mixin_based_extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
@@ -33,6 +34,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_agent_host_observer.h"
+#include "pdf/buildflags.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 class NotificationDisplayServiceTester;
@@ -207,9 +209,6 @@ class FileManagerBrowserTestBase
     // Whether tests should enable local image search by query.
     bool enable_local_image_search = false;
 
-    // Whether test should run with the fsps-in-recents flag.
-    bool enable_fsps_in_recents = false;
-
     // Whether tests should enable Google One offer Files banner. This flag is
     // enabled by default.
     bool enable_google_one_offer_files_banner = true;
@@ -223,11 +222,13 @@ class FileManagerBrowserTestBase
     // Whether to enable jellybean UI elements.
     bool enable_cros_components = false;
 
-    // Whether to enable the materialized views feature.
-    bool enable_materialized_views = false;
-
     // Whether test should enable the SkyVault feature.
     bool enable_skyvault = false;
+
+#if BUILDFLAG(ENABLE_PDF)
+    // Whether tests should enable OOPIF PDF or not.
+    bool enable_oopif_pdf = false;
+#endif  // BUILDFLAG(ENABLE_PDF)
 
     // Feature IDs associated for mapping test cases and features.
     std::vector<std::string> feature_ids;
@@ -277,7 +278,8 @@ class FileManagerBrowserTestBase
   void StartTest();
 
  private:
-  using IdToWebContents = std::map<std::string, content::WebContents*>;
+  using IdToWebContents =
+      std::map<std::string, raw_ptr<content::WebContents, CtnExperimental>>;
 
   class MockFileTasksObserver;
 
@@ -316,6 +318,12 @@ class FileManagerBrowserTestBase
   virtual bool HandleEnterpriseConnectorCommands(const std::string& name,
                                                  const base::Value::Dict& value,
                                                  std::string* output);
+
+  // Checks if the command is from SkyVault. If so, handles it and returns true,
+  // otherwise it returns false.
+  virtual bool HandleSkyVaultCommands(const std::string& name,
+                                      const base::Value::Dict& value,
+                                      std::string* output);
 
   // Called during setup if needed, to create a drive integration service for
   // the given |profile|. Caller owns the return result.

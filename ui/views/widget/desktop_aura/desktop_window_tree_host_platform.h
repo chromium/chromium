@@ -16,6 +16,8 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "ui/aura/window_tree_host_platform.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/platform_window/extensions/workspace_extension_delegate.h"
 #include "ui/views/views_export.h"
@@ -27,10 +29,6 @@ class PaintContext;
 }  // namespace ui
 
 namespace views {
-
-namespace corewm {
-class TooltipController;
-}
 
 class VIEWS_EXPORT DesktopWindowTreeHostPlatform
     : public aura::WindowTreeHostPlatform,
@@ -58,7 +56,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   // Get all open top-level windows. This includes windows that may not be
   // visible. This list is sorted in their stacking order, i.e. the first window
   // is the topmost window.
-  static std::vector<aura::Window*> GetAllOpenWindows();
+  static aura::Window::Windows GetAllOpenWindows();
 
   // Runs the |func| callback for each content-window, and deallocates the
   // internal list of open windows.
@@ -78,7 +76,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   void Close() override;
   void CloseNow() override;
   aura::WindowTreeHost* AsWindowTreeHost() override;
-  void Show(ui::WindowShowState show_state,
+  void Show(ui::mojom::WindowShowState show_state,
             const gfx::Rect& restore_bounds) override;
   bool IsVisible() const override;
   void SetSize(const gfx::Size& size) override;
@@ -86,8 +84,9 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   void StackAtTop() override;
   bool IsStackedAbove(aura::Window* window) override;
   void CenterWindow(const gfx::Size& size) override;
-  void GetWindowPlacement(gfx::Rect* bounds,
-                          ui::WindowShowState* show_state) const override;
+  void GetWindowPlacement(
+      gfx::Rect* bounds,
+      ui::mojom::WindowShowState* show_state) const override;
   gfx::Rect GetWindowBoundsInScreen() const override;
   gfx::Rect GetClientAreaBoundsInScreen() const override;
   gfx::Rect GetRestoredBounds() const override;
@@ -101,6 +100,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   void Maximize() override;
   void Minimize() override;
   void Restore() override;
+  void ShowWindowControlsMenu(const gfx::Point& point) override;
   bool IsMaximized() const override;
   bool IsMinimized() const override;
   bool HasCapture() const override;
@@ -117,18 +117,19 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
       Widget::MoveLoopEscapeBehavior escape_behavior) override;
   void EndMoveLoop() override;
   void SetVisibilityChangedAnimationsEnabled(bool value) override;
-  std::unique_ptr<NonClientFrameView> CreateNonClientFrameView() override;
+  std::unique_ptr<FrameView> CreateFrameView() override;
   bool ShouldUseNativeFrame() const override;
   bool ShouldWindowContentsBeTransparent() const override;
   void FrameTypeChanged() override;
   void SetFullscreen(bool fullscreen, int64_t display_id) override;
   bool IsFullscreen() const override;
   void SetOpacity(float opacity) override;
+  void SetBackgroundColor(SkColor background_color) override;
   void SetAspectRatio(const gfx::SizeF& aspect_ratio,
                       const gfx::Size& excluded_margin) override;
   void SetWindowIcons(const gfx::ImageSkia& window_icon,
                       const gfx::ImageSkia& app_icon) override;
-  void InitModalType(ui::ModalType modal_type) override;
+  void InitModalType(ui::mojom::ModalType modal_type) override;
   void FlashFrame(bool flash_frame) override;
   bool IsAnimatingClosed() const override;
   void SizeConstraintsChanged() override;
@@ -209,8 +210,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
 
   Widget* GetWidget();
   const Widget* GetWidget() const;
-
-  views::corewm::TooltipController* tooltip_controller();
 
   void ScheduleRelayout();
 

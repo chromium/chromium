@@ -2,14 +2,22 @@
 # Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+""" Unittest on dexdump.py
 
+Example Usage:
+  vpython3 dexdump_test.py
+"""
+
+import os
+import sys
 import unittest
 from xml.etree import ElementTree
 
-from pylib.utils import dexdump
+PYLIB_PATH = os.path.join(os.path.dirname(__file__), '..')
+sys.path.append(PYLIB_PATH)
+from utils import dexdump  #pylint: disable=no-name-in-module
 
 # pylint: disable=protected-access
-
 emptyAnnotations = dexdump.Annotations(classAnnotations={},
                                        methodsAnnotations={})
 

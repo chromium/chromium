@@ -6,15 +6,16 @@
 
 #include "base/check_op.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl_test_api.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,11 +25,11 @@
 namespace autofill {
 namespace {
 
-VirtualCardEnrollmentFields CreateVirtualCardEnrollmentFields() {
+VirtualCardEnrollmentFields CreateVirtualCardEnrollmentFields(
+    gfx::ImageSkia* card_art_image) {
   VirtualCardEnrollmentFields virtual_card_enrollment_fields;
   virtual_card_enrollment_fields.credit_card = test::GetFullServerCard();
-  gfx::ImageSkia card_art_image = gfx::test::CreateImage(100, 50).AsImageSkia();
-  virtual_card_enrollment_fields.card_art_image = &card_art_image;
+  virtual_card_enrollment_fields.card_art_image = card_art_image;
   virtual_card_enrollment_fields.google_legal_message = {
       TestLegalMessageLine("google_test_legal_message")};
   virtual_card_enrollment_fields.issuer_legal_message = {
@@ -43,13 +44,12 @@ VirtualCardEnrollmentFields CreateVirtualCardEnrollmentFields() {
 class ControllerTestSupport {
  public:
   explicit ControllerTestSupport(content::WebContents* web_contents)
-      : card_art_image_(gfx::test::CreateImage(100, 50).AsImageSkia()),
+      : card_art_image_(gfx::test::CreateImage(100, 50).AsImageSkia())),
         controller_(static_cast<VirtualCardEnrollBubbleControllerImpl*>(
             VirtualCardEnrollBubbleControllerImpl::GetOrCreate(web_contents))) {
-    virtual_card_enrollment_fields_ = CreateVirtualCardEnrollmentFields();
+    virtual_card_enrollment_fields_ =
+        CreateVirtualCardEnrollmentFields(&card_art_image_);
   }
-
-  ~ControllerTestSupport() = default;
 
   VirtualCardEnrollBubbleControllerImpl* controller() const {
     return controller_;
@@ -116,7 +116,8 @@ TEST_F(VirtualCardEnrollBubbleControllerImplBottomSheetTest,
 
   EXPECT_CALL(*bridge, Hide());
 
-  test_support.controller()->ShowConfirmationBubbleView(true);
+  test_support.controller()->ShowConfirmationBubbleView(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -139,25 +140,34 @@ class TestVirtualCardEnrollBubbleControllerImpl
 };
 
 class VirtualCardEnrollBubbleControllerImplBubbleViewTest
-    : public BrowserWithTestWindowTest {
+    : public base::test::WithFeatureOverride,
+      public BrowserWithTestWindowTest {
  public:
-  VirtualCardEnrollBubbleControllerImplBubbleViewTest() = default;
+  VirtualCardEnrollBubbleControllerImplBubbleViewTest()
+      : base::test::WithFeatureOverride(
+            features::kAutofillShowBubblesBasedOnPriorities) {}
   VirtualCardEnrollBubbleControllerImplBubbleViewTest(
       VirtualCardEnrollBubbleControllerImplBubbleViewTest&) = delete;
   VirtualCardEnrollBubbleControllerImplBubbleViewTest& operator=(
       VirtualCardEnrollBubbleControllerImplBubbleViewTest&) = delete;
 
   void SetUp() override {
+#if BUILDFLAG(IS_ANDROID)
+    if (GetParam()) {
+      GTEST_SKIP() << "Bubble Manager is not used on Android";
+    }
+#endif
     BrowserWithTestWindowTest::SetUp();
     AddTab(browser(), GURL("about:blank"));
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     TestVirtualCardEnrollBubbleControllerImpl::CreateForTesting(web_contents);
-    virtual_card_enrollment_fields_ = CreateVirtualCardEnrollmentFields();
+    virtual_card_enrollment_fields_ =
+        CreateVirtualCardEnrollmentFields(&card_art_image_);
   }
 
   void ShowBubble() {
-    controller()->ShowBubble(
+    controller()->SetupAndShowBubble(
         virtual_card_enrollment_fields(),
         /*accept_virtual_card_callback=*/base::DoNothing(),
         /*decline_virtual_card_callback=*/base::DoNothing());
@@ -178,14 +188,12 @@ class VirtualCardEnrollBubbleControllerImplBubbleViewTest
             browser()->tab_strip_model()->GetActiveWebContents()));
   }
   gfx::ImageSkia card_art_image_;
-  base::test::ScopedFeatureList features_{
-      features::kAutofillEnableVcnEnrollLoadingAndConfirmation};
   VirtualCardEnrollmentFields virtual_card_enrollment_fields_;
 };
 
 // Ensures that bubble acceptance and loading shown metrics are recorded after
 // bubble is shown and accepted .
-TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest, ShowBubble) {
+TEST_P(VirtualCardEnrollBubbleControllerImplBubbleViewTest, ShowBubble) {
   base::HistogramTester histogram_tester;
   ShowBubble();
   EXPECT_NE(GetBubbleViews(), nullptr);
@@ -195,7 +203,7 @@ TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest, ShowBubble) {
   histogram_tester.ExpectTotalCount(
       "Autofill.VirtualCardEnrollBubble.Result.Upstream.FirstShow", 0);
 
-  controller()->OnBubbleClosed(PaymentsBubbleClosedReason::kAccepted);
+  controller()->OnBubbleClosed(PaymentsUiClosedReason::kAccepted);
   controller()->HideIconAndBubble();
   histogram_tester.ExpectUniqueSample(
       "Autofill.VirtualCardEnrollBubble.Result.Upstream.FirstShow",
@@ -208,7 +216,7 @@ TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest, ShowBubble) {
 
 // Ensures that bubble acceptance, loading shown, and loading result metrics are
 // recorded when the bubble gets closed from the loading state.
-TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
+TEST_P(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
        ShowBubbleInLoadingState) {
   base::HistogramTester histogram_tester;
   ShowBubble();
@@ -225,7 +233,7 @@ TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
           VIRTUAL_CARD_ENROLLMENT_BUBBLE_ACCEPTED,
       1);
 
-  controller()->OnBubbleClosed(PaymentsBubbleClosedReason::kClosed);
+  controller()->OnBubbleClosed(PaymentsUiClosedReason::kClosed);
   histogram_tester.ExpectUniqueSample(
       "Autofill.VirtualCardEnrollBubble.LoadingResult",
       VirtualCardEnrollmentBubbleResult::VIRTUAL_CARD_ENROLLMENT_BUBBLE_CLOSED,
@@ -233,8 +241,9 @@ TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+
 // Tests virtual card enrollment flow with loading and confirmation.
-TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
+TEST_P(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
        ShowBubbleInLoadingAndConfirmationState) {
   base::HistogramTester histogram_tester;
   ShowBubble();
@@ -254,7 +263,8 @@ TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
           VIRTUAL_CARD_ENROLLMENT_BUBBLE_ACCEPTED,
       1);
 
-  controller()->ShowConfirmationBubbleView(/*is_vcn_enrolled=*/true);
+  controller()->ShowConfirmationBubbleView(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess);
   EXPECT_EQ(
       test_api(*controller()).GetEnrollmentStatus(),
       VirtualCardEnrollBubbleControllerImpl::EnrollmentStatus::kCompleted);
@@ -265,7 +275,7 @@ TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
       "Autofill.VirtualCardEnrollBubble.ConfirmationShown.CardEnrolled", true,
       1);
 
-  controller()->OnBubbleClosed(PaymentsBubbleClosedReason::kClosed);
+  controller()->OnBubbleClosed(PaymentsUiClosedReason::kClosed);
   // Expect the metric for virtual card enroll bubble to not change after
   // showing the confirmation bubble.
   histogram_tester.ExpectTotalCount(
@@ -277,22 +287,41 @@ TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
       1);
 }
 
+// Test that on getting client-side timeout, virtual card bubble is closed in
+// loading state and confirmation dialog is not shown.
+TEST_P(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
+       CloseBubbleInLoadingState_NoConfirmationBubble_ClientSideTimeout) {
+  ShowBubble();
+  EXPECT_NE(GetBubbleViews(), nullptr);
+  EXPECT_TRUE(controller()->IsIconVisible());
+  controller()->OnAcceptButton(/*did_switch_to_loading_state=*/true);
+  controller()->ShowConfirmationBubbleView(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kClientSideTimeout);
+  EXPECT_EQ(GetBubbleViews(), nullptr);
+  EXPECT_FALSE(controller()->IsIconVisible());
+}
+
 // Tests that the correct confirmation result metric is logged when the
 // confirmation bubble is closed after the card is not enrolled.
-TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
+TEST_P(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
        Metric_CloseConfirmationBubble_CardNotEnrolled) {
   base::HistogramTester histogram_tester;
 
   ShowBubble();
   controller()->OnAcceptButton(/*did_switch_to_loading_state=*/true);
-  controller()->ShowConfirmationBubbleView(/*is_vcn_enrolled=*/false);
-  controller()->OnBubbleClosed(PaymentsBubbleClosedReason::kClosed);
+  controller()->ShowConfirmationBubbleView(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure);
+  controller()->OnBubbleClosed(PaymentsUiClosedReason::kClosed);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.VirtualCardEnrollBubble.ConfirmationResult.CardNotEnrolled",
       VirtualCardEnrollmentBubbleResult::VIRTUAL_CARD_ENROLLMENT_BUBBLE_CLOSED,
       1);
 }
+
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    VirtualCardEnrollBubbleControllerImplBubbleViewTest);
 }  // namespace
 }  // namespace autofill

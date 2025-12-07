@@ -14,13 +14,21 @@
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "url/gurl.h"
 
+namespace {
+
+bool IsHttpLocalhost(const GURL& url) {
+  return url.SchemeIs(url::kHttpScheme) && net::IsLocalhost(url);
+}
+
+}  // namespace
+
 namespace blink {
 
 bool IsValidFencedFrameURL(const GURL& url) {
   if (!url.is_valid())
     return false;
   return (url.SchemeIs(url::kHttpsScheme) || url.IsAboutBlank() ||
-          net::IsLocalhost(url)) &&
+          IsHttpLocalhost(url)) &&
          !url.parsed_for_possibly_invalid_spec().potentially_dangling_markup;
 }
 
@@ -68,6 +76,20 @@ void RecordFencedFrameUnsandboxedFlags(network::mojom::WebSandboxFlags flags) {
 void RecordFencedFrameFailedSandboxLoadInTopLevelFrame(bool is_main_frame) {
   base::UmaHistogramBoolean(kFencedFrameFailedSandboxLoadInTopLevelFrame,
                             is_main_frame);
+}
+
+void RecordDisableUntrustedNetworkOutcome(
+    const DisableUntrustedNetworkOutcome outcome) {
+  base::UmaHistogramEnumeration(kDisableUntrustedNetworkOutcome, outcome);
+}
+
+void RecordSharedStorageGetInFencedFrameOutcome(
+    const SharedStorageGetInFencedFrameOutcome outcome) {
+  base::UmaHistogramEnumeration(kSharedStorageGetInFencedFrameOutcome, outcome);
+}
+
+void RecordNotifyEventOutcome(const NotifyEventOutcome outcome) {
+  base::UmaHistogramEnumeration(kNotifyEventOutcome, outcome);
 }
 
 // If more event types besides click are supported for fenced events, this

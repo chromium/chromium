@@ -7,10 +7,14 @@ package org.chromium.chrome.browser.webapps;
 import android.app.Activity;
 import android.os.Bundle;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** Do-nothing activity that is launched to bring a WebAPK to the foreground. */
+@NullMarked
 public class ActivateWebApkActivity extends Activity {
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         finish();
     }

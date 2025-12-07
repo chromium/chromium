@@ -258,7 +258,7 @@ class BackgroundFetchDataManagerTest
   blink::mojom::BackgroundFetchRegistrationDataPtr GetRegistration(
       int64_t service_worker_registration_id,
       const blink::StorageKey& storage_key,
-      const std::string developer_id,
+      const std::string& developer_id,
       blink::mojom::BackgroundFetchError* out_error) {
     DCHECK(out_error);
 
@@ -484,13 +484,14 @@ class BackgroundFetchDataManagerTest
     base::RunLoop run_loop;
     background_fetch_data_manager_->OpenCache(
         storage_key(), kExampleUniqueId, trace_id,
-        base::BindLambdaForTesting([&](blink::mojom::OpenResultPtr result) {
-          EXPECT_FALSE(result->is_status());
+        base::BindLambdaForTesting([&](blink::mojom::CacheStorage::OpenResult
+                                           result) {
+          EXPECT_TRUE(result.has_value());
 
           auto match_options = blink::mojom::CacheQueryOptions::New();
           match_options->ignore_search = true;
 
-          cache.Bind(std::move(result->get_cache()));
+          cache.Bind(std::move(result.value()));
           cache->Match(
               BackgroundFetchSettledFetch::CloneRequest(request),
               std::move(match_options),
@@ -512,8 +513,9 @@ class BackgroundFetchDataManagerTest
         storage_key(),
         /* unique_id= */ kExampleUniqueId,
         /* trace_id= */ 0,
-        base::BindLambdaForTesting([&](blink::mojom::OpenResultPtr result) {
-          EXPECT_TRUE(result->is_cache());
+        base::BindLambdaForTesting([&](blink::mojom::CacheStorage::OpenResult
+                                           result) {
+          EXPECT_TRUE(result.has_value());
 
           std::vector<blink::mojom::BatchOperationPtr> operation_ptr_vec;
           operation_ptr_vec.push_back(blink::mojom::BatchOperation::New());
@@ -525,7 +527,7 @@ class BackgroundFetchDataManagerTest
               blink::mojom::CacheQueryOptions::New();
           operation_ptr_vec[0]->match_options->ignore_search = true;
 
-          cache.Bind(std::move(result->get_cache()));
+          cache.Bind(std::move(result.value()));
           cache->Batch(
               std::move(operation_ptr_vec), /* trace_id= */ 0,
               base::BindOnce(&BackgroundFetchDataManagerTest::DidBatchOperation,
@@ -542,8 +544,9 @@ class BackgroundFetchDataManagerTest
         storage_key(),
         /* unique_id= */ kExampleUniqueId,
         /* trace_id= */ 0,
-        base::BindLambdaForTesting([&](blink::mojom::OpenResultPtr result) {
-          EXPECT_TRUE(result->is_cache());
+        base::BindLambdaForTesting([&](blink::mojom::CacheStorage::OpenResult
+                                           result) {
+          EXPECT_TRUE(result.has_value());
 
           std::vector<blink::mojom::BatchOperationPtr> operation_ptr_vec;
           operation_ptr_vec.push_back(blink::mojom::BatchOperation::New());
@@ -553,7 +556,7 @@ class BackgroundFetchDataManagerTest
               BackgroundFetchSettledFetch::CloneRequest(request);
           operation_ptr_vec[0]->response = std::move(response);
 
-          cache.Bind(std::move(result->get_cache()));
+          cache.Bind(std::move(result.value()));
           cache->Batch(
               std::move(operation_ptr_vec), /* trace_id= */ 0,
               base::BindOnce(&BackgroundFetchDataManagerTest::DidBatchOperation,
@@ -800,17 +803,19 @@ class BackgroundFetchDataManagerTest
 
   void DidMatchCache(base::OnceClosure quit_closure,
                      bool* out_result,
-                     blink::mojom::MatchResultPtr result) {
+                     blink::mojom::CacheStorage::MatchResult result) {
     *out_result = false;
-
-    // This counts as matched if an entry was found in the cache which
-    // also has a non-empty response.
-    if (result->is_eager_response()) {
-      auto& response = result->get_eager_response()->response;
-      *out_result = !response.is_null() && !response->url_list.empty();
-    } else if (result->is_response()) {
-      auto& response = result->get_response();
-      *out_result = !response.is_null() && !response->url_list.empty();
+    if (result.has_value()) {
+      auto& match_response = result.value();
+      // This counts as matched if an entry was found in the cache which
+      // also has a non-empty response.
+      if (match_response->is_eager_response()) {
+        auto& response = match_response->get_eager_response()->response;
+        *out_result = !response.is_null() && !response->url_list.empty();
+      } else {
+        auto& response = match_response->get_response();
+        *out_result = !response.is_null() && !response->url_list.empty();
+      }
     }
     std::move(quit_closure).Run();
   }

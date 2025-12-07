@@ -7,7 +7,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries_impl.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -82,8 +81,16 @@ void PrivacySandboxHandler::RegisterMessages() {
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "privacySandboxPrivacyGuideShouldShowAdTopicsCard",
-      base::BindRepeating(&PrivacySandboxHandler::HandleShouldShowAdTopicsCard,
-                          base::Unretained(this)));
+      base::BindRepeating(
+          &PrivacySandboxHandler::
+              HandlePrivacySandboxPrivacyGuideShouldShowAdTopicsCard,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "shouldShowPrivacySandboxAdTopicsContentParity",
+      base::BindRepeating(
+          &PrivacySandboxHandler::
+              HandleShouldShowPrivacySandboxAdTopicsContentParity,
+          base::Unretained(this)));
 }
 
 void PrivacySandboxHandler::HandleSetFledgeJoiningAllowed(
@@ -117,12 +124,14 @@ void PrivacySandboxHandler::HandleGetTopicsState(
     const base::Value::List& args) {
   AllowJavascript();
   base::Value::List top_topics_list;
-  for (const auto& topic : GetPrivacySandboxService()->GetCurrentTopTopics())
+  for (const auto& topic : GetPrivacySandboxService()->GetCurrentTopTopics()) {
     top_topics_list.Append(ConvertTopicToValue(topic));
+  }
 
   base::Value::List blocked_topics_list;
-  for (const auto& topic : GetPrivacySandboxService()->GetBlockedTopics())
+  for (const auto& topic : GetPrivacySandboxService()->GetBlockedTopics()) {
     blocked_topics_list.Append(ConvertTopicToValue(topic));
+  }
 
   base::Value::Dict topics_state;
   topics_state.Set(kTopTopics, std::move(top_topics_list));
@@ -144,14 +153,16 @@ void PrivacySandboxHandler::OnFledgeJoiningSitesRecieved(
   // Combine |joining_sites| with the blocked FLEDGE sites information. The
   // latter is available synchronously.
   base::Value::List joining_sites_list;
-  for (const auto& site : joining_sites)
+  for (const auto& site : joining_sites) {
     joining_sites_list.Append(site);
+  }
 
   const auto blocked_sites =
       GetPrivacySandboxService()->GetBlockedFledgeJoiningTopFramesForDisplay();
   base::Value::List blocked_sites_list;
-  for (const auto& site : blocked_sites)
+  for (const auto& site : blocked_sites) {
     blocked_sites_list.Append(site);
+  }
 
   base::Value::Dict fledge_state;
   fledge_state.Set(kJoiningSites, std::move(joining_sites_list));
@@ -196,19 +207,26 @@ void PrivacySandboxHandler::HandleGetChildTopicsCurrentlyAssigned(
                             std::move(child_topics_currently_assigned_list));
 }
 
-void PrivacySandboxHandler::HandleShouldShowAdTopicsCard(
-    const base::Value::List& args) {
+void PrivacySandboxHandler::
+    HandlePrivacySandboxPrivacyGuideShouldShowAdTopicsCard(
+        const base::Value::List& args) {
   AllowJavascript();
   bool should_show_ad_topics_card =
-      GetPrivacySandboxCountries()->IsConsentCountry() &&
-      base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxPrivacyGuideAdTopics);
+      GetPrivacySandboxService()
+          ->PrivacySandboxPrivacyGuideShouldShowAdTopicsCard();
   ResolveJavascriptCallback(args[0], should_show_ad_topics_card);
 }
 
+void PrivacySandboxHandler::HandleShouldShowPrivacySandboxAdTopicsContentParity(
+    const base::Value::List& args) {
+  AllowJavascript();
+  ResolveJavascriptCallback(
+      args[0], base::FeatureList::IsEnabled(
+                   privacy_sandbox::kPrivacySandboxAdTopicsContentParity));
+}
+
 PrivacySandboxCountries* PrivacySandboxHandler::GetPrivacySandboxCountries() {
-  static PrivacySandboxCountriesImpl instance;
-  return &instance;
+  return GetSingletonPrivacySandboxCountries();
 }
 
 PrivacySandboxService* PrivacySandboxHandler::GetPrivacySandboxService() {

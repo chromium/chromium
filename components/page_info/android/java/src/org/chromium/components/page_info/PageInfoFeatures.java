@@ -8,6 +8,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Features;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Provides an API for querying the status of Page Info features.
@@ -15,6 +16,7 @@ import org.chromium.base.Features;
  * <p>TODO(crbug.com/40121881): generate this file.
  */
 @JNINamespace("page_info")
+@NullMarked
 public class PageInfoFeatures extends Features {
     public static final String USER_BYPASS_UI_NAME = "UserBypassUI";
 

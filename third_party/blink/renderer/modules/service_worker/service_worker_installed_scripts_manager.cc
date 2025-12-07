@@ -9,7 +9,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/containers/span.h"
-#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -65,9 +64,9 @@ class Receiver {
     }
     callback_ = std::move(callback);
     // Unretained is safe because |watcher_| is owned by |this|.
-    MojoResult rv = watcher_.Watch(
-        handle_.get(), MOJO_HANDLE_SIGNAL_READABLE,
-        WTF::BindRepeating(&Receiver::OnReadable, WTF::Unretained(this)));
+    MojoResult rv =
+        watcher_.Watch(handle_.get(), MOJO_HANDLE_SIGNAL_READABLE,
+                       BindRepeating(&Receiver::OnReadable, Unretained(this)));
     DCHECK_EQ(MOJO_RESULT_OK, rv);
     watcher_.ArmOrNotify();
   }
@@ -80,8 +79,7 @@ class Receiver {
     switch (rv) {
       case MOJO_RESULT_BUSY:
       case MOJO_RESULT_INVALID_ARGUMENT:
-        NOTREACHED_IN_MIGRATION();
-        return;
+        NOTREACHED();
       case MOJO_RESULT_FAILED_PRECONDITION:
         // Closed by peer.
         OnCompleted();
@@ -206,9 +204,9 @@ class Internal : public mojom::blink::ServiceWorkerInstalledScriptsManager {
     auto receivers = std::make_unique<BundledReceivers>(
         std::move(script_info->meta_data), script_info->meta_data_size,
         std::move(script_info->body), script_info->body_size, task_runner_);
-    receivers->Start(WTF::BindOnce(&Internal::OnScriptReceived,
-                                   weak_factory_.GetWeakPtr(),
-                                   std::move(script_info)));
+    receivers->Start(blink::BindOnce(&Internal::OnScriptReceived,
+                                     weak_factory_.GetWeakPtr(),
+                                     std::move(script_info)));
     DCHECK(!running_receivers_.Contains(script_url));
     running_receivers_.insert(script_url, std::move(receivers));
   }
@@ -217,7 +215,7 @@ class Internal : public mojom::blink::ServiceWorkerInstalledScriptsManager {
   void OnScriptReceived(mojom::blink::ServiceWorkerScriptInfoPtr script_info) {
     DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
     auto iter = running_receivers_.find(script_info->script_url);
-    CHECK(iter != running_receivers_.end(), base::NotFatalUntil::M130);
+    CHECK(iter != running_receivers_.end());
     std::unique_ptr<BundledReceivers> receivers = std::move(iter->value);
     DCHECK(receivers);
     if (!receivers->body()->HasReceivedAllData() ||
@@ -309,12 +307,11 @@ ServiceWorkerInstalledScriptsManager::GetScriptData(const KURL& script_url) {
       std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
           TextResourceDecoderOptions::kPlainTextContent,
           raw_script_data->Encoding().empty()
-              ? UTF8Encoding()
-              : WTF::TextEncoding(raw_script_data->Encoding())));
+              ? Utf8Encoding()
+              : TextEncoding(raw_script_data->Encoding())));
 
   Vector<uint8_t> source_text = raw_script_data->TakeScriptText();
-  String decoded_source_text = decoder->Decode(
-      reinterpret_cast<const char*>(source_text.data()), source_text.size());
+  String decoded_source_text = decoder->Decode(base::span(source_text));
 
   // TODO(crbug.com/946676): Remove the unique_ptr<> wrapper around the Vector
   // as we can just use Vector::IsEmpty() to distinguish missing code cache.

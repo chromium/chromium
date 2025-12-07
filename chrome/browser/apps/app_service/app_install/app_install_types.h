@@ -8,10 +8,10 @@
 #include <iosfwd>
 #include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "components/services/app_service/public/cpp/package_id.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 namespace apps {
@@ -29,6 +29,7 @@ enum class AppInstallSurface {
   kAppInstallUriUnknown,
   kAppInstallUriShowoff,
   kAppInstallUriMall,
+  kAppInstallUriMallV2,
   kAppInstallUriGetit,
   kAppInstallUriLauncher,
   kAppInstallUriPeripherals,
@@ -84,6 +85,11 @@ struct WebAppInstallData {
   GURL proxied_manifest_url;
 
   GURL document_url;
+
+  // Ony used by PackageType::kWebsite shortcuts, to control whether the
+  // shortcut opens in a browser tab or window. PackageType::kWeb apps will
+  // ignore this value and always open in a window.
+  bool open_as_window = false;
 };
 
 std::ostream& operator<<(std::ostream& out, const WebAppInstallData& data);
@@ -127,10 +133,10 @@ struct AppInstallData {
 
   GURL install_url;
 
-  absl::variant<AndroidAppInstallData,
-                WebAppInstallData,
-                GeForceNowAppInstallData,
-                SteamAppInstallData>
+  std::variant<AndroidAppInstallData,
+               WebAppInstallData,
+               GeForceNowAppInstallData,
+               SteamAppInstallData>
       app_type_data;
 };
 

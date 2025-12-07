@@ -15,7 +15,7 @@ namespace {
 
 bool IsRestored(views::Widget* widget) {
   CHECK(widget);
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     return !widget->IsMinimized();
   }
   return !widget->IsMinimized() && !widget->IsMaximized() &&

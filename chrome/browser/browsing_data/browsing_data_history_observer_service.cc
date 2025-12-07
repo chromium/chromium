@@ -21,6 +21,7 @@
 #include "chrome/browser/commerce/merchant_viewer/merchant_viewer_data_manager.h"
 #include "chrome/browser/commerce/merchant_viewer/merchant_viewer_data_manager_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
+#include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/shopping_service.h"
 #endif
 
@@ -122,7 +123,8 @@ BrowsingDataHistoryObserverService::BrowsingDataHistoryObserverService(
     history_observation_.Observe(history_service);
 }
 
-BrowsingDataHistoryObserverService::~BrowsingDataHistoryObserverService() {}
+BrowsingDataHistoryObserverService::~BrowsingDataHistoryObserverService() =
+    default;
 
 void BrowsingDataHistoryObserverService::OnHistoryDeletions(
     history::HistoryService* history_service,
@@ -156,7 +158,8 @@ void BrowsingDataHistoryObserverService::OnHistoryDeletions(
 #if BUILDFLAG(IS_ANDROID)
   commerce::ShoppingService* shopping_service =
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile_);
-  if (shopping_service && shopping_service->IsMerchantViewerEnabled()) {
+  if (shopping_service && commerce::IsMerchantViewerEnabled(
+                              shopping_service->GetAccountChecker())) {
     ClearCommerceData(profile_, deletion_info);
   }
 #endif

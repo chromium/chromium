@@ -6,10 +6,11 @@ package org.chromium.chrome.browser.night_mode;
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.site_settings.AutoDarkMetrics;
 import org.chromium.components.browser_ui.site_settings.AutoDarkMetrics.AutoDarkSettingsChangeSource;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -21,6 +22,7 @@ import org.chromium.url.GURL;
  * A controller class could enable or disable web content dark mode feature based on the content
  * settings {@link ContentSettingsType.AUTO_DARK_WEB_CONTENT}.
  */
+@NullMarked
 public class WebContentsDarkModeController {
     /**
      * Return whether auto dark mode is enable for a given URL.
@@ -29,11 +31,11 @@ public class WebContentsDarkModeController {
      * @return Whether auto dark mode is enable for a given URL.
      */
     public static boolean isEnabledForUrl(BrowserContextHandle browserContextHandle, GURL url) {
-        @ContentSettingValues
+        @ContentSetting
         int contentSetting =
                 WebsitePreferenceBridge.getContentSetting(
                         browserContextHandle, ContentSettingsType.AUTO_DARK_WEB_CONTENT, url, url);
-        return contentSetting != ContentSettingValues.BLOCK;
+        return contentSetting != ContentSetting.BLOCK;
     }
 
     /**
@@ -49,11 +51,10 @@ public class WebContentsDarkModeController {
         // enabled. If it is enabled, the default content setting should be ALLOW.
         assert WebsitePreferenceBridge.getDefaultContentSetting(
                         browserContextHandle, ContentSettingsType.AUTO_DARK_WEB_CONTENT)
-                == ContentSettingValues.ALLOW;
+                == ContentSetting.ALLOW;
 
-        @ContentSettingValues
-        int contentSettingValue =
-                enabled ? ContentSettingValues.DEFAULT : ContentSettingValues.BLOCK;
+        @ContentSetting
+        int contentSettingValue = enabled ? ContentSetting.DEFAULT : ContentSetting.BLOCK;
 
         WebsitePreferenceBridge.setContentSettingDefaultScope(
                 browserContextHandle,
@@ -84,19 +85,21 @@ public class WebContentsDarkModeController {
     /**
      * Return whether web content dark mode is enabled by settings, despite whether the current
      * activity is in night mode.
+     *
      * @param browserContextHandle Current browser context handle.
-     * */
+     */
     public static boolean isGlobalUserSettingsEnabled(BrowserContextHandle browserContextHandle) {
         return WebsitePreferenceBridge.isContentSettingEnabled(
                 browserContextHandle, ContentSettingsType.AUTO_DARK_WEB_CONTENT);
     }
 
     /**
-     * Whether web contents dark mode feature is enabled for the UI.
-     * Returns true when auto dark global setting is enabled, and context is in night mode.
+     * Whether web contents dark mode feature is enabled for the UI. Returns true when auto dark
+     * global setting is enabled, and context is in night mode.
+     *
      * @param context {@link Context} used to check whether UI is in night mode.
      * @param browserContextHandle Current browser context handle.
-     * */
+     */
     public static boolean isFeatureEnabled(
             Context context, BrowserContextHandle browserContextHandle) {
         return WebContentsDarkModeController.isGlobalUserSettingsEnabled(browserContextHandle)
@@ -105,19 +108,21 @@ public class WebContentsDarkModeController {
 
     /**
      * Records UKM when the user disables auto-dark theming for a site through the app menu.
+     *
      * @param webContents The web contents associated with the current tab.
      * @param enabled The new per-site setting state for the current site.
      */
     public static void recordAutoDarkUkm(WebContents webContents, boolean enabled) {
         if (enabled) return;
-        new UkmRecorder.Bridge()
-                .recordEventWithBooleanMetric(
-                        webContents, "Android.DarkTheme.AutoDarkMode", "DisabledByUser");
+        new UkmRecorder(webContents, "Android.DarkTheme.AutoDarkMode")
+                .addBooleanMetric("DisabledByUser")
+                .record();
     }
 
     /**
      * Return the current enabled state for auto dark mode. If the input {@link GURL} is not null,
      * the enabled state will also check if auto dark is enabled for URL.
+     *
      * @param browserContextHandle Current browser context handle.
      * @param context {@link Context} used to check whether UI is in night mode.
      * @param url Queried URL whether auto dark is enabled.

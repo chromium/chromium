@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height= "wrap_content"
+    android:orientation="horizontal"
+    android:padding="@dimen/discount_item_container_padding"
+    android:background="@drawable/discount_item_container_background">
+
+    <!-- Discount content layout -->
+    <LinearLayout
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+                android:id="@+id/discount_code"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/discount_code_bottom_margin"
+                android:paddingHorizontal="@dimen/discount_code_horizontal_padding"
+                android:paddingVertical="@dimen/discount_code_vertical_padding"
+                android:textAppearance="@style/TextAppearance.DiscountCodeText"
+                android:background="@drawable/discount_code_background"/>
+        <TextView
+                android:id="@+id/description_detail"
+                android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        <TextView
+                android:id="@+id/expiry_time"
+                android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
+    </LinearLayout>
+
+    <!-- Copy button -->
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/copy_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        style="@style/TextButton"/>
+</LinearLayout>

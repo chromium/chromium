@@ -26,7 +26,7 @@ scoped_refptr<HostContentSettingsMap> CreateSettingsMap(
 TestPermissionsClient::TestPermissionsClient()
     : settings_map_(CreateSettingsMap(&prefs_)),
       autoblocker_(settings_map_.get()),
-      permission_actions_history_(&prefs_) {
+      permission_actions_history_(&prefs_, settings_map_.get()) {
   PermissionActionsHistory::RegisterProfilePrefs(prefs_.registry());
 }
 
@@ -113,5 +113,12 @@ void TestPermissionsClient::SetCanRequestDevicePermission(
     bool can_request_device_permission) {
   can_request_device_permission_ = can_request_device_permission;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// Gets the name of the embedder.
+const std::u16string TestPermissionsClient::GetClientApplicationName() const {
+  return u"Chrome";
+}
+#endif
 
 }  // namespace permissions

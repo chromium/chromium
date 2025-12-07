@@ -28,7 +28,7 @@ SynchronousTaskGraphRunner* GetGlobalTaskGraphRunner() {
 }
 
 FakeRasterBufferProviderImpl* GetGlobalRasterBufferProvider() {
-  static auto* buffer_provider = new FakeRasterBufferProviderImpl;
+  static auto* buffer_provider = new FakeRasterBufferProviderImpl();
   return buffer_provider;
 }
 

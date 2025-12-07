@@ -34,7 +34,7 @@
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_id.h"
 #include "ui/gfx/geometry/vector2d.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace gfx {
 
@@ -72,8 +72,8 @@ using TextAttributeMap = std::map<int, TextAttributeList>;
 // otherwise.
 class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
  public:
-  using AXPosition = ui::AXNodePosition::AXPositionInstance;
-  using SerializedPosition = ui::AXNodePosition::SerializedPosition;
+  using AXPosition = AXNodePosition::AXPositionInstance;
+  using SerializedPosition = AXNodePosition::SerializedPosition;
   using AXRange = ui::AXRange<AXPosition::element_type>;
 
   AXPlatformNodeDelegate();
@@ -86,6 +86,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   const AXNode* node() const { return node_; }
   AXNode* node() { return node_; }
   void SetNode(AXNode& node);
+  void reset_node() { node_ = nullptr; }
   AXTreeManager* GetTreeManager() const;
 
   // Returns the AXNodeID of the AXNode that this delegate encapsulates (if
@@ -131,29 +132,30 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   float GetFloatAttribute(ax::mojom::FloatAttribute attribute) const;
   bool GetFloatAttribute(ax::mojom::FloatAttribute attribute,
                          float* value) const;
-  const std::vector<std::pair<ax::mojom::IntAttribute, int32_t>>&
-  GetIntAttributes() const;
+  const AXIntAttributes& GetIntAttributes() const;
   bool HasIntAttribute(ax::mojom::IntAttribute attribute) const;
   int GetIntAttribute(ax::mojom::IntAttribute attribute) const;
   bool GetIntAttribute(ax::mojom::IntAttribute attribute, int* value) const;
-  const std::vector<std::pair<ax::mojom::StringAttribute, std::string>>&
-  GetStringAttributes() const;
+  const AXStringAttributes& GetStringAttributes() const;
   bool HasStringAttribute(ax::mojom::StringAttribute attribute) const;
   const std::string& GetStringAttribute(
       ax::mojom::StringAttribute attribute) const;
+  // TODO(accessibility): Deprecate. This version is likely less efficient than
+  // calling has followed by get since it creates a copy of the string rather
+  // than returning a const ref.
   bool GetStringAttribute(ax::mojom::StringAttribute attribute,
                           std::string* value) const;
   std::u16string GetString16Attribute(
       ax::mojom::StringAttribute attribute) const;
+  // TODO(accessibility): Deprecate in favor of using a has check if distinction
+  // between empty string and missing value is important.
   bool GetString16Attribute(ax::mojom::StringAttribute attribute,
                             std::u16string* value) const;
   const std::string& GetInheritedStringAttribute(
       ax::mojom::StringAttribute attribute) const;
   std::u16string GetInheritedString16Attribute(
       ax::mojom::StringAttribute attribute) const;
-  const std::vector<
-      std::pair<ax::mojom::IntListAttribute, std::vector<int32_t>>>&
-  GetIntListAttributes() const;
+  const AXIntListAttributes& GetIntListAttributes() const;
   bool HasIntListAttribute(ax::mojom::IntListAttribute attribute) const;
   const std::vector<int32_t>& GetIntListAttribute(
       ax::mojom::IntListAttribute attribute) const;
@@ -162,15 +164,15 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   bool HasStringListAttribute(ax::mojom::StringListAttribute attribute) const;
   const std::vector<std::string>& GetStringListAttribute(
       ax::mojom::StringListAttribute attribute) const;
+  // TODO(accessibility): Deprecate this method in favor of separate calls to
+  // Has and Get. This version forces a copy of the list, which is inefficient
+  // in cases where a const reference would suffice.
   bool GetStringListAttribute(ax::mojom::StringListAttribute attribute,
                               std::vector<std::string>* value) const;
-  bool HasHtmlAttribute(const char* attribute) const;
   const base::StringPairs& GetHtmlAttributes() const;
-  bool GetHtmlAttribute(const char* attribute, std::string* value) const;
-  bool GetHtmlAttribute(const char* attribute, std::u16string* value) const;
   AXTextAttributes GetTextAttributes() const;
+  AXStates GetStates() const;
   bool HasState(ax::mojom::State state) const;
-  ax::mojom::State GetState() const;
   bool HasAction(ax::mojom::Action action) const;
   bool HasDefaultActionVerb() const;
   std::vector<ax::mojom::Action> GetSupportedActions() const;
@@ -312,7 +314,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // Returns true if this is a top-level browser window that doesn't have a
   // parent accessible node, or its parent is the application accessible node on
   // platforms that have one.
-  virtual bool IsToplevelBrowserWindow();
+  bool IsToplevelBrowserWindow() const;
 
   // If this object is exposed to the platform's accessibility layer, returns
   // this object. Otherwise, returns the platform leaf or lowest unignored
@@ -381,10 +383,13 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // clipping behavior is set to clipped, clipping is applied. If an offscreen
   // result address is provided, it will be populated depending on whether the
   // returned bounding box is onscreen or offscreen.
-  virtual gfx::Rect GetBoundsRect(
-      const AXCoordinateSystem coordinate_system,
-      const AXClippingBehavior clipping_behavior,
-      AXOffscreenResult* offscreen_result = nullptr) const;
+  virtual gfx::Rect GetBoundsRect(const AXCoordinateSystem coordinate_system,
+                                  const AXClippingBehavior clipping_behavior,
+                                  AXOffscreenResult* offscreen_result) const;
+  gfx::Rect GetBoundsRect(const AXCoordinateSystem coordinate_system,
+                          const AXClippingBehavior clipping_behavior) const {
+    return GetBoundsRect(coordinate_system, clipping_behavior, nullptr);
+  }
 
   // Derivative utils for AXPlatformNodeDelegate::GetBoundsRect
   gfx::Rect GetClippedScreenBoundsRect(
@@ -392,13 +397,13 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   gfx::Rect GetUnclippedScreenBoundsRect(
       AXOffscreenResult* offscreen_result = nullptr) const;
   gfx::Rect GetClippedRootFrameBoundsRect(
-      ui::AXOffscreenResult* offscreen_result = nullptr) const;
+      AXOffscreenResult* offscreen_result = nullptr) const;
   gfx::Rect GetUnclippedRootFrameBoundsRect(
-      ui::AXOffscreenResult* offscreen_result = nullptr) const;
+      AXOffscreenResult* offscreen_result = nullptr) const;
   gfx::Rect GetClippedFrameBoundsRect(
-      ui::AXOffscreenResult* offscreen_result = nullptr) const;
+      AXOffscreenResult* offscreen_result = nullptr) const;
   gfx::Rect GetUnclippedFrameBoundsRect(
-      ui::AXOffscreenResult* offscreen_result = nullptr) const;
+      AXOffscreenResult* offscreen_result = nullptr) const;
 
   // Return the bounds of the text range given by text offsets relative to
   // GetHypertext in the coordinate system indicated. If the clipping behavior
@@ -479,7 +484,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // Get a node from a different tree using a tree ID and node ID.
   // Note that this is only guaranteed to work if the other tree is of the
   // same type, i.e. it won't work between web and views or vice-versa.
-  virtual AXPlatformNode* GetFromTreeIDAndNodeID(const ui::AXTreeID& ax_tree_id,
+  virtual AXPlatformNode* GetFromTreeIDAndNodeID(const AXTreeID& ax_tree_id,
                                                  int32_t id);
 
   // Given a node ID attribute (one where IsNodeIdIntAttribute is true), return
@@ -525,8 +530,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // Return a vector of all the descendants of this delegate's node. This method
   // is only meaningful for Windows UIA.
   virtual const std::vector<gfx::NativeViewAccessible>
-  GetUIADirectChildrenInRange(ui::AXPlatformNodeDelegate* start,
-                              ui::AXPlatformNodeDelegate* end);
+  GetUIADirectChildrenInRange(AXPlatformNodeDelegate* start,
+                              AXPlatformNodeDelegate* end);
 
   // Return a string representing the language code.
   //
@@ -538,6 +543,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // Returns empty string if no appropriate language was found or if this node
   // uses the default interface language.
   std::string GetLanguage() const;
+
+  // Returns the URL associated with the root of the tree containing this node.
+  std::string GetRootURL() const;
 
   //
   // Tables. All of these should be called on a node that has a table-like
@@ -556,6 +564,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   virtual std::vector<int32_t> GetColHeaderNodeIds(int col_index) const;
   virtual std::vector<int32_t> GetRowHeaderNodeIds() const;
   virtual std::vector<int32_t> GetRowHeaderNodeIds(int row_index) const;
+  virtual std::vector<int32_t> GetRowNodeIds() const;
+  virtual std::vector<AXNodeID> GetTableUniqueCellIds() const;
   virtual AXPlatformNode* GetTableCaption() const;
 
   //
@@ -602,7 +612,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   //
 
   // Return the platform-native GUI object that should be used as a target
-  // for accessibility events.
+  // for accessibility events. This function is performance-critical and must
+  // remain efficient.
   virtual gfx::AcceleratedWidget GetTargetForNativeAccessibilityEvent();
 
   //
@@ -616,7 +627,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   //
   // Localized strings.
   //
-
   virtual std::u16string GetLocalizedRoleDescriptionForUnlabeledImage() const;
   virtual std::u16string GetLocalizedStringForImageAnnotationStatus(
       ax::mojom::ImageAnnotationStatus status) const;
@@ -660,7 +670,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
 
   // Given a set of Blink node IDs, get their respective platform nodes and
   // return only those that are valid targets for a relation.
-  std::vector<ui::AXPlatformNode*> GetNodesFromRelationIdSet(
+  std::vector<AXPlatformNode*> GetNodesFromRelationIdSet(
       const std::set<AXNodeID>& ids);
 
  private:
@@ -670,7 +680,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // however reuse the same `AXNodeID`.
   //
   // Weak, `AXTree` owns this.
-  raw_ptr<AXNode, DanglingUntriaged> node_;
+  raw_ptr<AXNode> node_;
 };
 
 }  // namespace ui

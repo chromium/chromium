@@ -63,12 +63,13 @@ EffectNode& CreateEffectNode(PropertyTrees*,
 // This creates a scroll node that looks like a scroller that wasn't composited
 // (isn't connected to a Layer). This function will also create a matching
 // transform node that is a child of the parent's transform node.
-ScrollNode& CreateScrollNodeForUncompositedScroller(
+ScrollNode& CreateScrollNodeForNonCompositedScroller(
     PropertyTrees* property_trees,
     int parent_id,
     ElementId element_id,
     const gfx::Size& bounds,
-    const gfx::Size& scroll_container_bounds);
+    const gfx::Size& scroll_container_bounds,
+    const gfx::Point& scroll_container_origin = gfx::Point());
 
 void SetupMaskProperties(LayerImpl* masked_layer, PictureLayerImpl* mask_layer);
 void SetupMaskProperties(Layer* masked_layer, PictureLayer* mask_layer);
@@ -129,7 +130,7 @@ void SetLocalTransformChanged(LayerType* layer) {
   DCHECK(layer->has_transform_node());
   auto* transform_node = GetTransformNode(layer);
   transform_node->needs_local_transform_update = true;
-  transform_node->transform_changed = true;
+  transform_node->SetTransformChanged(DamageReason::kUntracked);
   GetPropertyTrees(layer)->transform_tree_mutable().set_needs_update(true);
 }
 
@@ -140,7 +141,7 @@ void SetWillChangeTransform(LayerType* layer, bool will_change_transform) {
   transform_node->will_change_transform = will_change_transform;
   transform_node->node_or_ancestors_will_change_transform =
       will_change_transform;
-  transform_node->transform_changed = true;
+  transform_node->SetTransformChanged(DamageReason::kUntracked);
   TransformTree& transform_tree =
       GetPropertyTrees(layer)->transform_tree_mutable();
   transform_tree.UpdateNodeOrAncestorsWillChangeTransform(

@@ -45,10 +45,6 @@ hue-slider {
 }
 
 eye-dropper {
-  background-image: url(eye_dropper_icon.svg);
-  background-origin: content-box;
-  background-repeat: no-repeat;
-  background-size: contain;
   border-radius: 2px;
   box-sizing: border-box;
   height: 32px;
@@ -168,7 +164,7 @@ format-toggler:hover {
   background-color: #F7F7F7;
 }
 
-#up-down-icon {
+.icon-container {
   display: flex;
   align-items: center;
 }
@@ -204,6 +200,9 @@ channel-label {
   color-selection-ring {
     forced-color-adjust: none;
   }
+  color-selection-ring:focus {
+    color: Highlight;
+  }
   color-picker {
     border: 1px solid WindowText;
     border-radius: 2px;
@@ -226,10 +225,6 @@ channel-label {
     background: #3B3B3B;
     color: #FFFFFF;
     border: 1px solid #858585;
-  }
-
-  eye-dropper {
-    background-image: url(eye_dropper_icon_dark.svg);
   }
 
   eye-dropper.selected {

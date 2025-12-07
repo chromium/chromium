@@ -86,13 +86,12 @@ class UndoManager {
   void ResumeUndoTracking();
   bool IsUndoTrakingSuspended() const;
 
-  // Remove all undo and redo operations. Note that grouping of actions and
-  // suspension of undo tracking states are left unchanged.
-  void RemoveAllOperations();
-
   // Observers are notified when the internal state of this class changes.
   void AddObserver(UndoManagerObserver* observer);
   void RemoveObserver(UndoManagerObserver* observer);
+
+  // Called upon the destruction of the underlying `BookmarkModel`.
+  void Shutdown();
 
  private:
   friend class UndoManagerTestApi;
@@ -101,15 +100,16 @@ class UndoManager {
             std::vector<std::unique_ptr<UndoGroup>>* active_undo_group);
   bool is_user_action() const { return !performing_undo_ && !performing_redo_; }
 
-  // Notifies the observers that the undo manager's state has changed.
-  void NotifyOnUndoManagerStateChange();
-
   // Handle the addition of |new_undo_group| to the active undo group container.
   void AddUndoGroup(std::unique_ptr<UndoGroup> new_undo_group);
 
   // Returns the undo or redo UndoGroup container that should store the next
   // change taking into account if an undo or redo is being executed.
   std::vector<std::unique_ptr<UndoGroup>>* GetActiveUndoGroup();
+
+  // Remove all undo and redo operations. Note that grouping of actions and
+  // suspension of undo tracking states are left unchanged.
+  void RemoveAllOperations();
 
   // Containers of user actions ready for an undo or redo treated as a stack.
   std::vector<std::unique_ptr<UndoGroup>> undo_actions_;

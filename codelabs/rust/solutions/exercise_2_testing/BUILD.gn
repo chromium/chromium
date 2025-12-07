@@ -1,0 +1,33 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/rust_static_library.gni")
+import("//testing/test.gni")
+
+rust_static_library("library") {
+  sources = [ "addnumberslib.rs" ]
+  crate_root = "addnumberslib.rs"
+  allow_unsafe = true
+}
+
+rust_static_library("unittests") {
+  testonly = true
+  is_gtest_unittests = true
+  crate_root = "addnumberslib_unittests.rs"
+  sources = [ "addnumberslib_unittests.rs" ]
+  deps = [
+    ":library",
+    "//testing/rust_gtest_interop",
+  ]
+}
+
+test("exercise_2_solution") {
+  sources = [ "run_tests.cc" ]
+  deps = [
+    ":unittests",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}

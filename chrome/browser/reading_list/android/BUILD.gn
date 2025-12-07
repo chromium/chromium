@@ -25,9 +25,8 @@ source_set("reading_list") {
     "//components/bookmarks/browser",
     "//components/keyed_service/core",
     "//components/reading_list/core",
-    "//components/reading_list/features:flags",
     "//skia",
-    "//ui/base:base",
+    "//ui/base",
     "//url",
   ]
 }
@@ -40,9 +39,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/notifications/scheduler/test:test_support",
     "//components/bookmarks/browser",
-    "//components/reading_list/core:core",
+    "//components/reading_list/core",
     "//components/reading_list/core:test_support",
-    "//components/reading_list/features:flags",
     "//components/sync",
     "//components/sync:test_support",
     "//skia",

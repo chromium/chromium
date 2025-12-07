@@ -103,7 +103,7 @@ void PatternParser::Parse(std::string_view pattern_spec,
       start = current_pos;
     }
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   current_pos = pattern_spec.size();
@@ -257,8 +257,8 @@ GURL PatternParser::ToRepresentativeUrl(
 
   if (!parts.is_scheme_wildcard) {
     r.SetSchemeStr(parts.scheme);
-    default_port = base::NumberToString(
-        url::DefaultPortForScheme(parts.scheme.c_str(), parts.scheme.length()));
+    default_port =
+        base::NumberToString(url::DefaultPortForScheme(parts.scheme));
     r.SetPortStr(default_port);
   }
 

@@ -7,9 +7,8 @@
 #include <utility>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/trace_event/trace_event.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_promise_app_item.h"
@@ -17,7 +16,7 @@
 #include "chrome/browser/ash/app_list/chrome_app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/reorder/app_list_reorder_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/app_icon_color_cache.h"
+#include "chrome/browser/ui/ash/app_icon_color_cache/app_icon_color_cache.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/extension_system.h"
 #include "ui/display/screen.h"
@@ -148,7 +147,7 @@ app_list::AppContextMenu* ChromeAppListItem::GetAppContextMenu() {
 void ChromeAppListItem::MaybeDismissAppList() {
   // Launching apps can take some time. It looks nicer to dismiss the app list.
   // Do not close app list for home launcher.
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     GetController()->DismissView();
   }
 }

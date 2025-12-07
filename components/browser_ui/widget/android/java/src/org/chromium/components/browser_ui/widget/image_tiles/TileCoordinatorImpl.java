@@ -8,15 +8,16 @@ import android.content.Context;
 import android.view.View;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /** The top level coordinator for the tiles UI. */
+@NullMarked
 class TileCoordinatorImpl implements ImageTileCoordinator {
     private final TileListModel mModel;
     private final TileListView mView;
-    private final TileMediator mMediator;
 
     /** Constructor. */
     public TileCoordinatorImpl(
@@ -26,7 +27,7 @@ class TileCoordinatorImpl implements ImageTileCoordinator {
             TileVisualsProvider visualsProvider) {
         mModel = new TileListModel();
         mView = new TileListView(context, config, mModel);
-        mMediator = new TileMediator(config, mModel, tileClickCallback, visualsProvider);
+        new TileMediator(config, mModel, tileClickCallback, visualsProvider);
     }
 
     @Override

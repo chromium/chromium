@@ -4,26 +4,26 @@
 
 #include "chrome/browser/first_run/first_run.h"
 
+#include <algorithm>
 #include <memory>
+#include <string>
 #include <tuple>
 #include <utility>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/functional/bind.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
 #include "base/one_shot_event.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
+#include "chrome/browser/first_run/first_run_features.h"
 #include "chrome/browser/first_run/first_run_internal.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/headless/headless_mode_util.h"
@@ -51,8 +51,15 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
+#include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/browser_features.h"
+#include "components/crx_file/id_util.h"
+#include "extensions/browser/pref_names.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace content {
 class BrowserContext;
@@ -82,17 +89,15 @@ base::Time g_cached_sentinel_creation_time;
 // ImportEnded() is called asynchronously. Thus we have to handle both cases.
 class ImportEndedObserver : public importer::ImporterProgressObserver {
  public:
-  ImportEndedObserver() : ended_(false) {}
+  ImportEndedObserver() = default;
 
   ImportEndedObserver(const ImportEndedObserver&) = delete;
   ImportEndedObserver& operator=(const ImportEndedObserver&) = delete;
 
-  ~ImportEndedObserver() override {}
-
   // importer::ImporterProgressObserver:
   void ImportStarted() override {}
-  void ImportItemStarted(importer::ImportItem item) override {}
-  void ImportItemEnded(importer::ImportItem item) override {}
+  void ImportItemStarted(user_data_importer::ImportItem item) override {}
+  void ImportItemEnded(user_data_importer::ImportItem item) override {}
   void ImportEnded() override {
     ended_ = true;
     if (callback_for_import_end_)
@@ -109,7 +114,7 @@ class ImportEndedObserver : public importer::ImporterProgressObserver {
 
  private:
   // Set if the import has ended.
-  bool ended_;
+  bool ended_ = false;
 
   base::OnceClosure callback_for_import_end_;
 };
@@ -118,9 +123,10 @@ class ImportEndedObserver : public importer::ImporterProgressObserver {
 // |target_profile| for the items specified in the |items_to_import| bitfield.
 // This may be done in a separate process depending on the platform, but it will
 // always block until done.
-void ImportFromSourceProfile(const importer::SourceProfile& source_profile,
-                             Profile* target_profile,
-                             uint16_t items_to_import) {
+void ImportFromSourceProfile(
+    const user_data_importer::SourceProfile& source_profile,
+    Profile* target_profile,
+    uint16_t items_to_import) {
   // Deletes itself.
   ExternalProcessImporterHost* importer_host =
       new ExternalProcessImporterHost;
@@ -145,8 +151,8 @@ void ImportFromSourceProfile(const importer::SourceProfile& source_profile,
 // |import_bookmarks_path|.
 void ImportFromFile(Profile* profile,
                     const std::string& import_bookmarks_path) {
-  importer::SourceProfile source_profile;
-  source_profile.importer_type = importer::TYPE_BOOKMARKS_FILE;
+  user_data_importer::SourceProfile source_profile;
+  source_profile.importer_type = user_data_importer::TYPE_BOOKMARKS_FILE;
 
   const base::FilePath::StringType& import_bookmarks_path_str =
 #if BUILDFLAG(IS_WIN)
@@ -156,7 +162,8 @@ void ImportFromFile(Profile* profile,
 #endif
   source_profile.source_path = base::FilePath(import_bookmarks_path_str);
 
-  ImportFromSourceProfile(source_profile, profile, importer::FAVORITES);
+  ImportFromSourceProfile(source_profile, profile,
+                          user_data_importer::FAVORITES);
   g_auto_import_state |= first_run::AUTO_IMPORT_BOOKMARKS_FILE_IMPORTED;
 }
 
@@ -165,7 +172,7 @@ void ImportSettings(Profile* profile,
                     std::unique_ptr<ImporterList> importer_list,
                     uint16_t items_to_import) {
   DCHECK(items_to_import);
-  const importer::SourceProfile& source_profile =
+  const user_data_importer::SourceProfile& source_profile =
       importer_list->GetSourceProfileAt(0);
 
   // Ensure that importers aren't requested to import items that they do not
@@ -185,7 +192,7 @@ void ConvertStringVectorToGURLVector(
     const std::vector<std::string>& src,
     std::vector<GURL>* ret) {
   ret->resize(src.size());
-  base::ranges::transform(src, ret->begin(), &UrlFromString);
+  std::ranges::transform(src, ret->begin(), &UrlFromString);
 }
 
 base::FilePath& GetInitialPrefsPathForTesting() {
@@ -288,6 +295,25 @@ void SetupInitialPrefsFromInstallPrefs(
       installer::initial_preferences::kDistroSuppressDefaultBrowserPromptPref,
       &out_prefs->suppress_default_browser_prompt_for_version);
 
+  if (base::FeatureList::IsEnabled(features::kBookmarksImportOnFirstRun)) {
+    const base::Value::Dict* bookmarks_dict = install_prefs.GetBookmarksBlock();
+    if (bookmarks_dict) {
+      out_prefs->import_bookmarks_dict = bookmarks_dict->Clone();
+    }
+  }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (base::FeatureList::IsEnabled(features::kInitialExternalExtensions)) {
+    out_prefs->initial_extensions_provider_name =
+        install_prefs.GetInitialExtensionsProviderName();
+
+    if (const base::Value::List* initial_extensions =
+            install_prefs.GetInitialExtensionsList()) {
+      out_prefs->initial_extensions = initial_extensions->Clone();
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 #if BUILDFLAG(IS_MAC)
   if (install_prefs.GetBool(prefs::kConfirmToQuitEnabled, &value) && value)
     out_prefs->confirm_to_quit = true;
@@ -377,13 +403,6 @@ std::unique_ptr<installer::InitialPreferences> LoadInitialPrefs() {
   base::FilePath initial_prefs_path;
   if (!GetInitialPrefsPathForTesting().empty()) {
     initial_prefs_path = GetInitialPrefsPathForTesting();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  } else if (const base::CommandLine* command_line =
-                 base::CommandLine::ForCurrentProcess();
-             command_line->HasSwitch(switches::kInitialPreferencesFile)) {
-    initial_prefs_path =
-        command_line->GetSwitchValuePath(switches::kInitialPreferencesFile);
-#endif
   } else {
     initial_prefs_path =
         base::FilePath(first_run::internal::InitialPrefsPath());
@@ -419,16 +438,21 @@ ProcessInitialPreferencesResult ProcessInitialPreferences(
     // before mapping it to prefs.
     initial_dictionary.Remove(installer::initial_preferences::kDistroDict);
 
+    initial_dictionary.Remove(installer::initial_preferences::kBookmarksBlock);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    // Extensions are not copied verbatim into prefs. Their installation
+    // is managed by the `InitialExternalExtensionsLoader` which will load
+    // extension ids from the local prefs.
+    initial_dictionary.RemoveByDottedPath(
+        installer::initial_preferences::kExtensionsBlock);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
     if (!chrome_prefs::InitializePrefsFromMasterPrefs(
             profiles::GetDefaultProfileDir(user_data_dir),
-            std::move(initial_dictionary))) {
+            std::move(initial_dictionary),
+            g_browser_process->os_crypt_async())) {
       DLOG(ERROR) << "Failed to initialize from initial preferences.";
-    }
-
-    const base::Value::Dict* extensions = nullptr;
-    if (initial_prefs->GetExtensionsBlock(extensions)) {
-      DVLOG(1) << "Extensions block found in initial preferences";
-      extensions::ExtensionUpdater::UpdateImmediatelyForFirstRun();
     }
 
     internal::SetupInitialPrefsFromInstallPrefs(*initial_prefs, out_prefs);
@@ -453,14 +477,14 @@ void AutoImport(
   uint16_t items_to_import = 0;
   static constexpr struct {
     const char* pref_path;
-    importer::ImportItem bit;
+    user_data_importer::ImportItem bit;
   } kImportItems[] = {
-      {prefs::kImportAutofillFormData, importer::AUTOFILL_FORM_DATA},
-      {prefs::kImportBookmarks, importer::FAVORITES},
-      {prefs::kImportHistory, importer::HISTORY},
-      {prefs::kImportHomepage, importer::HOME_PAGE},
-      {prefs::kImportSavedPasswords, importer::PASSWORDS},
-      {prefs::kImportSearchEngine, importer::SEARCH_ENGINES},
+      {prefs::kImportAutofillFormData, user_data_importer::AUTOFILL_FORM_DATA},
+      {prefs::kImportBookmarks, user_data_importer::FAVORITES},
+      {prefs::kImportHistory, user_data_importer::HISTORY},
+      {prefs::kImportHomepage, user_data_importer::HOME_PAGE},
+      {prefs::kImportSavedPasswords, user_data_importer::PASSWORDS},
+      {prefs::kImportSearchEngine, user_data_importer::SEARCH_ENGINES},
   };
 
   for (const auto& import_item : kImportItems) {

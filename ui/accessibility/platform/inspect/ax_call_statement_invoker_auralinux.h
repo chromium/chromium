@@ -7,9 +7,10 @@
 
 #include <atspi/atspi.h>
 
+#include <variant>
+
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/accessibility/platform/inspect/ax_optional.h"
 #include "ui/accessibility/platform/inspect/ax_tree_indexer_auralinux.h"
 
@@ -18,10 +19,10 @@ namespace ui {
 class AXPropertyNode;
 
 using Target =
-    absl::variant<absl::monostate, std::string, int, const AtspiAccessible*>;
+    std::variant<std::monostate, std::string, int, const AtspiAccessible*>;
 
 // Optional tri-state object.
-using AXOptionalObject = ui::AXOptional<Target>;
+using AXOptionalObject = AXOptional<Target>;
 
 // Invokes a script instruction describing a call unit which represents
 // a sequence of calls.

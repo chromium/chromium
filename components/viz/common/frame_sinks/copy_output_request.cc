@@ -4,19 +4,24 @@
 
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
+#include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
+#include "base/synchronization/lock.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace {
+
+constexpr int kMaxPendingSendResult = 4;
 
 const char* ResultFormatToShortString(
     viz::CopyOutputRequest::ResultFormat result_format) {
@@ -27,6 +32,8 @@ const char* ResultFormatToShortString(
       return "I420";
     case viz::CopyOutputRequest::ResultFormat::NV12:
       return "NV12";
+    case viz::CopyOutputRequest::ResultFormat::RGBAF16:
+      return "RGBAF16";
   }
 }
 
@@ -35,9 +42,16 @@ const char* ResultDestinationToShortString(
   switch (result_destination) {
     case viz::CopyOutputRequest::ResultDestination::kSystemMemory:
       return "CPU";
-    case viz::CopyOutputRequest::ResultDestination::kNativeTextures:
+    case viz::CopyOutputRequest::ResultDestination::kSharedImage:
       return "GPU";
   }
+}
+
+int g_pending_send_result_count = 0;
+
+base::Lock& GetPendingSendResultLock() {
+  static base::NoDestructor<base::Lock> lock;
+  return *lock;
 }
 
 }  // namespace
@@ -50,6 +64,7 @@ CopyOutputRequest::CopyOutputRequest(ResultFormat result_format,
     : result_format_(result_format),
       result_destination_(result_destination),
       result_callback_(std::move(result_callback)),
+      result_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       scale_from_(1, 1),
       scale_to_(1, 1) {
   // If format is I420_PLANES, the result must be in system memory. Returning
@@ -58,7 +73,8 @@ CopyOutputRequest::CopyOutputRequest(ResultFormat result_format,
          result_destination_ == ResultDestination::kSystemMemory);
 
   DCHECK(!result_callback_.is_null());
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("viz", "CopyOutputRequest", this);
+  TRACE_EVENT_BEGIN("viz", "CopyOutputRequest",
+                    perfetto::Track::FromPointer(this));
 }
 
 CopyOutputRequest::~CopyOutputRequest() {
@@ -106,9 +122,10 @@ void CopyOutputRequest::SetUniformScaleRatio(int scale_from, int scale_to) {
 
 void CopyOutputRequest::set_blit_request(BlitRequest blit_request) {
   DCHECK(!blit_request_);
-  DCHECK_EQ(result_destination(), ResultDestination::kNativeTextures);
+  DCHECK_EQ(result_destination(), ResultDestination::kSharedImage);
   DCHECK(result_format() == ResultFormat::NV12 ||
-         result_format() == ResultFormat::RGBA);
+         result_format() == ResultFormat::RGBA ||
+         result_format() == ResultFormat::RGBAF16);
   DCHECK(has_result_selection());
 
   if (result_format() == ResultFormat::NV12) {
@@ -117,24 +134,39 @@ void CopyOutputRequest::set_blit_request(BlitRequest blit_request) {
     DCHECK_EQ(blit_request.destination_region_offset().y() % 2, 0);
   }
 
-  CHECK(!blit_request.mailbox().IsZero());
+  CHECK(blit_request.shared_image());
 
   blit_request_ = std::move(blit_request);
 }
 
 void CopyOutputRequest::SendResult(std::unique_ptr<CopyOutputResult> result) {
-  TRACE_EVENT_NESTABLE_ASYNC_END2(
-      "viz", "CopyOutputRequest", this, "success", !result->IsEmpty(),
-      "has_provided_task_runner", !!result_task_runner_);
-  // Serializing the result requires an expensive copy, so to not block the
-  // any important thread we PostTask onto the threadpool by default, but if the
-  // user has provided a task runner use that instead.
-  auto runner =
-      result_task_runner_
-          ? result_task_runner_
-          : base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
-  runner->PostTask(FROM_HERE, base::BindOnce(std::move(result_callback_),
-                                             std::move(result)));
+  TRACE_EVENT_END("viz",
+                  /* CopyOutputRequest */ perfetto::Track::FromPointer(this),
+                  "success", !result->IsEmpty(), "has_provided_task_runner",
+                  !!result_task_runner_);
+  CHECK(result_task_runner_);
+  auto task = base::BindOnce(std::move(result_callback_), std::move(result));
+
+  if (send_result_delay_.is_zero()) {
+    result_task_runner_->PostTask(FROM_HERE, std::move(task));
+  } else {
+    base::AutoLock locked_counter(GetPendingSendResultLock());
+    if (g_pending_send_result_count >= kMaxPendingSendResult) {
+      result_task_runner_->PostTask(FROM_HERE, std::move(task));
+    } else {
+      g_pending_send_result_count++;
+      result_task_runner_->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(
+              [](base::OnceClosure callback) {
+                std::move(callback).Run();
+                base::AutoLock locked_counter(GetPendingSendResultLock());
+                g_pending_send_result_count--;
+              },
+              std::move(task)),
+          send_result_delay_);
+    }
+  }
   // Remove the reference to the task runner (no-op if we didn't have one).
   result_task_runner_ = nullptr;
 }

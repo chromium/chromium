@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "ash/public/cpp/style/color_provider.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/ash/release_notes/release_notes_storage.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/prefs/pref_service.h"
@@ -25,6 +25,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "url/gurl.h"
@@ -109,8 +110,7 @@ void HelpAppZeroStateProvider::StartZeroState() {
     // NOTE: Color provider may not be set in unit tests.
     SkColor icon_color =
         color_provider
-            ? color_provider->GetContentLayerColor(
-                  ash::ColorProvider::ContentLayerType::kButtonIconColorPrimary)
+            ? color_provider->GetColor(cros_tokens::kColorPrimaryInverted)
             : gfx::kGoogleGrey900;
     gfx::ImageSkia icon = gfx::CreateVectorIcon(
         ash::kReleaseNotesChipIcon, app_list::kSystemIconDimension, icon_color);
@@ -129,7 +129,7 @@ ash::AppListSearchResultType HelpAppZeroStateProvider::ResultType() const {
 }
 
 void HelpAppZeroStateProvider::OnAppUpdate(const apps::AppUpdate& update) {
-  if (update.AppId() == web_app::kHelpAppId && update.ReadinessChanged() &&
+  if (update.AppId() == ash::kHelpAppId && update.ReadinessChanged() &&
       update.Readiness() == apps::Readiness::kReady) {
     LoadIcon();
   }
@@ -165,7 +165,7 @@ void HelpAppZeroStateProvider::OnLoadIcon(apps::IconValuePtr icon_value) {
 void HelpAppZeroStateProvider::LoadIcon() {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
   proxy->LoadIcon(
-      web_app::kHelpAppId, apps::IconType::kStandard,
+      ash::kHelpAppId, apps::IconType::kStandard,
       ash::SharedAppListConfig::instance().suggestion_chip_icon_dimension(),
       /*allow_placeholder_icon=*/false,
       base::BindOnce(&HelpAppZeroStateProvider::OnLoadIcon,

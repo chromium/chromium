@@ -7,8 +7,8 @@
 #include <string>
 #include <utility>
 
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_driver.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 
 namespace autofill {
@@ -94,7 +94,7 @@ std::vector<uint8_t> TestCreditCardFidoAuthenticator::GetCredentialId() {
 
 std::vector<uint8_t> TestCreditCardFidoAuthenticator::GetChallenge() {
   if (request_options_) {
-    return request_options_->challenge;
+    return *request_options_->challenge;
   } else {
     DCHECK(creation_options_);
     return creation_options_->challenge;

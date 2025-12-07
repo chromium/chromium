@@ -4,18 +4,19 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 /** This factory creates TabGroupSyncService for the given {@link Profile}. */
+@NullMarked
 public final class TabGroupSyncServiceFactory {
-    private static TabGroupSyncService sTabGroupSyncServiceForTesting;
+    private static @Nullable TabGroupSyncService sTabGroupSyncServiceForTesting;
 
     /**
      * A factory method to create or retrieve a {@link TabGroupSyncService} object for a given
@@ -23,12 +24,16 @@ public final class TabGroupSyncServiceFactory {
      *
      * @return The {@link TabGroupSyncService} for the given profile.
      */
-    public static TabGroupSyncService getForProfile(Profile profile) {
+    public static @Nullable TabGroupSyncService getForProfile(Profile profile) {
+        // Assert this before returning test value so that incorrect usage can be caught in tests.
+        assert !profile.isOffTheRecord();
         if (sTabGroupSyncServiceForTesting != null) {
             return sTabGroupSyncServiceForTesting;
         }
 
-        assert !profile.isOffTheRecord();
+        // Throw an exception if the native pointer is not initialized. This is useful to get a more
+        // debuggable stacktrace than failing in native.
+        profile.ensureNativeInitialized();
         return TabGroupSyncServiceFactoryJni.get().getForProfile(profile);
     }
 

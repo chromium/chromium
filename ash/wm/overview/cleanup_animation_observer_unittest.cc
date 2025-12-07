@@ -14,9 +14,9 @@
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -149,8 +149,8 @@ TEST_F(CleanupAnimationObserverTest, CreateAnimateShutdown) {
   {
     // Normal animations for tests have ZERO_DURATION, make sure we are actually
     // animating the movement.
-    ui::ScopedAnimationDurationScaleMode animation_scale_mode(
-        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode animation_scale_mode(
+        gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
     ui::ScopedLayerAnimationSettings animation_settings(
         widget_window->layer()->GetAnimator());
     animation_settings.SetTransitionDuration(base::Milliseconds(1000));

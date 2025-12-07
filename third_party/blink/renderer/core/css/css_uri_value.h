@@ -11,33 +11,30 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-namespace WTF {
-class TextEncoding;
-}  // namespace WTF
-
 namespace blink {
 
 class Document;
 class KURL;
 class SVGResource;
+class TextEncoding;
 
 namespace cssvalue {
 
 class CORE_EXPORT CSSURIValue : public CSSValue {
  public:
-  explicit CSSURIValue(CSSUrlData url_data);
+  explicit CSSURIValue(const CSSUrlData& url_data);
   ~CSSURIValue();
 
   SVGResource* EnsureResourceReference() const;
   void ReResolveUrl(const Document&) const;
 
   const AtomicString& ValueForSerialization() const {
-    return url_data_.ValueForSerialization();
+    return UrlData().ValueForSerialization();
   }
 
   String CustomCSSText() const;
 
-  const CSSUrlData& UrlData() const { return url_data_; }
+  const CSSUrlData& UrlData() const { return *url_data_; }
   bool IsLocal(const Document&) const;
   AtomicString FragmentIdentifier() const;
 
@@ -51,16 +48,15 @@ class CORE_EXPORT CSSURIValue : public CSSValue {
   bool Equals(const CSSURIValue&) const;
 
   CSSURIValue* ComputedCSSValue(const KURL& base_url,
-                                const WTF::TextEncoding&) const;
+                                const TextEncoding&) const;
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   KURL AbsoluteUrl() const;
 
-  CSSUrlData url_data_;
-
   mutable AtomicString normalized_fragment_identifier_cache_;
+  const Member<const CSSUrlData> url_data_;
   mutable Member<SVGResource> resource_;
 };
 

@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_test_helper.h"
 
-namespace WTF {
+namespace blink {
 
 namespace {
 
@@ -16,7 +16,7 @@ static size_t test_node_counter = 0;
 
 class TestNode final : public DoublyLinkedListNode<TestNode> {
   USING_FAST_MALLOC(TestNode);
-  friend class WTF::DoublyLinkedListNode<TestNode>;
+  friend class DoublyLinkedListNode<TestNode>;
 
  public:
   TestNode(int i) : i_(i) { ++test_node_counter; }
@@ -220,4 +220,4 @@ TEST_F(DoublyLinkedListTest, InsertAfterDup) {
 
 }  // anonymous namespace
 
-}  // namespace WTF
+}  // namespace blink

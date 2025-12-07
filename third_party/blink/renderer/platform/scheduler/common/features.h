@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_FEATURES_H_
 
 #include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
@@ -15,10 +14,6 @@ namespace scheduler {
 
 BASE_FEATURE(kDedicatedWorkerThrottling,
              "BlinkSchedulerWorkerThrottling",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kBestEffortPriorityForFindInPage,
-             "BlinkSchedulerBestEffortPriorityForFindInPage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable setting high priority database task type from field trial parameters.
@@ -65,44 +60,6 @@ PLATFORM_EXPORT base::TimeDelta GetIntensiveWakeUpThrottlingGracePeriod(
 BASE_FEATURE(kMbiOverrideTaskRunnerHandle,
              "MbiOverrideTaskRunnerHandle",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Feature to experiment with different values for: "prioritize main thread
-// compositing tasks if we haven't done a main frame in this many milliseconds."
-PLATFORM_EXPORT BASE_DECLARE_FEATURE(kPrioritizeCompositingAfterDelayTrials);
-
-// Buffer time that we want to extend the loading state after the FMP is
-// received.
-PLATFORM_EXPORT base::TimeDelta
-GetLoadingPhaseBufferTimeAfterFirstMeaningfulPaint();
-
-// Finch flag for preventing rendering starvation during threaded scrolling.
-// With this feature enabled, the existing delay-based rendering anti-starvation
-// applies, and the compositor task queue priority is controlled with the
-// `kCompositorTQPolicyDuringThreadedScroll` `FeatureParam`.
-PLATFORM_EXPORT BASE_DECLARE_FEATURE(kThreadedScrollPreventRenderingStarvation);
-
-enum class CompositorTQPolicyDuringThreadedScroll {
-  // Compositor TQ has low priority, delay-based anti-starvation does not apply.
-  // This is the current behavior and it isn't exposed through
-  // `kCompositorTQPolicyDuringThreadedScrollOptions`; this exists to simplify
-  // the relayed policy logic.
-  kLowPriorityAlways,
-  // Compositor TQ has low priority, delay-based anti-starvation applies.
-  kLowPriorityWithAntiStarvation,
-  // Compositor TQ has normal priority, delay-based anti-starvation applies.
-  kNormalPriorityWithAntiStarvation,
-  // Compositor TQ has very high priority. Note that this is the same priority
-  // as used by the delay-based anti-starvation logic.
-  kVeryHighPriorityAlways,
-};
-
-PLATFORM_EXPORT extern const base::FeatureParam<
-    CompositorTQPolicyDuringThreadedScroll>::Option
-    kCompositorTQPolicyDuringThreadedScrollOptions[];
-
-PLATFORM_EXPORT extern const base::FeatureParam<
-    CompositorTQPolicyDuringThreadedScroll>
-    kCompositorTQPolicyDuringThreadedScroll;
 
 }  // namespace scheduler
 }  // namespace blink

@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/common/logging_chrome.h"
+
 #include <memory>
+#include <optional>
 
 #include "base/command_line.h"
 #include "base/environment.h"
@@ -10,9 +13,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/common/env_vars.h"
-#include "chrome/common/logging_chrome.h"
 #include "content/public/common/content_switches.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,8 +25,7 @@ class ChromeLoggingTest : public testing::Test {
   // variable and sets the variable to new_value.
   void SaveEnvironmentVariable(const std::string& new_value) {
     std::unique_ptr<base::Environment> env(base::Environment::Create());
-    if (!env->GetVar(env_vars::kLogFileName, &environment_filename_))
-      environment_filename_ = "";
+    environment_filename_ = env->GetVar(env_vars::kLogFileName).value_or("");
 
     env->SetVar(env_vars::kLogFileName, new_value);
   }
@@ -133,7 +134,7 @@ TEST_F(ChromeLoggingTest, EnvironmentAndFlagLogFileName) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ChromeLoggingTest, TimestampedName) {
   base::FilePath path = base::FilePath(FILE_PATH_LITERAL("xy.zzy"));
   base::FilePath timestamped_path =
@@ -326,4 +327,4 @@ TEST_F(ChromeLoggingTest, RotateLogFilesExisting) {
   }
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)

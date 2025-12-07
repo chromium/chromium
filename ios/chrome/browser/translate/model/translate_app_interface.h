@@ -42,6 +42,9 @@
 // Returns the language code for the language determined from the webpage.
 + (NSString*)adoptedLanguage;
 
++ (void)setAutoTranslateFromLanguage:(NSString*)source
+                          toLanguage:(NSString*)target;
+
 /// Whether user has set a preference to translate from `source` language to
 // `target` language.
 + (BOOL)shouldAutoTranslateFromLanguage:(NSString*)source

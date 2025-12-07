@@ -82,7 +82,6 @@ class MockLoginScreenClient : public LoginScreenClient {
               OnMaxIncorrectPasswordAttempted,
               (const AccountId& account_id),
               (override));
-  MOCK_METHOD(void, FocusLockScreenApps, (bool reverse), (override));
   MOCK_METHOD(void,
               ShowGaiaSignin,
               (const AccountId& prefilled_account),

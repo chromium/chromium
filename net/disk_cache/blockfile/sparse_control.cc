@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/disk_cache/blockfile/sparse_control.h"
 
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -81,7 +79,7 @@ class ChildrenDeleter
 
   // Two ways of deleting the children: if we have the children map, use Start()
   // directly, otherwise pass the data address to ReadData().
-  void Start(std::unique_ptr<char[]> buffer, int len);
+  void Start(base::HeapArray<uint8_t> buffer, int len);
   void ReadData(disk_cache::Addr address, int len);
 
  private:
@@ -94,7 +92,7 @@ class ChildrenDeleter
   std::string name_;
   disk_cache::Bitmap children_map_;
   int64_t signature_ = 0;
-  std::unique_ptr<char[]> buffer_;
+  base::HeapArray<uint8_t> buffer_;
 };
 
 // This is the callback of the file operation.
@@ -102,21 +100,22 @@ void ChildrenDeleter::OnFileIOComplete(int bytes_copied) {
   Start(std::move(buffer_), bytes_copied);
 }
 
-void ChildrenDeleter::Start(std::unique_ptr<char[]> buffer, int len) {
-  buffer_ = std::move(buffer);
+void ChildrenDeleter::Start(base::HeapArray<uint8_t> buffer, int len) {
   if (len < static_cast<int>(sizeof(disk_cache::SparseData)))
     return Release();
 
   // Just copy the information from |buffer|, delete |buffer| and start deleting
   // the child entries.
   disk_cache::SparseData* data =
-      reinterpret_cast<disk_cache::SparseData*>(buffer_.get());
+      reinterpret_cast<disk_cache::SparseData*>(buffer.data());
   signature_ = data->header.signature;
 
   int num_bits = (len - sizeof(disk_cache::SparseHeader)) * 8;
   children_map_.Resize(num_bits, false);
-  children_map_.SetMap(data->bitmap, num_bits / 32);
-  buffer_.reset();
+  base::span<uint8_t> bitmap_bytes =
+      buffer.subspan(offsetof(disk_cache::SparseData, bitmap));
+  children_map_.SetMap(disk_cache::ToUint32Span(bitmap_bytes));
+  buffer = {};
 
   DeleteChildren();
 }
@@ -133,10 +132,11 @@ void ChildrenDeleter::ReadData(disk_cache::Addr address, int len) {
   size_t file_offset = address.start_block() * address.BlockSize() +
                        disk_cache::kBlockHeaderSize;
 
-  buffer_ = std::make_unique<char[]>(len);
+  buffer_ = base::HeapArray<uint8_t>::Uninit(len);
   bool completed;
-  if (!file->Read(buffer_.get(), len, file_offset, this, &completed))
+  if (!file->Read(buffer_.as_span(), file_offset, this, &completed)) {
     return Release();
+  }
 
   if (completed)
     OnFileIOComplete(len);
@@ -170,8 +170,7 @@ net::NetLogEventType GetSparseEventType(
     case disk_cache::SparseControl::kGetRangeOperation:
       return net::NetLogEventType::SPARSE_GET_RANGE;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return net::NetLogEventType::CANCELLED;
+      NOTREACHED();
   }
 }
 
@@ -192,8 +191,7 @@ void LogChildOperationEnd(const net::NetLogWithSource& net_log,
       case disk_cache::SparseControl::kGetRangeOperation:
         return;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return;
+        NOTREACHED();
     }
     net_log.EndEventWithNetErrorCode(event_type, result);
   }
@@ -205,9 +203,9 @@ namespace disk_cache {
 
 SparseControl::SparseControl(EntryImpl* entry)
     : entry_(entry),
-      child_map_(child_data_.bitmap, kNumSparseBits, kNumSparseBits / 32) {
-  memset(&sparse_header_, 0, sizeof(sparse_header_));
-  memset(&child_data_, 0, sizeof(child_data_));
+      child_map_(ToUint32Span(base::as_writable_byte_span(child_data_.bitmap)),
+                 kNumSparseBits) {
+  static_assert(sizeof(child_data_.bitmap) == kNumSparseBits / 8);
 }
 
 SparseControl::~SparseControl() {
@@ -378,11 +376,12 @@ void SparseControl::DeleteChildren(EntryImpl* entry) {
   if (map_len > kMaxMapSize || map_len % 4)
     return;
 
-  std::unique_ptr<char[]> buffer;
+  base::HeapArray<uint8_t> buffer;
   Addr address;
   entry->GetData(kSparseIndex, &buffer, &address);
-  if (!buffer && !address.is_initialized())
+  if (buffer.empty() && !address.is_initialized()) {
     return;
+  }
 
   entry->net_log().AddEvent(net::NetLogEventType::SPARSE_DELETE_CHILDREN);
 
@@ -392,7 +391,7 @@ void SparseControl::DeleteChildren(EntryImpl* entry) {
   // The object will self destruct when finished.
   deleter->AddRef();
 
-  if (buffer) {
+  if (!buffer.empty()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&ChildrenDeleter::Start, deleter,
                                   std::move(buffer), data_len));
@@ -409,7 +408,7 @@ int SparseControl::CreateSparseEntry() {
   if (CHILD_ENTRY & entry_->GetEntryFlags())
     return net::ERR_CACHE_OPERATION_NOT_SUPPORTED;
 
-  memset(&sparse_header_, 0, sizeof(sparse_header_));
+  sparse_header_ = SparseHeader();
   sparse_header_.signature = Time::Now().ToInternalValue();
   sparse_header_.magic = kIndexMagic;
   sparse_header_.parent_key_len = entry_->GetKey().size();
@@ -471,7 +470,7 @@ int SparseControl::OpenSparseEntry(int data_len) {
 
   // Grow the bitmap to the current size and copy the bits.
   children_map_.Resize(map_len * 8, false);
-  children_map_.SetMap(reinterpret_cast<uint32_t*>(buf->data()), map_len);
+  children_map_.SetMap(ToUint32Span(buf->span()));
   return net::OK;
 }
 
@@ -687,7 +686,7 @@ int SparseControl::PartialBlockLength(int block_index) const {
 void SparseControl::InitChildData() {
   child_->SetEntryFlags(CHILD_ENTRY);
 
-  memset(&child_data_, 0, sizeof(child_data_));
+  child_data_ = SparseData();
   child_data_.header = sparse_header_;
 
   auto buf = base::MakeRefCounted<net::WrappedIOBuffer>(
@@ -765,7 +764,7 @@ bool SparseControl::DoChildIO() {
       rv = DoGetAvailableRange();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   if (rv == net::ERR_IO_PENDING) {

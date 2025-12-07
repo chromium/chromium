@@ -37,13 +37,13 @@ def main():
     try:
       output = mojom_format(file)
       if args.dry_run:
-        with open(file, 'r') as f:
+        with open(file, 'r', newline='\n', encoding='utf-8') as f:
           current = f.read()
           if current != output:
             print(file)
             exit_code = 1
       else:
-        with open(file, 'w') as f:
+        with open(file, 'w', newline='\n', encoding='utf-8') as f:
           f.write(output)
     except Exception as e:
       print(f'Failed to format {file}', file=sys.stderr)

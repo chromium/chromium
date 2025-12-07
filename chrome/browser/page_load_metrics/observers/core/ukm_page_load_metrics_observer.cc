@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "chrome/browser/page_load_metrics/observers/core/ukm_page_load_metrics_observer.h"
 
@@ -15,15 +11,16 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/hash/sha1.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_util.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
-#include "cc/metrics/ukm_smoothness_data.h"
+#include "cc/base/features.h"
+#include "cc/metrics/ukm_dropped_frames_data.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
@@ -51,6 +48,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/storage_partition.h"
@@ -84,24 +82,7 @@ const char kOfflinePreviewsMimeType[] = "multipart/related";
 static constexpr uint64_t kInstantPageLoadEventsTraceTrackId = 14878427190820;
 
 const char kHistogramSoftNavigationCount[] =
-    "PageLoad.Expermental.SoftNavigations.Count";
-
-template <size_t N>
-uint64_t PackBytes(base::span<const uint8_t, N> bytes) {
-  static_assert(N <= 8u,
-                "Error: Can't pack more than 8 bytes into a uint64_t.");
-  uint64_t result = 0;
-  for (auto byte : bytes) {
-    result = (result << 8) | byte;
-  }
-  return result;
-}
-
-uint64_t StrToHash64Bit(std::string_view str) {
-  auto bytes = base::as_bytes(base::make_span(str));
-  const base::SHA1Digest digest = base::SHA1Hash(bytes);
-  return PackBytes(base::make_span(digest).subspan<0, 8>());
-}
+    "PageLoad.Experimental.SoftNavigations.Count";
 
 bool IsSupportedProtocol(page_load_metrics::NetworkProtocol protocol) {
   switch (protocol) {
@@ -141,7 +122,7 @@ bool IsValidSearchURL(content::BrowserContext* browser_context,
     return false;
 
   const TemplateURL* template_url =
-      template_service->GetTemplateURLForHost(url.host());
+      template_service->GetTemplateURLForHost(url.GetHost());
   const SearchTermsData& search_terms_data =
       template_service->search_terms_data();
 
@@ -361,8 +342,20 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnCommit(
     main_frame_resource_has_no_store_ =
         response_headers->HasHeaderValue("cache-control", "no-store");
   }
+
+  navigation_trigger_type_ =
+      page_load_metrics::NavigationHandleUserData::InitiatorLocation::kOther;
+  auto* navigation_userdata =
+      page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
+          *navigation_handle);
+  if (navigation_userdata) {
+    navigation_trigger_type_ = navigation_userdata->navigation_type();
+  }
+
   // The PageTransition for the navigation may be updated on commit.
   page_transition_ = navigation_handle->GetPageTransition();
+  UMA_HISTOGRAM_BOOLEAN("Actor.MayOriginGatePageTransition",
+                        PageLoadMayOriginGate(navigation_handle));
   was_cached_ = navigation_handle->WasResponseCached();
   navigation_handle_timing_ = navigation_handle->GetNavigationHandleTiming();
   prerender::NoStatePrefetchManager* const no_state_prefetch_manager =
@@ -387,6 +380,22 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnCommit(
   return CONTINUE_OBSERVING;
 }
 
+bool UkmPageLoadMetricsObserver::PageLoadMayOriginGate(
+    content::NavigationHandle* navigation_handle) const {
+  // Actor only uses origin gating for cross-origin navigations.
+  if (navigation_handle->IsSameOrigin()) {
+    return false;
+  }
+  // Cross-origin client redirects would trigger origin gating.
+  if (page_transition_ & ui::PageTransition::PAGE_TRANSITION_CLIENT_REDIRECT) {
+    return true;
+  }
+  // Otherwise, only if it's the last chain in a redirect.
+  return (page_transition_ &
+          ui::PageTransition::PAGE_TRANSITION_SERVER_REDIRECT) &&
+         (page_transition_ & ui::PageTransition::PAGE_TRANSITION_CHAIN_END);
+}
+
 UkmPageLoadMetricsObserver::ObservePolicy
 UkmPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
@@ -399,8 +408,9 @@ UkmPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
   }
   if (GetDelegate().StartedInForeground())
     RecordTimingMetrics(timing);
+  RecordLastSoftNavigation();
   ReportLayoutStability();
-  RecordSmoothnessMetrics();
+  RecordDroppedFramesMetrics();
   RecordResponsivenessMetrics();
   // Assume that page ends on this method, as the app could be evicted right
   // after.
@@ -478,8 +488,9 @@ void UkmPageLoadMetricsObserver::OnComplete(
   }
   if (GetDelegate().StartedInForeground())
     RecordTimingMetrics(timing);
+  RecordLastSoftNavigation();
   ReportLayoutStability();
-  RecordSmoothnessMetrics();
+  RecordDroppedFramesMetrics();
   RecordResponsivenessMetrics();
   RecordPageEndMetrics(&timing, current_time,
                        /* app_entered_background */ false);
@@ -630,10 +641,13 @@ void UkmPageLoadMetricsObserver::RecordSiteEngagement() const {
 
 void UkmPageLoadMetricsObserver::RecordSoftNavigationMetrics(
     ukm::SourceId ukm_source_id,
-    page_load_metrics::mojom::SoftNavigationMetrics& soft_navigation_metrics) {
+    const page_load_metrics::mojom::SoftNavigationMetrics&
+        soft_navigation_metrics) {
+  if (ukm_source_id == ukm::kInvalidSourceId) {
+    return;
+  }
   ukm::builders::SoftNavigation builder(ukm_source_id);
-  builder.SetNavigationId(
-      StrToHash64Bit(soft_navigation_metrics.navigation_id));
+  builder.SetNavigationId(soft_navigation_metrics.navigation_id);
 
   builder.SetStartTime(soft_navigation_metrics.start_time.InMillisecondsF());
 
@@ -746,6 +760,23 @@ void UkmPageLoadMetricsObserver::RecordSoftNavigationMetrics(
 }
 
 void UkmPageLoadMetricsObserver::
+    RecordLargestContentfulPaintBeforeSoftNavigation() {
+  ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
+  const page_load_metrics::ContentfulPaintTimingInfo& largest_contentful_paint =
+      GetCoreWebVitalsLcpTimingInfo();
+  if (largest_contentful_paint.ContainsValidTime() &&
+      WasStartedInForegroundOptionalEventInForeground(
+          largest_contentful_paint.Time(), GetDelegate())) {
+    builder
+        .SetPaintTimingBeforeSoftNavigation_NavigationToLargestContentfulPaint2(
+            largest_contentful_paint.Time().value().InMilliseconds());
+    PAGE_LOAD_HISTOGRAM("PageLoad.BeforeSoftNavigation.LargestContentfulPaint2",
+                        largest_contentful_paint.Time().value());
+  }
+  builder.Record(ukm::UkmRecorder::Get());
+}
+
+void UkmPageLoadMetricsObserver::
     RecordResponsivenessMetricsBeforeSoftNavigationForMainFrame() {
   ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
   const page_load_metrics::ResponsivenessMetricsNormalization&
@@ -812,25 +843,24 @@ void UkmPageLoadMetricsObserver::OnSoftNavigationUpdated(
   // When the 1st soft navigation comes in, we record the
   // soft_navigation_interval_responsiveness_metrics_normalization_ as INP
   // before soft nav.
-  if (current_soft_navigation_metrics->count == 0 &&
-      new_soft_navigation_metrics.count == 1) {
+  if (current_soft_navigation_metrics->count == 0) {
+    RecordLargestContentfulPaintBeforeSoftNavigation();
     RecordResponsivenessMetricsBeforeSoftNavigationForMainFrame();
     RecordLayoutShiftBeforeSoftNavigationForMainFrame();
+  } else if (current_soft_navigation_metrics->count !=
+             new_soft_navigation_metrics.count) {
+    // We only want to record metrics once for each soft navigation. So we flush
+    // the current soft navigation metrics when the next soft navigation starts.
+    // So the first soft navigation metrics are recorded when the second soft
+    // navigation starts, and the second soft navigation metrics are recorded
+    // when the third soft navigation starts, etc. The final soft navigation
+    // metrics are recorded in `RecordTimingMetrics` at the end of the page
+    // load.
+    RecordSoftNavigationMetrics(
+        GetDelegate().GetUkmSourceIdForSameDocumentNavigation(
+            *current_soft_navigation_metrics->same_document_metrics_token),
+        *current_soft_navigation_metrics);
   }
-
-  // Record current soft navigation metrics into Ukm when a new soft navigation
-  // comes in. For example, when 2nd soft navigation with a larger count comes
-  // in, the 1st(current) soft metrics are recorded. The initial soft
-  // navigation metrics that have default values should not reported.
-  if (current_soft_navigation_metrics->count == 0 ||
-      current_soft_navigation_metrics->count >=
-          new_soft_navigation_metrics.count) {
-    return;
-  }
-
-  RecordSoftNavigationMetrics(
-      GetDelegate().GetPreviousUkmSourceIdForSoftNavigation(),
-      *current_soft_navigation_metrics);
 }
 
 const page_load_metrics::ContentfulPaintTimingInfo&
@@ -1000,40 +1030,48 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
   builder.SetCpuTime(total_foreground_cpu_time_.InMilliseconds());
 
   builder.SetNet_CacheBytes2(
-      ukm::GetExponentialBucketMinForBytes(cache_bytes_));
+      ukm::GetExponentialBucketMinForBytes(cache_bytes_.InBytes()));
   builder.SetNet_NetworkBytes2(
-      ukm::GetExponentialBucketMinForBytes(network_bytes_));
+      ukm::GetExponentialBucketMinForBytes(network_bytes_.InBytes()));
 
   builder.SetNet_JavaScriptBytes2(
-      ukm::GetExponentialBucketMinForBytes(js_decoded_bytes_));
+      ukm::GetExponentialBucketMinForBytes(js_decoded_bytes_.InBytes()));
   builder.SetNet_JavaScriptMaxBytes2(
-      ukm::GetExponentialBucketMinForBytes(js_max_decoded_bytes_));
+      ukm::GetExponentialBucketMinForBytes(js_max_decoded_bytes_.InBytes()));
 
   builder.SetNet_ImageBytes2(
-      ukm::GetExponentialBucketMinForBytes(image_total_bytes_));
+      ukm::GetExponentialBucketMinForBytes(image_total_bytes_.InBytes()));
   builder.SetNet_ImageSubframeBytes2(
-      ukm::GetExponentialBucketMinForBytes(image_subframe_bytes_));
+      ukm::GetExponentialBucketMinForBytes(image_subframe_bytes_.InBytes()));
   builder.SetNet_MediaBytes2(
-      ukm::GetExponentialBucketMinForBytes(media_bytes_));
+      ukm::GetExponentialBucketMinForBytes(media_bytes_.InBytes()));
 
-  builder.SetSoftNavigationCount(
-      GetDelegate().GetSoftNavigationMetrics().count);
-
-  if (main_frame_timing_)
+  if (main_frame_timing_) {
     ReportMainResourceTimingMetrics(builder);
-
-  builder.Record(ukm::UkmRecorder::Get());
-
-  // Record last soft navigation metrics.
-  if (GetDelegate().GetSoftNavigationMetrics().count >= 1 &&
-      !GetDelegate().GetSoftNavigationMetrics().navigation_id.empty()) {
-    RecordSoftNavigationMetrics(GetDelegate().GetUkmSourceIdForSoftNavigation(),
-                                GetDelegate().GetSoftNavigationMetrics());
   }
+  builder.Record(ukm::UkmRecorder::Get());
+}
+
+void UkmPageLoadMetricsObserver::RecordLastSoftNavigation() {
+  ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
+
+  const auto& soft_navigation_metrics =
+      GetDelegate().GetSoftNavigationMetrics();
+  builder.SetSoftNavigationCount(soft_navigation_metrics.count);
+
+  // Record last soft navigation metrics; note that 0 is the absent navigation
+  // id, see third_party/blink/renderer/core/timing/navigation_id_generator.h.
+  if (soft_navigation_metrics.count && soft_navigation_metrics.navigation_id) {
+    RecordSoftNavigationMetrics(
+        GetDelegate().GetUkmSourceIdForSameDocumentNavigation(
+            *soft_navigation_metrics.same_document_metrics_token),
+        soft_navigation_metrics);
+  }
+  builder.Record(ukm::UkmRecorder::Get());
 
   // Record soft navigation count histogram to UMA.
   base::UmaHistogramCounts100(kHistogramSoftNavigationCount,
-                              GetDelegate().GetSoftNavigationMetrics().count);
+                              soft_navigation_metrics.count);
 }
 
 void UkmPageLoadMetricsObserver::RecordInternalTimingMetrics(
@@ -1301,10 +1339,6 @@ void UkmPageLoadMetricsObserver::ReportLayoutStability() {
     builder
         .SetLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000ms(
             page_load_metrics::LayoutShiftUkmValue(*cwv_cls_value));
-    base::UmaHistogramCounts100(
-        "PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow."
-        "Gap1000ms.Max5000ms",
-        page_load_metrics::LayoutShiftUmaValue(*cwv_cls_value));
     base::UmaHistogramCustomCounts(
         "PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow."
         "Gap1000ms.Max5000ms2",
@@ -1343,11 +1377,6 @@ void UkmPageLoadMetricsObserver::ReportLayoutStability() {
                            GetDelegate()
                                .GetPageRenderData()
                                .layout_shift_score_before_input_or_scroll));
-
-  base::UmaHistogramCounts100(
-      "PageLoad.LayoutInstability.CumulativeShiftScore.MainFrame",
-      page_load_metrics::LayoutShiftUmaValue(
-          GetDelegate().GetMainFrameRenderData().layout_shift_score));
 }
 
 void UkmPageLoadMetricsObserver::ReportLayoutInstabilityAfterFirstForeground() {
@@ -1493,51 +1522,22 @@ void UkmPageLoadMetricsObserver::RecordPageLoadTimestampMetrics(
   builder.SetHourOfDay(exploded.hour);
 }
 
-void UkmPageLoadMetricsObserver::RecordSmoothnessMetrics() {
-  auto* smoothness =
-      ukm_smoothness_data_.GetMemoryAs<cc::UkmSmoothnessDataShared>();
-  if (!smoothness) {
+void UkmPageLoadMetricsObserver::RecordDroppedFramesMetrics() {
+  auto* dropped_frames =
+      ukm_dropped_frames_data_.GetMemoryAs<cc::UkmDroppedFramesDataShared>();
+  if (!dropped_frames) {
     return;
   }
 
-  cc::UkmSmoothnessData smoothness_data;
-  bool success = smoothness->Read(smoothness_data);
-
-  if (!success)
+  cc::UkmDroppedFramesData dropped_frames_data;
+  bool success = dropped_frames->Read(dropped_frames_data);
+  if (!success) {
     return;
+  }
 
-  ukm::builders::Graphics_Smoothness_NormalizedPercentDroppedFrames builder(
+  ukm::builders::Graphics_Smoothness_FrameSequence builder(
       GetDelegate().GetPageUkmSourceId());
-  builder.SetAverage(smoothness_data.avg_smoothness)
-      .SetMedian(smoothness_data.median_smoothness)
-      .SetPercentile95(smoothness_data.percentile_95)
-      .SetAboveThreshold(smoothness_data.above_threshold)
-      .SetWorstCase(smoothness_data.worst_smoothness)
-      .SetVariance(smoothness_data.variance)
-      .SetSmoothnessVeryGood(smoothness_data.buckets[0])
-      .SetSmoothnessGood(smoothness_data.buckets[1])
-      .SetSmoothnessOkay(smoothness_data.buckets[2])
-      .SetSmoothnessBad(smoothness_data.buckets[3])
-      .SetSmoothnessVeryBad25to50(smoothness_data.buckets[4])
-      .SetSmoothnessVeryBad50to75(smoothness_data.buckets[5])
-      .SetSmoothnessVeryBad75to100(smoothness_data.buckets[6])
-      .SetMainFocusedMedian(smoothness_data.main_focused_median)
-      .SetMainFocusedPercentile95(smoothness_data.main_focused_percentile_95)
-      .SetMainFocusedVariance(smoothness_data.main_focused_variance)
-      .SetCompositorFocusedMedian(smoothness_data.compositor_focused_median)
-      .SetCompositorFocusedPercentile95(
-          smoothness_data.compositor_focused_percentile_95)
-      .SetCompositorFocusedVariance(smoothness_data.compositor_focused_variance)
-      .SetScrollFocusedMedian(smoothness_data.scroll_focused_median)
-      .SetScrollFocusedPercentile95(
-          smoothness_data.scroll_focused_percentile_95)
-      .SetScrollFocusedVariance(smoothness_data.scroll_focused_variance);
-  if (smoothness_data.worst_smoothness_after1sec >= 0)
-    builder.SetWorstCaseAfter1Sec(smoothness_data.worst_smoothness_after1sec);
-  if (smoothness_data.worst_smoothness_after2sec >= 0)
-    builder.SetWorstCaseAfter2Sec(smoothness_data.worst_smoothness_after2sec);
-  if (smoothness_data.worst_smoothness_after5sec >= 0)
-    builder.SetWorstCaseAfter5Sec(smoothness_data.worst_smoothness_after5sec);
+  builder.SetPercentDroppedFrames(dropped_frames_data.percent_dropped_frames);
   builder.Record(ukm::UkmRecorder::Get());
 }
 
@@ -1548,6 +1548,9 @@ void UkmPageLoadMetricsObserver::RecordPageEndMetrics(
   ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
   // page_transition_ fits in a uint32_t, so we can safely cast to int64_t.
   builder.SetNavigation_PageTransition(static_cast<int64_t>(page_transition_));
+
+  builder.SetNavigation_InitiatorLocation(
+      static_cast<int64_t>(navigation_trigger_type_));
 
   // GetDelegate().GetPageEndReason() fits in a uint32_t, so we can safely cast
   // to int64_t.
@@ -1731,9 +1734,9 @@ void UkmPageLoadMetricsObserver::OnTimingUpdate(
   }
 }
 
-void UkmPageLoadMetricsObserver::SetUpSharedMemoryForSmoothness(
-    const base::ReadOnlySharedMemoryRegion& shared_memory) {
-  ukm_smoothness_data_ = shared_memory.Map();
+void UkmPageLoadMetricsObserver::SetUpSharedMemoryForDroppedFrames(
+    const base::ReadOnlySharedMemoryRegion& dropped_frames_memory) {
+  ukm_dropped_frames_data_ = dropped_frames_memory.Map();
 }
 
 void UkmPageLoadMetricsObserver::OnCpuTimingUpdate(

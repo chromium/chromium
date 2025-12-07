@@ -5,9 +5,11 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_MOCK_AUTOFILL_SUGGESTION_DELEGATE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_MOCK_AUTOFILL_SUGGESTION_DELEGATE_H_
 
-#include "base/functional/callback.h"
+#include <variant>
+
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
+#include "components/autofill/core/browser/ui/suggestion_button_action.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill {
@@ -18,12 +20,15 @@ class MockAutofillSuggestionDelegate : public AutofillSuggestionDelegate {
   MockAutofillSuggestionDelegate();
   ~MockAutofillSuggestionDelegate() override;
 
-  MOCK_METHOD((absl::variant<AutofillDriver*,
-                             password_manager::PasswordManagerDriver*>),
-              GetDriver,
-              (),
+  MOCK_METHOD(
+      (std::variant<AutofillDriver*, password_manager::PasswordManagerDriver*>),
+      GetDriver,
+      (),
+      (override));
+  MOCK_METHOD(void,
+              OnSuggestionsShown,
+              (base::span<const Suggestion>),
               (override));
-  MOCK_METHOD(void, OnSuggestionsShown, (), (override));
   MOCK_METHOD(void, OnSuggestionsHidden, (), (override));
   MOCK_METHOD(void,
               DidSelectSuggestion,
@@ -32,11 +37,11 @@ class MockAutofillSuggestionDelegate : public AutofillSuggestionDelegate {
   MOCK_METHOD(void,
               DidAcceptSuggestion,
               (const Suggestion& suggestion,
-               const AutofillSuggestionDelegate::SuggestionPosition& position),
+               const AutofillSuggestionDelegate::SuggestionMetadata& metadata),
               (override));
   MOCK_METHOD(void,
               DidPerformButtonActionForSuggestion,
-              (const Suggestion&),
+              (const Suggestion&, const SuggestionButtonAction&),
               (override));
   MOCK_METHOD(bool, RemoveSuggestion, (const Suggestion&), (override));
   MOCK_METHOD(void, ClearPreviewedForm, (), (override));

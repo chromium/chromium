@@ -13,9 +13,9 @@ namespace blink {
 enum class ContainerStuckLogical {
   // Not stuck
   kNo,
-  // Stuck to inset-inline-start, or inset-block-start
+  // Stuck to inline-start, or block-start
   kStart,
-  // Stuck to inset-inline-end, or inset-block-end
+  // Stuck to inline-end, or block-end
   kEnd,
 };
 
@@ -47,6 +47,53 @@ enum class ContainerSnapped {
 };
 
 using ContainerSnappedFlags = unsigned;
+
+// Flags that represent whether a scroll-state query container has scrollable
+// overflow in a given direction. For physical directions, kStart is used for
+// left/top and kEnd is used for right/bottom.
+enum class ContainerScrollable {
+  kNone = 0,
+  kStart = 1 << 0,
+  kEnd = 1 << 1,
+};
+
+using ContainerScrollableFlags = unsigned;
+
+inline ContainerScrollableFlags Flip(ContainerScrollableFlags scrollable) {
+  if (scrollable ==
+      static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone)) {
+    return scrollable;
+  }
+  ContainerScrollableFlags flipped =
+      static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone);
+  if (scrollable &
+      static_cast<ContainerScrollableFlags>(ContainerScrollable::kStart)) {
+    flipped |= static_cast<ContainerScrollableFlags>(ContainerScrollable::kEnd);
+  }
+  if (scrollable &
+      static_cast<ContainerScrollableFlags>(ContainerScrollable::kEnd)) {
+    flipped |=
+        static_cast<ContainerScrollableFlags>(ContainerScrollable::kStart);
+  }
+  return flipped;
+}
+
+enum class ContainerScrolled {
+  kNone = 0,
+  kStart = 1 << 0,
+  kEnd = 1 << 1,
+};
+
+inline ContainerScrolled Flip(ContainerScrolled scroll_direction) {
+  switch (scroll_direction) {
+    case ContainerScrolled::kNone:
+      return ContainerScrolled::kNone;
+    case ContainerScrolled::kStart:
+      return ContainerScrolled::kEnd;
+    case ContainerScrolled::kEnd:
+      return ContainerScrolled::kStart;
+  }
+}
 
 }  // namespace blink
 

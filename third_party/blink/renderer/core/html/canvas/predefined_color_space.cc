@@ -8,41 +8,59 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_canvas_smpte_st_2086_metadata.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_predefined_color_space.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "third_party/skia/include/core/SkData.h"
 
 namespace blink {
 
 bool ValidateAndConvertColorSpace(const V8PredefinedColorSpace& v8_color_space,
                                   PredefinedColorSpace& color_space,
                                   ExceptionState& exception_state) {
-  bool needs_hdr = false;
+  bool supported = true;
   switch (v8_color_space.AsEnum()) {
     case V8PredefinedColorSpace::Enum::kSRGB:
       color_space = PredefinedColorSpace::kSRGB;
       break;
-    case V8PredefinedColorSpace::Enum::kRec2020:
-      color_space = PredefinedColorSpace::kRec2020;
-      needs_hdr = true;
-      break;
     case V8PredefinedColorSpace::Enum::kDisplayP3:
       color_space = PredefinedColorSpace::kP3;
       break;
+
+    // To be shipped via linear color spaces features.
+    // https://crbug.com/436274258
+    case V8PredefinedColorSpace::Enum::kSRGBLinear:
+      color_space = PredefinedColorSpace::kSRGBLinear;
+      supported =
+          RuntimeEnabledFeatures::ColorSpacePredefinedLinearSpacesEnabled();
+      break;
+    case V8PredefinedColorSpace::Enum::kDisplayP3Linear:
+      color_space = PredefinedColorSpace::kDisplayP3Linear;
+      supported =
+          RuntimeEnabledFeatures::ColorSpacePredefinedLinearSpacesEnabled();
+      break;
+
+    case V8PredefinedColorSpace::Enum::kRec2100Linear:
+      color_space = PredefinedColorSpace::kRec2100Linear;
+      supported = RuntimeEnabledFeatures::ColorSpaceRec2100LinearEnabled();
+      break;
+
+    // Speculative CanvasHDR color spaces.
+    case V8PredefinedColorSpace::Enum::kRec2020:
+      color_space = PredefinedColorSpace::kRec2020;
+      supported = RuntimeEnabledFeatures::CanvasHDREnabled();
+      break;
     case V8PredefinedColorSpace::Enum::kRec2100Hlg:
       color_space = PredefinedColorSpace::kRec2100HLG;
-      needs_hdr = true;
+      supported = RuntimeEnabledFeatures::CanvasHDREnabled();
       break;
     case V8PredefinedColorSpace::Enum::kRec2100Pq:
       color_space = PredefinedColorSpace::kRec2100PQ;
-      needs_hdr = true;
-      break;
-    case V8PredefinedColorSpace::Enum::kSRGBLinear:
-      color_space = PredefinedColorSpace::kSRGBLinear;
-      needs_hdr = true;
+      supported = RuntimeEnabledFeatures::CanvasHDREnabled();
       break;
   }
-  if (needs_hdr && !RuntimeEnabledFeatures::CanvasHDREnabled()) {
-    exception_state.ThrowTypeError(
-        "The provided value '" + v8_color_space.AsString() +
-        "' is not a valid enum value of the type PredefinedColorSpace.");
+  if (!supported) {
+    exception_state.ThrowTypeError(StrCat(
+        {"The provided value '", v8_color_space.AsStringView(),
+         "' is not a valid enum value of the type PredefinedColorSpace."}));
     return false;
   }
   return true;
@@ -63,6 +81,12 @@ V8PredefinedColorSpace PredefinedColorSpaceToV8(
       return V8PredefinedColorSpace(V8PredefinedColorSpace::Enum::kRec2100Pq);
     case PredefinedColorSpace::kSRGBLinear:
       return V8PredefinedColorSpace(V8PredefinedColorSpace::Enum::kSRGBLinear);
+    case PredefinedColorSpace::kDisplayP3Linear:
+      return V8PredefinedColorSpace(
+          V8PredefinedColorSpace::Enum::kDisplayP3Linear);
+    case PredefinedColorSpace::kRec2100Linear:
+      return V8PredefinedColorSpace(
+          V8PredefinedColorSpace::Enum::kRec2100Linear);
   }
 }
 
@@ -97,6 +121,11 @@ void ParseCanvasHighDynamicRangeOptions(
     };
     smpte_st_2086.luminance_min = v8_metadata->minimumLuminance();
     smpte_st_2086.luminance_max = v8_metadata->maximumLuminance();
+  }
+  if (options->hasAgtm()) {
+    auto span = options->agtm().RawByteSpan();
+    auto data = SkData::MakeWithCopy(span.data(), span.size());
+    hdr_metadata.agtm.emplace(std::move(data));
   }
 }
 

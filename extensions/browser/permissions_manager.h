@@ -13,8 +13,7 @@
 #include "base/observer_list.h"
 #include "base/types/pass_key.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "content/public/browser/web_contents.h"
-#include "extensions/browser/site_access_requests_helper.h"
+#include "extensions/browser/host_access_request_helper.h"
 #include "extensions/common/extension_id.h"
 #include "url/origin.h"
 
@@ -23,6 +22,7 @@ class BrowserContextKeyedServiceFactory;
 
 namespace content {
 class BrowserContext;
+class WebContents;
 }
 
 namespace user_prefs {
@@ -128,20 +128,24 @@ class PermissionsManager : public KeyedService {
         const extensions::ExtensionId& extension_id,
         bool can_show_requests) {}
 
-    // Called when `extension_id` added a site access request for `tab_id`.
-    virtual void OnSiteAccessRequestAdded(const ExtensionId& extension_id,
+    // Called when `extension_id` added a host access request for `tab_id`.
+    virtual void OnHostAccessRequestAdded(const ExtensionId& extension_id,
                                           int tab_id) {}
 
-    // Called when `extension_id` removed a site access request for `tab_id`.
-    virtual void OnSiteAccessRequestRemoved(const ExtensionId& extension_id,
+    // Called when `extension_id` updated a host access request for `tab_id`.
+    virtual void OnHostAccessRequestUpdated(const ExtensionId& extension_id,
                                             int tab_id) {}
 
-    // Called when site access requests where cleared for `tab_id`.
-    virtual void OnSiteAccessRequestsCleared(int tab_id) {}
+    // Called when `extension_id` removed a host access request for `tab_id`.
+    virtual void OnHostAccessRequestRemoved(const ExtensionId& extension_id,
+                                            int tab_id) {}
 
-    // Called when `extension_id` has dismissed site access requests in
+    // Called when host access requests where cleared for `tab_id`.
+    virtual void OnHostAccessRequestsCleared(int tab_id) {}
+
+    // Called when `extension_id` has dismissed host access requests in
     // `origin`.
-    virtual void OnSiteAccessRequestDismissedByUser(
+    virtual void OnHostAccessRequestDismissedByUser(
         const ExtensionId& extension_id,
         const url::Origin& origin) {}
   };
@@ -200,10 +204,6 @@ class PermissionsManager : public KeyedService {
   ExtensionSiteAccess GetSiteAccess(const Extension& extension,
                                     const GURL& url) const;
 
-  // Returns whether the extension requests host permissions or activeTab.
-  bool ExtensionRequestsHostPermissionsOrActiveTab(
-      const Extension& extension) const;
-
   // Returns true if the associated extension can be affected by
   // runtime host permissions.
   bool CanAffectExtension(const Extension& extension) const;
@@ -214,9 +214,13 @@ class PermissionsManager : public KeyedService {
                                const GURL& gurl,
                                UserSiteAccess site_access) const;
 
+  // Returns whether the `extension` has requested host permissions, either
+  // required or optional.
+  bool HasRequestedHostPermissions(const Extension& extension) const;
+
   // Returns true if the extension has been explicitly granted permission to run
   // on the origin of `url`. This will return true if any permission includes
-  // access to the origin of |url|, even if the permission includes others
+  // access to the origin of `url`, even if the permission includes others
   // (such as *://*.com/*) or is restricted to a path (that is, an extension
   // with permission for https://google.com/maps will return true for
   // https://google.com). Note: This checks any runtime-granted permissions,
@@ -237,6 +241,10 @@ class PermissionsManager : public KeyedService {
   // which CanAffectExtension() returns true). Anything else will DCHECK.
   bool HasWithheldHostPermissions(const Extension& extension) const;
 
+  // Returns whether the `extension` has requested activeTab, either as a
+  // required or optional permission.
+  bool HasRequestedActiveTab(const Extension& extension) const;
+
   // Returns true if this extension uses the activeTab permission and would
   // probably be able to to access the given `url`. The actual checks when an
   // activeTab extension tries to run are a little more complicated and can be
@@ -247,16 +255,18 @@ class PermissionsManager : public KeyedService {
   bool HasActiveTabAndCanAccess(const Extension& extension,
                                 const GURL& url) const;
 
-  // Returns the effective list of runtime-granted permissions for a given
-  // `extension` from its prefs. ExtensionPrefs doesn't store the valid schemes
-  // for URLPatterns, which results in the chrome:-scheme being included for
-  // <all_urls> when retrieving it directly from the prefs; this then causes
-  // CHECKs to fail when validating that permissions being revoked are present
-  // (see https://crbug.com/930062).
-  // Returns null if there are no stored runtime-granted permissions.
+  // Returns the effective list of runtime-granted/desired-active permissions
+  // for a given `extension` from its prefs. ExtensionPrefs doesn't store the
+  // valid schemes for URLPatterns, which results in the chrome:-scheme being
+  // included for <all_urls> when retrieving it directly from the prefs; this
+  // then causes CHECKs to fail when validating that permissions being revoked
+  // are present (see https://crbug.com/930062). Returns null if there are no
+  // stored runtime-granted/desired-active permissions.
   // TODO(crbug.com/41441259): ExtensionPrefs should return
   // properly-bounded permissions.
   std::unique_ptr<PermissionSet> GetRuntimePermissionsFromPrefs(
+      const Extension& extension) const;
+  std::unique_ptr<PermissionSet> GetDesiredActivePermissionsFromPrefs(
       const Extension& extension) const;
 
   // Returns the set of permissions that the `extension` wants to have active at
@@ -283,25 +293,31 @@ class PermissionsManager : public KeyedService {
   std::unique_ptr<const PermissionSet> GetExtensionGrantedPermissions(
       const Extension& extension) const;
 
-  // Adds site access request for `extension` in `web_contents` with
-  // `tab_id`. Extension must have site access withheld for request to be added.
-  void AddSiteAccessRequest(content::WebContents* web_contents,
-                            int tab_id,
-                            const Extension& extension);
+  // Adds site access request with an optional `filter` for `extension` in
+  // `web_contents` with `tab_id`. Extension must have site access withheld for
+  // request to be added.
+  void AddHostAccessRequest(
+      content::WebContents* web_contents,
+      int tab_id,
+      const Extension& extension,
+      const std::optional<URLPattern>& filter = std::nullopt);
 
-  // Removes site access request for `extension` in `tab_id`, if existent.
-  // Returns whether the request was removed.
-  bool RemoveSiteAccessRequest(int tab_id, const ExtensionId& extension);
+  // Removes site access request for `extension` in `tab_id` with an optional
+  // `filter`, if existent. Returns whether the request was removed.
+  bool RemoveHostAccessRequest(
+      int tab_id,
+      const ExtensionId& extension_id,
+      const std::optional<URLPattern>& filter = std::nullopt);
 
   // Dismisses site access request for `extension` in `tab_id`. Request must be
   // existent for user to be able to dismiss it.
-  void UserDismissedSiteAccessRequest(content::WebContents* web_contents,
+  void UserDismissedHostAccessRequest(content::WebContents* web_contents,
                                       int tab_id,
                                       const ExtensionId& extension_id);
 
   // Returns whether `tab_id` has an active site access request for
   // `extension_id`.
-  bool HasActiveSiteAccessRequest(int tab_id, const ExtensionId& extension_id);
+  bool HasActiveHostAccessRequest(int tab_id, const ExtensionId& extension_id);
 
   // Adds `extension_id` to the `extensions_with_previous_broad_access` set.
   void AddExtensionToPreviousBroadSiteAccessSet(
@@ -339,7 +355,10 @@ class PermissionsManager : public KeyedService {
 
  private:
   using PassKey = base::PassKey<PermissionsManager>;
-  friend class SiteAccessRequestsHelper;
+  friend class HostAccessRequestsHelper;
+
+  // Returns the restricted and permitted sites by user.
+  std::pair<URLPatternSet, URLPatternSet> GetUserBlockedAndAllowedSites() const;
 
   // Called whenever `user_permissions_` have changed.
   void OnUserPermissionsSettingsChanged();
@@ -364,34 +383,38 @@ class PermissionsManager : public KeyedService {
 
   // Returns the site access requests helper for `tab_id` or nullptr if it
   // doesn't exist.
-  SiteAccessRequestsHelper* GetSiteAccessRequestsHelperFor(int tab_id);
+  HostAccessRequestsHelper* GetHostAccessRequestsHelperFor(int tab_id);
 
   // Returns the site access requests helper for `tab_id`. If the helper doesn't
   // exist for such tab, it creates a new one.
-  SiteAccessRequestsHelper* GetOrCreateSiteAccessRequestsHelperFor(
+  HostAccessRequestsHelper* GetOrCreateHostAccessRequestsHelperFor(
       content::WebContents* web_contents,
       int tab_id);
 
   // Deletes helper corresponding to `tab_id` by removing its entry from
   // `requests_helper_`.
-  void DeleteSiteAccessRequestHelperFor(int tab_id);
+  void DeleteHostAccessRequestHelperFor(int tab_id);
 
   // Notifies `observers_` that user permissions have changed.
   void NotifyUserPermissionSettingsChanged();
 
   // Notifies `observers_` that site access requests were cleared on `tab_id`.
-  void NotifySiteAccessRequestsCleared(int tab_id);
+  void NotifyHostAccessRequestsCleared(int tab_id);
 
   base::ObserverList<Observer>::Unchecked observers_;
 
   // The associated browser context.
   const raw_ptr<content::BrowserContext> browser_context_;
 
-  const raw_ptr<ExtensionPrefs> extension_prefs_;
+  // `extension_prefs_` is left dangling in tests.
+  // In unit tests, ExtensionPrefs is created and destroyed in a different flow
+  // from normal (TestExtensionPrefs).
+  // TODO(crbug.com/387322067): Fix the dangling pointer in tests.
+  const raw_ptr<ExtensionPrefs, DanglingUntriaged> extension_prefs_;
   UserPermissionsSettings user_permissions_;
 
   // Helpers that store and manage the site access requests per tab.
-  std::map<int, std::unique_ptr<SiteAccessRequestsHelper>> requests_helpers_;
+  std::map<int, std::unique_ptr<HostAccessRequestsHelper>> requests_helpers_;
 
   // Stores extensions whose site access was updated using the extensions
   // menu and previously had broad site access. This is done to preserve the

@@ -16,6 +16,11 @@
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/policy_export.h"
 
+namespace chrome::cros::reporting::proto {
+class Browser;
+class Device;
+}  // namespace chrome::cros::reporting::proto
+
 namespace policy {
 
 class DMAuth;
@@ -57,12 +62,17 @@ class POLICY_EXPORT ReportingJobConfigurationBase
     static base::Value::Dict BuildDeviceDictionary(
         const std::string& dm_token,
         const std::string& client_id);
+    static ::chrome::cros::reporting::proto::Device BuildDeviceProto(
+        const std::string& dm_token,
+        const std::string& client_id);
 
     static std::string GetDMTokenPath();
     static std::string GetClientIdPath();
     static std::string GetOSVersionPath();
     static std::string GetOSPlatformPath();
     static std::string GetNamePath();
+    static std::string GetDeviceFqdnPath();
+    static std::string GetNetworkNamePath();
 
    private:
     static std::string GetStringPath(std::string_view leaf_name);
@@ -73,6 +83,8 @@ class POLICY_EXPORT ReportingJobConfigurationBase
     static const char kOSVersion[];
     static const char kOSPlatform[];
     static const char kName[];
+    static const char kDeviceFqdn[];
+    static const char kNetworkName[];
   };
 
   // Builds a Browser dictionary for uploading information about the browser to
@@ -83,6 +95,9 @@ class POLICY_EXPORT ReportingJobConfigurationBase
     static const char kBrowserKey[];
 
     static base::Value::Dict BuildBrowserDictionary(bool include_device_info);
+
+    static ::chrome::cros::reporting::proto::Browser BuildBrowserProto(
+        bool include_device_info);
 
     static std::string GetBrowserIdPath();
     static std::string GetUserAgentPath();

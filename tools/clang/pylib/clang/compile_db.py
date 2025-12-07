@@ -10,7 +10,6 @@ import shutil
 import subprocess
 import sys
 
-_RSP_RE = re.compile(r' (@(.+?\.rsp)) ')
 _CLANG_WRAPPER_CMD_LINE_RE = re.compile(
     r'''
     (
@@ -59,9 +58,16 @@ def _FilterFlags(command, additional_filtered_flags):
       # This is used for profiling-guided optimizations. Not necessary by tools,
       # and clangd complains it cannot find the referenced profile file.
       '-fprofile-sample-use': 1,
+      '-fprofile-use': 1,
       # This flag is only usable with -fprofile-sample-use excluded above.
       # Exclude it to avoid having an unused-command-line-argument error.
       '-fsample-profile-use-profi': 1,
+      # Clang modules don't play particularly well with clangd.
+      # To solve this, we simply need to remove all references to modulemaps and
+      # to modules.
+      '-fbuiltin-module-map': 0,
+      '-fmodule-map-file': 1,
+      '-fmodule-file': 1,
   }
   # Add user-added flags. We only support flags with no parameters here.
   if additional_filtered_flags:
@@ -128,25 +134,9 @@ def _ProcessCommand(command, filtered_args, target_os):
 def _ProcessEntry(entry, filtered_args, target_os):
   """Transforms one entry in a compile db to be more clang-tool friendly.
 
-  Expands the contents of the response file, if any, and performs any
-  transformations needed to make the compile DB easier to use for third-party
-  tooling.
+  Performs any transformations needed to make the compile DB easier to use for
+  third-party tooling.
   """
-  # Expand the contents of the response file, if any.
-  # http://llvm.org/bugs/show_bug.cgi?id=21634
-  try:
-    match = _RSP_RE.search(entry['command'])
-    if match:
-      rsp_path = os.path.join(entry['directory'], match.group(2))
-      rsp_contents = open(rsp_path).read()
-      entry['command'] = ''.join([
-          entry['command'][:match.start(1)], rsp_contents,
-          entry['command'][match.end(1):]
-      ])
-  except IOError:
-    if _debugging:
-      print('Couldn\'t read response file for %s' % entry['file'])
-
   entry['command'] = _ProcessCommand(entry['command'], filtered_args, target_os)
 
   return entry
@@ -211,7 +201,7 @@ def GenerateWithNinja(path, targets=None):
     targets = []
   json_compile_db = subprocess.check_output(
       [ninja_path, '-C', path] + targets +
-      ['-t', 'compdb', 'cc', 'cxx', 'objc', 'objcxx'])
+      ['-t', 'compdb', '-x', 'cc', 'cxx', 'objc', 'objcxx'])
   return json.loads(json_compile_db)
 
 

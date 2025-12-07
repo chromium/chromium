@@ -39,7 +39,7 @@ function getAriaValue(tick: SliderTick|number): number {
   }
 
   const sliderTick = tick as SliderTick;
-  return sliderTick.ariaValue !== undefined ? sliderTick.ariaValue! :
+  return sliderTick.ariaValue !== undefined ? sliderTick.ariaValue :
                                               sliderTick.value;
 }
 
@@ -168,22 +168,22 @@ export class CrSliderElement extends CrSliderElementBase {
     };
   }
 
-  disabled: boolean = false;
-  dragging: boolean = false;
-  updatingFromKey: boolean = false;
-  keyPressSliderIncrement: number = 1;
-  markerCount: number = 0;
-  max: number = 100;
-  min: number = 0;
-  noKeybindings: boolean = false;
-  snaps: boolean = false;
-  ticks: SliderTick[]|number[] = [];
-  value: number = 0;
+  accessor disabled: boolean = false;
+  accessor dragging: boolean = false;
+  accessor updatingFromKey: boolean = false;
+  accessor keyPressSliderIncrement: number = 1;
+  accessor markerCount: number = 0;
+  accessor max: number = 100;
+  accessor min: number = 0;
+  accessor noKeybindings: boolean = false;
+  accessor snaps: boolean = false;
+  accessor ticks: SliderTick[]|number[] = [];
+  accessor value: number = 0;
 
-  protected disabled_: boolean = false;
-  protected label_: string = '';
-  protected showLabel_: boolean = false;
-  protected transiting_: boolean = false;
+  protected accessor disabled_: boolean = false;
+  protected accessor label_: string = '';
+  protected accessor showLabel_: boolean = false;
+  protected accessor transiting_: boolean = false;
 
   private deltaKeyMap_: Map<string, number>|null = null;
   private draggingEventTracker_: EventTracker|null = null;

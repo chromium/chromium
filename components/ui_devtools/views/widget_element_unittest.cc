@@ -161,6 +161,13 @@ TEST_F(WidgetElementTest, GetNodeWindowAndScreenBounds) {
   EXPECT_EQ(widget()->GetWindowBoundsInScreen(), window_and_bounds.second);
 }
 
+TEST_F(WidgetElementTest, GetNodeBoundsInScreen) {
+  gfx::Rect test_bounds(10, 20, 300, 400);
+  widget()->SetBounds(test_bounds);
+  EXPECT_EQ(widget()->GetWindowBoundsInScreen(),
+            element()->GetNodeBoundsInScreen());
+}
+
 TEST_F(WidgetElementTest, TrackNonParentedElementLifetime) {
   ASSERT_TRUE(widget());
   EXPECT_FALSE(element()->parent());

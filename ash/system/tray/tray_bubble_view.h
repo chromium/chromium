@@ -21,7 +21,7 @@
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/metadata/view_factory.h"
@@ -142,7 +142,7 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
     bool set_can_activate_on_click_or_tap = false;
     // Indicates whether tray bubble view should add a pre target event handler.
     bool reroute_event_handler = false;
-    int corner_radius = GetBubbleCornerRadius();
+    int corner_radius = kBubbleCornerRadius;
     std::optional<gfx::Insets> insets;
     std::optional<gfx::Insets> margin;
     // If the view has a large corner radius(e.g. slider bubble), we should
@@ -225,7 +225,7 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   bool is_gesture_dragging() const { return is_gesture_dragging_; }
 
   // views::WidgetDelegate:
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateFrameView(
       views::Widget* widget) override;
   bool WidgetHasHitTestMask() const override;
   void GetWidgetHitTestMask(SkPath* mask) const override;
@@ -236,17 +236,13 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& bounds) override;
-  ui::LayerType GetLayerType() const override;
 
   // views::View:
   void AddedToWidget() override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  int GetHeightForWidth(int width) const override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  void OnThemeChanged() override;
 
   // views::MouseWatcherListener:
   void MouseMovedOutOfHost() override;
@@ -280,6 +276,8 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   void NotifyTrayBubbleClosed();
 
   void CloseBubbleView();
+
+  void UpdateAccessibleName();
 
   views::BoxLayout* box_layout() { return layout_; }
   const views::BoxLayout* box_layout() const { return layout_; }
@@ -317,6 +315,10 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
     raw_ptr<TrayBubbleView> tray_bubble_view_;
   };
 
+  void UpdateAccessibleIgnoredState();
+  void OnAXNameChanged(ax::mojom::StringAttribute attribute,
+                       const std::optional<std::string>& name);
+
   InitParams params_;
   raw_ptr<views::BoxLayout, DanglingUntriaged> layout_;
   base::WeakPtr<Delegate> delegate_;
@@ -336,6 +338,8 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   std::unique_ptr<EventHandler> reroute_event_handler_;
 
   std::unique_ptr<SystemShadow> shadow_;
+
+  base::CallbackListSubscription name_changed_subscription_;
 };
 
 BEGIN_VIEW_BUILDER(ASH_EXPORT, TrayBubbleView, views::BubbleDialogDelegateView)

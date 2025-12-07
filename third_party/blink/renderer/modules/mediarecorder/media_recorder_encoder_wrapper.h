@@ -12,28 +12,23 @@
 #include "third_party/blink/renderer/modules/mediarecorder/video_track_recorder.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 
-namespace media {
-class GpuVideoAcceleratorFactories;
-}  // namespace media
-
 namespace blink {
 
-// VideoTrackRecorder::Encoder class encodes h264, vp8, vp9 and av1 using
+// VideoTrackRecorder::Encoder class encodes h264, hevc, vp8, vp9 and av1 using
 // media::VideoEncoder implementation.
 class MODULES_EXPORT MediaRecorderEncoderWrapper final
     : public VideoTrackRecorder::Encoder {
  public:
   using CreateEncoderCB =
-      base::RepeatingCallback<std::unique_ptr<media::VideoEncoder>(
-          media::GpuVideoAcceleratorFactories*)>;
-  using OnErrorCB = base::OnceClosure;
+      CrossThreadFunction<std::unique_ptr<media::VideoEncoder>()>;
+  using OnErrorCB = CrossThreadOnceFunction<void(media::EncoderStatus)>;
 
   MediaRecorderEncoderWrapper(
       scoped_refptr<base::SequencedTaskRunner> encoding_task_runner,
       media::VideoCodecProfile profile,
       uint32_t bits_per_second,
       bool is_screencast,
-      media::GpuVideoAcceleratorFactories* gpu_factories,
+      bool is_hardware_encoder,
       CreateEncoderCB create_encoder_cb,
       VideoTrackRecorder::OnEncodedVideoCB on_encoded_video_cb,
       OnErrorCB on_error_cb);
@@ -43,9 +38,6 @@ class MODULES_EXPORT MediaRecorderEncoderWrapper final
   MediaRecorderEncoderWrapper& operator=(const MediaRecorderEncoderWrapper&) =
       delete;
 
-  base::WeakPtr<Encoder> GetWeakPtr() override {
-    return weak_factory_.GetWeakPtr();
-  }
   bool IsScreenContentEncodingForTesting() const override;
 
  private:
@@ -82,7 +74,7 @@ class MODULES_EXPORT MediaRecorderEncoderWrapper final
                    bool request_keyframe) override;
   bool CanEncodeAlphaChannel() const override;
 
-  void EnterErrorState(const media::EncoderStatus& status);
+  void EnterErrorState(media::EncoderStatus status);
   void Reconfigure(const gfx::Size& frame_size, bool encode_alpha);
 
   // (Re)creates |encoder_| and initialize the encoder with |frame_size|.
@@ -98,7 +90,7 @@ class MODULES_EXPORT MediaRecorderEncoderWrapper final
       media::VideoEncoderOutput output,
       std::optional<media::VideoEncoder::CodecDescription> description);
 
-  const raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_;
+  const bool is_hardware_encoder_;
 
   const media::VideoCodecProfile profile_;
   const media::VideoCodec codec_;
@@ -109,8 +101,8 @@ class MODULES_EXPORT MediaRecorderEncoderWrapper final
   media::VideoEncoder::Options options_;
   bool encode_alpha_ = false;
   State state_ = State::kEncoding;
-  WTF::Deque<EncodeTask> pending_encode_tasks_;
-  WTF::Deque<VideoParamsAndTimestamp> params_in_encode_;
+  Deque<EncodeTask> pending_encode_tasks_;
+  Deque<VideoParamsAndTimestamp> params_in_encode_;
 
   std::unique_ptr<media::VideoEncoder> encoder_;
 

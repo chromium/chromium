@@ -8,6 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_id.mojom.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_recipe.h"
 #include "ui/gfx/color_palette.h"
@@ -15,9 +16,9 @@
 using ColorProviderUtilsTest = ::testing::Test;
 
 TEST_F(ColorProviderUtilsTest, ConvertColorProviderColorIdToCSSColorId) {
-  EXPECT_EQ(std::string("--color-primary-background"),
+  EXPECT_EQ("--color-primary-background",
             ui::ConvertColorProviderColorIdToCSSColorId(
-                std::string(ui::ColorIdName(ui::kColorPrimaryBackground))));
+                ui::ColorIdName(ui::kColorPrimaryBackground)));
 }
 
 TEST_F(ColorProviderUtilsTest, ConvertSkColorToCSSColor) {
@@ -47,8 +48,9 @@ TEST_F(ColorProviderUtilsTest, RendererColorMapGeneratesProvidersCorrectly) {
   // enum is generated in the resulting RendererColorMap.
   ui::ColorProvider color_provider;
   ui::ColorMixer& mixer = color_provider.AddMixer();
-  for (int i = ui::kUiColorsStart + 1; i < ui::kUiColorsEnd; ++i)
+  for (int i = ui::kUiColorsStart + 1; i < ui::kUiColorsEnd; ++i) {
     mixer[i] = {static_cast<SkColor>(i)};
+  }
 
   // The size of the RendererColorMap should match number of defined
   // RendererColorIds.
@@ -92,6 +94,16 @@ TEST_F(ColorProviderUtilsTest, DefaultBlinkColorProviderColorMapsValidity) {
   const auto has_valid_colors =
       [](const ui::RendererColorMap renderer_color_map) {
         for (const auto& value : renderer_color_map) {
+          // Test `kColorCssSystemActiveText` separately as it is expected to
+          // exactly equal `gfx::kPlaceholderColor`. This can be removed should
+          // this expectation ever change.
+          if (value.first ==
+              color::mojom::RendererColorId::kColorCssSystemActiveText) {
+            if (value.second == SkColorSetRGB(0xFF, 0x00, 0x00)) {
+              continue;
+            }
+          }
+
           if (value.second == gfx::kPlaceholderColor) {
             return false;
           }

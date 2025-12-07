@@ -12,6 +12,7 @@
 #include "base/check_is_test.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/service/display/dc_layer_overlay.h"
 #include "components/viz/service/display/output_surface.h"
@@ -29,8 +30,13 @@ class OverlayCandidateFactory;
 class VIZ_SERVICE_EXPORT OverlayProcessorWin
     : public OverlayProcessorInterface {
  public:
+  // TODO(crbug.com/444264038): Delete this declaration when the RPDQ refactor
+  // is finished. Need to avoid hiding the base class' overload.
+  using OverlayProcessorInterface::ProcessForOverlays;
+
   OverlayProcessorWin(
       OutputSurface::DCSupportLevel dc_support_level,
+      bool disable_direct_composition_letterbox_video_optimization,
       const DebugRendererSettings* debug_settings,
       std::unique_ptr<DCLayerOverlayProcessor> dc_layer_overlay_processor);
 
@@ -39,8 +45,8 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
 
   ~OverlayProcessorWin() override;
 
+  bool DisableSplittingQuads() const override;
   bool IsOverlaySupported() const override;
-  gfx::Rect GetPreviousFrameOverlaysBoundingRect() const override;
   gfx::Rect GetAndResetOverlayDamage() override;
 
   // Returns true if the platform supports hw overlays and surface occluding
@@ -51,9 +57,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   // Sets |is_page_fullscreen_mode_|.
   void SetIsPageFullscreen(bool enabled) override;
 
-  void AdjustOutputSurfaceOverlay(
-      std::optional<OutputSurfaceOverlayPlane>* output_surface_plane) override;
-
   // Attempt to replace quads from the specified root render pass with overlays
   // or CALayers. This must be called every frame.
   void ProcessForOverlays(
@@ -63,16 +66,16 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
       const FilterOperationsMap& render_pass_filters,
       const FilterOperationsMap& render_pass_backdrop_filters,
       SurfaceDamageRectList surface_damage_rect_list_in_root_space,
-      OutputSurfaceOverlayPlane* output_surface_plane,
+      std::optional<OverlayCandidate>& primary_plane,
       OverlayCandidateList* overlay_candidates,
       gfx::Rect* root_damage_rect,
       std::vector<gfx::Rect>* content_bounds) override;
 
   void SetFrameHasDelegatedInk() override;
 
-  bool frame_has_delegated_ink_for_testing() const {
+  bool frame_has_forced_dcomp_surface_for_testing() const {
     CHECK_IS_TEST();
-    return frame_has_delegated_ink_;
+    return frame_has_forced_dcomp_surface_;
   }
 
   // Sets whether or not |render_pass_id| will be marked for a DComp surface
@@ -111,7 +114,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
       const OverlayProcessorInterface::FilterOperationsMap&
           render_pass_backdrop_filters,
       const SurfaceDamageRectList& surface_damage_rect_list_in_root_space,
-      OutputSurfaceOverlayPlane* output_surface_plane,
       CandidateList* candidates,
       gfx::Rect* root_damage_rect);
 
@@ -159,7 +161,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   };
 
   // Attempt to promote all the quads in |root_render_pass|. Promoted quads will
-  // be placed in |out_candidates| in front-to-back order. Returns true if all
+  // be placed in |out_candidates| in back-to-front order. Returns true if all
   // quads were successfully promoted.
   base::expected<DelegatedCompositingResult, DelegationStatus>
   TryDelegatedCompositing(
@@ -170,6 +172,24 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
           render_pass_backdrop_filters,
       const DisplayResourceProvider* resource_provider) const;
 
+  // Remove the primary plane overlay from this frame. Ensure that the frame's
+  // overlay candidates fully cover the root pass' output rect or expect to "see
+  // through" to the window background.
+  //
+  // When the primary plane overlay is re-introduced on a later frame, then it
+  // will by fully damaged by the `root_render_pass` output rect from the frame
+  // it was removed from.
+  void RemovePrimaryPlane(const AggregatedRenderPass& root_render_pass,
+                          gfx::Rect& root_damage_rect);
+
+  // Searches through `candidates` for a single full screen (or
+  // letter/pillar-boxing) video candidate. If we find a valid candidate,
+  // explicitly mark it as full screen and possibly adjust the on-screen rect to
+  // the "ideal" full screen rect.
+  void TryPromoteFullScreenVideo(const AggregatedRenderPass& root_render_pass,
+                                 OverlayCandidateList& candidates,
+                                 gfx::Rect& root_damage_rect);
+
   // Modifies the properties of |promoted_render_passes| for passes that are
   // referenced by RPDQ overlays. This gives |SkiaRenderer| enough information
   // to decide whether or not a RPDQ overlay can skip the copy in
@@ -179,13 +199,12 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   // TODO(crbug.com/324460866): Used for partially delegated compositing.
   static DCLayerOverlayProcessor::RenderPassOverlayDataMap
   UpdatePromotedRenderPassPropertiesAndGetSurfaceContentPasses(
-      bool is_full_delegated_compositing,
       const AggregatedRenderPassList& render_passes,
       const PromotedRenderPassesInfo& promoted_render_passes_info);
 
   // Insert overlay candidates from |surface_content_render_passes| into
   // |candidates|, assigning correct plane z-order in the process. |candidates|
-  // is assumed to be in front-to-back. The resulting candidates list is not
+  // is assumed to be in back-to-front. The resulting candidates list is not
   // sorted. Returns the union rect of overlays in
   // |surface_content_render_passes|.
   // TODO(crbug.com/324460866): Used for partially delegated compositing.
@@ -194,7 +213,8 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
           surface_content_render_passes,
       OverlayCandidateList& candidates);
 
-  const OutputSurface::DCSupportLevel dc_support_level_;
+  const std::optional<features::DelegatedCompositingMode>
+      delegated_compositing_supported_;
 
   // Reference to the global viz singleton.
   const raw_ptr<const DebugRendererSettings> debug_settings_;
@@ -207,13 +227,15 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   // TODO(weiliangc): Eventually fold DCLayerOverlayProcessor into this class.
   std::unique_ptr<DCLayerOverlayProcessor> dc_layer_overlay_processor_;
 
+  bool disable_direct_composition_letterbox_video_optimization_ = false;
+
   bool is_page_fullscreen_mode_ = false;
 
-  bool delegation_succeeded_last_frame_ = false;
+  bool pending_remove_primary_plane_ = false;
 
-  // If true, causes the use of DComp surfaces as the backing image of a render
-  // pass, given that UseDCompSurfacesForDelegatedInk is also enabled.
-  bool frame_has_delegated_ink_ = false;
+  // If true, causes the use of DComp surfaces as the backing image of all
+  // render passes for the frame.
+  bool frame_has_forced_dcomp_surface_ = false;
 
   // Returned and reset by |GetAndResetOverlayDamage| to fully damage the root
   // render pass when we drop out of delegated compositing. This is essentially

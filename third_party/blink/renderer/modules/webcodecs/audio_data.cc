@@ -2,24 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/types/to_address.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_sample_types.h"
 #include "media/base/limits.h"
 #include "media/base/sample_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_copy_to_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_init.h"
-#include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 
@@ -116,13 +113,15 @@ void CopyToInterleaved(uint8_t* dest_data,
   const int channels = static_cast<int>(src_channels_data.size());
 
   SampleType* dest = reinterpret_cast<SampleType*>(dest_data);
-  for (int ch = 0; ch < channels; ++ch) {
-    const SampleType* src_start =
-        reinterpret_cast<SampleType*>(src_channels_data[ch]) + frame_offset;
-    for (int i = 0; i < frames_to_copy; ++i) {
-      dest[i * channels + ch] = src_start[i];
+  UNSAFE_TODO({
+    for (int ch = 0; ch < channels; ++ch) {
+      const SampleType* src_start =
+          reinterpret_cast<SampleType*>(src_channels_data[ch]) + frame_offset;
+      for (int i = 0; i < frames_to_copy; ++i) {
+        dest[i * channels + ch] = src_start[i];
+      }
     }
-  }
+  });
 }
 
 template <typename SampleType>
@@ -152,11 +151,13 @@ void CopyToPlanar(uint8_t* dest_data,
     return;
   }
 
-  const SampleType* src_start =
-      reinterpret_cast<const SampleType*>(src_data) + offset_in_samples;
-  for (int i = 0; i < frames_to_copy; ++i) {
-    dest[i] = src_start[i * src_channel_count + dest_channel_index];
-  }
+  UNSAFE_TODO({
+    const SampleType* src_start =
+        reinterpret_cast<const SampleType*>(src_data) + offset_in_samples;
+    for (int i = 0; i < frames_to_copy; ++i) {
+      dest[i] = src_start[i * src_channel_count + dest_channel_index];
+    }
+  });
 }
 
 media::SampleFormat RemovePlanar(media::SampleFormat format) {
@@ -178,7 +179,7 @@ media::SampleFormat RemovePlanar(media::SampleFormat format) {
       return media::kSampleFormatF32;
 
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -192,8 +193,9 @@ class ArrayBufferContentsAsAudioExternalMemory
         contents_(std::move(contents)) {
     // Check that `span` refers to the memory inside `contents`.
     auto* contents_data = static_cast<uint8_t*>(contents_.Data());
-    CHECK_GE(span.data(), contents_data);
-    CHECK_LE(span.data() + span.size(), contents_data + contents_.DataLength());
+    CHECK_GE(base::to_address(span.begin()), contents_data);
+    CHECK_LE(base::to_address(span.end()),
+             UNSAFE_TODO(contents_data + contents_.DataLength()));
   }
 
  private:
@@ -320,7 +322,7 @@ AudioData::AudioData(ScriptState* script_state,
         reinterpret_cast<const uint8_t*>(array_span.data());
 
     for (unsigned ch = 0; ch < init->numberOfChannels(); ++ch) {
-      channel_ptrs[ch] = plane_start + ch * plane_size_in_bytes;
+      UNSAFE_TODO(channel_ptrs[ch] = plane_start + ch * plane_size_in_bytes);
     }
   }
 
@@ -554,11 +556,13 @@ void AudioData::copyTo(const AllowSharedBufferSource* destination,
     return;
   }
 
-  const uint8_t* src_data =
-      data_->channel_data()[copy_to_options->planeIndex()];
-  const uint8_t* data_start = src_data + offset_in_bytes;
-  CHECK_LE(data_start + copy_size_in_bytes, src_data + src_data_size);
-  memcpy(dest_wrapper.data(), data_start, copy_size_in_bytes);
+  UNSAFE_TODO({
+    const uint8_t* src_data =
+        data_->channel_data()[copy_to_options->planeIndex()];
+    const uint8_t* data_start = src_data + offset_in_bytes;
+    CHECK_LE(data_start + copy_size_in_bytes, src_data + src_data_size);
+    memcpy(dest_wrapper.data(), data_start, copy_size_in_bytes);
+  });
 }
 
 void AudioData::CopyConvert(base::span<uint8_t> dest,
@@ -625,7 +629,7 @@ void AudioData::CopyConvert(base::span<uint8_t> dest,
       }
 
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -633,15 +637,16 @@ void AudioData::CopyConvert(base::span<uint8_t> dest,
   const int channel = copy_to_options->planeIndex();
 
   CHECK_LT(channel, data_as_f32_bus_->channels());
-  float* src_data = data_as_f32_bus_->channel(channel);
-  float* offset_src_data = src_data + offset;
-  CHECK_LE(offset_src_data + frame_count,
-           src_data + data_as_f32_bus_->frames());
+  const size_t num_frames =
+      base::checked_cast<size_t>(data_as_f32_bus_->frames());
+  base::span<float> src_data = data_as_f32_bus_->channel_span(channel);
+  base::span<float> offset_src_data = src_data.subspan(offset);
+  CHECK_LE(offset_src_data.subspan(frame_count).data(),
+           src_data.subspan(num_frames).data());
   switch (dest_format) {
     case media::kSampleFormatPlanarU8: {
-      uint8_t* dest_data = dest.data();
       for (uint32_t i = 0; i < frame_count; ++i) {
-        dest_data[i] =
+        dest[i] =
             media::UnsignedInt8SampleTypeTraits::FromFloat(offset_src_data[i]);
       }
       return;
@@ -649,28 +654,31 @@ void AudioData::CopyConvert(base::span<uint8_t> dest,
     case media::kSampleFormatPlanarS16: {
       int16_t* dest_data = reinterpret_cast<int16_t*>(dest.data());
       for (uint32_t i = 0; i < frame_count; ++i) {
-        dest_data[i] =
-            media::SignedInt16SampleTypeTraits::FromFloat(offset_src_data[i]);
+        UNSAFE_TODO(dest_data[i] =
+                        media::SignedInt16SampleTypeTraits::FromFloat(
+                            offset_src_data[i]));
       }
       return;
     }
     case media::kSampleFormatPlanarS32: {
       int32_t* dest_data = reinterpret_cast<int32_t*>(dest.data());
       for (uint32_t i = 0; i < frame_count; ++i) {
-        dest_data[i] =
-            media::SignedInt32SampleTypeTraits::FromFloat(offset_src_data[i]);
+        UNSAFE_TODO(dest_data[i] =
+                        media::SignedInt32SampleTypeTraits::FromFloat(
+                            offset_src_data[i]));
       }
       return;
     }
     case media::kSampleFormatPlanarF32: {
       int32_t* dest_data = reinterpret_cast<int32_t*>(dest.data());
-      CHECK_LE(offset_src_data + frame_count,
-               src_data + data_as_f32_bus_->frames());
-      memcpy(dest_data, offset_src_data, sizeof(float) * frame_count);
+      CHECK_LE(offset_src_data.subspan(frame_count).data(),
+               src_data.subspan(num_frames).data());
+      UNSAFE_TODO(memcpy(dest_data, offset_src_data.data(),
+                         sizeof(float) * frame_count));
       return;
     }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -711,7 +719,7 @@ void AudioData::CopyToInterleaved(base::span<uint8_t> dest,
                                         frames_to_copy);
       return;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -761,7 +769,7 @@ void AudioData::CopyToPlanar(base::span<uint8_t> dest,
                                    exception_state);
       return;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

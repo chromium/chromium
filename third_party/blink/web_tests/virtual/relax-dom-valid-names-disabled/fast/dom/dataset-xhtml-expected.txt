@@ -1,0 +1,51 @@
+This tests element.dataset for XHTML.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS testGet('data-foo', 'foo') is true
+PASS testGet('data-foo-bar', 'fooBar') is true
+PASS testGet('data--', '-') is true
+PASS testGet('data--foo', 'Foo') is true
+PASS testGet('data---foo', '-Foo') is true
+PASS testGet('data-', '') is true
+PASS testGet('data-à', 'à') is true
+
+
+PASS matchesNothingInDataset('dataFoo') is true
+PASS matchesNothingInDataset('data-Foo') is true
+
+
+PASS testSet('foo', 'data-foo') is true
+PASS testSet('fooBar', 'data-foo-bar') is true
+PASS testSet('-', 'data--') is true
+PASS testSet('Foo', 'data--foo') is true
+PASS testSet('-Foo', 'data---foo') is true
+PASS testSet('', 'data-') is true
+PASS testSet('à', 'data-à') is true
+
+
+PASS testSet('-foo', 'dummy') threw exception SyntaxError: Failed to set a named property '-foo' on 'DOMStringMap': '-foo' is not a valid property name..
+PASS testSet('foo ', 'dummy') threw exception InvalidCharacterError: Failed to set a named property 'foo ' on 'DOMStringMap': 'data-foo ' is not a valid attribute name..
+FAIL testSet('foo豈', 'data-foo豈') should be true. Threw exception InvalidCharacterError: Failed to set a named property 'foo豈' on 'DOMStringMap': 'data-foo豈' is not a valid attribute name.
+
+
+PASS testDelete('data-foo', 'foo') is true
+PASS testDelete('data-foo-bar', 'fooBar') is true
+PASS testDelete('data--', '-') is true
+PASS testDelete('data--foo', 'Foo') is true
+PASS testDelete('data---foo', '-Foo') is true
+PASS testDelete('data-', '') is true
+PASS testDelete('data-à', 'à') is true
+
+
+PASS testDelete('dummy', '-foo') is false
+
+
+PASS testForIn(['data-foo', 'data-bar', 'data-baz']) is 3
+PASS testForIn(['data-foo', 'data-bar', 'dataFoo']) is 2
+PASS testForIn(['data-foo', 'data-bar', 'style']) is 2
+PASS testForIn(['data-foo', 'data-bar', 'data-']) is 3
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

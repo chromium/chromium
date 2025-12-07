@@ -7,9 +7,11 @@
 #include <optional>
 #include <string_view>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/uuid.h"
 #include "chromeos/printing/printing_constants.h"
@@ -21,7 +23,12 @@
 namespace chromeos {
 
 namespace {
-std::string ToString(Uri::ParserStatus status) {
+
+std::string ErrMsg(std::string_view prefix, std::string_view message) {
+  return base::StrCat({prefix, message});
+}
+
+std::string_view ToString(Uri::ParserStatus status) {
   switch (status) {
     case Uri::ParserStatus::kInvalidPercentEncoding:
       return "invalid percent encoding";
@@ -46,7 +53,31 @@ std::string ToString(Uri::ParserStatus status) {
 }
 }  // namespace
 
-std::string ToString(PrinterClass pclass) {
+IppPrinterInfo::IppPrinterInfo() = default;
+
+IppPrinterInfo::IppPrinterInfo(const IppPrinterInfo& other) = default;
+
+IppPrinterInfo::IppPrinterInfo(const std::vector<std::string>& document_formats,
+                               const std::string& document_format_default,
+                               const std::string& document_format_preferred,
+                               const std::vector<std::string>& urf_supported,
+                               const std::vector<std::string>& pdf_versions,
+                               const std::vector<std::string>& ipp_features,
+                               const std::string& mopria_certified,
+                               const std::vector<std::string>& printer_kind) {
+  this->document_formats = document_formats;
+  this->document_format_default = document_format_default;
+  this->document_format_preferred = document_format_preferred;
+  this->urf_supported = urf_supported;
+  this->pdf_versions = pdf_versions;
+  this->ipp_features = ipp_features;
+  this->mopria_certified = mopria_certified;
+  this->printer_kind = printer_kind;
+}
+
+IppPrinterInfo::~IppPrinterInfo() = default;
+
+std::string_view ToString(PrinterClass pclass) {
   switch (pclass) {
     case PrinterClass::kEnterprise:
       return "Enterprise";
@@ -57,57 +88,57 @@ std::string ToString(PrinterClass pclass) {
     case PrinterClass::kSaved:
       return "Saved";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 bool IsValidPrinterUri(const Uri& uri, std::string* error_message) {
   static constexpr auto kKnownSchemes =
       base::MakeFixedFlatSet<std::string_view>(
           {"http", "https", "ipp", "ipps", "ippusb", "lpd", "socket", "usb"});
-  static const std::string kPrefix = "Malformed printer URI: ";
+  static constexpr std::string_view kPrefix = "Malformed printer URI: ";
 
   if (!kKnownSchemes.contains(uri.GetScheme())) {
     if (error_message)
-      *error_message = kPrefix + "unknown or missing scheme";
+      *error_message = ErrMsg(kPrefix, "unknown or missing scheme");
     return false;
   }
 
   // Only printer URIs with the lpd scheme are allowed to have Userinfo.
   if (!uri.GetUserinfo().empty() && uri.GetScheme() != "lpd") {
     if (error_message)
-      *error_message = kPrefix + "user info is not allowed for this scheme";
+      *error_message =
+          ErrMsg(kPrefix, "user info is not allowed for this scheme");
     return false;
   }
 
   if (uri.GetHost().empty()) {
     if (error_message)
-      *error_message = kPrefix + "missing host";
+      *error_message = ErrMsg(kPrefix, "missing host");
     return false;
   }
 
   if (uri.GetScheme() == "ippusb" || uri.GetScheme() == "usb") {
     if (uri.GetPort() > -1) {
       if (error_message)
-        *error_message = kPrefix + "port is not allowed for this scheme";
+        *error_message = ErrMsg(kPrefix, "port is not allowed for this scheme");
       return false;
     }
     if (uri.GetPath().empty()) {
       if (error_message)
-        *error_message = kPrefix + "path is required for this scheme";
+        *error_message = ErrMsg(kPrefix, "path is required for this scheme");
       return false;
     }
   }
 
   if (uri.GetScheme() == "socket" && !uri.GetPath().empty()) {
     if (error_message)
-      *error_message = kPrefix + "path is not allowed for this scheme";
+      *error_message = ErrMsg(kPrefix, "path is not allowed for this scheme");
     return false;
   }
 
   if (!uri.GetFragment().empty()) {
     if (error_message)
-      *error_message = kPrefix + "fragment is not allowed";
+      *error_message = ErrMsg(kPrefix, "fragment is not allowed");
     return false;
   }
 
@@ -119,11 +150,18 @@ bool Printer::PpdReference::IsFilled() const {
          !effective_make_and_model.empty();
 }
 
+Printer::ManagedPrintOptions::ManagedPrintOptions() = default;
+Printer::ManagedPrintOptions::ManagedPrintOptions(
+    const Printer::ManagedPrintOptions& other) = default;
+Printer::ManagedPrintOptions& Printer::ManagedPrintOptions::operator=(
+    const Printer::ManagedPrintOptions& other) = default;
+Printer::ManagedPrintOptions::~ManagedPrintOptions() = default;
+
 Printer::Printer()
     : id_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
       source_(SRC_USER_PREFS) {}
 
-Printer::Printer(const std::string& id) : id_(id), source_(SRC_USER_PREFS) {
+Printer::Printer(std::string id) : id_(std::move(id)), source_(SRC_USER_PREFS) {
   if (id_.empty())
     id_ = base::Uuid::GenerateRandomV4().AsLowercaseString();
 }
@@ -141,13 +179,13 @@ bool Printer::SetUri(const Uri& uri, std::string* error_message) {
   return true;
 }
 
-bool Printer::SetUri(const std::string& uri, std::string* error_message) {
+bool Printer::SetUri(std::string_view uri, std::string* error_message) {
   Uri parsed_uri(uri);
   const Uri::ParserError& parser_status = parsed_uri.GetLastParsingError();
   if (parser_status.status == Uri::ParserStatus::kNoErrors)
     return SetUri(parsed_uri, error_message);
   if (error_message) {
-    *error_message = "Malformed URI: " + ToString(parser_status.status);
+    *error_message = ErrMsg("Malformed URI: ", ToString(parser_status.status));
   }
   return false;
 }
@@ -161,10 +199,18 @@ bool Printer::RequiresDriverlessUsb() const {
   // IPP-USB evaluation is complete.
   static constexpr auto kDriverlessUsbMakeModels =
       base::MakeFixedFlatSet<std::string_view>({
-          "epson et-5180 series",    // b/319373509
-          "epson et-8550 series",    // b/301387697
-          "epson wf-110 series",     // b/287159028
-          "hp deskjet 4100 series",  // b/279387801
+          "epson et-4950 series",          // b/420836310
+          "epson et-5180 series",          // b/319373509
+          "epson et-8550 series",          // b/301387697
+          "epson wf-110 series",           // b/287159028
+          "hp deskjet 2600 series",        // b/399480007
+          "hp deskjet 2700 series",        // b/459435424
+          "hp deskjet 4100 series",        // b/279387801
+          "hp officejet 8010 series",      // b/401543989
+          "hp officejet 8020 series",      // b/401543989
+          "hp officejet 8700",             // b/401543989
+          "hp officejet pro 9010 series",  // b/401543989
+          "hp officejet pro 9020 series",  // b/401543989
       });
   return kDriverlessUsbMakeModels.contains(base::ToLowerASCII(make_and_model_));
 }
@@ -194,31 +240,22 @@ Uri Printer::ReplaceHostAndPort(const net::IPEndPoint& ip) const {
 }
 
 Printer::PrinterProtocol Printer::GetProtocol() const {
-  if (uri_.GetScheme() == "usb")
-    return PrinterProtocol::kUsb;
-
-  if (uri_.GetScheme() == "ipp")
-    return PrinterProtocol::kIpp;
-
-  if (uri_.GetScheme() == "ipps")
-    return PrinterProtocol::kIpps;
-
-  if (uri_.GetScheme() == "http")
-    return PrinterProtocol::kHttp;
-
-  if (uri_.GetScheme() == "https")
-    return PrinterProtocol::kHttps;
-
-  if (uri_.GetScheme() == "socket")
-    return PrinterProtocol::kSocket;
-
-  if (uri_.GetScheme() == "lpd")
-    return PrinterProtocol::kLpd;
-
-  if (uri_.GetScheme() == "ippusb")
-    return PrinterProtocol::kIppUsb;
-
-  return PrinterProtocol::kUnknown;
+  static constexpr auto kProtocolMap =
+      base::MakeFixedFlatMap<std::string_view, Printer::PrinterProtocol>({
+          {"usb", PrinterProtocol::kUsb},
+          {"ipp", PrinterProtocol::kIpp},
+          {"ipps", PrinterProtocol::kIpps},
+          {"http", PrinterProtocol::kHttp},
+          {"https", PrinterProtocol::kHttps},
+          {"socket", PrinterProtocol::kSocket},
+          {"lpd", PrinterProtocol::kLpd},
+          {"ippusb", PrinterProtocol::kIppUsb},
+      });
+  auto iter = kProtocolMap.find(uri_.GetScheme());
+  if (iter == kProtocolMap.cend()) {
+    return PrinterProtocol::kUnknown;
+  }
+  return iter->second;
 }
 
 bool Printer::HasNetworkProtocol() const {

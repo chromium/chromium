@@ -4,11 +4,18 @@
 
 #include "ash/wm/overview/birch/birch_bar_context_menu_model.h"
 
+#include "ash/birch/birch_coral_provider.h"
+#include "ash/birch/coral_util.h"
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "base/types/cxx23_to_underlying.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/views/controls/menu/menu_types.h"
@@ -19,7 +26,7 @@ namespace {
 // Returns whether the weather item should be enabled based on the geolocation
 // permission. See BirchWeatherProvider.
 bool IsWeatherAllowedByGeolocation() {
-  return SimpleGeolocationProvider::GetInstance()
+  return SystemLocationProvider::GetInstance()
       ->IsGeolocationUsageAllowedForSystem();
 }
 
@@ -36,6 +43,15 @@ BirchBarContextMenuModel::BirchBarContextMenuModel(
   // Expanded menu also has customizing suggestions options.
   if (type == Type::kExpandedBarMenu) {
     AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
+
+    if (features::IsCoralFeatureEnabled()) {
+      AddItem(base::to_underlying(CommandId::kCoralSuggestions),
+              l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CORAL_BAR_MENU_ITEM));
+      auto coral_index = GetIndexOfCommandId(
+          base::to_underlying(CommandId::kCoralSuggestions));
+      SetEnabledAt(coral_index.value(),
+                   BirchCoralProvider::Get()->IsCoralServiceAvailable());
+    }
 
     bool enabled = IsWeatherAllowedByGeolocation();
     std::u16string weather_label =

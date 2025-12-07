@@ -16,9 +16,7 @@ namespace base {
 struct BASE_EXPORT Frame {
   Frame(uintptr_t instruction_pointer, const ModuleCache::Module* module);
 
-  // TODO(crbug.com/40241229): For prototype use by Android arm browser main
-  // thread profiling for tracing only. Update once we have a full design
-  // for function name upload.
+  // The function name should only be populated by Android Java frames.
   Frame(uintptr_t instruction_pointer,
         const ModuleCache::Module* module,
         std::string function_name);
@@ -30,11 +28,8 @@ struct BASE_EXPORT Frame {
   // The module information.
   raw_ptr<const ModuleCache::Module, DanglingUntriaged> module;
 
-  // This serves as a temporary way to pass function names from libunwindstack
-  // unwinder to tracing profiler. Not used by any other unwinder.
-  // TODO(crbug.com/40241229): For prototype use by Android arm browser main
-  // thread profiling for tracing only. Update once we have a full design
-  // for function name upload.
+  // Function name associated with the frame. Currently populated only for
+  // Android Java frames.
   std::string function_name;
 };
 

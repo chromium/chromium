@@ -1,0 +1,87 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions)
+assert(is_chromeos)
+
+static_library("login_state") {
+  sources = [
+    "login_state_api.cc",
+    "login_state_api.h",
+    "session_state_changed_event_dispatcher.cc",
+    "session_state_changed_event_dispatcher.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/common/extensions/api",
+    "//extensions/browser",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:non_code_constants",
+    "//chromeos/ash/components/browser_context_helper",
+    "//components/session_manager:base",
+    "//components/session_manager/core",
+    "//content/public/browser",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "login_state_apitest.cc",
+    "session_state_changed_event_dispatcher_ash_apitest.cc",
+  ]
+
+  deps = [
+    ":login_state",
+    "//chrome/browser/ash/extensions",
+    "//chrome/browser/ash/login/lock:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
+    "//components/session_manager:base",
+    "//components/session_manager/core",
+    "//content/test:test_support",
+    "//extensions:test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "login_state_api_unittest.cc",
+    "session_state_changed_event_dispatcher_ash_unittest.cc",
+  ]
+
+  deps = [
+    ":login_state",
+    "//base",
+    "//chrome/common:non_code_constants",
+    "//chrome/common/extensions/api",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/login/login_state",
+    "//components/session_manager:base",
+    "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
+    "//content/test:test_support",
+    "//extensions:test_support",
+    "//extensions/browser",
+    "//extensions/browser:test_support",
+    "//extensions/common",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

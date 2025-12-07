@@ -28,6 +28,7 @@
 <translation id="2329392777730037872">לא ניתן היה לפתוח את <ph name="URL" /> במכשיר הלקוח.</translation>
 <translation id="2359808026110333948">המשך</translation>
 <translation id="2366718077645204424">לא ניתן להשיג את המארח. הסיבה לכך יכולה להיות תצורת הרשת שבה נעשה שימוש.</translation>
+<translation id="242591256144136845">‏זכויות יוצרים 2025‏ Google LLC. כל הזכויות שמורות.</translation>
 <translation id="2504109125669302160">מתן הרשאת 'נגישות' ל-<ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">בוצעה התחברות אל <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">האם ברצונך לשתף מחשב זה כך שמשתמש אחר יראה אותו וישלוט בו?</translation>
@@ -39,6 +40,7 @@
 <translation id="2758123043070977469">אירעה בעיה באימות. יש להתחבר שוב.</translation>
 <translation id="2803375539583399270">הזנת קוד אימות</translation>
 <translation id="2919669478609886916">שיתפת את המחשב הזה עם משתמש אחר. האם ברצונך להמשיך את השיתוף?</translation>
+<translation id="2929683002824598593">שיתוף המכשיר</translation>
 <translation id="2939145106548231838">יש לאמת מול המארח</translation>
 <translation id="3027681561976217984">מצב מסך מגע</translation>
 <translation id="3106379468611574572">המחשב המרוחק אינו מגיב לבקשות החיבור. יש לוודא שהוא מחובר לאינטרנט ולנסות שוב.</translation>
@@ -91,6 +93,7 @@
 <translation id="4987330545941822761">‏ל-Chrome Remote Desktop אין אפשרות לקבוע באיזה דפדפן לפתוח כתובות URL במחשב. עליך לבחור דפדפן מהרשימה שלמטה.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (לא מקוון)</translation>
 <translation id="507204348399810022">בטוח שברצונך להשבית את החיבורים המרוחקים אל <ph name="HOSTNAME" />?</translation>
+<translation id="5095424396646120601">דיווח על קריסה</translation>
 <translation id="5170982930780719864">מזהה מארח לא חוקי.</translation>
 <translation id="5204575267916639804">שאלות נפוצות</translation>
 <translation id="5222676887888702881">יציאה</translation>
@@ -116,10 +119,12 @@
 <translation id="6178645564515549384">מארח העברת הודעות ייעודי עבור סיוע מרוחק</translation>
 <translation id="618120821413932081">יש לעדכן את הפתרון המרוחק כך שיתאים לגודל החלון</translation>
 <translation id="6223301979382383752">פתיחת ההעדפות להקלטת מסך</translation>
+<translation id="6252344563748670011">התקבלה בקשת גישה מ-<ph name="CLIENT_USERNAME" /> לצפייה במסך שלך ולשליטה במקלדת ובעכבר. רוצה לשתף את המכשיר שלך?</translation>
 <translation id="6284412385303060032">המארח הפועל במסך הכניסה למסוף כבה כדי לתמוך במצב הסתרה, על ידי מעבר אל מארח הפועל בסשן ספציפי למשתמש.</translation>
 <translation id="6542902059648396432">דיווח על בעיה...</translation>
 <translation id="6583902294974160967">תמיכה</translation>
 <translation id="6612717000975622067">‏שליחת Ctrl-Alt-Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{אם לא תתבצע פעולה, המכשיר יתחיל לשתף את המידע באופן אוטומטי בעוד שניה אחת.}one{אם לא תתבצע פעולה, המכשיר יתחיל לשתף את המיקום באופן אוטומטי בעוד # שניות.}two{אם לא תתבצע פעולה, המכשיר יתחיל לשתף את המיקום באופן אוטומטי בעוד # שניות.}other{אם לא תתבצע פעולה, המכשיר יתחיל לשתף את המידע באופן אוטומטי בעוד # שניות.}}</translation>
 <translation id="6654753848497929428">שיתוף</translation>
 <translation id="677755392401385740">המארח הופעל עבור המשתמש: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">‏אפליקציה לעזרה בפתיחת כתובת URL בלקוח של <ph name="PRODUCT_NAME" /></translation>
@@ -133,13 +138,14 @@
 <translation id="7067321367069083429">המסך פועל כמסך מגע</translation>
 <translation id="7116737094673640201">‏ברוך בואך אל Chrome Remote Desktop</translation>
 <translation id="7144878232160441200">יש לנסות שוב</translation>
+<translation id="7298392173540380852">‏זכויות יוצרים 2025‏ The Chromium Authors. כל הזכויות שמורות.</translation>
 <translation id="7312846573060934304">המארח במצב אופליין.</translation>
 <translation id="7319983568955948908">הפסקת השיתוף</translation>
 <translation id="7359298090707901886">‏לא ניתן להשתמש בדפדפן שנבחר לפתיחת כתובות URL במחשב המקומי.</translation>
 <translation id="7401733114166276557">Chrome Remote Desktop</translation>
 <translation id="7434397035092923453">נדחתה גישה עבור לקוח: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">לקוח שהתחבר: <ph name="CLIENT_USERNAME" />.</translation>
-<translation id="7526139040829362392">החלפת חשבון</translation>
+<translation id="7526139040829362392">בחירה בחשבון אחר</translation>
 <translation id="7535110896613603182">פתיחת ההגדרות של אפליקציות ברירת המחדל</translation>
 <translation id="7628469622942688817">אני רוצה לזכור את קוד האימות שלי במכשיר הזה.</translation>
 <translation id="7649070708921625228">עזרה</translation>
@@ -149,7 +155,6 @@
 <translation id="7693372326588366043">רענון רשימת המארחים</translation>
 <translation id="7714222945760997814">דיווח על הבעיה</translation>
 <translation id="7868137160098754906">יש להזין את קוד האימות עבור המחשב המרוחק.</translation>
-<translation id="7881455334687220899">‏זכויות יוצרים 2024 The Chromium Authors. כל הזכויות שמורות.</translation>
 <translation id="7895403300744144251">מדיניות האבטחה במחשב המרוחק אינה מתירה חיבורים מהחשבון שלך.</translation>
 <translation id="7936528439960309876">עגינה לימין</translation>
 <translation id="7970576581263377361">‏האימות נכשל. יש להיכנס שוב ל-Chromium.</translation>
@@ -181,8 +186,7 @@
 <translation id="8747048596626351634">‏ההפעלה קרסה או שלא התחילה. אם ‎~/.chrome-remote-desktop-session קיים במחשב המרוחק, יש לוודא שהוא מפעיל תהליך ארוך טווח בחזית. לדוגמה: סביבת המחשב או מנהל החלונות.</translation>
 <translation id="8804164990146287819">מדיניות פרטיות</translation>
 <translation id="8906511416443321782">‏נדרשת גישה למיקרופון כדי להקליט אודיו ולשדר אותו ללקוח Chrome Remote Desktop.</translation>
-<translation id="9042277333359847053">‏זכויות יוצרים 2024 Google LLC. כל הזכויות שמורות.</translation>
-<translation id="9111855907838866522">התחברת למכשיר המרוחק שלך. כדי לפתוח את התפריט יש להקיש במסך עם ארבע אצבעות.</translation>
+<translation id="9111855907838866522">התחברת למכשיר המרוחק שלך. כדי לפתוח את התפריט יש ללחוץ במסך עם ארבע אצבעות.</translation>
 <translation id="9126115402994542723">אין לבקש שוב קוד אימות בעת התחברות למארח הזה ממכשיר זה.</translation>
 <translation id="916856682307586697">‏הפעלת ה-XSession שמוגדר כברירת מחדל</translation>
 <translation id="9187628920394877737">מתן הרשאת 'הקלטת מסך' ל-<ph name="PRODUCT_NAME" /></translation>

@@ -1,0 +1,5 @@
+specific_include_rules = {
+    "v8_script_value_serializer_for_modules_test\.cc" : [
+        "+media/base/audio_bus.h",
+    ]
+}

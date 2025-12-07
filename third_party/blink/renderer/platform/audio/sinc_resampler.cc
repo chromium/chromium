@@ -35,6 +35,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "media/base/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/fdlibm/ieee754.h"
@@ -186,6 +187,8 @@ class BufferSourceProvider final : public AudioSourceProvider {
     source_frames_available_ -= frames_to_copy;
     source_ += frames_to_copy;
   }
+
+  void SetClient(AudioSourceProviderClient*) override {}
 
  private:
   raw_ptr<const float, AllowPtrArithmetic> source_;

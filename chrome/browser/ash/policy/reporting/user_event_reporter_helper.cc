@@ -4,14 +4,19 @@
 
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper.h"
 
+#include <optional>
 #include <utility>
 
+#include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/core/reporting_user_tracker.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
@@ -100,5 +105,25 @@ void UserEventReporterHelper::OnEnqueueDefault(Status status) {
     DVLOG(1) << "Could not enqueue event to reporting queue because of: "
              << status;
   }
+}
+
+std::string UserEventReporterHelper::GetDeviceDmToken() const {
+  const enterprise_management::PolicyData* const policy_data =
+      ash::DeviceSettingsService::Get()->policy_data();
+  if (policy_data && policy_data->has_request_token()) {
+    return policy_data->request_token();
+  }
+  return std::string();
+}
+
+std::optional<uint32_t> UserEventReporterHelper::GetUniqueUserIdForThisDevice(
+    std::string_view user_email) const {
+  const std::string device_dm_token = GetDeviceDmToken();
+
+  if (device_dm_token.empty()) {
+    return std::nullopt;
+  }
+
+  return base::PersistentHash(base::StrCat({user_email, device_dm_token}));
 }
 }  // namespace reporting

@@ -4,6 +4,8 @@
 
 #include "chrome/services/sharing/nearby/test_support/fake_device.h"
 
+#include "base/notimplemented.h"
+
 namespace bluetooth {
 
 FakeDevice::FakeDevice() = default;

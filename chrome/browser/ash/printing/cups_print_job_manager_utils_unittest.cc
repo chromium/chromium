@@ -152,6 +152,19 @@ INSTANTIATE_TEST_SUITE_P(
     CupsPrintJobManagerUtilsTest,
     testing::ValuesIn(GenerateParams(CupsJob::COMPLETED,
                                      State::STATE_DOCUMENT_DONE)));
+
+INSTANTIATE_TEST_SUITE_P(
+    CompletedCancelledAtDevice,
+    CupsPrintJobManagerUtilsTest,
+    testing::Values(Params(State::STATE_STARTED,
+                           /*pages=*/1,
+                           CupsJob::COMPLETED,
+                           std::vector<CupsJob::JobStateReason>{
+                               CupsJob::JobStateReason::kJobCanceledAtDevice},
+                           /*job_pages=*/1,
+                           State::STATE_CANCELLED,
+                           /*expected_pages=*/1)));
+
 INSTANTIATE_TEST_SUITE_P(
     Cancelled,
     CupsPrintJobManagerUtilsTest,

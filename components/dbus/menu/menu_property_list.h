@@ -9,10 +9,10 @@
 #include <string>
 #include <vector>
 
-#include "components/dbus/properties/types.h"
+#include "components/dbus/utils/variant.h"
 
 using MenuPropertyList = std::vector<std::string>;
-using MenuItemProperties = std::map<std::string, DbusVariant>;
+using MenuItemProperties = std::map<std::string, dbus_utils::Variant>;
 using MenuPropertyChanges = std::map<int32_t, MenuPropertyList>;
 
 namespace ui {
@@ -20,14 +20,14 @@ class MenuModel;
 }
 
 // Computes properties for the menu item with index |i| in |menu|.
-COMPONENT_EXPORT(DBUS)
+COMPONENT_EXPORT(COMPONENTS_DBUS)
 MenuItemProperties ComputeMenuPropertiesForMenuItem(ui::MenuModel* menu,
                                                     size_t i);
 
 // Given inputs |old_properties| and |new_properties|, computes outputs
 // |item_updated_props| and |item_removed_props| suitable for use in
 // com.canonical.dbusmenu.ItemsPropertiesUpdated.
-COMPONENT_EXPORT(DBUS)
+COMPONENT_EXPORT(COMPONENTS_DBUS)
 void ComputeMenuPropertyChanges(const MenuItemProperties& old_properties,
                                 const MenuItemProperties& new_properties,
                                 MenuPropertyList* item_updated_props,

@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/memory/ptr_util.h"
-#include "base/not_fatal_until.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/device/geolocation/geolocation_impl.h"
 #include "url/origin.h"
@@ -29,9 +28,11 @@ void GeolocationContext::Create(
 void GeolocationContext::BindGeolocation(
     mojo::PendingReceiver<mojom::Geolocation> receiver,
     const GURL& requesting_url,
-    mojom::GeolocationClientId client_id) {
+    mojom::GeolocationClientId client_id,
+    bool has_precise_permission) {
   GeolocationImpl* impl =
-      new GeolocationImpl(std::move(receiver), requesting_url, client_id, this);
+      new GeolocationImpl(std::move(receiver), requesting_url, client_id, this,
+                          has_precise_permission);
   impls_.push_back(base::WrapUnique<GeolocationImpl>(impl));
   if (geoposition_override_) {
     impl->SetOverride(*geoposition_override_);
@@ -40,21 +41,27 @@ void GeolocationContext::BindGeolocation(
   }
 }
 
-void GeolocationContext::OnPermissionRevoked(const url::Origin& origin) {
-  std::erase_if(impls_, [&origin](const auto& impl) {
+void GeolocationContext::OnPermissionUpdated(
+    const url::Origin& origin,
+    mojom::GeolocationPermissionLevel permission_level) {
+  std::erase_if(impls_, [&origin, &permission_level](const auto& impl) {
     if (!origin.IsSameOriginWith(impl->url())) {
       return false;
     }
-    // Invoke the position callback with kPermissionDenied before removing.
-    impl->OnPermissionRevoked();
-    return true;
+    // Pass the permission update to the GeolocationImpl, and erase the impl if
+    // permission has been denied.
+    impl->OnPermissionUpdated(permission_level);
+    const bool should_erase =
+        permission_level == mojom::GeolocationPermissionLevel::kDenied;
+    return should_erase;
   });
+  return;
 }
 
 void GeolocationContext::OnConnectionError(GeolocationImpl* impl) {
   auto it =
-      base::ranges::find(impls_, impl, &std::unique_ptr<GeolocationImpl>::get);
-  CHECK(it != impls_.end(), base::NotFatalUntil::M130);
+      std::ranges::find(impls_, impl, &std::unique_ptr<GeolocationImpl>::get);
+  CHECK(it != impls_.end());
   impls_.erase(it);
 }
 

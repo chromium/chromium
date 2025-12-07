@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -31,6 +32,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/painter.h"
 #include "ui/views/view_class_properties.h"
 
@@ -95,7 +97,7 @@ class ExpandButton : public views::ImageView {
   void OnFocus() override;
   void OnBlur() override;
   void OnThemeChanged() override;
-  void SetTooltipText(const std::u16string& tooltip) override;
+  void OnTooltipTextChanged(const std::u16string& old_tooltip_text) override;
 
  private:
   std::unique_ptr<views::Painter> focus_painter_;
@@ -137,9 +139,9 @@ void ExpandButton::OnThemeChanged() {
       gfx::Insets::TLBR(0, 0, 1, 1));
 }
 
-void ExpandButton::SetTooltipText(const std::u16string& tooltip) {
-  views::ImageView::SetTooltipText(tooltip);
-
+void ExpandButton::OnTooltipTextChanged(
+    const std::u16string& old_tooltip_text) {
+  ImageView::OnTooltipTextChanged(old_tooltip_text);
   if (GetTooltipText().empty()) {
     GetViewAccessibility().SetName(
         GetTooltipText(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
@@ -178,7 +180,7 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback)
   app_icon_view_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
   app_icon_view_->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
   DCHECK_EQ(kInnerHeaderHeight, app_icon_view_->GetPreferredSize({}).height());
-  AddChildView(app_icon_view_.get());
+  AddChildViewRaw(app_icon_view_.get());
 
   // App name view
   auto app_name_view = std::make_unique<views::Label>();
@@ -195,7 +197,7 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback)
   detail_layout->SetCollapseMargins(true);
   detail_layout->SetDefault(views::kMarginsKey, kHeaderSpacing);
   detail_views_->SetID(NotificationView::kHeaderDetailViews);
-  AddChildView(detail_views_.get());
+  AddChildViewRaw(detail_views_.get());
 
   // Summary text divider
   auto summary_text_divider = std::make_unique<views::Label>();
@@ -229,7 +231,7 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback)
   expand_button_->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
   expand_button_->SetImageSize(gfx::Size(kExpandIconSize, kExpandIconSize));
   DCHECK_EQ(kInnerHeaderHeight, expand_button_->GetPreferredSize({}).height());
-  detail_views_->AddChildView(expand_button_.get());
+  detail_views_->AddChildViewRaw(expand_button_.get());
 
   // Spacer between left-aligned views and right-aligned views
   auto spacer = std::make_unique<views::View>();
@@ -246,13 +248,20 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback)
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kGenericContainer);
 
-  if (app_name_view_->GetText().empty()) {
+  if (const std::u16string name(app_name_view_->GetText()); name.empty()) {
     GetViewAccessibility().SetName(
-        app_name_view_->GetText(),
-        ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+        name, ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
   } else {
-    GetViewAccessibility().SetName(app_name_view_->GetText());
+    GetViewAccessibility().SetName(name);
   }
+
+  OnTextChanged();
+  summary_text_changed_callback_ =
+      summary_text_view_->AddTextChangedCallback(base::BindRepeating(
+          &NotificationHeaderView::OnTextChanged, base::Unretained(this)));
+  timestamp_changed_callback_ =
+      timestamp_view_->AddTextChangedCallback(base::BindRepeating(
+          &NotificationHeaderView::OnTextChanged, base::Unretained(this)));
 }
 
 NotificationHeaderView::~NotificationHeaderView() = default;
@@ -316,12 +325,6 @@ void NotificationHeaderView::SetOverflowIndicator(int count) {
       IDS_MESSAGE_CENTER_LIST_NOTIFICATION_HEADER_OVERFLOW_INDICATOR, count));
   has_progress_ = false;
   UpdateSummaryTextAndTimestampVisibility();
-}
-
-void NotificationHeaderView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  Button::GetAccessibleNodeData(node_data);
-  node_data->SetDescription(summary_text_view_->GetText() + u" " +
-                            timestamp_view_->GetText());
 }
 
 void NotificationHeaderView::OnThemeChanged() {
@@ -434,7 +437,7 @@ void NotificationHeaderView::SetIsInGroupChildNotification(
   UpdateSummaryTextAndTimestampVisibility();
 }
 
-const std::u16string& NotificationHeaderView::app_name_for_testing() const {
+std::u16string_view NotificationHeaderView::app_name_for_testing() const {
   return app_name_view_->GetText();
 }
 
@@ -499,6 +502,11 @@ void NotificationHeaderView::UpdateExpandedCollapsedAccessibleState() const {
   } else {
     GetViewAccessibility().SetIsCollapsed();
   }
+}
+
+void NotificationHeaderView::OnTextChanged() {
+  GetViewAccessibility().SetDescription(base::StrCat(
+      {summary_text_view_->GetText(), u" ", timestamp_view_->GetText()}));
 }
 
 BEGIN_METADATA(NotificationHeaderView)

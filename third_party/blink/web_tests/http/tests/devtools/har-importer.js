@@ -4,6 +4,7 @@
 
 import {ApplicationTestRunner} from 'application_test_runner';
 import * as HAR from 'devtools/models/har/har.js';
+import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
 import {NetworkTestRunner} from 'network_test_runner';
 import {TestRunner} from 'test_runner';
 
@@ -70,7 +71,7 @@ const harJson = {
         'serverIPAddress': '[::1]',
         '_initiator': {'type': 'other'},
         '_priority': 'VeryHigh',
-        'connection': '2945',
+        '_connectionId': '2945',
         'pageref': 'page_1'
       },
       {
@@ -123,7 +124,7 @@ const harJson = {
         '_initiator':
             {'type': 'parser', 'url': 'http://localhost/', 'lineNumber': 1},
         '_priority': 'Low',
-        'connection': '2945',
+        '_connectionId': '2945',
         'pageref': 'page_1'
       },
       {
@@ -166,7 +167,7 @@ const harJson = {
         'serverIPAddress': '[::1]',
         '_initiator': 'bad_initiator_string',
         '_priority': 'Low',
-        'connection': '2945',
+        '_connectionId': '2945',
         'pageref': 'page_1'
       },
       {
@@ -221,7 +222,7 @@ const harJson = {
         },
         '_priority': 'Low',
         '_resourceType': 'fetch',
-        'connection': '2945',
+        '_connectionId': '2945',
         'pageref': 'page_1'
       },
       {
@@ -368,7 +369,7 @@ const harJson = {
       transferSize: request.transferSize,
       cached: request.cached(),
       cachedInMemory: request.cachedInMemory(),
-      contentData: await (request.contentData()),
+      contentData: await (request.requestContentData().then(TextUtils.ContentData.ContentData.asDeferredContent)),
       remoteAddress: request.remoteAddress(),
       resourceType: request.resourceType(),
       priority: request.priority(),

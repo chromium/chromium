@@ -105,7 +105,7 @@ def _add_string_to_i18n_ts(id: str):
         ids.sort()
         return ''.join(f'  {id},\n' for id in ids)
 
-    i18n_ts = re.sub(r'(?<=noArgStrings = \[\n)(.*?)(?=\])',
+    i18n_ts = re.sub(r'(?<=noArgStringNames = \[\n)(.*?)(?=\])',
                      handle_replace,
                      i18n_ts,
                      flags=re.DOTALL)

@@ -5,24 +5,36 @@
 package org.chromium.chrome.test.transit.hub;
 
 import static androidx.test.espresso.matcher.ViewMatchers.isSelected;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import static org.hamcrest.CoreMatchers.allOf;
+import static org.chromium.base.test.transit.ViewElement.unscopedOption;
+import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
 
-import static org.chromium.base.test.transit.ViewSpec.viewSpec;
+import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.test.transit.Elements;
-import org.chromium.base.test.transit.ViewSpec;
+import org.chromium.base.test.transit.ViewElementMatchesCondition;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 
 /** Incognito tab switcher pane station. */
 public class IncognitoTabSwitcherStation extends TabSwitcherStation {
 
-    public static final ViewSpec SELECTED_INCOGNITO_TOGGLE_TAB_BUTTON =
-            viewSpec(allOf(INCOGNITO_TOGGLE_TAB_BUTTON.getViewMatcher(), isSelected()));
-
     public IncognitoTabSwitcherStation(boolean regularTabsExist, boolean incognitoTabsExist) {
         super(/* isIncognito= */ true, regularTabsExist, incognitoTabsExist);
+
+        if (!mIsStandaloneIncognitoWindow) {
+            assert incognitoTabsButtonElement != null;
+            declareEnterCondition(
+                    new ViewElementMatchesCondition(incognitoTabsButtonElement, isSelected()));
+        }
+
+        recyclerViewElement =
+                declareView(
+                        paneHostElement.descendant(
+                                RecyclerView.class,
+                                withId(org.chromium.chrome.test.R.id.tab_list_recycler_view)),
+                        unscopedOption());
     }
 
     /**
@@ -31,7 +43,8 @@ public class IncognitoTabSwitcherStation extends TabSwitcherStation {
      */
     public static IncognitoTabSwitcherStation from(TabModelSelector selector) {
         return new IncognitoTabSwitcherStation(
-                selector.getModel(false).getCount() > 0, selector.getModel(true).getCount() > 0);
+                getTabCountOnUiThread(selector.getModel(false)) > 0,
+                getTabCountOnUiThread(selector.getModel(true)) > 0);
     }
 
     @Override
@@ -39,9 +52,12 @@ public class IncognitoTabSwitcherStation extends TabSwitcherStation {
         return PaneId.INCOGNITO_TAB_SWITCHER;
     }
 
-    @Override
-    public void declareElements(Elements.Builder elements) {
-        super.declareElements(elements);
-        elements.declareView(SELECTED_INCOGNITO_TOGGLE_TAB_BUTTON);
+    /** Open a new tab using the New Tab action button. */
+    public IncognitoNewTabPageStation openNewTab() {
+        recheckActiveConditions();
+
+        return newTabButtonElement
+                .clickTo()
+                .arriveAt(IncognitoNewTabPageStation.newBuilder().initOpeningNewTab().build());
     }
 }

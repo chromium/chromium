@@ -7,17 +7,8 @@
 
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 
-namespace WTF {
+namespace blink {
 
-template <>
-struct CrossThreadCopier<blink::ExceptionContext> {
-  STATIC_ONLY(CrossThreadCopier);
-  static blink::ExceptionContext Copy(
-      blink::ExceptionContext exception_context) {
-    return exception_context;
-  }
-};
-
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_CROSS_THREAD_COPIER_H_

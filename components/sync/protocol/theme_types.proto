@@ -1,0 +1,50 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Helper sync types for theme syncing.
+
+// If you change or add any fields in this file, update proto_visitors.h and
+// potentially proto_enum_conversions.{h, cc}.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+message UserColorTheme {
+  enum BrowserColorVariant {
+    BROWSER_COLOR_VARIANT_UNSPECIFIED = 0;
+    SYSTEM = 1;
+    TONAL_SPOT = 2;
+    NEUTRAL = 3;
+    VIBRANT = 4;
+    EXPRESSIVE = 5;
+  }
+  optional uint32 color = 1;
+  optional BrowserColorVariant browser_color_variant = 2;
+}
+
+// Custom NTP background info.
+message NtpCustomBackground {
+  // Background image url.
+  optional string url = 1;
+  // Attribution strings for the image.
+  optional string attribution_line_1 = 2;
+  optional string attribution_line_2 = 3;
+  // Url to learn more info about the image.
+  optional string attribution_action_url = 4;
+  // Id of the collection being used.
+  optional string collection_id = 5;
+  // Token to get the next image from collection and avoid duplicates.
+  optional string resume_token = 6;
+  // Timestamp after which the next image should be fetched from the
+  // collection.
+  optional int64 refresh_timestamp_unix_epoch_seconds = 7;
+  // Main color of the image.
+  optional uint32 main_color = 8;
+}

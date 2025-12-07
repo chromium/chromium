@@ -19,7 +19,6 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/label_button.h"

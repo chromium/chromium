@@ -11,40 +11,43 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
+using InterstitialReason =
+    security_interstitials::https_only_mode::InterstitialReason;
+
 void PopulateHttpsOnlyModeStringsForBlockingPage(
     base::Value::Dict& load_time_data,
     const GURL& url,
     const security_interstitials::https_only_mode::HttpInterstitialState&
         interstitial_state,
-    bool new_interstitial_enabled) {
+    bool august2024_refresh_enabled) {
   load_time_data.Set("tabTitle",
                      l10n_util::GetStringUTF16(IDS_HTTPS_ONLY_MODE_TITLE));
 
   int heading_id = IDS_HTTPS_ONLY_MODE_HEADING;
   int primary_paragraph_id = IDS_HTTPS_ONLY_MODE_PRIMARY_PARAGRAPH;
-  if (new_interstitial_enabled) {
+  if (august2024_refresh_enabled) {
     heading_id = IDS_HTTPS_ONLY_BALANCED_MODE_HEADING;
     primary_paragraph_id = IDS_HTTPS_ONLY_BALANCED_MODE_PRIMARY_PARAGRAPH;
   }
 
-  // Multiple interstitial flags might be true here, but we assign higher
-  // priority to Site Engagement heuristic because we expect SE interstitials
-  // to be rare. Advanced Protection locks the HTTPS-First Mode UI setting so
-  // it's higher priority than the HFM string as well. The lowest priority is
-  // given to HFM-in-Incognito, where we want to use different strings only if
-  // the user is not opted in to HFM for any other reason.
-  if (interstitial_state.enabled_by_engagement_heuristic) {
+  InterstitialReason reason =
+      security_interstitials::https_only_mode::GetInterstitialReason(
+          interstitial_state);
+  if (reason == InterstitialReason::kSiteEngagementHeuristic) {
     primary_paragraph_id =
         IDS_HTTPS_ONLY_MODE_WITH_SITE_ENGAGEMENT_PRIMARY_PARAGRAPH;
-  } else if (interstitial_state.enabled_by_advanced_protection) {
+  } else if (reason == InterstitialReason::kAdvancedProtection) {
+#if BUILDFLAG(IS_ANDROID)
+    primary_paragraph_id =
+        IDS_HTTPS_ONLY_MODE_WITH_ADVANCED_PROTECTION_PRIMARY_PARAGRAPH_ANDROID;
+#else
     primary_paragraph_id =
         IDS_HTTPS_ONLY_MODE_WITH_ADVANCED_PROTECTION_PRIMARY_PARAGRAPH;
-  } else if (interstitial_state.enabled_by_typically_secure_browsing) {
+#endif
+  } else if (reason == InterstitialReason::kTypicallySecureUserHeuristic) {
     primary_paragraph_id =
         IDS_HTTPS_ONLY_MODE_FOR_TYPICALLY_SECURE_BROWSING_PRIMARY_PARAGRAPH;
-  } else if (interstitial_state.enabled_by_incognito &&
-             !interstitial_state.enabled_by_pref &&
-             !interstitial_state.enabled_in_balanced_mode) {
+  } else if (reason == InterstitialReason::kIncognito) {
     primary_paragraph_id = IDS_HTTPS_ONLY_MODE_FOR_INCOGNITO_PRIMARY_PARAGRAPH;
   }
 
@@ -74,13 +77,15 @@ void PopulateHttpsOnlyModeStringsForBlockingPage(
 }
 
 void PopulateHttpsOnlyModeStringsForSharedHTML(
-    base::Value::Dict& load_time_data) {
+    base::Value::Dict& load_time_data,
+    bool august2024_refresh_enabled) {
   load_time_data.Set("type", "HTTPS_ONLY");
   load_time_data.Set("overridable", false);
   load_time_data.Set("hide_primary_button", false);
-  load_time_data.Set("show_recurrent_error_paragraph", false);
-  load_time_data.Set("recurrentErrorParagraph", "");
   load_time_data.Set("openDetails", "");
   load_time_data.Set("explanationParagraph", "");
   load_time_data.Set("finalParagraph", "");
+  if (august2024_refresh_enabled) {
+    load_time_data.Set("august2024Refresh", true);
+  }
 }

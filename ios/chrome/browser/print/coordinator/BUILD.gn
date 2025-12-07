@@ -1,0 +1,21 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "print_coordinator.h",
+    "print_coordinator.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/strings",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/tabs/model",
+    "//ios/chrome/browser/web/model/print",
+    "//ios/web/public",
+    "//net",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

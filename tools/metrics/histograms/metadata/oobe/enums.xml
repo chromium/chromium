@@ -74,16 +74,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Online Signin"/>
 </enum>
 
-<enum name="GaiaPasswordChangedScreenUserAction">
-  <summary>Actions which happen on the screen.</summary>
-  <int value="0" label="Resync user data"/>
-  <int value="1" label="Migrate user data"/>
-  <int value="2" label="Cancel dialog"/>
-  <int value="3" label="Incorrect old password"/>
-  <int value="4" label="Don't setup Recovery"/>
-  <int value="5" label="Setup Recovery"/>
-</enum>
-
 <enum name="HidDetectionBluetoothPairingResult">
   <int value="0" label="Attempted but did not pair via Bluetooth"/>
   <int value="1" label="Paired via Bluetooth"/>
@@ -158,6 +148,13 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="User declined update over cellular"/>
 </enum>
 
+<enum name="OobeMetricsClientIdResetState">
+  <int value="0" label="No reset during OOBE"/>
+  <int value="1" label="Reset during OOBE"/>
+  <int value="2" label="Failed to retrieve initial ID"/>
+  <int value="3" label="Failed to retrieve OOBE completion ID"/>
+</enum>
+
 <enum name="OobeMultideviceScreenSkippedReason">
   <int value="0" label="Public session or ephermeral login"/>
   <int value="1" label="Host phone already set"/>
@@ -184,11 +181,27 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Unknown"/>
 </enum>
 
+<enum name="OobeNotCompletedErrorTrigger">
+  <int value="0" label="PerformOOBECompletedAction"/>
+  <int value="1" label="GaiaScreen"/>
+  <int value="2" label="ExistingUserController"/>
+</enum>
+
 <enum name="OobeWebViewLoadResult">
   <int value="0" label="Success"/>
   <int value="1" label="Load timeout"/>
   <int value="2" label="Load error"/>
   <int value="3" label="HTTP error"/>
+</enum>
+
+<enum name="PerksDiscoveryErrorReason">
+  <int value="0" label="No Campaign Manager found"/>
+  <int value="1" label="No Campaign found"/>
+  <int value="2" label="No Campaign ID found"/>
+  <int value="3" label="No payload found"/>
+  <int value="4" label="Malformed payload"/>
+  <int value="5" label="No user profile found"/>
+  <int value="6" label="No action found"/>
 </enum>
 
 <enum name="PinSetupScreenUserAction">

@@ -7,12 +7,24 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
+#include "components/tabs/public/split_tab_data.h"
+#include "components/tabs/public/tab_interface.h"
+
+// static
+std::unique_ptr<AutoPictureInPictureTabObserverHelperBase>
+AutoPictureInPictureTabObserverHelperBase::Create(
+    content::WebContents* web_contents,
+    ActivatedChangedCallback callback) {
+  return std::make_unique<AutoPictureInPictureTabStripObserverHelper>(
+      web_contents, std::move(callback));
+}
 
 AutoPictureInPictureTabStripObserverHelper::
     AutoPictureInPictureTabStripObserverHelper(
-        const content::WebContents* web_contents,
+        content::WebContents* web_contents,
         ActivatedChangedCallback callback)
-    : web_contents_(web_contents), callback_(std::move(callback)) {}
+    : AutoPictureInPictureTabObserverHelperBase(web_contents,
+                                                std::move(callback)) {}
 
 AutoPictureInPictureTabStripObserverHelper::
     ~AutoPictureInPictureTabStripObserverHelper() {
@@ -82,7 +94,7 @@ void AutoPictureInPictureTabStripObserverHelper::OnTabStripModelChanged(
     return;
   }
 
-  callback_.Run(is_tab_activated_);
+  RunCallback(is_tab_activated_);
 }
 
 void AutoPictureInPictureTabStripObserverHelper::UpdateIsTabActivated(
@@ -98,8 +110,15 @@ void AutoPictureInPictureTabStripObserverHelper::UpdateIsTabActivated(
       return;
     }
 
+    // When an inactive tab is in a Split View with the active tab, treat it as
+    // active.
+    const tabs::TabInterface* active_tab = tab_strip_model->GetActiveTab();
+    const tabs::TabInterface* observed_tab =
+        tabs::TabInterface::GetFromContents(GetObservedWebContents());
     is_tab_activated_ =
-        tab_strip_model->GetActiveWebContents() == web_contents_;
+        (tab_strip_model->GetActiveWebContents() == GetObservedWebContents()) ||
+        (active_tab->IsSplit() &&
+         active_tab->GetSplit() == observed_tab->GetSplit());
   }
 }
 
@@ -129,9 +148,18 @@ TabStripModel*
 AutoPictureInPictureTabStripObserverHelper::GetCurrentTabStripModel() const {
   // If this WebContents isn't in a normal browser window, then auto
   // picture-in-picture is not supported.
-  auto* browser = chrome::FindBrowserWithTab(web_contents_);
+  auto* browser = chrome::FindBrowserWithTab(GetObservedWebContents());
   if (!browser || !browser->is_type_normal()) {
     return nullptr;
   }
   return browser->tab_strip_model();
+}
+
+content::WebContents*
+AutoPictureInPictureTabStripObserverHelper::GetActiveWebContents() const {
+  if (!observed_tab_strip_model_) {
+    return nullptr;
+  }
+
+  return observed_tab_strip_model_->GetActiveWebContents();
 }

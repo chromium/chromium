@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/all_loyalty_cards_toolbar"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/all_loyalty_cards_back_image_button"
+            android:layout_width="wrap_content"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_weight="0"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_gravity="start|center_vertical"
+            android:src="@drawable/ic_arrow_back_24dp"
+            app:tint="@macro/default_icon_color"
+            android:background="?attr/actionBarItemBackground"
+            android:contentDescription="@string/autofill_bottom_sheet_back_button_description"/>
+
+        <TextView
+            android:id="@+id/all_loyalty_cards_screen_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:gravity="start"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="@string/autofill_bottom_sheet_all_loyalty_cards_screen_title"
+            android:textAlignment="viewStart"
+            android:focusable="true"
+            style="@style/TextAppearance.Headline"/>
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/touch_to_fill_all_loyalty_cards_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/ttf_sheet_margin"
+        android:layout_marginStart="@dimen/ttf_sheet_margin"
+        android:clipToPadding="false"
+        android:divider="@null"/>
+
+</LinearLayout>

@@ -77,8 +77,7 @@ TestMHTMLArchiver::TestMHTMLArchiver(const GURL& url,
                                      TestScopedOfflineClock* clock)
     : url_(url), test_scenario_(test_scenario), clock_(clock) {}
 
-TestMHTMLArchiver::~TestMHTMLArchiver() {
-}
+TestMHTMLArchiver::~TestMHTMLArchiver() = default;
 
 void TestMHTMLArchiver::GenerateMHTML(
     const base::FilePath& archives_dir,
@@ -98,12 +97,10 @@ void TestMHTMLArchiver::GenerateMHTML(
   base::FilePath archive_file_path =
       archives_dir.AppendASCII(url_.ExtractFileName());
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&TestMHTMLArchiver::OnGenerateMHTMLDone,
-                     base::Unretained(this), url_, archive_file_path,
-                     kTestTitle, create_archive_params.name_space,
-                     OfflineTimeNow(),
-                     content::MHTMLGenerationResult(kTestFileSize, nullptr)));
+      FROM_HERE, base::BindOnce(&TestMHTMLArchiver::OnGenerateMHTMLDone,
+                                base::Unretained(this), url_, archive_file_path,
+                                kTestTitle, create_archive_params.name_space,
+                                OfflineTimeNow(), kTestFileSize));
 
   clock_->Advance(kTimeToSaveMhtml);
 }
@@ -174,8 +171,7 @@ OfflinePageMHTMLArchiverTest::OfflinePageMHTMLArchiverTest()
       last_result_(OfflinePageArchiver::ArchiverResult::ERROR_DEVICE_FULL),
       last_file_size_(0L) {}
 
-OfflinePageMHTMLArchiverTest::~OfflinePageMHTMLArchiverTest() {
-}
+OfflinePageMHTMLArchiverTest::~OfflinePageMHTMLArchiverTest() = default;
 
 void OfflinePageMHTMLArchiverTest::SetUp() {
   base::FilePath test_data_dir_path;

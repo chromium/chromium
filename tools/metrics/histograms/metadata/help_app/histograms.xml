@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Discover.Overall.AppLaunched" enum="LaunchSource"
-    expires_after="2025-02-16">
+    expires_after="2026-05-03">
   <owner>callistus@google.com</owner>
   <owner>showoff-eng@google.com</owner>
   <summary>
@@ -61,7 +61,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Discover.SearchHandler.SearchAvailableTime" units="ms"
-    expires_after="2025-01-05">
+    expires_after="2025-03-09">
   <owner>chenjih@google.com</owner>
   <owner>tby@chromium.org</owner>
   <owner>showoff-eng@google.com</owner>

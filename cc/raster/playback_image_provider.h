@@ -20,7 +20,7 @@ class ImageDecodeCache;
 // decoded images for raster from the ImageDecodeCache.
 class CC_EXPORT PlaybackImageProvider : public ImageProvider {
  public:
-  enum class RasterMode { kSoftware, kGpu, kOop };
+  enum class RasterMode { kSoftware, kGpu };
   struct CC_EXPORT Settings {
     Settings();
     Settings(const Settings&) = delete;

@@ -39,7 +39,7 @@ class AppWebContentsHelper {
   AppWebContentsHelper(const AppWebContentsHelper&) = delete;
   AppWebContentsHelper& operator=(const AppWebContentsHelper&) = delete;
 
-  // Returns true if the given |event| should not be handled by the renderer.
+  // Returns true if the given `event` should not be handled by the renderer.
   static bool ShouldSuppressGestureEvent(const blink::WebGestureEvent& event);
 
   // Opens a new URL inside the passed in WebContents. See WebContentsDelegate.

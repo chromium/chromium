@@ -205,7 +205,8 @@ TEST_F(LayerImplTest, VerifyNeedsUpdateDrawProperties) {
   VERIFY_NEEDS_UPDATE_DRAW_PROPERTIES(layer->ScrollBy(arbitrary_vector2d));
   VERIFY_NO_NEEDS_UPDATE_DRAW_PROPERTIES(layer->ScrollBy(gfx::Vector2d()));
   VERIFY_NEEDS_UPDATE_DRAW_PROPERTIES(
-      layer->layer_tree_impl()->DidUpdateScrollOffset(layer->element_id()));
+      layer->layer_tree_impl()->DidUpdateScrollOffset(
+          layer->element_id(), /*pushed_from_main_or_pending_tree=*/false));
   layer->layer_tree_impl()
       ->property_trees()
       ->scroll_tree_mutable()
@@ -296,6 +297,30 @@ TEST_F(LayerImplTest, PerspectiveTransformHasReasonableScale) {
     ASSERT_TRUE(layer->ScreenSpaceTransform().HasPerspective());
     EXPECT_EQ(gfx::Vector2dF(1.f, 1.f), layer->GetIdealContentsScale());
   }
+}
+
+TEST_F(LayerImplTest, GetDamageReasons) {
+  LayerImpl* root = root_layer();
+  TransformNode& transform_node = CreateTransformNode(root);
+
+  root->layer_tree_impl()->ResetAllChangeTracking();
+  EXPECT_TRUE(root->GetDamageReasons().empty());
+  root->SetBounds(gfx::Size(10, 10));
+  EXPECT_EQ(root->GetDamageReasons(),
+            DamageReasonSet{DamageReason::kUntracked});
+
+  root->layer_tree_impl()->ResetAllChangeTracking();
+  EXPECT_TRUE(root->GetDamageReasons().empty());
+  root->UnionUpdateRect(gfx::Rect(10, 10));
+  EXPECT_EQ(root->GetDamageReasons(),
+            DamageReasonSet{DamageReason::kUntracked});
+
+  root->layer_tree_impl()->ResetAllChangeTracking();
+  EXPECT_TRUE(root->GetDamageReasons().empty());
+  transform_node.SetScrollOffset(gfx::PointF(1, 1),
+                                 DamageReason::kCompositorScroll);
+  EXPECT_EQ(root->GetDamageReasons(),
+            DamageReasonSet{DamageReason::kCompositorScroll});
 }
 
 class LayerImplScrollTest : public LayerImplTest {
@@ -493,55 +518,6 @@ TEST_F(LayerImplScrollTest, PushPropertiesToMirrorsCurrentScrollOffset) {
   EXPECT_POINTF_EQ(gfx::PointF(22, 23), CurrentScrollOffset(layer()));
   EXPECT_POINTF_EQ(CurrentScrollOffset(layer()),
                    CurrentScrollOffset(pending_layer.get()));
-}
-
-TEST_F(LayerImplTest, JitterTest) {
-  host_impl()->CreatePendingTree();
-  auto* root_layer = EnsureRootLayerInPendingTree();
-  root_layer->SetBounds(gfx::Size(50, 50));
-  SetupViewport(root_layer, gfx::Size(100, 100), gfx::Size(100, 100));
-  auto* scroll_layer =
-      host_impl()->pending_tree()->InnerViewportScrollLayerForTesting();
-  auto* content_layer = AddLayerInPendingTree<LayerImpl>();
-  content_layer->SetBounds(gfx::Size(100, 100));
-  content_layer->SetDrawsContent(true);
-  CopyProperties(
-      host_impl()->pending_tree()->OuterViewportScrollLayerForTesting(),
-      content_layer);
-  UpdatePendingTreeDrawProperties();
-
-  host_impl()->pending_tree()->PushPageScaleFromMainThread(1.f, 1.f, 1.f);
-  const int scroll = 5;
-  int accumulated_scroll = 0;
-  for (int i = 0; i < LayerTreeImpl::kFixedPointHitsThreshold + 1; ++i) {
-    host_impl()->ActivateSyncTree();
-    accumulated_scroll += scroll;
-    SetScrollOffset(
-        host_impl()->active_tree()->InnerViewportScrollLayerForTesting(),
-        gfx::PointF(0, accumulated_scroll));
-    UpdateActiveTreeDrawProperties();
-
-    host_impl()->CreatePendingTree();
-    LayerTreeImpl* pending_tree = host_impl()->pending_tree();
-    pending_tree->set_source_frame_number(i + 1);
-    pending_tree->PushPageScaleFromMainThread(1.f, 1.f, 1.f);
-    // Simulate scroll offset pushed from the main thread.
-    SetScrollOffset(scroll_layer, gfx::PointF(0, accumulated_scroll));
-    // The scroll done on the active tree is undone on the pending tree.
-    content_layer->SetOffsetToTransformParent(
-        gfx::Vector2dF(0, accumulated_scroll));
-    content_layer->SetNeedsPushProperties();
-    UpdateDrawProperties(pending_tree);
-
-    float jitter = content_layer->CalculateJitter();
-    // There should not be any jitter measured till we hit the fixed point hits
-    // threshold. 250 is sqrt(50 * 50) * 5. 50x50 is the visible bounds of
-    // content (clipped by the viewport). 5 is the distance between the
-    // locations of the content in the pending tree and the active tree.
-    float expected_jitter =
-        (i == pending_tree->kFixedPointHitsThreshold) ? 250 : 0;
-    EXPECT_EQ(jitter, expected_jitter);
-  }
 }
 
 }  // namespace

@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
 import * as Platform from 'devtools/core/platform/platform.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 import * as Elements from 'devtools/panels/elements/elements.js';
 
 (async function() {
@@ -74,7 +75,7 @@ import * as Elements from 'devtools/panels/elements/elements.js';
       TestRunner.addResult('Not editing');
       return;
     }
-    TestRunner.addResult('Editing: "' + TestRunner.textContentWithoutStyles(Platform.DOMUtilities.deepActiveElement(document)) + '"');
+    TestRunner.addResult('Editing: "' + TestRunner.textContentWithoutStyles(UI.DOMUtilities.deepActiveElement(document)) + '"');
   }
 
   function mouseDown(element, offset = 0) {

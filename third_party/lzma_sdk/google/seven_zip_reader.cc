@@ -209,7 +209,7 @@ Result SevenZipReaderImpl::Initialize(base::File archive_file) {
   look_stream_buffer_.reset(look_stream_.buf);
 
   look_stream_.bufSize = kStreamBufferSize;
-  LookToRead2_Init(&look_stream_);
+  LookToRead2_INIT(&look_stream_);
 
   // The destructor assumes that `stream_` is valid whenever `db_` is
   // initialized.
@@ -427,6 +427,11 @@ bool SevenZipReaderImpl::AreHeadersEncrypted(base::File archive_file,
     std::optional<uint64_t> header_offset_or = iterator.CopyObject<uint64_t>();
     std::optional<uint64_t> header_size_or = iterator.CopyObject<uint64_t>();
     if (!header_offset_or.has_value() || !header_size_or.has_value()) {
+      return false;
+    }
+
+    if (int64_t file_size = archive_file.GetLength();
+        file_size < 0 || header_size_or > file_size) {
       return false;
     }
 

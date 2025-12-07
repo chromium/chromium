@@ -1,0 +1,235 @@
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<!-- LINT.IfChange(IpProtectionGetAuthTokenResultForGeo) -->
+
+<enum name="IpProtectionGetAuthTokenResultForGeo">
+  <int value="0" label="Auth token unavailable and cache is empty"/>
+  <int value="1" label="Auth token unavailable but cache contains tokens"/>
+  <int value="2" label="Auth token available for current geo"/>
+  <int value="3" label="Auth token available for other geo"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/ip_protection/common/ip_protection_telemetry.h:AuthTokenResultForGeo) -->
+
+<enum name="IpProtectionGetProxyListResult">
+  <int value="0" label="Failed to acquire a list"/>
+  <int value="1" label="Got a list without any valid entries"/>
+  <int value="2" label="Got a list with at least one valid entry"/>
+</enum>
+
+<enum name="IpProtectionJobResult">
+  <int value="0" label="IP Protection was not attempted"/>
+  <int value="1"
+      label="The request was IP Protected and carried via IP Protection
+             proxies or, if the direct-only parameter is true, made directly"/>
+  <int value="2" label="The request was IP Protected, but fell back to direct"/>
+</enum>
+
+<enum name="IpProtectionProxyChainId">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Chain 1"/>
+  <int value="2" label="Chain 2"/>
+  <int value="3" label="Chain 3"/>
+</enum>
+
+<enum name="IpProtectionProxyLayer">
+  <int value="0" label="Proxy A"/>
+  <int value="1" label="Proxy B"/>
+</enum>
+
+<enum name="IpProtectionProxyResolutionResult">
+  <int value="0"
+      label="The MDL is not populated, so an eligility decision could not be
+             made"/>
+  <int value="1" label="The request did not match the MDL"/>
+  <int value="2"
+      label="DEPRECATED: The EnableIpProtectionProxy feature is not enabled"/>
+  <int value="3" label="The IP Protection setting is disabled"/>
+  <int value="4" label="Proxy List is unavailable"/>
+  <int value="5"
+      label="Proxy List is available but tokens have never been available"/>
+  <int value="6"
+      label="Proxy List is available but tokens in the cache have been
+             exhausted"/>
+  <int value="7" label="The request was resolved to the IP Protection proxies"/>
+  <int value="8"
+      label="A site exception created by User Bypass disables protections"/>
+  <int value="9"
+      label="DEPRECATED: The request bypassed the IP Protection proxies
+             through DevTools"/>
+</enum>
+
+<enum name="IpProtectionTokenBatchRequestError">
+<!-- The following errors are omitted because they have many possible suffixes:
+  "Failed to create RSA public key: <error>"
+  "Failed to decode extensions: <error>"
+  "Failed to validate extensions: <error>"
+  "Failed to parse expiration timestamp: <error>"
+  "Failed to parse geo hint: <error>"
+  "Failed to parse use case: <error>"
+  "Failed to create Privacy Pass client: <error>"
+  "Failed to create ExtendedTokenRequest: <error>"
+
+  Additionally, errors marked [DEPRECATED] are no longer emitted as of M141 (crrev.com/c/6865774).
+ -->
+
+  <int value="4948469" label="AuthAndSign failed: 404 (NOT_FOUND)"/>
+  <int value="149981085" label="GetInitialData failed: 401 (UNAUTHENTICATED)"/>
+  <int value="150736087" label="GetInitialData failed: 499 (CANCELLED)"/>
+  <int value="159430335"
+      label="[DEPRECATED] GetInitialDataRequest failed: 499 (CANCELLED)"/>
+  <int value="203200113" label="AuthAndSign failed: 409 (ABORTED)"/>
+  <int value="219311180" label="AuthAndSign failed: invalid response"/>
+  <int value="247849994" label="GetInitialData failed: 501 (UNIMPLEMENTED)"/>
+  <int value="774920404"
+      label="[DEPRECATED] GetInitialDataRequest failed: 5xx (INTERNAL)"/>
+  <int value="776650315"
+      label="GetInitialData failed: 4xx (FAILED_PRECONDITION)"/>
+  <int value="788650824"
+      label="[DEPRECATED] GetInitialDataRequest failed: 409 (ABORTED)"/>
+  <int value="882579398"
+      label="[DEPRECATED] AuthAndSign failed: 504 (DEADLINE_EXCEEDED)"/>
+  <int value="1009665478" label="GetInitialData failed: 409 (ABORTED)"/>
+  <int value="1324062375"
+      label="[DEPRECATED] AuthAndSign failed: 403 (PERMISSION_DENIED)"/>
+  <int value="1359797045"
+      label="[DEPRECATED] AuthAndSign failed: 416 (OUT_OF_RANGE)"/>
+  <int value="1392994811"
+      label="[DEPRECATED] GetInitialDataRequest failed: 4xx
+             (FAILED_PRECONDITION)"/>
+  <int value="1560305329"
+      label="[DEPRECATED] GetInitialDataRequest failed: invalid response"/>
+  <int value="1570178381"
+      label="[DEPRECATED] GetInitialDataRequest failed: 429
+             (RESOURCE_EXHAUSTED)"/>
+  <int value="1578860000" label="GetInitialData failed: 404 (NOT_FOUND)"/>
+  <int value="1632191523"
+      label="[DEPRECATED] GetInitialDataRequest failed: 1xx/3xx (UNKNOWN)"/>
+  <int value="1632242186"
+      label="[DEPRECATED] AuthAndSign failed: 429 (RESOURCE_EXHAUSTED)"/>
+  <int value="1637757426"
+      label="[DEPRECATED] GetInitialDataRequest failed: 401 (UNAUTHENTICATED)"/>
+  <int value="1684860881"
+      label="GetInitialData failed: 429 (RESOURCE_EXHAUSTED)"/>
+  <int value="1731128661" label="AuthAndSign failed: 401 (UNAUTHENTICATED)"/>
+  <int value="1741288262"
+      label="[DEPRECATED] AuthAndSign failed: 499 (CANCELLED)"/>
+  <int value="1782033339"
+      label="[DEPRECATED] AuthAndSign failed: invalid response"/>
+  <int value="1869144073"
+      label="GetInitialData failed: 504 (DEADLINE_EXCEEDED)"/>
+  <int value="1916829389"
+      label="[DEPRECATED] GetInitialDataRequest failed: 404 (NOT_FOUND)"/>
+  <int value="2040698924"
+      label="[DEPRECATED] AuthAndSign failed: 404 (NOT_FOUND)"/>
+  <int value="2073947853"
+      label="[DEPRECATED] AuthAndSign failed: 401 (UNAUTHENTICATED)"/>
+  <int value="2141269466" label="[DEPRECATED] Failed to validate extensions"/>
+  <int value="2143022301" label="AuthAndSign failed: 429 (RESOURCE_EXHAUSTED)"/>
+  <int value="2152182465"
+      label="GetInitialData failed: 403 (PERMISSION_DENIED)"/>
+  <int value="2218632443" label="GetInitialData failed: invalid response"/>
+  <int value="2339897637"
+      label="[DEPRECATED] GetInitialDataRequest failed: 503 (UNAVAILABLE)"/>
+  <int value="2353899066" label="AuthAndSign failed: 416 (OUT_OF_RANGE)"/>
+  <int value="2408268044" label="AuthAndSign failed: 400 (INVALID_ARGUMENT)"/>
+  <int value="2420519214" label="GetInitialData failed: 1xx/3xx (UNKNOWN)"/>
+  <int value="2528366448" label="Failed to parse GetInitialDataResponse"/>
+  <int value="2528411010"
+      label="[DEPRECATED] GetInitialDataRequest failed: 416 (OUT_OF_RANGE)"/>
+  <int value="2594877687"
+      label="[DEPRECATED] GetInitialDataRequest failed: 504
+             (DEADLINE_EXCEEDED)"/>
+  <int value="2596810654" label="Failed to marshal token"/>
+  <int value="2766613933"
+      label="[DEPRECATED] AuthAndSign failed: 503 (UNAVAILABLE)"/>
+  <int value="2848390062" label="Failed to parse AuthAndSignResponse"/>
+  <int value="2906092890"
+      label="[DEPRECATED] GetInitialDataRequest failed: 501 (UNIMPLEMENTED)"/>
+  <int value="2958424397" label="GetInitialData failed: 416 (OUT_OF_RANGE)"/>
+  <int value="3024523150"
+      label="[DEPRECATED] AuthAndSign failed: 5xx (INTERNAL)"/>
+  <int value="3118017018"
+      label="[DEPRECATED] AuthAndSign failed: 501 (UNIMPLEMENTED)"/>
+  <int value="3172166369"
+      label="[DEPRECATED] AuthAndSign failed: 1xx/3xx (UNKNOWN)"/>
+  <int value="3240481601" label="AuthAndSign failed: 504 (DEADLINE_EXCEEDED)"/>
+  <int value="3317564205"
+      label="AuthAndSign failed: 4xx (FAILED_PRECONDITION)"/>
+  <int value="3321526425" label="AuthAndSign failed: 501 (UNIMPLEMENTED)"/>
+  <int value="3329637962" label="AuthAndSign failed: 1xx/3xx (UNKNOWN)"/>
+  <int value="3336018440"
+      label="Non-Privacy Pass tokens are no longer supported"/>
+  <int value="3359657202"
+      label="[DEPRECATED] GetInitialDataRequest failed: 400
+             (INVALID_ARGUMENT)"/>
+  <int value="3426382554" label="AuthAndSign failed: 403 (PERMISSION_DENIED)"/>
+  <int value="3496444457" label="AuthAndSign failed: 5xx (INTERNAL)"/>
+  <int value="3506031840"
+      label="[DEPRECATED] AuthAndSign failed: 400 (INVALID_ARGUMENT)"/>
+  <int value="3554182688" label="Failed to unescape blinded signature"/>
+  <int value="3582010778" label="GetInitialData failed: 5xx (INTERNAL)"/>
+  <int value="3613919248" label="Failed to finalize token"/>
+  <int value="3831168552" label="AuthAndSign failed: 499 (CANCELLED)"/>
+  <int value="3831429430"
+      label="[DEPRECATED] AuthAndSign failed: 409 (ABORTED)"/>
+  <int value="3915930013" label="Failed to parse Privacy Pass public key"/>
+  <int value="4031088688" label="GetInitialData failed: 503 (UNAVAILABLE)"/>
+  <int value="4053847635"
+      label="GetInitialData failed: 400 (INVALID_ARGUMENT)"/>
+  <int value="4107556447"
+      label="[DEPRECATED] AuthAndSign failed: 4xx (FAILED_PRECONDITION)"/>
+  <int value="4124254920" label="AuthAndSign failed: 503 (UNAVAILABLE)"/>
+  <int value="4124458081" label="Failed to marshal token challenge"/>
+  <int value="4144593304"
+      label="Number of signatures is greater than the number of Privacy Pass
+             tokens sent"/>
+  <int value="4198175771"
+      label="[DEPRECATED] GetInitialDataRequest failed: 403
+             (PERMISSION_DENIED)"/>
+  <int value="4205984674"
+      label="[DEPRECATED] Failed to parse expiration timestamp"/>
+</enum>
+
+<enum name="IpProtectionTokenBatchRequestResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed - No Account"/>
+  <int value="2" label="Failed - Not Eligible"/>
+  <int value="3" label="Deprecated"/>
+  <int value="4" label="Failed - BSA Error 400"/>
+  <int value="5" label="Failed - BSA Error 401"/>
+  <int value="6" label="Failed - BSA Error 403"/>
+  <int value="7" label="Failed - BSA Error Other"/>
+  <int value="8" label="Transient OAuth Token Failure"/>
+  <int value="9" label="Persistent OAuth Token Failure"/>
+  <int value="10" label="Disabled by User"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

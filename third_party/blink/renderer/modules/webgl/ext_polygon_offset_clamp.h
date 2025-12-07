@@ -10,6 +10,8 @@
 
 namespace blink {
 
+class ExecutionContext;
+
 class EXTPolygonOffsetClamp final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -17,7 +19,7 @@ class EXTPolygonOffsetClamp final : public WebGLExtension {
   static bool Supported(WebGLRenderingContextBase*);
   static const char* ExtensionName();
 
-  explicit EXTPolygonOffsetClamp(WebGLRenderingContextBase*);
+  EXTPolygonOffsetClamp(WebGLRenderingContextBase*, ExecutionContext*);
 
   WebGLExtensionName GetName() const override;
 

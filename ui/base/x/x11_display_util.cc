@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/base/x/x11_display_util.h"
 
 #include <dlfcn.h>
 
+#include <algorithm>
 #include <bit>
 #include <bitset>
 #include <numeric>
@@ -19,11 +15,13 @@
 
 #include "base/bits.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "base/numerics/clamped_math.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/display/util/display_util.h"
@@ -77,7 +75,8 @@ gfx::Rect GetWorkAreaSync(x11::Future<x11::GetPropertyReply> future) {
     return gfx::Rect();
   }
   const uint32_t* value = response->value->cast_to<uint32_t>();
-  return gfx::Rect(value[0], value[1], value[2], value[3]);
+  return gfx::Rect(value[0], UNSAFE_TODO(value[1]), UNSAFE_TODO(value[2]),
+                   UNSAFE_TODO(value[3]));
 }
 
 x11::Future<x11::GetPropertyReply> GetIccProfileFuture(
@@ -135,7 +134,7 @@ void ClipWorkArea(std::vector<display::Display>* displays,
 
   // If the work area entirely contains exactly one display, assume it's meant
   // for that display (and so do nothing).
-  if (base::ranges::count_if(*displays, [&](const display::Display& display) {
+  if (std::ranges::count_if(*displays, [&](const display::Display& display) {
         return get_work_area(display).Contains(display.bounds());
       }) == 1) {
     return;
@@ -145,7 +144,7 @@ void ClipWorkArea(std::vector<display::Display>* displays,
   // it's meant for that display and intersect the work area with only that
   // display.
   const auto found =
-      base::ranges::find_if(*displays, [&](const display::Display& display) {
+      std::ranges::find_if(*displays, [&](const display::Display& display) {
         return display.bounds().Contains(get_work_area(display));
       });
 
@@ -454,7 +453,7 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
     const std::string name(output_info->name.begin(), output_info->name.end());
     auto process_type =
         command_line->GetSwitchValueASCII("type");
-    if (base::StartsWith(name, "eDP") || base::StartsWith(name, "LVDS")) {
+    if (name.starts_with("eDP") || name.starts_with("LVDS")) {
       display::SetInternalDisplayIds({display_id});
       // For browser process which has access to resource bundle,
       // use localized variant of "Built-in display" for internal displays.
@@ -488,8 +487,8 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
         color_space = display::GetColorSpaceFromEdid(edid_parser);
       }
 
-      display.SetColorSpaces(
-          gfx::DisplayColorSpaces(color_space, gfx::BufferFormat::BGRA_8888));
+      display.SetColorSpaces(gfx::DisplayColorSpaces(
+          color_space, viz::SinglePlaneFormat::kBGRA_8888));
     }
 
     display.set_color_depth(depth);

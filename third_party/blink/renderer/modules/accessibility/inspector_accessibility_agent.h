@@ -47,39 +47,39 @@ class MODULES_EXPORT InspectorAccessibilityAgent
   protocol::Response enable() override;
   protocol::Response disable() override;
   protocol::Response getPartialAXTree(
-      protocol::Maybe<int> dom_node_id,
-      protocol::Maybe<int> backend_node_id,
-      protocol::Maybe<String> object_id,
-      protocol::Maybe<bool> fetch_relatives,
+      std::optional<int> dom_node_id,
+      std::optional<int> backend_node_id,
+      std::optional<String> object_id,
+      std::optional<bool> fetch_relatives,
       std::unique_ptr<protocol::Array<protocol::Accessibility::AXNode>>*)
       override;
   protocol::Response getFullAXTree(
-      protocol::Maybe<int> depth,
-      protocol::Maybe<String> frame_id,
+      std::optional<int> depth,
+      std::optional<String> frame_id,
       std::unique_ptr<protocol::Array<protocol::Accessibility::AXNode>>*)
       override;
   protocol::Response getRootAXNode(
-      protocol::Maybe<String> frame_id,
+      std::optional<String> frame_id,
       std::unique_ptr<protocol::Accessibility::AXNode>* node) override;
   protocol::Response getAXNodeAndAncestors(
-      protocol::Maybe<int> dom_node_id,
-      protocol::Maybe<int> backend_node_id,
-      protocol::Maybe<String> object_id,
+      std::optional<int> dom_node_id,
+      std::optional<int> backend_node_id,
+      std::optional<String> object_id,
       std::unique_ptr<protocol::Array<protocol::Accessibility::AXNode>>*
           out_nodes) override;
   protocol::Response getChildAXNodes(
       const String& in_id,
-      protocol::Maybe<String> frame_id,
+      std::optional<String> frame_id,
       std::unique_ptr<protocol::Array<protocol::Accessibility::AXNode>>*
           out_nodes) override;
   // Invoked by CDP clients such as Puppeteer. See
   // third_party/blink/public/devtools_protocol/browser_protocol.pdl for me
   // details.
-  void queryAXTree(protocol::Maybe<int> dom_node_id,
-                   protocol::Maybe<int> backend_node_id,
-                   protocol::Maybe<String> object_id,
-                   protocol::Maybe<String> accessibleName,
-                   protocol::Maybe<String> role,
+  void queryAXTree(std::optional<int> dom_node_id,
+                   std::optional<int> backend_node_id,
+                   std::optional<String> object_id,
+                   std::optional<String> accessibleName,
+                   std::optional<String> role,
                    std::unique_ptr<QueryAXTreeCallback>) override;
   // An event was fired on the given AXObject, which should now also be
   // considered modified (as if AXObjectModified was called on it).
@@ -95,19 +95,6 @@ class MODULES_EXPORT InspectorAccessibilityAgent
   void ScheduleAXUpdateIfNeeded(TimerBase*, Document*);
 
  private:
-  // Used to store the queries received by queryAXTree. The queries are
-  // processed once the a11y tree is clean and ready for traversing
-  // (AXReadyCallback).
-  struct AXQuery {
-   public:
-    protocol::Maybe<int> dom_node_id;
-    protocol::Maybe<int> backend_node_id;
-    protocol::Maybe<String> object_id;
-    protocol::Maybe<String> accessible_name;
-    protocol::Maybe<String> role;
-    std::unique_ptr<QueryAXTreeCallback> callback;
-  };
-
   // Timer bound to a Document and an InspectorAccessibilityAgent instance,
   // similar to HeapTaskRunnerTimer
   // (third_party/blink/renderer/platform/timer.h).
@@ -137,10 +124,9 @@ class MODULES_EXPORT InspectorAccessibilityAgent
     void Fired() override { (agent_->*function_)(this, document_); }
 
     base::OnceClosure BindTimerClosure() final {
-      return WTF::BindOnce(&DocumentTimer::RunInternalTrampoline,
-                           WTF::Unretained(this),
-                           WrapWeakPersistent(agent_.Get()),
-                           WrapWeakPersistent(document_.Get()));
+      return BindOnce(&DocumentTimer::RunInternalTrampoline, Unretained(this),
+                      WrapWeakPersistent(agent_.Get()),
+                      WrapWeakPersistent(document_.Get()));
     }
 
    private:
@@ -158,37 +144,17 @@ class MODULES_EXPORT InspectorAccessibilityAgent
     TimerFiredFunction function_;
   };
 
-  void CompleteQuery(AXQuery&);
+  void CompleteQuery(Node* root_dom_node,
+                     std::optional<String> accessible_name,
+                     std::optional<String> role,
+                     std::unique_ptr<QueryAXTreeCallback> callback);
   bool MarkAXObjectDirty(AXObject* ax_object);
   // Unconditionally enables the agent, even if |enabled_.Get()==true|.
   // For idempotence, call enable().
   void EnableAndReset();
-  std::unique_ptr<protocol::Array<AXNode>> WalkAXNodesToDepth(
-      Document* document,
-      int max_depth);
-  std::unique_ptr<AXNode> BuildProtocolAXNodeForDOMNodeWithNoAXNode(
-      int backend_node_id) const;
-  std::unique_ptr<AXNode> BuildProtocolAXNodeForAXObject(
-      AXObject&,
-      bool force_name_and_role = false) const;
-  std::unique_ptr<AXNode> BuildProtocolAXNodeForIgnoredAXObject(
-      AXObject&,
-      bool force_name_and_role) const;
-  std::unique_ptr<AXNode> BuildProtocolAXNodeForUnignoredAXObject(
-      AXObject&) const;
-  void FillCoreProperties(AXObject&, AXNode*) const;
-  void AddAncestors(AXObject& first_ancestor,
-                    AXObject* inspected_ax_object,
-                    std::unique_ptr<protocol::Array<AXNode>>& nodes,
-                    AXObjectCacheImpl&) const;
-  void AddChildren(AXObject& ax_object,
-                   bool follow_ignored,
-                   std::unique_ptr<protocol::Array<AXNode>>& nodes,
-                   AXObjectCacheImpl&) const;
-  LocalFrame* FrameFromIdOrRoot(const protocol::Maybe<String>& frame_id);
+  LocalFrame* FrameFromIdOrRoot(const std::optional<String>& frame_id);
   void ScheduleAXChangeNotification(Document* document);
   AXObjectCacheImpl& AttachToAXObjectCache(Document*);
-  void ProcessPendingQueries(Document&);
   void ProcessPendingDirtyNodes(Document&);
 
   Member<InspectedFrames> inspected_frames_;
@@ -197,7 +163,8 @@ class MODULES_EXPORT InspectorAccessibilityAgent
   HashSet<AXID> nodes_requested_;
   // The collected dirty AXObjects that should be refreshed in the AX tree view
   // in DevTools.
-  HeapHashMap<WeakMember<Document>, Member<HeapHashSet<WeakMember<AXObject>>>>
+  HeapHashMap<WeakMember<Document>,
+              Member<GCedHeapHashSet<WeakMember<AXObject>>>>
       dirty_nodes_;
   // Time when every document was synced.
   HeapHashMap<WeakMember<Document>, base::Time> last_sync_times_;
@@ -208,8 +175,6 @@ class MODULES_EXPORT InspectorAccessibilityAgent
   // happens per document.
   HeapHashMap<WeakMember<Document>, Member<DisallowNewWrapper<DocumentTimer>>>
       timers_;
-
-  HeapHashMap<WeakMember<Document>, Vector<AXQuery>> queries_;
 
   HeapHashSet<WeakMember<Document>> load_complete_needs_processing_;
 };

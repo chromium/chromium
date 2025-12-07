@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 
 namespace page_content_annotations::features {
@@ -16,15 +17,31 @@ BASE_DECLARE_FEATURE(kPageContentAnnotations);
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 BASE_DECLARE_FEATURE(kPageVisibilityPageContentAnnotations);
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
-BASE_DECLARE_FEATURE(kPageVisibilityBatchAnnotations);
-COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 BASE_DECLARE_FEATURE(kPageContentAnnotationsValidation);
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 BASE_DECLARE_FEATURE(kRemotePageMetadata);
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
-BASE_DECLARE_FEATURE(kPageContentAnnotationsPersistSalientImageMetadata);
-COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 BASE_DECLARE_FEATURE(kExtractRelatedSearchesFromPrefetchedZPSResponse);
+
+// Enables extraction of AnnotatedPageContent for every page load.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+BASE_DECLARE_FEATURE(kAnnotatedPageContentExtraction);
+
+// Enables the PageContentCache to store AnnotatedPageContent.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+BASE_DECLARE_FEATURE(kPageContentCache);
+
+// The maximum number of days to keep page content in the cache.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+extern const base::FeatureParam<int> kPageContentCacheMaxCacheAgeInDays;
+
+// The maximum number of tabs to keep page content in the cache.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+extern const base::FeatureParam<int> kPageContentCacheMaxTabs;
+
+// Whether to enable taking screenshots for page content cache.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+extern const base::FeatureParam<bool> kPageContentCacheEnableScreenshot;
 
 // The maximum number of "related searches" entries allowed to be maintained in
 // a least-recently-used cache for "related searches" data obtained via ZPS
@@ -37,6 +54,9 @@ size_t MaxRelatedSearchesCacheSize();
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 BASE_DECLARE_FEATURE(
     kOptimizationGuideUseContinueOnShutdownForPageContentAnnotations);
+
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+BASE_DECLARE_FEATURE(kOnDeviceCategoryClassifier);
 
 // Returns whether page content annotations should be enabled.
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
@@ -65,10 +85,6 @@ int NumBitsForRAPPORMetrics();
 // Must be between 0 and 1.
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 double NoiseProbabilityForRAPPORMetrics();
-
-// Returns if Page Visibility Batch Annotations are enabled.
-COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
-bool PageVisibilityBatchAnnotationsEnabled();
 
 // The number of visits batch before running the page content annotation
 // models. A size of 1 is equivalent to annotating one page load at time
@@ -120,6 +136,58 @@ bool ShouldExecutePageVisibilityModelOnPageContent(const std::string& locale);
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 size_t MaxVisitAnnotationCacheSize();
 
+// Returns true if AnnotatedPageContent extraction should be aggressively
+// prioritized by scheduling.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+bool IsAnnotatedPageContentOnCriticalPath();
+
+// Allows heuristically delaying the extraction for AnnotatedPageContent once
+// the page has loaded so it reaches a steady state.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+base::TimeDelta GetAnnotatedPageContentCaptureDelay();
+
+// Whether the AnnotatedPageContent study should also capture inner text for a
+// comparison.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+bool ShouldAnnotatedPageContentStudyIncludeInnerText();
+
+// The mode for extracting AnnotatedPageContent in the extraction service.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+std::string AnnotatedPageContentMode();
+
+// The triggering mode for page content extraction.
+enum class PageContentExtractionTriggeringMode {
+  kOnLoad,
+  kOnHidden,
+  kOnLoadAndHidden,
+};
+
+// Returns the triggering mode for page content extraction.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+PageContentExtractionTriggeringMode GetPageContentExtractionTriggeringMode();
+
+// Returns whether |locale| is a supported locale for |feature|.
+//
+// This matches |locale| with the "supported_locales" feature param value in
+// |feature|, which is expected to be a comma-separated list of locales. A
+// feature param containing "en,es-ES,zh-TW" restricts the feature to English
+// language users from any locale and Spanish language users from the Spain
+// es-ES locale. A feature param containing "*" is unrestricted by locale and
+// any user may load it, while "" uses the |default_value| allowlist.
+// Exposed for test coverage.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+extern bool IsSupportedLocaleForFeature(const std::string& locale,
+                                        const base::Feature& feature,
+                                        const std::string& default_value);
+
+// Returns whether |country_code| is supported for |feature|, checking
+// against |default_value| allowlist if the feature param "supported_countries"
+// is unspecified. A feature param containing "*" is unrestricted.
+// Exposed for test coverage.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+extern bool IsSupportedCountryForFeature(const std::string& country_code,
+                                         const base::Feature& feature,
+                                         const std::string& default_value);
 }  // namespace page_content_annotations::features
 
 #endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_CONTENT_ANNOTATIONS_FEATURES_H_

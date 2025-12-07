@@ -5,13 +5,13 @@
 #ifndef COMPONENTS_PERMISSIONS_CONTEXTS_SPEAKER_SELECTION_PERMISSION_CONTEXT_H_
 #define COMPONENTS_PERMISSIONS_CONTEXTS_SPEAKER_SELECTION_PERMISSION_CONTEXT_H_
 
-#include "components/permissions/permission_context_base.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 
 // TODO(https://crbug.com/41492674): speaker selection is not hooked with
 // MediaStreamDevicesController yet, which could be when we have permission
 // prompt for speaker selection.
 class SpeakerSelectionPermissionContext
-    : public permissions::PermissionContextBase {
+    : public permissions::ContentSettingPermissionContextBase {
  public:
   explicit SpeakerSelectionPermissionContext(
       content::BrowserContext* browser_context);

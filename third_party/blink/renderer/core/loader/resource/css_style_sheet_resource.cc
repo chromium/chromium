@@ -65,7 +65,7 @@ CSSStyleSheetResource* CSSStyleSheetResource::Fetch(FetchParameters& params,
 
 CSSStyleSheetResource* CSSStyleSheetResource::CreateForTest(
     const KURL& url,
-    const WTF::TextEncoding& encoding) {
+    const TextEncoding& encoding) {
   ResourceRequest request(url);
   request.SetCredentialsMode(network::mojom::CredentialsMode::kOmit);
   ResourceLoaderOptions options(nullptr /* world */);
@@ -107,11 +107,11 @@ void CSSStyleSheetResource::OnMemoryDump(
     WebMemoryDumpLevelOfDetail level_of_detail,
     WebProcessMemoryDump* memory_dump) const {
   Resource::OnMemoryDump(level_of_detail, memory_dump);
-  const String name = GetMemoryDumpName() + "/style_sheets";
+  const String name = StrCat({GetMemoryDumpName(), "/style_sheets"});
   auto* dump = memory_dump->CreateMemoryAllocatorDump(name);
   dump->AddScalar("size", "bytes", decoded_sheet_text_.CharactersSizeInBytes());
-  memory_dump->AddSuballocation(
-      dump->Guid(), String(WTF::Partitions::kAllocatedObjectPoolName));
+  memory_dump->AddSuballocation(dump->Guid(),
+                                String(Partitions::kAllocatedObjectPoolName));
 }
 
 network::mojom::ReferrerPolicy CSSStyleSheetResource::GetReferrerPolicy()
@@ -193,9 +193,11 @@ bool CSSStyleSheetResource::CanUseSheet(const CSSParserContext* parser_context,
     // Grab |sheet_url|'s filename's extension (if present), and check whether
     // or not it maps to a `text/css` MIME type:
     String extension;
-    int last_dot = sheet_url.LastPathComponent().ReverseFind('.');
-    if (last_dot != -1)
-      extension = sheet_url.LastPathComponent().Substring(last_dot + 1);
+    String last_path_component = sheet_url.LastPathComponent().ToString();
+    int last_dot = last_path_component.ReverseFind('.');
+    if (last_dot != -1) {
+      extension = last_path_component.Substring(last_dot + 1);
+    }
     if (!EqualIgnoringASCIICase(
             MIMETypeRegistry::GetMIMETypeForExtension(extension), "text/css")) {
       if (parser_context) {
@@ -251,6 +253,8 @@ StyleSheetContents* CSSStyleSheetResource::CreateParsedStyleSheetFromCache(
   // This should not be problematic as the case of continuously modifying,
   // adding, or removing stylesheets, while at the same time have different
   // media query evaluations in the different documents should be quite rare.
+
+  parsed_style_sheet_cache_->SetIsUsedFromResourceCache();
 
   DCHECK(!parsed_style_sheet_cache_->IsLoading());
   return parsed_style_sheet_cache_.Get();

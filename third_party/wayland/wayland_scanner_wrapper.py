@@ -41,7 +41,7 @@ def main(argv):
   version = subprocess.check_output([cmd, "--version"],
                                     stderr=subprocess.STDOUT).decode("utf-8")
   # The version is of the form "wayland-scanner 1.18.0\n"
-  version = tuple([int(x) for x in version.strip().split(" ")[1].split(".")])
+  version = tuple([int(x) for x in version.strip().split(" ")[-1].split(".")])
   # This needs to generate private-code to avoid ODR
   # violation and avoid hacks such as in https://crrev.com/c/2416941/
   # See third_party/wayland/BUILD.gn#212 there for details there.

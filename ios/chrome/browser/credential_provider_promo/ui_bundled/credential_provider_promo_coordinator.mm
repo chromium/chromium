@@ -4,24 +4,27 @@
 
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_coordinator.h"
 
+#import <AuthenticationServices/AuthenticationServices.h>
+
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
-#import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
-#import "ios/chrome/browser/shared/ui/util/top_view_controller.h"
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_constants.h"
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_mediator.h"
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_metrics.h"
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_view_controller.h"
-#import "ios/chrome/browser/ui/promos_manager/promos_manager_ui_handler.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
+#import "ios/chrome/browser/promos_manager/ui_bundled/promos_manager_ui_handler.h"
+#import "ios/chrome/browser/shared/coordinator/utils/credential_provider_settings_utils.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/top_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
-#import "ios/public/provider/chrome/browser/password_auto_fill/password_auto_fill_api.h"
 
 @interface CredentialProviderPromoCoordinator () <
     ConfirmationAlertActionHandler,
@@ -56,10 +59,9 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
       startDispatchingToTarget:self
                    forProtocol:@protocol(CredentialProviderPromoCommands)];
   PromosManager* promosManager =
-      PromosManagerFactory::GetForBrowserState(self.browser->GetBrowserState());
+      PromosManagerFactory::GetForProfile(self.profile);
   self.mediator = [[CredentialProviderPromoMediator alloc]
-      initWithPromosManager:promosManager
-                prefService:self.browser->GetBrowserState()->GetPrefs()];
+      initWithPromosManager:promosManager];
 }
 
 - (void)stop {
@@ -89,16 +91,10 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
   self.viewController = [[CredentialProviderPromoViewController alloc] init];
   self.mediator.consumer = self.viewController;
   self.mediator.tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      feature_engagement::TrackerFactory::GetForProfile(self.profile);
   self.viewController.actionHandler = self;
   self.viewController.presentationController.delegate = self;
-  if (trigger == CredentialProviderPromoTrigger::SetUpList) {
-    // If this is coming from the SetUpList, force to go directly to LearnMore.
-    self.promoContext = CredentialProviderPromoContext::kLearnMore;
-  } else {
-    self.promoContext = CredentialProviderPromoContext::kFirstStep;
-  }
+  self.promoContext = [self promoContextFromTrigger:trigger];
   [self.mediator configureConsumerWithTrigger:trigger
                                       context:self.promoContext];
   self.trigger = trigger;
@@ -110,6 +106,8 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
                                 completion:nil];
   self.promoSeenInCurrentSession = YES;
 
+  GetApplicationContext()->GetLocalState()->SetTime(
+      prefs::kIosCredentialProviderPromoDisplayTime, base::Time::Now());
   credential_provider_promo::RecordImpression(
       [self.mediator promoOriginalSource],
       self.trigger == CredentialProviderPromoTrigger::RemindMeLater);
@@ -120,11 +118,26 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
 - (void)confirmationAlertPrimaryAction {
   [self hidePromo];
   if (self.promoContext == CredentialProviderPromoContext::kFirstStep) {
+    if (@available(iOS 18.0, *)) {
+      // Show the prompt to allow the app to be turned on as a credential
+      // provider.
+      __weak __typeof(self) weakSelf = self;
+      [ASSettingsHelper
+          requestToTurnOnCredentialProviderExtensionWithCompletionHandler:^(
+              BOOL appWasEnabledForAutoFill) {
+            [weakSelf recordTurnOnCredentialProviderExtensionPromptOutcome:
+                          appWasEnabledForAutoFill];
+          }];
+      [self recordAction:IOSCredentialProviderPromoAction::kTurnOnAutofill];
+      return;
+    }
+
+    // Show the screen informing the user on how they can set the app as a
+    // credential provider.
     [self presentLearnMore];
     [self recordAction:IOSCredentialProviderPromoAction::kLearnMore];
   } else {
-    // Open iOS settings.
-    ios::provider::PasswordsInOtherAppsOpensSettings();
+    [self openIOSCredentialProviderSettings];
     [self recordAction:IOSCredentialProviderPromoAction::kGoToSettings];
     [self promoWasDismissed];
   }
@@ -158,6 +171,11 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
 
 // Presents the 'learn more' step of the feature.
 - (void)presentLearnMore {
+  // The 'learn more' step shouldn't be presented on iOS 18+.
+  if (@available(iOS 18.0, *)) {
+    NOTREACHED();
+  }
+
   self.viewController = [[CredentialProviderPromoViewController alloc] init];
   self.viewController.actionHandler = self;
   self.viewController.presentationController.delegate = self;
@@ -195,6 +213,45 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
   GetApplicationContext()->GetLocalState()->SetInteger(
       prefs::kIosCredentialProviderPromoLastActionTaken,
       static_cast<int>(action));
+}
+
+// Records whether the user has accepted the in-app prompt to set the app as a
+// credential provider.
+- (void)recordTurnOnCredentialProviderExtensionPromptOutcome:(BOOL)outcome {
+  RecordTurnOnCredentialProviderExtensionPromptOutcome(
+      TurnOnCredentialProviderExtensionPromptSource::
+          kCredentialProviderExtensionPromo,
+      outcome);
+}
+
+// Opens the iOS credential provider settings. Delegates this task to
+// `settingsOpenerDelegate` when valid.
+- (void)openIOSCredentialProviderSettings {
+  if (self.settingsOpenerDelegate) {
+    [self.settingsOpenerDelegate
+        credentialProviderPromoCoordinatorOpenIOSCredentialProviderSettings:
+            self];
+    return;
+  }
+  OpenIOSCredentialProviderSettings();
+}
+
+// Returns the promo context for the given trigger. For SetUpList the first
+// step is skipped because some context is already provided in the SetUpList
+// item's description. But on iOS 18, the first step allows the user to enable
+// the CPE directly in-app, so this is preferred.
+- (CredentialProviderPromoContext)promoContextFromTrigger:
+    (CredentialProviderPromoTrigger)trigger {
+  if (trigger == CredentialProviderPromoTrigger::SetUpList) {
+    if (@available(iOS 18.0, *)) {
+      if (IsIOSExpandedTipsEnabled()) {
+        // Go to the first step, which allows enabling CPE in-app.
+        return CredentialProviderPromoContext::kFirstStep;
+      }
+    }
+    return CredentialProviderPromoContext::kLearnMore;
+  }
+  return CredentialProviderPromoContext::kFirstStep;
 }
 
 @end

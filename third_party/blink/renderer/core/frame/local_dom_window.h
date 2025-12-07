@@ -46,31 +46,32 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/universal_global_scope.h"
 #include "third_party/blink/renderer/core/frame/use_counter_impl.h"
 #include "third_party/blink/renderer/core/frame/window_event_handlers.h"
 #include "third_party/blink/renderer/core/frame/window_or_worker_global_scope.h"
 #include "third_party/blink/renderer/core/html/closewatcher/close_watcher.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
+#include "third_party/blink/renderer/platform/forward_declared_member.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/uuid.h"
 
 namespace blink {
 
 class BarProp;
 class CSSStyleDeclaration;
-class ComputedAccessibleNode;
 class CustomElementRegistry;
 class Document;
 class DocumentInit;
 class DOMSelection;
+class DOMViewport;
 class DOMVisualViewport;
+class CrashReportStorage;
 class Element;
 class ExceptionState;
 class External;
@@ -82,6 +83,7 @@ class LocalFrame;
 class MediaQueryList;
 class MessageEvent;
 class Modulator;
+class PageVisibilityObserver;
 class NavigationApi;
 class Navigator;
 class Screen;
@@ -90,13 +92,60 @@ class ScriptState;
 class ScrollToOptions;
 class SecurityOrigin;
 class SerializedScriptValue;
+class SoftNavigationHeuristics;
 class SourceLocation;
 class StyleMedia;
 class TrustedTypePolicyFactory;
 class V8FrameRequestCallback;
-class V8VoidFunction;
 struct WebPictureInPictureWindowOptions;
 class WindowAgent;
+class WindowPerformance;
+class AppBannerController;
+class AudioRendererSinkCacheWindowObserver;
+class CSSAnimationWorklet;
+class CachedPermissionStatus;
+class ContainerTiming;
+class CredentialManagerProxy;
+class DOMWindowDigitalGoods;
+class DOMWindowLaunchQueue;
+class DOMWindowStorage;
+class DOMWindowStorageController;
+class DeviceMotionController;
+class DeviceOrientationAbsoluteController;
+class DeviceOrientationController;
+class DocumentPictureInPicture;
+class FontAccess;
+class Fullscreen;
+class GlobalStorageAccessHandle;
+class HighlightRegistry;
+class ImageElementTiming;
+class InstallationServiceImpl;
+class InstalledAppController;
+class LayoutWorklet;
+class ManifestManager;
+class NFCProxy;
+class PaintWorklet;
+class PeerConnectionTracker;
+class PresentationController;
+class PushMessagingClient;
+class ResizeObserverController;
+class ScreenOrientationController;
+class SensorProviderProxy;
+class SharedStorageWindowSupplement;
+class SharedWorkerClientHolder;
+class SpeechRecognitionController;
+class SpeechSynthesis;
+class TextElementTiming;
+class ThirdPartyScriptDetector;
+class UserMediaClient;
+class WebLaunchServiceImpl;
+class WindowScreenDetails;
+class WindowSharedStorageImpl;
+
+template <typename T>
+class GlobalCookieStoreImpl;
+template <typename T, typename P>
+class GlobalPerformanceImpl;
 
 namespace scheduler {
 class TaskAttributionInfo;
@@ -112,8 +161,8 @@ enum PageTransitionEventPersistence {
 class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
                                          public ExecutionContext,
                                          public WindowOrWorkerGlobalScope,
-                                         public WindowEventHandlers,
-                                         public Supplementable<LocalDOMWindow> {
+                                         public UniversalGlobalScope,
+                                         public WindowEventHandlers {
   USING_PRE_FINALIZER(LocalDOMWindow, Dispose);
 
  public:
@@ -186,15 +235,24 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   const BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() const final;
   FrameOrWorkerScheduler* GetScheduler() final;
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType) final;
+  // TODO(crbug.com/451479061): Consider moving the following function
+  // under trustedTypes/
   TrustedTypePolicyFactory* GetTrustedTypes() const final {
     return GetTrustedTypesForWorld(*GetCurrentWorld());
   }
   ScriptWrappable* ToScriptWrappable() final { return this; }
   void ReportPermissionsPolicyViolation(
-      mojom::blink::PermissionsPolicyFeature,
+      network::mojom::PermissionsPolicyFeature,
       mojom::blink::PolicyDisposition,
-      const std::optional<String>& reporting_endpoint,
+      const String& reporting_endpoint,
       const String& message = g_empty_string) const final;
+  void ReportPotentialPermissionsPolicyViolation(
+      network::mojom::PermissionsPolicyFeature,
+      mojom::blink::PolicyDisposition,
+      const String& reporting_endpoint,
+      const String& message = g_empty_string,
+      const String& allow_attribute = g_empty_string,
+      const String& src_attribute = g_empty_string) const final;
   void ReportDocumentPolicyViolation(
       mojom::blink::DocumentPolicyFeature,
       mojom::blink::PolicyDisposition,
@@ -228,12 +286,15 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   // Count permissions policy feature usage through use counter.
   void CountPermissionsPolicyUsage(
-      mojom::blink::PermissionsPolicyFeature feature,
+      network::mojom::PermissionsPolicyFeature feature,
       UseCounterImpl::PermissionsPolicyUsageType type);
 
   // Checks if navigation to Javascript URL is allowed. This check should run
   // before any action is taken (e.g. creating new window) for all
   // same-origin navigations.
+  bool AllowInlineJavascriptUrl(const DOMWrapperWorld* world,
+                                const KURL& url,
+                                Element* element);
   String CheckAndGetJavascriptUrl(
       const DOMWrapperWorld* world,
       const KURL& url,
@@ -275,6 +336,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   double pageXOffset() const { return scrollX(); }
   double pageYOffset() const { return scrollY(); }
 
+  DOMViewport* viewport();
   DOMVisualViewport* visualViewport();
 
   const AtomicString& name() const;
@@ -321,14 +383,20 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   // FIXME: ScrollBehaviorSmooth is currently unsupported in VisualViewport.
   // crbug.com/434497
-  void scrollBy(double x, double y) const;
-  void scrollBy(const ScrollToOptions*) const;
-  void scrollTo(double x, double y) const;
-  void scrollTo(const ScrollToOptions*) const;
-  void scroll(double x, double y) const { scrollTo(x, y); }
-  void scroll(const ScrollToOptions* scroll_to_options) const {
-    scrollTo(scroll_to_options);
-  }
+  ScriptPromise<IDLUndefined> scrollBy(ScriptState* script_state,
+                                       double x,
+                                       double y) const;
+  ScriptPromise<IDLUndefined> scrollBy(ScriptState* script_state,
+                                       const ScrollToOptions*) const;
+  ScriptPromise<IDLUndefined> scrollTo(ScriptState* script_state,
+                                       double x,
+                                       double y) const;
+  ScriptPromise<IDLUndefined> scrollTo(ScriptState* script_state,
+                                       const ScrollToOptions*) const;
+
+  void scrollByForTesting(double x, double y) const;
+  void scrollToForTesting(double x, double y) const;
+
   void moveBy(int x, int y) const;
   void moveTo(int x, int y) const;
 
@@ -342,17 +410,10 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
       Element*,
       const String& pseudo_elt = String()) const;
 
-  // Acessibility Object Model
-  ScriptPromise<ComputedAccessibleNode> getComputedAccessibleNode(ScriptState*,
-                                                                  Element*);
-
   // WebKit animation extensions
   int requestAnimationFrame(V8FrameRequestCallback*);
   int webkitRequestAnimationFrame(V8FrameRequestCallback*);
   void cancelAnimationFrame(int id);
-
-  // https://html.spec.whatwg.org/C/#windoworworkerglobalscope-mixin
-  void queueMicrotask(V8VoidFunction*);
 
   // https://html.spec.whatwg.org/C/#dom-originagentcluster
   bool originAgentCluster() const;
@@ -368,8 +429,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void captureEvents() {}
   void releaseEvents() {}
   External* external();
-
-  bool isSecureContext() const;  // NOLINT(bugprone-virtual-near-miss)
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(search, kSearch)
 
@@ -392,9 +451,9 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
                   const String& features,
                   ExceptionState&);
 
-  DOMWindow* openPictureInPictureWindow(v8::Isolate*,
-                                        const WebPictureInPictureWindowOptions&,
-                                        ExceptionState&);
+  DOMWindow* openPictureInPictureWindow(
+      v8::Isolate*,
+      const WebPictureInPictureWindowOptions&);
 
   FrameConsole* GetFrameConsole() const;
 
@@ -403,13 +462,14 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void DispatchPostMessage(
       MessageEvent* event,
       scoped_refptr<const SecurityOrigin> intended_target_origin,
-      std::unique_ptr<SourceLocation> location,
-      const base::UnguessableToken& source_agent_cluster_id);
+      SourceLocation* location,
+      const base::UnguessableToken& source_agent_cluster_id,
+      scheduler::TaskAttributionInfo* task_state);
 
   void DispatchMessageEventWithOriginCheck(
       const SecurityOrigin* intended_target_origin,
       MessageEvent*,
-      std::unique_ptr<SourceLocation>,
+      SourceLocation*,
       const base::UnguessableToken& source_agent_cluster_id);
 
   // Events
@@ -430,7 +490,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void EnqueueNonPersistedPageshowEvent();
   void EnqueueHashchangeEvent(const String& old_url, const String& new_url);
   void DispatchPopstateEvent(scoped_refptr<SerializedScriptValue>,
-                             scheduler::TaskAttributionInfo* parent_task);
+                             scheduler::TaskAttributionInfo* task_state,
+                             bool has_ua_visual_transition);
   void DispatchWindowLoadEvent();
   void DocumentWasClosed();
 
@@ -441,7 +502,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   Event* CurrentEvent() const;
   void SetCurrentEvent(Event*);
 
-  TrustedTypePolicyFactory* trustedTypes(ScriptState*) const;
   TrustedTypePolicyFactory* GetTrustedTypesForWorld(
       const DOMWrapperWorld&) const;
 
@@ -511,13 +571,11 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   Fence* fence();
 
+  CrashReportStorage* crashReport();
+
   CloseWatcher::WatcherStack* closewatcher_stack() {
     return closewatcher_stack_.Get();
   }
-
-  void GenerateNewNavigationId();
-
-  String GetNavigationId() const { return navigation_id_; }
 
   NavigationApi* navigation();
 
@@ -529,13 +587,393 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
     is_picture_in_picture_window_ = is_picture_in_picture;
   }
 
+  // This enum represents whether or not a call to `SetStorageAccessApiStatus`
+  // needs to also pass the status back up to the browser.
+  enum class StorageAccessApiNotifyEmbedder {
+    // No notification.
+    kNone,
+    // Notify the browser process.
+    kBrowserProcess,
+  };
+
   // Sets the StorageAccessApiStatus. Calls to this method must not downgrade
   // the status.
-  void SetStorageAccessApiStatus(net::StorageAccessApiStatus status);
+  void SetStorageAccessApiStatus(net::StorageAccessApiStatus status,
+                                 StorageAccessApiNotifyEmbedder notify);
 
   // https://html.spec.whatwg.org/multipage/browsing-the-web.html#has-been-revealed
   bool HasBeenRevealed() const { return has_been_revealed_; }
   void SetHasBeenRevealed(bool revealed);
+
+  SoftNavigationHeuristics* GetSoftNavigationHeuristics() {
+    return soft_navigation_heuristics_.Get();
+  }
+
+  void requestResize(ExceptionState&);
+
+  ForwardDeclaredMember<GlobalCookieStoreImpl<LocalDOMWindow>>
+  GetGlobalCookieStoreImpl() const {
+    return global_cookie_store_impl_;
+  }
+  void SetGlobalCookieStoreImpl(
+      ForwardDeclaredMember<GlobalCookieStoreImpl<LocalDOMWindow>>
+          global_cookie_store_impl) {
+    global_cookie_store_impl_ = global_cookie_store_impl;
+  }
+
+  ForwardDeclaredMember<
+      GlobalPerformanceImpl<LocalDOMWindow, WindowPerformance>>
+  GetGlobalPerformanceImpl() const {
+    return global_performance_impl_;
+  }
+  void SetGlobalPerformanceImpl(
+      ForwardDeclaredMember<
+          GlobalPerformanceImpl<LocalDOMWindow, WindowPerformance>>
+          global_performance_impl) {
+    global_performance_impl_ = global_performance_impl;
+  }
+
+  CachedPermissionStatus* GetCachedPermissionStatus() const {
+    return cached_permission_status_;
+  }
+  void SetCachedPermissionStatus(
+      CachedPermissionStatus* cached_permission_status) {
+    cached_permission_status_ = cached_permission_status;
+  }
+
+  ContainerTiming* GetContainerTiming() const { return container_timing_; }
+  void SetContainerTiming(ContainerTiming* container_timing) {
+    container_timing_ = container_timing;
+  }
+
+  Fullscreen* GetFullscreen() const { return fullscreen_; }
+  void SetFullscreen(Fullscreen* fullscreen) { fullscreen_ = fullscreen; }
+
+  HighlightRegistry* GetHighlightRegistry() const {
+    return highlight_registry_;
+  }
+  void SetHighlightRegistry(HighlightRegistry* highlight_registry) {
+    highlight_registry_ = highlight_registry;
+  }
+
+  ImageElementTiming* GetImageElementTiming() const {
+    return image_element_timing_;
+  }
+  void SetImageElementTiming(ImageElementTiming* image_element_timing) {
+    image_element_timing_ = image_element_timing;
+  }
+
+  LayoutWorklet* GetLayoutWorklet() const { return layout_worklet_; }
+  void SetLayoutWorklet(LayoutWorklet* layout_worklet) {
+    layout_worklet_ = layout_worklet;
+  }
+
+  ResizeObserverController* GetResizeObserverController() const {
+    return resize_observer_controller_;
+  }
+  void SetResizeObserverController(
+      ResizeObserverController* resize_observer_controller) {
+    resize_observer_controller_ = resize_observer_controller;
+  }
+
+  SharedWorkerClientHolder* GetSharedWorkerClientHolder() const {
+    return shared_worker_client_holder_;
+  }
+  void SetSharedWorkerClientHolder(
+      SharedWorkerClientHolder* shared_worker_client_holder) {
+    shared_worker_client_holder_ = shared_worker_client_holder;
+  }
+
+  TextElementTiming* GetTextElementTiming() const {
+    return text_element_timing_;
+  }
+  void SetTextElementTiming(TextElementTiming* text_element_timing) {
+    text_element_timing_ = text_element_timing;
+  }
+
+  ForwardDeclaredMember<AppBannerController> GetAppBannerController() const {
+    return app_banner_controller_;
+  }
+  void SetAppBannerController(
+      ForwardDeclaredMember<AppBannerController> app_banner_controller) {
+    app_banner_controller_ = app_banner_controller;
+  }
+
+  ForwardDeclaredMember<AudioRendererSinkCacheWindowObserver>
+  GetAudioRendererSinkCacheWindowObserver() const {
+    return audio_renderer_sink_cache_window_observer_;
+  }
+  void SetAudioRendererSinkCacheWindowObserver(
+      ForwardDeclaredMember<AudioRendererSinkCacheWindowObserver>
+          audio_renderer_sink_cache_window_observer) {
+    audio_renderer_sink_cache_window_observer_ =
+        audio_renderer_sink_cache_window_observer;
+  }
+
+  ForwardDeclaredMember<CSSAnimationWorklet> GetCSSAnimationWorklet() const {
+    return css_animation_worklet_;
+  }
+  void SetCSSAnimationWorklet(
+      ForwardDeclaredMember<CSSAnimationWorklet> css_animation_worklet) {
+    css_animation_worklet_ = css_animation_worklet;
+  }
+
+  ForwardDeclaredMember<CredentialManagerProxy> GetCredentialManagerProxy()
+      const {
+    return credential_manager_proxy_;
+  }
+  void SetCredentialManagerProxy(
+      ForwardDeclaredMember<CredentialManagerProxy> credential_manager_proxy) {
+    credential_manager_proxy_ = credential_manager_proxy;
+  }
+
+  ForwardDeclaredMember<DOMWindowDigitalGoods> GetDOMWindowDigitalGoods()
+      const {
+    return dom_window_digital_goods_;
+  }
+  void SetDOMWindowDigitalGoods(
+      ForwardDeclaredMember<DOMWindowDigitalGoods> dom_window_digital_goods) {
+    dom_window_digital_goods_ = dom_window_digital_goods;
+  }
+
+  ForwardDeclaredMember<DOMWindowLaunchQueue> GetDOMWindowLaunchQueue() const {
+    return dom_window_launch_queue_;
+  }
+  void SetDOMWindowLaunchQueue(
+      ForwardDeclaredMember<DOMWindowLaunchQueue> dom_window_launch_queue) {
+    dom_window_launch_queue_ = dom_window_launch_queue;
+  }
+
+  ForwardDeclaredMember<DOMWindowStorage> GetDOMWindowStorage() const {
+    return dom_window_storage_;
+  }
+  void SetDOMWindowStorage(
+      ForwardDeclaredMember<DOMWindowStorage> dom_window_storage) {
+    dom_window_storage_ = dom_window_storage;
+  }
+
+  ForwardDeclaredMember<DOMWindowStorageController>
+  GetDOMWindowStorageController() const {
+    return dom_window_storage_controller_;
+  }
+  void SetDOMWindowStorageController(
+      ForwardDeclaredMember<DOMWindowStorageController>
+          dom_window_storage_controller) {
+    dom_window_storage_controller_ = dom_window_storage_controller;
+  }
+
+  ForwardDeclaredMember<DeviceMotionController, PageVisibilityObserver>
+  GetDeviceMotionController() const {
+    return device_motion_controller_;
+  }
+  void SetDeviceMotionController(
+      ForwardDeclaredMember<DeviceMotionController, PageVisibilityObserver>
+          device_motion_controller) {
+    device_motion_controller_ = device_motion_controller;
+  }
+
+  ForwardDeclaredMember<DeviceOrientationAbsoluteController,
+                        PageVisibilityObserver>
+  GetDeviceOrientationAbsoluteController() const {
+    return device_orientation_absolute_controller_;
+  }
+  void SetDeviceOrientationAbsoluteController(
+      ForwardDeclaredMember<DeviceOrientationAbsoluteController,
+                            PageVisibilityObserver>
+          device_orientation_absolute_controller) {
+    device_orientation_absolute_controller_ =
+        device_orientation_absolute_controller;
+  }
+
+  ForwardDeclaredMember<DeviceOrientationController, PageVisibilityObserver>
+  GetDeviceOrientationController() const {
+    return device_orientation_controller_;
+  }
+  void SetDeviceOrientationController(
+      ForwardDeclaredMember<DeviceOrientationController, PageVisibilityObserver>
+          device_orientation_controller) {
+    device_orientation_controller_ = device_orientation_controller;
+  }
+
+  ForwardDeclaredMember<DocumentPictureInPicture> GetDocumentPictureInPicture()
+      const {
+    return document_picture_in_picture_;
+  }
+  void SetDocumentPictureInPicture(
+      ForwardDeclaredMember<DocumentPictureInPicture>
+          document_picture_in_picture) {
+    document_picture_in_picture_ = document_picture_in_picture;
+  }
+
+  ForwardDeclaredMember<FontAccess> GetFontAccess() const {
+    return font_access_;
+  }
+  void SetFontAccess(ForwardDeclaredMember<FontAccess> font_access) {
+    font_access_ = font_access;
+  }
+
+  ForwardDeclaredMember<GlobalStorageAccessHandle>
+  GetGlobalStorageAccessHandle() const {
+    return global_storage_access_handle_;
+  }
+  void SetGlobalStorageAccessHandle(
+      ForwardDeclaredMember<GlobalStorageAccessHandle>
+          global_storage_access_handle) {
+    global_storage_access_handle_ = global_storage_access_handle;
+  }
+
+  ForwardDeclaredMember<InstallationServiceImpl> GetInstallationServiceImpl()
+      const {
+    return installation_service_impl_;
+  }
+  void SetInstallationServiceImpl(ForwardDeclaredMember<InstallationServiceImpl>
+                                      installation_service_impl) {
+    installation_service_impl_ = installation_service_impl;
+  }
+
+  ForwardDeclaredMember<InstalledAppController> GetInstalledAppController()
+      const {
+    return installed_app_controller_;
+  }
+  void SetInstalledAppController(
+      ForwardDeclaredMember<InstalledAppController> installed_app_controller) {
+    installed_app_controller_ = installed_app_controller;
+  }
+
+  ForwardDeclaredMember<ManifestManager> GetManifestManager() const {
+    return manifest_manager_;
+  }
+  void SetManifestManager(
+      ForwardDeclaredMember<ManifestManager> manifest_manager) {
+    manifest_manager_ = manifest_manager;
+  }
+
+  ForwardDeclaredMember<NFCProxy> GetNFCProxy() const { return nfcproxy_; }
+  void SetNFCProxy(ForwardDeclaredMember<NFCProxy> nfcproxy) {
+    nfcproxy_ = nfcproxy;
+  }
+
+  ForwardDeclaredMember<PaintWorklet> GetPaintWorklet() const {
+    return paint_worklet_;
+  }
+  void SetPaintWorklet(ForwardDeclaredMember<PaintWorklet> paint_worklet) {
+    paint_worklet_ = paint_worklet;
+  }
+
+  ForwardDeclaredMember<PeerConnectionTracker> GetPeerConnectionTracker()
+      const {
+    return peer_connection_tracker_;
+  }
+  void SetPeerConnectionTracker(
+      ForwardDeclaredMember<PeerConnectionTracker> peer_connection_tracker) {
+    peer_connection_tracker_ = peer_connection_tracker;
+  }
+
+  ForwardDeclaredMember<PresentationController> GetPresentationController()
+      const {
+    return presentation_controller_;
+  }
+  void SetPresentationController(
+      ForwardDeclaredMember<PresentationController> presentation_controller) {
+    presentation_controller_ = presentation_controller;
+  }
+
+  ForwardDeclaredMember<PushMessagingClient> GetPushMessagingClient() const {
+    return push_messaging_client_;
+  }
+  void SetPushMessagingClient(
+      ForwardDeclaredMember<PushMessagingClient> push_messaging_client) {
+    push_messaging_client_ = push_messaging_client;
+  }
+
+  ForwardDeclaredMember<ScreenOrientationController, PageVisibilityObserver>
+  GetScreenOrientationController() const {
+    return screen_orientation_controller_;
+  }
+  void SetScreenOrientationController(
+      ForwardDeclaredMember<ScreenOrientationController, PageVisibilityObserver>
+          screen_orientation_controller) {
+    screen_orientation_controller_ = screen_orientation_controller;
+  }
+
+  ForwardDeclaredMember<SensorProviderProxy> GetSensorProviderProxy() const {
+    return sensor_provider_proxy_;
+  }
+  void SetSensorProviderProxy(
+      ForwardDeclaredMember<SensorProviderProxy> sensor_provider_proxy) {
+    sensor_provider_proxy_ = sensor_provider_proxy;
+  }
+
+  ForwardDeclaredMember<SharedStorageWindowSupplement>
+  GetSharedStorageWindowSupplement() const {
+    return shared_storage_window_supplement_;
+  }
+  void SetSharedStorageWindowSupplement(
+      ForwardDeclaredMember<SharedStorageWindowSupplement>
+          shared_storage_window_supplement) {
+    shared_storage_window_supplement_ = shared_storage_window_supplement;
+  }
+
+  ForwardDeclaredMember<SpeechRecognitionController>
+  GetSpeechRecognitionController() const {
+    return speech_recognition_controller_;
+  }
+  void SetSpeechRecognitionController(
+      ForwardDeclaredMember<SpeechRecognitionController>
+          speech_recognition_controller) {
+    speech_recognition_controller_ = speech_recognition_controller;
+  }
+
+  ForwardDeclaredMember<SpeechSynthesis> GetSpeechSynthesis() const {
+    return speech_synthesis_;
+  }
+  void SetSpeechSynthesis(
+      ForwardDeclaredMember<SpeechSynthesis> speech_synthesis) {
+    speech_synthesis_ = speech_synthesis;
+  }
+
+  ForwardDeclaredMember<ThirdPartyScriptDetector> GetThirdPartyScriptDetector()
+      const {
+    return third_party_script_detector_;
+  }
+  void SetThirdPartyScriptDetector(
+      ForwardDeclaredMember<ThirdPartyScriptDetector>
+          third_party_script_detector) {
+    third_party_script_detector_ = third_party_script_detector;
+  }
+
+  ForwardDeclaredMember<UserMediaClient> GetUserMediaClient() const {
+    return user_media_client_;
+  }
+  void SetUserMediaClient(
+      ForwardDeclaredMember<UserMediaClient> user_media_client) {
+    user_media_client_ = user_media_client;
+  }
+
+  ForwardDeclaredMember<WebLaunchServiceImpl> GetWebLaunchServiceImpl() const {
+    return web_launch_service_impl_;
+  }
+  void SetWebLaunchServiceImpl(
+      ForwardDeclaredMember<WebLaunchServiceImpl> web_launch_service_impl) {
+    web_launch_service_impl_ = web_launch_service_impl;
+  }
+
+  ForwardDeclaredMember<WindowScreenDetails> GetWindowScreenDetails() const {
+    return window_screen_details_;
+  }
+  void SetWindowScreenDetails(
+      ForwardDeclaredMember<WindowScreenDetails> window_screen_details) {
+    window_screen_details_ = window_screen_details;
+  }
+
+  ForwardDeclaredMember<WindowSharedStorageImpl> GetWindowSharedStorageImpl()
+      const {
+    return window_shared_storage_impl_;
+  }
+  void SetWindowSharedStorageImpl(ForwardDeclaredMember<WindowSharedStorageImpl>
+                                      window_shared_storage_impl) {
+    window_shared_storage_impl_ = window_shared_storage_impl;
+  }
 
  protected:
   // EventTarget overrides.
@@ -573,6 +1011,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   Member<ScriptController> script_controller_;
 
   Member<Document> document_;
+  Member<DOMViewport> viewport_;
   Member<DOMVisualViewport> visualViewport_;
 
   bool should_print_when_finished_loading_;
@@ -626,7 +1065,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   Member<TextSuggestionController> text_suggestion_controller_;
 
   // Map from isolated world IDs to their ContentSecurityPolicy instances.
-  Member<HeapHashMap<int, Member<ContentSecurityPolicy>>>
+  Member<GCedHeapHashMap<int, Member<ContentSecurityPolicy>>>
       isolated_world_csp_map_;
 
   // Tracks which features have already been potentially violated in this
@@ -660,16 +1099,73 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // https://github.com/shivanigithub/fenced-frame/issues/14
   Member<Fence> fence_;
 
+  Member<CrashReportStorage> crash_report_storage_;
+
   Member<CloseWatcher::WatcherStack> closewatcher_stack_;
+
+  Member<SoftNavigationHeuristics> soft_navigation_heuristics_;
+
+  ForwardDeclaredMember<GlobalCookieStoreImpl<LocalDOMWindow>>
+      global_cookie_store_impl_;
+  ForwardDeclaredMember<
+      GlobalPerformanceImpl<LocalDOMWindow, WindowPerformance>>
+      global_performance_impl_;
+
+  Member<CachedPermissionStatus> cached_permission_status_;
+  Member<ContainerTiming> container_timing_;
+  Member<Fullscreen> fullscreen_;
+  Member<HighlightRegistry> highlight_registry_;
+  Member<ImageElementTiming> image_element_timing_;
+  Member<LayoutWorklet> layout_worklet_;
+  Member<ResizeObserverController> resize_observer_controller_;
+  Member<SharedWorkerClientHolder> shared_worker_client_holder_;
+  Member<TextElementTiming> text_element_timing_;
+  ForwardDeclaredMember<AppBannerController> app_banner_controller_;
+  ForwardDeclaredMember<AudioRendererSinkCacheWindowObserver>
+      audio_renderer_sink_cache_window_observer_;
+  ForwardDeclaredMember<CSSAnimationWorklet> css_animation_worklet_;
+  ForwardDeclaredMember<CredentialManagerProxy> credential_manager_proxy_;
+  ForwardDeclaredMember<DOMWindowDigitalGoods> dom_window_digital_goods_;
+  ForwardDeclaredMember<DOMWindowLaunchQueue> dom_window_launch_queue_;
+  ForwardDeclaredMember<DOMWindowStorage> dom_window_storage_;
+  ForwardDeclaredMember<DOMWindowStorageController>
+      dom_window_storage_controller_;
+  ForwardDeclaredMember<DeviceMotionController, PageVisibilityObserver>
+      device_motion_controller_;
+  ForwardDeclaredMember<DeviceOrientationAbsoluteController,
+                        PageVisibilityObserver>
+      device_orientation_absolute_controller_;
+  ForwardDeclaredMember<DeviceOrientationController, PageVisibilityObserver>
+      device_orientation_controller_;
+  ForwardDeclaredMember<DocumentPictureInPicture> document_picture_in_picture_;
+  ForwardDeclaredMember<FontAccess> font_access_;
+  ForwardDeclaredMember<GlobalStorageAccessHandle>
+      global_storage_access_handle_;
+  ForwardDeclaredMember<InstallationServiceImpl> installation_service_impl_;
+  ForwardDeclaredMember<InstalledAppController> installed_app_controller_;
+  ForwardDeclaredMember<ManifestManager> manifest_manager_;
+  ForwardDeclaredMember<NFCProxy> nfcproxy_;
+  ForwardDeclaredMember<PaintWorklet> paint_worklet_;
+  ForwardDeclaredMember<PeerConnectionTracker> peer_connection_tracker_;
+  ForwardDeclaredMember<PresentationController> presentation_controller_;
+  ForwardDeclaredMember<PushMessagingClient> push_messaging_client_;
+  ForwardDeclaredMember<ScreenOrientationController, PageVisibilityObserver>
+      screen_orientation_controller_;
+  ForwardDeclaredMember<SensorProviderProxy> sensor_provider_proxy_;
+  ForwardDeclaredMember<SharedStorageWindowSupplement>
+      shared_storage_window_supplement_;
+  ForwardDeclaredMember<SpeechRecognitionController>
+      speech_recognition_controller_;
+  ForwardDeclaredMember<SpeechSynthesis> speech_synthesis_;
+  ForwardDeclaredMember<ThirdPartyScriptDetector> third_party_script_detector_;
+  ForwardDeclaredMember<UserMediaClient> user_media_client_;
+  ForwardDeclaredMember<WebLaunchServiceImpl> web_launch_service_impl_;
+  ForwardDeclaredMember<WindowScreenDetails> window_screen_details_;
+  ForwardDeclaredMember<WindowSharedStorageImpl> window_shared_storage_impl_;
 
   // If set, this window is a Document Picture in Picture window.
   // https://wicg.github.io/document-picture-in-picture/
   bool is_picture_in_picture_window_ = false;
-
-  // The navigation id of a document is to identify navigation of special types
-  // like bfcache navigation or soft navigation. It changes when navigations
-  // of these types occur.
-  String navigation_id_;
 
   // Records this window's Storage Access API status. It cannot be downgraded.
   net::StorageAccessApiStatus storage_access_api_status_ =

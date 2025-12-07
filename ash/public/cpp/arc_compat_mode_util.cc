@@ -7,7 +7,6 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/widget/widget.h"
@@ -39,11 +38,9 @@ ResizeCompatMode PredictCurrentMode(const aura::Window* window) {
 const gfx::VectorIcon& GetIcon(ResizeCompatMode mode) {
   switch (mode) {
     case ResizeCompatMode::kPhone:
-      return chromeos::features::IsJellyEnabled() ? kSystemMenuPhoneIcon
-                                                  : kSystemMenuPhoneLegacyIcon;
+      return kSystemMenuPhoneIcon;
     case ResizeCompatMode::kTablet:
-      return chromeos::features::IsJellyEnabled() ? kSystemMenuTabletIcon
-                                                  : kSystemMenuTabletLegacyIcon;
+      return kSystemMenuTabletIcon;
     case ResizeCompatMode::kResizable:
       return kAppCompatResizableIcon;
   }

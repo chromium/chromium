@@ -3,14 +3,18 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ContentController, playFromSelectionTimeout, SelectionController, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 
-import {emitEvent, suppressInnocuousErrors, waitForPlayFromSelection} from './common.js';
+import {createApp, emitEvent} from './common.js';
+import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 suite('ReadAloudHighlight', () => {
-  let app: ReadAnythingElement;
+  let app: AppElement;
+  let speechController: SpeechController;
+  let selectionController: SelectionController;
   const sentence1 = 'Only need the light when it\'s burning low.\n';
   const sentence2 = 'Only miss the sun when it starts to snow.\n';
   const sentenceSegment1 = 'Only know you love her when you let her go';
@@ -48,29 +52,38 @@ suite('ReadAloudHighlight', () => {
     ],
   };
 
-  function emitNextGranularity(): void {
+  function emitNextGranularity() {
     emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
   }
 
-  function emitPreviousGranularity(): void {
+  function emitPreviousGranularity() {
     emitEvent(app, ToolbarEvent.PREVIOUS_GRANULARITY);
   }
 
-  setup(() => {
-    suppressInnocuousErrors();
+  setup(async () => {
+    // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // Do not call the real `onConnected()`. As defined in
     // ReadAnythingAppController, onConnected creates mojo pipes to connect to
     // the rest of the Read Anything feature, which we are not testing here.
     chrome.readingMode.onConnected = () => {};
+    SpeechBrowserProxyImpl.setInstance(new TestSpeechBrowserProxy());
+    selectionController = new SelectionController();
+    SelectionController.setInstance(selectionController);
+    speechController = new SpeechController();
+    SpeechController.setInstance(speechController);
+    VoiceLanguageController.setInstance(new VoiceLanguageController());
+    ContentController.setInstance(new ContentController());
+    // Ensure the ReadAloudModel is not shared between tests.
+    setInstance(null);
 
-    app = document.createElement('read-anything-app');
-    document.body.appendChild(app);
+    app = await createApp();
     chrome.readingMode.setContentForTesting(axTree, leafIds);
+    selectionController.onSelectionChange(app.getSelection());
   });
 
   test('on speak first sentence highlights are correct', () => {
-    app.playSpeech();
+    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
     const currentHighlight =
         app.$.container.querySelector('.current-read-highlight');
     const previousHighlight =
@@ -85,7 +98,7 @@ suite('ReadAloudHighlight', () => {
     let previousHighlights: NodeListOf<Element>;
 
     setup(() => {
-      app.playSpeech();
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
       emitNextGranularity();
       emitNextGranularity();
     });
@@ -120,7 +133,7 @@ suite('ReadAloudHighlight', () => {
   });
 
   test('on speak next sentence highlights are correct', () => {
-    app.playSpeech();
+    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
     emitNextGranularity();
     const currentHighlight =
         app.$.container.querySelector('.current-read-highlight');
@@ -131,12 +144,17 @@ suite('ReadAloudHighlight', () => {
     assertEquals(sentence1, previousHighlight!.textContent);
   });
 
+  // TODO: crbug.com/411198154- After refactoring is complete, ensure
+  // there are proper unit tests for keeping the reading position. Until the
+  // refactoring is complete, there isn't a great way to test this due to how
+  // distillation is managed in tests.
+
   suite('on finish speaking', () => {
     let currentHighlight: HTMLElement|null;
     let previousHighlights: NodeListOf<Element>;
 
     setup(() => {
-      app.playSpeech();
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
       emitNextGranularity();
       emitNextGranularity();
       emitNextGranularity();
@@ -155,11 +173,6 @@ suite('ReadAloudHighlight', () => {
           sentence1 + sentence2 + sentenceSegment1 + sentenceSegment2;
       assertEquals(expectedText, app.$.container.textContent);
     });
-
-    test('playing next granularity does not crash', () => {
-      emitNextGranularity();
-      emitNextGranularity();
-    });
   });
 
   suite('on speak previous sentence', () => {
@@ -167,7 +180,7 @@ suite('ReadAloudHighlight', () => {
     let previousHighlights: NodeListOf<Element>;
 
     setup(() => {
-      app.playSpeech();
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
       emitNextGranularity();
       emitPreviousGranularity();
 
@@ -225,10 +238,12 @@ suite('ReadAloudHighlight', () => {
   suite('on speaking from selection', () => {
     let currentHighlight: HTMLElement|null;
     let previousHighlights: NodeListOf<Element>;
+    let mockTimer: MockTimer;
 
-    async function selectAndPlay(
+    function selectAndPlay(
         anchorId: number, anchorOffset: number, focusId: number,
-        focusOffset: number): Promise<void> {
+        focusOffset: number): void {
+      mockTimer.install();
       const selectedTree = Object.assign(
           {
             selection: {
@@ -241,13 +256,15 @@ suite('ReadAloudHighlight', () => {
           },
           axTree);
       chrome.readingMode.setContentForTesting(selectedTree, leafIds);
-      app.updateSelection();
-      app.playSpeech();
-      return waitForPlayFromSelection();
+      selectionController.updateSelection(app.getSelection(), app.$.container);
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+      mockTimer.tick(playFromSelectionTimeout);
+      mockTimer.uninstall();
     }
 
-    setup(async () => {
-      await selectAndPlay(3, 1, 3, 5);
+    setup(() => {
+      mockTimer = new MockTimer();
+      selectAndPlay(3, 1, 3, 5);
     });
 
     test('shows correct highlights', () => {

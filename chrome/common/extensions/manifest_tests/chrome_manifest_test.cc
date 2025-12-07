@@ -8,16 +8,22 @@
 #include "base/path_service.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/version_info/version_info.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
+namespace extensions {
 
 ChromeManifestTest::ChromeManifestTest()
     // CHANNEL_UNKNOWN == trunk.
     : current_channel_(version_info::Channel::UNKNOWN) {}
 
-ChromeManifestTest::~ChromeManifestTest() {
-}
+ChromeManifestTest::~ChromeManifestTest() = default;
 
 base::FilePath ChromeManifestTest::GetTestDataDir() {
   base::FilePath path;
   base::PathService::Get(chrome::DIR_TEST_DATA, &path);
   return path.AppendASCII("extensions").AppendASCII("manifest_tests");
 }
+
+}  // namespace extensions

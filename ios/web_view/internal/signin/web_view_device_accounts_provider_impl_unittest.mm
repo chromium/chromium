@@ -5,20 +5,21 @@
 #import "ios/web_view/internal/signin/web_view_device_accounts_provider_impl.h"
 
 #import <Foundation/Foundation.h>
-#include <map>
-#include <utility>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/test/bind.h"
-#include "components/signin/public/identity_manager/ios/device_accounts_provider.h"
+#import <map>
+#import <utility>
+
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
+#import "base/test/bind.h"
+#import "components/signin/public/identity_manager/ios/device_accounts_provider.h"
 #import "ios/web_view/public/cwv_identity.h"
 #import "ios/web_view/public/cwv_sync_controller.h"
 #import "ios/web_view/public/cwv_sync_controller_data_source.h"
 #import "ios/web_view/public/cwv_sync_errors.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 namespace ios_web_view {
@@ -27,9 +28,9 @@ using WebViewDeviceAccountsProviderImplTest = PlatformTest;
 
 namespace {
 
-id MatchIdentityByGaiaID(NSString* gaia_id) {
+id MatchIdentityByGaiaID(NSString* gaia_id_string) {
   return [OCMArg checkWithBlock:^BOOL(CWVIdentity* identity) {
-    return [identity.gaiaID isEqualToString:gaia_id];
+    return [identity.gaiaID isEqualToString:gaia_id_string];
   }];
 }
 
@@ -42,19 +43,19 @@ TEST_F(WebViewDeviceAccountsProviderImplTest, GetAccessToken) {
   CWVSyncController.dataSource = data_source;
 
   OCMExpect([data_source
-                fetchAccessTokenForIdentity:MatchIdentityByGaiaID(@"gaia-id")
-                                     scopes:(@[ @"scope-1", @"scope-2" ])
-                                     completionHandler:[OCMArg any]])
-      .andDo(^(NSInvocation* invocation) {
-        __unsafe_unretained void (^block)(NSString*, NSDate*, NSError*) = nil;
-        [invocation getArgument:&block atIndex:4];  // completionHandler: index
-        block(@"access-token", base::Time::Max().ToNSDate(), nil);
-      });
+      fetchAccessTokenForIdentity:MatchIdentityByGaiaID(@"gaia-id")
+                           scopes:(@[ @"scope-1", @"scope-2" ])completionHandler
+                                 :[OCMArg checkWithBlock:^(BOOL (^block)(
+                                      NSString*, NSDate*, NSError*)) {
+                                   block(@"access-token",
+                                         base::Time::Max().ToNSDate(), nil);
+                                   return YES;
+                                 }]]);
 
   bool callback_called = false;
   WebViewDeviceAccountsProviderImpl accounts_provider;
   accounts_provider.GetAccessToken(
-      "gaia-id", "client-id", {"scope-1", "scope-2"},
+      GaiaId("gaia-id"), "client-id", {"scope-1", "scope-2"},
       base::BindLambdaForTesting(
           [&](DeviceAccountsProvider::AccessTokenResult result) {
             callback_called = true;
@@ -81,13 +82,13 @@ TEST_F(WebViewDeviceAccountsProviderImplTest, GetAllAccounts) {
 
   WebViewDeviceAccountsProviderImpl accounts_provider;
   std::vector<DeviceAccountsProvider::AccountInfo> accounts =
-      accounts_provider.GetAllAccounts();
+      accounts_provider.GetAccountsOnDevice();
 
   ASSERT_EQ(1UL, accounts.size());
   DeviceAccountsProvider::AccountInfo account_info = accounts[0];
-  EXPECT_EQ("foo@chromium.org", account_info.email);
-  EXPECT_EQ("gaia-id", account_info.gaia);
+  EXPECT_EQ("foo@chromium.org", account_info.GetEmail());
+  EXPECT_EQ(GaiaId("gaia-id"), account_info.GetGaiaId());
 
   [data_source verify];
 }
-}
+}  // namespace ios_web_view

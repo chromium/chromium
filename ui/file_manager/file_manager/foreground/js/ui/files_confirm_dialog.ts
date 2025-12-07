@@ -64,11 +64,10 @@ export class FilesConfirmDialog extends ConfirmDialog {
   }
 
   override hide(onHide?: VoidCallback) {
+    super.hide(onHide);
     if (!this.showModalElement) {
       this.parentNodeAsDialogTag.close();
     }
-
-    super.hide(onHide);
   }
 
   get parentNodeAsDialogTag(): HTMLDialogElement {

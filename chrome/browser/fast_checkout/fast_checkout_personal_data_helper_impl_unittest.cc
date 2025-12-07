@@ -7,10 +7,10 @@
 #include "base/uuid.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -155,7 +155,7 @@ TEST_F(FastCheckoutPersonalDataHelperTest,
       ->payments_data_manager()
       .AddCreditCard(kEmptyCreditCard);
 
-  std::vector<autofill::CreditCard*> cards =
+  std::vector<const autofill::CreditCard*> cards =
       personal_data_helper()->GetCreditCardsToSuggest();
 
   EXPECT_EQ(cards.size(), 1UL);

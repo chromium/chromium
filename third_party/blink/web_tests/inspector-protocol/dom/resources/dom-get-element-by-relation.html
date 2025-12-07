@@ -1,10 +1,15 @@
 <!DOCTYPE html>
 <html>
   <body>
-    <button class="popover-opener-1" popovertarget="my-popover-1">Open Popover</button>
+    <button class="popover-opener-1" popovertarget="my-popover-1" interestfor="my-popover-1">Open Popover</button>
     <button class="popover-opener-2">Open Popover</button>
-    <div class="popover-opener-3" popovertarget="my-popover-2">Open Popover</div>
+    <div class="popover-opener-3" popovertarget="my-popover-2" interestfor="my-popover-2">Open Popover</div>
+    <button class="popover-opener-4" interestfor="my-popover-3">Open Popover</button>
     <div popover id="my-popover-1">popover 1</div>
     <div popover id="my-popover-2">popover 2</div>
+    <div popover id="my-popover-3">popover 3</div>
+    <button class="dialog-opener-1" command="show-modal" commandfor="my-dialog">This opens a dialog</button>
+    <button class="dialog-opener-2">This opens a dialog</button>
+    <dialog id="my-dialog">This is the dialog</dialog>
   </body>
 </html>

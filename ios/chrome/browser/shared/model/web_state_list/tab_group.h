@@ -54,11 +54,8 @@ class TabGroup {
   // Returns the title of the group from `visual_data_`, even if empty.
   NSString* GetRawTitle() const;
 
-  // Returns the color of the group.
-  UIColor* GetColor() const;
-
-  // Returns the color for the elements displayed on top of the group color.
-  UIColor* GetForegroundColor() const;
+  // Returns the color ID of the tab group.
+  tab_groups::TabGroupColorId GetColor() const;
 
   // The underlying visual data specific to the group.
   const tab_groups::TabGroupVisualData& visual_data() const {
@@ -85,18 +82,6 @@ class TabGroup {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return tab_group_id_;
   }
-
-  // Returns all the colors a TabGroup can have.
-  static std::vector<tab_groups::TabGroupColorId> AllPossibleTabGroupColors();
-
-  // Returns a UIColor based on a `tab_group_color_id`.
-  static UIColor* ColorForTabGroupColorId(
-      tab_groups::TabGroupColorId tab_group_color_id);
-
-  // Returns a UIColor for the text to be displayed on top a
-  // `tab_group_color_id` color.
-  static UIColor* ForegroundColorForTabGroupColorId(
-      tab_groups::TabGroupColorId tab_group_color_id);
 
   // Returns the default color for a new TabGroup in `web_state_list`. This is
   // based on the colors currently used by this web state list (for this

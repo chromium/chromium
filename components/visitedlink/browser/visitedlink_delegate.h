@@ -34,7 +34,7 @@ class VisitedLinkDelegate {
     virtual void OnComplete(bool success) = 0;
 
    protected:
-    virtual ~URLEnumerator() {}
+    virtual ~URLEnumerator() = default;
 
    private:
     friend class base::RefCountedThreadSafe<URLEnumerator>;
@@ -76,7 +76,7 @@ class VisitedLinkDelegate {
       const scoped_refptr<VisitedLinkEnumerator>& enumerator) = 0;
 
  protected:
-  virtual ~VisitedLinkDelegate() {}
+  virtual ~VisitedLinkDelegate() = default;
 };
 
 }  // namespace visitedlink

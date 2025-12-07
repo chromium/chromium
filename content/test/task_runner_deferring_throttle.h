@@ -18,7 +18,7 @@ class TaskRunnerDeferringThrottle : public NavigationThrottle {
                               bool defer_start,
                               bool defer_redirect,
                               bool defer_response,
-                              NavigationHandle* handle);
+                              NavigationThrottleRegistry& registry);
 
   TaskRunnerDeferringThrottle(const TaskRunnerDeferringThrottle&) = delete;
   TaskRunnerDeferringThrottle& operator=(const TaskRunnerDeferringThrottle&) =
@@ -26,12 +26,12 @@ class TaskRunnerDeferringThrottle : public NavigationThrottle {
 
   ~TaskRunnerDeferringThrottle() override;
 
-  static std::unique_ptr<NavigationThrottle> Create(
+  static void Create(
       scoped_refptr<base::TaskRunner> task_runner,
       bool defer_start,
       bool defer_redirect,
       bool defer_response,
-      NavigationHandle* handle);
+      NavigationThrottleRegistry& registry);
 
   // NavigationThrottle:
   ThrottleCheckResult WillStartRequest() override;

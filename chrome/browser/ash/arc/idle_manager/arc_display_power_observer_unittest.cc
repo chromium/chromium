@@ -5,15 +5,15 @@
 #include "chrome/browser/ash/arc/idle_manager/arc_display_power_observer.h"
 
 #include "ash/shell.h"
-#include "ash/test/ash_test_base.h"
 #include "chrome/browser/ash/arc/idle_manager/arc_throttle_test_observer.h"
+#include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {
 
-class ArcDisplayPowerObserverTest : public ash::AshTestBase {
+class ArcDisplayPowerObserverTest : public ChromeAshTestBase {
  public:
   ArcDisplayPowerObserverTest() = default;
 
@@ -22,10 +22,6 @@ class ArcDisplayPowerObserverTest : public ash::AshTestBase {
       delete;
 
   ~ArcDisplayPowerObserverTest() override = default;
-
-  void SetUp() override { ash::AshTestBase::SetUp(); }
-
-  void TearDown() override { ash::AshTestBase::TearDown(); }
 
  protected:
   ArcDisplayPowerObserver* observer() { return &display_observer_; }

@@ -13,13 +13,6 @@ import sys
 
 from jsbundler import PathRewriter
 
-_SCRIPT_DIR = os.path.realpath(os.path.dirname(__file__))
-_CHROME_SOURCE = os.path.realpath(
-    os.path.join(_SCRIPT_DIR, *[os.path.pardir] * 6))
-sys.path.insert(
-    0,
-    os.path.join(_CHROME_SOURCE, ('third_party/chromevox/third_party/' +
-                                  'closure-library/closure/bin/build')))
 import source
 
 

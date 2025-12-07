@@ -50,10 +50,12 @@ gfx::Size SizeConstraints::AddWindowToConstraints(
 
 gfx::Size SizeConstraints::ClampSize(gfx::Size size) const {
   const gfx::Size max_size = GetMaximumSize();
-  if (max_size.width() != kUnboundedSize)
+  if (max_size.width() != kUnboundedSize) {
     size.set_width(std::min(size.width(), max_size.width()));
-  if (max_size.height() != kUnboundedSize)
+  }
+  if (max_size.height() != kUnboundedSize) {
     size.set_height(std::min(size.height(), max_size.height()));
+  }
   size.SetToMax(GetMinimumSize());
   return size;
 }

@@ -12,6 +12,8 @@
 #include "base/test/task_environment.h"
 #include "google_apis/gaia/gaia_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/gaia_id.h"
+#include "google_apis/gaia/gaia_id_literal.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher_impl.h"
@@ -24,7 +26,7 @@
 
 namespace {
 
-constexpr char kTestAccountId[] = "test_user_account_id";
+constexpr GaiaIdLiteral kTestAccountId("test_user_account_id");
 
 class FakeOAuth2AccessTokenManagerDelegate
     : public OAuth2AccessTokenManager::Delegate {
@@ -334,7 +336,8 @@ TEST_F(OAuth2AccessTokenManagerTest, CancelAllRequests) {
   std::unique_ptr<OAuth2AccessTokenManager::Request> request(
       token_manager_->StartRequest(
           account_id_, OAuth2AccessTokenManager::ScopeSet(), &consumer_));
-  const CoreAccountId account_id_2 = CoreAccountId::FromGaiaId("account_id_2");
+  const CoreAccountId account_id_2 =
+      CoreAccountId::FromGaiaId(GaiaId("account_id_2"));
   delegate_.AddAccount(account_id_2, "refreshToken2");
   std::unique_ptr<OAuth2AccessTokenManager::Request> request2(
       token_manager_->StartRequest(
@@ -364,7 +367,8 @@ TEST_F(OAuth2AccessTokenManagerTest, CancelRequestsForAccount) {
   std::unique_ptr<OAuth2AccessTokenManager::Request> request2(
       token_manager_->StartRequest(account_id_, scope_set_2, &consumer_));
 
-  const CoreAccountId account_id_2 = CoreAccountId::FromGaiaId("account_id_2");
+  const CoreAccountId account_id_2 =
+      CoreAccountId::FromGaiaId(GaiaId("account_id_2"));
   delegate_.AddAccount(account_id_2, "refreshToken2");
   std::unique_ptr<OAuth2AccessTokenManager::Request> request3(
       token_manager_->StartRequest(account_id_2, scope_set_1, &consumer_));
@@ -438,7 +442,8 @@ TEST_F(OAuth2AccessTokenManagerTest, ClearCacheForAccount) {
 
   base::RunLoop run_loop2;
   consumer_.SetResponseCompletedClosure(run_loop2.QuitClosure());
-  const CoreAccountId account_id_2 = CoreAccountId::FromGaiaId("account_id_2");
+  const CoreAccountId account_id_2 =
+      CoreAccountId::FromGaiaId(GaiaId("account_id_2"));
   delegate_.AddAccount(account_id_2, "refreshToken2");
   // Makes a request for |account_id_2|.
   std::unique_ptr<OAuth2AccessTokenManager::Request> request2(
@@ -595,6 +600,31 @@ TEST_F(OAuth2AccessTokenManagerTest,
   token_manager_->RemoveDiagnosticsObserver(&observer);
 }
 
+// Test that DiagnosticsObserver::OnFetchAccessTokenComplete is invoked when a
+// request is completed and then deleted by the delegate.
+TEST_F(OAuth2AccessTokenManagerTest,
+       OnFetchAccessTokenCompleteWhenRequestIsDeletedByDelegate) {
+  DiagnosticsObserverForTesting observer;
+  OAuth2AccessTokenManager::ScopeSet scopeset;
+  scopeset.insert("scope");
+  base::RunLoop run_loop;
+  GoogleServiceAuthError error(GoogleServiceAuthError::NONE);
+  observer.SetOnFetchAccessTokenComplete(account_id_, consumer_.id(), scopeset,
+                                         error, run_loop.QuitClosure());
+  token_manager_->AddDiagnosticsObserver(&observer);
+  SimulateOAuthTokenResponse(GetValidTokenResponse("token", 3600));
+
+  std::unique_ptr<OAuth2AccessTokenManager::Request> request(
+      token_manager_->StartRequest(account_id_, scopeset, &consumer_));
+  // Move request ownership to delegate_ lambda which will delete the object
+  // upon return.
+  delegate_.SetOnAccessTokenFetched(
+      account_id_, error,
+      base::BindLambdaForTesting([request = std::move(request)]() {}));
+  run_loop.Run();
+  token_manager_->RemoveDiagnosticsObserver(&observer);
+}
+
 // Test that DiagnosticsObserver::OnFetchAccessTokenComplete is invoked when
 // StartRequest is called for an account without a refresh token.
 TEST_F(OAuth2AccessTokenManagerTest,
@@ -606,7 +636,8 @@ TEST_F(OAuth2AccessTokenManagerTest,
   // |account_id| doesn't have a refresh token, OnFetchAccessTokenComplete
   // should report GoogleServiceAuthError::USER_NOT_SIGNED_UP.
   GoogleServiceAuthError error(GoogleServiceAuthError::USER_NOT_SIGNED_UP);
-  const CoreAccountId account_id = CoreAccountId::FromGaiaId("new_account_id");
+  const CoreAccountId account_id =
+      CoreAccountId::FromGaiaId(GaiaId("new_account_id"));
   observer.SetOnFetchAccessTokenComplete(account_id, consumer_.id(), scopeset,
                                          error, run_loop.QuitClosure());
   token_manager_->AddDiagnosticsObserver(&observer);
@@ -630,19 +661,22 @@ TEST_F(OAuth2AccessTokenManagerTest, OnAccessTokenRemoved) {
 
   OAuth2AccessTokenManager::ScopeSet scopeset2;
   scopeset2.insert("scope2");
-  CoreAccountId account_id_2 = CoreAccountId::FromGaiaId("account_id_2");
+  CoreAccountId account_id_2 =
+      CoreAccountId::FromGaiaId(GaiaId("account_id_2"));
   delegate_.AddAccount(account_id_2, "refreshToken2");
   CreateRequestAndBlockUntilComplete(account_id_2, scopeset2);
 
   OAuth2AccessTokenManager::ScopeSet scopeset3;
   scopeset3.insert("scope3");
-  CoreAccountId account_id_3 = CoreAccountId::FromGaiaId("account_id_3");
+  CoreAccountId account_id_3 =
+      CoreAccountId::FromGaiaId(GaiaId("account_id_3"));
   delegate_.AddAccount(account_id_3, "refreshToken3");
   CreateRequestAndBlockUntilComplete(account_id_3, scopeset3);
 
   OAuth2AccessTokenManager::ScopeSet scopeset4;
   scopeset4.insert("scope4");
-  CoreAccountId account_id_4 = CoreAccountId::FromGaiaId("account_id_4");
+  CoreAccountId account_id_4 =
+      CoreAccountId::FromGaiaId(GaiaId("account_id_4"));
   delegate_.AddAccount(account_id_4, "refreshToken4");
   CreateRequestAndBlockUntilComplete(account_id_4, scopeset4);
 

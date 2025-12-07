@@ -4,17 +4,16 @@
 
 #include "media/filters/source_buffer_state.h"
 
+#include <algorithm>
 #include <set>
 #include <string_view>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_track.h"
 #include "media/base/media_tracks.h"
@@ -46,7 +45,7 @@ base::TimeDelta EndTimestamp(const StreamParser::BufferQueue& queue) {
 bool CheckBytestreamTrackIds(const MediaTracks& tracks) {
   std::set<StreamParser::TrackId> bytestream_ids;
   for (const auto& track : tracks.tracks()) {
-    const StreamParser::TrackId& track_id = track->bytestream_track_id();
+    const StreamParser::TrackId& track_id = track->stream_id();
     if (bytestream_ids.find(track_id) != bytestream_ids.end()) {
       return false;
     }
@@ -129,13 +128,14 @@ SourceBufferState::SourceBufferState(
     MediaLog* media_log)
     : timestamp_offset_during_append_(nullptr),
       parsing_media_segment_(false),
-      stream_parser_(stream_parser.release()),
-      frame_processor_(frame_processor.release()),
+      stream_parser_(std::move(stream_parser)),
+      frame_processor_(std::move(frame_processor)),
       create_demuxer_stream_cb_(std::move(create_demuxer_stream_cb)),
       media_log_(media_log),
       state_(UNINITIALIZED) {
   DCHECK(create_demuxer_stream_cb_);
   DCHECK(frame_processor_);
+  DCHECK(stream_parser_);
 }
 
 SourceBufferState::~SourceBufferState() {
@@ -323,29 +323,6 @@ bool SourceBufferState::EvictCodedFrames(base::TimeDelta media_time,
   return success;
 }
 
-void SourceBufferState::OnMemoryPressure(
-    base::TimeDelta media_time,
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level,
-    bool force_instant_gc) {
-  // TODO(sebmarchand): Check if MEMORY_PRESSURE_LEVEL_MODERATE should also be
-  // ignored.
-  if (memory_pressure_level ==
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE) {
-    return;
-  }
-
-  // Notify video streams about memory pressure first, since video typically
-  // takes up the most memory and that's where we can expect most savings.
-  for (const auto& it : video_streams_) {
-    it.second->OnMemoryPressure(media_time, memory_pressure_level,
-                                force_instant_gc);
-  }
-  for (const auto& it : audio_streams_) {
-    it.second->OnMemoryPressure(media_time, memory_pressure_level,
-                                force_instant_gc);
-  }
-}
-
 Ranges<base::TimeDelta> SourceBufferState::GetBufferedRanges(
     base::TimeDelta duration,
     bool ended) const {
@@ -500,8 +477,7 @@ void SourceBufferState::SetMemoryLimits(DemuxerStream::Type type,
       }
       break;
     case DemuxerStream::UNKNOWN:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -570,7 +546,7 @@ bool SourceBufferState::OnNewConfigs(std::unique_ptr<MediaTracks> tracks) {
   if (!CheckBytestreamTrackIds(*tracks)) {
     MEDIA_LOG(ERROR, media_log_) << "Duplicate bytestream track ids detected";
     for (const auto& track : tracks->tracks()) {
-      const StreamParser::TrackId& track_id = track->bytestream_track_id();
+      const StreamParser::TrackId& track_id = track->stream_id();
       MEDIA_LOG(DEBUG, media_log_) << TrackTypeToStr(track->type()) << " track "
                                    << " bytestream track id=" << track_id;
     }
@@ -595,7 +571,7 @@ bool SourceBufferState::OnNewConfigs(std::unique_ptr<MediaTracks> tracks) {
 
   FrameProcessor::TrackIdChanges track_id_changes;
   for (const auto& track : tracks->tracks()) {
-    const auto& track_id = track->bytestream_track_id();
+    const auto& track_id = track->stream_id();
 
     if (track->type() == MediaTrack::Type::kAudio) {
       AudioDecoderConfig audio_config = tracks->getAudioConfig(track_id);
@@ -605,7 +581,7 @@ bool SourceBufferState::OnNewConfigs(std::unique_ptr<MediaTracks> tracks) {
 
       if (strict_codec_expectations_) {
         const auto& it =
-            base::ranges::find(expected_acodecs, audio_config.codec());
+            std::ranges::find(expected_acodecs, audio_config.codec());
         if (it == expected_acodecs.end()) {
           MEDIA_LOG(ERROR, media_log_)
               << "Audio stream codec " << GetCodecName(audio_config.codec())
@@ -689,7 +665,7 @@ bool SourceBufferState::OnNewConfigs(std::unique_ptr<MediaTracks> tracks) {
 
       if (strict_codec_expectations_) {
         const auto& it =
-            base::ranges::find(expected_vcodecs, video_config.codec());
+            std::ranges::find(expected_vcodecs, video_config.codec());
         if (it == expected_vcodecs.end()) {
           MEDIA_LOG(ERROR, media_log_)
               << "Video stream codec " << GetCodecName(video_config.codec())

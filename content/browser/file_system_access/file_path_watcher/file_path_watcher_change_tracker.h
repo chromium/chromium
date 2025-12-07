@@ -37,7 +37,16 @@ class FilePathWatcherChangeTracker {
   void MayHaveMissedChanges();
 
   // Gets the ChangeInfo's to report since the last call to `PopChanges`.
-  std::vector<ChangeInfo> PopChanges();
+  //
+  // Passing `next_change_soon` as true indicates another change will be added
+  // soon so we don't need to finish coalescing events yet.
+  std::vector<ChangeInfo> PopChanges(bool next_change_soon);
+
+  bool HasPendingDelete() { return last_deleted_change_.has_value(); }
+
+  std::optional<ChangeInfo> TakePendingDelete() {
+    return std::exchange(last_deleted_change_, std::nullopt);
+  }
 
  private:
   enum class ExistenceStatus {
@@ -83,6 +92,11 @@ class FilePathWatcherChangeTracker {
   // The `ChangeInfo` of the last `FILE_ACTION_RENAMED_OLD_NAME` OS change that
   // was passed to `AddChange`. Used to coalesce the move into a single event.
   ChangeInfo last_move_change_;
+
+  // The `ChangeInfo` of the last `FILE_ACTION_REMOVED` OS change that was
+  // passed to `AddChange`. Used to coalesce the overwrites into a single move
+  // event.
+  std::optional<ChangeInfo> last_deleted_change_;
 };
 }  // namespace content
 

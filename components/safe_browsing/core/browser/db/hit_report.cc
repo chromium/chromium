@@ -6,10 +6,10 @@
 
 namespace safe_browsing {
 
-HitReport::HitReport() {}
+HitReport::HitReport() = default;
 
 HitReport::HitReport(const HitReport& other) = default;
 
-HitReport::~HitReport() {}
+HitReport::~HitReport() = default;
 
 }  // namespace safe_browsing

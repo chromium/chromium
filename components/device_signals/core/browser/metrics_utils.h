@@ -33,6 +33,9 @@ void LogUserPermissionChecked(UserPermission permission);
 // Records that a request to collect `signal_name` was received.
 void LogSignalCollectionRequested(SignalName signal_name);
 
+// Records that a request to collect `number_of_signals` was received.
+void LogSignalsCountRequested(size_t number_of_signals);
+
 // Records that a request to collect the parameterized signal named
 // `signal_name` was received with `number_of_items` parameters.
 void LogSignalCollectionRequestedWithItems(SignalName signal_name,
@@ -61,6 +64,13 @@ void LogSignalCollectionSucceeded(
 // Records that an error occurred when trying to parse signals from the
 // CrowdStrike data.zta file.
 void LogCrowdStrikeParsingError(SignalsParsingError error);
+
+// Records that the system signals service was disconnected with a given number
+// of `pending_requests`.
+void LogSystemSignalCollectionDisconnect(size_t pending_requests);
+
+// Records that the system signals service is running in another process.
+void LogSystemSignalCollectionMissingPendingCallback();
 
 }  // namespace device_signals
 

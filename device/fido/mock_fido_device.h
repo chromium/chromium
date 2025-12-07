@@ -15,9 +15,9 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/time/time.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_device.h"
-#include "device/fido/fido_transport_protocol.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace cbor {

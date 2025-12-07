@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "build/build_config.h"
 #include "crypto/secure_util.h"
 #include "net/base/host_port_pair.h"
@@ -82,6 +83,15 @@ class FailingCertVerifier : public net::CertVerifier {
     verify_result->cert_status = net::CERT_STATUS_INVALID;
     return net::ERR_CERT_INVALID;
   }
+  void Verify2QwacBinding(
+      const std::string& binding,
+      const std::string& hostname,
+      const scoped_refptr<net::X509Certificate>& tls_cert,
+      base::OnceCallback<void(const scoped_refptr<net::X509Certificate>&)>
+          callback,
+      const net::NetLogWithSource& net_log) override {
+    std::move(callback).Run(nullptr);
+  }
   void SetConfig(const Config& config) override {}
   void AddObserver(Observer* observer) override {}
   void RemoveObserver(Observer* observer) override {}
@@ -109,20 +119,11 @@ class NetStreamSocketAdapter : public net::StreamSocket {
                           traffic_annotation);
   }
 
-  int SetReceiveBufferSize(int32_t size) override {
-    NOTREACHED_IN_MIGRATION();
-    return net::ERR_FAILED;
-  }
+  int SetReceiveBufferSize(int32_t size) override { NOTREACHED(); }
 
-  int SetSendBufferSize(int32_t size) override {
-    NOTREACHED_IN_MIGRATION();
-    return net::ERR_FAILED;
-  }
+  int SetSendBufferSize(int32_t size) override { NOTREACHED(); }
 
-  int Connect(net::CompletionOnceCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
-    return net::ERR_FAILED;
-  }
+  int Connect(net::CompletionOnceCallback callback) override { NOTREACHED(); }
   void Disconnect() override { socket_.reset(); }
   bool IsConnected() const override { return true; }
   bool IsConnectedAndIdle() const override { return true; }
@@ -131,23 +132,11 @@ class NetStreamSocketAdapter : public net::StreamSocket {
     *address = net::IPEndPoint(net::IPAddress::IPv4AllZeros(), 0);
     return net::OK;
   }
-  int GetLocalAddress(net::IPEndPoint* address) const override {
-    NOTREACHED_IN_MIGRATION();
-    return net::ERR_FAILED;
-  }
+  int GetLocalAddress(net::IPEndPoint* address) const override { NOTREACHED(); }
   const net::NetLogWithSource& NetLog() const override { return net_log_; }
-  bool WasEverUsed() const override {
-    NOTREACHED_IN_MIGRATION();
-    return true;
-  }
-  net::NextProto GetNegotiatedProtocol() const override {
-    NOTREACHED_IN_MIGRATION();
-    return net::kProtoUnknown;
-  }
-  bool GetSSLInfo(net::SSLInfo* ssl_info) override {
-    NOTREACHED_IN_MIGRATION();
-    return false;
-  }
+  bool WasEverUsed() const override { NOTREACHED(); }
+  net::NextProto GetNegotiatedProtocol() const override { NOTREACHED(); }
+  bool GetSSLInfo(net::SSLInfo* ssl_info) override { NOTREACHED(); }
   int64_t GetTotalReceivedBytes() const override {
     NOTIMPLEMENTED();
     return 0;
@@ -238,8 +227,7 @@ void SslHmacChannelAuthenticator::SecureAndAuthenticate(
   int result;
   if (is_ssl_server()) {
     scoped_refptr<net::X509Certificate> cert =
-        net::X509Certificate::CreateFromBytes(
-            base::as_bytes(base::make_span(local_cert_)));
+        net::X509Certificate::CreateFromBytes(base::as_byte_span(local_cert_));
     if (!cert) {
       LOG(ERROR) << "Failed to parse X509Certificate";
       NotifyError(net::ERR_FAILED);
@@ -250,7 +238,7 @@ void SslHmacChannelAuthenticator::SecureAndAuthenticate(
     ssl_config.require_ecdhe = true;
 
     socket_context_.server_context = net::CreateSSLServerContext(
-        cert.get(), *local_key_pair_->private_key(), ssl_config);
+        cert.get(), local_key_pair_->private_key(), ssl_config);
 
     std::unique_ptr<net::SSLServerSocket> server_socket =
         socket_context_.server_context->CreateSSLServerSocket(
@@ -272,8 +260,7 @@ void SslHmacChannelAuthenticator::SecureAndAuthenticate(
     ssl_config.require_ecdhe = true;
 
     scoped_refptr<net::X509Certificate> cert =
-        net::X509Certificate::CreateFromBytes(
-            base::as_bytes(base::make_span(remote_cert_)));
+        net::X509Certificate::CreateFromBytes(base::as_byte_span(remote_cert_));
     if (!cert) {
       LOG(ERROR) << "Failed to parse X509Certificate";
       NotifyError(net::ERR_FAILED);
@@ -425,8 +412,7 @@ bool SslHmacChannelAuthenticator::HandleAuthBytesRead(int read_result) {
     return true;
   }
 
-  if (!VerifyAuthBytes(std::string(base::as_string_view(
-          auth_read_buf_->everything().first(kAuthDigestLength))))) {
+  if (!VerifyAuthBytes(auth_read_buf_->everything().first(kAuthDigestLength))) {
     LOG(WARNING) << "Mismatched authentication";
     NotifyError(net::ERR_FAILED);
     return false;
@@ -438,8 +424,8 @@ bool SslHmacChannelAuthenticator::HandleAuthBytesRead(int read_result) {
 }
 
 bool SslHmacChannelAuthenticator::VerifyAuthBytes(
-    const std::string& received_auth_bytes) {
-  DCHECK(received_auth_bytes.length() == kAuthDigestLength);
+    base::span<const uint8_t> bytes) {
+  CHECK_EQ(bytes.size(), kAuthDigestLength);
 
   // Compute expected auth bytes.
   std::string auth_bytes = GetAuthBytes(
@@ -450,8 +436,7 @@ bool SslHmacChannelAuthenticator::VerifyAuthBytes(
     return false;
   }
 
-  return crypto::SecureMemEqual(received_auth_bytes.data(), &(auth_bytes[0]),
-                                kAuthDigestLength);
+  return crypto::SecureMemEqual(bytes, base::as_byte_span(auth_bytes));
 }
 
 void SslHmacChannelAuthenticator::CheckDone(bool* callback_called) {

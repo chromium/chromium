@@ -16,16 +16,12 @@
 namespace reporting {
 
 // Observes fatal Chrome crash events. The only difference between this class
-// and FatalCrashEventsObserver is the `SaveFilePathsProviderInterface` used and
-// crash types that are reported. Due to the IO on the save files, this class
-// should only have one instance.
+// and FatalCrashEventsObserver are the paths where reported local IDs and
+// uploaded crash info are stored and the crash types that are reported.
 class ChromeFatalCrashEventsObserver
     : public reporting::FatalCrashEventsObserver {
  public:
-  // Create a `ChromeFatalCrashEventsObserver` instance. We return
-  // `FatalCrashEventsObserver` instead of `ChromeFatalCrashEventsObserver`
-  // since they implement the same interface.
-  static std::unique_ptr<FatalCrashEventsObserver> Create();
+  static std::unique_ptr<ChromeFatalCrashEventsObserver> Create();
 
  private:
   // Give `TestEnvironment` the access to the private constructor that

@@ -19,6 +19,10 @@ class PrefChangeRegistrar;
 class PrefRegistrySimple;
 class PrefService;
 
+namespace base {
+class ScopedClosureRunner;
+}
+
 namespace ash {
 
 class ColorModeObserver;

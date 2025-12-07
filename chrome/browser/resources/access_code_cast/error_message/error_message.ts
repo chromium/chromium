@@ -96,9 +96,6 @@ export class ErrorMessageElement extends PolymerElement {
   private static readonly CAST_RESULT_MESSAGE_MAP =
       new Map(ErrorMessageElement.CAST_RESULT_MESSAGE_CODES);
 
-  // Needed for Polymer data binding
-  private errorMessageEnum = ErrorMessage;
-
   static get is() {
     return 'c2c-error-message';
   }
@@ -107,7 +104,23 @@ export class ErrorMessageElement extends PolymerElement {
     return getTemplate();
   }
 
-  private messageCode = ErrorMessage.NO_ERROR;
+  static get properties() {
+    return {
+      errorMessageEnum: {
+        type: Object,
+        value: ErrorMessage,
+      },
+
+      messageCode: {
+        type: Number,
+        value: ErrorMessage.NO_ERROR,
+      },
+    };
+  }
+
+  // Needed for Polymer data binding
+  declare private errorMessageEnum;
+  declare private messageCode;
 
   setAddSinkError(resultCode: AddSinkResultCode) {
     this.messageCode = this.findErrorMessage(resultCode,

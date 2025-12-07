@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Next MinVersion: 2
+
 // Datatypes and interfaces of Image Content Annotation API.
 
 // NOTE: This mojom exists in two places and must be kept in sync:
@@ -13,11 +15,10 @@
 // clients (Chromium, other downstream repos) later.
 // Use //chromeos/services/machine_learning/public/mojom/roll_mojoms.sh to help
 // replicate Chrome OS-side changes over to Chromium.
-
 module chromeos.machine_learning.mojom;
 
+import "ui/gfx/geometry/mojom/geometry.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
-
 
 [Stable]
 struct ImageAnnotatorConfig {
@@ -30,13 +31,22 @@ struct ImageAnnotationScore {
   // Id of the recognized entity, 0-N.
   int32 id@0;
   // Confidence, in the range 0-255.
-  uint8 confidence@1;
+  // DEPRECATED: Use score instead.
+  uint8 DEPRECATED_confidence@1;
   // Machine ID (mid).
   // This is a unique string for identifying an entity, and can be used for
   // image understanding. Eg the mid "/m/06wqb" corresponds to "space".
   string mid@2;
   // Normalized and localized name of recognized entity, if known.
   string? name@3;
+
+  // The confidence score, in the range 0-1.
+  [MinVersion=1]
+  float score@4;
+
+  // The bounding box of the annotation within the image.
+  [MinVersion=1]
+  gfx.mojom.Rect? bounding_box@5;
 };
 
 // Result struct for image annotation requests.
@@ -57,14 +67,14 @@ struct ImageAnnotationResult {
 interface ImageContentAnnotator {
   // Annotate image contents from raw RGB image bytes.
   AnnotateRawImage@0(mojo_base.mojom.ReadOnlySharedMemoryRegion rgb_bytes,
-                     uint32 width, uint32 height, uint32 line_stride)
-      =>(ImageAnnotationResult result);
+                     uint32 width,
+                     uint32 height,
+                     uint32 line_stride) => (ImageAnnotationResult result);
 
   // Annotate image contents from encoded image bytes.
   // Image will be decoded in ml service sandbox.
   // Supported image formats are currently JPEG, PNG, TIFF.
   AnnotateEncodedImage@1(
       mojo_base.mojom.ReadOnlySharedMemoryRegion encoded_image)
-      =>(ImageAnnotationResult result);
-
+      => (ImageAnnotationResult result);
 };

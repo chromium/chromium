@@ -6,7 +6,6 @@
 #define CONTENT_SHELL_GPU_SHELL_CONTENT_GPU_CLIENT_H_
 
 #include "content/public/gpu/content_gpu_client.h"
-#include "services/network/public/mojom/network_service_test.mojom-forward.h"
 
 namespace content {
 
@@ -21,6 +20,7 @@ class ShellContentGpuClient : public ContentGpuClient {
 
   // ContentGpuClient:
   void ExposeInterfacesToBrowser(
+      viz::GpuServiceImpl* gpu_service,
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
       mojo::BinderMap* binders) override;

@@ -36,6 +36,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
@@ -73,7 +74,6 @@ namespace ash {
 
 using message_center::MessageCenter;
 using message_center::NotifierId;
-using ContentLayerType = AshColorProvider::ContentLayerType;
 
 namespace {
 
@@ -131,7 +131,6 @@ class NotifierButtonWrapperView : public views::View {
   void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnFocus() override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnKeyReleased(const ui::KeyEvent& event) override;
@@ -140,11 +139,39 @@ class NotifierButtonWrapperView : public views::View {
   void OnPaint(gfx::Canvas* canvas) override;
   void OnBlur() override;
 
+  void SubscribeCallbacksForAccessibility();
+
  private:
   std::unique_ptr<views::Painter> focus_painter_;
 
   // NotifierButton to wrap.
   raw_ptr<views::View> contents_;
+
+  // Callback functions to update the a11y cache when `contents_`'s a11y cache
+  // gets updated. This view's accessibility attributes must mirror all
+  // attributes of `contents_`.
+  void OnAccessibleRoleChangedCallback(ax::mojom::Role role);
+  void OnAccessibleNameChangedCallback(ax::mojom::StringAttribute attribute,
+                                       const std::optional<std::string>& name);
+  void OnAccessibleCheckedStateChangedCallback(
+      ax::mojom::IntAttribute attribute,
+      std::optional<int> value);
+  void OnAccessibleIsDefaultChangedCallback(ax::mojom::State state,
+                                            bool is_default);
+  void OnAccessibleIsEnabledChangedCallback(ax::mojom::IntAttribute attribute,
+                                            std::optional<int> value);
+  void OnAccessibleHoveredChangedCallback(ax::mojom::State state, bool value);
+  void OnAccessibleDefaultActionVerbChangedCallback(
+      ax::mojom::IntAttribute attribute,
+      std::optional<int> value);
+
+  base::CallbackListSubscription role_changed_subscription_;
+  base::CallbackListSubscription name_changed_subscription_;
+  base::CallbackListSubscription checked_state_changed_subscription_;
+  base::CallbackListSubscription is_default_changed_subscription_;
+  base::CallbackListSubscription is_enabled_changed_subscription_;
+  base::CallbackListSubscription hovered_changed_subscription_;
+  base::CallbackListSubscription default_action_verb_changed_subscription_;
 };
 
 BEGIN_METADATA(NotifierButtonWrapperView)
@@ -153,7 +180,28 @@ END_METADATA
 NotifierButtonWrapperView::NotifierButtonWrapperView(views::View* contents)
     : focus_painter_(TrayPopupUtils::CreateFocusPainter()),
       contents_(contents) {
-  AddChildView(contents);
+  AddChildViewRaw(contents);
+
+  // We add callbacks so that whenever the a11y attributes of `contents_`
+  // change, we update the a11y attributes for `this`.
+  SubscribeCallbacksForAccessibility();
+  GetViewAccessibility().SetRole(
+      contents_->GetViewAccessibility().GetCachedRole());
+  !contents_->GetViewAccessibility().GetCachedName().empty()
+      ? GetViewAccessibility().SetName(
+            contents_->GetViewAccessibility().GetCachedName())
+      : GetViewAccessibility().SetName(
+            std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  GetViewAccessibility().SetCheckedState(
+      contents_->GetViewAccessibility().GetCheckedState());
+  GetViewAccessibility().SetIsDefault(
+      contents_->GetViewAccessibility().GetIsDefault());
+  GetViewAccessibility().SetIsEnabled(
+      contents_->GetViewAccessibility().GetIsEnabled());
+  GetViewAccessibility().SetIsHovered(
+      contents_->GetViewAccessibility().GetIsHovered());
+  GetViewAccessibility().SetDefaultActionVerb(
+      contents_->GetViewAccessibility().GetDefaultActionVerb());
 }
 
 NotifierButtonWrapperView::~NotifierButtonWrapperView() = default;
@@ -171,11 +219,6 @@ void NotifierButtonWrapperView::Layout(PassKey) {
 gfx::Size NotifierButtonWrapperView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   return gfx::Size(kWidth, kNotifierButtonWrapperHeight);
-}
-
-void NotifierButtonWrapperView::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  contents_->GetAccessibleNodeData(node_data);
 }
 
 void NotifierButtonWrapperView::OnFocus() {
@@ -210,6 +253,109 @@ void NotifierButtonWrapperView::OnBlur() {
   View::OnBlur();
   // We render differently when focused.
   SchedulePaint();
+}
+
+void NotifierButtonWrapperView::SubscribeCallbacksForAccessibility() {
+  role_changed_subscription_ =
+      contents_->GetViewAccessibility().AddRoleChangedCallback(
+          base::BindRepeating(
+              &NotifierButtonWrapperView::OnAccessibleRoleChangedCallback,
+              base::Unretained(this)));
+  name_changed_subscription_ =
+      contents_->GetViewAccessibility().AddStringAttributeChangedCallback(
+          ax::mojom::StringAttribute::kName,
+          base::BindRepeating(
+              &NotifierButtonWrapperView::OnAccessibleNameChangedCallback,
+              base::Unretained(this)));
+  checked_state_changed_subscription_ =
+      contents_->GetViewAccessibility().AddIntAttributeChangedCallback(
+          ax::mojom::IntAttribute::kCheckedState,
+          base::BindRepeating(&NotifierButtonWrapperView::
+                                  OnAccessibleCheckedStateChangedCallback,
+                              base::Unretained(this)));
+  is_default_changed_subscription_ =
+      contents_->GetViewAccessibility().AddStateChangedCallback(
+          ax::mojom::State::kDefault,
+          base::BindRepeating(
+              &NotifierButtonWrapperView::OnAccessibleIsDefaultChangedCallback,
+              base::Unretained(this)));
+  is_enabled_changed_subscription_ =
+      contents_->GetViewAccessibility().AddIntAttributeChangedCallback(
+          ax::mojom::IntAttribute::kRestriction,
+          base::BindRepeating(
+              &NotifierButtonWrapperView::OnAccessibleIsEnabledChangedCallback,
+              base::Unretained(this)));
+  hovered_changed_subscription_ =
+      contents_->GetViewAccessibility().AddStateChangedCallback(
+          ax::mojom::State::kHovered,
+          base::BindRepeating(
+              &NotifierButtonWrapperView::OnAccessibleHoveredChangedCallback,
+              base::Unretained(this)));
+  default_action_verb_changed_subscription_ =
+      contents_->GetViewAccessibility().AddIntAttributeChangedCallback(
+          ax::mojom::IntAttribute::kDefaultActionVerb,
+          base::BindRepeating(&NotifierButtonWrapperView::
+                                  OnAccessibleDefaultActionVerbChangedCallback,
+                              base::Unretained(this)));
+}
+
+void NotifierButtonWrapperView::OnAccessibleRoleChangedCallback(
+    ax::mojom::Role role) {
+  GetViewAccessibility().SetRole(role);
+}
+
+void NotifierButtonWrapperView::OnAccessibleNameChangedCallback(
+    ax::mojom::StringAttribute attribute,
+    const std::optional<std::string>& name) {
+  if (name.has_value()) {
+    GetViewAccessibility().SetName(name.value());
+  } else {
+    GetViewAccessibility().RemoveName();
+  }
+}
+
+void NotifierButtonWrapperView::OnAccessibleCheckedStateChangedCallback(
+    ax::mojom::IntAttribute attribute,
+    std::optional<int> value) {
+  if (value.has_value()) {
+    GetViewAccessibility().SetCheckedState(
+        static_cast<ax::mojom::CheckedState>(value.value()));
+  } else {
+    GetViewAccessibility().RemoveCheckedState();
+  }
+}
+
+void NotifierButtonWrapperView::OnAccessibleIsDefaultChangedCallback(
+    ax::mojom::State state,
+    bool is_default) {
+  GetViewAccessibility().SetIsDefault(is_default);
+}
+
+void NotifierButtonWrapperView::OnAccessibleIsEnabledChangedCallback(
+    ax::mojom::IntAttribute attribute,
+    std::optional<int> value) {
+  if (value.has_value()) {
+    bool is_disabled = static_cast<ax::mojom::Restriction>(value.value()) ==
+                       ax::mojom::Restriction::kDisabled;
+    GetViewAccessibility().SetIsEnabled(!is_disabled);
+  }
+}
+
+void NotifierButtonWrapperView::OnAccessibleHoveredChangedCallback(
+    ax::mojom::State state,
+    bool value) {
+  GetViewAccessibility().SetIsHovered(value);
+}
+
+void NotifierButtonWrapperView::OnAccessibleDefaultActionVerbChangedCallback(
+    ax::mojom::IntAttribute attribute,
+    std::optional<int> value) {
+  if (value.has_value()) {
+    GetViewAccessibility().SetDefaultActionVerb(
+        static_cast<ax::mojom::DefaultActionVerb>(value.value()));
+  } else {
+    GetViewAccessibility().RemoveDefaultActionVerb();
+  }
 }
 
 // ScrollContentsView ----------------------------------------------------------
@@ -260,8 +406,6 @@ class EmptyNotifierView : public views::View {
 
  public:
   EmptyNotifierView() {
-    const SkColor text_color = AshColorProvider::Get()->GetContentLayerColor(
-        ContentLayerType::kTextColorPrimary);
     auto layout = std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0);
     layout->set_main_axis_alignment(
@@ -271,34 +415,29 @@ class EmptyNotifierView : public views::View {
     SetLayoutManager(std::move(layout));
 
     views::ImageView* icon = new views::ImageView();
-    icon->SetImage(gfx::CreateVectorIcon(kNotificationCenterEmptyIcon,
-                                         message_center_style::kEmptyIconSize,
-                                         text_color));
+    icon->SetImage(ui::ImageModel::FromVectorIcon(
+        kNotificationCenterEmptyIcon, cros_tokens::kTextColorPrimary,
+        message_center_style::kEmptyIconSize));
     icon->SetBorder(
         views::CreateEmptyBorder(message_center_style::kEmptyIconPadding));
-    AddChildView(icon);
+    AddChildViewRaw(icon);
 
     views::Label* label = new views::Label(
         l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_NO_NOTIFIERS));
-    label->SetEnabledColor(text_color);
+    label->SetEnabledColor(cros_tokens::kTextColorPrimary);
     label->SetAutoColorReadabilityEnabled(false);
     label->SetSubpixelRenderingEnabled(false);
     // "Roboto-Medium, 12sp" is specified in the mock.
     label->SetFontList(
         gfx::FontList().DeriveWithWeight(gfx::Font::Weight::MEDIUM));
-    label_ = AddChildView(label);
+    label->SetEnabledColor(cros_tokens::kTextColorPrimary);
+    label_ = AddChildViewRaw(label);
   }
 
   EmptyNotifierView(const EmptyNotifierView&) = delete;
   EmptyNotifierView& operator=(const EmptyNotifierView&) = delete;
 
  private:
-  void OnThemeChanged() override {
-    views::View::OnThemeChanged();
-    label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        ContentLayerType::kTextColorPrimary));
-  }
-
   raw_ptr<views::Label> label_;
 };
 
@@ -315,8 +454,7 @@ class NotifierViewCheckbox : public views::Checkbox {
   // views::Checkbox:
   SkColor GetIconImageColor(int icon_state) const override {
     if (icon_state & IconState::CHECKED) {
-      return AshColorProvider::Get()->GetContentLayerColor(
-          ContentLayerType::kIconColorProminent);
+      return GetColorProvider()->GetColor(cros_tokens::kIconColorProminent);
     }
     return views::Checkbox::GetIconImageColor(icon_state);
   }
@@ -346,8 +484,7 @@ class NotifierButtonNameView : public views::Label {
     SetEnabledColor(
         cached_notifier_enforced_
             ? SkColorSetA(GetEnabledColor(), gfx::kDisabledControlAlpha)
-            : AshColorProvider::Get()->GetContentLayerColor(
-                  ContentLayerType::kTextColorPrimary));
+            : GetColorProvider()->GetColor(cros_tokens::kTextColorPrimary));
   }
 
   // NotifierButtonNameView uses different EnabledColor based on the notifier
@@ -365,17 +502,12 @@ class PrimaryTextColorLabel : public ::views::Label {
 
  public:
   explicit PrimaryTextColorLabel(const std::u16string& text)
-      : views::Label(text) {}
+      : views::Label(text) {
+    SetEnabledColor(cros_tokens::kTextColorPrimary);
+  }
   PrimaryTextColorLabel(const PrimaryTextColorLabel&) = delete;
   PrimaryTextColorLabel& operator=(const PrimaryTextColorLabel&) = delete;
   ~PrimaryTextColorLabel() override = default;
-
- private:
-  void OnThemeChanged() override {
-    Label::OnThemeChanged();
-    SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        ContentLayerType::kTextColorPrimary));
-  }
 };
 
 BEGIN_METADATA(PrimaryTextColorLabel)
@@ -386,19 +518,14 @@ class AdaptiveBadgingIcon : public ::views::ImageView {
   METADATA_HEADER(AdaptiveBadgingIcon, views::ImageView)
 
  public:
-  AdaptiveBadgingIcon() = default;
+  AdaptiveBadgingIcon() {
+    SetImage(ui::ImageModel::FromVectorIcon(kSystemTrayAppBadgingIcon,
+                                            cros_tokens::kIconColorPrimary,
+                                            kMenuIconSize));
+  }
   AdaptiveBadgingIcon(const AdaptiveBadgingIcon&) = delete;
   AdaptiveBadgingIcon& operator=(const AdaptiveBadgingIcon&) = delete;
   ~AdaptiveBadgingIcon() override = default;
-
- private:
-  void OnThemeChanged() override {
-    views::ImageView::OnThemeChanged();
-    SetImage(
-        gfx::CreateVectorIcon(kSystemTrayAppBadgingIcon, kMenuIconSize,
-                              AshColorProvider::Get()->GetContentLayerColor(
-                                  ContentLayerType::kIconColorPrimary)));
-  }
 };
 
 BEGIN_METADATA(AdaptiveBadgingIcon)
@@ -429,8 +556,7 @@ NotifierSettingsView::NotifierButton::NotifierButton(
           },
           this));
   name_view->SetAutoColorReadabilityEnabled(false);
-  name_view->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      ContentLayerType::kTextColorPrimary));
+  name_view->SetEnabledColor(cros_tokens::kTextColorPrimary);
   name_view->SetSubpixelRenderingEnabled(false);
   // "Roboto-Regular, 13sp" is specified in the mock.
   name_view->SetFontList(
@@ -458,6 +584,24 @@ NotifierSettingsView::NotifierButton::NotifierButton(
   icon_view_ = AddChildView(std::move(icon_view));
   name_view_ = AddChildView(std::move(name_view));
 
+  // We add callbacks so that whenever the a11y attributes of `checkbox_`
+  // change, we update the a11y attributes for `this`.
+  SubscribeCallbacksForAccessibility();
+  GetViewAccessibility().SetRole(
+      checkbox_->GetViewAccessibility().GetCachedRole());
+  GetViewAccessibility().SetName(
+      checkbox_->GetViewAccessibility().GetCachedName());
+  GetViewAccessibility().SetCheckedState(
+      checkbox_->GetViewAccessibility().GetCheckedState());
+  GetViewAccessibility().SetIsDefault(
+      checkbox_->GetViewAccessibility().GetIsDefault());
+  GetViewAccessibility().SetIsEnabled(
+      checkbox_->GetViewAccessibility().GetIsEnabled());
+  GetViewAccessibility().SetIsHovered(
+      checkbox_->GetViewAccessibility().GetIsHovered());
+  GetViewAccessibility().SetDefaultActionVerb(
+      checkbox_->GetViewAccessibility().GetDefaultActionVerb());
+
   UpdateIconImage(notifier.icon);
 }
 
@@ -466,12 +610,11 @@ NotifierSettingsView::NotifierButton::~NotifierButton() = default;
 void NotifierSettingsView::NotifierButton::UpdateIconImage(
     const gfx::ImageSkia& icon) {
   if (icon.isNull()) {
-    icon_view_->SetImage(
-        gfx::CreateVectorIcon(message_center::kProductIcon, kEntryIconSize,
-                              AshColorProvider::Get()->GetContentLayerColor(
-                                  ContentLayerType::kIconColorPrimary)));
+    icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
+        message_center::kProductIcon, cros_tokens::kIconColorPrimary,
+        kEntryIconSize));
   } else {
-    icon_view_->SetImage(icon);
+    icon_view_->SetImage(ui::ImageModel::FromImageSkia(icon));
     icon_view_->SetImageSize(gfx::Size(kEntryIconSize, kEntryIconSize));
   }
   GridChanged();
@@ -485,9 +628,109 @@ bool NotifierSettingsView::NotifierButton::GetChecked() const {
   return checkbox_->GetChecked();
 }
 
-void NotifierSettingsView::NotifierButton::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  static_cast<views::View*>(checkbox_)->GetAccessibleNodeData(node_data);
+void NotifierSettingsView::NotifierButton::OnAccessibleRoleChangedCallback(
+    ax::mojom::Role role) {
+  GetViewAccessibility().SetRole(role);
+}
+
+void NotifierSettingsView::NotifierButton::OnAccessibleNameChangedCallback(
+    ax::mojom::StringAttribute attribute,
+    const std::optional<std::string>& name) {
+  if (name.has_value()) {
+    GetViewAccessibility().SetName(name.value());
+  } else {
+    GetViewAccessibility().RemoveName();
+  }
+}
+
+void NotifierSettingsView::NotifierButton::
+    OnAccessibleCheckedStateChangedCallback(ax::mojom::IntAttribute attribute,
+                                            std::optional<int> value) {
+  if (value.has_value()) {
+    GetViewAccessibility().SetCheckedState(
+        static_cast<ax::mojom::CheckedState>(value.value()));
+  } else {
+    GetViewAccessibility().RemoveCheckedState();
+  }
+}
+
+void NotifierSettingsView::NotifierButton::OnAccessibleIsDefaultChangedCallback(
+    ax::mojom::State state,
+    bool is_default) {
+  GetViewAccessibility().SetIsDefault(is_default);
+}
+
+void NotifierSettingsView::NotifierButton::OnAccessibleIsEnabledChangedCallback(
+    ax::mojom::IntAttribute attribute,
+    std::optional<int> value) {
+  if (value.has_value()) {
+    bool is_disabled = static_cast<ax::mojom::Restriction>(value.value()) ==
+                       ax::mojom::Restriction::kDisabled;
+    GetViewAccessibility().SetIsEnabled(!is_disabled);
+  }
+}
+
+void NotifierSettingsView::NotifierButton::OnAccessibleHoveredChangedCallback(
+    ax::mojom::State state,
+    bool value) {
+  GetViewAccessibility().SetIsHovered(value);
+}
+
+void NotifierSettingsView::NotifierButton::
+    OnAccessibleDefaultActionVerbChangedCallback(
+        ax::mojom::IntAttribute attribute,
+        std::optional<int> value) {
+  if (value.has_value()) {
+    GetViewAccessibility().SetDefaultActionVerb(
+        static_cast<ax::mojom::DefaultActionVerb>(value.value()));
+  } else {
+    GetViewAccessibility().RemoveDefaultActionVerb();
+  }
+}
+
+void NotifierSettingsView::NotifierButton::
+    SubscribeCallbacksForAccessibility() {
+  role_changed_subscription_ =
+      checkbox_->GetViewAccessibility().AddRoleChangedCallback(
+          base::BindRepeating(&NotifierSettingsView::NotifierButton::
+                                  OnAccessibleRoleChangedCallback,
+                              base::Unretained(this)));
+  name_changed_subscription_ =
+      checkbox_->GetViewAccessibility().AddStringAttributeChangedCallback(
+          ax::mojom::StringAttribute::kName,
+          base::BindRepeating(&NotifierSettingsView::NotifierButton::
+                                  OnAccessibleNameChangedCallback,
+                              base::Unretained(this)));
+  checked_state_changed_subscription_ =
+      checkbox_->GetViewAccessibility().AddIntAttributeChangedCallback(
+          ax::mojom::IntAttribute::kCheckedState,
+          base::BindRepeating(&NotifierSettingsView::NotifierButton::
+                                  OnAccessibleCheckedStateChangedCallback,
+                              base::Unretained(this)));
+  is_default_changed_subscription_ =
+      checkbox_->GetViewAccessibility().AddStateChangedCallback(
+          ax::mojom::State::kDefault,
+          base::BindRepeating(&NotifierSettingsView::NotifierButton::
+                                  OnAccessibleIsDefaultChangedCallback,
+                              base::Unretained(this)));
+  is_enabled_changed_subscription_ =
+      checkbox_->GetViewAccessibility().AddIntAttributeChangedCallback(
+          ax::mojom::IntAttribute::kRestriction,
+          base::BindRepeating(&NotifierSettingsView::NotifierButton::
+                                  OnAccessibleIsEnabledChangedCallback,
+                              base::Unretained(this)));
+  hovered_changed_subscription_ =
+      checkbox_->GetViewAccessibility().AddStateChangedCallback(
+          ax::mojom::State::kHovered,
+          base::BindRepeating(&NotifierSettingsView::NotifierButton::
+                                  OnAccessibleHoveredChangedCallback,
+                              base::Unretained(this)));
+  default_action_verb_changed_subscription_ =
+      checkbox_->GetViewAccessibility().AddIntAttributeChangedCallback(
+          ax::mojom::IntAttribute::kDefaultActionVerb,
+          base::BindRepeating(&NotifierSettingsView::NotifierButton::
+                                  OnAccessibleDefaultActionVerbChangedCallback,
+                              base::Unretained(this)));
 }
 
 void NotifierSettingsView::NotifierButton::GridChanged() {
@@ -532,10 +775,9 @@ void NotifierSettingsView::NotifierButton::GridChanged() {
 
   if (!GetEnabled()) {
     auto policy_enforced_icon = std::make_unique<views::ImageView>();
-    policy_enforced_icon->SetImage(
-        gfx::CreateVectorIcon(kSystemMenuBusinessIcon, kEntryIconSize,
-                              AshColorProvider::Get()->GetContentLayerColor(
-                                  ContentLayerType::kIconColorPrimary)));
+    policy_enforced_icon->SetImage(ui::ImageModel::FromVectorIcon(
+        kSystemMenuBusinessIcon, cros_tokens::kIconColorPrimary,
+        kEntryIconSize));
     layout->AddColumn(
         views::LayoutAlignment::kCenter, views::LayoutAlignment::kCenter,
         views::TableLayout::kFixedSize, views::TableLayout::ColumnSize::kFixed,
@@ -566,15 +808,11 @@ NotifierSettingsView::NotifierSettingsView() {
         gfx::Insets::TLBR(0, 0, 4, 0), kTopBorderColor));
   }
 
-  const SkColor text_color = AshColorProvider::Get()->GetContentLayerColor(
-      ContentLayerType::kTextColorPrimary);
-  const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      ContentLayerType::kIconColorPrimary);
-
   // Row for the app badging toggle button.
   auto app_badging_icon = std::make_unique<AdaptiveBadgingIcon>();
-  app_badging_icon->SetImage(gfx::CreateVectorIcon(kSystemTrayAppBadgingIcon,
-                                                   kMenuIconSize, icon_color));
+  app_badging_icon->SetImage(ui::ImageModel::FromVectorIcon(
+      kSystemTrayAppBadgingIcon, cros_tokens::kIconColorPrimary,
+      kMenuIconSize));
   auto app_badging_label =
       std::make_unique<views::Label>(l10n_util::GetStringUTF16(
           IDS_ASH_MESSAGE_CENTER_APP_BADGING_BUTTON_TOOLTIP));
@@ -635,7 +873,8 @@ NotifierSettingsView::NotifierSettingsView() {
     notification_settings_label->SetFontList(gfx::FontList().Derive(
         kLabelFontSizeDelta, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
     notification_settings_label->SetAutoColorReadabilityEnabled(false);
-    notification_settings_label->SetEnabledColor(text_color);
+    notification_settings_label->SetEnabledColor(
+        cros_tokens::kTextColorPrimary);
     notification_settings_label->SetSubpixelRenderingEnabled(false);
     notification_settings_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     notification_settings_label->SetMultiLine(true);
@@ -653,7 +892,7 @@ NotifierSettingsView::NotifierSettingsView() {
     top_label->SetFontList(gfx::FontList().Derive(
         kLabelFontSizeDelta, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
     top_label->SetAutoColorReadabilityEnabled(false);
-    top_label->SetEnabledColor(text_color);
+    top_label->SetEnabledColor(cros_tokens::kTextColorPrimary);
     top_label->SetSubpixelRenderingEnabled(false);
     top_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     top_label->SetMultiLine(true);
@@ -675,6 +914,10 @@ NotifierSettingsView::NotifierSettingsView() {
     NotifierSettingsController::Get()->AddNotifierSettingsObserver(this);
     NotifierSettingsController::Get()->GetNotifiers();
   }
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kList);
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+      IDS_ASH_MESSAGE_CENTER_SETTINGS_DIALOG_DESCRIPTION));
 }
 
 NotifierSettingsView::~NotifierSettingsView() {
@@ -687,21 +930,15 @@ bool NotifierSettingsView::IsScrollable() {
 
 void NotifierSettingsView::SetQuietModeState(bool is_quiet_mode) {
   quiet_mode_toggle_->SetIsOn(is_quiet_mode);
-  const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      ContentLayerType::kIconColorPrimary);
   if (is_quiet_mode) {
-    quiet_mode_icon_->SetImage(gfx::CreateVectorIcon(
-        kSystemTrayDoNotDisturbIcon, kMenuIconSize, icon_color));
+    quiet_mode_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+        kSystemTrayDoNotDisturbIcon, cros_tokens::kIconColorPrimary,
+        kMenuIconSize));
   } else {
-    quiet_mode_icon_->SetImage(gfx::CreateVectorIcon(
-        kDoNotDisturbDisabledIcon, kMenuIconSize, icon_color));
+    quiet_mode_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+        kDoNotDisturbDisabledIcon, cros_tokens::kIconColorPrimary,
+        kMenuIconSize));
   }
-}
-
-void NotifierSettingsView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kList;
-  node_data->SetName(l10n_util::GetStringUTF16(
-      IDS_ASH_MESSAGE_CENTER_SETTINGS_DIALOG_DESCRIPTION));
 }
 
 void NotifierSettingsView::OnNotifiersUpdated(
@@ -730,7 +967,7 @@ void NotifierSettingsView::OnNotifiersUpdated(
     NotifierButtonWrapperView* wrapper = new NotifierButtonWrapperView(button);
 
     wrapper->SetFocusBehavior(FocusBehavior::ALWAYS);
-    contents_view->AddChildView(wrapper);
+    contents_view->AddChildViewRaw(wrapper);
     buttons_.insert(button);
   }
 
@@ -862,13 +1099,11 @@ std::unique_ptr<views::View> NotifierSettingsView::CreateToggleButtonRow(
   icon->SetBorder(views::CreateEmptyBorder(kToggleButtonRowLabelPadding));
   row_view->AddChildView(std::move(icon));
 
-  const SkColor text_color = AshColorProvider::Get()->GetContentLayerColor(
-      ContentLayerType::kTextColorPrimary);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   // "Roboto-Regular, 13sp" is specified in the mock.
   label->SetFontList(gfx::FontList().DeriveWithSizeDelta(kLabelFontSizeDelta));
   label->SetAutoColorReadabilityEnabled(false);
-  label->SetEnabledColor(text_color);
+  label->SetEnabledColor(cros_tokens::kTextColorPrimary);
   label->SetSubpixelRenderingEnabled(false);
   label->SetBorder(views::CreateEmptyBorder(kToggleButtonRowLabelPadding));
   auto* label_ptr = row_view->AddChildView(std::move(label));

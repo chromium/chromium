@@ -1,4 +1,5 @@
 // META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
 // META: script=/common/utils.js
 // META: script=resources/fledge-util.sub.js
 // META: script=/common/subset-tests.js
@@ -14,7 +15,7 @@
 // META: variant=?41-45
 // META: variant=?46-last
 
-"use strict;"
+"use strict";
 
 // The tests in this file focus on simple auctions (one bidder, one seller, one
 // origin, one frame) which have no winning bid, either due to errors or due to
@@ -75,7 +76,7 @@ const BIDDING_WASM_HELPER_ERRORS = [
   'error=not-wasm'
 ];
 
-for (error of BIDDING_LOGIC_SCRIPT_ERRORS) {
+for (let error of BIDDING_LOGIC_SCRIPT_ERRORS) {
   subsetTest(promise_test, (async (error, test) => {
     let biddingLogicURL = `${BASE_URL}resources/bidding-logic.sub.py?${error}`;
     await joinGroupAndRunBasicFledgeTestExpectingNoWinner(
@@ -85,7 +86,7 @@ for (error of BIDDING_LOGIC_SCRIPT_ERRORS) {
   }).bind(undefined, error), `Bidding logic script: ${error}`);
 }
 
-for (error of DECISION_LOGIC_SCRIPT_ERRORS) {
+for (let error of DECISION_LOGIC_SCRIPT_ERRORS) {
   subsetTest(promise_test, (async (error, test) => {
     let decisionLogicURL =
         `${BASE_URL}resources/decision-logic.sub.py?${error}`;
@@ -95,7 +96,7 @@ for (error of DECISION_LOGIC_SCRIPT_ERRORS) {
   }).bind(undefined, error), `Decision logic script: ${error}`);
 }
 
-for (error of BIDDING_WASM_HELPER_ERRORS) {
+for (let error of BIDDING_WASM_HELPER_ERRORS) {
   subsetTest(promise_test, (async (error, test) => {
     let biddingWasmHelperURL =
         `${BASE_URL}resources/wasm-helper.py?${error}`;

@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "components/sessions/core/tab_restore_service_client.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 
 class BrowserList;
 
@@ -36,7 +37,7 @@ class IOSChromeTabRestoreServiceClient
       sessions::SessionWindow::WindowType type,
       const std::string& app_name,
       const gfx::Rect& bounds,
-      ui::WindowShowState show_state,
+      ui::mojom::WindowShowState show_state,
       const std::string& workspace,
       const std::string& user_title,
       const std::map<std::string, std::string>& extra_data) override;
@@ -53,7 +54,7 @@ class IOSChromeTabRestoreServiceClient
   bool HasLastSession() override;
   void GetLastSession(sessions::GetLastSessionCallback callback) override;
 
-  const base::FilePath browser_state_path_;
+  const base::FilePath profile_path_;
   raw_ptr<BrowserList> browser_list_;
 };
 

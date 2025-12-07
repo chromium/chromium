@@ -24,7 +24,7 @@ import './cups_printers_browser_proxy.js';
 
 import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CupsPrinterInfo} from './cups_printers_browser_proxy.js';
+import type {CupsPrinterInfo} from './cups_printers_browser_proxy.js';
 import {getTemplate} from './cups_settings_add_printer_dialog.html.js';
 
 /**

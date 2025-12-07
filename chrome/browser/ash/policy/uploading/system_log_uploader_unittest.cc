@@ -182,17 +182,13 @@ class MockSystemLogUploader : public SystemLogUploader {
 
 class SystemLogUploaderTest : public testing::TestWithParam<bool> {
  public:
-  TestingPrefServiceSimple local_state_;
   SystemLogUploaderTest() : task_runner_(new base::TestSimpleTaskRunner()) {}
 
   void SetUp() override {
-    RegisterLocalState(local_state_.registry());
-    TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
   }
 
   void TearDown() override {
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
     settings_helper_.RestoreRealDeviceSettingsProvider();
     content::RunAllTasksUntilIdle();
   }

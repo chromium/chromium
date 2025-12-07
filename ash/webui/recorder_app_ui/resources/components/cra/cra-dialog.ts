@@ -6,7 +6,7 @@ import {MdDialog} from 'chrome://resources/mwc/@material/web/dialog/dialog.js';
 import {
   DialogAnimation,
 } from 'chrome://resources/mwc/@material/web/dialog/internal/animations.js';
-import {css} from 'chrome://resources/mwc/lit/index.js';
+import {css, PropertyValues} from 'chrome://resources/mwc/lit/index.js';
 
 /**
  * A dialog with ChromeOS specific style.
@@ -29,8 +29,8 @@ export class CraDialog extends MdDialog {
         --md-dialog-supporting-text-size: var(--cros-body-1-font-size);
         --md-dialog-supporting-text-weight: var(--cros-body-1-font-weight);
 
-        /* Want at least 80px left/right margin. */
-        max-width: min(512px, 100vw - 160px);
+        /* All dialog are "fixed" width in Recorder app. */
+        max-width: none;
       }
 
       .scrim {
@@ -38,6 +38,13 @@ export class CraDialog extends MdDialog {
 
         /* The opacity is already included in --cros-sys-scrim */
         opacity: 1;
+
+        /*
+         * The default z-index is 1, which makes it hard for anything below to
+         * be ordered by z-index and not accidentally being "over" the scrim.
+         * Change it to a higher value to make styling easier.
+         */
+        z-index: 100;
       }
 
       dialog {
@@ -118,6 +125,18 @@ export class CraDialog extends MdDialog {
         ],
       ],
     });
+  }
+
+  override updated(changedProperties: PropertyValues<this>): void {
+    super.updated(changedProperties);
+
+    if (this.ariaLabel !== null) {
+      // If aria-label is explicitly set, remove the aria-labelledby since that
+      // takes precedence over aria-label.
+      // TODO: b/338544996 - File a bug to md-dialog for this.
+      const dialog = this.shadowRoot?.querySelector('dialog') ?? null;
+      dialog?.removeAttribute('aria-labelledby');
+    }
   }
 }
 

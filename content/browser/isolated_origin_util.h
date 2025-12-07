@@ -8,7 +8,6 @@
 #include <string_view>
 
 #include "base/gtest_prod_util.h"
-#include "base/strings/string_util.h"
 #include "content/common/content_export.h"
 #include "url/origin.h"
 

@@ -4,5 +4,30 @@
 
 module cc.mojom;
 
-[Native]
-struct BrowserControlsParams;
+struct BrowserControlsParams {
+  // The height of the top controls (always 0 on platforms where URL-bar hiding
+  // isn't supported).
+  float top_controls_height = 0.0;
+
+  // The minimum visible height of the top controls.
+  float top_controls_min_height = 0.0;
+
+  // The height of the bottom controls.
+  float bottom_controls_height = 0.0;
+
+  // The minimum visible height of the bottom controls.
+  float bottom_controls_min_height = 0.0;
+
+  // Whether or not the changes to the browser controls heights should be
+  // animated.
+  bool animate_browser_controls_height_changes = false;
+
+  // Whether or not Blink's viewport size should be shrunk by the height of the
+  // URL-bar (always false on platforms where URL-bar hiding isn't supported).
+  bool browser_controls_shrink_blink_size = false;
+
+  // Whether or not the top controls should only expand at the top of the page
+  // contents. If true, collapsed top controls won't begin scrolling into view
+  // until the page is scrolled to the top.
+  bool only_expand_top_controls_at_page_top = false;
+};

@@ -10,9 +10,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
@@ -37,10 +35,11 @@ import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessoryS
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.ui.modelutil.RecyclerViewAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewMcp;
-import org.chromium.ui.widget.TextViewWithLeading;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -49,11 +48,13 @@ import java.util.concurrent.atomic.AtomicReference;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AccessorySheetTabViewTest {
+    private WebPageStation mPage;
     private AccessorySheetTabItemsModel mModel;
-    private AtomicReference<RecyclerView> mView = new AtomicReference<>();
+    private final AtomicReference<RecyclerView> mView = new AtomicReference<>();
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     /**
      * This helper method inflates the accessory sheet and loads the given layout as minimalistic
@@ -95,7 +96,7 @@ public class AccessorySheetTabViewTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
         openLayoutInAccessorySheet(
                 R.layout.password_accessory_sheet,
                 new KeyboardAccessoryData.Tab.Listener() {
@@ -124,26 +125,6 @@ public class AccessorySheetTabViewTest {
     @After
     public void tearDown() {
         mView.set(null);
-    }
-
-    @Test
-    @MediumTest
-    public void testAddingATitleToTheModelRendersIt() {
-        assertThat(mView.get().getChildCount(), is(0));
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mModel.add(new AccessorySheetDataPiece("Passwords", Type.TITLE));
-                });
-
-        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(mView.get().getChildCount(), is(1)));
-        assertThat(mView.get().getChildAt(0), instanceOf(LinearLayout.class));
-        LinearLayout layout = (LinearLayout) mView.get().getChildAt(0);
-        assertThat(layout.getChildCount(), is(3));
-        assertThat(layout.getChildAt(0), instanceOf(View.class)); // The top divider.
-        assertThat(layout.getChildAt(1), instanceOf(TextViewWithLeading.class));
-        assertThat(layout.getChildAt(2), instanceOf(View.class)); // Divider to commands.
-        assertThat(((TextView) layout.getChildAt(1)).getText(), is("Passwords"));
     }
 
     @Test

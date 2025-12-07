@@ -341,12 +341,17 @@ test(t => {
 // ------------------------------
 //  duration
 // ------------------------------
+test(t => {
+  const anim = createScrollLinkedAnimationWithTiming(t, { duration: Infinity });
+}, `Allows creating scroll linked animation with duration Infinity`);
+
 // adapted for progress based animations
 const gGoodDurationValuesForProgressBased = [
   // until duration returns a CSSNumberish which can handle percentages, 100%
   // will be represented as 100
   { specified: 123.45, computed: 100 },
   { specified: 'auto', computed: 100 },
+  { specified: Infinity, computed: 100 },
 ];
 
 for (const duration of gGoodDurationValuesForProgressBased) {
@@ -370,7 +375,7 @@ for (const duration of gGoodDurationValuesForProgressBased) {
 
 // adapted for progress based animations
 const gBadDurationValuesForProgressBased = [
-  -1, NaN, Infinity, -Infinity, 'abc', '100'
+  -1, NaN, -Infinity, 'abc', '100'
 ];
 
 for (const invalid of gBadDurationValuesForProgressBased) {
@@ -461,6 +466,7 @@ promise_test(async t => {
   await anim.ready;
   scroller.scrollTop = maxScroll * 0.07
   await waitForNextFrame();
+  await waitForNextFrame();
 
   assert_time_equals_literal(anim.effect.getComputedTiming().progress, 0.07,
                              'progress before updating direction');
@@ -515,6 +521,7 @@ promise_test(async t => {
   await anim.ready;
   scroller.scrollTop = maxScroll * 0.17 // 34% through first iteration
   await waitForNextFrame();
+  await waitForNextFrame();
 
   assert_time_equals_literal(anim.effect.getComputedTiming().progress, 0.34,
                              'progress before updating direction');
@@ -535,6 +542,7 @@ promise_test(async t => {
   anim.play();
   await anim.ready;
   scroller.scrollTop = maxScroll * 0.17
+  await waitForNextFrame();
   await waitForNextFrame();
   // anim.currentTime = 17000; // 34% through first iteration
   assert_time_equals_literal(anim.effect.getComputedTiming().progress, 0.34,
@@ -610,6 +618,7 @@ promise_test(async t => {
                 'easing replace to steps(2, end) at before phase');
 
   scroller.scrollTop = maxScroll * 0.875
+  await waitForNextFrame();
   await waitForNextFrame();
 
   assert_equals(anim.effect.getComputedTiming().progress, 0.5,

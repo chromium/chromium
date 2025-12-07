@@ -26,20 +26,24 @@ bool WritePrivacySandboxAttestationsFileForTesting(
     const base::FilePath& install_dir,
     std::string_view contents);
 
-// Install attestations component under DIR_COMPONENT_USER directory with
-// contents `proto`.
+// Install attestations component under the user or pre-install component
+// updater directory with contents `proto`.
 bool InstallPrivacySandboxAttestationsComponentForTesting(
     const privacy_sandbox::PrivacySandboxAttestationsProto& proto,
-    const base::Version& version);
+    const base::Version& version,
+    bool is_pre_installed);
 
-// Install attestations component under DIR_COMPONENT_USER directory.
+// Install attestations component under the user or pre-install component
+// updater directory.
 bool InstallPrivacySandboxAttestationsComponentForTesting(
     std::string_view contents,
-    const base::Version& version);
+    const base::Version& version,
+    bool is_pre_installed);
 
 // Returns attestations component installation directory.
 base::FilePath GetPrivacySandboxAtteststionsComponentInstallDir(
-    const base::Version& version);
+    const base::Version& version,
+    bool is_pre_installed);
 
 }  // namespace component_updater
 

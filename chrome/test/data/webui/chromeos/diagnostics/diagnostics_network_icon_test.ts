@@ -4,14 +4,15 @@
 
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {ConnectionStateType, CrosNetworkType, DiagnosticsNetworkIconElement, networkToNetworkStateAdapter} from 'chrome://diagnostics/diagnostics_network_icon.js';
+import type {DiagnosticsNetworkIconElement} from 'chrome://diagnostics/diagnostics_network_icon.js';
+import {ConnectionStateType, CrosNetworkType, networkToNetworkStateAdapter} from 'chrome://diagnostics/diagnostics_network_icon.js';
 import {fakeCellularDisabledNetwork, fakeCellularNetwork, fakeConnectingEthernetNetwork, fakeDisconnectedEthernetNetwork, fakeEthernetNetwork, fakePortalWifiNetwork, fakeWifiNetwork, fakeWifiNetworkDisabled} from 'chrome://diagnostics/fake_data.js';
-import {Network} from 'chrome://diagnostics/network_health_provider.mojom-webui.js';
+import type {Network} from 'chrome://diagnostics/network_health_provider.mojom-webui.js';
 import {NetworkIconElement} from 'chrome://resources/ash/common/network/network_icon.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import {PaperSpinnerLiteElement} from 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+import type {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import type {PaperSpinnerLiteElement} from 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -142,13 +143,13 @@ suite('diagnosticsNetworkIconTestSuite', function() {
 
   test('NetworkToNetworkStateAdapter_Guid', () => {
     assertEquals(
-        fakeEthernetNetwork!.observerGuid,
+        fakeEthernetNetwork.observerGuid,
         networkToNetworkStateAdapter((fakeEthernetNetwork as Network)).guid);
     assertEquals(
-        fakeWifiNetwork!.observerGuid,
+        fakeWifiNetwork.observerGuid,
         networkToNetworkStateAdapter((fakeWifiNetwork as Network)).guid);
     assertEquals(
-        fakeCellularNetwork!.observerGuid,
+        fakeCellularNetwork.observerGuid,
         networkToNetworkStateAdapter((fakeCellularNetwork as Network)).guid);
   });
 
@@ -156,17 +157,17 @@ suite('diagnosticsNetworkIconTestSuite', function() {
     const networkState =
         networkToNetworkStateAdapter((fakeCellularNetwork as Network));
     assertEquals(
-        fakeCellularNetwork!.typeProperties!.cellular!.networkTechnology,
-        networkState!.typeState!.cellular!.networkTechnology);
+        fakeCellularNetwork.typeProperties!.cellular!.networkTechnology,
+        networkState.typeState!.cellular!.networkTechnology);
     assertEquals(
-        fakeCellularNetwork!.typeProperties!.cellular!.simLocked,
-        networkState!.typeState!.cellular!.simLocked);
+        fakeCellularNetwork.typeProperties!.cellular!.simLocked,
+        networkState.typeState!.cellular!.simLocked);
     assertEquals(
-        fakeCellularNetwork!.typeProperties!.cellular!.signalStrength,
-        networkState!.typeState!.cellular!.signalStrength);
+        fakeCellularNetwork.typeProperties!.cellular!.signalStrength,
+        networkState.typeState!.cellular!.signalStrength);
     assertEquals(
-        fakeCellularNetwork!.typeProperties!.cellular!.roaming,
-        networkState!.typeState!.cellular!.roaming);
+        fakeCellularNetwork.typeProperties!.cellular!.roaming,
+        networkState.typeState!.cellular!.roaming);
   });
 
   test('DiagnosticsNetworkIconCellular', () => {
@@ -199,7 +200,7 @@ suite('diagnosticsNetworkIconTestSuite', function() {
     const networkState =
         networkToNetworkStateAdapter((fakeWifiNetwork as Network));
     assertEquals(
-        fakeWifiNetwork!.typeProperties!.wifi!.signalStrength,
+        fakeWifiNetwork.typeProperties!.wifi!.signalStrength,
         networkState.typeState!.wifi!.signalStrength);
   });
 

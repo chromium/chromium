@@ -10,11 +10,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_test_util.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_util.h"
 #include "chrome/browser/ash/file_suggest/mock_file_suggest_keyed_service.h"
 #include "chrome/browser/ash/file_suggest/mock_file_suggest_keyed_service_observer.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/ash/holding_space/scoped_test_mount_point.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -54,11 +57,9 @@ class FileSuggestKeyedServiceTest : public testing::Test {
 
 TEST_F(FileSuggestKeyedServiceTest, GetSuggestData) {
   base::HistogramTester tester;
-  if (features::IsForestFeatureEnabled()) {
-    drive::DriveIntegrationServiceFactory::GetInstance()
-        ->GetForProfile(profile_)
-        ->SetEnabled(true);
-  }
+  drive::DriveIntegrationServiceFactory::GetInstance()
+      ->GetForProfile(profile_)
+      ->SetEnabled(true);
   FileSuggestKeyedServiceFactory::GetInstance()
       ->GetService(profile_)
       ->GetSuggestFileData(
@@ -70,20 +71,14 @@ TEST_F(FileSuggestKeyedServiceTest, GetSuggestData) {
   tester.ExpectBucketCount(
       "Ash.Search.DriveFileSuggestDataValidation.Status",
       /*sample=*/DriveSuggestValidationStatus::kDriveFSNotMounted,
-      /*expected_count=*/
-      (features::IsLauncherContinueSectionWithRecentsEnabled() ||
-       features::IsForestFeatureEnabled())
-          ? 0
-          : 1);
+      /*expected_count=*/0);
 }
 
 TEST_F(FileSuggestKeyedServiceTest, DisabledByPolicy) {
   base::HistogramTester tester;
-  if (features::IsForestFeatureEnabled()) {
-    drive::DriveIntegrationServiceFactory::GetInstance()
-        ->GetForProfile(profile_)
-        ->SetEnabled(true);
-  }
+  drive::DriveIntegrationServiceFactory::GetInstance()
+      ->GetForProfile(profile_)
+      ->SetEnabled(true);
   FileSuggestKeyedServiceFactory::GetInstance()
       ->GetService(profile_)
       ->GetSuggestFileData(
@@ -143,6 +138,9 @@ class FileSuggestKeyedServiceRemoveTest : public FileSuggestKeyedServiceTest {
         FileSuggestKeyedServiceFactory::GetInstance(),
         base::BindRepeating(
             &MockFileSuggestKeyedService::BuildMockFileSuggestKeyedService,
+            TestingBrowserProcess::GetGlobal()
+                ->GetFeatures()
+                ->application_locale_storage(),
             temp_dir_.GetPath().Append("proto"))}};
   }
 
@@ -197,6 +195,15 @@ class FileSuggestKeyedServiceRemoveTest : public FileSuggestKeyedServiceTest {
     return suggested_file_paths;
   }
 
+  MockFileSuggestKeyedService* file_suggest_service() {
+    return file_suggest_service_;
+  }
+  ScopedTestMountPoint* drive_mount_point() {
+    return drive_fs_mount_point_.get();
+  }
+  ScopedTestMountPoint* local_mount_point() {
+    return local_fs_mount_point_.get();
+  }
   // Hosts the proto file.
   base::ScopedTempDir temp_dir_;
 
@@ -312,6 +319,74 @@ TEST_F(FileSuggestKeyedServiceRemoveTest, RemoveMixedFileSuggestions) {
   // Check the suggested files after suggestion removal.
   EXPECT_TRUE(GetSuggestionsForType(FileSuggestionType::kDriveFile)->empty());
   EXPECT_TRUE(GetSuggestionsForType(FileSuggestionType::kLocalFile)->empty());
+}
+
+// Verifies filtering out duplicate drive file suggestions.
+TEST_F(FileSuggestKeyedServiceRemoveTest, FilterDuplicateDriveFileSuggestions) {
+  const base::FilePath file_path_1 = drive_mount_point()->CreateArbitraryFile();
+  std::optional<std::vector<FileSuggestData>> suggestions;
+  suggestions =
+      std::vector<FileSuggestData>{{FileSuggestionType::kDriveFile, file_path_1,
+                                    /*title=*/std::nullopt,
+                                    /*new_prediction_reason=*/std::nullopt,
+                                    /*modified_time=*/std::nullopt,
+                                    /*viewed_time=*/std::nullopt,
+                                    /*shared_time=*/std::nullopt,
+                                    /*new_score=*/std::nullopt,
+                                    /*drive_file_id=*/std::nullopt,
+                                    /*icon_url=*/std::nullopt},
+                                   {FileSuggestionType::kDriveFile, file_path_1,
+                                    /*title=*/std::nullopt,
+                                    /*new_prediction_reason=*/std::nullopt,
+                                    /*modified_time=*/std::nullopt,
+                                    /*viewed_time=*/std::nullopt,
+                                    /*shared_time=*/std::nullopt,
+                                    /*new_score=*/std::nullopt,
+                                    /*drive_file_id=*/std::nullopt,
+                                    /*icon_url=*/std::nullopt}};
+
+  EXPECT_EQ(suggestions->size(), 2u);
+  file_suggest_service()->SetSuggestionsForType(FileSuggestionType::kDriveFile,
+                                                /*suggestions=*/suggestions);
+
+  // Check the suggested drive files, duplicate files should be removed.
+  suggestions = GetSuggestionsForType(FileSuggestionType::kDriveFile);
+  EXPECT_EQ(suggestions->size(), 1u);
+  EXPECT_EQ(suggestions->at(0).file_path.value(), file_path_1.value());
+}
+
+// Verifies filtering out duplicate local file suggestions.
+TEST_F(FileSuggestKeyedServiceRemoveTest, FilterDuplicateLocalFileSuggestions) {
+  const base::FilePath file_path_1 = local_mount_point()->CreateArbitraryFile();
+  std::optional<std::vector<FileSuggestData>> suggestions;
+  suggestions =
+      std::vector<FileSuggestData>{{FileSuggestionType::kLocalFile, file_path_1,
+                                    /*title=*/std::nullopt,
+                                    /*new_prediction_reason=*/std::nullopt,
+                                    /*modified_time=*/std::nullopt,
+                                    /*viewed_time=*/std::nullopt,
+                                    /*shared_time=*/std::nullopt,
+                                    /*new_score=*/std::nullopt,
+                                    /*drive_file_id=*/std::nullopt,
+                                    /*icon_url=*/std::nullopt},
+                                   {FileSuggestionType::kLocalFile, file_path_1,
+                                    /*title=*/std::nullopt,
+                                    /*new_prediction_reason=*/std::nullopt,
+                                    /*modified_time=*/std::nullopt,
+                                    /*viewed_time=*/std::nullopt,
+                                    /*shared_time=*/std::nullopt,
+                                    /*new_score=*/std::nullopt,
+                                    /*drive_file_id=*/std::nullopt,
+                                    /*icon_url=*/std::nullopt}};
+
+  EXPECT_EQ(suggestions->size(), 2u);
+  file_suggest_service()->SetSuggestionsForType(FileSuggestionType::kLocalFile,
+                                                /*suggestions=*/suggestions);
+
+  // Check the suggested local files, duplicate files should be removed.
+  suggestions = GetSuggestionsForType(FileSuggestionType::kLocalFile);
+  EXPECT_EQ(suggestions->size(), 1u);
+  EXPECT_EQ(suggestions->at(0).file_path.value(), file_path_1.value());
 }
 
 }  // namespace ash::test

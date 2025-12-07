@@ -9,6 +9,7 @@
 #include "ash/webui/sample_system_web_app_ui/url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_ui_config.h"
 #include "content/public/browser/webui_config.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
 
 #if defined(OFFICIAL_BUILD)

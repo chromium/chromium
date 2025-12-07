@@ -142,6 +142,11 @@ class SingleClientWifiConfigurationSyncTest : public SyncTest {
     SyncTest::SetUpOnMainThread();
   }
 
+  // This test suite is ChromeOS specific, where there's only Sync-the-feature.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTheFeature;
+  }
+
   void SetupShill() {
     // TODO(crbug.com/1077152): figure out where |userhash| is hardcoded and use
     // some shared constant here.

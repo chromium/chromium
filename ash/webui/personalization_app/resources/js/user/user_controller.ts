@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {BigBuffer, BigBufferSharedMemoryRegion} from 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
+import type {BigBuffer, BigBufferSharedMemoryRegion} from 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 
-import {UserProviderInterface} from '../../personalization_app.mojom-webui.js';
-import {PersonalizationStore} from '../personalization_store.js';
+import type {UserProviderInterface} from '../../personalization_app.mojom-webui.js';
+import type {PersonalizationStore} from '../personalization_store.js';
 
 import {setDefaultUserImagesAction, setUserInfoAction} from './user_actions.js';
 

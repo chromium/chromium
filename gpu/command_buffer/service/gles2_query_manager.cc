@@ -73,7 +73,7 @@ void AbstractIntegerQuery::End(base::subtle::Atomic32 submit_count) {
 }
 
 void AbstractIntegerQuery::QueryCounter(base::subtle::Atomic32 submit_count) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void AbstractIntegerQuery::Pause() {
@@ -224,7 +224,7 @@ void AsyncReadPixelsCompletedQuery::End(base::subtle::Atomic32 submit_count) {
 
 void AsyncReadPixelsCompletedQuery::QueryCounter(
     base::subtle::Atomic32 submit_count) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void AsyncReadPixelsCompletedQuery::Complete() {
@@ -232,7 +232,7 @@ void AsyncReadPixelsCompletedQuery::Complete() {
 }
 
 void AsyncReadPixelsCompletedQuery::Process(bool did_finish) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void AsyncReadPixelsCompletedQuery::Destroy(bool /* have_context */) {
@@ -287,11 +287,11 @@ void GetErrorQuery::End(base::subtle::Atomic32 submit_count) {
 }
 
 void GetErrorQuery::QueryCounter(base::subtle::Atomic32 submit_count) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void GetErrorQuery::Process(bool did_finish) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void GetErrorQuery::Destroy(bool /* have_context */) {
@@ -345,7 +345,7 @@ void TimeElapsedQuery::End(base::subtle::Atomic32 submit_count) {
 }
 
 void TimeElapsedQuery::QueryCounter(base::subtle::Atomic32 submit_count) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void TimeElapsedQuery::Pause() {
@@ -408,11 +408,11 @@ TimeStampQuery::TimeStampQuery(GLES2QueryManager* manager,
       gpu_timer_(manager->CreateGPUTimer(false)) {}
 
 void TimeStampQuery::Begin() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void TimeStampQuery::End(base::subtle::Atomic32 submit_count) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void TimeStampQuery::Pause() {
@@ -506,10 +506,10 @@ QueryManager::Query* GLES2QueryManager::CreateQuery(
     case GL_GET_ERROR_QUERY_CHROMIUM:
       query = new GetErrorQuery(this, target, std::move(buffer), sync);
       break;
-    case GL_TIME_ELAPSED:
+    case GL_TIME_ELAPSED_EXT:
       query = new TimeElapsedQuery(this, target, std::move(buffer), sync);
       break;
-    case GL_TIMESTAMP:
+    case GL_TIMESTAMP_EXT:
       query = new TimeStampQuery(this, target, std::move(buffer), sync);
       break;
     case GL_ANY_SAMPLES_PASSED:
@@ -519,7 +519,7 @@ QueryManager::Query* GLES2QueryManager::CreateQuery(
     case GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN:
       query = new SummedIntegerQuery(this, target, std::move(buffer), sync);
       break;
-    case GL_SAMPLES_PASSED:
+    case GL_SAMPLES_PASSED_ARB:
       query = new SummedIntegerQuery(this, target, std::move(buffer), sync);
       break;
     default:
@@ -584,7 +584,7 @@ void GLES2QueryManager::UpdateDisjointValue() {
 void GLES2QueryManager::SafelyResetDisjointValue() {
   // It is only safe to reset the disjoint value is there is no active
   // elapsed timer and we are not continually updating the disjoint value.
-  if (!update_disjoints_continually_ && !GetActiveQuery(GL_TIME_ELAPSED)) {
+  if (!update_disjoints_continually_ && !GetActiveQuery(GL_TIME_ELAPSED_EXT)) {
     // Reset the error state without storing the result.
     gpu_timing_client_->CheckAndResetTimerErrors();
   }

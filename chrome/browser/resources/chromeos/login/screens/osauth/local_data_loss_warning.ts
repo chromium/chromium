@@ -11,7 +11,7 @@ import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeUiState} from '../../components/display_manager_types.js';
@@ -85,6 +85,8 @@ export class LocalDataLossWarning extends LocalDataLossWarningBase {
   override ready(): void {
     super.ready();
     this.initializeLoginScreen('LocalDataLossWarningScreen');
+    // Initially everything should be enabled.
+    this.disabled = false;
   }
 
   /** Initial UI State for screen */
@@ -101,6 +103,7 @@ export class LocalDataLossWarning extends LocalDataLossWarningBase {
     this.isOwner = data['isOwner'];
     this.email = data['email'];
     this.canGoBack = data['canGoBack'];
+    this.disabled = false;
   }
 
   /**
@@ -135,6 +138,7 @@ export class LocalDataLossWarning extends LocalDataLossWarningBase {
     if (this.disabled) {
       return;
     }
+    this.disabled = true;
     this.handler.onBack();
   }
 
@@ -142,6 +146,7 @@ export class LocalDataLossWarning extends LocalDataLossWarningBase {
     if (this.disabled) {
       return;
     }
+    this.disabled = true;
     this.handler.onCancel();
   }
 }

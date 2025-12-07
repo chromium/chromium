@@ -58,10 +58,12 @@ void MouseCursorEventFilter::OnMouseEvent(ui::MouseEvent* event) {
       mouse_warp_enabled_ &&
       (event->flags() & ui::EF_NOT_SUITABLE_FOR_MOUSE_WARPING) == 0;
 
+  // Throttle mouse event based location updates as updating faster than
+  // display's refresh rate is a waste of CPU/GPU.
   Shell::Get()
       ->window_tree_host_manager()
       ->cursor_window_controller()
-      ->UpdateLocation();
+      ->UpdateLocation(/*throttle=*/true);
   mouse_warp_controller_->SetEnabled(mouse_warp_enabled);
 
   if (mouse_warp_controller_->WarpMouseCursor(event))

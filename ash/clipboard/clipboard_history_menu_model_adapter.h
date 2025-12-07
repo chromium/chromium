@@ -13,7 +13,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 
 namespace gfx {
@@ -57,7 +58,7 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter
   // indicate how the menu was triggered. `menu_last_time_shown` and
   // `nudge_last_time_shown` indicate when the menu or any nudge was last shown.
   void Run(const gfx::Rect& anchor_rect,
-           ui::MenuSourceType source_type,
+           ui::mojom::MenuSourceType source_type,
            crosapi::mojom::ClipboardHistoryControllerShowSource show_source,
            const std::optional<base::Time>& menu_last_time_shown,
            const std::optional<base::Time>& nudge_last_time_shown);
@@ -111,7 +112,8 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter
   class MenuModelWithWillCloseCallback;
   class ScopedA11yIgnore;
 
-  using ItemViewsByCommandId = std::map<int, ClipboardHistoryItemView*>;
+  using ItemViewsByCommandId =
+      std::map<int, raw_ptr<ClipboardHistoryItemView, CtnExperimental>>;
 
   ClipboardHistoryMenuModelAdapter(
       std::unique_ptr<MenuModelWithWillCloseCallback> model,

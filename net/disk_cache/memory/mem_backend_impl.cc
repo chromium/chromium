@@ -45,10 +45,10 @@ base::LinkNode<MemEntryImpl>* NextSkippingChildren(
 MemBackendImpl::MemBackendImpl(net::NetLog* net_log)
     : Backend(net::MEMORY_CACHE),
       net_log_(net_log),
-      memory_pressure_listener_(
+      memory_pressure_listener_registration_(
           FROM_HERE,
-          base::BindRepeating(&MemBackendImpl::OnMemoryPressure,
-                              base::Unretained(this))) {}
+          base::MemoryPressureListenerTag::kMemBackend,
+          this) {}
 
 MemBackendImpl::~MemBackendImpl() {
   while (!entries_.empty())
@@ -76,7 +76,7 @@ bool MemBackendImpl::Init() {
   if (max_size_)
     return true;
 
-  uint64_t total_memory = base::SysInfo::AmountOfPhysicalMemory();
+  uint64_t total_memory = base::SysInfo::AmountOfPhysicalMemory().InBytes();
 
   if (total_memory == 0) {
     max_size_ = kDefaultInMemoryCacheSize;
@@ -154,7 +154,8 @@ void MemBackendImpl::SetClockForTesting(base::Clock* clock) {
   custom_clock_for_testing_ = clock;
 }
 
-int32_t MemBackendImpl::GetEntryCount() const {
+int32_t MemBackendImpl::GetEntryCount(
+    net::Int32CompletionOnceCallback callback) const {
   return static_cast<int32_t>(entries_.size());
 }
 
@@ -314,7 +315,7 @@ std::unique_ptr<Backend::Iterator> MemBackendImpl::CreateIterator() {
 void MemBackendImpl::OnExternalCacheHit(const std::string& key) {
   auto it = entries_.find(key);
   if (it != entries_.end())
-    it->second->UpdateStateOnUse(MemEntryImpl::ENTRY_WAS_NOT_MODIFIED);
+    it->second->UpdateStateOnUse();
 }
 
 void MemBackendImpl::EvictIfNeeded() {
@@ -336,14 +337,14 @@ void MemBackendImpl::EvictTill(int target_size) {
 }
 
 void MemBackendImpl::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+    base::MemoryPressureLevel memory_pressure_level) {
   switch (memory_pressure_level) {
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
+    case base::MEMORY_PRESSURE_LEVEL_NONE:
       break;
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
+    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
       EvictTill(max_size_ / 2);
       break;
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
+    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
       EvictTill(max_size_ / 10);
       break;
   }

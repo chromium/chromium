@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<!--
+@WAIT-FOR:Ready
+@EXECUTE-AND-WAIT-FOR:activateFirstItem()
+@EXECUTE-AND-WAIT-FOR:activateThirdItem()
+@BLINK-ALLOW:htmlTag*
+@BLINK-ALLOW:className*
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material Web List</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+    <script type="module">
+        import { injectImportMap, loadAndWaitForReady } from "./resources/utils.js";
+        injectImportMap();
+
+        const components = [
+            "md-list",
+            "md-list-item",
+            "md-icon"
+        ];
+
+        loadAndWaitForReady(components, () => {
+            const statusDiv = document.getElementById("status");
+            const list = document.createElement("md-list");
+            const items = [
+                { headline: "Single line item", id: "test-item-1" },
+                {
+                    headline: "Item with icon",
+                    supportingText: "Supporting text",
+                    startIcon: "star"
+                },
+                {
+                    headline: "Item with end icon",
+                    supportingText: "More supporting text",
+                    endIcon: "arrow_forward",
+                    id: "test-item-3"
+                },
+                {
+                    headline: "Multi-line item",
+                    supportingText: "This item has multiple lines of supporting text to demonstrate the layout",
+                    startIcon: "folder",
+                    endIcon: "more_vert"
+                },
+                {
+                    headline: "Disabled item",
+                    supportingText: "This item is disabled",
+                    disabled: true,
+                    startIcon: "block"
+                }
+            ];
+            items.forEach(itemInfo => {
+                const item = document.createElement("md-list-item");
+                item.headline = itemInfo.headline;
+                if (itemInfo.id) {
+                    item.id = itemInfo.id;
+                }
+                if (itemInfo.supportingText) {
+                    item.setAttribute("supporting-text", itemInfo.supportingText);
+                }
+                if (itemInfo.startIcon) {
+                    const icon = document.createElement("md-icon");
+                    icon.slot = "start";
+                    icon.textContent = itemInfo.startIcon;
+                    item.appendChild(icon);
+                }
+                if (itemInfo.endIcon) {
+                    const icon = document.createElement("md-icon");
+                    icon.slot = "end";
+                    icon.textContent = itemInfo.endIcon;
+                    item.appendChild(icon);
+                }
+                if (itemInfo.disabled) {
+                    item.disabled = true;
+                }
+                list.appendChild(item);
+            });
+            statusDiv.appendChild(list);
+            statusDiv.setAttribute("aria-label", "Ready");
+        });
+    </script>
+</head>
+<body>
+    <div id="status" aria-label="Loading">
+    </div>
+</body>
+<script>
+    async function activateFirstItem() {
+        const item = document.getElementById("test-item-1");
+        if (item) {
+            item.dispatchEvent(new Event("request-activation", { bubbles: true }));
+            await item.updateComplete;
+            const statusDiv = document.getElementById("status");
+            const statusText = document.createElement("div");
+            statusText.textContent = "List Item 1 Activated";
+            statusDiv.appendChild(statusText);
+            return "List Item 1 Activated";
+        }
+        return "Failed to activate List Item 1";
+    }
+
+    async function activateThirdItem() {
+        const item = document.getElementById("test-item-3");
+        if (item) {
+            item.dispatchEvent(new Event("request-activation", { bubbles: true }));
+            await item.updateComplete;
+            const statusDiv = document.getElementById("status");
+            const statusText = document.createElement("div");
+            statusText.textContent = "List Item 3 Activated";
+            statusDiv.appendChild(statusText);
+            return "List Item 3 Activated";
+        }
+        return "Failed to activate List Item 3";
+    }
+</script>
+</html>

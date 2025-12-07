@@ -24,7 +24,7 @@ namespace blink {
 namespace {{namespace}} {
 
 {% for entry in entries %}
-{{symbol_export}}extern const WTF::AtomicString& {{entry|symbol}};
+{{symbol_export}}extern const AtomicString& {{entry|symbol}};
 {% endfor %}
 
 constexpr unsigned k{{suffix}}NamesCount = {{entries|length}};

@@ -9,20 +9,21 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/autocomplete_controller_config.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
-#include "components/omnibox/browser/omnibox_controller.h"
-#include "components/omnibox/browser/omnibox_view.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_client.h"
@@ -37,7 +38,9 @@ class MockAutocompleteController : public AutocompleteController {
   MockAutocompleteController(
       std::unique_ptr<AutocompleteProviderClient> provider_client,
       int provider_types)
-      : AutocompleteController(std::move(provider_client), provider_types) {}
+      : AutocompleteController(
+            std::move(provider_client),
+            AutocompleteControllerConfig{.provider_types = provider_types}) {}
   ~MockAutocompleteController() override = default;
   MockAutocompleteController(const MockAutocompleteController&) = delete;
   MockAutocompleteController& operator=(const MockAutocompleteController&) =
@@ -60,6 +63,8 @@ class ZeroSuggestPrefetchTabHelperBrowserTest : public InProcessBrowserTest {
     auto client_ = std::make_unique<MockAutocompleteProviderClient>();
     client_->set_template_url_service(template_url_service);
 
+    most_visited_prefetch_scoped_config_.Get().enabled = false;
+
     auto controller =
         std::make_unique<testing::NiceMock<MockAutocompleteController>>(
             std::move(client_), 0);
@@ -67,12 +72,14 @@ class ZeroSuggestPrefetchTabHelperBrowserTest : public InProcessBrowserTest {
     browser()
         ->window()
         ->GetLocationBar()
-        ->GetOmniboxView()
-        ->controller()
+        ->GetOmniboxController()
         ->SetAutocompleteControllerForTesting(std::move(controller));
   }
 
   base::test::ScopedFeatureList feature_list_;
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus>
+      most_visited_prefetch_scoped_config_;
   raw_ptr<testing::NiceMock<MockAutocompleteController>,
           AcrossTasksDanglingUntriaged>
       controller_;
@@ -83,8 +90,7 @@ class ZeroSuggestPrefetchTabHelperBrowserTestOnNTP
  public:
   ZeroSuggestPrefetchTabHelperBrowserTestOnNTP() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{omnibox::kZeroSuggestPrefetching,
-                              omnibox::kOmniboxOnClobberFocusTypeOnContent},
+        /*enabled_features=*/{},
         /*disabled_features=*/{omnibox::kZeroSuggestPrefetchingOnSRP,
                                omnibox::kZeroSuggestPrefetchingOnWeb});
   }
@@ -95,10 +101,8 @@ class ZeroSuggestPrefetchTabHelperBrowserTestOnSRP
  public:
   ZeroSuggestPrefetchTabHelperBrowserTestOnSRP() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{omnibox::kZeroSuggestPrefetchingOnSRP,
-                              omnibox::kOmniboxOnClobberFocusTypeOnContent},
-        /*disabled_features=*/{omnibox::kZeroSuggestPrefetching,
-                               omnibox::kZeroSuggestPrefetchingOnWeb});
+        /*enabled_features=*/{omnibox::kZeroSuggestPrefetchingOnSRP},
+        /*disabled_features=*/{omnibox::kZeroSuggestPrefetchingOnWeb});
   }
 };
 
@@ -107,10 +111,8 @@ class ZeroSuggestPrefetchTabHelperBrowserTestOnWeb
  public:
   ZeroSuggestPrefetchTabHelperBrowserTestOnWeb() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{omnibox::kZeroSuggestPrefetchingOnWeb,
-                              omnibox::kOmniboxOnClobberFocusTypeOnContent},
-        /*disabled_features=*/{omnibox::kZeroSuggestPrefetching,
-                               omnibox::kZeroSuggestPrefetchingOnSRP});
+        /*enabled_features=*/{omnibox::kZeroSuggestPrefetchingOnWeb},
+        /*disabled_features=*/{omnibox::kZeroSuggestPrefetchingOnSRP});
   }
 };
 
@@ -136,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnNTP,
         browser(), GURL(chrome::kChromeUINewTabPageURL),
         WindowOpenDisposition::CURRENT_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-    ASSERT_EQ(1, browser()->tab_strip_model()->GetTabCount());
+    ASSERT_EQ(1, browser()->tab_strip_model()->count());
 
     testing::Mock::VerifyAndClearExpectations(controller_);
   }
@@ -150,31 +152,7 @@ IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnNTP,
         browser(), GURL(chrome::kChromeUINewTabPageURL),
         WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-    ASSERT_EQ(2, browser()->tab_strip_model()->GetTabCount());
-
-    testing::Mock::VerifyAndClearExpectations(controller_);
-  }
-  {
-    // Opening a foreground SRP does not trigger prefetching.
-    EXPECT_CALL(*controller_, StartPrefetch).Times(0);
-    EXPECT_CALL(*controller_, Start).Times(0);
-
-    EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser(), GURL(srp_url), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-    ASSERT_EQ(3, browser()->tab_strip_model()->GetTabCount());
-
-    testing::Mock::VerifyAndClearExpectations(controller_);
-  }
-  {
-    // Opening a foreground Web page does not trigger prefetching.
-    EXPECT_CALL(*controller_, StartPrefetch).Times(0);
-    EXPECT_CALL(*controller_, Start).Times(0);
-
-    ui_test_utils::NavigateToURLWithDisposition(
-        browser(), GURL(web_url), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-    ASSERT_EQ(4, browser()->tab_strip_model()->GetTabCount());
+    ASSERT_EQ(2, browser()->tab_strip_model()->count());
 
     testing::Mock::VerifyAndClearExpectations(controller_);
   }
@@ -184,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnNTP,
         .Times(1);
     EXPECT_CALL(*controller_, Start).Times(0);
 
-    browser()->tab_strip_model()->ActivateTabAt(1);
+    browser()->tab_strip_model()->ActivateTabAt(0);
 
     testing::Mock::VerifyAndClearExpectations(controller_);
   }
@@ -199,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnSRP,
   auto input_is_correct = [](const AutocompleteInput& input) {
     return input.current_page_classification() ==
                metrics::OmniboxEventProto::SRP_ZPS_PREFETCH &&
-           input.focus_type() == metrics::OmniboxFocusType::INTERACTION_CLOBBER;
+           input.focus_type() == metrics::OmniboxFocusType::INTERACTION_FOCUS;
   };
 
   {
@@ -211,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnSRP,
     EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(srp_url), WindowOpenDisposition::CURRENT_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-    ASSERT_EQ(1, browser()->tab_strip_model()->GetTabCount());
+    ASSERT_EQ(1, browser()->tab_strip_model()->count());
 
     testing::Mock::VerifyAndClearExpectations(controller_);
   }
@@ -224,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnSRP,
     EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(srp_url), WindowOpenDisposition::NEW_BACKGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-    ASSERT_EQ(2, browser()->tab_strip_model()->GetTabCount());
+    ASSERT_EQ(2, browser()->tab_strip_model()->count());
 
     testing::Mock::VerifyAndClearExpectations(controller_);
   }
@@ -237,19 +215,7 @@ IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnSRP,
     EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(srp_url), WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-    ASSERT_EQ(3, browser()->tab_strip_model()->GetTabCount());
-
-    testing::Mock::VerifyAndClearExpectations(controller_);
-  }
-  {
-    // Opening a foreground Web page does not trigger prefetching.
-    EXPECT_CALL(*controller_, StartPrefetch).Times(0);
-    EXPECT_CALL(*controller_, Start).Times(0);
-
-    ui_test_utils::NavigateToURLWithDisposition(
-        browser(), GURL(web_url), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-    ASSERT_EQ(4, browser()->tab_strip_model()->GetTabCount());
+    ASSERT_EQ(3, browser()->tab_strip_model()->count());
 
     testing::Mock::VerifyAndClearExpectations(controller_);
   }
@@ -273,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnWeb,
   auto input_is_correct = [](const AutocompleteInput& input) {
     return input.current_page_classification() ==
                metrics::OmniboxEventProto::OTHER_ZPS_PREFETCH &&
-           input.focus_type() == metrics::OmniboxFocusType::INTERACTION_CLOBBER;
+           input.focus_type() == metrics::OmniboxFocusType::INTERACTION_FOCUS;
   };
 
   {
@@ -285,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnWeb,
     EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(web_url), WindowOpenDisposition::CURRENT_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-    ASSERT_EQ(1, browser()->tab_strip_model()->GetTabCount());
+    ASSERT_EQ(1, browser()->tab_strip_model()->count());
 
     testing::Mock::VerifyAndClearExpectations(controller_);
   }
@@ -298,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnWeb,
     EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(web_url), WindowOpenDisposition::NEW_BACKGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-    ASSERT_EQ(2, browser()->tab_strip_model()->GetTabCount());
+    ASSERT_EQ(2, browser()->tab_strip_model()->count());
 
     testing::Mock::VerifyAndClearExpectations(controller_);
   }
@@ -311,19 +277,7 @@ IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnWeb,
     EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(web_url), WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-    ASSERT_EQ(3, browser()->tab_strip_model()->GetTabCount());
-
-    testing::Mock::VerifyAndClearExpectations(controller_);
-  }
-  {
-    // Opening a foreground SRP does not trigger prefetching.
-    EXPECT_CALL(*controller_, StartPrefetch).Times(0);
-    EXPECT_CALL(*controller_, Start).Times(0);
-
-    EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser(), GURL(srp_url), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-    ASSERT_EQ(4, browser()->tab_strip_model()->GetTabCount());
+    ASSERT_EQ(3, browser()->tab_strip_model()->count());
 
     testing::Mock::VerifyAndClearExpectations(controller_);
   }

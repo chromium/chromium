@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
@@ -33,7 +34,7 @@ namespace content {
 
 namespace {
 
-constexpr static int kMaxPEPCPerPage = 2;
+constexpr static int kMaxPEPCPerPage = 3;
 
 class MockEmbeddedPermissionControlClient
     : public EmbeddedPermissionControlClient {
@@ -91,24 +92,32 @@ class EmbeddedPermissionControlCheckerTest
   PermissionService* permission_service() { return permission_service_.get(); }
 
   std::unique_ptr<MockEmbeddedPermissionControlClient>
-  CreateEmbeddedPermissionControlClient(
-      std::vector<PermissionName> permissions) {
+  CreateEmbeddedPermissionControlClient(std::vector<PermissionName> permissions,
+                                        bool is_geolocation_source = false) {
     mojo::PendingRemote<EmbeddedPermissionControlClient> mojo_client;
     auto client = std::make_unique<MockEmbeddedPermissionControlClient>(
         mojo_client.InitWithNewPipeAndPassReceiver());
 
     std::vector<PermissionDescriptorPtr> permission_descriptors;
     permission_descriptors.reserve(permissions.size());
-    base::ranges::transform(permissions,
-                            std::back_inserter(permission_descriptors),
-                            [](const auto& permission) {
-                              auto descriptor = PermissionDescriptor::New();
-                              descriptor->name = permission;
-                              return descriptor;
-                            });
+    std::ranges::transform(permissions,
+                           std::back_inserter(permission_descriptors),
+                           [](const auto& permission) {
+                             auto descriptor = PermissionDescriptor::New();
+                             descriptor->name = permission;
+                             return descriptor;
+                           });
+
+    auto request_descriptor =
+        blink::mojom::EmbeddedPermissionRequestDescriptor::New();
+    if (is_geolocation_source) {
+      request_descriptor->geolocation =
+          blink::mojom::GeolocationEmbeddedPermissionRequestDescriptor::New();
+    }
 
     permission_service()->RegisterPageEmbeddedPermissionControl(
-        std::move(permission_descriptors), std::move(mojo_client));
+        std::move(permission_descriptors), std::move(request_descriptor),
+        std::move(mojo_client));
     return client;
   }
 
@@ -116,6 +125,22 @@ class EmbeddedPermissionControlCheckerTest
   mojo::Remote<PermissionService> permission_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+TEST_F(EmbeddedPermissionControlCheckerTest,
+       IgnoreRegisteregisterPageEmbeddedPermissionCheck) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(blink::features::kBypassPepcSecurityForTesting);
+  for (PermissionName name :
+       {PermissionName::AUDIO_CAPTURE, PermissionName::VIDEO_CAPTURE,
+        PermissionName::GEOLOCATION}) {
+    std::vector<std::unique_ptr<MockEmbeddedPermissionControlClient>> clients(
+        kMaxPEPCPerPage + 3);
+    for (size_t i = 0; i < kMaxPEPCPerPage + 3; ++i) {
+      clients[i] = CreateEmbeddedPermissionControlClient({name});
+      clients[i]->ExpectEmbeddedPermissionControlRegistered();
+    }
+  }
+}
 
 TEST_F(EmbeddedPermissionControlCheckerTest,
        RegisterPageEmbeddedPermissionSinglePermission) {
@@ -176,6 +201,61 @@ TEST_F(EmbeddedPermissionControlCheckerTest,
   pending_client_2->ExpectEmbeddedPermissionControlNotRegistered();
   grouped_clients.pop_back();
   pending_client_2->ExpectEmbeddedPermissionControlRegistered();
+}
+
+class GeolocationEmbeddedPermissionControlCheckerTest
+    : public EmbeddedPermissionControlCheckerTest {
+ public:
+  GeolocationEmbeddedPermissionControlCheckerTest() = default;
+  GeolocationEmbeddedPermissionControlCheckerTest(
+      const GeolocationEmbeddedPermissionControlCheckerTest&) = delete;
+  ~GeolocationEmbeddedPermissionControlCheckerTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList features_{blink::features::kGeolocationElement};
+};
+
+TEST_F(GeolocationEmbeddedPermissionControlCheckerTest,
+       DecouplePermissionSources) {
+  // Register `kMaxPEPCPerPage` clients for the permission element source.
+  std::vector<std::unique_ptr<MockEmbeddedPermissionControlClient>>
+      permission_clients(kMaxPEPCPerPage);
+  for (size_t i = 0; i < kMaxPEPCPerPage; ++i) {
+    permission_clients[i] = CreateEmbeddedPermissionControlClient(
+        {PermissionName::GEOLOCATION}, /*is_geolocation_source=*/false);
+    permission_clients[i]->ExpectEmbeddedPermissionControlRegistered();
+  }
+
+  // Register `kMaxPEPCPerPage` clients for the geolocation element source.
+  // These should also be registered, as the sources are decoupled.
+  std::vector<std::unique_ptr<MockEmbeddedPermissionControlClient>>
+      geolocation_clients(kMaxPEPCPerPage);
+  for (size_t i = 0; i < kMaxPEPCPerPage; ++i) {
+    geolocation_clients[i] = CreateEmbeddedPermissionControlClient(
+        {PermissionName::GEOLOCATION}, /*is_geolocation_source=*/true);
+    geolocation_clients[i]->ExpectEmbeddedPermissionControlRegistered();
+  }
+
+  // Create one more client for each source, which should not be registered yet.
+  auto pending_permission_client = CreateEmbeddedPermissionControlClient(
+      {PermissionName::GEOLOCATION}, /*is_geolocation_source=*/false);
+  pending_permission_client->ExpectEmbeddedPermissionControlNotRegistered();
+
+  auto pending_geolocation_client = CreateEmbeddedPermissionControlClient(
+      {PermissionName::GEOLOCATION}, /*is_geolocation_source=*/true);
+  pending_geolocation_client->ExpectEmbeddedPermissionControlNotRegistered();
+
+  // Disconnect one client from the permission element source.
+  permission_clients.pop_back();
+  // The pending permission client should now be registered.
+  pending_permission_client->ExpectEmbeddedPermissionControlRegistered();
+  // The pending geolocation client should still not be registered.
+  pending_geolocation_client->ExpectEmbeddedPermissionControlNotRegistered();
+
+  // Disconnect one client from the geolocation element source.
+  geolocation_clients.pop_back();
+  // The pending geolocation client should now be registered.
+  pending_geolocation_client->ExpectEmbeddedPermissionControlRegistered();
 }
 
 }  // namespace content

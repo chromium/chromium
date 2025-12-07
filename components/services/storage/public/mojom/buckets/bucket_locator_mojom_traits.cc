@@ -22,17 +22,13 @@ bool StructTraits<
   if (!data.ReadStorageKey(&storage_key))
     return false;
 
-  blink::mojom::StorageType type;
-  if (!data.ReadType(&type))
-    return false;
-
   bool is_default = data.is_default();
 
   if (id.is_null()) {
     CHECK(is_default);
   }
 
-  *out = storage::BucketLocator(id, std::move(storage_key), type, is_default);
+  *out = storage::BucketLocator(id, std::move(storage_key), is_default);
   return true;
 }
 

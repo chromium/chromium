@@ -8,5 +8,4 @@ include_rules = [
   "+skia/ext/platform_canvas.h",
   "+third_party/libyuv",
   "+third_party/skia/include/core",
-  "+ui/gfx/gpu_memory_buffer.h",
 ]

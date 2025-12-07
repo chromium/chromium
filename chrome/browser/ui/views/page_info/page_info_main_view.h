@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/page_info/chosen_object_view_observer.h"
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view_observer.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/page_info/core/page_info_types.h"
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "components/page_info/page_info_ui.h"
 #include "device/vr/buildflags/buildflags.h"
@@ -31,7 +32,6 @@ class RichHoverButton;
 class PageInfoNavigationHandler;
 class PageInfoSecurityContentView;
 class PermissionToggleRowView;
-class PageInfoHistoryController;
 
 namespace test {
 class PageInfoBubbleViewTestApi;
@@ -47,15 +47,18 @@ class PageInfoMainView : public views::View,
 
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCookieButtonElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPrivacyAndSiteDataButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMainLayoutElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPermissionsElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMerchantTrustElementId);
+
   // Container view that fills the bubble width for button rows. Supports
   // updating the layout.
   class ContainerView : public views::View {
     METADATA_HEADER(ContainerView, views::View)
 
    public:
-    ContainerView();
+    explicit ContainerView(bool set_extra_right_margin = true);
 
     // Notifies that preferred size changed and updates the layout.
     void Update();
@@ -64,8 +67,8 @@ class PageInfoMainView : public views::View,
   PageInfoMainView(PageInfo* presenter,
                    ChromePageInfoUiDelegate* ui_delegate,
                    PageInfoNavigationHandler* navigation_handler,
-                   PageInfoHistoryController* history_controller,
-                   base::OnceClosure initialized_callback);
+                   base::OnceClosure initialized_callback,
+                   bool allow_extended_site_info);
   ~PageInfoMainView() override;
 
   // PageInfoUI implementations.
@@ -74,7 +77,7 @@ class PageInfoMainView : public views::View,
   void SetIdentityInfo(const IdentityInfo& identity_info) override;
   void SetPageFeatureInfo(const PageFeatureInfo& info) override;
   void SetAdPersonalizationInfo(const AdPersonalizationInfo& info) override;
-  void SetCookieInfo(const CookiesNewInfo& cookie_info) override;
+  void SetCookieInfo(const CookiesInfo& cookie_info) override;
 
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
@@ -106,7 +109,8 @@ class PageInfoMainView : public views::View,
 
   // Creates a view with vertical box layout that will used a container for
   // other views.
-  [[nodiscard]] std::unique_ptr<views::View> CreateContainerView();
+  [[nodiscard]] std::unique_ptr<views::View> CreateContainerView(
+      bool set_extra_right_margin = true);
 
   // Creates bubble header view for this page, contains the title and the close
   // button.
@@ -125,14 +129,30 @@ class PageInfoMainView : public views::View,
   // the label depending on the number of visible permissions.
   void UpdateResetButton(const PermissionInfoList& permission_info_list);
 
-  // Creates 'About this site' section which contains a button that opens a
-  // subpage and two separators.
-  [[nodiscard]] std::unique_ptr<views::View> CreateAboutThisSiteSection(
+  void OnMerchantTrustDataFetched(
+      const GURL& url,
+      std::optional<page_info::MerchantData> merchant_data);
+
+  // Creates 'About this site' button that opens a subpage.
+  [[nodiscard]] std::unique_ptr<views::View> CreateAboutThisSiteButton(
       const page_info::proto::SiteInfo& info);
 
-  // Creates 'Ad personalization' section which contains a button that opens a
-  // subpage and a separator.
-  [[nodiscard]] std::unique_ptr<views::View> CreateAdPersonalizationSection();
+  // Creates 'Ad personalization' button that opens a subpage.
+  [[nodiscard]] std::unique_ptr<views::View> CreateAdPersonalizationButton();
+
+  // Creates 'Merchant trust' button.
+  [[nodiscard]] std::unique_ptr<views::View> CreateMerchantTrustButton(
+      page_info::MerchantData value);
+
+  // Creates 'Merchant trust' button that opens a subpage.
+  [[nodiscard]] std::unique_ptr<RichHoverButton>
+  CreateMerchantTrustSubpageButton(page_info::MerchantData value);
+
+  // Creates 'Merchant trust' button that opens a side panel.
+  [[nodiscard]] std::unique_ptr<RichHoverButton>
+  CreateMerchantTrustLaunchButton(GURL url);
+
+  void OpenMerchantTrustSidePanel(const GURL& url);
 
   raw_ptr<PageInfo, AcrossTasksDanglingUntriaged> presenter_;
 
@@ -154,22 +174,28 @@ class PageInfoMainView : public views::View,
   raw_ptr<RichHoverButton> cookie_button_ = nullptr;
 
   // The button that opens up "Site Settings".
-  raw_ptr<views::View> site_settings_link_ = nullptr;
+  raw_ptr<RichHoverButton> site_settings_link_ = nullptr;
 
   // The view that contains the scroll view with permission rows and the reset
   // button, surrounded by separators.
   raw_ptr<views::View> permissions_view_ = nullptr;
 
-  // The section that contains "About this site" button that opens a
-  // subpage and two separators.
+  // The section that contains a separator and buttons with extended site
+  // information: "About this site" and "Merchant trust". The section is only
+  // shown when at least of one the buttons is available.
+  raw_ptr<views::View> extended_site_info_section_ = nullptr;
+
+  // "About this site" button that opens a subpage.
   raw_ptr<views::View> about_this_site_section_ = nullptr;
+
+  // "Merchant trust" button that opens a subpage.
+  raw_ptr<views::View> merchant_trust_section_ = nullptr;
 
   // The view that contains `SecurityInformationView` and a certificate button.
   raw_ptr<PageInfoSecurityContentView, AcrossTasksDanglingUntriaged>
       security_content_view_ = nullptr;
 
-  // The section that contains 'Ad personalization' button that opens a
-  // subpage.
+  // "Ad personalization" button that opens a subpage.
   raw_ptr<views::View> ads_personalization_section_ = nullptr;
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_VR)

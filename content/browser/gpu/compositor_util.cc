@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/gpu/compositor_util.h"
 
 #include <stddef.h>
@@ -24,7 +19,7 @@
 #include "base/system/sys_info.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "cc/base/features.h"
 #include "cc/base/switches.h"
 #include "components/viz/common/features.h"
 #include "content/browser/compositor/image_transport_factory.h"
@@ -122,11 +117,6 @@ std::vector<GpuFeatureData> GetGpuFeatureData(
           "via blocklist or the command line."),
       true);
   features.emplace_back(
-      "canvas_oop_rasterization",
-      SafeGetFeatureStatus(
-          gpu_feature_info, gpu::GPU_FEATURE_TYPE_CANVAS_OOP_RASTERIZATION,
-          command_line.HasSwitch(switches::kDisableAccelerated2dCanvas)));
-  features.emplace_back(
       "gpu_compositing",
       // TODO(rivr): Replace with a check to see which backend is used for
       // compositing; do the same for GPU rasterization if it's enabled. For
@@ -154,7 +144,7 @@ std::vector<GpuFeatureData> GetGpuFeatureData(
       SafeGetFeatureStatus(
           gpu_feature_info, gpu::GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE,
 #if BUILDFLAG(IS_LINUX)
-          !base::FeatureList::IsEnabled(media::kVaapiVideoDecodeLinux) ||
+          !base::FeatureList::IsEnabled(media::kAcceleratedVideoDecodeLinux) ||
 #endif  // BUILDFLAG(IS_LINUX)
               command_line.HasSwitch(switches::kDisableAcceleratedVideoDecode)),
       DisableInfo::Problem(
@@ -166,7 +156,7 @@ std::vector<GpuFeatureData> GetGpuFeatureData(
       SafeGetFeatureStatus(
           gpu_feature_info, gpu::GPU_FEATURE_TYPE_ACCELERATED_VIDEO_ENCODE,
 #if BUILDFLAG(IS_LINUX)
-          !base::FeatureList::IsEnabled(media::kVaapiVideoEncodeLinux)),
+          !base::FeatureList::IsEnabled(media::kAcceleratedVideoEncodeLinux)),
 #else
           command_line.HasSwitch(switches::kDisableAcceleratedVideoEncode)),
 #endif  // BUILDFLAG(IS_LINUX)
@@ -194,24 +184,18 @@ std::vector<GpuFeatureData> GetGpuFeatureData(
       "multiple_raster_threads",
       GetFakeFeatureStatus(NumberOfRendererRasterThreads() > 1));
 #if BUILDFLAG(IS_ANDROID)
-  features.emplace_back(
-      "surface_control",
-      SafeGetFeatureStatus(gpu_feature_info,
-                           gpu::GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL));
+  features.emplace_back("surface_control",
+                        features::IsAndroidSurfaceControlEnabled()
+                            ? gpu::kGpuFeatureStatusEnabled
+                            : gpu::kGpuFeatureStatusDisabled);
 #endif
-  features.emplace_back(
-      "webgl2",
-      SafeGetFeatureStatus(
-          gpu_feature_info, gpu::GPU_FEATURE_TYPE_ACCELERATED_WEBGL2,
-          command_line.HasSwitch(switches::kDisableWebGL) ||
-              command_line.HasSwitch(switches::kDisableWebGL2)),
-      DisableInfo::Problem(
-          "WebGL2 has been disabled via blocklist or the command line."),
-      false);
   features.emplace_back("raw_draw",
-                        GetFakeFeatureStatus(features::IsUsingRawDraw()));
-  features.emplace_back("direct_rendering_display_compositor",
-                        GetFakeFeatureStatus(features::IsDrDcEnabled()));
+                        GetFakeFeatureStatus(::features::IsUsingRawDraw()));
+  features.emplace_back(
+      "direct_rendering_display_compositor",
+      SafeGetFeatureStatus(
+          gpu_feature_info,
+          gpu::GPU_FEATURE_TYPE_DIRECT_RENDERING_DISPLAY_COMPOSITOR));
   features.emplace_back(
       "webgpu",
       SafeGetFeatureStatus(
@@ -228,6 +212,10 @@ std::vector<GpuFeatureData> GetGpuFeatureData(
   features.emplace_back(
       "webnn",
       SafeGetFeatureStatus(gpu_feature_info, gpu::GPU_FEATURE_TYPE_WEBNN));
+  features.emplace_back("trees_in_viz",
+                        base::FeatureList::IsEnabled(::features::kTreesInViz)
+                            ? gpu::kGpuFeatureStatusEnabled
+                            : gpu::kGpuFeatureStatusDisabled);
   return features;
 }
 
@@ -277,7 +265,6 @@ base::Value GetFeatureStatusImpl(GpuFeatureInfoType type) {
         status += "_on";
       }
       if ((gpu_feature_data.name == "webgl" ||
-           gpu_feature_data.name == "webgl2" ||
            gpu_feature_data.name == "webgpu") &&
           is_gpu_compositing_disabled)
         status += "_readback";
@@ -290,7 +277,7 @@ base::Value GetFeatureStatusImpl(GpuFeatureInfoType type) {
       if (gpu_feature_data.name == "multiple_raster_threads") {
         const base::CommandLine& command_line =
             *base::CommandLine::ForCurrentProcess();
-        if (command_line.HasSwitch(cc::switches::kNumRasterThreads)) {
+        if (command_line.HasSwitch(switches::kNumRasterThreads)) {
           status += "_force";
         }
         status += "_on";
@@ -300,7 +287,8 @@ base::Value GetFeatureStatusImpl(GpuFeatureInfoType type) {
           gpu_feature_data.name == "vulkan" ||
           gpu_feature_data.name == "skia_graphite" ||
           gpu_feature_data.name == "surface_control" ||
-          gpu_feature_data.name == "webnn") {
+          gpu_feature_data.name == "webnn" ||
+          gpu_feature_data.name == "trees_in_viz") {
         status += "_on";
       }
     }
@@ -429,12 +417,12 @@ int NumberOfRendererRasterThreads() {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
 
-  if (command_line.HasSwitch(cc::switches::kNumRasterThreads)) {
+  if (command_line.HasSwitch(switches::kNumRasterThreads)) {
     std::string string_value =
-        command_line.GetSwitchValueASCII(cc::switches::kNumRasterThreads);
+        command_line.GetSwitchValueASCII(switches::kNumRasterThreads);
     if (!base::StringToInt(string_value, &num_raster_threads)) {
-      DLOG(WARNING) << "Failed to parse switch "
-                    << cc::switches::kNumRasterThreads << ": " << string_value;
+      DLOG(WARNING) << "Failed to parse switch " << switches::kNumRasterThreads
+                    << ": " << string_value;
     }
   }
 
@@ -453,7 +441,7 @@ bool IsZeroCopyUploadEnabled() {
 
 bool IsPartialRasterEnabled() {
   // Partial raster is not supported with RawDraw.
-  if (features::IsUsingRawDraw()) {
+  if (::features::IsUsingRawDraw()) {
     return false;
   }
   const auto& command_line = *base::CommandLine::ForCurrentProcess();
@@ -463,7 +451,7 @@ bool IsPartialRasterEnabled() {
 bool IsGpuMemoryBufferCompositorResourcesEnabled() {
   // To use Raw Draw, the Raw Draw shared image backing should be used, so
   // not use GPU memory buffer shared image backings for compositor resources.
-  if (features::IsUsingRawDraw()) {
+  if (::features::IsUsingRawDraw()) {
     return false;
   }
   const base::CommandLine& command_line =
@@ -479,8 +467,6 @@ bool IsGpuMemoryBufferCompositorResourcesEnabled() {
 
 #if BUILDFLAG(IS_APPLE)
   return true;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return features::IsDelegatedCompositingEnabled();
 #elif BUILDFLAG(IS_WIN)
   return features::IsDelegatedCompositingEnabled() &&
          features::kDelegatedCompositingModeParam.Get() ==
@@ -521,8 +507,9 @@ bool IsMainFrameBeforeActivationEnabled() {
     return false;
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          cc::switches::kDisableMainFrameBeforeActivation))
+          switches::kDisableMainFrameBeforeActivation)) {
     return false;
+  }
 
   return true;
 }

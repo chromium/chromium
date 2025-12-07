@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_prefs.h"
+
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 
@@ -14,7 +15,7 @@ namespace chrome_labs_prefs {
 // still need to be met for the feature to be shown.
 const char kBrowserLabsEnabledEnterprisePolicy[] = "browser_labs_enabled";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // For ash-chrome which will use profile prefs. Dictionary pref mapping
 // experiment internal names to the day the experiment was added to the
 // ChromeLabs bubble. This will be used to track time since the new badge was
@@ -50,7 +51,7 @@ const int kChromeLabsNewExperimentPrefValue = -1;
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kBrowserLabsEnabledEnterprisePolicy, true);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterDictionaryPref(kChromeLabsNewBadgeDictAshChrome);
 #endif
 }
@@ -58,7 +59,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kChromeLabsActivationThreshold,
                                 kChromeLabsActivationThresholdDefaultValue);
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   registry->RegisterDictionaryPref(kChromeLabsNewBadgeDict);
 #endif
 }

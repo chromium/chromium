@@ -21,8 +21,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/media/renderer_audio_output_stream_factory.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 using ::testing::_;
 
@@ -62,7 +65,7 @@ class FakeRemoteFactory
         static_cast<media::mojom::blink::OutputDeviceStatus>(
             media::OutputDeviceStatus::
                 OUTPUT_DEVICE_STATUS_ERROR_NOT_AUTHORIZED),
-        media::AudioParameters::UnavailableDeviceParams(), WTF::g_empty_string);
+        media::AudioParameters::UnavailableDeviceParams(), g_empty_string);
     EXPECT_FALSE(on_called_.is_null());
     std::move(on_called_).Run();
   }
@@ -140,11 +143,12 @@ TEST_F(AudioOutputIPCFactoryTest, CallFactoryFromIOThread) {
   // |remote_factory|, and also that it's bound to |io_thread|, we create an
   // AudioOutputIPC object and request device authorization on the IO thread.
   // This is supposed to call |remote_factory| on the main thread.
-  io_thread->task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
+
+  PostCrossThreadTask(
+      *io_thread->task_runner(), FROM_HERE,
+      CrossThreadBindOnce(
           &AudioOutputIPCFactoryTest::RequestAuthorizationOnIOThread,
-          base::Unretained(this),
+          CrossThreadUnretained(this),
           ipc_factory.CreateAudioOutputIPC(TokenFromInt(kRenderFrameId))));
 
   // Wait for call to |remote_factory|:
@@ -188,11 +192,12 @@ TEST_F(AudioOutputIPCFactoryTest, SeveralFactories) {
 
   base::RunLoop run_loop;
   remote_factories[0].SetOnCalledCallback(run_loop.QuitWhenIdleClosure());
-  io_thread->task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
+
+  PostCrossThreadTask(
+      *io_thread->task_runner(), FROM_HERE,
+      CrossThreadBindOnce(
           &AudioOutputIPCFactoryTest::RequestAuthorizationOnIOThread,
-          base::Unretained(this),
+          CrossThreadUnretained(this),
           ipc_factory.CreateAudioOutputIPC(TokenFromInt(kRenderFrameId))));
   run_loop.Run();
 
@@ -201,11 +206,12 @@ TEST_F(AudioOutputIPCFactoryTest, SeveralFactories) {
 
   base::RunLoop run_loop2;
   remote_factories[2].SetOnCalledCallback(run_loop2.QuitWhenIdleClosure());
-  io_thread->task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
+
+  PostCrossThreadTask(
+      *io_thread->task_runner(), FROM_HERE,
+      CrossThreadBindOnce(
           &AudioOutputIPCFactoryTest::RequestAuthorizationOnIOThread,
-          base::Unretained(this),
+          CrossThreadUnretained(this),
           ipc_factory.CreateAudioOutputIPC(TokenFromInt(kRenderFrameId + 2))));
   run_loop2.Run();
 

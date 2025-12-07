@@ -7,6 +7,7 @@
 #include <cstdint>
 
 #include "base/containers/span.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/buildflags.h"
@@ -44,19 +45,16 @@ std::string GetDomainFromHost(const std::string& host) {
   return GetDomainAndRegistry(host, EXCLUDE_PRIVATE_REGISTRIES);
 }
 
-size_t GetRegistryLengthFromURL(
-    const std::string& url,
-    UnknownRegistryFilter unknown_filter) {
-  return GetRegistryLength(GURL(url),
-                           unknown_filter,
+size_t GetRegistryLengthFromURL(const std::string& url,
+                                UnknownRegistryFilter unknown_filter) {
+  return GetRegistryLength(GURL(url), unknown_filter,
                            EXCLUDE_PRIVATE_REGISTRIES);
 }
 
 size_t GetRegistryLengthFromURLIncludingPrivate(
     const std::string& url,
     UnknownRegistryFilter unknown_filter) {
-  return GetRegistryLength(GURL(url),
-                           unknown_filter,
+  return GetRegistryLength(GURL(url), unknown_filter,
                            INCLUDE_PRIVATE_REGISTRIES);
 }
 
@@ -207,6 +205,31 @@ TEST_F(RegistryControlledDomainTest, TestGetDomainAndRegistry) {
   EXPECT_EQ("", GetDomainFromHost(".localhost."));
 }
 
+// GetDomainAndRegistry is backed by a cache, so make sure that it's working
+// correctly.
+TEST_F(RegistryControlledDomainTest, TestGetDomainAndRegistryCaching) {
+  UseDomainData(test1::kDafsa);
+
+  // Ask the same thing twice, should get the same result.
+  EXPECT_EQ("baz.jp", GetDomainFromHost("a.baz.jp"));
+  EXPECT_EQ("baz.jp", GetDomainFromHost("a.baz.jp"));
+
+  // Asking 100 different things shouldn't cause any boundary issues.
+  for (int i = 0; i < 100; ++i) {
+    EXPECT_EQ("baz.jp", GetDomainFromHost(base::StringPrintf("%d.baz.jp", i)));
+  }
+
+  // Ask a few more things multiple times, the results should be consistent.
+  for (int i = 0; i < 3; i++) {
+    EXPECT_EQ("baz.jp", GetDomainFromHost("a.baz.jp"));
+    EXPECT_EQ("baz.jp.", GetDomainFromHost("a.baz.jp."));
+    EXPECT_EQ("", GetDomainFromHost("ac.jp"));
+    EXPECT_EQ("a.b.baz.bar.jp", GetDomainFromHost("a.b.baz.bar.jp"));
+    EXPECT_EQ("pref.bar.jp", GetDomainFromHost("baz.pref.bar.jp"));
+    EXPECT_EQ("b.bar.baz.com.", GetDomainFromHost("a.b.bar.baz.com."));
+  }
+}
+
 TEST_F(RegistryControlledDomainTest, TestGetRegistryLength) {
   UseDomainData(test1::kDafsa);
 
@@ -268,17 +291,17 @@ TEST_F(RegistryControlledDomainTest, TestGetRegistryLength) {
   EXPECT_EQ(4U, GetRegistryLengthFromURL("http://baz.com.",
                                          INCLUDE_UNKNOWN_REGISTRIES));  // none
 
+  EXPECT_EQ(std::string::npos, GetRegistryLengthFromURL(
+                                   std::string(), EXCLUDE_UNKNOWN_REGISTRIES));
   EXPECT_EQ(std::string::npos,
-      GetRegistryLengthFromURL(std::string(), EXCLUDE_UNKNOWN_REGISTRIES));
+            GetRegistryLengthFromURL("http://", EXCLUDE_UNKNOWN_REGISTRIES));
   EXPECT_EQ(std::string::npos,
-      GetRegistryLengthFromURL("http://", EXCLUDE_UNKNOWN_REGISTRIES));
-  EXPECT_EQ(std::string::npos,
-      GetRegistryLengthFromURL("file:///C:/file.html",
-                               EXCLUDE_UNKNOWN_REGISTRIES));
+            GetRegistryLengthFromURL("file:///C:/file.html",
+                                     EXCLUDE_UNKNOWN_REGISTRIES));
   EXPECT_EQ(0U, GetRegistryLengthFromURL("http://foo.com..",
                                          EXCLUDE_UNKNOWN_REGISTRIES));
-  EXPECT_EQ(0U, GetRegistryLengthFromURL("http://...",
-                                         EXCLUDE_UNKNOWN_REGISTRIES));
+  EXPECT_EQ(0U,
+            GetRegistryLengthFromURL("http://...", EXCLUDE_UNKNOWN_REGISTRIES));
   EXPECT_EQ(0U, GetRegistryLengthFromURL("http://192.168.0.1",
                                          EXCLUDE_UNKNOWN_REGISTRIES));
   EXPECT_EQ(0U, GetRegistryLengthFromURL("http://localhost",
@@ -394,13 +417,13 @@ TEST_F(RegistryControlledDomainTest, TestSameDomainOrHost) {
   EXPECT_FALSE(CompareDomains("http://a.com/file.html",        // a.com
                               "http://b.com/file.html"));      // b.com
   EXPECT_TRUE(CompareDomains("http://a.x.com/file.html",
-                             "http://b.x.com/file.html"));     // x.com
+                             "http://b.x.com/file.html"));  // x.com
   EXPECT_TRUE(CompareDomains("http://a.x.com/file.html",
-                             "http://.x.com/file.html"));      // x.com
+                             "http://.x.com/file.html"));  // x.com
   EXPECT_TRUE(CompareDomains("http://a.x.com/file.html",
-                             "http://..b.x.com/file.html"));   // x.com
+                             "http://..b.x.com/file.html"));  // x.com
   EXPECT_TRUE(CompareDomains("http://intranet/file.html",
-                             "http://intranet/file.html"));    // intranet
+                             "http://intranet/file.html"));  // intranet
   EXPECT_FALSE(CompareDomains("http://intranet1/file.html",
                               "http://intranet2/file.html"));  // intranet
   EXPECT_TRUE(CompareDomains(
@@ -411,7 +434,7 @@ TEST_F(RegistryControlledDomainTest, TestSameDomainOrHost) {
   EXPECT_FALSE(CompareDomains("http://192.168.0.1/file.html",  // 192.168.0.1
                               "http://127.0.0.1/file.html"));  // 127.0.0.1
   EXPECT_FALSE(CompareDomains("file:///C:/file.html",
-                              "file:///C:/file.html"));        // no host
+                              "file:///C:/file.html"));  // no host
 
   // The trailing dot means different sites - see also
   // https://github.com/mikewest/sec-metadata/issues/15.
@@ -434,7 +457,7 @@ TEST_F(RegistryControlledDomainTest, TestDefaultData) {
   EXPECT_EQ(0U, GetRegistryLengthFromURL("http://nowhere.notavaliddomain",
                                          EXCLUDE_UNKNOWN_REGISTRIES));
   EXPECT_EQ(15U, GetRegistryLengthFromURL("http://nowhere.notavaliddomain",
-                                         INCLUDE_UNKNOWN_REGISTRIES));
+                                          INCLUDE_UNKNOWN_REGISTRIES));
 }
 
 TEST_F(RegistryControlledDomainTest, TestPrivateRegistryHandling) {
@@ -464,30 +487,22 @@ TEST_F(RegistryControlledDomainTest, TestPrivateRegistryHandling) {
                                          INCLUDE_UNKNOWN_REGISTRIES));
 
   // Private registries.
-  EXPECT_EQ(0U,
-      GetRegistryLengthFromURLIncludingPrivate("http://priv.no",
-                                               EXCLUDE_UNKNOWN_REGISTRIES));
-  EXPECT_EQ(7U,
-      GetRegistryLengthFromURLIncludingPrivate("http://foo.priv.no",
-                                               EXCLUDE_UNKNOWN_REGISTRIES));
-  EXPECT_EQ(2U,
-      GetRegistryLengthFromURLIncludingPrivate("http://foo.jp",
-                                               EXCLUDE_UNKNOWN_REGISTRIES));
-  EXPECT_EQ(2U,
-      GetRegistryLengthFromURLIncludingPrivate("http://www.foo.jp",
-                                               EXCLUDE_UNKNOWN_REGISTRIES));
-  EXPECT_EQ(0U,
-      GetRegistryLengthFromURLIncludingPrivate("http://private",
-                                               EXCLUDE_UNKNOWN_REGISTRIES));
-  EXPECT_EQ(7U,
-      GetRegistryLengthFromURLIncludingPrivate("http://foo.private",
-                                               EXCLUDE_UNKNOWN_REGISTRIES));
-  EXPECT_EQ(0U,
-      GetRegistryLengthFromURLIncludingPrivate("http://private",
-                                               INCLUDE_UNKNOWN_REGISTRIES));
-  EXPECT_EQ(7U,
-      GetRegistryLengthFromURLIncludingPrivate("http://foo.private",
-                                               INCLUDE_UNKNOWN_REGISTRIES));
+  EXPECT_EQ(0U, GetRegistryLengthFromURLIncludingPrivate(
+                    "http://priv.no", EXCLUDE_UNKNOWN_REGISTRIES));
+  EXPECT_EQ(7U, GetRegistryLengthFromURLIncludingPrivate(
+                    "http://foo.priv.no", EXCLUDE_UNKNOWN_REGISTRIES));
+  EXPECT_EQ(2U, GetRegistryLengthFromURLIncludingPrivate(
+                    "http://foo.jp", EXCLUDE_UNKNOWN_REGISTRIES));
+  EXPECT_EQ(2U, GetRegistryLengthFromURLIncludingPrivate(
+                    "http://www.foo.jp", EXCLUDE_UNKNOWN_REGISTRIES));
+  EXPECT_EQ(0U, GetRegistryLengthFromURLIncludingPrivate(
+                    "http://private", EXCLUDE_UNKNOWN_REGISTRIES));
+  EXPECT_EQ(7U, GetRegistryLengthFromURLIncludingPrivate(
+                    "http://foo.private", EXCLUDE_UNKNOWN_REGISTRIES));
+  EXPECT_EQ(0U, GetRegistryLengthFromURLIncludingPrivate(
+                    "http://private", INCLUDE_UNKNOWN_REGISTRIES));
+  EXPECT_EQ(7U, GetRegistryLengthFromURLIncludingPrivate(
+                    "http://foo.private", INCLUDE_UNKNOWN_REGISTRIES));
 }
 
 TEST_F(RegistryControlledDomainTest, TestDafsaTwoByteOffsets) {
@@ -641,8 +656,27 @@ TEST_F(RegistryControlledDomainTest, Permissive) {
   // Invalid characters at the beginning are OK if the suffix still matches.
   EXPECT_EQ(2U, PermissiveGetHostRegistryLength("*%00#?.Jp"));
 
-  // Escaped period, this will add new components.
+  // Escaped period, this will add new components (Www.Google.jp).
   EXPECT_EQ(4U, PermissiveGetHostRegistryLength("Www.Googl%45%2e%4Ap"));
+
+  // Escaped period, the last component is invalid (Www.Google.%p).
+  EXPECT_EQ(0U, PermissiveGetHostRegistryLength("Www.Googl%45%2e%25p"));
+
+  // The last component is invalid (Www.Google.%p).
+  EXPECT_EQ(0U, PermissiveGetHostRegistryLength("Www.Google.%25p"));
+
+  // Escaped period. er is a wildcard registry.
+  EXPECT_EQ(13U, PermissiveGetHostRegistryLength("Www.Googl%45%2eEr"));
+
+  // Escaped period. The first component is invalid because of %FF%FE.
+  // er is a wildcard registry.
+  EXPECT_EQ(0U, PermissiveGetHostRegistryLength("%EF%2E%FF%FE.er"));
+
+  // First component is invalid. Note that the RCD (test.er) doesn't fall into
+  // the middle of a component here, so this doesn't execute the brute search
+  // at the end of DoPermissiveGetHostRegistryLength, nor the is_canonical check
+  // right before the search.
+  EXPECT_EQ(7U, PermissiveGetHostRegistryLength("%EF%2E%FF%FE.test.er"));
 
 // IDN cases (not supported when not linking ICU).
 #if !BUILDFLAG(USE_PLATFORM_ICU_ALTERNATIVES)

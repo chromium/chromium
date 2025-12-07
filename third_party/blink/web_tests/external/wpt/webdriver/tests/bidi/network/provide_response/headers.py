@@ -89,7 +89,7 @@ async def test_set_cookie_header_before_request_sent(
     on_load = wait_for_event(LOAD_EVENT)
 
     response_header = Header(
-        name="Set-Cookie", value=NetworkStringValue("foo=bar;Path=/")
+        name="Set-Cookie", value=NetworkStringValue("aaa=bbb;Path=/;SameSite=None;Secure")
     )
 
     await bidi_session.network.provide_response(
@@ -109,14 +109,16 @@ async def test_set_cookie_header_before_request_sent(
 
     expected_cookie = {
         "httpOnly": False,
-        "name": "foo",
+        "name": "aaa",
         "path": "/",
         "sameSite": "none",
-        "secure": False,
+        "secure": True,
         "size": 6,
-        "value": {"type": "string", "value": "bar"},
+        "value": {"type": "string", "value": "bbb"},
     }
     recursive_compare(expected_cookie, cookie)
+
+    await bidi_session.storage.delete_cookies()
 
 
 # Check that cookies from Set-Cookie headers of the headers parameter
@@ -139,10 +141,10 @@ async def test_set_cookie_header_and_cookies_before_request_sent(
     on_load = wait_for_event(LOAD_EVENT)
 
     response_header = Header(
-        name="Set-Cookie", value=NetworkStringValue("foo=bar;Path=/")
+        name="Set-Cookie", value=NetworkStringValue("foo=bar;Path=/;SameSite=None;Secure;")
     )
     response_cookie = SetCookieHeader(
-        name="baz", value=NetworkStringValue("biz"), path="/"
+        name="baz", value=NetworkStringValue("biz"), path="/", same_site="none", secure=True
     )
 
     await bidi_session.network.provide_response(
@@ -171,7 +173,7 @@ async def test_set_cookie_header_and_cookies_before_request_sent(
         "name": "foo",
         "path": "/",
         "sameSite": "none",
-        "secure": False,
+        "secure": True,
         "size": 6,
         "value": {"type": "string", "value": "bar"},
     }
@@ -182,8 +184,51 @@ async def test_set_cookie_header_and_cookies_before_request_sent(
         "name": "baz",
         "path": "/",
         "sameSite": "none",
-        "secure": False,
+        "secure": True,
         "size": 6,
         "value": {"type": "string", "value": "biz"},
     }
     recursive_compare(expected_cookie_from_cookies_param, cookie_from_cookies_param)
+
+    await bidi_session.storage.delete_cookies()
+
+
+async def test_provide_response_cross_origin(
+    setup_blocked_request,
+    subscribe_events,
+    wait_for_event,
+    bidi_session,
+    wait_for_future_safe,
+    inline,
+):
+    request = await setup_blocked_request(
+        "beforeRequestSent",
+        blocked_url=inline("<div>test</div>", domain="alt"),
+        # Set an extra header so that the request is not considered as a simple
+        # request and triggers a CORS preflight.
+        # See https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS#simple_requests
+        headers={"X-OTHER": "a"},
+        has_preflight=True
+    )
+
+    await subscribe_events(
+        events=[
+            RESPONSE_STARTED_EVENT,
+            RESPONSE_COMPLETED_EVENT,
+        ]
+    )
+
+    on_response_started = wait_for_event(RESPONSE_STARTED_EVENT)
+    on_response_completed = wait_for_event(RESPONSE_COMPLETED_EVENT)
+
+    await bidi_session.network.provide_response(
+        request=request,
+        status_code=200,
+        reason_phrase="OK",
+        headers=[
+            Header(name="access-control-allow-origin", value=NetworkStringValue("*")),
+        ],
+    )
+
+    await wait_for_future_safe(on_response_started)
+    await wait_for_future_safe(on_response_completed)

@@ -10,8 +10,8 @@ import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
-import {TestPersonalizationStore} from './test_personalization_store.js';
-import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
+import type {TestPersonalizationStore} from './test_personalization_store.js';
+import type {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
 suite('WallpaperImagesElementTest', function() {
   let wallpaperImagesElement: WallpaperImagesElement|null;
@@ -84,7 +84,7 @@ suite('WallpaperImagesElementTest', function() {
         [wallpaperProvider.images![0]!.url, wallpaperProvider.images![2]!.url],
         `item has correct src`);
 
-    const notSelectedElements: HTMLDivElement[] =
+    const notSelectedElements: HTMLElement[] =
         Array.from(wallpaperImagesElement.shadowRoot!.querySelectorAll(
             `${WallpaperGridItemElement.is}[aria-selected='false']`));
 

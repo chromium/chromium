@@ -16,7 +16,7 @@
         log('shiftKey');
       log('x: ' + event.x);
       log('y: ' + event.y);
-      if (event.type === 'mousewheel') {
+      if (event.type === 'wheel') {
         log('deltaX: ' + event.deltaX);
         log('deltaY: ' + event.deltaY);
       }
@@ -27,7 +27,7 @@
     window.addEventListener('mouseup', logEvent);
     window.addEventListener('mousemove', logEvent);
     window.addEventListener('contextmenu', logEvent);
-    window.addEventListener('mousewheel', logEvent);
+    window.addEventListener('wheel', logEvent, {passive: false});
   `);
 
   function dumpError(message) {
@@ -106,6 +106,12 @@
     x: 100,
     y: 200
   }));
+
+  // TODO(crbug.com/444929150): The Input.dispatchMouseEvent promise
+  // resolves before the 'wheel' event is handled by the renderer in the
+  // default passive mode, causing a race condition. Forcing the listener
+  // to be non-passive (`passive: false`) works around this by synchronizing
+  // the event processing.
   dumpError(await dp.Input.dispatchMouseEvent({
     type: 'mouseWheel',
     x: 100,

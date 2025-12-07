@@ -13,6 +13,7 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_partition_key_collection.h"
+#include "url/gurl.h"
 
 namespace net {
 
@@ -52,7 +53,7 @@ struct NET_EXPORT CookieDeletionInfo {
     // Note 1: |time| cannot be null.
     // Note 2: If |start_| == |end_| then end_ is inclusive.
     //
-    bool Contains(const base::Time& time) const;
+    bool Contains(base::Time time) const;
 
     // Set the range start time. Set to null (i.e. Time()) to indicated an
     // unbounded lower range.

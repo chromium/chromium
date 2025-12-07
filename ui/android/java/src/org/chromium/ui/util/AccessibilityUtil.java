@@ -4,14 +4,15 @@
 
 package org.chromium.ui.util;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.accessibility.AccessibilityState.State;
 
 /** Exposes information about the current accessibility state. */
+@NullMarked
 public class AccessibilityUtil implements AccessibilityState.Listener {
     /** An observer to be notified of accessibility status changes. */
     @Deprecated
@@ -24,7 +25,7 @@ public class AccessibilityUtil implements AccessibilityState.Listener {
         void onAccessibilityModeChanged(boolean enabled);
     }
 
-    private ObserverList<Observer> mObservers;
+    private @Nullable ObserverList<Observer> mObservers;
 
     protected AccessibilityUtil() {}
 
@@ -54,7 +55,7 @@ public class AccessibilityUtil implements AccessibilityState.Listener {
 
     @Override
     public void onAccessibilityStateChanged(
-            State oldAccessibilityState, State newAccessibilityState) {
+            @Nullable State oldAccessibilityState, State newAccessibilityState) {
         notifyModeChange(AccessibilityState.isAccessibilityEnabled());
     }
 

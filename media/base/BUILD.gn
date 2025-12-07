@@ -4,7 +4,6 @@
 
 import("//build/config/android/config.gni")
 import("//build/config/arm.gni")
-import("//build/config/features.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
@@ -44,11 +43,10 @@ source_set("base") {
   }
 
   sources = [
+    "agtm.cc",
+    "agtm.h",
     "amplitude_peak_detector.cc",
     "amplitude_peak_detector.h",
-    "android_overlay_config.cc",
-    "android_overlay_config.h",
-    "android_overlay_mojo_factory.h",
     "async_destroy_video_decoder.h",
     "async_destroy_video_encoder.h",
     "audio_block_fifo.cc",
@@ -59,6 +57,8 @@ source_set("base") {
     "audio_buffer_converter.h",
     "audio_buffer_queue.cc",
     "audio_buffer_queue.h",
+    "audio_bus.cc",
+    "audio_bus.h",
     "audio_bus_pool.cc",
     "audio_bus_pool.h",
     "audio_capturer_source.h",
@@ -80,6 +80,14 @@ source_set("base") {
     "audio_glitch_info.h",
     "audio_hash.cc",
     "audio_hash.h",
+    "audio_latency.cc",
+    "audio_latency.h",
+    "audio_limiter.cc",
+    "audio_limiter.h",
+    "audio_parameters.cc",
+    "audio_parameters.h",
+    "audio_point.cc",
+    "audio_point.h",
     "audio_power_monitor.cc",
     "audio_power_monitor.h",
     "audio_processing.cc",
@@ -92,14 +100,13 @@ source_set("base") {
     "audio_renderer.cc",
     "audio_renderer.h",
     "audio_renderer_sink.h",
+    "audio_sample_types.h",
     "audio_shifter.cc",
     "audio_shifter.h",
     "audio_timestamp_helper.cc",
     "audio_timestamp_helper.h",
     "bit_reader.cc",
     "bit_reader.h",
-    "bit_reader_core.cc",
-    "bit_reader_core.h",
     "bitrate.cc",
     "bitrate.h",
     "bitstream_buffer.cc",
@@ -111,6 +118,8 @@ source_set("base") {
     "callback_holder.h",
     "callback_registry.h",
     "callback_timeout_helpers.h",
+    "capture_version.cc",
+    "capture_version.h",
     "cdm_callback_promise.cc",
     "cdm_callback_promise.h",
     "cdm_capability.cc",
@@ -131,6 +140,8 @@ source_set("base") {
     "cdm_promise_adapter.h",
     "cdm_session_tracker.cc",
     "cdm_session_tracker.h",
+    "channel_layout.cc",
+    "channel_layout.h",
     "channel_mixer.cc",
     "channel_mixer.h",
     "channel_mixing_matrix.cc",
@@ -144,7 +155,6 @@ source_set("base") {
     "content_decryption_module.h",
     "converting_audio_fifo.cc",
     "converting_audio_fifo.h",
-    "crc_16.h",
     "cross_origin_data_source.h",
     "data_buffer.cc",
     "data_buffer.h",
@@ -174,6 +184,7 @@ source_set("base") {
     "djb2.cc",
     "djb2.h",
     "eme_constants.h",
+    "encoder_status.cc",
     "encoder_status.h",
     "encryption_pattern.cc",
     "encryption_pattern.h",
@@ -201,6 +212,9 @@ source_set("base") {
     "key_systems_impl.h",
     "key_systems_support_registration.cc",
     "key_systems_support_registration.h",
+    "limiting_audio_queue.cc",
+    "limiting_audio_queue.h",
+    "limits.h",
     "localized_strings.cc",
     "localized_strings.h",
     "logging_override_if_enabled.h",
@@ -245,10 +259,6 @@ source_set("base") {
     "media_tracks.h",
     "media_types.cc",
     "media_types.h",
-    "media_url_demuxer.cc",
-    "media_url_demuxer.h",
-    "media_url_params.cc",
-    "media_url_params.h",
     "media_util.cc",
     "media_util.h",
     "memory_dump_provider_proxy.cc",
@@ -267,6 +277,8 @@ source_set("base") {
     "output_device_info.h",
     "overlay_info.cc",
     "overlay_info.h",
+    "picture_in_picture_events_info.cc",
+    "picture_in_picture_events_info.h",
     "pipeline.h",
     "pipeline_impl.cc",
     "pipeline_impl.h",
@@ -291,12 +303,15 @@ source_set("base") {
     "renderer_factory_selector.cc",
     "renderer_factory_selector.h",
     "routing_token_callback.h",
+    "sample_format.cc",
+    "sample_format.h",
     "sample_rates.cc",
     "sample_rates.h",
     "scoped_async_trace.cc",
     "scoped_async_trace.h",
     "seekable_buffer.cc",
     "seekable_buffer.h",
+    "sequence.h",
     "serial_runner.cc",
     "serial_runner.h",
     "silent_sink_suspender.cc",
@@ -330,8 +345,9 @@ source_set("base") {
     "tuneable.cc",
     "tuneable.h",
     "use_after_free_checker.h",
-    "user_input_monitor.cc",
-    "user_input_monitor.h",
+    "vector_math.cc",
+    "vector_math.h",
+    "vector_math_testing.h",
     "video_aspect_ratio.cc",
     "video_aspect_ratio.h",
     "video_bitrate_allocation.cc",
@@ -368,6 +384,8 @@ source_set("base") {
     "video_thumbnail_decoder.h",
     "video_transformation.cc",
     "video_transformation.h",
+    "video_types.cc",
+    "video_types.h",
     "video_util.cc",
     "video_util.h",
     "wait_and_replace_sync_token_client.cc",
@@ -383,8 +401,8 @@ source_set("base") {
   defines = []
   public_deps = [
     ":video_facing",
+    "//gpu/command_buffer/client",
     "//media:media_buildflags",
-    "//media:shared_memory_support",
     "//media/gpu:buildflags",
     "//media/mojo:buildflags",
     "//ui/gfx:color_space",
@@ -393,23 +411,21 @@ source_set("base") {
   deps = [
     "//base",
     "//base/allocator:buildflags",
-    "//build:chromeos_buildflags",
     "//components/system_media_controls/linux/buildflags",
-    "//gpu/command_buffer/client:client",
     "//gpu/command_buffer/client:interface_base",
     "//gpu/command_buffer/client:raster_interface",
     "//gpu/command_buffer/common",
-    "//gpu/ipc/common:common",
+    "//gpu/ipc/common",
     "//media/cdm:clear_key_cdm_common",
     "//net",
     "//skia",
     "//third_party/libyuv",
     "//third_party/widevine/cdm:headers",
-    "//ui/display:display",
-    "//ui/events:events",
+    "//ui/display",
+    "//ui/events",
     "//ui/events:events_base",
     "//ui/events:keyboard_hook",
-    "//url:url",
+    "//url",
   ]
 
   libs = []
@@ -426,7 +442,7 @@ source_set("base") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//ash/constants" ]
   }
 
@@ -446,21 +462,15 @@ source_set("base") {
     deps += [ "//third_party/libaom" ]
   }
 
-  if (is_linux && !is_castos) {
-    sources += [ "user_input_monitor_linux.cc" ]
-  } else if (is_mac) {
-    sources += [ "user_input_monitor_mac.cc" ]
+  if (is_mac) {
     frameworks = [
       "CoreVideo.framework",
       "CoreFoundation.framework",
       "CoreGraphics.framework",
       "IOSurface.framework",
     ]
-  } else if (is_win) {
-    sources += [ "user_input_monitor_win.cc" ]
-  } else {
-    defines += [ "DISABLE_USER_INPUT_MONITOR" ]
   }
+
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }
@@ -478,6 +488,14 @@ source_set("base") {
       "win/media_foundation_package_runtime_locator.h",
       "win/mf_feature_checks.cc",
       "win/mf_feature_checks.h",
+    ]
+  }
+
+  if (is_android) {
+    sources += [
+      "android_overlay_config.cc",
+      "android_overlay_config.h",
+      "android_overlay_mojo_factory.h",
     ]
   }
 
@@ -510,6 +528,7 @@ if (is_android) {
   java_cpp_enum("java_enums") {
     sources = [
       "audio_parameters.h",
+      "channel_layout.h",
       "container_names.h",
       "encryption_scheme.h",
       "video_codecs.h",
@@ -567,7 +586,6 @@ static_library("test_support") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//testing/gmock",
     "//third_party/libyuv",
     "//ui/gfx:test_support",
@@ -582,6 +600,7 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "agtm_unittest.cc",
     "amplitude_peak_detector_unittest.cc",
     "audio_block_fifo_unittest.cc",
     "audio_buffer_converter_unittest.cc",
@@ -596,6 +615,7 @@ source_set("unit_tests") {
     "audio_glitch_info_unittest.cc",
     "audio_hash_unittest.cc",
     "audio_latency_unittest.cc",
+    "audio_limiter_unittest.cc",
     "audio_parameters_unittest.cc",
     "audio_point_unittest.cc",
     "audio_power_monitor_unittest.cc",
@@ -609,11 +629,11 @@ source_set("unit_tests") {
     "callback_holder_unittest.cc",
     "callback_registry_unittest.cc",
     "callback_timeout_helpers_unittest.cc",
+    "capture_version_unittest.cc",
     "channel_mixer_unittest.cc",
     "channel_mixing_matrix_unittest.cc",
     "container_names_unittest.cc",
     "converting_audio_fifo_unittest.cc",
-    "crc_16_unittest.cc",
     "data_buffer_unittest.cc",
     "decoder_buffer_queue_unittest.cc",
     "decoder_buffer_unittest.cc",
@@ -625,9 +645,9 @@ source_set("unit_tests") {
     "frame_buffer_pool_unittest.cc",
     "frame_rate_estimator_unittest.cc",
     "key_systems_unittest.cc",
+    "limiting_audio_queue_unittest.cc",
     "media_log_unittest.cc",
     "media_serializers_unittest.cc",
-    "media_url_demuxer_unittest.cc",
     "mime_util_unittest.cc",
     "multi_channel_resampler_unittest.cc",
     "null_video_sink_unittest.cc",
@@ -637,6 +657,7 @@ source_set("unit_tests") {
     "reentrancy_checker_unittest.cc",
     "renderer_factory_selector_unittest.cc",
     "seekable_buffer_unittest.cc",
+    "sequence_unittest.cc",
     "serial_runner_unittest.cc",
     "silent_sink_suspender_unittest.cc",
     "sinc_resampler_unittest.cc",
@@ -648,7 +669,6 @@ source_set("unit_tests") {
     "supported_video_decoder_config_unittest.cc",
     "time_delta_interpolator_unittest.cc",
     "tuneable_unittest.cc",
-    "user_input_monitor_unittest.cc",
     "vector_math_unittest.cc",
     "video_aspect_ratio_unittest.cc",
     "video_bitrate_allocation_unittest.cc",
@@ -668,8 +688,8 @@ source_set("unit_tests") {
   configs += [ "//media:media_config" ]
   deps = [
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/viz/common",
+    "//gpu:test_support",
     "//gpu/command_buffer/common",
     "//media:test_support",
     "//net",
@@ -702,6 +722,10 @@ source_set("unit_tests") {
   if (is_castos) {
     sources += [ "demuxer_memory_limit_cast_unittest.cc" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("perftests") {
@@ -709,6 +733,7 @@ source_set("perftests") {
   sources = [
     "audio_bus_perftest.cc",
     "audio_converter_perftest.cc",
+    "audio_limiter_perftest.cc",
     "run_all_perftests.cc",
     "sinc_resampler_perftest.cc",
     "vector_math_perftest.cc",

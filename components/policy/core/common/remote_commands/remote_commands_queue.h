@@ -42,7 +42,7 @@ class POLICY_EXPORT RemoteCommandsQueue {
     virtual void OnJobFinished(RemoteCommandJob* command) = 0;
 
    protected:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   RemoteCommandsQueue();

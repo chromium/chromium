@@ -15,19 +15,11 @@ CastMediaDrmBridgeClient::~CastMediaDrmBridgeClient() {}
 
 void CastMediaDrmBridgeClient::AddKeySystemUUIDMappings(KeySystemUuidMap* map) {
 // Note: MediaDrmBridge adds the Widevine UUID mapping automatically.
-#if BUILDFLAG(ENABLE_PLAYREADY)
-  (*map)[kChromecastPlayreadyKeySystem] = playready_delegate_.GetUUID();
-#endif  // BUILDFLAG(ENABLE_PLAYREADY)
 }
 
 ::media::MediaDrmBridgeDelegate*
 CastMediaDrmBridgeClient::GetMediaDrmBridgeDelegate(
     const ::media::UUID& scheme_uuid) {
-#if BUILDFLAG(ENABLE_PLAYREADY)
-  if (scheme_uuid == playready_delegate_.GetUUID())
-    return &playready_delegate_;
-#endif  // BUILDFLAG(ENABLE_PLAYREADY)
-
   if (scheme_uuid == widevine_delegate_.GetUUID())
     return &widevine_delegate_;
 

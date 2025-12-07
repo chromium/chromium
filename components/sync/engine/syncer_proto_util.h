@@ -25,10 +25,10 @@ namespace syncer {
 class ServerConnectionManager;
 struct SyncProtocolError;
 
-// Returns the types to migrate from the data in |response|.
+// Returns the types to migrate from the data in `response`.
 DataTypeSet GetTypesToMigrate(const sync_pb::ClientToServerResponse& response);
 
-// Builds a SyncProtocolError from the data in |error|.
+// Builds a SyncProtocolError from the data in `error`.
 SyncProtocolError ConvertErrorPBToSyncProtocolError(
     const sync_pb::ClientToServerResponse_Error& error);
 
@@ -38,7 +38,7 @@ class SyncerProtoUtil {
   SyncerProtoUtil& operator=(const SyncerProtoUtil&) = delete;
 
   // Adds all fields that must be sent on every request, which includes store
-  // birthday, protocol version, client chips, api keys, etc. |msg| must be not
+  // birthday, protocol version, client chips, api keys, etc. `msg` must be not
   // null. Must be called before calling PostClientToServerMessage().
   static void AddRequiredFieldsToClientToServerMessage(
       const SyncCycle* cycle,

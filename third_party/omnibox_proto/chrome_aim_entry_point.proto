@@ -1,0 +1,55 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto2';
+
+option optimize_for = LITE_RUNTIME;
+option java_package = 'org.chromium.components.omnibox';
+option java_outer_classname = 'ChromeAimEntryPointProto';
+
+package omnibox;
+
+// AIM entry points.
+enum ChromeAimEntryPoint {
+  // Entry point is not set or unknown. This is the default value so that if
+  // a new entry point is added and not wired yet, it doesn't count mistakenly
+  // towards counting another entry point.
+  UNKNOWN_AIM_ENTRY_POINT = 0;
+
+  // AIM entered from the NTP Realbox entrypoint.
+  DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT = 42;
+
+  // AIM entered from the NTP fake omnibox entrypoint on Chrome Android.
+  ANDROID_CHROME_NTP_FAKE_OMNIBOX_ENTRY_POINT = 43;
+
+  // AIM entered from the omnibox entrypoint on Chrome Android.
+  ANDROID_CHROME_NTP_OMNIBOX_ENTRY_POINT = 44;
+
+  // AIM entered from the omnibox entrypoint on Chrome iOS.
+  IOS_CHROME_NTP_FAKE_OMNIBOX_ENTRY_POINT = 47;
+
+  // AIM entered from the Desktop Chrome omnibox keyword entry point.
+  DESKTOP_CHROME_OMNIBOX_KEYWORD_ENTRY_POINT = 48;
+
+  // AIM is entered from a shortcut of typed state of omnibox on Chrome Android.
+  ANDROID_CHROME_AIM_SHORTCUT_TYPED_STATE_ENTRY_POINT = 61;
+
+  // AIM is entered from the omnibox search entrypoint on Chrome iOS.
+  IOS_CHROME_OMNIBOX_SEARCH_ENTRY_POINT = 62;
+
+  // AIM is entered from the composebox in Omnibox on NTP.
+  DESKTOP_CHROME_NTP_OMNIBOX_COMPOSEBOX_ENTRY_POINT = 109;
+
+  // AIM is entered from the composebox in Omnibox on SRP.
+  DESKTOP_CHROME_SRP_OMNIBOX_COMPOSEBOX_ENTRY_POINT = 110;
+
+  // AIM is entered from the composebox in Omnibox on Web.
+  DESKTOP_CHROME_OTHER_OMNIBOX_COMPOSEBOX_ENTRY_POINT = 111;
+
+  // AIM is entered from the co-browsing composebox.
+  DESKTOP_CHROME_CO_BROWSING_COMPOSEBOX_ENTRY_POINT = 116;
+
+  // AIM is entered from the lens contextual searchbox.
+  DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT = 117;
+}

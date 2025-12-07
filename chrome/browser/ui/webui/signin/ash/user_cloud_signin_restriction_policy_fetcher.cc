@@ -257,7 +257,7 @@ void UserCloudSigninRestrictionPolicyFetcher::FinalizeResult(
 
 void UserCloudSigninRestrictionPolicyFetcher::
     OnSecondaryGoogleAccountUsageResult(
-        std::unique_ptr<std::string> response_body) {
+        std::optional<std::string> response_body) {
   const char* histogram_name =
       IsFetchingArcPolicy() ? kSecondaryAccountAllowedInArcLatencyHistogramName
                             : kSecondaryGoogleAccountUsageLatencyHistogramName;
@@ -272,8 +272,9 @@ void UserCloudSigninRestrictionPolicyFetcher::
 
   GoogleServiceAuthError error = GoogleServiceAuthError::AuthErrorNone();
   std::optional<int> response_code;
-  if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers)
+  if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers) {
     response_code = url_loader->ResponseInfo()->headers->response_code();
+  }
 
   // Check for network or HTTP errors.
   if (url_loader->NetError() != net::OK || !response_body) {

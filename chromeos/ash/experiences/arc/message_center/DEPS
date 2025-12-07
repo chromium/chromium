@@ -1,0 +1,22 @@
+include_rules = [
+  "+ash/system/notification_center",
+  "+third_party/skia/include/core",
+
+  # TODO(crbug.com/386148857): Temporarily refer chromeos/ash/experiences
+  # from here for arc directory migration. Fix this later.
+  "+chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h",
+  "+chromeos/ash/experiences/arc/mojom/notifications.mojom.h",
+  "+chromeos/ash/experiences/arc/session/connection_holder.h",
+  "+chromeos/ash/experiences/arc/session/connection_observer.h",
+  "+chromeos/ash/experiences/arc/session/mojo_channel.h",
+  "+chromeos/ash/experiences/arc/test/connection_holder_util.h",
+  "+chromeos/ash/experiences/arc/test/fake_notifications_instance.h",
+]
+
+specific_include_rules = {
+  ".*unittest.cc": [
+    "+ash/shell.h",
+    "+ash/system",
+    "+ash/wm/desks/desks_util.h",
+  ]
+}

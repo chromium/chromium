@@ -8,13 +8,12 @@
 #include <memory>
 
 #include "content/common/content_export.h"
+#include "content/renderer/navigation_state.h"
 #include "net/http/http_response_info.h"
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "url/gurl.h"
 
 namespace content {
-
-class NavigationState;
 
 // RenderFrameImpl stores an instance of this class in the "extra data" of each
 // WebDocumentLoader.
@@ -28,6 +27,13 @@ class CONTENT_EXPORT DocumentState
       blink::WebDocumentLoader* document_loader) {
     return static_cast<DocumentState*>(document_loader->GetExtraData());
   }
+
+  // Clones this. Passed to the document loader of a newly committed empty
+  // document that replaces an existing document. This is done for discard
+  // operations or javascript URL navigations such that the new document loader
+  // behaves simiarly to the previous one. `navigation_state_` is not cloned
+  // as this is specific to the original document.
+  std::unique_ptr<blink::WebDocumentLoader::ExtraData> Clone() override;
 
   // For LoadDataWithBaseURL navigations, |was_load_data_with_base_url_request_|
   // is set to true and |data_url_| is set to the data URL of the navigation.
@@ -63,7 +69,9 @@ class CONTENT_EXPORT DocumentState
 
   NavigationState* navigation_state() { return navigation_state_.get(); }
   void set_navigation_state(std::unique_ptr<NavigationState> navigation_state);
-  void clear_navigation_state() { navigation_state_.reset(); }
+  std::unique_ptr<NavigationState> TakeNavigationState() {
+    return std::move(navigation_state_);
+  }
 
  private:
   bool was_load_data_with_base_url_request_ = false;

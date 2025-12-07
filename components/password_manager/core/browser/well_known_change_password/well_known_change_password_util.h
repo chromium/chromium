@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_WELL_KNOWN_CHANGE_PASSWORD_WELL_KNOWN_CHANGE_PASSWORD_UTIL_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_WELL_KNOWN_CHANGE_PASSWORD_WELL_KNOWN_CHANGE_PASSWORD_UTIL_H_
 
+#include <optional>
+
 class GURL;
 
 namespace password_manager {
@@ -32,7 +34,12 @@ extern const char kWellKnownNotExistingResourcePath[];
 // .well-known/change-password is a defined standard that points to the sites
 // change password form.
 // https://wicg.github.io/change-password-url/
-bool IsWellKnownChangePasswordUrl(const GURL& url);
+// `scheme_is_http_or_https` could be optionally given to provide a
+// precalculated scheme check result to avoid duplicated
+// url.SchemeIsHTTPOrHTTPS() calls.
+bool IsWellKnownChangePasswordUrl(
+    const GURL& url,
+    std::optional<bool> scheme_is_http_or_https = std::nullopt);
 
 // Creates a change password URL from `url`. In case the WellKnownChangePassword
 // feature is active this returns the origin + `WellKnownChangePasswordPath`,

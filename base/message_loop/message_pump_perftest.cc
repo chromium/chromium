@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -62,11 +63,12 @@ class JavaHandlerThreadForTest : public android::JavaHandlerThread {
 
 class ScheduleWorkTest : public testing::Test {
  public:
-  ScheduleWorkTest() : counter_(0) {}
+  ScheduleWorkTest() = default;
 
   void SetUp() override {
-    if (base::ThreadTicks::IsSupported())
+    if (base::ThreadTicks::IsSupported()) {
       base::ThreadTicks::WaitUntilInitialized();
+    }
   }
 
   void Increment(uint64_t amount) { counter_ += amount; }
@@ -74,8 +76,9 @@ class ScheduleWorkTest : public testing::Test {
   void Schedule(int index) {
     base::TimeTicks start = base::TimeTicks::Now();
     base::ThreadTicks thread_start;
-    if (ThreadTicks::IsSupported())
+    if (ThreadTicks::IsSupported()) {
       thread_start = base::ThreadTicks::Now();
+    }
     base::TimeDelta minimum = base::TimeDelta::Max();
     base::TimeDelta maximum = base::TimeDelta();
     base::TimeTicks now, lastnow = start;
@@ -92,12 +95,13 @@ class ScheduleWorkTest : public testing::Test {
       maximum = std::max(maximum, laptime);
     } while (now - start < base::Seconds(kTargetTimeSec));
 
-    scheduling_times_[index] = now - start;
-    if (ThreadTicks::IsSupported())
-      scheduling_thread_times_[index] =
+    UNSAFE_TODO(scheduling_times_[index]) = now - start;
+    if (ThreadTicks::IsSupported()) {
+      UNSAFE_TODO(scheduling_thread_times_[index]) =
           base::ThreadTicks::Now() - thread_start;
-    min_batch_times_[index] = minimum;
-    max_batch_times_[index] = maximum;
+    }
+    UNSAFE_TODO(min_batch_times_[index]) = minimum;
+    UNSAFE_TODO(max_batch_times_[index]) = maximum;
     target_message_loop_base()->GetTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(&ScheduleWorkTest::Increment,
                                   base::Unretained(this), schedule_calls));
@@ -164,10 +168,12 @@ class ScheduleWorkTest : public testing::Test {
     base::TimeDelta min_batch_time = base::TimeDelta::Max();
     base::TimeDelta max_batch_time = base::TimeDelta();
     for (int i = 0; i < num_scheduling_threads; ++i) {
-      total_time += scheduling_times_[i];
-      total_thread_time += scheduling_thread_times_[i];
-      min_batch_time = std::min(min_batch_time, min_batch_times_[i]);
-      max_batch_time = std::max(max_batch_time, max_batch_times_[i]);
+      total_time += UNSAFE_TODO(scheduling_times_[i]);
+      total_thread_time += UNSAFE_TODO(scheduling_thread_times_[i]);
+      min_batch_time =
+          std::min(min_batch_time, UNSAFE_TODO(min_batch_times_[i]));
+      max_batch_time =
+          std::max(max_batch_time, UNSAFE_TODO(max_batch_times_[i]));
     }
 
     std::string story_name = StringPrintf(
@@ -209,7 +215,7 @@ class ScheduleWorkTest : public testing::Test {
   std::unique_ptr<base::TimeDelta[]> scheduling_thread_times_;
   std::unique_ptr<base::TimeDelta[]> min_batch_times_;
   std::unique_ptr<base::TimeDelta[]> max_batch_times_;
-  uint64_t counter_;
+  uint64_t counter_ = 0;
 
   static const size_t kTargetTimeSec = 5;
   static const size_t kBatchSize = 1000;

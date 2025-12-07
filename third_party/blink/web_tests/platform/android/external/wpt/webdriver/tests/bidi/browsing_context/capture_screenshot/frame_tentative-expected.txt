@@ -1,0 +1,9 @@
+This is a wdspec test.
+[FAIL] test_iframe
+  assert (2937, 4377) == (2940, 4377)
+[FAIL] test_context_origin[same_origin]
+  assert (2937, 4203) == (2940, 4206)
+[FAIL] test_context_origin[cross_origin]
+  assert (1080, 1545) == (2940, 4206)
+Harness: the test ran to completion.
+

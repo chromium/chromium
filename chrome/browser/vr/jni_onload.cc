@@ -8,6 +8,6 @@
 // register VR's native JNI methods. However, since VR's Android-specific native
 // code still lives in the base module, VR's JNI registration is invoked
 // manually. Therefore, this function does nothing.
-JNI_BOUNDARY_EXPORT bool JNI_OnLoad_vr(JNIEnv* env) {
+JNI_ZERO_BOUNDARY_EXPORT bool JNI_OnLoad_vr(JNIEnv* env) {
   return true;
 }

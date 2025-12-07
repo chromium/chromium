@@ -15,21 +15,24 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.url.GURL;
 import org.chromium.url.URI;
 
+import java.text.BreakIterator;
 import java.util.Locale;
 
 /**
  * Generator for transparent icons containing a rounded rectangle with a given background color,
  * having a centered character drawn on top of it.
  */
+@NullMarked
 public class RoundedIconGenerator {
     private static final String TAG = "RoundedIconGenerator";
 
@@ -114,6 +117,19 @@ public class RoundedIconGenerator {
     }
 
     /**
+     * Gets the initial letter for the given text.
+     *
+     * <p>Can be more than character long for non-BMP characters.
+     */
+    @VisibleForTesting
+    static String getInitialLetter(String text) {
+        if (text.isEmpty()) return "";
+        BreakIterator iter = BreakIterator.getCharacterInstance();
+        iter.setText(text);
+        return text.substring(iter.first(), iter.next()).toUpperCase(Locale.getDefault());
+    }
+
+    /**
      * Generates an icon based on |text| (using the first character).
      *
      * @param text The text to render the first character of on the icon.
@@ -125,8 +141,7 @@ public class RoundedIconGenerator {
 
         canvas.drawRoundRect(mBackgroundRect, mCornerRadiusPx, mCornerRadiusPx, mBackgroundPaint);
 
-        int length = Math.min(1, text.length());
-        String displayText = text.substring(0, length).toUpperCase(Locale.getDefault());
+        String displayText = getInitialLetter(text);
         // Using Align.CENTER, so X is in the middle of the icon.
         canvas.drawText(displayText, mIconWidthPx / 2f, mTextBaselineY, mTextPaint);
 
@@ -134,9 +149,8 @@ public class RoundedIconGenerator {
     }
 
     /** {@link #generateIconForUrl(GURL, boolean)} */
-    @Nullable
     @Deprecated // TODO(crbug.com/40549331): Use GURL-variant or #generateIconForText
-    public Bitmap generateIconForUrl(String url, boolean includePrivateRegistries) {
+    public @Nullable Bitmap generateIconForUrl(String url, boolean includePrivateRegistries) {
         if (TextUtils.isEmpty(url)) return null;
 
         String text = getIconTextForUrl(url, includePrivateRegistries);
@@ -152,16 +166,14 @@ public class RoundedIconGenerator {
      * @param includePrivateRegistries Should private registries be considered as TLDs?
      * @return The generated icon, or NULL if |url| is empty or the domain cannot be resolved.
      */
-    @Nullable
-    public Bitmap generateIconForUrl(GURL url, boolean includePrivateRegistries) {
+    public @Nullable Bitmap generateIconForUrl(GURL url, boolean includePrivateRegistries) {
         if (url == null) return null;
         return generateIconForUrl(url.getSpec(), includePrivateRegistries);
     }
 
     /** {@link #generateIconForUrl(GURL)} */
-    @Nullable
     @Deprecated // TODO(crbug.com/40549331): Use GURL-variant or #generateIconForText
-    public Bitmap generateIconForUrl(String url) {
+    public @Nullable Bitmap generateIconForUrl(String url) {
         return generateIconForUrl(url, false);
     }
 
@@ -176,8 +188,7 @@ public class RoundedIconGenerator {
      * @param url URL for which the icon should be generated.
      * @return The generated icon, or NULL if |url| is empty or the domain cannot be resolved.
      */
-    @Nullable
-    public Bitmap generateIconForUrl(GURL url) {
+    public @Nullable Bitmap generateIconForUrl(GURL url) {
         return generateIconForUrl(url.getSpec(), false);
     }
 
@@ -189,9 +200,8 @@ public class RoundedIconGenerator {
      * @return The text to use on the rounded icon, or NULL if |url| is empty or the domain cannot
      *         be resolved.
      */
-    @Nullable
     @VisibleForTesting
-    public static String getIconTextForUrl(String url, boolean includePrivateRegistries) {
+    public static @Nullable String getIconTextForUrl(String url, boolean includePrivateRegistries) {
         String domain = UrlUtilities.getDomainAndRegistry(url, includePrivateRegistries);
         if (!TextUtils.isEmpty(domain)) return domain;
 

@@ -44,7 +44,8 @@ OverlayProcessorAndroid::OverlayProcessorAndroid(
         &OverlayProcessorAndroid::InitializeOverlayProcessorOnGpu,
         base::Unretained(this), display_controller->controller_on_gpu(),
         &event);
-    gpu_task_scheduler_->ScheduleGpuTask(std::move(callback), {});
+    gpu_task_scheduler_->ScheduleGpuTask(
+        std::move(callback), /*sync_token_fences=*/{}, gpu::SyncToken());
     event.Wait();
   }
 
@@ -71,7 +72,8 @@ OverlayProcessorAndroid::~OverlayProcessorAndroid() {
     auto callback =
         base::BindOnce(&OverlayProcessorAndroid::DestroyOverlayProcessorOnGpu,
                        base::Unretained(this), &event);
-    gpu_task_scheduler_->ScheduleGpuTask(std::move(callback), {});
+    gpu_task_scheduler_->ScheduleGpuTask(
+        std::move(callback), /*sync_token_fences=*/{}, gpu::SyncToken());
     event.Wait();
   }
 }
@@ -124,7 +126,8 @@ void OverlayProcessorAndroid::ScheduleOverlays(
   auto task = base::BindOnce(&OverlayProcessorOnGpu::ScheduleOverlays,
                              base::Unretained(processor_on_gpu_.get()),
                              std::move(overlay_candidates_));
-  gpu_task_scheduler_->ScheduleGpuTask(std::move(task), locks_sync_tokens);
+  gpu_task_scheduler_->ScheduleGpuTask(std::move(task), locks_sync_tokens,
+                                       gpu::SyncToken());
   overlay_candidates_.clear();
 }
 
@@ -142,7 +145,7 @@ void OverlayProcessorAndroid::OverlayPresentationComplete() {
 }
 
 void OverlayProcessorAndroid::CheckOverlaySupportImpl(
-    const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
+    const std::optional<OverlayCandidate>& primary_plane,
     OverlayCandidateList* candidates) {
   // For pre-SurfaceControl Android we should not have output surface as overlay
   // plane.
@@ -187,6 +190,13 @@ gfx::Rect OverlayProcessorAndroid::GetOverlayDamageRectForOutputSurface(
   return ToEnclosedRect(overlay.display_rect);
 }
 
+void OverlayProcessorAndroid::InsertPrimaryPlane(
+    OverlayCandidate primary_plane,
+    OverlayCandidateList& candidates) {
+  // `OverlayProcessorAndroid` will never have a primary plane.
+  NOTREACHED();
+}
+
 void OverlayProcessorAndroid::TakeOverlayCandidates(
     OverlayCandidateList* candidate_list) {
   overlay_candidates_.swap(*candidate_list);
@@ -212,9 +222,7 @@ void OverlayProcessorAndroid::NotifyOverlayPromotion(
     if (quad->material != DrawQuad::Material::kTextureContent)
       continue;
     const TextureDrawQuad* texture_quad = TextureDrawQuad::MaterialCast(quad);
-    if (!texture_quad->is_stream_video)
-      continue;
-    ResourceId id = texture_quad->resource_id();
+    ResourceId id = texture_quad->resource_id;
     if (!resource_provider->DoesResourceWantPromotionHint(id))
       continue;
     promotion_hint_requestor_set.insert(id);
@@ -261,7 +269,8 @@ void OverlayProcessorAndroid::NotifyOverlayPromotion(
                                base::Unretained(processor_on_gpu_.get()),
                                std::move(promotion_denied),
                                std::move(possible_promotions));
-    gpu_task_scheduler_->ScheduleGpuTask(std::move(task), locks_sync_tokens);
+    gpu_task_scheduler_->ScheduleGpuTask(std::move(task), locks_sync_tokens,
+                                         gpu::SyncToken());
   }
   promotion_hint_info_map_.clear();
 }

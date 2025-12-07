@@ -3,18 +3,22 @@
 // found in the LICENSE file.
 
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/manifest_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace errors = extensions::manifest_errors;
 namespace keys = extensions::manifest_keys;
-using extensions::ErrorUtils;
+
+namespace extensions {
 
 using ContentSecurityPolicyManifestTest = ChromeManifestTest;
 
 TEST_F(ContentSecurityPolicyManifestTest, InsecureContentSecurityPolicy) {
-  Testcase testcases[] = {
+  const Testcase testcases[] = {
       Testcase("insecure_contentsecuritypolicy_1.json",
                ErrorUtils::FormatErrorMessage(
                    errors::kInvalidCSPInsecureValueIgnored,
@@ -29,5 +33,7 @@ TEST_F(ContentSecurityPolicyManifestTest, InsecureContentSecurityPolicy) {
                ErrorUtils::FormatErrorMessage(
                    errors::kInvalidCSPMissingSecureSrc,
                    keys::kContentSecurityPolicy, "object-src"))};
-  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_WARNING);
+  RunTestcases(testcases, ExpectType::kWarning);
 }
+
+}  // namespace extensions

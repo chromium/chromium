@@ -12,7 +12,6 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
@@ -47,22 +46,13 @@ class ProfileOAuth2TokenServiceDelegateAndroid
 
   std::vector<CoreAccountId> GetAccounts() const override;
 
-  void ReloadAllAccountsFromSystemWithPrimaryAccount(
-      const std::optional<CoreAccountId>& primary_account_id) override;
-
-  // Seeds the accounts with |core_account_infos| then resumes the reload of
+  // Seeds the accounts with |accounts| then resumes the reload of
   // accounts once the account seeding is complete.
+  // If |primary_account_id| is not std::nullopt, then it must exist in
+  // |accounts|.
   void SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
-      const std::vector<CoreAccountInfo>& core_account_infos,
+      const std::vector<AccountInfo>& accounts,
       const std::optional<CoreAccountId>& primary_account_id) override;
-
-  // Resumes the reload of accounts once the account seeding is complete.
-  // TODO(crbug.com/40615112) Once ProfileOAuth2TokenServiceDelegate.java is
-  // internalized, use CoreAccountId instead of String.
-  void ReloadAllAccountsWithPrimaryAccountAfterSeeding(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& j_primary_account_id,
-      const base::android::JavaParamRef<jobjectArray>& j_device_account_names);
 
   // Takes a the signed in sync account as well as all the other
   // android account ids and check the token status of each.
@@ -72,6 +62,12 @@ class ProfileOAuth2TokenServiceDelegateAndroid
       const std::optional<CoreAccountId>& signed_in_account_id,
       const std::vector<CoreAccountId>& prev_ids,
       const std::vector<CoreAccountId>& curr_ids);
+
+  // Wrapper method to call the native UpdateAuthError() method from java.
+  void UpdateAuthErrorFromJava(JNIEnv* env,
+                               CoreAccountId& core_account_id,
+                               GoogleServiceAuthError& auth_error,
+                               jboolean fire_auth_error_changed);
 
  protected:
   std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
@@ -92,18 +88,16 @@ class ProfileOAuth2TokenServiceDelegateAndroid
   void FireRefreshTokensLoaded() override;
 
  private:
+  friend class OAuth2TokenServiceDelegateAndroidForTest;
+
   // ProfileOAuth2TokenServiceDelegate implementation:
   // Overridden from ProfileOAuth2TokenService to complete signout of all
   // POA2TService aware accounts.
   void RevokeAllCredentialsInternal(
       signin_metrics::SourceForRefreshTokenOperation source) override;
 
-  void LoadCredentialsInternal(const CoreAccountId& primary_account_id,
-                               bool is_syncing) override;
-
-  std::string MapAccountIdToAccountName(const CoreAccountId& account_id) const;
-  CoreAccountId MapAccountNameToAccountId(
-      const std::string& account_name) const;
+  void LoadCredentialsInternal(
+      const CoreAccountId& primary_account_id) override;
 
   enum RefreshTokenLoadStatus {
     RT_LOAD_NOT_START,
@@ -120,9 +114,9 @@ class ProfileOAuth2TokenServiceDelegateAndroid
                          std::vector<CoreAccountId>* refreshed_ids,
                          std::vector<CoreAccountId>* revoked_ids);
   // As |GetAccounts| but with only validated account IDs.
-  std::vector<CoreAccountId> GetValidAccounts();
+  std::vector<CoreAccountId> GetValidAccounts() const;
   // Set accounts that have been advertised by OnRefreshTokenAvailable.
-  virtual void SetAccounts(const std::vector<CoreAccountId>& accounts);
+  void SetAccounts(const std::vector<CoreAccountId>& accounts);
 
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
 

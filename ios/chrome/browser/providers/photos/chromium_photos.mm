@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/public/provider/chrome/browser/photos/photos_api.h"
-
 #import "base/notreached.h"
 #import "ios/chrome/browser/photos/model/photos_service.h"
+#import "ios/public/provider/chrome/browser/photos/photos_api.h"
 
 class ChromiumPhotosService final : public PhotosService {
  public:
@@ -20,10 +19,10 @@ class ChromiumPhotosService final : public PhotosService {
                    id<SystemIdentity> identity,
                    UploadProgressCallback progress_callback,
                    UploadCompletionCallback completion_callback) final {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
-  void CancelUpload() final { NOTREACHED_NORETURN(); }
+  void CancelUpload() final { NOTREACHED(); }
 };
 
 namespace ios {

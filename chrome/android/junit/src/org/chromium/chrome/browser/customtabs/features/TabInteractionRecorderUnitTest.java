@@ -16,7 +16,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
@@ -25,8 +24,6 @@ import org.chromium.chrome.browser.tab.Tab;
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabInteractionRecorderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock Tab mTab;
 
@@ -37,7 +34,7 @@ public class TabInteractionRecorderUnitTest {
     @Before
     public void setup() {
         mTestNative = new TestNativeInteractionRecorder();
-        mJniMocker.mock(TabInteractionRecorderJni.TEST_HOOKS, mTestNative);
+        TabInteractionRecorderJni.setInstanceForTesting(mTestNative);
         mPref = ChromeSharedPreferences.getInstance();
 
         TabInteractionRecorder.createForTab(mTab);

@@ -4,15 +4,15 @@
 
 #include "net/quic/quic_session_pool_job.h"
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/memory/weak_ptr.h"
-#include "base/not_fatal_until.h"
+#include "base/trace_event/trace_event.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_handle.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/request_priority.h"
 #include "net/base/trace_constants.h"
-#include "net/base/tracing.h"
 #include "net/dns/host_resolver.h"
 #include "net/log/net_log_with_source.h"
 #include "net/quic/address_utils.h"
@@ -61,13 +61,22 @@ QuicSessionPool::Job::~Job() {
 }
 
 void QuicSessionPool::Job::AddRequest(QuicSessionRequest* request) {
+  // We suspect that requests are being added to jobs that are being deleted
+  // which would leave the requests orphaned.
+  // TODO(crbug.com/404586727): Remove once we confirm the crash no longer
+  // happens.
+  if (is_deleting_) {
+    base::debug::DumpWithoutCrashing();
+  }
+  request->AddedToJob();
   requests_.insert(request);
   SetRequestExpectations(request);
 }
 
 void QuicSessionPool::Job::RemoveRequest(QuicSessionRequest* request) {
+  request->RemovedFromJob();
   auto request_iter = requests_.find(request);
-  CHECK(request_iter != requests_.end(), base::NotFatalUntil::M130);
+  CHECK(request_iter != requests_.end());
   requests_.erase(request_iter);
 }
 

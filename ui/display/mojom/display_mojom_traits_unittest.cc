@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/display/mojom/display_mojom_traits.h"
+
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "mojo/public/cpp/base/file_path_mojom_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
@@ -16,7 +19,6 @@
 #include "ui/display/mojom/display_color_management_mojom_traits.h"
 #include "ui/display/mojom/display_layout_mojom_traits.h"
 #include "ui/display/mojom/display_mode_mojom_traits.h"
-#include "ui/display/mojom/display_mojom_traits.h"
 #include "ui/display/mojom/display_snapshot.mojom.h"
 #include "ui/display/mojom/display_snapshot_mojom_traits.h"
 #include "ui/display/mojom/gamma_ramp_rgb_entry.mojom.h"
@@ -294,8 +296,9 @@ TEST(DisplayStructTraitsTest, ColorCalibrationRoundtrip) {
   SerializeAndDeserialize<mojom::ColorCalibration>(input, &output);
 
   // Validate `srgb_to_device_matrix`.
-  EXPECT_EQ(0, memcmp(&input.srgb_to_device_matrix,
-                      &output.srgb_to_device_matrix, sizeof(skcms_Matrix3x3)));
+  UNSAFE_TODO(EXPECT_EQ(
+      0, memcmp(&input.srgb_to_device_matrix, &output.srgb_to_device_matrix,
+                sizeof(skcms_Matrix3x3))));
 
   // Validate `srgb_to_linear`.
   input.srgb_to_linear.Evaluate(0.5f, in_r, in_g, in_b);
@@ -319,8 +322,8 @@ TEST(DisplayStructTraitsTest, ColorTemperatureAdjustmentRoundtrip) {
   ColorTemperatureAdjustment output;
   SerializeAndDeserialize<mojom::ColorTemperatureAdjustment>(input, &output);
 
-  EXPECT_EQ(0, memcmp(&input.srgb_matrix, &output.srgb_matrix,
-                      sizeof(skcms_Matrix3x3)));
+  UNSAFE_TODO(EXPECT_EQ(0, memcmp(&input.srgb_matrix, &output.srgb_matrix,
+                                  sizeof(skcms_Matrix3x3))));
 }
 
 TEST(DisplayStructTraitsTest, GammaAdjustmentRoundtrip) {
@@ -370,7 +373,8 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentAndNativeModesNull) {
   const base::FilePath sys_path = base::FilePath::FromUTF8Unsafe("a/cb");
   const int64_t product_code = 19;
   const int32_t year_of_manufacture = 1776;
-  const VariableRefreshRateState variable_refresh_rate_state = kVrrEnabled;
+  const VariableRefreshRateState variable_refresh_rate_state =
+      VariableRefreshRateState::kVrrEnabled;
 
   const DisplayMode display_mode({13, 11}, true, 40.0f);
 
@@ -428,7 +432,8 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentModeNull) {
   const base::FilePath sys_path = base::FilePath::FromUTF8Unsafe("z/b");
   const int64_t product_code = 9;
   const int32_t year_of_manufacture = 1776;
-  const VariableRefreshRateState variable_refresh_rate_state = kVrrEnabled;
+  const VariableRefreshRateState variable_refresh_rate_state =
+      VariableRefreshRateState::kVrrEnabled;
 
   const DisplayMode display_mode({13, 11}, true, 50.0f);
 
@@ -486,7 +491,8 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotExternal) {
   const base::FilePath sys_path = base::FilePath::FromUTF8Unsafe("a/cb");
   const int64_t product_code = 139;
   const int32_t year_of_manufacture = 2018;
-  const VariableRefreshRateState variable_refresh_rate_state = kVrrDisabled;
+  const VariableRefreshRateState variable_refresh_rate_state =
+      VariableRefreshRateState::kVrrDisabled;
 
   const DisplayMode display_mode({1024, 768}, false, 60.0f);
   const DisplayMode display_current_mode({1440, 900}, false, 59.89f);
@@ -549,7 +555,8 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotInternal) {
   const base::FilePath sys_path;
   const int64_t product_code = 139;
   const int32_t year_of_manufacture = 2018;
-  const VariableRefreshRateState variable_refresh_rate_state = kVrrNotCapable;
+  const VariableRefreshRateState variable_refresh_rate_state =
+      VariableRefreshRateState::kVrrNotCapable;
 
   const DisplayMode display_mode({2560, 1700}, false, 95.96f);
 

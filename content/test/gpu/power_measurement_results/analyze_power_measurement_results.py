@@ -61,7 +61,7 @@ def LoadResultsJsonFiles():
   jsons = []
   for json_filename in _RESULTS_JSON_FILES:
     json_path = os.path.join(_RESULTS_PATH, json_filename)
-    with open(json_path, 'r') as json_file:
+    with open(json_path, 'r', encoding='utf-8') as json_file:
       logging.debug('Loading %s', json_path)
       jsons.append(json.load(json_file))
   return jsons
@@ -241,8 +241,8 @@ def FindBuild(jsons, selected_bots, test_name, result):
 def RunExperiment_BadBots(jsons,
                           stdev_threshold,
                           repeat_strategy=RepeatStrategy.COUNT_MINIMUM):
-  MarkExperiment('Locate potential bad bots: thresh=%0.2f, repeat=%s' %
-                 (stdev_threshold, RepeatStrategy.ToString(repeat_strategy)))
+  MarkExperiment(f'Locate potential bad bots: thresh={stdev_threshold:.2f}, '
+                 f'repeat={RepeatStrategy.ToString(repeat_strategy)}')
   outcome = ProcessJsonData(
       jsons, per_bot=True, repeat_strategy=repeat_strategy)
   logging.debug('Processed builds: [%d, %d]', outcome['min_build'],
@@ -293,8 +293,8 @@ def RunExperiment_GoodBots(jsons,
   GOOD_BOT_RANGE_PERC = 0.08
   REGULAR_BOT_RANGE_PERC = 0.15
   MarkExperiment(
-      'Locate potential good bots: thresh=%0.2f, repeat=%s' %
-      (STDEV_GOOD_BOT_THRESHOLD, RepeatStrategy.ToString(repeat_strategy)))
+      f'Locate potential good bots: thresh={STDEV_GOOD_BOT_THRESHOLD:.2f}, '
+      f'repeat={RepeatStrategy.ToString(repeat_strategy)}')
   outcome = ProcessJsonData(
       jsons, per_bot=True, repeat_strategy=repeat_strategy)
   logging.debug('Processed builds: [%d, %d]', outcome['min_build'],
@@ -359,8 +359,8 @@ def RunExperiment_GoodBots(jsons,
 def RunExperiment_BestVariations(jsons, find_m_bots, variation_threshold):
   GET_RID_OF_N_BOTS_WITH_WORST_STDEV = 10
 
-  MarkExperiment('Find %d bots with best variations, threshold = %0.2f%%' %
-                 (find_m_bots, (variation_threshold * 100)))
+  MarkExperiment(f'Find {find_m_bots} bots with best variations, threshold = '
+                 f'{variation_threshold * 100:.2f}%')
 
   outcome = ProcessJsonData(
       jsons, per_bot=True, repeat_strategy=RepeatStrategy.COUNT_MINIMUM)

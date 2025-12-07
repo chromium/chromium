@@ -60,6 +60,12 @@ class AndroidPageLoadMetricsObserver
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnLoadedResource(const page_load_metrics::ExtraRequestCompleteInfo&
                             extra_request_complete_info) override;
+  void OnUserTimingMarkFullyLoaded(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  void OnUserTimingMarkFullyVisible(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  void OnUserTimingMarkInteractive(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
  protected:
   AndroidPageLoadMetricsObserver(

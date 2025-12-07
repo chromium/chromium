@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.android.webid;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import android.graphics.Bitmap;
 import android.view.View;
 import android.widget.TextView;
 
@@ -23,7 +24,7 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.I
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * View tests for the Account Selection Widget Mode component ensure that model changes are
+ * View tests for the Account Selection Passive Mode component ensure that model changes are
  * reflected in the sheet.
  */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -43,10 +44,30 @@ public class AccountSelectionWidgetModeViewTest extends AccountSelectionJUnitTes
                 new RpContextEntry(0xCAFE, R.string.account_selection_sheet_title_explicit_signin)
             };
 
+    // The title does not change depending on RP context in a dialog involving multiple IDPs.
+    private final RpContextEntry[] mMultiIdpRpContexts =
+            new RpContextEntry[] {
+                new RpContextEntry(
+                        RpContext.SIGN_IN,
+                        R.string.account_selection_multi_idp_sheet_title_explicit_signin),
+                new RpContextEntry(
+                        RpContext.SIGN_UP,
+                        R.string.account_selection_multi_idp_sheet_title_explicit_signin),
+                new RpContextEntry(
+                        RpContext.USE,
+                        R.string.account_selection_multi_idp_sheet_title_explicit_signin),
+                new RpContextEntry(
+                        RpContext.CONTINUE,
+                        R.string.account_selection_multi_idp_sheet_title_explicit_signin),
+                // Test an invalid value.
+                new RpContextEntry(
+                        0xCAFE, R.string.account_selection_multi_idp_sheet_title_explicit_signin)
+            };
+
     @Before
     @Override
     public void setUp() {
-        mRpMode = RpMode.WIDGET;
+        mRpMode = RpMode.PASSIVE;
         super.setUp();
     }
 
@@ -58,9 +79,10 @@ public class AccountSelectionWidgetModeViewTest extends AccountSelectionJUnitTes
                     new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                             .with(HeaderProperties.TYPE, HeaderType.SIGN_IN)
                             .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
+                            .with(HeaderProperties.IFRAME_FOR_DISPLAY, "")
                             .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                             .with(HeaderProperties.RP_CONTEXT, rpContext.mValue)
-                            .with(HeaderProperties.RP_MODE, RpMode.WIDGET)
+                            .with(HeaderProperties.RP_MODE, RpMode.PASSIVE)
                             .build());
             assertEquals(View.VISIBLE, mContentView.getVisibility());
             TextView title = mContentView.findViewById(R.id.header_title);
@@ -73,15 +95,46 @@ public class AccountSelectionWidgetModeViewTest extends AccountSelectionJUnitTes
     }
 
     @Test
+    public void testMultiIdpTitleDisplayed() {
+        for (RpContextEntry rpContext : mMultiIdpRpContexts) {
+            mModel.set(
+                    ItemProperties.HEADER,
+                    new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
+                            .with(HeaderProperties.TYPE, HeaderType.SIGN_IN)
+                            .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
+                            .with(HeaderProperties.IFRAME_FOR_DISPLAY, "")
+                            .with(HeaderProperties.IDP_FOR_DISPLAY, "should_not_show_up.com")
+                            .with(HeaderProperties.RP_CONTEXT, rpContext.mValue)
+                            .with(HeaderProperties.RP_MODE, RpMode.PASSIVE)
+                            .with(HeaderProperties.IS_MULTIPLE_IDPS, true)
+                            .with(
+                                    HeaderProperties.HEADER_ICON,
+                                    Bitmap.createBitmap(16, 16, Bitmap.Config.ARGB_8888))
+                            .build());
+            assertEquals(View.VISIBLE, mContentView.getVisibility());
+            TextView title = mContentView.findViewById(R.id.header_title);
+
+            assertEquals(
+                    "Incorrect title",
+                    mResources.getString(rpContext.mTitleId, "example.org"),
+                    title.getText().toString());
+
+            View headerIcon = mContentView.findViewById(R.id.header_icon);
+            assertEquals(View.VISIBLE, headerIcon.getVisibility());
+        }
+    }
+
+    @Test
     public void testVerifyingTitleDisplayedExplicitSignin() {
         mModel.set(
                 ItemProperties.HEADER,
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                         .with(HeaderProperties.TYPE, HeaderType.VERIFY)
                         .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
+                        .with(HeaderProperties.IFRAME_FOR_DISPLAY, "")
                         .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                         .with(HeaderProperties.RP_CONTEXT, RpContext.SIGN_IN)
-                        .with(HeaderProperties.RP_MODE, RpMode.WIDGET)
+                        .with(HeaderProperties.RP_MODE, RpMode.PASSIVE)
                         .build());
         assertEquals(View.VISIBLE, mContentView.getVisibility());
         TextView title = mContentView.findViewById(R.id.header_title);
@@ -101,9 +154,10 @@ public class AccountSelectionWidgetModeViewTest extends AccountSelectionJUnitTes
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                         .with(HeaderProperties.TYPE, HeaderType.VERIFY_AUTO_REAUTHN)
                         .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
+                        .with(HeaderProperties.IFRAME_FOR_DISPLAY, "")
                         .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                         .with(HeaderProperties.RP_CONTEXT, RpContext.SIGN_IN)
-                        .with(HeaderProperties.RP_MODE, RpMode.WIDGET)
+                        .with(HeaderProperties.RP_MODE, RpMode.PASSIVE)
                         .build());
         assertEquals(View.VISIBLE, mContentView.getVisibility());
         TextView title = mContentView.findViewById(R.id.header_title);

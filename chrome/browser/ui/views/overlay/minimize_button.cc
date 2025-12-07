@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/overlay/minimize_button.h"
 
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/grit/generated_resources.h"
@@ -16,8 +15,8 @@
 
 namespace {
 
-constexpr int kMinimizeButtonVerticalMargin = 4;
-constexpr int kMinimizeButtonHorizontalMargin = 32;
+constexpr int kMinimizeButtonVerticalMargin = 5;
+constexpr int kMinimizeButtonHorizontalMargin = 52;
 constexpr int kMinimizeButtonSize = 24;
 constexpr int kMinimizeButtonIconSize = 16;
 
@@ -40,17 +39,7 @@ OverlayWindowMinimizeButton::OverlayWindowMinimizeButton(
   SetTooltipText(button_label);
 }
 
-void OverlayWindowMinimizeButton::SetPosition(
-    const gfx::Size& size,
-    VideoOverlayWindowViews::WindowQuadrant quadrant) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (quadrant == VideoOverlayWindowViews::WindowQuadrant::kBottomLeft) {
-    views::ImageButton::SetPosition(gfx::Point(kMinimizeButtonHorizontalMargin,
-                                               kMinimizeButtonVerticalMargin));
-    return;
-  }
-#endif
-
+void OverlayWindowMinimizeButton::SetPosition(const gfx::Size& size) {
   views::ImageButton::SetPosition(gfx::Point(
       size.width() - kMinimizeButtonSize - kMinimizeButtonHorizontalMargin,
       kMinimizeButtonVerticalMargin));

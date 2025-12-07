@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/gmock_callback_support.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_factory.h"
 #include "chrome/browser/fast_checkout/mock_fast_checkout_capabilities_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,7 +18,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
-#include "components/autofill/core/browser/ui/mock_fast_checkout_client.h"
+#include "components/autofill/core/browser/integrators/fast_checkout/mock_fast_checkout_client.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -25,12 +26,12 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "url/gurl.h"
 
+namespace {
+
 using testing::_;
 using testing::Eq;
 using testing::SaveArg;
 using testing::StrictMock;
-
-namespace {
 
 // Creates the same fake http response for every request.
 std::unique_ptr<net::test_server::HttpResponse> CreateFakeResponse(
@@ -41,9 +42,7 @@ std::unique_ptr<net::test_server::HttpResponse> CreateFakeResponse(
   return response;
 }
 
-}  // namespace
-
-class FastCheckoutTabHelperBrowserTest : public PlatformBrowserTest {
+class FastCheckoutTabHelperBrowserTest : public AndroidBrowserTest {
  public:
   void SetUpOnMainThread() override {
     Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
@@ -85,8 +84,8 @@ class FastCheckoutTabHelperBrowserTest : public PlatformBrowserTest {
   void NavigateToUrl(const GURL& url) {
     ASSERT_TRUE(content::NavigateToURL(
         GetActiveWebContents(),
-        embedded_test_server()->GetURL(url.host(), url.path())));
-    base::RunLoop().RunUntilIdle();
+        embedded_test_server()->GetURL(url.GetHost(), url.GetPath())));
+    content::RunAllTasksUntilIdle();
   }
 
  private:
@@ -100,8 +99,11 @@ IN_PROC_BROWSER_TEST_F(
     DidStartNavigation_NoShoppingURL_NoFetchCapabilitiesCall) {
   // No availability request was started or the `StrickMock` would have failed.
   GURL no_shopping_url("http://www.example.com/empty.html");
-  EXPECT_CALL(*fast_checkout_client(), OnNavigation);
+  base::RunLoop run_loop;
+  EXPECT_CALL(*fast_checkout_client(), OnNavigation)
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
   NavigateToUrl(no_shopping_url);
+  run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -109,8 +111,11 @@ IN_PROC_BROWSER_TEST_F(
     DidStartNavigation_CheckoutURL_MakesFetchCapabilitiesCall) {
   GURL shopping_url("http://www.example2.co.uk/checkout.html");
   EXPECT_CALL(*fetcher(), FetchCapabilities);
-  EXPECT_CALL(*fast_checkout_client(), OnNavigation);
+  base::RunLoop run_loop;
+  EXPECT_CALL(*fast_checkout_client(), OnNavigation)
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
   NavigateToUrl(shopping_url);
+  run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -118,6 +123,11 @@ IN_PROC_BROWSER_TEST_F(
     DidStartNavigation_CartShoppingURL_MakesFetchCapabilitiesCall) {
   GURL shopping_cart_url("http://www.example2.co.uk/cart.html");
   EXPECT_CALL(*fetcher(), FetchCapabilities);
-  EXPECT_CALL(*fast_checkout_client(), OnNavigation);
+  base::RunLoop run_loop;
+  EXPECT_CALL(*fast_checkout_client(), OnNavigation)
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
   NavigateToUrl(shopping_cart_url);
+  run_loop.Run();
 }
+
+}  // namespace

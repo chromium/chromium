@@ -5,36 +5,37 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_REQUEST_DATA_WRAPPER_H_
 #define CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_REQUEST_DATA_WRAPPER_H_
 
-#include <memory>
 #include <string>
 #include <string_view>
 
-#include "base/memory/raw_ref.h"
-
-namespace net {
-struct NetworkTrafficAnnotationTag;
-}  // namespace net
+#include "base/functional/callback.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace ash::babelorca {
 
-class ResponseCallbackWrapper;
+class TachyonResponse;
 
 struct RequestDataWrapper {
+  using ResponseCallback = base::OnceCallback<void(TachyonResponse)>;
+
   RequestDataWrapper(
       const net::NetworkTrafficAnnotationTag& annotation_tag_param,
       std::string_view url_param,
       int max_retries_param,
-      std::unique_ptr<ResponseCallbackWrapper> response_cb_param);
+      ResponseCallback response_cb_param,
+      std::string content_type_param = "application/x-protobuf");
 
   ~RequestDataWrapper();
 
-  raw_ref<const net::NetworkTrafficAnnotationTag> annotation_tag;
+  const net::NetworkTrafficAnnotationTag annotation_tag;
   const std::string_view url;
   const int max_retries;
-  std::unique_ptr<ResponseCallbackWrapper> response_cb;
+  ResponseCallback response_cb;
   int oauth_version = 0;
   int oauth_retry_num = 0;
   std::string content_data;
+  const std::string content_type;
+  std::optional<std::string> uma_name;
 };
 
 }  // namespace ash::babelorca

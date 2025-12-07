@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_USE_CASE_H_
 
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/perfetto/include/perfetto/tracing/string_helpers.h"
 
 namespace blink::scheduler {
 
@@ -52,7 +53,7 @@ enum class UseCase {
   kMaxValue = kDiscreteInputResponse
 };
 
-PLATFORM_EXPORT const char* UseCaseToString(UseCase);
+PLATFORM_EXPORT perfetto::StaticString UseCaseToString(UseCase);
 
 }  // namespace blink::scheduler
 

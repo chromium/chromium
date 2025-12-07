@@ -28,8 +28,7 @@ class BluetoothAdapter;
 
 }  // namespace device
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 class Device;
 enum class AccountKeyFailure;
@@ -51,6 +50,7 @@ class FastPairPairerImpl : public FastPairPairer,
             pair_failed_callback,
         base::OnceCallback<void(scoped_refptr<Device>, AccountKeyFailure)>
             account_key_failure_callback,
+        base::OnceCallback<void(std::u16string, uint32_t)> display_passkey,
         base::OnceCallback<void(scoped_refptr<Device>)>
             pairing_procedure_complete);
 
@@ -67,6 +67,7 @@ class FastPairPairerImpl : public FastPairPairer,
             pair_failed_callback,
         base::OnceCallback<void(scoped_refptr<Device>, AccountKeyFailure)>
             account_key_failure_callback,
+        base::OnceCallback<void(std::u16string, uint32_t)> display_passkey,
         base::OnceCallback<void(scoped_refptr<Device>)>
             pairing_procedure_complete) = 0;
 
@@ -82,6 +83,7 @@ class FastPairPairerImpl : public FastPairPairer,
           pair_failed_callback,
       base::OnceCallback<void(scoped_refptr<Device>, AccountKeyFailure)>
           account_key_failure_callback,
+      base::OnceCallback<void(std::u16string, uint32_t)> display_passkey,
       base::OnceCallback<void(scoped_refptr<Device>)>
           pairing_procedure_complete);
   FastPairPairerImpl(const FastPairPairerImpl&) = delete;
@@ -193,6 +195,7 @@ class FastPairPairerImpl : public FastPairPairer,
       pair_failed_callback_;
   base::OnceCallback<void(scoped_refptr<Device>, AccountKeyFailure)>
       account_key_failure_callback_;
+  base::OnceCallback<void(std::u16string, uint32_t)> display_passkey_;
   base::OnceCallback<void(scoped_refptr<Device>)> pairing_procedure_complete_;
   raw_ptr<FastPairHandshake, DanglingUntriaged> fast_pair_handshake_ = nullptr;
   base::ScopedObservation<device::BluetoothAdapter,
@@ -207,7 +210,6 @@ class FastPairPairerImpl : public FastPairPairer,
   base::WeakPtrFactory<FastPairPairerImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair
 
 #endif  // ASH_QUICK_PAIR_PAIRING_FAST_PAIR_FAST_PAIR_PAIRER_IMPL_H_

@@ -1,7 +1,8 @@
 URL: http://www.pylint.org/
 Name: pylint
 Version: 1.4.1
-License: GPL v2
+Update Mechanism: Manual
+License: GPL-2.0
 License File: pylint/LICENSE.txt
 Security Critical: No
 Shipped: no

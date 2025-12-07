@@ -7,6 +7,7 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 
 namespace storage {

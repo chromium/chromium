@@ -4,30 +4,12 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/features.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//google_apis/config.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 declare_args() {
-  # Set the variable 'use_official_google_api_keys' to true
-  # to use the Google-internal file containing official API keys
-  # even in a developer build.  Setting this variable explicitly to
-  # true will cause the build to fail if the internal file is missing.
-  #
-  # Set the variable to false to not use the internal file, even for
-  # Chrome-branded builds or when it exists in your checkout.
-  #
-  # Leave it set to "" to have the variable implicitly set to true for
-  # Chrome-branded builds or if
-  # //src/google_apis/internal/google_chrome_api_keys.h is present and false
-  # otherwise.
-  # This does not apply to iOS builds, which use different mechanisms and always
-  # evaluate to use_official_google_api_keys=false.
-  # See https://crbug.com/1183709.
-  use_official_google_api_keys = ""
-
   # Set these to bake the specified API keys and OAuth client
   # IDs/secrets into your build.
   #
@@ -51,7 +33,7 @@ declare_args() {
 
 if (use_official_google_api_keys == "") {
   # No override set. Determine the default behavior.
-  if (is_chrome_branded) {
+  if (is_internal_chrome_branded) {
     # Chrome-branded builds default to behaving as if
     #`use_official_google_api_keys` was explicitly set to true and will fail to
     # build if the file is missing.
@@ -70,8 +52,8 @@ if (use_official_google_api_keys == "") {
 # Official API keys should always be used for Chrome-branded builds except on
 # iOS (see https://crbug.com/1183709) and Fuchsia (see the description of
 # https://crbug.com/1171510 for background).
-assert(
-    use_official_google_api_keys || !is_chrome_branded || is_ios || is_fuchsia)
+assert(use_official_google_api_keys || !is_internal_chrome_branded || is_ios ||
+       is_fuchsia)
 
 declare_args() {
   # Whether the SetAPIKey() method is defined.
@@ -113,8 +95,12 @@ config("key_defines") {
 
 component("google_apis") {
   sources = [
+    "api_key_cache.cc",
+    "api_key_cache.h",
     "credentials_mode.cc",
     "credentials_mode.h",
+    "default_api_keys-inc.cc",
+    "default_api_keys.h",
     "gaia/core_account_id.cc",
     "gaia/core_account_id.h",
     "gaia/gaia_access_token_fetcher.cc",
@@ -129,6 +115,10 @@ component("google_apis") {
     "gaia/gaia_config.h",
     "gaia/gaia_constants.cc",
     "gaia/gaia_constants.h",
+    "gaia/gaia_features.cc",
+    "gaia/gaia_features.h",
+    "gaia/gaia_id.cc",
+    "gaia/gaia_id.h",
     "gaia/gaia_oauth_client.cc",
     "gaia/gaia_oauth_client.h",
     "gaia/gaia_switches.cc",
@@ -155,14 +145,14 @@ component("google_apis") {
     "gaia/oauth2_mint_access_token_fetcher_adapter.h",
     "gaia/oauth2_mint_token_flow.cc",
     "gaia/oauth2_mint_token_flow.h",
+    "gaia/oauth2_response.h",
     "gaia/oauth_multilogin_result.cc",
     "gaia/oauth_multilogin_result.h",
-    "gaia/oauth_request_signer.cc",
-    "gaia/oauth_request_signer.h",
-    "google_api_keys-inc.cc",
+    "gaia/register_bound_session_payload.cc",
+    "gaia/register_bound_session_payload.h",
+    "gaia/token_binding_response_encryption_error.h",
+    "google_api_keys.cc",
     "google_api_keys.h",
-    "google_api_keys_utils.cc",
-    "google_api_keys_utils.h",
   ]
 
   configs += [
@@ -173,15 +163,12 @@ component("google_apis") {
   public_deps = [
     ":buildflags",
     "//base",
-    "//build:chromeos_buildflags",
     "//services/network/public/cpp",
   ]
 
   deps = [
     ":proto",
-    "//base/version_info:channel",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//crypto",
     "//mojo/public/cpp/bindings:struct_traits",
     "//net",
@@ -198,7 +185,15 @@ component("google_apis") {
       "google_api_keys_mac.mm",
     ]
 
+    if (is_ios) {
+      sources += [ "gaia/gaia_id_ios.mm" ]
+    }
+
     frameworks = [ "Foundation.framework" ]
+  }
+
+  if (is_android) {
+    deps += [ "gaia/android:jni_headers" ]
   }
 
   defines = [ "IS_GOOGLE_APIS_IMPL" ]
@@ -207,6 +202,7 @@ component("google_apis") {
 proto_library("proto") {
   sources = [
     "gaia/bound_oauth_token.proto",
+    "gaia/list_accounts_response.proto",
     "gaia/oauth2_mint_token_consent_result.proto",
   ]
 }
@@ -218,8 +214,11 @@ static_library("test_support") {
     "gaia/fake_gaia.h",
     "gaia/fake_oauth2_access_token_manager.cc",
     "gaia/fake_oauth2_access_token_manager.h",
+    "gaia/fake_oauth2_token_response.cc",
+    "gaia/fake_oauth2_token_response.h",
     "gaia/gaia_auth_test_util.cc",
     "gaia/gaia_auth_test_util.h",
+    "gaia/gaia_id_literal.h",
     "gaia/gaia_urls_overrider_for_testing.cc",
     "gaia/gaia_urls_overrider_for_testing.h",
     "gaia/oauth2_access_token_manager_test_util.cc",
@@ -250,6 +249,7 @@ source_set("run_all_unittests") {
 
 test("google_apis_unittests") {
   sources = [
+    "gaia/fake_oauth2_token_response_unittest.cc",
     "gaia/gaia_auth_fetcher_unittest.cc",
     "gaia/gaia_auth_util_unittest.cc",
     "gaia/gaia_config_unittest.cc",
@@ -263,7 +263,7 @@ test("google_apis_unittests") {
     "gaia/oauth2_mint_access_token_fetcher_adapter_unittest.cc",
     "gaia/oauth2_mint_token_flow_unittest.cc",
     "gaia/oauth_multilogin_result_unittest.cc",
-    "gaia/oauth_request_signer_unittest.cc",
+    "gaia/register_bound_session_payload_unittest.cc",
     "google_api_keys_unittest.cc",
     "google_api_keys_unittest.h",
   ]
@@ -277,13 +277,12 @@ test("google_apis_unittests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//base/version_info:channel",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//google_apis/calendar:calendar_unittests",
     "//google_apis/common:common_unittests",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/protobuf:protobuf_lite",
   ]
 
   if (is_ios) {
@@ -314,9 +313,15 @@ test("google_apis_unittests") {
   if (is_chromeos) {
     deps += [
       "//google_apis/classroom:classroom_unittests",
+      "//google_apis/people:people_unittest_sources",
       "//google_apis/tasks:tasks_unittests",
+      "//google_apis/youtube_music:youtube_music_unittests",
     ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 bundle_data("google_apis_unittest_bundle_data") {

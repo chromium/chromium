@@ -20,6 +20,7 @@
 #include "base/values.h"
 #include "chromeos/ash/components/audio/audio_device.h"
 #include "chromeos/ash/components/audio/audio_device_id.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -43,15 +44,17 @@ const char kActivateByUserKey[] = "activate_by_user";
 bool MigrateDeviceIdInSettings(base::Value::Dict* settings,
                                const std::string& intended_key,
                                const AudioDevice& device) {
-  if (device.stable_device_id_version == 1)
+  if (device.stable_device_id_version == 1) {
     return false;
+  }
 
   DCHECK_EQ(2, device.stable_device_id_version);
 
   std::string old_device_id = GetVersionedDeviceIdString(device, 1);
   std::optional<base::Value> value = settings->Extract(old_device_id);
-  if (!value)
+  if (!value) {
     return false;
+  }
 
   DCHECK_EQ(intended_key, GetDeviceIdString(device));
   settings->SetByDottedPath(intended_key, std::move(*value));
@@ -62,10 +65,11 @@ bool MigrateDeviceIdInSettings(base::Value::Dict* settings,
 
 double AudioDevicesPrefHandlerImpl::GetOutputVolumeValue(
     const AudioDevice* device) {
-  if (!device)
+  if (!device) {
     return kDefaultOutputVolumePercent;
-  else
+  } else {
     return GetOutputVolumePrefValue(*device);
+  }
 }
 
 double AudioDevicesPrefHandlerImpl::GetInputGainValue(
@@ -117,8 +121,9 @@ void AudioDevicesPrefHandlerImpl::SetInputGainPrefValue(
 
 bool AudioDevicesPrefHandlerImpl::GetMuteValue(const AudioDevice& device) {
   std::string device_id_str = GetDeviceIdString(device);
-  if (!device_mute_settings_.Find(device_id_str))
+  if (!device_mute_settings_.Find(device_id_str)) {
     MigrateDeviceMuteSettings(device_id_str, device);
+  }
 
   int mute =
       device_mute_settings_.FindInt(device_id_str).value_or(kPrefMuteOff);
@@ -143,8 +148,9 @@ void AudioDevicesPrefHandlerImpl::SetDeviceActive(const AudioDevice& device,
                                                   bool activate_by_user) {
   base::Value::Dict dict;
   dict.Set(kActiveKey, active);
-  if (active)
+  if (active) {
     dict.Set(kActivateByUserKey, activate_by_user);
+  }
 
   // Use this opportunity to remove device record under deprecated device ID,
   // if one exists.
@@ -180,8 +186,9 @@ bool AudioDevicesPrefHandlerImpl::GetDeviceActive(const AudioDevice& device,
   }
 
   *active = active_opt.value();
-  if (!*active)
+  if (!*active) {
     return true;
+  }
 
   std::optional<bool> activate_by_user_opt = dict->FindBool(kActivateByUserKey);
   if (!activate_by_user_opt.has_value()) {
@@ -206,8 +213,9 @@ void AudioDevicesPrefHandlerImpl::SetUserPriorityHigherThan(
 
   // Don't need to update the user priority of `target` if it's already has
   // higher priority than base.
-  if (t > b)
+  if (t > b) {
     return;
+  }
 
   auto target_id = GetDeviceIdString(target);
   base::Value::Dict& priority_prefs =
@@ -218,16 +226,18 @@ void AudioDevicesPrefHandlerImpl::SetUserPriorityHigherThan(
     // before: [. . . t - - - b . . .]
     // after:  [. . . - - - b t . . .]
     for (auto it : priority_prefs) {
-      if (it.second.GetInt() > t && it.second.GetInt() <= b)
+      if (it.second.GetInt() > t && it.second.GetInt() <= b) {
         it.second = base::Value(it.second.GetInt() - 1);
+      }
     }
     priority_prefs.Set(target_id, b);
   } else {
     // before: [. . . b + + +]
     // after : [. . . b t + + +]
     for (auto it : priority_prefs) {
-      if (it.second.GetInt() > b)
+      if (it.second.GetInt() > b) {
         it.second = base::Value(it.second.GetInt() + 1);
+      }
     }
     priority_prefs.Set(target_id, b + 1);
   }
@@ -397,8 +407,9 @@ double AudioDevicesPrefHandlerImpl::GetOutputVolumePrefValue(
     const AudioDevice& device) {
   DCHECK(!device.is_input);
   std::string device_id_str = GetDeviceIdString(device);
-  if (!device_volume_settings_.Find(device_id_str))
+  if (!device_volume_settings_.Find(device_id_str)) {
     MigrateDeviceVolumeGainSettings(device_id_str, device);
+  }
   return *device_volume_settings_.FindDouble(device_id_str);
 }
 
@@ -406,8 +417,9 @@ double AudioDevicesPrefHandlerImpl::GetInputGainPrefValue(
     const AudioDevice& device) {
   DCHECK(device.is_input);
   std::string device_id_str = GetDeviceIdString(device);
-  if (!device_gain_settings_.Find(device_id_str))
+  if (!device_gain_settings_.Find(device_id_str)) {
     SetInputGainPrefValue(device, kDefaultInputGainPercent);
+  }
   return *device_gain_settings_.FindDouble(device_id_str);
 }
 
@@ -425,23 +437,44 @@ double AudioDevicesPrefHandlerImpl::GetDeviceDefaultOutputVolume(
   }
 }
 
+bool AudioDevicesPrefHandlerImpl::GetVoiceIsolationState() const {
+  return local_state_->GetBoolean(prefs::kInputVoiceIsolationEnabled);
+}
+
+void AudioDevicesPrefHandlerImpl::SetVoiceIsolationState(
+    bool voice_isolation_state) {
+  local_state_->SetBoolean(prefs::kInputVoiceIsolationEnabled,
+                           voice_isolation_state);
+}
+
+uint32_t AudioDevicesPrefHandlerImpl::GetVoiceIsolationPreferredEffect() const {
+  return static_cast<uint32_t>(
+      local_state_->GetInteger(prefs::kInputVoiceIsolationPreferredEffect));
+}
+
+void AudioDevicesPrefHandlerImpl::SetVoiceIsolationPreferredEffect(
+    uint32_t effect) {
+  local_state_->SetInteger(prefs::kInputVoiceIsolationPreferredEffect,
+                           static_cast<int>(effect));
+}
+
 bool AudioDevicesPrefHandlerImpl::GetNoiseCancellationState() {
-  return local_state_->GetBoolean(prefs::kInputNoiseCancellationEnabled);
+  return local_state_->GetBoolean(prefs::kInputVoiceIsolationEnabled);
 }
 
 void AudioDevicesPrefHandlerImpl::SetNoiseCancellationState(
     bool noise_cancellation_state) {
-  local_state_->SetBoolean(prefs::kInputNoiseCancellationEnabled,
+  local_state_->SetBoolean(prefs::kInputVoiceIsolationEnabled,
                            noise_cancellation_state);
 }
 
 bool AudioDevicesPrefHandlerImpl::GetStyleTransferState() const {
-  return local_state_->GetBoolean(prefs::kInputStyleTransferEnabled);
+  return local_state_->GetBoolean(prefs::kInputVoiceIsolationEnabled);
 }
 
 void AudioDevicesPrefHandlerImpl::SetStyleTransferState(
     bool style_transfer_state) {
-  local_state_->SetBoolean(prefs::kInputStyleTransferEnabled,
+  local_state_->SetBoolean(prefs::kInputVoiceIsolationEnabled,
                            style_transfer_state);
 }
 
@@ -464,6 +497,15 @@ void AudioDevicesPrefHandlerImpl::SetHfpMicSrState(bool hfp_mic_sr_state) {
                            hfp_mic_sr_state);
 }
 
+bool AudioDevicesPrefHandlerImpl::GetSpatialAudioState() {
+  return local_state_->GetBoolean(prefs::kSpatialAudioEnabled);
+}
+
+void AudioDevicesPrefHandlerImpl::SetSpatialAudioState(
+    bool spatial_audio_state) {
+  local_state_->SetBoolean(prefs::kSpatialAudioEnabled, spatial_audio_state);
+}
+
 AudioDevicesPrefHandlerImpl::AudioDevicesPrefHandlerImpl(
     PrefService* local_state)
     : local_state_(local_state) {
@@ -475,20 +517,11 @@ AudioDevicesPrefHandlerImpl::AudioDevicesPrefHandlerImpl(
   LoadInputDevicesUserPriorityPref();
   LoadOutputDevicesUserPriorityPref();
 
-  // Reset set-based audio selection preference pref for testing purpose.
-  if (features::IsResetAudioSelectionImprovementPrefEnabled()) {
-    SaveDevicesStatePref();
-    SaveInputDevicePreferenceSetPref();
-    SaveOutputDevicePreferenceSetPref();
-    SaveMostRecentActivatedInputDeviceIdsPref();
-    SaveMostRecentActivatedOutputDeviceIdsPref();
-  } else {
-    LoadDevicesStatePref();
-    LoadInputDevicePreferenceSetPref();
-    LoadOutputDevicePreferenceSetPref();
-    LoadMostRecentActivatedInputDeviceIdsPref();
-    LoadMostRecentActivatedOutputDeviceIdsPref();
-  }
+  LoadDevicesStatePref();
+  LoadInputDevicePreferenceSetPref();
+  LoadOutputDevicePreferenceSetPref();
+  LoadMostRecentActivatedInputDeviceIdsPref();
+  LoadMostRecentActivatedOutputDeviceIdsPref();
 }
 
 AudioDevicesPrefHandlerImpl::~AudioDevicesPrefHandlerImpl() = default;
@@ -499,6 +532,14 @@ void AudioDevicesPrefHandlerImpl::InitializePrefObservers() {
       base::BindRepeating(&AudioDevicesPrefHandlerImpl::NotifyAudioPolicyChange,
                           base::Unretained(this));
   pref_change_registrar_.Add(prefs::kAudioOutputAllowed, callback);
+
+  base::RepeatingClosure callbackVoiceIsolation = base::BindRepeating(
+      &AudioDevicesPrefHandlerImpl::NotifyVoiceIsolationChange,
+      base::Unretained(this));
+  pref_change_registrar_.Add(prefs::kInputVoiceIsolationEnabled,
+                             callbackVoiceIsolation);
+  pref_change_registrar_.Add(prefs::kInputVoiceIsolationPreferredEffect,
+                             callbackVoiceIsolation);
 }
 
 void AudioDevicesPrefHandlerImpl::LoadDevicesMutePref() {
@@ -649,8 +690,15 @@ void AudioDevicesPrefHandlerImpl::MigrateDeviceVolumeGainSettings(
 }
 
 void AudioDevicesPrefHandlerImpl::NotifyAudioPolicyChange() {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnAudioPolicyPrefChanged();
+  }
+}
+
+void AudioDevicesPrefHandlerImpl::NotifyVoiceIsolationChange() {
+  for (auto& observer : observers_) {
+    observer.OnVoiceIsolationPrefChanged();
+  }
 }
 
 // static
@@ -659,6 +707,8 @@ void AudioDevicesPrefHandlerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kAudioDevicesGainPercent);
   registry->RegisterDictionaryPref(prefs::kAudioDevicesMute);
   registry->RegisterDictionaryPref(prefs::kAudioDevicesState);
+  registry->RegisterIntegerPref(prefs::kInputVoiceIsolationPreferredEffect, 0);
+  registry->RegisterBooleanPref(prefs::kInputVoiceIsolationEnabled, false);
   registry->RegisterBooleanPref(prefs::kInputNoiseCancellationEnabled, false);
   registry->RegisterBooleanPref(prefs::kInputStyleTransferEnabled, false);
   registry->RegisterBooleanPref(prefs::kHandsFreeProfileInputSuperResolution,
@@ -683,6 +733,9 @@ void AudioDevicesPrefHandlerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kAudioDevicesLastSeen);
 
   registry->RegisterBooleanPref(prefs::kInputForceRespectUiGainsEnabled, false);
+  registry->RegisterBooleanPref(
+      prefs::kSpatialAudioEnabled, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
 }  // namespace ash

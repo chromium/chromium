@@ -4,6 +4,8 @@
 
 #include "media/base/media_content_type.h"
 
+#include "base/time/time.h"
+
 namespace media {
 
 namespace {

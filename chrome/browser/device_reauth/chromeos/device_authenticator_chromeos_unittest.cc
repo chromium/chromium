@@ -4,14 +4,20 @@
 
 #include "chrome/browser/device_reauth/chromeos/device_authenticator_chromeos.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "components/device_reauth/device_reauth_metrics_util.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -19,6 +25,7 @@ namespace {
 
 using device_reauth::DeviceAuthenticator;
 using device_reauth::ReauthResult;
+using ::testing::Return;
 
 class MockSystemAuthenticator : public AuthenticatorChromeOSInterface {
  public:
@@ -27,13 +34,15 @@ class MockSystemAuthenticator : public AuthenticatorChromeOSInterface {
               (const std::u16string& message,
                base::OnceCallback<void(bool)> callback),
               (override));
+  MOCK_METHOD(BiometricsStatusChromeOS,
+              CheckIfBiometricsAvailable,
+              (),
+              (override));
 };
 
 constexpr base::TimeDelta kAuthValidityPeriod = base::Seconds(60);
 constexpr char kHistogramName[] =
     "PasswordManager.ReauthToAccessPasswordInSettings";
-
-}  // namespace
 
 class DeviceAuthenticatorChromeOSTest : public testing::Test {
  public:
@@ -54,6 +63,10 @@ class DeviceAuthenticatorChromeOSTest : public testing::Test {
 
   MockSystemAuthenticator& system_authenticator() {
     return *system_authenticator_;
+  }
+
+  PrefService* local_state() {
+    return TestingBrowserProcess::GetGlobal()->local_state();
   }
 
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
@@ -180,3 +193,56 @@ TEST_F(DeviceAuthenticatorChromeOSTest, RecordFailAuthHistogram) {
   histogram_tester().ExpectUniqueSample(kHistogramName, ReauthResult::kFailure,
                                         1);
 }
+
+// Verifies that the caching mechanism for BiometricsAvailable works.
+struct TestCase {
+  const char* description;
+  BiometricsStatusChromeOS availability;
+  bool expected_result;
+  int expected_bucket;
+};
+
+class DeviceAuthenticatorChromeOSTestAvailability
+    : public DeviceAuthenticatorChromeOSTest,
+      public testing::WithParamInterface<TestCase> {
+};
+
+TEST_P(DeviceAuthenticatorChromeOSTestAvailability, AvailabilityCheck) {
+  TestCase test_case = GetParam();
+  SCOPED_TRACE(test_case.description);
+  EXPECT_CALL(system_authenticator(), CheckIfBiometricsAvailable)
+      .WillOnce(Return(test_case.availability));
+  EXPECT_EQ(test_case.expected_result,
+            authenticator()->CanAuthenticateWithBiometrics());
+  EXPECT_EQ(test_case.expected_result,
+            local_state()->GetBoolean(
+                password_manager::prefs::kHadBiometricsAvailable));
+  histogram_tester().ExpectUniqueSample(
+      "PasswordManager.BiometricAvailabilityChromeOS",
+      test_case.expected_bucket, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DeviceAuthenticatorChromeOSTestAvailability,
+    ::testing::Values(
+        TestCase{
+            .description = "kAvailable",
+            .availability = BiometricsStatusChromeOS::kAvailable,
+            .expected_result = true,
+            .expected_bucket = 1,
+        },
+        TestCase{
+            .description = "kUnavailable",
+            .availability = BiometricsStatusChromeOS::kUnavailable,
+            .expected_result = false,
+            .expected_bucket = 2,
+
+        },
+        TestCase{
+            .description = "kNotConfiguredForUser",
+            .availability = BiometricsStatusChromeOS::kNotConfiguredForUser,
+            .expected_result = false,
+            .expected_bucket = 3,
+        }));
+}  // namespace

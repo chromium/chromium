@@ -11,6 +11,7 @@
 #include "base/json/json_writer.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/browsing_topics/common/common_types.h"
@@ -148,6 +149,9 @@ std::optional<EpochTopics> BrowsingTopicsState::AddEpoch(
   DCHECK(loaded_);
 
   epochs_.push_back(std::move(epoch_topics));
+  epochs_.back().ScheduleExpiration(base::BindOnce(
+      &BrowsingTopicsState::OnEpochExpired, weak_ptr_factory_.GetWeakPtr(),
+      epochs_.back().calculation_time()));
 
   // Remove the epoch data that is no longer useful.
   std::optional<EpochTopics> removed_epoch_topics;
@@ -161,6 +165,36 @@ std::optional<EpochTopics> BrowsingTopicsState::AddEpoch(
 
   ScheduleSave();
   return removed_epoch_topics;
+}
+
+void BrowsingTopicsState::ScheduleEpochsExpiration() {
+  base::Time expired_calculation_time =
+      base::Time::Now() -
+      blink::features::kBrowsingTopicsEpochRetentionDuration.Get();
+
+  // Remove expired epochs synchronously.
+  base::EraseIf(epochs_, [&expired_calculation_time](const EpochTopics& epoch) {
+    return epoch.calculation_time() <= expired_calculation_time;
+  });
+
+  for (EpochTopics& epoch : epochs_) {
+    epoch.ScheduleExpiration(base::BindOnce(
+        &BrowsingTopicsState::OnEpochExpired, weak_ptr_factory_.GetWeakPtr(),
+        epoch.calculation_time()));
+  }
+
+  ScheduleSave();
+}
+
+void BrowsingTopicsState::OnEpochExpired(base::Time calculation_time) {
+  // Remove all epochs associated with the given calculation_time.
+  // Though calculation times are typically unique, this handles potential
+  // duplicates.
+  base::EraseIf(epochs_, [&calculation_time](const EpochTopics& epoch) {
+    return epoch.calculation_time() == calculation_time;
+  });
+
+  ScheduleSave();
 }
 
 void BrowsingTopicsState::UpdateNextScheduledCalculationTime(
@@ -177,35 +211,36 @@ std::vector<const EpochTopics*> BrowsingTopicsState::EpochsForSite(
     const std::string& top_domain) const {
   DCHECK(loaded_);
 
+  if (epochs_.empty()) {
+    return {};
+  }
+
   const size_t kNumberOfEpochsToExpose = static_cast<size_t>(
       blink::features::kBrowsingTopicsNumberOfEpochsToExpose.Get());
 
   DCHECK_GT(kNumberOfEpochsToExpose, 0u);
 
-  // Derive a per-user per-site time delta in the range of
+  base::Time now = base::Time::Now();
+
+  // Derive a per-user per-site per-epoch time delta in the range of
   // [0, `kBrowsingTopicsMaxEpochIntroductionDelay`). The latest epoch will only
-  // be used after `site_sticky_time_delta` has elapsed since the last
-  // calculation finish time (i.e. `next_scheduled_calculation_time_` -
+  // be used after `site_epoch_sticky_introduction_delay` has elapsed since the
+  // last calculation finish time (i.e. `next_scheduled_calculation_time_` -
   // `kBrowsingTopicsTimePeriodPerEpoch`). This way, each site will see a
   // different epoch switch time.
-  base::TimeDelta site_sticky_time_delta =
-      CalculateSiteStickyTimeDelta(top_domain);
+  base::TimeDelta site_epoch_sticky_introduction_delay =
+      CalculateSiteStickyIntroductionDelay(top_domain);
 
   size_t end_epoch_index = 0;
-  if (base::Time::Now() <=
-      next_scheduled_calculation_time_ -
-          blink::features::kBrowsingTopicsTimePeriodPerEpoch.Get() +
-          site_sticky_time_delta) {
+  if (now <= next_scheduled_calculation_time_ -
+                 blink::features::kBrowsingTopicsTimePeriodPerEpoch.Get() +
+                 site_epoch_sticky_introduction_delay) {
     if (epochs_.size() < 2) {
       return {};
     }
 
     end_epoch_index = epochs_.size() - 2;
   } else {
-    if (epochs_.empty()) {
-      return {};
-    }
-
     end_epoch_index = epochs_.size() - 1;
   }
 
@@ -216,7 +251,15 @@ std::vector<const EpochTopics*> BrowsingTopicsState::EpochsForSite(
   std::vector<const EpochTopics*> result;
 
   for (size_t i = start_epoch_index; i <= end_epoch_index; ++i) {
-    result.emplace_back(&epochs_[i]);
+    const EpochTopics& epoch = epochs_[i];
+
+    base::Time earliest_valid_epoch_time =
+        now + CalculateSiteStickyPhaseOutTimeOffset(top_domain, epoch) -
+        blink::features::kBrowsingTopicsEpochRetentionDuration.Get();
+
+    if (epoch.calculation_time() > earliest_valid_epoch_time) {
+      result.emplace_back(&epoch);
+    }
   }
 
   return result;
@@ -226,19 +269,21 @@ bool BrowsingTopicsState::HasScheduledSaveForTesting() const {
   return writer_.HasPendingWrite();
 }
 
-base::TimeDelta BrowsingTopicsState::CalculateSiteStickyTimeDelta(
+base::TimeDelta BrowsingTopicsState::CalculateSiteStickyIntroductionDelay(
     const std::string& top_domain) const {
-  uint64_t epoch_switch_time_decision_hash =
-      HashTopDomainForEpochSwitchTimeDecision(hmac_key_, top_domain);
+  CHECK(!epochs_.empty());
 
-  // Currently the browser can only reasonably support configurations where the
-  // random-over period is less or equal to an epoch, because 1) we only store
-  // one more epoch in addition to the number to expose to sites, and that would
-  // not be sufficient. 2) the calculation finish times (i.e. the actual epoch
-  // delimitation times) for previous epochs aren't stored, so we wouldn't be
-  // able to know when to use a previous epoch (or we'd need to approximate
-  // the delimitation time with the calculation start time, or based on its
-  // position in `epochs_`).
+  uint64_t epoch_introduction_time_decision_hash =
+      HashTopDomainForEpochIntroductionTimeDecision(
+          hmac_key_, epochs_.back().calculation_time(), top_domain);
+
+  // The random-over period cannot exceed an epoch. This limitation is due to:
+  // 1. We only keep data for the last `kNumberOfEpochsToExpose` + 1 epochs. A
+  //    longer random-over period would require us to store more historical
+  //    epochs to meet the `kNumberOfEpochsToExpose` configuration.
+  // 2. For past, non-latest epochs, we don't store the exact delimitation times
+  //    (i.e. calculation finish times). Using the calculation start time as an
+  //    approximation is not 100% accurate.
   DCHECK_LE(blink::features::kBrowsingTopicsMaxEpochIntroductionDelay.Get(),
             blink::features::kBrowsingTopicsTimePeriodPerEpoch.Get());
 
@@ -248,14 +293,26 @@ base::TimeDelta BrowsingTopicsState::CalculateSiteStickyTimeDelta(
 
   // If the latest epoch was manually triggered, make the latest epoch
   // immediately available for testing purposes.
-  if (!epochs_.empty() &&
-      epochs_.back().from_manually_triggered_calculation()) {
+  if (epochs_.back().from_manually_triggered_calculation()) {
     return base::Seconds(0);
   }
 
   return base::Seconds(
-      epoch_switch_time_decision_hash %
+      epoch_introduction_time_decision_hash %
       blink::features::kBrowsingTopicsMaxEpochIntroductionDelay.Get()
+          .InSeconds());
+}
+
+base::TimeDelta BrowsingTopicsState::CalculateSiteStickyPhaseOutTimeOffset(
+    const std::string& top_domain,
+    const EpochTopics& epoch) const {
+  uint64_t epoch_phase_out_time_decision_hash =
+      HashTopDomainForEpochPhaseOutTimeDecision(
+          hmac_key_, epoch.calculation_time(), top_domain);
+
+  return base::Seconds(
+      epoch_phase_out_time_decision_hash %
+      blink::features::kBrowsingTopicsMaxEpochPhaseOutTimeOffset.Get()
           .InSeconds());
 }
 

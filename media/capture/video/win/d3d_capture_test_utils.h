@@ -7,6 +7,7 @@
 
 #include <d3d11_4.h>
 #include <wrl.h>
+
 #include "base/memory/ref_counted.h"
 #include "media/base/win/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -18,6 +19,8 @@ template <class... Interface>
 class MockInterface
     : public base::RefCountedThreadSafe<MockInterface<Interface...>> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   // IUnknown
   IFACEMETHODIMP QueryInterface(REFIID riid, void** object) {
     if (riid == __uuidof(IUnknown)) {
@@ -506,6 +509,52 @@ class MockD3D11DeviceContext final : public MockInterface<ID3D11DeviceContext> {
   ~MockD3D11DeviceContext() override;
 };
 
+// Mock implementation of IDXGIDevice2
+class MockDXGIDevice2 final : public MockInterface<IDXGIDevice2> {
+ public:
+  MockDXGIDevice2();
+
+  // IDXGIDevice2 methods
+  IFACEMETHODIMP EnqueueSetEvent(HANDLE event) override;
+  IFACEMETHODIMP OfferResources(UINT num_resources,
+                                IDXGIResource* const* resources,
+                                DXGI_OFFER_RESOURCE_PRIORITY priority) override;
+  IFACEMETHODIMP ReclaimResources(UINT num_resources,
+                                  IDXGIResource* const* resources,
+                                  BOOL* discarded) override;
+
+  // IDXGIDevice1 methods
+  IFACEMETHODIMP SetMaximumFrameLatency(UINT max_latency) override;
+  IFACEMETHODIMP GetMaximumFrameLatency(UINT* max_latency) override;
+
+  // IDXGIDevice methods
+  IFACEMETHODIMP GetAdapter(IDXGIAdapter** adapter) override;
+  IFACEMETHODIMP CreateSurface(const DXGI_SURFACE_DESC* desc,
+                               UINT num_surfaces,
+                               DXGI_USAGE usage,
+                               const DXGI_SHARED_RESOURCE* shared_resource,
+                               IDXGISurface** surface) override;
+  IFACEMETHODIMP QueryResourceResidency(IUnknown* const* resources,
+                                        DXGI_RESIDENCY* residency_status,
+                                        UINT num_resources) override;
+  IFACEMETHODIMP SetGPUThreadPriority(INT priority) override;
+  IFACEMETHODIMP GetGPUThreadPriority(INT* priority) override;
+
+  // IDXGIObject methods
+  IFACEMETHODIMP SetPrivateData(REFGUID name,
+                                UINT data_size,
+                                const void* data) override;
+  IFACEMETHODIMP SetPrivateDataInterface(REFGUID name,
+                                         const IUnknown* unknown) override;
+  IFACEMETHODIMP GetPrivateData(REFGUID name,
+                                UINT* data_size,
+                                void* data) override;
+  IFACEMETHODIMP GetParent(REFIID riid, void** parent) override;
+
+ private:
+  ~MockDXGIDevice2() override;
+};
+
 class MockD3D11Device final : public MockInterface<ID3D11Device1> {
  public:
   MockD3D11Device();
@@ -514,6 +563,10 @@ class MockD3D11Device final : public MockInterface<ID3D11Device1> {
     if (riid == __uuidof(ID3D11Device)) {
       this->AddRef();
       *object = static_cast<ID3D11Device*>(this);
+      return S_OK;
+    } else if (riid == __uuidof(IDXGIDevice2)) {
+      mock_dxgi_device2_->AddRef();
+      *object = static_cast<IDXGIDevice2*>(mock_dxgi_device2_.get());
       return S_OK;
     }
     return MockInterface::QueryInterface(riid, object);
@@ -677,6 +730,8 @@ class MockD3D11Device final : public MockInterface<ID3D11Device1> {
 
  private:
   ~MockD3D11Device() override;
+
+  scoped_refptr<MockDXGIDevice2> mock_dxgi_device2_;
 };
 
 class MockDXGIResource final

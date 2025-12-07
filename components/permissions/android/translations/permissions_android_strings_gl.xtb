@@ -11,6 +11,7 @@
 <translation id="2987449669841041897">Este sitio non pode pedirche permiso</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Obter axuda<ph name="END_LINK" /></translation>
 <translation id="3773755127849930740"><ph name="BEGIN_LINK" />Activa o Bluetooth<ph name="END_LINK" /> para permitir a sincronización</translation>
+<translation id="3878792656892132392"><ph name="APP_NAME" /> necesita permiso para facer un seguimento das mans.</translation>
 <translation id="4915549754973153784">Podes <ph name="BEGIN_LINK" />obter axuda<ph name="END_LINK" /> mentres se buscan dispositivos…</translation>
 <translation id="4925793601605263825"><ph name="APP_NAME" /> necesita permiso para que este sitio poida acceder ao micrófono.</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> quere buscar dispositivos Bluetooth cerca. Atopáronse os seguintes dispositivos:</translation>
@@ -21,7 +22,7 @@
 <translation id="6049776452963514597"><ph name="APP_NAME" /> necesita permiso para que este sitio poida acceder á cámara e ao micrófono.</translation>
 <translation id="6092062101542170135">Para continuar, activa a NFC na configuración de Android</translation>
 <translation id="6656545060687952787">Chrome precisa acceder á localización para analizar dispositivos. <ph name="BEGIN_LINK" />Actualizar permisos<ph name="END_LINK" /></translation>
-<translation id="7146360184282545445"><ph name="APP_NAME" /> necesita permiso para acceder á cámara co fin de crear un mapa 3D do que te rodea.</translation>
+<translation id="7146360184282545445"><ph name="APP_NAME" /> necesita permiso de acceso á cámara co fin de crear un mapa 3D do que te rodea.</translation>
 <translation id="7624880197989616768">Podes <ph name="BEGIN_LINK1" />obter axuda<ph name="END_LINK1" /> ou <ph name="BEGIN_LINK2" />volver buscar<ph name="END_LINK2" /></translation>
 <translation id="781351614677332494"><ph name="APP_NAME" /> necesita acceder á túa localización para compartila con este sitio.</translation>
 <translation id="7884346424584885269">Chrome necesita permiso para buscar dispositivos próximos. <ph name="BEGIN_LINK" />Actualizar permisos<ph name="END_LINK" />.</translation>

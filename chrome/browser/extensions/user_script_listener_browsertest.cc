@@ -27,8 +27,7 @@ IN_PROC_BROWSER_TEST_F(UserScriptListenerTest,
       ->GetUserScriptListener()
       ->SetUserScriptsNotReadyForTesting(&profile);
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   content::TestNavigationObserver nav_observer(web_contents, 1);
   content::DidStartNavigationObserver start_observer(web_contents);
 

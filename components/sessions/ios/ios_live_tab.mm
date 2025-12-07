@@ -7,6 +7,6 @@
 
 namespace sessions {
 
-IOSLiveTab::~IOSLiveTab() {}
+IOSLiveTab::~IOSLiveTab() = default;
 
 }  // namespace sessions

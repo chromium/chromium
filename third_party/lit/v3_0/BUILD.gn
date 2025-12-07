@@ -4,6 +4,7 @@
 
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/bundle_js.gni")
+import("//ui/webui/resources/tools/generate_code_cache.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/resources/tools/minify_js.gni")
 import("//ui/webui/webui_features.gni")
@@ -12,64 +13,129 @@ ts_library("build_ts") {
   visibility = [
     ":build_bundle",
 
-    # TODO(crbug.com/40943652): Currently limiting Lit usage to a small set of
-    # folders during the initial experimentation phase.
-    # - cr_elements/ and cr_components/
-    # - tests that need to refer to CrLitElement.
-    # - a few chrome/browser/resources/ folders  that hold small UIs.
-    # Update when the migration enters its next phase.
+    # Lit has officially being declared as the preferred framework (over
+    # Polymer) for new WebUI code, see [1] and [2]
+    #
+    # [1] https://chromium.googlesource.com/chromium/src/+/HEAD/styleguide/web/web.md#Lit
+    # [2] https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui/webui_using_lit.md
+    #
+    # Explicitly tracking targets that can depend on third_party/lit is still
+    # useful to audit UIs that depend on Lit, and to prevent adding Lit as a
+    # dependency to CrOS-only UIs (to reduce coupling between Desktop and CrOS
+    # and reduce the maintenance burden for the Desktop WebUI team).
 
     "//chrome/browser/resources/about_sys:build_ts",
+    "//chrome/browser/resources/actor_overlay:build_ts",
     "//chrome/browser/resources/app_home:build_ts",
     "//chrome/browser/resources/app_settings:build_ts",
+    "//chrome/browser/resources/autofill_ml_internals:build_ts",
+    "//chrome/browser/resources/bookmarks:build_ts",
     "//chrome/browser/resources/browser_switch:build_ts",
+    "//chrome/browser/resources/certificate_manager:build_ts",
+    "//chrome/browser/resources/certificate_viewer:build_ts",
+    "//chrome/browser/resources/color_pipeline_internals:build_ts",
     "//chrome/browser/resources/commerce/product_specifications:build_ts",
+    "//chrome/browser/resources/components:build_ts",
+    "//chrome/browser/resources/contextual_tasks:build_ts",
+    "//chrome/browser/resources/discards:build_ts",
+    "//chrome/browser/resources/downloads:build_ts",
+    "//chrome/browser/resources/extensions:build_ts",
+    "//chrome/browser/resources/extensions_zero_state_promo:build_ts",
+    "//chrome/browser/resources/family_link_user_internals:build_ts",
     "//chrome/browser/resources/feedback:build_ts",
+    "//chrome/browser/resources/history:build_ts",
+    "//chrome/browser/resources/infobar_internals:build_ts",
     "//chrome/browser/resources/intro:build_ts",
     "//chrome/browser/resources/key_value_pair_viewer_shared:build_ts",
+    "//chrome/browser/resources/lens/overlay:build_ts",
     "//chrome/browser/resources/management:build_ts",
     "//chrome/browser/resources/media_router/cast_feedback:build_ts",
+    "//chrome/browser/resources/new_tab_footer:build_ts",
     "//chrome/browser/resources/new_tab_page:build_ts",
+    "//chrome/browser/resources/new_tab_shared:build_ts",
+    "//chrome/browser/resources/omnibox_popup:build_ts",
     "//chrome/browser/resources/on_device_internals:build_ts",
+    "//chrome/browser/resources/on_device_translation_internals:build_ts",
     "//chrome/browser/resources/pdf:build_ts",
+    "//chrome/browser/resources/print_preview:build_ts",
+    "//chrome/browser/resources/privacy_sandbox:build_ts",
     "//chrome/browser/resources/privacy_sandbox/internals/private_state_tokens:build_ts",
     "//chrome/browser/resources/privacy_sandbox/internals/related_website_sets:build_ts",
     "//chrome/browser/resources/profile_internals:build_ts",
+    "//chrome/browser/resources/reload_button:build_ts",
+    "//chrome/browser/resources/search_engine_choice:build_ts",
+    "//chrome/browser/resources/settings:build_ts",
     "//chrome/browser/resources/side_panel/bookmarks:build_ts",
+    "//chrome/browser/resources/side_panel/comments:build_ts",
     "//chrome/browser/resources/side_panel/customize_chrome:build_ts",
+    "//chrome/browser/resources/side_panel/history:build_ts",
     "//chrome/browser/resources/side_panel/history_clusters:build_ts",
     "//chrome/browser/resources/side_panel/read_anything:build_ts",
     "//chrome/browser/resources/side_panel/reading_list:build_ts",
     "//chrome/browser/resources/side_panel/shared:build_ts",
     "//chrome/browser/resources/signin:build_ts",
+    "//chrome/browser/resources/signin/batch_upload:build_ts",
+    "//chrome/browser/resources/signin/history_sync_optin:build_ts",
     "//chrome/browser/resources/signin/profile_picker:build_ts",
+    "//chrome/browser/resources/signin/signout_confirmation:build_ts",
+    "//chrome/browser/resources/suggest_internals:build_ts",
+    "//chrome/browser/resources/tab_group_home:build_ts",
     "//chrome/browser/resources/tab_search:build_ts",
+    "//chrome/browser/resources/updater:build_ts",
+    "//chrome/browser/resources/user_education_internals:build_ts",
+    "//chrome/browser/resources/watermark:build_ts",
+    "//chrome/browser/resources/webui_browser:build_ts",
+    "//chrome/browser/resources/webui_browser/internal:build_ts",
     "//chrome/browser/resources/webui_gallery:build_ts",
-    "//chrome/browser/resources/welcome:build_ts",
     "//chrome/browser/resources/whats_new:build_ts",
+    "//chrome/test/data/pdf:build_ts",
+    "//chrome/test/data/webui/actor_overlay:build_ts",
     "//chrome/test/data/webui/app_home:build_ts",
+    "//chrome/test/data/webui/app_settings:build_ts",
+    "//chrome/test/data/webui/bookmarks:build_ts",
+    "//chrome/test/data/webui/commerce/product_specifications:build_ts",
     "//chrome/test/data/webui/cr_components:build_ts",
+    "//chrome/test/data/webui/cr_components/cr_shortcut_input:build_ts",
+    "//chrome/test/data/webui/cr_components/custom_help_bubble:build_ts",
     "//chrome/test/data/webui/cr_components/help_bubble:build_ts",
+    "//chrome/test/data/webui/cr_components/history_clusters:build_ts",
     "//chrome/test/data/webui/cr_elements:build_ts",
     "//chrome/test/data/webui/extensions:build_ts",
     "//chrome/test/data/webui/history:build_ts",
+    "//chrome/test/data/webui/print_preview:build_ts",
     "//chrome/test/data/webui/privacy_sandbox/internals/private_state_tokens:build_ts",
     "//chrome/test/data/webui/privacy_sandbox/internals/related_website_sets:build_ts",
     "//chrome/test/data/webui/signin:build_ts",
+    "//chrome/test/data/webui/signin/signout_confirmation:build_ts",
     "//chrome/test/data/webui/tab_search:build_ts",
-    "//chrome/test/data/webui/welcome:build_ts",
+    "//components/commerce/core/internals/resources:build_ts",
+    "//components/download/resources/download_internals:build_ts",
+    "//components/neterror/resources:build_ts",
+    "//components/ntp_tiles/webui/resources:build_ts",
+    "//components/signin/core/browser/resources:build_ts",
+    "//components/sync/service/resources:build_ts",
+    "//components/webui/chrome_urls/resources:build_ts",
+    "//components/webui/flags/resources:build_ts",
+    "//content/browser/resources/indexed_db:build_ts",
+    "//content/browser/resources/service_worker:build_ts",
     "//content/browser/resources/traces_internals:build_ts",
-    "//ui/webui/resources/cr_components/certificate_manager:build_ts",
+    "//ios/chrome/app/resources/profile_internals:build_ts",
+    "//ui/webui/resources/cr_components/composebox:build_ts",
+    "//ui/webui/resources/cr_components/cr_shortcut_input:build_ts",
     "//ui/webui/resources/cr_components/customize_color_scheme_mode:build_ts",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
     "//ui/webui/resources/cr_components/history_clusters:build_ts",
+    "//ui/webui/resources/cr_components/history_embeddings:build_ts",
     "//ui/webui/resources/cr_components/localized_link:build_ts",
     "//ui/webui/resources/cr_components/managed_dialog:build_ts",
     "//ui/webui/resources/cr_components/managed_footnote:build_ts",
     "//ui/webui/resources/cr_components/most_visited:build_ts",
+    "//ui/webui/resources/cr_components/search:build_ts",
+    "//ui/webui/resources/cr_components/searchbox:build_ts",
     "//ui/webui/resources/cr_components/theme_color_picker:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
   ]
+  tsconfig_base = "tsconfig_base.json"
   composite = true
   in_files = [
     "lit.ts",
@@ -141,6 +207,11 @@ ts_library("build_ts") {
   path_mappings = [
     "lit/index.js|" +
         rebase_path("${node_modules}/lit/index.d.ts", target_gen_dir),
+    "lit-html/async-directive.js|" +
+        rebase_path("${node_modules}/lit-html/async-directive.d.ts",
+                    target_gen_dir),
+    "lit-html/directive.js|" +
+        rebase_path("${node_modules}/lit-html/directive.d.ts", target_gen_dir),
     "lit-html|" +
         rebase_path("${node_modules}/lit-html/lit-html.d.ts", target_gen_dir),
     "@lit/reactive-element|" + rebase_path(
@@ -161,6 +232,17 @@ bundle_js("build_bundle") {
 }
 
 minify_js("build_min_js") {
+  visibility = [
+    ":build_grdp",
+
+    # Expose target to //components/neterror only, which needs to include the
+    # Lit bundle in its own bundle unlike WebUIs that exclude it and therefore
+    # don't need to depend on this target.
+    "//components/neterror/resources:bundle_js_internal",
+  ]
+  if (enable_webui_generate_code_cache) {
+    visibility += [ ":build_code_cache" ]
+  }
   deps = [ ":build_bundle" ]
   in_folder = "$target_gen_dir/bundled"
   in_files = [ "lit.rollup.js" ]
@@ -174,4 +256,23 @@ generate_grd("build_grdp") {
   resource_path_prefix = "lit/v3_0"
   manifest_files = [ "${target_gen_dir}/build_min_js_manifest.json" ]
   deps = [ ":build_min_js" ]
+}
+
+if (enable_webui_generate_code_cache) {
+  generate_code_cache("build_code_cache") {
+    in_folder = "$target_gen_dir/minified"
+    in_files = [ "lit.rollup.js" ]
+    out_folder = "$target_gen_dir/code_cache"
+    out_manifest = "$target_gen_dir/build_code_cache_manifest.json"
+
+    deps = [ ":build_min_js" ]
+  }
+
+  generate_grd("build_code_cache_grdp") {
+    grd_prefix = "lit_v3_0_code_cache"
+    out_grd = "$target_gen_dir/code_cache_resources.grdp"
+    resource_path_prefix = "lit/v3_0"
+    manifest_files = [ "${target_gen_dir}/build_code_cache_manifest.json" ]
+    deps = [ ":build_code_cache" ]
+  }
 }

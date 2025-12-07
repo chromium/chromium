@@ -9,8 +9,8 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
-#include "components/optimization_guide/core/mock_push_notification_manager.h"
-#include "components/optimization_guide/core/push_notification_manager.h"
+#include "components/optimization_guide/core/hints/mock_push_notification_manager.h"
+#include "components/optimization_guide/core/hints/push_notification_manager.h"
 #include "components/optimization_guide/proto/push_notification.pb.h"
 #include "components/sharing_message/proto/optimization_guide_push_notification.pb.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"

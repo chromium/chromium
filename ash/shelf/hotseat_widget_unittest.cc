@@ -11,11 +11,10 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_view.h"
-#include "ash/assistant/assistant_controller_impl.h"
+#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_features.h"
-#include "ash/focus_cycler.h"
-#include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
-#include "ash/public/cpp/test/assistant_test_api.h"
+#include "ash/focus/focus_cycler.h"
+#include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shelf/drag_window_from_shelf_controller_test_api.h"
 #include "ash/shelf/home_button.h"
@@ -32,14 +31,12 @@
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/shelf/test/hotseat_state_watcher.h"
 #include "ash/shelf/test/shelf_layout_manager_test_base.h"
-#include "ash/shelf/test/widget_animation_smoothness_inspector.h"
 #include "ash/shell.h"
 #include "ash/system/ime_menu/ime_menu_tray.h"
 #include "ash/system/overview/overview_button_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/layer_animation_verifier.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
@@ -47,18 +44,17 @@
 #include "ash/wm/work_area_insets.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/presentation_time_recorder.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/screen.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/test/widget_animation_waiter.h"
 #include "ui/wm/core/window_util.h"
 
@@ -78,39 +74,30 @@ class HotseatWidgetTest
     : public ShelfLayoutManagerTestBase,
       public testing::WithParamInterface<
           std::tuple<ShelfAutoHideBehavior,
-                     /*is_assistant_enabled*/ bool,
-                     /*navigation_buttons_shown_in_tablet_mode*/ bool>> {
+                     /*navigation_buttons_shown_in_tablet_mode*/ bool,
+                     /*sunfish_or_scanner_enabled=*/bool>> {
  public:
   HotseatWidgetTest()
       : ShelfLayoutManagerTestBase(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         shelf_auto_hide_behavior_(std::get<0>(GetParam())),
-        is_assistant_enabled_(std::get<1>(GetParam())),
-        navigation_buttons_shown_in_tablet_mode_(std::get<2>(GetParam())) {
-    if (is_assistant_enabled_)
-      assistant_test_api_ = AssistantTestApi::Create();
-  }
+        navigation_buttons_shown_in_tablet_mode_(std::get<1>(GetParam())),
+        sunfish_or_scanner_enabled_(std::get<2>(GetParam())) {}
 
   // testing::Test:
   void SetUp() override {
     SetupFeatureLists();
     ShelfLayoutManagerTestBase::SetUp();
-
-    if (is_assistant_enabled_) {
-      assistant_test_api_->SetAssistantEnabled(true);
-      assistant_test_api_->GetAssistantState()->NotifyFeatureAllowed(
-          assistant::AssistantAllowedState::ALLOWED);
-      assistant_test_api_->GetAssistantState()->NotifyStatusChanged(
-          assistant::AssistantStatus::READY);
-
-      assistant_test_api_->WaitUntilIdle();
-    }
   }
 
   virtual void SetupFeatureLists() {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kHideShelfControlsInTabletMode,
-          !navigation_buttons_shown_in_tablet_mode()}});
+    scoped_feature_list_.InitWithFeatureStates({
+        {features::kHideShelfControlsInTabletMode,
+         !navigation_buttons_shown_in_tablet_mode()},
+        {features::kSunfishFeature, sunfish_or_scanner_enabled()},
+        {features::kScannerUpdate, sunfish_or_scanner_enabled()},
+        {features::kScannerDogfood, sunfish_or_scanner_enabled()},
+    });
   }
 
   void TearDown() override {
@@ -123,23 +110,26 @@ class HotseatWidgetTest
   ShelfAutoHideBehavior shelf_auto_hide_behavior() const {
     return shelf_auto_hide_behavior_;
   }
-  bool is_assistant_enabled() const { return is_assistant_enabled_; }
   bool navigation_buttons_shown_in_tablet_mode() const {
     return navigation_buttons_shown_in_tablet_mode_;
   }
-  AssistantTestApi* assistant_test_api() { return assistant_test_api_.get(); }
+  bool sunfish_or_scanner_enabled() const {
+    return sunfish_or_scanner_enabled_;
+  }
 
-  void ShowShelfAndActivateAssistant() {
+  void ShowShelfAndLongPressHome() {
     if (shelf_auto_hide_behavior() == ShelfAutoHideBehavior::kAlways)
       SwipeUpOnShelf();
 
-    // If the launcher button is not expected to be shown, show the assistant UI
-    // directly; otherwise, simulate the long press on the home button,
+    // If the launcher button is not expected to be shown, start a
+    // Sunfish-session directly; otherwise, simulate the
+    // long press on the home button,
     if (!navigation_buttons_shown_in_tablet_mode_ &&
-        display::Screen::GetScreen()->InTabletMode()) {
-      AssistantUiController::Get()->ShowUi(
-          assistant::AssistantEntryPoint::kLongPressLauncher);
-      return;
+        display::Screen::Get()->InTabletMode()) {
+      if (sunfish_or_scanner_enabled()) {
+        CaptureModeController::Get()->StartSunfishSession();
+        return;
+      }
     }
 
     views::View* home_button =
@@ -162,7 +152,7 @@ class HotseatWidgetTest
     // If the launcher button is not expected to be shown, go home directly;
     // otherwise, simulate tap on the home button,
     if (!navigation_buttons_shown_in_tablet_mode_ &&
-        display::Screen::GetScreen()->InTabletMode()) {
+        display::Screen::Get()->InTabletMode()) {
       Shell::Get()->app_list_controller()->GoHome(GetPrimaryDisplay().id());
       return;
     }
@@ -183,7 +173,7 @@ class HotseatWidgetTest
     // directly; otherwise, simulate tap on the overview button, which should
     // toggle overview.
     if (!navigation_buttons_shown_in_tablet_mode_ &&
-        display::Screen::GetScreen()->InTabletMode()) {
+        display::Screen::Get()->InTabletMode()) {
       EnterOverview();
       return;
     }
@@ -203,7 +193,7 @@ class HotseatWidgetTest
     // directly; otherwise, simulate tap on the overview button, which should
     // toggle overview.
     if (!navigation_buttons_shown_in_tablet_mode_ &&
-        display::Screen::GetScreen()->InTabletMode()) {
+        display::Screen::Get()->InTabletMode()) {
       ExitOverview();
       return;
     }
@@ -218,34 +208,12 @@ class HotseatWidgetTest
 
  protected:
   const ShelfAutoHideBehavior shelf_auto_hide_behavior_;
-  const bool is_assistant_enabled_;
   const bool navigation_buttons_shown_in_tablet_mode_;
-  std::unique_ptr<AssistantTestApi> assistant_test_api_;
+  const bool sunfish_or_scanner_enabled_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class HotseatWidgetForestTest : public HotseatWidgetTest {
- public:
-  HotseatWidgetForestTest() = default;
-  ~HotseatWidgetForestTest() = default;
-
-  // HotseatWidgetTest:
-  void SetupFeatureLists() override {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kHideShelfControlsInTabletMode,
-          !navigation_buttons_shown_in_tablet_mode()},
-         {features::kForestFeature, true}});
-  }
-};
-
-class StackedHotseatWidgetTest : public HotseatWidgetTest {
- public:
-  void SetupFeatureLists() override {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kHideShelfControlsInTabletMode,
-          !navigation_buttons_shown_in_tablet_mode()}});
-  }
-};
+using StackedHotseatWidgetTest = HotseatWidgetTest;
 
 // Counts the number of times the work area changes.
 class DisplayWorkAreaChangeCounter : public display::DisplayObserver {
@@ -357,17 +325,8 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(
         testing::Values(ShelfAutoHideBehavior::kNever,
                         ShelfAutoHideBehavior::kAlways),
-        /*is_assistant_enabled*/ testing::Bool(),
-        /*navigation_buttons_shown_in_tablet_mode*/ testing::Bool()));
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    HotseatWidgetForestTest,
-    testing::Combine(
-        testing::Values(ShelfAutoHideBehavior::kNever,
-                        ShelfAutoHideBehavior::kAlways),
-        /*is_assistant_enabled*/ testing::Bool(),
-        /*navigation_buttons_shown_in_tablet_mode*/ testing::Bool()));
+        /*navigation_buttons_shown_in_tablet_mode*/ testing::Bool(),
+        /*sunfish_or_scanner_enabled=*/testing::Bool()));
 
 INSTANTIATE_TEST_SUITE_P(
     All,
@@ -375,8 +334,8 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(
         testing::Values(ShelfAutoHideBehavior::kNever,
                         ShelfAutoHideBehavior::kAlways),
-        /*is_assistant_enabled*/ testing::Bool(),
-        /*navigation_buttons_shown_in_tablet_mode*/ testing::Bool()));
+        /*navigation_buttons_shown_in_tablet_mode*/ testing::Bool(),
+        /*sunfish_or_scanner_enabled=*/testing::Bool()));
 
 // TODO(b:270757104) Set status are widget sizes.
 TEST_P(StackedHotseatWidgetTest, StackedHotseatShownOnSmallScreens) {
@@ -423,24 +382,35 @@ TEST_P(StackedHotseatWidgetTest, StackedHotseatNotShownOnLargeScreens) {
 }
 
 TEST_P(HotseatWidgetTest, LongPressHomeWithoutAppWindow) {
+  if (!sunfish_or_scanner_enabled() &&
+      !navigation_buttons_shown_in_tablet_mode()) {
+    GTEST_SKIP() << "No home long press if all of them are off: "
+                    "sunfish_or_scanner, navigation button.";
+  }
+
   GetPrimaryShelf()->SetAutoHideBehavior(shelf_auto_hide_behavior());
   TabletModeControllerTestApi().EnterTabletMode();
   GetAppListTestHelper()->CheckVisibility(true);
 
   HotseatStateWatcher watcher(GetShelfLayoutManager());
 
-  ShowShelfAndActivateAssistant();
-  GetAppListTestHelper()->CheckVisibility(true);
+  ShowShelfAndLongPressHome();
+  GetAppListTestHelper()->CheckVisibility(!sunfish_or_scanner_enabled());
 
-  EXPECT_EQ(
-      is_assistant_enabled(),
-      GetAppListTestHelper()->GetAppListView()->IsShowingEmbeddedAssistantUI());
+  EXPECT_EQ(CaptureModeController::Get()->IsActive(),
+            sunfish_or_scanner_enabled());
 
-  // Hotseat should not change when showing Assistant.
+  // Hotseat should not change when starting a Sunfish-session
   watcher.CheckEqual({});
 }
 
 TEST_P(HotseatWidgetTest, LongPressHomeWithAppWindow) {
+  if (!sunfish_or_scanner_enabled() &&
+      !navigation_buttons_shown_in_tablet_mode()) {
+    GTEST_SKIP() << "No home long press if all of them are off: "
+                    "sunfish_or_scanner, navigation button.";
+  }
+
   GetPrimaryShelf()->SetAutoHideBehavior(shelf_auto_hide_behavior());
   TabletModeControllerTestApi().EnterTabletMode();
   GetAppListTestHelper()->CheckVisibility(true);
@@ -453,22 +423,22 @@ TEST_P(HotseatWidgetTest, LongPressHomeWithAppWindow) {
 
   HotseatStateWatcher watcher(GetShelfLayoutManager());
 
-  ShowShelfAndActivateAssistant();
+  ShowShelfAndLongPressHome();
   GetAppListTestHelper()->CheckVisibility(false);
 
-  EXPECT_EQ(
-      is_assistant_enabled(),
-      GetAppListTestHelper()->GetAppListView()->IsShowingEmbeddedAssistantUI());
+  EXPECT_EQ(sunfish_or_scanner_enabled(),
+            CaptureModeController::Get()->IsActive());
 
   std::vector<HotseatState> expected_state;
   if (shelf_auto_hide_behavior() == ShelfAutoHideBehavior::kAlways) {
-    // |ShowShelfAndActivateAssistant()| will bring up shelf so it will trigger
-    // one hotseat state change.
+    // |ShowShelfAndLongPressHome()| will bring up shelf so it will trigger one
+    // hotseat state change.
     expected_state.push_back(HotseatState::kExtended);
-    // Launching the assistant from a shelf button on an autohidden shelf will
-    // hide the shelf at the end of the operation.
-    if (is_assistant_enabled() && navigation_buttons_shown_in_tablet_mode())
+    // Launching a Sunfish-session from a shelf button on an autohidden shelf
+    // will hide the shelf at the end of the operation.
+    if (sunfish_or_scanner_enabled()) {
       expected_state.push_back(HotseatState::kHidden);
+    }
   }
   watcher.CheckEqual(expected_state);
 }
@@ -526,7 +496,7 @@ TEST_P(HotseatWidgetTest, InAppShelfShowingContextMenu) {
       AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));
   wm::ActivateWindow(window.get());
   EXPECT_FALSE(Shell::Get()->app_list_controller()->IsVisible(
-      display::Screen::GetScreen()->GetPrimaryDisplay().id()));
+      display::Screen::Get()->GetPrimaryDisplay().id()));
 
   ShelfTestUtil::AddAppShortcut("app_id", TYPE_PINNED_APP);
 
@@ -760,7 +730,7 @@ TEST_P(HotseatWidgetTest, SwipeUpOnHotseatBackgroundDoesNothing) {
 
   // Swipe up on the shelf to show the hotseat.
   EXPECT_FALSE(Shell::Get()->app_list_controller()->IsVisible(
-      display::Screen::GetScreen()->GetPrimaryDisplay().id()));
+      display::Screen::Get()->GetPrimaryDisplay().id()));
 
   SwipeUpOnShelf();
 
@@ -785,7 +755,7 @@ TEST_P(HotseatWidgetTest, SwipeUpOnHotseatBackgroundDoesNothing) {
                                              kNumScrollSteps);
 
   EXPECT_FALSE(Shell::Get()->app_list_controller()->IsVisible(
-      display::Screen::GetScreen()->GetPrimaryDisplay().id()));
+      display::Screen::Get()->GetPrimaryDisplay().id()));
   EXPECT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
   if (shelf_auto_hide_behavior() == ShelfAutoHideBehavior::kAlways)
     EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, GetPrimaryShelf()->GetAutoHideState());
@@ -826,7 +796,7 @@ TEST_P(HotseatWidgetTest, TappingActiveWindowHidesHotseat) {
 
   // Tap the shelf background, nothing should happen.
   gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   gfx::Point tap_point = display_bounds.bottom_center();
   GetEventGenerator()->GestureTapAt(tap_point);
 
@@ -878,7 +848,7 @@ TEST_P(HotseatWidgetTest, GestureDraggingActiveWindowHidesHotseat) {
 
   // Gesture drag on the active window, the hotseat should hide.
   gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   gfx::Point start = display_bounds.bottom_center();
   start.Offset(0, -200);
   gfx::Point end = start;
@@ -933,8 +903,8 @@ TEST_P(HotseatWidgetTest, SwipeUpOnShelfShowsHotseatInSplitView) {
 // Tests that HotseatTransitionAimationObserver starting and ending calls have a
 // 1:1 relation. This test verifies that behavior.
 TEST_P(HotseatWidgetTest, ObserverCallsMatch) {
-  ui::ScopedAnimationDurationScaleMode non_zero(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   // Enter tablet mode to show the home launcher. Hotseat state should be
   // kShownHomeLauncher.
   TabletModeControllerTestApi().EnterTabletMode();
@@ -986,37 +956,7 @@ TEST_P(HotseatWidgetTest, ObserverCallsMatch) {
   EXPECT_TRUE(observer.ObserverCountsEqual());
 }
 
-// Tests that a swipe up on the shelf shows the hotseat while in split view.
-TEST_P(HotseatWidgetTest, DisableBlurDuringOverviewMode) {
-  // TODO(sammiequon): Remove this test when forest feature can no longer be
-  // disabled.
-  if (features::IsForestFeatureEnabled()) {
-    return;
-  }
-
-  TabletModeControllerTestApi().EnterTabletMode();
-
-  ASSERT_EQ(
-      ShelfConfig::Get()->shelf_blur_radius(),
-      GetShelfWidget()->hotseat_widget()->GetHotseatBackgroundBlurForTest());
-
-  // Go into overview and check that at the end of the animation, background
-  // blur is disabled.
-  StartOverview();
-  WaitForOverviewAnimation(/*enter=*/true);
-  EXPECT_EQ(
-      0, GetShelfWidget()->hotseat_widget()->GetHotseatBackgroundBlurForTest());
-
-  // Exit overview and check that at the end of the animation, background
-  // blur is enabled again.
-  EndOverview();
-  WaitForOverviewAnimation(/*enter=*/false);
-  EXPECT_EQ(
-      ShelfConfig::Get()->shelf_blur_radius(),
-      GetShelfWidget()->hotseat_widget()->GetHotseatBackgroundBlurForTest());
-}
-
-TEST_P(HotseatWidgetForestTest, EnableBlurDuringOverviewMode) {
+TEST_P(HotseatWidgetTest, EnableBlurDuringOverviewMode) {
   TabletModeControllerTestApi().EnterTabletMode();
 
   const int expected_blur_radius = ShelfConfig::Get()->shelf_blur_radius();
@@ -1057,7 +997,7 @@ TEST_P(HotseatWidgetTest, ReleasingSlowDragBelowThreshold) {
                                      InAppShelfGestures::kSwipeUpToShow, 0);
 
   gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   const gfx::Point start(display_bounds.bottom_center());
   const int hotseat_size = GetPrimaryShelf()
                                ->shelf_widget()
@@ -1093,7 +1033,7 @@ TEST_P(HotseatWidgetTest, ReleasingSlowDragAboveThreshold) {
                                      InAppShelfGestures::kSwipeUpToShow, 0);
 
   gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   const gfx::Point start(display_bounds.bottom_center());
   const int hotseat_size = GetPrimaryShelf()
                                ->shelf_widget()
@@ -1142,7 +1082,7 @@ TEST_P(HotseatWidgetTest, HotseatDragGestureForStylusApp) {
                                      InAppShelfGestures::kSwipeUpToShow, 0);
 
   gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   const gfx::Point start(display_bounds.bottom_center());
   const int hotseat_size = GetPrimaryShelf()
                                ->shelf_widget()
@@ -1195,7 +1135,7 @@ TEST_P(HotseatWidgetTest, HotseatNotFlushWhenHomeLauncherShowing) {
   GetPrimaryShelf()->SetAutoHideBehavior(shelf_auto_hide_behavior());
   TabletModeControllerTestApi().EnterTabletMode();
   const int display_height =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds().height();
+      display::Screen::Get()->GetPrimaryDisplay().bounds().height();
   const int hotseat_bottom = GetPrimaryShelf()
                                  ->shelf_widget()
                                  ->hotseat_widget()
@@ -1241,8 +1181,8 @@ TEST_P(HotseatWidgetTest, VerifyShelfAnimationWhenEnteringOverview) {
   GetPrimaryShelf()->SetAutoHideBehavior(shelf_auto_hide_behavior());
   TabletModeControllerTestApi().EnterTabletMode();
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   HotseatWidget* hotseat_widget = GetPrimaryShelf()->hotseat_widget();
   ASSERT_EQ(HotseatState::kShownHomeLauncher, hotseat_widget->state());
@@ -1305,8 +1245,8 @@ TEST_P(HotseatWidgetTest, InAppToHomeChangesStateOnce) {
   // directly to kShownHomeLauncher.
   SwipeUpOnShelf();
   {
-    ui::ScopedAnimationDurationScaleMode regular_animations(
-        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode regular_animations(
+        gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
     HotseatStateWatcher watcher(GetShelfLayoutManager());
     FlingUpOnShelf();
     watcher.CheckEqual({HotseatState::kShownHomeLauncher});
@@ -1326,8 +1266,6 @@ TEST_P(HotseatWidgetTest, InAppToHomeChangesStateOnce) {
   wm::ActivateWindow(window.get());
 
   // TODO(manucornet): This is flaky when the shelf is always auto-hidden.
-  // Investigate and fix (sometimes fails when the assistant is enabled,
-  // sometimes not).
   if (shelf_auto_hide_behavior() == ShelfAutoHideBehavior::kNever)
     return;
 
@@ -1355,8 +1293,8 @@ TEST_P(HotseatWidgetTest, HomeToOverviewAndBack) {
 
   // Start going to overview.
   {
-    ui::ScopedAnimationDurationScaleMode regular_animations(
-        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode regular_animations(
+        gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
     StartOverview();
 
     watcher.CheckEqual({/*Hotseat state should not change*/});
@@ -1389,8 +1327,8 @@ TEST_P(HotseatWidgetTest, InAppToOverviewAndBack) {
   // Start going to overview - use non zero animation so transition is not
   // immediate.
   {
-    ui::ScopedAnimationDurationScaleMode regular_animations(
-        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode regular_animations(
+        gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
     StartOverview();
   }
 
@@ -1431,8 +1369,8 @@ TEST_P(HotseatWidgetTest, ShowShelfAndGoHomeDuringInAppToOverviewTransition) {
   // Start going to overview - use non zero animation so transition is not
   // immediate.
   {
-    ui::ScopedAnimationDurationScaleMode regular_animations(
-        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode regular_animations(
+        gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
     StartOverview();
   }
 
@@ -1669,7 +1607,7 @@ TEST_P(HotseatWidgetTest, ExitOverviewWithClickOnHotseat) {
   ShelfTestUtil::AddAppShortcut("app_id_1", TYPE_APP);
 
   TabletModeControllerTestApi().EnterTabletMode();
-  ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  ASSERT_TRUE(display::Screen::Get()->InTabletMode());
   ASSERT_FALSE(WindowState::Get(window1.get())->IsMinimized());
 
   // Enter overview, hotseat is hidden. Swipe up to extended it and then choose
@@ -1771,8 +1709,7 @@ TEST_P(HotseatWidgetTest, DismissHotseatWhenStatusAreaTrayShows) {
 
 // Tests that the work area updates once each when going to/from tablet mode
 // with no windows open.
-TEST_P(HotseatWidgetTest,
-       DISABLED_WorkAreaUpdatesClamshellToFromHomeLauncherNoWindows) {
+TEST_P(HotseatWidgetTest, WorkAreaUpdatesClamshellToFromHomeLauncherNoWindows) {
   DisplayWorkAreaChangeCounter counter;
   TabletModeControllerTestApi().EnterTabletMode();
 
@@ -1854,7 +1791,7 @@ TEST_P(HotseatWidgetTest, ShelfVisibilityChangeChangesWorkArea) {
 TEST_P(HotseatWidgetTest, HotseatFlushWithScreenBottomInClamshell) {
   GetPrimaryShelf()->SetAutoHideBehavior(shelf_auto_hide_behavior());
   const int display_height =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds().height();
+      display::Screen::Get()->GetPrimaryDisplay().bounds().height();
   const int hotseat_bottom = GetPrimaryShelf()
                                  ->shelf_widget()
                                  ->hotseat_widget()
@@ -1886,7 +1823,7 @@ TEST_P(HotseatWidgetTest, DragActiveWindowInTabletMode) {
 
   // Drag upward, test the window transform changes.
   const gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   generator->MoveTouch(display_bounds.CenterPoint());
   const gfx::Transform upward_transform = window->layer()->transform();
   EXPECT_FALSE(upward_transform.IsIdentity());
@@ -1930,7 +1867,7 @@ TEST_P(HotseatWidgetTest, ExitingOverviewHidesHotseat) {
   // Drag upward, to the center of the screen, and release (this should enter
   // the overview).
   const gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   UpdateScroll(gfx::Vector2d(0, display_bounds.CenterPoint().y() -
                                     bottom_shelf_bounds.CenterPoint().y()));
   // Small scroll update, to simulate the user holding the pointer.
@@ -2243,7 +2180,7 @@ TEST_P(HotseatWidgetTest, FlingUpHotseatWithShortFling) {
   // Scrolls the hotseat by a distance not sufficuent to trigger the action of
   // entering home screen from the in-app shelf.
   gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   const gfx::Point start(display_bounds.bottom_center());
   const gfx::Point end(start + gfx::Vector2d(0, -20));
 
@@ -2280,7 +2217,7 @@ TEST_P(HotseatWidgetTest, FlingUpHotseatWithLongFling) {
   // Scrolls the hotseat by the sufficient distance to trigger the action of
   // entering home screen from the in-app shelf.
   gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   const gfx::Point start(display_bounds.bottom_center());
   const gfx::Point end(start + gfx::Vector2d(0, -200));
 
@@ -2362,7 +2299,8 @@ TEST_P(HotseatWidgetTest, HotseatRemainsHiddenIfPopupLaunched) {
   // remain hidden.
   aura::Window* window_2 = CreateTestWindowInParent(window.get());
   window_2->SetBounds(gfx::Rect(201, 0, 100, 100));
-  window_2->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+  window_2->SetProperty(aura::client::kShowStateKey,
+                        ui::mojom::WindowShowState::kNormal);
   window_2->Show();
   GetAppListTestHelper()->WaitUntilIdle();
   EXPECT_EQ(HotseatState::kHidden, GetShelfLayoutManager()->hotseat_state());
@@ -2374,8 +2312,8 @@ TEST_P(HotseatWidgetTest, NoBlurDuringAnimations) {
   ASSERT_EQ(
       ShelfConfig::Get()->shelf_blur_radius(),
       GetShelfWidget()->hotseat_widget()->GetHotseatBackgroundBlurForTest());
-  ui::ScopedAnimationDurationScaleMode regular_animations(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode regular_animations(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   // Open a window, as the hotseat animates to kHidden, it should lose its blur.
   std::unique_ptr<aura::Window> window =
@@ -2404,8 +2342,8 @@ TEST_P(HotseatWidgetTest, AnimationAfterDrag) {
       AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));
   wm::ActivateWindow(window.get());
 
-  ui::ScopedAnimationDurationScaleMode animation_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   HotseatWidget* const hotseat_widget = GetPrimaryShelf()->hotseat_widget();
   gfx::Point last_app_views_position =
@@ -2429,7 +2367,7 @@ TEST_P(HotseatWidgetTest, AnimationAfterDrag) {
 
   ui::test::EventGenerator* generator = GetEventGenerator();
   const gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   // Drag upwards from the bottom of the screen to bring up hotseat - this
   // should request presentation time metric to be reported.
   generator->PressTouch(display_bounds.bottom_center());
@@ -2531,7 +2469,7 @@ TEST_P(HotseatWidgetTest, InitialAnimationPositionWithNonIdentityTransform) {
 
   ui::test::EventGenerator* generator = GetEventGenerator();
   const gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   // Drag upwards from the bottom of the screen to bring up hotseat - this
   // should request presentation time metric to be reported.
   generator->PressTouch(display_bounds.bottom_center());
@@ -2543,8 +2481,8 @@ TEST_P(HotseatWidgetTest, InitialAnimationPositionWithNonIdentityTransform) {
   generator->ReleaseTouch();
   ASSERT_TRUE(app_views_moved());
 
-  ui::ScopedAnimationDurationScaleMode animation_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   auto set_animated_transform = [](ui::Layer* layer,
                                    const gfx::Vector2d& initial_offset) {
     // Set translate animation on the hotseat widget, to simulate a state which
@@ -2634,7 +2572,7 @@ TEST_P(HotseatWidgetTest, PresentationTimeMetricDuringDrag) {
 
   ui::test::EventGenerator* generator = GetEventGenerator();
   const gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   // Drag upwards from the bottom of the screen to bring up hotseat - this
   // should request presentation time metric to be reported.
   generator->PressTouch(display_bounds.bottom_center());
@@ -2771,127 +2709,4 @@ TEST_P(HotseatWidgetTest, PresentationTimeMetricDuringDrag) {
         "Ash.HotseatTransition.Drag.PresentationTime.MaxLatency", 1);
   }
 }
-
-// TODO(manucornet): Enable this test once the new API for layer animation
-// sequence observers is available.
-TEST_P(HotseatWidgetTest, DISABLED_OverviewToHomeAnimationAndBackIsSmooth) {
-  // Go into tablet mode and make sure animations are over.
-  HotseatWidget* hotseat = GetPrimaryShelf()->hotseat_widget();
-  {
-    views::WidgetAnimationWaiter waiter(hotseat);
-    TabletModeControllerTestApi().EnterTabletMode();
-    waiter.WaitForAnimation();
-  }
-
-  ui::ScopedAnimationDurationScaleMode regular_animations(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
-
-  // Go into overview and back to know what to expect in terms of bounds.
-  const gfx::Rect shown_hotseat_bounds = hotseat->GetWindowBoundsInScreen();
-  {
-    views::WidgetAnimationWaiter waiter(hotseat);
-    StartOverview();
-    waiter.WaitForAnimation();
-  }
-
-  const gfx::Rect extended_hotseat_bounds = hotseat->GetWindowBoundsInScreen();
-  {
-    views::WidgetAnimationWaiter waiter(hotseat);
-    EndOverview();
-    waiter.WaitForAnimation();
-  }
-
-  // The extended hotseat should be higher (lower value of Y) than the
-  // shown hotseat.
-  EXPECT_GT(shown_hotseat_bounds.y(), extended_hotseat_bounds.y());
-
-  // We should start with the hotseat in its shown position again.
-  EXPECT_EQ(shown_hotseat_bounds, hotseat->GetWindowBoundsInScreen());
-
-  {
-    WidgetAnimationSmoothnessInspector inspector(hotseat);
-    views::WidgetAnimationWaiter waiter(hotseat);
-    StartOverview();
-    waiter.WaitForAnimation();
-    EXPECT_TRUE(inspector.CheckAnimation(4));
-  }
-
-  // The hotseat should now be extended.
-  EXPECT_EQ(extended_hotseat_bounds, hotseat->GetWindowBoundsInScreen());
-
-  {
-    WidgetAnimationSmoothnessInspector inspector(hotseat);
-    views::WidgetAnimationWaiter waiter(hotseat);
-    EndOverview();
-    waiter.WaitForAnimation();
-    EXPECT_TRUE(inspector.CheckAnimation(4));
-  }
-
-  // And we should now be back where we started.
-  EXPECT_EQ(shown_hotseat_bounds, hotseat->GetWindowBoundsInScreen());
-}
-
-class HotseatWidgetRTLTest : public ShelfLayoutManagerTestBase,
-                             public testing::WithParamInterface<bool> {
- public:
-  // Use MOCK_TIME to increase number of commits during animation.
-  HotseatWidgetRTLTest()
-      : ShelfLayoutManagerTestBase(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        scoped_locale_(GetParam() ? "ar" : "") {}
-  HotseatWidgetRTLTest(const HotseatWidgetRTLTest&) = delete;
-  HotseatWidgetRTLTest& operator=(const HotseatWidgetRTLTest&) = delete;
-  ~HotseatWidgetRTLTest() override = default;
-
- private:
-  base::test::ScopedRestoreICUDefaultLocale scoped_locale_;
-};
-
-INSTANTIATE_TEST_SUITE_P(RTL, HotseatWidgetRTLTest, testing::Bool());
-
-// The test to verify the hotseat transition animation from the extended state
-// to the home launcher state.
-// TODO(crbug.com/40182469): Disable this test due to flakiness.
-TEST_P(HotseatWidgetRTLTest,
-       DISABLED_VerifyTransitionFromExtendedModeToHomeLauncher) {
-  TabletModeControllerTestApi().EnterTabletMode();
-  const auto app_id =
-      ShelfTestUtil::AddAppShortcut("fake_app", TYPE_PINNED_APP);
-
-  // Open a window so the hotseat transitions to hidden state.
-  std::unique_ptr<aura::Window> window =
-      AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));
-  wm::ActivateWindow(window.get());
-
-  // Swipe the hotseat up to enter the extended mode.
-  SwipeUpOnShelf();
-  EXPECT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
-
-  // Animation should be long enough in order to collect sufficient data.
-  // TODO(crbug.com/40181827): remove this line when we solve that issue.
-  ui::ScopedAnimationDurationScaleMode animation_duration(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
-
-  // Wait until shelf animation completes.
-  auto* shelf_view = GetPrimaryShelf()->GetShelfViewForTesting();
-  ShelfViewTestAPI shelf_test_api(shelf_view);
-  shelf_test_api.RunMessageLoopUntilAnimationsDone();
-
-  // Observe a shelf icon.
-  auto* observed_view = shelf_view->GetShelfAppButton(app_id.id);
-  LayerAnimationVerifier verifier(
-      GetPrimaryShelf()->hotseat_widget()->GetNativeView()->layer(),
-      observed_view);
-
-  // Transit the hotseat from the extended state to the home launcher state.
-  // Wait until the transition animation finishes.
-  views::WidgetAnimationWaiter waiter(GetPrimaryShelf()->hotseat_widget());
-  FlingUpOnShelf();
-  waiter.WaitForAnimation();
-
-  // Verify the hotseat state at the end of the animation.
-  EXPECT_EQ(HotseatState::kShownHomeLauncher,
-            GetShelfLayoutManager()->hotseat_state());
-}
-
 }  // namespace ash

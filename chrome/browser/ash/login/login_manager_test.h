@@ -44,6 +44,10 @@ class LoginManagerTest : public MixinBasedInProcessBrowserTest {
 
   UserContext CreateUserContextWithLocalPassword(const AccountId& account_id,
                                                  const std::string& password);
+
+  UserContext CreateUserContextWithPin(const AccountId& account_id,
+                                       const std::string& pin);
+
   // Set expected credentials for next login attempt.
   void SetExpectedCredentials(const UserContext& user_context);
 
@@ -62,6 +66,9 @@ class LoginManagerTest : public MixinBasedInProcessBrowserTest {
 
   // Log in user with local password.
   void LoginUserWithLocalPassword(const AccountId& account_id);
+
+  // Log in user with pin.
+  void LoginUserWithPin(const AccountId& account_id);
 
   // Add user with `user_id` to session.
   void AddUser(const AccountId& user_id);

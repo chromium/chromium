@@ -31,10 +31,8 @@ class FeatureUsageMetricsTest : public ::testing::Test,
                                 public FeatureUsageMetrics::Delegate {
  public:
   FeatureUsageMetricsTest() {
-    if (!base::PowerMonitor::IsInitialized()) {
-      base::PowerMonitor::Initialize(
-          std::make_unique<base::PowerMonitorDeviceSource>());
-    }
+    base::PowerMonitor::GetInstance()->Initialize(
+        std::make_unique<base::PowerMonitorDeviceSource>());
 
     ResetHistogramTester();
 

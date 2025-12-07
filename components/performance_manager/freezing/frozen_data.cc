@@ -8,6 +8,8 @@
 
 namespace performance_manager {
 
+FrozenData::FrozenData() = default;
+
 bool FrozenData::IsFrozen() const {
   return current_frame_count_ > 0 &&
          frozen_frame_count_ == current_frame_count_;

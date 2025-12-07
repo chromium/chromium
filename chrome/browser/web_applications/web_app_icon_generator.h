@@ -8,14 +8,17 @@
 #include <map>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/gfx/image/image_skia.h"
-#include "url/gurl.h"
+
+namespace gfx {
+class ImageSkia;
+}
 
 namespace web_app {
 
@@ -39,14 +42,14 @@ enum {
 }  // namespace icon_size
 
 #if BUILDFLAG(IS_MAC)
-constexpr int kInstallIconSize = icon_size::k96;
-constexpr int kLauncherIconSize = icon_size::k256;
+inline constexpr int kInstallIconSize = icon_size::k96;
+inline constexpr int kLauncherIconSize = icon_size::k256;
 #elif BUILDFLAG(IS_CHROMEOS)
-constexpr int kInstallIconSize = icon_size::k96;
-constexpr int kLauncherIconSize = icon_size::k128;
+inline constexpr int kInstallIconSize = icon_size::k96;
+inline constexpr int kLauncherIconSize = icon_size::k128;
 #else
-constexpr int kInstallIconSize = icon_size::k48;
-constexpr int kLauncherIconSize = icon_size::k128;
+inline constexpr int kInstallIconSize = icon_size::k48;
+inline constexpr int kLauncherIconSize = icon_size::k128;
 #endif
 
 using SizeToBitmap = std::map<SquareSizePx, SkBitmap>;
@@ -68,12 +71,12 @@ SizeToBitmap ConstrainBitmapsToSizes(const std::vector<SkBitmap>& bitmaps,
 SizeToBitmap ResizeIconsAndGenerateMissing(
     const std::vector<SkBitmap>& icons,
     const std::set<SquareSizePx>& sizes_to_generate,
-    char32_t icon_letter,
+    std::u16string_view icon_letter,
     bool* is_generated_icon);
 
 // Generate icons for default sizes, using the first letter of the application
-// name. |app_name| is encoded as UTF8.
-SizeToBitmap GenerateIcons(const std::string& app_name);
+// name.
+SizeToBitmap GenerateIcons(std::u16string_view app_name);
 
 // Converts any image with arbitrary RGB channels to a monochrome image
 // according to the spec.

@@ -12,7 +12,6 @@
 #include "base/files/dir_reader_posix.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
-#include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"

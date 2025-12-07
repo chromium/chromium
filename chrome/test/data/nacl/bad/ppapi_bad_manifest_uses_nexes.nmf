@@ -1,8 +1,0 @@
-{
-  "nexes": {
-    "x86-32": "doesnotexist.nexe",
-    "x86-64": "doesnotexist.nexe",
-    "arm": "doesnotexist.nexe",
-    "mips32": "doesnotexist.nexe"
-  }
-}

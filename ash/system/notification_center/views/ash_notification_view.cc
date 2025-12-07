@@ -4,6 +4,7 @@
 
 #include "ash/system/notification_center/views/ash_notification_view.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -40,8 +41,8 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -53,7 +54,6 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/color_utils.h"
@@ -66,6 +66,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/shadow_util.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_elider.h"
@@ -99,10 +100,9 @@
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/layout/table_layout.h"
-#include "ui/views/metadata/view_factory_internal.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
-#include "ui/views/view_class_properties.h"
 
 namespace {
 
@@ -188,7 +188,8 @@ views::Builder<views::View> CreateMainRightViewBuilder() {
       .SetLayoutManager(std::move(layout_manager))
       .SetProperty(
           views::kFlexBehaviorKey,
-          views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+          views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                                   views::MinimumFlexSizeRule::kScaleToZero,
                                    views::MaximumFlexSizeRule::kUnbounded));
 }
 
@@ -267,11 +268,10 @@ void ScaleAndTranslateView(views::View* view,
 // Returns the HTML snippet that contains the binary data of `bitmap`. Returns
 // `std::nullopt` if having any error.
 std::optional<std::u16string> GetHtmlForBitmap(const SkBitmap& bitmap) {
-  std::vector<unsigned char> image_data;
-  if (gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false,
-                                        &image_data)) {
-    std::string encoded_data = base::Base64Encode(
-        /*input=*/std::string(image_data.cbegin(), image_data.cend()));
+  std::optional<std::vector<uint8_t>> image_data =
+      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false);
+  if (image_data) {
+    std::string encoded_data = base::Base64Encode(image_data.value());
     const std::string html = base::StrCat(
         {"<img src=\"data:image/png;base64,", encoded_data, "\"/>"});
     std::u16string html_in_u16;
@@ -292,8 +292,6 @@ using Orientation = views::BoxLayout::Orientation;
 
 BEGIN_METADATA(AshNotificationView, NotificationTitleRow)
 END_METADATA
-
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AshNotificationView, kBubbleIdForTesting);
 
 void AshNotificationView::AddedToWidget() {
   MessageView::AddedToWidget();
@@ -380,9 +378,9 @@ AshNotificationView::NotificationTitleRow::NotificationTitleRow(
 
   ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton2,
                                              *title_view_);
-  title_view_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  title_view_->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
 
-  timestamp_in_collapsed_view_->SetEnabledColorId(
+  timestamp_in_collapsed_view_->SetEnabledColor(
       cros_tokens::kCrosSysOnSurfaceVariant);
   ash::TypographyProvider::Get()->StyleLabel(
       ash::TypographyToken::kCrosAnnotation1, *timestamp_in_collapsed_view_);
@@ -443,9 +441,9 @@ gfx::Size AshNotificationView::NotificationTitleRow::CalculatePreferredSize(
 void AshNotificationView::NotificationTitleRow::OnThemeChanged() {
   views::View::OnThemeChanged();
 
-  title_view_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
-  title_row_divider_->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
-  timestamp_in_collapsed_view_->SetEnabledColorId(
+  title_view_->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
+  title_row_divider_->SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant);
+  timestamp_in_collapsed_view_->SetEnabledColor(
       cros_tokens::kCrosSysOnSurfaceVariant);
 }
 
@@ -456,15 +454,10 @@ AshNotificationView::AshNotificationView(
       is_grouped_parent_view_(notification.group_parent()),
       is_grouped_child_view_(notification.group_child()),
       shown_in_popup_(shown_in_popup) {
-  if (features::IsNotificationImageDragEnabled()) {
-    set_drag_controller(
-        Shell::Get()->message_center_controller()->drag_controller());
-  }
-
-  SetProperty(views::kElementIdentifierKey, kBubbleIdForTesting);
+  set_drag_controller(
+      Shell::Get()->message_center_controller()->drag_controller());
 
   message_center_observer_.Observe(message_center::MessageCenter::Get());
-  // TODO(crbug.com/40780100): fix views and layout to match spec.
   // Instantiate view instances and define layout and view hierarchy.
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
@@ -484,14 +477,11 @@ AshNotificationView::AshNotificationView(
                   .SetProperty(views::kFlexBehaviorKey,
                                views::FlexSpecification(
                                    views::MinimumFlexSizeRule::kScaleToZero,
-                                   views::MaximumFlexSizeRule::kScaleToMaximum))
-                  .AddChild(
-                      CreateHeaderRowBuilder()
-                          .SetIsInAshNotificationView(true)
-                          .SetColor(
-                              AshColorProvider::Get()->GetContentLayerColor(
-                                  AshColorProvider::ContentLayerType::
-                                      kTextColorSecondary)))
+                                   views::MaximumFlexSizeRule::kUnbounded))
+                  .AddChild(CreateHeaderRowBuilder()
+                                .SetIsInAshNotificationView(true)
+                                .SetColor(AshColorProvider::Get()->GetColor(
+                                    cros_tokens::kTextColorSecondary)))
                   .AddChild(
                       CreateLeftContentBuilder()
                           .CopyAddressTo(&left_content_)
@@ -529,16 +519,14 @@ AshNotificationView::AshNotificationView(
                                           .SetButtonIconSize(
                                               kControlButtonsIconSize)
                                           .SetButtonIconColors(
-                                              AshColorProvider::Get()
-                                                  ->GetContentLayerColor(
-                                                      AshColorProvider::
-                                                          ContentLayerType::
-                                                              kIconColorPrimary))
+                                              cros_tokens::kIconColorPrimary)
                                           .SetNotificationControlButtonFactory(
                                               std::make_unique<
                                                   AshNotificationControlButtonFactory>())))
                           .AddChild(
                               views::Builder<AshNotificationExpandButton>()
+                                  .SetID(message_center::NotificationViewBase::
+                                             kExpandButton)
                                   .CopyAddressTo(&expand_button_)
                                   .SetCallback(base::BindRepeating(
                                       &AshNotificationView::ToggleExpand,
@@ -576,7 +564,7 @@ AshNotificationView::AshNotificationView(
       message_label_in_expanded_state_, kNotificationMessageLabelSize,
       /*is_color_primary=*/false);
 
-  message_label_in_expanded_state_->SetEnabledColorId(
+  message_label_in_expanded_state_->SetEnabledColor(
       cros_tokens::kCrosSysOnSurfaceVariant);
   ash::TypographyProvider::Get()->StyleLabel(
       ash::TypographyToken::kCrosAnnotation1,
@@ -584,6 +572,7 @@ AshNotificationView::AshNotificationView(
 
   AddChildView(
       views::Builder<views::FlexLayoutView>()
+          .SetID(message_center::NotificationViewBase::ViewId::kMainView)
           .CopyAddressTo(&main_view_)
           .SetOrientation(views::LayoutOrientation::kHorizontal)
           .AddChild(views::Builder<views::BoxLayoutView>()
@@ -670,6 +659,7 @@ AshNotificationView::~AshNotificationView() {
   // b/330585555: We need to abort any in progress animations before we destroy
   // the views hierarchy to make sure there are no dangling pointers associated
   // with an animations' OnAborted callback.
+  weak_factory_.InvalidateWeakPtrs();
   layer()->GetAnimator()->AbortAllAnimations();
 }
 
@@ -683,7 +673,6 @@ void AshNotificationView::GroupedNotificationsPreferredSizeChanged() {
 }
 
 std::optional<gfx::Rect> AshNotificationView::GetDragAreaBounds() const {
-  DCHECK(features::IsNotificationImageDragEnabled());
   if (!IsDraggable()) {
     return std::nullopt;
   }
@@ -697,7 +686,6 @@ std::optional<gfx::Rect> AshNotificationView::GetDragAreaBounds() const {
 }
 
 std::optional<gfx::ImageSkia> AshNotificationView::GetDragImage() {
-  DCHECK(features::IsNotificationImageDragEnabled());
   if (!IsDraggable()) {
     return std::nullopt;
   }
@@ -742,7 +730,6 @@ void AshNotificationView::AttachDropData(ui::OSExchangeData* data) {
 
 bool AshNotificationView::IsDraggable() const {
   // A notification view is draggable only when it contains a large image.
-  DCHECK(features::IsNotificationImageDragEnabled());
   return GetViewByID(message_center::NotificationViewBase::kLargeImageView);
 }
 
@@ -783,8 +770,9 @@ void AshNotificationView::AnimateGroupedChildExpandedCollapse(bool expanded) {
   if (expanded) {
     message_center_utils::FadeOutView(
         collapsed_summary_view_,
-        OnFadeOutAnimationEndedClosure(collapsed_summary_view_), 0,
-        kCollapsedSummaryViewAnimationDurationMs, gfx::Tween::LINEAR,
+        OnFadeOutAnimationEndedClosure(
+            message_center::NotificationViewBase::kCollapsedSummaryView),
+        0, kCollapsedSummaryViewAnimationDurationMs, gfx::Tween::LINEAR,
         "Ash.NotificationView.CollapsedSummaryView.FadeOut."
         "AnimationSmoothness");
     message_center_utils::FadeInView(
@@ -795,8 +783,10 @@ void AshNotificationView::AnimateGroupedChildExpandedCollapse(bool expanded) {
   }
 
   message_center_utils::FadeOutView(
-      main_view_, OnFadeOutAnimationEndedClosure(main_view_), 0,
-      kChildMainViewFadeOutAnimationDurationMs, gfx::Tween::LINEAR,
+      main_view_,
+      OnFadeOutAnimationEndedClosure(
+          message_center::NotificationViewBase::ViewId::kMainView),
+      0, kChildMainViewFadeOutAnimationDurationMs, gfx::Tween::LINEAR,
       "Ash.NotificationView.MainView.FadeOut.AnimationSmoothness");
   message_center_utils::FadeInView(
       collapsed_summary_view_, kChildMainViewFadeOutAnimationDurationMs,
@@ -853,7 +843,9 @@ void AshNotificationView::ToggleExpand() {
 
   if (inline_reply() && inline_reply()->GetVisible()) {
     message_center_utils::FadeOutView(
-        inline_reply(), OnFadeOutAnimationEndedClosure(inline_reply()),
+        inline_reply(),
+        OnFadeOutAnimationEndedClosure(
+            message_center::NotificationViewBase::ViewId::kInlineReply),
         /*delay_in_ms=*/0, kInlineReplyFadeOutAnimationDurationMs,
         gfx::Tween::LINEAR,
         "Ash.NotificationView.InlineReply.FadeOut.AnimationSmoothness");
@@ -967,7 +959,7 @@ void AshNotificationView::RemoveGroupNotification(
     return;
   }
 
-  auto on_notification_slid_out = base::BindRepeating(
+  auto on_notification_slid_out = base::BindOnce(
       [](base::WeakPtr<AshNotificationView> self,
          const std::string& notification_id) {
         if (!self) {
@@ -987,7 +979,7 @@ void AshNotificationView::RemoveGroupNotification(
       },
       weak_factory_.GetWeakPtr(), notification_id);
 
-  auto on_animation_aborted = base::BindRepeating(
+  auto on_animation_aborted = base::BindOnce(
       [](base::WeakPtr<AshNotificationView> self,
          const std::string& notification_id) {
         if (!self) {
@@ -1013,13 +1005,14 @@ void AshNotificationView::RemoveGroupNotification(
   // slide out if there is no transform.
   if (to_be_removed && to_be_removed->layer()->transform().IsIdentity()) {
     message_center_utils::SlideOutView(
-        to_be_removed.get(), on_notification_slid_out, on_animation_aborted,
+        to_be_removed.get(), std::move(on_notification_slid_out),
+        std::move(on_animation_aborted),
         /*delay_in_ms=*/0,
         /*duration_in_ms=*/kSlideOutGroupedNotificationAnimationDurationMs,
         gfx::Tween::LINEAR,
         "Ash.Notification.GroupNotification.SlideOut.AnimationSmoothness");
   } else {
-    on_notification_slid_out.Run();
+    std::move(on_notification_slid_out).Run();
   }
 }
 
@@ -1062,9 +1055,10 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
     } else {
       progress_bar_bottom_padding = kProgressBarCollapsedBottomPadding;
     }
-    progress_bar_view()->SetBorder(views::CreateEmptyBorder(
+    progress_bar_view()->SetProperty(
+        views::kMarginsKey,
         gfx::Insets::TLBR(message_center::kProgressBarTopPadding, 0,
-                          progress_bar_bottom_padding, 0)));
+                          progress_bar_bottom_padding, 0));
   }
 
   // Custom padding for app icon and expand button. These 2 views should always
@@ -1161,7 +1155,7 @@ void AshNotificationView::UpdateWithNotification(
     notification_style_utils::ConfigureLabelStyle(message_label(),
                                                   kNotificationMessageLabelSize,
                                                   /*is_color_primary=*/false);
-    message_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+    message_label()->SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant);
     ash::TypographyProvider::Get()->StyleLabel(
         ash::TypographyToken::kCrosAnnotation1, *message_label());
   }
@@ -1327,7 +1321,7 @@ void AshNotificationView::CreateOrUpdateProgressViews(
   if (status_view()) {
     status_view()->SetMultiLine(true);
     status_view()->SetMaxLines(message_center::kMaxLinesForStatusView);
-    status_view()->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+    status_view()->SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
                                           *status_view());
   }
@@ -1375,17 +1369,11 @@ void AshNotificationView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
   if (message_label()) {
-    message_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
-  }
-
-  if (control_buttons_view_) {
-    control_buttons_view_->SetButtonIconColors(
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorPrimary));
+    message_label()->SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant);
   }
 
   if (message_label_in_expanded_state_) {
-    message_label_in_expanded_state_->SetEnabledColorId(
+    message_label_in_expanded_state_->SetEnabledColor(
         cros_tokens::kCrosSysOnSurfaceVariant);
   }
 
@@ -1407,7 +1395,7 @@ void AshNotificationView::OnThemeChanged() {
        right_content()->height() - icon_view()->GetImageDrawingSize().height() >
            kSmallImageBackgroundThreshold)) {
     icon_view()->set_apply_rounded_corners(false);
-    right_content()->SetBackground(views::CreateThemedRoundedRectBackground(
+    right_content()->SetBackground(views::CreateRoundedRectBackground(
         kColorAshControlBackgroundColorInactive,
         message_center::kImageCornerRadius));
   }
@@ -1425,7 +1413,7 @@ AshNotificationView::GenerateNotificationLabelButton(
   std::unique_ptr<PillButton> actions_button = std::make_unique<PillButton>(
       std::move(callback), label, PillButton::Type::kFloatingWithoutIcon,
       /*icon=*/nullptr, kNotificationPillButtonHorizontalSpacing);
-  actions_button->SetButtonTextColorId(cros_tokens::kCrosSysOnSurface);
+  actions_button->SetButtonTextColor(cros_tokens::kCrosSysOnSurface);
 
   return actions_button;
 }
@@ -1494,7 +1482,8 @@ void AshNotificationView::OnInlineReplyUpdated() {
   message_center_utils::InitLayerForAnimations(action_buttons_row());
   message_center_utils::FadeOutView(
       action_buttons_row(),
-      OnFadeOutAnimationEndedClosure(action_buttons_row()),
+      OnFadeOutAnimationEndedClosure(
+          message_center::NotificationViewBase::ViewId::kActionButtonsRow),
       /*delay_in_ms=*/0, kActionButtonsFadeOutAnimationDurationMs,
       gfx::Tween::LINEAR,
       "Ash.NotificationView.ActionButtonsRow.FadeOut.AnimationSmoothness");
@@ -1509,7 +1498,7 @@ void AshNotificationView::OnInlineReplyUpdated() {
 
 views::View* AshNotificationView::FindGroupNotificationView(
     const std::string& notification_id) {
-  auto notification = base::ranges::find(
+  auto notification = std::ranges::find(
       grouped_notifications_container_->children(), notification_id,
       [](views::View* notification_view) {
         return static_cast<message_center::MessageView*>(notification_view)
@@ -1527,6 +1516,11 @@ AshNotificationView::GetActionButtonsForTest() {
 
 views::Label* AshNotificationView::GetTitleRowLabelForTest() {
   return title_row_->title_view();
+}
+
+message_center::NotificationInputContainer*
+AshNotificationView::GetInlineReplyForTest() {
+  return inline_reply();
 }
 
 void AshNotificationView::OnNotificationRemoved(
@@ -1663,8 +1657,8 @@ void AshNotificationView::UpdateIconAndButtonsColor(
       !notification ||
       notification->rich_notification_data().ignore_accent_color_for_text;
   if (use_default_button_color) {
-    button_color = AshColorProvider::Get()->GetControlsLayerColor(
-        AshColorProvider::ControlsLayerType::kControlBackgroundColorActive);
+    button_color = AshColorProvider::Get()->GetColor(
+        kColorAshControlBackgroundColorActive);
   }
 
   for (views::LabelButton* action_button : action_buttons()) {
@@ -1678,7 +1672,7 @@ void AshNotificationView::UpdateIconAndButtonsColor(
 
 void AshNotificationView::AnimateResizeAfterRemoval(
     views::View* to_be_removed) {
-  auto on_resize_complete = base::BindRepeating(
+  auto on_resize_complete = base::BindOnce(
       [](base::WeakPtr<AshNotificationView> self) {
         if (!self) {
           return;
@@ -1724,7 +1718,7 @@ void AshNotificationView::AnimateResizeAfterRemoval(
     return;
   }
   set_is_animating(true);
-  animation_builder.OnEnded(on_resize_complete);
+  animation_builder.OnEnded(std::move(on_resize_complete));
   for (auto it =
            grouped_notifications_container_->children().begin() + removed_index;
        it != grouped_notifications_container_->children().end(); it++) {
@@ -1862,7 +1856,8 @@ void AshNotificationView::PerformLargeImageAnimation() {
   // `image_container_view()`, fade out and scale down `image_container_view()`.
   message_center_utils::FadeOutView(
       image_container_view(),
-      OnFadeOutAnimationEndedClosure(image_container_view()),
+      OnFadeOutAnimationEndedClosure(
+          message_center::NotificationViewBase::ViewId::kImageContainerView),
       kLargeImageFadeOutAnimationDelayMs, kLargeImageFadeOutAnimationDurationMs,
       gfx::Tween::ACCEL_20_DECEL_100,
       "Ash.NotificationView.ImageContainerView.FadeOut.AnimationSmoothness");
@@ -1902,8 +1897,8 @@ void AshNotificationView::PerformLargeImageAnimation() {
 
 void AshNotificationView::PerformToggleInlineSettingsAnimation(
     bool should_show_inline_settings) {
-  if (ui::ScopedAnimationDurationScaleMode::duration_multiplier() ==
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
+  if (gfx::ScopedAnimationDurationScaleMode::duration_multiplier() ==
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
     return;
   }
 
@@ -1916,13 +1911,17 @@ void AshNotificationView::PerformToggleInlineSettingsAnimation(
     if (left_content_->GetVisible()) {
       message_center_utils::InitLayerForAnimations(left_content());
       message_center_utils::FadeOutView(
-          left_content(), OnFadeOutAnimationEndedClosure(left_content()),
+          left_content(),
+          OnFadeOutAnimationEndedClosure(
+              message_center::NotificationViewBase::ViewId::kLeftContent),
           /*delay_in_ms=*/0, kToggleInlineSettingsFadeOutDurationMs,
           gfx::Tween::LINEAR,
           "Ash.NotificationView.LeftContent.FadeOut.AnimationSmoothness");
     }
     message_center_utils::FadeOutView(
-        expand_button_, OnFadeOutAnimationEndedClosure(expand_button_),
+        expand_button_,
+        OnFadeOutAnimationEndedClosure(
+            message_center::NotificationViewBase::ViewId::kExpandButton),
         /*delay_in_ms=*/0, kToggleInlineSettingsFadeOutDurationMs,
         gfx::Tween::LINEAR,
         "Ash.NotificationView.ExpandButton.FadeOut.AnimationSmoothness");
@@ -1931,7 +1930,9 @@ void AshNotificationView::PerformToggleInlineSettingsAnimation(
     if (icon_view()) {
       message_center_utils::InitLayerForAnimations(icon_view());
       message_center_utils::FadeOutView(
-          icon_view(), OnFadeOutAnimationEndedClosure(icon_view()),
+          icon_view(),
+          OnFadeOutAnimationEndedClosure(
+              message_center::NotificationViewBase::ViewId::kIconView),
           /*delay_in_ms=*/0, kToggleInlineSettingsFadeOutDurationMs,
           gfx::Tween::LINEAR,
           "Ash.NotificationView.IconView.FadeOut.AnimationSmoothness");
@@ -1939,7 +1940,8 @@ void AshNotificationView::PerformToggleInlineSettingsAnimation(
   } else {
     message_center_utils::FadeOutView(
         inline_settings_row(),
-        OnFadeOutAnimationEndedClosure(inline_settings_row()),
+        OnFadeOutAnimationEndedClosure(
+            message_center::NotificationViewBase::ViewId::kInlineSettingsRow),
         /*delay_in_ms=*/0, kToggleInlineSettingsFadeOutDurationMs,
         gfx::Tween::LINEAR,
         "Ash.NotificationView.InlineSettingsRow.FadeOut.AnimationSmoothness");
@@ -2023,7 +2025,12 @@ void AshNotificationView::AttachBinaryImageAsDropData(
   }
 }
 
-void AshNotificationView::OnFadeOutAnimationEnded(views::View* view) {
+void AshNotificationView::OnFadeOutAnimationEnded(int view_id) {
+  auto* view = GetViewByID(view_id);
+  if (!view) {
+    return;
+  }
+
   auto* layer = view->layer();
   if (layer) {
     layer->SetOpacity(1.0f);
@@ -2036,9 +2043,9 @@ void AshNotificationView::OnFadeOutAnimationEnded(views::View* view) {
 }
 
 base::OnceClosure AshNotificationView::OnFadeOutAnimationEndedClosure(
-    views::View* view) {
+    int view_id) {
   return base::BindOnce(&AshNotificationView::OnFadeOutAnimationEnded,
-                        weak_factory_.GetWeakPtr(), view);
+                        weak_factory_.GetWeakPtr(), view_id);
 }
 
 void AshNotificationView::OnGroupedAnimationEnded(

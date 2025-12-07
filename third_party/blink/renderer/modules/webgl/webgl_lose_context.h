@@ -31,6 +31,7 @@
 namespace blink {
 
 class WebGLRenderingContextBase;
+class ExecutionContext;
 
 class WebGLLoseContext final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
@@ -39,7 +40,7 @@ class WebGLLoseContext final : public WebGLExtension {
   static bool Supported(WebGLRenderingContextBase*);
   static const char* ExtensionName();
 
-  explicit WebGLLoseContext(WebGLRenderingContextBase*);
+  WebGLLoseContext(WebGLRenderingContextBase*, ExecutionContext*);
 
   WebGLExtensionName GetName() const override;
   void Lose(bool) override;

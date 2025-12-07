@@ -38,7 +38,7 @@ TEST(WhiteSpaceTest, Normal) {
   EXPECT_FALSE(ShouldPreserveWhiteSpaces(ToWhiteSpaceCollapse(normal)));
   EXPECT_FALSE(ShouldPreserveBreaks(ToWhiteSpaceCollapse(normal)));
   EXPECT_FALSE(ShouldBreakSpaces(ToWhiteSpaceCollapse(normal)));
-  EXPECT_TRUE(ShouldWrapLine(ToTextWrap(normal)));
+  EXPECT_TRUE(ShouldWrapLine(ToTextWrapMode(normal)));
 }
 
 TEST(WhiteSpaceTest, Nowrap) {
@@ -46,7 +46,7 @@ TEST(WhiteSpaceTest, Nowrap) {
   EXPECT_FALSE(ShouldPreserveWhiteSpaces(ToWhiteSpaceCollapse(nowrap)));
   EXPECT_FALSE(ShouldPreserveBreaks(ToWhiteSpaceCollapse(nowrap)));
   EXPECT_FALSE(ShouldBreakSpaces(ToWhiteSpaceCollapse(nowrap)));
-  EXPECT_FALSE(ShouldWrapLine(ToTextWrap(nowrap)));
+  EXPECT_FALSE(ShouldWrapLine(ToTextWrapMode(nowrap)));
 }
 
 TEST(WhiteSpaceTest, Pre) {
@@ -54,7 +54,7 @@ TEST(WhiteSpaceTest, Pre) {
   EXPECT_TRUE(ShouldPreserveWhiteSpaces(ToWhiteSpaceCollapse(pre)));
   EXPECT_TRUE(ShouldPreserveBreaks(ToWhiteSpaceCollapse(pre)));
   EXPECT_FALSE(ShouldBreakSpaces(ToWhiteSpaceCollapse(pre)));
-  EXPECT_FALSE(ShouldWrapLine(ToTextWrap(pre)));
+  EXPECT_FALSE(ShouldWrapLine(ToTextWrapMode(pre)));
 }
 
 TEST(WhiteSpaceTest, PreLine) {
@@ -62,7 +62,7 @@ TEST(WhiteSpaceTest, PreLine) {
   EXPECT_FALSE(ShouldPreserveWhiteSpaces(ToWhiteSpaceCollapse(pre_line)));
   EXPECT_TRUE(ShouldPreserveBreaks(ToWhiteSpaceCollapse(pre_line)));
   EXPECT_FALSE(ShouldBreakSpaces(ToWhiteSpaceCollapse(pre_line)));
-  EXPECT_TRUE(ShouldWrapLine(ToTextWrap(pre_line)));
+  EXPECT_TRUE(ShouldWrapLine(ToTextWrapMode(pre_line)));
 }
 
 TEST(WhiteSpaceTest, PreWrap) {
@@ -70,7 +70,7 @@ TEST(WhiteSpaceTest, PreWrap) {
   EXPECT_TRUE(ShouldPreserveWhiteSpaces(ToWhiteSpaceCollapse(pre_wrap)));
   EXPECT_TRUE(ShouldPreserveBreaks(ToWhiteSpaceCollapse(pre_wrap)));
   EXPECT_FALSE(ShouldBreakSpaces(ToWhiteSpaceCollapse(pre_wrap)));
-  EXPECT_TRUE(ShouldWrapLine(ToTextWrap(pre_wrap)));
+  EXPECT_TRUE(ShouldWrapLine(ToTextWrapMode(pre_wrap)));
 }
 
 TEST(WhiteSpaceTest, BreakSpaces) {
@@ -78,7 +78,7 @@ TEST(WhiteSpaceTest, BreakSpaces) {
   EXPECT_TRUE(ShouldPreserveWhiteSpaces(ToWhiteSpaceCollapse(break_spaces)));
   EXPECT_TRUE(ShouldPreserveBreaks(ToWhiteSpaceCollapse(break_spaces)));
   EXPECT_TRUE(ShouldBreakSpaces(ToWhiteSpaceCollapse(break_spaces)));
-  EXPECT_TRUE(ShouldWrapLine(ToTextWrap(break_spaces)));
+  EXPECT_TRUE(ShouldWrapLine(ToTextWrapMode(break_spaces)));
 }
 
 }  // namespace blink

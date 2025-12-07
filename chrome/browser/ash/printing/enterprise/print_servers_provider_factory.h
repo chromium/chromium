@@ -51,7 +51,7 @@ class PrintServersProviderFactory {
   void RemoveForAccountId(const AccountId& account_id);
 
   // Tear down all PrintServersProviders.
-  void Shutdown();
+  void ShutdownForTesting();
 
  private:
   ~PrintServersProviderFactory();

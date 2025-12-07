@@ -10,6 +10,7 @@
 #include "components/grit/components_resources.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/hash_value.h"
 #include "net/cert/x509_certificate.h"
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl_lite.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -38,8 +39,6 @@ net::CertStatus MapToCertStatus(
     case chrome_browser_ssl::DynamicInterstitial::
         ERR_CERT_KNOWN_INTERCEPTION_BLOCKED:
       return net::CERT_STATUS_KNOWN_INTERCEPTION_BLOCKED;
-    case chrome_browser_ssl::DynamicInterstitial::ERR_CERT_SYMANTEC_LEGACY:
-      return net::CERT_STATUS_SYMANTEC_LEGACY;
     case chrome_browser_ssl::DynamicInterstitial::ERR_CERT_REVOKED:
       return net::CERT_STATUS_REVOKED;
     case chrome_browser_ssl::DynamicInterstitial::ERR_CERT_INVALID:
@@ -64,21 +63,32 @@ net::CertStatus MapToCertStatus(
   }
 }
 
-std::unordered_set<std::string> HashesFromDynamicInterstitial(
+absl::flat_hash_set<net::SHA256HashValue> HashesFromDynamicInterstitial(
     const chrome_browser_ssl::DynamicInterstitial& entry) {
-  std::unordered_set<std::string> hashes;
-  for (const std::string& hash : entry.sha256_hash())
-    hashes.insert(hash);
+  absl::flat_hash_set<net::SHA256HashValue> hashes;
+  for (const std::string& hash : entry.sha256_hash()) {
+    net::HashValue value;
+    if (!value.FromString(hash) || value.tag() != net::HASH_VALUE_SHA256) {
+      continue;
+    }
+    hashes.insert(value.sha256hashvalue());
+  }
 
   return hashes;
 }
 
-std::unique_ptr<std::unordered_set<std::string>> LoadCaptivePortalCertHashes(
+std::unique_ptr<absl::flat_hash_set<net::SHA256HashValue>>
+LoadCaptivePortalCertHashes(
     const chrome_browser_ssl::SSLErrorAssistantConfig& proto) {
-  auto hashes = std::make_unique<std::unordered_set<std::string>>();
+  auto hashes = std::make_unique<absl::flat_hash_set<net::SHA256HashValue>>();
   for (const chrome_browser_ssl::CaptivePortalCert& cert :
        proto.captive_portal_cert()) {
-    hashes.get()->insert(cert.sha256_hash());
+    net::HashValue value;
+    if (!value.FromString(cert.sha256_hash()) ||
+        value.tag() != net::HASH_VALUE_SHA256) {
+      continue;
+    }
+    hashes.get()->insert(value.sha256hashvalue());
   }
   return hashes;
 }
@@ -138,14 +148,13 @@ bool RegexMatchesAny(const std::vector<std::string>& organization_names,
 
 // Returns true if a hash in |ssl_info| is found in |spki_hashes|, a list of
 // hashes.
-bool MatchSSLInfoWithHashes(const net::SSLInfo& ssl_info,
-                            std::unordered_set<std::string> spki_hashes) {
-  for (const net::HashValue& hash_value : ssl_info.public_key_hashes) {
-    if (hash_value.tag() != net::HASH_VALUE_SHA256)
-      continue;
-
-    if (spki_hashes.find(hash_value.ToString()) != spki_hashes.end())
+bool MatchSSLInfoWithHashes(
+    const net::SSLInfo& ssl_info,
+    const absl::flat_hash_set<net::SHA256HashValue>& spki_hashes) {
+  for (const net::SHA256HashValue& hash_value : ssl_info.public_key_hashes) {
+    if (spki_hashes.contains(hash_value)) {
       return true;
+    }
   }
 
   return false;
@@ -161,7 +170,7 @@ MITMSoftwareType::MITMSoftwareType(const std::string& name,
       issuer_organization_regex(issuer_organization_regex) {}
 
 DynamicInterstitialInfo::DynamicInterstitialInfo(
-    const std::unordered_set<std::string>& spki_hashes,
+    const absl::flat_hash_set<net::SHA256HashValue>& spki_hashes,
     const std::string& issuer_common_name_regex,
     const std::string& issuer_organization_regex,
     const std::string& mitm_software_name,
@@ -180,14 +189,14 @@ DynamicInterstitialInfo::DynamicInterstitialInfo(
       show_only_for_nonoverridable_errors(show_only_for_nonoverridable_errors) {
 }
 
-DynamicInterstitialInfo::~DynamicInterstitialInfo() {}
+DynamicInterstitialInfo::~DynamicInterstitialInfo() = default;
 
 DynamicInterstitialInfo::DynamicInterstitialInfo(
     const DynamicInterstitialInfo& other) = default;
 
-SSLErrorAssistant::SSLErrorAssistant() {}
+SSLErrorAssistant::SSLErrorAssistant() = default;
 
-SSLErrorAssistant::~SSLErrorAssistant() {}
+SSLErrorAssistant::~SSLErrorAssistant() = default;
 
 bool SSLErrorAssistant::IsKnownCaptivePortalCertificate(
     const net::SSLInfo& ssl_info) {

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Commits logical properties
+  assert_equals: expected "20px" but got "10px"
+[FAIL] Commits logical properties as physical properties
+  assert_equals: expected "20px" but got "10px"
+Harness: the test ran to completion.
+

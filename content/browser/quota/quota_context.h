@@ -7,10 +7,10 @@
 
 #include <memory>
 
+#include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "content/browser/quota/quota_change_dispatcher.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "storage/browser/quota/quota_settings.h"
@@ -48,7 +48,8 @@ class QuotaContext : public base::RefCountedDeleteOnSequence<QuotaContext> {
       bool is_incognito,
       const base::FilePath& profile_path,
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
-      storage::GetQuotaSettingsFunc get_settings_function);
+      storage::GetQuotaSettingsFunc get_settings_function,
+      bool report_static_storage_quota = false);
 
   QuotaContext(const QuotaContext&) = delete;
   QuotaContext& operator=(const QuotaContext&) = delete;
@@ -75,9 +76,6 @@ class QuotaContext : public base::RefCountedDeleteOnSequence<QuotaContext> {
 
   // QuotaManager runs on the IO thread, so mojo receivers must be bound there.
   const scoped_refptr<base::SingleThreadTaskRunner> io_thread_;
-
-  // Owning reference for the QuotaChangeDispatcher.
-  scoped_refptr<QuotaChangeDispatcher> quota_change_dispatcher_;
 
   // Owning reference for the QuotaManager.
   //

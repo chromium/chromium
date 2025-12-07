@@ -4,8 +4,7 @@
 
 #include "chrome/services/sharing/nearby/platform/bluetooth_device.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 BluetoothDevice::BluetoothDevice(
     bluetooth::mojom::DeviceInfoPtr device_info,
@@ -31,5 +30,4 @@ void BluetoothDevice::UpdateDevice(
   last_discovered_time_ = last_discovered_time;
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

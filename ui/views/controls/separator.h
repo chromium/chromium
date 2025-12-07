@@ -43,6 +43,9 @@ class VIEWS_EXPORT Separator : public View {
   Orientation GetOrientation() const;
   void SetOrientation(Orientation orientation);
 
+  int GetBorderRadius() const;
+  void SetBorderRadius(int radius);
+
   // Overridden from View:
   gfx::Size CalculatePreferredSize(
       const SizeBounds& /*available_size*/) const override;
@@ -52,12 +55,14 @@ class VIEWS_EXPORT Separator : public View {
   int preferred_length_ = kThickness;
   ui::ColorId color_id_ = ui::kColorSeparator;
   Orientation orientation_ = Orientation::kVertical;
+  int border_radius_ = 0;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Separator, View)
 VIEW_BUILDER_PROPERTY(ui::ColorId, ColorId)
 VIEW_BUILDER_PROPERTY(int, PreferredLength)
 VIEW_BUILDER_PROPERTY(Separator::Orientation, Orientation)
+VIEW_BUILDER_PROPERTY(int, BorderRadius)
 END_VIEW_BUILDER
 
 }  // namespace views

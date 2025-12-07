@@ -6,9 +6,11 @@
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
+
 std::vector<uint8_t> StringToBytes(std::string_view str) {
   const uint8_t* raw_data = reinterpret_cast<const uint8_t*>(str.data());
-  return std::vector<uint8_t>(raw_data, raw_data + str.length());
+  return std::vector<uint8_t>(raw_data, UNSAFE_TODO(raw_data + str).length());
 }
 
 std::string_view BytesAsString(const std::vector<uint8_t>& bytes) {

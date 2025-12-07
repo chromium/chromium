@@ -5,7 +5,20 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_TRANSLATE_INTERNALS_TRANSLATE_INTERNALS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_TRANSLATE_INTERNALS_TRANSLATE_INTERNALS_UI_H_
 
+#include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
+
+class TranslateInternalsUI;
+
+class TranslateInternalsUIConfig
+    : public content::DefaultWebUIConfig<TranslateInternalsUI> {
+ public:
+  TranslateInternalsUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUITranslateInternalsHost) {}
+};
 
 // The implementation for the chrome://translate-internals page.
 class TranslateInternalsUI : public content::WebUIController {
@@ -15,7 +28,7 @@ class TranslateInternalsUI : public content::WebUIController {
   TranslateInternalsUI(const TranslateInternalsUI&) = delete;
   TranslateInternalsUI& operator=(const TranslateInternalsUI&) = delete;
 
-  ~TranslateInternalsUI() override {}
+  ~TranslateInternalsUI() override = default;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_TRANSLATE_INTERNALS_TRANSLATE_INTERNALS_UI_H_

@@ -5,21 +5,13 @@
 #ifndef BASE_HASH_SHA1_H_
 #define BASE_HASH_SHA1_H_
 
-#include <stddef.h>
-
 #include <array>
+#include <cstdint>
 #include <string>
 #include <string_view>
 
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "build/build_config.h"
-#if BUILDFLAG(IS_NACL)
-#include "base/hash/sha1_nacl.h"
-#else
-#include "base/hash/sha1_boringssl.h"
-#endif
 
 namespace base {
 
@@ -35,10 +27,6 @@ BASE_EXPORT SHA1Digest SHA1Hash(span<const uint8_t> data);
 // hash.
 BASE_EXPORT std::string SHA1HashString(std::string_view str);
 
-// These functions allow streaming SHA-1 operations.
-BASE_EXPORT void SHA1Init(SHA1Context& context);
-BASE_EXPORT void SHA1Update(const std::string_view data, SHA1Context& context);
-BASE_EXPORT void SHA1Final(SHA1Context& context, SHA1Digest& digest);
 }  // namespace base
 
 #endif  // BASE_HASH_SHA1_H_

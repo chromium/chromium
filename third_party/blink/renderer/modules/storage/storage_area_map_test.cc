@@ -66,7 +66,6 @@ TEST(StorageAreaMapTest, EnforcesQuota) {
   const String kKey("test_key");
   const String kValue("test_value");
   const String kKey2("test_key_2");
-  String old_value;
 
   // A 50 byte quota is too small to hold both keys and values, so we
   // should see the StorageAreaMap enforcing it.

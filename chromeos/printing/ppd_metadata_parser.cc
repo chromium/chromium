@@ -30,12 +30,13 @@ std::optional<base::Value> ParseJsonAndUnnestKey(
     std::string_view input,
     std::string_view key,
     base::Value::Type target_type) {
-  std::optional<base::Value> parsed = base::JSONReader::Read(input);
-  if (!parsed || !parsed->is_dict()) {
+  std::optional<base::Value::Dict> parsed =
+      base::JSONReader::ReadDict(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  if (!parsed) {
     return std::nullopt;
   }
 
-  std::optional<base::Value> unnested = parsed->GetDict().Extract(key);
+  std::optional<base::Value> unnested = parsed->Extract(key);
   if (!unnested || unnested->type() != target_type) {
     return std::nullopt;
   }
@@ -49,8 +50,7 @@ std::optional<base::Value> ParseJsonAndUnnestKey(
       unnested_is_empty = unnested->GetDict().empty();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   if (unnested_is_empty) {

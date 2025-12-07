@@ -6,9 +6,9 @@
  * @fileoverview This component is for the color scheme icon svg.
  */
 
-import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
+import type {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
-import {SampleColorScheme} from '../../personalization_app.mojom-webui.js';
+import type {SampleColorScheme} from '../../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {convertToRgbHexStr} from '../utils.js';
 

@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] PerformanceNavigationTiming interface: default toJSON operation on performance.getEntriesByType("navigation")[0]
-  Type RenderBlockingStatusType not found
-Harness: the test ran to completion.
-

@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial.h"
@@ -32,9 +33,8 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/extensions/crx_installer.h"
-#include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
-#include "chrome/browser/extensions/install_verifier.h"
+#include "chrome/browser/extensions/install_verifier_factory.h"
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
@@ -52,9 +52,15 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_file_task_runner.h"
-#include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/install/crx_install_error.h"
+#include "extensions/browser/install_approval.h"
+#include "extensions/browser/install_tracker.h"
+#include "extensions/browser/install_verifier.h"
+#include "extensions/browser/manifest_check_level.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_constants.h"
@@ -62,6 +68,8 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using content::BrowserContext;
 using content::BrowserThread;
@@ -72,7 +80,7 @@ using download::DownloadUrlParameters;
 
 namespace {
 
-// Key used to attach the Approval to the DownloadItem.
+// Key used to attach the InstallApproval to the DownloadItem.
 const char kApprovalKey[] = "extensions.webstore_installer";
 
 const char kInvalidIdError[] = "Invalid id";
@@ -126,7 +134,7 @@ base::FilePath GetDownloadFilePath(const base::FilePath& download_directory,
 void MaybeAppendAuthUserParameter(const std::string& authuser, GURL* url) {
   if (authuser.empty())
     return;
-  std::string old_query = url->query();
+  std::string old_query = url->GetQuery();
   url::Component query(0, old_query.length());
   url::Component key, value;
   // Ensure that the URL doesn't already specify an authuser parameter.
@@ -188,8 +196,9 @@ GURL WebstoreInstaller::GetWebstoreInstallURL(
   if (cmd_line->HasSwitch(::switches::kAppsGalleryDownloadURL)) {
     std::string download_url =
         cmd_line->GetSwitchValueASCII(::switches::kAppsGalleryDownloadURL);
-    return GURL(base::StringPrintfNonConstexpr(download_url.c_str(),
-                                               extension_id.c_str()));
+    base::ReplaceFirstSubstringAfterOffset(&download_url, 0, "%s",
+                                           extension_id);
+    return GURL(download_url);
   }
   std::vector<std::string_view> params;
   std::string extension_param = "id=" + extension_id;
@@ -210,48 +219,11 @@ GURL WebstoreInstaller::GetWebstoreInstallURL(
   return url;
 }
 
-WebstoreInstaller::Approval::Approval() = default;
-
-std::unique_ptr<WebstoreInstaller::Approval>
-WebstoreInstaller::Approval::CreateWithInstallPrompt(Profile* profile) {
-  std::unique_ptr<Approval> result(new Approval());
-  result->profile = profile;
-  return result;
-}
-
-std::unique_ptr<WebstoreInstaller::Approval>
-WebstoreInstaller::Approval::CreateForSharedModule(Profile* profile) {
-  std::unique_ptr<Approval> result(new Approval());
-  result->profile = profile;
-  result->skip_install_dialog = true;
-  result->skip_post_install_ui = true;
-  result->manifest_check_level = MANIFEST_CHECK_LEVEL_NONE;
-  return result;
-}
-
-std::unique_ptr<WebstoreInstaller::Approval>
-WebstoreInstaller::Approval::CreateWithNoInstallPrompt(
-    Profile* profile,
-    const extensions::ExtensionId& extension_id,
-    base::Value::Dict parsed_manifest,
-    bool strict_manifest_check) {
-  std::unique_ptr<Approval> result(new Approval());
-  result->extension_id = extension_id;
-  result->profile = profile;
-  result->manifest =
-      std::make_unique<Manifest>(mojom::ManifestLocation::kInvalidLocation,
-                                 std::move(parsed_manifest), extension_id);
-  result->skip_install_dialog = true;
-  result->manifest_check_level = strict_manifest_check ?
-    MANIFEST_CHECK_LEVEL_STRICT : MANIFEST_CHECK_LEVEL_LOOSE;
-  return result;
-}
-
-WebstoreInstaller::Approval::~Approval() {}
-
-const WebstoreInstaller::Approval* WebstoreInstaller::GetAssociatedApproval(
+// static
+const InstallApproval* WebstoreInstaller::GetAssociatedApproval(
     const DownloadItem& download) {
-  return static_cast<const Approval*>(download.GetUserData(kApprovalKey));
+  return static_cast<const InstallApproval*>(
+      download.GetUserData(kApprovalKey));
 }
 
 WebstoreInstaller::WebstoreInstaller(Profile* profile,
@@ -259,7 +231,7 @@ WebstoreInstaller::WebstoreInstaller(Profile* profile,
                                      FailureCallback failure_callback,
                                      content::WebContents* web_contents,
                                      const extensions::ExtensionId& id,
-                                     std::unique_ptr<Approval> approval,
+                                     std::unique_ptr<InstallApproval> approval,
                                      InstallSource source)
     : web_contents_(web_contents->GetWeakPtr()),
       profile_(profile),
@@ -285,10 +257,8 @@ void WebstoreInstaller::Start() {
     return;
   }
 
-  ExtensionService* extension_service =
-    ExtensionSystem::Get(profile_)->extension_service();
   if (approval_.get() && approval_->dummy_extension.get()) {
-    extension_service->shared_module_service()->CheckImports(
+    SharedModuleService::Get(profile_)->CheckImports(
         approval_->dummy_extension.get(), &pending_modules_, &pending_modules_);
     // Do not check the return value of CheckImports, the CRX installer
     // will report appropriate error messages and fail to install if there
@@ -307,12 +277,12 @@ void WebstoreInstaller::Start() {
   for (i = pending_modules_.begin(); i != pending_modules_.end(); ++i) {
     ids.insert(i->extension_id);
   }
-  InstallVerifier::Get(profile_)->AddProvisional(ids);
+  InstallVerifierFactory::GetForBrowserContext(profile_)->AddProvisional(ids);
 
   const std::string* name =
       approval_->manifest->available_values().FindString(manifest_keys::kName);
   if (!name) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   extensions::InstallTracker* tracker =
       extensions::InstallTrackerFactory::GetForBrowserContext(profile_);
@@ -433,8 +403,8 @@ void WebstoreInstaller::OnDownloadStarted(
   download_item_->AddObserver(this);
   if (pending_modules_.size() > 1) {
     // We are downloading a shared module. We need create an approval for it.
-    std::unique_ptr<Approval> approval =
-        Approval::CreateForSharedModule(profile_);
+    std::unique_ptr<InstallApproval> approval =
+        InstallApproval::CreateForSharedModule(profile_);
     const SharedModuleInfo::ImportInfo& info = pending_modules_.front();
     approval->extension_id = info.extension_id;
     const base::Version version_required(info.minimum_version);
@@ -538,7 +508,7 @@ void WebstoreInstaller::DownloadCrx(const extensions::ExtensionId& extension_id,
 // http://crbug.com/165634
 // http://crbug.com/126013
 // The current working theory is that one of the many pointers dereferenced in
-// here is occasionally deleted before all of its referers are nullified,
+// here is occasionally deleted before all of its referrers are nullified,
 // probably in a callback race. After this comment is released, the crash
 // reports should narrow down exactly which pointer it is.  Collapsing all the
 // early-returns into a single branch makes it hard to see exactly which pointer
@@ -586,7 +556,7 @@ void WebstoreInstaller::StartDownload(
   int render_process_host_id = web_contents_->GetPrimaryMainFrame()
                                    ->GetRenderViewHost()
                                    ->GetProcess()
-                                   ->GetID();
+                                   ->GetDeprecatedID();
 
   content::RenderFrameHost* render_frame_host =
       web_contents_->GetPrimaryMainFrame();
@@ -624,6 +594,7 @@ void WebstoreInstaller::StartDownload(
       download_url_, render_process_host_id, render_frame_host->GetRoutingID(),
       traffic_annotation));
   params->set_file_path(file);
+  params->set_initiator(render_frame_host->GetLastCommittedOrigin());
   if (controller.GetVisibleEntry()) {
     content::Referrer referrer = content::Referrer::SanitizeForRequest(
         download_url_,
@@ -636,6 +607,15 @@ void WebstoreInstaller::StartDownload(
   params->set_callback(base::BindOnce(&WebstoreInstaller::OnDownloadStarted,
                                       this, extension_id));
   params->set_download_source(download::DownloadSource::EXTENSION_INSTALLER);
+
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kWebstoreInstallerUserGestureKillSwitch)) {
+    // This is set to `true` so that the download stack can correctly apply
+    // download restriction policies and understand that a user gesture started
+    // the extension download.
+    params->set_has_user_gesture(true);
+  }
+
   download_manager->DownloadUrl(std::move(params));
 }
 
@@ -678,11 +658,7 @@ void WebstoreInstaller::StartCrxInstaller(const DownloadItem& download) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!crx_installer_.get());
 
-  ExtensionService* service = ExtensionSystem::Get(profile_)->
-      extension_service();
-  CHECK(service);
-
-  const Approval* approval = GetAssociatedApproval(download);
+  const InstallApproval* approval = GetAssociatedApproval(download);
   DCHECK(approval);
 
   crx_installer_ = download_crx_util::CreateCrxInstaller(profile_, download);

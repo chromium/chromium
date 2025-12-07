@@ -107,8 +107,9 @@ AudioCodec StringToAudioCodec(const std::string& codec_id) {
       base::StartsWith(codec_id, "mha1.", base::CompareCase::SENSITIVE)) {
     return AudioCodec::kMpegHAudio;
   }
-  if (codec_id == "opus")
+  if (codec_id == "opus" || codec_id == "Opus") {
     return AudioCodec::kOpus;
+  }
   if (codec_id == "vorbis")
     return AudioCodec::kVorbis;
   if (base::StartsWith(codec_id, "mp4a.40.", base::CompareCase::SENSITIVE))

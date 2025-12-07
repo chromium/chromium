@@ -4,15 +4,19 @@
 
 package org.chromium.chrome.browser.magic_stack;
 
+import static org.chromium.chrome.browser.magic_stack.HomeModulesUtils.getSettingsPreferenceKey;
+
 import android.content.Context;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,15 +31,16 @@ import java.util.Set;
  *
  * <p>This class serves as a single chrome home modules setting logic gateway.
  */
+@NullMarked
 public class HomeModulesConfigManager {
     /** An interface to use for getting home modules related updates. */
-    interface HomeModulesStateListener {
+    public interface HomeModulesStateListener {
         /** Called when the home modules' specific module type is disabled or enabled. */
-        void onModuleConfigChanged(@ModuleType int moduleType, boolean isEnabled);
-    }
+        default void onModuleConfigChanged(@ModuleType int moduleType, boolean isEnabled) {}
 
-    static final long INVALID_TIMESTAMP = -1;
-    static final int INVALID_FRESHNESS_SCORE = -1;
+        /** Called when the "all cards" switch is disabled or enabled. */
+        default void allCardsConfigChanged(boolean isEnabled) {}
+    }
 
     private final SharedPreferencesManager mSharedPreferencesManager;
     private final ObserverList<HomeModulesStateListener> mHomepageStateListeners;
@@ -68,7 +73,7 @@ public class HomeModulesConfigManager {
      * Adds a {@link HomeModulesStateListener} to receive updates when the home modules state
      * changes.
      */
-    void addListener(HomeModulesStateListener listener) {
+    public void addListener(HomeModulesStateListener listener) {
         mHomepageStateListeners.addObserver(listener);
     }
 
@@ -77,7 +82,7 @@ public class HomeModulesConfigManager {
      *
      * @param listener The listener to remove.
      */
-    void removeListener(HomeModulesStateListener listener) {
+    public void removeListener(HomeModulesStateListener listener) {
         mHomepageStateListeners.removeObserver(listener);
     }
 
@@ -87,8 +92,8 @@ public class HomeModulesConfigManager {
      * @param context {@link Context} used for launching a settings activity.
      */
     public void onMenuClick(Context context) {
-        SettingsLauncherFactory.createSettingsLauncher()
-                .launchSettingsActivity(context, HomeModulesConfigSettings.class);
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(context, HomeModulesConfigSettings.class);
     }
 
     /**
@@ -118,9 +123,28 @@ public class HomeModulesConfigManager {
      * @param moduleType {@link ModuleType} needed to be notified to the listeners.
      * @param enabled True is the module type is enabled.
      */
-    void setPrefModuleTypeEnabled(@ModuleType int moduleType, boolean enabled) {
+    public void setPrefModuleTypeEnabled(@ModuleType int moduleType, boolean enabled) {
         mSharedPreferencesManager.writeBoolean(getSettingsPreferenceKey(moduleType), enabled);
         notifyModuleTypeUpdated(moduleType, enabled);
+    }
+
+    /** Returns the user preference for whether all cards in the magic stack are enabled. */
+    public boolean getPrefAllCardsEnabled() {
+        return mSharedPreferencesManager.readBoolean(
+                ChromePreferenceKeys.HOME_MODULE_CARDS_ENABLED, true);
+    }
+
+    /**
+     * Sets the user preference for whether all cards in the magic stack are enabled.
+     *
+     * @param enabled True is all cards are enabled.
+     */
+    public void setPrefAllCardsEnabled(boolean enabled) {
+        mSharedPreferencesManager.writeBoolean(
+                ChromePreferenceKeys.HOME_MODULE_CARDS_ENABLED, enabled);
+        for (HomeModulesStateListener listener : mHomepageStateListeners) {
+            listener.allCardsConfigChanged(enabled);
+        }
     }
 
     /**
@@ -130,6 +154,12 @@ public class HomeModulesConfigManager {
     @ModuleType
     public Set<Integer> getEnabledModuleSet() {
         @ModuleType Set<Integer> enabledModuleList = new HashSet<>();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.HOME_MODULE_PREF_REFACTOR)
+                && !mSharedPreferencesManager.readBoolean(
+                        ChromePreferenceKeys.HOME_MODULE_CARDS_ENABLED, true)) {
+            return enabledModuleList;
+        }
+
         for (Entry<Integer, ModuleConfigChecker> entry : mModuleConfigCheckerMap.entrySet()) {
             ModuleConfigChecker configChecker = entry.getValue();
             if (configChecker.isEligible() && getPrefModuleTypeEnabled(entry.getKey())) {
@@ -143,10 +173,20 @@ public class HomeModulesConfigManager {
     @ModuleType
     public List<Integer> getModuleListShownInSettings() {
         @ModuleType List<Integer> moduleListShownInSettings = new ArrayList<>();
+        boolean isEducationalTipModuleAdded = false;
+
         for (Entry<Integer, ModuleConfigChecker> entry : mModuleConfigCheckerMap.entrySet()) {
             ModuleConfigChecker configChecker = entry.getValue();
             if (configChecker.isEligible()) {
-                moduleListShownInSettings.add(entry.getKey());
+                int moduleType = entry.getKey();
+                if (HomeModulesUtils.belongsToEducationalTipModule(moduleType)) {
+                    // All the educational tip modules are controlled by the same preference.
+                    if (isEducationalTipModuleAdded) continue;
+
+                    isEducationalTipModuleAdded = true;
+                }
+
+                moduleListShownInSettings.add(moduleType);
             }
         }
         return moduleListShownInSettings;
@@ -162,93 +202,11 @@ public class HomeModulesConfigManager {
         return false;
     }
 
-    /** Returns the preference key of the module type. */
-    String getSettingsPreferenceKey(@ModuleType int moduleType) {
-        assert 0 <= moduleType && moduleType < ModuleType.NUM_ENTRIES;
-
-        // SINGLE_TAB and TAB_RESUMPTION modules are controlled by the same preference key.
-        if (moduleType == ModuleType.SINGLE_TAB) {
-            return ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(
-                    String.valueOf(ModuleType.TAB_RESUMPTION));
-        }
-        return ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(String.valueOf(moduleType));
-    }
-
-    /** Returns the preference key of the module type. */
-    String getFreshnessCountPreferenceKey(@ModuleType int moduleType) {
-        assert 0 <= moduleType && moduleType < ModuleType.NUM_ENTRIES;
-
-        return ChromePreferenceKeys.HOME_MODULES_FRESHNESS_COUNT.createKey(
-                String.valueOf(moduleType));
-    }
-
-    /** Gets the freshness count of a module. */
-    public int getFreshnessCount(@ModuleType int moduleType) {
-        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
-        String freshnessScoreKey = getFreshnessCountPreferenceKey(moduleType);
-        return sharedPreferencesManager.readInt(freshnessScoreKey, INVALID_FRESHNESS_SCORE);
-    }
-
-    /** Called to reset the freshness count when there is new information to show. */
-    public void resetFreshnessCount(@ModuleType int moduleType) {
-        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
-        String freshnessScoreKey = getFreshnessCountPreferenceKey(moduleType);
-        sharedPreferencesManager.writeInt(freshnessScoreKey, INVALID_FRESHNESS_SCORE);
-    }
-
-    /**
-     * Called to increase the freshness score for the module. The count is increased from 0, not -1.
-     */
-    public void increaseFreshnessCount(@ModuleType int moduleType, int count) {
-        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
-        String freshnessScoreKey = getFreshnessCountPreferenceKey(moduleType);
-        int score =
-                Math.max(
-                        0,
-                        sharedPreferencesManager.readInt(
-                                freshnessScoreKey, INVALID_FRESHNESS_SCORE));
-        sharedPreferencesManager.writeInt(freshnessScoreKey, (score + count));
-    }
-
-    /** Returns the preference key of the module type. */
-    String getFreshnessTimeStampPreferenceKey(@ModuleType int moduleType) {
-        assert 0 <= moduleType && moduleType < ModuleType.NUM_ENTRIES;
-
-        return ChromePreferenceKeys.HOME_MODULES_FRESHNESS_TIMESTAMP_MS.createKey(
-                String.valueOf(moduleType));
-    }
-
-    /** Sets the timestamp of last time a freshness score is logged for a module. */
-    public void setFreshnessScoreTimeStamp(@ModuleType int moduleType, long timeStampMs) {
-        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
-        String freshnessScoreTimeStampKey = getFreshnessTimeStampPreferenceKey(moduleType);
-        sharedPreferencesManager.writeLong(freshnessScoreTimeStampKey, timeStampMs);
-    }
-
-    /** Gets the timestamp of last time a freshness score is logged for a module. */
-    public long getFreshnessScoreTimeStamp(@ModuleType int moduleType) {
-        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
-        String freshnessScoreTimeStampKey = getFreshnessTimeStampPreferenceKey(moduleType);
-        return sharedPreferencesManager.readLong(freshnessScoreTimeStampKey, INVALID_TIMESTAMP);
-    }
-
     /** Sets a mocked instance for testing. */
     public static void setInstanceForTesting(HomeModulesConfigManager instance) {
         var oldValue = LazyHolder.sInstance;
         LazyHolder.sInstance = instance;
         ResettersForTesting.register(() -> LazyHolder.sInstance = oldValue);
-    }
-
-    public void setFreshnessCountForTesting(@ModuleType int moduleType, int count) {
-        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
-        String freshnessScoreKey = getFreshnessCountPreferenceKey(moduleType);
-        sharedPreferencesManager.writeInt(freshnessScoreKey, count);
-    }
-
-    public void resetFreshnessTimeStampForTesting(@ModuleType int moduleType) {
-        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
-        String freshnessScoreKey = getFreshnessTimeStampPreferenceKey(moduleType);
-        sharedPreferencesManager.removeKey(freshnessScoreKey);
     }
 
     public void cleanupForTesting() {

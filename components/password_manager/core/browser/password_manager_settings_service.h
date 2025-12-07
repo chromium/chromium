@@ -7,9 +7,13 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/password_manager_setting.h"
 
+namespace password_manager {
+
 // Service used to access the password manager settings.
 class PasswordManagerSettingsService : public KeyedService {
  public:
+  ~PasswordManagerSettingsService() override = default;
+
   // Checks if `setting` is enabled. It ensures that the correct pref is checked
   // on Android, which depends on the unified password manager status.
   virtual bool IsSettingEnabled(
@@ -21,9 +25,8 @@ class PasswordManagerSettingsService : public KeyedService {
   // Sets the auto sign in setting to off. Used by the auto sign in first run
   // dialog.
   virtual void TurnOffAutoSignIn() = 0;
-
- protected:
-  ~PasswordManagerSettingsService() override = default;
 };
+
+}  // namespace password_manager
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_SETTINGS_SERVICE_H_

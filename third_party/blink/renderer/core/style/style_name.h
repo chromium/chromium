@@ -31,7 +31,6 @@ class CORE_EXPORT StyleName {
   bool operator==(const StyleName& other) const {
     return type_ == other.type_ && value_ == other.value_;
   }
-  bool operator!=(const StyleName& other) const { return !(*this == other); }
 
  private:
   Type type_ = Type::kString;

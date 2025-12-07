@@ -10,6 +10,10 @@
 #include "content/common/content_export.h"
 #include "ui/accessibility/ax_mode.h"
 
+namespace ui {
+enum class AssistiveTech;
+}
+
 namespace content {
 
 class BrowserContext;
@@ -27,17 +31,6 @@ class CONTENT_EXPORT BrowserAccessibilityState {
   // Returns the singleton instance.
   static BrowserAccessibilityState* GetInstance();
 
-  // Enables accessibility for all running tabs.
-  virtual void EnableAccessibility() = 0;
-
-  // Disables accessibility for all running tabs. (Only if accessibility is not
-  // required by a command line flag or by a platform requirement.)
-  virtual void DisableAccessibility() = 0;
-
-  // Returns true if renderer accessibility is not disabled via
-  // --disable-renderer-accessibility on the process's command line.
-  virtual bool IsRendererAccessibilityEnabled() = 0;
-
   // Returns the effective accessibility mode for the process. Individual
   // WebContentses may have an effective mode that is a superset of this as a
   // result of any live ScopedAccessibilityMode instances targeting them
@@ -54,7 +47,10 @@ class CONTENT_EXPORT BrowserAccessibilityState {
   // WebContents (colloquially referred to as the "target" of the scoper).
   // Creation and deletion of a scoper will each result in recomputation of the
   // effective accessibility mode for its target. If the effective mode changes,
-  // WebContentses associated with the target will be notified.
+  // WebContentses associated with the target will be notified. Calls that are
+  // made in response to signals from the platform accessibility integration
+  // (e.g., enabling accessibility when VoiceOver is detected) must include the
+  // `AXMode::kFromPlatform` flag in addition to other flags.
   virtual std::unique_ptr<ScopedAccessibilityMode> CreateScopedModeForProcess(
       ui::AXMode mode) = 0;
   virtual std::unique_ptr<ScopedAccessibilityMode>
@@ -64,55 +60,13 @@ class CONTENT_EXPORT BrowserAccessibilityState {
   CreateScopedModeForWebContents(WebContents* web_contents,
                                  ui::AXMode mode) = 0;
 
-  // Note: Prefer the three methods above to add/remove mode flags, as they
-  // allow callers to do so without interfering with other controllers of
-  // accessibility. The methods below effectively modify a single
-  // `ScopedAccessibilityMode` instance targeting the whole process, and put
-  // callers at risk of stepping on one another.
-
-  // DEPRECATED. Adds the given accessibility mode flags to the process,
-  // impacting all WebContents.
-  virtual void AddAccessibilityModeFlags(ui::AXMode mode) = 0;
-
-  // DEPRECATED. Remove the given accessibility mode flags from the current
-  // accessibility mode bitmap.
-  virtual void RemoveAccessibilityModeFlags(ui::AXMode mode) = 0;
-
-  // DEPRECATED. Resets accessibility to the platform default for all running
-  // tabs. This is probably off, but may be on, if
-  // --force_renderer_accessibility is passed, or EditableTextOnly if this is
-  // Win7.
-  virtual void ResetAccessibilityMode() = 0;
-
-  // Called when screen reader client is detected.
-  virtual void OnScreenReaderDetected() = 0;
-
-  // Called when screen reader client that had been detected is no longer
-  // running.
-  virtual void OnScreenReaderStopped() = 0;
-
-  // Returns true if the browser should be customized for accessibility.
-  virtual bool IsAccessibleBrowser() = 0;
-
-  // Add a callback method that will be called once, a small while after the
-  // browser starts up, when accessibility state histograms are updated.
-  // Use this to register a method to update additional accessibility
-  // histograms.
-  //
-  // Use this variant for a callback that must be run on the UI thread,
-  // for example something that needs to access prefs.
-  virtual void AddUIThreadHistogramCallback(base::OnceClosure callback) = 0;
-
-  // Use this variant for a callback that's better to run on another
-  // thread, for example something that may block or run slowly.
-  virtual void AddOtherThreadHistogramCallback(base::OnceClosure callback) = 0;
-
-  // Fire frequent metrics signals to ensure users keeping browser open multiple
-  // days are counted each day, not only at launch. This is necessary, because
-  // UMA only aggregates uniques on a daily basis,
-  virtual void UpdateUniqueUserHistograms() = 0;
-
-  virtual void UpdateHistogramsForTesting() = 0;
+  // Return the last active assistive technology. If multiple ATs are
+  // running concurrently (rare case), the result will prefer a screen reader.
+  // This will use the last known value, so it is possible for it to be out of
+  // date for a short period of time. Use
+  // AXModeObserver::OnAssistiveTechChanged() to get notifications for changes
+  // to this state.
+  virtual ui::AssistiveTech ActiveAssistiveTech() const = 0;
 
   // Update BrowserAccessibilityState with the current status of performance
   // filtering.
@@ -125,6 +79,22 @@ class CONTENT_EXPORT BrowserAccessibilityState {
   // want to ensure that the AXMode is not changed after a certain point.
   virtual void SetAXModeChangeAllowed(bool allow) = 0;
   virtual bool IsAXModeChangeAllowed() const = 0;
+
+  // Enables or disables activation of accessibility from interactions with the
+  // platform's accessibility integration. Such activations are disabled by
+  // default in tests; specifically, mode changes via calls to
+  // `CreateScopedModeForProcess()` are ignored when the `AXMode` contains the
+  // `AXMode::kFromPlatform` flag.
+  virtual void SetActivationFromPlatformEnabled(bool enabled) = 0;
+  virtual bool IsActivationFromPlatformEnabled() = 0;
+
+  // Returns true if the current AXMode was set as part of the accessibility
+  // performance measurement experiment.
+  virtual bool IsAccessibilityPerformanceMeasurementExperimentActive()
+      const = 0;
+
+  // Notifies web contents that preferences have changed.
+  virtual void NotifyWebContentsPreferencesChanged() const = 0;
 
   using FocusChangedCallback =
       base::RepeatingCallback<void(const FocusedNodeDetails&)>;

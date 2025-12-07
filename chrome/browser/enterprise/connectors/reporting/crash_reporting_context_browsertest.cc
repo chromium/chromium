@@ -34,8 +34,10 @@ IN_PROC_BROWSER_TEST_F(CrashReportingContextTest, OnCloudReportingLaunched) {
       "service_provider": "google"
     }
   ])";
-  profile->GetPrefs()->Set(kOnSecurityEventPref,
-                           *base::JSONReader::Read(kConnectorsPrefValue));
+  profile->GetPrefs()->Set(
+      kOnSecurityEventPref,
+      *base::JSONReader::Read(kConnectorsPrefValue,
+                              base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   BrowserCrashEventRouter router(profile);
 
@@ -46,6 +48,6 @@ IN_PROC_BROWSER_TEST_F(CrashReportingContextTest, OnCloudReportingLaunched) {
   crash_reporting_context->OnCloudReportingLaunched(nullptr);
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace enterprise_connectors

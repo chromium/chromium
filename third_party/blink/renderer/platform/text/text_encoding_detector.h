@@ -31,31 +31,26 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_TEXT_ENCODING_DETECTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_TEXT_ENCODING_DETECTOR_H_
 
-#include <stdint.h>
-#include <cstddef>
-
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
-namespace WTF {
-class TextEncoding;
-}
-
 namespace blink {
-class KURL;
 
-// Given a sequence of bytes in |data| of length |len| and an optional
-// hintEncodingName, detect the most likely character encoding.
-// The way hintEncodingName is used is up to an implementation.
+class KURL;
+class TextEncoding;
+
+// Given a sequence of bytes in `bytes` and an optional
+// `hint_encoding_name`, detect the most likely character encoding.
+// The way `hint_encoding_name` is used is up to an implementation.
 // Currently, the only caller sets it to the parent frame encoding.
-// |hintUrl| is optional. You can pass nullptr.
-// |hintUserLanguage| is an optional language code like "fr", and can be
-// |nullptr.
-PLATFORM_EXPORT bool DetectTextEncoding(const char* data,
-                                        uint32_t length,
+// `hint_url` is optional. You can pass nullptr.
+// `hint_user_language` is an optional language code like "fr", and can be
+// nullptr.
+PLATFORM_EXPORT bool DetectTextEncoding(base::span<const uint8_t> bytes,
                                         const char* hint_encoding_name,
                                         const KURL& hint_url,
                                         const char* hint_user_language,
-                                        WTF::TextEncoding* detected_encoding);
+                                        TextEncoding* detected_encoding);
 
 }  // namespace blink
 

@@ -13,6 +13,7 @@
 #include "base/timer/timer.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/test/test_sync_service.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -125,7 +126,8 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest, WebSignedOut) {
 }
 
 TEST_F(SyncSessionDurationsMetricsRecorderTest, WebSignedIn) {
-  identity_test_env_.SetCookieAccounts({{"foo@gmail.com", "foo_gaia_id"}});
+  identity_test_env_.SetCookieAccounts(
+      {{"foo@gmail.com", GaiaId("foo_gaia_id")}});
 
   base::HistogramTester ht;
   StartAndEndSession(kSessionTime);
@@ -140,9 +142,10 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest, NotOptedInToSync) {
 
   ExpectOneSessionWithDuration(ht, {"NotOptedInToSyncWithoutAccount"},
                                kSessionTime);
-  ExpectNoSession(ht,
-                  {"NotOptedInToSyncWithAccount", "OptedInToSyncWithoutAccount",
-                   "OptedInToSyncWithAccount"});
+  ExpectNoSession(
+      ht,
+      {"NotOptedInToSyncWithAccount", "NotOptedInToSyncWithAccountInAuthError",
+       "OptedInToSyncWithoutAccount", "OptedInToSyncWithAccount"});
 }
 
 TEST_F(SyncSessionDurationsMetricsRecorderTest, OptedInToSync_SyncActive) {
@@ -154,6 +157,7 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest, OptedInToSync_SyncActive) {
   ExpectOneSessionWithDuration(ht, {"OptedInToSyncWithAccount"}, kSessionTime);
   ExpectNoSession(
       ht, {"NotOptedInToSyncWithoutAccount", "NotOptedInToSyncWithoutAccount",
+           "NotOptedInToSyncWithAccountInAuthError",
            "OptedInToSyncWithoutAccount"});
 }
 
@@ -169,9 +173,10 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest,
   // then they are counted as having opted out of sync.
   ExpectOneSessionWithDuration(ht, {"NotOptedInToSyncWithAccount"},
                                kSessionTime);
-  ExpectNoSession(
-      ht, {"NotOptedInToSyncWithoutAccount", "OptedInToSyncWithoutAccount",
-           "OptedInToSyncWithAccount"});
+  ExpectNoSession(ht,
+                  {"NotOptedInToSyncWithoutAccount",
+                   "NotOptedInToSyncWithAccountInAuthError",
+                   "OptedInToSyncWithoutAccount", "OptedInToSyncWithAccount"});
 }
 
 TEST_F(SyncSessionDurationsMetricsRecorderTest,
@@ -185,8 +190,9 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest,
   ExpectOneSessionWithDuration(ht, {"OptedInToSyncWithoutAccount"},
                                kSessionTime);
   ExpectNoSession(
-      ht, {"NotOptedInToSyncWithoutAccount", "NotOptedInToSyncWithoutAccount",
-           "OptedInToSyncWithAccount"});
+      ht,
+      {"NotOptedInToSyncWithoutAccount", "NotOptedInToSyncWithoutAccount",
+       "NotOptedInToSyncWithAccountInAuthError", "OptedInToSyncWithAccount"});
 }
 
 TEST_F(SyncSessionDurationsMetricsRecorderTest,
@@ -197,16 +203,11 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest,
   base::HistogramTester ht;
   StartAndEndSession(kSessionTime);
 
-  // If the user opted in to sync, but then disabled sync (e.g. via policy or
-  // from the Android OS settings), then they are counted as having opted out
-  // of sync.
-  // The account is in auth error, so they are also counted as not having any
-  // browser account.
-  ExpectOneSessionWithDuration(ht, {"NotOptedInToSyncWithoutAccount"},
+  ExpectOneSessionWithDuration(ht, {"NotOptedInToSyncWithAccountInAuthError"},
                                kSessionTime);
-  ExpectNoSession(ht,
-                  {"NotOptedInToSyncWithAccount", "OptedInToSyncWithoutAccount",
-                   "OptedInToSyncWithAccount"});
+  ExpectNoSession(
+      ht, {"NotOptedInToSyncWithAccount", "NotOptedInToSyncWithoutAccount",
+           "OptedInToSyncWithoutAccount", "OptedInToSyncWithAccount"});
 }
 
 TEST_F(SyncSessionDurationsMetricsRecorderTest,
@@ -224,9 +225,10 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest,
   // account.
   ExpectOneSessionWithDuration(ht, {"NotOptedInToSyncWithoutAccount"},
                                kSessionTime);
-  ExpectNoSession(ht,
-                  {"NotOptedInToSyncWithAccount", "OptedInToSyncWithoutAccount",
-                   "OptedInToSyncWithAccount"});
+  ExpectNoSession(
+      ht,
+      {"NotOptedInToSyncWithAccount", "NotOptedInToSyncWithAccountInAuthError",
+       "OptedInToSyncWithoutAccount", "OptedInToSyncWithAccount"});
 }
 
 TEST_F(SyncSessionDurationsMetricsRecorderTest, SyncUnknownOnStartup) {
@@ -242,8 +244,9 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest, SyncUnknownOnStartup) {
   ExpectOneSessionWithDuration(ht, {"NotOptedInToSyncWithAccount"},
                                kSessionTime);
   ExpectNoSession(
-      ht, {"NotOptedInToSyncWithoutAccount", "OptedInToSyncWithoutAccount",
-           "OptedInToSyncWithoutAccount"});
+      ht, {"NotOptedInToSyncWithoutAccount",
+           "NotOptedInToSyncWithAccountInAuthError",
+           "OptedInToSyncWithoutAccount", "OptedInToSyncWithoutAccount"});
 }
 
 TEST_F(SyncSessionDurationsMetricsRecorderTest,
@@ -272,6 +275,7 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest,
     // Sync was in unknown state, so histograms should not be logged.
     ExpectNoSession(
         ht, {"NotOptedInToSyncWithAccount", "NotOptedInToSyncWithoutAccount",
+             "NotOptedInToSyncWithAccountInAuthError",
              "OptedInToSyncWithoutAccount", "OptedInToSyncWithoutAccount"});
   }
 
@@ -281,6 +285,7 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest,
     ExpectOneSession(ht, {"OptedInToSyncWithAccount"});
     ExpectNoSession(
         ht, {"NotOptedInToSyncWithAccount", "NotOptedInToSyncWithoutAccount",
+             "NotOptedInToSyncWithAccountInAuthError",
              "OptedInToSyncWithoutAccount"});
   }
 }
@@ -294,13 +299,28 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest, EnableSync) {
     metrics_recorder.OnSessionStarted(base::TimeTicks::Now());
     SCOPED_TRACE("OnSessionStarted");
     SignIn(signin::ConsentLevel::kSync);
+
     // The initial state of the record was:
-    // 0. sync_status = OFF, signin_status=kSignedOut
-    // When sync gets initialized, 2 things happen:
-    // 1. signin_status=kSignedIn => Log NotOptedInToSyncWithoutAccount
-    // 2. sync_status=ON => Log NotOptedInToSyncWithAccount
+    // 0. sync_status = OFF, signin_status=kSignedOut:
+    //    [Current state]: NotOptedInToSyncWithoutAccount.
+    //
+    // SignIn(signin::ConsentLevel::kSync) does the following:
+    // 1. The primary account is set at ConsentLevel::kSync, without a refresh
+    //    token:
+    //    [Current state]: NotOptedInToSyncWithAccountInAuthError
+    //    [Log]: Log previous state: NotOptedInToSyncWithoutAccount
     ExpectOneSession(ht, {"NotOptedInToSyncWithoutAccount"});
+
+    // 2. The refresh token of the primary account is set.
+    //    [Current state]: NotOptedInToSyncWithAccount
+    //    [Log]: Log previous state: NotOptedInToSyncWithAccountInAuthError
+    ExpectOneSession(ht, {"NotOptedInToSyncWithAccountInAuthError"});
+
+    // 3. Sync service is turned on:
+    //    [Current state]: OptedInToSyncWithAccount
+    //    [Log]: Log previous state: NotOptedInToSyncWithAccount
     ExpectOneSession(ht, {"NotOptedInToSyncWithAccount"});
+
     ExpectNoSession(
         ht, {"OptedInToSyncWithoutAccount", "OptedInToSyncWithAccount"});
   }
@@ -309,9 +329,12 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest, EnableSync) {
     base::HistogramTester ht;
     metrics_recorder.OnSessionEnded(kSessionTime);
     SCOPED_TRACE("OnSessionEnded");
+    // 4. When session ends, the last state is logged:
+    //    [Log]: Log previous state: OptedInToSyncWithAccount
     ExpectOneSession(ht, {"OptedInToSyncWithAccount"});
     ExpectNoSession(
-        ht, {"NotOptedInToSyncWithoutAccount", "NotOptedInToSyncWithoutAccount",
+        ht, {"NotOptedInToSyncWithoutAccount", "NotOptedInToSyncWithAccount",
+             "NotOptedInToSyncWithAccountInAuthError",
              "OptedInToSyncWithoutAccount"});
   }
 }
@@ -328,6 +351,7 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest, EnterAuthError) {
     ExpectOneSession(ht, {"OptedInToSyncWithAccount"});
     ExpectNoSession(
         ht, {"NotOptedInToSyncWithAccount", "NotOptedInToSyncWithoutAccount",
+             "NotOptedInToSyncWithAccountInAuthError",
              "OptedInToSyncWithoutAccount"});
   }
   {
@@ -335,8 +359,9 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest, EnterAuthError) {
     metrics_recorder.OnSessionEnded(kSessionTime);
     ExpectOneSession(ht, {"OptedInToSyncWithoutAccount"});
     ExpectNoSession(
-        ht, {"NotOptedInToSyncWithAccount", "NotOptedInToSyncWithoutAccount",
-             "OptedInToSyncWithAccount"});
+        ht,
+        {"NotOptedInToSyncWithAccount", "NotOptedInToSyncWithoutAccount",
+         "NotOptedInToSyncWithAccountInAuthError", "OptedInToSyncWithAccount"});
   }
 }
 
@@ -352,8 +377,9 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest, FixedAuthError) {
     ClearAuthError();
     ExpectOneSession(ht, {"OptedInToSyncWithoutAccount"});
     ExpectNoSession(
-        ht, {"NotOptedInToSyncWithAccount", "NotOptedInToSyncWithoutAccount",
-             "OptedInToSyncWithAccount"});
+        ht,
+        {"NotOptedInToSyncWithAccount", "NotOptedInToSyncWithoutAccount",
+         "NotOptedInToSyncWithAccountInAuthError", "OptedInToSyncWithAccount"});
   }
   {
     base::HistogramTester ht;
@@ -361,6 +387,7 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest, FixedAuthError) {
     ExpectOneSession(ht, {"OptedInToSyncWithAccount"});
     ExpectNoSession(
         ht, {"NotOptedInToSyncWithAccount", "NotOptedInToSyncWithoutAccount",
+             "NotOptedInToSyncWithAccountInAuthError",
              "OptedInToSyncWithoutAccount"});
   }
 }

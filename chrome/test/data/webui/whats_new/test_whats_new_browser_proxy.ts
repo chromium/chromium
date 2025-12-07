@@ -28,6 +28,19 @@ class TestWhatsNewPageHandler extends TestBrowserProxy implements
       'recordScrollDepth',
       'recordTimeOnPage',
       'recordModuleLinkClicked',
+      'recordModuleVideoStarted',
+      'recordModuleVideoEnded',
+      'recordModulePlayClicked',
+      'recordModulePauseClicked',
+      'recordModuleRestartClicked',
+      'recordBrowserCommandExecuted',
+      'recordQrCodeToggled',
+      'recordNavClick',
+      'recordFeatureTileNavigation',
+      'recordCarouselScrollButtonClick',
+      'recordExpandMediaToggled',
+      'recordCtaClick',
+      'recordNextButtonClick',
     ]);
 
     this.url_ = {url};
@@ -68,6 +81,58 @@ class TestWhatsNewPageHandler extends TestBrowserProxy implements
 
   recordModuleLinkClicked(moduleName: string, position: ModulePosition) {
     this.methodCalled('recordModuleLinkClicked', moduleName, position);
+  }
+
+  recordModuleVideoStarted(moduleName: string, position: ModulePosition) {
+    this.methodCalled('recordModuleVideoStarted', moduleName, position);
+  }
+
+  recordModuleVideoEnded(moduleName: string, position: ModulePosition) {
+    this.methodCalled('recordModuleVideoEnded', moduleName, position);
+  }
+
+  recordModulePlayClicked(moduleName: string, position: ModulePosition) {
+    this.methodCalled('recordModulePlayClicked', moduleName, position);
+  }
+
+  recordModulePauseClicked(moduleName: string, position: ModulePosition) {
+    this.methodCalled('recordModulePauseClicked', moduleName, position);
+  }
+
+  recordModuleRestartClicked(moduleName: string, position: ModulePosition) {
+    this.methodCalled('recordModuleRestartClicked', moduleName, position);
+  }
+
+  recordBrowserCommandExecuted() {
+    this.methodCalled('recordBrowserCommandExecuted');
+  }
+
+  recordQrCodeToggled(expanded: boolean) {
+    this.methodCalled('recordQrCodeToggled', expanded);
+  }
+
+  recordNavClick() {
+    this.methodCalled('recordNavClick');
+  }
+
+  recordFeatureTileNavigation() {
+    this.methodCalled('recordFeatureTileNavigation');
+  }
+
+  recordCarouselScrollButtonClick() {
+    this.methodCalled('recordCarouselScrollButtonClick');
+  }
+
+  recordExpandMediaToggled(moduleName: string, expanded: boolean) {
+    this.methodCalled('recordExpandMediaToggled', moduleName, expanded);
+  }
+
+  recordCtaClick() {
+    this.methodCalled('recordCtaClick');
+  }
+
+  recordNextButtonClick() {
+    this.methodCalled('recordNextButtonClick');
   }
 }
 

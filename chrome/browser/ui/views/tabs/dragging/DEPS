@@ -1,0 +1,11 @@
+specific_include_rules = {
+  "tab_drag_controller_interactive_uitest.cc": [
+    "+ash/shell.h",
+    "+ash/wm/float/float_controller.h",
+    "+ash/wm/overview/overview_session.h",
+    "+ash/wm/overview/overview_utils.h",
+    "+ash/wm/splitview/split_view_controller.h",
+    "+ash/wm/splitview/split_view_types.h",
+    "+ash/wm/window_state.h",
+  ],
+}

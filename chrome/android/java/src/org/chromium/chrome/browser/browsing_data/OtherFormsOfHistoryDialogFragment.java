@@ -17,16 +17,19 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 /** Informs the user about the existence of other forms of browsing history. */
+@NullMarked
 public class OtherFormsOfHistoryDialogFragment extends DialogFragment
         implements DialogInterface.OnClickListener {
     private static final String TAG = "OtherFormsOfHistoryDialogFragment";
@@ -40,7 +43,7 @@ public class OtherFormsOfHistoryDialogFragment extends DialogFragment
     }
 
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         super.onCreateDialog(savedInstanceState);
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.other_forms_of_history_dialog, null);
@@ -53,7 +56,7 @@ public class OtherFormsOfHistoryDialogFragment extends DialogFragment
                         new SpanApplier.SpanInfo(
                                 "<link>",
                                 "</link>",
-                                new NoUnderlineClickableSpan(
+                                new ChromeClickableSpan(
                                         getContext(),
                                         (widget) -> {
                                             new ChromeAsyncTabLauncher(/* incognito= */ false)

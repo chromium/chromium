@@ -30,28 +30,36 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/build_config.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy_features.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_disposition.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom-blink.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/core/context_features/context_feature_settings.h"
+#include "third_party/blink/renderer/core/dom/abort_signal_registry.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/events/error_event.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
+#include "third_party/blink/renderer/core/fileapi/file_backed_blob_factory_dispatcher.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/csp/execution_context_csp_delegate.h"
+#include "third_party/blink/renderer/core/frame/integrity_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/reporting_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
+#include "third_party/blink/renderer/core/inspector/inspector_media_context_impl.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
+#include "third_party/blink/renderer/core/scheduler/dom_scheduler.h"
+#include "third_party/blink/renderer/core/scheduler/scripted_idle_task_controller.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
@@ -181,7 +189,7 @@ void ExecutionContext::CountDeprecation(WebFeature feature) {
   Deprecation::CountDeprecation(this, feature);
 }
 
-HeapObserverSet<ContextLifecycleObserver>&
+HeapObserverList<ContextLifecycleObserver>&
 ExecutionContext::ContextLifecycleObserverSet() {
   return ContextLifecycleNotifier::observers();
 }
@@ -227,16 +235,12 @@ bool ExecutionContext::SharedArrayBufferTransferAllowed() const {
 
   CHECK(origin);
 
-  if (SecurityPolicy::IsSharedArrayBufferAlwaysAllowedForOrigin(origin))
-    return true;
-
 #if BUILDFLAG(IS_ANDROID)
   return false;
 #else
-  // On desktop, enable transfer for the reverse Origin Trial, or if the
-  // Finch "kill switch" is on, or if enabled by Enterprise Policy.
+  // On desktop, enable transfer for the reverse Origin Trial, or if enabled by
+  // Enterprise Policy.
   return RuntimeEnabledFeatures::UnrestrictedSharedArrayBufferEnabled(this) ||
-         RuntimeEnabledFeatures::SharedArrayBufferOnDesktopEnabled() ||
          RuntimeEnabledFeatures::
              SharedArrayBufferUnrestrictedAccessAllowedEnabled();
 #endif
@@ -405,13 +409,13 @@ void ExecutionContext::SetContentSecurityPolicy(
 }
 
 void ExecutionContext::SetRequireTrustedTypes() {
-  DCHECK(require_safe_types_ ||
-         content_security_policy_->IsRequireTrustedTypes());
-  require_safe_types_ = true;
+  DCHECK(require_trusted_types_ ||
+         content_security_policy_->TrustedTypesRequired());
+  require_trusted_types_ = true;
 }
 
 void ExecutionContext::SetRequireTrustedTypesForTesting() {
-  require_safe_types_ = true;
+  require_trusted_types_ = true;
 }
 
 network::mojom::blink::WebSandboxFlags ExecutionContext::GetSandboxFlags()
@@ -472,8 +476,7 @@ void ExecutionContext::ParseAndSetReferrerPolicy(
     policy_is_valid = (SecurityPolicy::ReferrerPolicyFromString(
         policy, kSupportReferrerPolicyLegacyKeywords, &referrer_policy));
   } else {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   if (policy_is_valid) {
@@ -486,21 +489,21 @@ void ExecutionContext::ParseAndSetReferrerPolicy(
       error_reason =
           "A policy specified by a meta element must contain only one token.";
     } else {
-      error_reason =
-          "The value '" + policy + "' is not one of " +
-          ((source == kPolicySourceMetaTag)
-               ? "'always', 'default', 'never', 'origin-when-crossorigin', "
-               : "") +
-          "'no-referrer', 'no-referrer-when-downgrade', 'origin', "
-          "'origin-when-cross-origin', 'same-origin', 'strict-origin', "
-          "'strict-origin-when-cross-origin', or 'unsafe-url'.";
+      error_reason = StrCat(
+          {"The value '", policy, "' is not one of ",
+           ((source == kPolicySourceMetaTag)
+                ? "'always', 'default', 'never', 'origin-when-crossorigin', "
+                : ""),
+           "'no-referrer', 'no-referrer-when-downgrade', 'origin', "
+           "'origin-when-cross-origin', 'same-origin', 'strict-origin', "
+           "'strict-origin-when-cross-origin', or 'unsafe-url'."});
     }
 
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kRendering,
         mojom::ConsoleMessageLevel::kError,
-        "Failed to set referrer policy: " + error_reason +
-            " The referrer policy has been left unchanged."));
+        StrCat({"Failed to set referrer policy: ", error_reason,
+                " The referrer policy has been left unchanged."})));
   }
 }
 
@@ -522,8 +525,13 @@ void ExecutionContext::SetReferrerPolicy(
 void ExecutionContext::SetPolicyContainer(
     std::unique_ptr<PolicyContainer> container) {
   policy_container_ = std::move(container);
-  security_context_.SetSandboxFlags(
-      policy_container_->GetPolicies().sandbox_flags);
+  const mojom::blink::PolicyContainerPolicies& policies =
+      policy_container_->GetPolicies();
+  security_context_.SetSandboxFlags(policies.sandbox_flags);
+
+  IntegrityPolicy::LogParsingErrorsIfAny(this, policies.integrity_policy);
+  IntegrityPolicy::LogParsingErrorsIfAny(this,
+                                         policies.integrity_policy_report_only);
 }
 
 std::unique_ptr<PolicyContainer> ExecutionContext::TakePolicyContainer() {
@@ -543,9 +551,42 @@ void ExecutionContext::Trace(Visitor* visitor) const {
   visitor->Trace(origin_trial_context_);
   visitor->Trace(content_security_policy_);
   visitor->Trace(runtime_feature_state_override_context_);
+  visitor->Trace(global_indexed_db_);
+  visitor->Trace(abort_signal_registry_);
+  visitor->Trace(context_feature_settings_);
+  visitor->Trace(dom_scheduler_);
+  visitor->Trace(file_backed_blob_factory_dispatcher_);
+  visitor->Trace(media_inspector_context_impl_);
+  visitor->Trace(reporting_context_);
+  visitor->Trace(scripted_idle_task_controller_);
+  visitor->Trace(ai_interface_proxy_);
+  visitor->Trace(background_readback_);
+  visitor->Trace(barcode_detector_statics_);
+  visitor->Trace(cached_video_frame_pool_);
+  visitor->Trace(canvas_resource_provider_cache_);
+  visitor->Trace(codec_pressure_manager_provider_);
+  visitor->Trace(cros_kiosk_);
+  visitor->Trace(dom_timer_coordinator_);
+  visitor->Trace(execution_context_clipboard_event_state_);
+  visitor->Trace(file_system_access_manager_);
+  visitor->Trace(file_system_dispatcher_);
+  visitor->Trace(file_system_observation_collection_);
+  visitor->Trace(idle_manager_);
+  visitor->Trace(image_bitmap_factories_);
+  visitor->Trace(local_file_system_);
+  visitor->Trace(navigator_badge_);
+  visitor->Trace(notification_manager_);
+  visitor->Trace(parsed_feature_policies_);
+  visitor->Trace(peer_connection_dependency_factory_);
+  visitor->Trace(pressure_observer_manager_);
+  visitor->Trace(rtc_transport_dependencies_);
+  visitor->Trace(service_worker_container_);
+  visitor->Trace(throttling_controller_);
+  visitor->Trace(web_codecs_logger_);
+  visitor->Trace(web_printing_manager_);
+  visitor->Trace(web_view_android_);
   MojoBindingContext::Trace(visitor);
   ConsoleLogger::Trace(visitor);
-  Supplementable<ExecutionContext>::Trace(visitor);
 }
 
 bool ExecutionContext::IsSameAgentCluster(
@@ -574,7 +615,7 @@ bool ExecutionContext::FeatureEnabled(
 }
 
 bool ExecutionContext::IsFeatureEnabled(
-    mojom::blink::PermissionsPolicyFeature feature,
+    network::mojom::PermissionsPolicyFeature feature,
     ReportOptions report_option,
     const String& message) {
   SecurityContext::FeatureStatus status =
@@ -593,7 +634,7 @@ bool ExecutionContext::IsFeatureEnabled(
 }
 
 bool ExecutionContext::IsFeatureEnabled(
-    mojom::blink::PermissionsPolicyFeature feature) const {
+    network::mojom::PermissionsPolicyFeature feature) const {
   return security_context_.IsFeatureEnabled(feature).enabled;
 }
 
@@ -644,60 +685,7 @@ bool ExecutionContext::IsFeatureEnabled(
 }
 
 bool ExecutionContext::RequireTrustedTypes() const {
-  return require_safe_types_;
-}
-
-namespace {
-using ContextType = ExecutionContext::Proto::ContextType;
-ContextType GetContextType(const ExecutionContext& execution_context) {
-  if (execution_context.IsWorkletGlobalScope()) {
-    return ContextType::WORKLET;
-  } else if (execution_context.IsDedicatedWorkerGlobalScope()) {
-    return ContextType::DEDICATED_WORKER;
-  } else if (execution_context.IsSharedWorkerGlobalScope()) {
-    return ContextType::SHARED_WORKER;
-  } else if (execution_context.IsServiceWorkerGlobalScope()) {
-    return ContextType::SERVICE_WORKER;
-  } else if (execution_context.IsWindow()) {
-    return ContextType::WINDOW;
-  }
-  return ContextType::UNKNOWN_CONTEXT;
-}
-
-using WorldType = ExecutionContext::Proto::WorldType;
-WorldType GetWorldType(const ExecutionContext& execution_context) {
-  auto* current_world = execution_context.GetCurrentWorld();
-  if (current_world == nullptr) {
-    return WorldType::WORLD_UNKNOWN;
-  }
-
-  switch (current_world->GetWorldType()) {
-    case DOMWrapperWorld::WorldType::kMain:
-      return WorldType::WORLD_MAIN;
-    case DOMWrapperWorld::WorldType::kIsolated:
-      return WorldType::WORLD_ISOLATED;
-    case DOMWrapperWorld::WorldType::kInspectorIsolated:
-      return WorldType::WORLD_INSPECTOR_ISOLATED;
-    case DOMWrapperWorld::WorldType::kRegExp:
-      return WorldType::WORLD_REG_EXP;
-    case DOMWrapperWorld::WorldType::kForV8ContextSnapshotNonMain:
-      return WorldType::WORLD_FOR_V8_CONTEXT_SNAPSHOT_NON_MAIN;
-    case DOMWrapperWorld::WorldType::kWorkerOrWorklet:
-      return WorldType::WORLD_WORKER;
-    case DOMWrapperWorld::WorldType::kShadowRealm:
-      return WorldType::WORLD_SHADOW_REALM;
-    default:
-      return WorldType::WORLD_UNKNOWN;
-  }
-}
-}  // namespace
-
-void ExecutionContext::WriteIntoTrace(
-    perfetto::TracedProto<ExecutionContext::Proto> proto) const {
-  proto->set_url(Url().GetString().Utf8());
-  proto->set_origin(GetSecurityOrigin()->ToString().Utf8());
-  proto->set_type(GetContextType(*this));
-  proto->set_world_type(GetWorldType(*this));
+  return require_trusted_types_;
 }
 
 bool ExecutionContext::CrossOriginIsolatedCapabilityOrDisabledWebSecurity()
@@ -718,7 +706,7 @@ bool ExecutionContext::IsInjectionMitigatedContext() const {
     return false;
   }
   return GetContentSecurityPolicy()->IsStrictPolicyEnforced() &&
-         GetContentSecurityPolicy()->RequiresTrustedTypes();
+         GetContentSecurityPolicy()->TrustedTypesRequired();
 }
 
 }  // namespace blink

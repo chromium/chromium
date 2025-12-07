@@ -7,8 +7,7 @@
 
 #include "chromeos/ash/components/phonehub/onboarding_ui_tracker.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 class FakeOnboardingUiTracker : public OnboardingUiTracker {
  public:
@@ -38,7 +37,6 @@ class FakeOnboardingUiTracker : public OnboardingUiTracker {
   bool is_icon_clicked_when_nudge_visible_ = false;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_FAKE_ONBOARDING_UI_TRACKER_H_

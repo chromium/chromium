@@ -244,19 +244,17 @@ pp_set.add_printer('absl::optional', '^absl::optional<.*>$',
                    AbslOptionalPrinter)
 
 
-class ClampedNumericPrinter(Printer):
-  type_re = r'^base::internal::ClampedNumeric<(.*)>$'
+class StdOptionalPrinter(Printer):
 
   def to_string(self):
-    m = type_re.search(self.val.type)
-    if m is None:
-      return self.val['value']
-    return '(%s) %s' % (m.group(1), self.val['value_'])
+    if self.val['__engaged_']:
+      return "%s: %s" % (str(self.val.type.tag), self.val['__val_'])
+    else:
+      return "%s: is empty" % str(self.val.type.tag)
 
 
-pp_set.add_printer('base::internal::ClampedNumeric',
-                   '^base::internal::ClampedNumeric<.*>$',
-                   ClampedNumericPrinter)
+pp_set.add_printer('std::optional', '^std::__Cr::optional<.*>$',
+                   StdOptionalPrinter)
 
 
 class TimeDeltaPrinter(object):

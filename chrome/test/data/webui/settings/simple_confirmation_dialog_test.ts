@@ -28,9 +28,9 @@ suite('settings-simple-confirmation-dialog', function() {
 
     const body = dialog.shadowRoot!.querySelector('[slot=body]');
     assertTrue(!!body);
-    assertEquals(dialog.bodyText, body.textContent!.trim());
+    assertEquals(dialog.bodyText, body.textContent.trim());
 
-    assertEquals(dialog.confirmText, dialog.$.confirm.textContent!.trim());
+    assertEquals(dialog.confirmText, dialog.$.confirm.textContent.trim());
   });
 
   test('noPrimaryButton', function() {

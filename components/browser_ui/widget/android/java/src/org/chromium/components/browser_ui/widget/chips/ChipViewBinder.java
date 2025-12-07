@@ -6,11 +6,13 @@ package org.chromium.components.browser_ui.widget.chips;
 
 import android.text.TextUtils;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** View binder to bind a model to a {@link ChipView}. */
+@NullMarked
 public class ChipViewBinder {
     public static void bind(PropertyModel model, ChipView chip, PropertyKey key) {
         if (ChipProperties.CLICK_HANDLER == key) {
@@ -32,11 +34,12 @@ public class ChipViewBinder {
                 boolean isSelected =
                         model.getAllSetProperties().contains(ChipProperties.SELECTED)
                                 && model.get(ChipProperties.SELECTED);
-                chip.setIcon(
+                chip.setIconWithTint(
                         isSelected ? R.drawable.ic_check_googblue_24dp : iconId,
                         model.get(ChipProperties.APPLY_ICON_TINT));
             } else {
-                chip.setIcon(ChipProperties.INVALID_ICON_ID, false);
+                chip.setIconWithTint(
+                        ChipProperties.INVALID_ICON_ID, /* tintWithTextColor= */ false);
             }
 
         } else if (ChipProperties.ID == key) {

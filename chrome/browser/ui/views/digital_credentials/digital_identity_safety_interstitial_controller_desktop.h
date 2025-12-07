@@ -7,7 +7,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/digital_credentials/digital_identity_safety_interstitial_controller.h"
+#include "chrome/browser/digital_credentials/digital_identity_interstitial_closed_reason.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/digital_identity_interstitial_type.h"
 #include "content/public/browser/digital_identity_provider.h"
 #include "content/public/browser/web_contents.h"
@@ -17,11 +18,10 @@ namespace views {
 class Widget;
 }  // namespace views
 
-class DigitalIdentitySafetyInterstitialControllerDesktop
-    : public DigitalIdentitySafetyInterstitialController {
+class DigitalIdentitySafetyInterstitialControllerDesktop {
  public:
   DigitalIdentitySafetyInterstitialControllerDesktop();
-  ~DigitalIdentitySafetyInterstitialControllerDesktop() override;
+  ~DigitalIdentitySafetyInterstitialControllerDesktop();
 
   content::DigitalIdentityProvider::DigitalIdentityInterstitialAbortCallback
   ShowInterstitial(
@@ -29,19 +29,38 @@ class DigitalIdentitySafetyInterstitialControllerDesktop
       const url::Origin& rp_origin,
       content::DigitalIdentityInterstitialType,
       content::DigitalIdentityProvider::DigitalIdentityInterstitialCallback
-          callback) override;
+          callback);
 
  private:
+  class CloseOnNavigationObserver
+      : public web_modal::WebContentsModalDialogManager::Observer {
+   public:
+    CloseOnNavigationObserver();
+    ~CloseOnNavigationObserver() override;
+
+    // Starts observing web-modal dialogs being closed as a result of page
+    // navigation.
+    void Observe(content::WebContents& web_contents);
+
+    // Returns whether any web-modal dialogs are about-to-close or have closed
+    // as a result of a page navigation.
+    bool WillCloseOnNavigation() const { return will_close_due_to_navigation_; }
+
+    // WebContentsModalDialogManager::Observer:
+    void OnWillCloseOnNavigation() override;
+
+   private:
+    bool will_close_due_to_navigation_ = false;
+
+    base::WeakPtr<content::WebContents> web_contents_;
+  };
+
   void Abort();
 
   void ShowInterstitialImpl(content::WebContents& web_contents,
                             bool was_request_aborted);
 
-  // Called when the user denies permission.
-  void OnUserDeniedPermission();
-
-  // Called when the user grants permission.
-  void OnUserGrantedPermission();
+  void OnDialogClosed(DigitalIdentityInterstitialClosedReason reason);
 
   url::Origin rp_origin_;
   content::DigitalIdentityInterstitialType interstitial_type_;
@@ -50,6 +69,8 @@ class DigitalIdentitySafetyInterstitialControllerDesktop
 
   base::WeakPtr<content::WebContents> web_contents_;
   raw_ptr<views::Widget> dialog_widget_;
+
+  std::unique_ptr<CloseOnNavigationObserver> close_on_navigation_observer_;
 
   base::WeakPtrFactory<DigitalIdentitySafetyInterstitialControllerDesktop>
       weak_ptr_factory_{this};

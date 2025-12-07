@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SHORTCUTS_CREATE_DESKTOP_SHORTCUT_H_
 #define CHROME_BROWSER_UI_VIEWS_SHORTCUTS_CREATE_DESKTOP_SHORTCUT_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -20,13 +21,10 @@ class ImageSkia;
 
 namespace shortcuts {
 
-// Used to return the following information from the Create Desktop Shortcut
-// dialog:
-// 1. A boolean indicating if the dialog was accepted or cancelled. Cancellation
-// covers both manual as well as automatic cancellations of the dialog.
-// 2. The title that should be used for the shortcut name.
+// Callback that returns the information in the textfield of the create desktop
+// shortcut dialog if accepted, or std::nullopt otherwise.
 using CreateShortcutDialogCallback =
-    base::OnceCallback<void(bool /*is_accepted*/, std::u16string /*title*/)>;
+    base::OnceCallback<void(std::optional<std::u16string>)>;
 
 // Public accessor to ShowCreateDesktopShortcutDialog() for testing.
 void ShowCreateDesktopShortcutDialogForTesting(

@@ -22,6 +22,8 @@ core/modules.
 The file name for a generated class is basically the same as its class
 name, but we use some aliases to avoid too-long file names
 (See https://crbug.com/611437 why we need to avoid long file names).
+Aliasing is done by adding to
+[union_name_map.conf](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/bindings/union_name_map.conf).
 
 The paths for generated classes depend on the places union types are
 used. If a union type is used only in IDL files under modules/, the

@@ -23,8 +23,7 @@ ContextMenuContentTypeWebView::ContextMenuContentTypeWebView(
     : ContextMenuContentType(params, true),
       web_view_guest_(std::move(web_view_guest)) {}
 
-ContextMenuContentTypeWebView::~ContextMenuContentTypeWebView() {
-}
+ContextMenuContentTypeWebView::~ContextMenuContentTypeWebView() = default;
 
 const Extension* ContextMenuContentTypeWebView::GetExtension() const {
   if (!web_view_guest_)

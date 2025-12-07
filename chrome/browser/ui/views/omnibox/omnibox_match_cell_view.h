@@ -23,18 +23,31 @@ class OmniboxMatchCellView : public views::View {
 
  public:
   // Constants used in layout. Exposed so other views can coordinate margins.
+
+  // The gap between the popup's left edge (not the focus indicator's edge) and
+  // `OmniboxMatchCellView`.
   static constexpr int kMarginLeft = 4;
+
+  // Probably intended to be the gap between the popup's right edge (assuming no
+  // buttons) and the text cut off. But this isn't used by
+  // `OmniboxMatchCellView`. `OmniboxMatchCellView::GetInsets()` hardcodes 7; so
+  // 8 here is probably wrong.
   static constexpr int kMarginRight = 8;
+
+  // The height of the standard 1-line match row. Multiline & IPH matches have
+  // larger heights.
+  static constexpr int kRowHeight = 40;
+
+  // The width of icon, answer, and entity image bounds. These images are
+  // smaller than this bounds; they'll be centered within the bounds.
   static constexpr int kImageBoundsWidth = 40;
-  static constexpr int kIPHLeftOffset = 16;
+
+  // For IPH matches, `OmniboxMatchCellView` is inset from the left & right by
+  // `kIphOffset`.
+  static constexpr int kIphOffset = 16;
 
   // Computes the maximum width, in pixels, that can be allocated for the two
   // parts of an autocomplete result, i.e. the contents and the description.
-  //
-  // When |description_on_separate_line| is true, the caller will be displaying
-  // two separate lines of text, so both contents and description can take up
-  // the full available width. Otherwise, the contents and description are
-  // assumed to be on the same line, with a separator between them.
   //
   // When |allow_shrinking_contents| is true, and the contents and description
   // are together on a line without enough space for both, the code tries to
@@ -44,11 +57,12 @@ class OmniboxMatchCellView : public views::View {
   static void ComputeMatchMaxWidths(int contents_width,
                                     int separator_width,
                                     int description_width,
+                                    int iph_link_width,
                                     int available_width,
-                                    bool description_on_separate_line,
                                     bool allow_shrinking_contents,
                                     int* contents_max_width,
-                                    int* description_max_width);
+                                    int* description_max_width,
+                                    int* iph_link_max_width);
 
   explicit OmniboxMatchCellView(OmniboxResultView* result_view);
   OmniboxMatchCellView(const OmniboxMatchCellView&) = delete;
@@ -63,8 +77,6 @@ class OmniboxMatchCellView : public views::View {
 
   // Determines if `match` should display an answer, calculator, or entity
   // image.
-  // If #omnibox-uniform-suggestion-height experiment flag is disabled, also
-  // determines whether `match` should be displayed on 1 or 2 lines.
   static bool ShouldDisplayImage(const AutocompleteMatch& match);
 
   void OnMatchUpdate(const OmniboxResultView* result_view,
@@ -89,21 +101,33 @@ class OmniboxMatchCellView : public views::View {
   void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
+  gfx::Size GetMinimumSize() const override;
 
  private:
   enum class LayoutStyle {
-    ONE_LINE_SUGGESTION,
-    TWO_LINE_SUGGESTION,
+    DEFAULT_NON_SEARCH_SUGGESTION,
+    SEARCH_SUGGESTION,
+    SEARCH_SUGGESTION_WITH_IMAGE,
+    IPH_SUGGESTION,
+    HISTORY_EMBEDDING_ANSWER,
+    TOOLBELT,
   };
 
+  // How far to indent the icon, entity, or answer image from the left side of
+  // this view. Images are positioned ignoring `GetInsets()`; i.e., this
+  // measures from the visual left edge of the popup.
+  int GetImageIndent() const;
+
+  // How far to indent the text from the left side of this view. Texts are
+  // positioned considering `GetInsets()` but ignoring the width and positioning
+  // of images; i.e., this measures from the visual left edge of the popup +
+  // `kMarginLeft`. IPH matches are externally inset as well, so this will
+  // measure from the left edge of the IPH background + `kMarginLeft`.
   int GetTextIndent() const;
 
   void SetTailSuggestCommonPrefixWidth(const std::u16string& common_prefix);
 
-  bool is_iph_type_ = false;
-  bool is_search_type_ = false;
-  bool has_image_ = false;
-  LayoutStyle layout_style_ = LayoutStyle::ONE_LINE_SUGGESTION;
+  LayoutStyle layout_style_ = LayoutStyle::DEFAULT_NON_SEARCH_SUGGESTION;
 
   // Weak pointers for easy reference.
   // An icon representing the type or content.

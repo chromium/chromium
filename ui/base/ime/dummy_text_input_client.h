@@ -10,7 +10,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/ime/text_input_client.h"
 
 namespace ui {
@@ -44,6 +43,13 @@ class DummyTextInputClient : public TextInputClient {
   bool CanComposeInline() const override;
   gfx::Rect GetCaretBounds() const override;
   gfx::Rect GetSelectionBoundingBox() const override;
+#if BUILDFLAG(IS_WIN)
+  std::optional<gfx::Rect> GetProximateCharacterBounds(
+      const gfx::Range& range) const override;
+  std::optional<size_t> GetProximateCharacterIndexFromPoint(
+      const gfx::Point& screen_point_in_dips,
+      IndexFromPointFlags flags) const override;
+#endif  // BUILDFLAG(IS_WIN)
   bool GetCompositionCharacterBounds(size_t index,
                                      gfx::Rect* rect) const override;
   bool HasCompositionText() const override;
@@ -83,11 +89,10 @@ class DummyTextInputClient : public TextInputClient {
       const std::vector<GrammarFragment>& fragments) override;
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   void GetActiveTextInputControlLayoutBounds(
       std::optional<gfx::Rect>* control_bounds,
       std::optional<gfx::Rect>* selection_bounds) override;
-#endif
+
 #if BUILDFLAG(IS_WIN)
   void SetActiveCompositionForAccessibility(
       const gfx::Range& range,

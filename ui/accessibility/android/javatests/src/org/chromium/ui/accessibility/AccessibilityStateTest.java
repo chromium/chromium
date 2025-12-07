@@ -4,6 +4,8 @@
 
 package org.chromium.ui.accessibility;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.chromium.ui.accessibility.AccessibilityState.StateIdentifierForTesting.CAPABILITIES_MASK;
 import static org.chromium.ui.accessibility.AccessibilityState.StateIdentifierForTesting.CAPABILITIES_MASK_HEURISTIC;
 import static org.chromium.ui.accessibility.AccessibilityState.StateIdentifierForTesting.EVENT_TYPE_MASK;
@@ -29,7 +31,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -181,7 +182,7 @@ public class AccessibilityStateTest {
     public void testRunningServicesForTesting() {
         AccessibilityServiceInfo service1 = new AccessibilityServiceInfo();
         AccessibilityServiceInfo service2 = new AccessibilityServiceInfo();
-        List<AccessibilityServiceInfo> serviceInfoList = new ArrayList<AccessibilityServiceInfo>();
+        List<AccessibilityServiceInfo> serviceInfoList = new ArrayList<>();
         serviceInfoList.add(service1);
         serviceInfoList.add(service2);
         AccessibilityState.setEnabledServiceInfoListForTesting(serviceInfoList);
@@ -228,7 +229,7 @@ public class AccessibilityStateTest {
         Assert.assertEquals(EVENT_TYPE_MASK_ERROR, 31, outcome_full.size());
 
         Set<Integer> expected_test =
-                new HashSet<Integer>(
+                new HashSet<>(
                         Arrays.asList(
                                 AccessibilityEvent.TYPE_VIEW_CLICKED,
                                 AccessibilityEvent.TYPE_VIEW_LONG_CLICKED,
@@ -310,7 +311,6 @@ public class AccessibilityStateTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(UiAccessibilityFeatures.START_SURFACE_ACCESSIBILITY_CHECK)
     public void testCalculateHeuristicState_Autofill_passwordManager() {
         AccessibilityServiceInfo myService =
                 new BuilderForTests(mContext)
@@ -333,7 +333,6 @@ public class AccessibilityStateTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(UiAccessibilityFeatures.START_SURFACE_ACCESSIBILITY_CHECK)
     public void testCalculateHeuristicState_notAutofill_notPasswordManager() {
         AccessibilityServiceInfo myService =
                 new BuilderForTests(mContext)
@@ -351,7 +350,6 @@ public class AccessibilityStateTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(UiAccessibilityFeatures.START_SURFACE_ACCESSIBILITY_CHECK)
     public void testCalculateHeuristicState_notAutofill_passwordManager() {
         AccessibilityServiceInfo myService =
                 new BuilderForTests(mContext)
@@ -369,7 +367,6 @@ public class AccessibilityStateTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(UiAccessibilityFeatures.START_SURFACE_ACCESSIBILITY_CHECK)
     public void testTogglingMisconfiguredAccessibilityServices() {
         // This service has the same config as Microsoft Authenticator during recent P0.
         AccessibilityServiceInfo errorProneService =
@@ -422,7 +419,7 @@ public class AccessibilityStateTest {
 
     public static class BuilderForTests {
 
-        private Context mContext;
+        private final Context mContext;
         private String mPackageName = "com.example.google";
         private String mClassName = "app.accessibility.AccessibilityService";
         private int mEventTypes;
@@ -476,7 +473,7 @@ public class AccessibilityStateTest {
             AccessibilityServiceInfo service =
                     constructAccessibilityServiceInfo(resolveInfo, mContext);
             setCapabilities(service, mCapabilities);
-            assert service != null;
+            assertThat(service).isNotNull();
             service.eventTypes = mEventTypes;
             service.feedbackType = mFeedbackType;
             service.flags = mFlags;
@@ -490,7 +487,8 @@ public class AccessibilityStateTest {
                         AccessibilityServiceInfo.class.getMethod("setCapabilities", int.class);
                 setResolveInfoMethod.invoke(info, capabilities);
             } catch (Exception ex) {
-                Assert.fail("Unable to call AccessibilityServiceInfo hidden method.");
+                throw new AssertionError(
+                        "Unable to call AccessibilityServiceInfo hidden method.", ex);
             }
         }
 
@@ -502,9 +500,9 @@ public class AccessibilityStateTest {
                                 ResolveInfo.class, Context.class);
                 return ctr.newInstance(resolveInfo, context);
             } catch (Exception ex) {
-                Assert.fail("Unable to call AccessibilityServiceInfo hidden method.");
+                throw new AssertionError(
+                        "Unable to call AccessibilityServiceInfo hidden method.", ex);
             }
-            return null;
         }
     }
 }

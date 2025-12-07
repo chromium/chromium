@@ -46,6 +46,7 @@ class TestBookmarkModelView : public BookmarkModelView {
   const bookmarks::BookmarkNode* mobile_node() const override;
   void EnsurePermanentNodesExist() override;
   void RemoveAllSyncableNodes() override;
+  void MaybeRemoveUnderlyingModelDuplicatesUponInitialSync() override;
   const bookmarks::BookmarkNode* GetNodeByUuid(
       const base::Uuid& uuid) const override;
 

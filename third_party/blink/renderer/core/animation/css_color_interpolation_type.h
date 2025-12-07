@@ -26,6 +26,8 @@ class CORE_EXPORT CSSColorInterpolationType : public CSSInterpolationType {
 
   InterpolationValue MaybeConvertStandardPropertyUnderlyingValue(
       const ComputedStyle&) const final;
+  InterpolationValue MaybeConvertCustomPropertyUnderlyingValue(
+      const CSSValue&) const final;
   void ApplyStandardPropertyValue(const InterpolableValue&,
                                   const NonInterpolableValue*,
                                   StyleResolverState&) const final;
@@ -36,8 +38,11 @@ class CORE_EXPORT CSSColorInterpolationType : public CSSInterpolationType {
 
   static void EnsureInterpolableStyleColor(InterpolableList& list,
                                            wtf_size_t index);
+  static void EnsureInterpolableStyleColor(InterpolableValue*& value);
   static void EnsureCompatibleInterpolableColorTypes(InterpolableList& list_a,
                                                      InterpolableList& list_b);
+  static void EnsureCompatibleInterpolableColorTypes(InterpolableValue*& a,
+                                                     InterpolableValue*& b);
 
   static InterpolableColor* CreateInterpolableColor(const Color&);
   static InterpolableColor* CreateInterpolableColor(
@@ -50,8 +55,7 @@ class CORE_EXPORT CSSColorInterpolationType : public CSSInterpolationType {
       const ui::ColorProvider* color_provider);
   static InterpolableColor* MaybeCreateInterpolableColor(
       const CSSValue&,
-      mojom::blink::ColorScheme color_scheme,
-      const ui::ColorProvider* color_provider);
+      const StyleResolverState*);
 
   static BaseInterpolableColor* CreateBaseInterpolableColor(
       const StyleColor&,
@@ -75,6 +79,7 @@ class CORE_EXPORT CSSColorInterpolationType : public CSSInterpolationType {
   static bool IsNonKeywordColor(const InterpolableValue&);
 
  private:
+  friend class CSSGapColorListInterpolationType;
   InterpolationValue MaybeConvertNeutral(const InterpolationValue& underlying,
                                          ConversionCheckers&) const final;
   InterpolationValue MaybeConvertInitial(const StyleResolverState&,
@@ -82,7 +87,7 @@ class CORE_EXPORT CSSColorInterpolationType : public CSSInterpolationType {
   InterpolationValue MaybeConvertInherit(const StyleResolverState&,
                                          ConversionCheckers&) const final;
   InterpolationValue MaybeConvertValue(const CSSValue&,
-                                       const StyleResolverState*,
+                                       const StyleResolverState&,
                                        ConversionCheckers&) const final;
   static InterpolationValue ConvertStyleColorPair(
       const OptionalStyleColor&,

@@ -28,7 +28,8 @@ bool IsNtpUrl(const GURL& url) {
 BreadcrumbManagerTabHelper::BreadcrumbManagerTabHelper(
     content::WebContents* web_contents)
     : breadcrumbs::BreadcrumbManagerTabHelper(
-          infobars::ContentInfoBarManager::FromWebContents(web_contents)),
+          infobars::ContentInfoBarManager::FromWebContents(web_contents),
+          breadcrumbs::BreadcrumbManagerTabHelper::ReserveUniqueId()),
       content::WebContentsObserver(web_contents),
       content::WebContentsUserData<BreadcrumbManagerTabHelper>(*web_contents) {}
 
@@ -86,9 +87,7 @@ void BreadcrumbManagerTabHelper::DidChangeVisibleSecurityState() {
       visible_security_state->displayed_mixed_content;
 
   security_state::SecurityLevel security_level =
-      security_state::GetSecurityLevel(
-          *visible_security_state,
-          /*used_policy_installed_certificate=*/false);
+      security_state::GetSecurityLevel(*visible_security_state);
   const bool security_style_authentication_broken =
       security_level == security_state::SecurityLevel::DANGEROUS;
 

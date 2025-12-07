@@ -4,7 +4,8 @@
 
 #include "ui/views/widget/sublevel_manager.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "build/build_config.h"
 #include "ui/views/widget/native_widget_private.h"
 #include "ui/views/widget/widget.h"
@@ -45,18 +46,6 @@ SublevelManager::SublevelManager(Widget* owner, int sublevel)
 
 SublevelManager::~SublevelManager() = default;
 
-void SublevelManager::TrackChildWidget(Widget* child) {
-  DCHECK_EQ(0, base::ranges::count(children_, child));
-  DCHECK(child->parent() == owner_);
-  children_.push_back(child);
-}
-
-void SublevelManager::UntrackChildWidget(Widget* child) {
-  // During shutdown a child might get untracked more than once by the same
-  // parent. We don't want to DCHECK on that.
-  children_.erase(base::ranges::remove(children_, child), std::end(children_));
-}
-
 void SublevelManager::SetSublevel(int sublevel) {
   sublevel_ = sublevel;
   EnsureOwnerSublevel();
@@ -89,9 +78,24 @@ void SublevelManager::EnsureOwnerTreeSublevel() {
   }
 }
 
+void SublevelManager::OnWidgetChildAdded(Widget* owner, Widget* child) {
+  CHECK_EQ(owner, owner_);
+  CHECK(!base::Contains(children_, child));
+  CHECK_EQ(child->parent(), owner_);
+  children_.push_back(child);
+}
+
+void SublevelManager::OnWidgetChildRemoved(Widget* owner, Widget* child) {
+  CHECK_EQ(owner, owner_);
+  // During shutdown a child might get untracked more than once by the same
+  // parent. We don't want to DCHECK on that.
+  std::erase(children_, child);
+}
+
 void SublevelManager::OrderChildWidget(Widget* child) {
-  DCHECK_EQ(1, base::ranges::count(children_, child));
-  children_.erase(base::ranges::remove(children_, child), std::end(children_));
+  auto removed = std::ranges::remove(children_, child);
+  DCHECK_EQ(1u, removed.size());
+  children_.erase(removed.begin(), removed.end());
 
   if (ShouldStackAboveParent(child)) {
     child->StackAboveWidget(owner_);
@@ -106,9 +110,9 @@ void SublevelManager::OrderChildWidget(Widget* child) {
     return widget->IsVisible() && widget->GetZOrderLevel() == child_level;
   };
 
-  auto prev_it = base::ranges::find_if(std::make_reverse_iterator(insert_it),
-                                       std::crend(children_),
-                                       find_visible_widget_of_same_level);
+  auto prev_it = std::ranges::find_if(std::make_reverse_iterator(insert_it),
+                                      std::crend(children_),
+                                      find_visible_widget_of_same_level);
 
   if (prev_it == children_.rend()) {
     // x11 bug: stacking above the base `owner_` will cause `child` to become
@@ -116,8 +120,8 @@ void SublevelManager::OrderChildWidget(Widget* child) {
     // position `child` relative to the next child widget.
 
     // Find the closest next widget at the same level.
-    auto next_it = base::ranges::find_if(insert_it, std::cend(children_),
-                                         find_visible_widget_of_same_level);
+    auto next_it = std::ranges::find_if(insert_it, std::cend(children_),
+                                        find_visible_widget_of_same_level);
 
     // Put `child` below `next_it`.
     if (next_it != std::end(children_)) {
@@ -131,21 +135,15 @@ void SublevelManager::OrderChildWidget(Widget* child) {
   children_.insert(insert_it, child);
 }
 
-void SublevelManager::OnWidgetDestroying(Widget* owner) {
-  DCHECK(owner == owner_);
-  if (owner->parent())
-    owner->parent()->GetSublevelManager()->UntrackChildWidget(owner);
-}
-
 bool SublevelManager::IsTrackingChildWidget(Widget* child) {
-  return base::ranges::find(children_, child) != children_.end();
+  return std::ranges::find(children_, child) != children_.end();
 }
 
 SublevelManager::ChildIterator SublevelManager::FindInsertPosition(
     Widget* child) const {
   ui::ZOrderLevel child_level = child->GetZOrderLevel();
   int child_sublevel = child->GetZOrderSublevel();
-  return base::ranges::find_if(children_, [&](Widget* widget) {
+  return std::ranges::find_if(children_, [&](Widget* widget) {
     return widget->GetZOrderLevel() == child_level &&
            widget->GetZOrderSublevel() > child_sublevel;
   });

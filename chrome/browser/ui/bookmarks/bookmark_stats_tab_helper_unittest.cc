@@ -9,6 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"

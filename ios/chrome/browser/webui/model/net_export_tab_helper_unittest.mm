@@ -7,7 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/webui/model/net_export_tab_helper_delegate.h"
 #import "ios/chrome/browser/webui/model/show_mail_composer_context.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -41,9 +41,9 @@ class NetExportTabHelperTest : public PlatformTest {
  public:
   NetExportTabHelperTest()
       : delegate_([[TestNetExportTabHelperDelegate alloc] init]) {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
 
-    web::WebState::CreateParams params(browser_state_.get());
+    web::WebState::CreateParams params(profile_.get());
     web_state_ = web::WebState::Create(params);
   }
 
@@ -60,7 +60,7 @@ class NetExportTabHelperTest : public PlatformTest {
   web::WebState* web_state() { return web_state_.get(); }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
   // A delegate that is given to the NetExportTabHelper for testing.
   __strong TestNetExportTabHelperDelegate* delegate_;

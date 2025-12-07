@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/completion_repeating_callback.h"
 #include "net/dns/mdns_client_impl.h"
@@ -100,7 +101,7 @@ class MockMDnsSocketFactory : public MDnsSocketFactory {
   void CreateSockets(
       std::vector<std::unique_ptr<DatagramServerSocket>>* sockets) override;
 
-  void SimulateReceive(const uint8_t* packet, int size);
+  void SimulateReceive(base::span<const uint8_t> packet);
 
   MOCK_METHOD1(OnSendTo, void(const std::string&));
 

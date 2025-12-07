@@ -6,12 +6,15 @@ import("//build/config/android/config.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
 
 source_set("lib") {
+  # External code should depend on ":android_webview" instead.
+  visibility = [ "//android_webview" ]
   sources = [
     "aw_main_delegate.cc",
     "aw_main_delegate.h",
     "webview_jni_onload.cc",
     "webview_jni_onload.h",
   ]
+  defines = [ "IS_ANDROID_WEBVIEW_IMPL" ]
 
   deps = [
     "//android_webview/browser",
@@ -24,15 +27,17 @@ source_set("lib") {
     "//cc/base",
     "//components/autofill/core/common",
     "//components/crash/core/common",
-    "//components/embedder_support:embedder_support",
+    "//components/embedder_support",
     "//components/gwp_asan/common:crash_keys",
     "//components/memory_system",
     "//components/metrics",
+    "//components/payments/content/android",
     "//components/safe_browsing/android:safe_browsing_api_handler",
     "//components/services/heap_profiling/public/cpp",
     "//components/spellcheck:buildflags",
-    "//components/stylus_handwriting/android:android",
+    "//components/stylus_handwriting/android",
     "//components/variations",
+    "//components/variations:variations_associated_data",
     "//components/version_info",
     "//components/version_info/android:channel_getter",
     "//components/viz/common",
@@ -40,7 +45,7 @@ source_set("lib") {
     "//content/public/browser",
     "//content/public/common",
     "//content/public/common:content_descriptor_keys",
-    "//device/base:base",
+    "//device/base",
     "//gin",
     "//gpu/command_buffer/service",
     "//gpu/config",
@@ -59,8 +64,12 @@ source_set("lib") {
 
 source_set("webview_entry_point") {
   deps = [
-    ":lib",
+    "//android_webview",
     "//base",
+    "//base:jni_onload",
   ]
+  if (enable_javaless_renderers) {
+    deps += [ "//content/app:javaless_renderer" ]
+  }
   sources = [ "webview_entry_point.cc" ]
 }

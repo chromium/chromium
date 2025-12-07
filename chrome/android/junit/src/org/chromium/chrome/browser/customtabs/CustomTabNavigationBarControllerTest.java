@@ -12,15 +12,16 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.os.Build;
 import android.view.Window;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -31,21 +32,23 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.customtabs.features.CustomTabNavigationBarController;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 
 /** Tests for {@link CustomTabNavigationBarController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 @Config(manifest = Config.NONE)
 public class CustomTabNavigationBarControllerTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ColorProvider mColorProvider;
     @Mock private CustomTabIntentDataProvider mCustomTabIntentDataProvider;
     @Mock private CustomTabsConnection mConnection;
+    @Mock private EdgeToEdgeSystemBarColorHelper mSystemBarColorHelper;
     private Window mWindow;
     private Context mContext;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         Activity activity = Robolectric.buildActivity(Activity.class).get();
         mWindow = spy(activity.getWindow());
         mContext = activity;
@@ -56,78 +59,104 @@ public class CustomTabNavigationBarControllerTest {
     @Test
     public void doesNotSetBarColorWhenNull() {
         when(mColorProvider.getNavigationBarColor()).thenReturn(null);
-        CustomTabNavigationBarController.update(mWindow, mCustomTabIntentDataProvider, mContext);
+        CustomTabNavigationBarController.update(
+                mWindow,
+                mCustomTabIntentDataProvider,
+                mContext,
+                /* isEdgeToEdge= */ false,
+                mSystemBarColorHelper);
 
         verify(mWindow, never()).setNavigationBarColor(Mockito.anyInt());
+        verify(mSystemBarColorHelper, never()).setNavigationBarColor(Mockito.anyInt());
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.P) // Android P+ (>=28) is needed for setting divider color.
     public void doesNotSetDividerColorWhenNull() {
         when(mColorProvider.getNavigationBarDividerColor()).thenReturn(null);
         // Bar color needs to be null. Otherwise the divider color could still be set if
         // needsDarkButtons is true.
         when(mColorProvider.getNavigationBarColor()).thenReturn(null);
 
-        CustomTabNavigationBarController.update(mWindow, mCustomTabIntentDataProvider, mContext);
+        CustomTabNavigationBarController.update(
+                mWindow,
+                mCustomTabIntentDataProvider,
+                mContext,
+                /* isEdgeToEdge= */ false,
+                mSystemBarColorHelper);
         verify(mWindow, never()).setNavigationBarDividerColor(Mockito.anyInt());
+        verify(mSystemBarColorHelper, never()).setNavigationBarDividerColor(Mockito.anyInt());
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.O_MR1)
-    // Android P+ (>=28) is needed for setting the divider color.
-    public void doesNotSetDividerColorWhenSdkLow() {
-        when(mColorProvider.getNavigationBarDividerColor()).thenReturn(Color.RED);
-        when(mColorProvider.getNavigationBarColor()).thenReturn(Color.GREEN);
-
-        // Make sure calling the line below does not throw an exception, because the method does not
-        // exist in android P+.
-        CustomTabNavigationBarController.update(mWindow, mCustomTabIntentDataProvider, mContext);
-    }
-
-    @Test
-    @Config(sdk = Build.VERSION_CODES.O) // SDK 26 is used to trigger supportDarkButtons=true.
     public void setsCorrectBarColorWhenDarkButtonsSupported() {
         when(mColorProvider.getNavigationBarDividerColor()).thenReturn(Color.RED);
         when(mColorProvider.getNavigationBarColor()).thenReturn(Color.GREEN);
 
         // The case when needsDarkButtons=true
         when(mColorProvider.getNavigationBarColor()).thenReturn(Color.WHITE);
-        CustomTabNavigationBarController.update(mWindow, mCustomTabIntentDataProvider, mContext);
-        verify(mWindow).setNavigationBarColor(Color.WHITE);
+        CustomTabNavigationBarController.update(
+                mWindow,
+                mCustomTabIntentDataProvider,
+                mContext,
+                /* isEdgeToEdge= */ false,
+                mSystemBarColorHelper);
+        verify(mSystemBarColorHelper).setNavigationBarColor(Color.WHITE);
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.P) // Android P+ (>=28) needed for setting divider color.
     public void setsCorrectDividerColor() {
         // The case when divider color is set explicitly.
         when(mColorProvider.getNavigationBarDividerColor()).thenReturn(Color.RED);
         when(mColorProvider.getNavigationBarColor()).thenReturn(Color.BLACK);
 
-        CustomTabNavigationBarController.update(mWindow, mCustomTabIntentDataProvider, mContext);
-        verify(mWindow).setNavigationBarDividerColor(Color.RED);
+        CustomTabNavigationBarController.update(
+                mWindow,
+                mCustomTabIntentDataProvider,
+                mContext,
+                /* isEdgeToEdge= */ false,
+                mSystemBarColorHelper);
+        verify(mSystemBarColorHelper).setNavigationBarDividerColor(Color.RED);
 
         // The case when divider color is set implicitly due to needsDarkButtons=true.
         when(mColorProvider.getNavigationBarDividerColor()).thenReturn(null);
         when(mColorProvider.getNavigationBarColor()).thenReturn(Color.WHITE);
-        CustomTabNavigationBarController.update(mWindow, mCustomTabIntentDataProvider, mContext);
-        verify(mWindow)
-                .setNavigationBarDividerColor(
-                        mContext.getColor(org.chromium.chrome.R.color.black_alpha_12));
+        CustomTabNavigationBarController.update(
+                mWindow,
+                mCustomTabIntentDataProvider,
+                mContext,
+                /* isEdgeToEdge= */ false,
+                mSystemBarColorHelper);
+        verify(mSystemBarColorHelper)
+                .setNavigationBarDividerColor(mContext.getColor(R.color.black_alpha_12));
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.P) // Android P+ (>=28) needed for setting divider color.
     @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR)
     public void setsCorrectDividerColorWhenGoogleBottomBarEnabled() {
         when(mConnection.shouldEnableGoogleBottomBarForIntent(mCustomTabIntentDataProvider))
                 .thenReturn(true);
-        CustomTabNavigationBarController.update(mWindow, mCustomTabIntentDataProvider, mContext);
-        verify(mWindow)
+        CustomTabNavigationBarController.update(
+                mWindow,
+                mCustomTabIntentDataProvider,
+                mContext,
+                /* isEdgeToEdge= */ false,
+                mSystemBarColorHelper);
+        verify(mSystemBarColorHelper)
                 .setNavigationBarColor(
                         mContext.getColor(R.color.google_bottom_bar_background_color));
-        verify(mWindow)
+        verify(mSystemBarColorHelper)
                 .setNavigationBarDividerColor(
                         mContext.getColor(R.color.google_bottom_bar_background_color));
+    }
+
+    @Test
+    public void setTransparentColorForEdgeToEdge() {
+        CustomTabNavigationBarController.update(
+                mWindow,
+                mCustomTabIntentDataProvider,
+                mContext,
+                /* isEdgeToEdge= */ true,
+                mSystemBarColorHelper);
+        verify(mSystemBarColorHelper).setNavigationBarColor(Color.TRANSPARENT);
     }
 }

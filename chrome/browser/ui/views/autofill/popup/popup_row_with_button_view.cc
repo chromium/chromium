@@ -27,6 +27,7 @@
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -143,15 +144,31 @@ PopupRowWithButtonView::PopupRowWithButtonView(
     int line_number,
     std::unique_ptr<PopupRowContentView> content_view,
     std::unique_ptr<views::ImageButton> button,
-    ButtonBehavior button_behavior)
+    ButtonVisibility button_visibility,
+    ButtonSelectBehavior button_select_behavior)
     : PopupRowView(a11y_selection_delegate,
                    selection_delegate,
                    controller,
                    line_number,
                    std::move(content_view)),
-      button_behavior_(button_behavior) {
-  CHECK(button);
+      button_visibility_(button_visibility),
+      button_select_behavior_(button_select_behavior) {
+  auto* content_layout =
+      static_cast<views::BoxLayout*>(GetContentView().GetLayoutManager());
+  // A spacer between the other children of the content view and the button.
+  // We do not use between child spacing since because the content view may
+  // have multiple children that we do not wish to affect.
+  const int spacer_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_RELATED_LABEL_HORIZONTAL_LIST);
+  content_layout->SetFlexForView(
+      GetContentView().AddChildView(
+          views::Builder<views::View>()
+              .SetPreferredSize(gfx::Size(spacer_width, 1))
+              .Build()),
+      0,
+      /*use_min_size=*/true);
 
+  CHECK(button);
   button_placeholder_ =
       GetContentView().AddChildView(std::make_unique<ButtonPlaceholder>(this));
   button_placeholder_->SetLayoutManager(std::make_unique<views::BoxLayout>());
@@ -163,12 +180,6 @@ PopupRowWithButtonView::PopupRowWithButtonView(
       button_, this,
       std::make_unique<views::Button::DefaultButtonControllerDelegate>(
           button_.get())));
-
-  auto* content_layout =
-      static_cast<views::BoxLayout*>(GetContentView().GetLayoutManager());
-  content_layout->set_between_child_spacing(
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
   content_layout->SetFlexForView(button_placeholder_, 0);
 }
 
@@ -180,7 +191,8 @@ views::View* PopupRowWithButtonView::GetButtonContainer() {
 
 void PopupRowWithButtonView::HandleKeyPressEventFocusOnButton() {
   button_->GetViewAccessibility().SetPopupFocusOverride();
-  button_->NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
+  button_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelection,
+                                              true);
   views::InkDrop::Get(button_->ink_drop_view())->GetInkDrop()->SetHovered(true);
   UpdateFocusedPartAndSelectedSuggestion(RowWithButtonPart::kButton);
 }
@@ -188,7 +200,7 @@ void PopupRowWithButtonView::HandleKeyPressEventFocusOnButton() {
 void PopupRowWithButtonView::HandleKeyPressEventFocusOnContent() {
   UpdateFocusedPartAndSelectedSuggestion(RowWithButtonPart::kContent);
   GetContentView().GetViewAccessibility().SetPopupFocusOverride();
-  NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelection, true);
   views::InkDrop::Get(button_->ink_drop_view())
       ->GetInkDrop()
       ->SetHovered(false);
@@ -272,16 +284,17 @@ void PopupRowWithButtonView::UpdateFocusedPartAndSelectedSuggestion(
   focused_part_ = part;
   if (focused_part_ == RowWithButtonPart::kContent) {
     controller()->SelectSuggestion(line_number());
-  } else {
+  } else if (button_select_behavior_ ==
+             ButtonSelectBehavior::kUnselectSuggestion) {
     controller()->UnselectSuggestion();
   }
 }
 
 bool PopupRowWithButtonView::ShouldButtonBeVisible() const {
-  switch (button_behavior_) {
-    case ButtonBehavior::kShowOnHoverOrSelect:
+  switch (button_visibility_) {
+    case ButtonVisibility::kShowOnHoverOrSelect:
       return GetSelectedCell() == CellType::kContent;
-    case ButtonBehavior::kShowAlways:
+    case ButtonVisibility::kShowAlways:
       return true;
   }
 }

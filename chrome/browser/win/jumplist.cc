@@ -51,11 +51,11 @@
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/favicon_size.h"
-#include "ui/gfx/icon_util.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_family.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
+#include "ui/gfx/win/icon_util.h"
 #include "url/gurl.h"
 
 namespace {
@@ -209,7 +209,7 @@ bool UpdateTaskCategory(
 // |profile_dir|.
 base::FilePath GenerateJumplistIconDirName(
     const base::FilePath& profile_dir,
-    const base::FilePath::StringPieceType& suffix) {
+    base::FilePath::StringViewType suffix) {
   base::FilePath::StringType dir_name =
       base::StrCat({chrome::kJumpListIconDirname, suffix});
   return profile_dir.Append(dir_name);
@@ -217,9 +217,9 @@ base::FilePath GenerateJumplistIconDirName(
 
 }  // namespace
 
-JumpList::UpdateTransaction::UpdateTransaction() {}
+JumpList::UpdateTransaction::UpdateTransaction() = default;
 
-JumpList::UpdateTransaction::~UpdateTransaction() {}
+JumpList::UpdateTransaction::~UpdateTransaction() = default;
 
 // static
 bool JumpList::Enabled() {

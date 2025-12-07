@@ -96,9 +96,6 @@ class PLATFORM_EXPORT SecurityPolicy {
       const String& header_value,
       ReferrerPolicyLegacyKeywordsSupport,
       network::mojom::ReferrerPolicy* result);
-
-  static bool IsSharedArrayBufferAlwaysAllowedForOrigin(
-      const SecurityOrigin* origin);
 };
 
 }  // namespace blink

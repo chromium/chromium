@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -35,14 +36,16 @@ base::Value::Dict EncodeTab(const GURL& url) {
 }
 
 // Encodes all the pinned tabs from |browser| into |serialized_tabs|.
-void EncodePinnedTabs(Browser* browser, base::Value::List& serialized_tabs) {
-  TabStripModel* tab_model = browser->tab_strip_model();
+void EncodePinnedTabs(BrowserWindowInterface* browser,
+                      base::Value::List& serialized_tabs) {
+  const TabStripModel* const tab_model = browser->GetTabStripModel();
   for (int i = 0; i < tab_model->count() && tab_model->IsTabPinned(i); ++i) {
     content::WebContents* web_contents = tab_model->GetWebContentsAt(i);
     NavigationEntry* entry =
         web_contents->GetController().GetLastCommittedEntry();
-    if (entry)
+    if (entry) {
       serialized_tabs.Append(EncodeTab(entry->GetURL()));
+    }
   }
 }
 
@@ -66,15 +69,19 @@ void PinnedTabCodec::RegisterProfilePrefs(
 // static
 void PinnedTabCodec::WritePinnedTabs(Profile* profile) {
   PrefService* prefs = profile->GetPrefs();
-  if (!prefs)
+  if (!prefs) {
     return;
+  }
 
   base::Value::List values;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->is_type_normal() && browser->profile() == profile) {
-      EncodePinnedTabs(browser, values);
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [profile, &values](BrowserWindowInterface* browser) {
+        if (browser->GetType() == BrowserWindowInterface::TYPE_NORMAL &&
+            browser->GetProfile() == profile) {
+          EncodePinnedTabs(browser, values);
+        }
+        return true;
+      });
   prefs->SetList(prefs::kPinnedTabs, std::move(values));
 }
 
@@ -82,30 +89,35 @@ void PinnedTabCodec::WritePinnedTabs(Profile* profile) {
 void PinnedTabCodec::WritePinnedTabs(Profile* profile,
                                      const StartupTabs& tabs) {
   PrefService* prefs = profile->GetPrefs();
-  if (!prefs)
+  if (!prefs) {
     return;
+  }
 
   ScopedListPrefUpdate update(prefs, prefs::kPinnedTabs);
   base::Value::List& values = update.Get();
   values.clear();
-  for (const auto& tab : tabs)
+  for (const auto& tab : tabs) {
     values.Append(EncodeTab(tab.url));
+  }
 }
 
 // static
 StartupTabs PinnedTabCodec::ReadPinnedTabs(Profile* profile) {
   PrefService* prefs = profile->GetPrefs();
-  if (!prefs)
+  if (!prefs) {
     return {};
+  }
 
   StartupTabs results;
 
   for (const auto& serialized_tab : prefs->GetList(prefs::kPinnedTabs)) {
-    if (!serialized_tab.is_dict())
+    if (!serialized_tab.is_dict()) {
       continue;
+    }
     std::optional<StartupTab> tab = DecodeTab(serialized_tab.GetDict());
-    if (tab.has_value())
+    if (tab.has_value()) {
       results.push_back(tab.value());
+    }
   }
 
   return results;

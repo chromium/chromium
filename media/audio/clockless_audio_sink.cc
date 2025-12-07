@@ -9,10 +9,12 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/simple_thread.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
 
 namespace media {

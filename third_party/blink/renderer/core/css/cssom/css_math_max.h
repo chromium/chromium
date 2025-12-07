@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_css_math_operator.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/cssom/css_math_variadic.h"
 
@@ -29,7 +30,9 @@ class CORE_EXPORT CSSMathMax final : public CSSMathVariadic {
   CSSMathMax(const CSSMathMax&) = delete;
   CSSMathMax& operator=(const CSSMathMax&) = delete;
 
-  String getOperator() const final { return "max"; }
+  V8CSSMathOperator getOperator() const final {
+    return V8CSSMathOperator(V8CSSMathOperator::Enum::kMax);
+  }
 
   // From CSSStyleValue.
   StyleValueType GetType() const final { return CSSStyleValue::kMaxType; }

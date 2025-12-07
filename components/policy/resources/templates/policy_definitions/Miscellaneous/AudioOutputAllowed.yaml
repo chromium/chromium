@@ -5,6 +5,7 @@ desc: |-
         Setting the policy to Disabled allows no audio output while users are signed in.
 
         Note: The policy affects all audio output, including audio accessibility features. Do not turn the policy off if a user requires a screen reader.
+default: true
 example_value: false
 features:
   dynamic_refresh: true

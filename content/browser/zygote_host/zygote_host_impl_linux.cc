@@ -8,6 +8,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_enumerator.h"
 #include "base/logging.h"
 #include "base/posix/unix_domain_socket.h"
@@ -16,7 +17,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/types/fixed_array.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/common/zygote/zygote_commands_linux.h"
 #include "content/common/zygote/zygote_communication_linux.h"
 #include "content/common/zygote/zygote_handle_impl_linux.h"
@@ -53,7 +53,7 @@ bool ReceiveFixedMessage(int fd,
       fd, buf.data(), buf.memsize(), &fds_vec, sender_pid);
   if (static_cast<size_t>(len) != expect_len)
     return false;
-  if (memcmp(buf.data(), expect_msg, expect_len) != 0) {
+  if (UNSAFE_TODO(memcmp(buf.data(), expect_msg, expect_len)) != 0) {
     return false;
   }
   if (!fds_vec.empty())
@@ -126,10 +126,14 @@ void ZygoteHostImpl::Init(const base::CommandLine& command_line) {
     use_suid_sandbox_for_adj_oom_score_ = use_suid_sandbox_;
   } else {
     LOG(FATAL)
-        << "No usable sandbox! Update your kernel or see "
+        << "No usable sandbox! If you are running on Ubuntu 23.10+ or another "
+           "Linux distro that has disabled unprivileged user namespaces with "
+           "AppArmor, see "
+           "https://chromium.googlesource.com/chromium/src/+/main/"
+           "docs/security/apparmor-userns-restrictions.md. Otherwise see "
            "https://chromium.googlesource.com/chromium/src/+/main/"
            "docs/linux/suid_sandbox_development.md for more information on "
-           "developing with the SUID sandbox. "
+           "developing with the (older) SUID sandbox. "
            "If you want to live dangerously and need an immediate workaround, "
            "you can try using --"
         << sandbox::policy::switches::kNoSandbox << ".";

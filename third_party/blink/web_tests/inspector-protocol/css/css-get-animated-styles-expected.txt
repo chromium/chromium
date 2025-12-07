@@ -1,0 +1,48 @@
+Tests getAnimatedStylesForNode behavior
+
+Animation styles for the element
+There are 2 animation styles for the element: TRUE
+Animation styles are ordered by their composite ordering: TRUE
+There are 2 animated CSS properties for --width-and-color animation: TRUE
+There is 1 animated CSS property for --color animation: TRUE
+
+WAAPI animations for the element
+There are 3 animations with the WAAPI animation: TRUE
+WAAPI animation has the highest compositing order and it doesn't have a name: TRUE
+
+Inherited animations for element
+First inherited entry is empty (.parent does not have any animations): TRUE
+Second inherited entry contains the color animation (for .grand-parent): TRUE
+
+Transitions style for element
+There is 1 transitioned CSS property: TRUE
+background-color is transitioned: TRUE
+
+Inherited transitions for element
+First inherited entry is empty (.parent does not have any transitions): TRUE
+Second inherited entry contains background-color transition (for .grand-parent): TRUE
+
+Animation styles for pseudo ::before
+There is only 1 animation: TRUE
+The name of the animation is --color: TRUE
+The color property is animated: TRUE
+
+Inherited animations for pseudo ::before
+First inherited entry contains animations from "#element": TRUE
+Second inherited entry is empty (.parent does not have any animations): TRUE
+
+Inherited transitions for pseudo ::before
+First inherited entry contains transitions from "#element": TRUE
+Second inherited entry is empty (.parent does not have any transitions): TRUE
+
+Animations for pseudo ::before when its origin element does not have any animations
+There is only 1 animation: TRUE
+The name of the animation is --color: TRUE
+The color property is animated: TRUE
+
+Scroll driven animations in a non-scrollable container
+There is no animation: TRUE
+
+Animations with `animation-start-delay`
+There is no animation: TRUE
+

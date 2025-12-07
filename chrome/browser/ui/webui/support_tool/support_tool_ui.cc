@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/support_tool/support_tool_ui.h"
 
+#include <algorithm>
 #include <optional>
 #include <set>
 #include <string>
@@ -20,11 +16,9 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/platform_util.h"
@@ -37,8 +31,8 @@
 #include "chrome/browser/support_tool/support_tool_handler.h"
 #include "chrome/browser/support_tool/support_tool_util.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/support_tool/support_tool_ui_utils.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -55,10 +49,17 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/selected_file_info.h"
+#include "ui/webui/webui_util.h"
 #include "url/gurl.h"
+
+bool SupportToolUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return SupportToolUI::IsEnabled(profile);
+}
 
 namespace {
 
@@ -81,9 +82,9 @@ void RecordOpenPageMetric(const GURL& url) {
     return;
   }
   std::string trimmed_path;
-  // We remove '/' characters from the path. `url.path_piece()` will return the
+  // We remove '/' characters from the path. `url.path()` will return the
   // '/' along with the path value.
-  base::TrimString(url.path_piece(), "/", &trimmed_path);
+  base::TrimString(url.path(), "/", &trimmed_path);
   // Check if the path is URL generator path.
   if (trimmed_path.compare(kUrlGeneratorPath) == 0) {
     base::UmaHistogramEnumeration(
@@ -106,9 +107,8 @@ void CreateAndAddSupportToolHTMLSource(Profile* profile, const GURL& url) {
 
   source->AddLocalizedStrings(SupportToolUI::GetLocalizedStrings());
 
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kSupportToolResources, kSupportToolResourcesSize),
-      IDR_SUPPORT_TOOL_SUPPORT_TOOL_CONTAINER_HTML);
+  webui::SetupWebUIDataSource(source, kSupportToolResources,
+                              IDR_SUPPORT_TOOL_SUPPORT_TOOL_CONTAINER_HTML);
 
   source->AddResourcePath(kUrlGeneratorPath,
                           IDR_SUPPORT_TOOL_URL_GENERATOR_CONTAINER_HTML);
@@ -346,7 +346,7 @@ void SupportToolMessageHandler::HandleStartDataCollection(
       GetSupportToolHandler(*issue_details->FindString("caseId"),
                             *issue_details->FindString("emailAddress"),
                             *issue_details->FindString("issueDescription"),
-                            Profile::FromWebUI(web_ui()),
+                            std::nullopt, Profile::FromWebUI(web_ui()),
                             GetIncludedDataCollectorTypes(data_collectors));
   this->handler_->CollectSupportData(
       base::BindOnce(&SupportToolMessageHandler::OnDataCollectionDone,
@@ -411,7 +411,7 @@ void SupportToolMessageHandler::HandleStartDataExport(
       /*file_types=*/&file_types,
       /*file_type_index=*/0,
       /*default_extension=*/base::FilePath::StringType(), owning_window,
-      /*params=*/nullptr);
+      /*caller=*/nullptr);
 }
 
 void SupportToolMessageHandler::FileSelected(const ui::SelectedFileInfo& file,
@@ -448,8 +448,8 @@ void SupportToolMessageHandler::OnDataExportDone(
   data_path_ = path;
   base::Value::Dict data_export_result;
   const auto& export_error =
-      base::ranges::find(errors, SupportToolErrorCode::kDataExportError,
-                         &SupportToolError::error_code);
+      std::ranges::find(errors, SupportToolErrorCode::kDataExportError,
+                        &SupportToolError::error_code);
   if (export_error == errors.end()) {
     data_export_result.Set("success", true);
     data_export_result.Set("path", path.BaseName().AsUTF8Unsafe());

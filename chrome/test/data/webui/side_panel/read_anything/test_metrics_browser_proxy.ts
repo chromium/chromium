@@ -13,14 +13,18 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
   constructor() {
     super([
       'incrementMetricCount',
+      'recordEmptyState',
+      'recordExtensionState',
       'recordHighlightOff',
       'recordHighlightOn',
+      'recordHighlightGranularity',
       'recordLanguage',
       'recordNewPage',
       'recordNewPageWithSpeech',
       'recordSpeechError',
       'recordSpeechPlaybackLength',
       'recordSpeechSettingsChange',
+      'recordSpeechStopSource',
       'recordTextSettingsChange',
       'recordTime',
       'recordVoiceSpeed',
@@ -30,6 +34,10 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
 
   incrementMetricCount(umaName: string) {
     this.methodCalled('incrementMetricCount', umaName);
+  }
+
+  recordEmptyState() {
+    this.methodCalled('recordEmptyState');
   }
 
   recordNewPage() {
@@ -48,6 +56,10 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('recordHighlightOff');
   }
 
+  recordHighlightGranularity(highlight: number) {
+    this.methodCalled('recordHighlightGranularity', highlight);
+  }
+
   recordVoiceType(voiceType: ReadAnythingVoiceType) {
     this.methodCalled('recordVoiceType', voiceType);
   }
@@ -64,6 +76,10 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('recordSpeechSettingsChange', settingsChange);
   }
 
+  recordSpeechStopSource(source: number) {
+    this.methodCalled('recordSpeechStopSource', source);
+  }
+
   recordVoiceSpeed(index: number) {
     this.methodCalled('recordVoiceSpeed', index);
   }
@@ -78,5 +94,9 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
 
   recordSpeechPlaybackLength(time: number) {
     this.methodCalled('recordSpeechPlaybackLength', time);
+  }
+
+  recordExtensionState() {
+    this.methodCalled('recordExtensionState');
   }
 }

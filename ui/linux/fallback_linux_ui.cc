@@ -4,8 +4,10 @@
 
 #include "ui/linux/fallback_linux_ui.h"
 
-#include "base/time/time.h"
+#include "base/notimplemented.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
+#include "ui/base/ime/text_edit_commands.h"
+#include "ui/base/ui_base_switches.h"
 #include "ui/events/keycodes/dom/dom_keyboard_layout_map.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/size.h"
@@ -14,7 +16,6 @@
 #include "ui/linux/nav_button_provider.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/shell_dialogs/select_file_policy.h"
-#include "ui/views/controls/textfield/textfield.h"
 
 namespace ui {
 
@@ -92,10 +93,6 @@ void FallbackLinuxUi::GetInactiveSelectionBgColor(SkColor* color) const {}
 
 void FallbackLinuxUi::GetInactiveSelectionFgColor(SkColor* color) const {}
 
-base::TimeDelta FallbackLinuxUi::GetCursorBlinkInterval() const {
-  return views::Textfield::GetCaretBlinkInterval();
-}
-
 gfx::Image FallbackLinuxUi::GetIconForContentType(
     const std::string& content_type,
     int size,
@@ -114,6 +111,10 @@ LinuxUi::WindowFrameAction FallbackLinuxUi::GetWindowFrameAction(
     case WindowFrameActionSource::kRightClick:
       return WindowFrameAction::kMenu;
   }
+}
+
+std::vector<std::string> FallbackLinuxUi::GetCmdLineFlagsForCopy() const {
+  return {std::string(switches::kUiToolkitFlag) + "=fallback"};
 }
 
 bool FallbackLinuxUi::PreferDarkTheme() const {
@@ -143,8 +144,17 @@ FallbackLinuxUi::CreateNavButtonProvider() {
 
 ui::WindowFrameProvider* FallbackLinuxUi::GetWindowFrameProvider(
     bool solid_frame,
-    bool tiled) {
+    bool tiled,
+    bool maximized) {
   return nullptr;
+}
+
+bool FallbackLinuxUi::PrimaryPasteEnabled() const {
+  return true;
+}
+
+int FallbackLinuxUi::GetWindowDragThresholdPx() const {
+  return kDefaultWindowDragThreshold;
 }
 
 base::flat_map<std::string, std::string>
@@ -168,11 +178,10 @@ ui::NativeTheme* FallbackLinuxUi::GetNativeTheme() const {
   return ui::NativeTheme::GetInstanceForNativeUi();
 }
 
-bool FallbackLinuxUi::GetTextEditCommandsForEvent(
+ui::TextEditCommand FallbackLinuxUi::GetTextEditCommandForEvent(
     const ui::Event& event,
-    int text_flags,
-    std::vector<ui::TextEditCommandAuraLinux>* commands) {
-  return false;
+    int text_flags) {
+  return ui::TextEditCommand::INVALID_COMMAND;
 }
 
 #if BUILDFLAG(ENABLE_PRINTING)

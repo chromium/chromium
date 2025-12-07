@@ -178,8 +178,9 @@ class VIEWS_EXPORT BoxLayout : public LayoutManagerBase {
   // Returns the minimum size for the specified |view|.
   int GetMinimumSizeForView(const View* view) const;
 
-  // Get the margin of the subview
-  NormalizedInsets GetChildMargins(BoxLayoutData& data, size_t index) const;
+  // Update `BoxChildData::margins` to account for the option to collapse
+  // margin spacing.
+  void UpdateChildMarginsIfCollapseMarginsSpacing(BoxLayoutData& data) const;
 
   // Returns the preferred size of the current view under `size_bounds`.
   gfx::Size GetPreferredSizeForView(

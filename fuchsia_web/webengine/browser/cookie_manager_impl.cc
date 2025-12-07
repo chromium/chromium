@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_change_dispatcher.h"
+#include "net/cookies/unique_cookie_key.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
 
@@ -28,6 +29,7 @@ fuchsia::web::Cookie ConvertCanonicalCookie(
   cookie.set_id(std::move(id));
   switch (cause) {
     case net::CookieChangeCause::INSERTED:
+    case net::CookieChangeCause::INSERTED_NO_VALUE_CHANGE_OVERWRITE:
       cookie.set_value(canonical_cookie.Value());
       break;
     case net::CookieChangeCause::EXPLICIT:
@@ -36,6 +38,7 @@ fuchsia::web::Cookie ConvertCanonicalCookie(
     case net::CookieChangeCause::EXPIRED:
     case net::CookieChangeCause::EVICTED:
     case net::CookieChangeCause::EXPIRED_OVERWRITE:
+    case net::CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE:
       break;
   };
 
@@ -150,8 +153,7 @@ class CookiesIteratorImpl final : public fuchsia::web::CookiesIterator,
 
   // Map from "unique key"s (see net::CanonicalCookie::UniqueKey()) to the
   // corresponding fuchsia::web::Cookie.
-  std::map<net::CanonicalCookie::UniqueCookieKey, fuchsia::web::Cookie>
-      queued_cookies_;
+  std::map<net::UniqueCookieKey, fuchsia::web::Cookie> queued_cookies_;
 };
 
 void OnAllCookiesReceived(

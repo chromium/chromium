@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_CREDIT_CARD_SAVE_METRICS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_CREDIT_CARD_SAVE_METRICS_H_
 
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 namespace autofill::autofill_metrics {
 
@@ -14,10 +14,9 @@ namespace autofill::autofill_metrics {
 // updated each time a new value is added.
 const int kNumCardUploadDecisionMetrics = 19;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum CardUploadDecision {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
   // All the required conditions were satisfied using either the form fields
   // or we prompted the user to fix one or more conditions in the card upload
   // prompt.
@@ -78,10 +77,10 @@ enum CardUploadDecision {
 
 // Log all the scenarios that contribute to the decision of whether card
 // upload is enabled or not.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class CardUploadEnabled {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
   kSyncServiceNull = 0,
   kSyncServicePaused = 1,
   kSyncServiceMissingAutofillWalletDataActiveType = 2,
@@ -100,11 +99,14 @@ enum class CardUploadEnabled {
   kMaxValue = kEnabledByFlag,
 };
 
-// Metrics to track event when the save card prompt is offered.
-enum class SaveCardPromptOffer {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
+// TODO(crbug.com/395731509): Refactor Save Card offer metrics across all
+// platforms.
 
+// Metrics to track event when the save card prompt is offered.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SaveCardPromptOffer {
   // The prompt is actually shown.
   kShown = 0,
   // The prompt is not shown because the prompt has been declined by the user
@@ -113,13 +115,31 @@ enum class SaveCardPromptOffer {
   // The prompt is not shown because the required delay since last strike has
   // not passed.
   kNotShownRequiredDelay = 2,
-  kMaxValue = kNotShownRequiredDelay,
+  // The prompt may have been for a card update instead of a new card upload, in
+  // which case CVC is required, but it was missing.
+  kCvcMissingForPotentialUpdate = 3,
+  kMaxValue = kCvcMissingForPotentialUpdate,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class SaveCardPromptResult {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
+  // The user accepted the save card prompt.
+  kAccepted = 0,
+  // The user closed, denied or ignored the save card prompt.
+  kClosed = 1,
+  kMaxValue = kClosed,
+};
 
+// This is a legacy enum used by card save and cvc save metrics on desktop. The
+// outcomes here are also represented by `enum SaveCardPromptResult` in
+// credit_card_save_metrics_desktop.h to be used for desktop-specific metrics.
+// The enum SaveCardPromptResult in this file represents only platform-agnostic
+// outcomes. These values are persisted to logs. Entries should not be
+// renumbered and numeric values should never be reused.
+// TODO(crbug.com/430588721): Clean up this enum once refactored save card
+// metrics have rolled out.
+enum class LegacySaveCardPromptResult {
   // The user explicitly accepted the prompt by clicking the ok button.
   kAccepted = 0,
   // The user explicitly cancelled the prompt by clicking the cancel button.
@@ -137,10 +157,10 @@ enum class SaveCardPromptResult {
 };
 
 // Represents requesting expiration date reason.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class SaveCardRequestExpirationDateReason {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
   // Submitted card has empty month.
   kMonthMissingOnly = 0,
   // Submitted card has empty year.
@@ -153,10 +173,10 @@ enum class SaveCardRequestExpirationDateReason {
 };
 
 // Clank-specific metrics.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class SaveCreditCardPromptResult {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
   // User accepted save.
   kAccepted = 0,
   // User declined to save card.
@@ -201,20 +221,36 @@ void LogSaveCardCardholderNamePrefilled(bool prefilled);
 // from its prefilled value or not.
 void LogSaveCardCardholderNameWasEdited(bool edited);
 
+// Logs whether the save credit card prompt is shown or not. The metric logged
+// is platform-agnostic. Should not be called for prompt re-shows (e.g., prompt
+// reshown from the omnibox icon on desktop).
+void LogSaveCreditCardPromptOfferMetric(SaveCardPromptOffer metric,
+                                        bool is_upload_save);
+
+// TODO(crbug.com/430588721): Clean up this function once refactored save card
+// metrics have rolled out.
 void LogSaveCardPromptOfferMetric(
     SaveCardPromptOffer metric,
     bool is_uploading,
     bool is_reshow,
-    AutofillClient::SaveCreditCardOptions options,
+    payments::PaymentsAutofillClient::SaveCreditCardOptions options,
     AutofillMetrics::PaymentsSigninState sync_state);
+
+// Logs platform-agnostic metric capturing the user's action (accepts or
+// closes/denies) for the save credit card prompt. Should not be called for
+// prompt re-shows (e.g., prompt reshown from the omnibox icon on desktop).
+void LogSaveCreditCardPromptResultMetric(SaveCardPromptResult metric,
+                                         bool is_upload_save);
 
 // `has_saved_cards` indicates that local or server cards existed before the
 // save prompt was accepted/denied.
+// TODO(crbug.com/430588721): Clean up this function once refactored save card
+// metrics have rolled out.
 void LogSaveCardPromptResultMetric(
-    SaveCardPromptResult metric,
+    LegacySaveCardPromptResult metric,
     bool is_uploading,
     bool is_reshow,
-    AutofillClient::SaveCreditCardOptions options,
+    payments::PaymentsAutofillClient::SaveCreditCardOptions options,
     AutofillMetrics::PaymentsSigninState sync_state,
     bool has_saved_cards);
 
@@ -222,7 +258,7 @@ void LogSaveCvcPromptOfferMetric(SaveCardPromptOffer metric,
                                  bool is_uploading,
                                  bool is_reshow);
 
-void LogSaveCvcPromptResultMetric(SaveCardPromptResult metric,
+void LogSaveCvcPromptResultMetric(LegacySaveCardPromptResult metric,
                                   bool is_uploading,
                                   bool is_reshow);
 
@@ -239,17 +275,25 @@ void LogCreditCardUploadLoadingViewShownMetric(bool is_shown);
 void LogCreditCardUploadConfirmationViewShownMetric(bool is_shown,
                                                     bool is_card_uploaded);
 
-void LogCreditCardUploadLoadingViewResultMetric(SaveCardPromptResult metric);
+// TODO(crbug.com/395731509): Replace use of LegacySaveCardPromptResult with
+// SaveCardPromptResult for LogCreditCardUploadLoadingViewResultMetric() and
+// LogCreditCardUploadConfirmationViewResultMetric() once refactored save card
+// metrics have rolled out.
+void LogCreditCardUploadLoadingViewResultMetric(
+    LegacySaveCardPromptResult metric);
 
 void LogCreditCardUploadConfirmationViewResultMetric(
-    SaveCardPromptResult metric,
+    LegacySaveCardPromptResult metric,
     bool is_card_uploaded);
+
+void LogGetCardUploadDetailsRequestLatencyMetric(base::TimeDelta duration,
+                                                 bool is_successful);
 
 // Clank-specific metrics.
 void LogSaveCreditCardPromptResult(
     SaveCreditCardPromptResult event,
     bool is_upload,
-    AutofillClient::SaveCreditCardOptions options);
+    payments::PaymentsAutofillClient::SaveCreditCardOptions options);
 
 }  // namespace autofill::autofill_metrics
 

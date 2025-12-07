@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/debug/debugger.h"
+
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -42,6 +43,5 @@ TEST(Debugger, DoesntExecuteBeyondBreakpoint) {
 #endif  // BUILDFLAG(IS_WIN)
 
 #else   // defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
-TEST(Debugger, NoTest) {
-}
+TEST(Debugger, NoTest) {}
 #endif  // defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)

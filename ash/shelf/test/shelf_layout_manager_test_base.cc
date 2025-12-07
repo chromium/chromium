@@ -19,6 +19,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/view.h"
@@ -182,7 +183,8 @@ void ShelfLayoutManagerTestBase::UpdateAutoHideStateNow() {
 
 aura::Window* ShelfLayoutManagerTestBase::CreateTestWindow() {
   aura::Window* window = new aura::Window(nullptr);
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kNormal);
   window->SetType(aura::client::WINDOW_TYPE_NORMAL);
   window->Init(ui::LAYER_TEXTURED);
   ParentWindowInPrimaryRootWindow(window);
@@ -192,7 +194,8 @@ aura::Window* ShelfLayoutManagerTestBase::CreateTestWindow() {
 aura::Window* ShelfLayoutManagerTestBase::CreateTestWindowInParent(
     aura::Window* root_window) {
   aura::Window* window = new aura::Window(nullptr);
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kNormal);
   window->SetType(aura::client::WINDOW_TYPE_NORMAL);
   window->Init(ui::LAYER_TEXTURED);
   aura::client::ParentWindowWithContext(window, root_window, gfx::Rect(),
@@ -214,7 +217,7 @@ views::Widget* ShelfLayoutManagerTestBase::CreateTestWidget() {
 
 gfx::Rect ShelfLayoutManagerTestBase::GetVisibleShelfWidgetBoundsInScreen() {
   gfx::Rect bounds = GetShelfWidget()->GetWindowBoundsInScreen();
-  bounds.Intersect(display::Screen::GetScreen()->GetPrimaryDisplay().bounds());
+  bounds.Intersect(display::Screen::Get()->GetPrimaryDisplay().bounds());
   return bounds;
 }
 
@@ -227,7 +230,7 @@ void ShelfLayoutManagerTestBase::UnlockScreen() {
 }
 
 int64_t ShelfLayoutManagerTestBase::GetPrimaryDisplayId() {
-  return display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  return display::Screen::Get()->GetPrimaryDisplay().id();
 }
 
 void ShelfLayoutManagerTestBase::StartScroll(gfx::Point start) {
@@ -299,7 +302,7 @@ bool ShelfLayoutManagerTestBase::TriggerAutoHideTimeout() const {
 // Performs a swipe up gesture to show an auto-hidden shelf.
 void ShelfLayoutManagerTestBase::SwipeUpOnShelf() {
   gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   const gfx::Point start(display_bounds.bottom_center());
   const gfx::Point end(start + gfx::Vector2d(0, -80));
   const base::TimeDelta kTimeDelta = base::Milliseconds(100);
@@ -322,10 +325,8 @@ void ShelfLayoutManagerTestBase::SwipeDownOnShelf() {
 }
 
 void ShelfLayoutManagerTestBase::FlingUpOnShelf() {
-  const gfx::Point location_start(display::Screen::GetScreen()
-                                      ->GetPrimaryDisplay()
-                                      .bounds()
-                                      .bottom_center());
+  const gfx::Point location_start(
+      display::Screen::Get()->GetPrimaryDisplay().bounds().bottom_center());
   const gfx::Point location_end(location_start.x(), 10);
   FlingBetweenLocations(location_start, location_end);
 }
@@ -364,7 +365,7 @@ void ShelfLayoutManagerTestBase::MouseDragShelfTo(const gfx::Point& start,
 
 // Move mouse to show Shelf in auto-hide mode.
 void ShelfLayoutManagerTestBase::MoveMouseToShowAutoHiddenShelf() {
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  display::Display display = display::Screen::Get()->GetPrimaryDisplay();
   const int display_bottom = display.bounds().bottom();
   GetEventGenerator()->MoveMouseTo(1, display_bottom - 1);
   ASSERT_TRUE(TriggerAutoHideTimeout());
@@ -403,7 +404,7 @@ void ShelfLayoutManagerTestBase::RunGestureDragTests(
     const gfx::Point& edge_to_hide,
     const gfx::Point& edge_to_show) {
   ui::test::EventGenerator* generator = GetEventGenerator();
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  display::Display display = display::Screen::Get()->GetPrimaryDisplay();
   generator->MoveMouseTo(display.bounds().CenterPoint());
 
   Shelf* shelf = GetPrimaryShelf();

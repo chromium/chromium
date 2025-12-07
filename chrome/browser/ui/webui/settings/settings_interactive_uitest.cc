@@ -7,7 +7,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -106,36 +106,34 @@ IN_PROC_BROWSER_TEST_F(SettingsInteractiveUiTest,
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
-  bool is_3pcd = base::FeatureList::IsEnabled(
-      content_settings::features::kTrackingProtection3pcd);
-  const std::string cookie_row_selector =
-      is_3pcd ? "cr-link-row#trackingProtectionLinkRow"
-              : "cr-link-row#thirdPartyCookiesLinkRow";
   const GURL cookie_setting_url("chrome://settings/privacy");
   const WebContentsInteractionTestUtil::DeepQuery cookies_link_row = {
-      "settings-ui", "settings-main", "settings-basic-page",
-      "settings-privacy-page", cookie_row_selector};
+      "settings-ui",
+      "settings-main",
+      "settings-privacy-page-index",
+      "settings-privacy-page",
+      "cr-link-row#thirdPartyCookiesLinkRow"};
   const WebContentsInteractionTestUtil::DeepQuery
       cookies_setting_page_help_icon = {
           "settings-ui",
           "settings-main",
-          "settings-basic-page",
-          "settings-privacy-page",
+          "settings-privacy-page-index",
+          "settings-cookies-page",
           "settings-subpage",
           "div#headerLine cr-icon-button[iron-icon='cr:help-outline']"};
 
   auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
       browser(), kWebContentsInteractionTestUtilTestId);
   util->LoadPage(cookie_setting_url);
+  const auto context = BrowserElements::From(browser())->GetContext();
   auto util2 = WebContentsInteractionTestUtil::ForNextTabInContext(
-      browser()->window()->GetElementContext(),
-      kWebContentsInteractionTestUtilTestId2);
+      context, kWebContentsInteractionTestUtilTestId2);
 
   auto sequence =
       ui::InteractionSequence::Builder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+          .SetContext(context)
           // Click on 'Cookies and other site data'.
           .AddStep(WaitFor(cookies_link_row))
           .AddStep(Click(cookies_link_row))
@@ -152,14 +150,8 @@ IN_PROC_BROWSER_TEST_F(SettingsInteractiveUiTest,
                         auto* util =
                             element->AsA<TrackedElementWebContents>()->owner();
                         auto* const contents = util->web_contents();
-                        if (is_3pcd) {
-                          EXPECT_EQ(
-                              contents->GetURL(),
-                              GURL(chrome::kTrackingProtectionHelpCenterURL));
-                        } else {
-                          EXPECT_EQ(contents->GetURL(),
-                                    chrome::kCookiesSettingsHelpCenterURL);
-                        }
+                        EXPECT_EQ(contents->GetURL(),
+                                  chrome::kCookiesSettingsHelpCenterURL);
                       }))
                   .Build())
           .Build();
@@ -182,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(ThemeSettingsInteractiveUiTest,
 
   const GURL appearance_setting_url("chrome://settings/appearance");
   const WebContentsInteractionTestUtil::DeepQuery reset_to_default_btn = {
-      "settings-ui", "settings-main", "settings-basic-page",
+      "settings-ui", "settings-main", "settings-appearance-page-index",
       "settings-appearance-page", "cr-button#useDefault"};
 
   auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
@@ -193,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(ThemeSettingsInteractiveUiTest,
       ui::InteractionSequence::Builder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+          .SetContext(BrowserElements::From(browser())->GetContext())
           // Verify the current theme is not set as default.
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetElementID(kWebContentsInteractionTestUtilTestId)

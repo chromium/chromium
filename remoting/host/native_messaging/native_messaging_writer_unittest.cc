@@ -4,11 +4,13 @@
 
 #include "remoting/host/native_messaging/native_messaging_writer.h"
 
-#include <stdint.h>
-
+#include <array>
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "base/json/json_reader.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
@@ -44,50 +46,56 @@ TEST_F(NativeMessagingWriterTest, GoodMessage) {
   base::Value message(std::move(dict));
   EXPECT_TRUE(writer_->WriteMessage(message));
 
-  // Read from the pipe and verify the content.
-  uint32_t length;
-  int read = read_file_.ReadAtCurrentPos(reinterpret_cast<char*>(&length), 4);
-  EXPECT_EQ(4, read);
-  std::string content(length, '\0');
-  read = read_file_.ReadAtCurrentPos(std::data(content), length);
-  EXPECT_EQ(static_cast<int>(length), read);
+  // Read and verify header (platform's native endian).
+  std::uint32_t body_length;
+  auto header_read = read_file_.ReadAtCurrentPos(
+      base::as_writable_byte_span(base::span_from_ref(body_length)));
+  ASSERT_TRUE(header_read.has_value());
+  ASSERT_EQ(sizeof(body_length), *header_read);
 
-  // |content| should now contain serialized |message|.
-  base::Value::Dict written_message = base::test::ParseJsonDict(content);
-  EXPECT_EQ(message, written_message);
+  std::string body_buffer(body_length, '\0');
+  auto body_read =
+      read_file_.ReadAtCurrentPos(base::as_writable_byte_span(body_buffer));
+  ASSERT_TRUE(body_read.has_value());
+  ASSERT_EQ(static_cast<size_t>(body_length), *body_read);
 
-  // Nothing more should have been written. Close the write-end of the pipe,
-  // and verify the read end immediately hits EOF.
-  writer_.reset(nullptr);
-  char unused;
-  read = read_file_.ReadAtCurrentPos(&unused, 1);
-  EXPECT_LE(read, 0);
+  base::Value::Dict written = base::test::ParseJsonDict(body_buffer);
+  EXPECT_EQ(message, written);
+
+  // Ensure no extra data: read returns zero or nullopt on EOF.
+  writer_.reset();
+  std::vector<uint8_t> eof_buffer(1);
+  auto eof_read =
+      read_file_.ReadAtCurrentPos(base::as_writable_byte_span(eof_buffer));
+  EXPECT_EQ(0u, eof_read.value_or(0u));
 }
 
 TEST_F(NativeMessagingWriterTest, SecondMessage) {
-  base::Value message1(base::Value::Dict{});
-  base::Value::Dict dict2;
-  dict2.Set("foo", 42);
-  base::Value message2(std::move(dict2));
-  EXPECT_TRUE(writer_->WriteMessage(message1));
-  EXPECT_TRUE(writer_->WriteMessage(message2));
-  writer_.reset(nullptr);
+  auto messages = std::to_array<base::Value>({
+      base::Value(base::Value::Dict{}),
+      base::Value(base::Value::Dict().Set("foo", 42)),
+  });
+  EXPECT_TRUE(writer_->WriteMessage(messages[0]));
+  EXPECT_TRUE(writer_->WriteMessage(messages[1]));
+  writer_.reset();
 
-  // Read two messages.
-  uint32_t length;
-  int read;
-  std::string content;
-  for (int i = 0; i < 2; i++) {
-    read = read_file_.ReadAtCurrentPos(reinterpret_cast<char*>(&length), 4);
-    EXPECT_EQ(4, read) << "i = " << i;
-    content.resize(length);
-    read = read_file_.ReadAtCurrentPos(std::data(content), length);
-    EXPECT_EQ(static_cast<int>(length), read) << "i = " << i;
+  for (size_t i = 0; i < messages.size(); ++i) {
+    std::uint32_t length;
+    auto header_read = read_file_.ReadAtCurrentPos(
+        base::as_writable_byte_span(base::span_from_ref(length)));
+    ASSERT_TRUE(header_read.has_value());
+    ASSERT_EQ(sizeof(length), *header_read) << "i = " << i;
+
+    std::string body_buffer(length, '\0');
+    auto body_read =
+        read_file_.ReadAtCurrentPos(base::as_writable_byte_span(body_buffer));
+    ASSERT_TRUE(body_read.has_value());
+    ASSERT_EQ(static_cast<size_t>(length), *body_read) << "i = " << i;
+
+    // Verify message content.
+    base::Value::Dict written = base::test::ParseJsonDict(body_buffer);
+    EXPECT_EQ(messages[i], written);
   }
-
-  // |content| should now contain serialized |message2|.
-  base::Value::Dict written_message2 = base::test::ParseJsonDict(content);
-  EXPECT_EQ(message2, written_message2);
 }
 
 TEST_F(NativeMessagingWriterTest, FailedWrite) {

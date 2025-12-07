@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "gpu/vulkan/vulkan_instance.h"
 
@@ -57,14 +58,14 @@ class VulkanImplementationFlatland : public gpu::VulkanImplementation {
       VkDevice device,
       zx::eventpair service_handle,
       zx::channel sysmem_token,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       gfx::BufferUsage usage,
       gfx::Size size,
       size_t min_buffer_count,
       bool register_with_flatland_allocator) override;
 
  private:
-  FlatlandSysmemBufferManager* const flatland_sysmem_buffer_manager_;
+  const raw_ptr<FlatlandSysmemBufferManager> flatland_sysmem_buffer_manager_;
 
   gpu::VulkanInstance vulkan_instance_;
 };

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_HELP_APP_LAUNCHER_H_
 
 #include "base/memory/ref_counted.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class GURL;
 class Profile;

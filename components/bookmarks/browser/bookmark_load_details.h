@@ -23,6 +23,7 @@ namespace bookmarks {
 class BookmarkPermanentNode;
 class TitledUrlIndex;
 class UrlIndex;
+struct UserFolderLoadStats;
 
 // BookmarkLoadDetails represents the outcome of loading and parsing the JSON
 // file containing bookmarks. It is produced by ModelLoader in the backend task
@@ -135,9 +136,13 @@ class BookmarkLoadDetails {
 
   const BookmarkNode* RootNodeForTest() const;
 
+  UserFolderLoadStats ComputeUserFolderStats() const;
+
  private:
   // Adds node to the various indices, recursing through all children as well.
   void AddNodeToIndexRecursive(BookmarkNode* node, UuidIndex& uuid_index);
+
+  const BookmarkNode* GetRootNode() const;
 
   std::unique_ptr<BookmarkNode> root_node_;
   std::unique_ptr<TitledUrlIndex> titled_url_index_;

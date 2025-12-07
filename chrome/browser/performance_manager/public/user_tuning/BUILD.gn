@@ -1,0 +1,26 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (!is_android) {
+  source_set("user_tuning") {
+    public = [
+      "battery_saver_mode_manager.h",
+      "memory_saver_policy_handler.h",
+      "performance_detection_manager.h",
+      "user_performance_tuning_manager.h",
+      "user_tuning_utils.h",
+    ]
+    public_deps = [
+      "//base",
+      "//chrome/browser/performance_manager/user_tuning",
+      "//chrome/browser/resource_coordinator:mojo_bindings",
+      "//chrome/browser/resource_coordinator:mojo_bindings_shared",
+      "//chrome/browser/resource_coordinator:mojo_bindings_shared_cpp_sources",
+      "//components/performance_manager",
+      "//components/policy/core/browser",
+      "//components/prefs",
+      "//content/public/browser",
+    ]
+  }
+}

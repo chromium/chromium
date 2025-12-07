@@ -4,16 +4,19 @@
 
 package org.chromium.components.payments;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 
 /** The interface of PaymentUiService that provides testing methods. */
+@NullMarked
 public interface PaymentUiServiceTestInterface {
     /**
      * Get the WebContents of the Payment Handler; return null if nonexistent.
      *
      * @return The WebContents of the Payment Handler.
      */
-    WebContents getPaymentHandlerWebContentsForTest();
+    @Nullable WebContents getPaymentHandlerWebContentsForTest();
 
     /**
      * Clicks the security icon of the Payment Handler; return false if failed.

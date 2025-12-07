@@ -55,11 +55,11 @@ suite('SettingsDropdownMenu', function() {
 
     // Initially selected item.
     assertEquals(
-        'Option 100', selectElement.selectedOptions[0]!.textContent!.trim());
+        'Option 100', selectElement.selectedOptions[0]!.textContent.trim());
 
     // Selecting an item updates the pref.
     await simulateChangeEvent('200');
-    assertEquals(200, dropdown.pref!.value);
+    assertEquals(200, dropdown.pref.value);
     assertEquals('200', dropdown.getSelectedValue());
 
     // Updating the pref selects an item.
@@ -84,19 +84,19 @@ suite('SettingsDropdownMenu', function() {
     await waitUntilDropdownUpdated();
 
     // Initially selected item.
-    assertEquals('CCC', selectElement.selectedOptions[0]!.textContent!.trim());
+    assertEquals('CCC', selectElement.selectedOptions[0]!.textContent.trim());
 
     // Selecting an item updates the pref.
     await simulateChangeEvent('a');
-    assertEquals('a', dropdown.pref!.value);
+    assertEquals('a', dropdown.pref.value);
     assertEquals('a', dropdown.getSelectedValue());
 
     // Item remains selected after updating menu items.
     const newMenuOptions = dropdown.menuOptions.slice().reverse();
     dropdown.menuOptions = newMenuOptions;
     await waitUntilDropdownUpdated();
-    assertEquals('AAA', selectElement.selectedOptions[0]!.textContent!.trim());
-    assertEquals('AAA', selectElement.selectedOptions[0]!.textContent!.trim());
+    assertEquals('AAA', selectElement.selectedOptions[0]!.textContent.trim());
+    assertEquals('AAA', selectElement.selectedOptions[0]!.textContent.trim());
   });
 
   test('with noSetPref', async function() {
@@ -115,7 +115,7 @@ suite('SettingsDropdownMenu', function() {
 
     // Initially selected item.
     assertEquals(
-        'Option 100', selectElement.selectedOptions[0]!.textContent!.trim());
+        'Option 100', selectElement.selectedOptions[0]!.textContent.trim());
 
     // Updating the pref selects an item also with noSetPref.
     dropdown.set('pref.value', 200);
@@ -125,12 +125,12 @@ suite('SettingsDropdownMenu', function() {
 
     // Selecting an item does not automatically update the pref with noSetPref.
     await simulateChangeEvent('300');
-    assertEquals(200, dropdown.pref!.value);
+    assertEquals(200, dropdown.pref.value);
     assertEquals('300', dropdown.getSelectedValue());
 
     // Calling |sendPrefChange()| updates the pref.
     dropdown.sendPrefChange();
-    assertEquals(300, dropdown.pref!.value);
+    assertEquals(300, dropdown.pref.value);
   });
 
   test('with custom value', async function() {
@@ -159,7 +159,7 @@ suite('SettingsDropdownMenu', function() {
     assertFalse(customOption.disabled);
 
     // Pref should not have changed.
-    assertEquals('f', dropdown.pref!.value);
+    assertEquals('f', dropdown.pref.value);
   });
 
   test('with hidden options', async function() {
@@ -243,14 +243,14 @@ suite('SettingsDropdownMenu', function() {
     await waitUntilDropdownUpdated();
     // Initially selected item.
     assertEquals(
-        'Option 2', selectElement.selectedOptions[0]!.textContent!.trim());
+        'Option 2', selectElement.selectedOptions[0]!.textContent.trim());
 
     // Setup does not call the settings-control-change event.
     assertEquals(0, settingsControlChangeCount);
 
     // Selecting an item updates the pref.
     await simulateChangeEvent('value3');
-    assertEquals('value3', dropdown.pref!.value['key2']);
+    assertEquals('value3', dropdown.pref.value['key2']);
 
     // The settings-control-change callback should have been triggered
     // exactly once.

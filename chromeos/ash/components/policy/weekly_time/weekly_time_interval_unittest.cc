@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_interval.h"
 
 #include <tuple>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time.h"
@@ -96,7 +92,7 @@ TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromProto_Empty) {
 TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromProto_NoEnd) {
   em::WeeklyTimeIntervalProto interval_proto;
   em::WeeklyTimeProto* start = interval_proto.mutable_start();
-  start->set_day_of_week(kWeekdays[start_day_of_week()]);
+  start->set_day_of_week(UNSAFE_TODO(kWeekdays[start_day_of_week()]));
   start->set_time(start_time());
   auto result = WeeklyTimeInterval::ExtractFromProto(interval_proto, 0);
   ASSERT_FALSE(result);
@@ -105,7 +101,7 @@ TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromProto_NoEnd) {
 TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromProto_NoStart) {
   em::WeeklyTimeIntervalProto interval_proto;
   em::WeeklyTimeProto* end = interval_proto.mutable_end();
-  end->set_day_of_week(kWeekdays[end_day_of_week()]);
+  end->set_day_of_week(UNSAFE_TODO(kWeekdays[end_day_of_week()]));
   end->set_time(end_time());
   auto result = WeeklyTimeInterval::ExtractFromProto(interval_proto, 0);
   ASSERT_FALSE(result);
@@ -117,7 +113,7 @@ TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromProto_InvalidStart) {
   em::WeeklyTimeProto* end = interval_proto.mutable_end();
   start->set_day_of_week(kWeekdays[0]);
   start->set_time(start_time());
-  end->set_day_of_week(kWeekdays[end_day_of_week()]);
+  end->set_day_of_week(UNSAFE_TODO(kWeekdays[end_day_of_week()]));
   end->set_time(end_time());
   auto result = WeeklyTimeInterval::ExtractFromProto(interval_proto, 0);
   ASSERT_FALSE(result);
@@ -127,7 +123,7 @@ TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromProto_InvalidEnd) {
   em::WeeklyTimeIntervalProto interval_proto;
   em::WeeklyTimeProto* start = interval_proto.mutable_start();
   em::WeeklyTimeProto* end = interval_proto.mutable_end();
-  start->set_day_of_week(kWeekdays[start_day_of_week()]);
+  start->set_day_of_week(UNSAFE_TODO(kWeekdays[start_day_of_week()]));
   start->set_time(start_time());
   end->set_day_of_week(kWeekdays[0]);
   end->set_time(end_time());
@@ -139,9 +135,9 @@ TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromProto_InvalidStartEqualsEnd) {
   em::WeeklyTimeIntervalProto interval_proto;
   em::WeeklyTimeProto* start = interval_proto.mutable_start();
   em::WeeklyTimeProto* end = interval_proto.mutable_end();
-  start->set_day_of_week(kWeekdays[start_day_of_week()]);
+  start->set_day_of_week(UNSAFE_TODO(kWeekdays[start_day_of_week()]));
   start->set_time(start_time());
-  end->set_day_of_week(kWeekdays[start_day_of_week()]);
+  end->set_day_of_week(UNSAFE_TODO(kWeekdays[start_day_of_week()]));
   end->set_time(start_time());
   auto result = WeeklyTimeInterval::ExtractFromProto(interval_proto, 0);
   ASSERT_FALSE(result);
@@ -151,9 +147,9 @@ TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromProto_Valid) {
   em::WeeklyTimeIntervalProto interval_proto;
   em::WeeklyTimeProto* start = interval_proto.mutable_start();
   em::WeeklyTimeProto* end = interval_proto.mutable_end();
-  start->set_day_of_week(kWeekdays[start_day_of_week()]);
+  start->set_day_of_week(UNSAFE_TODO(kWeekdays[start_day_of_week()]));
   start->set_time(start_time());
-  end->set_day_of_week(kWeekdays[end_day_of_week()]);
+  end->set_day_of_week(UNSAFE_TODO(kWeekdays[end_day_of_week()]));
   end->set_time(end_time());
   auto result = WeeklyTimeInterval::ExtractFromProto(interval_proto, 0);
   ASSERT_TRUE(result);

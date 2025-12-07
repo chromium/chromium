@@ -39,7 +39,7 @@ struct RequestAction {
     // The name of the header to be modified, specified in lowercase.
     std::string header;
     api::declarative_net_request::HeaderOperation operation;
-    // The value for |header| to be appended or set.
+    // The value for `header` to be appended or set.
     std::optional<std::string> value;
   };
 
@@ -92,7 +92,7 @@ struct RequestAction {
   // The id of the extension the action is attributed to.
   ExtensionId extension_id;
 
-  // Valid iff |type| is |MODIFY_HEADERS|.
+  // Valid iff `type` is `MODIFY_HEADERS`.
   // TODO(crbug.com/40686893): Constructing these vectors could involve lots of
   // string copies. One potential enhancement involves storing a WeakPtr to the
   // flatbuffer index that contain the actual header strings.
@@ -118,8 +118,8 @@ struct RequestAction {
   RequestAction(const RequestAction&);
 };
 
-// Compares RequestAction by |index_priority|, breaking ties by |ruleset_id|
-// then |rule_id|.
+// Compares RequestAction by `index_priority`, breaking ties by `ruleset_id`
+// then `rule_id`.
 bool operator<(const RequestAction& lhs, const RequestAction& rhs);
 bool operator>(const RequestAction& lhs, const RequestAction& rhs);
 

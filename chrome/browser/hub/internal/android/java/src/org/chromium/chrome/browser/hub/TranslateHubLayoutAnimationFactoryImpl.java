@@ -8,11 +8,12 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.hub.HubColorMixer.StateChange;
 import org.chromium.ui.interpolators.Interpolators;
 
 /** Implementation of {@link TranslateHubLayoutAnimationFactory}. */
+@NullMarked
 public class TranslateHubLayoutAnimationFactoryImpl {
 
     /**
@@ -21,8 +22,9 @@ public class TranslateHubLayoutAnimationFactoryImpl {
      * long)}.
      */
     public static HubLayoutAnimatorProvider createTranslateUpAnimatorProvider(
-            @NonNull HubContainerView hubContainerView,
-            @NonNull ScrimController scrimController,
+            HubColorMixer colorMixer,
+            HubContainerView hubContainerView,
+            ScrimController scrimController,
             long durationMs,
             float yOffset) {
         AnimatorSet animatorSet = new AnimatorSet();
@@ -40,7 +42,7 @@ public class TranslateHubLayoutAnimationFactoryImpl {
                         ObjectAnimator animator =
                                 ObjectAnimator.ofFloat(
                                         hubContainerView,
-                                        View.TRANSLATION_Y,
+                                        View.Y,
                                         hubContainerView.getHeight(),
                                         yOffset);
                         animator.setInterpolator(Interpolators.EMPHASIZED_DECELERATE);
@@ -48,6 +50,13 @@ public class TranslateHubLayoutAnimationFactoryImpl {
                         animatorSet.play(animator);
 
                         scrimController.startShowingScrim();
+                    }
+
+                    @Override
+                    public void onEnd(boolean wasForcedToFinish) {
+                        scrimController.startHidingScrim();
+                        colorMixer.processStateChange(
+                                StateChange.TRANSLATE_UP_TABLET_ANIMATION_END);
                     }
 
                     @Override
@@ -67,16 +76,14 @@ public class TranslateHubLayoutAnimationFactoryImpl {
      * long)}.
      */
     public static HubLayoutAnimatorProvider createTranslateDownAnimatorProvider(
-            @NonNull HubContainerView hubContainerView,
-            @NonNull ScrimController scrimController,
+            HubColorMixer colorMixer,
+            HubContainerView hubContainerView,
+            ScrimController scrimController,
             long durationMs,
             float yOffset) {
         ObjectAnimator animator =
                 ObjectAnimator.ofFloat(
-                        hubContainerView,
-                        View.TRANSLATION_Y,
-                        yOffset,
-                        hubContainerView.getHeight());
+                        hubContainerView, View.Y, yOffset, hubContainerView.getHeight());
         animator.setInterpolator(Interpolators.EMPHASIZED_ACCELERATE);
         animator.setDuration(durationMs);
 
@@ -88,6 +95,12 @@ public class TranslateHubLayoutAnimationFactoryImpl {
                     @Override
                     public void beforeStart() {
                         scrimController.startHidingScrim();
+                    }
+
+                    @Override
+                    public void onStart() {
+                        colorMixer.processStateChange(
+                                StateChange.TRANSLATE_DOWN_TABLET_ANIMATION_START);
                     }
 
                     @Override

@@ -15,15 +15,25 @@ class Highlight;
 struct HighlightRegistryMapEntry final
     : public GarbageCollected<HighlightRegistryMapEntry> {
   HighlightRegistryMapEntry(const AtomicString& highlight_name,
-                            Member<Highlight> highlight)
-      : highlight(highlight), highlight_name(highlight_name) {}
+                            Member<Highlight> highlight,
+                            uint64_t registration_position)
+      : highlight(highlight),
+        highlight_name(highlight_name),
+        registration_position(registration_position) {}
   explicit HighlightRegistryMapEntry(const HighlightRegistryMapEntry* entry)
-      : HighlightRegistryMapEntry(entry->highlight_name, entry->highlight) {}
+      : HighlightRegistryMapEntry(entry->highlight_name,
+                                  entry->highlight,
+                                  entry->registration_position) {}
 
   void Trace(blink::Visitor* visitor) const { visitor->Trace(highlight); }
 
   Member<Highlight> highlight = nullptr;
   AtomicString highlight_name = g_null_atom;
+
+  // Used to break ties when comparing two Highlights for precedence. This
+  // number means |highlight| was the |registration_position|-th Highlight
+  // registered in the HighlightRegistry.
+  uint64_t registration_position = 0;
 };
 
 // Translator used for looking up a HighlightRegistryMapEntry using only the
@@ -32,7 +42,7 @@ struct HighlightRegistryMapEntryNameTranslator {
   STATIC_ONLY(HighlightRegistryMapEntryNameTranslator);
 
   static unsigned GetHash(const AtomicString& name) {
-    return WTF::GetHash(name);
+    return blink::GetHash(name);
   }
   static bool Equal(const HighlightRegistryMapEntry* entry,
                     const AtomicString& name) {
@@ -41,33 +51,27 @@ struct HighlightRegistryMapEntryNameTranslator {
   }
 };
 
-}  // namespace blink
-
-namespace WTF {
-
 template <>
-struct HashTraits<blink::Member<blink::HighlightRegistryMapEntry>>
-    : MemberHashTraits<blink::HighlightRegistryMapEntry> {
+struct HashTraits<Member<HighlightRegistryMapEntry>>
+    : MemberHashTraits<HighlightRegistryMapEntry> {
   // Note that GetHash and Equal only take into account the |highlight_name|
   // because |HighlightRegistryMapEntry| is used for storing map entries
   // inside a set (i.e. there can only be one map entry in the set with the
   // same key which is |highlight_name|).
-  static inline unsigned GetHash(
-      const blink::Member<blink::HighlightRegistryMapEntry>& key) {
+  static inline unsigned GetHash(const Member<HighlightRegistryMapEntry>& key) {
     DCHECK(key);
-    return WTF::GetHash(key->highlight_name);
+    return blink::GetHash(key->highlight_name);
   }
-  static inline bool Equal(
-      const blink::Member<blink::HighlightRegistryMapEntry>& a,
-      const blink::Member<blink::HighlightRegistryMapEntry>& b) {
+  static inline bool Equal(const Member<HighlightRegistryMapEntry>& a,
+                           const Member<HighlightRegistryMapEntry>& b) {
     DCHECK(a && b);
-    return HashTraits<AtomicString>::Equal(a->highlight_name,
-                                           b->highlight_name);
+    return HashTraits<blink::AtomicString>::Equal(a->highlight_name,
+                                                  b->highlight_name);
   }
 
   static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HIGHLIGHT_HIGHLIGHT_REGISTRY_MAP_ENTRY_H_

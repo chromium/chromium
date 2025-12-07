@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/label_button.h"
@@ -74,13 +75,16 @@ std::u16string GetArrowName(BubbleBorder::Arrow arrow) {
   return u"INVALID";
 }
 
+}  // namespace
+
 class ExampleBubble : public BubbleDialogDelegateView {
   METADATA_HEADER(ExampleBubble, BubbleDialogDelegateView)
 
  public:
   ExampleBubble(View* anchor, BubbleBorder::Arrow arrow)
       : BubbleDialogDelegateView(anchor, arrow) {
-    DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
+    DialogDelegate::SetButtons(
+        static_cast<int>(ui::mojom::DialogButton::kNone));
   }
 
   ExampleBubble(const ExampleBubble&) = delete;
@@ -89,7 +93,7 @@ class ExampleBubble : public BubbleDialogDelegateView {
  protected:
   void Init() override {
     SetLayoutManager(std::make_unique<BoxLayout>(
-        BoxLayout::Orientation::kVertical, gfx::Insets(50)));
+        BoxLayout::Orientation::kVertical, gfx::Insets(30)));
     AddChildView(std::make_unique<Label>(GetArrowName(arrow())));
   }
 };
@@ -97,15 +101,16 @@ class ExampleBubble : public BubbleDialogDelegateView {
 BEGIN_METADATA(ExampleBubble)
 END_METADATA
 
-}  // namespace
-
 BubbleExample::BubbleExample() : ExampleBase("Bubble") {}
 
 BubbleExample::~BubbleExample() = default;
 
 void BubbleExample::CreateExampleView(View* container) {
-  container->SetLayoutManager(std::make_unique<BoxLayout>(
-      BoxLayout::Orientation::kHorizontal, gfx::Insets(), 10));
+  auto* const box_layout =
+      container->SetLayoutManager(std::make_unique<BoxLayout>(
+          BoxLayout::Orientation::kHorizontal, gfx::Insets(), 10));
+  box_layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kCenter);
+  box_layout->set_main_axis_alignment(BoxLayout::MainAxisAlignment::kCenter);
 
   standard_shadow_ = container->AddChildView(std::make_unique<LabelButton>(
       base::BindRepeating(&BubbleExample::ShowBubble, base::Unretained(this),
@@ -130,23 +135,23 @@ void BubbleExample::ShowBubble(raw_ptr<Button>* button,
   static const int count = std::size(arrows);
   arrow_index = (arrow_index + count + (event.IsShiftDown() ? -1 : 1)) % count;
   BubbleBorder::Arrow arrow = arrows[arrow_index];
-  if (event.IsControlDown())
+  if (event.IsControlDown()) {
     arrow = BubbleBorder::NONE;
-  else if (event.IsAltDown())
+  } else if (event.IsAltDown()) {
     arrow = BubbleBorder::FLOAT;
+  }
 
-  auto* provider = (*button)->GetColorProvider();
   // |bubble| will be destroyed by its widget when the widget is destroyed.
   auto bubble = std::make_unique<ExampleBubble>(*button, arrow);
-  bubble->set_color(
-      provider->GetColor(colors[(color_index++) % std::size(colors)]));
+  bubble->SetBackgroundColor(colors[(color_index++) % std::size(colors)]);
   bubble->set_shadow(shadow);
-  if (persistent)
+  if (persistent) {
     bubble->set_close_on_deactivate(false);
+  }
 
   BubbleDialogDelegateView::CreateBubble(std::move(bubble))->Show();
 
-  LogStatus(
+  PrintStatus(
       "Click with optional modifiers: [Ctrl] for set_arrow(NONE), "
       "[Alt] for set_arrow(FLOAT), or [Shift] to reverse the arrow iteration.");
 }

@@ -5,7 +5,7 @@
 #ifndef GOOGLE_APIS_GCM_ENGINE_GCM_REQUEST_TEST_BASE_H_
 #define GOOGLE_APIS_GCM_ENGINE_GCM_REQUEST_TEST_BASE_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "net/base/backoff_entry.h"
 #include "services/network/test/test_url_loader_factory.h"

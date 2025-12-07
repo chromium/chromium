@@ -17,6 +17,7 @@
 #include "content/web_test/renderer/text_input_controller.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/test/frame_widget_test_helper.h"
@@ -46,9 +47,6 @@ class WebFrameTestProxy : public RenderFrameImpl,
   // RenderFrameImpl overrides.
   void Initialize(blink::WebFrame* parent) override;
 
-  // Reset state between tests.
-  void Reset();
-
   // Returns a frame name that can be used in the output of web tests
   // (the name is derived from the frame's unique name).
   std::string GetFrameNameForWebTests();
@@ -76,19 +74,23 @@ class WebFrameTestProxy : public RenderFrameImpl,
       const blink::ContextMenuData& context_menu_data,
       const std::optional<gfx::Point>&) override;
   void DidDispatchPingLoader(const blink::WebURL& url) override;
-  void WillSendRequest(blink::WebURLRequest& request,
-                       ForRedirect for_redirect,
-                       const blink::WebURL& upstream_url) override;
+  std::optional<blink::WebURL> WillSendRequest(
+      const blink::WebURL& target,
+      const blink::WebSecurityOrigin& security_origin,
+      const net::SiteForCookies& site_for_cookies,
+      ForRedirect for_redirect,
+      const blink::WebURL& upstream_url) override;
+  void FinalizeRequest(blink::WebURLRequest& request) override;
   void BeginNavigation(std::unique_ptr<blink::WebNavigationInfo> info) override;
   void PostAccessibilityEvent(const ui::AXEvent& event) override;
-  void CheckIfAudioSinkExistsAndIsAuthorized(
-      const blink::WebString& sink_id,
-      blink::WebSetSinkIdCompleteCallback completion_callback) override;
+  std::optional<media::OutputDeviceStatus>
+  CheckIfAudioSinkExistsAndIsAuthorized(
+      const blink::WebString& sink_id) override;
   void DidClearWindowObject() override;
   void DidCommitNavigation(
       blink::WebHistoryCommitType commit_type,
       bool should_reset_browser_interface_broker,
-      const blink::ParsedPermissionsPolicy& permissions_policy_header,
+      const network::ParsedPermissionsPolicy& permissions_policy_header,
       const blink::DocumentPolicyFeatureState& document_policy_header) override;
   void HandleAXObjectDetachedForTest(unsigned axid) override;
   void HandleWebAccessibilityEventForTest(

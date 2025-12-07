@@ -59,6 +59,11 @@ class HelpAppUIDelegate {
   // process to crash.
   virtual std::optional<std::string> OpenUrlInBrowserAndTriggerInstallDialog(
       const GURL& url) = 0;
+
+  // Open an os settings of a specified settings component. If a specified
+  // component is not available on a device, it is handled as no-op.
+  virtual void OpenSettings(
+      ash::help_app::mojom::SettingsComponent component) = 0;
 };
 
 }  // namespace ash

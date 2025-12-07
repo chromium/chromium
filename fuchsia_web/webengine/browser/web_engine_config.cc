@@ -5,6 +5,7 @@
 #include "fuchsia_web/webengine/browser/web_engine_config.h"
 
 #include <string_view>
+#include <vector>
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
@@ -12,9 +13,12 @@
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/embedder_support/switches.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/viz/common/features.h"
@@ -25,11 +29,13 @@
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/config/gpu_switches.h"
 #include "media/base/media_switches.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/widevine/cdm/buildflags.h"
 #include "ui/display/display_switches.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/ozone/public/ozone_switches.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -51,14 +57,15 @@ bool IsProtectedMemorySupported() {
 // `value`, otherwise the switch will be set to `value`.
 void AppendToSwitch(std::string_view switch_name,
                     std::string_view value,
-                    base::CommandLine* command_line) {
+                    base::CommandLine* command_line,
+                    std::string_view separator = ",") {
   if (!command_line->HasSwitch(switch_name)) {
     command_line->AppendSwitchNative(switch_name, value);
     return;
   }
 
   std::string new_value = base::StrCat(
-      {command_line->GetSwitchValueASCII(switch_name), ",", value});
+      {command_line->GetSwitchValueASCII(switch_name), separator, value});
   command_line->RemoveSwitch(switch_name);
   command_line->AppendSwitchNative(switch_name, new_value);
 }
@@ -71,11 +78,11 @@ bool AddCommandLineArgsFromConfig(const base::Value::Dict& config,
   }
 
   static const std::string_view kAllowedArgs[] = {
-      blink::switches::kSharedArrayBufferAllowedOrigins,
       blink::switches::kGpuRasterizationMSAASampleCount,
       blink::switches::kMinHeightForGpuRasterTile,
-      cc::switches::kEnableClippedImageScaling,
-      cc::switches::kEnableGpuBenchmarking,
+      blink::switches::kForceGpuMemAvailableMb,
+      switches::kEnableClippedImageScaling,
+      switches::kEnableGpuBenchmarking,
       embedder_support::kOriginTrialPublicKey,
       embedder_support::kOriginTrialDisabledFeatures,
       switches::kDisableFeatures,
@@ -87,7 +94,6 @@ bool AddCommandLineArgsFromConfig(const base::Value::Dict& config,
       switches::kEnableFeatures,
       switches::kEnableLowEndDeviceMode,
       switches::kForceDeviceScaleFactor,
-      switches::kForceGpuMemAvailableMb,
       switches::kForceGpuMemDiscardableLimitMb,
       switches::kForceMaxTextureSize,
       switches::kGoogleApiKey,
@@ -103,6 +109,7 @@ bool AddCommandLineArgsFromConfig(const base::Value::Dict& config,
       switches::kVulkanSyncCpuMemoryLimitMb,
       switches::kWebglAntialiasingMode,
       switches::kWebglMSAASampleCount,
+      switches::kProtectedServiceWorkers,
   };
 
   for (const auto arg : *args) {
@@ -150,7 +157,27 @@ bool AddCommandLineArgsFromConfig(const base::Value::Dict& config,
   AppendToSwitch(switches::kDisableFeatures, features::kWebRtcHWDecoding.name,
                  command_line);
 
+  // Disable kLocalNetworkAccessChecks until fuchsia-dir:// is supported.
+  // TODO(crbug.com/451700528): Re-enable kLocalNetworkAccessChecks.
+  AppendToSwitch(switches::kDisableFeatures,
+                 network::features::kLocalNetworkAccessChecks.name,
+                 command_line);
+
   return true;
+}
+
+// Returns a list of ContentSettingsPattern from command line
+// --protected-service-workers.
+std::vector<ContentSettingsPattern> GetProtectedServiceWorkers() {
+  const auto tokens = base::SplitString(
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kProtectedServiceWorkers),
+      ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  std::vector<ContentSettingsPattern> patterns;
+  for (const auto& token : tokens) {
+    patterns.push_back(ContentSettingsPattern::FromString(token));
+  }
+  return patterns;
 }
 
 }  // namespace
@@ -193,5 +220,42 @@ bool UpdateCommandLineFromConfigFile(const base::Value::Dict& config,
   command_line->AppendSwitchASCII(switches::kEnableHardwareOverlays,
                                   "underlay");
 
+  std::optional<int> max_old_space =
+      config.FindInt("js-heap-max-old-space-size");
+  if (max_old_space) {
+    AppendToSwitch(
+        blink::switches::kJavaScriptFlags,
+        "--max_old_space_size=" + base::NumberToString(max_old_space.value()),
+        command_line, " ");
+  }
+
+  std::optional<int> max_semi_space =
+      config.FindInt("js-heap-max-semi-space-size");
+  if (max_semi_space) {
+    AppendToSwitch(
+        blink::switches::kJavaScriptFlags,
+        "--max_semi_space_size=" + base::NumberToString(max_semi_space.value()),
+        command_line, " ");
+  }
+
   return true;
+}
+
+bool IsProtectedServiceWorker(const GURL& scope) {
+  static const auto protected_service_workers = GetProtectedServiceWorkers();
+  for (const auto& pattern : protected_service_workers) {
+    if (pattern.Matches(scope)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool AllowNotifications(const GURL& origin) {
+  // The hardware spec of smart displays is fairly low and can easily trigger
+  // the teardown of service workers. Without being protected, allowing the
+  // service worker using longliving functionalities like PushMessagingAPI or
+  // Notification permission as the dependency of PushMessagingAPI doesn't make
+  // sense.
+  return IsProtectedServiceWorker(origin);
 }

@@ -5,8 +5,9 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 
-assert(enable_extensions,
-       "Cannot depend on extensions because enable_extensions=false.")
+assert(enable_extensions_core,
+       "Cannot depend on extensions because enable_extensions_core=false.")
+assert(!is_fuchsia, "Fuchsia does not support extensions.")
 
 source_set("system_cpu") {
   sources = [
@@ -18,31 +19,26 @@ source_set("system_cpu") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
-    "//build:chromeos_buildflags",
+  public_deps = [
+    "//base",
+    "//extensions/browser:browser_sources",
     "//extensions/browser/api/system_info",
     "//extensions/common/api",
   ]
 
-  if (is_fuchsia) {
-    sources += [ "cpu_info_provider_fuchsia.cc" ]
+  if (is_chromeos) {
+    deps = [ "//chromeos/system" ]
   }
 
   if (is_mac) {
     sources += [ "cpu_info_provider_mac.cc" ]
   }
 
-  if (is_linux || is_chromeos) {
+  if (is_linux || is_chromeos || enable_desktop_android_extensions) {
     sources += [ "cpu_info_provider_linux.cc" ]
   }
 
   if (is_win) {
     sources += [ "cpu_info_provider_win.cc" ]
   }
-
-  if (is_chromeos) {
-    deps += [ "//chromeos/system" ]
-  }
-
-  public_deps = [ "//extensions/browser:browser_sources" ]
 }

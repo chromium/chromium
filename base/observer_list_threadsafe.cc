@@ -3,14 +3,13 @@
 // found in the LICENSE file.
 
 #include "base/observer_list_threadsafe.h"
+
 #include "base/compiler_specific.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
-ABSL_CONST_INIT thread_local const ObserverListThreadSafeBase::
-    NotificationDataBase* current_notification = nullptr;
+constinit thread_local const ObserverListThreadSafeBase::NotificationDataBase*
+    current_notification = nullptr;
 
 // static
 const ObserverListThreadSafeBase::NotificationDataBase*&
@@ -25,5 +24,4 @@ ObserverListThreadSafeBase::GetCurrentNotification() {
   return current_notification;
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

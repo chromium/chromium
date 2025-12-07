@@ -38,9 +38,7 @@ void LogAction(SafeBrowsingTriggeredPopupBlocker::Action action) {
 
 using safe_browsing::SubresourceFilterLevel;
 
-BASE_FEATURE(kAbusiveExperienceEnforce,
-             "AbusiveExperienceEnforce",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAbusiveExperienceEnforce, base::FEATURE_ENABLED_BY_DEFAULT);
 
 SafeBrowsingTriggeredPopupBlocker::PageData::PageData(content::Page& page)
     : PageUserData(page) {}

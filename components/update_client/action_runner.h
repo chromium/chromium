@@ -5,43 +5,24 @@
 #ifndef COMPONENTS_UPDATE_CLIENT_ACTION_RUNNER_H_
 #define COMPONENTS_UPDATE_CLIENT_ACTION_RUNNER_H_
 
-#include "base/functional/callback.h"
-#include "base/memory/raw_ref.h"
-#include "base/sequence_checker.h"
-#include "components/update_client/update_client.h"
+#include <string>
 
-namespace base {
-class FilePath;
-class SequencedTaskRunner;
-}  // namespace base
+#include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/values.h"
+#include "components/update_client/update_client.h"
 
 namespace update_client {
 
-class Component;
-
-class ActionRunner {
- public:
-  using Callback = ActionHandler::Callback;
-
-  explicit ActionRunner(const Component& component);
-  ~ActionRunner();
-  ActionRunner(const ActionRunner&) = delete;
-  ActionRunner& operator=(const ActionRunner&) = delete;
-
-  void Run(Callback run_complete);
-
- private:
-  void Handle(const base::FilePath& crx_path);
-
-  SEQUENCE_CHECKER(sequence_checker_);
-
-  const raw_ref<const Component> component_;
-
-  // Used to post callbacks to the main sequence.
-  scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
-
-  Callback callback_;
-};
+// Runs an action. Returns a cancellation callback.
+base::OnceClosure RunAction(
+    scoped_refptr<ActionHandler> handler,
+    scoped_refptr<CrxInstaller> installer,
+    const std::string& file,
+    const std::string& session_id,
+    base::RepeatingCallback<void(base::Value::Dict)> event_adder,
+    base::RepeatingCallback<void(ComponentState)> state_tracker,
+    ActionHandler::Callback callback);
 
 }  // namespace update_client
 

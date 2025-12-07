@@ -18,31 +18,6 @@
 #include "ui/gfx/image/image.h"
 #include "ui/snapshot/snapshot_mac.h"
 
-// TODO: Remove when Chromium is built against the macOS 14.4 SDK or newer.
-#if !defined(MAC_OS_VERSION_14_4)
-
-@interface SCShareableContent (NewAPI)
-+ (void)getCurrentProcessShareableContentWithCompletionHandler:
-    (void (^)(SCShareableContent* _Nullable shareableContent,
-              NSError* _Nullable error))completionHandler
-    API_AVAILABLE(macos(14.4));
-@end
-
-@interface SCStreamConfiguration (NewAPI)
-@property(nonatomic, assign) BOOL includeChildWindows API_AVAILABLE(macos(14.2))
-    ;
-@end
-
-#endif  // !defined(MAC_OS_VERSION_14_4)
-
-// The API that allows an app TCC-less access to its own windows is new in macOS
-// 14.4. While this has been tested extensively on 14.4 betas, because this is a
-// new API added in an OS dot release, have a "break in case of emergency" off-
-// switch.
-BASE_FEATURE(kUseScreenCaptureKitForSnapshots,
-             "UseScreenCaptureKitForSnapshots",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace ui {
 
 namespace {
@@ -140,13 +115,13 @@ gfx::Image GrabViewSnapshotCGWindowListImpl(gfx::NativeView native_view,
   NSView* view = native_view.GetNativeNSView();
   NSWindow* window = view.window;
   NSScreen* screen = NSScreen.screens.firstObject;
-  gfx::Rect screen_bounds = gfx::Rect(NSRectToCGRect(screen.frame));
+  gfx::Rect screen_bounds(screen.frame);
 
   // Get the view bounds relative to the screen.
   NSRect frame = [view convertRect:view.bounds toView:nil];
   frame = [window convertRectToScreen:frame];
 
-  gfx::Rect view_bounds = gfx::Rect(NSRectToCGRect(frame));
+  gfx::Rect view_bounds(frame);
 
   // Flip window coordinates based on the primary screen.
   view_bounds.set_y(screen_bounds.height() - view_bounds.y() -
@@ -173,11 +148,18 @@ gfx::Image GrabViewSnapshotCGWindowListImpl(gfx::NativeView native_view,
 }
 
 bool ShouldForceOldAPIUse() {
-  // The SCK API -[SCShareableContent
-  // getCurrentProcessShareableContentWithCompletionHandler:] does not work
-  // correctly when there are multiple instances of an app with the same bundle
-  // ID. It must not be used in that case, as it can return errors, hang, or
-  // crash. https://crbug.com/333443445, FB13717818
+  // The SCK API +[SCShareableContent
+  // getCurrentProcessShareableContentWithCompletionHandler:] was introduced in
+  // macOS 14.4, but it did not work correctly when there were multiple
+  // instances of an app with the same bundle ID.
+  //
+  // This is fixed in macOS 15.
+  //
+  // https://crbug.com/333443445, FB13717818
+  if (base::mac::MacOSVersion() >= 15'00'00) {
+    return false;
+  }
+
   return [NSRunningApplication
              runningApplicationsWithBundleIdentifier:NSBundle.mainBundle
                                                          .bundleIdentifier]
@@ -198,7 +180,7 @@ void GrabWindowSnapshot(gfx::NativeWindow native_window,
   // tabstrip.
   NSView* view = native_window.GetNativeNSWindow().contentView.superview;
 
-  GrabViewSnapshot(view, source_rect, std::move(callback));
+  GrabViewSnapshot(gfx::NativeView(view), source_rect, std::move(callback));
 }
 
 void GrabViewSnapshot(gfx::NativeView view,
@@ -206,13 +188,17 @@ void GrabViewSnapshot(gfx::NativeView view,
                       GrabSnapshotImageCallback callback) {
   SnapshotAPI api = g_snapshot_api;
   if (api == SnapshotAPI::kUnspecified) {
-    if (base::mac::MacOSVersion() >= 14'04'00 &&
-        base::FeatureList::IsEnabled(kUseScreenCaptureKitForSnapshots) &&
-        !ShouldForceOldAPIUse()) {
+    if (base::mac::MacOSVersion() >= 14'04'00 && !ShouldForceOldAPIUse()) {
       api = SnapshotAPI::kNewAPI;
     } else {
       api = SnapshotAPI::kOldAPI;
     }
+  }
+
+  // On macOS 26, the CGWindowList API is not supported for snapshots - in
+  // existing tests, no screenshot is returned when using the CGWindowList API.
+  if (base::mac::MacOSVersion() >= 26'00'00) {
+    api = SnapshotAPI::kNewAPI;
   }
 
   if (@available(macOS 14.4, *)) {

@@ -1,0 +1,31 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #include=cr-hidden-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+cr-page-selector {
+  flex: 1;
+  overflow: hidden;
+}
+
+cr-page-selector > * {
+  display: block;
+  height: 100%;
+  overflow: auto;
+}
+
+graph-tab {
+  overflow: hidden;
+}

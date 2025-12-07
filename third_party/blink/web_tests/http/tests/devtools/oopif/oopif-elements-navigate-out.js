@@ -22,23 +22,16 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
   SDK.TargetManager.TargetManager.instance().observeTargets({
     targetAdded: async function(target) {
-      if (!target.model(SDK.ResourceTreeModel.ResourceTreeModel)) return;
-      target.model(SDK.ResourceTreeModel.ResourceTreeModel).agent.setLifecycleEventsEnabled(true);
-      let loadedModels = 0;
-      target.model(SDK.ResourceTreeModel.ResourceTreeModel).addEventListener(SDK.ResourceTreeModel.Events.LifecycleEvent, async (event) => {
-        if (event.data.name === 'load') {
-          loadedModels++;
+      const resourceTreeModel = target.model(SDK.ResourceTreeModel.ResourceTreeModel);
+      if (!resourceTreeModel) return;
+      await resourceTreeModel.once(SDK.ResourceTreeModel.Events.DOMContentLoaded);
 
-          if (loadedModels >= 2) {
-            ElementsTestRunner.expandElementsTree(async () => {
-              // Because of the out-of-process component, there is a slight delay here
-              // This requires expanding twice.
-              await timeout(200);
-              await ElementsTestRunner.expandAndDump();
-              TestRunner.completeTest();
-            });
-          }
-        }
+      ElementsTestRunner.expandElementsTree(async () => {
+        // Because of the out-of-process component, there is a slight delay here
+        // This requires expanding twice.
+        await timeout(200);
+        await ElementsTestRunner.expandAndDump();
+        TestRunner.completeTest();
       });
     },
 

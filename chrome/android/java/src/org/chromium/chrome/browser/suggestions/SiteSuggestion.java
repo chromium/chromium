@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.suggestions;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.suggestions.tile.TileSectionType;
 import org.chromium.chrome.browser.suggestions.tile.TileSource;
 import org.chromium.chrome.browser.suggestions.tile.TileTitleSource;
 import org.chromium.url.GURL;
 
 /** Data class that holds the site suggestion data provided by the tiles component. */
+@NullMarked
 public class SiteSuggestion {
     public static final int INVALID_FAVICON_ID = -1;
 
@@ -23,7 +25,7 @@ public class SiteSuggestion {
     @TileTitleSource public final int titleSource;
 
     /** the {@code TileSource} that generated the tile. */
-    @TileSource public final int source;
+    @TileSource.EnumType public final int source;
 
     /**
      * The {@link org.chromium.chrome.browser.suggestions.tile.TileSectionType} the tile is
@@ -42,7 +44,7 @@ public class SiteSuggestion {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof SiteSuggestion)) return false;
 
         SiteSuggestion that = (SiteSuggestion) o;
 

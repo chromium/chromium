@@ -11,8 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "extensions/browser/api/socket/socket_api.h"
 #include "extensions/common/api/sockets_udp.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace extensions {
 class ResumableUDPSocket;

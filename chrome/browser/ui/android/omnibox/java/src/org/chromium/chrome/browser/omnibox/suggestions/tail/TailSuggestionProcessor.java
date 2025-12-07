@@ -4,39 +4,35 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.tail;
 
-import android.content.Context;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
-import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.Optional;
-
 /** A class that handles model and view creation for the tail suggestions. */
+@NullMarked
 public class TailSuggestionProcessor extends BaseSuggestionViewProcessor {
     private final boolean mAlignTailSuggestions;
     private @Nullable AlignmentManager mAlignmentManager;
 
     /**
-     * @param context An Android context.
-     * @param suggestionHost A handle to the object using the suggestions.
+     * @param uiContext Context object containing common UI dependencies.
      */
-    public TailSuggestionProcessor(
-            @NonNull Context context, @NonNull SuggestionHost suggestionHost) {
-        super(context, suggestionHost, Optional.empty());
-        mAlignTailSuggestions = DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
+    public TailSuggestionProcessor(AutocompleteUIContext uiContext) {
+        super(uiContext);
+        mAlignTailSuggestions =
+                DeviceFormFactor.isNonMultiDisplayContextOnTablet(uiContext.context);
     }
 
     @Override
-    public boolean doesProcessSuggestion(@NonNull AutocompleteMatch suggestion, int position) {
+    public boolean doesProcessSuggestion(AutocompleteMatch suggestion, int position) {
         return suggestion.getType() == OmniboxSuggestionType.SEARCH_SUGGEST_TAIL;
     }
 
@@ -46,14 +42,17 @@ public class TailSuggestionProcessor extends BaseSuggestionViewProcessor {
     }
 
     @Override
-    public @NonNull PropertyModel createModel() {
+    public PropertyModel createModel() {
         return new PropertyModel(TailSuggestionViewProperties.ALL_KEYS);
     }
 
     @Override
     public void populateModel(
-            @NonNull AutocompleteMatch suggestion, @NonNull PropertyModel model, int position) {
-        super.populateModel(suggestion, model, position);
+            AutocompleteInput input,
+            AutocompleteMatch suggestion,
+            PropertyModel model,
+            int position) {
+        super.populateModel(input, suggestion, model, position);
 
         model.set(TailSuggestionViewProperties.ALIGNMENT_MANAGER, mAlignmentManager);
         model.set(TailSuggestionViewProperties.FILL_INTO_EDIT, suggestion.getFillIntoEdit());
@@ -63,7 +62,7 @@ public class TailSuggestionProcessor extends BaseSuggestionViewProcessor {
         applyHighlightToMatchRegions(text, suggestion.getDisplayTextClassifications());
         model.set(TailSuggestionViewProperties.TEXT, text);
 
-        setTabSwitchOrRefineAction(model, suggestion, position);
+        setRemoveOrRefineAction(model, input, suggestion, position);
     }
 
     @Override

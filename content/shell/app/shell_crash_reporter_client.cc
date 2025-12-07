@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/public/common/content_switches.h"
@@ -19,6 +20,24 @@
 #endif
 
 namespace content {
+
+namespace {
+
+base::FilePath GetCrashDumpLocationInternal() {
+  base::FilePath default_dir;
+#if BUILDFLAG(IS_IOS)
+  CHECK(base::PathService::Get(base::DIR_CACHE, &default_dir));
+  default_dir = default_dir.Append("Crashpad");
+#endif  // BUILDFLAG(IS_IOS)
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kCrashDumpsDir)) {
+    return default_dir;
+  }
+  return base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+      switches::kCrashDumpsDir);
+}
+
+}  // namespace
 
 ShellCrashReporterClient::ShellCrashReporterClient() {}
 ShellCrashReporterClient::~ShellCrashReporterClient() {}
@@ -38,22 +57,6 @@ void ShellCrashReporterClient::GetProductNameAndVersion(
 #endif
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
-void ShellCrashReporterClient::GetProductNameAndVersion(
-    const char** product_name,
-    const char** version) {
-  *product_name = "content_shell";
-  *version = CONTENT_SHELL_VERSION;
-}
-
-void ShellCrashReporterClient::GetProductNameAndVersion(
-    std::string* product_name,
-    std::string* version,
-    std::string* channel) {
-  *product_name = "content_shell";
-  *version = CONTENT_SHELL_VERSION;
-  *channel = "";
-}
-
 base::FilePath ShellCrashReporterClient::GetReporterLogFilename() {
   return base::FilePath(FILE_PATH_LITERAL("uploads.log"));
 }
@@ -64,12 +67,10 @@ bool ShellCrashReporterClient::GetCrashDumpLocation(std::wstring* crash_dir) {
 #else
 bool ShellCrashReporterClient::GetCrashDumpLocation(base::FilePath* crash_dir) {
 #endif
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kCrashDumpsDir))
+  base::FilePath crash_directory = GetCrashDumpLocationInternal();
+  if (crash_directory.empty()) {
     return false;
-  base::FilePath crash_directory =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
-          switches::kCrashDumpsDir);
+  }
 #if BUILDFLAG(IS_WIN)
   *crash_dir = crash_directory.value();
 #else
@@ -78,16 +79,14 @@ bool ShellCrashReporterClient::GetCrashDumpLocation(base::FilePath* crash_dir) {
   return true;
 }
 
-#if BUILDFLAG(IS_ANDROID)
-int ShellCrashReporterClient::GetAndroidMinidumpDescriptor() {
-  return kAndroidMinidumpDescriptor;
+void ShellCrashReporterClient::GetProductInfo(ProductInfo* product_info) {
+  product_info->product_name = "content_shell";
+  product_info->version = CONTENT_SHELL_VERSION;
 }
-#endif
 
 bool ShellCrashReporterClient::EnableBreakpadForProcess(
     const std::string& process_type) {
   return process_type == switches::kRendererProcess ||
-         process_type == switches::kPpapiPluginProcess ||
          process_type == switches::kZygoteProcess ||
          process_type == switches::kGpuProcess;
 }

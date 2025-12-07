@@ -33,7 +33,7 @@ class CORE_EXPORT CSSPaintValue : public CSSImageGeneratorValue {
   // The |target_size| is container size with subpixel snapping when used
   // in the context of paint images.
   scoped_refptr<Image> GetImage(const ImageResourceObserver&,
-                                const Document&,
+                                const Node&,
                                 const ComputedStyle&,
                                 const gfx::SizeF& target_size);
 
@@ -46,7 +46,7 @@ class CORE_EXPORT CSSPaintValue : public CSSImageGeneratorValue {
   const Vector<AtomicString>* CustomInvalidationProperties(
       const Document&) const;
 
-  const CSSStyleValueVector* GetParsedInputArgumentsForTesting() {
+  const GCedCSSStyleValueVector* GetParsedInputArgumentsForTesting() {
     return parsed_input_arguments_.Get();
   }
   void BuildInputArgumentValuesForTesting(
@@ -101,7 +101,7 @@ class CORE_EXPORT CSSPaintValue : public CSSImageGeneratorValue {
   HeapHashMap<WeakMember<const Document>, Member<CSSPaintImageGenerator>>
       generators_;
   Member<Observer> paint_image_generator_observer_;
-  Member<CSSStyleValueVector> parsed_input_arguments_;
+  Member<GCedCSSStyleValueVector> parsed_input_arguments_;
   HeapVector<Member<CSSVariableData>> argument_variable_data_;
   enum class OffThreadPaintState { kUnknown, kOffThread, kMainThread };
   // Indicates whether this paint worklet is composited or not. kUnknown

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+  <item
+      android:state_selected="true"
+      android:color="@macro/chip_bg_selected_color" />
+  <item
+      android:color="?attr/colorSurfaceContainer" />
+</selector>

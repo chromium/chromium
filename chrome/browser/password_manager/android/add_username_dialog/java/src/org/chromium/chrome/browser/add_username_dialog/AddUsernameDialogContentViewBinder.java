@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.add_username_dialog;
 import static org.chromium.chrome.browser.add_username_dialog.AddUsernameDialogContentProperties.PASSWORD;
 import static org.chromium.chrome.browser.add_username_dialog.AddUsernameDialogContentProperties.USERNAME_CHANGED_CALLBACK;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
+@NullMarked
 class AddUsernameDialogContentViewBinder {
     static void bind(
             PropertyModel model, AddUsernameDialogContentView view, PropertyKey propertyKey) {

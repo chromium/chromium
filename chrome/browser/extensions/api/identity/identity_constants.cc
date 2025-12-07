@@ -4,6 +4,10 @@
 
 #include "chrome/browser/extensions/api/identity/identity_constants.h"
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
 
 namespace identity_constants {
@@ -26,12 +30,15 @@ const char kOffTheRecord[] = "Identity API is disabled in incognito windows.";
 const char kPageLoadFailure[] = "Authorization page could not be loaded.";
 const char kPageLoadTimedOut[] = "Authorization page load timed out.";
 const char kInvalidConsentResult[] = "Returned an invalid consent result.";
-const char kCanceled[] = "canceled";
+const char kCannotSetRemoteConsentResolutionCookies[] =
+    "Couldn't set up remote consent resolution cookies to display an "
+    "authorization page";
 const char kCannotCreateWindow[] =
     "Couldn't create a browser window to display an authorization page.";
 const char kInvalidURLScheme[] =
     "The auth url has an invalid scheme. Only http:// and https:// schemes are "
     "allowed.";
+const char kBrowserContextShutDown[] = "The browser context has been shut down";
 
 const int kCachedRemoteConsentTTLSeconds = 1;
 }  // namespace identity_constants

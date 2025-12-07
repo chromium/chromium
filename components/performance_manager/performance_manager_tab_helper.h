@@ -16,6 +16,7 @@
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom-forward.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -59,19 +60,29 @@ class PerformanceManagerTabHelper
   // and vice-versa.
   void SetDestructionObserver(DestructionObserver* destruction_observer);
 
-  // Must be invoked prior to detaching a PerformanceManagerTabHelper from its
-  // WebContents.
-  void TearDown();
+  // Detaches the tab helper from the WebContents and deletes it. This must be
+  // used instead of calling WebContents::RemoveUserData directly to be sure
+  // resources are cleaned up in the right order.
+  void TearDownAndSelfDelete();
 
   // WebContentsObserver overrides.
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameHostChanged(content::RenderFrameHost* old_host,
                               content::RenderFrameHost* new_host) override;
+  void RenderFrameHostStateChanged(
+      content::RenderFrameHost* render_frame_host,
+      content::RenderFrameHost::LifecycleState old_state,
+      content::RenderFrameHost::LifecycleState new_state) override;
+  void OnVisibilityWillChange(content::Visibility visibility) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
   void OnAudioStateChanged(bool audible) override;
   void OnFrameAudioStateChanged(content::RenderFrameHost* render_frame_host,
                                 bool is_audible) override;
+  void OnRemoteSubframeViewportIntersectionStateChanged(
+      content::RenderFrameHost* render_frame_host,
+      const blink::mojom::ViewportIntersectionState&
+          viewport_intersection_state) override;
   void OnFrameVisibilityChanged(
       content::RenderFrameHost* render_frame_host,
       blink::mojom::FrameVisibility visibility) override;
@@ -83,9 +94,9 @@ class PerformanceManagerTabHelper
   void FrameReceivedUserActivation(
       content::RenderFrameHost* render_frame_host) override;
   void TitleWasSet(content::NavigationEntry* entry) override;
-  void InnerWebContentsAttached(content::WebContents* inner_web_contents,
-                                content::RenderFrameHost* render_frame_host,
-                                bool is_full_page) override;
+  void InnerWebContentsAttached(
+      content::WebContents* inner_web_contents,
+      content::RenderFrameHost* render_frame_host) override;
   void WebContentsDestroyed() override;
   void DidUpdateFaviconURL(
       content::RenderFrameHost* render_frame_host,
@@ -103,7 +114,8 @@ class PerformanceManagerTabHelper
 
   // Retrieves the frame node associated with |render_frame_host|. Returns
   // nullptr if none exist for that frame.
-  FrameNodeImpl* GetFrameNode(content::RenderFrameHost* render_frame_host);
+  FrameNodeImpl* GetFrameNode(
+      content::RenderFrameHost* render_frame_host) const;
 
   class Observer : public base::CheckedObserver {
    public:
@@ -138,8 +150,8 @@ class PerformanceManagerTabHelper
 
   // Callback invoked when the current main frame's notification permission
   // status changes.
-  void OnNotificationPermissionStatusChange(
-      blink::mojom::PermissionStatus permission_status);
+  void OnNotificationPermissionResultChange(
+      content::PermissionResult permission_result);
 
   // Unsubscribe from changes to the current main frame's notification
   // permission status, or no-op if there is no subscription.

@@ -1,0 +1,39 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom_component("mojom") {
+  output_prefix = "content_browser_memory_coordinator_mojom"
+  macro_prefix = "CONTENT_BROWSER_MEMORY_COORDINATOR_MOJOM"
+
+  cpp_only = true
+
+  sources = [ "memory_coordinator.mojom" ]
+
+  public_deps = [ "//mojo/public/mojom/base" ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "content.mojom.MemoryConsumerTraits"
+          cpp = "::base::MemoryConsumerTraits"
+          copyable_pass_by_value = true
+        },
+      ]
+
+      traits_headers = [ "memory_consumer_traits_mojom_traits.h" ]
+      traits_public_deps = [ "//base" ]
+    },
+  ]
+}
+
+mojom("test_interfaces") {
+  cpp_only = true
+
+  sources = [ "memory_consumer_traits_test.mojom" ]
+
+  public_deps = [ ":mojom" ]
+}

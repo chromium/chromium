@@ -36,26 +36,28 @@ FakeTrustedVaultClient::FakeServer::FakeServer() = default;
 FakeTrustedVaultClient::FakeServer::~FakeServer() = default;
 
 void FakeTrustedVaultClient::FakeServer::StoreKeysOnServer(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::vector<std::vector<uint8_t>>& keys) {
   gaia_id_to_keys_[gaia_id] = keys;
 }
 
 void FakeTrustedVaultClient::FakeServer::MimicKeyRetrievalByUser(
-    const std::string& gaia_id,
-    TrustedVaultClient* client) {
+    const GaiaId& gaia_id,
+    FakeTrustedVaultClient* client,
+    std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA> trigger) {
   DCHECK(client);
   DCHECK_NE(0U, gaia_id_to_keys_.count(gaia_id))
       << "StoreKeysOnServer() should have been called for " << gaia_id;
 
   client->StoreKeys(gaia_id, gaia_id_to_keys_[gaia_id],
                     /*last_key_version=*/
-                    static_cast<int>(gaia_id_to_keys_[gaia_id].size()) - 1);
+                    static_cast<int>(gaia_id_to_keys_[gaia_id].size()) - 1,
+                    trigger);
 }
 
 std::vector<std::vector<uint8_t>>
 FakeTrustedVaultClient::FakeServer::RequestRotatedKeysFromServer(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::vector<uint8_t>& key_known_by_client) {
   auto it = gaia_id_to_keys_.find(gaia_id);
   if (it == gaia_id_to_keys_.end()) {
@@ -73,7 +75,7 @@ FakeTrustedVaultClient::FakeServer::RequestRotatedKeysFromServer(
 }
 
 void FakeTrustedVaultClient::FakeServer::AddRecoveryMethod(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::vector<uint8_t>& public_key,
     int method_type_hint) {
   gaia_id_to_recovery_methods_[gaia_id].emplace_back(public_key,
@@ -82,7 +84,7 @@ void FakeTrustedVaultClient::FakeServer::AddRecoveryMethod(
 
 std::vector<FakeTrustedVaultClient::FakeServer::RecoveryMethod>
 FakeTrustedVaultClient::FakeServer::GetRecoveryMethods(
-    const std::string& gaia_id) const {
+    const GaiaId& gaia_id) const {
   auto it = gaia_id_to_recovery_methods_.find(gaia_id);
   if (it == gaia_id_to_recovery_methods_.end()) {
     return {};
@@ -128,7 +130,7 @@ void FakeTrustedVaultClient::RemoveObserver(Observer* observer) {
 }
 
 std::vector<std::vector<uint8_t>> FakeTrustedVaultClient::GetStoredKeys(
-    const std::string& gaia_id) const {
+    const GaiaId& gaia_id) const {
   auto it = gaia_id_to_cached_keys_.find(gaia_id);
   if (it == gaia_id_to_cached_keys_.end()) {
     return {};
@@ -147,7 +149,7 @@ void FakeTrustedVaultClient::FetchKeys(
     PostCompleteAllPendingRequests();
   }
 
-  const std::string& gaia_id = account_info.gaia;
+  const GaiaId& gaia_id = account_info.gaia;
 
   ++fetch_count_;
 
@@ -179,21 +181,22 @@ void FakeTrustedVaultClient::FetchKeys(
 }
 
 void FakeTrustedVaultClient::StoreKeys(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::vector<std::vector<uint8_t>>& keys,
-    int last_key_version) {
+    int last_key_version,
+    std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA> trigger) {
   CachedKeysPerUser& cached_keys = gaia_id_to_cached_keys_[gaia_id];
   cached_keys.keys = keys;
   cached_keys.marked_as_stale = false;
   for (Observer& observer : observer_list_) {
-    observer.OnTrustedVaultKeysChanged();
+    observer.OnTrustedVaultKeysChanged(trigger);
   }
 }
 
 void FakeTrustedVaultClient::MarkLocalKeysAsStale(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(bool)> callback) {
-  const std::string& gaia_id = account_info.gaia;
+  const GaiaId& gaia_id = account_info.gaia;
 
   ++keys_marked_as_stale_count_;
 
@@ -226,7 +229,7 @@ void FakeTrustedVaultClient::GetIsRecoverabilityDegraded(
 }
 
 void FakeTrustedVaultClient::AddTrustedRecoveryMethod(
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::vector<uint8_t>& public_key,
     int method_type_hint,
     base::OnceClosure callback) {

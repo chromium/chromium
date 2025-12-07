@@ -11,8 +11,12 @@ import android.text.TextUtils;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -20,7 +24,7 @@ import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.components.permissions.ItemChooserDialog;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 import org.chromium.ui.util.ColorUtils;
@@ -29,6 +33,7 @@ import org.chromium.ui.util.ColorUtils;
  * A dialog for showing available USB devices. This dialog is shown when a website requests to
  * connect to a USB device (e.g. through a usb.requestDevice Javascript call).
  */
+@NullMarked
 public class UsbChooserDialog implements ItemChooserDialog.ItemSelectedCallback {
     /** The dialog to show to let the user pick a device. */
     ItemChooserDialog mItemChooserDialog;
@@ -55,6 +60,7 @@ public class UsbChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
      *                      the USB device. For valid values see SecurityStateModel::SecurityLevel.
      */
     @VisibleForTesting
+    @Initializer
     void show(Activity activity, String origin, int securityLevel) {
         // Emphasize the origin.
         SpannableString originSpannableString = new SpannableString(origin);
@@ -69,7 +75,7 @@ public class UsbChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
                 chromeAutocompleteSchemeClassifier,
                 securityLevel,
                 useDarkColors,
-                /* emphasizeHttpsScheme= */ true);
+                /* emphasizeScheme= */ true);
         chromeAutocompleteSchemeClassifier.destroy();
         // Construct a full string and replace the origin text with emphasized version.
         SpannableString title =
@@ -91,7 +97,7 @@ public class UsbChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
                         new SpanInfo(
                                 "<link>",
                                 "</link>",
-                                new NoUnderlineClickableSpan(
+                                new ChromeClickableSpan(
                                         activity,
                                         (view) -> {
                                             if (mNativeUsbChooserDialogPtr == 0) return;
@@ -132,9 +138,9 @@ public class UsbChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
 
     @CalledByNative
     @VisibleForTesting
-    static UsbChooserDialog create(
+    static @Nullable UsbChooserDialog create(
             WindowAndroid windowAndroid,
-            String origin,
+            @JniType("std::u16string") String origin,
             int securityLevel,
             Profile profile,
             long nativeUsbChooserDialogPtr) {
@@ -165,12 +171,13 @@ public class UsbChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
 
     @VisibleForTesting
     @CalledByNative
-    void addDevice(String deviceId, String deviceName) {
+    void addDevice(
+            @JniType("std::string") String deviceId, @JniType("std::u16string") String deviceName) {
         mItemChooserDialog.addOrUpdateItem(deviceId, deviceName);
     }
 
     @CalledByNative
-    private void removeDevice(String deviceId) {
+    private void removeDevice(@JniType("std::string") String deviceId) {
         mItemChooserDialog.removeItemFromList(deviceId);
     }
 
@@ -182,7 +189,8 @@ public class UsbChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
 
     @NativeMethods
     interface Natives {
-        void onItemSelected(long nativeUsbChooserDialogAndroid, String deviceId);
+        void onItemSelected(
+                long nativeUsbChooserDialogAndroid, @JniType("std::string") String deviceId);
 
         void onDialogCancelled(long nativeUsbChooserDialogAndroid);
 

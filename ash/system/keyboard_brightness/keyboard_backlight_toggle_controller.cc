@@ -54,7 +54,7 @@ class UnifiedKeyboardBacklightToggleView
         AddChildView(std::make_unique<views::Label>(l10n_util::GetStringUTF16(
             toggled_on ? IDS_ASH_STATUS_AREA_TOAST_KBL_ON
                        : IDS_ASH_STATUS_AREA_TOAST_KBL_OFF)));
-    toast_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    toast_label_->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
                                           *toast_label_);
     slider()->SetVisible(false);
@@ -116,7 +116,7 @@ void KeyboardBacklightToggleController::SliderValueChanged(
     float value,
     float old_value,
     views::SliderChangeReason reason) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace ash

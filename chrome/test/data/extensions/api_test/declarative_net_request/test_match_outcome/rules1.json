@@ -38,4 +38,16 @@
   "action": {
     "type" : "block"
   }
-}]
+},
+{
+  "id": 7,
+  "priority": 1,
+  "condition" : {
+    "topDomains": ["block5.example"],
+    "excludedTopDomains": ["allow.block5.example"]
+  },
+  "action": {
+    "type" : "block"
+  }
+}
+]

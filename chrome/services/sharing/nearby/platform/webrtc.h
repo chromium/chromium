@@ -27,8 +27,7 @@ namespace sharing {
 class IpcPacketSocketFactory;
 }  // namespace sharing
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 class WebRtcMedium : public api::WebRtcMedium {
  public:
@@ -50,6 +49,10 @@ class WebRtcMedium : public api::WebRtcMedium {
   const std::string GetDefaultCountryCode() override;
   void CreatePeerConnection(webrtc::PeerConnectionObserver* observer,
                             PeerConnectionCallback callback) override;
+  void CreatePeerConnection(
+      std::optional<webrtc::PeerConnectionFactoryInterface::Options> options,
+      webrtc::PeerConnectionObserver* observer,
+      PeerConnectionCallback callback) override;
   std::unique_ptr<api::WebRtcSignalingMessenger> GetSignalingMessenger(
       std::string_view self_id,
       const location::nearby::connections::LocationHint& location_hint) override;
@@ -63,7 +66,7 @@ class WebRtcMedium : public api::WebRtcMedium {
       std::vector<::sharing::mojom::IceServerPtr> ice_servers)
       LOCKS_EXCLUDED(peer_connection_factory_lock_);
 
-  void InitWebRTCThread(rtc::Thread** thread_to_set);
+  void InitWebRTCThread(webrtc::Thread** thread_to_set);
   void InitPeerConnectionFactory()
       EXCLUSIVE_LOCKS_REQUIRED(peer_connection_factory_lock_);
   void InitNetworkThread(base::OnceClosure complete_callback);
@@ -77,24 +80,19 @@ class WebRtcMedium : public api::WebRtcMedium {
   base::Thread chrome_signaling_thread_;
   base::Thread chrome_worker_thread_;
 
-  // These rtc::Thread* are jingle thread wrappers around the corresponding
+  // These webrtc::Thread* are jingle thread wrappers around the corresponding
   // base::Thread. They get cleaned up on thread shutdown so we don't need to
   // manage lifetime.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION rtc::Thread* rtc_network_thread_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION rtc::Thread* rtc_signaling_thread_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION rtc::Thread* rtc_worker_thread_ = nullptr;
+  // RAW_PTR_EXCLUSION: Performance.
+  RAW_PTR_EXCLUSION webrtc::Thread* rtc_network_thread_ = nullptr;
+  RAW_PTR_EXCLUSION webrtc::Thread* rtc_signaling_thread_ = nullptr;
+  RAW_PTR_EXCLUSION webrtc::Thread* rtc_worker_thread_ = nullptr;
 
   // Used to guard access to peer_connection_factory_.
   base::Lock peer_connection_factory_lock_;
   // This factory is shared between all clients, but only initialized once on
   // the passed task runner the first time a Peer Connection is requested.
-  rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
+  webrtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
       peer_connection_factory_ GUARDED_BY(peer_connection_factory_lock_);
 
   mojo::SharedRemote<network::mojom::P2PSocketManager> p2p_socket_manager_;
@@ -105,7 +103,7 @@ class WebRtcMedium : public api::WebRtcMedium {
       webrtc_signaling_messenger_;
 
   std::unique_ptr<::sharing::IpcPacketSocketFactory> socket_factory_;
-  std::unique_ptr<rtc::NetworkManager> network_manager_;
+  std::unique_ptr<webrtc::NetworkManager> network_manager_;
 
   // This task runner is used to fetch ice servers and initialize the peer
   // connection factory.
@@ -114,7 +112,6 @@ class WebRtcMedium : public api::WebRtcMedium {
   base::WeakPtrFactory<WebRtcMedium> weak_ptr_factory_{this};
 };
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_WEBRTC_H_

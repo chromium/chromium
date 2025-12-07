@@ -114,6 +114,7 @@ class BrowserXRRuntimeImpl : public content::BrowserXRRuntime,
       device::mojom::XRRuntimeSessionResultPtr session_result);
   void OnImmersiveSessionError();
   void OnInstallFinished(bool succeeded);
+  void ShutdownRuntime();
 
   device::mojom::XRDeviceId id_;
   device::mojom::XRDeviceDataPtr device_data_;

@@ -34,6 +34,7 @@
 
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
+#include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/system/sys_info.h"
 #include "base/timer/elapsed_timer.h"
@@ -49,6 +50,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_data_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_map.h"
+#include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
 #include "third_party/blink/renderer/platform/fonts/font_global_context.h"
 #include "third_party/blink/renderer/platform/fonts/font_performance.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data_cache.h"
@@ -72,12 +74,11 @@
 namespace blink {
 
 const char kColorEmojiLocale[] = "und-Zsye";
+const char kMonoEmojiLocale[] = "und-Zsym";
 
 #if BUILDFLAG(IS_ANDROID)
 extern const char kNotoColorEmojiCompat[] = "Noto Color Emoji Compat";
 #endif
-
-SkFontMgr* FontCache::static_font_manager_ = nullptr;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 float FontCache::device_scale_factor_ = 1.0;
@@ -86,34 +87,13 @@ float FontCache::device_scale_factor_ = 1.0;
 #if BUILDFLAG(IS_WIN)
 bool FontCache::antialiased_text_enabled_ = false;
 bool FontCache::lcd_text_enabled_ = false;
-static bool should_use_test_font_mgr = false;
 #endif  // BUILDFLAG(IS_WIN)
 
 FontCache& FontCache::Get() {
   return FontGlobalContext::GetFontCache();
 }
 
-FontCache::FontCache() : font_manager_(sk_ref_sp(static_font_manager_)) {
-#if BUILDFLAG(IS_WIN)
-  if (!font_manager_ || should_use_test_font_mgr) {
-    // This code path is only for unit tests. This SkFontMgr does not work in
-    // sandboxed environments, but injecting this initialization code to all
-    // unit tests isn't easy.
-    font_manager_ = SkFontMgr_New_DirectWrite();
-    // Set |is_test_font_mgr_| to capture if this is not happening in the
-    // production code. crbug.com/561873
-    is_test_font_mgr_ = true;
-
-    // Tests[1][2] construct |FontCache| without |static_font_manager|, but
-    // these tests install font manager with dwrite proxy even if they don't
-    // have remote end in browser.
-    // [1] HtmlBasedUsernameDetectorTest.UserGroupAttributes
-    // [2] RenderViewImplTest.OnDeleteSurroundingTextInCodePoints
-    should_use_test_font_mgr = true;
-  }
-  DCHECK(font_manager_.get());
-#endif
-}
+FontCache::FontCache() = default;
 
 FontCache::~FontCache() = default;
 
@@ -123,6 +103,9 @@ void FontCache::Trace(Visitor* visitor) const {
   visitor->Trace(fallback_list_shaper_cache_);
   visitor->Trace(font_data_cache_);
   visitor->Trace(font_fallback_map_);
+#if BUILDFLAG(IS_MAC)
+  visitor->Trace(character_fallback_cache_);
+#endif
 }
 
 #if !BUILDFLAG(IS_MAC)
@@ -171,11 +154,6 @@ ShapeCache* FontCache::GetShapeCache(const FallbackListCompositeKey& key) {
   return result.stored_value->value.Get();
 }
 
-void FontCache::SetFontManager(sk_sp<SkFontMgr> font_manager) {
-  DCHECK(!static_font_manager_);
-  static_font_manager_ = font_manager.release();
-}
-
 void FontCache::AcceptLanguagesChanged(const String& accept_languages) {
   LayoutLocale::AcceptLanguagesChanged(accept_languages);
   Get().InvalidateShapeCache();
@@ -215,6 +193,11 @@ bool FontCache::IsPlatformFamilyMatchAvailable(
 bool FontCache::IsPlatformFontUniqueNameMatchAvailable(
     const FontDescription& font_description,
     const AtomicString& unique_font_name) {
+  // Return early to avoid attempting fallback.
+  if (unique_font_name.empty()) {
+    return false;
+  }
+
   return GetFontPlatformData(font_description,
                              FontFaceCreationParams(unique_font_name),
                              AlternateFontName::kLocalUniqueFace);
@@ -297,33 +280,15 @@ void FontCache::Invalidate() {
 }
 
 void FontCache::CrashWithFontInfo(const FontDescription* font_description) {
-  SkFontMgr* font_mgr = nullptr;
   int num_families = std::numeric_limits<int>::min();
-  bool is_test_font_mgr = false;
-  if (FontGlobalContext::TryGet()) {
-    FontCache& font_cache = FontGlobalContext::GetFontCache();
-#if BUILDFLAG(IS_WIN)
-    is_test_font_mgr = font_cache.is_test_font_mgr_;
-#endif
-    font_mgr = font_cache.font_manager_.get();
-    if (font_mgr)
-      num_families = font_mgr->countFamilies();
-  }
 
-  // In production, these 3 font managers must match.
-  // They don't match in unit tests or in single process mode.
-  SkFontMgr* static_font_mgr = static_font_manager_;
-  SkFontMgr* skia_default_font_mgr = skia::DefaultFontMgr().get();
-  base::debug::Alias(&font_mgr);
-  base::debug::Alias(&static_font_mgr);
-  base::debug::Alias(&skia_default_font_mgr);
+  num_families = skia::DefaultFontMgr()->countFamilies();
 
   FontDescription font_description_copy = *font_description;
   base::debug::Alias(&font_description_copy);
-  base::debug::Alias(&is_test_font_mgr);
   base::debug::Alias(&num_families);
 
-  CHECK(false);
+  NOTREACHED();
 }
 
 void FontCache::DumpShapeResultCache(
@@ -337,7 +302,7 @@ void FontCache::DumpShapeResultCache(
   }
   dump->AddScalar("size", "bytes", shape_result_cache_size);
   memory_dump->AddSuballocation(dump->guid(),
-                                WTF::Partitions::kAllocatedObjectPoolName);
+                                Partitions::kAllocatedObjectPoolName);
 }
 
 sk_sp<SkTypeface> FontCache::CreateTypefaceFromUniqueName(
@@ -370,8 +335,11 @@ FontCache::Bcp47Vector FontCache::GetBcp47LocaleForRequest(
   if (content_locale)
     result.push_back(content_locale->LocaleForSkFontMgr());
 
-  if (fallback_priority == FontFallbackPriority::kEmojiEmoji)
+  if (IsEmojiPresentationEmoji(fallback_priority)) {
     result.push_back(kColorEmojiLocale);
+  } else if (IsTextPresentationEmoji(fallback_priority)) {
+    result.push_back(kMonoEmojiLocale);
+  }
   return result;
 }
 
@@ -398,10 +366,8 @@ void FontCache::MaybePreloadSystemFonts() {
     return;
   }
 
-  const int kPhysicalMemoryGB =
-      base::SysInfo::AmountOfPhysicalMemoryMB() / 1024;
-
-  if (kPhysicalMemoryGB < features::kPreloadSystemFontsRequiredMemoryGB.Get()) {
+  if (base::SysInfo::AmountOfPhysicalMemory().InGiB() <
+      features::kPreloadSystemFontsRequiredMemoryGB.Get()) {
     return;
   }
 

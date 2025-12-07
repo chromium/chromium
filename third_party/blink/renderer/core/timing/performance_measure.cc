@@ -20,8 +20,9 @@ PerformanceMeasure::PerformanceMeasure(
     double end_time,
     scoped_refptr<SerializedScriptValue> serialized_detail,
     ExceptionState& exception_state,
-    DOMWindow* source)
-    : PerformanceEntry(name, start_time, end_time, source),
+    DOMWindow* source,
+    uint32_t navigation_id)
+    : PerformanceEntry(name, start_time, end_time, source, navigation_id),
       serialized_detail_(serialized_detail) {}
 
 // static
@@ -31,7 +32,8 @@ PerformanceMeasure* PerformanceMeasure::Create(ScriptState* script_state,
                                                double end_time,
                                                const ScriptValue& detail,
                                                ExceptionState& exception_state,
-                                               DOMWindow* source) {
+                                               DOMWindow* source,
+                                               uint32_t navigation_id) {
   scoped_refptr<SerializedScriptValue> serialized_detail;
   if (detail.IsEmpty()) {
     serialized_detail = nullptr;
@@ -44,7 +46,7 @@ PerformanceMeasure* PerformanceMeasure::Create(ScriptState* script_state,
   }
   return MakeGarbageCollected<PerformanceMeasure>(
       script_state, name, start_time, end_time, serialized_detail,
-      exception_state, source);
+      exception_state, source, navigation_id);
 }
 
 ScriptValue PerformanceMeasure::detail(ScriptState* script_state) {

@@ -111,8 +111,7 @@ size_t GetMenuIndexOfSortingOrder(ash::AppListSortOrder order) {
     case ash::AppListSortOrder::kNameReverseAlphabetical:
     case ash::AppListSortOrder::kCustom:
     case ash::AppListSortOrder::kAlphabeticalEphemeralAppFirst:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 
@@ -132,8 +131,7 @@ views::MenuItemView* GetReorderOptionForAppListOrFolderItemMenu(
     case ash::AppListSortOrder::kNameReverseAlphabetical:
     case ash::AppListSortOrder::kCustom:
     case ash::AppListSortOrder::kAlphabeticalEphemeralAppFirst:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
   return reorder_option;
 }
@@ -345,7 +343,7 @@ void AppListTestApi::WaitForBubbleWindow(bool wait_for_opening_animation) {
 void AppListTestApi::WaitForBubbleWindowInRootWindow(
     aura::Window* root_window,
     bool wait_for_opening_animation) {
-  DCHECK(!Shell::Get()->IsInTabletMode());
+  DCHECK(!display::Screen::Get()->InTabletMode());
 
   // Wait for the window only when the app list window does not exist.
   auto* app_list_controller = Shell::Get()->app_list_controller();
@@ -384,7 +382,7 @@ void AppListTestApi::WaitForAppListShowAnimation(bool is_bubble_window) {
   if (!is_bubble_window)
     return;
 
-  DCHECK(!Shell::Get()->IsInTabletMode());
+  DCHECK(!display::Screen::Get()->InTabletMode());
 
   ScrollableAppsGridView* scrollable_apps_grid_view =
       static_cast<ScrollableAppsGridView*>(GetTopLevelAppsGridView());
@@ -409,13 +407,10 @@ bool AppListTestApi::HasApp(const std::string& app_id) {
   return GetAppListModel()->FindItem(app_id);
 }
 
-std::u16string AppListTestApi::GetAppListItemViewName(
+std::u16string_view AppListTestApi::GetAppListItemViewName(
     const std::string& item_id) {
   AppListItemView* item_view = GetTopLevelItemViewFromId(item_id);
-  if (!item_view)
-    return u"";
-
-  return item_view->title()->GetText();
+  return item_view ? item_view->title()->GetText() : std::u16string_view();
 }
 
 AppListItemView* AppListTestApi::GetTopLevelItemViewFromId(
@@ -803,7 +798,7 @@ void AppListTestApi::RegisterReorderAnimationDoneCallback(
     ReorderAnimationEndState* actual_state) {
   AddReorderAnimationCallback(base::BindRepeating(
       &AppListTestApi::OnReorderAnimationDone, weak_factory_.GetWeakPtr(),
-      !ash::Shell::Get()->IsInTabletMode(), actual_state));
+      !display::Screen::Get()->InTabletMode(), actual_state));
 }
 
 void AppListTestApi::OnReorderAnimationDone(bool for_bubble_app_list,

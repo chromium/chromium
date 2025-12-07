@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
 #include "components/autofill/core/browser/payments/otp_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/otp_unmask_result.h"
@@ -16,11 +18,13 @@
 namespace autofill {
 
 CardUnmaskOtpInputDialogControllerImpl::CardUnmaskOtpInputDialogControllerImpl(
+    const CreditCard::RecordType card_type,
     const CardUnmaskChallengeOption& challenge_option,
     base::WeakPtr<OtpUnmaskDelegate> delegate)
     : challenge_type_(challenge_option.type),
       otp_length_(challenge_option.challenge_input_length),
-      delegate_(delegate) {}
+      delegate_(delegate),
+      card_type_(card_type) {}
 
 CardUnmaskOtpInputDialogControllerImpl::
     ~CardUnmaskOtpInputDialogControllerImpl() {
@@ -45,7 +49,7 @@ void CardUnmaskOtpInputDialogControllerImpl::ShowDialog(
 
   dialog_view_ = std::move(create_and_show_view_callback).Run();
   if (dialog_view_) {
-    autofill_metrics::LogOtpInputDialogShown(challenge_type_);
+    autofill_metrics::LogOtpInputDialogShown(card_type_, challenge_type_);
   }
 }
 
@@ -70,6 +74,7 @@ void CardUnmaskOtpInputDialogControllerImpl::OnOtpVerificationResult(
     case OtpUnmaskResult::kOtpMismatch:
       temporary_error_shown_ = true;
       autofill_metrics::LogOtpInputDialogErrorMessageShown(
+          card_type_,
           result == OtpUnmaskResult::kOtpMismatch
               ? autofill_metrics::OtpInputDialogError::kOtpMismatchError
               : autofill_metrics::OtpInputDialogError::kOtpExpiredError,
@@ -77,8 +82,7 @@ void CardUnmaskOtpInputDialogControllerImpl::OnOtpVerificationResult(
       ShowInvalidState(result);
       break;
     case OtpUnmaskResult::kUnknownType:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -91,6 +95,7 @@ void CardUnmaskOtpInputDialogControllerImpl::OnDialogClosed(
 
   if (user_closed_dialog) {
     autofill_metrics::LogOtpInputDialogResult(
+        card_type_,
         ok_button_clicked_ ? autofill_metrics::OtpInputDialogResult::
                                  kDialogCancelledByUserAfterConfirmation
                            : autofill_metrics::OtpInputDialogResult::
@@ -98,11 +103,13 @@ void CardUnmaskOtpInputDialogControllerImpl::OnDialogClosed(
         temporary_error_shown_, challenge_type_);
   } else if (server_request_succeeded) {
     autofill_metrics::LogOtpInputDialogResult(
+        card_type_,
         autofill_metrics::OtpInputDialogResult::
             kDialogClosedAfterVerificationSucceeded,
         temporary_error_shown_, challenge_type_);
   } else {
     autofill_metrics::LogOtpInputDialogResult(
+        card_type_,
         autofill_metrics::OtpInputDialogResult::
             kDialogClosedAfterVerificationFailed,
         temporary_error_shown_, challenge_type_);
@@ -128,7 +135,8 @@ void CardUnmaskOtpInputDialogControllerImpl::OnNewCodeLinkClicked() {
     delegate_->OnNewOtpRequested();
   }
 
-  autofill_metrics::LogOtpInputDialogNewOtpRequested(challenge_type_);
+  autofill_metrics::LogOtpInputDialogNewOtpRequested(card_type_,
+                                                     challenge_type_);
 }
 
 std::u16string CardUnmaskOtpInputDialogControllerImpl::GetWindowTitle() const {
@@ -218,7 +226,7 @@ void CardUnmaskOtpInputDialogControllerImpl::ShowInvalidState(
     case OtpUnmaskResult::kSuccess:
     case OtpUnmaskResult::kPermanentFailure:
     case OtpUnmaskResult::kUnknownType:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

@@ -97,11 +97,6 @@ class FakeDownloadDisplay : public DownloadDisplay {
   void AnnounceAccessibleAlertNow(const std::u16string& alert_text) override {
     ++announcement_count_;
   }
-  bool OpenMostSpecificDialog(
-      const offline_items_collection::ContentId& content_id) override {
-    detail_shown_ = true;
-    return true;
-  }
   bool IsFullscreenWithParentViewHidden() const override {
     return is_fullscreen_;
   }
@@ -307,11 +302,11 @@ class DownloadDisplayControllerTest : public testing::Test {
     EXPECT_CALL(*mock_update_service_, GetProgressInfo(_))
         .WillRepeatedly(Return(DownloadDisplay::ProgressInfo()));
     display_ = std::make_unique<FakeDownloadDisplay>();
-    window_ = std::make_unique<TestBrowserWindow>();
+    auto window = std::make_unique<TestBrowserWindow>();
     Browser::CreateParams params(profile_, true);
     params.type = Browser::TYPE_NORMAL;
-    params.window = window_.get();
-    browser_ = std::unique_ptr<Browser>(Browser::Create(params));
+    params.window = window.release();
+    browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
     bubble_controller_ = std::make_unique<DownloadBubbleUIController>(
         browser_.get(), mock_update_service_.get());
     controller_ = std::make_unique<DownloadDisplayController>(
@@ -519,7 +514,6 @@ class DownloadDisplayControllerTest : public testing::Test {
   std::unique_ptr<DownloadBubbleUIController> bubble_controller_;
   TestingProfileManager testing_profile_manager_;
   raw_ptr<Profile> profile_;
-  std::unique_ptr<TestBrowserWindow> window_;
   std::unique_ptr<Browser> browser_;
   raw_ptr<MockDownloadCoreService> mock_download_core_service_;
   std::unique_ptr<ChromeDownloadManagerDelegate> delegate_;

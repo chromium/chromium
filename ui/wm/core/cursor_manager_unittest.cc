@@ -6,6 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "ui/aura/client/cursor_client_observer.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/base/cursor/cursor_size.h"
@@ -40,6 +41,17 @@ class TestingCursorManager : public wm::NativeCursorManager {
   void SetCursorSize(ui::CursorSize cursor_size,
                      wm::NativeCursorManagerDelegate* delegate) override {
     delegate->CommitCursorSize(cursor_size);
+  }
+
+  void SetLargeCursorSizeInDip(
+      int large_cursor_size_in_dip,
+      wm::NativeCursorManagerDelegate* delegate) override {
+    delegate->CommitLargeCursorSizeInDip(large_cursor_size_in_dip);
+  }
+
+  void SetCursorColor(SkColor color,
+                      wm::NativeCursorManagerDelegate* delegate) override {
+    NOTIMPLEMENTED();
   }
 };
 
@@ -356,7 +368,26 @@ TEST_F(CursorManagerTest, TestCursorClientObserver) {
   EXPECT_FALSE(observer_a.is_cursor_visible());
 }
 
-// This test validates that the cursor visiblity state is restored when a
+#if BUILDFLAG(IS_WIN)
+TEST_F(CursorManagerTest, SystemCursorVisibilityTest) {
+  // System cursor visibility uses LockCursor()/UnlockCursor() to implement its
+  // behaviour. Make sure this does not crash when
+  // CommitSystemCursorVisibility(true) is called firstly. See
+  // crbug.com/380703583.
+  EXPECT_TRUE(cursor_manager_.IsCursorVisible());
+  cursor_manager_.HideCursor();
+  cursor_manager_.UpdateSystemCursorVisibilityForTest(true);
+  cursor_manager_.ShowCursor();
+  // If the system cursor is invisible, ShowCursor() should not make the
+  // cursor visible.
+  cursor_manager_.UpdateSystemCursorVisibilityForTest(false);
+  cursor_manager_.ShowCursor();
+  EXPECT_FALSE(cursor_manager_.IsCursorVisible());
+  EXPECT_TRUE(cursor_manager_.IsCursorLocked());
+}
+#endif
+
+// This test validates that the cursor visibility state is restored when a
 // CursorManager instance is destroyed and recreated.
 TEST(CursorManagerCreateDestroyTest, VisibilityTest) {
   // This block ensures that the cursor is hidden when the CursorManager

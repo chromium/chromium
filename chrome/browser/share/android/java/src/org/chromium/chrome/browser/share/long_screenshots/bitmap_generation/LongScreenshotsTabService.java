@@ -12,9 +12,12 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.paintpreview.browser.NativePaintPreviewServiceProvider;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.paint_preview.mojom.ClipCoordOverride;
 import org.chromium.url.GURL;
 
 /**
@@ -23,13 +26,14 @@ import org.chromium.url.GURL;
  * capturing the Paint Preview representation of a tab.
  */
 @JNINamespace("long_screenshots")
+@NullMarked
 public class LongScreenshotsTabService implements NativePaintPreviewServiceProvider {
     /** Interface used for notifying in the event of navigation to a URL. */
     public interface CaptureProcessor {
         void processCapturedTab(long nativeCaptureResultPtr, @Status int status);
     }
 
-    private CaptureProcessor mCaptureProcessor;
+    private @Nullable CaptureProcessor mCaptureProcessor;
 
     private long mNativeLongScreenshotsTabService;
 
@@ -70,7 +74,12 @@ public class LongScreenshotsTabService implements NativePaintPreviewServiceProvi
         mCaptureProcessor.processCapturedTab(nativeCaptureResultPtr, Status.OK);
     }
 
-    public void captureTab(Tab tab, Rect clipRect, boolean inMemory) {
+    public void captureTab(
+            Tab tab,
+            Rect clipRect,
+            boolean inMemory,
+            @ClipCoordOverride.EnumType int clipXCoordOverride,
+            @ClipCoordOverride.EnumType int clipYCoordOverride) {
         if (mNativeLongScreenshotsTabService == 0) {
             processCaptureTabStatus(Status.NATIVE_SERVICE_NOT_INITIALIZED);
             return;
@@ -91,7 +100,9 @@ public class LongScreenshotsTabService implements NativePaintPreviewServiceProvi
                         clipRect.top,
                         clipRect.width(),
                         clipRect.height(),
-                        inMemory);
+                        inMemory,
+                        clipXCoordOverride,
+                        clipYCoordOverride);
     }
 
     public void longScreenshotsClosed() {
@@ -124,7 +135,9 @@ public class LongScreenshotsTabService implements NativePaintPreviewServiceProvi
                 int clipY,
                 int clipWidth,
                 int clipHeight,
-                boolean inMemory);
+                boolean inMemory,
+                int clipXCoordOverride,
+                int clipYCoordOverride);
 
         void longScreenshotsClosedAndroid(long nativeLongScreenshotsTabService);
 

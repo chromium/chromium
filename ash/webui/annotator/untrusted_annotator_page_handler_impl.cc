@@ -30,7 +30,9 @@ UntrustedAnnotatorPageHandlerImpl::UntrustedAnnotatorPageHandlerImpl(
 }
 
 UntrustedAnnotatorPageHandlerImpl::~UntrustedAnnotatorPageHandlerImpl() {
-  AnnotatorClient::Get()->ResetAnnotatorPageHandler(this);
+  if (AnnotatorClient::HasInstance()) {
+    AnnotatorClient::Get()->ResetAnnotatorPageHandler(this);
+  }
 }
 
 void UntrustedAnnotatorPageHandlerImpl::SetTool(const AnnotatorTool& tool) {

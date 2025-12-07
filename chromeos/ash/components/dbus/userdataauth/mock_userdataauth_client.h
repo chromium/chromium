@@ -5,9 +5,9 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_MOCK_USERDATAAUTH_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_MOCK_USERDATAAUTH_CLIENT_H_
 
-#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
-
 #include "base/component_export.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {
@@ -29,6 +29,10 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) MockUserDataAuthClient
       PrepareAuthFactorProgressObserver* observer) override;
   void RemovePrepareAuthFactorProgressObserver(
       PrepareAuthFactorProgressObserver* observer) override;
+  void AddAuthFactorStatusUpdateObserver(
+      AuthFactorStatusUpdateObserver* observer) override;
+  void RemoveAuthFactorStatusUpdateObserver(
+      AuthFactorStatusUpdateObserver* observer) override;
 
   MOCK_METHOD(void,
               IsMounted,
@@ -147,6 +151,11 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) MockUserDataAuthClient
        GetAuthFactorExtendedInfoCallback callback),
       (override));
   MOCK_METHOD(void,
+              GenerateFreshRecoveryId,
+              (const ::user_data_auth::GenerateFreshRecoveryIdRequest& request,
+               GenerateFreshRecoveryIdCallback callback),
+              (override));
+  MOCK_METHOD(void,
               RemoveAuthFactor,
               (const ::user_data_auth::RemoveAuthFactorRequest& request,
                RemoveAuthFactorCallback callback),
@@ -182,6 +191,11 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) MockUserDataAuthClient
       (const ::user_data_auth::SetUserDataStorageWriteEnabledRequest& request,
        SetUserDataStorageWriteEnabledCallback),
       (override));
+  MOCK_METHOD(void,
+              LockFactorUntilReboot,
+              (const ::user_data_auth::LockFactorUntilRebootRequest& request,
+               LockFactorUntilRebootCallback callback),
+              (override));
 };
 
 }  // namespace ash

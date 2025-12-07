@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/password_manager/core/browser/password_reuse_manager_signin_notifier.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -36,12 +37,17 @@ class PasswordReuseManagerSigninNotifierImpl
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override;
   void OnExtendedAccountInfoRemoved(const AccountInfo& info) override;
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
 
  private:
   // Passes the sign-out notification to `reuse_manager_`.
   void NotifySignedOut(const std::string& username, bool syncing_account);
 
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   raw_ptr<PasswordReuseManager> reuse_manager_ = nullptr;  // weak
 };

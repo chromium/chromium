@@ -76,7 +76,7 @@ class CORE_EXPORT EditorCommand {
                            DeleteSoftLineBackwardTargetRanges);
   // Returns target ranges for the command, currently only supports delete
   // related commands. Used by InputEvent.
-  const StaticRangeVector* GetTargetRanges() const;
+  const GCedStaticRangeVector* GetTargetRanges() const;
 
   const EditorInternalCommand* command_;
   const EditorCommandSource source_;

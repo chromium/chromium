@@ -61,14 +61,15 @@ async function runServiceWorkerTest(workerUrl, subresourceUrl) {
   const subresourceUrl = params.get('subresourceUrl');
   let result;
   try {
-    if (workerClass === 'Worker')
+    if (workerClass === 'Worker') {
       result = await runWorkerTest(workerUrl, subresourceUrl);
-    else if (workerClass === 'SharedWorker')
+    } else if (workerClass === 'SharedWorker') {
       result = await runSharedWorkerTest(workerUrl, subresourceUrl);
-    else if (workerClass === 'ServiceWorker')
+    } else if (workerClass === 'ServiceWorker') {
       result = await runServiceWorkerTest(workerUrl, subresourceUrl);
-    else
+    } else {
       throw new Error(`Unrecognized class: ${workerClass}`);
+    }
   } catch (error) {
     result = `Error: ${error}`;
   }

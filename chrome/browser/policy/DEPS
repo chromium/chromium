@@ -7,5 +7,8 @@ specific_include_rules = {
   ],
   "screenshot_policy_browsertest\.cc": [
     "+ui/message_center",
-  ]
+  ],
+  "legacy_cookie_scope_browsertest\.cc" : [
+    "+content/browser/browsing_data/browsing_data_test_utils.h",
+  ],
 }

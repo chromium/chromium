@@ -9,10 +9,10 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.EditorBoundsInfo;
 import android.view.inputmethod.EditorInfo;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Interface that provides Stylus handwriting to text input functionality in HTML edit fields. This
@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
  * in this interface outside of //content (i.e. //components/stylus_handwriting) and these are
  * called from the current WebContents related classes in //content.
  */
+@NullMarked
 public interface StylusWritingHandler {
     /**
      * @return true if soft keyboard can be shown during stylus writing.
@@ -35,28 +36,26 @@ public interface StylusWritingHandler {
 
     /**
      * Update current input state parameters to stylus writing system.
-     *  @param text the input text
+     *
+     * @param text the input text
      * @param selectionStart the input selection start offset
      * @param selectionEnd the input selection end offset
      */
-    default void updateInputState(String text, int selectionStart, int selectionEnd) {}
+    default void updateInputState(@Nullable String text, int selectionStart, int selectionEnd) {}
 
     /**
      * Notify focused node has changed in web page.
      *
      * @param editableBoundsOnScreenDip the Editable element bounds Rect in dip
-     * @param isEditable     is true if focused node is of editable type.
+     * @param isEditable is true if focused node is of editable type.
      * @param currentView the {@link View} in which the focused node changed.
      */
-    @Nullable
-    default EditorBoundsInfo onFocusedNodeChanged(
+    default void onFocusedNodeChanged(
             Rect editableBoundsOnScreenDip,
             boolean isEditable,
             View currentView,
             float scaleFactor,
-            int contentOffsetY) {
-        return null;
-    }
+            int contentOffsetY) {}
 
     /**
      * Handle touch events if needed for stylus writing.
@@ -107,15 +106,12 @@ public interface StylusWritingHandler {
      * @param contentOffsetY the Physical on-screen Y offset amount below the browser controls
      * @param view the view on which to start stylus handwriting
      */
-    @Nullable
-    default EditorBoundsInfo onEditElementFocusedForStylusWriting(
+    default void onEditElementFocusedForStylusWriting(
             Rect focusedEditBounds,
             Point cursorPosition,
             float scaleFactor,
             int contentOffsetY,
-            View view) {
-        return null;
-    }
+            View view) {}
 
     /** Notify that ImeAdapter is destroyed. */
     default void onImeAdapterDestroyed() {}

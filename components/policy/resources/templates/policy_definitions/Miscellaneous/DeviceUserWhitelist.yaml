@@ -22,7 +22,7 @@ features:
   dynamic_refresh: true
 owners:
 - file://components/policy/OWNERS
-- pmarko@chromium.org
+- acostinas@google.com
 schema:
   items:
     type: string

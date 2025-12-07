@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
@@ -38,39 +39,36 @@ QuickAnswersState::Error ToQuickAnswersStateError(
       return QuickAnswersState::Error::kUninitialized;
   }
 
-  CHECK(false) << "Unknown MagicBoostState::Error enum class value provided.";
+  NOTREACHED() << "Unknown MagicBoostState::Error enum class value provided.";
 }
 
-quick_answers::prefs::ConsentStatus ToQuickAnswersPrefsConsentStatus(
-    chromeos::HMRConsentStatus consent_status) {
-  switch (consent_status) {
+quick_answers::prefs::ConsentStatus ToQuickAnswersStateConsentStatus(
+    bool magic_boost_enabled,
+    bool hmr_enabled,
+    chromeos::HMRConsentStatus hmr_consent_status) {
+  if (!magic_boost_enabled || !hmr_enabled) {
+    return quick_answers::prefs::ConsentStatus::kRejected;
+  }
+
+  switch (hmr_consent_status) {
     case chromeos::HMRConsentStatus::kUnset:
-      return quick_answers::prefs::ConsentStatus::kUnknown;
     case chromeos::HMRConsentStatus::kPendingDisclaimer:
-      // Quick Answers capability is available from `kPendingDisclaimer` state.
-      // See comments in `chromeos::HMRConsentStatus` for details of those
-      // states.
-      return quick_answers::prefs::ConsentStatus::kAccepted;
+      // Quick Answers capability is NOT available from `kPendingDisclaimer`
+      // state. See comments in `chromeos::HMRConsentStatus` for details of
+      // those states.
+      return quick_answers::prefs::ConsentStatus::kUnknown;
     case chromeos::HMRConsentStatus::kApproved:
       return quick_answers::prefs::ConsentStatus::kAccepted;
     case chromeos::HMRConsentStatus::kDeclined:
       return quick_answers::prefs::ConsentStatus::kRejected;
   }
 
-  CHECK(false) << "Unknown HMRConsentStatus enum class value provided.";
+  NOTREACHED() << "Unknown HMRConsentStatus enum class value provided.";
 }
 
 base::expected<bool, QuickAnswersState::Error> ToQuickAnswersStateIsEnabled(
     base::expected<bool, chromeos::MagicBoostState::Error> is_enabled) {
   return is_enabled.transform_error(&ToQuickAnswersStateError);
-}
-
-base::expected<quick_answers::prefs::ConsentStatus, QuickAnswersState::Error>
-ToQuickAnswersStateConsentStatus(
-    base::expected<chromeos::HMRConsentStatus, chromeos::MagicBoostState::Error>
-        consent_status) {
-  return consent_status.transform_error(&ToQuickAnswersStateError)
-      .transform(&ToQuickAnswersPrefsConsentStatus);
 }
 
 }  // namespace
@@ -82,9 +80,13 @@ QuickAnswersState* QuickAnswersState::Get() {
 
 // static
 QuickAnswersState::FeatureType QuickAnswersState::GetFeatureType() {
-  return chromeos::features::IsMagicBoostEnabled()
-             ? QuickAnswersState::FeatureType::kHmr
-             : QuickAnswersState::FeatureType::kQuickAnswers;
+  QuickAnswersState* quick_answers_state = Get();
+  if (!quick_answers_state) {
+    return QuickAnswersState::FeatureType::kQuickAnswers;
+  }
+
+  return quick_answers_state->GetFeatureTypeExpected().value_or(
+      QuickAnswersState::FeatureType::kQuickAnswers);
 }
 
 // static
@@ -136,16 +138,36 @@ QuickAnswersState::GetConsentStatusAs(FeatureType feature_type) {
   return quick_answers_state->GetConsentStatusExpectedAs(feature_type);
 }
 
+// static
+bool QuickAnswersState::IsIntentEligible(quick_answers::Intent intent) {
+  return IsIntentEligibleAs(intent, GetFeatureType());
+}
+
+// static
+bool QuickAnswersState::IsIntentEligibleAs(quick_answers::Intent intent,
+                                           FeatureType feature_type) {
+  QuickAnswersState* quick_answers_state = Get();
+  if (!quick_answers_state) {
+    return false;
+  }
+
+  return quick_answers_state->IsIntentEligibleExpectedAs(intent, feature_type)
+      .value_or(false);
+}
+
 QuickAnswersState::QuickAnswersState() {
   CHECK(!g_quick_answers_state);
   g_quick_answers_state = this;
 
-  if (GetFeatureType() == FeatureType::kHmr) {
     chromeos::MagicBoostState* magic_boost_state =
         chromeos::MagicBoostState::Get();
-    CHECK(magic_boost_state) << "QuickAnswersState depends on MagicBoostState.";
-    magic_boost_state_observation_.Observe(magic_boost_state);
-  }
+    if (magic_boost_state) {
+      magic_boost_state_observation_.Observe(magic_boost_state);
+    }
+
+    // Inovke `MaybeNotifyFeatureTypeChanged` to set initial last notified
+    // value.
+    MaybeNotifyFeatureTypeChanged();
 }
 
 QuickAnswersState::~QuickAnswersState() {
@@ -160,6 +182,12 @@ void QuickAnswersState::AddObserver(QuickAnswersStateObserver* observer) {
 
 void QuickAnswersState::RemoveObserver(QuickAnswersStateObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void QuickAnswersState::OnUserEligibleForGenAIFeaturesUpdated(bool eligible) {
+  // Gen-AI features' eligibility check includes an async operation. It can
+  // return false for a short period even if a user/device is eligible.
+  MaybeNotifyFeatureTypeChanged();
 }
 
 void QuickAnswersState::OnHMREnabledUpdated(bool enabled) {
@@ -208,8 +236,37 @@ bool QuickAnswersState::ShouldUseQuickAnswersTextAnnotator() {
          use_text_annotator_for_testing_;
 }
 
-bool QuickAnswersState::IsSupportedLanguage(const std::string& language) const {
+bool QuickAnswersState::IsSupportedLanguage(std::string_view language) const {
   return kSupportedLanguages.contains(language);
+}
+
+base::expected<QuickAnswersState::FeatureType, QuickAnswersState::Error>
+QuickAnswersState::GetFeatureTypeExpected() const {
+  chromeos::MagicBoostState* magic_boost_state =
+      chromeos::MagicBoostState::Get();
+  if (!magic_boost_state) {
+    // `magic_boost_state` might be null in tests
+    return base::unexpected(QuickAnswersState::Error::kUninitialized);
+  }
+
+  return magic_boost_state->is_user_eligible_for_genai_features()
+      .transform([](bool available) {
+        if (available) {
+          return QuickAnswersState::FeatureType::kHmr;
+        } else {
+          return QuickAnswersState::FeatureType::kQuickAnswers;
+        }
+      })
+      .transform_error([](chromeos::MagicBoostState::Error error) {
+        // Use `switch` statement as it gets a compile error when
+        // `MagicBoostState::Error` enum class value added.
+        switch (error) {
+          case chromeos::MagicBoostState::Error::kUninitialized:
+            return QuickAnswersState::Error::kUninitialized;
+        }
+        CHECK(false)
+            << "Unknown MagicBoostState::Error enum class value provided.";
+      });
 }
 
 base::expected<bool, QuickAnswersState::Error>
@@ -245,6 +302,7 @@ QuickAnswersState::IsEnabledExpected() const {
 base::expected<bool, QuickAnswersState::Error>
 QuickAnswersState::IsEnabledExpectedAs(
     QuickAnswersState::FeatureType feature_type) const {
+  // TODO(b/340628526): Use `IsEligibleExpectedAs` to propagate error values.
   if (!IsEligibleAs(feature_type)) {
     return false;
   }
@@ -253,6 +311,8 @@ QuickAnswersState::IsEnabledExpectedAs(
   // status. Note that there is a combination of IsEnabled=false and
   // ConsentStatus=kAccepted if a user has turned off a feature after they have
   // enabled/consented.
+  // TODO(b/340628526): Use `GetConsentStatusExpectedAs` to propagate error
+  // values.
   if (GetConsentStatusAs(feature_type) !=
       quick_answers::prefs::ConsentStatus::kAccepted) {
     return false;
@@ -294,12 +354,61 @@ QuickAnswersState::GetConsentStatusExpectedAs(
         return base::unexpected(QuickAnswersState::Error::kUninitialized);
       }
 
-      return ToQuickAnswersStateConsentStatus(
-          magic_boost_state->hmr_consent_status());
+      ASSIGN_OR_RETURN(bool magic_boost_enabled_value,
+                       magic_boost_state->magic_boost_enabled(),
+                       &ToQuickAnswersStateError);
+      ASSIGN_OR_RETURN(bool hmr_enabled_value, magic_boost_state->hmr_enabled(),
+                       &ToQuickAnswersStateError);
+      ASSIGN_OR_RETURN(chromeos::HMRConsentStatus hmr_consent_status_value,
+                       magic_boost_state->hmr_consent_status(),
+                       &ToQuickAnswersStateError);
+
+      return ToQuickAnswersStateConsentStatus(magic_boost_enabled_value,
+                                              hmr_enabled_value,
+                                              hmr_consent_status_value);
     }
     case QuickAnswersState::FeatureType::kQuickAnswers: {
       return quick_answers_consent_status_;
     }
+  }
+
+  NOTREACHED() << "Invalid FeatureType provided: "
+               << static_cast<int>(feature_type);
+}
+
+base::expected<bool, QuickAnswersState::Error>
+QuickAnswersState::IsIntentEligibleExpected(
+    quick_answers::Intent intent) const {
+  return IsIntentEligibleExpectedAs(intent, GetFeatureType());
+}
+
+base::expected<bool, QuickAnswersState::Error>
+QuickAnswersState::IsIntentEligibleExpectedAs(
+    quick_answers::Intent intent,
+    QuickAnswersState::FeatureType feature_type) const {
+  // Use `IsEligibleExpectedAs` instead of `IsEligibleAs` since we would like to
+  // return an error value if eligible is an error value.
+  base::expected<bool, QuickAnswersState::Error> maybe_eligible =
+      IsEligibleExpectedAs(feature_type);
+  if (maybe_eligible != true) {
+    return maybe_eligible;
+  }
+
+  switch (feature_type) {
+    case QuickAnswersState::FeatureType::kHmr:
+      // All intents are always eligible for kHmr.
+      return true;
+    case QuickAnswersState::FeatureType::kQuickAnswers:
+      switch (intent) {
+        case quick_answers::Intent::kDefinition:
+          return quick_answers_definition_eligible_;
+        case quick_answers::Intent::kTranslation:
+          return quick_answers_translation_eligible_;
+        case quick_answers::Intent::kUnitConversion:
+          return quick_answers_unit_conversion_eligible_;
+      }
+
+      NOTREACHED() << "Invalid IntentType enum class value provided.";
   }
 }
 
@@ -316,8 +425,32 @@ void QuickAnswersState::SetQuickAnswersFeatureConsentStatus(
   MaybeNotifyConsentStatusChanged();
 }
 
+void QuickAnswersState::SetIntentEligibilityAsQuickAnswers(
+    quick_answers::Intent intent,
+    bool eligible) {
+  switch (intent) {
+    case quick_answers::Intent::kDefinition:
+      quick_answers_definition_eligible_ = eligible;
+      return;
+    case quick_answers::Intent::kTranslation:
+      quick_answers_translation_eligible_ = eligible;
+      return;
+    case quick_answers::Intent::kUnitConversion:
+      quick_answers_unit_conversion_eligible_ = eligible;
+      return;
+  }
+
+  NOTREACHED() << "Invalid Intent enum class value provided.";
+}
+
 void QuickAnswersState::InitializeObserver(
     QuickAnswersStateObserver* observer) {
+  base::expected<QuickAnswersState::FeatureType, QuickAnswersState::Error>
+      maybe_feature_type = GetFeatureTypeExpected();
+  if (maybe_feature_type.has_value()) {
+    observer->OnFeatureTypeChanged();
+  }
+
   if (prefs_initialized_) {
     observer->OnPrefsInitialized();
     observer->OnApplicationLocaleReady(resolved_application_locale_);
@@ -383,6 +516,31 @@ void QuickAnswersState::MaybeNotifyIsEnabledChanged() {
   for (auto& observer : observers_) {
     observer.OnSettingsEnabled(last_notified_is_enabled_.value());
   }
+}
+
+void QuickAnswersState::MaybeNotifyFeatureTypeChanged() {
+  base::expected<QuickAnswersState::FeatureType, QuickAnswersState::Error>
+      feature_type = GetFeatureTypeExpected();
+
+  if (last_notified_feature_type_ == feature_type) {
+    return;
+  }
+
+  last_notified_feature_type_ = feature_type;
+
+  if (last_notified_feature_type_.has_value()) {
+    for (auto& observer : observers_) {
+      observer.OnFeatureTypeChanged();
+    }
+  }
+
+  // Trigger potential value change notifications. Note that this won't reset
+  // the last value with the previous feature type. e.g., if it's eligible with
+  // the previous feature type and it's still eligible with new feature type, it
+  // won't notify.
+  MaybeNotifyEligibilityChanged();
+  MaybeNotifyIsEnabledChanged();
+  MaybeNotifyConsentStatusChanged();
 }
 
 void QuickAnswersState::MaybeNotifyConsentStatusChanged() {

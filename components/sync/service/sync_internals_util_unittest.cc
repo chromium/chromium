@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/sync/service/sync_internals_util.h"
+
 #include <memory>
 #include <string>
 
 #include "base/values.h"
-#include "components/sync/service/sync_internals_util.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

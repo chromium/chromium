@@ -6,7 +6,6 @@
 
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/blink/public/common/page/browsing_context_group_info.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/page/prerender_page_param.mojom.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
@@ -33,8 +32,10 @@ ScopedWebFrame::ScopedWebFrame()
           *agent_group_scheduler_,
           /*session_storage_namespace_id=*/std::string(),
           /*page_base_background_color=*/std::nullopt,
-          blink::BrowsingContextGroupInfo::CreateUnique(),
-          /*color_provider_colors=*/nullptr)),
+          /*browsing_context_group_token=*/base::UnguessableToken::Create(),
+          /*color_provider_colors=*/nullptr,
+          /*history_index=*/-1,
+          /*history_length=*/0)),
       frame_(blink::WebLocalFrame::CreateMainFrame(view_,
                                                    &frame_client_,
                                                    nullptr,

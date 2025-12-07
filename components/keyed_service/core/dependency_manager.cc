@@ -20,11 +20,6 @@
 #include "components/keyed_service/core/keyed_service_factory.h"
 #include "components/keyed_service/core/refcounted_keyed_service_factory.h"
 
-#ifndef NDEBUG
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#endif  // NDEBUG
-
 namespace {
 
 // An ordered container of pointers to DependencyNode. The order depends
@@ -56,7 +51,7 @@ DependencyManager::~DependencyManager() = default;
 void DependencyManager::AddComponent(KeyedServiceBaseFactory* component) {
 #if DCHECK_IS_ON()
 #if BUILDFLAG(KEYED_SERVICE_HAS_TIGHT_REGISTRATION)
-  const bool registration_allowed = !any_context_created_;
+  const bool registration_allowed = (context_created_count_ == 0);
 #else
   // TODO(crbug.com/40158018): Tighten this check to ensure that no factories
   // are registered after CreateContextServices() is called.
@@ -105,7 +100,7 @@ void DependencyManager::RegisterPrefsForServices(
     user_prefs::PrefRegistrySyncable* pref_registry) {
   std::vector<raw_ptr<DependencyNode, VectorExperimental>> construction_order;
   if (!dependency_graph_.GetConstructionOrder(&construction_order)) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   for (DependencyNode* dependency_node : construction_order) {
@@ -121,10 +116,6 @@ void DependencyManager::CreateContextServices(void* context,
 
   const OrderedFactories construction_order = GetConstructionOrder();
 
-#ifndef NDEBUG
-  DumpContextDependencies(context);
-#endif
-
   for (KeyedServiceBaseFactory* factory : construction_order) {
     factory->ContextInitialized(context, is_testing_context);
   }
@@ -138,10 +129,6 @@ void DependencyManager::CreateContextServices(void* context,
 
 void DependencyManager::DestroyContextServices(void* context) {
   const OrderedFactories destruction_order = GetDestructionOrder();
-
-#ifndef NDEBUG
-  DumpContextDependencies(context);
-#endif
 
   ShutdownFactoriesInOrder(context, destruction_order);
   MarkContextDead(context);
@@ -167,11 +154,6 @@ void DependencyManager::PerformInterlockedTwoPhaseShutdown(
   const OrderedFactories destruction_order2 =
       dependency_manager2->GetDestructionOrder();
 
-#ifndef NDEBUG
-  dependency_manager1->DumpContextDependencies(context1);
-  dependency_manager2->DumpContextDependencies(context2);
-#endif
-
   ShutdownFactoriesInOrder(context1, destruction_order1);
   ShutdownFactoriesInOrder(context2, destruction_order2);
 
@@ -185,15 +167,16 @@ void DependencyManager::PerformInterlockedTwoPhaseShutdown(
 DependencyManager::OrderedFactories DependencyManager::GetConstructionOrder() {
   OrderedDependencyNodes construction_order;
   if (!dependency_graph_.GetConstructionOrder(&construction_order)) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   return OrderedFactoriesFromOrderedDependencyNodes(construction_order);
 }
 
 DependencyManager::OrderedFactories DependencyManager::GetDestructionOrder() {
   OrderedDependencyNodes destruction_order;
-  if (!dependency_graph_.GetDestructionOrder(&destruction_order))
-    NOTREACHED_IN_MIGRATION();
+  if (!dependency_graph_.GetDestructionOrder(&destruction_order)) {
+    NOTREACHED();
+  }
   return OrderedFactoriesFromOrderedDependencyNodes(destruction_order);
 }
 
@@ -216,7 +199,7 @@ void DependencyManager::DestroyFactoriesInOrder(
 void DependencyManager::AssertContextWasntDestroyed(void* context) const {
   if (dead_context_pointers_.find(context) != dead_context_pointers_.end()) {
     // We want to see all possible use-after-destroy in production environment.
-    CHECK(false) << "Attempted to access a context that was ShutDown(). "
+    NOTREACHED() << "Attempted to access a context that was ShutDown(). "
                  << "This is most likely a heap smasher in progress. After "
                  << "KeyedService::Shutdown() completes, your service MUST "
                  << "NOT refer to depended services again.";
@@ -225,16 +208,16 @@ void DependencyManager::AssertContextWasntDestroyed(void* context) const {
 
 void DependencyManager::MarkContextLive(void* context) {
 #if DCHECK_IS_ON()
+#if BUILDFLAG(KEYED_SERVICE_HAS_TIGHT_REGISTRATION)
+  ++context_created_count_;
+#else
   any_context_created_ = true;
+#endif
 #endif
 
   dead_context_pointers_.erase(context);
 
   const OrderedFactories construction_order = GetConstructionOrder();
-
-#ifndef NDEBUG
-  DumpContextDependencies(context);
-#endif
 
   for (KeyedServiceBaseFactory* factory : construction_order) {
     factory->ContextCreated(context);
@@ -243,26 +226,14 @@ void DependencyManager::MarkContextLive(void* context) {
 
 void DependencyManager::MarkContextDead(void* context) {
   dead_context_pointers_.insert(context);
+
+#if DCHECK_IS_ON()
+#if BUILDFLAG(KEYED_SERVICE_HAS_TIGHT_REGISTRATION)
+  CHECK_GT(context_created_count_, 0u);
+  --context_created_count_;
+#endif
+#endif
 }
-
-#ifndef NDEBUG
-namespace {
-
-std::string KeyedServiceBaseFactoryGetNodeName(DependencyNode* node) {
-  return static_cast<KeyedServiceBaseFactory*>(node)->name();
-}
-
-}  // namespace
-
-void DependencyManager::DumpDependenciesAsGraphviz(
-    const std::string& top_level_name,
-    const base::FilePath& dot_file) const {
-  DCHECK(!dot_file.empty());
-  std::string contents = dependency_graph_.DumpAsGraphviz(
-      top_level_name, base::BindRepeating(&KeyedServiceBaseFactoryGetNodeName));
-  base::WriteFile(dot_file, contents);
-}
-#endif  // NDEBUG
 
 DependencyGraph& DependencyManager::GetDependencyGraphForTesting() {
   return dependency_graph_;

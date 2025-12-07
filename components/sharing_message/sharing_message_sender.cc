@@ -4,15 +4,30 @@
 
 #include "components/sharing_message/sharing_message_sender.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
 #include "components/send_tab_to_self/target_device_info.h"
+#include "components/sharing_message/proto/sharing_message_type.pb.h"
 #include "components/sharing_message/sharing_constants.h"
 #include "components/sharing_message/sharing_fcm_sender.h"
 #include "components/sharing_message/sharing_metrics.h"
 #include "components/sharing_message/sharing_utils.h"
+#include "components/sync/protocol/unencrypted_sharing_message.pb.h"
 #include "components/sync_device_info/local_device_info_provider.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
+
+namespace {
+bool MessageTypeExpectsAck(sharing_message::MessageType message_type) {
+  switch (message_type) {
+    case sharing_message::SEND_TAB_TO_SELF_PUSH_NOTIFICATION:
+      return false;
+    default:
+      return true;
+  }
+}
+}  // namespace
 
 SharingMessageSender::SharingMessageSender(
     syncer::LocalDeviceInfoProvider* local_device_info_provider,
@@ -31,16 +46,13 @@ base::OnceClosure SharingMessageSender::SendMessageToDevice(
   DCHECK(message.payload_case() !=
          components_sharing_message::SharingMessage::kAckMessage);
 
-  int trace_id = GenerateSharingTraceId();
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-      "sharing", "Sharing.SendMessage", TRACE_ID_LOCAL(trace_id),
-      "message_type",
-      SharingMessageTypeToString(
-          SharingPayloadCaseToMessageType(message.payload_case())));
-
-  std::string message_guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
-  components_sharing_message::MessageType message_type =
+  sharing_message::MessageType message_type =
       SharingPayloadCaseToMessageType(message.payload_case());
+  int trace_id = GenerateSharingTraceId();
+  std::string message_guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
+
+  TRACE_EVENT_BEGIN("sharing", "Sharing.SendMessage", perfetto::Track(trace_id),
+                    "message_type", SharingMessageTypeToString(message_type));
 
   auto [it, inserted] = message_metadata_.insert_or_assign(
       message_guid, SentMessageMetadata(
@@ -49,22 +61,9 @@ base::OnceClosure SharingMessageSender::SendMessageToDevice(
                         SharingChannelType::kUnknown, device.pulse_interval()));
   DCHECK(inserted);
 
-  auto delegate_iter = send_delegates_.find(delegate_type);
-  if (delegate_iter == send_delegates_.end()) {
-    InvokeSendMessageCallback(message_guid,
-                              SharingSendMessageResult::kInternalError,
-                              /*response=*/nullptr);
-    return base::NullCallback();
-  }
-  SendMessageDelegate* delegate = delegate_iter->second.get();
-  DCHECK(delegate);
-
-  // TODO(crbug.com/40103693): Here we assume the caller gets the |device| from
-  // GetDeviceCandidates, so LocalDeviceInfoProvider is ready. It's better to
-  // queue up the message and wait until LocalDeviceInfoProvider is ready.
-  const syncer::DeviceInfo* local_device_info =
-      local_device_info_provider_->GetLocalDeviceInfo();
-  if (!local_device_info) {
+  SendMessageDelegate* delegate = MaybeGetSendMessageDelegate(
+      device, message_type, trace_id, message_guid, delegate_type);
+  if (!delegate) {
     InvokeSendMessageCallback(message_guid,
                               SharingSendMessageResult::kInternalError,
                               /*response=*/nullptr);
@@ -79,34 +78,126 @@ base::OnceClosure SharingMessageSender::SendMessageToDevice(
                      /*response=*/nullptr),
       response_timeout);
 
+  const syncer::DeviceInfo* local_device_info =
+      local_device_info_provider_->GetLocalDeviceInfo();
+
+  // Guaranteed by MaybeGetSendMessageDelegate().
+  CHECK(local_device_info);
+
   message.set_sender_guid(local_device_info->guid());
   message.set_sender_device_name(
       send_tab_to_self::GetSharingDeviceNames(local_device_info).full_name);
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("sharing", "Sharing.DoSendMessage",
-                                    TRACE_ID_LOCAL(trace_id));
+  TRACE_EVENT_BEGIN("sharing", "Sharing.DoSendMessage",
+                    perfetto::Track(trace_id));
+
   delegate->DoSendMessageToDevice(
       device, response_timeout, std::move(message),
       base::BindOnce(&SharingMessageSender::OnMessageSent,
-                     weak_ptr_factory_.GetWeakPtr(), message_guid));
+                     weak_ptr_factory_.GetWeakPtr(), message_guid,
+                     message_type));
 
   return base::BindOnce(&SharingMessageSender::InvokeSendMessageCallback,
                         weak_ptr_factory_.GetWeakPtr(), message_guid,
                         SharingSendMessageResult::kCancelled, nullptr);
 }
 
-void SharingMessageSender::OnMessageSent(const std::string& message_guid,
-                                         SharingSendMessageResult result,
-                                         std::optional<std::string> message_id,
-                                         SharingChannelType channel_type) {
+base::OnceClosure SharingMessageSender::SendUnencryptedMessageToDevice(
+    const SharingTargetDeviceInfo& device,
+    sync_pb::UnencryptedSharingMessage message,
+    DelegateType delegate_type,
+    ResponseCallback callback) {
+  sharing_message::MessageType message_type =
+      SharingPayloadCaseToMessageType(message.payload_case());
+  int trace_id = GenerateSharingTraceId();
+  std::string message_guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
+
+  TRACE_EVENT_BEGIN("sharing", "Sharing.SendMessage", perfetto::Track(trace_id),
+                    "message_type", SharingMessageTypeToString(message_type));
+
+  auto [it, inserted] = message_metadata_.insert_or_assign(
+      message_guid, SentMessageMetadata(
+                        std::move(callback), base::TimeTicks::Now(),
+                        message_type, device.platform(), trace_id,
+                        SharingChannelType::kUnknown, device.pulse_interval()));
+  DCHECK(inserted);
+
+  SendMessageDelegate* delegate = MaybeGetSendMessageDelegate(
+      device, message_type, trace_id, message_guid, delegate_type);
+  if (!delegate) {
+    InvokeSendMessageCallback(message_guid,
+                              SharingSendMessageResult::kInternalError,
+                              /*response=*/nullptr);
+    return base::NullCallback();
+  }
+
+  const syncer::DeviceInfo* local_device_info =
+      local_device_info_provider_->GetLocalDeviceInfo();
+
+  // Guaranteed by MaybeGetSendMessageDelegate().
+  CHECK(local_device_info);
+
+  message.set_sender_guid(local_device_info->guid());
+  message.set_sender_device_name(
+      send_tab_to_self::GetSharingDeviceNames(local_device_info).full_name);
+
+  TRACE_EVENT_BEGIN("sharing", "Sharing.DoSendMessage",
+                    perfetto::Track(trace_id));
+  delegate->DoSendUnencryptedMessageToDevice(
+      device, std::move(message),
+      base::BindOnce(&SharingMessageSender::OnMessageSent,
+                     weak_ptr_factory_.GetWeakPtr(), message_guid,
+                     message_type));
+
+  return base::BindOnce(&SharingMessageSender::InvokeSendMessageCallback,
+                        weak_ptr_factory_.GetWeakPtr(), message_guid,
+                        SharingSendMessageResult::kCancelled, nullptr);
+}
+
+SharingMessageSender::SendMessageDelegate*
+SharingMessageSender::MaybeGetSendMessageDelegate(
+    const SharingTargetDeviceInfo& device,
+    sharing_message::MessageType message_type,
+    int trace_id,
+    const std::string& message_guid,
+    DelegateType delegate_type) {
+  TRACE_EVENT_BEGIN("sharing", "Sharing.SendMessage", perfetto::Track(trace_id),
+                    "message_type", SharingMessageTypeToString(message_type));
+  auto delegate_iter = send_delegates_.find(delegate_type);
+  if (delegate_iter == send_delegates_.end()) {
+    return nullptr;
+  }
+  SendMessageDelegate* delegate = delegate_iter->second.get();
+  DCHECK(delegate);
+
+  // TODO(crbug.com/40103693): Here we assume the caller gets the |device| from
+  // GetDeviceCandidates, so LocalDeviceInfoProvider is ready. It's better to
+  // queue up the message and wait until LocalDeviceInfoProvider is ready.
+  const syncer::DeviceInfo* local_device_info =
+      local_device_info_provider_->GetLocalDeviceInfo();
+  if (!local_device_info) {
+    return nullptr;
+  }
+
+  return delegate;
+}
+
+void SharingMessageSender::OnMessageSent(
+    const std::string& message_guid,
+    sharing_message::MessageType message_type,
+    SharingSendMessageResult result,
+    std::optional<std::string> message_id,
+    SharingChannelType channel_type) {
   auto metadata_iter = message_metadata_.find(message_guid);
   DCHECK(metadata_iter != message_metadata_.end());
-  TRACE_EVENT_NESTABLE_ASYNC_END1(
-      "sharing", "Sharing.DoSendMessage",
-      TRACE_ID_LOCAL(metadata_iter->second.trace_id), "result",
-      SharingSendMessageResultToString(result));
+  TRACE_EVENT_END("sharing", /* Sharing.DoSendMessage */
+                  perfetto::Track(metadata_iter->second.trace_id), "result",
+                  SharingSendMessageResultToString(result));
   metadata_iter->second.channel_type = channel_type;
-  if (result != SharingSendMessageResult::kSuccessful) {
+  // For unsuccessful responses or for messages that don't expect an Ack
+  // response, record the result here.
+  if (result != SharingSendMessageResult::kSuccessful ||
+      !MessageTypeExpectsAck(message_type)) {
     InvokeSendMessageCallback(message_guid, result,
                               /*response=*/nullptr);
     return;
@@ -153,6 +244,12 @@ void SharingMessageSender::RegisterSendDelegate(
   DCHECK(result.second) << "Delegate type already registered";
 }
 
+void SharingMessageSender::ClearPendingMessages() {
+  for (const auto& [_, delegate] : send_delegates_) {
+    delegate->ClearPendingMessages();
+  }
+}
+
 SharingFCMSender* SharingMessageSender::GetFCMSenderForTesting() const {
   auto delegate_iter = send_delegates_.find(DelegateType::kFCM);
   DCHECK(delegate_iter != send_delegates_.end());
@@ -176,15 +273,16 @@ void SharingMessageSender::InvokeSendMessageCallback(
   LogSendSharingMessageResult(metadata.type, metadata.receiver_device_platform,
                               metadata.channel_type,
                               metadata.receiver_pulse_interval, result);
-  TRACE_EVENT_NESTABLE_ASYNC_END1("sharing", "SharingMessageSender.SendMessage",
-                                  TRACE_ID_LOCAL(metadata.trace_id), "result",
-                                  SharingSendMessageResultToString(result));
+  TRACE_EVENT_END(
+      "sharing",
+      /* SharingMessageSender.SendMessage */ perfetto::Track(metadata.trace_id),
+      "result", SharingSendMessageResultToString(result));
 }
 
 SharingMessageSender::SentMessageMetadata::SentMessageMetadata(
     ResponseCallback callback,
     base::TimeTicks timestamp,
-    components_sharing_message::MessageType type,
+    sharing_message::MessageType type,
     SharingDevicePlatform receiver_device_platform,
     int trace_id,
     SharingChannelType channel_type,

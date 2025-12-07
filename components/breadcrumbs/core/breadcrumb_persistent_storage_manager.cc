@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
 
@@ -14,7 +10,6 @@
 #include <string>
 
 #include "base/containers/adapters.h"
-#include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_split.h"
@@ -39,23 +34,15 @@ void DoWriteEventsToFile(const base::FilePath& file_path,
                          const size_t position,
                          const std::string& events,
                          const bool append) {
-  const base::MemoryMappedFile::Region region = {0, kPersistedFilesizeInBytes};
-  base::MemoryMappedFile file;
   int flags = base::File::FLAG_READ | base::File::FLAG_WRITE;
-  if (append) {
-    flags |= base::File::FLAG_OPEN_ALWAYS;
-  } else {
-    flags |= base::File::FLAG_CREATE_ALWAYS;
+  flags |=
+      append ? base::File::FLAG_OPEN_ALWAYS : base::File::FLAG_CREATE_ALWAYS;
+  base::File file(file_path, flags);
+  if (!file.IsValid()) {
+    return;
   }
-  const bool file_valid =
-      file.Initialize(base::File(file_path, flags), region,
-                      base::MemoryMappedFile::READ_WRITE_EXTEND);
-
-  if (file_valid) {
-    char* data = reinterpret_cast<char*>(file.data());
-    base::strlcpy(&data[position], events.c_str(),
-                  kPersistedFilesizeInBytes - position);
-  }
+  CHECK(position + events.length() <= kPersistedFilesizeInBytes);
+  file.Write(position, base::as_bytes(base::span(events)));
 }
 
 // Returns breadcrumb events stored at |file_path|.
@@ -112,7 +99,7 @@ std::string GetEvents() {
     breadcrumbs.push_back(event);
   }
 
-  std::reverse(breadcrumbs.begin(), breadcrumbs.end());
+  std::ranges::reverse(breadcrumbs);
   return base::JoinString(breadcrumbs, kEventSeparator) + kEventSeparator;
 }
 

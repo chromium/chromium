@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "build/build_config.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget.h"
 
 namespace content {
@@ -22,12 +22,12 @@ class DialogModel;
 namespace views {
 class DialogDelegate;
 class WidgetDelegate;
-}
+}  // namespace views
 
 namespace web_modal {
 class ModalDialogHost;
 class WebContentsModalDialogHost;
-}
+}  // namespace web_modal
 
 namespace constrained_window {
 
@@ -35,59 +35,56 @@ extern const void* kConstrainedWindowWidgetIdentifier;
 
 class ConstrainedWindowViewsClient;
 
-// Sets the ConstrainedWindowClient impl.
-void SetConstrainedWindowViewsClient(
-    std::unique_ptr<ConstrainedWindowViewsClient> client);
-
-// Update the position of dialog |widget| against |dialog_host|. This is used to
-// reposition widgets e.g. when the host dimensions change.
-void UpdateWebContentsModalDialogPosition(
-    views::Widget* widget,
-    web_modal::WebContentsModalDialogHost* dialog_host);
-
-void UpdateWidgetModalDialogPosition(
-    views::Widget* widget,
-    web_modal::ModalDialogHost* dialog_host);
-
-// Returns the top level WebContents of |initiator_web_contents|.
-content::WebContents* GetTopLevelWebContents(
-    content::WebContents* initiator_web_contents);
+// -- Helper functions for showing web modals.
+// -- Please use tabs::TabDialogManager on desktop platforms.
 
 // Shows the dialog with a new SingleWebContentsDialogManager. The dialog will
 // notify via WillClose() when it is being destroyed.
+// Please use tabs::TabDialogManager on desktop platforms.
 void ShowModalDialog(gfx::NativeWindow dialog,
                      content::WebContents* web_contents);
 
 // Calls CreateWebModalDialogViews, shows the dialog, and returns its widget.
+// Please use tabs::TabDialogManager on desktop platforms.
 views::Widget* ShowWebModalDialogViews(
     views::WidgetDelegate* dialog,
     content::WebContents* initiator_web_contents);
 
 // As above, but with an owned widget.
+// Please use tabs::TabDialogManager on desktop platforms.
 std::unique_ptr<views::Widget> ShowWebModalDialogViewsOwned(
     views::WidgetDelegate* dialog,
     content::WebContents* initiator_web_contents,
     views::Widget::InitParams::Ownership expected_ownership);
 
 // Create a widget for |dialog| that is modal to |web_contents|.
-// The modal type of |dialog->GetModalType()| must be ui::MODAL_TYPE_CHILD.
+// The modal type of |dialog->GetModalType()| must be
+// ui::mojom::ModalType::kChild.
+// Please use tabs::TabDialogManager on desktop platforms.
 views::Widget* CreateWebModalDialogViews(views::WidgetDelegate* dialog,
                                          content::WebContents* web_contents);
 
+// Shows a web/tab-modal dialog based on `dialog_model` and returns its widget.
+// Please use tabs::TabDialogManager on desktop platforms.
+views::Widget* ShowWebModal(std::unique_ptr<ui::DialogModel> dialog_model,
+                            content::WebContents* web_contents);
+
+// -- Helper function for showing browser modals.
+
 // Create a widget for |dialog| that has a modality given by
 // |dialog->GetModalType()|.  The modal type must be either
-// ui::MODAL_TYPE_SYSTEM or ui::MODAL_TYPE_WINDOW.  This places the dialog
-// appropriately if |parent| is a valid browser window. Currently, |parent| may
-// be null for MODAL_TYPE_WINDOW, but that's a bug and callers shouldn't rely on
-// that working. See http://crbug.com/657293. Instead of calling this function
-// with null |parent| and MODAL_TYPE_WINDOW, consider calling views::
-// DialogDelegate::CreateDialogWidget(dialog, nullptr, nullptr) instead.
-// For dialogs that may appear without direct user interaction (i.e., that may
-// appear while a user is busily accomplishing some other task in the browser),
-// consider providing an override of GetDefaultDialogButton on |dialog| to
-// suppress the normal behavior of choosing a focused-by-default button. This is
-// especially important if the action of the default button has consequences on
-// the user's task at hand.
+// ui::mojom::ModalType::kSystem or ui::mojom::ModalType::kWindow.  This places
+// the dialog appropriately if |parent| is a valid browser window. Currently,
+// |parent| may be null for MODAL_TYPE_WINDOW, but that's a bug and callers
+// shouldn't rely on that working. See http://crbug.com/657293. Instead of
+// calling this function with null |parent| and MODAL_TYPE_WINDOW, consider
+// calling views:: DialogDelegate::CreateDialogWidget(dialog, nullptr, nullptr)
+// instead. For dialogs that may appear without direct user interaction (i.e.,
+// that may appear while a user is busily accomplishing some other task in the
+// browser), consider providing an override of GetDefaultDialogButton on
+// |dialog| to suppress the normal behavior of choosing a focused-by-default
+// button. This is especially important if the action of the default button has
+// consequences on the user's task at hand.
 views::Widget* CreateBrowserModalDialogViews(
     std::unique_ptr<views::DialogDelegate> dialog,
     gfx::NativeWindow parent);
@@ -101,9 +98,24 @@ views::Widget* CreateBrowserModalDialogViews(views::DialogDelegate* dialog,
 views::Widget* ShowBrowserModal(std::unique_ptr<ui::DialogModel> dialog_model,
                                 gfx::NativeWindow parent);
 
-// Shows a web/tab-modal dialog based on `dialog_model` and returns its widget.
-views::Widget* ShowWebModal(std::unique_ptr<ui::DialogModel> dialog_model,
-                            content::WebContents* web_contents);
+// -- Other utility functions.
+
+// Sets the ConstrainedWindowClient impl.
+void SetConstrainedWindowViewsClient(
+    std::unique_ptr<ConstrainedWindowViewsClient> client);
+
+// Update the position of dialog |widget| against |dialog_host|. This is used to
+// reposition widgets e.g. when the host dimensions change.
+void UpdateWebContentsModalDialogPosition(
+    views::Widget* widget,
+    web_modal::WebContentsModalDialogHost* dialog_host);
+
+void UpdateWidgetModalDialogPosition(views::Widget* widget,
+                                     web_modal::ModalDialogHost* dialog_host);
+
+// Returns the top level WebContents of |initiator_web_contents|.
+content::WebContents* GetTopLevelWebContents(
+    content::WebContents* initiator_web_contents);
 
 // True if the platform supports global screen coordinates. This is typically
 // supported by most platforms except linux-wayland.

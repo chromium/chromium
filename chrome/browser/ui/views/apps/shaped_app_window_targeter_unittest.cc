@@ -9,7 +9,6 @@
 
 #include "apps/ui/views/app_window_frame_view.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/apps/chrome_native_app_window_views_aura.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -29,7 +28,7 @@ class ShapedAppWindowTargeterTest : public views::ViewsTestBase {
   ShapedAppWindowTargeterTest& operator=(const ShapedAppWindowTargeterTest&) =
       delete;
 
-  ~ShapedAppWindowTargeterTest() override {}
+  ~ShapedAppWindowTargeterTest() override = default;
 
   views::Widget* widget() { return widget_.get(); }
 
@@ -240,9 +239,9 @@ TEST_F(ShapedAppWindowTargeterTest, ResizeInsetsWithinBounds) {
     EXPECT_EQ(window, move.target());
   }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // The non standard app frame has a easy resize targetter installed.
-  std::unique_ptr<views::NonClientFrameView> frame(
+  std::unique_ptr<views::FrameView> frame(
       app_window_views()->CreateNonStandardAppFrame());
   {
     // Ensure that the window has an event targeter (there should be an

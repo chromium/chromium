@@ -7,9 +7,9 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "gpu/command_buffer/common/mailbox.h"
+#include "base/memory/weak_ptr.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/sync_token.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_resource_provider_cache.h"
@@ -45,11 +45,11 @@ class PLATFORM_EXPORT WebGPUMailboxTexture
       wgpu::TextureUsage usage,
       std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource);
 
-  static scoped_refptr<WebGPUMailboxTexture> FromExistingMailbox(
+  static scoped_refptr<WebGPUMailboxTexture> FromExistingSharedImage(
       scoped_refptr<DawnControlClientHolder> dawn_control_client,
       const wgpu::Device& device,
       const wgpu::TextureDescriptor& desc,
-      const gpu::Mailbox& mailbox,
+      scoped_refptr<gpu::ClientSharedImage> shared_image,
       const gpu::SyncToken& sync_token,
       gpu::webgpu::MailboxFlags mailbox_flags =
           gpu::webgpu::WEBGPU_MAILBOX_NONE,
@@ -63,7 +63,8 @@ class PLATFORM_EXPORT WebGPUMailboxTexture
       wgpu::TextureUsage usage,
       scoped_refptr<media::VideoFrame> video_frame);
 
-  void SetNeedsPresent(bool needs_present) { needs_present_ = needs_present; }
+  void SetNeedsPresent(bool needs_present);
+
   void SetAlphaClearer(scoped_refptr<WebGPUTextureAlphaClearer> alpha_clearer);
 
   // Dissociates this mailbox texture from WebGPU, presenting the image if
@@ -78,36 +79,32 @@ class PLATFORM_EXPORT WebGPUMailboxTexture
 
   ~WebGPUMailboxTexture();
 
-  const wgpu::Texture& GetTexture() { return texture_; }
-  uint32_t GetTextureIdForTest() { return wire_texture_id_; }
-  uint32_t GetTextureGenerationForTest() { return wire_texture_generation_; }
-  const wgpu::Device& GetDeviceForTest() { return device_; }
-  const gpu::Mailbox& GetMailbox() { return mailbox_; }
+  const wgpu::Texture& GetTexture();
 
  private:
   WebGPUMailboxTexture(
       scoped_refptr<DawnControlClientHolder> dawn_control_client,
       const wgpu::Device& device,
       const wgpu::TextureDescriptor& desc,
-      const gpu::Mailbox& mailbox,
+      scoped_refptr<gpu::ClientSharedImage> shared_image,
       const gpu::SyncToken& sync_token,
       gpu::webgpu::MailboxFlags mailbox_flags,
       wgpu::TextureUsage additional_internal_usage,
       base::OnceCallback<void(const gpu::SyncToken&)> finished_access_callback,
       std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource);
 
+  base::WeakPtr<WebGPUMailboxTexture> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
   wgpu::Device device_;
-  gpu::Mailbox mailbox_;
+  scoped_refptr<gpu::ClientSharedImage> shared_image_;
+  std::unique_ptr<gpu::WebGPUTextureScopedAccess> scoped_access_;
   base::OnceCallback<void(const gpu::SyncToken&)> finished_access_callback_;
-  wgpu::Texture texture_;
-  uint32_t wire_device_id_ = 0;
-  uint32_t wire_device_generation_ = 0;
-  uint32_t wire_texture_id_ = 0;
-  uint32_t wire_texture_generation_ = 0;
   std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource_;
-  bool needs_present_ = false;
   scoped_refptr<WebGPUTextureAlphaClearer> alpha_clearer_;
+  base::WeakPtrFactory<WebGPUMailboxTexture> weak_ptr_factory_{this};
 };
 
 }  // namespace blink

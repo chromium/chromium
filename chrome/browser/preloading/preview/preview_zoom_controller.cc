@@ -58,10 +58,7 @@ void PreviewZoomController::InitializeZoom() {
   CHECK(zoom_controller);
   CHECK(host_zoom_map);
 
-  content::NavigationEntry* entry =
-      web_contents()->GetController().GetLastCommittedEntry();
-  CHECK(entry);
-  const GURL url = host_zoom_map->GetURLFromEntry(entry);
+  const GURL url = content::HostZoomMap::GetURLForWebContents(web_contents());
   const std::string host = net::GetHostOrSpecFromURL(url);
 
   // If a user changed zoom level for the host in this session, recover it.
@@ -147,10 +144,7 @@ void PreviewZoomController::Zoom(content::PageZoom zoom) {
   CHECK(zoom_controller);
   CHECK(host_zoom_map);
 
-  content::NavigationEntry* entry =
-      web_contents()->GetController().GetLastCommittedEntry();
-  CHECK(entry);
-  const GURL url = host_zoom_map->GetURLFromEntry(entry);
+  const GURL url = content::HostZoomMap::GetURLForWebContents(web_contents());
   const std::string host = net::GetHostOrSpecFromURL(url);
 
   const double level = GetNextZoomLevel(

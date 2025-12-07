@@ -4,12 +4,12 @@
 
 #include "chrome/browser/chromeos/extensions/smart_card_provider_private/smart_card_provider_private_api.h"
 
-#include <queue>
-#include <variant>
-
+#include "base/containers/circular_deque.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/timer/timer.h"
+#include "base/types/expected_macros.h"
 #include "chrome/common/extensions/api/smart_card_provider_private.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -20,6 +20,8 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/mojom/smart_card.mojom.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace scard_api = extensions::api::smart_card_provider_private;
 
@@ -338,15 +340,15 @@ struct SmartCardProviderPrivateAPI::ContextData {
   // This queue contains requests from device::mojom::SmartCardContext or
   // device::mojom::SmartCardConnection for this context that have arrived
   // while it was waiting for the result of a previous request.
-  std::queue<base::OnceClosure> task_queue;
+  base::circular_deque<base::OnceClosure> task_queue;
 
   // All device::mojom::SmartCardConnection receivers created on this context.
-  std::set<mojo::ReceiverId> connection_receiver_ids;
+  absl::flat_hash_set<mojo::ReceiverId> connection_receiver_ids;
 
   // Maps a valid PC/SC Handle to whether it has an active transaction. Ie,
   // transactions begun by the browser and that, therefore, the browser should
   // also end.
-  std::map<Handle, bool> handles_map;
+  absl::flat_hash_map<Handle, bool> handles_map;
 };
 
 // static
@@ -380,6 +382,10 @@ SmartCardProviderPrivateAPI::SmartCardProviderPrivateAPI(
   transaction_receivers_.set_disconnect_handler(base::BindRepeating(
       &SmartCardProviderPrivateAPI::OnMojoTransactionDisconnected,
       weak_ptr_factory_.GetWeakPtr()));
+
+  connection_watchers_.set_disconnect_handler(
+      base::BindRepeating(&SmartCardProviderPrivateAPI::OnMojoWatcherPipeClosed,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 SmartCardProviderPrivateAPI::~SmartCardProviderPrivateAPI() = default;
@@ -439,6 +445,14 @@ void SmartCardProviderPrivateAPI::OnMojoConnectionDisconnected() {
   if (disconnect_observer_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, disconnect_observer_);
+  }
+
+  // Break the watcher pipe.
+  auto it = connection_watchers_per_receiver_.find(
+      connection_receivers_.current_receiver());
+  if (it != connection_watchers_per_receiver_.end()) {
+    connection_watchers_.Remove(it->second);
+    connection_watchers_per_receiver_.erase(it);
   }
 
   auto callback =
@@ -518,7 +532,7 @@ void SmartCardProviderPrivateAPI::OnScardHandleDisconnected(
 void SmartCardProviderPrivateAPI::RunOrQueueRequest(ContextId scard_context,
                                                     base::OnceClosure request) {
   if (IsContextBusy(scard_context)) {
-    GetContextData(scard_context).task_queue.push(std::move(request));
+    GetContextData(scard_context).task_queue.push_back(std::move(request));
     return;
   }
 
@@ -537,11 +551,8 @@ void SmartCardProviderPrivateAPI::SendReleaseContext(ContextId scard_context) {
           .Append(scard_context.GetUnsafeValue()),
       &*browser_context_);
 
-  const std::string provider_extension_id = GetListenerExtensionId(*event);
-
-  if (provider_extension_id.empty()) {
-    return;
-  }
+  ASSIGN_OR_RETURN(const std::string provider_extension_id,
+                   GetListenerExtensionId(*event), [] {});
 
   auto pending = std::make_unique<PendingResult>();
   pending->scard_context = scard_context;
@@ -859,7 +870,9 @@ device::mojom::SmartCardConnectResultPtr
 SmartCardProviderPrivateAPI::CreateSmartCardConnection(
     ContextId scard_context,
     Handle handle,
-    device::mojom::SmartCardProtocol active_protocol) {
+    device::mojom::SmartCardProtocol active_protocol,
+    mojo::PendingRemote<device::mojom::SmartCardConnectionWatcher>
+        connection_watcher) {
   if (handle.is_null()) {
     LOG(ERROR) << "Provider reported an invalid handle value: "
                << handle.GetUnsafeValue();
@@ -875,6 +888,17 @@ SmartCardProviderPrivateAPI::CreateSmartCardConnection(
   GetContextData(scard_context)
       .connection_receiver_ids.insert(connection_receiver_id);
 
+  if (mojo::Remote connection_watcher_remote(std::move(connection_watcher));
+      connection_watcher_remote.is_bound()) {
+    // Creating a connection is also considered the first use of said
+    // connection.
+    connection_watcher_remote->NotifyConnectionUsed();
+    mojo::RemoteSetElementId watcher_id =
+        connection_watchers_per_receiver_[connection_receiver_id] =
+            connection_watchers_.Add(std::move(connection_watcher_remote));
+    connection_receivers_per_watcher_[watcher_id] = connection_receiver_id;
+  }
+
   return SmartCardConnectResult::NewSuccess(
       device::mojom::SmartCardConnectSuccess::New(std::move(connection_remote),
                                                   active_protocol));
@@ -886,9 +910,13 @@ void SmartCardProviderPrivateAPI::ReportConnectResult(
     device::mojom::SmartCardProtocol active_protocol,
     device::mojom::SmartCardResultPtr result) {
   if (!pending_results_.contains(request_id)) {
-    // TODO(crbug.com/40247152): send disconnect request to PC/SC provider if
-    // the handle is valid and the result is success to avoid leaking this
-    // seemingly unrequested connection.
+    if (result->is_success() && !handle.is_null()) {
+      LOG(WARNING) << "Provider reported a connection for an unknown request. "
+                   << "Attempting to disconnect to prevent leaks.";
+      SendDisconnect(ContextId(), handle,
+                     device::mojom::SmartCardDisposition::kLeave,
+                     base::DoNothing());
+    }
     return;
   }
 
@@ -898,6 +926,8 @@ void SmartCardProviderPrivateAPI::ReportConnectResult(
 
 void SmartCardProviderPrivateAPI::ProcessConnectResult(
     ContextId scard_context,
+    mojo::PendingRemote<device::mojom::SmartCardConnectionWatcher>
+        connection_watcher,
     ResultArgs result_args,
     device::mojom::SmartCardResultPtr result,
     SmartCardCallback callback) {
@@ -911,7 +941,8 @@ void SmartCardProviderPrivateAPI::ProcessConnectResult(
 
     connect_result = CreateSmartCardConnection(
         scard_context, handle,
-        std::get<device::mojom::SmartCardProtocol>(handle_and_protocol));
+        std::get<device::mojom::SmartCardProtocol>(handle_and_protocol),
+        std::move(connection_watcher));
 
     auto& context_data = GetContextData(scard_context);
     CHECK(!context_data.handles_map.contains(handle));
@@ -941,7 +972,7 @@ void SmartCardProviderPrivateAPI::RunNextRequestForContext(
   }
 
   auto task = std::move(context_data.task_queue.front());
-  context_data.task_queue.pop();
+  context_data.task_queue.pop_front();
   std::move(task).Run();
 }
 
@@ -1029,25 +1060,40 @@ void SmartCardProviderPrivateAPI::SetDisconnectObserverForTesting(
   disconnect_observer_ = observer;
 }
 
-// TODO(crbug.com/40247152): Consider if we need to wait for a known
-// SmartCard provider Extension to load or finish installation
-// before querying for listeners.
-// Use case is if the Web API is used immediately after a user logs
-// in.
-std::string SmartCardProviderPrivateAPI::GetListenerExtensionId(
+// This might fail when one attempts to use this API immediately after system
+// startup or before the appropriate extension is installed. However waiting for
+// this to happen instead of immediately failing is not an option, as:
+// - The application is provided with the descriptive error, so it can implement
+//   retry mechanisms and knows what is happening.
+// - There are cases in which the subscription will never happen (e.g. extension
+//   is not installed and the user is not planning on doing it); not resolving
+//   the promise for a long time would be confusing for the application and
+//   indistinguishable from e.g. a long-running PC/SC operation.
+std::optional<std::string> SmartCardProviderPrivateAPI::GetListenerExtensionId(
     const extensions::Event& event) {
   std::set<const extensions::EventListener*> listener_set =
       event_router_->listeners().GetEventListeners(event);
 
   if (listener_set.empty()) {
     LOG(ERROR) << "No extension listening to " << event.event_name << ".";
-    return std::string();
+    return std::nullopt;
   }
 
-  // Allow list on the extension API permission enforces that there can't
-  // be multiple extensions with access to it. Thus don't bother
-  // iterating through the set.
-  return (*listener_set.cbegin())->extension_id();
+  // There may be multiple listeners within the same extension.
+  std::set<std::string> extension_ids;
+  std::ranges::transform(
+      listener_set, std::inserter(extension_ids, extension_ids.end()),
+      [](auto* event_listener) { return event_listener->extension_id(); });
+
+  if (extension_ids.size() > 1) {
+    LOG(ERROR) << "Multiple extensions listening to " << event.event_name
+               << ". This should never happen, as multiple PC/SC providers "
+                  "will collide with each other. Check whether you have not "
+                  "installed both beta and stable versions at the same time.";
+    return std::nullopt;
+  }
+
+  return *extension_ids.begin();
 }
 
 template <typename ResultPtr>
@@ -1072,13 +1118,13 @@ void SmartCardProviderPrivateAPI::DispatchEventWithTimeout(
                                                    std::move(event_arguments),
                                                    &*browser_context_);
 
-  const std::string provider_extension_id = GetListenerExtensionId(*event);
-  if (provider_extension_id.empty()) {
-    ResultPtr error(std::in_place);
-    error->set_error(SmartCardError::kNoService);
-    std::move(callback).Run(std::move(error));
-    return;
-  }
+  ASSIGN_OR_RETURN(const std::string provider_extension_id,
+                   GetListenerExtensionId(*event), [&callback] {
+                     using Result = typename ResultPtr::element_type;
+                     ResultPtr error =
+                         Result::NewError(SmartCardError::kNoService);
+                     std::move(callback).Run(std::move(error));
+                   });
 
   auto pending = std::make_unique<PendingResult>();
   pending->scard_context = scard_context;
@@ -1208,6 +1254,8 @@ void SmartCardProviderPrivateAPI::Connect(
     const std::string& reader,
     device::mojom::SmartCardShareMode share_mode,
     device::mojom::SmartCardProtocolsPtr preferred_protocols,
+    mojo::PendingRemote<device::mojom::SmartCardConnectionWatcher>
+        connection_watcher,
     ConnectCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -1219,7 +1267,7 @@ void SmartCardProviderPrivateAPI::Connect(
       base::BindOnce(&SmartCardProviderPrivateAPI::SendConnect,
                      weak_ptr_factory_.GetWeakPtr(), scard_context, reader,
                      share_mode, std::move(preferred_protocols),
-                     std::move(callback)));
+                     std::move(connection_watcher), std::move(callback)));
 }
 
 void SmartCardProviderPrivateAPI::SendConnect(
@@ -1227,6 +1275,8 @@ void SmartCardProviderPrivateAPI::SendConnect(
     const std::string& reader,
     device::mojom::SmartCardShareMode share_mode,
     device::mojom::SmartCardProtocolsPtr preferred_protocols,
+    mojo::PendingRemote<device::mojom::SmartCardConnectionWatcher>
+        connection_watcher,
     ConnectCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(scard_context);
@@ -1239,7 +1289,8 @@ void SmartCardProviderPrivateAPI::SendConnect(
 
   auto process_result =
       base::BindOnce(&SmartCardProviderPrivateAPI::ProcessConnectResult,
-                     weak_ptr_factory_.GetWeakPtr(), scard_context);
+                     weak_ptr_factory_.GetWeakPtr(), scard_context,
+                     std::move(connection_watcher));
 
   DispatchEventWithTimeout(
       scard_context, scard_api::OnConnectRequested::kEventName,
@@ -1256,6 +1307,8 @@ void SmartCardProviderPrivateAPI::Disconnect(
   const auto& [context_id, handle] = connection_receivers_.current_context();
   CHECK(context_id);
   CHECK(handle);
+
+  NotifyConnectionUsed();
 
   // Consider the handle no longer valid irrespective of whether the Disconnect
   // PC/SC call actually succeeds in the end as any PC/SC failure of this call
@@ -1286,6 +1339,8 @@ void SmartCardProviderPrivateAPI::Transmit(
   CHECK(context_id);
   CHECK(handle);
 
+  NotifyConnectionUsed();
+
   RunOrQueueRequest(
       context_id,
       base::BindOnce(&SmartCardProviderPrivateAPI::SendTransmit,
@@ -1302,6 +1357,8 @@ void SmartCardProviderPrivateAPI::Control(uint32_t control_code,
   CHECK(context_id);
   CHECK(handle);
 
+  NotifyConnectionUsed();
+
   RunOrQueueRequest(
       context_id,
       base::BindOnce(&SmartCardProviderPrivateAPI::SendControl,
@@ -1316,6 +1373,8 @@ void SmartCardProviderPrivateAPI::GetAttrib(uint32_t id,
   const auto& [context_id, handle] = connection_receivers_.current_context();
   CHECK(context_id);
   CHECK(handle);
+
+  NotifyConnectionUsed();
 
   RunOrQueueRequest(context_id,
                     base::BindOnce(&SmartCardProviderPrivateAPI::SendGetAttrib,
@@ -1339,6 +1398,8 @@ void SmartCardProviderPrivateAPI::SetAttrib(uint32_t id,
   CHECK(context_id);
   CHECK(handle);
 
+  NotifyConnectionUsed();
+
   RunOrQueueRequest(context_id,
                     base::BindOnce(&SmartCardProviderPrivateAPI::SendSetAttrib,
                                    weak_ptr_factory_.GetWeakPtr(), context_id,
@@ -1351,6 +1412,8 @@ void SmartCardProviderPrivateAPI::Status(StatusCallback callback) {
   const auto& [context_id, handle] = connection_receivers_.current_context();
   CHECK(context_id);
   CHECK(handle);
+
+  NotifyConnectionUsed();
 
   RunOrQueueRequest(context_id,
                     base::BindOnce(&SmartCardProviderPrivateAPI::SendStatus,
@@ -1365,6 +1428,8 @@ void SmartCardProviderPrivateAPI::BeginTransaction(
   const auto& [context_id, handle] = connection_receivers_.current_context();
   CHECK(context_id);
   CHECK(handle);
+
+  NotifyConnectionUsed();
 
   RunOrQueueRequest(
       context_id,
@@ -1583,4 +1648,22 @@ REPORT_RESULT_FUNCTION_IMPL(
 
 #undef REPORT_RESULT_FUNCTION_IMPL
 
+void SmartCardProviderPrivateAPI::OnMojoWatcherPipeClosed(
+    mojo::RemoteSetElementId watcher_id) {
+  auto it = connection_receivers_per_watcher_.find(watcher_id);
+  if (it == connection_receivers_per_watcher_.end()) {
+    return;
+  }
+  connection_receivers_.Remove(it->second);
+  connection_receivers_per_watcher_.erase(it);
+}
+
+void SmartCardProviderPrivateAPI::NotifyConnectionUsed() {
+  auto it = connection_watchers_per_receiver_.find(
+      connection_receivers_.current_receiver());
+  if (it == connection_watchers_per_receiver_.end()) {
+    return;
+  }
+  connection_watchers_.Get(it->second)->NotifyConnectionUsed();
+}
 }  // namespace extensions

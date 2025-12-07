@@ -63,7 +63,7 @@ void SessionRestorationWebStateObserver::WebStateRealized(
 
 void SessionRestorationWebStateObserver::WebStateDestroyed(
     web::WebState* web_state) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 #pragma mark - web::WebFramesManager::Observer
@@ -120,5 +120,3 @@ void SessionRestorationWebStateObserver::MarkDirty() {
 
   callback_.Run(web_state_.get());
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(SessionRestorationWebStateObserver)

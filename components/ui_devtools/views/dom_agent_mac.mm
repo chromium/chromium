@@ -6,9 +6,11 @@
 
 #import <AppKit/AppKit.h>
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "components/ui_devtools/views/widget_element.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/native_widget_mac.h"
 
 namespace ui_devtools {
@@ -49,7 +51,7 @@ std::vector<UIElement*> DOMAgentMac::CreateChildrenForRoot() {
 
 void DOMAgentMac::OnWidgetDestroying(views::Widget* widget) {
   widget->RemoveObserver(this);
-  roots_.erase(base::ranges::find(roots_, widget), roots_.end());
+  roots_.erase(std::ranges::find(roots_, widget), roots_.end());
 }
 
 void DOMAgentMac::OnNativeWidgetAdded(views::NativeWidgetMac* native_widget) {
@@ -64,14 +66,13 @@ void DOMAgentMac::OnNativeWidgetAdded(views::NativeWidgetMac* native_widget) {
 std::unique_ptr<protocol::DOM::Node> DOMAgentMac::BuildTreeForWindow(
     UIElement* window_element_root) {
   // Window elements aren't supported on Mac.
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void DOMAgentMac::InitializeRootsFromOpenWindows() {
   for (NSWindow* window in NSApp.windows) {
-    if (views::Widget* widget =
-            views::Widget::GetWidgetForNativeWindow(window)) {
+    if (views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
+            gfx::NativeWindow(window))) {
       // When in immersive fullscreen mode, an overlay widget has two associated
       // NSWindows:
       // 1. An invisible one created by Chrome, which serves as an anchor

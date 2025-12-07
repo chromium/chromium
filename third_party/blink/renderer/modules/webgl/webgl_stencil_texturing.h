@@ -10,6 +10,8 @@
 
 namespace blink {
 
+class ExecutionContext;
+
 class WebGLStencilTexturing final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -17,7 +19,7 @@ class WebGLStencilTexturing final : public WebGLExtension {
   static bool Supported(WebGLRenderingContextBase*);
   static const char* ExtensionName();
 
-  explicit WebGLStencilTexturing(WebGLRenderingContextBase*);
+  WebGLStencilTexturing(WebGLRenderingContextBase*, ExecutionContext*);
 
   WebGLExtensionName GetName() const override;
 };

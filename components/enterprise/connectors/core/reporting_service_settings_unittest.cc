@@ -7,8 +7,7 @@
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/no_destructor.h"
-#include "build/chromeos_buildflags.h"
-#include "components/enterprise/connectors/service_provider_config.h"
+#include "components/enterprise/connectors/core/service_provider_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace enterprise_connectors {
@@ -63,10 +62,6 @@ TEST_F(ReportingServiceSettingsTest, TestNormalSettingsWithoutEvents) {
   std::optional<ReportingSettings> reporting_settings =
       GetReportingSettings(kNormalSettingsWithoutEvents);
   ASSERT_TRUE(reporting_settings.has_value());
-
-  ASSERT_TRUE(reporting_settings->reporting_url.is_valid());
-  ASSERT_EQ(GURL("https://chromereporting-pa.googleapis.com/v1/events"),
-            reporting_settings.value().reporting_url);
 }
 
 TEST_F(ReportingServiceSettingsTest, TestNormalSettingsWithEvents) {

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/cert/x509_util.h"
 
 #include <string.h>
@@ -15,16 +10,19 @@
 #include <memory>
 #include <string_view>
 
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "crypto/hash.h"
+#include "crypto/keypair.h"
 #include "crypto/openssl_util.h"
-#include "crypto/rsa_private_key.h"
-#include "crypto/sha2.h"
 #include "net/base/hash_value.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/time_conversions.h"
@@ -254,8 +252,7 @@ bool GetTLSServerEndPointChannelBinding(const X509Certificate& certificate,
       // Legacy digests are not supported, and
       // `GetTlsServerEndpointDigestAlgorithm` internally maps MD5 and SHA-1 to
       // SHA-256.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
 
     case bssl::DigestAlgorithm::Sha256:
       digest_evp_md = EVP_sha256();
@@ -272,43 +269,29 @@ bool GetTLSServerEndPointChannelBinding(const X509Certificate& certificate,
   if (!digest_evp_md)
     return false;
 
-  uint8_t digest[EVP_MAX_MD_SIZE];
+  std::array<uint8_t, EVP_MAX_MD_SIZE> digest;
   unsigned int out_size;
   if (!EVP_Digest(der_encoded_certificate.data(),
-                  der_encoded_certificate.size(), digest, &out_size,
-                  digest_evp_md, nullptr))
+                  der_encoded_certificate.size(), digest.data(), &out_size,
+                  digest_evp_md, nullptr)) {
     return false;
+  }
 
   token->assign(kChannelBindingPrefix);
-  token->append(digest, digest + out_size);
+  token->append(base::as_string_view(digest).substr(0, out_size));
   return true;
 }
 
-// RSA keys created by CreateKeyAndSelfSignedCert will be of this length.
-static const uint16_t kRSAKeyLength = 1024;
+std::vector<uint8_t> CreateUnusableCert(std::string_view subject) {
+  const uint32_t kSerial = 1;
+  const base::Time not_valid_before = base::Time::Now() - base::Minutes(5);
+  const base::Time not_valid_after = base::Time::Now() + base::Hours(1);
+  auto key = crypto::keypair::PrivateKey::GenerateEcP256();
+  std::string der_cert;
+  CHECK(CreateSelfSignedCert(key.key(), DIGEST_SHA256, subject, kSerial,
+                             not_valid_before, not_valid_after, {}, &der_cert));
 
-// Certificates made by CreateKeyAndSelfSignedCert will be signed using this
-// digest algorithm.
-static const DigestAlgorithm kSignatureDigestAlgorithm = DIGEST_SHA256;
-
-bool CreateKeyAndSelfSignedCert(std::string_view subject,
-                                uint32_t serial_number,
-                                base::Time not_valid_before,
-                                base::Time not_valid_after,
-                                std::unique_ptr<crypto::RSAPrivateKey>* key,
-                                std::string* der_cert) {
-  std::unique_ptr<crypto::RSAPrivateKey> new_key(
-      crypto::RSAPrivateKey::Create(kRSAKeyLength));
-  if (!new_key)
-    return false;
-
-  bool success = CreateSelfSignedCert(new_key->key(), kSignatureDigestAlgorithm,
-                                      subject, serial_number, not_valid_before,
-                                      not_valid_after, {}, der_cert);
-  if (success)
-    *key = std::move(new_key);
-
-  return success;
+  return base::ToVector(base::as_byte_span(der_cert));
 }
 
 Extension::Extension(base::span<const uint8_t> in_oid,
@@ -440,9 +423,7 @@ bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBuffer(
 }
 
 bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBuffer(std::string_view data) {
-  return bssl::UniquePtr<CRYPTO_BUFFER>(
-      CRYPTO_BUFFER_new(reinterpret_cast<const uint8_t*>(data.data()),
-                        data.size(), GetBufferPool()));
+  return CreateCryptoBuffer(base::as_byte_span(data));
 }
 
 bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBufferFromStaticDataUnsafe(
@@ -456,26 +437,24 @@ bool CryptoBufferEqual(const CRYPTO_BUFFER* a, const CRYPTO_BUFFER* b) {
   DCHECK(a && b);
   if (a == b)
     return true;
-  return CRYPTO_BUFFER_len(a) == CRYPTO_BUFFER_len(b) &&
-         memcmp(CRYPTO_BUFFER_data(a), CRYPTO_BUFFER_data(b),
-                CRYPTO_BUFFER_len(a)) == 0;
+  return CryptoBufferAsSpan(a) == CryptoBufferAsSpan(b);
 }
 
 std::string_view CryptoBufferAsStringPiece(const CRYPTO_BUFFER* buffer) {
-  return std::string_view(
-      reinterpret_cast<const char*>(CRYPTO_BUFFER_data(buffer)),
-      CRYPTO_BUFFER_len(buffer));
+  return base::as_string_view(CryptoBufferAsSpan(buffer));
 }
 
 base::span<const uint8_t> CryptoBufferAsSpan(const CRYPTO_BUFFER* buffer) {
-  return base::make_span(CRYPTO_BUFFER_data(buffer), CRYPTO_BUFFER_len(buffer));
+  // SAFETY: CRYPTO_BUFFER_data(buffer) returns a pointer to data that is
+  // CRYPTO_BUFFER_len(buffer) bytes in length.
+  return UNSAFE_BUFFERS(
+      base::span(CRYPTO_BUFFER_data(buffer), CRYPTO_BUFFER_len(buffer)));
 }
 
 scoped_refptr<X509Certificate> CreateX509CertificateFromBuffers(
     const STACK_OF(CRYPTO_BUFFER) * buffers) {
   if (sk_CRYPTO_BUFFER_num(buffers) == 0) {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediate_chain;
@@ -517,13 +496,13 @@ bssl::ParseCertificateOptions DefaultParseCertificateOptions() {
   return options;
 }
 
-bool CalculateSha256SpkiHash(const CRYPTO_BUFFER* buffer, HashValue* hash) {
+bool CalculateSha256SpkiHash(const CRYPTO_BUFFER* buffer,
+                             SHA256HashValue* hash) {
   std::string_view spki;
   if (!asn1::ExtractSPKIFromDERCert(CryptoBufferAsStringPiece(buffer), &spki)) {
     return false;
   }
-  *hash = HashValue(HASH_VALUE_SHA256);
-  crypto::SHA256HashString(spki, hash->data(), hash->size());
+  *hash = crypto::hash::Sha256(base::as_byte_span(spki));
   return true;
 }
 
@@ -570,8 +549,7 @@ bool HasRsaPkcs1Sha1Signature(const CRYPTO_BUFFER* cert_buffer) {
   bssl::der::Input tbs_certificate_tlv;
   bssl::der::Input signature_algorithm_tlv;
   bssl::der::BitString signature_value;
-  if (!bssl::ParseCertificate(bssl::der::Input(CRYPTO_BUFFER_data(cert_buffer),
-                                               CRYPTO_BUFFER_len(cert_buffer)),
+  if (!bssl::ParseCertificate(bssl::der::Input(CryptoBufferAsSpan(cert_buffer)),
                               &tbs_certificate_tlv, &signature_algorithm_tlv,
                               &signature_value, /*out_errors=*/nullptr)) {
     return false;

@@ -80,8 +80,8 @@ TargetView::TargetView(DisplayOverlayController* controller,
   center_.set_x(bounds.width() / 2);
   center_.set_y(bounds.height() / 2);
   SetFocusBehavior(FocusBehavior::ALWAYS);
-  GetViewAccessibility().SetProperties(
-      ax::mojom::Role::kPane,
+  GetViewAccessibility().SetRole(ax::mojom::Role::kPane);
+  GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_BUTTON_PLACEMENT_A11Y_LABEL));
 }
 
@@ -91,7 +91,8 @@ void TargetView::UpdateWidgetBounds() {
   auto* widget = GetWidget();
   DCHECK(widget);
 
-  widget->SetBounds(controller_->touch_injector()->content_bounds());
+  controller_->UpdateWidgetBoundsInRootWindow(
+      widget, controller_->touch_injector()->content_bounds());
 }
 
 gfx::Rect TargetView::GetTargetCircleBounds() const {
@@ -107,7 +108,7 @@ int TargetView::GetCircleRadius() const {
     case ActionType::MOVE:
       return kActionMoveCircleRadius;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -118,7 +119,7 @@ int TargetView::GetCircleRingRadius() const {
     case ActionType::MOVE:
       return kActionMoveCircleRingRadius;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

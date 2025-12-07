@@ -2,40 +2,37 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 import("//ui/webui/webui_features.gni")
 
-assert(!is_chromeos_ash)
+assert(!is_chromeos)
 
 build_webui("build") {
   grd_prefix = "profile_picker"
 
   static_files = [ "profile_picker.html" ]
 
-  web_component_files = [
-    "profile_card_menu.ts",
-    "profile_card.ts",
-    "profile_creation_flow/profile_type_choice.ts",
-    "profile_picker_app.ts",
-    "profile_picker_main_view.ts",
-    "profile_switch.ts",
-  ]
-
-  if (is_chromeos_lacros) {
-    web_component_files +=
-        [ "profile_creation_flow/account_selection_lacros.ts" ]
-  }
-
-  non_web_component_files = [
+  ts_files = [
     "drag_drop_reorder_tile_list_delegate.ts",
     "ensure_lazy_loaded.ts",
     "lazy_load.ts",
     "manage_profiles_browser_proxy.ts",
     "navigation_mixin.ts",
-    "policy_helper.ts",
+    "profile_card.html.ts",
+    "profile_card.ts",
+    "profile_card_menu.html.ts",
+    "profile_card_menu.ts",
+    "profile_creation_flow/profile_type_choice.html.ts",
+    "profile_creation_flow/profile_type_choice.ts",
     "profile_picker.ts",
+    "profile_picker_app.html.ts",
+    "profile_picker_app.ts",
+    "profile_picker_flags.ts",
+    "profile_picker_main_view.html.ts",
+    "profile_picker_main_view.ts",
     "profile_picker_util.ts",
+    "profile_switch.html.ts",
+    "profile_switch.ts",
   ]
 
   icons_html_files = [ "icons.html" ]
@@ -43,16 +40,12 @@ build_webui("build") {
   css_files = [
     "profile_card.css",
     "profile_card_menu.css",
-    "profile_creation_flow/profile_creation_shared.css",
-    "profile_creation_flow/profile_creation_shared_lit.css",
     "profile_creation_flow/profile_type_choice.css",
+    "profile_picker_app.css",
     "profile_picker_main_view.css",
     "profile_picker_shared.css",
-    "profile_picker_shared_lit.css",
     "profile_switch.css",
   ]
-
-  html_to_wrapper_template = "detect"
 
   ts_composite = true
   ts_definitions = [
@@ -61,7 +54,6 @@ build_webui("build") {
   ]
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
-    "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",

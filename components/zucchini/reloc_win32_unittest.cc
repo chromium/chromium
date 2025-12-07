@@ -6,13 +6,13 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/gtest_util.h"
 #include "components/zucchini/address_translator.h"
 #include "components/zucchini/algorithm.h"
@@ -26,7 +26,7 @@ class RelocUtilsWin32Test : public testing::Test {
  protected:
   using Units = std::vector<RelocUnitWin32>;
 
-  RelocUtilsWin32Test() {}
+  RelocUtilsWin32Test() = default;
 
   // Resets all tester data, calls RelocRvaReaderWin32::FindRelocBlocks(), and
   // returns its results.
@@ -191,7 +191,7 @@ TEST_F(RelocUtilsWin32Test, ReadWrite) {
       "00 10 04 00 10 00 00 00 C0 32 18 A3 F8 A7 FF 0F "
       "00 20 04 00 10 00 00 00 80 A0 65 31 F8 37 BC 3A");
   reloc_region_ = {0x600, reloc_data.size()};
-  base::ranges::copy(reloc_data, image_data.begin() + reloc_region_.lo());
+  std::ranges::copy(reloc_data, image_data.begin() + reloc_region_.lo());
   image_ = {image_data.data(), image_data.size()};
   offset_t image_size = base::checked_cast<offset_t>(image_.size());
 

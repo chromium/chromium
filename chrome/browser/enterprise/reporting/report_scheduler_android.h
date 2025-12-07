@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_REPORTING_REPORT_SCHEDULER_ANDROID_H_
 #define CHROME_BROWSER_ENTERPRISE_REPORTING_REPORT_SCHEDULER_ANDROID_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 
 class Profile;
@@ -12,7 +13,8 @@ class Profile;
 namespace enterprise_reporting {
 
 // Android implementation of the ReportScheduler delegate.
-class ReportSchedulerAndroid : public ReportScheduler::Delegate {
+class ReportSchedulerAndroid : public ReportScheduler::Delegate,
+                               public UserSecuritySignalsService::Delegate {
  public:
   ReportSchedulerAndroid();
   explicit ReportSchedulerAndroid(Profile* profile);
@@ -29,6 +31,10 @@ class ReportSchedulerAndroid : public ReportScheduler::Delegate {
   void OnBrowserVersionUploaded() override;
   policy::DMToken GetProfileDMToken() override;
   std::string GetProfileClientId() override;
+
+  // UserSecuritySignalsService::Delegate implementation.
+  void OnReportEventTriggered(SecurityReportTrigger trigger) override;
+  network::mojom::CookieManager* GetCookieManager() override;
 
  private:
   raw_ptr<Profile> profile_;

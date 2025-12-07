@@ -12,13 +12,15 @@
 #include <optional>
 #include <set>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
+#include "base/dcheck_is_on.h"
 #include "base/debug/crash_logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_tree_data.h"
@@ -37,6 +39,8 @@ class AXSelection;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(AXTreeUnserializeError)
 enum class AXTreeUnserializeError {
   // Tree has no root.
   kNoRoot = 0,
@@ -58,10 +62,38 @@ enum class AXTreeUnserializeError {
   // increase, but none of the other enum values may change.
   kMaxValue = kPendingChanges
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:AccessibilityTreeUnserializeError)
 
-#define ACCESSIBILITY_TREE_UNSERIALIZE_ERROR_HISTOGRAM(enum_value) \
-  base::UmaHistogramEnumeration(                                   \
-      "Accessibility.Reliability.Tree.UnserializeError", enum_value)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+// To support AriaNotify on older versions of ATK, we need to use the ATK
+// signal "Text::text-insert". This signal requires a node that is a
+// text type, and it needs to have aria-live properties set in order for
+// Orca to make announcements. We create 2 extra "dummy" nodes that can be
+// used for firing these signals when there is an AriaNotify event. One node
+// will have `aria-live: assertive` and the other will have `aria-live:
+// polite`.
+class ExtraAnnouncementNodes {
+ public:
+  explicit ExtraAnnouncementNodes(AXNode* root);
+  ~ExtraAnnouncementNodes();
+
+  AXNode& AssertiveNode() const { return *assertive_node_; }
+  AXNode& PoliteNode() const { return *polite_node_; }
+  int Count() const {
+    return (assertive_node_ ? 1 : 0) + (polite_node_ ? 1 : 0);
+  }
+
+  static constexpr int kHighPriorityIndex = 0;
+  static constexpr int kNormalPriorityIndex = 1;
+
+ private:
+  std::unique_ptr<AXNode> CreateNode(const std::string& live_status,
+                                     AXNode* root);
+
+  std::unique_ptr<AXNode> assertive_node_;
+  std::unique_ptr<AXNode> polite_node_;
+};
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
 // AXTree is a live, managed tree of AXNode objects that can receive
 // updates from another AXTreeSource via AXTreeUpdates, and it can be
@@ -257,6 +289,14 @@ class AX_EXPORT AXTree {
 
   void NotifyChildTreeConnectionChanged(AXNode* node, AXTree* child_tree);
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  void ClearExtraAnnouncementNodes();
+  void CreateExtraAnnouncementNodes();
+  ExtraAnnouncementNodes* extra_announcement_nodes() const {
+    return extra_announcement_nodes_.get();
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+
  private:
   friend class ScopedTreeUpdateInProgressStateSetter;
   friend class AXTableInfoTest;
@@ -265,7 +305,7 @@ class AX_EXPORT AXTree {
   // `SetFocusedNodeShouldNeverBeIgnored` above).
   static bool is_focused_node_always_unignored_;
 
-#if DCHECK_IS_ON()
+#if AX_FAIL_FAST_BUILD()
   void CheckTreeConsistency(const AXTreeUpdate& update);
 #endif
 
@@ -308,12 +348,14 @@ class AX_EXPORT AXTree {
 
   // Notify the delegate that |node| will be destroyed or reparented.
   void NotifyNodeWillBeReparentedOrDeleted(
-      AXNode* node,
-      const AXTreeUpdateState* update_state);
+      AXNode& node,
+      const AXTreeUpdateState& update_state);
 
   // Notify the delegate that |node| and all of its descendants will be
   // destroyed. This function is called during AXTree teardown.
-  void RecursivelyNotifyNodeDeletedForTreeTeardown(AXNode* node);
+  void RecursivelyNotifyNodeWillBeDeletedForTreeTeardown(
+      AXNode& node,
+      absl::flat_hash_set<AXNodeID>& deleted_nodes);
 
   // Notify the delegate that the node marked by |node_id| has been deleted.
   // We are passing the node id instead of ax node is because by the time this
@@ -419,7 +461,7 @@ class AX_EXPORT AXTree {
 
   base::ObserverList<AXTreeObserver> observers_;
   raw_ptr<AXNode> root_ = nullptr;
-  std::unordered_map<AXNodeID, std::unique_ptr<AXNode>> id_map_;
+  absl::flat_hash_map<AXNodeID, std::unique_ptr<AXNode>> id_map_;
   std::string error_;
   AXTreeData data_;
 
@@ -434,7 +476,7 @@ class AX_EXPORT AXTree {
 
   // Map from node ID to cached table info, if the given node is a table.
   // Invalidated every time the tree is updated.
-  mutable std::unordered_map<AXNodeID, std::unique_ptr<AXTableInfo>>
+  mutable absl::flat_hash_map<AXNodeID, std::unique_ptr<AXTableInfo>>
       table_info_map_;
 
   // The next negative node ID to use for internal nodes.
@@ -442,9 +484,6 @@ class AX_EXPORT AXTree {
 
   // Contains pos_in_set and set_size data for an AXNode.
   struct NodeSetSizePosInSetInfo {
-    NodeSetSizePosInSetInfo();
-    ~NodeSetSizePosInSetInfo();
-
     std::optional<int> pos_in_set;
     std::optional<int> set_size;
     std::optional<int> lowest_hierarchical_level;
@@ -493,7 +532,7 @@ class AX_EXPORT AXTree {
   // objects.
   // All other objects will map to default-constructed OrderedSetInfo objects.
   // Invalidated every time the tree is updated.
-  mutable std::unordered_map<AXNodeID, NodeSetSizePosInSetInfo>
+  mutable absl::flat_hash_map<AXNodeID, NodeSetSizePosInSetInfo>
       node_set_size_pos_in_set_info_map_;
 
   // Indicates if the tree is updating.
@@ -502,7 +541,16 @@ class AX_EXPORT AXTree {
   // Indicates if the tree represents a paginated document
   bool has_pagination_support_ = false;
 
+#if DCHECK_IS_ON()
+  bool is_destroyed_ = false;
+  int unserialize_count_ = 0;
+#endif
+
   std::unique_ptr<AXEvent> event_data_;
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  std::unique_ptr<ExtraAnnouncementNodes> extra_announcement_nodes_ = nullptr;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 };
 
 // Sets the flag that indicates whether the accessibility tree is currently

@@ -5,23 +5,34 @@
 #ifndef EXTENSIONS_BROWSER_API_EXTENSIONS_API_CLIENT_H_
 #define EXTENSIONS_BROWSER_API_EXTENSIONS_API_CLIENT_H_
 
+#include <stdint.h>
+
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "extensions/browser/api/clipboard/clipboard_api.h"
-#include "extensions/browser/api/declarative_content/content_rules_registry.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "extensions/browser/api/storage/settings_namespace.h"
 #include "extensions/browser/api/storage/settings_observer.h"
-#include "extensions/common/api/clipboard.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "extensions/browser/api/clipboard/clipboard_api_types.h"
+#include "extensions/common/api/clipboard.h"
+#endif
+
 class GURL;
+class KeyedServiceBaseFactory;
+
+namespace base {
+class SingleThreadTaskRunner;
+}
 
 namespace content {
 class BrowserContext;
@@ -53,6 +64,9 @@ class MessagingDelegate;
 class MetricsPrivateDelegate;
 class MimeHandlerViewGuest;
 class MimeHandlerViewGuestDelegate;
+class NativeMessageHost;
+class NativeMessagePort;
+class NativeMessagePortDispatcher;
 class NonNativeFileSystemDelegate;
 class RulesCacheDelegate;
 class SupervisedUserExtensionsDelegate;
@@ -79,21 +93,22 @@ class ExtensionsAPIClient {
   // Destruction clears the single instance.
   virtual ~ExtensionsAPIClient();
 
-  // Returns the single instance of |this|.
+  // Returns the single instance of `this`.
   static ExtensionsAPIClient* Get();
 
   // Storage API support.
 
   // Add any additional value store caches (e.g. for chrome.storage.managed)
-  // to |caches|. By default adds nothing.
+  // to `caches`. By default adds nothing.
   virtual void AddAdditionalValueStoreCaches(
       content::BrowserContext* context,
       const scoped_refptr<value_store::ValueStoreFactory>& factory,
       SettingsChangedCallback observer,
-      std::map<settings_namespace::Namespace, ValueStoreCache*>* caches);
+      std::map<settings_namespace::Namespace,
+               raw_ptr<ValueStoreCache, CtnExperimental>>* caches);
 
   // Attaches any extra web contents helpers (like ExtensionWebContentsObserver)
-  // to |web_contents|.
+  // to `web_contents`.
   virtual void AttachWebContentsHelpers(content::WebContents* web_contents)
       const;
 
@@ -101,7 +116,7 @@ class ExtensionsAPIClient {
   virtual bool ShouldHideResponseHeader(const GURL& url,
                                         const std::string& header_name) const;
 
-  // Returns true if the given |request| should be hidden from extensions. This
+  // Returns true if the given `request` should be hidden from extensions. This
   // should be invoked on the UI thread.
   virtual bool ShouldHideBrowserNetworkRequest(
       content::BrowserContext* context,
@@ -115,7 +130,7 @@ class ExtensionsAPIClient {
 
   // Updates an extension's matched action count stored in an ExtensionAction
   // and optionally clears the extension's explicitly set badge text for the
-  // tab specified by |tab_id|.
+  // tab specified by `tab_id`.
   virtual void UpdateActionCount(content::BrowserContext* context,
                                  const ExtensionId& extension_id,
                                  int tab_id,
@@ -126,19 +141,20 @@ class ExtensionsAPIClient {
   virtual void ClearActionCount(content::BrowserContext* context,
                                 const Extension& extension);
 
-  // A method to open file: URL for tests.
-  virtual void OpenFileUrl(const GURL& file_url,
-                           content::BrowserContext* browser_context);
+  // A method to open file: URL for tests (e.g. chrome.test.openFileUrl).
+  virtual void OpenFileUrlForTesting(const GURL& file_url,
+                                     content::BrowserContext* browser_context);
 
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   // Creates the AppViewGuestDelegate.
-  virtual AppViewGuestDelegate* CreateAppViewGuestDelegate() const;
+  virtual std::unique_ptr<AppViewGuestDelegate> CreateAppViewGuestDelegate()
+      const;
 
-  // Returns a delegate for ExtensionOptionsGuest. The caller owns the returned
-  // ExtensionOptionsGuestDelegate.
-  virtual ExtensionOptionsGuestDelegate* CreateExtensionOptionsGuestDelegate(
-      ExtensionOptionsGuest* guest) const;
+  // Creates a delegate for ExtensionOptionsGuest.
+  virtual std::unique_ptr<ExtensionOptionsGuestDelegate>
+  CreateExtensionOptionsGuestDelegate(ExtensionOptionsGuest* guest) const;
 
-  // Returns a delegate for GuestViewManagerDelegate.
+  // Creates a delegate for GuestViewManagerDelegate.
   virtual std::unique_ptr<guest_view::GuestViewManagerDelegate>
   CreateGuestViewManagerDelegate() const;
 
@@ -146,16 +162,15 @@ class ExtensionsAPIClient {
   virtual std::unique_ptr<MimeHandlerViewGuestDelegate>
   CreateMimeHandlerViewGuestDelegate(MimeHandlerViewGuest* guest) const;
 
-  // Returns a delegate for some of WebViewGuest's behavior. The caller owns the
-  // returned WebViewGuestDelegate.
-  virtual WebViewGuestDelegate* CreateWebViewGuestDelegate(
+  // Creates a delegate for some of WebViewGuest's behavior.
+  virtual std::unique_ptr<WebViewGuestDelegate> CreateWebViewGuestDelegate(
       WebViewGuest* web_view_guest) const;
 
-  // Returns a delegate for some of WebViewPermissionHelper's behavior. The
-  // caller owns the returned WebViewPermissionHelperDelegate.
-  virtual WebViewPermissionHelperDelegate*
+  // Creates a delegate for some of WebViewPermissionHelper's behavior.
+  virtual std::unique_ptr<WebViewPermissionHelperDelegate>
   CreateWebViewPermissionHelperDelegate(
       WebViewPermissionHelper* web_view_permission_helper) const;
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Returns an interface for requesting consent for file system API. The caller
@@ -201,16 +216,21 @@ class ExtensionsAPIClient {
   // MetricsPrivateAPI behavior.
   virtual MetricsPrivateDelegate* GetMetricsPrivateDelegate();
 
-  // Returns a delegate for embedder-specific chrome.fileSystem behavior.
-  virtual FileSystemDelegate* GetFileSystemDelegate();
-
   // Returns a delegate for embedder-specific extension messaging.
   virtual MessagingDelegate* GetMessagingDelegate();
+
+// The APIs that need these methods are not supported on desktop Android.
+#if !BUILDFLAG(IS_ANDROID)
+  // Returns a delegate for embedder-specific chrome.fileSystem behavior.
+  virtual FileSystemDelegate* GetFileSystemDelegate();
 
   // Returns a delegate for the chrome.feedbackPrivate API.
   virtual FeedbackPrivateDelegate* GetFeedbackPrivateDelegate();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+  virtual AutomationInternalApiDelegate* GetAutomationInternalApiDelegate();
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS)
   // If supported by the embedder, returns a delegate for querying non-native
   // file systems.
   virtual NonNativeFileSystemDelegate* GetNonNativeFileSystemDelegate();
@@ -218,9 +238,7 @@ class ExtensionsAPIClient {
   // Returns a delegate for embedder-specific chrome.mediaPerceptionPrivate API
   // behavior.
   virtual MediaPerceptionAPIDelegate* GetMediaPerceptionAPIDelegate();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS)
   // Saves image data on clipboard.
   virtual void SaveImageDataToClipboard(
       std::vector<uint8_t> image_data,
@@ -230,11 +248,15 @@ class ExtensionsAPIClient {
       base::OnceCallback<void(const std::string&)> error_callback);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  virtual AutomationInternalApiDelegate* GetAutomationInternalApiDelegate();
-
   // Gets keyed service factories that are used in the other methods on this
   // class.
   virtual std::vector<KeyedServiceBaseFactory*> GetFactoryDependencies();
+
+  virtual std::unique_ptr<NativeMessagePortDispatcher>
+  CreateNativeMessagePortDispatcher(
+      std::unique_ptr<NativeMessageHost> host,
+      base::WeakPtr<NativeMessagePort> port,
+      scoped_refptr<base::SingleThreadTaskRunner> message_service_task_runner);
 
   // NOTE: If this interface gains too many methods (perhaps more than 20) it
   // should be split into one interface per API.

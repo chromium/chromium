@@ -98,7 +98,7 @@ std::vector<content::RenderFrameHost*> GetPdfPluginFrames(
   return plugin_frames;
 }
 
-size_t CountPdfPluginProcesses(Browser* browser) {
+size_t CountPdfPluginProcesses(const Browser* browser) {
   base::flat_set<content::RenderProcessHost*> pdf_processes;
 
   const TabStripModel* tab_strip = browser->tab_strip_model();
@@ -220,11 +220,6 @@ gfx::Point ConvertPageCoordToScreenCoord(
       content::EvalJs(guest_main_frame, "linkScreenPositionY;").ExtractInt();
 
   return {x, y};
-}
-
-void SetInputFocusOnPlugin(extensions::MimeHandlerViewGuest* guest) {
-  SetInputFocusOnPlugin(guest->GetGuestMainFrame(),
-                        guest->embedder_web_contents());
 }
 
 void SetInputFocusOnPlugin(content::RenderFrameHost* extension_host,

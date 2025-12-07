@@ -4,13 +4,15 @@
 
 #include "chrome/browser/ui/webauthn/passkey_saved_confirmation_controller.h"
 
+#include <memory>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
-#include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -23,7 +25,7 @@ namespace {
 using ::testing::Return;
 
 constexpr char kUIDismissalReasonMetric[] = "PasswordManager.UIDismissalReason";
-constexpr char16_t kUsername[] = u"username";
+constexpr char kRpId[] = "touhou.example.com";
 
 }  // namespace
 
@@ -41,8 +43,6 @@ class PasskeySavedConfirmationControllerTest : public ::testing::Test {
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
     mock_delegate_ =
         std::make_unique<testing::NiceMock<PasswordsModelDelegateMock>>();
-    ON_CALL(*mock_delegate_, GetRecentlySavedPasskeyUsername)
-        .WillByDefault(Return(kUsername));
     ON_CALL(*mock_delegate_, GpmPinCreatedDuringRecentPasskeyCreation)
         .WillByDefault(Return(false));
   }
@@ -54,7 +54,7 @@ class PasskeySavedConfirmationControllerTest : public ::testing::Test {
   void CreateController() {
     EXPECT_CALL(*delegate(), OnBubbleShown());
     controller_ = std::make_unique<PasskeySavedConfirmationController>(
-        mock_delegate_->AsWeakPtr());
+        mock_delegate_->AsWeakPtr(), kRpId);
     ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(delegate()));
   }
 
@@ -84,7 +84,6 @@ TEST_F(PasskeySavedConfirmationControllerTest, ContentWithoutPinCreation) {
   CreateController();
   EXPECT_EQ(controller()->GetTitle(),
             l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_PASSKEY_SAVED_TITLE));
-  EXPECT_EQ(controller()->GetUsername(), kUsername);
 }
 
 TEST_F(PasskeySavedConfirmationControllerTest, ContentWithPinCreation) {
@@ -94,16 +93,16 @@ TEST_F(PasskeySavedConfirmationControllerTest, ContentWithPinCreation) {
   EXPECT_EQ(controller()->GetTitle(),
             l10n_util::GetStringUTF16(
                 IDS_WEBAUTHN_GPM_PASSKEY_SAVED_PIN_CREATED_TITLE));
-  EXPECT_EQ(controller()->GetUsername(), kUsername);
 }
 
 TEST_F(PasskeySavedConfirmationControllerTest,
        OnGooglePasswordManagerLinkClicked) {
   base::HistogramTester histogram_tester;
   CreateController();
-  EXPECT_CALL(*delegate(), NavigateToPasswordManagerSettingsPage(
-                               password_manager::ManagePasswordsReferrer::
-                                   kPasskeySavedConfirmationBubble));
+  EXPECT_CALL(*delegate(),
+              NavigateToPasswordDetailsPageInPasswordManager(
+                  kRpId, password_manager::ManagePasswordsReferrer::
+                             kPasskeySavedConfirmationBubble));
   controller()->OnGooglePasswordManagerLinkClicked();
   DestroyController();
   histogram_tester.ExpectUniqueSample(

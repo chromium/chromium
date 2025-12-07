@@ -39,8 +39,9 @@ class CastDetailedViewTest : public AshTestBase {
   }
 
   void TearDown() override {
-    widget_.reset();
     detailed_view_ = nullptr;
+    // widget_ depends on delegate, so is reset before delegate.
+    widget_.reset();
     delegate_.reset();
     AshTestBase::TearDown();
   }
@@ -91,7 +92,7 @@ class CastDetailedViewTest : public AshTestBase {
   std::unique_ptr<views::Widget> widget_;
   TestCastConfigController cast_config_;
   std::unique_ptr<FakeDetailedViewDelegate> delegate_;
-  raw_ptr<CastDetailedView, DanglingUntriaged> detailed_view_ = nullptr;
+  raw_ptr<CastDetailedView> detailed_view_ = nullptr;
 };
 
 TEST_F(CastDetailedViewTest, ViewsCreatedForCastDevices) {
@@ -101,7 +102,7 @@ TEST_F(CastDetailedViewTest, ViewsCreatedForCastDevices) {
 
   for (views::View* view : GetDeviceViews()) {
     // Device views are children of the rounded container.
-    EXPECT_STREQ(view->parent()->GetClassName(), "RoundedContainer");
+    EXPECT_EQ(view->parent()->GetClassName(), "RoundedContainer");
 
     // Device views don't have a "stop casting" button by default.
     ASSERT_TRUE(views::IsViewClass<HoverHighlightView>(view));
@@ -131,9 +132,12 @@ TEST_F(CastDetailedViewTest, CastToSinkClosingBubbleDoesNotCrash) {
   // In multi-monitor situations, casting will create a picker window to choose
   // the desktop to cast. This causes a window activation that closes the
   // system tray bubble and deletes the widget owning the CastDetailedView.
-  cast_config_.set_cast_to_sink_closure(
-      base::BindOnce([](CastDetailedViewTest* test) { test->widget_.reset(); },
-                     base::Unretained(this)));
+  cast_config_.set_cast_to_sink_closure(base::BindOnce(
+      [](CastDetailedViewTest* test) {
+        test->detailed_view_ = nullptr;
+        test->widget_.reset();
+      },
+      base::Unretained(this)));
   LeftClickOn(first_view);
   EXPECT_EQ(cast_config_.cast_to_sink_count(), 1u);
   // No crash.
@@ -201,7 +205,7 @@ TEST_F(CastDetailedViewTest, StopCastingButton) {
   views::View* right_view = row->right_view();
   ASSERT_TRUE(right_view);
   EXPECT_TRUE(views::IsViewClass<PillButton>(right_view));
-  EXPECT_EQ(right_view->GetTooltipText(gfx::Point()), u"Stop casting");
+  EXPECT_EQ(right_view->GetRenderedTooltipText(gfx::Point()), u"Stop casting");
 
   // Clicking on the button stops casting.
   LeftClickOn(right_view);
@@ -257,7 +261,8 @@ TEST_F(CastDetailedViewTest, FreezeButton) {
   ASSERT_EQ(views.size(), 2u);
   auto* freeze_button = views[0].get();
   EXPECT_TRUE(views::IsViewClass<PillButton>(freeze_button));
-  EXPECT_EQ(freeze_button->GetTooltipText(gfx::Point()), u"Pause casting");
+  EXPECT_EQ(freeze_button->GetRenderedTooltipText(gfx::Point()),
+            u"Pause casting");
 
   // Clicking on the button pauses casting.
   LeftClickOn(freeze_button);

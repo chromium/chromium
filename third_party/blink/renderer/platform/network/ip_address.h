@@ -9,7 +9,7 @@
 #include "net/base/ip_address.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 
-namespace WTF {
+namespace blink {
 
 // Uses a default-constructed zero-sized IPAddress as the empty value and an
 // invalid one-byte IPAddress as the deleted value.
@@ -32,6 +32,6 @@ struct HashTraits<net::IPAddress> : GenericHashTraits<net::IPAddress> {
   }
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_NETWORK_IP_ADDRESS_H_

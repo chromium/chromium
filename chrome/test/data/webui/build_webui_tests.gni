@@ -5,6 +5,7 @@
 import("//chrome/common/features.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/typescript/webui_ts_library.gni")
+import("//ui/webui/resources/tools/eslint_ts.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 template("build_webui_tests") {
@@ -25,10 +26,13 @@ template("build_webui_tests") {
   }
 
   if (defined(invoker.static_files)) {
-    static_files_filter = [ "*.html" ]
+    static_files_filter = [
+      "*.html",
+      "*.json",
+    ]
     static_files = filter_include(invoker.static_files, static_files_filter)
     assert(static_files == invoker.static_files,
-           "Static files must be .html files")
+           "Static files must be .html,.json files")
     preprocess_if_expr("preprocess_static_files") {
       visibility = [ ":build_grdp" ]
       defines = chrome_grit_defines
@@ -40,7 +44,10 @@ template("build_webui_tests") {
   }
 
   preprocess_if_expr("preprocess") {
-    visibility = [ ":build_ts" ]
+    visibility = [
+      ":build_ts",
+      ":lint",
+    ]
     defines = chrome_grit_defines
     in_folder = "."
     out_folder = preprocess_dir
@@ -62,27 +69,26 @@ template("build_webui_tests") {
       composite = invoker.ts_composite
     }
     if (!composite) {
-      visibility = [ ":build_grdp" ]
+      visibility = [
+        ":build_grdp",
+        ":lint",
+      ]
     }
     root_dir = preprocess_dir
     out_dir = tsc_dir
 
     # Default tsconfig is set to
-    # //chrome/test/data/webui/tsconfig_base_polymer.json for targets
-    # with a Polymer or Lit dependency, and
-    # //chrome/test/data/webui/tsconfig_base_polymer.json) for other targets.
+    # //chrome/test/data/webui/tsconfig_base_lit.json for targets
+    # with a Lit dependency, and //chrome/test/data/webui/tsconfig_base.json
+    # for other targets.
     tsconfig_base = "//chrome/test/data/webui/tsconfig_base.json"
     if (defined(invoker.ts_tsconfig_base)) {
       tsconfig_base = invoker.ts_tsconfig_base
     } else if (defined(invoker.ts_deps)) {
-      has_polymer_or_lit =
-          filter_include(invoker.ts_deps,
-                         [
-                           "//third_party/polymer/v3_0:library",
-                           "//third_party/lit/v3_0:build_ts",
-                         ]) != []
-      if (has_polymer_or_lit) {
-        tsconfig_base = "//chrome/test/data/webui/tsconfig_base_polymer.json"
+      has_lit = filter_include(invoker.ts_deps,
+                               [ "//third_party/lit/v3_0:build_ts" ]) != []
+      if (has_lit) {
+        tsconfig_base = "//chrome/test/data/webui/tsconfig_base_lit.json"
       }
     }
 
@@ -125,6 +131,25 @@ template("build_webui_tests") {
       }
       extra_deps += [ ":copy_mojo" ]
     }
+    if (defined(invoker.ts_extra_deps)) {
+      extra_deps += invoker.ts_extra_deps
+    }
+  }
+
+  enable_type_aware_eslint_checks =
+      !defined(invoker.enable_type_aware_eslint_checks) ||
+      invoker.enable_type_aware_eslint_checks
+
+  if (enable_type_aware_eslint_checks) {
+    eslint_ts("lint") {
+      in_folder = preprocess_dir
+      in_files = filter_exclude(files, [ "*.js" ])
+      tsconfig = "$target_gen_dir/tsconfig_build_ts.json"
+      deps = [
+        ":build_ts",
+        ":preprocess",
+      ]
+    }
   }
 
   # This target is public so that it can be depended on by
@@ -144,6 +169,12 @@ template("build_webui_tests") {
       deps += [ ":preprocess_static_files" ]
       manifest_files +=
           [ "${target_gen_dir}/preprocess_static_files_manifest.json" ]
+    }
+
+    if (enable_type_aware_eslint_checks) {
+      # Adding as a dependency so that it runs as part of the build, even though
+      # this `generate_grd()` target does not use any outputs from it.
+      deps += [ ":lint" ]
     }
   }
 }

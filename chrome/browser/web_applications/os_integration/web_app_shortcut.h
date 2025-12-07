@@ -12,9 +12,10 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
-#include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
+#include "chrome/browser/web_applications/os_integration/shortcut_creation_reason.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/webapps/common/web_app_id.h"
@@ -41,10 +42,12 @@ class ImageSkia;
 }
 
 namespace web_app {
-namespace proto {
-class WebAppOsIntegrationState;
+
+namespace proto::os_state {
+class WebAppOsIntegration;
 class ShortcutMenus;
-}
+}  // namespace proto::os_state
+
 class WebApp;
 class WebAppIconManager;
 
@@ -70,6 +73,10 @@ struct ShortcutInfo {
   std::set<std::string> file_handler_extensions;
   std::set<std::string> file_handler_mime_types;
   std::set<std::string> protocol_handlers;
+  // Icons from DIY apps may get custom masking, as they have not "opted-in" to
+  // the installed PWA experience and thus the icons are not designed to be
+  // displayed on an OS dock.
+  bool is_diy_app = false;
 #if BUILDFLAG(IS_LINUX)
   std::set<DesktopActionInfo> actions;
 #endif  // BUILDFLAG(IS_LINUX)
@@ -98,7 +105,7 @@ std::unique_ptr<ShortcutInfo> BuildShortcutInfoWithoutFavicon(
     const GURL& start_url,
     const base::FilePath& profile_path,
     const std::string& profile_name,
-    const proto::WebAppOsIntegrationState& state);
+    const proto::os_state::WebAppOsIntegration& state);
 
 void PopulateFaviconForShortcutInfo(
     const WebApp* app,
@@ -107,7 +114,7 @@ void PopulateFaviconForShortcutInfo(
     base::OnceCallback<void(std::unique_ptr<ShortcutInfo>)> callback);
 
 std::vector<WebAppShortcutsMenuItemInfo> CreateShortcutsMenuItemInfos(
-    const proto::ShortcutMenus& shortcut_menus);
+    const proto::os_state::ShortcutMenus& shortcut_menus);
 
 // This specifies a folder in the system applications menu (e.g the Start Menu
 // on Windows).
@@ -131,6 +138,10 @@ enum ApplicationsMenuLocation {
 struct ShortcutLocations {
   ShortcutLocations();
   ~ShortcutLocations();
+
+  friend bool operator==(const ShortcutLocations&,
+                         const ShortcutLocations&) = default;
+
   base::Value ToDebugValue() const;
 
   bool on_desktop = false;
@@ -150,18 +161,6 @@ ShortcutLocations MergeLocations(
     const ShortcutLocations& user_specified_locations,
     const ShortcutLocations& existing_locations);
 
-bool operator==(const ShortcutLocations& location1,
-                const ShortcutLocations& location2);
-
-bool operator!=(const ShortcutLocations& location1,
-                const ShortcutLocations& location2);
-
-// This encodes the cause of shortcut creation as the correct behavior in each
-// case is implementation specific.
-enum ShortcutCreationReason {
-  SHORTCUT_CREATION_BY_USER,
-  SHORTCUT_CREATION_AUTOMATED,
-};
 
 // Compute a deterministic name based on data in the shortcut_info.
 std::string GenerateApplicationNameFromInfo(const ShortcutInfo& shortcut_info);
@@ -278,18 +277,16 @@ void UpdatePlatformShortcuts(
 // to a closure that deletes it on the UI thread when the task is complete.
 // Tasks posted here run with BEST_EFFORT priority and block shutdown.
 void PostShortcutIOTask(base::OnceCallback<void(const ShortcutInfo&)> task,
-                        std::unique_ptr<ShortcutInfo> shortcut_info);
-void PostShortcutIOTaskAndReplyWithResult(
-    base::OnceCallback<Result(const ShortcutInfo&)> task,
-    std::unique_ptr<ShortcutInfo> shortcut_info,
-    ResultCallback reply);
+                        std::unique_ptr<ShortcutInfo> shortcut_info,
+                        const base::Location& location = FROM_HERE);
 
 // Run an IO task on a worker thread. Ownership of |shortcut_info| transfers
 // to the task which must delete it on the UI thread when the task is complete.
 // Tasks posted here run with BEST_EFFORT priority and block shutdown.
 void PostAsyncShortcutIOTask(
     base::OnceCallback<void(std::unique_ptr<ShortcutInfo>)> task,
-    std::unique_ptr<ShortcutInfo> shortcut_info);
+    std::unique_ptr<ShortcutInfo> shortcut_info,
+    const base::Location& location = FROM_HERE);
 
 // The task runner for running shortcut tasks. On Windows this will be a task
 // runner that permits access to COM libraries. Shortcut tasks typically deal

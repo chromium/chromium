@@ -50,12 +50,12 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
 
   struct CreateP2PGroupParameter {
     CreateP2PGroupParameter(
-        const std::optional<std::string> ssid,
-        const std::optional<std::string> passphrase,
+        std::optional<std::string> ssid,
+        std::optional<std::string> passphrase,
         const std::optional<uint32_t> frequency,
         const std::optional<shill::WiFiInterfacePriority> priority);
-    CreateP2PGroupParameter(const std::optional<std::string> ssid,
-                            const std::optional<std::string> passphrase);
+    CreateP2PGroupParameter(std::optional<std::string> ssid,
+                            std::optional<std::string> passphrase);
 
     ~CreateP2PGroupParameter();
 
@@ -142,6 +142,10 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
     // Returns all enabled services in the given property.
     virtual base::Value::List GetEnabledServiceList() const = 0;
 
+    // Restarts hotspot by disabling and enabling after configured interactive
+    // delay.
+    virtual void RestartTethering() = 0;
+
     // Called by ShillServiceClient when a service's State property changes,
     // before notifying observers. Sets the DefaultService property to empty
     // if the state changes to a non-connected state.
@@ -176,6 +180,12 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
     // Makes ConfigureService succeed, fail, or timeout.
     virtual void SetSimulateConfigurationResult(
         FakeShillSimulatedResult configuration_result) = 0;
+
+    // Defines the error message which will be returned if configuration result
+    // is set to failure with `SetSimulateConfigurationResult`.
+    virtual void SetSimulateConfigurationError(
+        std::string_view error_name,
+        std::string_view error_message) = 0;
 
     // Makes SetTetheringEnabled succeed, fail, or timeout and the enable
     // tethering error string when it failed.
@@ -231,6 +241,19 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
 
     // Returns the shill id of the recently disconnected P2P group.
     virtual int GetRecentlyDisconnectedP2PGroupId() = 0;
+
+    // If set to true, `RequestScan()` will set the `shill::kScanningProperty`
+    // to true and then schedule a (delayed with the "interactive delay") task
+    // to reset it to false again.
+    // If set to false, `shill::kScanningProperty` is not auto-reset to false.
+    // If never called, the default is true.
+    virtual void SetAutoCompleteScan(bool auto_complete_scan) = 0;
+
+    // Triggers a "scanning complete" event on `device_path`.
+    // This resets the `shill::kScanningProperty` and also continues to
+    // "ConnectToBestServices" if `ScanAndConnectToBestServices` was called
+    // previously.
+    virtual void TriggerScanCompleted(const std::string& device_path) = 0;
 
    protected:
     virtual ~TestInterface() = default;

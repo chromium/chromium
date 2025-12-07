@@ -10,7 +10,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
-#include "components/bookmarks/browser/bookmark_utils.h"
+#include "base/trace_event/trace_event.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/keyword_search_term.h"
 #include "components/history/core/browser/url_database.h"
@@ -27,6 +27,7 @@
 #include "components/omnibox/browser/scored_history_match.h"
 #include "components/omnibox/browser/tailored_word_break_iterator.h"
 #include "components/omnibox/browser/url_index_private_data.h"
+#include "components/omnibox/common/string_cleaning.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 HistoryScoringSignalsAnnotator::HistoryScoringSignalsAnnotator(
@@ -38,6 +39,8 @@ HistoryScoringSignalsAnnotator::HistoryScoringSignalsAnnotator(
 void HistoryScoringSignalsAnnotator::AnnotateResult(
     const AutocompleteInput& input,
     AutocompleteResult* result) {
+  TRACE_EVENT0("omnibox", "HistoryScoringSignalsAnnotator::AnnotateResult");
+
   history::HistoryService* const history_service = client_->GetHistoryService();
   if (!history_service) {
     return;
@@ -55,13 +58,17 @@ void HistoryScoringSignalsAnnotator::AnnotateResult(
 
   for (auto& match : *result) {
     // Skip ineligible matches.
-    if (!IsEligibleMatch(match) &&
-        !AutocompleteMatch::IsSearchType(match.type)) {
+    if (!match.IsMlSignalLoggingEligible()) {
       continue;
     }
 
     history::URLRow url_info;
     if (AutocompleteMatch::IsSearchType(match.type)) {
+      if (!OmniboxFieldTrial::GetMLConfig()
+               .enable_history_scoring_signals_annotator_for_searches) {
+        continue;
+      }
+
       // Initialize the scoring signals if needed.
       if (!match.scoring_signals) {
         match.scoring_signals = std::make_optional<ScoringSignals>();
@@ -123,7 +130,7 @@ void HistoryScoringSignalsAnnotator::PopulateTitleMatchingSignals(
     const WordStarts& terms_to_word_starts_offsets,
     const std::u16string& raw_title,
     ScoringSignals* scoring_signals) {
-  std::u16string title = bookmarks::CleanUpTitleForMatching(raw_title);
+  std::u16string title = omnibox::CleanUpTitleForMatching(raw_title);
   WordStarts title_word_starts;
   String16VectorFromString16(title, &title_word_starts);
   TermMatches title_matches = FindTermMatchesForTerms(

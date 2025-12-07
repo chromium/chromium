@@ -1,0 +1,58 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+# Defines the interface between a test that uses the ax_client and the client
+# itself.
+mojom("mojom") {
+  testonly = true
+  sources = [ "ax_client.test-mojom" ]
+}
+
+# Provides facilities for launching the ax_client executable from a test. Tests
+# should generally derive from BrowserTestWithAxClient, which uses this launcher
+# to manage the test's ax_client.
+source_set("launcher") {
+  testonly = true
+  public = [ "launcher.h" ]
+  sources = [ "launcher.cc" ]
+  public_deps = [
+    ":mojom",
+    "//base",
+    "//mojo/public/cpp/bindings",
+  ]
+  deps = [
+    "//mojo/public/cpp/platform",
+    "//mojo/public/cpp/system",
+  ]
+  data_deps = [ ":client_exe" ]
+}
+
+# The client executable.
+executable("client_exe") {
+  output_name = "ax_client"
+  testonly = true
+  sources = [
+    "ax_client.cc",
+    "ax_client.h",
+    "ax_client_ia2.cc",
+    "ax_client_ia2.h",
+    "ax_client_impl.h",
+    "ax_client_main.cc",
+    "ax_client_uia.cc",
+    "ax_client_uia.h",
+  ]
+  deps = [
+    ":mojom",
+    "//base",
+    "//mojo/core/embedder",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/platform",
+    "//mojo/public/cpp/system",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/iaccessible2",
+  ]
+  libs = [ "oleacc.lib" ]
+}

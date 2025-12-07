@@ -119,7 +119,7 @@ ScriptPromise<IDLUndefined> TCPServerSocket::close(
 
   auto readable_cancel = readable_stream_wrapper_->Readable()->cancel(
       script_state, ScriptValue::From(script_state, reason), exception_state);
-  DCHECK(!exception_state.HadException()) << exception_state.Message();
+  DCHECK(!exception_state.HadException());
   readable_cancel.MarkAsHandled();
 
   return closed(script_state);
@@ -141,8 +141,8 @@ bool TCPServerSocket::Open(const String& local_addr,
 
   GetServiceRemote()->OpenTCPServerSocket(
       std::move(open_tcp_server_socket_options), std::move(tcp_server_receiver),
-      WTF::BindOnce(&TCPServerSocket::OnTCPServerSocketOpened,
-                    WrapPersistent(this), std::move(tcp_server_remote)));
+      BindOnce(&TCPServerSocket::OnTCPServerSocketOpened, WrapPersistent(this),
+               std::move(tcp_server_remote)));
   return true;
 }
 
@@ -156,8 +156,8 @@ void TCPServerSocket::OnTCPServerSocketOpened(
     readable_stream_wrapper_ =
         MakeGarbageCollected<TCPServerReadableStreamWrapper>(
             GetScriptState(),
-            WTF::BindOnce(&TCPServerSocket::OnReadableStreamClosed,
-                          WrapPersistent(this)),
+            BindOnce(&TCPServerSocket::OnReadableStreamClosed,
+                     WrapPersistent(this)),
             std::move(tcp_server_remote));
 
     auto* open_info = TCPServerSocketOpenInfo::Create();
@@ -203,11 +203,13 @@ void TCPServerSocket::ReleaseResources() {
   readable_stream_wrapper_.Clear();
 }
 
-void TCPServerSocket::OnReadableStreamClosed(ScriptValue exception) {
+void TCPServerSocket::OnReadableStreamClosed(v8::Local<v8::Value> exception,
+                                             int net_error) {
   DCHECK_EQ(GetState(), State::kOpen);
 
   if (!exception.IsEmpty()) {
-    GetClosedProperty().Reject(exception);
+    GetClosedProperty().Reject(
+        ScriptValue(GetScriptState()->GetIsolate(), exception));
     SetState(State::kAborted);
   } else {
     GetClosedProperty().ResolveWithUndefined();

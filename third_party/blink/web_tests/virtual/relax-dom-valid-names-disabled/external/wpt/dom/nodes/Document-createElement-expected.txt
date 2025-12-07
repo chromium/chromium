@@ -1,0 +1,52 @@
+This is a testharness.js-based test.
+Found 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] createElement("̀foo") in HTML document
+  Failed to execute 'createElement' on 'Document': The tag name provided ('̀foo') is not a valid name.
+[FAIL] createElement("̀foo") in XML document
+  Failed to execute 'createElement' on 'Document': The tag name provided ('̀foo') is not a valid name.
+[FAIL] createElement("̀foo") in XHTML document
+  Failed to execute 'createElement' on 'Document': The tag name provided ('̀foo') is not a valid name.
+[FAIL] createElement("f}oo") in HTML document
+  Failed to execute 'createElement' on 'Document': The tag name provided ('f}oo') is not a valid name.
+[FAIL] createElement("f}oo") in XML document
+  Failed to execute 'createElement' on 'Document': The tag name provided ('f}oo') is not a valid name.
+[FAIL] createElement("f}oo") in XHTML document
+  Failed to execute 'createElement' on 'Document': The tag name provided ('f}oo') is not a valid name.
+[FAIL] createElement("foo}") in HTML document
+  Failed to execute 'createElement' on 'Document': The tag name provided ('foo}') is not a valid name.
+[FAIL] createElement("foo}") in XML document
+  Failed to execute 'createElement' on 'Document': The tag name provided ('foo}') is not a valid name.
+[FAIL] createElement("foo}") in XHTML document
+  Failed to execute 'createElement' on 'Document': The tag name provided ('foo}') is not a valid name.
+[FAIL] createElement("\\ufffffoo") in HTML document
+  Failed to execute 'createElement' on 'Document': The tag name provided ('￿foo') is not a valid name.
+[FAIL] createElement("\\ufffffoo") in XML document
+  Failed to execute 'createElement' on 'Document': The tag name provided ('￿foo') is not a valid name.
+[FAIL] createElement("\\ufffffoo") in XHTML document
+  Failed to execute 'createElement' on 'Document': The tag name provided ('￿foo') is not a valid name.
+[FAIL] createElement("f\\uffffoo") in HTML document
+  Failed to execute 'createElement' on 'Document': The tag name provided ('f￿oo') is not a valid name.
+[FAIL] createElement("f\\uffffoo") in XML document
+  Failed to execute 'createElement' on 'Document': The tag name provided ('f￿oo') is not a valid name.
+[FAIL] createElement("f\\uffffoo") in XHTML document
+  Failed to execute 'createElement' on 'Document': The tag name provided ('f￿oo') is not a valid name.
+[FAIL] createElement("foo\\uffff") in HTML document
+  Failed to execute 'createElement' on 'Document': The tag name provided ('foo￿') is not a valid name.
+[FAIL] createElement("foo\\uffff") in XML document
+  Failed to execute 'createElement' on 'Document': The tag name provided ('foo￿') is not a valid name.
+[FAIL] createElement("foo\\uffff") in XHTML document
+  Failed to execute 'createElement' on 'Document': The tag name provided ('foo￿') is not a valid name.
+[FAIL] createElement("f<oo") in HTML document
+  Failed to execute 'createElement' on 'Document': The tag name provided ('f<oo') is not a valid name.
+[FAIL] createElement("f<oo") in XML document
+  Failed to execute 'createElement' on 'Document': The tag name provided ('f<oo') is not a valid name.
+[FAIL] createElement("f<oo") in XHTML document
+  Failed to execute 'createElement' on 'Document': The tag name provided ('f<oo') is not a valid name.
+[FAIL] createElement("̀") in HTML document
+  Failed to execute 'createElement' on 'Document': The tag name provided ('̀') is not a valid name.
+[FAIL] createElement("̀") in XML document
+  Failed to execute 'createElement' on 'Document': The tag name provided ('̀') is not a valid name.
+[FAIL] createElement("̀") in XHTML document
+  Failed to execute 'createElement' on 'Document': The tag name provided ('̀') is not a valid name.
+Harness: the test ran to completion.
+

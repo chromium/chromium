@@ -12,7 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
-#include "base/message_loop/message_pump_libevent.h"
+#include "base/message_loop/message_pump_epoll.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/stylus_state.h"
 #include "ui/events/event.h"
@@ -23,6 +23,10 @@
 #include "ui/events/ozone/evdev/keyboard_evdev.h"
 #include "ui/events/ozone/evdev/mouse_button_map_evdev.h"
 #include "ui/ozone/public/input_controller.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ui/events/ozone/evdev/microphone_mute_key_metrics.h"
+#endif
 
 struct input_event;
 
@@ -119,7 +123,7 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdevImpl
   unsigned int last_scan_code_ = 0;
 
   // Controller for watching the input fd.
-  base::MessagePumpLibevent::FdWatchController controller_;
+  base::MessagePumpEpoll::FdWatchController controller_;
 
   // The evdev codes of the keys which should be blocked.
   std::bitset<KEY_CNT> blocked_keys_;
@@ -145,6 +149,13 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdevImpl
 
   // Supported keyboard key bits.
   std::vector<uint64_t> key_bits_;
+
+  // Whether telephony device phone mute scan code should be blocked.
+  bool block_telephony_device_phone_mute_ = false;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<MicrophoneMuteKeyMetrics> microphone_mute_key_metrics_;
+#endif
 };
 
 }  // namespace ui

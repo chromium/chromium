@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Picture-in-Picture video conferencing test</title>
+  </head>
+  <body>
+    <video id="video" autoplay muted></video>
+    <button id="pip">PIP</button>
+  </body>
+<script>
+const video = document.getElementById('video');
+const pipButton = document.getElementById('pip');
+
+// Get user media and display it in the 'video' element.
+navigator.mediaDevices.getUserMedia({ video: true })
+  .then(stream => {
+    video.srcObject = stream;
+  })
+  .catch(error => {
+    console.error('getUserMedia() error: ', error);
+  });
+
+// Add click listener for the PiP button.
+pipButton.addEventListener('click', () => {
+  video.requestPictureInPicture();
+});
+
+// Register auto-pip action handler.
+navigator.mediaSession.setActionHandler('enterpictureinpicture', () => {
+  video.requestPictureInPicture();
+});
+</script>
+</html>

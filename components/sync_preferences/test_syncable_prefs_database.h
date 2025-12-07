@@ -7,6 +7,7 @@
 
 #include <functional>
 #include <map>
+#include <set>
 #include <string>
 #include <string_view>
 
@@ -27,6 +28,7 @@ class TestSyncablePrefsDatabase : public SyncablePrefsDatabase {
 
  private:
   PrefsMap syncable_prefs_map_;
+  std::set<std::string_view> always_syncing_prefs_;
 };
 
 }  // namespace sync_preferences

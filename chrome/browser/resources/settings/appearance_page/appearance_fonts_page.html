@@ -1,19 +1,21 @@
-    <style include="cr-shared-style settings-shared iron-flex">
-      #minimumSize {
-        align-items: flex-end;
-        display: flex;
-        flex-direction: column;
-      }
+  <style include="cr-shared-style settings-shared">
+    #minimumSize {
+      align-items: flex-end;
+      display: flex;
+      flex-direction: column;
+    }
 
-      #minimumSizeFontPreview {
-        text-align: end;
-      }
+    #minimumSizeFontPreview {
+      text-align: end;
+    }
 
-      div[id$='FontPreview'] {
-        /* Override default style from cr-page-host-style */
-        line-height: initial;
-      }
-    </style>
+    div[id$='FontPreview'] {
+      /* Override default style from cr-page-host-style */
+      line-height: initial;
+    }
+  </style>
+  <settings-subpage page-title="$i18n{customizeFonts}"
+      route-path$="[[routePath]]">
     <div class="cr-row first">
       <div class="flex cr-padded-text" aria-hidden="true">
         $i18n{fontSize}
@@ -206,4 +208,4 @@
         </math>
       </div>
     </div>
-
+  </settings-subpage>

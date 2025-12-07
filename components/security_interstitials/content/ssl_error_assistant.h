@@ -7,11 +7,11 @@
 
 #include <optional>
 #include <string>
-#include <unordered_set>
 #include <vector>
 
 #include "components/security_interstitials/content/ssl_error_assistant.pb.h"
 #include "net/ssl/ssl_info.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -34,7 +34,7 @@ struct MITMSoftwareType {
 // SSLErrorAssistant proto.
 struct DynamicInterstitialInfo {
   DynamicInterstitialInfo(
-      const std::unordered_set<std::string>& spki_hashes,
+      const absl::flat_hash_set<net::SHA256HashValue>& spki_hashes,
       const std::string& issuer_common_name_regex,
       const std::string& issuer_organization_regex,
       const std::string& mitm_software_name,
@@ -48,7 +48,7 @@ struct DynamicInterstitialInfo {
 
   ~DynamicInterstitialInfo();
 
-  const std::unordered_set<std::string> spki_hashes;
+  const absl::flat_hash_set<net::SHA256HashValue> spki_hashes;
   const std::string issuer_common_name_regex;
   const std::string issuer_organization_regex;
   const std::string mitm_software_name;
@@ -104,9 +104,10 @@ class SSLErrorAssistant {
   void EnsureInitialized();
 
   // SPKI hashes belonging to certs treated as captive portals. Null until the
-  // first time ShouldDisplayCaptiveProtalInterstitial() or
-  // SetErrorAssistantProto() is called.
-  std::unique_ptr<std::unordered_set<std::string>> captive_portal_spki_hashes_;
+  // first time IsKnownCaptivePortalCertificate() or SetErrorAssistantProto()
+  // is called.
+  std::unique_ptr<absl::flat_hash_set<net::SHA256HashValue>>
+      captive_portal_spki_hashes_;
 
   // Data about a known MITM software pulled from the SSLErrorAssistant proto.
   // Null until MatchKnownMITMSoftware() is called.

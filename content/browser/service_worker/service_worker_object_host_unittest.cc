@@ -145,7 +145,7 @@ class ServiceWorkerObjectHostTest : public testing::Test {
     // Make the registration findable via storage functions.
     std::optional<blink::ServiceWorkerStatusCode> status;
     base::RunLoop run_loop;
-    helper_->context()->registry()->StoreRegistration(
+    helper_->context()->registry().StoreRegistration(
         registration_.get(), version_.get(),
         ReceiveServiceWorkerStatus(&status, run_loop.QuitClosure()));
     run_loop.Run();

@@ -26,6 +26,7 @@
 #include <unicode/idna.h>
 #include <unicode/unistr.h>
 #include <unicode/uvernum.h>
+
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -36,10 +37,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_regexp.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
-
-#if U_ICU_VERSION_MAJOR_NUM >= 59
-#include <unicode/char16ptr.h>
-#endif
+#include "third_party/blink/renderer/platform/wtf/text/unicode_string.h"
 
 namespace {
 
@@ -56,7 +54,7 @@ const char kEmailPattern[] =
 const int32_t kMaximumDomainNameLength = 255;
 
 // Use the same option as in url/url_canon_icu.cc
-// TODO(crbug.com/694157): Change the options if UseIDNA2008NonTransitional flag
+// TODO(crbug.com/40086853): Change the options now that IDNA2008NonTransitional
 // is enabled.
 const int32_t kIdnaConversionOption = UIDNA_CHECK_BIDI;
 
@@ -66,7 +64,7 @@ namespace blink {
 
 ScriptRegexp* EmailInputType::CreateEmailRegexp(v8::Isolate* isolate) {
   return MakeGarbageCollected<ScriptRegexp>(isolate, kEmailPattern,
-                                            kTextCaseUnicodeInsensitive);
+                                            kTextCaseASCIIInsensitive);
 }
 
 Vector<String> EmailInputType::ParseMultipleValues(const String& value) {
@@ -89,7 +87,9 @@ String EmailInputType::ConvertEmailAddressToASCII(const ScriptRegexp& regexp,
   // build.) TODO(jshin): In an unlikely case this is a perf-issue, treat
   // 8bit and non-8bit strings separately.
   host.Ensure16Bit();
-  icu::UnicodeString idn_domain_name(host.Characters16(), host.length());
+
+  auto host_span = host.Span16();
+  icu::UnicodeString idn_domain_name(host_span.data(), host_span.size());
   icu::UnicodeString domain_name;
 
   // Leak |idna| at the end.
@@ -105,11 +105,7 @@ String EmailInputType::ConvertEmailAddressToASCII(const ScriptRegexp& regexp,
 
   StringBuilder builder;
   builder.Append(address, 0, at_position + 1);
-#if U_ICU_VERSION_MAJOR_NUM >= 59
-  builder.Append(icu::toUCharPtr(domain_name.getBuffer()), domain_name.length());
-#else
-  builder.Append(domain_name.getBuffer(), domain_name.length());
-#endif
+  builder.Append(unicode::ToSpan(domain_name));
   String ascii_email = builder.ToString();
   return IsValidEmailAddress(regexp, ascii_email) ? ascii_email : address;
 }
@@ -279,12 +275,10 @@ String EmailInputType::SanitizeValue(const String& proposed_value) const {
     return StripLeadingAndTrailingHTMLSpaces(no_line_break_value);
   Vector<String> addresses = ParseMultipleValues(no_line_break_value);
   StringBuilder stripped_value;
-  for (wtf_size_t i = 0; i < addresses.size(); ++i) {
-    if (i > 0)
-      stripped_value.Append(',');
-    stripped_value.Append(StripLeadingAndTrailingHTMLSpaces(addresses[i]));
-  }
-  return stripped_value.ToString();
+  stripped_value.AppendRange(addresses, ",", [](const auto& address) {
+    return StripLeadingAndTrailingHTMLSpaces(address);
+  });
+  return stripped_value.ReleaseString();
 }
 
 String EmailInputType::ConvertFromVisibleValue(
@@ -297,13 +291,11 @@ String EmailInputType::ConvertFromVisibleValue(
   Vector<String> addresses = ParseMultipleValues(sanitized_value);
   StringBuilder builder;
   builder.ReserveCapacity(sanitized_value.length());
-  for (wtf_size_t i = 0; i < addresses.size(); ++i) {
-    if (i > 0)
-      builder.Append(',');
-    builder.Append(ConvertEmailAddressToASCII(
-        GetElement().GetDocument().EnsureEmailRegexp(), addresses[i]));
-  }
-  return builder.ToString();
+  builder.AppendRange(addresses, ",", [&](const auto& address) {
+    return ConvertEmailAddressToASCII(
+        GetElement().GetDocument().EnsureEmailRegexp(), address);
+  });
+  return builder.ReleaseString();
 }
 
 String EmailInputType::VisibleValue() const {
@@ -314,12 +306,10 @@ String EmailInputType::VisibleValue() const {
   Vector<String> addresses = ParseMultipleValues(value);
   StringBuilder builder;
   builder.ReserveCapacity(value.length());
-  for (wtf_size_t i = 0; i < addresses.size(); ++i) {
-    if (i > 0)
-      builder.Append(',');
-    builder.Append(ConvertEmailAddressToUnicode(addresses[i]));
-  }
-  return builder.ToString();
+  builder.AppendRange(addresses, ",", [&](const auto& address) {
+    return ConvertEmailAddressToUnicode(address);
+  });
+  return builder.ReleaseString();
 }
 
 void EmailInputType::MultipleAttributeChanged() {

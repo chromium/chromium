@@ -95,13 +95,13 @@ class ULPMetricsLogger {
   // are present in accept_languages. Only language bases are compared (e.g
   // pt-BR == pt-MZ).
   static int LanguagesOverlapRatio(
-      const std::vector<std::string> accept_languages,
-      const std::vector<std::string> ulp_languages);
+      const std::vector<std::string>& accept_languages,
+      const std::vector<std::string>& ulp_languages);
 
   // Returns a vector with languages that do not have a ULP base language match.
   static std::vector<std::string> RemoveULPLanguages(
-      const std::vector<std::string> languages,
-      const std::vector<std::string> ulp_languages);
+      const std::vector<std::string>& languages,
+      const std::vector<std::string>& ulp_languages);
 };
 
 }  // namespace language

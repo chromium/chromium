@@ -36,6 +36,7 @@ import {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './pin_keyboard.html.js';
@@ -190,6 +191,22 @@ export class PinKeyboardElement extends PinKeyboardElementBase {
       },
 
       /**
+       * Enables the visibility icon for showing/hiding the PIN.
+       */
+      enableVisibilityIcon: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Controls the visibility icon logic.
+       */
+      isPinVisible_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
        * The aria label to be used for the input element.
        */
       ariaLabel: {
@@ -205,10 +222,12 @@ export class PinKeyboardElement extends PinKeyboardElementBase {
   passwordElement: HTMLElement|undefined;
   value: string;
   enablePlaceholder: boolean;
+  enableVisibilityIcon: boolean;
 
   private repeatBackspaceIntervalId_: number;
   private startAutoBackspaceId_: number;
   private focused_: boolean;
+  private isPinVisible_: boolean;
 
   override ready(): void {
     super.ready();
@@ -277,6 +296,11 @@ export class PinKeyboardElement extends PinKeyboardElementBase {
     if (selectionEnd !== undefined) {
       this.selectionEnd_ = selectionEnd;
     }
+  }
+
+  // Set the visibility of the input field back to hidden.
+  resetPinVisibility(): void {
+    this.isPinVisible_ = false;
   }
 
   /**
@@ -543,6 +567,24 @@ export class PinKeyboardElement extends PinKeyboardElementBase {
 
     return enablePassword ? this.i18n('pinKeyboardPlaceholderPinPassword') :
                             this.i18n('pinKeyboardPlaceholderPin');
+  }
+
+  private getShowHideButtonLabel(isVisible: boolean): string {
+    return isVisible ? loadTimeData.getString('hidePin') :
+                       loadTimeData.getString('showPin');
+  }
+
+  private getShowHideButtonIcon(isVisible: boolean): string {
+    return isVisible ? 'pin-keyboard:visibility-off' :
+                       'pin-keyboard:visibility';
+  }
+
+  private onPinShowHideButtonClick() {
+    this.isPinVisible_ = !this.isPinVisible_;
+  }
+
+  private getPinInputType(isVisible: boolean): string {
+    return isVisible ? 'text' : 'password';
   }
 
   /**

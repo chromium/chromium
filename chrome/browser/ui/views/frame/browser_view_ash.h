@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_VIEW_ASH_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_VIEW_ASH_H_
 
-#include <memory>
-
 #include "chrome/browser/ui/views/frame/browser_view.h"
 
 namespace gfx {
@@ -19,7 +17,7 @@ class Browser;
 // OS under classic ash.
 class BrowserViewAsh : public BrowserView {
  public:
-  explicit BrowserViewAsh(std::unique_ptr<Browser> browser);
+  explicit BrowserViewAsh(Browser* browser);
 
   BrowserViewAsh(const BrowserViewAsh&) = delete;
   BrowserViewAsh& operator=(const BrowserViewAsh&) = delete;
@@ -30,11 +28,8 @@ class BrowserViewAsh : public BrowserView {
   void Layout(PassKey) override;
 
   // views::ClientView:
-  void UpdateWindowRoundedCorners(int corner_radius) override;
-
- private:
-  gfx::RoundedCornersF contents_webview_radii_;
-  gfx::RoundedCornersF devtools_webview_radii_;
+  void UpdateWindowRoundedCorners(
+      const gfx::RoundedCornersF& window_radii) override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_VIEW_ASH_H_

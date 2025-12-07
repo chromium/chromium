@@ -7,15 +7,20 @@
 #include <algorithm>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "base/hash/hash.h"
+#include "base/i18n/number_formatting.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/new_tab_page/modules/modules_constants.h"
+#include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
@@ -43,7 +48,6 @@ constexpr char kPlatform[] = "CHROME_OS";
 #else
 constexpr char kPlatform[] = "UNSPECIFIED_PLATFORM";
 #endif
-// TODO(crbug.com/40749413): Add language code to request.
 constexpr char kRequestBody[] = R"({
   "client_info": {
     "platform_type": "%s",
@@ -223,6 +227,9 @@ constexpr char kFakeDataWithSixFiles[] = R"({
     }
   ]
 })";
+
+const char kBaseFileIconUrl[] =
+    "https://drive-thirdparty.googleusercontent.com/32/type/";
 }  // namespace
 
 // static
@@ -230,7 +237,7 @@ const char DriveService::kLastDismissedTimePrefName[] =
     "NewTabPage.Drive.LastDimissedTime";
 
 // static
-const base::TimeDelta DriveService::kDismissDuration = base::Days(14);
+const base::TimeDelta DriveService::kDismissDuration = base::Hours(12);
 
 DriveService::~DriveService() = default;
 
@@ -278,16 +285,26 @@ bool DriveService::GetDriveModuleSegmentationData() {
 }
 
 void DriveService::GetDriveFilesInternal() {
+  const base::Time last_dismissed_time =
+      pref_service_->GetTime(kLastDismissedTimePrefName);
   // Bail if module is still dismissed.
-  if (!pref_service_->GetTime(kLastDismissedTimePrefName).is_null() &&
-      base::Time::Now() - pref_service_->GetTime(kLastDismissedTimePrefName) <
-          kDismissDuration) {
-    for (auto& callback : callbacks_) {
-      std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
+  if (!last_dismissed_time.is_null()) {
+    base::TimeDelta elapsed_time = base::Time::Now() - last_dismissed_time;
+    if (elapsed_time < kDismissDuration) {
+      const std::string remaining_hours =
+          base::NumberToString((kDismissDuration - elapsed_time).InHours());
+      LogModuleDismissed(ntp_features::kNtpDriveModule, true, remaining_hours);
+
+      for (auto& callback : callbacks_) {
+        std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
+      }
+      callbacks_.clear();
+      return;
     }
-    callbacks_.clear();
-    return;
   }
+
+  LogModuleDismissed(ntp_features::kNtpDriveModule, false,
+                     /*remaining_hours=*/"0");
 
   // Skip fetch and jump straight to data parsing when serving fake data.
   if (base::GetFieldTrialParamValueByFeature(
@@ -305,12 +322,14 @@ void DriveService::GetDriveFilesInternal() {
   }
 
   token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-      "ntp_drive_module", identity_manager_,
-      signin::ScopeSet({GaiaConstants::kDriveReadOnlyOAuth2Scope}),
+      signin::OAuthConsumerId::kNtpDriveService, identity_manager_,
       base::BindOnce(&DriveService::OnTokenReceived,
                      weak_factory_.GetWeakPtr()),
       signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-      signin::ConsentLevel::kSync);
+      base::FeatureList::IsEnabled(
+          ntp_features::kNtpDriveModuleHistorySyncRequirement)
+          ? signin::ConsentLevel::kSignin
+          : signin::ConsentLevel::kSync);
 }
 
 void DriveService::DismissModule() {
@@ -327,6 +346,7 @@ void DriveService::OnTokenReceived(GoogleServiceAuthError error,
 
   token_fetcher_.reset();
   if (error.state() != GoogleServiceAuthError::NONE) {
+    LogModuleError(ntp_features::kNtpDriveModule, error.error_message());
     for (auto& callback : callbacks_) {
       std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
     }
@@ -386,36 +406,45 @@ void DriveService::OnTokenReceived(GoogleServiceAuthError error,
                      token_info.token),
       kMaxResponseSize);
   base::UmaHistogramSparse("NewTabPage.Modules.DataRequest",
-                           base::PersistentHash("drive"));
+                           base::PersistentHash(ntp_modules::kDriveModuleId));
 }
 
 void DriveService::OnJsonReceived(const std::string& token,
-                                  std::unique_ptr<std::string> response_body) {
+                                  std::optional<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const int net_error = url_loader_->NetError();
   url_loader_.reset();
 
-  if (net_error != net::OK || !response_body) {
+  if (net_error == net::OK && response_body) {
+    cached_json_ = std::move(response_body);
+    cached_json_time_ = base::Time::Now();
+    cached_json_token_ = token;
+    data_decoder::DataDecoder::ParseJsonIsolated(
+        *cached_json_, base::BindOnce(&DriveService::OnJsonParsed,
+                                      weak_factory_.GetWeakPtr()));
+    return;
+  }
+
+  if (net_error != net::OK) {
+    LogModuleError(
+        ntp_features::kNtpDriveModule,
+        base::StrCat({"net error ", base::NumberToString(net_error)}));
+  } else if (!response_body) {
+    LogModuleError(ntp_features::kNtpDriveModule, "no JSON response body");
+  }
     base::UmaHistogramEnumeration("NewTabPage.Drive.ItemSuggestRequestResult",
                                   ItemSuggestRequestResult::kNetworkError);
     for (auto& callback : callbacks_) {
       std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
     }
     callbacks_.clear();
-    return;
-  }
-  cached_json_ = std::move(response_body);
-  cached_json_time_ = base::Time::Now();
-  cached_json_token_ = token;
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      *cached_json_,
-      base::BindOnce(&DriveService::OnJsonParsed, weak_factory_.GetWeakPtr()));
 }
 
 void DriveService::OnJsonParsed(
     data_decoder::DataDecoder::ValueOrError result) {
   if (!result.has_value()) {
+    LogModuleError(ntp_features::kNtpDriveModule, "JSON parse error");
     base::UmaHistogramEnumeration("NewTabPage.Drive.ItemSuggestRequestResult",
                                   ItemSuggestRequestResult::kJsonParseError);
     for (auto& callback : callbacks_) {
@@ -426,6 +455,7 @@ void DriveService::OnJsonParsed(
   }
   auto* items = result->GetDict().FindList("item");
   if (!items) {
+    LogModuleError(ntp_features::kNtpDriveModule, "no items in JSON");
     base::UmaHistogramEnumeration("NewTabPage.Drive.ItemSuggestRequestResult",
                                   ItemSuggestRequestResult::kContentError);
     for (auto& callback : callbacks_) {
@@ -465,10 +495,11 @@ void DriveService::OnJsonParsed(
     }
     auto mojo_drive_doc = file_suggestion::mojom::File::New();
     mojo_drive_doc->title = *title;
-    mojo_drive_doc->mime_type = *mime_type;
+    mojo_drive_doc->icon_url = GURL(kBaseFileIconUrl + *mime_type);
     mojo_drive_doc->justification_text = justification_text;
     mojo_drive_doc->id = *id;
     mojo_drive_doc->item_url = GURL(*item_url);
+    mojo_drive_doc->recommendation_type = std::nullopt;
     document_list.push_back(std::move(mojo_drive_doc));
   }
   base::UmaHistogramEnumeration("NewTabPage.Drive.ItemSuggestRequestResult",

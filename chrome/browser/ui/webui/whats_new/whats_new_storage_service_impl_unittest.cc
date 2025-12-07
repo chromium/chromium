@@ -4,31 +4,38 @@
 
 #include "chrome/browser/ui/webui/whats_new/whats_new_storage_service_impl.h"
 
+#include "chrome/browser/global_features.h"
 #include "chrome/common/chrome_version.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/user_education/webui/whats_new_registry.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class WhatsNewStorageServiceTest : public testing::Test {
  public:
-  WhatsNewStorageServiceTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()) {}
+  WhatsNewStorageServiceTest() = default;
   ~WhatsNewStorageServiceTest() override = default;
 
   void SetUp() override {
     testing::Test::SetUp();
-    storage_service_ =
-        std::make_unique<whats_new::WhatsNewStorageServiceImpl>();
+
+    // WhatsNewStorageServiceImpl is created and initialized in
+    // GlobalFeatures::CreateWhatsNewRegistry() in the same way as the
+    // production.
+    storage_service_ = TestingBrowserProcess::GetGlobal()
+                           ->GetFeatures()
+                           ->whats_new_registry()
+                           ->GetMutableStorageServiceForTesting();
+    // Resets it here to satisfy the precondition.
+    storage_service_->Reset();
   }
 
   void TearDown() override {
-    storage_service_.reset();
+    storage_service_ = nullptr;
     testing::Test::TearDown();
   }
 
  protected:
-  std::unique_ptr<whats_new::WhatsNewStorageService> storage_service_;
-  ScopedTestingLocalState local_state_;
+  raw_ptr<whats_new::WhatsNewStorageService> storage_service_;
 };
 
 TEST_F(WhatsNewStorageServiceTest, StoresModulesData) {
@@ -48,15 +55,35 @@ TEST_F(WhatsNewStorageServiceTest, StoresModulesData) {
   // Modules does not exist.
   EXPECT_EQ(-1, storage_service_->GetModuleQueuePosition("ModuleC"));
 
-  storage_service_->ClearModule("ModuleA");
+  storage_service_->ClearModules({"ModuleA"});
   EXPECT_EQ(static_cast<size_t>(1), storage_service_->ReadModuleData().size());
   EXPECT_EQ("ModuleB", storage_service_->ReadModuleData()[0]);
 
-  storage_service_->ClearModule("ModuleC");
+  storage_service_->ClearModules({"ModuleC"});
   EXPECT_EQ(static_cast<size_t>(1), storage_service_->ReadModuleData().size());
 
-  storage_service_->ClearModule("ModuleB");
+  storage_service_->ClearModules({"ModuleB"});
   EXPECT_EQ(static_cast<size_t>(0), storage_service_->ReadModuleData().size());
+  EXPECT_TRUE(storage_service_->ReadModuleData().empty());
+}
+
+TEST_F(WhatsNewStorageServiceTest, ClearsMultipleModulesData) {
+  EXPECT_TRUE(storage_service_->ReadModuleData().empty());
+
+  storage_service_->SetModuleEnabled("ModuleA");
+  storage_service_->SetModuleEnabled("ModuleB");
+  storage_service_->SetModuleEnabled("ModuleC");
+  EXPECT_EQ(static_cast<size_t>(3), storage_service_->ReadModuleData().size());
+
+  storage_service_->ClearModules({"ModuleA", "ModuleB"});
+  EXPECT_EQ(static_cast<size_t>(1), storage_service_->ReadModuleData().size());
+
+  storage_service_->SetModuleEnabled("ModuleD");
+  storage_service_->SetModuleEnabled("ModuleE");
+  storage_service_->SetModuleEnabled("ModuleF");
+  EXPECT_EQ(static_cast<size_t>(4), storage_service_->ReadModuleData().size());
+
+  storage_service_->ClearModules({"ModuleC", "ModuleD", "ModuleE", "ModuleF"});
   EXPECT_TRUE(storage_service_->ReadModuleData().empty());
 }
 
@@ -87,14 +114,15 @@ TEST_F(WhatsNewStorageServiceTest, StoresEditionsData) {
   EXPECT_TRUE(storage_service_->IsUsedEdition("EditionA"));
   EXPECT_FALSE(storage_service_->IsUsedEdition("UnusedEditionC"));
 
-  storage_service_->ClearEdition("EditionA");
+  storage_service_->ClearEditions({"EditionA"});
   EXPECT_TRUE(storage_service_->ReadEditionData().empty());
   EXPECT_EQ(static_cast<size_t>(0), storage_service_->ReadEditionData().size());
   EXPECT_EQ(nullptr, storage_service_->ReadEditionData().Find("EditionA"));
 }
 
 TEST_F(WhatsNewStorageServiceTest, StoresEditionsDataWithPreviousData) {
-  ScopedDictPrefUpdate update(local_state_.Get(), prefs::kWhatsNewEditionUsed);
+  ScopedDictPrefUpdate update(TestingBrowserProcess::GetGlobal()->local_state(),
+                              prefs::kWhatsNewEditionUsed);
   update->Set("OldEdition100", 100);
   update->Set("OldEdition101", 101);
   EXPECT_FALSE(storage_service_->ReadEditionData().empty());
@@ -105,7 +133,7 @@ TEST_F(WhatsNewStorageServiceTest, StoresEditionsDataWithPreviousData) {
   EXPECT_EQ(CHROME_VERSION_MAJOR,
             *storage_service_->ReadEditionData().Find("EditionA"));
 
-  storage_service_->ClearEdition("EditionA");
+  storage_service_->ClearEditions({"EditionA"});
   EXPECT_EQ(static_cast<size_t>(2), storage_service_->ReadEditionData().size());
   EXPECT_EQ(nullptr, storage_service_->ReadEditionData().Find("EditionA"));
 

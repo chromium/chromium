@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <iostream>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/hash/hash.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 int main(int argc, char** argv) {
-  if (argc <= 2) {
+  // SAFETY: The OS guarantees argv length is argc.
+  const base::span<const char* const> args =
+      UNSAFE_BUFFERS(base::span(argv, static_cast<size_t>(argc)));
+  if (args.size() <= 2) {
     std::cout << "Generates hash values given UUIDs using the same method\n"
               << "as in bluetooth_metrics.cc.\n"
               << "\n"
@@ -21,11 +21,11 @@ int main(int argc, char** argv) {
               << "Note that tools/metrics/histograms/pretty_print.py will\n"
               << "sort enum entries for you.\n"
               << "\n"
-              << "Usage: " << argv[0] << " <uuid> <label> [uuid2 label2...]\n"
+              << "Usage: " << args[0] << " <uuid> <label> [uuid2 label2...]\n"
               << "       The UUIDs may be short UUIDs, and will be made\n"
               << "       canonical before being hashed.\n"
               << "\n"
-              << "Example: " << argv[0] << " FEFF foo FEFE bar\n"
+              << "Example: " << args[0] << " FEFF foo FEFE bar\n"
               << "  <int value=\"62669585\" "
                  "label=\"foo; 0000feff-0000-1000-8000-00805f9b34fb\"/>\n"
               << "  <int value=\"643543662\" "
@@ -33,9 +33,9 @@ int main(int argc, char** argv) {
     return 1;
   }
 
-  for (int i = 1; i < argc; i = i + 2) {
-    std::string uuid_string(argv[i]);
-    std::string label_string((i + 1 < argc) ? argv[i + 1] : "");
+  for (size_t i = 1; i < args.size(); i = i + 2) {
+    std::string uuid_string(args[i]);
+    std::string label_string((i + 1 < args.size()) ? args[i + 1] : "");
     device::BluetoothUUID uuid(uuid_string);
     std::string uuid_canonical_string = uuid.canonical_value();
     uint32_t hash = base::PersistentHash(uuid_canonical_string);

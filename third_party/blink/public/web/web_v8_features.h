@@ -58,6 +58,9 @@ class BLINK_EXPORT WebV8Features {
   // Send isolate priority change notification to worker thread isolates.
   static void SetIsolatePriority(base::Process::Priority priority);
 
+  // Whether `WebV8Features` is supported for the given v8 context.
+  static bool IsSupported(v8::Local<v8::Context>);
+
  private:
   WebV8Features() = delete;
 };

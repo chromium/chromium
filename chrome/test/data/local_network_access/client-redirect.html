@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Redirect</title>
+<script>
+
+const href = window.location.href;
+const queryBegin = href.indexOf('?url=');
+if (queryBegin == -1) {
+  console.log("Failed to find ?url= in URL");
+  throw "FAILURE";
+}
+const url = href.slice(queryBegin + 5);
+
+window.location.href = url;
+</script>

@@ -3,8 +3,17 @@
 # found in the LICENSE file.
 
 import("//build/apple/apple_info_plist.gni")
+import("//build/config/apple/arch.gni")
 import("//build/config/apple/symbols.gni")
 import("//build/config/mac/mac_sdk.gni")
+
+_sanitizer_runtime_names = []
+if (is_asan) {
+  _sanitizer_runtime_names += [ "libclang_rt.asan_osx_dynamic.dylib" ]
+}
+if (is_ubsan_any) {
+  _sanitizer_runtime_names += [ "libclang_rt.ubsan_osx_dynamic.dylib" ]
+}
 
 # Generates Info.plist files for Mac apps and frameworks.
 #
@@ -216,7 +225,8 @@ template("mac_framework_bundle") {
                      "Version=" + invoker.framework_version,
                      _output_name,
                    ] + invoker.framework_contents
-  _framework_contents = [ _output_name ] + invoker.framework_contents
+  _framework_contents = [ _output_name ] + invoker.sanitizer_runtime_names +
+                        invoker.framework_contents
   _framework_toc_file = "$target_out_dir/${target_name}.toc"
   write_file(_framework_toc_file, _framework_toc)
 
@@ -305,6 +315,7 @@ template("mac_framework_bundle") {
     visibility = [ ":$_framework_target+link" ]
     framework_dirs = [ root_out_dir ]
     frameworks = [ _framework_name ]
+    inputs = [ "$root_out_dir/$_framework_name" ]
   }
 
   create_bundle(_framework_target) {
@@ -339,9 +350,15 @@ template("mac_framework_bundle") {
     ]
 
     if (enable_dsyms) {
+      _archs_mapping_os = archs_mapping.mac
+      _archs_mapping_os_cpu = _archs_mapping_os[current_cpu]
+      _dsym_arch = _archs_mapping_os_cpu.dsym_arch
+
       data = [
         "$root_out_dir/$_output_name.dSYM/Contents/Info.plist",
         "$root_out_dir/$_output_name.dSYM/Contents/Resources/DWARF/$_output_name",
+        "$root_out_dir/$_output_name.dSYM/Contents/Resources/Relocations/" +
+            "$_dsym_arch/$_output_name.yml",
       ]
     }
 
@@ -383,6 +400,7 @@ template("mac_framework_bundle") {
 
 set_defaults("mac_framework_bundle") {
   configs = default_shared_library_configs
+  sanitizer_runtime_names = _sanitizer_runtime_names
 }
 
 # Template to create a Mac executable application bundle.
@@ -534,9 +552,15 @@ template("mac_app_bundle") {
     }
 
     if (enable_dsyms) {
+      _archs_mapping_os = archs_mapping.mac
+      _archs_mapping_os_cpu = _archs_mapping_os[current_cpu]
+      _dsym_arch = _archs_mapping_os_cpu.dsym_arch
+
       data = [
         "$root_out_dir/$_output_name.dSYM/Contents/Info.plist",
         "$root_out_dir/$_output_name.dSYM/Contents/Resources/DWARF/$_output_name",
+        "$root_out_dir/$_output_name.dSYM/Contents/Resources/Relocations/" +
+            "$_dsym_arch/$_output_name.yml",
       ]
     }
 
@@ -605,9 +629,15 @@ template("mac_plugin_bundle") {
     deps += [ ":$_loadable_module_bundle_data" ]
 
     if (enable_dsyms) {
+      _archs_mapping_os = archs_mapping.mac
+      _archs_mapping_os_cpu = _archs_mapping_os[current_cpu]
+      _dsym_arch = _archs_mapping_os_cpu.dsym_arch
+
       data = [
         "$root_out_dir/$_output_name.so.dSYM/Contents/Info.plist",
         "$root_out_dir/$_output_name.so.dSYM/Contents/Resources/DWARF/$_output_name.so",
+        "$root_out_dir/$_output_name.so.dSYM/Contents/Resources/Relocations/" +
+            "$_dsym_arch/$_output_name.so.yml",
       ]
     }
 

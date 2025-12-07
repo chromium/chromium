@@ -31,13 +31,13 @@ std::optional<float> TabSensitivityCache::GetScore(const GURL& url) const {
 }
 
 void TabSensitivityCache::OnPageContentAnnotated(
-    const GURL& url,
+    const page_content_annotations::HistoryVisit& visit,
     const page_content_annotations::PageContentAnnotationsResult& result) {
   CHECK(result.GetType() ==
         page_content_annotations::AnnotationType::kContentVisibility);
 
   // Invert the visibility score to get a sensitivity score.
-  sensitivy_scores_[url] = 1.0 - result.GetContentVisibilityScore();
+  sensitivy_scores_[visit.url] = 1.0 - result.GetContentVisibilityScore();
   MaybeTrimCacheKeys();
 }
 

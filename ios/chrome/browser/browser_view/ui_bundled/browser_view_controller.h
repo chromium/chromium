@@ -10,23 +10,22 @@
 #import "base/ios/block_types.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
+#import "ios/chrome/browser/browser_view/public/browser_view_visibility_state_changed_callback.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/tab_consumer.h"
 #import "ios/chrome/browser/contextual_panel/coordinator/contextual_sheet_presenter.h"
-#import "ios/chrome/browser/find_bar/ui_bundled/find_bar_coordinator.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_consumer.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_coordinator.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_presentation_environment.h"
+#import "ios/chrome/browser/omnibox/ui/omnibox_focus_delegate.h"
+#import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_presenter.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
-#import "ios/chrome/browser/ui/lens/lens_coordinator.h"
-#import "ios/chrome/browser/ui/ntp/logo_animation_controller.h"
-#import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
-#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
-#import "ios/chrome/browser/ui/toolbar/public/toolbar_height_delegate.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_height_delegate.h"
 #import "ios/chrome/browser/web/model/web_state_container_view_provider.h"
 
 @protocol ApplicationCommands;
 @class BookmarksCoordinator;
 @class BrowserContainerViewController;
-@protocol BrowserViewVisibilityConsumer;
 @protocol DefaultPromoNonModalPresentationDelegate;
 @protocol FindInPageCommands;
 class FullscreenController;
@@ -34,13 +33,12 @@ class FullscreenController;
 @class KeyCommandsProvider;
 @class NewTabPageCoordinator;
 @protocol OmniboxCommands;
-class PagePlaceholderBrowserAgent;
 @protocol PopupMenuCommands;
 @class PopupMenuCoordinator;
 @class SafeAreaProvider;
-@class SideSwipeMediator;
+@class SideSwipeCoordinator;
+class SnapshotBrowserAgent;
 @class TabStripCoordinator;
-@class TabStripLegacyCoordinator;
 class TabUsageRecorderBrowserAgent;
 @protocol TextZoomCommands;
 @class ToolbarAccessoryPresenter;
@@ -57,8 +55,7 @@ typedef struct {
   NewTabPageCoordinator* ntpCoordinator;
   ToolbarCoordinator* toolbarCoordinator;
   TabStripCoordinator* tabStripCoordinator;
-  TabStripLegacyCoordinator* legacyTabStripCoordinator;
-  SideSwipeMediator* sideSwipeMediator;
+  SideSwipeCoordinator* sideSwipeCoordinator;
   BookmarksCoordinator* bookmarksCoordinator;
   raw_ptr<FullscreenController> fullscreenController;
   id<TextZoomCommands> textZoomHandler;
@@ -68,10 +65,10 @@ typedef struct {
   id<FindInPageCommands> findInPageCommandsHandler;
   LayoutGuideCenter* layoutGuideCenter;
   BOOL isOffTheRecord;
-  raw_ptr<PagePlaceholderBrowserAgent> pagePlaceholderBrowserAgent;
   raw_ptr<UrlLoadingBrowserAgent> urlLoadingBrowserAgent;
   id<VoiceSearchController> voiceSearchController;
   raw_ptr<TabUsageRecorderBrowserAgent> tabUsageRecorderBrowserAgent;
+  raw_ptr<SnapshotBrowserAgent> snapshotBrowserAgent;
   base::WeakPtr<WebStateList> webStateList;
   SafeAreaProvider* safeAreaProvider;
 } BrowserViewControllerDependencies;
@@ -81,10 +78,9 @@ typedef struct {
 @interface BrowserViewController
     : UIViewController <BrowserCommands,
                         ContextualSheetPresenter,
-                        FindBarPresentationDelegate,
                         IncognitoReauthConsumer,
                         LensPresentationDelegate,
-                        LogoAnimationControllerOwnerOwner,
+                        LensOverlayPresentationEnvironment,
                         TabConsumer,
                         OmniboxFocusDelegate,
                         OmniboxPopupPresenterDelegate,
@@ -108,10 +104,6 @@ typedef struct {
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
-
-// Consumer that gets notified of the visibility of the browser view.
-@property(nonatomic, weak) id<BrowserViewVisibilityConsumer>
-    browserViewVisibilityConsumer;
 
 // Handler for reauth commands.
 @property(nonatomic, weak) id<IncognitoReauthCommands> reauthHandler;
@@ -137,6 +129,10 @@ typedef struct {
 // Command handler for omnibox commands.
 @property(nonatomic, weak) id<OmniboxCommands> omniboxCommandsHandler;
 
+// Callback that will be invoked when the browser view visibility changed.
+@property(nonatomic, assign) const BrowserViewVisibilityStateChangedCallback&
+    browserViewVisibilityStateChangedCallback;
+
 // Opens a new tab as if originating from `originPoint` and `focusOmnibox`.
 - (void)openNewTabFromOriginPoint:(CGPoint)originPoint
                      focusOmnibox:(BOOL)focusOmnibox
@@ -149,6 +145,13 @@ typedef struct {
 
 // Shows the voice search UI.
 - (void)startVoiceSearch;
+
+// Dismisses all presented views, excluding the omnibox if `dismissOmnibox` is
+// NO, then calls `completion`. if `dismissPresentedViewController` is NO, the
+// view controller presented by the BVC will not be dismissed.
+- (void)clearPresentedStateWithCompletion:(ProceduralBlock)completion
+                           dismissOmnibox:(BOOL)dismissOmnibox
+           dismissPresentedViewController:(BOOL)dismissPresentedViewController;
 
 @end
 

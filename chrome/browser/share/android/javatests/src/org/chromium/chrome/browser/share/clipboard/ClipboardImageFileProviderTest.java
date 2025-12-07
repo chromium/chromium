@@ -19,17 +19,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FileProviderUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.FileProviderHelper;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.browser_ui.share.ClipboardImageFileProvider;
 import org.chromium.ui.base.Clipboard;
 
@@ -43,14 +45,15 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class ClipboardImageFileProviderTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final long WAIT_TIMEOUT_SECONDS = 30L;
     private static final String TEST_PNG_IMAGE_FILE_EXTENSION = ".png";
 
     private byte[] mTestImageData;
 
-    private class AsyncTaskRunnableHelper extends CallbackHelper implements Runnable {
+    private static class AsyncTaskRunnableHelper extends CallbackHelper implements Runnable {
         @Override
         public void run() {
             notifyCalled();
@@ -78,8 +81,8 @@ public class ClipboardImageFileProviderTest {
         bitmap.compress(Bitmap.CompressFormat.PNG, /*quality = (0-100) */ 100, baos);
         mTestImageData = baos.toByteArray();
 
-        mActivityTestRule.startMainActivityFromLauncher();
-        ContentUriUtils.setFileProviderUtil(new FileProviderHelper());
+        mActivityTestRule.startFromLauncherAtNtp();
+        FileProviderUtils.setFileProviderUtil(new FileProviderHelper());
     }
 
     @After
@@ -90,6 +93,7 @@ public class ClipboardImageFileProviderTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "Flaky, see crbug.com/382511576")
     public void testClipboardSetImage() throws TimeoutException, IOException {
         Clipboard.getInstance().setImageFileProvider(new ClipboardImageFileProvider());
         Clipboard.getInstance().setImage(mTestImageData, TEST_PNG_IMAGE_FILE_EXTENSION);

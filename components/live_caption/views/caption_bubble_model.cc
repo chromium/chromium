@@ -5,20 +5,24 @@
 #include "components/live_caption/views/caption_bubble_model.h"
 
 #include "base/feature_list.h"
-#include "base/functional/callback_forward.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/live_caption/caption_bubble_context.h"
 #include "components/live_caption/views/caption_bubble.h"
 #include "media/base/media_switches.h"
 
 namespace {
-// The caption bubble contains 2 lines of text in its normal size and 8 lines
-// in its expanded size, so the maximum number of lines before truncating is 9.
+
+// Non-scrollable caption bubble contains 2 lines of text in its normal size and
+// 8 lines in its expanded size, so the maximum number of lines before
+// truncating is 9.
+// For scrollable caption bubble the number of lines in text is limited by
+// `kLiveCaptionScrollableMaxLines` feature parameter (see below).
 constexpr int kMaxLines = 9;
 
 // Returns the length of the longest common prefix between two strings.
 int GetLongestCommonPrefixLength(const std::string& str1,
-                                   const std::string& str2) {
+                                 const std::string& str2) {
   int length = 0;
   for (unsigned long i = 0, j = 0; i < str1.length() && j < str2.length();
        i++, j++, length++) {
@@ -33,6 +37,14 @@ int GetLongestCommonPrefixLength(const std::string& str1,
 }  // namespace
 
 namespace captions {
+
+BASE_FEATURE(kLiveCaptionScrollable, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(size_t,
+                   kLiveCaptionScrollableMaxLines,
+                   &kLiveCaptionScrollable,
+                   "live_caption_scrollable_max_lines",
+                   250);
 
 CaptionBubbleModel::CaptionBubbleModel(CaptionBubbleContext* context,
                                        OnCaptionBubbleClosedCallback callback)
@@ -74,8 +86,9 @@ void CaptionBubbleModel::RemoveObserver() {
 }
 
 void CaptionBubbleModel::OnTextChanged() {
-  if (observer_)
+  if (observer_) {
     observer_->OnTextChanged();
+  }
 }
 
 void CaptionBubbleModel::OnAutoDetectedLanguageChanged() {
@@ -129,6 +142,16 @@ void CaptionBubbleModel::Close() {
   ClearText();
 }
 
+std::string CaptionBubbleModel::GetFullText() const {
+  // Ensure that there is a space between the final and partial texts.
+  if (!final_text_.empty() && !partial_text_.empty() &&
+      !std::isspace(final_text_.back()) && !std::isspace(partial_text_[0])) {
+    return final_text_ + " " + partial_text_;
+  }
+
+  return final_text_ + partial_text_;
+}
+
 void CaptionBubbleModel::OnError(
     CaptionBubbleErrorType error_type,
     OnErrorClickedCallback error_clicked_callback,
@@ -150,17 +173,21 @@ void CaptionBubbleModel::ClearText() {
 }
 
 void CaptionBubbleModel::CommitPartialText() {
-  final_text_ += partial_text_;
+  final_text_ = GetFullText();
   partial_text_.clear();
   if (!observer_)
     return;
 
-  // Truncate the final text to kMaxLines lines long. This time, alert the
+  const size_t max_lines = base::FeatureList::IsEnabled(kLiveCaptionScrollable)
+                               ? kLiveCaptionScrollableMaxLines.Get()
+                               : kMaxLines;
+
+  // Truncate the final text to max_lines lines long. This time, alert the
   // observer that the text has changed.
   const size_t num_lines = observer_->GetNumLinesInLabel();
-  if (num_lines > kMaxLines) {
+  if (num_lines > max_lines) {
     const size_t truncate_index =
-        observer_->GetTextIndexOfLineInLabel(num_lines - kMaxLines);
+        observer_->GetTextIndexOfLineInLabel(num_lines - max_lines);
     final_text_.erase(0, truncate_index);
     OnTextChanged();
   }

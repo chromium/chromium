@@ -36,8 +36,7 @@ optimization_guide::proto::ComposeTone ComposeTone(
 }
 
 compose::mojom::ComposeStatus ComposeStatusFromOptimizationGuideResult(
-    const optimization_guide::OptimizationGuideModelStreamingExecutionResult&
-        result) {
+    const optimization_guide::OptimizationGuideModelExecutionResult& result) {
   if (result.response.has_value()) {
     return compose::mojom::ComposeStatus::kOk;
   }
@@ -59,6 +58,7 @@ compose::mojom::ComposeStatus ComposeStatusFromOptimizationGuideResult(
     case ModelExecutionError::kUnsupportedLanguage:
       return compose::mojom::ComposeStatus::kUnsupportedLanguage;
     case ModelExecutionError::kFiltered:
+    case ModelExecutionError::kResponseLowQuality:
       return compose::mojom::ComposeStatus::kFiltered;
     case ModelExecutionError::kDisabled:
       return compose::mojom::ComposeStatus::kDisabled;
@@ -76,5 +76,23 @@ optimization_guide::proto::UserFeedback OptimizationFeedbackFromComposeFeedback(
       return optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_DOWN;
     default:
       return optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
+  }
+}
+
+optimization_guide::proto::ComposeUpfrontInputMode ComposeUpfrontInputMode(
+    compose::mojom::InputMode mode) {
+  switch (mode) {
+    case compose::mojom::InputMode::kPolish:
+      return optimization_guide::proto::ComposeUpfrontInputMode::
+          COMPOSE_POLISH_MODE;
+    case compose::mojom::InputMode::kElaborate:
+      return optimization_guide::proto::ComposeUpfrontInputMode::
+          COMPOSE_ELABORATE_MODE;
+    case compose::mojom::InputMode::kFormalize:
+      return optimization_guide::proto::ComposeUpfrontInputMode::
+          COMPOSE_FORMALIZE_MODE;
+    case compose::mojom::InputMode::kUnset:
+      return optimization_guide::proto::ComposeUpfrontInputMode::
+          COMPOSE_UNSPECIFIED_MODE;
   }
 }

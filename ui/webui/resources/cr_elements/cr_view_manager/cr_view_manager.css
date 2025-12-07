@@ -16,6 +16,11 @@
   top: 0;
 }
 
+:host([show-all]) ::slotted([slot=view]) {
+  display: block;
+  position: initial;
+}
+
 :host ::slotted(.active),
 :host ::slotted(.closing) {
   display: block;

@@ -9,6 +9,11 @@ group("resources") {
   public_deps = [ ":main_interface" ]
 }
 
-bundle_data_ib_file("main_interface") {
+bundle_data_storyboard_file("main_interface") {
   source = "MainInterface.storyboard"
+  bundle_files = [
+    "UIViewController-Xki-Si-B7m.nib",
+    "Xki-Si-B7m-view-BuU-Ak-iZz.nib",
+    "Info.plist",
+  ]
 }

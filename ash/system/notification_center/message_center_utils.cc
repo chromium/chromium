@@ -4,6 +4,8 @@
 
 #include "ash/system/notification_center/message_center_utils.h"
 
+#include <algorithm>
+
 #include "ash/constants/ash_constants.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/vm_camera_mic_constants.h"
@@ -18,12 +20,11 @@
 #include "ash/system/status_area_widget.h"
 #include "base/hash/sha1.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/message_center.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/view.h"
@@ -56,11 +57,11 @@ std::string GenerateGroupParentNotificationIdSuffix(
       if (notifier_id.id == ash::kPrivacyIndicatorsNotifierId) {
         return base::SHA1HashString(notifier_id.id);
       }
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     case message_center::NotifierType::APPLICATION:
     case message_center::NotifierType::CROSTINI_APPLICATION:
     case message_center::NotifierType::PHONE_HUB:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -77,7 +78,7 @@ bool CompareNotifications(message_center::Notification* n1,
 
 std::vector<message_center::Notification*> GetSortedNotificationsWithOwnView() {
   std::vector<message_center::Notification*> sorted_notifications;
-  base::ranges::copy_if(
+  std::ranges::copy_if(
       message_center::MessageCenter::Get()->GetVisibleNotifications(),
       std::back_inserter(sorted_notifications),
       [](message_center::Notification* notification) {
@@ -100,7 +101,7 @@ size_t GetNotificationCount() {
                 ->session_state_notification_blocker()
           : nullptr;
 
-  return base::ranges::count_if(
+  return std::ranges::count_if(
       message_center::MessageCenter::Get()
           ->GetVisibleNotificationsWithoutBlocker(blocker_to_ignore),
       [](message_center::Notification* notification) {
@@ -110,7 +111,8 @@ size_t GetNotificationCount() {
         // `PrivacyIndicatorsTrayItemView` or `CameraMicTrayItemView` to show
         // indicators on the systray.
         if (notifier == kPrivacyIndicatorsNotifierId ||
-            notifier == kVmCameraMicNotifierId) {
+            notifier == kVmCameraMicNotifierId ||
+            notifier == kPrivacyIndicatorsMultiCaptureNotifierId) {
           return false;
         }
 
@@ -170,7 +172,7 @@ GetActiveNotificationViewControllerForNotificationView(
     views::View* notification_view) {
   aura::Window* window = notification_view->GetWidget()->GetNativeWindow();
   auto display_id =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
+      display::Screen::Get()->GetDisplayNearestWindow(window).id();
 
   return GetActiveNotificationViewControllerForDisplay(display_id);
 }
@@ -179,7 +181,7 @@ NotificationGroupingController* GetGroupingControllerForNotificationView(
     views::View* notification_view) {
   aura::Window* window = notification_view->GetWidget()->GetNativeWindow();
   auto display_id =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
+      display::Screen::Get()->GetDisplayNearestWindow(window).id();
 
   RootWindowController* root_window_controller =
       Shell::GetRootWindowControllerWithDisplayId(display_id);
@@ -206,8 +208,8 @@ void FadeInView(views::View* view,
                 const std::string& animation_histogram_name) {
   // If we are in testing with animation (non zero duration), we shouldn't have
   // delays so that we can properly track when animation is completed in test.
-  if (ui::ScopedAnimationDurationScaleMode::duration_multiplier() ==
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION) {
+  if (gfx::ScopedAnimationDurationScaleMode::duration_multiplier() ==
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION) {
     delay_in_ms = 0;
   }
 
@@ -238,8 +240,8 @@ void FadeOutView(views::View* view,
                  const std::string& animation_histogram_name) {
   // If we are in testing with animation (non zero duration), we shouldn't have
   // delays so that we can properly track when animation is completed in test.
-  if (ui::ScopedAnimationDurationScaleMode::duration_multiplier() ==
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION) {
+  if (gfx::ScopedAnimationDurationScaleMode::duration_multiplier() ==
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION) {
     delay_in_ms = 0;
   }
 
@@ -276,8 +278,8 @@ void SlideOutView(views::View* view,
                   const std::string& animation_histogram_name) {
   // If we are in testing with animation (non zero duration), we shouldn't have
   // delays so that we can properly track when animation is completed in test.
-  if (ui::ScopedAnimationDurationScaleMode::duration_multiplier() ==
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION) {
+  if (gfx::ScopedAnimationDurationScaleMode::duration_multiplier() ==
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION) {
     delay_in_ms = 0;
   }
 

@@ -5,15 +5,14 @@
 #ifndef CHROME_BROWSER_STORAGE_ACCESS_API_STORAGE_ACCESS_GRANT_PERMISSION_CONTEXT_H_
 #define CHROME_BROWSER_STORAGE_ACCESS_API_STORAGE_ACCESS_GRANT_PERMISSION_CONTEXT_H_
 
+#include <memory>
+
 #include "base/memory/weak_ptr.h"
-#include "components/permissions/permission_context_base.h"
+#include "base/types/pass_key.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 
 class GURL;
-
-namespace permissions {
-class PermissionRequestID;
-}
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -64,8 +63,10 @@ enum class RequestOutcome {
 };
 
 class StorageAccessGrantPermissionContext
-    : public permissions::PermissionContextBase {
+    : public permissions::ContentSettingPermissionContextBase {
  public:
+  using PassKey = base::PassKey<StorageAccessGrantPermissionContext>;
+
   explicit StorageAccessGrantPermissionContext(
       content::BrowserContext* browser_context);
 
@@ -76,9 +77,14 @@ class StorageAccessGrantPermissionContext
 
   ~StorageAccessGrantPermissionContext() override;
 
+  // Exposes `RequestPermission` for tests.
+  void RequestPermissionForTesting(
+      std::unique_ptr<permissions::PermissionRequestData> request_data,
+      permissions::BrowserPermissionCallback callback);
+
   // Exposes `DecidePermission` for tests.
   void DecidePermissionForTesting(
-      permissions::PermissionRequestData request_data,
+      std::unique_ptr<permissions::PermissionRequestData> request_data,
       permissions::BrowserPermissionCallback callback);
 
   static int GetImplicitGrantLimitForTesting();
@@ -86,34 +92,35 @@ class StorageAccessGrantPermissionContext
 
  private:
   // PermissionContextBase:
-  void DecidePermission(
-      permissions::PermissionRequestData request_data,
+  void RequestPermission(
+      std::unique_ptr<permissions::PermissionRequestData> request_data,
       permissions::BrowserPermissionCallback callback) override;
-  ContentSetting GetPermissionStatusInternal(
+  void DecidePermission(
+      std::unique_ptr<permissions::PermissionRequestData> request_data,
+      permissions::BrowserPermissionCallback callback) override;
+  void NotifyPermissionSet(
+      const permissions::PermissionRequestData& request_data,
+      permissions::BrowserPermissionCallback callback,
+      bool persist,
+      PermissionDecision decision,
+      bool is_final_decision) override;
+
+  // ContentSettingPermissionContextBase
+  ContentSetting GetContentSettingStatusInternal(
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       const GURL& embedding_origin) const override;
-  void NotifyPermissionSet(const permissions::PermissionRequestID& id,
-                           const GURL& requesting_origin,
-                           const GURL& embedding_origin,
-                           permissions::BrowserPermissionCallback callback,
-                           bool persist,
-                           ContentSetting content_setting,
-                           bool is_one_time,
-                           bool is_final_decision) override;
-  void UpdateContentSetting(const GURL& requesting_origin,
-                            const GURL& embedding_origin,
-                            ContentSetting content_setting,
-                            bool is_one_time) override;
+  void UpdateContentSetting(
+      const permissions::PermissionRequestData& request_data,
+      ContentSetting content_setting,
+      bool is_one_time) override;
 
   // Internal implementation for NotifyPermissionSet.
   void NotifyPermissionSetInternal(
-      const permissions::PermissionRequestID& id,
-      const GURL& requesting_origin,
-      const GURL& embedding_origin,
+      const permissions::PermissionRequestData& request_data,
       permissions::BrowserPermissionCallback callback,
       bool persist,
-      ContentSetting content_setting,
+      PermissionDecision decision,
       RequestOutcome outcome);
 
   // Checks First-Party Sets metadata to determine if auto-grants or
@@ -121,16 +128,18 @@ class StorageAccessGrantPermissionContext
   // this tries to to use an implicit grant, and finally may prompt the user if
   // necessary.
   void CheckForAutoGrantOrAutoDenial(
-      permissions::PermissionRequestData request_data,
+      std::unique_ptr<permissions::PermissionRequestData> request_data,
       permissions::BrowserPermissionCallback callback,
       net::FirstPartySetMetadata metadata);
 
   // Determines whether the top-level user-interaction heuristic was satisfied,
   // and if so, prompts the user.
   void OnCheckedUserInteractionHeuristic(
-      permissions::PermissionRequestData request_data,
+      std::unique_ptr<permissions::PermissionRequestData> request_data,
       permissions::BrowserPermissionCallback callback,
       bool had_top_level_user_interaction);
+
+  void ReportRelatedWebsiteSetsDeprecation(content::RenderFrameHost* rfh);
 
   base::WeakPtrFactory<StorageAccessGrantPermissionContext> weak_factory_{this};
 };

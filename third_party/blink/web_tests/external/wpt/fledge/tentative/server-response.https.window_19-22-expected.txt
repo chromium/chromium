@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Basic B&A auction - response marked as chaff incorrectly
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on 'Navigator': Invalid Coordinator"
+[FAIL] Basic B&A auction - incorrectly includes topLevelSeller
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on 'Navigator': Invalid Coordinator"
+[FAIL] Basic B&A auction - non-string top-level seller invalid
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on 'Navigator': Invalid Coordinator"
+[FAIL] Basic B&A auction - http:// topLevelSeller is bad, too
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on 'Navigator': Invalid Coordinator"
+Harness: the test ran to completion.
+

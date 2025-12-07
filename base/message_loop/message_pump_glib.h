@@ -6,6 +6,7 @@
 #define BASE_MESSAGE_LOOP_MESSAGE_PUMP_GLIB_H_
 
 #include <glib.h>
+
 #include <memory>
 
 #include "base/base_export.h"
@@ -16,6 +17,8 @@
 #include "base/time/time.h"
 
 namespace base {
+
+class IOWatcher;
 
 // This class implements a base MessagePump needed for TYPE_UI MessageLoops on
 // platforms using GLib.
@@ -45,7 +48,7 @@ class BASE_EXPORT MessagePumpGlib : public MessagePump,
     // WatchFileDescriptor() and sets up a GSource for the input parameters.
     // The source is not attached here, so the events will not be fired until
     // Attach() is called.
-    bool InitOrUpdate(int fd, int mode, FdWatcher* watcher);
+    bool InitOrUpdate(int fd, bool persistent, int mode, FdWatcher* watcher);
     // Returns the current initialization status.
     bool IsInitialized() const;
 
@@ -66,6 +69,7 @@ class BASE_EXPORT MessagePumpGlib : public MessagePump,
     // If this pointer is non-null, the pointee is set to true in the
     // destructor.
     raw_ptr<bool> was_destroyed_ = nullptr;
+    bool is_persistent_ = false;  // false if this event is one-shot.
   };
 
   MessagePumpGlib();
@@ -105,12 +109,13 @@ class BASE_EXPORT MessagePumpGlib : public MessagePump,
   void ScheduleWork() override;
   void ScheduleDelayedWork(
       const Delegate::NextWorkInfo& next_work_info) override;
+  IOWatcher* GetIOWatcher() override;
 
   // Internal methods used for processing the FdWatchSource callbacks. As for
   // main pump callbacks, they are public for simplicity but should not be used
   // directly.
   bool HandleFdWatchCheck(FdWatchController* controller);
-  void HandleFdWatchDispatch(FdWatchController* controller);
+  bool HandleFdWatchDispatch(FdWatchController* controller);
 
  private:
   struct GMainContextDeleter {
@@ -191,6 +196,9 @@ class BASE_EXPORT MessagePumpGlib : public MessagePump,
   int wakeup_pipe_write_;
   // Use a unique_ptr to avoid needing the definition of GPollFD in the header.
   std::unique_ptr<GPollFD> wakeup_gpollfd_;
+
+  // The IOWatcher for this thread, lazily initialized as needed.
+  std::unique_ptr<IOWatcher> io_watcher_;
 
   THREAD_CHECKER(watch_fd_caller_checker_);
 };

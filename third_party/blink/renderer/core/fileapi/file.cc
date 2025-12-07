@@ -45,7 +45,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
-#include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -54,7 +53,7 @@ static String GetContentTypeFromFileName(const String& name,
                                          File::ContentTypeLookupPolicy policy) {
   String type;
   wtf_size_t index = name.ReverseFind('.');
-  if (index != WTF::kNotFound) {
+  if (index != kNotFound) {
     if (policy == File::kWellKnownContentTypes) {
       type = MIMETypeRegistry::GetWellKnownMIMETypeForExtension(
           name.Substring(index + 1));
@@ -135,7 +134,8 @@ File* File::Create(ExecutionContext* context,
     last_modified = base::Time::Now();
   }
   DCHECK(options->hasEndings());
-  bool normalize_line_endings_to_native = options->endings() == "native";
+  const bool normalize_line_endings_to_native =
+      options->endings() == V8EndingType::Enum::kNative;
   if (normalize_line_endings_to_native)
     UseCounter::Count(context, WebFeature::kFileAPINativeLineEndings);
 
@@ -162,7 +162,7 @@ File* File::CreateFromControlState(ExecutionContext* context,
   String relative_path = state[index++];
   if (relative_path.empty())
     return File::CreateForUserProvidedFile(context, path, name);
-  return File::CreateWithRelativePath(context, path, relative_path);
+  return File::CreateWithRelativePath(context, path, name, relative_path);
 }
 
 String File::PathFromControlState(const FormControlState& state,
@@ -178,9 +178,10 @@ String File::PathFromControlState(const FormControlState& state,
 
 File* File::CreateWithRelativePath(ExecutionContext* context,
                                    const String& path,
+                                   const String& name,
                                    const String& relative_path) {
-  File* file = MakeGarbageCollected<File>(context, path, File::kAllContentTypes,
-                                          File::kIsUserVisible);
+  File* file = MakeGarbageCollected<File>(
+      context, path, name, File::kAllContentTypes, File::kIsUserVisible);
   file->relative_path_ = relative_path;
   return file;
 }
@@ -190,8 +191,8 @@ File* File::CreateForFileSystemFile(ExecutionContext& context,
                                     const KURL& url,
                                     const FileMetadata& metadata,
                                     UserVisibility user_visibility) {
-  String content_type =
-      GetContentTypeFromFileName(url.GetPath(), File::kWellKnownContentTypes);
+  String content_type = GetContentTypeFromFileName(
+      url.GetPath().ToString(), File::kWellKnownContentTypes);
   // RegisterBlob doesn't take nullable strings.
   if (content_type.IsNull()) {
     content_type = g_empty_string;
@@ -322,13 +323,10 @@ int64_t File::lastModified() const {
   return (LastModifiedTime() - base::Time::UnixEpoch()).InMilliseconds();
 }
 
-ScriptValue File::lastModifiedDate(ScriptState* script_state) const {
+ScriptObject File::lastModifiedDate(ScriptState* script_state) const {
   // lastModifiedDate returns a Date instance,
   // http://www.w3.org/TR/FileAPI/#dfn-lastModifiedDate
-  return ScriptValue(
-      script_state->GetIsolate(),
-      ToV8Traits<IDLNullable<IDLDate>>::ToV8(
-          script_state, std::optional<base::Time>(LastModifiedTime())));
+  return ToV8FromDate(script_state, std::make_optional(LastModifiedTime()));
 }
 
 std::optional<base::Time> File::LastModifiedTimeForSerialization() const {

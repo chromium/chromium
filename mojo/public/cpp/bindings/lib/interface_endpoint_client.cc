@@ -20,6 +20,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/common/task_annotator.h"
@@ -31,6 +32,8 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_group.h"
 #include "mojo/public/cpp/bindings/associated_group_controller.h"
+#include "mojo/public/cpp/bindings/connection_group.h"
+#include "mojo/public/cpp/bindings/connection_group_ref.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_controller.h"
 #include "mojo/public/cpp/bindings/lib/task_runner_helper.h"
 #include "mojo/public/cpp/bindings/lib/validation_util.h"
@@ -45,6 +48,8 @@ namespace mojo {
 
 namespace {
 
+constinit thread_local base::HistogramBase* g_end_to_end_metric = nullptr;
+
 // A helper to expose a subset of an InterfaceEndpointClient's functionality
 // through a thread-safe interface. Used by SharedRemote.
 class ThreadSafeInterfaceEndpointClientProxy : public ThreadSafeProxy {
@@ -56,11 +61,13 @@ class ThreadSafeInterfaceEndpointClientProxy : public ThreadSafeProxy {
       base::WeakPtr<InterfaceEndpointClient> endpoint,
       scoped_refptr<ThreadSafeProxy::Target> target,
       const AssociatedGroup& associated_group,
-      scoped_refptr<base::SequencedTaskRunner> task_runner)
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      const base::Location& location)
       : endpoint_(std::move(endpoint)),
         target_(std::move(target)),
         associated_group_(associated_group),
-        task_runner_(std::move(task_runner)) {}
+        task_runner_(std::move(task_runner)),
+        location_(location) {}
 
   ThreadSafeInterfaceEndpointClientProxy(
       const ThreadSafeInterfaceEndpointClientProxy&) = delete;
@@ -151,12 +158,14 @@ class ThreadSafeInterfaceEndpointClientProxy : public ThreadSafeProxy {
 
   class ForwardToCallingThread : public MessageReceiver {
    public:
-    explicit ForwardToCallingThread(std::unique_ptr<MessageReceiver> responder)
+    explicit ForwardToCallingThread(std::unique_ptr<MessageReceiver> responder,
+                                    const base::Location& location)
         : responder_(std::move(responder)),
-          caller_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
+          caller_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
+          location_(location) {}
 
     ~ForwardToCallingThread() override {
-      caller_task_runner_->DeleteSoon(FROM_HERE, std::move(responder_));
+      caller_task_runner_->DeleteSoon(location_, std::move(responder_));
     }
 
    private:
@@ -164,7 +173,7 @@ class ThreadSafeInterfaceEndpointClientProxy : public ThreadSafeProxy {
       // `this` will be deleted immediately after this method returns. We must
       // relinquish ownership of `responder_` so it doesn't get deleted.
       caller_task_runner_->PostTask(
-          FROM_HERE,
+          location_,
           base::BindOnce(&ForwardToCallingThread::CallAcceptAndDeleteResponder,
                          std::move(responder_), std::move(*message)));
       return true;
@@ -178,6 +187,7 @@ class ThreadSafeInterfaceEndpointClientProxy : public ThreadSafeProxy {
 
     std::unique_ptr<MessageReceiver> responder_;
     scoped_refptr<base::SequencedTaskRunner> caller_task_runner_;
+    const base::Location location_;
   };
 
   class ForwardSameThreadResponder : public MessageReceiver {
@@ -228,6 +238,7 @@ class ThreadSafeInterfaceEndpointClientProxy : public ThreadSafeProxy {
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   const scoped_refptr<InProgressSyncCalls> sync_calls_{
       base::MakeRefCounted<InProgressSyncCalls>()};
+  const base::Location location_;
 };
 
 void DetermineIfEndpointIsConnected(
@@ -281,7 +292,7 @@ class ResponderThunk : public MessageReceiverWithStatus {
 
   // Allows this thunk to be attached to a ConnectionGroup as a means of keeping
   // the group from idling while the response is pending.
-  void set_connection_group(ConnectionGroup::Ref connection_group) {
+  void set_connection_group(ConnectionGroupRef connection_group) {
     connection_group_ = std::move(connection_group);
   }
 
@@ -323,7 +334,7 @@ class ResponderThunk : public MessageReceiverWithStatus {
   base::WeakPtr<InterfaceEndpointClient> endpoint_client_;
   bool accept_was_invoked_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  ConnectionGroup::Ref connection_group_;
+  ConnectionGroupRef connection_group_;
 };
 
 }  // namespace
@@ -378,8 +389,8 @@ void ThreadSafeInterfaceEndpointClientProxy::SendMessageWithResponder(
   // Async messages are always posted (even if `task_runner_` runs tasks on
   // this sequence) to guarantee that two async calls can't be reordered.
   if (!message.has_flag(Message::kFlagIsSync)) {
-    auto reply_forwarder =
-        std::make_unique<ForwardToCallingThread>(std::move(responder));
+    auto reply_forwarder = std::make_unique<ForwardToCallingThread>(
+        std::move(responder), location_);
     task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&ThreadSafeInterfaceEndpointClientProxy ::
@@ -434,7 +445,7 @@ void ThreadSafeInterfaceEndpointClientProxy::SendMessageWithResponder(
     SyncEventWatcher watcher(&response->event,
                              base::BindRepeating(set_flag, &signaled));
     const bool* stop_flags[] = {&signaled};
-    watcher.SyncWatch(stop_flags, std::size(stop_flags));
+    watcher.SyncWatch(stop_flags);
   } else {
     // Else we can wait on the event directly. It will only signal after our
     // reply has been processed or cancelled.
@@ -507,10 +518,11 @@ AssociatedGroup* InterfaceEndpointClient::associated_group() {
 }
 
 scoped_refptr<ThreadSafeProxy> InterfaceEndpointClient::CreateThreadSafeProxy(
-    scoped_refptr<ThreadSafeProxy::Target> target) {
+    scoped_refptr<ThreadSafeProxy::Target> target,
+    const base::Location& location) {
   return base::MakeRefCounted<ThreadSafeInterfaceEndpointClientProxy>(
       weak_ptr_factory_.GetWeakPtr(), std::move(target), *associated_group_,
-      task_runner_);
+      task_runner_, location);
 }
 
 ScopedInterfaceEndpointHandle InterfaceEndpointClient::PassHandle() {
@@ -907,7 +919,7 @@ void InterfaceEndpointClient::OnAssociationEvent(
 }
 
 bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
-  TRACE_EVENT("toplevel",
+  TRACE_EVENT("toplevel,mojom",
               perfetto::StaticString{method_name_callback_(*message)},
               [&](perfetto::EventContext& ctx) {
                 auto* info = ctx.event()->set_chrome_mojo_event_info();
@@ -946,7 +958,8 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
                 info->set_data_num_bytes(message->data_num_bytes());
 
                 static const uint8_t* flow_enabled =
-                    TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("toplevel.flow");
+                    TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
+                        "toplevel.flow,mojom.flow");
                 if (!*flow_enabled)
                   return;
 
@@ -954,6 +967,18 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
               });
 
   DCHECK_EQ(handle_.id(), message->interface_id());
+
+  int64_t creation_timeticks_us = message->creation_timeticks_us();
+  if (creation_timeticks_us > 0) {
+    if (!g_end_to_end_metric) {
+      SetThreadNameSuffixForMetrics("Default");
+    }
+    base::TimeTicks creation_timeticks =
+        base::TimeTicks() + base::Microseconds(creation_timeticks_us);
+    base::TimeDelta end_to_end_duration =
+        base::TimeTicks::Now() - creation_timeticks;
+    g_end_to_end_metric->AddTimeMicrosecondsGranularity(end_to_end_duration);
+  }
 
   // Sync messages can be sent and received at arbitrary points in time and we
   // should not associate them with the top-level scheduler task.
@@ -985,8 +1010,9 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
       return control_message_handler_.AcceptWithResponder(message,
                                                           std::move(responder));
     } else {
-      if (idle_tracking_connection_group_)
+      if (idle_tracking_connection_group_) {
         responder->set_connection_group(idle_tracking_connection_group_);
+      }
       accepted_interface_message = incoming_receiver_->AcceptWithResponder(
           message, std::move(responder));
     }
@@ -1044,6 +1070,14 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
   }
 
   return accepted_interface_message;
+}
+
+// static
+void InterfaceEndpointClient::SetThreadNameSuffixForMetrics(
+    std::string thread_name) {
+  g_end_to_end_metric = base::Histogram::FactoryMicrosecondsTimeGet(
+      "Mojo.EndToEndLatencyUs." + thread_name, base::Microseconds(1),
+      base::Seconds(1), 100, base::HistogramBase::kUmaTargetedHistogramFlag);
 }
 
 }  // namespace mojo

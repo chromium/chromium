@@ -8,30 +8,35 @@
 #include <cstdint>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/task/sequenced_task_runner_helpers.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "remoting/base/constants.h"
+#include "remoting/base/errors.h"
+#include "remoting/base/local_session_policies_provider.h"
+#include "remoting/base/session_policies.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/client_session_details.h"
 #include "remoting/host/client_session_events.h"
-#include "remoting/host/desktop_and_cursor_composer_notifier.h"
-#include "remoting/host/desktop_and_cursor_conditional_composer.h"
+#include "remoting/host/cursor_visibility_notifier.h"
 #include "remoting/host/desktop_display_info.h"
 #include "remoting/host/host_experiment_session_plugin.h"
 #include "remoting/host/host_extension_session_manager.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
+#include "remoting/host/mojom/remote_url_opener.mojom.h"
 #include "remoting/host/mojom/webauthn_proxy.mojom.h"
 #include "remoting/host/remote_input_filter.h"
 #include "remoting/proto/action.pb.h"
@@ -39,23 +44,25 @@
 #include "remoting/protocol/clipboard_filter.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/connection_to_client.h"
+#include "remoting/protocol/coordinate_converter.h"
 #include "remoting/protocol/data_channel_manager.h"
 #include "remoting/protocol/display_size.h"
+#include "remoting/protocol/errors.h"
 #include "remoting/protocol/fractional_input_filter.h"
 #include "remoting/protocol/host_stub.h"
+#include "remoting/protocol/input_event_timestamps.h"
 #include "remoting/protocol/input_event_tracker.h"
 #include "remoting/protocol/input_filter.h"
-#include "remoting/protocol/input_stub.h"
+#include "remoting/protocol/mouse_cursor_monitor.h"
 #include "remoting/protocol/mouse_input_filter.h"
 #include "remoting/protocol/observing_input_filter.h"
 #include "remoting/protocol/pairing_registry.h"
+#include "remoting/protocol/transport.h"
 #include "remoting/protocol/video_stream.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_capture_metadata.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
-#include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
-#include "ui/events/event.h"
+#include "ui/events/types/event_type.h"
 
 namespace remoting {
 
@@ -82,8 +89,8 @@ class ClientSession : public protocol::HostStub,
                       public ClientSessionControl,
                       public ClientSessionDetails,
                       public ClientSessionEvents,
-                      public DesktopAndCursorComposerNotifier::EventHandler,
-                      public webrtc::MouseCursorMonitor::Callback,
+                      public CursorVisibilityNotifier::EventHandler,
+                      public protocol::MouseCursorMonitor::Callback,
                       public mojom::ChromotingSessionServices {
  public:
   // Callback interface for passing events to the ChromotingHost.
@@ -113,20 +120,26 @@ class ClientSession : public protocol::HostStub,
         const std::string& channel_name,
         const protocol::TransportRoute& route) = 0;
 
+    // Called when session policies are received. Returns nullopt if the session
+    // policies are valid; otherwise returns an error code, which will be used
+    // to close the session with.
+    virtual std::optional<ErrorCode> OnSessionPoliciesReceived(
+        const SessionPolicies& policies) = 0;
+
    protected:
     virtual ~EventHandler() {}
   };
 
   // |event_handler| and |desktop_environment_factory| must outlive |this|.
   // All |HostExtension|s in |extensions| must outlive |this|.
-  ClientSession(EventHandler* event_handler,
-                std::unique_ptr<protocol::ConnectionToClient> connection,
-                DesktopEnvironmentFactory* desktop_environment_factory,
-                const DesktopEnvironmentOptions& desktop_environment_options,
-                const base::TimeDelta& max_duration,
-                scoped_refptr<protocol::PairingRegistry> pairing_registry,
-                const std::vector<raw_ptr<HostExtension, VectorExperimental>>&
-                    extensions);
+  ClientSession(
+      EventHandler* event_handler,
+      std::unique_ptr<protocol::ConnectionToClient> connection,
+      DesktopEnvironmentFactory* desktop_environment_factory,
+      const DesktopEnvironmentOptions& desktop_environment_options,
+      scoped_refptr<protocol::PairingRegistry> pairing_registry,
+      const std::vector<raw_ptr<HostExtension, VectorExperimental>>& extensions,
+      const LocalSessionPoliciesProvider* local_session_policies_provider);
 
   ClientSession(const ClientSession&) = delete;
   ClientSession& operator=(const ClientSession&) = delete;
@@ -153,7 +166,8 @@ class ClientSession : public protocol::HostStub,
 
   // protocol::ConnectionToClient::EventHandler interface.
   void OnConnectionAuthenticating() override;
-  void OnConnectionAuthenticated() override;
+  void OnConnectionAuthenticated(
+      const SessionPolicies* session_policies) override;
   void CreateMediaStreams() override;
   void OnConnectionChannelsConnected() override;
   void OnConnectionClosed(protocol::ErrorCode error) override;
@@ -166,8 +180,10 @@ class ClientSession : public protocol::HostStub,
 
   // ClientSessionControl interface.
   const std::string& client_jid() const override;
-  void DisconnectSession(protocol::ErrorCode error) override;
-  void OnLocalKeyPressed(uint32_t usb_keycode) override;
+  void DisconnectSession(ErrorCode error,
+                         std::string_view error_details,
+                         const SourceLocation& error_location) override;
+  void OnLocalKeyPressed(std::uint32_t usb_keycode) override;
   void OnLocalPointerMoved(const webrtc::DesktopVector& position,
                            ui::EventType type) override;
   void SetDisableInputs(bool disable_inputs) override;
@@ -175,18 +191,19 @@ class ClientSession : public protocol::HostStub,
       std::unique_ptr<protocol::VideoLayout> layout) override;
 
   // ClientSessionEvents interface.
-  void OnDesktopAttached(uint32_t session_id) override;
+  void OnDesktopAttached(std::uint32_t session_id) override;
   void OnDesktopDetached() override;
 
   // ClientSessionDetails interface.
-  uint32_t desktop_session_id() const override;
+  std::uint32_t desktop_session_id() const override;
   ClientSessionControl* session_control() override;
 
-  // DesktopAndCursorComposerNotifier::EventHandler interface
-  void SetComposeEnabled(bool enabled) override;
+  // CursorVisibilityNotifier::EventHandler interface
+  void OnCursorVisibilityChanged(bool visible) override;
 
-  // webrtc::MouseCursorMonitor::Callback implementation.
-  void OnMouseCursor(webrtc::MouseCursor* mouse_cursor) override;
+  // MouseCursorMonitor::Callback implementation.
+  void OnMouseCursor(
+      std::unique_ptr<webrtc::MouseCursor> mouse_cursor) override;
   void OnMouseCursorPosition(const webrtc::DesktopVector& position) override;
 
   // mojom::ChromotingSessionServices implementation.
@@ -224,7 +241,16 @@ class ClientSession : public protocol::HostStub,
   // Public for tests.
   void UpdateMouseClampingFilterOffset();
 
+  const SessionPolicies& effective_policies_for_tests() const {
+    return effective_policies_;
+  }
+
  private:
+  void OnDesktopEnvironmentCreated(
+      std::unique_ptr<DesktopEnvironment> desktop_environment);
+
+  void OnLocalSessionPoliciesChanged(const SessionPolicies& new_policies);
+
   // Creates a proxy for sending clipboard events to the client.
   std::unique_ptr<protocol::ClipboardStub> CreateClipboardProxy();
 
@@ -277,11 +303,17 @@ class ClientSession : public protocol::HostStub,
   // whenever the screen id associated with the active window changes.
   void OnActiveDisplayChanged(webrtc::ScreenId display);
 
-  // Sets the fallback geometry on `fractional_input_filter_` according to the
+  // Sets the fallback geometry on `coordinate_converter` according to the
   // current display-layout and selected display index. This is only used for
   // single-stream mode, when the client provides fractional-coordinates without
   // any screen_id.
-  void UpdateFractionalFilterFallback();
+  void UpdateCoordinateConverterFallback();
+
+  // Calls SetComposeEnabled() on all video streams. This controls whether the
+  // host's cursor should be composed onto the desktop frame.
+  // TODO: crbug.com/455622961 - Remove this method once the
+  // clientRenderedHostCursor capability is fully rolled out.
+  void SetComposeEnabledOnVideoStreams(bool enabled);
 
   raw_ptr<EventHandler> event_handler_;
 
@@ -294,8 +326,19 @@ class ClientSession : public protocol::HostStub,
   // The DesktopEnvironment instance for this session.
   std::unique_ptr<DesktopEnvironment> desktop_environment_;
 
+  // Pending actions to run once the desktop environment has been created.
+  std::vector<base::OnceClosure> desktop_environment_ready_callbacks_;
+
+  // Used to convert fractional coordinates to absolute coordinates.
+  protocol::CoordinateConverter coordinate_converter_;
+
   // Tracker used to release pressed keys and buttons when disconnecting.
   protocol::InputEventTracker input_tracker_;
+
+  // Filter used to detect transitions into and out of client-side pointer lock,
+  // and to monitor local input to determine whether or not to include the mouse
+  // cursor in the desktop image.
+  CursorVisibilityNotifier cursor_visibility_notifier_;
 
   // Filter used to disable remote inputs during local input activity.
   RemoteInputFilter remote_input_filter_;
@@ -309,11 +352,6 @@ class ClientSession : public protocol::HostStub,
 
   // Filter used to notify listeners when remote input events are received.
   protocol::ObservingInputFilter observing_input_filter_;
-
-  // Filter used to detect transitions into and out of client-side pointer lock,
-  // and to monitor local input to determine whether or not to include the mouse
-  // cursor in the desktop image.
-  DesktopAndCursorComposerNotifier desktop_and_cursor_composer_notifier_;
 
   // Filter to used to stop clipboard items sent from the client being echoed
   // back to it.  It is the final element in the clipboard (client -> host)
@@ -331,10 +369,6 @@ class ClientSession : public protocol::HostStub,
   // This must appear after |clipboard_echo_filter_|, so that it won't outlive
   // it.
   base::WeakPtrFactory<protocol::ClipboardStub> client_clipboard_factory_;
-
-  // The maximum duration of this session.
-  // There is no maximum if this value is <= 0.
-  base::TimeDelta max_duration_;
 
   // A timer that triggers a disconnect when the maximum session duration
   // is reached.
@@ -436,15 +470,23 @@ class ClientSession : public protocol::HostStub,
 
   std::unique_ptr<ActiveDisplayMonitor> active_display_monitor_;
 
+  SessionPolicies effective_policies_;
+
+  raw_ptr<const LocalSessionPoliciesProvider> local_session_policies_provider_;
+
+  // If `effective_policies` does not come from local session policies, the
+  // subscription will be null and OnLocalSessionPoliciesChanged() will never
+  // be called.
+  base::CallbackListSubscription local_session_policy_update_subscription_;
+
+  bool host_cursor_rendered_by_client_ = false;
+  bool cursor_visible_ = false;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Used to disable callbacks to |this| once DisconnectSession() has been
   // called.
-  base::WeakPtrFactory<ClientSessionControl>
-      client_session_control_weak_factory_{this};
-
-  base::WeakPtrFactory<ClientSessionEvents> client_session_events_weak_factory_{
-      this};
+  base::WeakPtrFactory<ClientSession> weak_factory_{this};
 };
 
 }  // namespace remoting

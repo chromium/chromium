@@ -5,9 +5,9 @@
 #ifndef IOS_CHROME_COMMON_UI_REAUTHENTICATION_REAUTHENTICATION_MODULE_FOR_TESTING_H_
 #define IOS_CHROME_COMMON_UI_REAUTHENTICATION_REAUTHENTICATION_MODULE_FOR_TESTING_H_
 
-#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
-
 #import <LocalAuthentication/LocalAuthentication.h>
+
+#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 
 @interface ReauthenticationModule (ForTesting)
 

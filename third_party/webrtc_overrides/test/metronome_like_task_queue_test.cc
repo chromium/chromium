@@ -4,13 +4,16 @@
 
 #include "third_party/webrtc_overrides/test/metronome_like_task_queue_test.h"
 
-#include <functional>
+#include <cstddef>
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/functional/any_invocable.h"
+#include "third_party/webrtc/api/units/time_delta.h"
 
 namespace blink {
 

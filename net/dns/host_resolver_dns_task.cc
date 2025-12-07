@@ -4,13 +4,15 @@
 
 #include "net/dns/host_resolver_dns_task.h"
 
+#include <algorithm>
 #include <string_view>
+#include <variant>
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/tick_clock.h"
+#include "base/types/optional_util.h"
 #include "net/base/features.h"
 #include "net/dns/address_sorter.h"
 #include "net/dns/dns_client.h"
@@ -22,9 +24,11 @@
 #include "net/dns/host_resolver_cache.h"
 #include "net/dns/host_resolver_internal_result.h"
 #include "net/dns/public/util.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace net {
+
+// When enabled, query HTTPS RR first.
+BASE_FEATURE(kPrioritizeHttpsResourceRecord, base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -50,38 +54,32 @@ base::Value::Dict NetLogDnsTaskExtractionFailureParams(
 
 // Creates NetLog parameters when the DnsTask failed.
 base::Value::Dict NetLogDnsTaskFailedParams(
-    int net_error,
-    std::optional<DnsQueryType> failed_transaction_type,
-    std::optional<base::TimeDelta> ttl,
-    const HostCache::Entry* saved_results) {
+    const HostResolverInternalErrorResult& failure_result,
+    const HostResolverDnsTask::Results& saved_results) {
   base::Value::Dict dict;
-  if (failed_transaction_type) {
-    dict.Set("dns_query_type", kDnsQueryTypes.at(*failed_transaction_type));
+  dict.Set("failure_result", failure_result.ToValue());
+
+  if (!saved_results.empty()) {
+    base::Value::List list;
+    for (const std::unique_ptr<HostResolverInternalResult>& result :
+         saved_results) {
+      list.Append(result->ToValue());
+    }
+    dict.Set("saved_results", std::move(list));
   }
-  if (ttl) {
-    dict.Set("error_ttl_sec",
-             base::saturated_cast<int>(ttl.value().InSeconds()));
-  }
-  dict.Set("net_error", net_error);
-  if (saved_results) {
-    dict.Set("saved_results", saved_results->NetLogParams());
-  }
+
   return dict;
 }
 
-base::Value::Dict NetLogResults(const HostCache::Entry& results) {
-  base::Value::Dict dict;
-  dict.Set("results", results.NetLogParams());
-  return dict;
-}
+base::Value::Dict NetLogResults(const HostResolverDnsTask::Results& results) {
+  base::Value::List list;
+  for (const std::unique_ptr<HostResolverInternalResult>& result : results) {
+    list.Append(result->ToValue());
+  }
 
-void RecordResolveTimeDiffForBucket(const char* histogram_variant,
-                                    const char* histogram_bucket,
-                                    base::TimeDelta diff) {
-  base::UmaHistogramTimes(
-      base::StrCat({"Net.Dns.ResolveTimeDiff.", histogram_variant,
-                    ".FirstRecord", histogram_bucket}),
-      diff);
+  base::Value::Dict dict;
+  dict.Set("results", std::move(list));
+  return dict;
 }
 
 void RecordResolveTimeDiff(const char* histogram_variant,
@@ -90,34 +88,136 @@ void RecordResolveTimeDiff(const char* histogram_variant,
                            base::TimeTicks second_record_end_time) {
   CHECK_LE(start_time, first_record_end_time);
   CHECK_LE(first_record_end_time, second_record_end_time);
-  base::TimeDelta first_elapsed = first_record_end_time - start_time;
   base::TimeDelta diff = second_record_end_time - first_record_end_time;
 
-  if (first_elapsed < base::Milliseconds(10)) {
-    RecordResolveTimeDiffForBucket(histogram_variant, "FasterThan10ms", diff);
-  } else if (first_elapsed < base::Milliseconds(25)) {
-    RecordResolveTimeDiffForBucket(histogram_variant, "10msTo25ms", diff);
-  } else if (first_elapsed < base::Milliseconds(50)) {
-    RecordResolveTimeDiffForBucket(histogram_variant, "25msTo50ms", diff);
-  } else if (first_elapsed < base::Milliseconds(100)) {
-    RecordResolveTimeDiffForBucket(histogram_variant, "50msTo100ms", diff);
-  } else if (first_elapsed < base::Milliseconds(250)) {
-    RecordResolveTimeDiffForBucket(histogram_variant, "100msTo250ms", diff);
-  } else if (first_elapsed < base::Milliseconds(500)) {
-    RecordResolveTimeDiffForBucket(histogram_variant, "250msTo500ms", diff);
-  } else if (first_elapsed < base::Seconds(1)) {
-    RecordResolveTimeDiffForBucket(histogram_variant, "500msTo1s", diff);
-  } else {
-    RecordResolveTimeDiffForBucket(histogram_variant, "SlowerThan1s", diff);
+  base::UmaHistogramTimes(
+      base::StrCat({"Net.Dns.ResolveTimeDiff2.", histogram_variant}), diff);
+}
+
+// Gets endpoints for sort and prepares `results` to add sorted and merged
+// results back in.
+//
+// If `results` contains an AAAA result with at least one IPv6 endpoint, returns
+// all endpoints with all IPv6 before IPv4, and replaces all address-type
+// data/error results with a single  ERR_NAME_NOT_RESOLVED result of
+// DnsQueryType::UNSPECIFIED, ready to be replaced with sorted endpoints. If no
+// IPv6 endpoints, leaves `results` alone and returns an empty vector.
+//
+// TODO(crbug.com/40269419): Delete once results are always sorted as individual
+// transactions complete.
+std::vector<IPEndPoint> ExtractAddressResultsForSort(
+    HostResolverDnsTask::Results& results,
+    bool is_happy_eyeballs_v3_enabled) {
+  CHECK(!base::FeatureList::IsEnabled(features::kUseHostResolverCache) &&
+        !is_happy_eyeballs_v3_enabled);
+
+  // To simplify processing, assume no more than one result per address query
+  // type.
+  CHECK_LE(
+      std::ranges::count_if(
+          results,
+          [](const std::unique_ptr<HostResolverInternalResult>& result) {
+            return (result->type() == HostResolverInternalResult::Type::kData ||
+                    result->type() ==
+                        HostResolverInternalResult::Type::kError) &&
+                   result->query_type() == DnsQueryType::A;
+          }),
+      1);
+  CHECK_LE(
+      std::ranges::count_if(
+          results,
+          [](const std::unique_ptr<HostResolverInternalResult>& result) {
+            return (result->type() == HostResolverInternalResult::Type::kData ||
+                    result->type() ==
+                        HostResolverInternalResult::Type::kError) &&
+                   result->query_type() == DnsQueryType::AAAA;
+          }),
+      1);
+
+  auto a_result_it = std::ranges::find_if(
+      results, [](const std::unique_ptr<HostResolverInternalResult>& result) {
+        return (result->type() == HostResolverInternalResult::Type::kData ||
+                result->type() == HostResolverInternalResult::Type::kError) &&
+               result->query_type() == DnsQueryType::A;
+      });
+  auto aaaa_result_it = std::ranges::find_if(
+      results, [](const std::unique_ptr<HostResolverInternalResult>& result) {
+        return (result->type() == HostResolverInternalResult::Type::kData ||
+                result->type() == HostResolverInternalResult::Type::kError) &&
+               result->query_type() == DnsQueryType::AAAA;
+      });
+
+  if (aaaa_result_it == results.end() ||
+      (*aaaa_result_it)->type() == HostResolverInternalResult::Type::kError ||
+      (*aaaa_result_it)->AsData().endpoints().empty()) {
+    // No IPv6 endpoints, so no sort necessary.
+    return {};
   }
+
+  std::string domain_name = (*aaaa_result_it)->domain_name();
+
+  CHECK_EQ((*aaaa_result_it)->source(),
+           HostResolverInternalResult::Source::kDns);
+  std::optional<base::TimeTicks> expiration = (*aaaa_result_it)->expiration();
+  base::Time timed_expiration = (*aaaa_result_it)->timed_expiration().value();
+  std::vector<IPEndPoint> endpoints_to_sort =
+      (*aaaa_result_it)->AsData().endpoints();
+  CHECK((*aaaa_result_it)->AsData().strings().empty());
+  CHECK((*aaaa_result_it)->AsData().hosts().empty());
+  results.erase(aaaa_result_it);
+
+  if (a_result_it != results.end()) {
+    CHECK_EQ((*a_result_it)->source(),
+             HostResolverInternalResult::Source::kDns);
+    if (expiration.has_value()) {
+      expiration = std::min(
+          expiration.value(),
+          (*a_result_it)->expiration().value_or(base::TimeTicks::Max()));
+    } else {
+      expiration = (*a_result_it)->expiration();
+    }
+    timed_expiration =
+        std::min(timed_expiration, (*a_result_it)->timed_expiration().value());
+
+    if ((*a_result_it)->type() == HostResolverInternalResult::Type::kData) {
+      endpoints_to_sort.insert(endpoints_to_sort.end(),
+                               (*a_result_it)->AsData().endpoints().begin(),
+                               (*a_result_it)->AsData().endpoints().end());
+      CHECK((*a_result_it)->AsData().strings().empty());
+      CHECK((*a_result_it)->AsData().hosts().empty());
+    }
+
+    results.erase(a_result_it);
+  }
+
+  // Expect no more data types after removed address results.
+  CHECK(!std::ranges::any_of(
+      results, [](const std::unique_ptr<HostResolverInternalResult>& result) {
+        return result->type() == HostResolverInternalResult::Type::kData;
+      }));
+
+  // Expect no UNSPECIFIED-type error result to ensure the one we're about to
+  // create can be easily found.
+  CHECK(!std::ranges::any_of(
+      results, [](const std::unique_ptr<HostResolverInternalResult>& result) {
+        return result->type() == HostResolverInternalResult::Type::kError &&
+               result->query_type() == DnsQueryType::UNSPECIFIED;
+      }));
+
+  results.insert(std::make_unique<HostResolverInternalErrorResult>(
+      std::move(domain_name), DnsQueryType::UNSPECIFIED, expiration,
+      timed_expiration, HostResolverInternalResult::Source::kDns,
+      ERR_NAME_NOT_RESOLVED));
+
+  return endpoints_to_sort;
 }
 
 }  // namespace
 
 HostResolverDnsTask::SingleTransactionResults::SingleTransactionResults(
     DnsQueryType query_type,
-    Results results)
-    : query_type(query_type), results(std::move(results)) {}
+    ResultRefs results)
+    : query_type(query_type), results(results) {}
 
 HostResolverDnsTask::SingleTransactionResults::~SingleTransactionResults() =
     default;
@@ -263,6 +363,7 @@ DnsQueryTypeSet HostResolverDnsTask::MaybeDisableAdditionalQueries(
 
   if (types.Has(DnsQueryType::HTTPS)) {
     if (!secure_ && !client_->CanQueryAdditionalTypesViaInsecureDns()) {
+      https_disabled_ = true;
       types.Remove(DnsQueryType::HTTPS);
     } else {
       DCHECK(!httpssvc_metrics_);
@@ -283,25 +384,38 @@ void HostResolverDnsTask::PushTransactionsNeeded(DnsQueryTypeSet query_types) {
                                       TransactionErrorBehavior::kFatalOrEmpty);
   }
 
-  // Give AAAA/A queries a head start by pushing them to the queue first.
-  constexpr DnsQueryType kHighPriorityQueries[] = {DnsQueryType::AAAA,
-                                                   DnsQueryType::A};
-  for (DnsQueryType high_priority_query : kHighPriorityQueries) {
-    if (query_types.Has(high_priority_query)) {
-      query_types.Remove(high_priority_query);
-      transactions_needed_.emplace_back(high_priority_query);
-    }
-  }
-  for (DnsQueryType remaining_query : query_types) {
-    if (remaining_query == DnsQueryType::HTTPS) {
+  auto add_transaction = [&](DnsQueryType query) {
+    if (query == DnsQueryType::HTTPS) {
       // Ignore errors for these types. In most cases treating them normally
       // would only result in fallback to resolution without querying the
       // type. Instead, synthesize empty results.
       transactions_needed_.emplace_back(
-          remaining_query, TransactionErrorBehavior::kSynthesizeEmpty);
+          query, TransactionErrorBehavior::kSynthesizeEmpty);
     } else {
-      transactions_needed_.emplace_back(remaining_query);
+      transactions_needed_.emplace_back(query);
     }
+  };
+
+  if (query_types.Has(DnsQueryType::HTTPS) &&
+      (base::FeatureList::IsEnabled(kPrioritizeHttpsResourceRecord) ||
+       base::FeatureList::IsEnabled(features::kHappyEyeballsV3))) {
+    query_types.Remove(DnsQueryType::HTTPS);
+    add_transaction(DnsQueryType::HTTPS);
+  }
+
+  // Give AAAA/A queries a head start by pushing them to the queue first.
+  constexpr DnsQueryType kHighPriorityQueries[] = {DnsQueryType::AAAA,
+                                                   DnsQueryType::A};
+  for (DnsQueryType high_priority_query : kHighPriorityQueries) {
+    if (!query_types.Has(high_priority_query)) {
+      continue;
+    }
+    query_types.Remove(high_priority_query);
+    add_transaction(high_priority_query);
+  }
+
+  for (DnsQueryType remaining_query : query_types) {
+    add_transaction(remaining_query);
   }
 }
 
@@ -364,7 +478,7 @@ void HostResolverDnsTask::OnTimeout() {
       default:
         // The timeout timer is only started when all other transactions have
         // completed.
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -382,8 +496,7 @@ void HostResolverDnsTask::OnDnsTransactionComplete(
     uint16_t request_port,
     int net_error,
     const DnsResponse* response) {
-  CHECK(transaction_info_it != transactions_in_progress_.end(),
-        base::NotFatalUntil::M130);
+  CHECK(transaction_info_it != transactions_in_progress_.end());
   DCHECK(base::Contains(transactions_in_progress_, *transaction_info_it));
 
   // Pull the TransactionInfo out of `transactions_in_progress_` now, so it
@@ -423,8 +536,7 @@ void HostResolverDnsTask::OnDnsTransactionComplete(
             TransactionErrorBehavior::kFallback ||
         fatal_error) {
       // Fail task (or maybe Job) completely on network failure.
-      OnFailure(net_error, /*allow_fallback=*/!fatal_error,
-                /*ttl=*/std::nullopt, transaction_info.type);
+      OnFailure(net_error, /*allow_fallback=*/!fatal_error);
       return;
     } else {
       DCHECK((transaction_info.error_behavior ==
@@ -451,9 +563,6 @@ void HostResolverDnsTask::OnDnsTransactionComplete(
         request_port);
   }
 
-  DCHECK_NE(results.error_or(DnsResponseResultExtractor::ExtractionError::kOk),
-            DnsResponseResultExtractor::ExtractionError::kUnexpected);
-
   if (!results.has_value()) {
     net_log_.AddEvent(
         NetLogEventType::HOST_RESOLVER_DNS_TASK_EXTRACTION_FAILURE, [&] {
@@ -471,8 +580,7 @@ void HostResolverDnsTask::OnDnsTransactionComplete(
       DCHECK_EQ(transaction_info.type, DnsQueryType::HTTPS);
       results = Results();
     } else {
-      OnFailure(ERR_DNS_MALFORMED_RESPONSE, /*allow_fallback=*/true,
-                /*ttl=*/std::nullopt, transaction_info.type);
+      OnFailure(ERR_DNS_MALFORMED_RESPONSE, /*allow_fallback=*/true);
       return;
     }
   }
@@ -491,7 +599,7 @@ void HostResolverDnsTask::OnDnsTransactionComplete(
 
   if (httpssvc_metrics_) {
     if (transaction_info.type == DnsQueryType::HTTPS) {
-      bool has_compatible_https = base::ranges::any_of(
+      bool has_compatible_https = std::ranges::any_of(
           results.value(),
           [](const std::unique_ptr<HostResolverInternalResult>& result) {
             return result->type() ==
@@ -538,7 +646,7 @@ void HostResolverDnsTask::OnDnsTransactionComplete(
   }
 
   if (base::FeatureList::IsEnabled(features::kUseHostResolverCache) ||
-      base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+      delegate_->IsHappyEyeballsV3Enabled()) {
     SortTransactionAndHandleResults(std::move(transaction_info),
                                     std::move(results).value());
   } else {
@@ -600,7 +708,7 @@ void HostResolverDnsTask::SortTransactionAndHandleResults(
     TransactionInfo transaction_info,
     Results transaction_results) {
   // Expect at most 1 data result in an individual transaction.
-  CHECK_LE(base::ranges::count_if(
+  CHECK_LE(std::ranges::count_if(
                transaction_results,
                [](const std::unique_ptr<HostResolverInternalResult>& result) {
                  return result->type() ==
@@ -608,7 +716,7 @@ void HostResolverDnsTask::SortTransactionAndHandleResults(
                }),
            1);
 
-  auto data_result_it = base::ranges::find_if(
+  auto data_result_it = std::ranges::find_if(
       transaction_results,
       [](const std::unique_ptr<HostResolverInternalResult>& result) {
         return result->type() == HostResolverInternalResult::Type::kData;
@@ -659,13 +767,13 @@ void HostResolverDnsTask::OnTransactionSorted(
       std::move(transactions_in_progress_.extract(transaction_info_it).value());
 
   // Expect exactly one data result.
-  auto data_result_it = base::ranges::find_if(
+  auto data_result_it = std::ranges::find_if(
       transaction_results,
       [](const std::unique_ptr<HostResolverInternalResult>& result) {
         return result->type() == HostResolverInternalResult::Type::kData;
       });
   CHECK(data_result_it != transaction_results.end());
-  DCHECK_EQ(base::ranges::count_if(
+  DCHECK_EQ(std::ranges::count_if(
                 transaction_results,
                 [](const std::unique_ptr<HostResolverInternalResult>& result) {
                   return result->type() ==
@@ -726,22 +834,19 @@ void HostResolverDnsTask::HandleTransactionResults(
       ShouldTriggerHttpToHttpsUpgrade(transaction_results)) {
     // Disallow fallback. Otherwise DNS could be reattempted without HTTPS
     // queries, and that would hide this error instead of triggering upgrade.
-    OnFailure(
-        ERR_DNS_NAME_HTTPS_ONLY, /*allow_fallback=*/false,
-        HostCache::Entry::TtlFromInternalResults(
-            transaction_results, base::Time::Now(), tick_clock_->NowTicks()),
-        transaction_info.type);
+    OnFailure(ERR_DNS_NAME_HTTPS_ONLY, /*allow_fallback=*/false,
+              &transaction_results);
     return;
   }
 
   // Failures other than ERR_NAME_NOT_RESOLVED cannot be merged with other
   // transactions.
-  auto failure_result_it = base::ranges::find_if(
+  auto failure_result_it = std::ranges::find_if(
       transaction_results,
       [](const std::unique_ptr<HostResolverInternalResult>& result) {
         return result->type() == HostResolverInternalResult::Type::kError;
       });
-  DCHECK_LE(base::ranges::count_if(
+  DCHECK_LE(std::ranges::count_if(
                 transaction_results,
                 [](const std::unique_ptr<HostResolverInternalResult>& result) {
                   return result->type() ==
@@ -750,58 +855,27 @@ void HostResolverDnsTask::HandleTransactionResults(
             1);
   if (failure_result_it != transaction_results.end() &&
       (*failure_result_it)->AsError().error() != ERR_NAME_NOT_RESOLVED) {
-    OnFailure(
-        (*failure_result_it)->AsError().error(), /*allow_fallback=*/true,
-        HostCache::Entry::TtlFromInternalResults(
-            transaction_results, base::Time::Now(), tick_clock_->NowTicks()),
-        transaction_info.type);
+    OnFailure((*failure_result_it)->AsError().error(), /*allow_fallback=*/true,
+              &transaction_results);
     return;
   }
 
-  // TODO(crbug.com/40245250): Use new results type directly instead of
-  // converting to HostCache::Entry.
-  HostCache::Entry legacy_results(transaction_results, base::Time::Now(),
-                                  tick_clock_->NowTicks(),
-                                  HostCache::Entry::SOURCE_DNS);
-
-  // Merge results with saved results from previous transactions.
-  if (saved_results_) {
-    // If saved result is a deferred failure, try again to complete with that
-    // failure.
-    if (saved_results_is_failure_) {
-      OnFailure(saved_results_.value().error(), /*allow_fallback=*/true,
-                saved_results_.value().GetOptionalTtl());
-      return;
-    }
-
-    switch (transaction_info.type) {
-      case DnsQueryType::A:
-        // Canonical names from A results have lower priority than those
-        // from AAAA results, so merge to the back.
-        legacy_results = HostCache::Entry::MergeEntries(
-            std::move(saved_results_).value(), std::move(legacy_results));
-        break;
-      case DnsQueryType::AAAA:
-        // Canonical names from AAAA results take priority over those
-        // from A results, so merge to the front.
-        legacy_results = HostCache::Entry::MergeEntries(
-            std::move(legacy_results), std::move(saved_results_).value());
-        break;
-      case DnsQueryType::HTTPS:
-        // No particular importance to order.
-        legacy_results = HostCache::Entry::MergeEntries(
-            std::move(legacy_results), std::move(saved_results_).value());
-        break;
-      default:
-        // Only expect address query types with multiple transactions.
-        NOTREACHED_IN_MIGRATION();
-    }
+  // If saved result is a deferred failure, try again to complete with that
+  // failure.
+  if (deferred_failure_) {
+    OnDeferredFailure();
+    return;
   }
 
-  saved_results_ = std::move(legacy_results);
+  ResultRefs result_refs;
+  for (auto it = transaction_results.begin();
+       it != transaction_results.end();) {
+    result_refs.insert(it->get());
+    saved_results_.insert(std::move(transaction_results.extract(it++).value()));
+  }
 
-  OnTransactionsFinished(SingleTransactionResults(
-      transaction_info.type, std::move(transaction_results)));
+  OnTransactionsFinished(
+      SingleTransactionResults(transaction_info.type, std::move(result_refs)));
 }
 
 void HostResolverDnsTask::OnTransactionsFinished(
@@ -814,57 +888,70 @@ void HostResolverDnsTask::OnTransactionsFinished(
     return;
   }
 
-  DCHECK(saved_results_.has_value());
-  HostCache::Entry results = std::move(*saved_results_);
-
   timeout_timer_.Stop();
 
-  // If using HostResolverCache, transactions are already invidvidually sorted
-  // on completion.
-  if (!base::FeatureList::IsEnabled(features::kUseHostResolverCache)) {
-    std::vector<IPEndPoint> ip_endpoints = results.ip_endpoints();
+  // If using HostResolverCache or Happy Eyeballs v3, transactions are already
+  // invidvidually sorted on completion.
+  if (!base::FeatureList::IsEnabled(features::kUseHostResolverCache) &&
+      !delegate_->IsHappyEyeballsV3Enabled()) {
+    std::vector<IPEndPoint> endpoints_to_sort = ExtractAddressResultsForSort(
+        saved_results_, delegate_->IsHappyEyeballsV3Enabled());
 
-    // If there are multiple addresses, and at least one is IPv6, need to
-    // sort them.
-    bool at_least_one_ipv6_address = base::ranges::any_of(
-        ip_endpoints,
-        [](auto& e) { return e.GetFamily() == ADDRESS_FAMILY_IPV6; });
-
-    if (at_least_one_ipv6_address) {
+    // Need to sort if results contain at least one IPv6 address.
+    if (!endpoints_to_sort.empty()) {
       // Sort addresses if needed.  Sort could complete synchronously.
       client_->GetAddressSorter()->Sort(
-          ip_endpoints,
+          endpoints_to_sort,
           base::BindOnce(&HostResolverDnsTask::OnSortComplete,
                          weak_ptr_factory_.GetWeakPtr(),
-                         tick_clock_->NowTicks(), std::move(results), secure_));
+                         tick_clock_->NowTicks(), std::move(saved_results_),
+                         secure_));
       return;
     }
   }
 
-  OnSuccess(std::move(results));
+  OnSuccess(std::move(saved_results_));
 }
 
 void HostResolverDnsTask::OnSortComplete(base::TimeTicks sort_start_time,
-                                         HostCache::Entry results,
+                                         Results results,
                                          bool secure,
                                          bool success,
                                          std::vector<IPEndPoint> sorted) {
-  results.set_ip_endpoints(std::move(sorted));
+  CHECK(!base::FeatureList::IsEnabled(features::kUseHostResolverCache));
+  CHECK(!delegate_->IsHappyEyeballsV3Enabled());
 
   if (!success) {
-    OnFailure(ERR_DNS_SORT_ERROR, /*allow_fallback=*/true,
-              results.GetOptionalTtl());
+    OnFailure(ERR_DNS_SORT_ERROR, /*allow_fallback=*/true, &results);
     return;
   }
 
   // AddressSorter prunes unusable destinations.
-  if (results.ip_endpoints().empty() && results.text_records().empty() &&
-      results.hostnames().empty()) {
+  if (sorted.empty()) {
     LOG(WARNING) << "Address list empty after RFC3484 sort";
-    OnFailure(ERR_NAME_NOT_RESOLVED, /*allow_fallback=*/true,
-              results.GetOptionalTtl());
+    OnFailure(ERR_NAME_NOT_RESOLVED, /*allow_fallback=*/true, &results);
     return;
   }
+
+  // Find the merged error result that was created by
+  // ExtractAddressResultsForSort().
+  auto merged_error_it = std::ranges::find_if(
+      results, [](const std::unique_ptr<HostResolverInternalResult>& result) {
+        return result->type() == HostResolverInternalResult::Type::kError &&
+               result->query_type() == DnsQueryType::UNSPECIFIED &&
+               result->timed_expiration().has_value();
+      });
+  CHECK(merged_error_it != results.end());
+
+  // Replace merged error result with a single data result with the sorted
+  // addresses.
+  results.insert(std::make_unique<HostResolverInternalDataResult>(
+      (*merged_error_it)->domain_name(), DnsQueryType::UNSPECIFIED,
+      (*merged_error_it)->expiration(),
+      (*merged_error_it)->timed_expiration().value(),
+      (*merged_error_it)->source(), std::move(sorted),
+      std::vector<std::string>{}, std::vector<HostPortPair>{}));
+  results.erase(merged_error_it);
 
   OnSuccess(std::move(results));
 }
@@ -874,11 +961,10 @@ bool HostResolverDnsTask::AnyPotentiallyFatalTransactionsRemain() {
     return behavior == TransactionErrorBehavior::kFatalOrEmpty;
   };
 
-  return base::ranges::any_of(transactions_needed_, is_fatal_or_empty_error,
-                              &TransactionInfo::error_behavior) ||
-         base::ranges::any_of(transactions_in_progress_,
-                              is_fatal_or_empty_error,
-                              &TransactionInfo::error_behavior);
+  return std::ranges::any_of(transactions_needed_, is_fatal_or_empty_error,
+                             &TransactionInfo::error_behavior) ||
+         std::ranges::any_of(transactions_in_progress_, is_fatal_or_empty_error,
+                             &TransactionInfo::error_behavior);
 }
 
 void HostResolverDnsTask::CancelNonFatalTransactions() {
@@ -890,35 +976,54 @@ void HostResolverDnsTask::CancelNonFatalTransactions() {
   std::erase_if(transactions_in_progress_, has_non_fatal_or_empty_error);
 }
 
-void HostResolverDnsTask::OnFailure(
-    int net_error,
-    bool allow_fallback,
-    std::optional<base::TimeDelta> ttl,
-    std::optional<DnsQueryType> failed_transaction_type) {
-  if (httpssvc_metrics_ && failed_transaction_type.has_value() &&
-      IsAddressType(failed_transaction_type.value())) {
-    httpssvc_metrics_->SaveAddressQueryFailure();
-  }
+void HostResolverDnsTask::OnFailure(int net_error,
+                                    bool allow_fallback,
+                                    const Results* base_results) {
+  CHECK_NE(net_error, OK);
 
-  DCHECK_NE(OK, net_error);
-  HostCache::Entry results(net_error, HostCache::Entry::SOURCE_UNKNOWN, ttl);
+  // Create a single merged error result for the task failure.
+  std::optional<base::TimeTicks> expiration;
+  std::optional<base::Time> timed_expiration;
+  if (base_results) {
+    for (const std::unique_ptr<HostResolverInternalResult>& result :
+         *base_results) {
+      if (result->expiration().has_value()) {
+        expiration = std::min(expiration.value_or(base::TimeTicks::Max()),
+                              result->expiration().value());
+      }
+      if (result->timed_expiration().has_value()) {
+        timed_expiration =
+            std::min(timed_expiration.value_or(base::Time::Max()),
+                     result->timed_expiration().value());
+      }
+    }
+  }
+  deferred_failure_ = std::make_unique<HostResolverInternalErrorResult>(
+      std::string(host_.GetHostnameWithoutBrackets()),
+      DnsQueryType::UNSPECIFIED, expiration, timed_expiration,
+      HostResolverInternalResult::Source::kDns, net_error);
+
+  OnDeferredFailure(allow_fallback);
+}
+
+void HostResolverDnsTask::OnDeferredFailure(bool allow_fallback) {
+  CHECK(deferred_failure_);
 
   // On non-fatal errors, if any potentially fatal transactions remain, need
   // to defer ending the task in case any of those remaining transactions end
   // with a fatal failure.
   if (allow_fallback && AnyPotentiallyFatalTransactionsRemain()) {
-    saved_results_ = std::move(results);
-    saved_results_is_failure_ = true;
-
     CancelNonFatalTransactions();
     OnTransactionsFinished(/*single_transaction_results=*/std::nullopt);
     return;
   }
 
   net_log_.EndEvent(NetLogEventType::HOST_RESOLVER_DNS_TASK, [&] {
-    return NetLogDnsTaskFailedParams(net_error, failed_transaction_type, ttl,
-                                     base::OptionalToPtr(saved_results_));
+    return NetLogDnsTaskFailedParams(*deferred_failure_, saved_results_);
   });
+
+  Results results;
+  results.insert(std::move(deferred_failure_));
 
   // Expect this to result in destroying `this` and thus cancelling any
   // remaining transactions.
@@ -926,7 +1031,7 @@ void HostResolverDnsTask::OnFailure(
                                std::move(results), secure_);
 }
 
-void HostResolverDnsTask::OnSuccess(HostCache::Entry results) {
+void HostResolverDnsTask::OnSuccess(Results results) {
   net_log_.EndEvent(NetLogEventType::HOST_RESOLVER_DNS_TASK,
                     [&] { return NetLogResults(results); });
   delegate_->OnDnsTaskComplete(task_start_time_, /*allow_fallback=*/true,
@@ -940,17 +1045,17 @@ bool HostResolverDnsTask::AnyOfTypeTransactionsRemain(
   DCHECK(!transactions_needed_.empty() || !transactions_in_progress_.empty());
 
   // Check running transactions.
-  if (base::ranges::find_first_of(transactions_in_progress_, types,
-                                  /*pred=*/{},
-                                  /*proj1=*/&TransactionInfo::type) !=
+  if (std::ranges::find_first_of(transactions_in_progress_, types,
+                                 /*pred=*/{},
+                                 /*proj1=*/&TransactionInfo::type) !=
       transactions_in_progress_.end()) {
     return true;
   }
 
   // Check queued transactions, in case it ever becomes possible to get here
   // without the transactions being started first.
-  return base::ranges::find_first_of(transactions_needed_, types, /*pred=*/{},
-                                     /*proj1=*/&TransactionInfo::type) !=
+  return std::ranges::find_first_of(transactions_needed_, types, /*pred=*/{},
+                                    /*proj1=*/&TransactionInfo::type) !=
          transactions_needed_.end();
 }
 
@@ -974,7 +1079,7 @@ void HostResolverDnsTask::MaybeStartTimeoutTimer() {
   base::TimeDelta timeout_min;
 
   if (AnyOfTypeTransactionsRemain({DnsQueryType::HTTPS})) {
-    DCHECK(https_svcb_options_.enable);
+    DCHECK(base::FeatureList::IsEnabled(features::kUseDnsHttpsSvcb));
 
     if (secure_) {
       timeout_max = https_svcb_options_.secure_extra_time_max;
@@ -995,7 +1100,7 @@ void HostResolverDnsTask::MaybeStartTimeoutTimer() {
     }
   } else {
     // Unhandled supplemental type.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   base::TimeDelta timeout;
@@ -1040,7 +1145,7 @@ bool HostResolverDnsTask::ShouldTriggerHttpToHttpsUpgrade(
     return false;
   }
 
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       results, [](const std::unique_ptr<HostResolverInternalResult>& result) {
         return result->type() == HostResolverInternalResult::Type::kMetadata;
       });

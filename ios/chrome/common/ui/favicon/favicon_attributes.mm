@@ -17,14 +17,15 @@ NSString* const kFaviconDefaultBackgroundColorKey =
 NSString* const kFaviconDefaultImageKey = @"faviconDefaultImage";
 }  // namespace
 
+const CGFloat kFallbackIconDefaultTextColorGrayscale = 0.667;
+
 @implementation FaviconAttributes
 
 - (instancetype)initWithImage:(UIImage*)image
                      monogram:(NSString*)monogram
                     textColor:(UIColor*)textColor
               backgroundColor:(UIColor*)backgroundColor
-       defaultBackgroundColor:(BOOL)defaultBackgroundColor
-             usesDefaultImage:(BOOL)defaultImage {
+       defaultBackgroundColor:(BOOL)defaultBackgroundColor {
   DCHECK(image || (monogram && textColor && backgroundColor));
   self = [super init];
   if (self) {
@@ -33,7 +34,6 @@ NSString* const kFaviconDefaultImageKey = @"faviconDefaultImage";
     _textColor = textColor;
     _backgroundColor = backgroundColor;
     _defaultBackgroundColor = defaultBackgroundColor;
-    _usesDefaultImage = defaultImage;
   }
 
   return self;
@@ -45,8 +45,7 @@ NSString* const kFaviconDefaultImageKey = @"faviconDefaultImage";
                             monogram:nil
                            textColor:nil
                      backgroundColor:nil
-              defaultBackgroundColor:NO
-                    usesDefaultImage:NO];
+              defaultBackgroundColor:NO];
 }
 
 + (instancetype)attributesWithMonogram:(NSString*)monogram
@@ -57,18 +56,7 @@ NSString* const kFaviconDefaultImageKey = @"faviconDefaultImage";
                             monogram:monogram
                            textColor:textColor
                      backgroundColor:backgroundColor
-              defaultBackgroundColor:defaultBackgroundColor
-                    usesDefaultImage:NO];
-}
-
-+ (instancetype)attributesWithDefaultImage {
-  return
-      [[self alloc] initWithImage:[UIImage imageNamed:@"default_world_favicon"]
-                         monogram:nil
-                        textColor:nil
-                  backgroundColor:nil
-           defaultBackgroundColor:NO
-                 usesDefaultImage:YES];
+              defaultBackgroundColor:defaultBackgroundColor];
 }
 
 #pragma mark - NSCoding
@@ -86,9 +74,7 @@ NSString* const kFaviconDefaultImageKey = @"faviconDefaultImage";
                      textColor:textColor
                backgroundColor:backgroundColor
         defaultBackgroundColor:
-            [aDecoder decodeBoolForKey:kFaviconDefaultBackgroundColorKey]
-              usesDefaultImage:[aDecoder
-                                   decodeBoolForKey:kFaviconDefaultImageKey]];
+            [aDecoder decodeBoolForKey:kFaviconDefaultBackgroundColorKey]];
   }
   return nil;
 }
@@ -102,7 +88,6 @@ NSString* const kFaviconDefaultImageKey = @"faviconDefaultImage";
   [aCoder encodeObject:_backgroundColor forKey:kFaviconBackgroundColorKey];
   [aCoder encodeBool:_defaultBackgroundColor
               forKey:kFaviconDefaultBackgroundColorKey];
-  [aCoder encodeBool:_usesDefaultImage forKey:kFaviconDefaultImageKey];
 }
 
 @end

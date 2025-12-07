@@ -3,43 +3,13 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {SearchManager, SettingsIdleLoadElement, SettingsMainElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, pageVisibility, Router, routes, SearchRequest, setSearchManagerForTesting} from 'chrome://settings/settings.js';
+import type {SettingsMainElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, Router, routes, setSearchManagerForTesting} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+
+import {TestSearchManager} from './test_search_manager.js';
 // clang-format on
-
-/**
- * Extending TestBrowserProxy even though SearchManager is not a browser proxy
- * itself. Essentially TestBrowserProxy can act as a "proxy" for any external
- * dependency, not just "browser proxies" (and maybe should be renamed to
- * TestProxy).
- */
-class TestSearchManager extends TestBrowserProxy implements SearchManager {
-  private matchesFound_: boolean = true;
-  private searchRequest_: SearchRequest|null = null;
-
-  constructor() {
-    super(['search']);
-  }
-
-  setMatchesFound(matchesFound: boolean) {
-    this.matchesFound_ = matchesFound;
-  }
-
-  search(text: string, page: Element) {
-    this.methodCalled('search', text);
-
-    if (this.searchRequest_ == null || !this.searchRequest_.isSame(text)) {
-      this.searchRequest_ = new SearchRequest(text, page);
-      this.searchRequest_.updateMatches(this.matchesFound_);
-      this.searchRequest_.resolver.resolve(this.searchRequest_);
-    }
-    return this.searchRequest_.resolver.promise;
-  }
-}
 
 suite('MainPageTests', function() {
   let searchManager: TestSearchManager;
@@ -59,7 +29,6 @@ suite('MainPageTests', function() {
     settingsMain = document.createElement('settings-main');
     settingsMain.prefs = settingsPrefs.prefs!;
     settingsMain.toolbarSpinnerActive = false;
-    settingsMain.pageVisibility = pageVisibility;
     document.body.appendChild(settingsMain);
   });
 
@@ -116,25 +85,17 @@ suite('MainPageTests', function() {
 
   test('managed header hides when showing subpage', function() {
     flush();
-
     assertTrue(showingManagedHeader());
-
-    const basicPage =
-        settingsMain.shadowRoot!.querySelector('settings-basic-page')!;
-    basicPage.dispatchEvent(
-        new CustomEvent('subpage-expand', {bubbles: true, composed: true}));
+    Router.getInstance().navigateTo(routes.SEARCH_ENGINES);
     flush();
-
     assertFalse(showingManagedHeader());
   });
 
   test('managed header hides when showing about page', function() {
     flush();
-
     assertTrue(showingManagedHeader());
     Router.getInstance().navigateTo(routes.ABOUT);
     flush();
-
     assertFalse(showingManagedHeader());
   });
 
@@ -158,7 +119,7 @@ suite('MainPageTests', function() {
   });
 
   // Ensure that when the user clears the search box, the "no results" page
-  // is hidden and the "advanced page toggle" is visible again.
+  // is hidden.
   test('no results page hides on clear', function() {
     flush();
     const noSearchResults = settingsMain.$.noSearchResults;
@@ -174,77 +135,21 @@ suite('MainPageTests', function() {
   });
 
   /**
-   * Asserts the visibility of the basic and advanced pages.
+   * Asserts the visibility of the basic pages.
    * @param Expected 'display' value for the basic page.
-   * @param Expected 'display' value for the advanced page.
    */
-  function assertPageVisibility(
-      expectedBasic: string, expectedAdvanced: string): Promise<void> {
+  function assertPageVisibility(expected: string) {
     flush();
     const page = settingsMain.shadowRoot!.querySelector('settings-basic-page')!;
     assertEquals(
-        expectedBasic,
+        expected,
         getComputedStyle(page.shadowRoot!.querySelector('#basicPage')!)
             .display);
-
-    return page.shadowRoot!
-        .querySelector<SettingsIdleLoadElement>('#advancedPageTemplate')!.get()
-        .then(function(advancedPage) {
-          assertEquals(
-              expectedAdvanced, getComputedStyle(advancedPage).display);
-        });
   }
-
-  // TODO(michaelpg): It would be better not to drill into
-  // settings-basic-page. If search should indeed only work in Settings
-  // (as opposed to Advanced), perhaps some of this logic should be
-  // delegated to settings-basic-page now instead of settings-main.
-
-  /**
-   * Asserts the visibility of the basic and advanced pages after exiting
-   * search mode.
-   * @param Expected 'display' value for the advanced page.
-   */
-  function assertAdvancedVisibilityAfterSearch(expectedAdvanced: string):
-      Promise<void> {
-    searchManager.setMatchesFound(true);
-    return settingsMain.searchContents('Query1')
-        .then(function() {
-          searchManager.setMatchesFound(false);
-          return settingsMain.searchContents('');
-        })
-        .then(function() {
-          // Imitate behavior of clearing search.
-          Router.getInstance().navigateTo(routes.BASIC);
-          flush();
-          return assertPageVisibility('block', expectedAdvanced);
-        });
-  }
-
-  test('exiting search mode, advanced collapsed', function() {
-    // Simulating searching while the advanced page is collapsed.
-    settingsMain.currentRouteChanged();
-    flush();
-    return assertAdvancedVisibilityAfterSearch('none');
-  });
-
-  // Ensure that clearing the search results restores both "basic" and
-  // "advanced" page, when the search has been initiated from a subpage
-  // whose parent is the "advanced" page.
-  test('exiting search mode, advanced expanded', function() {
-    // Trigger basic page to be rendered once.
-    Router.getInstance().navigateTo(routes.APPEARANCE);
-    flush();
-
-    // Navigate to an "advanced" subpage.
-    Router.getInstance().navigateTo(routes.LANGUAGES);
-    flush();
-    return assertAdvancedVisibilityAfterSearch('block');
-  });
 
   // Ensure that searching, then entering a subpage, then going back
-  // lands the user in a page where both basic and advanced sections are
-  // visible, because the page is still in search mode.
+  // lands the user in a page where basic sections are visible, because the
+  // page is still in search mode.
   test('returning from subpage to search results', function() {
     Router.getInstance().navigateTo(routes.BASIC);
     flush();
@@ -260,18 +165,8 @@ suite('MainPageTests', function() {
 
       // Simulate clicking the left arrow to go back to the search results.
       Router.getInstance().navigateTo(routes.BASIC);
-      return assertPageVisibility('block', 'block');
+      assertPageVisibility('block');
     });
-  });
-
-  test('navigating to a basic page does not collapse advanced', function() {
-    Router.getInstance().navigateTo(routes.LANGUAGES);
-    flush();
-
-    Router.getInstance().navigateTo(routes.PEOPLE);
-    flush();
-
-    return assertPageVisibility('block', 'block');
   });
 
   test('updates the title based on current route', function() {

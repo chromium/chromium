@@ -183,26 +183,26 @@ net::DohProviderEntry::List GetProvidersForTesting() {
 TEST(SecureDnsUtil, LocalProviders) {
   const auto providers = GetProvidersForTesting();
 
-  const auto fr_providers = ProvidersForCountry(
-      providers, country_codes::CountryStringToCountryID("FR"));
+  const auto fr_providers =
+      ProvidersForCountry(providers, country_codes::CountryId("FR"));
   EXPECT_THAT(
       fr_providers,
       ElementsAre(&kProviderGlobal1, &kProviderEeFrDisabled, &kProviderFr,
                   &kProviderGlobal2, &kProviderGlobal3Disabled));
 
-  const auto ee_providers = ProvidersForCountry(
-      providers, country_codes::CountryStringToCountryID("EE"));
+  const auto ee_providers =
+      ProvidersForCountry(providers, country_codes::CountryId("EE"));
   EXPECT_THAT(ee_providers,
               ElementsAre(&kProviderGlobal1, &kProviderEeFrDisabled,
                           &kProviderGlobal2, &kProviderGlobal3Disabled));
 
-  const auto us_providers = ProvidersForCountry(
-      providers, country_codes::CountryStringToCountryID("US"));
+  const auto us_providers =
+      ProvidersForCountry(providers, country_codes::CountryId("US"));
   EXPECT_THAT(us_providers, ElementsAre(&kProviderGlobal1, &kProviderGlobal2,
                                         &kProviderGlobal3Disabled));
 
   const auto unknown_providers =
-      ProvidersForCountry(providers, country_codes::kCountryIDUnknown);
+      ProvidersForCountry(providers, country_codes::CountryId());
   EXPECT_THAT(unknown_providers,
               ElementsAre(&kProviderGlobal1, &kProviderGlobal2,
                           &kProviderGlobal3Disabled));

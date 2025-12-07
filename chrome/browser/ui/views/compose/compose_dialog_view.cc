@@ -5,14 +5,15 @@
 #include "chrome/browser/ui/views/compose/compose_dialog_view.h"
 
 #include <vector>
+
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "components/compose/core/browser/config.h"
 #include "components/renderer_context_menu/context_menu_delegate.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_class_properties.h"
@@ -175,9 +176,8 @@ gfx::Rect ComposeDialogView::GetBubbleBounds() {
     parent_bounds = GetWidget()->parent()->GetWindowBoundsInScreen();
   }
 
-  display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestView(
-          GetAnchorView()->GetWidget()->GetNativeView());
+  display::Display display = display::Screen::Get()->GetDisplayNearestView(
+      GetAnchorView()->GetWidget()->GetNativeView());
   gfx::Rect screen_work_area = display.work_area();
 
   return CalculateBubbleBounds(screen_work_area, widget_size, anchor_bounds_,
@@ -207,8 +207,8 @@ bool ComposeDialogView::HandleContextMenu(
     }
   }
 
-  for (size_t index = 0; index < command_ids.size(); index++) {
-    menu->RemoveMenuItem(command_ids[index]);
+  for (int command_id : command_ids) {
+    menu->RemoveMenuItem(command_id);
   }
   menu->RemoveAdjacentSeparators();
 

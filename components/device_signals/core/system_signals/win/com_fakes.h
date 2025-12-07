@@ -7,7 +7,6 @@
 
 #include <atlcomcli.h>
 #include <iwscapi.h>
-#include <wbemidl.h>
 
 #include <iterator>
 #include <map>
@@ -18,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
+#include "base/win/wbemidl_shim.h"
 
 namespace device_signals {
 
@@ -152,7 +152,6 @@ class FakeWscProduct : public IWscProduct {
  public:
   FakeWscProduct();
   FakeWscProduct(const wchar_t* name,
-                 const wchar_t* id,
                  WSC_SECURITY_PRODUCT_STATE state);
 
   FakeWscProduct(const FakeWscProduct& copy) = delete;
@@ -164,8 +163,7 @@ class FakeWscProduct : public IWscProduct {
 
   enum class FailureStep {
     kProductName = 0,
-    kProductId = 1,
-    kProductState = 2,
+    kProductState = 1,
   };
 
   // IWscProduct:

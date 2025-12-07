@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/memory/protected_memory.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <climits>
 #include <type_traits>
 
+#include "base/containers/span.h"
 #include "base/memory/protected_memory_buildflags.h"
 #include "base/synchronization/lock.h"
 #include "base/test/gtest_util.h"
@@ -40,9 +36,10 @@ static_assert(
     !std::is_trivially_constructible_v<DataWithNonTrivialConstructor>);
 
 #if BUILDFLAG(PROTECTED_MEMORY_ENABLED)
-void VerifyByteSequenceIsNotWriteable(unsigned char* const byte_pattern,
-                                      const size_t number_of_bits,
-                                      const size_t bit_increment) {
+void VerifyByteSequenceIsNotWriteable(
+    const base::span<unsigned char> byte_pattern,
+    const size_t bit_increment) {
+  const size_t number_of_bits = byte_pattern.size() * CHAR_BIT;
   const auto check_bit_not_writeable = [=](const size_t bit_index) {
     const size_t byte_index = bit_index / CHAR_BIT;
     const size_t local_bit_index = bit_index % CHAR_BIT;
@@ -71,8 +68,8 @@ void VerifyByteSequenceIsNotWriteable(unsigned char* const byte_pattern,
 template <typename T>
 void VerifyInstanceIsNotWriteable(T& instance, const size_t bit_increment = 3) {
   VerifyByteSequenceIsNotWriteable(
-      reinterpret_cast<unsigned char*>(std::addressof(instance)),
-      sizeof(T) * CHAR_BIT, bit_increment);
+      base::byte_span_from_ref(base::allow_nonunique_obj, instance),
+      bit_increment);
 }
 #endif  // BUILDFLAG(PROTECTED_MEMORY_ENABLED)
 

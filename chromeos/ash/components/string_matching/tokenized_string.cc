@@ -39,9 +39,7 @@ TokenizedString::~TokenizedString() = default;
 void TokenizedString::Tokenize() {
   BreakIterator break_iter(text_, BreakIterator::BREAK_WORD);
   if (!break_iter.Init()) {
-    NOTREACHED_IN_MIGRATION()
-        << "BreakIterator init failed" << ", text=\"" << text_ << "\"";
-    return;
+    NOTREACHED() << "BreakIterator init failed" << ", text=\"" << text_ << "\"";
   }
 
   while (break_iter.Advance()) {
@@ -62,9 +60,7 @@ void TokenizedString::Tokenize() {
 void TokenizedString::TokenizeWords() {
   BreakIterator break_iter(text_, BreakIterator::BREAK_WORD);
   if (!break_iter.Init()) {
-    NOTREACHED_IN_MIGRATION()
-        << "BreakIterator init failed" << ", text=\"" << text_ << "\"";
-    return;
+    NOTREACHED() << "BreakIterator init failed" << ", text=\"" << text_ << "\"";
   }
 
   // The token to be generated will be in [start, end) of |text_|.

@@ -1,0 +1,23 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("observation") {
+  sources = [
+    "tab_strip_api_batched_observer.h",
+    "tab_strip_api_observer.cc",
+    "tab_strip_api_observer.h",
+  ]
+
+  deps = [ "//components/browser_apis/tab_strip:mojom" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "tab_strip_api_observer_unittest.cc" ]
+  deps = [
+    "//chrome/browser/ui/tabs/tab_strip_api/observation",
+    "//components/browser_apis/tab_strip:mojom",
+    "//testing/gtest",
+  ]
+}

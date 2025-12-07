@@ -38,9 +38,7 @@ SkiaOutputSurfaceDependencyWebView::~SkiaOutputSurfaceDependencyWebView() =
 
 std::unique_ptr<gpu::SingleTaskSequence>
 SkiaOutputSurfaceDependencyWebView::CreateSequence() {
-  return std::make_unique<TaskForwardingSequence>(
-      task_queue_, gpu_service_->sync_point_manager(),
-      gpu_service_->scheduler());
+  return std::make_unique<TaskForwardingSequence>(task_queue_);
 }
 
 gpu::SharedImageManager*
@@ -117,14 +115,12 @@ SkiaOutputSurfaceDependencyWebView::CreateGLSurface(
 
 base::ScopedClosureRunner SkiaOutputSurfaceDependencyWebView::CachePresenter(
     gl::Presenter* presenter) {
-  NOTREACHED_IN_MIGRATION();
-  return base::ScopedClosureRunner();
+  NOTREACHED();
 }
 
 base::ScopedClosureRunner SkiaOutputSurfaceDependencyWebView::CacheGLSurface(
     gl::GLSurface* surface) {
-  NOTREACHED_IN_MIGRATION();
-  return base::ScopedClosureRunner();
+  NOTREACHED();
 }
 
 void SkiaOutputSurfaceDependencyWebView::DidLoseContext(

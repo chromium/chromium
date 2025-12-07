@@ -9,12 +9,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.StringRes;
+
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /** Content shown if the send-tab-to-self feature is ready but there are no target devices. */
+@NullMarked
 class NoTargetDeviceBottomSheetContent implements BottomSheetContent {
     private final ViewGroup mContentView;
 
@@ -35,7 +40,7 @@ class NoTargetDeviceBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public View getToolbarView() {
+    public @Nullable View getToolbarView() {
         return null;
     }
 
@@ -60,12 +65,6 @@ class NoTargetDeviceBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getPeekHeight() {
-        // Return DISABLED to ensure that the entire bottom sheet is shown.
-        return BottomSheetContent.HeightMode.DISABLED;
-    }
-
-    @Override
     public float getFullHeightRatio() {
         // Return WRAP_CONTENT to have the bottom sheet only open as far as it needs to display the
         // list of devices and nothing beyond that.
@@ -73,22 +72,22 @@ class NoTargetDeviceBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.send_tab_to_self_content_description;
+    public String getSheetContentDescription(Context context) {
+        return context.getString(R.string.send_tab_to_self_content_description);
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         return R.string.send_tab_to_self_sheet_half_height;
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
         return R.string.send_tab_to_self_sheet_full_height;
     }
 
     @Override
-    public int getSheetClosedAccessibilityStringId() {
+    public @StringRes int getSheetClosedAccessibilityStringId() {
         return R.string.send_tab_to_self_sheet_closed;
     }
 }

@@ -1,7 +1,9 @@
 <!DOCTYPE HTML>
-<script src='../../resources/js-test.js'></script>
+<title>SVG scale transform with negative scale values should be correctly converted to strings.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script>
-description("SVG scale transform with negative scale values should be correctly converted to strings.");
+setup({ single_test: true });
 
 var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
 var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -11,5 +13,6 @@ transform.setScale(-2, -4);
 var list = g.transform.baseVal;
 list.appendItem(transform);
 
-shouldBeEqualToString("g.getAttribute('transform')", "scale(-2 -4)");
+assert_equals(g.getAttribute('transform'), "scale(-2 -4)");
+done();
 </script>

@@ -6,11 +6,18 @@
 
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+
+namespace {
+// The maximum length of the page action title.
+constexpr int kPageActionTitleMaxLength = 24;
+}  // namespace
 
 namespace commerce {
 
@@ -49,7 +56,20 @@ ProductSpecificationsPageActionController::ShouldShowForNavigation() {
   if (got_product_response_for_page_ && !product_info_for_page_.has_value()) {
     return false;
   }
-  return product_group_for_page_.has_value();
+
+  if (!product_group_for_page_.has_value()) {
+    return false;
+  }
+
+  std::optional<ProductSpecificationsSet> existing_set =
+      product_specifications_service_->GetSetByUuid(
+          product_group_for_page_->uuid);
+
+  return existing_set.has_value() &&
+         existing_set->url_infos().size() < kMaxTableSize &&
+         (base::FeatureList::IsEnabled(commerce::kProductSpecifications)
+              ? !is_in_recommended_set_
+              : true);
 }
 
 bool ProductSpecificationsPageActionController::WantsExpandedUi() {
@@ -95,12 +115,27 @@ void ProductSpecificationsPageActionController::
     OnProductSpecificationsSetUpdate(
         const ProductSpecificationsSet& before_set,
         const ProductSpecificationsSet& after_set) {
-  if (!product_group_for_page_.has_value() ||
-      product_group_for_page_->uuid != after_set.uuid()) {
+  bool is_in_set = base::Contains(after_set.urls(), current_url_);
+  if (!product_group_for_page_.has_value()) {
+    if (is_in_set) {
+      most_recent_comparison_table_uuid_for_page_ = after_set.uuid();
+      NotifyHost();
+    }
     return;
   }
-  bool is_in_set = base::Contains(after_set.urls(), current_url_);
-  if (is_in_set != is_in_recommended_set_) {
+  // Hide the page action if the page has been added to a set that is not
+  // recommended set.
+  if (product_group_for_page_->uuid != after_set.uuid()) {
+    if (is_in_set) {
+      most_recent_comparison_table_uuid_for_page_ = after_set.uuid();
+      product_group_for_page_ = std::nullopt;
+      is_in_recommended_set_ = false;
+      NotifyHost();
+    }
+    return;
+  }
+  if (is_in_set != is_in_recommended_set_ ||
+      after_set.url_infos().size() >= kMaxTableSize) {
     is_in_recommended_set_ = is_in_set;
     NotifyHost();
   }
@@ -129,20 +164,26 @@ void ProductSpecificationsPageActionController::OnIconClicked() {
   if (!product_specifications_set.has_value()) {
     return;
   }
-  std::vector<GURL> existing_urls = product_specifications_set->urls();
+  std::vector<UrlInfo> existing_url_infos =
+      product_specifications_set->url_infos();
   if (!is_in_recommended_set_) {
-    existing_urls.push_back(current_url_);
+    existing_url_infos.emplace_back(current_url_, std::u16string());
     is_in_recommended_set_ = true;
   } else {
-    auto it =
-        std::find(existing_urls.begin(), existing_urls.end(), current_url_);
-    if (it != existing_urls.end()) {
-      existing_urls.erase(it);
+    GURL current_url = current_url_;
+    auto it = std::ranges::find_if(
+        existing_url_infos, [&current_url](const UrlInfo& query_url_info) {
+          return query_url_info.url == current_url;
+        });
+
+    if (it != existing_url_infos.end()) {
+      existing_url_infos.erase(it);
     }
     is_in_recommended_set_ = false;
   }
   product_specifications_service_->SetUrls(product_group_for_page_->uuid,
-                                           std::move(existing_urls));
+                                           std::move(existing_url_infos));
+
   NotifyHost();
 }
 
@@ -153,17 +194,41 @@ bool ProductSpecificationsPageActionController::IsInRecommendedSet() {
 std::u16string
 ProductSpecificationsPageActionController::GetProductSpecificationsLabel(
     bool is_added) {
-  if (!product_group_for_page_.has_value()) {
-    return is_added ? l10n_util::GetStringUTF16(
-                          IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADDED_DEFAULT)
-                    : l10n_util::GetStringUTF16(
-                          IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADD_DEFAULT);
+  if (!product_group_for_page_.has_value() ||
+      product_group_for_page_->name.size() > kPageActionTitleMaxLength) {
+    return is_added
+               ? l10n_util::GetStringUTF16(
+                     IDS_COMPARE_PAGE_ACTION_ADDED_DEFAULT)
+               : l10n_util::GetStringUTF16(IDS_COMPARE_PAGE_ACTION_ADD_DEFAULT);
   }
   std::u16string set_name = base::UTF8ToUTF16(product_group_for_page_->name);
-  return is_added ? l10n_util::GetStringFUTF16(
-                        IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADDED, set_name)
-                  : l10n_util::GetStringFUTF16(
-                        IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADD, set_name);
+  return is_added ? l10n_util::GetStringFUTF16(IDS_COMPARE_PAGE_ACTION_ADDED,
+                                               set_name)
+                  : l10n_util::GetStringFUTF16(IDS_COMPARE_PAGE_ACTION_ADD,
+                                               set_name);
+}
+
+std::u16string
+ProductSpecificationsPageActionController::GetComparisonSetName() {
+  CHECK(product_group_for_page_.has_value());
+  return base::UTF8ToUTF16(product_group_for_page_->name);
+}
+
+GURL ProductSpecificationsPageActionController::GetComparisonTableURL() {
+  CHECK(product_group_for_page_.has_value() ||
+        most_recent_comparison_table_uuid_for_page_.has_value());
+
+  if (most_recent_comparison_table_uuid_for_page_.has_value()) {
+    return commerce::GetProductSpecsTabUrlForID(
+        most_recent_comparison_table_uuid_for_page_.value());
+  }
+
+  if (product_group_for_page_.has_value()) {
+    return commerce::GetProductSpecsTabUrlForID(
+        product_group_for_page_.value().uuid);
+  }
+
+  NOTREACHED();
 }
 
 void ProductSpecificationsPageActionController::HandleProductInfoResponse(

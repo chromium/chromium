@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <vector>
 
 #include "net/base/io_buffer.h"
 #include "net/socket/ssl_server_socket.h"
@@ -18,11 +19,7 @@ namespace net {
 
 class SSLServerContextImpl : public SSLServerContext {
  public:
-  SSLServerContextImpl(X509Certificate* certificate,
-                       EVP_PKEY* pkey,
-                       const SSLServerConfig& ssl_server_config);
-  SSLServerContextImpl(X509Certificate* certificate,
-                       scoped_refptr<SSLPrivateKey> key,
+  SSLServerContextImpl(std::vector<SSLServerCredential> credentials,
                        const SSLServerConfig& ssl_server_config);
   ~SSLServerContextImpl() override;
 
@@ -39,13 +36,8 @@ class SSLServerContextImpl : public SSLServerContext {
   // Options for the SSL socket.
   SSLServerConfig ssl_server_config_;
 
-  // Certificate for the server.
-  scoped_refptr<X509Certificate> cert_;
-
-  // Private key used by the server.
-  // Only one representation should be set at any time.
-  bssl::UniquePtr<EVP_PKEY> pkey_;
-  const scoped_refptr<SSLPrivateKey> private_key_;
+  // Credentials for the server, in order from highest to lowest priority.
+  std::vector<SSLServerCredential> credentials_;
 };
 
 }  // namespace net

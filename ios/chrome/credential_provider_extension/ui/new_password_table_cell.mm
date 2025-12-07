@@ -5,6 +5,7 @@
 #import "ios/chrome/credential_provider_extension/ui/new_password_table_cell.h"
 
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/credential_provider_extension/ui/ui_util.h"
 
 namespace {
 
@@ -54,12 +55,6 @@ const CGFloat kButtonSpacing = 8;
 // The type of this cell.
 @property(nonatomic, assign) NewPasswordTableCellType cellType;
 
-// Convenience accessor for the hide password image.
-@property(nonatomic, readonly, strong) UIImage* hidePasswordImage;
-
-// Convenience accessor for the reveal password image.
-@property(nonatomic, readonly, strong) UIImage* revealPasswordImage;
-
 @end
 
 @implementation NewPasswordTableCell
@@ -70,7 +65,7 @@ const CGFloat kButtonSpacing = 8;
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
               reuseIdentifier:(NSString*)reuseIdentifier {
-  if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
+  if ((self = [super initWithStyle:style reuseIdentifier:reuseIdentifier])) {
     _titleLabel = [[UILabel alloc] init];
     _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
     _titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
@@ -215,22 +210,11 @@ const CGFloat kButtonSpacing = 8;
 
 #pragma mark - Accessors
 
-- (UIImage*)hidePasswordImage {
-  return [[UIImage imageNamed:@"password_hide_icon"]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-}
-
-- (UIImage*)revealPasswordImage {
-  return [[UIImage imageNamed:@"password_reveal_icon"]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-}
-
 - (void)setPasswordHidden:(BOOL)passwordHidden {
   _passwordHidden = passwordHidden;
   self.textField.secureTextEntry = _passwordHidden;
 
-  UIImage* newImage =
-      _passwordHidden ? self.revealPasswordImage : self.hidePasswordImage;
+  UIImage* newImage = GetPasswordVisibilityIcon(!_passwordHidden);
   [self.hidePasswordButton setImage:newImage forState:UIControlStateNormal];
   self.hidePasswordButton.accessibilityLabel =
       _passwordHidden

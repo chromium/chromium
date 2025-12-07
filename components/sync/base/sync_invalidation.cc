@@ -8,14 +8,17 @@ namespace syncer {
 
 bool SyncInvalidation::LessThanByVersion(const SyncInvalidation& a,
                                          const SyncInvalidation& b) {
-  if (a.IsUnknownVersion() && !b.IsUnknownVersion())
+  if (a.IsUnknownVersion() && !b.IsUnknownVersion()) {
     return true;
+  }
 
-  if (!a.IsUnknownVersion() && b.IsUnknownVersion())
+  if (!a.IsUnknownVersion() && b.IsUnknownVersion()) {
     return false;
+  }
 
-  if (a.IsUnknownVersion() && b.IsUnknownVersion())
+  if (a.IsUnknownVersion() && b.IsUnknownVersion()) {
     return false;
+  }
 
   return a.GetVersion() < b.GetVersion();
 }

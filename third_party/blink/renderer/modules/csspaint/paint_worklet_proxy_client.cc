@@ -31,12 +31,9 @@
 
 namespace blink {
 
-const char PaintWorkletProxyClient::kSupplementName[] =
-    "PaintWorkletProxyClient";
-
 // static
 PaintWorkletProxyClient* PaintWorkletProxyClient::From(WorkerClients* clients) {
-  return Supplement<WorkerClients>::From<PaintWorkletProxyClient>(clients);
+  return clients->GetPaintWorkletProxyClient();
 }
 
 // static
@@ -45,11 +42,13 @@ PaintWorkletProxyClient* PaintWorkletProxyClient::Create(LocalDOMWindow* window,
   PaintWorklet* paint_worklet = PaintWorklet::From(*window);
   scoped_refptr<base::SingleThreadTaskRunner> compositor_host_queue;
   base::WeakPtr<PaintWorkletPaintDispatcher> compositor_paint_dispatcher;
-  if (WebLocalFrameImpl* local_frame =
-          WebLocalFrameImpl::FromFrame(window->GetFrame())) {
-    compositor_paint_dispatcher =
-        local_frame->LocalRootFrameWidget()->EnsureCompositorPaintDispatcher(
-            &compositor_host_queue);
+  if (Thread::CompositorThread()) {
+    if (WebLocalFrameImpl* local_frame =
+            WebLocalFrameImpl::FromFrame(window->GetFrame())) {
+      compositor_paint_dispatcher =
+          local_frame->LocalRootFrameWidget()->EnsureCompositorPaintDispatcher(
+              &compositor_host_queue);
+    }
   }
   return MakeGarbageCollected<PaintWorkletProxyClient>(
       worklet_id, paint_worklet,
@@ -63,8 +62,7 @@ PaintWorkletProxyClient::PaintWorkletProxyClient(
     scoped_refptr<base::SingleThreadTaskRunner> main_thread_runner,
     base::WeakPtr<PaintWorkletPaintDispatcher> paint_dispatcher,
     scoped_refptr<base::SingleThreadTaskRunner> compositor_host_queue)
-    : Supplement(nullptr),
-      paint_dispatcher_(std::move(paint_dispatcher)),
+    : paint_dispatcher_(std::move(paint_dispatcher)),
       compositor_host_queue_(std::move(compositor_host_queue)),
       worklet_id_(worklet_id),
       state_(RunState::kUninitialized),
@@ -115,8 +113,8 @@ void PaintWorkletProxyClient::RegisterCSSPaintDefinition(
       document_definition_map_.Set(name, nullptr);
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNotSupportedError,
-          "A class with name:'" + name +
-              "' was registered with a different definition.");
+          StrCat({"A class with name:'", name,
+                  "' was registered with a different definition."}));
       return;
     }
   } else {
@@ -134,21 +132,13 @@ void PaintWorkletProxyClient::RegisterCSSPaintDefinition(
   // named paint definition (with the same definition as well).
   if (document_definition->GetRegisteredDefinitionCount() ==
       PaintWorklet::kNumGlobalScopesPerThread) {
-    const Vector<AtomicString>& custom_properties =
-        definition->CustomInvalidationProperties();
-    // Make a deep copy of the |custom_properties| into a Vector<String> so that
-    // CrossThreadCopier can pass that cross thread boundaries.
-    Vector<String> passed_custom_properties;
-    for (const auto& property : custom_properties)
-      passed_custom_properties.push_back(property.GetString());
-
     PostCrossThreadTask(
         *main_thread_runner_, FROM_HERE,
         CrossThreadBindOnce(
             &PaintWorklet::RegisterMainThreadDocumentPaintDefinition,
             MakeUnwrappingCrossThreadWeakHandle(paint_worklet_), name,
             definition->NativeInvalidationProperties(),
-            std::move(passed_custom_properties),
+            definition->CustomInvalidationProperties(),
             definition->InputArgumentTypes(),
             definition->GetPaintRenderingContext2DSettings()->alpha()));
   }
@@ -172,7 +162,6 @@ void PaintWorkletProxyClient::Dispose() {
 }
 
 void PaintWorkletProxyClient::Trace(Visitor* visitor) const {
-  Supplement<WorkerClients>::Trace(visitor);
   PaintWorkletPainter::Trace(visitor);
 }
 
@@ -247,7 +236,7 @@ void PaintWorkletProxyClient::UnregisterForNativePaintWorklet() {
 
 void ProvidePaintWorkletProxyClientTo(WorkerClients* clients,
                                       PaintWorkletProxyClient* client) {
-  clients->ProvideSupplement(client);
+  clients->SetPaintWorkletProxyClient(client);
 }
 
 }  // namespace blink

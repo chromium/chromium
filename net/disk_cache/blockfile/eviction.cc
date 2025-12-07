@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 // The eviction policy is a very simple pure LRU, so the elements at the end of
 // the list are evicted until kCleanUpMargin free space is available. There is
 // only one list in use (Rankings::NO_USE), and elements are sent to the front
@@ -41,12 +36,13 @@
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "net/base/tracing.h"
+#include "base/trace_event/trace_event.h"
 #include "net/disk_cache/blockfile/backend_impl.h"
 #include "net/disk_cache/blockfile/disk_format.h"
 #include "net/disk_cache/blockfile/entry_impl.h"
@@ -160,11 +156,11 @@ void Eviction::TrimCache(bool empty) {
   return;
 }
 
-void Eviction::UpdateRank(EntryImpl* entry, bool modified) {
+void Eviction::UpdateRank(EntryImpl* entry) {
   if (new_eviction_)
-    return UpdateRankV2(entry, modified);
+    return UpdateRankV2(entry);
 
-  rankings_->UpdateRank(entry->rankings(), modified, GetListForEntry(entry));
+  rankings_->UpdateRank(entry->rankings(), GetListForEntry(entry));
 }
 
 void Eviction::OnOpenEntry(EntryImpl* entry) {
@@ -176,7 +172,7 @@ void Eviction::OnCreateEntry(EntryImpl* entry) {
   if (new_eviction_)
     return OnCreateEntryV2(entry);
 
-  rankings_->Insert(entry->rankings(), true, GetListForEntry(entry));
+  rankings_->Insert(entry->rankings(), GetListForEntry(entry));
 }
 
 void Eviction::OnDoomEntry(EntryImpl* entry) {
@@ -289,7 +285,7 @@ bool Eviction::EvictEntry(CacheRankingsBlock* node, bool empty,
     rankings_->Remove(entry->rankings(), GetListForEntryV2(entry.get()), true);
     info->state = ENTRY_EVICTED;
     entry->entry()->Store();
-    rankings_->Insert(entry->rankings(), true, Rankings::DELETED);
+    rankings_->Insert(entry->rankings(), Rankings::DELETED);
   }
   if (!empty)
     backend_->OnEvent(Stats::TRIM_ENTRY);
@@ -305,8 +301,7 @@ void Eviction::TrimCacheV2(bool empty) {
   trimming_ = true;
   TimeTicks start = TimeTicks::Now();
 
-  const int kListsToSearch = 3;
-  Rankings::ScopedRankingsBlock next[kListsToSearch];
+  std::array<Rankings::ScopedRankingsBlock, kListsToSearch> next;
   int list = Rankings::LAST_ELEMENT;
 
   // Get a node from each list.
@@ -346,6 +341,27 @@ void Eviction::TrimCacheV2(bool empty) {
         // This entry is not being used by anybody.
         // Do NOT use node as an iterator after this point.
         rankings_->TrackRankingsBlock(node.get(), false);
+        if (!empty) {
+          // Eviction algorithm V2 is only used for the HTTP disk cache. These
+          // histograms are logged for every stored request, so they use the
+          // histogram macros.
+          // TODO(crbug.com/433551601): Remove these histograms once issue
+          // 433551601 is resolved.
+          UMA_HISTOGRAM_EXACT_LINEAR("DiskCache.0.EvictedRank", list,
+                                     kListsToSearch);
+
+          const Time used_time =
+              Time::FromInternalValue(node->Data()->last_used);
+          const base::TimeDelta age = Time::Now() - used_time;
+          // For the purposes of this investigation we don't care about old
+          // entries getting evicted, so just ignore them so that they don't
+          // mess up the averages.
+          if (age < base::Days(1)) {
+            UMA_HISTOGRAM_CUSTOM_TIMES("DiskCache.0.EvictedAge", age,
+                                       base::Milliseconds(1), base::Days(1),
+                                       50);
+          }
+        }
         if (EvictEntry(node.get(), empty, static_cast<Rankings::List>(list)))
           deleted_entries++;
 
@@ -376,8 +392,8 @@ void Eviction::TrimCacheV2(bool empty) {
   return;
 }
 
-void Eviction::UpdateRankV2(EntryImpl* entry, bool modified) {
-  rankings_->UpdateRank(entry->rankings(), modified, GetListForEntryV2(entry));
+void Eviction::UpdateRankV2(EntryImpl* entry) {
+  rankings_->UpdateRank(entry->rankings(), GetListForEntryV2(entry));
 }
 
 void Eviction::OnOpenEntryV2(EntryImpl* entry) {
@@ -391,11 +407,11 @@ void Eviction::OnOpenEntryV2(EntryImpl* entry) {
     // We may need to move this to a new list.
     if (1 == info->reuse_count) {
       rankings_->Remove(entry->rankings(), Rankings::NO_USE, true);
-      rankings_->Insert(entry->rankings(), false, Rankings::LOW_USE);
+      rankings_->Insert(entry->rankings(), Rankings::LOW_USE);
       entry->entry()->Store();
     } else if (kHighUse == info->reuse_count) {
       rankings_->Remove(entry->rankings(), Rankings::LOW_USE, true);
-      rankings_->Insert(entry->rankings(), false, Rankings::HIGH_USE);
+      rankings_->Insert(entry->rankings(), Rankings::HIGH_USE);
       entry->entry()->Store();
     }
   }
@@ -427,7 +443,7 @@ void Eviction::OnCreateEntryV2(EntryImpl* entry) {
       DUMP_WILL_BE_NOTREACHED();
   }
 
-  rankings_->Insert(entry->rankings(), true, GetListForEntryV2(entry));
+  rankings_->Insert(entry->rankings(), GetListForEntryV2(entry));
 }
 
 void Eviction::OnDoomEntryV2(EntryImpl* entry) {
@@ -445,7 +461,7 @@ void Eviction::OnDoomEntryV2(EntryImpl* entry) {
 
   info->state = ENTRY_DOOMED;
   entry->entry()->Store();
-  rankings_->Insert(entry->rankings(), true, Rankings::DELETED);
+  rankings_->Insert(entry->rankings(), Rankings::DELETED);
 }
 
 void Eviction::OnDestroyEntryV2(EntryImpl* entry) {
@@ -476,13 +492,14 @@ void Eviction::TrimDeleted(bool empty) {
   if (backend_->disabled_)
     return;
 
+  static constexpr int kMaxDeletedPerCall = 20;
   TimeTicks start = TimeTicks::Now();
   Rankings::ScopedRankingsBlock node(rankings_);
   Rankings::ScopedRankingsBlock next(
     rankings_, rankings_->GetPrev(node.get(), Rankings::DELETED));
   int deleted_entries = 0;
   while (next.get() &&
-         (empty || (deleted_entries < 20 &&
+         (empty || (deleted_entries < kMaxDeletedPerCall &&
                     (TimeTicks::Now() - start).InMilliseconds() < 20))) {
     node.reset(next.release());
     next.reset(rankings_->GetPrev(node.get(), Rankings::DELETED));
@@ -490,6 +507,13 @@ void Eviction::TrimDeleted(bool empty) {
       deleted_entries++;
     if (test_mode_)
       break;
+  }
+
+  if (!empty && new_eviction_) {
+    // TODO(crbug.com/433551601): Remove this histogram once issue 433551601 is
+    // resolved.
+    base::UmaHistogramExactLinear("DiskCache.0.TrimmedDeletedRankingEntries",
+                                  deleted_entries, kMaxDeletedPerCall + 1);
   }
 
   if (deleted_entries && !empty && ShouldTrimDeleted()) {
@@ -525,7 +549,8 @@ bool Eviction::NodeIsOldEnough(CacheRankingsBlock* node, int list) {
   return (Time::Now() - used).InHours() > kTargetTime * multiplier;
 }
 
-int Eviction::SelectListByLength(Rankings::ScopedRankingsBlock* next) {
+int Eviction::SelectListByLength(
+    std::array<Rankings::ScopedRankingsBlock, kListsToSearch>& next) {
   int data_entries = header_->num_entries -
                      header_->lru.sizes[Rankings::DELETED];
   // Start by having each list to be roughly the same size.

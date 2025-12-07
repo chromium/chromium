@@ -5,12 +5,14 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
+
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "mojo/public/cpp/bindings/lib/message_fragment.h"
 #include "mojo/public/cpp/system/message_pipe.h"
-#include "mojo/public/interfaces/bindings/tests/test_export2.mojom.h"
-#include "mojo/public/interfaces/bindings/tests/test_structs.mojom.h"
+#include "mojo/public/interfaces/bindings/tests/test_export2.test-mojom.h"
+#include "mojo/public/interfaces/bindings/tests/test_structs.test-mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -78,7 +80,7 @@ U SerializeAndDeserialize(T input) {
   // Set the subsequent area to a special value, so that we can find out if we
   // mistakenly access the area.
   void* subsequent_area = message.payload_buffer()->AllocateAndGet(32);
-  memset(subsequent_area, 0xAA, 32);
+  UNSAFE_TODO(memset(subsequent_area, 0xAA, 32));
 
   OutputDataType output_data =
       reinterpret_cast<OutputDataType>(message.mutable_payload());

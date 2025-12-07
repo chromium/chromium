@@ -4,16 +4,16 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {SettingsInternetSubpageMenuElement} from 'chrome://os-settings/lazy_load.js';
-import {CrActionMenuElement} from 'chrome://os-settings/os_settings.js';
+import type {SettingsInternetSubpageMenuElement} from 'chrome://os-settings/lazy_load.js';
+import type {CrActionMenuElement} from 'chrome://os-settings/os_settings.js';
 import {setESimManagerRemoteForTesting} from 'chrome://resources/ash/common/cellular_setup/mojo_interface_provider.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
-import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {ESimManagerRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
+import type {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
+import type {ESimManagerRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {FakeESimManagerRemote} from 'chrome://webui-test/chromeos/cellular_setup/fake_esim_manager_remote.js';
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
-import {FakeESimManagerRemote} from 'chrome://webui-test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 

@@ -30,16 +30,17 @@
 #include "chrome/browser/ash/policy/handlers/device_dlc_predownload_list_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/system_proxy_handler.h"
 #include "chrome/browser/ash/policy/off_hours/off_hours_proto_parser.h"
-#include "chrome/browser/ash/settings/device_settings_cache.h"
 #include "chrome/browser/ash/settings/hardware_data_usage_controller.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
-#include "chrome/browser/ash/tpm_firmware_update.h"
+#include "chrome/browser/ash/tpm/tpm_firmware_update.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/device_settings_cache.h"
 #include "components/policy/core/common/chrome_schema.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -76,9 +77,11 @@ constexpr auto kKnownSettings = base::MakeFixedFlatSet<std::string_view>({
     kAllowRedeemChromeOsRegistrationOffers,
     kAttestationForContentProtectionEnabled,
     kCastReceiverName,
+    kDeviceFlexArcPreloadEnabled,
     kDeviceActivityHeartbeatCollectionRateMs,
     kDeviceActivityHeartbeatEnabled,
     kDeviceAllowedBluetoothServices,
+    kDeviceBluetoothJustWorksPairingEnabled,
     kDeviceAutoUpdateTimeRestrictions,
     kDeviceCrostiniArcAdbSideloadingAllowed,
     kDeviceDisabled,
@@ -114,6 +117,8 @@ constexpr auto kKnownSettings = base::MakeFixedFlatSet<std::string_view>({
     kDeviceScheduledUpdateCheck,
     kDeviceSecondFactorAuthenticationMode,
     kDeviceUnaffiliatedCrostiniAllowed,
+    kDeviceUserInitiatedFirmwareUpdatesEnabled,
+    kDeviceUserInitiatedFlexSystemFirmwareUpdatesEnabled,
     kDeviceWebBasedAttestationAllowedUrls,
     kDeviceWiFiAllowed,
     kDisplayRotationDefault,
@@ -362,9 +367,7 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
         policy.user_allowlist().user_allowlist_size() > 0));
   new_values_cache->SetBoolean(
       kAccountsPrefFamilyLinkAccountsAllowed,
-      features::IsFamilyLinkOnSchoolDeviceEnabled() &&
-          user_allowlist_enforced &&
-          policy.has_family_link_accounts_allowed() &&
+      user_allowlist_enforced && policy.has_family_link_accounts_allowed() &&
           policy.family_link_accounts_allowed()
               .has_family_link_accounts_allowed() &&
           policy.family_link_accounts_allowed().family_link_accounts_allowed());
@@ -430,6 +433,25 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
         entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyKioskAppUpdateURL,
                        entry.kiosk_app().update_url());
       }
+      if (ash::features::IsHeliumArcvmKioskEnabled()) {
+        if (entry.arcvm_kiosk_app().has_package_name()) {
+          entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyArcvmKioskPackage,
+                         entry.arcvm_kiosk_app().package_name());
+        }
+        if (entry.arcvm_kiosk_app().has_class_name()) {
+          entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyArcvmKioskClass,
+                         entry.arcvm_kiosk_app().class_name());
+        }
+        if (entry.arcvm_kiosk_app().has_action()) {
+          entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyArcvmKioskAction,
+                         entry.arcvm_kiosk_app().action());
+        }
+        if (entry.arcvm_kiosk_app().has_display_name()) {
+          entry_dict.Set(
+              kAccountsPrefDeviceLocalAccountsKeyArcvmKioskDisplayName,
+              entry.arcvm_kiosk_app().display_name());
+        }
+      }
       if (entry.web_kiosk_app().has_url()) {
         entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyWebKioskUrl,
                        entry.web_kiosk_app().url());
@@ -451,7 +473,31 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
             static_cast<int>(
                 em::DeviceLocalAccountInfoProto::EPHEMERAL_MODE_UNSET));
       }
-
+      if (entry.has_isolated_kiosk_app()) {
+        if (entry.isolated_kiosk_app().has_web_bundle_id()) {
+          entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyIwaKioskBundleId,
+                         entry.isolated_kiosk_app().web_bundle_id());
+        }
+        if (entry.isolated_kiosk_app().has_update_manifest_url()) {
+          entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyIwaKioskUpdateUrl,
+                         entry.isolated_kiosk_app().update_manifest_url());
+        }
+        if (entry.isolated_kiosk_app().has_update_channel()) {
+          entry_dict.Set(
+              kAccountsPrefDeviceLocalAccountsKeyIwaKioskUpdateChannel,
+              entry.isolated_kiosk_app().update_channel());
+        }
+        if (entry.isolated_kiosk_app().has_pinned_version()) {
+          entry_dict.Set(
+              kAccountsPrefDeviceLocalAccountsKeyIwaKioskPinnedVersion,
+              entry.isolated_kiosk_app().pinned_version());
+        }
+        if (entry.isolated_kiosk_app().has_allow_downgrades()) {
+          entry_dict.Set(
+              kAccountsPrefDeviceLocalAccountsKeyIwaKioskAllowDowngrades,
+              entry.isolated_kiosk_app().allow_downgrades());
+        }
+      }
     } else if (entry.has_deprecated_public_session_id()) {
       // Deprecated public session specification.
       entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyId,
@@ -1066,6 +1112,15 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     }
   }
 
+  if (policy.has_deviceflexarcpreloadenabled()) {
+    const em::BooleanPolicyProto& container(
+        policy.deviceflexarcpreloadenabled());
+    if (container.has_value()) {
+      new_values_cache->SetValue(kDeviceFlexArcPreloadEnabled,
+                                 base::Value(container.value()));
+    }
+  }
+
   if (policy.has_network_hostname()) {
     const em::NetworkHostnameProto& container(policy.network_hostname());
     if (container.has_device_hostname_template() &&
@@ -1252,6 +1307,13 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     new_values_cache->SetValue(kDeviceAllowedBluetoothServices,
                                base::Value(std::move(list)));
   }
+  if (policy.has_devicebluetoothjustworkspairingenabled()) {
+    base::Value::List list;
+    const em::BooleanPolicyProto& container(
+        policy.devicebluetoothjustworkspairingenabled());
+    new_values_cache->SetValue(kDeviceBluetoothJustWorksPairingEnabled,
+                               base::Value(container.value()));
+  }
 
   if (policy.has_device_scheduled_reboot()) {
     const em::DeviceScheduledRebootProto& scheduled_reboot_policy =
@@ -1304,6 +1366,25 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     if (container.has_enabled()) {
       new_values_cache->SetValue(kDeviceHindiInscriptLayoutEnabled,
                                  base::Value(container.enabled()));
+    }
+  }
+
+  if (policy.has_deviceuserinitiatedfirmwareupdatesenabled()) {
+    const em::BooleanPolicyProto& container(
+        policy.deviceuserinitiatedfirmwareupdatesenabled());
+    if (container.has_value()) {
+      new_values_cache->SetValue(kDeviceUserInitiatedFirmwareUpdatesEnabled,
+                                 base::Value(container.value()));
+    }
+  }
+
+  if (policy.has_deviceuserinitiatedflexsystemfirmwareupdatesenabled()) {
+    const em::BooleanPolicyProto& container(
+        policy.deviceuserinitiatedflexsystemfirmwareupdatesenabled());
+    if (container.has_value()) {
+      new_values_cache->SetValue(
+          kDeviceUserInitiatedFlexSystemFirmwareUpdatesEnabled,
+          base::Value(container.value()));
     }
   }
 
@@ -1409,8 +1490,7 @@ void DeviceSettingsProvider::DoSet(const std::string& path,
   }
 
   if (!IsDeviceSetting(path)) {
-    NOTREACHED_IN_MIGRATION() << "Try to set unhandled cros setting " << path;
-    return;
+    NOTREACHED() << "Try to set unhandled cros setting " << path;
   }
 
   if (device_settings_service_->HasPrivateOwnerKey()) {
@@ -1617,7 +1697,7 @@ const base::Value* DeviceSettingsProvider::Get(std::string_view path) const {
     if (values_cache_.GetValue(path, &value))
       return value;
   } else {
-    NOTREACHED_IN_MIGRATION() << "Trying to get non cros setting.";
+    NOTREACHED() << "Trying to get non cros setting.";
   }
 
   return nullptr;
@@ -1651,7 +1731,7 @@ void DeviceSettingsProvider::UpdateAndProceedStoring() {
 
 bool DeviceSettingsProvider::UpdateFromService() {
   bool settings_loaded = false;
-  base::UmaHistogramEnumeration("Enterprise.DeviceSettings.UpdatedStatus",
+  base::UmaHistogramEnumeration("Enterprise.DeviceSettings.UpdatedStatus2",
                                 device_settings_service_->status());
   switch (device_settings_service_->status()) {
     case DeviceSettingsService::STORE_SUCCESS: {
@@ -1678,6 +1758,9 @@ bool DeviceSettingsProvider::UpdateFromService() {
         break;
       [[fallthrough]];
     case DeviceSettingsService::STORE_KEY_UNAVAILABLE:
+    case DeviceSettingsService::STORE_KEY_UNAVAILABLE_NOT_INITIALIZED:
+    case DeviceSettingsService::STORE_KEY_UNAVAILABLE_NOT_LOCKED:
+    case DeviceSettingsService::STORE_KEY_UNAVAILABLE_MANAGED:
       if (user_manager::UserManager::Get()->GetOwnerEmail().has_value()) {
         // On the consumer owned device Chrome is responsible for generating a
         // new key and/or policy if they are missing (which happens after the

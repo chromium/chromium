@@ -2,21 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/tab_collection_storage.h"
+#include "components/tabs/public/tab_collection_storage.h"
 
 #include <memory>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/test/gtest_util.h"
 #include "chrome/browser/ui/tabs/features.h"
-#include "chrome/browser/ui/tabs/pinned_tab_collection.h"
-#include "chrome/browser/ui/tabs/tab_collection.h"
-#include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/tabs/public/pinned_tab_collection.h"
+#include "components/tabs/public/tab_collection.h"
+#include "components/tabs/public/tab_group_tab_collection.h"
+#include "components/tabs/public/unpinned_tab_collection.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,8 +27,6 @@
 class TabCollectionStorageTest : public ::testing::Test {
  public:
   TabCollectionStorageTest() {
-    scoped_feature_list_.InitWithFeatures({tabs::kTabStripCollectionStorage},
-                                          {});
     pinned_collection_ = std::make_unique<tabs::PinnedTabCollection>();
     testing_profile_ = std::make_unique<TestingProfile>();
     tab_strip_model_delegate_ = std::make_unique<TestTabStripModelDelegate>();
@@ -49,7 +50,7 @@ class TabCollectionStorageTest : public ::testing::Test {
                                            GetTabStripModel());
       tabs::TabModel* tab_model_ptr = tab_model.get();
 
-      tabs::TabModel* inserted_tab_model_ptr =
+      tabs::TabInterface* inserted_tab_model_ptr =
           GetTabCollectionStorage()->AddTab(
               std::move(tab_model),
               GetTabCollectionStorage()->GetChildrenCount());
@@ -59,7 +60,7 @@ class TabCollectionStorageTest : public ::testing::Test {
     }
   }
 
-  void SetTabID(tabs::TabModel* tab_model, int id) {
+  void SetTabID(tabs::TabInterface* tab_model, int id) {
     std::string identifier =
         "T" + base::NumberToString(reinterpret_cast<uintptr_t>(tab_model));
     storage_children_to_id_map_[identifier] = "T" + base::NumberToString(id);
@@ -76,8 +77,8 @@ class TabCollectionStorageTest : public ::testing::Test {
     int collection_i = 0;
     const auto& children = GetTabCollectionStorage()->GetChildren();
     for (const auto& child : children) {
-      if (std::holds_alternative<std::unique_ptr<tabs::TabModel>>(child)) {
-        SetTabID(std::get<std::unique_ptr<tabs::TabModel>>(child).get(),
+      if (std::holds_alternative<std::unique_ptr<tabs::TabInterface>>(child)) {
+        SetTabID(std::get<std::unique_ptr<tabs::TabInterface>>(child).get(),
                  start + tab_i);
         tab_i += 1;
       } else if (std::holds_alternative<std::unique_ptr<tabs::TabCollection>>(
@@ -95,11 +96,11 @@ class TabCollectionStorageTest : public ::testing::Test {
     const auto& children = GetTabCollectionStorage()->GetChildren();
     for (const auto& child : children) {
       std::string identifier;
-      if (std::holds_alternative<std::unique_ptr<tabs::TabModel>>(child)) {
-        tabs::TabModel* tab_model =
-            std::get<std::unique_ptr<tabs::TabModel>>(child).get();
+      if (std::holds_alternative<std::unique_ptr<tabs::TabInterface>>(child)) {
+        tabs::TabInterface* tab =
+            std::get<std::unique_ptr<tabs::TabInterface>>(child).get();
         identifier =
-            "T" + base::NumberToString(reinterpret_cast<uintptr_t>(tab_model));
+            "T" + base::NumberToString(reinterpret_cast<uintptr_t>(tab));
       } else if (std::holds_alternative<std::unique_ptr<tabs::TabCollection>>(
                      child)) {
         tabs::TabCollection* collection =
@@ -119,13 +120,13 @@ class TabCollectionStorageTest : public ::testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::RenderViewHostTestEnabler test_enabler_;
   std::unique_ptr<Profile> testing_profile_;
   std::unique_ptr<tabs::PinnedTabCollection> pinned_collection_;
-  std::unique_ptr<TabStripModel> tab_strip_model_;
   std::unique_ptr<TestTabStripModelDelegate> tab_strip_model_delegate_;
+  std::unique_ptr<TabStripModel> tab_strip_model_;
   std::map<std::string, std::string> storage_children_to_id_map_;
+  const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
 };
 
 TEST_F(TabCollectionStorageTest, AddTabOperation) {
@@ -175,33 +176,11 @@ TEST_F(TabCollectionStorageTest, RemoveTabOperation) {
   EXPECT_EQ(collection_storage->GetChildrenCount(), 5ul);
   ResetStorageChildrenIDs(0);
 
-  auto removed_tab_model = collection_storage->RemoveTab(tab_model_one_ptr);
+  auto removed_tab = collection_storage->RemoveTab(tab_model_one_ptr);
 
   EXPECT_EQ(collection_storage->GetChildrenCount(), 4ul);
-  EXPECT_EQ(removed_tab_model.get(), tab_model_one_ptr);
+  EXPECT_EQ(removed_tab.get(), tab_model_one_ptr);
   // `tab_model_one_ptr` was removed from index 3.
-  EXPECT_EQ(StorageCollectionChildrenString(),
-            (std::vector<std::string>{"T0", "T1", "T2", "T4"}));
-}
-
-TEST_F(TabCollectionStorageTest, CloseTabOperation) {
-  auto tab_model_one =
-      std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel());
-  tabs::TabModel* tab_model_one_ptr = tab_model_one.get();
-
-  tabs::TabCollectionStorage* collection_storage = GetTabCollectionStorage();
-
-  // Add four tabs
-  AddTabs(4);
-
-  // Add `tab_model_one` to index 3.
-  collection_storage->AddTab(std::move(tab_model_one), 3ul);
-  EXPECT_EQ(collection_storage->GetChildrenCount(), 5ul);
-  ResetStorageChildrenIDs(0);
-
-  collection_storage->CloseTab(tab_model_one_ptr);
-
-  EXPECT_EQ(collection_storage->GetChildrenCount(), 4ul);
   EXPECT_EQ(StorageCollectionChildrenString(),
             (std::vector<std::string>{"T0", "T1", "T2", "T4"}));
 }
@@ -253,13 +232,13 @@ TEST_F(TabCollectionStorageTest, DISABLED_InvalidArgumentsTabOperations) {
 
   EXPECT_DEATH_IF_SUPPORTED(
       {
-        std::unique_ptr<tabs::TabModel> tab_model =
+        std::unique_ptr<tabs::TabInterface> tab =
             collection_storage->RemoveTab(tab_model_one.get());
       },
       "");
   EXPECT_DEATH_IF_SUPPORTED(
       {
-        std::unique_ptr<tabs::TabModel> tab_model =
+        std::unique_ptr<tabs::TabInterface> tab =
             collection_storage->RemoveTab(nullptr);
       },
       "");
@@ -273,10 +252,8 @@ TEST_F(TabCollectionStorageTest, DISABLED_InvalidArgumentsTabOperations) {
 }
 
 TEST_F(TabCollectionStorageTest, AddMixedTabAndCollectionOperation) {
-  auto tab_collection_one = std::make_unique<tabs::TabGroupTabCollection>(
-      tab_groups::TabGroupId::GenerateNew());
-  auto tab_collection_two = std::make_unique<tabs::TabGroupTabCollection>(
-      tab_groups::TabGroupId::GenerateNew());
+  auto tab_collection_one = std::make_unique<tabs::UnpinnedTabCollection>();
+  auto tab_collection_two = std::make_unique<tabs::UnpinnedTabCollection>();
 
   tabs::TabCollection* tab_collection_one_ptr = tab_collection_one.get();
   tabs::TabCollection* tab_collection_two_ptr = tab_collection_two.get();
@@ -309,10 +286,8 @@ TEST_F(TabCollectionStorageTest, AddMixedTabAndCollectionOperation) {
 }
 
 TEST_F(TabCollectionStorageTest, RemoveMixedTabAndCollectionOperation) {
-  auto tab_collection_one = std::make_unique<tabs::TabGroupTabCollection>(
-      tab_groups::TabGroupId::GenerateNew());
-  auto tab_collection_two = std::make_unique<tabs::TabGroupTabCollection>(
-      tab_groups::TabGroupId::GenerateNew());
+  auto tab_collection_one = std::make_unique<tabs::UnpinnedTabCollection>();
+  auto tab_collection_two = std::make_unique<tabs::UnpinnedTabCollection>();
 
   tabs::TabCollection* tab_collection_one_ptr = tab_collection_one.get();
   tabs::TabCollection* tab_collection_two_ptr = tab_collection_two.get();
@@ -342,38 +317,15 @@ TEST_F(TabCollectionStorageTest, RemoveMixedTabAndCollectionOperation) {
             (std::vector<std::string>{"T0", "T1", "T2", "C1", "T3"}));
 }
 
-TEST_F(TabCollectionStorageTest, CloseMixedTabAndCollectionOperation) {
-  auto tab_collection_one = std::make_unique<tabs::TabGroupTabCollection>(
-      tab_groups::TabGroupId::GenerateNew());
-  tabs::TabCollection* tab_collection_one_ptr = tab_collection_one.get();
-  tabs::TabCollectionStorage* collection_storage = GetTabCollectionStorage();
-
-  // Add four tabs
-  AddTabs(4);
-
-  collection_storage->AddCollection(std::move(tab_collection_one), 3ul);
-  EXPECT_EQ(collection_storage->GetChildrenCount(), 5ul);
-  ResetStorageChildrenIDs(0);
-
-  collection_storage->CloseCollection(tab_collection_one_ptr);
-
-  EXPECT_EQ(collection_storage->GetChildrenCount(), 4ul);
-  EXPECT_FALSE(collection_storage->ContainsCollection(tab_collection_one_ptr));
-  EXPECT_EQ(StorageCollectionChildrenString(),
-            (std::vector<std::string>{"T0", "T1", "T2", "T3"}));
-}
-
 TEST_F(TabCollectionStorageTest, MoveMixedTabAndCollectionOperation) {
   auto tab_model_one =
       std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel());
   tabs::TabModel* tab_model_one_ptr = tab_model_one.get();
 
-  auto tab_collection_one = std::make_unique<tabs::TabGroupTabCollection>(
-      tab_groups::TabGroupId::GenerateNew());
+  auto tab_collection_one = std::make_unique<tabs::UnpinnedTabCollection>();
   tabs::TabCollection* tab_collection_one_ptr = tab_collection_one.get();
 
-  auto tab_collection_two = std::make_unique<tabs::TabGroupTabCollection>(
-      tab_groups::TabGroupId::GenerateNew());
+  auto tab_collection_two = std::make_unique<tabs::UnpinnedTabCollection>();
   tabs::TabCollection* tab_collection_two_ptr = tab_collection_two.get();
 
   tabs::TabCollectionStorage* collection_storage = GetTabCollectionStorage();

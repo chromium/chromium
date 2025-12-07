@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/url_matcher/url_matcher.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -76,7 +72,7 @@ namespace {
 void CreateAndAddCidrBlock(
     const std::string& cidr_block,
     std::vector<URLMatcherCidrBlockFilter::CidrBlock>& blocks) {
-  const auto& block = URLMatcherCidrBlockFilter::CreateCidrBlock(cidr_block);
+  auto block = URLMatcherCidrBlockFilter::CreateCidrBlock(cidr_block);
   ASSERT_TRUE(block.has_value());
   blocks.push_back(std::move(*block));
 }
@@ -90,7 +86,7 @@ TEST(URLMatcherCidrBlocksFilter, TestMatching_IPv4) {
   CreateAndAddCidrBlock("129.0.0.1/32", blocks);
   ASSERT_EQ(blocks.size(), 2u);
 
-  URLMatcherCidrBlockFilter filter(blocks);
+  URLMatcherCidrBlockFilter filter(std::move(blocks));
   EXPECT_TRUE(filter.IsMatch(GURL("http://129.0.0.1/test.html")));
   EXPECT_TRUE(filter.IsMatch(GURL("http://129.0.0.1:80/test.html")));
   EXPECT_TRUE(filter.IsMatch(GURL("http://127.0.0.1:81/test.html")));
@@ -110,7 +106,7 @@ TEST(URLMatcherCidrBlocksFilter, TestMatching_IPv6) {
   CreateAndAddCidrBlock("::ffff:192.168.1.1/112", blocks);
   ASSERT_EQ(blocks.size(), 2u);
 
-  URLMatcherCidrBlockFilter filter(blocks);
+  URLMatcherCidrBlockFilter filter(std::move(blocks));
   EXPECT_TRUE(filter.IsMatch(GURL("http://[A:b:C:9::]/test.html")));
   EXPECT_FALSE(filter.IsMatch(GURL("http://foobar.com/test.html")));
   EXPECT_FALSE(filter.IsMatch(GURL("http://192.169.1.1/test.html")));
@@ -126,7 +122,7 @@ TEST(URLMatcherCidrBlocksFilter, TestMatching_IPv6) {
   CreateAndAddCidrBlock("::fffe:192.168.1.1/112", blocks);
   ASSERT_EQ(blocks.size(), 1u);
 
-  URLMatcherCidrBlockFilter close_filter(blocks);
+  URLMatcherCidrBlockFilter close_filter(std::move(blocks));
   EXPECT_TRUE(
       close_filter.IsMatch(GURL("http://[::fffe:192.168.1.3]/test.html")));
   EXPECT_FALSE(
@@ -186,7 +182,7 @@ TEST(URLMatcherConditionTest, Comparison) {
   MatcherStringPattern p1("foobar.com", 1);
   MatcherStringPattern p2("foobar.com", 2);
   // The first component of each test is expected to be < than the second.
-  URLMatcherCondition test_smaller[][2] = {
+  auto test_smaller = std::to_array<std::array<URLMatcherCondition, 2>>({
       {URLMatcherCondition(URLMatcherCondition::HOST_PREFIX, &p1),
        URLMatcherCondition(URLMatcherCondition::HOST_SUFFIX, &p1)},
       {URLMatcherCondition(URLMatcherCondition::HOST_PREFIX, &p1),
@@ -195,19 +191,19 @@ TEST(URLMatcherConditionTest, Comparison) {
        URLMatcherCondition(URLMatcherCondition::HOST_PREFIX, &p2)},
       {URLMatcherCondition(URLMatcherCondition::HOST_PREFIX, &p1),
        URLMatcherCondition(URLMatcherCondition::HOST_SUFFIX, nullptr)},
-  };
+  });
   for (size_t i = 0; i < std::size(test_smaller); ++i) {
     EXPECT_TRUE(test_smaller[i][0] < test_smaller[i][1])
         << "Test " << i << " of test_smaller failed";
     EXPECT_FALSE(test_smaller[i][1] < test_smaller[i][0])
         << "Test " << i << " of test_smaller failed";
   }
-  URLMatcherCondition test_equal[][2] = {
+  auto test_equal = std::to_array<std::array<URLMatcherCondition, 2>>({
       {URLMatcherCondition(URLMatcherCondition::HOST_PREFIX, &p1),
        URLMatcherCondition(URLMatcherCondition::HOST_PREFIX, &p1)},
       {URLMatcherCondition(URLMatcherCondition::HOST_PREFIX, nullptr),
        URLMatcherCondition(URLMatcherCondition::HOST_PREFIX, nullptr)},
-  };
+  });
   for (size_t i = 0; i < std::size(test_equal); ++i) {
     EXPECT_FALSE(test_equal[i][0] < test_equal[i][1])
         << "Test " << i << " of test_equal failed";
@@ -233,10 +229,10 @@ TEST(URLMatcherConditionFactoryTest, GURLCharacterSet) {
   // non ASCII-7 characters. We test this here, because a change to this
   // guarantee breaks this implementation horribly.
   GURL url("http://www.föö.com/föö?föö#föö");
-  EXPECT_TRUE(base::IsStringASCII(url.host()));
-  EXPECT_TRUE(base::IsStringASCII(url.path()));
-  EXPECT_TRUE(base::IsStringASCII(url.query()));
-  EXPECT_TRUE(base::IsStringASCII(url.ref()));
+  EXPECT_TRUE(base::IsStringASCII(url.GetHost()));
+  EXPECT_TRUE(base::IsStringASCII(url.GetPath()));
+  EXPECT_TRUE(base::IsStringASCII(url.GetQuery()));
+  EXPECT_TRUE(base::IsStringASCII(url.GetRef()));
 }
 
 TEST(URLMatcherConditionFactoryTest, Criteria) {

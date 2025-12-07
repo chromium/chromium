@@ -13,6 +13,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
+#include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
@@ -27,8 +28,9 @@ class ProcessManager;
 
 namespace ash {
 
-// Manages the lifetime of the login-screen policy-installed extensions and
-// apps, making sure that they are stopped during an active user session.
+// Manages the lifetime of the login- and lock-screen policy-installed
+// extensions and apps, making sure that they are stopped during an active user
+// session.
 class LoginScreenExtensionsLifetimeManager final
     : public KeyedService,
       public ProfileManagerObserver,
@@ -65,7 +67,8 @@ class LoginScreenExtensionsLifetimeManager final
   extensions::ExtensionIdList GetPolicyExtensionIds() const;
   void DisablePolicyExtensions();
   void EnablePolicyExtensions();
-  void DisableExtension(const extensions::ExtensionId& extension_id);
+  void DisableExtension(content::BrowserContext* browser_context,
+                        const extensions::ExtensionId& extension_id);
 
   // Unowned pointers:
   raw_ptr<Profile> const signin_original_profile_;

@@ -34,7 +34,11 @@ class HashRealTimeMechanism : public SafeBrowsingLookupMechanism {
 
   // If |did_match_allowlist| is true, this will fall back to the hash-based
   // check instead of performing the URL lookup.
-  void OnCheckUrlForHighConfidenceAllowlist(bool did_match_allowlist);
+  void OnCheckUrlForHighConfidenceAllowlist(
+      bool did_match_allowlist,
+      std::optional<SafeBrowsingDatabaseManager::
+                        HighConfidenceAllowlistCheckLoggingDetails>
+          logging_details);
 
   // This function has to be static because it is called in UI thread. This
   // function starts a hash-prefix real-time lookup if |lookup_service_on_ui| is

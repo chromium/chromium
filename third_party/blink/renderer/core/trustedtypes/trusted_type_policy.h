@@ -26,33 +26,36 @@ class CORE_EXPORT TrustedTypePolicy final : public ScriptWrappable {
  public:
   TrustedTypePolicy(const String& policy_name, TrustedTypePolicyOptions*);
 
-  TrustedHTML* CreateHTML(v8::Isolate*,
+  TrustedHTML* createHTML(v8::Isolate*,
                           const String&,
                           const HeapVector<ScriptValue>&,
                           ExceptionState&);
-  TrustedScript* CreateScript(v8::Isolate*,
+  TrustedScript* createScript(v8::Isolate*,
                               const String&,
                               const HeapVector<ScriptValue>&,
                               ExceptionState&);
-  TrustedScriptURL* CreateScriptURL(v8::Isolate*,
+  TrustedScriptURL* createScriptURL(v8::Isolate*,
                                     const String&,
                                     const HeapVector<ScriptValue>&,
                                     ExceptionState&);
 
-  // IDL generates calls with ScriptState*, which contains the Isolate*.
-  // These methods all call the Isolate* variant.
-  TrustedHTML* createHTML(ScriptState*,
-                          const String&,
-                          const HeapVector<ScriptValue>&,
-                          ExceptionState&);
-  TrustedScript* createScript(ScriptState*,
-                              const String&,
-                              const HeapVector<ScriptValue>&,
-                              ExceptionState&);
-  TrustedScriptURL* createScriptURL(ScriptState*,
-                                    const String&,
-                                    const HeapVector<ScriptValue>&,
-                                    ExceptionState&);
+  // These methods do the bulk of the work, but they return a value with a
+  // null-ish string. This is meant to support
+  // https://w3c.github.io/trusted-types/dist/spec/#process-value-with-a-default-policy-algorithm
+  // which may return null or undefined, while the JS-accessible methods will
+  // always return a string-ified result.
+  TrustedHTML* createHTMLInternal(v8::Isolate*,
+                                  const String&,
+                                  const HeapVector<ScriptValue>&,
+                                  ExceptionState&);
+  TrustedScript* createScriptInternal(v8::Isolate*,
+                                      const String&,
+                                      const HeapVector<ScriptValue>&,
+                                      ExceptionState&);
+  TrustedScriptURL* createScriptURLInternal(v8::Isolate*,
+                                            const String&,
+                                            const HeapVector<ScriptValue>&,
+                                            ExceptionState&);
 
   bool HasCreateHTML();
   bool HasCreateScript();

@@ -36,12 +36,8 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "ui/gfx/geometry/rect.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
 
 namespace blink {
 
@@ -52,24 +48,25 @@ class Page;
 class PagePopup;
 class PagePopupClient;
 
-class PagePopupController : public ScriptWrappable, public Supplement<Page> {
+class PagePopupController : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
   PagePopupController(Page&, PagePopup&, PagePopupClient*);
 
   static PagePopupController* From(Page&);
 
-  void setValueAndClosePopup(int num_value, const WTF::String& string_value);
-  void setValue(const WTF::String&);
+  void setValueAndClosePopup(int num_value,
+                             const String& string_value,
+                             bool is_keyboard_event);
+  void setValue(const String&);
   void closePopup();
-  WTF::String localizeNumberString(const WTF::String&);
-  WTF::String formatMonth(int year, int zero_base_month);
-  WTF::String formatShortMonth(int year, int zero_base_month);
-  WTF::String formatWeek(int year,
-                         int week_number,
-                         const WTF::String& localized_start_date);
+  String localizeNumberString(const String&);
+  String formatMonth(int year, int zero_base_month);
+  String formatShortMonth(int year, int zero_base_month);
+  String formatWeek(int year,
+                    int week_number,
+                    const String& localized_start_date);
   void ClearPagePopupClient();
   void setWindowRect(int x, int y, int width, int height);
 
@@ -81,14 +78,14 @@ class PagePopupController : public ScriptWrappable, public Supplement<Page> {
   // menu list. The bounds are only sent to the tree if children_updated is
   // true.
   void setMenuListOptionsBoundsInAXTree(
-      HeapVector<Member<DOMRect>>& options_bounds,
+      const HeapVector<Member<DOMRect>>& options_bounds,
       bool children_updated);
 
  private:
   PagePopup& popup_;
   std::optional<gfx::Point> popup_origin_;
 
-  WTF::Vector<gfx::Rect> options_bounds_;
+  Vector<gfx::Rect> options_bounds_;
 
  protected:
   PagePopupClient* popup_client_;

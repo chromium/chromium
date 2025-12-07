@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.ui.google_bottom_bar;
 
-import static org.chromium.chrome.browser.gsa.GSAState.GOOGLE_APP_CLASS_NAME;
-import static org.chromium.chrome.browser.gsa.GSAState.PACKAGE_NAME;
-import static org.chromium.chrome.browser.gsa.GSAState.VOICE_SEARCH_INTENT_ACTION;
+import static org.chromium.chrome.browser.gsa.GSAUtils.GSA_CLASS_NAME;
+import static org.chromium.chrome.browser.gsa.GSAUtils.GSA_PACKAGE_NAME;
+import static org.chromium.chrome.browser.gsa.GSAUtils.VOICE_SEARCH_INTENT_ACTION;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarButtonEvent.SEARCHBOX_HOME;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarButtonEvent.SEARCHBOX_LENS;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarButtonEvent.SEARCHBOX_SEARCH;
@@ -26,7 +26,8 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIntentParams;
@@ -42,7 +43,10 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.widget.ViewRectProvider;
 
+import java.util.function.Supplier;
+
 /** A handler class for actions triggered by buttons in a GoogleBottomBar. */
+@NullMarked
 class GoogleBottomBarActionsHandler {
     private static final String TAG = "GBBActionHandler";
 
@@ -63,7 +67,7 @@ class GoogleBottomBarActionsHandler {
         mShareDelegateSupplier = shareDelegateSupplier;
     }
 
-    View.OnClickListener getClickListener(ButtonConfig buttonConfig) {
+    View.@Nullable OnClickListener getClickListener(ButtonConfig buttonConfig) {
         switch (buttonConfig.getId()) {
             case ButtonId.SAVE -> {
                 return v -> onSaveButtonClick(buttonConfig, v);
@@ -104,7 +108,7 @@ class GoogleBottomBarActionsHandler {
     void onSearchboxMicTap() {
         GoogleBottomBarLogger.logButtonClicked(SEARCHBOX_VOICE_SEARCH);
         Intent intent = new Intent(VOICE_SEARCH_INTENT_ACTION);
-        intent.setPackage(PACKAGE_NAME);
+        intent.setPackage(GSA_PACKAGE_NAME);
 
         startGoogleAppActivityForResult(intent, "openGoogleAppVoiceSearch");
     }
@@ -146,7 +150,7 @@ class GoogleBottomBarActionsHandler {
 
     private void openGoogleAppSearch() {
         Intent intent = new Intent(SearchManager.INTENT_ACTION_GLOBAL_SEARCH);
-        intent.setPackage(PACKAGE_NAME);
+        intent.setPackage(GSA_PACKAGE_NAME);
 
         startGoogleAppActivityForResult(intent, "openGoogleAppSearch");
     }
@@ -154,7 +158,7 @@ class GoogleBottomBarActionsHandler {
     private void openGoogleAppHome() {
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_INFO);
-        intent.setClassName(PACKAGE_NAME, GOOGLE_APP_CLASS_NAME);
+        intent.setClassName(GSA_PACKAGE_NAME, GSA_CLASS_NAME);
 
         startGoogleAppActivityForResult(intent, "openGoogleAppHome");
     }
@@ -280,7 +284,7 @@ class GoogleBottomBarActionsHandler {
         addedIntent.setData(Uri.parse(tab.getUrl().getSpec()));
         try {
             ActivityOptions options = ActivityOptions.makeBasic();
-            ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartMode(options);
+            ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartAllowAlways(options);
             pendingIntent.send(
                     mActivity,
                     /* code= */ 0,

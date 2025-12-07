@@ -45,17 +45,41 @@ extension UIView {
         Self.cr_supportsWindowObserving = true
         observation = observe(\.window, options: [.initial]) { [weak self] _, _ in
           guard let self = self else { return }
-          if self.window != nil {
-            self.addMirrorViewInWindow()
-            // Additionally, call the closure here as the view moved to a window.
-            self.cr_onWindowCoordinatesChanged?(self)
+          if Thread.isMainThread {
+            MainActor.assumeIsolated {
+              self.windowCoordinatesChangeHandler()
+            }
           } else {
-            self.removeMirrorViewInWindow()
+            DispatchQueue.main.sync {
+              self.windowCoordinatesChangeHandler()
+            }
           }
         }
       } else {
         observation = nil
       }
+    }
+  }
+
+  /// Whether to notify of layout changes synchronously vs
+  /// asynchronously (the default). Default value is false.
+  ///
+  /// Sometimes, there are timing issues if the execution is asynchronous,
+  /// so it provides an ability to execute simultaneously.
+  /// For example, when switching between horizontal and vertical screens,
+  /// view B synchronously relies on the position change of view A to update
+  /// its constraints and perform the screen rotation animation.
+  /// If A updates the layout asynchronously, B cannot perform the screen
+  /// rotation animation correctly.
+  @objc public var cr_forcesSynchronousLayoutUpdates: Bool {
+    get {
+      (objc_getAssociatedObject(self, UIView.ForcesSynchronousLayoutUpdatesKey) as? NSNumber)?
+        .boolValue ?? false
+    }
+    set {
+      objc_setAssociatedObject(
+        self, UIView.ForcesSynchronousLayoutUpdatesKey, NSNumber.init(value: newValue),
+        .OBJC_ASSOCIATION_COPY)
     }
   }
 
@@ -72,6 +96,17 @@ extension UIView {
     }
   }
 
+  /// Called when the window coordinates of the view changed as a change handler of `observe()`.
+  private func windowCoordinatesChangeHandler() {
+    if self.window != nil {
+      self.addMirrorViewInWindow()
+      // Additionally, call the closure here as the view moved to a window.
+      self.cr_onWindowCoordinatesChanged?(self)
+    } else {
+      self.removeMirrorViewInWindow()
+    }
+  }
+
   /// Inserts a direct subview to the receiver's window, with constraints such that the mirror view
   /// always has the same window coordinates as the receiver. The mirror view calls the
   /// `onWindowCoordinatesChanged` closure when its bounds change.
@@ -81,12 +116,17 @@ extension UIView {
     mirrorViewInWindow.isUserInteractionEnabled = false
     mirrorViewInWindow.translatesAutoresizingMaskIntoConstraints = false
     mirrorViewInWindow.onLayoutChanged = { [weak self] _ in
-      // Callback on the next turn of the run loop to wait for AutoLayout to have updated the entire
-      // hierarchy. (It can happen that AutoLayout updates the mirror view before the mirrored
-      // view.)
-      DispatchQueue.main.async {
-        guard let self = self else { return }
+      guard let self = self else { return }
+      if self.cr_forcesSynchronousLayoutUpdates == true {
         self.cr_onWindowCoordinatesChanged?(self)
+      } else {
+        // Callback on the next turn of the run loop to wait for AutoLayout to have updated the
+        // entire hierarchy. (It can happen that AutoLayout updates the mirror view before the
+        // mirrored view.)
+        DispatchQueue.main.async { [weak self] in
+          guard let self = self else { return }
+          self.cr_onWindowCoordinatesChanged?(self)
+        }
       }
     }
 
@@ -141,6 +181,7 @@ extension UIView {
   @UniqueAddress private static var OnWindowCoordinatesChangedKey
   @UniqueAddress private static var ObservationKey
   @UniqueAddress private static var MirrorViewInWindowKey
+  @UniqueAddress private static var ForcesSynchronousLayoutUpdatesKey
 }
 
 /// A property wrapper to more safely support associated object keys.

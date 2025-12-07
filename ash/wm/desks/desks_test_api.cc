@@ -16,19 +16,22 @@
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_restore_util.h"
+#include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/overview_desk_bar_view.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "base/run_loop.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -82,8 +85,8 @@ const DeskMiniView* DesksTestApi::GetDeskBarDragView(
 // static
 views::LabelButton* DesksTestApi::GetCloseAllUndoToastDismissButton() {
   ToastManagerImpl* toast_manager = Shell::Get()->toast_manager();
-  return toast_manager->GetCurrentOverlayForTesting()
-      ->dismiss_button_for_testing();
+  return views::AsViewClass<views::LabelButton>(
+      toast_manager->GetCurrentOverlayForTesting()->button_for_testing());
 }
 
 // static
@@ -125,12 +128,6 @@ bool DesksTestApi::IsDeskShortcutViewVisible(DeskMiniView* mini_view) {
 }
 
 // static
-DeskProfilesButton* DesksTestApi::GetDeskProfileButton(
-    DeskMiniView* mini_view) {
-  return mini_view->desk_profile_button_;
-}
-
-// static
 bool DesksTestApi::DesksControllerHasDesk(Desk* desk) {
   return DesksController::Get()->HasDesk(desk);
 }
@@ -142,6 +139,10 @@ bool DesksTestApi::DesksControllerCanUndoDeskRemoval() {
 
 // static
 bool DesksTestApi::IsDeskBarLeftGradientVisible(DeskBarViewBase::Type type) {
+  views::View* const scroll_view = GetDeskBarView(type)->scroll_view_;
+  if (!scroll_view) {
+    return false;
+  }
   const auto& gradient_mask =
       GetDeskBarView(type)->scroll_view_->layer()->gradient_mask();
   return !gradient_mask.IsEmpty() &&
@@ -150,6 +151,10 @@ bool DesksTestApi::IsDeskBarLeftGradientVisible(DeskBarViewBase::Type type) {
 
 // static
 bool DesksTestApi::IsDeskBarRightGradientVisible(DeskBarViewBase::Type type) {
+  views::View* const scroll_view = GetDeskBarView(type)->scroll_view_;
+  if (!scroll_view) {
+    return false;
+  }
   const auto& gradient_mask =
       GetDeskBarView(type)->scroll_view_->layer()->gradient_mask();
   return !gradient_mask.IsEmpty() &&
@@ -173,19 +178,13 @@ void DesksTestApi::WaitForDeskBarUiUpdate(DeskBarViewBase* desk_bar_view) {
 }
 
 // static
-void DesksTestApi::SetDeskBarUiUpdateCallback(DeskBarViewBase* desk_bar_view,
-                                              base::OnceClosure done) {
-  desk_bar_view->on_update_ui_closure_for_testing_ = std::move(done);
-}
-
-// static
 DeskActionContextMenu* DesksTestApi::GetContextMenuForDesk(
     DeskBarViewBase::Type type,
     int index) {
   DeskMiniView* mini_view = GetDeskBarView(type)->mini_views()[index];
 
   // The context menu is not created until it is opened, so open it first.
-  mini_view->OpenContextMenu(ui::MENU_SOURCE_MOUSE);
+  mini_view->OpenContextMenu(ui::mojom::MenuSourceType::kMouse);
   return mini_view->context_menu();
 }
 
@@ -199,7 +198,12 @@ const ui::SimpleMenuModel& DesksTestApi::GetContextMenuModelForDesk(
 // static
 bool DesksTestApi::IsContextMenuRunningForDesk(DeskBarViewBase::Type type,
                                                int index) {
-  return GetContextMenuForDesk(type, index)->context_menu_runner_->IsRunning();
+  DeskMiniView* mini_view = GetDeskBarView(type)->mini_views()[index];
+  DeskActionContextMenu* menu = mini_view->context_menu();
+  if (!menu) {
+    return false;
+  }
+  return menu->context_menu_runner_->IsRunning();
 }
 
 // static
@@ -232,28 +236,73 @@ views::MenuItemView* DesksTestApi::OpenDeskContextMenuAndGetMenuItem(
     click_on_view(default_button);
 
     // Wait for the desk bar to finish animating to the expanded state.
-    if (!ui::ScopedAnimationDurationScaleMode::is_zero()) {
+    if (!gfx::ScopedAnimationDurationScaleMode::is_zero()) {
       DesksTestApi::WaitForDeskBarUiUpdate(bar_view);
     }
 
     CHECK(!bar_view->IsZeroState());
   }
 
-  // Hover over the mini view to show the context menu button.
   CHECK_LE(index, bar_view->mini_views().size());
   DeskMiniView* mini_view = bar_view->mini_views()[index];
-  event_generator.MoveMouseToInHost(
-      mini_view->GetBoundsInScreen().CenterPoint());
-  DeskActionButton* menu_button =
-      mini_view->desk_action_view()->context_menu_button();
-  CHECK(menu_button);
-  CHECK(menu_button->GetVisible());
 
-  // Click the button to open the context menu.
-  click_on_view(menu_button);
+  // If we have previously been using touch controls, open the menu using a long
+  // press on the mini view. Otherwise, hover over the mini view to get the
+  // action buttons to show, then click the menu button.
+  if (!aura::client::GetCursorClient(root)->IsCursorVisible()) {
+    // Long press until the context menu opens.
+    LongGestureTap(
+        mini_view->desk_action_view()->GetBoundsInScreen().CenterPoint(),
+        &event_generator);
+  } else {
+    // Hover over the mini view to show the context menu button.
+    event_generator.MoveMouseToInHost(
+        mini_view->GetBoundsInScreen().CenterPoint());
+
+    // The menu button container should be visible, along with the button
+    // itself.
+    CHECK(mini_view->desk_action_view()->GetVisible());
+    DeskActionButton* menu_button =
+        mini_view->desk_action_view()->context_menu_button();
+    CHECK(menu_button);
+    CHECK(menu_button->GetVisible());
+
+    // Click the button to open the context menu.
+    click_on_view(menu_button);
+  }
+
   DeskActionContextMenu* menu = mini_view->context_menu();
   CHECK(menu);
   return GetDeskActionContextMenuItem(menu, command_id);
+}
+
+// static
+void DesksTestApi::MaybeCloseContextMenuForGrid(OverviewGrid* overview_grid) {
+  for (DeskMiniView* mini_view :
+       overview_grid->desks_bar_view()->mini_views()) {
+    mini_view->MaybeCloseContextMenu();
+
+    // Closing the menu is asynchronous, so we want to wait until it has
+    // actually closed.
+    base::RunLoop().RunUntilIdle();
+  }
+}
+
+// static
+base::TimeDelta DesksTestApi::GetCloseAllWindowCloseTimeout() {
+  return DesksController::GetCloseAllWindowCloseTimeoutForTest();
+}
+
+// static
+base::AutoReset<base::TimeDelta> DesksTestApi::SetCloseAllWindowCloseTimeout(
+    base::TimeDelta interval) {
+  return DesksController::SetCloseAllWindowCloseTimeoutForTest(interval);
+}
+
+// static
+base::AutoReset<base::TimeDelta> DesksTestApi::SetScrollTimeInterval(
+    base::TimeDelta interval) {
+  return ScrollArrowButton::SetScrollTimeIntervalForTest(interval);
 }
 
 }  // namespace ash

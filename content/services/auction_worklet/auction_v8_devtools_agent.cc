@@ -9,8 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/not_fatal_until.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/services/auction_worklet/auction_v8_devtools_session.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
@@ -68,11 +67,13 @@ void AuctionV8DevToolsAgent::AttachDevToolsSession(
         session_receiver,
     mojo::PendingReceiver<blink::mojom::DevToolsSession> io_session_receiver,
     blink::mojom::DevToolsSessionStatePtr reattach_session_state,
+    const std::string& script_to_evaluate_on_load,
     bool client_expects_binary_responses,
     bool client_is_trusted,
     const std::string& session_id,
     bool session_waits_for_debugger) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
+  CHECK(script_to_evaluate_on_load.empty());  // This is for frames only so far.
   int context_group_id = receivers_.current_context();
   ContextGroupInfo& context_group_info = context_groups_[context_group_id];
 
@@ -110,7 +111,7 @@ void AuctionV8DevToolsAgent::runMessageLoopOnPause(int context_group_id) {
   DCHECK(!paused_);
 
   auto it = context_groups_.find(context_group_id);
-  CHECK(it != context_groups_.end(), base::NotFatalUntil::M130);
+  CHECK(it != context_groups_.end());
   DCHECK(!it->second.sessions.empty());
   AuctionV8DevToolsSession* session = *it->second.sessions.begin();
 
@@ -139,7 +140,7 @@ void AuctionV8DevToolsAgent::SessionDestroyed(
     AuctionV8DevToolsSession* session) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   auto it = context_groups_.find(session->context_group_id());
-  CHECK(it != context_groups_.end(), base::NotFatalUntil::M130);
+  CHECK(it != context_groups_.end());
   it->second.sessions.erase(session);
   if (it->second.sessions.empty())
     context_groups_.erase(it);

@@ -15,6 +15,7 @@
 #include "net/storage_access_api/status.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"
+#include "third_party/blink/public/mojom/frame/reporting_observer.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info_notifier.mojom.h"
 #include "third_party/blink/public/mojom/renderer_preference_watcher.mojom-forward.h"
 #include "third_party/blink/public/mojom/renderer_preferences.mojom-forward.h"
@@ -25,7 +26,7 @@
 
 namespace blink {
 class ChildURLLoaderFactoryBundle;
-class WebDedicatedOrSharedWorkerFetchContext;
+class WebDedicatedOrSharedWorkerGlobalScopeContext;
 class WebDedicatedWorker;
 }  // namespace blink
 
@@ -48,10 +49,6 @@ class DedicatedWorkerHostFactoryClient final
   ~DedicatedWorkerHostFactoryClient() override;
 
   // Implements blink::WebDedicatedWorkerHostFactoryClient.
-  void CreateWorkerHostDeprecated(
-      const blink::DedicatedWorkerToken& dedicated_worker_token,
-      const blink::WebURL& script_url,
-      CreateWorkerHostCallback callback) override;
   void CreateWorkerHost(
       const blink::DedicatedWorkerToken& dedicated_worker_token,
       const blink::WebURL& script_url,
@@ -64,8 +61,8 @@ class DedicatedWorkerHostFactoryClient final
       blink::WebWorkerFetchContext* web_worker_fetch_context,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
 
-  scoped_refptr<blink::WebDedicatedOrSharedWorkerFetchContext>
-  CreateWorkerFetchContext(
+  scoped_refptr<blink::WebDedicatedOrSharedWorkerGlobalScopeContext>
+  CreateWorkerGlobalScopeContext(
       const blink::RendererPreferences& renderer_preference,
       mojo::PendingReceiver<blink::mojom::RendererPreferenceWatcher>
           watcher_receiver,
@@ -78,7 +75,8 @@ class DedicatedWorkerHostFactoryClient final
       mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker,
       mojo::PendingRemote<blink::mojom::DedicatedWorkerHost>
-          dedicated_worker_host) override;
+          dedicated_worker_host,
+      const url::Origin& origin) override;
   void OnScriptLoadStarted(
       blink::mojom::ServiceWorkerContainerInfoForClientPtr
           service_worker_container_info,
@@ -89,7 +87,11 @@ class DedicatedWorkerHostFactoryClient final
           subresource_loader_updater,
       blink::mojom::ControllerServiceWorkerInfoPtr controller_info,
       mojo::PendingRemote<blink::mojom::BackForwardCacheControllerHost>
-          back_forward_cache_controller_host) override;
+          back_forward_cache_controller_host,
+      mojo::PendingReceiver<blink::mojom::ReportingObserver>
+          coep_reporting_observer,
+      mojo::PendingReceiver<blink::mojom::ReportingObserver>
+          dip_reporting_observer) override;
   void OnScriptLoadStartFailed() override;
 
   // |worker_| owns |this|.

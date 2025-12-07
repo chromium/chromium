@@ -9,12 +9,12 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/crash_upload_list/crash_upload_list.h"
 #include "components/feedback/feedback_report.h"
 #include "content/public/browser/browser_thread.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "content/public/browser/browser_thread.h"
 #endif
@@ -42,7 +42,7 @@ CrashIdsSource::CrashIdsSource()
       crash_upload_list_(CreateCrashUploadList()),
       pending_crash_list_loading_(false) {}
 
-CrashIdsSource::~CrashIdsSource() {}
+CrashIdsSource::~CrashIdsSource() = default;
 
 void CrashIdsSource::Fetch(SysLogsSourceCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -60,7 +60,7 @@ void CrashIdsSource::Fetch(SysLogsSourceCallback callback) {
   base::OnceClosure list_available_cb = base::BindOnce(
       &CrashIdsSource::OnUploadListAvailable, weak_ptr_factory_.GetWeakPtr());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Upload recent crashes so that they're shown in the report.
   // Non-chromeOS systems upload crashes shortly after they happen. ChromeOS is
   // unique in that it has a separate process (crash_sender) that uploads

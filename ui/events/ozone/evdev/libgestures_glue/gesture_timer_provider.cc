@@ -7,6 +7,7 @@
 #include <gestures/gestures.h>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 
 // libgestures requires that this be in the top level namespace.
@@ -38,7 +39,7 @@ struct GesturesTimer {
   }
 
   GesturesTimerCallback callback_ = nullptr;
-  void* callback_data_ = nullptr;
+  raw_ptr<void> callback_data_ = nullptr;
   base::OneShotTimer timer_;
 };
 

@@ -14,7 +14,8 @@ namespace google_apis::classroom {
 using ::base::JSONReader;
 
 TEST(ClassroomApiCoursesResponseTypesTest, ConvertsEmptyResponse) {
-  auto raw_courses = JSONReader::Read("{}");
+  auto raw_courses =
+      JSONReader::Read("{}", base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_courses);
 
   auto courses = Courses::CreateFrom(raw_courses.value());
@@ -24,13 +25,15 @@ TEST(ClassroomApiCoursesResponseTypesTest, ConvertsEmptyResponse) {
 }
 
 TEST(ClassroomApiCoursesResponseTypesTest, ConvertsCourses) {
-  const auto raw_courses = JSONReader::Read(R"(
+  const auto raw_courses =
+      JSONReader::Read(R"(
       {
         "courses": [
-          {"id": "course-1", "name": "Course Name 1", "courseState": "ACTIVE"},
+          {"id": "course-1", "name": "Course Name 1", "section": "Period 1", "courseState": "ACTIVE"},
           {"id": "course-2", "name": "Course Name 2", "courseState": "ARCHIVED"}
         ]
-      })");
+      })",
+                       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_courses);
 
   const auto courses = Courses::CreateFrom(raw_courses.value());
@@ -40,19 +43,23 @@ TEST(ClassroomApiCoursesResponseTypesTest, ConvertsCourses) {
 
   EXPECT_EQ(courses->items().at(0)->id(), "course-1");
   EXPECT_EQ(courses->items().at(0)->name(), "Course Name 1");
+  EXPECT_EQ(courses->items().at(0)->section(), "Period 1");
   EXPECT_EQ(courses->items().at(0)->state(), Course::State::kActive);
 
   EXPECT_EQ(courses->items().at(1)->id(), "course-2");
   EXPECT_EQ(courses->items().at(1)->name(), "Course Name 2");
+  EXPECT_EQ(courses->items().at(1)->section(), "");
   EXPECT_EQ(courses->items().at(1)->state(), Course::State::kOther);
 }
 
 TEST(ClassroomApiCoursesResponseTypesTest, ConvertsNextPageToken) {
-  const auto raw_courses = JSONReader::Read(R"(
+  const auto raw_courses =
+      JSONReader::Read(R"(
       {
         "courses": [],
         "nextPageToken": "qwerty"
-      })");
+      })",
+                       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_courses);
 
   const auto courses = Courses::CreateFrom(raw_courses.value());
@@ -65,11 +72,13 @@ TEST(ClassroomApiCoursesResponseTypesTest, ConvertsCourseStateToString) {
 }
 
 TEST(ClassroomApiCoursesResponseTypesTest, DoesNotCrashOnUnexpectedResponse) {
-  const auto raw_courses = JSONReader::Read(R"(
+  const auto raw_courses =
+      JSONReader::Read(R"(
       {
         "courses": [{"id": []}],
         "nextPageToken": true
-      })");
+      })",
+                       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_courses);
 
   const auto courses = Courses::CreateFrom(raw_courses.value());

@@ -10,7 +10,6 @@
 #include <memory>
 #include <sstream>
 #include <string_view>
-#include <tuple>
 #include <vector>
 
 #include "base/check.h"
@@ -46,20 +45,6 @@ SocketPermissionEntry::SocketPermissionEntry()
 
 SocketPermissionEntry::~SocketPermissionEntry() = default;
 
-bool SocketPermissionEntry::operator<(const SocketPermissionEntry& rhs) const {
-  return std::tie(pattern_.type, pattern_.host, match_subdomains_,
-                  pattern_.port) <
-         std::tie(rhs.pattern_.type, rhs.pattern_.host, rhs.match_subdomains_,
-                  rhs.pattern_.port);
-}
-
-bool SocketPermissionEntry::operator==(const SocketPermissionEntry& rhs) const {
-  return (pattern_.type == rhs.pattern_.type) &&
-         (pattern_.host == rhs.pattern_.host) &&
-         (match_subdomains_ == rhs.match_subdomains_) &&
-         (pattern_.port == rhs.pattern_.port);
-}
-
 bool SocketPermissionEntry::Check(
     const content::SocketPermissionRequest& request) const {
   if (pattern_.type != request.type)
@@ -72,11 +57,9 @@ bool SocketPermissionEntry::Check(
 
     if (!pattern_.host.empty()) {
       // Do not wildcard part of IP address.
-      url::Component component(0, lhost.length());
       url::RawCanonOutputT<char, 128> ignored_output;
       url::CanonHostInfo host_info;
-      url::CanonicalizeIPAddress(
-          lhost.c_str(), component, &ignored_output, &host_info);
+      url::CanonicalizeIPAddress(lhost, &ignored_output, &host_info);
       if (host_info.IsIPAddress())
         return false;
 

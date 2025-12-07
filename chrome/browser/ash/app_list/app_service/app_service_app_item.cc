@@ -48,11 +48,9 @@ bool IsNewInstall(const apps::AppUpdate& app_update) {
 
   switch (app_update.AppType()) {
     case apps::AppType::kUnknown:
-    case apps::AppType::kBuiltIn:
-    case apps::AppType::kStandaloneBrowser:
     case apps::AppType::kSystemWeb:
     case apps::AppType::kRemote:
-      // Chrome, Lacros, Settings, etc. are built-in.
+      // Chrome, Settings, etc. are built-in.
       return false;
     case apps::AppType::kArc:
     case apps::AppType::kCrostini:
@@ -62,8 +60,6 @@ bool IsNewInstall(const apps::AppUpdate& app_update) {
     case apps::AppType::kPluginVm:
     case apps::AppType::kBorealis:
     case apps::AppType::kBruschetta:
-    case apps::AppType::kStandaloneBrowserChromeApp:
-    case apps::AppType::kStandaloneBrowserExtension:
       // Other app types are user-installed.
       return true;
   }
@@ -201,8 +197,6 @@ void AppServiceAppItem::Activate(int event_flags) {
         if (update.AppType() == apps::AppType::kCrostini ||
             update.AppType() == apps::AppType::kWeb ||
             update.AppType() == apps::AppType::kSystemWeb ||
-            (update.AppType() == apps::AppType::kStandaloneBrowserChromeApp &&
-             !update.IsPlatformApp().value_or(true)) ||
             (update.AppType() == apps::AppType::kChromeApp &&
              update.IsPlatformApp().value_or(true))) {
           is_active_app = true;
@@ -248,7 +242,7 @@ void AppServiceAppItem::ResetIsNewInstall() {
 
   // Record metric for approximate time from installation to launch.
   base::TimeDelta time_since_install = base::TimeTicks::Now() - creation_time_;
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     base::UmaHistogramCustomTimes(
         "Apps.TimeBetweenAppInstallAndLaunch.TabletMode", time_since_install,
         kTimeMetricsMin, kTimeMetricsMax, kTimeMetricsBucketCount);

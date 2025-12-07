@@ -39,8 +39,6 @@ constexpr char kEnabledExtensionsCountHistogramName[] =
 constexpr char kUnknownAppsCountHistogramName[] =
     "FamilyUser.UnknownAppsCount2";
 constexpr char kArcAppsCountHistogramName[] = "FamilyUser.ArcAppsCount2";
-constexpr char kBuiltInAppsCountHistogramName[] =
-    "FamilyUser.BuiltInAppsCount2";
 constexpr char kCrostiniAppsCountHistogramName[] =
     "FamilyUser.CrostiniAppsCount2";
 // The InstalledExtensionsCount only includes regular browser extensions and
@@ -51,7 +49,6 @@ constexpr char kExtensionAppsCountHistogramName[] =
 constexpr char kWebAppsCountHistogramName[] = "FamilyUser.WebAppsCount2";
 constexpr char kPluginVmAppsCountHistogramName[] =
     "FamilyUser.PluginVmAppsCount2";
-constexpr char kStandaloneBrowserAppsCountHistogramName[] = "FamilyUser.LacrosAppsCount2";
 constexpr char kRemoteAppsCountHistogramName[] = "FamilyUser.RemoteAppsCount2";
 constexpr char kBorealisAppsCountHistogramName[] =
     "FamilyUser.BorealisAppsCount2";
@@ -59,11 +56,6 @@ constexpr char kBruschettaAppsCountHistogramName[] =
     "FamilyUser.BruschettaAppsCount2";
 constexpr char kSystemWebAppsCountHistogramName[] =
     "FamilyUser.SystemWebAppsCount2";
-constexpr char kStandaloneBrowserChromeAppCountHistogramName[] =
-    "FamilyUser.LacrosChromeAppsCount2";
-
-// TODO(agawronska): Add metrics for extensions, possibly differentiating Ash
-// from Lacros (AKA StandaloneBrowser).
 
 const char* GetAppsCountHistogramName(apps::AppType app_type) {
   switch (app_type) {
@@ -71,12 +63,9 @@ const char* GetAppsCountHistogramName(apps::AppType app_type) {
     // Extensions are recorded separately, and AppService only has some
     // extensions with file browser handlers.
     case apps::AppType::kExtension:
-    case apps::AppType::kStandaloneBrowserExtension:
       return kUnknownAppsCountHistogramName;
     case apps::AppType::kArc:
       return kArcAppsCountHistogramName;
-    case apps::AppType::kBuiltIn:
-      return kBuiltInAppsCountHistogramName;
     case apps::AppType::kCrostini:
       return kCrostiniAppsCountHistogramName;
     case apps::AppType::kChromeApp:
@@ -85,8 +74,6 @@ const char* GetAppsCountHistogramName(apps::AppType app_type) {
       return kWebAppsCountHistogramName;
     case apps::AppType::kPluginVm:
       return kPluginVmAppsCountHistogramName;
-    case apps::AppType::kStandaloneBrowser:
-      return kStandaloneBrowserAppsCountHistogramName;
     case apps::AppType::kRemote:
       return kRemoteAppsCountHistogramName;
     case apps::AppType::kBorealis:
@@ -95,9 +82,8 @@ const char* GetAppsCountHistogramName(apps::AppType app_type) {
       return kBruschettaAppsCountHistogramName;
     case apps::AppType::kSystemWeb:
       return kSystemWebAppsCountHistogramName;
-    case apps::AppType::kStandaloneBrowserChromeApp:
-      return kStandaloneBrowserChromeAppCountHistogramName;
   }
+  NOTREACHED();  // Invalid enum value.
 }
 
 }  // namespace

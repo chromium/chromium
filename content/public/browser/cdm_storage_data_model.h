@@ -14,6 +14,10 @@
 using CdmStorageKeyUsageSize =
     std::vector<std::pair<blink::StorageKey, uint64_t>>;
 
+namespace base {
+class Time;
+}
+
 namespace content {
 
 // To integrate the CdmStorage data type with the BrowsingDataModel, the

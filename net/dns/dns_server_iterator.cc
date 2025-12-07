@@ -22,7 +22,9 @@ DnsServerIterator::DnsServerIterator(size_t nameservers_size,
       max_failures_(max_failures),
       resolve_context_(resolve_context),
       next_index_(starting_index),
-      session_(session) {}
+      session_(session) {
+  CHECK(starting_index < nameservers_size || nameservers_size == 0);
+}
 
 DnsServerIterator::~DnsServerIterator() = default;
 

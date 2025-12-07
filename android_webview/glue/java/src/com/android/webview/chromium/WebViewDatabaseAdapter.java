@@ -8,7 +8,6 @@ import android.webkit.WebViewDatabase;
 
 import com.android.webview.chromium.WebViewChromium.ApiCall;
 
-import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.HttpAuthDatabase;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
@@ -16,22 +15,18 @@ import org.chromium.base.TraceEvent;
 import java.util.concurrent.Callable;
 
 /**
- * Chromium implementation of WebViewDatabase -- forwards calls to the
- * chromium internal implementation.
+ * Chromium implementation of WebViewDatabase -- forwards calls to the chromium internal
+ * implementation.
  */
 @SuppressWarnings("deprecation")
 final class WebViewDatabaseAdapter extends WebViewDatabase {
     private final WebViewChromiumFactoryProvider mFactory;
     private final HttpAuthDatabase mHttpAuthDatabase;
-    private final AwBrowserContext mBrowserContext;
 
     public WebViewDatabaseAdapter(
-            WebViewChromiumFactoryProvider factory,
-            HttpAuthDatabase httpAuthDatabase,
-            AwBrowserContext browserContext) {
+            WebViewChromiumFactoryProvider factory, HttpAuthDatabase httpAuthDatabase) {
         mFactory = factory;
         mHttpAuthDatabase = httpAuthDatabase;
-        mBrowserContext = browserContext;
     }
 
     @Override

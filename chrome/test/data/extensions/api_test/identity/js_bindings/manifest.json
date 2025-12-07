@@ -1,9 +1,9 @@
 {
   "name": "chrome.identity JS Bindings API Test",
   "version": "1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "background": {
-    "scripts": ["test.js"]
+    "service_worker": "test.js"
   },
   "permissions": [
     "identity"

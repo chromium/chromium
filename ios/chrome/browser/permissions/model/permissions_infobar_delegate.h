@@ -39,7 +39,7 @@ class PermissionsInfobarDelegate : public ConfirmInfoBarDelegate {
  private:
   NSArray<NSNumber*>* recently_accessible_permissions_;
 
-  raw_ptr<web::WebState> web_state_;
+  raw_ptr<web::WebState, DanglingUntriaged> web_state_;
 };
 
 #endif  // IOS_CHROME_BROWSER_PERMISSIONS_MODEL_PERMISSIONS_INFOBAR_DELEGATE_H_

@@ -25,3 +25,5 @@ ScopedUseFakeInstanceIDAndroid::~ScopedUseFakeInstanceIDAndroid() {
 }
 
 }  // namespace instance_id
+
+DEFINE_JNI(FakeInstanceIDWithSubtype)

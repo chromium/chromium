@@ -6,16 +6,18 @@
 #define ASH_GLANCEABLES_TASKS_GLANCEABLES_TASK_VIEW_H_
 
 #include <string>
+#include <string_view>
 
 #include "ash/api/tasks/tasks_client.h"
 #include "ash/api/tasks/tasks_types.h"
 #include "ash/ash_export.h"
-#include "ash/glanceables/common/glanceables_error_message_view.h"
 #include "ash/glanceables/tasks/glanceables_tasks_error_type.h"
+#include "ash/style/error_message_toast.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
+#include "google_apis/common/api_error_codes.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view_observer.h"
@@ -57,9 +59,9 @@ class ASH_EXPORT GlanceablesTaskView : public views::FlexLayoutView,
       const std::string& task_id,
       const std::string& title,
       api::TasksClient::OnTaskSavedCallback callback)>;
-  using ShowErrorMessageCallback = base::RepeatingCallback<void(
-      GlanceablesTasksErrorType,
-      GlanceablesErrorMessageView::ButtonActionType)>;
+  using ShowErrorMessageCallback =
+      base::RepeatingCallback<void(GlanceablesTasksErrorType,
+                                   ErrorMessageToast::ButtonActionType)>;
   using StateChangeObserverCallback =
       base::RepeatingCallback<void(bool view_expanding)>;
   // Modes of `tasks_title_view_` (simple label or text field).
@@ -117,11 +119,11 @@ class ASH_EXPORT GlanceablesTaskView : public views::FlexLayoutView,
 
   // Handles finished editing event from the text field, updates `task_title_`
   // and propagates new `title` to the server.
-  void OnFinishedEditing(const std::u16string& title);
+  void OnFinishedEditing(std::u16string_view title);
 
   // Handles completion of running `save_callback_` callback.
   // `task` - newly created or updated task.
-  void OnSaved(const api::Task* task);
+  void OnSaved(google_apis::ApiErrorCode http_error, const api::Task* task);
 
   // Owned by views hierarchy.
   raw_ptr<CheckButton> check_button_ = nullptr;

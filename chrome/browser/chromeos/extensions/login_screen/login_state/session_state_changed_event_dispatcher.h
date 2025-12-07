@@ -6,11 +6,11 @@
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_STATE_SESSION_STATE_CHANGED_EVENT_DISPATCHER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chromeos/crosapi/mojom/login_state.mojom.h"
+#include "base/scoped_observation.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router_factory.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 class BrowserContext;
@@ -23,7 +23,7 @@ class EventRouter;
 // |SessionStateChangedEventDispatcher| dispatches changes in the session state
 // to extensions listening on the |loginState.onSessionStateChanged| event.
 class SessionStateChangedEventDispatcher
-    : public crosapi::mojom::SessionStateChangedEventObserver,
+    : public session_manager::SessionManagerObserver,
       public BrowserContextKeyedAPI {
  public:
   // BrowserContextKeyedAPI implementation.
@@ -32,7 +32,7 @@ class SessionStateChangedEventDispatcher
   void Shutdown() override;
 
   explicit SessionStateChangedEventDispatcher(
-      content::BrowserContext* browser_context_);
+      content::BrowserContext* browser_context);
 
   SessionStateChangedEventDispatcher(
       const SessionStateChangedEventDispatcher&) = delete;
@@ -41,11 +41,10 @@ class SessionStateChangedEventDispatcher
 
   ~SessionStateChangedEventDispatcher() override;
 
-  bool IsBoundForTesting();
   void SetEventRouterForTesting(EventRouter* event_router);
 
-  // crosapi::mojom::SessionStateChangedEventObserver:
-  void OnSessionStateChanged(crosapi::mojom::SessionState state) override;
+  // session_manager::SessionManagerObserver:
+  void OnSessionStateChanged() override;
 
  private:
   // Needed for BrowserContextKeyedAPI implementation.
@@ -61,9 +60,9 @@ class SessionStateChangedEventDispatcher
   raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_;
   raw_ptr<EventRouter, DanglingUntriaged> event_router_;
 
-  // Receives mojo messages from ash.
-  mojo::Receiver<crosapi::mojom::SessionStateChangedEventObserver> receiver_{
-      this};
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_manager_observation_{this};
 };
 
 template <>

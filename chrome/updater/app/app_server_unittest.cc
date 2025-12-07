@@ -26,12 +26,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::Invoke;
-using testing::Return;
-
 namespace updater {
-
 namespace {
+
+using ::testing::Invoke;
+using ::testing::Return;
 
 class AppServerTest : public AppServer {
  public:
@@ -53,10 +52,9 @@ class AppServerTest : public AppServer {
   MOCK_METHOD(bool, ShutdownIfIdleAfterTask, (), (override));
   MOCK_METHOD(void, OnDelayedTaskComplete, (), (override));
 
- protected:
+ private:
   ~AppServerTest() override = default;
 
- private:
   UpdaterScope updater_scope() const override {
     return GetUpdaterScopeForTesting();
   }
@@ -94,7 +92,7 @@ class AppServerTestCase : public testing::Test {
 
 TEST_F(AppServerTestCase, SelfUninstall) {
   base::test::ScopedCommandLine command_line;
-  command_line.GetProcessCommandLine()->AppendSwitchASCII(
+  command_line.GetProcessCommandLine()->AppendSwitchUTF8(
       kServerServiceSwitch, kServerUpdateServiceInternalSwitchValue);
   {
     scoped_refptr<GlobalPrefs> global_prefs =
@@ -110,9 +108,9 @@ TEST_F(AppServerTestCase, SelfUninstall) {
 
   // Expect the app to ActiveDutyInternal then SelfUninstall.
   EXPECT_CALL(*app, ActiveDuty).Times(0);
-  EXPECT_CALL(*app, ActiveDutyInternal).Times(1);
+  EXPECT_CALL(*app, ActiveDutyInternal);
   EXPECT_CALL(*app, SwapInNewVersion).Times(0);
-  EXPECT_CALL(*app, UninstallSelf).Times(1);
+  EXPECT_CALL(*app, UninstallSelf);
   EXPECT_EQ(app->Run(), 0);
   EXPECT_TRUE(CreateLocalPrefs(GetUpdaterScopeForTesting())->GetQualified());
 }
@@ -129,7 +127,7 @@ TEST_F(AppServerTestCase, SelfPromote) {
 
     // Expect the app to SwapInNewVersion and then ActiveDuty then
     // Shutdown(0).
-    EXPECT_CALL(*app, ActiveDuty).Times(1);
+    EXPECT_CALL(*app, ActiveDuty);
     EXPECT_CALL(*app, SwapInNewVersion).WillOnce(Return(true));
     EXPECT_CALL(*app, UninstallSelf).Times(0);
     EXPECT_EQ(app->Run(), 0);
@@ -146,7 +144,7 @@ TEST_F(AppServerTestCase, InstallAutoPromotes) {
 
     // Expect the app to SwapInNewVersion and then ActiveDuty then
     // Shutdown(0). In this case it bypasses qualification.
-    EXPECT_CALL(*app, ActiveDuty).Times(1);
+    EXPECT_CALL(*app, ActiveDuty);
     EXPECT_CALL(*app, SwapInNewVersion).WillOnce(Return(true));
     EXPECT_CALL(*app, UninstallSelf).Times(0);
     EXPECT_EQ(app->Run(), 0);
@@ -195,7 +193,7 @@ TEST_F(AppServerTestCase, ActiveDutyAlready) {
     auto app = base::MakeRefCounted<AppServerTest>();
 
     // Expect the app to ActiveDuty and then Shutdown(0).
-    EXPECT_CALL(*app, ActiveDuty).Times(1);
+    EXPECT_CALL(*app, ActiveDuty);
     EXPECT_CALL(*app, SwapInNewVersion).Times(0);
     EXPECT_CALL(*app, UninstallSelf).Times(0);
     EXPECT_EQ(app->Run(), 0);
@@ -223,7 +221,7 @@ TEST_F(AppServerTestCase, StateDirty) {
 
     // Expect the app to SwapInNewVersion and then ActiveDuty and then
     // Shutdown(0).
-    EXPECT_CALL(*app, ActiveDuty).Times(1);
+    EXPECT_CALL(*app, ActiveDuty);
     EXPECT_CALL(*app, SwapInNewVersion).WillOnce(Return(true));
     EXPECT_CALL(*app, UninstallSelf).Times(0);
     EXPECT_EQ(app->Run(), 0);

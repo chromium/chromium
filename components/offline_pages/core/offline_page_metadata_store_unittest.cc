@@ -5,6 +5,7 @@
 #include "components/offline_pages/core/offline_page_metadata_store.h"
 
 #include <stdint.h>
+
 #include <memory>
 #include <set>
 #include <string>
@@ -29,6 +30,7 @@
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
+#include "sql/test/test_helpers.h"
 #include "sql/transaction.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -47,10 +49,10 @@ const ClientId kTestClientId1(kTestClientNamespace, "1234");
 const ClientId kTestClientId2(kTestClientNamespace, "5678");
 const base::FilePath::CharType kFilePath[] =
     FILE_PATH_LITERAL("/offline_pages/example_com.mhtml");
-int64_t kFileSize = 234567LL;
-int64_t kOfflineId = 12345LL;
+constexpr int64_t kFileSize = 234567LL;
+constexpr int64_t kOfflineId = 12345LL;
 const char kTestRequestOrigin[] = "request.origin";
-int64_t kTestSystemDownloadId = 42LL;
+constexpr int64_t kTestSystemDownloadId = 42LL;
 const char kTestDigest[] = "test-digest";
 const base::Time kVisualsExpiration = store_utils::FromDatabaseTime(42);
 const char kTestSnippet[] = "test snippet";
@@ -62,7 +64,7 @@ OfflinePageVisuals TestVisuals() {
 
 // Build a store with outdated schema to simulate the upgrading process.
 void BuildTestStoreWithSchemaFromM52(const base::FilePath& file) {
-  sql::Database connection;
+  sql::Database connection(sql::test::kTestTag);
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("OfflinePages.db"))));
   ASSERT_TRUE(connection.is_open());
@@ -109,7 +111,7 @@ void BuildTestStoreWithSchemaFromM52(const base::FilePath& file) {
 }
 
 void BuildTestStoreWithSchemaFromM53(const base::FilePath& file) {
-  sql::Database connection;
+  sql::Database connection(sql::test::kTestTag);
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("OfflinePages.db"))));
   ASSERT_TRUE(connection.is_open());
@@ -158,7 +160,7 @@ void BuildTestStoreWithSchemaFromM53(const base::FilePath& file) {
 }
 
 void BuildTestStoreWithSchemaFromM54(const base::FilePath& file) {
-  sql::Database connection;
+  sql::Database connection(sql::test::kTestTag);
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("OfflinePages.db"))));
   ASSERT_TRUE(connection.is_open());
@@ -214,7 +216,7 @@ void BuildTestStoreWithSchemaFromM54(const base::FilePath& file) {
 }
 
 void BuildTestStoreWithSchemaFromM55(const base::FilePath& file) {
-  sql::Database connection;
+  sql::Database connection(sql::test::kTestTag);
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("OfflinePages.db"))));
   ASSERT_TRUE(connection.is_open());
@@ -262,7 +264,7 @@ void BuildTestStoreWithSchemaFromM55(const base::FilePath& file) {
 }
 
 void BuildTestStoreWithSchemaFromM56(const base::FilePath& file) {
-  sql::Database connection;
+  sql::Database connection(sql::test::kTestTag);
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("OfflinePages.db"))));
   ASSERT_TRUE(connection.is_open());
@@ -311,7 +313,7 @@ void BuildTestStoreWithSchemaFromM56(const base::FilePath& file) {
 }
 
 void BuildTestStoreWithSchemaFromM57(const base::FilePath& file) {
-  sql::Database connection;
+  sql::Database connection(sql::test::kTestTag);
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("OfflinePages.db"))));
   ASSERT_TRUE(connection.is_open());
@@ -357,7 +359,7 @@ void BuildTestStoreWithSchemaFromM57(const base::FilePath& file) {
 }
 
 void BuildTestStoreWithSchemaFromM61(const base::FilePath& file) {
-  sql::Database connection;
+  sql::Database connection(sql::test::kTestTag);
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("OfflinePages.db"))));
   ASSERT_TRUE(connection.is_open());
@@ -435,7 +437,7 @@ void InjectItemInM62Store(sql::Database* db, const OfflinePageItem& item) {
 }
 
 void BuildTestStoreWithSchemaFromM62(const base::FilePath& file) {
-  sql::Database connection;
+  sql::Database connection(sql::test::kTestTag);
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("OfflinePages.db"))));
   ASSERT_TRUE(connection.is_open());
@@ -478,7 +480,7 @@ void BuildTestStoreWithSchemaFromM62(const base::FilePath& file) {
 
 void BuildTestStoreWithSchemaVersion1(const base::FilePath& file) {
   BuildTestStoreWithSchemaFromM62(file);
-  sql::Database connection;
+  sql::Database connection(sql::test::kTestTag);
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("OfflinePages.db"))));
   ASSERT_TRUE(connection.is_open());
@@ -507,15 +509,14 @@ void BuildTestStoreWithSchemaVersion1(const base::FilePath& file) {
 
 void BuildTestStoreWithSchemaVersion2(const base::FilePath& file) {
   BuildTestStoreWithSchemaVersion1(file);
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   ASSERT_TRUE(db.Open(file.Append(FILE_PATH_LITERAL("OfflinePages.db"))));
   sql::MetaTable meta_table;
   ASSERT_TRUE(
       meta_table.Init(&db, 2, OfflinePageMetadataStore::kCompatibleVersion));
 }
 
-bool InsertVisualsVersion3(sql::Database* db,
-                           const OfflinePageVisuals& visuals) {
+bool InsertVisualsVersion3(sql::Database* db, OfflinePageVisuals visuals) {
   static const char kInsertVisualsSql[] =
       "INSERT INTO page_thumbnails"
       " (offline_id,expiration,thumbnail) VALUES (?,?,?)";
@@ -523,13 +524,13 @@ bool InsertVisualsVersion3(sql::Database* db,
       db->GetCachedStatement(SQL_FROM_HERE, kInsertVisualsSql));
   statement.BindInt64(0, visuals.offline_id);
   statement.BindInt64(1, store_utils::ToDatabaseTime(visuals.expiration));
-  statement.BindBlob(2, visuals.thumbnail);
+  statement.BindBlob(2, std::move(visuals.thumbnail));
   return statement.Run();
 }
 
 void BuildTestStoreWithSchemaVersion3(const base::FilePath& file) {
   BuildTestStoreWithSchemaVersion2(file);
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   ASSERT_TRUE(db.Open(file.Append(FILE_PATH_LITERAL("OfflinePages.db"))));
   sql::MetaTable meta_table;
   ASSERT_TRUE(
@@ -606,7 +607,7 @@ class OfflinePageMetadataStoreTest : public testing::Test {
         task_runner_current_default_handle_(task_runner_) {
     EXPECT_TRUE(temp_directory_.CreateUniqueTempDir());
   }
-  ~OfflinePageMetadataStoreTest() override {}
+  ~OfflinePageMetadataStoreTest() override = default;
 
  protected:
   void TearDown() override {
@@ -679,7 +680,7 @@ class OfflinePageMetadataStoreTest : public testing::Test {
   }
 
   void VerifyMetaVersions() {
-    sql::Database connection;
+    sql::Database connection(sql::test::kTestTag);
     ASSERT_TRUE(connection.Open(temp_directory_.GetPath().Append(
         FILE_PATH_LITERAL("OfflinePages.db"))));
     ASSERT_TRUE(connection.is_open());
@@ -806,10 +807,12 @@ class OfflinePageMetadataStoreTest : public testing::Test {
       statement.BindString(15, item.snippet);
       statement.BindString(16, item.attribution);
 
-      if (!statement.Run())
+      if (!statement.Run()) {
         return ItemActionStatus::STORE_ERROR;
-      if (db->GetLastChangeCount() == 0)
+      }
+      if (db->GetLastChangeCount() == 0) {
         return ItemActionStatus::ALREADY_EXISTS;
+      }
       return ItemActionStatus::SUCCESS;
     });
     return ExecuteSync<ItemActionStatus>(store, result_callback,
@@ -827,8 +830,8 @@ class OfflinePageMetadataStoreTest : public testing::Test {
         visuals.offline_id = statement.ColumnInt64(0);
         visuals.expiration =
             store_utils::FromDatabaseTime(statement.ColumnInt64(1));
-        statement.ColumnBlobAsString(2, &visuals.thumbnail);
-        statement.ColumnBlobAsString(3, &visuals.favicon);
+        visuals.thumbnail = statement.ColumnBlobAsString(2);
+        visuals.favicon = statement.ColumnBlobAsString(3);
         visuals_vector.push_back(std::move(visuals));
       }
 

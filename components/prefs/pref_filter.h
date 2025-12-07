@@ -12,6 +12,8 @@
 #include "base/values.h"
 #include "components/prefs/prefs_export.h"
 
+class PrefService;
+
 // Filters preferences as they are loaded from disk or updated at runtime.
 // Currently supported only by JsonPrefStore.
 class COMPONENTS_PREFS_EXPORT PrefFilter {
@@ -56,6 +58,9 @@ class COMPONENTS_PREFS_EXPORT PrefFilter {
 
   // Cleans preference data that may have been saved outside of the store.
   virtual void OnStoreDeletionFromDisk() = 0;
+
+  // Allows a PrefService to be injected into the filter class.
+  virtual void SetPrefService(PrefService* pref_service) = 0;
 };
 
 #endif  // COMPONENTS_PREFS_PREF_FILTER_H_

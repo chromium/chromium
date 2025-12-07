@@ -23,7 +23,6 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  LOG(INFO) << "Successfully tested " << protocols.size()
-            << " protocols (excluding zwp_linux_explicit_synchronization_v1)";
+  LOG(INFO) << "Successfully tested " << protocols.size();
   return 0;
 }

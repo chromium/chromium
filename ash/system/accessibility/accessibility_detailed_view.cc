@@ -29,6 +29,7 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "components/live_caption/caption_util.h"
 #include "components/live_caption/pref_names.h"
@@ -483,9 +484,6 @@ HoverHighlightView* AccessibilityDetailedView::AddDictationView(
 
 HoverHighlightView* AccessibilityDetailedView::AddFaceGazeView(
     views::View* container) {
-  if (!base::FeatureList::IsEnabled(::features::kAccessibilityFaceGaze)) {
-    return nullptr;
-  }
   auto* controller = Shell::Get()->accessibility_controller();
   bool checked = controller->face_gaze().enabled();
   return AddScrollListFeatureItem(

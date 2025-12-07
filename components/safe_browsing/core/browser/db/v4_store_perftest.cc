@@ -8,14 +8,17 @@
 #include <utility>
 #include <vector>
 
+#include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/checked_math.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
 
@@ -44,7 +47,7 @@ TEST_F(V4StorePerftest, StressTest) {
   const size_t kNumPrefixes = 20000;
 #endif
 
-  static_assert(kMaxHashPrefixLength == crypto::kSHA256Length,
+  static_assert(kMaxHashPrefixLength == crypto::hash::kSha256Size,
                 "SHA256 produces a valid FullHashStr");
   CHECK(base::IsValidForType<size_t>(
       base::CheckMul(kNumPrefixes, kMaxHashPrefixLength)));
@@ -54,16 +57,29 @@ TEST_F(V4StorePerftest, StressTest) {
   std::string full_hashes(kNumPrefixes * kMaxHashPrefixLength, 0);
   std::string_view full_hashes_piece = std::string_view(full_hashes);
   std::vector<std::string> prefixes;
+  prefixes.reserve(kNumPrefixes);
   for (size_t i = 0; i < kNumPrefixes; i++) {
     size_t index = i * kMaxHashPrefixLength;
-    crypto::SHA256HashString(base::StringPrintf("%zu", i), &full_hashes[index],
-                             kMaxHashPrefixLength);
+    auto result_buffer = base::as_writable_byte_span(full_hashes)
+                             .subspan(index, kMaxHashPrefixLength);
+    crypto::hash::Hash(crypto::hash::HashKind::kSha256,
+                       base::byte_span_from_ref(i), result_buffer);
     prefixes.push_back(full_hashes.substr(index, kMinHashPrefixLength));
   }
 
-  auto store = std::make_unique<TestV4Store>(
-      base::MakeRefCounted<base::TestSimpleTaskRunner>(), base::FilePath());
-  store->SetPrefixes(std::move(prefixes), kMinHashPrefixLength);
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath store_path =
+      temp_dir.GetPath().AppendASCII("V4StoreTest.store");
+
+  auto task_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+  auto store = std::make_unique<V4Store>(task_runner, store_path);
+  std::sort(prefixes.begin(), prefixes.end());
+  store->hash_prefix_map_->Clear();
+  store->hash_prefix_map_->Append(kMinHashPrefixLength, base::StrCat(prefixes));
+
+  V4StoreFileFormat file_format;
+  ASSERT_EQ(WRITE_SUCCESS, store->WriteToDisk(&file_format));
 
   size_t matches = 0;
   auto reporter = SetUpV4StoreReporter("stress_test");

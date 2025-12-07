@@ -4,7 +4,9 @@
 
 #include "components/policy/core/browser/signin/user_cloud_signin_restriction_policy_fetcher.h"
 
+#include <optional>
 #include <set>
+#include <string>
 
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
@@ -20,9 +22,9 @@
 #include "components/policy/proto/secure_connect.pb.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/core_account_id.h"
-#include "google_apis/gaia/gaia_constants.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
+#include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -73,12 +75,12 @@ void UserCloudSigninRestrictionPolicyFetcher::
     GetManagedAccountsSigninRestriction(
         signin::IdentityManager* identity_manager,
         const CoreAccountId& account_id,
-        base::OnceCallback<void(const ProfileSeparationPolicies&)> callback,
+        base::OnceCallback<void(ProfileSeparationPolicies)> callback,
         const std::string& response_for_testing) {
   if (!response_for_testing.empty()) {
     OnManagedAccountsSigninRestrictionResult(
         std::move(callback),
-        std::make_unique<std::string>(response_for_testing));
+        std::make_optional<std::string>(response_for_testing));
     return;
   }
   // base::Unretained is safe here because the callback is called in the
@@ -94,20 +96,28 @@ void UserCloudSigninRestrictionPolicyFetcher::FetchAccessToken(
     signin::IdentityManager* identity_manager,
     const CoreAccountId& account_id,
     base::OnceCallback<void(const std::string&)> callback) {
-  DCHECK(callback);
-  DCHECK(!account_id.empty());
-  DCHECK(identity_manager->HasAccountWithRefreshToken(account_id));
-  DCHECK(!access_token_fetcher_);
+  CHECK(callback);
+  CHECK(!account_id.empty());
+#if BUILDFLAG(IS_IOS)
+  CHECK(identity_manager->HasAccountWithRefreshTokenOnDevice(account_id));
+  signin::AccessTokenFetcher::Source source =
+      signin::AccessTokenFetcher::Source::kDevice;
+#else
+  CHECK(identity_manager->HasAccountWithRefreshToken(account_id));
+  signin::AccessTokenFetcher::Source source =
+      signin::AccessTokenFetcher::Source::kProfile;
+#endif  // BUILDFLAG(IS_IOS)
+  CHECK(!access_token_fetcher_);
 
   // base::Unretained is safe here because `access_token_fetcher_` is owned by
   // `this`.
   access_token_fetcher_ = identity_manager->CreateAccessTokenFetcherForAccount(
-      account_id, /*oauth_consumer_name=*/"cloud_policy", /*scopes=*/
-      {GaiaConstants::kSecureConnectOAuth2Scope},
+      account_id,
+      signin::OAuthConsumerId::kUserCloudSigninRestrictionPolicyFetcher,
       base::BindOnce(
           &UserCloudSigninRestrictionPolicyFetcher::OnFetchAccessTokenResult,
           base::Unretained(this), std::move(callback)),
-      signin::AccessTokenFetcher::Mode::kImmediate);
+      signin::AccessTokenFetcher::Mode::kImmediate, source);
 }
 
 void UserCloudSigninRestrictionPolicyFetcher::OnFetchAccessTokenResult(
@@ -120,7 +130,7 @@ void UserCloudSigninRestrictionPolicyFetcher::OnFetchAccessTokenResult(
 
 void UserCloudSigninRestrictionPolicyFetcher::
     GetManagedAccountsSigninRestrictionInternal(
-        base::OnceCallback<void(const ProfileSeparationPolicies&)> callback,
+        base::OnceCallback<void(ProfileSeparationPolicies)> callback,
         const std::string& access_token) {
   net::NetworkTrafficAnnotationTag annotation =
       net::DefineNetworkTrafficAnnotation(
@@ -165,8 +175,8 @@ void UserCloudSigninRestrictionPolicyFetcher::
 
 void UserCloudSigninRestrictionPolicyFetcher::
     OnManagedAccountsSigninRestrictionResult(
-        base::OnceCallback<void(const ProfileSeparationPolicies&)> callback,
-        std::unique_ptr<std::string> response_body) {
+        base::OnceCallback<void(ProfileSeparationPolicies)> callback,
+        std::optional<std::string> response_body) {
   std::string restriction;
   GoogleServiceAuthError error = GoogleServiceAuthError::AuthErrorNone();
   std::unique_ptr<network::SimpleURLLoader> url_loader = std::move(url_loader_);
@@ -204,7 +214,7 @@ void UserCloudSigninRestrictionPolicyFetcher::
   if (error.state() == GoogleServiceAuthError::NONE && response_body) {
     auto result = base::JSONReader::Read(*response_body, base::JSON_PARSE_RFC);
     if (!result) {
-      std::move(callback).Run(std::move(ProfileSeparationPolicies()));
+      std::move(callback).Run(ProfileSeparationPolicies());
       return;
     }
 
@@ -213,22 +223,24 @@ void UserCloudSigninRestrictionPolicyFetcher::
     auto profile_separation_data_migration_settings =
         result->GetDict().FindInt("profileSeparationDataMigrationSettings");
 
-    if (profile_separation_settings) {
-      std::move(callback).Run(std::move(ProfileSeparationPolicies(
-          *profile_separation_settings,
-          std::move(profile_separation_data_migration_settings))));
+    if (profile_separation_settings ||
+        profile_separation_data_migration_settings) {
+      std::move(callback).Run(ProfileSeparationPolicies(
+          profile_separation_settings.value_or(
+              ProfileSeparationSettings::SUGGESTED),
+          std::move(profile_separation_data_migration_settings)));
       return;
     }
     auto* managed_accounts_signin_restrictions =
         result->GetDict().FindString("policyValue");
     if (managed_accounts_signin_restrictions) {
-      std::move(callback).Run(std::move(
-          ProfileSeparationPolicies(*managed_accounts_signin_restrictions)));
+      std::move(callback).Run(
+          ProfileSeparationPolicies(*managed_accounts_signin_restrictions));
       return;
     }
   }
 
-  std::move(callback).Run(std::move(ProfileSeparationPolicies()));
+  std::move(callback).Run(ProfileSeparationPolicies());
 }
 
 GURL UserCloudSigninRestrictionPolicyFetcher::

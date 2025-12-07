@@ -5,15 +5,20 @@
 #include "ui/views/examples/colored_dialog_example.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/adapters.h"
 #include "base/memory/raw_ref.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -43,12 +48,15 @@ class ThemeTrackingCheckbox : public views::Checkbox {
   // views::Checkbox
   void OnThemeChanged() override {
     views::Checkbox::OnThemeChanged();
-    SetChecked(GetNativeTheme()->ShouldUseDarkColors());
+    SetChecked(GetNativeTheme()->preferred_color_scheme() ==
+               ui::NativeTheme::PreferredColorScheme::kDark);
   }
 
   void ButtonPressed() {
-    GetNativeTheme()->set_use_dark_colors(GetChecked());
-    GetWidget()->ThemeChanged();
+    GetNativeTheme()->set_preferred_color_scheme(
+        GetChecked() ? ui::NativeTheme::PreferredColorScheme::kDark
+                     : ui::NativeTheme::PreferredColorScheme::kLight);
+    GetNativeTheme()->NotifyOnNativeThemeUpdated();
   }
 };
 
@@ -90,7 +98,7 @@ ColoredDialog::ColoredDialog(AcceptCallback accept_callback) {
       },
       base::Unretained(this), std::move(accept_callback)));
 
-  SetModalType(ui::MODAL_TYPE_WINDOW);
+  SetModalType(ui::mojom::ModalType::kWindow);
   SetTitle(l10n_util::GetStringUTF16(IDS_COLORED_DIALOG_TITLE));
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -104,9 +112,9 @@ ColoredDialog::ColoredDialog(AcceptCallback accept_callback) {
       l10n_util::GetStringUTF16(IDS_COLORED_DIALOG_TEXTFIELD_AX_LABEL));
   textfield_->set_controller(this);
 
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(IDS_COLORED_DIALOG_SUBMIT_BUTTON));
-  SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
+  SetButtonEnabled(ui::mojom::DialogButton::kOk, false);
 }
 
 ColoredDialog::~ColoredDialog() {
@@ -121,7 +129,8 @@ bool ColoredDialog::ShouldShowCloseButton() const {
 
 void ColoredDialog::ContentsChanged(Textfield* sender,
                                     const std::u16string& new_contents) {
-  SetButtonEnabled(ui::DIALOG_BUTTON_OK, !textfield_->GetText().empty());
+  SetButtonEnabled(ui::mojom::DialogButton::kOk,
+                   !textfield_->GetText().empty());
   DialogModelChanged();
 }
 
@@ -159,15 +168,15 @@ void ColoredDialogChooser::ButtonPressed() {
   views::Widget* widget = DialogDelegate::CreateDialogWidget(
       new ColoredDialog(base::BindOnce(&ColoredDialogChooser::OnFeedbackSubmit,
                                        base::Unretained(this))),
-      nullptr, GetWidget()->GetNativeView());
+      gfx::NativeWindow(), GetWidget()->GetNativeView());
   widget->Show();
 }
 
-void ColoredDialogChooser::OnFeedbackSubmit(std::u16string text) {
+void ColoredDialogChooser::OnFeedbackSubmit(std::u16string_view text) {
   constexpr base::TimeDelta kConfirmationDuration = base::Seconds(3);
 
   confirmation_label_->SetText(l10n_util::GetStringFUTF16(
-      IDS_COLORED_DIALOG_CHOOSER_CONFIRM_LABEL, text));
+      IDS_COLORED_DIALOG_CHOOSER_CONFIRM_LABEL, std::u16string(text)));
   confirmation_label_->SetVisible(true);
 
   confirmation_timer_.Start(

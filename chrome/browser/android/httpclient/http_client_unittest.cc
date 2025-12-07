@@ -4,13 +4,13 @@
 
 #include "chrome/browser/android/httpclient/http_client.h"
 
+#include <algorithm>
 #include <iostream>
 #include <ostream>
 #include <string>
 #include <type_traits>
 
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -255,11 +255,9 @@ TEST_F(HttpClientTest, TestSendDifferentRequestMethod) {
       auto pendingRequest = GetLastPendingRequest()->request;
       EXPECT_EQ(pendingRequest.method, method);
 
-      std::string content_type_val, method_val;
-      pendingRequest.headers.GetHeader("TestMethod", &method_val);
-      pendingRequest.headers.GetHeader("Content-Type", &content_type_val);
-      EXPECT_EQ(content_type_val, content_type);
-      EXPECT_EQ(method_val, method);
+      EXPECT_EQ(pendingRequest.headers.GetHeaderView("Content-Type"),
+                content_type);
+      EXPECT_EQ(pendingRequest.headers.GetHeaderView("TestMethod"), method);
     }
 
     Respond(GURL(request.url), TestHttpResponse());

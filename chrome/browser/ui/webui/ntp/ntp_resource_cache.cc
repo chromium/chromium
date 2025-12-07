@@ -7,30 +7,29 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "base/version_info/channel.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
-#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/cookie_controls/cookie_controls_service.h"
-#include "chrome/browser/ui/cookie_controls/cookie_controls_service_factory.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/webui/ntp/cookie_controls_handler.h"
 #include "chrome/browser/ui/webui/webui_util_desktop.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -38,14 +37,9 @@
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
-#include "components/content_settings/core/common/cookie_controls_enforcement.h"
-#include "components/content_settings/core/common/pref_names.h"
-#include "components/policy/core/common/policy_service.h"
-#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/tracking_protection_settings.h"
-#include "components/reading_list/features/reading_list_switches.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/strings/grit/privacy_sandbox_strings.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -58,7 +52,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/native_theme.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -70,7 +64,7 @@ namespace {
 
 // The URL for the the Learn More page shown on incognito new tab.
 const char kLearnMoreIncognitoUrl[] =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     "https://support.google.com/chromebook/?p=incognito";
 #else
     "https://support.google.com/chrome/?p=incognito";
@@ -78,7 +72,7 @@ const char kLearnMoreIncognitoUrl[] =
 
 // The URL for the Learn More page shown on guest session new tab.
 const char kLearnMoreGuestSessionUrl[] =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     "https://support.google.com/chromebook/?p=chromebook_guest";
 #else
     "https://support.google.com/chrome/?p=ui_guest";
@@ -99,8 +93,11 @@ SkColor GetThemeColor(const ui::NativeTheme* native_theme,
   SkColor color = cp.GetColor(id);
   // If web contents are being inverted because the system is in high-contrast
   // mode, any system theme colors we use must be inverted too to cancel out.
-  return native_theme->GetPlatformHighContrastColorScheme() ==
-                 ui::NativeTheme::PlatformHighContrastColorScheme::kDark
+  // TODO(pkasting): I'm not sure this conditional is correct anymore.
+  return (native_theme->forced_colors() !=
+              ui::ColorProviderKey::ForcedColors::kNone &&
+          native_theme->preferred_color_scheme() ==
+              ui::NativeTheme::PreferredColorScheme::kDark)
              ? color_utils::InvertColor(color)
              : color;
 }
@@ -129,45 +126,33 @@ std::string GetNewTabBackgroundTilingCSS(
   return ThemeProperties::TilingToString(repeat_mode);
 }
 
-NTPResourceCache::NTPResourceCache(Profile* profile)
-    : profile_(profile), is_swipe_tracking_from_scroll_events_enabled_(false) {
+NTPResourceCache::NTPResourceCache(Profile* profile) : profile_(profile) {
   ThemeServiceFactory::GetForProfile(profile_)->AddObserver(this);
-
-  base::RepeatingClosure callback = base::BindRepeating(
-      &NTPResourceCache::OnPreferenceChanged, base::Unretained(this));
-
-  // Watch for pref changes that cause us to need to invalidate the HTML cache.
-  profile_pref_change_registrar_.Init(profile_->GetPrefs());
-  profile_pref_change_registrar_.Add(prefs::kCookieControlsMode, callback);
 
   // TODO(crbug.com/40677117): Remove the global accessor to NativeTheme.
   theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
-
-  policy_change_registrar_ = std::make_unique<policy::PolicyChangeRegistrar>(
-      profile->GetProfilePolicyConnector()->policy_service(),
-      policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));
-  policy_change_registrar_->Observe(
-      policy::key::kBlockThirdPartyCookies,
-      base::BindRepeating(&NTPResourceCache::OnPolicyChanged,
-                          base::Unretained(this)));
 }
 
 NTPResourceCache::~NTPResourceCache() = default;
 
 NTPResourceCache::WindowType NTPResourceCache::GetWindowType(Profile* profile) {
-  if (profile->IsGuestSession())
+  if (profile->IsGuestSession()) {
     return GUEST;
-  if (profile->IsIncognitoProfile())
+  }
+  if (profile->IsIncognitoProfile()) {
     return INCOGNITO;
-  if (profile->IsOffTheRecord())
+  }
+  if (profile->IsOffTheRecord()) {
     return NON_PRIMARY_OTR;
+  }
 
   return NORMAL;
 }
 
 base::RefCountedMemory* NTPResourceCache::GetNewTabGuestHTML() {
-  if (!new_tab_guest_html_)
+  if (!new_tab_guest_html_) {
     CreateNewTabGuestHTML();
+  }
 
   return new_tab_guest_html_.get();
 }
@@ -181,8 +166,9 @@ base::RefCountedMemory* NTPResourceCache::GetNewTabHTML(
       return GetNewTabGuestHTML();
 
     case INCOGNITO:
-      if (!new_tab_incognito_html_)
+      if (!new_tab_incognito_html_) {
         CreateNewTabIncognitoHTML(wc_getter);
+      }
       return new_tab_incognito_html_.get();
 
     case NON_PRIMARY_OTR:
@@ -193,8 +179,7 @@ base::RefCountedMemory* NTPResourceCache::GetNewTabHTML(
       return new_tab_non_primary_otr_html_.get();
 
     case NORMAL:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -204,19 +189,22 @@ base::RefCountedMemory* NTPResourceCache::GetNewTabCSS(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Guest mode doesn't have theme-related CSS.
-  if (win_type == GUEST)
+  if (win_type == GUEST) {
     return nullptr;
+  }
 
   // Returns the cached CSS if it exists.
   // The cache will be invalidated when the theme of |wc_getter| changes.
   if (win_type == INCOGNITO) {
-    if (!new_tab_incognito_css_)
+    if (!new_tab_incognito_css_) {
       CreateNewTabIncognitoCSS(wc_getter);
+    }
     return new_tab_incognito_css_.get();
   }
 
-  if (!new_tab_css_)
+  if (!new_tab_css_) {
     CreateNewTabCSS(wc_getter);
+  }
   return new_tab_css_.get();
 }
 
@@ -234,14 +222,6 @@ void NTPResourceCache::OnNativeThemeUpdated(ui::NativeTheme* updated_theme) {
   Invalidate();
 }
 
-void NTPResourceCache::OnPreferenceChanged() {
-  // A change occurred to one of the preferences we care about, so flush the
-  // cache.
-  new_tab_incognito_html_ = nullptr;
-  new_tab_css_ = nullptr;
-}
-
-// TODO(dbeam): why must Invalidate() and OnPreferenceChanged() both exist?
 void NTPResourceCache::Invalidate() {
   new_tab_incognito_html_ = nullptr;
   new_tab_incognito_css_ = nullptr;
@@ -252,25 +232,14 @@ void NTPResourceCache::Invalidate() {
 void NTPResourceCache::CreateNewTabIncognitoHTML(
     const content::WebContents::Getter& wc_getter) {
   ui::TemplateReplacements replacements;
+  base::Value::Dict localized_strings;
 
   // Ensure passing off-the-record profile; |profile_| is not an OTR profile.
   DCHECK(!profile_->IsOffTheRecord());
   DCHECK(profile_->HasAnyOffTheRecordProfile());
 
-  // Cookie controls service returns the same result for all off-the-record
-  // profiles, so it doesn't matter which of them we use.
-  Profile* incognito_profile = profile_->GetAllOffTheRecordProfiles()[0];
-  CookieControlsService* cookie_controls_service =
-      CookieControlsServiceFactory::GetForProfile(incognito_profile);
-
   replacements["incognitoTabDescription"] =
       l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_SUBTITLE_WITH_READING_LIST);
-
-  privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings =
-      TrackingProtectionSettingsFactory::GetForProfile(incognito_profile);
-  bool is_tracking_protection_3pcd_enabled =
-      tracking_protection_settings->IsTrackingProtection3pcdEnabled();
-
   replacements["incognitoTabHeading"] =
       l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_TITLE);
   replacements["incognitoTabWarning"] =
@@ -279,46 +248,27 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
       l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_NOT_SAVED);
   replacements["learnMore"] =
       l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_LEARN_MORE_LINK);
-  replacements["cookieControlsTitle"] =
-      l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE);
-  replacements["cookieControlsDescription"] =
-      l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE_SUBLABEL);
 
   replacements["learnMoreLink"] = kLearnMoreIncognitoUrl;
   replacements["learnMoreA11yLabel"] = l10n_util::GetStringUTF8(
       IDS_INCOGNITO_TAB_LEARN_MORE_ACCESSIBILITY_LABEL);
   replacements["title"] = l10n_util::GetStringUTF8(IDS_NEW_INCOGNITO_TAB_TITLE);
 
-  if (is_tracking_protection_3pcd_enabled) {
-    replacements["hideBlockCookiesToggle"] = "hidden";
-    replacements["hideTooltipIcon"] = "hidden";
+  replacements["cookieControlsTitle"] = l10n_util::GetStringUTF8(
+      IDS_INCOGNITO_NTP_BLOCK_THIRD_PARTY_COOKIES_HEADER);
+  localized_strings.Set(
+      "cookieControlsDescription",
+      l10n_util::GetStringFUTF16(
+          IDS_INCOGNITO_NTP_BLOCK_THIRD_PARTY_COOKIES_DESCRIPTION_DESKTOP,
+          chrome::kUserBypassHelpCenterURL,
+          l10n_util::GetStringUTF16(IDS_NEW_TAB_OPENS_HC_ARTICLE_IN_NEW_TAB)));
 
-    // Overwrite the cookies control title and description if 3pcd enabled.
-    replacements["cookieControlsTitle"] =
-        l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE);
-    replacements["cookieControlsDescription"] = l10n_util::GetStringFUTF8(
-        IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE_SUBLABEL,
-        chrome::kUserBypassHelpCenterURL);
-
-  } else {
-    replacements["hideBlockCookiesToggle"] = "";
-    replacements["hideTooltipIcon"] =
-        cookie_controls_service->ShouldEnforceCookieControls() ? "" : "hidden";
-  }
-
-  replacements["cookieControlsToggleChecked"] =
-      cookie_controls_service->GetToggleCheckedValue() ? "checked" : "";
-  replacements["cookieControlsToolTipIcon"] =
-      CookieControlsHandler::GetEnforcementIcon(
-          cookie_controls_service->GetCookieControlsEnforcement());
-  replacements["cookieControlsTooltipText"] = l10n_util::GetStringUTF8(
-      IDS_NEW_TAB_OTR_COOKIE_CONTROLS_CONTROLLED_TOOLTIP_TEXT);
-
+  Profile* incognito_profile = profile_->GetAllOffTheRecordProfiles()[0];
   const ui::ThemeProvider& tp =
       ThemeService::GetThemeProviderForProfile(incognito_profile);
 
   replacements["hasCustomBackground"] =
-      tp.HasCustomImage(IDR_THEME_NTP_BACKGROUND) ? "true" : "false";
+      base::ToString(tp.HasCustomImage(IDR_THEME_NTP_BACKGROUND));
 
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &replacements);
@@ -328,6 +278,7 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
           ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
               IDR_INCOGNITO_TAB_HTML));
   CHECK(*incognito_tab_html);
+  ui::TemplateReplacementsFromDictionaryValue(localized_strings, &replacements);
   new_tab_incognito_html_ = base::MakeRefCounted<base::RefCountedString>(
       ReplaceTemplateExpressions(*incognito_tab_html, replacements));
 }
@@ -341,7 +292,7 @@ void NTPResourceCache::CreateNewTabGuestHTML() {
   int guest_tab_heading_ids = IDS_NEW_TAB_GUEST_SESSION_HEADING;
   int guest_tab_link_ids = IDS_LEARN_MORE;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   guest_tab_idr = IDR_GUEST_SESSION_TAB_HTML;
 
   policy::BrowserPolicyConnectorAsh* connector =
@@ -365,7 +316,7 @@ void NTPResourceCache::CreateNewTabGuestHTML() {
           IDS_ASH_ENTERPRISE_DEVICE_MANAGED_BY, ui::GetChromeOSDeviceName(),
           base::UTF8ToUTF16(enterprise_domain_manager));
     } else {
-      NOTREACHED_IN_MIGRATION() << "Unknown management type";
+      NOTREACHED() << "Unknown management type";
     }
     localized_strings.Set("enterpriseInfoMessage", enterprise_info);
   } else {
@@ -504,9 +455,4 @@ void NTPResourceCache::CreateNewTabCSS(
   CHECK(*new_tab_theme_css);
   new_tab_css_ = base::MakeRefCounted<base::RefCountedString>(
       ReplaceTemplateExpressions(*new_tab_theme_css, substitutions));
-}
-
-void NTPResourceCache::OnPolicyChanged(const base::Value* previous,
-                                       const base::Value* current) {
-  new_tab_incognito_html_ = nullptr;
 }

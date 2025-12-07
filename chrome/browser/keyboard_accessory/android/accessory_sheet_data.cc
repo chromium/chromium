@@ -4,10 +4,15 @@
 
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_data.h"
 
+#include <algorithm>
+#include <ios>
+
 #include "base/base64.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
+#include "components/password_manager/core/browser/origin_credential_store.h"
 
 namespace autofill {
 
@@ -26,18 +31,25 @@ AccessorySheetField& AccessorySheetField::operator=(AccessorySheetField&&) =
     default;
 
 std::ostream& operator<<(std::ostream& os, const AccessorySheetField& field) {
-  os << "(display text: \"" << field.display_text() << "\", "
+  os << "(suggestion_type: " << base::to_underlying(field.suggestion_type())
+     << ", " << "display text: \"" << field.display_text() << "\", "
      << "text_to_fill: \"" << field.text_to_fill() << "\", "
-     << "a11y_description: \"" << field.a11y_description() << "\", "
-     << "id: \"" << field.id() << "\", "
-     << "is " << (field.selectable() ? "" : "not ") << "selectable, "
-     << "is " << (field.is_obfuscated() ? "" : "not ") << "obfuscated)";
+     << "a11y_description: \"" << field.a11y_description() << "\", " << "id: \""
+     << field.id() << "\", " << "icon_id: \"" << field.icon_id() << "\", "
+     << "is " << (field.selectable() ? "" : "not ") << "selectable, " << "is "
+     << (field.is_obfuscated() ? "" : "not ") << "obfuscated)";
   return os;
 }
 
 AccessorySheetField::Builder::Builder() = default;
 
 AccessorySheetField::Builder::~Builder() = default;
+
+AccessorySheetField::Builder&& AccessorySheetField::Builder::SetSuggestionType(
+    AccessorySuggestionType suggestion_type) && {
+  accessory_sheet_field_.set_suggestion_type(suggestion_type);
+  return std::move(*this);
+}
 
 AccessorySheetField::Builder&& AccessorySheetField::Builder::SetDisplayText(
     std::u16string display_text) && {
@@ -76,6 +88,12 @@ AccessorySheetField::Builder&& AccessorySheetField::Builder::SetSelectable(
   return std::move(*this);
 }
 
+AccessorySheetField::Builder&& AccessorySheetField::Builder::SetIconId(
+    int icon_id) && {
+  accessory_sheet_field_.set_icon_id(icon_id);
+  return std::move(*this);
+}
+
 AccessorySheetField&& AccessorySheetField::Builder::Build() && {
   if (accessory_sheet_field_.text_to_fill().empty()) {
     accessory_sheet_field_.set_text_to_fill(
@@ -94,17 +112,33 @@ UserInfo::UserInfo(std::string origin)
     : UserInfo(std::move(origin), IsExactMatch(true)) {}
 
 UserInfo::UserInfo(std::string origin, IsExactMatch is_exact_match)
-    : UserInfo(std::move(origin), is_exact_match, GURL()) {}
-
-UserInfo::UserInfo(std::string origin, GURL icon_url)
-    : UserInfo(std::move(origin), IsExactMatch(true), std::move(icon_url)) {}
+    : UserInfo(std::move(origin),
+               is_exact_match,
+               GURL(),
+               IsBackupCredential(false)) {}
 
 UserInfo::UserInfo(std::string origin,
                    IsExactMatch is_exact_match,
-                   GURL icon_url)
+                   IsBackupCredential is_backup_credential)
+    : UserInfo(std::move(origin),
+               is_exact_match,
+               GURL(),
+               is_backup_credential) {}
+
+UserInfo::UserInfo(std::string origin, GURL icon_url)
+    : UserInfo(std::move(origin),
+               IsExactMatch(true),
+               std::move(icon_url),
+               IsBackupCredential(false)) {}
+
+UserInfo::UserInfo(std::string origin,
+                   IsExactMatch is_exact_match,
+                   GURL icon_url,
+                   IsBackupCredential is_backup_credential)
     : origin_(std::move(origin)),
       is_exact_match_(is_exact_match),
-      icon_url_(std::move(icon_url)) {}
+      icon_url_(std::move(icon_url)),
+      is_backup_credential_(is_backup_credential) {}
 
 UserInfo::UserInfo(const UserInfo&) = default;
 
@@ -121,6 +155,8 @@ std::ostream& operator<<(std::ostream& os, const UserInfo& user_info) {
      << "is_exact_match: " << std::boolalpha << user_info.is_exact_match()
      << ", "
      << "icon_url: " << user_info.icon_url() << ","
+     << "is_backup_credential: " << std::boolalpha
+     << user_info.is_backup_credential() << ", "
      << "fields: [\n";
   for (const AccessorySheetField& field : user_info.fields()) {
     os << field << ", \n";
@@ -128,13 +164,57 @@ std::ostream& operator<<(std::ostream& os, const UserInfo& user_info) {
   return os << "]";
 }
 
-PlusAddressSection::PlusAddressSection(std::string origin,
-                                       std::u16string plus_address)
+UserInfoSection::UserInfoSection(std::u16string title)
+    : title_(std::move(title)) {}
+
+UserInfoSection::UserInfoSection(const UserInfoSection&) = default;
+
+UserInfoSection& UserInfoSection::operator=(const UserInfoSection&) = default;
+
+UserInfoSection::UserInfoSection(UserInfoSection&&) = default;
+
+UserInfoSection& UserInfoSection::operator=(UserInfoSection&&) = default;
+
+UserInfoSection::~UserInfoSection() = default;
+
+std::ostream& operator<<(std::ostream& os, const UserInfoSection& section) {
+  os << "with title: \"" << section.title() << "\" and user info list: [";
+  for (const UserInfo& user_info : section.user_info_list()) {
+    os << user_info << ", ";
+  }
+  os << "]";
+  return os;
+}
+
+PlusAddressInfo::PlusAddressInfo(std::string origin,
+                                 std::u16string plus_address)
     : origin_(std::move(origin)),
-      plus_address_(AccessorySheetField::Builder()
-                        .SetDisplayText(std::move(plus_address))
-                        .SetSelectable(true)
-                        .Build()) {}
+      plus_address_(
+          AccessorySheetField::Builder()
+              .SetSuggestionType(AccessorySuggestionType::kPlusAddress)
+              .SetDisplayText(std::move(plus_address))
+              .SetSelectable(true)
+              .Build()) {}
+
+PlusAddressInfo::PlusAddressInfo(const PlusAddressInfo&) = default;
+
+PlusAddressInfo& PlusAddressInfo::operator=(const PlusAddressInfo&) = default;
+
+PlusAddressInfo::PlusAddressInfo(PlusAddressInfo&&) = default;
+
+PlusAddressInfo& PlusAddressInfo::operator=(PlusAddressInfo&&) = default;
+
+PlusAddressInfo::~PlusAddressInfo() = default;
+
+std::ostream& operator<<(std::ostream& os,
+                         const PlusAddressInfo& plus_address) {
+  os << "origin: \"" << plus_address.origin() << "\", " << "plus_address: \""
+     << plus_address.plus_address().display_text() << "\"";
+  return os;
+}
+
+PlusAddressSection::PlusAddressSection(std::u16string title)
+    : title_(std::move(title)) {}
 
 PlusAddressSection::PlusAddressSection(const PlusAddressSection&) = default;
 
@@ -149,9 +229,14 @@ PlusAddressSection& PlusAddressSection::operator=(PlusAddressSection&&) =
 PlusAddressSection::~PlusAddressSection() = default;
 
 std::ostream& operator<<(std::ostream& os,
-                         const PlusAddressSection& plus_address) {
-  os << "origin: \"" << plus_address.origin() << "\", " << "plus_address: \""
-     << plus_address.plus_address().display_text() << "\"";
+                         const PlusAddressSection& plus_address_section) {
+  os << "title: \"" << plus_address_section.title()
+     << "\", plus address info list: [";
+  for (const PlusAddressInfo& info :
+       plus_address_section.plus_address_info_list()) {
+    os << info << ", ";
+  }
+  os << "]";
   return os;
 }
 
@@ -181,6 +266,7 @@ std::ostream& operator<<(std::ostream& os,
 PromoCodeInfo::PromoCodeInfo(std::u16string promo_code,
                              std::u16string details_text)
     : promo_code_(AccessorySheetField::Builder()
+                      .SetSuggestionType(AccessorySuggestionType::kPromoCode)
                       .SetDisplayText(std::move(promo_code))
                       .SetSelectable(true)
                       .Build()),
@@ -207,6 +293,7 @@ IbanInfo::IbanInfo(std::u16string value,
                    std::u16string text_to_fill,
                    std::string id)
     : value_(AccessorySheetField::Builder()
+                 .SetSuggestionType(AccessorySuggestionType::kIban)
                  .SetDisplayText(std::move(value))
                  .SetTextToFill(std::move(text_to_fill))
                  .SetId(std::move(id))
@@ -225,6 +312,34 @@ IbanInfo::~IbanInfo() = default;
 
 std::ostream& operator<<(std::ostream& os, const IbanInfo& iban_info) {
   os << "iban_info: \"" << iban_info.value() << "\"";
+  return os;
+}
+
+LoyaltyCardInfo::LoyaltyCardInfo(std::string merchant_name,
+                                 GURL program_logo_url,
+                                 std::u16string loyalty_card_number)
+    : merchant_name_(std::move(merchant_name)),
+      program_logo_url_(std::move(program_logo_url)),
+      value_(AccessorySheetField::Builder()
+                 .SetSuggestionType(AccessorySuggestionType::kLoyaltyCard)
+                 .SetDisplayText(loyalty_card_number)
+                 .SetSelectable(true)
+                 .Build()) {}
+
+LoyaltyCardInfo::LoyaltyCardInfo(const LoyaltyCardInfo&) = default;
+
+LoyaltyCardInfo& LoyaltyCardInfo::operator=(const LoyaltyCardInfo&) = default;
+
+LoyaltyCardInfo::LoyaltyCardInfo(LoyaltyCardInfo&&) = default;
+
+LoyaltyCardInfo& LoyaltyCardInfo::operator=(LoyaltyCardInfo&&) = default;
+
+LoyaltyCardInfo::~LoyaltyCardInfo() = default;
+
+std::ostream& operator<<(std::ostream& os,
+                         const LoyaltyCardInfo& loyalty_card) {
+  os << "merchant_name: \"" << loyalty_card.merchant_name()
+     << "\", loyalty_card_number=\"" << loyalty_card.value() << "\"";
   return os;
 }
 
@@ -289,15 +404,21 @@ std::ostream& operator<<(std::ostream& os, const AccessoryTabType& type) {
 }
 
 AccessorySheetData::AccessorySheetData(AccessoryTabType sheet_type,
-                                       std::u16string title)
-    : AccessorySheetData(sheet_type, std::move(title), std::u16string()) {}
+                                       std::u16string user_info_title,
+                                       std::u16string plus_address_title)
+    : AccessorySheetData(sheet_type,
+                         std::move(user_info_title),
+                         std::move(plus_address_title),
+                         std::u16string()) {}
 
 AccessorySheetData::AccessorySheetData(AccessoryTabType sheet_type,
-                                       std::u16string title,
+                                       std::u16string user_info_title,
+                                       std::u16string plus_address_title,
                                        std::u16string warning)
     : sheet_type_(sheet_type),
-      title_(std::move(title)),
-      warning_(std::move(warning)) {}
+      warning_(std::move(warning)),
+      plus_address_section_(std::move(plus_address_title)),
+      user_info_section_(std::move(user_info_title)) {}
 
 AccessorySheetData::AccessorySheetData(const AccessorySheetData&) = default;
 
@@ -312,7 +433,7 @@ AccessorySheetData& AccessorySheetData::operator=(AccessorySheetData&&) =
 AccessorySheetData::~AccessorySheetData() = default;
 
 std::ostream& operator<<(std::ostream& os, const AccessorySheetData& data) {
-  os << data.get_sheet_type() << " with title: \"" << data.title();
+  os << data.get_sheet_type();
   if (data.option_toggle().has_value()) {
     os << "\", with option toggle: \"" << data.option_toggle().value();
   } else {
@@ -323,11 +444,8 @@ std::ostream& operator<<(std::ostream& os, const AccessorySheetData& data) {
   for (const PasskeySection& passkey_section : data.passkey_section_list()) {
     os << passkey_section << ", ";
   }
-  os << "], and user info list: [";
-  for (const UserInfo& user_info : data.user_info_list()) {
-    os << user_info << ", ";
-  }
-  os << "], and promo code info list: [";
+  os << "], and user info section " << data.user_info_section();
+  os << ", and promo code info list: [";
   for (const PromoCodeInfo& promo_code_info : data.promo_code_info_list()) {
     os << promo_code_info << ", ";
   }
@@ -335,7 +453,13 @@ std::ostream& operator<<(std::ostream& os, const AccessorySheetData& data) {
   for (const IbanInfo& iban_info : data.iban_info_list()) {
     os << iban_info << ", ";
   }
-  os << "], footer commands: [";
+  os << "], and loyalty card info list: [";
+  for (const LoyaltyCardInfo& loyatly_card_info :
+       data.loyalty_card_info_list()) {
+    os << loyatly_card_info << ", ";
+  }
+  os << "], and plus address section: " << data.plus_address_section();
+  os << ", footer commands: [";
   for (const FooterCommand& footer_command : data.footer_commands()) {
     os << footer_command << ", ";
   }
@@ -343,8 +467,11 @@ std::ostream& operator<<(std::ostream& os, const AccessorySheetData& data) {
 }
 
 AccessorySheetData::Builder::Builder(AccessoryTabType type,
-                                     std::u16string title)
-    : accessory_sheet_data_(type, std::move(title)) {}
+                                     std::u16string user_info_title,
+                                     std::u16string plus_address_title)
+    : accessory_sheet_data_(type,
+                            std::move(user_info_title),
+                            std::move(plus_address_title)) {}
 
 AccessorySheetData::Builder::~Builder() = default;
 
@@ -380,49 +507,57 @@ AccessorySheetData::Builder& AccessorySheetData::Builder::SetOptionToggle(
 AccessorySheetData::Builder&& AccessorySheetData::Builder::AddUserInfo(
     std::string origin,
     UserInfo::IsExactMatch is_exact_match,
-    GURL icon_url) && {
+    GURL icon_url,
+    UserInfo::IsBackupCredential is_backup_credential) && {
   // Calls AddUserInfo()& since |this| is an lvalue.
-  return std::move(
-      AddUserInfo(std::move(origin), is_exact_match, std::move(icon_url)));
+  return std::move(AddUserInfo(std::move(origin), is_exact_match,
+                               std::move(icon_url), is_backup_credential));
 }
 
 AccessorySheetData::Builder& AccessorySheetData::Builder::AddUserInfo(
     std::string origin,
     UserInfo::IsExactMatch is_exact_match,
-    GURL icon_url) & {
+    GURL icon_url,
+    UserInfo::IsBackupCredential is_backup_credential) & {
   accessory_sheet_data_.add_user_info(
-      UserInfo(std::move(origin), is_exact_match, std::move(icon_url)));
+      UserInfo(std::move(origin), is_exact_match, std::move(icon_url),
+               UserInfo::IsBackupCredential(false)));
   return *this;
 }
 
 AccessorySheetData::Builder&& AccessorySheetData::Builder::AppendSimpleField(
+    AccessorySuggestionType suggestion_type,
     std::u16string text) && {
   // Calls AppendSimpleField(...)& since |this| is an lvalue.
-  return std::move(AppendSimpleField(std::move(text)));
+  return std::move(AppendSimpleField(suggestion_type, std::move(text)));
 }
 
 AccessorySheetData::Builder& AccessorySheetData::Builder::AppendSimpleField(
+    AccessorySuggestionType suggestion_type,
     std::u16string text) & {
   std::u16string display_text = text;
   std::u16string text_to_fill = text;
   std::u16string a11y_description = std::move(text);
-  return AppendField(std::move(display_text), std::move(text_to_fill),
-                     std::move(a11y_description), false, true);
+  return AppendField(suggestion_type, std::move(display_text),
+                     std::move(text_to_fill), std::move(a11y_description),
+                     false, true);
 }
 
 AccessorySheetData::Builder&& AccessorySheetData::Builder::AppendField(
+    AccessorySuggestionType suggestion_type,
     std::u16string display_text,
     std::u16string a11y_description,
     bool is_obfuscated,
     bool selectable) && {
   std::u16string text_to_fill = display_text;
   // Calls AppendField(...)& since |this| is an lvalue.
-  return std::move(AppendField(std::move(display_text), std::move(text_to_fill),
-                               std::move(a11y_description), is_obfuscated,
-                               selectable));
+  return std::move(AppendField(
+      suggestion_type, std::move(display_text), std::move(text_to_fill),
+      std::move(a11y_description), is_obfuscated, selectable));
 }
 
 AccessorySheetData::Builder& AccessorySheetData::Builder::AppendField(
+    AccessorySuggestionType suggestion_type,
     std::u16string display_text,
     std::u16string text_to_fill,
     std::u16string a11y_description,
@@ -430,6 +565,7 @@ AccessorySheetData::Builder& AccessorySheetData::Builder::AppendField(
     bool selectable) & {
   accessory_sheet_data_.mutable_user_info_list().back().add_field(
       AccessorySheetField::Builder()
+          .SetSuggestionType(suggestion_type)
           .SetDisplayText(std::move(display_text))
           .SetTextToFill(std::move(text_to_fill))
           .SetA11yDescription(std::move(a11y_description))
@@ -440,6 +576,7 @@ AccessorySheetData::Builder& AccessorySheetData::Builder::AppendField(
 }
 
 AccessorySheetData::Builder&& AccessorySheetData::Builder::AppendField(
+    AccessorySuggestionType suggestion_type,
     std::u16string display_text,
     std::u16string text_to_fill,
     std::u16string a11y_description,
@@ -447,12 +584,13 @@ AccessorySheetData::Builder&& AccessorySheetData::Builder::AppendField(
     bool is_obfuscated,
     bool selectable) && {
   // Calls AppendField(...)& since |this| is an lvalue.
-  return std::move(AppendField(std::move(display_text), std::move(text_to_fill),
-                               std::move(a11y_description), std::move(id),
-                               is_obfuscated, selectable));
+  return std::move(AppendField(
+      suggestion_type, std::move(display_text), std::move(text_to_fill),
+      std::move(a11y_description), std::move(id), is_obfuscated, selectable));
 }
 
 AccessorySheetData::Builder& AccessorySheetData::Builder::AppendField(
+    AccessorySuggestionType suggestion_type,
     std::u16string display_text,
     std::u16string text_to_fill,
     std::u16string a11y_description,
@@ -461,6 +599,7 @@ AccessorySheetData::Builder& AccessorySheetData::Builder::AppendField(
     bool selectable) & {
   accessory_sheet_data_.mutable_user_info_list().back().add_field(
       AccessorySheetField::Builder()
+          .SetSuggestionType(suggestion_type)
           .SetDisplayText(std::move(display_text))
           .SetTextToFill(std::move(text_to_fill))
           .SetA11yDescription(std::move(a11y_description))
@@ -471,20 +610,42 @@ AccessorySheetData::Builder& AccessorySheetData::Builder::AppendField(
   return *this;
 }
 
-AccessorySheetData::Builder&&
-AccessorySheetData::Builder::AddPlusAddressSection(
-    std::string origin,
-    std::u16string plus_address) && {
-  // Calls PlusAddressSection(...)& since |this| is an lvalue.
-  return std::move(
-      AddPlusAddressSection(std::move(origin), std::move(plus_address)));
+AccessorySheetData::Builder&& AccessorySheetData::Builder::AppendField(
+    AccessorySuggestionType suggestion_type,
+    std::u16string display_text,
+    std::u16string text_to_fill,
+    std::u16string a11y_description,
+    std::string id,
+    int icon_id,
+    bool is_obfuscated,
+    bool selectable) && {
+  accessory_sheet_data_.mutable_user_info_list().back().add_field(
+      AccessorySheetField::Builder()
+          .SetSuggestionType(suggestion_type)
+          .SetDisplayText(std::move(display_text))
+          .SetTextToFill(std::move(text_to_fill))
+          .SetA11yDescription(std::move(a11y_description))
+          .SetId(std::move(id))
+          .SetIconId(icon_id)
+          .SetIsObfuscated(is_obfuscated)
+          .SetSelectable(selectable)
+          .Build());
+  return std::move(*this);
 }
 
-AccessorySheetData::Builder& AccessorySheetData::Builder::AddPlusAddressSection(
+AccessorySheetData::Builder&& AccessorySheetData::Builder::AddPlusAddressInfo(
+    std::string origin,
+    std::u16string plus_address) && {
+  // Calls AddPlusAddressInfo(...)& since |this| is an lvalue.
+  return std::move(
+      AddPlusAddressInfo(std::move(origin), std::move(plus_address)));
+}
+
+AccessorySheetData::Builder& AccessorySheetData::Builder::AddPlusAddressInfo(
     std::string origin,
     std::u16string plus_address) & {
-  accessory_sheet_data_.add_plus_address_section(
-      (PlusAddressSection(std::move(origin), std::move(plus_address))));
+  accessory_sheet_data_.add_plus_address_info(
+      (PlusAddressInfo(std::move(origin), std::move(plus_address))));
   return *this;
 }
 
@@ -535,6 +696,26 @@ AccessorySheetData::Builder& AccessorySheetData::Builder::AddIbanInfo(
     std::string id) & {
   accessory_sheet_data_.add_iban_info(
       (IbanInfo(std::move(value), std::move(text_to_fill), std::move(id))));
+  return *this;
+}
+
+AccessorySheetData::Builder&& AccessorySheetData::Builder::AddLoyaltyCardInfo(
+    std::string merchant_name,
+    GURL program_logo_url,
+    std::u16string loyalty_card_number) && {
+  // Calls AddLoyaltyCardInfo(...)& since `this` is an lvalue.
+  return std::move(AddLoyaltyCardInfo(std::move(merchant_name),
+                                      std::move(program_logo_url),
+                                      std::move(loyalty_card_number)));
+}
+
+AccessorySheetData::Builder& AccessorySheetData::Builder::AddLoyaltyCardInfo(
+    std::string merchant_name,
+    GURL program_logo_url,
+    std::u16string loyalty_card_number) & {
+  accessory_sheet_data_.add_loyalty_card_info(
+      (LoyaltyCardInfo(std::move(merchant_name), std::move(program_logo_url),
+                       std::move(loyalty_card_number))));
   return *this;
 }
 

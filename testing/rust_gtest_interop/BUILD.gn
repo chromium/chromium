@@ -6,6 +6,8 @@ import("//build/rust/rust_macro.gni")
 import("//build/rust/rust_static_library.gni")
 import("//testing/test.gni")
 
+# //testing is used outside of the chromium tree in other projects, and they
+# may not support the use of Rust and set `enable_rust = false`.
 if (enable_rust) {
   group("rust_gtest_interop") {
     testonly = true

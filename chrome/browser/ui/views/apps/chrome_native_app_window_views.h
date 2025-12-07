@@ -9,6 +9,7 @@
 
 #include "chrome/browser/extensions/chrome_app_icon_delegate.h"
 #include "extensions/components/native_app_window/native_app_window_views.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 
 class ExtensionKeybindingRegistryViews;
 
@@ -36,21 +37,19 @@ class ChromeNativeAppWindowViews
       views::Widget* widget);
   virtual void InitializeDefaultWindow(
       const extensions::AppWindow::CreateParams& create_params);
-  virtual std::unique_ptr<views::NonClientFrameView>
-  CreateStandardDesktopAppFrame();
-  virtual std::unique_ptr<views::NonClientFrameView>
-  CreateNonStandardAppFrame() = 0;
+  virtual std::unique_ptr<views::FrameView> CreateStandardDesktopAppFrame();
+  virtual std::unique_ptr<views::FrameView> CreateNonStandardAppFrame() = 0;
   virtual bool ShouldRemoveStandardFrame();
 
   // ui::BaseWindow implementation.
   gfx::Rect GetRestoredBounds() const override;
-  ui::WindowShowState GetRestoredState() const override;
+  ui::mojom::WindowShowState GetRestoredState() const override;
   ui::ZOrderLevel GetZOrderLevel() const override;
 
   // WidgetDelegate implementation.
   ui::ImageModel GetWindowAppIcon() override;
   ui::ImageModel GetWindowIcon() override;
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateFrameView(
       views::Widget* widget) override;
   bool WidgetHasHitTestMask() const override;
   void GetWidgetHitTestMask(SkPath* mask) const override;

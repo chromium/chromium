@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_command_line.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
@@ -27,13 +28,16 @@ class EnrollmentTestHelper {
   EnrollmentTestHelper(const EnrollmentTestHelper&) = delete;
   EnrollmentTestHelper& operator=(const EnrollmentTestHelper&) = delete;
 
-  // Configures ash::switches::IsRevenBranding() checks to pass.
+  // Pretends that the device is not a Chrome ("nonchrome") device.
+  void SetUpNonchromeDevice();
+  // Pretends that the device is a ChromeOS Flex device.
   void SetUpFlexDevice();
   // Configures OobeConfiguration with an enrollment token for testing.
   void SetUpEnrollmentTokenConfig(
       const char config[] = kEnrollmentTokenOobeConfig);
-  // Forces FRE (Forced Re-Enrollment) to be enabled on Flex via command line
-  // switch.
+  // Ensures that FRE (Forced Re-Enrollment) is disabled on Flex.
+  void DisableFREOnFlex();
+  // Ensures that FRE (Forced Re-Enrollment) is enabled on Flex.
   void EnableFREOnFlex();
   // Obtains the enrollment token set in OOBE configuration, returning nullptr
   // if not present.

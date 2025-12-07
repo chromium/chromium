@@ -307,13 +307,11 @@ ForegroundEidGenerator::GetEidPeriodTimestamps(
     }
   }
 
-  PA_LOG(ERROR) << "Could not find valid EID period for seed. "
-                << "seed.start_timestamp_ms: "
-                << current_seed->start_time_millis()
-                << ", seed.end_timestamp_ms: "
-                << current_seed->end_time_millis();
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED() << "Could not find valid EID period for seed. "
+               << "seed.start_timestamp_ms: "
+               << current_seed->start_time_millis()
+               << ", seed.end_timestamp_ms: "
+               << current_seed->end_time_millis();
 }
 
 std::unique_ptr<cryptauth::BeaconSeed>

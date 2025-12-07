@@ -34,32 +34,32 @@ class PrivacySandboxPromptHelper
 
  private:
   friend class content::WebContentsUserData<PrivacySandboxPromptHelper>;
-  friend class PrivacySandboxPromptHelperTest;
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPromptHelperTestWithParam,
+  friend class PrivacySandboxPromptHelperBrowserTest;
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPromptHelperWithParamBrowserTest,
                            PromptOpensOnNtp);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPromptHelperTestWithParam,
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPromptHelperWithParamBrowserTest,
                            PromptOpensAboutBlank);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPromptHelperTestWithParam,
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPromptHelperWithParamBrowserTest,
                            PromptOpensOnSettings);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPromptHelperTestWithParam,
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPromptHelperWithParamBrowserTest,
                            PromptOpensOnHistory);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPromptHelperTestWithParam,
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPromptHelperWithParamBrowserTest,
                            NoPromptNonDefaultNtp);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPromptHelperTestWithParam,
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPromptHelperWithParamBrowserTest,
                            NoPromptSync);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPromptHelperTestWithParam,
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPromptHelperWithParamBrowserTest,
                            NoPromptProfileSetup);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPromptHelperTestWithParam,
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPromptHelperWithParamBrowserTest,
                            UnsuitableUrl);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPromptHelperTestWithParam,
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPromptHelperWithParamBrowserTest,
                            SinglePromptPerBrowser);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPromptHelperTestWithParam,
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPromptHelperWithParamBrowserTest,
                            MultipleBrowserWindows);
   FRIEND_TEST_ALL_PREFIXES(
-      PrivacySandboxPromptHelperTestWithSearchEngineChoiceEnabled,
+      PrivacySandboxPromptHelperWithSearchEngineChoiceEnabledBrowserTest,
       NoPromptWhenSearchEngineChoiceDialogIsDisplayed);
   FRIEND_TEST_ALL_PREFIXES(
-      PrivacySandboxPromptNonNormalBrowserFeatureDisabledTest,
+      PrivacySandboxPromptNonNormalBrowserFeatureDisabledBrowserTest,
       NonNormalBrowserShowsPrompt);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPromptNonNormalBrowserTest,
                            NoPromptInSmallBrowser);

@@ -6,20 +6,104 @@
 
 #import <UserNotifications/UserNotifications.h>
 
+#import <string_view>
+
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/metrics/model/constants.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
-IOSPushNotificationsMetricsProvider::IOSPushNotificationsMetricsProvider(
-    signin::IdentityManager* identity_manager)
-    : identity_manager_(identity_manager) {
-  CHECK(identity_manager_);
+namespace {
+
+// Stores PushNotificationClientId and the associated histogram name for
+// use by the IOSPushNotificationsMetricsProvider.
+struct PushNotificationReportInfo {
+  const char* const histogram_name;
+  const PushNotificationClientId client_id;
+  const bool requires_signed_in_identity;
+};
+
+// List of PushNotificationClientId reported by this metrics provider.
+constexpr PushNotificationReportInfo kPushNotificationReportInfos[] = {
+    {
+        .histogram_name = kContentNotifClientStatusByProviderHistogram,
+        .client_id = PushNotificationClientId::kContent,
+        .requires_signed_in_identity = true,
+    },
+    {
+        .histogram_name = kSportsNotifClientStatusByProviderHistogram,
+        .client_id = PushNotificationClientId::kSports,
+        .requires_signed_in_identity = true,
+    },
+    {
+        .histogram_name = kTipsNotifClientStatusByProviderHistogram,
+        .client_id = PushNotificationClientId::kTips,
+        .requires_signed_in_identity = false,
+    },
+    {
+        .histogram_name = kSafetyCheckNotifClientStatusByProviderHistogram,
+        .client_id = PushNotificationClientId::kSafetyCheck,
+        .requires_signed_in_identity = false,
+    },
+    {
+        .histogram_name = kSendTabNotifClientStatusByProviderHistogram,
+        .client_id = PushNotificationClientId::kSendTab,
+        .requires_signed_in_identity = true,
+    },
+    {
+        .histogram_name = kPriceTrackingClientStatusByProviderHistogram,
+        .client_id = PushNotificationClientId::kCommerce,
+        .requires_signed_in_identity = true,
+    },
+    {
+        .histogram_name = kRemindersClientStatusByProviderHistogram,
+        .client_id = PushNotificationClientId::kReminders,
+        .requires_signed_in_identity = false,
+    },
+};
+
+// Records for histogram for `info` for an user signed-in with `gaia_id`.
+void RecordHistogramForPushNotificationReportInfo(
+    const PushNotificationReportInfo& info,
+    const GaiaId& gaia_id) {
+  if (info.requires_signed_in_identity && gaia_id.empty()) {
+    return;
+  }
+
+  base::UmaHistogramBoolean(info.histogram_name,
+                            push_notification_settings::
+                                GetMobileNotificationPermissionStatusForClient(
+                                    info.client_id, gaia_id));
 }
 
-IOSPushNotificationsMetricsProvider::~IOSPushNotificationsMetricsProvider() {}
+// Returns the signed-in `gaia_id` or an empty value if not signed-in.
+GaiaId GetSignedInGaiaId(ProfileIOS* profile) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return identity_manager
+        ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+        .gaia;
+  }
+
+  return GaiaId();
+}
+
+}  // namespace
+
+IOSPushNotificationsMetricsProvider::IOSPushNotificationsMetricsProvider() =
+    default;
+
+IOSPushNotificationsMetricsProvider::~IOSPushNotificationsMetricsProvider() =
+    default;
 
 void IOSPushNotificationsMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
@@ -29,55 +113,13 @@ void IOSPushNotificationsMetricsProvider::ProvideCurrentSessionData(
     base::UmaHistogramExactLinear(kNotifAuthorizationStatusByProviderHistogram,
                                   settings.authorizationStatus, 5);
   }];
-  // Report the enabled client IDs.
-  IOSPushNotificationsMetricsProvider::ReportEnabledClientID(
-      kContentNotifClientStatusByProviderHistogram,
-      PushNotificationClientId::kContent);
-  IOSPushNotificationsMetricsProvider::ReportEnabledClientID(
-      kSportsNotifClientStatusByProviderHistogram,
-      PushNotificationClientId::kSports);
-  IOSPushNotificationsMetricsProvider::ReportEnabledClientID(
-      kTipsNotifClientStatusByProviderHistogram,
-      PushNotificationClientId::kTips);
-  IOSPushNotificationsMetricsProvider::ReportEnabledClientID(
-      kSafetyCheckNotifClientStatusByProviderHistogram,
-      PushNotificationClientId::kSafetyCheck);
-}
 
-void IOSPushNotificationsMetricsProvider::ReportEnabledClientID(
-    std::string histogram_name,
-    PushNotificationClientId client_id) {
-  switch (client_id) {
-    case PushNotificationClientId::kCommerce:
-    case PushNotificationClientId::kContent:
-    case PushNotificationClientId::kSports:
-      if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-        base::UmaHistogramBoolean(
-            histogram_name,
-            push_notification_settings::
-                GetMobileNotificationPermissionStatusForClient(
-                    client_id,
-                    identity_manager_
-                        ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-                        .gaia));
-      } else if (identity_manager_->HasPrimaryAccount(
-                     signin::ConsentLevel::kSignin)) {
-        base::UmaHistogramBoolean(
-            histogram_name,
-            push_notification_settings::
-                GetMobileNotificationPermissionStatusForClient(
-                    client_id,
-                    identity_manager_
-                        ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-                        .gaia));
-      }
-      break;
-    case PushNotificationClientId::kTips:
-    case PushNotificationClientId::kSafetyCheck:
-      base::UmaHistogramBoolean(
-          histogram_name, push_notification_settings::
-                              GetMobileNotificationPermissionStatusForClient(
-                                  client_id, ""));
-      break;
+  // Report the enabled client IDs for each loaded profile.
+  for (ProfileIOS* profile :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
+    const GaiaId gaia_id = GetSignedInGaiaId(profile);
+    for (const auto& info : kPushNotificationReportInfos) {
+      RecordHistogramForPushNotificationReportInfo(info, gaia_id);
+    }
   }
 }

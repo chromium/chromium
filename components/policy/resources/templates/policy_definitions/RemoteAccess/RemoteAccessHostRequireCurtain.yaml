@@ -3,6 +3,7 @@ desc: |-
   Setting the policy to Enabled turns off remote access hosts' physical input and output devices during a remote connection.
 
         Setting the policy to Disabled or leaving it unset lets both local and remote users interact with the host while it's shared.
+default: false
 example_value: false
 features:
   dynamic_refresh: true

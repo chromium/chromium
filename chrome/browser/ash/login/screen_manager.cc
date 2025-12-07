@@ -36,7 +36,7 @@ OobeScreenId ScreenManager::GetScreenByName(const std::string& screen_name) {
   return iter->first;
 }
 
-bool ScreenManager::HasScreen(OobeScreenId screen) {
+bool ScreenManager::HasScreen(OobeScreenId screen) const {
   return screens_.count(screen) > 0;
 }
 

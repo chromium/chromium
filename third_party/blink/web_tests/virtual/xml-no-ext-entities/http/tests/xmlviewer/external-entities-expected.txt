@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] External resolution of XML entities, depending on flag.
+  assert_equals: While external entities are still allowed, the test element should contain text, otherwise this should fail. expected "SUCCESS, RESOLVED!" but got ""
+Harness: the test ran to completion.
+

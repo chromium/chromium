@@ -9,8 +9,8 @@
 
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
-#include "build/chromeos_buildflags.h"
-#include "components/enterprise/data_controls/core/browser/dlp_policy_event.pb.h"
+#include "build/build_config.h"
+#include "components/enterprise/common/proto/synced/dlp_policy_event.pb.h"
 #include "components/enterprise/data_controls/core/browser/rule.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/util/status.h"

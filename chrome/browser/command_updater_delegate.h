@@ -18,7 +18,7 @@ class CommandUpdaterDelegate {
       WindowOpenDisposition disposition) = 0;
 
  protected:
-  virtual ~CommandUpdaterDelegate() {}
+  virtual ~CommandUpdaterDelegate() = default;
 };
 
 #endif  // CHROME_BROWSER_COMMAND_UPDATER_DELEGATE_H_

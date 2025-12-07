@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/components/phonehub/fake_onboarding_ui_tracker.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 FakeOnboardingUiTracker::FakeOnboardingUiTracker() = default;
 
@@ -34,5 +33,4 @@ void FakeOnboardingUiTracker::HandleGetStarted(
   is_icon_clicked_when_nudge_visible_ = is_icon_clicked_when_nudge_visible;
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

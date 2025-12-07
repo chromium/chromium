@@ -56,6 +56,8 @@ function updatePageWithProperties() {
             'following-feed-order-reverse-chron')
             .checked = true;
         break;
+      default:
+        break;
     }
     getRequiredElement<HTMLInputElement>('following-feed-order-grouped')
         .disabled = false;

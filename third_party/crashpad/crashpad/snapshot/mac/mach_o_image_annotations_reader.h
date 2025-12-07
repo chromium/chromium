@@ -40,10 +40,11 @@ class ProcessReaderMac;
 //!    used by Apple code. The `message` and `message2` fields can be recovered
 //!    from any module with a compatible data section, and are included in the
 //!    annotations returned by Vector().
-//!  - `dyld`’s `error_string`. This format is used exclusively by dyld,
-//!    typically for fatal errors. This string can be recovered from any
+//!  - dyld’s `error_string`. This format was previously used exclusively by
+//!    dyld, typically for fatal errors. This string can be recovered from any
 //!    `MH_DYLINKER`-type module with this symbol, and is included in the
-//!    annotations returned by Vector().
+//!    annotations returned by Vector(). Newer versions of dyld use
+//!    `crashreporter_annotations_t`.
 class MachOImageAnnotationsReader {
  public:
   //! \brief Constructs an object.
@@ -76,7 +77,7 @@ class MachOImageAnnotationsReader {
   std::vector<AnnotationSnapshot> AnnotationsList() const;
 
  private:
-  // Reades crashreporter_annotations_t::message and
+  // Reads crashreporter_annotations_t::message and
   // crashreporter_annotations_t::message2 on behalf of Vector().
   void ReadCrashReporterClientAnnotations(
       std::vector<std::string>* vector_annotations) const;

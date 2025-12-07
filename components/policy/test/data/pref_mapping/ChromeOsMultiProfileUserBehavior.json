@@ -1,48 +1,16 @@
 [
   {
     "os": [
-      "chromeos_ash"
+      "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "default_for_enterprise_users=primary-only",
-        "policies": {},
-        "prefs": {
-          "settings.multiprofile_user_behavior": {
-            "value": "primary-only"
-          }
-        }
-      },
-      {
-        "policies": {
-          "ChromeOsMultiProfileUserBehavior": "unrestricted"
-        },
-        "prefs": {
-          "settings.multiprofile_user_behavior": {
-            "value": "unrestricted"
-          }
-        }
-      },
-      {
-        "policies": {
-          "ChromeOsMultiProfileUserBehavior": "not-allowed"
-        },
-        "prefs": {
-          "settings.multiprofile_user_behavior": {
-            "value": "not-allowed"
-          }
-        }
-      },
-      {
-        "policies": {
-          "ChromeOsMultiProfileUserBehavior": "primary-only"
-        },
-        "prefs": {
-          "settings.multiprofile_user_behavior": {
-            "value": "primary-only"
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "settings.multiprofile_user_behavior",
+      "default_for_enterprise_users": "primary-only",
+      "values_to_test": [
+        "unrestricted",
+        "primary-only",
+        "not-allowed"
+      ]
+    }
   }
 ]

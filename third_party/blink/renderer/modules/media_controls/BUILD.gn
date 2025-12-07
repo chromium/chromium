@@ -77,6 +77,10 @@ blink_modules_sources("media_controls") {
     "elements/media_control_timeline_element.h",
     "elements/media_control_toggle_closed_captions_button_element.cc",
     "elements/media_control_toggle_closed_captions_button_element.h",
+    "elements/media_control_track_selector_list_element.cc",
+    "elements/media_control_track_selector_list_element.h",
+    "elements/media_control_track_selector_menu_button_element.cc",
+    "elements/media_control_track_selector_menu_button_element.h",
     "elements/media_control_volume_control_container_element.cc",
     "elements/media_control_volume_control_container_element.h",
     "elements/media_control_volume_slider_element.cc",
@@ -107,6 +111,7 @@ blink_modules_sources("media_controls") {
     "//third_party/blink/renderer/modules/picture_in_picture",
     "//third_party/blink/renderer/modules/remoteplayback",
     "//third_party/blink/renderer/modules/screen_orientation",
+    "//ui/strings",
   ]
 }
 

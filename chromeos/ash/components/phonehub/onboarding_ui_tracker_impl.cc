@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/phonehub/onboarding_ui_tracker_impl.h"
 
+#include "base/functional/callback_helpers.h"
 #include "chromeos/ash/components/phonehub/feature_status.h"
 #include "chromeos/ash/components/phonehub/pref_names.h"
 #include "chromeos/ash/components/phonehub/util/histogram_util.h"
@@ -11,8 +12,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 void OnboardingUiTrackerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kHideOnboardingUi, false);
@@ -115,5 +115,4 @@ void OnboardingUiTrackerImpl::UpdateShouldShowOnboardingUi() {
   NotifyShouldShowOnboardingUiChanged();
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

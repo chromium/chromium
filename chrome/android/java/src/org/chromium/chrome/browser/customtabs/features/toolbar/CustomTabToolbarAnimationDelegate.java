@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs.features.toolbar;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
@@ -15,9 +17,11 @@ import android.widget.TextView;
 import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
-import org.chromium.components.omnibox.SecurityButtonAnimationDelegate;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.interpolators.Interpolators;
 
@@ -38,24 +42,31 @@ import org.chromium.ui.interpolators.Interpolators;
  * </p>
  * See {@link SecurityButtonAnimationDelegate} and {@link BrandingSecurityButtonAnimationDelegate}.
  */
+@NullMarked
 class CustomTabToolbarAnimationDelegate {
     private final SecurityButtonAnimationDelegate mSecurityButtonAnimationDelegate;
     private final BrandingSecurityButtonAnimationDelegate mBrandingAnimationDelegate;
     private final Runnable mAnimationEndRunnable;
+    private final View mSecurityButtonOffsetTarget;
 
-    private TextView mUrlBar;
-    private TextView mTitleBar;
+    private @MonotonicNonNull TextView mUrlBar;
+    private @MonotonicNonNull TextView mTitleBar;
     // A flag controlling whether the animation has run before.
     private boolean mShouldRunTitleAnimation;
     private boolean mUseRotationTransition;
+    private @DrawableRes int mPendingSecurityIconRes;
     private @DrawableRes int mSecurityIconRes;
     private boolean mIsInAnimation;
+    private int mSecurityButtonWidth;
 
     private final AnimatorListenerAdapter mTitleBarAnimatorListenerAdapter =
             new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     mIsInAnimation = false;
+                    if (mPendingSecurityIconRes != 0) {
+                        updateSecurityButton(mPendingSecurityIconRes);
+                    }
                     mAnimationEndRunnable.run();
                 }
             };
@@ -64,6 +75,7 @@ class CustomTabToolbarAnimationDelegate {
             new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
+                    assumeNonNull(mTitleBar);
                     mTitleBar
                             .animate()
                             .alpha(1f)
@@ -80,9 +92,10 @@ class CustomTabToolbarAnimationDelegate {
             final View securityButtonOffsetTarget,
             Runnable animationEndRunnable,
             @DimenRes int securityStatusIconSize) {
-        int securityButtonWidth =
+        mSecurityButtonWidth =
                 securityButton.getResources().getDimensionPixelSize(securityStatusIconSize);
-        securityButtonOffsetTarget.setTranslationX(-securityButtonWidth);
+        mSecurityButtonOffsetTarget = securityButtonOffsetTarget;
+        mSecurityButtonOffsetTarget.setTranslationX(-mSecurityButtonWidth);
         mSecurityButtonAnimationDelegate =
                 new SecurityButtonAnimationDelegate(
                         securityButton, securityButtonOffsetTarget, securityStatusIconSize);
@@ -90,9 +103,26 @@ class CustomTabToolbarAnimationDelegate {
         mAnimationEndRunnable = animationEndRunnable;
     }
 
-    /** Sets whether the title scaling animation is enabled. */
-    void setTitleAnimationEnabled(boolean enabled) {
-        mShouldRunTitleAnimation = enabled;
+    void setSecurityButton(ImageButton securityButton) {
+        mSecurityButtonAnimationDelegate.setSecurityButton(securityButton);
+    }
+
+    /**
+     * Sets the width of the security button to properly offset the url bar. This should be set once
+     * we know whether the security icon is nested or not. Currently, this is only called if the
+     * security icon is nested or the omnibox is enabled.
+     *
+     * @param width The width of the security button in pixels.
+     */
+    void setSecurityButtonWidth(int width) {
+        mSecurityButtonWidth = width;
+        mSecurityButtonOffsetTarget.setTranslationX(-mSecurityButtonWidth);
+        mSecurityButtonAnimationDelegate.setSecurityButtonWidth(width);
+    }
+
+    /** Disables the title scaling animation. */
+    void disableTitleAnimation() {
+        mShouldRunTitleAnimation = false;
     }
 
     void prepareTitleAnim(TextView urlBar, TextView titleBar) {
@@ -103,12 +133,18 @@ class CustomTabToolbarAnimationDelegate {
         mShouldRunTitleAnimation = true;
     }
 
+    @EnsuresNonNullIf({"mTitleBar", "mUrlBar"})
+    @SuppressWarnings("NullAway")
+    private boolean shouldRunTitleAnimation() {
+        return mShouldRunTitleAnimation;
+    }
+
     /**
      * Starts animation for urlbar scaling and title fading-in. If this animation has already run
      * once, does nothing.
      */
     void startTitleAnimation(Context context) {
-        if (!mShouldRunTitleAnimation) return;
+        if (!shouldRunTitleAnimation()) return;
         mShouldRunTitleAnimation = false;
 
         var titleBar = mTitleBar;
@@ -152,14 +188,23 @@ class CustomTabToolbarAnimationDelegate {
 
                         urlBar.setScaleX(scale);
                         urlBar.setScaleY(scale);
-                        urlBar.setTranslationX(oldLoc[0] - newLoc[0]);
+
+                        boolean nestSecurityIcon =
+                                ChromeFeatureList.sCctNestedSecurityIcon.isEnabled();
+                        int xOffset = oldLoc[0] - newLoc[0];
+
+                        if (nestSecurityIcon) {
+                            xOffset -= mSecurityButtonWidth;
+                        }
+
+                        urlBar.setTranslationX(xOffset);
                         urlBar.setTranslationY(oldLoc[1] - newLoc[1]);
 
                         mIsInAnimation = true;
                         urlBar.animate()
                                 .scaleX(1f)
                                 .scaleY(1f)
-                                .translationX(0)
+                                .translationX(nestSecurityIcon ? -mSecurityButtonWidth : 0)
                                 .translationY(0)
                                 .setDuration(SecurityButtonAnimationDelegate.SLIDE_DURATION_MS)
                                 .setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR)
@@ -176,13 +221,14 @@ class CustomTabToolbarAnimationDelegate {
      *     When this is null, the icon is animated to the left and faded out.
      */
     void updateSecurityButton(@DrawableRes int securityIconResource) {
+        if (shouldRunTitleAnimation()) {
+            mPendingSecurityIconRes = securityIconResource;
+            return;
+        }
         if (mUseRotationTransition) {
             mBrandingAnimationDelegate.updateDrawableResource(securityIconResource);
         } else {
-            boolean isActualResourceChange = true;
-            if (ToolbarFeatures.shouldSuppressCaptures()) {
-                isActualResourceChange = securityIconResource != mSecurityIconRes;
-            }
+            boolean isActualResourceChange = securityIconResource != mSecurityIconRes;
             mSecurityButtonAnimationDelegate.updateSecurityButton(
                     securityIconResource, /* animate= */ true, isActualResourceChange);
         }

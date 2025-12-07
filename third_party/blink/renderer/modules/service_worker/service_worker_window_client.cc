@@ -6,8 +6,8 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/renderer/bindings/core/v8/callback_promise_adapter.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_visibility_state.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
@@ -23,19 +23,34 @@ namespace blink {
 namespace {
 
 void DidFocus(ScriptPromiseResolver<ServiceWorkerWindowClient>* resolver,
-              mojom::blink::ServiceWorkerClientInfoPtr client) {
+              mojom::blink::FocusResultPtr result) {
   if (!resolver->GetExecutionContext() ||
       resolver->GetExecutionContext()->IsContextDestroyed()) {
     return;
   }
 
-  if (!client) {
-    resolver->Reject(ServiceWorkerError::GetException(
-        resolver, mojom::blink::ServiceWorkerErrorType::kNotFound,
-        "The client was not found."));
-    return;
+  switch (result->which()) {
+    case mojom::blink::FocusResult::Tag::kErrorCode: {
+      switch (result->get_error_code()) {
+        case mojom::blink::FocusError::CLIENT_NOT_FOUND:
+          resolver->Reject(ServiceWorkerError::AsException(
+              mojom::blink::ServiceWorkerErrorType::kNotFound,
+              "The client was not found."));
+          return;
+
+        case mojom::blink::FocusError::CLIENT_INACTIVE:
+          ScriptState::Scope scope(resolver->GetScriptState());
+          resolver->Reject(V8ThrowException::CreateTypeError(
+              resolver->GetScriptState()->GetIsolate(),
+              "The client is inactive."));
+          return;
+      }
+    }
+    case mojom::blink::FocusResult::Tag::kClient:
+      resolver->Resolve(MakeGarbageCollected<ServiceWorkerWindowClient>(
+          *result->get_client()));
+      return;
   }
-  resolver->Resolve(MakeGarbageCollected<ServiceWorkerWindowClient>(*client));
 }
 
 void DidNavigateOrOpenWindow(
@@ -72,7 +87,7 @@ void DidNavigateOrOpenWindow(
 ServiceWorkerWindowClient::ResolveWindowClientCallback
 ServiceWorkerWindowClient::CreateResolveWindowClientCallback(
     ScriptPromiseResolver<IDLNullable<ServiceWorkerWindowClient>>* resolver) {
-  return WTF::BindOnce(&DidNavigateOrOpenWindow, WrapPersistent(resolver));
+  return BindOnce(&DidNavigateOrOpenWindow, WrapPersistent(resolver));
 }
 
 ServiceWorkerWindowClient::ServiceWorkerWindowClient(
@@ -85,8 +100,12 @@ ServiceWorkerWindowClient::ServiceWorkerWindowClient(
 
 ServiceWorkerWindowClient::~ServiceWorkerWindowClient() = default;
 
-String ServiceWorkerWindowClient::visibilityState() const {
-  return PageHiddenStateString(page_hidden_);
+V8VisibilityState ServiceWorkerWindowClient::visibilityState() const {
+  if (page_hidden_) {
+    return V8VisibilityState(V8VisibilityState::Enum::kHidden);
+  } else {
+    return V8VisibilityState(V8VisibilityState::Enum::kVisible);
+  }
 }
 
 ScriptPromise<ServiceWorkerWindowClient> ServiceWorkerWindowClient::focus(
@@ -107,7 +126,7 @@ ScriptPromise<ServiceWorkerWindowClient> ServiceWorkerWindowClient::focus(
   global_scope->ConsumeWindowInteraction();
 
   global_scope->GetServiceWorkerHost()->FocusClient(
-      Uuid(), WTF::BindOnce(&DidFocus, WrapPersistent(resolver)));
+      Uuid(), BindOnce(&DidFocus, WrapPersistent(resolver)));
   return promise;
 }
 
@@ -124,13 +143,14 @@ ServiceWorkerWindowClient::navigate(ScriptState* script_state,
   KURL parsed_url = KURL(global_scope->location()->Url(), url);
   if (!parsed_url.IsValid() || parsed_url.ProtocolIsAbout()) {
     resolver->Reject(V8ThrowException::CreateTypeError(
-        script_state->GetIsolate(), "'" + url + "' is not a valid URL."));
+        script_state->GetIsolate(),
+        StrCat({"'", url, "' is not a valid URL."})));
     return promise;
   }
   if (!global_scope->GetSecurityOrigin()->CanDisplay(parsed_url)) {
     resolver->Reject(V8ThrowException::CreateTypeError(
         script_state->GetIsolate(),
-        "'" + parsed_url.ElidedString() + "' cannot navigate."));
+        StrCat({"'", parsed_url.ElidedString(), "' cannot navigate."})));
     return promise;
   }
 

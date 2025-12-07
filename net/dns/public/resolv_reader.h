@@ -25,6 +25,10 @@ class NET_EXPORT ResolvReader {
 
   // Null on failure.
   virtual std::unique_ptr<ScopedResState> GetResState();
+
+  // Returns whether or not resolv.conf contains configuration that will forward
+  // all DNS calls to a local resolver likely using systemd-resolved.
+  virtual bool IsLikelySystemdResolved();
 };
 
 // Returns configured DNS servers or nullopt on failure.

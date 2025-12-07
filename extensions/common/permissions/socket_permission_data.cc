@@ -82,14 +82,6 @@ SocketPermissionData::SocketPermissionData() = default;
 
 SocketPermissionData::~SocketPermissionData() = default;
 
-bool SocketPermissionData::operator<(const SocketPermissionData& rhs) const {
-  return entry_ < rhs.entry_;
-}
-
-bool SocketPermissionData::operator==(const SocketPermissionData& rhs) const {
-  return entry_ == rhs.entry_;
-}
-
 bool SocketPermissionData::Check(const APIPermission::CheckParam* param) const {
   if (!param)
     return false;

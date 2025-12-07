@@ -28,12 +28,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
+
+#include <array>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -139,9 +137,7 @@ class BitmapImageTest : public testing::Test {
       last_decoded_size_ = new_size;
     }
     bool ShouldPauseAnimation(const Image*) override { return false; }
-    void AsyncLoadCompleted(const Image*) override {
-      NOTREACHED_IN_MIGRATION();
-    }
+    void AsyncLoadCompleted(const Image*) override { NOTREACHED(); }
 
     void Changed(const Image*) override {}
 
@@ -327,6 +323,14 @@ TEST_F(BitmapImageTest, pngHasColorProfile) {
   EXPECT_TRUE(image_->HasColorProfile());
 }
 
+TEST_F(BitmapImageTest, pngHasInvalidColorProfile) {
+  LoadImage("png-zero-gamma-color-profile.png");
+  auto actualBitmap = GenerateBitmap(0u);
+  auto expectedBitmap =
+      GenerateBitmapForImage("png-zero-gamma-color-profile-ref.png");
+  VerifyBitmap(actualBitmap, expectedBitmap);
+}
+
 TEST_F(BitmapImageTest, webpHasColorProfile) {
   LoadImage("webp-color-profile-lossy.webp");
   image_->PaintImageForCurrentFrame();
@@ -369,8 +373,8 @@ TEST_F(BitmapImageTest, ConstantImageIdForPartiallyLoadedImages) {
 
   // Create a new buffer to partially supply the data.
   scoped_refptr<SharedBuffer> partial_buffer = SharedBuffer::Create();
-  partial_buffer->Append(image_data_binary.data(),
-                         image_data_binary.size() - 4);
+  partial_buffer->Append(
+      base::span(image_data_binary).first(image_data_binary.size() - 4));
 
   // First partial load. Repeated calls for a PaintImage should have the same
   // image until the data changes or the decoded data is destroyed.
@@ -481,9 +485,13 @@ TEST_F(BitmapImageTest, GifDecoderMultiThreaded) {
     cc::PaintImage::GeneratorClientId client_id;
   };
 
-  Decode decodes[4];
-  SkColor expected_color[4] = {SkColorSetARGB(255, 0, 128, 0), SK_ColorRED,
-                               SK_ColorBLUE, SK_ColorYELLOW};
+  std::array<Decode, 4> decodes;
+  std::array<SkColor, 4> expected_color = {
+      SkColorSetARGB(255, 0, 128, 0),
+      SK_ColorRED,
+      SK_ColorBLUE,
+      SK_ColorYELLOW,
+  };
   for (int i = 0; i < 4; ++i) {
     decodes[i].thread =
         std::make_unique<base::Thread>("Decode" + std::to_string(i));
@@ -661,7 +669,7 @@ TEST_F(BitmapImageTestWithMockDecoder, ImageMetadataTracking) {
   repetition_count_ = kAnimationLoopOnce;
   frame_count_ = 4u;
   last_frame_complete_ = false;
-  image_->SetData(SharedBuffer::Create("data", sizeof("data")), false);
+  image_->SetData(SharedBuffer::Create(base::span_from_cstring("data")), false);
 
   PaintImage image = image_->PaintImageForCurrentFrame();
   ASSERT_TRUE(image);
@@ -683,7 +691,7 @@ TEST_F(BitmapImageTestWithMockDecoder, ImageMetadataTracking) {
   repetition_count_ = kAnimationLoopInfinite;
   frame_count_ = 6u;
   last_frame_complete_ = true;
-  image_->SetData(SharedBuffer::Create("data", sizeof("data")), true);
+  image_->SetData(SharedBuffer::Create(base::span_from_cstring("data")), true);
 
   image = image_->PaintImageForCurrentFrame();
   ASSERT_TRUE(image);
@@ -705,7 +713,7 @@ TEST_F(BitmapImageTestWithMockDecoder,
   repetition_count_ = kAnimationNone;
   frame_count_ = 4u;
   last_frame_complete_ = true;
-  image_->SetData(SharedBuffer::Create("data", sizeof("data")), false);
+  image_->SetData(SharedBuffer::Create(base::span_from_cstring("data")), false);
 
   PaintImage image = image_->PaintImageForCurrentFrame();
   EXPECT_EQ(image.repetition_count(), repetition_count_);
@@ -736,7 +744,7 @@ TEST_F(BitmapImageTestWithMockDecoder,
   repetition_count_ = kAnimationLoopOnce;
   frame_count_ = 4u;
   last_frame_complete_ = true;
-  image_->SetData(SharedBuffer::Create("data", sizeof("data")), false);
+  image_->SetData(SharedBuffer::Create(base::span_from_cstring("data")), false);
 
   PaintImage image = image_->PaintImageForCurrentFrame();
   EXPECT_EQ(image.repetition_count(), repetition_count_);
@@ -768,7 +776,7 @@ TEST_F(BitmapImageTestWithMockDecoder,
   repetition_count_ = kAnimationLoopInfinite;
   frame_count_ = 4u;
   last_frame_complete_ = true;
-  image_->SetData(SharedBuffer::Create("data", sizeof("data")), false);
+  image_->SetData(SharedBuffer::Create(base::span_from_cstring("data")), false);
 
   PaintImage image = image_->PaintImageForCurrentFrame();
   EXPECT_EQ(image.repetition_count(), repetition_count_);
@@ -798,7 +806,7 @@ TEST_F(BitmapImageTestWithMockDecoder, ResetAnimation) {
   repetition_count_ = kAnimationLoopInfinite;
   frame_count_ = 4u;
   last_frame_complete_ = true;
-  image_->SetData(SharedBuffer::Create("data", sizeof("data")), false);
+  image_->SetData(SharedBuffer::Create(base::span_from_cstring("data")), false);
 
   PaintImage image = image_->PaintImageForCurrentFrame();
   image_->ResetAnimation();
@@ -811,7 +819,7 @@ TEST_F(BitmapImageTestWithMockDecoder, PaintImageForStaticBitmapImage) {
   repetition_count_ = kAnimationLoopInfinite;
   frame_count_ = 5;
   last_frame_complete_ = true;
-  image_->SetData(SharedBuffer::Create("data", sizeof("data")), false);
+  image_->SetData(SharedBuffer::Create(base::span_from_cstring("data")), false);
 
   // PaintImage for the original image is animated.
   EXPECT_TRUE(image_->PaintImageForCurrentFrame().ShouldAnimate());

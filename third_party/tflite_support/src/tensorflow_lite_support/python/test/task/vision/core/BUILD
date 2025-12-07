@@ -11,6 +11,7 @@ py_test(
         "//tensorflow_lite_support/cc/test/testdata/task/vision:test_images",
     ],
     deps = [
+        # build rule placeholder: google/protobuf:use_fast_cpp_protos dep,  # Automatically added go/proto_python_upb_flip
         # build rule placeholder: numpy dep,
         # build rule placeholder: tensorflow dep,
         "//tensorflow_lite_support/python/task/vision/core:color_space_type",

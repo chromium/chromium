@@ -27,7 +27,7 @@
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/aura/window.h"
@@ -37,6 +37,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
@@ -47,7 +48,6 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -145,7 +145,7 @@ class ClosePromoButton : public views::ImageButton {
   METADATA_HEADER(ClosePromoButton, views::ImageButton)
 
  public:
-  ClosePromoButton(const std::u16string accessible_name,
+  ClosePromoButton(const std::u16string& accessible_name,
                    PressedCallback callback) {
     SetCallback(std::move(callback));
     views::ConfigureVectorImageButton(this);
@@ -282,6 +282,7 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
                                TranslateArrow(params.arrow),
                                views::BubbleBorder::STANDARD_SHADOW),
       id_(id) {
+  SetBackgroundColor(cros_tokens::kCrosSysDialogContainer);
   SetCanActivate(true);
 
   // When hosted within a `views::ScrollView`, the anchor view may be
@@ -385,7 +386,7 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
   // Add the body icon (optional).
   constexpr int kBodyIconSize = 20;
   constexpr int kBodyIconBackgroundSize = 24;
-  if (body_icon && (body_icon != &gfx::kNoneIcon)) {
+  if (body_icon && (body_icon != &gfx::VectorIcon::EmptyIcon())) {
     icon_view_ = top_text_container->AddChildViewAt(
         views::Builder<views::ImageView>()
             .SetAccessibleName(params.body_icon_alt_text)
@@ -635,7 +636,7 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
   SetProperty(views::kElementIdentifierKey, kHelpBubbleElementIdForTesting);
   set_margins(gfx::Insets());
   set_title_margins(gfx::Insets());
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_close_on_deactivate(false);
   set_focus_traversable_from_anchor_view(false);
   set_parent_window(
@@ -703,9 +704,9 @@ void HelpBubbleViewAsh::OnTimeout() {
   GetWidget()->Close();
 }
 
-std::unique_ptr<views::NonClientFrameView>
-HelpBubbleViewAsh::CreateNonClientFrameView(views::Widget* widget) {
-  auto frame = BubbleDialogDelegateView::CreateNonClientFrameView(widget);
+std::unique_ptr<views::FrameView> HelpBubbleViewAsh::CreateFrameView(
+    views::Widget* widget) {
+  auto frame = BubbleDialogDelegateView::CreateFrameView(widget);
   auto* frame_ptr = static_cast<views::BubbleFrameView*>(frame.get());
   frame_ptr->bubble_border()->set_md_shadow_elevation(kBubbleShadowElevation);
   frame_ptr->set_use_anchor_window_bounds(false);
@@ -739,7 +740,8 @@ void HelpBubbleViewAsh::OnWidgetActivationChanged(views::Widget* widget,
   if (widget == GetWidget()) {
     if (active) {
       ++activate_count_;
-      auto_close_timer_.AbandonAndStop();
+      auto_close_timer_.Stop();
+      GetWidget()->UpdateAccessibleNameForRootView();
     } else {
       MaybeStartAutoCloseTimer();
     }
@@ -756,10 +758,6 @@ void HelpBubbleViewAsh::OnThemeChanged() {
   views::BubbleDialogDelegateView::OnThemeChanged();
 
   const auto* color_provider = GetColorProvider();
-  const SkColor background_color =
-      color_provider->GetColor(cros_tokens::kCrosSysDialogContainer);
-  set_color(background_color);
-
   const SkColor foreground_color =
       color_provider->GetColor(cros_tokens::kCrosSysOnSurface);
   if (icon_view_) {
@@ -767,6 +765,8 @@ void HelpBubbleViewAsh::OnThemeChanged() {
         foreground_color, icon_view_->GetPreferredSize().height() / 2));
   }
 
+  const SkColor background_color =
+      color_provider->GetColor(cros_tokens::kCrosSysDialogContainer);
   for (views::Label* label : labels_) {
     label->SetBackgroundColor(background_color);
     label->SetEnabledColor(foreground_color);
@@ -830,7 +830,7 @@ gfx::Rect HelpBubbleViewAsh::GetAnchorRect() const {
 }
 
 void HelpBubbleViewAsh::GetWidgetHitTestMask(SkPath* mask) const {
-  mask->addRect(gfx::RectToSkRect(GetHitRect()));
+  *mask = SkPath::Rect(gfx::RectToSkRect(GetHitRect()));
 }
 
 bool HelpBubbleViewAsh::WidgetHasHitTestMask() const {
@@ -901,7 +901,7 @@ void HelpBubbleViewAsh::UpdateRoundedCorners() {
   const float lower_left = dx < 0 && dy > 0 ? kSmall : kDefault;
 
   // Update rounded corners.
-  GetBubbleFrameView()->bubble_border()->set_rounded_corners(
+  GetBubbleFrameView()->SetRoundedCorners(
       gfx::RoundedCornersF(upper_left, upper_right, lower_right, lower_left));
 }
 

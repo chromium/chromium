@@ -41,8 +41,9 @@ def main():
             arch, success, result = future.result()
             if not success:
                 failures += 1
-            name = (f"{sysroot_creator.DISTRO}_{sysroot_creator.RELEASE}" +
-                    f"_{arch.lower()}-sysroot")
+            name = (
+                f"{sysroot_creator.DISTRO}_{sysroot_creator.RELEASES[arch]}" +
+                f"_{arch.lower()}-sysroot")
             results[name] = (success, result)
 
     globals = {"Str": lambda x: x, "Var": lambda x: x}
@@ -62,12 +63,12 @@ def main():
 
     print("Updating DEPS files")
     for key, objects in updates.items():
-        obj = objects[0]
+        obj = objects["objects"][0]
         object_info = ','.join([
-            obj['object_name'],
-            obj['sha256sum'],
-            str(obj['size_bytes']),
-            str(obj['generation']),
+            obj["object_name"],
+            obj["sha256sum"],
+            str(obj["size_bytes"]),
+            str(obj["generation"]),
         ])
 
         print(f"Updating {key} in src/DEPS")

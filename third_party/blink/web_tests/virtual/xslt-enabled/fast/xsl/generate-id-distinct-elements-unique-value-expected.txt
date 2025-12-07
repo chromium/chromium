@@ -1,0 +1,8 @@
+CONSOLE WARNING: XSLTProcessor and XSLT Processing Instructions have been deprecated by all browsers. These features will be removed from this browser soon. See https://chromestatus.com/feature/4709671889534976.
+Verify that generate-id() does not return the same value for different nodes.
+
+1 and 2 have distinct IDs as expected: PASSED
+
+1 and 3 have distinct IDs as expected: PASSED
+
+2 and 3 have distinct IDs as expected: PASSED

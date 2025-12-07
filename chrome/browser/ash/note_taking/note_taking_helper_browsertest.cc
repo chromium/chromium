@@ -21,8 +21,6 @@
 namespace ash {
 namespace {
 
-using ui_test_utils::BrowserChangeObserver;
-
 class NoteTakingHelperBrowserTest : public InProcessBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -48,10 +46,9 @@ IN_PROC_BROWSER_TEST_F(NoteTakingHelperBrowserTest, LaunchWebApp) {
       web_app::test::InstallWebApp(profile(), std::move(app_info));
   ASSERT_EQ(helper()->GetAvailableApps(profile()).size(), 1u);
 
-  BrowserChangeObserver observer(nullptr,
-                                 BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   NoteTakingClient::GetInstance()->CreateNote();
-  Browser* app_browser = observer.Wait();
+  Browser* app_browser = browser_created_observer.Wait();
 
   ASSERT_TRUE(app_browser->tab_strip_model()->GetActiveWebContents());
   GURL url = app_browser->tab_strip_model()->GetActiveWebContents()->GetURL();
@@ -79,10 +76,9 @@ IN_PROC_BROWSER_TEST_F(NoteTakingHelperBrowserTest, LaunchHardcodedWebApp) {
   ASSERT_EQ(app_id, NoteTakingHelper::kNoteTakingWebAppIdTest);
 
   // Fire a "Create Note" action and check the app is launched.
-  BrowserChangeObserver observer(nullptr,
-                                 BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   NoteTakingClient::GetInstance()->CreateNote();
-  Browser* app_browser = observer.Wait();
+  Browser* app_browser = browser_created_observer.Wait();
 
   ASSERT_TRUE(app_browser->tab_strip_model()->GetActiveWebContents());
   GURL url = app_browser->tab_strip_model()->GetActiveWebContents()->GetURL();

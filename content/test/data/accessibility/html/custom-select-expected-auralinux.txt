@@ -1,0 +1,46 @@
+[document web]
+++[section]
+++++[combo box] name='Currency for purchase' expandable haspopup:menu posinset:3 setsize:5
+++++++[menu] setsize:5
+++++++++[section]
+++++++++++[section]
+++++++++++++[menu item] name='EUR Euro' selectable
+++++++++++++++[section]
+++++++++++++++++[image] name=''
+++++++++++++++++[section]
+++++++++++++++++++[section]
+++++++++++++++++++++[static] name='EUR'
+++++++++++++++++++[section]
+++++++++++++++++++++[static] name='Euro'
+++++++++++++[menu item] name='GBP Great British Pound' selectable
+++++++++++++++[section]
+++++++++++++++++[image] name=''
+++++++++++++++++[section]
+++++++++++++++++++[section]
+++++++++++++++++++++[static] name='GBP'
+++++++++++++++++++[section]
+++++++++++++++++++++[static] name='Great British Pound'
+++++++++++++[menu item] name='USD United States Dollar' selectable selected posinset:1 setsize:5
+++++++++++++++[section]
+++++++++++++++++[image] name=''
+++++++++++++++++[section]
+++++++++++++++++++[section]
+++++++++++++++++++++[static] name='USD'
+++++++++++++++++++[section]
+++++++++++++++++++++[static] name='United States Dollar'
+++++++++++++[menu item] name='JPY Japanese Yen' selectable
+++++++++++++++[section]
+++++++++++++++++[image] name=''
+++++++++++++++++[section]
+++++++++++++++++++[section]
+++++++++++++++++++++[static] name='JPY'
+++++++++++++++++++[section]
+++++++++++++++++++++[static] name='Japanese Yen'
+++++++++++++[menu item] name='BTC Bitcoin' selectable
+++++++++++++++[section]
+++++++++++++++++[image] name=''
+++++++++++++++++[section]
+++++++++++++++++++[section]
+++++++++++++++++++++[static] name='BTC'
+++++++++++++++++++[section]
+++++++++++++++++++++[static] name='Bitcoin'

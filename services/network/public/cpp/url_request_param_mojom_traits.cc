@@ -4,6 +4,7 @@
 
 #include "services/network/public/cpp/url_request_param_mojom_traits.h"
 
+#include "base/notreached.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "net/base/request_priority.h"
 #include "net/url_request/referrer_policy.h"
@@ -29,8 +30,7 @@ EnumTraits<network::mojom::RequestPriority, net::RequestPriority>::ToMojom(
     case net::HIGHEST:
       return network::mojom::RequestPriority::kHighest;
   }
-  NOTREACHED_IN_MIGRATION();
-  return static_cast<network::mojom::RequestPriority>(priority);
+  NOTREACHED();
 }
 
 bool EnumTraits<network::mojom::RequestPriority, net::RequestPriority>::
@@ -56,9 +56,7 @@ bool EnumTraits<network::mojom::RequestPriority, net::RequestPriority>::
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  *out = static_cast<net::RequestPriority>(in);
-  return true;
+  NOTREACHED();
 }
 
 network::mojom::URLRequestReferrerPolicy
@@ -88,8 +86,7 @@ EnumTraits<network::mojom::URLRequestReferrerPolicy,
     case net::ReferrerPolicy::NO_REFERRER:
       return network::mojom::URLRequestReferrerPolicy::kNoReferrer;
   }
-  NOTREACHED_IN_MIGRATION();
-  return static_cast<network::mojom::URLRequestReferrerPolicy>(policy);
+  NOTREACHED();
 }
 
 bool EnumTraits<network::mojom::URLRequestReferrerPolicy, net::ReferrerPolicy>::
@@ -128,8 +125,7 @@ bool EnumTraits<network::mojom::URLRequestReferrerPolicy, net::ReferrerPolicy>::
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace mojo

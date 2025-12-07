@@ -38,7 +38,7 @@ const unsigned kVibrationDurationMsMax = 10000;
 blink::VibrationController::VibrationPattern sanitizeVibrationPatternInternal(
     const blink::VibrationController::VibrationPattern& pattern) {
   blink::VibrationController::VibrationPattern sanitized = pattern;
-  wtf_size_t length = sanitized.size();
+  blink::wtf_size_t length = sanitized.size();
 
   // If the pattern is too long then truncate it.
   if (length > kVibrationPatternLengthMax) {
@@ -47,7 +47,7 @@ blink::VibrationController::VibrationPattern sanitizeVibrationPatternInternal(
   }
 
   // If any pattern entry is too long then truncate it.
-  for (wtf_size_t i = 0; i < length; ++i) {
+  for (blink::wtf_size_t i = 0; i < length; ++i) {
     if (sanitized[i] > kVibrationDurationMsMax)
       sanitized[i] = kVibrationDurationMsMax;
   }
@@ -77,23 +77,19 @@ VibrationController::SanitizeVibrationPattern(
       return sanitizeVibrationPatternInternal(
           input->GetAsUnsignedLongSequence());
   }
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  NOTREACHED();
 }
 
 // static
 VibrationController& VibrationController::From(Navigator& navigator) {
   VibrationController* vibration_controller =
-      Supplement<Navigator>::From<VibrationController>(navigator);
+      navigator.GetVibrationController();
   if (!vibration_controller) {
     vibration_controller = MakeGarbageCollected<VibrationController>(navigator);
-    ProvideTo(navigator, vibration_controller);
+    navigator.SetVibrationController(vibration_controller);
   }
   return *vibration_controller;
 }
-
-// static
-const char VibrationController::kSupplementName[] = "VibrationController";
 
 // static
 bool VibrationController::vibrate(Navigator& navigator, unsigned time) {
@@ -113,8 +109,7 @@ bool VibrationController::vibrate(Navigator& navigator,
 }
 
 VibrationController::VibrationController(Navigator& navigator)
-    : Supplement<Navigator>(navigator),
-      ExecutionContextLifecycleObserver(navigator.DomWindow()),
+    : ExecutionContextLifecycleObserver(navigator.DomWindow()),
       PageVisibilityObserver(DomWindow()->GetFrame()->GetPage()),
       vibration_manager_(DomWindow()),
       timer_do_vibrate_(DomWindow()->GetTaskRunner(TaskType::kMiscPlatformAPI),
@@ -200,7 +195,7 @@ void VibrationController::DoVibrate(TimerBase* timer) {
     is_calling_vibrate_ = true;
     vibration_manager_->Vibrate(
         pattern_[0],
-        WTF::BindOnce(&VibrationController::DidVibrate, WrapPersistent(this)));
+        BindOnce(&VibrationController::DidVibrate, WrapPersistent(this)));
   }
 }
 
@@ -232,7 +227,7 @@ void VibrationController::Cancel() {
   if (is_running_ && !is_calling_cancel_ && vibration_manager_.is_bound()) {
     is_calling_cancel_ = true;
     vibration_manager_->Cancel(
-        WTF::BindOnce(&VibrationController::DidCancel, WrapPersistent(this)));
+        BindOnce(&VibrationController::DidCancel, WrapPersistent(this)));
   }
 
   is_running_ = false;
@@ -262,7 +257,6 @@ void VibrationController::PageVisibilityChanged() {
 }
 
 void VibrationController::Trace(Visitor* visitor) const {
-  Supplement<Navigator>::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   PageVisibilityObserver::Trace(visitor);
   visitor->Trace(vibration_manager_);

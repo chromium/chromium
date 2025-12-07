@@ -1,0 +1,24 @@
+# Copyright 2017 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("test") {
+  testonly = true
+
+  sources = [
+    "test_toolbars_size_observer.h",
+    "test_toolbars_size_observer.mm",
+    "toolbar_test_navigation_manager.h",
+    "toolbar_test_navigation_manager.mm",
+    "toolbars_size_broadcast_test_util.h",
+    "toolbars_size_broadcast_test_util.mm",
+  ]
+
+  deps = [
+    "//ios/chrome/browser/broadcaster/ui_bundled",
+    "//ios/chrome/browser/toolbar/ui_bundled/fullscreen",
+    "//ios/chrome/common/ui/util",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+  ]
+}

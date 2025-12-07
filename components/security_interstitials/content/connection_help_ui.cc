@@ -91,6 +91,6 @@ ConnectionHelpUI::ConnectionHelpUI(content::WebUI* web_ui)
       IDR_SECURITY_INTERSTITIAL_CONNECTION_HELP_HTML);
 }
 
-ConnectionHelpUI::~ConnectionHelpUI() {}
+ConnectionHelpUI::~ConnectionHelpUI() = default;
 
 }  // namespace security_interstitials

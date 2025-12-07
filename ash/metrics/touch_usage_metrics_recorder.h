@@ -5,6 +5,8 @@
 #ifndef ASH_METRICS_TOUCH_USAGE_METRICS_RECORDER_H_
 #define ASH_METRICS_TOUCH_USAGE_METRICS_RECORDER_H_
 
+#include <array>
+
 #include "ash/ash_export.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"

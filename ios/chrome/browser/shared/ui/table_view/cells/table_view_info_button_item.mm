@@ -4,8 +4,10 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
 
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item_delegate.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/legacy_table_view_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/colorful_symbol_content_configuration.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/info_button_content_configuration.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -14,7 +16,7 @@
 - (instancetype)initWithType:(NSInteger)type {
   self = [super initWithType:type];
   if (self) {
-    self.cellClass = [TableViewInfoButtonCell class];
+    self.cellClass = [LegacyTableViewCell class];
     _accessibilityActivationPointOnButton = YES;
   }
   return self;
@@ -22,64 +24,51 @@
 
 #pragma mark TableViewItem
 
-- (void)configureCell:(TableViewInfoButtonCell*)cell
+- (void)configureCell:(LegacyTableViewCell*)cell
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
-  cell.textLabel.text = self.text;
-  if (self.textColor) {
-    cell.textLabel.textColor = self.textColor;
-  }
-  if (self.detailText) {
-    cell.detailTextLabel.text = self.detailText;
-    if (self.detailTextColor) {
-      cell.detailTextLabel.textColor = self.detailTextColor;
-    }
-    [cell updatePaddingForDetailText:YES];
-  } else {
-    [cell updatePaddingForDetailText:NO];
-  }
-  [cell setStatusText:self.statusText];
-  if (self.accessibilityHint) {
-    cell.customizedAccessibilityHint = self.accessibilityHint;
-  }
-  if (self.accessibilityDelegate && !self.infoButtonIsHidden) {
-    cell.accessibilityCustomActions = [self createAccessibilityActions];
-  }
-  cell.isButtonSelectedForVoiceOver = self.accessibilityActivationPointOnButton;
+
+  TableViewCellContentConfiguration* contentConfiguration =
+      [[TableViewCellContentConfiguration alloc] init];
+  contentConfiguration.title = self.text;
+  contentConfiguration.titleColor = self.textColor;
+  contentConfiguration.subtitle = self.detailText;
+  contentConfiguration.subtitleColor = self.detailTextColor;
+  contentConfiguration.trailingText = self.statusText;
+
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
-  [cell setIconImage:self.iconImage
-            tintColor:self.iconTintColor
-      backgroundColor:self.iconBackgroundColor
-         cornerRadius:self.iconCornerRadius];
+  if (self.iconImage) {
+    ColorfulSymbolContentConfiguration* symbolConfiguration =
+        [[ColorfulSymbolContentConfiguration alloc] init];
+    symbolConfiguration.symbolImage = self.iconImage;
+    symbolConfiguration.symbolBackgroundColor = self.iconBackgroundColor;
+    symbolConfiguration.symbolTintColor = self.iconTintColor;
 
-  // Updates if the cells UI button should be hidden.
-  [cell hideUIButton:self.infoButtonIsHidden];
-}
-
-#pragma mark - Accessibility
-
-// Creates custom accessibility actions.
-- (NSArray*)createAccessibilityActions {
-  NSMutableArray* customActions = [[NSMutableArray alloc] init];
-
-  // Custom action for when the activation point is on the center of row.
-  if (!self.accessibilityActivationPointOnButton) {
-    UIAccessibilityCustomAction* tapButtonAction =
-        [[UIAccessibilityCustomAction alloc]
-            initWithName:l10n_util::GetNSString(
-                             IDS_IOS_INFO_BUTTON_ACCESSIBILITY_HINT)
-                  target:self
-                selector:@selector(handleTappedInfoButtonForItem)];
-    [customActions addObject:tapButtonAction];
+    contentConfiguration.leadingConfiguration = symbolConfiguration;
   }
 
-  return customActions;
+  InfoButtonContentConfiguration* buttonConfiguration =
+      [[InfoButtonContentConfiguration alloc] init];
+  buttonConfiguration.target = self.target;
+  buttonConfiguration.selector = self.selector;
+  buttonConfiguration.tag = self.tag;
+  buttonConfiguration.selectedForVoiceOver =
+      self.accessibilityActivationPointOnButton;
+
+  contentConfiguration.trailingConfiguration = buttonConfiguration;
+
+  cell.contentConfiguration = contentConfiguration;
+  cell.accessibilityLabel = contentConfiguration.accessibilityLabel;
+  cell.accessibilityValue = contentConfiguration.accessibilityValue;
+  cell.accessibilityHint =
+      self.accessibilityHint ?: contentConfiguration.accessibilityHint;
 }
 
-// Handles accessibility action for tapping outside the info button.
-- (void)handleTappedInfoButtonForItem {
-  [self.accessibilityDelegate handleTappedInfoButtonForItem:self];
+- (LegacyTableViewCell*)cellForTableView:(UITableView*)tableView {
+  [TableViewCellContentConfiguration legacyRegisterCellForTableView:tableView];
+  return
+      [TableViewCellContentConfiguration legacyDequeueTableViewCell:tableView];
 }
 
 @end

@@ -4,7 +4,9 @@
 
 #include "ios/chrome/browser/web/model/browser_about_rewriter.h"
 
+#include <array>
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/feature_list.h"
@@ -15,12 +17,20 @@
 
 namespace {
 
-const struct HostReplacement {
-  const char* old_host_name;
-  const char* new_host_name;
-} kHostReplacements[] = {
-    {"about", kChromeUIChromeURLsHost},
-    {"sync", kChromeUISyncInternalsHost},
+struct HostReplacement {
+  std::string_view old_host_name;
+  std::string_view new_host_name;
+};
+
+constexpr std::array<HostReplacement, 2> kHostReplacements = {
+    HostReplacement{
+        .old_host_name = "about",
+        .new_host_name = kChromeUIChromeURLsHost,
+    },
+    HostReplacement{
+        .old_host_name = "sync",
+        .new_host_name = kChromeUISyncInternalsHost,
+    },
 };
 
 }  // namespace
@@ -35,14 +45,18 @@ bool WillHandleWebBrowserAboutURL(GURL* url, web::BrowserState* browser_state) {
   *url = url_formatter::FixupURL(url->possibly_invalid_spec(), std::string());
 
   // Check that about: URLs are fixed up to chrome: by url_formatter::FixupURL.
-  // 'about:blank' is special-cased in various places in the code so it
-  // shouldn't be transformed.
+  // 'about:blank' and 'about:srcdoc' are special-cased in various places in the
+  // code so they shouldn't be transformed.
+  // (The condition below is that either the URL does not begin with 'about', or
+  // if it does, that the path is either 'blank' or 'srcdoc').
   DCHECK(!url->SchemeIs(url::kAboutScheme) ||
-         (url->path() == url::kAboutBlankPath));
+         (url->path() == url::kAboutBlankPath ||
+          url->path() == url::kAboutSrcdocPath));
 
   // url_formatter::FixupURL translates about:foo into chrome://foo/.
-  if (!url->SchemeIs(kChromeUIScheme))
+  if (!url->SchemeIs(kChromeUIScheme)) {
     return false;
+  }
 
   // Translate chrome://newtab back into about://newtab/ so the WebState shows a
   // blank page under the NTP.
@@ -53,17 +67,18 @@ bool WillHandleWebBrowserAboutURL(GURL* url, web::BrowserState* browser_state) {
     return *url != original_url;
   }
 
-  std::string host(url->host());
-  for (size_t i = 0; i < std::size(kHostReplacements); ++i) {
-    if (host != kHostReplacements[i].old_host_name)
+  std::string new_host(url->host());
+  for (const auto& replacement : kHostReplacements) {
+    if (new_host != replacement.old_host_name) {
       continue;
+    }
 
-    host.assign(kHostReplacements[i].new_host_name);
+    new_host.assign(replacement.new_host_name);
     break;
   }
 
   GURL::Replacements replacements;
-  replacements.SetHostStr(host);
+  replacements.SetHostStr(new_host);
   *url = url->ReplaceComponents(replacements);
 
   // Having re-written the URL, make the chrome: handler process it.

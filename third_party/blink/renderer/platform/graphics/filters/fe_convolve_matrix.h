@@ -55,8 +55,8 @@ class PLATFORM_EXPORT FEConvolveMatrix final : public FilterEffect {
   bool SetEdgeMode(FEConvolveMatrix::EdgeModeType);
   bool SetPreserveAlpha(bool);
 
-  WTF::TextStream& ExternalRepresentation(WTF::TextStream&,
-                                          int indention) const override;
+  StringBuilder& ExternalRepresentation(StringBuilder&,
+                                        wtf_size_t indent) const override;
 
  private:
   gfx::RectF MapEffect(const gfx::RectF&) const final;
@@ -64,6 +64,7 @@ class PLATFORM_EXPORT FEConvolveMatrix final : public FilterEffect {
   sk_sp<PaintFilter> CreateImageFilter() override;
 
   bool ParametersValid() const;
+  float ComputeDivisor() const;
 
   gfx::Size kernel_size_;
   float divisor_;

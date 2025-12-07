@@ -64,6 +64,11 @@ bool VideoColorSpace::IsSpecified() const {
          range != gfx::ColorSpace::RangeID::INVALID;
 }
 
+bool VideoColorSpace::IsHDR() const {
+  return transfer == TransferID::SMPTEST2084 ||
+         transfer == TransferID::ARIB_STD_B67;
+}
+
 gfx::ColorSpace VideoColorSpace::ToGfxColorSpace() const {
   return ToGfxColorSpaceInternal(/*allow_guessing=*/false);
 }
@@ -130,6 +135,9 @@ VideoColorSpace VideoColorSpace::FromGfxColorSpace(
     case gfx::ColorSpace::PrimaryID::P3:
       primaries = VideoColorSpace::PrimaryID::SMPTEST432_1;
       break;
+    case gfx::ColorSpace::PrimaryID::EBU_3213_E:
+      primaries = VideoColorSpace::PrimaryID::EBU_3213_E;
+      break;
     default:
       break;
   }
@@ -137,6 +145,7 @@ VideoColorSpace VideoColorSpace::FromGfxColorSpace(
   VideoColorSpace::TransferID transfer = VideoColorSpace::TransferID::INVALID;
   switch (color_space.GetTransferID()) {
     case gfx::ColorSpace::TransferID::BT709:
+    case gfx::ColorSpace::TransferID::BT709_APPLE:
       transfer = VideoColorSpace::TransferID::BT709;
       break;
     case gfx::ColorSpace::TransferID::GAMMA22:
@@ -281,8 +290,7 @@ gfx::ColorSpace VideoColorSpace::ToGfxColorSpaceInternal(
       primary_id = gfx::ColorSpace::PrimaryID::P3;
       break;
     case PrimaryID::EBU_3213_E:
-      // TODO(uzair.jaleel) Need to check this once.
-      primary_id = gfx::ColorSpace::PrimaryID::INVALID;
+      primary_id = gfx::ColorSpace::PrimaryID::EBU_3213_E;
       break;
     case PrimaryID::INVALID:
     case PrimaryID::UNSPECIFIED:

@@ -16,16 +16,16 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.autofill.OtpVerificationDialogProperties.ViewDelegate;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.EmptyTextWatcher;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
-import java.util.Optional;
-
 /** Dialog shown to the user for credit card unmasking using OTP-based verification. */
+@NullMarked
 public class OtpVerificationDialogView extends RelativeLayout {
     private View mProgressBarOverlayView;
     private View mOtpVerificationDialogViewContents;
@@ -83,6 +83,11 @@ public class OtpVerificationDialogView extends RelativeLayout {
         mProgressBarOverlayView.setAlpha(0f);
         mProgressBarOverlayView.animate().alpha(1f).setDuration(ANIMATION_DURATION_MS);
         mOtpVerificationDialogViewContents.animate().alpha(0f).setDuration(ANIMATION_DURATION_MS);
+        String progressMessage =
+                getContext()
+                        .getString(R.string.autofill_card_unmask_otp_input_dialog_pending_message);
+        ((TextView) mProgressBarOverlayView.findViewById(R.id.progress_bar_message))
+                .setText(progressMessage);
     }
 
     /**
@@ -100,17 +105,16 @@ public class OtpVerificationDialogView extends RelativeLayout {
      * unsuccessful server response after the user submits an OTP, and the errorMessage lets the
      * user know why the OTP was unsuccessful.
      *
-     * @param errorMessage The error message that gets displayed to the user. Can be empty,
-     * indicating there should be no error message shown on the dialog (so we hide it).
+     * @param errorMessage The error message that gets displayed to the user.
      */
-    void showOtpErrorMessage(Optional<String> errorMessage) {
+    void showOtpErrorMessage(String errorMessage) {
         mOtpErrorMessageTextView.setVisibility(View.VISIBLE);
-        mOtpErrorMessageTextView.setText(errorMessage.get());
+        mOtpErrorMessageTextView.setText(errorMessage);
     }
 
     /**
-     *  Hides the OTP error message. This method is called when the user changes the text in the
-     *  edit text field while an OTP error message is showing.
+     * Hides the OTP error message. This method is called when the user changes the text in the edit
+     * text field while an OTP error message is showing.
      */
     void hideOtpErrorMessage() {
         mOtpErrorMessageTextView.setVisibility(View.GONE);
@@ -139,17 +143,16 @@ public class OtpVerificationDialogView extends RelativeLayout {
         };
     }
 
-    /** Builds Otp Resend Message Link **/
+    /** Builds Otp Resend Message Link */
     private SpannableString buildOtpResendMessageLink(Context context, ViewDelegate viewDelegate) {
         return SpanApplier.applySpans(
-                context.getResources()
-                        .getString(
-                                org.chromium.chrome.browser.ui.autofill.internal.R.string
-                                        .autofill_payments_otp_verification_dialog_cant_find_code_message),
+                context.getString(
+                        org.chromium.chrome.browser.ui.autofill.internal.R.string
+                                .autofill_payments_otp_verification_dialog_cant_find_code_message),
                 new SpanInfo(
                         "<link>",
                         "</link>",
-                        new NoUnderlineClickableSpan(
+                        new ChromeClickableSpan(
                                 context,
                                 textView -> {
                                     viewDelegate.onResendLinkClicked();

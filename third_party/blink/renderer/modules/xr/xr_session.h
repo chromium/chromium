@@ -9,21 +9,31 @@
 #include <optional>
 
 #include "base/containers/span.h"
+#include "device/vr/public/mojom/layer_id.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "device/vr/public/mojom/xr_session.mojom-blink.h"
-#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_depth_data_format.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_depth_type.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_depth_usage.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_environment_blend_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_image_tracking_score.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_interaction_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_light_probe_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_reflection_format.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
+#include "third_party/blink/renderer/modules/xr/average_timer.h"
 #include "third_party/blink/renderer/modules/xr/xr_frame_request_callback_collection.h"
+#include "third_party/blink/renderer/modules/xr/xr_graphics_binding.h"
+#include "third_party/blink/renderer/modules/xr/xr_id_hash_traits.h"
 #include "third_party/blink/renderer/modules/xr/xr_input_source.h"
 #include "third_party/blink/renderer/modules/xr/xr_input_source_array.h"
+#include "third_party/blink/renderer/modules/xr/xr_layer_shared_image_manager.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -42,6 +52,8 @@ class ExceptionState;
 class HTMLCanvasElement;
 class ResizeObserver;
 class V8XRFrameRequestCallback;
+class V8XRReferenceSpaceType;
+class V8XRVisibilityState;
 class XRAnchor;
 class XRAnchorSet;
 class XRCanvasInputProvider;
@@ -61,7 +73,7 @@ class XRSystem;
 class XRTransientInputHitTestOptionsInit;
 class XRTransientInputHitTestSource;
 class XRViewData;
-class XRWebGLLayer;
+class XRFrameTransportDelegate;
 
 template <typename IDLType>
 class FrozenArray;
@@ -127,24 +139,33 @@ class XRSession final : public EventTarget,
             device::mojom::blink::XRInteractionMode interaction_mode,
             device::mojom::blink::XRSessionDeviceConfigPtr device_config,
             bool sensorless_session,
-            XRSessionFeatureSet enabled_feature_set);
+            XRSessionFeatureSet enabled_feature_set,
+            uint64_t trace_id);
   ~XRSession() override = default;
 
   XRSystem* xr() const { return xr_.Get(); }
-  const String& environmentBlendMode() const { return blend_mode_string_; }
-  const String& interactionMode() const { return interaction_mode_string_; }
+  V8XREnvironmentBlendMode environmentBlendMode() const {
+    return V8XREnvironmentBlendMode(blend_mode_);
+  }
+  V8XRInteractionMode interactionMode() const {
+    return V8XRInteractionMode(interaction_mode_);
+  }
   XRDOMOverlayState* domOverlayState() const {
     return dom_overlay_state_.Get();
   }
-  const String visibilityState() const;
+  V8XRVisibilityState visibilityState() const;
   std::optional<float> frameRate() const { return std::nullopt; }
-  DOMFloat32Array* supportedFrameRates() const { return nullptr; }
+  NotShared<DOMFloat32Array> supportedFrameRates() const {
+    return NotShared<DOMFloat32Array>();
+  }
   XRRenderState* renderState() const { return render_state_.Get(); }
 
   // ARCore by default returns textures in RGBA half-float HDR format and no
   // other runtimes support reflection mapping, so just return this until we
   // have a need to differentiate based on the underlying runtime.
-  const String preferredReflectionFormat() const { return "rgba16f"; }
+  V8XRReflectionFormat preferredReflectionFormat() const {
+    return V8XRReflectionFormat(V8XRReflectionFormat::Enum::kRgba16F);
+  }
 
   const FrozenArray<IDLString>& enabledFeatures() const;
 
@@ -166,20 +187,30 @@ class XRSession final : public EventTarget,
   DEFINE_ATTRIBUTE_EVENT_LISTENER(squeeze, kSqueeze)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(squeezestart, kSqueezestart)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(squeezeend, kSqueezeend)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(visibilitymaskchange, kVisibilitymaskchange)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(frameratechange, kFrameratechange)
 
   void updateRenderState(XRRenderStateInit* render_state_init,
                          ExceptionState& exception_state);
 
-  const String& depthUsage(ExceptionState& exception_state);
-  const String& depthDataFormat(ExceptionState& exception_state);
+  std::optional<V8XRDepthUsage> depthUsage(ExceptionState& exception_state);
+  std::optional<V8XRDepthDataFormat> depthDataFormat(
+      ExceptionState& exception_state);
+  std::optional<V8XRDepthType> depthType(ExceptionState& exception_state);
+  std::optional<bool> depthActive(ExceptionState& exception_state);
+
+  void pauseDepthSensing(ExceptionState& exception_state);
+  void resumeDepthSensing(ExceptionState& exception_state);
+
+  // Returns true iff depth is enabled on the system and depth_active_ is true.
+  bool IsDepthActive();
 
   ScriptPromise<IDLUndefined> updateTargetFrameRate(float rate,
                                                     ExceptionState&);
 
   ScriptPromise<XRReferenceSpace> requestReferenceSpace(
       ScriptState* script_state,
-      const String& type,
+      const V8XRReferenceSpaceType& type,
       ExceptionState&);
 
   // Helper, not IDL-exposed
@@ -195,7 +226,7 @@ class XRSession final : public EventTarget,
       const gfx::Transform& native_origin_from_anchor,
       const device::mojom::blink::XRNativeOriginInformationPtr&
           native_origin_information,
-      std::optional<uint64_t> maybe_plane_id,
+      std::optional<device::PlaneId> maybe_plane_id,
       ExceptionState& exception_state);
 
   // Helper POD type containing the information needed for anchor creation in
@@ -259,6 +290,12 @@ class XRSession final : public EventTarget,
   // value that provides a good balance between quality and performance.
   gfx::SizeF RecommendedFramebufferSize() const;
 
+  // Describes the recommended dimensions of layers represented by an array
+  // texture. Should be a value that provides a good balance between quality
+  // and performance.
+  gfx::SizeF RecommendedArrayTextureSize() const;
+  size_t array_texture_layers() const { return views_.size(); }
+
   // Reports the size of the output canvas, if one is available. If not
   // reports (0, 0);
   gfx::Size OutputCanvasSize() const;
@@ -273,12 +310,11 @@ class XRSession final : public EventTarget,
   const AtomicString& InterfaceName() const override;
 
   void OnFocusChanged();
-  void OnFrame(
-      double timestamp,
-      const std::optional<gpu::MailboxHolder>& output_mailbox_holder,
-      const std::optional<gpu::MailboxHolder>& camera_image_mailbox_holder);
+  void OnFrame(double timestamp, Vector<XRSharedImageData> shared_images);
 
   const HeapVector<Member<XRViewData>>& views();
+
+  XRViewData* ViewDataForEye(device::mojom::blink::XREye eye);
 
   void AddTransientInputSource(XRInputSource* input_source);
   void RemoveTransientInputSource(XRInputSource* input_source);
@@ -330,6 +366,7 @@ class XRSession final : public EventTarget,
   bool HasPendingActivity() const override;
 
   bool CanReportPoses() const;
+  bool CanReportInputPoses() const;
 
   // Return whether we should enable anti-aliasing for WebGL layers. Value
   // comes from the underlying XR runtime.
@@ -382,6 +419,25 @@ class XRSession final : public EventTarget,
     return camera_image_size_;
   }
 
+  enum XRGraphicsBinding::Api GraphicsApi() const { return graphics_api_; }
+
+  uint64_t GetTraceId() const { return trace_id_; }
+  base::TimeDelta TakeAnimationFrameTimerAverage();
+
+  const XRLayerSharedImageManager& LayerSharedImageManager() {
+    return layer_shared_image_manager_;
+  }
+
+  device::LayerId GetNextLayerId() {
+    return layer_id_generator_.GenerateNextId();
+  }
+
+  device::mojom::blink::XRLayerManager* LayerManager();
+
+  // This is an opportunity for the session to dispatch any initial set of
+  // events. Called by |XrSystem| after the session query has resolved.
+  void DispatchInitialEvents();
+
  private:
   class XRSessionResizeObserverDelegate;
 
@@ -427,17 +483,14 @@ class XRSession final : public EventTarget,
 
   void OnSubscribeToHitTestResult(
       ScriptPromiseResolver<XRHitTestSource>* resolver,
-      device::mojom::SubscribeToHitTestResult result,
-      uint64_t subscription_id);
+      const std::optional<device::HitTestSubscriptionId>& subscription_id);
 
   void OnSubscribeToHitTestForTransientInputResult(
       ScriptPromiseResolver<XRTransientInputHitTestSource>* resolver,
-      device::mojom::SubscribeToHitTestResult result,
-      uint64_t subscription_id);
+      const std::optional<device::HitTestSubscriptionId>& subscription_id);
 
   void OnCreateAnchorResult(ScriptPromiseResolver<XRAnchor>* resolver,
-                            device::mojom::CreateAnchorResult result,
-                            uint64_t id);
+                            const std::optional<device::AnchorId>& id);
 
   void EnsureEnvironmentErrorHandler();
   void OnEnvironmentProviderError();
@@ -468,8 +521,8 @@ class XRSession final : public EventTarget,
   const Member<XRSystem> xr_;
   const device::mojom::blink::XRSessionMode mode_;
   const bool environment_integration_;
-  String blend_mode_string_;
-  String interaction_mode_string_;
+  V8XREnvironmentBlendMode::Enum blend_mode_;
+  V8XRInteractionMode::Enum interaction_mode_;
   XRVisibilityState device_visibility_state_ = XRVisibilityState::VISIBLE;
   XRVisibilityState visibility_state_ = XRVisibilityState::VISIBLE;
   String visibility_state_string_;
@@ -478,8 +531,12 @@ class XRSession final : public EventTarget,
   // Put the device config fairly early in the list of members so that it can be
   // used to initialize other members.
   device::mojom::blink::XRSessionDeviceConfigPtr device_config_;
-  String depth_usage_string_;
-  String depth_data_format_string_;
+  V8XRDepthUsage::Enum depth_usage_;
+  V8XRDepthDataFormat::Enum depth_data_format_;
+  std::optional<V8XRDepthType::Enum> depth_type_;
+  // On sessions where depth is enabled, it is active by default. On sessions
+  // where it is not enabled, we throw instead of return this value.
+  bool depth_active_ = true;
 
   Member<XRLightProbe> world_light_probe_;
   HeapVector<Member<XRRenderStateInit>> pending_render_state_;
@@ -518,7 +575,7 @@ class XRSession final : public EventTarget,
   // |anchor_ids_to_pending_anchor_promises_|, and anchors that got created in
   // phase 3 live in |anchor_ids_to_anchors_|.
 
-  HeapHashMap<uint64_t, Member<XRAnchor>> anchor_ids_to_anchors_;
+  HeapHashMap<device::AnchorId, Member<XRAnchor>> anchor_ids_to_anchors_;
 
   // Set of promises returned from CreateAnchor that are still in-flight to the
   // device. Once the device calls us back with the newly created anchor id, the
@@ -528,7 +585,7 @@ class XRSession final : public EventTarget,
   // have not yet been resolved as their data is not yet available to blink.
   // Next frame update should contain the necessary data - the promise will be
   // resolved then.
-  HeapHashMap<uint64_t, Member<ScriptPromiseResolverBase>>
+  HeapHashMap<device::AnchorId, Member<ScriptPromiseResolverBase>>
       anchor_ids_to_pending_anchor_promises_;
 
   // Mapping of hit test source ids (aka hit test subscription ids) to hit test
@@ -542,9 +599,10 @@ class XRSession final : public EventTarget,
   // |hit_test_source_for_transient_input_ids_|.
   // For the specifics of HeapHashMap<Key, WeakMember<Value>> behavior, see:
   // https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/platform/heap/BlinkGCAPIReference.md#weak-collections
-  HeapHashMap<uint64_t, WeakMember<XRHitTestSource>>
+  HeapHashMap<device::HitTestSubscriptionId, WeakMember<XRHitTestSource>>
       hit_test_source_ids_to_hit_test_sources_;
-  HeapHashMap<uint64_t, WeakMember<XRTransientInputHitTestSource>>
+  HeapHashMap<device::HitTestSubscriptionId,
+              WeakMember<XRTransientInputHitTestSource>>
       hit_test_source_ids_to_transient_input_hit_test_sources_;
 
   // The entries in the above hash sets will be automatically removed by garbage
@@ -552,9 +610,9 @@ class XRSession final : public EventTarget,
   // introducing pre-finalizers on hit test sources, store the set of IDs that
   // we know about. We will then subsequently cross-reference the sets with hash
   // maps and notify the device about hit test sources that are no longer alive.
-  HashSet<uint64_t> hit_test_source_ids_;
-  HashSet<uint64_t> hit_test_source_for_transient_input_ids_;
-
+  HashSet<device::HitTestSubscriptionId> hit_test_source_ids_;
+  HashSet<device::HitTestSubscriptionId>
+      hit_test_source_for_transient_input_ids_;
   Member<XRPlaneManager> plane_manager_;
 
   // Populated iff the raw camera feature has been enabled and the session
@@ -563,8 +621,10 @@ class XRSession final : public EventTarget,
 
   HeapVector<Member<XRViewData>> views_;
 
+  Member<XRFrame> animation_frame_ = nullptr;
   Member<XRInputSourceArray> input_sources_;
-  Member<XRWebGLLayer> prev_base_layer_;
+  Member<XRInputSourceArray> empty_input_sources_;
+  Member<XRFrameTransportDelegate> prev_transport_delegate_ = nullptr;
   Member<ResizeObserver> resize_observer_;
   Member<XRCanvasInputProvider> canvas_input_provider_;
   Member<Element> overlay_element_;
@@ -589,11 +649,19 @@ class XRSession final : public EventTarget,
   // Viewer pose in mojo space.
   std::unique_ptr<gfx::Transform> mojo_from_viewer_;
 
+  // Location of the floor in mojo space.
+  std::optional<gfx::Transform> mojo_from_floor_;
+
   bool pending_frame_ = false;
   bool resolving_frame_ = false;
   bool frames_throttled_ = false;
 
   bool canvas_was_resized_ = false;
+
+  // True if the 'layers' feature was requested for the current session.
+  bool layers_enabled_ = false;
+  // Used to synchronize the active render state with the layers backend.
+  bool should_update_layers_backend_ = false;
 
   // Indicates that we've already logged a metric, so don't need to log it
   // again.
@@ -615,7 +683,17 @@ class XRSession final : public EventTarget,
 
   int16_t last_frame_id_ = -1;
 
+  device::LayerId::Generator layer_id_generator_;
+
   bool emulated_position_ = false;
+
+  XRGraphicsBinding::Api graphics_api_;
+
+  uint64_t trace_id_;
+
+  AverageTimer page_animation_frame_timer_;
+
+  XRLayerSharedImageManager layer_shared_image_manager_;
 };
 
 }  // namespace blink

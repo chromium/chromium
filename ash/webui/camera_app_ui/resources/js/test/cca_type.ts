@@ -14,10 +14,10 @@ export const SELECTOR_MAP = {
   backVideoResolutionOptions: `#view-video-resolution-settings ` +
       `.menu-item>input[data-facing="environment"]`,
   barcodeChipText: '.barcode-chip-text',
-  barcodeChipURL: '#barcode-chip-url',
+  barcodeChipUrl: '#barcode-chip-url',
   barcodeChipWifi: '#barcode-chip-wifi',
   barcodeCopyTextButton: '#barcode-chip-text-container .barcode-copy-button',
-  barcodeCopyURLButton: '#barcode-chip-url-container .barcode-copy-button',
+  barcodeCopyUrlButton: '#barcode-chip-url-container .barcode-copy-button',
   bitrateMultiplierRangeInput: '#bitrate-slider input[type=range]',
   cancelResultButton: 'button[i18n-label=cancel_review_button]',
   confirmResultButton: 'button[i18n-label=confirm_review_button]',
@@ -61,7 +61,7 @@ export const SELECTOR_MAP = {
   lowStorageDialog: '#view-low-storage-dialog',
   lowStorageDialogManageButton:
       '#view-low-storage-dialog button.dialog-negative-button',
-  lowStorageDialogOKButton:
+  lowStorageDialogOkButton:
       '#view-low-storage-dialog button.dialog-positive-button',
   lowStorageWarning: '#nudge',
   mirrorOptionOff: 'span[i18n-aria=aria_mirror_off]',
@@ -69,7 +69,7 @@ export const SELECTOR_MAP = {
   modeSelector: 'mode-selector',
   openGridPanelButton: '#open-grid-panel',
   openMirrorPanelButton: '#open-mirror-panel',
-  openPTZPanelButton: '#open-ptz-panel',
+  openPtzPanelButton: '#open-ptz-panel',
   openTimerPanelButton: '#open-timer-panel',
   panLeftButton: '#pan-left',
   panRightButton: '#pan-right',
@@ -107,7 +107,7 @@ export const SELECTOR_MAP = {
   zoomInButton: '#zoom-in',
   zoomOutButton: '#zoom-out',
 } as const;
-export type UIComponent = keyof typeof SELECTOR_MAP;
+export type UiComponent = keyof typeof SELECTOR_MAP;
 
 export const SETTING_OPTION_MAP = {
   customVideoParametersOption: {
@@ -130,7 +130,7 @@ export const SETTING_OPTION_MAP = {
     component: 'previewOcrOption',
     state: State.ENABLE_PREVIEW_OCR,
   },
-} satisfies Record<string, {component: UIComponent, state: StateUnion}>;
+} satisfies Record<string, {component: UiComponent, state: StateUnion}>;
 export type SettingOption = keyof typeof SETTING_OPTION_MAP;
 
 export const SETTING_MENU_MAP = {
@@ -154,5 +154,5 @@ export const SETTING_MENU_MAP = {
     component: 'videoResolutionSettingButton',
     view: ViewName.VIDEO_RESOLUTION_SETTINGS,
   },
-} satisfies Record<string, {component: UIComponent, view: ViewName}>;
+} satisfies Record<string, {component: UiComponent, view: ViewName}>;
 export type SettingMenu = keyof typeof SETTING_MENU_MAP;

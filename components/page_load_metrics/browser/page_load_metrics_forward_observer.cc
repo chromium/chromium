@@ -4,6 +4,8 @@
 
 #include "components/page_load_metrics/browser/page_load_metrics_forward_observer.h"
 
+#include "content/public/browser/auction_result.h"
+
 namespace page_load_metrics {
 
 PageLoadMetricsForwardObserver::PageLoadMetricsForwardObserver(
@@ -26,7 +28,10 @@ const char* PageLoadMetricsForwardObserver::GetObserverName() const {
 
 const PageLoadMetricsObserverDelegate&
 PageLoadMetricsForwardObserver::GetDelegate() const {
-  NOTREACHED_IN_MIGRATION();
+  // TODO(crbug.com/40895492): Investigate whether this should truly be
+  // unreachable. Note that all NOTREACHED()s were made non-fatal in this file,
+  // they are not all necessarily hit.
+  DUMP_WILL_BE_NOTREACHED();
   const PageLoadMetricsObserverDelegate* null_value = nullptr;
   return *null_value;
 }
@@ -46,7 +51,10 @@ PageLoadMetricsForwardObserver::OnStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url,
     bool started_in_foreground) {
-  NOTREACHED_IN_MIGRATION();
+  // TODO(crbug.com/40895492): Investigate whether this should truly be
+  // unreachable. Note that all NOTREACHED()s were made non-fatal in this file,
+  // they are not all necessarily hit.
+  DUMP_WILL_BE_NOTREACHED();
   return STOP_OBSERVING;
 }
 
@@ -54,7 +62,10 @@ PageLoadMetricsObserverInterface::ObservePolicy
 PageLoadMetricsForwardObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
-  NOTREACHED_IN_MIGRATION();
+  // TODO(crbug.com/40895492): Investigate whether this should truly be
+  // unreachable. Note that all NOTREACHED()s were made non-fatal in this file,
+  // they are not all necessarily hit.
+  DUMP_WILL_BE_NOTREACHED();
   return STOP_OBSERVING;
 }
 
@@ -62,7 +73,10 @@ PageLoadMetricsObserverInterface::ObservePolicy
 PageLoadMetricsForwardObserver::OnPrerenderStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
-  NOTREACHED_IN_MIGRATION();
+  // TODO(crbug.com/40895492): Investigate whether this should truly be
+  // unreachable. Note that all NOTREACHED()s were made non-fatal in this file,
+  // they are not all necessarily hit.
+  DUMP_WILL_BE_NOTREACHED();
   return STOP_OBSERVING;
 }
 
@@ -70,7 +84,10 @@ PageLoadMetricsObserverInterface::ObservePolicy
 PageLoadMetricsForwardObserver::OnPreviewStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
-  NOTREACHED_IN_MIGRATION();
+  // TODO(crbug.com/40895492): Investigate whether this should truly be
+  // unreachable. Note that all NOTREACHED()s were made non-fatal in this file,
+  // they are not all necessarily hit.
+  DUMP_WILL_BE_NOTREACHED();
   return STOP_OBSERVING;
 }
 
@@ -197,7 +214,10 @@ void PageLoadMetricsForwardObserver::OnCpuTimingUpdate(
 void PageLoadMetricsForwardObserver::OnUserInput(
     const blink::WebInputEvent& event,
     const mojom::PageLoadTiming& timing) {
-  NOTREACHED_IN_MIGRATION();
+  // TODO(crbug.com/40895492): Investigate whether this should truly be
+  // unreachable. Note that all NOTREACHED()s were made non-fatal in this file,
+  // they are not all necessarily hit.
+  DUMP_WILL_BE_NOTREACHED();
 }
 
 // Following events should be ignored as they are controlled at
@@ -217,6 +237,8 @@ void PageLoadMetricsForwardObserver::OnParseStop(
 
 void PageLoadMetricsForwardObserver::OnConnectStart(
     const mojom::PageLoadTiming& timing) {}
+void PageLoadMetricsForwardObserver::OnConnectEnd(
+    const mojom::PageLoadTiming& timing) {}
 void PageLoadMetricsForwardObserver::OnDomainLookupStart(
     const mojom::PageLoadTiming& timing) {}
 void PageLoadMetricsForwardObserver::OnDomainLookupEnd(
@@ -231,31 +253,55 @@ void PageLoadMetricsForwardObserver::OnFirstImagePaintInPage(
 void PageLoadMetricsForwardObserver::OnFirstContentfulPaintInPage(
     const mojom::PageLoadTiming& timing) {}
 
+void PageLoadMetricsForwardObserver::OnMonotonicFirstPaintInPage(
+    const mojom::PageLoadTiming& timing) {}
+
+void PageLoadMetricsForwardObserver::OnMonotonicFirstContentfulPaintInPage(
+    const mojom::PageLoadTiming& timing) {}
+
 void PageLoadMetricsForwardObserver::
     OnFirstPaintAfterBackForwardCacheRestoreInPage(
         const mojom::BackForwardCacheTiming& timing,
         size_t index) {
-  NOTREACHED_IN_MIGRATION() << "Not supported.";
+  // Today, pages in which fenced frames are restored from BFCache can hit this
+  // line. However, we shouldn't forward any metrics to the parent observer
+  // here, because fenced frames are never restored from BFCache independently
+  // of their top-level page.
 }
 
 void PageLoadMetricsForwardObserver::
     OnFirstInputAfterBackForwardCacheRestoreInPage(
         const mojom::BackForwardCacheTiming& timing,
         size_t index) {
-  NOTREACHED_IN_MIGRATION() << "Not supported.";
+  // TODO(crbug.com/40895492): Investigate whether this should truly be
+  // unreachable. Note that all NOTREACHED()s were made non-fatal in this file,
+  // they are not all necessarily hit.
+  DUMP_WILL_BE_NOTREACHED() << "Not supported.";
 }
 
 void PageLoadMetricsForwardObserver::
     OnRequestAnimationFramesAfterBackForwardCacheRestoreInPage(
         const mojom::BackForwardCacheTiming& timing,
         size_t index) {
-  NOTREACHED_IN_MIGRATION() << "Not supported.";
+  // TODO(crbug.com/40895492): Investigate whether this should truly be
+  // unreachable. Note that all NOTREACHED()s were made non-fatal in this file,
+  // they are not all necessarily hit.
+  DUMP_WILL_BE_NOTREACHED() << "Not supported.";
 }
 
 void PageLoadMetricsForwardObserver::OnFirstMeaningfulPaintInMainFrameDocument(
     const mojom::PageLoadTiming& timing) {}
 
 void PageLoadMetricsForwardObserver::OnFirstInputInPage(
+    const mojom::PageLoadTiming& timing) {}
+
+void PageLoadMetricsForwardObserver::OnUserTimingMarkFullyLoaded(
+    const mojom::PageLoadTiming& timing) {}
+
+void PageLoadMetricsForwardObserver::OnUserTimingMarkFullyVisible(
+    const mojom::PageLoadTiming& timing) {}
+
+void PageLoadMetricsForwardObserver::OnUserTimingMarkInteractive(
     const mojom::PageLoadTiming& timing) {}
 
 // OnLoadingBehaviorObserved and OnJavaScriptFrameworksObserved are called
@@ -276,13 +322,13 @@ void PageLoadMetricsForwardObserver::OnFeaturesUsageObserved(
   parent_observer_->OnFeaturesUsageObserved(rfh, features);
 }
 
-// SetUpSharedMemoryForSmoothness is called only for the outermost page.
-void PageLoadMetricsForwardObserver::SetUpSharedMemoryForSmoothness(
-    const base::ReadOnlySharedMemoryRegion& shared_memory) {
-  // See also MetricsWebContentsObserver::SetUpSharedMemoryForSmoothness and
-  // the relevant TODO. Currently, information from OOPIFs and FencedFrames are
-  // not handled.
-  NOTREACHED_IN_MIGRATION();
+// SetUpSharedMemoryForDroppedFrames is called only for the outermost page.
+void PageLoadMetricsForwardObserver::SetUpSharedMemoryForDroppedFrames(
+    const base::ReadOnlySharedMemoryRegion& dropped_frames_memory) {
+  // TODO(crbug.com/40895492): Investigate whether this should truly be
+  // unreachable. Note that all NOTREACHED()s were made non-fatal in this file,
+  // they are not all necessarily hit.
+  DUMP_WILL_BE_NOTREACHED();
 }
 
 // PageLoadTracker already aggregates inter-pages data and processes it via
@@ -316,12 +362,12 @@ void PageLoadMetricsForwardObserver::OnMainFrameViewportRectChanged(
   parent_observer_->OnMainFrameViewportRectChanged(main_frame_viewport_rect);
 }
 
-void PageLoadMetricsForwardObserver::OnMainFrameImageAdRectsChanged(
-    const base::flat_map<int, gfx::Rect>& main_frame_image_ad_rects) {
+void PageLoadMetricsForwardObserver::OnMainFrameAdRectsChanged(
+    const base::flat_map<int, gfx::Rect>& main_frame_ad_rects) {
   if (!parent_observer_) {
     return;
   }
-  parent_observer_->OnMainFrameImageAdRectsChanged(main_frame_image_ad_rects);
+  parent_observer_->OnMainFrameAdRectsChanged(main_frame_ad_rects);
 }
 
 // Don't need to forward FlushMetricsOnAppEnterBackground and OnComplete as they
@@ -376,8 +422,8 @@ void PageLoadMetricsForwardObserver::FrameSizeChanged(
 void PageLoadMetricsForwardObserver::OnRenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {}
 
-void PageLoadMetricsForwardObserver::OnSubFrameDeleted(int frame_tree_node_id) {
-}
+void PageLoadMetricsForwardObserver::OnSubFrameDeleted(
+    content::FrameTreeNodeId frame_tree_node_id) {}
 
 void PageLoadMetricsForwardObserver::OnCookiesRead(
     const GURL& url,
@@ -421,7 +467,10 @@ void PageLoadMetricsForwardObserver::OnStorageAccessed(
 
 void PageLoadMetricsForwardObserver::OnPrefetchLikely() {
   // This event is delivered only for the primary page.
-  NOTREACHED_IN_MIGRATION();
+  // TODO(crbug.com/40895492): Investigate whether this should truly be
+  // unreachable. Note that all NOTREACHED()s were made non-fatal in this file,
+  // they are not all necessarily hit.
+  DUMP_WILL_BE_NOTREACHED();
 }
 
 void PageLoadMetricsForwardObserver::DidActivatePrerenderedPage(
@@ -429,13 +478,6 @@ void PageLoadMetricsForwardObserver::DidActivatePrerenderedPage(
 
 void PageLoadMetricsForwardObserver::DidActivatePreviewedPage(
     base::TimeTicks activation_time) {}
-
-void PageLoadMetricsForwardObserver::OnV8MemoryChanged(
-    const std::vector<MemoryUpdate>& memory_updates) {
-  if (!parent_observer_)
-    return;
-  parent_observer_->OnV8MemoryChanged(memory_updates);
-}
 
 void PageLoadMetricsForwardObserver::OnSharedStorageWorkletHostCreated() {
   if (!parent_observer_)
@@ -454,6 +496,21 @@ void PageLoadMetricsForwardObserver::OnCustomUserTimingMarkObserved(
     const std::vector<mojom::CustomUserTimingMarkPtr>& timings) {
   // This new API doesn't support FORWARD_OBSERVING that is discouraged for new
   // observers.
+}
+
+void PageLoadMetricsForwardObserver::OnAdAuctionComplete(
+    bool is_server_auction,
+    bool is_on_device_auction,
+    content::AuctionResult result) {
+  if (!parent_observer_) {
+    return;
+  }
+  parent_observer_->OnAdAuctionComplete(is_server_auction, is_on_device_auction,
+                                        result);
+}
+
+void PageLoadMetricsForwardObserver::OnPrimaryPageRenderProcessGone() {
+  DUMP_WILL_BE_NOTREACHED() << "Not supported.";
 }
 
 }  // namespace page_load_metrics

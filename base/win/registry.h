@@ -129,7 +129,7 @@ class BASE_EXPORT RegKey {
 
   // Setters:
 
-  // Sets an int32_t value.
+  // Sets a uint32_t value.
   LONG WriteValue(const wchar_t* name, DWORD in_value);
 
   // Sets a string value.

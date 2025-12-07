@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/core/dependency_manager.h"
@@ -105,7 +106,7 @@ template <typename ServiceType>
 KeyedServiceTemplatedFactory<ServiceType>::ServicePtr
 KeyedServiceTemplatedFactory<ServiceType>::GetServiceForContext(void* context,
                                                                 bool create) {
-  TRACE_EVENT("browser,startup", "KeyedServiceFactory::GetServiceForContext",
+  TRACE_EVENT("browser", "KeyedServiceFactory::GetServiceForContext",
               [this](perfetto::EventContext ctx) {
                 ctx.event()->set_chrome_keyed_service()->set_name(name());
               });
@@ -232,7 +233,7 @@ void KeyedServiceTemplatedFactory<ServiceType>::ContextShutdown(void* context) {
 
   iterator->second.stage = MappingStage::kServiceShutdown;
   if (iterator->second.service) {
-    if constexpr (base::internal::IsRefCountedType<ServiceType>) {
+    if constexpr (base::IsRefCountedType<ServiceType>) {
       iterator->second.service->ShutdownOnUIThread();
     } else {
       iterator->second.service->Shutdown();

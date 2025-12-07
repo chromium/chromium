@@ -10,6 +10,7 @@
 #include "media/fuchsia/video/fuchsia_video_decoder.h"
 
 #include <fuchsia/sysmem/cpp/fidl.h>
+#include <inttypes.h>
 #include <lib/zx/eventpair.h>
 #include <vulkan/vulkan.h>
 
@@ -29,7 +30,6 @@
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h"
 #include "media/base/cdm_context.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_aspect_ratio.h"
@@ -119,7 +119,7 @@ class FuchsiaVideoDecoder::OutputMailbox {
       scoped_refptr<viz::RasterContextProvider> raster_context_provider,
       gfx::GpuMemoryBufferHandle gmb_handle,
       gfx::Size& size,
-      gfx::BufferFormat& buffer_format,
+      viz::SharedImageFormat& format,
       gfx::ClientNativePixmapFactory* pixmap_factory,
       const gfx::ColorSpace& color_space)
       : raster_context_provider_(raster_context_provider),
@@ -129,23 +129,11 @@ class FuchsiaVideoDecoder::OutputMailbox {
                                      gpu::SHARED_IMAGE_USAGE_SCANOUT |
                                      gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE;
 
-    // The GMB is either YUV_420_BIPLANAR (SIF kNV12) or YVU_420 (SIF kYV12).
-    auto shared_image_format = viz::MultiPlaneFormat::kNV12;
-    switch (buffer_format) {
-      case gfx::BufferFormat::YUV_420_BIPLANAR:
-        break;
-      case gfx::BufferFormat::YVU_420:
-        shared_image_format = viz::MultiPlaneFormat::kYV12;
-        break;
-      default:
-        NOTREACHED_NORETURN();
-    }
-    shared_image_format.SetPrefersExternalSampler();
-
+    // Note that the shared image prefers external sampler.
+    format.SetPrefersExternalSampler();
     shared_image_ =
         raster_context_provider_->SharedImageInterface()->CreateSharedImage(
-            {shared_image_format, size, color_space, usage,
-             "FuchsiaVideoDecoder"},
+            {format, size, color_space, usage, "FuchsiaVideoDecoder"},
             std::move(gmb_handle));
 
     create_sync_token_ = raster_context_provider_->SharedImageInterface()
@@ -177,17 +165,18 @@ class FuchsiaVideoDecoder::OutputMailbox {
     reuse_callback_ = std::move(reuse_callback);
 
     auto frame = VideoFrame::WrapSharedImage(
-        pixel_format, shared_image_, create_sync_token_, 0,
+        pixel_format, shared_image_, create_sync_token_,
         base::BindPostTaskToCurrentDefault(base::BindOnce(
             &OutputMailbox::OnFrameDestroyed, base::Unretained(this))),
         coded_size, visible_rect, natural_size, timestamp);
     create_sync_token_.Clear();
 
-    frame->set_shared_image_format_type(
-        media::SharedImageFormatType::kSharedImageFormatExternalSampler);
-
     // Request a fence we'll wait on before reusing the buffer.
     frame->metadata().read_lock_fences_enabled = true;
+
+    // Set the frame to have same color space as that for underlying shared
+    // image.
+    frame->set_color_space(shared_image_->color_space());
 
     return frame;
   }
@@ -573,20 +562,18 @@ void FuchsiaVideoDecoder::OnStreamProcessorOutputPacket(
       fidl::ToUnderlying(output_format_.image_format.pixel_format.type));
 
   VideoPixelFormat pixel_format;
-  gfx::BufferFormat buffer_format;
-  VkFormat vk_format;
+  // The GMB is either kNV12 or kYV12.
+  viz::SharedImageFormat si_format;
   switch (sysmem_pixel_format) {
     case fuchsia::images2::PixelFormat::NV12:
       pixel_format = PIXEL_FORMAT_NV12;
-      buffer_format = gfx::BufferFormat::YUV_420_BIPLANAR;
-      vk_format = VK_FORMAT_G8_B8R8_2PLANE_420_UNORM;
+      si_format = viz::MultiPlaneFormat::kNV12;
       break;
 
     case fuchsia::images2::PixelFormat::I420:
     case fuchsia::images2::PixelFormat::YV12:
       pixel_format = PIXEL_FORMAT_I420;
-      buffer_format = gfx::BufferFormat::YVU_420;
-      vk_format = VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM;
+      si_format = viz::MultiPlaneFormat::kYV12;
       break;
 
     default:
@@ -611,17 +598,16 @@ void FuchsiaVideoDecoder::OnStreamProcessorOutputPacket(
   }
 
   if (!output_mailboxes_[buffer_index]) {
-    gfx::GpuMemoryBufferHandle gmb_handle;
-    gmb_handle.type = gfx::NATIVE_PIXMAP;
+    gfx::NativePixmapHandle native_pixmap_handle;
     auto status = output_buffer_collection_handle_.duplicate(
-        ZX_RIGHT_SAME_RIGHTS,
-        &gmb_handle.native_pixmap_handle.buffer_collection_handle);
+        ZX_RIGHT_SAME_RIGHTS, &native_pixmap_handle.buffer_collection_handle);
     ZX_DCHECK(status == ZX_OK, status);
-    gmb_handle.native_pixmap_handle.buffer_index = buffer_index;
+    native_pixmap_handle.buffer_index = buffer_index;
 
     output_mailboxes_[buffer_index] = new OutputMailbox(
-        raster_context_provider_, std::move(gmb_handle), coded_size,
-        buffer_format, client_native_pixmap_factory_.get(),
+        raster_context_provider_,
+        gfx::GpuMemoryBufferHandle(std::move(native_pixmap_handle)), coded_size,
+        si_format, client_native_pixmap_factory_.get(),
         current_config_.color_space_info().ToGfxColorSpace());
   } else {
     raster_context_provider_->SharedImageInterface()->UpdateSharedImage(
@@ -657,24 +643,6 @@ void FuchsiaVideoDecoder::OnStreamProcessorOutputPacket(
       base::BindOnce(&FuchsiaVideoDecoder::ReleaseOutputPacket,
                      base::Unretained(this), std::move(output_packet)));
 
-  VkSamplerYcbcrModelConversion ycbcr_conversion =
-      (current_config_.color_space_info().matrix ==
-       VideoColorSpace::MatrixID::BT709)
-          ? VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_709
-          : VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_601;
-
-  // Currently sysmem doesn't specify location of chroma samples relative to
-  // luma (see fxbug.dev/13677). Assume they are cosited with luma. YCbCr info
-  // here must match the values passed for the same buffer in
-  // ui::SysmemBufferCollection::CreateVkImage() (see
-  // ui/ozone/platform/flatland/flatland_sysmem_buffer_collection.cc).
-  // |format_features| are resolved later in the GPU process before this info is
-  // passed to Skia.
-  frame->set_ycbcr_info(gpu::VulkanYCbCrInfo(
-      vk_format, /*external_format=*/0, ycbcr_conversion,
-      VK_SAMPLER_YCBCR_RANGE_ITU_NARROW, VK_CHROMA_LOCATION_COSITED_EVEN,
-      VK_CHROMA_LOCATION_COSITED_EVEN, /*format_features=*/0));
-
   // Mark the frame as power-efficient since (software decoders are used only in
   // tests).
   frame->metadata().power_efficient = true;
@@ -705,7 +673,16 @@ void FuchsiaVideoDecoder::OnStreamProcessorError() {
 }
 
 void FuchsiaVideoDecoder::CallNextDecodeCallback() {
-  DCHECK(!decode_callbacks_.empty());
+  if (decode_callbacks_.empty()) {
+    // Besides the potential possibilities of unexpected calling this function
+    // more times than expected, triggering this condition may also mean that we
+    // executed the callback too early and ignored some of the frames.
+    // The root cause is still being investigated, and will be fixed later.
+    // TODO(crbug.com/423634129): Remove this log once the root cause is fixed.
+    LOG(WARNING)
+        << "Called CallNextDecodeCallback more times than expected.";
+    return;
+  }
   auto cb = std::move(decode_callbacks_.front());
   decode_callbacks_.pop_front();
 
@@ -760,7 +737,7 @@ void FuchsiaVideoDecoder::SetBufferCollectionTokenForGpu(
   raster_context_provider_->SharedImageInterface()
       ->RegisterSysmemBufferCollection(
           std::move(service_handle), token.Unbind().TakeChannel(),
-          gfx::BufferFormat::YUV_420_BIPLANAR, gfx::BufferUsage::GPU_READ,
+          viz::MultiPlaneFormat::kNV12, gfx::BufferUsage::GPU_READ,
           use_overlays_for_video_ /*register_with_image_pipe*/);
 
   // Exact number of buffers sysmem will allocate is unknown here.

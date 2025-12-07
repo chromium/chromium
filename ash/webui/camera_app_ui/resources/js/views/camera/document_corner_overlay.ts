@@ -284,8 +284,8 @@ export class DocumentCornerOverlay {
       let centerX = 0;
       let centerY = 0;
       let maxEdgeLength = 0;
-      const shouldUpdatePOI = (() => {
-        let isPreviousPOIOutsideNewDoc = this.prevDocArea === null;
+      const shouldUpdatePoi = (() => {
+        let isPreviousPoiOutsideNewDoc = this.prevDocArea === null;
         const {x: xp, y: yp} = this.prevDocArea?.center ?? {x: 0, y: 0};
         for (let i = 0; i < corners.length; ++i) {
           const {x: x1, y: y1} = corners[i];
@@ -299,16 +299,16 @@ export class DocumentCornerOverlay {
 
           const d = (x2 - x1) * (yp - y1) - (xp - x1) * (y2 - y1);
           if (d >= 0) {
-            isPreviousPOIOutsideNewDoc = true;
+            isPreviousPoiOutsideNewDoc = true;
           }
         }
         const isDocScaleChanges = this.prevDocArea === null ||
             Math.abs(maxEdgeLength - this.prevDocArea.scale) /
                     this.prevDocArea.scale >
                 THRESHOLD_SCALE_DIFF;
-        return isPreviousPOIOutsideNewDoc || isDocScaleChanges;
+        return isPreviousPoiOutsideNewDoc || isDocScaleChanges;
       })();
-      if (!shouldUpdatePOI) {
+      if (!shouldUpdatePoi) {
         return null;
       }
       return {center: new Point(centerX, centerY), scale: maxEdgeLength};

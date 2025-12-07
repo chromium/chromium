@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -16,7 +17,6 @@
 #include "base/strings/strcat.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "v8/include/v8-local-handle.h"
 #include "v8/include/v8-value.h"
 
@@ -68,7 +68,7 @@ class CONTENT_EXPORT IdlConvert {
 
     // This must match the order inside `StatusValue`
     enum class Type { kSuccess, kTimeout, kErrorMessage, kException };
-    using StatusValue = absl::variant<Success, Timeout, std::string, Exception>;
+    using StatusValue = std::variant<Success, Timeout, std::string, Exception>;
 
     Status();
     Status(const Status& other) = delete;
@@ -103,6 +103,7 @@ class CONTENT_EXPORT IdlConvert {
     Type type() const { return static_cast<Type>(value_.index()); }
 
     bool is_success() const { return type() == Type::kSuccess; }
+    bool is_timeout() const { return type() == Type::kTimeout; }
 
     // Serializes the conversion error message. This can only be called if
     // the status is not a success.
@@ -115,7 +116,7 @@ class CONTENT_EXPORT IdlConvert {
 
     const Exception& GetException() const {
       DCHECK_EQ(type(), Type::kException);
-      return absl::get<Exception>(value_);
+      return std::get<Exception>(value_);
     }
 
    private:
@@ -187,7 +188,7 @@ class CONTENT_EXPORT IdlConvert {
                         std::string_view error_prefix,
                         std::initializer_list<std::string_view> error_subject,
                         v8::Local<v8::Value> value,
-                        absl::variant<int32_t, v8::Local<v8::BigInt>>& out);
+                        std::variant<int32_t, v8::Local<v8::BigInt>>& out);
 
   // For values that should be converted to WebIDL "any" type.
   // This just passes the incoming value through, and is here for benefit of

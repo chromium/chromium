@@ -19,10 +19,6 @@ JavaScriptFeature* GetBaseJavaScriptFeature();
 // __gCrWeb.common APIs.
 JavaScriptFeature* GetCommonJavaScriptFeature();
 
-// Returns the shared message javascript used across many features which defines
-// __gCrWeb.message APIs.
-JavaScriptFeature* GetMessageJavaScriptFeature();
-
 }  // namespace java_script_features
 }  // namespace web
 

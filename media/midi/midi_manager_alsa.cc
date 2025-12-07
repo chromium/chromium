@@ -9,21 +9,24 @@
 #include <stddef.h>
 #include <stdlib.h>
 
+#include <algorithm>
 #include <string>
+#include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/posix/safe_strerror.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "media/midi/midi_service.h"
 #include "media/midi/midi_service.mojom.h"
 #include "media/midi/task_service.h"
@@ -150,11 +153,11 @@ std::string GetVendor(udev_device* dev) {
   return vendor;
 }
 
-void SetStringIfNonEmpty(base::Value::Dict* value,
-                         const std::string& path,
-                         const std::string& in_value) {
+void SetStringIfNonEmpty(base::Value::Dict& value,
+                         std::string_view path,
+                         std::string in_value) {
   if (!in_value.empty())
-    value->Set(path, in_value);
+    value.Set(path, std::move(in_value));
 }
 
 }  // namespace
@@ -227,7 +230,7 @@ void MidiManagerAlsa::StartInitialization() {
 
   // Subscribe to the announce port.
   snd_seq_port_subscribe_t* subs;
-  snd_seq_port_subscribe_alloca(&subs);
+  UNSAFE_TODO(snd_seq_port_subscribe_alloca(&subs));
   snd_seq_addr_t announce_sender;
   snd_seq_addr_t announce_dest;
   announce_sender.client = SND_SEQ_CLIENT_SYSTEM;
@@ -351,8 +354,8 @@ MidiManagerAlsa::MidiPort::MidiPort(const std::string& path,
 MidiManagerAlsa::MidiPort::~MidiPort() = default;
 
 // Note: keep synchronized with the MidiPort::Match* methods.
-std::unique_ptr<base::Value::Dict> MidiManagerAlsa::MidiPort::Value() const {
-  std::unique_ptr<base::Value::Dict> value(new base::Value::Dict);
+base::Value::Dict MidiManagerAlsa::MidiPort::Value() const {
+  base::Value::Dict value;
 
   std::string type;
   switch (type_) {
@@ -363,38 +366,33 @@ std::unique_ptr<base::Value::Dict> MidiManagerAlsa::MidiPort::Value() const {
       type = "output";
       break;
   }
-  value->Set("type", type);
-  SetStringIfNonEmpty(value.get(), "path", path_);
-  SetStringIfNonEmpty(value.get(), "clientName", client_name_);
-  SetStringIfNonEmpty(value.get(), "portName", port_name_);
-  value->Set("clientId", client_id_);
-  value->Set("portId", port_id_);
-  value->Set("midiDevice", midi_device_);
+  value.Set("type", std::move(type));
+  SetStringIfNonEmpty(value, "path", path_);
+  SetStringIfNonEmpty(value, "clientName", client_name_);
+  SetStringIfNonEmpty(value, "portName", port_name_);
+  value.Set("clientId", client_id_);
+  value.Set("portId", port_id_);
+  value.Set("midiDevice", midi_device_);
 
   // Flatten id fields.
-  SetStringIfNonEmpty(value.get(), "bus", id_.bus());
-  SetStringIfNonEmpty(value.get(), "vendorId", id_.vendor_id());
-  SetStringIfNonEmpty(value.get(), "modelId", id_.model_id());
-  SetStringIfNonEmpty(value.get(), "usbInterfaceNum", id_.usb_interface_num());
-  SetStringIfNonEmpty(value.get(), "serial", id_.serial());
+  SetStringIfNonEmpty(value, "bus", id_.bus());
+  SetStringIfNonEmpty(value, "vendorId", id_.vendor_id());
+  SetStringIfNonEmpty(value, "modelId", id_.model_id());
+  SetStringIfNonEmpty(value, "usbInterfaceNum", id_.usb_interface_num());
+  SetStringIfNonEmpty(value, "serial", id_.serial());
 
   return value;
 }
 
 std::string MidiManagerAlsa::MidiPort::JSONValue() const {
-  std::string json;
-  JSONStringValueSerializer serializer(&json);
-  serializer.Serialize(*Value().get());
-  return json;
+  return base::WriteJson(Value()).value_or(std::string());
 }
 
 // TODO(agoode): Do not use SHA256 here. Instead store a persistent
 //               mapping and just use a UUID or other random string.
 //               http://crbug.com/465320
 std::string MidiManagerAlsa::MidiPort::OpaqueKey() const {
-  uint8_t hash[crypto::kSHA256Length];
-  crypto::SHA256HashString(JSONValue(), hash, sizeof(hash));
-  return base::HexEncode(hash);
+  return base::HexEncode(crypto::hash::Sha256(JSONValue()));
 }
 
 bool MidiManagerAlsa::MidiPort::MatchConnected(const MidiPort& query) const {
@@ -486,7 +484,7 @@ MidiManagerAlsa::MidiPortStateBase::iterator
 MidiManagerAlsa::MidiPortStateBase::FindConnected(
     const MidiManagerAlsa::MidiPort& port) {
   // Exact match required for connected ports.
-  return base::ranges::find_if(ports_, [&port](std::unique_ptr<MidiPort>& p) {
+  return std::ranges::find_if(ports_, [&port](std::unique_ptr<MidiPort>& p) {
     return p->MatchConnected(port);
   });
 }
@@ -512,7 +510,7 @@ MidiManagerAlsa::MidiPortStateBase::FindDisconnected(
     // This is the best possible match for hardware card-based clients.
     // This will also match the empty id correctly for devices without an id.
     auto it =
-        base::ranges::find_if(ports_, [&port](std::unique_ptr<MidiPort>& p) {
+        std::ranges::find_if(ports_, [&port](std::unique_ptr<MidiPort>& p) {
           return p->MatchCardPass1(port);
         });
     if (it != ports_.end())
@@ -523,7 +521,7 @@ MidiManagerAlsa::MidiPortStateBase::FindDisconnected(
       // This will give us a high-confidence match when a user moves a device to
       // another USB/Firewire/Thunderbolt/etc port, but only works if the device
       // has a hardware id.
-      it = base::ranges::find_if(ports_, [&port](std::unique_ptr<MidiPort>& p) {
+      it = std::ranges::find_if(ports_, [&port](std::unique_ptr<MidiPort>& p) {
         return p->MatchCardPass2(port);
       });
       if (it != ports_.end())
@@ -534,7 +532,7 @@ MidiManagerAlsa::MidiPortStateBase::FindDisconnected(
     // Pass 1. Match on client_id, port_id, client_name, port_name.
     // This will give us a reasonably good match.
     auto it =
-        base::ranges::find_if(ports_, [&port](std::unique_ptr<MidiPort>& p) {
+        std::ranges::find_if(ports_, [&port](std::unique_ptr<MidiPort>& p) {
           return p->MatchNoCardPass1(port);
         });
     if (it != ports_.end())
@@ -543,7 +541,7 @@ MidiManagerAlsa::MidiPortStateBase::FindDisconnected(
     // Pass 2. Match on port_id, client_name, port_name.
     // This is weaker but similar to pass 2 in the hardware card-based clients
     // match.
-    it = base::ranges::find_if(ports_, [&port](std::unique_ptr<MidiPort>& p) {
+    it = std::ranges::find_if(ports_, [&port](std::unique_ptr<MidiPort>& p) {
       return p->MatchNoCardPass2(port);
     });
     if (it != ports_.end())
@@ -809,7 +807,7 @@ void MidiManagerAlsa::SendMidiData(MidiManagerClient* client,
   ScopedSndMidiEventPtr encoder = CreateScopedSndMidiEventPtr(kSendBufferSize);
   for (const auto datum : data) {
     snd_seq_event_t event;
-    snd_seq_ev_clear(&event);
+    UNSAFE_TODO(snd_seq_ev_clear(&event));
     int result = snd_midi_event_encode_byte(encoder.get(), datum, &event);
     if (result == 1) {
       // Full event, send it.
@@ -948,7 +946,7 @@ void MidiManagerAlsa::ProcessClientStartEvent(int client_id) {
     return;
 
   snd_seq_client_info_t* client_info;
-  snd_seq_client_info_alloca(&client_info);
+  UNSAFE_TODO(snd_seq_client_info_alloca(&client_info));
   int err =
       snd_seq_get_any_client_info(in_client_.get(), client_id, client_info);
   if (err != 0)
@@ -969,7 +967,7 @@ void MidiManagerAlsa::ProcessClientStartEvent(int client_id) {
 
 void MidiManagerAlsa::ProcessPortStartEvent(const snd_seq_addr_t& addr) {
   snd_seq_port_info_t* port_info;
-  snd_seq_port_info_alloca(&port_info);
+  UNSAFE_TODO(snd_seq_port_info_alloca(&port_info));
   int err = snd_seq_get_any_port_info(in_client_.get(), addr.client, addr.port,
                                       port_info);
   if (err != 0)
@@ -1023,11 +1021,11 @@ void MidiManagerAlsa::ProcessUdevEvent(udev_device* dev) {
   if (!action)
     action = kUdevActionChange;
 
-  if (strcmp(action, kUdevActionChange) == 0) {
+  if (UNSAFE_TODO(strcmp(action, kUdevActionChange)) == 0) {
     AddCard(dev);
     // Generate Web MIDI events.
     UpdatePortStateAndGenerateEvents();
-  } else if (strcmp(action, kUdevActionRemove) == 0) {
+  } else if (UNSAFE_TODO(strcmp(action, kUdevActionRemove)) == 0) {
     RemoveCard(GetCardNumber(dev));
     // Generate Web MIDI events.
     UpdatePortStateAndGenerateEvents();
@@ -1043,8 +1041,8 @@ void MidiManagerAlsa::AddCard(udev_device* dev) {
 
   snd_ctl_card_info_t* card;
   snd_hwdep_info_t* hwdep;
-  snd_ctl_card_info_alloca(&card);
-  snd_hwdep_info_alloca(&hwdep);
+  UNSAFE_TODO(snd_ctl_card_info_alloca(&card));
+  UNSAFE_TODO(snd_hwdep_info_alloca(&hwdep));
   const std::string id = base::StringPrintf("hw:CARD=%i", number);
   snd_ctl_t* handle;
   int err = snd_ctl_open(&handle, id.c_str(), 0);
@@ -1209,9 +1207,9 @@ void MidiManagerAlsa::UpdatePortStateAndGenerateEvents() {
 // TODO(agoode): return false on failure.
 void MidiManagerAlsa::EnumerateAlsaPorts() {
   snd_seq_client_info_t* client_info;
-  snd_seq_client_info_alloca(&client_info);
+  UNSAFE_TODO(snd_seq_client_info_alloca(&client_info));
   snd_seq_port_info_t* port_info;
-  snd_seq_port_info_alloca(&port_info);
+  UNSAFE_TODO(snd_seq_port_info_alloca(&port_info));
 
   // Enumerate clients.
   snd_seq_client_info_set_client(client_info, -1);
@@ -1284,7 +1282,7 @@ bool MidiManagerAlsa::CreateAlsaOutputPort(uint32_t port_index,
 
     // Activate port subscription.
     snd_seq_port_subscribe_t* subs;
-    snd_seq_port_subscribe_alloca(&subs);
+    UNSAFE_TODO(snd_seq_port_subscribe_alloca(&subs));
     snd_seq_addr_t sender;
     sender.client = out_client_id_;
     sender.port = out_port;
@@ -1328,7 +1326,7 @@ bool MidiManagerAlsa::Subscribe(uint32_t port_index,
                                 int port_id) {
   // Activate port subscription.
   snd_seq_port_subscribe_t* subs;
-  snd_seq_port_subscribe_alloca(&subs);
+  UNSAFE_TODO(snd_seq_port_subscribe_alloca(&subs));
   snd_seq_addr_t sender;
   sender.client = client_id;
   sender.port = port_id;

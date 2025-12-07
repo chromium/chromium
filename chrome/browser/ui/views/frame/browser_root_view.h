@@ -11,17 +11,18 @@
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/widget/root_view.h"
 
+class BrowserView;
+class TabStrip;
 class ToolbarView;
 
 namespace ui {
 class OSExchangeData;
 }
 
-// RootView implementation used by BrowserFrame. This forwards drop events to
+// RootView implementation used by BrowserWidget. This forwards drop events to
 // the TabStrip. Visually the tabstrip extends to the top of the frame, but in
 // actually it doesn't. The tabstrip is only as high as a tab. To enable
 // dropping above the tabstrip BrowserRootView forwards drop events to the
@@ -54,13 +55,10 @@ class BrowserRootView : public views::internal::RootView {
     DropTarget(const DropTarget&) = delete;
     DropTarget& operator=(const DropTarget&) = delete;
 
-    // Returns a `DropIndex` for the drop. If multiple items are being dropped,
-    // then `allow_replacement` will be false and the `relative_to_index` value
-    // of the returned `DropIndex` must not be set to `kReplaceIndex`. Return
-    // `nullopt` if it is not possible to drop at this location.
+    // Returns a `DropIndex` for the drop. Returns `nullopt` if it is not
+    // possible to drop at this location.
     virtual std::optional<DropIndex> GetDropIndex(
-        const ui::DropTargetEvent& event,
-        bool allow_replacement) = 0;
+        const ui::DropTargetEvent& event) = 0;
     virtual DropTarget* GetDropTarget(gfx::Point loc_in_local_coords) = 0;
     virtual views::View* GetViewForDrop() = 0;
 
@@ -99,6 +97,9 @@ class BrowserRootView : public views::internal::RootView {
  private:
   friend class BrowserRootViewBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(BrowserRootViewBrowserTest, ClearDropInfo);
+  FRIEND_TEST_ALL_PREFIXES(BrowserRootViewBrowserTest, DropOrderingCorrect);
+  FRIEND_TEST_ALL_PREFIXES(BrowserRootViewBrowserTest,
+                           InitiatorOriginForDroppedLink);
 
   // Used during a drop session of a url. Tracks the position of the drop.
   struct DropInfo {
@@ -122,13 +123,10 @@ class BrowserRootView : public views::internal::RootView {
 
   // Converts `event` from the hosts coordinate system to the view's
   // coordinate system, and gets the `DropIndex` for the drop.
-  // `allow_replacement` specifies whether `RelativeToIndex::kReplaceIndex` is a
-  // valid value for the returned `DropIndex::relative_to_index`.
   std::optional<DropIndex> GetDropIndexForEvent(
       const ui::DropTargetEvent& event,
       const ui::OSExchangeData& data,
-      DropTarget* target,
-      bool allow_replacement);
+      DropTarget* target);
 
   DropTarget* GetDropTarget(const ui::DropTargetEvent& event);
 
@@ -140,8 +138,8 @@ class BrowserRootView : public views::internal::RootView {
   // `OnDragUpdated()` or calling the drop callback in tests.
   void SetOnFilteringCompleteClosureForTesting(base::OnceClosure closure);
 
-  TabStrip* tabstrip() { return browser_view_->tabstrip(); }
-  ToolbarView* toolbar() { return browser_view_->toolbar(); }
+  TabStrip* tabstrip();
+  ToolbarView* toolbar();
 
   // Returns a URL if |data| has string contents and the user can "paste and
   // go".

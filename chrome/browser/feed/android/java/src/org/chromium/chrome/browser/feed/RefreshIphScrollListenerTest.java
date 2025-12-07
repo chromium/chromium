@@ -9,11 +9,12 @@ import static org.mockito.Mockito.when;
 import android.view.View;
 
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.params.BlockJUnit4RunnerDelegate;
 import org.chromium.base.test.params.ParameterAnnotations;
@@ -137,14 +138,10 @@ public final class RefreshIphScrollListenerTest {
         }
     }
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Tracker mTracker;
 
-    private boolean mHasShownIPH;
-
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
+    private boolean mHasShownIph;
 
     @Test
     @Feature({"Feed"})
@@ -180,7 +177,7 @@ public final class RefreshIphScrollListenerTest {
                     }
 
                     @Override
-                    public boolean isFeedHeaderPositionInContainerSuitableForIPH(
+                    public boolean isFeedHeaderPositionInContainerSuitableForIph(
                             float headerMaxPosFraction) {
                         return false;
                     }
@@ -231,14 +228,14 @@ public final class RefreshIphScrollListenerTest {
                         delegate,
                         scrollableContainerDelegate,
                         () -> {
-                            mHasShownIPH = true;
+                            mHasShownIph = true;
                         });
         listener.onScrolled(0, scrollY);
 
         if (expectEnabled) {
-            Assert.assertTrue(mHasShownIPH);
+            Assert.assertTrue(mHasShownIph);
         } else {
-            Assert.assertFalse(mHasShownIPH);
+            Assert.assertFalse(mHasShownIph);
         }
     }
 }

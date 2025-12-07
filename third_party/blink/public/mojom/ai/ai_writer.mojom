@@ -1,0 +1,61 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/ai/ai_common.mojom";
+import "third_party/blink/public/mojom/ai/model_streaming_responder.mojom";
+
+// The struct follows the explainer in
+// https://github.com/explainers-by-googlers/writing-assistance-apis/blob/main/README.md
+
+// The output tone of the writer.
+enum AIWriterTone {
+  kFormal,
+  kNeutral,
+  kCasual,
+};
+
+// The output format of the writer.
+enum AIWriterFormat {
+  kPlainText,
+  kMarkdown,
+};
+
+// The output length of the writer.
+enum AIWriterLength {
+  kShort,
+  kMedium,
+  kLong,
+};
+
+// This is used when creating a new AIWriter.
+struct AIWriterCreateOptions {
+  string? shared_context;
+  AIWriterTone tone;
+  AIWriterFormat format;
+  AIWriterLength length;
+
+  // Creation fails if a model is not available for specified languages.
+  array<AILanguageCode> expected_input_languages;
+  array<AILanguageCode> expected_context_languages;
+  AILanguageCode output_language;
+};
+
+// Interface for AIWriter that can stream the output string.
+interface AIWriter {
+  // Generates a text using the input string. The shared context string can be
+  // set when creating the AIWriter.
+  // `input` is a string that is set when the JS API `writer.write()` is called.
+  // `context` is a optional string that is set in the AIWriterWriteOptions when
+  // the JS API `writer.write()` is called.
+  Write(
+    string input,
+    string? context,
+    pending_remote<ModelStreamingResponder> pending_responder);
+
+  // Returns the usage size of `input` and `context`, or null if unable to
+  // retrieve the usage.
+  MeasureUsage(string input, string context) => (uint32? number_of_tokens);
+};

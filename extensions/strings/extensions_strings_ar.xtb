@@ -5,7 +5,6 @@
 <translation id="1140871961407805696">الكاميرا الخلفية المواجهة للبيئة</translation>
 <translation id="1196338895211115272">تعذّر تصدير المفتاح الخاص.</translation>
 <translation id="132960226125594336">تعذّر تحميل الملف "<ph name="RELATIVE_PATH" />" للنص البرمجي الخاص بالمحتوى لأنّه سيتجاوز الحد الأقصى لحجم النص البرمجي أو الحد الأقصى لحجم النص البرمجي لإجمالي المحتوى الخاص بالإضافة.</translation>
-<translation id="1420684932347524586">‏عذرًا! تعذّر إنشاء ملف خاص RSA عشوائي.</translation>
 <translation id="1445572445564823378">تتسبب هذه الإضافة في بطء <ph name="PRODUCT_NAME" />. يجب إيقافها لاستعادة أداء <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">‏WebGL غير متوافق.</translation>
 <translation id="1610570795592207282">‏تعذَّر تحميل ملف css (صفحات الأنماط المتتالية) '<ph name="RELATIVE_PATH" />' للنص البرمجي.</translation>
@@ -19,13 +18,11 @@
 <translation id="3115238746683532089">المنتج غير معروف <ph name="PRODUCT_ID" /> من المورّد <ph name="VENDOR_ID" /> (الرقم التسلسلي <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">‏تعذّر استبدال ملف crx. تحقق ما إذا كان قيد الاستخدام.</translation>
 <translation id="3163201441334626963">المنتج غير معروف <ph name="PRODUCT_ID" /> من المورّد‬ <ph name="VENDOR_ID" /></translation>
-<translation id="3369521687965833290">لا يمكن فك ضغط الإضافة. لفك ضغط الإضافة بشكل آمن، يجب أن يكون هناك مسار إلى دليل ملفك الشخصي، ويبدأ بحرف محرك أقراص ولا يحتوي على وصلة أو نقطة تثبيت أو رابط رمزي. ليس هناك مثل هذا المسار لملفك الشخصي.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (الرقم التسلسلي <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> من المورّد <ph name="VENDOR_ID" /> (الرقم التسلسلي <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">يجب أن تكون قيمة الإدخال للمفتاح الخاص مسارًا صالحًا.</translation>
 <translation id="388442998277590542">تعذر تحميل صفحة الخيارات "<ph name="OPTIONS_PAGE" />".</translation>
 <translation id="3984413272403535372">حدث خطأ أثناء التوقيع على الإضافة.</translation>
-<translation id="4115165561519362854">يطلب مشرف هذا الجهاز <ph name="EXTENSION_NAME" /> الحصول على الحد الأدنى لإصدار <ph name="EXTENSION_VERSION" />. ولا يمكن تمكينه حتى يتم تحديثه إلى هذا الإصدار (أو أعلى).</translation>
 <translation id="4233778200880751280">تعذر تحميل حول الصفحة "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="471800408830181311">تعذّر إخراج المفتاح الخاص.</translation>
 <translation id="4811956658694082538">‏تعذر تثبيت الحزمة بسبب تعطل معالجة الأداة المساعدة. جرّب إعادة تشغيل Chrome وحاول مرة أخرى.</translation>
@@ -39,7 +36,6 @@
 <translation id="5972529113578162692">يتطلب مشرف هذا الجهاز تثبيت <ph name="EXTENSION_NAME" />. لا يمكن إلغاء تثبيته.</translation>
 <translation id="6027032947578871493">المنتج غير معروف <ph name="PRODUCT_ID" /> من <ph name="VENDOR_NAME" /> (الرقم التسلسلي <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> من المورّد <ph name="VENDOR_ID" /></translation>
-<translation id="6143635259298204954">لا يمكن فك ضغط الإضافة.  لفك ضغط الإضافة بشكل آمن، يجب أن يكون هناك مسار إلى دليل ملفك الشخصي، ولا يحتوي على رابط رمزي.  ليس هناك مثل هذا المسار لملفك الشخصي.</translation>
 <translation id="6322279351188361895">تعذّرت قراءة المفتاح الخاص.</translation>
 <translation id="6391538222494443604">يجب أن يكون دليل الإدخال موجودًا.</translation>
 <translation id="641087317769093025">تعذر فك ضغط الإضافة</translation>
@@ -52,12 +48,14 @@
 <translation id="7068383018033524534">ملف البيان غير صالح</translation>
 <translation id="7217838517480956708">يطلب مشرف هذا الجهاز تثبيت <ph name="EXTENSION_NAME" />. لا يمكن إزالتها أو تعديلها.</translation>
 <translation id="7612608473764576263">‏يجب أن تكون قيمة الإدخال للمفتاح الخاص تنسيقًا صالحًا (PKCS#8-format مفتاح RSA بتنسيق PEM).</translation>
+<translation id="7876803335449432072">‏تعذّر تحميل الملف "<ph name="RELATIVE_PATH" />" للنص البرمجي الخاص بالمحتوى، ولا يمكن تحميل أوراق أنماط النص البرمجي الخاص بالمحتوى إلا من ملفات أوراق الأنماط المتوافقة، مثل "ملفات css.".</translation>
 <translation id="7939686037314084444">تعذّر تحميل الإضافة بشكلٍ صحيح. وقد لا تتمكن الإضافة من اعتراض طلبات الشبكة.</translation>
 <translation id="7972881773422714442">الخيارات: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">الكاميرا الأمامية للمستخدم</translation>
 <translation id="8047248493720652249">تعذّرت هذه الإضافة في تسمية التنزيل "<ph name="ATTEMPTED_FILENAME" />" نظرًا لأن هناك إضافة أخرى (<ph name="EXTENSION_NAME" />) قد حددت اسم ملف آخر "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> من <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">ملف البيان مفقود أو غير قابل للقراءة</translation>
+<translation id="8621383749470166852">‏تعذّر تحميل الملف "<ph name="RELATIVE_PATH" />" للنص البرمجي الخاص بالمحتوى، ولا يمكن تحميل النصوص البرمجية للمحتوى إلا من ملفات JavaScript المتوافقة، مثل "ملفات js.".</translation>
 <translation id="8636666366616799973">الحزمة غير صالحة. التفاصيل: "<ph name="ERROR_MESSAGE" />".</translation>
 <translation id="8761756413268424715">يطلب تطبيق "<ph name="APP_NAME" />" الدخول إلى جهاز من أجهزتك:</translation>
 <translation id="8885905466771744233">يوجد مفتاح خاص للإضافة المحددة. أعد استخدام هذا المفتاح أو احذفه أولاً.</translation>

@@ -1,0 +1,98 @@
+This is a testharness.js-based test.
+Found 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] createDocumentType("", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided is empty.
+[FAIL] createDocumentType("1foo", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('1foo') contains the invalid name-start character '1'.
+[FAIL] createDocumentType("@foo", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('@foo') contains the invalid name-start character '@'.
+[FAIL] createDocumentType("foo@", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('foo@') contains the invalid character '@'.
+[FAIL] createDocumentType("f@oo", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('f@oo') contains the invalid character '@'.
+[FAIL] createDocumentType("edi:{", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('edi:{') contains the invalid name-start character '{'.
+[FAIL] createDocumentType("edi:}", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('edi:}') contains the invalid name-start character '}'.
+[FAIL] createDocumentType("edi:~", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('edi:~') contains the invalid name-start character '~'.
+[FAIL] createDocumentType("edi:'", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('edi:'') contains the invalid name-start character '''.
+[FAIL] createDocumentType("edi:!", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('edi:!') contains the invalid name-start character '!'.
+[FAIL] createDocumentType("edi:@", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('edi:@') contains the invalid name-start character '@'.
+[FAIL] createDocumentType("edi:#", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('edi:#') contains the invalid name-start character '#'.
+[FAIL] createDocumentType("edi:$", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('edi:$') contains the invalid name-start character '$'.
+[FAIL] createDocumentType("edi:%", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('edi:%') contains the invalid name-start character '%'.
+[FAIL] createDocumentType("edi:^", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('edi:^') contains the invalid name-start character '^'.
+[FAIL] createDocumentType("edi:&", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('edi:&') contains the invalid name-start character '&'.
+[FAIL] createDocumentType("edi:*", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('edi:*') contains the invalid name-start character '*'.
+[FAIL] createDocumentType("edi:(", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('edi:(') contains the invalid name-start character '('.
+[FAIL] createDocumentType("edi:)", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('edi:)') contains the invalid name-start character ')'.
+[FAIL] createDocumentType("edi:+", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('edi:+') contains the invalid name-start character '+'.
+[FAIL] createDocumentType("edi:=", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('edi:=') contains the invalid name-start character '='.
+[FAIL] createDocumentType("edi:[", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('edi:[') contains the invalid name-start character '['.
+[FAIL] createDocumentType("edi:]", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('edi:]') contains the invalid name-start character ']'.
+[FAIL] createDocumentType("edi:\\\\", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('edi:\\') contains the invalid name-start character '\\'.
+[FAIL] createDocumentType("edi:/", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('edi:/') contains the invalid name-start character '/'.
+[FAIL] createDocumentType("edi:;", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('edi:;') contains the invalid name-start character ';'.
+[FAIL] createDocumentType("edi:`", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('edi:`') contains the invalid name-start character '`'.
+[FAIL] createDocumentType("edi:<", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('edi:<') contains the invalid name-start character '<'.
+[FAIL] createDocumentType("edi:,", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('edi:,') contains the invalid name-start character ','.
+[FAIL] createDocumentType("edi:\\"", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('edi:"') contains the invalid name-start character '"'.
+[FAIL] createDocumentType("{", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('{') contains the invalid name-start character '{'.
+[FAIL] createDocumentType("}", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('}') contains the invalid name-start character '}'.
+[FAIL] createDocumentType("'", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided (''') contains the invalid name-start character '''.
+[FAIL] createDocumentType("~", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('~') contains the invalid name-start character '~'.
+[FAIL] createDocumentType("`", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('`') contains the invalid name-start character '`'.
+[FAIL] createDocumentType("@", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('@') contains the invalid name-start character '@'.
+[FAIL] createDocumentType("#", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('#') contains the invalid name-start character '#'.
+[FAIL] createDocumentType("$", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('$') contains the invalid name-start character '$'.
+[FAIL] createDocumentType("%", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('%') contains the invalid name-start character '%'.
+[FAIL] createDocumentType("^", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('^') contains the invalid name-start character '^'.
+[FAIL] createDocumentType("&", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('&') contains the invalid name-start character '&'.
+[FAIL] createDocumentType("*", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('*') contains the invalid name-start character '*'.
+[FAIL] createDocumentType("(", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('(') contains the invalid name-start character '('.
+[FAIL] createDocumentType(")", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided (')') contains the invalid name-start character ')'.
+[FAIL] createDocumentType(":foo", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided (':foo') has an empty namespace prefix.
+[FAIL] createDocumentType("foo:", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('foo:') has an empty local name.
+[FAIL] createDocumentType("prefix::local", "", "") should work
+  Failed to execute 'createDocumentType' on 'DOMImplementation': The qualified name provided ('prefix::local') contains multiple colons.
+Harness: the test ran to completion.
+

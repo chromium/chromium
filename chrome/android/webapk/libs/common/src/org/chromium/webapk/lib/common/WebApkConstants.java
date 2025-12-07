@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 package org.chromium.webapk.lib.common;
+import org.chromium.build.annotations.NullMarked;
 
 /** Stores WebAPK related constants. */
+@NullMarked
 public final class WebApkConstants {
     // WebAPK id prefix. The id is used for storing WebAPK data in Chrome's SharedPreferences.
     public static final String WEBAPK_ID_PREFIX = "webapk-";

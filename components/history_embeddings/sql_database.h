@@ -14,10 +14,10 @@
 #include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
-#include "components/history_embeddings/embedder.h"
 #include "components/history_embeddings/proto/history_embeddings.pb.h"
 #include "components/history_embeddings/vector_database.h"
 #include "components/os_crypt/async/common/encryptor.h"
+#include "components/passage_embeddings/passage_embeddings_types.h"
 #include "sql/database.h"
 #include "sql/init_status.h"
 
@@ -32,39 +32,43 @@ inline constexpr base::FilePath::CharType kHistoryEmbeddingsName[] =
 class SqlDatabase : public VectorDatabase {
  public:
   // `storage_dir` will generally be the Profile directory.
-  explicit SqlDatabase(const base::FilePath& storage_dir);
+  SqlDatabase(const base::FilePath& storage_dir,
+              bool erase_non_ascii_characters,
+              bool delete_embeddings);
   SqlDatabase(const SqlDatabase&) = delete;
   SqlDatabase& operator=(const SqlDatabase&) = delete;
   ~SqlDatabase() override;
 
   // Provides embedder metadata to the database. The database cannot be
   // initialized until valid metadata is provided.
-  void SetEmbedderMetadata(EmbedderMetadata embedder_metadata,
-                           os_crypt_async::Encryptor encryptor);
-
-  // Inserts or replaces `passages` keyed by `url_id`. `visit_id` and
-  // `visit_time` are needed too, to respect History deletions and expirations.
-  // If there are existing passages for `url_id`, they are replaced. Returns
-  // whether this operation was successful.
-  bool InsertOrReplacePassages(const UrlPassages& url_passages);
-
-  // Store embeddings; this is part of the implementation for `AddUrlData`.
-  bool InsertOrReplaceEmbeddings(const UrlEmbeddings& url_embeddings);
+  void SetEmbedderMetadata(
+      passage_embeddings::EmbedderMetadata embedder_metadata,
+      os_crypt_async::Encryptor encryptor);
 
   // Gets the passages associated with `url_id`. Returns nullopt if there's
   // nothing available.
   std::optional<proto::PassagesValue> GetPassages(history::URLID url_id);
 
   // Gets passages and embeddings for given `url_id` if data is found.
-  std::optional<UrlPassagesEmbeddings> GetUrlData(history::URLID url_id);
+  std::optional<UrlData> GetUrlData(history::URLID url_id);
+
+  // Gets passages and embeddings with visit times within specified range,
+  // using `limit` and `offset` to control data range returned.
+  std::vector<UrlData> GetUrlDataInTimeRange(base::Time from_time,
+                                             base::Time to_time,
+                                             size_t limit,
+                                             size_t offset);
 
   // Gets all rows from passages where a corresponding row in embeddings
   // does not exist, keyed on url_id.
-  std::vector<UrlPassages> GetUrlPassagesWithoutEmbeddings();
+  std::vector<UrlData> GetUrlPassagesWithoutEmbeddings();
+
+  // This is like `AddUrlData` but accepts mismatched passages and embeddings.
+  bool AddAnyUrlDataForTesting(UrlData url_data);
 
   // VectorDatabase:
   size_t GetEmbeddingDimensions() const override;
-  bool AddUrlData(UrlPassagesEmbeddings url_passages_embeddings) override;
+  bool AddUrlData(UrlData url_data) override;
   std::unique_ptr<UrlDataIterator> MakeUrlDataIterator(
       std::optional<base::Time> time_range_start) override;
 
@@ -80,18 +84,57 @@ class SqlDatabase : public VectorDatabase {
  private:
   // Initializes the database, if it's not already initialized. Returns true if
   // the initialization was successful (or already succeeded in the past).
-  bool LazyInit();
+  // If `force_init_for_deletion` is true, then some initialization requirements
+  // are bypassed. In that case, embeddings are not guaranteed to be compatible
+  // if the model version changes, so the database should be closed as soon as
+  // deletion completes; then a normal full initialization can be done later
+  // for typical data usage.
+  bool LazyInit(bool force_init_for_deletion = false);
   // Helper function for LazyInit(). Should only be called by LazyInit().
-  sql::InitStatus InitInternal(const base::FilePath& storage_dir);
+  sql::InitStatus InitInternal(const base::FilePath& storage_dir,
+                               bool force_init_for_deletion);
+  // Close the database and reset lazy init status so that LazyInit will work as
+  // normal with full initialization the next time it's called.  This doesn't
+  // need to be called proactively unless `LazyInit` was called with
+  // `force_init_for_deletion` set to true; see `LazyInit` comment.
+  void Close();
 
   // Callback for database errors.
   void DatabaseErrorCallback(int extended_error, sql::Statement* statement);
 
+  // Deletes passages and embeddings for visits before `expiration_time`.
+  void DeleteExpiredData(base::Time expiration_time);
+
+  // Inserts or replaces `passages` keyed by `url_id`. `visit_id` and
+  // `visit_time` are needed too, to respect History deletions and expirations.
+  // If there are existing passages for `url_id`, they are replaced. Returns
+  // whether this operation was successful.
+  // Note: Does not LazyInit because this is part of the AddUrlData
+  // implementation only, and transactions preclude initialization.
+  bool InsertOrReplacePassages(const UrlData& url_passages);
+
+  // Store embeddings; this is part of the implementation for `AddUrlData`.
+  // Note: Does not LazyInit because this is part of the AddUrlData
+  // implementation only, and transactions preclude initialization.
+  bool InsertOrReplaceEmbeddings(const UrlData& url_embeddings);
+
   // The directory storing the database.
   const base::FilePath storage_dir_;
 
+  // This holds a snapshot of
+  // `GetFeatureParameters().erase_non_ascii_characters` to affect database
+  // initialization without racing for global state. Parameters are immutable in
+  // production but mutable in tests, so this avoids access off main thread.
+  const bool erase_non_ascii_characters_;
+
+  // This holds a snapshot of
+  // `GetFeatureParameters().delete_embeddings` to affect database
+  // initialization without racing for global state. Parameters are immutable in
+  // production but mutable in tests, so this avoids access off main thread.
+  const bool delete_embeddings_;
+
   // Metadata of the embeddings model.
-  std::optional<EmbedderMetadata> embedder_metadata_;
+  std::optional<passage_embeddings::EmbedderMetadata> embedder_metadata_;
 
   std::optional<os_crypt_async::Encryptor> encryptor_;
 

@@ -15,12 +15,12 @@
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
 #include "chrome/browser/ui/autofill/payments/save_payment_icon_controller.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "ui/actions/action_id.h"
 
 namespace syncer {
 class SyncService;
@@ -29,6 +29,8 @@ class SyncService;
 namespace autofill {
 
 enum class BubbleType;
+
+class PaymentsDataManager;
 
 // Implementation of per-tab class to control the local/server save credit card
 // bubble, the local/server save CVC bubble, and Omnibox icon.
@@ -65,7 +67,7 @@ class SaveCardBubbleControllerImpl
   // immediately move it into a member.
   virtual void OfferLocalSave(
       const CreditCard& card,
-      AutofillClient::SaveCreditCardOptions options,
+      payments::PaymentsAutofillClient::SaveCreditCardOptions options,
       payments::PaymentsAutofillClient::LocalSaveCardPromptCallback
           save_card_prompt_callback);
 
@@ -89,7 +91,7 @@ class SaveCardBubbleControllerImpl
   void OfferUploadSave(
       const CreditCard& card,
       const LegalMessageLines& legal_message_lines,
-      AutofillClient::SaveCreditCardOptions options,
+      payments::PaymentsAutofillClient::SaveCreditCardOptions options,
       payments::PaymentsAutofillClient::UploadSaveCardPromptCallback
           save_card_prompt_callback);
 
@@ -111,6 +113,15 @@ class SaveCardBubbleControllerImpl
           payments::PaymentsAutofillClient::OnConfirmationClosedCallback>
           on_confirmation_closed_callback);
 
+  // Gets a callback to `ShowConfirmationBubbleView` with a weak ptr to the
+  // controller, passing `card_saved` as true and
+  // `on_confirmation_closed_callback` as std::nullopt.
+  base::OnceClosure GetShowConfirmationForCardSuccessfullySavedCallback();
+
+  // Gets a callback to `EndSaveCardPromptFlow` with a weak ptr to the
+  // controller.
+  base::OnceClosure GetEndSaveCardPromptFlowCallback();
+
   // SaveCardBubbleController:
   std::u16string GetWindowTitle() const override;
   std::u16string GetExplanatoryMessage() const override;
@@ -119,22 +130,23 @@ class SaveCardBubbleControllerImpl
   AccountInfo GetAccountInfo() override;
   Profile* GetProfile() const override;
   const CreditCard& GetCard() const override;
-  base::OnceCallback<void(PaymentsBubbleClosedReason)>
-  GetOnBubbleClosedCallback() override;
+  base::OnceCallback<void(PaymentsUiClosedReason)> GetOnBubbleClosedCallback()
+      override;
   const SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams&
   GetConfirmationUiParams() const override;
   bool ShouldRequestNameFromUser() const override;
   bool ShouldRequestExpirationDateFromUser() const override;
   ui::ImageModel GetCreditCardImage() const override;
 
-  void OnSaveButton(const AutofillClient::UserProvidedCardDetails&
-                        user_provided_card_details) override;
+  void OnSaveButton(
+      const payments::PaymentsAutofillClient::UserProvidedCardDetails&
+          user_provided_card_details) override;
   void OnLegalMessageLinkClicked(const GURL& url) override;
   void OnManageCardsClicked() override;
-  void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
+  void OnBubbleClosed(PaymentsUiClosedReason closed_reason) override;
   const LegalMessageLines& GetLegalMessageLines() const override;
   bool IsUploadSave() const override;
-  BubbleType GetBubbleType() const override;
+  PaymentsBubbleType GetPaymentsBubbleType() const override;
   bool IsPaymentsSyncTransportEnabledWithoutSyncFeature() const override;
   void HideSaveCardBubble() override;
 
@@ -147,6 +159,12 @@ class SaveCardBubbleControllerImpl
   AutofillBubbleBase* GetPaymentBubbleView() const override;
   int GetSaveSuccessAnimationStringId() const override;
 
+  // BubbleControllerBase:
+  void OnBubbleDiscarded() override;
+  bool CanBeReshown() const override;
+  BubbleType GetBubbleType() const override;
+  base::WeakPtr<BubbleControllerBase> GetBubbleControllerBaseWeakPtr() override;
+
   static base::AutoReset<bool> IgnoreWindowActivationForTesting();
 
  protected:
@@ -157,16 +175,39 @@ class SaveCardBubbleControllerImpl
 
   // AutofillBubbleControllerBase::
   void OnVisibilityChanged(content::Visibility visibility) override;
-  PageActionIconType GetPageActionIconType() override;
+  std::optional<PageActionIconType> GetPageActionIconType() override;
   void DoShowBubble() override;
+#if !BUILDFLAG(IS_ANDROID)
+  std::optional<actions::ActionId> GetActionIdForPageAction() override;
+  std::optional<std::u16string> GetPageActionTooltipText() override;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
  private:
   friend class content::WebContentsUserData<SaveCardBubbleControllerImpl>;
   friend class SaveCardBubbleControllerImplTest;
   friend class SaveCardBubbleViewsFullFormBrowserTest;
 
-  // Displays both the offer-to-save bubble and is associated omnibox icon.
-  void ShowBubble();
+  // Prepares the controller to offer a local credit card save. This sets all
+  // the necessary state for the bubble, including the card details and the
+  // callback to execute on completion.
+  void SetupLocalSave(
+      CreditCard card,
+      payments::PaymentsAutofillClient::SaveCreditCardOptions options,
+      payments::PaymentsAutofillClient::LocalSaveCardPromptCallback
+          save_card_prompt_callback);
+
+  // Prepares the controller to offer saving a credit card to the user's Google
+  // account. This configures the state, including card data, legal messages,
+  // and the callback for the upload flow.
+  void SetupUploadSave(
+      CreditCard card,
+      LegalMessageLines legal_message_lines,
+      payments::PaymentsAutofillClient::SaveCreditCardOptions options,
+      payments::PaymentsAutofillClient::UploadSaveCardPromptCallback
+          save_card_prompt_callback);
+
+  // This method runs a set of checks before showing the bubble.
+  void CheckPreconditionsBeforeShowing();
 
   // Displays the omnibox icon without popping up the offer-to-save bubble.
   void ShowIconOnly();
@@ -178,18 +219,23 @@ class SaveCardBubbleControllerImpl
   // Returns whether the web contents related to the controller is active.
   bool IsWebContentsActive();
 
-  // Should outlive this object.
-  raw_ptr<PersonalDataManager> personal_data_manager_;
+  // Hides the bubble if it currently being shown, and sets the bubble to
+  // inactive, effectively ending the save card flow.
+  void EndSaveCardPromptFlow();
 
-  // Should outlive this object.
-  raw_ptr<syncer::SyncService> sync_service_;
+  // Logs metrics when the bubble is closed.
+  void LogBubbleCloseMetrics(PaymentsUiClosedReason reason);
+
+  // Tied to the profile and outlive this object.
+  const raw_ref<PaymentsDataManager> payments_data_manager_;
+  const raw_ptr<syncer::SyncService> sync_service_;
 
   // Is true only if the [Card saved] label animation should be shown.
   bool should_show_card_saved_label_animation_ = false;
 
   // The type of bubble that is either currently being shown or would
   // be shown when the save card icon is clicked.
-  BubbleType current_bubble_type_ = BubbleType::INACTIVE;
+  PaymentsBubbleType current_bubble_type_ = PaymentsBubbleType::kInactive;
 
   // Callback to run once the user makes a decision with respect to the credit
   // card upload offer-to-save prompt or the CVC upload offer-to-save prompt
@@ -239,7 +285,7 @@ class SaveCardBubbleControllerImpl
   // `CardSaveType::kCardSaveWithCvc`, the offer-to-save card bubble is shown,
   // and the users are informed that the CVC will also be stored. If the type is
   // `CardSaveType::kCvcSaveOnly`, the offer-to-save CVC bubble is shown.
-  AutofillClient::SaveCreditCardOptions options_;
+  payments::PaymentsAutofillClient::SaveCreditCardOptions options_;
 
   // Contains the details of the card that will be saved if the user accepts.
   CreditCard card_;

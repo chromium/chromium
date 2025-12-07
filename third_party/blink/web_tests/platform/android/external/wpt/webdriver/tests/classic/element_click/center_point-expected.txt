@@ -1,0 +1,19 @@
+This is a wdspec test.
+[FAIL] test_css_pixel_rounding[2]
+  assert (0, 0) == (1, 1)
+[FAIL] test_css_pixel_rounding[3]
+  assert (0, 0) == (1, 1)
+[FAIL] test_css_pixel_rounding[4]
+  assert (1, 1) == (2, 2)
+[FAIL] test_css_pixel_rounding[5]
+  assert (1, 1) == (2, 2)
+[FAIL] test_css_pixel_rounding[6]
+  assert (2, 2) == (3, 3)
+[FAIL] test_css_pixel_rounding[7]
+  assert (2, 2) == (3, 3)
+[FAIL] test_css_pixel_rounding[8]
+  assert (3, 3) == (4, 4)
+[FAIL] test_css_pixel_rounding[9]
+  assert (3, 3) == (4, 4)
+Harness: the test ran to completion.
+

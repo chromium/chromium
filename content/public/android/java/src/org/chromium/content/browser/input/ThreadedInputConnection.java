@@ -4,6 +4,7 @@
 
 package org.chromium.content.browser.input;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.content.browser.input.StylusGestureConverter.createGestureData;
 
 import android.annotation.SuppressLint;
@@ -22,21 +23,24 @@ import android.view.inputmethod.ExtractedText;
 import android.view.inputmethod.ExtractedTextRequest;
 import android.view.inputmethod.HandwritingGesture;
 import android.view.inputmethod.InputConnection;
+import android.view.inputmethod.InputContentInfo;
 import android.view.inputmethod.SurroundingText;
+import android.view.inputmethod.TextAttribute;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.blink.mojom.StylusWritingGestureData;
-import org.chromium.blink_public.common.BlinkFeatures;
-import org.chromium.content_public.browser.ContentFeatureMap;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.net.MimeTypeFilter;
 
+import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -53,6 +57,7 @@ import java.util.function.IntConsumer;
  * so 'extends' here should have no functional effect at all. See crbug.com/616334 for more
  * details.
  */
+@NullMarked
 class ThreadedInputConnection extends BaseInputConnection implements ChromiumBaseInputConnection {
     private static final String TAG = "Ime";
     private static final boolean DEBUG_LOGS = false;
@@ -100,7 +105,7 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
     // a bunch of new objects for each key stroke.
     private final BlockingQueue<TextInputState> mQueue = new LinkedBlockingQueue<>();
     private int mPendingAccent;
-    private TextInputState mCachedTextInputState;
+    private @Nullable TextInputState mCachedTextInputState;
     private int mCurrentExtractedTextRequestToken;
     private boolean mShouldUpdateExtractedText;
 
@@ -129,7 +134,7 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
 
     @Override
     public void updateStateOnUiThread(
-            String text,
+            CharSequence text,
             final int selectionStart,
             final int selectionEnd,
             final int compositionStart,
@@ -212,7 +217,7 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
         }
     }
 
-    private void updateSelection(TextInputState textInputState) {
+    private void updateSelection(@Nullable TextInputState textInputState) {
         if (textInputState == null) return;
         assertOnImeThread();
         if (mNumNestedBatchEdits != 0) return;
@@ -241,7 +246,7 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
                 });
     }
 
-    private TextInputState requestAndWaitForTextInputState() {
+    private @Nullable TextInputState requestAndWaitForTextInputState() {
         if (DEBUG_LOGS) Log.i(TAG, "requestAndWaitForTextInputState");
         if (runningOnUiThread()) {
             Log.w(TAG, "InputConnection API is not called on IME thread. Returning cached result.");
@@ -283,7 +288,7 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
      * Block until we get the expected state update.
      * @return TextInputState if we get it successfully. null otherwise.
      */
-    private TextInputState blockAndGetStateUpdate() {
+    private @Nullable TextInputState blockAndGetStateUpdate() {
         if (DEBUG_LOGS) Log.i(TAG, "blockAndGetStateUpdate");
         assertOnImeThread();
         boolean shouldUpdateSelection = false;
@@ -389,6 +394,36 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
     }
 
     /**
+     * @see InputConnection#replaceText(int, int, java.lang.CharSequence, int,
+     *     android.view.inputmethod.TextAttribute)
+     */
+    @Override
+    public boolean replaceText(
+            final int start,
+            final int end,
+            final CharSequence text,
+            final int newCursorPosition,
+            @Nullable final TextAttribute attribute) {
+        if (DEBUG_LOGS) {
+            Log.i(
+                    TAG,
+                    "replaceText [%d] [%d] [%s] [%d] [%s]",
+                    start,
+                    end,
+                    text,
+                    newCursorPosition,
+                    attribute);
+        }
+
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    mImeAdapter.replaceText(start, end, text, newCursorPosition);
+                });
+        return true;
+    }
+
+    /**
      * @see InputConnection#performEditorAction(int)
      */
     @Override
@@ -426,7 +461,7 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
      * @see InputConnection#getExtractedText(android.view.inputmethod.ExtractedTextRequest, int)
      */
     @Override
-    public ExtractedText getExtractedText(ExtractedTextRequest request, int flags) {
+    public @Nullable ExtractedText getExtractedText(ExtractedTextRequest request, int flags) {
         if (DEBUG_LOGS) Log.i(TAG, "getExtractedText");
         assertOnImeThread();
         mShouldUpdateExtractedText = (flags & GET_EXTRACTED_TEXT_MONITOR) > 0;
@@ -437,7 +472,8 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
         return convertToExtractedText(textInputState);
     }
 
-    private ExtractedText convertToExtractedText(TextInputState textInputState) {
+    private @Nullable ExtractedText convertToExtractedText(
+            @Nullable TextInputState textInputState) {
         if (textInputState == null) return null;
         ExtractedText extractedText = new ExtractedText();
         extractedText.text = textInputState.text();
@@ -658,7 +694,8 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
     @RequiresApi(Build.VERSION_CODES.S)
     @SuppressLint("Override")
     @Override
-    public SurroundingText getSurroundingText(int beforeLength, int afterLength, int flags) {
+    public @Nullable SurroundingText getSurroundingText(
+            int beforeLength, int afterLength, int flags) {
         if (DEBUG_LOGS) {
             Log.i(TAG, "getSurroundingText [%d %d %x]", beforeLength, afterLength, flags);
         }
@@ -671,7 +708,7 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
      * @see InputConnection#getTextBeforeCursor(int, int)
      */
     @Override
-    public CharSequence getTextBeforeCursor(int maxChars, int flags) {
+    public @Nullable CharSequence getTextBeforeCursor(int maxChars, int flags) {
         if (DEBUG_LOGS) Log.i(TAG, "getTextBeforeCursor [%d %x]", maxChars, flags);
         TextInputState textInputState = requestAndWaitForTextInputState();
         if (textInputState == null) return null;
@@ -682,7 +719,7 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
      * @see InputConnection#getTextAfterCursor(int, int)
      */
     @Override
-    public CharSequence getTextAfterCursor(int maxChars, int flags) {
+    public @Nullable CharSequence getTextAfterCursor(int maxChars, int flags) {
         if (DEBUG_LOGS) Log.i(TAG, "getTextAfterCursor [%d %x]", maxChars, flags);
         TextInputState textInputState = requestAndWaitForTextInputState();
         if (textInputState == null) return null;
@@ -693,7 +730,7 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
      * @see InputConnection#getSelectedText(int)
      */
     @Override
-    public CharSequence getSelectedText(int flags) {
+    public @Nullable CharSequence getSelectedText(int flags) {
         if (DEBUG_LOGS) Log.i(TAG, "getSelectedText [%x]", flags);
         TextInputState textInputState = requestAndWaitForTextInputState();
         if (textInputState == null) return null;
@@ -797,14 +834,13 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
     @Override
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void performHandwritingGesture(
-            @NonNull HandwritingGesture gesture,
+            HandwritingGesture gesture,
             @Nullable Executor executor,
             @Nullable IntConsumer consumer) {
-        if (!ContentFeatureMap.isEnabled(BlinkFeatures.STYLUS_RICH_GESTURES)) {
-            return;
-        }
         StylusWritingGestureData gestureData = createGestureData(gesture);
         if (gestureData == null) {
+            assumeNonNull(executor);
+            assumeNonNull(consumer);
             executor.execute(() -> consumer.accept(HANDWRITING_GESTURE_RESULT_UNSUPPORTED));
             return;
         }
@@ -816,6 +852,60 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
                             new OngoingGesture(gestureData, executor, consumer);
                     mImeAdapter.handleGesture(ongoingGesture);
                 });
+    }
+
+    /**
+     * @see InputConnection#commitContent(InputContentInfo, int, Bundle)
+     */
+    @Override
+    public boolean commitContent(final InputContentInfo inputContentInfo, int flags, Bundle data) {
+        if (DEBUG_LOGS) Log.i(TAG, "commitContent [%s] [%d]", inputContentInfo, flags);
+        final String mimeType = inputContentInfo.getDescription().getMimeType(0);
+
+        if (!new MimeTypeFilter(
+                        Arrays.asList(mImeAdapter.getSupportedMimeTypes()),
+                        /* acceptDirectory= */ false)
+                .accept(null, mimeType)) {
+            return false;
+        }
+
+        PostTask.postTask(
+                TaskTraits.USER_BLOCKING_MAY_BLOCK,
+                () -> {
+                    inputContentInfo.requestPermission();
+                    try {
+                        String dataUrl =
+                                ImeUtils.getDataUrlFromContentUri(
+                                        ContextUtils.getApplicationContext()
+                                                .getContentResolver()
+                                                .openInputStream(inputContentInfo.getContentUri()),
+                                        mimeType);
+
+                        PostTask.postTask(
+                                TaskTraits.UI_DEFAULT,
+                                new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mImeAdapter.commitContent(dataUrl);
+                                    }
+                                });
+                    } catch (Exception e) {
+                        Log.e(TAG, "Failed to commit rich content.", e);
+                        return;
+                    }
+                });
+        return true;
+    }
+
+    /**
+     * @see InputConnection#performSpellCheck()
+     */
+    @Override
+    public boolean performSpellCheck() {
+        if (DEBUG_LOGS) Log.i(TAG, "performSpellCheck");
+
+        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> mImeAdapter.performSpellCheck());
+        return true;
     }
 
     /**

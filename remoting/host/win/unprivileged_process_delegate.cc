@@ -31,10 +31,9 @@
 #include "base/win/sid.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_channel_proxy.h"
-#include "ipc/ipc_message.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
-#include "remoting/base/breakpad_utils.h"
+#include "remoting/base/crash/breakpad_utils.h"
 #include "remoting/base/typed_buffer.h"
 #include "remoting/host/base/switches.h"
 #include "remoting/host/usage_stats_consent.h"
@@ -240,7 +239,7 @@ UnprivilegedProcessDelegate::UnprivilegedProcessDelegate(
 UnprivilegedProcessDelegate::~UnprivilegedProcessDelegate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!channel_);
-  DCHECK(!worker_process_.IsValid());
+  DCHECK(!worker_process_.is_valid());
 }
 
 void UnprivilegedProcessDelegate::LaunchProcess(
@@ -377,18 +376,10 @@ void UnprivilegedProcessDelegate::KillProcess() {
   CloseChannel();
   event_handler_ = nullptr;
 
-  if (worker_process_.IsValid()) {
+  if (worker_process_.is_valid()) {
     TerminateProcess(worker_process_.Get(), CONTROL_C_EXIT);
     worker_process_.Close();
   }
-}
-
-bool UnprivilegedProcessDelegate::OnMessageReceived(
-    const IPC::Message& message) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTREACHED_IN_MIGRATION()
-      << "Received unexpected IPC type: " << message.type();
-  return false;
 }
 
 void UnprivilegedProcessDelegate::OnChannelConnected(int32_t peer_pid) {
@@ -436,7 +427,7 @@ void UnprivilegedProcessDelegate::ReportFatalError() {
 void UnprivilegedProcessDelegate::ReportProcessLaunched(
     base::win::ScopedHandle worker_process) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!worker_process_.IsValid());
+  DCHECK(!worker_process_.is_valid());
 
   worker_process_ = std::move(worker_process);
 

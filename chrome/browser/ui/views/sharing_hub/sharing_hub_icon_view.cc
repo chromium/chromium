@@ -1,26 +1,28 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_icon_view.h"
 
+#include "base/check.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "build/buildflag.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_pedal_implementations.h"
+#include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_view_impl.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/view_class_properties.h"
 
 namespace sharing_hub {
 
@@ -60,9 +62,10 @@ SharingHubIconView::SharingHubIconView(
   SetVisible(false);
   SetLabel(
       l10n_util::GetStringUTF16(IDS_BROWSER_SHARING_OMNIBOX_SENDING_LABEL));
+  SetProperty(views::kElementIdentifierKey,
+              SharingHubBubbleController::kIconElementId);
   SetUpForInOutAnimation();
-  GetViewAccessibility().SetProperties(
-      /*role*/ std::nullopt,
+  GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_SHARING_HUB_TOOLTIP));
 }
 
@@ -74,8 +77,13 @@ views::BubbleDialogDelegate* SharingHubIconView::GetBubble() const {
     return nullptr;
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  CHECK(!controller->sharing_hub_bubble_view());
+  return nullptr;
+#else
   return static_cast<SharingHubBubbleViewImpl*>(
       controller->sharing_hub_bubble_view());
+#endif
 }
 
 void SharingHubIconView::UpdateImpl() {

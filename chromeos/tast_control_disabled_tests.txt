@@ -1,0 +1,115 @@
+# To disable a specific test in chrome_all_tast_tests, add the name of the test
+# to the following list and cite a bug.
+#
+# To disable the test only on a specific board, add an at-mark ( @ ) and the
+# board name at the end of the entry (eg. "login.Chrome@kevin" disables
+# "login.Chrome" test only on "kevin" device). An asterisk is not supported in
+# the board name.
+#
+# WARNING: This may cause unexpected disablement and is strongly discouraged.
+# You should specify the tests one-by-one in most cases, instead of this.
+
+# DO NOT ADD QUOTATION MARK AND TRAILING COMMA AT EACH LINE
+
+# WILDCARD IS NOT SUPPORTED
+
+# To disable on public builder only, modify chromeos/tast_control.gni.template
+# (for now)
+
+# https://crbug.com/1307940
+tast.policy.URLCheck.blocklist
+
+# https://crbug.com/1312121
+tast.policy.CookiesBlockedForUrls
+
+# http://crbug.com/1335213
+tast.arc.WindowState.clamshell
+
+# b/241122961
+tast.policy.BlockThirdPartyCookies
+
+# b/287525851
+tast.arc.AudioValidity.playback
+tast.arc.AudioValidity.record
+tast.arc.BuildProperties
+
+# https://crbug.com/1455848
+tast.arc.CheckAndroidVersion
+tast.arc.Downloads
+
+# b/338111076
+tast.crostini.AppAndroidStudio.bookworm_clamshell_stable@octopus
+
+# b/346793249, b/330290054
+tast.videoconferencing.OpenCLCacher
+
+# b/352703668: tests failing on trogdor.
+tast.security.SELinuxFilesDataDir.arcvm_user@trogdor
+
+# b/384060114
+tast.inputs.InputMethodShelfInputs@reven-vmtest
+tast.inputs.InputMethodShelfInputs@betty
+tast.inputs.VirtualKeyboardHandwriting.docked@reven-vmtest
+tast.inputs.VirtualKeyboardHandwriting.floating@reven-vmtest
+
+# b/394108883
+tast.security.NetworkListenersNonARC@jacuzzi
+tast.security.NetworkListenersNonARC@octopus
+
+# https://crbug.com/394821952
+tast.ui.WebUIJSErrors
+tast.ui.WebUIJSErrors.field_trial_off
+tast.ui.WebUIJSErrors.field_trial_on
+
+# b/394409115
+tast.network.AllowCACertificateManagement
+tast.network.AllowClientCertificateManagement
+
+#b/400849446
+tast.network.ARCCreateWifiInShillByCmd.manual_proxy
+
+# b/408102591
+tast.network.ARCEAPWifiProvisioning.eap_wifi_tls
+
+# b/409064294
+tast.apps.SystemWebAppsInstallGuest
+tast.peripherals.LaunchAppFromGuestSession.diagnostics
+tast.health.MonitorKeyboardDiagnosticEvent.tablet_mode_form_factors
+tast.health.MonitorKeyboardDiagnosticEvent.non_tablet_mode_form_factors
+
+# b/409349162
+tast.inputs.PhysicalKeyboardKoreanTyping@jacuzzi
+
+# b/422132031
+tast.inputs.VirtualKeyboardHandwriting.docked
+tast.inputs.VirtualKeyboardHandwriting.floating
+tast.inputs.VirtualKeyboardJapaneseInputMode
+tast.inputs.VirtualKeyboardMultipaste
+tast.inputs.VirtualKeyboardSpeech
+
+# b/424789710
+tast.apps.LaunchGalleryFromNotifications.stable
+
+# https://crbug.com/434741638
+apps.Sharesheet
+tast.apps.Sharesheet
+
+# https://crbug.com/437961311
+tast.bruschetta.CopyFilesToGuest@betty
+
+# https://crbug.com/432304431
+tast.featured.FieldTrialEarlyBoot.active_trial
+
+# https://crbug.com/459929970
+tast.crostini.SyncTime.baguette_stable
+
+# https://crbug.com/460052469
+tast.apps.LaunchHelpAppFromShortcut.stable_guest
+
+# https://crbug.com/460054243
+tast.inputs.VirtualKeyboardTypingUserMode.guest
+
+# https://crbug.com/368606672
+tast.inputs.InputMethodManagement.guest
+
+# READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.

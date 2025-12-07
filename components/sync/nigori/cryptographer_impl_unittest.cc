@@ -12,6 +12,8 @@
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/nigori/nigori_key_bag.h"
+#include "components/sync/protocol/encryption.pb.h"
+#include "components/sync/protocol/nigori_local_data.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -118,7 +120,7 @@ TEST(CryptographerImplTest, ShouldSelectDefaultCrossUserSharingKey) {
 
   std::optional<std::vector<uint8_t>> encrypted_message =
       cryptographer->AuthEncryptForCrossUserSharing(
-          base::as_bytes(base::make_span(plaintext)),
+          base::as_byte_span(plaintext),
           CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair()
               .GetRawPublicKey());
 
@@ -137,7 +139,7 @@ TEST(CryptographerImplTest, ShouldFailOnNonSetEncryptionKeyPair) {
 
   std::optional<std::vector<uint8_t>> encrypted_message =
       cryptographer->AuthEncryptForCrossUserSharing(
-          base::as_bytes(base::make_span(plaintext)),
+          base::as_byte_span(plaintext),
           CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair()
               .GetRawPublicKey());
 
@@ -157,7 +159,7 @@ TEST(CryptographerImplTest, ShouldFailOnNonExistentDefaultEncryptionKeyPair) {
 
   std::optional<std::vector<uint8_t>> encrypted_message =
       cryptographer->AuthEncryptForCrossUserSharing(
-          base::as_bytes(base::make_span(plaintext)),
+          base::as_byte_span(plaintext),
           CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair()
               .GetRawPublicKey());
 
@@ -364,7 +366,7 @@ TEST(CryptographerImplTest, ShouldEncryptAndDecryptForCrossUserSharing) {
 
   std::optional<std::vector<uint8_t>> encrypted_message =
       cryptographer_sender->AuthEncryptForCrossUserSharing(
-          base::as_bytes(base::make_span(plaintext)),
+          base::as_byte_span(plaintext),
           cryptographer_recipient->GetCrossUserSharingKeyPair(0)
               .GetRawPublicKey());
 

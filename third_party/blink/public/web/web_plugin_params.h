@@ -31,17 +31,19 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PLUGIN_PARAMS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PLUGIN_PARAMS_H_
 
+#include <vector>
+
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
-#include "third_party/blink/public/platform/web_vector.h"
 
 namespace blink {
 
 struct WebPluginParams {
   WebURL url;
   WebString mime_type;
-  WebVector<WebString> attribute_names;
-  WebVector<WebString> attribute_values;
+  std::vector<WebString> attribute_names;
+  std::vector<WebString> attribute_values;
+  // TODO(crbug.com/40511450): Remove once PPAPI is gone.
   bool load_manually;
 };
 

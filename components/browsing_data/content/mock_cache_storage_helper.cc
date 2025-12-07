@@ -17,7 +17,7 @@ MockCacheStorageHelper::MockCacheStorageHelper(
     content::StoragePartition* storage_partition)
     : CacheStorageHelper(storage_partition) {}
 
-MockCacheStorageHelper::~MockCacheStorageHelper() {}
+MockCacheStorageHelper::~MockCacheStorageHelper() = default;
 
 void MockCacheStorageHelper::StartFetching(FetchCallback callback) {
   ASSERT_FALSE(callback.is_null());

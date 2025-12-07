@@ -19,6 +19,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.TransportState;
 import org.chromium.components.sync.UserSelectableType;
 
 import java.util.ArrayList;
@@ -112,7 +113,9 @@ public final class SyncTestUtil {
     /** Waits for sync machinery to become active. */
     public static void waitForSyncTransportActive() {
         CriteriaHelper.pollUiThread(
-                () -> getSyncServiceForLastUsedProfile().isTransportStateActive(),
+                () ->
+                        getSyncServiceForLastUsedProfile().getTransportState()
+                                == TransportState.ACTIVE,
                 "Timed out waiting for sync transport state to become active.",
                 TIMEOUT_MS,
                 INTERVAL_MS);
@@ -174,6 +177,30 @@ public final class SyncTestUtil {
                                         Set.of(
                                                 UserSelectableType.HISTORY,
                                                 UserSelectableType.TABS)));
+    }
+
+    /** Returns whether bookmarks and reading list are active. */
+    public static boolean isBookmarksAndReadingListEnabled() {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        getSyncServiceForLastUsedProfile()
+                                .getSelectedTypes()
+                                .containsAll(
+                                        Set.of(
+                                                UserSelectableType.BOOKMARKS,
+                                                UserSelectableType.READING_LIST)));
+    }
+
+    /** Waits for bookmarks and reading list to be active. */
+    public static void waitForBookmarksAndReadingListEnabled() {
+        CriteriaHelper.pollUiThread(
+                () ->
+                        getSyncServiceForLastUsedProfile()
+                                .getSelectedTypes()
+                                .containsAll(
+                                        Set.of(
+                                                UserSelectableType.BOOKMARKS,
+                                                UserSelectableType.READING_LIST)));
     }
 
     /** Triggers a sync cycle. */
@@ -318,7 +345,7 @@ public final class SyncTestUtil {
         }
 
         List<Pair<String, JSONObject>> localDataForDatatype =
-                new ArrayList<Pair<String, JSONObject>>(datatypeNodes.length());
+                new ArrayList<>(datatypeNodes.length());
         for (int i = 0; i < datatypeNodes.length(); i++) {
             JSONObject entity = datatypeNodes.getJSONObject(i);
             if (entity.has("UNIQUE_SERVER_TAG")

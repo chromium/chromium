@@ -14,6 +14,9 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/ui_base_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/layout_provider.h"
 
@@ -31,12 +34,12 @@ ProtocolHandlerLaunchDialogView::ProtocolHandlerLaunchDialogView(
       views::DialogContentType::kText, views::DialogContentType::kControl));
   set_fixed_width(layout_provider->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW));
   SetButtonLabel(
-      ui::DIALOG_BUTTON_CANCEL,
+      ui::mojom::DialogButton::kCancel,
       l10n_util::GetStringUTF16(IDS_WEB_APP_PERMISSION_NEGATIVE_BUTTON));
-  SetDefaultButton(ui::DIALOG_BUTTON_CANCEL);
+  SetDefaultButton(static_cast<int>(ui::mojom::DialogButton::kCancel));
 }
 
 ProtocolHandlerLaunchDialogView::~ProtocolHandlerLaunchDialogView() = default;
@@ -48,7 +51,7 @@ ProtocolHandlerLaunchDialogView::CreateAboveAppInfoView() {
       l10n_util::GetStringFUTF16(
           IDS_PROTOCOL_HANDLER_INTENT_PICKER_QUESTION,
           custom_handlers::ProtocolHandler::GetProtocolDisplayName(
-              url_.scheme())),
+              url_.GetScheme())),
       views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::TextStyle::STYLE_PRIMARY);
   open_app_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -77,10 +80,16 @@ void ShowWebAppProtocolLaunchDialog(
   auto view = std::make_unique<web_app::ProtocolHandlerLaunchDialogView>(
       url, profile, app_id, std::move(close_callback));
   view->Init();
-  views::DialogDelegate::CreateDialogWidget(std::move(view),
-                                            /*context=*/nullptr,
-                                            /*parent=*/nullptr)
-      ->Show();
+  auto* widget =
+      views::DialogDelegate::CreateDialogWidget(std::move(view),
+                                                /*context=*/gfx::NativeWindow(),
+                                                /*parent=*/gfx::NativeView());
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS this dialog will be hidden underneath an existing Chrome
+  // instance unless kFloatingWindow is specified.
+  widget->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
+#endif
+  widget->Show();
 }
 
 }  // namespace web_app

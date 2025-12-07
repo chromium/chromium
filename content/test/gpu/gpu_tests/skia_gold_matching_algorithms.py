@@ -4,7 +4,6 @@
 """Classes related to the possible matching algorithms for Skia Gold."""
 
 import math
-from typing import List, Optional, Union
 
 
 class Parameters():
@@ -55,7 +54,7 @@ class SkiaGoldMatchingAlgorithm():
   ALGORITHM_KEY = 'image_matching_algorithm'
   """Abstract base class for all algorithms."""
 
-  def GetCmdline(self) -> List[str]:
+  def GetCmdline(self) -> list[str]:
     """Gets command line parameters for the algorithm.
 
     Returns:
@@ -75,22 +74,54 @@ class SkiaGoldMatchingAlgorithm():
 class ExactMatchingAlgorithm(SkiaGoldMatchingAlgorithm):
   """Class for the default exact matching algorithm in Gold."""
 
-  def GetCmdline(self) -> List[str]:
+  def GetCmdline(self) -> list[str]:
     return []
 
   def Name(self) -> str:
     return 'exact'
 
 
-class FuzzyMatchingAlgorithm(SkiaGoldMatchingAlgorithm):
+class InexactMatchingAlgorithm(SkiaGoldMatchingAlgorithm):
+  """Abstract base class for all inexact matching algorithms."""
+  # When set to 1, causes successful inexact matches to report the known-good
+  # image that was compared against instead of the new image. This is meant for
+  # noisy tests which effectively produce a unique image every run. This arg
+  # allows us to keep the flow of results going to Gold without flooding it
+  # with thousands of new images it needs to track.
+  COMBINE_INEXACT_MATCHES = 'combine-inexact-matches'
+
+  def __init__(self, *, combine_inexact_matches=False, **kwargs):
+    """
+    Args:
+      combine_inexact_matches: Whether to add the combine_inexact_matches
+          parameter.
+    """
+    super().__init__(**kwargs)
+    self._combine_inexact_matches = combine_inexact_matches
+
+  def GetCmdline(self) -> list[str]:
+    cmdline = super().GetCmdline()
+    if self._combine_inexact_matches:
+      cmdline.extend(
+          _GenerateOptionalKey(InexactMatchingAlgorithm.COMBINE_INEXACT_MATCHES,
+                               '1'))
+    return cmdline
+
+  def Name(self) -> str:
+    raise NotImplementedError()
+
+
+class FuzzyMatchingAlgorithm(InexactMatchingAlgorithm):
   """Class for the fuzzy matching algorithm in Gold."""
 
   def __init__(self,
+               *,
                max_different_pixels: int,
                pixel_delta_threshold: int = 0,
                pixel_per_channel_delta_threshold: int = 0,
-               ignored_border_thickness: int = 0):
-    super().__init__()
+               ignored_border_thickness: int = 0,
+               **kwargs):
+    super().__init__(**kwargs)
     assert max_different_pixels >= 0
     assert pixel_delta_threshold >= 0
     assert pixel_per_channel_delta_threshold >= 0
@@ -102,7 +133,7 @@ class FuzzyMatchingAlgorithm(SkiaGoldMatchingAlgorithm):
     self._pixel_per_channel_delta_threshold = pixel_per_channel_delta_threshold
     self._ignored_border_thickness = ignored_border_thickness
 
-  def GetCmdline(self) -> List[str]:
+  def GetCmdline(self) -> list[str]:
     retval = super().GetCmdline()
     retval.extend(
         _GenerateOptionalKey(Parameters.MAX_DIFFERENT_PIXELS,
@@ -130,8 +161,8 @@ class SobelMatchingAlgorithm(FuzzyMatchingAlgorithm):
   Technically a superset of the fuzzy matching algorithm.
   """
 
-  def __init__(self, edge_threshold: int, *args, **kwargs):
-    super().__init__(*args, **kwargs)
+  def __init__(self, *, edge_threshold: int, **kwargs):
+    super().__init__(**kwargs)
     assert int(edge_threshold) >= 0
     assert int(edge_threshold) <= 255
     if edge_threshold == 255:
@@ -140,7 +171,7 @@ class SobelMatchingAlgorithm(FuzzyMatchingAlgorithm):
           'matching.')
     self._edge_threshold = edge_threshold
 
-  def GetCmdline(self) -> List[str]:
+  def GetCmdline(self) -> list[str]:
     retval = super().GetCmdline()
     retval.extend(
         _GenerateOptionalKey(Parameters.EDGE_THRESHOLD, self._edge_threshold))
@@ -150,18 +181,20 @@ class SobelMatchingAlgorithm(FuzzyMatchingAlgorithm):
     return 'sobel'
 
 
-def _GenerateOptionalKey(key: str, value: Union[int, str]) -> List[str]:
-  return ['--add-test-optional-key', '%s:%s' % (key, value)]
+def _GenerateOptionalKey(key: str, value: int | str) -> list[str]:
+  return ['--add-test-optional-key', f'{key}:{value}']
 
 
-class SampleAreaMatchingAlgorithm(SkiaGoldMatchingAlgorithm):
+class SampleAreaMatchingAlgorithm(InexactMatchingAlgorithm):
   """Class for the sample_area matching algorithm in Gold."""
 
   def __init__(self,
+               *,
                sample_area_width: int,
                max_different_pixels_per_area: int,
-               sample_area_channel_delta_threshold: Optional[int] = None):
-    super().__init__()
+               sample_area_channel_delta_threshold: int | None = None,
+               **kwargs):
+    super().__init__(**kwargs)
     assert sample_area_width >= 1
     assert sample_area_width <= math.sqrt(2**31 - 1)
     assert max_different_pixels_per_area >= 0
@@ -182,7 +215,7 @@ class SampleAreaMatchingAlgorithm(SkiaGoldMatchingAlgorithm):
     self._sample_area_channel_delta_threshold = (
         sample_area_channel_delta_threshold)
 
-  def GetCmdline(self) -> List[str]:
+  def GetCmdline(self) -> list[str]:
     retval = super().GetCmdline()
     retval.extend(
         _GenerateOptionalKey(Parameters.SAMPLE_AREA_WIDTH,

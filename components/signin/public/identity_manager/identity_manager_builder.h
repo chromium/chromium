@@ -27,11 +27,9 @@ class SigninClient;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class TokenWebData;
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 namespace unexportable_keys {
 class UnexportableKeyService;
 }
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #endif
 
 #if BUILDFLAG(IS_IOS)
@@ -72,16 +70,14 @@ struct IdentityManagerBuildParams {
   std::unique_ptr<ProfileOAuth2TokenService> token_service;
   std::unique_ptr<AccountTrackerService> account_tracker_service;
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   bool delete_signin_cookies_on_exit = false;
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   scoped_refptr<TokenWebData> token_web_data;
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   raw_ptr<unexportable_keys::UnexportableKeyService> unexportable_key_service =
       nullptr;
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

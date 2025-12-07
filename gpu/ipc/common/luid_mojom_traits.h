@@ -6,13 +6,14 @@
 #define GPU_IPC_COMMON_LUID_MOJOM_TRAITS_H_
 
 #include "base/win/windows_types.h"
-#include "gpu/gpu_export.h"
+#include "gpu/ipc/common/gpu_ipc_common_export.h"
 #include "gpu/ipc/common/luid.mojom-shared.h"
 
 namespace mojo {
 
 template <>
-struct GPU_EXPORT StructTraits<gpu::mojom::LuidDataView, ::CHROME_LUID> {
+struct GPU_IPC_COMMON_EXPORT StructTraits<gpu::mojom::LuidDataView,
+                                          ::CHROME_LUID> {
   static bool Read(gpu::mojom::LuidDataView data, ::CHROME_LUID* out);
 
   static int32_t high(const ::CHROME_LUID& input) { return input.HighPart; }

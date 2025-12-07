@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.share.scroll_capture;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -16,10 +18,11 @@ import android.view.Surface;
 import android.view.View;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.paint_preview.PaintPreviewCompositorUtils;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager.BitmapGeneratorObserver;
@@ -30,6 +33,7 @@ import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.WebContents;
 
 /** An delegate to provide an Android API level independent implementation Scroll Capture. */
+@NullMarked
 public class ScrollCaptureCallbackDelegate {
     private static final int BITMAP_HEIGHT_THRESHOLD = 20;
 
@@ -55,12 +59,12 @@ public class ScrollCaptureCallbackDelegate {
     }
 
     private final EntryManagerWrapper mEntryManagerWrapper;
-    private Tab mCurrentTab;
-    private EntryManager mEntryManager;
+    private @Nullable Tab mCurrentTab;
+    private @Nullable EntryManager mEntryManager;
 
-    private Rect mContentArea;
+    private @Nullable Rect mContentArea;
     // Holds the viewport size.
-    private Rect mViewportRect;
+    private @Nullable Rect mViewportRect;
 
     private int mInitialYOffset;
     private float mMinPageScaleFactor;
@@ -72,7 +76,7 @@ public class ScrollCaptureCallbackDelegate {
     }
 
     /** See {@link ScrollCaptureCallback#onScrollCaptureSearch}. */
-    public Rect onScrollCaptureSearch(@NonNull CancellationSignal cancellationSignal) {
+    public Rect onScrollCaptureSearch(CancellationSignal cancellationSignal) {
         assert mCurrentTab != null;
         WebContents webContents = mCurrentTab.getWebContents();
         View view = mCurrentTab.getView();
@@ -94,8 +98,7 @@ public class ScrollCaptureCallbackDelegate {
     }
 
     /** See {@link ScrollCaptureCallback#onScrollCaptureStart}. */
-    public void onScrollCaptureStart(
-            @NonNull CancellationSignal signal, @NonNull Runnable onReady) {
+    public void onScrollCaptureStart(CancellationSignal signal, Runnable onReady) {
         assert mCurrentTab != null;
 
         mCaptureStartTime = SystemClock.elapsedRealtime();
@@ -105,6 +108,7 @@ public class ScrollCaptureCallbackDelegate {
                     @Override
                     public void onStatusChange(int status) {
                         if (status == EntryStatus.CAPTURE_IN_PROGRESS) return;
+                        assumeNonNull(mEntryManager);
 
                         // Abort if BitmapGenerator is not initialized successfully.
                         if (status != EntryStatus.CAPTURE_COMPLETE) {
@@ -123,6 +127,7 @@ public class ScrollCaptureCallbackDelegate {
 
                     @Override
                     public void onCompositorReady(Size contentSize, Point scrollOffset) {
+                        assumeNonNull(mEntryManager);
                         mEntryManager.removeBitmapGeneratorObserver(this);
                         if (contentSize.getWidth() == 0 || contentSize.getHeight() == 0) {
                             mEntryManager.destroy();
@@ -146,10 +151,11 @@ public class ScrollCaptureCallbackDelegate {
 
     /** See {@link ScrollCaptureCallback#onScrollCaptureImageRequest}. */
     public void onScrollCaptureImageRequest(
-            @NonNull Surface surface,
-            @NonNull CancellationSignal signal,
-            @NonNull Rect captureArea,
+            Surface surface,
+            CancellationSignal signal,
+            Rect captureArea,
             Callback<Rect> onComplete) {
+        assumeNonNull(mContentArea);
         // Reposition the captureArea to the content area coordinates.
         captureArea.offset(0, mInitialYOffset);
         if (!captureArea.intersect(mContentArea)
@@ -158,6 +164,7 @@ public class ScrollCaptureCallbackDelegate {
             return;
         }
 
+        assumeNonNull(mEntryManager);
         LongScreenshotsEntry entry = mEntryManager.generateEntry(captureArea);
         entry.setListener(
                 status -> {
@@ -182,7 +189,7 @@ public class ScrollCaptureCallbackDelegate {
     }
 
     /** See {@link ScrollCaptureCallback#onScrollCaptureEnd}. */
-    public void onScrollCaptureEnd(@NonNull Runnable onReady) {
+    public void onScrollCaptureEnd(Runnable onReady) {
         PaintPreviewCompositorUtils.stopWarmCompositor();
         if (mEntryManager != null) {
             mEntryManager.destroy();
@@ -210,7 +217,7 @@ public class ScrollCaptureCallbackDelegate {
                 "Sharing.ScrollCapture.BitmapGeneratorStatus", status, BitmapGeneratorStatus.COUNT);
     }
 
-    Rect getContentAreaForTesting() {
+    @Nullable Rect getContentAreaForTesting() {
         return mContentArea;
     }
 

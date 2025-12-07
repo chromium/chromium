@@ -3,7 +3,9 @@
 <style>
 area:focus { 
     outline-color: red;
-    outline-width: 0px;
+    outline-style: none;
+    /* Note: this used to test outline-width: 0px, but outline-width:
+     * 0px isn't supposed to do anything when outline-style is auto */
 }
 </style>
 <script>

@@ -51,8 +51,8 @@ public class CustomD8 {
     }
 
     private static class Deps implements DesugarGraphConsumer {
-        private Map<String, Set<String>> mDeps = new ConcurrentHashMap<>();
-        private String mFileTmpPrefix;
+        private final Map<String, Set<String>> mDeps = new ConcurrentHashMap<>();
+        private final String mFileTmpPrefix;
         private static final String DEP_PREFIX = "  <-  ";
 
         public Deps(String fileTmpPrefix) {

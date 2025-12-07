@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/borealis/borealis_service_fake.h"
 #include "chrome/browser/ash/borealis/borealis_task.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
@@ -100,30 +101,29 @@ IN_PROC_BROWSER_TEST_F(BorealisSplashScreenViewBrowserTest,
   EXPECT_NE(nullptr, BorealisSplashScreenView::GetActiveViewForTesting());
   MakeAndTrackWindow(
       "org.chromium.guest_os.borealis.foobarbaz",
-      &borealis::BorealisService::GetForProfile(browser()->profile())
+      &borealis::BorealisServiceFactory::GetForProfile(browser()->profile())
            ->WindowManager());
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(VerifyUi());
   EXPECT_EQ(nullptr, BorealisSplashScreenView::GetActiveViewForTesting());
 }
 
+// Flaky; see https://crbug.com/413207692.
 IN_PROC_BROWSER_TEST_F(BorealisSplashScreenViewBrowserTest,
-                       HidesWhenBorealisLaunchFails) {
+                       DISABLED_ShowsMOTDEvenIfBorealisLaunchFails) {
   ShowUi("default");
   EXPECT_TRUE(VerifyUi());
   EXPECT_NE(nullptr, BorealisSplashScreenView::GetActiveViewForTesting());
 
   CallbackFactory callback_check;
-  EXPECT_CALL(callback_check, Call(BorealisAppLauncher::LaunchResult::kError));
   BorealisAppLauncherImpl launcher(browser()->profile());
   launcher.Launch("foo.desktop", BorealisLaunchSource::kUnknown,
                   callback_check.BindOnce());
   base::RunLoop().RunUntilIdle();
 
-  // The splash screen should have disappeared.
-  EXPECT_EQ(nullptr, BorealisSplashScreenView::GetActiveViewForTesting());
-
-  // We should now see an error dialog instead.
+  // MOTD should be present. This is a behavior change from before, where
+  // MOTD now needs to be dismissed even when doing a launch.
+  EXPECT_NE(nullptr, BorealisSplashScreenView::GetActiveViewForTesting());
   EXPECT_TRUE(VerifyUi());
 }
 

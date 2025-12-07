@@ -68,6 +68,27 @@ CornerLocation GetPrevCorner(CornerLocation corner) {
              : static_cast<CornerLocation>(static_cast<size_t>(corner) - 1);
 }
 
+bool IsSizeAndCornerRadiusValid(const gfx::Size& size,
+                                const std::optional<size_t>& corner_radius) {
+  if (size.IsEmpty()) {
+    LOG(ERROR) << "GetArcCurveRectPath() is called with an empty size: "
+               << size.ToString();
+    return false;
+  }
+
+  if (corner_radius &&
+      (2 * corner_radius.value() >
+       static_cast<size_t>(std::min(size.width(), size.height())))) {
+    LOG(ERROR) << "GetArcCurveRectPath() is called with a size that is too "
+                  "small for rounded corners; the size: "
+               << size.ToString() << ", corner radius: " << *corner_radius;
+
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 // ArcCurveCorner --------------------------------------------------------------
@@ -86,12 +107,40 @@ ArcCurveCorner::ArcCurveCorner(CornerLocation location,
 
 // Utils -----------------------------------------------------------------------
 
+SkPath GetArcCurveRectPath(const gfx::Size& size, const size_t corner_radius) {
+  if (!IsSizeAndCornerRadiusValid(size, corner_radius)) {
+    return SkPath();
+  }
+
+  const auto width = size.width();
+  const auto height = size.height();
+
+  const auto bottom_left = SkPoint::Make(0.f, height);
+  const auto bottom_right = SkPoint::Make(width, height);
+  const auto top_right = SkPoint::Make(width, 0.f);
+  const auto top_left = SkPoint::Make(0.f, 0.f);
+
+  // One-radius offsets that can be added to or subtracted from coordinates to
+  // indicate a unidirectional move, e.g., when calculating the endpoint of an
+  // arc.
+  const auto horizontal_offset = SkPoint::Make(corner_radius, 0.f);
+  const auto vertical_offset = SkPoint::Make(0.f, corner_radius);
+
+  return SkPathBuilder()
+      // Start just after the curve of the top-left rounded corner.
+      .moveTo(0.f, corner_radius)
+      .arcTo(bottom_left, bottom_left + horizontal_offset, corner_radius)
+      .arcTo(bottom_right, bottom_right - vertical_offset, corner_radius)
+      .arcTo(top_right, top_right - horizontal_offset, corner_radius)
+      .arcTo(top_left, top_left + vertical_offset, corner_radius)
+      .close()
+      .detach();
+}
+
 SkPath GetArcCurveRectPath(const gfx::Size& size,
                            const ArcCurveCorner& arc_curve_corner,
                            const std::optional<size_t>& corner_radius) {
-  if (size.IsEmpty()) {
-    LOG(ERROR) << "GetArcCurveRectPath() is called with an empty size: "
-               << size.ToString();
+  if (!IsSizeAndCornerRadiusValid(size, corner_radius)) {
     return SkPath();
   }
 
@@ -102,16 +151,6 @@ SkPath GetArcCurveRectPath(const gfx::Size& size,
                   "small for the arc curve corner; the size: "
                << size.ToString() << ", arc_curve_corner size: "
                << arc_curve_corner.size.ToString();
-
-    return SkPath();
-  }
-
-  if (corner_radius &&
-      (2 * corner_radius.value() >
-       static_cast<size_t>(std::min(size.width(), size.height())))) {
-    LOG(ERROR) << "GetArcCurveRectPath() is called with a size that is too "
-                  "small for rounded corners; the size: "
-               << size.ToString() << ", corner radius: " << *corner_radius;
 
     return SkPath();
   }

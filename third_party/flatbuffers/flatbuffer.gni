@@ -69,18 +69,19 @@ template("flatbuffer") {
     deps = []
 
     if (defined(invoker.flatc_out_dir)) {
-      out_dir = "$root_gen_dir/" + invoker.flatc_out_dir
+      outputs = [ "$target_gen_dir/" + invoker.flatc_out_dir +
+                  "/{{source_name_part}}_generated.h" ]
+      out_dir = rebase_path(get_path_info(outputs[0], "dir"), root_build_dir)
     } else {
-      out_dir = "{{source_gen_dir}}"
+      outputs = [ "{{source_gen_dir}}/{{source_name_part}}_generated.h" ]
+      out_dir = get_path_info(outputs[0], "dir")
     }
-
-    outputs = [ "$out_dir/{{source_name_part}}_generated.h" ]
 
     args = [
       "-c",
       "--keep-prefix",
       "-o",
-      "$out_dir",
+      out_dir,
       "-I",
       rebase_path("//", root_build_dir),
     ]

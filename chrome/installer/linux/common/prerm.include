@@ -9,10 +9,5 @@ for icon in @@LOGO_RESOURCES_PNG@@; do
   "$XDG_ICON_RESOURCE" uninstall --size "${size}" "@@PACKAGE@@"
 done
 
-UPDATE_MENUS="`command -v update-menus 2> /dev/null || true`"
-if [ -x "$UPDATE_MENUS" ]; then
-  update-menus
-fi
-
 # Update cache of .desktop file MIME types. Non-fatal since it's just a cache.
 update-desktop-database > /dev/null 2>&1 || true

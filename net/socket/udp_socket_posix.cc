@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
+#include "net/socket/udp_socket_posix.h"
 
+#include "base/notimplemented.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_APPLE)
@@ -15,19 +13,20 @@
 #define __APPLE_USE_RFC_3542
 #endif  // BUILDFLAG(IS_APPLE)
 
-#include "net/socket/udp_socket_posix.h"
-
 #include <errno.h>
 #include <fcntl.h>
 #include <net/if.h>
 #include <netdb.h>
 #include <netinet/in.h>
+#include <stdint.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 
 #include <memory>
 
 #include "base/debug/alias.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -37,16 +36,16 @@
 #include "base/rand_util.h"
 #include "base/task/current_thread.h"
 #include "base/task/thread_pool.h"
-#include "build/chromeos_buildflags.h"
+#include "base/trace_event/trace_event.h"
 #include "net/base/cronet_buildflags.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_address.h"
+#include "net/base/ip_address_util.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_activity_monitor.h"
 #include "net/base/sockaddr_storage.h"
 #include "net/base/trace_constants.h"
-#include "net/base/tracing.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source.h"
@@ -64,6 +63,7 @@
 
 #if BUILDFLAG(IS_APPLE)
 #include "net/base/apple/guarded_fd.h"
+#include "net/socket/socket_apple.h"
 #endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_MAC)
@@ -153,9 +153,11 @@ int UDPSocketPosix::AdoptOpenedSocket(AddressFamily address_family,
 }
 
 int UDPSocketPosix::ConfigureOpenedSocket() {
-#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD) && !BUILDFLAG(IS_IOS_TVOS)
   // https://crbug.com/41271555: Guard against a file descriptor being closed
-  // out from underneath the socket.
+  // out from underneath the socket. The change_fdguard_np() and related APIs
+  // are undocumented, except for comments in the Darwin kernel source code:
+  // http://fxr.watson.org/fxr/source/bsd/kern/kern_guarded.c?v=xnu-8792;im=10#L451
   guardid_t guardid = reinterpret_cast<guardid_t>(this);
   PCHECK(change_fdguard_np(socket_, nullptr, 0, &guardid,
                            GUARD_CLOSE | GUARD_DUP, nullptr) == 0);
@@ -200,7 +202,7 @@ void UDPSocketPosix::Close() {
   CHECK_EQ(socket_hash_, GetSocketFDHash(socket_));
   TRACE_EVENT("base", perfetto::StaticString{"CloseSocketUDP"});
 
-#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD) && !BUILDFLAG(IS_IOS_TVOS)
   // Attempt to clear errors on the socket so that they are not returned by
   // close(). This seems to be effective at clearing some, but not all,
   // EPROTOTYPE errors. See https://crbug.com/40732798.
@@ -211,6 +213,8 @@ void UDPSocketPosix::Close() {
   // https://crbug.com/41271555: Guard against a file descriptor being closed
   // out from underneath the socket.
   guardid_t guardid = reinterpret_cast<guardid_t>(this);
+  // See the comment in ConfigureOpenedSocket(), above, for information about
+  // guarded_close_np().
   if (IGNORE_EINTR(guarded_close_np(socket_, &guardid)) != 0) {
     // There is a bug in the Mac OS kernel that it can return an ENOTCONN or
     // EPROTOTYPE error. In this case we don't know whether the file descriptor
@@ -218,7 +222,35 @@ void UDPSocketPosix::Close() {
     // because it may have been reused by another thread in the meantime. We may
     // leak file handles here and cause a crash indirectly later. See
     // https://crbug.com/40732798.
-    PCHECK(errno == ENOTCONN || errno == EPROTOTYPE);
+
+    // Temporary workaround to investigate EINVAL return values.
+    // TODO(https://crbug.com/437414746): Remove this or update it once we have
+    // information.
+    if (errno == EINVAL) {
+      int fdflags = 0;
+      // This call should be a successful no-op. If it fails, we know the state
+      // of the filehandle is not what we're expecting.
+      const int retval = HANDLE_EINTR(
+          change_fdguard_np(socket_, &guardid, GUARD_CLOSE | GUARD_DUP,
+                            &guardid, GUARD_CLOSE | GUARD_DUP, &fdflags));
+      // We have seen the case
+      //   retval == -1
+      //   errno == EBADF
+      //   fdflags == 0
+      // many times and we don't need any more dumps for it. Only gather dumps
+      // for novel cases.
+      if (retval != -1 || errno != EBADF || fdflags != 0) {
+        SCOPED_CRASH_KEY_NUMBER("UdpSocketPosix", "change_fdguard_retval",
+                                retval);
+        SCOPED_CRASH_KEY_NUMBER("UdpSocketPosix", "change_fdguard_errno",
+                                errno);
+        SCOPED_CRASH_KEY_NUMBER("UdpSocketPosix", "change_fdguard_fdflags",
+                                fdflags);
+        base::debug::DumpWithoutCrashing();
+      }
+    } else if (errno != ENOTCONN && errno != EPROTOTYPE) {
+      PLOG(FATAL) << "Unexpected errno from guarded_close_np";
+    }
   }
 #else
   PCHECK(IGNORE_EINTR(close(socket_)) == 0);
@@ -238,11 +270,13 @@ int UDPSocketPosix::GetPeerAddress(IPEndPoint* address) const {
 
   if (!remote_address_.get()) {
     SockaddrStorage storage;
-    if (getpeername(socket_, storage.addr, &storage.addr_len))
+    if (getpeername(socket_, storage.addr(), &storage.addr_len)) {
       return MapSystemError(errno);
+    }
     auto endpoint = std::make_unique<IPEndPoint>();
-    if (!endpoint->FromSockAddr(storage.addr, storage.addr_len))
+    if (!endpoint->FromSockAddr(storage.addr(), storage.addr_len)) {
       return ERR_ADDRESS_INVALID;
+    }
     remote_address_ = std::move(endpoint);
   }
 
@@ -258,11 +292,13 @@ int UDPSocketPosix::GetLocalAddress(IPEndPoint* address) const {
 
   if (!local_address_.get()) {
     SockaddrStorage storage;
-    if (getsockname(socket_, storage.addr, &storage.addr_len))
+    if (getsockname(socket_, storage.addr(), &storage.addr_len)) {
       return MapSystemError(errno);
+    }
     auto endpoint = std::make_unique<IPEndPoint>();
-    if (!endpoint->FromSockAddr(storage.addr, storage.addr_len))
+    if (!endpoint->FromSockAddr(storage.addr(), storage.addr_len)) {
       return ERR_ADDRESS_INVALID;
+    }
     local_address_ = std::move(endpoint);
     net_log_.AddEvent(NetLogEventType::UDP_LOCAL_ADDRESS, [&] {
       return CreateNetLogUDPConnectParams(*local_address_, bound_network_);
@@ -396,10 +432,11 @@ int UDPSocketPosix::InternalConnect(const IPEndPoint& address) {
   }
 
   SockaddrStorage storage;
-  if (!address.ToSockAddr(storage.addr, &storage.addr_len))
+  if (!address.ToSockAddr(storage.addr(), &storage.addr_len)) {
     return ERR_ADDRESS_INVALID;
+  }
 
-  rv = HANDLE_EINTR(connect(socket_, storage.addr, storage.addr_len));
+  rv = HANDLE_EINTR(connect(socket_, storage.addr(), storage.addr_len));
   if (rv < 0)
     return MapSystemError(errno);
 
@@ -499,7 +536,7 @@ int UDPSocketPosix::SetRecvTos() {
   DCHECK_NE(socket_, kInvalidSocket);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  unsigned int ecn = 1;
+  uint32_t ecn = 1;
   if (addr_family_ == AF_INET6) {
     if (setsockopt(socket_, IPPROTO_IPV6, IPV6_RECVTCLASS, &ecn, sizeof(ecn)) !=
         0) {
@@ -723,9 +760,9 @@ int UDPSocketPosix::InternalRecvFromConnectedSocket(IOBuffer* buf,
 
   SockaddrStorage sock_addr;
   bool success =
-        remote_address_->ToSockAddr(sock_addr.addr, &sock_addr.addr_len);
-    DCHECK(success);
-    LogRead(result, buf->data(), sock_addr.addr_len, sock_addr.addr);
+      remote_address_->ToSockAddr(sock_addr.addr(), &sock_addr.addr_len);
+  DCHECK(success);
+  LogRead(result, buf->data(), sock_addr.addr_len, sock_addr.addr());
   return result;
 }
 
@@ -742,7 +779,7 @@ int UDPSocketPosix::InternalRecvFromNonConnectedSocket(IOBuffer* buf,
   // 512 Bytes, re-used here.
   char control_buffer[512];
   struct msghdr msg = {
-      .msg_name = storage.addr,
+      .msg_name = storage.addr(),
       .msg_namelen = storage.addr_len,
       .msg_iov = &iov,
       .msg_iovlen = 1,
@@ -763,7 +800,7 @@ int UDPSocketPosix::InternalRecvFromNonConnectedSocket(IOBuffer* buf,
       // Linux, but isn't supported by POSIX.
       result = ERR_MSG_TOO_BIG;
     } else if (address &&
-               !address->FromSockAddr(storage.addr, storage.addr_len)) {
+               !address->FromSockAddr(storage.addr(), storage.addr_len)) {
       result = ERR_ADDRESS_INVALID;
     } else {
       result = bytes_transferred;
@@ -771,7 +808,9 @@ int UDPSocketPosix::InternalRecvFromNonConnectedSocket(IOBuffer* buf,
     last_tos_ = 0;
     if (bytes_transferred > 0 && msg.msg_controllen > 0) {
       for (struct cmsghdr* cmsg = CMSG_FIRSTHDR(&msg); cmsg != nullptr;
-           cmsg = CMSG_NXTHDR(&msg, cmsg)) {
+           // SAFETY: Size and null pointer checks are done in system header
+           // files.
+           cmsg = UNSAFE_BUFFERS(CMSG_NXTHDR(&msg, cmsg))) {
 #if BUILDFLAG(IS_APPLE)
         if ((cmsg->cmsg_level == IPPROTO_IP && cmsg->cmsg_type == IP_RECVTOS) ||
             (cmsg->cmsg_level == IPPROTO_IPV6 &&
@@ -781,13 +820,17 @@ int UDPSocketPosix::InternalRecvFromNonConnectedSocket(IOBuffer* buf,
             (cmsg->cmsg_level == IPPROTO_IPV6 &&
              cmsg->cmsg_type == IPV6_TCLASS)) {
 #endif  // BUILDFLAG(IS_APPLE)
-          last_tos_ = *(reinterpret_cast<uint8_t*>(CMSG_DATA(cmsg)));
+          auto cmsg_data_as_span =
+              // SAFETY: `CMSG_DATA` points to `control_buffer`. Its size is
+              // 512.
+              UNSAFE_BUFFERS(base::span(CMSG_DATA(cmsg), sizeof(uint8_t)));
+          base::byte_span_from_ref(last_tos_).copy_from(cmsg_data_as_span);
         }
       }
     }
   }
 
-  LogRead(result, buf->data(), storage.addr_len, storage.addr);
+  LogRead(result, buf->data(), storage.addr_len, storage.addr());
   return result;
 }
 
@@ -795,24 +838,38 @@ int UDPSocketPosix::InternalSendTo(IOBuffer* buf,
                                    int buf_len,
                                    const IPEndPoint* address) {
   SockaddrStorage storage;
-  struct sockaddr* addr = storage.addr;
+  struct sockaddr* addr = storage.addr();
   if (!address) {
     addr = nullptr;
     storage.addr_len = 0;
   } else {
-    if (!address->ToSockAddr(storage.addr, &storage.addr_len)) {
+    if (!address->ToSockAddr(storage.addr(), &storage.addr_len)) {
       int result = ERR_ADDRESS_INVALID;
       LogWrite(result, nullptr, nullptr);
       return result;
     }
   }
 
-  int result = HANDLE_EINTR(sendto(socket_, buf->data(), buf_len, sendto_flags_,
-                                   addr, storage.addr_len));
-  if (result < 0)
+#if !defined(WORK_AROUND_CRBUG_40064248)
+  ssize_t result = HANDLE_EINTR(sendto(socket_, buf->data(), buf_len,
+                                       sendto_flags_, addr, storage.addr_len));
+#else   // !WORK_AROUND_CRBUG_40064248
+  ssize_t result = HANDLE_EINTR(SendtoAndDetectBogusReturnValue(
+      socket_, buf->data(), buf_len, sendto_flags_, addr, storage.addr_len));
+  if (result == kSendBogusReturnValueDetected) {
+    // https://crbug.com/40064248 is known to occur as a result of certain
+    // network configuration changes.
+    result = ERR_NETWORK_CHANGED;
+  } else
+#endif  // !WORK_AROUND_CRBUG_40064248
+  if (result < 0) {
     result = MapSystemError(errno);
-  if (result != ERR_IO_PENDING)
+  } else {
+    CHECK_LE(result, buf_len);
+  }
+  if (result != ERR_IO_PENDING) {
     LogWrite(result, buf->data(), address);
+  }
   return result;
 }
 
@@ -868,8 +925,7 @@ int UDPSocketPosix::SetMulticastOptions() {
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION() << "Invalid address family";
-        return ERR_ADDRESS_INVALID;
+        NOTREACHED() << "Invalid address family";
     }
   }
   return OK;
@@ -877,13 +933,14 @@ int UDPSocketPosix::SetMulticastOptions() {
 
 int UDPSocketPosix::DoBind(const IPEndPoint& address) {
   SockaddrStorage storage;
-  if (!address.ToSockAddr(storage.addr, &storage.addr_len))
+  if (!address.ToSockAddr(storage.addr(), &storage.addr_len)) {
     return ERR_ADDRESS_INVALID;
-  int rv = bind(socket_, storage.addr, storage.addr_len);
+  }
+  int rv = bind(socket_, storage.addr(), storage.addr_len);
   if (rv == 0)
     return OK;
   int last_error = errno;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (last_error == EINVAL)
     return ERR_ADDRESS_IN_USE;
 #elif BUILDFLAG(IS_APPLE)
@@ -917,8 +974,7 @@ int UDPSocketPosix::JoinGroup(const IPAddress& group_address) const {
       ip_mreqn mreq = {};
       mreq.imr_ifindex = multicast_interface_;
       mreq.imr_address.s_addr = htonl(INADDR_ANY);
-      memcpy(&mreq.imr_multiaddr, group_address.bytes().data(),
-             IPAddress::kIPv4AddressSize);
+      mreq.imr_multiaddr = ToInAddr(group_address);
       int rv = setsockopt(socket_, IPPROTO_IP, IP_ADD_MEMBERSHIP,
                           &mreq, sizeof(mreq));
       if (rv < 0)
@@ -930,8 +986,7 @@ int UDPSocketPosix::JoinGroup(const IPAddress& group_address) const {
         return ERR_ADDRESS_INVALID;
       ipv6_mreq mreq;
       mreq.ipv6mr_interface = multicast_interface_;
-      memcpy(&mreq.ipv6mr_multiaddr, group_address.bytes().data(),
-             IPAddress::kIPv6AddressSize);
+      mreq.ipv6mr_multiaddr = ToIn6Addr(group_address);
       int rv = setsockopt(socket_, IPPROTO_IPV6, IPV6_JOIN_GROUP,
                           &mreq, sizeof(mreq));
       if (rv < 0)
@@ -939,8 +994,7 @@ int UDPSocketPosix::JoinGroup(const IPAddress& group_address) const {
       return OK;
     }
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid address family";
-      return ERR_ADDRESS_INVALID;
+      NOTREACHED() << "Invalid address family";
   }
 }
 
@@ -957,8 +1011,7 @@ int UDPSocketPosix::LeaveGroup(const IPAddress& group_address) const {
       ip_mreqn mreq = {};
       mreq.imr_ifindex = multicast_interface_;
       mreq.imr_address.s_addr = INADDR_ANY;
-      memcpy(&mreq.imr_multiaddr, group_address.bytes().data(),
-             IPAddress::kIPv4AddressSize);
+      mreq.imr_multiaddr = ToInAddr(group_address);
       int rv = setsockopt(socket_, IPPROTO_IP, IP_DROP_MEMBERSHIP,
                           &mreq, sizeof(mreq));
       if (rv < 0)
@@ -974,8 +1027,7 @@ int UDPSocketPosix::LeaveGroup(const IPAddress& group_address) const {
 #else   // BUILDFLAG(IS_FUCHSIA)
       mreq.ipv6mr_interface = 0;  // 0 indicates default multicast interface.
 #endif  // !BUILDFLAG(IS_FUCHSIA)
-      memcpy(&mreq.ipv6mr_multiaddr, group_address.bytes().data(),
-             IPAddress::kIPv6AddressSize);
+      mreq.ipv6mr_multiaddr = ToIn6Addr(group_address);
       int rv = setsockopt(socket_, IPPROTO_IPV6, IPV6_LEAVE_GROUP,
                           &mreq, sizeof(mreq));
       if (rv < 0)
@@ -983,8 +1035,7 @@ int UDPSocketPosix::LeaveGroup(const IPAddress& group_address) const {
       return OK;
     }
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid address family";
-      return ERR_ADDRESS_INVALID;
+      NOTREACHED() << "Invalid address family";
   }
 }
 
@@ -1092,6 +1143,19 @@ int UDPSocketPosix::SetIOSNetworkServiceType(int ios_network_service_type) {
   }
 #endif  // BUILDFLAG(IS_IOS)
   return OK;
+}
+
+void UDPSocketPosix::RegisterQuicConnectionClosePayload(
+    base::span<uint8_t> payload) {
+#if BUILDFLAG(IS_ANDROID)
+  net::android::RegisterQuicConnectionClosePayload(socket_, payload);
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+void UDPSocketPosix::UnregisterQuicConnectionClosePayload() {
+#if BUILDFLAG(IS_ANDROID)
+  net::android::UnregisterQuicConnectionClosePayload(socket_);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace net

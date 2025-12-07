@@ -9,17 +9,20 @@ import android.graphics.drawable.Drawable;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tinker_tank.TinkerTankDelegate;
-import org.chromium.chrome.browser.tinker_tank.TinkerTankDelegateImpl;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 
 import java.util.List;
 
 /** TinkerTank action for the {@link TabListEditorMenu}. */
+@NullMarked
 public class TabListEditorTinkerTankAction extends TabListEditorAction {
-    private Activity mActivity;
+    private final Activity mActivity;
 
     /**
      * Create an action for share tabs to tinker tank.
@@ -34,7 +37,7 @@ public class TabListEditorTinkerTankAction extends TabListEditorAction {
             @ShowMode int showMode,
             @ButtonType int buttonType,
             @IconPosition int iconPosition) {
-        assert TinkerTankDelegateImpl.enabled();
+        assert TinkerTankDelegate.isEnabled();
 
         Drawable drawable =
                 AppCompatResources.getDrawable(activity, R.drawable.ic_add_box_rounded_corner);
@@ -60,22 +63,25 @@ public class TabListEditorTinkerTankAction extends TabListEditorAction {
     }
 
     @Override
-    public void onSelectionStateChange(List<Integer> tabIds) {
+    public void onSelectionStateChange(List<TabListEditorItemSelectionId> itemIds) {
         int size =
                 editorSupportsActionOnRelatedTabs()
-                        ? getTabCountIncludingRelatedTabs(getTabGroupModelFilter(), tabIds)
-                        : tabIds.size();
-        setEnabledAndItemCount(!tabIds.isEmpty(), size);
+                        ? getTabCountIncludingRelatedTabs(getTabGroupModelFilter(), itemIds)
+                        : itemIds.size();
+        setEnabledAndItemCount(!itemIds.isEmpty(), size);
     }
 
     @Override
-    public boolean performAction(List<Tab> tabs) {
+    public boolean performAction(
+            List<Tab> tabs,
+            List<String> tabGroupSyncIds,
+            @Nullable MotionEventInfo triggeringMotion) {
         assert !tabs.isEmpty() : "Tinker Tank action should not be enabled for no tabs.";
         BottomSheetController bottomSheetController =
                 getActionDelegate().getBottomSheetController();
 
         if (bottomSheetController != null) {
-            TinkerTankDelegate delegate = new TinkerTankDelegateImpl();
+            TinkerTankDelegate delegate = TinkerTankDelegate.create();
             delegate.maybeShowForSelectedTabs(mActivity, bottomSheetController, tabs);
         }
         return true;

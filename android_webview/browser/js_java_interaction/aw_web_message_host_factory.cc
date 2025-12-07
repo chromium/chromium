@@ -13,7 +13,7 @@
 #include "components/js_injection/browser/js_communication_host.h"
 #include "components/js_injection/browser/web_message.h"
 #include "components/js_injection/browser/web_message_host.h"
-#include "components/js_injection/common/origin_matcher.h"
+#include "components/origin_matcher/origin_matcher.h"
 #include "content/public/browser/android/message_payload.h"
 #include "content/public/browser/android/message_port_helper.h"
 
@@ -49,9 +49,8 @@ class AwWebMessageHost : public js_injection::WebMessageHost {
     Java_WebMessageListenerHolder_onPostMessage(
         env, listener_,
         content::android::ConvertWebMessagePayloadToJava(message->message),
-        base::android::ConvertUTF8ToJavaString(env, top_level_origin_string_),
-        base::android::ConvertUTF8ToJavaString(env, origin_string_),
-        is_main_frame_, jports, reply_proxy_.GetJavaPeer());
+        top_level_origin_string_, origin_string_, is_main_frame_, jports,
+        reply_proxy_.GetJavaPeer());
   }
 
  private:
@@ -65,7 +64,7 @@ class AwWebMessageHost : public js_injection::WebMessageHost {
 }  // namespace
 
 AwWebMessageHostFactory::AwWebMessageHostFactory(
-    const base::android::JavaParamRef<jobject>& listener)
+    const base::android::JavaRef<jobject>& listener)
     : listener_(listener) {}
 
 AwWebMessageHostFactory::~AwWebMessageHostFactory() = default;
@@ -100,3 +99,6 @@ AwWebMessageHostFactory::CreateHost(const std::string& top_level_origin_string,
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(WebMessageListenerHolder)
+DEFINE_JNI(WebMessageListenerInfo)

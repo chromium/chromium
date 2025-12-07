@@ -7,6 +7,7 @@
 import os
 import sys
 
+# //testing imports.
 from pytype_common import pytype_runner
 
 TESTING_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -29,7 +30,7 @@ FILES_AND_DIRECTORIES_TO_CHECK = [
 ]
 
 TEST_NAME = 'testing_pytype'
-TEST_LOCATION = "//testing/run_pytype.py"
+TEST_LOCATION = '//testing/run_pytype.py'
 
 
 def main() -> int:

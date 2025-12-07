@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
@@ -90,6 +91,9 @@ class LoadStreamTask : public offline_pages::Task {
 
     // Experiments information from the server.
     Experiments experiments;
+
+    // Server-provided feed launch CUI metadata.
+    std::string feed_launch_cui_metadata;
 
     // Reliability logging feed launch result: CARDS_UNSPECIFIED if loading is
     // successful.

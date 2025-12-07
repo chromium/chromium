@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -90,7 +91,8 @@ class TestMoveLoop : public X11MoveLoop {
   // X11MoveLoop:
   bool RunMoveLoop(bool can_grab_pointer,
                    scoped_refptr<X11Cursor> old_cursor,
-                   scoped_refptr<X11Cursor> new_cursor) override;
+                   scoped_refptr<X11Cursor> new_cursor,
+                   base::OnceClosure started_callback) override;
   void UpdateCursor(scoped_refptr<X11Cursor> cursor) override;
   void EndMoveLoop() override;
 
@@ -214,7 +216,8 @@ class TestDragDropClient : public SimpleTestDragDropClient {
 
   // Map of x11::Windows to the collector which intercepts
   // x11::ClientMessageEvents for that window.
-  std::map<x11::Window, ClientMessageEventCollector*> collectors_;
+  std::map<x11::Window, raw_ptr<ClientMessageEventCollector, CtnExperimental>>
+      collectors_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -257,8 +260,10 @@ bool TestMoveLoop::IsRunning() const {
 
 bool TestMoveLoop::RunMoveLoop(bool can_grab_pointer,
                                scoped_refptr<X11Cursor> old_cursor,
-                               scoped_refptr<X11Cursor> new_cursor) {
+                               scoped_refptr<X11Cursor> new_cursor,
+                               base::OnceClosure started_callback) {
   is_running_ = true;
+  std::move(started_callback).Run();
   base::RunLoop run_loop;
   quit_closure_ = run_loop.QuitClosure();
   run_loop.Run();
@@ -301,7 +306,7 @@ DragOperation SimpleTestDragDropClient::StartDragAndDrop(
   loop_ = std::make_unique<TestMoveLoop>(this);
 
   // Cursors are not set. Thus, pass nothing.
-  loop_->RunMoveLoop(!source_window->HasCapture(), {}, {});
+  loop_->RunMoveLoop(!source_window->HasCapture(), {}, {}, base::DoNothing());
 
   auto resulting_operation = negotiated_operation();
   CleanupDrag();
@@ -443,7 +448,7 @@ class TestPlatformWindowDelegate : public PlatformWindowDelegate {
   void OnWillDestroyAcceleratedWidget() override {}
   void OnAcceleratedWidgetDestroyed() override {}
   void OnActivationChanged(bool active) override {}
-  void OnMouseEnter() override {}
+  void OnCursorUpdate() override {}
   SkPath GetWindowMaskForWindowShapeInPixels() override { return {}; }
 };
 

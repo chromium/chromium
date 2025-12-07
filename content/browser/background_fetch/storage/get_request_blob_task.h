@@ -38,7 +38,7 @@ class GetRequestBlobTask : public DatabaseTask {
  private:
   void DidOpenCache(int64_t trace_id, blink::mojom::CacheStorageError error);
   void DidMatchRequest(int64_t trace_id,
-                       blink::mojom::CacheKeysResultPtr result);
+                       blink::mojom::CacheStorageCache::KeysResult result);
 
   void FinishWithError(blink::mojom::BackgroundFetchError error) override;
 

@@ -13,9 +13,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/live_caption/caption_bubble_context.h"
+#include "components/live_caption/caption_bubble_settings.h"
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/views/caption_bubble.h"
 #include "components/live_caption/views/caption_bubble_model.h"
+#include "components/live_caption/views/translation_view_wrapper.h"
+#include "components/live_caption/views/translation_view_wrapper_base.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/soda_installer.h"
 #include "components/strings/grit/components_strings.h"
@@ -25,37 +28,41 @@ namespace captions {
 
 // Static
 std::unique_ptr<CaptionBubbleController> CaptionBubbleController::Create(
-    PrefService* profile_prefs,
-    const std::string& application_locale) {
-  return std::make_unique<CaptionBubbleControllerViews>(profile_prefs,
-                                                        application_locale);
+    CaptionBubbleSettings* caption_bubble_settings,
+    const std::string& application_locale,
+    std::unique_ptr<TranslationViewWrapperBase> translation_view_wrapper) {
+  return std::make_unique<CaptionBubbleControllerViews>(
+      caption_bubble_settings, application_locale,
+      std::move(translation_view_wrapper));
 }
 
 CaptionBubbleControllerViews::CaptionBubbleControllerViews(
-    PrefService* profile_prefs,
-    const std::string& application_locale)
+    CaptionBubbleSettings* caption_bubble_settings,
+    const std::string& application_locale,
+    std::unique_ptr<TranslationViewWrapperBase> translation_view_wrapper)
     : application_locale_(application_locale) {
   caption_bubble_ = new CaptionBubble(
-      profile_prefs, application_locale,
+      caption_bubble_settings, std::move(translation_view_wrapper),
+      application_locale,
       base::BindOnce(&CaptionBubbleControllerViews::OnCaptionBubbleDestroyed,
                      base::Unretained(this)));
   caption_widget_ =
       views::BubbleDialogDelegateView::CreateBubble(caption_bubble_);
   caption_bubble_->SetCaptionBubbleStyle();
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
   if (soda_installer) {
     soda_installer->AddObserver(this);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 CaptionBubbleControllerViews::~CaptionBubbleControllerViews() {
   if (caption_widget_)
     caption_widget_->CloseNow();
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
   // `soda_installer` is not guaranteed to be valid, since it's possible for
   // this class to out-live it. This means that this class cannot use
@@ -63,7 +70,7 @@ CaptionBubbleControllerViews::~CaptionBubbleControllerViews() {
   if (soda_installer) {
     soda_installer->RemoveObserver(this);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void CaptionBubbleControllerViews::OnCaptionBubbleDestroyed() {
@@ -72,6 +79,7 @@ void CaptionBubbleControllerViews::OnCaptionBubbleDestroyed() {
 }
 
 bool CaptionBubbleControllerViews::OnTranscription(
+    content::RenderFrameHost* rfh,
     CaptionBubbleContext* caption_bubble_context,
     const media::SpeechRecognitionResult& result) {
   if (!caption_bubble_)
@@ -79,14 +87,6 @@ bool CaptionBubbleControllerViews::OnTranscription(
   SetActiveModel(caption_bubble_context);
   if (active_model_->IsClosed())
     return false;
-
-  // If the caption bubble has no activity and it receives a final
-  // transcription, don't set text. The speech service sends a final
-  // transcription after several seconds of no audio. This prevents the bubble
-  // reappearing with a final transcription after it had disappeared due to no
-  // activity.
-  if (!caption_bubble_->HasActivity() && result.is_final)
-    return true;
 
   active_model_->SetPartialText(result.transcription);
   if (result.is_final)
@@ -110,6 +110,7 @@ void CaptionBubbleControllerViews::OnError(
 }
 
 void CaptionBubbleControllerViews::OnAudioStreamEnd(
+    content::RenderFrameHost* rfh,
     CaptionBubbleContext* caption_bubble_context) {
   if (!caption_bubble_)
     return;
@@ -230,6 +231,7 @@ CaptionBubble* CaptionBubbleControllerViews::GetCaptionBubbleForTesting() {
 }
 
 void CaptionBubbleControllerViews::OnLanguageIdentificationEvent(
+    content::RenderFrameHost* rfh,
     CaptionBubbleContext* caption_bubble_context,
     const media::mojom::LanguageIdentificationEventPtr& event) {
   if (!caption_bubble_) {

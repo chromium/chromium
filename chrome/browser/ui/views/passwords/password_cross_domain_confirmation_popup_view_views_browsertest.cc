@@ -9,7 +9,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
+#include "chrome/browser/ui/passwords/password_cross_domain_confirmation_popup_controller_interface.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_pixel_test.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,7 +30,7 @@ using ::testing::Values;
 constexpr gfx::RectF kElementBounds{100, 100, 250, 50};
 
 class MockPasswordCrossDomainConfirmationPopupController
-    : public autofill::AutofillPopupViewDelegate {
+    : public PasswordCrossDomainConfirmationPopupControllerInterface {
  public:
   MockPasswordCrossDomainConfirmationPopupController() = default;
   ~MockPasswordCrossDomainConfirmationPopupController() override = default;
@@ -44,6 +46,8 @@ class MockPasswordCrossDomainConfirmationPopupController
               GetElementTextDirection,
               (),
               (const override));
+  MOCK_METHOD(std::u16string, GetBodyText, (), (const, override));
+  MOCK_METHOD(std::u16string, GetTitleText, (), (const, override));
 
   base::WeakPtr<MockPasswordCrossDomainConfirmationPopupController>
   GetWeakPtr() {
@@ -81,12 +85,20 @@ class PasswordCrossDomainConfirmationPopupViewBrowsertest
   // autofill::PopupPixelTest:
   PasswordCrossDomainConfirmationPopupViewViews* CreateView(
       MockPasswordCrossDomainConfirmationPopupController& controller) override {
+    ON_CALL(controller, GetBodyText)
+        .WillByDefault(Return(l10n_util::GetStringFUTF16(
+            IDS_PASSWORD_CROSS_DOMAIN_FILLING_CONFIRMATION_DESCRIPTION,
+            u"b.com", u"a.com")));
+    ON_CALL(controller, GetTitleText)
+        .WillByDefault(Return(l10n_util::GetStringFUTF16(
+            IDS_PASSWORD_CROSS_DOMAIN_FILLING_CONFIRMATION_TITLE, u"b.com")));
+
     return new PasswordCrossDomainConfirmationPopupViewViews(
         controller.GetWeakPtr(),
         views::Widget::GetWidgetForNativeWindow(
             browser()->window()->GetNativeWindow()),
         /*domain=*/GURL("https://a.com"),
-        /*password_origin=*/u"b.com", base::DoNothing(), base::DoNothing());
+        /*password_hostname=*/u"b.com", base::DoNothing(), base::DoNothing());
   }
 };
 

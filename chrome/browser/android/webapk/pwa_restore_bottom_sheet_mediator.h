@@ -15,7 +15,7 @@ namespace webapk {
 class PwaRestoreBottomSheetMediator {
  public:
   explicit PwaRestoreBottomSheetMediator(
-      const base::android::JavaParamRef<jobject>& java_ref,
+      const base::android::JavaRef<jobject>& java_ref,
       WebApkRestoreManager* restore_manager);
   PwaRestoreBottomSheetMediator(const PwaRestoreBottomSheetMediator&) = delete;
   PwaRestoreBottomSheetMediator& operator=(
@@ -25,7 +25,7 @@ class PwaRestoreBottomSheetMediator {
 
   void OnRestoreWebapps(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobjectArray>& jrestore_app_ids);
+      const base::android::JavaRef<jobjectArray>& jrestore_app_ids);
 
  private:
   ~PwaRestoreBottomSheetMediator();

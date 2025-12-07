@@ -101,7 +101,7 @@ class SslHmacChannelAuthenticator : public ChannelAuthenticator {
   void ReadAuthenticationBytes();
   void OnAuthBytesRead(int result);
   bool HandleAuthBytesRead(int result);
-  bool VerifyAuthBytes(const std::string& received_auth_bytes);
+  bool VerifyAuthBytes(base::span<const uint8_t> bytes);
 
   void CheckDone(bool* callback_called);
   void NotifyError(int error);

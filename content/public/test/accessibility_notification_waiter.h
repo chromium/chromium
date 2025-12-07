@@ -11,7 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/accessibility/ax_event_generator.h"
-#include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree.h"
@@ -20,9 +19,12 @@ namespace base {
 class RunLoop;
 }
 
+namespace ui {
+class BrowserAccessibilityManager;
+}
+
 namespace content {
 
-class BrowserAccessibilityManager;
 class RenderFrameHost;
 class RenderFrameHostImpl;
 class WebContents;
@@ -40,12 +42,10 @@ class AccessibilityNotificationWaiter : public WebContentsObserver {
 
   // Wait for a specific Blink event.
   AccessibilityNotificationWaiter(WebContents* web_contents,
-                                  ui::AXMode accessibility_mode,
                                   ax::mojom::Event event);
 
   // Wait for a specific AXEventGenerator event.
   AccessibilityNotificationWaiter(WebContents* web_contents,
-                                  ui::AXMode accessibility_mode,
                                   ui::AXEventGenerator::Event event);
 
   AccessibilityNotificationWaiter(const AccessibilityNotificationWaiter&) =
@@ -81,7 +81,7 @@ class AccessibilityNotificationWaiter : public WebContentsObserver {
 
   // After WaitForNotification returns, use this to retrieve the
   // `BrowserAccessibilityManager` that was the target of the event.
-  BrowserAccessibilityManager* event_browser_accessibility_manager() const {
+  ui::BrowserAccessibilityManager* event_browser_accessibility_manager() const {
     return event_browser_accessibility_manager_;
   }
 
@@ -115,7 +115,7 @@ class AccessibilityNotificationWaiter : public WebContentsObserver {
                             int event_target_id);
 
   // Callback from BrowserAccessibilityManager for all generated events.
-  void OnGeneratedEvent(BrowserAccessibilityManager* manager,
+  void OnGeneratedEvent(ui::BrowserAccessibilityManager* manager,
                         ui::AXEventGenerator::Event event,
                         ui::AXNodeID event_target_id);
 
@@ -139,7 +139,7 @@ class AccessibilityNotificationWaiter : public WebContentsObserver {
   std::unique_ptr<base::RunLoop> loop_runner_;
   base::RepeatingClosure loop_runner_quit_closure_;
   int event_target_id_ = 0;
-  raw_ptr<BrowserAccessibilityManager, AcrossTasksDanglingUntriaged>
+  raw_ptr<ui::BrowserAccessibilityManager, AcrossTasksDanglingUntriaged>
       event_browser_accessibility_manager_ = nullptr;
   bool notification_received_ = false;
   int frame_count_ = 0;

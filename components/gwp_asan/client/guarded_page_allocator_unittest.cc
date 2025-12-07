@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/gwp_asan/client/guarded_page_allocator.h"
 
 #include <algorithm>
@@ -17,12 +12,14 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/page_size.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/threading/simple_thread.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/gwp_asan/client/gwp_asan.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,27 +27,35 @@
 namespace gwp_asan {
 namespace internal {
 
-static constexpr size_t kMaxMetadata = AllocatorState::kMaxMetadata;
-static constexpr size_t kMaxSlots = AllocatorState::kMaxRequestedSlots;
+static constexpr size_t kMaxMetadata = 2048;
+static constexpr size_t kMaxSlots = 8192;
 
 class BaseGpaTest : public testing::Test {
  protected:
   BaseGpaTest(size_t max_allocated_pages,
               size_t max_metadata,
               size_t max_slots,
-              bool is_partition_alloc) {
-    gpa_.Init(
-        AllocatorSettings{
+              bool is_partition_alloc)
+      : is_partition_alloc_(is_partition_alloc),
+        settings_{AllocatorSettings{
             .max_allocated_pages = max_allocated_pages,
             .num_metadata = max_metadata,
             .total_pages = max_slots,
             .sampling_frequency = 0u,
-        },
-        base::BindLambdaForTesting(
-            [&](size_t allocations) { allocator_oom_ = true; }),
-        is_partition_alloc);
+        }} {}
+
+  void SetUp() override {
+    ASSERT_TRUE(gpa_.Init(settings_,
+                          base::BindLambdaForTesting([&](size_t allocations) {
+                            allocator_oom_ = true;
+                          }),
+                          is_partition_alloc_));
   }
 
+  void TearDown() override { gpa_.DestructForTesting(); }
+
+  const bool is_partition_alloc_;
+  const AllocatorSettings settings_;
   GuardedPageAllocator gpa_;
   bool allocator_oom_ = false;
 };
@@ -97,12 +102,14 @@ INSTANTIATE_TEST_SUITE_P(VaryPartitionAlloc,
                          GuardedPageAllocatorTest,
                          testing::Values(false, true));
 
+#if defined(GTEST_HAS_DEATH_TEST)
+
 TEST_P(GuardedPageAllocatorTest, SingleAllocDealloc) {
   char* buf = reinterpret_cast<char*>(gpa_.Allocate(base::GetPageSize()));
   EXPECT_NE(buf, nullptr);
   EXPECT_TRUE(gpa_.PointerIsMine(buf));
-  memset(buf, 'A', base::GetPageSize());
-  EXPECT_DEATH(buf[base::GetPageSize()] = 'A', "");
+  UNSAFE_TODO(memset(buf, 'A', base::GetPageSize()));
+  UNSAFE_TODO(EXPECT_DEATH(buf[base::GetPageSize()] = 'A', ""));
   gpa_.Deallocate(buf);
   EXPECT_DEATH(buf[0] = 'B', "");
   EXPECT_DEATH(gpa_.Deallocate(buf), "");
@@ -111,9 +118,11 @@ TEST_P(GuardedPageAllocatorTest, SingleAllocDealloc) {
 TEST_P(GuardedPageAllocatorTest, CrashOnBadDeallocPointer) {
   EXPECT_DEATH(gpa_.Deallocate(nullptr), "");
   char* buf = reinterpret_cast<char*>(gpa_.Allocate(8));
-  EXPECT_DEATH(gpa_.Deallocate(buf + 1), "");
+  UNSAFE_TODO(EXPECT_DEATH(gpa_.Deallocate(buf + 1), ""));
   gpa_.Deallocate(buf);
 }
+
+#endif  // defined(GTEST_HAS_DEATH_TEST)
 
 TEST_P(GuardedPageAllocatorTest, PointerIsMine) {
   void* buf = gpa_.Allocate(1);
@@ -126,22 +135,24 @@ TEST_P(GuardedPageAllocatorTest, PointerIsMine) {
   EXPECT_FALSE(gpa_.PointerIsMine(malloc_ptr.get()));
 }
 
+#if defined(GTEST_HAS_DEATH_TEST)
+
 TEST_P(GuardedPageAllocatorTest, GetRequestedSize) {
   void* buf = gpa_.Allocate(100);
   EXPECT_EQ(gpa_.GetRequestedSize(buf), 100U);
 #if !BUILDFLAG(IS_APPLE)
-  EXPECT_DEATH({ gpa_.GetRequestedSize((char*)buf + 1); }, "");
+  UNSAFE_TODO(EXPECT_DEATH({ gpa_.GetRequestedSize((char*)buf + 1); }, ""));
 #else
-  EXPECT_EQ(gpa_.GetRequestedSize((char*)buf + 1), 0U);
+  UNSAFE_TODO(EXPECT_EQ(gpa_.GetRequestedSize((char*)buf + 1), 0U));
 #endif
 }
 
 TEST_P(GuardedPageAllocatorTest, LeftAlignedAllocation) {
   char* buf = GetAlignedAllocation(true, 16);
   ASSERT_NE(buf, nullptr);
-  EXPECT_DEATH(buf[-1] = 'A', "");
+  UNSAFE_TODO(EXPECT_DEATH(buf[-1] = 'A', ""));
   buf[0] = 'A';
-  buf[base::GetPageSize() - 1] = 'A';
+  UNSAFE_TODO(buf[base::GetPageSize() - 1]) = 'A';
   gpa_.Deallocate(buf);
 }
 
@@ -149,11 +160,14 @@ TEST_P(GuardedPageAllocatorTest, RightAlignedAllocation) {
   char* buf =
       GetAlignedAllocation(false, GuardedPageAllocator::kGpaAllocAlignment);
   ASSERT_NE(buf, nullptr);
-  buf[-1] = 'A';
+  UNSAFE_TODO(buf[-1]) = 'A';
   buf[0] = 'A';
-  EXPECT_DEATH(buf[GuardedPageAllocator::kGpaAllocAlignment] = 'A', "");
+  UNSAFE_TODO(
+      EXPECT_DEATH(buf[GuardedPageAllocator::kGpaAllocAlignment] = 'A', ""));
   gpa_.Deallocate(buf);
 }
+
+#endif  // defined(GTEST_HAS_DEATH_TEST)
 
 TEST_P(GuardedPageAllocatorTest, AllocationAlignment) {
   const uintptr_t page_size = base::GetPageSize();
@@ -196,7 +210,7 @@ class GuardedPageAllocatorParamTest
 
 TEST_P(GuardedPageAllocatorParamTest, AllocDeallocAllPages) {
   size_t num_allocations = GetParam();
-  char* bufs[kMaxMetadata];
+  std::array<char*, kMaxMetadata> bufs;
   for (size_t i = 0; i < num_allocations; i++) {
     bufs[i] = reinterpret_cast<char*>(gpa_.Allocate(1));
     EXPECT_NE(bufs[i], nullptr);
@@ -251,7 +265,7 @@ class ThreadedAllocCountDelegate : public base::DelegateSimpleThread::Delegate {
 // extra pages are allocated when there's concurrent calls to Allocate().
 TEST_P(GuardedPageAllocatorTest, ThreadedAllocCount) {
   constexpr size_t num_threads = 2;
-  std::array<void*, kMaxMetadata> allocations[num_threads];
+  std::array<std::array<void*, kMaxMetadata>, num_threads> allocations;
   {
     base::DelegateSimpleThreadPool threads("alloc_threads", num_threads);
     threads.Start();

@@ -9,7 +9,10 @@ import android.content.res.ColorStateList;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 
-import org.chromium.chrome.browser.toolbar.ButtonData;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone.VisualState;
 
 import java.util.Objects;
@@ -19,6 +22,7 @@ import java.util.Objects;
  * against new states, to infer if anything important has changed. Especially useful when deciding
  * if a new bitmap capture is warranted.
  */
+@NullMarked
 class PhoneCaptureStateToken {
     private final @ColorInt int mTint;
     private final int mTabCount;
@@ -31,11 +35,12 @@ class PhoneCaptureStateToken {
     private final boolean mIsShowingUpdateBadgeDuringLastCapture;
     private final boolean mIsPaintPreview;
     private final int mUnfocusedLocationBarLayoutWidth;
+    private final int mControlsPosition;
 
     public PhoneCaptureStateToken(
             @ColorInt int tint,
             int tabCount,
-            ButtonData optionalButtonData,
+            @Nullable ButtonData optionalButtonData,
             @VisualState int visualState,
             VisibleUrlText visibleUrlText,
             @DrawableRes int securityIcon,
@@ -44,7 +49,8 @@ class PhoneCaptureStateToken {
             boolean isShowingUpdateBadgeDuringLastCapture,
             boolean isPaintPreview,
             float progress,
-            int unfocusedLocationBarLayoutWidth) {
+            int unfocusedLocationBarLayoutWidth,
+            @ControlsPosition int controlsPosition) {
         mTint = tint;
         mTabCount = tabCount;
         mOptionalButtonDataHashCode = Objects.hashCode(optionalButtonData);
@@ -58,6 +64,7 @@ class PhoneCaptureStateToken {
         // Progress is not currently used for comparing snapshot states. It isn't part of the bitmap
         // capture anyway.
         mUnfocusedLocationBarLayoutWidth = unfocusedLocationBarLayoutWidth;
+        mControlsPosition = controlsPosition;
     }
 
     /**
@@ -69,7 +76,7 @@ class PhoneCaptureStateToken {
      * @return The difference.
      */
     public static @ToolbarSnapshotDifference int getAnyDifference(
-            PhoneCaptureStateToken current, PhoneCaptureStateToken next) {
+            @Nullable PhoneCaptureStateToken current, PhoneCaptureStateToken next) {
         assert next != null;
         if (current == null) {
             return ToolbarSnapshotDifference.NULL;
@@ -101,16 +108,9 @@ class PhoneCaptureStateToken {
             // great way to check for equality. Currently default colors should be sufficient for
             // detecting changes to the toolbar.
             return ToolbarSnapshotDifference.HOME_BUTTON;
+        } else if (current.mControlsPosition != next.mControlsPosition) {
+            return ToolbarSnapshotDifference.CONTROLS_POSITION;
         }
         return ToolbarSnapshotDifference.NONE;
-    }
-
-    @ColorInt
-    int getTint() {
-        return mTint;
-    }
-
-    int getTabCount() {
-        return mTabCount;
     }
 }

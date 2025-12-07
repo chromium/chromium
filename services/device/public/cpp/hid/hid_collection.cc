@@ -227,6 +227,12 @@ void HidCollection::GetMaxReportSizes(size_t* max_input_report_bits,
       mojom::HidUsageAndPage::New(usage_.usage, usage_.usage_page);
   collection_info->report_ids.insert(collection_info->report_ids.end(),
                                      report_ids_.begin(), report_ids_.end());
+
+  // Limit logging to avoid timing out in fuzz tests when there are many
+  // invalid items.
+  static constexpr int kMaxLogMessages = 100;
+  int log_message_count = 0;
+
   for (const auto& entry : report_lists) {
     *entry.max_report_bits = 0;
     for (const auto& report : *entry.reports) {
@@ -237,10 +243,17 @@ void HidCollection::GetMaxReportSizes(size_t* max_input_report_bits,
         // sizes. Warn if the size is too large, but still allow the report to
         // affect the maximum report size.
         if (report_size > kMaxItemReportSizeBits) {
-          LOG(WARNING) << base::StringPrintf(
-              "encountered report item with invalid report size (%" PRIu64
-              ">%u)",
-              report_size, kMaxItemReportSizeBits);
+          if (log_message_count < kMaxLogMessages) {
+            ++log_message_count;
+            LOG(WARNING) << base::StringPrintf(
+                "encountered report item with invalid report size (%" PRIu64
+                ">%u)",
+                report_size, kMaxItemReportSizeBits);
+          } else if (log_message_count == kMaxLogMessages) {
+            ++log_message_count;
+            LOG(WARNING) << "Too many invalid report items, not reporting any "
+                            "more for this device.";
+          }
         }
         // Report size and report count are both 32-bit values. A 64-bit integer
         // type is needed to avoid overflow when computing the product.

@@ -145,14 +145,14 @@ void InspectorContrast::CollectNodesAndBuildRTreeIfNeeded() {
   if (!layout_view)
     return;
 
-  if (!layout_view->GetFrameView()->UpdateLifecycleToPrePaintClean(
+  if (!layout_view->GetFrameView()->UpdateAllLifecyclePhasesExceptPaint(
           DocumentUpdateReason::kInspector)) {
     return;
   }
 
   InspectorDOMAgent::CollectNodes(
       document_, INT_MAX, true, InspectorDOMAgent::IncludeWhitespaceEnum::NONE,
-      WTF::BindRepeating(&NodeIsElementWithLayoutObject), &elements_);
+      BindRepeating(&NodeIsElementWithLayoutObject), &elements_);
   SortElementsByPaintOrder(elements_, document_);
   rtree_.Build(
       elements_.size(),
@@ -343,8 +343,9 @@ bool InspectorContrast::GetColorsFromRect(PhysicalRect rect,
       continue;
 
     // If background elements are hidden, ignore their background colors.
-    if (element != top_element && style->Visibility() == EVisibility::kHidden)
+    if (element != top_element && style->Visibility() == EVisibility::kHidden) {
       continue;
+    }
 
     Color background_color =
         style->VisitedDependentColor(GetCSSPropertyBackgroundColor());

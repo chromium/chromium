@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.xsurface;
 import android.content.Context;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
+
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -17,13 +19,14 @@ import java.lang.annotation.RetentionPolicy;
  *
  * Provides application-level dependencies for an external surface.
  */
+@NullMarked
 public interface ProcessScopeDependencyProvider {
     /**
      * Resolves a library name such as "foo" to an absolute path. The library name should be in the
      * same format given to System.loadLibrary().
      */
-    public interface LibraryResolver {
-        String resolvePath(String libName);
+    interface LibraryResolver {
+        @Nullable String resolvePath(String libName);
     }
 
     /** @return the context associated with the application. */
@@ -36,19 +39,23 @@ public interface ProcessScopeDependencyProvider {
         return new int[0];
     }
 
+    /** Returns the server-provided feed launch CUI metadata. */
+    default byte[] getFeedLaunchCuiMetadata() {
+        return new byte[0];
+    }
+
     /**
      * Provides experimental feature state to xsurface implementations.
      *
-     * Must be called on the UI thread.
+     * <p>Must be called on the UI thread.
      *
-     * WARNING: These methods can crash Chrome!
+     * <p>WARNING: These methods can crash Chrome!
      *
-     * You must add the feature to kFeaturesExposedToJava in
-     * chrome/browser/flags/android/chrome_feature_list.cc before
-     * querying for the feature with these methods. Chrome will
-     * crash if it doesn't find the feature.
+     * <p>You must add the feature to kFeaturesExposedToJava in
+     * chrome/browser/flags/android/chrome_feature_list.cc before querying for the feature with
+     * these methods. Chrome will crash if it doesn't find the feature.
      */
-    public interface FeatureStateProvider {
+    interface FeatureStateProvider {
         boolean isFeatureActive(String featureName);
 
         boolean getBooleanParameterValue(
@@ -130,7 +137,7 @@ public interface ProcessScopeDependencyProvider {
     }
 
     /** Returns the google API key. */
-    default String getGoogleApiKey() {
+    default @Nullable String getGoogleApiKey() {
         return null;
     }
 
@@ -162,7 +169,7 @@ public interface ProcessScopeDependencyProvider {
     // Visibility log types that can be uploaded.
     @IntDef({VisibilityLogType.UNSPECIFIED, VisibilityLogType.VIEW, VisibilityLogType.CLICK})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface VisibilityLogType {
+    @interface VisibilityLogType {
         int UNSPECIFIED = 0;
         int VIEW = 1;
         int CLICK = 2;
@@ -190,7 +197,7 @@ public interface ProcessScopeDependencyProvider {
 
     /** @return the Color provider. */
     @Deprecated
-    default ColorProvider getColorProvider() {
+    default @Nullable ColorProvider getColorProvider() {
         return null;
     }
 

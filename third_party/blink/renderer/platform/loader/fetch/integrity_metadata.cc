@@ -4,30 +4,26 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
 
+#include "third_party/blink/renderer/platform/wtf/text/base64.h"
+
 namespace blink {
 
-IntegrityMetadata::IntegrityMetadata(WTF::String digest,
-                                     IntegrityAlgorithm algorithm)
-    : digest_(digest), algorithm_(algorithm) {}
+void IntegrityMetadataSet::Insert(IntegrityMetadata item) {
+  switch (item.algorithm) {
+    case IntegrityAlgorithm::kSha256:
+    case IntegrityAlgorithm::kSha384:
+    case IntegrityAlgorithm::kSha512:
+      if (!hashes.Contains(item)) {
+        hashes.push_back(std::move(item));
+      }
+      break;
 
-IntegrityMetadata::IntegrityMetadata(IntegrityMetadataPair pair)
-    : digest_(pair.first), algorithm_(pair.second) {}
-
-IntegrityMetadataPair IntegrityMetadata::ToPair() const {
-  return IntegrityMetadataPair(digest_, algorithm_);
-}
-
-bool IntegrityMetadata::SetsEqual(const IntegrityMetadataSet& set1,
-                                  const IntegrityMetadataSet& set2) {
-  if (set1.size() != set2.size())
-    return false;
-
-  for (const IntegrityMetadataPair& metadata : set1) {
-    if (!set2.Contains(metadata))
-      return false;
+    case IntegrityAlgorithm::kEd25519:
+      if (!public_keys.Contains(item)) {
+        public_keys.push_back(std::move(item));
+      }
+      break;
   }
-
-  return true;
 }
 
 }  // namespace blink

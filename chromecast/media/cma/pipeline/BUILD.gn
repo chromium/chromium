@@ -49,7 +49,7 @@ cast_source_set("pipeline") {
     ":cma_pipeline_buildflags",
     "//base",
     "//chromecast/base",
-    "//chromecast/base/metrics:metrics",
+    "//chromecast/base/metrics",
     "//chromecast/media/base",
     "//chromecast/media/cdm",
     "//chromecast/media/cma/backend",
@@ -58,6 +58,10 @@ cast_source_set("pipeline") {
     "//media",
     "//third_party/boringssl",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 buildflag_header("cma_pipeline_buildflags") {

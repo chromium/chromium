@@ -28,6 +28,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/blocked_content/popup_blocker_tab_helper.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
@@ -35,9 +36,10 @@
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_manager.h"
-#include "components/permissions/permission_ui_selector.h"
+#include "components/permissions/prediction_service/permission_ui_selector.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_request.h"
+#include "components/permissions/test/mock_permission_ui_selector.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -52,39 +54,7 @@
 namespace {
 
 using QuietUiReason = permissions::PermissionUiSelector::QuietUiReason;
-
-// Test implementation of NotificationPermissionUiSelector that always forces
-// the quiet UI to be used for surfacing notification permission requests.
-class TestQuietNotificationPermissionUiSelector
-    : public permissions::PermissionUiSelector {
- public:
-  explicit TestQuietNotificationPermissionUiSelector(
-      QuietUiReason simulated_reason_for_quiet_ui)
-      : simulated_reason_for_quiet_ui_(simulated_reason_for_quiet_ui) {}
-
-  TestQuietNotificationPermissionUiSelector(
-      const TestQuietNotificationPermissionUiSelector&) = delete;
-  TestQuietNotificationPermissionUiSelector& operator=(
-      const TestQuietNotificationPermissionUiSelector&) = delete;
-
-  ~TestQuietNotificationPermissionUiSelector() override = default;
-
- protected:
-  // permissions::PermissionUiSelector:
-  void SelectUiToUse(permissions::PermissionRequest* request,
-                     DecisionMadeCallback callback) override {
-    std::move(callback).Run(
-        Decision(simulated_reason_for_quiet_ui_, std::nullopt));
-  }
-
-  bool IsPermissionRequestSupported(
-      permissions::RequestType request_type) override {
-    return request_type == permissions::RequestType::kNotifications;
-  }
-
- private:
-  QuietUiReason simulated_reason_for_quiet_ui_;
-};
+using Decision = permissions::PermissionUiSelector::Decision;
 
 // An override that returns a fake URL for every blocked popup, so the UI
 // displays consistent strings for pixel tests.
@@ -144,8 +114,6 @@ class ContentSettingBubbleDialogTest
   base::AutoReset<ChromeContentBrowserClient::PopupNavigationDelegateFactory>
       resetter_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::optional<permissions::MockPermissionRequest>
-      notification_permission_request_;
 };
 
 void ContentSettingBubbleDialogTest::ApplyMediastreamSettings(
@@ -209,7 +177,7 @@ void ContentSettingBubbleDialogTest::ApplyContentSettingsForType(
       break;
     }
     case ContentSettingsType::PROTOCOL_HANDLERS:
-      chrome::PageSpecificContentSettingsDelegate::FromWebContents(web_contents)
+      PageSpecificContentSettingsDelegate::FromWebContents(web_contents)
           ->set_pending_protocol_handler(
               custom_handlers::ProtocolHandler::CreateProtocolHandler(
                   "mailto", GURL("https://example.com/")));
@@ -238,13 +206,14 @@ void ContentSettingBubbleDialogTest::TriggerQuietNotificationPermissionRequest(
   auto* permission_request_manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents);
   permission_request_manager->set_permission_ui_selector_for_testing(
-      std::make_unique<TestQuietNotificationPermissionUiSelector>(
-          simulated_reason_for_quiet_ui));
-  DCHECK(!notification_permission_request_);
-  notification_permission_request_.emplace(
-      GURL("https://example.com"), permissions::RequestType::kNotifications);
-  permission_request_manager->AddRequest(web_contents->GetPrimaryMainFrame(),
-                                         &*notification_permission_request_);
+      std::make_unique<MockPermissionUiSelector>(
+          Decision::UseQuietUi(simulated_reason_for_quiet_ui, std::nullopt)));
+
+  permission_request_manager->AddRequest(
+      web_contents->GetPrimaryMainFrame(),
+      std::make_unique<permissions::MockPermissionRequest>(
+          GURL("https://example.com"),
+          permissions::RequestType::kNotifications));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -253,12 +222,25 @@ void ContentSettingBubbleDialogTest::OverrideContentSettingsProvider(
   auto provider = std::make_unique<content_settings::MockProvider>();
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+
+  // All settings should have a default value defined.
+  if (GetParam() == content_settings::ProviderType::kDefaultProvider) {
+    for (auto* info :
+         *content_settings::WebsiteSettingsRegistry::GetInstance()) {
+      provider->SetWebsiteSetting(ContentSettingsPattern::Wildcard(),
+                                  ContentSettingsPattern::Wildcard(),
+                                  info->type(),
+                                  info->initial_default_value().Clone(),
+                                  /*constraints=*/{});
+    }
+  }
+
+  // Override specified types.
   for (ContentSettingsType type : types) {
     provider->SetWebsiteSetting(
         ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
         type, base::Value(ContentSetting::CONTENT_SETTING_BLOCK),
-        /*constraints=*/{},
-        content_settings::PartitionKey::GetDefaultForTesting());
+        /*constraints=*/{});
   }
   content_settings::TestUtils::OverrideProvider(map, std::move(provider),
                                                 GetParam());

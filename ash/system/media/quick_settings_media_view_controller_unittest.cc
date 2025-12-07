@@ -10,9 +10,7 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/media_message_center/mock_media_notification_item.h"
-#include "media/base/media_switches.h"
 
 namespace ash {
 
@@ -26,8 +24,6 @@ class QuickSettingsMediaViewControllerTest : public AshTestBase {
   ~QuickSettingsMediaViewControllerTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures({media::kGlobalMediaControlsCrOSUpdatedUI},
-                                   {});
     AshTestBase::SetUp();
     provider_ = std::make_unique<MockMediaNotificationProvider>();
 
@@ -53,21 +49,34 @@ class QuickSettingsMediaViewControllerTest : public AshTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<media_message_center::test::MockMediaNotificationItem> item_;
   std::unique_ptr<MockMediaNotificationProvider> provider_;
 };
 
 TEST_F(QuickSettingsMediaViewControllerTest, ShowOrHideMediaItem) {
   const std::string item_id = "item_id";
-  EXPECT_EQ(0, static_cast<int>(view()->items_for_testing().size()));
+  EXPECT_EQ(0u, view()->items_for_testing().size());
 
   controller()->ShowMediaItem(item_id, item());
-  EXPECT_EQ(1, static_cast<int>(view()->items_for_testing().size()));
+  EXPECT_EQ(1u, view()->items_for_testing().size());
   EXPECT_TRUE(view()->items_for_testing().contains(item_id));
 
   controller()->HideMediaItem(item_id);
-  EXPECT_EQ(0, static_cast<int>(view()->items_for_testing().size()));
+  EXPECT_EQ(0u, view()->items_for_testing().size());
+}
+
+TEST_F(QuickSettingsMediaViewControllerTest,
+       HideMediaItemAfterDestroyingViewDoesntCrash) {
+  const std::string item_id = "item_id";
+  controller()->ShowMediaItem(item_id, item());
+  // Prevent relayout, since `controller()` gets mad during relayout once the
+  // view is gone.
+  view()->parent()->SetVisible(false);
+  view()->parent()->RemoveChildViewT<QuickSettingsMediaView>(view());
+  // The controller will try to talk to the view to hide the item, but the
+  // view just got destroyed. This should no-op successfully, since the
+  // destruction order isn't guaranteed.
+  controller()->HideMediaItem(item_id);
 }
 
 }  // namespace ash

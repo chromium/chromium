@@ -7,32 +7,20 @@
 #import <MediaPlayer/MediaPlayer.h>
 
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/task/thread_pool.h"
-#import "ios/chrome/app/deferred_initialization_runner.h"
+#import "ios/chrome/browser/download/model/auto_deletion/auto_deletion_service.h"
 #import "ios/chrome/browser/omaha/model/omaha_service.h"
-#import "ios/chrome/browser/reading_list/model/reading_list_download_service.h"
-#import "ios/chrome/browser/reading_list/model/reading_list_download_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/upgrade/model/upgrade_center.h"
+#import "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
 #import "ios/chrome/common/intents/SearchInChromeIntent.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "ui/base/l10n/l10n_util.h"
 
-namespace {
-// Constants for deferred initilization of the profile start-up task runners.
-NSString* const kStartProfileStartupTaskRunners =
-    @"StartProfileStartupTaskRunners";
-}  // namespace
-
 @interface StartupTasks ()
 
-// Performs browser state initialization tasks that don't need to happen
-// synchronously at startup.
-+ (void)performDeferredInitializationForBrowserState:
-    (ChromeBrowserState*)browserState;
 // Called when UIApplicationWillResignActiveNotification is received.
 - (void)applicationWillResignActiveNotification:(NSNotification*)notification;
 
@@ -42,25 +30,10 @@ NSString* const kStartProfileStartupTaskRunners =
 
 #pragma mark - Public methods.
 
-+ (void)scheduleDeferredBrowserStateInitialization:
-    (ChromeBrowserState*)browserState {
-  DCHECK(browserState);
-  // Schedule the start of the profile deferred task runners.
-  [[DeferredInitializationRunner sharedInstance]
-      enqueueBlockNamed:kStartProfileStartupTaskRunners
-                  block:^{
-                    [self performDeferredInitializationForBrowserState:
-                              browserState];
-                  }];
-}
-
 - (void)initializeOmaha {
   OmahaService::Start(
       GetApplicationContext()->GetSharedURLLoaderFactory()->Clone(),
-      base::BindRepeating(^(const UpgradeRecommendedDetails& details) {
-        [GetApplicationContext()->GetUpgradeCenter()
-            upgradeNotificationDidOccur:details];
-      }));
+      base::DoNothing());
 }
 
 - (void)registerForApplicationWillResignActiveNotification {
@@ -91,13 +64,13 @@ NSString* const kStartProfileStartupTaskRunners =
       }));
 }
 
-#pragma mark - Private methods.
-
-+ (void)performDeferredInitializationForBrowserState:
-    (ChromeBrowserState*)browserState {
-  ReadingListDownloadServiceFactory::GetForBrowserState(browserState)
-      ->Initialize();
+- (void)removeFilesScheduledForAutoDeletion {
+  GetApplicationContext()
+      ->GetAutoDeletionService()
+      ->RemoveScheduledFilesReadyForDeletion(base::DoNothing());
 }
+
+#pragma mark - Private methods.
 
 - (void)applicationWillResignActiveNotification:(NSNotification*)notification {
   // If the control center is displaying now-playing information from Chrome,

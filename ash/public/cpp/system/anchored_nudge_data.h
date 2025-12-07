@@ -15,7 +15,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/view_tracker.h"
 

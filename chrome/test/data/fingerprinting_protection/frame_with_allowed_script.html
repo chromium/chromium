@@ -1,0 +1,11 @@
+<html>
+  <head>
+    <!-- Disable extra network request for /favicon.ico -->
+    <link rel="icon" href="data:,">
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const scriptUrl = params.get('script_url') || 'included_allowed_script.js';
+      document.write(`<script src="${scriptUrl}"><\/script>`);
+    </script>
+  </head>
+</html>

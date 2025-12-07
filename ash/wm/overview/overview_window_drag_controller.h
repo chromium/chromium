@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/splitview/split_view_types.h"
+#include "base/auto_reset.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"

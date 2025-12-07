@@ -5,11 +5,12 @@
 // Defines base::PathProviderIOS which replaces base::PathProviderPosix for iOS
 // in base/path_service.cc.
 
+#include "base/base_paths.h"
+
 #import <Foundation/Foundation.h>
 
 #include "base/apple/bundle_locations.h"
 #include "base/apple/foundation_util.h"
-#include "base/base_paths.h"
 #include "base/base_paths_apple.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"

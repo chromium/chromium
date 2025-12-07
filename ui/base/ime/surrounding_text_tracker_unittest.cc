@@ -616,6 +616,22 @@ TEST(SurroundingTextTracker, InsertText) {
   EXPECT_TRUE(tracker.predicted_state().composition.is_empty());
   EXPECT_EQ(SurroundingTextTracker::UpdateResult::kUpdated,
             tracker.Update(u"xyz", 13u, gfx::Range(16)));
+
+  // Regression test for https://crrev.com/c/5947938
+  tracker.Reset();
+  ASSERT_EQ(SurroundingTextTracker::UpdateResult::kReset,
+            tracker.Update(u"abcdefg", 5u, gfx::Range(13, 14)));
+
+  {
+    std::u16string s = u"xyz";
+    tracker.OnInsertText(
+        s, TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+
+    tracker.OnInsertText(
+        s, TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  }
+  EXPECT_EQ(SurroundingTextTracker::UpdateResult::kUpdated,
+            tracker.Update(u"yz", 14u, gfx::Range(16)));
 }
 
 TEST(SurroundingTextTracker, InsertTextWithComposition) {

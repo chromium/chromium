@@ -41,8 +41,7 @@ void ChunkedUploadDataStream::AppendData(base::span<const uint8_t> data,
   DCHECK(!all_data_appended_);
   DCHECK(!data.empty() || is_done);
   if (!data.empty()) {
-    upload_data_.push_back(
-        std::make_unique<std::vector<uint8_t>>(data.begin(), data.end()));
+    upload_data_.emplace_back(data.begin(), data.end());
   }
   all_data_appended_ = is_done;
 
@@ -86,15 +85,14 @@ void ChunkedUploadDataStream::ResetInternal() {
 
 int ChunkedUploadDataStream::ReadChunk(IOBuffer* buf, int buf_len) {
   // Copy as much data as possible from |upload_data_| to |buf|.
-  int bytes_read = 0;
-  while (read_index_ < upload_data_.size() && bytes_read < buf_len) {
-    base::span<const uint8_t> data(*upload_data_[read_index_].get());
+  size_t bytes_read = 0;
+  const auto buf_len_s = base::checked_cast<size_t>(buf_len);
+  while (read_index_ < upload_data_.size() && bytes_read < buf_len_s) {
+    base::span<const uint8_t> data(upload_data_[read_index_]);
     base::span<const uint8_t> bytes_to_read = data.subspan(
-        read_offset_, std::min(static_cast<size_t>(buf_len - bytes_read),
-                               data.size() - read_offset_));
-    base::as_writable_bytes(buf->span())
-        .subspan(bytes_read)
-        .copy_prefix_from(bytes_to_read);
+        read_offset_,
+        std::min(buf_len_s - bytes_read, data.size() - read_offset_));
+    buf->span().subspan(bytes_read).copy_prefix_from(bytes_to_read);
     bytes_read += bytes_to_read.size();
     read_offset_ += bytes_to_read.size();
     if (read_offset_ == data.size()) {
@@ -102,16 +100,18 @@ int ChunkedUploadDataStream::ReadChunk(IOBuffer* buf, int buf_len) {
       read_offset_ = 0;
     }
   }
-  DCHECK_LE(bytes_read, buf_len);
+  DCHECK_LE(bytes_read, buf_len_s);
 
   // If no data was written, and not all data has been appended, return
   // ERR_IO_PENDING. The read will be completed in the next call to AppendData.
-  if (bytes_read == 0 && !all_data_appended_)
+  if (bytes_read == 0 && !all_data_appended_) {
     return ERR_IO_PENDING;
+  }
 
-  if (read_index_ == upload_data_.size() && all_data_appended_)
+  if (read_index_ == upload_data_.size() && all_data_appended_) {
     SetIsFinalChunk();
-  return bytes_read;
+  }
+  return base::checked_cast<int>(bytes_read);
 }
 
 }  // namespace net

@@ -13,7 +13,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/bindings/tests/nullable_value_types_enums.h"
 #include "mojo/public/cpp/system/message_pipe.h"
-#include "mojo/public/interfaces/bindings/tests/nullable_value_types.mojom.h"
+#include "mojo/public/interfaces/bindings/tests/nullable_value_types.test-mojom.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "mojo/public/java/system/mojo_javatests_jni/NullableValueTypesTestUtil_jni.h"
@@ -73,14 +73,14 @@ class InterfaceV2 : public mojom::InterfaceV2 {
                                std::optional<TypemappedEnum> mapped_enum_value,
                                MethodWithVersionedArgsCallback reply) override {
     // Not currently exercised by tests.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   void MethodWithVersionedStruct(
       mojom::VersionedStructV2Ptr in,
       MethodWithVersionedStructCallback reply) override {
     // Not currently exercised by tests.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   void MethodWithContainers(
@@ -120,7 +120,7 @@ class InterfaceV2 : public mojom::InterfaceV2 {
 
 namespace android {
 
-void JNI_NullableValueTypesTestUtil_BindTestInterface(
+static void JNI_NullableValueTypesTestUtil_BindTestInterface(
     JNIEnv* env,
     jlong raw_message_pipe_handle) {
   mojo::PendingReceiver<test::nullable_value_types::mojom::InterfaceV2>
@@ -133,3 +133,5 @@ void JNI_NullableValueTypesTestUtil_BindTestInterface(
 
 }  // namespace android
 }  // namespace mojo
+
+DEFINE_JNI(NullableValueTypesTestUtil)

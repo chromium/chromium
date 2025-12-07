@@ -4,6 +4,9 @@
 
 package org.chromium.mojo.system;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.nio.ByteBuffer;
 import java.util.List;
 
@@ -11,10 +14,11 @@ import java.util.List;
  * Message pipes are bidirectional communication channel for framed data (i.e., messages). Messages
  * can contain plain data and/or Mojo handles.
  */
+@NullMarked
 public interface MessagePipeHandle extends Handle {
 
     /** Flags for the message pipe creation operation. */
-    public static class CreateFlags extends Flags<CreateFlags> {
+    class CreateFlags extends Flags<CreateFlags> {
         private static final int FLAG_NONE = 0;
 
         /** Immutable flag with not bit set. */
@@ -38,8 +42,8 @@ public interface MessagePipeHandle extends Handle {
     }
 
     /** Used to specify creation parameters for a message pipe to |Core#createMessagePipe()|. */
-    public static class CreateOptions {
-        private CreateFlags mFlags = CreateFlags.NONE;
+    class CreateOptions {
+        private final CreateFlags mFlags = CreateFlags.NONE;
 
         /**
          * @return the flags
@@ -50,7 +54,7 @@ public interface MessagePipeHandle extends Handle {
     }
 
     /** Flags for the write operations on MessagePipeHandle . */
-    public static class WriteFlags extends Flags<WriteFlags> {
+    class WriteFlags extends Flags<WriteFlags> {
         private static final int FLAG_NONE = 0;
 
         /** Immutable flag with no bit set. */
@@ -74,7 +78,7 @@ public interface MessagePipeHandle extends Handle {
     }
 
     /** Flags for the read operations on MessagePipeHandle. */
-    public static class ReadFlags extends Flags<ReadFlags> {
+    class ReadFlags extends Flags<ReadFlags> {
         private static final int FLAG_NONE = 0;
 
         /** Immutable flag with no bit set. */
@@ -98,34 +102,35 @@ public interface MessagePipeHandle extends Handle {
     }
 
     /** Result of the |readMessage| method. */
-    public static class ReadMessageResult {
+    class ReadMessageResult {
         /** If a message was read, this contains the bytes of its data. */
-        public byte[] mData;
+        public byte @Nullable [] mData;
 
         /** If a message was read, this contains the raw handle values. */
-        public long[] mRawHandles;
+        public long @Nullable [] mRawHandles;
 
         /** If a message was read, the handles contained in the message, undefined otherwise. */
-        public List<UntypedHandle> mHandles;
+        public @Nullable List<UntypedHandle> mHandles;
     }
 
     /**
      * @see org.chromium.mojo.system.Handle#pass()
      */
     @Override
-    public MessagePipeHandle pass();
+    MessagePipeHandle pass();
 
     /**
      * Writes a message to the message pipe endpoint, with message data specified by |bytes| and
      * attached handles specified by |handles|, and options specified by |flags|. If there is no
      * message data, |bytes| may be null, otherwise it must be a direct ByteBuffer. If there are no
      * attached handles, |handles| may be null.
-     * <p>
-     * If handles are attached, on success the handles will no longer be valid (the receiver will
+     *
+     * <p>If handles are attached, on success the handles will no longer be valid (the receiver will
      * receive equivalent, but logically different, handles). Handles to be sent should not be in
      * simultaneous use (e.g., on another thread).
      */
-    void writeMessage(ByteBuffer bytes, List<? extends Handle> handles, WriteFlags flags);
+    void writeMessage(
+            @Nullable ByteBuffer bytes, @Nullable List<? extends Handle> handles, WriteFlags flags);
 
     /**
      * Reads a message from the message pipe endpoint; also usable to query the size of the next

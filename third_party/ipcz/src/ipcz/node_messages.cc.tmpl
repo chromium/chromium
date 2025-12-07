@@ -1,0 +1,97 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file is generated from node_messages.cc.tmpl and checked-in. Change this
+// file by editing the template then running:
+//
+// node_messages.py --dir={path to *_messages_generator.h}
+
+#include "ipcz/{{prefix}}.h"
+
+#include "third_party/abseil-cpp/absl/types/span.h"
+
+namespace {{interface|namespace}} {
+
+// clang-format off
+
+#pragma pack(push, 1)
+
+{% for m in messages %}
+{{m.message}}_Params::{{m.message}}_Params() = default;
+{{m.message}}_Params::~{{m.message}}_Params() = default;
+{% endfor %}
+
+{% for m in messages %}
+{{m.message}}::{{m.message}}() = default;
+{{m.message}}::{{m.message}}(decltype(kIncoming))
+    : {{m.message}}_Base(kIncoming) {}
+{{m.message}}::~{{m.message}}() = default;
+
+bool {{m.message}}::Deserialize(const DriverTransport::RawMessage& message,
+                                const DriverTransport& transport) {
+  return DeserializeFromTransport(sizeof(ParamsType), absl::MakeSpan(kVersions),
+                                  message, transport);
+}
+
+bool {{m.message}}::DeserializeRelayed(absl::Span<const uint8_t> data,
+                                       absl::Span<DriverObject> objects) {
+  return DeserializeFromRelay(sizeof(ParamsType), absl::MakeSpan(kVersions),
+                              data, objects);
+}
+
+constexpr internal::VersionMetadata {{m.message}}_Base::kVersions[];
+
+{% endfor %}
+
+bool {{interface}}MessageListener::OnMessage(Message& message) {
+  return DispatchMessage(message);
+}
+
+bool {{interface}}MessageListener::OnTransportMessage(
+    const DriverTransport::RawMessage& raw_message,
+    const DriverTransport& transport,
+    IpczDriverHandle envelope) {
+  if (raw_message.data.size() >= sizeof(internal::MessageHeaderV0)) {
+    const auto& header = *reinterpret_cast<const internal::MessageHeaderV0*>(
+        raw_message.data.data());
+    switch (header.message_id) {
+{% for m in messages %}
+      case {{m.message}}::kId: {
+        {{m.message}} message(Message::kIncoming);
+        message.SetEnvelope(
+            DriverObject(*transport.driver_object().driver(), envelope));
+        if (!message.Deserialize(raw_message, transport)) {
+          return false;
+        }
+        return OnMessage(message);
+      }
+{% endfor %}
+      default:
+        break;
+    }
+  }
+  Message message;
+  message.SetEnvelope(
+      DriverObject(*transport.driver_object().driver(), envelope));
+  return message.DeserializeUnknownType(raw_message, transport) &&
+         OnMessage(message);
+}
+
+bool {{interface}}MessageListener::DispatchMessage(Message& message) {
+  switch (message.header().message_id) {
+{% for m in messages %}
+    case msg::{{m.message}}::kId:
+      return On{{m.message}}(static_cast<{{m.message}}&>(message));
+{% endfor %}
+    default:
+      // Message might be from a newer version of ipcz so quietly ignore it.
+      return true;
+  }
+}
+
+#pragma pack(pop)
+
+// clang-format on
+
+}  // namespace {{interface|namespace}}

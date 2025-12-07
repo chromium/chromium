@@ -1,0 +1,3 @@
+AXExpandedChanged on AXPopUpButton AXDescription='Fruit' AXValue='^'
+AXFocusedUIElementChanged on AXMenuItem AXValue='Apple'
+AXMenuItemSelected on AXMenuItem AXValue='Apple'

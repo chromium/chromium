@@ -14,8 +14,8 @@
 #include "base/test/icu_test_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -71,8 +71,8 @@ class SplitViewHighlightViewTest : public AshTestBase {
 };
 
 TEST_F(SplitViewHighlightViewTest, HighlightGrows) {
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Tests that before animating, we set the bounds to the desired bounds and
   // clip the rect to the size of the old bounds.
@@ -102,8 +102,8 @@ TEST_F(SplitViewHighlightViewTest, HighlightGrows) {
 }
 
 TEST_F(SplitViewHighlightViewTest, HighlightShrinks) {
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Tests that when the highlight shrinks, the bounds do not get set until the
   // animation is complete.
@@ -125,7 +125,7 @@ TEST_F(SplitViewHighlightViewTest, PortraitMode) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
   // Set display to portrait mode.
-  int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
   display::test::ScopedSetInternalDisplayId set_internal(display_manager,
                                                          display_id);
@@ -134,8 +134,8 @@ TEST_F(SplitViewHighlightViewTest, PortraitMode) {
   test_api.SetDisplayRotation(display::Display::ROTATE_90,
                               display::Display::RotationSource::ACTIVE);
 
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   for (bool is_rtl : {false, true}) {
     // RTL should not affect portrait highlights.
@@ -174,8 +174,8 @@ TEST_F(SplitViewHighlightViewTest, PortraitMode) {
 // Tests that the highlights work as in expected in RTL.
 TEST_F(SplitViewHighlightViewTest, HighlightInRtl) {
   base::test::ScopedRestoreICUDefaultLocale scoped_locale("he");
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // In RTL, the right highlight gets mirrored bounds, so its start and end
   // bounds will have the same origin.

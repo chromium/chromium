@@ -35,8 +35,11 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/closure_animation_observer.h"
@@ -48,6 +51,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/image/image_skia.h"
@@ -66,6 +70,8 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
+#include "ui/wm/core/window_animations.h"
+#include "ui/wm/core/window_util.h"
 
 namespace {
 
@@ -123,39 +129,6 @@ void RecordMimeTypeMetric(const apps::IntentPtr& intent) {
 namespace ash {
 namespace sharesheet {
 
-class SharesheetBubbleView::SharesheetParentWidgetObserver
-    : public views::WidgetObserver {
- public:
-  SharesheetParentWidgetObserver(SharesheetBubbleView* owner,
-                                 views::Widget* widget)
-      : owner_(owner) {
-    observer_.Observe(widget);
-  }
-  ~SharesheetParentWidgetObserver() override = default;
-
-  // WidgetObserver:
-  void OnWidgetDestroying(views::Widget* widget) override {
-    DCHECK(observer_.IsObservingSource(widget));
-    observer_.Reset();
-    // |this| may be destroyed here!
-
-    // TODO(crbug.com/40173521) Code clean up.
-    // There should be something here telling SharesheetBubbleView
-    // that its parent widget is closing and therefore it should
-    // also close. Or we should try to inherit the widget changes from
-    // BubbleDialogDelegate and not have this class here at all.
-  }
-
-  void OnWidgetBoundsChanged(views::Widget* widget,
-                             const gfx::Rect& bounds) override {
-    owner_->UpdateAnchorPosition();
-  }
-
- private:
-  raw_ptr<SharesheetBubbleView> owner_;
-  base::ScopedObservation<views::Widget, views::WidgetObserver> observer_{this};
-};
-
 SharesheetBubbleView::SharesheetBubbleView(
     gfx::NativeWindow native_window,
     ::sharesheet::SharesheetServiceDelegator* delegator)
@@ -180,8 +153,10 @@ SharesheetBubbleView::SharesheetBubbleView(
       views::Widget::GetWidgetForNativeWindow(native_window);
   CHECK(widget);
   parent_view_ = widget->GetRootView();
-  parent_widget_observer_ =
-      std::make_unique<SharesheetParentWidgetObserver>(this, widget);
+  SetAnchorWidget(widget);
+
+  set_desired_bounds_delegate(base::BindRepeating(
+      &SharesheetBubbleView::GetDesiredBubbleBounds, base::Unretained(this)));
 
   InitBubble();
 }
@@ -194,7 +169,7 @@ SharesheetBubbleView::~SharesheetBubbleView() {
     std::move(close_callback_).Run(views::Widget::ClosedReason::kUnspecified);
   }
 
-  display::Screen::GetScreen()->RemoveObserver(this);
+  display::Screen::Get()->RemoveObserver(this);
 }
 
 void SharesheetBubbleView::ShowBubble(
@@ -464,14 +439,14 @@ void SharesheetBubbleView::ResizeBubble(const int& width, const int& height) {
   layer->GetAnimator()->SchedulePauseForProperties(
       kAnimateDelay, ui::LayerAnimationElement::TRANSFORM);
 
-  UpdateAnchorPosition();
+  OnAnchorBoundsChanged();
 
   layer->SetTransform(gfx::Transform());
 }
 
 // CloseBubble is called from a ShareAction or after an app launches.
 void SharesheetBubbleView::CloseBubble(views::Widget::ClosedReason reason) {
-  CloseWidgetWithAnimateFadeOut(reason);
+  CloseWidgetWithReason(reason);
 }
 
 bool SharesheetBubbleView::AcceleratorPressed(
@@ -487,12 +462,6 @@ bool SharesheetBubbleView::AcceleratorPressed(
     return true;
   }
 
-  // If the bubble is already in the process of closing, return early without
-  // doing anything.
-  if (is_bubble_closing_) {
-    return true;
-  }
-
   // If delivered_callback_ is not null at this point, then the sharesheet was
   // closed before a target was selected.
   if (delivered_callback_) {
@@ -501,15 +470,14 @@ bool SharesheetBubbleView::AcceleratorPressed(
   escape_pressed_ = true;
   ::sharesheet::SharesheetMetrics::RecordSharesheetActionMetrics(
       ::sharesheet::SharesheetMetrics::UserAction::kCancelledThroughEscPress);
-  CloseWidgetWithAnimateFadeOut(views::Widget::ClosedReason::kEscKeyPressed);
+  CloseWidgetWithReason(views::Widget::ClosedReason::kEscKeyPressed);
   return true;
 }
 
 bool SharesheetBubbleView::OnKeyPressed(const ui::KeyEvent& event) {
   // Ignore key press if it's not an arrow or bubble is closing.
-  if (!IsKeyboardCodeArrow(event.key_code()) || default_view_ == nullptr ||
-      is_bubble_closing_) {
-    if (event.key_code() == ui::VKEY_ESCAPE && !is_bubble_closing_) {
+  if (!IsKeyboardCodeArrow(event.key_code()) || default_view_ == nullptr) {
+    if (event.key_code() == ui::VKEY_ESCAPE) {
       escape_pressed_ = true;
     }
     return false;
@@ -530,8 +498,7 @@ bool SharesheetBubbleView::OnKeyPressed(const ui::KeyEvent& event) {
       delta = base::i18n::IsRTL() ? -1 : 1;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   const size_t default_views = default_view_->children().size();
@@ -554,15 +521,14 @@ bool SharesheetBubbleView::OnKeyPressed(const ui::KeyEvent& event) {
   return true;
 }
 
-std::unique_ptr<views::NonClientFrameView>
-SharesheetBubbleView::CreateNonClientFrameView(views::Widget* widget) {
+std::unique_ptr<views::FrameView> SharesheetBubbleView::CreateFrameView(
+    views::Widget* widget) {
   // TODO(crbug.com/40136695) Replace this with layer->SetRoundedCornerRadius.
   auto bubble_border =
       std::make_unique<views::BubbleBorder>(arrow(), GetShadow());
-  bubble_border->SetColor(color());
-  bubble_border->SetCornerRadius(kCornerRadius);
-  auto frame =
-      views::BubbleDialogDelegateView::CreateNonClientFrameView(widget);
+  bubble_border->SetColor(background_color());
+  bubble_border->set_rounded_corners(gfx::RoundedCornersF(kCornerRadius));
+  auto frame = views::BubbleDialogDelegateView::CreateFrameView(widget);
   static_cast<views::BubbleFrameView*>(frame.get())
       ->SetBubbleBorder(std::move(bubble_border));
   return frame;
@@ -575,9 +541,17 @@ gfx::Size SharesheetBubbleView::CalculatePreferredSize(
 
 void SharesheetBubbleView::OnWidgetActivationChanged(views::Widget* widget,
                                                      bool active) {
+  if (GetWidget() != widget) {
+    views::BubbleDialogDelegateView::OnWidgetActivationChanged(widget, active);
+    return;
+  }
+  if (widget->IsClosed()) {
+    return;
+  }
+
   // Catch widgets that are closing due to the user clicking out of the bubble.
   // If |close_on_deactivate_| we should close the bubble here.
-  if (!active && close_on_deactivate_ && !is_bubble_closing_) {
+  if (!active && close_on_deactivate_) {
     if (delivered_callback_) {
       std::move(delivered_callback_)
           .Run(::sharesheet::SharesheetResult::kCancel);
@@ -591,7 +565,7 @@ void SharesheetBubbleView::OnWidgetActivationChanged(views::Widget* widget,
       closed_reason = views::Widget::ClosedReason::kEscKeyPressed;
     }
     ::sharesheet::SharesheetMetrics::RecordSharesheetActionMetrics(user_action);
-    CloseWidgetWithAnimateFadeOut(closed_reason);
+    CloseWidgetWithReason(closed_reason);
   }
 }
 
@@ -602,7 +576,7 @@ void SharesheetBubbleView::OnDisplayTabletStateChanged(
     return;
   }
 
-  UpdateAnchorPosition();
+  OnAnchorBoundsChanged();
 }
 
 void SharesheetBubbleView::InitBubble() {
@@ -610,7 +584,7 @@ void SharesheetBubbleView::InitBubble() {
   // BubbleDialogDelegateView. Close on deactivation behaviour is managed by the
   // SharesheetBubbleView with the |close_on_deactivate_| member.
   set_close_on_deactivate(false);
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
@@ -634,10 +608,68 @@ void SharesheetBubbleView::SetUpAndShowBubble() {
   views::BubbleDialogDelegateView::CreateBubble(base::WrapUnique(this));
   GetWidget()->GetRootView()->DeprecatedLayoutImmediately();
   RecordMimeTypeMetric(intent_);
-  ShowWidgetWithAnimateFadeIn();
+  auto* window = View::GetWidget()->GetNativeWindow();
+  ::wm::SetWindowVisibilityCustomAnimation(
+      window, base::BindRepeating([](aura::Window* window, bool visibility) {
+        constexpr float kSharesheetScaleUpFactor = 0.8f;
+        constexpr auto kSharesheetScaleUpTime = base::Milliseconds(150);
 
-  UpdateAnchorPosition();
-  display::Screen::GetScreen()->AddObserver(this);
+        ui::Layer* layer = window->layer();
+        gfx::Transform transform = gfx::GetScaleTransform(
+            gfx::Rect(layer->size()).CenterPoint(), kSharesheetScaleUpFactor);
+        layer->SetTransform(transform);
+        layer->SetVisible(true);
+        layer->SetOpacity(0.0f);
+        {
+          ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());
+
+          settings.SetTransitionDuration(kSharesheetScaleUpTime);
+          settings.SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
+          layer->SetTransform(gfx::Transform());
+
+          settings.SetTransitionDuration(kQuickAnimateTime);
+          settings.SetTweenType(gfx::Tween::Type::LINEAR);
+          layer->SetOpacity(1.0f);
+        }
+      }));
+  GetWidget()->Show();
+
+  constexpr auto kSharesheetOpacityFadeOutTime = base::Milliseconds(80);
+  ::wm::SetWindowVisibilityAnimationDuration(window,
+                                             kSharesheetOpacityFadeOutTime);
+  ::wm::SetWindowVisibilityAnimationType(
+      window, ::wm::WINDOW_VISIBILITY_ANIMATION_TYPE_FADE);
+
+  OnAnchorBoundsChanged();
+  display::Screen::Get()->AddObserver(this);
+}
+
+gfx::Rect SharesheetBubbleView::GetDesiredBubbleBounds() {
+  // If |width_| is not set, set to default value.
+  if (width_ == 0) {
+    SetToDefaultBubbleSizing();
+  }
+
+  // Horizontally centered
+  int x_within_parent_view = parent_view_->GetMirroredXInView(
+      (parent_view_->bounds().width() - width_) / 2);
+  // Get position in screen, taking parent view origin into account. This is
+  // 0,0 in fullscreen on the primary display, but not on secondary displays, or
+  // in Hosted App windows.
+  gfx::Point origin = parent_view_->GetBoundsInScreen().origin();
+  origin += gfx::Vector2d(x_within_parent_view, kBubbleTopPaddingFromWindow);
+
+  // GetBoundsInScreen returns values that take anchor widget's translation into
+  // account, so undo that here. Without this, features which apply transforms
+  // on windows such overview mode will see bubbles offset.
+  gfx::Transform transform =
+      anchor_widget()->GetNativeWindow()->layer()->GetTargetTransform();
+  if (!transform.IsIdentity()) {
+    origin -= gfx::ToRoundedVector2d(transform.To2dTranslation());
+  }
+  gfx::Rect bubble_bounds = GetBubbleBounds();
+  bubble_bounds.set_origin(origin);
+  return bubble_bounds;
 }
 
 void SharesheetBubbleView::ExpandButtonPressed() {
@@ -646,8 +678,9 @@ void SharesheetBubbleView::ExpandButtonPressed() {
   // Scrollview has separators that overlaps with |header_body_separator_| and
   // |body_footer_separator_| to create a double line when both are visible, so
   // when scrollview is expanded we hide our separators.
-  if (header_body_separator_)
+  if (header_body_separator_) {
     header_body_separator_->SetVisible(!show_expanded_view_);
+  }
   body_footer_separator_->SetVisible(!show_expanded_view_);
 
   expanded_view_->SetVisible(show_expanded_view_);
@@ -704,25 +737,6 @@ void SharesheetBubbleView::TargetButtonPressed(TargetInfo target) {
   }
 }
 
-void SharesheetBubbleView::UpdateAnchorPosition() {
-  // If |width_| is not set, set to default value.
-  if (width_ == 0) {
-    SetToDefaultBubbleSizing();
-  }
-
-  // Horizontally centered
-  int x_within_parent_view = parent_view_->GetMirroredXInView(
-      (parent_view_->bounds().width() - width_) / 2);
-  // Get position in screen, taking parent view origin into account. This is
-  // 0,0 in fullscreen on the primary display, but not on secondary displays, or
-  // in Hosted App windows.
-  gfx::Point origin = parent_view_->GetBoundsInScreen().origin();
-  origin += gfx::Vector2d(x_within_parent_view, kBubbleTopPaddingFromWindow);
-
-  // SetAnchorRect will CalculatePreferredSize when called.
-  SetAnchorRect(gfx::Rect(origin, gfx::Size()));
-}
-
 void SharesheetBubbleView::SetToDefaultBubbleSizing() {
   width_ = kDefaultBubbleWidth;
   height_ = main_view_->GetPreferredSize().height();
@@ -754,35 +768,6 @@ void SharesheetBubbleView::ShowWidgetWithAnimateFadeIn() {
   widget->Activate();
 }
 
-void SharesheetBubbleView::CloseWidgetWithAnimateFadeOut(
-    views::Widget::ClosedReason closed_reason) {
-  if (is_bubble_closing_) {
-    return;
-  }
-
-  // Don't attempt to react to tablet mode changes while the sharesheet is
-  // closing.
-  display::Screen::GetScreen()->RemoveObserver(this);
-  is_bubble_closing_ = true;
-  ui::Layer* layer = View::GetWidget()->GetLayer();
-
-  constexpr auto kSharesheetOpacityFadeOutTime = base::Milliseconds(80);
-  auto scoped_settings =
-      std::make_unique<ui::ScopedLayerAnimationSettings>(layer->GetAnimator());
-  scoped_settings->SetTweenType(gfx::Tween::Type::LINEAR);
-  scoped_settings->SetTransitionDuration(kSharesheetOpacityFadeOutTime);
-  // This aborts any running animations and starts the current one.
-  scoped_settings->SetPreemptionStrategy(
-      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-  layer->SetOpacity(0.0f);
-  // We are closing the native widget during the close animation which results
-  // in destroying the layer and the animation and the observer not calling
-  // back. Thus it is safe to use base::Unretained here.
-  scoped_settings->AddObserver(new ui::ClosureAnimationObserver(
-      base::BindOnce(&SharesheetBubbleView::CloseWidgetWithReason,
-                     base::Unretained(this), closed_reason)));
-}
-
 void SharesheetBubbleView::CloseWidgetWithReason(
     views::Widget::ClosedReason closed_reason) {
   View::GetWidget()->CloseWithReason(closed_reason);
@@ -791,8 +776,10 @@ void SharesheetBubbleView::CloseWidgetWithReason(
   if (close_callback_) {
     std::move(close_callback_).Run(closed_reason);
   }
-  // Bubble is deleted here.
-  delegator_->OnBubbleClosed(active_share_action_type_);
+  // Bubble and delegator_ is deleted in the call `OnBubbleClosed`.
+  auto* delegator = delegator_.get();
+  delegator_ = nullptr;
+  delegator->OnBubbleClosed(active_share_action_type_);
 }
 
 BEGIN_METADATA(SharesheetBubbleView)

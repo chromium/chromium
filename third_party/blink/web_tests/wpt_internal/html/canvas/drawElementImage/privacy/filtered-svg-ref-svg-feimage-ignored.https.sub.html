@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>drawElementImage does not use cross-origin feimage content in SVG</title>
+  <link rel="help" href="https://github.com/WICG/html-in-canvas">
+  <link rel="author" href="mailto:schenney@chromium.org">
+  <script src='/resources/testharness.js'></script>
+  <script src='/resources/testharnessreport.js'></script>
+</head>
+<body>
+  <canvas id=canvas width="100" height="200" layoutsubtree>
+    <svg id=child width="100" height="200">
+      <filter id="filter-same">
+        <feImage href="https://{{location[host]}}/wpt_internal/html/canvas/drawElementImage/resources/red-100x100.png"/>
+      </filter>
+      <filter id="filter-cross">
+        <feImage href="https://{{hosts[alt][www]}}:{{ports[h2][0]}}/wpt_internal/html/canvas/drawElementImage/resources/red-100x100.png"/>
+      </filter>
+      <rect x="0" y="0" width="100" height="100" fill="green" filter="url(#filter-same)"></rect>
+      <rect x="0" y="100" width="100" height="100" fill="green" filter="url(#filter-cross)"></rect>
+    </svg>
+  </canvas>
+
+  <script>
+    window.onload = () => {
+      test(function(t) {
+        var context = canvas.getContext("2d", { willReadFrequently: true });
+        context.drawElementImage(document.getElementById("child"), 0, 0);
+
+        pixel = context.getImageData(50, 50, 1, 1).data;
+        assert_equals(pixel[0], 255, "Same origin should draw, red channel");
+        assert_equals(pixel[1], 0, "Same origin should draw, green channel");
+        assert_equals(pixel[2], 0, "Same origin should draw, blue channel");
+
+        pixel = context.getImageData(50, 150, 1, 1).data;
+        assert_equals(pixel[0], 0, "Cross origin should not draw, red channel");
+        assert_equals(pixel[1], 128, "Cross origin should not draw, green channel");
+        assert_equals(pixel[2], 0, "Cross origin should not draw, blue channel");
+
+        t.done();
+      });
+    }
+  </script>
+</body>
+</html>

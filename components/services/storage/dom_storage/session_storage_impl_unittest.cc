@@ -26,29 +26,22 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
+#include "components/services/storage/dom_storage/leveldb/dom_storage_batch_operation_leveldb.h"
 #include "components/services/storage/dom_storage/storage_area_test_util.h"
-#include "components/services/storage/dom_storage/testing_legacy_session_storage_database.h"
+#include "components/services/storage/public/mojom/storage_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/leveldatabase/env_chromium.h"
 
 namespace storage {
 
 namespace {
 
-std::vector<uint8_t> StdStringToUint8Vector(const std::string& s) {
-  return std::vector<uint8_t>(s.begin(), s.end());
-}
-
 std::vector<uint8_t> StringViewToUint8Vector(std::string_view s) {
   return std::vector<uint8_t>(s.begin(), s.end());
-}
-
-std::vector<uint8_t> String16ToUint8Vector(const std::u16string& s) {
-  auto bytes = base::as_bytes(base::make_span(s));
-  return std::vector<uint8_t>(bytes.begin(), bytes.end());
 }
 
 static const char kSessionStorageDirectory[] = "Session Storage";
@@ -88,7 +81,7 @@ class SessionStorageImplTest : public testing::Test {
       session_storage_ = std::make_unique<SessionStorageImpl>(
           temp_path(), blocking_task_runner_,
           base::SequencedTaskRunner::GetCurrentDefault(), backing_mode_,
-          kSessionStorageDirectory,
+          kSessionStorageDirectory, base::DoNothing(),
           remote_session_storage_.BindNewPipeAndPassReceiver());
     }
     return session_storage_.get();
@@ -153,6 +146,8 @@ class SessionStorageImplTest : public testing::Test {
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
   void FlushMojo() { remote_session_storage_.FlushForTesting(); }
 
+  void TestInvalidVersionOnDisk(std::string invalid_version_string);
+
   bool bad_message_called_ = false;
 
  private:
@@ -166,67 +161,6 @@ class SessionStorageImplTest : public testing::Test {
   std::unique_ptr<SessionStorageImpl> session_storage_;
   mojo::Remote<mojom::SessionStorageControl> remote_session_storage_;
 };
-
-TEST_F(SessionStorageImplTest, MigrationV0ToV1) {
-  std::string namespace_id1 =
-      base::Uuid::GenerateRandomV4().AsLowercaseString();
-  std::string namespace_id2 =
-      base::Uuid::GenerateRandomV4().AsLowercaseString();
-  blink::StorageKey storage_key1 =
-      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
-  blink::StorageKey storage_key2 =
-      blink::StorageKey::CreateFromStringForTesting("http://example.com");
-  std::u16string key = u"key";
-  std::u16string value = u"value";
-  std::u16string key2 = u"key2";
-  key2.push_back(0xd83d);
-  key2.push_back(0xde00);
-
-  base::FilePath old_db_path =
-      temp_path().AppendASCII(kSessionStorageDirectory);
-  {
-    auto db = base::MakeRefCounted<TestingLegacySessionStorageDatabase>(
-        old_db_path, base::SingleThreadTaskRunner::GetCurrentDefault().get());
-    LegacyDomStorageValuesMap data;
-    data[key] = value;
-    data[key2] = value;
-    EXPECT_TRUE(
-        db->CommitAreaChanges(namespace_id1, storage_key1, false, data));
-    EXPECT_TRUE(db->CloneNamespace(namespace_id1, namespace_id2));
-  }
-  EXPECT_TRUE(base::PathExists(old_db_path));
-
-  // The first call to session_storage() here constructs it.
-  session_storage()->CreateNamespace(namespace_id1);
-  session_storage()->CreateNamespace(namespace_id2);
-
-  mojo::Remote<blink::mojom::SessionStorageNamespace> ss_namespace1;
-  session_storage()->BindNamespace(namespace_id1,
-                                   ss_namespace1.BindNewPipeAndPassReceiver(),
-                                   base::DoNothing());
-  mojo::Remote<blink::mojom::StorageArea> area_n2_o1;
-  mojo::Remote<blink::mojom::StorageArea> area_n2_o2;
-  session_storage()->BindStorageArea(storage_key1, namespace_id2,
-                                     area_n2_o1.BindNewPipeAndPassReceiver(),
-                                     base::DoNothing());
-  session_storage()->BindStorageArea(storage_key2, namespace_id2,
-                                     area_n2_o2.BindNewPipeAndPassReceiver(),
-                                     base::DoNothing());
-
-  std::vector<blink::mojom::KeyValuePtr> data;
-  EXPECT_TRUE(test::GetAllSync(area_n2_o1.get(), &data));
-  // There should have been a migration to get rid of the "map-0-" refcount
-  // field.
-  EXPECT_EQ(2ul, data.size());
-  std::vector<uint8_t> key_as_vector =
-      StdStringToUint8Vector(base::UTF16ToUTF8(key));
-  EXPECT_TRUE(
-      base::Contains(data, blink::mojom::KeyValue::New(
-                               key_as_vector, String16ToUint8Vector(value))));
-  EXPECT_TRUE(
-      base::Contains(data, blink::mojom::KeyValue::New(
-                               key_as_vector, String16ToUint8Vector(value))));
-}
 
 TEST_F(SessionStorageImplTest, StartupShutdownSave) {
   std::string namespace_id1 =
@@ -553,7 +487,8 @@ TEST_F(SessionStorageImplTest, Scavenging) {
   EXPECT_EQ(0ul, data.size());
 }
 
-TEST_F(SessionStorageImplTest, InvalidVersionOnDisk) {
+void SessionStorageImplTest::TestInvalidVersionOnDisk(
+    std::string invalid_version_string) {
   std::string namespace_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
@@ -575,7 +510,9 @@ TEST_F(SessionStorageImplTest, InvalidVersionOnDisk) {
     base::FilePath db_path =
         temp_path().Append(FILE_PATH_LITERAL("Session Storage"));
     ASSERT_TRUE(leveldb_env::OpenDB(options, db_path.AsUTF8Unsafe(), &db).ok());
-    ASSERT_TRUE(db->Put(leveldb::WriteOptions(), "version", "argh").ok());
+    ASSERT_TRUE(
+        db->Put(leveldb::WriteOptions(), "version", invalid_version_string)
+            .ok());
   }
 
   opt_value = DoTestGet(namespace_id, storage_key, "key");
@@ -591,6 +528,14 @@ TEST_F(SessionStorageImplTest, InvalidVersionOnDisk) {
   ASSERT_TRUE(opt_value);
   EXPECT_EQ(StringViewToUint8Vector("value"), opt_value.value());
   ShutDownSessionStorage();
+}
+
+TEST_F(SessionStorageImplTest, InvalidVersionOnDisk) {
+  ASSERT_NO_FATAL_FAILURE(TestInvalidVersionOnDisk("argh"));
+}
+
+TEST_F(SessionStorageImplTest, WrongVersionOnDisk) {
+  ASSERT_NO_FATAL_FAILURE(TestInvalidVersionOnDisk("2"));
 }
 
 TEST_F(SessionStorageImplTest, CorruptionOnDisk) {
@@ -972,10 +917,11 @@ TEST_F(SessionStorageImplTest, PurgeInactiveWrappers) {
   // Clear all the data from the backing database.
   base::RunLoop loop;
   session_storage_impl()->DatabaseForTesting()->RunDatabaseTask(
-      base::BindOnce([](const DomStorageDatabase& db) {
-        leveldb::WriteBatch batch;
-        db.DeletePrefixed(StringViewToUint8Vector("map"), &batch);
-        EXPECT_TRUE(db.Commit(&batch).ok());
+      base::BindOnce([](DomStorageDatabaseLevelDB& db) {
+        std::unique_ptr<DomStorageBatchOperationLevelDB> batch =
+            db.CreateBatchOperation();
+        EXPECT_TRUE(batch->DeletePrefixed(StringViewToUint8Vector("map")).ok());
+        EXPECT_TRUE(batch->Commit().ok());
         return 0;
       }),
       base::IgnoreArgs<int>(loop.QuitClosure()));
@@ -1389,7 +1335,6 @@ TEST_F(SessionStorageImplTest, Bug1128318) {
                                   ->GetMetadataForTesting()
                                   .namespace_storage_key_map(),
                               namespace_id3));
-  EXPECT_EQ(ns->namespace_entry(), SessionStorageMetadata::NamespaceEntry());
 }
 
 }  // namespace storage

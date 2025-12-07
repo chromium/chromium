@@ -4,12 +4,16 @@
 
 package org.chromium.components.browser_ui.media;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.FileUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.ImageDownloadCallback;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.services.media_session.MediaImage;
@@ -43,6 +47,7 @@ import java.util.List;
  *   - The aspect ratio score lies in [0, 1] and is computed by dividing the short edge length by
  *     the long edge.
  */
+@NullMarked
 public class MediaImageManager implements ImageDownloadCallback {
     // The default score of unknown image size.
     private static final double DEFAULT_IMAGE_SIZE_SCORE = 0.4;
@@ -56,7 +61,7 @@ public class MediaImageManager implements ImageDownloadCallback {
 
     @VisibleForTesting static final int MAX_BITMAP_SIZE_FOR_DOWNLOAD = 2048;
 
-    private WebContents mWebContents;
+    private @Nullable WebContents mWebContents;
     // The minimum image size. Images that are smaller than |mMinimumSize| will be ignored.
     final int mMinimumSize;
     // The ideal image size. Images that are too large than |mIdealSize| will be ignored.
@@ -66,13 +71,13 @@ public class MediaImageManager implements ImageDownloadCallback {
     // {@link #clearRequests()} is called.
     private int mRequestId;
     // The callback to be called when the pending download image request completes.
-    private MediaImageCallback mCallback;
+    private @Nullable MediaImageCallback mCallback;
 
     // The last image src for download, used for avoiding fetching the same src when artwork is set
     // multiple times but the same src is chosen.
     //
     // Will be reset when initiating a new download request.
-    private GURL mLastImageSrc;
+    private @Nullable GURL mLastImageSrc;
 
     /**
      * MediaImageManager constructor.
@@ -89,7 +94,7 @@ public class MediaImageManager implements ImageDownloadCallback {
      * Called when the WebContent changes.
      * @param contents The new WebContents.
      */
-    public void setWebContents(WebContents contents) {
+    public void setWebContents(@Nullable WebContents contents) {
         mWebContents = contents;
         clearRequests();
     }
@@ -156,6 +161,7 @@ public class MediaImageManager implements ImageDownloadCallback {
                 bestScore = newScore;
             }
         }
+        assumeNonNull(mCallback);
         mCallback.onImageDownloaded(bestBitmap);
         clearRequests();
     }
@@ -164,7 +170,7 @@ public class MediaImageManager implements ImageDownloadCallback {
      * Select the best image from the |images|.
      * @param images The list of images to select from. Null is equivalent to empty list.
      */
-    private MediaImage selectImage(List<MediaImage> images) {
+    private @Nullable MediaImage selectImage(List<MediaImage> images) {
         if (images == null) return null;
 
         MediaImage selectedImage = null;

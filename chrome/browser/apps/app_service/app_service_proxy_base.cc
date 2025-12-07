@@ -11,6 +11,8 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -20,7 +22,7 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
-#include "chrome/browser/apps/app_service/publishers/app_publisher.h"
+#include "chrome/browser/apps/app_service/publisher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -110,8 +112,11 @@ AppServiceProxyBase::AppInnerIconLoader::LoadIconFromIconKey(
   return nullptr;
 }
 
-AppServiceProxyBase::AppServiceProxyBase(Profile* profile)
-    : app_inner_icon_loader_(this),
+AppServiceProxyBase::AppServiceProxyBase(
+    Profile* profile,
+    PublisherHostFactory* publisher_host_factory)
+    : publisher_host_factory_(CHECK_DEREF(publisher_host_factory)),
+      app_inner_icon_loader_(this),
       app_icon_coalescer_(&app_inner_icon_loader_),
       app_outer_icon_loader_(&app_icon_coalescer_,
                              IconCache::GarbageCollectionPolicy::kEager),
@@ -131,7 +136,7 @@ void AppServiceProxyBase::ReinitializeForTesting(
   // after full profile initialization to ensure the App Service implementation
   // has all of profile state it needs.
   profile_ = profile;
-  is_using_testing_profile_ = true;
+  skip_pause_dialog_for_testing_ = true;
   app_registry_cache_.ReinitializeForTesting();  // IN-TEST
 
   preferred_apps_impl_ = std::make_unique<apps::PreferredAppsImpl>(
@@ -169,7 +174,7 @@ void AppServiceProxyBase::Initialize() {
                               std::make_unique<apps::AppIconSource>(profile_));
 }
 
-AppPublisher* AppServiceProxyBase::GetPublisher(AppType app_type) {
+Publisher* AppServiceProxyBase::GetPublisher(AppType app_type) {
   auto it = publishers_.find(app_type);
   return it == publishers_.end() ? nullptr : it->second;
 }
@@ -192,7 +197,7 @@ apps::PreferredAppsListHandle& AppServiceProxyBase::PreferredAppsList() {
 }
 
 void AppServiceProxyBase::RegisterPublisher(AppType app_type,
-                                            AppPublisher* publisher) {
+                                            Publisher* publisher) {
   publishers_[app_type] = publisher;
 }
 

@@ -4,32 +4,36 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.action;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
+import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.R;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.action.OmniboxActionId;
 import org.chromium.components.omnibox.action.OmniboxPedalId;
+import org.chromium.ui.mojom.WindowOpenDisposition;
 
 /**
  * Omnibox Actions are additional actions associated with Omnibox Matches. For more information,
  * please check on OmniboxAction class definition on native side.
  */
+@NullMarked
 public class OmniboxPedal extends OmniboxAction {
     @VisibleForTesting
-    static final ChipIcon DINO_GAME_ICON = new ChipIcon(R.drawable.action_dino_game, true);
+    static final ActionIcon DINO_GAME_ICON = new ActionIcon(R.drawable.action_dino_game, true);
 
     /** The type of the underlying pedal. */
     public final @OmniboxPedalId int pedalId;
 
     public OmniboxPedal(
             long nativeInstance,
-            @NonNull String hint,
-            @NonNull String accessibilityHint,
+            String hint,
+            String accessibilityHint,
             @OmniboxPedalId int pedalId) {
         super(
                 OmniboxActionId.PEDAL,
@@ -39,12 +43,14 @@ public class OmniboxPedal extends OmniboxAction {
                 pedalId == OmniboxPedalId.PLAY_CHROME_DINO_GAME
                         ? DINO_GAME_ICON
                         : OmniboxAction.DEFAULT_ICON,
-                R.style.TextAppearance_ChipText);
+                R.style.TextAppearance_ChipText,
+                /* showAsActionButton= */ false,
+                WindowOpenDisposition.CURRENT_TAB);
         this.pedalId = pedalId;
     }
 
     @Override
-    public void execute(@NonNull OmniboxActionDelegate delegate) {
+    public void execute(OmniboxActionDelegate delegate) {
         switch (pedalId) {
             case OmniboxPedalId.MANAGE_CHROME_SETTINGS:
                 delegate.openSettingsPage(SettingsFragment.MAIN);
@@ -65,7 +71,9 @@ public class OmniboxPedal extends OmniboxAction {
                 delegate.openSettingsPage(SettingsFragment.ACCESSIBILITY);
                 break;
             case OmniboxPedalId.VIEW_CHROME_HISTORY:
-                delegate.loadPageInCurrentTab(UrlConstants.HISTORY_URL);
+                UrlConstantResolver resolver =
+                        UrlConstantResolverFactory.getForProfile(/* profile= */ null);
+                delegate.loadPageInCurrentTab(resolver.getHistoryPageUrl());
                 break;
             case OmniboxPedalId.PLAY_CHROME_DINO_GAME:
                 delegate.loadPageInCurrentTab(UrlConstants.CHROME_DINO_URL);
@@ -83,7 +91,7 @@ public class OmniboxPedal extends OmniboxAction {
      * Cast supplied OmniboxAction to OmniboxPedal. Requires the supplied input to be a valid
      * instance of an OmniboxPedal whose actionId is the PEDAL.
      */
-    public static @NonNull OmniboxPedal from(@NonNull OmniboxAction action) {
+    public static OmniboxPedal from(OmniboxAction action) {
         assert action != null;
         assert action.actionId == OmniboxActionId.PEDAL;
         assert action instanceof OmniboxPedal;

@@ -2,6 +2,20 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+component("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+    "top_sites_constants.h",
+  ]
+
+  deps = [ "//base" ]
+
+  # Used by `COMPONENT_EXPORT(HISTORY_FEATURES)` in `features.h` for dynamic
+  # linking. For more info, see: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/component_build.md#exporting-and-importing-symbols
+  defines = [ "IS_HISTORY_FEATURES_IMPL" ]
+}
+
 static_library("browser") {
   sources = [
     "browsing_history_driver.h",
@@ -18,8 +32,6 @@ static_library("browser") {
     "download_types.h",
     "expire_history_backend.cc",
     "expire_history_backend.h",
-    "features.cc",
-    "features.h",
     "history_backend.cc",
     "history_backend.h",
     "history_backend_client.h",
@@ -50,6 +62,8 @@ static_library("browser") {
     "keyword_search_term_util.h",
     "page_usage_data.cc",
     "page_usage_data.h",
+    "segment_scorer.cc",
+    "segment_scorer.h",
     "sync/delete_directive_handler.cc",
     "sync/delete_directive_handler.h",
     "sync/history_backend_for_sync.h",
@@ -98,6 +112,7 @@ static_library("browser") {
   ]
 
   public_deps = [
+    ":features",
     "//components/sessions:session_id",
     "//components/sync/protocol",
     "//components/sync_device_info",
@@ -124,6 +139,7 @@ static_library("browser") {
     "//components/variations",
     "//components/version_info",
     "//components/visitedlink/core",
+    "//crypto",
     "//google_apis",
     "//net",
     "//services/network/public/cpp",
@@ -132,25 +148,6 @@ static_library("browser") {
     "//ui/gfx",
     "//url",
   ]
-
-  if (is_android) {
-    sources += [
-      "android/android_history_types.cc",
-      "android/android_history_types.h",
-      "android/android_urls_database.cc",
-      "android/android_urls_database.h",
-      "android/android_urls_sql_handler.cc",
-      "android/android_urls_sql_handler.h",
-      "android/favicon_sql_handler.cc",
-      "android/favicon_sql_handler.h",
-      "android/sql_handler.cc",
-      "android/sql_handler.h",
-      "android/urls_sql_handler.cc",
-      "android/urls_sql_handler.h",
-      "android/visit_sql_handler.cc",
-      "android/visit_sql_handler.h",
-    ]
-  }
 }
 
 source_set("unit_tests") {
@@ -165,6 +162,7 @@ source_set("unit_tests") {
     "history_querying_unittest.cc",
     "history_service_unittest.cc",
     "history_types_unittest.cc",
+    "segment_scorer_unittest.cc",
     "sync/delete_directive_handler_unittest.cc",
     "sync/history_sync_bridge_unittest.cc",
     "sync/history_sync_metadata_database_unittest.cc",
@@ -208,8 +206,5 @@ source_set("unit_tests") {
   ]
   if (is_ios) {
     deps += [ "//components/test:history_test_bundle_data" ]
-  }
-  if (is_android) {
-    sources += [ "android/android_history_types_unittest.cc" ]
   }
 }

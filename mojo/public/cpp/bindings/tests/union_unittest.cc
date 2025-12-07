@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
+
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
+#include "base/rand_util.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/lib/array_internal.h"
 #include "mojo/public/cpp/bindings/lib/message_fragment.h"
@@ -26,8 +25,9 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/tests/union_unittest.test-mojom.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
-#include "mojo/public/interfaces/bindings/tests/test_structs.mojom.h"
-#include "mojo/public/interfaces/bindings/tests/test_unions.mojom.h"
+#include "mojo/public/cpp/test_support/validation_errors_test_util.h"
+#include "mojo/public/interfaces/bindings/tests/test_structs.test-mojom.h"
+#include "mojo/public/interfaces/bindings/tests/test_unions.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo {
@@ -289,13 +289,13 @@ TEST(UnionTest, SerializeIsNullInlined) {
 
   Message message(0, 0, 0, 0, nullptr);
   mojo::internal::Buffer& buffer = *message.payload_buffer();
-  EXPECT_EQ(sizeof(mojo::internal::MessageHeader), buffer.cursor());
+  EXPECT_EQ(sizeof(mojo::internal::MessageHeaderV3), buffer.cursor());
 
   mojo::internal::MessageFragment<internal::PodUnion_Data> fragment(message);
   fragment.Allocate();
   mojo::internal::Serialize<PodUnionDataView>(pod, fragment, true);
   EXPECT_TRUE(fragment->is_null());
-  EXPECT_EQ(16U + sizeof(mojo::internal::MessageHeader), buffer.cursor());
+  EXPECT_EQ(16U + sizeof(mojo::internal::MessageHeaderV3), buffer.cursor());
 
   PodUnionPtr pod2;
   mojo::internal::Deserialize<PodUnionDataView>(fragment.data(), &pod2,
@@ -461,7 +461,7 @@ TEST(UnionTest, StringValidateOOB) {
   fragment->data.f_f_string.offset = 8;
   char* ptr = reinterpret_cast<char*>(&fragment->data.f_f_string);
   mojo::internal::ArrayHeader* array_header =
-      reinterpret_cast<mojo::internal::ArrayHeader*>(ptr + *ptr);
+      reinterpret_cast<mojo::internal::ArrayHeader*>(UNSAFE_TODO(ptr + *ptr));
   array_header->num_bytes = 20;  // This should go out of bounds.
   array_header->num_elements = 20;
   mojo::internal::ValidationContext validation_context(fragment.data(), 32, 0,
@@ -533,11 +533,11 @@ TEST(UnionTest, ObjectUnionInArraySerialization) {
 
   std::vector<char> new_buf;
   new_buf.resize(size);
-  memcpy(new_buf.data(), data, size);
+  UNSAFE_TODO(memcpy(new_buf.data(), data, size));
 
-  data =
+  data = UNSAFE_TODO(
       reinterpret_cast<mojo::internal::Array_Data<internal::ObjectUnion_Data>*>(
-          new_buf.data());
+          new_buf.data()));
   mojo::internal::ValidationContext validation_context(
       data, static_cast<uint32_t>(size), 0, 0);
   constexpr const mojo::internal::ContainerValidateParams& validate_params =
@@ -1150,6 +1150,19 @@ TEST(UnionTest, InlineUnionAllocationWithNonPODFirstField) {
   // Regression test for https://crbug.com/1114366. Should not crash.
   UnionWithStringForFirstFieldPtr u;
   u = UnionWithStringForFirstField::NewS("hey");
+}
+
+TEST(UnionTest, UnionObjectHash) {
+  constexpr size_t kTestSeed = 31;
+  UnionWithStringForFirstFieldPtr union1(
+      UnionWithStringForFirstField::NewS("hello world"));
+  UnionWithStringForFirstFieldPtr union2(
+      UnionWithStringForFirstField::NewS("hello world"));
+
+  EXPECT_EQ(union1->Hash(kTestSeed), union2->Hash(kTestSeed));
+
+  union2->set_s("hello universe");
+  EXPECT_NE(union1->Hash(kTestSeed), union2->Hash(kTestSeed));
 }
 
 class ExtensibleTestUnionExchange

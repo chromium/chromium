@@ -5,37 +5,29 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_BROWSER_LIST_FACTORY_H_
 #define IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_BROWSER_LIST_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "base/no_destructor.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class BrowserList;
-class ChromeBrowserState;
+class ProfileIOS;
 
 // Keyed service factory for BrowserList.
-// This factory returns the same instance for regular and OTR browser states.
-class BrowserListFactory final : public BrowserStateKeyedServiceFactory {
+// This factory returns the same instance for regular and OTR profiles.
+class BrowserListFactory final : public ProfileKeyedServiceFactoryIOS {
  public:
-  // Convenience getter that typecasts the value returned to a
-  // BrowserList.
-  static BrowserList* GetForBrowserState(ChromeBrowserState* browser_state);
+  static BrowserList* GetForProfile(ProfileIOS* profile);
 
   // Getter for singleton instance.
   static BrowserListFactory* GetInstance();
-
-  // Not copyable or moveable.
-  BrowserListFactory(const BrowserListFactory&) = delete;
-  BrowserListFactory& operator=(const BrowserListFactory&) = delete;
 
  private:
   friend class base::NoDestructor<BrowserListFactory>;
 
   BrowserListFactory();
 
-  // BrowserStateKeyedServiceFactory:
+  // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const final;
-  web::BrowserState* GetBrowserStateToUse(
-      web::BrowserState* context) const final;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_BROWSER_LIST_FACTORY_H_

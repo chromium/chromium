@@ -30,13 +30,6 @@ bool ParamTraits<gfx::BufferUsageAndFormat>::Read(
   return true;
 }
 
-void ParamTraits<gfx::BufferUsageAndFormat>::Log(
-    const gfx::BufferUsageAndFormat& p,
-    std::string* l) {
-  l->append(base::StringPrintf("(%d, %u)", static_cast<int>(p.usage),
-                               base::strict_cast<uint32_t>(p.format)));
-}
-
 }  // namespace IPC
 
 // Generate param traits write methods.
@@ -48,13 +41,6 @@ namespace IPC {
 
 // Generate param traits read methods.
 #include "ipc/param_traits_read_macros.h"
-namespace IPC {
-#undef UI_GFX_IPC_BUFFER_TYPES_GFX_PARAM_TRAITS_MACROS_H_
-#include "ui/gfx/ipc/buffer_types/gfx_param_traits_macros.h"
-}  // namespace IPC
-
-// Generate param traits log methods.
-#include "ipc/param_traits_log_macros.h"
 namespace IPC {
 #undef UI_GFX_IPC_BUFFER_TYPES_GFX_PARAM_TRAITS_MACROS_H_
 #include "ui/gfx/ipc/buffer_types/gfx_param_traits_macros.h"

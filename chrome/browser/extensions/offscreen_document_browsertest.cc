@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/offscreen_document_host.h"
-#include "extensions/common/mojom/context_type.mojom.h"
-
 #include "base/test/bind.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/devtools/devtools_window.h"
@@ -12,7 +9,6 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -21,12 +17,14 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/extension_host_registry.h"
+#include "extensions/browser/offscreen_document_host.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/script_result_queue.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
@@ -43,13 +41,10 @@ class OffscreenDocumentBrowserTest : public ExtensionApiTest {
   std::unique_ptr<OffscreenDocumentHost> CreateOffscreenDocument(
       const Extension& extension,
       const GURL& url) {
-    scoped_refptr<content::SiteInstance> site_instance =
-        ProcessManager::Get(profile())->GetSiteInstanceForURL(url);
-
     content::TestNavigationObserver navigation_observer(url);
     navigation_observer.StartWatchingNewWebContents();
-    auto offscreen_document = std::make_unique<OffscreenDocumentHost>(
-        extension, site_instance.get(), url);
+    auto offscreen_document =
+        std::make_unique<OffscreenDocumentHost>(extension, profile(), url);
     offscreen_document->CreateRendererSoon();
     navigation_observer.Wait();
     EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
@@ -108,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest,
   EXPECT_EQ(mojom::ViewType::kOffscreenDocument, GetViewType(contents));
   // The offscreen document should be marked as never composited, excluding it
   // from certain a11y considerations.
-  EXPECT_TRUE(contents->GetDelegate()->IsNeverComposited(contents));
+  EXPECT_TRUE(contents->IsNeverComposited());
 
   {
     // Check the registration in the ProcessManager: the offscreen document
@@ -137,7 +132,8 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest,
   {
     mojom::ContextType context_type =
         ProcessMap::Get(profile())->GetMostLikelyContextType(
-            extension, contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+            extension,
+            contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
             &offscreen_url);
     // TODO(crbug.com/40849649): The following check should be:
     //   EXPECT_EQ(mojom::ContextType::kOffscreenExtension, context_type);
@@ -167,8 +163,7 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest,
     // a tab.
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), extension->GetResourceURL("other.html")));
-    content::WebContents* tab_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+    content::WebContents* tab_contents = GetActiveWebContents();
     EXPECT_EQ(tab_contents->GetPrimaryMainFrame()->GetProcess(),
               contents->GetPrimaryMainFrame()->GetProcess());
   }
@@ -225,8 +220,9 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest, APIAccessIsLimited) {
         R"("PlatformArch","PlatformNaclArch","PlatformOs",)"
         R"("RequestUpdateCheckStatus",)"
         // Methods and events.
-        R"("connect","getURL","id","onConnect","onConnectExternal",)"
-        R"("onMessage","onMessageExternal","sendMessage"])";
+        R"("connect","dynamicId","getURL","id","onConnect",)"
+        R"("onConnectExternal","onMessage","onMessageExternal",)"
+        R"("sendMessage"])";
     EXPECT_EQ(kExpectedProperties, EvalJs(contents, kScript));
   }
 }

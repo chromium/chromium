@@ -4,11 +4,10 @@
 
 #import "chrome/browser/ui/cocoa/touchbar/web_textfield_touch_bar_controller.h"
 
-#include "base/debug/stack_trace.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #import "chrome/browser/ui/cocoa/touchbar/browser_window_touch_bar_controller.h"
 #import "chrome/browser/ui/cocoa/touchbar/credit_card_autofill_touch_bar_controller.h"
-#include "chrome/browser/ui/views/frame/browser_frame_mac.h"
+#include "chrome/browser/ui/views/frame/browser_native_widget_mac.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "content/public/browser/web_contents.h"
 #import "ui/base/cocoa/touch_bar_util.h"
@@ -20,14 +19,14 @@
 
 + (WebTextfieldTouchBarController*)controllerForWindow:(NSWindow*)window {
   BrowserView* browser_view =
-      BrowserView::GetBrowserViewForNativeWindow(window);
+      BrowserView::GetBrowserViewForNativeWindow(gfx::NativeWindow(window));
   if (!browser_view) {
     return nil;
   }
 
-  BrowserFrameMac* browser_frame = static_cast<BrowserFrameMac*>(
-      browser_view->frame()->native_browser_frame());
-  return [browser_frame->GetTouchBarController() webTextfieldTouchBar];
+  BrowserNativeWidgetMac* native_widget = static_cast<BrowserNativeWidgetMac*>(
+      browser_view->browser_widget()->browser_native_widget());
+  return [native_widget->GetTouchBarController() webTextfieldTouchBar];
 }
 
 - (instancetype)initWithController:

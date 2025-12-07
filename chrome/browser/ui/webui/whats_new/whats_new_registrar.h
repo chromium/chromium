@@ -8,6 +8,10 @@
 #include "components/user_education/webui/whats_new_registry.h"
 
 namespace whats_new {
+namespace features {
+// Declare local features here.
+}  // namespace features
+
 void RegisterWhatsNewModules(whats_new::WhatsNewRegistry* registry);
 
 void RegisterWhatsNewEditions(whats_new::WhatsNewRegistry* registry);

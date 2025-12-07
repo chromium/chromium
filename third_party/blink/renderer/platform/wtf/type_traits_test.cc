@@ -27,7 +27,7 @@
 
 // No gtest tests; only static_assert checks.
 
-namespace WTF {
+namespace blink {
 
 namespace {
 
@@ -294,4 +294,4 @@ static_assert(!std::is_convertible<Wrapper<TestBaseClass<int>>,
 
 }  // anonymous namespace
 
-}  // namespace WTF
+}  // namespace blink

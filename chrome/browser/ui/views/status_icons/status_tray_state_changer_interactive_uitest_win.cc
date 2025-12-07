@@ -20,7 +20,7 @@
 
 class StatusTrayStateChangerWinTest : public testing::Test {
  public:
-  StatusTrayStateChangerWinTest() {}
+  StatusTrayStateChangerWinTest() = default;
 
   StatusTrayStateChangerWinTest(const StatusTrayStateChangerWinTest&) = delete;
   StatusTrayStateChangerWinTest& operator=(
@@ -100,7 +100,6 @@ TEST_F(StatusTrayStateChangerWinTest, DISABLED_Setup) {
 // Test is disabled due to multiple COM initialization errors.  See
 // https://crbug.com/367199 for details.
 TEST_F(StatusTrayStateChangerWinTest, DISABLED_ComApiTest) {
-
   // Setup code to read the current preference.
   std::unique_ptr<NOTIFYITEM> notify_item = SetupAndGetCurrentNotifyItem();
   ASSERT_TRUE(notify_item.get() != NULL);
@@ -132,14 +131,16 @@ TEST_F(StatusTrayStateChangerWinTest, DISABLED_TraySizeApiTest) {
   // Used to reset operating system state afterwards.
   std::unique_ptr<NOTIFYITEM> notify_item = SetupAndGetCurrentNotifyItem();
   // We can't actually run this test if we're already showing the icon.
-  if (notify_item->preference == PREFERENCE_SHOW_ALWAYS)
+  if (notify_item->preference == PREFERENCE_SHOW_ALWAYS) {
     return;
+  }
 
   // This test can only run if the tray window structure conforms to what I've
   // seen in Win7 and Win8.
   HWND shell_tray_hwnd = ::FindWindow(L"Shell_TrayWnd", NULL);
-  if (shell_tray_hwnd == NULL)
+  if (shell_tray_hwnd == NULL) {
     return;
+  }
 
   HWND tray_notify_hwnd =
       ::FindWindowEx(shell_tray_hwnd, NULL, L"TrayNotifyWnd", NULL);

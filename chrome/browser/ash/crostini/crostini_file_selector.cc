@@ -5,11 +5,10 @@
 #include "chrome/browser/ash/crostini/crostini_file_selector.h"
 
 #include "base/path_service.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/grit/generated_resources.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
@@ -26,6 +25,8 @@ CrostiniFileSelector::~CrostiniFileSelector() {
 void CrostiniFileSelector::SelectFile(
     base::OnceCallback<void(const base::FilePath&)> selected_callback,
     base::OnceCallback<void(void)> cancelled_callback) {
+  // TODO(crbug.com/345312503): Can this path be deprecated? Appears to only be
+  // called from multi-container settings pages.
   selected_callback_ = std::move(selected_callback);
   cancelled_callback_ = std::move(cancelled_callback);
   select_file_dialog_ = ui::SelectFileDialog::Create(
@@ -54,12 +55,7 @@ void CrostiniFileSelector::SelectFile(
       l10n_util::GetStringUTF16(
           IDS_SETTINGS_CROSTINI_FILE_SELECTOR_DIALOG_TITLE),
       downloads_path, &file_type_info, 0, FILE_PATH_LITERAL(""),
-      GetBrowserWindow());
-}
-
-gfx::NativeWindow CrostiniFileSelector::GetBrowserWindow() {
-  Browser* browser = chrome::FindBrowserWithTab(web_ui_->GetWebContents());
-  return browser ? browser->window()->GetNativeWindow() : gfx::NativeWindow();
+      web_ui_->GetWebContents()->GetTopLevelNativeWindow());
 }
 
 void CrostiniFileSelector::FileSelected(const ui::SelectedFileInfo& file,

@@ -15,7 +15,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/cache_type.h"
@@ -59,7 +58,7 @@ ServiceWorkerDiskCacheEntry::ServiceWorkerDiskCacheEntry(
 
 ServiceWorkerDiskCacheEntry::~ServiceWorkerDiskCacheEntry() {
   if (disk_cache_entry_) {
-    disk_cache_entry_->Close();
+    disk_cache_entry_.ExtractAsDangling()->Close();
     cache_->RemoveOpenEntry(this);
   }
 }
@@ -69,12 +68,11 @@ int ServiceWorkerDiskCacheEntry::Read(int index,
                                       net::IOBuffer* buf,
                                       int buf_len,
                                       net::CompletionOnceCallback callback) {
-  if (offset < 0 || offset > std::numeric_limits<int32_t>::max())
-    return net::ERR_INVALID_ARGUMENT;
-  if (!disk_cache_entry_)
+  if (!disk_cache_entry_) {
     return net::ERR_ABORTED;
-  return disk_cache_entry_->ReadData(index, static_cast<int>(offset), buf,
-                                     buf_len, std::move(callback));
+  }
+  return disk_cache_entry_->ReadData(index, offset, buf, buf_len,
+                                     std::move(callback));
 }
 
 int ServiceWorkerDiskCacheEntry::Write(int index,
@@ -82,13 +80,12 @@ int ServiceWorkerDiskCacheEntry::Write(int index,
                                        net::IOBuffer* buf,
                                        int buf_len,
                                        net::CompletionOnceCallback callback) {
-  if (offset < 0 || offset > std::numeric_limits<int32_t>::max())
-    return net::ERR_INVALID_ARGUMENT;
-  if (!disk_cache_entry_)
+  if (!disk_cache_entry_) {
     return net::ERR_ABORTED;
+  }
   const bool kTruncate = true;
-  return disk_cache_entry_->WriteData(index, static_cast<int>(offset), buf,
-                                      buf_len, std::move(callback), kTruncate);
+  return disk_cache_entry_->WriteData(index, offset, buf, buf_len,
+                                      std::move(callback), kTruncate);
 }
 
 int64_t ServiceWorkerDiskCacheEntry::GetSize(int index) {
@@ -96,7 +93,7 @@ int64_t ServiceWorkerDiskCacheEntry::GetSize(int index) {
 }
 
 void ServiceWorkerDiskCacheEntry::Abandon() {
-  disk_cache_entry_->Close();
+  disk_cache_entry_.ExtractAsDangling()->Close();
   disk_cache_entry_ = nullptr;
 }
 
@@ -273,7 +270,8 @@ net::Error ServiceWorkerDiskCache::Init(net::CacheType cache_type,
   disk_cache::BackendResult result = disk_cache::CreateCacheBackend(
       cache_type, net::CACHE_BACKEND_SIMPLE, /*file_operations=*/nullptr,
       cache_directory, cache_size, disk_cache::ResetHandling::kNeverReset,
-      /*net_log=*/nullptr, std::move(post_cleanup_callback),
+      /*net_log=*/nullptr, /*cache_encryption_delegate=*/nullptr,
+      std::move(post_cleanup_callback),
       base::BindOnce(&CreateBackendCallbackShim::Callback,
                      create_backend_callback_));
   net::Error rv = result.net_error;
@@ -310,7 +308,7 @@ uint64_t ServiceWorkerDiskCache::GetNextCallId() {
 void ServiceWorkerDiskCache::DidGetEntryResult(uint64_t call_id,
                                                disk_cache::EntryResult result) {
   auto it = active_entry_calls_.find(call_id);
-  CHECK(it != active_entry_calls_.end(), base::NotFatalUntil::M130);
+  CHECK(it != active_entry_calls_.end());
   EntryCallback callback = std::move(it->second);
   active_entry_calls_.erase(it);
 
@@ -326,7 +324,7 @@ void ServiceWorkerDiskCache::DidGetEntryResult(uint64_t call_id,
 
 void ServiceWorkerDiskCache::DidDoomEntry(uint64_t call_id, int net_error) {
   auto it = active_doom_calls_.find(call_id);
-  CHECK(it != active_doom_calls_.end(), base::NotFatalUntil::M130);
+  CHECK(it != active_doom_calls_.end());
   net::CompletionOnceCallback callback = std::move(it->second);
   active_doom_calls_.erase(it);
 

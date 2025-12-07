@@ -36,6 +36,7 @@
 #include "third_party/blink/public/platform/web_content_decryption_module.h"
 #include "third_party/blink/public/platform/web_encrypted_media_key_information.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_key_session_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_keys_policy.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -66,9 +67,7 @@ class MediaKeys::PendingAction final
 
   Type GetType() const { return type_; }
 
-  const Persistent<ContentDecryptionModuleResult> Result() const {
-    return result_;
-  }
+  ContentDecryptionModuleResult* Result() const { return result_; }
 
   DOMArrayBuffer* Data() const {
     DCHECK_EQ(Type::kSetServerCertificate, type_);
@@ -195,9 +194,13 @@ class GetStatusForPolicyResultPromise
     if (!IsValidToFulfillPromise())
       return;
 
-    // Report Media.EME.GetStatusForPolicy UKM.
     auto* execution_context = GetExecutionContext();
     if (auto* local_dom_window = DynamicTo<LocalDOMWindow>(execution_context)) {
+      // Report CrossOriginIframeUsage of GetStatusForPolicy.
+      local_dom_window->CountUseOnlyInCrossOriginIframe(
+          WebFeature::kGetStatusForPolicyCrossOriginIframe);
+
+      // Report Media.EME.GetStatusForPolicy UKM.
       Document* document = local_dom_window->document();
       if (document) {
         ukm::builders::Media_EME_GetStatusForPolicy builder(
@@ -222,7 +225,7 @@ class GetStatusForPolicyResultPromise
     }
 
     Resolve<V8MediaKeyStatus>(
-        EncryptedMediaUtils::ConvertKeyStatusToString(key_status));
+        EncryptedMediaUtils::ConvertKeyStatusToEnum(key_status));
   }
 
   void Trace(Visitor* visitor) const override {
@@ -240,7 +243,7 @@ class GetStatusForPolicyResultPromise
 
 MediaKeys::MediaKeys(
     ExecutionContext* context,
-    const WebVector<WebEncryptedMediaSessionType>& supported_session_types,
+    const std::vector<WebEncryptedMediaSessionType>& supported_session_types,
     std::unique_ptr<WebContentDecryptionModule> cdm,
     const MediaKeysConfig& config)
     : ActiveScriptWrappable<MediaKeys>({}),
@@ -262,11 +265,12 @@ MediaKeys::~MediaKeys() {
   InstanceCounters::DecrementCounter(InstanceCounters::kMediaKeysCounter);
 }
 
-MediaKeySession* MediaKeys::createSession(ScriptState* script_state,
-                                          const String& session_type_string,
-                                          ExceptionState& exception_state) {
+MediaKeySession* MediaKeys::createSession(
+    ScriptState* script_state,
+    const V8MediaKeySessionType& v8_session_type,
+    ExceptionState& exception_state) {
   DVLOG(MEDIA_KEYS_LOG_LEVEL)
-      << __func__ << "(" << this << ") " << session_type_string;
+      << __func__ << "(" << this << ") " << v8_session_type.AsCStr();
 
   // If the context for MediaKeys has been destroyed, fail.
   if (!GetExecutionContext()) {
@@ -287,7 +291,7 @@ MediaKeySession* MediaKeys::createSession(ScriptState* script_state,
   //    implementation value does not support sessionType, throw a new
   //    DOMException whose name is NotSupportedError.
   WebEncryptedMediaSessionType session_type =
-      EncryptedMediaUtils::ConvertToSessionType(session_type_string);
+      EncryptedMediaUtils::ConvertToSessionType(v8_session_type.AsStringView());
   if (!SessionTypeSupported(session_type)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Unsupported session type.");
@@ -334,8 +338,8 @@ ScriptPromise<IDLBoolean> MediaKeys::setServerCertificate(
 
   // 3. Let certificate be a copy of the contents of the serverCertificate
   //    parameter.
-  DOMArrayBuffer* server_certificate_buffer = DOMArrayBuffer::Create(
-      server_certificate.Data(), server_certificate.ByteLength());
+  DOMArrayBuffer* server_certificate_buffer =
+      DOMArrayBuffer::Create(server_certificate.ByteSpan());
 
   // 4. Let promise be a new promise.
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
@@ -373,14 +377,21 @@ void MediaKeys::SetServerCertificateTask(
   WebContentDecryptionModule* cdm = ContentDecryptionModule();
 
   // 5.2 Use the cdm to process certificate.
-  cdm->SetServerCertificate(
-      static_cast<unsigned char*>(server_certificate->Data()),
-      server_certificate->ByteLength(), result->Result());
+  cdm->SetServerCertificate(server_certificate->ByteSpan(), result->Result());
 
   // 5.3 If any of the preceding steps failed, reject promise with a
   //     new DOMException whose name is the appropriate error name.
   // 5.4 Resolve promise.
   // (These are handled by Chromium and the CDM.)
+
+  // Log the usage of setServerCertificate().
+  // TODO(crbug.com/436274254): `is_persistent_session` is unknown at the time
+  // of setting server certificate. Consider updating `is_persistent_session` to
+  // enum or optional type.
+  EncryptedMediaUtils::ReportUsage(EmeApiType::kSetServerCertificate,
+                                   GetExecutionContext(), config_.key_system,
+                                   config_.use_hardware_secure_codecs,
+                                   /*is_persistent_session=*/false);
 }
 
 ScriptPromise<V8MediaKeyStatus> MediaKeys::getStatusForPolicy(
@@ -391,6 +402,11 @@ ScriptPromise<V8MediaKeyStatus> MediaKeys::getStatusForPolicy(
   if (!GetExecutionContext()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
                                       "The context provided is invalid.");
+    return EmptyPromise();
+  }
+
+  if (!media_keys_policy->hasMinHdcpVersion()) {
+    exception_state.ThrowTypeError("MediaKeysPolicy is not present.");
     return EmptyPromise();
   }
 
@@ -489,7 +505,7 @@ void MediaKeys::TimerFired(TimerBase*) {
         break;
 
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 }

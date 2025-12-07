@@ -46,8 +46,7 @@ ExtensionFunction::ResponseAction DnsResolveFunction::Run() {
   receiver_.set_disconnect_handler(base::BindOnce(
       &DnsResolveFunction::OnComplete, base::Unretained(this),
       net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
-      /*resolved_addresses=*/std::nullopt,
-      /*endpoint_results_with_metadata=*/std::nullopt));
+      net::AddressList(), net::HostResolverEndpointResults()));
 
   // Balanced in OnComplete().
   AddRef();
@@ -57,17 +56,16 @@ ExtensionFunction::ResponseAction DnsResolveFunction::Run() {
 void DnsResolveFunction::OnComplete(
     int result,
     const net::ResolveErrorInfo& resolve_error_info,
-    const std::optional<net::AddressList>& resolved_addresses,
-    const std::optional<net::HostResolverEndpointResults>&
-        endpoint_results_with_metadata) {
+    const net::AddressList& resolved_addresses,
+    const net::HostResolverEndpointResults& alternative_endpoints) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   receiver_.reset();
 
   ResolveCallbackResolveInfo resolve_info;
   resolve_info.result_code = resolve_error_info.error;
   if (result == net::OK) {
-    DCHECK(resolved_addresses.has_value() && !resolved_addresses->empty());
-    resolve_info.address = resolved_addresses->front().ToStringWithoutPort();
+    DCHECK(!resolved_addresses.empty());
+    resolve_info.address = resolved_addresses.front().ToStringWithoutPort();
   }
 
   Respond(ArgumentList(Resolve::Results::Create(resolve_info)));

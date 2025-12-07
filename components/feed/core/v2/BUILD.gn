@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/supervised_user/buildflags.gni")
 import("//testing/test.gni")
 
 if (is_android) {
@@ -153,27 +152,25 @@ if (use_blink) {
     ]
     deps = [
       "public:common",
-      "//components/country_codes:country_codes",
+      "//components/country_codes",
       "//components/feed:feature_list",
       "//components/feed/core/shared_prefs:feed_shared_prefs",
       "//components/history/core/browser",
-      "//components/leveldb_proto:leveldb_proto",
-      "//components/offline_pages/task:task",
+      "//components/leveldb_proto",
+      "//components/offline_pages/task",
       "//components/prefs",
-      "//components/reading_list/features:flags",
       "//components/search_engines",
       "//components/signin/public/identity_manager",
-      "//components/supervised_user/core/common:features",
-      "//components/url_matcher:url_matcher",
+      "//components/url_matcher",
       "//components/variations",
       "//components/variations/net",
       "//components/version_info:channel",
-      "//components/web_resource:web_resource",
+      "//components/web_resource",
       "//net",
       "//services/network/public/cpp",
       "//services/network/public/mojom",
       "//third_party/zlib/google:compression_utils",
-      "//ui/base:base",
+      "//ui/base",
     ]
 
     public_deps = [
@@ -182,7 +179,6 @@ if (use_blink) {
       "//components/feed/core/common:feed_core_common",
       "//components/feed/core/proto:proto_ios_shared_v2",
       "//components/feed/core/proto:proto_v2",
-      "//components/supervised_user/core/browser/proto",
     ]
   }
 
@@ -247,7 +243,6 @@ if (use_blink) {
       "public:common",
       "//base",
       "//base/test:test_support",
-      "//build:chromeos_buildflags",
       "//components/feed:feature_list",
       "//components/feed/core/common:feed_core_common",
       "//components/feed/core/shared_prefs:feed_shared_prefs",
@@ -255,12 +250,10 @@ if (use_blink) {
       "//components/leveldb_proto:test_support",
       "//components/offline_pages/core:test_support",
       "//components/prefs:test_support",
-      "//components/reading_list/features:flags",
       "//components/search_engines",
       "//components/search_engines:test_support",
       "//components/signin/public/identity_manager",
       "//components/signin/public/identity_manager:test_support",
-      "//components/supervised_user/core/common:buildflags",
       "//components/sync/base",
       "//components/sync_preferences:test_support",
       "//components/variations:test_support",
@@ -279,13 +272,9 @@ if (use_blink) {
       deps += [ ":unit_tests_bundle_data" ]
     }
 
-    if (enable_supervised_users) {
-      sources += [ "api_test/feed_api_supervised_feed_unittest.cc" ]
-      deps += [
-        "//components/supervised_user/core/browser",
-        "//components/supervised_user/core/common:features",
-      ]
-    }
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 
   source_set("feed_core_stubs") {
@@ -315,7 +304,6 @@ if (is_android) {
   java_cpp_enum("feedv2_enums_java") {
     sources = [
       "enums.h",
-      "public/common_enums.h",
       "public/types.h",
     ]
   }
@@ -325,6 +313,18 @@ if (is_android) {
   # classes define multiple times.
   android_library("feedv2_core_java") {
     srcjar_deps = [ ":feedv2_enums_java" ]
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  }
+
+  java_cpp_enum("feedv2_common_enums_java") {
+    sources = [ "public/common_enums.h" ]
+  }
+
+  # Wrap feedv2_common_enums_java in an android_library so that only one
+  # android_library needs to depend on feedv2_common_enums_java. Otherwise, we
+  # will get classes define multiple times.
+  android_library("feedv2_common_core_java") {
+    srcjar_deps = [ ":feedv2_common_enums_java" ]
     deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
   }
 }

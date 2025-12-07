@@ -55,6 +55,7 @@ fn indexable_num_fonts<'a>(font_bytes: &[u8]) -> u32 {
 }
 
 #[cxx::bridge(namespace = "name_table_access")]
+#[allow(unused_unsafe)]
 pub mod ffi {
     extern "Rust" {
         /// Returns true if the font or font collection is indexable and gives

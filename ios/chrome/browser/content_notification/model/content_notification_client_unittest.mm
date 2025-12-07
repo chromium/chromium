@@ -7,7 +7,6 @@
 #import <UserNotifications/UserNotifications.h>
 
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/task_environment.h"
 #import "base/threading/thread_restrictions.h"
 #import "components/prefs/scoped_user_pref_update.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
@@ -19,15 +18,17 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/features.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/testing/scoped_block_swizzler.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -36,16 +37,17 @@
 class ContentNotificationClientTest : public PlatformTest {
  protected:
   ContentNotificationClientTest() {
-    ChromeBrowserState* browser_state =
-        browser_state_manager_.AddBrowserStateWithBuilder(
-            TestChromeBrowserState::Builder());
-    BrowserList* list = BrowserListFactory::GetForBrowserState(browser_state);
+    ProfileIOS* profile =
+        profile_manager_.AddProfileWithBuilder(TestProfileIOS::Builder());
+    BrowserList* list = BrowserListFactory::GetForProfile(profile);
     mock_scene_state_ = OCMClassMock([SceneState class]);
     OCMStub([mock_scene_state_ activationLevel])
         .andReturn(SceneActivationLevelForegroundActive);
-    browser_ = std::make_unique<TestBrowser>(browser_state, mock_scene_state_);
+    browser_ = std::make_unique<TestBrowser>(profile, mock_scene_state_);
     list->AddBrowser(browser_.get());
-    client_ = std::make_unique<ContentNotificationClient>();
+    client_ = IsMultiProfilePushNotificationHandlingEnabled()
+                  ? std::make_unique<ContentNotificationClient>(profile)
+                  : std::make_unique<ContentNotificationClient>();
     ScopedDictPrefUpdate update(GetApplicationContext()->GetLocalState(),
                                 prefs::kAppLevelPushNotificationPermissions);
     update->Set(kContentNotificationKey, true);
@@ -80,9 +82,9 @@ class ContentNotificationClientTest : public PlatformTest {
     return request;
   }
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  TestChromeBrowserStateManager browser_state_manager_;
+  TestProfileManagerIOS profile_manager_;
   id mock_scene_state_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<ContentNotificationClient> client_;
@@ -96,7 +98,7 @@ class ContentNotificationClientTest : public PlatformTest {
 // Tests that HandleNotificationReception does nothing and returns "NoData".
 TEST_F(ContentNotificationClientTest, HandleNotificationReception) {
   EXPECT_EQ(client_->HandleNotificationReception(CreatePayload(NO)),
-            UIBackgroundFetchResultNoData);
+            std::nullopt);
 }
 
 // Tests the appropriate secondary actions are registered.

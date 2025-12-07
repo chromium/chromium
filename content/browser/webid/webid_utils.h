@@ -17,16 +17,24 @@ enum class FederatedAuthRequestResult;
 enum class IdpSigninStatus;
 }  // namespace blink::mojom
 
+namespace perfetto {
+class NamedTrack;
+}  // namespace perfetto
+
 namespace content {
 class BrowserContext;
-enum class FedCmDisconnectStatus;
 enum class FedCmIdpSigninStatusMode;
 class FederatedIdentityApiPermissionContextDelegate;
 class FederatedIdentityPermissionContextDelegate;
 enum class IdpSigninStatus;
-class FederatedAuthRequestPageData;
+class NavigationHandle;
+class RenderFrameHost;
 
 namespace webid {
+
+class RequestPageData;
+enum class DisconnectStatus;
+enum class RequesterFrameType;
 
 // Returns true if `origin` is same site with `render_frame_host` and
 // all its ancestors. Also returns true if there are no ancestors or
@@ -35,7 +43,7 @@ bool IsSameSiteWithAncestors(const url::Origin& origin,
                              RenderFrameHost* render_frame_host);
 
 void SetIdpSigninStatus(BrowserContext* context,
-                        int frame_tree_node_id,
+                        FrameTreeNodeId frame_tree_node_id,
                         const url::Origin& origin,
                         blink::mojom::IdpSigninStatus status);
 
@@ -51,10 +59,6 @@ std::optional<std::string> ComputeConsoleMessageForHttpResponseCode(
 // endpoint URL.
 bool IsEndpointSameOrigin(const GURL& identity_provider_config_url,
                           const GURL& endpoint_url);
-
-// Returns whether the two origins are considered same-site (same eTLD+1). Also
-// ensures that the scheme is the same.
-bool IsSameSite(const url::Origin& origin1, const url::Origin& origin2);
 
 // Returns whether FedCM should fail/skip the accounts endpoint request because
 // the user is not signed-in to the IdP.
@@ -72,8 +76,8 @@ bool ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
 void UpdateIdpSigninStatusForAccountsEndpointResponse(
     RenderFrameHost& host,
     const GURL& identity_provider_config_url,
-    IdpNetworkRequestManager::FetchStatus account_endpoint_fetch_status,
-    bool does_idp_have_failing_idp_signin_status,
+    FetchStatus account_endpoint_fetch_status,
+    bool does_idp_have_failing_signin_status,
     FederatedIdentityPermissionContextDelegate* permission_delegate);
 
 // Returns a string to be used as the console error message from a
@@ -84,10 +88,7 @@ CONTENT_EXPORT std::string GetConsoleErrorMessageFromResult(
 // Returns a string to be used as the console error message for a disconnect()
 // call.
 CONTENT_EXPORT std::string GetDisconnectConsoleErrorMessage(
-    FedCmDisconnectStatus disconnect_status_for_metrics);
-
-FedCmIdpSigninStatusMode GetIdpSigninStatusMode(RenderFrameHost& host,
-                                                const url::Origin& idp_origin);
+    DisconnectStatus disconnect_status_for_metrics);
 
 // Returns the eTLD+1 for a given url. For localhost, returns the host.
 std::string FormatUrlForDisplay(const GURL& url);
@@ -105,13 +106,22 @@ bool HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
     FederatedIdentityPermissionContextDelegate* sharing_permission_delegate,
     FederatedIdentityApiPermissionContextDelegate* api_permission_delegate);
 
-bool IsFedCmAuthzEnabled(RenderFrameHost& host, const url::Origin& idp_origin);
+RequestPageData* GetPageData(Page& page);
 
-FederatedAuthRequestPageData* GetPageData(Page& page);
+// Returns the frame type of the requester.
+RequesterFrameType ComputeRequesterFrameType(const RenderFrameHost& rfh,
+                                             const url::Origin& requester,
+                                             const url::Origin& embedder);
 
-// Returns a new session ID. Used to record UKM metrics corresponding to a new
-// API invocation, like get() or disconnect().
-int GetNewSessionID();
+void MaybeAddResponseCodeToConsole(RenderFrameHost& render_frame_host,
+                                   const char* fetch_description,
+                                   int response_code);
+
+bool DidNavigationHandleHaveActivation(NavigationHandle* handle);
+
+// Creates a Perfetto track for the class pointed to by `class_pointer`.
+perfetto::NamedTrack CreatePerfettoTrackForFedCM(void* class_pointer);
+
 }  // namespace webid
 
 }  // namespace content

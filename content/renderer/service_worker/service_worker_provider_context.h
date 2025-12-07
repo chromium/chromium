@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -28,22 +28,21 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container_type.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-forward.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom-forward.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_worker_client_registry.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-forward.h"
-#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider_client.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider_context.h"
 
 namespace base {
 class SingleThreadTaskRunner;
 }  // namespace base
 
-namespace network {
-namespace mojom {
-class URLLoaderFactory;
-}  // namespace mojom
+namespace blink {
+class WebServiceWorkerProvider;
+}  // namespace blink
 
+namespace network {
 class SharedURLLoaderFactory;
 class WeakWrapperSharedURLLoaderFactory;
 }  // namespace network
@@ -59,7 +58,6 @@ FORWARD_DECLARE_TEST(ServiceWorkerProviderContextTest,
 }  // namespace service_worker_provider_context_unittest
 
 class WebServiceWorkerProviderImpl;
-struct ServiceWorkerProviderContextDeleter;
 
 // ServiceWorkerProviderContext stores common state for "providers" for service
 // worker clients (currently WebServiceWorkerProviderImpl and
@@ -76,9 +74,7 @@ struct ServiceWorkerProviderContextDeleter;
 // Created and destructed on the main thread. Unless otherwise noted, all
 // methods are called on the main thread.
 class CONTENT_EXPORT ServiceWorkerProviderContext
-    : public base::RefCountedThreadSafe<ServiceWorkerProviderContext,
-                                        ServiceWorkerProviderContextDeleter>,
-      public blink::WebServiceWorkerProviderContext,
+    : public blink::WebServiceWorkerProviderContext,
       public blink::mojom::ServiceWorkerContainer,
       public blink::mojom::ServiceWorkerWorkerClientRegistry {
  public:
@@ -107,6 +103,14 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
 
   blink::mojom::ServiceWorkerContainerType container_type() const {
     return container_type_;
+  }
+
+  // TODO(crbug.com/324939068): remove the code when the feature launched.
+  bool container_is_blob_url_shared_worker() const override;
+  // This must only be set once during construction in order to be safe to be
+  // called cross-thread.
+  void set_container_is_blob_url_shared_worker(bool is_blob_url) {
+    container_is_blob_url_shared_worker_ = is_blob_url;
   }
 
   // Returns version id of the controller service worker object
@@ -161,10 +165,11 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
   // state.
   void OnNetworkProviderDestroyed();
 
-  // May be nullptr if OnNetworkProviderDestroyed() has already been called.
-  // Currently this can be called only for clients that are Documents,
-  // see comments of |container_host_|.
-  blink::mojom::ServiceWorkerContainerHost* container_host() const;
+  // May be false if OnNetworkProviderDestroyed() has already been called.
+  // This should only be used by tests. It should only be called from the
+  // window thread or main thread as the value may not be accurate otherwise.
+  // See comments of |container_host_|.
+  bool has_container_host_for_testing() const;
 
   // Called when blink::IdlenessDetector emits its network idle signal. Tells
   // the browser process that this page is quiet soon after page load, as a
@@ -196,10 +201,32 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
   GetFetchHandlerBypassOption() const override;
   const blink::WebString client_id() const override;
 
+  std::unique_ptr<blink::WebServiceWorkerProvider> CreateServiceWorkerProvider()
+      override;
+
+  void Destroy() const override;
+
+  void Register(
+      const GURL& script_url,
+      blink::mojom::ServiceWorkerRegistrationOptionsPtr options,
+      blink::mojom::FetchClientSettingsObjectPtr fetch_client_settings,
+      blink::mojom::ServiceWorkerContainerHost::RegisterCallback callback);
+
+  void GetRegistration(
+      const GURL& document_url,
+      blink::mojom::ServiceWorkerContainerHost::GetRegistrationCallback
+          callback);
+
+  void GetRegistrations(
+      blink::mojom::ServiceWorkerContainerHost::GetRegistrationsCallback
+          callback);
+
+  void GetRegistrationForReady(
+      blink::mojom::ServiceWorkerContainerHost::GetRegistrationForReadyCallback
+          callback);
+
  private:
   friend class base::DeleteHelper<ServiceWorkerProviderContext>;
-  friend class base::RefCountedThreadSafe<ServiceWorkerProviderContext,
-                                          ServiceWorkerProviderContextDeleter>;
   friend class service_worker_provider_context_unittest::
       ServiceWorkerProviderContextTest;
   friend struct ServiceWorkerProviderContextDeleter;
@@ -245,6 +272,8 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
   network::mojom::URLLoaderFactory* GetSubresourceLoaderFactoryInternal();
 
   const blink::mojom::ServiceWorkerContainerType container_type_;
+  // TODO(crbug.com/324939068): remove the flag when the feature launched.
+  bool container_is_blob_url_shared_worker_ = false;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 
   // This keeps the connection to the content::ServiceWorkerContainerHost in the
@@ -303,11 +332,7 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
   std::optional<std::string> sha256_script_checksum_;
 
   std::optional<blink::ServiceWorkerRouterRules> router_rules_;
-  // TODO(crbug.com/40941292): It may be better to make this an optional, so it
-  // is possible to distinguish between unset and kStopped, which are not really
-  // equivalent.
-  blink::EmbeddedWorkerStatus initial_running_status_ =
-      blink::EmbeddedWorkerStatus::kStopped;
+  std::optional<blink::EmbeddedWorkerStatus> initial_running_status_;
   mojo::PendingRemote<blink::mojom::CacheStorage> remote_cache_storage_;
   mojo::PendingReceiver<blink::mojom::ServiceWorkerRunningStatusCallback>
       running_status_receiver_;
@@ -352,6 +377,8 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
       controller_connector_;
 
   bool sent_execution_ready_ = false;
+
+  base::WeakPtrFactory<ServiceWorkerProviderContext> weak_ptr_factory_{this};
 };
 
 struct ServiceWorkerProviderContextDeleter {

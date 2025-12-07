@@ -11,7 +11,7 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "net/base/apple/url_conversions.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
@@ -24,8 +24,8 @@ using password_manager::WellKnownChangePasswordTabHelper;
 WellKnownChangePasswordTabHelper::WellKnownChangePasswordTabHelper(
     web::WebState* web_state)
     : web::WebStatePolicyDecider(web_state), web_state_(web_state) {
-  affiliation_service_ = IOSChromeAffiliationServiceFactory::GetForBrowserState(
-      web_state->GetBrowserState());
+  affiliation_service_ = IOSChromeAffiliationServiceFactory::GetForProfile(
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
   web_state->AddObserver(this);
 }
 
@@ -59,8 +59,8 @@ void WellKnownChangePasswordTabHelper::ShouldAllowRequest(
         IsWellKnownChangePasswordUrl(request_url)) {
       request_url_ = request_url;
       if (affiliation_service_->GetChangePasswordURL(request_url_).is_empty()) {
-        well_known_change_password_state_.PrefetchChangePasswordURLs(
-            affiliation_service_, {request_url_});
+        well_known_change_password_state_.PrefetchChangePasswordURL(
+            affiliation_service_, request_url_);
       }
       auto url_loader_factory =
           web_state_->GetBrowserState()->GetSharedURLLoaderFactory();
@@ -156,5 +156,3 @@ void WellKnownChangePasswordTabHelper::RecordMetric(
       .SetWellKnownChangePasswordResult(static_cast<int64_t>(result))
       .Record(ukm::UkmRecorder::Get());
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(WellKnownChangePasswordTabHelper)

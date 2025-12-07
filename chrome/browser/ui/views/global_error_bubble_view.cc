@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -70,13 +71,14 @@ GlobalErrorBubbleView::GlobalErrorBubbleView(
   WidgetDelegate::RegisterWindowClosingCallback(base::BindOnce(
       &GlobalErrorWithStandardBubble::BubbleViewDidClose, error_, browser));
 
-  SetDefaultButton(ui::DIALOG_BUTTON_OK);
+  SetDefaultButton(static_cast<int>(ui::mojom::DialogButton::kOk));
   SetButtons(!error_->GetBubbleViewCancelButtonLabel().empty()
-                 ? (ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL)
-                 : ui::DIALOG_BUTTON_OK);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+                 ? static_cast<int>(ui::mojom::DialogButton::kCancel) |
+                       static_cast<int>(ui::mojom::DialogButton::kOk)
+                 : static_cast<int>(ui::mojom::DialogButton::kOk));
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  error_->GetBubbleViewAcceptButtonLabel());
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  error_->GetBubbleViewCancelButtonLabel());
 
   // Note that error is already a WeakPtr, so these callbacks will simply do

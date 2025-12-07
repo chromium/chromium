@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_TAB_GROUP_ACTION_CONTEXT_DESKTOP_H_
 
 #include "base/memory/raw_ptr.h"
-#include "components/saved_tab_groups/types.h"
+#include "components/saved_tab_groups/public/types.h"
 
 class Browser;
 

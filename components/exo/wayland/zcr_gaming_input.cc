@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/exo/wayland/zcr_gaming_input.h"
 
 #include <gaming-input-unstable-v2-server-protocol.h>
@@ -15,6 +10,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "components/exo/gamepad.h"
@@ -64,16 +60,17 @@ class WaylandGamepadVibratorImpl : public GamepadObserver {
                  int32_t repeat) {
     std::vector<int64_t> extracted_durations;
     int64_t* p;
-    const uint8_t* duration_millis_end =
-        static_cast<uint8_t*>(duration_millis->data) + duration_millis->size;
+    const uint8_t* duration_millis_end = UNSAFE_TODO(
+        static_cast<uint8_t*>(duration_millis->data) + duration_millis->size);
     for (p = static_cast<int64_t*>(duration_millis->data);
-         (const uint8_t*)p < duration_millis_end; p++) {
+         (const uint8_t*)p < duration_millis_end; UNSAFE_TODO(p++)) {
       extracted_durations.emplace_back(*p);
     }
 
     const uint8_t* amplitudes_start = static_cast<uint8_t*>(amplitudes->data);
     size_t amplitude_size = amplitudes->size / sizeof(uint8_t);
-    const uint8_t* amplitudes_end = amplitudes_start + amplitude_size;
+    const uint8_t* amplitudes_end =
+        UNSAFE_TODO(amplitudes_start + amplitude_size);
     std::vector<uint8_t> extracted_amplitudes(amplitudes_start, amplitudes_end);
 
     if (gamepad_)
@@ -214,7 +211,7 @@ class WaylandGamepadDelegate : public GamepadDelegate {
       uint64_t* wl_key_bits_ptr =
           static_cast<uint64_t*>(wl_array_add(&wl_key_bits, key_bits_len));
       if (wl_key_bits_ptr) {
-        memcpy(wl_key_bits_ptr, key_bits.data(), key_bits_len);
+        UNSAFE_TODO(memcpy(wl_key_bits_ptr, key_bits.data(), key_bits_len));
         zcr_gamepad_v2_send_supported_key_bits(gamepad_resource_, &wl_key_bits);
       }
       wl_array_release(&wl_key_bits);

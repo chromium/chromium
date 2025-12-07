@@ -4,47 +4,32 @@
 
 #include "extensions/common/extension_urls.h"
 
-#include "base/test/scoped_feature_list.h"
-#include "extensions/common/extension_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extension_urls {
 
-namespace {
+// The tests in this file hard-code the expected webstore URLs. These are a bit
+// of a change-detector test in some ways, but are valuable because:
+// a) The webstore URLs *shouldn't* change often, and updating these tests if
+//    they do is very cheap.
+// b) The construction of the URLs is a bit subtle and we've had tricky bugs
+//    in the past (e.g., double slashes or improperly resolved paths). These
+//    ensure the construction succeeds properly with the default URL.
 
-class ExtensionWebstoreURLsTest : public testing::Test,
-                                  public testing::WithParamInterface<bool> {
- public:
-  explicit ExtensionWebstoreURLsTest(bool enable_new_webstore_url = false) {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          extensions_features::kNewWebstoreURL);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          extensions_features::kNewWebstoreURL);
-    }
-  }
+// Tests that the URL for the extensions category in the webstore is what
+// we expect.
+TEST(ExtensionWebstoreURLsTest, GetWebstoreExtensionsCategoryURL) {
+  EXPECT_EQ("https://chromewebstore.google.com/category/extensions",
+            GetWebstoreExtensionsCategoryURL().spec());
+}
 
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(NewChromeWebstoreLaunchUrl,
-                         ExtensionWebstoreURLsTest,
-                         testing::Values(true));
-INSTANTIATE_TEST_SUITE_P(PreviousChromeWebstoreLaunchUrl,
-                         ExtensionWebstoreURLsTest,
-                         testing::Values(false));
-
-}  // namespace
-
-// Tests that the correct extensions webstore category URL is returned depending
-// on feature extensions_features::kNewWebstoreURL.
-TEST_P(ExtensionWebstoreURLsTest, GetNewWebstoreExtensionsCategoryURL) {
-  const std::string expected_category_url =
-      GetParam() ? GetNewWebstoreLaunchURL().spec() + "category/extensions"
-                 : GetWebstoreLaunchURL().spec() + "/category/extensions";
-  EXPECT_EQ(expected_category_url, GetWebstoreExtensionsCategoryURL());
+// Tests that the URL to get the block status of extensions in the webstore is
+// what we expect.
+TEST(ExtensionWebstoreURLsTest, GetWebstoreBlockStatusURL) {
+  EXPECT_EQ(
+      "https://chromewebstore.googleapis.com/v2/items:"
+      "batchFetchItemBlockStatusForEnterprise",
+      GetWebstoreBlockStatusURL().spec());
 }
 
 }  // namespace extension_urls

@@ -8,10 +8,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
+
 class CdmSessionAdapter;
 
 class PLATFORM_EXPORT WebContentDecryptionModuleSessionImpl
@@ -44,13 +45,11 @@ class PLATFORM_EXPORT WebContentDecryptionModuleSessionImpl
   WebString SessionId() const override;
 
   void InitializeNewSession(media::EmeInitDataType init_data_type,
-                            const unsigned char* initData,
-                            size_t initDataLength,
+                            base::span<const uint8_t> init_data,
                             WebContentDecryptionModuleResult result) override;
   void Load(const WebString& session_id,
             WebContentDecryptionModuleResult result) override;
-  void Update(const uint8_t* response,
-              size_t response_length,
+  void Update(base::span<const uint8_t> response,
               WebContentDecryptionModuleResult result) override;
   void Close(WebContentDecryptionModuleResult result) override;
   void Remove(WebContentDecryptionModuleResult result) override;
@@ -97,6 +96,9 @@ class PLATFORM_EXPORT WebContentDecryptionModuleSessionImpl
   bool is_closed_;
 
   bool has_key_status_uma_reported_ = false;
+
+  // Last key status information to report UMA when the CDM session gets closed.
+  std::optional<media::CdmKeysInfo> last_keys_info_;
 
   THREAD_CHECKER(thread_checker_);
 

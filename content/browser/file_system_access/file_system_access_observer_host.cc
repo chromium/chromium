@@ -4,9 +4,13 @@
 
 #include "content/browser/file_system_access/file_system_access_observer_host.h"
 
+#include <algorithm>
 #include <memory>
+#include <variant>
 
-#include "base/ranges/algorithm.h"
+#include "base/files/file_util.h"
+#include "base/metrics/histogram_functions.h"
+#include "build/build_config.h"
 #include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/file_system_access/file_system_access_file_handle_impl.h"
@@ -14,8 +18,10 @@
 #include "content/browser/file_system_access/file_system_access_observer_observation.h"
 #include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
 #include "content/browser/file_system_access/file_system_access_watcher_manager.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_observer.mojom.h"
@@ -88,8 +94,8 @@ void FileSystemAccessObserverHost::DidResolveTransferTokenToObserve(
 
   FileSystemAccessPermissionContext::HandleType handle_type =
       resolved_token->type();
-  absl::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
-                std::unique_ptr<FileSystemAccessFileHandleImpl>>
+  std::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
+               std::unique_ptr<FileSystemAccessFileHandleImpl>>
       handle;
   switch (handle_type) {
     case FileSystemAccessPermissionContext::HandleType::kDirectory:
@@ -100,6 +106,71 @@ void FileSystemAccessObserverHost::DidResolveTransferTokenToObserve(
       break;
   }
 
+  // We only need to check if the path is a symlink or junction on local file
+  // system.
+  bool file_could_be_symlink =
+      resolved_token->url().type() == storage::kFileSystemTypeLocal;
+#if BUILDFLAG(IS_FUCHSIA)
+  // Fuchsia does not support symlinks.
+  file_could_be_symlink = false;
+#endif
+
+  if (!file_could_be_symlink) {
+    DidCheckIfSymlinkOrJunction(std::move(handle), std::move(callback),
+                                resolved_token->url(), is_recursive,
+                                handle_type, file_could_be_symlink);
+    return;
+  }
+
+  base::FilePath path = resolved_token->url().path();
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(
+          [](base::FilePath path) -> bool {
+            base::FilePath check_path;
+            // `base::NormalizeFilePath()` resolves any file path elements like
+            // symbolic links or junctions by returning the target file path.
+            if (!base::NormalizeFilePath(path, &check_path)) {
+              check_path = path;
+            }
+            DCHECK(path.empty() == check_path.empty());
+            return check_path != path;
+          },
+          std::move(path)),
+      base::BindOnce(&FileSystemAccessObserverHost::DidCheckIfSymlinkOrJunction,
+                     weak_factory_.GetWeakPtr(), std::move(handle),
+                     std::move(callback), resolved_token->url(), is_recursive,
+                     handle_type));
+}
+
+void FileSystemAccessObserverHost::DidCheckIfSymlinkOrJunction(
+    std::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
+                 std::unique_ptr<FileSystemAccessFileHandleImpl>> handle,
+    ObserveCallback callback,
+    storage::FileSystemURL url,
+    bool is_recursive,
+    FileSystemAccessPermissionContext::HandleType handle_type,
+    bool is_symlink_or_junction) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (url.type() == storage::kFileSystemTypeLocal) {
+    base::UmaHistogramBoolean(
+        "Storage.FileSystemAccess.AttemptToObserveSymlinkOrJunction",
+        is_symlink_or_junction);
+  }
+  // Observing symlink and junction is not supported for Origin Trial.
+  // TODO(crbug.com/363195541): Add support for symlinks and junctions for
+  // feature launch.
+  if (is_symlink_or_junction) {
+    std::move(callback).Run(
+        blink::mojom::FileSystemAccessError::New(
+            blink::mojom::FileSystemAccessStatus::kFileError,
+            base::File::FILE_ERROR_INVALID_OPERATION,
+            "Symlinks or junctions cannot be observed"),
+        mojo::NullReceiver());
+    return;
+  }
+
   manager_->DoFileSystemOperation(
       FROM_HERE,
       handle_type == FileSystemAccessPermissionContext::HandleType::kDirectory
@@ -107,13 +178,13 @@ void FileSystemAccessObserverHost::DidResolveTransferTokenToObserve(
           : &storage::FileSystemOperationRunner::FileExists,
       base::BindOnce(&FileSystemAccessObserverHost::DidCheckItemExists,
                      weak_factory_.GetWeakPtr(), std::move(handle),
-                     std::move(callback), resolved_token->url(), is_recursive),
-      resolved_token->url());
+                     std::move(callback), url, is_recursive),
+      url);
 }
 
 void FileSystemAccessObserverHost::DidCheckItemExists(
-    absl::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
-                  std::unique_ptr<FileSystemAccessFileHandleImpl>> handle,
+    std::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
+                 std::unique_ptr<FileSystemAccessFileHandleImpl>> handle,
     ObserveCallback callback,
     storage::FileSystemURL url,
     bool is_recursive,
@@ -126,17 +197,23 @@ void FileSystemAccessObserverHost::DidCheckItemExists(
     return;
   }
 
+  // TODO(crbug.com/384635679): Support getting UKM source ID for web workers.
+  RenderFrameHostImpl* rfh =
+      RenderFrameHostImpl::FromID(binding_context_.frame_id);
+  ukm::SourceId source_id =
+      rfh ? rfh->GetPageUkmSourceId() : ukm::kInvalidSourceId;
+
   switch (handle.index()) {
     case 0u:
       watcher_manager()->GetDirectoryObservation(
-          std::move(url), is_recursive,
+          binding_context_.storage_key, std::move(url), is_recursive, source_id,
           base::BindOnce(&FileSystemAccessObserverHost::GotObservation,
                          weak_factory_.GetWeakPtr(), std::move(handle),
                          std::move(callback)));
       break;
     case 1u:
       watcher_manager()->GetFileObservation(
-          std::move(url),
+          binding_context_.storage_key, std::move(url), source_id,
           base::BindOnce(&FileSystemAccessObserverHost::GotObservation,
                          weak_factory_.GetWeakPtr(), std::move(handle),
                          std::move(callback)));
@@ -175,10 +252,10 @@ void FileSystemAccessObserverHost::DidResolveTransferTokenToUnobserve(
 }
 
 void FileSystemAccessObserverHost::GotObservation(
-    absl::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
-                  std::unique_ptr<FileSystemAccessFileHandleImpl>> handle,
+    std::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
+                 std::unique_ptr<FileSystemAccessFileHandleImpl>> handle,
     ObserveCallback callback,
-    base::expected<std::unique_ptr<FileSystemAccessWatcherManager::Observation>,
+    base::expected<std::unique_ptr<FileSystemAccessObservationGroup::Observer>,
                    blink::mojom::FileSystemAccessErrorPtr>
         observation_or_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -13,11 +13,10 @@
 #include "base/clang_profiling_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "content/common/buildflags.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/child_process_id.h"
 #include "content/public/common/content_constants.h"
-#include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 
 namespace base {
@@ -26,12 +25,6 @@ class File;
 #endif
 class FilePath;
 }  // namespace base
-
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-namespace IPC {
-class MessageFilter;
-}
-#endif
 
 namespace mojo {
 class OutgoingInvitation;
@@ -44,41 +37,23 @@ class ChildProcessHostDelegate;
 // This represents a non-browser process. This can include traditional child
 // processes like plugins, or an embedder could even use this for long lived
 // processes that run independent of the browser process.
-class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
+//
+// Every ChildProcessHost provides a single primordial Mojo message pipe to
+// the launched child process, with the other end held by the ChildProcessHost
+// (the primordial pipe is a content.mojom.ChildProcess pipe).
+//
+class CONTENT_EXPORT ChildProcessHost {
  public:
-  ~ChildProcessHost() override;
+  virtual ~ChildProcessHost();
 
   // This is a value never returned as the unique id of any child processes of
-  // any kind, including the values returned by RenderProcessHost::GetID().
+  // any kind, including the values returned by
+  // RenderProcessHost::GetDeprecatedID().
   enum : int { kInvalidUniqueID = kInvalidChildProcessUniqueId };
-
-  // Every ChildProcessHost provides a single primordial Mojo message pipe to
-  // the launched child process, with the other end held by the
-  // ChildProcessHost.
-  //
-  // This enum (given to |Create()|) determines how the ChildProcessHost uses
-  // the pipe.
-  enum class IpcMode {
-    // In this mode, the primordial pipe is a content.mojom.ChildProcess pipe.
-    // The ChildProcessHost is fully functional in this mode, and all new
-    // process hosts should prefer to use this mode.
-    kNormal,
-
-    // In this mode, the primordial pipe is a legacy IPC Channel bootstrapping
-    // pipe (IPC.mojom.ChannelBootstrap). This should be used when the child
-    // process only uses legacy Chrome IPC (e.g. Chrome's NaCl processes.)
-    //
-    // In this mode, ChildProcessHost methods like |BindReceiver()| are not
-    // functional.
-    //
-    // DEPRECATED: Do not introduce new uses of this mode.
-    kLegacy,
-  };
 
   // Used to create a child process host. The delegate must outlive this object.
   static std::unique_ptr<ChildProcessHost> Create(
-      ChildProcessHostDelegate* delegate,
-      IpcMode ipc_mode);
+      ChildProcessHostDelegate* delegate);
 
   // Returns a unique ID to identify a child process. Used by both child
   // processes that are derived from ChildProcessHost, but also used to generate
@@ -86,11 +61,8 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
   // This ensures that IDs are unique for all different types of child
   // processes.
   //
-  // This function is threadsafe since RenderProcessHost is on the UI thread,
-  // but normally this will be used on the IO thread.
-  //
   // This will never return kInvalidUniqueID.
-  static int GenerateChildProcessUniqueId();
+  static ChildProcessId GenerateChildProcessUniqueId();
 
   // These flags may be passed to GetChildPath in order to alter its behavior,
   // causing it to return a child path more suited to a specific task.
@@ -168,17 +140,12 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
   // Creates a legacy IPC channel over a Mojo message pipe. Must be called if
   // legacy IPC will be used to communicate with the child process, but
   // otherwise should not be called.
-  virtual void CreateChannelMojo() = 0;
+  virtual void CreateChannel() = 0;
 
   // Returns true iff the IPC channel is currently being opened; this means
-  // CreateChannelMojo() has been called, but OnChannelConnected() has not yet
+  // CreateChannel() has been called, but OnChannelConnected() has not yet
   // been invoked.
   virtual bool IsChannelOpening() = 0;
-
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-  // Adds an IPC message filter.  A reference will be kept to the filter.
-  virtual void AddFilter(IPC::MessageFilter* filter) = 0;
-#endif
 
   // Bind an interface exposed by the child process. Whether or not the
   // interface in |receiver| can be bound depends on the process type and
@@ -198,7 +165,7 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
   // out.
   virtual void SetBatterySaverMode(bool battery_saver_mode_enabled) = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Reinitializes the child process's logging with the given settings. This
   // is needed on Chrome OS, which switches to a log file in the user's home
   // directory once they log in.

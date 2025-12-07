@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.bottomsheet;
 
 import android.view.MotionEvent;
+import android.view.ViewGroup;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
@@ -12,6 +13,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 
 import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 
 /** Utilities to support testing with the {@link BottomSheetController}. */
 public class BottomSheetTestSupport {
@@ -53,7 +55,27 @@ public class BottomSheetTestSupport {
         getBottomSheet().setSheetOffsetFromBottom(offset, reason);
     }
 
-    /** @see {@link BottomSheet#getFullRatio()} */
+    public void setBottomMargin(int offset) {
+        getBottomSheet().setBottomMargin(offset);
+    }
+
+    /**
+     * @see {@link BottomSheet#getMaxOffsetPx()}
+     */
+    public float getMaxOffsetPx() {
+        return getBottomSheet().getMaxOffsetPx();
+    }
+
+    /**
+     * @see {@link BottomSheet#getCurrentOffsetPx()}
+     */
+    public float getCurrentOffsetPx() {
+        return getBottomSheet().getCurrentOffsetPx();
+    }
+
+    /**
+     * @see {@link BottomSheet#getFullRatio()}
+     */
     public float getFullRatio() {
         return getBottomSheet().getFullRatio();
     }
@@ -89,9 +111,19 @@ public class BottomSheetTestSupport {
     }
 
     /**
+     * Force triggering `onSheetStateChanged` events.
+     *
+     * @param state The state the sheet should be in.
+     */
+    public void setInternalCurrentState(@SheetState int state) {
+        getBottomSheet().setInternalCurrentState(state, StateChangeReason.NONE);
+    }
+
+    /**
      * WARNING: This destroys the internal sheet state. Only use in tests and only use once!
      *
-     * To simulate scrolling, this method puts the sheet in a permanent scrolling state.
+     * <p>To simulate scrolling, this method puts the sheet in a permanent scrolling state.
+     *
      * @return The target state of the bottom sheet (to check thresholds).
      */
     @SheetState
@@ -113,6 +145,11 @@ public class BottomSheetTestSupport {
         return (BottomSheet) mController.getBottomSheetViewForTesting();
     }
 
+    /** Returns the container for the bottom sheet. */
+    public ViewGroup getSheetContainer() {
+        return mController.getBottomSheetContainerForTesting();
+    }
+
     /**
      * @return Whether has any token to suppress the bottom sheet.
      */
@@ -121,9 +158,14 @@ public class BottomSheetTestSupport {
                 () -> mController.hasSuppressionTokensForTesting());
     }
 
+    public void setEdgeToEdgeBottomInsetSupplier(Supplier<Integer> edgeToEdgeBottomInsetSupplier) {
+        getBottomSheet().setEdgeToEdgeBottomInsetSupplierForTesting(edgeToEdgeBottomInsetSupplier);
+    }
+
     /**
      * Wait for the bottom sheet to enter the specified state. If the sheet is already in the
      * specified state, this method returns immediately.
+     *
      * @param controller The controller for the bottom sheet.
      * @param state The state to wait for.
      */

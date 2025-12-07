@@ -13,6 +13,7 @@
 #include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/ash/components/network/cellular_esim_profile_handler.h"
 #include "chromeos/ash/components/network/cellular_inhibitor.h"
+#include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/hermes_metrics_util.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/network/network_event_log.h"
@@ -91,6 +92,9 @@ std::optional<std::string> CellularConnectionHandler::ResultToErrorString(
 
     case PrepareCellularConnectionResult::kInhibitFailed:
       return NetworkConnectionHandler::kErrorCellularInhibitFailure;
+
+    case PrepareCellularConnectionResult::kSimLocked:
+      return NetworkConnectionHandler::kErrorSimPinPukLocked;
 
     case PrepareCellularConnectionResult::kCouldNotFindRelevantEuicc:
       [[fallthrough]];
@@ -465,8 +469,9 @@ void CellularConnectionHandler::OnEnableCarrierProfileResult(
 }
 
 void CellularConnectionHandler::HandleNetworkPropertiesUpdate() {
-  if (state_ == ConnectionState::kWaitingForConnectable)
+  if (state_ == ConnectionState::kWaitingForConnectable) {
     CheckForConnectable();
+  }
 }
 
 void CellularConnectionHandler::NetworkConnectionStateChanged(
@@ -476,10 +481,35 @@ void CellularConnectionHandler::NetworkConnectionStateChanged(
   }
 }
 
+void CellularConnectionHandler::DevicePropertiesUpdated(
+    const DeviceState* device) {
+  if (device->type() != shill::kTypeCellular ||
+      state_ != ConnectionState::kWaitingForConnectable) {
+    return;
+  }
+
+  CheckForConnectable();
+}
+
 void CellularConnectionHandler::CheckForConnectable() {
   DCHECK_EQ(state_, ConnectionState::kWaitingForConnectable);
 
+  // If the cellular device is locked, exit early, there's no need to wait for
+  // the network to be connectable.
+  const DeviceState* cellular_device =
+      network_state_handler_->GetDeviceStateByType(
+          NetworkTypePattern::Cellular());
+  DCHECK(cellular_device);
   const NetworkState* network_state = GetNetworkStateForCurrentOperation();
+  // We can check the cellular device lock status since the current SIM is the
+  // active SIM.
+  if (cellular_device->IsSimLocked() && network_state &&
+      cellular_device->iccid() == network_state->iccid()) {
+    CompleteConnectionAttempt(PrepareCellularConnectionResult::kSimLocked,
+                              /*auto_connected=*/false);
+    return;
+  }
+
   if (network_state && CanInitiateShillConnection(network_state)) {
     if (!request_queue_.front()->did_connection_require_enabling_profile) {
       CompleteConnectionAttempt(PrepareCellularConnectionResult::kSuccess,

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/base/interaction/interaction_test_util.h"
+
+#include <array>
 #include <functional>
+
+#include "base/containers/adapters.h"
+#include "ui/base/interaction/element_tracker.h"
 
 namespace ui::test {
 
@@ -20,7 +20,7 @@ ActionResult Simulate(
         simulators,
     ActionResult (InteractionTestUtil::Simulator::*method)(Args...),
     Args... args) {
-  for (const auto& simulator : simulators) {
+  for (const auto& simulator : base::Reversed(simulators)) {
     const auto result = std::invoke(method, simulator.get(), args...);
     if (result != ActionResult::kNotAttempted) {
       return result;
@@ -48,7 +48,8 @@ ActionResult InteractionTestUtil::Simulator::DoDefaultAction(TrackedElement*,
 
 ActionResult InteractionTestUtil::Simulator::SelectTab(TrackedElement*,
                                                        size_t,
-                                                       InputType) {
+                                                       InputType,
+                                                       std::optional<size_t>) {
   return ActionResult::kNotAttempted;
 }
 
@@ -69,13 +70,27 @@ ActionResult InteractionTestUtil::Simulator::ActivateSurface(
   return ActionResult::kNotAttempted;
 }
 
+ActionResult InteractionTestUtil::Simulator::FocusElement(
+    TrackedElement* element) {
+  return ActionResult::kNotAttempted;
+}
+
 #if !BUILDFLAG(IS_IOS)
+
 ActionResult InteractionTestUtil::Simulator::SendAccelerator(
     TrackedElement* element,
     Accelerator accelerator) {
   return ActionResult::kNotAttempted;
 }
-#endif
+
+ActionResult InteractionTestUtil::Simulator::SendKeyPress(
+    TrackedElement* element,
+    KeyboardCode key,
+    int flags) {
+  return ActionResult::kNotAttempted;
+}
+
+#endif  // !BUILDFLAG(IS_IOS)
 
 ActionResult InteractionTestUtil::Simulator::Confirm(TrackedElement* element) {
   return ActionResult::kNotAttempted;
@@ -100,11 +115,13 @@ ActionResult InteractionTestUtil::DoDefaultAction(TrackedElement* element,
                   input_type);
 }
 
-ActionResult InteractionTestUtil::SelectTab(TrackedElement* tab_collection,
-                                            size_t index,
-                                            InputType input_type) {
+ActionResult InteractionTestUtil::SelectTab(
+    TrackedElement* tab_collection,
+    size_t index,
+    InputType input_type,
+    std::optional<size_t> expected_index_after_selection) {
   return Simulate(simulators_, &Simulator::SelectTab, tab_collection, index,
-                  input_type);
+                  input_type, expected_index_after_selection);
 }
 
 ActionResult InteractionTestUtil::SelectDropdownItem(TrackedElement* dropdown,
@@ -124,29 +141,40 @@ ActionResult InteractionTestUtil::ActivateSurface(TrackedElement* element) {
   return Simulate(simulators_, &Simulator::ActivateSurface, element);
 }
 
+ActionResult InteractionTestUtil::FocusElement(TrackedElement* element) {
+  return Simulate(simulators_, &Simulator::FocusElement, element);
+}
+
 #if !BUILDFLAG(IS_IOS)
+
 ActionResult InteractionTestUtil::SendAccelerator(TrackedElement* element,
                                                   Accelerator accelerator) {
   return Simulate(simulators_, &Simulator::SendAccelerator, element,
                   accelerator);
 }
-#endif
+
+ActionResult InteractionTestUtil::SendKeyPress(TrackedElement* element,
+                                               KeyboardCode key,
+                                               int flags) {
+  return Simulate(simulators_, &Simulator::SendKeyPress, element, key, flags);
+}
+
+#endif  // !BUILDFLAG(IS_IOS)
 
 ActionResult InteractionTestUtil::Confirm(TrackedElement* element) {
   return Simulate(simulators_, &Simulator::Confirm, element);
 }
 
 void PrintTo(InteractionTestUtil::InputType input_type, std::ostream* os) {
-  const char* const kInputTypeNames[] = {
-      "InputType::kDontCare", "InputType::kMouse", "InputType::kKeyboard",
-      "InputType::kMouse"};
-  constexpr int kCount = sizeof(kInputTypeNames) / sizeof(kInputTypeNames[0]);
+  static constexpr auto kInputTypeNames =
+      std::to_array<const char*>({"InputType::kDontCare", "InputType::kMouse",
+                                  "InputType::kKeyboard", "InputType::kMouse"});
+  constexpr size_t kCount = kInputTypeNames.size();
   static_assert(kCount ==
-                static_cast<int>(InteractionTestUtil::InputType::kMaxValue) +
+                static_cast<size_t>(InteractionTestUtil::InputType::kMaxValue) +
                     1);
-  const int value = static_cast<int>(input_type);
-  *os << ((value < 0 || value >= kCount) ? "[invalid InputType]"
-                                         : kInputTypeNames[value]);
+  const size_t value = base::checked_cast<size_t>(input_type);
+  *os << (value >= kCount ? "[invalid InputType]" : kInputTypeNames[value]);
 }
 
 std::ostream& operator<<(std::ostream& os,

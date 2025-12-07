@@ -11,7 +11,7 @@ DEFINE_UI_CLASS_PROPERTY_TYPE(exo::Permission*)
 namespace exo {
 
 // Permission object allowing this window to activate itself.
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(exo::Permission, kPermissionKey, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(exo::Permission, kPermissionKey)
 
 Permission::Permission(Permission::Capability capability)
     : capability_(capability), expiry_(base::Time::Max()) {}

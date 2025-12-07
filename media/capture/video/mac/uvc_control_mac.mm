@@ -26,9 +26,7 @@ namespace media {
 namespace {
 const unsigned int kRequestTimeoutInMilliseconds = 1000;
 
-BASE_FEATURE(kExposeAllUvcControls,
-             "ExposeAllUvcControls",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kExposeAllUvcControls, base::FEATURE_DISABLED_BY_DEFAULT);
 
 struct PanTilt {
   int32_t pan;
@@ -187,7 +185,7 @@ static bool FindDeviceWithVendorAndProductIds(int vendor_id,
                        base::apple::NSToCFPtrCast(@(product_id)));
 
   kern_return_t kr = IOServiceGetMatchingServices(
-      kIOMasterPortDefault, query_dictionary.release(), usb_iterator);
+      kIOMainPortDefault, query_dictionary.release(), usb_iterator);
   if (kr != kIOReturnSuccess) {
     VLOG(1) << "No devices found with specified Vendor and Product ID.";
     return false;
@@ -273,10 +271,10 @@ template <typename DescriptorType>
 std::vector<uint8_t> ExtractControls(IOUSBDescriptorHeader* usb_descriptor) {
   auto* descriptor = reinterpret_cast<DescriptorType>(usb_descriptor);
   if (descriptor->bControlSize > 0) {
-    NSData* data = [[NSData alloc] initWithBytes:&descriptor->bmControls[0]
-                                          length:descriptor->bControlSize];
-    const uint8_t* bytes = reinterpret_cast<const uint8_t*>(data.bytes);
-    return std::vector<uint8_t>(bytes, bytes + data.length);
+    const uint8_t* bytes =
+        reinterpret_cast<const uint8_t*>(&descriptor->bmControls[0]);
+    const size_t length = descriptor->bControlSize;
+    return std::vector<uint8_t>(bytes, bytes + length);
   }
   return std::vector<uint8_t>();
 }
@@ -372,12 +370,6 @@ static ScopedIOUSBInterfaceInterface OpenVideoClassSpecificControlInterface(
       (*control_interface.get())->USBInterfaceOpen(control_interface.get());
   if (ret != kIOReturnSuccess) {
     VLOG(1) << "Unable to open control interface";
-
-    // Temporary additional debug logging for crbug.com/1270335
-    VLOG_IF(1, base::mac::MacOSMajorVersion() >= 12 &&
-                   ret == kIOReturnExclusiveAccess)
-        << "Camera USBInterfaceOpen failed with "
-        << "kIOReturnExclusiveAccess";
     return ScopedIOUSBInterfaceInterface();
   }
   return control_interface;

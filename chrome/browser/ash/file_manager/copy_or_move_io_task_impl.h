@@ -150,7 +150,7 @@ class CopyOrMoveIOTaskImpl {
   void GotFileSize(size_t idx,
                    base::File::Error error,
                    const base::File::Info& file_info);
-  void GotFreeDiskSpace(int64_t free_space);
+  void GotFreeDiskSpace(std::optional<int64_t> free_space);
   void GotDrivePooledQuota(int64_t required_bytes,
                            bool is_shared_drive,
                            drive::FileError error,

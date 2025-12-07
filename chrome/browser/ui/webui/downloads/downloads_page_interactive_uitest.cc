@@ -35,12 +35,9 @@ const char kClickFn[] = "el => el.click()";
 using ::testing::Eq;
 
 class DownloadsPageInteractiveUitest
-    : public InteractiveBrowserTestT<DownloadTestBase> {
+    : public InteractiveBrowserTestMixin<DownloadTestBase> {
  public:
-  DownloadsPageInteractiveUitest() {
-    feature_list_.InitAndEnableFeature(
-        safe_browsing::kDangerousDownloadInterstitial);
-  }
+  DownloadsPageInteractiveUitest() = default;
   ~DownloadsPageInteractiveUitest() override = default;
 
   void SetUp() override {
@@ -48,11 +45,11 @@ class DownloadsPageInteractiveUitest
     // reliably open in the same tab. (It only opens in the same tab if the
     // current tab is about:blank.)
     set_open_about_blank_on_browser_launch(true);
-    InteractiveBrowserTestT<DownloadTestBase>::SetUp();
+    InteractiveBrowserTestMixin<DownloadTestBase>::SetUp();
   }
 
   void SetUpOnMainThread() override {
-    InteractiveBrowserTestT<DownloadTestBase>::SetUpOnMainThread();
+    InteractiveBrowserTestMixin<DownloadTestBase>::SetUpOnMainThread();
     embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
     ASSERT_TRUE(embedded_test_server()->Start());
   }
@@ -133,7 +130,7 @@ class DownloadsPageInteractiveUitest
     const DeepQuery kPathToClearAllButton{
         "downloads-manager",
         "downloads-toolbar",
-        ".clear-all",
+        "#clearAll",
     };
     return ExecuteJsAt(kDownloadsPageTabId, kPathToClearAllButton, kClickFn);
   }
@@ -316,7 +313,7 @@ class DownloadsPageInteractiveUitestWithDangerType
     DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kReadyEvent);
     const DeepQuery kPathToDialog{
         "downloads-manager",
-        "download-bypass-warning-confirmation-dialog",
+        "downloads-bypass-warning-confirmation-dialog",
     };
     StateChange dialog_visible;
     dialog_visible.type = StateChange::Type::kExists;
@@ -329,7 +326,7 @@ class DownloadsPageInteractiveUitestWithDangerType
     DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kReadyEvent);
     const DeepQuery path_to_button{
         "downloads-manager",
-        "download-bypass-warning-confirmation-dialog",
+        "downloads-bypass-warning-confirmation-dialog",
         button_selector,
     };
     StateChange button_visible;
@@ -342,26 +339,6 @@ class DownloadsPageInteractiveUitestWithDangerType
                  MoveMouseTo(kDownloadsPageTabId, path_to_button),
                  ClickMouse());
   }
-};
-
-template <download::DownloadDangerType DangerType>
-class DownloadsPageInteractiveUitestWithDangerTypeForBypassDialog
-    : public DownloadsPageInteractiveUitestWithDangerType<DangerType> {
- public:
-  DownloadsPageInteractiveUitestWithDangerTypeForBypassDialog() {
-    feature_list_.InitAndDisableFeature(
-        safe_browsing::kDangerousDownloadInterstitial);
-  }
-  ~DownloadsPageInteractiveUitestWithDangerTypeForBypassDialog() override =
-      default;
-
-  void SetUpOnMainThread() override {
-    DownloadsPageInteractiveUitestWithDangerType<
-        DangerType>::SetUpOnMainThread();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Uncommon downloads follow the "suspicious" pattern and show up with grey
@@ -427,13 +404,7 @@ IN_PROC_BROWSER_TEST_F(DownloadsPageInteractiveUitestDangerous,
                   WaitForNoDownloads());
 }
 
-// Dangerous downloads follow the "dangerous" pattern and show up with red
-// icons and text. They can be validated only from the confirmation dialog.
-using DownloadsPageInteractiveUitestDangerousFromBypassDialog =
-    DownloadsPageInteractiveUitestWithDangerTypeForBypassDialog<
-        download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT>;
-
-IN_PROC_BROWSER_TEST_F(DownloadsPageInteractiveUitestDangerousFromBypassDialog,
+IN_PROC_BROWSER_TEST_F(DownloadsPageInteractiveUitestDangerous,
                        ValidateDangerousFileFromPrompt) {
   RunTestSequence(
       OpenDownloadsPage(),                                           //
@@ -446,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(DownloadsPageInteractiveUitestDangerousFromBypassDialog,
       WaitForTopmostItemDanger(false));
 }
 
-IN_PROC_BROWSER_TEST_F(DownloadsPageInteractiveUitestDangerousFromBypassDialog,
+IN_PROC_BROWSER_TEST_F(DownloadsPageInteractiveUitestDangerous,
                        CancelValidateDangerousFile) {
   RunTestSequence(OpenDownloadsPage(),                               //
                   DownloadDangerousTestFile(),                       //

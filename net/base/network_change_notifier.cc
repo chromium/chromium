@@ -14,14 +14,15 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/notimplemented.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "net/base/network_change_notifier_factory.h"
 #include "net/base/network_interfaces.h"
 #include "net/base/url_util.h"
@@ -121,7 +122,7 @@ class NetworkChangeNotifier::NetworkChangeCalculator
   }
 
   // NetworkChangeNotifier::IPAddressObserver implementation.
-  void OnIPAddressChanged() override {
+  void OnIPAddressChanged(IPAddressChangeType change_type) override {
     DCHECK(thread_checker_.CalledOnValidThread());
     pending_connection_type_ = GetConnectionType();
     base::TimeDelta delay = last_announced_connection_type_ == CONNECTION_NONE
@@ -440,8 +441,7 @@ double NetworkChangeNotifier::GetMaxBandwidthMbpsForConnectionSubtype(
     case SUBTYPE_OTHER:
       return std::numeric_limits<double>::infinity();
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::numeric_limits<double>::infinity();
+  NOTREACHED();
 }
 
 // static
@@ -516,10 +516,25 @@ base::cstring_view NetworkChangeNotifier::ConnectionTypeToString(
                     NetworkChangeNotifier::CONNECTION_LAST + 1,
                 "ConnectionType name count should match");
   if (type < CONNECTION_UNKNOWN || type > CONNECTION_LAST) {
-    NOTREACHED_IN_MIGRATION();
-    return "CONNECTION_INVALID";
+    NOTREACHED();
   }
   return kConnectionTypeNames[type];
+}
+
+// static
+base::cstring_view NetworkChangeNotifier::IPAddressChangeTypeToString(
+    IPAddressChangeType type) {
+  static constexpr auto kChangeTypeNames = std::to_array<base::cstring_view>({
+      "IP_ADDRESS_CHANGE_NONE",
+      "IP_ADDRESS_CHANGE_NORMAL",
+      "IP_ADDRESS_CHANGE_IPV6_TEMPADDR",
+  });
+  static_assert(std::size(kChangeTypeNames) == IP_ADDRESS_CHANGE_LAST + 1,
+                "IPAddressChangeType name count should match");
+  if (type < IP_ADDRESS_CHANGE_NONE || type > IP_ADDRESS_CHANGE_LAST) {
+    NOTREACHED();
+  }
+  return kChangeTypeNames[type];
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -789,9 +804,11 @@ void NetworkChangeNotifier::TriggerNonSystemDnsChange() {
 }
 
 // static
-void NetworkChangeNotifier::NotifyObserversOfIPAddressChangeForTests() {
+void NetworkChangeNotifier::NotifyObserversOfIPAddressChangeForTests(
+    IPAddressChangeType change_type) {
   if (g_network_change_notifier)
-    g_network_change_notifier->NotifyObserversOfIPAddressChangeImpl();
+    g_network_change_notifier->NotifyObserversOfIPAddressChangeImpl(
+        change_type);
 }
 
 // static
@@ -848,7 +865,8 @@ NetworkChangeNotifier::NetworkChangeNotifier(
     /*= NetworkChangeCalculatorParams()*/,
     SystemDnsConfigChangeNotifier* system_dns_config_notifier /*= nullptr */,
     bool omit_observers_in_constructor_for_testing /*= false */)
-    : system_dns_config_notifier_(system_dns_config_notifier),
+    : track_("NetworkChangeNotifier"),
+      system_dns_config_notifier_(system_dns_config_notifier),
       system_dns_config_observer_(std::make_unique<SystemDnsConfigObserver>()) {
   {
     base::AutoLock auto_lock(NetworkChangeNotifierCreationLock());
@@ -939,10 +957,12 @@ bool NetworkChangeNotifier::IsDefaultNetworkActiveInternal() {
 }
 
 // static
-void NetworkChangeNotifier::NotifyObserversOfIPAddressChange() {
+void NetworkChangeNotifier::NotifyObserversOfIPAddressChange(
+    IPAddressChangeType change_type) {
   if (g_network_change_notifier &&
       !NetworkChangeNotifier::test_notifications_only_) {
-    g_network_change_notifier->NotifyObserversOfIPAddressChangeImpl();
+    g_network_change_notifier->NotifyObserversOfIPAddressChangeImpl(
+        change_type);
   }
 }
 
@@ -1021,24 +1041,31 @@ void NetworkChangeNotifier::StopSystemDnsConfigNotifier() {
   system_dns_config_notifier_ = nullptr;
 }
 
-void NetworkChangeNotifier::NotifyObserversOfIPAddressChangeImpl() {
+void NetworkChangeNotifier::NotifyObserversOfIPAddressChangeImpl(
+    IPAddressChangeType change_type) {
+  TRACE_EVENT_INSTANT("net", "NetworkChangeNotifier::IPAddressChange", track_);
   GetObserverList().ip_address_observer_list_->Notify(
-      FROM_HERE, &IPAddressObserver::OnIPAddressChanged);
+      FROM_HERE, &IPAddressObserver::OnIPAddressChanged, change_type);
 }
 
 void NetworkChangeNotifier::NotifyObserversOfConnectionTypeChangeImpl(
     ConnectionType type) {
+  TRACE_EVENT_INSTANT("net", "NetworkChangeNotifier::ConnectionTypeChange",
+                      track_, "type", type);
   GetObserverList().connection_type_observer_list_->Notify(
       FROM_HERE, &ConnectionTypeObserver::OnConnectionTypeChanged, type);
 }
 
 void NetworkChangeNotifier::NotifyObserversOfNetworkChangeImpl(
     ConnectionType type) {
+  TRACE_EVENT_INSTANT("net", "NetworkChangeNotifier::NetworkChange", track_,
+                      "type", type);
   GetObserverList().network_change_observer_list_->Notify(
       FROM_HERE, &NetworkChangeObserver::OnNetworkChanged, type);
 }
 
 void NetworkChangeNotifier::NotifyObserversOfDNSChangeImpl() {
+  TRACE_EVENT_INSTANT("net", "NetworkChangeNotifier::DnsChange", track_);
   GetObserverList().resolver_state_observer_list_->Notify(
       FROM_HERE, &DNSObserver::OnDNSChanged);
 }
@@ -1046,6 +1073,8 @@ void NetworkChangeNotifier::NotifyObserversOfDNSChangeImpl() {
 void NetworkChangeNotifier::NotifyObserversOfMaxBandwidthChangeImpl(
     double max_bandwidth_mbps,
     ConnectionType type) {
+  TRACE_EVENT_INSTANT("net", "NetworkChangeNotifier::MaxBandwidthChange",
+                      track_, "bandwidth", max_bandwidth_mbps, "type", type);
   GetObserverList().max_bandwidth_observer_list_->Notify(
       FROM_HERE, &MaxBandwidthObserver::OnMaxBandwidthChanged,
       max_bandwidth_mbps, type);
@@ -1054,6 +1083,8 @@ void NetworkChangeNotifier::NotifyObserversOfMaxBandwidthChangeImpl(
 void NetworkChangeNotifier::NotifyObserversOfSpecificNetworkChangeImpl(
     NetworkChangeType type,
     handles::NetworkHandle network) {
+  TRACE_EVENT_INSTANT("net", "NetworkChangeNotifier::SpecificNetworkChange",
+                      track_, "type", type, "network", network);
   switch (type) {
     case NetworkChangeType::kConnected:
       GetObserverList().network_observer_list_->Notify(
@@ -1076,23 +1107,25 @@ void NetworkChangeNotifier::NotifyObserversOfSpecificNetworkChangeImpl(
 
 void NetworkChangeNotifier::NotifyObserversOfConnectionCostChangeImpl(
     ConnectionCost cost) {
+  TRACE_EVENT_INSTANT("net", "NetworkChangeNotifier::ConnectionCostChange",
+                      track_, "cost", cost);
   GetObserverList().connection_cost_observer_list_->Notify(
       FROM_HERE, &ConnectionCostObserver::OnConnectionCostChanged, cost);
 }
 
 void NetworkChangeNotifier::NotifyObserversOfDefaultNetworkActiveImpl() {
+  TRACE_EVENT_INSTANT("net", "NetworkChangeNotifier::DefaultNetworkActive",
+                      track_);
   GetObserverList().default_network_active_observer_list_->Notify(
       FROM_HERE, &DefaultNetworkActiveObserver::OnDefaultNetworkActive);
 }
 
 NetworkChangeNotifier::DisableForTest::DisableForTest()
     : network_change_notifier_(g_network_change_notifier) {
-  DCHECK(g_network_change_notifier);
   g_network_change_notifier = nullptr;
 }
 
 NetworkChangeNotifier::DisableForTest::~DisableForTest() {
-  DCHECK(!g_network_change_notifier);
   g_network_change_notifier = network_change_notifier_;
 }
 

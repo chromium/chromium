@@ -25,11 +25,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_PROPERTY_PARSER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_PROPERTY_PARSER_H_
 
-#include "css_tokenized_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
@@ -42,7 +40,7 @@ class CSSParserTokenStream;
 class CSSValue;
 class ExecutionContext;
 
-// Inputs: PropertyID, isImportant bool, CSSParserTokenRange.
+// Inputs: PropertyID, isImportant bool, CSSParserTokenStream.
 // Outputs: Vector of CSSProperties
 
 class CORE_EXPORT CSSPropertyParser {
@@ -69,6 +67,15 @@ class CORE_EXPORT CSSPropertyParser {
                                           CSSParserTokenStream&,
                                           const CSSParserContext*);
 
+  // Tries to parse an entire value consisting solely of a CSS-wide
+  // keyword (and potentially !important). Returns nullptr on failure,
+  // and then leaves the stream position untouched (but “important”
+  // in an undeterminate state). Unlike the ParseFoo() functions,
+  // this is static, so does not touch parsed_properties_.
+  static const CSSValue* ConsumeCSSWideKeyword(CSSParserTokenStream& stream,
+                                               bool allow_important_annotation,
+                                               bool& important);
+
  private:
   CSSPropertyParser(CSSParserTokenStream&,
                     const CSSParserContext*,
@@ -78,8 +85,8 @@ class CORE_EXPORT CSSPropertyParser {
   bool ParseValueStart(CSSPropertyID unresolved_property,
                        bool allow_important_annotation,
                        StyleRule::RuleType rule_type);
-  bool ConsumeCSSWideKeyword(CSSPropertyID unresolved_property,
-                             bool allow_important_annotation);
+  bool ParseCSSWideKeyword(CSSPropertyID unresolved_property,
+                           bool allow_important_annotation);
 
   bool ParseFontFaceDescriptor(CSSPropertyID);
 

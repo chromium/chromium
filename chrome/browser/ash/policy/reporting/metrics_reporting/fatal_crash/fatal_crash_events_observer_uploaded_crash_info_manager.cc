@@ -117,8 +117,8 @@ void FatalCrashEventsObserver::UploadedCrashInfoManager::ResumeLoadingSaveFile(
     return;
   }
 
-  const auto parsed_result =
-      base::JSONReader::ReadAndReturnValueWithError(content.value());
+  const auto parsed_result = base::JSONReader::ReadAndReturnValueWithError(
+      content.value(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_result.has_value()) {
     LOG(ERROR) << "Failed to parse the save file " << save_file_.value()
                << " as JSON: " << parsed_result.error().ToString();

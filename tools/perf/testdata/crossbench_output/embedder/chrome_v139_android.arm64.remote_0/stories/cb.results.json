@@ -1,0 +1,115 @@
+{
+  "cwd": "/example/path/chrome_v139_android.arm64.remote_0/stories",
+  "browser": {
+    "label": "android.arm64.remote_0",
+    "browser": "chrome",
+    "unique_name": "chrome_v139_android.arm64.remote_0",
+    "app_name": "chrome",
+    "version": "139.0.7251.0",
+    "channel": "stable",
+    "flags": [
+      "--no-default-browser-check",
+      "--disable-component-update",
+      "--disable-sync",
+      "--no-first-run",
+      "--disable-search-engine-choice-screen",
+      "--disable-background-timer-throttling",
+      "--disable-renderer-backgrounding",
+      "--disable-field-trial-config",
+      "--enable-features=DisablePrivacySandboxPrompts",
+      "--disable-extensions"
+    ],
+    "js_flags": [],
+    "path": "com.google.android.googlequicksearchbox",
+    "clear_cache_dir": true,
+    "major_version": 139
+  },
+  "stories": {
+    "agsa-simple": {
+      "cwd": "/example/path/chrome_v139_android.arm64.remote_0/stories/agsa-simple",
+      "duration": 30.0,
+      "probes": {
+        "embedder": {
+          "json": [
+            "/example/path/chrome_v139_android.arm64.remote_0/stories/agsa-simple/embedder.json"
+          ],
+          "csv": [
+            "/example/path/chrome_v139_android.arm64.remote_0/stories/agsa-simple/embedder.csv"
+          ]
+        },
+        "chrome_histograms": {
+          "json": [
+            "/example/path/chrome_v139_android.arm64.remote_0/stories/agsa-simple/chrome_histograms.json"
+          ],
+          "csv": [
+            "/example/path/chrome_v139_android.arm64.remote_0/stories/agsa-simple/chrome_histograms.csv"
+          ]
+        },
+        "cb.thermal_monitor": {
+          "json": [
+            "/example/path/chrome_v139_android.arm64.remote_0/stories/agsa-simple/cb.thermal_monitor.json"
+          ]
+        },
+        "cb.system.details": null,
+        "cb.log": null,
+        "cb.errors": null,
+        "cb.durations": {
+          "json": [
+            "/example/path/chrome_v139_android.arm64.remote_0/stories/agsa-simple/cb.durations.json"
+          ],
+          "csv": [
+            "/example/path/chrome_v139_android.arm64.remote_0/stories/agsa-simple/cb.durations.csv"
+          ]
+        }
+      },
+      "errors": []
+    }
+  },
+  "group": {
+    "label": "android.arm64.remote_0",
+    "browser": "Chrome",
+    "version": "139.0.7251.0",
+    "major_version": 139,
+    "channel": "stable",
+    "os": "android 11 arm64",
+    "device": "Pixel 4",
+    "cpu": "cortex-a76 msmnile 8 cores",
+    "binary": "com.google.android.googlequicksearchbox",
+    "flags": "--no-default-browser-check --disable-component-update --disable-sync --no-first-run --disable-search-engine-choice-screen --disable-background-timer-throttling --disable-renderer-backgrounding --disable-field-trial-config --enable-features=DisablePrivacySandboxPrompts --disable-extensions",
+    "runs": 50,
+    "failed runs": 0
+  },
+  "probes": {
+    "embedder": {
+      "json": [
+        "/example/path/chrome_v139_android.arm64.remote_0/stories/embedder.json"
+      ],
+      "csv": [
+        "/example/path/chrome_v139_android.arm64.remote_0/stories/embedder.csv"
+      ]
+    },
+    "chrome_histograms": {
+      "json": [
+        "/example/path/chrome_v139_android.arm64.remote_0/stories/chrome_histograms.json"
+      ],
+      "csv": [
+        "/example/path/chrome_v139_android.arm64.remote_0/stories/chrome_histograms.csv"
+      ]
+    },
+    "cb.thermal_monitor": {
+      "json": [
+        "/example/path/chrome_v139_android.arm64.remote_0/stories/cb.thermal_monitor.json"
+      ]
+    },
+    "cb.system.details": null,
+    "cb.log": null,
+    "cb.errors": null,
+    "cb.durations": {
+      "json": [
+        "/example/path/chrome_v139_android.arm64.remote_0/stories/cb.durations.json"
+      ]
+    }
+  },
+  "success": true,
+  "errors": []
+}

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_HELP_TEST_VERSION_UPDATER_H_
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/help/version_updater.h"
 
 // A very simple VersionUpdater implementation that immediately invokes the
@@ -30,7 +29,7 @@ class TestVersionUpdater : public VersionUpdater {
 #if BUILDFLAG(IS_MAC)
   void PromoteUpdater() override {}
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void SetChannel(const std::string& channel,
                   bool is_powerwash_allowed) override {}
   void GetChannel(bool get_current_channel, ChannelCallback callback) override {
@@ -43,7 +42,7 @@ class TestVersionUpdater : public VersionUpdater {
   void SetUpdateOverCellularOneTimePermission(StatusCallback callback,
                                               const std::string& update_version,
                                               int64_t update_size) override {}
-  void ApplyDeferredUpdate() override {}
+  void ApplyDeferredUpdateAdvanced() override {}
 #endif
 
  private:

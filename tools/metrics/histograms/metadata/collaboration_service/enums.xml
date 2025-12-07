@@ -1,0 +1,224 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<!-- LINT.IfChange(CollaborationServiceFlowEvent) -->
+
+<enum name="CollaborationServiceFlowEvent">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Started"/>
+  <int value="2" label="Not signed in on a collaboration flow attempt"/>
+  <int value="3" label="Canceled - due to sign in requirement"/>
+  <int value="4" label="Signin and sync requirements met"/>
+  <int value="5" label="Signin not verified when finished"/>
+  <int value="6" label="Signin verified when finished"/>
+  <int value="7" label="Signin verified in observer"/>
+  <int value="8" label="Data sharing service ready when started"/>
+  <int value="9" label="Data sharing service ready observed"/>
+  <int value="10" label="Tab group sync service ready"/>
+  <int value="11" label="All services ready for flow"/>
+  <int value="12" label="Failure - Device policy disables signin"/>
+  <int value="13" label="Managed account signed in"/>
+  <int value="14" label="Account info is not ready upon signin"/>
+  <int value="15" label="Canceled - While on join screen"/>
+  <int value="16" label="Accepted the join invitation"/>
+  <int value="17" label="Opened new group"/>
+  <int value="18" label="Opened existing group"/>
+  <int value="19" label="Failure - URL parsing"/>
+  <int value="20" label="Found collaboration, not tab group"/>
+  <int value="21" label="Failed - Read new group failed"/>
+  <int value="22" label="Read new group success"/>
+  <int value="23" label="Adding user to group"/>
+  <int value="24" label="Failure - Preview group full"/>
+  <int value="25" label="Failure - Preview fetch"/>
+  <int value="26" label="Preview successful"/>
+  <int value="27" label="Group exists when joined"/>
+  <int value="28" label="Tab group fetched"/>
+  <int value="29" label="People group fetched"/>
+  <int value="30" label="Success - Promote tab group"/>
+  <int value="31" label="Failure - Timeout waiting for services to be ready"/>
+  <int value="32"
+      label="Failure - Timeout waiting for sync and data sharing group"/>
+  <int value="33" label="Read new group when user is already member"/>
+  <int value="34" label="Failure - While adding the user to a group"/>
+  <int value="35" label="Share dialog shown"/>
+  <int value="36" label="Manage dialog shown"/>
+  <int value="37" label="Collaboration group created"/>
+  <int value="38" label="Success - Urls ready to share"/>
+  <int value="39" label="Failure - Sync group not found"/>
+  <int value="40" label="Failure - Created group missing ID"/>
+  <int value="41" label="Failure - Created group ID invalid"/>
+  <int value="42" label="Failure - Tab group null before migration"/>
+  <int value="43" label="Failure - Migration"/>
+  <int value="44" label="Failure - Read group"/>
+  <int value="45" label="Failure - URL creation"/>
+  <int value="46" label="Failure - Created group ID empty"/>
+  <int value="47" label="Canceled - Share dialog canceled"/>
+  <int value="48" label="Success - Tab group shared"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/collaboration/internal/metrics.h:CollaborationServiceFlowEvent) -->
+
+<!-- LINT.IfChange(CollaborationServiceJoinEntryPoint) -->
+
+<enum name="CollaborationServiceJoinEntryPoint">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Link Click"/>
+  <int value="2" label="User Typed"/>
+  <int value="3" label="External Application"/>
+  <int value="4" label="Forward or Back Button"/>
+  <int value="5" label="Redirect"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/collaboration/public/collaboration_flow_entry_point.h:CollaborationServiceJoinEntryPoint) -->
+
+<!-- LINT.IfChange(CollaborationServiceJoinEvent) -->
+
+<enum name="CollaborationServiceJoinEvent">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Started"/>
+  <int value="2" label="Canceled - While on join screen"/>
+  <int value="3" label="Canceled - due to sign in requirement"/>
+  <int value="4" label="Not signed in on join attempt"/>
+  <int value="5" label="Accepted - the join invitation"/>
+  <int value="6" label="Opened - new group"/>
+  <int value="7" label="Opened - existing group"/>
+  <int value="8" label="Signin and sync requirements met"/>
+  <int value="9" label="Failed - URL parsing"/>
+  <int value="10" label="Signin not verified when finished"/>
+  <int value="11" label="Signin verified when finished"/>
+  <int value="12" label="Signin verified in observer"/>
+  <int value="13" label="Found collaboration, not tab group"/>
+  <int value="14" label="Read new group failed"/>
+  <int value="15" label="Read new group success"/>
+  <int value="16" label="Adding user to group"/>
+  <int value="17" label="Failed - Preview group full"/>
+  <int value="18" label="Failed - Preview fetch"/>
+  <int value="19" label="Preview successful"/>
+  <int value="20" label="Group exists when joined"/>
+  <int value="21" label="Tab group fetched"/>
+  <int value="22" label="People group fetched"/>
+  <int value="23" label="Success - Promote tab group"/>
+  <int value="24" label="Data sharing service ready when started"/>
+  <int value="25" label="Data sharing service ready observed"/>
+  <int value="26" label="Tab group sync service ready"/>
+  <int value="27" label="All services ready for flow"/>
+  <int value="28" label="Timeout waiting for services to be ready"/>
+  <int value="29" label="Timeout waiting for sync and data sharing group"/>
+  <int value="30" label="Device policy disables signin"/>
+  <int value="31" label="Managed account signed in"/>
+  <int value="32" label="Account info is not ready upon signin"/>
+  <int value="33" label="Read new group result: user is already member"/>
+  <int value="34" label="Failed adding the user to a group"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/collaboration/internal/metrics.h:CollaborationServiceJoinEvent) -->
+
+<!-- LINT.IfChange(CollaborationServiceLeaveOrDeleteEntryPoint) -->
+
+<enum name="CollaborationServiceLeaveOrDeleteEntryPoint">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="AndroidTabGroupContextMenuLeave"/>
+  <int value="2" label="AndroidTabGroupContextMenuDelete"/>
+  <int value="3" label="AndroidTabGroupItemMenuLeave"/>
+  <int value="4" label="AndroidTabGroupItemMenuDelete"/>
+  <int value="5" label="AndroidTabGroupRow"/>
+  <int value="6" label="AndroidTabGridDialogLeave"/>
+  <int value="7" label="AndroidTabGridDialogDelete"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/collaboration/public/collaboration_flow_entry_point.h:CollaborationServiceLeaveOrDeleteEntryPoint) -->
+
+<!-- LINT.IfChange(CollaborationServiceShareOrManageEntryPoint) -->
+
+<enum name="CollaborationServiceShareOrManageEntryPoint">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="AndroidTabGridDialogShare"/>
+  <int value="2" label="AndroidTabGridDialogManage"/>
+  <int value="3" label="RecentActivity"/>
+  <int value="4" label="AndroidTabGroupContextMenuShare"/>
+  <int value="5" label="AndroidTabGroupContextMenuManage"/>
+  <int value="6" label="Notification"/>
+  <int value="7" label="AndroidMessage"/>
+  <int value="8" label="TabGroupItemMenuShare"/>
+  <int value="9" label="AndroidShareSheetExtra"/>
+  <int value="10" label="DialogToolbarButton"/>
+  <int value="11" label="iOSTabGroupIndicatorShare"/>
+  <int value="12" label="iOSTabGroupIndicatorManage"/>
+  <int value="13" label="iOSTabGridShare"/>
+  <int value="14" label="iOSTabGridManage"/>
+  <int value="15" label="iOSTabStripShare"/>
+  <int value="16" label="iOSTabStripManage"/>
+  <int value="17" label="iOSTabGroupViewShare"/>
+  <int value="18" label="iOSTabGroupViewManage"/>
+  <int value="19" label="DesktopGroupEditorShareOrManageButton"/>
+  <int value="20" label="DesktopNotification"/>
+  <int value="21" label="DesktopRecentActivity"/>
+  <int value="22" label="iOSMessage"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/collaboration/public/collaboration_flow_entry_point.h:CollaborationServiceShareOrManageEntryPoint) -->
+
+<!-- LINT.IfChange(CollaborationServiceShareOrManageEvent) -->
+
+<enum name="CollaborationServiceShareOrManageEvent">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Started"/>
+  <int value="2" label="Not signed in on share or manage attempt"/>
+  <int value="3" label="Canceled - due to sign in requirement"/>
+  <int value="4" label="Share dialog shown"/>
+  <int value="5" label="Manage dialog shown"/>
+  <int value="6" label="Collaboration group created"/>
+  <int value="7" label="Urls ready to share"/>
+  <int value="8" label="Signin and sync requirements met"/>
+  <int value="9" label="Signin verified when finished"/>
+  <int value="10" label="Signin not verified when finished"/>
+  <int value="11" label="Signin verified in observer"/>
+  <int value="12" label="Failed - Sync group not found"/>
+  <int value="13" label="Failed - Created group missing ID"/>
+  <int value="14" label="Failed - Created group ID invalid"/>
+  <int value="15" label="Failed - Tab group null before migration"/>
+  <int value="16" label="Failed - Migration"/>
+  <int value="17" label="Failed - Read group"/>
+  <int value="18" label="Failed - URL creation"/>
+  <int value="19" label="Data sharing service ready when started"/>
+  <int value="20" label="Data sharing service ready observed"/>
+  <int value="21" label="Tab group sync service ready"/>
+  <int value="22" label="All services ready for flow"/>
+  <int value="23" label="Device policy disables signin"/>
+  <int value="24" label="Managed account signed in"/>
+  <int value="25" label="Account info is not ready upon signin"/>
+  <int value="26" label="Failed - Created group ID empty"/>
+  <int value="27" label="Canceled - Share dialog canceled"/>
+  <int value="28" label="Tab group shared"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/collaboration/internal/metrics.h:CollaborationServiceShareOrManageEvent) -->
+
+</enums>
+
+</histogram-configuration>

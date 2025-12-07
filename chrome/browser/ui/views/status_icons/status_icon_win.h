@@ -64,7 +64,7 @@ class StatusIconWin : public StatusIcon {
   void UpdatePlatformContextMenu(StatusIconMenuModel* menu) override;
 
  private:
-  void InitIconData(NOTIFYICONDATA* icon_data);
+  NOTIFYICONDATA InitIconData() const;
 
   // The tray that owns us.  Weak.
   raw_ptr<StatusTrayWin> tray_;
@@ -79,10 +79,10 @@ class StatusIconWin : public StatusIcon {
   UINT message_id_;
 
   // The currently-displayed icon for the window.
-  base::win::ScopedHICON icon_;
+  base::win::ScopedGDIObject<HICON> icon_;
 
   // The currently-displayed icon for the notification balloon.
-  base::win::ScopedHICON balloon_icon_;
+  base::win::ScopedGDIObject<HICON> balloon_icon_;
 
   // Not owned.
   raw_ptr<ui::MenuModel> menu_model_ = nullptr;

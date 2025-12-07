@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] value at progress 0.75 in animation of "width" from "calc-size(40%, size)" to "calc-size(calc-size(10px, (2 * size)), size + 20px)"
+  assert_equals: expected "calc-size(100%, 30px + (0.1 * size))" but got "calc-size(100%, 0% + 30px + (0.1 * size))"
+Harness: the test ran to completion.
+

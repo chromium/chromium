@@ -34,11 +34,12 @@ if (is_android) {
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/segmentation_platform:factory_java",
       "//chrome/test/android:chrome_java_integration_test_support",
+      "//chrome/test/android:chrome_java_transit",
       "//components/segmentation_platform/public:public_java",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/hamcrest:hamcrest_core_java",
       "//third_party/hamcrest:hamcrest_library_java",
-      "//third_party/junit:junit",
+      "//third_party/junit",
       "//url:gurl_java",
     ]
   }
@@ -46,6 +47,30 @@ if (is_android) {
   generate_jni("jni_headers") {
     sources = [ "android/java/src/org/chromium/chrome/browser/segmentation_platform/SegmentationPlatformServiceFactory.java" ]
   }
+
+  android_library("client_util_java") {
+    srcjar_deps = [ ":client_util_jni_headers" ]
+    sources = [ "android/java/src/org/chromium/chrome/browser/segmentation_platform/client_util/HomeModulesRankingHelper.java" ]
+
+    deps = [
+      ":factory_java",
+      "//base:base_java",
+      "//build/android:build_java",
+      "//chrome/browser/flags:java",
+      "//chrome/browser/profiles/android:java",
+      "//components/segmentation_platform/public:public_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+  generate_jni("client_util_jni_headers") {
+    sources = [ "android/java/src/org/chromium/chrome/browser/segmentation_platform/client_util/HomeModulesRankingHelper.java" ]
+  }
+}
+
+source_set("segmentation_platform") {
+  sources = [ "segmentation_platform_service_factory.h" ]
+  public_deps = [ "//chrome/browser/profiles:profile" ]
 }
 
 static_library("test_utils") {
@@ -55,8 +80,10 @@ static_library("test_utils") {
     "ukm_data_manager_test_utils.h",
   ]
   deps = [
+    ":segmentation_platform",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser/history",
     "//components/segmentation_platform/embedder",
     "//components/segmentation_platform/embedder/default_model:default_model_test_base",
     "//components/segmentation_platform/internal",

@@ -19,7 +19,6 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_ANDROID_DOWNLOAD_CONTROLLER_H_
 #define CHROME_BROWSER_DOWNLOAD_ANDROID_DOWNLOAD_CONTROLLER_H_
 
-#include <map>
 #include <string>
 #include <utility>
 
@@ -28,10 +27,13 @@
 #include "chrome/browser/download/android/dangerous_download_dialog_bridge.h"
 #include "chrome/browser/download/android/download_callback_validator.h"
 #include "chrome/browser/download/android/download_controller_base.h"
+#include "chrome/browser/download/android/policy_warning_download_dialog_bridge.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_util.h"
+
+class DownloadUIModel;
 
 class DownloadController : public DownloadControllerBase {
  public:
@@ -41,9 +43,6 @@ class DownloadController : public DownloadControllerBase {
   DownloadController& operator=(const DownloadController&) = delete;
 
   // DownloadControllerBase implementation.
-  void AcquireFileAccessPermission(
-      const content::WebContents::Getter& wc_getter,
-      AcquireFileAccessPermissionCallback callback) override;
   void CreateAndroidDownload(const content::WebContents::Getter& wc_getter,
                              const DownloadInfo& info) override;
 
@@ -80,24 +79,29 @@ class DownloadController : public DownloadControllerBase {
 
   // DownloadControllerBase implementation.
   void OnDownloadStarted(download::DownloadItem* download_item) override;
-  void StartContextMenuDownload(const content::ContextMenuParams& params,
+  void StartContextMenuDownload(const GURL& url,
+                                const content::ContextMenuParams& params,
                                 content::WebContents* web_contents,
-                                bool is_link) override;
+                                bool is_media) override;
 
   // DownloadItem::Observer interface.
   void OnDownloadUpdated(download::DownloadItem* item) override;
   void OnDownloadDestroyed(download::DownloadItem* item) override;
 
   // The download item contains dangerous file types.
+  // Shows the DangerousDownloadDialog (generic dangerous filetype warning).
   void OnDangerousDownload(download::DownloadItem* item);
+
+  // The download item contains sensitive content.
+  // Shows the PolicyWarningDownloadDialog.
+  void OnSensitiveDownload(download::DownloadItem* item);
+
+  // Shows the UI warnings from Safe Browsing malicious APK download check.
+  void ShowDangerousDownloadWarning(DownloadUIModel& model);
 
   // Helper methods to start android download on UI thread.
   void StartAndroidDownload(const content::WebContents::Getter& wc_getter,
                             const DownloadInfo& info);
-  void StartAndroidDownloadInternal(
-      const content::WebContents::Getter& wc_getter,
-      const DownloadInfo& info,
-      bool allowed);
 
   // Get profile key from download item.
   ProfileKey* GetProfileKey(download::DownloadItem* download_item);
@@ -117,6 +121,9 @@ class DownloadController : public DownloadControllerBase {
   DownloadCallbackValidator validator_;
 
   std::unique_ptr<DangerousDownloadDialogBridge> dangerous_download_bridge_;
+
+  std::unique_ptr<PolicyWarningDownloadDialogBridge>
+      policy_warning_download_bridge_;
 
   // The item currently or previously doing an app verification
   // prompt. Because we show at most one at a time, this does not need

@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<head></head>
+<body>
+    <h1> Adding skippable entry to history stack </h1>
+
+    <script>
+        window.addEventListener('load', () => {
+            history.pushState(null, '', '#foo');
+        });
+    </script>
+</body>

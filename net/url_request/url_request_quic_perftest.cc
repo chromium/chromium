@@ -42,7 +42,6 @@
 #include "url/gurl.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::Contains;
 using testing::Eq;
 using testing::ByRef;

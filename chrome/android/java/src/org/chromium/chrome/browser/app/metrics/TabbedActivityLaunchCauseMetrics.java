@@ -10,6 +10,7 @@ import android.nfc.NfcAdapter;
 import android.speech.RecognizerResultsIntent;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.ServiceTabLauncher;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
@@ -19,6 +20,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.webapps.ShortcutSource;
 
 /** LaunchCauseMetrics for ChromeTabbedActivity. */
+@NullMarked
 public class TabbedActivityLaunchCauseMetrics extends LaunchCauseMetrics {
     private final Activity mActivity;
 
@@ -91,10 +93,9 @@ public class TabbedActivityLaunchCauseMetrics extends LaunchCauseMetrics {
             return LaunchCause.SHARE_INTENT;
         }
 
-        @IntentHandler.ExternalAppId
-        int intentSender = IntentHandler.determineExternalIntentSource(launchIntent);
-        if (Intent.ACTION_VIEW.equals(launchIntent.getAction())
-                && intentSender != IntentHandler.ExternalAppId.CHROME) {
+        boolean isExternalIntentFromChrome =
+                IntentHandler.isExternalIntentSourceChrome(launchIntent);
+        if (Intent.ACTION_VIEW.equals(launchIntent.getAction()) && !isExternalIntentFromChrome) {
             return LaunchCause.EXTERNAL_VIEW_INTENT;
         }
 
@@ -102,7 +103,7 @@ public class TabbedActivityLaunchCauseMetrics extends LaunchCauseMetrics {
             return LaunchCause.NFC;
         }
 
-        if (intentSender == IntentHandler.ExternalAppId.CHROME) return LaunchCause.OTHER_CHROME;
+        if (isExternalIntentFromChrome) return LaunchCause.OTHER_CHROME;
         return LaunchCause.OTHER;
     }
 

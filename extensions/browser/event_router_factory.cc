@@ -11,6 +11,7 @@
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/process_manager_factory.h"
 
 using content::BrowserContext;
 
@@ -33,6 +34,7 @@ EventRouterFactory::EventRouterFactory()
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(ExtensionRegistryFactory::GetInstance());
   DependsOn(ExtensionPrefsFactory::GetInstance());
+  DependsOn(ProcessManagerFactory::GetInstance());
 }
 
 EventRouterFactory::~EventRouterFactory() {
@@ -48,7 +50,7 @@ BrowserContext* EventRouterFactory::GetBrowserContextToUse(
     BrowserContext* context) const {
   // Redirected in incognito.
   return ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
-      context, /*force_guest_profile=*/true);
+      context);
 }
 
 bool EventRouterFactory::ServiceIsNULLWhileTesting() const {

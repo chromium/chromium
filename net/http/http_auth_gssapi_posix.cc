@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/http/http_auth_gssapi_posix.h"
 
 #include <limits>
@@ -123,7 +118,8 @@ class ScopedName {
 bool OidEquals(const gss_OID left, const gss_OID right) {
   if (left->length != right->length)
     return false;
-  return 0 == memcmp(left->elements, right->elements, right->length);
+  return 0 ==
+         UNSAFE_TODO(memcmp(left->elements, right->elements, right->length));
 }
 
 base::Value::Dict GetGssStatusCodeValue(GSSAPILibrary* gssapi_lib,
@@ -326,10 +322,10 @@ base::Value::Dict GetContextStateAsValue(GSSAPILibrary* gssapi_lib,
 namespace {
 
 // Return a NetLog value for the result of loading a library.
-base::Value::Dict LibraryLoadResultParams(std::string_view library_name,
+base::Value::Dict LibraryLoadResultParams(const base::FilePath& library_name,
                                           std::string_view load_result) {
   base::Value::Dict params;
-  params.Set("library_name", library_name);
+  params.Set("library_name", library_name.value());
   if (!load_result.empty())
     params.Set("load_result", load_result);
   return params;
@@ -364,49 +360,44 @@ bool GSSAPISharedLibrary::InitImpl(const NetLogWithSource& net_log) {
 
 base::NativeLibrary GSSAPISharedLibrary::LoadSharedLibrary(
     const NetLogWithSource& net_log) {
-  const char* const* library_names;
-  size_t num_lib_names;
-  const char* user_specified_library[1];
+  std::vector<base::FilePath> library_names;
   if (!gssapi_library_name_.empty()) {
-    user_specified_library[0] = gssapi_library_name_.c_str();
-    library_names = user_specified_library;
-    num_lib_names = 1;
+    library_names.emplace_back(gssapi_library_name_);
   } else {
-    static const char* const kDefaultLibraryNames[] = {
 #if BUILDFLAG(IS_APPLE)
-      "/System/Library/Frameworks/GSS.framework/GSS"
+    library_names.emplace_back("/System/Library/Frameworks/GSS.framework/GSS");
 #elif BUILDFLAG(IS_OPENBSD)
-      "libgssapi.so"  // Heimdal - OpenBSD
+    // Heimdal - OpenBSD
+    library_names.emplace_back("libgssapi.so");
 #else
-      "libgssapi_krb5.so.2",  // MIT Kerberos - FC, Suse10, Debian
-      "libgssapi.so.4",       // Heimdal - Suse10, MDK
-      "libgssapi.so.2",       // Heimdal - Gentoo
-      "libgssapi.so.1"        // Heimdal - Suse9, CITI - FC, MDK, Suse10
+    // MIT Kerberos - FC, Suse10, Debian
+    library_names.emplace_back("libgssapi_krb5.so.2");
+    // Heimdal - Suse10, MDK
+    library_names.emplace_back("libgssapi.so.4");
+    // Heimdal - Gentoo
+    library_names.emplace_back("libgssapi.so.2");
+    // Heimdal - Suse9, CITI - FC, MDK, Suse10
+    library_names.emplace_back("libgssapi.so.1");
 #endif
-    };
-    library_names = kDefaultLibraryNames;
-    num_lib_names = std::size(kDefaultLibraryNames);
   }
 
   net_log.BeginEvent(NetLogEventType::AUTH_LIBRARY_LOAD);
 
   // There has to be at least one candidate.
-  DCHECK_NE(0u, num_lib_names);
+  CHECK(!library_names.empty());
 
-  const char* library_name = nullptr;
   base::NativeLibraryLoadError load_error;
 
-  for (size_t i = 0; i < num_lib_names; ++i) {
+  for (const auto& library_name : library_names) {
     load_error = base::NativeLibraryLoadError();
-    library_name = library_names[i];
-    base::FilePath file_path(library_name);
 
     // TODO(asanka): Move library loading to a separate thread.
     //               http://crbug.com/66702
     base::ScopedAllowBlocking scoped_allow_blocking_temporarily;
-    base::NativeLibrary lib = base::LoadNativeLibrary(file_path, &load_error);
+    base::NativeLibrary lib =
+        base::LoadNativeLibrary(library_name, &load_error);
     if (lib) {
-      if (BindMethods(lib, library_name, net_log)) {
+      if (BindMethods(lib, library_name.value(), net_log)) {
         net_log.EndEvent(NetLogEventType::AUTH_LIBRARY_LOAD, [&] {
           return LibraryLoadResultParams(library_name, "");
         });
@@ -421,7 +412,7 @@ base::NativeLibrary GSSAPISharedLibrary::LoadSharedLibrary(
   // library. Doing so also always logs the failure when the GSSAPI library
   // name is explicitly specified.
   net_log.EndEvent(NetLogEventType::AUTH_LIBRARY_LOAD, [&] {
-    return LibraryLoadResultParams(library_name, load_error.ToString());
+    return LibraryLoadResultParams(library_names.back(), load_error.ToString());
   });
   return nullptr;
 }

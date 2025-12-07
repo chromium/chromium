@@ -1,0 +1,71 @@
+<style include="cr-shared-style settings-shared settings-columned-section">
+  #header-text {
+    border-inline-end: var(--cr-separator-line);
+  }
+
+  #expandedContent {
+    border-top: var(--cr-separator-line);
+  }
+</style>
+
+<cr-expand-button class="cr-row first" expanded="{{expanded_}}">
+  <div id="header-text">
+    <div>$i18n{yourSavedInfoAutofillSettingsLabel}</div>
+    <div class="cr-secondary-text">
+      $i18n{yourSavedInfoAutofillSettingsDescription}
+    </div>
+  </div>
+</cr-expand-button>
+<cr-collapse id="expandedContent" opened="[[expanded_]]">
+  <settings-toggle-button id="optInToggle"
+      on-settings-boolean-control-change="onOptInToggleChange_"
+      disabled="[[!enhancedAutofillEligibleUser_]]"
+      pref="{{enhancedAutofillOptedIn_}}" no-extension-indicator
+      label="$i18n{autofillAiPageTitle}"
+      sub-label="$i18n{autofillAiToggleSubLabel}">
+  </settings-toggle-button>
+
+  <div class="settings-columned-section">
+    <div class="column">
+      <h3 class="description-header">$i18n{columnHeadingWhenOn}</h3>
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:sync-saved-locally" aria-hidden="true">
+          </cr-icon>
+          <div class="cr-secondary-text">
+            $i18n{autofillAiWhenOnSavedInfo}
+          </div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:text-analysis" aria-hidden="true">
+          </cr-icon>
+          <div class="cr-secondary-text">
+            $i18n{autofillAiWhenOnUseToFill}
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="column">
+      <h3 class="description-header">$i18n{columnHeadingConsider}</h3>
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:googleg" aria-hidden="true"></cr-icon>
+          <div class="cr-secondary-text">
+            $i18n{autofillAiToConsiderDataUsage}
+          </div>
+        </li>
+        <template is="dom-if" if="[[showLoggingInfoBullet_(
+            prefs.optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed.value)]]"
+            restamp>
+          <settings-ai-logging-info-bullet
+              id="enterpriseInfoBullet"
+              pref=
+                  "[[prefs.optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed]]"
+              logging-managed-disabled-custom-label=
+                  "$i18n{autofillAiSubpageSublabelLoggingManagedDisabled}">
+          </settings-ai-logging-info-bullet>
+        </template>
+      </ul>
+    </div>
+  </div>
+</cr-collapse>

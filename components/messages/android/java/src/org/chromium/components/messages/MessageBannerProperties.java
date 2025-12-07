@@ -11,8 +11,8 @@ import android.view.View.OnClickListener;
 import androidx.annotation.ColorInt;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
-import org.chromium.ui.listmenu.ListMenuButtonDelegate;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -21,7 +21,10 @@ import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableLongPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
+import java.util.function.Supplier;
+
 /** Properties of message banner. */
+@NullMarked
 public class MessageBannerProperties {
     /** A Color value indicating that the "natural" colors from the image should be used. */
     @ColorInt public static final int TINT_NONE = Color.TRANSPARENT;
@@ -103,8 +106,8 @@ public class MessageBannerProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> SECONDARY_ICON_CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
-    public static final WritableObjectPropertyKey<ListMenuButtonDelegate>
-            SECONDARY_MENU_BUTTON_DELEGATE = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<ListMenuDelegate> SECONDARY_MENU_BUTTON_DELEGATE =
+            new WritableObjectPropertyKey<>();
     public static final WritableIntPropertyKey SECONDARY_MENU_MAX_SIZE =
             new WritableIntPropertyKey();
     // Unit: milliseconds.
@@ -147,6 +150,15 @@ public class MessageBannerProperties {
     // ON_SECONDARY_BUTTON_CLICK is SingleActionMessage's handler that calls ON_SECONDARY_ACTION.
     static final WritableObjectPropertyKey<Runnable> ON_SECONDARY_BUTTON_CLICK =
             new WritableObjectPropertyKey<>();
+    // CLOSE_BUTTON_CLICK_LISTENER is the handler when the mouse clicks the close button.
+    static final WritableObjectPropertyKey<OnClickListener> CLOSE_BUTTON_CLICK_LISTENER =
+            new WritableObjectPropertyKey<>();
+    // Whether to show the close button when the mouse hovers over the message.
+    static final WritableBooleanPropertyKey ENABLE_CLOSE_BUTTON = new WritableBooleanPropertyKey();
+
+    // Supplier of whether the view is under tap protection.
+    static final WritableObjectPropertyKey<Supplier<Boolean>>
+            IS_WITHIN_TAP_PROTECTION_PERIOD_SUPPLIER = new WritableObjectPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -185,6 +197,9 @@ public class MessageBannerProperties {
                 PRIMARY_WIDGET_APPEARANCE,
                 ELEVATION,
                 MARGIN_TOP,
-                VISUAL_HEIGHT
+                VISUAL_HEIGHT,
+                IS_WITHIN_TAP_PROTECTION_PERIOD_SUPPLIER,
+                CLOSE_BUTTON_CLICK_LISTENER,
+                ENABLE_CLOSE_BUTTON
             };
 }

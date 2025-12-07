@@ -4,10 +4,11 @@
 
 #include "components/safe_browsing/core/common/utils.h"
 
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -18,11 +19,14 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "crypto/sha2.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/ip_address.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/cookie_access_observer.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/enterprise_util.h"
@@ -38,6 +42,35 @@ const char kAuthHeaderBearer[] = "Bearer ";
 
 // Represents the HTTP response code when it has not explicitly been set.
 const int kUnsetHttpResponseCode = 0;
+
+class CookieWriteLogger : public network::mojom::CookieAccessObserver {
+ public:
+  explicit CookieWriteLogger(
+      safe_browsing::SafeBrowsingAuthenticatedEndpoint endpoint)
+      : endpoint_(endpoint) {}
+
+  // network::mojom::CookieAccessObserver:
+  void OnCookiesAccessed(
+      std::vector<network::mojom::CookieAccessDetailsPtr> details) override {
+    for (const network::mojom::CookieAccessDetailsPtr& access : details) {
+      if (access->type != network::mojom::CookieAccessDetails::Type::kChange) {
+        continue;
+      }
+
+      base::UmaHistogramEnumeration(
+          "SafeBrowsing.AuthenticatedCookieResetEndpoint", endpoint_);
+    }
+  }
+
+  void Clone(mojo::PendingReceiver<network::mojom::CookieAccessObserver>
+                 listener) override {
+    mojo::MakeSelfOwnedReceiver(std::make_unique<CookieWriteLogger>(endpoint_),
+                                std::move(listener));
+  }
+
+ private:
+  safe_browsing::SafeBrowsingAuthenticatedEndpoint endpoint_;
+};
 
 }  // namespace
 
@@ -102,10 +135,10 @@ bool CanGetReputationOfUrl(const GURL& url) {
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS() || net::IsLocalhost(url)) {
     return false;
   }
-  const std::string hostname = url.host();
+  const std::string hostname = url.GetHost();
   // There is no reason to send URLs with very short or single-label hosts.
   // The Safe Browsing server does not check them.
-  if (hostname.size() < 4 || base::ranges::count(hostname, '.') < 1) {
+  if (hostname.size() < 4 || std::ranges::count(hostname, '.') < 1) {
     return false;
   }
 
@@ -119,15 +152,19 @@ bool CanGetReputationOfUrl(const GURL& url) {
   return true;
 }
 
-void SetAccessTokenAndClearCookieInResourceRequest(
-    network::ResourceRequest* resource_request,
-    const std::string& access_token) {
+void LogAuthenticatedCookieResets(network::ResourceRequest& resource_request,
+                                  SafeBrowsingAuthenticatedEndpoint endpoint) {
+  resource_request.trusted_params = network::ResourceRequest::TrustedParams();
+  mojo::MakeSelfOwnedReceiver(std::make_unique<CookieWriteLogger>(endpoint),
+                              resource_request.trusted_params->cookie_observer
+                                  .InitWithNewPipeAndPassReceiver());
+}
+
+void SetAccessToken(network::ResourceRequest* resource_request,
+                    const std::string& access_token) {
   resource_request->headers.SetHeader(
       net::HttpRequestHeaders::kAuthorization,
       base::StrCat({kAuthHeaderBearer, access_token}));
-  if (base::FeatureList::IsEnabled(kSafeBrowsingRemoveCookiesInAuthRequests)) {
-    resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  }
 }
 
 void RecordHttpResponseOrErrorCode(const char* metric_name,
@@ -149,8 +186,6 @@ bool ErrorIsRetriable(int net_error, int http_error) {
 std::string GetExtraMetricsSuffix(
     security_interstitials::UnsafeResource unsafe_resource) {
   switch (unsafe_resource.threat_source) {
-    case safe_browsing::ThreatSource::REMOTE:
-      return "from_device";
     case safe_browsing::ThreatSource::LOCAL_PVER4:
       return "from_device_v4";
     case safe_browsing::ThreatSource::CLIENT_SIDE_DETECTION:
@@ -166,7 +201,65 @@ std::string GetExtraMetricsSuffix(
     case safe_browsing::ThreatSource::UNKNOWN:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
+}
+
+std::string GetExtraExtraMetricsSuffix(
+    security_interstitials::UnsafeResource unsafe_resource) {
+  switch (unsafe_resource.threat_subtype) {
+    case safe_browsing::ThreatSubtype::SCAM_EXPERIMENT_VERDICT_1:
+      return "scam_experiment_verdict_1";
+    case safe_browsing::ThreatSubtype::SCAM_EXPERIMENT_VERDICT_2:
+      return "scam_experiment_verdict_2";
+    case safe_browsing::ThreatSubtype::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT:
+      return "scam_experiment_catch_all";
+    case safe_browsing::ThreatSubtype::UNKNOWN:
+      return "";
+  }
+  // Subtype is not always set.
+  return "";
+}
+
+std::string GetThreatTypeStringForInterstitial(
+    safe_browsing::SBThreatType threat_type) {
+  using enum SBThreatType;
+
+  switch (threat_type) {
+    case SB_THREAT_TYPE_URL_PHISHING:
+    case SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
+      return "SOCIAL_ENGINEERING";
+    case SB_THREAT_TYPE_URL_MALWARE:
+      return "MALWARE";
+    case SB_THREAT_TYPE_URL_UNWANTED:
+      return "UNWANTED_SOFTWARE";
+    case SB_THREAT_TYPE_BILLING:
+      return "THREAT_TYPE_UNSPECIFIED";
+    case SB_THREAT_TYPE_MANAGED_POLICY_WARN:
+      return "MANAGED_POLICY_WARN";
+    case SB_THREAT_TYPE_MANAGED_POLICY_BLOCK:
+      return "MANAGED_POLICY_BLOCK";
+    case SB_THREAT_TYPE_UNUSED:
+    case SB_THREAT_TYPE_SAFE:
+    case SB_THREAT_TYPE_URL_BINARY_MALWARE:
+    case SB_THREAT_TYPE_EXTENSION:
+    case SB_THREAT_TYPE_API_ABUSE:
+    case SB_THREAT_TYPE_SUBRESOURCE_FILTER:
+    case SB_THREAT_TYPE_CSD_ALLOWLIST:
+    case DEPRECATED_SB_THREAT_TYPE_URL_PASSWORD_PROTECTION_PHISHING:
+    case DEPRECATED_SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE:
+    case SB_THREAT_TYPE_SAVED_PASSWORD_REUSE:
+    case SB_THREAT_TYPE_SIGNED_IN_SYNC_PASSWORD_REUSE:
+    case SB_THREAT_TYPE_SIGNED_IN_NON_SYNC_PASSWORD_REUSE:
+    case SB_THREAT_TYPE_AD_SAMPLE:
+    case SB_THREAT_TYPE_BLOCKED_AD_POPUP:
+    case SB_THREAT_TYPE_BLOCKED_AD_REDIRECT:
+    case SB_THREAT_TYPE_SUSPICIOUS_SITE:
+    case SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE:
+    case SB_THREAT_TYPE_APK_DOWNLOAD:
+    case SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
+      NOTREACHED();
+  }
+  return std::string();
 }
 
 }  // namespace safe_browsing

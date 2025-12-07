@@ -15,8 +15,7 @@ class _VersionTest(unittest.TestCase):
   def testGenerateVersionCodesAndroidChrome(self):
     """Assert it gives correct values for standard/example inputs"""
     output = GenerateVersionCodes(4844, 0,
-                                  arch='arm',
-                                  is_next_build=False)
+                                  arch='arm')
 
     chrome_version_code = output['CHROME_VERSION_CODE']
 
@@ -25,8 +24,7 @@ class _VersionTest(unittest.TestCase):
   def testGenerateVersionCodesAndroidChromeModern(self):
     """Assert it gives correct values for standard/example inputs"""
     output = GenerateVersionCodes(4844, 0,
-                                  arch='arm',
-                                  is_next_build=False)
+                                  arch='arm')
 
     chrome_modern_version_code = output['CHROME_MODERN_VERSION_CODE']
 
@@ -35,8 +33,7 @@ class _VersionTest(unittest.TestCase):
   def testGenerateVersionCodesAndroidMonochrome(self):
     """Assert it gives correct values for standard/example inputs"""
     output = GenerateVersionCodes(4844, 0,
-                                  arch='arm',
-                                  is_next_build=False)
+                                  arch='arm')
 
     monochrome_version_code = output['MONOCHROME_VERSION_CODE']
 
@@ -45,8 +42,7 @@ class _VersionTest(unittest.TestCase):
   def testGenerateVersionCodesAndroidTrichrome(self):
     """Assert it gives correct values for standard/example inputs"""
     output = GenerateVersionCodes(4844, 0,
-                                  arch='arm',
-                                  is_next_build=False)
+                                  arch='arm')
 
     trichrome_version_code = output['TRICHROME_VERSION_CODE']
     trichrome_auto_version_code = output['TRICHROME_AUTO_VERSION_CODE']
@@ -57,8 +53,7 @@ class _VersionTest(unittest.TestCase):
   def testGenerateVersionCodesAndroidWebviewStable(self):
     """Assert it gives correct values for standard/example inputs"""
     output = GenerateVersionCodes(4844, 0,
-                                  arch='arm',
-                                  is_next_build=False)
+                                  arch='arm')
 
     webview_stable_version_code = output['WEBVIEW_STABLE_VERSION_CODE']
 
@@ -67,39 +62,29 @@ class _VersionTest(unittest.TestCase):
   def testGenerateVersionCodesAndroidWebviewBeta(self):
     """Assert it gives correct values for standard/example inputs"""
     output = GenerateVersionCodes(4844, 0,
-                                  arch='arm',
-                                  is_next_build=False)
+                                  arch='arm')
 
     webview_beta_version_code = output['WEBVIEW_BETA_VERSION_CODE']
 
     self.assertEqual(webview_beta_version_code, '484400010')
 
-  def testGenerateVersionCodesAndroidWebviewDev(self):
+  def testGenerateVersionCodesAndroidWebviewAuto(self):
     """Assert it gives correct values for standard/example inputs"""
     output = GenerateVersionCodes(4844, 0,
-                                  arch='arm',
-                                  is_next_build=False)
+                                  arch='arm64')
 
-    webview_dev_version_code = output['WEBVIEW_DEV_VERSION_CODE']
+    webview_auto_version_code = output['WEBVIEW_AUTO_64_32_VERSION_CODE']
 
-    self.assertEqual(webview_dev_version_code, '484400020')
+    self.assertEqual(webview_auto_version_code, '484400074')
 
-  def testGenerateVersionCodesAndroidNextBuild(self):
-    """Assert it handles "next" builds correctly"""
+  def testGenerateVersionCodesAndroidWebviewDesktop(self):
+    """Assert it gives correct values for standard/example inputs"""
     output = GenerateVersionCodes(4844, 0,
-                                  arch='arm',
-                                  is_next_build=True)
+                                  arch='arm64')
 
-    # Get just a sample of values
-    chrome_version_code = output['CHROME_VERSION_CODE']
-    monochrome_version_code = output['MONOCHROME_VERSION_CODE']
-    webview_stable_version_code = output['WEBVIEW_STABLE_VERSION_CODE']
-    webview_beta_version_code = output['WEBVIEW_BETA_VERSION_CODE']
+    webview_desktop_version_code = output['WEBVIEW_DESKTOP_64_VERSION_CODE']
 
-    self.assertEqual(chrome_version_code, '484450000')
-    self.assertEqual(monochrome_version_code, '484450020')
-    self.assertEqual(webview_stable_version_code, '484450000')
-    self.assertEqual(webview_beta_version_code, '484450010')
+    self.assertEqual(webview_desktop_version_code, '484400085')
 
   def testGenerateVersionCodesAndroidArchArm(self):
     """Assert it handles different architectures correctly.
@@ -110,8 +95,7 @@ class _VersionTest(unittest.TestCase):
     reasoning.
     """
     output = GenerateVersionCodes(4844, 0,
-                                  arch='arm',
-                                  is_next_build=False)
+                                  arch='arm')
     arch_chrome_version_code = output['CHROME_VERSION_CODE']
 
     self.assertEqual(arch_chrome_version_code, '484400000')
@@ -125,8 +109,7 @@ class _VersionTest(unittest.TestCase):
     reasoning.
     """
     output = GenerateVersionCodes(4844, 0,
-                                  arch='x86',
-                                  is_next_build=False)
+                                  arch='x86')
     arch_chrome_version_code = output['CHROME_VERSION_CODE']
 
     self.assertEqual(arch_chrome_version_code, '484400001')
@@ -140,11 +123,10 @@ class _VersionTest(unittest.TestCase):
     reasoning.
     """
     output = GenerateVersionCodes(4844, 0,
-                                  arch='arm64',
-                                  is_next_build=False)
+                                  arch='arm64')
     arch_chrome_version_code = output['CHROME_VERSION_CODE']
 
-    self.assertEqual(arch_chrome_version_code, '484400005')
+    self.assertEqual(arch_chrome_version_code, '484400004')
 
   def testGenerateVersionCodesAndroidArchArm64Variants(self):
     """Assert it handles 64-bit-specific additional version codes correctly.
@@ -153,8 +135,7 @@ class _VersionTest(unittest.TestCase):
     See docstring on android_chrome_version.ARCH64_APK_VARIANTS for more info.
     """
     output = GenerateVersionCodes(4844, 0,
-                                  arch='arm64',
-                                  is_next_build=False)
+                                  arch='arm64')
     arch_monochrome_version_code = output['MONOCHROME_VERSION_CODE']
     arch_monochrome_32_version_code = output['MONOCHROME_32_VERSION_CODE']
     arch_monochrome_32_64_version_code = output['MONOCHROME_32_64_VERSION_CODE']
@@ -176,6 +157,10 @@ class _VersionTest(unittest.TestCase):
         'TRICHROME_AUTO_64_32_VERSION_CODE']
     arch_trichrome_desktop_64_version_code = output[
         'TRICHROME_DESKTOP_64_VERSION_CODE']
+    arch_chrome_desktop_version_code = output[
+        'CHROME_DESKTOP_VERSION_CODE']
+    arch_chrome_desktop_beta_version_code = output[
+        'CHROME_DESKTOP_BETA_VERSION_CODE']
 
     self.assertEqual(arch_monochrome_32_version_code, '484400020')
     self.assertEqual(arch_monochrome_32_64_version_code, '484400023')
@@ -194,6 +179,8 @@ class _VersionTest(unittest.TestCase):
     self.assertEqual(arch_trichrome_auto_64_version_code, '484400055')
     self.assertEqual(arch_trichrome_auto_64_32_version_code, '484400054')
     self.assertEqual(arch_trichrome_desktop_64_version_code, '484400065')
+    self.assertEqual(arch_chrome_desktop_version_code, '484400075')
+    self.assertEqual(arch_chrome_desktop_beta_version_code, '484400085')
 
   def testGenerateVersionCodesAndroidArchX64(self):
     """Assert it handles different architectures correctly.
@@ -204,11 +191,10 @@ class _VersionTest(unittest.TestCase):
     reasoning.
     """
     output = GenerateVersionCodes(4844, 0,
-                                  arch='x64',
-                                  is_next_build=False)
+                                  arch='x64')
     arch_chrome_version_code = output['CHROME_VERSION_CODE']
 
-    self.assertEqual(arch_chrome_version_code, '484400008')
+    self.assertEqual(arch_chrome_version_code, '484400007')
 
   def testGenerateVersionCodesAndroidArchX64Variants(self):
     """Assert it handles 64-bit-specific additional version codes correctly.
@@ -217,8 +203,7 @@ class _VersionTest(unittest.TestCase):
     See docstring on android_chrome_version.ARCH64_APK_VARIANTS for more info.
     """
     output = GenerateVersionCodes(4844, 0,
-                                  arch='x64',
-                                  is_next_build=False)
+                                  arch='x64')
     arch_monochrome_32_version_code = output['MONOCHROME_32_VERSION_CODE']
     arch_monochrome_32_64_version_code = output['MONOCHROME_32_64_VERSION_CODE']
     arch_monochrome_version_code = output['MONOCHROME_VERSION_CODE']
@@ -238,6 +223,8 @@ class _VersionTest(unittest.TestCase):
         'TRICHROME_AUTO_64_32_VERSION_CODE']
     arch_trichrome_desktop_64_version_code = output[
         'TRICHROME_DESKTOP_64_VERSION_CODE']
+    arch_chrome_desktop_version_code = output[
+        'CHROME_DESKTOP_VERSION_CODE']
 
     self.assertEqual(arch_monochrome_32_version_code, '484400021')
     self.assertEqual(arch_monochrome_32_64_version_code, '484400026')
@@ -255,6 +242,7 @@ class _VersionTest(unittest.TestCase):
     self.assertEqual(arch_trichrome_auto_64_version_code, '484400058')
     self.assertEqual(arch_trichrome_auto_64_32_version_code, '484400057')
     self.assertEqual(arch_trichrome_desktop_64_version_code, '484400068')
+    self.assertEqual(arch_chrome_desktop_version_code, '484400078')
 
   def testGenerateVersionCodesAndroidArchOrderArm(self):
     """Assert it handles different architectures correctly.
@@ -267,11 +255,9 @@ class _VersionTest(unittest.TestCase):
     Test arm-related values.
     """
     arm_output = GenerateVersionCodes(4844, 0,
-                                      arch='arm',
-                                      is_next_build=False)
+                                      arch='arm')
     arm64_output = GenerateVersionCodes(4844, 0,
-                                        arch='arm64',
-                                        is_next_build=False)
+                                        arch='arm64')
 
     arm_chrome_version_code = arm_output['CHROME_VERSION_CODE']
     arm64_chrome_version_code = arm64_output['CHROME_VERSION_CODE']
@@ -289,11 +275,9 @@ class _VersionTest(unittest.TestCase):
     Test x86-related values.
     """
     x86_output = GenerateVersionCodes(4844, 0,
-                                      arch='x86',
-                                      is_next_build=False)
+                                      arch='x86')
     x64_output = GenerateVersionCodes(4844, 0,
-                                      arch='x64',
-                                      is_next_build=False)
+                                      arch='x64')
 
     x86_chrome_version_code = x86_output['CHROME_VERSION_CODE']
     x64_chrome_version_code = x64_output['CHROME_VERSION_CODE']
@@ -311,11 +295,28 @@ class _VersionTest(unittest.TestCase):
     beta and stable channels are otherwise on the same version.
     """
     output = GenerateVersionCodes(4844, 0,
-                                  arch='arm',
-                                  is_next_build=False)
+                                  arch='arm')
 
     webview_stable_version_code = output['WEBVIEW_STABLE_VERSION_CODE']
     webview_beta_version_code = output['WEBVIEW_BETA_VERSION_CODE']
+
+    self.assertGreater(webview_beta_version_code, webview_stable_version_code)
+
+  def testGenerateVersionCodesAndroidWebviewChannelOrderBeta64bit(self):
+    """Assert 64-bit webview beta channel is higher than stable.
+
+    The channel-specific version codes for standalone webview needs to follow
+    the order stable < beta < dev.
+
+    This allows that if a user opts into beta track, they will always have the
+    beta apk, including any finch experiments targeted at beta users, even when
+    beta and stable channels are otherwise on the same version.
+    """
+    output = GenerateVersionCodes(4844, 0,
+                                  arch='arm64')
+
+    webview_stable_version_code = output['WEBVIEW_64_STABLE_VERSION_CODE']
+    webview_beta_version_code = output['WEBVIEW_64_BETA_VERSION_CODE']
 
     self.assertGreater(webview_beta_version_code, webview_stable_version_code)
 
@@ -330,8 +331,7 @@ class _VersionTest(unittest.TestCase):
     dev and beta channels are otherwise on the same version.
     """
     output = GenerateVersionCodes(4844, 0,
-                                  arch='arm',
-                                  is_next_build=False)
+                                  arch='arm')
 
     webview_beta_version_code = output['WEBVIEW_BETA_VERSION_CODE']
     webview_dev_version_code = output['WEBVIEW_DEV_VERSION_CODE']
@@ -349,8 +349,7 @@ class _VersionTest(unittest.TestCase):
     beta and stable channels are otherwise on the same version.
     """
     output = GenerateVersionCodes(4844, 0,
-                                  arch='arm',
-                                  is_next_build=False)
+                                  arch='arm')
 
     trichrome_stable_version_code = output['TRICHROME_VERSION_CODE']
     trichrome_beta_version_code = output['TRICHROME_BETA_VERSION_CODE']
@@ -365,8 +364,7 @@ class _VersionGroupedTest(unittest.TestCase):
   def testGenerateVersionCodesAndroidChrome(self):
     """Assert it gives correct values for standard/example inputs"""
     output = GenerateVersionCodes(5750, 0,
-                                  arch='arm',
-                                  is_next_build=False)
+                                  arch='arm')
 
     chrome_version_code = output['CHROME_VERSION_CODE']
 
@@ -375,8 +373,7 @@ class _VersionGroupedTest(unittest.TestCase):
   def testGenerateVersionCodesAndroidChromeModern(self):
     """Assert it gives correct values for standard/example inputs"""
     output = GenerateVersionCodes(5750, 0,
-                                  arch='arm',
-                                  is_next_build=False)
+                                  arch='arm')
 
     chrome_modern_version_code = output['CHROME_MODERN_VERSION_CODE']
 
@@ -385,8 +382,7 @@ class _VersionGroupedTest(unittest.TestCase):
   def testGenerateVersionCodesAndroidMonochrome(self):
     """Assert it gives correct values for standard/example inputs"""
     output = GenerateVersionCodes(5750, 0,
-                                  arch='arm',
-                                  is_next_build=False)
+                                  arch='arm')
 
     monochrome_version_code = output['MONOCHROME_VERSION_CODE']
 
@@ -395,8 +391,7 @@ class _VersionGroupedTest(unittest.TestCase):
   def testGenerateVersionCodesAndroidTrichrome(self):
     """Assert it gives correct values for standard/example inputs"""
     output = GenerateVersionCodes(5750, 0,
-                                  arch='arm',
-                                  is_next_build=False)
+                                  arch='arm')
 
     trichrome_version_code = output['TRICHROME_VERSION_CODE']
 
@@ -405,8 +400,7 @@ class _VersionGroupedTest(unittest.TestCase):
   def testGenerateVersionCodesAndroidWebviewStable(self):
     """Assert it gives correct values for standard/example inputs"""
     output = GenerateVersionCodes(5750, 0,
-                                  arch='arm',
-                                  is_next_build=False)
+                                  arch='arm')
 
     webview_stable_version_code = output['WEBVIEW_STABLE_VERSION_CODE']
 
@@ -415,8 +409,7 @@ class _VersionGroupedTest(unittest.TestCase):
   def testGenerateVersionCodesAndroidWebviewBeta(self):
     """Assert it gives correct values for standard/example inputs"""
     output = GenerateVersionCodes(5750, 0,
-                                  arch='arm',
-                                  is_next_build=False)
+                                  arch='arm')
 
     webview_beta_version_code = output['WEBVIEW_BETA_VERSION_CODE']
 
@@ -425,29 +418,11 @@ class _VersionGroupedTest(unittest.TestCase):
   def testGenerateVersionCodesAndroidWebviewDev(self):
     """Assert it gives correct values for standard/example inputs"""
     output = GenerateVersionCodes(5750, 0,
-                                  arch='arm',
-                                  is_next_build=False)
+                                  arch='arm')
 
     webview_dev_version_code = output['WEBVIEW_DEV_VERSION_CODE']
 
     self.assertEqual(webview_dev_version_code, '575000020')
-
-  def testGenerateVersionCodesAndroidNextBuild(self):
-    """Assert it handles "next" builds correctly"""
-    output = GenerateVersionCodes(5750, 0,
-                                  arch='arm',
-                                  is_next_build=True)
-
-    # Get just a sample of values
-    chrome_version_code = output['CHROME_VERSION_CODE']
-    monochrome_version_code = output['MONOCHROME_VERSION_CODE']
-    webview_stable_version_code = output['WEBVIEW_STABLE_VERSION_CODE']
-    webview_beta_version_code = output['WEBVIEW_BETA_VERSION_CODE']
-
-    self.assertEqual(chrome_version_code, '575050000')
-    self.assertEqual(monochrome_version_code, '575050020')
-    self.assertEqual(webview_stable_version_code, '575050000')
-    self.assertEqual(webview_beta_version_code, '575050010')
 
   def testGenerateVersionCodesAndroidArchArm(self):
     """Assert it handles different architectures correctly.
@@ -458,8 +433,7 @@ class _VersionGroupedTest(unittest.TestCase):
     reasoning.
     """
     output = GenerateVersionCodes(5750, 0,
-                                  arch='arm',
-                                  is_next_build=False)
+                                  arch='arm')
     arch_chrome_version_code = output['CHROME_VERSION_CODE']
 
     self.assertEqual(arch_chrome_version_code, '575000000')
@@ -473,8 +447,7 @@ class _VersionGroupedTest(unittest.TestCase):
     reasoning.
     """
     output = GenerateVersionCodes(5750, 0,
-                                  arch='x86',
-                                  is_next_build=False)
+                                  arch='x86')
     arch_chrome_version_code = output['CHROME_VERSION_CODE']
 
     self.assertEqual(arch_chrome_version_code, '575000006')
@@ -488,11 +461,10 @@ class _VersionGroupedTest(unittest.TestCase):
     reasoning.
     """
     output = GenerateVersionCodes(5750, 0,
-                                  arch='arm64',
-                                  is_next_build=False)
+                                  arch='arm64')
     arch_chrome_version_code = output['CHROME_VERSION_CODE']
 
-    self.assertEqual(arch_chrome_version_code, '575000004')
+    self.assertEqual(arch_chrome_version_code, '575000002')
 
   def testGenerateVersionCodesAndroidArchArm64Variants(self):
     """Assert it handles 64-bit-specific additional version codes correctly.
@@ -501,8 +473,7 @@ class _VersionGroupedTest(unittest.TestCase):
     See docstring on android_chrome_version.ARCH64_APK_VARIANTS for more info.
     """
     output = GenerateVersionCodes(5750, 0,
-                                  arch='arm64',
-                                  is_next_build=False)
+                                  arch='arm64')
     arch_monochrome_version_code = output['MONOCHROME_VERSION_CODE']
     arch_monochrome_32_version_code = output['MONOCHROME_32_VERSION_CODE']
     arch_monochrome_32_64_version_code = output['MONOCHROME_32_64_VERSION_CODE']
@@ -555,11 +526,10 @@ class _VersionGroupedTest(unittest.TestCase):
     reasoning.
     """
     output = GenerateVersionCodes(5750, 0,
-                                  arch='x64',
-                                  is_next_build=False)
+                                  arch='x64')
     arch_chrome_version_code = output['CHROME_VERSION_CODE']
 
-    self.assertEqual(arch_chrome_version_code, '575000009')
+    self.assertEqual(arch_chrome_version_code, '575000008')
 
   def testGenerateVersionCodesAndroidArchX64Variants(self):
     """Assert it handles 64-bit-specific additional version codes correctly.
@@ -568,8 +538,7 @@ class _VersionGroupedTest(unittest.TestCase):
     See docstring on android_chrome_version.ARCH64_APK_VARIANTS for more info.
     """
     output = GenerateVersionCodes(5750, 0,
-                                  arch='x64',
-                                  is_next_build=False)
+                                  arch='x64')
     arch_monochrome_32_version_code = output['MONOCHROME_32_VERSION_CODE']
     arch_monochrome_32_64_version_code = output['MONOCHROME_32_64_VERSION_CODE']
     arch_monochrome_version_code = output['MONOCHROME_VERSION_CODE']
@@ -619,8 +588,7 @@ class _VersionGroupedTest(unittest.TestCase):
     reasoning.
     """
     output = GenerateVersionCodes(5750, 0,
-                                  arch='riscv64',
-                                  is_next_build=False)
+                                  arch='riscv64')
     arch_chrome_version_code = output['CHROME_VERSION_CODE']
 
     self.assertEqual(arch_chrome_version_code, '575000004')
@@ -632,8 +600,7 @@ class _VersionGroupedTest(unittest.TestCase):
     See docstring on android_chrome_version.ARCH64_APK_VARIANTS for more info.
     """
     output = GenerateVersionCodes(5750, 0,
-                                  arch='riscv64',
-                                  is_next_build=False)
+                                  arch='riscv64')
     arch_chrome_version_code = output['CHROME_VERSION_CODE']
     arch_chrome_modern_version_code = output['CHROME_MODERN_VERSION_CODE']
     arch_monochrome_version_code = output['MONOCHROME_VERSION_CODE']
@@ -685,11 +652,9 @@ class _VersionGroupedTest(unittest.TestCase):
     Test arm-related values.
     """
     arm_output = GenerateVersionCodes(5750, 0,
-                                      arch='arm',
-                                      is_next_build=False)
+                                      arch='arm')
     arm64_output = GenerateVersionCodes(5750, 0,
-                                        arch='arm64',
-                                        is_next_build=False)
+                                        arch='arm64')
 
     arm_chrome_version_code = arm_output['CHROME_VERSION_CODE']
     arm64_chrome_version_code = arm64_output['CHROME_VERSION_CODE']
@@ -707,11 +672,9 @@ class _VersionGroupedTest(unittest.TestCase):
     Test x86-related values.
     """
     x86_output = GenerateVersionCodes(5750, 0,
-                                      arch='x86',
-                                      is_next_build=False)
+                                      arch='x86')
     x64_output = GenerateVersionCodes(5750, 0,
-                                      arch='x64',
-                                      is_next_build=False)
+                                      arch='x64')
 
     x86_chrome_version_code = x86_output['CHROME_VERSION_CODE']
     x64_chrome_version_code = x64_output['CHROME_VERSION_CODE']
@@ -729,8 +692,7 @@ class _VersionGroupedTest(unittest.TestCase):
     beta and stable channels are otherwise on the same version.
     """
     output = GenerateVersionCodes(5750, 0,
-                                  arch='arm',
-                                  is_next_build=False)
+                                  arch='arm')
 
     webview_stable_version_code = output['WEBVIEW_STABLE_VERSION_CODE']
     webview_beta_version_code = output['WEBVIEW_BETA_VERSION_CODE']
@@ -748,8 +710,7 @@ class _VersionGroupedTest(unittest.TestCase):
     dev and beta channels are otherwise on the same version.
     """
     output = GenerateVersionCodes(5750, 0,
-                                  arch='arm',
-                                  is_next_build=False)
+                                  arch='arm')
 
     webview_beta_version_code = output['WEBVIEW_BETA_VERSION_CODE']
     webview_dev_version_code = output['WEBVIEW_DEV_VERSION_CODE']
@@ -767,8 +728,7 @@ class _VersionGroupedTest(unittest.TestCase):
     beta and stable channels are otherwise on the same version.
     """
     output = GenerateVersionCodes(5750, 0,
-                                  arch='arm',
-                                  is_next_build=False)
+                                  arch='arm')
 
     trichrome_stable_version_code = output['TRICHROME_VERSION_CODE']
     trichrome_beta_version_code = output['TRICHROME_BETA_VERSION_CODE']
@@ -781,8 +741,7 @@ class _VersionCodeTest(unittest.TestCase):
   def testGenerateThenTranslate(self):
     """Assert it gives correct values for a version code that we generated."""
     output = GenerateVersionCodes(4844, 0,
-                                  arch='arm',
-                                  is_next_build=False)
+                                  arch='arm')
 
     version_code = output['MONOCHROME_VERSION_CODE']
 
@@ -1010,8 +969,7 @@ class _VersionCodeGroupedTest(unittest.TestCase):
   def testGenerateThenTranslate(self):
     """Assert it gives correct values for a version code that we generated."""
     output = GenerateVersionCodes(5750, 0,
-                                  arch='arm',
-                                  is_next_build=False)
+                                  arch='arm')
 
     version_code = output['MONOCHROME_VERSION_CODE']
 
@@ -1040,7 +998,7 @@ class _VersionCodeGroupedTest(unittest.TestCase):
     self.assertEqual(build, 5750)
     self.assertEqual(patch, 112)
     self.assertEqual(package, 'CHROME_MODERN')
-    self.assertEqual(abi, 'arm_64')
+    self.assertEqual(abi, 'arm_64_high')
     self.assertEqual(is_next_build, False)
 
   def testArm_32_64Translate(self):
@@ -1144,6 +1102,55 @@ class _VersionCodeGroupedTest(unittest.TestCase):
     self.assertEqual(abi, 'arm')
     self.assertEqual(is_next_build, False)
 
+  def testWebview_64_32_Translate(self):
+    """Test for a build with Webview."""
+    build, patch, package, abi, is_next_build = TranslateVersionCode(
+        '575000002', is_webview=True)
+    self.assertEqual(build, 5750)
+    self.assertEqual(patch, 0)
+    self.assertEqual(package, 'WEBVIEW_STABLE')
+    self.assertEqual(abi, 'arm_64_32')
+    self.assertEqual(is_next_build, False)
+
+  def testWebviewAutoTranslate(self):
+    """Test for a build with Webview."""
+    build, patch, package, abi, is_next_build = TranslateVersionCode(
+        '575000070', is_webview=True)
+    self.assertEqual(build, 5750)
+    self.assertEqual(patch, 0)
+    self.assertEqual(package, 'WEBVIEW_AUTO')
+    self.assertEqual(abi, 'arm')
+    self.assertEqual(is_next_build, False)
+
+  def testWebviewAuto_64_32_Translate(self):
+    """Test for a build with Webview."""
+    build, patch, package, abi, is_next_build = TranslateVersionCode(
+        '575000072', is_webview=True)
+    self.assertEqual(build, 5750)
+    self.assertEqual(patch, 0)
+    self.assertEqual(package, 'WEBVIEW_AUTO')
+    self.assertEqual(abi, 'arm_64_32')
+    self.assertEqual(is_next_build, False)
+
+  def testWebviewDesktopTranslate(self):
+    """Test for a build with Webview."""
+    build, patch, package, abi, is_next_build = TranslateVersionCode(
+        '575000080', is_webview=True)
+    self.assertEqual(build, 5750)
+    self.assertEqual(patch, 0)
+    self.assertEqual(package, 'WEBVIEW_DESKTOP')
+    self.assertEqual(abi, 'arm')
+    self.assertEqual(is_next_build, False)
+
+  def testWebviewDesktop_64_High_Translate(self):
+    """Test for a build with Webview."""
+    build, patch, package, abi, is_next_build = TranslateVersionCode(
+        '575000084', is_webview=True)
+    self.assertEqual(build, 5750)
+    self.assertEqual(patch, 0)
+    self.assertEqual(package, 'WEBVIEW_DESKTOP')
+    self.assertEqual(abi, 'arm_64_high')
+    self.assertEqual(is_next_build, False)
 
 if __name__ == '__main__':
   unittest.main()

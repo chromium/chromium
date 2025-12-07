@@ -11,7 +11,6 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/debug/stack_trace.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
@@ -19,7 +18,7 @@
 #include "third_party/leveldatabase/src/include/leveldb/comparator.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 
-namespace content {
+namespace content::indexed_db {
 namespace {
 
 #if DCHECK_IS_ON()
@@ -186,7 +185,6 @@ leveldb::Status LevelDBScope::DeleteRange(const leveldb::Slice& begin,
   DCHECK(!committed_);
   DCHECK(!locks_.empty());
   switch (mode) {
-    case LevelDBScopeDeletionMode::kDeferred:
     case LevelDBScopeDeletionMode::kDeferredWithCompaction:
       deferred_delete_ranges_.emplace_back(begin.ToString(), end.ToString());
       break;
@@ -196,10 +194,6 @@ leveldb::Status LevelDBScope::DeleteRange(const leveldb::Slice& begin,
 #endif
   bool end_exclusive = true;
   switch (mode) {
-    case LevelDBScopeDeletionMode::kDeferred:
-      SetModeToUndoLog();
-      AddCleanupDeleteRangeTask(begin.ToString(), end.ToString());
-      return leveldb::Status::OK();
     case LevelDBScopeDeletionMode::kDeferredWithCompaction:
       SetModeToUndoLog();
       AddCleanupDeleteAndCompactRangeTask(begin.ToString(), end.ToString());
@@ -298,8 +292,7 @@ std::pair<leveldb::Status, LevelDBScope::Mode> LevelDBScope::Commit(
       s = WriteChangesAndUndoLogInternal(sync_on_commit);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return {leveldb::Status::NotSupported("Unknown scopes mode."), mode_};
+      NOTREACHED();
   }
   locks_.clear();
   committed_ = true;
@@ -356,20 +349,9 @@ void LevelDBScope::AddBufferedUndoTask() {
   undo_task_buffer_.Clear();
 }
 
-void LevelDBScope::AddCleanupDeleteRangeTask(std::string begin,
-                                             std::string end) {
-  DCHECK(cleanup_task_buffer_.operation_case() ==
-         LevelDBScopesCleanupTask::OPERATION_NOT_SET);
-  auto* const range = cleanup_task_buffer_.mutable_delete_range();
-  range->set_begin(std::move(begin));
-  range->set_end(std::move(end));
-  AddBufferedCleanupTask();
-}
-
 void LevelDBScope::AddCleanupDeleteAndCompactRangeTask(std::string begin,
                                                        std::string end) {
-  DCHECK(cleanup_task_buffer_.operation_case() ==
-         LevelDBScopesCleanupTask::OPERATION_NOT_SET);
+  DCHECK(!cleanup_task_buffer_.has_delete_range_and_compact());
   auto* const range = cleanup_task_buffer_.mutable_delete_range_and_compact();
   range->set_begin(std::move(begin));
   range->set_end(std::move(end));
@@ -424,7 +406,6 @@ void LevelDBScope::AddCommitPoint() {
 leveldb::Status LevelDBScope::WriteBufferBatch(bool sync) {
   leveldb::WriteOptions write_options;
   write_options.sync = sync;
-  approximate_bytes_written_ += buffer_batch_.ApproximateSize();
   leveldb::Status s = level_db_->db()->Write(write_options, &buffer_batch_);
   // We intentionally clear the write batch, even if the write fails, as this
   // class is expected to be treated as invalid after a failure and shouldn't be
@@ -453,4 +434,4 @@ bool LevelDBScope::IsInDeferredDeletionRange(const leveldb::Slice& key) {
 }
 #endif
 
-}  // namespace content
+}  // namespace content::indexed_db

@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("reorder") {
   sources = [
@@ -15,13 +15,15 @@ static_library("reorder") {
     "app_list_reorder_util.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/public/cpp",
     "//ash/strings",
     "//base",
     "//base:i18n",
     "//chrome/browser/ash/app_list",
-    "//chrome/browser/ui/ash",
+    "//chrome/browser/ui/ash/app_icon_color_cache",
     "//components/sync/model",
     "//third_party/icu",
     "//ui/base",

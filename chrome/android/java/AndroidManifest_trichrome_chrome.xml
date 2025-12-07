@@ -9,7 +9,6 @@
 {% block extra_application_attributes %}
 {{ super() }}
 android:multiArch="true"
-android:extractNativeLibs="false"
 {% endblock %}
 
 {% block extra_keyset_definitions %}

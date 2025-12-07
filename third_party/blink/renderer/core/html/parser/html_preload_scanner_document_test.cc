@@ -15,8 +15,7 @@ namespace blink {
 
 class MockNoStatePrefetchClient : public NoStatePrefetchClient {
  public:
-  explicit MockNoStatePrefetchClient(Page& page)
-      : NoStatePrefetchClient(page, nullptr) {}
+  MockNoStatePrefetchClient() : NoStatePrefetchClient(nullptr) {}
 
  private:
   bool IsPrefetchOnly() override { return true; }
@@ -111,8 +110,8 @@ TEST_F(HTMLPreloadScannerDocumentTest,
   // Create a prefetch only document since that will ensure only the preload
   // scanner runs.
   ProvideNoStatePrefetchClientTo(
-      *GetDocument().GetPage(), MakeGarbageCollected<MockNoStatePrefetchClient>(
-                                    *GetDocument().GetPage()));
+      *GetDocument().GetPage(),
+      MakeGarbageCollected<MockNoStatePrefetchClient>());
   EXPECT_TRUE(GetDocument().IsPrefetchOnly());
   main_resource_->Complete(
       R"(<meta http-equiv="Delegate-CH" content="sec-ch-dpr">)");
@@ -125,8 +124,8 @@ TEST_F(HTMLPreloadScannerDocumentTest,
   // Create a prefetch only document since that will ensure only the preload
   // scanner runs.
   ProvideNoStatePrefetchClientTo(
-      *GetDocument().GetPage(), MakeGarbageCollected<MockNoStatePrefetchClient>(
-                                    *GetDocument().GetPage()));
+      *GetDocument().GetPage(),
+      MakeGarbageCollected<MockNoStatePrefetchClient>());
   EXPECT_TRUE(GetDocument().IsPrefetchOnly());
   main_resource_->Complete(
       R"(<meta http-equiv="Accept-CH" content="sec-ch-dpr">)");

@@ -12,16 +12,23 @@
 #define GOOGLE_APIS_GAIA_GOOGLE_SERVICE_AUTH_ERROR_H_
 
 #include <string>
+#include <variant>
 
 #include "base/component_export.h"
-#include "url/gurl.h"
+#include "build/build_config.h"
+#include "net/base/net_errors.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 class COMPONENT_EXPORT(GOOGLE_APIS) GoogleServiceAuthError {
  public:
-  //
   // These enumerations are referenced by integer value in HTML login code and
   // in UMA histograms. Do not change the numeric values.
   //
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.google_apis.gaia
+  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: GoogleServiceAuthErrorState
   enum State {
     // The user is authenticated.
     NONE = 0,
@@ -110,8 +117,25 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GoogleServiceAuthError {
     NUM_REASONS
   };
 
-  bool operator==(const GoogleServiceAuthError &b) const;
-  bool operator!=(const GoogleServiceAuthError &b) const;
+  // Error reason for scope limited unrecoverable errors. Only used when the
+  // error is SCOPE_LIMITED_UNRECOVERABLE_ERROR.
+  enum class ScopeLimitedUnrecoverableErrorReason {
+    // The authorization grant is invalid.
+    kInvalidGrantRaptError = 0,
+    // The requested scope is invalid.
+    kInvalidScope,
+    // The client is restricted.
+    kRestrictedClient,
+    // Scope restricted by admin policy.
+    kAdminPolicyEnforced,
+    // The user doesn't have consent for this scope.
+    kRemoteConsentResolutionRequired,
+    // The user doesn't have access to this scope.
+    kAccessDenied
+  };
+
+  friend bool operator==(const GoogleServiceAuthError&,
+                         const GoogleServiceAuthError&) = default;
 
   // Construct a GoogleServiceAuthError from a State with no additional data.
   explicit GoogleServiceAuthError(State s);
@@ -123,6 +147,8 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GoogleServiceAuthError {
   GoogleServiceAuthError(const GoogleServiceAuthError& other);
   GoogleServiceAuthError& operator=(const GoogleServiceAuthError& other);
 
+  ~GoogleServiceAuthError();
+
   // Construct a GoogleServiceAuthError from a network error.
   // It will be created with CONNECTION_FAILED set.
   static GoogleServiceAuthError FromConnectionError(int error);
@@ -133,8 +159,8 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GoogleServiceAuthError {
   static GoogleServiceAuthError FromServiceUnavailable(
       const std::string& error_message);
 
-  static GoogleServiceAuthError FromScopeLimitedUnrecoverableError(
-      const std::string& error_message);
+  static GoogleServiceAuthError FromScopeLimitedUnrecoverableErrorReason(
+      ScopeLimitedUnrecoverableErrorReason reason);
 
   // Construct a SERVICE_ERROR error, e.g. invalid client ID, with an
   // |error_message| which provides more information about the service error.
@@ -160,14 +186,21 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GoogleServiceAuthError {
 
   // The error information.
   State state() const;
-  int network_error() const;
   const std::string& error_message() const;
+
+  // Should only be used when the error state is CONNECTION_FAILED.
+  net::Error GetNetworkError() const;
 
   // Should only be used when the error state is CHALLENGE_RESPONSE_REQUIRED.
   const std::string& GetTokenBindingChallenge() const;
 
   // Should only be used when the error state is INVALID_GAIA_CREDENTIALS.
   InvalidGaiaCredentialsReason GetInvalidGaiaCredentialsReason() const;
+
+  // Should only be used when the error state is
+  // SCOPE_LIMITED_UNRECOVERABLE_ERROR.
+  ScopeLimitedUnrecoverableErrorReason GetScopeLimitedUnrecoverableErrorReason()
+      const;
 
   // Returns a message describing the error.
   std::string ToString() const;
@@ -190,17 +223,96 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GoogleServiceAuthError {
   // both.
   bool IsTransientError() const;
 
+#if BUILDFLAG(IS_ANDROID)
+  static GoogleServiceAuthError FromJavaObject(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& j_auth_error);
+
+  jni_zero::ScopedJavaLocalRef<jobject> ToJavaObject(JNIEnv* env) const;
+#endif  // BUILDFLAG(IS_ANDROID)
+
  private:
-  GoogleServiceAuthError(State s, int error);
+  // State-specific data structures for the variant.
+  struct None {
+    friend bool operator==(const None&, const None&) = default;
+  };
+  struct InvalidGaiaCredentials {
+    InvalidGaiaCredentialsReason reason = InvalidGaiaCredentialsReason::UNKNOWN;
+    friend bool operator==(const InvalidGaiaCredentials&,
+                           const InvalidGaiaCredentials&) = default;
+  };
+  struct UserNotSignedUp {
+    friend bool operator==(const UserNotSignedUp&,
+                           const UserNotSignedUp&) = default;
+  };
+  struct ConnectionFailed {
+    net::Error network_error = net::ERR_FAILED;
+    friend bool operator==(const ConnectionFailed&,
+                           const ConnectionFailed&) = default;
+  };
+  struct ServiceUnavailable {
+    std::string error_message;
+    friend bool operator==(const ServiceUnavailable&,
+                           const ServiceUnavailable&) = default;
+  };
+  struct RequestCanceled {
+    friend bool operator==(const RequestCanceled&,
+                           const RequestCanceled&) = default;
+  };
+  struct UnexpectedServiceResponse {
+    std::string error_message;
+    friend bool operator==(const UnexpectedServiceResponse&,
+                           const UnexpectedServiceResponse&) = default;
+  };
+  struct ServiceError {
+    std::string error_message;
+    friend bool operator==(const ServiceError&, const ServiceError&) = default;
+  };
+  struct ScopeLimitedUnrecoverableError {
+    ScopeLimitedUnrecoverableErrorReason reason;
+    friend bool operator==(const ScopeLimitedUnrecoverableError&,
+                           const ScopeLimitedUnrecoverableError&) = default;
+  };
+  struct ChallengeResponseRequired {
+    std::string token_binding_challenge;
+    friend bool operator==(const ChallengeResponseRequired&,
+                           const ChallengeResponseRequired&) = default;
+  };
 
-  // Construct a GoogleServiceAuthError from |state| and |error_message|.
-  GoogleServiceAuthError(State state, const std::string& error_message);
+  using Details = std::variant<None,
+                               InvalidGaiaCredentials,
+                               UserNotSignedUp,
+                               ConnectionFailed,
+                               ServiceUnavailable,
+                               RequestCanceled,
+                               UnexpectedServiceResponse,
+                               ServiceError,
+                               ScopeLimitedUnrecoverableError,
+                               ChallengeResponseRequired>;
 
-  State state_;
-  int network_error_;
-  std::string error_message_;
-  std::string token_binding_challenge_;
-  InvalidGaiaCredentialsReason invalid_gaia_credentials_reason_;
+  explicit GoogleServiceAuthError(Details details);
+
+  Details details_;
 };
+
+#if BUILDFLAG(IS_ANDROID)
+namespace jni_zero {
+
+template <>
+inline GoogleServiceAuthError FromJniType<GoogleServiceAuthError>(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& j_auth_error) {
+  return GoogleServiceAuthError::FromJavaObject(env, j_auth_error);
+}
+
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType(
+    JNIEnv* env,
+    const GoogleServiceAuthError& auth_error) {
+  return auth_error.ToJavaObject(env);
+}
+
+}  // namespace jni_zero
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #endif  // GOOGLE_APIS_GAIA_GOOGLE_SERVICE_AUTH_ERROR_H_

@@ -39,7 +39,7 @@ DownloadCoreServiceFactory::DownloadCoreServiceFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   DependsOn(DownloadBubbleUpdateServiceFactory::GetInstance());
 #endif  // !BUILDFLAG(IS_ANDROID)
   DependsOn(HistoryServiceFactory::GetInstance());
@@ -49,13 +49,11 @@ DownloadCoreServiceFactory::DownloadCoreServiceFactory()
 
 DownloadCoreServiceFactory::~DownloadCoreServiceFactory() = default;
 
-KeyedService* DownloadCoreServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+DownloadCoreServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* profile) const {
-  DownloadCoreService* service =
-      new DownloadCoreServiceImpl(static_cast<Profile*>(profile));
-
   // No need for initialization; initialization can be done on first
   // use of service.
-
-  return service;
+  return std::make_unique<DownloadCoreServiceImpl>(
+      static_cast<Profile*>(profile));
 }

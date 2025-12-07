@@ -9,11 +9,11 @@ import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/load_timing_info.mojom";
 import "services/network/public/mojom/service_worker_router_info.mojom";
 import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
+import "url/mojom/url.mojom";
 
 // This struct holds the information from PerformanceServerTiming that needs
 // to be passed between processes. This is currently used to send timing
 // information about cross-process iframes for window.performance.
-// Note: Please update CrossThreadCopier whenever a new field is added.
 // See https://w3c.github.io/server-timing/#the-performanceservertiming-interface
 struct ServerTimingInfo {
   // Server specific metric name. Corresponds to |name| in
@@ -42,7 +42,6 @@ enum CacheState {
 // This struct holds the information from PerformanceResourceTiming that needs
 // to be passed between processes. This is currently used to send timing
 // information about cross-process iframes for window.performance.
-// Note: Please update CrossThreadCopier whenever a new field is added.
 struct ResourceTimingInfo {
 
   // The name to associate with the performance entry. For iframes, this is
@@ -125,9 +124,22 @@ struct ResourceTimingInfo {
   // PerformanceResourceTiming (https://w3c.github.io/resource-timing/).
   string content_type;
 
+  // Holds the string corresponding to |contentEncoding| in
+  // PerformanceResourceTiming (https://w3c.github.io/resource-timing/).
+  string content_encoding;
+
+  // Holds the url of the resource that initiated current resource.
+  // PerformanceResourceTiming (https://w3c.github.io/resource-timing/).
+  url.mojom.Url initiator_url;
+
   // Holds the source type of ServiceWorker static routing API. It keeps track
   // of |matchedSourceType| and |finalSourceType|. This is a proposed field in
   // https://github.com/WICG/service-worker-static-routing-api, not in the
   // resource-timing standard yet.
   network.mojom.ServiceWorkerRouterInfo? service_worker_router_info;
+
+  // Holds where the source of the resource, when it was fetched via
+  // ServiceWorker. This is |kUnspecified| if the response is not from
+  // ServiceWorker.
+  network.mojom.FetchResponseSource service_worker_response_source;
 };

@@ -1,4 +1,3 @@
-static bool GetAutoRenamedName(std::wstring &Name);
 static SOUND_NOTIFY_MODE uiSoundNotify;
 
 void uiInit(SOUND_NOTIFY_MODE Sound)

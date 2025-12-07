@@ -53,60 +53,53 @@ class WidgetFocusObserverTest : public ViewsTestBase {
 TEST_F(WidgetFocusObserverTest, NoWidgets) {
   test::WidgetFocusObserver observer;
   observer.SetStateObserverStateChangedCallback(base::DoNothing());
-  EXPECT_EQ(gfx::NativeView(), observer.GetStateObserverInitialState());
+  EXPECT_EQ(nullptr, observer.GetStateObserverInitialState());
 }
 
 TEST_F(WidgetFocusObserverTest, OneWidget) {
-  const auto widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  const auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   test::WidgetVisibleWaiter visible_waiter(widget.get());
   widget->Show();
   visible_waiter.Wait();
 
   test::WidgetFocusObserver observer;
   observer.SetStateObserverStateChangedCallback(base::DoNothing());
-  EXPECT_EQ(widget->GetNativeView(), observer.GetStateObserverInitialState());
+  EXPECT_EQ(widget.get(), observer.GetStateObserverInitialState());
 }
 
 TEST_F(WidgetFocusObserverTest, SeveralWidgets) {
-  const auto widget1 =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  const auto widget1 = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   test::WidgetVisibleWaiter visible_waiter1(widget1.get());
   widget1->Show();
   visible_waiter1.Wait();
 
-  const auto widget2 =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  const auto widget2 = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   test::WidgetVisibleWaiter visible_waiter2(widget1.get());
   widget2->Show();
   visible_waiter2.Wait();
 
-  const auto widget3 =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  const auto widget3 = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   test::WidgetVisibleWaiter visible_waiter3(widget1.get());
   widget3->ShowInactive();
   visible_waiter3.Wait();
 
   test::WidgetFocusObserver observer;
   observer.SetStateObserverStateChangedCallback(base::DoNothing());
-  EXPECT_EQ(widget2->GetNativeView(), observer.GetStateObserverInitialState());
+  EXPECT_EQ(widget2.get(), observer.GetStateObserverInitialState());
 }
 
 TEST_F(WidgetFocusObserverTest, AfterActivate) {
-  const auto widget1 =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  const auto widget1 = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   test::WidgetVisibleWaiter visible_waiter1(widget1.get());
   widget1->Show();
   visible_waiter1.Wait();
 
-  const auto widget2 =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  const auto widget2 = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   test::WidgetVisibleWaiter visible_waiter2(widget1.get());
   widget2->Show();
   visible_waiter2.Wait();
 
-  const auto widget3 =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  const auto widget3 = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   test::WidgetVisibleWaiter visible_waiter3(widget1.get());
   widget3->ShowInactive();
   visible_waiter3.Wait();
@@ -116,18 +109,18 @@ TEST_F(WidgetFocusObserverTest, AfterActivate) {
 
   test::WidgetFocusObserver observer;
   observer.SetStateObserverStateChangedCallback(base::DoNothing());
-  EXPECT_EQ(widget3->GetNativeView(), observer.GetStateObserverInitialState());
+  EXPECT_EQ(widget3.get(), observer.GetStateObserverInitialState());
 }
 
 TEST_F(WidgetFocusObserverTest, Bubble) {
-  const auto widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  const auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   test::WidgetVisibleWaiter visible_waiter(widget.get());
   widget->Show();
   visible_waiter.Wait();
 
   auto bubble = std::make_unique<BubbleDialogDelegateView>(
-      widget->GetRootView(), BubbleBorder::LEFT_CENTER);
+      BubbleDialogDelegateView::CreatePassKey(), widget->GetRootView(),
+      BubbleBorder::LEFT_CENTER);
   auto* const bubble_widget =
       BubbleDialogDelegate::CreateBubble(std::move(bubble));
   test::WidgetVisibleWaiter visible_waiter2(bubble_widget);
@@ -136,7 +129,7 @@ TEST_F(WidgetFocusObserverTest, Bubble) {
 
   test::WidgetFocusObserver observer;
   observer.SetStateObserverStateChangedCallback(base::DoNothing());
-  EXPECT_EQ(bubble_widget->GetNativeView(),
+  EXPECT_EQ(bubble_widget,
             observer.GetStateObserverInitialState());
 }
 

@@ -1,0 +1,75 @@
+This is a testharness.js-based test.
+[FAIL] Success: generateKey(ED448, false, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ED448, true, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ED448, false, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ED448, true, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ED448, false, [sign, verify, sign, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ED448, true, [sign, verify, sign, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ED448}, false, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ED448}, true, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ED448}, false, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ED448}, true, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ED448}, false, [sign, verify, sign, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ED448}, true, [sign, verify, sign, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ed448, false, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ed448, true, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ed448, false, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ed448, true, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ed448, false, [sign, verify, sign, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(ed448, true, [sign, verify, sign, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ed448}, false, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ed448}, true, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ed448}, false, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ed448}, true, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ed448}, false, [sign, verify, sign, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: ed448}, true, [sign, verify, sign, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ed448, false, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ed448, true, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ed448, false, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ed448, true, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ed448, false, [sign, verify, sign, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Ed448, true, [sign, verify, sign, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ed448}, false, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ed448}, true, [sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ed448}, false, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ed448}, true, [verify, sign])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ed448}, false, [sign, verify, sign, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Ed448}, true, [sign, verify, sign, sign, verify])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+Harness: the test ran to completion.
+

@@ -38,6 +38,7 @@ namespace ash::cloud_upload {
 OneDriveUploadHandler::OneDriveUploadHandler(
     Profile* profile,
     const storage::FileSystemURL& source_url,
+    UploadType upload_type,
     UploadCallback callback,
     base::SafeRef<CloudOpenMetrics> cloud_open_metrics)
     : profile_(profile),
@@ -50,8 +51,11 @@ OneDriveUploadHandler::OneDriveUploadHandler(
               l10n_util::GetStringUTF8(IDS_OFFICE_FILE_HANDLER_APP_MICROSOFT),
               // TODO(b/242685536) Update when support for multi-files is added.
               /*num_files=*/1,
-              GetUploadType(profile, source_url))),
+              upload_type)),
       source_url_(source_url),
+      operation_type_(upload_type == UploadType::kCopy
+                          ? file_manager::io_task::OperationType::kCopy
+                          : file_manager::io_task::OperationType::kMove),
       callback_(std::move(callback)),
       cloud_open_metrics_(cloud_open_metrics) {
   observed_task_id_ = -1;
@@ -153,9 +157,6 @@ void OneDriveUploadHandler::CheckReauthenticationAndStartIOTask(
     return;
   }
 
-  operation_type_ = GetUploadType(profile_, source_url_) == UploadType::kCopy
-                        ? file_manager::io_task::OperationType::kCopy
-                        : file_manager::io_task::OperationType::kMove;
   std::vector<FileSystemURL> source_urls{source_url_};
   std::unique_ptr<file_manager::io_task::IOTask> task =
       std::make_unique<file_manager::io_task::CopyOrMoveIOTask>(
@@ -208,8 +209,7 @@ void OneDriveUploadHandler::OnFailedUpload(
     LOG(ERROR) << "Upload to OneDrive: " << error_message;
     notification_manager_->ShowUploadError(error_message);
   }
-    std::move(callback_).Run(OfficeTaskResult::kFailedToUpload, std::nullopt,
-                             0);
+  std::move(callback_).Run(OfficeTaskResult::kFailedToUpload, std::nullopt, 0);
 }
 
 void OneDriveUploadHandler::OnIOTaskStatus(
@@ -254,10 +254,8 @@ void OneDriveUploadHandler::OnIOTaskStatus(
       ShowIOTaskError(status);
       return;
     case file_manager::io_task::State::kNeedPassword:
-      NOTREACHED_IN_MIGRATION()
-          << "Encrypted file should not need password to be copied or "
-             "moved. Case should not be reached.";
-      return;
+      NOTREACHED() << "Encrypted file should not need password to be copied or "
+                      "moved. Case should not be reached.";
   }
 }
 

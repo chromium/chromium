@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_history.h"
 #include "third_party/blink/renderer/core/inspector/protocol/protocol.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -54,6 +55,9 @@ class DOMEditor::RemoveChildAction final : public InspectorHistory::Action {
   RemoveChildAction& operator=(const RemoveChildAction&) = delete;
 
   bool Perform(ExceptionState& exception_state) override {
+    if (!parent_node_) {
+      return false;
+    }
     anchor_node_ = node_->nextSibling();
     return Redo(exception_state);
   }
@@ -287,6 +291,9 @@ class DOMEditor::ReplaceChildNodeAction final
   ReplaceChildNodeAction& operator=(const ReplaceChildNodeAction&) = delete;
 
   bool Perform(ExceptionState& exception_state) override {
+    if (!parent_node_) {
+      return false;
+    }
     return Redo(exception_state);
   }
 
@@ -411,14 +418,15 @@ bool DOMEditor::SetNodeValue(Node* node,
       MakeGarbageCollected<SetNodeValueAction>(node, value), exception_state);
 }
 
-static protocol::Response ToResponse(ExceptionState& exception_state) {
+static protocol::Response ToResponse(
+    DummyExceptionStateForTesting& exception_state) {
   if (exception_state.HadException()) {
-    String name_prefix = IsDOMExceptionCode(exception_state.Code())
-                             ? DOMException::GetErrorName(
-                                   exception_state.CodeAs<DOMExceptionCode>()) +
-                                   " "
-                             : g_empty_string;
-    String msg = name_prefix + exception_state.Message();
+    String msg = exception_state.Message();
+    if (IsDOMExceptionCode(exception_state.Code())) {
+      msg = StrCat({DOMException::GetErrorName(
+                        exception_state.CodeAs<DOMExceptionCode>()),
+                    " ", msg});
+    }
     return protocol::Response::ServerError(msg.Utf8());
   }
   return protocol::Response::Success();

@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_IMAGEBITMAP_IMAGE_BITMAP_FACTORIES_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_IMAGEBITMAP_IMAGE_BITMAP_FACTORIES_H_
 
+#include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -40,12 +41,12 @@
 #include "third_party/blink/renderer/core/fileapi/file_reader_client.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_data_view.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -61,18 +62,21 @@ class ScriptState;
 
 class MODULES_EXPORT ImageBitmapFactories final
     : public GarbageCollected<ImageBitmapFactories>,
-      public Supplement<ExecutionContext>,
-      public NameClient {
+      public NameClient,
+      public GarbageCollectedMixin {
  public:
-  static const char kSupplementName[];
-
-  explicit ImageBitmapFactories(ExecutionContext& context);
+  ImageBitmapFactories() = default;
 
   static ScriptPromise<ImageBitmap> CreateImageBitmap(
       ScriptState*,
       const V8ImageBitmapSource*,
       const ImageBitmapOptions*,
       ExceptionState&);
+  // Note that this makes a copy of DOMDataView*.
+  static ScriptPromise<ImageBitmap> CreateImageBitmap(ScriptState*,
+                                                      const DOMDataView*,
+                                                      const ImageBitmapOptions*,
+                                                      ExceptionState&);
   static ScriptPromise<ImageBitmap> CreateImageBitmap(
       ScriptState*,
       const V8ImageBitmapSource*,
@@ -134,7 +138,7 @@ class MODULES_EXPORT ImageBitmapFactories final
   ~ImageBitmapFactories() override = default;
 
   void Trace(Visitor*) const override;
-  const char* NameInHeapSnapshot() const override {
+  const char* GetHumanReadableName() const override {
     return "ImageBitmapLoader";
   }
 
@@ -164,6 +168,7 @@ class MODULES_EXPORT ImageBitmapFactories final
                       const ImageBitmapOptions*);
 
     void LoadBlobAsync(Blob*);
+    void LoadDataViewAsync(const DOMDataView*);
     ScriptPromise<ImageBitmap> Promise() { return resolver_->Promise(); }
 
     void Trace(Visitor*) const override;

@@ -11,17 +11,13 @@
 #include <vector>
 
 #include "ash/app_list/app_list_metrics.h"
-#include "ash/assistant/ui/assistant_view_delegate.h"
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/weak_ptr.h"
-#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
-#include "url/gurl.h"
 
 namespace ui {
 class SimpleMenuModel;
@@ -49,12 +45,6 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   // returns false.
   virtual std::unique_ptr<ScopedIphSession>
   CreateLauncherSearchIphSession() = 0;
-
-  // Invoked to start a new Google Assistant session.
-  virtual void StartAssistant(assistant::AssistantEntryPoint entry_point) = 0;
-
-  // Invoked to end a Google Assistant session.
-  virtual void EndAssistant(assistant::AssistantExitPoint exit_point) = 0;
 
   // Returns the search categories that are available for users to choose if
   // they want to have the results in the categories displayed in launcher
@@ -122,8 +112,9 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
                                    GetContextMenuModelCallback callback) = 0;
 
   // Show wallpaper context menu from the specified onscreen location.
-  virtual void ShowWallpaperContextMenu(const gfx::Point& onscreen_location,
-                                        ui::MenuSourceType source_type) = 0;
+  virtual void ShowWallpaperContextMenu(
+      const gfx::Point& onscreen_location,
+      ui::mojom::MenuSourceType source_type) = 0;
 
   // Returns True if the last event passing through app list was a key event.
   // This is stored in the controller and managed by the presenter.
@@ -138,16 +129,10 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   // doesn't appear in the screenshot.
   virtual bool ShouldDismissImmediately() = 0;
 
-  // Returns the AssistantViewDelegate.
-  virtual AssistantViewDelegate* GetAssistantViewDelegate() = 0;
-
   // Called if a search result has its visibility updated and wants to
   // be notified (i.e. its notify_visibility_change() returns true).
   virtual void OnSearchResultVisibilityChanged(const std::string& id,
                                                bool visibility) = 0;
-
-  // Returns true if the Assistant feature is allowed and enabled.
-  virtual bool IsAssistantAllowedAndEnabled() const = 0;
 
   // Gets the app list page currently shown in the fullscreen app list, as
   // reported from the app list view using `OnAppListPageChanged()`.

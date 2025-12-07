@@ -138,8 +138,7 @@ void ToGfxTransformOperations(
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }  // switch
   }    // for each operation
 }

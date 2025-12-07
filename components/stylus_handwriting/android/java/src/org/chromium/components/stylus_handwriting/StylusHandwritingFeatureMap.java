@@ -7,13 +7,19 @@ package org.chromium.components.stylus_handwriting;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureMap;
+import org.chromium.build.annotations.NullMarked;
 
 /** Java accessor for state of Stylus Handwriting feature flags. */
 @JNINamespace("stylus_handwriting::android")
+@NullMarked
 public class StylusHandwritingFeatureMap extends FeatureMap {
 
+    public static final String CACHE_STYLUS_SETTINGS = "CacheStylusSettings";
     public static final String USE_HANDWRITING_INITIATOR = "UseHandwritingInitiator";
+    public static final String PROBE_STYLUS_WRITING_IN_BACKGROUND =
+            "ProbeStylusWritingInBackground";
     private static final StylusHandwritingFeatureMap sInstance = new StylusHandwritingFeatureMap();
 
     // Do not instantiate this class.
@@ -31,6 +37,12 @@ public class StylusHandwritingFeatureMap extends FeatureMap {
     /** Convenience method to call {@link #isEnabledInNative(String)} statically. */
     public static boolean isEnabled(String featureName) {
         return getInstance().isEnabledInNative(featureName);
+    }
+
+    // Convenience method to check the feature state and return default value if native is not
+    // initialized.
+    public static boolean isEnabledOrDefault(String featureName, boolean def) {
+        return FeatureList.isNativeInitialized() ? isEnabled(featureName) : def;
     }
 
     @Override

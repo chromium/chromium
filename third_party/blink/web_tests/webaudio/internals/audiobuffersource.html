@@ -14,34 +14,26 @@ See if we can load an AudioBuffer, create an AudioBufferSourceNode, attach the b
   </head>
   <body>
     <script id="layout-test-code">
-      window.onload = init;
+      window.onload = runTest;
 
-      let sampleRate = 44100.0;
-      let lengthInSeconds = 2;
-
-      let context = 0;
-      let bufferLoader = 0;
-
-      function init() {
-        if (!window.testRunner)
+      async function runTest() {
+        if (!window.testRunner) {
           return;
+        }
+
+        testRunner.waitUntilDone();
+
+        let sampleRate = 44100.0;
+        let lengthInSeconds = 2;
+        let context = 0;
 
         // Create offline audio context.
         context = new OfflineAudioContext(
             2, sampleRate * lengthInSeconds, sampleRate);
 
-        bufferLoader = new BufferLoader(
-            context,
-            [
-              '../resources/hyper-reality/br-jam-loop.wav',
-            ],
-            finishedLoading);
+        const bufferList = await loadBuffers(
+            context, ['../resources/hyper-reality/br-jam-loop.wav']);
 
-        bufferLoader.load();
-        testRunner.waitUntilDone();
-      }
-
-      function finishedLoading(bufferList) {
         let bufferSource = context.createBufferSource();
         bufferSource.buffer = bufferList[0];
 

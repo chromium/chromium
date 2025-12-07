@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/platform/bindings/callback_interface_base.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 
 namespace blink {
 
@@ -29,19 +28,14 @@ bool CallbackInvokeHelper<CallbackBase, mode, return_type_is_promise>::
     ScriptForbiddenScope::ThrowScriptForbiddenException(isolate);
     return Abort();
   }
-  if (RuntimeEnabledFeatures::BlinkLifecycleScriptForbiddenEnabled()) {
-    CHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
-  } else {
-    DCHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
-  }
 
   if constexpr (mode == CallbackInvokeHelperMode::kConstructorCall) {
     // step 3. If ! IsConstructor(F) is false, throw a TypeError exception.
     if (!callback_->IsConstructor()) {
-      ExceptionState exception_state(isolate, v8::ExceptionContext::kOperation,
-                                     class_like_name_, property_name_);
-      exception_state.ThrowTypeError(
-          "The provided callback is not a constructor.");
+      V8ThrowException::ThrowTypeError(
+          isolate, ExceptionMessages::FailedToExecute(
+                       property_name_, class_like_name_,
+                       "The provided callback is not a constructor."));
       return Abort();
     }
   }
@@ -104,16 +98,6 @@ bool CallbackInvokeHelper<CallbackBase, mode, return_type_is_promise>::
       callback_this_ =
           callback_this.V8Value(callback_->CallbackRelevantScriptState());
     }
-    if (auto* tracker = scheduler::TaskAttributionTracker::From(isolate)) {
-      scheduler::TaskAttributionInfo* task_state_to_propagate = nullptr;
-      if constexpr (std::is_same<
-                        CallbackBase,
-                        CallbackFunctionWithTaskAttributionBase>::value) {
-        task_state_to_propagate = callback_->GetParentTask();
-      }
-      task_attribution_scope_ = tracker->MaybeCreateTaskScopeForCallback(
-          callback_->CallbackRelevantScriptState(), task_state_to_propagate);
-    }
   }
 
   return true;
@@ -125,8 +109,9 @@ template <class CallbackBase,
 bool CallbackInvokeHelper<CallbackBase, mode, return_type_is_promise>::
     CallInternal(int argc, v8::Local<v8::Value>* argv) {
   ScriptState* script_state = callback_->CallbackRelevantScriptState();
+  DCHECK(script_state);
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
-  probe::InvokeCallback probe_scope(script_state, class_like_name_,
+  probe::InvokeCallback probe_scope(*script_state, class_like_name_,
                                     /*callback=*/nullptr, function_);
 
   if constexpr (mode == CallbackInvokeHelperMode::kConstructorCall) {
@@ -154,9 +139,12 @@ bool CallbackInvokeHelper<CallbackBase, mode, return_type_is_promise>::Call(
   if constexpr (return_type_is_promise == CallbackReturnTypeIsPromise::kYes) {
     v8::TryCatch block(callback_->GetIsolate());
     if (!CallInternal(argc, argv)) {
-      result_ = ScriptPromiseUntyped::Reject(
+      // We don't know the type of the promise here - but given that we're only
+      // going to extract the v8::Value and discard the ScriptPromise, it
+      // doesn't matter what type we use.
+      result_ = ScriptPromise<IDLUndefined>::Reject(
                     callback_->CallbackRelevantScriptState(), block.Exception())
-                    .V8Value();
+                    .V8Promise();
     }
   } else {
     if (!CallInternal(argc, argv))

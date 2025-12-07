@@ -367,16 +367,19 @@ message PerfDataProto {
     // Type of event.
     optional uint32 type = 1;
     optional uint32 misc = 2;
+
     // Size of event.
     optional uint32 size = 3;
   }
 
   message PerfEvent {
     optional EventHeader header = 1;
+
     oneof event_type {
       MMapEvent mmap_event = 2;
       SampleEvent sample_event = 3;
       CommEvent comm_event = 4;
+
       // FORK and EXIT events are structurally identical. They only differ by
       // the event type. But using two distinct fields allows us to
       // differentiate between them without having to check the event type under
@@ -388,6 +391,7 @@ message PerfDataProto {
 
       // Not added from original: fields 8, 11-24.
     }
+
     // Time after boot in nanoseconds corresponding to the event.
     optional uint64 timestamp = 10;
   }
@@ -457,7 +461,6 @@ message PerfDataProto {
 
   repeated PerfFileAttr file_attrs = 1;
   repeated PerfEvent events = 2;
-
   repeated PerfEventType event_types = 10;
 
   // Time when quipper generated this perf data / protobuf, given as seconds

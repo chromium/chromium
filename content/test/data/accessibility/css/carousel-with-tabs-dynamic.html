@@ -1,0 +1,63 @@
+<!--
+@WAIT-FOR:Done
+-->
+<!doctype html>
+
+<style>
+.carousel {
+  overflow: auto;
+  columns: 1;
+  height: 200px;
+  width: 200px;
+
+  scroll-marker-group: after tabs;
+
+  /* Scroll marker group is generated on the .carousel element */
+  &::scroll-marker-group {
+    height: 1rem;
+    width: 100%;
+    text-align: center;
+  }
+
+  /* These are div items children within the carousel */
+  & > div {
+    height: 100%;
+
+    /* Request a scroll marker for this element by setting non-none content */
+    &::scroll-marker {
+      display: inline-block;
+      content: '';
+      width: 1rem;
+      height: 1rem;
+      border: 1px solid black;
+    }
+    /* The currently selected scroll marker should be blue */
+    &::scroll-marker:target-current {
+      background: blue;
+    }
+  }
+}
+</style>
+
+<div id="scroller" class=carousel>
+  <div><a href="#">One</a></div>
+  <div>Two</div>
+  <div><span><a href="#">3</a></span>Three</div>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const a11ySyncTimeMs = 1000;
+    document.documentElement.offsetTop;
+    scroller.scrollLeft = 400;
+    document.documentElement.offsetTop;
+    setTimeout(() => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          document.documentElement.offsetTop;
+          // Signal the end of the test.
+          document.title = "Done";
+        });
+      });
+    }, a11ySyncTimeMs);
+  });
+</script>

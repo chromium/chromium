@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] "::part(mypart):is(:first-child)" should be a valid selector
+  assert_equals: serialization should be canonical expected "::part(mypart):is(:first-child)" but got "::part(mypart):is()"
+[FAIL] "::part(mypart):where(:first-child)" should be a valid selector
+  assert_equals: serialization should be canonical expected "::part(mypart):where(:first-child)" but got "::part(mypart):where()"
+Harness: the test ran to completion.
+

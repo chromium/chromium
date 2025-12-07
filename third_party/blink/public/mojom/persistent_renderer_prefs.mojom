@@ -1,0 +1,15 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Interface for notifying the browser about changes to renderer
+// preferences. Please only expose new preferences after carefully
+// considering if it would be problematic if these preferences were to be
+// modified by a compromised renderer process.
+interface PersistentRendererPrefsService {
+  // Asks the browser process to remember the current line wrapping
+  // preference.
+  SetViewSourceLineWrapping(bool value);
+};

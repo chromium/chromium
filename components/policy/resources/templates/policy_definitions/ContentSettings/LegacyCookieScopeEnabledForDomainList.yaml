@@ -1,0 +1,34 @@
+caption: Enable Legacy Cookie Scope behavior for a list of domains
+desc: |-
+ This policy provides a temporary exemption for specified domains from the new origin-bound cookie behavior.
+
+ Adding a domain to the list will allow cookies from those domain being used by different scheme or port.
+ More information can be found with <ph name ="LEGACY_COOKIE_SCOPE_ENABLED_POLICY_NAME">LegacyCookieScopeEnabled</ph>.
+
+ For cookies on domains not covered by the patterns specified here, or for all cookies if this policy is not set, they will behave with origin-bound cookie behavior.
+
+ This policy will be removed in the future.
+
+example_value:
+- www.example.com
+- '[*.]example.edu'
+
+features:
+  dynamic_refresh: true
+  per_profile: true
+
+future_on:
+ - chrome.*
+ - chrome_os
+ - android
+
+owners:
+- amarjotgill@chromium.org
+- bingler@chromium.org
+
+schema:
+  items:
+    type: string
+  type: array
+tags: []
+type: list

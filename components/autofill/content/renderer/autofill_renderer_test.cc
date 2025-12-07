@@ -47,9 +47,8 @@ void AutofillRendererTest::SetUp() {
       GetMainRenderFrame(), password_autofill_agent.get(),
       &associated_interfaces_);
   autofill_agent_ = CreateAutofillAgent(
-      GetMainRenderFrame(), AutofillAgent::Config(),
-      std::move(password_autofill_agent), std::move(password_generation_agent),
-      &associated_interfaces_);
+      GetMainRenderFrame(), std::move(password_autofill_agent),
+      std::move(password_generation_agent), &associated_interfaces_);
 }
 
 void AutofillRendererTest::TearDown() {
@@ -63,12 +62,11 @@ void AutofillRendererTest::TearDown() {
 
 std::unique_ptr<AutofillAgent> AutofillRendererTest::CreateAutofillAgent(
     content::RenderFrame* render_frame,
-    const AutofillAgent::Config& config,
     std::unique_ptr<PasswordAutofillAgent> password_autofill_agent,
     std::unique_ptr<PasswordGenerationAgent> password_generation_agent,
     blink::AssociatedInterfaceRegistry* associated_interfaces) {
   return std::make_unique<AutofillAgent>(
-      render_frame, config, std::move(password_autofill_agent),
+      render_frame, std::move(password_autofill_agent),
       std::move(password_generation_agent), associated_interfaces);
 }
 

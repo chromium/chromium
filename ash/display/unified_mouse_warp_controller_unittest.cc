@@ -345,7 +345,7 @@ TEST_F(UnifiedMouseWarpControllerTest, BoundaryTestGrid) {
 
   BoundaryTestBody(display_specs, matrix, expected_edges);
 
-  ASSERT_EQ(1, display::Screen::GetScreen()->GetNumDisplays());
+  ASSERT_EQ(1, display::Screen::Get()->GetNumDisplays());
 
   // Assert mouse warps in all bounds to the correct display.
   const std::vector<WarpGroup> warp_groups = {
@@ -397,7 +397,7 @@ TEST_F(UnifiedMouseWarpControllerTest, BoundaryTestGrid) {
 // unified desktop mode.
 TEST_F(UnifiedMouseWarpControllerTest, WarpMouse) {
   UpdateDisplay("600x500,700+0-600x500");
-  ASSERT_EQ(1, display::Screen::GetScreen()->GetNumDisplays());
+  ASSERT_EQ(1, display::Screen::Get()->GetNumDisplays());
 
   EXPECT_FALSE(TestIfMouseWarpsAt(gfx::Point(10, 10)));
   // Touch the right edge of the first display. Pointer should warp.
@@ -416,7 +416,7 @@ TEST_F(UnifiedMouseWarpControllerTest, WarpMouse) {
 
   // With 2X and 1X displays
   UpdateDisplay("600x500*2,700+0-600x500");
-  ASSERT_EQ(1, display::Screen::GetScreen()->GetNumDisplays());
+  ASSERT_EQ(1, display::Screen::Get()->GetNumDisplays());
 
   EXPECT_FALSE(TestIfMouseWarpsAt(gfx::Point(10, 10)));
   // Touch the right edge of the first display. Pointer should warp.
@@ -436,7 +436,7 @@ TEST_F(UnifiedMouseWarpControllerTest, WarpMouse) {
 
   // With 1X and 2X displays
   UpdateDisplay("600x500,700+0-600x500*2");
-  ASSERT_EQ(1, display::Screen::GetScreen()->GetNumDisplays());
+  ASSERT_EQ(1, display::Screen::Get()->GetNumDisplays());
 
   EXPECT_FALSE(TestIfMouseWarpsAt(gfx::Point(10, 10)));
   // Touch the right edge of the first display. Pointer should warp.
@@ -455,7 +455,7 @@ TEST_F(UnifiedMouseWarpControllerTest, WarpMouse) {
 
   // With two 2X displays
   UpdateDisplay("600x500*2,700+0-600x500*2");
-  ASSERT_EQ(1, display::Screen::GetScreen()->GetNumDisplays());
+  ASSERT_EQ(1, display::Screen::Get()->GetNumDisplays());
 
   EXPECT_FALSE(TestIfMouseWarpsAt(gfx::Point(10, 10)));
   // Touch the right edge of the first display. Pointer should warp.

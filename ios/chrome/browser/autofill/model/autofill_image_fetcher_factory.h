@@ -5,28 +5,23 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_MODEL_AUTOFILL_IMAGE_FETCHER_FACTORY_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_MODEL_AUTOFILL_IMAGE_FETCHER_FACTORY_H_
 
-#include <memory>
+#import <memory>
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "base/no_destructor.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
-class ChromeBrowserState;
+class ProfileIOS;
 
 namespace autofill {
 
 class AutofillImageFetcherImpl;
 
 // Singleton that owns all AutofillImageFetcherImpls and associates them with
-// ChromeBrowserState.
-class AutofillImageFetcherFactory : public BrowserStateKeyedServiceFactory {
+// profiles.
+class AutofillImageFetcherFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  static AutofillImageFetcherImpl* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  static AutofillImageFetcherImpl* GetForProfile(ProfileIOS* profile);
   static AutofillImageFetcherFactory* GetInstance();
-
-  AutofillImageFetcherFactory(const AutofillImageFetcherFactory&) = delete;
-  AutofillImageFetcherFactory& operator=(const AutofillImageFetcherFactory&) =
-      delete;
 
  private:
   friend class base::NoDestructor<AutofillImageFetcherFactory>;
@@ -34,9 +29,9 @@ class AutofillImageFetcherFactory : public BrowserStateKeyedServiceFactory {
   AutofillImageFetcherFactory();
   ~AutofillImageFetcherFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace autofill

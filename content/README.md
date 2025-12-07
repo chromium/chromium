@@ -31,7 +31,6 @@ these criteria and thus, are not implemented in `content`. A non-exhaustive
 list:
 
 - Extensions
-- NaCl
 - SpellCheck
 - Autofill
 - Sync

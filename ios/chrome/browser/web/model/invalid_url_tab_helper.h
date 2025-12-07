@@ -29,7 +29,6 @@ class InvalidUrlTabHelper : public web::WebStatePolicyDecider,
       web::WebStatePolicyDecider::PolicyDecisionCallback callback) override;
 
   friend class web::WebStateUserData<InvalidUrlTabHelper>;
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_MODEL_INVALID_URL_TAB_HELPER_H_

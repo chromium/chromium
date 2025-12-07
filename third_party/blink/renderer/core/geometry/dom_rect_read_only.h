@@ -8,13 +8,14 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/geometry/geometry_util.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
 class DOMRectInit;
-class ScriptValue;
+class ScriptObject;
 class ScriptState;
 
 class CORE_EXPORT DOMRectReadOnly : public ScriptWrappable {
@@ -41,7 +42,14 @@ class CORE_EXPORT DOMRectReadOnly : public ScriptWrappable {
   double bottom() const { return geometry_util::NanSafeMax(y_, y_ + height_); }
   double left() const { return geometry_util::NanSafeMin(x_, x_ + width_); }
 
-  ScriptValue toJSONForBinding(ScriptState*) const;
+  // This is just a utility function, which is not web exposed.
+  gfx::PointF Center() const;
+
+  ScriptObject toJSONForBinding(ScriptState*) const;
+
+  bool IsPointInside(double x, double y) const {
+    return x >= left() && x < right() && y >= top() && y < bottom();
+  }
 
  protected:
   double x_;

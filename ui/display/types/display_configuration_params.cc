@@ -26,6 +26,22 @@ DisplayConfigurationParams::DisplayConfigurationParams(
     mode = pmode->Clone();
 }
 
+DisplayConfigurationParams& DisplayConfigurationParams::operator=(
+    const DisplayConfigurationParams& other) {
+  id = other.id;
+  origin = other.origin;
+  mode = other.mode ? other.mode->Clone() : nullptr;
+  enable_vrr = other.enable_vrr;
+  return *this;
+}
+
 DisplayConfigurationParams::~DisplayConfigurationParams() = default;
+
+bool DisplayConfigurationParams::operator==(
+    const DisplayConfigurationParams& other) const {
+  return id == other.id && origin == other.origin &&
+         (mode == other.mode || (mode && other.mode && *mode == *other.mode)) &&
+         enable_vrr == other.enable_vrr;
+}
 
 }  // namespace display

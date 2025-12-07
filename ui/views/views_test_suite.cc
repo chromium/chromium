@@ -6,10 +6,10 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/memory/discardable_memory_allocator.h"
 #include "base/path_service.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
-#include "build/chromeos_buildflags.h"
 #include "gpu/ipc/service/image_transport_surface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/platform/provide_ax_platform_for_tests.h"
@@ -23,7 +23,7 @@
 #include "ui/aura/env.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/command_line.h"
 #include "ui/gl/gl_switches.h"
 #endif
@@ -53,7 +53,7 @@ void ViewsTestSuite::Initialize() {
   testing::UnitTest::GetInstance()->listeners().Append(
       new ui::ProvideAXPlatformForTests());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER)
+#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
   // Force software-gl. This is necessary for mus tests to avoid an msan warning
   // in gl init.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -70,6 +70,8 @@ void ViewsTestSuite::Initialize() {
 #if defined(USE_AURA)
   InitializeEnv();
 #endif
+
+  base::DiscardableMemoryAllocator::SetInstance(&discardable_memory_allocator_);
 }
 
 void ViewsTestSuite::Shutdown() {

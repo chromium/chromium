@@ -17,7 +17,7 @@ struct Serializer<{{data_view}}, MaybeConstUserType> {
     if (CallIsNullIfExists<Traits>(input))
       return;
     {{struct_macros.serialize(
-          struct, struct.name ~ " struct", "Traits::%s(input)", "fragment",
+          struct, struct.name ~ " struct", "Traits::%s(input)", "fragment", "default",
           True)|indent(2)}}
   }
 

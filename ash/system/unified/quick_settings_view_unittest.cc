@@ -17,6 +17,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 
@@ -64,6 +65,13 @@ class QuickSettingsViewTest : public AshTestBase {
     return static_cast<FeatureTile*>(tile_view);
   }
 
+  views::View* GetAccessibilityFocusHelperView() {
+    return GetPrimaryUnifiedSystemTray()
+        ->bubble()
+        ->quick_settings_view()
+        ->GetAccessibilityFocusHelperViewForTesting();
+  }
+
  private:
   // This is required to make the cast tile visible in the
   // `CastAndAutoRotateCompactTiles` unit test. Cast features will not be used.
@@ -79,7 +87,7 @@ TEST_F(QuickSettingsViewTest, CastAndAutoRotateCompactTiles) {
 
   // Test that the cast tile is in its primary form when in clamshell mode,
   // when the auto-rotate tile is not visible.
-  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(display::Screen::Get()->InTabletMode());
   tray->ShowBubble();
 
   FeatureTile* cast_tile = GetTileById(VIEW_ID_FEATURE_TILE_CAST);
@@ -94,7 +102,7 @@ TEST_F(QuickSettingsViewTest, CastAndAutoRotateCompactTiles) {
 
   // Test that cast and auto-rotate tiles are compact in tablet mode.
   tablet_mode_controller->SetEnabledForTest(true);
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
 
   tray->ShowBubble();
 
@@ -158,6 +166,19 @@ TEST_F(QuickSettingsViewTest, ResetSelectedPageAfterClosingBubble) {
   GetPrimaryUnifiedSystemTray()->CloseBubble();
   GetPrimaryUnifiedSystemTray()->ShowBubble();
   EXPECT_EQ(0, pagination_model()->selected_page());
+}
+
+TEST_F(QuickSettingsViewTest,
+       AccessibilityFocusHelperViewAccessibleProperties) {
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  ui::AXNodeData data;
+  auto* helper_view = GetAccessibilityFocusHelperView();
+
+  ASSERT_TRUE(helper_view);
+  helper_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kListItem);
+
+  GetPrimaryUnifiedSystemTray()->CloseBubble();
 }
 
 }  // namespace ash

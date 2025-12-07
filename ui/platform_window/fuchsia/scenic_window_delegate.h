@@ -5,6 +5,8 @@
 #ifndef UI_PLATFORM_WINDOW_FUCHSIA_SCENIC_WINDOW_DELEGATE_H_
 #define UI_PLATFORM_WINDOW_FUCHSIA_SCENIC_WINDOW_DELEGATE_H_
 
+#include "base/component_export.h"
+
 namespace ui {
 
 // Interface use by ScenicWindow to notify the client about Scenic-specific

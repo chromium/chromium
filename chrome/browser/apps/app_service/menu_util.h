@@ -15,7 +15,7 @@
 #include "components/services/app_service/public/cpp/menu.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/menu_separator_types.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 class Profile;
 

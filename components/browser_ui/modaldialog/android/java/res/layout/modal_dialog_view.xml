@@ -14,8 +14,8 @@ found in the LICENSE file.
     android:orientation="vertical"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    app:maxWidthLandscape="@dimen/abc_dialog_min_width_major"
-    app:maxWidthPortrait="@dimen/abc_dialog_min_width_minor"
+    app:maxWidthLandscape="@dimen/modal_dialog_max_width_major"
+    app:maxWidthPortrait="@dimen/modal_dialog_max_width_minor"
     app:maxHeight="@dimen/modal_dialog_max_height" >
 
     <include layout="@layout/modal_dialog_title"
@@ -37,19 +37,25 @@ found in the LICENSE file.
                 android:id="@+id/scrollable_title_container"
                 android:visibility="gone" />
 
-            <org.chromium.ui.widget.TextViewWithLeading
-                android:id="@+id/message_paragraph_1"
-                android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-                app:leading="20sp"
-                style="@style/AlertDialogContent" />
+            <LinearLayout
+                android:id="@+id/message_paragraphs_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone" />
 
-            <org.chromium.ui.widget.TextViewWithLeading
-                android:id="@+id/message_paragraph_2"
-                android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-                android:visibility="gone"
-                android:layout_marginBottom="16dp"
-                app:leading="20sp"
-                style="@style/AlertDialogContent" />
+            <Space
+                android:id="@+id/message_paragraphs_bottom_spacer"
+                android:layout_width="match_parent"
+                android:layout_height="16dp"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/menu_items_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone" />
 
         </LinearLayout>
 
@@ -90,6 +96,16 @@ found in the LICENSE file.
             </LinearLayout>
         </LinearLayout>
     </org.chromium.components.browser_ui.widget.FadingEdgeScrollView>
+
+    <CheckBox
+        android:id="@+id/modal_dialog_checkbox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginTop="16dp"
+        android:visibility="gone"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
 
     <org.chromium.components.browser_ui.widget.DualControlLayout
         android:id="@+id/button_bar"

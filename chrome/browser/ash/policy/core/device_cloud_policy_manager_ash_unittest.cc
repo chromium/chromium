@@ -71,6 +71,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "content/public/test/test_utils.h"
@@ -90,7 +91,6 @@ using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::AtMost;
 using ::testing::DoAll;
-using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::SaveArg;
 using ::testing::StrictMock;
@@ -225,24 +225,24 @@ class DeviceCloudPolicyManagerAshTest
         base::WrapUnique(store_.get()), std::move(external_data_manager),
         base::SingleThreadTaskRunner::GetCurrentDefault(), &state_keys_broker_);
 
-    RegisterLocalState(local_state_.registry());
     manager_->Init(&schema_registry_);
     manager_->SetSigninProfileSchemaRegistry(&schema_registry_);
 
-    user_manager_ =
-        std::make_unique<user_manager::FakeUserManager>(&local_state_);
+    user_manager_ = std::make_unique<user_manager::FakeUserManager>(
+        TestingBrowserProcess::GetGlobal()->local_state());
     manager_->OnUserManagerCreated(user_manager_.get());
 
     // SharedURLLoaderFactory and LocalState singletons have to be set since
     // they are accessed by EnrollmentHandler and StartupUtils.
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
         test_url_loader_factory_.GetSafeWeakWrapper());
-    TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);
 
     // SystemSaltGetter is used in DeviceOAuth2TokenService.
     ash::SystemSaltGetter::Initialize();
     DeviceOAuth2TokenServiceFactory::Initialize(
-        test_url_loader_factory_.GetSafeWeakWrapper(), &local_state_);
+        test_url_loader_factory_.GetSafeWeakWrapper(),
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()->os_crypt_async());
 
     url_fetcher_response_code_ = net::HTTP_OK;
     url_fetcher_response_string_ =
@@ -266,7 +266,7 @@ class DeviceCloudPolicyManagerAshTest
     }
     ShutdownManager();
 
-    manager_->OnUserManagerWillBeDestroyed(user_manager_.get());
+    manager_->OnUserManagerWillBeDestroyed();
     user_manager_.reset();
 
     manager_.reset();
@@ -275,7 +275,6 @@ class DeviceCloudPolicyManagerAshTest
     DeviceOAuth2TokenServiceFactory::Shutdown();
     ash::SystemSaltGetter::Shutdown();
     ash::InstallAttributesClient::Shutdown();
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
 
     reporting_test_enviroment_.reset();
 
@@ -302,6 +301,10 @@ class DeviceCloudPolicyManagerAshTest
     session_manager_client_.set_server_backed_state_keys(state_keys);
   }
 
+  void RemoveStateKeys() {
+    session_manager_client_.set_server_backed_state_keys(/*state_keys=*/{});
+  }
+
   void ConnectManager(bool expectExternalDataManagerConnectCall = true) {
     if (expectExternalDataManagerConnectCall) {
       EXPECT_CALL(*external_data_manager_, Connect(_));
@@ -311,7 +314,7 @@ class DeviceCloudPolicyManagerAshTest
   }
 
   void InitDeviceCloudPolicyInitializer() {
-    manager_->Initialize(&local_state_);
+    manager_->Initialize(TestingBrowserProcess::GetGlobal()->local_state());
     EnrollmentRequisitionManager::Initialize();
     initializer_ = std::make_unique<DeviceCloudPolicyInitializer>(
         &device_management_service_, install_attributes_.get(),
@@ -374,7 +377,6 @@ class DeviceCloudPolicyManagerAshTest
 
   net::HttpStatusCode url_fetcher_response_code_;
   std::string url_fetcher_response_string_;
-  TestingPrefServiceSimple local_state_;
   std::unique_ptr<user_manager::FakeUserManager> user_manager_;
   StrictMock<MockJobCreationHandler> job_creation_handler_;
   FakeDeviceManagementService device_management_service_{
@@ -396,7 +398,8 @@ class DeviceCloudPolicyManagerAshTest
  private:
   // This property is required to instantiate the session manager, a singleton
   // which is used by the device status collector.
-  session_manager::SessionManager session_manager_;
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
 };
 
 TEST_F(DeviceCloudPolicyManagerAshTest, FreshDevice) {
@@ -407,7 +410,7 @@ TEST_F(DeviceCloudPolicyManagerAshTest, FreshDevice) {
   FlushDeviceSettings();
   EXPECT_TRUE(manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
 
-  manager_->Initialize(&local_state_);
+  manager_->Initialize(TestingBrowserProcess::GetGlobal()->local_state());
 
   PolicyBundle bundle;
   EXPECT_TRUE(manager_->policies().Equals(bundle));
@@ -556,10 +559,8 @@ TEST_F(DeviceCloudPolicyManagerAshTest, ConsumerDevice) {
 }
 
 TEST_F(DeviceCloudPolicyManagerAshTest, EnrolledDeviceNoStateKeysGenerated) {
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
-      ash::switches::kEnterpriseEnableForcedReEnrollment,
-      AutoEnrollmentTypeChecker::kForcedReEnrollmentAlways);
+  RemoveStateKeys();  // This is the crucial part of this test: no state keys.
+  EXPECT_FALSE(state_keys_broker_.available());
 
   LockDevice();
   device_settings_service_->LoadImmediately();
@@ -568,18 +569,33 @@ TEST_F(DeviceCloudPolicyManagerAshTest, EnrolledDeviceNoStateKeysGenerated) {
   EXPECT_TRUE(manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
   VerifyPolicyPopulated();
 
-  EXPECT_CALL(job_creation_handler_, OnJobCreation).Times(0);
   AllowUninterestingRemoteCommandFetches();
 
   EXPECT_FALSE(manager_->GetManagedSessionService());
   EXPECT_FALSE(manager_->GetLoginLogoutReporter());
   EXPECT_FALSE(manager_->GetUserAddedRemovedReporter());
 
+  if (AutoEnrollmentTypeChecker::AreFREStateKeysSupported()) {
+    EXPECT_CALL(job_creation_handler_, OnJobCreation).Times(0);
+  } else {
+    // If state keys aren't supported (as in ChromeOS Flex),
+    // `DeviceCloudPolicyInitializer` will start the connection to DMServer even
+    // when state keys are missing, see
+    // `DeviceCloudPolicyInitializer::TryToStartConnection`.
+    EXPECT_CALL(job_creation_handler_, OnJobCreation)
+        .Times(testing::AtLeast(1));
+  }
+
   InitDeviceCloudPolicyInitializer();
 
   // Status uploader for reporting on enrolled devices is only created on
   // connect call.
-  EXPECT_FALSE(manager_->GetStatusUploader());
+  if (AutoEnrollmentTypeChecker::AreFREStateKeysSupported()) {
+    EXPECT_FALSE(manager_->GetStatusUploader());
+  } else {
+    EXPECT_TRUE(manager_->GetStatusUploader());
+  }
+
   // Managed session service and reporters are created when notified by
   // |DeviceCloudPolicyInitializer| that the policy store is ready.
   EXPECT_TRUE(manager_->GetManagedSessionService());
@@ -596,7 +612,7 @@ class DeviceCloudPolicyManagerAshObserverTest
     : public DeviceCloudPolicyManagerAshTest,
       public DeviceCloudPolicyManagerAsh::Observer {
  protected:
-  DeviceCloudPolicyManagerAshObserverTest() {}
+  DeviceCloudPolicyManagerAshObserverTest() = default;
 
   void SetUp() override {
     DeviceCloudPolicyManagerAshTest::SetUp();
@@ -708,8 +724,7 @@ class DeviceCloudPolicyManagerAshEnrollmentTest
           GetCertificate(
               ash::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
               /*force_new_key=*/true, _, _, _, _))
-          .WillOnce(
-              WithArgs<7>(Invoke(CertCallbackSuccessWithValidCertificate)));
+          .WillOnce(WithArgs<7>(CertCallbackSuccessWithValidCertificate));
     }
     AddStateKeys();
   }
@@ -751,8 +766,6 @@ class DeviceCloudPolicyManagerAshEnrollmentTest
     ASSERT_TRUE(owner_settings_service);
 
     EnrollmentConfig enrollment_config;
-    enrollment_config.auth_mechanism =
-        EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED;
     enrollment_config.mode = with_cert ? EnrollmentConfig::MODE_ATTESTATION
                                        : EnrollmentConfig::MODE_MANUAL;
     DMAuth auth =
@@ -984,15 +997,16 @@ TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest, Success) {
 
 TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest,
        EnabledKioskHeartbeatsViaERP) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(chromeos::features::kKioskHeartbeatsViaERP);
-
   RunTest();
   EXPECT_FALSE(manager_->GetHeartbeatSchedulerForTesting());
 }
 
 TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest,
        DisabledKioskHeartbeatsViaERP) {
+    base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      chromeos::features::kKioskHeartbeatsViaERP);
+
   RunTest();
   EXPECT_EQ(manager_->GetHeartbeatSchedulerForTesting()->last_heartbeat(),
             base::Time());

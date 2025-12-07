@@ -14,7 +14,7 @@ import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 
 import {FingerprintProgressElement} from '//resources/ash/common/quick_unlock/fingerprint_progress.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeUiState} from '../../components/display_manager_types.js';
@@ -174,9 +174,6 @@ export class FingerprintSetup extends FingerprintSetupBase {
    * @param isComplete Whether fingerprint enrollment is complete.
    * @param percentComplete Percentage of completion of the enrollment.
    */
-  /**
-   * TODO(b/321675493) Revamp progress update to validate isComplete
-  */
   onEnrollScanDone(
       scanResult: FingerprintResultType, _isComplete: boolean,
       percentComplete: number): void {

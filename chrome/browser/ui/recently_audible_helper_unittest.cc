@@ -24,7 +24,7 @@ class RecentlyAudibleHelperTest : public testing::Test {
   RecentlyAudibleHelperTest& operator=(const RecentlyAudibleHelperTest&) =
       delete;
 
-  ~RecentlyAudibleHelperTest() override {}
+  ~RecentlyAudibleHelperTest() override = default;
 
   void SetUp() override {
     test_web_contents_factory_ =
@@ -40,9 +40,10 @@ class RecentlyAudibleHelperTest : public testing::Test {
     RecentlyAudibleHelper::CreateForWebContents(contents_);
     helper_ = RecentlyAudibleHelper::FromWebContents(contents_);
     helper_->SetTickClockForTesting(task_runner_->GetMockTickClock());
-    subscription_ = helper_->RegisterCallbackForTesting(base::BindRepeating(
-        &RecentlyAudibleHelperTest::OnRecentlyAudibleCallback,
-        base::Unretained(this)));
+    subscription_ =
+        helper_->RegisterRecentlyAudibleChangedCallback(base::BindRepeating(
+            &RecentlyAudibleHelperTest::OnRecentlyAudibleCallback,
+            base::Unretained(this)));
   }
 
   void TearDown() override {

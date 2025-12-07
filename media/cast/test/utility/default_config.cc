@@ -19,7 +19,6 @@ FrameSenderConfig GetDefaultAudioSenderConfig() {
   FrameSenderConfig config;
   config.sender_ssrc = 1;
   config.receiver_ssrc = 2;
-  config.rtp_payload_type = RtpPayloadType::AUDIO_OPUS;
   config.use_hardware_encoder = false;
   config.rtp_timebase = 48000;
   config.channels = 2;
@@ -34,7 +33,6 @@ FrameSenderConfig GetDefaultVideoSenderConfig() {
   FrameSenderConfig config;
   config.sender_ssrc = 11;
   config.receiver_ssrc = 12;
-  config.rtp_payload_type = RtpPayloadType::VIDEO_VP8;
   config.use_hardware_encoder = false;
   config.rtp_timebase = kVideoFrequency;
   config.start_bitrate = config.min_bitrate = config.max_bitrate =

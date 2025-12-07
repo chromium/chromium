@@ -1,0 +1,62 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+source_set("restriction_schedule") {
+  visibility = [
+    ":unit_tests",
+    "//chromeos/ash/components/policy",
+  ]
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_POLICY_IMPL" ]
+
+  public = [
+    "device_restriction_schedule_controller.h",
+    "device_restriction_schedule_controller_delegate_impl.h",
+  ]
+
+  sources = [
+    "device_restriction_schedule_controller.cc",
+    "device_restriction_schedule_controller_delegate_impl.cc",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chromeos/strings",
+    "//components/prefs",
+  ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//base:i18n",
+    "//chromeos/ash/components/install_attributes",
+    "//chromeos/ash/components/login/login_state",
+    "//chromeos/ash/components/policy/weekly_time",
+    "//chromeos/constants",
+    "//components/user_manager",
+    "//components/vector_icons",
+    "//ui/base",
+    "//ui/chromeos",
+    "//ui/message_center",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "device_restriction_schedule_controller_unittest.cc" ]
+
+  deps = [
+    ":restriction_schedule",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/login/login_state",
+    "//chromeos/ash/components/policy/weekly_time",
+    "//chromeos/ash/components/policy/weekly_time:test_support",
+    "//chromeos/constants",
+    "//components/prefs:test_support",
+    "//testing/gmock",
+  ]
+}

@@ -1,0 +1,8 @@
+specific_include_rules = {
+  "browsing_data_remover_impl\.cc": [
+    "+components/browsing_data/core/cookie_or_cache_deletion_choice.h",
+  ],
+  "browsing_data_remover_impl.*\.cc": [
+    "+components/fingerprinting_protection_filter/interventions/common/interventions_features.h",
+  ]
+}

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/notifications/scheduler/public/notification_schedule_service.h"
+
 #include <memory>
 #include <set>
 #include <string>
@@ -16,9 +18,9 @@
 #include "chrome/browser/notifications/scheduler/public/display_agent.h"
 #include "chrome/browser/notifications/scheduler/public/features.h"
 #include "chrome/browser/notifications/scheduler/public/notification_params.h"
-#include "chrome/browser/notifications/scheduler/public/notification_schedule_service.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_client.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_client_registrar.h"
+#include "chrome/browser/notifications/scheduler/public/tips_agent.h"
 #include "chrome/browser/notifications/scheduler/schedule_service_factory_helper.h"
 #include "chrome/browser/notifications/scheduler/test/mock_notification_background_task_scheduler.h"
 #include "chrome/browser/profiles/profile.h"
@@ -38,7 +40,7 @@ const base::FilePath::CharType kTestDir[] =
 
 class TestClient : public NotificationSchedulerClient {
  public:
-  TestClient() {}
+  TestClient() = default;
   TestClient(const TestClient&) = delete;
   TestClient& operator=(const TestClient&) = delete;
   ~TestClient() override = default;
@@ -129,7 +131,7 @@ class NotificationScheduleServiceTest : public InProcessBrowserTest {
   NotificationScheduleServiceTest& operator=(
       const NotificationScheduleServiceTest&) = delete;
 
-  ~NotificationScheduleServiceTest() override {}
+  ~NotificationScheduleServiceTest() override = default;
 
  protected:
   void SetUpOnMainThread() override {
@@ -155,13 +157,15 @@ class NotificationScheduleServiceTest : public InProcessBrowserTest {
     auto display_agent = notifications::DisplayAgent::Create();
     auto background_task_scheduler =
         std::make_unique<TestBackgroundTaskScheduler>();
+    auto tips_agent = notifications::TipsAgent::Create();
     task_scheduler_ = background_task_scheduler.get();
     auto* db_provider =
         profile->GetDefaultStoragePartition()->GetProtoDatabaseProvider();
     service_ = CreateNotificationScheduleService(
         std::move(client_registrar), std::move(background_task_scheduler),
-        std::move(display_agent), db_provider,
-        tmp_dir_.GetPath().Append(kTestDir), profile->IsOffTheRecord());
+        std::move(display_agent), std::move(tips_agent), db_provider,
+        tmp_dir_.GetPath().Append(kTestDir), profile->IsOffTheRecord(),
+        profile->GetPrefs());
   }
 
   // Helper function to schedule a notification immediately to show.
@@ -210,7 +214,7 @@ class NotificationScheduleServiceTest : public InProcessBrowserTest {
   base::ScopedTempDir tmp_dir_;
   std::unique_ptr<KeyedService> service_;
   raw_ptr<TestBackgroundTaskScheduler> task_scheduler_;
-  std::map<SchedulerClientType, TestClient*> clients_;
+  std::map<SchedulerClientType, raw_ptr<TestClient, CtnExperimental>> clients_;
 };
 
 // Test to schedule a notification.

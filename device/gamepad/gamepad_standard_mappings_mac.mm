@@ -2,18 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+
+#include "device/gamepad/gamepad_standard_mappings.h"
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <iterator>
 
-#include "base/ranges/algorithm.h"
 #include "device/gamepad/gamepad_id_list.h"
-#include "device/gamepad/gamepad_standard_mappings.h"
 
 namespace device {
 
@@ -136,6 +133,12 @@ void MapperXboxSeriesXBluetooth(const Gamepad& input, Gamepad* mapped) {
   mapped->buttons[XBOX_SERIES_X_BUTTON_SHARE] = input.buttons[15];
   mapped->buttons_length = XBOX_SERIES_X_BUTTON_COUNT;
   mapped->axes_length = AXIS_INDEX_COUNT;
+}
+
+void Mapper8BitDoBluetooth(const Gamepad& input, Gamepad* mapped) {
+  MapperXboxBluetooth(input, mapped);
+  mapped->buttons[BUTTON_INDEX_LEFT_TRIGGER] = AxisToButton(input.axes[4]);
+  mapped->buttons[BUTTON_INDEX_RIGHT_TRIGGER] = AxisToButton(input.axes[3]);
 }
 
 void MapperPlaystationSixAxis(const Gamepad& input, Gamepad* mapped) {
@@ -781,6 +784,10 @@ constexpr struct MappingData {
 } kAvailableMappings[] = {
     // PowerA Wireless Controller - Nintendo GameCube style
     {GamepadId::kPowerALicPro, MapperSwitchPro},
+    // 8BitDo Ultimate Wireless 2C (Bluetooth)
+    {GamepadId::k8BitDoProduct301b, Mapper8BitDoBluetooth},
+    // 8BitDo Ultimate Wireless 2C 81HE (Bluetooth)
+    {GamepadId::k8BitDoProduct6012, Mapper8BitDoBluetooth},
     // Snakebyte iDroid:con
     {GamepadId::kBroadcomProduct8502, MapperSnakebyteIDroidCon},
     // DragonRise Generic USB
@@ -841,6 +848,8 @@ constexpr struct MappingData {
     {GamepadId::kSonyProduct0ce6, MapperDualSense},
     // DualSense Edge
     {GamepadId::kSonyProduct0df2, MapperDualSense},
+    // PlayStation Access
+    {GamepadId::kSonyProduct0e5f, MapperDualSense},
     // Switch Joy-Con L
     {GamepadId::kNintendoProduct2006, MapperSwitchJoyCon},
     // Switch Joy-Con R
@@ -892,7 +901,7 @@ constexpr struct MappingData {
 }  // namespace
 
 GamepadStandardMappingFunction GetGamepadStandardMappingFunction(
-    const std::string_view product_name,
+    std::string_view product_name,
     const uint16_t vendor_id,
     const uint16_t product_id,
     const uint16_t hid_specification_version,
@@ -900,8 +909,8 @@ GamepadStandardMappingFunction GetGamepadStandardMappingFunction(
     GamepadBusType bus_type) {
   GamepadId gamepad_id =
       GamepadIdList::Get().GetGamepadId(product_name, vendor_id, product_id);
-  const auto* find_it = base::ranges::find(kAvailableMappings, gamepad_id,
-                                           &MappingData::gamepad_id);
+  const auto* find_it = std::ranges::find(kAvailableMappings, gamepad_id,
+                                          &MappingData::gamepad_id);
   GamepadStandardMappingFunction mapper =
       (find_it == std::end(kAvailableMappings)) ? nullptr : find_it->function;
 

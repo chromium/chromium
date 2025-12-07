@@ -22,7 +22,7 @@ source_set("test_support") {
   deps = [
     "//components/breadcrumbs/core",
     "//components/content_settings/core/common",
-    "//components/gcm_driver:gcm_driver",
+    "//components/gcm_driver",
     "//mojo/core/embedder",
     "//net",
     "//testing/gtest",
@@ -43,7 +43,6 @@ source_set("test_support") {
 
   if (use_blink) {
     deps += [
-      "//components/invalidation/impl",
       "//components/policy/core/browser",
       "//ui/gl:test_support",
     ]
@@ -71,6 +70,10 @@ if (is_ios) {
     testonly = true
     filelist_name = "data/dom_distiller/unit_tests_bundle_data.filelist"
   }
+  bundle_data_from_filelist("dom_label_test_bundle_data") {
+    testonly = true
+    filelist_name = "data/autofill/label-doms/unit_tests_bundle_data.filelist"
+  }
   bundle_data_from_filelist("feed_test_bundle_data") {
     testonly = true
     filelist_name = "data/feed/unit_tests_bundle_data.filelist"
@@ -91,13 +94,26 @@ if (is_ios) {
     testonly = true
     filelist_name = "data/language/unit_tests_bundle_data.filelist"
   }
+  bundle_data_from_filelist("optimization_guide_test_bundle_data") {
+    testonly = true
+    filelist_name = "data/optimization_guide/unit_tests_bundle_data.filelist"
+  }
   bundle_data_from_filelist("offline_pages_test_bundle_data") {
     testonly = true
     filelist_name = "data/offline_pages/unit_tests_bundle_data.filelist"
   }
+  bundle_data_from_filelist("page_content_annotations_test_bundle_data") {
+    testonly = true
+    filelist_name =
+        "data/page_content_annotations/unit_tests_bundle_data.filelist"
+  }
   bundle_data_from_filelist("paint_preview_test_bundle_data") {
     testonly = true
     filelist_name = "data/paint_preview/unit_tests_bundle_data.filelist"
+  }
+  bundle_data_from_filelist("passage_embeddings_test_bundle_data") {
+    testonly = true
+    filelist_name = "data/passage_embeddings/unit_tests_bundle_data.filelist"
   }
   bundle_data_from_filelist("password_manager_test_bundle_data") {
     testonly = true

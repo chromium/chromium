@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.messages;
 
 import android.text.format.DateUtils;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.messages.MessageAutodismissDurationProvider;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.ui.accessibility.AccessibilityState;
@@ -13,11 +14,12 @@ import org.chromium.ui.accessibility.AccessibilityState;
 /**
  * Implementation of {@link MessageAutodismissDurationProvider}.
  *
- * Use finch parameter "autodismiss_duration_ms_{@link MessageIdentifier}" to customize through
+ * <p>Use finch parameter "autodismiss_duration_ms_{@link MessageIdentifier}" to customize through
  * finch config, such as "autodismiss_duration_ms_SyncError" within the feature {@code
  * ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE}. The duration configured in this way will
  * take the highest priority over clients' configuration in code.
  */
+@NullMarked
 public class ChromeMessageAutodismissDurationProvider
         implements MessageAutodismissDurationProvider {
     private long mAutodismissDurationMs;

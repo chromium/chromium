@@ -1,0 +1,4 @@
+android.webkit.WebView focusable focused
+++android.view.View
+++++android.view.View interesting name='labeltext '
+++++android.view.View role_description='menu pop up button' clickable collapsed focusable interesting name='one' hint='labeltext' expanded_state=1

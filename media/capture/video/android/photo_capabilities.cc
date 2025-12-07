@@ -100,3 +100,5 @@ PhotoCapabilities::getMeteringModeArray(MeteringModeType type) const {
 }
 
 }  // namespace media
+
+DEFINE_JNI(PhotoCapabilities)

@@ -61,6 +61,10 @@ p {
   display: none;
 }
 
+.red {
+  color: red;
+}
+
 a, span.readOnlyMode {
   margin-block-end: 10px;
   margin-block-start: 10px;
@@ -74,7 +78,7 @@ label {
 }
 
 label.disabled {
-  color: rgb(128, 134, 139);
+  color: gray;
 }
 
 input[type='checkbox'] {

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_ENTERPRISE_DATA_CONTROLS_CORE_BROWSER_CONDITIONS_OR_CONDITION_H_
 #define COMPONENTS_ENTERPRISE_DATA_CONTROLS_CORE_BROWSER_CONDITIONS_OR_CONDITION_H_
 
+#include <vector>
+
 #include "components/enterprise/data_controls/core/browser/conditions/condition.h"
 
 namespace data_controls {

@@ -4,11 +4,18 @@
 
 #include "chrome/browser/ui/ash/boca/chrome_tab_strip_delegate.h"
 
+#include "ash/constants/ash_features.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/test/base/ash/util/ash_test_util.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
@@ -32,10 +39,18 @@ class ChromeTabStripDelegateBrowserTest
   ChromeTabStripDelegateBrowserTest& operator=(
       const ChromeTabStripDelegateBrowserTest&) = delete;
   ~ChromeTabStripDelegateBrowserTest() override = default;
+
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kBoca, ash::features::kBocaConsumer,
+         ash::features::kOnDeviceSpeechRecognition},
+        /*disabled_features=*/{});
+    extensions::PlatformAppBrowserTest::SetUp();
+  }
+
   // extensions::PlatformAppBrowserTest:
   void SetUpOnMainThread() override {
     extensions::PlatformAppBrowserTest::SetUpOnMainThread();
-
     delegate_ = std::make_unique<ChromeTabStripDelegate>();
   }
 
@@ -60,10 +75,12 @@ class ChromeTabStripDelegateBrowserTest
     EXPECT_EQ(base::UTF8ToUTF16(title), tab.title);
     EXPECT_EQ(url, tab.url);
     EXPECT_GT(tab.last_access_timetick, base::TimeTicks());
+    EXPECT_GT(tab.id, 0);
   }
 
  private:
   std::unique_ptr<ChromeTabStripDelegate> delegate_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeTabStripDelegateBrowserTest, GetTabListForWindow) {
@@ -84,4 +101,45 @@ IN_PROC_BROWSER_TEST_F(ChromeTabStripDelegateBrowserTest, GetTabListForWindow) {
 
   // Verify last access time reflects the access order.
   EXPECT_GT(tab_list[1].last_access_timetick, tab_list[0].last_access_timetick);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeTabStripDelegateBrowserTest,
+                       GetTabListForSWANonEmptyWindow) {
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
+
+  // Create browser 1 and navigate to url1 and then url2
+  CreateBrowser({GURL(kTabUrl1), GURL(kTabUrl2)}, /*active_url_index=*/1);
+  // Create a SWA
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+  ash::test::InstallSystemAppsForTesting(profile());
+  ash::test::CreateSystemWebApp(profile(), ash::SystemWebAppType::BOCA);
+  BrowserWindowInterface* const swa_browser = browser_created_observer.Wait();
+
+  chrome::AddTabAt(swa_browser->GetBrowserForMigrationOnly(), GURL(kTabUrl3),
+                   /*index=*/0,
+                   /*foreground=*/false);
+  EXPECT_EQ(3u, chrome::GetTotalBrowserCount());
+
+  auto tab_list = delegate()->GetTabsListForWindow(
+      swa_browser->GetWindow()->GetNativeWindow());
+
+  // Contains the new tab and webui itself.
+  ASSERT_EQ(2u, tab_list.size());
+
+  // Verify tab is listed in non-ascending order inside window based on last
+  // access time.
+  EXPECT_EQ(kTabUrl3, tab_list[1].url);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeTabStripDelegateBrowserTest,
+                       GetTabListForSWAEmptyWindow) {
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+  ash::test::InstallSystemAppsForTesting(profile());
+  ash::test::CreateSystemWebApp(profile(), ash::SystemWebAppType::BOCA);
+  BrowserWindowInterface* const swa_browser = browser_created_observer.Wait();
+
+  auto tab_list = delegate()->GetTabsListForWindow(
+      swa_browser->GetWindow()->GetNativeWindow());
+  // Contains the webui itself.
+  EXPECT_EQ(1u, tab_list.size());
 }

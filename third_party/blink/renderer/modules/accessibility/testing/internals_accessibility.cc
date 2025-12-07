@@ -26,8 +26,8 @@ AXObject* GetAXObject(const Element* element) {
 }  // namespace
 
 // static
-WTF::String InternalsAccessibility::getComputedLabel(Internals&,
-                                                     const Element* element) {
+String InternalsAccessibility::getComputedLabel(Internals&,
+                                                const Element* element) {
   AXObject* ax_object = GetAXObject(element);
   if (!ax_object || ax_object->IsIgnored()) {
     return g_empty_string;
@@ -35,12 +35,12 @@ WTF::String InternalsAccessibility::getComputedLabel(Internals&,
 
   ax::mojom::NameFrom name_from;
   AXObject::AXObjectVector name_objects;
-  return ax_object->GetName(name_from, &name_objects);
+  return ax_object->GetName(name_from, &name_objects, nullptr);
 }
 
 // static
-WTF::String InternalsAccessibility::getComputedRole(Internals&,
-                                                    const Element* element) {
+String InternalsAccessibility::getComputedRole(Internals&,
+                                               const Element* element) {
   AXObject* ax_object = GetAXObject(element);
   if (!ax_object || ax_object->IsIgnored()) {
     return AXObject::AriaRoleName(ax::mojom::Role::kNone);

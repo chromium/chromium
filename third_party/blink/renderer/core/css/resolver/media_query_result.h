@@ -26,7 +26,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
-#include "third_party/blink/renderer/core/css/media_query_exp.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector_traits.h"
 
@@ -57,9 +57,6 @@ struct MediaQueryResultFlags {
     return (unit_flags == o.unit_flags) &&
            (is_viewport_dependent == o.is_viewport_dependent) &&
            (is_device_dependent == o.is_device_dependent);
-  }
-  bool operator!=(const MediaQueryResultFlags& o) const {
-    return !(*this == o);
   }
 
   void Add(const MediaQueryResultFlags& o) {

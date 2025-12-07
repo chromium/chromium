@@ -14,13 +14,15 @@ namespace {
 // Returns the first responder in the subviews of `view`, or nil if no view in
 // the subtree is the first responder.
 UIView* GetFirstResponderSubview(UIView* view) {
-  if ([view isFirstResponder])
+  if ([view isFirstResponder]) {
     return view;
+  }
 
   for (UIView* subview in [view subviews]) {
     UIView* firstResponder = GetFirstResponderSubview(subview);
-    if (firstResponder)
+    if (firstResponder) {
       return firstResponder;
+    }
   }
 
   return nil;
@@ -40,8 +42,9 @@ UIView* GetFirstResponderSubview(UIView* view) {
 @implementation CRWWebViewScrollViewProxy (ContentInsetsAlgebra)
 
 - (void)cr_addInsets:(UIEdgeInsets)insets {
-  if (UIEdgeInsetsEqualToEdgeInsets(insets, UIEdgeInsetsZero))
+  if (UIEdgeInsetsEqualToEdgeInsets(insets, UIEdgeInsetsZero)) {
     return;
+  }
 
   UIEdgeInsets currentInsets = [self contentInset];
   currentInsets.top += insets.top;
@@ -98,6 +101,14 @@ UIView* GetFirstResponderSubview(UIView* view) {
       allowsBackForwardNavigationGestures;
 }
 
+- (BOOL)allowsLinkPreview {
+  return _webController.allowsLinkPreview;
+}
+
+- (void)setAllowsLinkPreview:(BOOL)allowsLinkPreview {
+  _webController.allowsLinkPreview = allowsLinkPreview;
+}
+
 - (CGRect)bounds {
   return [_contentView bounds];
 }
@@ -141,8 +152,9 @@ UIView* GetFirstResponderSubview(UIView* view) {
 
 - (void)registerInsets:(UIEdgeInsets)insets forCaller:(id)caller {
   NSValue* callerValue = [NSValue valueWithNonretainedObject:caller];
-  if ([_registeredInsets objectForKey:callerValue])
+  if ([_registeredInsets objectForKey:callerValue]) {
     [self unregisterInsetsForCaller:caller];
+  }
   [self.scrollViewProxy cr_addInsets:insets];
   [_registeredInsets setObject:[NSValue valueWithUIEdgeInsets:insets]
                         forKey:callerValue];
@@ -177,8 +189,9 @@ UIView* GetFirstResponderSubview(UIView* view) {
 }
 
 - (BOOL)isKeyboardVisible {
-  if (!_contentView)
+  if (!_contentView) {
     return NO;
+  }
   UIView* firstResponder = GetFirstResponderSubview(_contentView);
   return firstResponder.inputAccessoryView != nil;
 }
@@ -187,12 +200,16 @@ UIView* GetFirstResponderSubview(UIView* view) {
   return [_contentView becomeFirstResponder];
 }
 
-- (void)surfaceSizeChanged {
-  [_webController surfaceSizeChanged];
-}
-
 - (BOOL)isWebPageInFullscreenMode {
   return [_webController isWebPageInFullscreenMode];
+}
+
+- (UIEdgeInsets)obscuredInsets {
+  return _contentView.obscuredInsets;
+}
+
+- (void)setObscuredInsets:(UIEdgeInsets)obscuredInsets {
+  [_contentView setObscuredInsets:obscuredInsets];
 }
 
 @end

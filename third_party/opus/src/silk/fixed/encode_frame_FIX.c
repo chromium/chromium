@@ -105,8 +105,11 @@ opus_int silk_encode_frame_FIX(
     opus_int     gain_lock[ MAX_NB_SUBFR ] = {0};
     opus_int16   best_gain_mult[ MAX_NB_SUBFR ];
     opus_int     best_sum[ MAX_NB_SUBFR ];
+    opus_int     bits_margin;
     SAVE_STACK;
 
+    /* For CBR, 5 bits below budget is close enough. For VBR, allow up to 25% below the cap if we initially busted the budget. */
+    bits_margin = useCBR ? 5 : maxBits/4;
     /* This is totally unnecessary but many compilers (including gcc) are too dumb to realise it */
     LastGainIndex_copy2 = nBits_lower = nBits_upper = gainMult_lower = gainMult_upper = 0;
 
@@ -282,7 +285,7 @@ opus_int silk_encode_frame_FIX(
                     gainMult_upper = gainMult_Q8;
                     gainsID_upper = gainsID;
                 }
-            } else if( nBits < maxBits - 5 ) {
+            } else if( nBits < maxBits - bits_margin ) {
                 found_lower = 1;
                 nBits_lower = nBits;
                 gainMult_lower = gainMult_Q8;
@@ -296,7 +299,7 @@ opus_int silk_encode_frame_FIX(
                     LastGainIndex_copy2 = psEnc->sShape.LastGainIndex;
                 }
             } else {
-                /* Within 5 bits of budget: close enough */
+                /* Close enough */
                 break;
             }
 
@@ -318,17 +321,10 @@ opus_int silk_encode_frame_FIX(
             if( ( found_lower & found_upper ) == 0 ) {
                 /* Adjust gain according to high-rate rate/distortion curve */
                 if( nBits > maxBits ) {
-                    if (gainMult_Q8 < 16384) {
-                        gainMult_Q8 *= 2;
-                    } else {
-                        gainMult_Q8 = 32767;
-                    }
+                    gainMult_Q8 = silk_min_32( 1024, gainMult_Q8*3/2 );
                 } else {
-                    opus_int32 gain_factor_Q16;
-                    gain_factor_Q16 = silk_log2lin( silk_LSHIFT( nBits - maxBits, 7 ) / psEnc->sCmn.frame_length + SILK_FIX_CONST( 16, 7 ) );
-                    gainMult_Q8 = silk_SMULWB( gain_factor_Q16, gainMult_Q8 );
+                    gainMult_Q8 = silk_max_32( 64, gainMult_Q8*4/5 );
                 }
-
             } else {
                 /* Adjust gain by interpolating */
                 gainMult_Q8 = gainMult_lower + silk_DIV32_16( silk_MUL( gainMult_upper - gainMult_lower, maxBits - nBits_lower ), nBits_upper - nBits_lower );

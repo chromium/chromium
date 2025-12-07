@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef NET_DNS_HOST_RESOLVER_MANAGER_JOB_H_
 #define NET_DNS_HOST_RESOLVER_MANAGER_JOB_H_
 
+#include <array>
 #include <deque>
 #include <memory>
 #include <optional>
+#include <variant>
 #include <vector>
 
 #include "base/containers/linked_list.h"
@@ -32,11 +29,11 @@
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/log/net_log_with_source.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace net {
 
 class ResolveContext;
+class HostResolverInternalResult;
 class HostResolverMdnsTask;
 class HostResolverNat64Task;
 
@@ -154,6 +151,31 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   }
 
  private:
+  // Explains why a Job didn't attempt HTTPS query.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(HttpsNotAttemptedReason)
+  enum class HttpsNotAttemptedReason {
+    // The reason is unknown. This is the last resort option and should be
+    // avoided as much as possible.
+    kUnknown = 0,
+    // Querying HTTPS is disabled.
+    kQueryingHttpsDisabled = 1,
+    // Built-in DNS resolver is disabled.
+    kBuiltInResolverDisabled = 2,
+    // No DnsClient.
+    kNoDnsClient = 3,
+    // DnsTask wasn't scheduled because it hadn't been working for a while.
+    kFallbackFromInsecureTransactionPreferred = 4,
+    // Insecure DnsTask was not allowed to query HTTPS.
+    kInsecureDnsTaskDisabled = 5,
+    // DnsTask was executed but fell back to the system task.
+    kFallbackToSystemTaskAfterDnsTask = 6,
+    kMaxValue = kFallbackToSystemTaskAfterDnsTask,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:HttpsNotAttemptedReason)
+
   // Keeps track of the highest priority.
   class PriorityTracker {
    public:
@@ -191,7 +213,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
    private:
     RequestPriority highest_priority_;
     size_t total_count_ = 0;
-    size_t counts_[NUM_PRIORITIES] = {};
+    std::array<size_t, NUM_PRIORITIES> counts_ = {};
   };
 
   base::Value::Dict NetLogJobCreationParams(const NetLogSource& source);
@@ -244,11 +266,12 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   // HostResolverDnsTask::Delegate implementation:
   void OnDnsTaskComplete(base::TimeTicks start_time,
                          bool allow_fallback,
-                         HostCache::Entry results,
+                         HostResolverDnsTask::Results results,
                          bool secure) override;
   void OnIntermediateTransactionsComplete(
       std::optional<HostResolverDnsTask::SingleTransactionResults>
           single_transaction_results) override;
+  bool IsHappyEyeballsV3Enabled() const override;
   void AddTransactionTimeQueued(base::TimeDelta time_queued) override;
 
   // DnsTaskResultsManager::Delegate implementation:
@@ -259,10 +282,12 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   void OnMdnsImmediateFailure(int rv);
 
   void StartNat64Task();
-  void OnNat64TaskComplete();
+  void OnNat64TaskComplete(std::unique_ptr<HostResolverInternalResult> result);
 
   void RecordJobHistograms(const HostCache::Entry& results,
                            std::optional<TaskType> task_type);
+
+  void RecordJobHttpsHistograms();
 
   void MaybeCacheResult(const HostCache::Entry& results,
                         base::TimeDelta ttl,
@@ -333,6 +358,13 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   // Result of DnsTask.
   int dns_task_error_ = OK;
 
+  // Set to true when this Job executed DnsTask.
+  bool dns_task_executed_ = false;
+
+  // Set to whether DnsTask disabled HTTPS query. Set only when DnsTask
+  // succeeds.
+  bool dns_task_https_disabled_ = false;
+
   raw_ptr<const base::TickClock> tick_clock_;
   base::TimeTicks start_time_;
 
@@ -343,6 +375,9 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   // Resolves the host using the system DNS resolver, which can be overridden
   // for tests.
   std::unique_ptr<HostResolverSystemTask> system_task_;
+
+  // Set to true when this Job falls back to the system DNS task after DNS task.
+  bool fallback_to_system_task_after_dns_task_ = false;
 
   // Resolves the host using a DnsTransaction.
   std::unique_ptr<HostResolverDnsTask> dns_task_;

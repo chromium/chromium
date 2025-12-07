@@ -19,7 +19,6 @@
 #include "media/mojo/mojom/audio_logging.mojom.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace speech {
 
@@ -61,8 +60,7 @@ class AudioSourceFetcherImpl
   void Capture(const media::AudioBus* audio_source,
                base::TimeTicks audio_capture_time,
                const media::AudioGlitchInfo& glitch_info,
-               double volume,
-               bool key_pressed) final;
+               double volume) final;
   void OnCaptureError(media::AudioCapturerSource::ErrorCode code,
                       const std::string& message) final;
   void OnCaptureMuted(bool is_muted) final {}

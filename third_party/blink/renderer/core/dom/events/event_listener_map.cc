@@ -30,14 +30,10 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/dom/events/event_listener_map.h"
 
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/debug/crash_logging.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_event_listener_options.h"
 #include "third_party/blink/renderer/core/dom/events/add_event_listener_options_resolved.h"
@@ -116,7 +112,7 @@ static bool AddListenerToVector(EventListenerVector* listener_vector,
                                 const AddEventListenerOptionsResolved* options,
                                 RegisteredEventListener** registered_listener) {
   for (auto& item : *listener_vector) {
-    if (item->Matches(listener, options)) {
+    if (item->Matches(listener, {options->capture()})) {
       // Duplicate listener.
       return false;
     }
@@ -158,11 +154,11 @@ bool EventListenerMap::Add(const AtomicString& event_type,
 static bool RemoveListenerFromVector(
     EventListenerVector* listener_vector,
     const EventListener* listener,
-    const EventListenerOptions* options,
+    const RegisteredEventListener::OptionsForMatching& options,
     RegisteredEventListener** registered_listener) {
   EventListenerVector::iterator end = listener_vector->end();
   for (EventListenerVector::iterator iter = listener_vector->begin();
-       iter != end; ++iter) {
+       iter != end; UNSAFE_TODO(++iter)) {
     if ((*iter)->Matches(listener, options)) {
       (*iter)->SetRemoved();
       *registered_listener = *iter;
@@ -173,10 +169,11 @@ static bool RemoveListenerFromVector(
   return false;
 }
 
-bool EventListenerMap::Remove(const AtomicString& event_type,
-                              const EventListener* listener,
-                              const EventListenerOptions* options,
-                              RegisteredEventListener** registered_listener) {
+bool EventListenerMap::Remove(
+    const AtomicString& event_type,
+    const EventListener* listener,
+    const RegisteredEventListener::OptionsForMatching& options,
+    RegisteredEventListener** registered_listener) {
   for (unsigned i = 0; i < entries_.size(); ++i) {
     if (entries_[i].first == event_type) {
       bool was_removed = RemoveListenerFromVector(

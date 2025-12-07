@@ -66,7 +66,7 @@ class PointerDelegate {
   virtual void OnPointerFrame() = 0;
 
  protected:
-  virtual ~PointerDelegate() {}
+  virtual ~PointerDelegate() = default;
 };
 
 }  // namespace exo

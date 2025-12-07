@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_ARC_NEARBY_SHARE_NEARBY_SHARE_SESSION_IMPL_H_
 #define CHROME_BROWSER_ASH_ARC_NEARBY_SHARE_NEARBY_SHARE_SESSION_IMPL_H_
 
-#include "ash/components/arc/mojom/nearby_share.mojom.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -13,21 +12,34 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/arc/nearby_share/share_info_file_handler.h"
-#include "chrome/browser/ash/fusebox/fusebox_moniker.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
+#include "chromeos/ash/experiences/arc/mojom/nearby_share.mojom.h"
 #include "chromeos/components/sharesheet/constants.h"
+#include "components/exo/wm_helper.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "ui/aura/env.h"
-#include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
-#include "ui/aura/window_observer.h"
 #include "ui/views/widget/widget.h"
 
 namespace webshare {
 class PrepareDirectoryTask;
 }  // namespace webshare
+
+namespace base {
+template <>
+struct ScopedObservationTraits<exo::WMHelper,
+                               exo::WMHelper::ExoWindowObserver> {
+  static void AddObserver(exo::WMHelper* source,
+                          exo::WMHelper::ExoWindowObserver* observer) {
+    source->AddExoWindowObserver(observer);
+  }
+  static void RemoveObserver(exo::WMHelper* source,
+                             exo::WMHelper::ExoWindowObserver* observer) {
+    source->RemoveExoWindowObserver(observer);
+  }
+};
+}  // namespace base
 
 namespace arc {
 
@@ -35,8 +47,7 @@ class ProgressBarDialogView;
 
 // Implementation of NearbyShareSession interface.
 class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
-                               public aura::WindowObserver,
-                               public aura::EnvObserver {
+                               public exo::WMHelper::ExoWindowObserver {
  public:
   using SessionFinishedCallback = base::OnceCallback<void(uint32_t)>;
   using SharesheetCallback = base::RepeatingCallback<void(
@@ -65,12 +76,8 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   // Called when Nearby Share is closed.
   void OnNearbyShareClosed(views::Widget::ClosedReason reason);
 
-  // aura::EnvObserver:
-  void OnWindowInitialized(aura::Window* const window) override;
-
-  // aura::WindowObserver:
-  void OnWindowVisibilityChanged(aura::Window* const window,
-                                 bool visible) override;
+  // exo::WMHelper::ExoWindowObserver:
+  void OnExoWindowCreated(aura::Window* window) override;
 
   // Sets a callback which will be called instead of showing the Sharesheet
   // bubble.
@@ -85,10 +92,6 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
 
   // Converts |share_info_| to |apps::IntentPtr| type.
   apps::IntentPtr ConvertShareIntentInfoToIntent();
-
-  // Converts |share_info_| to |apps::IntentPtr| type, using fusebox::Monikers
-  // to share files.
-  apps::IntentPtr ConvertShareIntentInfoToMonikerFileIntent();
 
   void OnNearbyShareBubbleShown(sharesheet::SharesheetResult result);
 
@@ -169,19 +172,12 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   // Sequenced task runner for executing backend file IO cleanup tasks.
   const scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
 
-  // Observes the ARC window.
-  base::ScopedObservation<aura::Window, aura::WindowObserver>
-      arc_window_observation_{this};
-
-  // Observes the Aura environment.
-  base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation_{this};
+  // Observes the ARC window creation.
+  base::ScopedObservation<exo::WMHelper, exo::WMHelper::ExoWindowObserver>
+      exo_observation_{this};
 
   // Callback when the Nearby Share Session is finished and no longer needed.
   SessionFinishedCallback session_finished_callback_;
-
-  // Monikers which have been created for sharing files from ARC. These should
-  // be destroyed once sharing is complete.
-  std::vector<fusebox::Moniker> shared_monikers_;
 
   // Test callback to override the sharesheet bubble in test environments.
   SharesheetCallback test_sharesheet_callback_;

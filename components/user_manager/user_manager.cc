@@ -6,6 +6,13 @@
 
 #include "base/logging.h"
 #include "components/account_id/account_id.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/user_manager/known_user.h"
+#include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
+#include "components/user_manager/multi_user/multi_user_sign_in_policy_controller.h"
+#include "components/user_manager/user_directory_integrity_manager.h"
+#include "components/user_manager/user_manager_pref_names.h"
 #include "components/user_manager/user_names.h"
 
 namespace user_manager {
@@ -29,6 +36,8 @@ void UserManager::Observer::OnUserImageIsEnterpriseManagedChanged(
     bool is_enterprise_managed) {}
 
 void UserManager::Observer::OnUserProfileCreated(const User& user) {}
+
+void UserManager::Observer::OnUserProfileWillBeDestroyed(const User& user) {}
 
 void UserManager::Observer::OnUserProfileImageUpdateFailed(const User& user) {}
 
@@ -54,10 +63,9 @@ void UserManager::UserSessionStateObserver::UserAddedToSession(
     const User* active_user) {}
 
 void UserManager::UserSessionStateObserver::OnLoginStateUpdated(
-    const User* active_user,
-    bool is_current_user_owner) {}
+    const User* active_user) {}
 
-UserManager::UserSessionStateObserver::~UserSessionStateObserver() {}
+UserManager::UserSessionStateObserver::~UserSessionStateObserver() = default;
 
 UserManager::UserAccountData::UserAccountData(
     const std::u16string& display_name,
@@ -65,7 +73,55 @@ UserManager::UserAccountData::UserAccountData(
     const std::string& locale)
     : display_name_(display_name), given_name_(given_name), locale_(locale) {}
 
-UserManager::UserAccountData::~UserAccountData() {}
+UserManager::UserAccountData::~UserAccountData() = default;
+
+UserManager::DeviceLocalAccountInfo::DeviceLocalAccountInfo(std::string user_id,
+                                                            UserType type)
+    : user_id(std::move(user_id)), type(type) {}
+
+UserManager::DeviceLocalAccountInfo::DeviceLocalAccountInfo(
+    const UserManager::DeviceLocalAccountInfo&) = default;
+
+UserManager::DeviceLocalAccountInfo&
+UserManager::DeviceLocalAccountInfo::operator=(
+    const UserManager::DeviceLocalAccountInfo&) = default;
+
+UserManager::DeviceLocalAccountInfo::~DeviceLocalAccountInfo() = default;
+
+// static
+void UserManager::RegisterPrefs(PrefRegistrySimple* registry) {
+  registry->RegisterListPref(prefs::kRegularUsersPref);
+  registry->RegisterStringPref(prefs::kLastLoggedInGaiaUser, "");
+  registry->RegisterDictionaryPref(prefs::kUserDisplayName);
+  registry->RegisterDictionaryPref(prefs::kUserGivenName);
+  registry->RegisterDictionaryPref(prefs::kUserDisplayEmail);
+  registry->RegisterDictionaryPref(prefs::kUserOAuthTokenStatus);
+  registry->RegisterDictionaryPref(prefs::kUserForceOnlineSignin);
+  registry->RegisterDictionaryPref(prefs::kUserType);
+  registry->RegisterStringPref(prefs::kLastActiveUser, "");
+  registry->RegisterDictionaryPref(prefs::kOwnerAccount);
+
+  registry->RegisterListPref(prefs::kDeviceLocalAccountsWithSavedData);
+  registry->RegisterStringPref(prefs::kDeviceLocalAccountPendingDataRemoval,
+                               "");
+
+  UserDirectoryIntegrityManager::RegisterLocalStatePrefs(registry);
+  KnownUser::RegisterPrefs(registry);
+  MultiUserSignInPolicyController::RegisterPrefs(registry);
+}
+
+// static
+void UserManager::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterStringPref(
+      prefs::kMultiProfileUserBehaviorPref,
+      MultiUserSignInPolicyToPrefValue(MultiUserSignInPolicy::kUnrestricted));
+  registry->RegisterBooleanPref(
+      prefs::kMultiProfileNeverShowIntro, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kMultiProfileWarningShowDismissed, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+}
 
 void UserManager::Initialize() {
   DCHECK(!UserManager::instance);
@@ -88,8 +144,7 @@ UserManager* user_manager::UserManager::Get() {
   return UserManager::instance;
 }
 
-UserManager::~UserManager() {
-}
+UserManager::~UserManager() = default;
 
 // static
 void UserManager::SetInstance(UserManager* user_manager) {
@@ -118,8 +173,9 @@ UserType UserManager::CalculateUserType(const AccountId& account_id,
 
   // This may happen after browser crash after device account was marked for
   // removal, but before clean exit.
-  if (browser_restart && IsDeviceLocalAccountMarkedForRemoval(account_id))
+  if (browser_restart && IsDeviceLocalAccountMarkedForRemoval(account_id)) {
     return UserType::kPublicAccount;
+  }
 
   // If user already exists
   if (user) {
@@ -137,20 +193,13 @@ UserType UserManager::CalculateUserType(const AccountId& account_id,
       LOG(FATAL) << "Incorrect child user type " << user_type;
     }
 
-    // TODO(rsorokin): Check for reverse: account_id AD type should imply
-    // AD user type.
-    if (account_id.GetAccountType() == AccountType::ACTIVE_DIRECTORY) {
-      LOG(FATAL) << "Incorrect AD user type " << user_type;
-    }
-
     return user_type;
   }
 
   // User is new
-  if (is_child)
+  if (is_child) {
     return UserType::kChild;
-
-  CHECK(account_id.GetAccountType() != AccountType::ACTIVE_DIRECTORY);
+  }
 
   return UserType::kRegular;
 }

@@ -35,10 +35,15 @@ class ServiceWorkerNetworkProviderForFrame::NewDocumentObserver
         render_frame()->GetWebFrame()->GetDocumentLoader();
     DCHECK_EQ(owner_, web_loader->GetServiceWorkerNetworkProvider());
 
-    if (web_frame->GetSecurityOrigin().IsOpaque()) {
+    if (web_frame->GetSecurityOrigin().IsOpaque() ||
+        web_loader->IsForDiscard()) {
       // At navigation commit we thought the document was eligible to use
       // service workers so created the network provider, but it turns out it is
       // not eligible because it is CSP sandboxed.
+      // In the case a frame navigation was committed and the document was
+      // eligible to use service workers, a network provider would have been
+      // created. However once the frame has been discarded and the
+      // corresponding empty document installed it is no longer eligible.
       web_loader->SetServiceWorkerNetworkProvider(
           ServiceWorkerNetworkProviderForFrame::CreateInvalidInstance());
       // |this| and its owner are destroyed.

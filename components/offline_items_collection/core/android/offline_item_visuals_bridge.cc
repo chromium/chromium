@@ -33,3 +33,5 @@ ScopedJavaLocalRef<jobject> OfflineItemVisualsBridge::CreateOfflineItemVisuals(
 
 }  // namespace android
 }  // namespace offline_items_collection
+
+DEFINE_JNI(OfflineItemVisualsBridge)

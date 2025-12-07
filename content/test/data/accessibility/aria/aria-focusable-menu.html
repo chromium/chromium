@@ -1,0 +1,30 @@
+<!--
+@MAC-ALLOW:AXDescription='File'
+@MAC-DENY:AXValue
+@MAC-ALLOW:AXLinkedUIElements
+@MAC-DENY:AXLinkedUIElements=[]
+@WIN-DENY:description=''
+-->
+<html>
+  <body>
+    <button
+      type="button"
+      id="filebutton"
+      aria-controls="filemenu"
+      aria-expanded="true"
+      aria-haspopup="true"
+    >Actions</button>
+    <ul
+      id="filemenu"
+      role="menu"
+      tabindex="-1"
+      aria-labelledby="filebutton"
+      aria-activedescendant="action-open"
+    >
+      <li id="action-new" role="menuitem" tabindex="-1">New</span>
+      <li id="action-open" role="menuitem" tabindex="-1">Open</span>
+      <li id="action-save" role="menuitem" tabindex="-1">Save</span>
+      <li id="action-quit" role="menuitem" tabindex="-1">Quit</span>
+    </ul>
+  </body>
+</html>

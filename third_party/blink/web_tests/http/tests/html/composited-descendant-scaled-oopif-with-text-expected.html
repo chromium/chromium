@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<head>
+  <style>
+  * {
+      margin: 0;
+    }
+  </style>
+</head>
+<html>
+  <body>
+    <h1>Composited 2D scaled transform with descended iframe.</h1>
+    This test verifies that the text within the OOP iframe is not blurry.
+    <div style="transform:scale(1.8); transform-origin: 0 0; height: 50px; width: 150px; background-color:pink">
+      <div style="border: none; height: 50px; width: 150px">
+        This is some text
+      </div>
+    </div>
+  </body>
+</html>

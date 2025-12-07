@@ -21,6 +21,7 @@ import android.view.View;
 
 import androidx.core.content.res.ResourcesCompat;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.R;
 
 /**
@@ -28,6 +29,7 @@ import org.chromium.ui.R;
  * to the center of the touch point. See go/animated-image-drag-shadow-corner-cases for known edge
  * cases.
  */
+@NullMarked
 class AnimatedImageDragShadowBuilder extends View.DragShadowBuilder {
     /**
      * Animatable progress for the drag shadow. When the progress is 0, the drag shadow is full size
@@ -36,7 +38,7 @@ class AnimatedImageDragShadowBuilder extends View.DragShadowBuilder {
      * the center of the drag shadow.
      */
     private final FloatProperty<AnimatedImageDragShadowBuilder> mProgressProperty =
-            new FloatProperty<AnimatedImageDragShadowBuilder>("progress") {
+            new FloatProperty<>("progress") {
                 @Override
                 public void setValue(
                         AnimatedImageDragShadowBuilder animatedImageDragShadowBuilder, float v) {

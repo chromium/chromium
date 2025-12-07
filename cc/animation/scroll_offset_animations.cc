@@ -59,7 +59,8 @@ void ScrollOffsetAnimations::PushPropertiesTo(
   for (auto& kv : element_to_update_map_) {
     const auto& update = kv.second;
     if (update.takeover_)
-      animations->ScrollAnimationAbort(true /*needs_completion*/);
+      animations->ScrollAnimationAbort(true /*needs_completion*/,
+                                       update.element_id_);
     else
       animations->ScrollAnimationApplyAdjustment(update.element_id_,
                                                  update.adjustment_);

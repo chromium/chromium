@@ -49,9 +49,6 @@ class CORE_EXPORT CSSPropertyName {
   }
 
   bool operator==(const CSSPropertyName&) const;
-  bool operator!=(const CSSPropertyName& other) const {
-    return !(*this == other);
-  }
 
   CSSPropertyID Id() const {
     DCHECK(!IsEmptyValue() && !IsDeletedValue());
@@ -60,7 +57,7 @@ class CORE_EXPORT CSSPropertyName {
 
   bool IsCustomProperty() const { return Id() == CSSPropertyID::kVariable; }
 
-  AtomicString ToAtomicString() const;
+  const AtomicString& ToAtomicString() const;
 
  private:
   // For HashTraits::EmptyValue().
@@ -82,24 +79,18 @@ class CORE_EXPORT CSSPropertyName {
   AtomicString custom_property_name_;
 
   friend class CSSPropertyNameTest;
-  friend struct ::WTF::HashTraits<blink::CSSPropertyName>;
+  friend struct HashTraits<blink::CSSPropertyName>;
 };
 
-}  // namespace blink
-
-namespace WTF {
-
 template <>
-struct HashTraits<blink::CSSPropertyName>
-    : SimpleClassHashTraits<blink::CSSPropertyName> {
-  static unsigned GetHash(const blink::CSSPropertyName& name) {
+struct HashTraits<CSSPropertyName> : SimpleClassHashTraits<CSSPropertyName> {
+  static unsigned GetHash(const CSSPropertyName& name) {
     return name.GetHash();
   }
 
-  using CSSPropertyName = blink::CSSPropertyName;
   static const bool kEmptyValueIsZero = false;
   static void ConstructDeletedValue(CSSPropertyName& slot) {
-    new (NotNullTag::kNotNull, &slot)
+    new (base::NotNullTag::kNotNull, &slot)
         CSSPropertyName(CSSPropertyName::kDeletedValue);
   }
   static bool IsDeletedValue(const CSSPropertyName& value) {
@@ -108,12 +99,12 @@ struct HashTraits<blink::CSSPropertyName>
   static bool IsEmptyValue(const CSSPropertyName& value) {
     return value.IsEmptyValue();
   }
-  static blink::CSSPropertyName EmptyValue() {
-    return blink::CSSPropertyName(CSSPropertyName::kEmptyValue);
+  static CSSPropertyName EmptyValue() {
+    return CSSPropertyName(CSSPropertyName::kEmptyValue);
   }
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::CSSPropertyName)
 

@@ -24,6 +24,7 @@
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -47,7 +48,7 @@ using RequestType = PerUserTopicSubscriptionManager::RequestType;
 
 namespace {
 
-size_t kInvalidationTopicsCount = 5;
+constexpr size_t kInvalidationTopicsCount = 5;
 
 const char kInvalidationRegistrationScope[] =
     "https://firebaseperusertopics-pa.googleapis.com";

@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] document.constructor is not shadowed
+  assert_equals: expected (function) function "function HTMLDocument() { [native code] }" but got (object) Element node <img name="constructor"></img>
+[FAIL] document.currentScript is not shadowed
+  assert_equals: expected Element node <script id="this-script">\ntest(function() {\n  assert_equa... but got Element node <img name="currentScript"></img>
+[FAIL] document.forms is not shadowed
+  assert_true: expected true got false
+[FAIL] document.onreadystatechange is not shadowed
+  assert_equals: expected null but got Element node <img name="onreadystatechange"></img>
+[FAIL] document.firstChild is not shadowed
+  assert_true: expected true got false
+[FAIL] document.isSameNode() is not shadowed
+  assert_true: expected true got false
+[FAIL] document.__proto__ is not shadowed
+  assert_equals: expected object "[object HTMLDocument]" but got Element node <img name="__proto__"></img>
+Harness: the test ran to completion.
+

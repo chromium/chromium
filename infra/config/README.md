@@ -31,7 +31,11 @@ not end in -dev.cfg as well as the markdown file
 [cq-builders.md](generated/cq-builders.md). Starlark files in the following
 directories are consumed by the configuration:
 
-* lib - Utilities for defining LUCI entities.
+* lib - Mostly lists of hard-coded constants.
+* targets - A local lucicfg package containing definitions of chromium targets
+  and tests that will be executed by builders. See
+  [its README.md](targets/README.md) for information on how to use the package
+  in other projects.
 * subprojects - Definitions of LUCI entities.
 * generators - Definitions of lucicfg generators that do various things to
   post-process the LUCI configuration before the output files are generated.
@@ -48,6 +52,24 @@ configuration for the chromium project on the dev instance of LUCI. This
 configuration consumes starlark files under the dev directory and is responsible
 for generating the raw configuration files ending in -dev.cfg.
 
+## Starlark libs
+
+Much of the starlark configuration here uses libraries defined in a separate
+[infra/chromium.git][infra-chromium] repo. These libraries traverse and manipulate
+lucicfg's [internal graph][lucicfg-graph] to represent components of Chromium's
+infra (e.g. nodes for things like builders and tests, and links between related
+elements). This code is in a separate repo so it can be shared and reused
+elsewhere, mainly src-internal.
+
+Normally, when generating the LUCI configs here, the
+[infra/chromium.git][infra-chromium] repo is fetched on-demand using lucicfg's
+[package system][lucicfg-package]. However, if you have that repo checked out
+locally and want to re-generate the configs here using it instead, you can do so
+via:
+```
+lucicfg generate -repo-override chromium.googlesource.com/infra/chromium/+/refs/heads/main=/path/to/local/infra/chromium/checkout main.star
+```
+
 ## VS Code
 
 In order to get syntax highlighting, the [Bazel][bazel-extension] can be installed.
@@ -62,3 +84,6 @@ details.
 [bazel-extension]: https://marketplace.visualstudio.com/items?itemName=BazelBuild.vscode-bazel
 [bazel-lsp]: https://github.com/cameron-martin/bazel-lsp
 [bazel-lsp-readme]: ../../tools/vscode/bazel_lsp/README.md
+[infra-chromium]: https://chromium.googlesource.com/infra/chromium
+[lucicfg-graph]: https://chromium.googlesource.com/infra/luci/luci-go/+/refs/heads/main/lucicfg/doc/README.md#rules_state-representation
+[lucicfg-package]: https://chromium.googlesource.com/infra/luci/luci-go/+/refs/heads/main/lucicfg/doc/README.md#modules-and-packages

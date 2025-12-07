@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/test_future.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -98,7 +99,7 @@ class Summer {
   void AddFiveParam(int a, int b, int c, int d, int e) {
     value_ = a + b + c + d + e;
   }
-  void AddSixParam(int a, int b, int c, int d, int e , int f) {
+  void AddSixParam(int a, int b, int c, int d, int e, int f) {
     value_ = a + b + c + d + e + f;
   }
 
@@ -574,6 +575,41 @@ TEST(CallbackListTest, ReentrantNotify) {
   EXPECT_EQ(2, b.total());
   EXPECT_EQ(2, c.total());
   EXPECT_EQ(1, d.total());
+}
+
+TEST(CallbackListTest, ClearPreventsInvocation) {
+  Listener listener;
+  RepeatingClosureList cb_reg;
+  CallbackListSubscription subscription = cb_reg.Add(
+      BindRepeating(&Listener::IncrementTotal, Unretained(&listener)));
+  cb_reg.Clear();
+  cb_reg.Notify();
+  EXPECT_EQ(0, listener.total());
+}
+
+TEST(CallbackListTest, ClearInvokesRemovalCallback) {
+  RepeatingClosureList cb_reg;
+  base::test::TestFuture<void> removal_callback;
+  cb_reg.set_removal_callback(removal_callback.GetRepeatingCallback());
+  cb_reg.AddUnsafe(base::DoNothing());
+
+  // Removing the callback calls the removal callback.
+  cb_reg.Clear();
+  ASSERT_TRUE(removal_callback.IsReady());
+  removal_callback.Clear();
+
+  // No callback registered, removal callback isn't called.
+  cb_reg.Clear();
+  ASSERT_FALSE(removal_callback.IsReady());
+}
+
+TEST(CallbackListTest, ClearInvalidatesSubscription) {
+  RepeatingClosureList cb_reg;
+  CallbackListSubscription subscription = cb_reg.Add(base::DoNothing());
+  // `Clear()` invalidates `subscription`. `subscription` does nothing when it's
+  // destroyed.
+  cb_reg.Clear();
+  subscription = {};
 }
 
 }  // namespace

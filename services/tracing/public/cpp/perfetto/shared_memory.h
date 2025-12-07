@@ -40,7 +40,7 @@ class COMPONENT_EXPORT(TRACING_CPP) ChromeBaseSharedMemory
 
   // perfetto::SharedMemory implementation. Called internally by Perfetto
   // classes.
-  void* start() const override;
+  const void* start() const override;
   size_t size() const override;
 
  private:

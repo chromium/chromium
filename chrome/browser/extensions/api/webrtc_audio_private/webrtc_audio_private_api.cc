@@ -11,19 +11,14 @@
 
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
-#include "base/strings/string_number_conversions.h"
-#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "components/media_device_salt/media_device_salt_service.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/media_device_id.h"
-#include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/web_contents.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/common/error_utils.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -50,8 +45,7 @@ WebrtcAudioPrivateEventService::WebrtcAudioPrivateEventService(
     system_monitor->AddDevicesChangedObserver(this);
 }
 
-WebrtcAudioPrivateEventService::~WebrtcAudioPrivateEventService() {
-}
+WebrtcAudioPrivateEventService::~WebrtcAudioPrivateEventService() = default;
 
 void WebrtcAudioPrivateEventService::Shutdown() {
   // In unit tests, the SystemMonitor may not be created.
@@ -105,9 +99,9 @@ void WebrtcAudioPrivateEventService::SignalEvent() {
   }
 }
 
-WebrtcAudioPrivateFunction::WebrtcAudioPrivateFunction() {}
+WebrtcAudioPrivateFunction::WebrtcAudioPrivateFunction() = default;
 
-WebrtcAudioPrivateFunction::~WebrtcAudioPrivateFunction() {}
+WebrtcAudioPrivateFunction::~WebrtcAudioPrivateFunction() = default;
 
 url::Origin WebrtcAudioPrivateFunction::GetExtensionOrigin() const {
   return url::Origin::Create(source_url());

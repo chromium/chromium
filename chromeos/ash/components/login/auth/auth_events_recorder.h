@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
+#include "chromeos/ash/components/login/auth/public/session_auth_factors.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -134,6 +135,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthEventsRecorder
 
   // Report the result of the recovery and time taken to UMA.
   void OnRecoveryDone(CryptohomeRecoveryResult result,
+                      const SessionAuthFactors& auth_factors,
                       const base::TimeDelta& time);
 
   // Report that the user submitted an auth method.

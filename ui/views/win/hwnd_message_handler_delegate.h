@@ -6,8 +6,8 @@
 #define UI_VIEWS_WIN_HWND_MESSAGE_HANDLER_DELEGATE_H_
 
 #include "base/win/windows_types.h"
-#include "ui/base/ui_base_types.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/views_export.h"
 
 class SkPath;
@@ -69,11 +69,6 @@ class VIEWS_EXPORT HWNDMessageHandlerDelegate {
   virtual bool CanMinimize() const = 0;
   virtual bool CanActivate() const = 0;
 
-  // Returns true if the delegate wants mouse events when inactive and the
-  // window is clicked and should not become activated. A return value of false
-  // indicates the mouse events will be dropped.
-  virtual bool WantsMouseEventsWhenInactive() const = 0;
-
   virtual bool WidgetSizeIsClientSize() const = 0;
 
   // Returns true if the delegate represents a modal window.
@@ -84,17 +79,14 @@ class VIEWS_EXPORT HWNDMessageHandlerDelegate {
   virtual int GetInitialShowState() const = 0;
 
   virtual int GetNonClientComponent(const gfx::Point& point) const = 0;
-  virtual void GetWindowMask(const gfx::Size& size, SkPath* mask) = 0;
+  virtual void GetWindowMask(const gfx::Size& size_px, SkPath* mask) = 0;
 
   // Returns true if the delegate modifies |insets| to define a custom client
   // area for the window, false if the default client area should be used. If
-  // false is returned, |insets| is not modified.  |monitor| is the monitor
-  // this window is on.  Normally that would be determined from the HWND, but
-  // during WM_NCCALCSIZE Windows does not return the correct monitor for the
-  // HWND, so it must be passed in explicitly (see HWNDMessageHandler::
-  // OnNCCalcSize for more details).
+  // false is returned, |insets| is not modified.  |frame_thickness| is the the
+  // window frame thickness on the monitor this window is on.
   virtual bool GetClientAreaInsets(gfx::Insets* insets,
-                                   HMONITOR monitor) const = 0;
+                                   int frame_thickness) const = 0;
 
   // Returns true if DWM frame should be extended into client area by |insets|.
   // Insets are specified in screen pixels not DIP because that's what DWM uses.
@@ -113,6 +105,10 @@ class VIEWS_EXPORT HWNDMessageHandlerDelegate {
   virtual void ResetWindowControls() = 0;
 
   virtual gfx::NativeViewAccessible GetNativeViewAccessible() = 0;
+
+  // Returns the NativeViewAccessible for the parent Widget's RootView if the
+  // parent is a Views-owned Widget; otherwise nullptr.
+  virtual gfx::NativeViewAccessible GetParentNativeViewAccessible() = 0;
 
   // TODO(beng): Investigate migrating these methods to On* prefixes once
   // HWNDMessageHandler is the WindowImpl.
@@ -155,7 +151,7 @@ class VIEWS_EXPORT HWNDMessageHandlerDelegate {
   // Called when the HWND is to be focused for the first time. This is called
   // when the window is shown for the first time. Returns true if the delegate
   // set focus and no default processing should be done by the message handler.
-  virtual bool HandleInitialFocus(ui::WindowShowState show_state) = 0;
+  virtual bool HandleInitialFocus(ui::mojom::WindowShowState show_state) = 0;
 
   // Called when display settings are adjusted on the system.
   virtual void HandleDisplayChange() = 0;
@@ -164,6 +160,11 @@ class VIEWS_EXPORT HWNDMessageHandlerDelegate {
   // manager.
   virtual void HandleBeginWMSizeMove() = 0;
   virtual void HandleEndWMSizeMove() = 0;
+
+  // Called when the user begins or ends resizing the window by dragging the
+  // resize handle.
+  virtual void HandleBeginUserResize() = 0;
+  virtual void HandleEndUserResize() = 0;
 
   // Called when the window's position changed.
   virtual void HandleMove() = 0;
@@ -254,6 +255,10 @@ class VIEWS_EXPORT HWNDMessageHandlerDelegate {
 
   // Called when the headless window bounds has changed.
   virtual void HandleHeadlessWindowBoundsChanged(const gfx::Rect& bounds) = 0;
+
+  // Returns a HBRUSH to be used to fill exposed pixels in OnPaint(), or nullptr
+  // if the default should be used.
+  virtual HBRUSH GetBackgroundPaintBrush() = 0;
 
  protected:
   virtual ~HWNDMessageHandlerDelegate() = default;

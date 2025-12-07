@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_util.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "url/gurl.h"
@@ -53,7 +54,7 @@ void FakeEulaMixin::SetUpCommandLine(base::CommandLine* command_line) {
 std::unique_ptr<HttpResponse> FakeEulaMixin::HandleRequest(
     const HttpRequest& request) {
   GURL request_url = GURL("http://localhost").Resolve(request.relative_url);
-  const std::string request_path = request_url.path();
+  const std::string request_path = request_url.GetPath();
   if (!base::EndsWith(request_path, "/eula_text.html",
                       base::CompareCase::SENSITIVE)) {
     return nullptr;

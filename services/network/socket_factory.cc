@@ -61,6 +61,7 @@ void SocketFactory::CreateRestrictedUDPSocket(
     mojo::PendingReceiver<mojom::RestrictedUDPSocket> receiver,
     mojo::PendingRemote<mojom::UDPSocketListener> listener,
     std::unique_ptr<SimpleHostResolver> resolver,
+    bool allow_multicast,
     mojom::NetworkContext::CreateRestrictedUDPSocketCallback callback) {
   auto udp_socket = std::make_unique<UDPSocket>(std::move(listener), net_log_);
   switch (mode) {
@@ -76,7 +77,8 @@ void SocketFactory::CreateRestrictedUDPSocket(
       break;
   }
   auto restricted_udp_socket = std::make_unique<RestrictedUDPSocket>(
-      std::move(udp_socket), traffic_annotation, std::move(resolver));
+      std::move(udp_socket), traffic_annotation, std::move(resolver),
+      allow_multicast);
 #if BUILDFLAG(IS_CHROMEOS)
   if (params && params->connection_tracker) {
     restricted_udp_socket->AttachConnectionTracker(
@@ -154,19 +156,8 @@ void SocketFactory::CreateTCPServerSocketHelper(
     socket->AttachConnectionTracker(std::move(options->connection_tracker));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  std::optional<bool> ipv6_only;
-  switch (options->ipv6_only) {
-    case mojom::OptionalBool::kTrue:
-      ipv6_only = true;
-      break;
-    case mojom::OptionalBool::kFalse:
-      ipv6_only = false;
-      break;
-    case mojom::OptionalBool::kUnset:
-      break;
-  }
   base::expected<net::IPEndPoint, int32_t> result =
-      socket->Listen(local_addr, options->backlog, ipv6_only);
+      socket->Listen(local_addr, options->backlog, options->ipv6_only);
   if (!result.has_value()) {
     std::move(callback).Run(result.error(), std::nullopt);
     return;

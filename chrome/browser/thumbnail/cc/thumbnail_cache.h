@@ -14,8 +14,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/memory/memory_pressure_listener.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -83,7 +82,6 @@ class ThumbnailCache : ThumbnailDelegate {
                         TabId primary_tab_id);
   void DecompressEtc1ThumbnailFromFile(
       TabId tab_id,
-      bool save_jpeg,
       base::OnceCallback<void(bool, const SkBitmap&)> post_decompress_callback);
 
   // Called when resident textures were evicted, which requires paging
@@ -132,11 +130,6 @@ class ThumbnailCache : ThumbnailDelegate {
                   std::unique_ptr<ThumbnailCaptureTracker,
                                   base::OnTaskRunnerDeleter> tracker,
                   const SkBitmap& bitmap);
-  void ForkToSaveAsJpeg(
-      base::OnceCallback<void(bool, const SkBitmap&)> callback,
-      int tab_id,
-      bool result,
-      const SkBitmap& bitmap);
   void PostWriteJpegTask(std::unique_ptr<ThumbnailCaptureTracker,
                                          base::OnTaskRunnerDeleter> tracker,
                          bool success);
@@ -164,11 +157,6 @@ class ThumbnailCache : ThumbnailDelegate {
   void NotifyObserversOfThumbnailAddedToCache(TabId tab_id);
   void NotifyObserversOfThumbnailRead(TabId tab_id);
   void RemoveOnMatchedTimeStamp(TabId tab_id, const base::Time& time_stamp);
-  static std::pair<SkBitmap, float> CreateApproximation(const SkBitmap& bitmap,
-                                                        float scale);
-
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel level);
 
   // Default priority as most of the time there is a placeholder available.
   const scoped_refptr<base::SequencedTaskRunner>
@@ -200,7 +188,6 @@ class ThumbnailCache : ThumbnailDelegate {
   base::WeakPtr<ui::UIResourceProvider> ui_resource_provider_;
   SEQUENCE_CHECKER(sequence_checker_);
 
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_;
   base::WeakPtrFactory<ThumbnailCache> weak_factory_{this};
 };
 

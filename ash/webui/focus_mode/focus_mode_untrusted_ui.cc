@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "ash/webui/focus_mode/focus_mode_untrusted_ui.h"
 
@@ -34,8 +30,7 @@ FocusModeUntrustedUI::FocusModeUntrustedUI(content::WebUI* web_ui)
 
   // Add the content. We don't need to set up a default ("") path since the
   // trusted page will refer directly to player.html.
-  source->AddResourcePaths(base::make_span(kAshFocusModePlayerResources,
-                                           kAshFocusModePlayerResourcesSize));
+  source->AddResourcePaths(kAshFocusModePlayerResources);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::DefaultSrc, "default-src 'self';");
   // Enables the page to actually load media.
@@ -59,7 +54,7 @@ FocusModeUntrustedUIConfig::FocusModeUntrustedUIConfig()
 
 bool FocusModeUntrustedUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return ash::features::IsFocusModeEnabled();
+  return true;
 }
 
 }  // namespace ash

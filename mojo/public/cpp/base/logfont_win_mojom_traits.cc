@@ -20,8 +20,8 @@ namespace mojo {
 base::span<const uint8_t>
 StructTraits<mojo_base::mojom::LOGFONTDataView, ::LOGFONT>::bytes(
     const ::LOGFONT& input) {
-  return base::make_span(reinterpret_cast<const uint8_t*>(&input),
-                         sizeof(::LOGFONT));
+  return base::span(reinterpret_cast<const uint8_t*>(&input),
+                    sizeof(::LOGFONT));
 }
 
 // static

@@ -37,7 +37,7 @@ component("init") {
 
   if (use_static_angle) {
     sources += [ "gl_initializer_angle.cc" ]
-    deps += [ "//third_party/angle:libEGL_static" ]
+    deps += [ "//third_party/angle:libGLESv2_thin_static" ]
   }
 
   if (is_android) {

@@ -33,8 +33,9 @@ AssertionResult VerificationCountAssertionFailure(size_t actual_count,
 AssertionResult VerifySessionsHierarchyEquality(
     const SessionsHierarchy& expected,
     const SessionsHierarchy& actual) {
-  if (expected.Equals(actual))
+  if (expected.Equals(actual)) {
     return AssertionSuccess() << "Sessions hierarchies are equal.";
+  }
 
   return AssertionFailure() << "Sessions hierarchies are not equal. "
                             << "FakeServer contents: " << actual.ToString()
@@ -89,8 +90,9 @@ AssertionResult FakeServerVerifier::VerifyEntityCountByTypeAndName(
   base::Value name_value(name);
 
   for (auto& entity : *entity_list) {
-    if (name_value == entity)
+    if (name_value == entity) {
       actual_count++;
+    }
   }
 
   if (actual_count != expected_count) {

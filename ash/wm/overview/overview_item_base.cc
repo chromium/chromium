@@ -25,7 +25,6 @@
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_properties.h"
-#include "ash/wm/window_util.h"
 #include "ash/wm/wm_constants.h"
 #include "base/memory/raw_ptr.h"
 
@@ -108,8 +107,7 @@ void OverviewItemBase::RefreshShadowVisuals(bool shadow_visible) {
   gfx::Rect shadow_content_bounds(
       gfx::ToRoundedRect(shadow_bounds_in_screen).size());
   shadow_->SetContentBounds(shadow_content_bounds);
-  shadow_->SetRoundedCornerRadius(
-      window_util::GetMiniWindowRoundedCornerRadius());
+  shadow_->SetRoundedCornerRadius(kWindowMiniViewCornerRadius);
 }
 
 void OverviewItemBase::UpdateShadowTypeForDrag(bool is_dragging) {
@@ -199,8 +197,7 @@ void OverviewItemBase::HandleMouseEvent(const ui::MouseEvent& event,
       HandleDragEvent(screen_location);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -314,7 +311,8 @@ void OverviewItemBase::UpdateMirrorsForDragging(bool is_touch_dragging) {
 
   if (!item_mirror_for_dragging_) {
     item_mirror_for_dragging_ = std::make_unique<DragWindowController>(
-        item_widget_->GetNativeWindow(), is_touch_dragging);
+        item_widget_->GetNativeWindow(), is_touch_dragging,
+        /*create_window_shadow=*/true);
   }
 
   item_mirror_for_dragging_->Update();
@@ -338,6 +336,8 @@ views::Widget::InitParams OverviewItemBase::CreateOverviewItemWidgetParams(
   params.parent = parent_window;
   params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
   params.init_properties_container.SetProperty(kOverviewUiKey, true);
+  params.layer_type = ui::LAYER_NOT_DRAWN;
+
   return params;
 }
 

@@ -14,7 +14,10 @@
 #include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/profiler/stack_buffer.h"
-#include "partition_alloc/tagging.h"
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
+#include "partition_alloc/tagging.h"  // nogncheck
+#endif
 
 namespace base {
 
@@ -63,8 +66,9 @@ uintptr_t StackCopier::RewritePointerIfInOriginalStack(
   auto stack_copy_bottom_uint = reinterpret_cast<uintptr_t>(stack_copy_bottom);
 
   if (pointer < original_stack_bottom_uint ||
-      pointer >= original_stack_top_uint)
+      pointer >= original_stack_top_uint) {
     return pointer;
+  }
 
   return stack_copy_bottom_uint + (pointer - original_stack_bottom_uint);
 }
@@ -76,11 +80,13 @@ const uint8_t* StackCopier::CopyStackContentsAndRewritePointers(
     const uintptr_t* original_stack_top,
     size_t platform_stack_alignment,
     uintptr_t* stack_buffer_bottom) {
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
   // Disable MTE during this function because this function indiscriminately
   // reads stack frames, some of which belong to system libraries, not Chrome
   // itself. With stack tagging, some bytes on the stack have MTE tags different
   // from the stack pointer tag.
   partition_alloc::SuspendTagCheckingScope suspend_tag_checking_scope;
+#endif
 
   const uint8_t* byte_src = original_stack_bottom;
   // The first address in the stack with pointer alignment. Pointer-aligned
@@ -101,8 +107,9 @@ const uint8_t* StackCopier::CopyStackContentsAndRewritePointers(
   uint8_t* byte_dst = stack_copy_bottom;
 
   // Copy bytes verbatim up to the first aligned address.
-  for (; byte_src < first_aligned_address; ++byte_src, ++byte_dst)
+  for (; byte_src < first_aligned_address; ++byte_src, ++byte_dst) {
     *byte_dst = *byte_src;
+  }
 
   // Copy the remaining stack by pointer-sized values, rewriting anything that
   // looks like a pointer into the stack.

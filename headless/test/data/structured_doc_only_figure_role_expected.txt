@@ -1,0 +1,17 @@
+{
+   "lang": "en",
+   "type": "Document",
+   "~children": [ {
+      "alt": "Text that describes the figure.",
+      "type": "Figure",
+      "~children": [ {
+         "alt": "Sample SVG image",
+         "type": "Figure"
+      }, {
+         "type": "P",
+         "~children": [ {
+            "type": "NonStruct"
+         } ]
+      } ]
+   } ]
+}

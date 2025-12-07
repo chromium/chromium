@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_COLLECTION_SUPPORT_HEAP_VECTOR_BACKING_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_COLLECTION_SUPPORT_HEAP_VECTOR_BACKING_H_
 
 #include <type_traits>
+
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/utils.h"
 #include "third_party/blink/renderer/platform/heap/custom_spaces.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -37,7 +35,7 @@ inline bool VTableInitialized(const void* object_payload) {
 
 }  // namespace internal
 
-template <typename T, typename Traits = WTF::VectorTraits<T>>
+template <typename T, typename Traits = VectorTraits<T>>
 class HeapVectorBacking final
     : public GarbageCollected<HeapVectorBacking<T, Traits>> {
  public:
@@ -99,20 +97,21 @@ HeapVectorBacking<T, Traits>::~HeapVectorBacking()
   using ByteBuffer = uint8_t*;
   ByteBuffer payload = reinterpret_cast<ByteBuffer>(this);
 #ifdef ANNOTATE_CONTIGUOUS_CONTAINER
-  ANNOTATE_CHANGE_SIZE(payload, length * sizeof(T), 0, length * sizeof(T));
+  UNSAFE_TODO(
+      ANNOTATE_CHANGE_SIZE(payload, length * sizeof(T), 0, length * sizeof(T)));
 #endif  // ANNOTATE_CONTIGUOUS_CONTAINER
   // HeapVectorBacking calls finalizers for unused slots and expects them to be
   // no-ops.
   if (std::is_polymorphic<T>::value) {
     for (size_t i = 0; i < length; ++i) {
-      ByteBuffer element = payload + i * sizeof(T);
+      ByteBuffer element = UNSAFE_TODO(payload + i * sizeof(T));
       if (internal::VTableInitialized(element))
         reinterpret_cast<T*>(element)->~T();
     }
   } else {
     T* buffer = reinterpret_cast<T*>(payload);
     for (size_t i = 0; i < length; ++i)
-      buffer[i].~T();
+      UNSAFE_TODO(buffer[i]).~T();
   }
 }
 
@@ -122,20 +121,25 @@ struct ThreadingTrait<HeapVectorBacking<T, Traits>> {
   static constexpr ThreadAffinity kAffinity = ThreadingTrait<T>::kAffinity;
 };
 
-}  // namespace blink
-
-namespace WTF {
+namespace internal {
+template <typename T>
+struct CompactionTraits<blink::HeapVectorBacking<T>> {
+  static constexpr bool SupportsCompaction() {
+    return blink::HeapVectorBacking<T>::TraitsType::kCanMoveWithMemcpy;
+  }
+};
+}  // namespace internal
 
 // This trace method is used for all HeapVectorBacking objects. On-stack objects
 // are found and dispatched using conservative stack scanning. HeapVector (i.e.
 // Vector) dispatches all regular on-heap backings to this method.
 template <typename T, typename Traits>
 struct TraceInCollectionTrait<kNoWeakHandling,
-                              blink::HeapVectorBacking<T, Traits>,
+                              HeapVectorBacking<T, Traits>,
                               void> {
-  using Backing = blink::HeapVectorBacking<T, Traits>;
+  using Backing = HeapVectorBacking<T, Traits>;
 
-  static void Trace(blink::Visitor* visitor, const void* self) {
+  static void Trace(Visitor* visitor, const void* self) {
     // HeapVectorBacking does not know the exact size of the vector
     // and just knows the capacity of the vector. Due to the constraint,
     // HeapVectorBacking can support only the following objects:
@@ -157,7 +161,7 @@ struct TraceInCollectionTrait<kNoWeakHandling,
         "cleared as unused with memset.");
 
     // Bail out early if the contents are not actually traceable.
-    if constexpr (!IsTraceable<T>::value) {
+    if constexpr (!IsTraceableV<T>) {
       return;
     }
 
@@ -169,29 +173,29 @@ struct TraceInCollectionTrait<kNoWeakHandling,
 #ifdef ANNOTATE_CONTIGUOUS_CONTAINER
     // As commented above, HeapVectorBacking can trace unused slots (which are
     // already zeroed out).
-    ANNOTATE_CHANGE_SIZE(array, length, 0, length);
+    UNSAFE_TODO(ANNOTATE_CHANGE_SIZE(array, length, 0, length));
 #endif  // ANNOTATE_CONTIGUOUS_CONTAINER
-    if constexpr (IsTraceable<T>::value) {
+    if constexpr (IsTraceableV<T>) {
       for (unsigned i = 0; i < length; ++i) {
         if (!std::is_polymorphic_v<T> ||
-            blink::internal::VTableInitialized(&array[i])) {
-          visitor->Trace(array[i]);
+            internal::VTableInitialized(&UNSAFE_TODO(array[i]))) {
+          visitor->Trace(UNSAFE_TODO(array[i]));
         }
       }
     }
   }
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 namespace cppgc {
 
 // The space trait rewires allocations for HeapVector with `kCanMoveWithMemcpy`
 // into a space supporting compaction.
 template <typename T>
-struct SpaceTrait<blink::HeapVectorBacking<T>,
-                  std::enable_if_t<blink::HeapVectorBacking<
-                      T>::TraitsType::kCanMoveWithMemcpy>> {
+  requires(blink::internal::CompactionTraits<
+           blink::HeapVectorBacking<T>>::SupportsCompaction())
+struct SpaceTrait<blink::HeapVectorBacking<T>> {
   using Space = blink::CompactableHeapVectorBackingSpace;
 };
 
@@ -228,6 +232,15 @@ struct TraceTrait<blink::HeapVectorBacking<T, Traits>> {
   }
 
   static void Trace(Visitor* visitor, const void* self) {
+    static_assert(!blink::IsWeakV<T>,
+                  "Weakness is not supported in HeapVector and HeapDeque");
+
+    // Early bailout for non-traceable types. `GetTraceDescriptor()` doesn't
+    // support returning a null callback, so this is the best we can do for now.
+    if (!blink::IsTraceableV<T>) {
+      return;
+    }
+
     if (!Traits::kCanTraceConcurrently && self) {
       if (visitor->DeferTraceToMutatorThreadIfConcurrent(
               self, &Trace,
@@ -237,13 +250,9 @@ struct TraceTrait<blink::HeapVectorBacking<T, Traits>> {
       }
     }
 
-    static_assert(!WTF::IsWeak<T>::value,
-                  "Weakness is not supported in HeapVector and HeapDeque");
-    if (WTF::IsTraceable<T>::value) {
-      WTF::TraceInCollectionTrait<WTF::kNoWeakHandling,
+    blink::TraceInCollectionTrait<blink::kNoWeakHandling,
                                   blink::HeapVectorBacking<T, Traits>,
                                   void>::Trace(visitor, self);
-    }
   }
 };
 

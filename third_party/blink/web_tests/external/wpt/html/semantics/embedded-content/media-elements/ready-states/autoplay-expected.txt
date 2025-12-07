@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] audio.autoplay
+  assert_array_equals: expected property 1 to be "canplaythrough" but got "play" (expected array ["canplay", "canplaythrough"] got ["canplay", "play"])
+[FAIL] audio.autoplay and load()
+  assert_array_equals: expected property 1 to be "canplaythrough" but got "play" (expected array ["canplay", "canplaythrough"] got ["canplay", "play"])
+[FAIL] video.autoplay
+  assert_array_equals: expected property 1 to be "canplaythrough" but got "play" (expected array ["canplay", "canplaythrough"] got ["canplay", "play"])
+[FAIL] video.autoplay and load()
+  assert_array_equals: expected property 1 to be "canplaythrough" but got "play" (expected array ["canplay", "canplaythrough"] got ["canplay", "play"])
+Harness: the test ran to completion.
+

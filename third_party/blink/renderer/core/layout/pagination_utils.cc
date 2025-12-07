@@ -46,7 +46,7 @@ LogicalSize PageBoxDefaultSizeWithSourceOrientation(const Document& document,
                                                     LogicalSize layout_size) {
   DCHECK(ShouldCenterPageOnPaper(document.GetFrame()->GetPrintParams()));
   LogicalSize target_size =
-      PageBoxDefaultSize(document).ConvertToLogical(style.GetWritingMode());
+      ToLogicalSize(PageBoxDefaultSize(document), style.GetWritingMode());
   if (layout_size.inline_size != layout_size.block_size &&
       (target_size.inline_size > target_size.block_size) !=
           (layout_size.inline_size > layout_size.block_size)) {
@@ -121,7 +121,7 @@ LogicalSize DesiredPageContainingBlockSize(const Document& document,
     }
   }
 
-  return layout_size.ConvertToLogical(style.GetWritingMode());
+  return ToLogicalSize(layout_size, style.GetWritingMode());
 }
 
 void ResolvePageBoxGeometry(const BlockNode& page_box,
@@ -228,7 +228,7 @@ float TargetScaleForPage(const PhysicalBoxFragment& page_container) {
                          &geometry, &margins);
   LogicalSize source_size = geometry.border_box_size + margins;
   LogicalSize target_size =
-      page_container.Size().ConvertToLogical(style.GetWritingMode());
+      ToLogicalSize(page_container.Size(), style.GetWritingMode());
 
   return layout_scale * TargetShrinkScaleFactor(target_size, source_size);
 }
@@ -290,15 +290,15 @@ wtf_size_t PageCount(const LayoutView& view) {
 }
 
 const PhysicalBoxFragment* GetPageContainer(const LayoutView& view,
-                                            wtf_size_t page_number) {
+                                            wtf_size_t page_index) {
   if (!view.PhysicalFragmentCount()) {
     return nullptr;
   }
   const auto& pages = view.GetPhysicalFragment(0)->Children();
-  if (page_number >= pages.size()) {
+  if (page_index >= pages.size()) {
     return nullptr;
   }
-  const auto* child = To<PhysicalBoxFragment>(pages[page_number].get());
+  const auto* child = To<PhysicalBoxFragment>(pages[page_index].get());
   if (child->GetBoxType() != PhysicalFragment::kPageContainer) {
     // Not paginated, at least not yet.
     return nullptr;
@@ -307,8 +307,8 @@ const PhysicalBoxFragment* GetPageContainer(const LayoutView& view,
 }
 
 const PhysicalBoxFragment* GetPageArea(const LayoutView& view,
-                                       wtf_size_t page_number) {
-  const auto* page_container = GetPageContainer(view, page_number);
+                                       wtf_size_t page_index) {
+  const auto* page_container = GetPageContainer(view, page_index);
   if (!page_container) {
     return nullptr;
   }
@@ -324,7 +324,7 @@ const PhysicalFragmentLink& GetPageBorderBoxLink(
     }
   }
   // A page container will never be laid out without a page border box child.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 const PhysicalBoxFragment& GetPageBorderBox(
@@ -343,8 +343,8 @@ const PhysicalBoxFragment& GetPageArea(
 }
 
 PhysicalRect StitchedPageContentRect(const LayoutView& layout_view,
-                                     wtf_size_t page_number) {
-  return StitchedPageContentRect(*GetPageContainer(layout_view, page_number));
+                                     wtf_size_t page_index) {
+  return StitchedPageContentRect(*GetPageContainer(layout_view, page_index));
 }
 
 PhysicalRect StitchedPageContentRect(
@@ -352,21 +352,36 @@ PhysicalRect StitchedPageContentRect(
   DCHECK_EQ(page_container.GetBoxType(), PhysicalFragment::kPageContainer);
   const PhysicalBoxFragment& page_border_box = GetPageBorderBox(page_container);
   const PhysicalBoxFragment& page_area = GetPageArea(page_border_box);
+  const LayoutView& view = *page_container.GetDocument().GetLayoutView();
+  const PhysicalBoxFragment& first_page_area = *GetPageArea(view, 0);
+  const BlockBreakToken* previous_break_token =
+      FindPreviousBreakTokenForPageArea(page_area);
+
+  return StitchedPageContentRect(page_area, first_page_area,
+                                 previous_break_token);
+}
+
+PhysicalRect StitchedPageContentRect(
+    const PhysicalBoxFragment& page_area,
+    const PhysicalBoxFragment& first_page_area,
+    const BlockBreakToken* previous_break_token) {
+  DCHECK_EQ(page_area.GetBoxType(), PhysicalFragment::kPageArea);
+  DCHECK_EQ(first_page_area.GetBoxType(), PhysicalFragment::kPageArea);
+
   PhysicalRect physical_page_rect = page_area.LocalRect();
 
-  if (const BlockBreakToken* previous_break_token =
-          FindPreviousBreakTokenForPageArea(page_area)) {
+  if (previous_break_token) {
     LayoutUnit consumed_block_size = previous_break_token->ConsumedBlockSize();
-    WritingMode writing_mode = page_container.Style().GetWritingMode();
-    if (writing_mode == WritingMode::kVerticalRl) {
-      const LayoutView& view = *page_container.GetDocument().GetLayoutView();
-      const PhysicalBoxFragment& first_page_area = *GetPageArea(view, 0);
+    PhysicalDirection block_end =
+        page_area.Style().GetWritingDirection().BlockEnd();
+    if (block_end == PhysicalDirection::kLeft) {
       physical_page_rect.offset.left += first_page_area.Size().width;
       physical_page_rect.offset.left -=
           consumed_block_size + page_area.Size().width;
-    } else if (writing_mode == WritingMode::kVerticalLr) {
+    } else if (block_end == PhysicalDirection::kRight) {
       physical_page_rect.offset.left += consumed_block_size;
     } else {
+      CHECK_EQ(block_end, PhysicalDirection::kDown);
       physical_page_rect.offset.top += consumed_block_size;
     }
   }
@@ -393,7 +408,9 @@ float CalculateOverflowShrinkForPrinting(const LayoutView& view,
     const auto& page_container = To<PhysicalBoxFragment>(*link);
     for (const PhysicalFragmentLink& child : page_container.Children()) {
       if (child->GetBoxType() == PhysicalFragment::kPageBorderBox) {
-        const auto& page = *To<PhysicalBoxFragment>(child->Children()[0].get());
+        const auto& page_border_box = *To<PhysicalBoxFragment>(child.get());
+        const auto& page =
+            *To<PhysicalBoxFragment>(page_border_box.Children()[0].get());
         // Check the inline axis overflow on each individual page, to find the
         // largest relative overflow.
         float page_scale_factor;

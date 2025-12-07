@@ -67,6 +67,88 @@ MockSubresourceFilterObserver::MockSubresourceFilterObserver(
 
 MockSubresourceFilterObserver::~MockSubresourceFilterObserver() = default;
 
+// ================= SubresourceFilterSharedBrowserTest =======================
+
+SubresourceFilterSharedBrowserTest::SubresourceFilterSharedBrowserTest() =
+    default;
+
+SubresourceFilterSharedBrowserTest::~SubresourceFilterSharedBrowserTest() =
+    default;
+
+void SubresourceFilterSharedBrowserTest::SetUpOnMainThread() {
+  embedded_test_server()->ServeFilesFromSourceDirectory("components/test/data");
+  host_resolver()->AddSimulatedFailure("host-with-dns-lookup-failure");
+
+  host_resolver()->AddRule("*", "127.0.0.1");
+  content::SetupCrossSiteRedirector(embedded_test_server());
+
+  // This does not start the embedded test server in order to allow derived
+  // classes to perform additional setup.
+}
+
+GURL SubresourceFilterSharedBrowserTest::GetTestUrl(
+    const std::string& relative_url) const {
+  return embedded_test_server()->base_url().Resolve(relative_url);
+}
+
+content::WebContents* SubresourceFilterSharedBrowserTest::web_contents() {
+  return chrome_test_utils::GetActiveWebContents(this);
+}
+
+content::RenderFrameHost* SubresourceFilterSharedBrowserTest::FindFrameByName(
+    const std::string& name) {
+  return content::FrameMatchingPredicate(
+      web_contents()->GetPrimaryPage(),
+      base::BindRepeating(&content::FrameMatchesName, name));
+}
+
+bool SubresourceFilterSharedBrowserTest::WasParsedScriptElementLoaded(
+    content::RenderFrameHost* rfh) {
+  CHECK(rfh);
+  return content::EvalJs(rfh, "!!document.scriptExecuted").ExtractBool();
+}
+
+void SubresourceFilterSharedBrowserTest::
+    ExpectParsedScriptElementLoadedStatusInFrames(
+        const std::vector<const char*>& frame_names,
+        const std::vector<bool>& expect_loaded) {
+  ASSERT_EQ(expect_loaded.size(), frame_names.size());
+  for (size_t i = 0; i < frame_names.size(); ++i) {
+    SCOPED_TRACE(frame_names[i]);
+    content::RenderFrameHost* frame = FindFrameByName(frame_names[i]);
+    ASSERT_TRUE(frame);
+    ASSERT_EQ(expect_loaded[i], WasParsedScriptElementLoaded(frame));
+  }
+}
+
+void SubresourceFilterSharedBrowserTest::ExpectFramesIncludedInLayout(
+    const std::vector<const char*>& frame_names,
+    const std::vector<bool>& expect_displayed) {
+  const char kScript[] = "document.getElementsByName(\"%s\")[0].clientWidth;";
+
+  ASSERT_EQ(expect_displayed.size(), frame_names.size());
+  for (size_t i = 0; i < frame_names.size(); ++i) {
+    SCOPED_TRACE(frame_names[i]);
+    int client_width =
+        content::EvalJs(web_contents()->GetPrimaryMainFrame(),
+                        base::StringPrintf(kScript, frame_names[i]))
+            .ExtractInt();
+    EXPECT_EQ(expect_displayed[i], !!client_width) << client_width;
+  }
+}
+
+void SubresourceFilterSharedBrowserTest::NavigateFrame(const char* frame_name,
+                                                       const GURL& url) {
+  content::TestNavigationObserver navigation_observer(web_contents(), 1);
+  ASSERT_TRUE(content::ExecJs(
+      web_contents()->GetPrimaryMainFrame(),
+      base::StringPrintf("document.getElementsByName(\"%s\")[0].src = \"%s\";",
+                         frame_name, url.spec().c_str())));
+  navigation_observer.Wait();
+}
+
+// ======================= SubresourceFilterBrowserTest =======================
+
 SubresourceFilterBrowserTest::SubresourceFilterBrowserTest() {
   scoped_feature_list_.InitWithFeatures(
       /*enabled_features=*/{kAdTagging},
@@ -85,23 +167,18 @@ bool SubresourceFilterBrowserTest::AdsBlockedInContentSettings(
 
 void SubresourceFilterBrowserTest::SetUp() {
   database_helper_ = CreateTestDatabase();
-  PlatformBrowserTest::SetUp();
+  SubresourceFilterSharedBrowserTest::SetUp();
 }
 
 void SubresourceFilterBrowserTest::TearDown() {
-  PlatformBrowserTest::TearDown();
+  SubresourceFilterSharedBrowserTest::TearDown();
   // Unregister test factories after PlatformBrowserTest::TearDown
   // (which destructs SafeBrowsingService).
   database_helper_.reset();
 }
 
 void SubresourceFilterBrowserTest::SetUpOnMainThread() {
-  embedded_test_server()->ServeFilesFromSourceDirectory("components/test/data");
-  host_resolver()->AddSimulatedFailure("host-with-dns-lookup-failure");
-
-  host_resolver()->AddRule("*", "127.0.0.1");
-  content::SetupCrossSiteRedirector(embedded_test_server());
-
+  SubresourceFilterSharedBrowserTest::SetUpOnMainThread();
   // Add content/test/data for cross_site_iframe_factory.html
   base::FilePath test_data_dir;
   ASSERT_TRUE(base::PathService::Get(content::DIR_TEST_DATA, &test_data_dir));
@@ -117,11 +194,6 @@ void SubresourceFilterBrowserTest::SetUpOnMainThread() {
 std::unique_ptr<TestSafeBrowsingDatabaseHelper>
 SubresourceFilterBrowserTest::CreateTestDatabase() {
   return std::make_unique<TestSafeBrowsingDatabaseHelper>();
-}
-
-GURL SubresourceFilterBrowserTest::GetTestUrl(
-    const std::string& relative_url) const {
-  return embedded_test_server()->base_url().Resolve(relative_url);
 }
 
 void SubresourceFilterBrowserTest::ConfigureAsPhishingURL(const GURL& url) {
@@ -150,52 +222,6 @@ void SubresourceFilterBrowserTest::ConfigureURLWithWarning(
       url, safe_browsing::GetUrlSubresourceFilterId(), metadata);
 }
 
-content::WebContents* SubresourceFilterBrowserTest::web_contents() {
-  return chrome_test_utils::GetActiveWebContents(this);
-}
-
-content::RenderFrameHost* SubresourceFilterBrowserTest::FindFrameByName(
-    const std::string& name) {
-  return content::FrameMatchingPredicate(
-      web_contents()->GetPrimaryPage(),
-      base::BindRepeating(&content::FrameMatchesName, name));
-}
-
-bool SubresourceFilterBrowserTest::WasParsedScriptElementLoaded(
-    content::RenderFrameHost* rfh) {
-  CHECK(rfh);
-  return content::EvalJs(rfh, "!!document.scriptExecuted").ExtractBool();
-}
-
-void SubresourceFilterBrowserTest::
-    ExpectParsedScriptElementLoadedStatusInFrames(
-        const std::vector<const char*>& frame_names,
-        const std::vector<bool>& expect_loaded) {
-  ASSERT_EQ(expect_loaded.size(), frame_names.size());
-  for (size_t i = 0; i < frame_names.size(); ++i) {
-    SCOPED_TRACE(frame_names[i]);
-    content::RenderFrameHost* frame = FindFrameByName(frame_names[i]);
-    ASSERT_TRUE(frame);
-    ASSERT_EQ(expect_loaded[i], WasParsedScriptElementLoaded(frame));
-  }
-}
-
-void SubresourceFilterBrowserTest::ExpectFramesIncludedInLayout(
-    const std::vector<const char*>& frame_names,
-    const std::vector<bool>& expect_displayed) {
-  const char kScript[] = "document.getElementsByName(\"%s\")[0].clientWidth;";
-
-  ASSERT_EQ(expect_displayed.size(), frame_names.size());
-  for (size_t i = 0; i < frame_names.size(); ++i) {
-    SCOPED_TRACE(frame_names[i]);
-    int client_width =
-        content::EvalJs(web_contents()->GetPrimaryMainFrame(),
-                        base::StringPrintf(kScript, frame_names[i]))
-            .ExtractInt();
-    EXPECT_EQ(expect_displayed[i], !!client_width) << client_width;
-  }
-}
-
 bool SubresourceFilterBrowserTest::IsDynamicScriptElementLoaded(
     content::RenderFrameHost* rfh) {
   CHECK(rfh);
@@ -213,16 +239,6 @@ void SubresourceFilterBrowserTest::NavigateFromRendererSide(const GURL& url) {
   ASSERT_TRUE(content::ExecJs(
       web_contents()->GetPrimaryMainFrame(),
       base::StringPrintf("window.location = \"%s\";", url.spec().c_str())));
-  navigation_observer.Wait();
-}
-
-void SubresourceFilterBrowserTest::NavigateFrame(const char* frame_name,
-                                                 const GURL& url) {
-  content::TestNavigationObserver navigation_observer(web_contents(), 1);
-  ASSERT_TRUE(content::ExecJs(
-      web_contents()->GetPrimaryMainFrame(),
-      base::StringPrintf("document.getElementsByName(\"%s\")[0].src = \"%s\";",
-                         frame_name, url.spec().c_str())));
   navigation_observer.Wait();
 }
 

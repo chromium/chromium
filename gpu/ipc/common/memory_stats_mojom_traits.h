@@ -6,15 +6,16 @@
 #define GPU_IPC_COMMON_MEMORY_STATS_MOJOM_TRAITS_H_
 
 #include "build/build_config.h"
-#include "gpu/gpu_export.h"
+#include "gpu/ipc/common/gpu_ipc_common_export.h"
 #include "gpu/ipc/common/memory_stats.h"
 #include "gpu/ipc/common/memory_stats.mojom-shared.h"
 
 namespace mojo {
 
 template <>
-struct GPU_EXPORT StructTraits<gpu::mojom::VideoMemoryProcessStatsDataView,
-                               gpu::VideoMemoryUsageStats::ProcessStats> {
+struct GPU_IPC_COMMON_EXPORT StructTraits<
+    gpu::mojom::VideoMemoryProcessStatsDataView,
+    gpu::VideoMemoryUsageStats::ProcessStats> {
   static uint64_t video_memory_bytes(
       const gpu::VideoMemoryUsageStats::ProcessStats& state) {
     return state.video_memory;
@@ -34,8 +35,9 @@ struct GPU_EXPORT StructTraits<gpu::mojom::VideoMemoryProcessStatsDataView,
 };
 
 template <>
-struct GPU_EXPORT StructTraits<gpu::mojom::VideoMemoryUsageStatsDataView,
-                               gpu::VideoMemoryUsageStats> {
+struct GPU_IPC_COMMON_EXPORT StructTraits<
+    gpu::mojom::VideoMemoryUsageStatsDataView,
+    gpu::VideoMemoryUsageStats> {
   static std::map<int32_t, gpu::VideoMemoryUsageStats::ProcessStats>
   process_map(const gpu::VideoMemoryUsageStats& stats) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)

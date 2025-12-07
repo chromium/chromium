@@ -7,13 +7,17 @@ package org.chromium.chrome.browser.notifications;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * Provides the ability for the PushMessagingServiceImpl to revoke Notifications permission.
  *
  * <p>This class should only be used on the UI thread.
  */
+@NullMarked
 public class PushMessagingServiceBridge {
-    private static PushMessagingServiceBridge sInstance;
+    private static @Nullable PushMessagingServiceBridge sInstance;
 
     /**
      * Returns the current instance of the PushMessagingServiceBridge.
@@ -35,7 +39,8 @@ public class PushMessagingServiceBridge {
      * @param profileId Id of the profile that showed the notification.
      * @param appLevelNotificationsEnabled Whether Chrome has app-level Notifications permission.
      */
-    public void verify(String origin, String profileId, boolean appLevelNotificationsEnabled) {
+    public void verify(
+            String origin, @Nullable String profileId, boolean appLevelNotificationsEnabled) {
         PushMessagingServiceBridgeJni.get()
                 .verifyAndRevokeNotificationsPermission(
                         origin, profileId, appLevelNotificationsEnabled);
@@ -45,7 +50,7 @@ public class PushMessagingServiceBridge {
     interface Natives {
         void verifyAndRevokeNotificationsPermission(
                 @JniType("std::string") String origin,
-                @JniType("std::string") String profileId,
+                @JniType("std::string") @Nullable String profileId,
                 boolean appLevelNotificationsEnabled);
     }
 }

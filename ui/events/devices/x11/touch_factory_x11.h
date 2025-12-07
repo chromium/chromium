@@ -5,15 +5,13 @@
 #ifndef UI_EVENTS_DEVICES_X11_TOUCH_FACTORY_X11_H_
 #define UI_EVENTS_DEVICES_X11_TOUCH_FACTORY_X11_H_
 
-#include <stdint.h>
-
-#include <bitset>
 #include <map>
 #include <optional>
 #include <set>
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "ui/events/devices/x11/events_devices_x11_export.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/sequential_id_generator.h"
@@ -61,9 +59,6 @@ class EVENTS_DEVICES_X11_EXPORT TouchFactory {
   // time this is called.
   void SetTouchDeviceList(
       const std::vector<std::pair<int, EventPointerType>>& devices);
-
-  // Is the device ID valid?
-  bool IsValidDevice(int deviceid) const;
 
   // Is the device a touch-device?
   bool IsTouchDevice(x11::Input::DeviceId deviceid) const;
@@ -127,14 +122,12 @@ class EVENTS_DEVICES_X11_EXPORT TouchFactory {
   // identifier for the touch device. This can be completed after enough testing
   // on real touch devices.
 
-  static const int kMaxDeviceNum = 128;
-
   // A quick lookup table for determining if events from the pointer device
   // should be processed.
-  std::bitset<kMaxDeviceNum> pointer_device_lookup_;
+  base::flat_set<x11::Input::DeviceId> pointer_device_lookup_;
 
   // A quick lookup table for determining if a device is a touch device.
-  std::bitset<kMaxDeviceNum> touch_device_lookup_;
+  base::flat_set<x11::Input::DeviceId> touch_device_lookup_;
 
   // The list of touch devices. For testing/debugging purposes, a single-pointer
   // device (mouse or touch screen without sufficient X/driver support for MT)

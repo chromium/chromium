@@ -2,20 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/android/device_info.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/task/current_thread.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/keyboard_accessory/android/password_accessory_controller.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
+#include "chrome/browser/password_manager/android/password_generation_controller.h"
 #include "chrome/browser/password_manager/android/password_manager_test_utils_bridge.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/passwords_navigation_observer.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
+#include "chrome/browser/touch_to_fill/password_manager/password_generation/android/touch_to_fill_password_generation_controller.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_results_observer.h"
+#include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -30,6 +42,11 @@ class PasswordManagerAndroidBrowserTest
  public:
   PasswordManagerAndroidBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    // Set a GMS Core version that is guaranteed to provide full UPM support.
+    // This ensures that calls to the password store are derministically
+    // routed to the android backend.
+    base::android::device_info::set_gms_version_code_for_test(
+        base::NumberToString(password_manager::GetSplitStoresUpmMinVersion()));
     // See crbug.com/331746629. The login database on Android will be
     // deprecated soon. So create a fake backend on GMS Core for password
     // storing.
@@ -75,8 +92,8 @@ class PasswordManagerAndroidBrowserTest
         base::StatisticsRecorder::ScopedHistogramSampleObserver>(
         histogram_name,
         base::BindLambdaForTesting(
-            [&](const char* histogram_name, uint64_t name_hash,
-                base::HistogramBase::Sample sample) { run_loop.Quit(); }));
+            [&](std::string_view histogram_name, uint64_t name_hash,
+                base::HistogramBase::Sample32 sample) { run_loop.Quit(); }));
     run_loop.Run();
   }
 
@@ -103,6 +120,7 @@ class PasswordManagerAndroidBrowserTest
   }
 
  private:
+  autofill::test::AutofillBrowserTestEnvironment environment_;
   net::EmbeddedTestServer https_server_;
 };
 
@@ -155,10 +173,15 @@ IN_PROC_BROWSER_TEST_P(PasswordManagerAndroidBrowserTest,
 
   // A user accepts a credential in TouchToFill. That fills in the credential
   // and submits it.
+  base::test::TestFuture<bool> completion_future;
+  driver->FillSuggestion(u"username", u"password",
+                         completion_future.GetCallback());
+  ASSERT_TRUE(completion_future.Wait());
+
+  // TouchToFill tracking starts after filling the form.
   ChromePasswordManagerClient::FromWebContents(GetActiveWebContents())
       ->StartSubmissionTrackingAfterTouchToFill(u"username");
 
-  driver->FillSuggestion(u"username", u"password");
   driver->TriggerFormSubmission();
 
   ASSERT_TRUE(observer.Wait());
@@ -168,6 +191,78 @@ IN_PROC_BROWSER_TEST_P(PasswordManagerAndroidBrowserTest,
                    uma_recorder);
   uma_recorder.ExpectTotalCount(
       "PasswordManager.TouchToFill.TimeToSuccessfulLogin", 1);
+}
+
+// Tests that manual password generation can be triggered on the text field if
+// field's name contains "password".
+IN_PROC_BROWSER_TEST_P(PasswordManagerAndroidBrowserTest,
+                       TriggerPasswordGenerationOnTextField) {
+  password_manager::PasswordFormManager::
+      set_wait_for_server_predictions_for_filling(false);
+
+  NavigateToFile("/password/sign_in_with_password_type_text.html");
+
+  password_manager::ContentPasswordManagerDriver* driver =
+      password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
+          GetActiveWebContents()->GetPrimaryMainFrame());
+
+  // After parsing, text field is considered as manual generation eligible
+  // field.
+  EXPECT_TRUE(base::test::RunUntil([driver]() {
+    return driver->GetPasswordGenerationHelper()
+               ->GenerationEnabledFieldsForTests()
+               .size() == 1;
+  }));
+  const base::flat_set<autofill::FieldRendererId>& generation_enabled_fields =
+      driver->GetPasswordGenerationHelper()->GenerationEnabledFieldsForTests();
+  autofill::FieldRendererId password_field_renderer_id =
+      *generation_enabled_fields.begin();
+
+  // A user taps on the password field. JS call updates the last focused field
+  // for `PasswordAutofillAgent`. `PasswordGenerationAgent` uses the last
+  // focused field info to fill the manually generated password.
+  // TODO: crbug.com/372635030 - Replace JS script and get rid of with
+  // `ChromePasswordManagerClient::FocusedInputChanged` once
+  // `SimulateMouseClickOrTapElementWithId` call starts creation of keyboard
+  // accessory.
+  ASSERT_TRUE(
+      content::ExecJs(GetActiveWebContents(),
+                      "document.getElementById('password_field').focus();"));
+  // Wait because on some emulator bots the renderer may take longer time to
+  // finish the "focus()" call.
+  content::MainThreadFrameObserver frame_observer(
+      GetActiveWebContents()->GetRenderWidgetHostView()->GetRenderWidgetHost());
+  frame_observer.Wait();
+  ChromePasswordManagerClient::FromWebContents(GetActiveWebContents())
+      ->FocusedInputChanged(
+          driver, password_field_renderer_id,
+          autofill::mojom::FocusedFieldType::kFillableNonSearchField);
+  // User generates the password manually.
+  PasswordAccessoryController* password_accessory =
+      PasswordAccessoryController::GetIfExisting(GetActiveWebContents());
+  ASSERT_TRUE(password_accessory);
+  password_accessory->OnOptionSelected(
+      autofill::AccessoryAction::GENERATE_PASSWORD_MANUAL);
+
+  PasswordGenerationController* password_generation_controller =
+      PasswordGenerationController::GetIfExisting(GetActiveWebContents());
+
+  // Wait till password generation bottomsheet is shown to the user.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return password_generation_controller
+        ->GetTouchToFillGenerationControllerForTesting();
+  }));
+  TouchToFillPasswordGenerationController* touch_to_fill_generation_controller =
+      password_generation_controller
+          ->GetTouchToFillGenerationControllerForTesting();
+
+  touch_to_fill_generation_controller->OnGeneratedPasswordAccepted(u"Password");
+
+  EXPECT_TRUE(
+      content::EvalJs(
+          GetActiveWebContents(),
+          "document.getElementById('password_field').value === \"Password\"")
+          .ExtractBool());
 }
 
 INSTANTIATE_TEST_SUITE_P(VariateFormElementPresence,

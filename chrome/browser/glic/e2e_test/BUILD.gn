@@ -1,0 +1,122 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ozone.gni")
+import("//build/config/ui.gni")
+import("//testing/test.gni")
+
+source_set("internal_test_placeholder_constants") {
+  testonly = true
+  sources = [ "internal_test_placeholder_constants.h" ]
+}
+
+source_set("e2e_test_support") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [
+    "glic_e2e_test.cc",
+    "glic_e2e_test.h",
+  ]
+  if (checkout_glic_e2e_tests) {
+    defines += [ "ENABLE_GLIC_INTERNAL_TESTS=1" ]
+  }
+
+  # Internal targets also use the dependencies by depending on this target.
+  public_deps = [
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/autofill:test_support_ui",
+    "//chrome/browser/contextual_cueing",
+    "//chrome/browser/glic",
+    "//chrome/browser/glic:impl",
+    "//chrome/browser/glic/fre",
+    "//chrome/browser/glic/test_support",
+    "//chrome/browser/signin/e2e_tests:test_support",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//content/public/browser",
+    "//content/test:test_support",
+  ]
+  if (checkout_glic_e2e_tests) {
+    public_deps += [ "//chrome/browser/glic/e2e_test/internal:constants" ]
+  } else {
+    public_deps += [ ":internal_test_placeholder_constants" ]
+  }
+
+  # TODO(crbug.com/432285114): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+test("glic_internal_e2e_interactive_ui_tests") {
+  use_xvfb = use_xvfb_in_this_config
+  configs += [ "//build/config:precompiled_headers" ]
+  sources = [
+    # TODO(crbug.com/399665693): This is needed because we are using WPR
+    # definition in autofill test utilities. This can be removed when WPR
+    # utilities is separated.
+    "../../../browser/ui/views/translate/translate_bubble_test_utils_views.cc",
+    "../../../test/base/interactive_ui_tests_main.cc",
+  ]
+  data = [
+    "//chrome/browser/internal/resources/signin/test_accounts.json",
+
+    # TODO(crbug.com/399665693): Remove unneeded data after refactoring.
+    # Used in wpr utilities.
+    "//chrome/test/data/web_page_replay_go_helper_scripts/automation_helper.js",
+    "//components/test/data/autofill/web_page_replay_support_files/",
+
+    # WPR binary.
+    "//third_party/catapult/telemetry/telemetry/bin/",
+
+    # Used in WPR command.
+    "//third_party/catapult/web_page_replay_go/deterministic.js",
+  ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  deps = [
+    ":e2e_test_support",
+
+    # TODO(crbug.com/399665693): Remove unneeded deps after refactoring.
+    # Required for translate_bubble_test_utils_views.cc
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/translate:test_support",
+    "//chrome/test:chrome_test_launcher",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+  ]
+
+  if (checkout_glic_e2e_tests) {
+    # Real internal test code is defined in this target.
+    deps += [ "internal:e2e_tests" ]
+    data += [
+      "internal/wpr_recordings/",
+      "internal/test_data/",
+    ]
+  }
+
+  if (use_aura) {
+    deps += [ "//ui/aura:test_support" ]
+  }
+
+  if (use_ozone) {
+    deps += [
+      "//ui/ozone",
+      "//ui/platform_window/common",
+    ]
+  }
+
+  if (is_win) {
+    deps += [
+      "//chrome:browser_tests_pak",
+      "//chrome:packed_resources",
+      "//chrome:resources",
+      "//chrome:strings",
+      "//chrome/installer/util:strings",
+      "//ui/resources:ui_test_pak",
+      "//ui/resources:ui_test_pak_data",
+    ]
+  }
+}

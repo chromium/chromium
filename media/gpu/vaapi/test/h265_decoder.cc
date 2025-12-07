@@ -2,9 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/vaapi/test/h265_decoder.h"
 
 #include <algorithm>
+#include <array>
 
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -85,7 +91,7 @@ H265Decoder::H265Decoder(const uint8_t* stream_data,
                          SharedVASurface::FetchPolicy fetch_policy)
     : VideoDecoder::VideoDecoder(va_device, fetch_policy), wrapper_(va_device) {
   Reset();
-  parser_.SetStream(stream_data, stream_len);
+  parser_.SetStream(base::span(stream_data, stream_len));
 }
 
 H265Decoder::~H265Decoder() {
@@ -427,8 +433,9 @@ void H265Decoder::CalcPictureOrderCount(const H265PPS* pps,
                                         const H265SliceHeader* slice_hdr) {
   // 8.3.1 Decoding process for picture order count.
   curr_pic_->valid_for_prev_tid0_pic_ =
-      !pps->temporal_id && (slice_hdr->nal_unit_type < H265NALU::RADL_N ||
-                            slice_hdr->nal_unit_type > H265NALU::RSV_VCL_N14);
+      !slice_hdr->temporal_id &&
+      (slice_hdr->nal_unit_type < H265NALU::RADL_N ||
+       slice_hdr->nal_unit_type > H265NALU::RSV_VCL_N14);
   curr_pic_->slice_pic_order_cnt_lsb_ = slice_hdr->slice_pic_order_cnt_lsb;
 
   // Calculate POC for current picture.
@@ -556,8 +563,8 @@ bool H265Decoder::BuildRefPicLists(const H265SPS* sps,
   ref_pic_set_st_curr_after_.resize(kMaxDpbSize);
   ref_pic_set_st_curr_before_.clear();
   ref_pic_set_st_curr_before_.resize(kMaxDpbSize);
-  scoped_refptr<H265Picture> ref_pic_set_lt_foll[kMaxDpbSize];
-  scoped_refptr<H265Picture> ref_pic_set_st_foll[kMaxDpbSize];
+  std::array<scoped_refptr<H265Picture>, kMaxDpbSize> ref_pic_set_lt_foll;
+  std::array<scoped_refptr<H265Picture>, kMaxDpbSize> ref_pic_set_st_foll;
 
   // Mark everything in the DPB as unused for reference now. When we determine
   // the pics in the ref list, then we will mark them appropriately.
@@ -636,7 +643,7 @@ bool H265Decoder::BuildRefPicLists(const H265SPS* sps,
     int num_rps_curr_temp_list0 =
         std::max(slice_hdr->num_ref_idx_l0_active_minus1 + 1,
                  slice_hdr->num_pic_total_curr);
-    scoped_refptr<H265Picture> ref_pic_list_temp0[kMaxDpbSize];
+    std::array<scoped_refptr<H265Picture>, kMaxDpbSize> ref_pic_list_temp0;
 
     // Equation 8-8.
     int r_idx = 0;
@@ -671,7 +678,7 @@ bool H265Decoder::BuildRefPicLists(const H265SPS* sps,
       int num_rps_curr_temp_list1 =
           std::max(slice_hdr->num_ref_idx_l1_active_minus1 + 1,
                    slice_hdr->num_pic_total_curr);
-      scoped_refptr<H265Picture> ref_pic_list_temp1[kMaxDpbSize];
+      std::array<scoped_refptr<H265Picture>, kMaxDpbSize> ref_pic_list_temp1;
 
       // Equation 8-10.
       r_idx = 0;

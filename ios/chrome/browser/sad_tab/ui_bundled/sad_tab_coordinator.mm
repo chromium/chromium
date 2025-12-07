@@ -6,39 +6,38 @@
 
 #import "base/metrics/histogram_macros.h"
 #import "components/ui_metrics/sadtab_metrics_types.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/chrome_coordinator+fullscreen_disabling.h"
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
 #import "ios/chrome/browser/sad_tab/ui_bundled/sad_tab_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
-#import "ios/chrome/browser/ui/fullscreen/chrome_coordinator+fullscreen_disabling.h"
+#import "ios/chrome/browser/tabs/model/tabs_dependency_installer_bridge.h"
 #import "ios/chrome/browser/web/model/sad_tab_tab_helper.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
-#import "ios/chrome/browser/web_state_list/model/web_state_dependency_installer_bridge.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/web/public/web_state.h"
 
 @interface SadTabCoordinator () <SadTabViewControllerDelegate,
-                                 DependencyInstalling> {
-  SadTabViewController* _viewController;
-  // Bridge to observe the web state list from Objective-C.
-  std::unique_ptr<WebStateDependencyInstallerBridge> _dependencyInstallerBridge;
-}
+                                 TabsDependencyInstalling>
 @end
 
-@implementation SadTabCoordinator
+@implementation SadTabCoordinator {
+  SadTabViewController* _viewController;
+  // Bridge to observe the web state list from Objective-C.
+  TabsDependencyInstallerBridge _dependencyInstallerBridge;
+}
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    _dependencyInstallerBridge =
-        std::make_unique<WebStateDependencyInstallerBridge>(
-            self, self.browser->GetWebStateList());
+    _dependencyInstallerBridge.StartObserving(
+        self, browser, TabsDependencyInstaller::Policy::kOnlyRealized);
   }
   return self;
 }
@@ -46,8 +45,9 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  if (_viewController)
+  if (_viewController) {
     return;
+  }
 
   if (self.repeatedFailure) {
     UMA_HISTOGRAM_ENUMERATION(ui_metrics::kSadTabFeedbackHistogramKey,
@@ -64,8 +64,7 @@
   _viewController = [[SadTabViewController alloc] init];
   _viewController.delegate = self;
   _viewController.overscrollDelegate = self.overscrollDelegate;
-  _viewController.offTheRecord =
-      self.browser->GetBrowserState()->IsOffTheRecord();
+  _viewController.offTheRecord = self.isOffTheRecord;
   _viewController.repeatedFailure = self.repeatedFailure;
 
   [self.baseViewController addChildViewController:_viewController];
@@ -79,8 +78,9 @@
 }
 
 - (void)stop {
-  if (!_viewController)
+  if (!_viewController) {
     return;
+  }
 
   [self didStopFullscreenDisablingUI];
 
@@ -91,9 +91,8 @@
 }
 
 - (void)disconnect {
-  // Deleting the installer bridge will cause all web states to have
-  // dependencies uninstalled.
-  _dependencyInstallerBridge.reset();
+  // Stop observing the WebStateList before destroying the bridge object.
+  _dependencyInstallerBridge.StopObserving();
 }
 
 - (void)setOverscrollDelegate:
@@ -115,10 +114,9 @@
 
 - (void)sadTabViewController:(SadTabViewController*)sadTabViewController
     showSuggestionsPageWithURL:(const GURL&)URL {
-  OpenNewTabCommand* command = [OpenNewTabCommand
-      commandWithURLFromChrome:URL
-                   inIncognito:self.browser->GetBrowserState()
-                                   ->IsOffTheRecord()];
+  OpenNewTabCommand* command =
+      [OpenNewTabCommand commandWithURLFromChrome:URL
+                                      inIncognito:self.isOffTheRecord];
 
   // TODO(crbug.com/40670043): Use HandlerForProtocol after commands protocol
   // clean up.
@@ -135,8 +133,9 @@
 - (void)sadTabTabHelper:(SadTabTabHelper*)tabHelper
     presentSadTabForWebState:(web::WebState*)webState
              repeatedFailure:(BOOL)repeatedFailure {
-  if (!webState->IsVisible())
+  if (!webState->IsVisible()) {
     return;
+  }
 
   self.repeatedFailure = repeatedFailure;
   [self start];
@@ -156,10 +155,23 @@
   [self stop];
 }
 
-#pragma mark - DependencyInstalling
+#pragma mark - TabsDependencyInstalling
 
-- (void)installDependencyForWebState:(web::WebState*)webState {
+- (void)webStateInserted:(web::WebState*)webState {
   SadTabTabHelper::FromWebState(webState)->SetDelegate(self);
+}
+
+- (void)webStateRemoved:(web::WebState*)webState {
+  SadTabTabHelper::FromWebState(webState)->SetDelegate(nil);
+}
+
+- (void)webStateDeleted:(web::WebState*)webState {
+  // Nothing to do.
+}
+
+- (void)newWebStateActivated:(web::WebState*)newActive
+           oldActiveWebState:(web::WebState*)oldActive {
+  // Nothing to do.
 }
 
 @end

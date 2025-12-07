@@ -1,0 +1,15 @@
+AXWebArea
+++AXGroup
+++++AXButton AXExpanded=0
+++++AXMenuBar
+++++++AXMenuItem AXExpanded=0 AXTitle='First item'
+++++++AXMenuItem AXTitle='No command item'
+++++++AXMenuItem AXTitle='Custom command item'
+++++AXButton AXExpanded=0
+++++AXMenuBar
+++++++AXMenuItem AXExpanded=0 AXTitle='First item'
+++++AXMenuBar
+++++++AXMenuItem AXExpanded=1 AXTitle='First item'
+++++AXGroup AXSubrole=AXApplicationGroup
+++++++AXMenuItem AXTitle='Submenu1 first item'
+++++++AXMenuItem AXExpanded=0 AXTitle='Submenu1 second item'

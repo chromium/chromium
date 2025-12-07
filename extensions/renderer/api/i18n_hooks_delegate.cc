@@ -90,7 +90,7 @@ v8::Local<v8::Value> DetectedLanguage::ToV8(v8::Isolate* isolate) const {
 
 v8::Local<v8::Value> LanguageDetectionResult::ToV8(
     v8::Local<v8::Context> context) const {
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   DCHECK(isolate->GetCurrentContext() == context);
 
   v8::Local<v8::Array> v8_languages = v8::Array::New(isolate, languages.size());
@@ -155,7 +155,7 @@ v8::Local<v8::Value> GetI18nMessage(const std::string& message_name,
                                     v8::Local<v8::Value> v8_options,
                                     SharedL10nMap::IPCTarget* ipc_target,
                                     v8::Local<v8::Context> context) {
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
 
   std::string message = SharedL10nMap::GetInstance().GetMessage(
       extension_id, message_name, ipc_target);
@@ -336,7 +336,7 @@ RequestResult I18nHooksDelegate::HandleDetectLanguage(
     DCHECK(arguments[1]->IsFunction());
     JSRunner::Get(v8_context)
         ->RunJSFunction(arguments[1].As<v8::Function>(), v8_context,
-                        std::size(response_args), response_args);
+                        response_args);
   } else {
     DCHECK_EQ(binding::AsyncResponseType::kPromise, parse_result.async_type);
     auto promise_resolver =

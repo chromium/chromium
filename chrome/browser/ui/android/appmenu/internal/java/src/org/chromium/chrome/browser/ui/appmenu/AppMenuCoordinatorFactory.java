@@ -9,25 +9,36 @@ import android.graphics.Rect;
 import android.view.View;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController.SubmenuHeaderFactory;
+
+import java.util.function.Supplier;
 
 /** A factory for creating an {@link AppMenuCoordinator}. */
+@NullMarked
 public class AppMenuCoordinatorFactory {
     private AppMenuCoordinatorFactory() {}
 
     /**
      * Create a new AppMenuCoordinator.
+     *
      * @param context The activity context.
      * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} for the containing
-     *         activity.
+     *     activity.
      * @param buttonDelegate The {@link MenuButtonDelegate} for the containing activity.
      * @param appMenuDelegate The {@link AppMenuDelegate} for the containing activity.
      * @param decorView The decor {@link View}, e.g. from Window#getDecorView(), for the containing
-     *         activity.
+     *     activity.
      * @param hardwareButtonAnchorView The {@link View} used as an anchor for the menu when it is
-     *            displayed using a hardware button.
+     *     displayed using a hardware button.
      * @param appRect Supplier of the app area in Window that the menu should fit in.
+     * @param windowAndroid The window that will be used to fetch KeyboardVisibilityDelegate
+     * @param browserControlsStateProvider a provider that can provide the state of the toolbar
+     * @param submenuHeaderFactory The {@link SubmenuHeaderFactory} to use for the {@link
+     *     HierarchicalMenuController}.
      */
     public static AppMenuCoordinator createAppMenuCoordinator(
             Context context,
@@ -36,7 +47,10 @@ public class AppMenuCoordinatorFactory {
             AppMenuDelegate appMenuDelegate,
             View decorView,
             View hardwareButtonAnchorView,
-            Supplier<Rect> appRect) {
+            Supplier<Rect> appRect,
+            WindowAndroid windowAndroid,
+            BrowserControlsStateProvider browserControlsStateProvider,
+            SubmenuHeaderFactory submenuHeaderFactory) {
         return new AppMenuCoordinatorImpl(
                 context,
                 activityLifecycleDispatcher,
@@ -44,10 +58,15 @@ public class AppMenuCoordinatorFactory {
                 appMenuDelegate,
                 decorView,
                 hardwareButtonAnchorView,
-                appRect);
+                appRect,
+                windowAndroid,
+                browserControlsStateProvider,
+                submenuHeaderFactory);
     }
 
-    /** @param reporter A means of reporting an exception without crashing. */
+    /**
+     * @param reporter A means of reporting an exception without crashing.
+     */
     public static void setExceptionReporter(Callback<Throwable> reporter) {
         AppMenuCoordinatorImpl.setExceptionReporter(reporter);
     }

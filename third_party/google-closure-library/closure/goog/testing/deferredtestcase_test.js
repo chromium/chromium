@@ -45,22 +45,22 @@ function createDeferredTestCase(d) {
 
 testSuite({
   testDeferredCallbacks() {
-    let callbackTime = goog.now();
+    let callbackTime = Date.now();
     const callbacks = new Deferred();
     deferredTestCase.addWaitForAsync('Waiting for 1st callback', callbacks);
     callbacks.addCallback(() => {
-      assertTrue('We\'re going back in time!', goog.now() >= callbackTime);
-      callbackTime = goog.now();
+      assertTrue('We\'re going back in time!', Date.now() >= callbackTime);
+      callbackTime = Date.now();
     });
     deferredTestCase.addWaitForAsync('Waiting for 2nd callback', callbacks);
     callbacks.addCallback(() => {
-      assertTrue('We\'re going back in time!', goog.now() >= callbackTime);
-      callbackTime = goog.now();
+      assertTrue('We\'re going back in time!', Date.now() >= callbackTime);
+      callbackTime = Date.now();
     });
     deferredTestCase.addWaitForAsync('Waiting for last callback', callbacks);
     callbacks.addCallback(() => {
-      assertTrue('We\'re going back in time!', goog.now() >= callbackTime);
-      callbackTime = goog.now();
+      assertTrue('We\'re going back in time!', Date.now() >= callbackTime);
+      callbackTime = Date.now();
     });
 
     deferredTestCase.waitForDeferred(callbacks);

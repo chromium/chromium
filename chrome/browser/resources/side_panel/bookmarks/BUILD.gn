@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//ui/webui/resources/tools/build_webui.gni")
+import("//ui/webui/webui_features.gni")
 
 assert(!is_android)
 
@@ -10,8 +11,8 @@ build_webui("build") {
   grd_prefix = "side_panel_bookmarks"
 
   static_files = [
-    "images/bookmarks_empty_dark.svg",
     "images/bookmarks_empty.svg",
+    "images/bookmarks_empty_dark.svg",
     "power_bookmarks.html",
   ]
 
@@ -24,13 +25,14 @@ build_webui("build") {
     "power_bookmarks_list.ts",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "bookmarks_api_proxy.ts",
-    "power_bookmarks_drag_manager.ts",
+    "keyboard_arrow_navigation_service.ts",
     "power_bookmark_row.html.ts",
     "power_bookmark_row.ts",
-    "power_bookmarks_utils.ts",
+    "power_bookmarks_drag_manager.ts",
     "power_bookmarks_service.ts",
+    "power_bookmarks_utils.ts",
   ]
 
   css_files = [ "power_bookmark_row.css" ]
@@ -45,9 +47,9 @@ build_webui("build") {
 
   ts_composite = true
   ts_definitions = [
-    "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/bookmark_manager_private.d.ts",
     "//tools/typescript/definitions/bookmarks.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/tabs.d.ts",
   ]
@@ -68,6 +70,6 @@ build_webui("build") {
             "$root_gen_dir/chrome/browser/resources/side_panel/shared/tsc/*",
             target_gen_dir) ]
 
-  html_to_wrapper_template = "detect"
   webui_context_type = "trusted"
+  generate_code_cache = enable_webui_generate_code_cache
 }

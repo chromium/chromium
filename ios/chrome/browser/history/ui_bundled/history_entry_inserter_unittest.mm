@@ -10,9 +10,9 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
 #import "components/history/core/browser/browsing_history_service.h"
-#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/history/ui_bundled/history_entry_item.h"
 #import "ios/chrome/browser/history/ui_bundled/history_util.h"
+#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -27,7 +27,7 @@ HistoryEntryItem* TestHistoryEntryItem(base::Time timestamp,
       BrowsingHistoryService::HistoryEntry::LOCAL_ENTRY,
       GURL(("http://" + name).c_str()), base::UTF8ToUTF16(name.c_str()),
       timestamp, std::string(), false, std::u16string(), false, GURL(), 0, 0,
-      history::kNoAppIdFilter);
+      /*is_actor_visit=*/false, history::kNoAppIdFilter);
   HistoryEntryItem* item =
       [[HistoryEntryItem alloc] initWithType:kItemTypeEnumZero
                        accessibilityDelegate:nil];

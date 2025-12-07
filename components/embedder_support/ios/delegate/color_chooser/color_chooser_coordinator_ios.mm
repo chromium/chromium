@@ -6,7 +6,7 @@
 
 #import "components/embedder_support/ios/delegate/color_chooser/color_chooser_controller_ios.h"
 #import "components/embedder_support/ios/delegate/color_chooser/color_chooser_mediator_ios.h"
-#import "ui/gfx/native_widget_types.h"
+#import "ui/gfx/native_ui_types.h"
 
 @implementation ColorChooserCoordinatorIOS
 

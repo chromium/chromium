@@ -47,15 +47,15 @@ function validatePasswordsSubsection(
     if (!searchTerm || expectedGroup.name.includes(searchTerm)) {
       assertEquals(
           expectedGroup.name,
-          listItemElement.$.displayedName.textContent!.trim());
+          listItemElement.$.displayedName.textContent.trim());
     } else if (matchingUsername) {
       assertEquals(
           expectedGroup.name + ' • ' + matchingUsername,
-          listItemElement.$.displayedName.textContent!.trim());
+          listItemElement.$.displayedName.textContent.trim());
     } else {
       assertEquals(
           expectedGroup.name + ' • ' + matchingDomain,
-          listItemElement.$.displayedName.textContent!.trim());
+          listItemElement.$.displayedName.textContent.trim());
     }
   }
 }
@@ -195,7 +195,7 @@ suite('PasswordsSectionTest', function() {
     assertFalse(listEntries[1]!.$.numberOfAccounts.hidden);
     assertEquals(
         pluralString.text,
-        listEntries[1]!.$.numberOfAccounts.textContent!.trim());
+        listEntries[1]!.$.numberOfAccounts.textContent.trim());
   });
 
   test('search by group name', async function() {
@@ -546,7 +546,7 @@ suite('PasswordsSectionTest', function() {
       });
 
   test('Should not show local credentials icon', async function() {
-    passwordManager.data.isOptedInAccountStorage = true;
+    passwordManager.data.isAccountStorageEnabled = true;
 
     passwordManager.data.groups = [createCredentialGroup({
       name: 'test.com',
@@ -566,9 +566,8 @@ suite('PasswordsSectionTest', function() {
   });
 
   test('Should show local credentials icon', async function() {
-    passwordManager.data.isOptedInAccountStorage = true;
+    passwordManager.data.isAccountStorageEnabled = true;
     syncProxy.syncInfo = {
-      isEligibleForAccountStorage: true,
       isSyncingPasswords: false,
     };
 

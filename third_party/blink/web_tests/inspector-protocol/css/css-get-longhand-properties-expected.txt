@@ -1,0 +1,85 @@
+Test css.getLonghandProperties method
+
+Running test: testInvalidProperty
+Test getLonghandPropertiesFont for non-existing property
+marg: 10px 50px 20px 0
+Resolved longands:
+{"code":-32000,"message":"Invalid shorthandName"}
+
+Running test: testInvalidValue
+Test getLonghandPropertiesFont for invalid value
+font: italic small cursive
+Resolved longands:
+font-style: italic
+font-variant-caps: normal
+font-variant-ligatures: normal
+font-variant-numeric: normal
+font-variant-east-asian: normal
+font-variant-alternates: normal
+font-size-adjust: none
+font-language-override: normal
+font-kerning: auto
+font-optical-sizing: auto
+font-feature-settings: normal
+font-variation-settings: normal
+font-variant-position: normal
+font-variant-emoji: normal
+font-weight: normal
+font-stretch: normal
+font-size: small
+line-height: normal
+font-family: cursive
+
+Running test: testLonghandValue
+Test getLonghandPropertiesFont for longhand property
+font-style: italic
+Resolved longands:
+{"code":-32000,"message":"Invalid shorthandName"}
+
+Running test: testFontProperty
+Test getLonghandPropertiesFont for font property
+font: italic small-caps bold 16px/2 cursive
+Resolved longands:
+font-style: italic
+font-variant-caps: small-caps
+font-variant-ligatures: normal
+font-variant-numeric: normal
+font-variant-east-asian: normal
+font-variant-alternates: normal
+font-size-adjust: none
+font-language-override: normal
+font-kerning: auto
+font-optical-sizing: auto
+font-feature-settings: normal
+font-variation-settings: normal
+font-variant-position: normal
+font-variant-emoji: normal
+font-weight: bold
+font-stretch: normal
+font-size: 16px
+line-height: 2
+font-family: cursive
+
+Running test: testMarginProperty
+Test getLonghandPropertiesFont for margin property
+margin: 10px 50px 20px 0
+Resolved longands:
+margin-top: 10px
+margin-right: 50px
+margin-bottom: 20px
+margin-left: 0px
+
+Running test: testBackgroundProperty
+Test getLonghandPropertiesFont for background property
+background: center / contain no-repeat url("../../media/examples/firefox-logo.svg"), #eee 35% url("../../media/examples/lizard.png")
+Resolved longands:
+background-image: url("../../media/examples/firefox-logo.svg"), url("../../media/examples/lizard.png")
+background-position-x: center, 35%
+background-position-y: center, center
+background-size: contain, initial
+background-repeat: no-repeat, initial
+background-attachment: initial, initial
+background-origin: initial, initial
+background-clip: initial, initial
+background-color: rgb(238, 238, 238)
+

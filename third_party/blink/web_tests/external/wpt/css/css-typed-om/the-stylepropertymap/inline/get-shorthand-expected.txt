@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Getting a shorthand property that is partially set in inline style returns null
+  assert_equals: Shorthand value must be undefined as it is not explicitly set expected (undefined) undefined but got (object) null
+[FAIL] Getting an attributeStyleMap shorthand property from an element without a style attribute
+  assert_equals: Shorthand value must be undefined for element without style expected (undefined) undefined but got (object) null
+Harness: the test ran to completion.
+

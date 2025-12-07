@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_TEST_FAKES_FAKE_PASSWORD_AUTO_FILL_STATUS_MANAGER_H_
 #define IOS_CHROME_TEST_FAKES_FAKE_PASSWORD_AUTO_FILL_STATUS_MANAGER_H_
 
-#import "ios/chrome/browser/ui/settings/utils/password_auto_fill_status_manager.h"
+#import "ios/chrome/browser/settings/ui_bundled/utils/password_auto_fill_status_manager.h"
 
 // Substitute of the real PasswordAutoFillStatusManager that could update the UI
 // of observers accordingly without interacting with iOS API.

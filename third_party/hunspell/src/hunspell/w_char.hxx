@@ -1,6 +1,8 @@
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
+ * Copyright (C) 2002-2022 Németh László
+ *
  * The contents of this file are subject to the Mozilla Public License Version
  * 1.1 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -11,12 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is Hunspell, based on MySpell.
- *
- * The Initial Developers of the Original Code are
- * Kevin Hendricks (MySpell) and Németh László (Hunspell).
- * Portions created by the Initial Developers are Copyright (C) 2002-2005
- * the Initial Developers. All Rights Reserved.
+ * Hunspell is based on MySpell which is Copyright (C) 2002 Kevin Hendricks.
  *
  * Contributor(s): David Einstein, Davide Prina, Giuseppe Modugno,
  * Gianluca Turconi, Simon Brouwer, Noll János, Bíró Árpád,
@@ -43,6 +40,12 @@
 
 #include <string>
 
+#if __cplusplus >= 202002L
+#include <bit>
+#else
+#include <cstring>
+#endif
+
 #ifndef GCC
 struct w_char {
 #else
@@ -51,18 +54,33 @@ struct __attribute__((packed)) w_char {
   unsigned char l;
   unsigned char h;
 
+  operator unsigned short() const
+  {
+#if defined(__i386__) || defined(_M_IX86) || defined(_M_X64)
+    //use little-endian optimized version
+#if __cplusplus >= 202002L
+    return std::bit_cast<unsigned short>(*this);
+#else
+    unsigned short u;
+    memcpy(&u, this, sizeof(unsigned short));
+    return u;
+#endif
+
+#else
+    return ((unsigned short)h << 8) | (unsigned short)l;
+#endif
+  }
+
   friend bool operator<(const w_char a, const w_char b) {
-    unsigned short a_idx = (a.h << 8) + a.l;
-    unsigned short b_idx = (b.h << 8) + b.l;
-    return a_idx < b_idx;
+    return (unsigned short)a < (unsigned short)b;
   }
 
   friend bool operator==(const w_char a, const w_char b) {
-    return (((a).l == (b).l) && ((a).h == (b).h));
+    return (unsigned short)a == (unsigned short)b;
   }
 
   friend bool operator!=(const w_char a, const w_char b) {
-    return !(a == b);;
+    return !(a == b);
   }
 };
 

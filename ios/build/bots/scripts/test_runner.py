@@ -20,6 +20,7 @@ import time
 from typing import List, Optional
 
 import constants
+import exception_utils
 import file_util
 import gtest_utils
 import mac_util
@@ -28,7 +29,7 @@ import shard_util
 import test_apps
 from test_result_util import ResultCollection, TestResult, TestStatus
 import test_runner_errors
-from xcode_log_parser import XcodeLogParser
+from xcode_log_parser import XcodeLogParser, Xcode16LogParser
 import xcode_util
 import xctest_utils
 
@@ -95,6 +96,16 @@ class SimulatorNotFoundError(TestRunnerError):
   def __init__(self, iossim_path):
     super(SimulatorNotFoundError, self).__init__(
         'Simulator does not exist: %s' % iossim_path)
+
+
+class UnsupportedDeviceTypeError(TestRunnerError):
+  """A simulator device type corresponds to an unsupported platform (e.g.
+  Apple Vision).
+  """
+
+  def __init__(self, device_type):
+    super(UnsupportedDeviceTypeError,
+          self).__init__(f'Unsupported device type: {device_type}')
 
 
 class TestDataExtractionError(DeviceError):
@@ -212,10 +223,12 @@ def terminate_process(proc, proc_name):
 
 
 # TODO(crbug.com/40115765): Moved print_process_output to utils class.
-def print_process_output(proc,
-                         proc_name=None,
-                         parser=None,
-                         timeout=constants.READLINE_TIMEOUT):
+def print_process_output(
+    proc,
+    proc_name=None,
+    parser=None,
+    timeout=constants.READLINE_TIMEOUT,
+    exception_checker: exception_utils.ExceptionChecker = None):
   """Logs process messages in console and waits until process is done.
 
   Method waits until no output message and if no message for timeout seconds,
@@ -230,6 +243,7 @@ def print_process_output(proc,
       If proc_name is not specified, process name will be used to kill process.
     parser: A parser.
     timeout: A timeout(in seconds) to subprocess.stdout.readline method.
+    exception_checker: (ExceptionChecker) will check each line for exceptions.
   """
   out = []
   if not proc_name:
@@ -257,11 +271,15 @@ def print_process_output(proc,
     out.append(line)
     if parser:
       parser.ProcessLine(line)
+    if exception_checker:
+      exception_checker.check_line(line)
     LOGGER.info(line)
     sys.stdout.flush()
 
   if parser:
     parser.Finalize()
+  if exception_checker:
+    exception_checker.throw_first()
   LOGGER.debug('Finished print_process_output.')
   return out
 
@@ -323,7 +341,9 @@ class TestRunner(object):
       test_cases: List of tests to be included in the test run. None or [] to
         include all tests.
       xctest: Whether or not this is an XCTest.
-
+      exception_checker: (ExceptionChecker) An exception checker that will check
+        logs for infra related issues and raise them as exceptions. Default is
+        None.
     Raises:
       AppNotFoundError: If the given app does not exist.
       PlugInsNotFoundError: If the PlugIns directory does not exist for XCTests.
@@ -359,6 +379,8 @@ class TestRunner(object):
     self.readline_timeout = (
         kwargs.get('readline_timeout') or constants.READLINE_TIMEOUT)
     self.output_disabled_tests = kwargs.get('output_disabled_tests') or False
+
+    self.exception_checker = kwargs.get('exception_checker')
 
     self.test_results = init_test_result_defaults()
 
@@ -463,7 +485,7 @@ class TestRunner(object):
 
   def wipe_derived_data(self):
     """Removes the contents of Xcode's DerivedData directory."""
-    if os.path.exists(DERIVED_DATA):
+    if os.path.exists(DERIVED_DATA) and not xcode_util.is_local_run():
       shutil.rmtree(DERIVED_DATA)
       os.mkdir(DERIVED_DATA)
 
@@ -486,8 +508,12 @@ class TestRunner(object):
     for xcresult in xcresult_paths:
       # This is what was passed in -resultBundlePath to xcodebuild command.
       result_bundle_path = os.path.splitext(xcresult)[0]
-      XcodeLogParser.copy_artifacts(result_bundle_path)
-      XcodeLogParser.export_diagnostic_data(result_bundle_path)
+      if xcode_util.using_xcode_16_or_higher():
+        Xcode16LogParser.copy_artifacts(result_bundle_path)
+        Xcode16LogParser.export_diagnostic_data(result_bundle_path)
+      else:
+        XcodeLogParser.copy_artifacts(result_bundle_path)
+        XcodeLogParser.export_diagnostic_data(result_bundle_path)
       # result_bundle_path is a symlink to xcresult directory.
       if os.path.islink(result_bundle_path):
         os.unlink(result_bundle_path)
@@ -629,6 +655,7 @@ class TestRunner(object):
           LOGGER.warning('Crashed during %s, resuming...\n',
                          list(result.crashed_tests()))
           test_app.excluded_tests = list(overall_result.all_test_names())
+          test_app.crashed_tests = list(result.crashed_tests())
           # Changing test filter will change selected gtests in this shard.
           # Thus, sharding env vars have to be cleared to ensure needed tests
           # are run. This means there might be duplicate same tests across
@@ -722,7 +749,6 @@ class SimulatorTestRunner(TestRunner):
       test_cases: List of tests to be included in the test run. None or [] to
         include all tests.
       use_clang_coverage: Whether code coverage is enabled in this run.
-      wpr_tools_path: Path to pre-installed WPR-related tools
       xctest: Whether or not this is an XCTest.
 
     Raises:
@@ -743,7 +769,10 @@ class SimulatorTestRunner(TestRunner):
     self.start_time = None
     self.version = version
     self.clones = kwargs.get('clones') or 1
-    self.udid = iossim_util.get_simulator(self.platform, self.version)
+    self.udid = iossim_util.get_simulator(self.platform, self.version,
+                                          self.out_dir)
+    self.platform_type = iossim_util.get_platform_type_by_platform(
+        self.platform)
     self.use_clang_coverage = kwargs.get('use_clang_coverage') or False
 
   @staticmethod
@@ -935,6 +964,7 @@ class SimulatorTestRunner(TestRunner):
     if not self.xctest:
       return test_apps.GTestsApp(
           self.app_path,
+          self.platform_type,
           included_tests=self.test_cases,
           env_vars=self.env_vars,
           repeat_count=self.repeat_count,
@@ -942,6 +972,7 @@ class SimulatorTestRunner(TestRunner):
 
     return test_apps.SimulatorXCTestUnitTestsApp(
         self.app_path,
+        self.platform_type,
         included_tests=self.test_cases,
         env_vars=self.env_vars,
         repeat_count=self.repeat_count,
@@ -967,6 +998,8 @@ class DeviceTestRunner(TestRunner):
       test_cases: List of tests to be included in the test run. None or [] to
         include all tests.
       xctest: Whether or not this is an XCTest.
+      exception_checker: (ExceptionChecker) an exception checker that checks
+        log lines for infra related issues and raises them as exceptions.
 
     Raises:
       AppNotFoundError: If the given app does not exist.
@@ -976,6 +1009,9 @@ class DeviceTestRunner(TestRunner):
     """
     super(DeviceTestRunner, self).__init__(app_path, out_dir, **kwargs)
 
+    self.exception_checker = kwargs.get(
+        'exception_checker', exception_utils.DeviceExceptionChecker())
+
     self.udid = subprocess.check_output(['idevice_id',
                                          '--list']).decode('utf-8').rstrip()
     if len(self.udid.splitlines()) != 1:
@@ -984,7 +1020,9 @@ class DeviceTestRunner(TestRunner):
     self.restart = kwargs.get('restart') or False
 
   def uninstall_apps(self):
-    """Uninstalls all apps found on the device."""
+    """Uninstalls all apps found on the device unless a local run is detected"""
+    if xcode_util.is_local_run():
+      return
     for app in self.get_installed_packages():
       cmd = ['ideviceinstaller', '--udid', self.udid, '--uninstall', app]
       print_process_output(self.start_proc(cmd))
@@ -1005,10 +1043,10 @@ class DeviceTestRunner(TestRunner):
 
   def set_up(self):
     """Performs setup actions which must occur prior to every test launch."""
+    self.restart_usbmuxd()
     self.uninstall_apps()
     self.wipe_derived_data()
     self.install_app()
-    self.restart_usbmuxd()
 
   def extract_test_data(self):
     """Extracts data emitted by the test."""
@@ -1148,6 +1186,9 @@ class DeviceTestRunner(TestRunner):
           "Restarting usbmuxd to ensure device is re-paired to Xcode...")
       try:
         mac_util.kill_usbmuxd()
+        # Sleep for 10 seconds to give time for usbmuxd to restart
+        # and device to be recognized by the OS
+        time.sleep(10)
       except subprocess.CalledProcessError as e:
         logging.exception('Unable to restart usbmuxd:')
         logging.error(e)

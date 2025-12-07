@@ -82,7 +82,9 @@ void SmsProviderGms::Retrieve(RenderFrameHost* render_frame_host,
                              fetch_type == SmsFetchType::kLocal);
 }
 
-void SmsProviderGms::OnReceive(JNIEnv* env, jstring message, jint backend) {
+void SmsProviderGms::OnReceive(JNIEnv* env,
+                               const base::android::JavaRef<jstring>& message,
+                               jint backend) {
   GmsBackend b = static_cast<GmsBackend>(backend);
   auto consent_requirement = UserConsent::kNotObtained;
   if (b == GmsBackend::kUserConsent)
@@ -113,3 +115,5 @@ void SmsProviderGms::SetClientAndWindowForTesting(
 }
 
 }  // namespace content
+
+DEFINE_JNI(SmsProviderGms)

@@ -6,27 +6,50 @@ import("//testing/test.gni")
 
 static_library("android") {
   sources = [
+    "device_delegate_android.cc",
+    "device_delegate_android.h",
     "facilitated_payments_api_client_android.cc",
     "facilitated_payments_api_client_android.h",
+    "facilitated_payments_app_info_list_android.cc",
+    "facilitated_payments_app_info_list_android.h",
+    "secure_payload_android.cc",
+    "secure_payload_android.h",
   ]
 
   deps = [
     "//base",
     "//components/facilitated_payments/android/java:jni_headers",
     "//components/facilitated_payments/core/browser",
+    "//components/facilitated_payments/core/utils",
     "//components/signin/public/identity_manager",
     "//content/public/browser",
+    "//ui/android",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "facilitated_payments_api_client_android_unittest.cc" ]
+  sources = [
+    "device_delegate_android_unittest.cc",
+    "facilitated_payments_api_client_android_unittest.cc",
+    "secure_payload_android_unittest.cc",
+  ]
   deps = [
     ":android",
+    ":test_support",
     "//components/facilitated_payments/core/browser",
+    "//components/facilitated_payments/core/utils",
     "//components/signin/public/identity_manager:test_support",
     "//content/test:test_support",
     "//testing/gtest",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [ "device_delegate_android_test_api.h" ]
+  deps = [
+    ":android",
+    "//base",
   ]
 }

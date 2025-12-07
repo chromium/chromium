@@ -22,13 +22,13 @@ TEST(NetErrorsTest, IsCertificateError) {
   EXPECT_TRUE(IsCertificateError(ERR_CERT_NON_UNIQUE_NAME));
   EXPECT_TRUE(IsCertificateError(ERR_CERT_NO_REVOCATION_MECHANISM));
   EXPECT_TRUE(IsCertificateError(ERR_CERT_REVOKED));
-  EXPECT_TRUE(IsCertificateError(ERR_CERT_SYMANTEC_LEGACY));
   EXPECT_TRUE(IsCertificateError(ERR_CERT_UNABLE_TO_CHECK_REVOCATION));
   EXPECT_TRUE(IsCertificateError(ERR_CERT_VALIDITY_TOO_LONG));
   EXPECT_TRUE(IsCertificateError(ERR_CERT_WEAK_KEY));
   EXPECT_TRUE(IsCertificateError(ERR_CERT_WEAK_SIGNATURE_ALGORITHM));
   EXPECT_TRUE(IsCertificateError(ERR_SSL_PINNED_KEY_NOT_IN_CERT_CHAIN));
   EXPECT_TRUE(IsCertificateError(ERR_CERT_KNOWN_INTERCEPTION_BLOCKED));
+  EXPECT_TRUE(IsCertificateError(ERR_CERT_SELF_SIGNED_LOCAL_NETWORK));
 
   // Negative tests.
   EXPECT_FALSE(IsCertificateError(ERR_SSL_PROTOCOL_ERROR));
@@ -42,7 +42,7 @@ TEST(NetErrorsTest, IsCertificateError) {
 
   // Trigger a failure whenever ERR_CERT_END is changed, forcing developers to
   // update this test.
-  EXPECT_EQ(ERR_CERT_END, -219)
+  EXPECT_EQ(ERR_CERT_END, -220)
       << "It looks like you added a new certificate error code ("
       << ErrorToString(ERR_CERT_END + 1)
       << ").\n"
@@ -73,6 +73,16 @@ TEST(NetErrorsTest, IsClientCertificateError) {
   EXPECT_FALSE(IsClientCertificateError(ERR_CERT_REVOKED));
   EXPECT_FALSE(IsClientCertificateError(ERR_SSL_PROTOCOL_ERROR));
   EXPECT_FALSE(IsClientCertificateError(ERR_CERT_WEAK_KEY));
+}
+
+TEST(NetErrorsTest, IsOkOrDefinedError) {
+  EXPECT_TRUE(IsOkOrDefinedError(OK));
+#define NET_ERROR(label, value) EXPECT_TRUE(IsOkOrDefinedError(value));
+#include "net/base/net_error_list.h"
+#undef NET_ERROR
+
+  // Error -813 was removed and is not defined.
+  EXPECT_FALSE(IsOkOrDefinedError(-813));
 }
 
 }  // namespace

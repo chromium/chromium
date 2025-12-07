@@ -3,5 +3,4 @@ AXWebArea
 ++++AXGroup
 ++++++AXStaticText AXValue='Static fallback'
 ++++AXGroup
-++++++AXLink AXDescription='Interactive fallback'
-++++++++AXStaticText AXValue='Interactive fallback'
+++++++AXStaticText AXValue='Static fallback'

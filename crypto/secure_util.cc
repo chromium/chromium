@@ -8,8 +8,10 @@
 
 namespace crypto {
 
-bool SecureMemEqual(const void* s1, const void* s2, size_t n) {
-  return CRYPTO_memcmp(s1, s2, n) == 0;
+bool SecureMemEqual(base::span<const uint8_t> s1,
+                    base::span<const uint8_t> s2) {
+  return s1.size() == s2.size() &&
+         CRYPTO_memcmp(s1.data(), s2.data(), s1.size()) == 0;
 }
 
 }  // namespace crypto

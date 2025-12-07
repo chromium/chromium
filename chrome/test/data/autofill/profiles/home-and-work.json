@@ -1,0 +1,19 @@
+{
+  "profiles": [
+    {
+      "record_type": "accountHome",
+      "ADDRESS_HOME_COUNTRY" : "US",
+      "ADDRESS_HOME_STREET_ADDRESS" : "1600 Amphitheatre Parkway",
+      "ADDRESS_HOME_ZIP" : "94043",
+      "ADDRESS_HOME_CITY" : "Mountain View",
+      "ADDRESS_HOME_STATE" : "CA"
+    },
+    {
+      "record_type": "accountWork",
+      "ADDRESS_HOME_COUNTRY" : "DE",
+      "ADDRESS_HOME_STREET_ADDRESS" : "Erika-Mann-Str. 33",
+      "ADDRESS_HOME_ZIP" : "80636",
+      "ADDRESS_HOME_CITY" : "Munich"
+    }
+  ]
+}

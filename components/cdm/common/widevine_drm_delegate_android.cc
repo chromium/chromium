@@ -2,32 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/cdm/common/widevine_drm_delegate_android.h"
 
+#include <vector>
+
 #include "media/cdm/cenc_utils.h"
+#include "third_party/widevine/cdm/widevine_cdm_common.h"
 
 namespace cdm {
 
-namespace {
+WidevineDrmDelegateAndroid::WidevineDrmDelegateAndroid() = default;
 
-const uint8_t kWidevineUuid[16] = {
-    0xED, 0xEF, 0x8B, 0xA9, 0x79, 0xD6, 0x4A, 0xCE,  //
-    0xA3, 0xC8, 0x27, 0xDC, 0xD5, 0x1D, 0x21, 0xED};
-
-}  // namespace
-
-WidevineDrmDelegateAndroid::WidevineDrmDelegateAndroid() {}
-
-WidevineDrmDelegateAndroid::~WidevineDrmDelegateAndroid() {}
+WidevineDrmDelegateAndroid::~WidevineDrmDelegateAndroid() = default;
 
 const std::vector<uint8_t> WidevineDrmDelegateAndroid::GetUUID() const {
-  return std::vector<uint8_t>(kWidevineUuid,
-                              kWidevineUuid + std::size(kWidevineUuid));
+  return std::vector<uint8_t>(std::begin(kWidevineUuid),
+                              std::end(kWidevineUuid));
 }
 
 bool WidevineDrmDelegateAndroid::OnCreateSession(

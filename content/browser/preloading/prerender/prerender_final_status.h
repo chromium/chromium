@@ -37,7 +37,7 @@ enum class PrerenderFinalStatus {
   // kInProgressNavigation = 7,  // No longer used.
   // kNavigationRequestFailure = 8,  // No longer used.
   kNavigationRequestBlockedByCsp = 9,
-  kMainFrameNavigation = 10,
+  // kMainFrameNavigation = 10, // No longer used.
   kMojoBinderPolicy = 11,
   // kPlugin = 12,  // No longer used.
   kRendererProcessCrashed = 13,
@@ -103,7 +103,7 @@ enum class PrerenderFinalStatus {
   // from the initial prerendering navigation so Prerender fails to activate it.
   kActivationNavigationParameterMismatch = 50,
   kActivatedInBackground = 51,
-  kEmbedderHostDisallowed = 52,
+  // kEmbedderHostDisallowed = 52, // No longer used.
   // Called when encounter failures during synchronous activation.
   // TODO(crbug.com/40238737): Remove this reason if no sample is
   // recorded in stable, or look into the reason if there are.
@@ -147,8 +147,8 @@ enum class PrerenderFinalStatus {
   // status is specified.
   kActivatedWithAuxiliaryBrowsingContexts = 72,
 
-  kMaxNumOfRunningEagerPrerendersExceeded = 73,
-  kMaxNumOfRunningNonEagerPrerendersExceeded = 74,
+  kMaxNumOfRunningImmediatePrerendersExceeded = 73,
+  kMaxNumOfRunningNonImmediatePrerendersExceeded = 74,
   kMaxNumOfRunningEmbedderPrerendersExceeded = 75,
 
   kPrerenderingUrlHasEffectiveUrl = 76,
@@ -166,9 +166,24 @@ enum class PrerenderFinalStatus {
   kSlowNetwork = 83,
   kOtherPrerenderedPageActivated = 84,
 
-  kMaxValue = kOtherPrerenderedPageActivated,
+  // When the V8 optimizer is disabled by the site settings, prerendering a page
+  // that has the COOP crashes (see https://crbug.com/40076091 for details). To
+  // avoid it, prerendering is disabled in that case.
+  // kV8OptimizerDisabled = 85,
+
+  // Prefetch ahead of prerender failed. Precise reason is recorded as UMA
+  // `Prerender.Experimental.PrefetchAheadOfPrerenderFailed.PrefetchStatus{PreloadingTriggerType}`
+  kPrerenderFailedDuringPrefetch = 86,
+
+  // Prerendering canceled by clearing cache from browsing data removal.
+  kBrowsingDataRemoved = 87,
+  // Prerendering cancelled but the PrerenderHost is reused for future
+  // navigation.
+  kPrerenderHostReused = 88,
+
+  kMaxValue = kPrerenderHostReused,
 };
-// LINT.ThenChange()
+// LINT.ThenChange(//third_party/blink/public/devtools_protocol/browser_protocol.pdl)
 
 // Helper method to convert PrerenderFinalStatus to PreloadingFailureReason.
 PreloadingFailureReason CONTENT_EXPORT

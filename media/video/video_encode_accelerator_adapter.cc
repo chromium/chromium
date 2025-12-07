@@ -12,15 +12,16 @@
 #include "base/memory/ref_counted.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "components/viz/common/resources/shared_image_format_utils.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "media/base/bitstream_buffer.h"
+#include "media/base/encoder_status.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "media/base/svc_scalability_mode.h"
@@ -40,11 +41,6 @@
 namespace media {
 
 namespace {
-
-// Allow MappableSI to be used for VideoEncoderAcceleratorAdapter.
-BASE_FEATURE(kUseMappableSIForVideoEncoderAcceleratorAdapter,
-             "UseMappableSIForVideoEncoderAcceleratorAdapter",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // HW encoders expect a nonzero bitrate, so |kVEADefaultBitratePerPixel| is used
 // to estimate bits per second for ~30 fps with ~1/16 compression rate.
@@ -93,7 +89,7 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
     VideoCodecProfile profile,
     const VideoEncoder::Options& opts,
     VideoPixelFormat format,
-    VideoFrame::StorageType storage_type,
+    VideoEncodeAccelerator::Config::StorageType storage_type,
     VideoEncodeAccelerator::SupportedRateControlMode supported_rc_modes,
     VideoEncodeAccelerator::Config::EncoderType required_encoder_type) {
   Bitrate bitrate =
@@ -104,6 +100,7 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
       VideoEncodeAccelerator::Config::StorageType::kShmem,
       VideoEncodeAccelerator::Config::ContentType::kCamera);
   config.gop_length = opts.keyframe_interval;
+  config.storage_type = storage_type;
 
   if (opts.content_hint) {
     switch (*opts.content_hint) {
@@ -136,9 +133,8 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
         num_temporal_layers = 3;
         break;
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Unsupported SVC: "
-            << GetScalabilityModeName(opts.scalability_mode.value());
+        NOTREACHED() << "Unsupported SVC: "
+                     << GetScalabilityModeName(opts.scalability_mode.value());
     }
   }
   if (num_temporal_layers > 1) {
@@ -154,29 +150,7 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
   config.require_low_delay =
       opts.latency_mode == VideoEncoder::LatencyMode::Realtime;
   config.required_encoder_type = required_encoder_type;
-
-  const bool is_rgb =
-      format == PIXEL_FORMAT_XBGR || format == PIXEL_FORMAT_XRGB ||
-      format == PIXEL_FORMAT_ABGR || format == PIXEL_FORMAT_ARGB;
-
-  // Override the provided format if incoming frames are RGB -- they'll be
-  // converted to I420 or NV12 depending on the VEA configuration.
-  if (is_rgb)
-    config.input_format = PIXEL_FORMAT_I420;
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  if (format != PIXEL_FORMAT_I420 ||
-      !VideoFrame::IsStorageTypeMappable(storage_type)) {
-    // ChromeOS/Linux hardware video encoders supports I420 on-memory
-    // VideoFrame and NV12 GpuMemoryBuffer VideoFrame.
-    // For other VideoFrames than them, some processing e.g. format conversion
-    // is required. Let the destination buffer be GpuMemoryBuffer because a
-    // hardware encoder can process it more efficiently than on-memory buffer.
-    config.input_format = PIXEL_FORMAT_NV12;
-    config.storage_type =
-        VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
-  }
-#endif
+  config.manual_reference_buffer_control = opts.manual_reference_buffer_control;
 
   return config;
 }
@@ -186,6 +160,8 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
 class VideoEncodeAcceleratorAdapter::GpuMemoryBufferVideoFramePool
     : public base::RefCountedThreadSafe<GpuMemoryBufferVideoFramePool> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   GpuMemoryBufferVideoFramePool(GpuVideoAcceleratorFactories* gpu_factories,
                                 const gfx::Size& coded_size)
       : gpu_factories_(gpu_factories), coded_size_(coded_size) {}
@@ -198,71 +174,44 @@ class VideoEncodeAcceleratorAdapter::GpuMemoryBufferVideoFramePool
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(gfx::Rect(coded_size_).Contains(gfx::Rect(visible_size)));
 
-    const auto buffer_format = gfx::BufferFormat::YUV_420_BIPLANAR;
-    const auto si_format = viz::GetSharedImageFormat(buffer_format);
+    const auto si_format = viz::MultiPlaneFormat::kNV12;
     const auto buffer_usage =
         gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
 
     // Setting some default usage in order to get a mappable shared image.
-    const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE |
+    const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
                           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
     scoped_refptr<VideoFrame> video_frame;
     gpu::SyncToken sync_token;
-    if (base::FeatureList::IsEnabled(
-            kUseMappableSIForVideoEncoderAcceleratorAdapter)) {
-      if (available_shared_images_.empty()) {
-        auto* sii = gpu_factories_->SharedImageInterface();
-        if (!sii) {
-          LOG(ERROR) << "SharedImageInterface is null.";
-          return nullptr;
-        }
-
-        auto shared_image =
-            sii->CreateSharedImage({si_format, coded_size_, gfx::ColorSpace(),
-                                    gpu::SharedImageUsageSet(si_usage),
-                                    "VideoEncodeAcceleratorAdapter"},
-                                   gpu::kNullSurfaceHandle, buffer_usage);
-        if (!shared_image) {
-          LOG(ERROR) << "Unable to create a mappable shared image.";
-          return nullptr;
-        }
-        sync_token = sii->GenVerifiedSyncToken();
-        available_shared_images_.push_back(std::move(shared_image));
-      }
-
-      auto shared_image = std::move(available_shared_images_.back());
-      available_shared_images_.pop_back();
-
-      auto shared_image_release_cb =
-          base::BindPostTaskToCurrentDefault(base::BindOnce(
-              &GpuMemoryBufferVideoFramePool::ReuseFrame, this, shared_image));
-      video_frame = media::VideoFrame::WrapMappableSharedImage(
-          std::move(shared_image), sync_token, GL_TEXTURE_2D,
-          std::move(shared_image_release_cb), gfx::Rect(visible_size),
-          visible_size, base::TimeDelta());
-      return video_frame;
-    }
-
-    if (available_gmbs_.empty()) {
-      auto gmb = gpu_factories_->CreateGpuMemoryBuffer(
-          coded_size_, buffer_format, buffer_usage);
-      if (!gmb) {
+    if (available_shared_images_.empty()) {
+      auto* sii = gpu_factories_->SharedImageInterface();
+      if (!sii) {
+        LOG(ERROR) << "SharedImageInterface is null.";
         return nullptr;
       }
-      available_gmbs_.push_back(std::move(gmb));
+
+      auto shared_image = sii->CreateSharedImage(
+          {si_format, coded_size_, gfx::ColorSpace(),
+           gpu::SharedImageUsageSet(si_usage), "VideoEncodeAcceleratorAdapter"},
+          gpu::kNullSurfaceHandle, buffer_usage);
+      if (!shared_image) {
+        LOG(ERROR) << "Unable to create a mappable shared image.";
+        return nullptr;
+      }
+      sync_token = sii->GenVerifiedSyncToken();
+      available_shared_images_.push_back(std::move(shared_image));
     }
 
-    auto gmb = std::move(available_gmbs_.back());
-    available_gmbs_.pop_back();
+    auto shared_image = std::move(available_shared_images_.back());
+    available_shared_images_.pop_back();
 
-    video_frame = VideoFrame::WrapExternalGpuMemoryBuffer(
-        gfx::Rect(visible_size), visible_size, std::move(gmb),
-        base::TimeDelta());
-    video_frame->SetReleaseMailboxAndGpuMemoryBufferCB(
-        base::BindPostTaskToCurrentDefault(
-            base::BindOnce(&GpuMemoryBufferVideoFramePool::ReuseFrame, this,
-                           /*shared_image=*/nullptr)));
+    auto shared_image_release_cb =
+        base::BindPostTaskToCurrentDefault(base::BindOnce(
+            &GpuMemoryBufferVideoFramePool::ReuseFrame, this, shared_image));
+    video_frame = media::VideoFrame::WrapMappableSharedImage(
+        std::move(shared_image), sync_token, std::move(shared_image_release_cb),
+        gfx::Rect(visible_size), visible_size, base::TimeDelta());
     return video_frame;
   }
 
@@ -273,28 +222,16 @@ class VideoEncodeAcceleratorAdapter::GpuMemoryBufferVideoFramePool
   // |shared_image| will be used when MappableSI is enabled. It will be null
   // otherwise.
   void ReuseFrame(scoped_refptr<gpu::ClientSharedImage> shared_image,
-                  const gpu::SyncToken& token,
-                  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer) {
+                  const gpu::SyncToken& token) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     constexpr size_t kMaxPooledFrames = 5;
-    if (shared_image) {
-      CHECK(base::FeatureList::IsEnabled(
-          kUseMappableSIForVideoEncoderAcceleratorAdapter));
-      CHECK(!gpu_memory_buffer);
-      if (available_shared_images_.size() < kMaxPooledFrames) {
-        available_shared_images_.push_back(std::move(shared_image));
-      }
-    } else {
-      if (available_gmbs_.size() < kMaxPooledFrames) {
-        available_gmbs_.push_back(std::move(gpu_memory_buffer));
-      }
+    if (shared_image && (available_shared_images_.size() < kMaxPooledFrames)) {
+      available_shared_images_.push_back(std::move(shared_image));
     }
   }
 
   const raw_ptr<GpuVideoAcceleratorFactories> gpu_factories_;
   const gfx::Size coded_size_;
-
-  std::vector<std::unique_ptr<gfx::GpuMemoryBuffer>> available_gmbs_;
 
   // Available mappable shared images.
   std::vector<scoped_refptr<gpu::ClientSharedImage>> available_shared_images_;
@@ -305,6 +242,8 @@ class VideoEncodeAcceleratorAdapter::GpuMemoryBufferVideoFramePool
 class VideoEncodeAcceleratorAdapter::ReadOnlyRegionPool
     : public base::RefCountedThreadSafe<ReadOnlyRegionPool> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   struct Handle {
     using ReuseBufferCallback =
         base::OnceCallback<void(std::unique_ptr<base::MappedReadOnlyRegion>)>;
@@ -474,7 +413,7 @@ void VideoEncodeAcceleratorAdapter::InitializeOnAcceleratorThread(
   auto supported_profiles =
       gpu_factories_->GetVideoEncodeAcceleratorSupportedProfiles();
   if (!supported_profiles) {
-    InitCompleted(
+    std::move(done_cb).Run(
         EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedProfile,
                       "No profile is supported by video encode accelerator."));
     return;
@@ -482,9 +421,14 @@ void VideoEncodeAcceleratorAdapter::InitializeOnAcceleratorThread(
 
   auto supported_rc_modes =
       VideoEncodeAccelerator::SupportedRateControlMode::kNoMode;
+  std::vector<VideoPixelFormat> gpu_supported_pixel_formats;
   for (const auto& supported_profile : *supported_profiles) {
     if (supported_profile.profile == profile) {
       supported_rc_modes = supported_profile.rate_control_modes;
+      gpu_supported_pixel_formats =
+          supported_profile.gpu_supported_pixel_formats;
+      supports_gpu_shared_images_ =
+          supported_profile.supports_gpu_shared_images;
       break;
     }
   }
@@ -501,78 +445,53 @@ void VideoEncodeAcceleratorAdapter::InitializeOnAcceleratorThread(
 
   profile_ = profile;
   supported_rc_modes_ = supported_rc_modes;
+  gpu_supported_pixel_formats_ = std::move(gpu_supported_pixel_formats);
   options_ = options;
   info_cb_ = std::move(info_cb);
   output_cb_ = std::move(output_cb);
-  state_ = State::kWaitingForFirstFrame;
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   if (profile_ >= H264PROFILE_MIN && profile_ <= H264PROFILE_MAX &&
       !options_.avc.produce_annexb) {
-    h264_converter_ = std::make_unique<H264AnnexBToAvcBitstreamConverter>();
+    h264_converter_ = std::make_unique<H264AnnexBToAvcBitstreamConverter>(
+        /*add_parameter_sets_in_bitstream=*/false);
   }
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC) && \
     BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   if (profile_ == HEVCPROFILE_MAIN && !options_.hevc.produce_annexb) {
-    h265_converter_ = std::make_unique<H265AnnexBToHevcBitstreamConverter>();
+    h265_converter_ = std::make_unique<H265AnnexBToHevcBitstreamConverter>(
+        /*add_parameter_sets_in_bitstream=*/false);
   }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC) &&
         // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
-  std::move(done_cb).Run(EncoderStatus::Codes::kOk);
-
-  // The accelerator will be initialized for real once we have the first frame.
-}
-
-void VideoEncodeAcceleratorAdapter::InitializeInternalOnAcceleratorThread() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
-  DCHECK_EQ(state_, State::kWaitingForFirstFrame);
-  DCHECK(!pending_encodes_.empty());
-
-  // We use the first frame to setup the VEA config so that we can ensure that
-  // zero copy hardware encoding from the camera can be used.
-  const auto& first_frame = pending_encodes_.front()->frame;
-  const auto format = first_frame->format();
-  const bool is_rgb =
-      format == PIXEL_FORMAT_XBGR || format == PIXEL_FORMAT_XRGB ||
-      format == PIXEL_FORMAT_ABGR || format == PIXEL_FORMAT_ARGB;
-  const bool supported_format =
-      format == PIXEL_FORMAT_NV12 || format == PIXEL_FORMAT_I420 || is_rgb;
-  if (!supported_format) {
-    InitCompleted(EncoderStatus(EncoderStatus::Codes::kUnsupportedFrameFormat,
-                                "Unexpected frame format.")
-                      .WithData("frame", first_frame->AsHumanReadableString()));
-    return;
-  }
-
-  auto vea_config =
-      SetUpVeaConfig(profile_, options_, format, first_frame->storage_type(),
-                     supported_rc_modes_, required_encoder_type_);
-
+  auto format = PIXEL_FORMAT_I420;
+  auto storage_type = VideoEncodeAccelerator::Config::StorageType::kShmem;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Linux/ChromeOS require a special configuration to use dmabuf storage.
-  // We need to keep sending frames the same way the first frame was sent.
-  // Other platforms will happily mix GpuMemoryBuffer storage with regular
+  // We need to keep sending frames with the same storage type.
+  // Other platforms will happily mix GpuMemoryBuffer storage with shared-mem
   // storage, so we don't care about mismatches on other platforms.
   if (input_buffer_preference_ == InputBufferKind::Any) {
-    if (vea_config.storage_type ==
-        VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer) {
-      input_buffer_preference_ = InputBufferKind::GpuMemBuf;
-    } else {
-      input_buffer_preference_ = InputBufferKind::CpuMemBuf;
-    }
+    input_buffer_preference_ = InputBufferKind::GpuMemBuf;
   }
+  format = PIXEL_FORMAT_NV12;
+  storage_type = VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
 #endif
-  if (!accelerator_->Initialize(vea_config, this, media_log_->Clone())) {
-    InitCompleted(
-        EncoderStatus(EncoderStatus::Codes::kEncoderInitializationError,
-                      "Failed to initialize video encode accelerator."));
+
+  auto vea_config = SetUpVeaConfig(profile_, options_, format, storage_type,
+                                   supported_rc_modes_, required_encoder_type_);
+
+  if (auto status =
+          accelerator_->Initialize(vea_config, this, media_log_->Clone());
+      !status.is_ok()) {
+    std::move(done_cb).Run(std::move(status));
     return;
   }
 
   state_ = State::kInitializing;
-  format_ = vea_config.input_format;
+  pending_initialize_callback_ = std::move(done_cb);
 }
 
 void VideoEncodeAcceleratorAdapter::Encode(scoped_refptr<VideoFrame> frame,
@@ -595,15 +514,12 @@ void VideoEncodeAcceleratorAdapter::EncodeOnAcceleratorThread(
                "timestamp", frame->timestamp());
   DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
 
-  if (state_ == State::kWaitingForFirstFrame ||
-      state_ == State::kInitializing) {
+  if (state_ == State::kInitializing) {
     auto pending_encode = std::make_unique<PendingEncode>();
     pending_encode->done_callback = std::move(done_cb);
     pending_encode->frame = std::move(frame);
     pending_encode->options = encode_options;
     pending_encodes_.push_back(std::move(pending_encode));
-    if (state_ == State::kWaitingForFirstFrame)
-      InitializeInternalOnAcceleratorThread();
     return;
   }
 
@@ -622,8 +538,10 @@ void VideoEncodeAcceleratorAdapter::EncodeOnAcceleratorThread(
   // Try using a frame with GPU buffer both are true:
   // 1. the frame already has GPU buffer
   // 2. frame doesn't need resizing or can be resized by GPU encoder.
-  bool use_gpu_buffer = frame->HasMappableGpuBuffer() &&
-                        (!frame_needs_resizing || gpu_resize_supported_);
+  bool use_gpu_buffer =
+      (frame->HasMappableSharedImage() ||
+       (frame->HasSharedImage() && supports_gpu_shared_images_)) &&
+      (!frame_needs_resizing || gpu_resize_supported_);
 
   // Currently configured encoder's preference takes precedence overe heuristic
   // above.
@@ -681,8 +599,7 @@ void VideoEncodeAcceleratorAdapter::ChangeOptionsOnAcceleratorThread(
   DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
   DCHECK(active_encodes_.empty());
   DCHECK(pending_encodes_.empty());
-  CHECK(state_ == State::kReadyToEncode ||
-        state_ == State::kWaitingForFirstFrame);
+  CHECK(state_ == State::kReadyToEncode);
 
   if (options.bitrate && options_.bitrate &&
       options.bitrate->mode() != options_.bitrate->mode()) {
@@ -731,7 +648,8 @@ void VideoEncodeAcceleratorAdapter::ChangeOptionsOnAcceleratorThread(
     if (options.avc.produce_annexb) {
       h264_converter_.reset();
     } else if (!h264_converter_) {
-      h264_converter_ = std::make_unique<H264AnnexBToAvcBitstreamConverter>();
+      h264_converter_ = std::make_unique<H264AnnexBToAvcBitstreamConverter>(
+          /*add_parameter_sets_in_bitstream=*/false);
     }
   }
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC) && \
@@ -740,7 +658,8 @@ void VideoEncodeAcceleratorAdapter::ChangeOptionsOnAcceleratorThread(
     if (options.hevc.produce_annexb) {
       h265_converter_.reset();
     } else if (!h265_converter_) {
-      h265_converter_ = std::make_unique<H265AnnexBToHevcBitstreamConverter>();
+      h265_converter_ = std::make_unique<H265AnnexBToHevcBitstreamConverter>(
+          /*add_parameter_sets_in_bitstream=*/false);
     }
   }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC) &&
@@ -767,12 +686,6 @@ void VideoEncodeAcceleratorAdapter::Flush(EncoderStatusCB done_cb) {
 void VideoEncodeAcceleratorAdapter::FlushOnAcceleratorThread(
     EncoderStatusCB done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
-  if (state_ == State::kWaitingForFirstFrame) {
-    // Nothing to do since we haven't actually initialized yet.
-    std::move(done_cb).Run(EncoderStatus::Codes::kOk);
-    return;
-  }
-
   if (state_ != State::kReadyToEncode && state_ != State::kInitializing) {
     std::move(done_cb).Run(EncoderStatus(
         EncoderStatus::Codes::kEncoderFailedFlush, "Encoder can't flush now"));
@@ -791,8 +704,7 @@ void VideoEncodeAcceleratorAdapter::FlushOnAcceleratorThread(
     state_ = State::kFlushing;
   }
 
-  pending_flush_ = std::make_unique<PendingOp>();
-  pending_flush_->done_callback = std::move(done_cb);
+  pending_flush_callback_ = std::move(done_cb);
 
   // If flush is not supported FlushCompleted() will be called by
   // BitstreamBufferReady() when |active_encodes_| is empty.
@@ -857,10 +769,10 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
     result.temporal_id = metadata.vp9.value().temporal_idx;
   else if (metadata.vp8.has_value())
     result.temporal_id = metadata.vp8.value().temporal_idx;
-  else if (metadata.av1.has_value())
-    result.temporal_id = metadata.av1.value().temporal_idx;
-  else if (metadata.h265.has_value())
-    result.temporal_id = metadata.h265.value().temporal_idx;
+
+  if (metadata.svc_generic.has_value()) {
+    result.temporal_id = metadata.svc_generic->temporal_idx;
+  }
 
   if (metadata.encoded_size)
     result.encoded_size = metadata.encoded_size;
@@ -990,6 +902,7 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
 
 void VideoEncodeAcceleratorAdapter::NotifyErrorStatus(
     const EncoderStatus& status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
   CHECK(!status.is_ok());
   MEDIA_LOG(ERROR, media_log_)
       << "VEA adapter error. Code: " << static_cast<int32_t>(status.code())
@@ -1022,6 +935,9 @@ void VideoEncodeAcceleratorAdapter::NotifyEncoderInfoChange(
     const VideoEncoderInfo& info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
   supports_frame_size_change_ = info.supports_frame_size_change;
+  supports_gpu_shared_images_ = info.supports_gpu_shared_images;
+  gpu_supported_pixel_formats_ = info.gpu_supported_pixel_formats;
+
   if (info_cb_) {
     info_cb_.Run(info);
   }
@@ -1029,14 +945,24 @@ void VideoEncodeAcceleratorAdapter::NotifyEncoderInfoChange(
 
 void VideoEncodeAcceleratorAdapter::InitCompleted(EncoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
+  if (pending_initialize_callback_) {
+    std::move(pending_initialize_callback_).Run(status);
+    pending_initialize_callback_.Reset();
+  }
 
   if (!status.is_ok()) {
-    // Report the error to all encoding-done callbacks
-    for (auto& encode : pending_encodes_)
-      std::move(encode->done_callback).Run(status);
+    MEDIA_LOG(ERROR, media_log_) << "VEA adapter initialization error. Code: "
+                                 << static_cast<int32_t>(status.code())
+                                 << ". Message: " << status.message();
 
-    if (pending_flush_)
+    // Report the error to all encoding-done callbacks
+    for (auto& encode : pending_encodes_) {
+      std::move(encode->done_callback).Run(status);
+    }
+
+    if (pending_flush_callback_) {
       FlushCompleted(false);
+    }
 
     DCHECK(active_encodes_.empty());
     pending_encodes_.clear();
@@ -1057,7 +983,7 @@ void VideoEncodeAcceleratorAdapter::InitCompleted(EncoderStatus status) {
 
   // If a Flush() came in during initialization, transition to flushing now that
   // all the pending encodes have been sent.
-  if (pending_flush_) {
+  if (pending_flush_callback_) {
     state_ = State::kFlushing;
     if (flush_support_.value()) {
       accelerator_->Flush(
@@ -1069,13 +995,14 @@ void VideoEncodeAcceleratorAdapter::InitCompleted(EncoderStatus status) {
 
 void VideoEncodeAcceleratorAdapter::FlushCompleted(bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
-  if (!pending_flush_)
+  if (!pending_flush_callback_) {
     return;
+  }
 
-  std::move(pending_flush_->done_callback)
+  std::move(pending_flush_callback_)
       .Run(success ? EncoderStatus::Codes::kOk
                    : EncoderStatus::Codes::kEncoderFailedFlush);
-  pending_flush_.reset();
+  pending_flush_callback_.Reset();
   state_ = State::kReadyToEncode;
 }
 
@@ -1121,13 +1048,12 @@ VideoEncodeAcceleratorAdapter::PrepareCpuFrame(
     return EncoderStatus(EncoderStatus::Codes::kOutOfMemoryError);
 
   const base::WritableSharedMemoryMapping* mapping = handle->mapping();
-  auto mapped_src_frame = src_frame->HasMappableGpuBuffer()
+  auto mapped_src_frame = src_frame->HasMappableSharedImage()
                               ? ConvertToMemoryMappedFrame(src_frame)
                               : src_frame;
   auto shared_frame = VideoFrame::WrapExternalData(
       PIXEL_FORMAT_I420, dest_coded_size, dest_visible_rect,
-      dest_visible_rect.size(), static_cast<uint8_t*>(mapping->memory()),
-      mapping->size(), src_frame->timestamp());
+      dest_visible_rect.size(), *mapping, src_frame->timestamp());
 
   if (!shared_frame || !mapped_src_frame)
     return EncoderStatus(EncoderStatus::Codes::kSystemAPICallError);
@@ -1155,9 +1081,12 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
 
   const auto dest_coded_size = input_coded_size_;
   const auto dest_visible_rect = gfx::Rect(options_.frame_size);
+  bool is_gpu_supported_format =
+      std::ranges::find(gpu_supported_pixel_formats_, src_frame->format()) !=
+      gpu_supported_pixel_formats_.end();
 
-  if (src_frame->HasMappableGpuBuffer() &&
-      src_frame->format() == PIXEL_FORMAT_NV12 &&
+  if ((src_frame->HasMappableSharedImage() || src_frame->HasSharedImage()) &&
+      (src_frame->format() == PIXEL_FORMAT_NV12 || is_gpu_supported_format) &&
       (gpu_resize_supported_ || src_frame->coded_size() == dest_coded_size)) {
     // Nothing to do here, the input frame is already what we need
     return src_frame;
@@ -1184,7 +1113,7 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
   // This is true because |gpu_frame| is created with
   // |VEA_READ_CAMERA_AND_CPU_READ_WRITE| usage flag.
   auto mapped_gpu_frame = ConvertToMemoryMappedFrame(gpu_frame);
-  auto mapped_src_frame = src_frame->HasMappableGpuBuffer()
+  auto mapped_src_frame = src_frame->HasMappableSharedImage()
                               ? ConvertToMemoryMappedFrame(src_frame)
                               : src_frame;
   if (!mapped_gpu_frame || !mapped_src_frame)
@@ -1198,16 +1127,6 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
 
   // |mapped_gpu_frame| has the color space respecting the color conversion in
   // ConvertAndScale().
-#if BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(
-          kUseMappableSIForVideoEncoderAcceleratorAdapter)) {
-    gpu_frame->shared_image(0)->SetColorSpaceOnNativeBuffer(
-        mapped_gpu_frame->ColorSpace());
-  } else {
-    gpu_frame->GetGpuMemoryBuffer()->SetColorSpace(
-        mapped_gpu_frame->ColorSpace());
-  }
-#endif
   gpu_frame->set_color_space(mapped_gpu_frame->ColorSpace());
 
   return gpu_frame;

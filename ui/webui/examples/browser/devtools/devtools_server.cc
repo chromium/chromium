@@ -4,7 +4,8 @@
 
 #include "ui/webui/examples/browser/devtools/devtools_server.h"
 
-#include "base/atomicops.h"
+#include <atomic>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "content/public/browser/browser_context.h"
@@ -18,7 +19,7 @@ namespace webui_examples::devtools {
 
 namespace {
 
-base::subtle::Atomic32 g_last_used_port;
+std::atomic<int> g_last_used_port;
 
 class TCPServerSocketFactory : public content::DevToolsSocketFactory {
  public:
@@ -42,7 +43,7 @@ class TCPServerSocketFactory : public content::DevToolsSocketFactory {
 
     net::IPEndPoint endpoint;
     if (socket->GetLocalAddress(&endpoint) == net::OK)
-      base::subtle::NoBarrier_Store(&g_last_used_port, endpoint.port());
+      g_last_used_port.store(endpoint.port(), std::memory_order_relaxed);
 
     return socket;
   }
@@ -76,7 +77,7 @@ void StopHttpHandler() {
 }
 
 int GetHttpHandlerPort() {
-  return base::subtle::NoBarrier_Load(&g_last_used_port);
+  return g_last_used_port.load(std::memory_order_acquire);
 }
 
 }  // namespace webui_examples::devtools

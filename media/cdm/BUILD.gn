@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//media/media_options.gni")
+import("//testing/test.gni")
 
 source_set("cdm_api") {
   sources = [ "api/content_decryption_module.h" ]
@@ -17,7 +18,7 @@ source_set("cdm_type_conversion") {
     ]
     configs += [ "//media:subcomponent_config" ]
   } else {
-    visibility = [ "//media/cdm/library_cdm/clear_key_cdm:clear_key_cdm" ]
+    visibility = [ "//media/cdm/library_cdm/clear_key_cdm" ]
   }
 
   sources = [
@@ -141,9 +142,14 @@ source_set("cdm") {
       "win/media_foundation_cdm_session.h",
       "win/media_foundation_cdm_util.cc",
       "win/media_foundation_cdm_util.h",
+      "win/pmp_host_app_impl.cc",
+      "win/pmp_host_app_impl.h",
     ]
 
-    libs = [ "Propsys.lib" ]
+    libs = [
+      "mfuuid.lib",
+      "propsys.lib",
+    ]
 
     deps += [
       ":cdm_paths",
@@ -201,12 +207,12 @@ source_set("unit_tests") {
     "aes_decryptor_unittest.cc",
     "cbcs_decryptor_unittest.cc",
     "cenc_decryptor_unittest.cc",
+    "cenc_utils_unittest.cc",
     "json_web_key_unittest.cc",
   ]
 
   deps = [
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//crypto",
     "//media:test_support",
     "//testing/gmock",
@@ -233,6 +239,7 @@ source_set("unit_tests") {
       "simple_cdm_allocator_unittest.cc",
       "simple_cdm_buffer.cc",
       "simple_cdm_buffer.h",
+      "supported_cdm_versions_unittest.cc",
     ]
 
     data_deps += [ "//media/cdm/library_cdm/clear_key_cdm" ]
@@ -245,15 +252,32 @@ source_set("unit_tests") {
     ]
   }
 
-  if (proprietary_codecs) {
-    sources += [ "cenc_utils_unittest.cc" ]
-  }
-
   if (is_win) {
     sources += [
       "win/media_foundation_cdm_factory_unittest.cc",
       "win/media_foundation_cdm_session_unittest.cc",
       "win/media_foundation_cdm_unittest.cc",
+      "win/media_foundation_cdm_util_unittest.cc",
     ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
+}
+
+test("aes_decryptor_fuzztests") {
+  sources = [ "aes_decryptor_fuzztests.cc" ]
+
+  fuzztests = [
+    "AesDecryptorFuzzTests.CreateSessionDoesNotCrash",
+    "AesDecryptorFuzzTests.UpdateSessionDoesNotCrash",
+    "AesDecryptorFuzzTests.DecryptDoesNotCrash",
+  ]
+
+  deps = [
+    "//base/test:test_support",
+    "//media:test_support",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
 }

@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/overview/birch/birch_chip_button.h"
-#include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/controls/button/button.h"
@@ -87,6 +86,10 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView {
   static std::unique_ptr<views::Widget> CreateBirchBarWidget(
       aura::Window* root_window);
 
+  const std::vector<raw_ptr<BirchChipButtonBase>>& chips() const {
+    return chips_;
+  }
+
   void SetState(State state);
 
   // Clears the items cached in the `BirchChipButtons`.
@@ -113,6 +116,9 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView {
   // `attached_item` if it's not null.
   void RemoveChip(BirchItem* removed_item, BirchItem* attached_item = nullptr);
 
+  // Re-initializes the chip corresponding to the given `item`.
+  void UpdateChip(BirchItem* item);
+
   // Gets the maximum height of the bar with full chips.
   int GetMaximumHeight() const;
 
@@ -129,6 +135,9 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView {
     kOneByFour,
     kTwoByTwo,
   };
+
+  // Creates a chip for given `item`.
+  std::unique_ptr<BirchChipButtonBase> CreateChipForItem(BirchItem* item);
 
   void AttachChip(std::unique_ptr<BirchChipButtonBase> chip);
 
@@ -200,8 +209,8 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView {
   // The chips are owned by either primary or secondary row.
   std::vector<raw_ptr<BirchChipButtonBase>> chips_;
 
-  // The chip which is waiting to be attached.
-  std::unique_ptr<BirchChipButtonBase> chip_to_attach_;
+  // The chips which are waiting to be attached.
+  base::circular_deque<std::unique_ptr<BirchChipButtonBase>> chips_to_attach_;
 
   // Called after relayout.
   RelayoutCallback relayout_callback_;

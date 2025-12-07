@@ -7,14 +7,19 @@
 #include <utility>
 
 #include "base/containers/span.h"
-#include "base/hash/md5.h"
 #include "base/logging.h"
 #include "base/numerics/byte_conversions.h"
 #include "components/database_utils/url_converter.h"
+#include "crypto/obsolete/md5.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 
 namespace segmentation_platform {
+
+std::array<uint8_t, crypto::obsolete::Md5::kSize> Md5ForUrlId(
+    std::string_view data) {
+  return crypto::obsolete::Md5::Hash(data);
+}
 
 UkmUrlTable::UkmUrlTable(sql::Database* db) : db_(db) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -33,10 +38,10 @@ UrlId UkmUrlTable::GenerateUrlId(const GURL& url) {
   // Converts the 8-byte prefix of an MD5 hash into a int64_t value. This
   // hashing scheme is architecture dependent.
   std::string db_url = GetDatabaseUrlString(url);
-  base::MD5Digest digest;
-  base::MD5Sum(base::as_byte_span(db_url), &digest);
+  std::array<uint8_t, crypto::obsolete::Md5::kSize> digest =
+      Md5ForUrlId(db_url);
   return UrlId::FromUnsafeValue(
-      base::I64FromLittleEndian(base::span(digest.a).first<8u>()));
+      base::I64FromLittleEndian(base::span(digest).first<8u>()));
 }
 
 bool UkmUrlTable::InitTable() {

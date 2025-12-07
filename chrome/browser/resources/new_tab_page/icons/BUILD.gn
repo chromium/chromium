@@ -17,15 +17,16 @@ generate_grd("build_grdp") {
     "facebook.svg",
     "generic_globe.svg",
     "google_logo.svg",
-    "icon_pencil.svg",
     "info.svg",
     "link.svg",
     "mail.svg",
     "mic.svg",
     "offline_dialog.svg",
     "share_unfilled.svg",
-    "sparkle.svg",
     "twitter.svg",
+    "banana.svg",
+    "deep_search.svg",
+    "suggestion.svg",
   ]
   input_files_base_dir = rebase_path(".", "//")
   resource_path_prefix = "icons"

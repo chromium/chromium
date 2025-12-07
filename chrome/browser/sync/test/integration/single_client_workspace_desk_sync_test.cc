@@ -72,6 +72,11 @@ class SingleClientWorkspaceDeskSyncTest : public SyncTest {
       const SingleClientWorkspaceDeskSyncTest&) = delete;
   ~SingleClientWorkspaceDeskSyncTest() override = default;
 
+  // This test suite is ChromeOS specific, where there's only Sync-the-feature.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTheFeature;
+  }
+
   base::Time AdvanceAndGetTime(base::TimeDelta delta = base::Milliseconds(10)) {
     clock_.Advance(delta);
     return clock_.Now();
@@ -80,11 +85,15 @@ class SingleClientWorkspaceDeskSyncTest : public SyncTest {
   void DisableDeskSync() {
     syncer::SyncService* service = GetSyncService(0);
 
-      // Disable all OS types, including the desk sync type.
-    service->GetUserSettings()->SetSelectedOsTypes(
-        /*sync_all_os_types=*/false, syncer::UserSelectableOsTypeSet());
+    // Disable tab sync - this should also disable desk sync.
+    syncer::UserSelectableTypeSet types_to_enable =
+        service->GetUserSettings()->GetSelectedTypes();
+    ASSERT_TRUE(types_to_enable.Has(syncer::UserSelectableType::kTabs));
+    types_to_enable.Remove(syncer::UserSelectableType::kTabs);
+    service->GetUserSettings()->SetSelectedTypes(
+        /*sync_everything=*/false, types_to_enable);
 
-    ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+    ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   }
 
   base::Uuid kTestUuid1_;
@@ -106,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWorkspaceDeskSyncTest,
           /*creation_time=*/syncer::TimeToProtoTime(AdvanceAndGetTime()),
           /*last_modified_time=*/syncer::TimeToProtoTime(AdvanceAndGetTime())));
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   syncer::SyncService* sync_service = GetSyncService(0);
   ASSERT_TRUE(sync_service->GetActiveDataTypes().Has(syncer::WORKSPACE_DESK));
@@ -146,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWorkspaceDeskSyncTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientWorkspaceDeskSyncTest, IsReady) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   EXPECT_TRUE(workspace_desk_helper::DeskModelReadyChecker(
                   DeskSyncServiceFactory::GetForProfile(GetProfile(0)))
@@ -164,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWorkspaceDeskSyncTest, DeleteDeskTemplate) {
           /*creation_time=*/syncer::TimeToProtoTime(AdvanceAndGetTime()),
           /*last_modified_time=*/syncer::TimeToProtoTime(AdvanceAndGetTime())));
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(
       workspace_desk_helper::DeskUuidChecker(
@@ -192,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWorkspaceDeskSyncTest, DeleteDeskTemplate) {
 
 IN_PROC_BROWSER_TEST_F(SingleClientWorkspaceDeskSyncTest,
                        ShouldAllowAddTemplateLocallyWhenSyncIsDisabled) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   DisableDeskSync();
 

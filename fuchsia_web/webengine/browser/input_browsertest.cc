@@ -11,6 +11,7 @@
 
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_context_for_process.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -117,8 +118,7 @@ base::Value::List FuchsiaModifiersToWebModifiers(
     } else if (modifier == fuchsia_ui_input3::Modifiers::kShift) {
       web_modifiers.Append("Shift");
     } else {
-      NOTREACHED_IN_MIGRATION()
-          << static_cast<uint64_t>(modifier) << " has no web mapping";
+      NOTREACHED() << static_cast<uint64_t>(modifier) << " has no web mapping";
     }
   }
   return web_modifiers;

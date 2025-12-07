@@ -10,12 +10,16 @@
 #include <string_view>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 
 namespace base {
 namespace ios {
+
+// Skip starting background tasks if the application is terminating.
+BASE_DECLARE_FEATURE(kScopedCriticalActionSkipOnShutdown);
 
 // This class attempts to allow the application to continue to run for a period
 // of time after it transitions to the background. The construction of an
@@ -39,9 +43,16 @@ class ScopedCriticalAction {
 
   ~ScopedCriticalAction();
 
+  // Skip starting new background tasks if the application is terminating.
+  // This must be triggered by the application and cannot be triggered by
+  // a UIApplicationWillTerminateNotification, as that notification fires
+  // after -[UIApplicationDelegate applicationWillTerminate:].
+  static void ApplicationWillTerminate();
+
   // Exposed for unit-testing.
   static void ClearNumActiveBackgroundTasksForTest();
   static int GetNumActiveBackgroundTasksForTest();
+  static void ResetApplicationWillTerminateForTest();
 
  private:
   // Core logic; ScopedCriticalAction should not be reference counted so
@@ -123,7 +134,14 @@ class ScopedCriticalAction {
     // no longer needs to prevent background suspension.
     void ReleaseHandle(Handle handle);
 
+    // Skip starting new background tasks if the application is terminating.
+    void ApplicationWillTerminate();
+
+    // Exposed for unit-testing.
+    void ResetApplicationWillTerminateForTest();
+
    private:
+    std::atomic_bool application_is_terminating_{false};
     InternalEntriesMap entries_map_ GUARDED_BY(entries_map_lock_);
     Lock entries_map_lock_;
   };

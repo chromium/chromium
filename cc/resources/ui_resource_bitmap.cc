@@ -14,12 +14,13 @@
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkMallocPixelRef.h"
 #include "third_party/skia/include/core/SkPixelRef.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "third_party/skia/include/gpu/GrRecordingContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrRecordingContext.h"
 
 namespace cc {
 namespace {
@@ -35,9 +36,7 @@ UIResourceBitmap::UIResourceFormat SkColorTypeToUIResourceFormat(
       format = UIResourceBitmap::ALPHA_8;
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Invalid SkColorType for UIResourceBitmap: " << sk_type;
-      break;
+      NOTREACHED() << "Invalid SkColorType for UIResourceBitmap: " << sk_type;
   }
   return format;
 }
@@ -69,6 +68,20 @@ void UIResourceBitmap::DrawToCanvas(SkCanvas* canvas, SkPaint* paint) {
   }
 }
 
+base::span<const uint8_t> UIResourceBitmap::GetPixels() const {
+  if (!pixel_ref_) {
+    return {};
+  }
+  // TODO(crbug.com/40285824): Check if this is guaranteed safe. The pixel
+  // memory must be at least row_bytes * height but it's not well defined if
+  // memory past the end of the last row is allocated when row_bytes > width *
+  // bytes_per_pixel. UIResourceBitmap has an implicit assumption that row_bytes
+  // == width * bytes_per_pixel but if that assumption is violated this span
+  // could be too large.
+  return UNSAFE_TODO(base::span(
+      static_cast<const uint8_t*>(pixel_ref_->pixels()), SizeInBytes()));
+}
+
 size_t UIResourceBitmap::SizeInBytes() const {
   if (!pixel_ref_)
     return 0u;
@@ -83,7 +96,11 @@ UIResourceBitmap::UIResourceBitmap(const SkBitmap& skbitmap) {
   const SkBitmap* target = &skbitmap;
 #if BUILDFLAG(IS_ANDROID)
   SkBitmap copy;
-  if (features::IsDrDcEnabled()) {
+  if (features::ShouldEnableDrDc()) {
+    // If GpuFeatureInfo is available, replace ShouldEnableDrDc() with
+    // IsDrDcEnabled(gpu_feature_info) which is set after checking drdc
+    // workarounds;
+
     // TODO(vikassoni): Forcing everything to N32 while android backing cannot
     // support some other formats. Note that DrDc is disabled on some gl
     // renderers and hence gpus via gpu driver bug workaround. That workaround

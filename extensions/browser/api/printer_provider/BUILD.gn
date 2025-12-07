@@ -22,15 +22,20 @@ source_set("printer_provider") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
-    "//components/device_event_log",
+  public_deps = [
+    "//base",
     "//components/keyed_service/content",
-    "//content/public/browser",
+    "//components/keyed_service/core",
+    "//extensions/browser:browser_sources",
     "//extensions/common",
     "//extensions/common/api",
-    "//services/device/public/cpp/usb",
     "//services/device/public/mojom:usb",
   ]
 
-  public_deps = [ "//extensions/browser:browser_sources" ]
+  deps = [
+    "//base:i18n",
+    "//components/device_event_log",
+    "//content/public/browser",
+    "//extensions/common:mojom",
+  ]
 }

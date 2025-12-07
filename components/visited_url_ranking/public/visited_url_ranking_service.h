@@ -12,6 +12,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/visited_url_ranking/public/fetch_options.h"
 #include "components/visited_url_ranking/public/url_visit.h"
+#include "components/visited_url_ranking/public/url_visit_aggregates_transformer.h"
 
 namespace visited_url_ranking {
 
@@ -53,6 +54,12 @@ enum class ResultStatus {
   kMaxValue = kSuccess,
 };
 
+// Holds data about the vector of URLVisitAggregates.
+struct URLVisitsMetadata {
+  size_t aggregates_count_before_transforms = 0;
+  std::optional<base::Time> most_recent_timestamp;
+};
+
 // Provides APIs suitable for combining URL Visit data across various data
 // sources and their subsequent ranking via a model.
 // Example usage:
@@ -82,8 +89,8 @@ class VisitedURLRankingService : public KeyedService {
 
   // Computes `URLVisitAggregate` objects based on a series of `options` for
   // one or more data providers and triggers the `callback` with such data.
-  using GetURLVisitAggregatesCallback =
-      base::OnceCallback<void(ResultStatus, std::vector<URLVisitAggregate>)>;
+  using GetURLVisitAggregatesCallback = base::OnceCallback<
+      void(ResultStatus, URLVisitsMetadata, std::vector<URLVisitAggregate>)>;
   virtual void FetchURLVisitAggregates(
       const FetchOptions& options,
       GetURLVisitAggregatesCallback callback) = 0;
@@ -96,6 +103,17 @@ class VisitedURLRankingService : public KeyedService {
       const Config& config,
       std::vector<URLVisitAggregate> visit_aggregates,
       RankURLVisitAggregatesCallback callback) = 0;
+
+  // Adds relevant decorations to a collection of `URLVisitAggregate` objects.
+  // Only the visits that are to be displayed on the UI should be passed to
+  // this method.
+  using DecorateURLVisitAggregatesCallback =
+      base::OnceCallback<void(ResultStatus, std::vector<URLVisitAggregate>)>;
+  virtual void DecorateURLVisitAggregates(
+      const Config& config,
+      visited_url_ranking::URLVisitsMetadata url_visits_metadata,
+      std::vector<URLVisitAggregate> visit_aggregates,
+      DecorateURLVisitAggregatesCallback callback) = 0;
 
   // Records a user action performed for a `URLVisitAggregate` object returned
   // by `RankURLVisitAggregates`. This is needed to collect feedback on whether
@@ -116,6 +134,12 @@ class VisitedURLRankingService : public KeyedService {
       ScoredURLUserAction action,
       const std::string& visit_id,
       segmentation_platform::TrainingRequestId visit_request_id) = 0;
+
+  // Sets additional transformers for fetching visits and data. Does not replace
+  // an existing transformer of same type.
+  virtual void RegisterTransformer(
+      URLVisitAggregatesTransformType type,
+      std::unique_ptr<URLVisitAggregatesTransformer> transformer) = 0;
 };
 
 }  // namespace visited_url_ranking

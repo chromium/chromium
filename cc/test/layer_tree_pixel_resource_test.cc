@@ -6,7 +6,6 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "cc/layers/layer.h"
-#include "cc/raster/bitmap_raster_buffer_provider.h"
 #include "cc/raster/gpu_raster_buffer_provider.h"
 #include "cc/raster/one_copy_raster_buffer_provider.h"
 #include "cc/raster/raster_buffer_provider.h"
@@ -14,6 +13,7 @@
 #include "cc/resources/resource_pool.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/ipc/client/client_shared_image_interface.h"
 
 namespace cc {
 
@@ -52,57 +52,43 @@ LayerTreeHostPixelResourceTest::CreateRasterBufferProvider(
       layer_tree_frame_sink->context_provider();
   viz::RasterContextProvider* worker_context_provider =
       layer_tree_frame_sink->worker_context_provider();
-  int max_bytes_per_copy_operation = 1024 * 1024;
   int max_staging_buffer_usage_in_bytes = 32 * 1024 * 1024;
-
-  RasterCapabilities raster_caps;
-  if (compositor_context_provider) {
-    if (host_impl->settings().use_rgba_4444) {
-      raster_caps.tile_format = viz::SinglePlaneFormat::kRGBA_4444;
-    } else {
-      if (raster_type() == TestRasterType::kGpu) {
-        raster_caps.tile_format =
-            viz::PlatformColor::BestSupportedRenderBufferFormat(
-                compositor_context_provider->ContextCapabilities());
-      } else {
-        raster_caps.tile_format =
-            viz::PlatformColor::BestSupportedTextureFormat(
-                compositor_context_provider->ContextCapabilities());
-      }
-    }
-  }
 
   switch (raster_type()) {
     case TestRasterType::kBitmap:
       EXPECT_FALSE(compositor_context_provider);
       EXPECT_TRUE(use_software_renderer());
 
-      return std::make_unique<BitmapRasterBufferProvider>(
-          host_impl->layer_tree_frame_sink());
+      return std::make_unique<ZeroCopyRasterBufferProvider>(
+          host_impl->layer_tree_frame_sink()->shared_image_interface(),
+          /*is_software=*/true);
     case TestRasterType::kGpu:
       EXPECT_TRUE(compositor_context_provider);
       EXPECT_TRUE(worker_context_provider);
       EXPECT_FALSE(use_software_renderer());
 
-      raster_caps.use_gpu_rasterization = true;
       return std::make_unique<GpuRasterBufferProvider>(
-          compositor_context_provider, worker_context_provider, raster_caps,
-          gfx::Size(), true, host_impl->GetRasterQueryQueueForTesting());
+          worker_context_provider->SharedImageInterface(),
+          compositor_context_provider, worker_context_provider,
+          /*is_overlay_candidate=*/false, gfx::Size(),
+          host_impl->GetRasterQueryQueueForTesting());
     case TestRasterType::kZeroCopy:
       EXPECT_TRUE(compositor_context_provider);
       EXPECT_FALSE(use_software_renderer());
 
       return std::make_unique<ZeroCopyRasterBufferProvider>(
-          compositor_context_provider, raster_caps);
+          compositor_context_provider->SharedImageInterface(),
+          /*is_software=*/false);
     case TestRasterType::kOneCopy:
       EXPECT_TRUE(compositor_context_provider);
       EXPECT_TRUE(worker_context_provider);
       EXPECT_FALSE(use_software_renderer());
 
       return std::make_unique<OneCopyRasterBufferProvider>(
-          task_runner, compositor_context_provider, worker_context_provider,
-          max_bytes_per_copy_operation, false,
-          max_staging_buffer_usage_in_bytes, raster_caps);
+          worker_context_provider->SharedImageInterface(), task_runner,
+          compositor_context_provider, worker_context_provider, false,
+          max_staging_buffer_usage_in_bytes,
+          /*is_overlay_candidate=*/false);
   }
 }
 

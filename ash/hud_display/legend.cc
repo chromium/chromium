@@ -17,10 +17,12 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 namespace hud_display {
@@ -79,7 +81,7 @@ LegendEntry::LegendEntry(const Legend::Entry& data)
       std::make_unique<views::Label>(data.label, views::style::CONTEXT_LABEL));
   label->SetEnabledColor(kHUDDefaultColor);
   if (!data.tooltip.empty())
-    label->SetTooltipText(data.tooltip);
+    label->SetCustomTooltipText(data.tooltip);
 
   constexpr int kLabelToValueSpece = 5;
   value_ = AddChildView(std::make_unique<views::Label>(
@@ -101,29 +103,22 @@ void LegendEntry::OnPaint(gfx::Canvas* canvas) {
 
   constexpr int kBoxBorderWidth = 1;
 
-  gfx::Rect box = bounds;
-  box.ClampToCenteredSize(gfx::Size(kBoxSize, kBoxSize));
-
-  const SkRect border =
-      SkRect::MakeXYWH(box.x(), box.y(), box.width(), box.height());
-
-  SkPath box_border;
-  box_border.addRect(border);
-
-  SkPath box_filled;
-  box_filled.addRect(border.makeInset(kBoxBorderWidth, kBoxBorderWidth));
+  gfx::Rect box_border = bounds;
+  box_border.ClampToCenteredSize(gfx::Size(kBoxSize, kBoxSize));
+  gfx::Rect box_filled = box_border;
+  box_filled.Inset(kBoxBorderWidth);
 
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setBlendMode(SkBlendMode::kSrc);
   flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setColor(color_);
-  canvas->DrawPath(box_filled, flags);
+  canvas->DrawRect(box_filled, flags);
 
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setStrokeWidth(kBoxBorderWidth);
   flags.setColor(kHUDDefaultColor);
-  canvas->DrawPath(box_border, flags);
+  canvas->DrawRect(box_border, flags);
 
   views::View::OnPaint(canvas);
 }
@@ -183,23 +178,17 @@ void Legend::Layout(PassKey) {
   gfx::Size max_size;
   bool updated = false;
   for (views::View* view : children()) {
-    if (std::string_view(view->GetClassName()) !=
-        std::string_view(LegendEntry::kViewClassName)) {
-      continue;
+    if (auto* entry = views::AsViewClass<LegendEntry>(view)) {
+      views::View* value = entry->value();
+      max_size.SetToMax(value->GetPreferredSize());
+      updated |= max_size != value->GetPreferredSize();
     }
-
-    views::View* value = static_cast<LegendEntry*>(view)->value();
-    max_size.SetToMax(value->GetPreferredSize());
-    updated |= max_size != value->GetPreferredSize();
   }
   if (updated) {
     for (views::View* view : children()) {
-      if (std::string_view(view->GetClassName()) !=
-          std::string_view(LegendEntry::kViewClassName)) {
-        continue;
+      if (auto* entry = views::AsViewClass<LegendEntry>(view)) {
+        entry->value()->SetPreferredSize(max_size);
       }
-
-      static_cast<LegendEntry*>(view)->value()->SetPreferredSize(max_size);
     }
     LayoutSuperclass<views::View>(this);
   }
@@ -207,23 +196,17 @@ void Legend::Layout(PassKey) {
 
 void Legend::SetValuesIndex(size_t index) {
   for (views::View* view : children()) {
-    if (std::string_view(view->GetClassName()) !=
-        std::string_view(LegendEntry::kViewClassName)) {
-      continue;
+    if (auto* entry = views::AsViewClass<LegendEntry>(view)) {
+      entry->SetValueIndex(index);
     }
-
-    static_cast<LegendEntry*>(view)->SetValueIndex(index);
   }
 }
 
 void Legend::RefreshValues() {
   for (views::View* view : children()) {
-    if (std::string_view(view->GetClassName()) !=
-        std::string_view(LegendEntry::kViewClassName)) {
-      continue;
+    if (auto* entry = views::AsViewClass<LegendEntry>(view)) {
+      entry->RefreshValue();
     }
-
-    static_cast<LegendEntry*>(view)->RefreshValue();
   }
 }
 

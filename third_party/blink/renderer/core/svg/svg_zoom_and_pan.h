@@ -54,8 +54,10 @@ class SVGZoomAndPan {
     return static_cast<SVGZoomAndPanType>(number);
   }
 
-  static SVGZoomAndPanType Parse(const LChar*& start, const LChar* end);
-  static SVGZoomAndPanType Parse(const UChar*& start, const UChar* end);
+  static SVGZoomAndPanType Parse(const base::span<const LChar> chars,
+                                 size_t& position);
+  static SVGZoomAndPanType Parse(const base::span<const UChar> chars,
+                                 size_t& position);
 
   bool ParseAttribute(const QualifiedName& name, const AtomicString& value);
 

@@ -159,10 +159,11 @@ def main():
     --presubmit: (Optional) Simply prints a message if the input is not
         formatted correctly instead of modifying the file.
     --diff: (Optional) Prints diff to stdout rather than modifying the file.
+    --cleanup: (Optional) Removes any backup file created during the execution.
 
   Example usage:
     pretty_print.py metadata/Fingerprint/histograms.xml
-    pretty_print.py enums.xml
+    pretty_print.py enums.xml --cleanup
   """
   parser = argparse.ArgumentParser()
   parser.add_argument('filepath', help="relative path to XML file")
@@ -170,6 +171,9 @@ def main():
   parser.add_argument('--non-interactive', action="store_true")
   parser.add_argument('--presubmit', action="store_true")
   parser.add_argument('--diff', action="store_true")
+  parser.add_argument('--cleanup',
+                      action="store_true",
+                      help="Remove the backup file after a successful run.")
   args = parser.parse_args()
 
   status = 0

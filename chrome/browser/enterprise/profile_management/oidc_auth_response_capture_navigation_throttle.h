@@ -9,12 +9,9 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "components/url_matcher/url_matcher.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
-
-namespace content {
-class NavigationHandle;
-}  // namespace content
 
 namespace profile_management {
 
@@ -28,11 +25,10 @@ class OidcAuthResponseCaptureNavigationThrottle
   // Create a navigation throttle for the given navigation if Oidc
   // authentication based enrollment is enabled. Returns nullptr if no
   // throttling should be done.
-  static std::unique_ptr<OidcAuthResponseCaptureNavigationThrottle>
-  MaybeCreateThrottleFor(content::NavigationHandle* navigation_handle);
+  static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry);
 
   explicit OidcAuthResponseCaptureNavigationThrottle(
-      content::NavigationHandle* navigation_handle);
+      content::NavigationThrottleRegistry& registry);
 
   OidcAuthResponseCaptureNavigationThrottle(
       const OidcAuthResponseCaptureNavigationThrottle&) = delete;
@@ -43,10 +39,17 @@ class OidcAuthResponseCaptureNavigationThrottle
   // content::NavigationThrottle implementation:
   ThrottleCheckResult WillRedirectRequest() override;
   ThrottleCheckResult WillProcessResponse() override;
+
   const char* GetNameForLogging() override;
 
+  // Method to get a new URL matcher instead of the usual static one for
+  // testing, due the feature flag value may have changed in different cases.
+  static std::unique_ptr<url_matcher::URLMatcher>
+  GetOidcEnrollmentUrlMatcherForTesting();
+
  private:
-  ThrottleCheckResult AttemptToTriggerInterception();
+  ThrottleCheckResult AttemptToTriggerUrlInterception();
+  ThrottleCheckResult AttemptToTriggerHeaderInterception();
 
   // Starts OIDC registration and profile creation process if the response is
   // valid.

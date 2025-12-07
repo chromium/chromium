@@ -4,16 +4,19 @@
 
 #include "cc/test/test_hooks.h"
 
+#include <memory>
+
+#include "cc/raster/raster_buffer_provider.h"
+
 namespace cc {
 
 TestHooks::TestHooks() = default;
 
 TestHooks::~TestHooks() = default;
 
-DrawResult TestHooks::PrepareToDrawOnThread(
-    LayerTreeHostImpl* host_impl,
-    LayerTreeHostImpl::FrameData* frame_data,
-    DrawResult draw_result) {
+DrawResult TestHooks::PrepareToDrawOnThread(LayerTreeHostImpl* host_impl,
+                                            FrameData* frame_data,
+                                            DrawResult draw_result) {
   return draw_result;
 }
 

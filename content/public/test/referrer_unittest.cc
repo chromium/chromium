@@ -17,14 +17,14 @@ namespace content {
 using ReferrerSanitizerTest = testing::Test;
 
 TEST_F(ReferrerSanitizerTest, SanitizesPolicyForEmptyReferrers) {
-  EXPECT_DCHECK_DEATH(
+  EXPECT_NOTREACHED_DEATH(
       std::ignore = Referrer::SanitizeForRequest(
           GURL("https://a"),
           Referrer(GURL(), static_cast<network::mojom::ReferrerPolicy>(200))));
 }
 
 TEST_F(ReferrerSanitizerTest, SanitizesPolicyForNonEmptyReferrers) {
-  EXPECT_DCHECK_DEATH(
+  EXPECT_NOTREACHED_DEATH(
       std::ignore = Referrer::SanitizeForRequest(
           GURL("https://a"),
           Referrer(GURL("http://b"),

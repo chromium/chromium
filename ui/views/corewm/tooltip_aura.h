@@ -105,7 +105,7 @@ class VIEWS_EXPORT TooltipAura : public Tooltip, public WidgetObserver {
   // showing.
   raw_ptr<aura::Window> tooltip_window_ = nullptr;
 
-  int max_width_ = kTooltipMaxWidth;
+  int max_width_;
 
   // Observes tooltip state change.
   base::ObserverList<wm::TooltipObserver> observers_;

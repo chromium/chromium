@@ -9,18 +9,30 @@
 
 #include "base/check.h"
 #include "base/functional/callback.h"
+#include "components/plus_addresses/core/common/features.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/version_info/channel.h"
+#include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_cookie_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include <optional>
+namespace {
 
-#include "components/account_manager_core/account.h"
-#endif
+class TestOAuthConsumerRegistry : public signin::OAuthConsumerRegistry {
+ protected:
+  signin::OAuthConsumer GetOAuthConsumerForEnterprisePlusAddress()
+      const override {
+    CHECK(base::FeatureList::IsEnabled(
+        plus_addresses::features::kPlusAddressesEnabled));
+    return signin::OAuthConsumer(
+        signin::oauth_consumer_name::kEnterprisePlusAddressName,
+        {plus_addresses::features::kEnterprisePlusAddressOAuthScope.Get()});
+  }
+};
+
+}  // namespace
 
 TestWaitForNetworkCallbackHelper::TestWaitForNetworkCallbackHelper() = default;
 TestWaitForNetworkCallbackHelper::~TestWaitForNetworkCallbackHelper() = default;
@@ -57,9 +69,10 @@ TestSigninClient::TestSigninClient(
           std::make_unique<TestWaitForNetworkCallbackHelper>()),
       test_url_loader_factory_(test_url_loader_factory),
       pref_service_(pref_service),
-      are_signin_cookies_allowed_(true) {}
+      are_signin_cookies_allowed_(true),
+      oauth_consumer_registry_(std::make_unique<TestOAuthConsumerRegistry>()) {}
 
-TestSigninClient::~TestSigninClient() {}
+TestSigninClient::~TestSigninClient() = default;
 
 void TestSigninClient::DoFinalInit() {}
 
@@ -73,8 +86,9 @@ TestSigninClient::GetURLLoaderFactory() {
 }
 
 network::mojom::CookieManager* TestSigninClient::GetCookieManager() {
-  if (!cookie_manager_)
+  if (!cookie_manager_) {
     cookie_manager_ = std::make_unique<network::TestCookieManager>();
+  }
   return cookie_manager_.get();
 }
 
@@ -86,8 +100,9 @@ network::mojom::NetworkContext* TestSigninClient::GetNetworkContext() {
 }
 
 network::TestURLLoaderFactory* TestSigninClient::GetTestURLLoaderFactory() {
-  if (test_url_loader_factory_)
+  if (test_url_loader_factory_) {
     return test_url_loader_factory_;
+  }
 
   if (!default_test_url_loader_factory_) {
     default_test_url_loader_factory_ =
@@ -144,38 +159,7 @@ version_info::Channel TestSigninClient::GetClientChannel() {
 void TestSigninClient::OnPrimaryAccountChanged(
     signin::PrimaryAccountChangeEvent event_details) {}
 
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>
-TestSigninClient::CreateBoundSessionOAuthMultiloginDelegate() const {
-  return bound_session_delegate_factory_ ? bound_session_delegate_factory_.Run()
-                                         : nullptr;
+signin::OAuthConsumer TestSigninClient::GetOAuthConsumerFromId(
+    signin::OAuthConsumerId oauth_consumer_id) const {
+  return oauth_consumer_registry_->GetOAuthConsumerFromId(oauth_consumer_id);
 }
-
-void TestSigninClient::SetBoundSessionOauthMultiloginDelegateFactory(
-    BoundSessionOauthMultiloginDelegateFactory factory) {
-  bound_session_delegate_factory_ = std::move(factory);
-}
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-std::optional<account_manager::Account>
-TestSigninClient::GetInitialPrimaryAccount() {
-  return initial_primary_account_;
-}
-
-std::optional<bool> TestSigninClient::IsInitialPrimaryAccountChild() const {
-  return is_initial_primary_account_child_;
-}
-
-void TestSigninClient::SetInitialPrimaryAccountForTests(
-    const account_manager::Account& account,
-    const std::optional<bool>& is_child) {
-  initial_primary_account_ = std::make_optional(account);
-  is_initial_primary_account_child_ = is_child;
-}
-
-void TestSigninClient::RemoveAccount(
-    const account_manager::AccountKey& account_key) {}
-void TestSigninClient::RemoveAllAccounts() {}
-
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

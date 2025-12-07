@@ -174,12 +174,12 @@ def _TestsCorrespondingToAffectedBaselines(input_api,
         test_prefix = baseline_match['test_prefix']
         # Getting the test name from the baseline path is not as easy as the
         # other direction. Try all extensions as a heuristic instead.
+        abs_prefix = input_api.os_path.join(input_api.PresubmitLocalPath(),
+                                            test_prefix)
         for extension in [
                 'html', 'xml', 'xhtml', 'xht', 'pl', 'htm', 'php', 'svg',
                 'mht', 'pdf', 'js'
         ]:
-            abs_prefix = input_api.os_path.join(input_api.PresubmitLocalPath(),
-                                                test_prefix)
             test_paths.update(input_api.glob(f'{abs_prefix}*.{extension}'))
     return [
         input_api.os_path.relpath(test_path, input_api.PresubmitLocalPath())
@@ -253,45 +253,56 @@ def _CheckForUnlistedTestFolder(input_api, output_api):
             # we can not know if the folder is deleted as there can be local
             # unchecked in files.
             path = f.AbsoluteLocalPath()
-            fns = path[len(this_dir)+1:].split('/')
+            fns = path[len(this_dir) + 1:].split(input_api.os_path.sep)
             if len(fns) > 1:
                 possible_new_dirs.add(fns[0])
+    if not possible_new_dirs:
+        return []
 
-    if possible_new_dirs:
-        path_build_gn = input_api.os_path.join(input_api.change.RepositoryRoot(), 'BUILD.gn')
-        dirs_from_build_gn = []
-        start_line = '# === List Test Cases folders here ==='
-        end_line = '# === Test Case Folders Ends ==='
-        end_line_count = 0
-        find_start_line  = False
-        for line in input_api.ReadFile(path_build_gn).splitlines():
-            line = line.strip()
-            if line.startswith(start_line):
-                find_start_line = True
+    path_build_gn = input_api.os_path.join(this_dir, 'BUILD.gn')
+    dirs_from_build_gn = set()
+    start_line = '# === List Test Cases folders here ==='
+    line_pattern = input_api.re.compile(
+        r'\s*"(//third_party/blink/web_tests/)?(?P<dir>[^/]+)/')
+    end_line = '# === Test Case Folders Ends ==='
+    end_line_count = 0
+    find_start_line = False
+    for line in input_api.ReadFile(path_build_gn).splitlines():
+        line = line.strip()
+        if line.startswith(start_line):
+            find_start_line = True
+            continue
+        if find_start_line:
+            if line.startswith(end_line):
+                find_start_line = False
+                end_line_count += 1
+                if end_line_count == 2:
+                    break
                 continue
-            if find_start_line:
-                if line.startswith(end_line):
-                    find_start_line = False
-                    end_line_count += 1
-                    if end_line_count == 2:
-                        break
-                    continue
-                if len(line.split('/')) > 1:
-                    dirs_from_build_gn.append(line.split('/')[-2])
-        dirs_from_build_gn.extend(
-            ['platform', 'FlagExpectations', 'flag-specific', 'TestLists'])
+            if match := line_pattern.match(line):
+                dirs_from_build_gn.add(match['dir'])
 
-        new_dirs = [x for x in possible_new_dirs if x not in dirs_from_build_gn]
-        if new_dirs:
-            dir_plural = "directories" if len(new_dirs) > 1 else "directory"
-            error_message = (
-                'This CL adds new %s(%s) under //third_party/blink/web_tests/, but //BUILD.gn '
-                'is not updated. Please add the %s to BUILD.gn.' % (dir_plural, ', '.join(new_dirs), dir_plural))
-            if input_api.is_committing:
-                return [output_api.PresubmitError(error_message)]
-            else:
-                return [output_api.PresubmitPromptWarning(error_message)]
-    return []
+    unlisted_dirs = sorted(possible_new_dirs - dirs_from_build_gn - {
+        'platform',
+        'FlagExpectations',
+        'flag-specific',
+        'TestLists',
+    })
+    if not unlisted_dirs:
+        return []
+
+    dir_plural = "directories" if len(unlisted_dirs) > 1 else "directory"
+    error_message = (
+        'This CL adds new directories under `//third_party/blink/web_tests/` '
+        'without updating `//third_party/blink/web_tests/BUILD.gn`. Please '
+        f'add {", ".join(unlisted_dirs)} to BUILD.gn')
+    if input_api.is_committing:
+        return [output_api.PresubmitError(error_message, items=unlisted_dirs)]
+    else:
+        return [
+            output_api.PresubmitPromptWarning(error_message,
+                                              items=unlisted_dirs)
+        ]
 
 
 def _CheckForExtraVirtualBaselines(input_api, output_api):
@@ -376,21 +387,6 @@ def _CheckForExtraVirtualBaselines(input_api, output_api):
     return results
 
 
-def _CheckWebViewExpectations(input_api, output_api):
-    src_dir = os.path.join(input_api.PresubmitLocalPath(), os.pardir,
-                           os.pardir, os.pardir)
-    webview_data_dir = input_api.os_path.join(src_dir, 'android_webview',
-                                              'tools', 'system_webview_shell',
-                                              'test', 'data', 'webexposed')
-    if webview_data_dir not in sys.path:
-        sys.path.append(webview_data_dir)
-
-    # pylint: disable=import-outside-toplevel
-    from exposed_webview_interfaces_presubmit import (
-        CheckNotWebViewExposedInterfaces)
-    return CheckNotWebViewExposedInterfaces(input_api, output_api)
-
-
 class _DoctypeParser(HTMLParser):
     """Parses HTML to check if there exists a DOCTYPE declaration before all other tags.
     """
@@ -456,59 +452,6 @@ def _CheckForDoctypeHTML(input_api, output_api):
 
     return results
 
-
-def _CheckNewVirtualSuites(input_api, output_api, max_suite_length: int = 48):
-    """Validate new virtual test suites."""
-    # TODO(crbug.com/1380165): Once all virtual suites adopt "owners", consider
-    # making the field mandatory. In that case, we don't need to access the
-    # change contents and can promote this check to `lint_test_expectations.py`.
-    vts_path = input_api.os_path.join(input_api.PresubmitLocalPath(),
-                                      'VirtualTestSuites')
-    results = []
-    for affected_file in input_api.AffectedFiles():
-        if affected_file.AbsoluteLocalPath() != vts_path:
-            continue
-        old_contents = ''.join(affected_file.OldContents())
-        new_contents = ''.join(affected_file.NewContents())
-        try:
-            old_suites = _FilterForSuites(input_api.json.loads(old_contents))
-            new_suites = _FilterForSuites(input_api.json.loads(new_contents))
-            old_suite_names = {suite['prefix'] for suite in old_suites}
-            new_ownerless_suites, new_long_suites = [], []
-            for suite in new_suites:
-                prefix, owners = suite['prefix'], suite.get('owners', [])
-                if prefix in old_suite_names:
-                    continue
-                if not owners:
-                    new_ownerless_suites.append(prefix)
-                if len(prefix) > max_suite_length:
-                    new_long_suites.append(prefix)
-            if new_ownerless_suites:
-                results.append(
-                    output_api.PresubmitPromptWarning(
-                        'Consider specifying "owners" (a list of emails) '
-                        'for the virtual suites added by this patch:',
-                        new_ownerless_suites))
-            if new_long_suites:
-                results.append(
-                    output_api.PresubmitPromptWarning(
-                        'Consider shorter virtual suite names so that the '
-                        "global filename length presubmit doesn't reject "
-                        'future `*-expected.txt` under their directories. You '
-                        'can add comments about these suites to '
-                        'VirtualTestSuites.', new_long_suites))
-        except (ValueError, KeyError):
-            # Invalid JSON or missing required fields will be detected by
-            # `lint_test_expectations.py`.
-            pass
-        break
-    return results
-
-
-def _FilterForSuites(suites):
-    return [suite for suite in suites if not isinstance(suite, str)]
-
-
 def CheckChangeOnUpload(input_api, output_api):
     results = []
     results.extend(_CheckTestharnessWdspecResults(input_api, output_api))
@@ -524,9 +467,7 @@ def CheckChangeOnUpload(input_api, output_api):
     results.extend(_CheckRunAfterLayoutAndPaintJS(input_api, output_api))
     results.extend(_CheckForUnlistedTestFolder(input_api, output_api))
     results.extend(_CheckForExtraVirtualBaselines(input_api, output_api))
-    results.extend(_CheckWebViewExpectations(input_api, output_api))
     results.extend(_CheckForDoctypeHTML(input_api, output_api))
-    results.extend(_CheckNewVirtualSuites(input_api, output_api))
     return results
 
 
@@ -542,7 +483,5 @@ def CheckChangeOnCommit(input_api, output_api):
     results.extend(_CheckForRedundantBaselines(input_api, output_api))
     results.extend(_CheckForUnlistedTestFolder(input_api, output_api))
     results.extend(_CheckForExtraVirtualBaselines(input_api, output_api))
-    results.extend(_CheckWebViewExpectations(input_api, output_api))
     results.extend(_CheckForDoctypeHTML(input_api, output_api))
-    results.extend(_CheckNewVirtualSuites(input_api, output_api))
     return results

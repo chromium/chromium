@@ -36,10 +36,9 @@ class DirectLayerTreeFrameSink : public cc::LayerTreeFrameSink,
       viz::FrameSinkManagerImpl* frame_sink_manager,
       viz::Display* display,
       scoped_refptr<viz::RasterContextProvider> context_provider,
-      scoped_refptr<cc::RasterContextProviderWrapper>
-          worker_context_provider_wrapper,
+      scoped_refptr<viz::RasterContextProvider> worker_context_provider,
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
-      gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager);
+      gfx::AcceleratedWidget widget = gfx::kNullAcceleratedWidget);
 
   DirectLayerTreeFrameSink(const DirectLayerTreeFrameSink& other) = delete;
   DirectLayerTreeFrameSink& operator=(const DirectLayerTreeFrameSink& other) =
@@ -54,9 +53,7 @@ class DirectLayerTreeFrameSink : public cc::LayerTreeFrameSink,
                              bool hit_test_data_changed) override;
   void DidNotProduceFrame(const viz::BeginFrameAck& ack,
                           cc::FrameSkippedReason reason) override;
-  void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
-                               const viz::SharedBitmapId& id) override;
-  void DidDeleteSharedBitmap(const viz::SharedBitmapId& id) override;
+  void NotifyNewLocalSurfaceIdExpectedWhilePaused() override;
 
   // viz::DisplayClient implementation.
   void DisplayOutputSurfaceLost() override;
@@ -65,15 +62,11 @@ class DirectLayerTreeFrameSink : public cc::LayerTreeFrameSink,
       viz::AggregatedRenderPassList* render_passes) override;
   void DisplayDidDrawAndSwap() override {}
   void DisplayDidReceiveCALayerParams(
-      const gfx::CALayerParams& ca_layer_params) override {}
+      const gfx::CALayerParams& ca_layer_params) override;
   void DisplayDidCompleteSwapWithSize(const gfx::Size& pixel_size) override {}
   void DisplayAddChildWindowToBrowser(
       gpu::SurfaceHandle child_window) override {}
   void SetWideColorEnabled(bool enabled) override {}
-  void SetPreferredFrameInterval(base::TimeDelta interval) override {}
-  base::TimeDelta GetPreferredFrameIntervalForFrameSinkId(
-      const viz::FrameSinkId& id,
-      viz::mojom::CompositorFrameSinkType* type) override;
 
  private:
   // viz::mojom::CompositorFrameSinkClient implementation:
@@ -81,7 +74,6 @@ class DirectLayerTreeFrameSink : public cc::LayerTreeFrameSink,
       std::vector<viz::ReturnedResource> resources) override;
   void OnBeginFrame(const viz::BeginFrameArgs& args,
                     const viz::FrameTimingDetailsMap& timing_details,
-                    bool frame_ack,
                     std::vector<viz::ReturnedResource> resource) override;
   void ReclaimResources(std::vector<viz::ReturnedResource> resources) override;
   void OnBeginFramePausedChanged(bool paused) override;
@@ -105,6 +97,7 @@ class DirectLayerTreeFrameSink : public cc::LayerTreeFrameSink,
   raw_ptr<viz::FrameSinkManagerImpl> frame_sink_manager_;
   viz::ParentLocalSurfaceIdAllocator parent_local_surface_id_allocator_;
   raw_ptr<viz::Display> display_;
+  gfx::AcceleratedWidget widget_;
   gfx::Size last_swap_frame_size_;
   float device_scale_factor_ = 1.f;
   bool is_lost_ = false;

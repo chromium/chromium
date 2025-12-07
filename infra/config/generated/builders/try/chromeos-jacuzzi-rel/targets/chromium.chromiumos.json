@@ -1,0 +1,128 @@
+{
+  "chromeos-jacuzzi-rel": {
+    "additional_compile_targets": [
+      "chromiumos_preflight"
+    ],
+    "skylab_tests": [
+      {
+        "autotest_name": "chromium",
+        "bucket": "chromiumos-image-archive",
+        "cros_board": "jacuzzi",
+        "module_name": "//base:base_unittests",
+        "module_scheme": "gtest",
+        "name": "base_unittests PUBLIC_LKGM",
+        "public_builder": "cros_test_platform_public",
+        "public_builder_bucket": "testplatform-public",
+        "resultdb": {
+          "result_format": "gtest"
+        },
+        "shard_level_retries_on_ctp": 1,
+        "test": "base_unittests",
+        "test_id_prefix": "ninja://base:base_unittests/",
+        "use_lkgm": true,
+        "variant_id": "PUBLIC_LKGM"
+      },
+      {
+        "args": [
+          "setup.FieldTrialConfig=enable",
+          "-maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)|uidetection\\.(key|key_type|server)"
+        ],
+        "bucket": "chromiumos-image-archive",
+        "cros_board": "jacuzzi",
+        "cros_ctp_suite_name": "chrome-uprev-hw",
+        "cros_test_max_in_shard": 20,
+        "cros_test_names_exclude_from_file": [
+          "chromeos/tast_control_disabled_tests.txt",
+          "chromeos/tast_control_disabled_tests_public_builders.txt"
+        ],
+        "cros_test_tags": [
+          "group:mainline",
+          "dep:chrome"
+        ],
+        "cros_test_tags_exclude": [
+          "informational",
+          "dep:no_chrome_dcheck"
+        ],
+        "module_name": "//chromeos:chrome_all_tast_tests",
+        "module_scheme": "tast",
+        "name": "chrome_all_tast_tests PUBLIC_LKGM",
+        "public_builder": "cros_test_platform_public",
+        "public_builder_bucket": "testplatform-public",
+        "resultdb": {
+          "result_format": "tast"
+        },
+        "shard_level_retries_on_ctp": 1,
+        "test": "chrome_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
+        "timeout_sec": 14400,
+        "use_lkgm": true,
+        "variant_id": "PUBLIC_LKGM"
+      },
+      {
+        "args": [
+          "setup.FieldTrialConfig=enable",
+          "-maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)|uidetection\\.(key|key_type|server)"
+        ],
+        "bucket": "chromiumos-image-archive",
+        "ci_only": true,
+        "cros_board": "jacuzzi",
+        "cros_test_max_in_shard": 20,
+        "cros_test_names_exclude_from_file": [
+          "chromeos/tast_control_disabled_tests.txt"
+        ],
+        "cros_test_tags": [
+          "group:mainline",
+          "dep:chrome",
+          "informational",
+          "group:criticalstaging"
+        ],
+        "cros_test_tags_exclude": [
+          "dep:lacros",
+          "dep:no_chrome_dcheck"
+        ],
+        "experiment_percentage": 100,
+        "module_name": "//chromeos:chrome_criticalstaging_tast_tests",
+        "module_scheme": "tast",
+        "name": "chrome_criticalstaging_tast_tests PUBLIC_LKGM",
+        "public_builder": "cros_test_platform_public",
+        "public_builder_bucket": "testplatform-public",
+        "resultdb": {
+          "result_format": "tast"
+        },
+        "test": "chrome_criticalstaging_tast_tests",
+        "test_id_prefix": "ninja://chromeos:chrome_criticalstaging_tast_tests/",
+        "timeout_sec": 14400,
+        "use_lkgm": true,
+        "variant_id": "PUBLIC_LKGM"
+      },
+      {
+        "args": [
+          "setup.FieldTrialConfig=enable",
+          "-maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)|uidetection\\.(key|key_type|server)"
+        ],
+        "bucket": "chromiumos-image-archive",
+        "ci_only": true,
+        "cros_board": "jacuzzi",
+        "cros_test_max_in_shard": 20,
+        "cros_test_names_from_file": [
+          "chromeos/tast_control_disabled_tests.txt",
+          "chromeos/tast_control_disabled_tests_public_builders.txt"
+        ],
+        "experiment_percentage": 100,
+        "module_name": "//chromeos:chrome_disabled_tast_tests",
+        "module_scheme": "tast",
+        "name": "chrome_disabled_tast_tests PUBLIC_LKGM",
+        "public_builder": "cros_test_platform_public",
+        "public_builder_bucket": "testplatform-public",
+        "resultdb": {
+          "result_format": "tast"
+        },
+        "test": "chrome_disabled_tast_tests",
+        "test_id_prefix": "ninja://chromeos:chrome_disabled_tast_tests/",
+        "timeout_sec": 14400,
+        "use_lkgm": true,
+        "variant_id": "PUBLIC_LKGM"
+      }
+    ]
+  }
+}

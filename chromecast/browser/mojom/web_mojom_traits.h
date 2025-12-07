@@ -33,8 +33,7 @@ struct EnumTraits<chromecast::mojom::PageState, chromecast::PageState> {
       CASE_TRANSLATE_ENUM(DESTROYED);
       CASE_TRANSLATE_ENUM(ERROR);
     }
-    NOTREACHED_IN_MIGRATION();
-    return chromecast::mojom::PageState::IDLE;
+    NOTREACHED();
   }
 
   static bool FromMojom(chromecast::mojom::PageState state,
@@ -49,9 +48,7 @@ struct EnumTraits<chromecast::mojom::PageState, chromecast::PageState> {
       CASE_TRANSLATE_MOJOM_ENUM(DESTROYED);
       CASE_TRANSLATE_MOJOM_ENUM(ERROR);
     }
-    NOTREACHED_IN_MIGRATION();
-    *out = chromecast::PageState::IDLE;
-    return false;
+    NOTREACHED();
   }
 };
 }  // namespace mojo

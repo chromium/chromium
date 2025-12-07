@@ -5,8 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_TOP_CHROME_PRELOAD_CONTEXT_H_
 #define CHROME_BROWSER_UI_WEBUI_TOP_CHROME_PRELOAD_CONTEXT_H_
 
-#include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include <variant>
 
 class Browser;
 class Profile;
@@ -36,9 +35,9 @@ class PreloadContext {
   PreloadContext();
 
   // This class should NOT outlive the Profile or Browser it wraps.
-  absl::variant<Browser*, Profile*> store_;
+  std::variant<Browser*, Profile*> store_;
 };
 
 }  // namespace webui
 
-#endif  /// CHROME_BROWSER_UI_WEBUI_TOP_CHROME_PRELOAD_CONTEXT_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_TOP_CHROME_PRELOAD_CONTEXT_H_

@@ -53,7 +53,7 @@ yee+dcuGhs9IGBOEEF7lFA==
 // file.
 base::FilePath InstallVendorKey(const base::FilePath& path) {
   base::FilePath key_file = path.Append("crosier.adb_key");
-  base::WriteFile(key_file, kArcKey, std::size(kArcKey));
+  base::WriteFile(key_file, kArcKey);
 
   constexpr char command_template[] = R"(
     KEY_DIR="%s"
@@ -168,7 +168,7 @@ bool AdbHelper::InstallApk(const base::FilePath& apk_path) {
   return false;
 }
 
-bool AdbHelper::Command(const std::string_view command) {
+bool AdbHelper::Command(std::string_view command) {
   auto result = TestSudoHelperClient().RunCommand(
       base::StrCat({"ADB_VENDOR_KEYS=", vendor_key_file_.value(), " adb -s ",
                     serial_, " ", command}));

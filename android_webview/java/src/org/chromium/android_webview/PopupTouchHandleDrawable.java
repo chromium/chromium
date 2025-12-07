@@ -195,9 +195,7 @@ public class PopupTouchHandleDrawable extends View implements DisplayAndroidObse
                 .addListener(mGestureStateListener, ALL_UPDATES);
         mNativeDrawable =
                 PopupTouchHandleDrawableJni.get()
-                        .init(
-                                PopupTouchHandleDrawable.this,
-                                HandleViewResources.getHandleHorizontalPaddingRatio());
+                        .init(this, HandleViewResources.getHandleHorizontalPaddingRatio());
     }
 
     public static PopupTouchHandleDrawable create(
@@ -678,6 +676,6 @@ public class PopupTouchHandleDrawable extends View implements DisplayAndroidObse
 
     @NativeMethods
     interface Natives {
-        long init(PopupTouchHandleDrawable caller, float horizontalPaddingRatio);
+        long init(PopupTouchHandleDrawable self, float horizontalPaddingRatio);
     }
 }

@@ -2,21 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/device/serial/bluetooth_serial_port_impl.h"
 
 #include <string>
 #include <string_view>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/scoped_feature_list.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_socket.h"
@@ -30,7 +26,6 @@
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/io_buffer.h"
 #include "services/device/public/cpp/bluetooth/bluetooth_utils.h"
-#include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/test/fake_serial_port_client.h"
 #include "services/device/public/mojom/serial.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -42,7 +37,6 @@ namespace {
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::WithArgs;
 
@@ -52,6 +46,7 @@ constexpr char kDiscardedBuffer[] = "discarded";
 constexpr char kDeviceAddress[] = "00:00:00:00:00:00";
 constexpr uint32_t kElementNumBytes = 1;
 constexpr uint32_t kCapacityNumBytes = 64;
+constexpr std::string_view kOpenSocketResult = "Bluetooth.Serial.OpenSocketResult";
 
 std::string CreateTestData(size_t buffer_size) {
   std::string test_data(buffer_size, 'X');
@@ -104,10 +99,7 @@ MojoResult ReadConsumerData(mojo::ScopedDataPipeConsumerHandle& consumer,
 
 class BluetoothSerialPortImplTest : public testing::Test {
  public:
-  BluetoothSerialPortImplTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kEnableBluetoothSerialPortProfileInSerialApi}, {});
-  }
+  BluetoothSerialPortImplTest() = default;
   BluetoothSerialPortImplTest(const BluetoothSerialPortImplTest&) = delete;
   BluetoothSerialPortImplTest& operator=(const BluetoothSerialPortImplTest&) =
       delete;
@@ -146,6 +138,9 @@ class BluetoothSerialPortImplTest : public testing::Test {
               loop.Quit();
             }));
     loop.Run();
+
+    histogram_tester().ExpectUniqueSample(kOpenSocketResult, /*sample=*/true,
+                                          /*expected_bucket_count=*/1);
   }
 
   void CreateDataPipe(mojo::ScopedDataPipeProducerHandle* producer,
@@ -163,13 +158,16 @@ class BluetoothSerialPortImplTest : public testing::Test {
 
   MockBluetoothSocket& mock_socket() { return *mock_socket_; }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
  private:
   scoped_refptr<MockBluetoothSocket> mock_socket_ =
       base::MakeRefCounted<MockBluetoothSocket>();
   std::unique_ptr<MockBluetoothDevice> mock_device_;
 
+  base::HistogramTester histogram_tester_;
+
   base::test::SingleThreadTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace
@@ -201,6 +199,9 @@ TEST_F(BluetoothSerialPortImplTest, OpenFailure) {
             loop.Quit();
           }));
   loop.Run();
+
+  histogram_tester().ExpectUniqueSample(kOpenSocketResult, /*sample=*/false,
+                                        /*expected_bucket_count=*/1);
 }
 
 TEST_F(BluetoothSerialPortImplTest, StartWritingTest) {
@@ -222,18 +223,18 @@ TEST_F(BluetoothSerialPortImplTest, StartWritingTest) {
   EXPECT_EQ(result, MOJO_RESULT_OK);
 
   EXPECT_CALL(mock_socket(), Send)
-      .WillOnce(WithArgs<0, 1, 2>(Invoke(
+      .WillOnce(WithArgs<0, 1, 2>(
           [&](scoped_refptr<net::IOBuffer> buf, int buffer_size,
               MockBluetoothSocket::SendCompletionCallback success_callback) {
             ASSERT_EQ(buffer_size, static_cast<int>(bytes_read));
             // EXPECT_EQ only does a shallow comparison, so it's necessary to
             // iterate through both objects and compare each character.
             for (int i = 0; i < buffer_size; i++) {
-              EXPECT_EQ(buf->data()[i], kBuffer[i])
+              UNSAFE_TODO(EXPECT_EQ(buf->data()[i], kBuffer[i]))
                   << "buffer comparison failed at index " << i;
             }
             std::move(success_callback).Run(buffer_size);
-          })));
+          }));
 
   EXPECT_CALL(mock_socket(), Disconnect(_)).WillOnce(RunOnceCallback<0>());
 
@@ -270,7 +271,7 @@ TEST_F(BluetoothSerialPortImplTest, StartReadingTest) {
   EXPECT_EQ(MOJO_RESULT_OK, ReadConsumerData(consumer, &consumer_data));
   ASSERT_EQ(kBufferNumBytes, consumer_data.size());
   for (size_t i = 0; i < consumer_data.size(); i++) {
-    EXPECT_EQ(consumer_data[i], kBuffer[i])
+    UNSAFE_TODO(EXPECT_EQ(consumer_data[i], kBuffer[i]))
         << "buffer comparison failed at index " << i;
   }
 
@@ -472,16 +473,16 @@ TEST_F(BluetoothSerialPortImplTest, FlushWriteAndWriteNewPipe) {
 
     EXPECT_CALL(mock_socket(), Send)
         .WillOnce(WithArgs<0, 1, 2>(
-            Invoke([&](scoped_refptr<net::IOBuffer> buf, int buffer_size,
-                       MockBluetoothSocket::SendCompletionCallback callback) {
+            [&](scoped_refptr<net::IOBuffer> buf, int buffer_size,
+                MockBluetoothSocket::SendCompletionCallback callback) {
               EXPECT_EQ(buffer_size, static_cast<int>(actually_written_bytes1));
               DCHECK(!pre_flush_send_callback);
               for (int i = 0; i < buffer_size; i++) {
-                EXPECT_EQ(buf->data()[i], pre_flush_data[i])
+                UNSAFE_TODO(EXPECT_EQ(buf->data()[i], pre_flush_data[i]))
                     << "buffer comparison failed at index " << i;
               }
               pre_flush_send_callback = std::move(callback);
-            })));
+            }));
 
     result = pre_flush_producer->WriteData(base::as_byte_span(pre_flush_data),
                                            MOJO_WRITE_DATA_FLAG_NONE,
@@ -533,17 +534,17 @@ TEST_F(BluetoothSerialPortImplTest, FlushWriteAndWriteNewPipe) {
 
   EXPECT_CALL(mock_socket(), Send)
       .WillOnce(WithArgs<0, 1, 2>(
-          Invoke([&](scoped_refptr<net::IOBuffer> buf, int buffer_size,
-                     MockBluetoothSocket::SendCompletionCallback callback) {
+          [&](scoped_refptr<net::IOBuffer> buf, int buffer_size,
+              MockBluetoothSocket::SendCompletionCallback callback) {
             EXPECT_EQ(buffer_size, static_cast<int>(actually_written_bytes1));
             DCHECK(!pre_flush_send_callback);
             for (int i = 0; i < buffer_size; i++) {
-              EXPECT_EQ(buf->data()[i], post_flush_data[i])
+              UNSAFE_TODO(EXPECT_EQ(buf->data()[i], post_flush_data[i]))
                   << "buffer comparison failed at index " << i;
             }
             std::move(callback).Run(buffer_size);
             post_flush_send_run_loop.Quit();
-          })));
+          }));
 
   serial_port->StartWriting(std::move(post_flush_consumer));
   // Wait for StartWriting to start on the remote end before directly calling

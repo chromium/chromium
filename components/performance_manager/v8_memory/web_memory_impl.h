@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/functional/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/public/mojom/web_memory.mojom.h"
 #include "components/performance_manager/public/v8_memory/v8_detailed_memory.h"
@@ -31,11 +30,10 @@ class WebMemoryMeasurer {
       base::OnceCallback<void(mojom::WebMemoryMeasurementPtr)>;
 
   // Implements WebMeasureMemory (from public/v8_memory/web_memory.h) by
-  // instantiating a WebMemoryMeasurer. |frame_node| must be the last parameter
-  // so it can be used with base::Bind.
+  // instantiating a WebMemoryMeasurer.
   static void MeasureMemory(mojom::WebMemoryMeasurement::Mode mode,
                             MeasurementCallback callback,
-                            base::WeakPtr<FrameNode> frame_node);
+                            const FrameNode* frame_node);
 
   ~WebMemoryMeasurer();
 
@@ -73,10 +71,7 @@ class WebMeasureMemorySecurityCheckerImpl
   WebMeasureMemorySecurityCheckerImpl() = default;
   ~WebMeasureMemorySecurityCheckerImpl() override = default;
 
-  void CheckMeasureMemoryIsAllowed(
-      const FrameNode* frame,
-      MeasureMemoryCallback measure_memory_callback,
-      mojo::ReportBadMessageCallback bad_message_callback) const override;
+  bool IsMeasureMemoryAllowed(const FrameNode* frame) const override;
 };
 
 }  // namespace v8_memory

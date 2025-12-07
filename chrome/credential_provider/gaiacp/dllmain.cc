@@ -31,7 +31,6 @@
 #include "chrome/credential_provider/gaiacp/gaia_credential_provider_module.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
-#include "chrome/credential_provider/gaiacp/os_gaia_user_manager.h"
 #include "chrome/credential_provider/gaiacp/os_process_manager.h"
 #include "chrome/credential_provider/gaiacp/os_user_manager.h"
 #include "chrome/credential_provider/gaiacp/reauth_credential.h"
@@ -73,7 +72,7 @@ STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID* ppv) {
   // Check to see if the credential provider has crashed too much recently.
   // If it has then do not allow it to create any credential providers.
   if (!credential_provider::WriteToStartupSentinel()) {
-    LOGFN(ERROR) << "Disabled due to previous unsuccessful starts";
+    LOGFN(ERROR) << "Disabled temporarily due to previous unsuccessful starts.";
     return E_NOTIMPL;
   }
 
@@ -82,12 +81,6 @@ STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID* ppv) {
   HRESULT hr = _AtlModule.DllGetClassObject(rclsid, riid, ppv);
 
   if (SUCCEEDED(hr)) {
-    hr = credential_provider::OSGaiaUserManager::Get()
-             ->ChangeGaiaUserPasswordIfNeeded();
-    if (FAILED(hr)) {
-      LOGFN(ERROR) << "ChangeGaiaUserPasswordIfNeeded failed. hr=" << putHR(hr);
-    }
-
     // Start refreshing token handle validity as soon as possible so that when
     // their validity is requested later on by the credential providers they may
     // already be available and no wait is needed.

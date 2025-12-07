@@ -17,12 +17,14 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
+#include "base/run_loop.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/updater/activity.h"
 #include "chrome/updater/app/app_utils.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/event_history.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
@@ -41,7 +43,7 @@
 namespace updater {
 
 bool IsInternalService() {
-  return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+  return base::CommandLine::ForCurrentProcess()->GetSwitchValueUTF8(
              kServerServiceSwitch) == kServerUpdateServiceInternalSwitchValue;
 }
 
@@ -92,7 +94,8 @@ base::OnceClosure AppServer::ModeCheck() {
     if (!local_prefs->GetQualified()) {
       global_prefs = nullptr;
       prefs_ = local_prefs;
-      config_ = base::MakeRefCounted<Configurator>(prefs_, external_constants_);
+      config_ = base::MakeRefCounted<Configurator>(prefs_, external_constants_,
+                                                   updater_scope());
       if (IsInternalService()) {
         return base::BindOnce(
             &AppServer::ActiveDutyInternal, this,
@@ -110,7 +113,11 @@ base::OnceClosure AppServer::ModeCheck() {
   }
 
   if (this_version > active_version || global_prefs->GetSwapping()) {
-    if (!SwapVersions(global_prefs.get(), CreateLocalPrefs(updater_scope()))) {
+    ActivateEndEvent event = ActivateStartEvent().WriteAsyncAndReturnEndEvent();
+    bool activated =
+        SwapVersions(global_prefs.get(), CreateLocalPrefs(updater_scope()));
+    event.SetActivated(activated).WriteAsync();
+    if (!activated) {
       return base::BindOnce(&AppServer::Shutdown, this, kErrorFailedToSwap);
     }
   }
@@ -128,7 +135,8 @@ base::OnceClosure AppServer::ModeCheck() {
 
   server_starts_ = global_prefs->CountServerStarts();
   prefs_ = global_prefs;
-  config_ = base::MakeRefCounted<Configurator>(prefs_, external_constants_);
+  config_ = base::MakeRefCounted<Configurator>(prefs_, external_constants_,
+                                               updater_scope());
   return base::BindOnce(
       &AppServer::ActiveDuty, this,
       base::MakeRefCounted<UpdateServiceImpl>(updater_scope(), config_));
@@ -161,6 +169,11 @@ bool AppServer::IsIdle() {
 }
 
 void AppServer::Uninitialize() {
+  if (config_ && config_->GetEventLogger()) {
+    base::RunLoop run_loop;
+    config_->GetEventLogger()->Flush(run_loop.QuitClosure());
+    run_loop.Run();
+  }
   // Simply stopping the timer does not destroy its task. The task holds a
   // refcount to this AppServer; therefore the task must be replaced and then
   // the timer stopped.

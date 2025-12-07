@@ -8,13 +8,14 @@
 #include "base/timer/elapsed_timer.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/supervised_user/core/browser/kids_management_api_fetcher.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
-#include "components/supervised_user/core/browser/proto_fetcher.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/browser/browser_thread.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace system_logs {
 
@@ -38,9 +39,7 @@ void FamilyInfoLogSource::Fetch(SysLogsSourceCallback callback) {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          supervised_user::kUseFamilyMemberRolePrefsForFeedback) &&
-      !user_prefs_->GetString(prefs::kFamilyLinkUserMemberRole).empty()) {
+  if (!user_prefs_->GetString(prefs::kFamilyLinkUserMemberRole).empty()) {
     auto logs_response = std::make_unique<SystemLogsResponse>();
     const std::string& family_link_role =
         user_prefs_->GetString(prefs::kFamilyLinkUserMemberRole);
@@ -114,7 +113,7 @@ void FamilyInfoLogSource::AppendFamilyMemberRoleForPrimaryAccount(
 
   for (const kidsmanagement::FamilyMember& member :
        list_members_response.members()) {
-    if (member.user_id() == account_info.gaia) {
+    if (GaiaId(member.user_id()) == account_info.gaia) {
       logs_response->emplace(
           supervised_user::kFamilyMemberRoleFeedbackTag,
           supervised_user::FamilyRoleToString(member.role()));

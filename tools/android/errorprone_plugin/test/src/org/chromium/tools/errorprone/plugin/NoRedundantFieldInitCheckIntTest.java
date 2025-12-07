@@ -6,6 +6,7 @@ package org.chromium.tools.errorprone.plugin;
 
 /** |mBar| initialization should cause 'NoRedundantFieldInitCheck' errorprone warning. */
 public class NoRedundantFieldInitCheckIntTest {
+    @SuppressWarnings("FieldCanBeFinal")
     private int mBar = 0;
 
     public void foo() {

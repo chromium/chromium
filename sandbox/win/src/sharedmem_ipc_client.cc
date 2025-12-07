@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/win/src/sharedmem_ipc_client.h"
 
 #include <stddef.h>
 #include <string.h>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "sandbox/win/src/crosscall_client.h"
 #include "sandbox/win/src/crosscall_params.h"
 #include "sandbox/win/src/sandbox.h"
@@ -57,8 +53,8 @@ void* SharedMemIPCClient::GetBuffer() {
   if (failure) {
     return nullptr;
   }
-  return reinterpret_cast<char*>(control_) +
-         control_->channels[ix].channel_base;
+  return UNSAFE_TODO(reinterpret_cast<char*>(control_) +
+                     control_->channels[ix].channel_base);
 }
 
 // If we need to cancel an IPC before issuing DoCall
@@ -67,7 +63,8 @@ void* SharedMemIPCClient::GetBuffer() {
 void SharedMemIPCClient::FreeBuffer(void* buffer) {
   size_t num = ChannelIndexFromBuffer(buffer);
   ChannelControl* channel = control_->channels;
-  LONG result = ::InterlockedExchange(&channel[num].state, kFreeChannel);
+  LONG result =
+      ::InterlockedExchange(&UNSAFE_TODO(channel[num]).state, kFreeChannel);
   DCHECK_NE(kFreeChannel, static_cast<ChannelState>(result));
 }
 
@@ -76,8 +73,8 @@ void SharedMemIPCClient::FreeBuffer(void* buffer) {
 // and should be constructed per call.
 SharedMemIPCClient::SharedMemIPCClient(void* shared_mem)
     : control_(reinterpret_cast<IPCControl*>(shared_mem)) {
-  first_base_ =
-      reinterpret_cast<char*>(shared_mem) + control_->channels[0].channel_base;
+  first_base_ = UNSAFE_TODO(reinterpret_cast<char*>(shared_mem) +
+                            control_->channels[0].channel_base);
   // There must be at least one channel.
   DCHECK(0 != control_->channels_count);
 }
@@ -95,7 +92,7 @@ ResultCode SharedMemIPCClient::DoCall(CrossCallParams* params,
   // Note that the IPC tag goes outside the buffer as well inside
   // the buffer. This should enable the server to prioritize based on
   // IPC tags without having to de-serialize the entire message.
-  channel[num].ipc_tag = params->GetTag();
+  UNSAFE_TODO(channel[num]).ipc_tag = params->GetTag();
 
   // Wait for the server to service this IPC call. After kIPCWaitTimeOut1
   // we check if the server_alive mutex was abandoned which will indicate
@@ -103,8 +100,9 @@ ResultCode SharedMemIPCClient::DoCall(CrossCallParams* params,
 
   // While the atomic signaling and waiting is not a requirement, it
   // is nice because we save a trip to kernel.
-  DWORD wait = SignalObjectAndWaitWrapper(
-      channel[num].ping_event, channel[num].pong_event, kIPCWaitTimeOut1);
+  DWORD wait = SignalObjectAndWaitWrapper(UNSAFE_TODO(channel[num]).ping_event,
+                                          UNSAFE_TODO(channel[num]).pong_event,
+                                          kIPCWaitTimeOut1);
   if (WAIT_TIMEOUT == wait) {
     // The server is taking too long. Enter a loop were we check if the
     // server_alive mutex has been abandoned which would signal a server crash
@@ -113,7 +111,7 @@ ResultCode SharedMemIPCClient::DoCall(CrossCallParams* params,
       wait = WaitForSingleObjectWrapper(control_->server_alive, 0);
       if (WAIT_TIMEOUT == wait) {
         // Server seems still alive. We already signaled so here we just wait.
-        wait = WaitForSingleObjectWrapper(channel[num].pong_event,
+        wait = WaitForSingleObjectWrapper(UNSAFE_TODO(channel[num]).pong_event,
                                           kIPCWaitTimeOut1);
         if (WAIT_OBJECT_0 == wait) {
           // The server took a long time but responded.
@@ -126,7 +124,8 @@ ResultCode SharedMemIPCClient::DoCall(CrossCallParams* params,
       } else {
         // The server has crashed and windows has signaled the mutex as
         // abandoned.
-        ::InterlockedExchange(&channel[num].state, kAbandonedChannel);
+        ::InterlockedExchange(&UNSAFE_TODO(channel[num]).state,
+                              kAbandonedChannel);
         control_->server_alive = 0;
         return SBOX_ERROR_CHANNEL_ERROR;
       }
@@ -158,8 +157,9 @@ size_t SharedMemIPCClient::LockFreeChannel(bool* severe_failure) {
   ChannelControl* channel = control_->channels;
   do {
     for (size_t ix = 0; ix != control_->channels_count; ++ix) {
-      if (kFreeChannel == ::InterlockedCompareExchange(
-                              &channel[ix].state, kBusyChannel, kFreeChannel)) {
+      if (kFreeChannel ==
+          ::InterlockedCompareExchange(&UNSAFE_TODO(channel[ix]).state,
+                                       kBusyChannel, kFreeChannel)) {
         *severe_failure = false;
         return ix;
       }

@@ -81,6 +81,10 @@ void RegisterContentSchemes(bool should_lock_registry) {
   for (auto& scheme : schemes.extension_schemes)
     blink::CommonSchemeRegistry::RegisterURLSchemeAsExtension(scheme.c_str());
 
+  for (auto& scheme : schemes.isolated_app_schemes) {
+    blink::CommonSchemeRegistry::RegisterURLSchemeAsIsolatedApp(scheme.c_str());
+  }
+
   schemes.no_access_schemes.push_back(kChromeErrorScheme);
   for (auto& scheme : schemes.no_access_schemes)
     url::AddNoAccessScheme(scheme.c_str());

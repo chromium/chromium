@@ -1,4 +1,4 @@
-# tags: [ Android Fuchsia Linux Mac Mac11 Mac12 Mac13 Mac13-arm64 Mac14 Mac14-arm64 Mac15 Mac15-arm64 Win Win10.20h2 Win11 Win11-arm64 ]
+# tags: [ Android Fuchsia Linux Mac Mac12 Mac13 Mac13-arm64 Mac14 Mac14-arm64 Mac15 Mac15-arm64 Win Win10.20h2 Win11 Win11-arm64 ]
 # tags: [ Release Debug ]
 # results: [ Skip Crash Pass Failure Slow ]
 
@@ -14,9 +14,6 @@
 # To save time in linux-blink-web-tests-force-accessibility-rel builder, do not
 # run virtual test suites.
 virtual/* [ Skip ]
-
-# StylableSelect Crashes
-crbug.com/1401767 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-marker-end-aligned.tentative.html [ Crash ]
 
 # Intentional skips for media tests using proprietary codecs.
 # The linux-blink-web-tests-force-accessibility-rel bot compiles without proprietary codecs.
@@ -39,16 +36,15 @@ external/wpt/webrtc/RTCRtpTransceiver-setCodecPreferences.html [ Skip ]
 external/wpt/webrtc/protocol/rtp-demuxing.html [ Skip ]
 external/wpt/webrtc/protocol/video-codecs.https.html [ Skip ]
 fast/mediarecorder/MediaRecorder-error-on-oversize-frame-h264.html [ Skip ]
-crbug.com/1126305 external/wpt/speculation-rules/prerender/restriction-encrypted-media.https.html [ Skip ]
-crbug.com/1126305 external/wpt/speculation-rules/prerender/restriction-media-auto-play-attribute.html?target_hint=_self [ Skip ]
-crbug.com/1126305 external/wpt/speculation-rules/prerender/restriction-media-auto-play-attribute.html?target_hint=_blank [ Skip ]
-crbug.com/1126305 external/wpt/speculation-rules/prerender/restriction-media-play.html?target_hint=_self [ Skip ]
-crbug.com/1126305 external/wpt/speculation-rules/prerender/restriction-media-play.html?target_hint=_blank [ Skip ]
 wpt_internal/mediastream/mediastreamtrackprocessor-transfer-to-worker.html [ Skip ]
 wpt_internal/webcodecs/annexb_decoding.https.any.html [ Skip ]
 wpt_internal/webcodecs/annexb_decoding.https.any.worker.html [ Skip ]
 wpt_internal/webcodecs/avc_encoder_config.https.any.html [ Skip ]
 wpt_internal/webcodecs/avc_encoder_config.https.any.worker.html [ Skip ]
+
+# Flaky failure after enable swiftshader on headless shell
+crbug.com/339041663 external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-063-print.html [ Failure Pass ]
+crbug.com/339041663 external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-064-print.html [ Failure Pass ]
 
 # Times out
 http/tests/inspector-protocol/runtime/serialization-options.js [ Skip ]
@@ -63,6 +59,3 @@ external/wpt/html/select/options-length-too-large.html [ Skip ]
 # realistic scenario in the wild so we deem it safe to simply skip this test
 # when accessibility is enabled.
 fast/events/touch/gesture/gesture-tap-frame-move.html [ Skip ]
-
-# Undiagnosed failure:
-crbug.com/1503980 fast/events/scroll-event-handler-count.html [ Skip ]

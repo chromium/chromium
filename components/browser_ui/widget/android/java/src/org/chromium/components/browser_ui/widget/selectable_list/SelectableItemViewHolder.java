@@ -8,12 +8,15 @@ import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * An ViewHolder for a {@link SelectableItemView}.
  * @param <E> The type of the item associated with the {@link SelectableItemView}.
  */
+@NullMarked
 public class SelectableItemViewHolder<E> extends ViewHolder {
-    private SelectableItemView<E> mItemView;
+    private final SelectableItemView<E> mItemView;
 
     /**
      * @param itemView The {@link SelectableItemView} to be held by this ViewHolder.

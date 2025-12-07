@@ -57,8 +57,6 @@ class RemovedResultsRanker : public Ranker {
 
   const raw_ptr<Profile> profile_;
 
-  // TODO(https://crbug.com/1368833): after this issue gets fixed, the ranker
-  // should own a proto that contains only non-file result ids.
   const raw_ptr<ash::PersistentProto<RemovedResultsProto>> proto_;
 
   base::CallbackListSubscription on_init_subscription_;

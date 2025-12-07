@@ -23,9 +23,6 @@ class SuccessfulPositionFallback {
 
  public:
   bool operator==(const SuccessfulPositionFallback&) const;
-  bool operator!=(const SuccessfulPositionFallback& fallback) const {
-    return !operator==(fallback);
-  }
   bool IsEmpty() const { return position_try_fallbacks_ == nullptr; }
   void Clear();
 

@@ -6,8 +6,7 @@
 #ifndef {{header_guard}}
 #define {{header_guard}}
 
-#include <memory>
-
+#include "base/containers/heap_array.h"
 {% if export == 'CORE_EXPORT' %}
 #include "third_party/blink/renderer/core/core_export.h"
 {% endif %}
@@ -21,7 +20,7 @@ namespace {{cpp_namespace}} {
 
 {% set symbol_export = '%s ' % export if export else '' %}
 // Namespace
-{{symbol_export}}extern const WTF::AtomicString& {{namespace_prefix}}NamespaceURI;
+{{symbol_export}}extern const AtomicString& {{namespace_prefix}}NamespaceURI;
 
 // Tags
 
@@ -47,13 +46,11 @@ enum class {{namespace}}Tag {
 
 {% if tags %}
 constexpr unsigned kTagsCount = {{tags|count}};
-{{symbol_export}}std::unique_ptr<const {{namespace}}QualifiedName*[]> GetTags();
+{{symbol_export}}base::HeapArray<const QualifiedName*> GetTags();
 {% endif %}
 
 constexpr unsigned kAttrsCount = {{attrs|count}};
-{% if namespace != 'HTML' %}
-std::unique_ptr<const QualifiedName*[]> GetAttrs();
-{% endif %}
+{{symbol_export}}base::HeapArray<const QualifiedName*> GetAttrs();
 
 {% if generate_tag_enum %}
 {{symbol_export}} extern const blink::{{namespace}}QualifiedName& TagToQualifiedName({{namespace}}Tag tag);

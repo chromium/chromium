@@ -9,10 +9,12 @@
 
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_consumer.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_consumer.h"
-#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
+#import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_presenter.h"
 
-@protocol LensOmniboxMutator;
+@protocol LensToolbarMutator;
+@protocol LensResultPageMutator;
 @protocol TextFieldViewContaining;
+@protocol LensResultPageViewControllerDelegate;
 
 /// View controller of the lens result page.
 @interface LensResultPageViewController
@@ -22,11 +24,27 @@
 
 /// Container for the web view.
 @property(nonatomic, strong, readonly) UIView* webViewContainer;
+/// Delegate for the lens result page.
+@property(nonatomic, weak) id<LensResultPageViewControllerDelegate> delegate;
 /// Mutator of the lens omnibox.
-@property(nonatomic, weak) id<LensOmniboxMutator> omniboxMutator;
+@property(nonatomic, weak) id<LensToolbarMutator> toolbarMutator;
+/// Mutator of the lens result page.
+@property(nonatomic, weak) id<LensResultPageMutator> mutator;
+
+/// Sets the bottom sheet grabber visible.
+- (void)setBottomSheetGrabberVisible:(BOOL)bottomSheetGrabberVisible;
 
 /// Sets the omnibox edit view.
 - (void)setEditView:(UIView<TextFieldViewContaining>*)editView;
+
+@end
+
+// Delegate for lens result page.
+@protocol LensResultPageViewControllerDelegate <NSObject>
+
+// The user tapped on the bottom sheet grabber.
+- (void)lensResultPageViewControllerDidTapBottomSheetGrabber:
+    (LensResultPageViewController*)lensResultPageViewController;
 
 @end
 

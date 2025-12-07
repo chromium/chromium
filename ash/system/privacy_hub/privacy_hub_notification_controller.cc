@@ -37,9 +37,8 @@ constexpr char kLearnMoreUrl[] =
     "https://support.google.com/chromebook/?p=privacy_hub";
 
 void LogInvalidSensor(const Sensor sensor) {
-  NOTREACHED_IN_MIGRATION()
-      << "Invalid sensor: "
-      << static_cast<std::underlying_type_t<Sensor>>(sensor);
+  NOTREACHED() << "Invalid sensor: "
+               << static_cast<std::underlying_type_t<Sensor>>(sensor);
 }
 
 // Throttler for geolocation notification. Limits notification to be displayed
@@ -358,7 +357,7 @@ void PrivacyHubNotificationController::OpenSupportUrl(Sensor sensor) {
           privacy_hub_metrics::PrivacyHubLearnMoreSensor::kGeolocation);
       return;
   }
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(kLearnMoreUrl), NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }

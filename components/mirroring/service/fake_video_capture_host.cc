@@ -4,6 +4,7 @@
 
 #include "components/mirroring/service/fake_video_capture_host.h"
 
+#include "base/compiler_specific.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "media/base/video_frame.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
@@ -39,8 +40,9 @@ void FakeVideoCaptureHost::Start(
 }
 
 void FakeVideoCaptureHost::Stop(const base::UnguessableToken& device_id) {
-  if (!observer_)
+  if (!observer_) {
     return;
+  }
 
   observer_->OnStateChanged(media::mojom::VideoCaptureResult::NewState(
       media::mojom::VideoCaptureState::ENDED));
@@ -50,24 +52,27 @@ void FakeVideoCaptureHost::Stop(const base::UnguessableToken& device_id) {
 
 void FakeVideoCaptureHost::Pause(const base::UnguessableToken& device_id) {
   paused_ = true;
+  OnPaused();
 }
 
 void FakeVideoCaptureHost::Resume(const base::UnguessableToken& device_id,
                                   const base::UnguessableToken& session_id,
                                   const media::VideoCaptureParams& params) {
   paused_ = false;
+  OnResumed();
 }
 
 void FakeVideoCaptureHost::SendOneFrame(const gfx::Size& size,
                                         base::TimeTicks capture_time) {
-  if (!observer_)
+  if (!observer_) {
     return;
+  }
 
   auto shmem = base::ReadOnlySharedMemoryRegion::Create(5000);
   if (!shmem.IsValid()) {
     return;
   }
-  memset(shmem.mapping.memory(), 125, 5000);
+  UNSAFE_TODO(memset(shmem.mapping.memory(), 125, 5000));
   observer_->OnNewBuffer(
       0, media::mojom::VideoBufferHandle::NewReadOnlyShmemRegion(
              std::move(shmem.region)));

@@ -12,8 +12,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 namespace {
 
@@ -216,5 +215,4 @@ void MultideviceSetupStateUpdater::UpdateIsAwaitingVerifiedHost() {
   }
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

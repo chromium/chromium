@@ -16,6 +16,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "net/base/net_export.h"
+#include "url/origin.h"
 #include "url/third_party/mozilla/url_parse.h"
 
 class GURL;
@@ -106,9 +107,9 @@ class NET_EXPORT QueryIterator {
   std::string unescaped_value_;
 };
 
-// Looks for |search_key| in the query portion of |url|. Returns true if the
-// key is found and sets |out_value| to the unescaped value for the key.
-// Returns false if the key is not found.
+// Looks for |search_key| in the query portion of |url|. Returns true if the key
+// is found, false otherwise. If the key is found and |out_value| is not null,
+// sets its contents to the unescaped value for the key.
 NET_EXPORT bool GetValueForKeyInQuery(const GURL& url,
                                       std::string_view search_key,
                                       std::string* out_value);
@@ -167,10 +168,24 @@ NET_EXPORT std::string GetSuperdomain(std::string_view domain);
 NET_EXPORT bool IsSubdomainOf(std::string_view subdomain,
                               std::string_view superdomain);
 
+// Wrapper for CanonicalizeHost that allows using a bare IPV6. If |host| is
+// not IPV6, this is equivalent to CanonicalizeHost.
+NET_EXPORT std::string CanonicalizeHostSupportsBareIPV6(
+    std::string_view host,
+    url::CanonHostInfo* host_info);
+
 // Canonicalizes |host| and returns it.  Also fills |host_info| with
 // IP address information.  |host_info| must not be NULL.
+// Canonicalization will follow the host parsing rules for a non-file
+// special URL (https://url.spec.whatwg.org/#is-special).
 NET_EXPORT std::string CanonicalizeHost(std::string_view host,
                                         url::CanonHostInfo* host_info);
+
+// Canonicalizes |host| and returns it.  Also fills |host_info| with
+// IP address information.  |host_info| must not be NULL.
+// Canonicalization will follow the host parsing rules for a file URL.
+NET_EXPORT std::string CanonicalizeFileHost(std::string_view host,
+                                            url::CanonHostInfo* host_info);
 
 // Returns true if |host| is not an IP address and is compliant with a set of
 // rules based on RFC 1738 and tweaked to be compatible with the real world.
@@ -208,10 +223,13 @@ NET_EXPORT bool IsLocalhost(const GURL& url);
 // machine.
 NET_EXPORT bool HostStringIsLocalhost(std::string_view host);
 
-// Strip the portions of |url| that aren't core to the network request.
+// Strip the portions of `url` that aren't core to the network request.
 //   - user name / password
 //   - reference section
 NET_EXPORT GURL SimplifyUrlForRequest(const GURL& url);
+
+// Remove the name / password from `url`, if it has them. Always duplicates URL.
+NET_EXPORT GURL RemoveCredentialsFromUrl(const GURL& url);
 
 // Changes scheme "ws" to "http" and "wss" to "https". This is useful for origin
 // checks and authentication, where WebSocket URLs are treated as if they were
@@ -223,6 +241,30 @@ NET_EXPORT GURL ChangeWebSocketSchemeToHttpScheme(const GURL& url);
 // have hostnames representing domains (i.e. network hosts).
 // See url::SchemeType.
 NET_EXPORT bool IsStandardSchemeWithNetworkHost(std::string_view scheme);
+
+// This enumerated class provides values that are useful for describing the
+// relationship between two origins.
+//
+// Note that the order of enum values below is significant - it is important for
+// std::max invocations that kSameOrigin < kSameSite < kCrossSite.
+enum class OriginRelation {
+  // Value for origins that are equal to each other.
+  kSameOrigin,
+  // Value for origins that are not equal, but share a scheme and site.
+  kSameSite,
+  // Value for origins that do not share a scheme and/or site.
+  kCrossSite,
+};
+
+// Returns the relationship between two url::Origins expressed as an
+// OriginRelation.
+NET_EXPORT OriginRelation GetOriginRelation(const url::Origin& target_origin,
+                                            const url::Origin& related_origin);
+
+// Returns the relationship between a GURL and a url::Origin expressed as an
+// OriginRelation. Prefer overload with two origins when possible.
+NET_EXPORT OriginRelation GetOriginRelation(const GURL& target_url,
+                                            const url::Origin& related_origin);
 
 // Extracts the unescaped username/password from |url|, saving the results
 // into |*username| and |*password|.

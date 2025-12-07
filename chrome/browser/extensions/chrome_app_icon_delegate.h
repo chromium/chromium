@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_CHROME_APP_ICON_DELEGATE_H_
 #define CHROME_BROWSER_EXTENSIONS_CHROME_APP_ICON_DELEGATE_H_
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
 
 class ChromeAppIcon;
@@ -16,7 +20,7 @@ class ChromeAppIconDelegate {
   virtual void OnIconUpdated(ChromeAppIcon* icon) = 0;
 
  protected:
-  virtual ~ChromeAppIconDelegate() {}
+  virtual ~ChromeAppIconDelegate() = default;
 };
 
 }  // namespace extensions

@@ -10,15 +10,19 @@
 #include <utility>
 #include <vector>
 
-#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "printing/backend/cups_connection.h"
 #include "printing/backend/cups_ipp_helper.h"
 #include "printing/backend/print_backend_consts.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/units.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include "printing/backend/cups_weak_functions.h"
+#endif
 
 namespace printing {
 
@@ -116,5 +120,13 @@ std::vector<std::string> PrintBackendCupsIpp::GetPrinterDriverInfo(
 bool PrintBackendCupsIpp::IsValidPrinter(const std::string& printer_name) {
   return !!cups_connection_->GetPrinter(printer_name);
 }
+
+#if BUILDFLAG(IS_MAC)
+// static
+scoped_refptr<PrintBackend> PrintBackend::CreateInstanceImpl(
+    const std::string& locale) {
+  return base::MakeRefCounted<PrintBackendCupsIpp>(CupsConnection::Create());
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace printing

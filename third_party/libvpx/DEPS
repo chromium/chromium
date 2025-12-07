@@ -3,4 +3,5 @@ include_rules = [
   '+vp9',
   '+vpx',
   '+vpx_dsp',
+  '+vpx_ports',
 ]

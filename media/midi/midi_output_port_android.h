@@ -15,7 +15,8 @@ namespace midi {
 
 class MidiOutputPortAndroid final {
  public:
-  MidiOutputPortAndroid(JNIEnv* env, jobject raw);
+  MidiOutputPortAndroid(JNIEnv* env,
+                        const base::android::JavaRef<jobject>& raw);
   ~MidiOutputPortAndroid();
 
   // Returns the when the operation succeeds or the port is already open.

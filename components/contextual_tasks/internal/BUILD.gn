@@ -1,0 +1,93 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("internal") {
+  visibility = [
+    ":*",
+    "//chrome/browser/contextual_tasks:*",
+  ]
+
+  sources = [
+    "account_utils.cc",
+    "account_utils.h",
+    "ai_thread_sync_bridge.cc",
+    "ai_thread_sync_bridge.h",
+    "composite_context_decorator.cc",
+    "composite_context_decorator.h",
+    "contextual_task_sync_bridge.cc",
+    "contextual_task_sync_bridge.h",
+    "contextual_tasks_service_impl.cc",
+    "contextual_tasks_service_impl.h",
+    "conversions.cc",
+    "conversions.h",
+    "fallback_title_context_decorator.cc",
+    "fallback_title_context_decorator.h",
+    "favicon_context_decorator.cc",
+    "favicon_context_decorator.h",
+    "history_context_decorator.cc",
+    "history_context_decorator.h",
+    "pending_context_decorator.cc",
+    "pending_context_decorator.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/contextual_search:public",
+    "//components/contextual_tasks/internal/proto",
+    "//components/contextual_tasks/public",
+    "//components/favicon/core",
+    "//components/favicon_base",
+    "//components/history/core/browser",
+    "//components/keyed_service/core",
+    "//components/omnibox/browser",
+    "//components/prefs",
+    "//components/sessions:session_id",
+    "//components/signin/public/identity_manager",
+    "//components/sync/model",
+    "//components/url_formatter",
+    "//net",
+    "//ui/gfx",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "account_utils_unittest.cc",
+    "ai_thread_sync_bridge_unittest.cc",
+    "composite_context_decorator_unittest.cc",
+    "contextual_task_sync_bridge_unittest.cc",
+    "contextual_tasks_service_impl_unittest.cc",
+    "conversions_unittest.cc",
+    "fallback_title_context_decorator_unittest.cc",
+    "favicon_context_decorator_unittest.cc",
+    "history_context_decorator_unittest.cc",
+    "pending_context_decorator_unittest.cc",
+  ]
+
+  deps = [
+    ":internal",
+    "//base",
+    "//base/test:test_support",
+    "//components/contextual_search:impl",
+    "//components/contextual_search:public",
+    "//components/contextual_tasks/public",
+    "//components/favicon/core/test:test_support",
+    "//components/history/core/browser",
+    "//components/omnibox/browser",
+    "//components/prefs:test_support",
+    "//components/sessions:session_id",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/sync:test_support",
+    "//components/sync/model",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx:test_support",
+    "//url",
+  ]
+
+  visibility = [ "//components/contextual_tasks:unit_tests" ]
+}

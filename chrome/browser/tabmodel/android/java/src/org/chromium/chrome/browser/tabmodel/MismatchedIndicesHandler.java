@@ -7,11 +7,14 @@ package org.chromium.chrome.browser.tabmodel;
 import android.app.Activity;
 import android.app.ActivityManager;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Contains methods for activities to handle scenarios where a new activity attempts to use a
  * window/tab model selector index that is already assigned, thereby leading to potentially
  * erroneous circumstances.
  */
+@NullMarked
 public interface MismatchedIndicesHandler {
 
     /**
@@ -30,4 +33,12 @@ public interface MismatchedIndicesHandler {
             Activity activityAtRequestedIndex,
             boolean isActivityInAppTasks,
             boolean isActivityInSameTask);
+
+    /**
+     * Determines whether the tab model selector index reassignment for an activity should be
+     * skipped upon mismatch with the originally requested activity window index.
+     *
+     * @return {@code true} if index reassignment should be skipped, {@code false} otherwise.
+     */
+    boolean skipIndexReassignment();
 }

@@ -4,22 +4,31 @@
 
 package org.chromium.chrome.browser.omaha;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omaha.OmahaBase.PostResult;
 
 /** Delegates calls out from {@link OmahaBase}. */
+@NullMarked
 public abstract class OmahaDelegate {
-    private RequestGenerator mRequestGenerator;
+    private @Nullable RequestGenerator mRequestGenerator;
 
     OmahaDelegate() {}
 
-    /** @return Whether Chrome is installed as part of the system image. */
+    /**
+     * @return Whether Chrome is installed as part of the system image.
+     */
     abstract boolean isInSystemImage();
 
-    /** @return The scheduler used to trigger jobs. */
+    /**
+     * @return The scheduler used to trigger jobs.
+     */
     abstract ExponentialBackoffScheduler getScheduler();
 
-    /** @return The {@link RequestGenerator} used to create Omaha XML. */
-    final RequestGenerator getRequestGenerator() {
+    /**
+     * @return The {@link RequestGenerator} used to create Omaha XML.
+     */
+    final @Nullable RequestGenerator getRequestGenerator() {
         if (mRequestGenerator == null) mRequestGenerator = createRequestGenerator();
         return mRequestGenerator;
     }
@@ -38,12 +47,13 @@ public abstract class OmahaDelegate {
     abstract void scheduleService(long currentTimestampMs, long nextTimestampMs);
 
     /** Creates a {@link RequestGenerator}. */
-    abstract RequestGenerator createRequestGenerator();
+    abstract @Nullable RequestGenerator createRequestGenerator();
 
     /**
      * Called when {@link OmahaBase#registerNewRequest} finishes.
+     *
      * @param timestampRequestMs When the next active user request should be generated.
-     * @param timestampPostMs    Earliest time the next POST should be allowed.
+     * @param timestampPostMs Earliest time the next POST should be allowed.
      */
     void onRegisterNewRequestDone(long timestampRequestMs, long timestampPostMs) {}
 

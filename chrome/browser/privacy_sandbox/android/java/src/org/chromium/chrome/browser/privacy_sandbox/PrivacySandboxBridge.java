@@ -9,6 +9,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.Arrays;
@@ -16,6 +17,7 @@ import java.util.Collections;
 import java.util.List;
 
 /** Bridge, providing access to the native-side Privacy Sandbox configuration. */
+@NullMarked
 public class PrivacySandboxBridge {
 
     private final Profile mProfile;
@@ -86,38 +88,38 @@ public class PrivacySandboxBridge {
         PrivacySandboxBridgeJni.get().setFledgeJoiningAllowed(mProfile, topFrameEtldPlus1, allowed);
     }
 
-    public @PromptType int getRequiredPromptType() {
-        return PrivacySandboxBridgeJni.get().getRequiredPromptType(mProfile);
+    public @PromptType int getRequiredPromptType(@SurfaceType int surfaceType) {
+        return PrivacySandboxBridgeJni.get().getRequiredPromptType(mProfile, surfaceType);
     }
 
-    public void promptActionOccurred(@PromptAction int action) {
-        PrivacySandboxBridgeJni.get().promptActionOccurred(mProfile, action);
+    public void promptActionOccurred(@PromptAction int action, @SurfaceType int surfaceType) {
+        PrivacySandboxBridgeJni.get().promptActionOccurred(mProfile, action, surfaceType);
     }
 
-    public boolean isFirstPartySetsDataAccessEnabled() {
-        return PrivacySandboxBridgeJni.get().isFirstPartySetsDataAccessEnabled(mProfile);
+    public boolean isRelatedWebsiteSetsDataAccessEnabled() {
+        return PrivacySandboxBridgeJni.get().isRelatedWebsiteSetsDataAccessEnabled(mProfile);
     }
 
-    public boolean isFirstPartySetsDataAccessManaged() {
-        return PrivacySandboxBridgeJni.get().isFirstPartySetsDataAccessManaged(mProfile);
+    public boolean isRelatedWebsiteSetsDataAccessManaged() {
+        return PrivacySandboxBridgeJni.get().isRelatedWebsiteSetsDataAccessManaged(mProfile);
     }
 
-    public boolean isPartOfManagedFirstPartySet(String origin) {
-        return PrivacySandboxBridgeJni.get().isPartOfManagedFirstPartySet(mProfile, origin);
+    public boolean isPartOfManagedRelatedWebsiteSet(String origin) {
+        return PrivacySandboxBridgeJni.get().isPartOfManagedRelatedWebsiteSet(mProfile, origin);
     }
 
-    public void setFirstPartySetsDataAccessEnabled(boolean enabled) {
-        PrivacySandboxBridgeJni.get().setFirstPartySetsDataAccessEnabled(mProfile, enabled);
+    public void setRelatedWebsiteSetsDataAccessEnabled(boolean enabled) {
+        PrivacySandboxBridgeJni.get().setRelatedWebsiteSetsDataAccessEnabled(mProfile, enabled);
     }
 
     /**
-     * Gets the First Party Sets owner hostname given a FPS member origin.
+     * Gets the Related Website Sets owner hostname given a RWS member origin.
      *
-     * @param memberOrigin FPS member origin.
+     * @param memberOrigin RWS member origin.
      * @return A string containing the owner hostname, null if it doesn't exist.
      */
-    public String getFirstPartySetOwner(String memberOrigin) {
-        return PrivacySandboxBridgeJni.get().getFirstPartySetOwner(mProfile, memberOrigin);
+    public String getRelatedWebsiteSetOwner(String memberOrigin) {
+        return PrivacySandboxBridgeJni.get().getRelatedWebsiteSetOwner(mProfile, memberOrigin);
     }
 
     public void topicsToggleChanged(boolean newValue) {
@@ -132,8 +134,21 @@ public class PrivacySandboxBridge {
         PrivacySandboxBridgeJni.get().recordActivityType(mProfile, activityType);
     }
 
-    public boolean isConsentCountry() {
-        return PrivacySandboxBridgeJni.get().isConsentCountry();
+    public boolean privacySandboxPrivacyGuideShouldShowAdTopicsCard() {
+        return PrivacySandboxBridgeJni.get()
+                .privacySandboxPrivacyGuideShouldShowAdTopicsCard(mProfile);
+    }
+
+    public boolean shouldUsePrivacyPolicyChinaDomain() {
+        return PrivacySandboxBridgeJni.get().shouldUsePrivacyPolicyChinaDomain(mProfile);
+    }
+
+    public String getEmbeddedPrivacyPolicyURL(
+            @PrivacyPolicyDomainType int domainType,
+            @PrivacyPolicyColorScheme int colorScheme,
+            String locale) {
+        return PrivacySandboxBridgeJni.get()
+                .getEmbeddedPrivacyPolicyURL(domainType, colorScheme, locale);
     }
 
     @NativeMethods
@@ -142,15 +157,15 @@ public class PrivacySandboxBridge {
 
         boolean isRestrictedNoticeEnabled(Profile profile);
 
-        boolean isFirstPartySetsDataAccessEnabled(Profile profile);
+        boolean isRelatedWebsiteSetsDataAccessEnabled(Profile profile);
 
-        boolean isFirstPartySetsDataAccessManaged(Profile profile);
+        boolean isRelatedWebsiteSetsDataAccessManaged(Profile profile);
 
-        boolean isPartOfManagedFirstPartySet(Profile profile, String origin);
+        boolean isPartOfManagedRelatedWebsiteSet(Profile profile, String origin);
 
-        void setFirstPartySetsDataAccessEnabled(Profile profile, boolean enabled);
+        void setRelatedWebsiteSetsDataAccessEnabled(Profile profile, boolean enabled);
 
-        String getFirstPartySetOwner(Profile profile, String memberOrigin);
+        String getRelatedWebsiteSetOwner(Profile profile, String memberOrigin);
 
         @JniType("std::vector")
         List<Topic> getCurrentTopTopics(Profile profile);
@@ -174,9 +189,9 @@ public class PrivacySandboxBridge {
 
         void setFledgeJoiningAllowed(Profile profile, String topFrameEtldPlus1, boolean allowed);
 
-        int getRequiredPromptType(Profile profile);
+        int getRequiredPromptType(Profile profile, int surfaceType);
 
-        void promptActionOccurred(Profile profile, int action);
+        void promptActionOccurred(Profile profile, int action, int surfaceType);
 
         void topicsToggleChanged(Profile profile, boolean newValue);
 
@@ -184,6 +199,10 @@ public class PrivacySandboxBridge {
 
         void recordActivityType(Profile profile, int activityType);
 
-        boolean isConsentCountry();
+        boolean privacySandboxPrivacyGuideShouldShowAdTopicsCard(Profile profile);
+
+        boolean shouldUsePrivacyPolicyChinaDomain(Profile profile);
+
+        String getEmbeddedPrivacyPolicyURL(int domainType, int colorScheme, String locale);
     }
 }

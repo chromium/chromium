@@ -9,10 +9,9 @@
 #import "ios/chrome/browser/alert_view/ui_bundled/alert_view_controller.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/alert_overlay.h"
-#import "ios/chrome/browser/overlays/model/test/overlay_test_macros.h"
-#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/overlays/ui_bundled/test/fake_overlay_request_coordinator_delegate.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -44,8 +43,8 @@ std::unique_ptr<OverlayRequest> CreateAlertRequest() {
 class AlertOverlayCoordinatorTest : public PlatformTest {
  public:
   AlertOverlayCoordinatorTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     root_view_controller_ = [[UIViewController alloc] init];
     request_ = CreateAlertRequest();
     coordinator_ = [[AlertOverlayCoordinator alloc]
@@ -58,7 +57,7 @@ class AlertOverlayCoordinatorTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   ScopedKeyWindow scoped_window_;
   UIViewController* root_view_controller_ = nil;

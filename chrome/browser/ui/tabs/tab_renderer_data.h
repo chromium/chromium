@@ -7,16 +7,26 @@
 
 #include <string>
 
+#include "base/byte_count.h"
+#include "base/memory/weak_ptr.h"
 #include "base/process/kill.h"
-#include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"
-#include "chrome/browser/ui/thumbnails/thumbnail_image.h"
 #include "ui/base/models/image_model.h"
-#include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
 class TabStripModel;
+class TabResourceUsage;
+class ThumbnailImage;
+
+namespace tab_groups {
+class CollaborationMessagingTabData;
+}  // namespace tab_groups
+
+namespace tabs {
+class TabInterface;
+enum class TabAlert;
+}  // namespace tabs
 
 // Wraps the state needed by the renderers.
 struct TabRendererData {
@@ -50,21 +60,25 @@ struct TabRendererData {
   bool should_display_url = true;
   base::TerminationStatus crashed_status =
       base::TERMINATION_STATUS_STILL_RUNNING;
-  bool incognito = false;
   bool show_icon = true;
   bool pinned = false;
   bool blocked = false;
-  std::vector<TabAlertState> alert_state;
+  std::vector<tabs::TabAlert> alert_state;
   bool should_hide_throbber = false;
   bool should_render_empty_title = false;
   bool should_themify_favicon = false;
   bool is_tab_discarded = false;
+  base::WeakPtr<tab_groups::CollaborationMessagingTabData>
+      collaboration_messaging = nullptr;
   bool should_show_discard_status = false;
   // Amount of memory saved through discarding the tab
-  int64_t discarded_memory_savings_in_bytes = 0;
+  base::ByteCount discarded_memory_savings;
   // Contains information about how much resource a tab is using
   scoped_refptr<const TabResourceUsage> tab_resource_usage;
   bool is_monochrome_favicon = false;
+
+  // Weak pointer to the TabInterface for accessing tab state
+  base::WeakPtr<tabs::TabInterface> tab_interface;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_RENDERER_DATA_H_

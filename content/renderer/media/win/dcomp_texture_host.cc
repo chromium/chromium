@@ -10,8 +10,8 @@
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
-#include "ipc/ipc_message_macros.h"
 #include "ipc/ipc_mojo_bootstrap.h"
+#include "ipc/param_traits_macros.h"
 #include "media/base/win/mf_helpers.h"
 
 namespace content {

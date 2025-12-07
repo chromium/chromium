@@ -41,7 +41,7 @@ Supported architectures for heap profiling:
         supported.
 
     *   **Arm64**: If you are building for arm64 and using the primary apk
-        (chrome.apk or monochrome.apk), then profiling works with all the
+        (Chrome.apk or ChromePublic.apk), then profiling works with all the
         builds.
 
     *   **Arm64-secondary**: If you are using builds from secondary arch folder

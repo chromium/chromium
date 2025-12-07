@@ -7,38 +7,48 @@ package org.chromium.chrome.browser.password_manager;
 import android.app.Activity;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** JNI call glue between the native password manager CredentialLeak class and Java objects. */
+@NullMarked
 public class CredentialLeakDialogBridge {
     private long mNativeCredentialLeakDialogViewAndroid;
     private final PasswordManagerDialogCoordinator mCredentialLeakDialog;
     private final WindowAndroid mWindowAndroid;
 
     private CredentialLeakDialogBridge(
-            @NonNull WindowAndroid windowAndroid, long nativeCredentialLeakDialogViewAndroid) {
+            WindowAndroid windowAndroid, long nativeCredentialLeakDialogViewAndroid) {
         mNativeCredentialLeakDialogViewAndroid = nativeCredentialLeakDialogViewAndroid;
         mWindowAndroid = windowAndroid;
 
+        ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
+        assert modalDialogManager != null;
+        Activity activity = windowAndroid.getActivity().get();
+        assert activity != null;
+
+        BrowserControlsManager browserControlsManager =
+                BrowserControlsManagerSupplier.getValueOrNullFrom(windowAndroid);
         mCredentialLeakDialog =
                 new PasswordManagerDialogCoordinator(
-                        windowAndroid.getModalDialogManager(),
-                        windowAndroid.getActivity().get().findViewById(android.R.id.content),
-                        BrowserControlsManagerSupplier.getValueOrNullFrom(windowAndroid));
+                        modalDialogManager,
+                        activity.findViewById(android.R.id.content),
+                        browserControlsManager);
     }
 
     @CalledByNative
@@ -78,7 +88,7 @@ public class CredentialLeakDialogBridge {
             String credentialLeakDetails,
             int illustrationId,
             String positiveButton,
-            String negativeButton) {
+            @Nullable String negativeButton) {
         return new PasswordManagerDialogContents(
                 credentialLeakTitle,
                 credentialLeakDetails,
@@ -99,21 +109,14 @@ public class CredentialLeakDialogBridge {
         switch (dismissalCause) {
             case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
                 CredentialLeakDialogBridgeJni.get()
-                        .accepted(
-                                mNativeCredentialLeakDialogViewAndroid,
-                                CredentialLeakDialogBridge.this);
+                        .accepted(mNativeCredentialLeakDialogViewAndroid);
                 return;
             case DialogDismissalCause.NEGATIVE_BUTTON_CLICKED:
                 CredentialLeakDialogBridgeJni.get()
-                        .cancelled(
-                                mNativeCredentialLeakDialogViewAndroid,
-                                CredentialLeakDialogBridge.this);
+                        .cancelled(mNativeCredentialLeakDialogViewAndroid);
                 return;
             default:
-                CredentialLeakDialogBridgeJni.get()
-                        .closed(
-                                mNativeCredentialLeakDialogViewAndroid,
-                                CredentialLeakDialogBridge.this);
+                CredentialLeakDialogBridgeJni.get().closed(mNativeCredentialLeakDialogViewAndroid);
         }
     }
 
@@ -134,12 +137,10 @@ public class CredentialLeakDialogBridge {
 
     @NativeMethods
     interface Natives {
-        void accepted(
-                long nativeCredentialLeakDialogViewAndroid, CredentialLeakDialogBridge caller);
+        void accepted(long nativeCredentialLeakDialogViewAndroid);
 
-        void cancelled(
-                long nativeCredentialLeakDialogViewAndroid, CredentialLeakDialogBridge caller);
+        void cancelled(long nativeCredentialLeakDialogViewAndroid);
 
-        void closed(long nativeCredentialLeakDialogViewAndroid, CredentialLeakDialogBridge caller);
+        void closed(long nativeCredentialLeakDialogViewAndroid);
     }
 }

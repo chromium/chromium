@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("nearby") {
   sources = [
@@ -34,6 +34,7 @@ static_library("nearby") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/nearby_sharing/common",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/nearby/common/connections_manager",
     "//chromeos/ash/services/nearby/public/cpp",
@@ -51,10 +52,6 @@ static_library("nearby") {
     "//mojo/public/cpp/bindings",
     "//net",
     "//services/network/public/mojom",
-
-    # TODO(b/353449134): Use //chrome/browser after fixing cyclic dependency from
-    # obj/chrome/browser/ash/nearby/nearby/nearby_dependencies_provider.o.
-    "//chrome/browser/nearby_sharing/instantmessaging/proto",
   ]
 }
 
@@ -124,9 +121,9 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/nearby/presence/credential_storage:unit_tests",
     "//chrome/browser/nearby_sharing/common",
+    "//chrome/browser/profiles:profile_util",
     "//chrome/services/sharing/nearby/test_support",
     "//chromeos/ash/services/nearby/public/cpp:test_support",
     "//chromeos/ash/services/nearby/public/mojom",

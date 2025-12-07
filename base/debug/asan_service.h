@@ -29,12 +29,19 @@ class BASE_EXPORT AsanService {
   // callbacks to be as simple as possible.
   //
   // `reason` points to a string containing the AddressSanitizer error report.
-  // `should_exit_cleanly` should be set to true only if the callback determines
-  // that this crash is known to be safe - this will override the normal ASan
-  // behaviour and instead exit cleanly. If your callback is modifying this
-  // parameter, it should log a message explaining why this error is known to
-  // be safe.
-  using ErrorCallback = void (*)(const char* reason, bool* should_exit_cleanly);
+  // `should_exit_cleanly` defaults to false, and should be set to true only if
+  // the callback determines that this crash is safe - this will override the
+  // normal ASan behaviour and instead exit cleanly. If your callback is
+  // modifying this parameter, it should log a message explaining why this
+  // error is known to be safe.
+  // `should_abort` defaults to true, and should only be set to false if it is
+  // safe to continue execution after this error; ie. this is known to be a safe
+  // access due to additional quarantining logic. If your hook will rely on
+  // setting `should_abort`, then it is necessary to ensure that
+  // halt_on_error() == false before registering the hook.
+  using ErrorCallback = void (*)(const char* reason,
+                                 bool* should_exit_cleanly,
+                                 bool* should_abort);
 
   static AsanService* GetInstance();
 
@@ -47,11 +54,17 @@ class BASE_EXPORT AsanService {
   // for logging inside callbacks. Safe to call from any thread.
   void Log(const char* format, ...);
 
+  // Aborts program execution in the same way as AddressSanitizer.
+  void Abort();
+
   // Adds an error callback that will be called on the faulting thread when
   // Address Sanitizer detects an error. All registered callbacks are called
-  // for every error. Safe to call from any thread, and the callback registered
-  // must also be safe to call from any thread.
+  // for every error. Safe to call from any thread, and the callback
+  // registered must also be safe to call from any thread.
   void AddErrorCallback(ErrorCallback error_callback) LOCKS_EXCLUDED(lock_);
+
+  bool halt_on_error() const { return halt_on_error_; }
+  bool detect_leak() const { return detect_leak_; }
 
  private:
   friend class AsanServiceTest;
@@ -60,17 +73,26 @@ class BASE_EXPORT AsanService {
   AsanService();
   ~AsanService() = delete;
 
+  void ResetErrorCallbacksForTesting() LOCKS_EXCLUDED(lock_);
+
   void RunErrorCallbacks(const char* reason) LOCKS_EXCLUDED(lock_);
 
   // This is the error report entrypoint function that is registered with
   // AddressSanitizer.
   static void ErrorReportCallback(const char* reason);
 
+  // Expose ASAN_OPTIONS values here for options that we need to either use or
+  // check at runtime. These values will be set correctly during Initialize().
+  int exitcode_;
+  bool halt_on_error_;
+  bool detect_leak_;
+
   // Guards all of the internal state, so that we can safely handle concurrent
   // errors on multiple threads.
   Lock lock_;
 
-  // Ensure that we don't try and register callbacks before calling Initialize.
+  // Ensure that we don't try and register callbacks before calling
+  // Initialize.
   bool is_initialized_ GUARDED_BY(lock_) = false;
 
   // The list of currently registered error callbacks.

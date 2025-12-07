@@ -19,20 +19,30 @@ if (is_chrome_branded) {
   mac_updater_bundle_identifier = "org.chromium.ChromiumUpdater"
   privileged_helper_bundle_name = "ChromiumUpdaterPrivilegedHelper"
   privileged_helper_name = "org.chromium.Chromium.UpdaterPrivilegedHelper"
+  updater_app_icon_path = "//chrome/app/theme/chromium/mac/app.icns"
   updater_company_full_name = "Chromium Authors"
   updater_company_short_name = "Chromium"
+  updater_company_short_name_lowercase = "chromium"
   updater_company_short_name_uppercase = "CHROMIUM"
   updater_copyright =
       "Copyright 2020 The Chromium Authors. All rights reserved."
   updater_product_full_name = "ChromiumUpdater"
+  updater_product_full_name_dashed_lowercase = "chromium-updater"
+  updater_product_full_display_name = "Chromium Updater"
+  updater_metainstaller_name = "Chromium Installer"
   mac_team_identifier = "PLACEHOLDER"
   updater_appid = "{6e8ffa8f-e7e2-4000-9884-589283c27015}"
+  browser_appid = "{5d8d08af-2df9-4da2-86c1-eac353a0ca32}"
   qualification_appid = "{43f3a046-04b3-4443-a770-d67dae90e440}"
+  platform_experience_helper_appid = "{b84ca560-bb0c-4ec9-a288-df67e15354c7}"
+  crx_pkhash = ""
   legacy_service_name_prefix = "cupdate"
   prefs_access_mutex = "{A6B9ECD5-772A-4D3F-BFEB-CF9340534A3E}"
   setup_mutex_prefix = "{25569F82-3B67-4185-8127-88E4CF803680}"
   grdfile_name = "chromium_strings"
   extra_args_is_chrome_branded = "IS_CHROME_BRANDED=False"
+  update_check_url = "https://omaha-qa.sandbox.google.com/service/update2/json"
+  updater_event_logging_url = "https://play.googleapis.com/staging/log/"
 
   UpdaterLegacyLibGUID = "4C61BB05-94D1-4BAB-B69C-C34195AF92CA"
   GoogleUpdate3WebUserClassGUID = "75828ED1-7BE8-45D0-8950-AA85CBF74510"
@@ -98,7 +108,3 @@ if (is_chrome_branded) {
     legacy_google_update_appid = "{8B2B92A3-1BA2-4154-A89C-DA74C9C505E4}"
   }
 }
-
-# Chrome and Chromium share the same endpoints for now.
-update_check_url = "https://update.googleapis.com/service/update2/json"
-device_management_server_url = "https://m.google.com/devicemanagement/data/api"

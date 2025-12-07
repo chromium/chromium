@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/notimplemented.h"
 #include "base/uuid.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,8 +21,10 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/restore_type.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 
 AndroidLiveTabContext::AndroidLiveTabContext(TabModel* tab_model)
     : tab_model_(tab_model) {}
@@ -98,8 +101,7 @@ AndroidLiveTabContext::GetVisualDataForGroup(
 
   // Since we never return a group from GetTabGroupForTab(), this should never
   // be called.
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 const std::optional<base::Uuid>
@@ -122,7 +124,7 @@ void AndroidLiveTabContext::SetVisualDataForGroup(
   // TODO(crbug.com/40647050): ensure this never gets called (or remove
   // NOTREACHED) if we implement restoring groups for foreign session
   // windows.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 const gfx::Rect AndroidLiveTabContext::GetRestoredBounds() const {
@@ -130,9 +132,9 @@ const gfx::Rect AndroidLiveTabContext::GetRestoredBounds() const {
   return gfx::Rect();
 }
 
-ui::WindowShowState AndroidLiveTabContext::GetRestoredState() const {
+ui::mojom::WindowShowState AndroidLiveTabContext::GetRestoredState() const {
   // Not applicable to android.
-  return ui::SHOW_STATE_NORMAL;
+  return ui::mojom::WindowShowState::kNormal;
 }
 
 std::string AndroidLiveTabContext::GetWorkspace() const {
@@ -144,6 +146,7 @@ sessions::LiveTab* AndroidLiveTabContext::AddRestoredTab(
     const sessions::tab_restore::Tab& tab,
     int tab_index,
     bool select,
+    bool is_restoring_group_or_window,
     sessions::tab_restore::Type original_session_type) {
   Profile* profile = tab_model_->GetProfile();
 
@@ -207,7 +210,7 @@ sessions::LiveTabContext* AndroidLiveTabContext::FindContextForWebContents(
   }
 
   TabModel* model =
-      TabModelList::FindTabModelWithId(tab_android->GetWindowId());
+      TabModelList::FindTabModelWithWindowSessionId(tab_android->GetWindowId());
 
   return model ? model->GetLiveTabContext() : nullptr;
 }
@@ -216,7 +219,7 @@ sessions::LiveTabContext* AndroidLiveTabContext::FindContextForWebContents(
 sessions::LiveTabContext* AndroidLiveTabContext::FindContextWithID(
     SessionID desired_id) {
   // Find the model with desired id.
-  TabModel* tab_model = TabModelList::FindTabModelWithId(desired_id);
+  TabModel* tab_model = TabModelList::FindTabModelWithWindowSessionId(desired_id);
 
   // If we can't find the correct model, fall back to first non-incognito model.
   if (!tab_model || tab_model->IsOffTheRecord()) {

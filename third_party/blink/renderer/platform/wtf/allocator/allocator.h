@@ -11,14 +11,12 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 
-namespace WTF {
+namespace blink::internal {
 
-using base::NotNullTag;
-
-namespace internal {
 // A dummy class used in following macros.
 class __thisIsHereToForceASemicolonAfterThisMacro;
-}  // namespace internal
+
+}  // namespace blink::internal
 
 // Classes that contain references to garbage-collected objects but aren't
 // themselves garbaged allocated, have some extra macros available which
@@ -34,28 +32,28 @@ class __thisIsHereToForceASemicolonAfterThisMacro;
 // Members you need a trace method and the containing object needs to call that
 // trace method.
 //
-#define DISALLOW_NEW()                                          \
- public:                                                        \
-  using IsDisallowNewMarker [[maybe_unused]] = int;             \
-  void* operator new(size_t, WTF::NotNullTag, void* location) { \
-    return location;                                            \
-  }                                                             \
-  void* operator new(size_t, void* location) {                  \
-    return location;                                            \
-  }                                                             \
-                                                                \
- private:                                                       \
-  void* operator new(size_t) = delete;                          \
-                                                                \
- public:                                                        \
-  friend class ::WTF::internal::__thisIsHereToForceASemicolonAfterThisMacro
+#define DISALLOW_NEW()                                           \
+ public:                                                         \
+  using IsDisallowNewMarker [[maybe_unused]] = int;              \
+  void* operator new(size_t, base::NotNullTag, void* location) { \
+    return location;                                             \
+  }                                                              \
+  void* operator new(size_t, void* location) {                   \
+    return location;                                             \
+  }                                                              \
+                                                                 \
+ private:                                                        \
+  void* operator new(size_t) = delete;                           \
+                                                                 \
+ public:                                                         \
+  friend class ::blink::internal::__thisIsHereToForceASemicolonAfterThisMacro
 
-#define STATIC_ONLY(Type)                                      \
-  Type() = delete;                                             \
-  Type(const Type&) = delete;                                  \
-  Type& operator=(const Type&) = delete;                       \
-  void* operator new(size_t) = delete;                         \
-  void* operator new(size_t, WTF::NotNullTag, void*) = delete; \
+#define STATIC_ONLY(Type)                                       \
+  Type() = delete;                                              \
+  Type(const Type&) = delete;                                   \
+  Type& operator=(const Type&) = delete;                        \
+  void* operator new(size_t) = delete;                          \
+  void* operator new(size_t, base::NotNullTag, void*) = delete; \
   void* operator new(size_t, void*) = delete
 
 // Provides customizable overrides of fastMalloc/fastFree and operator
@@ -82,7 +80,7 @@ class __thisIsHereToForceASemicolonAfterThisMacro;
 #if defined(OFFICIAL_BUILD)
 #define WTF_HEAP_PROFILER_TYPE_NAME(T) nullptr
 #else
-#define WTF_HEAP_PROFILER_TYPE_NAME(T) ::WTF::GetStringWithTypeName<T>()
+#define WTF_HEAP_PROFILER_TYPE_NAME(T) ::blink::GetStringWithTypeName<T>()
 #endif
 
 // Both of these macros enable fast malloc and provide type info to the heap
@@ -96,42 +94,40 @@ class __thisIsHereToForceASemicolonAfterThisMacro;
 #define USING_FAST_MALLOC_WITH_TYPE_NAME(type) \
   USING_FAST_MALLOC_INTERNAL(type, #type)
 
-#define USING_FAST_MALLOC_INTERNAL(type, typeName)              \
- public:                                                        \
-  void* operator new(size_t, void* p) {                         \
-    return p;                                                   \
-  }                                                             \
-  void* operator new[](size_t, void* p) {                       \
-    return p;                                                   \
-  }                                                             \
-                                                                \
-  void* operator new(size_t size) {                             \
-    return ::WTF::Partitions::FastMalloc(size, typeName);       \
-  }                                                             \
-                                                                \
-  void operator delete(void* p) {                               \
-    ::WTF::Partitions::FastFree(p);                             \
-  }                                                             \
-                                                                \
-  void* operator new[](size_t size) {                           \
-    return ::WTF::Partitions::FastMalloc(size, typeName);       \
-  }                                                             \
-                                                                \
-  void operator delete[](void* p) {                             \
-    ::WTF::Partitions::FastFree(p);                             \
-  }                                                             \
-  void* operator new(size_t, WTF::NotNullTag, void* location) { \
-    DCHECK(location);                                           \
-    return location;                                            \
-  }                                                             \
-                                                                \
- private:                                                       \
-  friend class ::WTF::internal::__thisIsHereToForceASemicolonAfterThisMacro
-
-}  // namespace WTF
+#define USING_FAST_MALLOC_INTERNAL(type, typeName)               \
+ public:                                                         \
+  void* operator new(size_t, void* p) {                          \
+    return p;                                                    \
+  }                                                              \
+  void* operator new[](size_t, void* p) {                        \
+    return p;                                                    \
+  }                                                              \
+                                                                 \
+  void* operator new(size_t size) {                              \
+    return ::blink::Partitions::FastMalloc(size, typeName);      \
+  }                                                              \
+                                                                 \
+  void operator delete(void* p) {                                \
+    ::blink::Partitions::FastFree(p);                            \
+  }                                                              \
+                                                                 \
+  void* operator new[](size_t size) {                            \
+    return ::blink::Partitions::FastMalloc(size, typeName);      \
+  }                                                              \
+                                                                 \
+  void operator delete[](void* p) {                              \
+    ::blink::Partitions::FastFree(p);                            \
+  }                                                              \
+  void* operator new(size_t, base::NotNullTag, void* location) { \
+    DCHECK(location);                                            \
+    return location;                                             \
+  }                                                              \
+                                                                 \
+ private:                                                        \
+  friend class ::blink::internal::__thisIsHereToForceASemicolonAfterThisMacro
 
 // This version of placement new omits a 0 check.
-inline void* operator new(size_t, WTF::NotNullTag, void* location) {
+inline void* operator new(size_t, base::NotNullTag, void* location) {
   DCHECK(location);
   return location;
 }

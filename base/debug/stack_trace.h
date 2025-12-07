@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <iosfwd>
 #include <string>
 
@@ -18,9 +19,7 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_POSIX)
-#if !BUILDFLAG(IS_NACL)
 #include <signal.h>
-#endif
 #include <unistd.h>
 #endif
 
@@ -42,7 +41,16 @@ namespace base::debug {
 // done in official builds because it has security implications).
 BASE_EXPORT bool EnableInProcessStackDumping();
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
+#if BUILDFLAG(IS_WIN)
+// Returns `true` if EnableInProcessStackDumping() was called and succeeded.
+// Only supported on Windows.
+BASE_EXPORT bool InProcessStackDumpingEnabled();
+
+// Allows tests to exercise code that runs when symbolization is not available.
+BASE_EXPORT bool DisableInProcessStackDumpingForTesting();
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_POSIX)
 // Sets a first-chance callback for the stack dump signal handler. This callback
 // is called at the beginning of the signal handler to handle special kinds of
 // signals, like out-of-bounds memory accesses in WebAssembly (WebAssembly Trap
@@ -100,6 +108,9 @@ class BASE_EXPORT StackTrace {
   // Returns true if this current test environment is expected to have
   // symbolized frames when printing a stack trace.
   static bool WillSymbolizeToStreamForTesting();
+
+  // Initialize features.
+  static void InitializeFeatures();
 
   // Copying and assignment are allowed with the default functions.
 
@@ -280,11 +291,10 @@ namespace internal {
 // conversion was successful or NULL otherwise. It never writes more than "sz"
 // bytes. Output will be truncated as needed, and a NUL character is always
 // appended.
-BASE_EXPORT char *itoa_r(intptr_t i,
-                         char *buf,
-                         size_t sz,
-                         int base,
-                         size_t padding);
+BASE_EXPORT void itoa_r(intptr_t i,
+                        int base,
+                        size_t padding,
+                        base::span<char> buf);
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 
 }  // namespace internal

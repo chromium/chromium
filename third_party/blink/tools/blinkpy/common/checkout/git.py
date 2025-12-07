@@ -30,10 +30,10 @@
 import enum
 import logging
 import re
-import os
 from typing import List, Mapping, NamedTuple, Optional, Union
 
 from blinkpy.common.memoized import memoized
+from blinkpy.common.path_finder import PathFinder
 from blinkpy.common.system.executive import Executive, ScriptError
 from blinkpy.common.system.filesystem import FileSystem
 
@@ -103,13 +103,14 @@ class Git:
             module_directory = self._filesystem.abspath(
                 self._filesystem.dirname(
                     self._filesystem.path_to_module(self.__module__)))
-            _log.info(
+            _log.warning(
                 'The current directory (%s) is not in a git repo, trying directory %s.',
-                cwd, module_directory)
+                self.cwd, module_directory)
             if self.in_working_directory(module_directory):
                 self.cwd = module_directory
-            _log.error('Failed to find Git repo for %s or %s', cwd,
-                       module_directory)
+            else:
+                _log.warning('Failed to find Git repo for %s or %s', self.cwd,
+                             module_directory)
 
         self.checkout_root = self.find_checkout_root(self.cwd)
 
@@ -166,8 +167,8 @@ class Git:
 
     def find_checkout_root(self, path):
         """Returns the absolute path to the root of the repository."""
-        if os.getcwd().startswith('/google/cog/cloud'):
-            return os.getcwd()
+        if PathFinder(self._filesystem).is_cog():
+            return None
         return self.run(['rev-parse', '--show-toplevel'], cwd=path).strip()
 
     @classmethod

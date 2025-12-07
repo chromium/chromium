@@ -25,6 +25,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "url/origin.h"
 
 class TemplateURLService;
 
@@ -37,23 +38,21 @@ struct NotificationChannel {
                       const std::string& origin,
                       const base::Time& timestamp,
                       NotificationChannelStatus status);
-  NotificationChannel(const NotificationChannel& other);
   bool operator==(const NotificationChannel& other) const {
     return origin == other.origin && status == other.status;
   }
-  const std::string id;
-  const std::string origin;
-  const base::Time timestamp;
+
+  std::string id;
+  std::string origin;
+  base::Time timestamp;
   NotificationChannelStatus status = NotificationChannelStatus::UNAVAILABLE;
 };
 
 // This class provides notification content settings from system notification
-// channels on Android O+. This provider takes precedence over pref-provided
-// content settings, but defers to supervised user and policy settings - see
-// ordering of the ProviderType enum values in HostContentSettingsMap.
-//
-// PartitionKey is ignored by this provider because the content settings should
-// apply across partitions.
+// channels that per-origin notification permissions states are mapped to since
+// Android Oreo. This provider takes precedence over pref-provided content
+// settings, but defers to supervised user and policy settings - see ordering of
+// the ProviderType enum values in HostContentSettingsMap.
 class NotificationChannelsProviderAndroid
     : public content_settings::UserModifiableProvider {
  public:
@@ -84,45 +83,40 @@ class NotificationChannelsProviderAndroid
   void Initialize(content_settings::ProviderInterface* pref_provider,
                   TemplateURLService* template_url_service);
 
+  // Forces an update of cached channels and invokes callback upon completion.
+  void EnsureUpdatedSettings(base::OnceClosure callback) override;
+
+  // Called when a site channel is blocked/unblocked.
+  void OnChannelStateChanged(const NotificationChannel& channel);
+
   // UserModifiableProvider methods.
   std::unique_ptr<content_settings::RuleIterator> GetRuleIterator(
       ContentSettingsType content_type,
-      bool incognito,
-      const content_settings::PartitionKey& partition_key) const override;
+      bool off_the_record) const override;
   bool SetWebsiteSetting(
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsType content_type,
       base::Value&& value,
-      const content_settings::ContentSettingConstraints& constraints,
-      const content_settings::PartitionKey& partition_key) override;
-  void ClearAllContentSettingsRules(
-      ContentSettingsType content_type,
-      const content_settings::PartitionKey& partition_key) override;
+      const content_settings::ContentSettingConstraints& constraints) override;
+  void ClearAllContentSettingsRules(ContentSettingsType content_type) override;
   void ShutdownOnUIThread() override;
-  bool UpdateLastUsedTime(
-      const GURL& primary_url,
-      const GURL& secondary_url,
-      ContentSettingsType content_type,
-      const base::Time time,
-      const content_settings::PartitionKey& partition_key) override;
-  bool ResetLastVisitTime(
-      const ContentSettingsPattern& primary_pattern,
-      const ContentSettingsPattern& secondary_pattern,
-      ContentSettingsType content_type,
-      const content_settings::PartitionKey& partition_key) override;
-  bool UpdateLastVisitTime(
-      const ContentSettingsPattern& primary_pattern,
-      const ContentSettingsPattern& secondary_pattern,
-      ContentSettingsType content_type,
-      const content_settings::PartitionKey& partition_key) override;
+  bool UpdateLastUsedTime(const GURL& primary_url,
+                          const GURL& secondary_url,
+                          ContentSettingsType content_type,
+                          const base::Time time) override;
+  bool ResetLastVisitTime(const ContentSettingsPattern& primary_pattern,
+                          const ContentSettingsPattern& secondary_pattern,
+                          ContentSettingsType content_type) override;
+  bool UpdateLastVisitTime(const ContentSettingsPattern& primary_pattern,
+                           const ContentSettingsPattern& secondary_pattern,
+                           ContentSettingsType content_type) override;
   std::optional<base::TimeDelta> RenewContentSetting(
       const GURL& primary_url,
       const GURL& secondary_url,
       ContentSettingsType content_type,
-      std::optional<ContentSetting> setting_to_match,
-      const content_settings::PartitionKey& partition_key) override;
-  void SetClockForTesting(base::Clock* clock) override;
+      std::optional<ContentSetting> setting_to_match) override;
+  void SetClockForTesting(const base::Clock* clock) override;
 
  protected:
   // Migrates any notification settings from the passed-in provider to
@@ -151,14 +145,21 @@ class NotificationChannelsProviderAndroid
   // Helper methods for implementing ClearBlockedChannelsIfNecessary(). Called
   // when updated channels are retrieved.
   void ClearBlockedChannelsIfNecessaryImpl(
-      TemplateURLService* template_url_service,
+      const url::Origin& default_search_engine_origin,
       const std::vector<NotificationChannel>& channels);
 
   // Don't call this directly.
   // Helper methods for implementing ClearAllContentSettingsRules(). Called
-  // when updated channels are retrieved.
+  // when updated channels are retrieved. The `channel_timestamp_at_invocation`
+  // is used to check whether a channel is modified after the
+  // ClearAllContentSettingsRules() call and should not be cleared.
   void ClearAllChannelsImpl(ContentSettingsType content_type,
+                            base::Time channel_timestamp_at_invocation,
                             const std::vector<NotificationChannel>& channels);
+
+  // Check if a notification channel reflects the same rule as returned by
+  // GetRuleIterator().
+  bool IsSameAsCachedRule(const NotificationChannel& channel);
 
   // Don't call this directly.
   // Helper methods for implementing SetWebsiteSetting(). Called when
@@ -168,7 +169,8 @@ class NotificationChannelsProviderAndroid
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsType content_type,
       ContentSetting content_setting,
-      const content_settings::ContentSettingConstraints& constraints);
+      const content_settings::ContentSettingConstraints& constraints,
+      const NotificationChannel& pending_channel);
 
   // Don't call this directly. Pass this as a callback to ScheduleGetChannels().
   // Update cached channels. If `only_initialize_null_cached_channels`, cached
@@ -183,15 +185,17 @@ class NotificationChannelsProviderAndroid
       const std::vector<NotificationChannel>& channels);
 
   // Create notification channel if required.
-  void CreateChannelIfRequired(const std::string& origin_string,
+  void CreateChannelIfRequired(const ContentSettingsPattern& primary_pattern,
+                               const ContentSettingsPattern& secondary_pattern,
                                NotificationChannelStatus new_channel_status);
 
   // Create notification channel for a given rule
   void CreateChannelForRule(const content_settings::Rule& rule);
 
-  // Called to initialize cached channels. Once complete,
+  // Called to retrieve cached channels if it is null. Once complete,
   // `on_channels_initialized_cb` will be invoked.
-  void InitCachedChannels(base::OnceClosure on_channels_initialized_cb);
+  void GetCachedChannelsIfNecessary(
+      base::OnceClosure on_channels_initialized_cb);
 
   // Schedule an pending operation to get Java notification channels. Once
   // the previous pending operation completes, GetChannelsImpl() will be
@@ -223,7 +227,7 @@ class NotificationChannelsProviderAndroid
 
   std::unique_ptr<NotificationChannelsBridge> bridge_;
 
-  raw_ptr<base::Clock> clock_;
+  raw_ptr<const base::Clock> clock_;
 
   // Map of origin - NotificationChannel. Channel status may be out of date.
   // This cache is completely refreshed every time GetRuleIterator is called;
@@ -239,6 +243,12 @@ class NotificationChannelsProviderAndroid
   //    detect channels getting blocked/enabled by the user, in the absence of a
   //    callback for this event.
   std::optional<std::map<std::string, NotificationChannel>> cached_channels_;
+
+  // Notification channels that are pending creation or update after
+  // SetWebsiteSetting() call. These channels don't have a channel Id yet. They
+  // are used for providing a synchronous result to the GetRuleIterator() call.
+  // They will be moved to `cached_channels_` once creation or update completes.
+  std::map<std::string, NotificationChannel> pending_channels_;
 
   using PendingCallback = base::OnceCallback<void(base::OnceClosure)>;
   // This is a list of postponed calls to update cached_channels_.

@@ -7,6 +7,7 @@
 
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/password_manager/android/password_settings_updater_android_bridge_helper.h"
 #include "chrome/browser/password_manager/android/password_settings_updater_android_dispatcher_bridge.h"
 

@@ -11,13 +11,11 @@
 #include <string_view>
 
 #include "base/containers/span.h"
-#include "base/strings/string_util.h"
 #include "content/browser/web_package/signed_exchange_signature_header_field.h"
 #include "content/common/content_export.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
-#include "url/gurl.h"
 
 namespace content {
 
@@ -56,7 +54,7 @@ class CONTENT_EXPORT SignedExchangeEnvelope {
   scoped_refptr<net::HttpResponseHeaders> BuildHttpResponseHeaders() const;
 
   const base::span<const uint8_t> cbor_header() const {
-    return base::make_span(cbor_header_);
+    return base::span(cbor_header_);
   }
   void set_cbor_header(base::span<const uint8_t> data);
 

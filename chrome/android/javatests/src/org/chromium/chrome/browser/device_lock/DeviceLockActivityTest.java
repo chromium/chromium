@@ -30,6 +30,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.ui.base.IntentRequestTracker;
+import org.chromium.ui.base.WindowAndroid.IntentCallback;
 
 import java.lang.ref.WeakReference;
 
@@ -55,7 +56,7 @@ public class DeviceLockActivityTest {
         onView(withText(R.string.device_lock_description)).check(matches(isDisplayed()));
 
         mDeviceLockActivity.onDeviceLockReady();
-        assertEquals("Activity should be finished", mDeviceLockActivity.isFinishing(), true);
+        assertEquals("Activity should be finished", true, mDeviceLockActivity.isFinishing());
         assertEquals(
                 "Setting a device lock should set activity result to OK",
                 Activity.RESULT_OK,
@@ -71,7 +72,7 @@ public class DeviceLockActivityTest {
 
         mDeviceLockActivity.onDeviceLockRefused();
 
-        assertEquals("Activity should be finished", mDeviceLockActivity.isFinishing(), true);
+        assertEquals("Activity should be finished", true, mDeviceLockActivity.isFinishing());
         assertEquals(
                 "Refusing a device lock should set activity result to CANCELED",
                 Activity.RESULT_CANCELED,
@@ -99,14 +100,14 @@ public class DeviceLockActivityTest {
                         ContextUtils.getApplicationContext(),
                         "testSelectedAccount",
                         true,
-                        DeviceLockActivityLauncher.Source.SYNC_CONSENT);
+                        DeviceLockActivityLauncher.Source.ACCOUNT_PICKER);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mActivityScenario = ActivityScenario.launchActivityForResult(intent);
         mActivityScenario.onActivity(activity -> mDeviceLockActivity = activity);
         ApplicationTestUtils.waitForActivityState(mDeviceLockActivity, Stage.RESUMED);
     }
 
-    private class MockIntentRequestTracker implements IntentRequestTracker {
+    private static class MockIntentRequestTracker implements IntentRequestTracker {
         boolean mOnActivityResultCalled;
 
         MockIntentRequestTracker() {}
@@ -127,5 +128,10 @@ public class DeviceLockActivityTest {
 
         @Override
         public void restoreInstanceState(Bundle bundle) {}
+
+        @Override
+        public int showCancelableIntent(Intent intent, IntentCallback callback, Integer errorId) {
+            return 0;
+        }
     }
 }

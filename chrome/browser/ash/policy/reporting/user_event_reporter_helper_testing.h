@@ -24,6 +24,8 @@ class UserEventReporterHelperTesting : public UserEventReporterHelper {
 
   bool IsKioskUser() const override;
 
+  std::string GetDeviceDmToken() const override;
+
  private:
   const bool reporting_enabled_;
   const bool should_report_user_;

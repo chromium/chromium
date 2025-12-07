@@ -112,6 +112,9 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
     // Called after EmitLoginPromptVisible is called.
     virtual void EmitLoginPromptVisibleCalled() {}
 
+    // Called after StartSessionEx is called.
+    virtual void StartSessionExCalled() {}
+
     // Called when the ARC instance is stopped after it had already started.
     virtual void ArcInstanceStopped(
         login_manager::ArcContainerStopReason reason) {}
@@ -270,17 +273,8 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   virtual void StartRemoteDeviceWipe(
       const enterprise_management::SignedData& signed_command) = 0;
 
-  // Set the block_demode and check_enrollment flags to 0 in the VPD.
-  virtual void ClearForcedReEnrollmentVpd(
-      chromeos::VoidDBusMethodCallback callback) = 0;
-
-  virtual void UnblockDevModeForEnrollment(
-      chromeos::VoidDBusMethodCallback callback) = 0;
-
-  virtual void UnblockDevModeForInitialStateDetermination(
-      chromeos::VoidDBusMethodCallback callback) = 0;
-
-  virtual void UnblockDevModeForCarrierLock(
+  // Set the block_demode flag to 0 in the VPD.
+  virtual void ClearBlockDevmodeVpd(
       chromeos::VoidDBusMethodCallback callback) = 0;
 
   // Triggers a TPM firmware update.
@@ -295,23 +289,6 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
 
   // Notifies session_manager that Chrome has hidden the lock screen.
   virtual void NotifyLockScreenDismissed() = 0;
-
-  // Makes session_manager add some flags to carry out browser data migration
-  // upon next ash-chrome restart. The method returns true if the DBus call was
-  // successful. The callback is passed true if the DBus call is successful and
-  // false otherwise.
-  // This method is blocking. Do not use unless necessary.
-  virtual bool BlockingRequestBrowserDataMigration(
-      const cryptohome::AccountIdentifier& cryptohome_id,
-      const std::string& mode) = 0;
-
-  // Makes session_manager add some flags to carry out browser data backward
-  // migration upon next ash-chrome restart. The method returns true if the DBus
-  // call was successful. The callback is passed true if the DBus call is
-  // successful and false otherwise.
-  // This method is blocking. Do not use unless necessary.
-  virtual bool BlockingRequestBrowserDataBackwardMigration(
-      const cryptohome::AccountIdentifier& cryptohome_id) = 0;
 
   // Map that is used to describe the set of active user sessions where |key|
   // is cryptohome id and |value| is user_id_hash.
@@ -342,61 +319,6 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   using RetrievePolicyCallback =
       base::OnceCallback<void(RetrievePolicyResponseType response_type,
                               const std::string& protobuf)>;
-
-  // Fetches the device policy blob stored by the session manager.  Upon
-  // completion of the retrieve attempt, we will call the provided callback.
-  // DEPRECATED, use RetrievePolicy() instead.
-  virtual void RetrieveDevicePolicy(RetrievePolicyCallback callback) = 0;
-
-  // Same as RetrieveDevicePolicy() but blocks until a reply is received, and
-  // populates the policy synchronously. Returns SUCCESS when successful, or
-  // the corresponding error from enum in case of a failure.
-  // This may only be called in situations where blocking the UI thread is
-  // considered acceptable (e.g. restarting the browser after a crash or after
-  // a flag change).
-  // TODO(crbug.com/40954539): Get rid of blocking calls.
-  // DEPRECATED, use BlockingRetrievePolicy() instead.
-  virtual RetrievePolicyResponseType BlockingRetrieveDevicePolicy(
-      std::string* policy_out) = 0;
-
-  // Fetches the user policy blob stored by the session manager for the given
-  // |cryptohome_id|. Upon completion of the retrieve attempt, we will call the
-  // provided callback.
-  // DEPRECATED, use RetrievePolicy() instead.
-  virtual void RetrievePolicyForUser(
-      const cryptohome::AccountIdentifier& cryptohome_id,
-      RetrievePolicyCallback callback) = 0;
-
-  // Same as RetrievePolicyForUser() but blocks until a reply is received, and
-  // populates the policy synchronously. Returns SUCCESS when successful, or
-  // the corresponding error from enum in case of a failure.
-  // This may only be called in situations where blocking the UI thread is
-  // considered acceptable (e.g. restarting the browser after a crash or after
-  // a flag change).
-  // TODO(crbug.com/40954539): Get rid of blocking calls.
-  // DEPRECATED, use BlockingRetrievePolicy() instead.
-  virtual RetrievePolicyResponseType BlockingRetrievePolicyForUser(
-      const cryptohome::AccountIdentifier& cryptohome_id,
-      std::string* policy_out) = 0;
-
-  // Fetches the policy blob associated with the specified device-local account
-  // from session manager.  |callback| is invoked up on completion.
-  // DEPRECATED, use RetrievePolicy() instead.
-  virtual void RetrieveDeviceLocalAccountPolicy(
-      const std::string& account_id,
-      RetrievePolicyCallback callback) = 0;
-
-  // Same as RetrieveDeviceLocalAccountPolicy() but blocks until a reply is
-  // received, and populates the policy synchronously. Returns SUCCESS when
-  // successful, or the corresponding error from enum in case of a failure.
-  // This may only be called in situations where blocking the UI thread is
-  // considered acceptable (e.g. restarting the browser after a crash or after
-  // a flag change).
-  // TODO(crbug.com/40296212): Get rid of blocking calls.
-  // DEPRECATED, use BlockingRetrievePolicy() instead.
-  virtual RetrievePolicyResponseType BlockingRetrieveDeviceLocalAccountPolicy(
-      const std::string& account_id,
-      std::string* policy_out) = 0;
 
   // Fetches a policy blob stored by the session manager. Invokes |callback|
   // upon completion.

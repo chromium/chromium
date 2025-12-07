@@ -8,8 +8,8 @@
 #include <set>
 
 #import "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
+#import "base/memory/weak_ptr.h"
+#import "base/scoped_observation.h"
 #import "ios/chrome/browser/overlays/model/overlay_request_queue_impl.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_dismissal_callback.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_modality.h"
@@ -17,8 +17,8 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_user_data.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
+#import "ios/chrome/browser/tabs/model/tabs_dependency_installer.h"
 
 class OverlayResponse;
 
@@ -26,12 +26,11 @@ class OverlayResponse;
 // - observes OverlayRequestQueue modifications for the active WebState and
 //   triggers the presentation for added requests using the UI delegate.
 // - manages hiding and showing overlays for active WebState changes.
-class OverlayPresenterImpl : public BrowserObserver,
-                             public OverlayPresenter,
+class OverlayPresenterImpl : public OverlayPresenter,
                              public OverlayPresentationContextObserver,
                              public OverlayRequestQueueImpl::Delegate,
                              public OverlayRequestQueueImpl::Observer,
-                             public WebStateListObserver {
+                             public TabsDependencyInstaller {
  public:
   ~OverlayPresenterImpl() override;
 
@@ -47,7 +46,7 @@ class OverlayPresenterImpl : public BrowserObserver,
     OverlayPresenterImpl* PresenterForModality(OverlayModality modality);
 
    private:
-    OVERLAY_USER_DATA_SETUP(Container);
+    friend class OverlayUserData<Container>;
     explicit Container(Browser* browser);
 
     raw_ptr<Browser> browser_ = nullptr;
@@ -69,7 +68,7 @@ class OverlayPresenterImpl : public BrowserObserver,
 
   // Setter for the active WebState.  Setting to a new value will hide any
   // presented overlays and show the next overlay for the new active WebState.
-  void SetActiveWebState(web::WebState* web_state, bool is_replaced);
+  void SetActiveWebState(web::WebState* web_state);
 
   // Fetches the request queue for `web_state`, creating it if necessary.
   OverlayRequestQueueImpl* GetQueueForWebState(web::WebState* web_state) const;
@@ -119,8 +118,12 @@ class OverlayPresenterImpl : public BrowserObserver,
   void WebStateAddedToBrowser(web::WebState* web_state);
   void WebStateRemovedFromBrowser(web::WebState* web_state);
 
-  // BrowserObserver:
-  void BrowserDestroyed(Browser* browser) override;
+  // TabsDependencyInstaller:
+  void OnWebStateInserted(web::WebState* web_state) override;
+  void OnWebStateRemoved(web::WebState* web_state) override;
+  void OnWebStateDeleted(web::WebState* web_state) override;
+  void OnActiveWebStateChanged(web::WebState* old_active,
+                               web::WebState* new_active) override;
 
   // OverlayRequestQueueImpl::Delegate:
   void OverlayRequestRemoved(OverlayRequestQueueImpl* queue,
@@ -147,14 +150,6 @@ class OverlayPresenterImpl : public BrowserObserver,
   void OverlayPresentationContextDidMoveToWindow(
       OverlayPresentationContext* presentation_context,
       UIWindow* window) override;
-
-  // WebStateListObserver:
-  void WebStateListWillChange(WebStateList* web_state_list,
-                              const WebStateListChangeDetach& detach_change,
-                              const WebStateListStatus& status) override;
-  void WebStateListDidChange(WebStateList* web_state_list,
-                             const WebStateListChange& change,
-                             const WebStateListStatus& status) override;
 
   // Whether the UI delegate is presenting overlay UI for this presenter.  Stays
   // true from the beginning of the presentation until the end of the
@@ -191,8 +186,6 @@ class OverlayPresenterImpl : public BrowserObserver,
   base::ObserverList<OverlayPresenterObserver,
                      /* check_empty= */ true>
       observers_;
-  // Scoped observation.
-  base::ScopedObservation<Browser, BrowserObserver> browser_observation_{this};
 
   base::WeakPtrFactory<OverlayPresenterImpl> weak_factory_{this};
   // Add new members before weak_factory_.

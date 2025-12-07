@@ -10,7 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -39,6 +39,10 @@ namespace gcm {
 class GCMDriver;
 }  // namespace gcm
 
+namespace instance_id {
+class InstanceIDDriver;
+}  // namespace instance_id
+
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
@@ -49,15 +53,12 @@ namespace device_sync {
 
 class ClientAppMetadataProvider;
 class CryptAuthClientFactory;
-class CryptAuthDeviceManager;
 class CryptAuthDeviceNotifier;
 class CryptAuthDeviceRegistry;
 class CryptAuthFeatureStatusSetter;
 class CryptAuthKeyRegistry;
 class CryptAuthScheduler;
 class CryptAuthV2DeviceManager;
-class GcmDeviceInfoProvider;
-class SoftwareFeatureManager;
 
 // Concrete DeviceSync implementation. When DeviceSyncImpl is constructed, it
 // starts an initialization flow with the following steps:
@@ -81,8 +82,8 @@ class DeviceSyncImpl : public DeviceSyncBase,
     static std::unique_ptr<DeviceSyncBase> Create(
         signin::IdentityManager* identity_manager,
         gcm::GCMDriver* gcm_driver,
+        instance_id::InstanceIDDriver* instance_id_driver,
         PrefService* profile_prefs,
-        const GcmDeviceInfoProvider* gcm_device_info_provider,
         ClientAppMetadataProvider* client_app_metadata_provider,
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
         std::unique_ptr<base::OneShotTimer> timer,
@@ -96,8 +97,8 @@ class DeviceSyncImpl : public DeviceSyncBase,
     virtual std::unique_ptr<DeviceSyncBase> CreateInstance(
         signin::IdentityManager* identity_manager,
         gcm::GCMDriver* gcm_driver,
+        instance_id::InstanceIDDriver* instance_id_driver,
         PrefService* profile_prefs,
-        const GcmDeviceInfoProvider* gcm_device_info_provider,
         ClientAppMetadataProvider* client_app_metadata_provider,
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
         std::unique_ptr<base::OneShotTimer> timer,
@@ -221,8 +222,8 @@ class DeviceSyncImpl : public DeviceSyncBase,
   DeviceSyncImpl(
       signin::IdentityManager* identity_manager,
       gcm::GCMDriver* gcm_driver,
+      instance_id::InstanceIDDriver* instance_id_driver,
       PrefService* profile_prefs,
-      const GcmDeviceInfoProvider* gcm_device_info_provider,
       ClientAppMetadataProvider* client_app_metadata_provider,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       base::Clock* clock,
@@ -254,22 +255,9 @@ class DeviceSyncImpl : public DeviceSyncBase,
   std::optional<multidevice::RemoteDevice> GetSyncedDeviceWithPublicKey(
       const std::string& public_key) const;
 
-  void OnSetSoftwareFeatureStateSuccess();
-  void OnSetSoftwareFeatureStateError(const base::UnguessableToken& request_id,
-                                      NetworkRequestError error);
   void OnSetFeatureStatusSuccess();
   void OnSetFeatureStatusError(const base::UnguessableToken& request_id,
                                NetworkRequestError error);
-  void OnFindEligibleDevicesSuccess(
-      base::OnceCallback<void(mojom::NetworkRequestResult,
-                              mojom::FindEligibleDevicesResponsePtr)> callback,
-      const std::vector<cryptauth::ExternalDeviceInfo>& eligible_devices,
-      const std::vector<cryptauth::IneligibleDevice>& ineligible_devices);
-  void OnFindEligibleDevicesError(
-      const base::OnceCallback<void(mojom::NetworkRequestResult,
-                                    mojom::FindEligibleDevicesResponsePtr)>
-          callback,
-      NetworkRequestError error);
   void OnNotifyDevicesSuccess(const base::UnguessableToken& request_id);
   void OnNotifyDevicesError(const base::UnguessableToken& request_id,
                             NetworkRequestError error);
@@ -288,8 +276,8 @@ class DeviceSyncImpl : public DeviceSyncBase,
 
   raw_ptr<signin::IdentityManager> identity_manager_;
   raw_ptr<gcm::GCMDriver> gcm_driver_;
+  raw_ptr<instance_id::InstanceIDDriver> instance_id_driver_;
   raw_ptr<PrefService> profile_prefs_;
-  raw_ptr<const GcmDeviceInfoProvider> gcm_device_info_provider_;
   raw_ptr<ClientAppMetadataProvider> client_app_metadata_provider_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   raw_ptr<base::Clock> clock_;
@@ -331,9 +319,7 @@ class DeviceSyncImpl : public DeviceSyncBase,
   std::unique_ptr<CryptAuthFeatureStatusSetter> feature_status_setter_;
 
   std::unique_ptr<CryptAuthEnrollmentManager> cryptauth_enrollment_manager_;
-  std::unique_ptr<CryptAuthDeviceManager> cryptauth_device_manager_;
   std::unique_ptr<RemoteDeviceProvider> remote_device_provider_;
-  std::unique_ptr<SoftwareFeatureManager> software_feature_manager_;
   std::unique_ptr<CryptAuthDeviceActivityGetter>
       cryptauth_device_activity_getter_;
 

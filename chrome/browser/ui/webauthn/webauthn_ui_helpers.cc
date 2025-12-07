@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ui/webauthn/webauthn_ui_helpers.h"
 
+#include <cstddef>
+#include <string>
+
+#include "base/check.h"
 #include "base/strings/strcat.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/gfx/font_list.h"
@@ -13,11 +17,12 @@
 namespace webauthn_ui_helpers {
 
 std::u16string RpIdToElidedHost(const std::string& relying_party_id,
-                                size_t width) {
+                                size_t width,
+                                gfx::FontList font_list) {
   GURL relying_party_id_url(base::StrCat(
       {url::kHttpsScheme, url::kStandardSchemeSeparator, relying_party_id}));
   DCHECK(relying_party_id_url.is_valid());
-  return url_formatter::ElideHost(relying_party_id_url, gfx::FontList(), width);
+  return url_formatter::ElideHost(relying_party_id_url, font_list, width);
 }
 
 }  // namespace webauthn_ui_helpers

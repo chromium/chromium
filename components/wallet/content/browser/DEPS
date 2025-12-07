@@ -1,0 +1,12 @@
+include_rules = [
+  # go/keep-sorted start
+  "+components/optimization_guide",
+  "+services/shape_detection/public/mojom",
+  # go/keep-sorted end
+]
+
+specific_include_rules = {
+  "content_walletable_pass_ingestion_controller.cc": [
+    "+third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h",
+  ],
+}

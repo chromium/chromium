@@ -21,8 +21,8 @@
 
 namespace webnn::dml {
 
-class BufferImplDml;
 class CommandQueue;
+class TensorImplDml;
 
 // CommandRecorder is mainly responsible for the initialization and execution of
 // a DirectML graph. It wraps a DirectML command recorder, and manages the
@@ -32,7 +32,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandRecorder final {
  public:
   static base::expected<std::unique_ptr<CommandRecorder>, HRESULT> Create(
       scoped_refptr<CommandQueue> queue,
-      Microsoft::WRL::ComPtr<IDMLDevice> dml_device);
+      Microsoft::WRL::ComPtr<IDMLDevice1> dml_device);
 
   ~CommandRecorder();
   CommandRecorder(const CommandRecorder&) = delete;
@@ -76,16 +76,16 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandRecorder final {
                         uint64_t src_offset,
                         uint64_t byte_length);
 
-  // Helper function to upload buffer data from GPU to CPU.
-  void UploadBufferWithBarrier(
-      BufferImplDml* dst_buffer,
+  // Helper function to upload tensor data from GPU to CPU.
+  void UploadTensorWithBarrier(
+      TensorImplDml* dst_tensor,
       Microsoft::WRL::ComPtr<ID3D12Resource> src_buffer,
       size_t buffer_size);
 
-  // Helper function to readback buffer data from GPU to CPU.
-  void ReadbackBufferWithBarrier(
+  // Helper function to readback tensor data from GPU to CPU.
+  void ReadbackTensorWithBarrier(
       Microsoft::WRL::ComPtr<ID3D12Resource> dst_buffer,
-      BufferImplDml* src_buffer,
+      TensorImplDml* src_tensor,
       size_t buffer_size);
 
   // Initialize a compiled DirectML operator, which may also represent a
@@ -122,12 +122,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandRecorder final {
   // descriptors that the compiled operator needs and supply it via
   // `descriptor_heap`.
   //
-  // The input and output resources are supplied by the caller via
-  // `input_bindings` and `output_bindings`. The input and output resources will
-  // be bound to the operator's binding table. The number of bindings should
-  // exactly match the number of input and output tensors of this operator. All
-  // bound resources need to be in the D3D12_RESOURCE_STATE_UNORDERED_ACCESS
-  // state before calling this method.
+  // The operator must be compiled with
+  // `DML_EXECUTION_FLAG_DESCRIPTORS_VOLATILE` flag which allows late bindings.
+  // Caller is expected to bind the input and output resources after calling
+  // this method and before submitting the command list for execution.
   //
   // If the compiled operator also requires any persistent resources, they
   // should be initialized by `InitializeOperator()` and be supplied via
@@ -141,55 +139,61 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandRecorder final {
   HRESULT ExecuteOperator(
       Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator,
       Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptor_heap,
-      base::span<const DML_BINDING_DESC> input_bindings,
-      base::span<const DML_BINDING_DESC> output_bindings,
       const std::optional<DML_BINDING_DESC>& persistent_resource_binding,
       const std::optional<DML_BINDING_DESC>& temporary_resource_binding);
 
+  // Helper functions to bind input and output resources. These functions do not
+  // hold references to the input or output resources; it is the caller's
+  // responsibility to keep them alive until the operator execution has
+  // completed on the GPU.
+  HRESULT BindInputs(base::span<const DML_BINDING_DESC> input_bindings);
+  HRESULT BindOutputs(base::span<const DML_BINDING_DESC> output_bindings);
+
   CommandQueue* command_queue() const { return command_queue_.get(); }
 
-  // Called when a WebNNBuffer requires tracking of GPU progress
+  // Called when a WebNNTensor requires tracking of GPU progress
   // because a recorded command will modify the data which could be accessed
   // by the CPU. The last submission fence will be updated during
   // recording to ensure the CPU can safely use the buffer.
-  void OnBufferAccessed(BufferImplDml* buffer);
+  void OnTensorAccessed(TensorImplDml* tensor);
 
   void ReferenceCommandResources(Microsoft::WRL::ComPtr<IUnknown> object);
 
  private:
   CommandRecorder(
       scoped_refptr<CommandQueue> command_queue,
-      Microsoft::WRL::ComPtr<IDMLDevice> dml_device,
+      Microsoft::WRL::ComPtr<IDMLDevice1> dml_device,
       Microsoft::WRL::ComPtr<ID3D12CommandAllocator> command_allocator,
-      Microsoft::WRL::ComPtr<IDMLCommandRecorder> command_recorder);
+      Microsoft::WRL::ComPtr<IDMLCommandRecorder> command_recorder,
+      Microsoft::WRL::ComPtr<IDMLBindingTable> binding_table);
 
   // Records execution of a dispatchable object (an operator initializer, or a
   // compiled operator) onto a command list.
-  void RecordDispatch(IDMLDispatchable* dispatchable,
-                      IDMLBindingTable* binding_table);
+  void RecordDispatch(IDMLDispatchable* dispatchable);
 
   bool is_open_ = false;
   // The first call to `CloseAndExecute()` sets the first submitted fence value.
   uint64_t last_submitted_fence_value_ = UINT64_MAX;
 
   scoped_refptr<CommandQueue> command_queue_;
-  Microsoft::WRL::ComPtr<IDMLDevice> dml_device_;
+  Microsoft::WRL::ComPtr<IDMLDevice1> dml_device_;
   Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device_;
   Microsoft::WRL::ComPtr<ID3D12CommandAllocator> command_allocator_;
   Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> command_list_;
   Microsoft::WRL::ComPtr<IDMLCommandRecorder> command_recorder_;
+  Microsoft::WRL::ComPtr<IDMLBindingTable> binding_table_;
 
   // Keep the resources used by recorded commands. After commands submission,
   // these resources would be kept alive until the command queue has completed
   // the execution of these commands on GPU.
   std::vector<Microsoft::WRL::ComPtr<IUnknown>> command_resources_;
 
-  // Keep WebNNBuffers used in recorded commands pending execution. The key is
+  // Keep WebNNTensors used in recorded commands pending execution. The key is
   // a strong pointer to the underlying ID3D12Resource to ensure the recorded
   // buffer entry will always remain valid until Open() is called again to reset
   // it.
-  std::map<Microsoft::WRL::ComPtr<ID3D12Resource>, base::WeakPtr<BufferImplDml>>
-      command_buffer_impls_;
+  std::map<Microsoft::WRL::ComPtr<ID3D12Resource>, base::WeakPtr<TensorImplDml>>
+      command_tensor_impls_;
 };
 
 }  // namespace webnn::dml

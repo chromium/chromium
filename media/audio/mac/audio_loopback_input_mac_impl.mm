@@ -15,11 +15,13 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "media/audio/mac/audio_loopback_input_mac.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"
 
 using SampleCallback = base::RepeatingCallback<
@@ -38,6 +40,8 @@ constexpr float kMaxVolume = 1.0;
 class API_AVAILABLE(macos(13.0)) SharedHelper
     : public base::RefCountedThreadSafe<SharedHelper> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   SharedHelper(const base::TimeDelta shareable_content_timeout)
       : volume_(kMaxVolume),
         shareable_content_timeout_(shareable_content_timeout) {}
@@ -139,10 +143,13 @@ class API_AVAILABLE(macos(13.0)) SharedHelper
 
  private:
   friend class base::RefCountedThreadSafe<SharedHelper>;
+  ~SharedHelper() = default;
 
   class ShareableContentData
       : public base::RefCountedThreadSafe<ShareableContentData> {
    public:
+    REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
     // Event used to signal completion of shareable content enumeration.
     base::WaitableEvent event;
 
@@ -157,8 +164,6 @@ class API_AVAILABLE(macos(13.0)) SharedHelper
     friend class base::RefCountedThreadSafe<ShareableContentData>;
     ~ShareableContentData() = default;
   };
-
-  ~SharedHelper() = default;
 
   // Invoked when shareable content (displays, applications, windows) has been
   // enumerated. Generates a filter based on the available content. Runs on a
@@ -529,7 +534,9 @@ void SCKAudioInputStream::OnStreamSample(
     for (int channel = 0; channel < params_.channels(); channel++) {
       float* channel_data = reinterpret_cast<float*>(buffer) +
                             channel * total_frame_count + frames_delivered;
-      audio_bus_->SetChannelData(channel, channel_data);
+      audio_bus_->SetChannelData(
+          channel, base::span(channel_data, base::checked_cast<size_t>(
+                                                params_.frames_per_buffer())));
     }
 
     // Adjust the volume.

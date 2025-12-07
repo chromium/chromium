@@ -18,6 +18,6 @@ public class CronetSampleTest {
     @Test
     @SmallTest
     public void testSimple() throws Exception {
-        assertThat(1).isEqualTo(1);
+        assertThat(1 + 1).isEqualTo(2);
     }
 }

@@ -2,21 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/customization/customization_document.h"
 
 #include <stddef.h>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/base/locale_util.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/l10n_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -24,6 +21,7 @@
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -33,6 +31,8 @@ namespace {
 
 using locale_util::LanguageSwitchResult;
 using locale_util::SwitchLanguageCallback;
+using ::testing::Optional;
+using ::testing::StrEq;
 
 class LanguageSwitchedWaiter {
  public:
@@ -84,10 +84,11 @@ std::string GetExpectedLanguage(const std::string& required) {
   std::string expected = required;
 
   for (size_t i = 0; i < std::size(locale_aliases); ++i) {
-    if (required != locale_aliases[i].locale_alias)
+    if (required != UNSAFE_TODO(locale_aliases[i]).locale_alias) {
       continue;
+    }
 
-    expected = locale_aliases[i].locale_name;
+    expected = UNSAFE_TODO(locale_aliases[i]).locale_name;
     break;
   }
 
@@ -119,7 +120,7 @@ std::string Print(const std::vector<std::string>& locales) {
   return result;
 }
 
-const char* kVPDInitialLocales[] = {
+constexpr const char* kVPDInitialLocales[] = {
     "ar",
     "ar,bg",
     "ar,bg,bn",
@@ -199,11 +200,9 @@ IN_PROC_BROWSER_TEST_F(CustomizationLocaleTest, CheckAvailableLocales) {
                                 ProfileManager::GetActiveUserProfile());
     waiter.Wait();
     {
-      std::string resolved_locale;
       base::ScopedAllowBlockingForTesting allow_blocking;
-      l10n_util::CheckAndResolveLocale(languages_available[i],
-                                       &resolved_locale);
-      EXPECT_EQ(GetExpectedLanguage(languages_available[i]), resolved_locale)
+      EXPECT_THAT(l10n_util::CheckAndResolveLocale(languages_available[i]),
+                  Optional(StrEq(GetExpectedLanguage(languages_available[i]))))
           << "CheckAndResolveLocale() failed for language='"
           << languages_available[i] << "'";
     }
@@ -240,7 +239,8 @@ IN_PROC_BROWSER_TEST_P(CustomizationVPDTest, GetUILanguageList) {
       << "', locales=" << Print(locales);
 
   auto ui_language_list =
-      GetUILanguageList(nullptr, "", input_method::InputMethodManager::Get());
+      GetUILanguageList(g_browser_process->GetApplicationLocale(), nullptr, "",
+                        input_method::InputMethodManager::Get());
   EXPECT_GE(ui_language_list.size(), locales.size())
       << "Test failed for initial_locale='" << GetParam() << "'";
 

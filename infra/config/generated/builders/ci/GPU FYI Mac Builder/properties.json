@@ -90,35 +90,6 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Mac FYI Experimental Retina Release (NVIDIA)",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "builder_group": "chromium.gpu.fyi",
-              "execution_mode": "TEST",
-              "legacy_chromium_config": {
-                "apply_configs": [
-                  "mb"
-                ],
-                "build_config": "Release",
-                "config": "chromium",
-                "target_bits": 64,
-                "target_platform": "mac"
-              },
-              "legacy_gclient_config": {
-                "config": "chromium"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "GPU FYI Mac Builder",
-                "project": "chromium"
-              },
-              "run_tests_serially": true
-            }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
               "builder": "Mac FYI Release (Intel)",
               "project": "chromium"
             },
@@ -148,7 +119,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Mac FYI Retina Release (AMD)",
+              "builder": "Mac FYI Retina Release (AMD Radeon Pro 555X)",
               "project": "chromium"
             },
             "builder_spec": {
@@ -177,7 +148,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Mac FYI Retina Release (NVIDIA)",
+              "builder": "Mac FYI Retina Release (AMD)",
               "project": "chromium"
             },
             "builder_spec": {
@@ -254,22 +225,17 @@
         },
         {
           "bucket": "ci",
-          "builder": "Mac FYI Experimental Retina Release (NVIDIA)",
-          "project": "chromium"
-        },
-        {
-          "bucket": "ci",
           "builder": "Mac FYI Release (Intel)",
           "project": "chromium"
         },
         {
           "bucket": "ci",
-          "builder": "Mac FYI Retina Release (AMD)",
+          "builder": "Mac FYI Retina Release (AMD Radeon Pro 555X)",
           "project": "chromium"
         },
         {
           "bucket": "ci",
-          "builder": "Mac FYI Retina Release (NVIDIA)",
+          "builder": "Mac FYI Retina Release (AMD)",
           "project": "chromium"
         },
         {
@@ -281,6 +247,10 @@
       "mirroring_builder_group_and_names": [
         {
           "builder": "gpu-fyi-try-mac-amd-pro-rel",
+          "group": "tryserver.chromium.mac"
+        },
+        {
+          "builder": "gpu-fyi-try-mac-amd-retina-555x-rel",
           "group": "tryserver.chromium.mac"
         },
         {
@@ -298,30 +268,20 @@
         {
           "builder": "gpu-fyi-try-mac-intel-rel",
           "group": "tryserver.chromium.mac"
-        },
-        {
-          "builder": "gpu-fyi-try-mac-nvidia-retina-exp",
-          "group": "tryserver.chromium.mac"
-        },
-        {
-          "builder": "gpu-fyi-try-mac-nvidia-retina-rel",
-          "group": "tryserver.chromium.mac"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/GPU FYI Mac Builder/targets"
     }
-  },
-  "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "metrics_project": "chromium-reclient-metrics",
-    "scandeps_server": true
   },
   "$build/siso": {
     "configs": [
       "builder"
     ],
+    "enable_cloud_monitoring": true,
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
+    "metrics_project": "chromium-reclient-metrics",
     "project": "rbe-chromium-trusted",
     "remote_jobs": 250
   },

@@ -7,14 +7,12 @@
 
 #include <map>
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/passphrase_enums.h"
-#include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/data_type_connector.h"
 #include "components/sync/engine/nudge_handler.h"
 #include "components/sync/engine/sync_encryption_handler.h"
@@ -28,19 +26,21 @@ class SyncEncryptionHandler;
 class DataTypeWorker;
 class UpdateHandler;
 
-using UpdateHandlerMap = std::map<DataType, UpdateHandler*>;
-using CommitContributorMap = std::map<DataType, CommitContributor*>;
+using UpdateHandlerMap =
+    std::map<DataType, raw_ptr<UpdateHandler, CtnExperimental>>;
+using CommitContributorMap =
+    std::map<DataType, raw_ptr<CommitContributor, CtnExperimental>>;
 
 // Keeps track of the sets of active update handlers and commit contributors.
 // Lives on the sync sequence.
 class DataTypeRegistry : public DataTypeConnector,
-                          public SyncEncryptionHandler::Observer {
+                         public SyncEncryptionHandler::Observer {
  public:
-  // |nudge_handler|, |cancelation_signal| and |sync_encryption_handler| must
+  // `nudge_handler`, `cancelation_signal` and `sync_encryption_handler` must
   // outlive this object.
   DataTypeRegistry(NudgeHandler* nudge_handler,
-                    CancelationSignal* cancelation_signal,
-                    SyncEncryptionHandler* sync_encryption_handler);
+                   CancelationSignal* cancelation_signal,
+                   SyncEncryptionHandler* sync_encryption_handler);
 
   DataTypeRegistry(const DataTypeRegistry&) = delete;
   DataTypeRegistry& operator=(const DataTypeRegistry&) = delete;
@@ -76,7 +76,7 @@ class DataTypeRegistry : public DataTypeConnector,
   // applied.
   DataTypeSet GetInitialSyncEndedTypes() const;
 
-  // Returns the update handler for |type|. If UpdateHandler of |type| doesn't
+  // Returns the update handler for `type`. If UpdateHandler of `type` doesn't
   // exist, returns nullptr.
   const UpdateHandler* GetUpdateHandler(DataType type) const;
   UpdateHandler* GetMutableUpdateHandler(DataType type);
@@ -85,9 +85,6 @@ class DataTypeRegistry : public DataTypeConnector,
   UpdateHandlerMap* update_handler_map();
   CommitContributorMap* commit_contributor_map();
   KeystoreKeysHandler* keystore_keys_handler();
-
-  // Returns types that have local changes yet to be synced to the server.
-  DataTypeSet GetTypesWithUnsyncedData() const;
 
   bool HasUnsyncedItems() const;
 

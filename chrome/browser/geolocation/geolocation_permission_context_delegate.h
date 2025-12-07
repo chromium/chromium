@@ -13,10 +13,6 @@ namespace content {
 class WebContents;
 }
 
-namespace permissions {
-class PermissionRequestID;
-}
-
 class GeolocationPermissionContextDelegate
     : public permissions::GeolocationPermissionContext::Delegate {
  public:
@@ -34,9 +30,7 @@ class GeolocationPermissionContextDelegate
   // checks that it is only code from valid iframes.
   // It also adds special logic when called through an extension.
   bool DecidePermission(
-      const permissions::PermissionRequestID& id,
-      const GURL& requesting_origin,
-      bool user_gesture,
+      const permissions::PermissionRequestData& request_data,
       permissions::BrowserPermissionCallback* callback,
       permissions::GeolocationPermissionContext* context) override;
 

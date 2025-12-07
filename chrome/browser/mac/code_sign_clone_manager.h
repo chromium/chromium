@@ -8,13 +8,13 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "content/public/common/main_function_params.h"
 
 namespace code_sign_clone_manager {
 
 BASE_DECLARE_FEATURE(kMacAppCodeSignClone);
+BASE_DECLARE_FEATURE(kMacAppCodeSignCloneRenameAsBundle);
 
 //
 // Manages a temporary copy-on-write clone of an app bundle. The temporary clone
@@ -79,8 +79,11 @@ BASE_DECLARE_FEATURE(kMacAppCodeSignClone);
 // will become inaccessible on the filesystem and their disk blocks will be
 // freed.
 //
+// The clone is given a ".bundle" extension to avoid Launch Services issues; see
+// https://crbug.com/381199182 for more details.
+//
 // Example path to the cloned app bundle:
-//   /private/var/folders/c4/ygf_t4gn0tx0k1y1hm32hh6w00b_4p/X/org.chromium.Chromium.code_sign_clone/code_sign_clone.tKdILk/Chromium.app
+//   /private/var/folders/c4/ygf_t4gn0tx0k1y1hm32hh6w00b_4p/X/org.chromium.Chromium.code_sign_clone/code_sign_clone.tKdILk/Chromium.app.bundle
 //
 // Each clone contains an instance-specific snapshot of an on-disk
 // representation of Chrome. The bundles are verifiable by both dynamic and
@@ -135,6 +138,30 @@ namespace internal {
 // The entry point into the background clone cleanup process. This is not a user
 // API.
 int ChromeCodeSignCloneCleanupMain(content::MainFunctionParams main_parameters);
+
+//
+// Checks if a file is open more than once, globally (across all processes on a
+// host), including the calling process.
+//
+// Usage of this check is fairly niche. It does not provide any information
+// about which process has a reference to an open file. For that see
+// `proc_listpidspath` (The linked header is from macOS 14.5).
+// https://github.com/apple-oss-distributions/xnu/blob/xnu-10063.121.3/libsyscall/wrappers/libproc/libproc.h
+//
+// This function simply checks if a file is exclusively opened. Performance
+// concerns may be a reason to use this function over `proc_listpidspath`, which
+// needs to loop over the process tree.
+//
+// Note: File descriptors that have been `dup`ed or inherited only count as
+// being opened once for this check’s purpose.
+//
+enum class FileOpenMoreThanOnce {
+  kNo = 0,
+  kYes = 1,
+  kError = 2,
+};
+FileOpenMoreThanOnce IsFileOpenMoreThanOnce(const base::FilePath& file_path);
+FileOpenMoreThanOnce IsFileOpenMoreThanOnce(int file_descriptor);
 
 }  // namespace internal
 

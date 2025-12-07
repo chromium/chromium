@@ -26,7 +26,7 @@ SavePageRequest::SavePageRequest(int64_t request_id,
 
 SavePageRequest::SavePageRequest(const SavePageRequest& other) = default;
 
-SavePageRequest::~SavePageRequest() {}
+SavePageRequest::~SavePageRequest() = default;
 
 bool SavePageRequest::operator==(const SavePageRequest& other) const {
   return request_id_ == other.request_id_ && url_ == other.url_ &&

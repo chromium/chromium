@@ -36,16 +36,6 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
-			<string>Reset First Follow</string>
-			<key>Key</key>
-			<string>ResetFirstFollow</string>
-			<key>DefaultValue</key>
-			<false/>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
 			<string>Always show First Follow</string>
 			<key>Key</key>
 			<string>AlwaysShowFirstFollow</string>
@@ -79,16 +69,6 @@
 			<string>Ignore Tile Ablation Conditions</string>
 			<key>Key</key>
 			<string>IgnoreTileAblationConditions</string>
-			<key>DefaultValue</key>
-			<false/>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Always show Follow IPH</string>
-			<key>Key</key>
-			<string>AlwaysShowFollowIPH</string>
 			<key>DefaultValue</key>
 			<false/>
 		</dict>
@@ -152,9 +132,9 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
-			<string>Force Upgrade Promo</string>
+			<string>Ignore Device Locale Conditions</string>
 			<key>Key</key>
-			<string>UpgradePromoForceEnabled</string>
+			<string>IgnoreDeviceLocaleConditions</string>
 			<key>DefaultValue</key>
 			<false/>
 		</dict>
@@ -172,20 +152,32 @@
 				<string></string>
 				<string>promos_manager::Promo::AppStoreRating</string>
 				<string>promos_manager::Promo::DefaultBrowser</string>
+				<string>promos_manager::Promo::DefaultBrowserRemindMeLater</string>
+				<string>promos_manager::Promo::AllTabsDefaultBrowser</string>
+				<string>promos_manager::Promo::MadeForIOSDefaultBrowser</string>
+				<string>promos_manager::Promo::StaySafeDefaultBrowser</string>
+				<string>promos_manager::Promo::DefaultBrowserOffCycle</string>
 				<string>promos_manager::Promo::PostRestoreDefaultBrowserAlert</string>
-				<string>promos_manager::Promo::OmniboxPosition</string>
 				<string>promos_manager::Promo::DockingPromo</string>
-				<string>promos_manager::Promo::PostDefaultAbandonment</string>
+				<string>promos_manager::Promo::BWGPromo</string>
+				<string>promos_manager::Promo::FullscreenSignin</string>
+				<string>promos_manager::Promo::WelcomeBack</string>
 			</array>
 			<key>Titles</key>
 			<array>
 				<string>Disabled (No Promos Forced)</string>
 				<string>App Store Rating</string>
 				<string>Default Browser</string>
+				<string>Default Browser Reminder</string>
+				<string>Default Browser &quot;All Tabs&quot; version</string>
+				<string>Default Browser &quot;Made for iOS&quot; version</string>
+				<string>Default Browser &quot;Stay safe&quot; version</string>
+				<string>Default Browser off-cycle version</string>
 				<string>Post Restore Default Browser Alert</string>
-				<string>Omnibox Position</string>
 				<string>Docking Promo</string>
-				<string>Post-Default Browser Abandonment Alert</string>
+				<string>BWG Promo</string>
+				<string>Fullscreen sign-in</string>
+				<string>Welcome Back Promo</string>
 			</array>
 		</dict>
 		<dict>
@@ -200,15 +192,27 @@
 			<key>Values</key>
 			<array>
 				<string></string>
+				<string>Desktop</string>
 				<string>AndroidPhone</string>
 				<string>SyncedAndFirstDevice</string>
 			</array>
 			<key>Titles</key>
 			<array>
 				<string>Disabled</string>
+				<string>Desktop</string>
 				<string>Android Phone</string>
 				<string>Synced And First Device</string>
 			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Force Shopper Experience</string>
+			<key>Key</key>
+			<string>ForceExperienceForShopper</string>
+			<key>DefaultValue</key>
+			<false/>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -362,6 +366,30 @@
 		</dict>
 		<dict>
 			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Safety Check Notifications (Inactivity Threshold)</string>
+			<key>Key</key>
+			<string>SafetyCheckNotificationsInactivityThreshold</string>
+			<key>DefaultValue</key>
+			<integer>0</integer>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>30</integer>
+				<integer>300</integer>
+				<integer>3600</integer>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Unset</string>
+				<string>30 seconds</string>
+				<string>5 minutes</string>
+				<string>1 hour</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
 			<string>WidgetKit refresh 5 minutes</string>
@@ -369,6 +397,84 @@
 			<string>WidgetKitRefreshFiveMinutes</string>
 			<key>DefaultValue</key>
 			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Tips (Magic Stack) State</string>
+			<key>Key</key>
+			<string>TipsMagicStackStateOverride</string>
+			<key>DefaultValue</key>
+			<integer>0</integer>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>3</integer>
+				<integer>4</integer>
+				<integer>5</integer>
+				<integer>6</integer>
+				<integer>7</integer>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>None</string>
+				<string>Lens Search</string>
+				<string>Lens Shop</string>
+				<string>Lens Translate</string>
+				<string>Address Bar Position</string>
+				<string>Save Passwords</string>
+				<string>Autofill Passwords</string>
+				<string>Enhanced Safe Browsing</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Force product image in Lens Shop Tip</string>
+			<key>Key</key>
+			<string>TipsMagicStackLensShopWithImage</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<false/>
+			<key>Key</key>
+			<string>InactiveTabsDemoMode</string>
+			<key>Title</key>
+			<string>Force inactive tabs threshold (1min)</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>Key</key>
+			<string>AsyncStartupOverrideResponse</string>
+			<key>Title</key>
+			<string>Asynchronous startup</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<string></string>
+				<string>500ms</string>
+				<string>FirstPartyIncognitoNoDelay</string>
+				<string>FirstPartyIncognito500Delay</string>
+				<string>AlwaysShowTheUI</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Unset</string>
+				<string>500ms delay</string>
+				<string>With first party incognito</string>
+				<string>With 500ms delayed first party incognito</string>
+				<string>Always show the UI</string>
+			</array>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -451,12 +557,22 @@
 			</array>
 		</dict>
 		<dict>
-		    <key>Type</key>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Enable AI Prototyping Menu</string>
+			<key>Key</key>
+			<string>EnableAIPrototypingMenu</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
-			<string>Switch Profile Debugging</string>
+			<string>Forced Tips Notification</string>
 			<key>Key</key>
-			<string>DisplaySwitchProfile</string>
+			<string>ForcedTipsNotificationType</string>
 			<key>DefaultValue</key>
 			<integer>0</integer>
 			<key>Values</key>
@@ -465,13 +581,53 @@
 				<integer>1</integer>
 				<integer>2</integer>
 				<integer>3</integer>
+				<integer>5</integer>
+				<integer>6</integer>
+				<integer>7</integer>
+				<integer>8</integer>
+				<integer>9</integer>
+				<integer>10</integer>
+				<integer>11</integer>
+				<integer>13</integer>
 			</array>
 			<key>Titles</key>
 			<array>
-				<string>Disabled</string>
-				<string>Enabled (creates 1 test profile)</string>
-				<string>Enabled (creates 2 test profiles)</string>
-				<string>Enabled (creates 3 test profiles)</string>
+				<string>Unset</string>
+				<string>Default Browser</string>
+				<string>Whats New</string>
+				<string>Sign In</string>
+				<string>Set Up List</string>
+				<string>Docking</string>
+				<string>Omnibox Position</string>
+				<string>Lens</string>
+				<string>Enhanced Safe Browsing</string>
+				<string>Lens Overlay</string>
+				<string>CPE</string>
+				<string>Trusted Vault</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Tips Notification Trigger</string>
+			<key>Key</key>
+			<string>TipsNotificationTrigger</string>
+			<key>DefaultValue</key>
+			<integer>0</integer>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>5</integer>
+				<integer>10</integer>
+				<integer>30</integer>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Unset</string>
+				<string>5 Seconds</string>
+				<string>10 Seconds</string>
+				<string>30 Seconds</string>
 			</array>
 		</dict>
 		<dict>
@@ -699,6 +855,20 @@
 			<string>AlternateOriginServerHost</string>
 			<key>DefaultValue</key>
 			<string></string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>Lens Result Panel GWS URL</string>
+			<key>Key</key>
+			<string>LensResultPanelGwsURL</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>KeyboardType</key>
+			<string>URL</string>
 			<key>AutocorrectionType</key>
 			<string>No</string>
 		</dict>

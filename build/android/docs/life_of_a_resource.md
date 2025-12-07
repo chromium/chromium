@@ -217,10 +217,6 @@ When webview is loaded it calls this [R file's][Base Module R.java File]
 deobfuscating webview resource ids, disregard the first two bytes in the id when
 looking it up in the `R.txt` file.
 
-Monochrome, when loaded as webview, rewrites the package ids of resources used
-by the webview portion to the correct value at runtime, otherwise, its resources
-have package id `0x7f` when run as a regular apk.
-
 [Base Module R.java File]: https://cs.chromium.org/chromium/src/out/android-Debug/gen/android_webview/system_webview_apk/generated_java/gen/base_module/R.java
 
 ## How R.java files are generated
@@ -244,12 +240,12 @@ package gen.base_module;
 
 public final class R {
     public static class anim  {
-        public static final int abc_fade_in = 0x7f010000;
-        public static final int abc_fade_out = 0x7f010001;
-        public static final int abc_slide_in_top = 0x7f010007;
+        public static int abc_fade_in = 0x7f010000;
+        public static int abc_fade_out = 0x7f010001;
+        public static int abc_slide_in_top = 0x7f010007;
     }
     public static class animator  {
-        public static final int design_appbar_state_list_animator = 0x7f020000;
+        public static int design_appbar_state_list_animator = 0x7f020000;
     }
 }
 ```
@@ -266,10 +262,18 @@ public final class R {
     public static class anim extends gen.base_module.R.anim {
     }
     public static class animator extends gen.base_module.R.animator  {
-        public static final int design_appbar_state_list_animator = 0x7f030000;
+        // Each DFM uses a unique package byte (here it's 7e rather than 7f)
+        public static int design_appbar_state_list_animator = 0x7e020000;
     }
 }
 ```
+
+*** note
+**Note:** Since some Android APIs (E.g. notification icons) assume resources to
+be in the base module, we currently move all DFM resources to the base module
+as a build step.
+***
+
 
 ### Per-Library `R.java` Files
 Generated for each `android_library()` target that sets `resources_package`.

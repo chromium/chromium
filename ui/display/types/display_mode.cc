@@ -29,7 +29,7 @@ DisplayMode::DisplayMode(const gfx::Size& size,
                   refresh_rate,
                   /*vsync_rate_min=*/std::nullopt) {}
 
-DisplayMode::~DisplayMode() {}
+DisplayMode::~DisplayMode() = default;
 
 std::unique_ptr<DisplayMode> DisplayMode::Clone() const {
   return base::WrapUnique(
@@ -42,18 +42,9 @@ std::unique_ptr<DisplayMode> DisplayMode::CopyWithSize(
                                        vsync_rate_min_);
 }
 
-void DisplayMode::set_vsync_rate_min(
-    const std::optional<float>& vsync_rate_min) {
-  if (vsync_rate_min_ == vsync_rate_min) {
-    return;
-  }
-  if (vsync_rate_min_.has_value()) {
-    LOG(WARNING) << "set_vsync_rate_min() called when it is already populated.";
-  }
-  vsync_rate_min_ = vsync_rate_min;
-}
-
 bool DisplayMode::operator<(const DisplayMode& other) const {
+  if (is_interlaced_ && !other.is_interlaced_)
+    return true;
   if (size_.GetArea() < other.size_.GetArea())
     return true;
   if (size_.GetArea() > other.size_.GetArea())

@@ -25,17 +25,6 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
-namespace WTF {
-
-template <>
-struct CrossThreadCopier<media::AudioParameters> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = media::AudioParameters;
-  static Type Copy(Type pointer) { return pointer; }
-};
-
-}  // namespace WTF
-
 namespace blink {
 
 namespace {
@@ -330,7 +319,7 @@ void TrackAudioRenderer::SwitchOutputDevice(
     return;
   }
 
-  output_device_id_ = String(device_id.data(), device_id.size());
+  output_device_id_ = String(device_id);
   bool was_sink_started = sink_started_;
 
   if (sink_)

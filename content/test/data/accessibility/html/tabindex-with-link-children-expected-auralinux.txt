@@ -1,0 +1,12 @@
+[document web]
+++[section]
+++++[static] name='All of the following '
+++++[link] name='links'
+++++++[static] name='links'
+++++[static] name=' are included '
+++++[link] name='within'
+++++++[static] name='within'
+++++[static] name=' one '
+++++[link] name='span'
+++++++[static] name='span'
+++++[static] name='.'

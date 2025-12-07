@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
@@ -20,22 +21,16 @@ namespace blink {
 
 class CSSOffsetRotationNonInterpolableValue : public NonInterpolableValue {
  public:
+  explicit CSSOffsetRotationNonInterpolableValue(
+      OffsetRotationType rotation_type)
+      : rotation_type_(rotation_type) {}
   ~CSSOffsetRotationNonInterpolableValue() override = default;
-
-  static scoped_refptr<CSSOffsetRotationNonInterpolableValue> Create(
-      OffsetRotationType rotation_type) {
-    return base::AdoptRef(
-        new CSSOffsetRotationNonInterpolableValue(rotation_type));
-  }
 
   OffsetRotationType RotationType() const { return rotation_type_; }
 
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
-  CSSOffsetRotationNonInterpolableValue(OffsetRotationType rotation_type)
-      : rotation_type_(rotation_type) {}
-
   OffsetRotationType rotation_type_;
 };
 
@@ -92,7 +87,8 @@ InterpolationValue ConvertOffsetRotate(const StyleOffsetRotation& rotation) {
   return InterpolationValue(
       MakeGarbageCollected<InterpolableNumber>(
           rotation.angle, CSSPrimitiveValue::UnitType::kDegrees),
-      CSSOffsetRotationNonInterpolableValue::Create(rotation.type));
+      MakeGarbageCollected<CSSOffsetRotationNonInterpolableValue>(
+          rotation.type));
 }
 
 }  // namespace
@@ -128,7 +124,7 @@ InterpolationValue CSSOffsetRotateInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSOffsetRotateInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState&,
     ConversionCheckers&) const {
   if (auto* identifier = DynamicTo<CSSIdentifierValue>(value)) {
     DCHECK_EQ(identifier->GetValueID(), CSSValueID::kAuto);
@@ -176,7 +172,7 @@ InterpolationValue CSSOffsetRotateInterpolationType::MaybeConvertValue(
   }
   return InterpolationValue(
       MakeGarbageCollected<InterpolableNumber>(*angle),
-      CSSOffsetRotationNonInterpolableValue::Create(type));
+      MakeGarbageCollected<CSSOffsetRotationNonInterpolableValue>(type));
 }
 
 PairwiseInterpolationValue CSSOffsetRotateInterpolationType::MaybeMergeSingles(
@@ -217,7 +213,7 @@ void CSSOffsetRotateInterpolationType::Composite(
     underlying_value_owner.MutableValue().interpolable_value->ScaleAndAdd(
         underlying_fraction, *value.interpolable_value);
   } else {
-    underlying_value_owner.Set(*this, value);
+    underlying_value_owner.Set(this, value);
   }
 }
 

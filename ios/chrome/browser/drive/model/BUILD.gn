@@ -13,7 +13,6 @@ source_set("drive_availability") {
     "//components/prefs",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
   ]
@@ -30,6 +29,7 @@ source_set("drive_tab_helper") {
     "//base",
     "//ios/chrome/browser/drive/model:drive_service",
     "//ios/chrome/browser/drive/model:drive_service_factory",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",
     "//ios/web/public",
     "//ios/web/public:web_state_observer",
@@ -46,6 +46,7 @@ source_set("drive_upload_task") {
     ":metrics",
     "//base",
     "//ios/chrome/browser/download/model:mime_types",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model:system_identity",
     "//net",
     "//url",
@@ -72,9 +73,14 @@ source_set("drive_service") {
     "drive_service.mm",
     "drive_service_configuration.h",
   ]
-  deps = [
-    "//components/keyed_service/core",
-    "//ios/chrome/browser/shared/model/browser_state",
+  public_deps = [ "//base" ]
+  deps = [ "//components/keyed_service/core" ]
+}
+
+source_set("drive_file_downloader") {
+  sources = [
+    "drive_file_downloader.h",
+    "drive_file_downloader.mm",
   ]
   public_deps = [ "//base" ]
 }
@@ -92,6 +98,7 @@ source_set("drive_list") {
     "drive_list.h",
     "drive_list.mm",
   ]
+  deps = [ "//ios/chrome/browser/shared/ui/symbols" ]
   public_deps = [ "//base" ]
 }
 
@@ -103,25 +110,13 @@ source_set("drive_service_factory") {
   deps = [
     ":drive_service",
     "//base",
-    "//components/keyed_service/ios",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
     "//ios/public/provider/chrome/browser/drive:drive_api",
-  ]
-}
-
-source_set("manage_storage_url_util") {
-  sources = [
-    "manage_storage_url_util.h",
-    "manage_storage_url_util.mm",
-  ]
-  deps = [
-    "//base",
-    "//net",
-    "//url",
   ]
 }
 
@@ -147,13 +142,19 @@ source_set("test_constants") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "test_drive_file_downloader.h",
+    "test_drive_file_downloader.mm",
     "test_drive_file_uploader.h",
     "test_drive_file_uploader.mm",
+    "test_drive_list.h",
+    "test_drive_list.mm",
     "test_drive_service.h",
     "test_drive_service.mm",
   ]
   public_deps = [
+    ":drive_file_downloader",
     ":drive_file_uploader",
+    ":drive_list",
     ":drive_service",
     ":test_constants",
     "//base",
@@ -179,9 +180,10 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//ios/chrome/browser/download/model:mime_types",
     "//ios/chrome/browser/drive/model:upload_task",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
   ]

@@ -4,19 +4,19 @@
 
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
 
+#include <string>
 #include <utility>
 
-#include <string>
 #include "base/memory/raw_ptr.h"
 #include "base/test/null_task_runner.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/interfaces/bindings/tests/sample_service.mojom-blink.h"
+#include "mojo/public/interfaces/bindings/tests/sample_service.test-mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/heap_observer_set.h"
+#include "third_party/blink/renderer/platform/heap_observer_list.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
@@ -104,12 +104,12 @@ class HeapMojoReceiverSetDisconnectHandlerBaseTest
     this->owner_->receiver_set().Add(
         pending_remote.InitWithNewPipeAndPassReceiver(), this->task_runner());
     remote_.Bind(std::move(pending_remote));
-    remote_.set_disconnect_handler(WTF::BindOnce(
+    remote_.set_disconnect_handler(BindOnce(
         [](HeapMojoReceiverSetDisconnectHandlerBaseTest* receiver_set_test) {
           receiver_set_test->run_loop().Quit();
           receiver_set_test->disconnected() = true;
         },
-        WTF::Unretained(this)));
+        Unretained(this)));
   }
 
   base::RunLoop run_loop_;
@@ -138,7 +138,7 @@ class HeapMojoReceiverSetDisconnectWithReasonHandlerBaseTest
     this->owner_->receiver_set().Add(
         pending_remote.InitWithNewPipeAndPassReceiver(), this->task_runner());
     this->remote_.Bind(std::move(pending_remote));
-    this->remote_.set_disconnect_with_reason_handler(WTF::BindOnce(
+    this->remote_.set_disconnect_with_reason_handler(BindOnce(
         [](HeapMojoReceiverSetDisconnectWithReasonHandlerBaseTest*
                receiver_set_test,
            const uint32_t custom_reason, const std::string& description) {
@@ -146,7 +146,7 @@ class HeapMojoReceiverSetDisconnectWithReasonHandlerBaseTest
           receiver_set_test->disconnected_reason_code() = custom_reason;
           receiver_set_test->disconnected_description() = description;
         },
-        WTF::Unretained(this)));
+        Unretained(this)));
   }
 
   std::optional<uint32_t> disconnected_reason_code_;

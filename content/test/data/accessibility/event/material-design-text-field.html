@@ -1,0 +1,71 @@
+<!--
+@WAIT-FOR:Ready
+@EVENTS-TREE-DUMP
+@AURALINUX-DENY:CHILDREN-CHANGED*
+@AURALINUX-DENY:PARENT-CHANGED*
+@UIA-WIN-DENY:*StructureChanged*
+@WIN-DENY:EVENT_OBJECT_LOCATIONCHANGE*
+@WIN-DENY:EVENT_OBJECT_REORDER*
+@WIN-DENY:EVENT_OBJECT_SHOW*
+@WIN-DENY:EVENT_OBJECT_HIDE*
+-->
+<!doctype html>
+<html>
+<head>
+    <title>Material Web Text Field Events</title>
+    <script type="module">
+        import { injectImportMap, loadAndWaitForReady, setupEventTestRunner, waitForStable } from "../material-design/resources/utils.js";
+        injectImportMap();
+
+        const components = [
+            "md-filled-text-field"
+        ];
+
+        setupEventTestRunner();
+        window.waitForStable = waitForStable;
+        loadAndWaitForReady(components, () => {
+            const statusDiv = document.getElementById("status");
+            const textField = document.createElement("md-filled-text-field");
+            textField.id = "test-text-field";
+            textField.label = "Test Text Field";
+            textField.value = "";
+            textField.setAttribute("aria-label", "Test Text Field");
+            statusDiv.appendChild(textField);
+            statusDiv.setAttribute("aria-label", "Ready");
+        });
+    </script>
+</head>
+<body>
+    <div id="status" aria-label="Loading">
+    </div>
+</body>
+<script>
+    window.go_passes = [
+        async () => {
+            const textField = document.getElementById("test-text-field");
+            if (textField) {
+                textField.value = "Hello";
+                textField.dispatchEvent(new Event('input', { bubbles: true }));
+                await waitForStable(textField);
+            }
+        },
+        async () => {
+            const textField = document.getElementById("test-text-field");
+            if (textField) {
+                textField.value = "Hello World";
+                textField.dispatchEvent(new Event('input', { bubbles: true }));
+                await waitForStable(textField);
+            }
+        },
+        async () => {
+            const textField = document.getElementById("test-text-field");
+            if (textField) {
+                textField.value = "";
+                textField.dispatchEvent(new Event('input', { bubbles: true }));
+                await waitForStable(textField);
+            }
+        }
+    ];
+
+</script>
+</html>

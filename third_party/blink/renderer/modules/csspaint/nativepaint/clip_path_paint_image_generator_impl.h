@@ -22,13 +22,13 @@ class MODULES_EXPORT ClipPathPaintImageGeneratorImpl final
   explicit ClipPathPaintImageGeneratorImpl(ClipPathPaintDefinition*);
   ~ClipPathPaintImageGeneratorImpl() override = default;
 
+  std::optional<gfx::RectF> GetAnimationBoundingRect(
+      const LayoutObject& obj) final;
+
   scoped_refptr<Image> Paint(float zoom,
                              const gfx::RectF& reference_box,
-                             const gfx::SizeF& clip_area_size,
+                             const gfx::RectF& clip_area_size,
                              const Node&) final;
-  gfx::RectF ClipAreaRect(const Node& node,
-                          const gfx::RectF& reference_box,
-                          float zoom) const final;
   Animation* GetAnimationIfCompositable(const Element* element) final;
 
   void Shutdown() final;

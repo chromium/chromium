@@ -22,7 +22,7 @@ ScopedTempFile& ScopedTempFile::operator=(ScopedTempFile&& other) noexcept {
     CHECK_NE(path_, other.path_);
   }
   if (!Delete()) {
-    DLOG(WARNING) << "Could not delete temp dir in operator=().";
+    DLOG(WARNING) << "Could not delete temp file in operator=().";
   }
   path_ = std::move(other.path_);
   return *this;
@@ -30,7 +30,7 @@ ScopedTempFile& ScopedTempFile::operator=(ScopedTempFile&& other) noexcept {
 
 ScopedTempFile::~ScopedTempFile() {
   if (!Delete()) {
-    DLOG(WARNING) << "Could not delete temp dir in destructor.";
+    DLOG(WARNING) << "Could not delete temp file in destructor.";
   }
 }
 
@@ -52,7 +52,7 @@ bool ScopedTempFile::Delete() {
 
 void ScopedTempFile::Reset() {
   if (!Delete()) {
-    DLOG(WARNING) << "Could not delete temp dir in Reset().";
+    DLOG(WARNING) << "Could not delete temp file in Reset().";
   }
   path_.clear();
 }

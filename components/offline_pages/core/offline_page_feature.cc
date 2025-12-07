@@ -25,7 +25,6 @@ BASE_FEATURE(kOfflinePagesInDownloadHomeOpenInCctFeature,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOfflinePagesNetworkStateLikelyUnknown,
-             "OfflinePagesNetworkStateLikelyUnknown",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kPrefetchingOfflinePagesExperimentsOption[] = "exp";

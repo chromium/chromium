@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/filters/ffmpeg_aac_bitstream_converter.h"
 
 #include "base/logging.h"
@@ -63,17 +68,17 @@ bool GenerateAdtsHeader(int codec,
   hdr[1] |= 1;
 
   switch (audio_profile) {
-    case FF_PROFILE_AAC_MAIN:
+    case AV_PROFILE_AAC_MAIN:
       break;
-    case FF_PROFILE_AAC_HE:
-    case FF_PROFILE_AAC_HE_V2:
-    case FF_PROFILE_AAC_LOW:
+    case AV_PROFILE_AAC_HE:
+    case AV_PROFILE_AAC_HE_V2:
+    case AV_PROFILE_AAC_LOW:
       hdr[2] |= (1 << 6);
       break;
-    case FF_PROFILE_AAC_SSR:
+    case AV_PROFILE_AAC_SSR:
       hdr[2] |= (2 << 6);
       break;
-    case FF_PROFILE_AAC_LTP:
+    case AV_PROFILE_AAC_LTP:
       hdr[2] |= (3 << 6);
       break;
     default:
@@ -171,15 +176,15 @@ FFmpegAACBitstreamConverter::FFmpegAACBitstreamConverter(
 FFmpegAACBitstreamConverter::~FFmpegAACBitstreamConverter() = default;
 
 bool FFmpegAACBitstreamConverter::ConvertPacket(AVPacket* packet) {
-  if (packet == NULL || !packet->data) {
+  if (packet == nullptr || !packet->data) {
     return false;
   }
 
   int header_plus_packet_size =
       packet->size + kAdtsHeaderSize;
   if (!stream_codec_parameters_->extradata) {
-    DLOG(ERROR) << "extradata is null";
-    return false;
+    DVLOG(3) << "extradata is null";
+    return true;
   }
   if (stream_codec_parameters_->extradata_size < 2) {
     DLOG(ERROR) << "extradata too small to contain MP4A header";

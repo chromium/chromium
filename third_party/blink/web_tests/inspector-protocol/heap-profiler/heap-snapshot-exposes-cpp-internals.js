@@ -20,7 +20,7 @@
     let foundBlinkNameSpace = false;
     for (let i = 0; i < (nodeLength * s.snapshot.node_count); i += nodeLength) {
       let nodeName = s.strings[s.nodes[i + nameIndex]];
-      if (nodeName === 'InternalNode') {
+      if (nodeName.startsWith('InternalNode')) {
         foundInternalNode = true;
       } else if (nodeName.startsWith('blink::')) {
         foundBlinkNameSpace = true;

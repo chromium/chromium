@@ -6,40 +6,37 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 
 namespace blink {
 
-const char RenderBlockingMetricsReporter::kSupplementName[] =
-    "RenderBlockingMetricsReporter";
-
 RenderBlockingMetricsReporter::RenderBlockingMetricsReporter(Document& document)
-    : Supplement<Document>(document) {}
+    : document_(document) {}
 
 // static
 RenderBlockingMetricsReporter& RenderBlockingMetricsReporter::From(
     Document& document) {
   RenderBlockingMetricsReporter* supplement =
-      Supplement<Document>::From<RenderBlockingMetricsReporter>(document);
+      document.GetRenderBlockingMetricsReporter();
   if (!supplement) {
     supplement = MakeGarbageCollected<RenderBlockingMetricsReporter>(document);
-    ProvideTo(document, supplement);
+    document.SetRenderBlockingMetricsReporter(supplement);
   }
   return *supplement;
 }
 
 void RenderBlockingMetricsReporter::Trace(Visitor* visitor) const {
-  Supplement<Document>::Trace(visitor);
+  visitor->Trace(document_);
 }
 
 base::TimeDelta RenderBlockingMetricsReporter::GetDeltaFromTimeOrigin() {
-  Document* document = GetSupplementable();
+  Document* document = document_;
   DCHECK(document);
   LocalDOMWindow* window = document->domWindow();
   if (!window) {
     return base::TimeDelta();
   }
-  WindowPerformance* performance = DOMWindowPerformance::performance(*window);
+  WindowPerformance* performance = GlobalPerformance::performance(*window);
   DCHECK(performance);
 
   return (base::TimeTicks::Now() - performance->GetTimeOriginInternal());

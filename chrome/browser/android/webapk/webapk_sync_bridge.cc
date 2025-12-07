@@ -16,7 +16,6 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/android/webapk/webapk_database.h"
-#include "chrome/browser/android/webapk/webapk_database_factory.h"
 #include "chrome/browser/android/webapk/webapk_helpers.h"
 #include "chrome/browser/android/webapk/webapk_registry_update.h"
 #include "chrome/browser/android/webapk/webapk_restore_task.h"
@@ -27,6 +26,7 @@
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_type_store.h"
+#include "components/sync/model/data_type_store_service.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/mutable_data_batch.h"
@@ -143,7 +143,6 @@ std::unique_ptr<webapps::ShortcutInfo> CreateShortcutInfoFromSpecifics(
     shortcut_info->best_primary_icon_url =
         GURL(webapk_specifics.icon_infos(0).url());
     shortcut_info->is_primary_icon_maskable =
-        webapps::WebappsIconUtils::DoesAndroidSupportMaskableIcons() &&
         webapk_specifics.icon_infos(0).purpose() ==
             sync_pb::WebApkIconInfo_Purpose_MASKABLE;
   } else {
@@ -165,10 +164,10 @@ bool IsLegacyAppId(webapps::AppId app_id) {
 }  // anonymous namespace
 
 WebApkSyncBridge::WebApkSyncBridge(
-    AbstractWebApkDatabaseFactory* database_factory,
+    syncer::DataTypeStoreService* data_type_store_service,
     base::OnceClosure on_initialized)
     : WebApkSyncBridge(
-          database_factory,
+          data_type_store_service,
           std::move(on_initialized),
           std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
               syncer::WEB_APKS,
@@ -178,14 +177,14 @@ WebApkSyncBridge::WebApkSyncBridge(
           std::make_unique<WebApkSpecificsFetcher>()) {}
 
 WebApkSyncBridge::WebApkSyncBridge(
-    AbstractWebApkDatabaseFactory* database_factory,
+    syncer::DataTypeStoreService* data_type_store_service,
     base::OnceClosure on_initialized,
     std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     std::unique_ptr<base::Clock> clock,
     std::unique_ptr<AbstractWebApkSpecificsFetcher> specifics_fetcher)
     : syncer::DataTypeSyncBridge(std::move(change_processor)),
       database_(
-          database_factory,
+          data_type_store_service,
           base::BindRepeating(&WebApkSyncBridge::ReportErrorToChangeProcessor,
                               base::Unretained(this))),
       clock_(std::move(clock)),
@@ -321,17 +320,14 @@ void WebApkSyncBridge::RegisterDoneInitializingCallback(
 }
 
 void WebApkSyncBridge::MergeSyncDataForTesting(
-    std::vector<std::vector<std::string>> app_vector,
-    std::vector<int> last_used_days_vector) {
+    std::vector<std::vector<std::string>> app_vector) {
   CHECK(database_.is_opened());
-  CHECK(app_vector.size() == last_used_days_vector.size());
 
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
       syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList();
   std::unique_ptr<webapk::RegistryUpdateData> registry_update =
       std::make_unique<webapk::RegistryUpdateData>();
 
-  int i = 0;
   for (auto const& app : app_vector) {
     std::unique_ptr<sync_pb::WebApkSpecifics> specifics =
         std::make_unique<sync_pb::WebApkSpecifics>();
@@ -348,12 +344,11 @@ void WebApkSyncBridge::MergeSyncDataForTesting(
     icon_info->set_url(icon_url);
     icon_info->set_purpose(icon_purpose);
 
-    base::Time time = base::Time::Now() - base::Days(last_used_days_vector[i]);
     specifics->set_last_used_time_windows_epoch_micros(
-        time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+        base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+
     registry_update->apps_to_create.push_back(
         WebApkProtoFromSpecifics(specifics.get(), false));
-    i++;
   }
 
   database_.Write(
@@ -461,10 +456,7 @@ std::vector<WebApkRestoreData> WebApkSyncBridge::GetRestorableAppsShortcutInfo()
         AppWasUsedRecently(&proto->sync_data())) {
       auto restore_info = CreateShortcutInfoFromSpecifics(proto->sync_data());
       if (restore_info) {
-        results.emplace_back(WebApkRestoreData(
-            appId, std::move(restore_info),
-            base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
-                proto->sync_data().last_used_time_windows_epoch_micros()))));
+        results.emplace_back(appId, std::move(restore_info));
       }
     }
   }
@@ -507,15 +499,20 @@ std::unique_ptr<syncer::DataBatch> WebApkSyncBridge::GetAllDataForDebugging() {
 // chrome/browser/web_applications/web_app_sync_bridge.cc's
 // WebAppSyncBridge::GetClientTag().
 std::string WebApkSyncBridge::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   DCHECK(entity_data.specifics.has_web_apk());
 
   return ManifestIdStrToAppId(entity_data.specifics.web_apk().manifest_id());
 }
 
 std::string WebApkSyncBridge::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return GetClientTag(entity_data);
+}
+
+bool WebApkSyncBridge::IsEntityDataValid(
+    const syncer::EntityData& entity_data) const {
+  return !entity_data.specifics.web_apk().manifest_id().empty();
 }
 
 void WebApkSyncBridge::ApplyDisableSyncChanges(

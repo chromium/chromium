@@ -204,8 +204,9 @@ class DummyConnectDelegate : public WebSocketStream::ConnectDelegate {
  public:
   DummyConnectDelegate() = default;
   ~DummyConnectDelegate() override = default;
-  void OnURLRequestConnected(URLRequest* request,
-                             const TransportInfo& info) override;
+  int OnURLRequestConnected(URLRequest* request,
+                            const TransportInfo& info,
+                            CompletionOnceCallback callback) override;
   void OnCreateRequest(URLRequest* url_request) override {}
   void OnSuccess(
       std::unique_ptr<WebSocketStream> stream,

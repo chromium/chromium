@@ -19,6 +19,7 @@ class OverlayRequestImpl : public OverlayRequest,
   // OverlayRequest:
   OverlayCallbackManager* GetCallbackManager() override;
   web::WebState* GetQueueWebState() override;
+  OverlayRequestId GetRequestId() const override;
   base::SupportsUserData* data() override;
 
  private:
@@ -30,7 +31,8 @@ class OverlayRequestImpl : public OverlayRequest,
     queue_web_state_ = queue_web_state;
   }
 
-  raw_ptr<web::WebState> queue_web_state_ = nullptr;
+  const OverlayRequestId request_id_;
+  raw_ptr<web::WebState, DanglingUntriaged> queue_web_state_ = nullptr;
   OverlayCallbackManagerImpl callback_manager_;
 };
 

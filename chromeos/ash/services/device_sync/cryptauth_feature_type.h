@@ -101,15 +101,16 @@ enum class CryptAuthFeatureType {
 const base::flat_set<CryptAuthFeatureType>& GetAllCryptAuthFeatureTypes();
 const base::flat_set<CryptAuthFeatureType>& GetSupportedCryptAuthFeatureTypes();
 const base::flat_set<CryptAuthFeatureType>& GetEnabledCryptAuthFeatureTypes();
-const base::flat_set<std::string>& GetAllCryptAuthFeatureTypeStrings();
+const base::flat_set<std::string_view>& GetAllCryptAuthFeatureTypeStrings();
 
 // Provides a unique mapping between each CryptAuthFeatureType enum value and
 // the corresponding string used in the protos and understood by CryptAuth.
 // CryptAuthFeatureTypeFromString returns null if |feature_type_string| does not
 // map to a known CryptAuthFeatureType.
-const char* CryptAuthFeatureTypeToString(CryptAuthFeatureType feature_type);
+std::string_view CryptAuthFeatureTypeToString(
+    CryptAuthFeatureType feature_type);
 std::optional<CryptAuthFeatureType> CryptAuthFeatureTypeFromString(
-    const std::string& feature_type_string);
+    std::string_view feature_type_string);
 
 // Provides a unique mapping between a CryptAuthFeatureType and its
 // corresponding encoded hash value that CryptAuth sends in GCM messages.

@@ -75,8 +75,8 @@ class MultilineExample::RenderTextView : public View {
   RenderTextView() : render_text_(gfx::RenderText::CreateRenderText()) {
     render_text_->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
     render_text_->SetMultiline(true);
-    SetBorder(CreateThemedSolidBorder(
-        2, ExamplesColorIds::kColorMultilineExampleBorder));
+    SetBorder(
+        CreateSolidBorder(2, ExamplesColorIds::kColorMultilineExampleBorder));
   }
 
   RenderTextView(const RenderTextView&) = delete;
@@ -142,8 +142,9 @@ class MultilineExample::RenderTextView : public View {
 
   void UpdateColors() {
     const auto* cp = GetColorProvider();
-    if (!cp)
+    if (!cp) {
       return;
+    }
     render_text_->SetColor(
         cp->GetColor(ExamplesColorIds::kColorMultilineExampleForeground));
     render_text_->set_selection_color(cp->GetColor(
@@ -204,7 +205,7 @@ void MultilineExample::CreateExampleView(View* container) {
   label_ = container->AddChildView(std::make_unique<PreferredSizeLabel>());
   label_->SetText(kTestString);
   label_->SetMultiLine(true);
-  label_->SetBorder(CreateThemedSolidBorder(
+  label_->SetBorder(CreateSolidBorder(
       2, ExamplesColorIds::kColorMultilineExampleLabelBorder));
 
   elision_checkbox_ = container->AddChildView(std::make_unique<Checkbox>(
@@ -230,8 +231,9 @@ void MultilineExample::CreateExampleView(View* container) {
 void MultilineExample::ContentsChanged(Textfield* sender,
                                        const std::u16string& new_contents) {
   render_text_view_->SetText(new_contents);
-  if (label_checkbox_->GetChecked())
+  if (label_checkbox_->GetChecked()) {
     label_->SetText(new_contents);
+  }
   example_view()->InvalidateLayout();
   example_view()->SchedulePaint();
 }

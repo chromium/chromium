@@ -11,19 +11,20 @@
 #import "base/check.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_consumer.h"
 #import "ios/chrome/browser/overlays/model/public/infobar_banner/infobar_banner_overlay_responses.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_support.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_response.h"
-#import "ios/chrome/browser/ui/infobars/banners/infobar_banner_consumer.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/infobar_banner_overlay_mediator+consumer_support.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_mediator+subclassing.h"
+#import "ios/chrome/browser/shared/public/commands/non_modal_signin_promo_commands.h"
 
 @implementation InfobarBannerOverlayMediator
 
 - (instancetype)initWithRequest:(OverlayRequest*)request {
-  if (self = [super initWithRequest:request]) {
+  if ((self = [super initWithRequest:request])) {
     DCHECK([self class].requestSupport->IsRequestSupported(request));
   }
   return self;
@@ -36,11 +37,13 @@
 #pragma mark - Accessors
 
 - (void)setConsumer:(id<InfobarBannerConsumer>)consumer {
-  if (_consumer == consumer)
+  if (_consumer == consumer) {
     return;
+  }
   _consumer = consumer;
-  if (_consumer)
+  if (_consumer) {
     [self configureConsumer];
+  }
 }
 
 #pragma mark - InfobarBannerDelegate
@@ -83,7 +86,7 @@
 @implementation InfobarBannerOverlayMediator (ConsumerSupport)
 
 - (void)configureConsumer {
-  NOTREACHED_IN_MIGRATION() << "Subclasses must implement.";
+  NOTREACHED() << "Subclasses must implement.";
 }
 
 @end

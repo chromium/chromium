@@ -4,8 +4,7 @@
 
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
 
-#include "base/functional/bind_internal.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/bind.h"
 #include "base/scoped_environment_variable_override.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
@@ -14,6 +13,8 @@
 #include "chrome/browser/consent_auditor/consent_auditor_test_utils.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
@@ -36,10 +37,10 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/base/ui_base_switches.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/widget/any_widget_observer.h"
 
-#if !BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(ENABLE_DICE_SUPPORT)
 #error Platform not supported
 #endif
 
@@ -55,19 +56,14 @@ using testing::AllOf;
 using testing::Contains;
 using testing::ElementsAre;
 
-// Configures the state of ::switches::kMinorModeRestrictionsForHistorySyncOptIn
-// that relies on can_show_history_sync_opt_ins_without_minor_mode_restrictions
-// capability.
-struct MinorModeRestrictions {
-  // Related capability value
-  signin::Tribool capability = signin::Tribool::kTrue;
-};
+// Configures the can_show_history_sync_opt_ins_without_minor_mode_restrictions
+// account capability, which determines minor mode restrictions status.
+using MinorModeRestrictions =
+    base::StrongAlias<class MinorModeRestrictionsTag, signin::Tribool>;
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-constexpr MinorModeRestrictions kWithMinorModeRestrictionsWithUnrestrictedUser{
-    .capability = signin::Tribool::kTrue};
-constexpr MinorModeRestrictions kWithMinorModeRestrictionsWithRestrictedUser{
-    .capability = signin::Tribool::kFalse};
+constexpr MinorModeRestrictions kWithUnrestrictedUser(signin::Tribool::kTrue);
+constexpr MinorModeRestrictions kWithRestrictedUser(signin::Tribool::kFalse);
 #endif
 
 struct SyncConfirmationTestParam {
@@ -76,7 +72,7 @@ struct SyncConfirmationTestParam {
       AccountManagementStatus::kNonManaged;
   SyncConfirmationStyle sync_style = SyncConfirmationStyle::kWindow;
   bool is_sync_promo = false;
-  MinorModeRestrictions minor_mode_restrictions;
+  MinorModeRestrictions minor_mode_restrictions = kWithUnrestrictedUser;
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -94,7 +90,7 @@ const SyncConfirmationTestParam kWindowTestParams[] = {
     {.pixel_test_param = {.test_suffix = "Rtl",
                           .use_right_to_left_language = true}},
     {.pixel_test_param = {.test_suffix = "SmallWindow",
-                          .use_small_window = true}},
+                          .window_size = PixelTestParam::kSmallWindowSize}},
     {.pixel_test_param = {.test_suffix = "ManagedAccount"},
      .account_management_status = AccountManagementStatus::kManaged},
 
@@ -102,10 +98,10 @@ const SyncConfirmationTestParam kWindowTestParams[] = {
     // Restricted mode is only implemented for these platforms.
     {.pixel_test_param = {.test_suffix =
                               "RegularWithRestrictionsWithUnrestrictedUser"},
-     .minor_mode_restrictions = kWithMinorModeRestrictionsWithUnrestrictedUser},
+     .minor_mode_restrictions = kWithUnrestrictedUser},
     {.pixel_test_param = {.test_suffix =
                               "RegularWithRestrictionsWithRestrictedUser"},
-     .minor_mode_restrictions = kWithMinorModeRestrictionsWithRestrictedUser},
+     .minor_mode_restrictions = kWithRestrictedUser},
 #endif
 
 };
@@ -113,12 +109,9 @@ const SyncConfirmationTestParam kWindowTestParams[] = {
 const SyncConfirmationTestParam kDialogTestParams[] = {
     {.pixel_test_param = {.test_suffix = "Regular"},
      .sync_style = SyncConfirmationStyle::kDefaultModal},
-// The sign-in intercept feature isn't enabled on Lacros.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
     {.pixel_test_param = {.test_suffix = "SigninInterceptStyle"},
      .sync_style = SyncConfirmationStyle::kSigninInterceptModal,
      .is_sync_promo = true},
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
     {.pixel_test_param = {.test_suffix = "DarkTheme", .use_dark_theme = true},
      .sync_style = SyncConfirmationStyle::kDefaultModal},
     {.pixel_test_param = {.test_suffix = "Rtl",
@@ -136,11 +129,11 @@ const SyncConfirmationTestParam kDialogTestParams[] = {
     {.pixel_test_param = {.test_suffix =
                               "RegularWithRestrictionsWithUnrestrictedUser"},
      .sync_style = SyncConfirmationStyle::kDefaultModal,
-     .minor_mode_restrictions = kWithMinorModeRestrictionsWithUnrestrictedUser},
+     .minor_mode_restrictions = kWithUnrestrictedUser},
     {.pixel_test_param = {.test_suffix =
                               "RegularWithRestrictionsWithRestrictedUser"},
      .sync_style = SyncConfirmationStyle::kDefaultModal,
-     .minor_mode_restrictions = kWithMinorModeRestrictionsWithRestrictedUser},
+     .minor_mode_restrictions = kWithRestrictedUser},
 #endif
 
 };
@@ -173,7 +166,7 @@ class SyncConfirmationStepControllerForTest
             weak_ptr_factory_.GetWeakPtr(), std::move(step_shown_callback)));
   }
 
-  void OnNavigateBackRequested() override { NOTREACHED_NORETURN(); }
+  void OnNavigateBackRequested() override { NOTREACHED(); }
 
   void OnSyncConfirmationLoaded(
       StepSwitchFinishedCallback step_shown_callback) {
@@ -182,8 +175,8 @@ class SyncConfirmationStepControllerForTest
 
     sync_confirmation_ui->InitializeMessageHandlerWithBrowser(nullptr);
 
-    if (step_shown_callback) {
-      std::move(step_shown_callback).Run(/*success=*/true);
+    if (!step_shown_callback->is_null()) {
+      std::move(step_shown_callback.value()).Run(/*success=*/true);
     }
   }
 
@@ -204,13 +197,13 @@ class SyncConfirmationUIWindowPixelTest
   }
 
   void ShowUi(const std::string& name) override {
-    ui::ScopedAnimationDurationScaleMode disable_animation(
-        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode disable_animation(
+        gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
     DCHECK(browser());
 
     SignInWithAccount(GetParam().account_management_status,
                       signin::ConsentLevel::kSignin,
-                      GetParam().minor_mode_restrictions.capability);
+                      GetParam().minor_mode_restrictions.value());
     profile_picker_view_ = new ProfileManagementStepTestView(
         ProfilePicker::Params::ForFirstRun(browser()->profile()->GetPath(),
                                            base::DoNothing()),
@@ -220,10 +213,7 @@ class SyncConfirmationUIWindowPixelTest
           return std::unique_ptr<ProfileManagementStepController>(
               new SyncConfirmationStepControllerForTest(host));
         }));
-    profile_picker_view_->ShowAndWait(
-        GetParam().pixel_test_param.use_small_window
-            ? std::optional<gfx::Size>(gfx::Size(750, 590))
-            : std::nullopt);
+    profile_picker_view_->ShowAndWait(GetParam().pixel_test_param.window_size);
   }
 
   bool VerifyUi() override {
@@ -279,7 +269,7 @@ class SyncConfirmationUIDialogPixelTest
 
     SignInWithAccount(GetParam().account_management_status,
                       signin::ConsentLevel::kSignin,
-                      GetParam().minor_mode_restrictions.capability);
+                      GetParam().minor_mode_restrictions.value());
     auto url = GURL(chrome::kChromeUISyncConfirmationURL);
     url = AppendSyncConfirmationQueryParams(url, GetParam().sync_style,
                                             GetParam().is_sync_promo);
@@ -293,7 +283,7 @@ class SyncConfirmationUIDialogPixelTest
         views::test::AnyWidgetTestPasskey{},
         "SigninViewControllerDelegateViews");
 
-    auto* controller = browser()->signin_view_controller();
+    auto* controller = browser()->GetFeatures().signin_view_controller();
     controller->ShowModalSyncConfirmationDialog(
         GetParam().sync_style == SyncConfirmationStyle::kSigninInterceptModal,
         GetParam().is_sync_promo);
@@ -345,7 +335,7 @@ class SyncConfirmationUITest
     }
     command_line->AppendSwitchASCII(switches::kLang, GetLanguage());
 
-    // On Linux & Lacros the command line switch has no effect, we need to use
+    // On Linux the command line switch has no effect, we need to use
     // environment variables to change the language.
     scoped_env_override_ =
         std::make_unique<base::ScopedEnvironmentVariableOverride>(
@@ -355,18 +345,20 @@ class SyncConfirmationUITest
   // LoginUIService::Observer:
   void OnSyncConfirmationUIClosed(
       LoginUIService::SyncConfirmationUIClosedResult result) override {
-    browser()->signin_view_controller()->CloseModalSignin();
+    browser()->GetFeatures().signin_view_controller()->CloseModalSignin();
   }
 
   [[nodiscard]] AccountInfo FillAccountInfoWithEscapedHtmlCharacters(
       const AccountInfo& account_info) {
-    AccountInfo new_account_info = account_info;
     // The account name contains characters that are escaped in HTML.
-    new_account_info.full_name = "The name's <>&\"', James\u00a0<>&\"'";
-    new_account_info.given_name = new_account_info.full_name;
-    //  Fill all required fields to make `AccountInfo` valid.
-    new_account_info.hosted_domain = kNoHostedDomainFound;
-    new_account_info.picture_url = "https://example.org/avatar";
+    std::string name = "The name's <>&\"', James\u00a0<>&\"'";
+    AccountInfo new_account_info =
+        AccountInfo::Builder(account_info)
+            .SetFullName(name)
+            .SetGivenName(name)
+            .SetHostedDomain(std::string())
+            .SetAvatarUrl("https://example.org/avatar")
+            .Build();
     CHECK(new_account_info.IsValid());
     return new_account_info;
   }
@@ -394,13 +386,9 @@ class SyncConfirmationUITest
   }
 
   int GetTitleId() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    return IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE_LACROS;
-#else
     return IsSigninIntercept()
                ? IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE_SIGNIN_INTERCEPT_V2
                : IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
   int GetDescriptionId() {
@@ -429,8 +417,11 @@ IN_PROC_BROWSER_TEST_P(SyncConfirmationUITest,
   account_info = FillAccountInfoWithEscapedHtmlCharacters(account_info);
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
-  browser()->signin_view_controller()->ShowModalSyncConfirmationDialog(
-      IsSigninIntercept(), /*is_sync_promo=*/true);
+  browser()
+      ->GetFeatures()
+      .signin_view_controller()
+      ->ShowModalSyncConfirmationDialog(IsSigninIntercept(),
+                                        /*is_sync_promo=*/true);
   switch (GetAction()) {
     case SyncConfirmationUIAction::kTurnSyncOn:
       EXPECT_TRUE(
@@ -463,14 +454,8 @@ std::string SyncConfirmationUITestParamToTestSuffix(
 INSTANTIATE_TEST_SUITE_P(
     ,
     SyncConfirmationUITest,
-    testing::Combine(
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-        // Sign-in intercept is not supported on Lacros.
-        testing::Values(false),
-#else
-        testing::Bool(),
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-        testing::Values(SyncConfirmationUIAction::kTurnSyncOn,
-                        SyncConfirmationUIAction::kGoToSettings),
-        testing::Values("", "pl")),
+    testing::Combine(testing::Bool(),
+                     testing::Values(SyncConfirmationUIAction::kTurnSyncOn,
+                                     SyncConfirmationUIAction::kGoToSettings),
+                     testing::Values("", "pl")),
     &SyncConfirmationUITestParamToTestSuffix);

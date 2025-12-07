@@ -9,7 +9,6 @@
 #include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/ozone/events_ozone.h"
 
@@ -64,7 +63,7 @@ bool UIControlsOzone::SendKeyEventsNotifyWhenDone(
 
   int flags = button_down_mask_;
   int64_t display_id =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
+      display::Screen::Get()->GetDisplayNearestWindow(window).id();
 
   if (has_press) {
     if (has_control) {
@@ -193,8 +192,7 @@ bool UIControlsOzone::SendMouseEventsNotifyWhenDone(
       changed_button_flag = ui::EF_RIGHT_MOUSE_BUTTON;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   // Process the accelerator key state.
@@ -232,10 +230,6 @@ bool UIControlsOzone::SendMouseClick(ui_controls::MouseButton type) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-bool UIControlsOzone::SendTouchEvents(int action, int id, int x, int y) {
-  return SendTouchEventsNotifyWhenDone(action, id, x, y, base::OnceClosure());
-}
-
 bool UIControlsOzone::SendTouchEventsNotifyWhenDone(int action,
                                                     int id,
                                                     int x,
@@ -268,26 +262,16 @@ bool UIControlsOzone::SendTouchEventsNotifyWhenDone(int action,
 void UIControlsOzone::SendEventToSink(ui::Event* event,
                                       int64_t display_id,
                                       base::OnceClosure closure,
-                                      WindowTreeHost* optional_host,
-                                      bool post_task_after_dispatch) {
-  // Post the task before processing the event. This is usually necessary in
-  // case processing the event results in a nested message loop.
-  if (closure && !post_task_after_dispatch) {
+                                      WindowTreeHost* optional_host) {
+  // Post the task before processing the event. This is necessary in case
+  // processing the event results in a nested message loop.
+  if (closure) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(closure));
   }
-
   WindowTreeHost* host = optional_host ? optional_host : host_.get();
   ui::EventSourceTestApi event_source_test(host->GetEventSource());
   std::ignore = event_source_test.SendEventToSink(event);
-
-  // It is sometimes necessary to post the task after processing the event.
-  // This should only occur if it is known that the event does not enter any
-  // nested message loops.
-  if (closure && post_task_after_dispatch) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(closure));
-  }
 }
 
 void UIControlsOzone::PostKeyEvent(ui::EventType type,
@@ -347,16 +331,7 @@ void UIControlsOzone::PostMouseEventTask(ui::EventType type,
   // This hack is necessary to set the repeat count for clicks.
   ui::MouseEvent mouse_event2(&mouse_event);
 
-  // For drag-ending left-mouse-button release events, the closure must be
-  // posted after the event is processed to ensure zcr_ui_controls::
-  // request_processed is sent after wl_data_source::dnd_finished.
-  // TODO(crbug.com/41489982): Desired synchronization semantics should
-  // be declared explicitly, not decided by test framework heuristics.
-  bool post_task_after_dispatch =
-      changed_button_flags == ui::EF_LEFT_MOUSE_BUTTON &&
-      type == ui::EventType::kMouseReleased;
-  SendEventToSink(&mouse_event2, display_id, std::move(closure), nullptr,
-                  post_task_after_dispatch);
+  SendEventToSink(&mouse_event2, display_id, std::move(closure), nullptr);
 }
 
 void UIControlsOzone::PostTouchEvent(ui::EventType type,
@@ -385,9 +360,8 @@ void UIControlsOzone::PostTouchEventTask(ui::EventType type,
 bool UIControlsOzone::ScreenDIPToHostPixels(gfx::PointF* location,
                                             int64_t* display_id) {
   // The location needs to be in display's coordinate.
-  display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestPoint(
-          gfx::ToFlooredPoint(*location));
+  display::Display display = display::Screen::Get()->GetDisplayNearestPoint(
+      gfx::ToFlooredPoint(*location));
   if (!display.is_valid()) {
     LOG(ERROR) << "Failed to find the display for " << location->ToString();
     return false;

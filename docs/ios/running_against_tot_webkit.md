@@ -34,7 +34,7 @@ solutions = [
 
     "custom_vars": {
       "checkout_ios_webkit": True,
-      "ios_webkit_revision": "refs/heads/master",
+      "ios_webkit_revision": "refs/heads/main",
     },
 
   },
@@ -54,10 +54,10 @@ you can build it individually.
 
 ```
 # Builds all targets, including webkit.
-ninja -C out/Debug-iphonesimulator
+autoninja -C out/Debug-iphonesimulator
 
 # Builds just the webkit target.
-ninja -C out/Debug-iphonesimulator webkit
+autoninja -C out/Debug-iphonesimulator webkit
 ```
 
 The WebKit build output can be found at
@@ -72,23 +72,21 @@ generally sufficient for incremental builds, but for clean builds (or after a
 sync) it may be faster to build WebKit without this limitation.
 
 ```
-# After a sync, build WebKit first.
-ios/third_party/webkit/build-webkit.py
+# After a sync, build WebKit first. Make sure to use the same args as in
+# //ios/third_party/webkit/BUILD.gn.
+ios/third_party/webkit/build-webkit.py --ios_simulator
 
 # Once WebKit is built, invoke ninja as usual to build Chromium.
-ninja -C out/Debug-iphonesimulator
+autoninja -C out/Debug-iphonesimulator
 ```
 
-### One-time setup (per machine, per version of Xcode)
+### Fixing compiler errors in WebKitLegacy headers
 
-If you move to a new machine or install a new version of Xcode, you'll need to
-run a setup script in order to copy some headers from the macOS SDK into the iOS
-SDK.
-
-```
-sudo ios/third_party/webkit/src/Tools/Scripts/configure-xcode-for-ios-development
-```
-
+If you get compiler errors in `WebKitLegacy.framework/PrivateHeaders/WebView.h`,
+you can just edit
+`obj/ios/third_party/webkit/ios/Debug-iphonesimulator/WebKit.framework/Headers/WebKitLegacy.h`
+and remove the import of `WebKitLegacy/WebKit.h`. It's not actually needed, and
+the SDK shipped with Xcode doesn't include the WebKitLegacy framework too.
 
 ## Running against locally-built libraries
 

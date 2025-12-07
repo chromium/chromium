@@ -17,8 +17,9 @@ WidgetFadeAnimator::WidgetFadeAnimator(Widget* widget)
 WidgetFadeAnimator::~WidgetFadeAnimator() = default;
 
 void WidgetFadeAnimator::FadeIn() {
-  if (IsFadingIn())
+  if (IsFadingIn()) {
     return;
+  }
 
   DCHECK(widget_);
 
@@ -27,29 +28,43 @@ void WidgetFadeAnimator::FadeIn() {
 
   // Widgets cannot be shown when visible and fully transparent.
   widget_->SetOpacity(0.01f);
-  widget_->Show();
+
+  switch (show_type_) {
+    case WidgetShowType::kNone:
+      break;
+    case WidgetShowType::kShowActive:
+      widget_->Show();
+      break;
+    case WidgetShowType::kShowInactive:
+      widget_->ShowInactive();
+      break;
+  }
+
   fade_animation_.Start();
 }
 
 void WidgetFadeAnimator::CancelFadeIn() {
-  if (!IsFadingIn())
+  if (!IsFadingIn()) {
     return;
+  }
 
   fade_animation_.Stop();
   animation_type_ = FadeType::kNone;
 }
 
 void WidgetFadeAnimator::FadeOut() {
-  if (IsFadingOut() || !widget_)
+  if (IsFadingOut() || !widget_) {
     return;
+  }
 
   // If the widget is already hidden, then there is no current animation and
   // nothing to do. If the animation is close-on-hide, however, we should still
   // close the widget.
   if (!widget_->IsVisible()) {
     DCHECK(!IsFadingIn());
-    if (close_on_hide_)
+    if (close_on_hide_) {
       widget_->Close();
+    }
     fade_complete_callbacks_.Notify(this, FadeType::kFadeOut);
     return;
   }
@@ -60,8 +75,9 @@ void WidgetFadeAnimator::FadeOut() {
 }
 
 void WidgetFadeAnimator::CancelFadeOut() {
-  if (!IsFadingOut())
+  if (!IsFadingOut()) {
     return;
+  }
 
   fade_animation_.Stop();
   animation_type_ = FadeType::kNone;
@@ -78,16 +94,18 @@ void WidgetFadeAnimator::AnimationProgressed(const gfx::Animation* animation) {
   double value =
       gfx::Tween::CalculateValue(tween_type_, animation->GetCurrentValue());
   float opacity = 0.0f;
-  if (IsFadingOut())
+  if (IsFadingOut()) {
     opacity = gfx::Tween::FloatValueBetween(value, 1.0f, 0.0f);
-  else if (IsFadingIn())
+  } else if (IsFadingIn()) {
     opacity = gfx::Tween::FloatValueBetween(value, 0.0f, 1.0f);
+  }
 
   if (IsFadingOut() && opacity == 0.0f) {
-    if (close_on_hide_)
+    if (close_on_hide_) {
       widget_->Close();
-    else
+    } else {
       widget_->Hide();
+    }
   } else {
     widget_->SetOpacity(opacity);
   }

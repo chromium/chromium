@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -32,11 +33,84 @@ void UpdateReleaseCount(
 
 }  // namespace
 
-TaskGraph::Sequence::Task::Task(base::OnceClosure closure,
+FenceSyncReleaseDelegate::FenceSyncReleaseDelegate(
+    SyncPointManager* sync_point_manager)
+    : sync_point_manager_(sync_point_manager) {}
+
+void FenceSyncReleaseDelegate::Release() {
+  sync_point_manager_->EnsureFenceSyncReleased(
+      release_upperbound_, ReleaseCause::kExplicitClientRelease);
+}
+
+void FenceSyncReleaseDelegate::Release(uint64_t release) {
+  if (release > release_upperbound_.release_count()) {
+    LOG(DFATAL) << "Attempt to release fence sync with a release count larger "
+                   "than what was specified at task registration. Requested: "
+                << release
+                << "; registered: " << release_upperbound_.release_count();
+    release = release_upperbound_.release_count();
+  }
+
+  SyncToken request(release_upperbound_.namespace_id(),
+                    release_upperbound_.command_buffer_id(), release);
+  sync_point_manager_->EnsureFenceSyncReleased(
+      request, ReleaseCause::kExplicitClientRelease);
+}
+
+void FenceSyncReleaseDelegate::Reset(const SyncToken& release_upperbound) {
+  release_upperbound_ = release_upperbound;
+}
+
+ScopedSyncPointClientState::ScopedSyncPointClientState(
+    TaskGraph* task_graph,
+    SequenceId sequence_id,
+    CommandBufferNamespace namespace_id,
+    CommandBufferId command_buffer_id)
+    : task_graph_(task_graph),
+      sequence_id_(sequence_id),
+      namespace_id_(namespace_id),
+      command_buffer_id_(command_buffer_id) {}
+
+ScopedSyncPointClientState::~ScopedSyncPointClientState() {
+  Reset();
+}
+
+ScopedSyncPointClientState::ScopedSyncPointClientState(
+    ScopedSyncPointClientState&& other)
+    : task_graph_(other.task_graph_),
+      sequence_id_(other.sequence_id_),
+      namespace_id_(other.namespace_id_),
+      command_buffer_id_(other.command_buffer_id_) {
+  other.task_graph_ = nullptr;
+}
+
+ScopedSyncPointClientState& ScopedSyncPointClientState::operator=(
+    ScopedSyncPointClientState&& other) {
+  if (&other != this) {
+    task_graph_ = other.task_graph_;
+    other.task_graph_ = nullptr;
+    sequence_id_ = other.sequence_id_;
+    namespace_id_ = other.namespace_id_;
+    command_buffer_id_ = other.command_buffer_id_;
+  }
+  return *this;
+}
+
+void ScopedSyncPointClientState::Reset() {
+  if (!task_graph_) {
+    return;
+  }
+
+  task_graph_->DestroySyncPointClientState(sequence_id_, namespace_id_,
+                                           command_buffer_id_);
+  task_graph_ = nullptr;
+}
+
+TaskGraph::Sequence::Task::Task(base::OnceClosure task_closure,
                                 uint32_t order_num,
                                 const SyncToken& release,
                                 ReportingCallback report_callback)
-    : closure(std::move(closure)),
+    : task_closure(std::move(task_closure)),
       order_num(order_num),
       release(release),
       report_callback(std::move(report_callback)) {}
@@ -62,32 +136,56 @@ TaskGraph::Sequence::WaitFence& TaskGraph::Sequence::WaitFence::operator=(
 
 TaskGraph::Sequence::Sequence(
     TaskGraph* task_graph,
-    base::RepeatingClosure front_task_unblocked_callback,
-    scoped_refptr<base::SingleThreadTaskRunner> validation_runner)
+    scoped_refptr<base::SingleThreadTaskRunner> validation_runner,
+    CommandBufferNamespace namespace_id,
+    CommandBufferId command_buffer_id)
     : task_graph_(task_graph),
       order_data_(task_graph_->sync_point_manager_->CreateSyncPointOrderData()),
       sequence_id_(order_data_->sequence_id()),
-      front_task_unblocked_callback_(std::move(front_task_unblocked_callback)) {
-  if (task_graph_->graph_validation_enabled()) {
+      release_delegate_(task_graph->sync_point_manager()) {
+  if (task_graph_->graph_validation_enabled() && validation_runner) {
     validation_timer_ = base::MakeRefCounted<RetainingOneShotTimerHolder>(
         kMaxValidationDelay, kMinValidationDelay, std::move(validation_runner),
         base::BindRepeating(&TaskGraph::ValidateSequenceTaskFenceDeps,
                             base::Unretained(task_graph),
                             base::Unretained(this)));
   }
+
+  if (namespace_id != CommandBufferNamespace::INVALID) {
+    sync_point_states_.push_back(
+        task_graph_->sync_point_manager()->CreateSyncPointClientState(
+            namespace_id, command_buffer_id, sequence_id_));
+  }
 }
 
 TaskGraph::Sequence::~Sequence() {
-  order_data_->Destroy();
 }
 
-uint32_t TaskGraph::Sequence::AddTask(base::OnceClosure closure,
+ScopedSyncPointClientState TaskGraph::Sequence::CreateSyncPointClientState(
+    CommandBufferNamespace namespace_id,
+    CommandBufferId command_buffer_id) {
+  sync_point_states_.push_back(
+      task_graph_->sync_point_manager()->CreateSyncPointClientState(
+          namespace_id, command_buffer_id, sequence_id_));
+  return ScopedSyncPointClientState(task_graph_, sequence_id_, namespace_id,
+                                    command_buffer_id);
+}
+
+uint32_t TaskGraph::Sequence::AddTask(TaskCallback task_callback,
                                       std::vector<SyncToken> wait_fences,
                                       const SyncToken& release,
                                       ReportingCallback report_callback) {
-  uint32_t order_num = order_data_->GenerateUnprocessedOrderNumber();
-  tasks_.push_back(
-      {std::move(closure), order_num, release, std::move(report_callback)});
+  return AddTask(CreateTaskClosure(std::move(task_callback)),
+                 std::move(wait_fences), release, std::move(report_callback));
+}
+
+uint32_t TaskGraph::Sequence::AddTask(base::OnceClosure task_closure,
+                                      std::vector<SyncToken> wait_fences,
+                                      const SyncToken& release,
+                                      ReportingCallback report_callback) {
+  const uint32_t order_num = order_data_->GenerateUnprocessedOrderNumber();
+  tasks_.push_back({std::move(task_closure), order_num, release,
+                    std::move(report_callback)});
 
   for (const SyncToken& sync_token : ReduceSyncTokens(wait_fences)) {
     SequenceId release_sequence_id =
@@ -96,16 +194,17 @@ uint32_t TaskGraph::Sequence::AddTask(base::OnceClosure closure,
     // base::Unretained is safe here since all sequences and corresponding sync
     // point callbacks will be released before the task graph is destroyed (even
     // though sync point manager itself outlives the task graph briefly).
-    if (task_graph_->sync_point_manager_->Wait(
-            sync_token, sequence_id_, order_num,
-            base::BindOnce(&TaskGraph::SyncTokenFenceReleased,
-                           base::Unretained(task_graph_), sync_token, order_num,
-                           release_sequence_id, sequence_id_))) {
-      auto it = wait_fences_.find(
-          WaitFence{sync_token, order_num, release_sequence_id});
-      if (it == wait_fences_.end()) {
-        wait_fences_.emplace(sync_token, order_num, release_sequence_id);
-      }
+    auto release_callback = base::BindOnce(
+        &TaskGraph::SyncTokenFenceReleased, base::Unretained(task_graph_),
+        sync_token, order_num, release_sequence_id, sequence_id_);
+    // Only wait if we're not already waiting on the same sync token for the
+    // same order number.
+    auto it = wait_fences_.find(
+        WaitFence{sync_token, order_num, release_sequence_id});
+    if (it == wait_fences_.end() &&
+        task_graph_->sync_point_manager_->Wait(
+            sync_token, sequence_id_, order_num, std::move(release_callback))) {
+      wait_fences_.emplace(sync_token, order_num, release_sequence_id);
       SetLastTaskFirstDependencyTimeIfNeeded();
     }
   }
@@ -118,14 +217,16 @@ uint32_t TaskGraph::Sequence::AddTask(base::OnceClosure closure,
   return order_num;
 }
 
-uint32_t TaskGraph::Sequence::BeginTask(base::OnceClosure* closure) {
-  DCHECK(closure);
+uint32_t TaskGraph::Sequence::BeginTask(base::OnceClosure* task_closure) {
+  DCHECK(task_closure);
   DCHECK(!tasks_.empty());
 
   DVLOG(10) << "Sequence " << sequence_id() << " is now running.";
-  *closure = std::move(tasks_.front().closure);
+  *task_closure = std::move(tasks_.front().task_closure);
   uint32_t order_num = tasks_.front().order_num;
   current_task_release_ = tasks_.front().release;
+  release_delegate_.Reset(current_task_release_);
+
   if (!tasks_.front().report_callback.is_null()) {
     std::move(tasks_.front().report_callback).Run(tasks_.front().running_ready);
   }
@@ -136,14 +237,18 @@ uint32_t TaskGraph::Sequence::BeginTask(base::OnceClosure* closure) {
 
 void TaskGraph::Sequence::FinishTask() {
   DVLOG(10) << "Sequence " << sequence_id() << " is now ending.";
+  SyncToken release = current_task_release_;
   current_task_release_.Clear();
   UpdateValidationTimer();
 }
 
-void TaskGraph::Sequence::ContinueTask(base::OnceClosure closure) {
-  uint32_t order_num = order_data_->current_order_num();
+void TaskGraph::Sequence::ContinueTask(TaskCallback task_callback) {
+  ContinueTask(CreateTaskClosure(std::move(task_callback)));
+}
 
-  tasks_.push_front({std::move(closure), order_num, current_task_release_,
+void TaskGraph::Sequence::ContinueTask(base::OnceClosure task_closure) {
+  const uint32_t order_num = order_data_->current_order_num();
+  tasks_.push_front({std::move(task_closure), order_num, current_task_release_,
                      ReportingCallback()});
   current_task_release_.Clear();
   order_data_->PauseProcessingOrderNumber(order_num);
@@ -197,7 +302,7 @@ void TaskGraph::Sequence::RemoveWaitFence(const SyncToken& sync_token,
 
   DCHECK(!tasks_.empty());
   if (order_num == tasks_.front().order_num && IsFrontTaskUnblocked()) {
-    front_task_unblocked_callback_.Run();
+    OnFrontTaskUnblocked(order_num);
   }
 }
 
@@ -207,18 +312,46 @@ bool TaskGraph::Sequence::IsFrontTaskUnblocked() const {
           wait_fences_.begin()->order_num > tasks_.front().order_num);
 }
 
-void TaskGraph::Sequence::StopValidation() {
+void TaskGraph::Sequence::Destroy() {
+  std::vector<scoped_refptr<SyncPointClientState>> sync_point_states;
+  base::circular_deque<Task> tasks;
+  {
+    base::AutoLock auto_lock(task_graph_->lock());
+    sync_point_states_.swap(sync_point_states);
+    tasks_.swap(tasks);
+  }
+
   if (validation_timer_) {
     validation_timer_->DestroyTimer();
   }
+
+  for (auto& state : sync_point_states) {
+    state->Destroy();
+  }
+
+  order_data_->Destroy();
+}
+
+scoped_refptr<SyncPointClientState>
+TaskGraph::Sequence::TakeSyncPointClientState(
+    CommandBufferNamespace namespace_id,
+    CommandBufferId command_buffer_id) {
+  scoped_refptr<SyncPointClientState> sync_point_state;
+  for (auto iter = sync_point_states_.begin(); iter != sync_point_states_.end();
+       ++iter) {
+    if ((*iter)->namespace_id() == namespace_id &&
+        (*iter)->command_buffer_id() == command_buffer_id) {
+      sync_point_state = std::move(*iter);
+      sync_point_states_.erase(iter);
+      break;
+    }
+  }
+
+  return sync_point_state;
 }
 
 void TaskGraph::Sequence::UpdateValidationTimer() {
-  if (!task_graph_->graph_validation_enabled()) {
-    return;
-  }
-
-  if (!HasTasks()) {
+  if (!validation_timer_ || !HasTasks()) {
     return;
   }
 
@@ -253,6 +386,11 @@ const TaskGraph::Sequence::Task* TaskGraph::Sequence::FindReleaseTask(
   return nullptr;
 }
 
+base::OnceClosure TaskGraph::Sequence::CreateTaskClosure(
+    TaskCallback task_callback) {
+  return base::BindOnce(std::move(task_callback),
+                        base::Unretained(&release_delegate_));
+}
 TaskGraph::TaskGraph(SyncPointManager* sync_point_manager)
     : sync_point_manager_(sync_point_manager) {}
 
@@ -261,22 +399,20 @@ TaskGraph::~TaskGraph() {
   DCHECK(sequence_map_.empty());
 }
 
-SequenceId TaskGraph::CreateSequence(
-    base::RepeatingClosure front_task_unblocked_callback,
-    scoped_refptr<base::SingleThreadTaskRunner> validation_runner) {
-  base::AutoLock auto_lock(lock_);
-  auto sequence =
-      std::make_unique<Sequence>(this, std::move(front_task_unblocked_callback),
-                                 std::move(validation_runner));
-  SequenceId id = sequence->sequence_id();
-  sequence_map_.emplace(id, std::move(sequence));
-  return id;
-}
-
 void TaskGraph::AddSequence(std::unique_ptr<Sequence> sequence) {
   base::AutoLock auto_lock(lock_);
   SequenceId id = sequence->sequence_id();
   sequence_map_.emplace(id, std::move(sequence));
+}
+
+ScopedSyncPointClientState TaskGraph::CreateSyncPointClientState(
+    SequenceId sequence_id,
+    CommandBufferNamespace namespace_id,
+    CommandBufferId command_buffer_id) {
+  base::AutoLock auto_lock(lock_);
+  auto* sequence = GetSequence(sequence_id);
+  CHECK(sequence);
+  return sequence->CreateSyncPointClientState(namespace_id, command_buffer_id);
 }
 
 void TaskGraph::DestroySequence(SequenceId sequence_id) {
@@ -293,7 +429,7 @@ void TaskGraph::DestroySequence(SequenceId sequence_id) {
   {
     // Thread annotation macros don't recognize base::AutoUnlock.
     lock_.Release();
-    sequence->StopValidation();
+    sequence->Destroy();
     lock_.Acquire();
   }
 }
@@ -311,10 +447,27 @@ void TaskGraph::SyncTokenFenceReleased(const SyncToken& sync_token,
                                        SequenceId release_sequence_id,
                                        SequenceId waiting_sequence_id) {
   base::AutoLock auto_lock(lock_);
-  Sequence* sequence = GetSequence(waiting_sequence_id);
-
-  if (sequence) {
+  if (auto* sequence = GetSequence(waiting_sequence_id)) {
     sequence->RemoveWaitFence(sync_token, order_num, release_sequence_id);
+  }
+}
+
+void TaskGraph::DestroySyncPointClientState(SequenceId sequence_id,
+                                            CommandBufferNamespace namespace_id,
+                                            CommandBufferId command_buffer_id) {
+  scoped_refptr<SyncPointClientState> sync_point_client_state;
+  {
+    base::AutoLock auto_lock(lock_);
+    Sequence* sequence = GetSequence(sequence_id);
+
+    if (sequence) {
+      sync_point_client_state =
+          sequence->TakeSyncPointClientState(namespace_id, command_buffer_id);
+    }
+  }
+
+  if (sync_point_client_state) {
+    sync_point_client_state->Destroy();
   }
 }
 
@@ -322,6 +475,8 @@ void TaskGraph::ValidateSequenceTaskFenceDeps(Sequence* root_sequence) {
   DCHECK(graph_validation_enabled());
 
   DVLOG(10) << "Validation: root sequence " << root_sequence->sequence_id();
+
+  base::TimeTicks start_time = base::TimeTicks::Now();
 
   // Releases that need to be forcefully done to avoid invalid waits.
   ReleaseMap force_releases;
@@ -356,10 +511,18 @@ void TaskGraph::ValidateSequenceTaskFenceDeps(Sequence* root_sequence) {
     }
   }
 
+  base::UmaHistogramBoolean("GPU.GraphValidation.NeedsForceRelease",
+                            !force_releases.empty());
+
   for (const auto& [client_id, release] : force_releases) {
     sync_point_manager_->EnsureFenceSyncReleased(
-        {client_id.namespace_id, client_id.command_buffer_id, release});
+        {client_id.namespace_id, client_id.command_buffer_id, release},
+        ReleaseCause::kForceRelease);
   }
+
+  base::UmaHistogramCustomTimes("GPU.GraphValidation.Duration",
+                                base::TimeTicks::Now() - start_time,
+                                base::Milliseconds(1), base::Seconds(1), 50);
 }
 
 void TaskGraph::ValidateTaskFenceDeps(
@@ -387,9 +550,16 @@ void TaskGraph::ValidateTaskFenceDeps(
     const SyncPointClientId client_id = fence.sync_token.GetClientId();
 
     Sequence* release_sequence = GetSequence(fence.release_sequence_id);
+    ValidateState* release_validate_state = nullptr;
 
-    auto& release_validate_state = GetSequenceValidateState(
-        validate_states, pending_releases, release_sequence);
+    // `release_sequence` is nullptr if the release sequence has been destroyed
+    // and the corresponding wait fences hasn't been removed from other
+    // sequences. The task graph lock is unlocked between the two operations, so
+    // it is possible that validation happens right in the middle.
+    if (release_sequence) {
+      release_validate_state = &GetSequenceValidateState(
+          validate_states, pending_releases, release_sequence);
+    }
 
     // This should happen after the GetSequenceValidateState() call above, which
     // ensures that `pending_releases` has been updated for `release_sequence`.
@@ -416,10 +586,13 @@ void TaskGraph::ValidateTaskFenceDeps(
 
       LOG(ERROR) << "Validation: wait-without-release detected. Forcefully "
                     "release fence: Release sequence "
-                 << release_sequence->sequence_id() << "; sync token "
+                 << fence.release_sequence_id << "; sync token "
                  << fence.sync_token.ToDebugString();
     } else {
-      if (release_validate_state.validating) {
+      DCHECK(release_sequence);
+      DCHECK(release_validate_state);
+
+      if (release_validate_state->validating) {
         // Circular dependency detected.
         // Forcefully release the fence to break the cycle.
         UpdateReleaseCount(pending_releases, client_id,
@@ -434,7 +607,7 @@ void TaskGraph::ValidateTaskFenceDeps(
       } else {
         // In order for `release_task` to get a chance to run, all prior tasks
         // in the same sequence must be able to run, so validate them all.
-        for (auto dep_task_iter = release_validate_state.next_to_validate;
+        for (auto dep_task_iter = release_validate_state->next_to_validate;
              dep_task_iter != release_sequence->tasks_.end(); ++dep_task_iter) {
           if (dep_task_iter->order_num > release_task->order_num) {
             break;

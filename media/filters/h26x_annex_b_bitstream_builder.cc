@@ -7,6 +7,7 @@
 #include "base/bits.h"
 #include "base/containers/span.h"
 #include "base/numerics/byte_conversions.h"
+#include "media/parsers/h264_parser.h"
 
 namespace media {
 
@@ -35,7 +36,7 @@ void H26xAnnexBBitstreamBuilder::Grow() {
   auto grown = base::HeapArray<uint8_t>::Uninit(data_.size() + kGrowBytes);
   // The first `pos_` bytes in `data_` are initialized. Copy them but don't read
   // from the uninitialized stuff after it.
-  grown.first(pos_).copy_from(data_.first(pos_));
+  grown.copy_prefix_from(data_.first(pos_));
   data_ = std::move(grown);
 }
 
@@ -82,8 +83,8 @@ void H26xAnnexBBitstreamBuilder::FlushReg() {
       Grow();
     }
 
-    data_.subspan(pos_, bytes_in_reg)
-        .copy_from(base::span(reg_be).first(bytes_in_reg));
+    data_.subspan(pos_).copy_prefix_from(
+        base::span(reg_be).first(bytes_in_reg));
     bits_in_buffer_ = pos_ * 8u + bits_in_reg;
     pos_ += bytes_in_reg;
   }
@@ -155,7 +156,7 @@ void H26xAnnexBBitstreamBuilder::BeginNALU(H264NALU::Type nalu_type,
   DCHECK(!in_nalu_);
   DCHECK_FINISHED();
 
-  DCHECK_LE(nalu_type, H264NALU::kEOStream);
+  DCHECK(nalu_type <= H264NALU::kEOStream || nalu_type == H264NALU::kPrefix);
   DCHECK_GE(nal_ref_idc, 0);
   DCHECK_LE(nal_ref_idc, 3);
 
@@ -208,11 +209,11 @@ size_t H26xAnnexBBitstreamBuilder::BytesInBuffer() const {
   return pos_;
 }
 
-const uint8_t* H26xAnnexBBitstreamBuilder::data() const {
+base::span<const uint8_t> H26xAnnexBBitstreamBuilder::data() const {
   DCHECK(!data_.empty());
   DCHECK_FINISHED();
 
-  return data_.data();
+  return data_.first(pos_);
 }
 
 }  // namespace media

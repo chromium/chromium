@@ -27,9 +27,12 @@ TEST(SharedMemoryVersionTest, InitialSetupAllowsVersionSharing) {
       mojo::shared_memory_version::kInvalidVersion));
   EXPECT_TRUE(client.SharedVersionIsLessThan(
       mojo::shared_memory_version::kInvalidVersion));
+
+  EXPECT_FALSE(client.CommittedWritesIsLessThan(0));
+  EXPECT_TRUE(client.CommittedWritesIsLessThan(1));
 }
 
-TEST(SharedMemoryVersionTest, IncrementsAreReflectedInClient) {
+TEST(SharedMemoryVersionTest, VersionIncrementsAreReflectedInClient) {
   mojo::SharedMemoryVersionController controller;
   mojo::SharedMemoryVersionClient client(controller.GetSharedMemoryRegion());
 
@@ -51,19 +54,44 @@ TEST(SharedMemoryVersionTest, IncrementsAreReflectedInClient) {
   EXPECT_TRUE(client.SharedVersionIsLessThan(local_version));
 }
 
+TEST(SharedMemoryVersionTest, CommittedWritesAreReflectedInClient) {
+  mojo::SharedMemoryVersionController controller;
+  mojo::SharedMemoryVersionClient client(controller.GetSharedMemoryRegion());
+
+  mojo::VersionType required_committed_writes = 0;
+
+  // Remote count up to date.
+  EXPECT_FALSE(client.CommittedWritesIsLessThan(required_committed_writes));
+
+  // Local count increases.
+  ++required_committed_writes;
+  EXPECT_TRUE(client.CommittedWritesIsLessThan(required_committed_writes));
+
+  // Remote count catches up.
+  controller.CommitWrite();
+  EXPECT_FALSE(client.CommittedWritesIsLessThan(required_committed_writes));
+
+  // More remote updates still satisfy the requirement.
+  controller.CommitWrite();
+  EXPECT_FALSE(client.CommittedWritesIsLessThan(required_committed_writes));
+}
+
 TEST(SharedMemoryVersionTest, ClientRemainsValidThroughControllerDestuction) {
   std::optional<mojo::SharedMemoryVersionController> controller;
   controller.emplace();
   controller->Increment();
+  controller->CommitWrite();
 
   mojo::SharedMemoryVersionClient client(controller->GetSharedMemoryRegion());
   controller.reset();
 
-  // Client is still valid past the lifetime of the controller.d
+  // Client is still valid past the lifetime of the controller.
   EXPECT_TRUE(client.SharedVersionIsGreaterThan(
       mojo::shared_memory_version::kInitialVersion));
   EXPECT_FALSE(client.SharedVersionIsLessThan(
       mojo::shared_memory_version::kInitialVersion));
+  EXPECT_FALSE(client.CommittedWritesIsLessThan(1));
+  EXPECT_TRUE(client.CommittedWritesIsLessThan(2));
 }
 
 }  // namespace

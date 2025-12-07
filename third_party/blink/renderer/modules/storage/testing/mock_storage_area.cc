@@ -62,7 +62,7 @@ void MockStorageArea::DeleteAll(
 }
 
 void MockStorageArea::Get(const Vector<uint8_t>& key, GetCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MockStorageArea::GetAll(
@@ -75,10 +75,6 @@ void MockStorageArea::GetAll(
   for (const auto& entry : key_values_)
     entries.push_back(mojom::blink::KeyValue::New(entry.key, entry.value));
   std::move(callback).Run(std::move(entries));
-}
-
-void MockStorageArea::Checkpoint() {
-  ++observed_checkpoints_;
 }
 
 }  // namespace blink

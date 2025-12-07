@@ -38,7 +38,8 @@ def fix_python_path(cmd):
   return out
 
 
-def get_sanitizer_env(asan, lsan, msan, tsan, cfi_diag):
+def get_sanitizer_env(asan: bool, lsan: bool, msan: bool, tsan: bool,
+                      cfi_diag: bool, detect_odr_violation: bool):
   """Returns the environment flags needed for sanitizer tools."""
 
   extra_env = {}
@@ -82,6 +83,9 @@ def get_sanitizer_env(asan, lsan, msan, tsan, cfi_diag):
       # See https://github.com/google/sanitizers/issues/1322
       if 'linux' in sys.platform:
         asan_options.append('intercept_tls_get_addr=0')
+
+    if not detect_odr_violation:
+      asan_options.append('detect_odr_violation=0')
 
     if asan_options:
       extra_env['ASAN_OPTIONS'] = ' '.join(asan_options)
@@ -128,13 +132,13 @@ def get_coverage_continuous_mode_env(env):
   # Do not insert %c into LLVM_PROFILE_FILE if it's already there as that'll
   # cause the coverage instrumentation to write coverage data to default.profraw
   # instead of LLVM_PROFILE_FILE.
-  if "%c" in llvm_profile_file:
+  if '%c' in llvm_profile_file:
     return {'LLVM_PROFILE_FILE': llvm_profile_file}
 
   dirname, basename = os.path.split(llvm_profile_file)
   root, ext = os.path.splitext(basename)
 
-  return {'LLVM_PROFILE_FILE': os.path.join(dirname, root + "%c" + ext)}
+  return {'LLVM_PROFILE_FILE': os.path.join(dirname, root + '%c' + ext)}
 
 
 def get_sanitizer_symbolize_command(json_path=None, executable_path=None):
@@ -174,7 +178,7 @@ def symbolize_snippets_in_json(cmd, env):
     raise
 
   if p.returncode != 0:
-    print("Error: failed to symbolize snippets in JSON:\n", file=sys.stderr)
+    print('Error: failed to symbolize snippets in JSON:\n', file=sys.stderr)
     print(stderr, file=sys.stderr)
     raise subprocess.CalledProcessError(p.returncode, symbolize_command)
 
@@ -193,8 +197,8 @@ def escalate_sanitizer_warnings_in_json(cmd, env):
   json_path = get_json_path(cmd)
   if json_path is None:
     print(
-        "Warning: Cannot escalate sanitizer warnings without a json summary "
-        "file:\n",
+        'Warning: Cannot escalate sanitizer warnings without a json summary '
+        'file:\n',
         file=sys.stderr)
     return 0
 
@@ -208,7 +212,7 @@ def escalate_sanitizer_warnings_in_json(cmd, env):
     raise
 
   if p.returncode != 0:
-    print("Error: failed to escalate sanitizer warnings status in JSON:\n",
+    print('Error: failed to escalate sanitizer warnings status in JSON:\n',
           file=sys.stderr)
     print(stderr, file=sys.stderr)
   return p.returncode
@@ -327,7 +331,7 @@ def forward_signals(procs):
       if sys.platform == 'win32' and sig == signal.SIGBREAK:
         p.send_signal(signal.CTRL_BREAK_EVENT)
       else:
-        print("Forwarding signal(%d) to process %d" % (sig, p.pid))
+        print('Forwarding signal(%d) to process %d' % (sig, p.pid))
         p.send_signal(sig)
       # pylint: enable=no-member
 
@@ -366,6 +370,7 @@ def run_executable(cmd, env, stdoutfile=None, cwd=None):
   msan = '--msan=1' in cmd
   tsan = '--tsan=1' in cmd
   cfi_diag = '--cfi-diag=1' in cmd
+  detect_odr_violation = not '--asan-detect-odr-violation=0' in cmd
   # Treat sanitizer warnings as test case failures.
   use_sanitizer_warnings_script = '--fail-san=1' in cmd
   if stdoutfile or sys.platform in ['win32', 'cygwin']:
@@ -377,7 +382,9 @@ def run_executable(cmd, env, stdoutfile=None, cwd=None):
     use_symbolization_script = (asan or msan or cfi_diag or lsan or tsan)
 
   if asan or lsan or msan or tsan or cfi_diag:
-    extra_env.update(get_sanitizer_env(asan, lsan, msan, tsan, cfi_diag))
+    extra_env.update(
+        get_sanitizer_env(asan, lsan, msan, tsan, cfi_diag,
+                          detect_odr_violation))
 
   if lsan or tsan:
     # LSan and TSan are not sandbox-friendly.
@@ -389,6 +396,7 @@ def run_executable(cmd, env, stdoutfile=None, cwd=None):
 
   # pylint: disable=import-outside-toplevel
   if '--skip-set-lpac-acls=1' not in cmd and sys.platform == 'win32':
+    # //testing imports.
     sys.path.insert(
         0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'scripts'))
     from scripts import common  # pylint: disable=cyclic-import

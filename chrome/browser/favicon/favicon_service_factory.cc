@@ -51,8 +51,7 @@ favicon::FaviconService* FaviconServiceFactory::GetForProfile(
   }
 
   // Profile is OffTheRecord without access.
-  NOTREACHED_IN_MIGRATION() << "This profile is OffTheRecord";
-  return nullptr;
+  NOTREACHED() << "This profile is OffTheRecord";
 }
 
 // static

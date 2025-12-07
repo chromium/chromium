@@ -36,6 +36,8 @@ class MODULES_EXPORT NDEFReader : public EventTarget,
                                   public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
 
+  USING_PRE_FINALIZER(NDEFReader, Dispose);
+
  public:
   static NDEFReader* Create(ExecutionContext*);
 
@@ -70,6 +72,8 @@ class MODULES_EXPORT NDEFReader : public EventTarget,
       ExceptionState& exception_state);
 
   void Trace(Visitor*) const override;
+
+  void Dispose();
 
   // Called by NFCProxy for dispatching events.
   virtual void OnReading(const String& serial_number,

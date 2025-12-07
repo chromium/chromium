@@ -129,14 +129,6 @@ TEST_F(PageLoadMetricsForwardObserverTest, Basic) {
   // The event will be invoked twice in the primary page observer, once is for
   // its own, the other is forwarded one from the FencedFrames' page.
   EXPECT_EQ(2u, GetEvents().event_count);
-
-  // Check metrics.
-  tester()->histogram_tester().ExpectBucketCount(
-      internal::kPageLoadTrackerPageType,
-      internal::PageLoadTrackerPageType::kPrimaryPage, 1);
-  tester()->histogram_tester().ExpectBucketCount(
-      internal::kPageLoadTrackerPageType,
-      internal::PageLoadTrackerPageType::kFencedFramesPage, 1);
 }
 
 }  // namespace

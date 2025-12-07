@@ -26,7 +26,7 @@ namespace extensions {
 // |   /|\   \   |
 // |  A B C   D  |
 //
-// where E = Hash(A||B||C), F = Hash(D), and G = Hash(E||F)
+// where E = Hash(A|`B`|C), F = Hash(D), and G = Hash(E||F)
 //
 // The one exception to this rule is when there is only one node left. This
 // means that the root hash of any vector with just one leaf is the same as

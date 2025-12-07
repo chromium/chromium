@@ -17,7 +17,7 @@ namespace leveldb {
 class Iterator;
 }  // namespace leveldb
 
-namespace content {
+namespace content::indexed_db {
 class TransactionalLevelDBDatabase;
 class TransactionalLevelDBIterator;
 class LevelDBScope;
@@ -76,6 +76,6 @@ class DefaultTransactionalLevelDBFactory : public TransactionalLevelDBFactory {
       std::unique_ptr<LevelDBSnapshot> snapshot) override;
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // COMPONENTS_SERVICES_STORAGE_INDEXED_DB_TRANSACTIONAL_LEVELDB_TRANSACTIONAL_LEVELDB_FACTORY_H_

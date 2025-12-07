@@ -27,7 +27,7 @@ struct V4ProtocolConfig;
 class RemoteSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
  public:
   // Construct RemoteSafeBrowsingDatabaseManager.
-  // Must be initialized by calling StartOnSBThread() before using.
+  // Must be initialized by calling StartOnUIThread() before using.
   RemoteSafeBrowsingDatabaseManager();
 
   RemoteSafeBrowsingDatabaseManager(const RemoteSafeBrowsingDatabaseManager&) =
@@ -51,10 +51,9 @@ class RemoteSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
   bool CheckExtensionIDs(const std::set<std::string>& extension_ids,
                          Client* client) override;
   AsyncMatch CheckCsdAllowlistUrl(const GURL& url, Client* client) override;
-  std::optional<HighConfidenceAllowlistCheckLoggingDetails>
-  CheckUrlForHighConfidenceAllowlist(
+  void CheckUrlForHighConfidenceAllowlist(
       const GURL& url,
-      base::OnceCallback<void(bool)> callback) override;
+      CheckUrlForHighConfidenceAllowlistCallback callback) override;
   bool CheckUrlForSubresourceFilter(const GURL& url, Client* client) override;
   void MatchDownloadAllowlistUrl(
       const GURL& url,
@@ -62,10 +61,10 @@ class RemoteSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
   safe_browsing::ThreatSource GetBrowseUrlThreatSource(
       CheckBrowseUrlType check_type) const override;
   safe_browsing::ThreatSource GetNonBrowseUrlThreatSource() const override;
-  void StartOnSBThread(
+  void StartOnUIThread(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const V4ProtocolConfig& config) override;
-  void StopOnSBThread(bool shutdown) override;
+  void StopOnUIThread(bool shutdown) override;
   bool IsDatabaseReady() const override;
 
   //

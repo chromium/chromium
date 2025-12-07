@@ -6,6 +6,7 @@
 #define MEDIA_FFMPEG_FFMPEG_COMMON_H_
 
 #include <stdint.h>
+
 #include <string>
 
 // Used for FFmpeg error codes.
@@ -18,11 +19,12 @@
 #include "build/build_config.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/channel_layout.h"
+#include "media/base/decoder_buffer_side_data.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/media_export.h"
 #include "media/base/sample_format.h"
 #include "media/base/video_codecs.h"
-#include "media/base/video_frame.h"
+#include "media/base/video_types.h"
 #include "media/ffmpeg/ffmpeg_deleters.h"
 #include "third_party/ffmpeg/ffmpeg_features.h"
 
@@ -83,7 +85,7 @@ inline void ScopedPtrAVFreeFrame::operator()(void* x) const {
 
 // Returns the data from `packet` as a `base::span`. `packet` must be a valid
 // `AVPacket` returned from ffmpeg.
-inline base::span<const uint8_t> AVPacketData(const AVPacket& packet) {
+inline base::span<uint8_t> AVPacketData(const AVPacket& packet) {
   // SAFETY: Once initialized by ffmpeg, an `AVPacket` will describe a valid
   // buffer. We assume that callers do not create uninitialized `AVPacket`s on
   // the stack, as ffmpeg's documentation says to only create `AVPacket`s with
@@ -91,6 +93,51 @@ inline base::span<const uint8_t> AVPacketData(const AVPacket& packet) {
   // due to limitations from ffmpeg being a C API.
   return UNSAFE_BUFFERS(
       base::span(packet.data, base::checked_cast<size_t>(packet.size)));
+}
+
+inline base::span<AVStream*> AVFormatContextToSpan(
+    const AVFormatContext* codec_context) {
+  // SAFETY:
+  // https://ffmpeg.org/doxygen/trunk/structAVFormatContext.html#a0b748d924898b08b89ff4974afd17285
+  // ffmpeg documentation: `nb_streams` is the number of elements in
+  // `AVFormatContext.streams`.
+  return UNSAFE_BUFFERS(
+      base::span(codec_context->streams,
+                 base::checked_cast<size_t>(codec_context->nb_streams)));
+}
+
+inline base::span<uint8_t> AVCodecContextExtraDataToSpan(
+    const AVCodecContext* codec_context) {
+  // SAFETY:
+  // https://ffmpeg.org/doxygen/trunk/structAVCodecContext.html#abe964316aaaa61967b012efdcced79c4
+  // ffmpeg documentation: The allocated memory should be
+  // `AV_INPUT_BUFFER_PADDING_SIZE` bytes larger than `extradata_size`. So when
+  // we only use extradata_size bytes, it is safe.
+  return UNSAFE_BUFFERS(
+      base::span(codec_context->extradata,
+                 base::checked_cast<size_t>(codec_context->extradata_size)));
+}
+
+inline base::span<AVPacketSideData> AVCodecParametersCodedSideToSpan(
+    const AVCodecParameters* codecpar) {
+  // SAFETY:
+  // https://ffmpeg.org/doxygen/trunk/structAVCodecParameters.html#a29643cfd94231e2d148a5d17b08d115b
+  // ffmpeg documentation: `nb_coded_side_data` is the amount of entries in
+  // `coded_side_data`.
+  return UNSAFE_BUFFERS(
+      base::span(codecpar->coded_side_data,
+                 base::checked_cast<size_t>(codecpar->nb_coded_side_data)));
+}
+
+inline base::span<uint8_t> AVCodecParametersExtraDataToSpan(
+    const AVCodecParameters* codecpar) {
+  // SAFETY:
+  // https://ffmpeg.org/doxygen/trunk/structAVCodecParameters.html#a9befe0b86412646017afb0051d144d13
+  // ffmpeg documentation: The allocated size of `extradata` must be at least
+  // `extradata_size + AV_INPUT_BUFFER_PADDING_SIZE`.
+  return UNSAFE_BUFFERS(
+      base::span(codecpar->extradata,
+                 base::checked_cast<size_t>(codecpar->extradata_size)));
 }
 
 // Converts an int64_t timestamp in |time_base| units to a base::TimeDelta.
@@ -120,17 +167,15 @@ AVStreamToAVCodecContext(const AVStream* stream);
 // Returns false if conversion fails, in which case |config| is not modified.
 MEDIA_EXPORT bool AVStreamToAudioDecoderConfig(const AVStream* stream,
                                                AudioDecoderConfig* config);
-void AudioDecoderConfigToAVCodecContext(
-    const AudioDecoderConfig& config,
-    AVCodecContext* codec_context);
+void AudioDecoderConfigToAVCodecContext(const AudioDecoderConfig& config,
+                                        AVCodecContext* codec_context);
 
 // Returns true if AVStream is successfully converted to a VideoDecoderConfig.
 // Returns false if conversion fails, in which case |config| is not modified.
 MEDIA_EXPORT bool AVStreamToVideoDecoderConfig(const AVStream* stream,
                                                VideoDecoderConfig* config);
-void VideoDecoderConfigToAVCodecContext(
-    const VideoDecoderConfig& config,
-    AVCodecContext* codec_context);
+void VideoDecoderConfigToAVCodecContext(const VideoDecoderConfig& config,
+                                        AVCodecContext* codec_context);
 
 // Returns true if AVCodecContext is successfully converted to an
 // AudioDecoderConfig. Returns false if conversion fails, in which case |config|
@@ -164,6 +209,21 @@ std::string AVErrorToString(int errnum);
 // Returns a 32-bit hash for the given codec name.  See the VerifyUmaCodecHashes
 // unit test for more information and code for generating the histogram XML.
 MEDIA_EXPORT int32_t HashCodecName(const char* codec_name);
+
+// Returns the list of allowed decoders for audio.
+MEDIA_EXPORT const char* GetAllowedAudioDecoders();
+
+// Converts an FFmpeg timestamp in the given `time_base` to a `base::TimeDelta`.
+// This function is a convenience wrapper around `ConvertFromTimeBase`.
+base::TimeDelta ConvertStreamTimestamp(const AVRational& time_base,
+                                       int64_t timestamp);
+
+// Parses discard padding information from the side data of an `AVPacket`.
+// Discard padding is used to specify the number of samples to discard from the
+// beginning and end of a decoded audio frame. `samples_per_second` is used to
+// convert the discard padding from samples to a `base::TimeDelta`.
+std::optional<DecoderBufferSideData::DiscardPadding>
+GetDiscardPaddingFromAVPacket(const AVPacket* packet, int samples_per_second);
 
 }  // namespace media
 

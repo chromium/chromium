@@ -13,23 +13,21 @@ var MockInputMethodPrivate = {
 
   /**
    * Gets the current input method.
-   * @param {function<string>} callback
+   * @return {Promise<string>}
    */
-  getCurrentInputMethod(callback) {
-    callback(this.currentInputMethod_);
+  getCurrentInputMethod() {
+    return Promise.resolve(this.currentInputMethod_);
   },
 
 
   /**
    * Sets the current input method.
    * @param {string} inputMethodId The input method to set.
-   * @param {function<>} callback Callback called on success.
+   * @return {Promise<void>}
    */
-  setCurrentInputMethod(inputMethodId, callback) {
+  setCurrentInputMethod(inputMethodId) {
     MockInputMethodPrivate.currentInputMethod_ = inputMethodId;
-    if (callback) {
-      callback();
-    }
+    return Promise.resolve();
   },
 
   // Methods for testing. //

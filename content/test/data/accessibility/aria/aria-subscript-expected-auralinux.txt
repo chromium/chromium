@@ -9,7 +9,7 @@
 ++++[subscript] text-position=sub text-position=sub text-position=sub text-position=sub text-position=sub
 ++++++[static] name=' ' text-position=sub
 ++++++[content deletion] text-position=sub
-++++++++[section] name='3' text-position=sub
+++++++++[section] text-position=sub
 ++++++++++[section] description='oops' description-from:tooltip text-position=sub
 ++++++++++++[static] name='3' text-position=sub
 ++++++[static] name=' ' text-position=sub

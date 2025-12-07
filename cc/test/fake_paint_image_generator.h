@@ -34,7 +34,7 @@ class FakePaintImageGenerator : public PaintImageGenerator {
   FakePaintImageGenerator& operator=(const FakePaintImageGenerator&) = delete;
 
   // PaintImageGenerator implementation.
-  sk_sp<SkData> GetEncodedData() const override;
+  sk_sp<const SkData> GetEncodedData() const override;
   bool GetPixels(SkPixmap pixmap,
                  size_t frame_index,
                  PaintImage::GeneratorClientId client_id,
@@ -65,6 +65,7 @@ class FakePaintImageGenerator : public PaintImageGenerator {
 
     frames_decoded_count_.clear();
   }
+  void SetForceFailDecode() { force_fail_decode_ = true; }
   void SetExpectFallbackToRGB() {
     base::AutoLock lock(lock_);
 
@@ -94,6 +95,7 @@ class FakePaintImageGenerator : public PaintImageGenerator {
   // planes and after Chrome implements it, we should no longer expect RGB
   // fallback.
   bool expect_fallback_to_rgb_ = false;
+  bool force_fail_decode_ = false;
   ImageHeaderMetadata image_metadata_;
 };
 

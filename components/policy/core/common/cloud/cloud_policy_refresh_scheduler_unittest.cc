@@ -26,6 +26,7 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_service.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
+#include "mock_user_cloud_policy_store.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,7 +34,6 @@
 namespace em = enterprise_management;
 
 using testing::_;
-using testing::Invoke;
 using testing::Mock;
 
 namespace policy {
@@ -87,9 +87,9 @@ class CloudPolicyRefreshSchedulerTest : public testing::Test {
 
     // Remove mock observer from any scheduler that is being destroyed.
     ON_CALL(mock_observer_, OnRefreshSchedulerDestruction)
-        .WillByDefault(Invoke([&](CloudPolicyRefreshScheduler* scheduler) {
+        .WillByDefault([&](CloudPolicyRefreshScheduler* scheduler) {
           scheduler->RemoveObserver(&mock_observer_);
-        }));
+        });
   }
 
   CloudPolicyRefreshScheduler* CreateRefreshScheduler() {
@@ -264,7 +264,7 @@ TEST_F(CloudPolicyRefreshSchedulerTest, InitialRefreshManagedNotYetFetched) {
 
 TEST_F(CloudPolicyRefreshSchedulerTest, InitialRefreshManagedAlreadyFetched) {
   SetLastUpdateToNow();
-  client_.SetPolicy(dm_protocol::kChromeUserPolicyType, std::string(),
+  client_.SetPolicy(dm_protocol::GetChromeUserPolicyType(), std::string(),
                     em::PolicyFetchResponse());
   auto scheduler = base::WrapUnique(CreateRefreshScheduler());
   CheckTiming(scheduler.get(), kPolicyRefreshRate);
@@ -310,7 +310,7 @@ TEST_F(CloudPolicyRefreshSchedulerTest, RefreshSoonOverriding) {
 
   // The refresh scheduled for soon is not overridden by the notification on the
   // already fetched policy.
-  client_.SetPolicy(dm_protocol::kChromeUserPolicyType, std::string(),
+  client_.SetPolicy(dm_protocol::GetChromeUserPolicyType(), std::string(),
                     em::PolicyFetchResponse());
   store_.NotifyStoreLoaded();
   CheckTiming(scheduler.get(), 0);
@@ -480,7 +480,7 @@ TEST_F(CloudPolicyRefreshSchedulerTest, OnConnectionChangedUnregistered) {
 TEST_F(CloudPolicyRefreshSchedulerTest, OnConnectionChangedAfterSleep) {
   auto scheduler = base::WrapUnique(CreateRefreshScheduler());
 
-  client_.SetPolicy(dm_protocol::kChromeUserPolicyType, std::string(),
+  client_.SetPolicy(dm_protocol::GetChromeUserPolicyType(), std::string(),
                     em::PolicyFetchResponse());
   task_runner_->RunPendingTasks();
   EXPECT_FALSE(task_runner_->HasPendingTask());
@@ -591,6 +591,43 @@ TEST_F(CloudPolicyRefreshSchedulerSteadyStateTest, OnConnectionChanged) {
   EXPECT_EQ(GetLastDelay(), base::TimeDelta());
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+TEST_F(CloudPolicyRefreshSchedulerSteadyStateTest,
+       SignatureValidationFailedAndRetry) {
+  MockUserCloudPolicyStore store;
+  refresh_scheduler_ = std::make_unique<CloudPolicyRefreshScheduler>(
+      &client_, &store, service_.get(), task_runner_,
+      network::TestNetworkConnectionTracker::CreateGetter());
+
+  task_runner_->ClearPendingTasks();
+
+  client_.SetDMToken("dm-token");
+
+  // In case of signature error, reset key and retry.
+  EXPECT_CALL(store, ResetPolicyKey()).Times(1);
+  store.validation_result_ =
+      std::make_unique<CloudPolicyValidatorBase::ValidationResult>();
+  store.validation_result_->status =
+      CloudPolicyValidatorBase::VALIDATION_BAD_SIGNATURE;
+  store.status_ = CloudPolicyStore::STATUS_VALIDATION_ERROR;
+
+  store.NotifyStoreError();
+
+  EXPECT_TRUE(task_runner_->HasPendingTask());
+
+  // If it happens twice in row, won't retry for the second time.
+  Mock::VerifyAndClearExpectations(&store);
+  task_runner_->ClearPendingTasks();
+  EXPECT_CALL(store, ResetPolicyKey()).Times(0);
+
+  store.NotifyStoreError();
+
+  EXPECT_FALSE(task_runner_->HasPendingTask());
+
+  refresh_scheduler_.reset();
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 struct ClientErrorTestParam {
   DeviceManagementStatus client_error;
   PolicyFetchReason reason;
@@ -646,6 +683,9 @@ static const ClientErrorTestParam kClientErrorTestCases[] = {
     {DM_STATUS_SERVICE_ILLEGAL_ACCOUNT_FOR_PACKAGED_EDU_LICENSE, kUnspecified,
      -1, 1},
     {DM_STATUS_SERVICE_INVALID_PACKAGED_DEVICE_FOR_KIOSK, kUnspecified, -1, 1},
+    {DM_STATUS_SERVICE_INVALID_PACKAGED_DEVICE_FOR_KIOSK, kUnspecified,
+     /*expected_delay_ms=*/-1, /*backoff_factor=*/1},
+
 };
 
 class CloudPolicyRefreshSchedulerClientErrorTest

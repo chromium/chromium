@@ -35,6 +35,14 @@ public final class AccountCapabilitiesBuilder {
         return this;
     }
 
+    /** Sets the isSubjectToEnterpriseFeatures capability value. */
+    public AccountCapabilitiesBuilder setIsSubjectToEnterpriseFeatures(boolean value) {
+        mCapabilities.put(
+                AccountCapabilitiesConstants.IS_SUBJECT_TO_ENTERPRISE_POLICIES_CAPABILITY_NAME,
+                value);
+        return this;
+    }
+
     /** Sets the canHaveEmailAddressDisplayed capability value. */
     public AccountCapabilitiesBuilder setCanHaveEmailAddressDisplayed(boolean value) {
         mCapabilities.put(

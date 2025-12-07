@@ -5,45 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_HELP_COMMANDS_H_
 #define IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_HELP_COMMANDS_H_
 
-#import <Foundation/Foundation.h>
+#import "ios/chrome/browser/bubble/public/in_product_help_type.h"
 
-/// Types of in-product help managed by bubble presenter coordinator.
-///
-/// Note: This is NOT a conclusive list of all help bubbles on Chrome on iOS,
-/// since some of them are directly managed by feature coordinators.
-enum class InProductHelpType : NSInteger {
-  /// Discover feed's menu button.
-  kDiscoverFeedMenu,
-  /// Follow help bubble while browsing a site.
-  kFollowWhileBrowsing,
-  /// Help bubble to let the user know that they can change the default mode
-  /// (Desktop/Mobile) of the websites.
-  kDefaultSiteView,
-  /// Help bubble for What's New.
-  kWhatsNew,
-  /// Help bubble to inform the user that they can track the price of the item
-  /// on the current website.
-  kPriceNotificationsWhileBrowsing,
-  /// Help bubble to inform the user that they can tap the Lens button in the
-  /// omnibox keyboard to search with their camera.
-  kLensKeyboard,
-  /// Help bubble to inform the user that their tracked packages will appear in
-  /// the Magic Stack.
-  kParcelTracking,
-  /// Help bubble for the share button.
-  kShareButton,
-  /// Help bubble for the tab grid button in the toolbar.
-  kTabGridToolbarItem,
-  /// Help bubble for the new tab toolbar button.
-  kNewTabToolbarItem,
-  /// Fullscreen help bubble for the pull-to-refresh gesture.
-  kPullToRefresh,
-  /// Fullscreen help bubble for the gesture to swipe to navigate back/forward.
-  kBackForwardSwipe,
-  /// Fullscreen help bubble for the gesture to swipe horizontally on the
-  /// toolbar to switch tabs.
-  kToolbarSwipe
-};
+#import <Foundation/Foundation.h>
 
 /// Commands to control the display of in-product help UI ("bubbles").
 @protocol HelpCommands <NSObject>

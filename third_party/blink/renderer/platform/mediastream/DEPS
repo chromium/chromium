@@ -10,13 +10,23 @@ include_rules = [
     "+media/capture",
     "+media/webrtc/audio_processor_controls.h",
     "+media/webrtc/webrtc_features.h",
+    "+third_party/blink/renderer/platform/allow_discouraged_type.h",
     "+third_party/blink/renderer/platform/audio",
     "+third_party/blink/renderer/platform/heap",
     "+third_party/blink/renderer/platform/peerconnection/rtc_api_name.h",
     "+third_party/blink/renderer/platform/platform_export.h",
     "+third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h",
     "+third_party/blink/renderer/platform/scheduler/public/worker_pool.h",
+    "+third_party/blink/renderer/platform/webrtc/peer_connection_remote_audio_source.h",
     "+third_party/blink/renderer/platform/wtf/uuid.h",
     "+third_party/blink/renderer/platform/wtf",
     "+ui/display/types/display_constants.h",
 ]
+
+specific_include_rules = {
+    # This should be removed once the usage is migrated to C++11 atomics.
+    # See crbug.com/40175832 for details.
+    "media_stream_audio_test.cc": [
+        "+base/atomicops.h"
+    ],
+}

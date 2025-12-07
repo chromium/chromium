@@ -12,10 +12,12 @@
 #include "base/notreached.h"
 #include "chrome/browser/ui/views/frame/dbus_appmenu.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
+#include "components/dbus/utils/call_method.h"
 #include "dbus/bus.h"
-#include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
+#include "ui/platform_window/extensions/wayland_extension.h"
+#include "ui/platform_window/extensions/x11_extension.h"
 
 namespace {
 
@@ -34,31 +36,28 @@ DbusAppmenuRegistrar* DbusAppmenuRegistrar::GetInstance() {
 void DbusAppmenuRegistrar::OnMenuBarCreated(DbusAppmenu* menu) {
   // Make sure insertion succeeds, we should not already be tracking `menu`.
   CHECK(menus_.insert({menu, kUninitialized}).second);
-  if (service_has_owner_)
+  if (service_has_owner_) {
     InitializeMenu(menu);
+  }
 }
 
 void DbusAppmenuRegistrar::OnMenuBarDestroyed(DbusAppmenu* menu) {
   DCHECK(base::Contains(menus_, menu));
   if (menus_[menu] == kRegistered) {
-    dbus::MethodCall method_call(kAppMenuRegistrarInterface,
-                                 "UnregisterWindow");
-    dbus::MessageWriter writer(&method_call);
-    writer.AppendUint32(menu->browser_frame_id());
-    registrar_proxy_->CallMethod(&method_call,
-                                 dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-                                 base::DoNothing());
+    if (auto* toplevel_extension =
+            ui::GetWaylandToplevelExtension(*menu->platform_window())) {
+      toplevel_extension->UnsetAppmenu();
+    } else if (ui::GetX11Extension(*menu->platform_window())) {
+      dbus_utils::CallMethod<"u", "">(
+          registrar_proxy_, kAppMenuRegistrarInterface, "UnregisterWindow",
+          base::DoNothing(), menu->browser_frame_id());
+    }
   }
   menus_.erase(menu);
 }
 
-DbusAppmenuRegistrar::DbusAppmenuRegistrar() {
-  dbus::Bus::Options bus_options;
-  bus_options.bus_type = dbus::Bus::SESSION;
-  bus_options.connection_type = dbus::Bus::PRIVATE;
-  bus_options.dbus_task_runner = dbus_thread_linux::GetTaskRunner();
-  bus_ = base::MakeRefCounted<dbus::Bus>(bus_options);
-
+DbusAppmenuRegistrar::DbusAppmenuRegistrar()
+    : bus_(dbus_thread_linux::GetSharedSessionBus()) {
   registrar_proxy_ = bus_->GetObjectProxy(
       kAppMenuRegistrarName, dbus::ObjectPath(kAppMenuRegistrarPath));
 
@@ -81,20 +80,25 @@ void DbusAppmenuRegistrar::RegisterMenu(DbusAppmenu* menu) {
   DCHECK(base::Contains(menus_, menu));
   DCHECK(menus_[menu] == kInitializeSucceeded || menus_[menu] == kRegistered);
   menus_[menu] = kRegistered;
-  dbus::MethodCall method_call(kAppMenuRegistrarInterface, "RegisterWindow");
-  dbus::MessageWriter writer(&method_call);
-  writer.AppendUint32(menu->browser_frame_id());
-  writer.AppendObjectPath(dbus::ObjectPath(menu->GetPath()));
-  registrar_proxy_->CallMethod(
-      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, base::DoNothing());
+
+  if (auto* toplevel_extension =
+          ui::GetWaylandToplevelExtension(*menu->platform_window())) {
+    toplevel_extension->SetAppmenu(bus_->GetConnectionName(), menu->GetPath());
+  } else if (ui::GetX11Extension(*menu->platform_window())) {
+    dbus_utils::CallMethod<"uo", "">(
+        registrar_proxy_, kAppMenuRegistrarInterface, "RegisterWindow",
+        base::DoNothing(), menu->browser_frame_id(),
+        dbus::ObjectPath(menu->GetPath()));
+  }
 }
 
 void DbusAppmenuRegistrar::OnMenuInitialized(DbusAppmenu* menu, bool success) {
   DCHECK(base::Contains(menus_, menu));
   DCHECK(menus_[menu] == kInitializing);
   menus_[menu] = success ? kInitializeSucceeded : kInitializeFailed;
-  if (success && service_has_owner_)
+  if (success && service_has_owner_) {
     RegisterMenu(menu);
+  }
 }
 
 void DbusAppmenuRegistrar::OnNameOwnerChanged(
@@ -107,8 +111,9 @@ void DbusAppmenuRegistrar::OnNameOwnerChanged(
     DbusAppmenu* menu = pair.first;
     switch (pair.second) {
       case kUninitialized:
-        if (service_has_owner_)
+        if (service_has_owner_) {
           InitializeMenu(menu);
+        }
         break;
       case kInitializing:
         // Wait for Initialize() to finish.
@@ -117,14 +122,16 @@ void DbusAppmenuRegistrar::OnNameOwnerChanged(
         // Don't try to recover.
         break;
       case kInitializeSucceeded:
-        if (service_has_owner_)
+        if (service_has_owner_) {
           RegisterMenu(menu);
+        }
         break;
       case kRegistered:
-        if (service_has_owner_)
+        if (service_has_owner_) {
           RegisterMenu(menu);
-        else
+        } else {
           menus_[menu] = kInitializeSucceeded;
+        }
         break;
     }
   }

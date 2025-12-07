@@ -4,6 +4,7 @@
 
 #include "components/memory_pressure/unnecessary_discard_monitor.h"
 
+#include "base/byte_count.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 
@@ -39,8 +40,33 @@ void UnnecessaryDiscardMonitor::OnReclaimTargetBegin(
     previous_kill_events_.clear();
   }
 
-  // Store the reclaim target for use in identifiying unnecessary kills.
+  // Store the reclaim target for use in identifying unnecessary kills.
   current_reclaim_event_ = reclaim_target;
+}
+
+ReclaimTarget UnnecessaryDiscardMonitor::CorrectReclaimTarget(
+    ReclaimTarget target) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Iterate through all previous kills to identify ones that were finished
+  // after this reclaim target was created.
+  for (const auto& kill_event : previous_kill_events_) {
+    if (target.target.is_zero()) {
+      break;
+    }
+
+    // If this kill happened after the current reclaim event was calculated,
+    // the reclaim target should be adjusted.
+    if (kill_event.kill_time >= target.origin_time) {
+      if (kill_event.kill_size >= target.target) {
+        target.target = base::ByteCount(0);
+      } else {
+        target.target -= kill_event.kill_size;
+      }
+    }
+  }
+
+  return target;
 }
 
 void UnnecessaryDiscardMonitor::OnReclaimTargetEnd() {
@@ -52,25 +78,17 @@ void UnnecessaryDiscardMonitor::OnReclaimTargetEnd() {
     return;
   }
 
-  int64_t adjusted_target_kb = current_reclaim_event_->target_kb;
-
-  // Iterate through all previous kills to identify ones that were finished
-  // after this reclaim target was created.
-  for (const auto& kill_event : previous_kill_events_) {
-    // If this kill happened after the current reclaim event was calculated,
-    // the reclaim target should be adjusted.
-    if (kill_event.kill_time >= current_reclaim_event_->origin_time) {
-      adjusted_target_kb -= kill_event.kill_size_kb;
-    }
-  }
+  base::ByteCount adjusted_target =
+      CorrectReclaimTarget(*current_reclaim_event_).target;
 
   // Now that the reclaim target has been adjusted by any kills that occurred
   // after it was calculated, we can check if any of its resultant kills were
   // unnecessary.
   size_t i = 0;
-  for (; i < current_reclaim_event_kills_.size() && adjusted_target_kb > 0;
+  for (;
+       i < current_reclaim_event_kills_.size() && adjusted_target.is_positive();
        i++) {
-    adjusted_target_kb -= current_reclaim_event_kills_[i].kill_size_kb;
+    adjusted_target -= current_reclaim_event_kills_[i].kill_size;
   }
 
   ReportUnnecessaryDiscards(current_reclaim_event_kills_.size() - i);
@@ -87,12 +105,12 @@ void UnnecessaryDiscardMonitor::OnReclaimTargetEnd() {
 }
 
 void UnnecessaryDiscardMonitor::OnDiscard(
-    int64_t memory_freed_kb,
+    base::ByteCount memory_freed,
     base::TimeTicks discard_complete_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (current_reclaim_event_) {
     // Cache this kill event along with the time it took place.
-    current_reclaim_event_kills_.emplace_back(memory_freed_kb,
+    current_reclaim_event_kills_.emplace_back(memory_freed,
                                               discard_complete_time);
   }
 }

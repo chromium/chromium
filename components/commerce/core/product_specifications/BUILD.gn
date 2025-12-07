@@ -4,15 +4,16 @@
 
 source_set("product_specifications") {
   sources = [
+    "product_specifications_cache.cc",
+    "product_specifications_cache.h",
     "product_specifications_service.cc",
     "product_specifications_service.h",
     "product_specifications_set.cc",
     "product_specifications_set.h",
-    "product_specifications_sync_bridge.cc",
-    "product_specifications_sync_bridge.h",
   ]
   deps = [
     "//base",
+    "//components/commerce/core:commerce_types",
     "//components/commerce/core:feature_list",
     "//components/keyed_service/core",
     "//components/sync",
@@ -23,10 +24,7 @@ source_set("product_specifications") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "product_specifications_service_unittest.cc",
-    "product_specifications_sync_bridge_unittest.cc",
-  ]
+  sources = [ "product_specifications_cache_unittest.cc" ]
   deps = [
     ":product_specifications",
     "//base/test:test_support",
@@ -34,6 +32,10 @@ source_set("unit_tests") {
     "//components/commerce/core:feature_list",
     "//components/sync:test_support",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("test_support") {

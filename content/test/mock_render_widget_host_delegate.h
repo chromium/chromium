@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/text_input_manager.h"
@@ -43,6 +44,7 @@ class MockRenderWidgetHostDelegate
       KeyboardEventProcessingResult result) {
     pre_handle_keyboard_event_result_ = result;
   }
+
   void CreateInputEventRouter();
 
   void FlushInkRenderer() { delegated_ink_point_renderer_.FlushForTesting(); }
@@ -71,6 +73,7 @@ class MockRenderWidgetHostDelegate
   VisibleTimeRequestTrigger& GetVisibleTimeRequestTrigger() override;
   gfx::mojom::DelegatedInkPointRenderer* GetDelegatedInkRenderer(
       ui::Compositor* compositor) override;
+  void OnInputIgnored(const blink::WebInputEvent& event) override;
 
   //  RenderWidgetHostInputEventRouter::Delegate
   input::TouchEmulator* GetTouchEmulator(bool create_if_necessary) override;
@@ -78,7 +81,7 @@ class MockRenderWidgetHostDelegate
  private:
   std::unique_ptr<input::NativeWebKeyboardEvent> last_event_;
   raw_ptr<RenderWidgetHostImpl, DanglingUntriaged> rwh_ = nullptr;
-  std::unique_ptr<input::RenderWidgetHostInputEventRouter>
+  scoped_refptr<input::RenderWidgetHostInputEventRouter>
       rwh_input_event_router_;
   mojo::Remote<gfx::mojom::DelegatedInkPointRenderer>
       delegated_ink_point_renderer_;

@@ -1,0 +1,106 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/build/scripts/scripts.gni")
+import("//third_party/blink/renderer/core/core.gni")
+
+blink_python_runner("generate_builtins_all_known") {
+  script = "builtins_all_known.py"
+  outputs = [ "$target_gen_dir/builtins_all_known.json" ]
+  sources = [
+    "../html/aria_properties.json5",
+    "../html/html_attribute_names.json5",
+    "../html/html_tag_names.json5",
+    "../mathml/mathml_attribute_names.json5",
+    "../mathml/mathml_tag_names.json5",
+    "../svg/svg_attribute_names.json5",
+    "../svg/svg_tag_names.json5",
+    "../svg/xlink_attribute_names.json5",
+    "../xml/xml_attribute_names.json5",
+    "../xml/xmlns_attribute_names.json5",
+  ]
+  inputs = sources + scripts_for_json5_files
+  args = [
+           "--out",
+           rebase_path(outputs[0], root_build_dir),
+         ] + rebase_path(sources, root_build_dir)
+}
+
+action("generate_builtins_default_config") {
+  script = "builtins_generate_config.py"
+  sources = [ "builtins_default_config.json" ]
+  outputs = [ "$target_gen_dir/builtins_default.cc" ]
+  allknown = get_target_outputs(":generate_builtins_all_known")
+  args = [
+    "--default-configuration",
+    rebase_path(sources[0], root_build_dir),
+    "--out",
+    rebase_path(outputs[0], root_build_dir),
+    "--name",
+    "BuildDefaultConfig",
+    "--all-known",
+    rebase_path(allknown[0], root_build_dir),
+  ]
+  deps = [ ":generate_builtins_all_known" ]
+}
+
+action("generate_builtins_baseline_config") {
+  script = "builtins_generate_config.py"
+  sources = [ "builtins_baseline_config.json" ]
+  outputs = [ "$target_gen_dir/builtins_baseline.cc" ]
+  allknown = get_target_outputs(":generate_builtins_all_known")
+  args = [
+    "--default-configuration",
+    rebase_path(sources[0], root_build_dir),
+    "--out",
+    rebase_path(outputs[0], root_build_dir),
+    "--name",
+    "BuildBaselineConfig",
+    "--all-known",
+    rebase_path(allknown[0], root_build_dir),
+  ]
+  deps = [ ":generate_builtins_all_known" ]
+}
+
+action("generate_builtins_all_known_config") {
+  script = "builtins_generate_config.py"
+  sources = get_target_outputs(":generate_builtins_all_known")
+  outputs = [ "$target_gen_dir/builtins_all_known.cc" ]
+  args = [
+    "--default-configuration",
+    rebase_path(sources[0], root_build_dir),
+    "--out",
+    rebase_path(outputs[0], root_build_dir),
+    "--name",
+    "BuildAllKnownConfig_ForTesting",
+    "--all-known",
+    rebase_path(sources[0], root_build_dir),
+  ]
+  deps = [ ":generate_builtins_all_known" ]
+}
+
+# ":generated" is the main target that should be referenced by core/BUILD.gn.
+#
+# It's down here because GN's get_target_outputs function insists that its
+# targets have already been declared.
+blink_core_sources("generated") {
+  sources = get_target_outputs(":generate_builtins_baseline_config") +
+            get_target_outputs(":generate_builtins_default_config")
+  deps = [
+    ":generate_builtins_baseline_config",
+    ":generate_builtins_default_config",
+  ]
+}
+
+# The "all known" config is large, and is only used at build time, not runtime.
+# So we don't want to include it in the binary. But we do want to write some
+# tests to sanity check its content, so we have a testonly target for it.
+source_set("unit_test_support") {
+  testonly = true
+  sources = get_target_outputs(":generate_builtins_all_known_config")
+  deps = [
+    ":generate_builtins_all_known_config",
+    "//third_party/blink/renderer/core",
+  ]
+}

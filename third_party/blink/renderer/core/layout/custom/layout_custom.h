@@ -42,7 +42,9 @@ class LayoutCustom final : public LayoutBlockFlow {
   void AddChild(LayoutObject* new_child, LayoutObject* before_child) override;
   void RemoveChild(LayoutObject* child) override;
 
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) override;
 
   bool IsMonolithic() const final {
     NOT_DESTROYED();

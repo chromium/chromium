@@ -6,7 +6,7 @@
 
 #include "android_webview/public/browser/draw_fn.h"
 #include "android_webview/test/shell/src/draw_fn/allocator.h"
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/android/jni_array.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -17,8 +17,8 @@ namespace {
 
 bool AreOverlaysSupported() {
   static bool supported = gfx::SurfaceControl::IsSupported() &&
-                          (base::android::BuildInfo::GetInstance()->sdk_int() >=
-                           base::android::SDK_VERSION_S);
+                          (base::android::android_info::sdk_int() >=
+                           base::android::android_info::SDK_VERSION_S);
 
   return supported;
 }

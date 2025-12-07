@@ -5,6 +5,7 @@
 #include "ash/login/ui/login_password_view.h"
 
 #include <memory>
+#include <string_view>
 
 #include "ash/login/ui/login_arrow_navigation_delegate.h"
 #include "ash/login/ui/login_test_base.h"
@@ -14,9 +15,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/ime/text_input_type.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/widget/widget.h"
@@ -58,8 +59,8 @@ class LoginPasswordViewTest : public LoginTestBase {
     SetWidget(CreateWidgetWithContent(view_));
   }
 
-  void OnPasswordSubmit(const std::u16string& password) {
-    password_ = password;
+  void OnPasswordSubmit(std::u16string_view password) {
+    password_ = std::u16string_view(password);
   }
   void OnPasswordTextChanged(bool is_empty) {
     is_password_field_empty_ = is_empty;

@@ -14,9 +14,8 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
-namespace WTF {
+namespace blink {
 
 template <>
 struct HashTraits<wgpu::Buffer> : GenericHashTraits<wgpu::Buffer> {
@@ -33,15 +32,13 @@ struct HashTraits<wgpu::Buffer> : GenericHashTraits<wgpu::Buffer> {
   static std::nullptr_t DeletedValue() { return nullptr; }
 };
 
-}  // namespace WTF
-namespace blink {
-
 class GPUAdapter;
 class GPUBuffer;
 class GPURequestAdapterOptions;
 class NavigatorBase;
 class ScriptState;
 class DawnControlClientHolder;
+class V8GPUTextureFormat;
 class WGSLLanguageFeatures;
 
 struct BoxedMappableWGPUBufferHandles
@@ -57,13 +54,10 @@ struct BoxedMappableWGPUBufferHandles
 };
 
 class MODULES_EXPORT GPU final : public ScriptWrappable,
-                                 public Supplement<NavigatorBase>,
                                  public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
-
   // Getter for navigator.gpu
   static GPU* gpu(NavigatorBase&);
 
@@ -80,14 +74,15 @@ class MODULES_EXPORT GPU final : public ScriptWrappable,
   // ExecutionContextLifecycleObserver overrides
   void ContextDestroyed() override;
 
-  // gpu.idl
+  // gpu.idl {{{
   ScriptPromise<IDLNullable<GPUAdapter>> requestAdapter(
       ScriptState* script_state,
       const GPURequestAdapterOptions* options);
-  String getPreferredCanvasFormat();
+  V8GPUTextureFormat getPreferredCanvasFormat();
   WGSLLanguageFeatures* wgslLanguageFeatures() const;
+  // }}} End of WebIDL binding implementation.
 
-  static wgpu::TextureFormat preferred_canvas_format();
+  static wgpu::TextureFormat GetPreferredCanvasFormat();
 
   // Store the buffer in a weak hash set so we can destroy it when the
   // context is destroyed.
@@ -96,7 +91,7 @@ class MODULES_EXPORT GPU final : public ScriptWrappable,
   // destroyed.
   void UntrackMappableBuffer(GPUBuffer* buffer);
 
-  BoxedMappableWGPUBufferHandles* mappable_buffer_handles() const {
+  BoxedMappableWGPUBufferHandles* GetMappableBufferHandles() const {
     return mappable_buffer_handles_.get();
   }
 
@@ -110,11 +105,7 @@ class MODULES_EXPORT GPU final : public ScriptWrappable,
       ScriptPromiseResolver<IDLNullable<GPUAdapter>>* resolver,
       wgpu::RequestAdapterStatus status,
       wgpu::Adapter adapter,
-      const char* error_message);
-
-  void RecordAdapterForIdentifiability(ScriptState* script_state,
-                                       const GPURequestAdapterOptions* options,
-                                       GPUAdapter* adapter) const;
+      wgpu::StringView error_message);
 
   void RequestAdapterImpl(ScriptState* script_state,
                           const GPURequestAdapterOptions* options,
@@ -123,8 +114,7 @@ class MODULES_EXPORT GPU final : public ScriptWrappable,
   Member<WGSLLanguageFeatures> wgsl_language_features_;
 
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
-  WTF::Vector<base::OnceCallback<void()>>
-      dawn_control_client_initialized_callbacks_;
+  Vector<base::OnceCallback<void()>> dawn_control_client_initialized_callbacks_;
   HeapHashSet<WeakMember<GPUBuffer>> mappable_buffers_;
   // Mappable buffers remove themselves from this set on destruction.
   // It is boxed in a scoped_refptr so GPUBuffer can access it in its

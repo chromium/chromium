@@ -8,7 +8,6 @@
 #include <tuple>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
@@ -20,6 +19,8 @@
 #include "chrome/browser/apps/app_preload_service/app_preload_service.h"
 #include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
 #include "chrome/browser/apps/app_preload_service/proto/app_preload.pb.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -34,56 +35,48 @@ namespace apps {
 
 class AppPreloadAlmanacEndpointTest : public testing::Test {
  public:
-  AppPreloadAlmanacEndpointTest()
-      : test_shared_loader_factory_(
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &url_loader_factory_)) {
+  AppPreloadAlmanacEndpointTest() {
     feature_list_.InitAndDisableFeature(kAppPreloadServiceEnableTestApps);
   }
 
+  void SetUp() override {
+    TestingProfile::Builder profile_builder;
+    profile_builder.SetSharedURLLoaderFactory(
+        url_loader_factory_.GetSafeWeakWrapper());
+    profile_ = profile_builder.Build();
+  }
+
+  Profile* profile() { return profile_.get(); }
+
  protected:
   network::TestURLLoaderFactory url_loader_factory_;
-  scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   base::HistogramTester histograms_;
   base::test::ScopedFeatureList feature_list_;
 
  private:
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfile> profile_;
 };
 
 TEST_F(AppPreloadAlmanacEndpointTest, GetAppsForFirstLoginRequest) {
-  // We only set enough fields to verify that context protos are attached to the
-  // request.
-  DeviceInfo device_info;
-  device_info.board = "brya";
-  device_info.user_type = "unmanaged";
-
-  std::string method;
-  std::string method_override_header;
-  std::string content_type;
   std::string body;
 
+  base::RunLoop run_loop;
   url_loader_factory_.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
-        request.headers.GetHeader(net::HttpRequestHeaders::kContentType,
-                                  &content_type);
-        request.headers.GetHeader("X-HTTP-Method-Override",
-                                  &method_override_header);
-        method = request.method;
         body = network::GetUploadData(request);
+        run_loop.Quit();
       }));
 
-  app_preload_almanac_endpoint::GetAppsForFirstLogin(
-      device_info, *test_shared_loader_factory_, base::DoNothing());
-
-  EXPECT_EQ(method, "POST");
-  EXPECT_EQ(method_override_header, "GET");
-  EXPECT_EQ(content_type, "application/x-protobuf");
+  app_preload_almanac_endpoint::GetAppsForFirstLogin(profile(),
+                                                     base::DoNothing());
+  run_loop.Run();
 
   proto::AppPreloadListRequest request;
   ASSERT_TRUE(request.ParseFromString(body));
 
-  EXPECT_EQ(request.device_context().board(), "brya");
+  EXPECT_TRUE(request.has_device_context());
   EXPECT_EQ(request.user_context().user_type(),
             apps::proto::ClientUserContext::USERTYPE_UNMANAGED);
 }
@@ -91,7 +84,6 @@ TEST_F(AppPreloadAlmanacEndpointTest, GetAppsForFirstLoginRequest) {
 TEST_F(AppPreloadAlmanacEndpointTest, GetAppsForFirstLoginSuccessfulResponse) {
   PackageId chrome_app =
       *PackageId::FromString("chromeapp:mgndgikekgjfcpckkfioiadnlibdjbkf");
-  PackageId lacros_app = *PackageId::FromString("system:lacros-chrome");
   PackageId web_app1 = *PackageId::FromString("web:http://example.com/app1");
   PackageId android_app1 = *PackageId::FromString("android:com.example.app1");
   PackageId web_app2 = *PackageId::FromString("web:http://example.com/app2");
@@ -163,7 +155,7 @@ TEST_F(AppPreloadAlmanacEndpointTest, GetAppsForFirstLoginSuccessfulResponse) {
                          LauncherOrdering, ShelfPinOrdering>
       test_callback;
   app_preload_almanac_endpoint::GetAppsForFirstLogin(
-      DeviceInfo(), *test_shared_loader_factory_, test_callback.GetCallback());
+      profile(), test_callback.GetCallback());
 
   auto apps = std::get<0>(test_callback.Get());
   EXPECT_TRUE(apps.has_value());
@@ -173,11 +165,9 @@ TEST_F(AppPreloadAlmanacEndpointTest, GetAppsForFirstLoginSuccessfulResponse) {
   auto launcher_ordering = std::get<1>(test_callback.Get());
   EXPECT_EQ(launcher_ordering.size(), 2u);
   auto root_folder = launcher_ordering[""];
-  EXPECT_EQ(root_folder.size(), 5u);
+  EXPECT_EQ(root_folder.size(), 4u);
   EXPECT_EQ(root_folder[chrome_app].type, type_chrome);
   EXPECT_EQ(root_folder[chrome_app].order, 1u);
-  EXPECT_EQ(root_folder[lacros_app].type, type_chrome);
-  EXPECT_EQ(root_folder[lacros_app].order, 1u);
   EXPECT_EQ(root_folder[web_app1].type, type_app);
   EXPECT_EQ(root_folder[web_app1].order, 2u);
   EXPECT_EQ(root_folder[android_app1].type, type_app);
@@ -203,8 +193,8 @@ TEST_F(AppPreloadAlmanacEndpointTest, GetAppsForFirstLoginServerError) {
   base::test::TestFuture<std::optional<std::vector<PreloadAppDefinition>>,
                          LauncherOrdering, ShelfPinOrdering>
       result;
-  app_preload_almanac_endpoint::GetAppsForFirstLogin(
-      DeviceInfo(), *test_shared_loader_factory_, result.GetCallback());
+  app_preload_almanac_endpoint::GetAppsForFirstLogin(profile(),
+                                                     result.GetCallback());
   EXPECT_FALSE(std::get<0>(result.Get()).has_value());
 }
 
@@ -217,8 +207,8 @@ TEST_F(AppPreloadAlmanacEndpointTest, GetAppsForFirstLoginNetworkError) {
   base::test::TestFuture<std::optional<std::vector<PreloadAppDefinition>>,
                          LauncherOrdering, ShelfPinOrdering>
       result;
-  app_preload_almanac_endpoint::GetAppsForFirstLogin(
-      DeviceInfo(), *test_shared_loader_factory_, result.GetCallback());
+  app_preload_almanac_endpoint::GetAppsForFirstLogin(profile(),
+                                                     result.GetCallback());
   EXPECT_FALSE(std::get<0>(result.Get()).has_value());
 }
 

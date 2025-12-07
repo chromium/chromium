@@ -9,6 +9,7 @@
 #include "content/public/browser/devtools_agent_host_client.h"
 #include "content/public/browser/devtools_agent_host_client_channel.h"
 #include "headless/lib/browser/protocol/browser_handler.h"
+#include "headless/lib/browser/protocol/emulation_handler.h"
 #include "headless/lib/browser/protocol/headless_handler.h"
 #include "headless/lib/browser/protocol/page_handler.h"
 #include "headless/lib/browser/protocol/target_handler.h"
@@ -35,6 +36,7 @@ HeadlessDevToolsSession::HeadlessDevToolsSession(
   AddHandler(
       std::make_unique<BrowserHandler>(browser_.get(), agent_host->GetId()));
   AddHandler(std::make_unique<TargetHandler>(browser_.get()));
+  AddHandler(std::make_unique<EmulationHandler>());
 }
 
 HeadlessDevToolsSession::~HeadlessDevToolsSession() {

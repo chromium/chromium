@@ -8,7 +8,8 @@
 #include <memory>
 
 #include "content/public/browser/web_ui_controller.h"
-#include "ui/gfx/native_widget_types.h"
+#include "content/public/browser/webui_config.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace gfx {
 class Size;
@@ -17,11 +18,23 @@ class Size;
 namespace content {
 class BrowserContext;
 class WebContents;
-}
+}  // namespace content
 
 namespace ui {
 class WebDialogDelegate;
 }
+
+namespace views {
+class WidgetDelegate;
+}
+
+class ConstrainedWebDialogUI;
+
+class ConstrainedWebDialogUIConfig
+    : public content::DefaultWebUIConfig<ConstrainedWebDialogUI> {
+ public:
+  ConstrainedWebDialogUIConfig();
+};
 
 class ConstrainedWebDialogDelegate {
  public:
@@ -53,7 +66,7 @@ class ConstrainedWebDialogDelegate {
   virtual gfx::Size GetConstrainedWebDialogPreferredSize() const = 0;
 
  protected:
-  virtual ~ConstrainedWebDialogDelegate() {}
+  virtual ~ConstrainedWebDialogDelegate() = default;
 };
 
 // ConstrainedWebDialogUI is a facility to show HTML WebUI content
@@ -114,5 +127,10 @@ ConstrainedWebDialogDelegate* ShowConstrainedWebDialogWithAutoResize(
     content::WebContents* overshadowed,
     const gfx::Size& min_size,
     const gfx::Size& max_size);
+
+views::WidgetDelegate* GetConstrainedWebDialogForAccessibilityTesting(
+    content::BrowserContext* browser_context,
+    std::unique_ptr<ui::WebDialogDelegate> delegate,
+    content::WebContents* overshadowed);
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CONSTRAINED_WEB_DIALOG_UI_H_

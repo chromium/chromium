@@ -23,6 +23,8 @@ public class FakeRwsPrivacySandboxBridge implements PrivacySandboxBridge.Natives
     // Owner of the one RWS group represented by the fake bridge
     private final String mRwsOwner;
     private final Set<String> mRwsMembers;
+    private static final String GOOGLE_EMBEDDED_PRIVACY_POLICY_U_R_L =
+            "https://policies.google.com/privacy/embedded";
 
     public FakeRwsPrivacySandboxBridge(String rwsOwner, Set<String> rwsMembers) {
         this.mRwsOwner = rwsOwner;
@@ -40,25 +42,25 @@ public class FakeRwsPrivacySandboxBridge implements PrivacySandboxBridge.Natives
     }
 
     @Override
-    public boolean isFirstPartySetsDataAccessEnabled(Profile profile) {
+    public boolean isRelatedWebsiteSetsDataAccessEnabled(Profile profile) {
         return true;
     }
 
     @Override
-    public boolean isFirstPartySetsDataAccessManaged(Profile profile) {
+    public boolean isRelatedWebsiteSetsDataAccessManaged(Profile profile) {
         return true;
     }
 
     @Override
-    public boolean isPartOfManagedFirstPartySet(Profile profile, String origin) {
+    public boolean isPartOfManagedRelatedWebsiteSet(Profile profile, String origin) {
         return mRwsMembers.contains(origin);
     }
 
     @Override
-    public void setFirstPartySetsDataAccessEnabled(Profile profile, boolean enabled) {}
+    public void setRelatedWebsiteSetsDataAccessEnabled(Profile profile, boolean enabled) {}
 
     @Override
-    public String getFirstPartySetOwner(Profile profile, String memberOrigin) {
+    public String getRelatedWebsiteSetOwner(Profile profile, String memberOrigin) {
         return mRwsMembers.contains(memberOrigin.replace("http://", "")) ? mRwsOwner : "";
     }
 
@@ -101,12 +103,12 @@ public class FakeRwsPrivacySandboxBridge implements PrivacySandboxBridge.Natives
             Profile profile, String topFrameEtldPlus1, boolean allowed) {}
 
     @Override
-    public int getRequiredPromptType(Profile profile) {
+    public int getRequiredPromptType(Profile profile, int surfaceType) {
         return 0;
     }
 
     @Override
-    public void promptActionOccurred(Profile profile, int action) {}
+    public void promptActionOccurred(Profile profile, int action, int surfaceType) {}
 
     @Override
     public void topicsToggleChanged(Profile profile, boolean newValue) {}
@@ -118,7 +120,17 @@ public class FakeRwsPrivacySandboxBridge implements PrivacySandboxBridge.Natives
     public void recordActivityType(Profile profile, int activityType) {}
 
     @Override
-    public boolean isConsentCountry() {
+    public boolean privacySandboxPrivacyGuideShouldShowAdTopicsCard(Profile profile) {
         return false;
+    }
+
+    @Override
+    public boolean shouldUsePrivacyPolicyChinaDomain(Profile profile) {
+        return false;
+    }
+
+    @Override
+    public String getEmbeddedPrivacyPolicyURL(int domainType, int colorScheme, String locale) {
+        return GOOGLE_EMBEDDED_PRIVACY_POLICY_U_R_L;
     }
 }

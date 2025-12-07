@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_PERMISSIONS_CONTEXTS_LOCAL_FONTS_PERMISSION_CONTEXT_H_
 #define COMPONENTS_PERMISSIONS_CONTEXTS_LOCAL_FONTS_PERMISSION_CONTEXT_H_
 
-#include "components/permissions/permission_context_base.h"
+#include "components/permissions/content_setting_permission_context_base.h"
 
-class LocalFontsPermissionContext : public permissions::PermissionContextBase {
+class LocalFontsPermissionContext
+    : public permissions::ContentSettingPermissionContextBase {
  public:
   explicit LocalFontsPermissionContext(
       content::BrowserContext* browser_context);

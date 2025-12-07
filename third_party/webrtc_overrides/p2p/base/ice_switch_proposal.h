@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "third_party/webrtc/api/array_view.h"
 #include "third_party/webrtc/p2p/base/ice_controller_interface.h"
 #include "third_party/webrtc/p2p/base/ice_switch_reason.h"
 #include "third_party/webrtc/rtc_base/system/rtc_export.h"
@@ -36,12 +37,12 @@ enum class IceSwitchReason {
 
 std::string IceSwitchReasonToString(IceSwitchReason reason);
 RTC_EXPORT IceSwitchReason
-ConvertFromWebrtcIceSwitchReason(cricket::IceSwitchReason reason);
-cricket::IceSwitchReason ConvertToWebrtcIceSwitchReason(IceSwitchReason reason);
+ConvertFromWebrtcIceSwitchReason(webrtc::IceSwitchReason reason);
+webrtc::IceSwitchReason ConvertToWebrtcIceSwitchReason(IceSwitchReason reason);
 
 // Represents a future event to check whether an ICE switch should be performed.
 struct IceRecheckEvent {
-  explicit IceRecheckEvent(const cricket::IceRecheckEvent& event);
+  explicit IceRecheckEvent(const webrtc::IceRecheckEvent& event);
 
   IceSwitchReason reason;
   int recheck_delay_ms;
@@ -53,8 +54,8 @@ struct IceRecheckEvent {
 class RTC_EXPORT IceSwitchProposal : public IceProposal {
  public:
   IceSwitchProposal(
-      cricket::IceSwitchReason reason,
-      const cricket::IceControllerInterface::SwitchResult& switch_result,
+      webrtc::IceSwitchReason reason,
+      const webrtc::IceControllerInterface::SwitchResult& switch_result,
       bool reply_expected);
 
   IceSwitchProposal(const IceSwitchProposal&) = default;
@@ -72,7 +73,7 @@ class RTC_EXPORT IceSwitchProposal : public IceProposal {
   }
   // Connections for which some learnt state should be reset.
   // TODO(crbug.com/1369096): this is probably not necessary, check!
-  const rtc::ArrayView<const IceConnection> connections_to_forget_state_on()
+  const webrtc::ArrayView<const IceConnection> connections_to_forget_state_on()
       const {
     return connections_to_forget_state_on_;
   }

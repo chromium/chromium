@@ -7,11 +7,12 @@
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
-#include "content/browser/permissions/permission_controller_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents.h"
 #include "services/device/public/mojom/nfc.mojom.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -30,8 +31,8 @@ NFCHost::NFCHost(WebContents* web_contents)
     : WebContentsObserver(web_contents) {
   DCHECK(web_contents);
 
-  permission_controller_ = PermissionControllerImpl::FromBrowserContext(
-      web_contents->GetBrowserContext());
+  permission_controller_ =
+      web_contents->GetBrowserContext()->GetPermissionController();
 }
 
 NFCHost::~NFCHost() {
@@ -61,26 +62,28 @@ void NFCHost::GetNFC(RenderFrameHost* render_frame_host,
 
   if (render_frame_host->GetBrowserContext()
           ->GetPermissionController()
-          ->GetPermissionStatusForCurrentDocument(blink::PermissionType::NFC,
-                                                  render_frame_host) !=
-      blink::mojom::PermissionStatus::GRANTED) {
+          ->GetPermissionStatusForCurrentDocument(
+              content::PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionType(
+                      blink::PermissionType::NFC),
+              render_frame_host) != blink::mojom::PermissionStatus::GRANTED) {
     return;
   }
 
   if (!subscription_id_) {
     // base::Unretained() is safe here because the subscription is canceled when
     // this object is destroyed.
-    // TODO(crbug.com/40205763) : Move `SubscribeToPermissionStatusChange` to
-    // `PermissionController`.
     subscription_id_ =
-        permission_controller_->SubscribeToPermissionStatusChange(
-            blink::PermissionType::NFC, /*render_process_host=*/nullptr,
-            render_frame_host,
+        permission_controller_->SubscribeToPermissionResultChange(
+            PermissionDescriptorUtil::
+                CreatePermissionDescriptorForPermissionType(
+                    blink::PermissionType::NFC),
+            /*render_process_host=*/nullptr, render_frame_host,
             render_frame_host->GetMainFrame()
                 ->GetLastCommittedOrigin()
                 .GetURL(),
             /*should_include_device_status=*/false,
-            base::BindRepeating(&NFCHost::OnPermissionStatusChange,
+            base::BindRepeating(&NFCHost::OnPermissionResultChange,
                                 base::Unretained(this)));
   }
 
@@ -124,16 +127,19 @@ void NFCHost::MaybeResumeOrSuspendOperations(Visibility visibility) {
     nfc_provider_->SuspendNFCOperations();
 }
 
-void NFCHost::OnPermissionStatusChange(blink::mojom::PermissionStatus status) {
-  if (status != blink::mojom::PermissionStatus::GRANTED)
+void NFCHost::OnPermissionResultChange(PermissionResult permission_result) {
+  if (permission_result.status != blink::mojom::PermissionStatus::GRANTED) {
     Close();
+  }
 }
 
 void NFCHost::Close() {
   nfc_provider_.reset();
-  permission_controller_->UnsubscribeFromPermissionStatusChange(
+  permission_controller_->UnsubscribeFromPermissionResultChange(
       subscription_id_);
   subscription_id_ = PermissionController::SubscriptionId();
 }
 
 }  // namespace content
+
+DEFINE_JNI(NfcHost)

@@ -9,11 +9,11 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "crypto/evp.h"
 #include "net/ssl/openssl_private_key.h"
 #include "net/ssl/ssl_private_key.h"
 #include "net/ssl/test_ssl_private_key.h"
 #include "net/test/cert_test_util.h"
-#include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 
 namespace net {
@@ -36,15 +36,16 @@ FakeClientCertIdentity::CreateFromCertAndKeyFiles(
   if (!cert)
     return nullptr;
 
-  std::string pkcs8;
-  if (!base::ReadFileToString(dir.AppendASCII(key_filename), &pkcs8))
+  std::optional<std::vector<uint8_t>> pkcs8 =
+      base::ReadFileToBytes(dir.AppendASCII(key_filename));
+  if (!pkcs8) {
     return nullptr;
+  }
 
-  CBS cbs;
-  CBS_init(&cbs, reinterpret_cast<const uint8_t*>(pkcs8.data()), pkcs8.size());
-  bssl::UniquePtr<EVP_PKEY> pkey(EVP_parse_private_key(&cbs));
-  if (!pkey || CBS_len(&cbs) != 0)
+  bssl::UniquePtr<EVP_PKEY> pkey = crypto::evp::PrivateKeyFromBytes(*pkcs8);
+  if (!pkey) {
     return nullptr;
+  }
 
   scoped_refptr<SSLPrivateKey> ssl_private_key =
       WrapOpenSSLPrivateKey(std::move(pkey));

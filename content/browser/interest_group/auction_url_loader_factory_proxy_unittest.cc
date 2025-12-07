@@ -17,6 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
+#include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/subresource_url_builder.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -24,8 +25,10 @@
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/network_isolation_partition.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -55,9 +58,14 @@ const char kTrustedSignalsBaseUrl[] = "https://host.test/trusted_signals";
 const char kTrustedSignalsUrl[] =
     "https://host.test/trusted_signals?hostname=top.test&keys=jabberwocky";
 
+const char kAdAuctionTrustedSignalsContentType[] =
+    "message/ad-auction-trusted-signals-request";
+
 // Values for the Accept header.
 const char kAcceptJavascript[] = "application/javascript";
 const char kAcceptJson[] = "application/json";
+const char kAcceptAdAuctionTrustedSignals[] =
+    "message/ad-auction-trusted-signals-response";
 const char kAcceptOther[] = "binary/ocelot-stream";
 const char kAcceptWasm[] = "application/wasm";
 
@@ -65,7 +73,7 @@ const char kBundleUrl[] = "https://host.test/bundle";
 
 const int kRenderProcessId = 123;
 
-// The AuctionUrlLoaerFactoryProxy doesn't care which URL is used; its users are
+// The AuctionUrlLoaderFactoryProxy doesn't care which URL is used; its users are
 // responsible for setting the correct URLs for the correct proxy.
 const char kSubresourceUrl1[] = "https://host.test/signals?fakeSuffix1";
 const char kSubresourceUrl2[] = "https://host.test/signals?fakeSuffix2";
@@ -99,14 +107,16 @@ class AuctionUrlLoaderFactoryProxyTest : public testing::TestWithParam<bool> {
   };
 
   AuctionUrlLoaderFactoryProxyTest() {
-    if (PermitCrossOriginTrustedSignals()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          blink::features::kFledgePermitCrossOriginTrustedSignals);
-    }
-
     // Other defaults are all reasonable, but this should always be true for
     // FLEDGE.
     client_security_state_->is_web_secure_context = true;
+    if (UseNonTransientNIKForSellerSignals()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kFledgeUseNonTransientNIKForSeller);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kFledgeUseNonTransientNIKForSeller);
+    }
   }
 
   ~AuctionUrlLoaderFactoryProxyTest() override {
@@ -116,7 +126,7 @@ class AuctionUrlLoaderFactoryProxyTest : public testing::TestWithParam<bool> {
     EXPECT_FALSE(preconnect_url_);
   }
 
-  bool PermitCrossOriginTrustedSignals() const { return GetParam(); }
+  bool UseNonTransientNIKForSellerSignals() const { return GetParam(); }
 
   void CreateUrlLoaderFactoryProxy() {
     // The AuctionURLLoaderFactoryProxy should only be created if there is no
@@ -141,19 +151,27 @@ class AuctionUrlLoaderFactoryProxyTest : public testing::TestWithParam<bool> {
             &trusted_url_loader_factory_),
         base::BindOnce(&AuctionUrlLoaderFactoryProxyTest::PreconnectSocket,
                        base::Unretained(this)),
-        base::BindRepeating(
-            []() -> std::optional<std::string> { return std::nullopt; }),
         base::BindRepeating([]() -> std::vector<std::string> { return {}; }),
         /*force_reload=*/force_reload_, top_frame_origin_, frame_origin_,
         /*renderer_process_id=*/kRenderProcessId, is_for_seller_,
         client_security_state_.Clone(), GURL(kScriptUrl), wasm_url_,
         trusted_signals_base_url_, needs_cors_for_additional_bid_,
-        /*frame_tree_node_id=*/RenderFrameHost::kNoFrameTreeNodeId);
+        /*frame_tree_node_id=*/FrameTreeNodeId());
 
     EXPECT_EQ(preconnect_url_, trusted_signals_base_url_);
     if (trusted_signals_base_url_) {
       if (is_for_seller_) {
-        EXPECT_TRUE(preconnect_network_anonymization_key_->IsTransient());
+        if (UseNonTransientNIKForSellerSignals()) {
+          net::SchemefulSite seller_site{GURL(kScriptUrl)};
+          EXPECT_EQ(preconnect_network_anonymization_key_,
+                    net::NetworkAnonymizationKey::CreateFromFrameSite(
+                        net::SchemefulSite(top_frame_origin_), seller_site,
+                        /*nonce=*/std::nullopt,
+                        net::NetworkIsolationPartition::
+                            kProtectedAudienceSellerWorklet));
+        } else {
+          EXPECT_TRUE(preconnect_network_anonymization_key_->IsTransient());
+        }
       } else {
         net::SchemefulSite buyer_site{GURL(kScriptUrl)};
         EXPECT_EQ(preconnect_network_anonymization_key_,
@@ -308,8 +326,10 @@ class AuctionUrlLoaderFactoryProxyTest : public testing::TestWithParam<bool> {
     EXPECT_EQ(original_accept_header, observed_request.headers.GetHeader(
                                           net::HttpRequestHeaders::kAccept));
 
-    // The accept header should be the only accept header.
-    EXPECT_EQ(1u, observed_request.headers.GetHeaderVector().size());
+    // The accept header should be the only accept header for GET requests.
+    if (observed_request.method == net::HttpRequestHeaders::kGetMethod) {
+      EXPECT_EQ(1u, observed_request.headers.GetHeaderVector().size());
+    }
 
     // The request should not include credentials and not follow redirects.
     EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
@@ -318,12 +338,32 @@ class AuctionUrlLoaderFactoryProxyTest : public testing::TestWithParam<bool> {
               observed_request.redirect_mode);
 
     // Should bypass cache when in force-reload mode.
-    EXPECT_EQ(force_reload_ ? net::LOAD_BYPASS_CACHE : 0,
-              observed_request.load_flags);
+    if (force_reload_) {
+      EXPECT_EQ(observed_request.load_flags, net::LOAD_BYPASS_CACHE);
+    } else if (request.load_flags & net::LOAD_SUPPORT_ASYNC_REVALIDATION) {
+      EXPECT_EQ(observed_request.load_flags,
+                net::LOAD_SUPPORT_ASYNC_REVALIDATION);
+    } else {
+      EXPECT_EQ(observed_request.load_flags, 0);
+    }
+
+    // Check method, body and content-type for POST requests.
+    if (request.method == net::HttpRequestHeaders::kPostMethod) {
+      EXPECT_EQ(observed_request.method, net::HttpRequestHeaders::kPostMethod);
+      EXPECT_EQ(request.request_body, observed_request.request_body);
+      if (request.headers.GetHeader(net::HttpRequestHeaders::kContentType)
+              .has_value()) {
+        EXPECT_EQ(
+            request.headers.GetHeader(net::HttpRequestHeaders::kContentType),
+            observed_request.headers.GetHeader(
+                net::HttpRequestHeaders::kContentType));
+      }
+    }
 
     bool cross_site_enabled_trusted_signals_request =
-        PermitCrossOriginTrustedSignals() && !expect_bundle_request &&
-        *original_accept_header == kAcceptJson;
+        !expect_bundle_request &&
+        (*original_accept_header == kAcceptJson ||
+         *original_accept_header == kAcceptAdAuctionTrustedSignals);
 
     // The initiator should be set.
     if (cross_site_enabled_trusted_signals_request) {
@@ -350,30 +390,40 @@ class AuctionUrlLoaderFactoryProxyTest : public testing::TestWithParam<bool> {
         EXPECT_FALSE(trusted_factory_used);
         EXPECT_FALSE(observed_request.trusted_params);
       } else {
-        // Seller worklet trusted bidding signals currently use transient
-        // IsolationInfos. DirectFromSellerSignals uses the frame's isolation
-        // info, but with a trusted URLLoaderFactory (to override the
-        // X-FLEDGE-Auction-Only request block).
+        // DirectFromSellerSignals uses the frame's isolation info, but with a
+        // trusted URLLoaderFactory (to override the X-FLEDGE-Auction-Only
+        // request block).
         EXPECT_TRUE(trusted_factory_used);
         ASSERT_TRUE(observed_request.trusted_params);
+        const auto& observed_isolation_info =
+            observed_request.trusted_params->isolation_info;
         if (expect_bundle_request) {
-          const auto& observed_isolation_info =
-              observed_request.trusted_params->isolation_info;
           EXPECT_EQ(expected_isolation_info_origin,
                     observed_isolation_info.top_frame_origin());
           EXPECT_EQ(expected_isolation_info_origin,
                     observed_isolation_info.frame_origin());
           EXPECT_TRUE(observed_isolation_info.site_for_cookies().IsNull());
         } else {
-          EXPECT_TRUE(observed_request.trusted_params->isolation_info
-                          .network_isolation_key()
-                          .IsTransient());
+          if (UseNonTransientNIKForSellerSignals()) {
+            // Trusted scoring signals should use an
+            // IsolationInfo with a special NetworkIsolationPartition.
+            EXPECT_EQ(top_frame_origin_,
+                      observed_isolation_info.top_frame_origin());
+            EXPECT_EQ(url::Origin::Create(GURL(kScriptUrl)),
+                      observed_isolation_info.frame_origin());
+            EXPECT_TRUE(observed_isolation_info.site_for_cookies().IsNull());
+            EXPECT_EQ(observed_isolation_info.GetNetworkIsolationPartition(),
+                      net::NetworkIsolationPartition::
+                          kProtectedAudienceSellerWorklet);
+          } else {
+            EXPECT_TRUE(
+                observed_isolation_info.network_isolation_key().IsTransient());
+          }
           // There should have been a preconnect in this case, with a
           // NetworkAnonymizationKey that's consistent with the request's
           // IsolationInfo.
           EXPECT_EQ(preconnect_network_anonymization_key_,
-                    observed_request.trusted_params->isolation_info
-                        .network_anonymization_key());
+                    observed_isolation_info.network_anonymization_key());
         }
         EXPECT_EQ(*client_security_state_,
                   *observed_request.trusted_params->client_security_state);
@@ -535,6 +585,24 @@ TEST_P(AuctionUrlLoaderFactoryProxyTest, ForceReload) {
   TryMakeRequest(kScriptUrl, kAcceptJavascript, ExpectedResponse::kAllow);
 }
 
+TEST_P(AuctionUrlLoaderFactoryProxyTest, SupportsStaleWhileRevalidate) {
+  network::ResourceRequest request;
+  request.url = GURL(kScriptUrl);
+  request.headers.SetHeader(net::HttpRequestHeaders::kAccept,
+                            kAcceptJavascript);
+
+  request.load_flags = net::LOAD_SUPPORT_ASYNC_REVALIDATION;
+  TryMakeRequest(request, ExpectedResponse::kAllow);
+
+  // Try repeating the request with force_reload_. force_reload_
+  // should take precedence.
+  force_reload_ = true;
+  // Force creation of a new proxy, with correct `force_reload` value.
+  remote_url_loader_factory_.reset();
+  CreateUrlLoaderFactoryProxy();
+  TryMakeRequest(request, ExpectedResponse::kAllow);
+}
+
 TEST_P(AuctionUrlLoaderFactoryProxyTest, NoWasmUrl) {
   wasm_url_ = std::nullopt;
   CreateUrlLoaderFactoryProxy();
@@ -678,11 +746,25 @@ TEST_P(AuctionUrlLoaderFactoryProxyTest, TrustedSignalsUrl) {
     TryMakeRequest(
         "https://host.test/trusted_signals?hostname=top.test&keys=%23%26%3D",
         kAcceptJson, ExpectedResponse::kAllow);
+
+    // Valid Trusted Signals KVv2 POST request
+    network::ResourceRequest request;
+    request.method = net::HttpRequestHeaders::kPostMethod;
+    request.url = GURL(kTrustedSignalsBaseUrl);
+    request.headers.SetHeader(net::HttpRequestHeaders::kAccept,
+                              kAcceptAdAuctionTrustedSignals);
+    request.headers.SetHeader(net::HttpRequestHeaders::kContentType,
+                              kAdAuctionTrustedSignalsContentType);
+    TryMakeRequest(request, ExpectedResponse::kAllow);
+
+    // Invalid Trusted Signals KVv2 POST request with mismatched base url.
+    request.url = GURL("https://host.test/trusted_signals?");
+    TryMakeRequest(request, ExpectedResponse::kReject);
   }
 }
 
-// Make sure all seller signals requests use the same transient
-// NetworkAnonymizationKey.
+// Make sure all seller signals requests use the same
+// NetworkIsolationKey.
 TEST_P(AuctionUrlLoaderFactoryProxyTest, SellerSignalsNetworkIsolationKey) {
   is_for_seller_ = true;
   // Make 20 JSON requests, 10 with the same URL, 10 with different ones. All
@@ -694,12 +776,9 @@ TEST_P(AuctionUrlLoaderFactoryProxyTest, SellerSignalsNetworkIsolationKey) {
   }
   EXPECT_EQ(20u, trusted_url_loader_factory_.pending_requests()->size());
 
-  // Make sure all 20 requests use the same transient NetworkAnonymizationKey.
+  // Make sure all 20 requests use the same NetworkIsolationKey.
   for (const auto& request : *trusted_url_loader_factory_.pending_requests()) {
     ASSERT_TRUE(request.request.trusted_params);
-    EXPECT_TRUE(
-        request.request.trusted_params->isolation_info.network_isolation_key()
-            .IsTransient());
     EXPECT_EQ(
         request.request.trusted_params->isolation_info.network_isolation_key(),
         (*trusted_url_loader_factory_.pending_requests())[0]
@@ -747,8 +826,8 @@ TEST_P(AuctionUrlLoaderFactoryProxyTest, SameUrl) {
 TEST_P(AuctionUrlLoaderFactoryProxyTest, ClientSecurityState) {
   is_for_seller_ = false;
 
-  for (auto ip_address_space : {network::mojom::IPAddressSpace::kLocal,
-                                network::mojom::IPAddressSpace::kPrivate,
+  for (auto ip_address_space : {network::mojom::IPAddressSpace::kLoopback,
+                                network::mojom::IPAddressSpace::kLocal,
                                 network::mojom::IPAddressSpace::kPublic,
                                 network::mojom::IPAddressSpace::kUnknown}) {
     client_security_state_->ip_address_space = ip_address_space;
@@ -764,8 +843,8 @@ TEST_P(AuctionUrlLoaderFactoryProxyTest, ClientSecurityState) {
        {network::mojom::PrivateNetworkRequestPolicy::kAllow,
         network::mojom::PrivateNetworkRequestPolicy::kWarn,
         network::mojom::PrivateNetworkRequestPolicy::kBlock,
-        network::mojom::PrivateNetworkRequestPolicy::kPreflightBlock,
-        network::mojom::PrivateNetworkRequestPolicy::kPreflightBlock}) {
+        network::mojom::PrivateNetworkRequestPolicy::kPermissionWarn,
+        network::mojom::PrivateNetworkRequestPolicy::kPermissionBlock}) {
     client_security_state_->private_network_request_policy =
         private_network_request_policy;
     // Force creation of a new proxy, with correct `ip_address_space` value.
@@ -836,8 +915,8 @@ TEST_P(AuctionUrlLoaderFactoryProxyTest, AdditionalBidCors) {
   TryMakeRequest(kScriptUrl, kAcceptJavascript, ExpectedResponse::kAllow);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    /* no label */,
-    AuctionUrlLoaderFactoryProxyTest,
-    testing::Bool());
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         AuctionUrlLoaderFactoryProxyTest,
+                         testing::Bool());
+
 }  // namespace content

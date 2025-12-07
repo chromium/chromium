@@ -40,7 +40,7 @@ GuestOsStabilityMonitor::GuestOsStabilityMonitor(const std::string& histogram)
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-GuestOsStabilityMonitor::~GuestOsStabilityMonitor() {}
+GuestOsStabilityMonitor::~GuestOsStabilityMonitor() = default;
 
 void GuestOsStabilityMonitor::ConciergeStarted(bool is_available) {
   DCHECK(is_available);

@@ -14,6 +14,8 @@ namespace media::hls {
 
 class MEDIA_EXPORT Playlist : public base::RefCounted<Playlist> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   // Unless explicitly specified via the `EXT-X-VERSION` tag, the default
   // playlist version is `1`.
   static constexpr types::DecimalInteger kDefaultVersion = 1;
@@ -57,9 +59,6 @@ class MEDIA_EXPORT Playlist : public base::RefCounted<Playlist> {
   // Playlist. If this is a Multivariant Playlist, it applies to every Media
   // Segment in every Media Playlist referenced by this playlist.
   bool AreSegmentsIndependent() const { return independent_segments_; }
-
-  // Returns the kind of playlist this instance is.
-  virtual Kind GetKind() const = 0;
 
  protected:
   Playlist(GURL uri, types::DecimalInteger version, bool independent_segments);

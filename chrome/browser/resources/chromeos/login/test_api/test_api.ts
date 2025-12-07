@@ -5,6 +5,7 @@
 import {CrRadioGroupElement} from '//resources/ash/common/cr_elements/cr_radio_group/cr_radio_group.js';
 import {CrToggleElement} from '//resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
+import {loginSyslog} from '//resources/ash/common/logging/webui_syslog_emitter.js';
 import {assert} from '//resources/js/assert.js';
 import {sendWithPromise} from '//resources/js/cr.js';
 import {afterNextRender} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -362,53 +363,6 @@ class GeminiIntroScreenTester extends ScreenElementApi {
   }
 }
 
-class AssistantScreenTester extends ScreenElementApi {
-  private mainElement: PolymerElementApi;
-  private valueProp: PolymerElementApi;
-  private valuePropSkipButtonText: PolymerElementApi;
-  private relatedInfo: PolymerElementApi;
-
-  constructor() {
-    super('assistant-optin-flow');
-    this.mainElement = new PolymerElementApi(this, '#card');
-    this.valueProp = new PolymerElementApi(this.mainElement, '#valueProp');
-    this.valuePropSkipButtonText =
-        new PolymerElementApi(this.valueProp, '#skip-button-text');
-    this.relatedInfo = new PolymerElementApi(this.mainElement, '#relatedInfo');
-  }
-
-  override shouldSkip(): boolean {
-    return loadTimeData.getBoolean('testapi_shouldSkipAssistant');
-  }
-
-  /**
-   * Returns if the assistant screen is ready for test interaction.
-   */
-  isReadyForTesting(): boolean {
-    return (
-        this.isVisible() &&
-        (this.valueProp.isVisible() || this.relatedInfo.isVisible()));
-  }
-
-  getSkipButtonName(): string {
-    if (this.valueProp.isVisible()) {
-      const valuePropSkipButton = this.valuePropSkipButtonText.element();
-      if (!valuePropSkipButton || !valuePropSkipButton.textContent) {
-        return '';
-      }
-      return valuePropSkipButton.textContent;
-    }
-    return loadTimeData.getString('assistantOptinNoThanksButton');
-  }
-
-  /**
-   * Returns whether we currently show existing user flow.
-   */
-  isPreviousUserFlowShown(): boolean {
-    return this.relatedInfo.isVisible();
-  }
-}
-
 class MarketingOptInScreenTester extends ScreenElementApi {
   private accessibilityButton: PolymerElementApi;
   private accessibilityStep: PolymerElementApi;
@@ -633,11 +587,13 @@ class PinSetupScreenTester extends ScreenElementApi {
 class EnrollmentSignInStep extends PolymerElementApi {
   private signInFrame: PolymerElementApi;
   private nextButton: PolymerElementApi;
+  private backButton: PolymerElementApi;
 
   constructor(parent: ScreenElementApi) {
     super(parent, '#step-signin');
     this.signInFrame = new PolymerElementApi(this, '#signin-frame');
     this.nextButton = new PolymerElementApi(this, '#primary-action-button');
+    this.backButton = new PolymerElementApi(this, '#signin-back-button');
   }
 
   /**
@@ -1154,12 +1110,8 @@ class GaiaInfoScreenTester extends ScreenElementApi {
     this.manualCredentialsButton = new PolymerElementApi(this, '#manualButton');
   }
 
-  override shouldSkip(): boolean {
-    return loadTimeData.getBoolean('testapi_shouldSkipGaiaInfoScreen');
-  }
-
-  isOobeQuickStartEnabled(): boolean {
-    return loadTimeData.getBoolean('testapi_isOobeQuickStartEnabled');
+  isCrossDeviceFeatureSuiteAllowed(): boolean {
+    return loadTimeData.getBoolean('testapi_isCrossDeviceFeatureSuiteAllowed');
   }
 
   /**
@@ -1230,12 +1182,6 @@ class ChoobeScreenTester extends ScreenElementApi {
         '`shouldSkip()` should only be called after `requestShouldSkip()`' +
             'is called, and `isShouldSkippedReceived()` starts returning true');
     return this.shouldBeSkipped;
-  }
-
-  // TODO(b/327270907): Remove `updatedShouldSkip()` after the users of the test
-  // API migrate to using `shouldSkip()`
-  updatedShouldSkip(): boolean {
-    return this.shouldSkip();
   }
 
   isReadyForTesting(): boolean {
@@ -1358,12 +1304,6 @@ class ChoobeTouchpadScrollScreenTester extends ScreenElementApi {
     return this.shouldBeSkipped;
   }
 
-  // TODO(b/327270907): Remove `updatedShouldSkip()` after the users of the test
-  // API migrate to using `shouldSkip()`
-  updatedShouldSkip(): boolean {
-    return this.shouldSkip();
-  }
-
   isReadyForTesting(): boolean {
     return this.isVisible();
   }
@@ -1440,6 +1380,43 @@ class PersonalizedRecommendAppsScreenTester extends ScreenElementApi {
   }
 }
 
+class SplitModifierKeyboardInfoScreenTester extends ScreenElementApi {
+  private shouldSkipReceived: boolean;
+  private shouldBeSkipped: boolean;
+
+  constructor() {
+    super('split-modifier-keyboard-info');
+    this.shouldSkipReceived = false;
+    this.shouldBeSkipped = false;
+  }
+
+  requestShouldSkip(): void {
+    sendWithPromise('OobeTestApi.getShouldSkipSplitModifierScreen')
+        .then(shouldBeSkipped => this.setShouldBeSkipped(shouldBeSkipped));
+  }
+
+  setShouldBeSkipped(shouldBeSkipped: boolean): void {
+    this.shouldSkipReceived = true;
+    this.shouldBeSkipped = shouldBeSkipped;
+  }
+
+  isShouldSkipReceived(): boolean {
+    return this.shouldSkipReceived;
+  }
+
+  override shouldSkip(): boolean {
+    // TODO(bohdanty): Add assert check in a follow-up CL to prevent CQ from
+    // breaking.
+    return loadTimeData.getBoolean(
+               'testapi_shouldSkipSplitModifierKeyboardInfo') ||
+        this.shouldBeSkipped;
+  }
+
+  isReadyForTesting(): boolean {
+    return this.isVisible();
+  }
+}
+
 export class OobeApiProvider {
   private screens: Record<string, ScreenElementApi>;
   private metricsClientID: string;
@@ -1463,6 +1440,7 @@ export class OobeApiProvider {
   private requestMetricsClientID: () => void;
   private isMetricsClientIdAvailable: () => boolean;
   private getMetricsClientID: () => string;
+  private emitLoginSyslog: (message: string) => void;
 
   constructor() {
     this.screens = {
@@ -1478,7 +1456,6 @@ export class OobeApiProvider {
       FingerprintScreen: new FingerprintScreenTester(),
       AiIntroScreen: new AiIntroScreenTester(),
       GeminiIntroScreen: new GeminiIntroScreenTester(),
-      AssistantScreen: new AssistantScreenTester(),
       MarketingOptInScreen: new MarketingOptInScreenTester(),
       ConfirmSamlPasswordScreen: new ConfirmSamlPasswordScreenTester(),
       PinSetupScreen: new PinSetupScreenTester(),
@@ -1504,6 +1481,8 @@ export class OobeApiProvider {
       DeviceUseCaseScreen: new DeviceUseCaseScreenTester(),
       PersonalizedRecommendAppsScreen:
           new PersonalizedRecommendAppsScreenTester(),
+      SplitModifierKeyboardInfoScreen:
+          new SplitModifierKeyboardInfoScreenTester(),
     };
 
     this.loginWithPin = function(username: string, pin: string): void {
@@ -1692,6 +1671,10 @@ export class OobeApiProvider {
       this.metricsClientID = '';
 
       return id;
+    };
+
+    this.emitLoginSyslog = function(message: string): void {
+      loginSyslog(message);
     };
   }
 

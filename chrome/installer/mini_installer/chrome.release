@@ -29,7 +29,6 @@ eventlog_provider.dll: %(VersionDir)s\
 icudtl.dat: %(VersionDir)s\
 libEGL.dll: %(VersionDir)s\
 libGLESv2.dll: %(VersionDir)s\
-mojo_core.dll: %(VersionDir)s\
 notification_helper.exe: %(VersionDir)s\
 optimization_guide_internal.dll: %(VersionDir)s\
 resources.pak: %(VersionDir)s\
@@ -64,6 +63,12 @@ PrivacySandboxAttestationsPreloaded\privacy-sandbox-attestations.dat: %(VersionD
 MEIPreload\manifest.json: %(VersionDir)s\MEIPreload\
 MEIPreload\preloaded_data.pb: %(VersionDir)s\MEIPreload\
 
+#
+# IWA Key Distribution
+#
+IwaKeyDistribution\iwa-key-distribution.pb: %(VersionDir)s\IwaKeyDistribution\
+IwaKeyDistribution\manifest.json: %(VersionDir)s\IwaKeyDistribution\
+
 [HIDPI]
 chrome_200_percent.pak: %(VersionDir)s\
 
@@ -73,7 +78,7 @@ ffmpeg.dll: %(VersionDir)s\
 [TOUCH]
 
 [GOOGLE_CHROME]
-# The elevation service is only installed for Google Chrome builds.
+elevated_tracing_service.exe: %(VersionDir)s\
 elevation_service.exe: %(VersionDir)s\
 os_update_handler.exe: %(VersionDir)s\
 

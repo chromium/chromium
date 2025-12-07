@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/time/time.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/protocol/entity_data.h"
@@ -19,7 +18,7 @@
 
 namespace syncer {
 
-static const int64_t kUncommittedVersion = -1;
+constexpr int64_t kUncommittedVersion = -1;
 
 enum class SyncCommitError {
   kNetworkError,
@@ -53,7 +52,6 @@ struct CommitRequestData {
   // that make use of this struct.
   int64_t sequence_number = 0;
   std::string specifics_hash;
-  base::Time unsynced_time;
 };
 
 // Represents a successfully committed item.
@@ -70,7 +68,6 @@ struct CommitResponseData {
   int64_t sequence_number = 0;
   int64_t response_version = 0;
   std::string specifics_hash;
-  base::Time unsynced_time;
 };
 
 // Represents an item, which wasn't committed due to an error.

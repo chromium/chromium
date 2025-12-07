@@ -1,0 +1,63 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/ai/ai_common.mojom";
+import "third_party/blink/public/mojom/ai/model_streaming_responder.mojom";
+
+// The enumerations and struct follows the explainer in
+// https://github.com/explainers-by-googlers/writing-assistance-apis/blob/main/README.md
+
+// The output tone of the rewriter.
+enum AIRewriterTone {
+  kAsIs,
+  kMoreFormal,
+  kMoreCasual,
+};
+
+// The output format of the rewriter.
+enum AIRewriterFormat {
+  kAsIs,
+  kPlainText,
+  kMarkdown,
+};
+
+// The output length of the rewriter.
+enum AIRewriterLength {
+  kAsIs,
+  kShorter,
+  kLonger,
+};
+
+// This is used when creating a new AIRewriter.
+struct AIRewriterCreateOptions {
+  string? shared_context;
+  AIRewriterTone tone;
+  AIRewriterFormat format;
+  AIRewriterLength length;
+
+  // Creation fails if a model is not available for specified languages.
+  array<AILanguageCode> expected_input_languages;
+  array<AILanguageCode> expected_context_languages;
+  AILanguageCode output_language;
+};
+
+// Interface for AIRewriter that can stream the output string.
+interface AIRewriter {
+  // Rewrite the input string. The shared context string, tone option and length
+  // option can be set when creating the AIRewriter.
+  // `input` is a string that is set when the JS API `rewriter.rewrite()` is
+  // called.
+  // `context` is a optional string that is set in the AIRewriterRewriteOptions
+  // when the JS API `rewriter.rewrite()` is called.
+  Rewrite(
+    string input,
+    string? context,
+    pending_remote<ModelStreamingResponder> pending_responder);
+
+  // Returns the usage size of `input` and `context`, or null if unable to
+  // retrieve the usage.
+  MeasureUsage(string input, string context) => (uint32? number_of_tokens);
+};

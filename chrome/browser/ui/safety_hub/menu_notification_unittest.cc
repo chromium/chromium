@@ -10,9 +10,9 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
-#include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -27,10 +27,9 @@ const base::TimeDelta kLifetime = base::Days(60);
 const base::Time kPastTime = base::Time::Now() - kLifetime;
 
 // TODO(crbug.com/40267370): Use a mock result instead.
-std::unique_ptr<UnusedSitePermissionsService::UnusedSitePermissionsResult>
-CreateUnusedSitePermissionsResult(base::Value::List urls) {
-  auto result = std::make_unique<
-      UnusedSitePermissionsService::UnusedSitePermissionsResult>();
+std::unique_ptr<RevokedPermissionsResult> CreateRevokedPermissionsResult(
+    base::Value::List urls) {
+  auto result = std::make_unique<RevokedPermissionsResult>();
   PermissionsData permissions_data;
   for (base::Value& url_val : urls) {
     permissions_data.primary_pattern =
@@ -51,9 +50,8 @@ class SafetyHubMenuNotificationTest : public testing::Test {
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     EXPECT_TRUE(testing_profile_manager_->SetUp());
-    profile_ = testing_profile_manager_->CreateTestingProfile(
-        "user@example.com", {},
-        /*is_main_profile=*/true);
+    profile_ =
+        testing_profile_manager_->CreateTestingProfile("user@example.com");
     EXPECT_TRUE(profile_);
   }
   ~SafetyHubMenuNotificationTest() override = default;
@@ -63,7 +61,7 @@ class SafetyHubMenuNotificationTest : public testing::Test {
     // the correct permission types.
     auto* registry = content_settings::ContentSettingsRegistry::GetInstance();
     registry->ResetForTest();
-    service_ = std::make_unique<UnusedSitePermissionsService>(
+    service_ = std::make_unique<RevokedPermissionsService>(
         profile(), profile()->GetPrefs());
   }
 
@@ -72,7 +70,7 @@ class SafetyHubMenuNotificationTest : public testing::Test {
     task_environment_.FastForwardBy(delta);
   }
 
-  UnusedSitePermissionsService* service() { return service_.get(); }
+  RevokedPermissionsService* service() { return service_.get(); }
   TestingProfile* profile() { return profile_.get(); }
 
  private:
@@ -80,10 +78,11 @@ class SafetyHubMenuNotificationTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   raw_ptr<TestingProfile> profile_ = nullptr;
-  std::unique_ptr<UnusedSitePermissionsService> service_;
+  std::unique_ptr<RevokedPermissionsService> service_;
 };
 
-TEST_F(SafetyHubMenuNotificationTest, ToFromDictValue) {
+// TODO(crbug.com/364523673): This test is flaking on android pie builder.
+TEST_F(SafetyHubMenuNotificationTest, DISABLED_ToFromDictValue) {
   // Creating a mock menu notification.
   base::Time last = kPastTime + base::Days(30);
   auto notification = std::make_unique<SafetyHubMenuNotification>(
@@ -93,7 +92,7 @@ TEST_F(SafetyHubMenuNotificationTest, ToFromDictValue) {
   notification->first_impression_time_ = kPastTime;
   notification->last_impression_time_ = last;
   notification->current_result_ =
-      CreateUnusedSitePermissionsResult(base::Value::List().Append(kUrl1));
+      CreateRevokedPermissionsResult(base::Value::List().Append(kUrl1));
 
   // When transforming the notification to a Dict, the properties of the
   // notification should be correct.
@@ -112,10 +111,10 @@ TEST_F(SafetyHubMenuNotificationTest, ToFromDictValue) {
   // The properties of the contained result should also be correct.
   auto* result_dict =
       dict.FindDict(safety_hub::kSafetyHubMenuNotificationResultKey);
-  EXPECT_TRUE(result_dict->contains(kUnusedSitePermissionsResultKey));
-  EXPECT_EQ(1U, result_dict->FindList(kUnusedSitePermissionsResultKey)->size());
+  EXPECT_TRUE(result_dict->contains(kRevokedPermissionsResultKey));
+  EXPECT_EQ(1U, result_dict->FindList(kRevokedPermissionsResultKey)->size());
   base::Value::List& revoked_origins =
-      *result_dict->FindList(kUnusedSitePermissionsResultKey);
+      *result_dict->FindList(kRevokedPermissionsResultKey);
   EXPECT_EQ(kUrl1, revoked_origins.front());
 
   // Using the dict from before, we can create another menu notification object
@@ -129,12 +128,13 @@ TEST_F(SafetyHubMenuNotificationTest, ToFromDictValue) {
   EXPECT_EQ(last, new_notification->last_impression_time_);
   EXPECT_FALSE(new_notification->prev_stored_result_.empty());
   EXPECT_EQ(kUrl1, new_notification->prev_stored_result_
-                       .FindList(kUnusedSitePermissionsResultKey)
+                       .FindList(kRevokedPermissionsResultKey)
                        ->front()
                        .GetString());
 }
 
-TEST_F(SafetyHubMenuNotificationTest, ShouldBeShown) {
+// TODO(crbug.com/364523673): This test is flaking on android pie builder.
+TEST_F(SafetyHubMenuNotificationTest, DISABLED_ShouldBeShown) {
   base::TimeDelta interval = base::Days(30);
   auto notification = std::make_unique<SafetyHubMenuNotification>(
       safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS);
@@ -144,9 +144,8 @@ TEST_F(SafetyHubMenuNotificationTest, ShouldBeShown) {
 
   // The notification is updated with a new result that is a trigger. The
   // notification has never been shown, so should be shown.
-  std::unique_ptr<UnusedSitePermissionsService::UnusedSitePermissionsResult>
-      result =
-          CreateUnusedSitePermissionsResult(base::Value::List().Append(kUrl1));
+  std::unique_ptr<RevokedPermissionsResult> result =
+      CreateRevokedPermissionsResult(base::Value::List().Append(kUrl1));
   notification->UpdateResult(std::move(result));
   ASSERT_TRUE(notification->ShouldBeShown(interval));
 
@@ -177,15 +176,14 @@ TEST_F(SafetyHubMenuNotificationTest, ShouldBeShown) {
 
   // When updating to a similar result, the notification should still not be
   // shown.
-  std::unique_ptr<UnusedSitePermissionsService::UnusedSitePermissionsResult>
-      similar_result =
-          CreateUnusedSitePermissionsResult(base::Value::List().Append(kUrl1));
+  std::unique_ptr<RevokedPermissionsResult> similar_result =
+      CreateRevokedPermissionsResult(base::Value::List().Append(kUrl1));
   notification->UpdateResult(std::move(similar_result));
   ASSERT_FALSE(notification->ShouldBeShown(interval));
 
   // When updating to a new result, the notification should be shown.
-  std::unique_ptr<UnusedSitePermissionsService::UnusedSitePermissionsResult>
-      new_result = CreateUnusedSitePermissionsResult(
+  std::unique_ptr<RevokedPermissionsResult> new_result =
+      CreateRevokedPermissionsResult(
           base::Value::List().Append("https://other.com:443"));
   notification->UpdateResult(std::move(new_result));
   ASSERT_TRUE(notification->ShouldBeShown(interval));
@@ -201,7 +199,7 @@ TEST_F(SafetyHubMenuNotificationTest, ShouldBeShown) {
 
   // Create new notification and new associated result to test passing time but
   // not the count.
-  result = CreateUnusedSitePermissionsResult(base::Value::List().Append(kUrl1));
+  result = CreateRevokedPermissionsResult(base::Value::List().Append(kUrl1));
   auto other_notification = std::make_unique<SafetyHubMenuNotification>(
       safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS);
   other_notification->UpdateResult(std::move(result));
@@ -222,15 +220,15 @@ TEST_F(SafetyHubMenuNotificationTest, ShouldBeShown) {
   ASSERT_FALSE(other_notification->ShouldBeShown(interval));
 }
 
-TEST_F(SafetyHubMenuNotificationTest, IsCurrentlyActive) {
+// TODO(crbug.com/364523673): This test is flaking on android pie builder.
+TEST_F(SafetyHubMenuNotificationTest, DISABLED_IsCurrentlyActive) {
   auto notification = std::make_unique<SafetyHubMenuNotification>(
       safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS);
 
   // A notification is not active when it new or when it has not been shown yet.
   ASSERT_FALSE(notification->IsCurrentlyActive());
-  std::unique_ptr<UnusedSitePermissionsService::UnusedSitePermissionsResult>
-      result =
-          CreateUnusedSitePermissionsResult(base::Value::List().Append(kUrl1));
+  std::unique_ptr<RevokedPermissionsResult> result =
+      CreateRevokedPermissionsResult(base::Value::List().Append(kUrl1));
   notification->UpdateResult(std::move(result));
   ASSERT_FALSE(notification->IsCurrentlyActive());
 

@@ -38,7 +38,6 @@ import subprocess
 import sys
 from robo_lib import config
 
-
 COPYRIGHT = """# Copyright %d The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -78,7 +77,8 @@ GN_SOURCE_END = """]
 _Attrs = ('ARCHITECTURE', 'TARGET', 'PLATFORM')
 Attr = collections.namedtuple('Attr', _Attrs)(*_Attrs)
 SUPPORT_MATRIX = {
-    Attr.ARCHITECTURE: set(['ia32', 'x64', 'arm', 'arm64', 'arm-neon']),
+    Attr.ARCHITECTURE:
+    set(['ia32', 'x64', 'arm', 'arm64', 'arm-neon', 'riscv64']),
     Attr.TARGET: set(['Chromium', 'Chrome']),
     Attr.PLATFORM: set(['android', 'linux', 'win', 'mac'])
 }
@@ -317,6 +317,8 @@ class SourceSet(object):
                 arch_condition = 'current_cpu == "arm" && arm_use_neon'
             elif condition.ARCHITECTURE == 'ia32':
                 arch_condition = 'current_cpu == "x86"'
+            elif condition.ARCHITECTURE == 'arm64':
+                arch_condition = '(current_cpu == "arm64" || current_cpu == "arm64e")'
             else:
                 arch_condition = 'current_cpu == "%s"' % condition.ARCHITECTURE
 
@@ -328,8 +330,8 @@ class SourceSet(object):
                 target_condition = 'ffmpeg_branding == "%s"' % condition.TARGET
 
             # Platform conditions look like: is_mac .
-            # Linux configuration is also used on Fuchsia, for linux config we use
-            # |use_linux_config| flag.
+            # Linux configuration is also used on Fuchsia, for linux config we
+            # use |use_linux_config| flag.
             if condition.PLATFORM == '*':
                 platform_condition = None
             elif condition.PLATFORM == 'linux':
@@ -652,6 +654,7 @@ IGNORED_INCLUDE_FILES = [
     # Chromium generated files
     'config.h',
     'config_components.h',
+    'config_components.asm',
     os.path.join('libavcodec', 'bsf_list.c'),
     os.path.join('libavcodec', 'codec_list.c'),
     os.path.join('libavcodec', 'parser_list.c'),

@@ -78,9 +78,7 @@ class FakeAcceleratorFetcherObserver
 class AcceleratorFetcherTest : public AshTestBase {
  public:
   AcceleratorFetcherTest() {
-    scoped_feature_list_.InitWithFeatures({features::kPeripheralCustomization,
-                                           features::kInputDeviceSettingsSplit,
-                                           ::features::kShortcutCustomization},
+    scoped_feature_list_.InitWithFeatures({features::kPeripheralCustomization},
                                           {});
   }
 

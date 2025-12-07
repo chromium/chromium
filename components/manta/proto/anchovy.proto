@@ -1,0 +1,40 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+
+package manta.proto;
+
+message AnchovyDescription {
+  reserved 3, 5;
+
+  enum Type {
+    UNKNOWN = 0;
+    PRIMARY_CAPTION = 1;
+    SECONDARY_CAPTION = 2;
+    LABEL = 3;
+    OCR = 4;
+    UNUSED = 5;
+  }
+  optional Type type = 1;
+
+  optional string text = 2;
+  optional string lang_id = 4;
+}
+
+message AnchovyContext {
+  optional string version = 1;
+  optional string lang_id = 2;
+  message OptionalInputs {
+    optional bool input1 = 1;
+    optional bool unused_input2 = 2;
+  }
+  optional OptionalInputs optional_inputs = 3;
+
+  message AnchovyOptions {
+    optional bool unused = 1;
+  }
+  optional AnchovyOptions options = 4;
+}

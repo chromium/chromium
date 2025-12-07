@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SYNC_
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.TimeUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.components.prefs.PrefService;
@@ -19,6 +20,7 @@ import java.util.concurrent.TimeUnit;
  * Tracks the last time the sync error message was shown and decides whether that was long enough
  * ago to show the message again.
  */
+@NullMarked
 public class SyncErrorMessageImpressionTracker {
     @VisibleForTesting
     public static final long MINIMAL_DURATION_BETWEEN_UI_MS =

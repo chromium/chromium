@@ -5,6 +5,7 @@
 #include "components/content_settings/core/common/content_settings_mojom_traits.h"
 
 #include "base/test/gtest_util.h"
+#include "base/values.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings.mojom-shared.h"
 #include "components/content_settings/core/common/content_settings.mojom.h"
@@ -54,7 +55,6 @@ TEST(ContentSettingsTraitsTest, Roundtrips_ContentSetting) {
            CONTENT_SETTING_BLOCK,
            CONTENT_SETTING_ASK,
            CONTENT_SETTING_SESSION_ONLY,
-           CONTENT_SETTING_DETECT_IMPORTANT_CONTENT,
        }) {
     ContentSetting round_tripped;
 
@@ -78,6 +78,8 @@ TEST(ContentSettingsTraitsTest, Roundtrips_RuleMetadata) {
       content_settings::mojom::TpcdMetadataRuleSource::SOURCE_TEST);
   original.set_tpcd_metadata_cohort(
       content_settings::mojom::TpcdMetadataCohort::GRACE_PERIOD_FORCED_OFF);
+  original.set_decided_by_related_website_sets(true);
+  original.set_rule_options(base::Value(true));
 
   content_settings::RuleMetaData round_tripped;
 

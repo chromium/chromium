@@ -1,0 +1,45 @@
+<!doctype html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+    content="initial-scale=1, minimum-scale=1, width=device-width">
+<title>$i18n{blockPageTitle}</title>
+<link rel="stylesheet" href="../../../../../components/security_interstitials/core/common/resources/interstitial_core.css">
+<!-- This is simplified version of v3 interstitial which reuses the styling -->
+<link rel="stylesheet" href="supervised_user_block_interstitial_v3.css">
+<if expr="not optimize_webui">
+  <script src="%ROOT_GEN_DIR%/components/supervised_user/core/browser/resources/preprocessed/supervised_user_block_interstitial_no_approvals.js"></script>
+</if>
+<if expr="optimize_webui">
+  <script src="%ROOT_GEN_DIR%/components/supervised_user/core/browser/resources/minified/supervised_user_block_interstitial_no_approvals.js"></script>
+</if>
+</head>
+<body class="supervised-user-block" <if expr="is_ios">style="font-size: $i18n{fontsize}"</if>>
+<div class="frame-blocked" id="frame-blocked" tabindex="-1">
+  <div class="message-container">
+    <picture id="error-page-illustration">
+      <source
+        srcset="error_page_illustration_no_approvals_dark_theme.svg"
+        media="(prefers-color-scheme: dark)"
+        alt="">
+      <img class="illustration"
+        src="error_page_illustration_no_approvals_light_theme.svg"
+        alt="">
+    </picture>
+    <div id="main-message">
+      <h1 id="block-page-header" tabindex="-1">$i18n{blockPageHeader}</h1>
+      <p id="block-page-message" tabindex="-1">$i18n{blockPageMessage}</p>
+    </div>
+  </div>
+  <div class="button-container">
+    <button id="back-button" class="go-back-button primary-button">
+      $i18n{backButton}
+    </button>
+    <button id="learn-more-button" class="learn-more-button secondary-button">
+      $i18n{learnMore}
+    </button>
+  </div>
+</div>
+</body>
+</html>

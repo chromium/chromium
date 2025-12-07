@@ -5,8 +5,8 @@
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {CellularNetwork, EthernetNetwork, NetworkGuidInfo, WiFiNetwork} from './diagnostics_types.js';
-import {NetworkHealthProviderInterface, NetworkListObserverRemote, NetworkStateObserverRemote} from './network_health_provider.mojom-webui.js';
+import type {CellularNetwork, EthernetNetwork, NetworkGuidInfo, WiFiNetwork} from './diagnostics_types.js';
+import type {NetworkHealthProviderInterface, NetworkListObserverRemote, NetworkStateObserverRemote} from './network_health_provider.mojom-webui.js';
 
 // Method names.
 export const ON_NETWORK_LIST_CHANGED_METHOD_NAME =

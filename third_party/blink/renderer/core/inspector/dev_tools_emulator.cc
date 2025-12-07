@@ -63,7 +63,7 @@ static float calculateDeviceScaleAdjustment(int width,
 namespace blink {
 
 class DevToolsEmulator::ScopedGlobalOverrides
-    : public WTF::RefCounted<ScopedGlobalOverrides> {
+    : public RefCounted<ScopedGlobalOverrides> {
  public:
   static scoped_refptr<ScopedGlobalOverrides> AssureInstalled() {
     return g_instance_ ? g_instance_
@@ -71,7 +71,7 @@ class DevToolsEmulator::ScopedGlobalOverrides
   }
 
  private:
-  friend class WTF::RefCounted<ScopedGlobalOverrides>;
+  friend class RefCounted<ScopedGlobalOverrides>;
 
   ScopedGlobalOverrides()
       : overlay_scrollbars_enabled_(
@@ -125,8 +125,6 @@ DevToolsEmulator::DevToolsEmulator(WebViewImpl* web_view)
           web_view->GetPage()->GetSettings().GetLCDTextPreference()),
       embedder_viewport_style_(
           web_view->GetPage()->GetSettings().GetViewportStyle()),
-      embedder_plugins_enabled_(
-          web_view->GetPage()->GetSettings().GetPluginsEnabled()),
       embedder_available_pointer_types_(
           web_view->GetPage()->GetSettings().GetAvailablePointerTypes()),
       embedder_primary_pointer_type_(
@@ -161,7 +159,10 @@ DevToolsEmulator::DevToolsEmulator(WebViewImpl* web_view)
       document_cookie_disabled_(false),
       embedder_force_dark_mode_enabled_(
           web_view->GetPage()->GetSettings().GetForceDarkModeEnabled()),
-      auto_dark_overriden_(false) {}
+      auto_dark_overriden_(false),
+      embedder_accessibility_font_scale_(
+          web_view->GetPage()->GetSettings().GetAccessibilityFontScaleFactor()),
+      accessibility_font_scale_emulation_enabled_(false) {}
 
 DevToolsEmulator::~DevToolsEmulator() {
   // This class is GarbageCollected, so desturctor may run at any time, hence
@@ -214,13 +215,6 @@ void DevToolsEmulator::SetViewportStyle(mojom::blink::ViewportStyle style) {
   }
 }
 
-void DevToolsEmulator::SetPluginsEnabled(bool enabled) {
-  embedder_plugins_enabled_ = enabled;
-  if (!emulate_mobile_enabled()) {
-    web_view_->GetPage()->GetSettings().SetPluginsEnabled(enabled);
-  }
-}
-
 void DevToolsEmulator::SetScriptEnabled(bool enabled) {
   embedder_script_enabled_ = enabled;
   if (!script_execution_disabled_)
@@ -244,7 +238,7 @@ void DevToolsEmulator::SetDoubleTapToZoomEnabled(bool enabled) {
 }
 
 bool DevToolsEmulator::DoubleTapToZoomEnabled() const {
-  return touch_event_emulation_enabled_ ? true : double_tap_to_zoom_enabled_;
+  return touch_event_emulation_enabled_ || double_tap_to_zoom_enabled_;
 }
 
 void DevToolsEmulator::SetMainFrameResizesAreOrientationChanges(bool value) {
@@ -320,7 +314,8 @@ void DevToolsEmulator::SetOutputDeviceUpdateAbilityType(
 }
 
 gfx::Transform DevToolsEmulator::EnableDeviceEmulation(
-    const DeviceEmulationParams& params) {
+    const DeviceEmulationParams& params,
+    const mojom::blink::DeviceEmulationCacheBehavior& cache_behavior) {
   if (device_metrics_enabled_ &&
       emulation_params_.view_size == params.view_size &&
       emulation_params_.screen_type == params.screen_type &&
@@ -330,9 +325,26 @@ gfx::Transform DevToolsEmulator::EnableDeviceEmulation(
       emulation_params_.viewport_scale == params.viewport_scale) {
     return ComputeRootLayerTransform();
   }
-  if (emulation_params_.device_scale_factor != params.device_scale_factor ||
-      !device_metrics_enabled_)
+  if ((emulation_params_.device_scale_factor != params.device_scale_factor ||
+       !device_metrics_enabled_) &&
+      cache_behavior ==
+          mojom::blink::DeviceEmulationCacheBehavior::kClearCache) {
+    // The MemoryCache does not take device parameters into account when
+    // invalidating the cache because the device is normally the same.
+    // With device emulation the device parameters can change and, therefore,
+    // DevToolsEmulator::EnableDeviceEmulation clears the memory cache if the
+    // user changes the emulation params.
+    // DevToolsEmulator::EnableDeviceEmulation can be called when the user
+    // initiates the change but also when the emulation state is synced for a
+    // new RenderFrameHost. When the change is not a result of a direct user
+    // action, we do not want to clear the cache because parameters have not
+    // actually changed. Before RenderDocument we could always clear the cache.
+    // With RenderDocument we need to it conditionally to avoid the cache being
+    // cleared on each navigation (even if the emulation params has not changed
+    // and the renderer process is reused) to allow testing the memory cache
+    // behavior.
     MemoryCache::Get()->EvictResources();
+  }
 
   emulation_params_ = params;
   device_metrics_enabled_ = true;
@@ -404,7 +416,6 @@ void DevToolsEmulator::EnableMobileEmulation() {
   web_view_->GetPage()->GetSettings().SetTextAutosizingEnabled(true);
   web_view_->GetPage()->GetSettings().SetLCDTextPreference(
       LCDTextPreference::kIgnored);
-  web_view_->GetPage()->GetSettings().SetPluginsEnabled(false);
   web_view_->GetPage()->GetSettings().SetMainFrameResizesAreOrientationChanges(
       true);
   web_view_->SetZoomFactorOverride(1);
@@ -442,8 +453,6 @@ void DevToolsEmulator::DisableMobileEmulation() {
       embedder_lcd_text_preference_);
   web_view_->GetPage()->GetSettings().SetViewportStyle(
       embedder_viewport_style_);
-  web_view_->GetPage()->GetSettings().SetPluginsEnabled(
-      embedder_plugins_enabled_);
   web_view_->GetPage()->GetSettings().SetMainFrameResizesAreOrientationChanges(
       embedder_main_frame_resizes_are_orientation_changes_);
   web_view_->SetZoomFactorOverride(0);
@@ -553,7 +562,7 @@ void DevToolsEmulator::SetScriptExecutionDisabled(
     bool script_execution_disabled) {
   script_execution_disabled_ = script_execution_disabled;
   web_view_->GetPage()->GetSettings().SetScriptEnabled(
-      script_execution_disabled_ ? false : embedder_script_enabled_);
+      !script_execution_disabled_ && embedder_script_enabled_);
 }
 
 void DevToolsEmulator::SetScrollbarsHidden(bool hidden) {
@@ -561,7 +570,7 @@ void DevToolsEmulator::SetScrollbarsHidden(bool hidden) {
     return;
   scrollbars_hidden_ = hidden;
   web_view_->GetPage()->GetSettings().SetHideScrollbars(
-      scrollbars_hidden_ ? true : embedder_hide_scrollbars_);
+      scrollbars_hidden_ || embedder_hide_scrollbars_);
 }
 
 void DevToolsEmulator::SetDocumentCookieDisabled(bool disabled) {
@@ -569,7 +578,7 @@ void DevToolsEmulator::SetDocumentCookieDisabled(bool disabled) {
     return;
   document_cookie_disabled_ = disabled;
   web_view_->GetPage()->GetSettings().SetCookieEnabled(
-      document_cookie_disabled_ ? false : embedder_cookie_enabled_);
+      !document_cookie_disabled_ && embedder_cookie_enabled_);
 }
 
 void DevToolsEmulator::SetAutoDarkModeOverride(bool enabled) {
@@ -586,6 +595,30 @@ void DevToolsEmulator::ResetAutoDarkModeOverride() {
     web_view_->GetPage()->GetSettings().SetForceDarkModeEnabled(
         embedder_force_dark_mode_enabled_);
     auto_dark_overriden_ = false;
+  }
+}
+
+void DevToolsEmulator::SetAccessibilityFontScaleFactor(double scale) {
+  embedder_accessibility_font_scale_ = scale;
+  if (!accessibility_font_scale_emulation_enabled_) {
+    web_view_->GetPage()->GetSettings().SetAccessibilityFontScaleFactor(scale);
+  }
+}
+
+void DevToolsEmulator::SetEmulatedAccessibilityFontScaleFactor(double scale) {
+  if (!accessibility_font_scale_emulation_enabled_) {
+    accessibility_font_scale_emulation_enabled_ = true;
+    embedder_accessibility_font_scale_ =
+        web_view_->GetPage()->GetSettings().GetAccessibilityFontScaleFactor();
+  }
+  web_view_->GetPage()->GetSettings().SetAccessibilityFontScaleFactor(scale);
+}
+
+void DevToolsEmulator::ResetEmulatedAccessibilityFontScaleFactor() {
+  if (accessibility_font_scale_emulation_enabled_) {
+    web_view_->GetPage()->GetSettings().SetAccessibilityFontScaleFactor(
+        embedder_accessibility_font_scale_);
+    accessibility_font_scale_emulation_enabled_ = false;
   }
 }
 

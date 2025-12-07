@@ -28,6 +28,6 @@ extern NSString* const kNormalWindowMode;
 
 // To indicate a window in incognito mode.
 extern NSString* const kIncognitoWindowMode;
-}
+}  // namespace AppleScript
 
 #endif  // CHROME_BROWSER_UI_COCOA_APPLESCRIPT_CONSTANTS_APPLESCRIPT_H_

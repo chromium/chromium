@@ -9,14 +9,14 @@
 
 // This class stores all the data associated with an NTP Most Visited tile
 // suggestion in an NSCoding-enabled format.
-@interface NTPTile : NSObject<NSCoding>
+@interface NTPTile : NSObject <NSCoding>
 
 // The most visited site's title.
 @property(readonly, atomic) NSString* title;
 // The most visited site's URL.
 @property(readonly, atomic) NSURL* URL;
 // The filename of the most visited site's favicon on disk, if it exists.
-@property(strong, atomic) NSString* faviconFileName;
+@property(copy, atomic) NSString* faviconFileName;
 // The fallback text color for the most visited site, if it exists.
 @property(strong, atomic) UIColor* fallbackTextColor;
 // The fallback background color for the most visited site, if it exists.
@@ -25,7 +25,7 @@
 // default color.
 @property(assign, atomic) BOOL fallbackIsDefaultColor;
 // The monogram to use on the fallback icon.
-@property(strong, atomic) NSString* fallbackMonogram;
+@property(copy, atomic) NSString* fallbackMonogram;
 // Index of the site's position in the most visited list.
 @property(assign, atomic) NSUInteger position;
 

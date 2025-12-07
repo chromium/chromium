@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -9,7 +11,6 @@
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -37,7 +38,7 @@ namespace {
 // with "/test-user".
 // TODO(http://crbug.com/1234755): Add audit comment (or fix the issue) for all
 // paths that do not have a comment.
-const char* kAllowListPrefixesForAllPlatforms[] = {
+constexpr const char* kAllowListPrefixesForAllPlatforms[] = {
     "/Default/data_reduction_proxy_leveldb",
     "/Default/Extension State",
     "/Default/GCM Store/",
@@ -51,9 +52,10 @@ const char* kAllowListPrefixesForAllPlatforms[] = {
     "/GrShaderCache/GPUCache",
     "/Local State"};
 #if BUILDFLAG(IS_MAC)
-const char* kAllowListPrefixesForPlatform[] = {"/Default/Visited Links"};
+constexpr const char* kAllowListPrefixesForPlatform[] = {
+    "/Default/Visited Links"};
 #elif BUILDFLAG(IS_WIN)
-const char* kAllowListPrefixesForPlatform[] = {
+constexpr const char* kAllowListPrefixesForPlatform[] = {
     "/Default/databases-off-the-record",
     "/Default/heavy_ad_intervention_opt_out.db", "/Default/Top Sites",
     "/GrShaderCache/old_GPUCache",
@@ -62,21 +64,21 @@ const char* kAllowListPrefixesForPlatform[] = {
     // therefore it's safe to be written in Incognito.
     "/Last Browser"};
 #elif BUILDFLAG(IS_CHROMEOS)
-const char* kAllowListPrefixesForPlatform[] = {
+constexpr const char* kAllowListPrefixesForPlatform[] = {
     "/Default/Local Storage/leveldb/CURRENT",
     "/Default/Site Characteristics Database", "/Default/Sync Data/LevelDB",
     "/test-user/.variations-list.txt"};
 #elif BUILDFLAG(IS_LINUX)
-const char* kAllowListPrefixesForPlatform[] = {"/Default/Web Data"};
+constexpr const char* kAllowListPrefixesForPlatform[] = {"/Default/Web Data"};
 #else
-const char* kAllowListPrefixesForPlatform[] = {};
+constexpr const char* kAllowListPrefixesForPlatform[] = {};
 #endif
 
 // List of directory prefixes that are known to be added as an empty directory
 // during an Incognito session.
 // TODO(http://crbug.com/1234755): Add audit comment (or fix the issue) for all
 // paths that do not have a comment.
-const char* kAllowListEmptyDirectoryPrefixesForAllPlatforms[] = {
+constexpr const char* kAllowListEmptyDirectoryPrefixesForAllPlatforms[] = {
     "/Default/AutofillStrikeDatabase",
     "/Default/Download Service",
     "/Default/Feature Engagement Tracker",
@@ -165,15 +167,15 @@ bool AreDirectoriesModified(Snapshot& snapshot_before,
     if (!base::Contains(snapshot_before.directories, directory)) {
       // If a file/prefix in this directory is allowlisted, ignore directory
       // addition.
-      if (base::ranges::any_of(allow_list,
-                               [&directory](const std::string& prefix) {
-                                 return prefix.find(directory) == 0;
-                               })) {
+      if (std::ranges::any_of(allow_list,
+                              [&directory](const std::string& prefix) {
+                                return prefix.find(directory) == 0;
+                              })) {
         continue;
       }
 
       // If directory is specifically allow list, ignore.
-      if (base::ranges::any_of(
+      if (std::ranges::any_of(
               kAllowListEmptyDirectoryPrefixesForAllPlatforms,
               [&directory](const std::string& allow_listed_directory) {
                 return directory.find(allow_listed_directory) == 0;
@@ -203,7 +205,7 @@ bool AreFilesModified(Snapshot& snapshot_before,
     if (is_new ||
         fd.second.last_modified_time != before->second.last_modified_time) {
       // Ignore allow-listed paths.
-      if (base::ranges::any_of(allow_list, [&fd](const std::string& prefix) {
+      if (std::ranges::any_of(allow_list, [&fd](const std::string& prefix) {
             return fd.first.find(prefix) == 0;
           })) {
         continue;

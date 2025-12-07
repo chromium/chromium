@@ -61,7 +61,7 @@ EncodedVideoChunk* EncodedVideoChunk::Create(ScriptState* script_state,
                 init->duration()))
           : media::kNoTimestamp);
 
-  buffer->set_is_key_frame(init->type() == "key");
+  buffer->set_is_key_frame(init->type() == V8EncodedVideoChunkType::Enum::kKey);
 
   if (init->hasDecryptConfig()) {
     auto decrypt_config = CreateMediaDecryptConfig(*init->decryptConfig());
@@ -79,8 +79,10 @@ EncodedVideoChunk* EncodedVideoChunk::Create(ScriptState* script_state,
 EncodedVideoChunk::EncodedVideoChunk(scoped_refptr<media::DecoderBuffer> buffer)
     : buffer_(std::move(buffer)) {}
 
-String EncodedVideoChunk::type() const {
-  return buffer_->is_key_frame() ? "key" : "delta";
+V8EncodedVideoChunkType EncodedVideoChunk::type() const {
+  return V8EncodedVideoChunkType(buffer_->is_key_frame()
+                                     ? V8EncodedVideoChunkType::Enum::kKey
+                                     : V8EncodedVideoChunkType::Enum::kDelta);
 }
 
 int64_t EncodedVideoChunk::timestamp() const {
@@ -101,18 +103,19 @@ void EncodedVideoChunk::copyTo(const AllowSharedBufferSource* destination,
                                ExceptionState& exception_state) {
   // Validate destination buffer.
   auto dest_wrapper = AsSpan<uint8_t>(destination);
-  if (dest_wrapper.size() < buffer_->size()) {
+  auto buffer_span = base::span(*buffer_);
+  if (dest_wrapper.size() < buffer_span.size()) {
     exception_state.ThrowTypeError("destination is not large enough.");
     return;
   }
 
-  if (buffer_->empty()) {
+  if (buffer_span.empty()) {
     // Calling memcpy with nullptr is UB, even if count is zero.
     return;
   }
 
   // Copy data.
-  memcpy(dest_wrapper.data(), buffer_->data(), buffer_->size());
+  dest_wrapper.copy_prefix_from(buffer_span);
 }
 
 }  // namespace blink

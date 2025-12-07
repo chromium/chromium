@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "storage/browser/blob/blob_storage_context.h"
-
 #include <memory>
 #include <string>
 
@@ -12,6 +9,8 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -29,6 +28,7 @@
 #include "net/base/net_errors.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_impl.h"
+#include "storage/browser/blob/blob_storage_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
@@ -145,9 +145,8 @@ TEST_F(BlobStorageContextMojoTest, BasicBlobCreation) {
   mojo::Remote<mojom::BlobStorageContext> context = CreateContextConnection();
 
   mojo::Remote<blink::mojom::Blob> blob;
-  context->RegisterFromMemory(
-      blob.BindNewPipeAndPassReceiver(), "1234",
-      mojo_base::BigBuffer(base::as_bytes(base::make_span(kData))));
+  context->RegisterFromMemory(blob.BindNewPipeAndPassReceiver(), "1234",
+                              mojo_base::BigBuffer(base::as_byte_span(kData)));
 
   EXPECT_EQ(std::string("1234"), UUIDFromBlob(blob.get()));
 
@@ -166,9 +165,8 @@ TEST_F(BlobStorageContextMojoTest, SaveBlobToFile) {
   mojo::Remote<mojom::BlobStorageContext> context = CreateContextConnection();
 
   mojo::Remote<blink::mojom::Blob> blob;
-  context->RegisterFromMemory(
-      blob.BindNewPipeAndPassReceiver(), "1234",
-      mojo_base::BigBuffer(base::as_bytes(base::make_span(kData))));
+  context->RegisterFromMemory(blob.BindNewPipeAndPassReceiver(), "1234",
+                              mojo_base::BigBuffer(base::as_byte_span(kData)));
 
   // Create a 'last modified' that is different from now.
   base::Time last_modified =
@@ -207,9 +205,8 @@ TEST_F(BlobStorageContextMojoTest, SaveBlobToFileNoDate) {
   mojo::Remote<mojom::BlobStorageContext> context = CreateContextConnection();
 
   mojo::Remote<blink::mojom::Blob> blob;
-  context->RegisterFromMemory(
-      blob.BindNewPipeAndPassReceiver(), "1234",
-      mojo_base::BigBuffer(base::as_bytes(base::make_span(kData))));
+  context->RegisterFromMemory(blob.BindNewPipeAndPassReceiver(), "1234",
+                              mojo_base::BigBuffer(base::as_byte_span(kData)));
 
   base::RunLoop loop;
   base::FilePath file_path = temp_dir_.GetPath().AppendASCII("TestFile.txt");
@@ -512,9 +509,8 @@ TEST_F(BlobStorageContextMojoTest, NoProfileDirectory) {
 
   mojo::Remote<mojom::BlobStorageContext> context = CreateContextConnection();
   mojo::Remote<blink::mojom::Blob> blob;
-  context->RegisterFromMemory(
-      blob.BindNewPipeAndPassReceiver(), "1234",
-      mojo_base::BigBuffer(base::as_bytes(base::make_span(kData))));
+  context->RegisterFromMemory(blob.BindNewPipeAndPassReceiver(), "1234",
+                              mojo_base::BigBuffer(base::as_byte_span(kData)));
 
   base::RunLoop loop;
   base::FilePath file_path = temp_dir_.GetPath().AppendASCII("TestFile.txt");
@@ -533,9 +529,8 @@ TEST_F(BlobStorageContextMojoTest, PathWithReferences) {
 
   mojo::Remote<mojom::BlobStorageContext> context = CreateContextConnection();
   mojo::Remote<blink::mojom::Blob> blob;
-  context->RegisterFromMemory(
-      blob.BindNewPipeAndPassReceiver(), "1234",
-      mojo_base::BigBuffer(base::as_bytes(base::make_span(kData))));
+  context->RegisterFromMemory(blob.BindNewPipeAndPassReceiver(), "1234",
+                              mojo_base::BigBuffer(base::as_byte_span(kData)));
 
   base::RunLoop loop;
   base::FilePath file_path =
@@ -555,9 +550,8 @@ TEST_F(BlobStorageContextMojoTest, InvalidPath) {
 
   mojo::Remote<mojom::BlobStorageContext> context = CreateContextConnection();
   mojo::Remote<blink::mojom::Blob> blob;
-  context->RegisterFromMemory(
-      blob.BindNewPipeAndPassReceiver(), "1234",
-      mojo_base::BigBuffer(base::as_bytes(base::make_span(kData))));
+  context->RegisterFromMemory(blob.BindNewPipeAndPassReceiver(), "1234",
+                              mojo_base::BigBuffer(base::as_byte_span(kData)));
 
   base::RunLoop loop;
   base::FilePath file_path = base::FilePath::FromUTF8Unsafe("/etc/passwd");
@@ -576,9 +570,8 @@ TEST_F(BlobStorageContextMojoTest, SaveBlobToFileNoDirectory) {
   mojo::Remote<mojom::BlobStorageContext> context = CreateContextConnection();
 
   mojo::Remote<blink::mojom::Blob> blob;
-  context->RegisterFromMemory(
-      blob.BindNewPipeAndPassReceiver(), "1234",
-      mojo_base::BigBuffer(base::as_bytes(base::make_span(kData))));
+  context->RegisterFromMemory(blob.BindNewPipeAndPassReceiver(), "1234",
+                              mojo_base::BigBuffer(base::as_byte_span(kData)));
 
   // Create a 'last modified' that is different from now.
   base::Time last_modified =

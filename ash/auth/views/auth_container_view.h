@@ -6,12 +6,16 @@
 #define ASH_AUTH_VIEWS_AUTH_CONTAINER_VIEW_H_
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "ash/auth/views/auth_common.h"
 #include "ash/auth/views/auth_input_row_view.h"
+#include "ash/auth/views/fingerprint_view.h"
 #include "ash/auth/views/pin_container_view.h"
+#include "ash/auth/views/pin_status_view.h"
 #include "ash/login/ui/animated_rounded_image_view.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
@@ -20,11 +24,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
+
+namespace cryptohome {
+class PinStatus;
+}  // namespace cryptohome
 
 namespace ash {
 
@@ -40,8 +47,8 @@ class ASH_EXPORT AuthContainerView : public views::View {
   // (e.g., password submission, PIN submission, etc.)
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnPasswordSubmit(const std::u16string& password) {}
-    virtual void OnPinSubmit(const std::u16string& pin) {}
+    virtual void OnPasswordSubmit(std::u16string_view password) {}
+    virtual void OnPinSubmit(std::u16string_view pin) {}
     // Escape key was pressed.
     virtual void OnEscape() {}
     // Something happened on the view e.g: the switch button was pressed or the
@@ -62,7 +69,11 @@ class ASH_EXPORT AuthContainerView : public views::View {
 
     raw_ptr<views::Button> GetSwitchButton();
 
-    AuthInputType GetCurrentInputType();
+    raw_ptr<PinStatusView> GetPinStatusView();
+
+    raw_ptr<FingerprintView> GetFingerprintView();
+
+    std::optional<AuthInputType> GetCurrentInputType();
 
     raw_ptr<AuthContainerView> GetView();
 
@@ -80,7 +91,6 @@ class ASH_EXPORT AuthContainerView : public views::View {
   // views::View:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   std::string GetObjectName() const override;
   void RequestFocus() override;
 
@@ -94,6 +104,8 @@ class ASH_EXPORT AuthContainerView : public views::View {
 
   void SetHasPin(bool has_pin);
   bool HasPin() const;
+  void SetPinStatus(std::unique_ptr<cryptohome::PinStatus> pin_status);
+  std::u16string_view GetPinStatusMessage() const;
 
   // Enables or disables the following UI elements:
   // - View
@@ -106,18 +118,26 @@ class ASH_EXPORT AuthContainerView : public views::View {
 
   // Actions:
   void ToggleCurrentAuthType();
-  void PinSubmit(const std::u16string& pin) const;
-  void PasswordSubmit(const std::u16string& password) const;
+  void PinSubmit(std::u16string_view pin) const;
+  void PasswordSubmit(std::u16string_view password) const;
   void Escape() const;
   void ContentsChanged() const;
   // Reset the input fields text and visibility.
   void ResetInputfields();
+
+  // FingerprintView actions:
+  void SetFingerprintState(FingerprintState state);
+  void NotifyFingerprintAuthSuccess(
+      base::OnceClosure on_success_animation_finished);
+  void NotifyFingerprintAuthFailure();
 
  private:
   // Internal methods for managing views.
   void AddPasswordView();
   void AddPinView();
   void AddSwitchButton();
+  void AddPinStatusView();
+  void AddFingerprintView();
   void UpdateAuthInput();
   void UpdateSwitchButtonState();
 
@@ -127,6 +147,8 @@ class ASH_EXPORT AuthContainerView : public views::View {
   std::unique_ptr<PinContainerView::Observer> pin_observer_;
   raw_ptr<AuthInputRowView> password_view_ = nullptr;
   std::unique_ptr<AuthInputRowView::Observer> password_observer_;
+  raw_ptr<PinStatusView> pin_status_ = nullptr;
+  raw_ptr<FingerprintView> fingerprint_view_ = nullptr;
 
   // Switch Button and Spacer. When the switch button is hidden
   // this also should be hidden.
@@ -134,7 +156,7 @@ class ASH_EXPORT AuthContainerView : public views::View {
   raw_ptr<views::LabelButton> switch_button_ = nullptr;
 
   // State:
-  AuthInputType current_input_type_ = AuthInputType::kPassword;
+  std::optional<AuthInputType> current_input_type_;
 
   base::ObserverList<Observer> observers_;
 

@@ -11,8 +11,11 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchBarControl;
+import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchCalloutControl;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchImageControl;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPromoControl;
@@ -25,6 +28,7 @@ import org.chromium.ui.resources.ResourceManager;
 
 /** A SceneLayer to render layers for ContextualSearchLayout. */
 @JNINamespace("android")
+@NullMarked
 public class ContextualSearchSceneLayer extends SceneOverlayLayer {
     // NOTE: If you use SceneLayer's native pointer here, the JNI generator will try to
     // downcast using reinterpret_cast<>. We keep a separate pointer to avoid it.
@@ -36,7 +40,7 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
     private final Profile mProfile;
     private final float mDpToPx;
 
-    private ContextualSearchImageControl mImageControl;
+    private @Nullable ContextualSearchImageControl mImageControl;
 
     public ContextualSearchSceneLayer(Profile profile, float dpToPx) {
         mProfile = profile;
@@ -45,13 +49,15 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
 
     /**
      * Update the scene layer to draw an OverlayPanel.
+     *
      * @param resourceManager Manager to get view and image resources.
      * @param panel The OverlayPanel to render.
      * @param searchBarControl The Search Bar control.
      * @param promoControl The privacy Opt-in promo that appears below the Bar.
-     * @param relatedSearchesInBarControl A control that displays Related Searches suggestions
-     *        in the Bar to facilitate one-click searching.
+     * @param relatedSearchesInBarControl A control that displays Related Searches suggestions in
+     *     the Bar to facilitate one-click searching.
      * @param imageControl The object controlling the image displayed in the Bar.
+     * @param calloutControl The control for the callout displayed in the Bar.
      */
     public void update(
             ResourceManager resourceManager,
@@ -59,14 +65,14 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
             ContextualSearchBarControl searchBarControl,
             ContextualSearchPromoControl promoControl,
             RelatedSearchesControl relatedSearchesInBarControl,
-            ContextualSearchImageControl imageControl) {
+            ContextualSearchImageControl imageControl,
+            ContextualSearchCalloutControl calloutControl) {
         // Don't try to update the layer if not initialized or showing.
         if (resourceManager == null || !panel.isShowing()) return;
 
         if (!mIsInitialized) {
             ContextualSearchSceneLayerJni.get()
-                    .createContextualSearchLayer(
-                            mNativePtr, ContextualSearchSceneLayer.this, resourceManager);
+                    .createContextualSearchLayer(mNativePtr, resourceManager);
             mIsInitialized = true;
         }
         mImageControl = imageControl;
@@ -111,15 +117,21 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
         float searchPanelWidth = panel.getWidth();
         float searchPanelHeight = panel.getHeight();
 
+        float searchCaptionAnimationPercentage = searchBarControl.getCaptionAnimationPercentage();
+        boolean searchCaptionVisible = searchBarControl.getCaptionVisible();
+
         float searchBarMarginSide = panel.getBarMarginSide();
         float searchBarMarginTop = panel.getBarMarginTop();
+        float baseSearchBarMarginBottom = panel.getBarMarginBottomPx();
+        float searchBarMarginBottom = baseSearchBarMarginBottom * searchCaptionAnimationPercentage;
         float searchBarHeight = panel.getBarHeight();
+        // By default, the search bar height includes the entire bottom margin. Remove any excess
+        // based on the animation percentage.
+        searchBarHeight -=
+                (baseSearchBarMarginBottom * (1 - searchCaptionAnimationPercentage) / mDpToPx);
 
         float searchContextOpacity = searchBarControl.getSearchBarContextOpacity();
         float searchTermOpacity = searchBarControl.getSearchBarTermOpacity();
-
-        float searchCaptionAnimationPercentage = searchBarControl.getCaptionAnimationPercentage();
-        boolean searchCaptionVisible = searchBarControl.getCaptionVisible();
 
         boolean searchBarBorderVisible = panel.isBarBorderVisible();
         float searchBarBorderHeight = panel.getBarBorderHeight();
@@ -148,13 +160,15 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
         int panelShadowResourceId = R.drawable.top_round_shadow;
         int closeIconResourceId = INVALID_RESOURCE_ID;
 
+        int calloutResourceId = calloutControl.getViewId();
+        float calloutOpacity = calloutControl.getOpacity();
+
         // TODO(donnd): crbug.com/1143472 - Remove parameters for the now
         // defunct close button from the interface and the associated code on
         // the native side.
         ContextualSearchSceneLayerJni.get()
                 .updateContextualSearchLayer(
                         mNativePtr,
-                        ContextualSearchSceneLayer.this,
                         panelShadowResourceId,
                         searchBarBackgroundColor,
                         searchContextViewId,
@@ -193,6 +207,7 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
                         searchPanelHeight * mDpToPx,
                         searchBarMarginSide * mDpToPx,
                         searchBarMarginTop * mDpToPx,
+                        searchBarMarginBottom,
                         searchBarHeight * mDpToPx,
                         searchContextOpacity,
                         searchBarControl.getTextLayerMinHeight(),
@@ -219,7 +234,9 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
                         touchHighlightWidth,
                         mProfile,
                         roundedBarTopResourceId,
-                        separatorLineColor);
+                        separatorLineColor,
+                        calloutResourceId,
+                        calloutOpacity);
     }
 
     @CalledByNative
@@ -229,20 +246,19 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
 
     @Override
     public void setContentTree(SceneLayer contentTree) {
-        ContextualSearchSceneLayerJni.get()
-                .setContentTree(mNativePtr, ContextualSearchSceneLayer.this, contentTree);
+        ContextualSearchSceneLayerJni.get().setContentTree(mNativePtr, contentTree);
     }
 
     /** Hide the layer tree; for use if the panel is not being shown. */
     public void hideTree() {
         if (!mIsInitialized) return;
-        ContextualSearchSceneLayerJni.get().hideTree(mNativePtr, ContextualSearchSceneLayer.this);
+        ContextualSearchSceneLayerJni.get().hideTree(mNativePtr);
     }
 
     @Override
     protected void initializeNative() {
         if (mNativePtr == 0) {
-            mNativePtr = ContextualSearchSceneLayerJni.get().init(ContextualSearchSceneLayer.this);
+            mNativePtr = ContextualSearchSceneLayerJni.get().init(this);
         }
         assert mNativePtr != 0;
     }
@@ -257,23 +273,17 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
 
     @NativeMethods
     interface Natives {
-        long init(ContextualSearchSceneLayer caller);
+        long init(ContextualSearchSceneLayer self);
 
         void createContextualSearchLayer(
-                long nativeContextualSearchSceneLayer,
-                ContextualSearchSceneLayer caller,
-                ResourceManager resourceManager);
+                long nativeContextualSearchSceneLayer, ResourceManager resourceManager);
 
-        void setContentTree(
-                long nativeContextualSearchSceneLayer,
-                ContextualSearchSceneLayer caller,
-                SceneLayer contentTree);
+        void setContentTree(long nativeContextualSearchSceneLayer, SceneLayer contentTree);
 
-        void hideTree(long nativeContextualSearchSceneLayer, ContextualSearchSceneLayer caller);
+        void hideTree(long nativeContextualSearchSceneLayer);
 
         void updateContextualSearchLayer(
                 long nativeContextualSearchSceneLayer,
-                ContextualSearchSceneLayer caller,
                 int searchBarBackgroundResourceId,
                 int searchBarBackgroundColor,
                 int searchContextResourceId,
@@ -295,7 +305,7 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
                 float layoutHeight,
                 float basePageBrightness,
                 float basePageYOffset,
-                WebContents webContents,
+                @JniType("content::WebContents*") @Nullable WebContents webContents,
                 boolean searchPromoVisible,
                 float searchPromoHeight,
                 float searchPromoOpacity,
@@ -312,6 +322,7 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
                 float searchPanelHeight,
                 float searchBarMarginSide,
                 float searchBarMarginTop,
+                float searchBarMarginBottom,
                 float searchBarHeight,
                 float searchContextOpacity,
                 float searchTextLayerMinHeight,
@@ -323,7 +334,7 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
                 float searchBarBorderHeight,
                 boolean quickActionIconVisible,
                 boolean thumbnailVisible,
-                String thumbnailUrl,
+                @JniType("std::string") String thumbnailUrl,
                 float customImageVisibilityPercentage,
                 int barImageSize,
                 int iconColor,
@@ -338,6 +349,8 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
                 float toucHighlightWidth,
                 @JniType("Profile*") Profile profile,
                 int barBackgroundResourceId,
-                int separatorLineColor);
+                int separatorLineColor,
+                int calloutResourceId,
+                float calloutOpacity);
     }
 }

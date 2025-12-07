@@ -1,0 +1,88 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("tracking_price") {
+  sources = [
+    "tracking_price_coordinator.h",
+    "tracking_price_coordinator.mm",
+    "tracking_price_mediator.h",
+    "tracking_price_mediator.mm",
+  ]
+  deps = [
+    ":constants",
+    ":tracking_price_ui",
+    "//components/commerce/core:pref_names",
+    "//components/commerce/core:shopping_service",
+    "//components/prefs",
+    "//components/prefs/ios",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/commerce/model:shopping_service",
+    "//ios/chrome/browser/push_notification/model:profile_service",
+    "//ios/chrome/browser/push_notification/model:profile_service_factory",
+    "//ios/chrome/browser/push_notification/model:push_notification_client_id",
+    "//ios/chrome/browser/push_notification/model:push_notification_service",
+    "//ios/chrome/browser/push_notification/model:push_notification_service_header",
+    "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",
+    "//ios/chrome/browser/push_notification/model:push_notification_util",
+    "//ios/chrome/browser/settings/ui_bundled/notifications:utils",
+    "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/utils",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ui/base",
+  ]
+}
+
+source_set("tracking_price_ui") {
+  sources = [
+    "tracking_price_alert_presenter.h",
+    "tracking_price_consumer.h",
+    "tracking_price_view_controller.h",
+    "tracking_price_view_controller.mm",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/settings/ui_bundled:settings_root",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ui/base",
+  ]
+}
+
+source_set("constants") {
+  sources = [
+    "tracking_price_constants.h",
+    "tracking_price_constants.mm",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "tracking_price_egtest.mm" ]
+  deps = [
+    ":constants",
+    "//base",
+    "//base/test:test_support",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:pref_names",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

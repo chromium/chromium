@@ -4,6 +4,7 @@
 
 #include <jni.h>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -15,7 +16,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "chrome/browser/browser_process.h"
@@ -36,7 +36,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/privacy/jni_headers/SecureDnsBridge_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using chrome_browser_net::DnsProbeRunner;
 
@@ -105,7 +105,7 @@ static ScopedJavaLocalRef<jobjectArray> JNI_SecureDnsBridge_GetProviders(
   net::DohProviderEntry::List providers = GetFilteredProviders();
   std::vector<std::vector<std::u16string>> ret;
   ret.reserve(providers.size());
-  base::ranges::transform(
+  std::ranges::transform(
       providers, std::back_inserter(ret),
       [](const net::DohProviderEntry* entry) -> std::vector<std::u16string> {
         net::DnsOverHttpsConfig config({entry->doh_server_config});
@@ -122,9 +122,8 @@ static ScopedJavaLocalRef<jstring> JNI_SecureDnsBridge_GetConfig(JNIEnv* env) {
       env, local_state->GetString(prefs::kDnsOverHttpsTemplates));
 }
 
-static jboolean JNI_SecureDnsBridge_SetConfig(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& jconfig) {
+static jboolean JNI_SecureDnsBridge_SetConfig(JNIEnv* env,
+                                              const JavaRef<jstring>& jconfig) {
   PrefService* local_state = g_browser_process->local_state();
   std::string config = base::android::ConvertJavaStringToUTF8(jconfig);
   if (config.empty()) {
@@ -155,7 +154,7 @@ static void JNI_SecureDnsBridge_UpdateValidationHistogram(JNIEnv* env,
 
 static jboolean JNI_SecureDnsBridge_ProbeConfig(
     JNIEnv* env,
-    const JavaParamRef<jstring>& doh_config) {
+    const JavaRef<jstring>& doh_config) {
   // Android recommends converting async functions to blocking when using JNI:
   // https://developer.android.com/training/articles/perf-jni.
   // This function converts the DnsProbeRunner, which can only be created and
@@ -174,3 +173,5 @@ static jboolean JNI_SecureDnsBridge_ProbeConfig(
   secure_dns::UpdateProbeHistogram(success);
   return success;
 }
+
+DEFINE_JNI(SecureDnsBridge)

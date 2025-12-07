@@ -20,7 +20,6 @@
 #include "components/manta/provider_params.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "url/gurl.h"
 
 namespace manta {
 
@@ -49,14 +48,33 @@ class COMPONENT_EXPORT(MANTA) MahiProvider : public BaseProvider {
   // `MantaGenericCallback` callback.
   // Will give an empty response if `IdentityManager` is no longer valid.
   virtual void Summarize(const std::string& input,
+                         const std::string& title,
+                         const std::optional<std::string>& context,
+                         const std::optional<std::string>& url,
+                         MantaGenericCallback done_callback);
+
+  // Similar to `Summarize` but elucidates / simplifies the `input`, making it
+  // easy to unserstand. The `input` is usually a piece of user selected text
+  // while the `context` is the full document where `input` is selected from, to
+  // help the service better understand the context and give more accurate
+  // output.
+  virtual void Elucidate(const std::string& input,
+                         const std::string& context,
+                         const std::string& title,
+                         const std::optional<std::string>& url,
                          MantaGenericCallback done_callback);
 
   // Similar to `Summarize` but outlines the `input`.
-  void Outline(const std::string& input, MantaGenericCallback done_callback);
+  void Outline(const std::string& input,
+               const std::string& title,
+               const std::optional<std::string>& url,
+               MantaGenericCallback done_callback);
 
   // Virtual for testing.
   using MahiQAPair = std::pair<std::string, std::string>;
   virtual void QuestionAndAnswer(const std::string& content,
+                                 const std::string& title,
+                                 const std::optional<std::string>& url,
                                  const std::vector<MahiQAPair> QAHistory,
                                  const std::string& question,
                                  MantaGenericCallback done_callback);

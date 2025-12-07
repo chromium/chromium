@@ -12,11 +12,14 @@
 
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/viz_common_export.h"
-#include "gpu/command_buffer/common/mailbox_holder.h"
+#include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 
+namespace gpu {
+class ClientSharedImage;
+}
 namespace viz {
 
 // `BlendBitmap` can be added to `BlitRequest`, and signifies that the caller
@@ -68,9 +71,11 @@ enum class LetterboxingBehavior {
 // in textures that they own.
 class VIZ_COMMON_EXPORT BlitRequest {
  public:
+  BlitRequest();
+  // `shared_image` must not be null
   explicit BlitRequest(const gfx::Point& destination_region_offset,
                        LetterboxingBehavior letterboxing_behavior,
-                       const gpu::Mailbox& mailbox,
+                       scoped_refptr<gpu::ClientSharedImage> shared_image,
                        const gpu::SyncToken& sync_token,
                        bool populates_gpu_memory_buffer);
 
@@ -89,7 +94,9 @@ class VIZ_COMMON_EXPORT BlitRequest {
     return letterboxing_behavior_;
   }
 
-  const gpu::Mailbox& mailbox() const { return mailbox_; }
+  const scoped_refptr<gpu::ClientSharedImage>& shared_image() const {
+    return shared_image_;
+  }
 
   const gpu::SyncToken& sync_token() const { return sync_token_; }
 
@@ -114,7 +121,7 @@ class VIZ_COMMON_EXPORT BlitRequest {
   }
 
  private:
-  // Offset from the origin of the image represented by the `mailbox_`.
+  // Offset from the origin of the image represented by the `shared_image_`.
   // The results of the blit request will be placed at that offset in those
   // images.
   gfx::Point destination_region_offset_;
@@ -124,14 +131,14 @@ class VIZ_COMMON_EXPORT BlitRequest {
 
   // The image that will be populated. The texture can (but doesn't have to) be
   // backed by a GpuMemoryBuffer.
-  gpu::Mailbox mailbox_;
+  scoped_refptr<gpu::ClientSharedImage> shared_image_;
 
-  // SyncToken to wait on before accessing `mailbox_`.
+  // SyncToken to wait on before accessing `shared_image_`;
   gpu::SyncToken sync_token_;
 
-  // True if `mailbox_` describes a shared image that has been created from a
-  // GpuMemoryBuffer. In this case, the CopyOutputResult needs to be sent out
-  // only after it's safe to map the GpuMemoryBuffer to system memory.
+  // True if `shared_image_` has been created from a `GpuMemoryBuffer`. In this
+  // case, the `CopyOutputResult` needs to be sent out only after it's safe to
+  // map the `GpuMemoryBuffer` to system memory.
   bool populates_gpu_memory_buffer_;
 
   // Collection of bitmaps that will be blended onto the texture.

@@ -8,6 +8,8 @@
 
 #include "base/check.h"
 #include "base/check_is_test.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -23,6 +25,7 @@
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/nuke_profile_directory_utils.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -33,6 +36,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/pref_names.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -82,24 +87,14 @@ void DisableSyncForProfileDeletion(Profile* profile) {
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On ChromeOS Ash, profile deletion uses a different codepath but some
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, profile deletion uses a different codepath but some
   // browser tests do exercise this code.
-  CHECK_IS_TEST(base::NotFatalUntil::M127);
-
-  // This is believed to be unreachable (outside tests) but the stakes are quite
-  // high too, so fall back to the legacy logic just in case.
-  // TODO(crbug.com/40797392): Remove this code and replace it all with
-  // CHECK_IS_TEST() or NOTREACHED_NORETURN().
-  if (SyncServiceFactory::HasSyncService(profile)) {
-    syncer::SyncService* sync_service =
-        SyncServiceFactory::GetForProfile(profile);
-    sync_service->StopAndClear();
-  }
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+  CHECK_IS_TEST();
+#else
   identity_manager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
       signin_metrics::ProfileSignout::kSignoutDuringProfileDeletion);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace
@@ -137,9 +132,6 @@ void DeleteProfileHelper::MaybeScheduleProfileForDeletion(
 
   Profile* profile = profile_manager_->GetProfileByPath(profile_dir);
   if (profile) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    CHECK(!profile->IsMainProfile());
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     // Cancel all in-progress downloads before deleting the profile to prevent a
     // "Do you want to exit Google Chrome and cancel the downloads?" prompt
     // (crbug.com/336725).
@@ -305,16 +297,23 @@ void DeleteProfileHelper::EnsureActiveProfileExistsBeforeDeletion(
   }
 
   // Search for an active browser and use its profile as active if possible.
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    Profile* profile = browser->profile();
-    base::FilePath cur_path = profile->GetPath();
-    if (cur_path != profile_dir && cur_path != guest_profile_path &&
-        !IsProfileDirectoryMarkedForDeletion(cur_path)) {
-      OnNewActiveProfileInitialized(profile_dir, cur_path, std::move(callback),
-                                    std::move(keep_alive),
-                                    std::move(profile_keep_alive), profile);
-      return;
-    }
+  bool found = false;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this, &profile_dir, &guest_profile_path, &callback, &keep_alive,
+       &profile_keep_alive, &found](BrowserWindowInterface* browser) {
+        Profile* const profile = browser->GetProfile();
+        const base::FilePath cur_path = profile->GetPath();
+        if (cur_path != profile_dir && cur_path != guest_profile_path &&
+            !IsProfileDirectoryMarkedForDeletion(cur_path)) {
+          OnNewActiveProfileInitialized(
+              profile_dir, cur_path, std::move(callback), std::move(keep_alive),
+              std::move(profile_keep_alive), profile);
+          found = true;
+        }
+        return !found;
+      });
+  if (found) {
+    return;
   }
 
   // There no valid browsers to fallback, search for any existing valid profile.

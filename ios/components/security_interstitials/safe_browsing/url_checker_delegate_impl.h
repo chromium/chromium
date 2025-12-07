@@ -5,7 +5,7 @@
 #ifndef IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_URL_CHECKER_DELEGATE_IMPL_H_
 #define IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_URL_CHECKER_DELEGATE_IMPL_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 
@@ -50,6 +50,7 @@ class UrlCheckerDelegateImpl : public safe_browsing::UrlCheckerDelegate {
       base::optional_ref<const base::UnguessableToken> render_frame_token,
       bool originated_from_service_worker) override;
 
+#pragma mark - Unused on iOS
   // This function is unused on iOS, since iOS cannot use content/.
   // TODO(crbug.com/40683815): Refactor SafeBrowsingUrlCheckerImpl and
   // UrlCheckerDelegate to extract the functionality that can be shared across
@@ -58,9 +59,17 @@ class UrlCheckerDelegateImpl : public safe_browsing::UrlCheckerDelegate {
   void NotifySuspiciousSiteDetected(
       const base::RepeatingCallback<content::WebContents*()>&
           web_contents_getter) override;
+  void SendUrlRealTimeAndHashRealTimeDiscrepancyReport(
+      std::unique_ptr<safe_browsing::ClientSafeBrowsingReportRequest> report,
+      const base::RepeatingCallback<content::WebContents*()>&
+          web_contents_getter) override;
+#pragma mark - UrlCheckerDelegate
   const safe_browsing::SBThreatTypeSet& GetThreatTypes() override;
   safe_browsing::SafeBrowsingDatabaseManager* GetDatabaseManager() override;
   safe_browsing::BaseUIManager* GetUIManager() override;
+  bool AreBackgroundHashRealTimeSampleLookupsAllowed(
+      const base::RepeatingCallback<content::WebContents*()>&
+          web_contents_getter) override;
 
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
   base::WeakPtr<SafeBrowsingClient> client_;

@@ -41,12 +41,13 @@ class PopupMenuHelper : public RenderWidgetHostObserver,
   PopupMenuHelper& operator=(const PopupMenuHelper&) = delete;
 
   ~PopupMenuHelper() override;
+
+  // Closes the popup menu.
   void CloseMenu();
 
   // Shows the popup menu and notifies the RenderFrameHost of the selection/
   // cancellation.
   void ShowPopupMenu(const gfx::Rect& bounds,
-                     int item_height,
                      double item_font_size,
                      int selected_item,
                      std::vector<blink::mojom::MenuItemPtr> items,
@@ -57,9 +58,6 @@ class PopupMenuHelper : public RenderWidgetHostObserver,
   void OnMenuItemSelected(int idx) override;
   void OnMenuCanceled() override;
 
-  // Immediately return from ShowPopupMenu.
-  CONTENT_EXPORT static void DontShowPopupMenuForTesting();
-
  private:
   // RenderWidgetHostObserver implementation:
   void RenderWidgetHostVisibilityChanged(RenderWidgetHost* widget_host,
@@ -67,6 +65,9 @@ class PopupMenuHelper : public RenderWidgetHostObserver,
   void RenderWidgetHostDestroyed(RenderWidgetHost* widget_host) override;
 
   RenderWidgetHostViewIOS* GetRenderWidgetHostView() const;
+
+  // Destroys `menu_runner_` and resets `popup_client_`.
+  void ReleaseMenu();
 
   raw_ptr<Delegate> delegate_;  // Weak. Owns |this|.
 

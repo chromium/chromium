@@ -4,14 +4,13 @@
 
 #include <memory>
 
-#include "base/functional/callback_forward.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
-#include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/widget/widget_observer.h"

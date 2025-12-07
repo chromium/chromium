@@ -7,7 +7,7 @@ module extensions.mojom;
 import "extensions/common/mojom/host_id.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "url/mojom/url.mojom";
-// EventDispatch is a one-per-renderer-processs interface that is responsible
+// EventDispatch is a one-per-renderer-process interface that is responsible
 // for triggering API events that extensions have registered listeners for in
 // the renderer (either the extension process renderer, for extension-origin
 // pages, or a web renderer, for content script listeners).
@@ -18,6 +18,9 @@ import "url/mojom/url.mojom";
 // script. It is should always be false for service workers.
 interface EventDispatcher {
     // Sent to the renderer to dispatch an event to a listener.
+    // TODO(crbug.com/380898785): remove the UnlimitedSize tag once
+    // the responsible extensions are identified.
+    [UnlimitedSize]
     DispatchEvent(DispatchEventParams params,
                   mojo_base.mojom.ListValue event_args) => (
                     // TODO(crbug.com/40277737): Remove this variable once

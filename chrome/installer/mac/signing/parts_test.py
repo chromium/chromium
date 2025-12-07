@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import asyncio
 import unittest
 from unittest import mock
 
@@ -140,10 +141,11 @@ def _get_plist_read(other_version):
 
 @mock.patch.multiple('signing.signing',
                      **{m: mock.DEFAULT for m in ('sign_part', 'verify_part')})
-@mock.patch.multiple('signing.commands', **{
-    m: mock.DEFAULT
-    for m in ('copy_files', 'move_file', 'make_dir', 'run_command')
-})
+@mock.patch.multiple(
+    'signing.commands', **{
+        m: mock.DEFAULT for m in ('copy_files', 'move_file', 'make_dir',
+                                  'run_command', 'run_command_all_output_async')
+    })
 @mock.patch('signing.model._get_identity_hash', _get_identity_hash)
 class TestSignChrome(unittest.TestCase):
 
@@ -155,11 +157,12 @@ class TestSignChrome(unittest.TestCase):
         manager = mock.Mock()
         for kwarg in kwargs:
             manager.attach_mock(kwargs[kwarg], kwarg)
+        kwargs['run_command_all_output_async'].return_value = ('', 0, '', '')
 
         dist = model.Distribution()
         config = dist.to_config(test_config.TestConfig())
 
-        parts.sign_chrome(self.paths, config, sign_framework=True)
+        asyncio.run(parts.sign_chrome(self.paths, config, sign_framework=True))
 
         # No files should be moved.
         self.assertEqual(0, kwargs['move_file'].call_count)
@@ -191,14 +194,20 @@ class TestSignChrome(unittest.TestCase):
             mock.call.run_command([
                 'codesign', '--display', '--requirements', '-', '--verbose=5',
                 '/$W/App Product.app'
+            ])
+        ])
+        kwargs['run_command_all_output_async'].assert_has_awaits([
+            mock.call([
+                'codesign', '--verify', '--verbose=6', '--deep', '--strict',
+                '/$W/App Product.app'
             ]),
-            mock.call.run_command(
-                ['spctl', '--assess', '-vv', '/$W/App Product.app']),
+            mock.call(['spctl', '--assess', '-vv', '/$W/App Product.app']),
         ])
 
     @mock.patch('signing.parts._sanity_check_version_keys')
     def test_sign_chrome_no_assess(self, *args, **kwargs):
         dist = model.Distribution()
+        kwargs['run_command_all_output_async'].return_value = ('', 0, '', '')
 
         class Config(test_config.TestConfig):
 
@@ -208,7 +217,7 @@ class TestSignChrome(unittest.TestCase):
 
         config = dist.to_config(Config())
 
-        parts.sign_chrome(self.paths, config, sign_framework=True)
+        asyncio.run(parts.sign_chrome(self.paths, config, sign_framework=True))
 
         self.assertEqual(kwargs['run_command'].mock_calls, [
             mock.call.run_command([
@@ -216,9 +225,16 @@ class TestSignChrome(unittest.TestCase):
                 '/$W/App Product.app'
             ]),
         ])
+        kwargs['run_command_all_output_async'].assert_has_awaits([
+            mock.call([
+                'codesign', '--verify', '--verbose=6', '--deep', '--strict',
+                '/$W/App Product.app'
+            ]),
+        ])
 
     @mock.patch('signing.parts._sanity_check_version_keys')
     def test_sign_chrome_no_provisioning(self, *args, **kwargs):
+        kwargs['run_command_all_output_async'].return_value = ('', 0, '', '')
         dist = model.Distribution()
 
         class Config(test_config.TestConfig):
@@ -228,12 +244,13 @@ class TestSignChrome(unittest.TestCase):
                 return None
 
         config = dist.to_config(Config())
-        parts.sign_chrome(self.paths, config, sign_framework=True)
+        asyncio.run(parts.sign_chrome(self.paths, config, sign_framework=True))
 
         self.assertEqual(0, kwargs['copy_files'].call_count)
 
     @mock.patch('signing.parts._sanity_check_version_keys')
     def test_sign_chrome_no_framework(self, *args, **kwargs):
+        kwargs['run_command_all_output_async'].return_value = ('', 0, '', '')
         manager = mock.Mock()
         for kwarg in kwargs:
             manager.attach_mock(kwargs[kwarg], kwarg)
@@ -241,7 +258,7 @@ class TestSignChrome(unittest.TestCase):
         dist = model.Distribution()
         config = dist.to_config(test_config.TestConfig())
 
-        parts.sign_chrome(self.paths, config, sign_framework=False)
+        asyncio.run(parts.sign_chrome(self.paths, config, sign_framework=False))
 
         # No files should be moved.
         self.assertEqual(0, kwargs['move_file'].call_count)
@@ -267,12 +284,18 @@ class TestSignChrome(unittest.TestCase):
                 'codesign', '--display', '--requirements', '-', '--verbose=5',
                 '/$W/App Product.app'
             ]),
-            mock.call.run_command(
-                ['spctl', '--assess', '-vv', '/$W/App Product.app']),
+        ])
+        kwargs['run_command_all_output_async'].assert_has_awaits([
+            mock.call([
+                'codesign', '--verify', '--verbose=6', '--deep', '--strict',
+                '/$W/App Product.app'
+            ]),
+            mock.call(['spctl', '--assess', '-vv', '/$W/App Product.app']),
         ])
 
     @mock.patch('signing.parts._sanity_check_version_keys')
     def test_sign_chrome_updater(self, *args, **kwargs):
+        kwargs['run_command_all_output_async'].return_value = ('', 0, '', '')
 
         class Config(test_config.TestConfig):
 
@@ -281,7 +304,7 @@ class TestSignChrome(unittest.TestCase):
                 return True
 
         config = model.Distribution().to_config(Config())
-        parts.sign_chrome(self.paths, config, sign_framework=True)
+        asyncio.run(parts.sign_chrome(self.paths, config, sign_framework=True))
         # Ensure that the privileged helper is signed.
         self.assertIn(
             'App Product.app/Contents/Library/LaunchServices' +
@@ -290,6 +313,7 @@ class TestSignChrome(unittest.TestCase):
 
     @mock.patch('signing.parts._sanity_check_version_keys')
     def test_sign_chrome_no_updater(self, *args, **kwargs):
+        kwargs['run_command_all_output_async'].return_value = ('', 0, '', '')
 
         class Config(test_config.TestConfig):
 
@@ -298,7 +322,7 @@ class TestSignChrome(unittest.TestCase):
                 return False
 
         config = model.Distribution().to_config(Config())
-        parts.sign_chrome(self.paths, config, sign_framework=True)
+        asyncio.run(parts.sign_chrome(self.paths, config, sign_framework=True))
         # Ensure that the privileged helper not is signed.
         self.assertNotIn(
             'App Product.app/Contents/Library/LaunchServices' +
@@ -310,6 +334,7 @@ class TestSignChrome(unittest.TestCase):
         'signing.signing._binary_architectures_offsets',
         return_value=(('arch_1', 123), ('arch_2', 456)))
     def test_sign_chrome_pinned_geometry(self, *args, **kwargs):
+        kwargs['run_command_all_output_async'].return_value = ('', 0, '', '')
 
         class Config(test_config.TestConfig):
 
@@ -318,13 +343,14 @@ class TestSignChrome(unittest.TestCase):
                 return (('arch_1', 123), ('arch_2', 456))
 
         config = model.Distribution().to_config(Config())
-        parts.sign_chrome(self.paths, config, sign_framework=True)
+        asyncio.run(parts.sign_chrome(self.paths, config, sign_framework=True))
 
     @mock.patch('signing.parts._sanity_check_version_keys')
     @mock.patch(
         'signing.signing._binary_architectures_offsets',
         return_value=(('arch_1', 123), ('arch_2', 789)))
     def test_sign_chrome_unpinned_geometry(self, *args, **kwargs):
+        kwargs['run_command_all_output_async'].return_value = ('', 0, '', '')
 
         class Config(test_config.TestConfig):
 
@@ -334,15 +360,16 @@ class TestSignChrome(unittest.TestCase):
 
         config = model.Distribution().to_config(Config())
         self.assertRaises(
-            signing.InvalidAppGeometryException,
-            lambda: parts.sign_chrome(self.paths, config, sign_framework=True))
+            signing.InvalidAppGeometryException, lambda: asyncio.run(
+                parts.sign_chrome(self.paths, config, sign_framework=True)))
 
     @mock.patch(
         'signing.commands.read_plist',
         side_effect=_get_plist_read('99.0.9999.99'))
     def test_sanity_check_ok(self, read_plist, **kwargs):
+        kwargs['run_command_all_output_async'].return_value = ('', 0, '', '')
         config = model.Distribution().to_config(test_config.TestConfig())
-        parts.sign_chrome(self.paths, config, sign_framework=True)
+        asyncio.run(parts.sign_chrome(self.paths, config, sign_framework=True))
 
     @mock.patch(
         'signing.commands.read_plist',
@@ -350,5 +377,5 @@ class TestSignChrome(unittest.TestCase):
     def test_sanity_check_bad(self, read_plist, **kwargs):
         config = model.Distribution().to_config(test_config.TestConfig())
         self.assertRaises(
-            ValueError, lambda: parts.sign_chrome(
-                self.paths, config, sign_framework=True))
+            ValueError, lambda: asyncio.run(
+                parts.sign_chrome(self.paths, config, sign_framework=True)))

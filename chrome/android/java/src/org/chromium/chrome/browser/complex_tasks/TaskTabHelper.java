@@ -8,6 +8,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAttributeKeys;
 import org.chromium.chrome.browser.tab.TabAttributes;
@@ -15,6 +17,7 @@ import org.chromium.content_public.browser.WebContents;
 
 /** Used for maintaining Task ID (see NavigationTaskId) data about a Tab */
 @JNINamespace("tasks")
+@NullMarked
 public class TaskTabHelper {
     private static final long INVALID_ID = -1;
 
@@ -22,10 +25,11 @@ public class TaskTabHelper {
 
     /**
      * Creates the {@link TaskTabHelper} for the given {@link Tab}.
+     *
      * @param tab the Tab to attach the helper to.
      * @param parentTab corresponding parent Tab for the Tab
      */
-    public static void createForTab(Tab tab, Tab parentTab) {
+    public static void createForTab(Tab tab, @Nullable Tab parentTab) {
         if (parentTab == null) return;
         TabAttributes.from(tab)
                 .set(
@@ -52,8 +56,8 @@ public class TaskTabHelper {
 
     @NativeMethods
     interface Natives {
-        long getTaskId(WebContents webContents);
+        long getTaskId(@Nullable WebContents webContents);
 
-        long getRootTaskId(WebContents webContents);
+        long getRootTaskId(@Nullable WebContents webContents);
     }
 }

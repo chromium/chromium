@@ -5,9 +5,7 @@
 # Toolchain-related configuration that may be needed outside the context of the
 # toolchain() rules themselves.
 
-import("//build/config/cast.gni")
-import("//build/config/chrome_build.gni")
-import("//build_overrides/build.gni")
+import("//build/toolchain/sysroot.gni")
 
 declare_args() {
   # If this is set to true, we use the revision in the llvm repo to determine
@@ -17,11 +15,10 @@ declare_args() {
   # `gclient runhooks` is run as well.
   llvm_force_head_revision = false
 
-  # Cronet is shipped in AOSP, where it is built using the Android Mainline
-  # Clang. Please refer to go/cronet-builders-with-mainline-clang-design for
-  # more information.
-  # If this arg is set to true, we use the Android Mainline LLVM.
-  llvm_android_mainline = false
+  # Equivalent to llvm_force_head_revision, but for rust. When true, we expect
+  # to find a locally-build version of rust rather than the version specified
+  # in //tools/clang/scripts/update.py.
+  rust_force_head_revision = false
 
   # Used for binary size analysis.
   generate_linker_map = is_android && is_official_build
@@ -34,25 +31,17 @@ declare_args() {
   # If false, the toolchain overrides `use_partition_alloc_as_malloc` in
   # PartitionAlloc, to allow use of the system allocator.
   toolchain_allows_use_partition_alloc_as_malloc = true
-}
 
-if (generate_linker_map) {
-  assert(is_official_build || is_castos || is_cast_android,
-         "Linker map files should only be generated when is_official_build = " +
-             "true or is_castos = true or is_cast_android = true")
-  assert(current_os == "android" || current_os == "linux" ||
-             target_os == "android" || target_os == "linux" ||
-             target_os == "chromeos",
-         "Linker map files should only be generated for Android, Linux, " +
-             "or ChromeOS.")
+  # Use -MD instead of -MMD for compiler commands. This is useful for tracking
+  # the comprehensive set of dependencies.  It's also required when building
+  # without the sysroot so that updates to system header files trigger a
+  # rebuild (when using the sysroot, the CR_SYSROOT_KEY define takes care of
+  # this already).
+  system_headers_in_deps = !use_sysroot
 }
 
 declare_args() {
-  if (llvm_android_mainline) {  # https://crbug.com/1481060
-    clang_version = "17"
-  } else {
-    clang_version = "20"
-  }
+  clang_version = "22"
 }
 
 # Extension for shared library files (including leading dot).
@@ -62,6 +51,9 @@ if (is_apple) {
   shlib_extension = ".so"
 } else if (is_win) {
   shlib_extension = ".dll"
+} else if (is_wasm) {
+  # WebAssembly does not stably support shared libraries. (as of Oct 2019)
+  shlib_extension = ".wasm"
 } else {
   assert(false, "Platform not supported")
 }

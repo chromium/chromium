@@ -41,8 +41,8 @@ extern const char kDisableListedJavascriptFeatures[] =
 // comma separated string of the value returned by
 // `JavaScriptFeature::GetScriptMessageHandlerName()`. If a feature does not
 // have a message handler, it will NOT be enabled when using this flag. However,
-// the features returned by `GetBaseJavaScriptFeature()`,
-// `GetCommonJavaScriptFeature()` and `GetMessageJavaScriptFeature()` are always
+// the features returned by `GetBaseJavaScriptFeature()` and
+// `GetCommonJavaScriptFeature()` are always
 // enabled (even though they do not have message handlers) because most features
 // rely on them and there would otherwise be no way to enable them.
 // For example, to only enable only ContextMenuJavaScriptFeature, use:

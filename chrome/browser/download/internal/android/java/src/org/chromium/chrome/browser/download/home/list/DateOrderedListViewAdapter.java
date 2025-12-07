@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.download.home.list;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.home.list.holder.ListItemViewHolder;
 import org.chromium.ui.modelutil.RecyclerViewAdapter;
 
@@ -14,6 +15,7 @@ import org.chromium.ui.modelutil.RecyclerViewAdapter;
  * to the right {@link ViewHolder} and {@link ViewBinder}.
  * TODO(bauerb): Remove this class together with reliance on stable IDs
  */
+@NullMarked
 class DateOrderedListViewAdapter extends RecyclerViewAdapter<ListItemViewHolder, Void> {
     private final DecoratedListItemModel mModel;
 

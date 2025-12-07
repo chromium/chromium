@@ -12,6 +12,7 @@
 <translation id="3983305234037158273">Perangkat yang disinkronkan untuk pemulihan tab dapat diubah dengan gestur sentuh. Buka untuk meninjau atau memulihkan tab yang dipilih untuk perangkat saat ini dengan gestur sentuh. Keyboard disembunyikan.</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Buka <ph name="TABS_COUNT_ONE" /> tab}other{Buka <ph name="TABS_COUNT_MANY" /> tab}}</translation>
 <translation id="4509609396389120020">Akses tab dari perangkat lain</translation>
+<translation id="4619615317237390068">Tab dari perangkat lain</translation>
 <translation id="4811934403802581334">Semua tab yang dipilih dari perangkat yang saat ini dipilih akan dipulihkan.</translation>
 <translation id="5336031759968328813">Tinjau semua tab</translation>
 <translation id="5494920125229734069">Pilih semua</translation>

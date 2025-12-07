@@ -17,10 +17,10 @@ import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.
 import 'chrome://resources/ash/common/cr_elements/policy/cr_tooltip_icon.js';
 import '../geolocation_dialog.js';
 
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
-import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
+import type {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
+import type {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
 import {isCrosPrivacyHubLocationEnabled} from '../load_time_booleans.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
@@ -65,6 +65,11 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
         value: null,
       },
 
+      geolocationIsUserModifiable_: {
+        type: Boolean,
+        value: null,
+      },
+
       sunriseTime_: {
         type: String,
         value: null,
@@ -94,6 +99,7 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
   private sunriseTime_: string|null;
   private sunsetTime_: string|null;
   private selectedButton_: CrButtonElement;
+  private geolocationIsUserModifiable_: boolean|null;
   private shouldShowGeolocationDialog_: boolean;
   private shouldShowGeolocationWarningText_: boolean;
 
@@ -113,6 +119,9 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
     this.watch<PersonalizationThemeElement['geolocationPermissionEnabled_']>(
         'geolocationPermissionEnabled_',
         state => state.theme.geolocationPermissionEnabled);
+    this.watch<PersonalizationThemeElement['geolocationIsUserModifiable_']>(
+        'geolocationIsUserModifiable_',
+        state => state.theme.geolocationIsUserModifiable);
     this.watch<PersonalizationThemeElement['sunriseTime_']>(
         'sunriseTime_', state => state.theme.sunriseTime);
     this.watch<PersonalizationThemeElement['sunsetTime_']>(
@@ -199,7 +208,8 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
     // If needed, pop up a dialog asking users to enable system location
     // permission.
     if (isCrosPrivacyHubLocationEnabled() &&
-        this.geolocationPermissionEnabled_ === false) {
+        this.geolocationPermissionEnabled_ === false &&
+        this.geolocationIsUserModifiable_ === true) {
       this.shouldShowGeolocationDialog_ = true;
     }
   }

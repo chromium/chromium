@@ -1,0 +1,74 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("serial") {
+  sources = [ "serial_chooser_controller.h" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/serial",
+    "//components/permissions",
+    "//content/public/browser",
+    "//device/bluetooth",
+    "//services/device/public/mojom",
+    "//third_party/blink/public/common",
+    "//url",
+  ]
+}
+
+source_set("impl") {
+  sources = [ "serial_chooser_controller.cc" ]
+  deps = [
+    ":serial",
+    "//base",
+    "//chrome/app:branded_strings",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//components/strings:components_strings",
+    "//content/public/browser",
+    "//device/bluetooth",
+    "//device/bluetooth/public/cpp",
+    "//services/device/public/cpp/bluetooth",
+    "//services/device/public/mojom",
+    "//ui/base",
+  ]
+  if (is_chromeos) {
+    deps += [ "//ash/webui/settings/public/constants:mojom" ]
+  }
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_serial_chooser_controller.cc",
+    "mock_serial_chooser_controller.h",
+  ]
+  deps = [ "//chrome/test:test_support" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "serial_chooser_controller_unittest.cc" ]
+  deps = [
+    ":serial",
+    "//base/test:test_support",
+    "//chrome/browser/serial",
+    "//chrome/test:test_support",
+    "//components/permissions:test_support",
+    "//device/bluetooth",
+    "//device/bluetooth:mocks",
+    "//device/bluetooth/public/cpp",
+    "//mojo/public/cpp/bindings",
+    "//services/device/public/cpp:test_support",
+    "//services/device/public/cpp/bluetooth",
+    "//services/device/public/mojom",
+    "//third_party/blink/public/common",
+  ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}

@@ -16,7 +16,7 @@
 namespace blink {
 
 struct BLINK_COMMON_EXPORT IndexedDBIndexMetadata {
-  static const int64_t kInvalidId = -1;
+  inline static const int64_t kInvalidId = -1;
 
   IndexedDBIndexMetadata();
   IndexedDBIndexMetadata(const std::u16string& name,
@@ -32,22 +32,20 @@ struct BLINK_COMMON_EXPORT IndexedDBIndexMetadata {
   bool operator==(const IndexedDBIndexMetadata& other) const;
 
   std::u16string name;
-  int64_t id;
+  int64_t id = kInvalidId;
   blink::IndexedDBKeyPath key_path;
-  bool unique;
-  bool multi_entry;
+  bool unique = false;
+  bool multi_entry = false;
 };
 
 struct BLINK_COMMON_EXPORT IndexedDBObjectStoreMetadata {
-  static const int64_t kInvalidId = -1;
-  static const int64_t kMinimumIndexId = 30;
+  inline static const int64_t kInvalidId = -1;
 
   IndexedDBObjectStoreMetadata();
   IndexedDBObjectStoreMetadata(const std::u16string& name,
                                int64_t id,
                                const blink::IndexedDBKeyPath& key_path,
-                               bool auto_increment,
-                               int64_t max_index_id);
+                               bool auto_increment);
   IndexedDBObjectStoreMetadata(const IndexedDBObjectStoreMetadata& other);
   IndexedDBObjectStoreMetadata(IndexedDBObjectStoreMetadata&& other);
   ~IndexedDBObjectStoreMetadata();
@@ -57,10 +55,10 @@ struct BLINK_COMMON_EXPORT IndexedDBObjectStoreMetadata {
   bool operator==(const IndexedDBObjectStoreMetadata& other) const;
 
   std::u16string name;
-  int64_t id;
+  int64_t id = kInvalidId;
   blink::IndexedDBKeyPath key_path;
-  bool auto_increment;
-  int64_t max_index_id;
+  bool auto_increment = false;
+  int64_t max_index_id = 0;
 
   std::map<int64_t, IndexedDBIndexMetadata> indexes;
 };
@@ -70,25 +68,25 @@ struct BLINK_COMMON_EXPORT IndexedDBDatabaseMetadata {
   enum { NO_VERSION = -1, DEFAULT_VERSION = 0 };
 
   IndexedDBDatabaseMetadata();
-  IndexedDBDatabaseMetadata(const std::u16string& name,
-                            int64_t id,
-                            int64_t version,
-                            int64_t max_object_store_id);
+  IndexedDBDatabaseMetadata(const std::u16string& name);
   IndexedDBDatabaseMetadata(const IndexedDBDatabaseMetadata& other);
   IndexedDBDatabaseMetadata(IndexedDBDatabaseMetadata&& other);
-  ~IndexedDBDatabaseMetadata();
+  // TODO(estade): this is virtual because it's extended in backend code.
+  // Backend code probably shouldn't be depending on Blink classes for its own
+  // bookkeeping; fix this.
+  virtual ~IndexedDBDatabaseMetadata();
   IndexedDBDatabaseMetadata& operator=(const IndexedDBDatabaseMetadata& other);
   IndexedDBDatabaseMetadata& operator=(IndexedDBDatabaseMetadata&& other);
   bool operator==(const IndexedDBDatabaseMetadata& other) const;
 
   std::u16string name;
-  int64_t id;
-  int64_t version;
-  int64_t max_object_store_id;
+  int64_t version = NO_VERSION;
+  int64_t max_object_store_id = 0;
 
   std::map<int64_t, IndexedDBObjectStoreMetadata> object_stores;
 
-  bool was_cold_open;
+  bool was_cold_open = true;
+  bool is_sqlite = false;
 };
 
 }  // namespace blink

@@ -14,8 +14,8 @@ using DigitalIdentityInterstitialAbortCallback =
 StubDigitalIdentityProvider::StubDigitalIdentityProvider() = default;
 StubDigitalIdentityProvider::~StubDigitalIdentityProvider() = default;
 
-bool StubDigitalIdentityProvider::IsLowRiskOrigin(
-    const url::Origin& to_check) const {
+bool StubDigitalIdentityProvider::IsLastCommittedOriginLowRisk(
+    RenderFrameHost& render_frame_host) const {
   return false;
 }
 
@@ -28,9 +28,14 @@ StubDigitalIdentityProvider::ShowDigitalIdentityInterstitial(
   return base::OnceClosure();
 }
 
-void StubDigitalIdentityProvider::Request(WebContents*,
-                                          const url::Origin& origin,
-                                          const std::string& request,
-                                          DigitalIdentityCallback) {}
+void StubDigitalIdentityProvider::Get(WebContents*,
+                                      const url::Origin& origin,
+                                      base::ValueView request,
+                                      DigitalIdentityCallback) {}
+
+void StubDigitalIdentityProvider::Create(WebContents*,
+                                         const url::Origin& origin,
+                                         base::ValueView request,
+                                         DigitalIdentityCallback) {}
 
 }  // namespace content

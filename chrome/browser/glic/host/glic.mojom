@@ -1,0 +1,1535 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module glic.mojom;
+
+import "chrome/browser/glic/host/glic_features.mojom";
+import "chrome/common/actor_webui.mojom";
+import "components/content_settings/core/common/content_settings_types.mojom";
+import "mojo/public/mojom/base/big_buffer.mojom";
+import "mojo/public/mojom/base/proto_wrapper.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "mojo/public/mojom/base/version.mojom";
+import "skia/public/mojom/bitmap.mojom";
+import "third_party/blink/public/mojom/content_extraction/ai_page_content_metadata.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
+
+// Warning: a script copies some enums from this file over to glic_api.ts.
+// Run this script to update them, and read it for details.
+// chrome/browser/resources/glic/glic_api_impl/generate.py
+
+// The ready state of the profile.
+enum ProfileReadyState {
+  // The profile is not ready for Glic.
+  kUnknownError,
+  // The account state is paused, and requires sign in.
+  kSignInRequired,
+  // The profile is ready for Glic.
+  kReady,
+  // The profile is not eligible for Glic.
+  kIneligible,
+  // Similar to kIneligible, but the admin has explicitly disabled Glic.
+  kDisabledByAdmin,
+};
+
+// A minimal interface for the initial handshake.
+interface PreloadPage {
+  // The one and only method needed to unblock the frontend.
+  SetProfileReadyState(ProfileReadyState ready_state);
+};
+
+// Functions provided by the WebUI page.
+interface Page {
+  // Called before the page is shown.
+  IntentToShow();
+
+  // TODO(crbug.com/454120908): Remove this method after WebContents warming is
+  // rolled out.
+  // Called any time the ready state of the profile changes.
+  // `ready_state` = `GlicEnabling::GetProfileReadyState()`.
+  SetProfileReadyState(ProfileReadyState ready_state);
+
+  // Called to inform the page of the UI surface it is being rendered in.
+  UpdatePageState(PanelStateKind panelStateKind);
+};
+
+// Page handler for pre-loading tasks.
+interface GlicPreloadHandler {
+  // Prepare the webview for loading the client. Sync Google account sign-in
+  // cookies to the webview, if necessary, so that it can sign-in automatically.
+  // If this returns an error, the web client cannot be created.
+  PrepareForClient() => (PrepareForClientResult result);
+};
+
+// Factory for GlicPreloadHandler used in chrome://glic.
+interface GlicPreloadHandlerFactory {
+  // Creates the GlicPreloadHandler for chrome://glic.
+  CreatePreloadHandler(pending_receiver<GlicPreloadHandler> receiver,
+                       pending_remote<PreloadPage> page);
+};
+
+// Factory for PageHandler used in chrome://glic.
+interface PageHandlerFactory {
+  // Creates the PageHandler for chrome://glic.
+  CreatePageHandler(
+      pending_receiver<PageHandler> receiver, pending_remote<Page> page);
+};
+
+// It is used in the Glic.PanelWebUiState.FinishState histogram.
+// This must match enums.xml.
+// LINT.IfChange(WebUiState)
+enum WebUiState {
+  // Glic app controller not started.
+  kUninitialized = 0,
+  // Web client begins loading; no visible UI.
+  kBeginLoad = 1,
+  // Loading panel is displayed. This state, combined with the `hold-loading`
+  // state, will be held for `kMinHoldLoadingTimeMs` if entered.
+  kShowLoading = 2,
+  // Loading panel is still displayed, but the web client is ready. This
+  // state will be held for the remainder of `kMinHoldLoadingTimeMs`.
+  kHoldLoading = 3,
+  // Loading panel is displayed until web client is ready, or until
+  // `kMaxWaitTimeMs` timeout is reached.
+  kFinishLoading = 4,
+  // "Something went wrong" error panel is displayed.
+  kError = 5,
+  // Connection offline panel is displayed.
+  kOffline = 6,
+  // Glic is not available for profile; "Unavailable" panel is displayed.
+  kUnavailable = 7,
+  // Web view is displayed.
+  kReady = 8,
+  // Glic is unresponsive. Currently this will show the same UI as kError.
+  kUnresponsive = 9,
+  // Sign in panel is displayed.
+  kSignIn = 10,
+  // Web view is displayed, but it is an error page.
+  kGuestError = 11,
+  // Similar to kUnavailable, but the admin has explicitly disabled Glic.
+  kDisabledByAdmin = 12,
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:WebUiState)
+
+// @generate glic_api
+// The type of user input reaction.
+[Stable, Extensible]
+enum MetricUserInputReactionType {
+  // An unknown reaction type.
+  [Default] kUnknown = 0,
+  // A canned reaction which can be presented without communication with the
+  // server.
+  kCanned = 1,
+  // A reaction which requires some generic modeling to produce.
+  kModel = 2,
+};
+
+// The result of `PrepareForClient()`.
+enum PrepareForClientResult {
+  // Ready to load the web client.
+  kSuccess,
+  // An unknown error occurred while resyncing cookies.
+  kErrorResyncingCookies,
+  // The account state is paused, and requires sign in.
+  kRequiresSignIn,
+};
+
+// Page handler for the glic WebUI.
+interface PageHandler {
+  // Creates a WebClientHandler, for use by a single web client instance.
+  CreateWebClient(pending_receiver<WebClientHandler> web_client_receiver);
+
+  // TODO(crbug.com/454120908): Remove this method after WebContents warming is
+  // rolled out.
+  // Prepare the webview for loading the client. Sync Google account sign-in
+  // cookies to the webview, if necessary, so that it can sign-in automatically.
+  // If this returns an error, the web client cannot be created.
+  PrepareForClient() => (PrepareForClientResult result);
+
+  // Called whenever the webview mainframe commits.
+  WebviewCommitted(url.mojom.Url url);
+
+  // Closes the Glic panel.
+  ClosePanel() => ();
+
+  // Opens the profile picker, and closes the Glic panel.
+  OpenProfilePickerAndClosePanel();
+
+  // Opens the disabled by admin link, and closes the Glic panel.
+  OpenDisabledByAdminLinkAndClosePanel();
+
+  // Opens the sign-in page, and closes the Glic panel.
+  SignInAndClosePanel();
+
+  // Resize the widget hosting the WebUI to the given size.
+  // If `duration` is 0 or less, instantly resize, otherwise run an animation.
+  ResizeWidget(gfx.mojom.Size size, mojo_base.mojom.TimeDelta duration) => ();
+
+  // Set whether the panel can be manually resized, or if the panel hasn't been
+  // created yet, whether it should be resizable when created.
+  EnableDragResize(bool enabled);
+
+  // Notifies the PageHandler that the state of the WebUI has changed.
+  WebUiStateChanged(WebUiState new_state);
+};
+
+// @generate glic_api
+// Reason for failure while acting.
+// LINT.IfChange(PerformActionsErrorReason)
+[Stable, Extensible]
+enum PerformActionsErrorReason {
+  [Default] kUnknown = 0,
+  // The serialized actions proto failed to parse.
+  [MinVersion=1] kInvalidProto = 1,
+
+  // The actions proto did not set a task id.
+  [MinVersion=2] kMissingTaskId = 2,
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:PerformActionsErrorReason)
+
+// @generate glic_api
+// Reason for failure when creating an actor task.
+// LINT.IfChange(CreateTaskErrorReason)
+[Stable, Extensible]
+enum CreateTaskErrorReason {
+  [Default] kUnknown = 0,
+
+  // The host does not support the actor task system.
+  kTaskSystemUnavailable = 1,
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:CreateTaskErrorReason)
+
+// @generate glic_api
+// The state of an actor task.
+[Stable, Extensible]
+enum ActorTaskState {
+  [Default] kUnknown = 0,
+  // The actor task is idle and waiting for the next action instruction.
+  kIdle = 1,
+  // The actor task is performing an action.
+  kActing = 2,
+  // The actor task is paused and waiting to be resumed or stopped.
+  kPaused = 3,
+  // The actor task is stopped and going away.
+  kStopped = 4,
+};
+
+// @generate glic_api
+// The reason/source of why an actor task was paused.
+[Stable, Extensible]
+enum ActorTaskPauseReason {
+  // Actor task was paused by the model.
+  [Default] kPausedByModel = 0,
+  // Actor task was puased by the user.
+  kPausedByUser = 1,
+};
+
+// @generate glic_api
+// Next version: 3
+// The reason/source of why an actor task was stopped.
+[Stable, Extensible]
+enum ActorTaskStopReason {
+  // Actor task is complete.
+  [Default] kTaskComplete = 0,
+  // Actor task was stopped by the user.
+  kStoppedByUser = 1,
+  // Actor task was stopped because the model reported a failure.
+  [MinVersion=1] kModelError = 2,
+  // Actor task was stopped by choosing a new conversation.
+  [MinVersion=2] kUserStartedNewChat = 3,
+  // Actor task was stopped by choosing a previous conversation.
+  [MinVersion=2] kUserLoadedPreviousChat = 4,
+};
+
+// @generate glic_api
+// Reason why capturing desktop screenshot failed. NOTE: This may be extended in
+// the future so avoid using complete switches on the currently used enum
+// values.
+[Stable, Extensible]
+enum CaptureScreenshotErrorReason {
+  // Screen capture or frame encoding failure.
+  [Default] kUnknown = 0,
+  // Screen capture requested but already in progress of serving another
+  // request.
+  kScreenCaptureRequestThrottled = 1,
+  // User declined screen capture dialog before taking a screenshot.
+  kUserCancelledScreenPickerDialog = 2,
+};
+
+union GetContextResult {
+  string error_reason;
+  TabContext tab_context;
+};
+
+struct GetContextResultWithActionResultCode {
+  GetContextResult get_context_result;
+  // Note that this is an enum ActionResultCode from chrome/common/actor.mojom.
+  // It would be tedious to import the actual enum here and the renderer doesn't
+  // need the type, so we just use an int here. It is expected that the client
+  // has an equivalent enum definition. See http://shortn/_gLyPxrRm6p
+  int32? action_result;
+};
+
+union CaptureScreenshotResult {
+  CaptureScreenshotErrorReason error_reason;
+  Screenshot screenshot;
+};
+
+// Information about the user profile.
+struct UserProfileInfo {
+  // Profile avatar image bitmap.
+  skia.mojom.BitmapN32? avatar_icon;
+  // The user's full name for display purposes.
+  string display_name;
+  // The local name for the Chrome profile.
+  string local_profile_name;
+  // The user's email.
+  string email;
+  // The user's given name.
+  string given_name;
+  // Whether the profile's signed-in account is a managed account.
+  // See `policy::ManagementService::IsAccountManaged()`.
+  bool is_managed;
+};
+
+// The result of `WebClientCreated()`. Contains information that needs to be
+// available before the web client is initialized.
+struct WebClientInitialState {
+  PanelState panel_state;
+  // Initially focused tab data.
+  FocusedTabData focused_tab_data;
+  bool microphone_permission_enabled;
+  bool location_permission_enabled;
+  bool tab_context_permission_enabled;
+  bool os_location_permission_enabled;
+  string hotkey;
+  mojo_base.mojom.Version chrome_version;
+  // Whether the glic panel can currently be attached to a browser window.
+  bool can_attach;
+  // Whether the panel is active. See `NotifyPanelActiveChange`.
+  bool panel_is_active;
+  bool browser_is_open;
+  bool instance_is_active;
+  // Reflects the enabling state of always-detached mode.
+  bool always_detached_mode;
+  bool enable_zero_state_suggestions;
+  // Whether features::kGlicActor is enabled.
+  bool enable_act_in_focused_tab;
+  // Whether features::kGlicScrollTo is enabled.
+  bool enable_scroll_to;
+  // Whether features::kGlicDefaultTabContextSetting is enabled.
+  bool enable_default_tab_context_setting_feature;
+  // Whether the glic default tab context setting is enabled.
+  bool default_tab_context_setting_enabled;
+  // Whether features::kGlicClosedCaptioning is enabled.
+  bool enable_closed_captioning_feature;
+  // Whether the glic closed captioning setting is enabled.
+  bool closed_captioning_setting_enabled;
+  // Whether features::kGlicUserStatusCheck is enabled with
+  // features::kGlicUserStatusRefreshApi true.
+  bool enable_maybe_refresh_user_status;
+  // Whether multi tab is enabled.
+  bool enable_multi_tab;
+  // Whether get context for actor from tab is enabled.
+  bool enable_get_context_actor;
+  // The list of capabilities of the host.
+  array<HostCapability> host_capabilities;
+  // Whether get page metadata is enabled.
+  bool enable_get_page_metadata;
+  // Whether kGlicApiActivationGating is enabled.
+  bool enable_api_activation_gating;
+  // Whether capture region is enabled.
+  bool enable_capture_region;
+  // Whether kGlicWebActuationSetting is enabled.
+  bool enable_web_actuation_setting_feature;
+  // Whether the user enabled actuation setting is enabled.
+  bool actuation_on_web_setting_enabled;
+  // Whether the host has the capability to act on web.
+  bool can_act_on_web;
+  // Whether kGlicActivateTabApi is enabled.
+  bool enable_activate_tab;
+  // Whether kGlicGetTabByIdApi is enabled.
+  bool enable_get_tab_by_id;
+  // Whether kGlicOpenPasswordManagerSettingsPageApi is enabled.
+  bool enable_open_password_manager_settings_page;
+  // Whether kGlicLoadAndExtractContent is enabled.
+  bool enable_load_and_extract_content;
+};
+
+// Options for getting tab context.
+struct GetTabContextOptions {
+  // Whether to include inner text in the response.
+  bool include_inner_text;
+  // Maximum size in UTF-8 bytes that the returned innerText data may contain.
+  uint32 inner_text_bytes_limit;
+  // Whether to include a viewport screenshot in the response.
+  bool include_viewport_screenshot;
+  // Whether to include  in the response.
+  bool include_annotated_page_content;
+  // Maximum number of meta tags (per Document)to include in the response.
+  uint32 max_meta_tags;
+  // Whether to include PDF data in the response.
+  bool include_pdf;
+  // Maximum size of PDF data returned. If PDF data exceeds this size, no PDF
+  // data is returned.
+  uint32 pdf_size_limit;
+  // The mode of the annotated page content if included in the response. This
+  // maps directly to the AnnotatedPageContentMode enum in the proto.
+  //
+  // If invalid, falls back to using ANNOTATED_PAGE_CONTENT_MODE_DEFAULT.
+  uint32 annotated_page_content_mode = 0;
+};
+
+// Options for requesting pin candidates.
+struct GetPinCandidatesOptions {
+  // The maximum number of candidates to return. Could be fewer.
+  uint32 max_candidates;
+  // An optional query string.
+  string? query;
+};
+
+// Parameters for ScrollTo.
+struct ScrollToParams {
+  // Used to specify content to scroll to (and optionally highlight).
+  ScrollToSelector selector;
+
+  // Whether to highlight the selected content.
+  bool highlight;
+
+  // The document targeted by this operation. When specified, it verifies
+  // that the document in the primary main frame of the currently focused tab
+  // matches the ID (and fails the operation if it doesn't). The verification
+  // does not happen for PDFs.
+  mojo_base.mojom.UnguessableToken? document_id;
+
+  // The URL of the document targeted by this operation. If the currently
+  // focused tab has a PDF loaded, this url is matched and verified against the
+  // tab's primary main frame's URL (and is ignored otherwise).
+  url.mojom.Url? url;
+};
+
+// Used to select content in a page to scroll to and highlight.
+union ScrollToSelector {
+  ScrollToTextSelector exact_text_selector;
+  ScrollToTextFragmentSelector text_fragment_selector;
+  ScrollToNodeSelector node_selector;
+};
+
+// Used to specify exact text to scroll to and highlight.
+struct ScrollToTextSelector {
+  // Exact text to select.
+  string text;
+  // The DOMNodeId of the start node for the search range (the end is always
+  // the end of the document). If not specified, the search range will be the
+  // entire document.
+  int32? search_range_start_node_id;
+};
+
+// Used to specify a text fragment to scroll to and highlight. Text selected
+// will match text block that starts with `text_start` and ends with `text_end`
+// (and can have any text in the middle).
+struct ScrollToTextFragmentSelector {
+  // Start of text to select.
+  string text_start;
+  // End of text to select.
+  string text_end;
+  // The DOMNodeId of the start node for the search range (the end is always
+  // the end of the document). If not specified, the search range will be the
+  // entire document.
+  int32? search_range_start_node_id;
+};
+
+// Used to specify a node to scroll to and highlight. All text within the node
+// will be highlighted.
+struct ScrollToNodeSelector {
+  // DOMNodeId of the node whose text will be highlighted (and scrolled to).
+  int32 node_id;
+};
+
+// @generate glic_api
+// Reason why scrollTo() failed.
+// Next version: 8
+// LINT.IfChange(ScrollToErrorReason)
+[Stable, Extensible]
+enum ScrollToErrorReason {
+  // Invalid params were provided to scrollTo(), or the browser doesn't support
+  // scrollTo() yet.
+  [Default] kNotSupported = 0,
+
+  // scrollTo() was called again before this call finished processing.
+  [MinVersion=1] kNewerScrollToCall,
+
+  // There is no tab currently in focus.
+  [MinVersion=1] kNoFocusedTab,
+
+  // The input selector did not match any content in the document or a given
+  // range.
+  [MinVersion=1] kNoMatchFound,
+
+  // The currently focused tab changed or navigated while processing the
+  // scrollTo() call.
+  [MinVersion=1] kFocusedTabChangedOrNavigated,
+
+  // The document_id or url provided doesn't match the active document in the
+  // primary main frame of the currently focused tab. The document may have been
+  // navigated away, may not currently be in focus, or may not be in a primary
+  // main frame (we don't currently support iframes).
+  [MinVersion=2] kNoMatchingDocument,
+
+  // The search range starting from DOMNodeId did not result in a valid range.
+  [MinVersion=5] kSearchRangeInvalid,
+
+  // Page context access is disabled.
+  [MinVersion=6] kTabContextPermissionDisabled,
+
+  // The web client requested to drop the highlight via
+  // `dropScrollToHighlight()`.
+  [MinVersion=7] kDroppedByWebClient,
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicScrollToErrorReason)
+
+// A single suggestion.
+struct SuggestionContent {
+  // The suggestion. Always provided.
+  string suggestion;
+};
+
+// A list of suggestions for the currently focused tab.
+struct ZeroStateSuggestions {
+  // The list of suggestions to present to the user.
+  array<SuggestionContent> suggestions;
+  // The unique tab id of the tab associated with the suggestions.
+  int32 tab_id;
+  // The url of the tab associated with the suggestions.
+  url.mojom.Url tab_url;
+};
+
+// A list of suggestions for the currently pinned tabs.
+struct ZeroStateSuggestionsV2 {
+  // The list of suggestions to present to the user.
+  array<SuggestionContent> suggestions;
+  // Whether there is a current outstanding request to generate suggestions for
+  // the current tab context.
+  bool is_pending;
+};
+
+// The options associated with the current zero state suggestions.
+struct ZeroStateSuggestionsOptions {
+  bool is_first_run;
+  array<string> supported_tools;
+};
+
+// A candidate for pinning.
+struct PinCandidate {
+  // The tab that is a candidate for pinning.
+  TabData tab_data;
+};
+
+// Observes changes to pin candidates.
+interface PinCandidatesObserver {
+  // Called when the list of pin candidates has changed.
+  OnPinCandidatesChanged(array<PinCandidate> candidates);
+};
+
+// @generate glic_api
+// Describes what triggered the pin.
+[Stable, Extensible]
+enum PinTrigger {
+  // The pin occurred for unknown reasons. Specifies 'web client' to align with
+  // `GlicPinTrigger` enum (which disambiguates from unknown triggers
+  // originating elsewhere).
+  [Default] kWebClientUnknown = 0,
+  // The pin was triggered by the toggle UI for pin candidates.
+  kCandidatesToggle = 1,
+  // The pin was triggered by the inline '@' mention feature.
+  kAtMention = 2,
+  // The pin was triggered as part of actor/actuation behavior.
+  kActuation = 3,
+};
+
+// Options for pinning tabs.
+struct PinTabsOptions {
+  PinTrigger pin_trigger;
+};
+
+// Access to the browser from the web client by proxy through the WebUI.
+// A single WebClientHandler will provide access to the browser for only
+// a single web client. If the webview navigates or refreshes, a new
+// WebClientHandler is created.
+interface WebClientHandler {
+  // Called just before the web client initialize() call. Provides the initial
+  // state of any values that can be queried.
+  WebClientCreated(pending_remote<WebClient> web_client)
+      => (WebClientInitialState initial_state);
+
+  // Called when the web client loads and successfully returns from
+  // initialize(), indicating that it will support Chrome. `web_client` may
+  // be used to communicate with the client.
+  WebClientInitialized();
+
+  // Called when the web client loads, but throws an exception in initialize().
+  WebClientInitializeFailed();
+
+  // Creates a new tab. `url` must have a http or https protocol.
+  // `tab_data` is null if the tab could not be created, which may happen if the
+  // url or window_id is invalid.
+  CreateTab(url.mojom.Url url, bool open_in_background, int32? window_id)
+      => (TabData? tab_data);
+
+  // Creates a new popup window.
+  OpenLinkInPopup(url.mojom.Url url, int32 popup_width, int32 popup_height);
+
+  // Opens the glic settings page.
+  OpenGlicSettingsPage(OpenSettingsOptions options);
+
+  // Opens the password manager settings page.
+  OpenPasswordManagerSettingsPage();
+
+  // Closes the Glic panel.
+  ClosePanel();
+
+  // Shuts down the Glic panel.
+  ClosePanelAndShutdown();
+
+  // Requests that the web client's panel be attached to a browser
+  // window.
+  AttachPanel();
+
+  // Requests that the web client's panel be detached from a browser
+  // window (floats free).
+  DetachPanel();
+
+  // Notifies the browser that the web client has switched modes.
+  OnModeChange(WebClientMode new_mode);
+
+  // Triggers the change profile flow, which allows the user to switch which
+  // profile is used. If a new profile is chosen, this WebUI will be closed in
+  // favor of a new one.
+  ShowProfilePicker();
+
+  // Returns the current model quality client id.
+  [RuntimeFeature=glic.mojom.features.kGlicAppendModelQualityClientId]
+  GetModelQualityClientId() => (string model_quality_client_id);
+
+  // Returns the context from the currently active tab.
+  // `tab_context_result` is null if tab content could not be captured.
+  // This may fail if the tab is navigated while collecting data, or closed
+  // before data is collected.
+  GetContextFromFocusedTab(GetTabContextOptions options)
+      => (GetContextResult result);
+
+  // Returns the context from the tab associated with `tab_id`.
+  // `tab_context_result` is null if tab content could not be captured.
+  // This may fail if the tab is navigated while collecting data, or closed
+  // before data is collected.
+  [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
+  GetContextFromTab(int32 tab_id, GetTabContextOptions options)
+      => (GetContextResult result);
+
+  // Returns the context from the tab associated with `tab_id` for an actor.
+  // This skips the focus check.
+  [RuntimeFeature=glic.mojom.features.kGlicActorTabContext]
+  GetContextForActorFromTab(int32 tab_id, GetTabContextOptions options)
+      => (GetContextResult result);
+
+  // Sets the maximum number of supported pinned tabs. Negative means that the
+  // client has no limit. Since the browser may only support so many, the
+  // effective limit is returned. The returned number may also differ from the
+  // requested number if the current number of pinned tabs exceeds the requested
+  // amount.
+  [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
+  SetMaximumNumberOfPinnedTabs(uint32 requested_max)
+      => (uint32 effective_max);
+
+  // Pins the given tabs. Can fail if the tabs cannot be found, if the number of
+  // pinned tabs exceeds the allowed limit or if the tabs are already pinned.
+  // Returns true if all the given tabs were pinned.
+  [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
+  PinTabs(array<int32> tab_ids, PinTabsOptions? options) => (bool pinned_all);
+
+  // Unpins the given tabs. Can fail if the tabs cannot be found, or if some of
+  // the given tabs aren't pinned.
+  [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
+  UnpinTabs(array<int32> tab_ids) => (bool unpinned_all);
+
+  // Unpins all currently pinned tabs.
+  [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
+  UnpinAllTabs();
+
+  // Subscribes to receive updates on pin candidates.
+  [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
+  SubscribeToPinCandidates(GetPinCandidatesOptions options,
+                           pending_remote<PinCandidatesObserver> observer);
+
+  // Creates a new task in the actor framework and returns the new task's ID.
+  // `task_options` contains information used to initialize the task.
+  CreateTask(actor.webui.mojom.TaskOptions? task_options)
+      => result<int32, CreateTaskErrorReason>;
+
+  // Executes the given actions. `action_proto` is a serialized proto of type
+  // optimization_guide::proto::Actions. Returns the result of the actions as a
+  // serialized proto of type optimization_guide::proto::ActionsResult.
+  //
+  // It is an error to act with a paused task.
+  PerformActions(array<uint8> actions_proto)
+      => result<mojo_base.mojom.ProtoWrapper, PerformActionsErrorReason>;
+
+  // Immediately stops the actor from taking any further actions associated with
+  // the given id and exits acting mode. The stop_reason indicates the reason
+  // for why the stop was initiated. Any in flight actions are canceled and
+  // their callbacks will be (asynchronously) invoked. No-op if a task with the
+  // given id does not exist.
+  StopActorTask(int32 task_id, ActorTaskStopReason stop_reason);
+
+  // Pauses the task associated with the given id. Any restrictions on the tab
+  // which would prevent user interaction with it are lifted. The pause_reason
+  // indicates the reason for why the pause was initiated. The optional tab_id
+  // indicates the tab that belongs to this actor task. ResumeActorTask
+  // restores these restrictions, and allows for further actions. Any in flight
+  // actions are canceled and their callbacks will be (asynchronously) invoked.
+  // No-op if a task with the given id does not exist.
+  PauseActorTask(
+      int32 task_id, ActorTaskPauseReason pause_reason, int32? tab_id);
+
+  // Resumes a paused task associated with the given id, allowing for further
+  // actions. Any restrictions on the tab lifted by PauseActorTask are
+  // reimposed. After resumption, computes the context of the tab associated
+  // with the task according to the given `context_options` and returns the
+  // result. Returns an error if the task doesn't exist or is not paused.
+  ResumeActorTask(int32 task_id, GetTabContextOptions context_options)
+      => (GetContextResultWithActionResultCode result);
+
+  // Interrupts the task associated with the given id. This is
+  // different than pausing a task since this still prevents user
+  // interaction.
+  // No-op if a task with the given id does not exist.
+  // No-op if the state of the task not in the reflecting state.
+  InterruptActorTask(int32 task_id);
+
+  // Indicates the task associated with the given id is no longer waiting
+  // on user input.
+  // No-op if a task with the given id does not exist.
+  // No-op if the task is not in the interrupted state.
+  UninterruptActorTask(int32 task_id);
+
+  // Creates a new tab for an actor task to act in. The initiator tab and window
+  // are used to place the new tab in the window the task was started from,
+  // regardless of whether context from that initial tab was shared or not.
+  // Note: task_id is used primarily for the journal, the new tab isn't
+  // associated with the task in any way until acted on. Returns the TabData
+  // for the newly created tab or undefined if tab creation failed.
+  CreateActorTab(int32 task_id,
+                 bool open_in_background,
+                 int32? initiator_tab_id,
+                 int32? initiator_window_id) => (TabData? tab_data);
+
+  // Foregrounds the given tab.
+  // No-op if the tab doesn't exist or is already in the foreground.
+  [RuntimeFeature=glic.mojom.features.kGlicActivateTabApi]
+  ActivateTab(int32 task_id);
+
+  // Resize the widget hosting the WebUI to the given size.
+  // If `duration` is 0 or less, instantly resize, otherwise run an animation.
+  // If the widget doesn't exist yet, `size` will be used as its initial size
+  // when it's created later.
+  ResizeWidget(gfx.mojom.Size size, mojo_base.mojom.TimeDelta duration) => ();
+
+  // Returns the screenshot result or error reason. 'screenshot' is null when an
+  // error occurs during capture. This can also fail if the user cancels the
+  // screen picker dialog.
+  CaptureScreenshot() => (CaptureScreenshotResult result);
+
+  // Starts a user-interactive process to select content from a tab. Multiple
+  // regions can be captured. Results for each region, and errors, are sent
+  // via the observer.
+  //
+  // The `observer` remote is disconnected when the capture operation is
+  // terminated by either the browser (e.g., on user cancellation) or the
+  // client.
+  //
+  // If another capture is already in progress, the previous capture session
+  // will be terminated and a new one will begin.
+  CaptureRegion(pending_remote<CaptureRegionObserver> observer);
+
+  // Requests that audio ducking be enabled or disabled.
+  // If enabled, audio from other sources will be attenuated.
+  // If disabled, normal audio playout resumes.
+  // Returns `true` if the ducking state was actually changed. On some
+  // platforms this will also duck other applications besides Chrome. On these
+  // platforms, we will return `true` if other Chrome tabs were successfully
+  // ducked, even if ducking other applications has failed.
+  SetAudioDucking(bool enable) => (bool result);
+
+  // Set the areas of the Glic panel from which it should be draggable. If
+  // `draggable_areas` is empty, the panel will use the top bar area by default.
+  // Returns when the browser has updated the draggable area.
+  // Any web elements that are in the draggable area must set "draggable=false"
+  // to avoid conflicting with dragging the Glic panel. Also, elements with text
+  // like <h1> should have style 'user-select: none'.
+  SetPanelDraggableAreas(array<gfx.mojom.Rect> draggable_areas) => ();
+
+  // Sets the minimum possible size that a user can manually resize to for the
+  // widget hosting the WebUI.
+  SetMinimumPanelSize(gfx.mojom.Size size);
+
+  // Set the state of the Microphone permission pref:
+  // prefs::kGlicMicrophoneEnabled. Returns when the browser has stored the new
+  // pref value.
+  SetMicrophonePermissionState(bool enabled) => ();
+
+  // Set the state of the Location permission pref:
+  // prefs::kGlicGeolocationEnabled. Returns when the browser has stored the new
+  // pref value.
+  SetLocationPermissionState(bool enabled) => ();
+
+  // Set the state of the TabContext permission pref:
+  // prefs::kGlicTabContextEnabled. Returns when the browser has stored the new
+  // pref value.
+  SetTabContextPermissionState(bool enabled) => ();
+
+  // Set the state of the closed captioning glic setting pref:
+  // prefs::kGlicClosedCaptioningEnabled. Returns when the browser has stored
+  // the new pref value.
+  SetClosedCaptioningSetting(bool enabled) => ();
+
+  // Set the state of the user enabled web actuation glic setting pref:
+  // prefs::kGlicUserEnabledActuationOnWeb. Returns when the browser has stored
+  // the new pref value.
+  SetActuationOnWebSetting(bool enabled) => ();
+
+  // Returns whether a media permission request from the guest should be granted
+  // or denied.
+  ShouldAllowMediaPermissionRequest() => (bool is_allowed);
+
+  // Returns whether a geolocation permission request from the guest should be
+  // granted or denied.
+  ShouldAllowGeolocationPermissionRequest() => (bool is_allowed);
+
+  // Set the state of the context access indicator UI effect on the focused tab.
+  SetContextAccessIndicator(bool enabled);
+
+  // Returns the user profile information. This should only return null if
+  // the profile associated with this webui is invalid, which should only
+  // possibly happen during teardown.
+  GetUserProfileInfo() => (UserProfileInfo? profile_info);
+
+  // Sync signin cookies to webview. This is the same as
+  // `PageHandler.SyncWebviewCookies()`, except this call originates from the
+  // webview.
+  SyncCookies() => (bool success);
+
+  // Log a begin event in the journal.
+  LogBeginAsyncEvent(
+      uint64 event_async_id, int32 task_id, string event, string details);
+
+  // Log an end event in the journal.
+  LogEndAsyncEvent(uint64 event_async_id, string details);
+
+  // Log an instant event in the journal.
+  LogInstantEvent(int32 task_id, string event, string details);
+
+  // Clear the journal.
+  JournalClear();
+
+  // Serialize the current journal collection to a encoded
+  // perfetto protobuf encoding.
+  JournalSnapshot(bool clear_journal) => (Journal journal);
+
+  // Start journal collection.
+  JournalStart(uint64 max_bytes, bool capture_screenshots);
+
+  // Stop journal collection.
+  JournalStop();
+
+  // Record the journal in a listnr feedback. The reason will be sent to listnr
+  // as the feedback description exactly as is without being parsed or processed
+  // in the browser process.
+  JournalRecordFeedback(bool positive, string reason);
+
+  // Called when the user submits input.
+  OnUserInputSubmitted(WebClientMode mode);
+
+  // Called when starting to upload context to the server.
+  OnContextUploadStarted();
+
+  // Called when finished uploading context to the server.
+  OnContextUploadCompleted();
+
+  // Called after user input is submitted, but before a response starts,
+  // when the UI shows a message that explains the progress of the request.
+  OnReaction(MetricUserInputReactionType reactionType);
+
+  // Called when the web client starts to respond.
+  OnResponseStarted();
+
+  // Called when the web client stops responding.
+  OnResponseStopped(OnResponseStoppedDetails details);
+
+  // Called when the session is terminated.
+  OnSessionTerminated();
+
+  // Called when the web client completes a turn.
+  OnTurnCompleted(WebClientModel model, mojo_base.mojom.TimeDelta duration);
+
+  // Called when the web client changes the model.
+  OnModelChanged(WebClientModel model);
+
+  // Called when the web client wants to record a use counter.
+  // The counter values matches the WebUseCounter enum. We do not use the
+  // explicit type because we do not want enforcement of the range of the
+  // enum because of versioning issues between the front end and chrome.
+  // eg. The front end could be newer than chrome and we want the counter
+  // still logged, but may not exist in chrome's version of WebUseCounter.
+  OnRecordUseCounter(uint16 counter);
+
+  // Called when the user rates a response.
+  OnResponseRated(bool positive);
+
+  // Called when the user receives a response with closed captions showing.
+  OnClosedCaptionsShown();
+
+  // Scrolls to and (optionally) highlights content specified by `params`. Only
+  // one highlight is active at a time. Returns an error reason if the scroll
+  // fails, or null otherwise.
+  ScrollTo(ScrollToParams params) => (ScrollToErrorReason? error_reason);
+
+  // Drops the content highlight from scrollTo(). No effects if no contents are
+  // highlighted.
+  DropScrollToHighlight();
+
+  // Enrolls Chrome in the synthetic experiment group specified by
+  // trial_name.group_name. Enrollment will start when the API is called and end
+  // when Chrome closes.
+  SetSyntheticExperimentState(string trial_name, string group_name);
+
+  // Attempts to open the OS permission settings page.  No return value.
+  OpenOsPermissionSettingsMenu(
+      content_settings.mojom.ContentSettingsType type);
+
+  // Get the status of the OS Microphone permission currently granted to Chrome.
+  GetOsMicrophonePermissionStatus() => (bool enabled);
+
+  // If is_live==true this will return the zero state suggestions for the
+  // currently shared content. Suggestions will continue to emit via
+  // NotifyZeroStateSuggestionsChanged until this is called with the same
+  // options but with is_live == false.
+  [RuntimeFeature=glic.mojom.features.kZeroStateSuggestionsV2]
+  GetZeroStateSuggestionsAndSubscribe(
+      bool is_live, ZeroStateSuggestionsOptions options)
+      => (ZeroStateSuggestionsV2? zero_state_suggestions);
+
+  // Returns zero-state suggestions from the currently active tab.
+  GetZeroStateSuggestionsForFocusedTab(bool? is_first_run)
+      => (ZeroStateSuggestions? suggestions);
+
+  // Called when the client believes that the user's status may have changed.
+  // For example, an RPC may have been rejected due to the the service being
+  // disabled.
+  MaybeRefreshUserStatus();
+
+  // Returns whether the debugger is attached to the webview.
+  // This is useful for debugging the webview without having the responsiveness
+  // check get in the way.
+  IsDebuggerAttached() => (bool is_attached_to_webview);
+
+  // Called when the web client has changed the view shown to the user. This is
+  // used to trigger updates to browser UI which shows the current state of the
+  // web client, such as toggle controls.
+  OnViewChanged(ViewChangedNotification notification);
+
+  // Subscribe to be notified when meta tags change. Sends the current state on
+  // first call, and then notifies when the state changes. Call with an empty
+  // names array to stop receiving notifications.
+  SubscribeToPageMetadata(int32 tab_id, array<string> names)
+      => (bool success);
+
+  // Switches the active conversation in the web client.
+  // `conversation_id` must be non-empty to be considered valid.
+  SwitchConversation(ConversationInfo? info)
+      => (SwitchConversationErrorReason? error_reason);
+
+  // Registers a conversation in the web client.
+  // `conversation_id` must be non-empty to be considered valid.
+  RegisterConversation(ConversationInfo info)
+      => (RegisterConversationErrorReason? error_reason);
+};
+
+// Information about a conversation.
+struct ConversationInfo {
+  string conversation_id;
+  string conversation_title;
+};
+
+// @generate glic_api
+// Reason for failure when switching a conversation.
+[Stable, Extensible]
+enum SwitchConversationErrorReason {
+  [Default] kUnknown = 0,
+};
+
+// @generate glic_api
+// Reason for failure when registering a conversation.
+[Stable, Extensible]
+enum RegisterConversationErrorReason {
+  [Default] kUnknown = 0,
+  // The instance already has a conversation ID.
+  kInstanceAlreadyHasConversationId = 1,
+};
+
+// Data sent from the browser to the web client with panel opening information.
+struct PanelOpeningData {
+  // The state of the panel as it's being opened.
+  PanelState panel_state;
+  // Indicates the entry point used to trigger the opening of the panel.
+  InvocationSource invocation_source;
+  // The ID of the conversation to open. If unset, the web client will open a
+  // new conversation. This field is used only when the `MULTI_INSTANCE`
+  // capability is present.
+  // If set, `conversation_id` will be a string with length >0. Empty
+  // conversation IDs are not supported.
+  string? conversation_id;
+  // If set, the textbox for user input will be populated with the given string
+  // before the panel opens.
+  string? prompt_suggestion;
+  // Up to 3 most recently active conversations, ordered by most recently active
+  // first.
+  array<ConversationInfo>? recently_active_conversations;
+};
+
+// @generate glic_api
+// The panel can be in one of these three states.
+enum PanelStateKind {
+  // The panel is hidden.
+  kHidden = 0,
+  // The panel is a floating window, detached from any browser window.
+  kDetached = 1,
+  // The panel is a side panel, attached to a browser window.
+  kAttached = 2,
+};
+
+// State of the glic panel.
+struct PanelState {
+  PanelStateKind kind;
+  // Present when attached, indicates to which window the panel is attached.
+  int32? window_id;
+};
+
+// @generate glic_api
+// Entry points that can trigger the opening of the panel.
+// LINT.IfChange(InvocationSource)
+[Stable, Extensible]
+enum InvocationSource {
+  // Button in the OS.
+  kOsButton = 0,
+  // Menu from button in the OS.
+  kOsButtonMenu = 1,
+  // OS-level hotkey.
+  kOsHotkey = 2,
+  // Button in top-chrome.
+  kTopChromeButton = 3,
+  // First run experience.
+  kFre = 4,
+  // From the profile picker.
+  kProfilePicker = 5,
+  // From tab strip nudge.
+  kNudge = 6,
+  // From 3-dot menu.
+  kThreeDotsMenu = 7,
+  // An unsupported/unknown source.
+  /// The default is set to a valid value because this enum is only sent to the
+  /// web client, so Mojo will never handle an unknown value.
+  [Default] kUnsupported = 8,
+  // From the What's New page.
+  [MinVersion=1] kWhatsNew = 9,
+  // User clicked the sign-in button and signed in.
+  [MinVersion=2] kAfterSignIn = 10,
+  // User shared a tab (e.g. via its context menu).
+  [MinVersion=3] kSharedTab = 11,
+  // From the actor task icon.
+  [MinVersion=4] kActorTaskIcon = 12,
+  // User shared an image via the context menu.
+  [MinVersion=5] kSharedImage = 13,
+  // From the handoff button.
+  [MinVersion=6] kHandoffButton = 14,
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvocationSource, //chrome/browser/glic/glic_metrics.h:ResponseSegmentation)
+
+// @generate glic_api
+// Web client's operation modes.
+// LINT.IfChange(WebClientMode)
+[Stable, Extensible]
+enum WebClientMode {
+  [Default] kUnknown = 2,
+  // Text operation mode.
+  kText = 0,
+  // Audio operation mode.
+  kAudio = 1,
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:WebClientMode)
+
+// @generate glic_api
+// Web client's operation model.
+[Stable, Extensible]
+enum WebClientModel {
+  // Default model.
+  [Default] kDefault = 0,
+  // Actor operation mode.
+  kActor = 1,
+};
+
+// @generate glic_api
+// Web client's user counter.
+// LINT.IfChange(WebUseCounter)
+[Stable, Extensible]
+enum WebUseCounter {
+  // Default counter. Never used.
+  [Default] kDefault = 0,
+  kSubmitPromptWithAutoMode = 1,
+  kTaskInterruptedForUserConfirmation = 2,
+  kTaskInterruptedForUserClarification = 3,
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicWebUseCounter)
+[Stable, Extensible]
+enum ResponseStopCause {
+  [Default] kUnknown = 0,
+  kUser = 1,
+  kOther = 2,
+};
+
+// Details of response stop event.
+struct OnResponseStoppedDetails {
+  ResponseStopCause cause;
+};
+
+// Carries back to the browser information on how to configure the panel being
+// opened.
+struct OpenPanelInfo {
+  // Informs Chrome of the current web client mode, which may be kUnknown for
+  // clients that do not support it.
+  WebClientMode web_client_mode;
+  // The size of the panel upon opening. Temporarily, it may not be provided by
+  // the web client.
+  gfx.mojom.Size? panelSize;
+  // Resize animation duration.
+  mojo_base.mojom.TimeDelta resizeDuration;
+  // Whether the panel should start out user-resizable.
+  bool can_user_resize;
+};
+
+// Data for AdditionalContext.
+struct ContextData {
+  // The MIME type of the context data.
+  string mime_type;
+  // The context data.
+  mojo_base.mojom.BigBuffer data;
+};
+
+// Part of an additional context object.
+union AdditionalContextPart {
+  ContextData data;
+  // The four items below can be contained by TabContext and are deprecated.
+  Screenshot screenshot;
+  WebPageData web_page_data;
+  AnnotatedPageData annotated_page_data;
+  PdfDocumentData pdf_document_data;
+  TabContext tab_context;
+  CapturedRegion region;
+};
+
+// An additional context object.
+struct AdditionalContext {
+  // The name of the context.
+  string? name;
+  // Tab id, if associated with a tab.
+  int32? tab_id;
+  // Origin of the frame the content came from (if it came from a frame).
+  url.mojom.Origin? origin;
+  // url of the frame the content came from (if it came from a frame).
+  url.mojom.Url? frameUrl;
+  // The parts of the context.
+  array<AdditionalContextPart> parts;
+};
+
+// Access from the browser to the Glic web client by proxy of the WebUI page.
+interface WebClient {
+  // Informs the web client that the panel will open. Chrome will wait to open
+  // the panel until after this returns, and will use the data in the returned
+  // `OpenPanelInfo` to setup the opening panel.
+  NotifyPanelWillOpen(PanelOpeningData panel_opening_data)
+      => (OpenPanelInfo openPanelInfo);
+
+  // Informs the web client that the panel was closed. Chrome will try to keep
+  // the web client alive until this function returns.
+  NotifyPanelWasClosed() => ();
+
+  // Informs the client that the state of the glic panel has changed.
+  NotifyPanelStateChange(PanelState panel_state);
+
+  // Informs the client that the panel active state has changed. The panel is
+  // inactive if it's attached to a browser window, and that browser window is
+  // not the active window.
+  NotifyPanelActiveChange(bool panel_active);
+
+  // Informs the client that whether the panel can be attached right now.
+  NotifyPanelCanAttachChange(bool can_attach);
+
+  // The Microphone permission has changed either by action within the web
+  // client or by user action in the glic settings.
+  NotifyMicrophonePermissionStateChanged(bool enabled);
+
+  // The Location permission has changed either by action within the web client
+  // or by user action in the glic settings.
+  NotifyLocationPermissionStateChanged(bool enabled);
+
+  // The Tab Context permission has changed either by action within the web
+  // client or by user action in the glic settings.
+  NotifyTabContextPermissionStateChanged(bool enabled);
+
+  // The OS Location permission granted to Chrome has changed by user action in
+  // the OS settings menu.
+  NotifyOsLocationPermissionStateChanged(bool enabled);
+
+  // The focused tab has changed.
+  NotifyFocusedTabChanged(FocusedTabData focused_tab_data);
+
+  // The user started or stopped manually resizing the window.
+  NotifyManualResizeChanged(bool resizing);
+
+  // The OS Hotkey has changed.
+  NotifyOsHotkeyStateChanged(string hotkey);
+
+  // True if the browser has at least one open window.
+  NotifyBrowserIsOpenChanged(bool browser_is_open);
+
+  // The window holding the glic panel has become active or inactive (in the
+  // sense of visibility and focus). Some activity, such as responsiveness
+  // checks, may be paused or resumed accordingly.
+  NotifyInstanceActivationChanged(bool instance_active);
+
+  // Notify that the closed captioning setting has changed.
+  NotifyClosedCaptioningSettingChanged(bool enabled);
+
+  // Notify that the collection of shared tabs has changed.
+  [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
+  NotifyPinnedTabsChanged(array<TabData> tab_data);
+
+  // Notify that the TabData for a pinned tab has changed.
+  [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
+  NotifyPinnedTabDataChanged(TabData tab_data);
+
+  // Informs the client that the zero state suggestions have changed.
+  NotifyZeroStateSuggestionsChanged(ZeroStateSuggestionsV2? suggestions,
+                                    ZeroStateSuggestionsOptions options);
+
+  // Notify that the actor task with the given id has changed to the indicated
+  // state.
+  NotifyActorTaskStateChanged(int32 task_id, ActorTaskState state);
+
+  // Notify that state relating to the tab has changed.
+  NotifyTabDataChanged(TabData tab_data);
+
+  // Called when the browser wants the web client to change its view to match
+  // the requested change (e.g., because the user clicked a UI element to toggle
+  // to a different view).
+  //
+  // The web client should update its view to match the requested change.
+  RequestViewChange(ViewChangeRequest request);
+
+  // Informs the client that the metadata tags have changed.
+  // Contents from meta tags are passed unsanitized from the renderer.
+  NotifyPageMetadataChanged(
+      int32 tab_id, blink.mojom.PageMetadata? metadata);
+
+  // Informs the client when the default state for tab context sharing for new
+  // sessions changes.
+  NotifyDefaultTabContextPermissionStateChanged(bool enabled);
+
+  // Requests the web client to show a dialog to the user to select a credential
+  // for actor login. The web client should show the dialog and wait for the
+  // user to interact with it.
+  RequestToShowCredentialSelectionDialog(
+      actor.webui.mojom.SelectCredentialDialogRequest request)
+      => (actor.webui.mojom.SelectCredentialDialogResponse response);
+
+  // Requests the web client to show a dialog to the user to select autofill
+  // suggestions. The web client should show the dialog and wait for the user
+  // to interact with it.
+  //
+  // Selections for multiple forms can be requested by populating multiple
+  // FormFillingRequest objects.
+  RequestToShowAutofillSuggestionsDialog(
+      actor.webui.mojom.SelectAutofillSuggestionsDialogRequest request)
+      => (actor.webui.mojom.SelectAutofillSuggestionsDialogResponse response);
+
+  // Requests the web client to show a dialog for deterministic user
+  // confirmation. This should occur when Chrome detects the actor
+  // engaging in security-sensitive operations that require user permission.
+  RequestToShowUserConfirmationDialog(
+      actor.webui.mojom.UserConfirmationDialogRequest request)
+      => (actor.webui.mojom.UserConfirmationDialogResponse response);
+
+  // Requests the web client confirm navigation to a novel origin
+  // that the model has not yet encountered, but is not sensitive
+  // enough to require structured user confirmation.
+  RequestToConfirmNavigation(
+      actor.webui.mojom.NavigationConfirmationRequest request)
+      => (actor.webui.mojom.NavigationConfirmationResponse response);
+
+  // Informs the client that additional context is available.
+  NotifyAdditionalContext(AdditionalContext context);
+
+  // Notify that the user enabled web actuation setting has changed.
+  NotifyActuationOnWebSettingChanged(bool enabled);
+
+  // Informs the client that the capability to act on web pages has changed.
+  NotifyActOnWebCapabilityChanged(bool can_act_on_web);
+};
+
+// Information extracted from a tab.
+struct TabContext {
+  // Metadata about the tab that holds the page. Always provided.
+  TabData tab_data;
+  // Web page data, if requested.
+  WebPageData? web_page_data;
+  // A screenshot of the user-visible portion of the tab. Provided only if
+  // requested.
+  Screenshot? viewport_screenshot;
+  // Information about a PDF document. Provided if the document is a PDF or
+  // contains a PDF, and PDF data was requested. Note that it is possible for
+  // a document to contain multiple PDFs using iframes. Only the first PDF
+  // document found while traversing the frame tree will be provided here.
+  PdfDocumentData? pdf_document_data;
+  // Information about the annotated page content. Provided if the document is
+  // a web page and annotated page content was requested.
+  AnnotatedPageData? annotated_page_data;
+};
+
+// Information about a web page being rendered in a tab.
+struct WebPageData {
+  // Main document of the page.
+  DocumentData main_document;
+};
+
+// Text information about a web document.
+struct DocumentData {
+  // Origin of the document.
+  url.mojom.Origin origin;
+  // The innerText of the document at its current state.
+  // Currently includes embedded same-origin iframes.
+  string inner_text;
+  // Whether `inner_text` was truncated due to `inner_text_bytes_limit`.
+  bool inner_text_truncated;
+};
+
+// Information about a PDF document.
+struct PdfDocumentData {
+  // Origin of the PDF document. This may not match the origin of the tab.
+  url.mojom.Origin origin;
+  // Raw PDF bytes.
+  array<uint8>? pdf_data;
+  // Whether the the PDF size exceeds the requested limit. If true, pdf data is
+  // not returned.
+  bool size_limit_exceeded;
+};
+
+// Data about a browser tab.
+struct TabData {
+  // Unique ID of the tab that owns the page.
+  int32 tab_id;
+  // Unique ID of the browser window holding the tab.
+  int32 window_id;
+  // URL of the page.
+  url.mojom.Url url;
+  // The title of the loaded page. Returned if the page is loaded enough for it
+  // to be available. It may be empty if the page did not define a title.
+  string? title;
+  // The favicon for the tab. Null when not available. This will be removed
+  // once usages are migrated to `favicon_url`.
+  skia.mojom.BitmapN32? favicon;
+  // Base64 encded data URL for the favicon.
+  url.mojom.Url? favicon_url;
+  // MIME type of the main document in this tab.
+  string document_mime_type;
+  // Whether the tab is observable (i.e., audible or visible).
+  bool? is_observable;
+  // Whether the tab has active audio or video playing, used for showing tab UI.
+  // This is a best effort signal, and may not be accurate/stale due to not
+  // observing media events directly.
+  bool? is_media_active;
+  // Whether the tab content is being captured by another functionality (e.g.,
+  // screen share in video chat).
+  // This is a best effort signal, and may not be accurate/stale due to not
+  // observing tab content capture events directly.
+  bool? is_tab_content_captured;
+  // Whether the tab is the active tab in its browser window. Note that this
+  // does not consider the state of the window.
+  bool? is_active_in_window;
+  // Whether the tab's browser window is active. Note that this does not
+  // consider whether the tab is active in the window.
+  bool? is_window_active;
+};
+
+// Data about the focused tab state.
+union FocusedTabData {
+  // Stores the focused tab data if one exists.
+  TabData focused_tab;
+  // Information about why there is no focused tab.
+  NoFocusedTabData no_focused_tab_data;
+};
+
+// Data about the why there is no focused tab.
+struct NoFocusedTabData {
+  // Data about the active tab that could not be focused, if one exists.
+  TabData? active_tab_data;
+  // A human-readable debug message explaining why there is no focused tab.
+  string no_focus_reason;
+};
+
+// Information about the annotated page content.
+struct AnnotatedPageData {
+  // Proto for AnnotatedPageContent.
+  // See components/optimization_guide/proto/features/common_quality_data.proto
+  // Provided only if requested.
+  mojo_base.mojom.ProtoWrapper? annotated_page_content;
+
+  // Metadata about the page content.
+  blink.mojom.PageMetadata? metadata;
+};
+
+// Annotates an image, providing security relevant information about the origins
+// from which image is composed.
+// TODO(crbug.com/380495633): Finalize and implement image annotations.
+struct ImageOriginAnnotations {};
+
+// An encoded journal. This is an encoded perfetto protobuf.
+// See `chrome/browser/actor/aggregated_journal_serializer.h`
+struct Journal {
+  // Encoded journal data.
+  array<uint8> data;
+};
+
+// The captured region from the user.
+union CapturedRegion {
+  // A rectangular region.
+  gfx.mojom.Rect rect;
+};
+
+// The result of a successful region capture.
+struct CaptureRegionResult {
+  // The ID of the tab from which the region was captured.
+  int32 tab_id;
+  // The captured region. This can be expanded with other region types like
+  // polygons in the future.
+  CapturedRegion region;
+};
+
+// @generate glic_api
+// Reason for `captureRegion` error.
+// LINT.IfChange(CaptureRegionErrorReason)
+[Stable, Extensible]
+enum CaptureRegionErrorReason {
+  [Default] kUnknown = 0,
+  // There is no focused tab that can be used for region capture.
+  kNoFocusableTab = 1,
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:CaptureRegionErrorReason)
+
+// Observer for the capture region process.
+interface CaptureRegionObserver {
+  // Called for each region the user successfully selects, or when an
+  // error occurs. Exactly one of `result` or `reason` will be non-null.
+  OnUpdate(CaptureRegionResult? result, CaptureRegionErrorReason? reason);
+};
+
+// An encoded screenshot image and associated metadata.
+struct Screenshot {
+  // Width and height of the image in pixels.
+  uint32 width_pixels;
+  uint32 height_pixels;
+  // Encoded image data.
+  array<uint8> data;
+  // The image encoding format represented as a MIME type.
+  string mime_type;
+  // Image annotations for this screenshot.
+  ImageOriginAnnotations origin_annotations;
+};
+
+// @generate glic_api
+// Fields of interest from the Glic settings page.
+[Stable, Extensible]
+enum SettingsPageField {
+  [Default] kNone = 0,
+  // The OS hotkey configuration field.
+  kOsHotkey,
+  // The OS entrypoint enabling field.
+  kOsEntrypointToggle,
+};
+
+// Optional parameters for the openGlicSettingsPage function.
+struct OpenSettingsOptions {
+  // Optionally select a field to be highlighted while opening the Glic settings
+  // page.
+  SettingsPageField highlightField;
+};
+
+// @generate glic_api
+// Describes the capability of the glic host.
+enum HostCapability {
+  // Glic host supports scrollTo() with PDF documents.
+  kScrollToPdf = 0,
+  // Glic host will reset panel size and location on open.
+  kResetSizeAndLocationOnOpen = 1,
+  // The glic host's getModelQualityClientId() is enabled and can be called
+  // safely.
+  kGetModelQualityClientId = 2,
+  // Glic is in multi-instance mode.
+  kMultiInstance = 3,
+};
+
+// A request to change the glic web client to a view suitable for tracking the
+// progress of actuation.
+struct ViewChangeRequestActuation {};
+
+// A request to change the glic web client to a view which shows a
+// conversational interface of some type (whether textual, aural or other).
+struct ViewChangeRequestConversation {};
+
+union ViewChangeRequestDetails {
+  ViewChangeRequestActuation actuation;
+  ViewChangeRequestConversation conversation;
+};
+
+// A request to change the glic web client to a view of some type. These all
+// specify what the desired view is (via the union discriminator) but some may
+// carry additional information.
+struct ViewChangeRequest {
+  ViewChangeRequestDetails details;
+};
+
+// A coarse categorization of the view currently shown to the user.
+enum CurrentView {
+  // A conversational interface of some type (whether textual, aural or other).
+  kConversation = 0,
+
+  // A view suitable for tracking the progress of actuation.
+  kActuation = 1,
+};
+
+// A notification that the glic web client has changed the view shown to the
+// user.
+struct ViewChangedNotification {
+  CurrentView current_view;
+};

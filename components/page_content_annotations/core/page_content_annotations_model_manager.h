@@ -8,10 +8,10 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
-#include "components/page_content_annotations/core/page_content_annotator.h"
-#include "components/optimization_guide/core/model_info.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/page_content_annotations/core/page_content_annotation_job.h"
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
+#include "components/page_content_annotations/core/page_content_annotator.h"
 #include "components/page_content_annotations/core/page_visibility_model_handler.h"
 #include "net/base/priority_queue.h"
 

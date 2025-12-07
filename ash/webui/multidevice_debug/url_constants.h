@@ -10,8 +10,6 @@ namespace ash {
 namespace multidevice {
 
 extern const char kChromeUIProximityAuthHost[];
-extern const char kChromeUIProximityAuthURL[];
-extern const char kOsUIProximityAuthURL[];
 
 }  // namespace multidevice
 

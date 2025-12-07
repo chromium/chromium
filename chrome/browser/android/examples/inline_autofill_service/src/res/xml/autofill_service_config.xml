@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright 2025 The Chromium Authors
+  Use of this source code is governed by a BSD-style license that can be
+  found in the LICENSE file.-->
+
+
+<autofill-service xmlns:android="http://schemas.android.com/apk/res/android"
+        android:supportsInlineSuggestions="true"
+        android:settingsActivity="org.chromium.example.android_autofill.SettingsActivity"
+        android:passwordsActivity="org.chromium.example.android_autofill.MainActivity">
+    <compatibility-package android:name="com.android.chrome" android:maxLongVersionCode="711900039" />
+    <compatibility-package android:name="com.chrome.beta" android:maxLongVersionCode="711900039" />
+    <compatibility-package android:name="com.chrome.dev" android:maxLongVersionCode="711900039" />
+    <compatibility-package android:name="com.chrome.canary" android:maxLongVersionCode="711900039" />
+    <compatibility-package android:name="com.google.android.apps.chrome" android:maxLongVersionCode="711900039" />
+</autofill-service>

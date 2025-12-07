@@ -9,11 +9,12 @@
  */
 
 import '../settings_shared.css.js';
+import 'chrome://resources/ash/common/bluetooth/bluetooth_device_battery_info.js';
 import 'chrome://resources/ash/common/bluetooth/bluetooth_icon.js';
 import 'chrome://resources/ash/common/cr_elements/policy/cr_tooltip_icon.js';
 import './os_bluetooth_change_device_name_dialog.js';
+import './os_bluetooth_forget_device_dialog.js';
 import './os_bluetooth_true_wireless_images.js';
-import 'chrome://resources/ash/common/bluetooth/bluetooth_device_battery_info.js';
 
 import {BluetoothUiSurface, recordBluetoothUiSurfaceMetrics} from 'chrome://resources/ash/common/bluetooth/bluetooth_metrics_utils.js';
 import {BatteryType} from 'chrome://resources/ash/common/bluetooth/bluetooth_types.js';
@@ -23,16 +24,18 @@ import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {AudioOutputCapability, BluetoothSystemProperties, DeviceConnectionState, DeviceType, PairedBluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+import type {BluetoothSystemProperties, PairedBluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+import {AudioOutputCapability, DeviceConnectionState, DeviceType} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isInputDeviceSettingsSplitEnabled} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
-import {OsSettingsSubpageElement} from '../os_settings_page/os_settings_subpage.js';
-import {Route, Router, routes} from '../router.js';
+import type {OsSettingsSubpageElement} from '../os_settings_page/os_settings_subpage.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
 import {getTemplate} from './os_bluetooth_device_detail_subpage.html.js';
-import {OsBluetoothDevicesSubpageBrowserProxy, OsBluetoothDevicesSubpageBrowserProxyImpl} from './os_bluetooth_devices_subpage_browser_proxy.js';
+import type {OsBluetoothDevicesSubpageBrowserProxy} from './os_bluetooth_devices_subpage_browser_proxy.js';
+import {OsBluetoothDevicesSubpageBrowserProxyImpl} from './os_bluetooth_devices_subpage_browser_proxy.js';
 
 enum PageState {
   DISCONNECTED = 1,
@@ -130,14 +133,8 @@ export class SettingsBluetoothDeviceDetailSubpageElement extends
     this.addEventListener(
         'forget-bluetooth-device', this.forgetDeviceConfirmed_);
 
-    if (isInputDeviceSettingsSplitEnabled()) {
-      this.addFocusConfig(routes.PER_DEVICE_MOUSE, '#changeMouseSettings');
-      this.addFocusConfig(
-          routes.PER_DEVICE_KEYBOARD, '#changeKeyboardSettings');
-    } else {
-      this.addFocusConfig(routes.POINTERS, '#changeMouseSettings');
-      this.addFocusConfig(routes.KEYBOARD, '#changeKeyboardSettings');
-    }
+    this.addFocusConfig(routes.PER_DEVICE_MOUSE, '#changeMouseSettings');
+    this.addFocusConfig(routes.PER_DEVICE_KEYBOARD, '#changeKeyboardSettings');
   }
 
   override currentRouteChanged(route: Route, oldRoute?: Route): void {
@@ -508,19 +505,11 @@ export class SettingsBluetoothDeviceDetailSubpageElement extends
   }
 
   private onMouseRowClick_(): void {
-    if (isInputDeviceSettingsSplitEnabled()) {
-      Router.getInstance().navigateTo(routes.PER_DEVICE_MOUSE);
-    } else {
-      Router.getInstance().navigateTo(routes.POINTERS);
-    }
+    Router.getInstance().navigateTo(routes.PER_DEVICE_MOUSE);
   }
 
   private onKeyboardRowClick_(): void {
-    if (isInputDeviceSettingsSplitEnabled()) {
-      Router.getInstance().navigateTo(routes.PER_DEVICE_KEYBOARD);
-    } else {
-      Router.getInstance().navigateTo(routes.KEYBOARD);
-    }
+    Router.getInstance().navigateTo(routes.PER_DEVICE_KEYBOARD);
   }
 
   private getForgetA11yLabel_(): string {

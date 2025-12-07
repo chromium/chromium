@@ -5,8 +5,8 @@
 // This file defines utility functions for working with strings.
 
 #ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
 #endif
 
 #ifndef BASE_STRINGS_STRING_UTIL_H_
@@ -19,6 +19,7 @@
 #include <concepts>
 #include <initializer_list>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -42,15 +43,17 @@ namespace base {
 // Wrapper for vsnprintf that always null-terminates and always returns the
 // number of characters that would be in an untruncated formatted
 // string, even when truncation occurs.
-int vsnprintf(char* buffer, size_t size, const char* format, va_list arguments)
-    PRINTF_FORMAT(3, 0);
+// TODO(tsepez): should be UNSAFE_BUFFER_USAGE.
+PRINTF_FORMAT(3, 0)
+int vsnprintf(char* buffer, size_t size, const char* format, va_list arguments);
 
 // Some of these implementations need to be inlined.
 
 // We separate the declaration from the implementation of this inline
 // function just so the PRINTF_FORMAT works.
-inline int snprintf(char* buffer, size_t size, const char* format, ...)
-    PRINTF_FORMAT(3, 4);
+// TODO(tsepez): should be UNSAFE_BUFFER_USAGE.
+PRINTF_FORMAT(3, 4)
+inline int snprintf(char* buffer, size_t size, const char* format, ...);
 inline int snprintf(char* buffer, size_t size, const char* format, ...) {
   va_list arguments;
   va_start(arguments, format);
@@ -60,11 +63,22 @@ inline int snprintf(char* buffer, size_t size, const char* format, ...) {
 }
 
 // BSD-style safe and consistent string copy functions.
+
+// Copies `src` to `dst`, truncating `dst` if it does not fit, and ensuring that
+// `dst` is NUL-terminated if it's not an empty span. Returns the length of
+// `src` in characters. If the return value is `>= dst.size()`, then the output
+// was truncated. NOTE: All sizes are in number of characters, NOT in bytes.
+BASE_EXPORT size_t strlcpy(span<char> dst, std::string_view src);
+BASE_EXPORT size_t u16cstrlcpy(span<char16_t> dst, std::u16string_view src);
+BASE_EXPORT size_t wcslcpy(span<wchar_t> dst, std::wstring_view src);
+
 // Copies |src| to |dst|, where |dst_size| is the total allocated size of |dst|.
 // Copies at most |dst_size|-1 characters, and always NULL terminates |dst|, as
 // long as |dst_size| is not 0.  Returns the length of |src| in characters.
 // If the return value is >= dst_size, then the output was truncated.
 // NOTE: All sizes are in number of characters, NOT in bytes.
+//
+// TODO: crbug.com/40284755 - Make these UNSAFE_BUFFER_USAGE.
 BASE_EXPORT size_t strlcpy(char* dst, const char* src, size_t dst_size);
 BASE_EXPORT size_t u16cstrlcpy(char16_t* dst,
                                const char16_t* src,
@@ -93,31 +107,6 @@ BASE_EXPORT size_t wcslcpy(wchar_t* dst, const wchar_t* src, size_t dst_size);
 //
 // This function is intended to be called from base::vswprintf.
 BASE_EXPORT bool IsWprintfFormatPortable(const wchar_t* format);
-
-// Simplified implementation of C++20's std::basic_string_view(It, End).
-// Reference: https://wg21.link/string.view.cons
-template <typename CharT, typename Iter>
-constexpr std::basic_string_view<CharT> MakeBasicStringPiece(Iter begin,
-                                                             Iter end) {
-  DCHECK_GE(end - begin, 0);
-  return {base::to_address(begin), static_cast<size_t>(end - begin)};
-}
-
-// Explicit instantiations of MakeBasicStringPiece.
-template <typename Iter>
-constexpr std::string_view MakeStringPiece(Iter begin, Iter end) {
-  return MakeBasicStringPiece<char>(begin, end);
-}
-
-template <typename Iter>
-constexpr std::u16string_view MakeStringPiece16(Iter begin, Iter end) {
-  return MakeBasicStringPiece<char16_t>(begin, end);
-}
-
-template <typename Iter>
-constexpr std::wstring_view MakeWStringView(Iter begin, Iter end) {
-  return MakeBasicStringPiece<wchar_t>(begin, end);
-}
 
 // ASCII-specific tolower.  The standard library's tolower is locale sensitive,
 // so we don't want to use it here.
@@ -156,7 +145,9 @@ BASE_EXPORT std::u16string ToUpperASCII(std::u16string_view str);
 // context (combining accents), and require handling UTF-16. If you need
 // proper Unicode support, use base::i18n::ToLower/FoldCase and then just
 // use a normal operator== on the result.
-template<typename Char> struct CaseInsensitiveCompareASCII {
+template <typename Char>
+  requires(std::integral<Char>)
+struct CaseInsensitiveCompareASCII {
  public:
   bool operator()(Char x, Char y) const {
     return ToLowerASCII(x) == ToLowerASCII(y);
@@ -223,15 +214,16 @@ BASE_EXPORT const std::u16string& EmptyString16();
 // Contains the set of characters representing whitespace in the corresponding
 // encoding. Null-terminated. The ASCII versions are the whitespaces as defined
 // by HTML5, and don't include control characters.
-BASE_EXPORT extern const wchar_t kWhitespaceWide[];  // Includes Unicode.
+BASE_EXPORT extern const wchar_t kWhitespaceWide[];    // Includes Unicode.
 BASE_EXPORT extern const char16_t kWhitespaceUTF16[];  // Includes Unicode.
 BASE_EXPORT extern const char16_t
     kWhitespaceNoCrLfUTF16[];  // Unicode w/o CR/LF.
 BASE_EXPORT extern const char kWhitespaceASCII[];
 BASE_EXPORT extern const char16_t kWhitespaceASCIIAs16[];  // No unicode.
-                                                           //
+
 // https://infra.spec.whatwg.org/#ascii-whitespace
-BASE_EXPORT extern const char kInfraAsciiWhitespace[];
+// Note that this array is not null-terminated.
+inline constexpr char kInfraAsciiWhitespace[] = {0x09, 0x0A, 0x0C, 0x0D, 0x20};
 
 // Null-terminated string representing the UTF-8 byte order mark.
 BASE_EXPORT extern const char kUtf8ByteOrderMark[];
@@ -261,10 +253,10 @@ BASE_EXPORT bool ReplaceChars(std::string_view input,
                               std::string* output);
 
 enum TrimPositions {
-  TRIM_NONE     = 0,
-  TRIM_LEADING  = 1 << 0,
+  TRIM_NONE = 0,
+  TRIM_LEADING = 1 << 0,
   TRIM_TRAILING = 1 << 1,
-  TRIM_ALL      = TRIM_LEADING | TRIM_TRAILING,
+  TRIM_ALL = TRIM_LEADING | TRIM_TRAILING,
 };
 
 // Removes characters in |trim_chars| from the beginning and end of |input|.
@@ -291,9 +283,11 @@ BASE_EXPORT std::string_view TrimString(std::string_view input,
 
 // Truncates a string to the nearest UTF-8 character that will leave
 // the string less than or equal to the specified byte size.
-BASE_EXPORT void TruncateUTF8ToByteSize(const std::string& input,
+BASE_EXPORT void TruncateUTF8ToByteSize(std::string_view input,
                                         const size_t byte_size,
                                         std::string* output);
+BASE_EXPORT std::string_view TruncateUTF8ToByteSize(std::string_view input,
+                                                    size_t byte_size);
 
 // Trims any whitespace from either end of the input string.
 //
@@ -394,44 +388,79 @@ BASE_EXPORT bool EndsWith(
     std::u16string_view search_for,
     CompareCase case_sensitivity = CompareCase::SENSITIVE);
 
+// If `string` begins with `prefix`, return a view into the portion
+// of `string` following `prefix`. Otherwise, return nullopt. The
+// `case_sensitivity` argument is the same as would be passed to
+// StartsWith() above.
+BASE_EXPORT std::optional<std::string_view> RemovePrefix(
+    std::string_view string,
+    std::string_view prefix,
+    CompareCase case_sensitivity = CompareCase::SENSITIVE);
+BASE_EXPORT std::optional<std::u16string_view> RemovePrefix(
+    std::u16string_view string,
+    std::u16string_view prefix,
+    CompareCase case_sensitivity = CompareCase::SENSITIVE);
+
+// If `string` ends with `suffix`, return a view into the portion
+// of `string` preceding `suffix`. Otherwise, return nullopt. The
+// `case_sensitivity` argument is the same as would be passed to
+// EndsWith() above.
+BASE_EXPORT std::optional<std::string_view> RemoveSuffix(
+    std::string_view string,
+    std::string_view suffix,
+    CompareCase case_sensitivity = CompareCase::SENSITIVE);
+BASE_EXPORT std::optional<std::u16string_view> RemoveSuffix(
+    std::u16string_view string,
+    std::u16string_view suffix,
+    CompareCase case_sensitivity = CompareCase::SENSITIVE);
+
 // Determines the type of ASCII character, independent of locale (the C
 // library versions will change based on locale).
 template <typename Char>
-inline bool IsAsciiWhitespace(Char c) {
-  // kWhitespaceASCII is a null-terminated string.
-  for (const char* cur = kWhitespaceASCII; *cur; ++cur) {
-    if (*cur == c)
+  requires(std::integral<Char>)
+constexpr bool IsAsciiWhitespace(Char c) {
+  // SAFETY: kWhitespaceASCII is a NUL-terminated string.
+  for (const char* cur = kWhitespaceASCII; *cur; UNSAFE_BUFFERS(++cur)) {
+    if (*cur == c) {
       return true;
+    }
   }
   return false;
 }
 template <typename Char>
-inline bool IsAsciiAlpha(Char c) {
+  requires(std::integral<Char>)
+constexpr bool IsAsciiAlpha(Char c) {
   return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
 }
 template <typename Char>
-inline bool IsAsciiUpper(Char c) {
+  requires(std::integral<Char>)
+constexpr bool IsAsciiUpper(Char c) {
   return c >= 'A' && c <= 'Z';
 }
 template <typename Char>
-inline bool IsAsciiLower(Char c) {
+  requires(std::integral<Char>)
+constexpr bool IsAsciiLower(Char c) {
   return c >= 'a' && c <= 'z';
 }
 template <typename Char>
-inline bool IsAsciiDigit(Char c) {
+  requires(std::integral<Char>)
+constexpr bool IsAsciiDigit(Char c) {
   return c >= '0' && c <= '9';
 }
 template <typename Char>
-inline bool IsAsciiAlphaNumeric(Char c) {
+  requires(std::integral<Char>)
+constexpr bool IsAsciiAlphaNumeric(Char c) {
   return IsAsciiAlpha(c) || IsAsciiDigit(c);
 }
 template <typename Char>
-inline bool IsAsciiPrintable(Char c) {
+  requires(std::integral<Char>)
+constexpr bool IsAsciiPrintable(Char c) {
   return c >= ' ' && c <= '~';
 }
 
 template <typename Char>
-inline bool IsAsciiControl(Char c) {
+  requires(std::integral<Char>)
+constexpr bool IsAsciiControl(Char c) {
   if constexpr (std::is_signed_v<Char>) {
     if (c < 0) {
       return false;
@@ -441,21 +470,23 @@ inline bool IsAsciiControl(Char c) {
 }
 
 template <typename Char>
-inline bool IsUnicodeControl(Char c) {
+  requires(std::integral<Char>)
+constexpr bool IsUnicodeControl(Char c) {
   return IsAsciiControl(c) ||
          // C1 control characters: http://unicode.org/charts/PDF/U0080.pdf
          (c >= 0x80 && c <= 0x9F);
 }
 
 template <typename Char>
-inline bool IsAsciiPunctuation(Char c) {
+  requires(std::integral<Char>)
+constexpr bool IsAsciiPunctuation(Char c) {
   return c > 0x20 && c < 0x7f && !IsAsciiAlphaNumeric(c);
 }
 
 template <typename Char>
-inline bool IsHexDigit(Char c) {
-  return (c >= '0' && c <= '9') ||
-         (c >= 'A' && c <= 'F') ||
+  requires(std::integral<Char>)
+constexpr bool IsHexDigit(Char c) {
+  return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') ||
          (c >= 'a' && c <= 'f');
 }
 
@@ -477,33 +508,28 @@ inline char HexDigitToInt(char16_t c) {
 // values known to hold the full code point before calling this.
 template <typename Char>
   requires(sizeof(Char) > 1)
-inline bool IsUnicodeWhitespace(Char c) {
-  // kWhitespaceWide is a null-terminated string.
-  for (const auto* cur = kWhitespaceWide; *cur; ++cur) {
+constexpr bool IsUnicodeWhitespace(Char c) {
+  // SAFETY: kWhitespaceWide is a NUL-terminated string.
+  for (const auto* cur = kWhitespaceWide; *cur; UNSAFE_BUFFERS(++cur)) {
     if (static_cast<typename std::make_unsigned_t<wchar_t>>(*cur) ==
-        static_cast<typename std::make_unsigned_t<Char>>(c))
+        static_cast<typename std::make_unsigned_t<Char>>(c)) {
       return true;
+    }
   }
   return false;
 }
 
-// DANGEROUS: Assumes ASCII or not base on the size of `Char`.  You should
+// DANGEROUS: Assumes ASCII or not based on the size of `Char`.  You should
 // probably be explicitly calling IsUnicodeWhitespace() or IsAsciiWhitespace()
 // instead!
 template <typename Char>
-inline bool IsWhitespace(Char c) {
+constexpr bool IsWhitespace(Char c) {
   if constexpr (sizeof(Char) > 1) {
     return IsUnicodeWhitespace(c);
   } else {
     return IsAsciiWhitespace(c);
   }
 }
-
-// Return a byte string in human-readable format with a unit suffix. Not
-// appropriate for use in any UI; use of FormatBytes and friends in ui/base is
-// highly recommended instead. TODO(avi): Figure out how to get callers to use
-// FormatBytes instead; remove this.
-BASE_EXPORT std::u16string FormatBytesUnlocalized(int64_t bytes);
 
 // Starting at |start_offset| (usually 0), replace the first instance of
 // |find_this| with |replace_with|.
@@ -587,31 +613,29 @@ BASE_EXPORT std::u16string JoinString(
 // Additionally, any number of consecutive '$' characters is replaced by that
 // number less one. Eg $$->$, $$$->$$, etc. The offsets parameter here can be
 // NULL. This only allows you to use up to nine replacements.
+//
+// Calling ReplaceStringPlaceholders(u"$1", {ReturnU16string()}, nullptr) will
+// unexpectedly give you the single-u16string overload below, the same as if you
+// had written ReplaceStringPlaceholders(u"$1", ReturnU16String(), nullptr).
+// This is surprising but mostly harmless. Call the base::span constructor
+// explicitly if you need to force this overload, ie.
+// ReplaceStringPlaceholders(
+//     u"$1", base::span<const std::u16string>({ReturnU16string()}), nullptr).
 BASE_EXPORT std::u16string ReplaceStringPlaceholders(
     std::u16string_view format_string,
-    const std::vector<std::u16string>& subst,
+    base::span<const std::u16string> subst,
     std::vector<size_t>* offsets);
 
 BASE_EXPORT std::string ReplaceStringPlaceholders(
     std::string_view format_string,
-    const std::vector<std::string>& subst,
+    base::span<const std::string> subst,
     std::vector<size_t>* offsets);
 
 // Single-string shortcut for ReplaceStringHolders. |offset| may be NULL.
 BASE_EXPORT std::u16string ReplaceStringPlaceholders(
-    const std::u16string& format_string,
-    const std::u16string& a,
+    std::u16string_view format_string,
+    std::u16string_view subst,
     size_t* offset);
-
-// Helper function for creating a std::string_view from a string literal that
-// preserves internal NUL characters.
-template <class CharT, size_t N>
-std::basic_string_view<CharT> MakeStringViewWithNulChars(
-    const CharT (&lit LIFETIME_BOUND)[N])
-    ENABLE_IF_ATTR(lit[N - 1u] == CharT{0},
-                   "requires string literal as input") {
-  return std::basic_string_view<CharT>(lit, N - 1u);
-}
 
 }  // namespace base
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/file_suggest/drive_recent_file_suggestion_provider.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
@@ -14,11 +15,11 @@
 #include "base/functional/callback.h"
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/files/justifications.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_util.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "chromeos/ash/components/drivefs/drivefs_util.h"
@@ -325,11 +326,9 @@ void DriveRecentFileSuggestionProvider::PerformSearch(
     base::RepeatingClosure callback) {
   drive_service->GetDriveFsHost()->PerformSearch(
       std::move(query),
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          base::BindOnce(
-              &DriveRecentFileSuggestionProvider::OnSearchRequestComplete,
-              weak_factory_.GetWeakPtr(), search_type, std::move(callback)),
-          drive::FileError::FILE_ERROR_ABORT, /*items=*/std::nullopt));
+      base::BindOnce(
+          &DriveRecentFileSuggestionProvider::OnSearchRequestComplete,
+          weak_factory_.GetWeakPtr(), search_type, std::move(callback)));
 }
 
 void DriveRecentFileSuggestionProvider::MaybeUpdateItemSuggestCache(
@@ -348,15 +347,12 @@ void DriveRecentFileSuggestionProvider::OnSearchRequestComplete(
           "."),
       std::abs(error));
 
-  if (error != drive::FileError::FILE_ERROR_OK &&
-      error != drive::FileError::FILE_ERROR_INVALID_OPERATION &&
-      error != drive::FileError::FILE_ERROR_OK_WITH_MORE_RESULTS) {
+  if (!drive::IsFileErrorOk(error) &&
+      error != drive::FileError::FILE_ERROR_INVALID_OPERATION) {
     can_use_cache_ = false;
   }
 
-  if ((error == drive::FileError::FILE_ERROR_OK ||
-       error == drive::FileError::FILE_ERROR_OK_WITH_MORE_RESULTS) &&
-      items) {
+  if (drive::IsFileErrorOk(error) && items) {
     base::UmaHistogramTimes(
         base::JoinString({kBaseHistogramName, "DurationOnSuccess",
                           GetHistogramSuffix(search_type)},
@@ -415,7 +411,7 @@ DriveRecentFileSuggestionProvider::GetSuggestionsFromLatestQueryResults() {
     }
   }
 
-  base::ranges::sort(results, [](const auto& lhs, const auto& rhs) {
+  std::ranges::sort(results, [](const auto& lhs, const auto& rhs) {
     if ((lhs.modified_time || rhs.modified_time) &&
         lhs.modified_time != rhs.modified_time) {
       return lhs.modified_time.value_or(base::Time()) >

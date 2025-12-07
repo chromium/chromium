@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.util.Batch.UNIT_TESTS;
 
+import android.app.Activity;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -25,17 +26,24 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
+import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageView;
 
@@ -44,7 +52,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /** Tests for {@link LargeMessageCardViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(UNIT_TESTS)
-public class LargeMessageCardViewBinderTest extends BlankUiTestActivityTestCase {
+public class LargeMessageCardViewBinderTest {
     private static final String TITLE_TEXT = "titleText";
     private static final String ACTION_TEXT = "actionText";
     private static final String DESCRIPTION_TEXT = "descriptionText";
@@ -53,20 +61,26 @@ public class LargeMessageCardViewBinderTest extends BlankUiTestActivityTestCase 
     private static final String PRICE = "$300";
     private static final String PREVIOUS_PRICE = "$400";
 
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
+
     private final AtomicBoolean mReviewButtonClicked = new AtomicBoolean();
     private final AtomicBoolean mSecondaryActionButtonClicked = new AtomicBoolean();
     private final AtomicBoolean mDismissButtonClicked = new AtomicBoolean();
     private final AtomicBoolean mMessageServiceReviewCallbackRan = new AtomicBoolean();
     private final AtomicBoolean mMessageServiceDismissCallbackRan = new AtomicBoolean();
 
-    private final MessageCardView.ReviewActionProvider mUiReviewHandler =
+    private final MessageCardView.ActionProvider mUiReviewHandler =
             () -> mReviewButtonClicked.set(true);
-    private final MessageCardView.DismissActionProvider mUiDismissHandler =
-            (int messageType) -> mDismissButtonClicked.set(true);
-    private final MessageCardView.ReviewActionProvider mMessageServiceActionHandler =
+    private final MessageCardView.ActionProvider mUiDismissHandler =
+            () -> mDismissButtonClicked.set(true);
+    private final MessageCardView.ActionProvider mMessageServiceActionHandler =
             () -> mMessageServiceReviewCallbackRan.set(true);
-    private final MessageCardView.DismissActionProvider mMessageServiceDismissHandler =
-            (int messageType) -> mMessageServiceDismissCallbackRan.set(true);
+    private final ServiceDismissActionProvider<@MessageType Integer> mMessageServiceDismissHandler =
+            messageType -> mMessageServiceDismissCallbackRan.set(true);
     private final OnClickListener mSecondaryActionButtonClickListener =
             view -> mSecondaryActionButtonClicked.set(true);
 
@@ -81,19 +95,22 @@ public class LargeMessageCardViewBinderTest extends BlankUiTestActivityTestCase 
     private PropertyModel mItemViewModel;
     private PropertyModelChangeProcessor mItemMCP;
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
 
-        ViewGroup view = new FrameLayout(getActivity());
+    @Before
+    public void setUp() throws Exception {
+        ViewGroup view = new FrameLayout(sActivity);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    getActivity().setContentView(view);
+                    sActivity.setContentView(view);
 
                     mItemView =
                             (LargeMessageCardView)
-                                    getActivity()
+                                    sActivity
                                             .getLayoutInflater()
                                             .inflate(R.layout.large_message_card_item, null);
                     view.addView(mItemView);
@@ -150,8 +167,7 @@ public class LargeMessageCardViewBinderTest extends BlankUiTestActivityTestCase 
     public void testSetIconDrawable() {
         assertNull(mIcon.getDrawable());
 
-        Drawable iconDrawable =
-                AppCompatResources.getDrawable(getActivity(), R.drawable.ic_globe_24dp);
+        Drawable iconDrawable = AppCompatResources.getDrawable(sActivity, R.drawable.ic_globe_24dp);
         mItemViewModel.set(
                 MessageCardViewProperties.ICON_PROVIDER,
                 (callback) -> {
@@ -281,7 +297,7 @@ public class LargeMessageCardViewBinderTest extends BlankUiTestActivityTestCase 
 
         int landscapeSidePadding =
                 (int)
-                        getActivity()
+                        sActivity
                                 .getResources()
                                 .getDimension(
                                         R.dimen.tab_grid_large_message_side_padding_landscape);
@@ -293,9 +309,8 @@ public class LargeMessageCardViewBinderTest extends BlankUiTestActivityTestCase 
         assertEquals(0, mItemView.getPaddingBottom());
     }
 
-    @Override
-    public void tearDownTest() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(mItemMCP::destroy);
-        super.tearDownTest();
     }
 }

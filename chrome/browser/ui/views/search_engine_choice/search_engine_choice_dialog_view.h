@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_DIALOG_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"

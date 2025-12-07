@@ -10,7 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
-#include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/common/autofill_clock.h"
 
 namespace autofill::autofill_metrics {
@@ -31,7 +31,8 @@ void LogStoredIbanMetrics(
     const std::string histogram_suffix =
         ibans[0]->record_type() == Iban::kLocalIban ? "Local" : "Server";
     for (const std::unique_ptr<Iban>& iban : ibans) {
-      const base::TimeDelta time_since_last_use = now - iban->use_date();
+      const base::TimeDelta time_since_last_use =
+          now - iban->usage_history().use_date();
       if (time_since_last_use > disused_data_threshold) {
         num_disused_ibans++;
       }
@@ -71,7 +72,7 @@ void LogDaysSinceLastIbanUse(const Iban& iban) {
                     (iban.record_type() == Iban::RecordType::kServerIban)
                         ? "Server"
                         : "Local"}),
-      (AutofillClock::Now() - iban.use_date()).InDays());
+      (AutofillClock::Now() - iban.usage_history().use_date()).InDays());
 }
 
 void LogStrikesPresentWhenIbanSaved(const int num_strikes,
@@ -108,7 +109,7 @@ void LogUploadIbanMetric(UploadIbanOriginMetric origin_metric,
   base::UmaHistogramEnumeration(histogram_name, origin_metric);
 }
 
-void LogSaveIbanBubbleOfferMetric(SaveIbanPromptOffer metric,
+void LogSaveIbanPromptOfferMetric(SaveIbanPromptOffer metric,
                                   bool is_reshow,
                                   bool is_upload_save) {
   std::string base_histogram_name = base::StrCat(
@@ -117,16 +118,16 @@ void LogSaveIbanBubbleOfferMetric(SaveIbanPromptOffer metric,
   base::UmaHistogramEnumeration(base_histogram_name, metric);
 }
 
-void LogSaveIbanBubbleResultMetric(SaveIbanBubbleResult metric,
+void LogSaveIbanPromptResultMetric(SaveIbanPromptResult metric,
                                    bool is_reshow,
                                    bool is_upload_save) {
   std::string base_histogram_name = base::StrCat(
-      {"Autofill.SaveIbanPromptResult.", is_upload_save ? "Upload" : "Local",
+      {"Autofill.SaveIbanPromptResult2.", is_upload_save ? "Upload" : "Local",
        is_reshow ? ".Reshows" : ".FirstShow"});
   base::UmaHistogramEnumeration(base_histogram_name, metric);
 }
 
-void LogSaveIbanBubbleResultSavedWithNicknameMetric(bool save_with_nickname,
+void LogSaveIbanPromptResultSavedWithNicknameMetric(bool save_with_nickname,
                                                     bool is_upload_save) {
   base::UmaHistogramBoolean(
       base::StrCat({"Autofill.SaveIbanPromptResult.",

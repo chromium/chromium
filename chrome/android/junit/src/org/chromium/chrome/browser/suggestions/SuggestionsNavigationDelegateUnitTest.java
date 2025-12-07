@@ -8,9 +8,9 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
@@ -29,17 +29,22 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.TabGroupCreationDialogManager;
+import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /** Unit tests for {@link SuggestionsNavigationDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -53,8 +58,8 @@ public class SuggestionsNavigationDelegateUnitTest {
     @Mock private Profile mProfile;
     @Mock private NativePageHost mHost;
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabGroupCreationDialogManager mTabGroupCreationDialogManager;
     @Mock private Tab mTab;
+    @Mock private MultiInstanceManager mMultiInstanceManager;
 
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
@@ -64,14 +69,9 @@ public class SuggestionsNavigationDelegateUnitTest {
     public void setUp() {
         mSuggestionsNavigationDelegate =
                 new SuggestionsNavigationDelegate(
-                        mActivity,
-                        mProfile,
-                        mHost,
-                        mTabModelSelector,
-                        mTabGroupCreationDialogManager,
-                        mTab);
+                        mActivity, mProfile, mHost, mTabModelSelector, mTab, mMultiInstanceManager);
 
-        when(mTabModelSelector.isIncognitoSelected()).thenReturn(IS_INCOGNITO_SELECTED);
+        lenient().when(mTabModelSelector.isIncognitoSelected()).thenReturn(IS_INCOGNITO_SELECTED);
     }
 
     @Test
@@ -125,43 +125,55 @@ public class SuggestionsNavigationDelegateUnitTest {
     @Test
     @SmallTest
     public void testMaybeSelectTabWithUrl_NoMatch() {
-        int index = 0;
-        prepareTabModelWithSingleTabAtIndex(JUnitTestGURLs.URL_1, index);
+        TabModel tabModel =
+                createTabModelFromList(Arrays.asList(JUnitTestGURLs.URL_1, JUnitTestGURLs.URL_2));
+        doReturn(tabModel).when(mTabModelSelector).getModel(/* incognito= */ false);
 
         // Mismatched URL.
         Assert.assertFalse(
-                mSuggestionsNavigationDelegate.maybeSelectTabWithUrl(
-                        JUnitTestGURLs.RED_1.getSpec()));
+                mSuggestionsNavigationDelegate.maybeSelectTabWithUrl(JUnitTestGURLs.RED_1));
 
-        // Currently applying strict match.
+        // By default, require identical match.
         Assert.assertFalse(
                 mSuggestionsNavigationDelegate.maybeSelectTabWithUrl(
-                        JUnitTestGURLs.URL_1.getSpec() + "?q=1"));
+                        new GURL(JUnitTestGURLs.URL_1.getSpec() + "/path")));
         Assert.assertFalse(
                 mSuggestionsNavigationDelegate.maybeSelectTabWithUrl(
-                        JUnitTestGURLs.URL_1.getSpec() + "#hash"));
+                        new GURL(JUnitTestGURLs.URL_1.getSpec() + "?query=1")));
+        Assert.assertFalse(
+                mSuggestionsNavigationDelegate.maybeSelectTabWithUrl(
+                        new GURL(JUnitTestGURLs.URL_1.getSpec() + "#ref")));
     }
 
     @Test
     @SmallTest
     public void testMaybeSelectTabWithUrl_Match() {
-        int index = 0;
-        TabModel tabModel = prepareTabModelWithSingleTabAtIndex(JUnitTestGURLs.URL_1, index);
+        TabModel tabModel =
+                createTabModelFromList(Arrays.asList(JUnitTestGURLs.URL_1, JUnitTestGURLs.URL_2));
+        doReturn(tabModel).when(mTabModelSelector).getModel(/* incognito= */ false);
 
         Assert.assertTrue(
-                mSuggestionsNavigationDelegate.maybeSelectTabWithUrl(
-                        JUnitTestGURLs.URL_1.getSpec()));
-        verify(tabModel).setIndex(eq(index), anyInt());
-        verify(tabModel).closeTabs(argThat(params -> params.tabs.get(0) == mTab));
+                mSuggestionsNavigationDelegate.maybeSelectTabWithUrl(JUnitTestGURLs.URL_2));
+        verify(tabModel).setIndex(eq(1), anyInt());
+        verify(tabModel.getTabRemover())
+                .closeTabs(
+                        argThat(params -> params.tabs.get(0) == mTab),
+                        /* allowDialog= */ eq(false));
     }
 
-    private TabModel prepareTabModelWithSingleTabAtIndex(GURL url, int index) {
-        Tab tab = mock(Tab.class);
-        doReturn(url).when(tab).getUrl();
+    private TabModel createTabModelFromList(List<GURL> urlList) {
         TabModel tabModel = mock(TabModel.class);
-        doReturn(1).when(tabModel).getCount();
-        doReturn(tab).when(tabModel).getTabAt(index);
-        doReturn(tabModel).when(mTabModelSelector).getModel(/* incognito= */ false);
+        List<Tab> tabs = new ArrayList<>();
+        for (int i = 0; i < urlList.size(); ++i) {
+            Tab tab = mock(Tab.class);
+            lenient().doReturn(urlList.get(i)).when(tab).getUrl();
+            lenient().doReturn(tab).when(tabModel).getTabAt(i);
+            tabs.add(tab);
+        }
+        lenient().doAnswer(invocation -> tabs.iterator()).when(tabModel).iterator();
+        lenient().doReturn(urlList.size()).when(tabModel).getCount();
+        TabRemover tabRemover = mock(TabRemover.class);
+        lenient().doReturn(tabRemover).when(tabModel).getTabRemover();
         return tabModel;
     }
 }

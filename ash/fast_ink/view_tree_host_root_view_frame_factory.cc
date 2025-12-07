@@ -17,6 +17,7 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_tree_host.h"
@@ -44,12 +45,6 @@ constexpr uint32_t kUiSourceId = 1u;
 }  // namespace
 
 // -----------------------------------------------------------------------------
-// ViewTreeHostUiResource:
-
-ViewTreeHostUiResource::ViewTreeHostUiResource() = default;
-ViewTreeHostUiResource::~ViewTreeHostUiResource() = default;
-
-// -----------------------------------------------------------------------------
 // ViewTreeHostRootViewFrameFactory:
 
 ViewTreeHostRootViewFrameFactory::ViewTreeHostRootViewFrameFactory(
@@ -57,8 +52,7 @@ ViewTreeHostRootViewFrameFactory::ViewTreeHostRootViewFrameFactory(
     : widget_(widget) {}
 
 // static
-std::unique_ptr<ViewTreeHostUiResource>
-ViewTreeHostRootViewFrameFactory::CreateUiResource(
+std::unique_ptr<UiResource> ViewTreeHostRootViewFrameFactory::CreateUiResource(
     const gfx::Size& size,
     viz::SharedImageFormat format,
     UiSourceId ui_source_id,
@@ -66,20 +60,21 @@ ViewTreeHostRootViewFrameFactory::CreateUiResource(
   DCHECK(!size.IsEmpty());
   DCHECK(ui_source_id > 0);
 
-  auto resource = std::make_unique<ViewTreeHostUiResource>();
-  resource->context_provider = aura::Env::GetInstance()
-                                   ->context_factory()
-                                   ->SharedMainThreadRasterContextProvider();
-  if (!resource->context_provider) {
+  auto context_provider = aura::Env::GetInstance()
+                              ->context_factory()
+                              ->SharedMainThreadRasterContextProvider();
+  if (!context_provider) {
     LOG(ERROR) << "Failed to acquire a context provider";
     return nullptr;
   }
 
-  gpu::SharedImageInterface* sii =
-      resource->context_provider->SharedImageInterface();
+  scoped_refptr<gpu::SharedImageInterface> sii =
+      context_provider->SharedImageInterface();
 
   gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-  if (is_overlay_candidate) {
+
+  if (is_overlay_candidate &&
+      sii->GetCapabilities().supports_scanout_shared_images) {
     usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
 
@@ -90,14 +85,15 @@ ViewTreeHostRootViewFrameFactory::CreateUiResource(
     LOG(ERROR) << "Failed to create MappableSharedImage";
     return nullptr;
   }
-  resource->SetClientSharedImage(std::move(client_shared_image));
 
-  resource->sync_token = sii->GenVerifiedSyncToken();
+  auto resource = std::make_unique<UiResource>(std::move(sii),
+                                               std::move(client_shared_image));
+
+  resource->sync_token =
+      resource->shared_image_interface->GenVerifiedSyncToken();
   resource->damaged = true;
   resource->is_overlay_candidate = is_overlay_candidate;
-  resource->format = format;
   resource->ui_source_id = ui_source_id;
-  resource->resource_size = size;
 
   return resource;
 }
@@ -121,7 +117,7 @@ ViewTreeHostRootViewFrameFactory::CreateCompositorFrame(
       gfx::ScaleToCeiledSize(content_rect.size(), device_scale_factor);
 
   display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+      display::Screen::Get()->GetDisplayNearestWindow(window);
 
   if (display.panel_rotation() == display::Display::ROTATE_90 ||
       display.panel_rotation() == display::Display::ROTATE_270) {
@@ -158,19 +154,15 @@ ViewTreeHostRootViewFrameFactory::CreateCompositorFrame(
   Paint(total_damage_rect, rotation_transform, resource.get());
 
   if (resource->damaged) {
-    DCHECK(resource->context_provider);
-    gpu::SharedImageInterface* sii =
-        resource->context_provider->SharedImageInterface();
-
-    sii->UpdateSharedImage(resource->sync_token, resource->mailbox());
-    resource->sync_token = sii->GenVerifiedSyncToken();
+    resource->shared_image_interface->UpdateSharedImage(
+        resource->sync_token, resource->client_shared_image()->mailbox());
+    resource->sync_token =
+        resource->shared_image_interface->GenVerifiedSyncToken();
     resource->damaged = false;
   }
 
-  viz::ResourceId frame_resource_id =
-      resource_manager.OfferResource(std::move(resource));
   viz::TransferableResource transferable_resource =
-      resource_manager.PrepareResourceForExport(frame_resource_id);
+      resource_manager.OfferAndPrepareResourceForExport(std::move(resource));
 
   auto frame = std::make_unique<viz::CompositorFrame>();
   frame->metadata.begin_frame_ack = begin_frame_ack;
@@ -215,7 +207,7 @@ ViewTreeHostRootViewFrameFactory::CreateCompositorFrame(
 void ViewTreeHostRootViewFrameFactory::Paint(
     const gfx::Rect& invalidation_rect,
     const gfx::Transform& rotate_transform,
-    ViewTreeHostUiResource* resource) {
+    UiResource* resource) {
   auto display_item_list = base::MakeRefCounted<cc::DisplayItemList>();
   float dsf = widget_->GetCompositor()->device_scale_factor();
 
@@ -235,10 +227,8 @@ void ViewTreeHostRootViewFrameFactory::Paint(
 
   SkImageInfo info = SkImageInfo::MakeN32Premul(mapping->Size().width(),
                                                 mapping->Size().height());
-  uint8_t* data = static_cast<uint8_t*>(mapping->Memory(0));
-  int stride = mapping->Stride(0);
-
-  auto canvas = SkCanvas::MakeRasterDirect(info, data, stride);
+  std::unique_ptr<SkCanvas> canvas = SkCanvas::MakeRasterDirect(
+      info, mapping->GetMemoryForPlane(0).data(), mapping->Stride(0));
   canvas->setMatrix(gfx::TransformToFlattenedSkMatrix(rotate_transform));
 
   display_item_list->Raster(canvas.get());
@@ -274,32 +264,21 @@ void ViewTreeHostRootViewFrameFactory::AppendQuad(
   uv_crop.Scale(1.f / buffer_size.width(), 1.f / buffer_size.height());
 
   texture_quad->SetNew(quad_state, quad_rect, quad_rect,
-                       /*needs_blending=*/true, resource.id,
-                       /*premultiplied=*/true, uv_crop.origin(),
+                       /*needs_blending=*/true, resource.id, uv_crop.origin(),
                        uv_crop.bottom_right(), SkColors::kTransparent,
-                       /*flipped=*/false,
                        /*nearest=*/false,
                        /*secure_output=*/false,
                        gfx::ProtectedVideoType::kClear);
-
-  texture_quad->set_resource_size_in_pixels(resource.size);
 }
 
-std::unique_ptr<ViewTreeHostUiResource>
-ViewTreeHostRootViewFrameFactory::AcquireUiResource(
+std::unique_ptr<UiResource> ViewTreeHostRootViewFrameFactory::AcquireUiResource(
     const gfx::Size& size,
     bool is_overlay_candidate,
     UiResourceManager& resource_manager) const {
-  viz::ResourceId reusable_resource_id = resource_manager.FindResourceToReuse(
+  std::unique_ptr<UiResource> resource = resource_manager.GetResourceToReuse(
       size, kSharedImageFormat, kUiSourceId);
 
-  std::unique_ptr<ViewTreeHostUiResource> resource;
-
-  if (reusable_resource_id != viz::kInvalidResourceId) {
-    resource = base::WrapUnique(static_cast<ViewTreeHostUiResource*>(
-        resource_manager.ReleaseAvailableResource(reusable_resource_id)
-            .release()));
-  } else {
+  if (!resource) {
     resource = CreateUiResource(size, kSharedImageFormat, kUiSourceId,
                                 is_overlay_candidate);
   }

@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
@@ -31,9 +32,10 @@ class CookieStoreGetOptions;
 class ExceptionState;
 class ScriptState;
 
-class CookieStore final : public EventTarget,
-                          public ExecutionContextClient,
-                          public network::mojom::blink::CookieChangeListener {
+class MODULES_EXPORT CookieStore final
+    : public EventTarget,
+      public ExecutionContextClient,
+      public network::mojom::blink::CookieChangeListener {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

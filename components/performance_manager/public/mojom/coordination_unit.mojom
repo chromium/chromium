@@ -5,6 +5,7 @@
 module performance_manager.mojom;
 
 import "mojo/public/mojom/base/process_id.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "components/performance_manager/public/mojom/lifecycle.mojom";
 import "components/performance_manager/public/mojom/v8_contexts.mojom";
@@ -38,17 +39,21 @@ interface DocumentCoordinationUnit {
   // will only trigger `SetHadUserEdits()`.
   SetHadUserEdits();
 
+  // Called when the document starts using WebRTC.
+  OnStartedUsingWebRTC();
+
+  // Called when the document stops using WebRTC.
+  OnStoppedUsingWebRTC();
+
   // Called whenever the frame associated with this document is tagged or
   // untagged as an ad, providing the new status.
   SetIsAdFrame(bool is_ad_frame);
-
-  // Event signals.
 
   // Called when the associated frame has caused a non-persistent notification
   // to be created.
   OnNonPersistentNotificationCreated();
 
-  // Invoked when the frame associated with this document has had a first
+  // Called when the frame associated with this document has had a first
   // contentful paint, as defined here:
   // https://developers.google.com/web/tools/lighthouse/audits/first-contentful-paint
   // This may not fire for all frames, depending on if the load is interrupted
@@ -56,14 +61,19 @@ interface DocumentCoordinationUnit {
   // frame. It will only fire for main-frame nodes.
   OnFirstContentfulPaint(mojo_base.mojom.TimeDelta time_since_navigation_start);
 
-  // Invoked when JS in the renderer requests a memory measurement via
+  // Called when JS in the renderer requests a memory measurement via
   // the performance.measureUserAgentSpecificMemory API.
   OnWebMemoryMeasurementRequested(WebMemoryMeasurement.Mode mode) =>
       (WebMemoryMeasurement measurement);
+
+  // Called when the document is opted-out from freezing via origin trial.
+  OnFreezingOriginTrialOptOut();
 };
 
-// Interface used by the RendererResourceCoordinator singleton to send state
-// associated with resource management of a renderer process to the embedder.
+// Interface used by the RendererResourceCoordinator singleton to send or
+// request state associated with resource management of a renderer process.
+// Implemented in the embedder by ProcessNodeImpl.
+// TODO(crbug.com/365586676): Rename to RendererProcessCoordinationUnit.
 interface ProcessCoordinationUnit {
   // Property signals.
   SetMainThreadTaskLoadIsLow(bool main_thread_task_load_is_low);
@@ -114,10 +124,28 @@ interface ProcessCoordinationUnit {
   // by OnRemoteIframeAttached.
   OnRemoteIframeDetached(blink.mojom.LocalFrameToken parent_frame_token,
                          blink.mojom.RemoteFrameToken remote_frame_token);
+};
 
-  // Called when a renderer has observed an allow-listed performance.mark
-  // trigger event. The browser will reconfirm that the trigger is indeed
-  // allow-listed before firing the background tracing trigger, which can result
-  // in a trace being uploaded to the background tracing pipeline.
-  FireBackgroundTracingTrigger(string trigger_name);
+// Interface used by ChildThreadImpl to send or request state associated with
+// resource management of any child process. Implemented in the embedder by
+// ProcessNodeImpl.
+interface ChildProcessCoordinationUnit {
+  // Called immediately after the interface is connected, to send and receive
+  // initial state:
+  //
+  // The browser sends back handles to shared memory regions that communicate
+  // state values between the browser and the child. If any returned region
+  // handle is invalid, the child will use default state instead of reading from
+  // that memory region.
+  //
+  // `global_region` should contain a list of `std::atomic` enums representing
+  // global scenarios that the renderer should use when making performance
+  // decisions.
+  //
+  // `process_region` should contain a list of `std::atomic` enums representing
+  // scenarios local to the renderer process that it should use when making
+  // performance decisions.
+  InitializeChildProcessCoordination() =>
+      (mojo_base.mojom.ReadOnlySharedMemoryRegion? global_region,
+       mojo_base.mojom.ReadOnlySharedMemoryRegion? process_region);
 };

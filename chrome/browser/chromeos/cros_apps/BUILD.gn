@@ -2,16 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 assert(is_chromeos)
 
 source_set("cros_apps") {
   sources = [
-    "cros_apps_key_event_handler.cc",
-    "cros_apps_key_event_handler.h",
-    "cros_apps_key_event_handler_factory.cc",
-    "cros_apps_key_event_handler_factory.h",
     "cros_apps_tab_helper.cc",
     "cros_apps_tab_helper.h",
   ]
@@ -19,8 +13,7 @@ source_set("cros_apps") {
   deps = [
     "//chrome/browser/chromeos/cros_apps/api",
     "//chrome/browser/profiles:profile",
-    "//chromeos/constants:constants",
-    "//components/keyed_service/content",
+    "//chromeos/constants",
     "//content/public/browser",
     "//content/public/common",
   ]

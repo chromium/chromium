@@ -28,7 +28,8 @@ import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.media.MediaViewerUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
@@ -47,7 +48,8 @@ import java.util.concurrent.TimeoutException;
 })
 public class VideoFullscreenOrientationLockChromeTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final String TEST_URL = "content/test/data/media/video-player.html";
     private static final String VIDEO_URL = "content/test/data/media/bear.webm";
@@ -103,7 +105,7 @@ public class VideoFullscreenOrientationLockChromeTest {
 
     @Before
     public void setUp() {
-        mActivityTestRule.startMainActivityWithURL(UrlUtils.getIsolatedTestFileUrl(TEST_URL));
+        mActivityTestRule.startOnUrl(UrlUtils.getIsolatedTestFileUrl(TEST_URL));
     }
 
     @Test

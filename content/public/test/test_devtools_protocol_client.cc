@@ -12,6 +12,8 @@
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "content/browser/devtools/render_frame_devtools_agent_host.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
@@ -45,10 +47,9 @@ const base::Value::Dict* TestDevToolsProtocolClient::SendSessionCommand(
   if (!session_id.empty())
     command.Set(kSessionIdParam, std::move(session_id));
 
-  std::string json_command;
-  base::JSONWriter::Write(base::Value(std::move(command)), &json_command);
-  agent_host_->DispatchProtocolMessage(
-      this, base::as_bytes(base::make_span(json_command)));
+  std::string json_command =
+      base::WriteJson(base::Value(std::move(command))).value_or("");
+  agent_host_->DispatchProtocolMessage(this, base::as_byte_span(json_command));
   // Some messages are dispatched synchronously.
   // Only run loop if we are not finished yet.
   if (in_dispatch_ && wait)
@@ -59,6 +60,13 @@ const base::Value::Dict* TestDevToolsProtocolClient::SendSessionCommand(
 void TestDevToolsProtocolClient::WaitForResponse() {
   waiting_for_command_result_id_ = last_sent_id_;
   RunLoopUpdatingQuitClosure();
+}
+
+void TestDevToolsProtocolClient::AttachToFrameTreeHost(RenderFrameHost* frame) {
+  FrameTreeNode* ftn =
+      FrameTreeNode::GloballyFindByID(frame->GetFrameTreeNodeId());
+  agent_host_ = RenderFrameDevToolsAgentHost::GetOrCreateFor(ftn);
+  agent_host_->AttachClient(this);
 }
 
 void TestDevToolsProtocolClient::AttachToWebContents(WebContents* wc) {
@@ -145,7 +153,7 @@ const base::Value::Dict* TestDevToolsProtocolClient::error() const {
 }
 
 void TestDevToolsProtocolClient::RunLoopUpdatingQuitClosure() {
-  base::RunLoop run_loop;
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   run_loop_quit_closure_ = run_loop.QuitClosure();
   run_loop.Run();
 }
@@ -155,7 +163,8 @@ void TestDevToolsProtocolClient::DispatchProtocolMessage(
     base::span<const uint8_t> message) {
   std::string_view message_str(reinterpret_cast<const char*>(message.data()),
                                message.size());
-  base::Value parsed = *base::JSONReader::Read(message_str);
+  base::Value parsed = *base::JSONReader::Read(
+      message_str, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (std::optional<int> id = parsed.GetDict().FindInt("id")) {
     received_responses_count_++;
     response_ = std::move(parsed).TakeDict();
@@ -166,15 +175,16 @@ void TestDevToolsProtocolClient::DispatchProtocolMessage(
     }
   } else {
     const std::string* notification = parsed.GetDict().FindString("method");
-    notifications_.push_back(std::move(parsed).TakeDict());
-    if (waiting_for_notification_ != *notification)
+    if (waiting_for_notification_ != *notification) {
+      notifications_.push_back(std::move(parsed).TakeDict());
       return;
-    const base::Value* params = notifications_.back().Find(kParamsParam);
+    }
+    base::Value* params = parsed.GetDict().Find(kParamsParam);
     if (waiting_for_notification_matcher_.is_null() ||
         waiting_for_notification_matcher_.Run(params->GetDict())) {
       waiting_for_notification_ = std::string();
       waiting_for_notification_matcher_ = NotificationMatcher();
-      received_notification_params_ = params->GetDict().Clone();
+      received_notification_params_ = std::move(*params).TakeDict();
       std::move(run_loop_quit_closure_).Run();
     }
   }
@@ -182,8 +192,9 @@ void TestDevToolsProtocolClient::DispatchProtocolMessage(
 
 void TestDevToolsProtocolClient::AgentHostClosed(
     DevToolsAgentHost* agent_host) {
-  if (!agent_host_can_close_)
-    NOTREACHED_IN_MIGRATION();
+  if (!agent_host_can_close_) {
+    NOTREACHED();
+  }
 }
 
 bool TestDevToolsProtocolClient::AllowUnsafeOperations() {
@@ -204,7 +215,8 @@ bool TestDevToolsProtocolClient::MayWriteLocalFiles() {
 
 bool TestDevToolsProtocolClient::MayAttachToURL(const GURL& url,
                                                 bool is_webui) {
-  return not_attachable_hosts_.find(url.host()) == not_attachable_hosts_.end();
+  return not_attachable_hosts_.find(url.GetHost()) ==
+         not_attachable_hosts_.end();
 }
 
 std::optional<url::Origin>

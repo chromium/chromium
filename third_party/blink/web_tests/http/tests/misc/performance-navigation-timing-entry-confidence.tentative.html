@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<html>
+<head>
+  <title>Testing PerformanceNavigationTiming.confidence</title>
+  <script src="/w3c/resources/testharness.js"></script>
+  <script src="/w3c/resources/testharnessreport.js"></script>
+  <script>
+    async_test(function(t) {
+      function observerCallback(list, observer) {
+        for (let entry of list.getEntries()) {
+          assert_equals(entry.entryType, 'navigation');
+          assert_implements(entry.confidence, 'entry.confidence should be implemented.');
+          assert_between_inclusive(entry.confidence.randomizedTriggerRate, 0.0, 1.0, 'randomizedTriggerRate should be between 0.0, and 1.0 inclusive.');
+          assert_any(assert_equals, entry.confidence.value, ['high', 'low'], 'confidence value should be high or low.');
+        }
+        t.done();
+      }
+
+      assert_equals(performance.getEntriesByType('navigation')[0].confidence, null, 'confidence should be null before page is interactive');
+      window.addEventListener('DOMContentLoaded', t.step_func(function(e) {
+        assert_equals(performance.getEntriesByType('navigation')[0].confidence, null, 'confidence should be null during DOMContentLoaded');
+      }));
+
+      window.addEventListener('load', t.step_func(function() {
+        const observer = new PerformanceObserver(observerCallback);
+        observer.observe({ type: 'navigation', buffered: true });
+      }));
+    }, 'Performance confidence object is valid');
+
+  </script>
+</head>
+</html>

@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.browserservices.ui.splashscreen.webapps;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.view.View;
@@ -16,6 +15,8 @@ import android.widget.ImageView;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
@@ -29,33 +30,31 @@ import org.chromium.ui.util.ColorUtils;
 import org.chromium.webapk.lib.common.WebApkCommonUtils;
 import org.chromium.webapk.lib.common.splash.SplashLayout;
 
-import javax.inject.Inject;
-
 /** Displays the splash screen for homescreen shortcuts and WebAPKs. */
+@NullMarked
 public class WebappSplashController implements SplashDelegate {
     public static final int HIDE_ANIMATION_DURATION_MS = 300;
 
-    private SplashController mSplashController;
-    private TabObserverRegistrar mTabObserverRegistrar;
-    private WebappInfo mWebappInfo;
+    private final SplashController mSplashController;
+    private final TabObserverRegistrar mTabObserverRegistrar;
+    private final WebappInfo mWebappInfo;
 
-    private WebApkSplashNetworkErrorObserver mWebApkNetworkErrorObserver;
+    private @Nullable WebApkSplashNetworkErrorObserver mWebApkNetworkErrorObserver;
 
-    @Inject
     public WebappSplashController(
-            SplashController splashController,
             Activity activity,
+            SplashController splashController,
             TabObserverRegistrar tabObserverRegistrar,
             BrowserServicesIntentDataProvider intentDataProvider) {
         mSplashController = splashController;
         mTabObserverRegistrar = tabObserverRegistrar;
+
         mWebappInfo = WebappInfo.create(intentDataProvider);
 
-        mSplashController.setConfig(this, HIDE_ANIMATION_DURATION_MS);
+        mSplashController.setConfigAndShowSplash(this, HIDE_ANIMATION_DURATION_MS);
 
         if (mWebappInfo.isForWebApk()) {
-            mWebApkNetworkErrorObserver =
-                    new WebApkSplashNetworkErrorObserver(activity, mWebappInfo.name());
+            mWebApkNetworkErrorObserver = new WebApkSplashNetworkErrorObserver(activity);
             mTabObserverRegistrar.registerTabObserver(mWebApkNetworkErrorObserver);
         }
     }
@@ -108,9 +107,9 @@ public class WebappSplashController implements SplashDelegate {
         }
 
         storage.getSplashScreenImage(
-                new WebappDataStorage.FetchCallback<Bitmap>() {
+                new WebappDataStorage.FetchCallback<>() {
                     @Override
-                    public void onDataRetrieved(Bitmap splashImage) {
+                    public void onDataRetrieved(@Nullable Bitmap splashImage) {
                         initializeWebApkInfoSplashLayout(
                                 splashScreen, backgroundColor, splashImage, false);
                     }
@@ -121,10 +120,9 @@ public class WebappSplashController implements SplashDelegate {
     private void initializeWebApkInfoSplashLayout(
             ViewGroup splashScreen,
             int backgroundColor,
-            Bitmap splashImage,
+            @Nullable Bitmap splashImage,
             boolean isSplashIconMaskable) {
         Context context = ContextUtils.getApplicationContext();
-        Resources resources = context.getResources();
 
         Bitmap selectedIcon = splashImage;
         boolean selectedIconGenerated = false;
@@ -149,12 +147,12 @@ public class WebappSplashController implements SplashDelegate {
         ImageView splashView = new ImageView(appContext);
         splashView.setBackgroundColor(backgroundColor);
 
+        String packageName = mWebappInfo.webApkPackageName();
+        assert packageName != null;
         Bitmap splashBitmap =
                 FileUtils.queryBitmapFromContentProvider(
                         appContext,
-                        Uri.parse(
-                                WebApkCommonUtils.generateSplashContentProviderUri(
-                                        mWebappInfo.webApkPackageName())));
+                        Uri.parse(WebApkCommonUtils.generateSplashContentProviderUri(packageName)));
         if (splashBitmap != null) {
             splashView.setScaleType(ImageView.ScaleType.FIT_CENTER);
             splashView.setImageBitmap(splashBitmap);

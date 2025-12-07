@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -57,20 +58,21 @@ class SharingDialogViewTest : public TestWithBrowserView {
   }
 
   void TearDown() override {
-    if (dialog_)
+    if (dialog_) {
       dialog_->GetWidget()->CloseNow();
+    }
     TestWithBrowserView::TearDown();
   }
 
   std::vector<SharingTargetDeviceInfo> CreateDevices(int count) {
     std::vector<SharingTargetDeviceInfo> devices;
     for (int i = 0; i < count; ++i) {
-      devices.push_back(SharingTargetDeviceInfo(
-          "guid_" + base::NumberToString(i), "name_" + base::NumberToString(i),
-          SharingDevicePlatform::kUnknown,
-          /*pulse_interval=*/base::TimeDelta(),
-          syncer::DeviceInfo::FormFactor::kUnknown,
-          /*last_updated_timestamp=*/base::Time()));
+      devices.emplace_back("guid_" + base::NumberToString(i),
+                           "name_" + base::NumberToString(i),
+                           SharingDevicePlatform::kUnknown,
+                           /*pulse_interval=*/base::TimeDelta(),
+                           syncer::DeviceInfo::FormFactor::kUnknown,
+                           /*last_updated_timestamp=*/base::Time());
     }
     return devices;
   }
@@ -94,12 +96,13 @@ class SharingDialogViewTest : public TestWithBrowserView {
   SharingDialogData CreateDialogData(int devices, int apps) {
     SharingDialogData data;
 
-    if (devices)
+    if (devices) {
       data.type = SharingDialogType::kDialogWithDevicesMaybeApps;
-    else if (apps)
+    } else if (apps) {
       data.type = SharingDialogType::kDialogWithoutDevicesWithApp;
-    else
+    } else {
       data.type = SharingDialogType::kEducationalDialog;
+    }
 
     data.prefix = SharingFeatureName::kClickToCall;
     data.devices = CreateDevices(devices);

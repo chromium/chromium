@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_BLOCKED_SCHEME_NAVIGATION_THROTTLE_H_
 #define CONTENT_BROWSER_RENDERER_HOST_BLOCKED_SCHEME_NAVIGATION_THROTTLE_H_
 
-#include <memory>
-
 #include "content/public/browser/navigation_throttle.h"
 
 namespace content {
@@ -15,7 +13,8 @@ namespace content {
 // (currently data: and filesystem:).
 class BlockedSchemeNavigationThrottle : public NavigationThrottle {
  public:
-  explicit BlockedSchemeNavigationThrottle(NavigationHandle* navigation_handle);
+  explicit BlockedSchemeNavigationThrottle(
+      NavigationThrottleRegistry& registry);
 
   BlockedSchemeNavigationThrottle(const BlockedSchemeNavigationThrottle&) =
       delete;
@@ -29,8 +28,7 @@ class BlockedSchemeNavigationThrottle : public NavigationThrottle {
   ThrottleCheckResult WillProcessResponse() override;
   const char* GetNameForLogging() override;
 
-  static std::unique_ptr<NavigationThrottle> CreateThrottleForNavigation(
-      NavigationHandle* navigation_handle);
+  static void MaybeCreateAndAdd(NavigationThrottleRegistry& registry);
 };
 
 }  // namespace content

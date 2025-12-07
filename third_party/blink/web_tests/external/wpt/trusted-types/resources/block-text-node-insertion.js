@@ -14,11 +14,13 @@
   // - includes "count": Count these, and later check against expect_count.
   // - includes "done": Unregister the event handler and finish the test.
   // - all else: Reject, as this is probably an error in the test.
-  function checkMessage(expect_count) {
-    postMessage("done", "*");
+  function checkMessage(t, fn, expect_count) {
     return new Promise((resolve, reject) => {
       let count = 0;
       globalThis.addEventListener("message", function handler(e) {
+        t.add_cleanup(() => {
+          globalThis.removeEventListener("message", handler);
+        });
         if (e.data.includes("block")) {
           reject(`'block' received (${e.data})`);
         } else if (e.data.includes("count")) {
@@ -35,26 +37,7 @@
           reject("unexpected message received: " + e.data);
         }
       });
-    });
-  }
-
-  function checkSecurityPolicyViolationEvent(expect_count) {
-    return new Promise((resolve, reject) => {
-      let count = 0;
-      document.addEventListener("securitypolicyviolation", e => {
-        if (e.sample.includes("trigger")) {
-          if (expect_count && count != expect_count) {
-            reject(
-                `'trigger' received, but unexpected counts: expected ${expect_count} != actual ${count}`);
-          } else {
-            resolve();
-          }
-        } else {
-          count = count + 1;
-        }
-      });
-      try {
-        document.getElementById("trigger").text = "trigger fail";
-      } catch(e) { }
+      fn();
+      requestAnimationFrame(_ => requestAnimationFrame(_ => postMessage("done", "*")));
     });
   }

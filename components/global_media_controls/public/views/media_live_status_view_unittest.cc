@@ -48,7 +48,7 @@ TEST_F(MediaLiveStatusViewTest, ViewCheck) {
   EXPECT_TRUE(view()->GetLineViewForTesting()->GetVisible());
   EXPECT_TRUE(view()->GetLiveLabelForTesting()->GetVisible());
   EXPECT_EQ(kForegroundColorId,
-            view()->GetLiveLabelForTesting()->GetEnabledColorId());
+            view()->GetLiveLabelForTesting()->GetRequestedEnabledColor());
 }
 
 }  // namespace global_media_controls

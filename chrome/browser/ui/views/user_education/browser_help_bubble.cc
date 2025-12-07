@@ -4,14 +4,27 @@
 
 #include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
 
+#include <string>
+
+#include "base/types/pass_key.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_controller.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "components/user_education/webui/help_bubble_webui.h"
-#include "components/user_education/webui/tracked_element_webui.h"
+#include "components/user_education/webui/tracked_element_help_bubble_webui_anchor.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/accessible_pane_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_utils.h"
 
@@ -119,14 +132,15 @@ FloatingWebUIHelpBubbleFactoryBrowser::
 
 bool FloatingWebUIHelpBubbleFactoryBrowser::CanBuildBubbleForTrackedElement(
     const ui::TrackedElement* element) const {
-  if (!element->IsA<user_education::TrackedElementWebUI>()) {
+  if (!element->IsA<user_education::TrackedElementHelpBubbleWebUIAnchor>()) {
     return false;
   }
 
   // If this is a WebUI in a tab, then don't use this factory.
-  const auto* contents = element->AsA<user_education::TrackedElementWebUI>()
-                             ->handler()
-                             ->GetWebContents();
+  const auto* contents =
+      element->AsA<user_education::TrackedElementHelpBubbleWebUIAnchor>()
+          ->handler()
+          ->GetWebContents();
   // Note: this checks all tabs for their WebContents.
   if (chrome::FindBrowserWithTab(contents)) {
     return false;
@@ -136,6 +150,89 @@ bool FloatingWebUIHelpBubbleFactoryBrowser::CanBuildBubbleForTrackedElement(
   // bubble.
   return FloatingWebUIHelpBubbleFactory::CanBuildBubbleForTrackedElement(
       element);
+}
+
+// static
+void BrowserHelpBubble::MaybeCloseOverlappingHelpBubbles(
+    const views::View* view) {
+  auto* const browser =
+      BrowserFeaturePromoControllerBase::GetBrowserForView(view);
+  if (!browser) {
+    return;
+  }
+
+  auto* const service =
+      UserEducationServiceFactory::GetForBrowserContext(browser->GetProfile());
+  if (!service) {
+    return;
+  }
+
+  auto* const controller =
+      service->GetFeaturePromoController(base::PassKey<BrowserHelpBubble>());
+  if (!controller) {
+    return;
+  }
+
+  static_cast<user_education::FeaturePromoControllerCommon*>(controller)
+      ->DismissNonCriticalBubbleInRegion(view->GetBoundsInScreen());
+}
+
+// static
+std::u16string BrowserHelpBubble::GetFocusHelpBubbleScreenReaderHint(
+    user_education::FeaturePromoSpecification::PromoType promo_type,
+    const ui::AcceleratorProvider* accelerator_provider,
+    ui::TrackedElement* anchor_element) {
+  // No message is required as this is a background bubble with a
+  // screen reader-specific prompt and will dismiss itself.
+  if (promo_type ==
+      user_education::FeaturePromoSpecification::PromoType::kToast) {
+    return std::u16string();
+  }
+
+  const std::u16string accelerator_text =
+      GetFocusBubbleAcceleratorText(accelerator_provider);
+
+  // Present the user with the full help bubble navigation shortcut.
+  auto* const anchor_view = anchor_element->AsA<views::TrackedElementViews>();
+  if (promo_type ==
+          user_education::FeaturePromoSpecification::PromoType::kTutorial ||
+      (anchor_view &&
+       (anchor_view->view()
+            ->GetViewAccessibility()
+            .IsAccessibilityFocusable() ||
+        views::IsViewClass<views::AccessiblePaneView>(anchor_view->view())))) {
+    return l10n_util::GetStringFUTF16(IDS_FOCUS_HELP_BUBBLE_TOGGLE_DESCRIPTION,
+                                      accelerator_text);
+  }
+
+  // Present the user with an abridged help bubble navigation shortcut.
+  return l10n_util::GetStringFUTF16(IDS_FOCUS_HELP_BUBBLE_DESCRIPTION,
+                                    accelerator_text);
+}
+
+// static
+std::u16string BrowserHelpBubble::GetFocusTutorialBubbleScreenReaderHint(
+    const ui::AcceleratorProvider* accelerator_provider) {
+  const std::u16string accelerator_text =
+      GetFocusBubbleAcceleratorText(accelerator_provider);
+  return l10n_util::GetStringFUTF16(IDS_FOCUS_HELP_BUBBLE_TUTORIAL_DESCRIPTION,
+                                    accelerator_text);
+}
+
+// static
+std::u16string BrowserHelpBubble::GetFocusBubbleAcceleratorText(
+    const ui::AcceleratorProvider* provider) {
+  ui::Accelerator accelerator;
+#if BUILDFLAG(IS_CHROMEOS)
+  // IDC_FOCUS_NEXT_PANE still reports as F6 on ChromeOS, but many ChromeOS
+  // devices do not have function keys. Therefore, instead prompt the other
+  // accelerator that does the same thing.
+  static const auto kAccelerator = IDC_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY;
+#else
+  static const auto kAccelerator = IDC_FOCUS_NEXT_PANE;
+#endif
+  CHECK(provider->GetAcceleratorForCommandId(kAccelerator, &accelerator));
+  return accelerator.GetShortcutText();
 }
 
 DEFINE_FRAMEWORK_SPECIFIC_METADATA(FloatingWebUIHelpBubbleFactoryBrowser)

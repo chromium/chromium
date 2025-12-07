@@ -19,6 +19,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/widget/widget_utils.h"
@@ -85,7 +86,7 @@ class TestSharingIconView : public SharingIconView {
   // PageActionIconView:
   void OnExecuting(ExecuteSource execute_source) override {}
   const gfx::VectorIcon& GetVectorIcon() const override {
-    return gfx::kNoneIcon;
+    return gfx::VectorIcon::EmptyIcon();
   }
   void UpdateImpl() override {}
 };

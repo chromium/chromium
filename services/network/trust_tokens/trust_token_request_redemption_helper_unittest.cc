@@ -8,6 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -125,7 +126,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, RejectsIfTooManyIssuers) {
   mojom::TrustTokenOperationStatus result =
       ExecuteBeginOperationAndWaitForResult(&helper, request.get());
 
-  EXPECT_EQ(result, mojom::TrustTokenOperationStatus::kResourceLimited);
+  EXPECT_EQ(result, mojom::TrustTokenOperationStatus::kSiteIssuerLimit);
 }
 
 // Check that redemption fails if its key commitment request fails.

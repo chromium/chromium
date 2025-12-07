@@ -30,8 +30,7 @@ NetConnectionTypeToWebConnectionType(
       return blink::kWebConnectionTypeBluetooth;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return blink::kWebConnectionTypeNone;
+  NOTREACHED();
 }
 
 }  // namespace content

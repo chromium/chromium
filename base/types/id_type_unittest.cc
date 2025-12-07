@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <limits>
-
 #include "base/types/id_type.h"
+
+#include <limits>
+#include <unordered_map>
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -42,16 +44,18 @@ TEST(IdType, ExtraInvalidValue) {
 
 TEST(IdType, Generator) {
   FooId::Generator foo_id_generator;
-  for (int i = 1; i < 10; i++)
+  for (int i = 1; i < 10; i++) {
     EXPECT_EQ(foo_id_generator.GenerateNextId(), FooId::FromUnsafeValue(i));
+  }
 }
 
 TEST(IdType, GeneratorWithNonZeroInvalidValue) {
   using TestId = IdType<class TestIdTag, int, -1>;
 
   TestId::Generator test_id_generator;
-  for (int i = 0; i < 10; i++)
+  for (int i = 0; i < 10; i++) {
     EXPECT_EQ(test_id_generator.GenerateNextId(), TestId::FromUnsafeValue(i));
+  }
 }
 
 TEST(IdType, GeneratorWithBigUnsignedInvalidValue) {
@@ -70,8 +74,9 @@ TEST(IdType, GeneratorWithDifferentStartingValue) {
   using TestId = IdType<class TestIdTag, int, -1, 1>;
 
   TestId::Generator test_id_generator;
-  for (int i = 1; i < 10; i++)
+  for (int i = 1; i < 10; i++) {
     EXPECT_EQ(test_id_generator.GenerateNextId(), TestId::FromUnsafeValue(i));
+  }
 }
 
 TEST(IdType, EnsureConstexpr) {
@@ -106,15 +111,29 @@ TEST(IdType, EnsureConstexpr) {
   static_assert(kMultiOne, "");
 }
 
+TEST(IdType, Map) {
+  struct TestObject {};
+  using TestId = IdType32<class MapTestTag>;
+  TestId::Generator id_generator;
+  std::unordered_map<TestId, TestObject> map;
+
+  TestObject obj[5];
+
+  for (auto& i : obj) {
+    map[id_generator.GenerateNextId()] = i;
+  }
+}
+
 class IdTypeSpecificValueTest : public ::testing::TestWithParam<int> {
  protected:
   FooId test_id() { return FooId::FromUnsafeValue(GetParam()); }
 
   FooId other_id() {
-    if (GetParam() != std::numeric_limits<int>::max())
+    if (GetParam() != std::numeric_limits<int>::max()) {
       return FooId::FromUnsafeValue(GetParam() + 1);
-    else
+    } else {
       return FooId::FromUnsafeValue(std::numeric_limits<int>::min());
+    }
   }
 };
 

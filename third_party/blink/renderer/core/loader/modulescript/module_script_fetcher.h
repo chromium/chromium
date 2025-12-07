@@ -11,12 +11,12 @@
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 
 namespace blink {
 
 class ConsoleMessage;
 class ModuleScriptLoader;
+class ResourceFetcher;
 
 // ModuleScriptFetcher is an abstract class to fetch module scripts. Derived
 // classes are expected to fetch a module script for the given FetchParameters
@@ -48,12 +48,15 @@ class CORE_EXPORT ModuleScriptFetcher : public ResourceClient {
                      ModuleType,
                      ResourceFetcher*,
                      ModuleGraphLevel,
-                     Client*) = 0;
+                     Client*,
+                     ModuleImportPhase) = 0;
 
   void Trace(Visitor*) const override;
 
  protected:
-  static bool WasModuleLoadSuccessful(
+  // The returned value is empty in case of failure, and contains
+  // the module type otherwise.
+  static std::optional<ResolvedModuleType> WasModuleLoadSuccessful(
       ScriptResource* resource,
       ModuleType expected_module_type,
       HeapVector<Member<ConsoleMessage>>* error_messages);

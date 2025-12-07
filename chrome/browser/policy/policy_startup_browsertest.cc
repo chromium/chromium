@@ -24,7 +24,7 @@ class PolicyMakeDefaultBrowserTest : public InProcessBrowserTest {
 
  protected:
   PolicyMakeDefaultBrowserTest() : InProcessBrowserTest() {
-    set_expected_exit_code(chrome::RESULT_CODE_ACTION_DISALLOWED_BY_POLICY);
+    set_expected_exit_code(CHROME_RESULT_CODE_ACTION_DISALLOWED_BY_POLICY);
   }
 
   void SetUpInProcessBrowserTestFixture() override {

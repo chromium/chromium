@@ -18,9 +18,11 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <ranges>
 #include <sstream>
 
 #include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 #include "base/version_info/channel.h"
 #include "build/branding_buildflags.h"
 #include "chrome/chrome_elf/nt_registry/nt_registry.h"
@@ -29,7 +31,6 @@
 #include "chrome/install_static/install_modes.h"
 #include "chrome/install_static/policy_path_parser.h"
 #include "chrome/install_static/user_data_dir.h"
-#include "components/nacl/common/buildflags.h"
 
 namespace install_static {
 
@@ -37,9 +38,6 @@ enum class ProcessType {
   UNINITIALIZED,
   OTHER_PROCESS,
   BROWSER_PROCESS,
-#if BUILDFLAG(ENABLE_NACL)
-  NACL_LOADER_PROCESS,
-#endif
   CRASHPAD_HANDLER_PROCESS,
 };
 
@@ -53,9 +51,6 @@ const wchar_t kRegValueChromeStatsSample[] = L"UsageStatsInSample";
 // The constants defined in this file are also defined in chrome/installer and
 // other places. we need to unify them.
 const wchar_t kHeadless[] = L"CHROME_HEADLESS";
-const wchar_t kShowRestart[] = L"CHROME_CRASHED";
-const wchar_t kRestartInfo[] = L"CHROME_RESTART";
-const wchar_t kRtlLocale[] = L"RIGHT_TO_LEFT";
 
 const wchar_t kCrashpadHandler[] = L"crashpad-handler";
 const wchar_t kFallbackHandler[] = L"fallback-handler";
@@ -84,10 +79,6 @@ constexpr wchar_t kChromeChannelStableExplicit[] = L"stable";
 // need to unify them.
 constexpr wchar_t kRegValueUsageStats[] = L"usagestats";
 constexpr wchar_t kMetricsReportingEnabled[] = L"MetricsReportingEnabled";
-
-#if BUILDFLAG(ENABLE_NACL)
-constexpr wchar_t kNaClLoaderProcess[] = L"nacl-loader";
-#endif
 
 void Trace(const wchar_t* format_string, ...) {
   static const int kMaxLogBufferSize = 1024;
@@ -264,10 +255,6 @@ bool GetChromeChannelNameFromString(const wchar_t* channel_test,
 ProcessType GetProcessType(const std::wstring& process_type) {
   if (process_type.empty())
     return ProcessType::BROWSER_PROCESS;
-#if BUILDFLAG(ENABLE_NACL)
-  if (process_type == kNaClLoaderProcess)
-    return ProcessType::NACL_LOADER_PROCESS;
-#endif
   if (process_type == kCrashpadHandler)
     return ProcessType::CRASHPAD_HANDLER_PROCESS;
   return ProcessType::OTHER_PROCESS;
@@ -280,9 +267,6 @@ bool ProcessNeedsProfileDir(ProcessType process_type) {
   // lies on a network share the sandbox will prevent us from accessing it.
   switch (process_type) {
     case ProcessType::BROWSER_PROCESS:
-#if BUILDFLAG(ENABLE_NACL)
-    case ProcessType::NACL_LOADER_PROCESS:
-#endif
       return true;
     case ProcessType::OTHER_PROCESS:
       return false;
@@ -294,6 +278,27 @@ bool ProcessNeedsProfileDir(ProcessType process_type) {
   }
   assert(false);
   return false;
+}
+
+// Returns the user's temporary directory, or an empty string in case of
+// failure.
+std::wstring GetTempDir() {
+  constexpr DWORD kBufferLength = MAX_PATH + 1U;
+  wchar_t temp_path[kBufferLength];
+  DWORD temp_path_len = ::GetTempPath(kBufferLength, temp_path);
+  if (temp_path_len == 0 || temp_path_len > kBufferLength) {
+    return {};
+  }
+
+  std::wstring temp_dir(temp_path, temp_path_len);
+
+  // Strip the trailing slashes if any to duplicate //base method behavior.
+  while (!temp_dir.empty() &&
+         (temp_dir.back() == '\\' || temp_dir.back() == '/')) {
+    temp_dir.pop_back();
+  }
+
+  return temp_dir;
 }
 
 }  // namespace
@@ -355,7 +360,7 @@ const IID& GetElevatorIid() {
 
 std::wstring GetElevationServiceName() {
   std::wstring name = GetElevationServiceDisplayName();
-  name.erase(std::remove_if(name.begin(), name.end(), isspace), name.end());
+  std::erase_if(name, isspace);
   return name;
 }
 
@@ -363,6 +368,25 @@ std::wstring GetElevationServiceDisplayName() {
   static constexpr wchar_t kElevationServiceDisplayName[] =
       L" Elevation Service";
   return GetBaseAppName() + kElevationServiceDisplayName;
+}
+
+const CLSID& GetTracingServiceClsid() {
+  return InstallDetails::Get().tracing_service_clsid();
+}
+
+const IID& GetTracingServiceIid() {
+  return InstallDetails::Get().tracing_service_iid();
+}
+
+std::wstring GetTracingServiceName() {
+  std::wstring name = GetTracingServiceDisplayName();
+  std::erase_if(name, isspace);
+  return name;
+}
+
+std::wstring GetTracingServiceDisplayName() {
+  static constexpr wchar_t kTracingServiceDisplayName[] = L" Tracing Service";
+  return GetBaseAppName() + kTracingServiceDisplayName;
 }
 
 std::wstring GetBaseAppName() {
@@ -379,6 +403,10 @@ const wchar_t* GetBrowserProgIdPrefix() {
 
 const wchar_t* GetBrowserProgIdDescription() {
   return InstallDetails::Get().mode().browser_prog_id_description;
+}
+
+const char* GetDirectLaunchUrlScheme() {
+  return InstallDetails::Get().mode().direct_launch_url_scheme;
 }
 
 const wchar_t* GetPDFProgIdPrefix() {
@@ -408,16 +436,11 @@ int GetAppIconResourceIndex() {
 }
 
 int GetHTMLIconResourceIndex() {
-  // TODO(crbug.com/40384442): Return HTML specific resource index
-  // once we've added support for it. This will be used for all doc types
-  // Chrome registers itself as a default handler for, except for .pdf.
-  return InstallDetails::Get().mode().app_icon_resource_index;
+  return InstallDetails::Get().mode().html_doc_icon_resource_index;
 }
 
 int GetPDFIconResourceIndex() {
-  // TODO(crbug.com/40384442): Return PDF specific resource index
-  // once we've added support for it.
-  return InstallDetails::Get().mode().app_icon_resource_index;
+  return InstallDetails::Get().mode().pdf_doc_icon_resource_index;
 }
 
 const wchar_t* GetSandboxSidPrefix() {
@@ -523,9 +546,8 @@ bool ReportingIsEnforcedByPolicy(bool* crash_reporting_enabled) {
 
 void InitializeProcessType() {
   assert(g_process_type == ProcessType::UNINITIALIZED);
-  std::wstring process_type =
-      GetSwitchValueFromCommandLine(::GetCommandLine(), kProcessType);
-  g_process_type = GetProcessType(process_type);
+  g_process_type = GetProcessType(
+      GetCommandLineSwitchValue(::GetCommandLine(), kProcessType));
 }
 
 bool IsProcessTypeInitialized() {
@@ -610,18 +632,18 @@ void GetExecutableVersionDetails(const std::wstring& exe_path,
   DWORD dummy = 0;
   DWORD length = ::GetFileVersionInfoSize(exe_path.c_str(), &dummy);
   if (length) {
-    std::unique_ptr<char[]> data(new char[length]);
-    if (::GetFileVersionInfo(exe_path.c_str(), dummy, length, data.get())) {
-      GetValueFromVersionResource(data.get(), L"ProductVersion", version);
+    auto data = base::HeapArray<char>::Uninit(length);
+    if (::GetFileVersionInfo(exe_path.c_str(), dummy, length, data.data())) {
+      GetValueFromVersionResource(data.data(), L"ProductVersion", version);
 
       std::wstring official_build;
-      GetValueFromVersionResource(data.get(), L"Official Build",
+      GetValueFromVersionResource(data.data(), L"Official Build",
                                   &official_build);
       if (official_build != L"1")
         version->append(L"-devel");
-      GetValueFromVersionResource(data.get(), L"ProductShortName",
+      GetValueFromVersionResource(data.data(), L"ProductShortName",
                                   product_name);
-      GetValueFromVersionResource(data.get(), L"SpecialBuild", special_build);
+      GetValueFromVersionResource(data.data(), L"SpecialBuild", special_build);
     }
   }
   *channel_name = GetChromeChannelName(/*with_extended_stable=*/true);
@@ -660,7 +682,7 @@ bool IsExtendedStableChannel() {
 
 std::string WideToUTF8(const std::wstring& source) {
   if (source.empty() ||
-      static_cast<int>(source.size()) > std::numeric_limits<int>::max()) {
+      source.size() > static_cast<size_t>(std::numeric_limits<int>::max())) {
     return std::string();
   }
   int size = ::WideCharToMultiByte(CP_UTF8, 0, &source[0],
@@ -678,7 +700,7 @@ std::string WideToUTF8(const std::wstring& source) {
 
 std::wstring UTF8ToWide(const std::string& source) {
   if (source.empty() ||
-      static_cast<int>(source.size()) > std::numeric_limits<int>::max()) {
+      source.size() > static_cast<size_t>(std::numeric_limits<int>::max())) {
     return std::wstring();
   }
   int size = ::MultiByteToWideChar(CP_UTF8, 0, &source[0],
@@ -811,22 +833,38 @@ std::vector<std::wstring> TokenizeCommandLineToArray(
   return result;
 }
 
-std::wstring GetSwitchValueFromCommandLine(const std::wstring& command_line,
-                                           const std::wstring& switch_name) {
-  static constexpr wchar_t kSwitchTerminator[] = L"--";
+std::optional<std::wstring> GetCommandLineSwitch(
+    const std::wstring& command_line,
+    std::wstring_view switch_name) {
   assert(!command_line.empty());
   assert(!switch_name.empty());
 
-  std::vector<std::wstring> as_array = TokenizeCommandLineToArray(command_line);
-  std::wstring switch_with_equal = L"--" + switch_name + L"=";
-  auto end = std::find(as_array.cbegin(), as_array.cend(), kSwitchTerminator);
-  for (auto scan = as_array.cbegin(); scan != end; ++scan) {
-    const std::wstring& arg = *scan;
-    if (arg.compare(0, switch_with_equal.size(), switch_with_equal) == 0)
-      return arg.substr(switch_with_equal.size());
+  std::vector<std::wstring> switches = TokenizeCommandLineToArray(command_line);
+
+  // Stop scanning if lone '--' switch prefix is found.
+  auto cend = std::ranges::find(switches, L"--");
+
+  std::wstring switch_with_prefix = L"--" + std::wstring(switch_name);
+  for (auto it = switches.cbegin(); it != cend; ++it) {
+    if (it->starts_with(switch_with_prefix)) {
+      if (it->length() == switch_with_prefix.length()) {
+        return std::wstring();
+      }
+      if ((*it)[switch_with_prefix.length()] == L'=') {
+        return it->substr(switch_with_prefix.length() + 1);
+      }
+    }
   }
 
-  return std::wstring();
+  return std::nullopt;
+}
+
+std::wstring GetCommandLineSwitchValue(const std::wstring& command_line,
+                                       std::wstring_view switch_name) {
+  assert(!command_line.empty());
+  assert(!switch_name.empty());
+  return GetCommandLineSwitch(command_line, switch_name)
+      .value_or(std::wstring());
 }
 
 bool RecursiveDirectoryCreate(const std::wstring& full_path) {
@@ -872,6 +910,45 @@ bool RecursiveDirectoryCreate(const std::wstring& full_path) {
     }
   }
   return true;
+}
+
+std::wstring CreateUniqueTempDirectory(std::wstring_view prefix) {
+  std::wstring temp_dir = GetTempDir();
+  if (temp_dir.empty()) {
+    Trace(L"Failed to retrieve temporary directory");
+    return {};
+  }
+
+  // The following code uses std::to_wstring() which is banned in Chrome,
+  // however, since the //base alternative is not available here, we use it as
+  // the last resort. Please DO NOT copy/paste this code outside install_static!
+  temp_dir.push_back(L'\\');
+  temp_dir.append(prefix);
+  temp_dir.append(kProductPathName, kProductPathNameLength);
+  temp_dir.append(std::to_wstring(::GetCurrentProcessId()));
+  temp_dir.append(std::to_wstring(::GetTickCount()));
+  size_t temp_dir_length = temp_dir.length();
+
+  // Try to create a new temporary directory. If the one exists, keep trying
+  // adding a randomized suffix to the path until we reach some limit.
+  for (int count = 0; count < 50; ++count) {
+    if (::CreateDirectory(temp_dir.c_str(), /*lpSecurityAttributes*/ nullptr)) {
+      return temp_dir;
+    }
+
+    // Seed the rand() once.
+    [[maybe_unused]] static bool once = []() {
+      srand(::GetTickCount());
+      return true;
+    }();
+
+    temp_dir.erase(temp_dir_length);
+    temp_dir.append(std::to_wstring(rand()));
+  }
+
+  Trace(L"Failed to create unique temporary directory %ls", temp_dir.c_str());
+
+  return {};
 }
 
 // This function takes these inputs rather than accessing the module's

@@ -6,7 +6,6 @@
 #define CHROMECAST_MEDIA_AUDIO_AUDIO_OUTPUT_SERVICE_RECEIVER_CMA_BACKEND_SHIM_H_
 
 #include <cstdint>
-#include <deque>
 #include <memory>
 #include <string>
 

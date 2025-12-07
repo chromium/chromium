@@ -12,6 +12,7 @@
 #include <oleacc.h>
 #include <wrl/client.h>
 
+#include <algorithm>
 #include <memory>
 
 #include "base/auto_reset.h"
@@ -26,6 +27,7 @@
 #include "base/values.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_bstr.h"
+#include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_safearray.h"
 #include "base/win/scoped_variant.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -47,13 +49,21 @@ using base::win::ScopedVariant;
 namespace ui {
 
 const std::u16string AXPlatformNodeWinTest::kEmbeddedCharacterAsString = {
-    ui::AXPlatformNodeBase::kEmbeddedCharacter};
+    AXPlatformNodeBase::kEmbeddedCharacter};
 
 namespace {
 
 // Most IAccessible functions require a VARIANT set to CHILDID_SELF as
 // the first argument.
 ScopedVariant SELF(CHILDID_SELF);
+
+// Calls `Release()` on each of the `count` interface pointers in `pointers`.
+void ReleasePointers(IUnknown** pointers, LONG count) {
+  if (count > 0) {
+    std::ranges::for_each(base::span(pointers, static_cast<size_t>(count)),
+                          [](IUnknown* ptr) { ptr->Release(); });
+  }
+}
 
 }  // namespace
 
@@ -289,9 +299,14 @@ void AXPlatformNodeWinTest::TearDown() {
   // Destroy the tree and make sure we're not leaking any objects.
   ax_fragment_root_.reset(nullptr);
   DestroyTree();
+}
+
+void AXPlatformNodeWinTest::DestroyTree() {
   TestAXNodeWrapper::SetGlobalIsWebContent(false);
+  // Must unregister all observers from the tree before it is destroyed.
   TestAXNodeWrapper::ResetGlobalState();
-  ASSERT_EQ(0U, AXPlatformNodeBase::GetInstanceCountForTesting());
+
+  TestSingleAXTreeManager::DestroyTree();
 }
 
 AXPlatformNode* AXPlatformNodeWinTest::AXPlatformNodeFromNode(AXNode* node) {
@@ -335,11 +350,11 @@ AXPlatformNodeWinTest::GetIRawElementProviderSimpleFromChildIndex(
 }
 
 Microsoft::WRL::ComPtr<IRawElementProviderSimple>
-AXPlatformNodeWinTest::GetIRawElementProviderSimpleFromTree(
-    const ui::AXTreeID tree_id,
+AXPlatformNodeWinTest::GetIRawElementProviderSimpleFromId(
     const AXNodeID node_id) {
+  CHECK(GetTree()) << "No tree available";
   return QueryInterfaceFromNode<IRawElementProviderSimple>(
-      GetNodeFromTree(tree_id, node_id));
+      GetTree()->GetFromId(node_id));
 }
 
 ComPtr<IRawElementProviderFragment>
@@ -535,15 +550,11 @@ void AXPlatformNodeWinTest::TestGetColumnHeadersForRole(ax::mojom::Role role) {
       GetTree(), GetRoot()->children()[0]->children()[0]);
   column_header_wrapper->ResetNativeEventTarget();
 
-  safearray.Release();
+  safearray.Reset();
   EXPECT_HRESULT_SUCCEEDED(
       root_itableprovider->GetColumnHeaders(safearray.Receive()));
   EXPECT_EQ(nullptr, safearray.Get());
 }
-
-TestFragmentRootDelegate::TestFragmentRootDelegate() = default;
-
-TestFragmentRootDelegate::~TestFragmentRootDelegate() = default;
 
 gfx::NativeViewAccessible TestFragmentRootDelegate::GetChildOfAXFragmentRoot() {
   return child_;
@@ -1297,67 +1308,73 @@ TEST_F(AXPlatformNodeWinTest, AccNavigate) {
       ia_root->accNavigate(NAVDIR_NEXT, ScopedVariant::kEmptyVariant, nullptr));
   EXPECT_EQ(E_INVALIDARG,
             ia_child1->accNavigate(NAVDIR_NEXT, ScopedVariant::kEmptyVariant,
-                                   end.AsInput()));
+                                   end.Receive()));
   EXPECT_EQ(VT_EMPTY, end.type());
 
   // Navigating to first/last child should only be from self.
   EXPECT_EQ(E_INVALIDARG,
-            ia_root->accNavigate(NAVDIR_FIRSTCHILD, var_root, end.AsInput()));
+            ia_root->accNavigate(NAVDIR_FIRSTCHILD, var_root, end.Receive()));
   EXPECT_EQ(VT_EMPTY, end.type());
   EXPECT_EQ(E_INVALIDARG,
-            ia_root->accNavigate(NAVDIR_LASTCHILD, var_root, end.AsInput()));
+            ia_root->accNavigate(NAVDIR_LASTCHILD, var_root, end.Receive()));
   EXPECT_EQ(VT_EMPTY, end.type());
 
   // Spatial directions are not supported.
-  EXPECT_EQ(E_NOTIMPL, ia_child1->accNavigate(NAVDIR_UP, SELF, end.AsInput()));
-  EXPECT_EQ(E_NOTIMPL, ia_root->accNavigate(NAVDIR_DOWN, SELF, end.AsInput()));
+  EXPECT_EQ(E_NOTIMPL, ia_child1->accNavigate(NAVDIR_UP, SELF, end.Receive()));
+  EXPECT_EQ(E_NOTIMPL, ia_root->accNavigate(NAVDIR_DOWN, SELF, end.Receive()));
   EXPECT_EQ(E_NOTIMPL,
-            ia_child1->accNavigate(NAVDIR_RIGHT, SELF, end.AsInput()));
+            ia_child1->accNavigate(NAVDIR_RIGHT, SELF, end.Receive()));
   EXPECT_EQ(E_NOTIMPL,
-            ia_child2->accNavigate(NAVDIR_LEFT, SELF, end.AsInput()));
+            ia_child2->accNavigate(NAVDIR_LEFT, SELF, end.Receive()));
   EXPECT_EQ(VT_EMPTY, end.type());
 
   // Logical directions should be supported.
-  EXPECT_EQ(S_OK, ia_root->accNavigate(NAVDIR_FIRSTCHILD, SELF, end.AsInput()));
+  EXPECT_EQ(S_OK, ia_root->accNavigate(NAVDIR_FIRSTCHILD, SELF, end.Receive()));
   EXPECT_EQ(VT_DISPATCH, end.type());
   EXPECT_EQ(V_DISPATCH(var_child1.ptr()), V_DISPATCH(end.ptr()));
+  end.Reset();
 
-  EXPECT_EQ(S_OK, ia_root->accNavigate(NAVDIR_LASTCHILD, SELF, end.AsInput()));
+  EXPECT_EQ(S_OK, ia_root->accNavigate(NAVDIR_LASTCHILD, SELF, end.Receive()));
   EXPECT_EQ(VT_DISPATCH, end.type());
   EXPECT_EQ(V_DISPATCH(var_child2.ptr()), V_DISPATCH(end.ptr()));
+  end.Reset();
 
-  EXPECT_EQ(S_OK, ia_child1->accNavigate(NAVDIR_NEXT, SELF, end.AsInput()));
+  EXPECT_EQ(S_OK, ia_child1->accNavigate(NAVDIR_NEXT, SELF, end.Receive()));
   EXPECT_EQ(VT_DISPATCH, end.type());
   EXPECT_EQ(V_DISPATCH(var_child2.ptr()), V_DISPATCH(end.ptr()));
+  end.Reset();
 
-  EXPECT_EQ(S_OK, ia_child2->accNavigate(NAVDIR_PREVIOUS, SELF, end.AsInput()));
+  EXPECT_EQ(S_OK, ia_child2->accNavigate(NAVDIR_PREVIOUS, SELF, end.Receive()));
   EXPECT_EQ(VT_DISPATCH, end.type());
   EXPECT_EQ(V_DISPATCH(var_child1.ptr()), V_DISPATCH(end.ptr()));
+  end.Reset();
 
   // Child indices can also be passed by variant.
   // Indices are one-based.
   EXPECT_EQ(S_OK,
-            ia_root->accNavigate(NAVDIR_NEXT, ScopedVariant(1), end.AsInput()));
+            ia_root->accNavigate(NAVDIR_NEXT, ScopedVariant(1), end.Receive()));
   EXPECT_EQ(VT_DISPATCH, end.type());
   EXPECT_EQ(V_DISPATCH(var_child2.ptr()), V_DISPATCH(end.ptr()));
+  end.Reset();
 
   EXPECT_EQ(S_OK, ia_root->accNavigate(NAVDIR_PREVIOUS, ScopedVariant(2),
-                                       end.AsInput()));
+                                       end.Receive()));
   EXPECT_EQ(VT_DISPATCH, end.type());
   EXPECT_EQ(V_DISPATCH(var_child1.ptr()), V_DISPATCH(end.ptr()));
+  end.Reset();
 
   // Test out-of-bounds.
   EXPECT_EQ(S_FALSE,
-            ia_child1->accNavigate(NAVDIR_PREVIOUS, SELF, end.AsInput()));
+            ia_child1->accNavigate(NAVDIR_PREVIOUS, SELF, end.Receive()));
   EXPECT_EQ(VT_EMPTY, end.type());
-  EXPECT_EQ(S_FALSE, ia_child2->accNavigate(NAVDIR_NEXT, SELF, end.AsInput()));
+  EXPECT_EQ(S_FALSE, ia_child2->accNavigate(NAVDIR_NEXT, SELF, end.Receive()));
   EXPECT_EQ(VT_EMPTY, end.type());
 
   EXPECT_EQ(S_FALSE, ia_root->accNavigate(NAVDIR_PREVIOUS, ScopedVariant(1),
-                                          end.AsInput()));
+                                          end.Receive()));
   EXPECT_EQ(VT_EMPTY, end.type());
   EXPECT_EQ(S_FALSE,
-            ia_root->accNavigate(NAVDIR_NEXT, ScopedVariant(2), end.AsInput()));
+            ia_root->accNavigate(NAVDIR_NEXT, ScopedVariant(2), end.Receive()));
   EXPECT_EQ(VT_EMPTY, end.type());
 }
 
@@ -1824,12 +1841,13 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleTableCellGetColumnHeaderCells) {
   ComPtr<IAccessibleTableCell> cell = GetCellInTable();
   ASSERT_NE(nullptr, cell.Get());
 
-  IUnknown** cell_accessibles;
+  base::win::ScopedCoMem<IUnknown*> cell_accessibles;
+  LONG number_cells = 0;
 
-  LONG number_cells;
   EXPECT_EQ(S_OK,
             cell->get_columnHeaderCells(&cell_accessibles, &number_cells));
   EXPECT_EQ(1, number_cells);
+  ReleasePointers(cell_accessibles.get(), number_cells);
 }
 
 TEST_F(AXPlatformNodeWinTest, IAccessibleTableCellGetColumnIndex) {
@@ -1860,11 +1878,12 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleTableCellGetRowHeaderCells) {
   ComPtr<IAccessibleTableCell> cell = GetCellInTable();
   ASSERT_NE(nullptr, cell.Get());
 
-  IUnknown** cell_accessibles;
+  base::win::ScopedCoMem<IUnknown*> cell_accessibles;
+  LONG number_cells = 0;
 
-  LONG number_cells;
   EXPECT_EQ(S_OK, cell->get_rowHeaderCells(&cell_accessibles, &number_cells));
   EXPECT_EQ(number_cells, 1);
+  ReleasePointers(cell_accessibles.get(), number_cells);
 }
 
 TEST_F(AXPlatformNodeWinTest, IAccessibleTableCellGetRowIndex) {
@@ -2164,17 +2183,18 @@ TEST_F(AXPlatformNodeWinTest, IAccessible2_TestRelationTargetsOfType) {
 
   {
     ScopedBstr type(L"details");
-    IUnknown** targets;
+    base::win::ScopedCoMem<IUnknown*> targets;
     LONG n_targets;
     EXPECT_EQ(S_OK, root_iaccessible2->get_relationTargetsOfType(
                         type.Get(), 0, &targets, &n_targets));
     ASSERT_EQ(2, n_targets);
-    CoTaskMemFree(targets);
+    ReleasePointers(targets.get(), n_targets);
+    targets.Reset(nullptr);
 
     EXPECT_EQ(S_OK, root_iaccessible2->get_relationTargetsOfType(
                         type.Get(), 1, &targets, &n_targets));
     ASSERT_EQ(1, n_targets);
-    CoTaskMemFree(targets);
+    ReleasePointers(targets.get(), n_targets);
   }
 }
 
@@ -2228,37 +2248,37 @@ TEST_F(AXPlatformNodeWinTest, DISABLED_TestRelationTargetsOfType) {
 
   {
     ScopedBstr type(L"details");
-    IUnknown** targets;
+    base::win::ScopedCoMem<IUnknown*> targets;
     LONG n_targets;
     EXPECT_EQ(S_OK, root_iaccessible2->get_relationTargetsOfType(
                         type.Get(), 1, &targets, &n_targets));
     ASSERT_EQ(1, n_targets);
     EXPECT_EQ(ax_child1.Get(), targets[0]);
-    CoTaskMemFree(targets);
+    ReleasePointers(targets.get(), n_targets);
   }
 
   {
     ScopedBstr type(IA2_RELATION_LABELLED_BY);
-    IUnknown** targets;
+    base::win::ScopedCoMem<IUnknown*> targets;
     LONG n_targets;
     EXPECT_EQ(S_OK, ax_child2->get_relationTargetsOfType(type.Get(), 0,
                                                          &targets, &n_targets));
     ASSERT_EQ(2, n_targets);
     EXPECT_EQ(root_iaccessible2.Get(), targets[0]);
     EXPECT_EQ(ax_child3.Get(), targets[1]);
-    CoTaskMemFree(targets);
+    ReleasePointers(targets.get(), n_targets);
   }
 
   {
     ScopedBstr type(L"detailsFor");
-    IUnknown** targets;
+    base::win::ScopedCoMem<IUnknown*> targets;
     LONG n_targets;
     EXPECT_EQ(S_OK, ax_child1->get_relationTargetsOfType(type.Get(), 0,
                                                          &targets, &n_targets));
     ASSERT_EQ(2, n_targets);
     EXPECT_EQ(root_iaccessible2.Get(), targets[0]);
     EXPECT_EQ(ax_child3.Get(), targets[1]);
-    CoTaskMemFree(targets);
+    ReleasePointers(targets.get(), n_targets);
   }
 }
 
@@ -2860,10 +2880,11 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleTable2GetSelectedChildrenZero) {
   table.As(&result);
   ASSERT_NE(nullptr, result.Get());
 
-  IUnknown** cell_accessibles;
+  base::win::ScopedCoMem<IUnknown*> cell_accessibles;
   LONG count;
   EXPECT_EQ(S_OK, result->get_selectedCells(&cell_accessibles, &count));
   EXPECT_EQ(0, count);
+  ReleasePointers(cell_accessibles.get(), count);
 }
 
 TEST_F(AXPlatformNodeWinTest, IAccessibleTable2GetSelectedChildren) {
@@ -2886,16 +2907,14 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleTable2GetSelectedChildren) {
   table.As(&result);
   ASSERT_NE(nullptr, result.Get());
 
-  IUnknown** cell_accessibles;
+  base::win::ScopedCoMem<IUnknown*> cell_accessibles;
   LONG count;
   EXPECT_EQ(S_OK, result->get_selectedCells(&cell_accessibles, &count));
   EXPECT_EQ(2, count);
 
-  ComPtr<IUnknown> table_cell_1(cell_accessibles[0]);
-  CheckIUnknownHasName(table_cell_1, L"1");
-
-  ComPtr<IUnknown> table_cell_4(cell_accessibles[1]);
-  CheckIUnknownHasName(table_cell_4, L"4");
+  CheckIUnknownHasName(cell_accessibles.get()[0], L"1");
+  CheckIUnknownHasName(cell_accessibles.get()[1], L"4");
+  ReleasePointers(cell_accessibles.get(), count);
 }
 
 TEST_F(AXPlatformNodeWinTest, IAccessible2GetGroupPosition) {
@@ -3670,10 +3689,10 @@ TEST_F(AXPlatformNodeWinTest, IGridProviderGetItem) {
       QueryInterfaceFromNode<IRawElementProviderSimple>(
           GetRoot()->children()[0]->children()[0]));
 
-  IRawElementProviderSimple* grid_item = nullptr;
+  ComPtr<IRawElementProviderSimple> grid_item;
   EXPECT_HRESULT_SUCCEEDED(root_igridprovider->GetItem(0, 0, &grid_item));
   EXPECT_NE(nullptr, grid_item);
-  EXPECT_EQ(cell1_irawelementprovidersimple.Get(), grid_item);
+  EXPECT_EQ(cell1_irawelementprovidersimple.Get(), grid_item.Get());
 }
 
 TEST_F(AXPlatformNodeWinTest, IGridProviderGetItemCustomAria) {
@@ -3695,11 +3714,11 @@ TEST_F(AXPlatformNodeWinTest, IGridProviderGetItemCustomAria) {
   ComPtr<IGridProvider> grid4_provider =
       QueryInterfaceFromNode<IGridProvider>(GetRoot()->children()[3]);
 
-  IRawElementProviderSimple* grid_item = nullptr;
+  ComPtr<IRawElementProviderSimple> grid_item;
   EXPECT_HRESULT_FAILED(grid1_provider->GetItem(0, 0, &grid_item));
   EXPECT_HRESULT_SUCCEEDED(grid2_provider->GetItem(3, 4, &grid_item));
   EXPECT_EQ(QueryInterfaceFromNodeId<IRawElementProviderSimple>(5).Get(),
-            grid_item);
+            grid_item.Get());
   // This is an empty grid, so we should not be able to get any items.
   EXPECT_HRESULT_FAILED(grid3_provider->GetItem(1, 2, &grid_item));
   EXPECT_HRESULT_FAILED(grid4_provider->GetItem(-1, -1, &grid_item));
@@ -3896,7 +3915,7 @@ TEST_F(AXPlatformNodeWinTest, ITableProviderGetRowHeaders) {
       GetTree(), GetRoot()->children()[0]->children()[1]);
   row_header_wrapper->ResetNativeEventTarget();
 
-  safearray.Release();
+  safearray.Reset();
   EXPECT_HRESULT_SUCCEEDED(
       root_itableprovider->GetRowHeaders(safearray.Receive()));
   EXPECT_EQ(nullptr, safearray.Get());
@@ -3975,7 +3994,7 @@ TEST_F(AXPlatformNodeWinTest, ITableItemProviderGetColumnHeaderItems) {
       GetTree(), GetRoot()->children()[0]->children()[0]);
   column_header_wrapper->ResetNativeEventTarget();
 
-  safearray.Release();
+  safearray.Reset();
   EXPECT_HRESULT_SUCCEEDED(
       cell_itableitemprovider->GetColumnHeaderItems(safearray.Receive()));
   EXPECT_EQ(nullptr, safearray.Get());
@@ -4037,7 +4056,7 @@ TEST_F(AXPlatformNodeWinTest, ITableItemProviderGetRowHeaderItems) {
       GetTree(), GetRoot()->children()[0]->children()[0]);
   row_header_wrapper->ResetNativeEventTarget();
 
-  safearray.Release();
+  safearray.Reset();
   EXPECT_HRESULT_SUCCEEDED(
       cell_itableitemprovider->GetRowHeaderItems(safearray.Receive()));
   EXPECT_EQ(nullptr, safearray.Get());
@@ -4114,9 +4133,10 @@ TEST_F(AXPlatformNodeWinTest, UIAGetPropertySimple) {
   EXPECT_UIA_BSTR_EQ(root_node, UIA_FullDescriptionPropertyId,
                      L"fake description");
   EXPECT_UIA_BSTR_EQ(root_node, UIA_AriaRolePropertyId, L"list");
-  EXPECT_UIA_BSTR_EQ(root_node, UIA_AriaPropertiesPropertyId,
-                     L"readonly=true;expanded=false;multiline=false;"
-                     L"multiselectable=false;required=false;setsize=2");
+  EXPECT_UIA_BSTR_EQ(
+      root_node, UIA_AriaPropertiesPropertyId,
+      L"readonly=true;expanded=false;multiline=false;"
+      L"multiselectable=false;required=false;setsize=2;hasactions=false");
   EXPECT_UIA_BSTR_EQ(root_node, UIA_NamePropertyId, L"fake name");
   EXPECT_UIA_INT_EQ(root_node, UIA_ControlTypePropertyId,
                     int{UIA_ListControlTypeId});
@@ -4139,7 +4159,7 @@ TEST_F(AXPlatformNodeWinTest, UIAGetPropertySimple) {
   EXPECT_UIA_BSTR_EQ(
       child_node1, UIA_AriaPropertiesPropertyId,
       L"readonly=true;expanded=false;multiline=false;multiselectable=false;"
-      L"posinset=1;required=false;current=page");
+      L"posinset=1;required=false;hasactions=false;current=page");
 
   ComPtr<IRawElementProviderSimple> child_node2 =
       QueryInterfaceFromNode<IRawElementProviderSimple>(
@@ -4148,7 +4168,7 @@ TEST_F(AXPlatformNodeWinTest, UIAGetPropertySimple) {
   EXPECT_UIA_BSTR_EQ(
       child_node2, UIA_AriaPropertiesPropertyId,
       L"readonly=true;expanded=false;multiline=false;multiselectable=false;"
-      L"required=false");
+      L"required=false;hasactions=false");
 }
 
 TEST_F(AXPlatformNodeWinTest, UIAControlContentPropertyForTableElements) {
@@ -4825,8 +4845,7 @@ TEST_F(AXPlatformNodeWinTest, GetPropertyValue_LabeledByTest) {
   // Case 1: |gc_2| is labeled by |static_text_3|.
 
   ComPtr<IRawElementProviderSimple> gc_2_provider =
-      GetIRawElementProviderSimpleFromTree(gc_2_node->tree()->GetAXTreeID(),
-                                           gc_2_node->id());
+      GetIRawElementProviderSimpleFromId(gc_2_node->id());
   ScopedVariant property_value;
   EXPECT_EQ(S_OK, gc_2_provider->GetPropertyValue(UIA_LabeledByPropertyId,
                                                   property_value.Receive()));
@@ -4840,8 +4859,7 @@ TEST_F(AXPlatformNodeWinTest, GetPropertyValue_LabeledByTest) {
   // child of that node, which is |static_text_6|.
 
   ComPtr<IRawElementProviderSimple> gc_4_provider =
-      GetIRawElementProviderSimpleFromTree(gc_4_node->tree()->GetAXTreeID(),
-                                           gc_4_node->id());
+      GetIRawElementProviderSimpleFromId(gc_4_node->id());
   property_value.Reset();
   EXPECT_EQ(S_OK, gc_4_provider->GetPropertyValue(UIA_LabeledByPropertyId,
                                                   property_value.Receive()));
@@ -4857,8 +4875,7 @@ TEST_F(AXPlatformNodeWinTest, GetPropertyValue_LabeledByTest) {
   // |static_text_6|, but shouldn't expose it to the UIA_LabeledByPropertyId.
 
   ComPtr<IRawElementProviderSimple> alert_7_provider =
-      GetIRawElementProviderSimpleFromTree(alert_7_node->tree()->GetAXTreeID(),
-                                           alert_7_node->id());
+      GetIRawElementProviderSimpleFromId(alert_7_node->id());
   property_value.Reset();
   EXPECT_EQ(S_OK, alert_7_provider->GetPropertyValue(UIA_LabeledByPropertyId,
                                                      property_value.Receive()));
@@ -4977,7 +4994,7 @@ TEST_F(AXPlatformNodeWinTest, GetPropertyValue_IsControlElement) {
     ++++17 kForm name="name"
   )HTML"));
 
-  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  AXTreeID tree_id = AXTreeID::CreateNewAXTreeID();
   update.tree_data.tree_id = tree_id;
   update.has_tree_data = true;
   update.root_id = 1;
@@ -4988,37 +5005,37 @@ TEST_F(AXPlatformNodeWinTest, GetPropertyValue_IsControlElement) {
 
   TestAXNodeWrapper::SetGlobalIsWebContent(true);
 
-  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromTree(tree_id, 2),
+  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromId(2),
                      UIA_IsControlElementPropertyId, true);
-  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromTree(tree_id, 3),
+  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromId(3),
                      UIA_IsControlElementPropertyId, false);
-  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromTree(tree_id, 4),
+  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromId(4),
                      UIA_IsControlElementPropertyId, false);
-  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromTree(tree_id, 5),
+  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromId(5),
                      UIA_IsControlElementPropertyId, true);
-  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromTree(tree_id, 6),
+  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromId(6),
                      UIA_IsControlElementPropertyId, true);
-  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromTree(tree_id, 7),
+  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromId(7),
                      UIA_IsControlElementPropertyId, true);
-  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromTree(tree_id, 8),
+  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromId(8),
                      UIA_IsControlElementPropertyId, false);
-  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromTree(tree_id, 9),
+  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromId(9),
                      UIA_IsControlElementPropertyId, true);
-  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromTree(tree_id, 10),
+  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromId(10),
                      UIA_IsControlElementPropertyId, false);
-  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromTree(tree_id, 11),
+  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromId(11),
                      UIA_IsControlElementPropertyId, true);
-  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromTree(tree_id, 12),
+  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromId(12),
                      UIA_IsControlElementPropertyId, true);
-  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromTree(tree_id, 13),
+  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromId(13),
                      UIA_IsControlElementPropertyId, true);
-  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromTree(tree_id, 14),
+  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromId(14),
                      UIA_IsControlElementPropertyId, true);
-  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromTree(tree_id, 15),
+  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromId(15),
                      UIA_IsControlElementPropertyId, true);
-  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromTree(tree_id, 16),
+  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromId(16),
                      UIA_IsControlElementPropertyId, true);
-  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromTree(tree_id, 17),
+  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromId(17),
                      UIA_IsControlElementPropertyId, true);
 }
 
@@ -5130,9 +5147,9 @@ TEST_F(AXPlatformNodeWinTest, UIAGetEmbeddedFragmentRoots) {
   EXPECT_EQ(nullptr, embedded_fragment_roots.Get());
 }
 
-TEST_F(AXPlatformNodeWinTest, UIAGetRuntimeId) {
+TEST_F(AXPlatformNodeWinTest, UIAGetRuntimeIdForGeneratedId) {
   AXNodeData root_data;
-  root_data.id = 1;
+  root_data.id = -99;
   root_data.role = ax::mojom::Role::kRootWebArea;
   Init(root_data);
 
@@ -5159,6 +5176,39 @@ TEST_F(AXPlatformNodeWinTest, UIAGetRuntimeId) {
   EXPECT_NE(-1, array_data[1]);
   EXPECT_NE(-1, array_data[2]);
   EXPECT_NE(-1, array_data[3]);
+
+  EXPECT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(runtime_id.Get()));
+}
+
+TEST_F(AXPlatformNodeWinTest, UIAGetRuntimeIdForSuppliedId) {
+  AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
+  Init(root_data);
+
+  ComPtr<IRawElementProviderFragment> root_provider =
+      GetRootIRawElementProviderFragment();
+
+  base::win::ScopedSafearray runtime_id;
+  EXPECT_HRESULT_SUCCEEDED(root_provider->GetRuntimeId(runtime_id.Receive()));
+
+  LONG array_lower_bound;
+  EXPECT_HRESULT_SUCCEEDED(
+      ::SafeArrayGetLBound(runtime_id.Get(), 1, &array_lower_bound));
+  EXPECT_EQ(0, array_lower_bound);
+
+  LONG array_upper_bound;
+  EXPECT_HRESULT_SUCCEEDED(
+      ::SafeArrayGetUBound(runtime_id.Get(), 1, &array_upper_bound));
+  EXPECT_EQ(3, array_upper_bound);
+
+  int* array_data;
+  EXPECT_HRESULT_SUCCEEDED(::SafeArrayAccessData(
+      runtime_id.Get(), reinterpret_cast<void**>(&array_data)));
+  EXPECT_EQ(UiaAppendRuntimeId, array_data[0]);
+  EXPECT_EQ(-1, array_data[1]);
+  EXPECT_EQ(-1, array_data[2]);
+  EXPECT_EQ(1, array_data[3]);
 
   EXPECT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(runtime_id.Get()));
 }
@@ -5453,7 +5503,7 @@ TEST_F(AXPlatformNodeWinTest, IAnnotationProvider) {
     EXPECT_EQ(highlighted1_node.Get(), target.Get());
     annotation_provider.Reset();
     target.Reset();
-    name.Release();
+    name.Reset();
   }
 
   {
@@ -5477,7 +5527,7 @@ TEST_F(AXPlatformNodeWinTest, IAnnotationProvider) {
     EXPECT_EQ(highlighted1_node.Get(), target.Get());
     annotation_provider.Reset();
     target.Reset();
-    name.Release();
+    name.Reset();
   }
 
   {
@@ -5503,7 +5553,7 @@ TEST_F(AXPlatformNodeWinTest, IAnnotationProvider) {
     EXPECT_EQ(highlighted1_node.Get(), target.Get());
     annotation_provider.Reset();
     target.Reset();
-    name.Release();
+    name.Reset();
   }
 
   {
@@ -5832,8 +5882,13 @@ TEST_F(AXPlatformNodeWinTest, ComputeUIAControlType) {
   child10.role = ax::mojom::Role::kLineBreak;
   root.child_ids.push_back(child10.id);
 
+  AXNodeData child11;
+  child11.id = 12;
+  child11.role = ax::mojom::Role::kMenuItemSeparator;
+  root.child_ids.push_back(child11.id);
+
   Init(root, child1, child2, child3, child4, child5, child6, child7, child8,
-       child9, child10);
+       child9, child10, child11);
 
   EXPECT_UIA_INT_EQ(
       QueryInterfaceFromNodeId<IRawElementProviderSimple>(child1.id),
@@ -5865,6 +5920,9 @@ TEST_F(AXPlatformNodeWinTest, ComputeUIAControlType) {
   EXPECT_UIA_INT_EQ(
       QueryInterfaceFromNodeId<IRawElementProviderSimple>(child10.id),
       UIA_ControlTypePropertyId, int{UIA_TextControlTypeId});
+  EXPECT_UIA_INT_EQ(
+      QueryInterfaceFromNodeId<IRawElementProviderSimple>(child11.id),
+      UIA_ControlTypePropertyId, int{UIA_SeparatorControlTypeId});
 }
 
 TEST_F(AXPlatformNodeWinTest, IsUIAControlForStatusRole) {
@@ -6266,7 +6324,7 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
   constexpr AXNodeID list_grid_cell_id = 38;
 
   AXTreeUpdate update;
-  update.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
   update.has_tree_data = true;
   update.root_id = root_id;
   update.nodes.resize(38);
@@ -6536,19 +6594,19 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
 }
 
 TEST_F(AXPlatformNodeWinTest, GetPatternProviderExpandCollapsePattern) {
-  ui::AXNodeData root;
+  AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
 
-  ui::AXNodeData list_box;
-  ui::AXNodeData list_item;
-  ui::AXNodeData menu_item;
-  ui::AXNodeData menu_list_option;
-  ui::AXNodeData tree_item;
-  ui::AXNodeData combo_box_grouping;
-  ui::AXNodeData combo_box_menu_button;
-  ui::AXNodeData disclosure_triangle;
-  ui::AXNodeData text_field_with_combo_box;
+  AXNodeData list_box;
+  AXNodeData list_item;
+  AXNodeData menu_item;
+  AXNodeData menu_list_option;
+  AXNodeData tree_item;
+  AXNodeData combo_box_grouping;
+  AXNodeData combo_box_menu_button;
+  AXNodeData disclosure_triangle;
+  AXNodeData text_field_with_combo_box;
 
   list_box.id = 2;
   list_item.id = 3;
@@ -6655,14 +6713,14 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderExpandCollapsePattern) {
 }
 
 TEST_F(AXPlatformNodeWinTest, GetPatternProviderInvokePattern) {
-  ui::AXNodeData root;
+  AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
 
-  ui::AXNodeData link;
-  ui::AXNodeData generic_container;
-  ui::AXNodeData combo_box_grouping;
-  ui::AXNodeData check_box;
+  AXNodeData link;
+  AXNodeData generic_container;
+  AXNodeData combo_box_grouping;
+  AXNodeData check_box;
 
   link.id = 2;
   generic_container.id = 3;
@@ -6794,18 +6852,18 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderGridCellValuePattern) {
 }
 
 TEST_F(AXPlatformNodeWinTest, IExpandCollapsePatternProviderAction) {
-  ui::AXNodeData root;
+  AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
 
-  ui::AXNodeData combo_box_grouping_has_popup;
-  ui::AXNodeData combo_box_grouping_expanded;
-  ui::AXNodeData combo_box_grouping_collapsed;
-  ui::AXNodeData combo_box_grouping_disabled;
-  ui::AXNodeData button_has_popup_menu;
-  ui::AXNodeData button_has_popup_menu_pressed;
-  ui::AXNodeData button_has_popup_true;
-  ui::AXNodeData generic_container_has_popup_menu;
+  AXNodeData combo_box_grouping_has_popup;
+  AXNodeData combo_box_grouping_expanded;
+  AXNodeData combo_box_grouping_collapsed;
+  AXNodeData combo_box_grouping_disabled;
+  AXNodeData button_has_popup_menu;
+  AXNodeData button_has_popup_menu_pressed;
+  AXNodeData button_has_popup_true;
+  AXNodeData generic_container_has_popup_menu;
 
   combo_box_grouping_has_popup.id = 2;
   combo_box_grouping_expanded.id = 3;
@@ -7067,12 +7125,12 @@ TEST_F(AXPlatformNodeWinTest,
 }
 
 TEST_F(AXPlatformNodeWinTest, IInvokeProviderInvoke) {
-  ui::AXNodeData root;
+  AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
 
-  ui::AXNodeData button;
-  ui::AXNodeData button_disabled;
+  AXNodeData button;
+  AXNodeData button_disabled;
 
   button.id = 2;
   button_disabled.id = 3;
@@ -7985,6 +8043,7 @@ TEST_F(AXPlatformNodeWinTest, DISABLED_BulkFetch) {
   CComObject<TestIChromeAccessibleDelegate>* delegate = nullptr;
   ASSERT_HRESULT_SUCCEEDED(
       CComObject<TestIChromeAccessibleDelegate>::CreateInstance(&delegate));
+  ComPtr<TestIChromeAccessibleDelegate> delegate_ptr(delegate);
   ScopedBstr input_bstr(L"Potato");
   chrome_accessible->get_bulkFetch(input_bstr.Get(), 99, delegate);
   std::string response = delegate->WaitForBulkFetchResult(99);
@@ -8014,6 +8073,7 @@ TEST_F(AXPlatformNodeWinTest, AsyncHitTest) {
   CComObject<TestIChromeAccessibleDelegate>* delegate = nullptr;
   ASSERT_HRESULT_SUCCEEDED(
       CComObject<TestIChromeAccessibleDelegate>::CreateInstance(&delegate));
+  ComPtr<TestIChromeAccessibleDelegate> delegate_ptr(delegate);
   ScopedBstr input_bstr(L"Potato");
   chrome_accessible->get_hitTest(400, 300, 12345, delegate);
   ComPtr<IUnknown> result = delegate->WaitForHitTestResult(12345);
@@ -8025,6 +8085,124 @@ TEST_F(AXPlatformNodeWinTest, AsyncHitTest) {
   LONG root_unique_id = 0;
   ASSERT_HRESULT_SUCCEEDED(root_accessible->get_uniqueID(&root_unique_id));
   ASSERT_EQ(root_unique_id, result_unique_id);
+}
+
+namespace {
+
+class FakeAxPlatformNodeDelegate : public AXPlatformNodeDelegate {
+ public:
+  AXPlatformNodeId GetUniqueId() const override { return unique_id_; }
+
+ private:
+  const AXUniqueId unique_id_{AXUniqueId::Create()};
+};
+
+}  // namespace
+
+// Tests lifecycle accounting for dormant -> destroyed.
+TEST_F(AXPlatformNodeWinTest, DormantDestroyed) {
+  AXPlatformNodeDelegate test_delegate;
+
+  // All zeros to start with.
+  ASSERT_EQ(AXPlatformNodeWin::GetCounts(),
+            (AXPlatformNodeWin::Counts{0U, 0U, 0U, 0U}));
+
+  AXPlatformNode::Pointer node = AXPlatformNode::Create(test_delegate);
+
+  // One instance and one dormant node.
+  ASSERT_EQ(AXPlatformNodeWin::GetCounts(),
+            (AXPlatformNodeWin::Counts{1U, 1U, 0U, 0U}));
+
+  node.reset();
+
+  // Zero instances and no ghost nodes.
+  ASSERT_EQ(AXPlatformNodeWin::GetCounts(),
+            (AXPlatformNodeWin::Counts{0U, 0U, 0U, 0U}));
+}
+
+// Tests lifecycle accounting for dormant -> live -> dormant -> destroyed.
+TEST_F(AXPlatformNodeWinTest, DormantLiveDormantDestroyed) {
+  AXPlatformNodeDelegate test_delegate;
+
+  // All zeros to start with.
+  ASSERT_EQ(AXPlatformNodeWin::GetCounts(),
+            (AXPlatformNodeWin::Counts{0U, 0U, 0U, 0U}));
+
+  AXPlatformNode::Pointer node = AXPlatformNode::Create(test_delegate);
+
+  // One instance and one dormant node.
+  ASSERT_EQ(AXPlatformNodeWin::GetCounts(),
+            (AXPlatformNodeWin::Counts{1U, 1U, 0U, 0U}));
+
+  Microsoft::WRL::ComPtr<IAccessible> a_ref;
+  ASSERT_HRESULT_SUCCEEDED(
+      static_cast<AXPlatformNodeWin&>(*node).QueryInterface(
+          IID_PPV_ARGS(&a_ref)));
+
+  // One instance and one live node.
+  ASSERT_EQ(AXPlatformNodeWin::GetCounts(),
+            (AXPlatformNodeWin::Counts{1U, 0U, 1U, 0U}));
+
+  a_ref.Reset();
+
+  // One instance and one dormant node.
+  ASSERT_EQ(AXPlatformNodeWin::GetCounts(),
+            (AXPlatformNodeWin::Counts{1U, 1U, 0U, 0U}));
+
+  node.reset();
+
+  // Zero instances and no ghost nodes.
+  ASSERT_EQ(AXPlatformNodeWin::GetCounts(),
+            (AXPlatformNodeWin::Counts{0U, 0U, 0U, 0U}));
+}
+
+// Tests lifecycle accounting for dormant -> live -> ghost -> destroyed.
+TEST_F(AXPlatformNodeWinTest, DormantLiveGhostDestroyed) {
+  AXPlatformNodeDelegate test_delegate;
+
+  // All zeros to start with.
+  ASSERT_EQ(AXPlatformNodeWin::GetCounts(),
+            (AXPlatformNodeWin::Counts{0U, 0U, 0U, 0U}));
+
+  AXPlatformNode::Pointer node = AXPlatformNode::Create(test_delegate);
+
+  // One instance and one dormant node.
+  ASSERT_EQ(AXPlatformNodeWin::GetCounts(),
+            (AXPlatformNodeWin::Counts{1U, 1U, 0U, 0U}));
+
+  Microsoft::WRL::ComPtr<IAccessible> a_ref;
+  ASSERT_HRESULT_SUCCEEDED(
+      static_cast<AXPlatformNodeWin&>(*node).QueryInterface(
+          IID_PPV_ARGS(&a_ref)));
+
+  // One instance and one live node.
+  ASSERT_EQ(AXPlatformNodeWin::GetCounts(),
+            (AXPlatformNodeWin::Counts{1U, 0U, 1U, 0U}));
+
+  Microsoft::WRL::ComPtr<IAccessible> a_second_ref;
+  ASSERT_HRESULT_SUCCEEDED(a_ref.CopyTo(&a_second_ref));
+
+  // Still one instance and one live node.
+  ASSERT_EQ(AXPlatformNodeWin::GetCounts(),
+            (AXPlatformNodeWin::Counts{1U, 0U, 1U, 0U}));
+
+  node.reset();
+
+  // Zero instances and one ghost node.
+  ASSERT_EQ(AXPlatformNodeWin::GetCounts(),
+            (AXPlatformNodeWin::Counts{0U, 0U, 0U, 1U}));
+
+  a_ref.Reset();
+
+  // Still zero instances and one ghost node.
+  ASSERT_EQ(AXPlatformNodeWin::GetCounts(),
+            (AXPlatformNodeWin::Counts{0U, 0U, 0U, 1U}));
+
+  a_second_ref.Reset();
+
+  // Zero instances and no ghost nodes.
+  ASSERT_EQ(AXPlatformNodeWin::GetCounts(),
+            (AXPlatformNodeWin::Counts{0U, 0U, 0U, 0U}));
 }
 
 }  // namespace ui

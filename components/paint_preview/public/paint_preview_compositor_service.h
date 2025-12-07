@@ -41,8 +41,7 @@ class PaintPreviewCompositorService {
 
   // Called when system is under memory pressure.
   virtual void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel
-          memory_pressure_level) = 0;
+      base::MemoryPressureLevel memory_pressure_level) = 0;
 
   PaintPreviewCompositorService(const PaintPreviewCompositorService&) = delete;
   PaintPreviewCompositorService& operator=(

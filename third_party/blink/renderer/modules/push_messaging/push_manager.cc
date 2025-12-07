@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/modules/push_messaging/push_messaging_client.h"
 #include "third_party/blink/renderer/modules/push_messaging/push_provider.h"
 #include "third_party/blink/renderer/modules/push_messaging/push_subscription.h"
-#include "third_party/blink/renderer/modules/push_messaging/push_subscription_callbacks.h"
 #include "third_party/blink/renderer/modules/push_messaging/push_subscription_options.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_registration.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -111,14 +110,11 @@ ScriptPromise<PushSubscription> PushManager::subscribe(
 
     messaging_client->Subscribe(
         registration_, options,
-        LocalFrame::HasTransientUserActivation(window->GetFrame()),
-        std::make_unique<PushSubscriptionCallbacks>(resolver,
-                                                    /*null_allowed=*/false));
+        LocalFrame::HasTransientUserActivation(window->GetFrame()), resolver);
   } else {
     GetPushProvider(registration_)
         ->Subscribe(options, LocalFrame::HasTransientUserActivation(nullptr),
-                    std::make_unique<PushSubscriptionCallbacks>(
-                        resolver, /*null_allowed=*/false));
+                    resolver);
   }
 
   return promise;
@@ -128,12 +124,8 @@ ScriptPromise<IDLNullable<PushSubscription>> PushManager::getSubscription(
     ScriptState* script_state) {
   auto* resolver = MakeGarbageCollected<
       ScriptPromiseResolver<IDLNullable<PushSubscription>>>(script_state);
-  auto promise = resolver->Promise();
-
-  GetPushProvider(registration_)
-      ->GetSubscription(std::make_unique<PushSubscriptionCallbacks>(
-          resolver, /*null_allowed=*/true));
-  return promise;
+  GetPushProvider(registration_)->GetSubscription(resolver);
+  return resolver->Promise();
 }
 
 ScriptPromise<V8PermissionState> PushManager::permissionState(

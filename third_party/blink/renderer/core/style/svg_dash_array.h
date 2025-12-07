@@ -29,15 +29,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_SVG_DASH_ARRAY_H_
 
 #include "third_party/blink/renderer/platform/geometry/length.h"
-#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
 namespace blink {
 
-using SVGDashArray = base::RefCountedData<WTF::Vector<Length>>;
-
-// TODO(fs): Should return const.
-SVGDashArray* EmptyDashArray();
+using SVGDashArray = GCedHeapVector<Length>;
 
 }  // namespace blink
 

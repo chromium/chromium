@@ -16,7 +16,6 @@ class SharedURLLoaderFactory;
 namespace affiliations {
 
 class AffiliationFetcherInterface;
-class AffiliationFetcherDelegate;
 
 // Interface for a factory to construct instances of AffiliationFetcher
 // subclasses.
@@ -36,8 +35,10 @@ class AffiliationFetcherFactory {
   // to the |delegate| on the same thread that creates the instance. Returns
   // nullptr is facet can't be created.
   virtual std::unique_ptr<AffiliationFetcherInterface> CreateInstance(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      AffiliationFetcherDelegate* delegate) = 0;
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) = 0;
+
+  // Returns true only if factory can create AffiliationFetcher.
+  virtual bool CanCreateFetcher() const = 0;
 };
 
 }  // namespace affiliations

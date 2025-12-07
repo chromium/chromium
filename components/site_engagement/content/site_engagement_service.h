@@ -18,6 +18,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
 #include "components/site_engagement/core/site_engagement_score_provider.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom.h"
 #include "ui/base/page_transition_types.h"
 
@@ -42,7 +43,7 @@ class GURL;
 class HostContentSettingsMap;
 class PrefRegistrySimple;
 class NotificationPermissionReviewServiceTest;
-class SafetyHubCardDataHelperTest;
+class SafetyHubHatsServiceTest;
 
 namespace site_engagement {
 
@@ -133,13 +134,16 @@ class SiteEngagementService : public KeyedService,
   static double GetScoreFromSettings(HostContentSettingsMap* settings,
                                      const GURL& origin);
 
-  // Retrieves all details for origins within `url_set`. Can be called
+  // Retrieves all details for origins within `url_set` and with minimum total
+  // engagement level greater than `minimum_engagement`. Can be called
   // from a background thread. `now` must be the current timestamp. Takes a
   // scoped_refptr to keep HostContentSettingsMap alive. See crbug.com/901287.
   static std::vector<mojom::SiteEngagementDetails> GetAllDetailsInBackground(
       base::Time now,
       scoped_refptr<HostContentSettingsMap> map,
-      URLSets::Type url_set = URLSets::HTTP);
+      URLSets::Type url_set = URLSets::HTTP,
+      blink::mojom::EngagementLevel minimum_engagement =
+          blink::mojom::EngagementLevel::NONE);
 
   // Returns whether |score| is at least the given |level| of engagement.
   static bool IsEngagementAtLeast(double score,
@@ -181,6 +185,9 @@ class SiteEngagementService : public KeyedService,
   // Update the last time |url| was opened from an installed shortcut (hosted in
   // |web_contents|) to be clock_->Now().
   void SetLastShortcutLaunchTime(content::WebContents* web_contents,
+#if !BUILDFLAG(IS_ANDROID)
+                                 const webapps::AppId& app_id,
+#endif
                                  const GURL& url);
 
   // Returns the site engagement details for the specified |url|.
@@ -209,7 +216,7 @@ class SiteEngagementService : public KeyedService,
   friend class SiteEngagementServiceTest;
   friend class web_app::WebAppEngagementBrowserTest;
   friend class ::NotificationPermissionReviewServiceTest;
-  friend class ::SafetyHubCardDataHelperTest;
+  friend class ::SafetyHubHatsServiceTest;
   FRIEND_TEST_ALL_PREFIXES(SiteEngagementServiceTest, CheckHistograms);
   FRIEND_TEST_ALL_PREFIXES(SiteEngagementServiceTest, CleanupEngagementScores);
   FRIEND_TEST_ALL_PREFIXES(SiteEngagementServiceTest,
@@ -298,9 +305,12 @@ class SiteEngagementService : public KeyedService,
   // |web_contents| may be null if the engagement has increased when |url| is
   // not in a tab, e.g. from a notification interaction. Also records
   // engagement-type metrics.
-  void OnEngagementEvent(content::WebContents* web_contents,
-                         const GURL& url,
-                         EngagementType type);
+  void OnEngagementEvent(
+      content::WebContents* web_contents,
+      const GURL& url,
+      EngagementType type,
+      double old_score,
+      const std::optional<webapps::AppId>& app_id_override = std::nullopt);
 
   // Returns true if the last engagement increasing event seen by the site
   // engagement service was sufficiently long ago that we need to reset all

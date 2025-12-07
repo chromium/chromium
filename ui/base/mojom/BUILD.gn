@@ -11,47 +11,32 @@ mojom("mojom") {
     "ui_base_types.mojom",
     "window_open_disposition.mojom",
   ]
+  cpp_typemaps = []
 
   if (is_mac) {
-    sources += [ "attributed_string.mojom" ]
+    sources += [
+      "attributed_string.mojom",
+      "color_mode.mojom",
+    ]
     public_deps = [
       "//mojo/public/mojom/base",
       "//ui/gfx/range/mojom",
     ]
+    cpp_typemaps += [
+      {
+        types = [
+          {
+            mojom = "ui.mojom.ColorMode"
+            cpp = "::ui::ColorProviderKey::ColorMode"
+          },
+        ]
+        traits_headers = [ "color_mode_mojom_traits.h" ]
+        traits_public_deps = [ "//ui/color:color_provider_key" ]
+      },
+    ]
   }
 
-  shared_cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "ui.mojom.WindowShowState"
-          cpp = "::ui::WindowShowState"
-        },
-      ]
-      traits_headers = [ "ui_base_types_mojom_traits.h" ]
-      traits_public_deps = [ "//ui/base" ]
-    },
-  ]
-
-  cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "ui.mojom.DialogButton"
-          cpp = "::ui::DialogButton"
-        },
-        {
-          mojom = "ui.mojom.MenuSourceType"
-          cpp = "::ui::MenuSourceType"
-        },
-        {
-          mojom = "ui.mojom.ModalType"
-          cpp = "::ui::ModalType"
-        },
-      ]
-      traits_headers = [ "ui_base_types_mojom_traits.h" ]
-      traits_public_deps = [ "//ui/base" ]
-    },
+  cpp_typemaps += [
     {
       types = [
         {
@@ -64,14 +49,25 @@ mojom("mojom") {
     },
   ]
 
-  cpp_typemaps += shared_cpp_typemaps
-  blink_cpp_typemaps = shared_cpp_typemaps
-
   export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
   export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
   export_header_blink = "third_party/blink/public/platform/web_common.h"
   webui_module_path = "chrome://resources/mojo/ui/base/mojom"
 
   # Generate legacy bindings for Blink.
+  generate_legacy_js_bindings = true
+}
+
+# TODO(crbug.com/359910414): Move back DialogButton enum to ui_base_types.mojom.
+# TODO(crbug.com/361008605): Move back `WindowShowState` enum to ui_base_types.mojom.
+# TODO(crbug.com/370252254): Move back `MenuSourceType` enum to ui_base_types.mojom.
+mojom("ui_base_types") {
+  generate_java = true
+  sources = [
+    "dialog_button.mojom",
+    "menu_source_type.mojom",
+    "window_show_state.mojom",
+  ]
+  webui_module_path = "chrome://resources/mojo/ui/base/mojom"
   generate_legacy_js_bindings = true
 }

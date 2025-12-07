@@ -8,8 +8,8 @@
 
 #include "base/base_switches.h"
 #include "base/debug/crash_logging.h"
+#include "base/logging.h"
 #include "base/memory/shared_memory_mapping.h"
-#include "base/memory/shared_memory_switch.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/metrics/persistent_histogram_allocator.h"
@@ -24,8 +24,8 @@
 
 // On Apple platforms, the shared memory handle is shared using a Mach port
 // rendezvous key.
-#if BUILDFLAG(IS_APPLE)
-#include "base/mac/mach_port_rendezvous.h"
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_IOS_TVOS)
+#include "base/apple/mach_port_rendezvous.h"
 #endif
 
 // On POSIX, the shared memory handle is a file_descriptor mapped in the
@@ -68,12 +68,16 @@
 namespace base {
 
 BASE_FEATURE(kPassHistogramSharedMemoryOnLaunch,
-             "PassHistogramSharedMemoryOnLaunch",
-             FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             FEATURE_DISABLED_BY_DEFAULT
+#else
+             FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 #if BUILDFLAG(IS_APPLE)
-const MachPortsForRendezvous::key_type HistogramSharedMemory::kRendezvousKey =
-    'hsmr';
+const shared_memory::SharedMemoryMachPortRendezvousKey
+    HistogramSharedMemory::kRendezvousKey = 'hsmr';
 #endif
 
 HistogramSharedMemory::SharedMemory::SharedMemory(
@@ -115,52 +119,39 @@ HistogramSharedMemory::Create(int process_id,
 }
 
 // static
-bool HistogramSharedMemory::PassOnCommandLineIsEnabled(
-    std::string_view process_type) {
-  // On ChromeOS and for "utility" processes on other platforms there seems to
-  // be one or more mechanisms on startup which walk through all inherited
-  // shared memory regions and take a read-only handle to them. When we later
-  // attempt to deserialize the handle info and take a writable handle we
-  // find that the handle is already owned in read-only mode, triggering
-  // a crash due to "FD ownership violation".
+bool HistogramSharedMemory::PassOnCommandLineIsEnabled(int process_type) {
+  // On Android "utility" processes, there seems to be one or more mechanisms on
+  // startup which walk through all inherited shared memory regions and take a
+  // read-only handle to them. When we later attempt to deserialize the handle
+  // info and take a writable handle we find that the handle is already owned in
+  // read-only mode, triggering a crash due to "FD ownership violation".
   //
   // Example: The call to OpenSymbolFiles() in base/debug/stack_trace_posix.cc
   // grabs a read-only handle to the shmem region for some process types.
   //
-  // TODO(crbug.com/40109064): Fix ChromeOS and utility processes.
+  // TODO(crbug.com/40109064): Fix Android utility processes. Constants from
+  // content::ProcessType;
+  [[maybe_unused]] constexpr int PROCESS_TYPE_UTILITY = 6;
   return (FeatureList::IsEnabled(kPassHistogramSharedMemoryOnLaunch)
-#if BUILDFLAG(IS_CHROMEOS)
-          && process_type != "gpu-process"
-#elif BUILDFLAG(IS_ANDROID)
-          && process_type != "utility"
+#if BUILDFLAG(IS_ANDROID)
+          && process_type != PROCESS_TYPE_UTILITY
 #endif
   );
 }
 
 // static
 void HistogramSharedMemory::AddToLaunchParameters(
-    UnsafeSharedMemoryRegion histogram_shmem_region,
+    const UnsafeSharedMemoryRegion& histogram_shmem_region,
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
     GlobalDescriptors::Key descriptor_key,
     ScopedFD& descriptor_to_share,
 #endif
     CommandLine* command_line,
     LaunchOptions* launch_options) {
+  CHECK(histogram_shmem_region.IsValid());
   CHECK(command_line);
-
-  const std::string process_type = command_line->GetSwitchValueASCII("type");
-  const bool enabled = PassOnCommandLineIsEnabled(process_type);
-
-  DVLOG(1) << (enabled ? "A" : "Not a")
-           << "dding histogram shared memory launch parameters for "
-           << process_type << " process.";
-
-  if (!enabled) {
-    return;
-  }
-
   shared_memory::AddToLaunchParameters(::switches::kMetricsSharedMemoryHandle,
-                                       std::move(histogram_shmem_region),
+                                       histogram_shmem_region,
 #if BUILDFLAG(IS_APPLE)
                                        kRendezvousKey,
 #elif BUILDFLAG(IS_POSIX)

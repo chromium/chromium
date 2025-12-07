@@ -1,0 +1,194 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("banners") {
+  sources = []
+  public_deps = [
+    "//base",
+    "//components/webapps/browser",
+  ]
+
+  if (is_android) {
+    sources += [ "android/chrome_app_banner_manager_android.h" ]
+  } else {
+    sources += [ "app_banner_manager_desktop.h" ]
+    public_deps += [
+      "//chrome/browser/ui/web_applications",
+      "//chrome/browser/web_applications",
+      "//components/webapps/common",
+      "//content/public/browser",
+    ]
+  }
+}
+
+# TODO(crbug.com/353332589): :banners and :impl can be merged once
+# c/b/ui/tabs_helpers.cc ever gets built out of //c/b/ui:ui, otherwise
+# it causes circular dependencies.
+source_set("impl") {
+  sources = []
+  deps = [
+    ":banners",
+    "//chrome/browser/profiles:profile",
+    "//third_party/blink/public/common",
+  ]
+
+  if (is_android) {
+    sources += [ "android/chrome_app_banner_manager_android.cc" ]
+    deps += [
+      "//chrome/browser:browser_process",
+      "//chrome/browser/android/webapk:webapk_sources",
+      "//chrome/browser/flags:flags_android",
+      "//chrome/browser/segmentation_platform",
+      "//chrome/common:chrome_features",
+      "//components/site_engagement/content",
+      "//components/webapps/browser/android:webapps_java_enums_srcjar",
+      "//content/public/browser",
+    ]
+  } else {
+    sources += [ "app_banner_manager_desktop.cc" ]
+    deps += [
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/web_applications",
+      "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
+      "//chrome/browser/web_applications/proto",
+      "//components/webapps/browser:constants",
+      "//extensions/browser",
+      "//extensions/common:common_constants",
+    ]
+    if (is_chromeos) {
+      deps += [
+        "//chrome/browser/ash/app_list/arc",
+        "//chrome/browser/ash/arc:arc_util",
+      ]
+    }
+  }
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = []
+  deps = []
+
+  if (!is_android) {
+    sources += [
+      "test_app_banner_manager_desktop.cc",
+      "test_app_banner_manager_desktop.h",
+    ]
+    public_deps = [ ":banners" ]
+    deps += [
+      "//base/test:test_support",
+      "//chrome/browser",
+      "//components/webapps/browser",
+      "//components/webapps/browser:webapps_client",
+      "//content/public/browser",
+      "//testing/gmock",
+      "//third_party/blink/public/common:headers",
+    ]
+  }
+}
+
+source_set("platform_browser_tests") {
+  testonly = true
+  sources = [
+    "app_banner_manager_browsertest_base.cc",
+    "app_banner_manager_browsertest_base.h",
+  ]
+  public_deps = [
+    "//chrome/test:test_support",
+    "//url",
+  ]
+  deps = [
+    "//chrome/browser/ui",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//net",
+    "//net:test_support",
+  ]
+  if (!is_android) {
+    public_deps += [ "//chrome/test:test_support_ui" ]
+    deps += [
+      "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications:web_applications_test_support",
+    ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    testonly = true
+    sources = [
+      "app_banner_manager_browsertest.cc",
+      "app_banner_manager_desktop_browsertest.cc",
+    ]
+    deps = [
+      ":banners",
+      ":platform_browser_tests",
+      ":test_support",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/app:command_ids",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/actions:actions_headers",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/web_applications",
+      "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications:web_applications_test_support",
+      "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
+      "//chrome/common:chrome_features",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/network_session_configurator/common",
+      "//components/password_manager/content/common",
+      "//components/password_manager/core/common:features",
+      "//components/webapps/browser",
+      "//components/webapps/browser:constants",
+      "//content/public/browser",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//extensions/common",
+      "//net:test_support",
+      "//testing/gtest",
+      "//third_party/blink/public/common:headers",
+    ]
+  }
+} else {
+  source_set("android_browsertests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "android/ambient_badge_manager_browsertest.cc",
+      "app_banner_manager_browsertest.cc",
+    ]
+    deps = [
+      ":banners",
+      ":platform_browser_tests",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/profiles:profile",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui_android",
+      "//components/network_session_configurator/common",
+      "//components/segmentation_platform/public",
+      "//components/segmentation_platform/public:test_support",
+      "//components/webapps/browser",
+      "//components/webapps/browser/android:webapps_java_enums_srcjar",
+      "//content/public/android:content_public_android_java_enums_srcjar",
+      "//content/public/browser",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//net",
+      "//net:test_support",
+      "//net/android:net_java_test_support_enums_srcjar",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//third_party/blink/public/common:headers",
+      "//url",
+    ]
+  }
+}

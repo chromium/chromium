@@ -5,8 +5,7 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/wallet_helper.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -24,14 +23,18 @@ using wallet_helper::UpdateServerCardCredentialData;
 
 namespace {
 
-class TwoClientWalletCredentialSyncTest : public SyncTest {
+class TwoClientWalletCredentialSyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   TwoClientWalletCredentialSyncTest() : SyncTest(TWO_CLIENT) {
-    features_.InitWithFeatures(
-        /*enabled_features=*/{kSyncAutofillWalletCredentialData,
-                              autofill::features::
-                                  kAutofillEnableCvcStorageAndFilling},
-        /*disabled_features=*/{});
+    std::vector<base::test::FeatureRef> enabled_features = {
+        kSyncAutofillWalletCredentialData,
+        autofill::features::kAutofillEnableCvcStorageAndFilling};
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+    features_.InitWithFeatures(enabled_features, {});
   }
 
   TwoClientWalletCredentialSyncTest(const TwoClientWalletCredentialSyncTest&) =
@@ -41,11 +44,13 @@ class TwoClientWalletCredentialSyncTest : public SyncTest {
 
   ~TwoClientWalletCredentialSyncTest() override = default;
 
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
+
   bool TestUsesSelfNotifications() override { return false; }
 
   bool SetUpSyncAndInitialize() {
-    test_clock_.SetNow(base::Time::FromSecondsSinceUnixEpoch(25));
-
     if (!SetupSync()) {
       return false;
     }
@@ -70,24 +75,35 @@ class TwoClientWalletCredentialSyncTest : public SyncTest {
             entity_specifics, /*creation_time=*/0, /*last_modified_time=*/0));
   }
 
+  wallet_helper::StoreType GetStoreType() const {
+    return GetSetupSyncMode() == SyncTest::SetupSyncMode::kSyncTransportOnly
+               ? wallet_helper::StoreType::kAccountStore
+               : wallet_helper::StoreType::kProfileStore;
+  }
+
  private:
-  autofill::TestAutofillClock test_clock_;
   base::test::ScopedFeatureList features_;
 };
 
-IN_PROC_BROWSER_TEST_F(TwoClientWalletCredentialSyncTest, AddCvcToCreditCard) {
+INSTANTIATE_TEST_SUITE_P(,
+                       TwoClientWalletCredentialSyncTest,
+                       GetSyncTestModes(),
+                       testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(TwoClientWalletCredentialSyncTest, AddCvcToCreditCard) {
   GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard()});
   ASSERT_TRUE(SetUpSyncAndInitialize());
 
   // Grab the current card on the first client.
-  std::vector<autofill::CreditCard*> credit_cards =
+  std::vector<const autofill::CreditCard*> credit_cards =
       GetServerCreditCards(/*profile=*/0);
   ASSERT_EQ(1u, credit_cards.size());
   EXPECT_TRUE(credit_cards[0]->cvc().empty());
   autofill::CreditCard card = *credit_cards[0];
 
   card.set_cvc(u"123");
-  SetServerCardCredentialData(/*profile=*/0, /*credit_card=*/card);
+  SetServerCardCredentialData(/*profile=*/0, /*credit_card=*/card,
+                              GetStoreType());
 
   // Wait for the change to propagate.
   EXPECT_TRUE(AutofillWalletChecker(0, 1).Wait());
@@ -101,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWalletCredentialSyncTest, AddCvcToCreditCard) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientWalletCredentialSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientWalletCredentialSyncTest,
                        UpdateCvcForCreditCard) {
   SetDefaultWalletCredentialOnFakeServer();
   GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard()});
@@ -109,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWalletCredentialSyncTest,
 
   // Grab the server cards from both the clients. Verify that CVC is not empty
   // and has the default value.
-  std::vector<autofill::CreditCard*> credit_cards;
+  std::vector<const autofill::CreditCard*> credit_cards;
   for (int profile_id = 0; profile_id < 2; profile_id++) {
     credit_cards = GetServerCreditCards(/*profile=*/profile_id);
     ASSERT_EQ(1u, credit_cards.size());
@@ -118,7 +134,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientWalletCredentialSyncTest,
 
   autofill::CreditCard card = *GetServerCreditCards(/*profile=*/0)[0];
   card.set_cvc(u"963");
-  UpdateServerCardCredentialData(/*profile=*/0, /*credit_card=*/card);
+  UpdateServerCardCredentialData(/*profile=*/0, /*credit_card=*/card,
+                                 GetStoreType());
 
   // Wait for the change to propagate.
   EXPECT_TRUE(AutofillWalletChecker(/*profile_a=*/0, /*profile_b=*/1).Wait());
@@ -132,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWalletCredentialSyncTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientWalletCredentialSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientWalletCredentialSyncTest,
                        RemoveCvcForCreditCard) {
   SetDefaultWalletCredentialOnFakeServer();
   GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard()});
@@ -140,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWalletCredentialSyncTest,
 
   // Grab the server cards from both the clients. Verify that CVC is not empty
   // and has the default value.
-  std::vector<autofill::CreditCard*> credit_cards;
+  std::vector<const autofill::CreditCard*> credit_cards;
   for (int profile_id = 0; profile_id < 2; profile_id++) {
     credit_cards = GetServerCreditCards(/*profile=*/profile_id);
     ASSERT_EQ(1u, credit_cards.size());
@@ -148,7 +165,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientWalletCredentialSyncTest,
   }
 
   autofill::CreditCard card = *GetServerCreditCards(/*profile=*/0)[0];
-  RemoveServerCardCredentialData(/*profile=*/0, /*credit_card=*/card);
+  RemoveServerCardCredentialData(/*profile=*/0, /*credit_card=*/card,
+                                 GetStoreType());
 
   // Wait for the change to propagate.
   EXPECT_TRUE(AutofillWalletChecker(/*profile_a=*/0, /*profile_b=*/1).Wait());

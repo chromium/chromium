@@ -111,6 +111,9 @@ int AuctionConfig::NumPromises() const {
   if (non_shared_params.seller_signals.is_promise()) {
     ++total;
   }
+  if (non_shared_params.seller_tkv_signals.is_promise()) {
+    ++total;
+  }
   if (non_shared_params.per_buyer_signals.is_promise()) {
     ++total;
   }
@@ -126,6 +129,13 @@ int AuctionConfig::NumPromises() const {
   if (non_shared_params.deprecated_render_url_replacements.is_promise()) {
     ++total;
   }
+  for (const auto& buyer_tkv_signals :
+       non_shared_params.per_buyer_tkv_signals) {
+    if (buyer_tkv_signals.second.is_promise()) {
+      ++total;
+    }
+  }
+
   if (direct_from_seller_signals.is_promise()) {
     ++total;
   }
@@ -135,6 +145,7 @@ int AuctionConfig::NumPromises() const {
   if (expects_additional_bids) {
     ++total;
   }
+
   for (const blink::AuctionConfig& sub_auction :
        non_shared_params.component_auctions) {
     total += sub_auction.NumPromises();
@@ -143,7 +154,7 @@ int AuctionConfig::NumPromises() const {
 }
 
 bool AuctionConfig::IsHttpsAndMatchesSellerOrigin(const GURL& url) const {
-  return url.scheme() == url::kHttpsScheme &&
+  return url.GetScheme() == url::kHttpsScheme &&
          url::Origin::Create(url) == seller;
 }
 
@@ -153,12 +164,7 @@ bool AuctionConfig::IsValidTrustedScoringSignalsURL(const GURL& url) const {
     return false;
   }
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kFledgePermitCrossOriginTrustedSignals)) {
-    return url.scheme() == url::kHttpsScheme;
-  } else {
-    return IsHttpsAndMatchesSellerOrigin(url);
-  }
+  return url.GetScheme() == url::kHttpsScheme;
 }
 
 bool AuctionConfig::IsDirectFromSellerSignalsValid(

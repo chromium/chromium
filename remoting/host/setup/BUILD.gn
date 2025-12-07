@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//remoting/build/config/remoting_build.gni")
 
 source_set("setup") {
@@ -38,12 +37,12 @@ source_set("common") {
     "//extensions/browser/api/messaging:native_messaging",
     "//google_apis",
     "//mojo/core/embedder",
+    "//remoting/base",
     "//remoting/base:authorization",
-    "//remoting/base:base",
     "//remoting/host:common",
     "//remoting/host:resources",
     "//remoting/host/native_messaging",
-    "//remoting/protocol:protocol",
+    "//remoting/protocol",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
   ]
@@ -63,7 +62,7 @@ source_set("common") {
     deps += [
       "//remoting/host/mac:permission_checking",
       "//remoting/resources:strings_grit",
-      "//ui/base:base",
+      "//ui/base",
     ]
   }
 
@@ -103,10 +102,10 @@ source_set("start_host_common") {
     ":common",
     "//google_apis",
     "//net",
-    "//remoting/base:base",
+    "//remoting/base",
     "//remoting/host:common",
     "//services/network:network_service",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
   ]
 }
 
@@ -134,15 +133,15 @@ source_set("start_host_main") {
     "//google_apis",
     "//mojo/core/embedder",
     "//net",
+    "//remoting/base",
     "//remoting/base:authorization",
-    "//remoting/base:base",
-    "//remoting/base:breakpad",
+    "//remoting/base/crash",
     "//remoting/host:common",
     "//remoting/host/setup",
     "//remoting/host/setup:start_host_main_headers",
-    "//remoting/proto/remoting/v1:cloud_proto",
+    "//remoting/proto/google/remoting/cloud/v1:messages",
     "//services/network:network_service",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//third_party/libjingle_xmpp:rtc_xmllite",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
@@ -177,12 +176,11 @@ source_set("native_messaging_host_main") {
   deps = [
     ":native_messaging_host_main_headers",
     "//base",
-    "//build:chromeos_buildflags",
     "//mojo/core/embedder",
     "//net",
     "//remoting/base",
     "//remoting/base:authorization",
-    "//remoting/base:breakpad",
+    "//remoting/base/crash",
     "//remoting/host",
     "//remoting/host:common",
     "//remoting/host/base",
@@ -193,7 +191,7 @@ source_set("native_messaging_host_main") {
     "//services/network/public/mojom",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//remoting/host/chromeos:browser_interop" ]
   }
 }

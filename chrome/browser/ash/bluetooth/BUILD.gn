@@ -5,7 +5,7 @@
 import("//build/chromeos/crosier_tests.gni")
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("bluetooth") {
   sources = [
@@ -20,6 +20,7 @@ static_library("bluetooth") {
   ]
   deps = [
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/signin",
     "//chromeos/ash/components/dbus/upstart",
     "//components/device_event_log",
     "//components/session_manager/core",
@@ -67,7 +68,6 @@ source_set("browser_tests") {
     "//ash/public/cpp",
     "//base/test:test_support",
     "//chrome/browser/ash/hats",
-    "//chrome/browser/ash/notifications",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/common",
@@ -76,6 +76,7 @@ source_set("browser_tests") {
     "//components/prefs",
     "//components/session_manager/core",
     "//content/test:test_support",
+    "//ui/message_center:test_support",
   ]
 }
 
@@ -86,7 +87,6 @@ if (is_chromeos_device) {
     sources_metadata = [ "bluetooth_integration_test.yaml" ]
 
     deps = [
-      ":bluetooth",
       "//ash",
       "//base",
       "//base/test:test_support",

@@ -149,7 +149,7 @@ BatteryInfo::BatteryInfo(BatteryInfo&&) = default;
 
 BatteryInfo& BatteryInfo::operator=(BatteryInfo&&) = default;
 
-bool BatteryInfo::operator==(const BatteryInfo& other) {
+bool BatteryInfo::operator==(const BatteryInfo& other) const {
   return type == other.type && percentage == other.percentage &&
          charge_state == other.charge_state;
 }
@@ -608,7 +608,7 @@ bool BluetoothDevice::supports_service_specific_discovery() const {
 void BluetoothDevice::UpgradeToFullDiscovery() {
   // Must be overridden by any subclass that sets
   // |supports_service_specific_discovery_|.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::unique_ptr<BluetoothGattConnection>
@@ -678,7 +678,7 @@ void BluetoothDevice::SetAsExpiredForTesting() {
 
 void BluetoothDevice::Pair(PairingDelegate* pairing_delegate,
                            ConnectCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void BluetoothDevice::UpdateTimestamp() {

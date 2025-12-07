@@ -24,22 +24,17 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 #include <algorithm>
 #include <optional>
 
-#include "base/strings/string_util.h"
+#include "base/strings/span_printf.h"
 #include "third_party/blink/renderer/platform/wtf/dtoa.h"
 #include "third_party/blink/renderer/platform/wtf/text/integer_to_string_conversion.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-namespace WTF {
+namespace blink {
 
 String StringBuilder::ReleaseString() {
   if (!length_)
@@ -74,8 +69,8 @@ String StringBuilder::Substring(unsigned start, unsigned length) const {
     return string_.Substring(start, length);
   length = std::min(length, length_ - start);
   if (is_8bit_)
-    return String(Characters8() + start, length);
-  return String(Characters16() + start, length);
+    return String(Span8().subspan(start, length));
+  return String(Span16().subspan(start, length));
 }
 
 StringView StringBuilder::SubstringView(unsigned start, unsigned length) const {
@@ -85,8 +80,8 @@ StringView StringBuilder::SubstringView(unsigned start, unsigned length) const {
     return StringView(string_, start, length);
   length = std::min(length, length_ - start);
   if (is_8bit_)
-    return StringView(Characters8() + start, length);
-  return StringView(Characters16() + start, length);
+    return StringView(Span8().subspan(start, length));
+  return StringView(Span16().subspan(start, length));
 }
 
 void StringBuilder::Swap(StringBuilder& builder) {
@@ -226,7 +221,7 @@ void StringBuilder::CreateBuffer16(unsigned added_size) {
   is_8bit_ = false;
   length_ = 0;
   if (!buffer8.empty()) {
-    Append(buffer8.data(), length);
+    Append(base::span(buffer8).first(length));
     return;
   }
   Append(string_);
@@ -248,37 +243,41 @@ bool StringBuilder::DoesAppendCauseOverflow(unsigned length) const {
          Buffer16::MaxCapacity();
 }
 
-void StringBuilder::Append(const UChar* characters, unsigned length) {
-  if (!length)
+void StringBuilder::Append(base::span<const UChar> chars) {
+  if (chars.empty()) {
     return;
-  DCHECK(characters);
+  }
+  DCHECK(chars.data());
 
   // If there's only one char we use append(UChar) instead since it will
   // check for latin1 and avoid converting to 16bit if possible.
-  if (length == 1) {
-    Append(*characters);
+  if (chars.size() == 1) {
+    Append(chars[0]);
     return;
   }
 
+  unsigned length = base::checked_cast<unsigned>(chars.size());
   EnsureBuffer16(length);
-  buffer16_.Append(characters, length);
+  buffer16_.AppendSpan(chars);
   length_ += length;
 }
 
-void StringBuilder::Append(const LChar* characters, unsigned length) {
-  if (!length)
+void StringBuilder::Append(base::span<const LChar> chars) {
+  if (chars.empty()) {
     return;
-  DCHECK(characters);
+  }
+  DCHECK(chars.data());
 
+  unsigned length = base::checked_cast<unsigned>(chars.size());
   if (is_8bit_) {
     EnsureBuffer8(length);
-    buffer8_.Append(characters, length);
+    buffer8_.AppendSpan(chars);
     length_ += length;
     return;
   }
 
   EnsureBuffer16(length);
-  buffer16_.Append(characters, length);
+  buffer16_.AppendSpan(chars);
   length_ += length;
 }
 
@@ -291,8 +290,8 @@ void StringBuilder::AppendNumber(float number) {
 }
 
 void StringBuilder::AppendNumber(double number, unsigned precision) {
-  NumberToStringBuffer buffer;
-  Append(NumberToFixedPrecisionString(number, precision, buffer));
+  DoubleToStringConverter converter;
+  Append(converter.ToStringWithFixedPrecision(number, precision));
 }
 
 void StringBuilder::AppendFormat(const char* format, ...) {
@@ -302,19 +301,18 @@ void StringBuilder::AppendFormat(const char* format, ...) {
   Vector<char, kDefaultSize> buffer(kDefaultSize);
 
   va_start(args, format);
-  int length = base::vsnprintf(buffer.data(), kDefaultSize, format, args);
+  int length = base::VSpanPrintf(buffer, format, args);
   va_end(args);
   DCHECK_GE(length, 0);
 
   if (length >= static_cast<int>(kDefaultSize)) {
     buffer.Grow(length + 1);
     va_start(args, format);
-    length = base::vsnprintf(buffer.data(), buffer.size(), format, args);
+    length = base::VSpanPrintf(buffer, format, args);
     va_end(args);
   }
 
-  DCHECK_LT(static_cast<wtf_size_t>(length), buffer.size());
-  Append(reinterpret_cast<const LChar*>(buffer.data()), length);
+  Append(base::as_byte_span(buffer).first(static_cast<wtf_size_t>(length)));
 }
 
 void StringBuilder::erase(unsigned index) {
@@ -331,4 +329,4 @@ void StringBuilder::erase(unsigned index) {
   --length_;
 }
 
-}  // namespace WTF
+}  // namespace blink

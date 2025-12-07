@@ -5,6 +5,7 @@
 #include "components/send_tab_to_self/send_tab_to_self_infobar_delegate.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -20,7 +21,7 @@ SendTabToSelfInfoBarDelegate::Create(content::WebContents* web_contents,
       new SendTabToSelfInfoBarDelegate(web_contents, entry));
 }
 
-SendTabToSelfInfoBarDelegate::~SendTabToSelfInfoBarDelegate() {}
+SendTabToSelfInfoBarDelegate::~SendTabToSelfInfoBarDelegate() = default;
 
 std::u16string SendTabToSelfInfoBarDelegate::GetInfobarMessage() const {
   // TODO(crbug.com/40619532): Define real string.

@@ -11,6 +11,7 @@ mojom("mojom") {
     "//services/network/public/mojom:mojom_ip_address",
     "//services/network/public/mojom:mojom_network_anonymization_key",
     "//services/network/public/mojom:mojom_network_param",
+    "//services/network/public/mojom:mojom_proxy_config",
     "//url/mojom:url_mojom_gurl",
   ]
   public_deps = [ "//sandbox/policy/mojom" ]
@@ -43,4 +44,19 @@ mojom("mojom") {
       ]
     },
   ]
+
+  if (is_win) {
+    cpp_typemaps += [
+      {
+        types = [
+          {
+            mojom = "proxy_resolver.mojom.WinHttpStatus"
+            cpp = "::net::WinHttpStatus"
+          },
+        ]
+        traits_headers = [ "//services/proxy_resolver_win/public/cpp/proxy_resolver_win_mojom_traits.h" ]
+        traits_sources = [ "//services/proxy_resolver_win/public/cpp/proxy_resolver_win_mojom_traits.cc" ]
+      },
+    ]
+  }
 }

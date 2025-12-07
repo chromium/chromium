@@ -24,12 +24,6 @@ class ExtensionPrefs;
 class ExtensionSystem;
 class ExtensionRegistry;
 
-// UMA metrics for auto-approved extensions.
-constexpr char kInitialLocallyApprovedExtensionCountWinLinuxMacHistogramName[] =
-    "SupervisedUsers.InitialLocallyApprovedExtensionsCountOnWinLinuxMac";
-constexpr char kExtensionApprovalsCountOnExtensionToggleHistogramName[] =
-    "SupervisedUsers.ExtensionApprovalsCountOnExtensionToggle";
-
 // This class groups all the functionality to handle extensions
 // for supervised users.
 class SupervisedUserExtensionsManager : public ExtensionRegistryObserver,
@@ -75,8 +69,7 @@ class SupervisedUserExtensionsManager : public ExtensionRegistryObserver,
   bool UserMayLoad(const Extension* extension,
                    std::u16string* error) const override;
   bool MustRemainDisabled(const Extension* extension,
-                          disable_reason::DisableReason* reason,
-                          std::u16string* error) const override;
+                          disable_reason::DisableReason* reason) const override;
 
   // extensions::ExtensionRegistryObserver overrides:
   void OnExtensionInstalled(content::BrowserContext* browser_context,
@@ -107,7 +100,7 @@ class SupervisedUserExtensionsManager : public ExtensionRegistryObserver,
   //    custodian are also allowed.
   // REQUIRE_APPROVAL: if it is installed by the child user and
   //    hasn't been approved by the custodian yet.
-  enum class ExtensionState { BLOCKED, ALLOWED, REQUIRE_APPROVAL };
+  enum class ExtensionState { kBlocked, kAllowed, kRequireApproval };
 
   // Returns the state of an extension whether being BLOCKED, ALLOWED or
   // REQUIRE_APPROVAL from the Supervised User service's point of view.
@@ -174,7 +167,7 @@ class SupervisedUserExtensionsManager : public ExtensionRegistryObserver,
   // `extension_ids`. The input `extension_ids` doesn't have to be a subset of
   // the locally approved extensions: the method will remove those that are
   // locally approved and ignore the rest.
-  void RemoveLocalParentalApproval(const std::set<std::string> extension_ids);
+  void RemoveLocalParentalApproval(const std::set<std::string>& extension_ids);
 
   // Handles the parent-approval state of the present extensions,
   // whenever the parent changes the value of the FL "Extension" switch.

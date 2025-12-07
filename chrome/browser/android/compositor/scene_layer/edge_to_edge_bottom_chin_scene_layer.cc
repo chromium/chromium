@@ -6,13 +6,16 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
+#include "base/command_line.h"
+#include "cc/input/android/offset_tag_android.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/solid_color_layer.h"
 #include "cc/slim/ui_resource_layer.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/ui/android/edge_to_edge/jni_headers/EdgeToEdgeBottomChinSceneLayer_jni.h"
+#include "components/viz/common/quads/offset_tag.h"
+#include "ui/base/ui_base_switches.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 namespace android {
@@ -39,10 +42,10 @@ EdgeToEdgeBottomChinSceneLayer::EdgeToEdgeBottomChinSceneLayer(
   divider_layer_->SetHideLayerAndSubtree(true);
   view_container_->AddChild(divider_layer_);
 
-  is_debugging_ = chrome::android::kEdgeToEdgeBottomChinDebugParam.Get();
+  is_debugging_ = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kEnableEdgeToEdgeDebugLayers);
   if (is_debugging_) {
     debug_layer_->SetIsDrawable(true);
-    debug_layer_->SetBackgroundColor(SkColors::kMagenta);
     debug_layer_->SetOpacity(0.5f);
     view_container_->AddChild(debug_layer_);
   }
@@ -56,9 +59,14 @@ void EdgeToEdgeBottomChinSceneLayer::UpdateEdgeToEdgeBottomChinLayer(
     jint container_height,
     jint color_argb,
     jint divider_color,
-    jfloat y_offset) {
+    jfloat y_offset,
+    jboolean has_constraint,
+    const base::android::JavaRef<jobject>& joffset_tag) {
   view_container_->SetBounds(gfx::Size(container_width, container_height));
   view_container_->SetPosition(gfx::PointF(0, y_offset - container_height));
+
+  viz::OffsetTag offset_tag = cc::android::FromJavaOffsetTag(env, joffset_tag);
+  view_container_->SetOffsetTag(offset_tag);
 
   view_layer_->SetBackgroundColor(SkColor4f::FromColor(color_argb));
   view_layer_->SetBounds(gfx::Size(container_width, container_height));
@@ -70,13 +78,14 @@ void EdgeToEdgeBottomChinSceneLayer::UpdateEdgeToEdgeBottomChinLayer(
 
   if (is_debugging_) {
     debug_layer_->SetBounds(gfx::Size(container_width / 2, container_height));
+    debug_layer_->SetBackgroundColor(has_constraint ? SkColors::kYellow
+                                                    : SkColors::kMagenta);
   }
 }
 
 void EdgeToEdgeBottomChinSceneLayer::SetContentTree(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jobj,
-    const JavaParamRef<jobject>& jcontent_tree) {
+    const JavaRef<jobject>& jcontent_tree) {
   SceneLayer* content_tree = FromJavaObject(env, jcontent_tree);
   if (!content_tree || !content_tree->layer()) {
     return;
@@ -84,6 +93,8 @@ void EdgeToEdgeBottomChinSceneLayer::SetContentTree(
 
   if (!content_tree->layer()->parent() ||
       (content_tree->layer()->parent()->id() != layer_->id())) {
+    // The content tree changes. Remove all the children.
+    layer_->RemoveAllChildren();
     layer_->AddChild(content_tree->layer());
     layer_->AddChild(view_container_);
   }
@@ -103,7 +114,7 @@ bool EdgeToEdgeBottomChinSceneLayer::ShouldShowBackground() {
 
 static jlong JNI_EdgeToEdgeBottomChinSceneLayer_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jobj) {
+    const JavaRef<jobject>& jobj) {
   // This will automatically bind to the Java object and pass ownership there.
   EdgeToEdgeBottomChinSceneLayer* scene_layer =
       new EdgeToEdgeBottomChinSceneLayer(env, jobj);
@@ -111,3 +122,5 @@ static jlong JNI_EdgeToEdgeBottomChinSceneLayer_Init(
 }
 
 }  // namespace android
+
+DEFINE_JNI(EdgeToEdgeBottomChinSceneLayer)

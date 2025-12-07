@@ -21,7 +21,7 @@ class TickClock;
 class BASE_EXPORT LazyNow {
  public:
   explicit LazyNow(TimeTicks now);
-  explicit LazyNow(std::optional<TimeTicks> now, const TickClock* tick_clock);
+  LazyNow(std::optional<TimeTicks> now, const TickClock* tick_clock);
   explicit LazyNow(const TickClock* tick_clock);
   LazyNow(const LazyNow&) = delete;
   LazyNow& operator=(const LazyNow&) = delete;

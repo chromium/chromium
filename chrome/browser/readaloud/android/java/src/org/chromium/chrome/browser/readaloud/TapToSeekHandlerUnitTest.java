@@ -5,29 +5,24 @@
 package org.chromium.chrome.browser.readaloud;
 
 import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.Playback.PlaybackTextPart;
 import org.chromium.chrome.modules.readaloud.Playback.PlaybackTextType;
@@ -43,30 +38,17 @@ import org.chromium.url.JUnitTestGURLs;
     ChromeFeatureList.READALOUD_TAP_TO_SEEK
 })
 public class TapToSeekHandlerUnitTest {
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock private Profile mProfile;
-    @Mock private ObservableSupplier<Tab> mMockTabProvider;
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Playback mPlayback;
     @Mock private Playback.Metadata mMetadata;
     private static final GURL sTestGURL = JUnitTestGURLs.EXAMPLE_URL;
     @Mock private ReadAloudFeatures.Natives mReadAloudFeaturesNatives;
 
-    private TapToSeekHandler mTapToSeekHandler;
-
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        doReturn(false).when(mProfile).isOffTheRecord();
         when(mPlayback.getMetadata()).thenReturn(mMetadata);
-        mJniMocker.mock(ReadAloudFeaturesJni.TEST_HOOKS, mReadAloudFeaturesNatives);
-
-        mTapToSeekHandler = new TapToSeekHandler(mMockTabProvider);
-    }
-
-    @After
-    public void tearDown() {
-        ReadAloudFeatures.shutdown();
+        ReadAloudFeaturesJni.setInstanceForTesting(mReadAloudFeaturesNatives);
     }
 
     @Test
@@ -133,6 +115,18 @@ public class TapToSeekHandlerUnitTest {
     }
 
     @Test
+    public void testTapToSeek_Empty() {
+        var histogram =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(ReadAloudMetrics.HAS_TAP_TO_SEEK_FOUND_MATCH)
+                        .build();
+        tapToSeek("", 6, 9, "The\nquick brown fox  jumps\nover the lazy dog.", true);
+
+        histogram.assertExpected();
+        verify(mPlayback, never()).seekToWord(anyInt(), anyInt());
+    }
+
+    @Test
     public void testPlayPauseState() {
         tapToSeek(
                 "brown\nfox jumps", 6, 9, "The\nquick brown fox  jumps\nover the lazy dog.", true);
@@ -171,6 +165,6 @@ public class TapToSeekHandlerUnitTest {
                 };
         PlaybackTextPart[] paragraphs = new PlaybackTextPart[] {p};
         when(mMetadata.paragraphs()).thenReturn(paragraphs);
-        mTapToSeekHandler.tapToSeek(content, beginOffset, endOffset, mPlayback, playing);
+        TapToSeekHandler.tapToSeek(content, beginOffset, endOffset, mPlayback, playing);
     }
 }

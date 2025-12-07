@@ -1,0 +1,129 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/public/provider/chrome/browser/build_config.gni")
+
+source_set("ui_bundled") {
+  sources = [
+    "pinned_tab_collection_consumer.h",
+    "tab_collection_consumer.h",
+    "tab_collection_drag_drop_handler.h",
+    "tab_collection_drag_drop_metrics.h",
+    "tab_collection_drag_drop_metrics.mm",
+  ]
+}
+
+source_set("items") {
+  sources = [
+    "tab_group_item.h",
+    "tab_group_item.mm",
+    "tab_group_item_fetch_info.h",
+    "tab_group_item_fetch_info.mm",
+    "tab_group_item_utils.h",
+    "tab_group_item_utils.mm",
+    "tab_snapshot_and_favicon.h",
+    "tab_snapshot_and_favicon.mm",
+    "tab_snapshot_and_favicon_configurator.h",
+    "tab_snapshot_and_favicon_configurator.mm",
+    "tab_switcher_item.h",
+    "tab_switcher_item.mm",
+    "tab_switcher_item_snapshot_and_favicon_data_source.h",
+    "web_state_tab_switcher_item.h",
+    "web_state_tab_switcher_item.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/favicon/ios",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/saved_tab_groups/ui:utils",
+    "//ios/chrome/browser/shared/model/url",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/snapshots/model:model_common",
+    "//ios/chrome/browser/tabs/model",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/util:image_util",
+    "//ios/web/public",
+    "//url",
+  ]
+}
+
+source_set("tab_group_confirmation") {
+  sources = [
+    "tab_group_action_type.h",
+    "tab_group_confirmation_coordinator.h",
+    "tab_group_confirmation_coordinator.mm",
+  ]
+
+  public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
+  deps = [
+    "//base",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ui/base",
+    "//ui/strings",
+  ]
+}
+
+source_set("utils") {
+  sources = [
+    "item_utils.h",
+    "item_utils.mm",
+    "tab_utils.h",
+    "tab_utils.mm",
+  ]
+
+  deps = [
+    ":items",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list:utils",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_item_identifier",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_context_menu:tab_item",
+    "//ios/chrome/browser/tabs/model",
+    "//ios/web/public",
+  ]
+
+  allow_circular_includes_from = [
+    ":items",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_item_identifier",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "tab_snapshot_and_favicon_configurator_unittest.mm",
+    "tab_utils_unittest.mm",
+  ]
+  deps = [
+    ":items",
+    ":utils",
+    "//base/test:test_config",
+    "//base/test:test_support",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/favicon/model:test_support",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/snapshots/model:snapshot_source",
+    "//ios/chrome/browser/tab_switcher/ui_bundled:items",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}

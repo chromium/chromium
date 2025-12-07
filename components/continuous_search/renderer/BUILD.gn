@@ -12,6 +12,7 @@ source_set("renderer") {
 
   deps = [
     "//base",
+    "//build:buildflag_header_h",
     "//components/continuous_search/common",
     "//components/continuous_search/common/public/mojom",
     "//content/public/renderer",

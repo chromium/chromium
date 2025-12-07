@@ -13,11 +13,13 @@ import androidx.annotation.IntDef;
 import org.chromium.base.Callback;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** ReauthenticationUtils contains static util methods for account reauthentication. */
+@NullMarked
 public class AccountReauthenticationUtils {
     public AccountReauthenticationUtils() {}
 

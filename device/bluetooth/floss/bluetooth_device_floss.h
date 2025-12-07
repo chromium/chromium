@@ -190,6 +190,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   void FetchRemoteUuids(base::OnceClosure callback);
   void FetchRemoteVendorProductInfo(base::OnceClosure callback);
   void FetchRemoteAddressType(base::OnceClosure callback);
+  void FetchRemoteBondState(base::OnceClosure callback);
+  void FetchRemoteConnectionState(base::OnceClosure callback);
+
+  void OnDeviceConnectionFailed(FlossDBusClient::BtifStatus status);
 
  protected:
   // BluetoothDevice override
@@ -230,6 +234,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   void OnGetRemoteAddressType(
       base::OnceClosure callback,
       DBusResult<FlossAdapterClient::BtAddressType> ret);
+  void OnGetRemoteBondState(base::OnceClosure callback,
+                            DBusResult<uint32_t> ret);
+  void OnGetRemoteConnectionState(base::OnceClosure callback,
+                                  DBusResult<uint32_t> ret);
   void OnConnectAllEnabledProfiles(DBusResult<Void> ret);
   void OnConnectAllEnabledProfiles(DBusResult<FlossDBusClient::BtifStatus> ret);
   void OnDisconnectAllEnabledProfiles(base::OnceClosure callback,

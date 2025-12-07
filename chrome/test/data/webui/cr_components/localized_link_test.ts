@@ -90,7 +90,7 @@ suite('localized_link', function() {
         `Text with a <a href='#'>link</a>`, ``);
     const localizedLink = document.body.querySelector('localized-link');
     assertTrue(!!localizedLink);
-    const anchorTag = localizedLink.shadowRoot!.querySelector('a');
+    const anchorTag = localizedLink.shadowRoot.querySelector('a');
     assertTrue(!!anchorTag);
     const localizedLinkPromise = eventToPromise('link-clicked', localizedLink);
 
@@ -103,7 +103,7 @@ suite('localized_link', function() {
         `Text with a <a href='#'>link</a>`, ``);
     const localizedLink = document.body.querySelector('localized-link');
     assertTrue(!!localizedLink);
-    const anchorTag = localizedLink.shadowRoot!.querySelector('a');
+    const anchorTag = localizedLink.shadowRoot.querySelector('a');
     assertTrue(!!anchorTag);
     const localizedLinkPromise = eventToPromise('link-clicked', localizedLink);
 
@@ -118,7 +118,7 @@ suite('localized_link', function() {
         `Text with a <a href='#'>link</a>`, ``);
     const localizedLink = document.body.querySelector('localized-link');
     assertTrue(!!localizedLink);
-    const anchorTag = localizedLink.shadowRoot!.querySelector('a');
+    const anchorTag = localizedLink.shadowRoot.querySelector('a');
     assertTrue(!!anchorTag);
     assertEquals(anchorTag.getAttribute('tabindex'), '0');
     localizedLink.linkDisabled = true;
@@ -137,7 +137,7 @@ suite('localized_link', function() {
     await microtasksFinished();
 
     // Tab index is still -1 due to it being disabled.
-    const anchorTag = localizedLink.shadowRoot!.querySelector('a');
+    const anchorTag = localizedLink.shadowRoot.querySelector('a');
     assertTrue(!!anchorTag);
     assertEquals(anchorTag.getAttribute('tabindex'), '-1');
 

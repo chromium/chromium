@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_image_reader.h"
 
+#include <array>
+
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/renderer/platform/image-decoders/jpeg/jpeg_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/png/png_image_decoder.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 
 namespace {
 
-// See comments on lookup_table_addresses_ in the header.
-constexpr uint8_t nBitTo8BitlookupTable[] = {
+// See comments on lookup_table_spans_ in the header.
+constexpr auto nBitTo8BitlookupTable = std::to_array<uint8_t>({
     // clang-format off
     // 1 bit
     0, 255,
@@ -44,7 +44,7 @@ constexpr uint8_t nBitTo8BitlookupTable[] = {
     203, 205, 207, 209, 211, 213, 215, 217, 219, 221, 223, 225, 227, 229, 231,
     233, 235, 237, 239, 241, 243, 245, 247, 249, 251, 253, 255,
     // clang-format on
-};
+});
 
 }  // namespace
 
@@ -60,7 +60,6 @@ BMPImageReader::BMPImageReader(ImageDecoder* parent,
       img_data_offset_(img_data_offset),
       is_in_ico_(is_in_ico) {
   // Clue-in decodeBMP() that we need to detect the correct info header size.
-  memset(&info_header_, 0, sizeof(info_header_));
 }
 
 BMPImageReader::~BMPImageReader() = default;
@@ -88,6 +87,11 @@ bool BMPImageReader::DecodeBMP(bool only_size) {
   if ((decoded_offset_ < header_end) && !ProcessInfoHeader()) {
     return false;
   }
+
+  // TODO(https://crbug.com/452667935): Clean this up once we have sufficient
+  // data (when M143 or M144 reach Stable?).
+  base::UmaHistogramEnumeration("Blink.DecodedImage.BMP.CompressionType",
+                                info_header_.compression);
 
   // If there is an applicable color profile, it must be processed now, since
   // once the image size is available, the decoding machinery assumes the color
@@ -519,8 +523,7 @@ bool BMPImageReader::IsInfoHeaderValid() const {
     default:
       // Some type we don't understand.  This should have been caught in
       // ReadInfoHeader().
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 
   // Reject the following valid bitmap types that we don't currently bother
@@ -547,12 +550,12 @@ bool BMPImageReader::DecodeAlternateFormat() {
     if (info_header_.compression == JPEG) {
       alternate_decoder_ = std::make_unique<JPEGImageDecoder>(
           parent_->GetAlphaOption(), parent_->GetColorBehavior(),
-          parent_->GetMaxDecodedBytes(), img_data_offset_);
-    } else {
-      alternate_decoder_ = std::make_unique<PNGImageDecoder>(
-          parent_->GetAlphaOption(), ImageDecoder::kDefaultBitDepth,
-          parent_->GetColorBehavior(), parent_->GetMaxDecodedBytes(),
+          parent_->GetAuxImage(), parent_->GetMaxDecodedBytes(),
           img_data_offset_);
+    } else {
+      alternate_decoder_ = std::make_unique<PngImageDecoder>(
+          parent_->GetAlphaOption(), parent_->GetColorBehavior(),
+          parent_->GetMaxDecodedBytes(), img_data_offset_);
     }
     alternate_decoder_->SetData(data_.get(), parent_->IsAllDataReceived());
   }
@@ -585,11 +588,11 @@ bool BMPImageReader::ProcessEmbeddedColorProfile() {
   }
 
   // Parse the profile.
-  auto owned_buffer = std::make_unique<char[]>(info_header_.profile_size);
-  const char* buffer = fast_reader_.GetConsecutiveData(
-      info_header_.profile_data, info_header_.profile_size, owned_buffer.get());
-  auto profile = ColorProfile::Create(
-      base::as_bytes(base::span(buffer, info_header_.profile_size)));
+  auto owned_buffer =
+      base::HeapArray<uint8_t>::WithSize(info_header_.profile_size);
+  base::span<const uint8_t> buffer = fast_reader_.GetConsecutiveData(
+      info_header_.profile_data, info_header_.profile_size, owned_buffer);
+  auto profile = ColorProfile::Create(buffer);
   if (!profile) {
     return parent_->SetFailed();
   }
@@ -700,7 +703,7 @@ bool BMPImageReader::ProcessBitmasks() {
     uint32_t temp_mask = bit_masks_[i];
     if (!temp_mask) {
       bit_shifts_right_[i] = 0;
-      lookup_table_addresses_[i] = nullptr;
+      lookup_table_spans_[i] = base::span<const uint8_t>();
       continue;
     }
 
@@ -734,9 +737,11 @@ bool BMPImageReader::ProcessBitmasks() {
       num_bits = 0;
     }
 
-    // Calculate LUT address.
-    lookup_table_addresses_[i] =
-        num_bits ? (nBitTo8BitlookupTable + (1 << num_bits) - 2) : nullptr;
+    // Calculate LUT span.
+    lookup_table_spans_[i] =
+        num_bits ? base::span(nBitTo8BitlookupTable)
+                       .subspan((1u << num_bits) - 2, 1u << num_bits)
+                 : base::span<const uint8_t>();
   }
 
   // We've now decoded all the non-image data we care about.  Skip anything
@@ -965,7 +970,7 @@ BMPImageReader::ProcessingResult BMPImageReader::ProcessRLEData() {
         // RLE8 has one color index that gets repeated; RLE4 has two
         // color indexes in the upper and lower 4 bits of the byte,
         // which are alternated.
-        wtf_size_t color_indexes[2] = {code, code};
+        std::array<wtf_size_t, 2> color_indexes = {code, code};
         if (info_header_.compression == RLE4) {
           color_indexes[0] = (color_indexes[0] >> 4) & 0xf;
           color_indexes[1] &= 0xf;

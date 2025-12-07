@@ -28,7 +28,7 @@ class AXNode;
 class AX_EXPORT AXComputedNodeData final {
  public:
   explicit AXComputedNodeData(const AXNode& node);
-  virtual ~AXComputedNodeData();
+  ~AXComputedNodeData();
   AXComputedNodeData(const AXComputedNodeData& other) = delete;
   AXComputedNodeData& operator=(const AXComputedNodeData& other) = delete;
 
@@ -58,32 +58,16 @@ class AX_EXPORT AXComputedNodeData final {
   // assistive software.
   bool GetOrComputeIsDescendantOfPlatformLeaf() const;
 
-  // Given an accessibility attribute, returns whether the attribute is
-  // currently present in the node's data, or if it can always be computed on
-  // demand.
-  bool HasOrCanComputeAttribute(const ax::mojom::IntAttribute attribute) const;
-  bool HasOrCanComputeAttribute(
-      const ax::mojom::StringAttribute attribute) const;
-  bool HasOrCanComputeAttribute(
-      const ax::mojom::IntListAttribute attribute) const;
-
-  // Given an accessibility attribute, returns whether the attribute can be
-  // computed. Use this version in cases where we already know the attribute
-  // is not currently present to avoid rechecking the current properties.
-  bool CanComputeAttribute(const ax::mojom::IntAttribute attribute) const;
-
   // Given an accessibility attribute, returns the attribute's value. The
   // attribute is computed if not provided by the tree's source, otherwise it is
   // simply returned from the node's data. String and intlist attributes are
   // potentially the slowest to compute at the tree's source, e.g. in Blink.
-  const std::string& GetOrComputeAttributeUTF8(
+  const std::string& ComputeAttributeUTF8(
       const ax::mojom::StringAttribute attribute) const;
-  std::u16string GetOrComputeAttributeUTF16(
+  std::u16string ComputeAttributeUTF16(
       const ax::mojom::StringAttribute attribute) const;
-  const std::vector<int32_t>& GetOrComputeAttribute(
+  const std::vector<int32_t>& ComputeAttribute(
       const ax::mojom::IntListAttribute attribute) const;
-  std::optional<int> GetOrComputeAttribute(
-      const ax::mojom::IntAttribute attribute) const;
 
   // Retrieves from the cache or computes the on-screen text that is found
   // inside the associated node and all its descendants, caches the result, and

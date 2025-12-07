@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/android/jni_android.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -20,9 +20,8 @@ namespace gpu {
 bool CollectContextGraphicsInfo(GPUInfo* gpu_info) {
   // When command buffer is compiled as a standalone library, the process might
   // not have a Java environment.
-  if (base::android::IsVMInitialized()) {
-    gpu_info->machine_model_name =
-        base::android::BuildInfo::GetInstance()->model();
+  if (base::android::IsJavaAvailable()) {
+    gpu_info->machine_model_name = base::android::android_info::model();
   }
 
   // At this point GL bindings have been initialized already.

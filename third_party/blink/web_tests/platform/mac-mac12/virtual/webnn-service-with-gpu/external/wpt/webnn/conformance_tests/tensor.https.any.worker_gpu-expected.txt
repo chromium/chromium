@@ -1,0 +1,18 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = UnknownError: Failed to execute 'createExportableTensor' on 'MLContext': Failed to create tensor.
+Found 0 FAIL, 0 TIMEOUT, 13 NOTRUN.
+[NOTRUN] interop / export tensor
+[NOTRUN] interop / export wrong tensor
+[NOTRUN] interop / export big tensor
+[NOTRUN] interop / export then destroy buffer
+[NOTRUN] interop / export then destroy tensor
+[NOTRUN] interop / write tensor after export
+[NOTRUN] interop / export twice
+[NOTRUN] interop / dispatch gpu twice
+[NOTRUN] interop / webnn dispatch only
+[NOTRUN] interop / dispatch from webgpu then webnn
+[NOTRUN] interop / destroy context after export
+[NOTRUN] interop / destroy device after export
+[NOTRUN] interop / destroy device before export
+Harness: the test ran to completion.
+

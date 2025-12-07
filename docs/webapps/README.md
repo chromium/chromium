@@ -89,6 +89,9 @@ This public interface should (and will) be improved, however this is the basic s
 - `WebAppCommandScheduler`. Internally this schedules `WebAppCommand`s to do safe operations on the system.
   - This already includes a variety of operations like installation, launching, etc.
 - Observers like the `AppRegistrarObserver` or `WebAppInstallManagerObserver`. However, users of these MUST NOT modify the web app system in the observation call - this can cause race conditions and weird re-entry bugs.
+- To query for apps with specific capabilities (like being installable, opening
+  in a window, etc.), use a [`WebAppFilter`][web-app-filter]. This is the
+  preferred way to find apps that match a given criteria.
 - Items exposed from the locks given to commands or callbacks:
   - `WebAppRegistrar`
   - Writing to the database using `ScopedRegistryUpdate` and the `WebAppSyncBridge`.
@@ -105,21 +108,27 @@ Some parts of the system that are used within commands:
 
 The goal is to have all of these behind an abstraction that has a fake to allow easy unit testing of our system. Some of these dependencies are behind a nice fake-able interface, and some are not (yet).
 
-- **Extensions** - Some of our code still talks to the extensions system, specifically the `PreinstalledWebAppManager`.
-- **`content::WebContents`**
-  - **`WebAppUrlLoader`** - load a given url in a `WebContents`. Faked by `FakeWebAppUrlLoader`.
-  - **`WebAppDataRetriever`** - retrieve installability information, the manifest, or icons from a **`WebContents`**. Faked by `FakeWebAppDataRetriever`.
-  - Misc:
-    - Navigation completion in WebAppTabHelper, used to kick off update commands.
-    - Listening to destruction.
-    - IsPrimaryMainFrame() and other filtering.
-    - etc
-- **OS Integration**: Each OS integration has fairly custom code on each OS to do the operation. This is difficult to coordinate and test. Currently the `OsIntegrationManger` manages this, which has a fake version.
-- **Sync system**
-  - There is a tight coupling between our system and the sync system through the WebAppSyncBridge.
-  - Faking this is easy and is handled by the `FakeWebAppProvider`.
-- **UI**: There are parts of the system that are coupled to UI, like showing dialogs, determining information about app windows, etc. These are put behind the `WebAppUiManager`, and faked by the `FakeWebAppUiManager`.
-- **Policy**: Our code depends on the policy system setting it's policies in appropriate prefs for us to read. Because we just look at prefs, we don't need a "fake" here.
+- **Extensions** - Some of our code still talks to the extensions system,
+  specifically the `PreinstalledWebAppManager`.
+- **`content::WebContents`**: The WebAppProvider system interacts with
+  `content::WebContents` for various tasks like loading URLs (via
+  `WebAppUrlLoader`), retrieving web app manifest data and icons (via
+  `WebAppDataRetriever` and `WebAppIconDownloader` respectively), and observing
+  navigations and destruction. The `WebContentsManager` serves as a centralized
+  point of dependency for these interactions and acts as a factory for these
+  components, allowing for easier management and faking in tests.
+- **OS Integration**: Each OS integration has fairly custom code on each OS to
+  do the operation. This is difficult to coordinate and test. Currently the
+  `OsIntegrationManger` manages this, which has a fake version.
+- **Sync system**: There is a tight coupling between our system and the sync
+  system through the WebAppSyncBridge. Faking this is easy and is handled by
+  the `FakeWebAppProvider`.
+- **UI**: There are parts of the system that are coupled to UI, like showing
+  dialogs, determining information about app windows, etc. These are put behind
+  the `WebAppUiManager`, and faked by the `FakeWebAppUiManager`.
+- **Policy**: Our code depends on the policy system setting its policies in
+  appropriate prefs for us to read. Because we just look at prefs, we don't
+  need a "fake" here.
 
 ### Databases / sources of truth
 
@@ -137,12 +146,26 @@ None of this information should be accessed without an applicable 'lock' on the 
 
 ### Managers
 
-These are used to encapsulate common responsibilities or in-memory state that needs to be stored.
+These are used to encapsulate common responsibilities or in-memory state that
+needs to be stored.
+
+#### `WebContentsManager`
+
+*   **Purpose**: Manages dependencies on `content::WebContents` for the
+    WebAppProvider system. It acts as a factory for `WebAppUrlLoader`,
+    `WebAppDataRetriever`, and `WebAppIconDownloader`.
+*   **Key Responsibilities**:
+    *   Provides concrete implementations of URL loading and data retrieval
+        abstractions.
+    *   Enables the use of fakes for these components in unit tests, reducing
+        the need for a full browser environment.
+*   **Location**:
+    `chrome/browser/web_applications/web_contents/web_contents_manager.h`
 
 ### Commands
 
-Commands are used to encapsulate operations in the system, and use Locks to ensure that your operation has isolation from other operations.
-
+Commands are used to encapsulate operations in the system, and use Locks to
+ensure that your operation has isolation from other operations.
 - If you need to change something in the WebAppProvider system, you should probably use a command.
 - Commands talk to the system using locks they are granted. The locks should offer access to "managers" that the commands can use.
 - Commands expose a `ToDebugValue()` method that is logged on completion and exposed in the chrome://web-app-internals. This can be very helpful for debugging and bug reports.
@@ -250,8 +273,6 @@ These all specify a set of [install URLs][23] which the `ExternallyManagedAppMan
 
 This is the tail end of the installation process where we write all our web app metadata to [disk][25] and deploy OS integrations (like [desktop shortcuts][26] and [file handlers][27] using the [`OsIntegrationManager`][28].
 
-This also manages the uninstallation process.
-
 #### [`WebAppUiManager`][29]
 
 Sometimes we need to query window state from chrome/browser/ui land even though our BUILD.gn targets disallow this as it would be a circular dependency. This [abstract class][30] + [impl][31] injects the dependency at link time (see [`WebAppUiManager::Create()`'s`][32] `declaration and definition locations`).
@@ -314,3 +335,4 @@ This information is used when launching a web app (to determine what profile or 
 [57]: https://source.chromium.org/search?q=WebAppInternalsHandler::BuildDebugInfo
 [58]: testing.md
 [59]: cdp-integration.md
+[web-app-filter]: /chrome/browser/web_applications/web_app_filter.h

@@ -131,7 +131,7 @@ promise_test(async t => {
   // 'granted' to test that it doesn't accidently grant the ability to use
   // System Exclusive messages
   await test_driver.set_permission({name: 'midi', sysex: false}, 'granted');
-  return promise_rejects_dom(t, 'SecurityError',
+  return promise_rejects_dom(t, 'NotAllowedError',
       navigator.requestMIDIAccess({sysex: true}));
 }, 'basic MIDI access is functional');
 

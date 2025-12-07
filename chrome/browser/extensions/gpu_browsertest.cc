@@ -20,10 +20,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, BackgroundPageIsNeverComposited) {
                     .AppendASCII("behllobkkfkfnphdnhnkndlbkcpglgmj")
                     .AppendASCII("1.0.0.0")));
 
-  ProcessManager* manager = ProcessManager::Get(browser()->profile());
+  ProcessManager* manager = ProcessManager::Get(profile());
   ExtensionHost* host = FindHostWithPath(manager, "/backgroundpage.html", 1);
-  ASSERT_TRUE(host->host_contents()->GetDelegate()->IsNeverComposited(
-      host->host_contents()));
+  ASSERT_TRUE(host->host_contents()->IsNeverComposited());
 }
 
 }  // namespace extensions

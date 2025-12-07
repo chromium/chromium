@@ -21,11 +21,11 @@ TextResource::TextResource(const ResourceRequest& resource_request,
 TextResource::~TextResource() = default;
 
 void TextResource::SetEncoding(const String& chs) {
-  decoder_->SetEncoding(WTF::TextEncoding(chs),
+  decoder_->SetEncoding(TextEncoding(chs),
                         TextResourceDecoder::kEncodingFromHTTPHeader);
 }
 
-WTF::TextEncoding TextResource::Encoding() const {
+TextEncoding TextResource::Encoding() const {
   return decoder_->Encoding();
 }
 
@@ -34,7 +34,7 @@ String TextResource::DecodedText() const {
 
   StringBuilder builder;
   for (const auto& span : *Data())
-    builder.Append(decoder_->Decode(span.data(), span.size()));
+    builder.Append(decoder_->Decode(span));
   builder.Append(decoder_->Flush());
   return builder.ToString();
 }

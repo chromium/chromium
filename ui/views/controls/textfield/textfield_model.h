@@ -10,11 +10,13 @@
 #include <list>
 #include <memory>
 #include <string>
+#include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "build/chromeos_buildflags.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/gfx/render_text.h"
 #include "ui/gfx/text_constants.h"
@@ -57,6 +59,10 @@ class VIEWS_EXPORT TextfieldModel {
     // Called any time that the text property is modified in TextfieldModel
     virtual void OnTextChanged() {}
 
+    // Writes `text` to `clipboard_buffer`, if permitted by the implementation.
+    virtual void WriteTextToClipboard(ui::ClipboardBuffer clipboard_buffer,
+                                      const std::u16string_view& text) {}
+
    protected:
     virtual ~Delegate();
   };
@@ -70,7 +76,7 @@ class VIEWS_EXPORT TextfieldModel {
 
   // Edit related methods.
 
-  const std::u16string& text() const { return render_text_->text(); }
+  std::u16string_view text() const { return render_text_->text(); }
   // Sets the text. Returns true if the text was modified. The current
   // composition text will be confirmed first. Setting the same text, even with
   // an updated |cursor_position|, will neither add edit history nor change the
@@ -81,14 +87,14 @@ class VIEWS_EXPORT TextfieldModel {
   // subsequent calls will override the cursor position because updating the
   // cursor alone won't update the edit history. I.e. the cursor position after
   // applying or redoing the edit will be determined by |cursor_position|.
-  bool SetText(const std::u16string& new_text, size_t cursor_position);
+  bool SetText(std::u16string_view new_text, size_t cursor_position);
 
   gfx::RenderText* render_text() { return render_text_.get(); }
 
   // Inserts given |new_text| at the current cursor position.
   // The current composition text will be cleared.
-  void InsertText(const std::u16string& new_text) {
-    InsertTextInternal(new_text, false);
+  void InsertText(std::u16string new_text) {
+    InsertTextInternal(std::move(new_text), false);
   }
 
   // Inserts a character at the current cursor position.
@@ -98,18 +104,18 @@ class VIEWS_EXPORT TextfieldModel {
 
   // Replaces characters at the current position with characters in given text.
   // The current composition text will be cleared.
-  void ReplaceText(const std::u16string& new_text) {
-    ReplaceTextInternal(new_text, false);
+  void ReplaceText(std::u16string new_text) {
+    ReplaceTextInternal(std::move(new_text), false);
   }
 
   // Replaces the char at the current position with given character.
   void ReplaceChar(char16_t c) {
-    ReplaceTextInternal(std::u16string(&c, 1), true);
+    ReplaceTextInternal(std::u16string(1, c), true);
   }
 
   // Appends the text.
   // The current composition text will be confirmed.
-  void Append(const std::u16string& new_text);
+  void Append(std::u16string new_text);
 
   // Deletes the first character after the current cursor position (as if, the
   // the user has pressed delete key in the textfield). Returns true if
@@ -151,7 +157,7 @@ class VIEWS_EXPORT TextfieldModel {
 
   // Returns the primary selected text associated with the cursor. Does not
   // return secondary selections.
-  std::u16string GetSelectedText() const;
+  std::u16string_view GetSelectedText() const;
 
   // The current composition text will be confirmed. If |primary| is true, the
   // selection starts with the range's start position and ends with the range's
@@ -222,11 +228,11 @@ class VIEWS_EXPORT TextfieldModel {
   void DeleteSelection();
 
   // Deletes the selected text (if any) and insert text at given position.
-  void DeletePrimarySelectionAndInsertTextAt(const std::u16string& new_text,
+  void DeletePrimarySelectionAndInsertTextAt(std::u16string new_text,
                                              size_t position);
 
   // Retrieves the text content in a given range.
-  std::u16string GetTextFromRange(const gfx::Range& range) const;
+  std::u16string_view GetTextFromRange(const gfx::Range& range) const;
 
   // Retrieves the range containing all text in the model.
   void GetTextRange(gfx::Range* range) const;
@@ -274,12 +280,12 @@ class VIEWS_EXPORT TextfieldModel {
   // Insert the given |new_text| at the cursor. |mergeable| indicates if this
   // operation can be merged with previous edits in the history. Will delete any
   // selected text.
-  void InsertTextInternal(const std::u16string& new_text, bool mergeable);
+  void InsertTextInternal(std::u16string new_text, bool mergeable);
 
   // Replace the current selected text with the given |new_text|. |mergeable|
   // indicates if this operation can be merged with previous edits in the
   // history.
-  void ReplaceTextInternal(const std::u16string& new_text, bool mergeable);
+  void ReplaceTextInternal(std::u16string new_text, bool mergeable);
 
   // Clears redo history.
   void ClearRedoHistory();
@@ -287,13 +293,13 @@ class VIEWS_EXPORT TextfieldModel {
   // Executes and records edit operations.
   void ExecuteAndRecordDelete(std::vector<gfx::Range> ranges, bool mergeable);
   void ExecuteAndRecordReplaceSelection(internal::MergeType merge_type,
-                                        const std::u16string& new_text);
+                                        std::u16string new_text);
   void ExecuteAndRecordReplace(internal::MergeType merge_type,
                                std::vector<gfx::Range> replacement_range,
                                size_t new_cursor_pos,
-                               const std::u16string& new_text,
+                               std::u16string new_text,
                                size_t new_text_start);
-  void ExecuteAndRecordInsert(const std::u16string& new_text, bool mergeable);
+  void ExecuteAndRecordInsert(std::u16string new_text, bool mergeable);
 
   // Adds or merges |edit| into the edit history.
   void AddOrMergeEditHistory(std::unique_ptr<internal::Edit> edit);
@@ -314,8 +320,8 @@ class VIEWS_EXPORT TextfieldModel {
                   const gfx::Range& primary_selection,
                   const std::vector<gfx::Range>& secondary_selections);
 
-  // Calls render_text->SetText() and delegate's callback.
-  void SetRenderTextText(const std::u16string& text);
+  // Calls `render_text->SetText()` and delegate's callback.
+  void SetRenderTextText(std::u16string text);
 
   void ClearComposition();
 

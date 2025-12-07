@@ -18,7 +18,7 @@ import java.util.List;
  * number of trials of upload for that report.
  */
 public class UnuploadedFilesStateLoader extends CrashInfoLoader {
-    private CrashFileManager mCrashFileManager;
+    private final CrashFileManager mCrashFileManager;
 
     /** @param crashDir the directory where WebView stores crash reports files. */
     public UnuploadedFilesStateLoader(CrashFileManager crashFileManager) {

@@ -8,18 +8,20 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/event_utils.h"
-#include "components/saved_tab_groups/saved_tab_group.h"
+#include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/page_navigator.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/menu_button.h"
-#include "ui/views/dialog_model_context_menu_controller.h"
 #include "ui/views/drag_controller.h"
 
 class Browser;
@@ -28,34 +30,41 @@ namespace gfx {
 class Canvas;
 }
 
+namespace views {
+class MenuRunner;
+}
+
 namespace tab_groups {
+
+class STGTabsMenuModel;
 
 // The visual representation of a SavedTabGroup shown in the bookmarks bar.
 class SavedTabGroupButton : public views::MenuButton,
-                            public views::DragController {
+                            public views::DragController,
+                            public views::ContextMenuController {
   METADATA_HEADER(SavedTabGroupButton, views::MenuButton)
 
  public:
-  SavedTabGroupButton(
-      const SavedTabGroup& group,
-      PressedCallback callback,
-      Browser* browser,
-      bool animations_enabled = true);
+  SavedTabGroupButton(const SavedTabGroup& group,
+                      PressedCallback callback,
+                      Browser* browser,
+                      bool animations_enabled = true);
 
   SavedTabGroupButton(const SavedTabGroupButton&) = delete;
   SavedTabGroupButton& operator=(const SavedTabGroupButton&) = delete;
   ~SavedTabGroupButton() override;
 
   // views::MenuButton:
-  std::u16string GetTooltipText(const gfx::Point& p) const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void PaintButtonContents(gfx::Canvas* canvas) override;
   std::unique_ptr<views::LabelButtonBorder> CreateDefaultBorder()
       const override;
   void OnThemeChanged() override;
 
+  void UpdateCachedTooltipText();
+
   // views::View
   bool OnKeyPressed(const ui::KeyEvent& event) override;
+  gfx::Point GetKeyboardContextMenuLocation() override;
 
   // views::LabelButton
   bool IsTriggerableEvent(const ui::Event& e) override;
@@ -69,6 +78,12 @@ class SavedTabGroupButton : public views::MenuButton,
                            const gfx::Point& press_pt,
                            const gfx::Point& p) override;
 
+  // views::ContextMenuController
+  void ShowContextMenuForViewImpl(
+      View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override;
+
   // Updates the buttons visuals (title and color) alongside its list of tabs
   // displayed in the context menu.
   void UpdateButtonData(const SavedTabGroup& group);
@@ -80,12 +95,23 @@ class SavedTabGroupButton : public views::MenuButton,
   const base::Uuid guid() const { return guid_; }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(SavedTabGroupBarUnitTest, AccessibleName);
+  FRIEND_TEST_ALL_PREFIXES(SavedTabGroupBarUnitTest, TooltipText);
+
   std::u16string GetAccessibleNameForButton() const;
   void SetTextProperties(const SavedTabGroup& group);
   void UpdateButtonLayout();
+  void UpdateAccessibleName();
+  void SetText(std::u16string_view text) override;
+  int GetAndIncrementLatestCommandId();
+
+  raw_ptr<Browser> browser_;
 
   // The animations for button movement.
   std::unique_ptr<gfx::SlideAnimation> show_animation_;
+
+  // The shared state of the TabGroup.
+  bool is_shared_;
 
   // The color of the TabGroup this button is associated with.
   tab_groups::TabGroupColorId tab_group_color_id_;
@@ -96,12 +122,15 @@ class SavedTabGroupButton : public views::MenuButton,
   // The local guid used to identify the group in the tabstrip if it is open.
   std::optional<tab_groups::TabGroupId> local_group_id_;
 
-  // The tabs to be displayed in the context menu. Currently supports tab
-  // title, url, and favicon.
-  std::vector<SavedTabGroupTab> tabs_;
+  // The command id that gets updated and assigned to the context menu
+  // commands.
+  int latest_command_id_ = -1;
 
-  // Context menu controller used for this View.
-  views::DialogModelContextMenuController context_menu_controller_;
+  // Menu model used by the context menu.
+  std::unique_ptr<STGTabsMenuModel> menu_model_;
+
+  // Context menu runner used for this View.
+  std::unique_ptr<views::MenuRunner> context_menu_runner_;
 };
 
 }  // namespace tab_groups

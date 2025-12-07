@@ -61,7 +61,7 @@ bool MessagePortCast::OnMessage(blink::WebMessagePort::Message message) {
 MessagePortCast::MessagePortCast(blink::WebMessagePort&& port)
     : receiver_(nullptr), port_(std::move(port)) {}
 
-MessagePortCast::~MessagePortCast() {}
+MessagePortCast::~MessagePortCast() = default;
 
 void MessagePortCast::OnPipeError() {
   DCHECK(receiver_);

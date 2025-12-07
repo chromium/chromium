@@ -31,7 +31,7 @@ export const CrRippleMixin =
           };
         }
 
-        noink: boolean = false;
+        accessor noink: boolean = false;
         rippleContainer: HTMLElement|null = null;
 
         private ripple_: CrRippleElement|null = null;

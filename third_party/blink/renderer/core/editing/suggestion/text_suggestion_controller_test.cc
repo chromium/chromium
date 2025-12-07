@@ -55,7 +55,7 @@ TEST_F(TextSuggestionControllerTest, ApplySpellCheckSuggestion) {
       "<div contenteditable>"
       "spllchck"
       "</div>");
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   Node* text = div->firstChild();
 
   GetDocument().Markers().AddActiveSuggestionMarker(
@@ -95,7 +95,7 @@ TEST_F(TextSuggestionControllerTest, MAYBE_ApplyTextSuggestion) {
       "<div contenteditable>"
       "word1 word2 word3 word4"
       "</div>");
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   auto* text = To<Text>(div->firstChild());
 
   // Add marker on "word1". This marker should *not* be cleared by the
@@ -206,7 +206,7 @@ TEST_F(TextSuggestionControllerTest,
       "<div contenteditable>"
       "mispelled"
       "</div>");
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   auto* text = To<Text>(div->firstChild());
 
   // Add marker on "mispelled". This marker should be cleared by the replace
@@ -247,7 +247,7 @@ TEST_F(TextSuggestionControllerTest,
       "this is a mispelled."
       "</span>"
       "</div>");
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   Element* span = To<Element>(div->firstChild());
   Text* text = To<Text>(span->firstChild());
 
@@ -280,7 +280,7 @@ TEST_F(TextSuggestionControllerTest,
   EXPECT_EQ(0u, GetDocument().Markers().MarkersFor(*text).size());
   EXPECT_EQ(
       "<span style=\"color: rgb(255, 0, 0);\">this is a misspelled.</span>",
-      div->innerHTML());
+      div->GetInnerHTMLString());
 }
 
 TEST_F(TextSuggestionControllerTest, DeleteActiveSuggestionRange_DeleteAtEnd) {
@@ -288,7 +288,7 @@ TEST_F(TextSuggestionControllerTest, DeleteActiveSuggestionRange_DeleteAtEnd) {
       "<div contenteditable>"
       "word1 word2"
       "</div>");
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   Node* text = div->firstChild();
 
   // Mark "word2" as the active suggestion range
@@ -316,7 +316,7 @@ TEST_F(TextSuggestionControllerTest,
       "<div contenteditable>"
       "word1 word2 word3"
       "</div>");
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   Node* text = div->firstChild();
 
   // Mark "word2" as the active suggestion range
@@ -345,7 +345,7 @@ TEST_F(TextSuggestionControllerTest,
       "<div contenteditable>"
       "word1 word2"
       "</div>");
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   Node* text = div->firstChild();
 
   // Mark "word1" as the active suggestion range
@@ -375,7 +375,7 @@ TEST_F(TextSuggestionControllerTest,
       "<div contenteditable>"
       "word1"
       "</div>");
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   Node* text = div->firstChild();
 
   // Mark "word1" as the active suggestion range
@@ -408,7 +408,7 @@ TEST_F(TextSuggestionControllerTest,
       "<div contenteditable>"
       "word1word2 word3"
       "</div>");
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   Node* text = div->firstChild();
 
   // Mark "word2" as the active suggestion range
@@ -436,7 +436,7 @@ TEST_F(TextSuggestionControllerTest,
       "<div contenteditable>"
       "word1 word2word3"
       "</div>");
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   Node* text = div->firstChild();
 
   // Mark "word2" as the active suggestion range
@@ -464,7 +464,7 @@ TEST_F(TextSuggestionControllerTest,
       "<div contenteditable>"
       "word1word2"
       "</div>");
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   Node* text = div->firstChild();
 
   // Mark "word1" as the active suggestion range
@@ -492,7 +492,7 @@ TEST_F(TextSuggestionControllerTest,
       "<div contenteditable>"
       "embiggen"
       "</div>");
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   Node* text = div->firstChild();
 
   // Mark "embiggen" as misspelled
@@ -541,7 +541,7 @@ TEST_F(TextSuggestionControllerTest, SuggestionMarkerWithEmptySuggestion) {
       "<div contenteditable>"
       "hello"
       "</div>");
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   auto* text = To<Text>(div->firstChild());
 
   // Set suggestion marker with empty suggestion list.
@@ -591,7 +591,7 @@ TEST_F(TextSuggestionControllerTest, SuggestionMarkerWithSuggestion) {
       "<div contenteditable>"
       "hello"
       "</div>");
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   auto* text = To<Text>(div->firstChild());
 
   // Set suggestion marker with two suggestions.
@@ -617,4 +617,135 @@ TEST_F(TextSuggestionControllerTest, SuggestionMarkerWithSuggestion) {
   EXPECT_TRUE(IsTextSuggestionHostAvailable());
 }
 
+TEST_F(TextSuggestionControllerTest, SpellingMarkerWithSuggestionNotHidden) {
+  SetBodyContent("<div contenteditable>helloo</div>");
+  Element* div = QuerySelector("div");
+  auto* text = To<Text>(div->firstChild());
+
+  GetDocument().Markers().AddSpellingMarker(
+      EphemeralRange(Position(text, 0), Position(text, 5)), "hello\nyellow",
+      /*should_hide_suggestion_menu=*/false);
+
+  // Set the caret inside the word.
+  GetDocument().GetFrame()->Selection().SetSelection(
+      SelectionInDOMTree::Builder()
+          .SetBaseAndExtent(Position(text, 3), Position(text, 3))
+          .Build(),
+      SetSelectionOptions());
+
+  // Handle potential suggestion tap on the caret position.
+  // This is to force a connection to the host.
+  GetDocument()
+      .GetFrame()
+      ->GetTextSuggestionController()
+      .HandlePotentialSuggestionTap(PositionInFlatTree(text, 3));
+
+  // Force open spellcheck menu.
+  GetDocument()
+      .GetFrame()
+      ->GetTextSuggestionController()
+      .SuggestionMenuTimeoutCallback(0);
+
+  EXPECT_TRUE(
+      GetDocument().GetFrame()->GetTextSuggestionController().IsMenuOpen());
+}
+
+TEST_F(TextSuggestionControllerTest, SpellingMarkerWithSuggestionHidden) {
+  SetBodyContent("<div contenteditable>helloo</div>");
+  Element* div = QuerySelector("div");
+  auto* text = To<Text>(div->firstChild());
+
+  GetDocument().Markers().AddSpellingMarker(
+      EphemeralRange(Position(text, 0), Position(text, 5)), "hello\nyellow",
+      /*should_hide_suggestion_menu=*/true);
+
+  // Set the caret inside the word.
+  GetDocument().GetFrame()->Selection().SetSelection(
+      SelectionInDOMTree::Builder()
+          .SetBaseAndExtent(Position(text, 3), Position(text, 3))
+          .Build(),
+      SetSelectionOptions());
+
+  // Handle potential suggestion tap on the caret position.
+  // This is to force a connection to the host.
+  GetDocument()
+      .GetFrame()
+      ->GetTextSuggestionController()
+      .HandlePotentialSuggestionTap(PositionInFlatTree(text, 3));
+
+  // Force open spellcheck menu.
+  GetDocument()
+      .GetFrame()
+      ->GetTextSuggestionController()
+      .SuggestionMenuTimeoutCallback(0);
+
+  EXPECT_FALSE(
+      GetDocument().GetFrame()->GetTextSuggestionController().IsMenuOpen());
+}
+
+TEST_F(TextSuggestionControllerTest, GrammarMarkerWithSuggestionNotHidden) {
+  SetBodyContent("<div contenteditable>helloo</div>");
+  Element* div = QuerySelector("div");
+  auto* text = To<Text>(div->firstChild());
+
+  GetDocument().Markers().AddGrammarMarker(
+      EphemeralRange(Position(text, 0), Position(text, 5)), "hello\nyellow",
+      /*should_hide_suggestion_menu=*/false);
+
+  // Set the caret inside the word.
+  GetDocument().GetFrame()->Selection().SetSelection(
+      SelectionInDOMTree::Builder()
+          .SetBaseAndExtent(Position(text, 3), Position(text, 3))
+          .Build(),
+      SetSelectionOptions());
+
+  // Handle potential suggestion tap on the caret position.
+  // This is to force a connection to the host.
+  GetDocument()
+      .GetFrame()
+      ->GetTextSuggestionController()
+      .HandlePotentialSuggestionTap(PositionInFlatTree(text, 3));
+
+  // Force open spellcheck menu.
+  GetDocument()
+      .GetFrame()
+      ->GetTextSuggestionController()
+      .SuggestionMenuTimeoutCallback(0);
+
+  EXPECT_TRUE(
+      GetDocument().GetFrame()->GetTextSuggestionController().IsMenuOpen());
+}
+
+TEST_F(TextSuggestionControllerTest, GrammarMarkerWithSuggestionHidden) {
+  SetBodyContent("<div contenteditable>helloo</div>");
+  Element* div = QuerySelector("div");
+  auto* text = To<Text>(div->firstChild());
+
+  GetDocument().Markers().AddGrammarMarker(
+      EphemeralRange(Position(text, 0), Position(text, 5)), "hello\nyellow",
+      /*should_hide_suggestion_menu=*/true);
+
+  // Set the caret inside the word.
+  GetDocument().GetFrame()->Selection().SetSelection(
+      SelectionInDOMTree::Builder()
+          .SetBaseAndExtent(Position(text, 3), Position(text, 3))
+          .Build(),
+      SetSelectionOptions());
+
+  // Handle potential suggestion tap on the caret position.
+  // This is to force a connection to the host.
+  GetDocument()
+      .GetFrame()
+      ->GetTextSuggestionController()
+      .HandlePotentialSuggestionTap(PositionInFlatTree(text, 3));
+
+  // Force open spellcheck menu.
+  GetDocument()
+      .GetFrame()
+      ->GetTextSuggestionController()
+      .SuggestionMenuTimeoutCallback(0);
+
+  EXPECT_FALSE(
+      GetDocument().GetFrame()->GetTextSuggestionController().IsMenuOpen());
+}
 }  // namespace blink

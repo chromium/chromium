@@ -8,7 +8,7 @@
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gl/gl_surface_egl.h"
 
 namespace base {

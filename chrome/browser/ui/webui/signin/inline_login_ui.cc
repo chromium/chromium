@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/signin/inline_login_ui.h"
 
 #include <memory>
@@ -17,14 +12,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/test_files_request_filter.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -40,8 +33,9 @@
 #include "content/public/common/content_switches.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/webui/webui_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
@@ -50,11 +44,9 @@
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/webui/ash/edu_account_login_handler.h"
 #include "chrome/browser/ui/webui/ash/edu_coexistence/edu_coexistence_login_handler.h"
+#include "chrome/browser/ui/webui/signin/ash/edu_account_login_handler.h"
 #include "chrome/browser/ui/webui/signin/ash/inline_login_handler_impl.h"
-#include "chrome/grit/arc_account_picker_resources.h"
-#include "chrome/grit/arc_account_picker_resources_map.h"
 #include "chrome/grit/edu_coexistence_resources.h"
 #include "chrome/grit/edu_coexistence_resources_map.h"
 #include "chrome/grit/gaia_action_buttons_resources.h"
@@ -70,11 +62,11 @@
 #include "ui/strings/grit/ui_strings.h"
 #else
 #include "chrome/browser/ui/webui/signin/inline_login_handler_impl.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void AddEduStrings(content::WebUIDataSource* source,
                    const std::u16string& username) {
   source->AddLocalizedString("okButton", IDS_APP_OK);
@@ -118,18 +110,15 @@ void AddEduStrings(content::WebUIDataSource* source,
       "addSchoolAccountLabel",
       IDS_ACCOUNT_MANAGER_DIALOG_ADD_SCHOOL_ACCOUNT_LABEL);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void CreateAndAddWebUIDataSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIChromeSigninHost);
 
-  source->AddResourcePaths(
-      base::make_span(kInlineLoginResources, kInlineLoginResourcesSize));
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kGaiaAuthHostResources, kGaiaAuthHostResourcesSize),
-      IDR_INLINE_LOGIN_INLINE_LOGIN_HTML);
+  source->AddResourcePaths(kInlineLoginResources);
+  webui::SetupWebUIDataSource(source, kGaiaAuthHostResources,
+                              IDR_INLINE_LOGIN_INLINE_LOGIN_HTML);
   // TODO(crbug.com/40250068): Remove this when saml_password_attributes.js is
   // made TrustedTypes compliant.
   source->DisableTrustedTypesCSP();
@@ -137,16 +126,11 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ConnectSrc, "connect-src *;");
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  source->AddResourcePaths(base::make_span(kArcAccountPickerResources,
-                                           kArcAccountPickerResourcesSize));
-  source->AddResourcePaths(base::make_span(kGaiaActionButtonsResources,
-                                           kGaiaActionButtonsResourcesSize));
-  source->AddResourcePaths(
-      base::make_span(kEduCoexistenceResources, kEduCoexistenceResourcesSize));
-  source->AddResourcePaths(
-      base::make_span(kSupervisionResources, kSupervisionResourcesSize));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+  source->AddResourcePaths(kGaiaActionButtonsResources);
+  source->AddResourcePaths(kEduCoexistenceResources);
+  source->AddResourcePaths(kSupervisionResources);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Only add a filter when runing as test.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -157,155 +141,90 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
                              test::GetTestFilesRequestFilter());
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   static constexpr webui::ResourcePath kResources[] = {
-    {"account_manager_shared.css.js", IDR_ACCOUNT_MANAGER_SHARED_CSS_JS},
-    {"error_screen.html.js",
-     IDR_ACCOUNT_MANAGER_COMPONENTS_ERROR_SCREEN_HTML_JS},
-    {"error_screen.js", IDR_ACCOUNT_MANAGER_COMPONENTS_ERROR_SCREEN_JS},
-    // Resources for the server-based edu coexistence flow.
-    {"edu-coexistence", IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_HTML},
+      {"account_manager_shared.css.js", IDR_ACCOUNT_MANAGER_SHARED_CSS_JS},
+      {"error_screen.html.js",
+       IDR_ACCOUNT_MANAGER_COMPONENTS_ERROR_SCREEN_HTML_JS},
+      {"error_screen.js", IDR_ACCOUNT_MANAGER_COMPONENTS_ERROR_SCREEN_JS},
+      // Resources for the server-based edu coexistence flow.
+      {"edu-coexistence", IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_HTML},
 
-    {"account_manager_signin_blocked_by_policy.svg",
-     IDS_ACCOUNT_MANAGER_SIGNIN_BLOCKED_BY_POLICY_SVG},
+      {"account_manager_signin_blocked_by_policy.svg",
+       IDS_ACCOUNT_MANAGER_SIGNIN_BLOCKED_BY_POLICY_SVG},
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    {"account_manager_welcome_1x.png", IDR_ACCOUNT_MANAGER_WELCOME_1X_PNG},
-    {"account_manager_welcome_2x.png", IDR_ACCOUNT_MANAGER_WELCOME_2X_PNG},
-    {"googleg.svg", IDR_ACCOUNT_MANAGER_WELCOME_GOOGLE_LOGO_SVG},
+      {"account_manager_welcome_1x.png", IDR_ACCOUNT_MANAGER_WELCOME_1X_PNG},
+      {"account_manager_welcome_2x.png", IDR_ACCOUNT_MANAGER_WELCOME_2X_PNG},
+      {"googleg.svg", IDR_ACCOUNT_MANAGER_WELCOME_GOOGLE_LOGO_SVG},
 #endif
   };
   source->AddResourcePaths(kResources);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-    {"accessibleCloseButtonLabel", IDS_SIGNIN_ACCESSIBLE_CLOSE_BUTTON},
-    {"accessibleBackButtonLabel", IDS_SIGNIN_ACCESSIBLE_BACK_BUTTON},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"title", IDS_ACCOUNT_MANAGER_DIALOG_TITLE},
-    {"ok", IDS_APP_OK},
-    {"nextButtonLabel", IDS_ACCOUNT_MANAGER_DIALOG_NEXT_BUTTON},
-    {"accountManagerDialogWelcomeTitle",
-     IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_TITLE},
-    {"accountManagerDialogWelcomeCheckbox",
-     IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_CHECKBOX},
-    {"accountManagerDialogArcAccountPickerTitle",
-     IDS_ACCOUNT_MANAGER_DIALOG_ARC_ACCOUNT_PICKER_TITLE},
-    {"addAccountLabel", IDS_ACCOUNT_MANAGER_DIALOG_ADD_ACCOUNT_LABEL},
-    {"accountUseInArcButtonLabel",
-     IDS_SETTINGS_ACCOUNT_MANAGER_USE_IN_ARC_BUTTON_LABEL},
-    {"accountManagerErrorNoInternetTitle",
-     IDS_ACCOUNT_MANAGER_ERROR_NO_INTERNET_TITLE},
-    {"accountManagerErrorNoInternetBody",
-     IDS_ACCOUNT_MANAGER_ERROR_NO_INTERNET_BODY},
-    {"accountManagerErrorCannotAddAccountTitle",
-     IDS_ACCOUNT_MANAGER_ERROR_CANNOT_ADD_ACCOUNT_TITLE},
-    {"accountManagerErrorCannotAddAccountBody",
-     IDS_ACCOUNT_MANAGER_ERROR_CANNOT_ADD_ACCOUNT_BODY},
-    {"accountManagerDialogSigninBlockedByPolicyTitle",
-     IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_BLOCKED_BY_POLICY_TITLE},
-    {"accountManagerDialogSigninBlockedByPolicyBody",
-     IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_BLOCKED_BY_POLICY_BODY},
-    {"accountManagerDialogSigninErrorTitle",
-     IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_ERROR_TITLE},
-    {"accountManagerDialogSigninErrorBody",
-     IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_ERROR_BODY},
-    {"accountManagerDialogSigninBlockedByPolicyImageAlt",
-     IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_BLOCKED_BY_POLICY_IMAGE_ALT},
-    {"accountManagerDialogSigninSpinnerText",
-     IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_SPINNER_TEXT},
+      {"accessibleCloseButtonLabel", IDS_SIGNIN_ACCESSIBLE_CLOSE_BUTTON},
+      {"accessibleBackButtonLabel", IDS_SIGNIN_ACCESSIBLE_BACK_BUTTON},
+#if BUILDFLAG(IS_CHROMEOS)
+      {"title", IDS_ACCOUNT_MANAGER_DIALOG_TITLE},
+      {"ok", IDS_APP_OK},
+      {"accountManagerDialogWelcomeTitle",
+       IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_TITLE},
+      {"accountManagerDialogWelcomeCheckbox",
+       IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_CHECKBOX},
+      {"addAccountLabel", IDS_ACCOUNT_MANAGER_DIALOG_ADD_ACCOUNT_LABEL},
+      {"accountUseInArcButtonLabel",
+       IDS_SETTINGS_ACCOUNT_MANAGER_USE_IN_ARC_BUTTON_LABEL},
+      {"accountManagerErrorNoInternetTitle",
+       IDS_ACCOUNT_MANAGER_ERROR_NO_INTERNET_TITLE},
+      {"accountManagerErrorNoInternetBody",
+       IDS_ACCOUNT_MANAGER_ERROR_NO_INTERNET_BODY},
+      {"accountManagerErrorCannotAddAccountTitle",
+       IDS_ACCOUNT_MANAGER_ERROR_CANNOT_ADD_ACCOUNT_TITLE},
+      {"accountManagerErrorCannotAddAccountBody",
+       IDS_ACCOUNT_MANAGER_ERROR_CANNOT_ADD_ACCOUNT_BODY},
+      {"accountManagerDialogSigninBlockedByPolicyTitle",
+       IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_BLOCKED_BY_POLICY_TITLE},
+      {"accountManagerDialogSigninBlockedByPolicyBody",
+       IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_BLOCKED_BY_POLICY_BODY},
+      {"accountManagerDialogSigninErrorTitle",
+       IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_ERROR_TITLE},
+      {"accountManagerDialogSigninErrorBody",
+       IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_ERROR_BODY},
+      {"accountManagerDialogSigninBlockedByPolicyImageAlt",
+       IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_BLOCKED_BY_POLICY_IMAGE_ALT},
+      {"accountManagerDialogSigninSpinnerText",
+       IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_SPINNER_TEXT},
 #else
-    {"title", IDS_CHROME_SIGNIN_TITLE},
+      {"title", IDS_CHROME_SIGNIN_TITLE},
 #endif
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   source->AddBoolean(
       "secondaryGoogleAccountSigninAllowed",
       profile->GetPrefs()->GetBoolean(
           ::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed));
-  source->AddBoolean(
-      "isArcAccountRestrictionsEnabled",
-      ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
-  // The "Apps Settings" link points to Apps > Manage your apps.
-  source->AddString(
-      "accountManagerDialogArcToggleLabel",
-      l10n_util::GetStringFUTF16(
-          IDS_ACCOUNT_MANAGER_DIALOG_ARC_TOGGLE_LABEL,
-          base::UTF8ToUTF16(
-              chrome::GetOSSettingsUrl(
-                  chromeos::settings::mojom::kAppManagementSubpagePath)
-                  .spec())));
-  source->AddString(
-      "accountManagerDialogArcAccountPickerBody",
-      l10n_util::GetStringFUTF16(
-          IDS_ACCOUNT_MANAGER_DIALOG_ARC_ACCOUNT_PICKER_BODY,
-          base::UTF8ToUTF16(
-              chrome::GetOSSettingsUrl(
-                  chromeos::settings::mojom::kMyAccountsSubpagePath)
-                  .spec())));
-  source->AddBoolean(
-      "shouldSkipWelcomePage",
-      ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()
-          ? false
-          : profile->GetPrefs()->GetBoolean(
-                ash::prefs::kShouldSkipInlineLoginWelcomePage));
-  if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
-    int message_id = IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_V2_WITHOUT_GUEST;
-    // Offer browser guest mode or device guest mode, if available.
-    if (profiles::IsGuestModeEnabled()) {
-      message_id = IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_V2_WITH_GUEST_MODE;
-    } else if (user_manager::UserManager::Get()->IsGuestSessionAllowed()) {
-      message_id =
-          IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_V2_WITH_DEVICE_GUEST_MODE;
-    }
+  source->AddBoolean("shouldSkipWelcomePage",
+                     profile->GetPrefs()->GetBoolean(
+                         ash::prefs::kShouldSkipInlineLoginWelcomePage));
 
-    source->AddString(
-        "accountManagerDialogWelcomeBody",
-        l10n_util::GetStringFUTF16(
-            message_id,
-            // "add a new person" link:
-            chrome::kAddNewUserURL,
-            // Device type:
-            ui::GetChromeOSDeviceName(),
-            // Settings > Accounts link:
-            base::UTF8ToUTF16(
-                chrome::GetOSSettingsUrl(
-                    chromeos::settings::mojom::kMyAccountsSubpagePath)
-                    .spec())));
-
-    source->AddString(
-        "accountManagerDialogWelcomeBodyArc",
-        l10n_util::GetStringFUTF16(
-            IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_ARC,
-            // "add a new person" link:
-            chrome::kAddNewUserURL,
-            // Device type:
-            ui::GetChromeOSDeviceName(),
-            // "Apps Settings" link:
-            base::UTF8ToUTF16(
-                chrome::GetOSSettingsUrl(
-                    chromeos::settings::mojom::kAppManagementSubpagePath)
-                    .spec())));
-  } else {
-    bool is_incognito_enabled =
-        (IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
-         policy::IncognitoModeAvailability::kDisabled);
-    int message_id =
-        is_incognito_enabled
-            ? IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY
-            : IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_WITHOUT_INCOGNITO;
-    source->AddString(
-        "accountManagerDialogWelcomeBody",
-        l10n_util::GetStringFUTF16(
-            message_id,
-            base::UTF8ToUTF16(
-                chrome::GetOSSettingsUrl(
-                    chromeos::settings::mojom::kMyAccountsSubpagePath)
-                    .spec()),
-            ui::GetChromeOSDeviceName()));
-  }
+  bool is_incognito_enabled =
+      (IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
+       policy::IncognitoModeAvailability::kDisabled);
+  int message_id =
+      is_incognito_enabled
+          ? IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY
+          : IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_WITHOUT_INCOGNITO;
+  source->AddString(
+      "accountManagerDialogWelcomeBody",
+      l10n_util::GetStringFUTF16(
+          message_id,
+          base::UTF8ToUTF16(chrome::GetOSSettingsUrl(
+                                chromeos::settings::mojom::kPeopleSectionPath)
+                                .spec()),
+          ui::GetChromeOSDeviceName()));
 
   source->AddBoolean("isChild",
                      user_manager::UserManager::Get()->IsLoggedInAsChildUser());
@@ -314,10 +233,10 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
   DCHECK(user);
   source->AddString("userName", user->GetGivenName());
-  source->AddString("accountManagerOsSettingsUrl",
-                    chrome::GetOSSettingsUrl(
-                        chromeos::settings::mojom::kMyAccountsSubpagePath)
-                        .spec());
+  source->AddString(
+      "accountManagerOsSettingsUrl",
+      chrome::GetOSSettingsUrl(chromeos::settings::mojom::kPeopleSectionPath)
+          .spec());
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc,
@@ -326,13 +245,13 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
   std::u16string username =
       ash::ProfileHelper::Get()->GetUserByProfile(profile)->GetGivenName();
   AddEduStrings(source, username);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 // Returns whether |url| can be displayed in a chrome://chrome-signin web
 // contents, depending on the signin reason that is encoded in the url.
 bool IsValidChromeSigninReason(const GURL& url) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return true;
 #else
   signin_metrics::Reason reason =
@@ -355,8 +274,8 @@ bool IsValidChromeSigninReason(const GURL& url) {
     case signin_metrics::Reason::kUnknownReason:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  NOTREACHED();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace
@@ -367,10 +286,11 @@ InlineLoginUI::InlineLoginUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
   CreateAndAddWebUIDataSource(profile);
 
-  if (!IsValidChromeSigninReason(web_ui->GetWebContents()->GetVisibleURL()))
+  if (!IsValidChromeSigninReason(web_ui->GetWebContents()->GetVisibleURL())) {
     return;
+  }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   web_ui->AddMessageHandler(
       std::make_unique<ash::InlineLoginHandlerImpl>(base::BindRepeating(
           &WebDialogUIBase::CloseDialog, weak_factory_.GetWeakPtr(),
@@ -384,7 +304,7 @@ InlineLoginUI::InlineLoginUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
 
 #else
   web_ui->AddMessageHandler(std::make_unique<InlineLoginHandlerImpl>());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
 
@@ -396,4 +316,4 @@ InlineLoginUI::InlineLoginUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
   CreateSessionServiceTabHelper(contents);
 }
 
-InlineLoginUI::~InlineLoginUI() {}
+InlineLoginUI::~InlineLoginUI() = default;

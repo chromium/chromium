@@ -22,14 +22,11 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/image/image.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ui/base/models/image_model.h"
-#endif
 
 class SkBitmap;
 
@@ -71,6 +68,35 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
     LargeFont,
   };
 
+  // The gender to use for languages that are grammatically gendered. kOther is
+  // the default.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.ui.base
+  enum class Gender {
+    kOther = 0,
+    kFeminine,
+    kMasculine,
+    kNeuter,
+    kDefault = kOther,
+  };
+
+#if BUILDFLAG(IS_ANDROID)
+  // The purpose for a pak file represented by an FdAndRegion. These correspond
+  // to entries in the android_webview/common/aw_descriptors.h and
+  // chrome/common/chrome_descriptors.h enums.
+  enum class LocalePakPurpose {
+    kWebViewMain = 0,
+    kNonWebViewMain,
+    kWebViewFallback,
+    kNonWebViewFallback,
+  };
+
+  struct FdAndRegion {
+    int fd;
+    base::MemoryMappedFile::Region region;
+    LocalePakPurpose purpose;
+  };
+#endif  // BUILDFLAG(IS_ANDROID)
+
   struct COMPONENT_EXPORT(UI_BASE) FontDetails {
     explicit FontDetails(std::string typeface = std::string(),
                          int size_delta = 0,
@@ -110,14 +136,6 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
         const base::FilePath& pack_path,
         ResourceScaleFactor scale_factor) = 0;
 
-    // Called before a locale pack file is loaded. Return the full path for
-    // the pack file to continue loading or an empty value to cancel loading.
-    // |pack_path| will contain the complete default path for the pack file if
-    // known or just the pack file name otherwise.
-    virtual base::FilePath GetPathForLocalePack(
-        const base::FilePath& pack_path,
-        const std::string& locale) = 0;
-
     // Return an image resource or an empty value to attempt retrieval of the
     // default resource.
     virtual gfx::Image GetImageNamed(int resource_id) = 0;
@@ -125,6 +143,10 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
     // Return an image resource or an empty value to attempt retrieval of the
     // default resource.
     virtual gfx::Image GetNativeImageNamed(int resource_id) = 0;
+
+    // Returns true if LoadDataResourceBytes would return non-null data for the
+    // specified |resource_id|.
+    virtual bool HasDataResource(int resource_id) const = 0;
 
     // Return a ref counted memory resource or null to attempt retrieval of the
     // default resource.
@@ -155,11 +177,25 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
     virtual ~Delegate() = default;
   };
 
+  // RAII object for tests that wraps SwapSharedInstanceForTesting() to swap out
+  // (and then back in) the current shared instance and, on Android, also the
+  // Android global locale packs.
+  class COMPONENT_EXPORT(UI_BASE) SharedInstanceSwapperForTesting {
+   public:
+    SharedInstanceSwapperForTesting();
+    explicit SharedInstanceSwapperForTesting(ResourceBundle* instance);
+    ~SharedInstanceSwapperForTesting();
+
+   private:
+    raw_ptr<ResourceBundle> instance_;
+#if BUILDFLAG(IS_ANDROID)
+    std::vector<ResourceBundle::FdAndRegion> android_locale_packs_;
+#endif  // BUILDFLAG(IS_ANDROID)
+  };
+
   using LottieData = std::vector<uint8_t>;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   using LottieImageParseFunction = gfx::ImageSkia (*)(LottieData);
   using LottieThemedImageParseFunction = ui::ImageModel (*)(LottieData);
-#endif
 
   // Initialize the ResourceBundle for this process. Does not take ownership of
   // the |delegate| value. Returns the language selected or an empty string if
@@ -197,8 +233,21 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // Delete the ResourceBundle for this process if it exists.
   static void CleanupSharedInstance();
 
-  // Returns the existing shared instance and sets it to the given instance.
-  static ResourceBundle* SwapSharedInstanceForTesting(ResourceBundle* instance);
+  // Returns the existing shared instance and sets it to the given instance. On
+  // Android, it also sets the global android locale pack data to
+  // |new_android_locale_packs| and returns the original data in
+  // |old_android_locale_packs|.
+  //
+  // Prefer to use the RAII class SharedInstanceSwapperForTesting instead of
+  // calling this directly when possible.
+  static ResourceBundle* SwapSharedInstanceForTesting(
+      ResourceBundle* instance
+#if BUILDFLAG(IS_ANDROID)
+      ,
+      const std::vector<ResourceBundle::FdAndRegion>& new_android_locale_packs,
+      std::vector<ResourceBundle::FdAndRegion>* old_android_locale_packs
+#endif  // BUILDFLAG(IS_ANDROID)
+  );
 
   // Returns true after the global resource loader instance has been created.
   static bool HasSharedInstance();
@@ -206,12 +255,6 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // Initialize the ResourceBundle using data pack from given buffer.
   // Return the global resource loader instance.
   static ResourceBundle& GetSharedInstance();
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  static void SetLottieParsingFunctions(
-      LottieImageParseFunction parse_lottie_as_still_image,
-      LottieThemedImageParseFunction parse_lottie_as_themed_still_image);
-#endif
 
   // Exposed for testing, otherwise use GetSharedInstance().
   explicit ResourceBundle(Delegate* delegate);
@@ -221,12 +264,12 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   ResourceBundle& operator=(const ResourceBundle&) = delete;
 
   // Loads a secondary locale data pack using the given file region.
-  void LoadSecondaryLocaleDataWithPakFileRegion(
+  void LoadAdditionalLocaleDataWithPakFileRegion(
       base::File pak_file,
       const base::MemoryMappedFile::Region& region);
 
   // Check if the .pak for the given locale exists.
-  static bool LocaleDataPakExists(const std::string& locale);
+  static bool LocaleDataPakExists(std::string_view locale, Gender gender);
 
   // Registers additional data pack files with this ResourceBundle.  When
   // looking for a DataResource, we will search these files after searching the
@@ -251,28 +294,6 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // load.
   void AddOptionalDataPackFromPath(const base::FilePath& path,
                                    ResourceScaleFactor scale_factor);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Same as AddDataPackFromPath but loads main source `shared_resource_path`
-  // with ash resources `ash_path`.
-  // When creating and adding ResourceHandle for `lacros_path`, we map lacros
-  // resources to ash resources if a resource is common and remove it from
-  // lacros resources. This is for saving memory.
-  // If `shared_resource_path` is not successfully loaded, load `lacros_path`
-  // as DataPack instead. In this case, the memory saving does not work.
-  void AddDataPackFromPathWithAshResources(
-      const base::FilePath& shared_resource_path,
-      const base::FilePath& ash_path,
-      const base::FilePath& lacros_path,
-      ResourceScaleFactor scale_factor);
-
-  // Same as above but does not log an error if the pack fails to load.
-  void AddOptionalDataPackFromPathWithAshResources(
-      const base::FilePath& shared_resource_path,
-      const base::FilePath& ash_path,
-      const base::FilePath& lacros_path,
-      ResourceScaleFactor scale_factor);
-#endif
 
   // Changes the locale for an already-initialized ResourceBundle, returning the
   // name of the newly-loaded locale, or an empty string if initialization
@@ -310,11 +331,13 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // `SkottieWrapper`.
   std::optional<LottieData> GetLottieData(int resource_id) const;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Gets a themed Lottie image (not animated) with the specified |resource_id|
   // from the current module data. |ResourceBundle| owns the result.
   const ui::ImageModel& GetThemedLottieImageNamed(int resource_id);
-#endif
+
+  // Returns true if LoadDataResourceBytes would return non-null data for the
+  // specified |resource_id|.
+  bool HasDataResource(int resource_id) const;
 
   // Loads the raw bytes of a scale independent data resource or null.
   base::RefCountedMemory* LoadDataResourceBytes(int resource_id) const;
@@ -409,7 +432,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // returned path is not guaranteed to reference an existing file.
   // Used on Android to load the local file in the browser process and pass it
   // to the sandboxed renderer process.
-  static base::FilePath GetLocaleFilePath(const std::string& app_locale);
+  static base::FilePath GetLocaleFilePath(std::string_view app_locale);
 
   // Returns the maximum scale factor currently loaded.
   // Returns k100Percent if no resource is loaded.
@@ -424,7 +447,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
     mangle_localized_strings_ = mangle;
   }
 
-  std::string GetLoadedLocaleForTesting() { return loaded_locale_; }
+  const std::string& GetLoadedLocale() const { return loaded_locale_; }
 #if DCHECK_IS_ON()
   // Gets whether overriding locale strings is supported.
   bool get_can_override_locale_string_resources_for_test() {
@@ -432,8 +455,9 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   }
 #endif
 
+  const base::FilePath& GetOverriddenPakPath() const;
+
  private:
-  FRIEND_TEST_ALL_PREFIXES(ResourceBundleTest, DelegateGetPathForLocalePack);
   FRIEND_TEST_ALL_PREFIXES(ResourceBundleTest, DelegateGetImageNamed);
   FRIEND_TEST_ALL_PREFIXES(ResourceBundleTest, DelegateGetNativeImageNamed);
 
@@ -463,18 +487,6 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   void AddDataPackFromPathInternal(const base::FilePath& path,
                                    ResourceScaleFactor scale_factor,
                                    bool optional);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Implementation for the public methods which add a DataPack from a path with
-  // ash resources. If |optional| is false, an error is logged on failure to
-  // load.
-  void AddDataPackFromPathWithAshResourcesInternal(
-      const base::FilePath& shared_resource_path,
-      const base::FilePath& ash_path,
-      const base::FilePath& lacros_path,
-      ResourceScaleFactor scale_factor,
-      bool optional);
-#endif
 
   // Inserts |resource_handle| to |resource_handle_| and updates
   // |max_scale_factor_| accordingly.
@@ -529,19 +541,14 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // chunks. For security reasons we can't alter PNGCodec to return this
   // information. Our PNG files are preprocessed by GRIT, and any special chunks
   // should occur immediately after the IHDR chunk.
-  static bool DecodePNG(const unsigned char* buf,
-                        size_t size,
+  static bool DecodePNG(base::span<const uint8_t> buf,
                         SkBitmap* bitmap,
                         bool* fell_back_to_1x);
 
   // Returns an empty image for when a resource cannot be loaded. This is a
   // bright red bitmap.
   gfx::Image& GetEmptyImage();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   const ui::ImageModel& GetEmptyImageModel();
-#endif
-
-  const base::FilePath& GetOverriddenPakPath() const;
 
   // If mangling of localized strings is enabled, mangles |str| to make it
   // longer and to add begin and end markers so that any truncation of it is
@@ -563,8 +570,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   std::unique_ptr<base::Lock> locale_resources_data_lock_;
 
   // Handles for data sources.
-  std::unique_ptr<ResourceHandle> locale_resources_data_;
-  std::unique_ptr<ResourceHandle> secondary_locale_resources_data_;
+  std::vector<std::unique_ptr<ResourceHandle>> locale_resources_data_;
   std::vector<std::unique_ptr<ResourceHandle>> resource_handles_;
 
   // The maximum scale factor currently loaded.
@@ -574,15 +580,11 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // ownership of the pointers.
   using ImageMap = std::map<int, gfx::Image>;
   ImageMap images_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   using ImageModelMap = std::map<int, ui::ImageModel>;
   ImageModelMap image_models_;
-#endif
 
   gfx::Image empty_image_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   ui::ImageModel empty_image_model_;
-#endif
 
   // The various font lists used, as a map from a signed size delta from the
   // platform base font size, plus style, to the FontList. Cached to avoid

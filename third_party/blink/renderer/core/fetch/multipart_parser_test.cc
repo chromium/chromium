@@ -17,12 +17,6 @@ namespace blink {
 
 namespace {
 
-String toString(const Vector<char>& data) {
-  if (data.empty())
-    return String("");
-  return String(data.data(), data.size());
-}
-
 class MockMultipartParserClient final
     : public GarbageCollected<MockMultipartParserClient>,
       public MultipartParser::Client {
@@ -71,7 +65,7 @@ TEST(MultipartParserTest, AppendDataInChunks) {
   const size_t sizes[] = {1u, 2u, strlen(kBytes)};
 
   Vector<char> boundary;
-  boundary.Append("boundary", 8u);
+  boundary.AppendSpan(base::span_from_cstring("boundary"));
   for (const size_t size : sizes) {
     MockMultipartParserClient* client =
         MakeGarbageCollected<MockMultipartParserClient>();
@@ -91,18 +85,18 @@ TEST(MultipartParserTest, AppendDataInChunks) {
     EXPECT_EQ(1u, client->GetPart(1).header_fields.size());
     EXPECT_EQ("application/xhtml+xml",
               client->GetPart(1).header_fields.Get(http_names::kContentType));
-    EXPECT_EQ("1", toString(client->GetPart(1).data));
+    EXPECT_EQ("1", String(client->GetPart(1).data));
     EXPECT_TRUE(client->GetPart(1).data_fully_received);
     EXPECT_EQ(1u, client->GetPart(2).header_fields.size());
     EXPECT_EQ("text/html",
               client->GetPart(2).header_fields.Get(http_names::kContentType));
     EXPECT_EQ("2\r\n--\r\n--bound--\r\n--\r\n2\r\n",
-              toString(client->GetPart(2).data));
+              String(client->GetPart(2).data));
     EXPECT_TRUE(client->GetPart(2).data_fully_received);
     EXPECT_EQ(1u, client->GetPart(3).header_fields.size());
     EXPECT_EQ("text/plain; charset=iso-8859-1",
               client->GetPart(3).header_fields.Get(http_names::kContentType));
-    EXPECT_EQ("333", toString(client->GetPart(3).data));
+    EXPECT_EQ("333", String(client->GetPart(3).data));
     EXPECT_TRUE(client->GetPart(3).data_fully_received);
   }
 }
@@ -121,7 +115,7 @@ TEST(MultipartParserTest, Epilogue) {
   };
 
   Vector<char> boundary;
-  boundary.Append("boundary", 8u);
+  boundary.AppendSpan(base::span_from_cstring("boundary"));
   for (size_t end : ends) {
     MockMultipartParserClient* client =
         MakeGarbageCollected<MockMultipartParserClient>();
@@ -138,24 +132,24 @@ TEST(MultipartParserTest, Epilogue) {
     EXPECT_EQ(1u, client->GetPart(1).header_fields.size());
     EXPECT_EQ("application/xhtml+xml",
               client->GetPart(1).header_fields.Get(http_names::kContentType));
-    EXPECT_EQ("1", toString(client->GetPart(1).data));
+    EXPECT_EQ("1", String(client->GetPart(1).data));
     EXPECT_TRUE(client->GetPart(1).data_fully_received);
     EXPECT_EQ(1u, client->GetPart(2).header_fields.size());
     EXPECT_EQ("text/html",
               client->GetPart(2).header_fields.Get(http_names::kContentType));
     EXPECT_EQ("2\r\n--\r\n--bound--\r\n--\r\n2\r\n",
-              toString(client->GetPart(2).data));
+              String(client->GetPart(2).data));
     EXPECT_TRUE(client->GetPart(2).data_fully_received);
     EXPECT_EQ(1u, client->GetPart(3).header_fields.size());
     EXPECT_EQ("text/plain; charset=iso-8859-1",
               client->GetPart(3).header_fields.Get(http_names::kContentType));
     switch (end) {
       case 15u:
-        EXPECT_EQ("333\r\n--boundar", toString(client->GetPart(3).data));
+        EXPECT_EQ("333\r\n--boundar", String(client->GetPart(3).data));
         EXPECT_FALSE(client->GetPart(3).data_fully_received);
         break;
       default:
-        EXPECT_EQ("333", toString(client->GetPart(3).data));
+        EXPECT_EQ("333", String(client->GetPart(3).data));
         EXPECT_TRUE(client->GetPart(3).data_fully_received);
         break;
     }
@@ -168,7 +162,7 @@ TEST(MultipartParserTest, NoEndBoundary) {
       "--boundary\r\ncontent-type: application/xhtml+xml\r\n\r\n1";
 
   Vector<char> boundary;
-  boundary.Append("boundary", 8u);
+  boundary.AppendSpan(base::span_from_cstring("boundary"));
   MockMultipartParserClient* client =
       MakeGarbageCollected<MockMultipartParserClient>();
   MultipartParser* parser =
@@ -180,7 +174,7 @@ TEST(MultipartParserTest, NoEndBoundary) {
   EXPECT_EQ(1u, client->GetPart(0).header_fields.size());
   EXPECT_EQ("application/xhtml+xml",
             client->GetPart(0).header_fields.Get(http_names::kContentType));
-  EXPECT_EQ("1", toString(client->GetPart(0).data));
+  EXPECT_EQ("1", String(client->GetPart(0).data));
   EXPECT_FALSE(client->GetPart(0).data_fully_received);
 }
 
@@ -190,7 +184,7 @@ TEST(MultipartParserTest, NoStartBoundary) {
       "content-type: application/xhtml+xml\r\n\r\n1\r\n--boundary--\r\n";
 
   Vector<char> boundary;
-  boundary.Append("boundary", 8u);
+  boundary.AppendSpan(base::span_from_cstring("boundary"));
   MockMultipartParserClient* client =
       MakeGarbageCollected<MockMultipartParserClient>();
   MultipartParser* parser =
@@ -206,7 +200,7 @@ TEST(MultipartParserTest, NoStartNorEndBoundary) {
   constexpr char bytes[] = "content-type: application/xhtml+xml\r\n\r\n1";
 
   Vector<char> boundary;
-  boundary.Append("boundary", 8u);
+  boundary.AppendSpan(base::span_from_cstring("boundary"));
   MockMultipartParserClient* client =
       MakeGarbageCollected<MockMultipartParserClient>();
   MultipartParser* parser =
@@ -229,7 +223,7 @@ constexpr size_t kStarts[] = {
 TEST(MultipartParserTest, Preamble) {
   test::TaskEnvironment task_environment;
   Vector<char> boundary;
-  boundary.Append("boundary", 8u);
+  boundary.AppendSpan(base::span_from_cstring("boundary"));
   for (const size_t start : kStarts) {
     MockMultipartParserClient* client =
         MakeGarbageCollected<MockMultipartParserClient>();
@@ -246,19 +240,19 @@ TEST(MultipartParserTest, Preamble) {
         EXPECT_EQ(1u, client->GetPart(0).header_fields.size());
         EXPECT_EQ("application/xhtml+xml", client->GetPart(0).header_fields.Get(
                                                http_names::kContentType));
-        EXPECT_EQ("1", toString(client->GetPart(0).data));
+        EXPECT_EQ("1", String(client->GetPart(0).data));
         EXPECT_TRUE(client->GetPart(0).data_fully_received);
         EXPECT_EQ(1u, client->GetPart(1).header_fields.size());
         EXPECT_EQ("text/html", client->GetPart(1).header_fields.Get(
                                    http_names::kContentType));
         EXPECT_EQ("2\r\n--\r\n--bound--\r\n--\r\n2\r\n",
-                  toString(client->GetPart(1).data));
+                  String(client->GetPart(1).data));
         EXPECT_TRUE(client->GetPart(1).data_fully_received);
         EXPECT_EQ(1u, client->GetPart(2).header_fields.size());
         EXPECT_EQ(
             "text/plain; charset=iso-8859-1",
             client->GetPart(2).header_fields.Get(http_names::kContentType));
-        EXPECT_EQ("333", toString(client->GetPart(2).data));
+        EXPECT_EQ("333", String(client->GetPart(2).data));
         EXPECT_TRUE(client->GetPart(2).data_fully_received);
         break;
       default:
@@ -269,19 +263,19 @@ TEST(MultipartParserTest, Preamble) {
         EXPECT_EQ(1u, client->GetPart(1).header_fields.size());
         EXPECT_EQ("application/xhtml+xml", client->GetPart(1).header_fields.Get(
                                                http_names::kContentType));
-        EXPECT_EQ("1", toString(client->GetPart(1).data));
+        EXPECT_EQ("1", String(client->GetPart(1).data));
         EXPECT_TRUE(client->GetPart(1).data_fully_received);
         EXPECT_EQ(1u, client->GetPart(2).header_fields.size());
         EXPECT_EQ("text/html", client->GetPart(2).header_fields.Get(
                                    http_names::kContentType));
         EXPECT_EQ("2\r\n--\r\n--bound--\r\n--\r\n2\r\n",
-                  toString(client->GetPart(2).data));
+                  String(client->GetPart(2).data));
         EXPECT_TRUE(client->GetPart(2).data_fully_received);
         EXPECT_EQ(1u, client->GetPart(3).header_fields.size());
         EXPECT_EQ(
             "text/plain; charset=iso-8859-1",
             client->GetPart(3).header_fields.Get(http_names::kContentType));
-        EXPECT_EQ("333", toString(client->GetPart(3).data));
+        EXPECT_EQ("333", String(client->GetPart(3).data));
         EXPECT_TRUE(client->GetPart(3).data_fully_received);
         break;
     }
@@ -291,7 +285,7 @@ TEST(MultipartParserTest, Preamble) {
 TEST(MultipartParserTest, PreambleWithMalformedBoundary) {
   test::TaskEnvironment task_environment;
   Vector<char> boundary;
-  boundary.Append("--boundary", 10u);
+  boundary.AppendSpan(base::span_from_cstring("--boundary"));
   for (const size_t start : kStarts) {
     MockMultipartParserClient* client =
         MakeGarbageCollected<MockMultipartParserClient>();

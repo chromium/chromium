@@ -28,7 +28,6 @@ const char kTranslateLanguageDeterminedDuration[] =
 const char kTranslatedLanguageDetectionContentLength[] =
     "Translate.Translation.LanguageDetection.ContentLength";
 
-// Note: These string constants are repeated in TranslateCompactInfoBar.java.
 const char kTranslateCompactInfobarEvent[] = "Translate.CompactInfobar.Event";
 
 }  // namespace metrics_internal
@@ -36,23 +35,23 @@ const char kTranslateCompactInfobarEvent[] = "Translate.CompactInfobar.Event";
 void ReportLanguageVerification(LanguageVerificationType type) {
   base::UmaHistogramEnumeration(
       metrics_internal::kTranslateLanguageDetectionLanguageVerification, type,
-      LANGUAGE_VERIFICATION_MAX);
+      LanguageVerificationType::kMaxValue);
 }
 
 void ReportTimeToBeReady(double time_in_msec) {
-  UMA_HISTOGRAM_MEDIUM_TIMES(
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
       metrics_internal::kTranslateTimeToBeReady,
       base::Microseconds(static_cast<int64_t>(time_in_msec * 1000.0)));
 }
 
 void ReportTimeToLoad(double time_in_msec) {
-  UMA_HISTOGRAM_MEDIUM_TIMES(
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
       metrics_internal::kTranslateTimeToLoad,
       base::Microseconds(static_cast<int64_t>(time_in_msec * 1000.0)));
 }
 
 void ReportTimeToTranslate(double time_in_msec) {
-  UMA_HISTOGRAM_MEDIUM_TIMES(
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
       metrics_internal::kTranslateTimeToTranslate,
       base::Microseconds(static_cast<int64_t>(time_in_msec * 1000.0)));
 }

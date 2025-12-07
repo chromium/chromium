@@ -18,7 +18,7 @@ namespace blink {
 // * Increment "Next value"
 // * Update TaskTypes.md
 //
-// Next value: 87
+// Next value: 88
 enum class TaskType : unsigned char {
   ///////////////////////////////////////
   // Speced tasks should use one of the following task types
@@ -283,6 +283,18 @@ enum class TaskType : unsigned char {
   // Tasks related to renderer-initiated navigation cancellation.
   kInternalNavigationCancellation = 80,
 
+  // Tasks related to autofill.
+  //
+  // TODO(crbug.com/382342234): This was added to distinguish autofill tasks
+  // from kInternalUserInteraction tasks to exclude them from task deferral
+  // policies, but tasks with this type need to be synchronized with synchronous
+  // submission. Remove this if the autofill tasks become synchronous.
+  kInternalAutofill = 88,
+
+  // Like kPostedMessage, but for tasks that must run on a page in the
+  // Back-Forward Cache.
+  kBackForwardCachePostedMessage = 89,
+
   ///////////////////////////////////////
   // The following task types are only for thread-local queues.
   ///////////////////////////////////////
@@ -292,7 +304,8 @@ enum class TaskType : unsigned char {
   // get a task queue/runner.
 
   kMainThreadTaskQueueV8 = 37,
-  kMainThreadTaskQueueV8LowPriority = 84,
+  kMainThreadTaskQueueV8UserVisible = 84,
+  kMainThreadTaskQueueV8BestEffort = 87,
   kMainThreadTaskQueueCompositor = 38,
   kMainThreadTaskQueueDefault = 39,
   kMainThreadTaskQueueInput = 40,
@@ -311,7 +324,7 @@ enum class TaskType : unsigned char {
   kWorkerThreadTaskQueueV8 = 47,
   kWorkerThreadTaskQueueCompositor = 48,
 
-  kMaxValue = kMachineLearning,
+  kMaxValue = kBackForwardCachePostedMessage,
 };
 
 }  // namespace blink

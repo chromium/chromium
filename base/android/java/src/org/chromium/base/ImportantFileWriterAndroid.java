@@ -4,14 +4,19 @@
 
 package org.chromium.base;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
+
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * This class provides an interface to the native class for writing important data files without
  * risking data loss.
  */
+@NullMarked
 @JNINamespace("base::android")
 public class ImportantFileWriterAndroid {
 
@@ -28,8 +33,9 @@ public class ImportantFileWriterAndroid {
         return ImportantFileWriterAndroidJni.get().writeFileAtomically(fileName, data);
     }
 
+    @VisibleForTesting
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         boolean writeFileAtomically(
                 @JniType("std::string") String fileName,
                 @JniType("jni_zero::ByteArrayView") byte[] data);

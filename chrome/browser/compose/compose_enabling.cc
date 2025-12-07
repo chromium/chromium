@@ -10,7 +10,7 @@
 #include <type_traits>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -22,20 +22,22 @@
 #include "chrome/browser/compose/proto/compose_optimization_guide.pb.h"
 #include "chrome/browser/flag_descriptions.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/compose/buildflags.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/compose/core/browser/compose_metrics.h"
 #include "components/compose/core/browser/config.h"
-#include "components/flags_ui/feature_entry.h"
-#include "components/flags_ui/flags_storage.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/service/variations_service_utils.h"
+#include "components/webui/flags/feature_entry.h"
+#include "components/webui/flags/flags_storage.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/constants/chromeos_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -64,14 +66,16 @@ std::string GetCountryCode() {
   return country_code;
 }
 
-std::tuple<std::string, bool> IsComposeEnabledForCountry(
-    compose::Config config) {
+// Given a set of countries checks if the current variations country is in the
+// list. A list with a single item that is "*" will accept all countries.
+// Return tuple: (current_country_code, enabled_for_country).
+std::tuple<std::string, bool> IsEnabledForCountry(
+    const base::flat_set<std::string>& enabled_countries) {
   std::string country_code = GetCountryCode();
-  if (config.enabled_countries.size() == 1 &&
-      config.enabled_countries[0] == "*") {
+  if (enabled_countries.size() == 1 && enabled_countries.contains("*")) {
     return {country_code, true};
   }
-  return {country_code, base::Contains(config.enabled_countries, country_code)};
+  return {country_code, enabled_countries.contains(country_code)};
 }
 
 }  // namespace
@@ -178,6 +182,21 @@ bool ComposeEnabling::IsEnabledForProfile(Profile* profile) {
   return CheckEnabling(opt_guide, identity_manager).has_value();
 }
 
+bool ComposeEnabling::IsSettingVisible(Profile* profile) {
+  OptimizationGuideKeyedService* opt_guide =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfileIfExists(profile);
+  auto enabled = CheckEnabling(opt_guide, identity_manager);
+  if (!enabled.has_value() &&
+      enabled.error() ==
+          compose::ComposeShowStatus::kUserNotAllowedByOptimizationGuide) {
+    return opt_guide->IsSettingVisible(
+        optimization_guide::UserVisibleFeatureKey::kCompose);
+  }
+  return enabled.has_value();
+}
+
 // Private static.
 base::expected<void, compose::ComposeShowStatus> ComposeEnabling::CheckEnabling(
     OptimizationGuideKeyedService* opt_guide,
@@ -210,7 +229,7 @@ base::expected<void, compose::ComposeShowStatus> ComposeEnabling::CheckEnabling(
   std::string country_code;
   bool is_enabled_for_country;
   std::tie(country_code, is_enabled_for_country) =
-      IsComposeEnabledForCountry(compose::GetComposeConfig());
+      IsEnabledForCountry(compose::GetComposeConfig().enabled_countries);
   if (!is_enabled_for_country) {
     DVLOG(2) << "not running in an enabled country: \"" << country_code << "\"";
     return base::unexpected(
@@ -231,8 +250,8 @@ base::expected<void, compose::ComposeShowStatus> ComposeEnabling::CheckEnabling(
 
   // TODO(b/314199871): Remove test bypass once this check becomes mock-able.
   if (!skip_user_check_for_testing_ &&
-      !opt_guide->ShouldFeatureBeCurrentlyEnabledForUser(
-          optimization_guide::UserVisibleFeatureKey::kCompose)) {
+      (!opt_guide->ShouldFeatureBeCurrentlyEnabledForUser(
+          optimization_guide::UserVisibleFeatureKey::kCompose))) {
     DVLOG(2) << "Feature not available for this user";
     return base::unexpected(
         compose::ComposeShowStatus::kUserNotAllowedByOptimizationGuide);
@@ -261,6 +280,20 @@ ComposeEnabling::ShouldTriggerNoStatePopup(
     const url::Origin& element_frame_origin,
     GURL url,
     bool is_msbb_enabled) {
+  // Check if we're running in a country where the no state popup is enabled.
+  // Note that an empty country code will block the no state popup.
+  std::string country_code;
+  bool is_enabled_for_country;
+  std::tie(country_code, is_enabled_for_country) = IsEnabledForCountry(
+      compose::GetComposeConfig().proactive_nudge_countries);
+  if (!is_enabled_for_country) {
+    DVLOG(2) << "not running in an enabled country: \"" << country_code << "\"";
+    return base::unexpected(
+        country_code.empty()
+            ? compose::ComposeShowStatus::kUndefinedCountry
+            : compose::ComposeShowStatus::kComposeNotEnabledInCountry);
+  }
+
   // TODO(b/319661274): Support fenced frame checks from the Autofill popup
   // entry point.
   bool is_in_fenced_frame = false;

@@ -70,12 +70,12 @@ class NearbyApiCallFlowImpl : public NearbyApiCallFlow,
   net::HttpRequestHeaders CreateApiCallHeaders() override;
   std::string CreateApiCallBody() override;
   std::string CreateApiCallBodyContentType() override;
-  std::string GetRequestTypeForBody(const std::string& body) override;
+  std::string GetRequestTypeForBody(std::string_view body) override;
   void ProcessApiCallSuccess(const network::mojom::URLResponseHead* head,
-                             std::unique_ptr<std::string> body) override;
+                             std::optional<std::string> body) override;
   void ProcessApiCallFailure(int net_error,
                              const network::mojom::URLResponseHead* head,
-                             std::unique_ptr<std::string> body) override;
+                             std::optional<std::string> body) override;
   net::PartialNetworkTrafficAnnotationTag GetNetworkTrafficAnnotationTag()
       override;
 

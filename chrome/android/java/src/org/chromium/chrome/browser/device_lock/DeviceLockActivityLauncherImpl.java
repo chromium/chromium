@@ -7,21 +7,22 @@ package org.chromium.chrome.browser.device_lock;
 import android.content.Context;
 import android.content.Intent;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher.Source;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
- * DeviceLockActivityLauncher creates the proper intent and then launches the
- * {@link DeviceLockActivity} in different scenarios.
+ * DeviceLockActivityLauncher creates the proper intent and then launches the {@link
+ * DeviceLockActivity} in different scenarios.
  */
+@NullMarked
 public class DeviceLockActivityLauncherImpl implements DeviceLockActivityLauncher {
-    private static DeviceLockActivityLauncherImpl sLauncher;
+    private static @Nullable DeviceLockActivityLauncher sLauncher;
 
     /** Singleton instance getter */
-    public static DeviceLockActivityLauncherImpl get() {
+    public static DeviceLockActivityLauncher get() {
         if (sLauncher == null) {
             sLauncher = new DeviceLockActivityLauncherImpl();
         }
@@ -44,7 +45,7 @@ public class DeviceLockActivityLauncherImpl implements DeviceLockActivityLaunche
         windowAndroid.showIntent(intent, callback, null);
     }
 
-    public static void setInstanceForTesting(DeviceLockActivityLauncherImpl launcher) {
+    public static void setInstanceForTesting(DeviceLockActivityLauncher launcher) {
         sLauncher = launcher;
     }
 }

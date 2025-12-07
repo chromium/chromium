@@ -3,6 +3,7 @@ specific_include_rules = {
     "+components/web_package",
   ],
   "system_web_app_interactive_uitest\.cc": [
+    "+ash/multi_user/multi_user_window_manager.h",
     "+ash/shell.h",
     "+ash/wm/window_util.h",
   ],

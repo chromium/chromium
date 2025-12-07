@@ -8,11 +8,13 @@
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
 #include "third_party/blink/renderer/platform/testing/fuzzed_data_provider.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static blink::BlinkFuzzerTestSupport test_support =
       blink::BlinkFuzzerTestSupport();
+  blink::test::TaskEnvironment task_environment;
 
   if (size <= 4) {
     return 0;
@@ -31,9 +33,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         static_cast<blink::CSSParserMode>(parser_mode),
         blink::SecureContextMode::kInsecureContext);
     blink::CSSParserFastPaths::MaybeParseValue(
-        property_id,
-        String::FromUTF8WithLatin1Fallback(data_string.data(),
-                                           data_string.length()),
+        property_id, blink::String::FromUTF8WithLatin1Fallback(data_string),
         context);
   }
 

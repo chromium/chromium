@@ -32,7 +32,7 @@ windows_manifest("chrome_exe_manifest") {
     sources += [ segment_heap_manifest ]
   }
 
-  deps = [ ":chrome_exe_version_manifest" ]
+  public_deps = [ ":chrome_exe_version_manifest" ]
 }
 
 # Generates the manifest for the version assembly, which is the versioned

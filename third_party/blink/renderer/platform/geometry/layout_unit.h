@@ -35,6 +35,7 @@
 #include <iosfwd>
 #include <limits>
 #include <optional>
+#include <type_traits>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
@@ -44,13 +45,10 @@
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/vector_traits.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
 
 namespace blink {
 
@@ -164,6 +162,31 @@ class PLATFORM_EXPORT FixedPoint {
     return FromRawValue(ClampRawValue(raw_value));
   }
 
+  // Given unrounded `start_value` and `end_value`, return a pair of rounded
+  // FixedPoints, where the final rounded values encompass the original passed
+  // in floats. However, if `start_value` and `end_value` are equal, the
+  // returned FixedPoints will also be equal, with both results being floored,
+  // ensuring that the pairs are also equivalent after rounding.
+  static std::pair<FixedPoint, FixedPoint> FromFloatEncompassRound(
+      float start_value,
+      float end_value) {
+    FixedPoint start_position;
+    FixedPoint end_position;
+    if (start_value < end_value ||
+        (!RuntimeEnabledFeatures::EquivalentEncompassRoundingEnabled() &&
+         start_value == end_value)) [[likely]] {
+      start_position = FromFloatFloor(start_value);
+      end_position = FromFloatCeil(end_value);
+    } else if (start_value > end_value) [[unlikely]] {
+      start_position = FromFloatCeil(start_value);
+      end_position = FromFloatFloor(end_value);
+    } else {
+      CHECK(RuntimeEnabledFeatures::EquivalentEncompassRoundingEnabled());
+      start_position = end_position = FromFloatFloor(start_value);
+    }
+    return {start_position, end_position};
+  }
+
   // Construct from a `FixedPoint` with different template parameters. Implicit
   // because it's lossless. For lossy conversions, use `To<>()` below instead.
   template <unsigned source_fractional_bits, typename SourceStorage>
@@ -183,15 +206,26 @@ class PLATFORM_EXPORT FixedPoint {
     return FromRawValue(value);
   }
   template <unsigned source_fractional_bits>
-    requires(source_fractional_bits > kFractionalBits)
-  static constexpr FixedPoint FromFixed(Storage value) {
-    return FromRawValue(value >> (source_fractional_bits - kFractionalBits));
+    requires(source_fractional_bits >= kFractionalBits)
+  static constexpr FixedPoint FromFixed(std::integral auto value) {
+    constexpr unsigned kBitsDiff = source_fractional_bits - kFractionalBits;
+    return FromRawValueWithClamp(value >> kBitsDiff);
+  }
+  template <unsigned source_fractional_bits>
+    requires(kFractionalBits > source_fractional_bits)
+  static constexpr FixedPoint FromFixed(std::integral auto value) {
+    constexpr unsigned kBitsDiff = kFractionalBits - source_fractional_bits;
+    if (value >= kRawValueMax >> kBitsDiff) [[unlikely]] {
+      return Max();
+    }
+    if (value <= kRawValueMin >> kBitsDiff) [[unlikely]] {
+      return Min();
+    }
+    return FromRawValue(value << kBitsDiff);
   }
 
-  // Convert to a `FixedPoint` of the same storage but with a different
-  // precision.
+  // Convert to a `FixedPoint` with a different storage and/or precision.
   template <typename Target>
-    requires(std::is_same_v<Storage, typename Target::StorageType>)
   constexpr Target To() const {
     return Target::template FromFixed<kFractionalBits>(RawValue());
   }
@@ -335,15 +369,15 @@ class PLATFORM_EXPORT FixedPoint {
   std::optional<FixedPoint> NullOptIf(FixedPoint null_value) const;
   std::optional<FixedPoint> NullOptIfMin() const { return NullOptIf(Min()); }
 
-  WTF::String ToString() const;
+  String ToString() const;
 
  private:
 #if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS) && \
-    defined(COMPILER_GCC) && !BUILDFLAG(IS_NACL) && __OPTIMIZE__
+    defined(COMPILER_GCC) && __OPTIMIZE__
   // If we're building ARM 32-bit on GCC we replace the C++ versions with some
   // native ARM assembly for speed.
   constexpr inline void SaturatedSet(int value) {
-    if (IsConstantEvaluated() || sizeof(Storage) > sizeof(int)) {
+    if (std::is_constant_evaluated() || sizeof(Storage) > sizeof(int)) {
       SaturatedSetNonAsm(value);
     } else {
       SaturatedSetAsm(value);
@@ -376,7 +410,7 @@ class PLATFORM_EXPORT FixedPoint {
   }
 
   constexpr inline void SaturatedSet(unsigned value) {
-    if (IsConstantEvaluated() || sizeof(Storage) > sizeof(int)) {
+    if (std::is_constant_evaluated() || sizeof(Storage) > sizeof(int)) {
       SaturatedSetNonAsm(value);
     } else {
       SaturatedSetAsm(value);
@@ -487,14 +521,6 @@ inline bool operator>(const int a, const LayoutUnit& b) {
   return LayoutUnit(a) > b;
 }
 
-inline bool operator!=(const int a, const LayoutUnit& b) {
-  return LayoutUnit(a) != b;
-}
-
-inline bool operator!=(const LayoutUnit& a, int b) {
-  return a != LayoutUnit(b);
-}
-
 inline bool operator==(const LayoutUnit& a, int b) {
   return a == LayoutUnit(b);
 }
@@ -547,11 +573,12 @@ template <unsigned fractional_bits, typename RawValue>
 inline FixedPoint<fractional_bits, RawValue> operator*(
     const FixedPoint<fractional_bits, RawValue> a,
     std::integral auto b) {
-  return a * FixedPoint<fractional_bits, RawValue>(b);
+  return FixedPoint<fractional_bits, RawValue>::FromRawValue(
+      base::ClampMul(a.RawValue(), b));
 }
 
 inline LayoutUnit operator*(std::integral auto a, const LayoutUnit& b) {
-  return LayoutUnit(a) * b;
+  return b * a;
 }
 
 constexpr float operator*(const float a, const LayoutUnit& b) {
@@ -595,7 +622,7 @@ template <unsigned fractional_bits, typename RawValue>
 inline FixedPoint<fractional_bits, RawValue> operator/(
     const FixedPoint<fractional_bits, RawValue>& a,
     std::integral auto b) {
-  return a / FixedPoint<fractional_bits, RawValue>(b);
+  return FixedPoint<fractional_bits, RawValue>::FromRawValue(a.RawValue() / b);
 }
 
 constexpr float operator/(const float a, const LayoutUnit& b) {
@@ -608,6 +635,15 @@ constexpr double operator/(const double a, const LayoutUnit& b) {
 
 inline LayoutUnit operator/(std::integral auto a, const LayoutUnit& b) {
   return LayoutUnit(a) / b;
+}
+
+template <unsigned fractional_bits, typename RawValue>
+  requires(std::is_same_v<RawValue, int32_t>)
+inline FixedPoint<fractional_bits, RawValue> operator%(
+    const FixedPoint<fractional_bits, RawValue>& a,
+    const FixedPoint<fractional_bits, RawValue>& b) {
+  int64_t raw_val = a.RawValue() % b.RawValue();
+  return FixedPoint<fractional_bits, RawValue>::FromRawValueWithClamp(raw_val);
 }
 
 template <unsigned fractional_bits, typename RawValue>
@@ -690,6 +726,16 @@ inline FixedPoint<fractional_bits, RawValue>& operator+=(
     const FixedPoint<fractional_bits, SourceStorage>& b) {
   a.SetRawValue(base::ClampAdd(a.RawValue(), b.RawValue()).RawValue());
   return a;
+}
+
+template <unsigned fractional_bits, typename RawValue, typename SourceStorage>
+  requires(sizeof(SourceStorage) <= sizeof(RawValue))
+inline FixedPoint<fractional_bits, RawValue> operator+(
+    const FixedPoint<fractional_bits, RawValue>& a,
+    const FixedPoint<fractional_bits, SourceStorage>& b) {
+  FixedPoint<fractional_bits, RawValue> r = a;
+  r += b;
+  return r;
 }
 
 inline LayoutUnit& operator+=(LayoutUnit& a, std::integral auto b) {
@@ -801,7 +847,7 @@ FixedPoint<fractional_bits, RawValue>::NullOptIf(FixedPoint null_value) const {
 }
 
 #if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS) && \
-    defined(COMPILER_GCC) && !BUILDFLAG(IS_NACL) && __OPTIMIZE__
+    defined(COMPILER_GCC) && __OPTIMIZE__
 inline int GetMaxSaturatedSetResultForTesting() {
   // For ARM Asm version the set function maxes out to the biggest
   // possible integer part with the fractional part zero'd out.
@@ -827,10 +873,6 @@ ALWAYS_INLINE int GetMinSaturatedSetResultForTesting() {
 template <unsigned fractional_bits, typename RawValue>
 PLATFORM_EXPORT std::ostream& operator<<(
     std::ostream&,
-    const FixedPoint<fractional_bits, RawValue>&);
-template <unsigned fractional_bits, typename RawValue>
-PLATFORM_EXPORT WTF::TextStream& operator<<(
-    WTF::TextStream&,
     const FixedPoint<fractional_bits, RawValue>&);
 
 }  // namespace blink

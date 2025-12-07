@@ -1,12 +1,12 @@
 // Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {CupsPrinterInfo, PrinterListEntry, SettingsCupsPrintersEntryElement} from 'chrome://os-settings/lazy_load.js';
+import type {CupsPrinterInfo, PrinterListEntry, SettingsCupsPrintersEntryElement} from 'chrome://os-settings/lazy_load.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 export function createCupsPrinterInfo(
     printerName: string, printerAddress: string, printerId: string,
-    isManaged: boolean = false): CupsPrinterInfo {
+    isManaged: boolean = false, printerPPDPath: string = ''): CupsPrinterInfo {
   const printer = {
     isManaged,
     ppdManufacturer: '',
@@ -16,7 +16,7 @@ export function createCupsPrinterInfo(
     printerId,
     printerMakeAndModel: '',
     printerName,
-    printerPPDPath: '',
+    printerPPDPath,
     printerPpdReference: {
       userSuppliedPpdUrl: '',
       effectiveMakeAndModel: '',

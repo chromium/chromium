@@ -4,10 +4,14 @@
 
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller.h"
 
+#include <algorithm>
+#include <tuple>
+
 #include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
-#include "chrome/browser/password_manager/android/password_manager_launcher_android.h"
+#include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_bridge.h"
+#include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller.h"
+#include "chrome/browser/password_manager/android/password_manager_ui_util_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller_delegate.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_view.h"
@@ -26,19 +30,41 @@ namespace {
 using password_manager::PasskeyCredential;
 using password_manager::UiCredential;
 using webauthn::WebAuthnCredManDelegate;
+using Credential = TouchToFillView::Credential;
 using DisplayTarget = TouchToFillController::DisplayTarget;
 
-std::vector<UiCredential> SortCredentials(
-    base::span<const UiCredential> credentials) {
-  std::vector<UiCredential> result(credentials.begin(), credentials.end());
+// Constants used to rank passkeys and passwords in the default credential
+// sorting. Passkeys have a higher value so they will be sorted above
+// passwords.
+constexpr int kPasskeySortValue = 1;
+constexpr int kPasswordSortValue = 0;
+// `kPlaceholderSortValue` is an arbitrary value for credential type, which
+// is not used for passkeys.
+constexpr int kPlaceholderSortValue = 0;
+
+std::vector<Credential> DefaultSortCredentials(
+    base::span<const Credential> credentials) {
+  std::vector<Credential> result(credentials.begin(), credentials.end());
   // Sort `credentials` according to the following criteria:
-  // 1) Prefer exact matches then affiliated, then PSL matches.
-  // 2) Prefer credentials that were used recently over others.
+  // 1) List passkeys before passwords.
+  // 2) List exact matches first, then affiliated, then PSL matches.
+  // 3) List credentials that were used recently before others.
+  // 4) List recovery passwords immediately after their corresponding main
+  //    password (note: main and recovery passwords have the same last used
+  //    date).
   //
-  // Note: This ordering matches password_manager_util::FindBestMatches().
-  base::ranges::sort(result, std::greater<>{}, [](const UiCredential& cred) {
-    return std::make_pair(-static_cast<int>(cred.match_type()),
-                          cred.last_used());
+  // Note: This ordering matches password_manager_util::FindBestMatches(),
+  // apart from the backup password which only exists separately in the UI.
+  std::ranges::sort(result, std::greater<>{}, [](const Credential& cred) {
+    if (const auto* passkey = std::get_if<PasskeyCredential>(&cred)) {
+      return std::make_tuple(
+          kPasskeySortValue, kPlaceholderSortValue,
+          passkey->last_used_time().value_or(base::Time::Min()), false);
+    }
+    const auto* password = &std::get<UiCredential>(cred);
+    return std::make_tuple(
+        kPasswordSortValue, -static_cast<int>(password->match_type()),
+        password->last_used(), !password->is_backup_credential());
   });
 
   return result;
@@ -49,17 +75,26 @@ TouchToFillController::TouchToFillController(
     Profile* profile,
     base::WeakPtr<
         password_manager::KeyboardReplacingSurfaceVisibilityController>
-        visibility_controller)
-    : profile_(profile), visibility_controller_(visibility_controller) {}
+        visibility_controller,
+    std::unique_ptr<AcknowledgeGroupedCredentialSheetController>
+        grouped_credential_sheet_controller)
+    : profile_(profile),
+      visibility_controller_(visibility_controller),
+      grouped_credential_sheet_controller_(
+          std::move(grouped_credential_sheet_controller)) {}
 TouchToFillController::~TouchToFillController() = default;
 
-bool TouchToFillController::Show(
-    base::span<const UiCredential> credentials,
-    base::span<PasskeyCredential> passkey_credentials,
-    std::unique_ptr<TouchToFillControllerDelegate> ttf_delegate,
-    webauthn::WebAuthnCredManDelegate* cred_man_delegate,
+void TouchToFillController::InitData(
+    std::vector<Credential> credentials,
     base::WeakPtr<password_manager::ContentPasswordManagerDriver>
         frame_driver) {
+  credentials_ = std::move(credentials);
+  frame_driver_ = frame_driver;
+}
+
+bool TouchToFillController::Show(
+    std::unique_ptr<TouchToFillControllerDelegate> ttf_delegate,
+    webauthn::WebAuthnCredManDelegate* cred_man_delegate) {
   if (!ttf_delegate->ShouldShowTouchToFill()) {
     return false;
   }
@@ -68,15 +103,15 @@ bool TouchToFillController::Show(
   ttf_delegate_ = std::move(ttf_delegate);
 
   cred_man_delegate_ = cred_man_delegate;
-  visibility_controller_->SetVisible(std::move(frame_driver));
+  visibility_controller_->SetVisible(frame_driver_);
 
-  ttf_delegate_->OnShow(credentials, passkey_credentials);
+  ttf_delegate_->OnShow(credentials_);
   GURL url = ttf_delegate_->GetFrameUrl();
   // If the render frame host has been destroyed already, the url will be empty
   // in which case Show() should never be called.
   CHECK(!url.is_empty());
 
-  switch (GetResponsibleDisplayTarget(credentials, passkey_credentials)) {
+  switch (GetResponsibleDisplayTarget(credentials_)) {
     case DisplayTarget::kNone:
       // Ideally this should never happen. However, in case we do end up
       // invoking Show() without credentials, we should not show Touch To Fill
@@ -85,6 +120,9 @@ bool TouchToFillController::Show(
       OnDismiss();
       return false;
     case DisplayTarget::kShowNoPasskeysSheet:
+      if (!GetNativeView()->GetWindowAndroid()) {
+        return false;  // Chrome exits and can't show a sheet anymore.
+      }
       if (!no_passkeys_bridge_) {
         no_passkeys_bridge_ = std::make_unique<NoPasskeysBottomSheetBridge>();
       }
@@ -111,10 +149,6 @@ bool TouchToFillController::Show(
       if (ttf_delegate_->ShouldTriggerSubmission()) {
         flags |= TouchToFillView::kTriggerSubmission;
       }
-      if (password_manager_launcher::CanManagePasswordsWhenPasskeysPresent(
-              profile_)) {
-        flags |= TouchToFillView::kCanManagePasswordsWhenPasskeysPresent;
-      }
       if (ttf_delegate_->ShouldShowHybridOption()) {
         flags |= TouchToFillView::kShouldShowHybridOption;
       }
@@ -127,22 +161,81 @@ bool TouchToFillController::Show(
         flags |= TouchToFillView::kShouldShowCredManEntry;
       }
 
+      std::optional<std::vector<Credential>> sorted_credentials =
+          ttf_delegate_->SortCredentials(credentials_);
+      if (!sorted_credentials.has_value()) {
+        sorted_credentials = DefaultSortCredentials(credentials_);
+      }
+
       return view_->Show(url,
                          TouchToFillView::IsOriginSecure(
                              network::IsOriginPotentiallyTrustworthy(
                                  url::Origin::Create(url))),
-                         SortCredentials(credentials), passkey_credentials,
-                         flags);
+                         *sorted_credentials, flags);
   }
 }
 
 void TouchToFillController::OnCredentialSelected(
     const UiCredential& credential) {
   view_.reset();
+
+  if (credential.match_type() ==
+      password_manager_util::GetLoginMatchType::kGrouped) {
+    std::string current_origin =
+        GetDisplayOrigin(url::Origin::Create(ttf_delegate_->GetFrameUrl()));
+    // Use `cred->display_name()` instead of origin here to correctly display
+    // credentials saved for android apps.
+    grouped_credential_sheet_controller_->ShowAcknowledgeSheet(
+        std::move(current_origin), credential.display_name(),
+        GetNativeView()->GetWindowAndroid(),
+        base::BindOnce(
+            &TouchToFillController::OnAcknowledgementBeforeFillingReceived,
+            // Using `base::Unretained` is safe here because the
+            // `grouped_credential_sheet_controller_` is owned by this.
+            weak_ptr_factory_.GetWeakPtr(), credential));
+    return;
+  }
+
+  // Emit UMA if grouped affiliation match was available for the user.
+  if (std::ranges::find_if(credentials_, [](const Credential& login) {
+        const UiCredential* password_login = std::get_if<UiCredential>(&login);
+        return password_login &&
+               password_login->match_type() ==
+                   password_manager_util::GetLoginMatchType::kGrouped;
+      }) != credentials_.end()) {
+    password_manager::metrics_util::LogFillSuggestionGroupedMatchAccepted(
+        /*grouped_match_accepted=*/false);
+  }
   // Unretained is safe here because TouchToFillController owns the delegate.
   ttf_delegate_->OnCredentialSelected(
       credential, base::BindOnce(&TouchToFillController::ActionCompleted,
                                  base::Unretained(this)));
+}
+
+void TouchToFillController::OnAcknowledgementBeforeFillingReceived(
+    const password_manager::UiCredential& credential,
+    AcknowledgeGroupedCredentialSheetBridge::DismissReason dismiss_reason) {
+  // Emit UMA if grouped affiliation match was available for the user.
+  password_manager::metrics_util::LogFillSuggestionGroupedMatchAccepted(
+      dismiss_reason ==
+      AcknowledgeGroupedCredentialSheetBridge::DismissReason::kAccept);
+
+  switch (dismiss_reason) {
+    case AcknowledgeGroupedCredentialSheetBridge::DismissReason::kAccept:
+      // Unretained is safe here because TouchToFillController owns the
+      // delegate.
+      ttf_delegate_->OnCredentialSelected(
+          credential, base::BindOnce(&TouchToFillController::ActionCompleted,
+                                     weak_ptr_factory_.GetWeakPtr()));
+      break;
+    case AcknowledgeGroupedCredentialSheetBridge::DismissReason::kBack:
+      visibility_controller_->SetCanBeShown();
+      Show(std::move(ttf_delegate_), cred_man_delegate_);
+      break;
+    case AcknowledgeGroupedCredentialSheetBridge::DismissReason::kIgnore:
+      // Do nothing here.
+      break;
+  }
 }
 
 void TouchToFillController::OnPasskeyCredentialSelected(
@@ -218,6 +311,7 @@ void TouchToFillController::Reset() {
     Close();
   }
   visibility_controller_->Reset();
+  credentials_.clear();
 }
 
 void TouchToFillController::ActionCompleted() {
@@ -228,12 +322,11 @@ void TouchToFillController::ActionCompleted() {
 }
 
 DisplayTarget TouchToFillController::GetResponsibleDisplayTarget(
-    base::span<const password_manager::UiCredential> credentials,
-    base::span<password_manager::PasskeyCredential> passkey_credentials) const {
+    base::span<const Credential> credentials) const {
   bool has_passkeys_in_cred_man =
       cred_man_delegate_ && cred_man_delegate_->HasPasskeys() ==
                                 WebAuthnCredManDelegate::State::kHasPasskeys;
-  if (!credentials.empty() || !passkey_credentials.empty()) {
+  if (!credentials.empty()) {
     return DisplayTarget::kShowTouchToFill;
   }
 

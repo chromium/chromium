@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("files") {
   sources = [
@@ -22,6 +20,7 @@ static_library("files") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/file_system_provider",
     "//chrome/browser/ui/webui/ash/settings/pages/files/mojom",
@@ -33,11 +32,10 @@ static_library("files") {
     "//ash/constants",
     "//ash/webui/system_apps/public:system_web_app_type",
     "//chrome/app:generated_resources",
-    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos/upload_office_to_cloud",
-    "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/browser/ui/webui/ash/smb_shares",
     "//chrome/common",
@@ -47,6 +45,7 @@ static_library("files") {
     "//components/user_manager",
     "//content/public/browser",
     "//ui/base",
+    "//ui/webui",
   ]
 }
 
@@ -76,4 +75,8 @@ source_set("browser_tests") {
     "//mojo/public/cpp/bindings",
     "//ui/base",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

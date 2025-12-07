@@ -30,7 +30,7 @@ NSString* const kAltQueryValue = @"proto";
 // Timeout for the spec fetching request.
 const NSTimeInterval kPasswordSpecTimeout = 10;
 
-}
+}  // namespace
 
 @interface PasswordSpecFetcher ()
 

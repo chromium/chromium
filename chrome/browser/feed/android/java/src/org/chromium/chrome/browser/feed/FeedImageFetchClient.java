@@ -6,17 +6,20 @@ package org.chromium.chrome.browser.feed;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.xsurface.ImageFetchClient;
 
 /** Implementation of xsurface's ImageFetchClient. Calls through to the native network stack. */
 @JNINamespace("feed")
+@NullMarked
 public class FeedImageFetchClient implements ImageFetchClient {
     private static class HttpResponseImpl implements ImageFetchClient.HttpResponse {
-        private int mStatus;
-        private byte[] mBody;
+        private final int mStatus;
+        private final byte[] mBody;
 
         public HttpResponseImpl(int status, byte[] body) {
             mStatus = status;
@@ -60,7 +63,9 @@ public class FeedImageFetchClient implements ImageFetchClient {
 
     @NativeMethods
     interface Natives {
-        int sendRequest(String url, ImageFetchClient.HttpResponseConsumer responseConsumer);
+        int sendRequest(
+                @JniType("std::string") String url,
+                ImageFetchClient.HttpResponseConsumer responseConsumer);
 
         void cancel(int requestId);
     }

@@ -55,12 +55,10 @@ class PLATFORM_EXPORT V8DOMActivityLogger {
                          const v8::Local<v8::Value>& new_value) {}
   virtual void LogMethod(ScriptState* script_state,
                          const String& api_name,
-                         int argc,
-                         const v8::Local<v8::Value>* argv) {}
+                         base::span<const v8::Local<v8::Value>> args) {}
   virtual void LogEvent(ExecutionContext* execution_context,
                         const String& event_name,
-                        int argc,
-                        const String* argv) {}
+                        base::span<const String> args) {}
 
   void LogMethod(ScriptState* script_state,
                  const char* api_name,

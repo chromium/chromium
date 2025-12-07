@@ -13,27 +13,35 @@
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_header_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views_test.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/search_test_utils.h"
 #include "components/omnibox/browser/actions/tab_switch_action.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
+#include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/fake_autocomplete_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
+#include "components/omnibox/browser/suggestion_group_util.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -43,17 +51,31 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/events/test/event_generator.h"
-#include "ui/views/accessibility/ax_event_manager.h"
-#include "ui/views/accessibility/ax_event_observer.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
+#include "ui/native_theme/native_theme.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
+#include "ui/views/accessibility/ax_update_observer.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/views_test_utils.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
+#include "url/gurl.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
 #endif
 
 namespace {
+
+std::string result_a11y_text(OmniboxResultView* result_view) {
+  if (!result_view) {
+    return "";
+  }
+
+  ui::AXNodeData result_node_data;
+  result_view->GetViewAccessibility().GetAccessibleNodeData(&result_node_data);
+  return result_node_data.GetStringAttribute(ax::mojom::StringAttribute::kName);
+}
 
 bool contains(std::string str, std::string substr) {
   return str.find(substr) != std::string::npos;
@@ -70,7 +92,7 @@ class ClickTrackingOverlayView : public views::View {
     // OmniboxPopupViewViews's parent.
     auto* contents = result->parent();
     SetBoundsRect(contents->ConvertRectToParent(result->bounds()));
-    contents->parent()->AddChildView(this);
+    contents->parent()->AddChildViewRaw(this);
   }
 
   // views::View:
@@ -87,18 +109,18 @@ class ClickTrackingOverlayView : public views::View {
 BEGIN_METADATA(ClickTrackingOverlayView)
 END_METADATA
 
-class TestAXEventObserver : public views::AXEventObserver {
+class TestAXEventObserver : public views::AXUpdateObserver {
  public:
-  TestAXEventObserver() { views::AXEventManager::Get()->AddObserver(this); }
+  TestAXEventObserver() { views::AXUpdateNotifier::Get()->AddObserver(this); }
 
   TestAXEventObserver(const TestAXEventObserver&) = delete;
   TestAXEventObserver& operator=(const TestAXEventObserver&) = delete;
 
   ~TestAXEventObserver() override {
-    views::AXEventManager::Get()->RemoveObserver(this);
+    views::AXUpdateNotifier::Get()->RemoveObserver(this);
   }
 
-  // views::AXEventObserver:
+  // views::AXUpdateObserver:
   void OnViewEvent(views::View* view, ax::mojom::Event event_type) override {
     if (!view->GetWidget()) {
       return;
@@ -115,8 +137,6 @@ class TestAXEventObserver : public views::AXEventObserver {
     } else if (event_type == ax::mojom::Event::kSelection &&
                role == ax::mojom::Role::kListBoxOption) {
       selection_changed_count_++;
-      selected_option_name_ =
-          node_data.GetStringAttribute(ax::mojom::StringAttribute::kName);
     } else if (event_type == ax::mojom::Event::kValueChanged &&
                role == ax::mojom::Role::kTextField) {
       value_changed_count_++;
@@ -141,7 +161,6 @@ class TestAXEventObserver : public views::AXEventObserver {
   }
 
   std::string omnibox_value() { return omnibox_value_; }
-  std::string selected_option_name() { return selected_option_name_; }
 
  private:
   int text_changed_on_listboxoption_count_ = 0;
@@ -150,7 +169,6 @@ class TestAXEventObserver : public views::AXEventObserver {
   int value_changed_count_ = 0;
   int active_descendant_changed_count_ = 0;
   std::string omnibox_value_;
-  std::string selected_option_name_;
 };
 
 }  // namespace
@@ -181,10 +199,12 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, ThemeIntegration) {
   UseDefaultTheme();
   SetUseDeviceTheme(false);
 
-  SetUseDarkColor(true);
+  os_settings_provider().SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
   const SkColor selection_color_dark = GetSelectedColor(browser());
 
-  SetUseDarkColor(false);
+  os_settings_provider().SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kLight);
   const SkColor selection_color_light = GetSelectedColor(browser());
 
   // Unthemed, non-incognito always has a white background. Exceptions: Inverted
@@ -201,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, ThemeIntegration) {
   extensions::ChromeTestExtensionLoader loader(browser()->profile());
   {
     ThemeChangeWaiter wait(theme_service);
-    base::FilePath path = ui_test_utils::GetTestFilePath(
+    base::FilePath path = chrome_test_utils::GetTestFilePath(
         base::FilePath().AppendASCII("extensions"),
         base::FilePath().AppendASCII("theme"));
     loader.LoadExtension(path);
@@ -230,19 +250,21 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, ThemeIntegrationInIncognito) {
   UseDefaultTheme();
   SetUseDeviceTheme(false);
 
-  SetUseDarkColor(true);
+  os_settings_provider().SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
   SetIsGrayscale(true);
 
   const SkColor selection_color_dark = GetSelectedColor(browser());
 
-  SetUseDarkColor(false);
+  os_settings_provider().SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kLight);
   SetIsGrayscale(false);
 
   // Install a theme (in both browsers, since it's the same profile).
   extensions::ChromeTestExtensionLoader loader(browser()->profile());
   {
     ThemeChangeWaiter wait(theme_service);
-    base::FilePath path = ui_test_utils::GetTestFilePath(
+    base::FilePath path = chrome_test_utils::GetTestFilePath(
         base::FilePath().AppendASCII("extensions"),
         base::FilePath().AppendASCII("theme"));
     loader.LoadExtension(path);
@@ -369,55 +391,69 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   popup_view()->UpdatePopupAppearance();
   EXPECT_EQ(observer.text_changed_on_listboxoption_count(), 0);
 
-  // Changing the user text while in the input rather than the list should not
-  // result in a text/name change accessibility event.
   edit_model()->SetUserText(u"bar");
   edit_model()->StartAutocomplete(false, false);
   popup_view()->UpdatePopupAppearance();
-  EXPECT_EQ(observer.text_changed_on_listboxoption_count(), 0);
+  EXPECT_EQ(observer.text_changed_on_listboxoption_count(), 1);
   EXPECT_EQ(observer.selected_children_changed_count(), 1);
   EXPECT_EQ(observer.selection_changed_count(), 1);
   EXPECT_EQ(observer.active_descendant_changed_count(), 1);
   EXPECT_EQ(observer.value_changed_count(), 2);
 
-  // Each time the selection changes, we should have a text/name change event.
-  // This makes it possible for screen readers to have the updated match content
-  // when they are notified the selection changed.
   edit_model()->SetPopupSelection(OmniboxPopupSelection(1));
-  EXPECT_EQ(observer.text_changed_on_listboxoption_count(), 1);
   EXPECT_EQ(observer.selected_children_changed_count(), 2);
   EXPECT_EQ(observer.selection_changed_count(), 2);
   EXPECT_EQ(observer.active_descendant_changed_count(), 2);
   EXPECT_EQ(observer.value_changed_count(), 3);
   EXPECT_TRUE(contains(observer.omnibox_value(), "2 of 3"));
-  EXPECT_FALSE(contains(observer.selected_option_name(), "2 of 3"));
-  EXPECT_TRUE(contains(observer.selected_option_name(), "foobar.com"));
   EXPECT_TRUE(contains(observer.omnibox_value(), "FooBarCom"));
-  EXPECT_TRUE(contains(observer.selected_option_name(), "FooBarCom"));
   EXPECT_TRUE(contains(observer.omnibox_value(), "location from history"));
-  EXPECT_TRUE(
-      contains(observer.selected_option_name(), "location from history"));
+
+  OmniboxResultView* selected_result_view = GetResultViewAt(1);
+  ui::AXNodeData result_node_data;
+  selected_result_view->GetViewAccessibility().GetAccessibleNodeData(
+      &result_node_data);
+  std::string ax_name =
+      result_node_data.GetStringAttribute(ax::mojom::StringAttribute::kName);
+  EXPECT_FALSE(contains(ax_name, "2 of 3"));
+  EXPECT_TRUE(contains(ax_name, "foobar.com"));
+  EXPECT_TRUE(contains(ax_name, "FooBarCom"));
+  EXPECT_TRUE(contains(ax_name, "location from history"));
 
   edit_model()->SetPopupSelection(OmniboxPopupSelection(2));
-  EXPECT_EQ(observer.text_changed_on_listboxoption_count(), 2);
   EXPECT_EQ(observer.selected_children_changed_count(), 3);
   EXPECT_EQ(observer.selection_changed_count(), 3);
   EXPECT_EQ(observer.active_descendant_changed_count(), 3);
   EXPECT_EQ(observer.value_changed_count(), 4);
   EXPECT_TRUE(contains(observer.omnibox_value(), "3 of 3"));
-  EXPECT_FALSE(contains(observer.selected_option_name(), "3 of 3"));
-  EXPECT_TRUE(contains(observer.selected_option_name(), "foobarbaz.com"));
   EXPECT_TRUE(contains(observer.omnibox_value(), "FooBarBazCom"));
-  EXPECT_TRUE(contains(observer.selected_option_name(), "FooBarBazCom"));
+
+  selected_result_view = GetResultViewAt(2);
+  result_node_data = ui::AXNodeData();
+  selected_result_view->GetViewAccessibility().GetAccessibleNodeData(
+      &result_node_data);
+  ax_name =
+      result_node_data.GetStringAttribute(ax::mojom::StringAttribute::kName);
+  EXPECT_FALSE(contains(ax_name, "3 of 3"));
+  EXPECT_TRUE(contains(ax_name, "foobarbaz.com"));
+  EXPECT_TRUE(contains(ax_name, "FooBarBazCom"));
 
   // Check that active descendant on textbox matches the selected result view.
   ui::AXNodeData ax_node_data_omnibox;
   omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(
       &ax_node_data_omnibox);
-  OmniboxResultView* selected_result_view = GetResultViewAt(2);
+  selected_result_view = GetResultViewAt(2);
   EXPECT_EQ(ax_node_data_omnibox.GetIntAttribute(
                 ax::mojom::IntAttribute::kActivedescendantId),
             selected_result_view->GetViewAccessibility().GetUniqueId());
+
+  result_node_data = ui::AXNodeData();
+  selected_result_view->GetViewAccessibility().GetAccessibleNodeData(
+      &result_node_data);
+  int result_size = static_cast<int>(
+      controller()->autocomplete_controller()->result().size());
+  EXPECT_EQ(result_size, result_node_data.GetIntAttribute(
+                             ax::mojom::IntAttribute::kSetSize));
   histogram_tester.ExpectUniqueSample("Omnibox.Views.PopupFirstPaint", 1, 0);
 }
 
@@ -453,6 +489,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
       &node_data_omnibox_result_view);
   EXPECT_TRUE(node_data_omnibox_result_view.GetBoolAttribute(
       ax::mojom::BoolAttribute::kSelected));
+  EXPECT_EQ(node_data_omnibox_result_view.GetString16Attribute(
+                ax::mojom::StringAttribute::kName),
+            u"FooBarCom https://foobar.com location from history");
 
   edit_model()->SetPopupSelection(OmniboxPopupSelection(2));
   OmniboxResultView* unselected_result_view = GetResultViewAt(1);
@@ -461,6 +500,16 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
       &node_data_omnibox_result_view);
   EXPECT_FALSE(node_data_omnibox_result_view.GetBoolAttribute(
       ax::mojom::BoolAttribute::kSelected));
+
+  selected_result_view = GetResultViewAt(2);
+  node_data_omnibox_result_view = ui::AXNodeData();
+  selected_result_view->GetViewAccessibility().GetAccessibleNodeData(
+      &node_data_omnibox_result_view);
+  EXPECT_TRUE(node_data_omnibox_result_view.GetBoolAttribute(
+      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_EQ(node_data_omnibox_result_view.GetString16Attribute(
+                ax::mojom::StringAttribute::kName),
+            u"FooBarBazCom https://foobarbaz.com location from history");
 }
 
 // Flaky on Mac: https://crbug.com/1146627.
@@ -495,37 +544,54 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   EXPECT_EQ(observer.active_descendant_changed_count(), 2);
   EXPECT_EQ(observer.value_changed_count(), 2);
   EXPECT_TRUE(contains(observer.omnibox_value(), "The Foo Of All Bars"));
-  EXPECT_TRUE(contains(observer.selected_option_name(), "foobar.com"));
   EXPECT_TRUE(contains(observer.omnibox_value(), "press Tab then Enter"));
   EXPECT_TRUE(contains(observer.omnibox_value(), "2 of 2"));
-  EXPECT_TRUE(
-      contains(observer.selected_option_name(), "press Tab then Enter"));
-  EXPECT_FALSE(contains(observer.selected_option_name(), "2 of 2"));
+
+  OmniboxResultView* selected_result_view = GetResultViewAt(1);
+  ui::AXNodeData result_node_data;
+  selected_result_view->GetViewAccessibility().GetAccessibleNodeData(
+      &result_node_data);
+  std::string ax_name =
+      result_node_data.GetStringAttribute(ax::mojom::StringAttribute::kName);
+  EXPECT_TRUE(contains(ax_name, "foobar.com"));
+  EXPECT_TRUE(contains(ax_name, "press Tab then Enter"));
+  EXPECT_FALSE(contains(ax_name, "2 of 2"));
 
   edit_model()->SetPopupSelection(
       OmniboxPopupSelection(1, OmniboxPopupSelection::FOCUSED_BUTTON_ACTION));
   EXPECT_TRUE(contains(observer.omnibox_value(), "Tab switch button"));
   EXPECT_EQ(observer.selected_children_changed_count(), 3);
   EXPECT_EQ(observer.selection_changed_count(), 3);
-  EXPECT_EQ(observer.value_changed_count(), 4);
+  EXPECT_EQ(observer.value_changed_count(), 3);
   EXPECT_TRUE(contains(observer.omnibox_value(), "press Enter to switch"));
   EXPECT_FALSE(contains(observer.omnibox_value(), "2 of 2"));
-  EXPECT_TRUE(
-      contains(observer.selected_option_name(), "press Enter to switch"));
-  EXPECT_FALSE(contains(observer.selected_option_name(), "2 of 2"));
+
+  result_node_data = ui::AXNodeData();
+  selected_result_view->GetViewAccessibility().GetAccessibleNodeData(
+      &result_node_data);
+  ax_name =
+      result_node_data.GetStringAttribute(ax::mojom::StringAttribute::kName);
+  EXPECT_TRUE(contains(ax_name, "press Enter to switch"));
+  EXPECT_FALSE(contains(ax_name, "2 of 2"));
 
   edit_model()->SetPopupSelection(
       OmniboxPopupSelection(1, OmniboxPopupSelection::NORMAL));
   EXPECT_TRUE(contains(observer.omnibox_value(), "The Foo Of All Bars"));
-  EXPECT_TRUE(contains(observer.selected_option_name(), "foobar.com"));
   EXPECT_EQ(observer.selected_children_changed_count(), 4);
   EXPECT_EQ(observer.selection_changed_count(), 4);
-  EXPECT_EQ(observer.value_changed_count(), 5);
+  EXPECT_EQ(observer.value_changed_count(), 4);
   EXPECT_TRUE(contains(observer.omnibox_value(), "press Tab then Enter"));
   EXPECT_TRUE(contains(observer.omnibox_value(), "2 of 2"));
-  EXPECT_TRUE(
-      contains(observer.selected_option_name(), "press Tab then Enter"));
-  EXPECT_FALSE(contains(observer.selected_option_name(), "2 of 2"));
+
+  result_node_data = ui::AXNodeData();
+  selected_result_view->GetViewAccessibility().GetAccessibleNodeData(
+      &result_node_data);
+  ax_name =
+      result_node_data.GetStringAttribute(ax::mojom::StringAttribute::kName);
+  EXPECT_TRUE(contains(ax_name, "foobar.com"));
+  EXPECT_TRUE(contains(ax_name, "press Tab then Enter"));
+  EXPECT_FALSE(contains(ax_name, "2 of 2"));
+
   histogram_tester.ExpectUniqueSample("Omnibox.Views.PopupFirstPaint", 1, 0);
 }
 
@@ -545,8 +611,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   AutocompleteMatch match(nullptr, 500, false,
                           AutocompleteMatchType::HISTORY_TITLE);
   match.contents = match_url;
-  match.contents_class.push_back(
-      ACMatchClassification(0, ACMatchClassification::URL));
+  match.contents_class.emplace_back(0, ACMatchClassification::URL);
   match.destination_url = GURL(match_url);
   match.description = u"Foobar";
   match.allowed_to_be_default_match = true;
@@ -557,7 +622,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   matches.push_back(match);
   results.AppendMatches(matches);
   results.SortAndCull(input, /*template_url_service=*/nullptr,
-                      triggered_feature_service());
+                      triggered_feature_service(), /*is_lens_active=*/false,
+                      /*can_show_contextual_suggestions=*/false,
+                      /*mia_enabled=*/false, /*is_incognito=*/false);
   controller()->autocomplete_controller()->NotifyChanged();
 
   // Check that arrowing up and down emits the event.
@@ -598,7 +665,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
       ax::mojom::IntAttribute::kPopupForId));
 
   // Check accessibility of list box while it's closed.
-  controller()->autocomplete_controller()->Stop(true);
+  controller()->autocomplete_controller()->Stop(
+      AutocompleteStopReason::kClobbered);
   popup_view()->UpdatePopupAppearance();
   popup_node_data_while_open = ui::AXNodeData();
   popup_view()->GetViewAccessibility().GetAccessibleNodeData(
@@ -607,6 +675,63 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
       popup_node_data_while_open.HasState(ax::mojom::State::kExpanded));
   EXPECT_TRUE(
       popup_node_data_while_open.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_TRUE(
+      popup_node_data_while_open.HasState(ax::mojom::State::kInvisible));
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
+                       AccessibilityStatesOnWidgetDestroyed) {
+  // Create a popup for the matches.
+  views::Widget* widget = CreatePopupForTestQuery();
+  views::test::WidgetDestroyedWaiter waiter(widget);
+
+  // Check accessibility of list box while it's open.
+  ui::AXNodeData popup_node_data;
+  popup_view()->GetViewAccessibility().GetAccessibleNodeData(&popup_node_data);
+  EXPECT_EQ(popup_node_data.role, ax::mojom::Role::kListBox);
+  EXPECT_TRUE(popup_node_data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(popup_node_data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_FALSE(popup_node_data.HasState(ax::mojom::State::kInvisible));
+  EXPECT_TRUE(
+      popup_node_data.HasIntAttribute(ax::mojom::IntAttribute::kPopupForId));
+
+  // Check accessibility of list box while it's closed.
+  widget->Close();
+  waiter.Wait();
+  EXPECT_FALSE(controller()->IsPopupOpen());
+  popup_node_data = ui::AXNodeData();
+  popup_view()->GetViewAccessibility().GetAccessibleNodeData(&popup_node_data);
+  EXPECT_FALSE(popup_node_data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_TRUE(popup_node_data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_TRUE(popup_node_data.HasState(ax::mojom::State::kInvisible));
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, AccessibleResultName) {
+  CreatePopupForTestQuery();
+  ACMatches matches;
+  AutocompleteMatch match(nullptr, 500, false,
+                          AutocompleteMatchType::HISTORY_TITLE);
+  match.destination_url = GURL("https://foobar.com");
+  match.contents = u"https://foobar.com";
+  match.description = u"FooBarCom";
+  match.contents_class = {{0, 0}};
+  match.description_class = {{0, 0}};
+  matches.push_back(match);
+  controller()->autocomplete_controller()->internal_result_.AppendMatches(
+      matches);
+  popup_view()->UpdatePopupAppearance();
+  edit_model()->SetUserText(u"bar");
+  edit_model()->StartAutocomplete(false, false);
+  popup_view()->UpdatePopupAppearance();
+
+  edit_model()->SetPopupSelection(OmniboxPopupSelection(1));
+  OmniboxResultView* selected_result_view = GetResultViewAt(1);
+  ui::AXNodeData result_node_data;
+  selected_result_view->GetViewAccessibility().GetAccessibleNodeData(
+      &result_node_data);
+  EXPECT_EQ(
+      result_node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      u"FooBarCom https://foobar.com location from history");
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, DeleteSuggestion) {
@@ -654,7 +779,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, DeleteSuggestion) {
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
   input.set_omit_asynchronous_matches(true);
   controller()->autocomplete_controller()->Start(input);
-  ASSERT_TRUE(popup_view()->IsOpen());
+  ASSERT_TRUE(controller()->IsPopupOpen());
 
   // Select deletable match at index 1 (input is index 0).
   edit_model()->SetPopupSelection(OmniboxPopupSelection(1));
@@ -695,7 +820,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, DeleteSuggestion) {
 }
 
 // Flaky on Mac: https://crbug.com/1511356
-#if BUILDFLAG(IS_MAC)
+// Flaky on Win and Linux: https://crbug.com/365250293
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #define MAYBE_SpaceEntersKeywordMode DISABLED_SpaceEntersKeywordMode
 #else
 #define MAYBE_SpaceEntersKeywordMode SpaceEntersKeywordMode
@@ -703,9 +829,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, DeleteSuggestion) {
 IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
                        MAYBE_SpaceEntersKeywordMode) {
   CreatePopupForTestQuery();
-  EXPECT_TRUE(popup_view()->IsOpen());
+  EXPECT_TRUE(controller()->IsPopupOpen());
 
-  omnibox_view()->controller()->client()->GetPrefs()->SetBoolean(
+  location_bar()->GetOmniboxController()->client()->GetPrefs()->SetBoolean(
       omnibox::kKeywordSpaceTriggeringEnabled, true);
   omnibox_view()->SetUserText(u"@bookmarks");
   edit_model()->StartAutocomplete(false, false);
@@ -740,7 +866,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   ui::AXNodeData ax_node_data_omnibox;
   omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(
       &ax_node_data_omnibox);
-  EXPECT_FALSE(popup_view()->IsOpen());
+  EXPECT_FALSE(controller()->IsPopupOpen());
   EXPECT_FALSE(ax_node_data_omnibox.HasIntAttribute(
       ax::mojom::IntAttribute::kActivedescendantId));
 
@@ -768,7 +894,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   edit_model()->StartAutocomplete(false, false);
   omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(
       &ax_node_data_omnibox);
-  EXPECT_TRUE(popup_view()->IsOpen());
+  EXPECT_TRUE(controller()->IsPopupOpen());
   EXPECT_TRUE(ax_node_data_omnibox.HasIntAttribute(
       ax::mojom::IntAttribute::kActivedescendantId));
   // First result is selected by default.
@@ -786,10 +912,194 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
 
   // Check accessibility when popup is closed.
   ax_node_data_omnibox = ui::AXNodeData();
-  controller()->autocomplete_controller()->Stop(true);
+  controller()->autocomplete_controller()->Stop(
+      AutocompleteStopReason::kClobbered);
   omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(
       &ax_node_data_omnibox);
-  EXPECT_FALSE(popup_view()->IsOpen());
+  EXPECT_FALSE(controller()->IsPopupOpen());
   EXPECT_FALSE(ax_node_data_omnibox.HasIntAttribute(
       ax::mojom::IntAttribute::kActivedescendantId));
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, AccessibleControlIds) {
+  ui::AXNodeData ax_node_data_omnibox, data;
+  omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(
+      &ax_node_data_omnibox);
+  EXPECT_FALSE(controller()->IsPopupOpen());
+  EXPECT_FALSE(ax_node_data_omnibox.HasIntListAttribute(
+      ax::mojom::IntListAttribute::kControlsIds));
+
+  CreatePopupForTestQuery();
+
+  // Check accessibility when popup is open.
+  ax_node_data_omnibox = ui::AXNodeData();
+  edit_model()->StartAutocomplete(false, false);
+  omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(
+      &ax_node_data_omnibox);
+  EXPECT_TRUE(controller()->IsPopupOpen());
+  EXPECT_TRUE(ax_node_data_omnibox.HasIntListAttribute(
+      ax::mojom::IntListAttribute::kControlsIds));
+  EXPECT_THAT(ax_node_data_omnibox.GetIntListAttribute(
+                  ax::mojom::IntListAttribute::kControlsIds)[0],
+              popup_view()->GetViewAccessibility().GetUniqueId());
+
+  // Check accessibility when popup is closed.
+  ax_node_data_omnibox = ui::AXNodeData();
+  controller()->autocomplete_controller()->Stop(
+      AutocompleteStopReason::kClobbered);
+  omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(
+      &ax_node_data_omnibox);
+  EXPECT_FALSE(controller()->IsPopupOpen());
+  EXPECT_FALSE(ax_node_data_omnibox.HasIntListAttribute(
+      ax::mojom::IntListAttribute::kControlsIds));
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxPopupSuggestionGroupHeadersTest,
+                       ShowSuggestionGroupHeadersByPageContext) {
+  scoped_refptr<FakeAutocompleteProvider> provider =
+      new FakeAutocompleteProvider(AutocompleteProvider::TYPE_SEARCH);
+  controller()->autocomplete_controller()->providers_.push_back(provider);
+
+  const auto group1 = omnibox::GroupId::GROUP_VISITED_DOC_RELATED;
+  const auto group2 = omnibox::GroupId::GROUP_CONTEXTUAL_SEARCH;
+
+  ACMatches matches;
+  // Non-contextual search suggestion.
+  {
+    std::u16string match_url = u"https://google.com/search?q=foo1";
+    AutocompleteMatch match(nullptr, 500, false,
+                            AutocompleteMatchType::SEARCH_SUGGEST);
+    match.contents = u"foo1";
+    match.contents_class.emplace_back(0, ACMatchClassification::URL);
+    match.destination_url = GURL(match_url);
+    match.description = u"first match";
+    match.description_class.emplace_back(0, ACMatchClassification::URL);
+    match.allowed_to_be_default_match = true;
+    match.provider = provider.get();
+    match.suggestion_group_id = group1;
+    match.keyword = u"foo1";
+    matches.push_back(match);
+  }
+  // Contextual search suggestion.
+  {
+    std::u16string match_url = u"https://google.com/search?q=foo2";
+    AutocompleteMatch match(nullptr, 450, false,
+                            AutocompleteMatchType::SEARCH_SUGGEST);
+    match.contents = u"foo2";
+    match.contents_class.emplace_back(0, ACMatchClassification::URL);
+    match.destination_url = GURL(match_url);
+    match.description = u"second match";
+    match.description_class.emplace_back(0, ACMatchClassification::URL);
+    match.allowed_to_be_default_match = true;
+    match.provider = provider.get();
+    match.suggestion_group_id = group2;
+    match.keyword = u"foo2";
+    matches.push_back(match);
+  }
+  provider->matches_ = matches;
+
+  omnibox::GroupConfigMap suggestion_groups_map;
+  // Non-contextual suggestion group header.
+  const std::string kNonContextualSuggestionGroupHeaderText =
+      "Related to this page";
+  suggestion_groups_map[group1];
+  suggestion_groups_map[group1].set_header_text(
+      kNonContextualSuggestionGroupHeaderText);
+  // Contextual suggestion group header.
+  const std::string kContextualSuggestionGroupHeaderText =
+      "Suggested questions about this page";
+  suggestion_groups_map[group2];
+  suggestion_groups_map[group2].set_header_text(
+      kContextualSuggestionGroupHeaderText);
+  provider->suggestion_groups_map_ = suggestion_groups_map;
+
+  // NTP page context.
+  {
+    edit_model()->SetUserText(u"foo");
+    AutocompleteInput input(
+        u"foo",
+        metrics::OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
+        ChromeAutocompleteSchemeClassifier(browser()->profile()));
+    input.set_omit_asynchronous_matches(true);
+    controller()->autocomplete_controller()->Start(input);
+    ASSERT_TRUE(controller()->IsPopupOpen());
+
+    // Skip over implicit SEARCH_WHAT_YOU_TYPED suggestion at index 0.
+
+    // Non-contextual suggestion group header should be SHOWN.
+    EXPECT_TRUE(GetHeaderViewAt(1)->GetVisible());
+    EXPECT_TRUE(GetResultViewAt(1)->GetVisible());
+
+    // Header text should be INCLUDED in the suggestion a11y text.
+    edit_model()->SetPopupSelection(OmniboxPopupSelection(1));
+    EXPECT_TRUE(contains(result_a11y_text(GetResultViewAt(1)),
+                         kNonContextualSuggestionGroupHeaderText));
+
+    // Contextual suggestion group header should be SHOWN.
+    EXPECT_TRUE(GetHeaderViewAt(2)->GetVisible());
+    EXPECT_TRUE(GetResultViewAt(2)->GetVisible());
+
+    // Header text should be INCLUDED in the suggestion a11y text.
+    edit_model()->SetPopupSelection(OmniboxPopupSelection(2));
+    EXPECT_TRUE(contains(result_a11y_text(GetResultViewAt(2)),
+                         kContextualSuggestionGroupHeaderText));
+  }
+
+  // SRP page context.
+  {
+    edit_model()->SetUserText(u"foo");
+    AutocompleteInput input(
+        u"foo",
+        metrics::OmniboxEventProto::
+            SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+        ChromeAutocompleteSchemeClassifier(browser()->profile()));
+    input.set_omit_asynchronous_matches(true);
+    controller()->autocomplete_controller()->Start(input);
+    ASSERT_TRUE(controller()->IsPopupOpen());
+
+    // Skip over implicit SEARCH_WHAT_YOU_TYPED suggestion at index 0.
+
+    // Non-contextual suggestion group header should be HIDDEN for SRP page
+    // context.
+    EXPECT_FALSE(popup_view()->header_view_at(1)->GetVisible());
+    EXPECT_TRUE(popup_view()->result_view_at(1)->GetVisible());
+
+    // Header text should be EXCLUDED from the suggestion a11y text.
+    edit_model()->SetPopupSelection(OmniboxPopupSelection(1));
+    EXPECT_FALSE(contains(result_a11y_text(GetResultViewAt(1)),
+                          kNonContextualSuggestionGroupHeaderText));
+
+    // Contextual suggestion group header should be HIDDEN for SRP page
+    // context.
+    EXPECT_FALSE(popup_view()->header_view_at(2)->GetVisible());
+    EXPECT_TRUE(popup_view()->result_view_at(2)->GetVisible());
+  }
+
+  // Web page context.
+  {
+    edit_model()->SetUserText(u"foo");
+    AutocompleteInput input(
+        u"foo", metrics::OmniboxEventProto::OTHER,
+        ChromeAutocompleteSchemeClassifier(browser()->profile()));
+    input.set_omit_asynchronous_matches(true);
+    controller()->autocomplete_controller()->Start(input);
+    ASSERT_TRUE(controller()->IsPopupOpen());
+
+    // Skip over implicit SEARCH_WHAT_YOU_TYPED suggestion at index 0.
+
+    // Non-contextual suggestion group header should be HIDDEN for Web page
+    // context.
+    EXPECT_FALSE(popup_view()->header_view_at(1)->GetVisible());
+    EXPECT_TRUE(popup_view()->result_view_at(1)->GetVisible());
+
+    // Header text should be EXCLUDED from the suggestion a11y text.
+    edit_model()->SetPopupSelection(OmniboxPopupSelection(1));
+    EXPECT_FALSE(contains(result_a11y_text(GetResultViewAt(1)),
+                          kNonContextualSuggestionGroupHeaderText));
+
+    // Contextual suggestion group header should be SHOWN for Web page
+    // context.
+    EXPECT_FALSE(popup_view()->header_view_at(2)->GetVisible());
+    EXPECT_TRUE(popup_view()->result_view_at(2)->GetVisible());
+  }
 }

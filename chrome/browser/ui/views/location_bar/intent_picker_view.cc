@@ -31,8 +31,7 @@ IntentPickerView::IntentPickerView(
                          page_action_icon_delegate,
                          "IntentPicker"),
       browser_(browser) {
-  GetViewAccessibility().SetProperties(
-      /*role*/ std::nullopt,
+  GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_TOOLTIP_INTENT_PICKER_ICON));
 }
 
@@ -43,8 +42,9 @@ void IntentPickerView::UpdateImpl() {
 
   SetVisible(GetShowIcon());
 
-  if (was_visible && !GetVisible())
+  if (was_visible && !GetVisible()) {
     IntentPickerBubbleView::CloseCurrentBubble();
+  }
 }
 
 void IntentPickerView::OnExecuting(
@@ -64,12 +64,14 @@ views::BubbleDialogDelegate* IntentPickerView::GetBubble() const {
 }
 
 bool IntentPickerView::GetShowIcon() const {
-  if (browser_->profile()->IsOffTheRecord())
+  if (browser_->profile()->IsOffTheRecord()) {
     return false;
+  }
 
   content::WebContents* web_contents = GetWebContents();
-  if (!web_contents)
+  if (!web_contents) {
     return false;
+  }
 
   IntentPickerTabHelper* tab_helper =
       IntentPickerTabHelper::FromWebContents(web_contents);

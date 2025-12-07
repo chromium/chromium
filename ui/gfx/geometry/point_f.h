@@ -9,8 +9,8 @@
 #include <string>
 #include <tuple>
 
+#include "base/component_export.h"
 #include "build/build_config.h"
-#include "ui/gfx/geometry/geometry_export.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -24,7 +24,7 @@ class TracedValue;
 namespace gfx {
 
 // A floating version of gfx::Point.
-class GEOMETRY_EXPORT PointF {
+class COMPONENT_EXPORT(GEOMETRY) PointF {
  public:
   constexpr PointF() : x_(0.f), y_(0.f) {}
   constexpr PointF(float x, float y) : x_(x), y_(y) {}
@@ -112,18 +112,12 @@ class GEOMETRY_EXPORT PointF {
   // Write a represtation of this object into a trace event argument.
   void WriteIntoTrace(perfetto::TracedValue) const;
 
+  friend constexpr bool operator==(const PointF&, const PointF&) = default;
+
  private:
   float x_;
   float y_;
 };
-
-constexpr bool operator==(const PointF& lhs, const PointF& rhs) {
-  return lhs.x() == rhs.x() && lhs.y() == rhs.y();
-}
-
-constexpr bool operator!=(const PointF& lhs, const PointF& rhs) {
-  return !(lhs == rhs);
-}
 
 constexpr PointF operator+(const PointF& lhs, const Vector2dF& rhs) {
   PointF result(lhs);
@@ -145,9 +139,8 @@ inline PointF PointAtOffsetFromOrigin(const Vector2dF& offset_from_origin) {
   return PointF(offset_from_origin.x(), offset_from_origin.y());
 }
 
-GEOMETRY_EXPORT PointF ScalePoint(const PointF& p,
-                                  float x_scale,
-                                  float y_scale);
+COMPONENT_EXPORT(GEOMETRY)
+PointF ScalePoint(const PointF& p, float x_scale, float y_scale);
 
 inline PointF ScalePoint(const PointF& p, float scale) {
   return ScalePoint(p, scale, scale);

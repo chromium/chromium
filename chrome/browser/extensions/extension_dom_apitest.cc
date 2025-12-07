@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/test/result_catcher.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -22,7 +25,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
       "dom/closed_shadow_root_from_content_script")));
 
   ResultCatcher catcher;
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
   EXPECT_TRUE(catcher.GetNextResult());
 }
 

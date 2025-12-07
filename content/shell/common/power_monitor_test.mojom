@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 module content.mojom;
+
+import "mojo/public/mojom/base/battery_power_status.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
 // This interface is only for the sake of browser test to query current power
@@ -12,5 +14,6 @@ interface PowerMonitorTest {
   // The power state is reported immediatelly if there is already a change
   // available to notify, otherwise wait until a change happen. Overlapping
   // calls to QueryNextState are prohibited.
-  QueryNextState() => (bool on_battery_power);
+  QueryNextState()
+      => (mojo_base.mojom.BatteryPowerStatus battery_power_status);
 };

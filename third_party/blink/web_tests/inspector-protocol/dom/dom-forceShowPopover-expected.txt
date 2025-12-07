@@ -1,0 +1,217 @@
+Tests the DOM.forceShowPopover method
+Compare force/unforce orders with hint and auto stacks
+closed popovers when force-showing node #p1[
+]
+closed popovers when force-showing node #p3[
+]
+closed popovers when force-hiding node #p1[
+    [0] : #p1
+]
+closed popovers when force-hiding node #p3[
+    [0] : #p3
+]
+Currently open popovers: {
+    type : object
+    value : [
+    ]
+}
+closed popovers when force-showing node #p3[
+]
+Open popovers after #p1.showPopover(): {
+    type : string
+    value : ["p1","p3"]
+}
+Open popovers after #p1.hidePopover(): {
+    type : string
+    value : ["p3"]
+}
+Currently open popovers: {
+    type : object
+    value : [
+        [0] : p3
+    ]
+}
+closed popovers when force-hiding node #p3[
+    [0] : #p3
+]
+Open popovers after #p1.hidePopover(): {
+    type : string
+    value : []
+}
+Currently open popovers: {
+    type : object
+    value : [
+    ]
+}
+First, check interleaving forceShowPopover calls with showPopover()/hidePopover()
+Currently open popovers: {
+    type : object
+    value : [
+    ]
+}
+Open popovers after #popover.showPopover(): {
+    type : string
+    value : ["popover"]
+}
+Open popovers after #popover.hidePopover(): {
+    type : string
+    value : []
+}
+force-open:
+closed popovers when force-showing node #popover[
+]
+Currently open popovers: {
+    type : object
+    value : [
+        [0] : popover
+    ]
+}
+Open popovers after #popover.hidePopover(): {
+    type : string
+    value : ["popover"]
+}
+force-close:
+closed popovers when force-hiding node #popover[
+    [0] : #popover
+]
+Currently open popovers: {
+    type : object
+    value : [
+    ]
+}
+Open popovers after #popover.showPopover(): {
+    type : string
+    value : ["popover"]
+}
+Currently open popovers: {
+    type : object
+    value : [
+        [0] : popover
+    ]
+}
+force-open:
+closed popovers when force-showing node #popover[
+]
+Currently open popovers: {
+    type : object
+    value : [
+        [0] : popover
+    ]
+}
+Open popovers after #popover.hidePopover(): {
+    type : string
+    value : ["popover"]
+}
+Currently open popovers: {
+    type : object
+    value : [
+        [0] : popover
+    ]
+}
+closed popovers when force-hiding node #popover[
+    [0] : #popover
+]
+
+Second, test forceShowPopover calls for popover stack in different orders
+force-opened in order:
+closed popovers when force-showing node #p1[
+]
+closed popovers when force-showing node #p2[
+]
+closed popovers when force-showing node #p3[
+]
+Currently open popovers: {
+    type : object
+    value : [
+        [0] : p1
+        [1] : p2
+        [2] : p3
+    ]
+}
+force-closed in order:
+closed popovers when force-hiding node #p3[
+    [0] : #p3
+]
+closed popovers when force-hiding node #p2[
+    [0] : #p2
+]
+closed popovers when force-hiding node #p1[
+    [0] : #p1
+]
+Currently open popovers: {
+    type : object
+    value : [
+    ]
+}
+force-opened in order:
+closed popovers when force-showing node #p1[
+]
+closed popovers when force-showing node #p2[
+]
+closed popovers when force-showing node #p3[
+]
+Currently open popovers: {
+    type : object
+    value : [
+        [0] : p1
+        [1] : p2
+        [2] : p3
+    ]
+}
+force-closed out of order:
+closed popovers when force-hiding node #p2[
+    [0] : #p2
+]
+closed popovers when force-hiding node #p3[
+    [0] : #p3
+]
+closed popovers when force-hiding node #p1[
+    [0] : #p1
+]
+Currently open popovers: {
+    type : object
+    value : [
+    ]
+}
+force-opened out of order:
+closed popovers when force-showing node #p3[
+]
+closed popovers when force-showing node #p2[
+]
+closed popovers when force-showing node #p1[
+]
+Currently open popovers: {
+    type : object
+    value : [
+        [0] : p1
+        [1] : p2
+        [2] : p3
+    ]
+}
+force-closed out of order:
+closed popovers when force-hiding node #p2[
+    [0] : #p2
+]
+closed popovers when force-hiding node #p3[
+    [0] : #p3
+]
+closed popovers when force-hiding node #p1[
+    [0] : #p1
+]
+Currently open popovers: {
+    type : object
+    value : [
+    ]
+}
+hidePopover() out of order:
+Open popovers after #p1.showPopover(): {
+    type : string
+    value : ["p1"]
+}
+closed popovers when force-showing node #p2[
+]
+Open popovers after #p1.hidePopover(): {
+    type : string
+    value : ["p2"]
+}
+

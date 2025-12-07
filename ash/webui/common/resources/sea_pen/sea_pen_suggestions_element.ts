@@ -13,16 +13,19 @@ import 'chrome://resources/ash/common/personalization/cros_button_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
-import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
+import type {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
+import type {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
+import {afterNextRender, Debouncer, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SEA_PEN_SUGGESTIONS} from './constants.js';
 import {logSuggestionClicked, logSuggestionShuffleClicked} from './sea_pen_metrics_logger.js';
 import {getTemplate} from './sea_pen_suggestions_element.html.js';
-import {SEA_PEN_SUGGESTIONS} from './sea_pen_untranslated_constants.js';
-import {isArrayEqual, shuffle} from './sea_pen_utils.js';
+import {IronAnnounceEvent, isArrayEqual, isNonEmptyArray, shuffle} from './sea_pen_utils.js';
 
 const seaPenSuggestionSelectedEvent = 'sea-pen-suggestion-selected';
 
@@ -46,10 +49,13 @@ export interface SeaPenSuggestionsElement {
   $: {
     keys: IronA11yKeysElement,
     suggestionSelector: IronSelectorElement,
+    shuffle: CrButtonElement,
   };
 }
 
-export class SeaPenSuggestionsElement extends PolymerElement {
+const SeaPenSuggestionsElementBase = I18nMixin(PolymerElement);
+
+export class SeaPenSuggestionsElement extends SeaPenSuggestionsElementBase {
   static get is() {
     return 'sea-pen-suggestions';
   }
@@ -65,19 +71,29 @@ export class SeaPenSuggestionsElement extends PolymerElement {
         observer: 'onSuggestionsChanged_',
       },
 
-      hiddenSuggestions_: Object,
+      // An array to store only the visible suggestions to select by filling the
+      // items in `suggestions_` to the `suggestionSelector` container until no
+      // space (width) left.
+      selectableSuggestions_: Array,
 
-      /** The button currently highlighted by keyboard navigation. */
-      ironSelectedSuggestion_: Object,
+      hiddenSuggestions_: Object,
     };
   }
 
   private suggestions_: string[];
+  private selectableSuggestions_: string[];
   private hiddenSuggestions_: Set<string>;
-  private ironSelectedSuggestion_: CrButtonElement;
+  private debouncer_: Debouncer;
+  private onResized_: () => void = () => {
+    this.debouncer_ =
+        Debouncer.debounce(this.debouncer_, timeOut.after(50), () => {
+          this.getSelectableSuggestions_();
+        });
+  };
 
   override ready() {
     super.ready();
+    IronA11yAnnouncer.requestAvailability();
     this.$.keys.target = this.$.suggestionSelector;
   }
 
@@ -86,6 +102,30 @@ export class SeaPenSuggestionsElement extends PolymerElement {
     this.hiddenSuggestions_ = new Set();
     this.suggestions_ = [...SEA_PEN_SUGGESTIONS];
     this.shuffleSuggestions_();
+    window.addEventListener('resize', this.onResized_);
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    window.removeEventListener('resize', this.onResized_);
+  }
+
+  private getSelectableSuggestions_() {
+    if (!isNonEmptyArray(this.suggestions_)) {
+      return;
+    }
+    this.selectableSuggestions_ = this.suggestions_;
+    afterNextRender(this, () => {
+      const items = Array.from(
+          this.shadowRoot!.querySelectorAll<CrButtonElement>('.suggestion'));
+      const GAP = 10;  // 10px gap between suggestion chips.
+      let remainingWidth = this.$.suggestionSelector.clientWidth - GAP;
+      this.selectableSuggestions_ = this.suggestions_.filter((_, i) => {
+        const itemWidth = items[i].clientWidth + GAP;
+        remainingWidth -= itemWidth;
+        return remainingWidth >= 0;
+      });
+    });
   }
 
   private onClickSuggestion_(event: Event&{model: {index: number}}) {
@@ -93,16 +133,25 @@ export class SeaPenSuggestionsElement extends PolymerElement {
     const suggestion = target.textContent?.trim();
     assert(suggestion);
     this.dispatchEvent(new SeaPenSuggestionSelectedEvent(suggestion));
-    this.hiddenSuggestions_.add(suggestion);
-    this.splice('suggestions_', event.model.index, 1);
-    // Manually calls observer since splicing doesn't trigger it.
-    this.onSuggestionsChanged_();
     logSuggestionClicked();
+
+    // If there are fewer than 4 suggestions, shuffle them all instead of
+    // removing one.
+    if (SEA_PEN_SUGGESTIONS.length - this.hiddenSuggestions_.size < 4) {
+      this.shuffleSuggestions_();
+    } else {
+      this.hiddenSuggestions_.add(suggestion);
+      this.splice('suggestions_', event.model.index, 1);
+      // Manually calls observer since splicing doesn't trigger it.
+      this.onSuggestionsChanged_();
+    }
   }
 
   private onShuffleClicked_() {
     logSuggestionShuffleClicked();
     this.shuffleSuggestions_();
+    this.dispatchEvent(new IronAnnounceEvent(
+        loadTimeData.getString('ariaAnnouncePromptSuggestionsShuffled')));
   }
 
   private shuffleSuggestions_() {
@@ -125,6 +174,7 @@ export class SeaPenSuggestionsElement extends PolymerElement {
   }
 
   private onSuggestionsChanged_() {
+    this.getSelectableSuggestions_();
     requestAnimationFrame(() => {
       // The focused suggestion might be removed from the DOM once clicked. To
       // allow keyboard users to focus on the suggestions again, we add the
@@ -145,7 +195,7 @@ export class SeaPenSuggestionsElement extends PolymerElement {
   private onSuggestionKeyPressed_(
       e: CustomEvent<{key: string, keyboardEvent: KeyboardEvent}>) {
     const selector = this.$.suggestionSelector;
-    const prevSuggestion = this.ironSelectedSuggestion_;
+    const prevSuggestion = selector.selectedItem as CrButtonElement;
     switch (e.detail.key) {
       case 'left':
         selector.selectPrevious();
@@ -161,9 +211,10 @@ export class SeaPenSuggestionsElement extends PolymerElement {
       prevSuggestion.removeAttribute('tabindex');
     }
     // Add focus state for new button.
-    if (this.ironSelectedSuggestion_) {
-      this.ironSelectedSuggestion_.setAttribute('tabindex', '0');
-      this.ironSelectedSuggestion_.focus();
+    const currentSuggestion = selector.selectedItem as CrButtonElement;
+    if (currentSuggestion) {
+      currentSuggestion.setAttribute('tabindex', '0');
+      currentSuggestion.focus();
     }
     e.detail.keyboardEvent.preventDefault();
   }

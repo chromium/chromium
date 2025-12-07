@@ -5,18 +5,11 @@
 import("//build/config/cast.gni")
 import("//build/config/ui.gni")  # For the toolkit_views variables.
 import("//mojo/public/tools/bindings/mojom.gni")
-import("//ppapi/buildflags/buildflags.gni")  # For the enable_plugins variable.
 import("//printing/buildflags/buildflags.gni")
+import("//services/device/public/cpp/compute_pressure/buildflags.gni")
 
 if (is_android) {
   import("//build/config/android/config.gni")
-} else if (is_mac) {
-  import("//build/apple/tweak_info_plist.gni")
-  import("//build/config/mac/rules.gni")
-  import("//content/public/app/mac_helpers.gni")
-  import("//third_party/icu/config.gni")
-  import("//ui/gl/features.gni")
-  import("//v8/gni/v8.gni")
 }
 
 mojom("web_test_common_mojom") {
@@ -46,13 +39,12 @@ static_library("web_test_common") {
   sources = [
     "common/tracked_dictionary.cc",
     "common/tracked_dictionary.h",
-    "common/web_test_constants.cc",
     "common/web_test_constants.h",
+    "common/web_test_hash_util.cc",
     "common/web_test_runtime_flags.cc",
     "common/web_test_runtime_flags.h",
     "common/web_test_string_util.cc",
     "common/web_test_string_util.h",
-    "common/web_test_switches.cc",
     "common/web_test_switches.h",
   ]
   public_deps = [
@@ -137,8 +129,8 @@ static_library("web_test_browser") {
     "browser/web_test_origin_trial_throttle.h",
     "browser/web_test_permission_manager.cc",
     "browser/web_test_permission_manager.h",
-    "browser/web_test_pressure_manager.cc",
-    "browser/web_test_pressure_manager.h",
+    "browser/web_test_privacy_sandbox.cc",
+    "browser/web_test_privacy_sandbox.h",
     "browser/web_test_push_messaging_service.cc",
     "browser/web_test_push_messaging_service.h",
     "browser/web_test_sensor_provider_manager.cc",
@@ -152,6 +144,13 @@ static_library("web_test_browser") {
     "browser/web_test_tts_platform.cc",
     "browser/web_test_tts_platform.h",
   ]
+
+  if (enable_compute_pressure) {
+    sources += [
+      "browser/web_test_pressure_manager.cc",
+      "browser/web_test_pressure_manager.h",
+    ]
+  }
 
   if (is_mac) {
     sources += [ "browser/web_test_shell_platform_delegate_mac.mm" ]
@@ -178,10 +177,9 @@ static_library("web_test_browser") {
   deps = [
     ":web_test_common",
     "//base",
-    "//build:chromeos_buildflags",
     "//cc/base",
     "//cc/paint",
-    "//components/custom_handlers:custom_handlers",
+    "//components/custom_handlers",
     "//components/custom_handlers:test_support",
     "//components/download/content/factory",
     "//components/download/public/background_service:public",
@@ -189,6 +187,7 @@ static_library("web_test_browser") {
     "//components/network_session_configurator/common",
     "//components/origin_trials:common",
     "//components/proxy_config",
+    "//components/subresource_filter/core/common:test_support",
     "//content/browser:for_content_tests",  # For non-component builds.
     "//content/public/browser",  # For component builds.
     "//content/shell:content_shell_lib",
@@ -199,38 +198,30 @@ static_library("web_test_browser") {
     "//device/bluetooth:fake_bluetooth",
     "//device/bluetooth:mocks",
     "//device/bluetooth/public/mojom:fake_bluetooth_interfaces",
-    "//gpu",
     "//media",
     "//net",
     "//net:net_resources",
     "//net:test_support",
-    "//ppapi/buildflags",
     "//sandbox",
     "//services/device/public/cpp:test_support",
+    "//services/device/public/cpp/compute_pressure:buildflags",
     "//services/network/public/cpp",
     "//services/service_manager/public/cpp",
     "//storage/browser",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public:blink",
+    "//third_party/blink/public/test/mojom:core_test_automation",
+    "//third_party/blink/public/test/mojom:modules_test_automation",
     "//ui/base",
     "//ui/base/ime/init",
     "//ui/display",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/gl",
-    "//ui/shell_dialogs:shell_dialogs",
+    "//ui/shell_dialogs",
     "//url",
   ]
-
-  # TODO(crbug.com/40139469): Blink test plugin must be migrated from PPAPI.
-  if (enable_ppapi) {
-    deps += [
-      "//content/ppapi_plugin",
-      "//ppapi:blink_deprecated_test_plugin",
-      "//ppapi:blink_test_plugin",
-    ]
-  }
 
   if (is_mac) {
     deps += [ "//ui/display:test_support" ]
@@ -267,7 +258,6 @@ group("web_test_renderer_public_deps") {
     "//device/gamepad/public/cpp:shared_with_blink",
     "//device/gamepad/public/mojom",
     "//gin",
-    "//gpu",
     "//mojo/public/cpp/bindings",
     "//services/device/public/mojom",
     "//third_party/blink/public:blink_headers",
@@ -279,6 +269,23 @@ group("web_test_renderer_public_deps") {
     "//url",
     "//v8",
   ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  if (is_component_build) {
+    check_includes = false
+  }
+
+  sources = [
+    "renderer/test_runner_utils.cc",
+    "renderer/test_runner_utils.h",
+  ]
+
+  deps = [ "//base" ]
+
+  public_deps = []
 }
 
 static_library("web_test_renderer") {
@@ -308,8 +315,6 @@ static_library("web_test_renderer") {
     "renderer/event_sender.h",
     "renderer/fake_screen_orientation_impl.cc",
     "renderer/fake_screen_orientation_impl.h",
-    "renderer/fake_subresource_filter.cc",
-    "renderer/fake_subresource_filter.h",
     "renderer/gamepad_controller.cc",
     "renderer/gamepad_controller.h",
     "renderer/gc_controller.cc",
@@ -343,10 +348,13 @@ static_library("web_test_renderer") {
   ]
   deps = [
     "//components/plugins/renderer",
+    "//components/subresource_filter/content/renderer",
+    "//components/subresource_filter/core/common",
     "//components/viz/common",
     "//components/web_cache/renderer",
     "//content/public/common",
     "//content/test:test_support",
+    "//content/web_test:test_support",
     "//gpu/command_buffer/client:gles2_interface",
     "//media/capture",
     "//printing/buildflags",
@@ -373,4 +381,8 @@ static_library("web_test_renderer") {
   if (enable_printing || enable_printing_tests) {
     deps += [ "//printing" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

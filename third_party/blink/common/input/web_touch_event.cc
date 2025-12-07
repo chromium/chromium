@@ -81,6 +81,7 @@ void WebTouchEvent::Coalesce(const WebInputEvent& event) {
   dispatch_type =
       MergeDispatchTypes(old_event.dispatch_type, touch_event.dispatch_type);
   unique_touch_event_id = old_event.unique_touch_event_id;
+  touch_start_or_first_touch_move |= old_event.touch_start_or_first_touch_move;
 }
 
 WebTouchEvent WebTouchEvent::FlattenTransform() const {

@@ -4,8 +4,11 @@
 
 #include "content/browser/loader/url_loader_factory_utils.h"
 
+#include <variant>
+
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_thread.h"
+#include "net/cookies/cookie_setting_override.h"
 
 namespace content {
 namespace url_loader_factory {
@@ -202,7 +205,7 @@ std::tuple<bool, bool> GetIsNavigationAndDownload(
     case ContentBrowserClient::URLLoaderFactoryType::kPrefetch:
     case ContentBrowserClient::URLLoaderFactoryType::kDevTools:
     case ContentBrowserClient::URLLoaderFactoryType::kEarlyHints:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -242,8 +245,11 @@ template <typename OutType, typename... FinishArgs>
 
   if (devtools_params) {
     auto [is_navigation, is_download] = GetIsNavigationAndDownload(type);
-    devtools_params->Run(is_navigation, is_download, factory_builder,
-                         factory_override_ptr);
+    devtools_params->Run(
+        is_navigation, is_download, factory_builder, factory_override_ptr,
+        terminal_params.header_client_option() == HeaderClientOption::kAllow
+            ? &header_client
+            : nullptr);
   }
 
   if (auto terminal_url_loader_factory =
@@ -253,7 +259,7 @@ template <typename OutType, typename... FinishArgs>
                                   factory_builder);
     }
 
-    return absl::visit(
+    return std::visit(
         [&factory_builder, &finish_args...](auto&& terminal) {
           return std::move(factory_builder)
               .template Finish<OutType>(
@@ -280,6 +286,11 @@ template <typename OutType, typename... FinishArgs>
   factory_params->header_client = std::move(header_client);
   factory_params->factory_override = std::move(factory_override);
   factory_params->disable_secure_dns = disable_secure_dns;
+  if (devtools_params) {
+    devtools_instrumentation::ApplyNetworkCookieControlsOverrides(
+        devtools_params->agent_host(),
+        factory_params->devtools_cookie_setting_overrides);
+  }
 
   if (GetTestingInterceptor()) {
     GetTestingInterceptor().Run(terminal_params.process_id(), factory_builder);

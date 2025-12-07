@@ -47,7 +47,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/text_resource_decoder_options.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/segmented_string.h"
-#include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -94,7 +93,7 @@ VTTParser::VTTParser(VTTParserClient* client, Document& document)
       state_(kInitial),
       decoder_(std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
           TextResourceDecoderOptions::kPlainTextContent,
-          UTF8Encoding()))),
+          Utf8Encoding()))),
       current_start_time_(0),
       current_end_time_(0),
       current_region_(nullptr),
@@ -114,8 +113,8 @@ void VTTParser::GetNewStyleSheets(
   output_sheets.swap(style_sheets_);
 }
 
-void VTTParser::ParseBytes(const char* data, size_t length) {
-  String text_data = decoder_->Decode(data, length);
+void VTTParser::ParseBytes(base::span<const char> data) {
+  String text_data = decoder_->Decode(data);
   line_reader_.Append(text_data);
   Parse();
 }
@@ -225,9 +224,9 @@ bool VTTParser::HasRequiredFileIdentifier(const String& line) {
     UChar maybe_separator = line[kFileIdentifierLength];
     // The line reader handles the line break characters, so we don't need
     // to check for LF here.
-    if (maybe_separator != kSpaceCharacter &&
-        maybe_separator != kTabulationCharacter)
+    if (maybe_separator != uchar::kSpace && maybe_separator != uchar::kTab) {
       return false;
+    }
   }
   return true;
 }
@@ -245,7 +244,7 @@ VTTParser::ParseState VTTParser::CollectStyleSheet(const String& line) {
   if (line.empty() || line.Contains("-->")) {
     auto* parser_context = MakeGarbageCollected<CSSParserContext>(
         *document_, NullURL(), true /* origin_clean */, Referrer(),
-        UTF8Encoding(), ResourceFetchRestriction::kOnlyDataUrls);
+        Utf8Encoding(), ResourceFetchRestriction::kOnlyDataUrls);
     auto* style_sheet_contents =
         MakeGarbageCollected<StyleSheetContents>(parser_context);
     CSSParser::ParseSheet(
@@ -514,7 +513,7 @@ bool VTTParser::CollectTimeStamp(VTTScanner& input, double& time_stamp) {
   // Steps 5 - 7 - Collect a sequence of characters that are 0-9.
   // If not 2 characters or value is greater than 59, interpret as hours.
   unsigned value1;
-  unsigned value1_digits = input.ScanDigits(value1);
+  const size_t value1_digits = input.ScanDigits(value1);
   if (!value1_digits)
     return false;
   if (value1_digits != 2 || value1 > 59)
@@ -545,40 +544,43 @@ bool VTTParser::CollectTimeStamp(VTTScanner& input, double& time_stamp) {
     return false;
 
   // Steps 18 - 19 - Calculate result.
-  time_stamp = (value1 * kMinutesPerHour * kSecondsPerMinute) +
-               (value2 * kSecondsPerMinute) + value3 +
-               (value4 * (1 / kMsPerSecond));
+  base::TimeDelta time_stamp_delta = base::Hours(value1);
+  time_stamp_delta += base::Minutes(value2);
+  time_stamp_delta += base::Seconds(value3);
+  time_stamp_delta += base::Milliseconds(value4);
+
+  time_stamp = time_stamp_delta.InSecondsF();
   return true;
 }
 
-static VTTNodeType TokenToNodeType(VTTToken& token) {
+static VttNodeType TokenToNodeType(VTTToken& token) {
   switch (token.GetName().length()) {
     case 1:
       if (token.GetName()[0] == 'c')
-        return kVTTNodeTypeClass;
+        return VttNodeType::kClass;
       if (token.GetName()[0] == 'v')
-        return kVTTNodeTypeVoice;
+        return VttNodeType::kVoice;
       if (token.GetName()[0] == 'b')
-        return kVTTNodeTypeBold;
+        return VttNodeType::kBold;
       if (token.GetName()[0] == 'i')
-        return kVTTNodeTypeItalic;
+        return VttNodeType::kItalic;
       if (token.GetName()[0] == 'u')
-        return kVTTNodeTypeUnderline;
+        return VttNodeType::kUnderline;
       break;
     case 2:
       if (token.GetName()[0] == 'r' && token.GetName()[1] == 't')
-        return kVTTNodeTypeRubyText;
+        return VttNodeType::kRubyText;
       break;
     case 4:
       if (token.GetName()[0] == 'r' && token.GetName()[1] == 'u' &&
           token.GetName()[2] == 'b' && token.GetName()[3] == 'y')
-        return kVTTNodeTypeRuby;
+        return VttNodeType::kRuby;
       if (token.GetName()[0] == 'l' && token.GetName()[1] == 'a' &&
           token.GetName()[2] == 'n' && token.GetName()[3] == 'g')
-        return kVTTNodeTypeLanguage;
+        return VttNodeType::kLanguage;
       break;
   }
-  return kVTTNodeTypeNone;
+  return VttNodeType::kNone;
 }
 
 void VTTTreeBuilder::ConstructTreeFromToken(Document& document) {
@@ -591,17 +593,20 @@ void VTTTreeBuilder::ConstructTreeFromToken(Document& document) {
       break;
     }
     case VTTTokenTypes::kStartTag: {
-      VTTNodeType node_type = TokenToNodeType(token_);
-      if (node_type == kVTTNodeTypeNone)
+      VttNodeType node_type = TokenToNodeType(token_);
+      if (node_type == VttNodeType::kNone) {
         break;
+      }
 
       auto* curr_vtt_element = DynamicTo<VTTElement>(current_node_);
-      VTTNodeType current_type = curr_vtt_element
-                                     ? curr_vtt_element->WebVTTNodeType()
-                                     : kVTTNodeTypeNone;
+      VttNodeType current_type = curr_vtt_element
+                                     ? curr_vtt_element->GetVttNodeType()
+                                     : VttNodeType::kNone;
       // <rt> is only allowed if the current node is <ruby>.
-      if (node_type == kVTTNodeTypeRubyText && current_type != kVTTNodeTypeRuby)
+      if (node_type == VttNodeType::kRubyText &&
+          current_type != VttNodeType::kRuby) {
         break;
+      }
 
       auto* child = MakeGarbageCollected<VTTElement>(node_type, &document);
       child->SetTrack(track_);
@@ -609,10 +614,10 @@ void VTTTreeBuilder::ConstructTreeFromToken(Document& document) {
       if (!token_.Classes().empty())
         child->setAttribute(html_names::kClassAttr, token_.Classes());
 
-      if (node_type == kVTTNodeTypeVoice) {
+      if (node_type == VttNodeType::kVoice) {
         child->setAttribute(VTTElement::VoiceAttributeName(),
                             token_.Annotation());
-      } else if (node_type == kVTTNodeTypeLanguage) {
+      } else if (node_type == VttNodeType::kLanguage) {
         language_stack_.push_back(token_.Annotation());
         child->setAttribute(VTTElement::LangAttributeName(),
                             language_stack_.back());
@@ -624,9 +629,10 @@ void VTTTreeBuilder::ConstructTreeFromToken(Document& document) {
       break;
     }
     case VTTTokenTypes::kEndTag: {
-      VTTNodeType node_type = TokenToNodeType(token_);
-      if (node_type == kVTTNodeTypeNone)
+      VttNodeType node_type = TokenToNodeType(token_);
+      if (node_type == VttNodeType::kNone) {
         break;
+      }
 
       // The only non-VTTElement would be the DocumentFragment root. (Text
       // nodes and PIs will never appear as current_node_.)
@@ -634,20 +640,21 @@ void VTTTreeBuilder::ConstructTreeFromToken(Document& document) {
       if (!curr_vtt_element)
         break;
 
-      VTTNodeType current_type = curr_vtt_element->WebVTTNodeType();
+      VttNodeType current_type = curr_vtt_element->GetVttNodeType();
       bool matches_current = node_type == current_type;
       if (!matches_current) {
         // </ruby> auto-closes <rt>.
-        if (current_type == kVTTNodeTypeRubyText &&
-            node_type == kVTTNodeTypeRuby) {
+        if (current_type == VttNodeType::kRubyText &&
+            node_type == VttNodeType::kRuby) {
           if (current_node_->parentNode())
             current_node_ = current_node_->parentNode();
         } else {
           break;
         }
       }
-      if (node_type == kVTTNodeTypeLanguage)
+      if (node_type == VttNodeType::kLanguage) {
         language_stack_.pop_back();
+      }
       if (current_node_->parentNode())
         current_node_ = current_node_->parentNode();
       break;

@@ -13,9 +13,6 @@
 #include "media/cast/sender/audio_sender.h"
 #include "media/cast/sender/video_sender.h"
 
-using media::cast::FrameSenderConfig;
-using media::cast::RtpPayloadType;
-
 namespace mirroring {
 
 VideoRtpStream::VideoRtpStream(
@@ -36,7 +33,7 @@ VideoRtpStream::VideoRtpStream(
   }
 }
 
-VideoRtpStream::~VideoRtpStream() {}
+VideoRtpStream::~VideoRtpStream() = default;
 
 void VideoRtpStream::InsertVideoFrame(
     scoped_refptr<media::VideoFrame> video_frame) {
@@ -115,7 +112,7 @@ AudioRtpStream::AudioRtpStream(
   DCHECK(client_);
 }
 
-AudioRtpStream::~AudioRtpStream() {}
+AudioRtpStream::~AudioRtpStream() = default;
 
 void AudioRtpStream::InsertAudio(std::unique_ptr<media::AudioBus> audio_bus,
                                  base::TimeTicks capture_time) {

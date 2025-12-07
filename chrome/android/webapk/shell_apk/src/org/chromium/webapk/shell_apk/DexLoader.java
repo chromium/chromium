@@ -9,6 +9,9 @@ import android.util.Log;
 
 import dalvik.system.BaseDexClassLoader;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -18,6 +21,7 @@ import java.io.OutputStream;
 /**
  * Creates ClassLoader for .dex file in a remote Context's APK. Non static for the sake of tests.
  */
+@NullMarked
 public class DexLoader {
     private static final int BUFFER_SIZE = 16 * 1024;
     private static final String TAG = "cr.DexLoader";
@@ -51,7 +55,7 @@ public class DexLoader {
      *     #load()}.
      * @return The ClassLoader. Returns null on an error.
      */
-    public ClassLoader load(
+    public @Nullable ClassLoader load(
             Context remoteContext, String dexName, String canaryClassName, File localDexDir) {
         File localDexFile = new File(localDexDir, dexName);
 
@@ -88,7 +92,6 @@ public class DexLoader {
     /**
      * Extracts an asset from {@link context}'s APK to a file.
      *
-     * @param context
      * @param assetName Name of the asset to extract.
      * @param destFile File to extract the asset to.
      * @return true on success.
@@ -133,7 +136,7 @@ public class DexLoader {
      * @param optimizedDir Directory for storing the optimized dex file.
      * @return The ClassLoader. Returns null on an error.
      */
-    private static ClassLoader tryCreatingClassLoader(
+    private static @Nullable ClassLoader tryCreatingClassLoader(
             String canaryClassName, File dexFile, File optimizedDir) {
         try {
             ClassLoader loader =

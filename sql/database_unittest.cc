@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "sql/database.h"
 
 #include <stddef.h>
@@ -9,7 +14,9 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -17,6 +24,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -28,12 +36,16 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/thread_annotations.h"
 #include "base/trace_event/memory_dump_request_args.h"
@@ -49,6 +61,7 @@
 #include "sql/transaction.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/sqlite/sqlite3.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -103,6 +116,10 @@ bool IsOpenedInCorrectJournalMode(Database* db, bool is_wal) {
   return ExecuteWithResult(db, "PRAGMA journal_mode") == expected_mode;
 }
 
+int64_t CheckedGetFileSize(const base::FilePath& file_path) {
+  return base::GetFileSize(file_path).value();
+}
+
 }  // namespace
 
 // We use the parameter to run all tests with WAL mode on and off.
@@ -130,24 +147,22 @@ class SQLDatabaseTest : public testing::Test,
     db_.reset();
     ASSERT_TRUE(base::DeleteFile(db_path_));
 
-    db_ = std::make_unique<Database>(GetDBOptions());
+    db_ = std::make_unique<Database>(GetDBOptions(), test::kTestTag);
     ASSERT_TRUE(db_->Open(db_path_));
     ASSERT_TRUE(base::PathExists(db_path_));
   }
 
   DatabaseOptions GetDBOptions() {
-    DatabaseOptions options;
-    options.wal_mode = IsWALEnabled();
+    return DatabaseOptions()
+        .set_wal_mode(IsWALEnabled())
     // TODO(crbug.com/40146017): Remove after switching to exclusive mode on by
     // default.
-    options.exclusive_locking = false;
 #if BUILDFLAG(IS_FUCHSIA)  // Exclusive mode needs to be enabled to enter WAL
-                           // mode on Fuchsia
-    if (IsWALEnabled()) {
-      options.exclusive_locking = true;
-    }
+        .set_exclusive_locking(IsWALEnabled())
+#else
+        .set_exclusive_locking(false)
 #endif  // BUILDFLAG(IS_FUCHSIA)
-    return options;
+        ;
   }
 
   bool IsWALEnabled() { return GetParam(); }
@@ -430,6 +445,7 @@ TEST_P(SQLDatabaseTest, SchemaIntrospectionUsesErrorExpecter) {
   ASSERT_TRUE(sql::test::CorruptSizeInHeader(db_path_));
 
   {
+    base::HistogramTester tester;
     sql::test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_CORRUPT);
     ASSERT_FALSE(db_->Open(db_path_));
@@ -437,6 +453,8 @@ TEST_P(SQLDatabaseTest, SchemaIntrospectionUsesErrorExpecter) {
     ASSERT_FALSE(db_->DoesTableExist("foo"));
     ASSERT_FALSE(db_->DoesColumnExist("foo", "id"));
     ASSERT_TRUE(expecter.SawExpectedErrors());
+    tester.ExpectUniqueSample("Sql.Database.Open.FirstAttempt.Error.Test",
+                              SqliteResultCode::kCorrupt, 1);
   }
 }
 
@@ -620,6 +638,87 @@ class LifeTracker {
   SEQUENCE_CHECKER(sequence_checker_);
   raw_ptr<bool> flag_ptr_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
+
+int TestVfsOpen(sqlite3_vfs* vfs,
+                const char* full_path,
+                sqlite3_file* result_file,
+                int requested_flags,
+                int* granted_flags) {
+  uint64_t* call_count = reinterpret_cast<uint64_t*>(vfs->pAppData);
+  ++*call_count;
+  return SQLITE_ERROR;
+}
+int TestVfsFullPathname(sqlite3_vfs* vfs,
+                        const char* file_path,
+                        int result_size,
+                        char* result) {
+  uint64_t* call_count = reinterpret_cast<uint64_t*>(vfs->pAppData);
+  ++*call_count;
+
+  if (result_size < 0) {
+    return SQLITE_CANTOPEN;
+  }
+
+  const size_t expected_result_size = result_size;
+  base::cstring_view file_path_view(file_path);
+  if (expected_result_size < file_path_view.size() + sizeof(*file_path)) {
+    return SQLITE_CANTOPEN;
+  }
+
+  // `copy()` returns an output iterator just past the last char copied. Write
+  // the string terminator to that location.
+  *std::ranges::copy(file_path_view,
+                     base::span(result, expected_result_size).begin())
+       .out = 0;
+  return SQLITE_OK;
+}
+
+TEST_P(SQLDatabaseTest, UseVfs) {
+  uint64_t call_count = 0;
+
+  constexpr const char kVFSName[] = "test_vfs";
+  static constexpr int kSqliteVfsApiVersion = 3;
+  static constexpr int kSqliteMaxPathSize = 512;
+
+  sqlite3_vfs vfs{
+      kSqliteVfsApiVersion,
+      sizeof(sqlite3_vfs),
+      kSqliteMaxPathSize,
+      /*pNext=*/nullptr,
+      kVFSName,
+      // Provide pointer to `call_count` so it can be modified from within calls
+      // to the VFS and used in test assertions.
+      /*pAppData=*/&call_count,
+      TestVfsOpen,
+      /*xDelete*/ nullptr,
+      /*xAccess*/ nullptr,
+      TestVfsFullPathname,
+      /*xDlOpen=*/nullptr,
+      /*xDlError=*/nullptr,
+      /*xDlSym=*/nullptr,
+      /*xDlClose=*/nullptr,
+      /*xRandomness*/ nullptr,
+      /*xSleep*/ nullptr,
+      /*xCurrentTime=*/nullptr,
+      /*xGetLastError*/ nullptr,
+      /*xCurrentTimeInt64*/ nullptr,
+      /*xSetSystemCall=*/nullptr,
+      /*xGetSystemCall=*/nullptr,
+      /*xNextSystemCall=*/nullptr,
+  };
+
+  sqlite3_vfs_register(&vfs, /*makeDflt=*/false);
+  absl::Cleanup vfs_unregisterer = [&vfs]() { sqlite3_vfs_unregister(&vfs); };
+
+  DatabaseOptions options = GetDBOptions().set_vfs_name_discouraged(kVFSName);
+  Database other_db(options, test::kTestTag);
+
+  // Since the vfs's Open function is not implemented `Open()` will fail.
+  ASSERT_FALSE(other_db.Open(db_path_));
+
+  // Vfs implementation called twice, once for open and once for path name.
+  ASSERT_EQ(call_count, 2ull);
+}
 
 // base::BindRepeating() can curry arguments to be passed by const reference to
 // the callback function. If the error callback function calls
@@ -915,6 +1014,15 @@ TEST_P(SQLDatabaseTest, Raze) {
   }
 }
 
+TEST_P(SQLDatabaseTest, RazeFailedOnPoisoned) {
+  // Poison the database.
+  db_->Poison();
+
+  base::HistogramTester tester;
+  EXPECT_FALSE(db_->Raze());
+  tester.ExpectTotalCount("Sql.Database.Raze.FailureReason.Test", 1);
+}
+
 TEST_P(SQLDatabaseTest, RazeDuringSelect) {
   ASSERT_TRUE(
       db_->Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"));
@@ -954,7 +1062,8 @@ void TestPageSize(const base::FilePath& db_prefix,
   const base::FilePath db_path = db_prefix.InsertBeforeExtensionASCII(
       base::NumberToString(initial_page_size));
   Database::Delete(db_path);
-  Database db({.page_size = initial_page_size});
+  Database db(DatabaseOptions().set_page_size(initial_page_size),
+              test::kTestTag);
   ASSERT_TRUE(db.Open(db_path));
   ASSERT_TRUE(db.Execute(kCreateSql));
   ASSERT_TRUE(db.Execute(kInsertSql1));
@@ -964,7 +1073,8 @@ void TestPageSize(const base::FilePath& db_prefix,
   db.Close();
 
   // Re-open the database while setting a new |options.page_size| in the object.
-  Database razed_db({.page_size = final_page_size});
+  Database razed_db(DatabaseOptions().set_page_size(final_page_size),
+                    test::kTestTag);
   ASSERT_TRUE(razed_db.Open(db_path));
   // Raze will use the page size set in the connection object, which may not
   // match the file's page size.
@@ -1015,7 +1125,7 @@ TEST_P(SQLDatabaseTest, RazeMultiple) {
       "CREATE TABLE foo (id INTEGER PRIMARY KEY, value)";
   ASSERT_TRUE(db_->Execute(kCreateSql));
 
-  Database other_db(GetDBOptions());
+  Database other_db(GetDBOptions(), test::kTestTag);
   ASSERT_TRUE(other_db.Open(db_path_));
 
   // Check that the second connection sees the table.
@@ -1030,7 +1140,7 @@ TEST_P(SQLDatabaseTest, RazeMultiple) {
 TEST_P(SQLDatabaseTest, Raze_OtherConnectionHasWriteLock) {
   ASSERT_TRUE(db_->Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY)"));
 
-  Database other_db(GetDBOptions());
+  Database other_db(GetDBOptions(), test::kTestTag);
   ASSERT_TRUE(other_db.Open(db_path_));
 
   Transaction other_db_transaction(&other_db);
@@ -1055,7 +1165,7 @@ TEST_P(SQLDatabaseTest, Raze_OtherConnectionHasReadLock) {
     return;
   }
 
-  Database other_db(GetDBOptions());
+  Database other_db(GetDBOptions(), test::kTestTag);
   ASSERT_TRUE(other_db.Open(db_path_));
 
   Statement select(other_db.GetUniqueStatement("SELECT id FROM rows"));
@@ -1157,8 +1267,11 @@ TEST_P(SQLDatabaseTest, RazeCallbackReopen) {
   // fail with SQLITE_CORRUPT, as will this PRAGMA.
   {
     sql::test::ScopedErrorExpecter expecter;
+    base::HistogramTester tester;
     expecter.ExpectError(SQLITE_CORRUPT);
     ASSERT_FALSE(db_->Open(db_path_));
+    tester.ExpectUniqueSample("Sql.Database.Open.FirstAttempt.Error.Test",
+                              SqliteResultCode::kCorrupt, 1);
     ASSERT_FALSE(db_->Execute("PRAGMA auto_vacuum"));
     db_->Close();
     ASSERT_TRUE(expecter.SawExpectedErrors());
@@ -1171,9 +1284,13 @@ TEST_P(SQLDatabaseTest, RazeCallbackReopen) {
   // callback will call RazeAndPoison().  Open() will then fail and be
   // retried.  The second Open() on the empty database will succeed
   // cleanly.
-  ASSERT_TRUE(db_->Open(db_path_));
-  ASSERT_TRUE(db_->Execute("PRAGMA auto_vacuum"));
-  EXPECT_EQ(0, SqliteSchemaCount(db_.get()));
+  {
+    base::HistogramTester tester;
+    ASSERT_TRUE(db_->Open(db_path_));
+    tester.ExpectTotalCount("Sql.Database.RazeTime.Test", 1);
+    ASSERT_TRUE(db_->Execute("PRAGMA auto_vacuum"));
+    EXPECT_EQ(0, SqliteSchemaCount(db_.get()));
+  }
 }
 
 TEST_P(SQLDatabaseTest, RazeAndPoison_DeletesData) {
@@ -1237,12 +1354,6 @@ TEST_P(SQLDatabaseTest, RazeAndPoison_OpenTransaction) {
   EXPECT_TRUE(
       db_->Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"))
       << "RazeAndPoison() did not produce a healthy empty database";
-}
-
-TEST_P(SQLDatabaseTest, RazeAndPoison_Preload_NoCrash) {
-  db_->Preload();
-  db_->RazeAndPoison();
-  db_->Preload();
 }
 
 TEST_P(SQLDatabaseTest, RazeAndPoison_DoesTableExist) {
@@ -1363,9 +1474,9 @@ TEST_P(SQLDatabaseTest, RazeTruncate) {
   // page.  Not checking directly because auto_vacuum on Android adds a freelist
   // page.
   ASSERT_TRUE(db_->Raze());
-  int64_t expected_size;
-  ASSERT_TRUE(base::GetFileSize(db_path_, &expected_size));
-  ASSERT_GT(expected_size, 0);
+  std::optional<int64_t> expected_size = GetFileSize(db_path_);
+  ASSERT_TRUE(expected_size.has_value());
+  EXPECT_GT(*expected_size, 0);
 
   // Cause the database to take a few pages.
   static constexpr char kCreateSql[] =
@@ -1380,9 +1491,9 @@ TEST_P(SQLDatabaseTest, RazeTruncate) {
   // happens.
   ASSERT_TRUE(db_->CheckpointDatabase());
 
-  int64_t db_size;
-  ASSERT_TRUE(base::GetFileSize(db_path_, &db_size));
-  ASSERT_GT(db_size, expected_size);
+  std::optional<int64_t> db_size = GetFileSize(db_path_);
+  ASSERT_TRUE(db_size.has_value());
+  EXPECT_GT(*db_size, *expected_size);
 
   // Make a query covering most of the database file to make sure that the
   // blocks are actually mapped into memory.  Empirically, the truncate problem
@@ -1391,8 +1502,9 @@ TEST_P(SQLDatabaseTest, RazeTruncate) {
             ExecuteWithResult(db_.get(), "SELECT SUM(LENGTH(value)) FROM foo"));
 
   ASSERT_TRUE(db_->Raze());
-  ASSERT_TRUE(base::GetFileSize(db_path_, &db_size));
-  ASSERT_EQ(expected_size, db_size);
+  db_size = GetFileSize(db_path_);
+  ASSERT_TRUE(db_size.has_value());
+  EXPECT_EQ(*expected_size, *db_size);
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1493,12 +1605,6 @@ TEST_P(SQLDatabaseTest, Poison_Close_Reopen_NoChanges) {
   EXPECT_TRUE(
       db_->Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"))
       << "Execute() returned false but went through after Poison()";
-}
-
-TEST_P(SQLDatabaseTest, Poison_Preload_NoCrash) {
-  db_->Preload();
-  db_->Poison();
-  db_->Preload();
 }
 
 TEST_P(SQLDatabaseTest, Poison_DoesTableExist) {
@@ -1616,7 +1722,7 @@ TEST_P(SQLDatabaseTest, AttachDatabase) {
       db_path_.DirName().AppendASCII("attach_database_test.db");
   static constexpr char kAttachmentPoint[] = "other";
   {
-    Database other_db;
+    Database other_db(test::kTestTag);
     ASSERT_TRUE(other_db.Open(attach_path));
     ASSERT_TRUE(
         other_db.Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"));
@@ -1650,7 +1756,7 @@ TEST_P(SQLDatabaseTest, AttachDatabaseWithOpenTransaction) {
       db_path_.DirName().AppendASCII("attach_database_test.db");
   static constexpr char kAttachmentPoint[] = "other";
   {
-    Database other_db;
+    Database other_db(test::kTestTag);
     ASSERT_TRUE(other_db.Open(attach_path));
     ASSERT_TRUE(
         other_db.Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"));
@@ -1838,10 +1944,10 @@ TEST_P(SQLDatabaseTest, MmapInitiallyEnabledAltStatus) {
   db_->Close();
   Database::Delete(db_path_);
 
-  DatabaseOptions options = GetDBOptions();
-  options.mmap_alt_status_discouraged = true;
-  options.enable_views_discouraged = true;
-  db_ = std::make_unique<Database>(options);
+  DatabaseOptions options = GetDBOptions()
+                                .set_mmap_alt_status_discouraged(true)
+                                .set_enable_views_discouraged(true);
+  db_ = std::make_unique<Database>(options, test::kTestTag);
   ASSERT_TRUE(db_->Open(db_path_));
 
   {
@@ -1867,90 +1973,6 @@ TEST_P(SQLDatabaseTest, MmapInitiallyEnabledAltStatus) {
   db_->set_mmap_disabled();
   ASSERT_TRUE(db_->Open(db_path_));
   EXPECT_EQ("0", ExecuteWithResult(db_.get(), "PRAGMA mmap_size"));
-}
-
-TEST_P(SQLDatabaseTest, ComputeMmapSizeForOpen) {
-  const size_t kMmapAlot = 25 * 1024 * 1024;
-  int64_t mmap_status = MetaTable::kMmapFailure;
-
-  // If there is no meta table (as for a fresh database), assume that everything
-  // should be mapped, and the status of the meta table is not affected.
-  ASSERT_TRUE(!db_->DoesTableExist("meta"));
-  ASSERT_GT(db_->ComputeMmapSizeForOpen(), kMmapAlot);
-  ASSERT_TRUE(!db_->DoesTableExist("meta"));
-
-  // When the meta table is first created, it sets up to map everything.
-  ASSERT_TRUE(MetaTable().Init(db_.get(), 1, 1));
-  ASSERT_TRUE(db_->DoesTableExist("meta"));
-  ASSERT_GT(db_->ComputeMmapSizeForOpen(), kMmapAlot);
-  ASSERT_TRUE(MetaTable::GetMmapStatus(db_.get(), &mmap_status));
-  ASSERT_EQ(MetaTable::kMmapSuccess, mmap_status);
-
-  // Preload with partial progress of one page.  Should map everything.
-  ASSERT_TRUE(db_->Execute("REPLACE INTO meta VALUES ('mmap_status', 1)"));
-  ASSERT_GT(db_->ComputeMmapSizeForOpen(), kMmapAlot);
-  ASSERT_TRUE(MetaTable::GetMmapStatus(db_.get(), &mmap_status));
-  ASSERT_EQ(MetaTable::kMmapSuccess, mmap_status);
-
-  // Failure status maps nothing.
-  ASSERT_TRUE(db_->Execute("REPLACE INTO meta VALUES ('mmap_status', -2)"));
-  ASSERT_EQ(0UL, db_->ComputeMmapSizeForOpen());
-
-  // Re-initializing the meta table does not re-create the key if the table
-  // already exists.
-  ASSERT_TRUE(db_->Execute("DELETE FROM meta WHERE key = 'mmap_status'"));
-  ASSERT_TRUE(MetaTable().Init(db_.get(), 1, 1));
-  ASSERT_EQ(MetaTable::kMmapSuccess, mmap_status);
-  ASSERT_TRUE(MetaTable::GetMmapStatus(db_.get(), &mmap_status));
-  ASSERT_EQ(0, mmap_status);
-
-  // With no key, map everything and create the key.
-  // TODO(shess): This really should be "maps everything after validating it",
-  // but that is more complicated to structure.
-  ASSERT_GT(db_->ComputeMmapSizeForOpen(), kMmapAlot);
-  ASSERT_TRUE(MetaTable::GetMmapStatus(db_.get(), &mmap_status));
-  ASSERT_EQ(MetaTable::kMmapSuccess, mmap_status);
-}
-
-TEST_P(SQLDatabaseTest, ComputeMmapSizeForOpenAltStatus) {
-  const size_t kMmapAlot = 25 * 1024 * 1024;
-
-  // At this point, Database still expects a future [meta] table.
-  ASSERT_FALSE(db_->DoesTableExist("meta"));
-  ASSERT_FALSE(db_->DoesViewExist("MmapStatus"));
-  ASSERT_GT(db_->ComputeMmapSizeForOpen(), kMmapAlot);
-  ASSERT_FALSE(db_->DoesTableExist("meta"));
-  ASSERT_FALSE(db_->DoesViewExist("MmapStatus"));
-
-  // Using alt status, everything should be mapped, with state in the view.
-  DatabaseOptions options = GetDBOptions();
-  options.mmap_alt_status_discouraged = true;
-  options.enable_views_discouraged = true;
-  db_ = std::make_unique<Database>(options);
-  ASSERT_TRUE(db_->Open(db_path_));
-
-  ASSERT_GT(db_->ComputeMmapSizeForOpen(), kMmapAlot);
-  ASSERT_FALSE(db_->DoesTableExist("meta"));
-  ASSERT_TRUE(db_->DoesViewExist("MmapStatus"));
-  EXPECT_EQ(base::NumberToString(MetaTable::kMmapSuccess),
-            ExecuteWithResult(db_.get(), "SELECT * FROM MmapStatus"));
-
-  // Also maps everything when kMmapSuccess is already in the view.
-  ASSERT_GT(db_->ComputeMmapSizeForOpen(), kMmapAlot);
-
-  // Preload with partial progress of one page.  Should map everything.
-  ASSERT_TRUE(db_->Execute("DROP VIEW MmapStatus"));
-  ASSERT_TRUE(db_->Execute("CREATE VIEW MmapStatus (value) AS SELECT 1"));
-  ASSERT_GT(db_->ComputeMmapSizeForOpen(), kMmapAlot);
-  EXPECT_EQ(base::NumberToString(MetaTable::kMmapSuccess),
-            ExecuteWithResult(db_.get(), "SELECT * FROM MmapStatus"));
-
-  // Failure status leads to nothing being mapped.
-  ASSERT_TRUE(db_->Execute("DROP VIEW MmapStatus"));
-  ASSERT_TRUE(db_->Execute("CREATE VIEW MmapStatus (value) AS SELECT -2"));
-  ASSERT_EQ(0UL, db_->ComputeMmapSizeForOpen());
-  EXPECT_EQ(base::NumberToString(MetaTable::kMmapFailure),
-            ExecuteWithResult(db_.get(), "SELECT * FROM MmapStatus"));
 }
 
 TEST_P(SQLDatabaseTest, GetMemoryUsage) {
@@ -2084,22 +2106,21 @@ TEST_P(SQLDatabaseTest, ReOpenWithDifferentJournalMode) {
   } else {
     // The Rollback journal should have a zero size when pending operations
     // are completed.
-    int64_t journal_size = 0;
-    base::GetFileSize(journal_path, &journal_size);
-    EXPECT_EQ(journal_size, 0);
+    std::optional<int64_t> journal_size = GetFileSize(journal_path);
+    EXPECT_THAT(journal_size, testing::Optional(0));
   }
 
   // Re-open the database with a different mode (Rollback vs WAL).
-  DatabaseOptions options = GetDBOptions();
-  options.wal_mode = !is_wal;
+  DatabaseOptions options =
+      GetDBOptions()
+          .set_wal_mode(!is_wal)
 #if BUILDFLAG(IS_FUCHSIA)
-  // Exclusive mode needs to be enabled to enter WAL mode on Fuchsia.
-  if (options.wal_mode) {
-    options.exclusive_locking = true;
-  }
+          // Exclusive mode needs to be enabled to enter WAL mode on Fuchsia.
+          .set_exclusive_locking(!is_wal)
 #endif  // BUILDFLAG(IS_FUCHSIA)
+      ;
 
-  db_ = std::make_unique<Database>(options);
+  db_ = std::make_unique<Database>(options, test::kTestTag);
   ASSERT_TRUE(db_->Open(db_path_));
 
   // The value for the last inserted row should be valid.
@@ -2111,8 +2132,8 @@ TEST_P(SQLDatabaseTest, ReOpenWithDifferentJournalMode) {
   }
 
   // Ensure appropriate journal file exists.
-  EXPECT_TRUE(IsOpenedInCorrectJournalMode(db_.get(), options.wal_mode));
-  EXPECT_EQ(base::PathExists(wal_path), options.wal_mode);
+  EXPECT_TRUE(IsOpenedInCorrectJournalMode(db_.get(), options.wal_mode_));
+  EXPECT_EQ(base::PathExists(wal_path), options.wal_mode_);
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -2124,18 +2145,17 @@ class SQLDatabaseTestExclusiveFileLockMode
   ~SQLDatabaseTestExclusiveFileLockMode() override = default;
 
   void SetUp() override {
-    db_ = std::make_unique<Database>(GetDBOptions());
+    db_ = std::make_unique<Database>(GetDBOptions(), test::kTestTag);
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_path_ = temp_dir_.GetPath().AppendASCII("maybelocked.sqlite");
     ASSERT_TRUE(db_->Open(db_path_));
   }
 
   DatabaseOptions GetDBOptions() {
-    DatabaseOptions options;
-    options.wal_mode = IsWALEnabled();
-    options.exclusive_locking = true;
-    options.exclusive_database_file_lock = IsExclusivelockEnabled();
-    return options;
+    return DatabaseOptions()
+        .set_wal_mode(IsWALEnabled())
+        .set_exclusive_locking(true)
+        .set_exclusive_database_file_lock(IsExclusivelockEnabled());
   }
 
   bool IsWALEnabled() { return std::get<0>(GetParam()); }
@@ -2177,7 +2197,8 @@ TEST(SQLInvalidDatabaseFlagsDeathTest, ExclusiveDatabaseLock) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   auto db_path = temp_dir.GetPath().AppendASCII("database_test_locked.sqlite");
 
-  Database db({.exclusive_database_file_lock = true});
+  Database db(DatabaseOptions().set_exclusive_database_file_lock(true),
+              test::kTestTag);
 
   EXPECT_CHECK_DEATH_WITH(
       { std::ignore = db.Open(db_path); },
@@ -2192,17 +2213,16 @@ class SQLDatabaseTestExclusiveMode : public testing::Test,
   ~SQLDatabaseTestExclusiveMode() override = default;
 
   void SetUp() override {
-    db_ = std::make_unique<Database>(GetDBOptions());
+    db_ = std::make_unique<Database>(GetDBOptions(), test::kTestTag);
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_path_ = temp_dir_.GetPath().AppendASCII("recovery_test.sqlite");
     ASSERT_TRUE(db_->Open(db_path_));
   }
 
   DatabaseOptions GetDBOptions() {
-    DatabaseOptions options;
-    options.wal_mode = IsWALEnabled();
-    options.exclusive_locking = true;
-    return options;
+    return DatabaseOptions()
+        .set_wal_mode(IsWALEnabled())
+        .set_exclusive_locking(true);
   }
 
   bool IsWALEnabled() { return GetParam(); }
@@ -2229,13 +2249,9 @@ TEST_P(SQLDatabaseTest, CheckpointDatabase) {
   if (!IsWALEnabled())
     return;
 
+  // WAL file initially not present until there are modifications to the db.
   base::FilePath wal_path = Database::WriteAheadLogPath(db_path_);
-
-  int64_t wal_size = 0;
-  // WAL file initially empty.
-  EXPECT_TRUE(base::PathExists(wal_path));
-  base::GetFileSize(wal_path, &wal_size);
-  EXPECT_EQ(wal_size, 0);
+  EXPECT_FALSE(base::PathExists(wal_path));
 
   ASSERT_TRUE(
       db_->Execute("CREATE TABLE foo (id INTEGER UNIQUE, value INTEGER)"));
@@ -2243,22 +2259,195 @@ TEST_P(SQLDatabaseTest, CheckpointDatabase) {
   ASSERT_TRUE(db_->Execute("INSERT INTO foo VALUES (2, 2)"));
 
   // Writes reach WAL file but not db file.
-  base::GetFileSize(wal_path, &wal_size);
-  EXPECT_GT(wal_size, 0);
+  std::optional<int64_t> wal_size = GetFileSize(wal_path);
+  ASSERT_TRUE(wal_size.has_value());
+  EXPECT_GT(wal_size.value(), 0);
 
-  int64_t db_size = 0;
-  base::GetFileSize(db_path_, &db_size);
-  EXPECT_EQ(db_size, db_->page_size());
+  std::optional<int64_t> db_size = GetFileSize(db_path_);
+  ASSERT_TRUE(db_size.has_value());
+  EXPECT_EQ(db_size.value(), db_->page_size());
 
   // Checkpoint database to immediately propagate writes to DB file.
   EXPECT_TRUE(db_->CheckpointDatabase());
 
-  base::GetFileSize(db_path_, &db_size);
-  EXPECT_GT(db_size, db_->page_size());
+  db_size = GetFileSize(db_path_);
+  EXPECT_TRUE(db_size.has_value());
+  EXPECT_GT(db_size.value(), db_->page_size());
   EXPECT_EQ(ExecuteWithResult(db_.get(), "SELECT value FROM foo where id=1"),
             "1");
   EXPECT_EQ(ExecuteWithResult(db_.get(), "SELECT value FROM foo where id=2"),
             "2");
+}
+
+TEST_P(SQLDatabaseTest, WALCommitCallback) {
+  if (!IsWALEnabled()) {
+    GTEST_SKIP() << "WAL mode not enabled";
+  }
+
+  db_->Close();
+  Database::Delete(db_path_);
+
+  std::optional<int> wal_callback_pages;
+  Database db(DatabaseOptions()
+#if BUILDFLAG(IS_WIN)
+                  .set_exclusive_database_file_lock(true)
+#endif  // IS_WIN
+                  .set_wal_mode(true)
+                  .set_wal_commit_callback(base::BindLambdaForTesting(
+                      [&](int pages) { wal_callback_pages = pages; })),
+              test::kTestTag);
+  ASSERT_TRUE(db.Open(db_path_));
+
+  // The value of `wal_autocheckpoint` must be 0 when the db is created with
+  // manual checkpoint options.
+  EXPECT_EQ("0", ExecuteWithResult(&db, "PRAGMA wal_autocheckpoint"));
+
+  const base::FilePath wal_path = Database::WriteAheadLogPath(db_path_);
+  // The WAL file should not exist yet.
+  ASSERT_FALSE(base::GetFileSize(wal_path).has_value());
+
+  int64_t db_size = CheckedGetFileSize(db_path_);
+  int64_t previous_db_size = db_size;
+
+  // The following CREATE TABLE statement writes some pages into the WAL log.
+  ASSERT_TRUE(
+      db.Execute("CREATE TABLE foo (id INTEGER UNIQUE, value INTEGER)"));
+
+  // The WAL callback must have been called while creating a table.
+  ASSERT_TRUE(wal_callback_pages.has_value());
+  EXPECT_GT(*wal_callback_pages, 0);
+  int previous_wal_callback_pages = *wal_callback_pages;
+
+  // The WAL file should grow.
+  int64_t wal_size = CheckedGetFileSize(wal_path);
+  int64_t previous_wal_size = wal_size;
+  ASSERT_GT(wal_size, 0);
+
+  // The db file size should not change.
+  ASSERT_EQ(CheckedGetFileSize(db_path_), previous_db_size);
+
+  for (int i = 0; i < 100; ++i) {
+    // The following INSERT INTO statement writes some pages into the WAL log.
+    ASSERT_TRUE(db.Execute(
+        base::StringPrintf("INSERT INTO foo VALUES (%d, %d)", i, i)));
+
+    // The WAL callback must have been called with a greater `pages` value.
+    ASSERT_GT(*wal_callback_pages, previous_wal_callback_pages);
+    previous_wal_callback_pages = *wal_callback_pages;
+
+    // The WAL file should grow.
+    wal_size = CheckedGetFileSize(wal_path);
+    ASSERT_GT(wal_size, previous_wal_size);
+    previous_wal_size = wal_size;
+
+    // The db file size should not change.
+    ASSERT_EQ(CheckedGetFileSize(db_path_), previous_db_size);
+  }
+
+  wal_callback_pages.reset();
+  previous_wal_callback_pages = 0;
+
+  db.CheckpointDatabase();
+
+  // The WAL callback must not be called while running checkpoint.
+  ASSERT_FALSE(wal_callback_pages.has_value());
+
+  // The db file size should grow.
+  db_size = CheckedGetFileSize(db_path_);
+  ASSERT_GT(db_size, previous_db_size);
+  previous_db_size = db_size;
+
+  for (int i = 100; i < 200; ++i) {
+    // The following INSERT INTO statement writes some pages into the WAL log.
+    ASSERT_TRUE(db.Execute(
+        base::StringPrintf("INSERT INTO foo VALUES (%d, %d)", i, i)));
+
+    // The WAL callback must have been called with a greater `pages` value.
+    ASSERT_GT(*wal_callback_pages, previous_wal_callback_pages);
+    previous_wal_callback_pages = *wal_callback_pages;
+
+    // The db file size should not change.
+    ASSERT_EQ(CheckedGetFileSize(db_path_), previous_db_size);
+  }
+}
+
+#if BUILDFLAG(IS_WIN)
+
+TEST_P(SQLDatabaseTest, OpenFails_WindowsExclusiveReadMode) {
+  db_->Close();
+
+  base::File file(db_path_, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                // Do not allow others to read from the file.
+                                base::File::FLAG_WIN_EXCLUSIVE_READ);
+  ASSERT_TRUE(file.IsValid());
+
+  base::HistogramTester tester;
+  sql::test::ScopedErrorExpecter expecter;
+  expecter.ExpectError(SQLITE_CANTOPEN);
+  ASSERT_FALSE(db_->Open(db_path_));
+  ASSERT_TRUE(expecter.SawExpectedErrors());
+  tester.ExpectTotalCount("Sql.Database.Open.FailureReason.Test", 1);
+  db_->Close();
+
+  file.Close();
+
+  ASSERT_TRUE(db_->Open(db_path_));
+}
+
+TEST_P(SQLDatabaseTest, OpenFails_WindowsExclusiveWriteMode) {
+  db_->Close();
+
+  base::File file(db_path_, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                // Do not allow others to write to the file.
+                                base::File::FLAG_WIN_EXCLUSIVE_WRITE);
+  ASSERT_TRUE(file.IsValid());
+
+  base::HistogramTester tester;
+  sql::test::ScopedErrorExpecter expecter;
+  expecter.ExpectError(SQLITE_READONLY);
+  ASSERT_FALSE(db_->Open(db_path_));
+  ASSERT_TRUE(expecter.SawExpectedErrors());
+  tester.ExpectTotalCount("Sql.Database.Open.FailureReason.Test", 1);
+  db_->Close();
+
+  file.Close();
+
+  ASSERT_TRUE(db_->Open(db_path_));
+}
+
+TEST_P(SQLDatabaseTest, OpenFails_ExclusiveLock) {
+  db_->Close();
+
+  base::File file(db_path_, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  ASSERT_TRUE(file.IsValid());
+  ASSERT_EQ(base::File::FILE_OK, file.Lock(base::File::LockMode::kExclusive));
+
+  {
+    base::HistogramTester tester;
+    sql::test::ScopedErrorExpecter expecter;
+    expecter.ExpectError(SQLITE_IOERR_READ);
+    ASSERT_FALSE(db_->Open(db_path_));
+    ASSERT_TRUE(expecter.SawExpectedErrors());
+    tester.ExpectTotalCount("Sql.Database.Open.FailureReason.Test", 1);
+    db_->Close();
+  }
+
+  ASSERT_EQ(base::File::FILE_OK, file.Unlock());
+
+  ASSERT_TRUE(db_->Open(db_path_));
+}
+
+#endif  // BUILDFLAG(IS_WIN)
+
+TEST_P(SQLDatabaseTest, OpenHistograms) {
+  static constexpr char kCreateSql[] = "CREATE TABLE foo (id INTEGER UNIQUE)";
+  ASSERT_TRUE(db_->Execute(kCreateSql));
+  db_->Close();
+
+  base::HistogramTester tester;
+  ASSERT_TRUE(db_->Open(db_path_));
+  tester.ExpectTotalCount("Sql.Database.Success.SqliteOpenTime.Test", 1);
+  tester.ExpectTotalCount("Sql.Database.Success.OpenInternalTime.Test", 1);
 }
 
 TEST_P(SQLDatabaseTest, OpenFailsAfterCorruptSizeInHeader) {
@@ -2270,8 +2459,11 @@ TEST_P(SQLDatabaseTest, OpenFailsAfterCorruptSizeInHeader) {
   ASSERT_TRUE(sql::test::CorruptSizeInHeader(db_path_));
   {
     sql::test::ScopedErrorExpecter expecter;
+    base::HistogramTester tester;
     expecter.ExpectError(SQLITE_CORRUPT);
     ASSERT_FALSE(db_->Open(db_path_));
+    tester.ExpectUniqueSample("Sql.Database.Open.FirstAttempt.Error.Test",
+                              SqliteResultCode::kCorrupt, 1);
     EXPECT_TRUE(expecter.SawExpectedErrors());
   }
 }
@@ -2303,6 +2495,7 @@ TEST_P(SQLDatabaseTest, OpenWithRecoveryHandlesCorruption) {
 
     {
       sql::test::ScopedErrorExpecter expecter;
+      base::HistogramTester tester;
       expecter.ExpectError(SQLITE_CORRUPT);
 
       // When `corrupt_after_recovery` is true, `Database::Open()` will return
@@ -2311,11 +2504,25 @@ TEST_P(SQLDatabaseTest, OpenWithRecoveryHandlesCorruption) {
       // thus `Database::Open()`'s second attempt at opening the database will
       // succeed.
       ASSERT_EQ(db_->Open(db_path_), !corrupt_after_recovery);
+      tester.ExpectUniqueSample("Sql.Database.Open.FirstAttempt.Error.Test",
+                                SqliteResultCode::kCorrupt, 1);
+      if (corrupt_after_recovery) {
+        tester.ExpectUniqueSample("Sql.Database.Open.SecondAttempt.Error.Test",
+                                  SqliteResultCode::kCorrupt, 1);
+      }
       EXPECT_TRUE(expecter.SawExpectedErrors());
     }
     EXPECT_EQ(error_count, 1u);
     EXPECT_FALSE(db_->has_error_callback());
   }
+}
+
+TEST_P(SQLDatabaseTest, OpenWithPreload) {
+  db_->Close();
+
+  DatabaseOptions options = GetDBOptions().set_preload(true);
+  db_ = std::make_unique<Database>(options, test::kTestTag);
+  ASSERT_TRUE(db_->Open(db_path_));
 }
 
 TEST_P(SQLDatabaseTest, ExecuteFailsAfterCorruptSizeInHeader) {
@@ -2329,8 +2536,11 @@ TEST_P(SQLDatabaseTest, ExecuteFailsAfterCorruptSizeInHeader) {
   ASSERT_TRUE(sql::test::CorruptSizeInHeader(db_path_));
   {
     sql::test::ScopedErrorExpecter expecter;
+    base::HistogramTester tester;
     expecter.ExpectError(SQLITE_CORRUPT);
     ASSERT_FALSE(db_->Open(db_path_));
+    tester.ExpectUniqueSample("Sql.Database.Open.FirstAttempt.Error.Test",
+                              SqliteResultCode::kCorrupt, 1);
     EXPECT_TRUE(expecter.SawExpectedErrors())
         << "Database::Open() did not encounter SQLITE_CORRUPT";
   }
@@ -2353,8 +2563,11 @@ TEST_P(SQLDatabaseTest, SchemaFailsAfterCorruptSizeInHeader) {
   ASSERT_TRUE(sql::test::CorruptSizeInHeader(db_path_));
   {
     sql::test::ScopedErrorExpecter expecter;
+    base::HistogramTester tester;
     expecter.ExpectError(SQLITE_CORRUPT);
     ASSERT_FALSE(db_->Open(db_path_));
+    tester.ExpectUniqueSample("Sql.Database.Open.FirstAttempt.Error.Test",
+                              SqliteResultCode::kCorrupt, 1);
     EXPECT_TRUE(expecter.SawExpectedErrors())
         << "Database::Open() did not encounter SQLITE_CORRUPT";
   }
@@ -2367,8 +2580,22 @@ TEST_P(SQLDatabaseTest, SchemaFailsAfterCorruptSizeInHeader) {
   }
 }
 
+TEST_P(SQLDatabaseTest, StatementErrorHistogram) {
+  static constexpr char kCreateSql[] = "CREATE TABLE foo (id INTEGER UNIQUE)";
+  ASSERT_TRUE(db_->Execute(kCreateSql));
+
+  sql::test::ScopedErrorExpecter expecter;
+  expecter.ExpectError(SQLITE_ERROR);
+
+  base::HistogramTester tester;
+  EXPECT_FALSE(db_->Execute("SELECT invalid_column from foo"));
+  tester.ExpectUniqueSample("Sql.Database.Statement.Error.Test",
+                            SqliteResultCode::kError, 1);
+  EXPECT_TRUE(expecter.SawExpectedErrors());
+}
+
 TEST(SQLEmptyPathDatabaseTest, EmptyPathTest) {
-  Database db;
+  Database db(test::kTestTag);
   EXPECT_TRUE(db.OpenInMemory());
   EXPECT_TRUE(db.is_open());
   EXPECT_TRUE(db.DbPath().empty());
@@ -2386,4 +2613,118 @@ INSTANTIATE_TEST_SUITE_P(JournalMode,
                          SQLDatabaseTestExclusiveMode,
                          testing::Values(false));
 #endif
+
+class ReadOnlySQLDatabaseTest
+    : public testing::Test,
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+ protected:
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    const char* db_name = "database_test.db";
+    db_path_ = temp_dir_.GetPath().AppendASCII(db_name);
+
+    std::tie(wal_mode_, exclusive_mode_, readonly_mode_) = GetParam();
+  }
+
+  // Opens a database with options that depend on test params. If
+  // `force_readwrite` is true, the database is opened in read/write mode
+  // irrespective of the "read-only" test param. The database is created
+  // if it doesn't already exist iff it is opened in read/write mode.
+  void OpenDatabase(bool force_read_write) {
+    ASSERT_FALSE(db_path_.empty());
+    db_.reset();
+    db_ = std::make_unique<Database>(GetDBOptions(force_read_write),
+                                     test::kTestTag);
+    ASSERT_TRUE(db_->Open(db_path_));
+  }
+
+  void CreateTable() {
+    ASSERT_TRUE(db_->Execute(
+        "CREATE TABLE IF NOT EXISTS entries(key TEXT PRIMARY KEY UNIQUE NOT "
+        "NULL, content BLOB NOT NULL)"));
+  }
+
+  void Insert() {
+    sql::Statement stm(
+        db_->GetCachedStatement(SQL_FROM_HERE,
+                                "REPLACE INTO entries (key, content "
+                                ") VALUES (?, ?)"));
+    stm.BindString(0, value);
+    stm.BindString(1, base::as_string_view(value));
+    ASSERT_TRUE(stm.is_valid());
+    EXPECT_TRUE(stm.Run());
+  }
+
+  void Select() {
+    sql::Statement stm = sql::Statement(db_->GetCachedStatement(
+        SQL_FROM_HERE, "SELECT content FROM entries WHERE key = ?"));
+    stm.BindString(0, value);
+    ASSERT_TRUE(stm.is_valid());
+    EXPECT_TRUE(stm.Step());
+  }
+
+  DatabaseOptions GetDBOptions(bool force_readwrite_only) {
+    return DatabaseOptions()
+        .set_read_only(force_readwrite_only ? false : readonly_mode_)
+        .set_wal_mode(wal_mode_)
+        .set_exclusive_locking(exclusive_mode_);
+  }
+
+ protected:
+  const std::string value{"VALUE"};
+  base::ScopedTempDir temp_dir_;
+  base::FilePath db_path_;
+  std::unique_ptr<Database> db_;
+
+  bool wal_mode_;
+  bool exclusive_mode_;
+  bool readonly_mode_;
+};
+
+TEST_P(ReadOnlySQLDatabaseTest, MmapSize) {
+  // Ensures the DB exists.
+  ASSERT_NO_FATAL_FAILURE(OpenDatabase(true));
+  // Re-open and test the mmap on the existing DB.
+  ASSERT_NO_FATAL_FAILURE(OpenDatabase(false));
+  sql::Statement pragma_mmap_size(db_->GetUniqueStatement("PRAGMA mmap_size"));
+  pragma_mmap_size.Step();
+  EXPECT_NE(pragma_mmap_size.ColumnInt64(0), 0);
+}
+
+TEST_P(ReadOnlySQLDatabaseTest, Histograms) {
+  base::HistogramTester tester;
+  ASSERT_NO_FATAL_FAILURE(OpenDatabase(true));
+
+  tester.ExpectTotalCount("Sql.Database.Success.OpenInternalTime.Test", 1);
+  tester.ExpectTotalCount("Sql.Database.Success.SqliteOpenTime.Test", 1);
+
+  ASSERT_NO_FATAL_FAILURE(OpenDatabase(false));
+
+  tester.ExpectTotalCount("Sql.Database.Success.OpenInternalTime.Test", 2);
+  tester.ExpectTotalCount("Sql.Database.Success.SqliteOpenTime.Test", 2);
+}
+
+TEST_P(ReadOnlySQLDatabaseTest, CreateAndSelect) {
+  // Not yet supported by Sqlite. Cannot be tested.
+  // TODO(crbug.com/413595430): Remove this if the combination of flags ever
+  // works.
+  if (wal_mode_ && exclusive_mode_ && readonly_mode_) {
+    return;
+  }
+
+  ASSERT_NO_FATAL_FAILURE(OpenDatabase(true));
+  ASSERT_NO_FATAL_FAILURE(CreateTable());
+  ASSERT_NO_FATAL_FAILURE(Insert());
+  ASSERT_NO_FATAL_FAILURE(Select());
+
+  ASSERT_NO_FATAL_FAILURE(OpenDatabase(false));
+  ASSERT_NO_FATAL_FAILURE(Select());
+}
+
+INSTANTIATE_TEST_SUITE_P(LockingMode,
+                         ReadOnlySQLDatabaseTest,
+                         testing::Combine(testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool()));
+
 }  // namespace sql

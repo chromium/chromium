@@ -5,23 +5,24 @@
 package org.chromium.chrome.browser.signin.services;
 
 import androidx.annotation.MainThread;
-import androidx.annotation.Nullable;
 
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.components.signin.identitymanager.AccountTrackerService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
 /**
  * Provides access to sign-in related services that are profile-keyed on the native side. Java
  * equivalent of AccountTrackerServiceFactory and similar classes.
  */
+@NullMarked
 public class IdentityServicesProvider {
-    private static IdentityServicesProvider sIdentityServicesProvider;
+    private static @Nullable IdentityServicesProvider sIdentityServicesProvider;
 
     private IdentityServicesProvider() {}
 
@@ -51,21 +52,8 @@ public class IdentityServicesProvider {
     }
 
     /**
-     * Getter for {@link AccountTrackerService} instance for given profile.
-     * @param profile The profile to get regarding account tracker service.
-     * @return a {@link AccountTrackerService} instance, or null if the incognito Profile is
-     *         supplied.
-     */
-    @MainThread
-    public @Nullable AccountTrackerService getAccountTrackerService(Profile profile) {
-        ThreadUtils.assertOnUiThread();
-        AccountTrackerService result =
-                IdentityServicesProviderJni.get().getAccountTrackerService(profile);
-        return result;
-    }
-
-    /**
      * Getter for {@link SigninManager} instance for given profile.
+     *
      * @param profile The profile to get regarding sign-in manager.
      * @return a {@link SigninManager} instance, or null if the incognito Profile is supplied.
      */
@@ -78,9 +66,8 @@ public class IdentityServicesProvider {
 
     @NativeMethods
     public interface Natives {
+        @JniType("signin::IdentityManager*")
         IdentityManager getIdentityManager(@JniType("Profile*") Profile profile);
-
-        AccountTrackerService getAccountTrackerService(@JniType("Profile*") Profile profile);
 
         SigninManager getSigninManager(@JniType("Profile*") Profile profile);
     }

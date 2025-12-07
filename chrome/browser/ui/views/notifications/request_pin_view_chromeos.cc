@@ -19,6 +19,7 @@
 #include "chromeos/components/security_token_pin/error_generator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/events/event.h"
 #include "ui/gfx/color_palette.h"
@@ -67,15 +68,16 @@ void RequestPinView::ContentsChanged(views::Textfield* sender,
 }
 
 bool RequestPinView::Accept() {
-  if (!textfield_->GetEnabled())
+  if (!textfield_->GetEnabled()) {
     return true;
+  }
   DCHECK(!textfield_->GetText().empty());
   DCHECK(!locked_);
 
   error_label_->SetVisible(true);
   error_label_->SetText(
       l10n_util::GetStringUTF16(IDS_REQUEST_PIN_DIALOG_PROCESSING));
-  error_label_->SetTooltipText(error_label_->GetText());
+  error_label_->SetCustomTooltipText(error_label_->GetText());
   error_label_->SetTextStyle(views::style::STYLE_SECONDARY);
   error_label_->SizeToPreferredSize();
   // The |textfield_| and OK button become disabled, but the user still can
@@ -88,24 +90,27 @@ bool RequestPinView::Accept() {
   return false;
 }
 
-bool RequestPinView::IsDialogButtonEnabled(ui::DialogButton button) const {
+bool RequestPinView::IsDialogButtonEnabled(
+    ui::mojom::DialogButton button) const {
   switch (button) {
-    case ui::DialogButton::DIALOG_BUTTON_CANCEL:
+    case ui::mojom::DialogButton::kCancel:
       return true;
-    case ui::DialogButton::DIALOG_BUTTON_OK:
-      if (locked_)
+    case ui::mojom::DialogButton::kOk:
+      if (locked_) {
         return false;
+      }
       // Not locked but the |textfield_| is not enabled. It's just a
       // notification to the user and [OK] button can be used to close the
       // dialog.
-      if (!textfield_->GetEnabled())
+      if (!textfield_->GetEnabled()) {
         return true;
+      }
       return textfield_->GetText().size() > 0;
-    case ui::DialogButton::DIALOG_BUTTON_NONE:
+    case ui::mojom::DialogButton::kNone:
       return true;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 views::View* RequestPinView::GetInitiallyFocusedView() {
@@ -190,8 +195,9 @@ void RequestPinView::Init() {
 
 void RequestPinView::SetAcceptInput(bool accept_input) {
   textfield_->SetEnabled(accept_input);
-  if (accept_input)
+  if (accept_input) {
     textfield_->RequestFocus();
+  }
 }
 
 void RequestPinView::SetErrorMessage(
@@ -211,7 +217,7 @@ void RequestPinView::SetErrorMessage(
 
   error_label_->SetVisible(true);
   error_label_->SetText(error_message);
-  error_label_->SetTooltipText(error_message);
+  error_label_->SetCustomTooltipText(error_message);
   error_label_->SetTextStyle(STYLE_RED);
   error_label_->SizeToPreferredSize();
   textfield_->SetInvalid(true);

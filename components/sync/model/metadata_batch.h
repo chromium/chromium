@@ -38,7 +38,7 @@ class MetadataBatch {
   // protos from the map for performance reasons.
   EntityMetadataMap TakeAllMetadata();
 
-  // Add |metadata| for |storage_key| to the batch.
+  // Add `metadata` for `storage_key` to the batch.
   void AddMetadata(const std::string& storage_key,
                    std::unique_ptr<sync_pb::EntityMetadata> metadata);
 

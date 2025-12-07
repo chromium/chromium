@@ -13,9 +13,9 @@
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/google/core/common/google_util.h"
-#include "components/optimization_guide/core/hint_cache.h"
+#include "components/optimization_guide/core/hints/hint_cache.h"
+#include "components/optimization_guide/core/hints/push_notification_manager.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/push_notification_manager.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -24,18 +24,14 @@ namespace {
 
 // Returns true if we can make a request for hints for |prediction|.
 bool IsAllowedToFetchForNavigationPrediction(
-    const std::optional<NavigationPredictorKeyedService::Prediction>
-        prediction) {
-  DCHECK(prediction);
-
-  if (prediction->prediction_source() !=
+    const NavigationPredictorKeyedService::Prediction& prediction) {
+  if (prediction.prediction_source() !=
       NavigationPredictorKeyedService::PredictionSource::
           kAnchorElementsParsedFromWebPage) {
     // We only support predictions from page anchors.
     return false;
   }
-  const std::optional<GURL> source_document_url =
-      prediction->source_document_url();
+  const auto& source_document_url = prediction.source_document_url();
   if (!source_document_url || source_document_url->is_empty())
     return false;
 
@@ -93,17 +89,16 @@ void ChromeHintsManager::Shutdown() {
 }
 
 void ChromeHintsManager::OnPredictionUpdated(
-    const std::optional<NavigationPredictorKeyedService::Prediction>
-        prediction) {
+    const NavigationPredictorKeyedService::Prediction& prediction) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(prediction);
 
-  if (!IsAllowedToFetchForNavigationPrediction(prediction))
+  if (!IsAllowedToFetchForNavigationPrediction(prediction)) {
     return;
+  }
 
   // Per comments in NavigationPredictorKeyedService::Prediction, this pointer
   // should be valid while OnPredictionUpdated is on the call stack.
-  content::WebContents* web_contents = prediction->web_contents();
+  content::WebContents* web_contents = prediction.web_contents();
   CHECK(web_contents);
   auto* observer =
       OptimizationGuideWebContentsObserver::FromWebContents(web_contents);
@@ -112,7 +107,7 @@ void ChromeHintsManager::OnPredictionUpdated(
   }
 
   std::vector<GURL> urls_to_fetch;
-  for (const auto& url : prediction->sorted_predicted_urls()) {
+  for (const auto& url : prediction.sorted_predicted_urls()) {
     if (!IsAllowedToFetchNavigationHints(url))
       continue;
     // Don't prefetch hints for SRP links that point back to Google.

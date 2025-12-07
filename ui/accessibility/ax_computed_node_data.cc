@@ -7,7 +7,6 @@
 #include "base/check_op.h"
 #include "base/i18n/break_iterator.h"
 #include "base/logging.h"
-#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -101,202 +100,67 @@ bool AXComputedNodeData::GetOrComputeIsDescendantOfPlatformLeaf() const {
   return *is_descendant_of_leaf_;
 }
 
-bool AXComputedNodeData::HasOrCanComputeAttribute(
-    const ax::mojom::IntAttribute attribute) const {
-  if (owner_->data().HasIntAttribute(attribute)) {
-    return true;
-  }
-
-  return CanComputeAttribute(attribute);
-}
-
-bool AXComputedNodeData::CanComputeAttribute(
-    const ax::mojom::IntAttribute attribute) const {
-  if (!::features::IsAccessibilityPruneRedundantInlineConnectivityEnabled()) {
-    return false;
-  }
-
-  // Inline text boxes share the same next- or previous-on-line ID with the
-  // parent when traversing across the parent's boundary. Determination of the
-  // next- or previous-on-line IDs for this type of connectivity is expensive
-  // during the serialization process. Unnecessary to duplicate the effort.
-  if (owner_->data().role != ax::mojom::Role::kInlineTextBox) {
-    return false;
-  }
-
-  if (owner_ == owner_->GetParent()->GetFirstChild() &&
-      attribute == ax::mojom::IntAttribute::kPreviousOnLineId) {
-    return true;
-  }
-
-  if (owner_ == owner_->GetParent()->GetLastChild() &&
-      attribute == ax::mojom::IntAttribute::kNextOnLineId) {
-    return true;
-  }
-
-  return false;
-}
-
-bool AXComputedNodeData::HasOrCanComputeAttribute(
+const std::string& AXComputedNodeData::ComputeAttributeUTF8(
     const ax::mojom::StringAttribute attribute) const {
-  if (owner_->data().HasStringAttribute(attribute))
-    return true;
-
+  DCHECK(owner_->CanComputeStringAttribute(attribute));
   switch (attribute) {
     case ax::mojom::StringAttribute::kValue:
-      // The value attribute could be computed on the browser for content
-      // editables and ARIA text/search boxes.
-      return owner_->data().IsNonAtomicTextField();
+      return GetOrComputeTextContentWithParagraphBreaksUTF8();
 
     case ax::mojom::StringAttribute::kName:
-      return CanInferNameAttribute();
+      return GetOrComputeTextContentUTF8();
 
     default:
-      return false;
+      NOTREACHED();
   }
 }
 
-bool AXComputedNodeData::HasOrCanComputeAttribute(
+std::u16string AXComputedNodeData::ComputeAttributeUTF16(
+    const ax::mojom::StringAttribute attribute) const {
+  DCHECK(owner_->CanComputeStringAttribute(attribute));
+  switch (attribute) {
+    case ax::mojom::StringAttribute::kValue:
+      return GetOrComputeTextContentWithParagraphBreaksUTF16();
+
+    case ax::mojom::StringAttribute::kName:
+      return GetOrComputeTextContentUTF16();
+
+    default:
+      NOTREACHED();
+  }
+}
+
+const std::vector<int32_t>& AXComputedNodeData::ComputeAttribute(
     const ax::mojom::IntListAttribute attribute) const {
-  if (owner_->data().HasIntListAttribute(attribute))
-    return true;
-
-  switch (attribute) {
-    case ax::mojom::IntListAttribute::kLineStarts:
-    case ax::mojom::IntListAttribute::kLineEnds:
-    case ax::mojom::IntListAttribute::kSentenceStarts:
-    case ax::mojom::IntListAttribute::kSentenceEnds:
-    case ax::mojom::IntListAttribute::kWordStarts:
-    case ax::mojom::IntListAttribute::kWordEnds:
-      return true;
-    default:
-      return false;
-  }
-}
-
-std::optional<int> AXComputedNodeData::GetOrComputeAttribute(
-    const ax::mojom::IntAttribute attribute) const {
-  int value;
-  if (owner_->data().GetIntAttribute(attribute, &value)) {
-    return value;
-  }
-
-  if (!CanComputeAttribute(attribute)) {
-    return std::nullopt;
-  }
-
-  DCHECK(owner_->data().role == ax::mojom::Role::kInlineTextBox);
-  switch (attribute) {
-    case ax::mojom::IntAttribute::kPreviousOnLineId:
-    case ax::mojom::IntAttribute::kNextOnLineId:
-      return owner_->GetParent()->data().GetIntAttribute(attribute);
-
-    default:
-      NOTREACHED_NORETURN();
-  }
-}
-
-const std::string& AXComputedNodeData::GetOrComputeAttributeUTF8(
-    const ax::mojom::StringAttribute attribute) const {
-  if (owner_->data().HasStringAttribute(attribute))
-    return owner_->data().GetStringAttribute(attribute);
-
-  switch (attribute) {
-    case ax::mojom::StringAttribute::kValue:
-      if (owner_->data().IsNonAtomicTextField()) {
-        DCHECK(HasOrCanComputeAttribute(attribute))
-            << "Code in `HasOrCanComputeAttribute` should be in sync with "
-               "'GetOrComputeAttributeUTF8`";
-        return GetOrComputeTextContentWithParagraphBreaksUTF8();
-      }
-      // If an atomic text field has no value attribute sent from the renderer,
-      // then it means that it is empty, since we do not compute the values of
-      // such controls on the browser. The same for all other controls, other
-      // than non-atomic text fields.
-      return base::EmptyString();
-
-    case ax::mojom::StringAttribute::kName:
-      if (CanInferNameAttribute()) {
-        return GetOrComputeTextContentUTF8();
-      }
-      return base::EmptyString();
-
-    default:
-      return base::EmptyString();
-  }
-}
-
-std::u16string AXComputedNodeData::GetOrComputeAttributeUTF16(
-    const ax::mojom::StringAttribute attribute) const {
-  if (owner_->data().HasStringAttribute(attribute))
-    return owner_->data().GetString16Attribute(attribute);
-
-  switch (attribute) {
-    case ax::mojom::StringAttribute::kValue:
-      if (owner_->data().IsNonAtomicTextField()) {
-        DCHECK(HasOrCanComputeAttribute(attribute))
-            << "Code in `HasOrCanComputeAttribute` should be in sync with "
-               "'GetOrComputeAttributeUTF16`";
-        return GetOrComputeTextContentWithParagraphBreaksUTF16();
-      }
-      // If an atomic text field has no value attribute sent from the renderer,
-      // then it means that it is empty, since we do not compute the values of
-      // such controls on the browser. The same for all other controls, other
-      // than non-atomic text fields.
-      return std::u16string();
-
-    case ax::mojom::StringAttribute::kName:
-      if (CanInferNameAttribute()) {
-        return GetOrComputeTextContentUTF16();
-      }
-      return std::u16string();
-
-    default:
-      return std::u16string();
-  }
-}
-
-const std::vector<int32_t>& AXComputedNodeData::GetOrComputeAttribute(
-    const ax::mojom::IntListAttribute attribute) const {
-  if (owner_->data().HasIntListAttribute(attribute))
-    return owner_->data().GetIntListAttribute(attribute);
-
-  const std::vector<int32_t>* result = nullptr;
+  DCHECK(owner_->CanComputeIntListAttribute(attribute));
   switch (attribute) {
     case ax::mojom::IntListAttribute::kLineStarts:
       ComputeLineOffsetsIfNeeded();
-      result = &(*line_starts_);
-      break;
+      return *line_starts_;
+
     case ax::mojom::IntListAttribute::kLineEnds:
       ComputeLineOffsetsIfNeeded();
-      result = &(*line_ends_);
-      break;
+      return *line_ends_;
+
     case ax::mojom::IntListAttribute::kSentenceStarts:
       ComputeSentenceOffsetsIfNeeded();
-      result = &(*sentence_starts_);
-      break;
+      return *sentence_starts_;
+
     case ax::mojom::IntListAttribute::kSentenceEnds:
       ComputeSentenceOffsetsIfNeeded();
-      result = &(*sentence_ends_);
-      break;
+      return *sentence_ends_;
+
     case ax::mojom::IntListAttribute::kWordStarts:
       ComputeWordOffsetsIfNeeded();
-      result = &(*word_starts_);
-      break;
+      return *word_starts_;
+
     case ax::mojom::IntListAttribute::kWordEnds:
       ComputeWordOffsetsIfNeeded();
-      result = &(*word_ends_);
-      break;
-    default:
-      return owner_->data().GetIntListAttribute(
-          ax::mojom::IntListAttribute::kNone);
-  }
+      return *word_ends_;
 
-  DCHECK(HasOrCanComputeAttribute(attribute))
-      << "Code in `HasOrCanComputeAttribute` should be in sync with "
-         "'GetOrComputeAttribute`";
-  DCHECK(result);
-  return *result;
+    default:
+      NOTREACHED();
+  }
 }
 
 const std::string&
@@ -368,8 +232,7 @@ int AXComputedNodeData::GetOrComputeTextContentLengthUTF16() const {
 bool AXComputedNodeData::CanInferNameAttribute() const {
   // The name may be suppressed when serializing an AXInlineTextBox if it
   // can be inferred from the parent.
-  return ::features::IsAccessibilityPruneRedundantInlineTextEnabled() &&
-         owner_->data().role == ax::mojom::Role::kInlineTextBox &&
+  return owner_->data().role == ax::mojom::Role::kInlineTextBox &&
          owner_->data().GetNameFrom() == ax::mojom::NameFrom::kContents &&
          owner_->GetParent()->data().GetNameFrom() ==
              ax::mojom::NameFrom::kContents &&
@@ -392,12 +255,11 @@ void AXComputedNodeData::ComputeUnignoredValues(
     unignored_parent_id_for_child = owner_->id();
   int unignored_child_count = 0;
   std::vector<AXNodeID> unignored_child_ids;
-  for (auto iter = owner_->AllChildrenBegin(); iter != owner_->AllChildrenEnd();
-       ++iter) {
-    const AXComputedNodeData& computed_data = iter->GetComputedNodeData();
+  for (AXNode* child : owner_->GetAllChildren()) {
+    const AXComputedNodeData& computed_data = child->GetComputedNodeData();
     int new_index_in_parent = starting_index_in_parent + unignored_child_count;
 
-    if (iter->IsIgnored()) {
+    if (child->IsIgnored()) {
       // Skip the ignored node and recursively look at its children.
       computed_data.ComputeUnignoredValues(unignored_parent_id_for_child,
                                            new_index_in_parent);
@@ -418,7 +280,7 @@ void AXComputedNodeData::ComputeUnignoredValues(
         computed_data.unignored_parent_id_ = unignored_parent_id_for_child;
 
       ++unignored_child_count;
-      unignored_child_ids.push_back(iter->id());
+      unignored_child_ids.push_back(child->id());
     }
   }
 
@@ -453,7 +315,8 @@ void AXComputedNodeData::ComputeIsDescendantOfPlatformLeaf() const {
 }
 
 void AXComputedNodeData::ComputeLineOffsetsIfNeeded() const {
-  if (line_starts_ || line_ends_) {
+  DCHECK_EQ(line_starts_.has_value(), line_ends_.has_value());
+  if (line_starts_) {
     DCHECK_EQ(line_starts_->size(), line_ends_->size());
     return;  // Already cached.
   }
@@ -479,15 +342,18 @@ void AXComputedNodeData::ComputeLineOffsetsIfNeeded() const {
 }
 
 void AXComputedNodeData::ComputeSentenceOffsetsIfNeeded() const {
-  if (sentence_starts_ || sentence_ends_) {
+  DCHECK_EQ(sentence_starts_.has_value(), sentence_ends_.has_value());
+  if (sentence_starts_) {
     DCHECK_EQ(sentence_starts_->size(), sentence_ends_->size());
     return;  // Already cached.
   }
 
   sentence_starts_ = std::vector<int32_t>();
   sentence_ends_ = std::vector<int32_t>();
-  if (owner_->IsLineBreak())
+  if (owner_->IsLineBreak()) {
     return;
+  }
+
   const std::u16string& text_content = GetOrComputeTextContentUTF16();
   if (text_content.empty() ||
       base::ContainsOnlyChars(text_content, base::kWhitespaceUTF16)) {
@@ -513,7 +379,8 @@ void AXComputedNodeData::ComputeSentenceOffsetsIfNeeded() const {
 }
 
 void AXComputedNodeData::ComputeWordOffsetsIfNeeded() const {
-  if (word_starts_ || word_ends_) {
+  DCHECK_EQ(word_starts_.has_value(), word_ends_.has_value());
+  if (word_starts_) {
     DCHECK_EQ(word_starts_->size(), word_ends_->size());
     return;  // Already cached.
   }
@@ -550,12 +417,10 @@ std::string AXComputedNodeData::ComputeTextContentUTF8() const {
   // the same as the parent. We can differentiate this case from a specified
   // but empty name based on the name from attribute, which is kFromContent if
   // set and kNone if the text content is to be inferred from the parent.
-  if (::features::IsAccessibilityPruneRedundantInlineTextEnabled()) {
-    if (owner_->data().role == ax::mojom::Role::kInlineTextBox &&
-        !owner_->data().HasStringAttribute(ax::mojom::StringAttribute::kName)) {
-      return owner_->GetParent()->data().GetStringAttribute(
-          ax::mojom::StringAttribute::kName);
-    }
+  if (owner_->data().role == ax::mojom::Role::kInlineTextBox &&
+      !owner_->data().HasStringAttribute(ax::mojom::StringAttribute::kName)) {
+    return owner_->GetParent()->data().GetStringAttribute(
+        ax::mojom::StringAttribute::kName);
   }
 
   // If a text field has no descendants, then we compute its text content from
@@ -595,15 +460,19 @@ std::string AXComputedNodeData::ComputeTextContentUTF8() const {
       // The accessible name does not represent the entirety of the node's text
       // content, e.g. a table's caption or a figure's figcaption.
       case ax::mojom::NameFrom::kCaption:
+      // The name comes from CSS alt text.
+      case ax::mojom::NameFrom::kCssAltText:
       // The object should not have an accessible name according to ARIA 1.2.
       // If kProhibited is set, that means we calculated a name in Blink and
       // are deliberately not exposing it.
       case ax::mojom::NameFrom::kProhibited:
+      case ax::mojom::NameFrom::kProhibitedAndRedundant:
       case ax::mojom::NameFrom::kRelatedElement:
       // The accessible name is not displayed directly inside the node but is
       // visible via e.g. a tooltip.
       case ax::mojom::NameFrom::kTitle:
-      case ax::mojom::NameFrom::kPopoverAttribute:
+      case ax::mojom::NameFrom::kPopoverTarget:
+      case ax::mojom::NameFrom::kInterestFor:
         return std::string();
 
       case ax::mojom::NameFrom::kContents:
@@ -619,8 +488,9 @@ std::string AXComputedNodeData::ComputeTextContentUTF8() const {
   }
 
   std::string text_content;
-  for (auto it = owner_->UnignoredChildrenCrossingTreeBoundaryBegin();
-       it != owner_->UnignoredChildrenCrossingTreeBoundaryEnd(); ++it) {
+  for (auto it = owner_->UnignoredChildrenCrossingTreeBoundaryBegin(),
+            end = owner_->UnignoredChildrenCrossingTreeBoundaryEnd();
+       it != end; ++it) {
     text_content += it->GetTextContentUTF8();
   }
   return text_content;

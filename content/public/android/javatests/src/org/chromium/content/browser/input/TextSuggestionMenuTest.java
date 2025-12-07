@@ -97,6 +97,7 @@ public class TextSuggestionMenuTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "https://crbug.com/1156419")
     public void testDeleteWordMarkedWithSpellingMarker()
             throws InterruptedException, Throwable, TimeoutException {
         WebContents webContents = mRule.getWebContents();
@@ -242,6 +243,7 @@ public class TextSuggestionMenuTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "https://crbug.com/1156419")
     public void testApplyMisspellingSuggestion()
             throws InterruptedException, Throwable, TimeoutException {
         WebContents webContents = mRule.getWebContents();
@@ -519,7 +521,7 @@ public class TextSuggestionMenuTest {
 
     private ListView getSuggestionList(WebContents webContents) {
         View contentView = getContentView(webContents);
-        return (ListView) contentView.findViewById(R.id.suggestionContainer);
+        return contentView.findViewById(R.id.suggestionContainer);
     }
 
     private View getSuggestionButton(WebContents webContents, int suggestionIndex) {

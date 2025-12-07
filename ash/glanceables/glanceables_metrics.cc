@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 
@@ -168,12 +169,6 @@ void RecordUserWithNoTasksRedictedToTasksUI() {
 void RecordAddTaskButtonShownForTT() {
   base::RecordAction(
       base::UserMetricsAction("Glanceables_Tasks_AddTaskButtonShown"));
-}
-
-void RecordAddTaskButtonUsageForNewTasksUsersTT(bool pressed) {
-  base::UmaHistogramBoolean(
-      "Ash.Glanceables.TimeManagement.AddTaskButtonUsageForNewTasksUsersTT",
-      pressed);
 }
 
 void RecordLoginToShowTime(base::TimeDelta login_to_show_time) {

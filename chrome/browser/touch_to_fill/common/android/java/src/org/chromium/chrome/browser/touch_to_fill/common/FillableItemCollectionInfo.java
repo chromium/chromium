@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.touch_to_fill.common;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
- * Data identifying an item's position in a list. Used to create the a11y content description of
- * the items representing user's content, like credentials, and distinguish them from static
- * controls like the "Manage password" button.
+ * Data identifying an item's position in a list. Used to create the a11y content description of the
+ * items representing user's content, like credentials, and distinguish them from static controls
+ * like the "Manage password" button.
  */
+@NullMarked
 public class FillableItemCollectionInfo {
     private final int mPosition;
     private final int mTotal;

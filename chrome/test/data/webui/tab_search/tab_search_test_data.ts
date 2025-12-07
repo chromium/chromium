@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import type {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
-import type {ProfileData, RecentlyClosedTab, Tab, Window} from 'chrome://tab-search.top-chrome/tab_search.js';
-import {TabAlertState} from 'chrome://tab-search.top-chrome/tab_search.js';
+import type {ProfileData, RecentlyClosedTab, Tab, TabOrganizationSession, Window} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {TabAlertState, TabOrganizationError, TabOrganizationState} from 'chrome://tab-search.top-chrome/tab_search.js';
 
 export const SAMPLE_WINDOW_HEIGHT: number = 448;
 
@@ -12,6 +12,7 @@ export function createTab(overrides: Partial<Tab>): Tab {
   return Object.assign(
       {
         active: false,
+        visible: false,
         faviconUrl: null,
         groupId: null,
         alertStates: [],
@@ -20,6 +21,7 @@ export function createTab(overrides: Partial<Tab>): Tab {
         lastActiveElapsedText: '',
         lastActiveTimeTicks: {internalValue: BigInt(0)},
         pinned: false,
+        split: false,
         showIcon: false,
         tabId: 1,
         title: 'Example',
@@ -30,6 +32,7 @@ export function createTab(overrides: Partial<Tab>): Tab {
 
 export const SAMPLE_WINDOW_DATA_WITH_MEDIA_TAB: Window[] = [{
   active: true,
+  isHostWindow: true,
   height: SAMPLE_WINDOW_HEIGHT,
   tabs: [
     createTab({
@@ -64,6 +67,7 @@ export const SAMPLE_WINDOW_DATA_WITH_MEDIA_TAB: Window[] = [{
 export const SAMPLE_WINDOW_DATA: Window[] = [
   {
     active: true,
+    isHostWindow: true,
     height: SAMPLE_WINDOW_HEIGHT,
     tabs: [
       createTab({
@@ -89,6 +93,7 @@ export const SAMPLE_WINDOW_DATA: Window[] = [
   },
   {
     active: false,
+    isHostWindow: false,
     height: SAMPLE_WINDOW_HEIGHT,
     tabs: [
       createTab({
@@ -214,6 +219,7 @@ export function generateSampleDataFromSiteNames(siteNames: string[]):
   return {
     windows: [{
       active: true,
+      isHostWindow: true,
       height: SAMPLE_WINDOW_HEIGHT,
       tabs: generateSampleTabsFromSiteNames(siteNames),
     }],
@@ -229,4 +235,25 @@ export function sampleToken(high: bigint, low: bigint): Token {
   Object.freeze(token);
 
   return token;
+}
+
+export function createTabOrganizationSession(
+    override: Partial<TabOrganizationSession> = {}): TabOrganizationSession {
+  return Object.assign(
+      {
+        activeTabId: -1,
+        sessionId: 1,
+        state: TabOrganizationState.kNotStarted,
+        organizations: [{
+          organizationId: 1,
+          name: 'foo',
+          tabs: [
+            createTab({title: 'Tab 1', url: {url: 'https://tab-1.com/'}}),
+            createTab({title: 'Tab 2', url: {url: 'https://tab-2.com/'}}),
+            createTab({title: 'Tab 3', url: {url: 'https://tab-3.com/'}}),
+          ],
+        }],
+        error: TabOrganizationError.kNone,
+      },
+      override);
 }

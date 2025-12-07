@@ -49,7 +49,7 @@ class SyncFeatureStatusForMigrationsRecorderTest : public testing::Test {
   bool GetDataTypeStatus(DataType type) const {
     return pref_service_.GetBoolean(base::StrCat(
         {prefs::internal::kSyncDataTypeStatusForSyncToSigninMigrationPrefix,
-         ".", GetDataTypeLowerCaseRootTag(type)}));
+         ".", DataTypeToStableLowerCaseString(type)}));
   }
 
   TestSyncService& sync_service() { return sync_service_; }
@@ -92,7 +92,7 @@ TEST_F(SyncFeatureStatusForMigrationsRecorderTest, NoSyncConsent) {
   // The recorder should have marked everything as disabled (even though the
   // data types were active!)
   EXPECT_EQ(GetSyncFeatureStatus(),
-            SyncFeatureStatusForSyncToSigninMigration::kDisabledOrPaused);
+            SyncFeatureStatusForSyncToSigninMigration::kDisabled);
   EXPECT_FALSE(GetDataTypeStatus(syncer::BOOKMARKS));
   EXPECT_FALSE(GetDataTypeStatus(syncer::PASSWORDS));
   EXPECT_FALSE(GetDataTypeStatus(syncer::READING_LIST));
@@ -159,7 +159,7 @@ TEST_F(SyncFeatureStatusForMigrationsRecorderTest, SyncPaused) {
 
   // The recorder should have marked everything as disabled.
   EXPECT_EQ(GetSyncFeatureStatus(),
-            SyncFeatureStatusForSyncToSigninMigration::kDisabledOrPaused);
+            SyncFeatureStatusForSyncToSigninMigration::kPaused);
   EXPECT_FALSE(GetDataTypeStatus(syncer::BOOKMARKS));
   EXPECT_FALSE(GetDataTypeStatus(syncer::PASSWORDS));
   EXPECT_FALSE(GetDataTypeStatus(syncer::READING_LIST));

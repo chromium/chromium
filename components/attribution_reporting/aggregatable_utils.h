@@ -40,7 +40,7 @@ COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 bool IsAggregatableValueInRange(int value);
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-bool IsRemainingAggregatableBudgetInRange(int budget);
+bool IsAggregatableBudgetInRange(int budget);
 
 }  // namespace attribution_reporting
 

@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "ui/ozone/demo/vulkan_overlay_renderer.h"
 
@@ -329,15 +325,13 @@ VulkanOverlayRenderer::Buffer::Create(
     VkRenderPass vk_render_pass,
     gfx::AcceleratedWidget widget,
     const gfx::Size& size) {
-  gfx::BufferFormat format = gfx::BufferFormat::BGRA_8888;
-
   VkDevice vk_device = vulkan_device_queue->GetVulkanDevice();
   VkImage vk_image = VK_NULL_HANDLE;
   VkDeviceMemory vk_device_memory = VK_NULL_HANDLE;
   scoped_refptr<gfx::NativePixmap> native_pixmap =
       surface_factory_ozone->CreateNativePixmapForVulkan(
-          widget, size, format, gfx::BufferUsage::SCANOUT, vk_device,
-          &vk_device_memory, &vk_image);
+          widget, size, gfx::BufferUsage::SCANOUT, vk_device, &vk_device_memory,
+          &vk_image);
   if (!native_pixmap) {
     LOG(FATAL)
         << "Failed to create a presentable buffer for rendering with vulkan";

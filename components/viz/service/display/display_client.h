@@ -7,18 +7,16 @@
 
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "gpu/ipc/common/surface_handle.h"
-#include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 
 namespace gfx {
 struct CALayerParams;
 }  // namespace gfx
 
 namespace viz {
-class FrameSinkId;
 
 class DisplayClient {
  public:
-  virtual ~DisplayClient() {}
+  virtual ~DisplayClient() = default;
   virtual void DisplayOutputSurfaceLost() = 0;
   // It is expected that |render_pass| would only be modified to insert debug
   // quads.
@@ -32,10 +30,6 @@ class DisplayClient {
   virtual void DisplayAddChildWindowToBrowser(
       gpu::SurfaceHandle child_window) = 0;
   virtual void SetWideColorEnabled(bool enabled) = 0;
-  virtual void SetPreferredFrameInterval(base::TimeDelta interval) = 0;
-  virtual base::TimeDelta GetPreferredFrameIntervalForFrameSinkId(
-      const FrameSinkId& id,
-      mojom::CompositorFrameSinkType* type) = 0;
 };
 
 }  // namespace viz

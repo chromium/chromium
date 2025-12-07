@@ -25,7 +25,7 @@ void FakePrintRenderFrame::PrintRequestedPages() {}
 
 void FakePrintRenderFrame::PrintWithParams(mojom::PrintPagesParamsPtr params,
                                            PrintWithParamsCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakePrintRenderFrame::PrintForSystemDialog() {}
@@ -34,7 +34,7 @@ void FakePrintRenderFrame::SetPrintPreviewUI(
     mojo::PendingAssociatedRemote<mojom::PrintPreviewUI> preview) {}
 
 void FakePrintRenderFrame::InitiatePrintPreview(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     mojo::PendingAssociatedRemote<mojom::PrintRenderer> print_renderer,
 #endif
     bool has_selection) {

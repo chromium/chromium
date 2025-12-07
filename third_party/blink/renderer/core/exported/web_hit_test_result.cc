@@ -61,6 +61,14 @@ WebNode WebHitTestResult::GetNode() const {
   return WebNode(private_->Result().InnerNode());
 }
 
+WebNode WebHitTestResult::GetNodeOrPseudoNode() const {
+  return WebNode(private_->Result().InnerPossiblyPseudoNode());
+}
+
+WebElement WebHitTestResult::GetElement() const {
+  return WebElement(private_->Result().InnerElement());
+}
+
 WebElement WebHitTestResult::UrlElement() const {
   return WebElement(private_->Result().URLElement());
 }

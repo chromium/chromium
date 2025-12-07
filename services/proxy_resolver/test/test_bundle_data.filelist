@@ -29,6 +29,7 @@ data/proxy_resolver_v8_unittest/exception_findproxyforurl_during_resolve.js
 data/proxy_resolver_v8_unittest/international_domain_names.js
 data/proxy_resolver_v8_unittest/missing_close_brace.js
 data/proxy_resolver_v8_unittest/no_entrypoint.js
+data/proxy_resolver_v8_unittest/no_webassembly.js
 data/proxy_resolver_v8_unittest/pac_library_unittest.js
 data/proxy_resolver_v8_unittest/passthrough.js
 data/proxy_resolver_v8_unittest/resolve_host.js

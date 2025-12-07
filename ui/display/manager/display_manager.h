@@ -25,7 +25,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/display_observer.h"
@@ -275,7 +274,7 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   // Called when display configuration has changed. The new display
   // configurations is passed as a vector of Display object, which contains each
   // display's new information.
-  void OnNativeDisplaysChanged(
+  bool OnNativeDisplaysChanged(
       const std::vector<ManagedDisplayInfo>& display_info_list);
 
   // Updates current displays using current |display_info_|.
@@ -290,11 +289,11 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   // This is called by ScreenAsh when the primary display is requested, but
   // there is no valid display. It provides a display that
   // - has a non-empty screen rect
-  // - has a valid gfx::BufferFormat
+  // - has a valid format
   // This exists to enable buggy observers assume that the primary display
-  // will always have non-zero size and a valid gfx::BufferFormat. The right
-  // solution to this problem is to fix those observers.
-  // https://crbug.com/866714, https://crbug.com/1057501
+  // will always have non-zero size and a valid format. The right solution to
+  // this problem is to fix those observers. https://crbug.com/866714,
+  // https://crbug.com/1057501
   static const Display& GetFakePrimaryDisplay();
 
   // Returns the logical number of displays. This returns 1 when displays are
@@ -315,12 +314,18 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   // Returns true if the display specified by |display_id| is currently
   // connected and active. (mirroring display isn't active, for example).
   bool IsActiveDisplayId(int64_t display_id) const;
+  // Returns true if the display specified by |display_id| is currently
+  // connected. Mirroring display is connected but not active.
+  bool IsConnectedDisplayId(int64_t display_id) const;
 
   // Returns the number of connected displays. For example, this returns 2 in
   // mirror mode with one external display.
   size_t num_connected_displays() const {
     return connected_display_id_list_.size();
   }
+
+  // Return the number of external displays that's currently connected.
+  size_t GetNumExternalDisplays() const;
 
   // Returns true if either software or hardware mirror mode is active.
   bool IsInMirrorMode() const;
@@ -369,8 +374,8 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   // mixed mirror mode in the next display configuration. (Use SetMirrorMode()
   // to immediately switch to mixed mirror mode.)
   void set_mixed_mirror_mode_params(
-      const std::optional<MixedMirrorModeParams> mixed_params) {
-    mixed_mirror_mode_params_ = mixed_params;
+      std::optional<MixedMirrorModeParams> mixed_params) {
+    mixed_mirror_mode_params_ = std::move(mixed_params);
   }
 
   void dec_screen_capture_active_counter() {
@@ -424,10 +429,7 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   std::string GetDisplayNameForId(int64_t id) const;
 
   // Returns true if mirror mode should be set on for the specified displays.
-  // If |should_check_hardware_mirroring| is true, the state of
-  // IsInHardwareMirroringMode() will also be taken into account.
-  bool ShouldSetMirrorModeOn(const DisplayIdList& id_list,
-                             bool should_check_hardware_mirroring);
+  bool ShouldSetMirrorModeOn(const DisplayIdList& id_list);
 
   // Change the mirror mode. |mixed_params| will be ignored if mirror mode is
   // off or normal. When mirror mode is off, display mode will be set to default
@@ -453,11 +455,17 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   void SetSoftwareMirroring(bool enabled) override;
   bool SoftwareMirroringEnabled() const override;
   bool IsSoftwareMirroringEnforced() const override;
+
+  // Sets the touch calibration data via `TouchDeviceManager`, mapping
+  // `touchdevice` to the given `display_id`. If `apply_spatial_calibration` is
+  // true, the bounds and valid screen space of the target touch device are also
+  // calibrated, otherwise this information is thrown out.
   void SetTouchCalibrationData(
       int64_t display_id,
       const TouchCalibrationData::CalibrationPointPairQuad& point_pair_quad,
       const gfx::Size& display_bounds,
-      const ui::TouchscreenDevice& touchdevice);
+      const ui::TouchscreenDevice& touchdevice,
+      bool apply_spatial_calibration);
   void ClearTouchCalibrationData(
       int64_t display_id,
       std::optional<ui::TouchscreenDevice> touchdevice);
@@ -472,6 +480,7 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
 
   // Sets multi display mode.
   void SetMultiDisplayMode(MultiDisplayMode mode);
+  MultiDisplayMode multi_display_mode() const { return multi_display_mode_; }
 
   // Reconfigure display configuration using the same physical display.
   // TODO(oshima): Refactor and move this impl to |SetDefaultMultiDisplayMode|.
@@ -482,7 +491,7 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
 
   // Creates mirror window asynchronously if the software mirror mode is
   // enabled.
-  void CreateMirrorWindowAsyncIfAny();
+  bool CreateMirrorWindowAsyncIfAny();
 
   // A unit test may change the internal display id (which never happens on a
   // real device). This will update the mode list for internal display for this
@@ -584,7 +593,7 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
 
   // Updates the internal display data using `updated_display_info_list` and
   // notifies observers about the changes.
-  void UpdateDisplaysWith(
+  bool UpdateDisplaysWith(
       const std::vector<ManagedDisplayInfo>& updated_display_info_list);
 
   // Creates software mirroring display related information. The display used to
@@ -722,12 +731,6 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   // displays.
   // 2. when unified mode is enabled this is the set of physical displays.
   Displays software_mirroring_display_list_;
-
-  // There's no source and destination display in hardware mirroring, so we
-  // treat the first mirroring display as source and store its id in
-  // |mirroring_source_id_| and treat the rest of mirroring displays as
-  // destination and store their ids in this list.
-  DisplayIdList hardware_mirroring_display_id_list_;
 
   // Stores external displays that were in mirror mode before.
   // These are display ids without output index.

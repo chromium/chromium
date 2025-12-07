@@ -3,27 +3,30 @@
 <head>
 <script src="../editing.js"></script>
 <script>
-function paste(event)
+function pasted(event)
 {
     var items = event.clipboardData.items;
     for (var i = 0; i < items.length; ++i) {
         if (items[i].kind == 'file' && items[i].type == 'image/png') {
+            let dest = document.createElement("img");
+            dest.onload = function() {
+                if (window.testRunner) {
+                    testRunner.notifyDone();
+                }
+            }
             var blob = items[i].getAsFile();
             var url = window.URL.createObjectURL(blob);
-            document.getElementById('dest').src = url;
+            document.body.appendChild(dest);
+            dest.src = url;
+            break;
         }
     }
-    window.setTimeout(function () {
-        if (window.testRunner)
-            testRunner.notifyDone();
-    }, 0);
 }
 
 function runTest()
 {
     if (!window.testRunner)
         return;
-    testRunner.waitUntilDone();
     var srcElement = document.getElementById('src');
     srcElement.contentWindow.document.execCommand('copy');
     eventSender.mouseMoveTo(1, 1);
@@ -31,13 +34,14 @@ function runTest()
     eventSender.mouseUp();
     document.execCommand('paste');
 }
+
+testRunner.waitUntilDone();
 </script>
 </head>
-<body onload="runTest()" onpaste="paste(event)">
+<body onpaste="pasted(event)">
 <div>This file tests the image pasting functionality of DataTransferItems.
 To try the test manually, right-click on the image &gt; Copy Image, click
 anywhere in the background of the main page and paste.</div>
-<iframe id="src" src="resources/mozilla.gif"></iframe><br>
-<img id="dest">
+<iframe id="src" src="resources/mozilla.gif" onload="runTest()" style="display:block; border:none;"></iframe>
 </body>
 </html>

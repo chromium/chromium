@@ -21,7 +21,4 @@
 #define XML_ENT_VALIDATED   (1u << 2)
 #define XML_ENT_EXPANDING   (1u << 3)
 
-XML_HIDDEN xmlChar *
-xmlEncodeAttributeEntities(xmlDocPtr doc, const xmlChar *input);
-
 #endif /* XML_ENTITIES_H_PRIVATE__ */

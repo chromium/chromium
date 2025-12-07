@@ -21,7 +21,7 @@
 #include "content/public/browser/webui_config_map.h"
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-#include "content/browser/tracing/trace_report/trace_report_internals_ui.h"
+#include "content/browser/tracing/traces_internals/traces_internals_ui.h"
 #include "content/browser/tracing/tracing_ui.h"
 #endif
 
@@ -35,7 +35,8 @@ void RegisterContentWebUIConfigs() {
   auto& map = WebUIConfigMap::GetInstance();
   map.AddWebUIConfig(std::make_unique<AttributionInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<GpuInternalsUIConfig>());
-  map.AddWebUIConfig(std::make_unique<IndexedDBInternalsUIConfig>());
+  map.AddWebUIConfig(
+      std::make_unique<indexed_db::IndexedDBInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<MediaInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<HistogramsInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<NetworkErrorsListingUIConfig>());
@@ -50,8 +51,9 @@ void RegisterContentWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<WebXrInternalsUIConfig>());
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  map.AddWebUIConfig(std::make_unique<TraceReportInternalsUIConfig>());
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
+  map.AddWebUIConfig(std::make_unique<TracesInternalsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<TracesInternalsLegacyUIConfig>());
   map.AddWebUIConfig(std::make_unique<TracingUIConfig>());
 #endif
 }

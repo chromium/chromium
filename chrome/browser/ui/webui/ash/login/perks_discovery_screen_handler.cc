@@ -33,9 +33,15 @@ void PerksDiscoveryScreenHandler::SetPerksData(
     perk_dict.Set("title", base::Value(perk.title));
     perk_dict.Set("subtitle", base::Value(perk.subtitle));
     perk_dict.Set("iconUrl", base::Value(perk.icon_url));
+    if (perk.additional_text.has_value()) {
+      perk_dict.Set("additionalText",
+                    base::Value(perk.additional_text.value()));
+    }
     if (perk.content.illustration.has_value()) {
-      perk_dict.Set("illustrationUrl", base::Value(perk.content.illustration->url));
-      perk_dict.Set("illustrationWidth", base::Value(perk.content.illustration->width));
+      perk_dict.Set("illustrationUrl",
+                    base::Value(perk.content.illustration->url));
+      perk_dict.Set("illustrationWidth",
+                    base::Value(perk.content.illustration->width));
       perk_dict.Set("illustrationHeight",
                     base::Value(perk.content.illustration->height));
     }

@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -21,7 +22,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
-#include "third_party/blink/renderer/platform/video_capture/gpu_memory_buffer_test_support.h"
+#include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/video_capture/video_capture_impl.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -98,13 +99,13 @@ class MockVideoCaptureImpl : public VideoCaptureImpl,
   void GetDeviceSupportedFormats(const base::UnguessableToken&,
                                  const base::UnguessableToken&,
                                  GetDeviceSupportedFormatsCallback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void GetDeviceFormatsInUse(const base::UnguessableToken&,
                              const base::UnguessableToken&,
                              GetDeviceFormatsInUseCallback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   MOCK_METHOD1(OnFrameDropped, void(media::VideoCaptureFrameDropReason));
@@ -219,30 +220,32 @@ class VideoCaptureImplManagerTest : public ::testing::Test,
 
   void OnStateUpdate(const media::VideoCaptureSessionId& id,
                      VideoCaptureState state) {
-    if (state == VIDEO_CAPTURE_STATE_STARTED)
+    if (state == VIDEO_CAPTURE_STATE_STARTED) {
       OnStarted(id);
-    else if (state == VIDEO_CAPTURE_STATE_STOPPED)
+    } else if (state == VIDEO_CAPTURE_STATE_STOPPED) {
       OnStopped(id);
-    else
-      NOTREACHED_IN_MIGRATION();
+    } else {
+      NOTREACHED();
+    }
   }
 
   base::OnceClosure StartCapture(const media::VideoCaptureSessionId& id,
                                  const media::VideoCaptureParams& params) {
-    return manager_->StartCapture(
-        id, params,
-        ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-            &VideoCaptureImplManagerTest::OnStateUpdate,
-            CrossThreadUnretained(this), id)),
-        ConvertToBaseRepeatingCallback(
-            CrossThreadBindRepeating(&VideoCaptureImplManagerTest::OnFrameReady,
-                                     CrossThreadUnretained(this))),
-        base::DoNothing(), base::DoNothing());
+    VideoCaptureCallbacks video_capture_callbacks;
+    video_capture_callbacks.state_update_cb = ConvertToBaseRepeatingCallback(
+        CrossThreadBindRepeating(&VideoCaptureImplManagerTest::OnStateUpdate,
+                                 CrossThreadUnretained(this), id));
+    video_capture_callbacks.deliver_frame_cb =
+        base::BindRepeating(&VideoCaptureImplManagerTest::OnFrameReady,
+                            CrossThreadUnretained(this));
+    video_capture_callbacks.frame_dropped_cb = base::DoNothing();
+    video_capture_callbacks.capture_version_cb = base::DoNothing();
+    return manager_->StartCapture(id, params,
+                                  std::move(video_capture_callbacks));
   }
 
   base::test::TaskEnvironment task_environment_;
-  ScopedTestingPlatformSupport<TestingPlatformSupportForGpuMemoryBuffer>
-      platform_;
+  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
   base::RunLoop cleanup_run_loop_;
   std::unique_ptr<MockVideoCaptureImplManager> manager_;
   raw_ptr<const BrowserInterfaceBrokerProxy> browser_interface_broker_;

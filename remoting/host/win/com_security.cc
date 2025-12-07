@@ -28,8 +28,8 @@ bool InitializeComSecurity(const std::string& security_descriptor,
   ScopedSid group;
   ScopedSid owner;
   ScopedAcl sacl;
-  if (!MakeScopedAbsoluteSd(relative_sd, &absolute_sd, &dacl, &group, &owner,
-                            &sacl)) {
+  if (!MakeScopedAbsoluteSd(relative_sd, absolute_sd, dacl, group, owner,
+                            sacl)) {
     PLOG(ERROR) << "MakeScopedAbsoluteSd() failed";
     return false;
   }

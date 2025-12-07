@@ -28,7 +28,7 @@ class TextResourceDecoderForFuzzing : public TextResourceDecoder {
       case TextResourceDecoderOptions::kUseAllAutoDetection:
         return TextResourceDecoderOptions::CreateWithAutoDetection(
             FuzzedContentType(fuzzed_data), FuzzedEncoding(fuzzed_data),
-            WTF::TextEncoding(), NullURL());
+            TextEncoding(), NullURL());
 
       case TextResourceDecoderOptions::kUseContentAndBOMBasedDetection:
         return TextResourceDecoderOptions(FuzzedContentType(fuzzed_data),
@@ -47,11 +47,11 @@ class TextResourceDecoderForFuzzing : public TextResourceDecoder {
             TextResourceDecoderOptions::kMaxContentType));
   }
 
-  static WTF::TextEncoding FuzzedEncoding(FuzzedDataProvider& fuzzed_data) {
+  static TextEncoding FuzzedEncoding(FuzzedDataProvider& fuzzed_data) {
     // Note: Charsets can be long (see the various encodings in
     // wtf/text). For instance: "unicode-1-1-utf-8". To ensure good coverage,
     // set a generous max limit for these sizes (32 bytes should be good).
-    return WTF::TextEncoding(fuzzed_data.ConsumeRandomLengthString(32));
+    return TextEncoding(fuzzed_data.ConsumeRandomLengthString(32));
   }
 };
 

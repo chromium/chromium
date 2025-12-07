@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/dialogs/ui_bundled/overlay_java_script_dialog_presenter.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
@@ -19,11 +20,12 @@
 // Test fixture for OverlayJavaScriptDialogPresenter.
 class OverlayJavaScriptDialogPresenterTest : public PlatformTest {
  protected:
-  OverlayJavaScriptDialogPresenterTest() : url_("http://chromium.test") {
+  OverlayJavaScriptDialogPresenterTest()
+      : origin_(url::Origin::Create(GURL("http://chromium.test"))) {
     OverlayRequestQueue::CreateForWebState(&web_state_);
   }
 
-  const GURL url_;
+  const url::Origin origin_;
   web::FakeWebState web_state_;
   OverlayJavaScriptDialogPresenter presenter_;
 };
@@ -31,7 +33,7 @@ class OverlayJavaScriptDialogPresenterTest : public PlatformTest {
 // Tests that the presenter adds an OverlayRequest configured with a
 // JavaScriptAlertRequest.
 TEST_F(OverlayJavaScriptDialogPresenterTest, RunJavaScriptAlertDialog) {
-  presenter_.RunJavaScriptAlertDialog(&web_state_, url_, @"",
+  presenter_.RunJavaScriptAlertDialog(&web_state_, origin_, @"",
                                       base::DoNothing());
 
   // Verify that an alert OverlayRequest is added to the queue.
@@ -45,7 +47,7 @@ TEST_F(OverlayJavaScriptDialogPresenterTest, RunJavaScriptAlertDialog) {
 // Tests that the presenter adds an OverlayRequest configured with a
 // JavaScriptConfirmationOverlayRequestConfig.
 TEST_F(OverlayJavaScriptDialogPresenterTest, RunJavaScriptConfirmDialog) {
-  presenter_.RunJavaScriptConfirmDialog(&web_state_, url_, @"",
+  presenter_.RunJavaScriptConfirmDialog(&web_state_, origin_, @"",
                                         base::DoNothing());
 
   // Verify that an alert OverlayRequest is added to the queue.
@@ -59,7 +61,7 @@ TEST_F(OverlayJavaScriptDialogPresenterTest, RunJavaScriptConfirmDialog) {
 // Tests that the presenter adds an OverlayRequest configured with a
 // JavaScriptPromptOverlayRequestConfig.
 TEST_F(OverlayJavaScriptDialogPresenterTest, RunJavaScriptPromptDialog) {
-  presenter_.RunJavaScriptPromptDialog(&web_state_, url_, @"", @"",
+  presenter_.RunJavaScriptPromptDialog(&web_state_, origin_, @"", @"",
                                        base::DoNothing());
 
   // Verify that an alert OverlayRequest is added to the queue.
@@ -73,7 +75,7 @@ TEST_F(OverlayJavaScriptDialogPresenterTest, RunJavaScriptPromptDialog) {
 // Tests that the presenter removes all requests from the queue when
 // CancelDialogs() is called.
 TEST_F(OverlayJavaScriptDialogPresenterTest, RunJavaScriptDialogCancelDialogs) {
-  presenter_.RunJavaScriptAlertDialog(&web_state_, url_, @"",
+  presenter_.RunJavaScriptAlertDialog(&web_state_, origin_, @"",
                                       base::DoNothing());
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
       &web_state_, OverlayModality::kWebContentArea);
@@ -87,7 +89,7 @@ TEST_F(OverlayJavaScriptDialogPresenterTest, RunJavaScriptDialogCancelDialogs) {
 // Tests that the presenter adds an OverlayRequest configured with a
 // JavaScriptAlertRequest.
 TEST_F(OverlayJavaScriptDialogPresenterTest, RunAlert) {
-  presenter_.RunJavaScriptAlertDialog(&web_state_, url_, @"",
+  presenter_.RunJavaScriptAlertDialog(&web_state_, origin_, @"",
                                       base::DoNothing());
 
   // Verify that an alert OverlayRequest is added to the queue.
@@ -103,7 +105,7 @@ TEST_F(OverlayJavaScriptDialogPresenterTest, RunAlert) {
 // Tests that the presenter adds an OverlayRequest configured with a
 // JavaScriptConfirmationOverlayRequestConfig.
 TEST_F(OverlayJavaScriptDialogPresenterTest, RunConfirmation) {
-  presenter_.RunJavaScriptConfirmDialog(&web_state_, url_, @"",
+  presenter_.RunJavaScriptConfirmDialog(&web_state_, origin_, @"",
                                         base::DoNothing());
 
   // Verify that an alert OverlayRequest is added to the queue.
@@ -119,7 +121,7 @@ TEST_F(OverlayJavaScriptDialogPresenterTest, RunConfirmation) {
 // Tests that the presenter adds an OverlayRequest configured with a
 // JavaScriptPromptOverlayRequestConfig.
 TEST_F(OverlayJavaScriptDialogPresenterTest, RunPrompt) {
-  presenter_.RunJavaScriptPromptDialog(&web_state_, url_, @"", @"",
+  presenter_.RunJavaScriptPromptDialog(&web_state_, origin_, @"", @"",
                                        base::DoNothing());
 
   // Verify that an alert OverlayRequest is added to the queue.
@@ -135,7 +137,7 @@ TEST_F(OverlayJavaScriptDialogPresenterTest, RunPrompt) {
 // Tests that the presenter removes all requests from the queue when
 // CancelDialogs() is called.
 TEST_F(OverlayJavaScriptDialogPresenterTest, CancelDialogs) {
-  presenter_.RunJavaScriptAlertDialog(&web_state_, url_, @"",
+  presenter_.RunJavaScriptAlertDialog(&web_state_, origin_, @"",
                                       base::DoNothing());
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
       &web_state_, OverlayModality::kWebContentArea);

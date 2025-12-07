@@ -6,14 +6,17 @@
 #define IOS_CHROME_BROWSER_BOOKMARKS_UI_BUNDLED_HOME_BOOKMARKS_HOME_MEDIATOR_H_
 
 #import <UIKit/UIKit.h>
+
 #import <set>
 #import <string>
+
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 
 @protocol BookmarksHomeConsumer;
 @class BookmarkTableCell;
 @protocol BookmarkTableCellTitleEditing;
 class Browser;
+typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
 @class TableViewModel;
 
 namespace bookmarks {
@@ -87,7 +90,7 @@ typedef NS_ENUM(NSInteger, BookmarksHomeItemType) {
 @property(nonatomic, assign) const bookmarks::BookmarkNode* editingFolderNode;
 
 // Registers the feature preferences.
-+ (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry;
++ (void)registerProfilePrefs:(user_prefs::PrefRegistrySyncable*)registry;
 
 // Designated initializer.
 // `bookmarkModel` must not be `nullptr`. It must also be loaded.
@@ -105,6 +108,9 @@ typedef NS_ENUM(NSInteger, BookmarksHomeItemType) {
 
 // Stops mediating and disconnects from backend models.
 - (void)disconnect;
+
+// Whether the view can be dismissed.
+- (BOOL)canDismiss;
 
 // Rebuilds the table view model data for the Bookmarks section.  Deletes any
 // existing data first.
@@ -130,6 +136,9 @@ typedef NS_ENUM(NSInteger, BookmarksHomeItemType) {
 // `bookmarkNode`.
 - (BOOL)shouldDisplayCloudSlashIconWithBookmarkNode:
     (const bookmarks::BookmarkNode*)bookmarkNode;
+
+// Callback for the SigninPresenter.
+- (void)signinDidCompleteWithResult:(SigninCoordinatorResult)result;
 
 @end
 

@@ -15,7 +15,7 @@ DesktopMessagePopupCollection::DesktopMessagePopupCollection() = default;
 DesktopMessagePopupCollection::~DesktopMessagePopupCollection() = default;
 
 void DesktopMessagePopupCollection::StartObserving() {
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   if (screen_ || !screen)
     return;
 
@@ -91,6 +91,13 @@ bool DesktopMessagePopupCollection::BlockForMixedFullscreen(
     const Notification& notification) const {
   // Always return false. Notifications for fullscreen will be blocked by
   // chrome/browser/notifications/fullscreen_notification_blocker.
+  return false;
+}
+
+bool DesktopMessagePopupCollection::CanUseTransformForBoundsAnimation() const {
+  // Desktop message popups are desktop widgets. Transform could not be used
+  // for bounds change because each widget hosts a window tree and transform
+  // could not show contents outside the window tree.
   return false;
 }
 

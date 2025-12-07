@@ -13,18 +13,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
-#include "chrome/browser/download/chrome_download_manager_delegate.h"
-#include "chrome/browser/download/download_core_service.h"
-#include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/download/download_prefs.h"
-#include "chrome/browser/download/offline_item_utils.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
-#include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/enterprise/connectors/connectors_service.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog_controller.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
@@ -33,24 +28,32 @@
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/download_protection/download_request_maker.h"
+#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/safe_browsing/deep_scanning_failure_modal_dialog.h"
 #include "chrome/common/pref_names.h"
 #include "components/download/public/common/download_item.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/common.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
+#include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/policy/core/common/cloud/dm_token.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
-#include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
+#include "components/safe_browsing/core/browser/download_check_result.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/url_matcher/url_matcher.h"
 #include "content/public/browser/download_item_utils.h"
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/common.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 using DeepScanTrigger = DownloadItemWarningData::DeepScanTrigger;
 
@@ -74,6 +77,7 @@ DownloadCheckResult GetHighestPrecedenceResult(DownloadCheckResult result_1,
       DownloadCheckResult::BLOCKED_TOO_LARGE,
       DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED,
       DownloadCheckResult::BLOCKED_SCAN_FAILED,
+      DownloadCheckResult::FORCE_SAVE_TO_GDRIVE,
       DownloadCheckResult::POTENTIALLY_UNWANTED,
       DownloadCheckResult::SENSITIVE_CONTENT_WARNING,
       DownloadCheckResult::PROMPT_FOR_SCANNING,
@@ -87,141 +91,23 @@ DownloadCheckResult GetHighestPrecedenceResult(DownloadCheckResult result_1,
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return DownloadCheckResult::UNKNOWN;
+  NOTREACHED();
 }
 
-void ResponseToDownloadCheckResult(
-    const enterprise_connectors::ContentAnalysisResponse& response,
-    DownloadCheckResult* download_result) {
-  bool malware_scan_failure = false;
-  bool dlp_scan_failure = false;
-  auto malware_action =
-      enterprise_connectors::TriggeredRule::ACTION_UNSPECIFIED;
-  auto dlp_action = enterprise_connectors::TriggeredRule::ACTION_UNSPECIFIED;
-
-  for (const auto& result : response.results()) {
-    if (result.tag() == "malware") {
-      if (result.status() !=
-          enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS) {
-        malware_scan_failure = true;
-        continue;
-      }
-      for (const auto& rule : result.triggered_rules()) {
-        malware_action = enterprise_connectors::GetHighestPrecedenceAction(
-            malware_action, rule.action());
-      }
-    }
-    if (result.tag() == "dlp") {
-      if (result.status() !=
-          enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS) {
-        dlp_scan_failure = true;
-        continue;
-      }
-      for (const auto& rule : result.triggered_rules()) {
-        dlp_action = enterprise_connectors::GetHighestPrecedenceAction(
-            dlp_action, rule.action());
-      }
-    }
-  }
-
-  if (malware_action == enterprise_connectors::GetHighestPrecedenceAction(
-                            malware_action, dlp_action)) {
-    switch (malware_action) {
-      case enterprise_connectors::TriggeredRule::BLOCK:
-        *download_result = DownloadCheckResult::DANGEROUS;
-        return;
-      case enterprise_connectors::TriggeredRule::WARN:
-        *download_result = DownloadCheckResult::POTENTIALLY_UNWANTED;
-        return;
-      case enterprise_connectors::TriggeredRule::REPORT_ONLY:
-      case enterprise_connectors::TriggeredRule::ACTION_UNSPECIFIED:
-        break;
-    }
-  } else {
-    switch (dlp_action) {
-      case enterprise_connectors::TriggeredRule::BLOCK:
-        *download_result = DownloadCheckResult::SENSITIVE_CONTENT_BLOCK;
-        return;
-      case enterprise_connectors::TriggeredRule::WARN:
-        *download_result = DownloadCheckResult::SENSITIVE_CONTENT_WARNING;
-        return;
-      case enterprise_connectors::TriggeredRule::REPORT_ONLY:
-      case enterprise_connectors::TriggeredRule::ACTION_UNSPECIFIED:
-        break;
-    }
-  }
-
-  if (dlp_scan_failure || malware_scan_failure) {
-    *download_result = DownloadCheckResult::DEEP_SCANNED_FAILED;
-    return;
-  }
-
-  *download_result = DownloadCheckResult::DEEP_SCANNED_SAFE;
-}
-
-EventResult GetEventResult(download::DownloadDangerType danger_type,
-                           download::DownloadItem* item) {
-  DownloadCoreService* download_core_service =
-      DownloadCoreServiceFactory::GetForBrowserContext(
-          content::DownloadItemUtils::GetBrowserContext(item));
-  if (download_core_service) {
-    ChromeDownloadManagerDelegate* delegate =
-        download_core_service->GetDownloadManagerDelegate();
-    if (delegate && delegate->ShouldBlockFile(item, danger_type)) {
-      return EventResult::BLOCKED;
-    }
-  }
-
-  switch (danger_type) {
-    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
-    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE:
-    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL:
-    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
-    case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
-    case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
-    case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT:
-    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST:
-    case download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT:
-      return EventResult::WARNED;
-
-    case download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS:
-    case download::DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY:
-      return EventResult::ALLOWED;
-
-    case download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED:
-    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:
-      return EventResult::BYPASSED;
-
-    case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
-    case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
-    case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
-    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE:
-    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED:
-    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:
-    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:
-    case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
-    case download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING:
-    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
-    case download::DOWNLOAD_DANGER_TYPE_MAX:
-      NOTREACHED_IN_MIGRATION();
-      return EventResult::UNKNOWN;
-  }
-}
-
-EventResult GetEventResult(DownloadCheckResult download_result,
-                           Profile* profile) {
+enterprise_connectors::EventResult GetEventResult(
+    DownloadCheckResult download_result,
+    Profile* profile) {
   auto download_restriction =
-      profile
-          ? static_cast<DownloadPrefs::DownloadRestriction>(
-                profile->GetPrefs()->GetInteger(prefs::kDownloadRestrictions))
-          : DownloadPrefs::DownloadRestriction::NONE;
+      profile ? static_cast<policy::DownloadRestriction>(
+                    profile->GetPrefs()->GetInteger(
+                        policy::policy_prefs::kDownloadRestrictions))
+              : policy::DownloadRestriction::NONE;
   switch (download_result) {
     case DownloadCheckResult::UNKNOWN:
     case DownloadCheckResult::SAFE:
     case DownloadCheckResult::ALLOWLISTED_BY_POLICY:
     case DownloadCheckResult::DEEP_SCANNED_SAFE:
-      return EventResult::ALLOWED;
+      return enterprise_connectors::EventResult::ALLOWED;
 
     // The following results return WARNED or BLOCKED depending on
     // |download_restriction|.
@@ -229,31 +115,31 @@ EventResult GetEventResult(DownloadCheckResult download_result,
     case DownloadCheckResult::DANGEROUS_HOST:
     case DownloadCheckResult::DANGEROUS_ACCOUNT_COMPROMISE:
       switch (download_restriction) {
-        case DownloadPrefs::DownloadRestriction::ALL_FILES:
-        case DownloadPrefs::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES:
-        case DownloadPrefs::DownloadRestriction::DANGEROUS_FILES:
-        case DownloadPrefs::DownloadRestriction::MALICIOUS_FILES:
-          return EventResult::BLOCKED;
-        case DownloadPrefs::DownloadRestriction::NONE:
-          return EventResult::WARNED;
+        case policy::DownloadRestriction::ALL_FILES:
+        case policy::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES:
+        case policy::DownloadRestriction::DANGEROUS_FILES:
+        case policy::DownloadRestriction::MALICIOUS_FILES:
+          return enterprise_connectors::EventResult::BLOCKED;
+        case policy::DownloadRestriction::NONE:
+          return enterprise_connectors::EventResult::WARNED;
       }
 
     case DownloadCheckResult::UNCOMMON:
     case DownloadCheckResult::POTENTIALLY_UNWANTED:
     case DownloadCheckResult::SENSITIVE_CONTENT_WARNING:
-      return EventResult::WARNED;
+      return enterprise_connectors::EventResult::WARNED;
 
+    case DownloadCheckResult::FORCE_SAVE_TO_GDRIVE:
+      return enterprise_connectors::EventResult::FORCED_SAVE_TO_CLOUD;
     case DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED:
     case DownloadCheckResult::BLOCKED_TOO_LARGE:
     case DownloadCheckResult::SENSITIVE_CONTENT_BLOCK:
     case DownloadCheckResult::BLOCKED_SCAN_FAILED:
-      return EventResult::BLOCKED;
+      return enterprise_connectors::EventResult::BLOCKED;
 
     default:
-      NOTREACHED_IN_MIGRATION() << "Should never be final result";
-      break;
+      NOTREACHED() << "Should never be final result";
   }
-  return EventResult::UNKNOWN;
 }
 
 std::string GetTriggerName(DeepScanTrigger trigger) {
@@ -272,34 +158,28 @@ std::string GetTriggerName(DeepScanTrigger trigger) {
 }
 
 enterprise_connectors::ContentAnalysisAcknowledgement::FinalAction
-GetFinalAction(EventResult event_result) {
+GetFinalAction(enterprise_connectors::EventResult event_result) {
   auto final_action =
       enterprise_connectors::ContentAnalysisAcknowledgement::ALLOW;
   switch (event_result) {
-    case EventResult::UNKNOWN:
-    case EventResult::ALLOWED:
-    case EventResult::BYPASSED:
+    case enterprise_connectors::EventResult::UNKNOWN:
+    case enterprise_connectors::EventResult::ALLOWED:
+    case enterprise_connectors::EventResult::BYPASSED:
       break;
-    case EventResult::WARNED:
+    case enterprise_connectors::EventResult::WARNED:
       final_action =
           enterprise_connectors::ContentAnalysisAcknowledgement::WARN;
       break;
-    case EventResult::BLOCKED:
+    // TODO(alshawwa): handle FORCE_SAVE_TO_CLOUD case. Currently defaults to
+    // BLOCKED behaviour.
+    case enterprise_connectors::EventResult::FORCED_SAVE_TO_CLOUD:
+    case enterprise_connectors::EventResult::BLOCKED:
       final_action =
           enterprise_connectors::ContentAnalysisAcknowledgement::BLOCK;
       break;
   }
 
   return final_action;
-}
-
-void PromptForPassword(download::DownloadItem* item) {
-  if (DownloadBubbleUIController* controller =
-          DownloadBubbleUIController::GetForDownload(item);
-      controller) {
-    controller->GetDownloadDisplayController()->OpenSecuritySubpage(
-        OfflineItemUtils::GetContentIdForDownload(item));
-  }
 }
 
 void LogDeepScanResult(DownloadCheckResult download_result,
@@ -333,41 +213,114 @@ bool HasDecryptionFailedResult(
   return false;
 }
 
-bool EnterpriseResultIsFailure(BinaryUploadService::Result result,
-                               bool block_large_files,
-                               bool block_password_protected_files) {
-  return enterprise_connectors::IsResumableUploadEnabled()
-             ? enterprise_connectors::CloudResumableResultIsFailure(
-                   result, block_large_files, block_password_protected_files)
-             : enterprise_connectors::CloudMultipartResultIsFailure(result);
+bool EnterpriseResultIsFailure(
+    enterprise_connectors::ScanRequestUploadResult result,
+    bool block_large_files,
+    bool block_password_protected_files) {
+  return enterprise_connectors::CloudResumableResultIsFailure(
+      result, block_large_files, block_password_protected_files);
 }
 
-void RecordEnterpriseScan(std::unique_ptr<FileAnalysisRequest> request,
-                          BinaryUploadService::Result result) {
+void RecordEnterpriseScan(
+    std::unique_ptr<FileAnalysisRequest> request,
+    enterprise_connectors::ScanRequestUploadResult result) {
   const std::string result_info =
-      safe_browsing::BinaryUploadService::ResultToString(result);
-  safe_browsing::WebUIInfoSingleton::GetInstance()->AddToDeepScanRequests(
-      request->per_profile_request(), /*access_token*/ "",
-      /*upload_info*/ base::StrCat({"Skipped - ", result_info}),
-      /*upload_url*/ "", request->content_analysis_request());
-  safe_browsing::WebUIInfoSingleton::GetInstance()->AddToDeepScanResponses(
-      /*token=*/"", result_info,
-      enterprise_connectors::ContentAnalysisResponse());
+      enterprise_connectors::ScanRequestUploadResultToString(result);
+  safe_browsing::WebUIContentInfoSingleton::GetInstance()
+      ->AddToDeepScanRequests(
+          request->per_profile_request(), /*access_token*/ "",
+          /*upload_info*/ base::StrCat({"Skipped - ", result_info}),
+          /*upload_url*/ "", request->content_analysis_request());
+  safe_browsing::WebUIContentInfoSingleton::GetInstance()
+      ->AddToDeepScanResponses(
+          /*token=*/"", result_info,
+          enterprise_connectors::ContentAnalysisResponse());
 }
 
 }  // namespace
 
+DownloadCheckResult ResponseToDownloadCheckResult(
+    const enterprise_connectors::ContentAnalysisResponse& response) {
+  bool malware_scan_failure = false;
+  bool dlp_scan_failure = false;
+  auto malware_action =
+      enterprise_connectors::TriggeredRule::ACTION_UNSPECIFIED;
+  auto dlp_action = enterprise_connectors::TriggeredRule::ACTION_UNSPECIFIED;
+
+  for (const auto& result : response.results()) {
+    if (result.tag() == "malware") {
+      if (result.status() !=
+          enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS) {
+        malware_scan_failure = true;
+        continue;
+      }
+      for (const auto& rule : result.triggered_rules()) {
+        malware_action = enterprise_connectors::GetHighestPrecedenceAction(
+            malware_action, rule.action());
+      }
+    }
+    if (result.tag() == "dlp") {
+      if (result.status() !=
+          enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS) {
+        dlp_scan_failure = true;
+        continue;
+      }
+      for (const auto& rule : result.triggered_rules()) {
+        dlp_action = enterprise_connectors::GetHighestPrecedenceAction(
+            dlp_action, rule.action());
+      }
+    }
+  }
+
+  CHECK(malware_action !=
+        enterprise_connectors::TriggeredRule::FORCE_SAVE_TO_CLOUD);
+
+  if (malware_action == enterprise_connectors::GetHighestPrecedenceAction(
+                            malware_action, dlp_action)) {
+    switch (malware_action) {
+      case enterprise_connectors::TriggeredRule::BLOCK:
+        return DownloadCheckResult::DANGEROUS;
+      case enterprise_connectors::TriggeredRule::WARN:
+        return DownloadCheckResult::POTENTIALLY_UNWANTED;
+      case enterprise_connectors::TriggeredRule::REPORT_ONLY:
+      case enterprise_connectors::TriggeredRule::ACTION_UNSPECIFIED:
+        break;
+      case enterprise_connectors::TriggeredRule::FORCE_SAVE_TO_CLOUD:
+        NOTREACHED();
+    }
+  } else {
+    switch (dlp_action) {
+      case enterprise_connectors::TriggeredRule::FORCE_SAVE_TO_CLOUD:
+        return DownloadCheckResult::FORCE_SAVE_TO_GDRIVE;
+      case enterprise_connectors::TriggeredRule::BLOCK:
+        return DownloadCheckResult::SENSITIVE_CONTENT_BLOCK;
+      case enterprise_connectors::TriggeredRule::WARN:
+        return DownloadCheckResult::SENSITIVE_CONTENT_WARNING;
+      case enterprise_connectors::TriggeredRule::REPORT_ONLY:
+      case enterprise_connectors::TriggeredRule::ACTION_UNSPECIFIED:
+        break;
+    }
+  }
+
+  if (dlp_scan_failure || malware_scan_failure) {
+    return DownloadCheckResult::DEEP_SCANNED_FAILED;
+  }
+
+  return DownloadCheckResult::DEEP_SCANNED_SAFE;
+}
+
 /* static */
 std::optional<enterprise_connectors::AnalysisSettings>
-DeepScanningRequest::ShouldUploadBinary(download::DownloadItem* item) {
+DeepScanningRequest::ShouldUploadBinary(const DeepScanningMetadata& metadata) {
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   // Files already on the disk shouldn't be uploaded for scanning.
-  if (item->GetURL().SchemeIsFile()) {
+  if (metadata.GetURL().SchemeIsFile()) {
     return std::nullopt;
   }
 
   auto* service =
       enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
-          content::DownloadItemUtils::GetBrowserContext(item));
+          metadata.GetBrowserContext());
 
   // If the download Connector is not enabled, don't scan.
   if (!service ||
@@ -376,23 +329,26 @@ DeepScanningRequest::ShouldUploadBinary(download::DownloadItem* item) {
     return std::nullopt;
   }
 
-  // Check that item->GetURL() matches the appropriate URL patterns by getting
-  // settings. No settings means no matches were found and that the downloaded
-  // file shouldn't be uploaded.
+  // Check that the scanned item's URL matches the appropriate URL patterns by
+  // getting settings. No settings means no matches were found and that the
+  // downloaded file shouldn't be uploaded.
   return service->GetAnalysisSettings(
-      item->GetURL(),
+      metadata.GetURL(),
       enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED);
+#else
+  return std::nullopt;
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }
 
 DeepScanningRequest::DeepScanningRequest(
-    download::DownloadItem* item,
+    std::unique_ptr<DeepScanningMetadata> metadata,
     DeepScanTrigger trigger,
     DownloadCheckResult pre_scan_download_check_result,
     CheckDownloadRepeatingCallback callback,
     DownloadProtectionService* download_service,
     enterprise_connectors::AnalysisSettings settings,
     base::optional_ref<const std::string> password)
-    : item_(item),
+    : metadata_(std::move(metadata)),
       trigger_(trigger),
       callback_(callback),
       download_service_(download_service),
@@ -404,17 +360,18 @@ DeepScanningRequest::DeepScanningRequest(
       weak_ptr_factory_(this) {
   base::UmaHistogramEnumeration("SBClientDownload.DeepScanType",
                                 DeepScanType::NORMAL);
-  item_->AddObserver(this);
+  CHECK(metadata_);
+  download_observation_ = metadata_->GetDownloadObservation(this);
 }
 
 DeepScanningRequest::DeepScanningRequest(
-    download::DownloadItem* item,
+    std::unique_ptr<DeepScanningMetadata> metadata,
     DownloadCheckResult pre_scan_download_check_result,
     CheckDownloadRepeatingCallback callback,
     DownloadProtectionService* download_service,
     enterprise_connectors::AnalysisSettings settings,
     base::flat_map<base::FilePath, base::FilePath> save_package_files)
-    : item_(item),
+    : metadata_(std::move(metadata)),
       trigger_(DeepScanTrigger::TRIGGER_POLICY),
       callback_(callback),
       download_service_(download_service),
@@ -428,12 +385,11 @@ DeepScanningRequest::DeepScanningRequest(
                                 DeepScanType::SAVE_PACKAGE);
   base::UmaHistogramCounts10000("SBClientDownload.SavePackageFileCount",
                                 save_package_files_.size());
-  item_->AddObserver(this);
+  CHECK(metadata_);
+  download_observation_ = metadata_->GetDownloadObservation(this);
 }
 
-DeepScanningRequest::~DeepScanningRequest() {
-  item_->RemoveObserver(this);
-}
+DeepScanningRequest::~DeepScanningRequest() = default;
 
 void DeepScanningRequest::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
@@ -445,7 +401,7 @@ void DeepScanningRequest::RemoveObserver(Observer* observer) {
 
 void DeepScanningRequest::Start() {
   // Indicate we're now scanning the file.
-  pre_scan_danger_type_ = item_->GetDangerType();
+  pre_scan_danger_type_ = metadata_->GetDangerType();
 
   if (ReportOnlyScan()) {
     // In non-blocking mode, run `callback_` immediately so the download
@@ -457,7 +413,7 @@ void DeepScanningRequest::Start() {
     return;
   }
 
-  DownloadItemWarningData::SetDeepScanTrigger(item_, trigger_);
+  metadata_->SetDeepScanTrigger(trigger_);
   callback_.Run(DownloadCheckResult::ASYNC_SCANNING);
   if (save_package_files_.empty()) {
     StartSingleFileScan();
@@ -473,35 +429,38 @@ void DeepScanningRequest::StartSingleFileScan() {
   IncrementCrashKey(ScanningCrashKey::TOTAL_FILE_DOWNLOADS);
 
   auto request = std::make_unique<FileAnalysisRequest>(
-      analysis_settings_, item_->GetFullPath(),
-      item_->GetTargetFilePath().BaseName(), item_->GetMimeType(),
+      analysis_settings_, metadata_->GetFullPath(),
+      metadata_->GetTargetFilePath().BaseName(), metadata_->GetMimeType(),
       /* delay_opening_file */ false,
       base::BindOnce(&DeepScanningRequest::OnScanComplete,
-                     weak_ptr_factory_.GetWeakPtr(), item_->GetFullPath()));
-  request->set_filename(item_->GetTargetFilePath().AsUTF8Unsafe());
+                     weak_ptr_factory_.GetWeakPtr(), metadata_->GetFullPath()),
+      base::DoNothing(), metadata_->IsObfuscated());
 
-  std::string sha256 = base::HexEncode(item_->GetHash());
+  request->set_filename(metadata_->GetTargetFilePath().AsUTF8Unsafe());
+
+  std::string sha256 = base::HexEncode(metadata_->GetHash());
   request->set_digest(sha256);
 
   if (password_) {
     request->set_password(*password_);
   }
 
-  file_metadata_.insert({item_->GetFullPath(),
-                         enterprise_connectors::FileMetadata(
-                             item_->GetTargetFilePath().AsUTF8Unsafe(), sha256,
-                             item_->GetMimeType(), item_->GetTotalBytes())});
+  file_metadata_.insert(
+      {metadata_->GetFullPath(),
+       enterprise_connectors::FileMetadata(
+           metadata_->GetTargetFilePath().AsUTF8Unsafe(), sha256,
+           metadata_->GetMimeType(), metadata_->GetTotalBytes())});
 
-  Profile* profile = Profile::FromBrowserContext(
-      content::DownloadItemUtils::GetBrowserContext(item_));
+  Profile* profile =
+      Profile::FromBrowserContext(metadata_->GetBrowserContext());
 
   base::UmaHistogramEnumeration("SBClientDownload.DeepScanTrigger", trigger_);
 
   FileAnalysisRequest* request_raw = request.get();
-  PopulateRequest(request_raw, profile, item_->GetFullPath());
+  PopulateRequest(request_raw, profile, metadata_->GetFullPath());
   request_raw->GetRequestData(
       base::BindOnce(&DeepScanningRequest::OnGetFileRequestData,
-                     weak_ptr_factory_.GetWeakPtr(), item_->GetFullPath(),
+                     weak_ptr_factory_.GetWeakPtr(), metadata_->GetFullPath(),
                      std::move(request)));
 }
 
@@ -513,8 +472,8 @@ void DeepScanningRequest::StartSavePackageScan() {
   IncrementCrashKey(ScanningCrashKey::TOTAL_FILE_DOWNLOADS,
                     pending_scan_requests_);
 
-  Profile* profile = Profile::FromBrowserContext(
-      content::DownloadItemUtils::GetBrowserContext(item_));
+  Profile* profile =
+      Profile::FromBrowserContext(metadata_->GetBrowserContext());
   std::vector<FileOpeningJob::FileOpeningTask> tasks(pending_scan_requests_);
   size_t i = 0;
   for (const auto& tmp_path_and_final_path : save_package_files_) {
@@ -546,48 +505,20 @@ void DeepScanningRequest::StartSavePackageScan() {
 void DeepScanningRequest::PopulateRequest(FileAnalysisRequest* request,
                                           Profile* profile,
                                           const base::FilePath& path) {
-  if (IsEnterpriseTriggered()) {
-    if (analysis_settings_.cloud_or_local_settings.is_cloud_analysis()) {
-      request->set_device_token(
-          analysis_settings_.cloud_or_local_settings.dm_token());
-    }
-    request->set_per_profile_request(analysis_settings_.per_profile);
-    if (analysis_settings_.client_metadata) {
-      request->set_client_metadata(*analysis_settings_.client_metadata);
-    }
-    request->set_reason(reason_);
-  }
-
+  InitializeRequest(request, IsEnterpriseTriggered());
   request->set_analysis_connector(enterprise_connectors::FILE_DOWNLOADED);
-  request->set_email(GetProfileEmail(profile));
-
-  if (item_->GetURL().is_valid()) {
-    request->set_url(item_->GetURL().spec());
-  }
-
-  if (item_->GetTabUrl().is_valid()) {
-    request->set_tab_url(item_->GetTabUrl());
-  }
-
   if (file_metadata_.count(path) &&
       !file_metadata_.at(path).mime_type.empty()) {
     request->set_content_type(file_metadata_.at(path).mime_type);
   }
-
-  for (const auto& tag : analysis_settings_.tags) {
-    request->add_tag(tag.first);
-  }
-
-  request->set_blocking(analysis_settings_.block_until_verdict !=
-                        enterprise_connectors::BlockUntilVerdict::kNoBlock);
 }
 
 void DeepScanningRequest::PrepareClientDownloadRequest(
     const base::FilePath& current_path,
     std::unique_ptr<FileAnalysisRequest> request) {
   if (IsEnterpriseTriggered()) {
-    download_request_maker_ = DownloadRequestMaker::CreateFromDownloadItem(
-        new BinaryFeatureExtractor(), item_);
+    download_request_maker_ = metadata_->CreateDownloadRequestFromMetadata(
+        new BinaryFeatureExtractor());
     download_request_maker_->Start(base::BindOnce(
         &DeepScanningRequest::OnDownloadRequestReady,
         weak_ptr_factory_.GetWeakPtr(), current_path, std::move(request)));
@@ -600,7 +531,7 @@ void DeepScanningRequest::OnGetPackageFileRequestData(
     const base::FilePath& final_path,
     const base::FilePath& current_path,
     std::unique_ptr<FileAnalysisRequest> request,
-    BinaryUploadService::Result result,
+    enterprise_connectors::ScanRequestUploadResult result,
     BinaryUploadService::Request::Data data) {
   file_metadata_.insert({current_path, enterprise_connectors::FileMetadata(
                                            final_path.AsUTF8Unsafe(), data.hash,
@@ -622,7 +553,7 @@ void DeepScanningRequest::OnGetPackageFileRequestData(
 void DeepScanningRequest::OnGetFileRequestData(
     const base::FilePath& file_path,
     std::unique_ptr<FileAnalysisRequest> request,
-    BinaryUploadService::Result result,
+    enterprise_connectors::ScanRequestUploadResult result,
     BinaryUploadService::Request::Data data) {
   if (ShouldTerminateEarly(result)) {
     // We record the scan here because the request is terminated early and won't
@@ -647,28 +578,29 @@ void DeepScanningRequest::OnDownloadRequestReady(
   }
 
   upload_start_times_[current_path] = base::TimeTicks::Now();
-  Profile* profile = Profile::FromBrowserContext(
-      content::DownloadItemUtils::GetBrowserContext(item_));
+  Profile* profile =
+      Profile::FromBrowserContext(metadata_->GetBrowserContext());
   BinaryUploadService* binary_upload_service =
       download_service_->GetBinaryUploadService(profile, analysis_settings_);
   if (binary_upload_service) {
     binary_upload_service->MaybeUploadForDeepScanning(
         std::move(deep_scan_request));
   } else {
-    OnScanComplete(current_path, BinaryUploadService::Result::UNKNOWN,
+    OnScanComplete(current_path,
+                   enterprise_connectors::ScanRequestUploadResult::kUnknown,
                    enterprise_connectors::ContentAnalysisResponse());
   }
 }
 
 void DeepScanningRequest::OnScanComplete(
     const base::FilePath& current_path,
-    BinaryUploadService::Result result,
+    enterprise_connectors::ScanRequestUploadResult result,
     enterprise_connectors::ContentAnalysisResponse response) {
   RecordDeepScanMetrics(
       analysis_settings_.cloud_or_local_settings.is_cloud_analysis(),
-      /*access_point=*/DeepScanAccessPoint::DOWNLOAD,
+      /*access_point=*/enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
       /*duration=*/base::TimeTicks::Now() - upload_start_times_[current_path],
-      /*total_size=*/item_->GetTotalBytes(), /*result=*/result,
+      /*total_bytes=*/metadata_->GetTotalBytes(), /*result=*/result,
       /*response=*/response);
 
   if (IsConsumerTriggered()) {
@@ -676,45 +608,44 @@ void DeepScanningRequest::OnScanComplete(
   } else if (IsEnterpriseTriggered()) {
     OnEnterpriseScanComplete(current_path, result, response);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
 void DeepScanningRequest::OnConsumerScanComplete(
     const base::FilePath& current_path,
-    BinaryUploadService::Result result,
+    enterprise_connectors::ScanRequestUploadResult result,
     enterprise_connectors::ContentAnalysisResponse response) {
   bool is_invalid_password =
-      result == BinaryUploadService::Result::FILE_ENCRYPTED ||
-      (result == BinaryUploadService::Result::SUCCESS &&
-       DownloadItemWarningData::IsEncryptedArchive(item_) &&
+      result ==
+          enterprise_connectors::ScanRequestUploadResult::kFileEncrypted ||
+      (result == enterprise_connectors::ScanRequestUploadResult::kSuccess &&
+       metadata_->IsTopLevelEncryptedArchive() &&
        HasDecryptionFailedResult(response));
   bool is_success =
-      result == BinaryUploadService::Result::SUCCESS && !is_invalid_password;
+      result == enterprise_connectors::ScanRequestUploadResult::kSuccess &&
+      !is_invalid_password;
   CHECK(IsConsumerTriggered());
   DownloadCheckResult download_result = DownloadCheckResult::UNKNOWN;
   if (is_success) {
     request_tokens_.push_back(response.request_token());
-    ResponseToDownloadCheckResult(response, &download_result);
-    LogDeepScanEvent(item_, DeepScanEvent::kScanCompleted);
+    download_result = ResponseToDownloadCheckResult(response);
+    LogDeepScanEvent(*metadata_, DeepScanEvent::kScanCompleted);
   } else if (is_invalid_password) {
-    // Since we now prompt the user for a password, FILE_ENCRYPTED indicates
-    // the password was not correct. Instead of failing, ask the user to
-    // correct the issue.
-    DownloadItemWarningData::SetHasIncorrectPassword(item_, true);
-    PromptForPassword(item_);
+    // Since we now prompt the user for a password for `DownloadItem` scans,
+    // FILE_ENCRYPTED indicates the password was not correct. Instead of
+    // failing, ask the user to correct the issue.
+    metadata_->SetHasIncorrectPassword(true);
+    metadata_->PromptForPassword();
     download_result = DownloadCheckResult::PROMPT_FOR_SCANNING;
-    LogDeepScanEvent(item_, DeepScanEvent::kIncorrectPassword);
-    base::UmaHistogramBoolean(
-        "SBClientDownload.DeepScan.IncorrectPasswordVerdictIsLocal",
-        result == BinaryUploadService::Result::FILE_ENCRYPTED);
+    LogDeepScanEvent(*metadata_, DeepScanEvent::kIncorrectPassword);
   } else {
     download_result = DownloadCheckResult::DEEP_SCANNED_FAILED;
-    LogDeepScanEvent(item_, DeepScanEvent::kScanFailed);
+    LogDeepScanEvent(*metadata_, DeepScanEvent::kScanFailed);
   }
 
   LogDeepScanResult(download_result, trigger_,
-                    DownloadItemWarningData::IsEncryptedArchive(item_));
+                    metadata_->IsTopLevelEncryptedArchive());
 
   DCHECK(file_metadata_.count(current_path));
   file_metadata_.at(current_path).scan_response = std::move(response);
@@ -723,63 +654,109 @@ void DeepScanningRequest::OnConsumerScanComplete(
 
 void DeepScanningRequest::OnEnterpriseScanComplete(
     const base::FilePath& current_path,
-    BinaryUploadService::Result result,
+    enterprise_connectors::ScanRequestUploadResult result,
     enterprise_connectors::ContentAnalysisResponse response) {
   CHECK(IsEnterpriseTriggered());
+
   DownloadCheckResult download_result = DownloadCheckResult::UNKNOWN;
-  if (result == BinaryUploadService::Result::SUCCESS) {
-    request_tokens_.push_back(response.request_token());
-    ResponseToDownloadCheckResult(response, &download_result);
-  } else if (result == BinaryUploadService::Result::FILE_TOO_LARGE &&
-             analysis_settings_.block_large_files) {
+
+  if (result == enterprise_connectors::ScanRequestUploadResult::kFileTooLarge &&
+      analysis_settings_.block_large_files) {
     download_result = DownloadCheckResult::BLOCKED_TOO_LARGE;
-  } else if (result == BinaryUploadService::Result::FILE_ENCRYPTED &&
+  } else if (result == enterprise_connectors::ScanRequestUploadResult::
+                           kFileEncrypted &&
              analysis_settings_.block_password_protected_files) {
     download_result = DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED;
+    // WebProtect could still issue a block or warn verdict based on the
+    // metadata of large or encrypted files. Therefore we should check the
+    // `response` for these two cases as well.
+  } else if (result == enterprise_connectors::ScanRequestUploadResult::
+                           kFileTooLarge ||
+             result == enterprise_connectors::ScanRequestUploadResult::
+                           kFileEncrypted) {
+    MaybeUpdateDownloadCheckResult(response, download_result);
+  } else if (result ==
+             enterprise_connectors::ScanRequestUploadResult::kSuccess) {
+    request_tokens_.push_back(response.request_token());
+    download_result = ResponseToDownloadCheckResult(response);
+    if (download_result == DownloadCheckResult::FORCE_SAVE_TO_GDRIVE) {
+      if (!base::FeatureList::IsEnabled(
+              enterprise_data_protection::kEnableForceDownloadToCloud)) {
+        download_result = DownloadCheckResult::SENSITIVE_CONTENT_BLOCK;
+      } else if (web_contents()) {
+        // `web_contents()` may be nullptr in several cases, if the tab owning
+        // the download was opened by a download link, a restored page, or an
+        // external application. For those cases, download to drive directly.
+        //
+        // ProcessEnterpriseDownloadResult will run via
+        // dialog callback.
+        base::OnceClosure keep_closure = base::BindOnce(
+            &DeepScanningRequest::ProcessEnterpriseDownloadResult,
+            weak_ptr_factory_.GetWeakPtr(),
+            DownloadCheckResult::FORCE_SAVE_TO_GDRIVE);
+        base::OnceClosure discard_closure = base::BindOnce(
+            &DeepScanningRequest::ProcessEnterpriseDownloadResult,
+            weak_ptr_factory_.GetWeakPtr(),
+            DownloadCheckResult::SENSITIVE_CONTENT_BLOCK);
+
+        new enterprise_connectors::ContentAnalysisDialogController(
+            std::make_unique<
+                enterprise_connectors::ContentAnalysisDownloadsDelegate>(
+                u"", u"", GURL(), false, std::move(keep_closure),
+                std::move(discard_closure), nullptr,
+                enterprise_connectors::ContentAnalysisResponse::Result::
+                    TriggeredRule::CustomRuleMessage()),
+            true,  // Downloads are always cloud-based for now.
+            web_contents(),
+            enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
+            /* file_count */ 1,
+            enterprise_connectors::FinalContentAnalysisResult::
+                FORCE_SAVE_TO_CLOUD,
+            nullptr);
+        return;
+      }
+    }
   } else if (enterprise_connectors::ResultIsFailClosed(result) &&
              analysis_settings_.default_action ==
                  enterprise_connectors::DefaultAction::kBlock) {
     download_result = DownloadCheckResult::BLOCKED_SCAN_FAILED;
   }
 
-  LogDeepScanResult(download_result, trigger_,
-                    DownloadItemWarningData::IsEncryptedArchive(item_));
-
-  Profile* profile = Profile::FromBrowserContext(
-      content::DownloadItemUtils::GetBrowserContext(item_));
+  // Reporting happens unconditionally and does not depend on
+  // DownloadCheckResult. Can be kept here.
+  Profile* profile =
+      Profile::FromBrowserContext(metadata_->GetBrowserContext());
   DCHECK(file_metadata_.count(current_path));
   file_metadata_.at(current_path).scan_response = std::move(response);
   if (profile) {
+    safe_browsing::ReferrerChain referrers = referrer_chain();
     const auto& file_metadata = file_metadata_.at(current_path);
     report_callbacks_.AddUnsafe(base::BindOnce(
-        &MaybeReportDeepScanningVerdict, profile, item_->GetURL(),
-        item_->GetTabUrl(), "", "", file_metadata.filename,
-        file_metadata.sha256, file_metadata.mime_type,
-        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload, "",
-        DeepScanAccessPoint::DOWNLOAD, file_metadata.size, result,
-        file_metadata.scan_response));
+        &MaybeReportDeepScanningVerdict, profile, this, /*source=*/"",
+        /*destination=*/"", file_metadata.filename, file_metadata.sha256,
+        file_metadata.mime_type,
+        enterprise_connectors::kFileDownloadDataTransferEventTrigger,
+        /*content_transfer_method=*/"", GetContentAreaAccountEmail(),
+        file_metadata.size, referrers, result, file_metadata.scan_response));
 
-    enterprise_connectors::ScanResult* stored_result =
-        static_cast<enterprise_connectors::ScanResult*>(
-            item_->GetUserData(enterprise_connectors::ScanResult::kKey));
-    if (stored_result) {
-      stored_result->file_metadata.push_back(file_metadata);
-    } else {
-      auto scan_result =
-          std::make_unique<enterprise_connectors::ScanResult>(file_metadata);
-      item_->SetUserData(enterprise_connectors::ScanResult::kKey,
-                         std::move(scan_result));
-    }
+    metadata_->AddScanResultMetadata(file_metadata);
   }
 
+  ProcessEnterpriseDownloadResult(download_result);
+}
+
+void DeepScanningRequest::ProcessEnterpriseDownloadResult(
+    DownloadCheckResult download_result) {
+  LogDeepScanResult(download_result, trigger_,
+                    metadata_->IsTopLevelEncryptedArchive());
   MaybeFinishRequest(download_result);
 }
 
 void DeepScanningRequest::OnDownloadUpdated(download::DownloadItem* download) {
-  DCHECK_EQ(download, item_);
+  CHECK(metadata_->IsForDownloadItem(download));
 
   if (ReportOnlyScan() &&
-      item_->GetState() == download::DownloadItem::COMPLETE &&
+      download->GetState() == download::DownloadItem::COMPLETE &&
       !scanning_started_) {
     // Now that the download is complete in non-blocking mode, scanning can
     // start since the files have moved to their final destination.
@@ -793,7 +770,7 @@ void DeepScanningRequest::OnDownloadUpdated(download::DownloadItem* download) {
 
 void DeepScanningRequest::OnDownloadDestroyed(
     download::DownloadItem* download) {
-  DCHECK_EQ(download, item_);
+  CHECK(metadata_->IsForDownloadItem(download));
 
   if (download->IsSavePackageDownload()) {
     enterprise_connectors::RunSavePackageScanningCallback(download, false);
@@ -805,7 +782,73 @@ void DeepScanningRequest::OnDownloadDestroyed(
   // has finished.
   callback_.Reset();
 
+  // `FinishRequest` always clears the `download_observation` and `metadata`,
+  // preventing use-after-free issues for `download_item` after it's been
+  // destroyed.
   FinishRequest(DownloadCheckResult::UNKNOWN);
+}
+
+const enterprise_connectors::AnalysisSettings& DeepScanningRequest::settings()
+    const {
+  return analysis_settings_;
+}
+
+signin::IdentityManager* DeepScanningRequest::identity_manager() const {
+  return IdentityManagerFactory::GetForProfile(
+      Profile::FromBrowserContext(metadata_->GetBrowserContext()));
+}
+
+int DeepScanningRequest::user_action_requests_count() const {
+  if (!save_package_files_.empty()) {
+    return save_package_files_.size();
+  }
+  return 1;
+}
+
+std::string DeepScanningRequest::tab_title() const {
+  return "";
+}
+
+std::string DeepScanningRequest::user_action_id() const {
+  return "";
+}
+
+std::string DeepScanningRequest::email() const {
+  return enterprise_connectors::GetProfileEmail(
+      Profile::FromBrowserContext(metadata_->GetBrowserContext()));
+}
+
+const GURL& DeepScanningRequest::url() const {
+  if (metadata_->GetURL().is_valid()) {
+    return metadata_->GetURL();
+  }
+  return GURL::EmptyGURL();
+  ;
+}
+
+const GURL& DeepScanningRequest::tab_url() const {
+  if (metadata_->GetTabUrl().is_valid()) {
+    return metadata_->GetTabUrl();
+  }
+  return GURL::EmptyGURL();
+}
+
+enterprise_connectors::ContentAnalysisRequest::Reason
+DeepScanningRequest::reason() const {
+  return reason_;
+}
+
+safe_browsing::ReferrerChain DeepScanningRequest::referrer_chain() const {
+  return metadata_->GetReferrerChain();
+}
+
+google::protobuf::RepeatedPtrField<std::string>
+DeepScanningRequest::frame_url_chain() const {
+  return metadata_->CollectFrameUrls();
+}
+
+content::WebContents* DeepScanningRequest::web_contents() const {
+  return metadata_->web_contents();
 }
 
 void DeepScanningRequest::MaybeFinishRequest(DownloadCheckResult result) {
@@ -819,7 +862,8 @@ void DeepScanningRequest::MaybeFinishRequest(DownloadCheckResult result) {
 }
 
 void DeepScanningRequest::FinishRequest(DownloadCheckResult result) {
-  EventResult event_result = EventResult::UNKNOWN;
+  enterprise_connectors::EventResult event_result =
+      enterprise_connectors::EventResult::UNKNOWN;
 
   if (!report_callbacks_.empty()) {
     DCHECK(IsEnterpriseTriggered());
@@ -828,18 +872,19 @@ void DeepScanningRequest::FinishRequest(DownloadCheckResult result) {
       // The event result in report-only will always match whatever danger type
       // known before deep scanning since the UI will never be updated based on
       // `result`.
-      event_result = GetEventResult(pre_scan_danger_type_, item_);
+      event_result = metadata_->GetPreScanEventResult(pre_scan_danger_type_);
     } else {
-      Profile* profile = Profile::FromBrowserContext(
-          content::DownloadItemUtils::GetBrowserContext(item_));
+      Profile* profile =
+          Profile::FromBrowserContext(metadata_->GetBrowserContext());
       // If FinishRequest is reached with an unknown `result` or an explicit
       // failure, then it means no scanning request ever completed successfully,
       // so `event_result` needs to reflect whatever danger type was known
       // pre-deep scanning.
-      event_result = (result == DownloadCheckResult::DEEP_SCANNED_FAILED ||
-                      result == DownloadCheckResult::UNKNOWN)
-                         ? GetEventResult(pre_scan_danger_type_, item_)
-                         : GetEventResult(result, profile);
+      event_result =
+          (result == DownloadCheckResult::DEEP_SCANNED_FAILED ||
+           result == DownloadCheckResult::UNKNOWN)
+              ? metadata_->GetPreScanEventResult(pre_scan_danger_type_)
+              : GetEventResult(result, profile);
     }
 
     report_callbacks_.Notify(event_result);
@@ -859,12 +904,62 @@ void DeepScanningRequest::FinishRequest(DownloadCheckResult result) {
 
   AcknowledgeRequest(event_result);
 
+  // Bypassed verdicts are given when a user continues a download after being
+  // warned by WP, so it is considered safe here.
+  // For obfuscated download files, deobfuscate it if the scan returns a safe
+  // verdict or result is unknown.
+  // TODO(crbug.com/378490429): Add support in obfuscation module for skipping
+  // malware scan for password protected files.
+  if ((event_result == enterprise_connectors::EventResult::ALLOWED ||
+       event_result == enterprise_connectors::EventResult::BYPASSED ||
+       result == DownloadCheckResult::UNKNOWN) &&
+      metadata_->IsObfuscated()) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(&enterprise_obfuscation::DeobfuscateFileInPlace,
+                       metadata_->GetFullPath()),
+        base::BindOnce(&DeepScanningRequest::OnDeobfuscationComplete,
+                       weak_ptr_factory_.GetWeakPtr(), result));
+
+    // Reset to prevent use-after-free issues.
+    download_observation_.reset();
+    metadata_.reset();
+
+    return;
+  }
+
+  CallbackAndCleanup(result);
+}
+
+void DeepScanningRequest::OnDeobfuscationComplete(
+    DownloadCheckResult result,
+    base::expected<void, enterprise_obfuscation::Error> deobfuscation_result) {
+  if (!deobfuscation_result.has_value()) {
+    // TODO(b/367259664): Add better error handling for deobfuscation.
+    DVLOG(1) << "Failed to deobfuscate downloaded file.";
+  }
+
+  CallbackAndCleanup(result);
+}
+
+void DeepScanningRequest::CallbackAndCleanup(DownloadCheckResult result) {
   if (!callback_.is_null()) {
     callback_.Run(result);
   }
   weak_ptr_factory_.InvalidateWeakPtrs();
-  item_->RemoveObserver(this);
+  download_observation_.reset();
+  metadata_.reset();
   download_service_->RequestFinished(this);
+}
+
+void DeepScanningRequest::MaybeUpdateDownloadCheckResult(
+    const enterprise_connectors::ContentAnalysisResponse& response,
+    DownloadCheckResult& download_result) {
+  auto result_from_response = ResponseToDownloadCheckResult(response);
+  if (result_from_response != DownloadCheckResult::DEEP_SCANNED_SAFE) {
+    request_tokens_.push_back(response.request_token());
+    download_result = result_from_response;
+  }
 }
 
 bool DeepScanningRequest::ReportOnlyScan() {
@@ -876,9 +971,10 @@ bool DeepScanningRequest::ReportOnlyScan() {
          enterprise_connectors::BlockUntilVerdict::kNoBlock;
 }
 
-void DeepScanningRequest::AcknowledgeRequest(EventResult event_result) {
-  Profile* profile = Profile::FromBrowserContext(
-      content::DownloadItemUtils::GetBrowserContext(item_));
+void DeepScanningRequest::AcknowledgeRequest(
+    enterprise_connectors::EventResult event_result) {
+  Profile* profile =
+      Profile::FromBrowserContext(metadata_->GetBrowserContext());
   BinaryUploadService* binary_upload_service =
       download_service_->GetBinaryUploadService(profile, analysis_settings_);
   if (!binary_upload_service) {
@@ -923,43 +1019,20 @@ bool DeepScanningRequest::IsEnterpriseTriggered() const {
   }
 }
 
-bool DeepScanningRequest::MaybeShowDeepScanFailureModalDialog(
-    base::OnceClosure accept_callback,
-    base::OnceClosure cancel_callback,
-    base::OnceClosure close_callback,
-    base::OnceClosure open_now_callback) {
-  Profile* profile = Profile::FromBrowserContext(
-      content::DownloadItemUtils::GetBrowserContext(item_));
-  if (!profile) {
-    return false;
-  }
-
-  Browser* browser =
-      chrome::FindTabbedBrowser(profile, /*match_original_profiles=*/false);
-  if (!browser) {
-    return false;
-  }
-
-  DeepScanningFailureModalDialog::ShowForWebContents(
-      browser->tab_strip_model()->GetActiveWebContents(),
-      std::move(accept_callback), std::move(cancel_callback),
-      std::move(close_callback), std::move(open_now_callback));
-  return true;
-}
-
 bool DeepScanningRequest::ShouldTerminateEarly(
-    BinaryUploadService::Result result) {
+    enterprise_connectors::ScanRequestUploadResult result) {
   CHECK(analysis_settings_.cloud_or_local_settings.is_cloud_analysis());
 
   return IsEnterpriseTriggered()
              ? EnterpriseResultIsFailure(
                    result, analysis_settings_.block_large_files,
                    analysis_settings_.block_password_protected_files)
-             : result != BinaryUploadService::Result::SUCCESS;
+             : result !=
+                   enterprise_connectors::ScanRequestUploadResult::kSuccess;
 }
 
 void DeepScanningRequest::OpenDownload() {
-  item_->OpenDownload();
+  metadata_->OpenDownload();
   FinishRequest(DownloadCheckResult::UNKNOWN);
 }
 

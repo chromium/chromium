@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/power/ml/user_activity_ukm_logger_impl.h"
+
 #include <cmath>
 
 #include "chrome/browser/ash/power/ml/user_activity_event.pb.h"
 #include "chrome/browser/ash/power/ml/user_activity_manager.h"
 #include "chrome/browser/ash/power/ml/user_activity_ukm_logger_helpers.h"
-#include "chrome/browser/ash/power/ml/user_activity_ukm_logger_impl.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "ui/gfx/native_widget_types.h"
 
 namespace ash {
 namespace power {

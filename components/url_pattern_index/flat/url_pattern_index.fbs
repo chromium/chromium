@@ -28,7 +28,7 @@ enum OptionFlag : ubyte (bit_flags) {
   IS_ALLOWLIST,
   APPLIES_TO_FIRST_PARTY,
   APPLIES_TO_THIRD_PARTY,
-  IS_CASE_INSENSITIVE,
+  IS_MATCH_CASE,
 }
 
 // The options controlling whether or not to activate filtering for subresources

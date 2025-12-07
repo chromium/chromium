@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/byte_count.mojom";
 import "third_party/blink/public/mojom/blob/blob_url_store.mojom";
 import "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom";
 import "third_party/blink/public/mojom/cache_storage/cache_storage.mojom";
@@ -37,8 +38,9 @@ interface StorageAccessHandle {
        pending_remote<FileSystemAccessDirectoryHandle>? directory);
 
   // Returns estimated quota usage for first-party storage.
-  // TODO(crbug.com/1500556): These should never be negative so consider uint64.
-  Estimate() => (int64 current_usage, int64 current_quota, bool success);
+  Estimate() => (mojo_base.mojom.ByteCount current_usage,
+                 mojo_base.mojom.ByteCount current_quota,
+                 bool success);
 
   // Binds a BlobURLStore with access to first-party storage.
   BindBlobStorage(pending_associated_receiver<BlobURLStore> receiver);

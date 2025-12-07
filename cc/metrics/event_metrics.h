@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -64,7 +65,8 @@ class CC_EXPORT EventMetrics {
     kGesturePinchUpdate,
     kInertialGestureScrollUpdate,
     kMouseMoved,
-    kMaxValue = kMouseMoved,
+    kInertialGestureScrollEnd,
+    kMaxValue = kInertialGestureScrollEnd,
   };
 
   // Stages of event dispatch in different processes/threads.
@@ -129,6 +131,10 @@ class CC_EXPORT EventMetrics {
   const char* GetTypeName() const;
   static const char* GetTypeName(EventType type);
 
+  // Whether `EventMetrics` with `type` should be kept around even if handling
+  // the event didn't cause a frame update.
+  static bool ShouldKeepEvenWithoutCausingFrameUpdate(EventType type);
+
   // Returns custom histogram bucketing for the metric. If returns `nullopt`,
   // default bucketing will be used.
   struct HistogramBucketing {
@@ -179,6 +185,11 @@ class CC_EXPORT EventMetrics {
     requires_main_thread_update_ = true;
   }
 
+  bool caused_frame_update() const { return caused_frame_update_; }
+  void set_caused_frame_update(bool caused_frame_update) {
+    caused_frame_update_ = caused_frame_update;
+  }
+
  protected:
   EventMetrics(EventType type,
                base::TimeTicks timestamp,
@@ -196,6 +207,8 @@ class CC_EXPORT EventMetrics {
   // directly correspond to an event, it won't be used in recording trace
   // events.
   EventMetrics(const EventMetrics& other);
+
+  void CoalesceWith(const EventMetrics& newer_event);
 
   // Copy timestamps of dispatch stages (up to and including
   // `last_dispatch_stage`) from `other`.
@@ -245,6 +258,10 @@ class CC_EXPORT EventMetrics {
   // have a corresponding input, for example a generated event based on existing
   // event.
   std::optional<TraceId> trace_id_;
+
+  // Whether handling the event caused a frame update. See
+  // `EventsMetricsManager::ScopedMonitor`.
+  bool caused_frame_update_ = true;
 };
 
 class CC_EXPORT ScrollEventMetrics : public EventMetrics {
@@ -427,6 +444,8 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
 
   ~ScrollUpdateEventMetrics() override;
 
+  // Note: Synthetic scroll updates (see `is_synthetic_`) should never be
+  // coalesced.
   void CoalesceWith(const ScrollUpdateEventMetrics& newer_scroll_update);
 
   ScrollUpdateEventMetrics* AsScrollUpdate() override;
@@ -451,6 +470,12 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
   std::optional<bool> is_janky_scrolled_frame() const {
     return is_janky_scrolled_frame_;
   }
+
+  void set_did_scroll(bool did_scroll) { did_scroll_ = did_scroll; }
+  bool did_scroll() const { return did_scroll_; }
+
+  void set_is_synthetic(bool is_synthetic) { is_synthetic_ = is_synthetic; }
+  bool is_synthetic() const { return is_synthetic_; }
 
  protected:
   ScrollUpdateEventMetrics(EventType type,
@@ -485,6 +510,24 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
   int32_t coalesced_event_count_ = 1;
 
   std::optional<bool> is_janky_scrolled_frame_ = std::nullopt;
+
+  // The scroll delta may not be actually applied. Event if it is consumed. This
+  // denotes that a scroll did actually occur.
+  bool did_scroll_ = false;
+
+  // Whether the scroll update is a synthetic event, which was predicted by
+  // Chrome (see `blink::ScrollPredictor::GenerateSyntheticScrollUpdate()`). In
+  // contrast to real scroll updates, metrics cannot blindly "trust" synthetic
+  // scroll updates' input generation timestamps
+  // (`GetDispatchStageTimestamp(DispatchStage::kGenerated)`) and raw scroll
+  // deltas (`delta_`) because the scroll updates didn't originate from
+  // hardware/OS.
+  // TODO(crbug.com/456180776): For now, while we incrementally implement
+  // support for synthetic scroll updates in the scroll jank v4 metric, this
+  // field is only set to true in unit tests. Set this to true in
+  // `blink::ScrollPredictor::GenerateSyntheticScrollUpdate()` once the metric
+  // fully supports synthetic scroll updates.
+  bool is_synthetic_ = false;
 };
 
 class CC_EXPORT PinchEventMetrics : public EventMetrics {
@@ -549,7 +592,8 @@ struct CC_EXPORT EventMetricsSet {
   EventMetricsSet();
   ~EventMetricsSet();
   EventMetricsSet(EventMetrics::List main_thread_event_metrics,
-                  EventMetrics::List impl_thread_event_metrics);
+                  EventMetrics::List impl_thread_event_metrics,
+                  EventMetrics::List raster_thread_event_metrics);
   EventMetricsSet(EventMetricsSet&&);
   EventMetricsSet& operator=(EventMetricsSet&&);
 
@@ -558,6 +602,7 @@ struct CC_EXPORT EventMetricsSet {
 
   EventMetrics::List main_event_metrics;
   EventMetrics::List impl_event_metrics;
+  EventMetrics::List raster_event_metrics;
 };
 
 }  // namespace cc

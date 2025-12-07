@@ -7,7 +7,7 @@
 #include "base/uuid.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 
-namespace WTF {
+namespace blink {
 
 String CreateCanonicalUUIDString() {
   String uuid(base::Uuid::GenerateRandomV4().AsLowercaseString());
@@ -18,8 +18,8 @@ String CreateCanonicalUUIDString() {
 bool IsValidUUID(const String& uuid) {
   // In most (if not all) cases the given uuid should be utf-8, so this
   // conversion should be almost no-op.
-  StringUTF8Adaptor utf8(uuid);
+  StringUtf8Adaptor utf8(uuid);
   return base::Uuid::ParseLowercase(utf8.AsStringView()).is_valid();
 }
 
-}  // namespace WTF
+}  // namespace blink

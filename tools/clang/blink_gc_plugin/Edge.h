@@ -273,7 +273,7 @@ class TraceWrapperV8Reference : public PtrEdge {
 class Collection : public Edge {
  public:
   typedef std::vector<Edge*> Members;
-  Collection(RecordInfo* info, bool on_heap) : info_(info), on_heap_(on_heap) {}
+  explicit Collection(RecordInfo* info);
   ~Collection() {
     for (Members::iterator it = members_.begin(); it != members_.end(); ++it) {
       assert(*it && "Collection-edge members must be non-null");
@@ -303,7 +303,7 @@ class Collection : public Edge {
 // An iterator edge is a direct edge to some iterator type.
 class Iterator : public Edge {
  public:
-  Iterator(RecordInfo* info, bool on_heap) : info_(info), on_heap_(on_heap) {}
+  explicit Iterator(RecordInfo* info);
   ~Iterator() {}
 
   void Accept(EdgeVisitor* visitor) override { visitor->VisitIterator(this); }

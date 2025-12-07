@@ -2,25 +2,92 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_IOS_TVOS)
+#include <TargetConditionals.h>
+
+#if TARGET_OS_SIMULATOR
+// On tvOS, all posix_spawn*() functions except for posix_spawnp() are marked
+// unavailable, but the symbols and the implementation are present (but
+// unusable on tvOS device builds targeted for distribution due to App Store
+// restrictions on the use of multiple processes). posix_spawnp() is required
+// for the test launcher code to be able to launch multiple processes in the
+// simulator, but it is not fully usable without the functions marked
+// unavailable.
+//
+// Work around it by changing the availability annotation of the functions used
+// in this file before including <spawn.h>. This is done as early as possible
+// (i.e. before even including base/process/launch.h) to prevent <spawn.h> from
+// being indirectly included before we are able to declare a different
+// availability.
+//
+// Note: <spawn.h> is included as a system header together with the other
+// regular headers outside this block. The inclusion as a system header turns
+// off the availability warning that would normally be thrown by LLVM when the
+// header's function declarations with different availability annotations were
+// added. See the discussion in
+// https://chromium-review.googlesource.com/c/chromium/src/+/6687371/comment/6baf4b4c_8a60d02a/
+#include <Availability.h>
+#include <inttypes.h>
+#include <sys/types.h>
+
+extern "C" {
+
+using posix_spawnattr_t = void*;
+using posix_spawn_file_actions_t = void*;
+
+int posix_spawnattr_init(posix_spawnattr_t*) __API_AVAILABLE(tvos(1.0));
+int posix_spawnattr_destroy(posix_spawnattr_t*) __API_AVAILABLE(tvos(1.0));
+int posix_spawn_file_actions_destroy(posix_spawn_file_actions_t*)
+    __API_AVAILABLE(tvos(1.0));
+int posix_spawn_file_actions_init(posix_spawn_file_actions_t*)
+    __API_AVAILABLE(tvos(1.0));
+int posix_spawn_file_actions_adddup2(posix_spawn_file_actions_t*, int, int)
+    __API_AVAILABLE(tvos(1.0));
+int posix_spawn_file_actions_addopen(posix_spawn_file_actions_t*,
+                                     int,
+                                     const char*,
+                                     int,
+                                     mode_t) __API_AVAILABLE(tvos(1.0));
+int posix_spawn_file_actions_addinherit_np(posix_spawn_file_actions_t*, int)
+    __API_AVAILABLE(tvos(1.0));
+int posix_spawnattr_setpgroup(posix_spawnattr_t*, pid_t)
+    __API_AVAILABLE(tvos(1.0));
+int posix_spawnattr_setflags(posix_spawnattr_t*, short)
+    __API_AVAILABLE(tvos(1.0));
+int posix_spawnattr_set_csm_np(const posix_spawnattr_t*, uint32_t)
+    __API_AVAILABLE(tvos(1.0));
+
+}  // extern "C"
+
+#else
+#error This file is not supported on tvOS device builds.
+#endif  // TARGET_OS_SIMULATOR
+#endif  // BUILDFLAG(IS_IOS_TVOS)
+
 #include "base/process/launch.h"
 
 #include <crt_externs.h>
 #include <mach/mach.h>
-#include <os/availability.h>
 #include <spawn.h>
 #include <string.h>
 #include <sys/wait.h>
 
+#include "base/apple/mach_port_rendezvous.h"
 #include "base/command_line.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
-#include "base/mac/mach_port_rendezvous.h"
 #include "base/memory/raw_ptr.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/environment_internal.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "base/apple/mach_port_rendezvous_mac.h"
+#endif
 
 extern "C" {
 // Changes the current thread's directory to a path or directory file
@@ -34,6 +101,11 @@ int responsibility_spawnattrs_setdisclaim(posix_spawnattr_t attrs,
 }  // extern "C"
 
 namespace base {
+
+void CheckPThreadStackMinIsSafe() {
+  static_assert(__builtin_constant_p(PTHREAD_STACK_MIN),
+                "Always constant on mac");
+}
 
 namespace {
 
@@ -140,6 +212,9 @@ bool GetAppOutputInternal(const std::vector<std::string>& argv,
   }
 
   Process process = LaunchProcess(argv, launch_options);
+  if (!process.IsValid()) {
+    return false;
+  }
 
   // Close the parent process' write descriptor, so that EOF is generated in
   // read loop below.
@@ -230,21 +305,28 @@ Process LaunchProcess(const std::vector<std::string>& argv,
   if (options.disclaim_responsibility) {
     DPSXCHECK(responsibility_spawnattrs_setdisclaim(attr.get(), 1));
   }
+
+  EnvironmentMap new_environment_map = options.environment;
+  MachPortRendezvousServerMac::AddFeatureStateToEnvironment(
+      new_environment_map);
+#else
+  const EnvironmentMap& new_environment_map = options.environment;
 #endif
 
   std::vector<char*> argv_cstr;
   argv_cstr.reserve(argv.size() + 1);
-  for (const auto& arg : argv)
+  for (const auto& arg : argv) {
     argv_cstr.push_back(const_cast<char*>(arg.c_str()));
+  }
   argv_cstr.push_back(nullptr);
 
   base::HeapArray<char*> owned_environ;
   char* empty_environ = nullptr;
   char** new_environ =
       options.clear_environment ? &empty_environ : *_NSGetEnviron();
-  if (!options.environment.empty()) {
+  if (!new_environment_map.empty()) {
     owned_environ =
-        internal::AlterEnvironment(new_environ, options.environment);
+        internal::AlterEnvironment(new_environ, new_environment_map);
     new_environ = owned_environ.data();
   }
 
@@ -276,7 +358,13 @@ Process LaunchProcess(const std::vector<std::string>& argv,
   pid_t pid;
   {
     const bool has_mach_ports_for_rendezvous =
-        !options.mach_ports_for_rendezvous.empty();
+#if BUILDFLAG(IS_IOS_TVOS)
+        false
+#else
+        !options.mach_ports_for_rendezvous.empty()
+#endif  // BUILDFLAG(IS_IOS_TVOS)
+        ;
+
 #if BUILDFLAG(IS_IOS)
     // This code is only used for the iOS simulator to launch tests. We do not
     // support setting MachPorts on launch. You should look at
@@ -284,12 +372,16 @@ Process LaunchProcess(const std::vector<std::string>& argv,
     // a non-test and need ports.
     CHECK(!has_mach_ports_for_rendezvous);
 #else
-    // If |options.mach_ports_for_rendezvous| is specified : the server's lock
-    // must be held for the duration of posix_spawnp() so that new child's PID
-    // can be recorded with the set of ports.
+    // If `options.mach_ports_for_rendezvous` or `options.process_requirement`
+    // is specified : the server's lock must be held for the duration of
+    // posix_spawnp() so that new child's PID can be recorded with the set of
+    // ports or process requirement.
+    bool needs_rendezvous_lock =
+        has_mach_ports_for_rendezvous || options.process_requirement;
+
     AutoLockMaybe rendezvous_lock(
-        has_mach_ports_for_rendezvous
-            ? &MachPortRendezvousServer::GetInstance()->GetLock()
+        needs_rendezvous_lock
+            ? &MachPortRendezvousServerMac::GetInstance()->GetLock()
             : nullptr);
 #endif
     // Use posix_spawnp as some callers expect to have PATH consulted.
@@ -297,11 +389,17 @@ Process LaunchProcess(const std::vector<std::string>& argv,
                       &argv_cstr[0], new_environ);
 
 #if !BUILDFLAG(IS_IOS)
-    if (has_mach_ports_for_rendezvous) {
+    if (needs_rendezvous_lock) {
       if (rv == 0) {
-        MachPortRendezvousServer::GetInstance()->GetLock().AssertAcquired();
-        MachPortRendezvousServer::GetInstance()->RegisterPortsForPid(
-            pid, options.mach_ports_for_rendezvous);
+        MachPortRendezvousServerMac::GetInstance()->GetLock().AssertAcquired();
+        if (has_mach_ports_for_rendezvous) {
+          MachPortRendezvousServerMac::GetInstance()->RegisterPortsForPid(
+              pid, options.mach_ports_for_rendezvous);
+        }
+        if (options.process_requirement) {
+          MachPortRendezvousServerMac::GetInstance()
+              ->SetProcessRequirementForPid(pid, *options.process_requirement);
+        }
       } else {
         // Because |options| is const-ref, the collection has to be copied here.
         // The caller expects to relinquish ownership of any strong rights if
@@ -351,11 +449,7 @@ bool GetAppOutputAndError(const CommandLine& cl, std::string* output) {
 bool GetAppOutputWithExitCode(const CommandLine& cl,
                               std::string* output,
                               int* exit_code) {
-  GetAppOutputOptions options;
-  options.output = output;
-  bool rv = GetAppOutputInternal(cl.argv(), &options);
-  *exit_code = options.exit_code;
-  return rv;
+  return GetAppOutputWithExitCode(cl.argv(), output, exit_code);
 }
 
 bool GetAppOutput(const std::vector<std::string>& argv, std::string* output) {
@@ -372,6 +466,16 @@ bool GetAppOutputAndError(const std::vector<std::string>& argv,
   options.output = output;
   return GetAppOutputInternal(argv, &options) &&
          options.exit_code == EXIT_SUCCESS;
+}
+
+bool GetAppOutputWithExitCode(const std::vector<std::string>& argv,
+                              std::string* output,
+                              int* exit_code) {
+  GetAppOutputOptions options;
+  options.output = output;
+  bool rv = GetAppOutputInternal(argv, &options);
+  *exit_code = options.exit_code;
+  return rv;
 }
 
 void RaiseProcessToHighPriority() {

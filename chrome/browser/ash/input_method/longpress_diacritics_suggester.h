@@ -9,7 +9,6 @@
 #include <string>
 #include <string_view>
 
-#include "base/containers/fixed_flat_map.h"
 #include "chrome/browser/ash/input_method/longpress_suggester.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "ui/events/event.h"
@@ -20,12 +19,12 @@ namespace ash::input_method {
 
 class SuggestionHandlerInterface;
 
-constexpr std::u16string_view kDiacriticsSeperator = u";";
-constexpr ui::DomCode kNextDomCode = ui::DomCode::ARROW_RIGHT;
-constexpr ui::DomCode kPreviousDomCode = ui::DomCode::ARROW_LEFT;
-constexpr ui::DomCode kAcceptDomCode = ui::DomCode::ENTER;
-constexpr ui::DomCode kDismissDomCode = ui::DomCode::ESCAPE;
-constexpr ui::DomCode kTabDomCode = ui::DomCode::TAB;
+inline constexpr std::u16string_view kDiacriticsSeperator = u";";
+inline constexpr ui::DomCode kNextDomCode = ui::DomCode::ARROW_RIGHT;
+inline constexpr ui::DomCode kPreviousDomCode = ui::DomCode::ARROW_LEFT;
+inline constexpr ui::DomCode kAcceptDomCode = ui::DomCode::ENTER;
+inline constexpr ui::DomCode kDismissDomCode = ui::DomCode::ESCAPE;
+inline constexpr ui::DomCode kTabDomCode = ui::DomCode::TAB;
 
 // Must match IMEPKLongpressDiacriticAction in
 // tools/metrics/histograms/enums.xml

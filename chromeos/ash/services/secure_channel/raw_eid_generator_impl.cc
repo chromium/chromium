@@ -6,6 +6,7 @@
 
 #include "base/containers/span.h"
 #include "base/numerics/byte_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "crypto/sha2.h"
 
 namespace ash::secure_channel {
@@ -26,8 +27,8 @@ std::string RawEidGeneratorImpl::GenerateEid(
   if (extra_entropy) {
     to_hash += *extra_entropy;
   }
-  to_hash.append(base::as_string_view(
-      base::numerics::U64ToBigEndian(start_of_period_timestamp_ms)));
+  to_hash.append(
+      base::as_string_view(base::U64ToBigEndian(start_of_period_timestamp_ms)));
 
   std::string result = crypto::SHA256HashString(to_hash);
   result.resize(RawEidGenerator::kNumBytesInEidValue);

@@ -2,10 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_win || is_mac || is_linux || is_chromeos)
+import("//chrome/common/features.gni")
+import("//components/guest_view/buildflags/buildflags.gni")
+import("//extensions/buildflags/buildflags.gni")
 
-import("//build/config/chromeos/ui_mode.gni")
-import("//components/nacl/features.gni")
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
 
 # The public interface for task_manager does not allow circular dependencies.
 source_set("task_manager") {
@@ -22,15 +25,9 @@ source_set("task_manager") {
     "providers/task_provider.h",
     "providers/task_provider_observer.h",
     "providers/web_contents/back_forward_cache_task.h",
-    "providers/web_contents/background_contents_tag.h",
-    "providers/web_contents/background_contents_task.h",
     "providers/web_contents/devtools_tag.h",
     "providers/web_contents/devtools_task.h",
-    "providers/web_contents/extension_tag.h",
-    "providers/web_contents/extension_task.h",
     "providers/web_contents/fenced_frame_task.h",
-    "providers/web_contents/guest_tag.h",
-    "providers/web_contents/guest_task.h",
     "providers/web_contents/isolated_web_app_task.h",
     "providers/web_contents/no_state_prefetch_tag.h",
     "providers/web_contents/no_state_prefetch_task.h",
@@ -55,21 +52,21 @@ source_set("task_manager") {
     "sampling/task_group_sampler.h",
     "sampling/task_manager_impl.h",
     "task_manager_interface.h",
+    "task_manager_metrics_recorder.h",
     "task_manager_observer.h",
     "web_contents_tags.h",
   ]
   public_deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_util",
+    "//chrome/common:buildflags",
     "//components/favicon/core",
-    "//components/nacl/common:buildflags",
+    "//components/guest_view/buildflags",
     "//components/sessions:session_id",
     "//components/webapps/common",
     "//content/public/browser",
-    "//extensions/browser",
     "//extensions/buildflags",
-    "//extensions/common:mojom",
     "//services/resource_coordinator/public/cpp/memory_instrumentation",
     "//third_party/blink/public/common:headers",
     "//third_party/blink/public/common/tokens:tokens_headers",
@@ -80,11 +77,10 @@ source_set("task_manager") {
     sources += [ "sampling/shared_sampler_win_defines.h" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "providers/arc/arc_process_task.h",
       "providers/arc/arc_process_task_provider.h",
-      "providers/crosapi/crosapi_task.h",
       "providers/vm/crostini_process_task.h",
       "providers/vm/plugin_vm_process_task.h",
       "providers/vm/vm_process_task.h",
@@ -92,18 +88,30 @@ source_set("task_manager") {
       "sampling/arc_shared_sampler.h",
     ]
     public_deps += [
-      "//ash/components/arc/mojom",
-      "//ash/components/arc/session:connection_holder",
-      "//chrome/browser/ash:primitives",
-      "//chrome/browser/ash/arc/process",
       "//chromeos/ash/components/dbus/concierge",
-      "//chromeos/crosapi/mojom",
-      "//components/arc",
+      "//chromeos/ash/components/dbus/concierge:concierge_proto",
+      "//chromeos/ash/components/process_snapshot",
+      "//chromeos/ash/experiences/arc/intent_helper",
+      "//chromeos/ash/experiences/arc/mojom",
+      "//chromeos/ash/experiences/arc/process",
+      "//chromeos/ash/experiences/arc/session:connection_holder",
     ]
   }
-  if (is_chromeos_lacros) {
-    sources += [ "providers/crosapi/task_manager_controller_lacros.h" ]
-    public_deps += [ "//chromeos/crosapi/mojom" ]
+  if (!is_android) {
+    sources += [
+      "providers/web_contents/background_contents_tag.h",
+      "providers/web_contents/background_contents_task.h",
+      "providers/web_contents/extension_tag.h",
+      "providers/web_contents/extension_task.h",
+      "providers/web_contents/guest_tag.h",
+      "providers/web_contents/guest_task.h",
+      "providers/web_contents/guest_task_mparch.h",
+    ]
+    public_deps += [
+      "//extensions/browser",
+      "//extensions/buildflags",
+      "//extensions/common:mojom",
+    ]
   }
 }
 
@@ -125,15 +133,9 @@ source_set("impl") {
     "providers/task.cc",
     "providers/task_provider.cc",
     "providers/web_contents/back_forward_cache_task.cc",
-    "providers/web_contents/background_contents_tag.cc",
-    "providers/web_contents/background_contents_task.cc",
     "providers/web_contents/devtools_tag.cc",
     "providers/web_contents/devtools_task.cc",
-    "providers/web_contents/extension_tag.cc",
-    "providers/web_contents/extension_task.cc",
     "providers/web_contents/fenced_frame_task.cc",
-    "providers/web_contents/guest_tag.cc",
-    "providers/web_contents/guest_task.cc",
     "providers/web_contents/isolated_web_app_task.cc",
     "providers/web_contents/no_state_prefetch_tag.cc",
     "providers/web_contents/no_state_prefetch_task.cc",
@@ -157,6 +159,7 @@ source_set("impl") {
     "sampling/task_group_sampler.cc",
     "sampling/task_manager_impl.cc",
     "task_manager_interface.cc",
+    "task_manager_metrics_recorder.cc",
     "task_manager_observer.cc",
     "web_contents_tags.cc",
   ]
@@ -164,33 +167,26 @@ source_set("impl") {
   deps = [
     ":task_manager",
     "//base",
-    "//base",
     "//base:i18n",
-    "//build:chromeos_buildflags",
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
     "//chrome/app/theme:theme_resources",
     "//chrome/app/theme:theme_resources_grit",
     "//chrome/browser:browser_process",
-    "//chrome/browser/extensions",
     "//chrome/browser/favicon",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/task_manager",
+    "//chrome/browser/task_manager/common",
+    "//chrome/browser/ui:url_identity",
     "//chrome/common",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
-    "//components/guest_view/browser",
     "//components/prefs",
     "//components/sessions",
     "//components/webapps/common",
     "//content/public/browser",
     "//content/public/common",
     "//content/public/common:result_codes",
-    "//extensions:extensions_browser_resources",
-    "//extensions:extensions_browser_resources_grit",
-    "//extensions/browser",
-    "//extensions/buildflags",
-    "//extensions/common",
     "//gpu/ipc/common",
     "//mojo/public/cpp/bindings",
     "//printing/buildflags",
@@ -203,24 +199,18 @@ source_set("impl") {
     "//url",
   ]
 
+  if (is_mac || is_win || is_linux || is_chromeos) {
+    deps += [ "//components/webapps/isolated_web_apps:scheme" ]
+  }
   if (is_win) {
     sources += [ "sampling/shared_sampler_win.cc" ]
   } else {
     sources += [ "sampling/shared_sampler_stub.cc" ]
   }
   if (is_chromeos) {
-    deps += [ "//components/nacl/common:buildflags" ]
-  }
-  if (enable_nacl) {
-    deps += [ "//components/nacl/browser" ]
-  }
-  if (is_chromeos_ash) {
     sources += [
       "providers/arc/arc_process_task.cc",
       "providers/arc/arc_process_task_provider.cc",
-      "providers/crosapi/crosapi_task.cc",
-      "providers/crosapi/crosapi_task_provider_ash.cc",
-      "providers/crosapi/crosapi_task_provider_ash.h",
       "providers/vm/crostini_process_task.cc",
       "providers/vm/plugin_vm_process_task.cc",
       "providers/vm/vm_process_task.cc",
@@ -228,20 +218,57 @@ source_set("impl") {
       "sampling/arc_shared_sampler.cc",
     ]
     deps += [
-      "//ash/components/arc:arc_base_utils",
-      "//ash/components/arc/session",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
-      "//chrome/browser/ash",
-      "//chrome/browser/ash/arc/process",
-      "//chrome/browser/ash/crosapi",
-      "//chrome/browser/ash/crosapi:browser_util",
       "//chrome/browser/ash/crostini",
       "//chrome/browser/ash/plugin_vm",
       "//chromeos/ash/components/dbus/concierge",
-      "//components/arc",
+      "//chromeos/ash/experiences/arc:arc_base_utils",
+      "//chromeos/ash/experiences/arc/intent_helper",
+      "//chromeos/ash/experiences/arc/process",
+      "//chromeos/ash/experiences/arc/session",
     ]
   }
-  if (is_chromeos_lacros) {
-    sources += [ "providers/crosapi/task_manager_controller_lacros.cc" ]
+  if (!is_android) {
+    deps += [ "//chrome/browser/background" ]
+    sources += [
+      "providers/web_contents/background_contents_tag.cc",
+      "providers/web_contents/background_contents_task.cc",
+    ]
+  }
+  if (enable_guest_view) {
+    deps += [ "//components/guest_view/browser" ]
+    sources += [
+      "providers/web_contents/guest_tag.cc",
+      "providers/web_contents/guest_task.cc",
+      "providers/web_contents/guest_task_mparch.cc",
+    ]
+  }
+  if (enable_extensions_core) {
+    deps += [
+      "//chrome/browser/extensions",
+      "//extensions:extensions_browser_resources",
+      "//extensions:extensions_browser_resources_grit",
+      "//extensions/browser",
+      "//extensions/buildflags",
+      "//extensions/common",
+    ]
+    sources += [
+      "providers/web_contents/extension_tag.cc",
+      "providers/web_contents/extension_task.cc",
+    ]
+  }
+  if (enable_glic) {
+    deps += [ "//chrome/browser/glic" ]
+  }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+if (is_android) {
+  java_cpp_enum("java_enum_srcjar") {
+    visibility = [ "//chrome/browser/task_manager/internal/android:*" ]
+    sources = [ "task_manager_observer.h" ]
   }
 }

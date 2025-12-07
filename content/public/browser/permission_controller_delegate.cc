@@ -3,31 +3,40 @@
 // found in the LICENSE file.
 
 #include "content/public/browser/permission_controller_delegate.h"
+
+#include <memory>
+
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
 namespace content {
 
-bool PermissionControllerDelegate::IsPermissionOverridable(
-    blink::PermissionType permission,
-    const std::optional<url::Origin>& origin) {
-  return true;
+PermissionControllerDelegate::~PermissionControllerDelegate() {
+  subscriptions_ = nullptr;
 }
 
-PermissionResult
-PermissionControllerDelegate::GetPermissionResultForCurrentDocument(
+bool PermissionControllerDelegate::IsPermissionOverridable(
     blink::PermissionType permission,
-    RenderFrameHost* render_frame_host,
-    bool should_include_device_status) {
-  return PermissionResult(PermissionStatus::DENIED,
-                          PermissionStatusSource::UNSPECIFIED);
+    base::optional_ref<const url::Origin> requesting_origin,
+    base::optional_ref<const url::Origin> embedding_origin) {
+  return true;
 }
 
 std::optional<gfx::Rect>
 PermissionControllerDelegate::GetExclusionAreaBoundsInScreen(
     content::WebContents* web_contents) const {
   return std::nullopt;
+}
+
+void PermissionControllerDelegate::SetSubscriptions(
+    content::PermissionController::SubscriptionsMap* subscriptions) {
+  subscriptions_ = subscriptions;
+}
+
+content::PermissionController::SubscriptionsMap*
+PermissionControllerDelegate::subscriptions() {
+  return subscriptions_;
 }
 
 }  // namespace content

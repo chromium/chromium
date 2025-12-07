@@ -20,19 +20,15 @@ class GPU_GLES2_EXPORT SharedMemoryImageBackingFactory
 
   ~SharedMemoryImageBackingFactory() override;
 
-  // SharedImageBackingFactory implementation
-  std::unique_ptr<SharedImageBacking> CreateSharedImage(
-      const Mailbox& mailbox,
-      viz::SharedImageFormat format,
-      SurfaceHandle surface_handle,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      SharedImageUsageSet usage,
-      std::string debug_label,
-      bool is_thread_safe) override;
+  static bool IsBufferUsageSupported(gfx::BufferUsage usage);
+  static bool IsSizeValidForFormat(const gfx::Size& size,
+                                   viz::SharedImageFormat format);
 
+  static gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle(
+      const gfx::Size& size,
+      viz::SharedImageFormat format);
+
+  // SharedImageBackingFactory implementation
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
       viz::SharedImageFormat format,
@@ -43,17 +39,6 @@ class GPU_GLES2_EXPORT SharedMemoryImageBackingFactory
       SharedImageUsageSet usage,
       std::string debug_label,
       bool is_thread_safe,
-      base::span<const uint8_t> pixel_data) override;
-
-  std::unique_ptr<SharedImageBacking> CreateSharedImage(
-      const Mailbox& mailbox,
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      SharedImageUsageSet usage,
-      std::string debug_label,
       gfx::GpuMemoryBufferHandle handle) override;
 
   std::unique_ptr<SharedImageBacking> CreateSharedImage(

@@ -120,10 +120,9 @@ net::NetworkTrafficAnnotationTag FetchUtils::GetTrafficAnnotationTag(
     case network::mojom::RequestDestination::kFrame:
     case network::mojom::RequestDestination::kFencedframe:
     case network::mojom::RequestDestination::kWebIdentity:
+    case network::mojom::RequestDestination::kEmailVerification:
     case network::mojom::RequestDestination::kSharedStorageWorklet:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
-
+      NOTREACHED();
     case network::mojom::RequestDestination::kEmpty:
     case network::mojom::RequestDestination::kAudio:
     case network::mojom::RequestDestination::kAudioWorklet:
@@ -255,7 +254,7 @@ void FetchUtils::LogFetchKeepAliveRequestMetric(
     case mojom::blink::RequestContextType::WORKER:
     case mojom::blink::RequestContextType::XML_HTTP_REQUEST:
     case mojom::blink::RequestContextType::XSLT:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   std::string_view request_state_name;
@@ -291,7 +290,7 @@ void FetchUtils::LogFetchKeepAliveRequestSentToServiceMetric(
   auto resource_type =
       static_cast<mojom::blink::ResourceType>(resource_request.resource_type);
   FetchKeepAliveRequestMetricType sample_type;
-  // See also blink::PopulateResourceRequest().
+  // See also blink::UpgradeResourceRequestForLoader().
   switch (resource_type) {
     case mojom::blink::ResourceType::kXhr:
       sample_type = FetchKeepAliveRequestMetricType::kFetch;
@@ -323,7 +322,7 @@ void FetchUtils::LogFetchKeepAliveRequestSentToServiceMetric(
     case mojom::blink::ResourceType::kNavigationPreloadMainFrame:
     case mojom::blink::ResourceType::kNavigationPreloadSubFrame:
     case mojom::blink::ResourceType::kJson:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   base::UmaHistogramEnumeration(

@@ -5,6 +5,7 @@
 #include "chrome/test/chromedriver/chrome/mobile_emulation_override_manager.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/test/chromedriver/chrome/device_metrics.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
@@ -50,9 +51,10 @@ Status OverrideClientHintsIfNeeded(DevToolsClient* client,
   }
   std::string user_agent;
   if (mobile_device.user_agent.has_value()) {
+    user_agent = mobile_device.user_agent.value();
+    // Replace a single "%s", if present, with the (simplified) version string.
     std::string version = base::StringPrintf("%d.0.0.0", major_version);
-    user_agent = base::StringPrintfNonConstexpr(
-        mobile_device.user_agent.value().c_str(), version.c_str());
+    base::ReplaceFirstSubstringAfterOffset(&user_agent, 0, "%s", version);
   } else {
     std::string major_version_str = base::NumberToString(major_version);
     status = mobile_device.GetReducedUserAgent(std::move(major_version_str),

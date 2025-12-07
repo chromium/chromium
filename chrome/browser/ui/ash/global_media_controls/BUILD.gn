@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("global_media_controls") {
   sources = [
@@ -22,11 +20,12 @@ static_library("global_media_controls") {
 
   deps = [
     "//ash",
-    "//chrome/browser/ash/crosapi",
+    "//chrome/browser:browser_process",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/media/router",
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/global_media_controls",
     "//components/global_media_controls",
     "//components/keyed_service/core",
     "//components/user_manager",
@@ -50,6 +49,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/global_media_controls",
     "//chrome/test:test_support",
     "//components/global_media_controls",
     "//components/global_media_controls:test_support",
@@ -59,6 +59,10 @@ source_set("browser_tests") {
     "//ui/events",
     "//ui/views",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("unit_tests") {
@@ -75,12 +79,15 @@ source_set("unit_tests") {
     "//chrome/browser/ash/crosapi:test_support",
     "//chrome/browser/media/router/discovery",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/global_media_controls",
     "//chrome/test:test_support",
     "//chrome/test:test_support_unit",
     "//components/global_media_controls",
     "//components/global_media_controls:test_support",
     "//components/media_message_center:test_support",
     "//components/media_router/common",
+    "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//content/test:test_support",
     "//services/media_session/public/cpp",
     "//services/media_session/public/mojom",

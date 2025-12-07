@@ -19,6 +19,7 @@ import {request_options_with_mediation_required,
         fedcm_test,
         select_manifest,
         fedcm_get_dialog_type_promise,
+        fedcm_expect_dialog,
         mark_signed_in} from '/fedcm/support/fedcm-helper.sub.js';
 
 fedcm_test(async t => {
@@ -31,7 +32,7 @@ fedcm_test(async t => {
   // Because we cancel the dialog, we expect a NetworkError here.
   cred_promise = promise_rejects_dom(t, "NetworkError", cred_promise);
 
-  let type = await fedcm_get_dialog_type_promise(t);
+  let type = await fedcm_expect_dialog(cred_promise, fedcm_get_dialog_type_promise(t));
   assert_equals("ConfirmIdpLogin", type);
 
   window.test_driver.cancel_fedcm_dialog();

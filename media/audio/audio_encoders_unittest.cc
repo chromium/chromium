@@ -1,27 +1,25 @@
 // Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
+#include <array>
 #include <cstring>
 #include <limits>
 #include <memory>
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "media/audio/audio_opus_encoder.h"
 #include "media/audio/simple_sources.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_encoder.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/converting_audio_fifo.h"
@@ -33,15 +31,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #include "media/gpu/windows/mf_audio_encoder.h"
-
-// The AAC tests are failing on Arm64. Disable the AAC part of these tests until
-// those failures can be fixed. TODO(https://crbug.com/1424215): Fix tests,
-// and/or investigate if AAC support should be turned off in Chrome for Arm64
-// Windows, or if these are an issue with the tests.
-#if !defined(ARCH_CPU_ARM64)
 #define HAS_AAC_ENCODER 1
-#endif
-
 #endif  // IS_WIN
 
 #if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -84,7 +74,7 @@ struct TestAudioParams {
   const int sample_rate;
 };
 
-constexpr TestAudioParams kTestAudioParamsOpus[] = {
+constexpr auto kTestAudioParamsOpus = std::to_array<TestAudioParams>({
     {AudioCodec::kOpus, 2, 48000},
     // Change to mono:
     {AudioCodec::kOpus, 1, 48000},
@@ -96,14 +86,17 @@ constexpr TestAudioParams kTestAudioParamsOpus[] = {
     {AudioCodec::kOpus, 2, 44100},
     {AudioCodec::kOpus, 2, 96000},
     {AudioCodec::kOpus, 2, kAudioSampleRateWithDelay},
-};
+});
 
 #if HAS_AAC_ENCODER
-constexpr TestAudioParams kTestAudioParamsAAC[] = {
-    {AudioCodec::kAAC, 2, 48000}, {AudioCodec::kAAC, 6, 48000},
-    {AudioCodec::kAAC, 1, 48000}, {AudioCodec::kAAC, 2, 44100},
-    {AudioCodec::kAAC, 6, 44100}, {AudioCodec::kAAC, 1, 44100},
-};
+constexpr auto kTestAudioParamsAAC = std::to_array<TestAudioParams>({
+    {AudioCodec::kAAC, 2, 48000},
+    {AudioCodec::kAAC, 6, 48000},
+    {AudioCodec::kAAC, 1, 48000},
+    {AudioCodec::kAAC, 2, 44100},
+    {AudioCodec::kAAC, 6, 44100},
+    {AudioCodec::kAAC, 1, 44100},
+});
 #endif  // HAS_AAC_ENCODER
 
 std::string EncoderStatusCodeToString(EncoderStatus::Codes code) {
@@ -129,7 +122,7 @@ std::string EncoderStatusCodeToString(EncoderStatus::Codes code) {
     case EncoderStatus::Codes::kEncoderMojoConnectionError:
       return "kEncoderMojoConnectionError";
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -176,6 +169,15 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
           buffer_duration_, options_.sample_rate);
     } else if (options_.codec == AudioCodec::kAAC) {
 #if BUILDFLAG(IS_WIN) && HAS_AAC_ENCODER
+      if ((base::win::OSInfo::GetInstance()->version() ==
+               base::win::Version::WIN11_22H2 ||
+           base::win::OSInfo::GetInstance()->version() ==
+               base::win::Version::WIN11_23H2) &&
+          base::win::OSInfo::GetInstance()->version_number().patch < 4112) {
+        GTEST_SKIP() << "https://crbug.com/325249353: AAC encoder requires "
+                        "a fix in Win11 patch 4112.";
+        // GTEST_SKIP() returns.
+      }
       EXPECT_TRUE(com_initializer_.Succeeded());
       ASSERT_TRUE(base::SequencedTaskRunner::HasCurrentDefault());
       encoder_ = std::make_unique<MFAudioEncoder>(
@@ -200,10 +202,10 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
         // GTEST_SKIP() returns.
       }
 #else
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
 #endif
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
 
     min_number_input_frames_needed_ = frames_per_buffer_;
@@ -711,17 +713,17 @@ TEST_P(AudioOpusEncoderTest, ExtraData) {
   EXPECT_EQ(extra[2], 'u');
   EXPECT_EQ(extra[3], 's');
 
-  uint16_t* sample_rate_ptr = reinterpret_cast<uint16_t*>(extra.data() + 12);
+  uint16_t sample_rate = (static_cast<uint16_t>(extra[13]) << 8) + extra[12];
   if (options_.sample_rate < std::numeric_limits<uint16_t>::max())
-    EXPECT_EQ(*sample_rate_ptr, options_.sample_rate);
+    EXPECT_EQ(sample_rate, options_.sample_rate);
   else
-    EXPECT_EQ(*sample_rate_ptr, 48000);
+    EXPECT_EQ(sample_rate, 48000);
 
-  uint8_t* channels_ptr = reinterpret_cast<uint8_t*>(extra.data() + 9);
-  EXPECT_EQ(*channels_ptr, options_.channels);
+  uint8_t channels = extra[9];
+  EXPECT_EQ(channels, options_.channels);
 
-  uint16_t* skip_ptr = reinterpret_cast<uint16_t*>(extra.data() + 10);
-  EXPECT_GT(*skip_ptr, 0);
+  uint16_t skip = extra[10];
+  EXPECT_GT(skip, 0);
 }
 
 TEST_P(AudioOpusEncoderTest, FullCycleEncodeDecode) {
@@ -823,11 +825,36 @@ TEST_P(AudioOpusEncoderTest, FullCycleEncodeDecode_BitrateMode) {
 
 // Tests we can configure the AudioOpusEncoder's extra options.
 TEST_P(AudioOpusEncoderTest, FullCycleEncodeDecode_OpusOptions) {
-  // TODO(crbug.com/40243924): Test an OpusOptions::frame_duration which forces
-  // repacketization.
   constexpr media::AudioEncoder::OpusOptions kTestOpusOptions[] = {
       // Base case
       {.frame_duration = base::Milliseconds(20),
+       .complexity = 10,
+       .packet_loss_perc = 0,
+       .use_in_band_fec = false,
+       .use_dtx = false},
+
+      // Test Repacketizer by using valid non-standard durations
+      {.frame_duration = base::Milliseconds(30),
+       .complexity = 10,
+       .packet_loss_perc = 0,
+       .use_in_band_fec = false,
+       .use_dtx = false},
+      {.frame_duration = base::Microseconds(117500),
+       .complexity = 10,
+       .packet_loss_perc = 0,
+       .use_in_band_fec = false,
+       .use_dtx = false},
+      {.frame_duration = base::Microseconds(7500),
+       .complexity = 10,
+       .packet_loss_perc = 0,
+       .use_in_band_fec = false,
+       .use_dtx = false},
+      {.frame_duration = base::Milliseconds(80),
+       .complexity = 10,
+       .packet_loss_perc = 0,
+       .use_in_band_fec = false,
+       .use_dtx = false},
+      {.frame_duration = base::Milliseconds(120),
        .complexity = 10,
        .packet_loss_perc = 0,
        .use_in_band_fec = false,
@@ -906,7 +933,7 @@ TEST_P(AudioOpusEncoderTest, FullCycleEncodeDecode_OpusOptions) {
 
 TEST_P(AudioOpusEncoderTest, VariableChannelCounts) {
   constexpr int kTestToneFrequency = 440;
-  SineWaveAudioSource sources[] = {
+  std::array<SineWaveAudioSource, 3> sources = {
       SineWaveAudioSource(1, kTestToneFrequency, options_.sample_rate),
       SineWaveAudioSource(2, kTestToneFrequency, options_.sample_rate),
       SineWaveAudioSource(3, kTestToneFrequency, options_.sample_rate)};
@@ -973,7 +1000,7 @@ class AACAudioEncoderTest : public AudioEncodersTest {
         channel_layout = CHANNEL_LAYOUT_5_1_BACK;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     AudioDecoderConfig config(AudioCodec::kAAC, SampleFormat::kSampleFormatS16,
                               channel_layout, options_.sample_rate,

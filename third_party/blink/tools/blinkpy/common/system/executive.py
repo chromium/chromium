@@ -38,8 +38,6 @@ import subprocess
 import sys
 import time
 
-import six
-
 _log = logging.getLogger(__name__)
 
 
@@ -67,15 +65,14 @@ class ScriptError(Exception):
             message += '\n\noutput: %s' % shortened_output
 
         Exception.__init__(self, message)
-        if six.PY3:
-            self.message = message
+        self.message = message
         self.script_args = script_args  # 'args' is already used by Exception
         self.exit_code = exit_code
         self.output = output
         self.cwd = cwd
 
     def message_with_output(self):
-        return six.text_type(self)
+        return str(self)
 
     def command_name(self):
         command_path = self.script_args
@@ -276,6 +273,13 @@ class Executive:
             # It's impossible for callers to avoid race conditions with process shutdown.
             pass
 
+    def terminate(self, pid):
+        try:
+            os.kill(pid, signal.SIGTERM)
+        except OSError:
+            # Silently ignore when the pid doesn't exist.
+            pass
+
     # Error handlers do not need to be static methods once all callers are
     # updated to use an Executive object.
 
@@ -307,7 +311,7 @@ class Executive:
         # See https://bugs.webkit.org/show_bug.cgi?id=37528
         # for an example of a regression caused by passing a unicode string directly.
         # FIXME: We may need to encode differently on different platforms.
-        if isinstance(user_input, six.text_type):
+        if isinstance(user_input, str):
             user_input = user_input.encode(self._child_process_encoding())
         return (self.PIPE, user_input)
 
@@ -318,7 +322,7 @@ class Executive:
         args = self._stringify_args(args)
         escaped_args = []
         for arg in args:
-            if isinstance(arg, six.text_type):
+            if isinstance(arg, str):
                 # Escape any non-ascii characters for easy copy/paste
                 arg = arg.encode('unicode_escape')
             # FIXME: Do we need to fix quotes here?
@@ -446,7 +450,7 @@ class Executive:
 
     def _stringify_args(self, args):
         # Popen will throw an exception if args are non-strings (like int())
-        string_args = map(six.text_type, args)
+        string_args = map(str, args)
         # The Windows implementation of Popen cannot handle unicode strings. :(
         return map(self._encode_argument_if_needed, string_args)
 

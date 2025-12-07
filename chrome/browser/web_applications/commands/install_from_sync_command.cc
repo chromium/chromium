@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/generated_icon_fix_util.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
+#include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -24,10 +25,10 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
-#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
+#include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -59,6 +60,17 @@ WebAppInstallFinalizer::FinalizeOptions GetFinalizerOptionForSyncInstall() {
   return finalize_options;
 }
 
+// On ChromeOS, always perform installation by fetching the manifest, while on
+// other platforms, always install from fallback based on whether trusted icons
+// are enabled.
+bool ShouldInstallFallbackNoManifestFetching() {
+#if BUILDFLAG(IS_CHROMEOS)
+  return false;
+#else
+  return base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
 }  // namespace
 
 InstallFromSyncCommand::Params::~Params() = default;
@@ -71,7 +83,8 @@ InstallFromSyncCommand::Params::Params(
     const GURL& scope,
     const std::optional<SkColor>& theme_color,
     const std::optional<mojom::UserDisplayMode>& user_display_mode,
-    const std::vector<apps::IconInfo>& icons)
+    const std::vector<apps::IconInfo>& manifest_icons,
+    const std::vector<apps::IconInfo>& trusted_icons)
     : app_id(app_id),
       manifest_id(manifest_id),
       start_url(start_url),
@@ -79,7 +92,8 @@ InstallFromSyncCommand::Params::Params(
       scope(scope),
       theme_color(theme_color),
       user_display_mode(user_display_mode),
-      icons(icons) {
+      manifest_icons(manifest_icons),
+      trusted_icons(trusted_icons) {
   CHECK(!app_id.empty());
   CHECK(manifest_id.is_valid());
   CHECK(!manifest_id.is_empty());
@@ -102,8 +116,7 @@ InstallFromSyncCommand::InstallFromSyncCommand(
                           webapps::InstallResultCode::
                               kCancelledOnWebAppProviderShuttingDown)),
       profile_(profile),
-      params_(params),
-      install_error_log_entry_(true, webapps::WebappInstallSource::SYNC) {
+      params_(params) {
 #if BUILDFLAG(IS_CHROMEOS)
   DCHECK(AreAppsLocallyInstalledBySync());
 #endif
@@ -114,7 +127,8 @@ InstallFromSyncCommand::InstallFromSyncCommand(
   fallback_install_info_->user_display_mode = params_.user_display_mode;
   fallback_install_info_->scope = params_.scope;
   fallback_install_info_->theme_color = params_.theme_color;
-  fallback_install_info_->manifest_icons = params_.icons;
+  fallback_install_info_->manifest_icons = params_.manifest_icons;
+  fallback_install_info_->trusted_icons = params_.trusted_icons;
   GetMutableDebugValue().Set("app_id", params_.app_id);
   GetMutableDebugValue().Set("manifest_id", params_.manifest_id.spec());
   GetMutableDebugValue().Set("title", params_.title);
@@ -136,6 +150,12 @@ void InstallFromSyncCommand::StartWithLock(
   url_loader_ = lock_->web_contents_manager().CreateUrlLoader();
   data_retriever_ = lock_->web_contents_manager().CreateDataRetriever();
 
+  if (ShouldInstallFallbackNoManifestFetching()) {
+    InstallFallback(
+        webapps::InstallResultCode::kFallbackInstallUsingTrustedIcons);
+    return;
+  }
+
   url_loader_->LoadUrl(
       params_.start_url, &lock_->shared_web_contents(),
       webapps::WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
@@ -151,12 +171,7 @@ void InstallFromSyncCommand::SetFallbackTriggeredForTesting(
 
 void InstallFromSyncCommand::OnWebAppUrlLoadedGetWebAppInstallInfo(
     webapps::WebAppUrlLoaderResult result) {
-  GetMutableDebugValue().Set("WebAppUrlLoader::Result",
-                             ConvertUrlLoaderResultToString(result));
-  if (result != webapps::WebAppUrlLoaderResult::kUrlLoaded) {
-    install_error_log_entry_.LogUrlLoaderError(
-        "OnWebAppUrlLoaded", params_.start_url.spec(), result);
-  }
+  GetMutableDebugValue().Set("WebAppUrlLoader::Result", base::ToString(result));
 
   if (result == webapps::WebAppUrlLoaderResult::kRedirectedUrlLoaded) {
     InstallFallback(webapps::InstallResultCode::kInstallURLRedirected);
@@ -185,26 +200,24 @@ void InstallFromSyncCommand::OnGetWebAppInstallInfo(
     InstallFallback(webapps::InstallResultCode::kGetWebAppInstallInfoFailed);
     return;
   }
-  DCHECK(!install_info_);
-  install_info_ = std::move(web_app_info);
-  install_info_->user_display_mode = params_.user_display_mode;
-  // Prefer the synced title to the one from the page's metadata
-  install_info_->title = base::UTF8ToUTF16(params_.title);
 
-  // Populate fallback info with the data retrieved from `GetWebAppInstallInfo`
-  fallback_install_info_->description = install_info_->description;
-  if (!install_info_->manifest_icons.empty()) {
-    fallback_install_info_->manifest_icons = install_info_->manifest_icons;
+  // Populate fallback info with the data retrieved from `GetWebAppInstallInfo`.
+  // `trusted_icons` do not need to be updated here because the
+  // `WebAppInstallInfo` obtained here is from the page metadata.
+  fallback_install_info_->description = web_app_info->description;
+  if (!web_app_info->manifest_icons.empty()) {
+    fallback_install_info_->manifest_icons = web_app_info->manifest_icons;
   }
-  fallback_install_info_->mobile_capable = install_info_->mobile_capable;
+  fallback_install_info_->mobile_capable = web_app_info->mobile_capable;
 
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
       &lock_->shared_web_contents(),
       base::BindOnce(&InstallFromSyncCommand::OnDidPerformInstallableCheck,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(web_app_info)));
 }
 
 void InstallFromSyncCommand::OnDidPerformInstallableCheck(
+    std::unique_ptr<WebAppInstallInfo> page_info,
     blink::mojom::ManifestPtr opt_manifest,
     bool valid_manifest_for_web_app,
     webapps::InstallableStatusCode error_code) {
@@ -213,11 +226,31 @@ void InstallFromSyncCommand::OnDidPerformInstallableCheck(
     return;
   }
 
-  UpdateWebAppInfoFromManifest(*opt_manifest, install_info_.get());
+  page_info->title = base::UTF8ToUTF16(params_.title);
 
+  // If the page doesn't have a favicon, then the icon fetcher will hang
+  // forever.
+  // TODO(crbug.com/40226606): Allow favicons without waiting for them to
+  // be updated on the page.
+  manifest_to_install_info_job_ =
+      ManifestToWebAppInstallInfoJob::CreateAndStart(
+          *opt_manifest, *data_retriever_.get(),
+          /*background_installation=*/true, webapps::WebappInstallSource::SYNC,
+          lock_->shared_web_contents().GetWeakPtr(), [](IconUrlSizeSet&) {},
+          GetMutableDebugValue(),
+          base::BindOnce(
+              &InstallFromSyncCommand::
+                  OnWebAppInstallInfoRetrievedMergeAndFinalizeInstall,
+              weak_ptr_factory_.GetWeakPtr()),
+          WebAppInstallInfoConstructOptions{}, page_info->Clone());
+}
+
+void InstallFromSyncCommand::
+    OnWebAppInstallInfoRetrievedMergeAndFinalizeInstall(
+        std::unique_ptr<WebAppInstallInfo> install_info) {
   // Ensure that the manifest linked is the right one.
   webapps::AppId generated_app_id =
-      GenerateAppIdFromManifestId(install_info_->manifest_id());
+      GenerateAppIdFromManifestId(install_info->manifest_id());
   if (params_.app_id != generated_app_id) {
     // Add the error to the log.
     base::Value::Dict expected_id_error;
@@ -225,50 +258,47 @@ void InstallFromSyncCommand::OnDidPerformInstallableCheck(
     expected_id_error.Set("app_id", generated_app_id);
     GetMutableDebugValue().Set("app_id_error", std::move(expected_id_error));
 
-    install_error_log_entry_.LogExpectedAppIdError(
-        "OnDidPerformInstallableCheck", params_.start_url.spec(),
-        generated_app_id, params_.app_id);
-
     InstallFallback(webapps::InstallResultCode::kExpectedAppIdCheckFailed);
     return;
   }
 
-  // If the page doesn't have a favicon, then the icon fetcher will hang
-  // forever.
-  // TODO(crbug.com/40226606): Allow favicons without waiting for them to
-  // be updated on the page.
-  IconUrlSizeSet icon_urls = GetValidIconUrlsToDownload(*install_info_);
-  data_retriever_->GetIcons(
-      &lock_->shared_web_contents(), std::move(icon_urls),
-      /*skip_page_favicons=*/true,
-      /*fail_all_if_any_fail=*/false,
-      base::BindOnce(&InstallFromSyncCommand::OnIconsRetrievedFinalizeInstall,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     FinalizeMode::kNormalWebAppInfo));
+  CHECK(!install_info_);
+  install_info_ = std::move(install_info);
+  install_info_->user_display_mode = params_.user_display_mode;
+  FinalizeInstall(FinalizeMode::kNormalWebAppInfo);
 }
 
-void InstallFromSyncCommand::OnIconsRetrievedFinalizeInstall(
-    FinalizeMode mode,
+void InstallFromSyncCommand::OnIconsRetrievedForFallbackInfo(
     IconsDownloadedResult result,
     IconsMap icons_map,
     DownloadedIconsHttpResults icons_http_results) {
-  WebAppInstallInfo* current_info = mode == FinalizeMode::kNormalWebAppInfo
-                                        ? install_info_.get()
-                                        : fallback_install_info_.get();
-  PopulateProductIcons(current_info, &icons_map);
-  PopulateOtherIcons(current_info, icons_map);
+  PopulateProductIcons(fallback_install_info_.get(), &icons_map);
+  if (fallback_install_info_->is_generated_icon) {
+    GetMutableDebugValue().Set("fallback_is_generated_icon", true);
+  }
+  PopulateTrustedIconBitmaps(*fallback_install_info_.get(), icons_map);
+  PopulateOtherIcons(fallback_install_info_.get(), icons_map);
 
   RecordDownloadedIconsHttpResultsCodeClass(
       "WebApp.Icon.HttpStatusCodeClassOnSync", result, icons_http_results);
   UMA_HISTOGRAM_ENUMERATION("WebApp.Icon.DownloadedResultOnSync", result);
   RecordDownloadedIconHttpStatusCodes(
       "WebApp.Icon.DownloadedHttpStatusCodeOnSync", icons_http_results);
-  install_error_log_entry_.LogDownloadedIconsErrors(
-      *current_info, result, icons_map, icons_http_results);
+  base::DictValue icon_errors =
+      LogDownloadedIconsErrors(result, icons_map, icons_http_results);
+  if (!icon_errors.empty()) {
+    GetMutableDebugValue().Set("icon_errors", std::move(icon_errors));
+  }
+  FinalizeInstall(FinalizeMode::kFallbackWebAppInfo);
+}
 
+void InstallFromSyncCommand::FinalizeInstall(FinalizeMode mode) {
+  WebAppInstallInfo* current_info = mode == FinalizeMode::kNormalWebAppInfo
+                                        ? install_info_.get()
+                                        : fallback_install_info_.get();
   current_info->generated_icon_fix =
       generated_icon_fix_util::CreateInitialTimeWindow(
-          GeneratedIconFixSource_SYNC_INSTALL);
+          proto::GENERATED_ICON_FIX_SOURCE_SYNC_INSTALL);
 
   lock_->install_finalizer().FinalizeInstall(
       *current_info, GetFinalizerOptionForSyncInstall(),
@@ -310,11 +340,10 @@ void InstallFromSyncCommand::InstallFallback(webapps::InstallResultCode code) {
   // TODO(dmurph): Also use favicons. https://crbug.com/1328977.
   data_retriever_->GetIcons(
       &lock_->shared_web_contents(), std::move(icon_urls),
-      /*skip_page_favicons=*/true,
+      /*download_page_favicons=*/false,
       /*fail_all_if_any_fail=*/false,
-      base::BindOnce(&InstallFromSyncCommand::OnIconsRetrievedFinalizeInstall,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     FinalizeMode::kFallbackWebAppInfo));
+      base::BindOnce(&InstallFromSyncCommand::OnIconsRetrievedForFallbackInfo,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void InstallFromSyncCommand::ReportResultAndDestroy(
@@ -331,14 +360,8 @@ void InstallFromSyncCommand::ReportResultAndDestroy(
   // a sync install is not a recordable install source.
   DCHECK(!webapps::InstallableMetrics::IsReportableInstallSource(
       webapps::WebappInstallSource::SYNC));
-  // TODO(crbug.com/40826246): migrate LogToInstallManager to take a
-  // base::Value::Dict
-  if (install_error_log_entry_.HasErrorDict()) {
-    command_manager()->LogToInstallManager(
-        install_error_log_entry_.TakeErrorDict());
-  }
 
-  base::UmaHistogramEnumeration("WebApp.InstallResult.Sync", code);
+  base::UmaHistogramEnumeration("Webapp.InstallResult.Sync", code);
   CompleteAndSelfDestruct(
       success ? CommandResult::kSuccess : CommandResult::kFailure, app_id,
       code);

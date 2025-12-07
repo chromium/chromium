@@ -11,13 +11,14 @@
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
-import '//resources/cr_elements/icons_lit.html.js';
+import '//resources/cr_elements/icons.html.js';
 import './help_bubble_icons.html.js';
 
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assert, assertNotReached} from '//resources/js/assert.js';
 import {isWindows} from '//resources/js/platform.js';
+import {debounceEnd} from '//resources/js/util.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {InsetsF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
@@ -46,14 +47,6 @@ export type HelpBubbleDismissedEvent = CustomEvent<{
 export type HelpBubbleTimedOutEvent = CustomEvent<{
   nativeId: string,
 }>;
-
-export function debounceEnd(fn: Function, time: number = 50): () => void {
-  let timerId: number|undefined;
-  return () => {
-    clearTimeout(timerId);
-    timerId = setTimeout(fn, time);
-  };
-}
 
 export interface HelpBubbleElement {
   $: {
@@ -90,7 +83,7 @@ export class HelpBubbleElement extends CrLitElement {
         reflect: true,
       },
       position: {
-        type: HelpBubbleArrowPosition,
+        type: Number,
         reflect: true,
       },
       bodyIconName: {type: String},
@@ -110,17 +103,18 @@ export class HelpBubbleElement extends CrLitElement {
     };
   }
 
-  nativeId: string = '';
-  bodyText: string = '';
-  titleText: string = '';
-  closeButtonAltText: string = '';
-  closeButtonTabIndex: number = 0;
-  position: HelpBubbleArrowPosition = HelpBubbleArrowPosition.TOP_CENTER;
-  buttons: HelpBubbleButtonParams[] = [];
-  sortedButtons: HelpBubbleButtonParams[] = [];
-  progress: Progress|null = null;
-  bodyIconName: string|null = null;
-  bodyIconAltText: string = '';
+  accessor nativeId: string = '';
+  accessor bodyText: string = '';
+  accessor titleText: string = '';
+  accessor closeButtonAltText: string = '';
+  accessor closeButtonTabIndex: number = 0;
+  accessor position: HelpBubbleArrowPosition =
+      HelpBubbleArrowPosition.TOP_CENTER;
+  accessor buttons: HelpBubbleButtonParams[] = [];
+  accessor sortedButtons: HelpBubbleButtonParams[] = [];
+  accessor progress: Progress|null = null;
+  accessor bodyIconName: string|null = null;
+  accessor bodyIconAltText: string = '';
 
   timeoutMs: number|null = null;
   timeoutTimerId: number|null = null;
@@ -140,7 +134,7 @@ export class HelpBubbleElement extends CrLitElement {
    * Backing data for the dom-repeat that generates progress indicators.
    * The elements are placeholders only.
    */
-  protected progressData_: boolean[] = [];
+  protected accessor progressData_: boolean[] = [];
 
   /**
    * Watches the offsetParent for resize events, allowing the bubble to be
@@ -196,11 +190,9 @@ export class HelpBubbleElement extends CrLitElement {
 
     if (this.timeoutMs !== null) {
       const timedOutCallback = () => {
-        this.dispatchEvent(new CustomEvent(HELP_BUBBLE_TIMED_OUT_EVENT, {
-          detail: {
-            nativeId: this.nativeId,
-          },
-        }));
+        this.fire(HELP_BUBBLE_TIMED_OUT_EVENT, {
+          nativeId: this.nativeId,
+        });
       };
       this.timeoutTimerId = setTimeout(timedOutCallback, this.timeoutMs);
     }
@@ -276,7 +268,7 @@ export class HelpBubbleElement extends CrLitElement {
     // As a fallback, focus the close button before trying to focus the anchor;
     // this will allow the focus to stay on the close button if the anchor
     // cannot be focused.
-    this.$.close!.focus();
+    this.$.close.focus();
 
     // Maybe try to focus the anchor. This is preferable to focusing the close
     // button, but not every element can be focused.
@@ -295,12 +287,10 @@ export class HelpBubbleElement extends CrLitElement {
 
   protected dismiss_() {
     assert(this.nativeId, 'Dismiss: expected help bubble to have a native id.');
-    this.dispatchEvent(new CustomEvent(HELP_BUBBLE_DISMISSED_EVENT, {
-      detail: {
-        nativeId: this.nativeId,
-        fromActionButton: false,
-      },
-    }));
+    this.fire(HELP_BUBBLE_DISMISSED_EVENT, {
+      nativeId: this.nativeId,
+      fromActionButton: false,
+    });
   }
 
   /**
@@ -351,13 +341,11 @@ export class HelpBubbleElement extends CrLitElement {
     // dom-repeat. However, the index is stored in the node's identifier.
     const index: number = parseInt(
         (e.target as Element).id.substring(ACTION_BUTTON_ID_PREFIX.length));
-    this.dispatchEvent(new CustomEvent(HELP_BUBBLE_DISMISSED_EVENT, {
-      detail: {
-        nativeId: this.nativeId,
-        fromActionButton: true,
-        buttonIndex: index,
-      },
-    }));
+    this.fire(HELP_BUBBLE_DISMISSED_EVENT, {
+      nativeId: this.nativeId,
+      fromActionButton: true,
+      buttonIndex: index,
+    });
   }
 
   protected getButtonId_(item: HelpBubbleButtonParams): string {

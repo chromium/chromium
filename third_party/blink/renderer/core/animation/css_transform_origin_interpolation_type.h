@@ -18,12 +18,12 @@ namespace blink {
 class CSSTransformOriginInterpolationType
     : public CSSLengthListInterpolationType {
  public:
-  CSSTransformOriginInterpolationType(PropertyHandle property)
+  explicit CSSTransformOriginInterpolationType(PropertyHandle property)
       : CSSLengthListInterpolationType(property) {}
 
  private:
   InterpolationValue MaybeConvertValue(const CSSValue& value,
-                                       const StyleResolverState*,
+                                       const StyleResolverState&,
                                        ConversionCheckers&) const final {
     const CSSValueList& list = To<CSSValueList>(value);
     DCHECK_GE(list.length(), 2u);

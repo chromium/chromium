@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This html serves as the test bench for the two regression scenarios for
+http://crbug.com/413540372. The javascript code is called from
+`indexed_db_browsertest.cc`.
+-->
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regression Test for Index Deletion crbug.com/413540372</title>
+  <script type="text/javascript" src="common.js"></script>
+  <script type="text/javascript" src="index_deletion_regression_tests.js"></script>
+</head>
+
+<body>
+  <h1>IndexedDB Tombstone Sweeper Regression Test</h1>
+  <div id="status" class="status-running">Initializing...</div>
+  <div id="log"></div>
+</body>
+
+</html>

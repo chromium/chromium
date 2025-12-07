@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestImportManager} from '../testing/test_import_manager.js';
+
 /**
  * @fileoverview Defines various strategies for recovering automation nodes.
  */
@@ -112,3 +114,7 @@ export class TreePathRecoveryStrategy extends AncestryRecoveryStrategy {
     return node;
   }
 }
+
+TestImportManager.exportForTesting(RecoveryStrategy);
+TestImportManager.exportForTesting(AncestryRecoveryStrategy);
+TestImportManager.exportForTesting(TreePathRecoveryStrategy);

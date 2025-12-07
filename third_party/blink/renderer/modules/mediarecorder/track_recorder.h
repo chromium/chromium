@@ -5,13 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIARECORDER_TRACK_RECORDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIARECORDER_TRACK_RECORDER_H_
 
+#include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_sink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
@@ -41,8 +39,11 @@ TrackRecorder<MediaStreamSink>::TrackRecorder(base::OnceClosure track_ended_cb)
 template <class MediaStreamSink>
 void TrackRecorder<MediaStreamSink>::OnReadyStateChanged(
     WebMediaStreamSource::ReadyState state) {
-  if (state == WebMediaStreamSource::kReadyStateEnded)
+  TRACE_EVENT("media", "OnReadyStateChanged", "this",
+              reinterpret_cast<size_t>(this), "state", state);
+  if (state == WebMediaStreamSource::kReadyStateEnded) {
     std::move(track_ended_cb_).Run();
+  }
 }
 
 // It is muxer container type for the video and audio types.
@@ -50,13 +51,13 @@ enum class MediaTrackContainerType {
   kNone,
   kVideoMp4,
   kVideoWebM,
-  kVidoMatroska,
+  kVideoMatroska,
   kAudioMp4,
   kAudioWebM,
 };
 
 MODULES_EXPORT MediaTrackContainerType
-GetMediaContainerTypeFromString(const WTF::String& type);
+GetMediaContainerTypeFromString(const String& type);
 
 }  // namespace blink
 

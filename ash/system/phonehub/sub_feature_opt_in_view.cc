@@ -14,6 +14,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -150,11 +151,9 @@ void SubFeatureOptInView::UpdateLabels() {
 }
 
 void SubFeatureOptInView::InitLayout() {
-  // TODO(b/322067753): Replace usage of |AshColorProvider| with |cros_tokens|.
-  const SkColor border_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSeparatorColor);
-  SetBorder(views::CreateRoundedRectBorder(
-      kBorderThicknessDip, kBorderCornerRadiusDip, border_color));
+  SetBorder(views::CreateRoundedRectBorder(kBorderThicknessDip,
+                                           kBorderCornerRadiusDip,
+                                           cros_tokens::kSeparatorColor));
 
   auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kVertical);
@@ -165,15 +164,9 @@ void SubFeatureOptInView::InitLayout() {
   // Set up layout row for the text label.
   text_label_ = AddChildView(std::make_unique<views::Label>());
   text_label_->SetProperty(views::kCrossAxisAlignmentKey,
-                           views::LayoutAlignment::kCenter);
+                           views::LayoutAlignment::kStart);
   text_label_->SetProperty(views::kMarginsKey, kTextLabelBorderInsets);
-  text_label_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
-                               views::MaximumFlexSizeRule::kUnbounded, true));
-  auto text_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary);
-  text_label_->SetEnabledColor(text_color);
+  text_label_->SetEnabledColor(cros_tokens::kTextColorPrimary);
   text_label_->SetAutoColorReadabilityEnabled(false);
   auto default_font = text_label_->font_list();
   text_label_->SetFontList(default_font

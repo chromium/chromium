@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "components/autofill/core/common/unique_ids.h"
+#import "components/autofill/core/common/unique_ids.h"
 
 namespace {
 // The "password" field type does not explicitly mean that the field contains a
@@ -22,14 +22,15 @@ NSString* const kObfuscatedFieldType = @"password";
 @interface FormSuggestionProviderQuery : NSObject
 
 // Form HTML 'name' attribute. If missing, its 'id' attribute. If also
-// missing, a name assigned by Chrome in __gCrWeb.form.getFormIdentifier.
+// missing, a name assigned by Chrome in getFormIdentifier form utility function.
 @property(readonly, nonatomic, copy) NSString* formName;
 
 // Number ID, unique for a frame.
 @property(readonly, nonatomic) autofill::FormRendererId formRendererID;
 
 // Field HTML 'id' attribute. If missing, its 'name' attribute. If also
-// missing, a unique string path assigned in __gCrWeb.form.getFieldIdentifier.
+// missing, a unique string path assigned in getFieldIdentifier utility
+// function defined in form.ts.
 @property(readonly, nonatomic, copy) NSString* fieldIdentifier;
 
 // Number ID, unique for a frame.
@@ -48,6 +49,10 @@ NSString* const kObfuscatedFieldType = @"password";
 // ID of a frame containing the form.
 @property(readonly, nonatomic, copy) NSString* frameID;
 
+// YES if only passwords should be returned as suggestions (e.g. no password
+// generation suggestion).
+@property(readonly, nonatomic, assign) BOOL onlyPassword;
+
 - (instancetype)initWithFormName:(NSString*)formName
                   formRendererID:(autofill::FormRendererId)formRendererID
                  fieldIdentifier:(NSString*)fieldIdentifier
@@ -55,7 +60,8 @@ NSString* const kObfuscatedFieldType = @"password";
                        fieldType:(NSString*)fieldType
                             type:(NSString*)type
                       typedValue:(NSString*)typedValue
-                         frameID:(NSString*)frameID NS_DESIGNATED_INITIALIZER;
+                         frameID:(NSString*)frameID
+                    onlyPassword:(BOOL)onlyPassword NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

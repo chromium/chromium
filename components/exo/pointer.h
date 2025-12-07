@@ -26,7 +26,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace viz {
 class CopyOutputResult;
@@ -152,6 +152,8 @@ class Pointer : public SurfaceTreeHost,
   }
 
  private:
+  class ScopedCursorLocker;
+
   // Remove |delegate| from |constraints_|.
   void RemoveConstraintDelegate(PointerConstraintDelegate* delegate);
 
@@ -244,7 +246,8 @@ class Pointer : public SurfaceTreeHost,
 
   // All delegates currently requesting a pointer locks, whether granted or
   // not. Only one such request may exist per surface; others will be denied.
-  base::flat_map<Surface*, PointerConstraintDelegate*> constraints_;
+  base::flat_map<Surface*, raw_ptr<PointerConstraintDelegate, CtnExperimental>>
+      constraints_;
 
   // The delegate instance that stylus/pen events are dispatched to.
   raw_ptr<PointerStylusDelegate> stylus_delegate_ = nullptr;
@@ -304,6 +307,8 @@ class Pointer : public SurfaceTreeHost,
   // Bitmask of the button event flags that started the drag and drop operation.
   // Used to send the release events upon drop.
   int button_flags_on_drag_drop_start_ = 0;
+
+  std::unique_ptr<ScopedCursorLocker> cursor_locker_;
 
   // Weak pointer factory used for cursor capture callbacks.
   base::WeakPtrFactory<Pointer> cursor_capture_weak_ptr_factory_{this};

@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("smb_shares") {
   sources = [
@@ -18,16 +16,19 @@ static_library("smb_shares") {
     "smb_shares_localized_strings_provider.h",
   ]
 
-  public_deps = [ "//chrome/browser/ui/webui/ash" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
+  ]
 
   deps = [
     "//ash/webui/common:trusted_types_util",
     "//chrome/app:generated_resources",
     "//chrome/browser:resources",
+    "//chrome/browser/ash/file_system_provider",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/smb_client",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui",
     "//chrome/common",
     "//chromeos/constants",
     "//components/strings:components_strings",

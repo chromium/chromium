@@ -69,8 +69,7 @@ const char* ToRotationString(display::Display::Rotation rotation) {
     case display::Display::ROTATE_270:
       return "270";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "unknown";
+  NOTREACHED();
 }
 
 }  // namespace
@@ -138,8 +137,7 @@ display::Display::Rotation Display::DegreesToRotation(int degrees) {
     return display::Display::ROTATE_180;
   if (degrees == 270)
     return display::Display::ROTATE_270;
-  NOTREACHED_IN_MIGRATION();
-  return display::Display::ROTATE_0;
+  NOTREACHED();
 }
 
 // static
@@ -154,8 +152,7 @@ int Display::RotationToDegrees(display::Display::Rotation rotation) {
     case display::Display::ROTATE_270:
       return 270;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 // static
@@ -199,8 +196,7 @@ int Display::RotationAsDegree() const {
     case ROTATE_270:
       return 270;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 const gfx::DisplayColorSpaces& Display::GetColorSpaces() const {
@@ -208,7 +204,8 @@ const gfx::DisplayColorSpaces& Display::GetColorSpaces() const {
 }
 
 void Display::SetColorSpaces(const gfx::DisplayColorSpaces& color_spaces) {
-  SetDisplayColorSpacesRef(new DisplayColorSpacesRef(color_spaces));
+  SetDisplayColorSpacesRef(
+      base::MakeRefCounted<gfx::DisplayColorSpacesRef>(color_spaces));
 }
 
 void Display::SetRotationAsDegree(int rotation) {
@@ -227,7 +224,7 @@ void Display::SetRotationAsDegree(int rotation) {
       break;
     default:
       // We should not reach that but we will just ignore the call if we do.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -344,7 +341,7 @@ bool Display::EqualExceptForHdrHeadroom(const Display& lhs,
 }
 
 void Display::SetDisplayColorSpacesRef(
-    scoped_refptr<const DisplayColorSpacesRef> color_spaces) {
+    scoped_refptr<const gfx::DisplayColorSpacesRef> color_spaces) {
   color_spaces_ = std::move(color_spaces);
   if (color_spaces_->color_spaces().SupportsHDR()) {
     color_depth_ = kHDR10BitsPerPixel;
@@ -355,12 +352,13 @@ void Display::SetDisplayColorSpacesRef(
   }
 }
 
-scoped_refptr<const Display::DisplayColorSpacesRef>
+scoped_refptr<const gfx::DisplayColorSpacesRef>
 Display::GetDefaultDisplayColorSpacesRef() {
   // On Android we need to ensure the platform supports a color profile before
   // using it. Using a not supported profile can result in fatal errors in the
   // GPU process.
-  static const base::NoDestructor<scoped_refptr<const DisplayColorSpacesRef>>
+  static const base::NoDestructor<
+      scoped_refptr<const gfx::DisplayColorSpacesRef>>
       default_color_spaces_ref([] {
         auto color_space = gfx::ColorSpace::CreateSRGB();
 #if !BUILDFLAG(IS_ANDROID)
@@ -368,7 +366,8 @@ Display::GetDefaultDisplayColorSpacesRef() {
           color_space = GetForcedDisplayColorProfile();
         }
 #endif
-        return new DisplayColorSpacesRef(gfx::DisplayColorSpaces(color_space));
+        return base::MakeRefCounted<gfx::DisplayColorSpacesRef>(
+            gfx::DisplayColorSpaces(color_space));
       }());
   return *default_color_spaces_ref;
 }

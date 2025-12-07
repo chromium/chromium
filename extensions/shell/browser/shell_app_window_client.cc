@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/notimplemented.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/shell/browser/shell_app_delegate.h"
 
@@ -20,13 +21,6 @@ AppWindow* ShellAppWindowClient::CreateAppWindow(
     const Extension* extension) {
   return new AppWindow(context, std::make_unique<ShellAppDelegate>(),
                        extension);
-}
-
-AppWindow* ShellAppWindowClient::CreateAppWindowForLockScreenAction(
-    content::BrowserContext* context,
-    const Extension* extension,
-    api::app_runtime::ActionType action) {
-  return nullptr;
 }
 
 void ShellAppWindowClient::OpenDevToolsWindow(

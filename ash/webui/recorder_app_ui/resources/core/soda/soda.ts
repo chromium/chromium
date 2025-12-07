@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {i18n} from '../i18n.js';
 import {assertExists} from '../utils/assert.js';
 import {Infer, z} from '../utils/schema.js';
-import {lazyInit, sliceWhen} from '../utils/utils.js';
+import {getWordCount, lazyInit, sliceWhen} from '../utils/utils.js';
 
+import {LanguageCode} from './language_info.js';
 import {
   FinalResult,
   PartialResult,
@@ -28,6 +30,10 @@ export const textPartSchema = z.object({
   timeRange: z.nullable(timeRangeSchema),
   leadingSpace: z.nullable(z.boolean()),
   speakerLabel: z.autoNullOptional(z.string()),
+  // Since the transcription saved to the disk are always finalResult, and this
+  // is only used in intermediate partialResult, only include this field in
+  // partialResult to save some disk space.
+  partial: z.optional(z.literal(true)),
 });
 
 export type TextPart = Infer<typeof textPartSchema>;
@@ -70,6 +76,7 @@ function flattenEvent(
   ev: FinalResult|PartialResult,
   offsetMs: number,
   speakerLabelEnabled: boolean,
+  isPartialResult = false,
 ): TextPart[] {
   const {hypothesisPart, timingEvent} = ev;
 
@@ -110,6 +117,7 @@ function flattenEvent(
       timeRange,
       leadingSpace: part.leadingSpace,
       speakerLabel: speakerLabelEnabled ? part.speakerLabel : null,
+      partial: isPartialResult ? true : undefined,
     });
   }
   return result;
@@ -122,9 +130,33 @@ export class SodaEventTransformer {
   // The last tokens from the PartialResult in SodaEvent with partial result.
   private partialResultTokens: TextToken[]|null = null;
 
-  constructor(private readonly speakerLabelEnabled: boolean) {}
+  // Speaker label will be dynamically toggled and impact on the final result.
+  // If speaker label is turned on/off in the middle of the sentence, the whole
+  // sentence will include/drop the speaker label.
+  constructor(public speakerLabelEnabled: boolean) {}
 
-  getTranscription(): Transcription {
+  // Finalizes partial results and updates the tokens when current SODA session
+  // is stopped.
+  finalizeTokens(): void {
+    if (this.partialResultTokens !== null) {
+      if (this.tokens.length > 0) {
+        this.tokens.push(textSeparator);
+      }
+      for (const token of this.partialResultTokens) {
+        if (token.kind !== 'textPart') {
+          this.tokens.push(token);
+          continue;
+        }
+        // Finalizes the token by excluding `partial` field.
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const {partial, ...finalToken} = token;
+        this.tokens.push(finalToken);
+      }
+      this.partialResultTokens = null;
+    }
+  }
+
+  getTranscription(language: LanguageCode): Transcription {
     const tokens = [...this.tokens];
     if (this.partialResultTokens !== null) {
       if (tokens.length > 0) {
@@ -132,7 +164,7 @@ export class SodaEventTransformer {
       }
       tokens.push(...this.partialResultTokens);
     }
-    return new Transcription(tokens);
+    return new Transcription(tokens, language);
   }
 
   private handleSpeakerLabelCorrectionEvent(
@@ -164,7 +196,11 @@ export class SodaEventTransformer {
           // immutable update, or signal/proxy with nested change detection, or
           // have a clearer boundary on which values (especially object/array)
           // should be immutably updated for lit change detection.
-          token.speakerLabel = speakerLabel;
+          // Correct speaker label only if speaker label is enabled on the
+          // original transcription.
+          if (token.speakerLabel !== null) {
+            token.speakerLabel = speakerLabel;
+          }
           found = true;
           break;
         }
@@ -192,6 +228,7 @@ export class SodaEventTransformer {
         event.partialResult,
         offsetMs,
         this.speakerLabelEnabled,
+        /* isPartialResult= */ true,
       );
       // Don't update tokens since it'll be added in getTokens.
       return;
@@ -230,22 +267,23 @@ export const transcriptionSchema = z.transform(
     // If the transcription is never enabled while recording, `textTokens` will
     // be null (to show a different state in playback view).
     textTokens: z.nullable(z.array(textTokenSchema)),
+    language: z.withDefault(z.nativeEnum(LanguageCode), LanguageCode.EN_US),
   }),
   {
     test(input) {
       return input instanceof Transcription;
     },
-    decode({textTokens}) {
+    decode({textTokens, language}) {
       if (textTokens === null) {
         return null;
       }
-      return new Transcription(textTokens);
+      return new Transcription(textTokens, language);
     },
     encode(val) {
       if (val === null) {
-        return {textTokens: null};
+        return {textTokens: null, language: LanguageCode.EN_US};
       }
-      return {textTokens: val.textTokens};
+      return {textTokens: val.textTokens, language: val.language};
     },
   },
 );
@@ -253,21 +291,24 @@ export const transcriptionSchema = z.transform(
 const MAX_DESCRIPTION_LENGTH = 512;
 
 export class Transcription {
-  constructor(readonly textTokens: TextToken[]) {}
+  constructor(
+    readonly textTokens: TextToken[],
+    readonly language: LanguageCode,
+  ) {}
 
   isEmpty(): boolean {
     return this.textTokens.length === 0;
   }
 
+  getWordCount = lazyInit((): number => {
+    return getWordCount(this.toPlainText(), this.language);
+  });
+
   /**
    * Concatenates textTokens into the string representation of the
    * transcription.
    *
-   * This is also used to export the transcription into a txt file.
-   *
-   * TODO(pihsun): Have a different function for exporting to text format and
-   * when exporting representation used for summary input.
-   * TODO(pihsun): Include speaker label in the output.
+   * This is used for title generation and summary input.
    */
   toPlainText = lazyInit((): string => {
     const ret: string[] = [];
@@ -280,6 +321,47 @@ export class Transcription {
         ret.push('\n');
         startOfParagraph = true;
         continue;
+      }
+      if (!startOfParagraph && (token.leadingSpace ?? true)) {
+        ret.push(' ');
+      }
+      ret.push(token.text);
+      startOfParagraph = false;
+    }
+    return ret.join('');
+  });
+
+  /**
+   * Concatenates textTokens into the string representation of the
+   * transcription. For continuous paragraphs with the same speaker label, adds
+   * the speaker label at the first paragraph.
+   *
+   * This is used to export the transcription into a txt file.
+   */
+  toExportText = lazyInit((): string => {
+    const ret: string[] = [];
+    let startOfParagraph = true;
+    let currentSpeaker: string|null = null;
+    for (const token of this.textTokens) {
+      if (token.kind === 'textSeparator') {
+        ret.push('\n');
+        startOfParagraph = true;
+        continue;
+      }
+      if (token.speakerLabel !== currentSpeaker) {
+        if (!startOfParagraph) {
+          ret.push('\n');
+          startOfParagraph = true;
+        }
+        if (ret.length !== 0) {
+          // Add a new line between two speakers.
+          ret.push('\n');
+        }
+        if (token.speakerLabel !== null) {
+          ret.push(i18n.transcriptionSpeakerLabelLabel(token.speakerLabel));
+          ret.push('\n');
+        }
+        currentSpeaker = token.speakerLabel;
       }
       if (!startOfParagraph && (token.leadingSpace ?? true)) {
         ret.push(' ');
@@ -310,7 +392,8 @@ export class Transcription {
   getSpeakerLabels = lazyInit((): string[] => {
     const speakerLabels = new Set<string>();
     for (const token of this.textTokens) {
-      if (token.kind === 'textPart' && token.speakerLabel !== null) {
+      if (token.kind === 'textPart' && token.speakerLabel !== null &&
+          !token.partial) {
         speakerLabels.add(token.speakerLabel);
       }
     }
@@ -336,7 +419,10 @@ export class Transcription {
         // time ranges are always continuous.
         return true;
       }
-      if (a.speakerLabel !== b.speakerLabel) {
+      if (a.partial !== b.partial) {
+        return true;
+      }
+      if (!a.partial && a.speakerLabel !== b.speakerLabel) {
         return true;
       }
       return false;

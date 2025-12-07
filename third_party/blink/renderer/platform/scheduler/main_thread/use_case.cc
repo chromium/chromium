@@ -7,10 +7,10 @@
 namespace blink::scheduler {
 
 // static
-const char* UseCaseToString(UseCase use_case) {
+perfetto::StaticString UseCaseToString(UseCase use_case) {
   switch (use_case) {
     case UseCase::kNone:
-      return "none";
+      return nullptr;
     case UseCase::kCompositorGesture:
       return "compositor_gesture";
     case UseCase::kMainThreadCustomInputHandling:

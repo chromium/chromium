@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<title>Canvas.drawElementImage: green rect with alpha</title>
+<link rel="help" href="https://github.com/WICG/html-in-canvas">
+<link rel="author" href="mailto:schenney@chromium.org">
+<link rel="match" href="global-alpha-basic-ref.html">
+<meta name=fuzzy content="1;2500">
+<style>
+#child {
+  width: 100px;
+  height: 100px;
+  background: green;
+}
+#canvas {
+  background: grey;
+}
+</style>
+
+<canvas id=canvas width="200" height="200" layoutsubtree>
+  <div id=child></div>
+</canvas>
+
+<script>
+function runTest() {
+  var context = canvas.getContext("2d");
+  context.fillStyle = "blue";
+  context.fillRect(70, 80, 110, 100);
+  context.globalAlpha = 0.5;
+  context.drawElementImage(child, 20, 30);
+}
+
+onload = () => runTest();
+
+</script>
+</html>

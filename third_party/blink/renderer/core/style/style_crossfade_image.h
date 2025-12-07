@@ -10,12 +10,11 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
+
+class CSSLengthResolver;
 
 namespace cssvalue {
 class CSSCrossfadeValue;
@@ -25,7 +24,8 @@ class CSSCrossfadeValue;
 class StyleCrossfadeImage final : public StyleImage {
  public:
   StyleCrossfadeImage(cssvalue::CSSCrossfadeValue&,
-                      HeapVector<Member<StyleImage>> images);
+                      HeapVector<Member<StyleImage>> images,
+                      const CSSLengthResolver&);
   ~StyleCrossfadeImage() override;
 
   CSSValue* CssValue() const override;
@@ -37,9 +37,9 @@ class StyleCrossfadeImage final : public StyleImage {
   bool IsLoading() const override;
   bool IsLoaded() const override;
   bool ErrorOccurred() const override;
-  bool IsAccessAllowed(WTF::String&) const override;
+  bool IsAccessAllowed(String&) const override;
 
-  IntrinsicSizingInfo GetNaturalSizingInfo(
+  NaturalSizingInfo GetNaturalSizingInfo(
       float multiplier,
       RespectImageOrientationEnum) const override;
   gfx::SizeF ImageSize(float multiplier,
@@ -52,7 +52,7 @@ class StyleCrossfadeImage final : public StyleImage {
   void RemoveClient(ImageResourceObserver*) override;
 
   scoped_refptr<Image> GetImage(const ImageResourceObserver&,
-                                const Document&,
+                                const Node&,
                                 const ComputedStyle&,
                                 const gfx::SizeF& target_size) const override;
 
@@ -70,10 +70,17 @@ class StyleCrossfadeImage final : public StyleImage {
   // Converts from 0..100 to 0..1, and fills in missing percentages.
   // If for_sizing is true, skips all <color> StyleImages, since they
   // do not participate in the sizing algorithms.
-  std::vector<float> ComputeWeights(bool for_sizing) const;
+  HeapVector<float> ComputeWeights(const CSSLengthResolver& length_resolver,
+                                   bool for_sizing) const;
 
   Member<cssvalue::CSSCrossfadeValue> original_value_;
   HeapVector<Member<StyleImage>> images_;
+
+  // Weights for the actual cross-fade operation.
+  HeapVector<float> weights_;
+
+  // Weights for non-<color> images (see comment on ComputeWeights()).
+  HeapVector<float> weights_for_sizing_;
 };
 
 template <>

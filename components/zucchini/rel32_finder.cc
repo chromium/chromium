@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/zucchini/rel32_finder.h"
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 
 namespace zucchini {
@@ -39,17 +35,19 @@ Abs32GapFinder::Abs32GapFinder(ConstBufferView image,
   // may straddle across |region.begin()|.
   cur_lo_ = region.begin();
   if (abs32_cur_ > abs32_locations.begin())
-    cur_lo_ = std::max(cur_lo_, image.begin() + abs32_cur_[-1] + abs32_width_);
+    cur_lo_ = std::max(
+        cur_lo_, UNSAFE_TODO(image.begin() + abs32_cur_[-1] + abs32_width_));
 }
 
 Abs32GapFinder::~Abs32GapFinder() = default;
 
 bool Abs32GapFinder::FindNext() {
   // Iterate over |[abs32_cur_, abs32_end_)| and emit segments.
-  while (abs32_cur_ != abs32_end_ && base_ + *abs32_cur_ < region_end_) {
-    ConstBufferView::const_iterator hi = base_ + *abs32_cur_;
+  while (abs32_cur_ != abs32_end_ &&
+         UNSAFE_TODO(base_ + *abs32_cur_) < region_end_) {
+    ConstBufferView::const_iterator hi = UNSAFE_TODO(base_ + *abs32_cur_);
     gap_ = ConstBufferView::FromRange(cur_lo_, hi);
-    cur_lo_ = hi + abs32_width_;
+    cur_lo_ = UNSAFE_TODO(hi + abs32_width_);
     ++abs32_cur_;
     if (!gap_.empty())
       return true;
@@ -99,13 +97,13 @@ Rel32Finder::NextIterators Rel32FinderIntel::SetResult(
     ConstBufferView::const_iterator cursor,
     uint32_t opcode_size,
     bool can_point_outside_section) {
-  offset_t location =
-      base::checked_cast<offset_t>((cursor + opcode_size) - image_.begin());
+  offset_t location = base::checked_cast<offset_t>(
+      (UNSAFE_TODO(cursor + opcode_size)) - image_.begin());
   rva_t location_rva = offset_to_rva_.Convert(location);
   DCHECK_NE(location_rva, kInvalidRva);
   rva_t target_rva = location_rva + 4 + image_.read<uint32_t>(location);
   rel32_ = {location, target_rva, can_point_outside_section};
-  return {cursor + 1, cursor + (opcode_size + 4)};
+  return {UNSAFE_TODO(cursor + 1), UNSAFE_TODO(cursor + (opcode_size + 4))};
 }
 
 /******** Rel32FinderX86 ********/
@@ -114,15 +112,17 @@ Rel32Finder::NextIterators Rel32FinderX86::Scan(ConstBufferView region) {
   ConstBufferView::const_iterator cursor = region.begin();
   while (cursor < region.end()) {
     // Heuristic rel32 detection by looking for opcodes that use them.
-    if (cursor + 5 <= region.end()) {
+    if (UNSAFE_TODO(cursor + 5) <= region.end()) {
       if (cursor[0] == 0xE8 || cursor[0] == 0xE9)  // JMP rel32; CALL rel32
         return SetResult(cursor, 1, false);
     }
-    if (cursor + 6 <= region.end()) {
-      if (cursor[0] == 0x0F && (cursor[1] & 0xF0) == 0x80)  // Jcc long form
+    if (UNSAFE_TODO(cursor + 6) <= region.end()) {
+      if (cursor[0] == 0x0F &&
+          (UNSAFE_TODO(cursor[1]) & 0xF0) == 0x80) {  // Jcc long form
         return SetResult(cursor, 2, false);
+      }
     }
-    ++cursor;
+    UNSAFE_TODO(++cursor);
   }
   return {nullptr, nullptr};
 }
@@ -133,18 +133,19 @@ Rel32Finder::NextIterators Rel32FinderX64::Scan(ConstBufferView region) {
   ConstBufferView::const_iterator cursor = region.begin();
   while (cursor < region.end()) {
     // Heuristic rel32 detection by looking for opcodes that use them.
-    if (cursor + 5 <= region.end()) {
+    if (UNSAFE_TODO(cursor + 5) <= region.end()) {
       if (cursor[0] == 0xE8 || cursor[0] == 0xE9)  // JMP rel32; CALL rel32
         return SetResult(cursor, 1, false);
     }
-    if (cursor + 6 <= region.end()) {
-      if (cursor[0] == 0x0F && (cursor[1] & 0xF0) == 0x80) {  // Jcc long form
+    if (UNSAFE_TODO(cursor + 6) <= region.end()) {
+      if (cursor[0] == 0x0F &&
+          (UNSAFE_TODO(cursor[1]) & 0xF0) == 0x80) {  // Jcc long form
         return SetResult(cursor, 2, false);
-      } else if ((cursor[0] == 0xFF &&
-                  (cursor[1] == 0x15 || cursor[1] == 0x25)) ||
+      } else if ((cursor[0] == 0xFF && (UNSAFE_TODO(cursor[1]) == 0x15 ||
+                                        UNSAFE_TODO(cursor[1]) == 0x25)) ||
                  ((cursor[0] == 0x89 || cursor[0] == 0x8B ||
                    cursor[0] == 0x8D) &&
-                  (cursor[1] & 0xC7) == 0x05)) {
+                  (UNSAFE_TODO(cursor[1]) & 0xC7) == 0x05)) {
         // 6-byte instructions:
         // [2-byte opcode] [disp32]:
         //  Opcode
@@ -162,7 +163,7 @@ Rel32Finder::NextIterators Rel32FinderX64::Scan(ConstBufferView region) {
         return SetResult(cursor, 2, true);
       }
     }
-    ++cursor;
+    UNSAFE_TODO(++cursor);
   }
   return {nullptr, nullptr};
 }
@@ -183,7 +184,7 @@ Rel32Finder::NextIterators Rel32FinderArm<ADDR_TYPE>::SetResult(
     ConstBufferView::const_iterator cursor,
     int instr_size) {
   rel32_ = result;
-  return {cursor + instr_size, cursor + instr_size};
+  return {UNSAFE_TODO(cursor + instr_size), UNSAFE_TODO(cursor + instr_size)};
 }
 
 // SetResult() for end of scan.
@@ -207,8 +208,8 @@ Rel32Finder::NextIterators Rel32FinderAArch32::ScanA32(ConstBufferView region) {
   if (region.size() < 4)
     return SetEmptyResult();
   ConstBufferView::const_iterator cursor = region.begin();
-  cursor += IncrementForAlignCeil4(cursor - image_.begin());
-  for (; region.end() - cursor >= 4; cursor += 4) {
+  UNSAFE_TODO(cursor += IncrementForAlignCeil4(cursor - image_.begin()));
+  for (; region.end() - cursor >= 4; UNSAFE_TODO(cursor += 4)) {
     offset_t offset = base::checked_cast<offset_t>(cursor - image_.begin());
     AArch32Rel32Translator translator;
     rva_t instr_rva = offset_to_rva_.Convert(offset);
@@ -227,7 +228,7 @@ Rel32Finder::NextIterators Rel32FinderAArch32::ScanT32(ConstBufferView region) {
   if (region.size() < 2)
     return SetEmptyResult();
   ConstBufferView::const_iterator cursor = region.begin();
-  cursor += IncrementForAlignCeil2(cursor - image_.begin());
+  UNSAFE_TODO(cursor += IncrementForAlignCeil2(cursor - image_.begin()));
   while (region.end() - cursor >= 2) {
     offset_t offset = base::checked_cast<offset_t>(cursor - image_.begin());
     AArch32Rel32Translator translator;
@@ -252,7 +253,7 @@ Rel32Finder::NextIterators Rel32FinderAArch32::ScanT32(ConstBufferView region) {
     }
     if (type != AArch32Rel32Translator::ADDR_NONE)
       return SetResult({offset, target_rva, type}, cursor, instr_size);
-    cursor += instr_size;
+    UNSAFE_TODO(cursor += instr_size);
   }
   return SetEmptyResult();
 }
@@ -274,8 +275,8 @@ Rel32Finder::NextIterators Rel32FinderAArch64::Scan(ConstBufferView region) {
   if (region.size() < 4)
     return SetEmptyResult();
   ConstBufferView::const_iterator cursor = region.begin();
-  cursor += IncrementForAlignCeil4(cursor - image_.begin());
-  for (; region.end() - cursor >= 4; cursor += 4) {
+  UNSAFE_TODO(cursor += IncrementForAlignCeil4(cursor - image_.begin()));
+  for (; region.end() - cursor >= 4; UNSAFE_TODO(cursor += 4)) {
     offset_t offset = base::checked_cast<offset_t>(cursor - image_.begin());
     // For simplicity we assume RVA fits within 32-bits.
     AArch64Rel32Translator translator;

@@ -1,5 +1,10 @@
+include_rules = [
+  "+components/link_header_util",
+]
+
 specific_include_rules = {
   '.*_[a-z]*test.*': [
+    "+chrome/windows_services/service_program/test_support",
     "+services/network/test",
     "+third_party/boringssl/src/pki",
   ],

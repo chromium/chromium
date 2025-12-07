@@ -13,6 +13,8 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -37,6 +39,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/blink/public/mojom/manifest/manifest_manager.mojom.h"
 
 namespace web_app {
 
@@ -44,7 +47,6 @@ namespace {
 
 const char16_t kFooTitle[] = u"Foo Title";
 
-}  // namespace
 
 class FakeWebPageMetadataAgent
     : public webapps::mojom::WebPageMetadataAgentInterceptorForTesting {
@@ -52,10 +54,7 @@ class FakeWebPageMetadataAgent
   FakeWebPageMetadataAgent() = default;
   ~FakeWebPageMetadataAgent() override = default;
 
-  WebPageMetadataAgent* GetForwardingInterface() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  WebPageMetadataAgent* GetForwardingInterface() override { NOTREACHED(); }
 
   void Bind(mojo::ScopedInterfaceEndpointHandle handle) {
     receiver_.Bind(mojo::PendingAssociatedReceiver<WebPageMetadataAgent>(
@@ -204,7 +203,7 @@ TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_AppUrlPresent) {
   run_loop.Run();
 
   EXPECT_EQ(other_app_url, web_app_info()->start_url());
-  EXPECT_EQ(other_app_title, web_app_info()->title);
+  EXPECT_EQ(other_app_title, web_app_info()->title.value());
 }
 
 TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_TitleAbsentFromRenderer) {
@@ -250,7 +249,7 @@ TEST_F(WebAppDataRetrieverTest,
   // If the WebAppInstallInfo has no title and the WebContents has no title, we
   // fallback to start_url.
   EXPECT_EQ(base::UTF8ToUTF16(web_app_info()->start_url().spec()),
-            web_app_info()->title);
+            web_app_info()->title.value());
 }
 
 TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_ConnectionError) {
@@ -321,14 +320,12 @@ TEST_F(WebAppDataRetrieverTest, GetIcons_WebContentsDestroyed) {
 
   web_contents_tester()->NavigateAndCommit(GURL("https://foo.example"));
 
-  bool skip_page_favicons = true;
-  bool fail_all_if_any_fail = false;
-
   base::RunLoop run_loop;
   WebAppDataRetriever retriever;
   retriever.GetIcons(web_contents(),
                      /*extra_favicon_urls=*/IconUrlSizeSet(),
-                     skip_page_favicons, fail_all_if_any_fail,
+                     /*download_page_favicons=*/false,
+                     /*fail_all_if_any_fail=*/false,
                      base::BindLambdaForTesting(
                          [&](IconsDownloadedResult result, IconsMap icons_map,
                              DownloadedIconsHttpResults icons_http_results) {
@@ -456,4 +453,37 @@ TEST_F(WebAppDataRetrieverTest, CheckInstallabilityFails) {
   EXPECT_TRUE(callback_called);
 }
 
+// This is required as the CallbackList uses const ref, and TestFuture requires
+// copying or move support. This manually clones from the const ref so the
+// result can be moved into the TestFuture.
+base::expected<blink::mojom::ManifestPtr, blink::mojom::RequestManifestErrorPtr>
+CopyMojoExpectedConstRef(
+    const base::expected<blink::mojom::ManifestPtr,
+                         blink::mojom::RequestManifestErrorPtr>&
+        const_ref_result) {
+  if (const_ref_result.has_value()) {
+    return base::ok(const_ref_result->Clone());
+  } else {
+    return base::unexpected(const_ref_result.error()->Clone());
+  }
+}
+
+TEST_F(WebAppDataRetrieverTest, CheckTimeoutTriggers) {
+  base::test::TestFuture<base::expected<blink::mojom::ManifestPtr,
+                                        blink::mojom::RequestManifestErrorPtr>>
+      primary_manifest_future;
+
+  WebAppDataRetriever retriever;
+  retriever.SetManifestWaitTimeoutForTesting(base::Seconds(0));
+  retriever.GetPrimaryPageFirstSpecifiedManifest(
+      *web_contents(), base::BindOnce(&CopyMojoExpectedConstRef)
+                           .Then(primary_manifest_future.GetCallback()));
+
+  ASSERT_TRUE(primary_manifest_future.Wait());
+  ASSERT_FALSE(primary_manifest_future.Get().has_value());
+  EXPECT_EQ(primary_manifest_future.Get().error()->error,
+            blink::mojom::ManifestRequestResult::kNoManifestSpecified);
+}
+
+}  // namespace
 }  // namespace web_app

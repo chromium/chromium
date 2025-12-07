@@ -10,6 +10,7 @@
 
 namespace signin {
 
+// TODO(crbug.com/425896213): Remove this file after migration complete.
 using ScopeSet = std::set<std::string>;
 
 }  // namespace signin

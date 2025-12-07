@@ -13,8 +13,7 @@ There are 4 lifecycle states [defined](https://cs.chromium.org/chromium/src/thir
 
 * kRunning - actively running context
 * kPaused - Paused state. Does not fire frozen or resumed events on the document.
-* kFrozen - Frozen state, pause all media.
-* kFrozenAutoResumeMedia - Frozen state, resume media when resuming.
+* kFrozen - Frozen state.
 
 ## kPaused
 * Used for synchronous mechanisms for a single thread, eg. window.print, V8 inspector debugging.

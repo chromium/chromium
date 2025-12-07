@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "content/browser/web_package/signed_exchange_error.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "net/base/ip_address.h"
 #include "net/base/network_isolation_key.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -29,7 +30,7 @@ class CONTENT_EXPORT SignedExchangeReporter {
       const std::string& referrer,
       const network::mojom::URLResponseHead& response,
       const net::NetworkAnonymizationKey& network_anonymization_key,
-      int frame_tree_node_id);
+      FrameTreeNodeId frame_tree_node_id);
 
   SignedExchangeReporter(const SignedExchangeReporter&) = delete;
   SignedExchangeReporter& operator=(const SignedExchangeReporter&) = delete;
@@ -52,12 +53,12 @@ class CONTENT_EXPORT SignedExchangeReporter {
       const std::string& referrer,
       const network::mojom::URLResponseHead& response,
       const net::NetworkAnonymizationKey& network_anonymization_key,
-      int frame_tree_node_id);
+      FrameTreeNodeId frame_tree_node_id);
 
   network::mojom::SignedExchangeReportPtr report_;
   const base::TimeTicks request_start_;
   const net::NetworkAnonymizationKey network_anonymization_key_;
-  const int frame_tree_node_id_;
+  const FrameTreeNodeId frame_tree_node_id_;
   net::IPAddress cert_server_ip_address_;
 };
 

@@ -68,10 +68,6 @@ export class MockVolumeManager extends VolumeManager {
         str('DOWNLOADS_DIRECTORY_LABEL'));
   }
 
-  override getFuseBoxOnlyFilterEnabled() {
-    return false;
-  }
-
   override getMediaStoreFilesOnlyFilterEnabled() {
     return false;
   }

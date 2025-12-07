@@ -13,12 +13,8 @@
 #include <set>
 #include <string>
 #include <unordered_map>
-#include <unordered_set>
 #include <vector>
 
-#include "ash/components/arc/mojom/bluetooth.mojom.h"
-#include "ash/components/arc/mojom/intent_helper.mojom-forward.h"
-#include "ash/components/arc/session/connection_observer.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file.h"
 #include "base/files/file_descriptor_watcher_posix.h"
@@ -27,6 +23,9 @@
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/arc/bluetooth/arc_bluetooth_task_queue.h"
+#include "chromeos/ash/experiences/arc/mojom/bluetooth.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom-forward.h"
+#include "chromeos/ash/experiences/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -439,7 +438,7 @@ class ArcBluetoothBridge
 
   void OnGattNotifyStartDone(
       GattStatusCallback callback,
-      const std::string char_string_id,
+      std::string char_string_id,
       std::unique_ptr<device::BluetoothGattNotifySession> notify_session);
 
   // Indicates if a power change is initiated by Chrome / Android.
@@ -728,8 +727,6 @@ class ArcBluetoothBridge
   // * mapped to nullptr -> reserved, awaiting data
   // * mapped to a device::BluetoothAdvertisement -> in use, and the mapped
   //   BluetoothAdvertisement is currently registered with the adapter.
-  // TODO(crbug.com/41282389) Change back to 5 when we support setting signal
-  // strength per each advertisement slot.
   enum { kMaxAdvertisements = 1 };
   std::map<int32_t, scoped_refptr<device::BluetoothAdvertisement>>
       advertisements_;

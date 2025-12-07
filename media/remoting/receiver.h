@@ -19,8 +19,8 @@
 #include "media/base/renderer.h"
 #include "media/base/renderer_client.h"
 #include "media/cast/openscreen/rpc_call_message_handler.h"
+#include "third_party/openscreen/src/cast/streaming/public/rpc_messenger.h"
 #include "third_party/openscreen/src/cast/streaming/remoting.pb.h"
-#include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"
 
 namespace openscreen {
 namespace cast {

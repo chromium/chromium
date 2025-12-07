@@ -24,19 +24,19 @@ EmojiSegmentationCategory GetEmojiSegmentationCategory(UChar32 codepoint) {
   // classes first, then expand towards more generic ones. So we match single
   // characters and small ranges first, then return EMOJI and
   // EMOJI_TEXT_PRESENTATION for the remaining ones.
-  if (codepoint == kCombiningEnclosingKeycapCharacter) {
+  if (codepoint == uchar::kCombiningEnclosingKeycap) {
     return EmojiSegmentationCategory::COMBINING_ENCLOSING_KEYCAP;
   }
-  if (codepoint == kCombiningEnclosingCircleBackslashCharacter) {
+  if (codepoint == uchar::kCombiningEnclosingCircleBackslash) {
     return EmojiSegmentationCategory::COMBINING_ENCLOSING_CIRCLE_BACKSLASH;
   }
-  if (codepoint == kZeroWidthJoinerCharacter) {
+  if (codepoint == uchar::kZeroWidthJoiner) {
     return EmojiSegmentationCategory::ZWJ;
   }
-  if (codepoint == kVariationSelector15Character) {
+  if (codepoint == uchar::kVariationSelector15) {
     return EmojiSegmentationCategory::VS15;
   }
-  if (codepoint == kVariationSelector16Character) {
+  if (codepoint == uchar::kVariationSelector16) {
     return EmojiSegmentationCategory::VS16;
   }
   if (codepoint == 0x1F3F4) {
@@ -45,7 +45,7 @@ EmojiSegmentationCategory GetEmojiSegmentationCategory(UChar32 codepoint) {
   if (Character::IsEmojiTagSequence(codepoint)) {
     return EmojiSegmentationCategory::TAG_SEQUENCE;
   }
-  if (codepoint == kCancelTag) {
+  if (codepoint == uchar::kCancelTag) {
     // http://www.unicode.org/reports/tr51/#def_emoji_tag_sequence
     // defines a TAG_TERM grammar rule for U+E007F CANCEL TAG.
     return EmojiSegmentationCategory::TAG_TERM;
@@ -66,7 +66,7 @@ EmojiSegmentationCategory GetEmojiSegmentationCategory(UChar32 codepoint) {
   if (Character::IsEmojiTextDefault(codepoint)) {
     return EmojiSegmentationCategory::EMOJI_TEXT_PRESENTATION;
   }
-  if (Character::IsEmoji(codepoint)) {
+  if (Character::IsEmojiIncludingReserved(codepoint)) {
     return EmojiSegmentationCategory::EMOJI;
   }
 

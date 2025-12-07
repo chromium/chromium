@@ -19,9 +19,9 @@
 
 // https://html.spec.whatwg.org/C/#the-br-element
 [
-    Exposed=Window,
-    HTMLConstructor
+    Exposed=Window
 ] interface HTMLBRElement : HTMLElement {
+    [HTMLConstructor] constructor();
     // obsolete members
     // https://html.spec.whatwg.org/C/#HTMLBRElement-partial
     [CEReactions, Reflect] attribute DOMString clear;

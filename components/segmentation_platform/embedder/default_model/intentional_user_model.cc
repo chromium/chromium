@@ -43,18 +43,12 @@ constexpr std::array<int32_t, 1> kLaunchCauseMainLauncherIcon{
 };
 
 // Set UMA metrics to use as input.
-constexpr std::array<MetadataWriter::UMAFeature, 1>
-    kIntentionalUserUMAFeatures = {
-        // This input is the sum of all times MobileStartup.LaunchCause was
-        // recorded with a value of MAIN_LAUNCHER_ICON in the last 28 days.
-        MetadataWriter::UMAFeature::FromEnumHistogram(
-            "MobileStartup.LaunchCause",
-            /* This is the number of buckets to store and aggregate, each bucket
-               is 1 day according to kIntentionalUserTimeUnit and
-               kIntentionalUserBucketDuration. */
-            28,
-            kLaunchCauseMainLauncherIcon.data(),
-            kLaunchCauseMainLauncherIcon.size())};
+constexpr FeaturePair<IntentionalUserModel::Feature>
+    kIntentionalUserFeatures[] = {
+        {IntentionalUserModel::kFeatureLaunchCauseMainLauncherIcon,
+         features::UMAEnum("MobileStartup.LaunchCause",
+                           28,
+                           kLaunchCauseMainLauncherIcon)}};
 
 }  // namespace
 
@@ -98,8 +92,7 @@ IntentionalUserModel::GetModelConfig() {
       /*time_unit=*/proto::TimeUnit::DAY);
 
   // Set features.
-  writer.AddUmaFeatures(kIntentionalUserUMAFeatures.data(),
-                        kIntentionalUserUMAFeatures.size());
+  writer.AddFeatures<IntentionalUserModel::Feature>(kIntentionalUserFeatures);
 
   return std::make_unique<ModelConfig>(std::move(intentional_user_metadata),
                                        kIntentionalUserModelVersion);
@@ -109,13 +102,13 @@ void IntentionalUserModel::ExecuteModelWithInput(
     const ModelProvider::Request& inputs,
     ExecutionCallback callback) {
   // Invalid inputs.
-  if (inputs.size() != kIntentionalUserUMAFeatures.size()) {
+  if (inputs.size() != kFeatureCount) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
 
-  const int main_launcher_clicks = inputs[0];
+  const int main_launcher_clicks = inputs[kFeatureLaunchCauseMainLauncherIcon];
   float result = 0;
 
   if (main_launcher_clicks >= kIntentionalLaunchThreshold) {

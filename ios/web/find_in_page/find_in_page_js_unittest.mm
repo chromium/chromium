@@ -49,7 +49,6 @@ namespace web {
 // correct.
 class FindInPageJsTest : public WebTestWithWebState {
  protected:
-
   void SetUp() override {
     WebTestWithWebState::SetUp();
 

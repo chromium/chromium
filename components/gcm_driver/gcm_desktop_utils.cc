@@ -9,7 +9,6 @@
 #include "base/command_line.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/gcm_driver/gcm_client_factory.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/gcm_driver_desktop.h"
@@ -31,9 +30,9 @@ GCMClient::ChromePlatform GetPlatform() {
   return GCMClient::PLATFORM_IOS;
 #elif BUILDFLAG(IS_ANDROID)
   return GCMClient::PLATFORM_ANDROID;
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
   return GCMClient::PLATFORM_CROS;
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX)
   return GCMClient::PLATFORM_LINUX;
 #else
   // For all other platforms, return as LINUX.
@@ -54,8 +53,7 @@ GCMClient::ChromeChannel GetChannel(version_info::Channel channel) {
     case version_info::Channel::STABLE:
       return GCMClient::CHANNEL_STABLE;
   }
-  NOTREACHED_IN_MIGRATION();
-  return GCMClient::CHANNEL_UNKNOWN;
+  NOTREACHED();
 }
 
 std::string GetVersion() {
@@ -89,13 +87,14 @@ std::unique_ptr<GCMDriver> CreateGCMDriverDesktop(
     const std::string& product_category_for_subtypes,
     const scoped_refptr<base::SequencedTaskRunner>& ui_task_runner,
     const scoped_refptr<base::SequencedTaskRunner>& io_task_runner,
-    const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner) {
+    const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner,
+    os_crypt_async::OSCryptAsync* os_crypt_async) {
   return std::unique_ptr<GCMDriver>(new GCMDriverDesktop(
       std::move(gcm_client_factory),
       GetChromeBuildInfo(channel, product_category_for_subtypes), prefs,
       store_path, get_socket_factory_callback, std::move(url_loader_factory),
       network_connection_tracker, ui_task_runner, io_task_runner,
-      blocking_task_runner));
+      blocking_task_runner, os_crypt_async));
 }
 
 }  // namespace gcm

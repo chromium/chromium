@@ -7,11 +7,12 @@
 
 syntax = "proto2";
 
-option optimize_for = LITE_RUNTIME;
-
 package safe_browsing;
 
+import "components/enterprise/common/proto/connectors.proto";
 import "components/safe_browsing/core/common/proto/csd.proto";
+
+option optimize_for = LITE_RUNTIME;
 
 message RTLookupRequest {
   // If applicable, URL submitted from Chrome.
@@ -46,9 +47,18 @@ message RTLookupRequest {
   // For more information on DM tokens, see go/cbe-dmtoken
   optional string browser_dm_token = 12;
 
+  // This field contains additional information about the browser and device or
+  // profile, this information is used for security event reporting.
+  // Only populated for Enterprise Protego requests.
+  optional enterprise_connectors.ClientMetadata client_reporting_metadata = 14;
+
   // Email of the signed-in user that triggered the request, if available.
   // Only populated for enterprise requests.
   optional string email = 13;
+
+  // The email of the currently active user in the content area. Only populated
+  // for Workspace sites (enterprise-only).
+  optional string content_area_account_email = 17;
 
   // |version| helps the Safe Browsing server understand what version of the
   // proto Chrome understands, and also what kinds of behaviours it supports.
@@ -63,6 +73,8 @@ message RTLookupRequest {
   //   * Client supports referrer chains.
   // Version 3:
   //   * Client support the |report_type| and |frame_type| fields.
+  // Version 4:
+  //   * Client may include |referring_webapk| in |referring_app_info| field.
   optional int32 version = 6 [default = 0];
 
   // The operating system of the client.
@@ -102,6 +114,13 @@ message RTLookupRequest {
   }
   // Whether the URL sent to Safe Browsing is mainframe URL or subframe URL.
   optional FrameType frame_type = 10;
+
+  // The Android app that launched Chrome.
+  optional ReferringAppInfo referring_app_info = 15;
+
+  // Local IP addresses of the device. This is only used for enterprise
+  // requests.
+  repeated string local_ips = 16;
 }
 
 message RTLookupResponse {
@@ -191,6 +210,10 @@ message RTLookupResponse {
   // The URL categories associated with the URL in the request. Only populated
   // for Enterprise Protego and only if categories were found for the URL.
   repeated string url_categories = 3;
+
+  // The information of Llama trigger rules that triggered a CSD ping. Set only
+  // if client_side_detection_type = FORCE_REQUEST.
+  optional LlamaForcedTriggerInfo llama_forced_trigger_info = 4;
 }
 
 // mirrors google.protobuf.Timestamp
@@ -276,4 +299,28 @@ message MatchedUrlNavigationRule {
 
   // Whether the matched rule need to block screenshots.
   optional bool block_screenshot = 8;
+
+  message DataMaskingAction {
+    // The display name of the data masking detector.
+    optional string display_name = 1;
+
+    // The type of masking to be applied. This is either "LIGHT", "HARD" or
+    // "REDACTED", and is implemented using a string instead of an enum to
+    // simplify compatibility when this proto field is converted to a JSON
+    // object in Chrome for a JS extension API call.
+    optional string mask_type = 2;
+
+    // This is a regex pattern that will be used to match the URL.
+    optional string pattern = 3;
+
+    // The id of the data masking detector.
+    optional string detector_id = 4;
+
+    // The text to use as the mask.
+    optional string mask_text = 5;
+  }
+
+  // The set of data masking actions that should be applied to the URL due to
+  // this rule match.
+  repeated DataMaskingAction data_masking_actions = 9;
 }

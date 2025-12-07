@@ -15,86 +15,52 @@
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
-#include "crypto/rsa_private_key.h"
-#include "crypto/signature_creator.h"
+#include "crypto/sign.h"
 #include "net/cert/x509_util.h"
 
 namespace remoting {
 
-RsaKeyPair::RsaKeyPair(std::unique_ptr<crypto::RSAPrivateKey> key)
-    : key_(std::move(key)) {
-  DCHECK(key_);
-}
+RsaKeyPair::RsaKeyPair(crypto::keypair::PrivateKey&& key)
+    : key_(std::move(key)) {}
 
 RsaKeyPair::~RsaKeyPair() = default;
 
 // static
 scoped_refptr<RsaKeyPair> RsaKeyPair::Generate() {
-  std::unique_ptr<crypto::RSAPrivateKey> key(
-      crypto::RSAPrivateKey::Create(2048));
-  if (!key) {
-    LOG(ERROR) << "Cannot generate private key.";
-    return nullptr;
-  }
-  return new RsaKeyPair(std::move(key));
+  return new RsaKeyPair(crypto::keypair::PrivateKey::GenerateRsa2048());
 }
 
 // static
 scoped_refptr<RsaKeyPair> RsaKeyPair::FromString(
     const std::string& key_base64) {
-  std::string key_str;
-  if (!base::Base64Decode(key_base64, &key_str)) {
+  std::optional<std::vector<uint8_t>> key_bytes =
+      base::Base64Decode(key_base64);
+  if (!key_bytes.has_value()) {
     LOG(ERROR) << "Failed to decode private key.";
     return nullptr;
   }
 
-  std::vector<uint8_t> key_buf(key_str.begin(), key_str.end());
-  std::unique_ptr<crypto::RSAPrivateKey> key(
-      crypto::RSAPrivateKey::CreateFromPrivateKeyInfo(key_buf));
-  if (!key) {
+  auto key = crypto::keypair::PrivateKey::FromPrivateKeyInfo(*key_bytes);
+  if (!key.has_value()) {
     LOG(ERROR) << "Invalid private key.";
     return nullptr;
   }
 
-  return new RsaKeyPair(std::move(key));
+  return new RsaKeyPair(std::move(*key));
 }
 
 std::string RsaKeyPair::ToString() const {
-  // Check that the key initialized.
-  DCHECK(key_.get() != nullptr);
-
-  std::vector<uint8_t> key_buf;
-  CHECK(key_->ExportPrivateKey(&key_buf));
-  std::string key_str(key_buf.begin(), key_buf.end());
-  std::string key_base64 = base::Base64Encode(key_str);
-  return key_base64;
+  return base::Base64Encode(key_.ToPrivateKeyInfo());
 }
 
 std::string RsaKeyPair::GetPublicKey() const {
-  std::vector<uint8_t> public_key;
-  CHECK(key_->ExportPublicKey(&public_key));
-  std::string public_key_str(public_key.begin(), public_key.end());
-  std::string public_key_base64 = base::Base64Encode(public_key_str);
-  return public_key_base64;
+  return base::Base64Encode(key_.ToSubjectPublicKeyInfo());
 }
 
-std::string RsaKeyPair::SignMessage(const std::string& message) const {
-  std::unique_ptr<crypto::SignatureCreator> signature_creator(
-      crypto::SignatureCreator::Create(key_.get(),
-                                       crypto::SignatureCreator::SHA1));
-  signature_creator->Update(reinterpret_cast<const uint8_t*>(message.c_str()),
-                            message.length());
-  std::vector<uint8_t> signature_buf;
-  signature_creator->Final(&signature_buf);
-  std::string signature_str(signature_buf.begin(), signature_buf.end());
-  std::string signature_base64 = base::Base64Encode(signature_str);
-  return signature_base64;
-}
-
-std::string RsaKeyPair::GenerateCertificate() const {
+std::string RsaKeyPair::GenerateCertificate() {
   std::string der_cert;
   net::x509_util::CreateSelfSignedCert(
-      key_->key(), net::x509_util::DIGEST_SHA256, "CN=chromoting",
+      key_.key(), net::x509_util::DIGEST_SHA256, "CN=chromoting",
       base::RandInt(1, std::numeric_limits<int>::max()), base::Time::Now(),
       base::Time::Now() + base::Days(1), {}, &der_cert);
   return der_cert;

@@ -17,11 +17,15 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "build/build_config.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/update_client/unzipper.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
+#include "components/update_client/update_client_metrics.h"
 #include "components/update_client/utils.h"
 #include "third_party/zlib/google/compression_utils.h"
 
@@ -41,22 +45,28 @@ namespace update_client {
 
 Unpacker::Result::Result() = default;
 
-Unpacker::Unpacker(const base::FilePath& path,
+Unpacker::Unpacker(const std::string& app_id,
+                   const std::string& prod_id,
+                   const base::FilePath& path,
                    std::unique_ptr<Unzipper> unzipper,
                    base::OnceCallback<void(const Result& result)> callback)
-    : path_(path),
+    : app_id_(app_id),
+      prod_id_(update_client::UTF8ToStringType(prod_id)),
+      path_(path),
       unzipper_(std::move(unzipper)),
       callback_(std::move(callback)) {}
 
 Unpacker::~Unpacker() = default;
 
-void Unpacker::Unpack(const std::vector<uint8_t>& pk_hash,
+void Unpacker::Unpack(const std::string& app_id,
+                      const std::string& prod_id,
+                      const std::vector<uint8_t>& pk_hash,
                       const base::FilePath& path,
                       std::unique_ptr<Unzipper> unzipper,
                       crx_file::VerifierFormat crx_format,
                       base::OnceCallback<void(const Result& result)> callback) {
-  base::WrapRefCounted(
-      new Unpacker(path, std::move(unzipper), std::move(callback)))
+  base::WrapRefCounted(new Unpacker(app_id, prod_id, path, std::move(unzipper),
+                                    std::move(callback)))
       ->Verify(pk_hash, crx_format);
 }
 
@@ -85,8 +95,12 @@ void Unpacker::Verify(const std::vector<uint8_t>& pk_hash,
 
 void Unpacker::BeginUnzipping() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!base::CreateNewTempDirectory(
-          FILE_PATH_LITERAL("chrome_Unpacker_BeginUnzipping"), &unpack_path_)) {
+
+  unzip_begin_time_ = base::TimeTicks::Now();
+  if (!CreateTempDirectory(
+          base::StrCat(
+              {prod_id_, FILE_PATH_LITERAL("_chrome_Unpacker_BeginUnzipping")}),
+          &unpack_path_)) {
     VLOG(1) << "Unable to create temporary directory for unpacking.";
     EndUnpacking(UnpackerError::kUnzipPathError,
                  ::logging::GetLastSystemErrorCode());
@@ -99,6 +113,10 @@ void Unpacker::BeginUnzipping() {
 
 void Unpacker::EndUnzipping(bool result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (result) {
+    metrics::RecordCRXUnzipTime(base::TimeTicks::Now() - unzip_begin_time_,
+                                app_id_);
+  }
   if (!result) {
     VLOG(1) << "Unzipping failed.";
     EndUnpacking(UnpackerError::kUnzipFailed, 0);
@@ -153,7 +171,7 @@ void Unpacker::StoreVerifiedContentsInExtensionDir(
 void Unpacker::EndUnpacking(UnpackerError error, int extended_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error != UnpackerError::kNone && !unpack_path_.empty()) {
-    RetryDeletePathRecursively(unpack_path_);
+    RetryFileOperation(&base::DeletePathRecursively, unpack_path_);
   }
 
   Result result;

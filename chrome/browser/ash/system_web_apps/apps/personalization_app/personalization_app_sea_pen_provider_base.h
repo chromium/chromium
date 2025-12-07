@@ -61,6 +61,10 @@ class PersonalizationAppSeaPenProviderBase
 
   bool IsEligibleForSeaPenTextInput() override;
 
+  bool IsManagedSeaPenEnabled() override;
+
+  bool IsManagedSeaPenFeedbackEnabled() override;
+
   // ::ash::personalization_app::mojom::SeaPenProvider:
   void SetSeaPenObserver(
       mojo::PendingRemote<mojom::SeaPenObserver> observer) override;
@@ -69,6 +73,7 @@ class PersonalizationAppSeaPenProviderBase
                            GetSeaPenThumbnailsCallback callback) override;
 
   void SelectSeaPenThumbnail(uint32_t id,
+                             bool preview_mode,
                              SelectSeaPenThumbnailCallback callback) override;
 
   void SelectRecentSeaPenImage(
@@ -90,6 +95,11 @@ class PersonalizationAppSeaPenProviderBase
 
   void HandleSeaPenIntroductionDialogClosed() override;
 
+  void ShouldShowSeaPenFreeformIntroductionDialog(
+      ShouldShowSeaPenIntroductionDialogCallback callback) override;
+
+  void HandleSeaPenFreeformIntroductionDialogClosed() override;
+
   void IsInTabletMode(IsInTabletModeCallback callback) override;
 
   void MakeTransparent() override;
@@ -104,6 +114,10 @@ class PersonalizationAppSeaPenProviderBase
       bool preview_mode,
       SelectRecentSeaPenImageCallback callback) = 0;
 
+  virtual bool IsManagedSeaPenEnabledInternal() = 0;
+
+  virtual bool IsManagedSeaPenFeedbackEnabledInternal() = 0;
+
   virtual void GetRecentSeaPenImageIdsInternal(
       GetRecentSeaPenImageIdsCallback callback) = 0;
 
@@ -116,9 +130,15 @@ class PersonalizationAppSeaPenProviderBase
 
   virtual void HandleSeaPenIntroductionDialogClosedInternal() = 0;
 
+  virtual void ShouldShowSeaPenFreeformIntroductionDialogInternal(
+      ShouldShowSeaPenFreeformIntroductionDialogCallback callback) = 0;
+
+  virtual void HandleSeaPenFreeformIntroductionDialogClosedInternal() = 0;
+
   virtual void OnFetchWallpaperDoneInternal(
       const SeaPenImage& sea_pen_image,
       const mojom::SeaPenQueryPtr& query,
+      bool preview_mode,
       base::OnceCallback<void(bool success)> callback) = 0;
 
   manta::proto::FeatureName feature_name_;
@@ -145,6 +165,7 @@ class PersonalizationAppSeaPenProviderBase
 
   void OnFetchWallpaperDone(SelectSeaPenThumbnailCallback callback,
                             const mojom::SeaPenQueryPtr& query,
+                            bool preview_mode,
                             std::optional<SeaPenImage> image);
 
   void OnRecentSeaPenImageSelected(bool success);

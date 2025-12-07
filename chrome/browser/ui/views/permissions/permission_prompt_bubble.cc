@@ -3,21 +3,25 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble.h"
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_view_factory.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
 #include "components/permissions/features.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/display/types/display_constants.h"
 
 PermissionPromptBubble::PermissionPromptBubble(
     Browser* browser,
     content::WebContents* web_contents,
     Delegate* delegate)
-    : PermissionPromptDesktop(browser, web_contents, delegate),
-      permission_requested_time_(base::TimeTicks::Now()) {
+    : PermissionPromptDesktop(browser, web_contents, delegate) {
   LocationBarView* lbv = GetLocationBarView();
   if (lbv && lbv->IsDrawn() &&
       delegate->Requests()[0]->IsConfirmationChipSupported()) {
@@ -36,9 +40,18 @@ PermissionPromptBubble::~PermissionPromptBubble() {
 }
 
 void PermissionPromptBubble::ShowBubble() {
+  FullscreenController* fullscreen_controller = browser()
+                                                    ->GetFeatures()
+                                                    .exclusive_access_manager()
+                                                    ->fullscreen_controller();
+  CHECK(fullscreen_controller);
+  if (fullscreen_controller->IsTabFullscreen()) {
+    fullscreen_blocker_ =
+        web_contents()->ForSecurityDropFullscreen(display::kInvalidDisplayId);
+  }
+
   raw_ptr<PermissionPromptBubbleBaseView> prompt_bubble =
       CreatePermissionPromptBubbleView(browser(), delegate()->GetWeakPtr(),
-                                       permission_requested_time_,
                                        PermissionPromptStyle::kBubbleOnly);
   prompt_bubble_tracker_.SetView(prompt_bubble);
   prompt_bubble->Show();

@@ -68,19 +68,20 @@
 // should be able to tell the difference.
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/task/delay_policy.h"
 #include "base/task/delayed_task_handle.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 
 namespace base {
 
+class SequencedTaskRunner;
 class TickClock;
 
 namespace internal {
@@ -162,10 +163,6 @@ class BASE_EXPORT DelayTimerBase : public TimerBase {
   // the timer is not running, this will start it by posting a task.
   virtual void Reset();
 
-  // DEPRECATED. Call Stop() instead.
-  // TODO(crbug.com/40202541): Remove this method and all callers.
-  void AbandonAndStop();
-
   TimeTicks desired_run_time() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return desired_run_time_;
@@ -245,7 +242,10 @@ class BASE_EXPORT OneShotTimer : public internal::DelayTimerBase {
              TimeDelta delay,
              Receiver* receiver,
              void (Receiver::*method)()) {
-    Start(posted_from, delay, BindOnce(method, Unretained(receiver)));
+    // Explicitly qualify calls, in case this is used inside Blink (which has
+    // similar methods in WTF).
+    Start(posted_from, delay,
+          ::base::BindOnce(method, ::base::Unretained(receiver)));
   }
 
   // Run the scheduled task immediately, and stop the timer. The timer needs to
@@ -294,10 +294,13 @@ class BASE_EXPORT RepeatingTimer : public internal::DelayTimerBase {
              TimeDelta delay,
              Receiver* receiver,
              void (Receiver::*method)()) {
-    Start(posted_from, delay, BindRepeating(method, Unretained(receiver)));
+    Start(posted_from, delay,
+          base::BindRepeating(method, base::Unretained(receiver)));
   }
 
-  const RepeatingClosure& user_task() const { return user_task_; }
+  const RepeatingClosure& user_task() const LIFETIME_BOUND {
+    return user_task_;
+  }
 
  private:
   // Mark this final, so that the destructor can call this safely.
@@ -346,7 +349,9 @@ class BASE_EXPORT RetainingOneShotTimer : public internal::DelayTimerBase {
     Start(posted_from, delay, BindRepeating(method, Unretained(receiver)));
   }
 
-  const RepeatingClosure& user_task() const { return user_task_; }
+  const RepeatingClosure& user_task() const LIFETIME_BOUND {
+    return user_task_;
+  }
 
  private:
   // Mark this final, so that the destructor can call this safely.

@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/app_list/arc/arc_package_install_priority_handler.h"
 
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/test/fake_app_instance.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,15 +23,18 @@ class ArcPackageInstallPiroirtyHanlderTest : public testing::Test {
  public:
   void SetUp() override {
     feature_list_.InitAndEnableFeature(arc::kSyncInstallPriority);
-    testing::Test::SetUp();
 
     arc_app_test_ = std::make_unique<ArcAppTest>();
-    arc_app_test_->SetUp(&testing_profile_);
+    arc_app_test_->PreProfileSetUp();
+    testing_profile_ = std::make_unique<TestingProfile>();
+    arc_app_test_->PostProfileSetUp(testing_profile_.get());
   }
 
   void TearDown() override {
     arc_app_test_->StopArcInstance();
-    arc_app_test_->TearDown();
+    arc_app_test_->PreProfileTearDown();
+    testing_profile_.reset();
+    arc_app_test_->PostProfileTearDown();
   }
 
   ArcAppTest* arc_app_test() { return arc_app_test_.get(); }
@@ -39,7 +42,7 @@ class ArcPackageInstallPiroirtyHanlderTest : public testing::Test {
  private:
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile testing_profile_;
+  std::unique_ptr<TestingProfile> testing_profile_;
   std::unique_ptr<ArcAppTest> arc_app_test_;
 };
 

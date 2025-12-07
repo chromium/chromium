@@ -110,12 +110,8 @@ class MockExtensionCache : public ExtensionCache {
 // TestURLLoaderFactory as a URL factory.
 class ExtensionDownloaderTestHelper {
  public:
-  static constexpr DownloadPingData kNeverPingedData =
-      DownloadPingData(ManifestFetchData::kNeverPinged,
-                       ManifestFetchData::kNeverPinged,
-                       true,
-                       0);
   static constexpr char kEmptyUpdateUrlData[] = "";
+  static const DownloadPingData* GetTestPingData();
 
   ExtensionDownloaderTestHelper();
 
@@ -169,7 +165,7 @@ void AddExtensionToFetchDataForTesting(ManifestFetchData* fetch_data,
                                        const ExtensionId& id,
                                        const std::string& version,
                                        const GURL& update_url,
-                                       DownloadPingData ping_data);
+                                       const DownloadPingData& ping_data);
 
 // Simplified version with fewer arguments.
 void AddExtensionToFetchDataForTesting(ManifestFetchData* fetch_data,

@@ -14,7 +14,7 @@ bool UnionTraits<{{mojom_type}}::DataView, {{mojom_type}}Ptr>::Read(
 {%-   set kind = field.kind %}
 {%-   set serializer_type = kind|unmapped_type_for_serializer %}
 {%-   if kind|is_object_kind %}
-      {{kind|cpp_wrapper_type(True)}} result_{{name}};
+      {{kind|cpp_wrapper_type(True)}} result_{{name}}{ {{-field|default_value-}} };
       if (!input.Read{{name|under_to_camel}}(&result_{{name}}))
         return false;
 

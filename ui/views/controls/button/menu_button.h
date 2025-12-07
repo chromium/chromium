@@ -5,7 +5,7 @@
 #ifndef UI_VIEWS_CONTROLS_BUTTON_MENU_BUTTON_H_
 #define UI_VIEWS_CONTROLS_BUTTON_MENU_BUTTON_H_
 
-#include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -28,7 +28,7 @@ class VIEWS_EXPORT MenuButton : public LabelButton {
 
  public:
   explicit MenuButton(PressedCallback callback = PressedCallback(),
-                      const std::u16string& text = std::u16string(),
+                      std::u16string_view text = {},
                       int button_context = style::CONTEXT_BUTTON);
   MenuButton(const MenuButton&) = delete;
   MenuButton& operator=(const MenuButton&) = delete;

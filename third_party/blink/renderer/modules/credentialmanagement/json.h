@@ -20,7 +20,7 @@ class ScriptState;
 
 // WebAuthn JSON-encodes binary-valued fields as Base64URL without trailing '='
 // padding characters.
-WTF::String WebAuthnBase64UrlEncode(DOMArrayPiece buffer);
+String WebAuthnBase64UrlEncode(DOMArrayPiece buffer);
 
 AuthenticationExtensionsClientOutputsJSON*
 AuthenticationExtensionsClientOutputsToJSON(

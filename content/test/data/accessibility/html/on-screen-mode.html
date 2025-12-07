@@ -1,0 +1,27 @@
+<!--
+@BLINK-ALLOW:name*
+@BLINK-ALLOW:role*
+@EXECUTE-AND-WAIT-FOR:show_node()
+-->
+<html>
+  <style>
+    .spacer {
+       height: 200vh;
+    }
+  </style>
+  <body>
+    <span>before content</span>
+  <div class="spacer"></div>
+  <span id="target1"> content here...</span>
+  <div class="spacer"></div>
+  <span id="target2">done</span>
+
+  <script>
+    function show_node() {
+      const element = document.getElementById("target2");
+      element.scrollIntoView();
+      return 'done';
+    }
+  </script>
+</body>
+</html>

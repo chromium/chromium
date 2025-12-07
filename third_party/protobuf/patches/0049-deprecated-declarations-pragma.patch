@@ -1,0 +1,19 @@
+diff --git a/src/google/protobuf/descriptor.cc b/src/google/protobuf/descriptor.cc
+index 7731a9405e031..0a7ef114ac449 100644
+--- a/src/google/protobuf/descriptor.cc
++++ b/src/google/protobuf/descriptor.cc
+@@ -156,12 +156,12 @@ std::string ToJsonName(const absl::string_view input) {
+ 
+ template <typename OptionsT>
+ bool IsLegacyJsonFieldConflictEnabled(const OptionsT& options) {
+-#ifdef __GNUC__
++#if defined(__GNUC__) || defined(__clang__)
+ #pragma GCC diagnostic push
+ #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+ #endif
+   return options.deprecated_legacy_json_field_conflicts();
+-#ifdef __GNUC__
++#if defined(__GNUC__) || defined(__clang__)
+ #pragma GCC diagnostic pop
+ #endif
+ }

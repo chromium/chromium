@@ -25,8 +25,6 @@ if (is_android) {
       "android_cdm_factory.h",
       "android_overlay.cc",
       "android_overlay.h",
-      "android_util.cc",
-      "android_util.h",
       "jni_hdr_metadata.cc",
       "jni_hdr_metadata.h",
       "media_codec_bridge.h",
@@ -50,18 +48,8 @@ if (is_android) {
       "media_drm_bridge_factory.h",
       "media_drm_storage_bridge.cc",
       "media_drm_storage_bridge.h",
-      "media_player_bridge.cc",
-      "media_player_bridge.h",
-      "media_player_listener.cc",
-      "media_player_listener.h",
-      "media_resource_getter.cc",
-      "media_resource_getter.h",
       "media_server_crash_listener.cc",
       "media_server_crash_listener.h",
-      "media_service_throttler.cc",
-      "media_service_throttler.h",
-      "media_url_interceptor.h",
-      "stream_texture_wrapper.h",
     ]
     configs += [ "//media:subcomponent_config" ]
     public_deps = [ ":media_jni_headers" ]
@@ -91,8 +79,6 @@ if (is_android) {
       "media_codec_loop_unittest.cc",
       "media_codec_util_unittest.cc",
       "media_drm_bridge_unittest.cc",
-      "media_player_bridge_unittest.cc",
-      "media_service_throttler_unittest.cc",
     ]
 
     deps = [
@@ -139,8 +125,6 @@ if (is_android) {
       "java/src/org/chromium/media/MediaCodecUtil.java",
       "java/src/org/chromium/media/MediaDrmBridge.java",
       "java/src/org/chromium/media/MediaDrmStorageBridge.java",
-      "java/src/org/chromium/media/MediaPlayerBridge.java",
-      "java/src/org/chromium/media/MediaPlayerListener.java",
       "java/src/org/chromium/media/MediaServerCrashListener.java",
       "java/src/org/chromium/media/VideoAcceleratorUtil.java",
     ]
@@ -156,12 +140,12 @@ if (is_android) {
 
   java_cpp_strings("java_switches") {
     sources = [ "//media/base/media_switches.cc" ]
-    template = "//media/base/android/java_templates/MediaSwitches.java.tmpl"
+    template = "java_templates/MediaSwitches.java.tmpl"
   }
 
   java_cpp_features("java_features") {
     sources = [ "//media/base/media_switches.cc" ]
-    template = "//media/base/android/java_templates/MediaFeatures.java.tmpl"
+    class_name = "org.chromium.media.MediaFeatures"
   }
 
   android_resources("media_java_resources") {
@@ -175,6 +159,7 @@ if (is_android) {
       ":media_java_resources",
       "//base:base_java",
       "//build/android:build_java",
+      "//third_party/android_deps:guava_android_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
     ]
@@ -189,26 +174,24 @@ if (is_android) {
     resources_package = "org.chromium.media"
     sources = [
       "java/src/org/chromium/media/AudioDeviceListener.java",
-      "java/src/org/chromium/media/AudioDeviceSelector.java",
-      "java/src/org/chromium/media/AudioDeviceSelectorPostS.java",
-      "java/src/org/chromium/media/AudioDeviceSelectorPreS.java",
       "java/src/org/chromium/media/AudioManagerAndroid.java",
       "java/src/org/chromium/media/AudioTrackOutputStream.java",
-      "java/src/org/chromium/media/BitrateAdjuster.java",
       "java/src/org/chromium/media/CodecProfileLevelList.java",
+      "java/src/org/chromium/media/CommunicationDeviceListener.java",
+      "java/src/org/chromium/media/CommunicationDeviceSelector.java",
+      "java/src/org/chromium/media/CommunicationDeviceSelectorPostS.java",
+      "java/src/org/chromium/media/CommunicationDeviceSelectorPreS.java",
       "java/src/org/chromium/media/HdrMetadata.java",
       "java/src/org/chromium/media/MaxAnticipatedResolutionEstimator.java",
       "java/src/org/chromium/media/MediaCodecBridge.java",
       "java/src/org/chromium/media/MediaCodecBridgeBuilder.java",
-      "java/src/org/chromium/media/MediaCodecEncoder.java",
       "java/src/org/chromium/media/MediaCodecUtil.java",
       "java/src/org/chromium/media/MediaDrmBridge.java",
       "java/src/org/chromium/media/MediaDrmSessionManager.java",
       "java/src/org/chromium/media/MediaDrmStorageBridge.java",
       "java/src/org/chromium/media/MediaFormatBuilder.java",
-      "java/src/org/chromium/media/MediaPlayerBridge.java",
-      "java/src/org/chromium/media/MediaPlayerListener.java",
       "java/src/org/chromium/media/MediaServerCrashListener.java",
+      "java/src/org/chromium/media/ScoStateListener.java",
       "java/src/org/chromium/media/ScreenResolutionUtil.java",
       "java/src/org/chromium/media/VideoAcceleratorUtil.java",
     ]
@@ -223,9 +206,8 @@ if (is_android) {
 
   robolectric_binary("media_base_junit_tests") {
     sources = [
-      "java/src/test/org/chromium/media/AudioDeviceListenerTest.java",
       "java/src/test/org/chromium/media/AudioTrackOutputStreamTest.java",
-      "java/src/test/org/chromium/media/BitrateAdjusterTest.java",
+      "java/src/test/org/chromium/media/CommunicationDeviceListenerTest.java",
       "java/src/test/org/chromium/media/MediaFormatBuilderTest.java",
     ]
     deps = [
@@ -234,6 +216,7 @@ if (is_android) {
       "//base:base_java_test_support",
       "//base:base_junit_test_support",
       "//third_party/androidx:androidx_test_runner_java",
+      "//third_party/google-truth:google_truth_java",
       "//third_party/junit",
     ]
   }

@@ -7,7 +7,11 @@
 
 #include <string>
 
+class PrefService;
+
 namespace ash {
+
+extern const char kKioskLaunchErrorHistogram[];
 
 class AuthFailure;
 
@@ -37,9 +41,11 @@ class KioskAppLaunchError {
     kExtensionsPolicyInvalid =
         15,  // The policy value of ExtensionInstallForcelist is invalid.
     kUserNotAllowlisted = 16,  // LoginPerformer disallowed this user.
-    kLacrosDataMigrationStarted = 17,
-    kLacrosBackwardDataMigrationStarted = 18,
-    kMaxValue = kLacrosBackwardDataMigrationStarted,  // Max value of errors.
+    // kLacrosDataMigrationStarted = 17,  // Deprecated
+    // kLacrosBackwardDataMigrationStarted = 18,  // Deprecated
+    kChromeAppDeprecated = 19,
+    kIsolatedAppNotAllowed = 20,         // Isolated app is not on allowlist
+    kMaxValue = kIsolatedAppNotAllowed,  // Max value of errors.
   };
 
   // Returns a message for given `error`.
@@ -47,17 +53,18 @@ class KioskAppLaunchError {
 
   // Saves a launch error. The error is used on the next Chrome run to report
   // metrics and display a message to the user.
-  static void Save(Error error);
+  static void Save(PrefService& local_state, Error error);
 
   // Saves a cryptohome auth error. The error is used for metrics report on the
   // next Chrome run.
-  static void SaveCryptohomeFailure(const AuthFailure& auth_failure);
+  static void SaveCryptohomeFailure(PrefService& local_state,
+                                    const AuthFailure& auth_failure);
 
   // Gets the last launch error.
-  static Error Get();
+  static Error Get(const PrefService& local_state);
 
   // Records the launch error and cryptohome auth error metric and clears them.
-  static void RecordMetricAndClear();
+  static void RecordMetricAndClear(PrefService& local_state);
 
   KioskAppLaunchError() = delete;
   KioskAppLaunchError(const KioskAppLaunchError&) = delete;

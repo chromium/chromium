@@ -8,7 +8,7 @@ import {getRootType, isComputersRoot, isFakeEntry, isOneDrivePlaceholder, isSame
 import type {FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {type CustomEventMap, FilesEventTarget} from '../../common/js/files_event_target.js';
 import {str} from '../../common/js/translations.js';
-import {promisify, timeoutPromise} from '../../common/js/util.js';
+import {debug, promisify, timeoutPromise} from '../../common/js/util.js';
 import type {FileSystemType, Source} from '../../common/js/volume_manager_types.js';
 import {COMPUTERS_DIRECTORY_PATH, getMediaViewRootTypeFromVolumeId, getRootTypeFromVolumeType, MediaViewRootType, RootType, SHARED_DRIVES_DIRECTORY_PATH, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
 import {addVolume, removeVolume} from '../../state/ducks/volumes.js';
@@ -26,6 +26,14 @@ import {VolumeInfoList} from './volume_info_list.js';
 const TIMEOUT = 15 * 60 * 1000;
 
 const TIMEOUT_STR_REQUEST_FILE_SYSTEM = 'timeout(requestFileSystem)';
+
+/**
+ * A list of RequestType
+ */
+enum RequestType {
+  MOUNT = 'mount',
+  UNMOUNT = 'unmount',
+}
 
 /**
  * Logs a warning message if the given error is not in
@@ -85,7 +93,7 @@ export async function createVolumeInfo(
       break;
   }
 
-  console.debug(`Getting file system '${volumeMetadata.volumeId}'`);
+  debug(`Getting file system '${volumeMetadata.volumeId}'`);
   return timeoutPromise(
              new Promise<DirectoryEntry>((resolve, reject) => {
                chrome.fileManagerPrivate.getVolumeRoot(
@@ -104,7 +112,7 @@ export async function createVolumeInfo(
              TIMEOUT,
              TIMEOUT_STR_REQUEST_FILE_SYSTEM + ': ' + volumeMetadata.volumeId)
       .then(rootDirectoryEntry => {
-        console.debug(`Got file system '${volumeMetadata.volumeId}'`);
+        debug(`Got file system '${volumeMetadata.volumeId}'`);
         return new VolumeInfo(
             volumeMetadata.volumeType as VolumeType, volumeMetadata.volumeId,
             rootDirectoryEntry.filesystem, volumeMetadata.mountCondition,
@@ -235,15 +243,6 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
   }
 
   /**
-   * Gets the 'fusebox-only' filter state: true if enabled, false if disabled.
-   * The filter is only enabled by the SelectFileAsh (Lacros) file picker, and
-   * implemented by {FilteredVolumeManager} override.
-   */
-  getFuseBoxOnlyFilterEnabled(): boolean {
-    return false;
-  }
-
-  /**
    * Gets the 'media-store-files-only' filter state: true if enabled, false if
    * disabled. The filter is only enabled by the Android (ARC) file picker, and
    * implemented by {FilteredVolumeManager} override.
@@ -330,7 +329,7 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
         return;
       }
       volumeMetadataList = volumeMetadataList.filter(volume => !volume.hidden);
-      console.debug(`There are ${volumeMetadataList.length} volumes`);
+      debug(`There are ${volumeMetadataList.length} volumes`);
 
       let counter = 0;
 
@@ -339,14 +338,14 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
         const volumeId = volumeMetadata.volumeId;
         let volumeInfo = null;
         try {
-          console.debug(`Initializing volume #${idx} '${volumeId}'`);
+          debug(`Initializing volume #${idx} '${volumeId}'`);
           // createVolumeInfo() requests the filesystem and resolve its root,
           // after that it only creates a VolumeInfo.
           volumeInfo = await this.createVolumeInfo_(volumeMetadata);
           // Add addVolumeInfo_() changes the VolumeInfoList which propagates
           // to the foreground.
           this.addVolumeInfo_(volumeInfo);
-          console.debug(`Initialized volume #${idx} ${volumeId}'`);
+          debug(`Initialized volume #${idx} ${volumeId}'`);
         } catch (error) {
           console.warn(`Error initializing #${idx} ${volumeId}: ${error}`);
         } finally {
@@ -393,15 +392,15 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
 
     switch (eventType) {
       case 'mount': {
-        const requestKey = this.makeRequestKey_('mount', sourcePath);
+        const requestKey = this.makeRequestKey_(RequestType.MOUNT, sourcePath);
 
         switch (volumeError) {
           case VolumeError.SUCCESS:
           case VolumeError.UNKNOWN_FILESYSTEM:
           case VolumeError.UNSUPPORTED_FILESYSTEM: {
-            console.debug(`Mounted '${sourcePath}' as '${volumeId}'`);
+            debug(`Mounted '${sourcePath}' as '${volumeId}'`);
             if (volumeMetadata.hidden) {
-              console.debug(`Mount discarded for hidden volume: '${volumeId}'`);
+              debug(`Mount discarded for hidden volume: '${volumeId}'`);
               this.finishRequest_(requestKey, volumeError);
               return;
             }
@@ -426,7 +425,7 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
           case VolumeError.PATH_ALREADY_MOUNTED: {
             console.warn(
                 `Cannot mount (redacted): Already mounted as '${volumeId}'`);
-            console.debug(`Cannot mount '${sourcePath}': Already mounted as '${
+            debug(`Cannot mount '${sourcePath}': Already mounted as '${
                 volumeId}'`);
             const navigationEvent =
                 new CustomEvent('volume_already_mounted', {detail: {volumeId}});
@@ -439,14 +438,14 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
           case VolumeError.CANCELLED:
           default:
             console.warn('Cannot mount (redacted):', volumeError);
-            console.debug(`Cannot mount '${sourcePath}':`, volumeError);
+            debug(`Cannot mount '${sourcePath}':`, volumeError);
             this.finishRequest_(requestKey, volumeError);
             return;
         }
       }
 
       case 'unmount': {
-        const requestKey = this.makeRequestKey_('unmount', volumeId);
+        const requestKey = this.makeRequestKey_(RequestType.UNMOUNT, volumeId);
         const volumeInfoIndex = this.volumeInfoList.findIndex(volumeId);
         const volumeInfo = volumeInfoIndex !== -1 ?
             this.volumeInfoList.item(volumeInfoIndex) :
@@ -456,11 +455,11 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
           case VolumeError.SUCCESS: {
             const requested = requestKey in this.requests_;
             if (!requested && volumeInfo) {
-              console.debug(`Unmounted '${volumeId}' without request`);
+              debug(`Unmounted '${volumeId}' without request`);
               this.dispatchEvent(new CustomEvent(
                   'externally-unmounted', {detail: volumeInfo}));
             } else {
-              console.debug(`Unmounted '${volumeId}'`);
+              debug(`Unmounted '${volumeId}'`);
             }
             getStore().dispatch(removeVolume(volumeId));
             this.volumeInfoList.remove(volumeId);
@@ -470,7 +469,7 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
 
           default:
             console.warn('Cannot unmount (redacted):', volumeError);
-            console.debug(`Cannot unmount '${volumeId}':`, volumeError);
+            debug(`Cannot unmount '${volumeId}':`, volumeError);
             this.finishRequest_(requestKey, volumeError);
             return;
         }
@@ -480,12 +479,12 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
 
   /**
    * Creates string to match mount events with requests.
-   * @param requestType 'mount' | 'unmount'. TODO(hidehiko): Replace by enum.
+   * @param requestType 'mount' | 'unmount'.
    * @param argument Argument describing the request, eg. source file
    *     path of the archive to be mounted, or a volumeId for unmounting.
    * @return Key for |this.requests_|.
    */
-  private makeRequestKey_(requestType: string, argument: string): string {
+  private makeRequestKey_(requestType: RequestType, argument: string): string {
     return requestType + ':' + argument;
   }
 
@@ -497,8 +496,8 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
   async mountArchive(fileUrl: string, password?: string): Promise<VolumeInfo> {
     const path: string =
         await promisify(chrome.fileManagerPrivate.addMount, fileUrl, password);
-    console.debug(`Mounting '${path}'`);
-    const key = this.makeRequestKey_('mount', path);
+    debug(`Mounting '${path}'`);
+    const key = this.makeRequestKey_(RequestType.MOUNT, path);
     return this.startRequest_(key);
   }
 
@@ -508,7 +507,7 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
    * @return Fulfilled on success, otherwise rejected with a VolumeError.
    */
   async cancelMounting(fileUrl: string): Promise<void> {
-    console.debug(`Cancelling mounting archive at '${fileUrl}'`);
+    debug(`Cancelling mounting archive at '${fileUrl}'`);
     return promisify(chrome.fileManagerPrivate.cancelMounting, fileUrl);
   }
 
@@ -518,8 +517,8 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
    * @return Fulfilled on success, otherwise rejected with a VolumeError.
    */
   async unmount({volumeId}: VolumeInfo): Promise<void> {
-    console.debug(`Unmounting '${volumeId}'`);
-    const key = this.makeRequestKey_('unmount', volumeId);
+    debug(`Unmounting '${volumeId}'`);
+    const key = this.makeRequestKey_(RequestType.UNMOUNT, volumeId);
     const request = this.startRequest_(key);
     await promisify(chrome.fileManagerPrivate.removeMount, volumeId);
     await request;

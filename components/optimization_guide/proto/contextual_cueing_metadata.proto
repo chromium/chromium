@@ -1,0 +1,96 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+edition = "2023";
+
+package optimization_guide.proto;
+
+option features.enum_type = CLOSED;
+option features.utf8_validation = NONE;
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "ContextualCueingMetadataProto";
+
+enum ContextualCueingClientSignal {
+  CONTEXTUAL_CUEING_CLIENT_SIGNAL_UNSPECIFIED = 0;
+
+  // The number of pages in the PDF, if the page being viewed is a PDF.
+  CONTEXTUAL_CUEING_CLIENT_SIGNAL_PDF_PAGE_COUNT = 1;
+
+  // The number of words in the page being viewed if not a PDF.
+  CONTEXTUAL_CUEING_CLIENT_SIGNAL_CONTENT_LENGTH_WORD_COUNT = 2;
+}
+
+enum ContextualCueingOperator {
+  CONTEXTUAL_CUEING_OPERATOR_UNSPECIFIED = 0;
+  CONTEXTUAL_CUEING_OPERATOR_GREATER_THAN_OR_EQUAL_TO = 1;
+  CONTEXTUAL_CUEING_OPERATOR_LESS_THAN_OR_EQUAL_TO = 2;
+}
+
+enum ContextualCueingFeature {
+  CONTEXTUAL_CUEING_FEATURE_UNSPECIFIED = 0;
+  CONTEXTUAL_CUEING_FEATURE_GLIC = 1;
+  CONTEXTUAL_CUEING_FEATURE_GLIC_ACTOR = 2;
+}
+
+message ContextualCueingConditions {
+  // The signal to check.
+  ContextualCueingClientSignal signal = 1;
+
+  // The operator to use when comparing the signal to the threshold.
+  ContextualCueingOperator cueing_operator = 2;
+
+  oneof threshold {
+    // The int64 threshold value to compare the signal to.
+    int64 int64_threshold = 3;
+  }
+}
+
+message GlicContextualCueingMetadata {
+  // Cueing configurations supported for this page.
+  //
+  // Take the first one that matches something the current client state and
+  // capabilities.
+  //
+  // If there is no match, then the client should not show any cues.
+  repeated GlicCueingConfiguration cueing_configurations = 1;
+}
+
+message GlicCueingConfiguration {
+  // The cue label to show in the tab strip.
+  //
+  // This will always be non-empty.
+  string cue_label = 1;
+
+  // This label will only be populated on eligible pages.
+  string dynamic_cue_label = 4;
+
+  // The text to prefill in glic if a dynamic cue is clicked.
+  string default_text = 5;
+
+  // The feature to launch with the cue.
+  ContextualCueingFeature cue_feature = 3;
+
+  // The conditions that must be met for this cueing configuration to be
+  // eligible. This should be treated as an AND operation.
+  //
+  // If this list is empty, this cueing configuration is always eligible.
+  repeated ContextualCueingConditions conditions = 2;
+}
+
+message GlicZeroStateSuggestionsMetadata {
+  // The contextual zero state suggestions to show for this page.
+  //
+  // If this list is empty, contexutal suggestions are not immediately available
+  // for this page, but still can be obtained using the page content, if
+  // `contextual_suggestions_eligible` is true.
+  repeated string contextual_suggestions = 1;
+
+  // Whether the page is eligible for contextual suggestions.
+  //
+  // If this is false, the client should show generic suggestions instead.
+  // If this is true, the client should show the `contextual_suggestions` if
+  // available, or generic suggestions if not.
+  bool contextual_suggestions_eligible = 2;
+}

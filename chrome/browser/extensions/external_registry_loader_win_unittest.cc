@@ -20,7 +20,7 @@ const char kDummyRegistryKey[] = "dummyId";
 
 class TestExternalRegistryLoader : public ExternalRegistryLoader {
  public:
-  TestExternalRegistryLoader() {}
+  TestExternalRegistryLoader() = default;
 
   TestExternalRegistryLoader(const TestExternalRegistryLoader&) = delete;
   TestExternalRegistryLoader& operator=(const TestExternalRegistryLoader&) =
@@ -36,7 +36,7 @@ class TestExternalRegistryLoader : public ExternalRegistryLoader {
   std::vector<int> GetPrefsTestIds() { return prefs_test_ids_; }
 
  private:
-  ~TestExternalRegistryLoader() override {}
+  ~TestExternalRegistryLoader() override = default;
 
   base::Value::Dict LoadPrefsOnBlockingThread() override {
     return base::Value::Dict().Set(kDummyRegistryKey, id_++);
@@ -73,7 +73,7 @@ class ExternalRegistryLoaderUnittest : public testing::Test {
   ExternalRegistryLoaderUnittest& operator=(
       const ExternalRegistryLoaderUnittest&) = delete;
 
-  ~ExternalRegistryLoaderUnittest() override {}
+  ~ExternalRegistryLoaderUnittest() override = default;
 
  protected:
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }

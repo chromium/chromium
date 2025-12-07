@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chromeos/components/onc/onc_validator.h"
+
 #include <stddef.h>
 
 #include <cstdio>
@@ -13,9 +15,9 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/values.h"
 #include "chromeos/components/onc/onc_signature.h"
-#include "chromeos/components/onc/onc_validator.h"
 
 // TODO Check why this file do not fail on default trybots
 // http://crbug.com/543919
@@ -29,15 +31,11 @@ const char kSwitchUserPolicy[] = "user-policy";
 const char kSwitchDevicePolicy[] = "device-policy";
 const char kSwitchUserImport[] = "user-import";
 
-const char* kSwitches[] = {
-  kSwitchErrorOnUnknownField,
-  kSwitchErrorOnWrongRecommended,
-  kSwitchErrorOnMissingField,
-  kSwitchManagedOnc,
-  kSwitchUserPolicy,
-  kSwitchDevicePolicy,
-  kSwitchUserImport
-};
+constexpr const char* kSwitches[] = {
+    kSwitchErrorOnUnknownField, kSwitchErrorOnWrongRecommended,
+    kSwitchErrorOnMissingField, kSwitchManagedOnc,
+    kSwitchUserPolicy,          kSwitchDevicePolicy,
+    kSwitchUserImport};
 
 // Return codes.
 enum ReturnCode {
@@ -51,11 +49,8 @@ enum ReturnCode {
 const char kToplevelConfiguration[] = "ToplevelConfiguration";
 const char kNetworkConfiguration[] = "NetworkConfiguration";
 const char kCertificate[] = "Certificate";
-const char* kTypes[] = {
-  kToplevelConfiguration,
-  kNetworkConfiguration,
-  kCertificate
-};
+constexpr const char* kTypes[] = {kToplevelConfiguration, kNetworkConfiguration,
+                                  kCertificate};
 
 void PrintHelp() {
   fprintf(stderr,
@@ -167,6 +162,6 @@ int main(int argc, const char* argv[]) {
     case chromeos::onc::Validator::INVALID:
       return kStatusInvalid;
     default:
-      CHECK(false);
+      NOTREACHED();
   }
 }

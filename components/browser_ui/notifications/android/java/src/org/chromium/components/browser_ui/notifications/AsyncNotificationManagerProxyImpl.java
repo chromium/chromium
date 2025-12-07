@@ -6,108 +6,119 @@ package org.chromium.components.browser_ui.notifications;
 
 import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
-import android.content.Context;
 
-import androidx.annotation.NonNull;
 import androidx.core.app.NotificationManagerCompat;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Default implementation of the AsyncNotificationManagerProxy, which passes through all calls to
  * the normal Android Notification Manager.
  */
-public class AsyncNotificationManagerProxyImpl implements AsyncNotificationManagerProxy {
+@NullMarked
+/* package */ class AsyncNotificationManagerProxyImpl implements BaseNotificationManagerProxy {
     private static final String TAG = "AsyncNotifManager";
-    private final Context mContext;
-    private final NotificationManagerCompat mNotificationManager;
 
-    /** Get a AsyncNotificationManagerProxyImpl for a provided context. */
-    public AsyncNotificationManagerProxyImpl(@NonNull Context context) {
-        mContext = context;
-        mNotificationManager = NotificationManagerCompat.from(mContext);
+    // This object is initialized and used on a background thread, and it should always be non
+    // null when used.
+    @SuppressWarnings("NullAway.Init")
+    private NotificationManagerCompat mNotificationManager;
+
+    private static @Nullable AsyncNotificationManagerProxyImpl sInstance;
+
+    public static AsyncNotificationManagerProxyImpl getInstance() {
+        if (sInstance == null) {
+            sInstance = new AsyncNotificationManagerProxyImpl();
+        }
+        return sInstance;
     }
 
-    @Override
-    public void areNotificationsEnabled(Callback<Boolean> callback) {
-        runAsyncAndReply(
-                TraceEvent.scoped("AsyncNotificationManagerProxyImpl.areNotificationsEnabled"),
-                () -> mNotificationManager.areNotificationsEnabled(),
-                callback);
+    private AsyncNotificationManagerProxyImpl() {
+        runAsync(
+                "AsyncNotificationManagerProxyImpl()",
+                () -> {
+                    mNotificationManager =
+                            NotificationManagerCompat.from(ContextUtils.getApplicationContext());
+                });
     }
 
     @Override
     public void cancel(int id) {
         runAsync(
-                TraceEvent.scoped("AsyncNotificationManagerProxyImpl.cancel(id)"),
+                "AsyncNotificationManagerProxyImpl.cancel(id)",
                 () -> mNotificationManager.cancel(id));
     }
 
     @Override
-    public void cancel(String tag, int id) {
+    public void cancel(@Nullable String tag, int id) {
         runAsync(
-                TraceEvent.scoped("AsyncNotificationManagerProxyImpl.cancel(tag, id)"),
+                "AsyncNotificationManagerProxyImpl.cancel(tag, id)",
                 () -> mNotificationManager.cancel(tag, id));
     }
 
     @Override
     public void cancelAll() {
         runAsync(
-                TraceEvent.scoped("AsyncNotificationManagerProxyImpl.cancelAll"),
+                "AsyncNotificationManagerProxyImpl.cancelAll",
                 () -> mNotificationManager.cancelAll());
     }
 
     @Override
     public void createNotificationChannel(NotificationChannel channel) {
         runAsync(
-                TraceEvent.scoped("AsyncNotificationManagerProxyImpl.createNotificationChannel"),
+                "AsyncNotificationManagerProxyImpl.createNotificationChannel",
                 () -> mNotificationManager.createNotificationChannel(channel));
     }
 
     @Override
     public void createNotificationChannelGroup(NotificationChannelGroup channelGroup) {
         runAsync(
-                TraceEvent.scoped(
-                        "AsyncNotificationManagerProxyImpl.createNotificationChannelGroup"),
+                "AsyncNotificationManagerProxyImpl.createNotificationChannelGroup",
                 () -> mNotificationManager.createNotificationChannelGroup(channelGroup));
     }
 
     @Override
     public void getNotificationChannels(Callback<List<NotificationChannel>> callback) {
         runAsyncAndReply(
-                TraceEvent.scoped("AsyncNotificationManagerProxyImpl.getNotificationChannels"),
+                "AsyncNotificationManagerProxyImpl.getNotificationChannels",
                 () -> mNotificationManager.getNotificationChannels(),
-                callback);
+                callback,
+                Collections.emptyList());
     }
 
     @Override
     public void getNotificationChannelGroups(Callback<List<NotificationChannelGroup>> callback) {
         runAsyncAndReply(
-                TraceEvent.scoped("AsyncNotificationManagerProxyImpl.getNotificationChannelGroups"),
+                "AsyncNotificationManagerProxyImpl.getNotificationChannelGroups",
                 () -> mNotificationManager.getNotificationChannelGroups(),
-                callback);
+                callback,
+                Collections.emptyList());
     }
 
     @Override
     public void deleteNotificationChannel(String id) {
         runAsync(
-                TraceEvent.scoped("AsyncNotificationManagerProxyImpl.deleteNotificationChannel"),
+                "AsyncNotificationManagerProxyImpl.deleteNotificationChannel",
                 () -> mNotificationManager.deleteNotificationChannel(id));
     }
 
     @Override
     public void deleteAllNotificationChannels(Function<String, Boolean> func) {
         runAsync(
-                TraceEvent.scoped(
-                        "AsyncNotificationManagerProxyImpl.deleteAllNotificationChannels"),
+                "AsyncNotificationManagerProxyImpl.deleteAllNotificationChannels",
                 () -> {
                     for (NotificationChannel channel :
                             mNotificationManager.getNotificationChannels()) {
@@ -128,7 +139,7 @@ public class AsyncNotificationManagerProxyImpl implements AsyncNotificationManag
         }
 
         runAsync(
-                TraceEvent.scoped("AsyncNotificationManagerProxyImpl.notify"),
+                "AsyncNotificationManagerProxyImpl.notify",
                 () ->
                         mNotificationManager.notify(
                                 notification.getMetadata().tag,
@@ -139,16 +150,16 @@ public class AsyncNotificationManagerProxyImpl implements AsyncNotificationManag
     @Override
     public void getNotificationChannel(String channelId, Callback<NotificationChannel> callback) {
         runAsyncAndReply(
-                TraceEvent.scoped("AsyncNotificationManagerProxyImpl.getNotificationChannel"),
+                "AsyncNotificationManagerProxyImpl.getNotificationChannel",
                 () -> mNotificationManager.getNotificationChannel(channelId),
-                callback);
+                callback,
+                null);
     }
 
     @Override
     public void deleteNotificationChannelGroup(String groupId) {
         runAsync(
-                TraceEvent.scoped(
-                        "AsyncNotificationManagerProxyImpl.deleteNotificationChannelGroup"),
+                "AsyncNotificationManagerProxyImpl.deleteNotificationChannelGroup",
                 () -> mNotificationManager.deleteNotificationChannelGroup(groupId));
     }
 
@@ -156,20 +167,27 @@ public class AsyncNotificationManagerProxyImpl implements AsyncNotificationManag
     public void getActiveNotifications(
             Callback<List<? extends StatusBarNotificationProxy>> callback) {
         runAsyncAndReply(
-                TraceEvent.scoped("AsyncNotificationManagerProxyImpl.getActiveNotifications"),
-                () ->
-                        mNotificationManager.getActiveNotifications().stream()
-                                .map((sbn) -> new StatusBarNotificationAdaptor(sbn))
-                                .collect(Collectors.toList()),
-                callback);
+                "AsyncNotificationManagerProxyImpl.getActiveNotifications",
+                () -> {
+                    List<StatusBarNotificationAdaptor> result = new ArrayList<>();
+                    for (var notification : mNotificationManager.getActiveNotifications()) {
+                        result.add(new StatusBarNotificationAdaptor(notification));
+                    }
+                    return result;
+                },
+                callback,
+                Collections.emptyList());
     }
 
     /** Helper method to run an runnable inside a scoped event in background. */
-    private void runAsync(TraceEvent scopedEvent, Runnable runnable) {
+    @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
+    private void runAsync(String eventName, Runnable runnable) {
         AsyncTask.SERIAL_EXECUTOR.execute(
                 () -> {
-                    try (scopedEvent) {
+                    try (TraceEvent te = TraceEvent.scoped(eventName)) {
                         runnable.run();
+                    } catch (Exception e) {
+                        Log.e(TAG, "unable to run a runnable.", e);
                     }
                 });
     }
@@ -178,23 +196,23 @@ public class AsyncNotificationManagerProxyImpl implements AsyncNotificationManag
      * Helper method to run an runnable inside a scoped event in background, and executes callback
      * on the ui thread.
      */
-    private <T> void runAsyncAndReply(
-            TraceEvent scopedEvent, Callable<T> callable, Callback callback) {
-        new AsyncTask<T>() {
+    @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
+    @NullUnmarked // https://github.com/uber/NullAway/issues/1075
+    private <T extends @Nullable Object> void runAsyncAndReply(
+            String eventName, Callable<T> callable, Callback<T> callback, T defaultValue) {
+        new AsyncTask<@Nullable T>() {
             @Override
-            protected T doInBackground() {
-                try (scopedEvent) {
-                    try {
-                        return callable.call();
-                    } catch (Exception e) {
-                        Log.e(TAG, "Unable to call method.", e);
-                        return null;
-                    }
+            protected @Nullable T doInBackground() {
+                try (TraceEvent te = TraceEvent.scoped(eventName)) {
+                    return callable.call();
+                } catch (Exception e) {
+                    Log.e(TAG, "Unable to call method.", e);
+                    return defaultValue;
                 }
             }
 
             @Override
-            protected void onPostExecute(T result) {
+            protected void onPostExecute(@Nullable T result) {
                 callback.onResult(result);
             }
         }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);

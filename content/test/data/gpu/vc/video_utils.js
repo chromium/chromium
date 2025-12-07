@@ -30,6 +30,20 @@ function GetVideoSource(videoCount, index, codec, useLargeSizeVideo = false) {
       }
       break;
 
+    case 'avc':
+      if (videoCount <= 4 || useLargeSizeVideo) {
+        return './teddy1_avc_640x360_30fps.mp4';
+      } else {
+        if (index < 4) {
+          return './teddy3_avc_320x180_30fps.mp4';
+        } else if (index < 16) {
+          return './teddy2_avc_320x180_15fps.mp4';
+        } else {
+          return './teddy1_avc_320x180_7fps.mp4';
+        }
+      }
+      break;
+
     case 'vp9':
     default:
       if (videoCount <= 4 || useLargeSizeVideo) {

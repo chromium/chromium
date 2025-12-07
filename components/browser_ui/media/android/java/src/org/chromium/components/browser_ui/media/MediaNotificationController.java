@@ -4,6 +4,9 @@
 
 package org.chromium.components.browser_ui.media;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -11,23 +14,25 @@ import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
-import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 import android.util.SparseArray;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
@@ -46,6 +51,7 @@ import java.util.Set;
  * A class that manages the notification, foreground service, and {@link MediaSessionCompat} for a
  * specific type of media.
  */
+@NullMarked
 public class MediaNotificationController {
     private static final String TAG = "MediaNotification";
 
@@ -55,7 +61,13 @@ public class MediaNotificationController {
     // The maximum number of actions in BigView media notification.
     private static final int BIG_VIEW_ACTIONS_COUNT = 5;
 
-    private final PendingIntentProvider mPendingIntentActionSwipe;
+    // Pending intent for `ACTION_SWIPE`. This intent is scheduled to be created when the UI thread
+    // message queue is idle, the first time it is needed, with the goal of reducing input handling
+    // delay.
+    @VisibleForTesting public @Nullable PendingIntentProvider mPendingIntentActionSwipe;
+
+    // Used to help initialize `mPendingIntentActionSwipe`.
+    @VisibleForTesting public @Nullable PendingIntentInitializer mPendingIntentInitializer;
 
     public static final String ACTION_PLAY = "org.chromium.components.browser_ui.media.ACTION_PLAY";
     public static final String ACTION_PAUSE =
@@ -85,20 +97,20 @@ public class MediaNotificationController {
     public static final int MEDIA_ACTION_SEEK_BACKWARD = 23;
 
     // ListenerService running for the notification. Only non-null when showing.
-    @VisibleForTesting public Service mService;
+    @VisibleForTesting public @Nullable Service mService;
 
     @VisibleForTesting public Delegate mDelegate;
 
-    private SparseArray<MediaButtonInfo> mActionToButtonInfo;
+    private final SparseArray<MediaButtonInfo> mActionToButtonInfo;
 
-    @VisibleForTesting public NotificationWrapperBuilder mNotificationBuilder;
+    @VisibleForTesting public @Nullable NotificationWrapperBuilder mNotificationBuilder;
 
-    @VisibleForTesting public Bitmap mDefaultNotificationLargeIcon;
+    @VisibleForTesting public @Nullable Bitmap mDefaultNotificationLargeIcon;
 
     // |mMediaNotificationInfo| should be not null if and only if the notification is showing.
-    @VisibleForTesting public MediaNotificationInfo mMediaNotificationInfo;
+    @VisibleForTesting public @Nullable MediaNotificationInfo mMediaNotificationInfo;
 
-    @VisibleForTesting public MediaSessionCompat mMediaSession;
+    @VisibleForTesting public @Nullable MediaSessionCompat mMediaSession;
 
     @VisibleForTesting public Throttler mThrottler;
 
@@ -112,32 +124,33 @@ public class MediaNotificationController {
         private final Handler mHandler;
 
         @VisibleForTesting
-        public Throttler(@NonNull MediaNotificationController manager) {
+        public Throttler(MediaNotificationController manager) {
             mController = manager;
             mHandler = new Handler();
         }
 
-        // When |mTask| is non-null, it will always be queued in mHandler. When |mTask| is non-null,
-        // all notification updates will be throttled and their info will be stored as
-        // mLastPendingInfo. When |mTask| fires, it will call {@link showNotification()} with
-        // the latest queued notification info.
-        @VisibleForTesting public Runnable mTask;
+        // When |mThrottleTask| is non-null, it will always be queued in mHandler. When
+        // |mThrottleTask| is non-null, all notification updates will be throttled and their info
+        // will be stored as mLastPendingInfo. When |mThrottleTask| fires, it will call {@link
+        // showNotification()} with the latest queued notification info.
+        @VisibleForTesting public @Nullable Runnable mThrottleTask;
 
         // The last pending info. If non-null, it will be the latest notification info.
         // Otherwise, the latest notification info will be |mController.mMediaNotificationInfo|.
-        @VisibleForTesting public MediaNotificationInfo mLastPendingInfo;
+        //
+        // If `mLastPendingInfo` or `mPendingIntentActionSwipe` are null, no notification will be
+        // shown. When `mThrottleTask` fires and `mLastPendingInfo` is null, the throttled state
+        // will end.
+        @VisibleForTesting public @Nullable MediaNotificationInfo mLastPendingInfo;
 
         /**
-         * Queue |mediaNotificationInfo| for update. In unthrottled state (i.e. |mTask| != null),
-         * the notification will be updated immediately and enter the throttled state. In
-         * unthrottled state, the method will only update the pending notification info, which will
-         * be used for updating the notification when |mTask| is fired.
+         * Queue `mediaNotificationInfo` for update.
          *
          * @param mediaNotificationInfo The notification info to be queued.
          */
         public void queueNotification(MediaNotificationInfo mediaNotificationInfo) {
             assert mediaNotificationInfo != null;
-
+            mController.schedulePendingIntentConstructionIfNeeded();
             MediaNotificationInfo latestMediaNotificationInfo =
                     mLastPendingInfo != null
                             ? mLastPendingInfo
@@ -148,43 +161,166 @@ public class MediaNotificationController {
                 return;
             }
 
-            if (mTask == null) {
-                showNotificationImmediately(mediaNotificationInfo);
-            } else {
-                mLastPendingInfo = mediaNotificationInfo;
+            showNotificationImmediately(mediaNotificationInfo);
+        }
+
+        /**
+         * Clears the pending notification and `PendingIntentInitializer` task, and enter
+         * unthrottled state.
+         */
+        public void clearPendingNotifications() {
+            if (mThrottleTask != null) {
+                mHandler.removeCallbacks(mThrottleTask);
+            }
+            mLastPendingInfo = null;
+            mThrottleTask = null;
+
+            if (mController.mPendingIntentInitializer != null) {
+                mController.mPendingIntentInitializer.clearDelayedTask();
             }
         }
 
-        /** Clears the pending notification and enter unthrottled state. */
-        public void clearPendingNotifications() {
-            mHandler.removeCallbacks(mTask);
-            mLastPendingInfo = null;
-            mTask = null;
-        }
-
+        /**
+         * Shows notification immediately if no notification has been updated in the last
+         * THROTTLE_MILLIS, and queue a task for blocking further updates.
+         *
+         * <p>In unthrottled state (i.e. `mThrottleTask` == null), the notification will be updated
+         * immediately and enter the throttled state. In throttled state, the method will only
+         * update the pending notification info, which will be used for updating the notification
+         * when `mThrottleTask` is fired.
+         */
         @VisibleForTesting
         public void showNotificationImmediately(MediaNotificationInfo mediaNotificationInfo) {
-            // If no notification hasn't been updated in the last THROTTLE_MILLIS, update
-            // immediately and queue a task for blocking further updates.
-            mController.showNotification(mediaNotificationInfo);
-            mTask =
+            // Keep `mLastPendingInfo` up to date with the latest notification info.
+            mLastPendingInfo = mediaNotificationInfo;
+
+            // Return if we are in a throttled state.
+            if (mThrottleTask != null) {
+                return;
+            }
+
+            // Show the notification and clear `mLastPendingInfo` to prevent the next scheduled task
+            // from showing a notification, if no new notifications are received.
+            if (mController.mPendingIntentActionSwipe != null) {
+                mController.showNotification(mediaNotificationInfo);
+                mLastPendingInfo = null;
+            }
+
+            // Create a task to show a notification for the latest `mLastPendingInfo` that is queued
+            // while the task is waiting to run. The task will fire after `THROTTLE_MILLIS` has
+            // elapsed.
+            //
+            // `mThrottleTask` takes care of clearing itself and `mLastPendingInfo` controls when to
+            // exit the throttled state.
+            mThrottleTask =
                     new Runnable() {
                         @Override
                         public void run() {
+                            mThrottleTask = null;
                             if (mLastPendingInfo != null) {
-                                // If any notification info is pended during the throttling time
-                                // window, update the notification.
                                 showNotificationImmediately(mLastPendingInfo);
-                                mLastPendingInfo = null;
-                            } else {
-                                // Otherwise, clear the task so further update is unthrottled.
-                                mTask = null;
                             }
                         }
                     };
-            if (!mHandler.postDelayed(mTask, THROTTLE_MILLIS)) {
+
+            // Enter throttled state.
+            if (!mHandler.postDelayed(mThrottleTask, THROTTLE_MILLIS)) {
                 Log.w(TAG, "Failed to post the throttler task.");
-                mTask = null;
+                mThrottleTask = null;
+            }
+        }
+    }
+
+    /**
+     * Helper class to initialize the `mPendingIntentActionSwipe` pending intent when the UI thread
+     * message queue is idle.
+     *
+     * <p>This class will add an `IdleHandler` to the UI thread message queue and schedule a delayed
+     * task. If the UI thread is not idle before `MAX_INIT_WAIT_TIME_MILLIS`, then
+     * `mPendingIntentActionSwipe` will be initialized by the delayed task.
+     *
+     * <p>If the idle task runs before `MAX_INIT_WAIT_TIME_MILLIS`, it will cancel the delayed task.
+     */
+    public static class PendingIntentInitializer {
+        @VisibleForTesting public static final int MAX_INIT_WAIT_TIME_MILLIS = 2000;
+
+        @VisibleForTesting public MediaNotificationController mController;
+
+        private final Handler mHandler;
+
+        // Task to perform initialization if the pending intent has not been initialized after
+        // `MAX_INIT_WAIT_TIME_MILLIS`.
+        @VisibleForTesting public @Nullable Runnable mSwipeInitTask;
+
+        // Indicates whether the tasks to initialize the pending intent have been scheduled or not.
+        private boolean mTasksScheduled;
+
+        @VisibleForTesting
+        public PendingIntentInitializer(MediaNotificationController controller) {
+            mController = controller;
+            mHandler = new Handler();
+        }
+
+        /** Schedules the `mPendingIntentActionSwipe` construction if needed. */
+        @VisibleForTesting
+        public void schedulePendingIntentConstructionIfNeeded() {
+            if (mController.mPendingIntentActionSwipe != null || mTasksScheduled) {
+                return;
+            }
+
+            postDelayedTask();
+            scheduleIdleTask();
+
+            mTasksScheduled = true;
+        }
+
+        @VisibleForTesting
+        public void createPendingIntentActionSwipeIfNeeded() {
+            if (mController.mPendingIntentActionSwipe != null) {
+                return;
+            }
+
+            clearDelayedTask();
+            mController.mPendingIntentActionSwipe = mController.createPendingIntent(ACTION_SWIPE);
+            mController.mPendingIntentInitializer = null;
+        }
+
+        /**
+         * Schedules a delayed task to initialize `mPendingIntentActionSwipe`, if the pending intent
+         * has not been initialized after `MAX_INIT_WAIT_TIME_MILLIS`.
+         */
+        @VisibleForTesting
+        public void postDelayedTask() {
+            mSwipeInitTask =
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            createPendingIntentActionSwipeIfNeeded();
+                        }
+                    };
+            mHandler.postDelayed(mSwipeInitTask, MAX_INIT_WAIT_TIME_MILLIS);
+        }
+
+        /**
+         * Adds a new `IdleHandler` to initialize `mPendingIntentActionSwipe` whenever the UI thread
+         * message queue is idle.
+         */
+        @VisibleForTesting
+        public void scheduleIdleTask() {
+            Looper.myQueue()
+                    .addIdleHandler(
+                            () -> {
+                                createPendingIntentActionSwipeIfNeeded();
+                                return false;
+                            });
+        }
+
+        /** Clears the `mIdleSwipeInitTask` delayed task */
+        @VisibleForTesting
+        public void clearDelayedTask() {
+            if (mSwipeInitTask != null) {
+                mHandler.removeCallbacks(mSwipeInitTask);
+                mSwipeInitTask = null;
             }
         }
     }
@@ -236,17 +372,16 @@ public class MediaNotificationController {
     /**
      * Finishes starting the service on O+.
      *
-     * If startForegroundService() was called, the app MUST call startForeground on the created
+     * <p>If startForegroundService() was called, the app MUST call startForeground on the created
      * service no matter what or it will crash.
      *
      * @param service the {@link Service} on which {@link Context#startForegroundService()} has been
-     *         called.
+     *     called.
      * @param notification a minimal version of the notification associated with the service.
      * @return true if {@link Service#startForeground()} was called.
      */
     public static boolean finishStartingForegroundServiceOnO(
             Service service, NotificationWrapper notification) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false;
         try {
             ForegroundServiceUtils.getInstance()
                     .startForeground(
@@ -260,8 +395,9 @@ public class MediaNotificationController {
         return true;
     }
 
-    private PendingIntentProvider createPendingIntent(String action) {
-        Intent intent = mDelegate.createServiceIntent().setAction(action);
+    @VisibleForTesting
+    public PendingIntentProvider createPendingIntent(String action) {
+        Intent intent = assumeNonNull(mDelegate.createServiceIntent()).setAction(action);
         return PendingIntentProvider.getService(
                 getContext(),
                 0,
@@ -276,16 +412,16 @@ public class MediaNotificationController {
      */
     private static final class MediaButtonInfo {
         /** The resource ID of this media button icon. */
-        public int iconResId;
+        public final int iconResId;
 
         /** The resource ID of this media button description. */
-        public int descriptionResId;
+        public final int descriptionResId;
 
         /** The intent string to be fired when this media button is clicked. */
-        public String intentString;
+        public final String intentString;
 
         /** The ID to identify the notification button. */
-        public int buttonId;
+        public final int buttonId;
 
         public MediaButtonInfo(
                 int buttonResId, int descriptionResId, String intentString, int buttonId) {
@@ -299,7 +435,7 @@ public class MediaNotificationController {
     /** An interface for separating embedder-specific logic. */
     public interface Delegate {
         /** Returns an intent that will start a Service which listens to notification actions. */
-        Intent createServiceIntent();
+        @Nullable Intent createServiceIntent();
 
         /** Returns the name of the embedding app. */
         String getAppName();
@@ -372,9 +508,11 @@ public class MediaNotificationController {
                         ACTION_SEEK_BACKWARD,
                         MEDIA_ACTION_SEEK_BACKWARD));
 
-        mPendingIntentActionSwipe = createPendingIntent(ACTION_SWIPE);
-
         mThrottler = new Throttler(this);
+
+        // Create `mPendingIntentInitializer`, which will be used to help initialize
+        // `mPendingIntentActionSwipe`.
+        mPendingIntentInitializer = new PendingIntentInitializer(this);
     }
 
     /**
@@ -394,7 +532,7 @@ public class MediaNotificationController {
         mService = null;
     }
 
-    public boolean processIntent(Service service, Intent intent) {
+    public boolean processIntent(Service service, @Nullable Intent intent) {
         if (intent == null || mMediaNotificationInfo == null) return false;
 
         if (intent.getAction() == null) {
@@ -447,7 +585,22 @@ public class MediaNotificationController {
         // is no longer available. It's unclear if it is a Support Library issue
         // or something that isn't properly cleaned up but given that the
         // crashes are rare and the fix is simple, null check was enough.
-        if (mMediaNotificationInfo == null || mMediaNotificationInfo.isPaused) return;
+        if (mMediaNotificationInfo == null) return;
+
+        if (mMediaNotificationInfo.isPaused) {
+            // If already paused, receiving a PAUSE command from the MediaSession indicates
+            // the external controller is out of sync (e.g. it believes the audio stream is active).
+            // We interpret this redundant PAUSE as a user intent to resume playback.
+            //
+            // We specifically check for ACTION_SOURCE_MEDIA_SESSION to avoid side effects from
+            // other pause sources, such as unplugging headphones (ACTION_SOURCE_HEADSET_UNPLUG),
+            // which should never trigger playback.
+            if (actionSource == MediaNotificationListener.ACTION_SOURCE_MEDIA_SESSION) {
+                onPlay(actionSource);
+            }
+            return;
+        }
+
         mMediaNotificationInfo.listener.onPause(actionSource);
     }
 
@@ -502,7 +655,7 @@ public class MediaNotificationController {
             // catch the exception, and `mService` will remain null for us to try again later.
             try {
                 ForegroundServiceUtils.getInstance()
-                        .startForegroundService(mDelegate.createServiceIntent());
+                        .startForegroundService(assertNonNull(mDelegate.createServiceIntent()));
             } catch (RuntimeException e) {
             }
         } else {
@@ -511,7 +664,7 @@ public class MediaNotificationController {
     }
 
     private static boolean shouldIgnoreMediaNotificationInfo(
-            MediaNotificationInfo oldInfo, MediaNotificationInfo newInfo) {
+            @Nullable MediaNotificationInfo oldInfo, MediaNotificationInfo newInfo) {
         // If this is a web MediaSession notification, but we haven't yet gotten actions, then we
         // shouldn't display the notification.
         if (newInfo.mediaSessionActions != null && newInfo.mediaSessionActions.isEmpty()) {
@@ -519,16 +672,16 @@ public class MediaNotificationController {
         }
 
         return newInfo.equals(oldInfo)
-                || ((newInfo.isPaused
+                || (newInfo.isPaused
                         && oldInfo != null
-                        && newInfo.instanceId != oldInfo.instanceId));
+                        && newInfo.instanceId != oldInfo.instanceId);
     }
 
     public void clearNotification() {
         mThrottler.clearPendingNotifications();
         if (mMediaNotificationInfo == null) return;
 
-        NotificationManagerCompat.from(getContext()).cancel(mMediaNotificationInfo.id);
+        BaseNotificationManagerProxyFactory.create().cancel(mMediaNotificationInfo.id);
 
         if (mMediaSession != null) {
             mMediaSession.setCallback(null);
@@ -552,6 +705,15 @@ public class MediaNotificationController {
         clearNotification();
     }
 
+    /** Schedules the `mPendingIntentActionSwipe` construction if needed. */
+    @VisibleForTesting
+    public void schedulePendingIntentConstructionIfNeeded() {
+        if (mPendingIntentInitializer == null) {
+            return;
+        }
+        mPendingIntentInitializer.schedulePendingIntentConstructionIfNeeded();
+    }
+
     @VisibleForTesting
     public void stopListenerService() {
         if (mService == null) return;
@@ -561,9 +723,9 @@ public class MediaNotificationController {
         mService.stopSelf();
     }
 
-    @NonNull
     @VisibleForTesting
     public MediaMetadataCompat createMetadata() {
+        assumeNonNull(mMediaNotificationInfo);
         // Can't return null as {@link MediaSessionCompat#setMetadata()} will crash in some versions
         // of the Android compat library.
         MediaMetadataCompat.Builder metadataBuilder = new MediaMetadataCompat.Builder();
@@ -629,8 +791,7 @@ public class MediaNotificationController {
         if (mMediaNotificationInfo.supportsSwipeAway() && mMediaNotificationInfo.isPaused) {
             ForegroundServiceUtils.getInstance()
                     .stopForeground(mService, Service.STOP_FOREGROUND_DETACH);
-            BaseNotificationManagerProxy manager =
-                    BaseNotificationManagerProxyFactory.create(getContext());
+            BaseNotificationManagerProxy manager = BaseNotificationManagerProxyFactory.create();
             manager.notify(notification);
         } else if (!finishedForegroundingService) {
             // We did not foreground the service and update the notification above, so we should do
@@ -646,8 +807,7 @@ public class MediaNotificationController {
                                 notification.getNotification(),
                                 ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
             } catch (RuntimeException e) {
-                BaseNotificationManagerProxy manager =
-                        BaseNotificationManagerProxyFactory.create(getContext());
+                BaseNotificationManagerProxy manager = BaseNotificationManagerProxyFactory.create();
                 manager.notify(notification);
             }
         }
@@ -657,6 +817,7 @@ public class MediaNotificationController {
     }
 
     @VisibleForTesting
+    @EnsuresNonNull("mNotificationBuilder")
     public void updateNotificationBuilder() {
         assert (mMediaNotificationInfo != null);
 
@@ -697,6 +858,7 @@ public class MediaNotificationController {
     }
 
     @VisibleForTesting
+    @RequiresNonNull("mMediaNotificationInfo")
     public void updateMediaSession() {
         if (!mMediaNotificationInfo.supportsPlayPause()) return;
 
@@ -712,6 +874,7 @@ public class MediaNotificationController {
     }
 
     @VisibleForTesting
+    @RequiresNonNull("mMediaNotificationInfo")
     public PlaybackStateCompat createPlaybackState() {
         PlaybackStateCompat.Builder playbackStateBuilder =
                 new PlaybackStateCompat.Builder().setActions(computeMediaSessionActions());
@@ -782,6 +945,7 @@ public class MediaNotificationController {
         mMediaSession.setActive(true);
     }
 
+    @RequiresNonNull("mMediaNotificationInfo")
     private void setMediaStyleLayoutForNotificationBuilder(NotificationWrapperBuilder builder) {
         setMediaStyleNotificationText(builder);
         if (!mMediaNotificationInfo.supportsPlayPause()) {
@@ -796,6 +960,7 @@ public class MediaNotificationController {
         addNotificationButtons(builder);
     }
 
+    @RequiresNonNull("mMediaNotificationInfo")
     private void addNotificationButtons(NotificationWrapperBuilder builder) {
         Set<Integer> actions = new HashSet<>();
 
@@ -824,27 +989,28 @@ public class MediaNotificationController {
 
         for (int action : bigViewActions) {
             MediaButtonInfo buttonInfo = mActionToButtonInfo.get(action);
+            assumeNonNull(buttonInfo);
             builder.addAction(
                     buttonInfo.iconResId,
-                    getContext().getResources().getString(buttonInfo.descriptionResId),
+                    getContext().getString(buttonInfo.descriptionResId),
                     createPendingIntent(buttonInfo.intentString),
                     buttonInfo.buttonId);
         }
 
         // Only apply MediaStyle when NotificationInfo supports play/pause.
         if (mMediaNotificationInfo.supportsPlayPause()) {
+            assert mMediaSession != null;
             builder.setMediaStyle(mMediaSession, computeCompactViewActionIndices(bigViewActions));
         }
     }
 
+    @RequiresNonNull("mMediaNotificationInfo")
     private void setMediaStyleNotificationText(NotificationWrapperBuilder builder) {
         if (mMediaNotificationInfo.isPrivate) {
             // Notifications in incognito shouldn't show what is playing to avoid leaking
             // information.
-            builder.setContentTitle(
-                    getContext().getResources().getString(R.string.media_notification_incognito));
-            builder.setSubText(
-                    getContext().getResources().getString(R.string.notification_incognito_tab));
+            builder.setContentTitle(getContext().getString(R.string.media_notification_incognito));
+            builder.setSubText(getContext().getString(R.string.notification_incognito_tab));
             return;
         }
 
@@ -970,6 +1136,7 @@ public class MediaNotificationController {
 
     // Return a non-blank string for use as the notification title, to avoid issues on some
     // versions of Android.
+    @RequiresNonNull("mMediaNotificationInfo")
     private String getSafeNotificationTitle() {
         String title = mMediaNotificationInfo.metadata.getTitle();
         if (title != null && title.trim().length() > 0) {

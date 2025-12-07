@@ -4,7 +4,7 @@
 
 #include "services/network/test/test_udp_socket.h"
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 
 namespace network {
 

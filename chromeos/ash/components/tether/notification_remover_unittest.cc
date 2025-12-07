@@ -68,7 +68,7 @@ class NotificationRemoverTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  NetworkStateTestHelper helper_{true /* use_default_devices_and_services */};
+  NetworkStateTestHelper helper_{/*use_default_devices_and_services=*/true};
 
   const std::unordered_map<std::string, HostScanCacheEntry> test_entries_;
 

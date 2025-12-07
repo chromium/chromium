@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] [required] gru float16 tensors steps=1 with options.bias, options.recurrentBias and options.activations=['relu', 'relu']
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gru float16 actual -1 should be close enough to expected -4 by ULP distance: expected a number less than or equal to 6 but got 2048
+[FAIL] [required] gru float16 tensors steps=1 with options.bias, options.recurrentBias and options.activations=['relu', 'relu'] and resetAfter=true
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gru float16 actual -1.5 should be close enough to expected -6 by ULP distance: expected a number less than or equal to 6 but got 2048
+[FAIL] [required] gru float16 tensors steps=1 with options.bias, options.recurrentBias, options.activations=['relu', 'relu'] and explicit options.direction='forward'
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gru float16 actual -1 should be close enough to expected -4 by ULP distance: expected a number less than or equal to 6 but got 2048
+[FAIL] [required] gru float16 tensors steps=1 with options.bias, options.recurrentBias, options.activations=['relu', 'relu'] and explicit options.layout='zrn'
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gru float16 actual -1 should be close enough to expected -4 by ULP distance: expected a number less than or equal to 6 but got 2048
+[FAIL] [required] gru float16 tensors steps=1 with options.bias, options.recurrentBias, options.activations=['relu', 'relu'] and options.layout='rzn'
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gru float16 actual -1 should be close enough to expected -4 by ULP distance: expected a number less than or equal to 6 but got 2048
+[FAIL] [required] gru float16 tensors steps=1 with options.bias, options.recurrentBias, options.activations=['relu', 'relu'] and options.initialHiddenState
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gru float16 actual -1 should be close enough to expected -4 by ULP distance: expected a number less than or equal to 6 but got 2048
+[FAIL] [required] gru float16 tensors steps=1 all options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gru float16 actual -1 should be close enough to expected -4 by ULP distance: expected a number less than or equal to 6 but got 2048
+Harness: the test ran to completion.
+

@@ -10,8 +10,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -31,8 +31,19 @@ class MockUpdateAddressBubbleController : public UpdateAddressBubbleController {
             /*web_contents=*/nullptr,
             /*profile_to_save=*/test::GetFullProfile(),
             /*original_profile=*/test::GetFullProfile()) {}
-  MOCK_METHOD(std::u16string, GetWindowTitle, (), (const, override));
+  MOCK_METHOD(std::u16string,
+              GetWindowTitle,
+              (bool has_non_empty_original_values),
+              (const, override));
   MOCK_METHOD(std::u16string, GetFooterMessage, (), (const, override));
+  MOCK_METHOD(std::u16string,
+              GetPositiveButtonText,
+              (bool has_non_empty_original_values),
+              (const, override));
+  MOCK_METHOD(std::u16string,
+              GetNegativeButtonText,
+              (bool has_non_empty_original_values),
+              (const, override));
   MOCK_METHOD(const AutofillProfile&, GetProfileToSave, (), (const, override));
   MOCK_METHOD(const AutofillProfile&,
               GetOriginalProfile,
@@ -110,15 +121,15 @@ void UpdateAddressProfileViewTest::CreateViewAndShow() {
       std::make_unique<testing::NiceMock<MockUpdateAddressBubbleController>>();
   mock_controller_ = mock_controller_unique.get();
 
-  ON_CALL(*mock_controller(), GetWindowTitle())
+  ON_CALL(*mock_controller(), GetWindowTitle)
       .WillByDefault(testing::Return(std::u16string()));
   ON_CALL(*mock_controller(), GetProfileToSave())
       .WillByDefault(testing::ReturnRef(address_profile_to_save()));
   ON_CALL(*mock_controller(), GetOriginalProfile())
       .WillByDefault(testing::ReturnRef(original_profile()));
 
-  view_ = new UpdateAddressProfileView(std::move(mock_controller_unique),
-                                       anchor_widget_->GetContentsView(),
+  view_ = new UpdateAddressProfileView(anchor_widget_->GetContentsView(),
+                                       std::move(mock_controller_unique),
                                        test_web_contents_.get());
   views::BubbleDialogDelegateView::CreateBubble(view_)->Show();
 }
@@ -133,7 +144,7 @@ TEST_F(UpdateAddressProfileViewTest, AcceptInvokesTheController) {
   EXPECT_CALL(
       *mock_controller(),
       OnUserDecision(AutofillClient::AddressPromptUserDecision::kAccepted,
-                     Property(&profile_ref::has_value, false)));
+                     Property(&profile_ref::has_value, true)));
   view()->AcceptDialog();
 }
 

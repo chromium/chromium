@@ -22,25 +22,22 @@ class SelectFileDialogImpl : public SelectFileDialog {
   SelectFileDialogImpl& operator=(const SelectFileDialogImpl&) = delete;
 
   void OnFileSelected(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& java_object,
-                      const base::android::JavaParamRef<jstring>& filepath,
-                      const base::android::JavaParamRef<jstring>& display_name);
+                      const base::android::JavaRef<jstring>& filepath,
+                      const base::android::JavaRef<jstring>& display_name);
 
   void OnMultipleFilesSelected(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& java_object,
-      const base::android::JavaParamRef<jobjectArray>& filepaths,
-      const base::android::JavaParamRef<jobjectArray>& display_names);
+      const base::android::JavaRef<jobjectArray>& filepaths,
+      const base::android::JavaRef<jobjectArray>& display_names);
 
-  void OnFileNotSelected(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& java_object);
+  void OnFileNotSelected(JNIEnv* env);
 
   // From SelectFileDialog
   bool IsRunning(gfx::NativeWindow) const override;
   void ListenerDestroyed() override;
   void SetAcceptTypes(std::vector<std::u16string> types) override;
   void SetUseMediaCapture(bool use_media_capture) override;
+  void SetOpenWritable(bool open_writable) override;
 
   // Called when it is time to display the file picker.
   void SelectFileImpl(SelectFileDialog::Type type,
@@ -63,6 +60,8 @@ class SelectFileDialogImpl : public SelectFileDialog {
 
   std::vector<std::u16string> accept_types_;
   bool use_media_capture_ = false;
+  bool open_writable_ = false;
+  SelectFileDialog::Type select_type_ = SELECT_NONE;
 
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 };

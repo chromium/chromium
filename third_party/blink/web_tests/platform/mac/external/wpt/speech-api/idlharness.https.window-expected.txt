@@ -1,0 +1,66 @@
+This is a testharness.js-based test.
+Found 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] SpeechRecognitionErrorEvent interface object length
+  assert_equals: wrong value for SpeechRecognitionErrorEvent.length expected 2 but got 1
+[FAIL] SpeechRecognitionAlternative interface: existence and properties of interface object
+  assert_own_property: self does not have own property "SpeechRecognitionAlternative" expected property "SpeechRecognitionAlternative" missing
+[FAIL] SpeechRecognitionAlternative interface object length
+  assert_own_property: self does not have own property "SpeechRecognitionAlternative" expected property "SpeechRecognitionAlternative" missing
+[FAIL] SpeechRecognitionAlternative interface object name
+  assert_own_property: self does not have own property "SpeechRecognitionAlternative" expected property "SpeechRecognitionAlternative" missing
+[FAIL] SpeechRecognitionAlternative interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "SpeechRecognitionAlternative" expected property "SpeechRecognitionAlternative" missing
+[FAIL] SpeechRecognitionAlternative interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "SpeechRecognitionAlternative" expected property "SpeechRecognitionAlternative" missing
+[FAIL] SpeechRecognitionAlternative interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "SpeechRecognitionAlternative" expected property "SpeechRecognitionAlternative" missing
+[FAIL] SpeechRecognitionAlternative interface: attribute transcript
+  assert_own_property: self does not have own property "SpeechRecognitionAlternative" expected property "SpeechRecognitionAlternative" missing
+[FAIL] SpeechRecognitionAlternative interface: attribute confidence
+  assert_own_property: self does not have own property "SpeechRecognitionAlternative" expected property "SpeechRecognitionAlternative" missing
+[FAIL] SpeechRecognitionResult interface: existence and properties of interface object
+  assert_own_property: self does not have own property "SpeechRecognitionResult" expected property "SpeechRecognitionResult" missing
+[FAIL] SpeechRecognitionResult interface object length
+  assert_own_property: self does not have own property "SpeechRecognitionResult" expected property "SpeechRecognitionResult" missing
+[FAIL] SpeechRecognitionResult interface object name
+  assert_own_property: self does not have own property "SpeechRecognitionResult" expected property "SpeechRecognitionResult" missing
+[FAIL] SpeechRecognitionResult interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "SpeechRecognitionResult" expected property "SpeechRecognitionResult" missing
+[FAIL] SpeechRecognitionResult interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "SpeechRecognitionResult" expected property "SpeechRecognitionResult" missing
+[FAIL] SpeechRecognitionResult interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "SpeechRecognitionResult" expected property "SpeechRecognitionResult" missing
+[FAIL] SpeechRecognitionResult interface: attribute length
+  assert_own_property: self does not have own property "SpeechRecognitionResult" expected property "SpeechRecognitionResult" missing
+[FAIL] SpeechRecognitionResult interface: operation item(unsigned long)
+  assert_own_property: self does not have own property "SpeechRecognitionResult" expected property "SpeechRecognitionResult" missing
+[FAIL] SpeechRecognitionResult interface: attribute isFinal
+  assert_own_property: self does not have own property "SpeechRecognitionResult" expected property "SpeechRecognitionResult" missing
+[FAIL] SpeechRecognitionResultList interface: existence and properties of interface object
+  assert_own_property: self does not have own property "SpeechRecognitionResultList" expected property "SpeechRecognitionResultList" missing
+[FAIL] SpeechRecognitionResultList interface object length
+  assert_own_property: self does not have own property "SpeechRecognitionResultList" expected property "SpeechRecognitionResultList" missing
+[FAIL] SpeechRecognitionResultList interface object name
+  assert_own_property: self does not have own property "SpeechRecognitionResultList" expected property "SpeechRecognitionResultList" missing
+[FAIL] SpeechRecognitionResultList interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "SpeechRecognitionResultList" expected property "SpeechRecognitionResultList" missing
+[FAIL] SpeechRecognitionResultList interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "SpeechRecognitionResultList" expected property "SpeechRecognitionResultList" missing
+[FAIL] SpeechRecognitionResultList interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "SpeechRecognitionResultList" expected property "SpeechRecognitionResultList" missing
+[FAIL] SpeechRecognitionResultList interface: attribute length
+  assert_own_property: self does not have own property "SpeechRecognitionResultList" expected property "SpeechRecognitionResultList" missing
+[FAIL] SpeechRecognitionResultList interface: operation item(unsigned long)
+  assert_own_property: self does not have own property "SpeechRecognitionResultList" expected property "SpeechRecognitionResultList" missing
+[FAIL] SpeechRecognitionEvent interface object length
+  assert_equals: wrong value for SpeechRecognitionEvent.length expected 2 but got 1
+[FAIL] SpeechGrammar interface: existence and properties of interface object
+  assert_throws_js: interface object didn't throw TypeError when called as a constructor function "function() {\n                new interface_object();\n            }" did not throw
+[FAIL] SpeechGrammarList interface: operation addFromURI(DOMString, optional float)
+  assert_own_property: interface prototype object missing non-static operation expected property "addFromURI" missing
+[FAIL] SpeechGrammarList interface: new SpeechGrammarList() must inherit property "addFromURI(DOMString, optional float)" with the proper type
+  assert_inherits: property "addFromURI" not found in prototype chain
+[FAIL] SpeechGrammarList interface: calling addFromURI(DOMString, optional float) on new SpeechGrammarList() with too few arguments must throw TypeError
+  assert_inherits: property "addFromURI" not found in prototype chain
+Harness: the test ran to completion.
+

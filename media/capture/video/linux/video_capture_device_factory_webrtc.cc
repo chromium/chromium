@@ -24,6 +24,7 @@ struct {
     {webrtc::VideoType::kUYVY, PIXEL_FORMAT_UYVY},
     {webrtc::VideoType::kMJPEG, PIXEL_FORMAT_MJPEG},
     {webrtc::VideoType::kBGRA, PIXEL_FORMAT_BGRA},
+    {webrtc::VideoType::kABGR, PIXEL_FORMAT_ABGR},
 };
 
 VideoCaptureDeviceFactoryWebRtc::VideoCaptureDeviceFactoryWebRtc() = default;

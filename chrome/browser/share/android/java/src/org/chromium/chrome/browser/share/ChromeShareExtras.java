@@ -5,8 +5,9 @@
 package org.chromium.chrome.browser.share;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.url.GURL;
@@ -21,6 +22,7 @@ import org.chromium.url.GURL;
  *
  * <p>These int value for these enums are safe to modify as its not used for metrics.
  */
+@NullMarked
 public class ChromeShareExtras {
     @IntDef({
         DetailedContentType.NOT_SPECIFIED,
@@ -30,6 +32,7 @@ public class ChromeShareExtras {
         DetailedContentType.SCREENSHOT,
         DetailedContentType.WEB_SHARE,
         DetailedContentType.PAGE_INFO,
+        DetailedContentType.TAB_GROUP_LINK,
     })
     public @interface DetailedContentType {
         int NOT_SPECIFIED = 0;
@@ -39,6 +42,7 @@ public class ChromeShareExtras {
         int SCREENSHOT = 4;
         int WEB_SHARE = 5;
         int PAGE_INFO = 6;
+        int TAB_GROUP_LINK = 7;
     }
 
     /** Whether to save the chosen activity for future direct sharing. */
@@ -54,17 +58,17 @@ public class ChromeShareExtras {
     private final boolean mIsUrlOfVisiblePage;
 
     /** Source URL of the image. */
-    @NonNull private final GURL mImageSrcUrl;
+    private final GURL mImageSrcUrl;
 
     /** Url of the content being shared. */
-    @NonNull private final GURL mContentUrl;
+    private final GURL mContentUrl;
 
     private final boolean mIsReshareHighlightedText;
 
     /** Whether page sharing 1P actions should be added to the share sheet or not. */
     private final boolean mSkipPageSharingActions;
 
-    private final RenderFrameHost mRenderFrameHost;
+    private final @Nullable RenderFrameHost mRenderFrameHost;
 
     /** The detailed content type that is being shared. */
     @DetailedContentType private final int mDetailedContentType;
@@ -73,11 +77,11 @@ public class ChromeShareExtras {
             boolean saveLastUsed,
             boolean shareDirectly,
             boolean isUrlOfVisiblePage,
-            GURL imageSrcUrl,
-            GURL contentUrl,
+            @Nullable GURL imageSrcUrl,
+            @Nullable GURL contentUrl,
             boolean isReshareHighlightedText,
             boolean skipPageSharingActions,
-            RenderFrameHost renderFrameHost,
+            @Nullable RenderFrameHost renderFrameHost,
             @DetailedContentType int detailedContentType) {
         mSaveLastUsed = saveLastUsed;
         mShareDirectly = shareDirectly;
@@ -115,14 +119,14 @@ public class ChromeShareExtras {
     /**
      * @return Source URL of the image.
      */
-    public @NonNull GURL getImageSrcUrl() {
+    public GURL getImageSrcUrl() {
         return mImageSrcUrl;
     }
 
     /**
      * @return URL of the content being shared.
      */
-    public @NonNull GURL getContentUrl() {
+    public GURL getContentUrl() {
         return mContentUrl;
     }
 
@@ -141,7 +145,7 @@ public class ChromeShareExtras {
     /**
      * @return The {@link RenderFrameHost} that opened the context menu for sharing.
      */
-    public RenderFrameHost getRenderFrameHost() {
+    public @Nullable RenderFrameHost getRenderFrameHost() {
         return mRenderFrameHost;
     }
 
@@ -154,7 +158,7 @@ public class ChromeShareExtras {
 
     /**
      * Whether the content being shared is an image based on the {@link #getDetailedContentType()}.
-     * */
+     */
     public boolean isImage() {
         return mDetailedContentType == DetailedContentType.IMAGE
                 || mDetailedContentType == DetailedContentType.GIF
@@ -166,11 +170,11 @@ public class ChromeShareExtras {
         private boolean mSaveLastUsed;
         private boolean mShareDirectly;
         private boolean mIsUrlOfVisiblePage;
-        private GURL mImageSrcUrl;
-        private GURL mContentUrl;
+        private @Nullable GURL mImageSrcUrl;
+        private @Nullable GURL mContentUrl;
         private boolean mIsReshareHighlightedText;
         private boolean mSkipPageSharingActions;
-        private RenderFrameHost mRenderFrameHost;
+        private @Nullable RenderFrameHost mRenderFrameHost;
         @DetailedContentType private int mDetailedContentType;
 
         /** Sets whether to save the chosen activity for future direct sharing. */
@@ -180,7 +184,7 @@ public class ChromeShareExtras {
         }
 
         /** Sets {@link RenderFrameHost} that opened the context menu for sharing. */
-        public Builder setRenderFrameHost(RenderFrameHost renderFrameHost) {
+        public Builder setRenderFrameHost(@Nullable RenderFrameHost renderFrameHost) {
             mRenderFrameHost = renderFrameHost;
             return this;
         }

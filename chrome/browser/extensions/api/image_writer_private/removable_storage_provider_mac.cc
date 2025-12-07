@@ -36,7 +36,7 @@ RemovableStorageProvider::PopulateDeviceList() {
   // IOServiceGetMatchingServices consumes a reference to the matching
   // dictionary passed to it.
   base::mac::ScopedIOObject<io_service_t> disk_iterator;
-  if (IOServiceGetMatchingServices(kIOMasterPortDefault, matching.release(),
+  if (IOServiceGetMatchingServices(kIOMainPortDefault, matching.release(),
                                    disk_iterator.InitializeInto()) !=
       KERN_SUCCESS) {
     LOG(ERROR) << "Unable to get disk services.";

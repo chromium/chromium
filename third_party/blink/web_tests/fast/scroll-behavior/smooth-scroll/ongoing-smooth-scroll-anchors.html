@@ -2,7 +2,6 @@
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../../resources/gesture-util.js"></script>
-<script src="../../../resources/percent-based-util.js"></script>
 <style>
   body {
     margin: 0px;
@@ -23,42 +22,33 @@
 <div id="anchor"></div>
 
 <script>
-  var asyncTest = async_test("Verify smooth scroll interaction with scroll anchroing");
+  const changer_desired_height = "100px";
+  const pixelsToScrollY = 205;
+  // End position: changer height + pixelsToScrollY.
+  const endY = 305;
 
-  // The element that will change in height.
-  var ch;
-
-  // Initital scroll position.
-  var initialY = 10;
-  // Amount to smooth scroll by.
-  const { y: userScrollY } = calculatePixelsToScroll(
-    document.scrollingElement, 0, 205
-  );
-  // Amount to change the height of the element above the viewport.
-  var changerY =  100;
-  // End position: height of ch + userScroll.
-  var endY = 305;
-  var source = GestureSourceType.MOUSE_INPUT;
-
-  function scrollListener() {
-    // The value on Linux appears to be slightly different
-    if (approx_equals(window.scrollY, endY, 0.5)) {
-      asyncTest.done();
-      return;
+  function addScrollListener(target) {
+    const scrollListener = () => {
+      if (target.style.height != changer_desired_height) {
+        target.style.height = changer_desired_height;
+      }
     }
-
-    if (ch.style.height != "100")
-      ch.style.height = changerY + "px";
+    document.addEventListener("scroll", scrollListener, { once: true });
   }
 
-  window.onload = async () => {
-    ch = document.getElementById("changer");
-    document.addEventListener("scroll", scrollListener);
+  promise_test(async () => {
+    await waitForCompositorReady();
+    await waitForScrollReset(document.scrollingElement);
 
-    // Smooth scroll.
-    smoothScroll(userScrollY, 100, 100, source, 'down',
-                 SPEED_INSTANT, false /* precise_scrolling_deltas */);
-    await raf();
+    // Scroll down (10px) so the anchor is invisible.
     document.getElementById('anchor').scrollIntoView();
-  }
+    await waitForScrollendEvent(document);
+
+    const changer = document.getElementById("changer");
+    addScrollListener(changer);
+    await smoothScrollWithXY(
+      0, pixelsToScrollY, 100, 100, GestureSourceType.MOUSE_INPUT,
+      SPEED_INSTANT);
+    assert_equals(window.scrollY, endY);
+  }, "Verify smooth scroll interaction with scroll anchoring");
 </script>

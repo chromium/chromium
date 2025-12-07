@@ -58,40 +58,6 @@ StoragePartitionConfig::GetFallbackForBlobUrls() const {
           FallbackMode::kFallbackPartitionInMemory);
 }
 
-bool StoragePartitionConfig::operator<(
-    const StoragePartitionConfig& rhs) const {
-  if (partition_domain_ != rhs.partition_domain_)
-    return partition_domain_ < rhs.partition_domain_;
-
-  if (partition_name_ != rhs.partition_name_)
-    return partition_name_ < rhs.partition_name_;
-
-  if (in_memory_ != rhs.in_memory_)
-    return in_memory_ < rhs.in_memory_;
-
-  if (fallback_to_partition_domain_for_blob_urls_ !=
-      rhs.fallback_to_partition_domain_for_blob_urls_) {
-    return fallback_to_partition_domain_for_blob_urls_ <
-           rhs.fallback_to_partition_domain_for_blob_urls_;
-  }
-
-  return false;
-}
-
-bool StoragePartitionConfig::operator==(
-    const StoragePartitionConfig& rhs) const {
-  return partition_domain_ == rhs.partition_domain_ &&
-         partition_name_ == rhs.partition_name_ &&
-         in_memory_ == rhs.in_memory_ &&
-         fallback_to_partition_domain_for_blob_urls_ ==
-             rhs.fallback_to_partition_domain_for_blob_urls_;
-}
-
-bool StoragePartitionConfig::operator!=(
-    const StoragePartitionConfig& rhs) const {
-  return !(*this == rhs);
-}
-
 std::ostream& operator<<(std::ostream& out,
                          const StoragePartitionConfig& config) {
   out << "{";

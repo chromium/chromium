@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/installer/util/app_command.h"
 
 #include <windows.h>
@@ -14,6 +9,7 @@
 #include <stddef.h>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/win/registry.h"
@@ -99,8 +95,8 @@ bool AppCommand::Initialize(const base::win::RegKey& key) {
   for (size_t i = 0; i < std::size(kNameBoolVars); ++i) {
     DWORD value = 0;  // Set default to false.
     // Note: ReadValueDW only modifies out param on success.
-    key.ReadValueDW(kNameBoolVars[i].name, &value);
-    this->*(kNameBoolVars[i].data) = (value != 0);
+    key.ReadValueDW(UNSAFE_TODO(kNameBoolVars[i]).name, &value);
+    this->*(UNSAFE_TODO(kNameBoolVars[i]).data) = (value != 0);
   }
 
   return true;
@@ -121,8 +117,8 @@ void AppCommand::AddCreateAppCommandWorkItems(const HKEY root_key,
       ->set_log_message("setting AppCommand CommandLine registry value");
 
   for (size_t i = 0; i < std::size(kNameBoolVars); ++i) {
-    const wchar_t* var_name = kNameBoolVars[i].name;
-    bool var_data = this->*(kNameBoolVars[i].data);
+    const wchar_t* var_name = UNSAFE_TODO(kNameBoolVars[i]).name;
+    bool var_data = this->*(UNSAFE_TODO(kNameBoolVars[i]).data);
 
     // Adds a work item to set |var_name| to DWORD 1 if |var_data| is true;
     // adds a work item to remove |var_name| otherwise.

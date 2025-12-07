@@ -23,9 +23,9 @@ class InternalsUkmRecorder final : public ScriptWrappable {
   explicit InternalsUkmRecorder(Document*);
   ~InternalsUkmRecorder() override = default;
 
-  HeapVector<ScriptValue> getMetrics(ScriptState* script_state,
-                                     const String& entry_name,
-                                     const Vector<String>& metric_names);
+  HeapVector<ScriptObject> getMetrics(ScriptState* script_state,
+                                      const String& entry_name,
+                                      const Vector<String>& metric_names);
 
  private:
   ukm::TestAutoSetUkmRecorder recorder_;

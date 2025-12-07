@@ -24,23 +24,77 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+
 NSString* const kFirstStepAnimation = @"CPE_promo_animation_edu_autofill";
 NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
 UIImage* kImage = ios::provider::GetBrandedImage(
     ios::provider::BrandedImage::kPasswordSuggestionKey);
 
-NSString* LearnMoreSubtitleString() {
-  if (@available(iOS 16, *)) {
-    return l10n_util::GetNSStringF(
-        IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_SUBTITLE_WITH_PH,
-        base::SysNSStringToUTF16(l10n_util::GetNSString(
-            IDS_IOS_CREDENTIAL_PROVIDER_PROMO_OS_PASSWORDS_SETTINGS_TITLE_IOS16)));
+struct PromoStrings {
+  NSString* title_string;
+  NSString* subtitle_string;
+  NSString* primary_action_string;
+  NSString* secondary_action_string;
+  NSString* tertiary_action_string;
+};
+
+// Returns the expected set of strings for the `kFirstStep` promo context.
+PromoStrings ExpectedFirstStepPromoStrings() {
+  NSString* title_string;
+  NSString* subtitle_string;
+  NSString* primary_action_string;
+  NSString* secondary_action_string;
+  NSString* tertiary_action_string;
+
+  if (@available(iOS 18.0, *)) {
+    title_string =
+        l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_TITLE_IOS18);
+    primary_action_string = l10n_util::GetNSString(
+        IDS_IOS_CREDENTIAL_PROVIDER_SETTINGS_TURN_ON_AUTOFILL);
   } else {
-    return l10n_util::GetNSStringF(
-        IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_SUBTITLE_WITH_PH,
-        base::SysNSStringToUTF16(l10n_util::GetNSString(
-            IDS_IOS_CREDENTIAL_PROVIDER_PROMO_OS_PASSWORDS_SETTINGS_TITLE_BELOW_IOS16)));
+    title_string =
+        l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_TITLE);
+    subtitle_string =
+        l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_SUBTITLE);
+    primary_action_string =
+        l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_HOW);
   }
+
+  secondary_action_string =
+      l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_NO_THANKS);
+  tertiary_action_string =
+      l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_REMIND_ME_LATER);
+
+  return {title_string, subtitle_string, primary_action_string,
+          secondary_action_string, tertiary_action_string};
+}
+
+// Returns the expected set of strings for the `kLearnMore` promo context.
+PromoStrings ExpectedLearnMorePromoStrings() {
+  NSString* title_string;
+  NSString* subtitle_string;
+  NSString* primary_action_string;
+  NSString* secondary_action_string;
+  NSString* tertiary_action_string;
+
+  title_string = l10n_util::GetNSString(
+      IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_TITLE);
+
+  NSString* ios_settings_title = l10n_util::GetNSString(
+      IDS_IOS_CREDENTIAL_PROVIDER_PROMO_OS_PASSWORDS_SETTINGS_TITLE_IOS16);
+  subtitle_string = l10n_util::GetNSStringF(
+      IDS_IOS_CREDENTIAL_PROVIDER_PROMO_INSTRUCTIONS_SUBTITLE,
+      base::SysNSStringToUTF16(ios_settings_title));
+
+  primary_action_string =
+      l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_GO_TO_SETTINGS);
+  secondary_action_string =
+      l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_NO_THANKS);
+  tertiary_action_string =
+      l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_REMIND_ME_LATER);
+
+  return {title_string, subtitle_string, primary_action_string,
+          secondary_action_string, tertiary_action_string};
 }
 
 }  // namespace
@@ -50,7 +104,6 @@ class CredentialProviderPromoMediatorTest : public PlatformTest {
  protected:
   CredentialProviderPromoMediatorTest() {
     CreateCredentialProviderPromoMediator();
-    DisableCredentialProviderExtension();
   }
 
   PrefService* local_state() {
@@ -61,63 +114,44 @@ class CredentialProviderPromoMediatorTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<MockPromosManager> promos_manager_;
   CredentialProviderPromoMediator* mediator_;
-  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   id consumer_;
-  NSString* firstStepTitleString =
-      l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_INITIAL_TITLE);
-  NSString* firstStepSubtitleString = l10n_util::GetNSString(
-      IDS_IOS_CREDENTIAL_PROVIDER_PROMO_INITIAL_SUBTITLE);
-  NSString* learnMoreTitleString = l10n_util::GetNSString(
-      IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_TITLE);
-  NSString* goToSettingsString =
-      l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_GO_TO_SETTINGS);
-  NSString* learnHowString =
-      l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_HOW);
-  NSString* noThanksString =
-      l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_NO_THANKS);
-  NSString* remindMeLaterString =
-      l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_REMIND_ME_LATER);
 
   void CreateCredentialProviderPromoMediator() {
     promos_manager_ = std::make_unique<MockPromosManager>();
-    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     consumer_ = OCMProtocolMock(@protocol(CredentialProviderPromoConsumer));
     mediator_ = [[CredentialProviderPromoMediator alloc]
-        initWithPromosManager:promos_manager_.get()
-                  prefService:pref_service_.get()];
+        initWithPromosManager:promos_manager_.get()];
     mediator_.consumer = consumer_;
   }
 
-  void DisableCredentialProviderExtension() {
-    pref_service_->registry()->RegisterBooleanPref(
-        password_manager::prefs::kCredentialProviderEnabledOnStartup, false);
-  }
-
   void ExpectConsumerSetFieldsForFirstStep() {
-    OCMExpect([consumer_ setTitleString:firstStepTitleString
-                         subtitleString:firstStepSubtitleString
-                    primaryActionString:learnHowString
-                  secondaryActionString:noThanksString
-                   tertiaryActionString:remindMeLaterString
+    PromoStrings promo_strings = ExpectedFirstStepPromoStrings();
+    OCMExpect([consumer_ setTitleString:promo_strings.title_string
+                         subtitleString:promo_strings.subtitle_string
+                    primaryActionString:promo_strings.primary_action_string
+                  secondaryActionString:promo_strings.secondary_action_string
+                   tertiaryActionString:promo_strings.tertiary_action_string
                                   image:nil]);
     OCMExpect([consumer_ setAnimation:kFirstStepAnimation]);
   }
 
   void ExpectConsumerSetFieldsForFirstStepNoAnimation() {
-    OCMExpect([consumer_ setTitleString:firstStepTitleString
-                         subtitleString:firstStepSubtitleString
-                    primaryActionString:learnHowString
-                  secondaryActionString:noThanksString
-                   tertiaryActionString:remindMeLaterString
+    PromoStrings promo_strings = ExpectedFirstStepPromoStrings();
+    OCMExpect([consumer_ setTitleString:promo_strings.title_string
+                         subtitleString:promo_strings.subtitle_string
+                    primaryActionString:promo_strings.primary_action_string
+                  secondaryActionString:promo_strings.secondary_action_string
+                   tertiaryActionString:promo_strings.tertiary_action_string
                                   image:kImage]);
   }
 
   void ExpectConsumerSetFieldsForLearnMore() {
-    OCMExpect([consumer_ setTitleString:learnMoreTitleString
-                         subtitleString:LearnMoreSubtitleString()
-                    primaryActionString:goToSettingsString
-                  secondaryActionString:noThanksString
-                   tertiaryActionString:remindMeLaterString
+    PromoStrings promo_strings = ExpectedLearnMorePromoStrings();
+    OCMExpect([consumer_ setTitleString:promo_strings.title_string
+                         subtitleString:promo_strings.subtitle_string
+                    primaryActionString:promo_strings.primary_action_string
+                  secondaryActionString:promo_strings.secondary_action_string
+                   tertiaryActionString:promo_strings.tertiary_action_string
                                   image:nil]);
     OCMExpect([consumer_ setAnimation:kLearnMoreAnimation]);
   }
@@ -129,7 +163,7 @@ class CredentialProviderPromoMediatorTest : public PlatformTest {
 // Credential Provider Extension.
 TEST_F(CredentialProviderPromoMediatorTest,
        CredentialProviderExtensionEnabled) {
-  pref_service_->SetBoolean(
+  local_state()->SetBoolean(
       password_manager::prefs::kCredentialProviderEnabledOnStartup, true);
 
   EXPECT_FALSE([mediator_

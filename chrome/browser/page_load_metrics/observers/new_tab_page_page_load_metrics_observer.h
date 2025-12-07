@@ -7,9 +7,9 @@
 
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 
-// NewTabPagePageLoadMetricsObserver is responsible for recording performance
-// related metrics, such as NavigationOrActivationToFirstContentfulPaint and
-// NavigationOrActivationToLargestContentfulPaint for NewTabPage navigations.
+// NewTabPagePageLoadMetricsObserver records performance metrics,
+// such as NewTabPage.LoadTime.FirstContentfulPaint and
+// NewTabPage.LoadTime.LargestContentfulPaint for the new tab page.
 class NewTabPagePageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
@@ -24,6 +24,9 @@ class NewTabPagePageLoadMetricsObserver
 
  private:
   // page_load_metrics::PageLoadMetricsObserver:
+  const char* GetObserverName() const override;
+  PageLoadMetricsObserver::ObservePolicy ShouldObserveScheme(
+      const GURL& url) const override;
   ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
                         const GURL& currently_committed_url,
                         bool started_in_foreground) override;
@@ -32,12 +35,7 @@ class NewTabPagePageLoadMetricsObserver
   ObservePolicy OnFencedFramesStart(
       content::NavigationHandle* navigation_handle,
       const GURL& currently_committed_url) override;
-  void DidActivatePrerenderedPage(
-      content::NavigationHandle* navigation_handle) override;
-  ObservePolicy OnCommit(content::NavigationHandle* navigation_handle) override;
   void OnFirstContentfulPaintInPage(
-      const page_load_metrics::mojom::PageLoadTiming& timing) override;
-  void OnFirstMeaningfulPaintInMainFrameDocument(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   ObservePolicy FlushMetricsOnAppEnterBackground(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;

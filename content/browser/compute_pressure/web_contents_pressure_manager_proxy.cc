@@ -19,7 +19,18 @@ WebContentsPressureManagerProxy::WebContentsPressureManagerProxy(
     WebContents* web_contents)
     : WebContentsUserData<WebContentsPressureManagerProxy>(*web_contents) {}
 
-WebContentsPressureManagerProxy::~WebContentsPressureManagerProxy() = default;
+WebContentsPressureManagerProxy::~WebContentsPressureManagerProxy() {
+  // Explicitly clear all observers here. In general, this class will outlive
+  // its observers (PressureServiceForDedicatedWorker and
+  // PressureServiceForFrame), but in some cases (e.g. active PressureObserver
+  // instances in both a shared worker and a dedicated worker may cause
+  // the PressureServiceForDedicatedWorker to be destroyed only when its
+  // DedicatedWorkerHost's RenderProcessHost is destroyed, which happens
+  // after this object is destroyed) this is not true.
+  // The condition above can be reproduced by ComputePressureBrowserTest when
+  // SupportsSharedWorker() is true and shared workers are used.
+  observers_.Clear();
+}
 
 // static
 WebContentsPressureManagerProxy* WebContentsPressureManagerProxy::GetOrCreate(
@@ -28,6 +39,14 @@ WebContentsPressureManagerProxy* WebContentsPressureManagerProxy::GetOrCreate(
       web_contents);
   return WebContentsUserData<WebContentsPressureManagerProxy>::FromWebContents(
       web_contents);
+}
+
+void WebContentsPressureManagerProxy::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void WebContentsPressureManagerProxy::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 std::unique_ptr<ScopedVirtualPressureSourceForDevTools>
@@ -41,6 +60,10 @@ WebContentsPressureManagerProxy::CreateVirtualPressureSourceForDevTools(
       base::WrapUnique(new ScopedVirtualPressureSourceForDevTools(
           source, std::move(metadata), weak_ptr_factory_.GetWeakPtr()));
   virtual_pressure_sources_tokens_[source] = virtual_pressure_source->token();
+
+  observers_.Notify(&Observer::DidAddVirtualPressureSource,
+                    virtual_pressure_source->source());
+
   return virtual_pressure_source;
 }
 
@@ -58,7 +81,6 @@ void WebContentsPressureManagerProxy::EnsureDeviceServiceConnection() {
   if (pressure_manager_) {
     return;
   }
-
   GetDeviceService().BindPressureManager(
       pressure_manager_.BindNewPipeAndPassReceiver());
   pressure_manager_.reset_on_disconnect();
@@ -78,6 +100,9 @@ void WebContentsPressureManagerProxy::
   CHECK(it != virtual_pressure_sources_tokens_.end());
   CHECK_EQ(it->second, virtual_pressure_source.token());
   virtual_pressure_sources_tokens_.erase(it);
+
+  observers_.Notify(&Observer::DidRemoveVirtualPressureSource,
+                    virtual_pressure_source.source());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsPressureManagerProxy);
@@ -115,14 +140,16 @@ base::UnguessableToken ScopedVirtualPressureSourceForDevTools::token() const {
   return token_;
 }
 
-void ScopedVirtualPressureSourceForDevTools::UpdateVirtualPressureSourceState(
+void ScopedVirtualPressureSourceForDevTools::UpdateVirtualPressureSourceData(
     device::mojom::PressureState state,
-    device::mojom::PressureManager::UpdateVirtualPressureSourceStateCallback
+    double own_contribution_estimate,
+    device::mojom::PressureManager::UpdateVirtualPressureSourceDataCallback
         callback) {
   if (web_contents_pressure_manager_proxy_) {
     web_contents_pressure_manager_proxy_->GetPressureManager()
-        ->UpdateVirtualPressureSourceState(token_, source_, state,
-                                           std::move(callback));
+        ->UpdateVirtualPressureSourceData(token_, source_, state,
+                                          own_contribution_estimate,
+                                          std::move(callback));
   }
 }
 

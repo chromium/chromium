@@ -21,6 +21,12 @@ MEDIA_GPU_EXPORT void BuildPackedH264PPS(
     H26xAnnexBBitstreamBuilder& bitstream_builder,
     const H264SPS& sps,
     const H264PPS& pps);
+// Returns the H264 Prefix NALU bitstream for temporal layer encoding with
+// the arguments.
+MEDIA_GPU_EXPORT std::vector<uint8_t> BuildPrefixNALU(
+    int nal_ref_idc,
+    H264NALU::Type associated_nalu_type,
+    uint8_t temporal_id);
 
 }  // namespace media
 

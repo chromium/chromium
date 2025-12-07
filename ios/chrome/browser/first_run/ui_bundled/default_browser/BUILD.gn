@@ -12,15 +12,25 @@ source_set("default_browser") {
     ":default_browser_ui",
     "//base",
     "//components/feature_engagement/public",
-    "//components/segmentation_platform/public",
+    "//ios/chrome/app/strings:ios_branded_strings",
+    "//ios/chrome/app/strings:ios_strings",
     "//ios/chrome/browser/default_browser/model:default_browser_interest_signals",
     "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/default_promo/ui_bundled:coordinator",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/first_run/model",
+    "//ios/chrome/browser/first_run/ui_bundled:constants",
+    "//ios/chrome/browser/first_run/ui_bundled:features",
+    "//ios/chrome/browser/first_run/ui_bundled:first_run_provider",
     "//ios/chrome/browser/first_run/ui_bundled:screen_delegate",
-    "//ios/chrome/browser/segmentation_platform/model",
+    "//ios/chrome/browser/first_run/ui_bundled:utils",
+    "//ios/chrome/browser/first_run/ui_bundled/tos",
+    "//ios/chrome/browser/first_run/ui_bundled/uma",
+    "//ios/chrome/browser/instructions_bottom_sheet/ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/common/ui/promo_style",
   ]
@@ -29,20 +39,28 @@ source_set("default_browser") {
 
 source_set("default_browser_ui") {
   sources = [
+    "default_browser_animated_screen_view_controller.h",
+    "default_browser_animated_screen_view_controller.mm",
     "default_browser_screen_view_controller.h",
     "default_browser_screen_view_controller.mm",
   ]
   deps = [
     ":default_browser_mediator",
     "//base",
+    "//base:i18n",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/first_run/ui_bundled:constants",
+    "//ios/chrome/browser/first_run/ui_bundled:features",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/instruction_view",
     "//ios/chrome/common/ui/promo_style",
+    "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
@@ -55,32 +73,34 @@ source_set("default_browser_mediator") {
     "default_browser_screen_mediator.mm",
   ]
   deps = [
-    "//components/segmentation_platform/embedder/default_model",
-    "//components/segmentation_platform/public",
+    "//components/metrics:metrics_pref_names",
+    "//components/prefs",
+    "//components/web_resource",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/segmentation_platform/model",
-    "//ios/chrome/browser/segmentation_platform/model:segmented_default_browser",
+    "//ios/chrome/browser/first_run/ui_bundled:features",
+    "//ios/chrome/browser/first_run/ui_bundled:utils",
+    "//ios/chrome/browser/policy/model:policy_util",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/public/features",
     "//ui/base",
   ]
 }
 
-source_set("unit_tests") {
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
-  sources = [ "default_browser_screen_mediator_unittest.mm" ]
+  sources = [ "default_browser_screen_egtest.mm" ]
   deps = [
-    ":default_browser_mediator",
-    "//base/test:test_support",
-    "//components/segmentation_platform/embedder/default_model",
-    "//components/segmentation_platform/public:test_support",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/segmentation_platform/model:segmented_default_browser",
-    "//ios/chrome/browser/segmentation_platform/model:segmented_default_browser_tests",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/first_run/ui_bundled:constants",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/test:test_support",
-    "//ios/web/public/test",
-    "//testing/gtest",
-    "//third_party/ocmock",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/common/ui/promo_style:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ui/base",
   ]
+  frameworks = [ "UIKit.framework" ]
 }

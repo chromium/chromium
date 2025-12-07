@@ -8,19 +8,26 @@ import android.os.Handler;
 
 import androidx.annotation.DrawableRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.components.security_state.ConnectionMaliciousContentStatus;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.Page;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
+import java.util.function.Supplier;
+
 /**
  * PaymentHandlerToolbar mediator, which is responsible for receiving events from the view and
  * notifies the backend (the coordinator).
  */
+@NullMarked
 /* package */ class PaymentHandlerToolbarMediator extends WebContentsObserver {
     /** The delay (four video frames - for 60Hz) after which the hide progress will be hidden. */
     private static final long HIDE_PROGRESS_BAR_DELAY_MS = (1000 / 60) * 4;
@@ -34,7 +41,7 @@ import org.chromium.url.GURL;
     private final PropertyModel mModel;
 
     /** The handler to delay hiding the progress bar. */
-    private Handler mHideProgressBarHandler;
+    private @Nullable Handler mHideProgressBarHandler;
 
     /** Postfix with "Ref" to distinguish from mWebContent in WebContentsObserver. */
     private final WebContents mWebContentsRef;
@@ -44,17 +51,26 @@ import org.chromium.url.GURL;
     /** The delegate of PaymentHandlerToolbarMediator. */
     /* package */ interface PaymentHandlerToolbarMediatorDelegate {
         /** Get the security level of PaymentHandler's WebContents. */
+        @ConnectionSecurityLevel
         int getSecurityLevel();
+
+        /** Get the malicious content status of PaymentHandler's WebContents. */
+        @ConnectionMaliciousContentStatus
+        int getMaliciousContentStatus();
 
         /**
          * Get the security icon resource for a given security level.
+         *
          * @param securityLevel The security level.
          */
         @DrawableRes
-        int getSecurityIconResource(@ConnectionSecurityLevel int securityLevel);
+        int getSecurityIconResource(
+                @ConnectionSecurityLevel int securityLevel,
+                Supplier<@ConnectionMaliciousContentStatus Integer> maliciousContentStatus);
 
         /**
          * Get the content description of the security icon for a given security level.
+         *
          * @param securityLevel The security level.
          */
         String getSecurityIconContentDescription(@ConnectionSecurityLevel int securityLevel);
@@ -80,6 +96,7 @@ import org.chromium.url.GURL;
     // WebContentsObserver:
     @Override
     public void didFinishLoadInPrimaryMainFrame(
+            Page page,
             GlobalRenderFrameHostId rfhId,
             GURL url,
             boolean isKnownValid,
@@ -141,7 +158,10 @@ import org.chromium.url.GURL;
     }
 
     private void setSecurityState(@ConnectionSecurityLevel int securityLevel) {
-        @DrawableRes int iconRes = mDelegate.getSecurityIconResource(securityLevel);
+        @DrawableRes
+        int iconRes =
+                mDelegate.getSecurityIconResource(
+                        securityLevel, mDelegate::getMaliciousContentStatus);
         mModel.set(PaymentHandlerToolbarProperties.SECURITY_ICON, iconRes);
         String contentDescription = mDelegate.getSecurityIconContentDescription(securityLevel);
         mModel.set(

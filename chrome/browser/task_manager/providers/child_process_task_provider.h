@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/task_manager/providers/task_provider.h"
 #include "content/public/browser/browser_child_process_observer.h"
 
@@ -65,7 +66,8 @@ class ChildProcessTaskProvider
       tasks_by_processid_;
 
   // A map to track ChildProcessTask's by their child process unique ids.
-  base::flat_map<int, ChildProcessTask*> tasks_by_child_id_;
+  base::flat_map<int, raw_ptr<ChildProcessTask, CtnExperimental>>
+      tasks_by_child_id_;
 };
 
 }  // namespace task_manager

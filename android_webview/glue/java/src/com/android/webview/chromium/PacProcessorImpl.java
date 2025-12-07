@@ -5,19 +5,13 @@
 package com.android.webview.chromium;
 
 import android.net.Network;
-import android.os.Build;
 import android.webkit.PacProcessor;
 
-import androidx.annotation.RequiresApi;
-
 import org.chromium.android_webview.AwPacProcessor;
-import org.chromium.base.JNIUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 
-@RequiresApi(Build.VERSION_CODES.P)
 final class PacProcessorImpl implements PacProcessor {
     static {
-        JNIUtils.setClassLoader(WebViewChromiumFactoryProvider.class.getClassLoader());
         LibraryLoader.getInstance().ensureInitialized();
 
         // This will set up Chromium environment to run proxy resolver.

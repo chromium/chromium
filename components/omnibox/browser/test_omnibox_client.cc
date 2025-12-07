@@ -10,8 +10,10 @@
 
 #include "base/functional/callback.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/autocomplete_controller_config.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
-#include "components/omnibox/browser/mock_autocomplete_provider_client.h"
+#include "components/omnibox/browser/fake_autocomplete_provider_client.h"
+#include "components/omnibox/browser/mock_unscoped_extension_provider_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -23,7 +25,9 @@ TestOmniboxClient::TestOmniboxClient()
       autocomplete_classifier_(
           std::make_unique<AutocompleteController>(
               CreateAutocompleteProviderClient(),
-              AutocompleteClassifier::DefaultOmniboxProviders()),
+              AutocompleteControllerConfig{
+                  .provider_types =
+                      AutocompleteClassifier::DefaultOmniboxProviders()}),
           std::make_unique<TestSchemeClassifier>()),
       last_log_disposition_(WindowOpenDisposition::UNKNOWN) {}
 
@@ -33,7 +37,7 @@ TestOmniboxClient::~TestOmniboxClient() {
 
 std::unique_ptr<AutocompleteProviderClient>
 TestOmniboxClient::CreateAutocompleteProviderClient() {
-  auto provider_client = std::make_unique<MockAutocompleteProviderClient>();
+  auto provider_client = std::make_unique<FakeAutocompleteProviderClient>();
   EXPECT_CALL(*provider_client, GetBuiltinURLs())
       .WillRepeatedly(testing::Return(std::vector<std::u16string>()));
   EXPECT_CALL(*provider_client, GetSchemeClassifier())
@@ -41,8 +45,12 @@ TestOmniboxClient::CreateAutocompleteProviderClient() {
   EXPECT_CALL(*provider_client, GetApplicationLocale())
       .WillRepeatedly(testing::Return("en-US"));
 
-  provider_client->set_template_url_service(
-      search_engines_test_environment_.template_url_service());
+  // The `UnscopedExtensionProviderDelegate` should be set. It will be called
+  // when `AutocompleteController::Stop()` is called on destruction.
+  std::unique_ptr<MockUnscopedExtensionProviderDelegate> mock_delegate =
+      std::make_unique<MockUnscopedExtensionProviderDelegate>();
+  provider_client->set_unscoped_extension_provider_delegate(
+      std::move(mock_delegate));
   return std::move(provider_client);
 }
 
@@ -85,12 +93,23 @@ bool TestOmniboxClient::IsUsingFakeHttpsForHttpsUpgradeTesting() const {
   return false;
 }
 
+gfx::Image TestOmniboxClient::GetSizedIcon(const SkBitmap* bitmap) const {
+  return gfx::Image(gfx::ImageSkia::CreateFrom1xBitmap(*bitmap));
+}
+
 gfx::Image TestOmniboxClient::GetSizedIcon(
     const gfx::VectorIcon& vector_icon_type,
     SkColor vector_icon_color) const {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(16, 16);
   return gfx::Image(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
+}
+
+gfx::Image TestOmniboxClient::GetSizedIcon(const gfx::Image& icon) const {
+  if (icon.IsEmpty()) {
+    return gfx::Image();
+  }
+  return gfx::Image(*icon.ToImageSkia());
 }
 
 std::u16string TestOmniboxClient::GetFormattedFullURL() const {
@@ -106,9 +125,8 @@ GURL TestOmniboxClient::GetNavigationEntryURL() const {
 }
 
 metrics::OmniboxEventProto::PageClassification
-TestOmniboxClient::GetPageClassification(OmniboxFocusSource focus_source,
-                                         bool is_prefetch) {
-  return location_bar_model_.GetPageClassification(focus_source, is_prefetch);
+TestOmniboxClient::GetPageClassification(bool is_prefetch) const {
+  return location_bar_model_.GetPageClassification(is_prefetch);
 }
 
 security_state::SecurityLevel TestOmniboxClient::GetSecurityLevel() const {

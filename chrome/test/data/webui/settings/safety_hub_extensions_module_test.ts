@@ -45,7 +45,7 @@ suite('CrSettingsSafetyHubExtensionsTest', function() {
     return flushTasks();
   });
 
-  test('testExtensionsModule', async function() {
+  test('ExtensionsModule', async function() {
     testElement =
         document.createElement('settings-safety-hub-extensions-module');
     document.body.appendChild(testElement);
@@ -55,11 +55,11 @@ suite('CrSettingsSafetyHubExtensionsTest', function() {
     // Check that the proper string is returned.
     webUIListenerCallback(SafetyHubEvent.EXTENSIONS_CHANGED, 1);
     await flushTasks();
-    await assertPluralString('safetyCheckExtensionsReviewLabel', 1);
+    await assertPluralString('safetyHubExtensionsReviewLabel', 1);
 
     webUIListenerCallback(SafetyHubEvent.EXTENSIONS_CHANGED, 2);
     await flushTasks();
-    await assertPluralString('safetyCheckExtensionsReviewLabel', 2);
+    await assertPluralString('safetyHubExtensionsReviewLabel', 2);
 
     // After clicking the review button the user should be navigated
     // to the extensions page.

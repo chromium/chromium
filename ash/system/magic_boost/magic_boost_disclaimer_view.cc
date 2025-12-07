@@ -14,6 +14,7 @@
 #include "ash/style/typography.h"
 #include "ash/system/magic_boost/magic_boost_constants.h"
 #include "base/functional/bind.h"
+#include "build/branding_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -22,6 +23,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
@@ -31,6 +33,7 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -91,8 +94,11 @@ views::Builder<views::StyledLabel> GetTextBodyBuilder(
 }
 
 views::Builder<views::StyledLabel> GetParagraphOneBuilder() {
-  return GetTextBodyBuilder(l10n_util::GetStringUTF16(
-                                IDS_ASH_MAGIC_BOOST_DISCLAMIER_PARAGRAPH_ONE))
+  return GetTextBodyBuilder(
+             l10n_util::GetStringUTF16(
+                 ash::features::IsLobsterEnabled()
+                     ? IDS_LOBSTER_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_ONE
+                     : IDS_ASH_MAGIC_BOOST_DISCLAMIER_PARAGRAPH_ONE))
       .SetID(magic_boost::ViewId::DisclaimerViewParagraphOne);
 }
 
@@ -102,7 +108,10 @@ views::Builder<views::StyledLabel> GetParagraphTwoBuilder(
   const std::u16string link_text =
       l10n_util::GetStringUTF16(IDS_ASH_MAGIC_BOOST_DISCLAIMER_TERMS_LINK_TEXT);
   const std::u16string text = l10n_util::GetStringFUTF16(
-      IDS_ASH_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_TWO, {link_text}, &offsets);
+      ash::features::IsLobsterEnabled()
+          ? IDS_LOBSTER_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_TWO
+          : IDS_ASH_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_TWO,
+      {link_text}, &offsets);
 
   return views::Builder<views::StyledLabel>()
       .SetText(text)
@@ -119,8 +128,11 @@ views::Builder<views::StyledLabel> GetParagraphTwoBuilder(
 }
 
 views::Builder<views::StyledLabel> GetParagraphThreeBuilder() {
-  return GetTextBodyBuilder(l10n_util::GetStringUTF16(
-                                IDS_ASH_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_THREE))
+  return GetTextBodyBuilder(
+             l10n_util::GetStringUTF16(
+                 ash::features::IsLobsterEnabled()
+                     ? IDS_LOBSTER_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_THREE
+                     : IDS_ASH_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_THREE))
       .SetID(magic_boost::ViewId::DisclaimerViewParagraphThree);
 }
 
@@ -130,7 +142,10 @@ views::Builder<views::StyledLabel> GetParagraphFourBuilder(
   const std::u16string link_text = l10n_util::GetStringUTF16(
       IDS_ASH_MAGIC_BOOST_DISCLAIMER_LEARN_MORE_LINK_TEXT);
   const std::u16string text = l10n_util::GetStringFUTF16(
-      IDS_ASH_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_FOUR, {link_text}, &offsets);
+      ash::features::IsLobsterEnabled()
+          ? IDS_LOBSTER_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_FOUR
+          : IDS_ASH_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_FOUR,
+      {link_text}, &offsets);
 
   return views::Builder<views::StyledLabel>()
       .SetText(text)
@@ -159,14 +174,13 @@ MagicBoostDisclaimerView::MagicBoostDisclaimerView(
       .CopyAddressTo(&disclaimer_view)
       .SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical))
-      .SetBackground(views::CreateThemedRoundedRectBackground(
+      .SetBackground(views::CreateRoundedRectBackground(
           cros_tokens::kCrosSysDialogContainer, kRadius))
       .SetPaintToLayer()
       .AddChildren(
           views::Builder<views::ImageView>()
-              .SetImage(
-                  ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-                      IDR_MAGIC_BOOST_DISCLAIMER_ILLUSTRATION))
+              .SetImage(ui::ImageModel::FromResourceId(
+                  IDR_MAGIC_BOOST_DISCLAIMER_ILLUSTRATION))
               .SetPreferredSize(kImagePreferredSize),
           views::Builder<views::ScrollView>()
               .SetBackgroundColor(std::nullopt)
@@ -188,7 +202,7 @@ MagicBoostDisclaimerView::MagicBoostDisclaimerView(
                                   TypographyProvider::Get()
                                       ->ResolveTypographyToken(
                                           TypographyToken::kCrosDisplay7))
-                              .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+                              .SetEnabledColor(cros_tokens::kCrosSysOnSurface)
                               .SetHorizontalAlignment(
                                   gfx::HorizontalAlignment::ALIGN_LEFT)
                               .SetID(magic_boost::ViewId::DisclaimerViewTitle)
@@ -249,7 +263,7 @@ views::UniqueWidgetPtr MagicBoostDisclaimerView::CreateWidget(
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.shadow_elevation = 2;
-  params.corner_radius = kRadius;
+  params.rounded_corners = gfx::RoundedCornersF(kRadius);
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
   params.name = GetWidgetName();

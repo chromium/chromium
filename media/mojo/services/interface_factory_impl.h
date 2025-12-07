@@ -27,7 +27,6 @@
 #include "media/mojo/services/mojo_cdm_service_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 
@@ -54,12 +53,11 @@ class InterfaceFactoryImpl final
       mojo::PendingReceiver<mojom::AudioDecoder> receiver) final;
   void CreateVideoDecoder(
       mojo::PendingReceiver<mojom::VideoDecoder> receiver,
-      mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
-          dst_video_decoder) final;
+      mojo::PendingRemote<media::mojom::VideoDecoder> dst_video_decoder) final;
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-  void CreateStableVideoDecoder(
-      mojo::PendingReceiver<media::stable::mojom::StableVideoDecoder>
-          video_decoder) final;
+  void CreateVideoDecoderWithTracker(
+      mojo::PendingReceiver<mojom::VideoDecoder> receiver,
+      mojo::PendingRemote<mojom::VideoDecoderTracker> tracker) final;
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
   void CreateAudioEncoder(
@@ -74,12 +72,6 @@ class InterfaceFactoryImpl final
       mojo::PendingReceiver<mojom::Renderer> receiver) final;
 #endif
 #if BUILDFLAG(IS_ANDROID)
-  void CreateMediaPlayerRenderer(
-      mojo::PendingRemote<mojom::MediaPlayerRendererClientExtension>
-          client_extension_remote,
-      mojo::PendingReceiver<mojom::Renderer> receiver,
-      mojo::PendingReceiver<mojom::MediaPlayerRendererExtension>
-          renderer_extension_receiver) final;
   void CreateFlingingRenderer(
       const std::string& presentation_id,
       mojo::PendingRemote<mojom::FlingingRendererClientExtension>
@@ -91,9 +83,7 @@ class InterfaceFactoryImpl final
       mojo::PendingRemote<mojom::MediaLog> media_log_remote,
       mojo::PendingReceiver<mojom::Renderer> receiver,
       mojo::PendingReceiver<mojom::MediaFoundationRendererExtension>
-          renderer_extension_receiver,
-      mojo::PendingRemote<media::mojom::MediaFoundationRendererClientExtension>
-          client_extension_remote) final;
+          renderer_extension_receiver) final;
 #endif  // BUILDFLAG(IS_WIN)
 
   void CreateCdm(const CdmConfig& cdm_config, CreateCdmCallback callback) final;
@@ -128,8 +118,7 @@ class InterfaceFactoryImpl final
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
   void FinishCreatingVideoDecoder(
       mojo::PendingReceiver<mojom::VideoDecoder> receiver,
-      mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
-          dst_video_decoder);
+      mojo::PendingRemote<media::mojom::VideoDecoder> dst_video_decoder);
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
   // Must be declared before the receivers below because the bound objects might

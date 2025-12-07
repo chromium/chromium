@@ -12,7 +12,6 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,8 +23,6 @@ namespace {
 class PrintingOAuth2ClientIdsDatabaseTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
-  ScopedTestingLocalState pref_ =
-      ScopedTestingLocalState(TestingBrowserProcess::GetGlobal());
   std::unique_ptr<ClientIdsDatabase> client_ids_database_ =
       ClientIdsDatabase::Create();
 };

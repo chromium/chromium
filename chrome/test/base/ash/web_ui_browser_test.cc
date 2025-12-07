@@ -7,10 +7,12 @@
 #include <stddef.h>
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
@@ -23,19 +25,16 @@
 #include "base/test/test_switches.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/webui/ash/web_ui_test_handler.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ash/js_test_api.h"
+#include "chrome/test/base/ash/web_ui_test_handler.h"
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
 #include "chrome/test/base/test_switches.h"
 #include "chrome/test/base/web_ui_test_data_source.h"
@@ -392,14 +391,6 @@ void BaseWebUIBrowserTest::SetUpOnMainThread() {
 
   logging::SetLogMessageHandler(&LogHandler);
 
-  if (crosapi::browser_util::IsLacrosEnabled() && browser() == nullptr) {
-    // Create a new Ash browser window so test code using browser() can work
-    // even when Lacros is the only browser.
-    // TODO(crbug.com/40270051): Remove uses of browser() from such tests.
-    chrome::NewEmptyWindow(ProfileManager::GetActiveUserProfile());
-    SelectFirstBrowser();
-  }
-
   // For tests that run on the login screen, there is no Browser during
   // SetUpOnMainThread() so skip adding the chrome://webui-test data source.
   // These tests don't need it anyway.
@@ -414,7 +405,7 @@ void BaseWebUIBrowserTest::SetUpOnMainThread() {
       std::make_unique<content::ScopedWebUIControllerFactoryRegistration>(
           test_factory_.get(), ChromeWebUIControllerFactory::GetInstance());
 
-  test_factory_->AddFactoryOverride(DummyUrl().host(),
+  test_factory_->AddFactoryOverride(DummyUrl().GetHost(),
                                     mock_provider_.Pointer());
   test_factory_->AddFactoryOverride(content::kChromeUIResourcesHost,
                                     mock_provider_.Pointer());
@@ -423,7 +414,7 @@ void BaseWebUIBrowserTest::SetUpOnMainThread() {
 void BaseWebUIBrowserTest::TearDownOnMainThread() {
   logging::SetLogMessageHandler(nullptr);
 
-  test_factory_->RemoveFactoryOverride(DummyUrl().host());
+  test_factory_->RemoveFactoryOverride(DummyUrl().GetHost());
   // |factory_registration_| must be reset before |test_factory_| to remove
   // any pointers to |test_factory_| from the factory registry before its
   // destruction.
@@ -462,7 +453,10 @@ bool BaseWebUIBrowserTest::RunJavascriptUsingHandler(
                                   : test_handler_->GetRenderFrameHostForTest();
   if (!base::Contains(libraries_preloaded_for_frames_,
                       frame_for_libraries->GetGlobalId())) {
-    BuildJavascriptLibraries(&libraries);
+    if (!BuildJavascriptLibraries(&libraries)) {
+      ADD_FAILURE() << "Failed to build JavaScript libraries";
+      return false;
+    }
     if (!preload_frame) {
       content = base::JoinString(libraries, u"\n");
       libraries.clear();

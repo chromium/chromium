@@ -22,6 +22,7 @@
   CRWWebViewScrollViewProxy* _contentViewScrollViewProxy;
 }
 @synthesize contentView = _contentView;
+@synthesize allowsLinkPreview = _allowsLinkPreview;
 @dynamic keyboardVisible;
 
 - (instancetype)init {
@@ -115,11 +116,15 @@
   return [_contentView becomeFirstResponder];
 }
 
-- (void)surfaceSizeChanged {
-}
-
 - (BOOL)isWebPageInFullscreenMode {
   return NO;
+}
+
+- (UIEdgeInsets)obscuredInsets {
+  return UIEdgeInsetsZero;
+}
+
+- (void)setObscuredInsets:(UIEdgeInsets)obscuredInsets {
 }
 
 @end

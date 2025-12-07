@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/render_process_host_observer.h"
 
 namespace content {
@@ -32,7 +33,7 @@ class MimeHandlerViewGuest;
 // is accessed on UI thread.
 class MimeHandlerViewAttachHelper : content::RenderProcessHostObserver {
  public:
-  // Returns the unique helper for process identified with |render_process_id|.
+  // Returns the unique helper for process identified with `render_process_id`.
   static MimeHandlerViewAttachHelper* Get(int render_process_id);
 
   // Creates and returns a template HTML page containing an embed for a MIME
@@ -46,17 +47,17 @@ class MimeHandlerViewAttachHelper : content::RenderProcessHostObserver {
   // Called on IO thread to override the response body for frame-based
   // MimeHandlerView. The resulting payload will be populated with a template
   // HTML page which appends a child frame to the frame associated with
-  // |navigating_frame_tree_node_id|. Then, an observer of the associated
+  // `navigating_frame_tree_node_id`. Then, an observer of the associated
   // WebContents will observe the newly created RenderFrameHosts. As soon as the
   // expected RFH (i.e., the one added by the HTML string) is found, the
   // renderer is notified to start the MimHandlerView creation process. The
   // mentioned child frame will be used to attach the GuestView's WebContents to
   // the outer WebContents (WebContents associated with
-  // |navigating_frame_tree_node_id|). The corresponding resource load will be
-  // halted until |resume| is invoked. This provides an opportunity for UI
+  // `navigating_frame_tree_node_id`). The corresponding resource load will be
+  // halted until `resume` is invoked. This provides an opportunity for UI
   // thread initializations.
   static std::string OverrideBodyForInterceptedResponse(
-      int32_t navigating_frame_tree_node_id,
+      content::FrameTreeNodeId navigating_frame_tree_node_id,
       const GURL& resource_url,
       const std::string& mime_type,
       const std::string& stream_id,
@@ -72,7 +73,7 @@ class MimeHandlerViewAttachHelper : content::RenderProcessHostObserver {
   // content::RenderProcessHostObserver overrides.
   void RenderProcessHostDestroyed(content::RenderProcessHost* host) override;
 
-  // Starts the attaching process for the |guest_view|'s WebContents to its
+  // Starts the attaching process for the `guest_view`'s WebContents to its
   // outer WebContents (embedder WebContents) on the UI thread.
   void AttachToOuterWebContents(
       std::unique_ptr<MimeHandlerViewGuest> guest_view,
@@ -94,7 +95,7 @@ class MimeHandlerViewAttachHelper : content::RenderProcessHostObserver {
 
  private:
   // Called after the content layer finishes preparing a frame for attaching to
-  // the embedder WebContents. If |plugin_render_frame_host| is nullptr then
+  // the embedder WebContents. If `plugin_render_frame_host` is nullptr then
   // attaching is not possible and the guest should be destroyed; otherwise it
   // is safe to proceed to attaching the WebContentses.
   void ResumeAttachOrDestroy(
@@ -104,14 +105,15 @@ class MimeHandlerViewAttachHelper : content::RenderProcessHostObserver {
       content::RenderFrameHost* plugin_render_frame_host);
 
   // Called on UI thread to start observing the frame associated with
-  // |frame_tree_node_id| and have the renderer create a
+  // `frame_tree_node_id` and have the renderer create a
   // MimeHandlerViewFrameContainer as soon as the observed frame is ready, i.e.,
-  // the frame has committed the |resource_url| and its child frame (in the same
+  // the frame has committed the `resource_url` and its child frame (in the same
   // SiteInstance) has been created.
-  static void CreateFullPageMimeHandlerView(int32_t frame_tree_node_id,
-                                            const GURL& resource_url,
-                                            const std::string& stream_id,
-                                            const std::string& token);
+  static void CreateFullPageMimeHandlerView(
+      content::FrameTreeNodeId frame_tree_node_id,
+      const GURL& resource_url,
+      const std::string& stream_id,
+      const std::string& token);
 
   explicit MimeHandlerViewAttachHelper(
       content::RenderProcessHost* render_process_host);

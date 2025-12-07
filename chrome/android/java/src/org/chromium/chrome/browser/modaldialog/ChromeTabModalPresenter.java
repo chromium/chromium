@@ -4,14 +4,17 @@
 
 package org.chromium.chrome.browser.modaldialog;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
-import android.content.res.Resources;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
 
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -26,18 +29,25 @@ import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.modaldialog.TabModalPresenter;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.components.webxr.XrDelegate;
 import org.chromium.components.webxr.XrDelegateProvider;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.function.Supplier;
+
 /**
  * This presenter creates tab modality by blocking interaction with select UI elements while a
  * dialog is visible.
  */
+@NullMarked
 public class ChromeTabModalPresenter extends TabModalPresenter
         implements BrowserControlsStateProvider.Observer {
     /** The activity displaying the dialogs. */
@@ -50,12 +60,14 @@ public class ChromeTabModalPresenter extends TabModalPresenter
     private final BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
     private final TabModalBrowserControlsVisibilityDelegate mVisibilityDelegate;
     private final TabModelSelector mTabModelSelector;
+    private final ObservableSupplier<ScrimManager> mScrimManagerSupplier;
+    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
 
     /** The active tab of which the dialog will be shown on top. */
-    private Tab mActiveTab;
+    private @Nullable Tab mActiveTab;
 
     /** The parent view that contains the dialog container. */
-    private ViewGroup mContainerParent;
+    private @Nullable ViewGroup mContainerParent;
 
     /** Whether the dialog container is brought to the front in its parent. */
     private boolean mContainerIsAtFront;
@@ -71,13 +83,16 @@ public class ChromeTabModalPresenter extends TabModalPresenter
      * browser controls. If BottomSheet is opened or UrlBar is focused, the dialog container should
      * be behind the browser controls and the URL suggestions.
      */
-    private View mDefaultNextSiblingView;
+    private @Nullable View mDefaultNextSiblingView;
 
     private int mBottomControlsHeight;
     private boolean mShouldUpdateContainerLayoutParams;
 
     /** A token held while the dialog manager is obscuring all tabs. */
-    private TabObscuringHandler.Token mTabObscuringToken;
+    private TabObscuringHandler.@Nullable Token mTabObscuringToken;
+
+    private @Nullable ScrimManager mScrimManager;
+    private @Nullable PropertyModel mScrimModel;
 
     /**
      * Constructor for initializing dialog container.
@@ -89,6 +104,10 @@ public class ChromeTabModalPresenter extends TabModalPresenter
      * @param fullscreenManager The {@link FullscreenManager} object, used to exit full screen.
      * @param browserControlsVisibilityManager The {@link BrowserControlsVisibilityManager} object.
      * @param tabModelSelector The {@link TabModelSelector} object.
+     * @param scrimManagerSupplier The supplier for {@link ScrimManager}. Used to darken the screen
+     *     behind the dialog.
+     * @param edgeToEdgeControllerSupplier The supplier for {@link EdgeToEdgeController}. Used to
+     *     decide how to position the scrim.
      */
     public ChromeTabModalPresenter(
             Activity activity,
@@ -97,7 +116,9 @@ public class ChromeTabModalPresenter extends TabModalPresenter
             Runnable hideContextualSearch,
             FullscreenManager fullscreenManager,
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
-            TabModelSelector tabModelSelector) {
+            TabModelSelector tabModelSelector,
+            ObservableSupplier<ScrimManager> scrimManagerSupplier,
+            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
         super(activity);
         mActivity = activity;
         mTabObscuringHandlerSupplier = tabObscuringHandlerSupplier;
@@ -108,6 +129,8 @@ public class ChromeTabModalPresenter extends TabModalPresenter
         mVisibilityDelegate = new TabModalBrowserControlsVisibilityDelegate();
         mHideContextualSearch = hideContextualSearch;
         mTabModelSelector = tabModelSelector;
+        mScrimManagerSupplier = scrimManagerSupplier;
+        mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
     }
 
     public void destroy() {
@@ -139,38 +162,19 @@ public class ChromeTabModalPresenter extends TabModalPresenter
                 mActivity.findViewById(R.id.tab_modal_dialog_container_sibling_view);
         assert mDefaultNextSiblingView != null;
 
-        Resources resources = mActivity.getResources();
-
         MarginLayoutParams params = (MarginLayoutParams) dialogContainer.getLayoutParams();
         params.width = ViewGroup.MarginLayoutParams.MATCH_PARENT;
         params.height = ViewGroup.MarginLayoutParams.MATCH_PARENT;
-        params.topMargin = getContainerTopMargin(resources, mBrowserControlsVisibilityManager);
+        params.topMargin = getContainerTopMargin(mBrowserControlsVisibilityManager);
         params.bottomMargin = getContainerBottomMargin(mBrowserControlsVisibilityManager);
         dialogContainer.setLayoutParams(params);
-
-        int scrimVerticalMargin =
-                resources.getDimensionPixelSize(R.dimen.tab_modal_scrim_vertical_margin);
-        View scrimView = dialogContainer.findViewById(R.id.scrim);
-        params = (MarginLayoutParams) scrimView.getLayoutParams();
-        params.width = MarginLayoutParams.MATCH_PARENT;
-        params.height = MarginLayoutParams.MATCH_PARENT;
-        params.topMargin = scrimVerticalMargin;
-        scrimView.setLayoutParams(params);
 
         return dialogContainer;
     }
 
     @Override
     protected void showDialogContainer() {
-        if (mShouldUpdateContainerLayoutParams) {
-            MarginLayoutParams params = (MarginLayoutParams) getDialogContainer().getLayoutParams();
-            params.topMargin =
-                    getContainerTopMargin(
-                            mActivity.getResources(), mBrowserControlsVisibilityManager);
-            params.bottomMargin = mBottomControlsHeight;
-            getDialogContainer().setLayoutParams(params);
-            mShouldUpdateContainerLayoutParams = false;
-        }
+        maybeUpdateDialogLayout();
 
         // Don't show the dialog container before browser controls are guaranteed fully visible.
         if (BrowserControlsUtils.areBrowserControlsFullyVisible(
@@ -182,11 +186,52 @@ public class ChromeTabModalPresenter extends TabModalPresenter
         assert mTabObscuringToken == null;
         mTabObscuringToken =
                 mTabObscuringHandlerSupplier.get().obscure(TabObscuringHandler.Target.TAB_CONTENT);
+
+        mScrimManager = mScrimManagerSupplier.get();
+        if (mScrimManager == null) {
+            return;
+        }
+
+        // If mScrimModel is not null, Hide mScrimModel before reconstructing a new one to avoid
+        // creating multiple scrims and orphaning some of them.
+        if (mScrimModel != null) {
+            mScrimManager.hideScrim(mScrimModel, /* animate= */ false);
+            mScrimModel = null;
+        }
+
+        int bottomInset =
+                mEdgeToEdgeControllerSupplier != null && mEdgeToEdgeControllerSupplier.get() != null
+                        ? mEdgeToEdgeControllerSupplier.get().getBottomInsetPx()
+                        : 0;
+        // We want to apply a scrim when only the nav bar is present (without the bottom control
+        // toolbar) and bottom chin is enabled.Note: Bottom inset is 0 in 3-button mode.
+        boolean isOnlyNavBarPresent =
+                (bottomInset == mBrowserControlsVisibilityManager.getBottomControlsHeight());
+        boolean affectsNavBar =
+                isOnlyNavBarPresent && EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivity);
+        int bottomMargin =
+                affectsNavBar ? 0 : mBrowserControlsVisibilityManager.getBottomControlsHeight();
+
+        mScrimModel =
+                new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
+                        .with(ScrimProperties.AFFECTS_STATUS_BAR, false)
+                        .with(ScrimProperties.AFFECTS_NAVIGATION_BAR, affectsNavBar)
+                        .with(
+                                ScrimProperties.ANCHOR_VIEW,
+                                mActivity.findViewById(R.id.tab_modal_dialog_container))
+                        .with(
+                                ScrimProperties.TOP_MARGIN,
+                                mBrowserControlsVisibilityManager.getTopControlsHeight())
+                        .with(ScrimProperties.BOTTOM_MARGIN, bottomMargin)
+                        .build();
+
+        mScrimManager.showScrim(mScrimModel);
     }
 
     @Override
     protected void setBrowserControlsAccess(boolean restricted) {
-        if (!mToolbarManagerSupplier.hasValue()) return;
+        var toolbarManager = mToolbarManagerSupplier.get();
+        if (toolbarManager == null) return;
 
         View menuButton = mToolbarManagerSupplier.get().getMenuButtonView();
 
@@ -210,8 +255,10 @@ public class ChromeTabModalPresenter extends TabModalPresenter
 
             mToolbarManagerSupplier.get().setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
 
-            menuButton.setEnabled(false);
+            if (menuButton != null) menuButton.setEnabled(false);
         } else {
+            assumeNonNull(mActiveTab);
+
             // Show the action bar back if it was dismissed when the dialogs were showing.
             WebContents webContents = mActiveTab.getWebContents();
             if (webContents != null) {
@@ -219,16 +266,24 @@ public class ChromeTabModalPresenter extends TabModalPresenter
             }
 
             onTabModalDialogStateChanged(false);
-            menuButton.setEnabled(true);
+            if (menuButton != null) menuButton.setEnabled(true);
             mActiveTab = null;
         }
     }
 
     @Override
-    protected void removeDialogView(PropertyModel model) {
+    protected void removeDialogView(@Nullable PropertyModel model) {
+        assumeNonNull(mTabObscuringToken);
+
         mRunEnterAnimationOnCallback = false;
         mTabObscuringHandlerSupplier.get().unobscure(mTabObscuringToken);
         mTabObscuringToken = null;
+
+        if (mScrimManager != null && mScrimModel != null) {
+            mScrimManager.hideScrim(mScrimModel, /* animate= */ false);
+            mScrimModel = null;
+        }
+
         super.removeDialogView(model);
     }
 
@@ -236,9 +291,11 @@ public class ChromeTabModalPresenter extends TabModalPresenter
     public void onControlsOffsetChanged(
             int topOffset,
             int topControlsMinHeightOffset,
+            boolean topControlsMinHeightChanged,
             int bottomOffset,
             int bottomControlsMinHeightOffset,
-            boolean needsAnimate,
+            boolean bottomControlsMinHeightChanged,
+            boolean requestNewFrame,
             boolean isVisibilityForced) {
         if (getDialogModel() == null
                 || !mRunEnterAnimationOnCallback
@@ -255,11 +312,13 @@ public class ChromeTabModalPresenter extends TabModalPresenter
             int bottomControlsHeight, int bottomControlsMinHeight) {
         mBottomControlsHeight = bottomControlsHeight;
         mShouldUpdateContainerLayoutParams = true;
+        maybeUpdateDialogLayout();
     }
 
     @Override
     public void onTopControlsHeightChanged(int topControlsHeight, int topControlsMinHeight) {
         mShouldUpdateContainerLayoutParams = true;
+        maybeUpdateDialogLayout();
     }
 
     @Override
@@ -268,26 +327,28 @@ public class ChromeTabModalPresenter extends TabModalPresenter
 
         if (toFront == mContainerIsAtFront) return;
         mContainerIsAtFront = toFront;
+        ViewGroup dialogContainer = getDialogContainer();
+        if (dialogContainer == null) return;
+
         if (toFront) {
-            getDialogContainer().bringToFront();
+            dialogContainer.bringToFront();
         } else {
-            UiUtils.removeViewFromParent(getDialogContainer());
-            UiUtils.insertBefore(mContainerParent, getDialogContainer(), mDefaultNextSiblingView);
+            assumeNonNull(mContainerParent);
+            assumeNonNull(mDefaultNextSiblingView);
+            UiUtils.removeViewFromParent(dialogContainer);
+            UiUtils.insertBefore(mContainerParent, dialogContainer, mDefaultNextSiblingView);
         }
     }
 
     /**
      * Calculate the top margin of the dialog container and the dialog scrim so that the scrim
      * doesn't overlap the toolbar.
-     * @param resources {@link Resources} to use to get the scrim vertical margin.
+     *
      * @param provider {@link BrowserControlsStateProvider} for browser controls heights.
      * @return The container top margin.
      */
-    public static int getContainerTopMargin(
-            Resources resources, BrowserControlsStateProvider provider) {
-        int scrimVerticalMargin =
-                resources.getDimensionPixelSize(R.dimen.tab_modal_scrim_vertical_margin);
-        return provider.getTopControlsHeight() - scrimVerticalMargin;
+    public static int getContainerTopMargin(BrowserControlsStateProvider provider) {
+        return provider.getTopControlsHeight();
     }
 
     /**
@@ -300,10 +361,13 @@ public class ChromeTabModalPresenter extends TabModalPresenter
     }
 
     public static boolean isDialogShowing(Tab tab) {
-        return TabAttributes.from(tab).get(TabAttributeKeys.MODAL_DIALOG_SHOWING, false);
+        Boolean isShowing =
+                TabAttributes.from(tab).get(TabAttributeKeys.MODAL_DIALOG_SHOWING, false);
+        return isShowing != null && isShowing;
     }
 
     private void onTabModalDialogStateChanged(boolean isShowing) {
+        assumeNonNull(mActiveTab);
         TabAttributes.from(mActiveTab).set(TabAttributeKeys.MODAL_DIALOG_SHOWING, isShowing);
         mVisibilityDelegate.updateConstraintsForTab(mActiveTab);
 
@@ -334,10 +398,24 @@ public class ChromeTabModalPresenter extends TabModalPresenter
     }
 
     private boolean areRendererInputEventsIgnored() {
-        return mActiveTab.getWebContents().getMainFrame().areInputEventsIgnored();
+        assumeNonNull(mActiveTab);
+        WebContents webContents = mActiveTab.getWebContents();
+        assumeNonNull(webContents);
+
+        return webContents.getMainFrame().areInputEventsIgnored();
     }
 
-    ViewGroup getContainerParentForTest() {
+    private void maybeUpdateDialogLayout() {
+        if (mShouldUpdateContainerLayoutParams && getDialogContainer() != null) {
+            MarginLayoutParams params = (MarginLayoutParams) getDialogContainer().getLayoutParams();
+            params.topMargin = getContainerTopMargin(mBrowserControlsVisibilityManager);
+            params.bottomMargin = mBottomControlsHeight;
+            getDialogContainer().setLayoutParams(params);
+            mShouldUpdateContainerLayoutParams = false;
+        }
+    }
+
+    @Nullable ViewGroup getContainerParentForTest() {
         return mContainerParent;
     }
 

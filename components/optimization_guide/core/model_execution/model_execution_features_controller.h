@@ -12,16 +12,20 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/threading/thread_checker.h"
+#include "components/optimization_guide/core/feature_registry/mqls_feature_registry.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/settings_enabled_observer.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
-#include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 
 class PrefService;
+
+namespace policy {
+class ManagementService;
+}
 
 namespace optimization_guide {
 
@@ -46,7 +50,7 @@ class ModelExecutionFeaturesController
     // account.
     kNotVisibleModelExecutionCapability = 6,
     // Not visible because the feature is already graduated.
-    kNotVisibleGraduatedFeature = 7,
+    // DEPRECATED: kNotVisibleGraduatedFeature = 7,
     // Not visible because the device is unsupported by the feature.
     kNotVisibleHardwareUnsupported = 8,
     // Updates should match with FeaturesSettingsVisibilityResult enum in
@@ -60,10 +64,13 @@ class ModelExecutionFeaturesController
   };
 
   // Must be created only for non-incognito browser contexts.
-  ModelExecutionFeaturesController(PrefService* browser_context_profile_service,
-                                   signin::IdentityManager* identity_manager,
-                                   PrefService* local_state,
-                                   DogfoodStatus dogfood_status);
+  ModelExecutionFeaturesController(
+      PrefService* browser_context_profile_service,
+      signin::IdentityManager* identity_manager,
+      PrefService* local_state,
+      policy::ManagementService* management_service,
+      DogfoodStatus dogfood_status,
+      bool is_official_build);
 
   ~ModelExecutionFeaturesController() override;
 
@@ -72,9 +79,10 @@ class ModelExecutionFeaturesController
   ModelExecutionFeaturesController& operator=(
       const ModelExecutionFeaturesController&) = delete;
 
-  // Returns true if the opt-in setting should be shown for this profile for
+  // Returns the visibility state of the opt-in setting for this profile for the
   // given `feature`. This should only be called by settings UX.
-  bool IsSettingVisible(UserVisibleFeatureKey feature) const;
+  SettingsVisibilityResult GetSettingsVisibility(
+      UserVisibleFeatureKey feature) const;
 
   // Returns true if the `feature` should be currently enabled for this user.
   // Note that the return value here may not match the feature enable state on
@@ -82,10 +90,20 @@ class ModelExecutionFeaturesController
   bool ShouldFeatureBeCurrentlyEnabledForUser(
       UserVisibleFeatureKey feature) const;
 
+  // Returns true if signed-in user is allowed to execute models, disregarding
+  // the `allow_unsigned_user` switch.
+  bool ShouldFeatureAllowModelExecutionForSignedInUser(
+      optimization_guide::UserVisibleFeatureKey feature) const;
+
   // Returns whether the `feature` should be currently allowed for logging model
   // quality logs.
   bool ShouldFeatureBeCurrentlyAllowedForLogging(
-      UserVisibleFeatureKey feature) const;
+      const MqlsFeatureMetadata* metadata) const;
+
+  // Returns true if the user passes all sign-in checks and is allowed to use
+  // model execution. This does not perform any feature related checks such as
+  // allowed by enterprise policy.
+  bool ShouldModelExecutionBeAllowedForUser() const;
 
   // Adds `observer` which can observe the change in feature settings.
   void AddObserver(SettingsEnabledObserver* observer);
@@ -97,6 +115,8 @@ class ModelExecutionFeaturesController
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  void AllowUnsignedUserForTesting(UserVisibleFeatureKey feature);
+
  private:
   // Enumerates the reasons an user is invalid.
   enum class UserValidityResult {
@@ -106,8 +126,29 @@ class ModelExecutionFeaturesController
     kInvalidModelExecutionCapability,
   };
 
-  // Called when the main setting toggle pref is changed.
-  void OnMainToggleSettingStatePrefChanged();
+  // Enumerates the reasons a feature might be enabled or not.
+  enum class FeatureCurrentlyEnabledResult {
+    kUnknown = 0,
+    // Not enabled because user is not signed-in.
+    kNotEnabledUnsignedUser = 1,
+    // Returned result as enabled because feature was enabled at startup.
+    kEnabledAtStartup = 2,
+    // Returned result as not enabled because feature was not enabled at
+    // startup.
+    kNotEnabledAtStartup = 3,
+    // Returned result as not enabled because feature was disabled by enterprise
+    // policy.
+    kNotEnabledEnterprisePolicy = 4,
+    // Returned result as not enabled because model execution capability was
+    // disabled for the user account.
+    kNotEnabledModelExecutionCapability = 5,
+    // Returned result as enabled because the feature has graduated from
+    // experimental AI settings.
+    kEnabledByGraduation = 6,
+    // Updates should match with FeatureCurrentlyEnabledResult enum in
+    // enums.xml.
+    kMaxValue = kEnabledByGraduation
+  };
 
   // Called when the feature-specific toggle pref is changed.
   void OnFeatureSettingPrefChanged(UserVisibleFeatureKey feature);
@@ -126,14 +167,18 @@ class ModelExecutionFeaturesController
 
   prefs::FeatureOptInState GetPrefState(UserVisibleFeatureKey feature) const;
 
+  FeatureCurrentlyEnabledResult GetFeatureEnabledState(
+      UserVisibleFeatureKey feature) const;
+
   // Returns the current validity result for user is eligible to be shown
   // settings for `feature`.
   UserValidityResult GetCurrentUserValidityResult(
-      UserVisibleFeatureKey feature) const;
+      UserVisibleFeatureKey feature,
+      bool skip_enterprise_check) const;
 
-  // Returns the enterprise policy value for the `feature`.
-  model_execution::prefs::ModelExecutionEnterprisePolicyValue
-  GetEnterprisePolicyValue(UserVisibleFeatureKey feature) const;
+  // Returns a validity result for accounts requiring signin: kValid when signin
+  // checks pass, or invalid result indicating the reason if checks fail.
+  UserValidityResult PerformSigninChecks() const;
 
   // Performs settings visibility checks specific to History Search. If passed,
   // `kUnknown` is returned. Otherwise, the corresponding enum for the failed
@@ -173,11 +218,16 @@ class ModelExecutionFeaturesController
   raw_ptr<PrefService> local_state_;
 
   // Set of features that are visible to unsigned users.
-  const base::flat_set<UserVisibleFeatureKey>
-      features_allowed_for_unsigned_user_;
+  base::flat_set<UserVisibleFeatureKey> features_allowed_for_unsigned_user_;
+
+  // To check if the user is enterprise or not.
+  raw_ptr<policy::ManagementService> management_service_;
 
   // Whether this client is a (likely) dogfood client.
   const DogfoodStatus dogfood_status_;
+
+  // Whether this client is an official build.
+  const bool is_official_build_;
 
   THREAD_CHECKER(thread_checker_);
 

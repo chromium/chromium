@@ -26,7 +26,7 @@ class ForwardingAgentHost : public DevToolsAgentHostImpl {
   ~ForwardingAgentHost() override;
 
   // DevToolsAgentHostImpl overrides.
-  bool AttachSession(DevToolsSession* session, bool acquire_wake_lock) override;
+  bool AttachSession(DevToolsSession* session) override;
   void DetachSession(DevToolsSession* session) override;
 
   // DevToolsAgentHost implementation.

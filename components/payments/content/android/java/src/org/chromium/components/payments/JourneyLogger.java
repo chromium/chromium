@@ -7,12 +7,14 @@ package org.chromium.components.payments;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.List;
 
 /** A class used to record journey metrics for the Payment Request feature. */
 @JNINamespace("payments")
+@NullMarked
 public class JourneyLogger {
     /** Pointer to the native implementation. */
     private long mJourneyLoggerAndroid;
@@ -29,14 +31,13 @@ public class JourneyLogger {
         assert !webContents.isDestroyed();
         // Note that this pointer could leak the native object. The called must call destroy() to
         // ensure that the native object is destroyed.
-        mJourneyLoggerAndroid =
-                JourneyLoggerJni.get().initJourneyLoggerAndroid(JourneyLogger.this, webContents);
+        mJourneyLoggerAndroid = JourneyLoggerJni.get().initJourneyLoggerAndroid(webContents);
     }
 
     /** Will destroy the native object. This class shouldn't be used afterwards. */
     public void destroy() {
         if (mJourneyLoggerAndroid != 0) {
-            JourneyLoggerJni.get().destroy(mJourneyLoggerAndroid, JourneyLogger.this);
+            JourneyLoggerJni.get().destroy(mJourneyLoggerAndroid);
             mJourneyLoggerAndroid = 0;
         }
     }
@@ -54,36 +55,34 @@ public class JourneyLogger {
         assert section < Section.MAX;
         JourneyLoggerJni.get()
                 .setNumberOfSuggestionsShown(
-                        mJourneyLoggerAndroid,
-                        JourneyLogger.this,
-                        section,
-                        number,
-                        hasCompleteSuggestion);
+                        mJourneyLoggerAndroid, section, number, hasCompleteSuggestion);
     }
 
     /** Records that an Opt Out experience is being offered to the user in the current UI flow. */
     public void setOptOutOffered() {
-        JourneyLoggerJni.get().setOptOutOffered(mJourneyLoggerAndroid, JourneyLogger.this);
+        JourneyLoggerJni.get().setOptOutOffered(mJourneyLoggerAndroid);
     }
 
     /** Records that a PaymentRequest.show() was allowed without a user activation. */
     public void setActivationlessShow() {
-        JourneyLoggerJni.get().setActivationlessShow(mJourneyLoggerAndroid, JourneyLogger.this);
+        JourneyLoggerJni.get().setActivationlessShow(mJourneyLoggerAndroid);
     }
 
-    /** Records that a payment app has been invoked without any payment UI being shown before that. */
+    /**
+     * Records that a payment app has been invoked without any payment UI being shown before that.
+     */
     public void setSkippedShow() {
-        JourneyLoggerJni.get().setSkippedShow(mJourneyLoggerAndroid, JourneyLogger.this);
+        JourneyLoggerJni.get().setSkippedShow(mJourneyLoggerAndroid);
     }
 
     /** Records that a payment UI has been shown. */
     public void setShown() {
-        JourneyLoggerJni.get().setShown(mJourneyLoggerAndroid, JourneyLogger.this);
+        JourneyLoggerJni.get().setShown(mJourneyLoggerAndroid);
     }
 
     /** Records that a payment app was invoked. */
     public void setPayClicked() {
-        JourneyLoggerJni.get().setPayClicked(mJourneyLoggerAndroid, JourneyLogger.this);
+        JourneyLoggerJni.get().setPayClicked(mJourneyLoggerAndroid);
     }
 
     /**
@@ -92,17 +91,16 @@ public class JourneyLogger {
      * @param category The category of the method.
      */
     public void setSelectedMethod(@PaymentMethodCategory int category) {
-        JourneyLoggerJni.get()
-                .setSelectedMethod(mJourneyLoggerAndroid, JourneyLogger.this, category);
+        JourneyLoggerJni.get().setSelectedMethod(mJourneyLoggerAndroid, category);
     }
 
-    /*
+    /**
      * Records what user information were requested by the merchant to complete the Payment Request.
      *
      * @param requestShipping Whether the merchant requested a shipping address.
-     * @param requestEmail    Whether the merchant requested an email address.
-     * @param requestPhone    Whether the merchant requested a phone number.
-     * @param requestName     Whether the merchant requestes a name.
+     * @param requestEmail Whether the merchant requested an email address.
+     * @param requestPhone Whether the merchant requested a phone number.
+     * @param requestName Whether the merchant requests a name.
      */
     public void setRequestedInformation(
             boolean requestShipping,
@@ -112,26 +110,24 @@ public class JourneyLogger {
         JourneyLoggerJni.get()
                 .setRequestedInformation(
                         mJourneyLoggerAndroid,
-                        JourneyLogger.this,
                         requestShipping,
                         requestEmail,
                         requestPhone,
                         requestName);
     }
 
-    /*
+    /**
      * Records what types of payment methods were requested by the merchant in the Payment Request.
      *
-     * @param methodTypes The list of types of the payment methods, defined in
-     *        {@link PaymentMethodCategories}.
+     * @param methodTypes The list of types of the payment methods, defined in {@link
+     *     PaymentMethodCategories}.
      */
     public void setRequestedPaymentMethods(List<Integer> methodTypes) {
         int[] methods = new int[methodTypes.size()];
         for (int i = 0; i < methodTypes.size(); i++) {
             methods[i] = methodTypes.get(i);
         }
-        JourneyLoggerJni.get()
-                .setRequestedPaymentMethods(mJourneyLoggerAndroid, JourneyLogger.this, methods);
+        JourneyLoggerJni.get().setRequestedPaymentMethods(mJourneyLoggerAndroid, methods);
     }
 
     /**
@@ -143,7 +139,7 @@ public class JourneyLogger {
 
         if (!mHasRecorded) {
             mHasRecorded = true;
-            JourneyLoggerJni.get().setCompleted(mJourneyLoggerAndroid, JourneyLogger.this);
+            JourneyLoggerJni.get().setCompleted(mJourneyLoggerAndroid);
         }
     }
 
@@ -160,7 +156,7 @@ public class JourneyLogger {
         // recorded.
         if (!mHasRecorded) {
             mHasRecorded = true;
-            JourneyLoggerJni.get().setAborted(mJourneyLoggerAndroid, JourneyLogger.this, reason);
+            JourneyLoggerJni.get().setAborted(mJourneyLoggerAndroid, reason);
         }
     }
 
@@ -170,81 +166,76 @@ public class JourneyLogger {
 
         if (!mHasRecorded) {
             mHasRecorded = true;
-            JourneyLoggerJni.get().setNotShown(mJourneyLoggerAndroid, JourneyLogger.this);
+            JourneyLoggerJni.get().setNotShown(mJourneyLoggerAndroid);
         }
     }
 
     /** Records that the No Matching Credentials UX was shown to the user. */
     public void setNoMatchingCredentialsShown() {
-        JourneyLoggerJni.get()
-                .setNoMatchingCredentialsShown(mJourneyLoggerAndroid, JourneyLogger.this);
+        JourneyLoggerJni.get().setNoMatchingCredentialsShown(mJourneyLoggerAndroid);
     }
 
     /**
      * Records that the payment request has entered the given checkout step.
+     *
      * @param step An int indicating the step to be recorded.
      */
     public void recordCheckoutStep(int step) {
-        JourneyLoggerJni.get().recordCheckoutStep(mJourneyLoggerAndroid, JourneyLogger.this, step);
+        JourneyLoggerJni.get().recordCheckoutStep(mJourneyLoggerAndroid, step);
     }
 
     /**
      * Sets the ukm source id of payment app.
+     *
      * @param sourceId A long indicating the ukm source id of the invoked payment app.
      */
     public void setPaymentAppUkmSourceId(long sourceId) {
-        JourneyLoggerJni.get()
-                .setPaymentAppUkmSourceId(mJourneyLoggerAndroid, JourneyLogger.this, sourceId);
+        JourneyLoggerJni.get().setPaymentAppUkmSourceId(mJourneyLoggerAndroid, sourceId);
     }
 
     @NativeMethods
     interface Natives {
-        long initJourneyLoggerAndroid(JourneyLogger caller, WebContents webContents);
+        long initJourneyLoggerAndroid(WebContents webContents);
 
-        void destroy(long nativeJourneyLoggerAndroid, JourneyLogger caller);
+        void destroy(long nativeJourneyLoggerAndroid);
 
         void setNumberOfSuggestionsShown(
                 long nativeJourneyLoggerAndroid,
-                JourneyLogger caller,
                 int section,
                 int number,
                 boolean hasCompleteSuggestion);
 
-        void setOptOutOffered(long nativeJourneyLoggerAndroid, JourneyLogger caller);
+        void setOptOutOffered(long nativeJourneyLoggerAndroid);
 
-        void setActivationlessShow(long nativeJourneyLoggerAndroid, JourneyLogger caller);
+        void setActivationlessShow(long nativeJourneyLoggerAndroid);
 
-        void setSkippedShow(long nativeJourneyLoggerAndroid, JourneyLogger caller);
+        void setSkippedShow(long nativeJourneyLoggerAndroid);
 
-        void setShown(long nativeJourneyLoggerAndroid, JourneyLogger caller);
+        void setShown(long nativeJourneyLoggerAndroid);
 
-        void setPayClicked(long nativeJourneyLoggerAndroid, JourneyLogger caller);
+        void setPayClicked(long nativeJourneyLoggerAndroid);
 
-        void setSelectedMethod(
-                long nativeJourneyLoggerAndroid, JourneyLogger caller, int paymentMethodCategory);
+        void setSelectedMethod(long nativeJourneyLoggerAndroid, int paymentMethodCategory);
 
         void setRequestedInformation(
                 long nativeJourneyLoggerAndroid,
-                JourneyLogger caller,
                 boolean requestShipping,
                 boolean requestEmail,
                 boolean requestPhone,
                 boolean requestName);
 
-        void setRequestedPaymentMethods(
-                long nativeJourneyLoggerAndroid, JourneyLogger caller, int[] methodTypes);
+        void setRequestedPaymentMethods(long nativeJourneyLoggerAndroid, int[] methodTypes);
 
-        void setCompleted(long nativeJourneyLoggerAndroid, JourneyLogger caller);
+        void setCompleted(long nativeJourneyLoggerAndroid);
 
-        void setAborted(long nativeJourneyLoggerAndroid, JourneyLogger caller, int reason);
+        void setAborted(long nativeJourneyLoggerAndroid, int reason);
 
-        void setNotShown(long nativeJourneyLoggerAndroid, JourneyLogger caller);
+        void setNotShown(long nativeJourneyLoggerAndroid);
 
-        void setNoMatchingCredentialsShown(long nativeJourneyLoggerAndroid, JourneyLogger caller);
+        void setNoMatchingCredentialsShown(long nativeJourneyLoggerAndroid);
 
-        void recordCheckoutStep(long nativeJourneyLoggerAndroid, JourneyLogger caller, int step);
+        void recordCheckoutStep(long nativeJourneyLoggerAndroid, int step);
 
-        void setPaymentAppUkmSourceId(
-                long nativeJourneyLoggerAndroid, JourneyLogger caller, long sourceId);
+        void setPaymentAppUkmSourceId(long nativeJourneyLoggerAndroid, long sourceId);
     }
 }

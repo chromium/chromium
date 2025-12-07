@@ -10,8 +10,10 @@
 #include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation_traits.h"
+#include "base/threading/thread_checker.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_mode.h"
+#include "ui/accessibility/platform/assistive_tech.h"
 
 namespace ui {
 
@@ -40,18 +42,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
     virtual ~Delegate() = default;
 
     // Returns the effective process-wide accessibility mode.
-    virtual AXMode GetProcessMode() = 0;
-
-    // Sets the effective process-wide accessibility mode and notifies observers
-    // if `new_mode` contains additions to the mode flags.
-    virtual void SetProcessMode(AXMode new_mode) = 0;
-
-    // The global accessibility mode is automatically enabled based on
-    // usage of accessibility APIs. When we detect a significant amount
-    // of user inputs within a certain time period, but no accessibility
-    // API usage, we automatically disable accessibility. This method
-    // should be called when we detect accessibility API usage.
-    virtual void OnAccessibilityApiUsage() = 0;
+    virtual AXMode GetAccessibilityMode() = 0;
 
 #if BUILDFLAG(IS_WIN)
     // Used to retrieve the product name, version, and toolkit version for IA2.
@@ -59,6 +50,23 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
     // product_strings_ member of AXPlatform.
     virtual ProductStrings GetProductStrings() = 0;
 #endif
+
+    // A very basic accessible property was used, such as role, name or
+    // location. Only enables AXMode::kNativeAPIs unless the screen reader
+    // honeypot is used.
+    virtual void OnMinimalPropertiesUsed() {}
+    // An a11y property was used in the browser UI. Enable AXMode::kNativeAPIs.
+    virtual void OnPropertiesUsedInBrowserUI() {}
+    // A basic property was used in web content. Enable AXMode::kWebContents.
+    virtual void OnPropertiesUsedInWebContent() {}
+    // Inline textboxes were used. Enable AXMode::kInlineTextBoxes.
+    virtual void OnInlineTextBoxesUsedInWebContent() {}
+    // Extended properties were used. Enable AXMode::kExtendedProperties.
+    virtual void OnExtendedPropertiesUsedInWebContent() {}
+    // HTML properties were used. Enable AXMode::kHTML.
+    virtual void OnHTMLAttributesUsed() {}
+    // An a11y action was used in web content.
+    virtual void OnActionFromAssistiveTech() {}
 
    protected:
     Delegate() = default;
@@ -76,7 +84,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
   ~AXPlatform();
 
   // Returns the process-wide accessibility mode.
-  AXMode GetMode() { return delegate_->GetProcessMode(); }
+  AXMode GetMode();
 
   void AddModeObserver(AXModeObserver* observer);
   void RemoveModeObserver(AXModeObserver* observer);
@@ -85,8 +93,23 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
   // process-wide accessibility mode.
   void NotifyModeAdded(AXMode mode);
 
-  // Notifies the delegate that an accessibility API has been used.
-  void NotifyAccessibilityApiUsage() { delegate_->OnAccessibilityApiUsage(); }
+  // Notify observers that an assistive technology was launched or exited.
+  // Note: in some cases we do not yet have a perfect signal when the user
+  // quits their assistive tech, so in that case the tool will continue to
+  // appear to be present.
+  // The only known assistive tech that this affects currently is JAWS.
+  // TODO(crbug.com/402069423) Improve JAWS exit detection.
+  void NotifyAssistiveTechChanged(AssistiveTech assistive_tech);
+
+  // The current active assistive tech, such as a screen reader, where a
+  // detection algorithm has been implemented.
+  AssistiveTech active_assistive_tech() const {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    return active_assistive_tech_;
+  }
+
+  // Is the current active assistive tech a screen reader.
+  bool IsScreenReaderActive();
 
   // Returns whether caret browsing is enabled. When caret browsing is enabled,
   // we need to ensure that we keep ATs aware of caret movement.
@@ -112,38 +135,75 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
   // be called during browser process startup before any UI is presented.
   void SetUiaProviderEnabled(bool is_enabled);
 
+  // Disables the UI Automation Provider on Windows, and signals to UIA that the
+  // previous providers that might have been returned are no longer valid.
+  void DisableActiveUiaProvider();
+
   // Returns true if the UI Automation Provider for Windows is enabled.
   bool IsUiaProviderEnabled() const;
+
+  // Notes that an inbound request from a UIA client has been serviced; for
+  // example, by calling UiaReturnRawElementProvider to give it a window's
+  // root object.
+  void SetUiaClientServiced(bool uia_client_serviced);
+
+  // Returns true if a UIA client has been serviced; see above.
+  bool HasServicedUiaClients();
 #endif
+
+  // A very basic accessible property was used, such as role, name or location.
+  // Always enables AXMode::kNativeAPIs by calling OnMinimalPropertiesUsed() on
+  // the delegate. If the screen reader honeypot is used (currently windows
+  // only), OnPropertiesUsedInWebContent() will also be called, enabling web
+  // content accessibility via AXMode::kWebContents.
+  void OnMinimalPropertiesUsed(bool is_name_used = false);
+  // An a11y property was used in the browser UI. Enable AXMode::kNativeAPIs.
+  void OnPropertiesUsedInBrowserUI();
+  // A basic property was used in web content. Enable AXMode::kWebContents.
+  void OnPropertiesUsedInWebContent();
+  // Inline textboxes were used. Enable AXMode::kInlineTextBoxes.
+  void OnInlineTextBoxesUsedInWebContent();
+  // Extended properties were used. Enable AXMode::kExtendedProperties.
+  void OnExtendedPropertiesUsedInWebContent();
+  // HTML properties were used. Enable AXMode::kHTML.
+  void OnHTMLAttributesUsed();
+  // An a11y action was used in web content.
+  void OnActionFromAssistiveTech();
+#if BUILDFLAG(IS_WIN)
+  // The honeypot is a fake alert object that is created, with a fake alert
+  // event fired on it. It is considered unlikely that anything but a screen
+  // reader would be query that object, and also query other minimal properties.
+  // TODO(accessibility): We may no longer need this method because we
+  // detect all screen readers directly, although this may happen earlier.
+  void OnScreenReaderHoneyPotQueried();
+#endif
+
+  void DetachFromThreadForTesting();
 
  private:
   friend class ::ui::AXPlatformNode;
   FRIEND_TEST_ALL_PREFIXES(AXPlatformTest, Observer);
 
-  // Sets the process-wide accessibility mode.
-  void SetMode(AXMode new_mode) { delegate_->SetProcessMode(new_mode); }
-
 #if BUILDFLAG(IS_WIN)
   // Retrieves the product name, version, and toolkit version from the delegate
   // if they have not already been retrieved.
-  void RetrieveProductStringsIfNeeded() const;
+  void RetrieveProductStringsIfNeeded() const
+      VALID_CONTEXT_REQUIRED(thread_checker_);
 #endif
 
-  // Keeps track of whether caret browsing is enabled.
-  bool caret_browsing_enabled_ = false;
-
   // The embedder's delegate.
-  const raw_ref<Delegate> delegate_;
+  const raw_ref<Delegate> delegate_ GUARDED_BY_CONTEXT(thread_checker_);
 
   base::ObserverList<AXModeObserver,
                      /*check_empty=*/true,
                      /*allow_reentrancy=*/false>
-      observers_;
+      observers_ GUARDED_BY_CONTEXT(thread_checker_);
 
 #if BUILDFLAG(IS_WIN)
   // See product_name() product_version(), and toolkit_version().
   // These are lazily cached upon first use. Mutable to allow caching.
-  mutable std::optional<ProductStrings> product_strings_;
+  mutable std::optional<ProductStrings> product_strings_
+      GUARDED_BY_CONTEXT(thread_checker_);
 
   enum class UiaProviderEnablement {
     // Enabled or disabled via Chrome Variations (base::FeatureList).
@@ -153,9 +213,25 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
     // Explicitly disabled at runtime.
     kDisabled,
   };
-  UiaProviderEnablement uia_provider_enablement_ =
-      UiaProviderEnablement::kVariations;
+  UiaProviderEnablement uia_provider_enablement_
+      GUARDED_BY_CONTEXT(thread_checker_) = UiaProviderEnablement::kVariations;
+#endif  // BUILDFLAG(IS_WIN)
+
+  // Keeps track of the active AssistiveTech.
+  AssistiveTech active_assistive_tech_ GUARDED_BY_CONTEXT(thread_checker_) =
+      AssistiveTech::kUninitialized;
+
+  // Keeps track of whether caret browsing is enabled.
+  bool caret_browsing_enabled_ GUARDED_BY_CONTEXT(thread_checker_) = false;
+
+#if BUILDFLAG(IS_WIN)
+  bool screen_reader_honeypot_queried_ GUARDED_BY_CONTEXT(thread_checker_) =
+      false;
+  bool is_name_used_ GUARDED_BY_CONTEXT(thread_checker_) = false;
+  bool has_serviced_uia_clients_ GUARDED_BY_CONTEXT(thread_checker_) = false;
 #endif
+
+  THREAD_CHECKER(thread_checker_);
 };
 
 }  // namespace ui

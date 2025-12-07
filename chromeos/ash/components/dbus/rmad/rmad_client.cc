@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -363,8 +362,10 @@ void RmadClientImpl::HardwareVerificationResultReceived(dbus::Signal* signal) {
   }
   DCHECK(!reader.HasMoreData());
   bool is_compliant = true;
+  bool is_skipped = false;
   std::string error_str = "";
-  if (!sub_reader.PopBool(&is_compliant) || !sub_reader.PopString(&error_str)) {
+  if (!sub_reader.PopBool(&is_compliant) || !sub_reader.PopString(&error_str) ||
+      !sub_reader.PopBool(&is_skipped)) {
     LOG(ERROR) << "Unable to decode signal for " << signal->GetMember();
     return;
   }
@@ -372,6 +373,7 @@ void RmadClientImpl::HardwareVerificationResultReceived(dbus::Signal* signal) {
   rmad::HardwareVerificationResult signal_proto;
   signal_proto.set_is_compliant(is_compliant);
   signal_proto.set_error_str(error_str);
+  signal_proto.set_is_skipped(is_skipped);
   for (auto& observer : observers_) {
     observer.HardwareVerificationResult(signal_proto);
   }

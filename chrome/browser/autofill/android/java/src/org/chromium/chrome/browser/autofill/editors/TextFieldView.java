@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.autofill.editors;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.ERROR_MESSAGE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.FOCUSED;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_REQUIRED;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
 
 import android.content.Context;
@@ -23,15 +22,16 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.TextView.OnEditorActionListener;
 
-import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.EmptyTextWatcher;
@@ -41,14 +41,15 @@ import java.util.List;
 /** Handles validation and display of one field from the {@link EditorProperties.ItemType}. */
 // TODO(b/173103628): Re-enable this
 // @VisibleForTesting
+@NullMarked
 class TextFieldView extends FrameLayout implements FieldView {
     // TODO(crbug.com/40824084): Replace with EditorDialog field once migrated.
     /** The indicator for input fields that are required. */
     public static final String REQUIRED_FIELD_INDICATOR = "*";
 
-    @Nullable private static EditorObserverForTest sObserverForTest;
+    private @Nullable static EditorObserverForTest sObserverForTest;
 
-    @Nullable private Runnable mDoneRunnable;
+    private @Nullable Runnable mDoneRunnable;
 
     @SuppressWarnings("WrongConstant") // https://crbug.com/1038784
     private final OnEditorActionListener mEditorActionListener =
@@ -67,14 +68,12 @@ class TextFieldView extends FrameLayout implements FieldView {
                 return true;
             };
 
-    private PropertyModel mEditorFieldModel;
-    private TextInputLayout mInputLayout;
-    private AutoCompleteTextView mInput;
-    private View mIconsLayer;
-    private ImageView mActionIcon;
-    private boolean mShowRequiredIndicator;
-    @Nullable private EditorFieldValidator mValidator;
-    @Nullable private TextWatcher mTextFormatter;
+    private final PropertyModel mEditorFieldModel;
+    private final TextInputLayout mInputLayout;
+    private final AutoCompleteTextView mInput;
+    private final View mIconsLayer;
+    private @Nullable EditorFieldValidator mValidator;
+    private @Nullable TextWatcher mTextFormatter;
     private boolean mInFocusChange;
     private boolean mInValueChange;
 
@@ -82,7 +81,7 @@ class TextFieldView extends FrameLayout implements FieldView {
         super(context);
         mEditorFieldModel = fieldModel;
 
-        LayoutInflater.from(context).inflate(R.layout.payments_request_editor_textview, this, true);
+        LayoutInflater.from(context).inflate(R.layout.autofill_editor_dialog_textview, this, true);
         mInputLayout = (TextInputLayout) findViewById(R.id.text_input_layout);
 
         mInput = (AutoCompleteTextView) mInputLayout.findViewById(R.id.text_view);
@@ -102,8 +101,6 @@ class TextFieldView extends FrameLayout implements FieldView {
                     imm.showSoftInput(v, 0);
                     return true;
                 });
-
-        setShowRequiredIndicator(/* showRequiredIndicator= */ false);
 
         mIconsLayer = findViewById(R.id.icons_layer);
         mIconsLayer.addOnLayoutChangeListener(
@@ -173,11 +170,26 @@ class TextFieldView extends FrameLayout implements FieldView {
 
     void setLabel(String label, boolean isRequired) {
         // Build up the label. Required fields are indicated by appending a '*'.
-        if (isRequired && mShowRequiredIndicator) {
+        if (isRequired) {
+            // TODO(crbug.com/417413188): Fix a bug where label is announced too many times.
+            // Build the accessibility description manually by combining "required" string with  the
+            // label, because '*' are not announced by the screen reader and it is more informative.
+            final int requiredFieldContentDescriptionId =
+                    R.string.autofill_address_edit_dialog_required_field_content_description;
+            final String labelForAccessibility =
+                    getContext().getString(requiredFieldContentDescriptionId, label);
+            mInputLayout.setTextInputAccessibilityDelegate(
+                    new TextInputLayout.AccessibilityDelegate(mInputLayout) {
+                        @Override
+                        public void onInitializeAccessibilityNodeInfo(
+                                View host, AccessibilityNodeInfoCompat info) {
+                            super.onInitializeAccessibilityNodeInfo(host, info);
+                            info.setText(labelForAccessibility);
+                        }
+                    });
             label += REQUIRED_FIELD_INDICATOR;
         }
         mInputLayout.setHint(label);
-        mInput.setContentDescription(label);
     }
 
     void setValidator(@Nullable EditorFieldValidator validator) {
@@ -233,12 +245,6 @@ class TextFieldView extends FrameLayout implements FieldView {
 
     void setDoneRunnable(@Nullable Runnable doneRunnable) {
         mDoneRunnable = doneRunnable;
-    }
-
-    @Override
-    public void setShowRequiredIndicator(boolean showRequiredIndicator) {
-        mShowRequiredIndicator = showRequiredIndicator;
-        setLabel(mEditorFieldModel.get(LABEL), mEditorFieldModel.get(IS_REQUIRED));
     }
 
     @Override

@@ -9,14 +9,14 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** The {@View} binder class for the PermissionDialogCustomView MVC. */
+@NullMarked
 class PermissionDialogCustomViewBinder {
     public static void bind(PropertyModel model, View customView, PropertyKey propertyKey) {
         if (PermissionDialogCustomViewProperties.MESSAGE_TEXT == propertyKey) {
@@ -31,18 +31,17 @@ class PermissionDialogCustomViewBinder {
         }
     }
 
-    private static void updateMessageText(@NonNull View customView, @NonNull String messageText) {
+    private static void updateMessageText(View customView, String messageText) {
         TextView messageTextView = customView.findViewById(R.id.text);
         messageTextView.setText(messageText);
     }
 
-    private static void updateIcon(@NonNull View customView, @NonNull Drawable icon) {
+    private static void updateIcon(View customView, Drawable icon) {
         TextViewWithCompoundDrawables messageTextView = customView.findViewById(R.id.text);
         messageTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null);
     }
 
-    private static void updateTintColor(
-            @NonNull View customView, @Nullable ColorStateList iconTint) {
+    private static void updateTintColor(View customView, @Nullable ColorStateList iconTint) {
         TextViewWithCompoundDrawables messageTextView = customView.findViewById(R.id.text);
         messageTextView.setDrawableTintColor(iconTint);
     }

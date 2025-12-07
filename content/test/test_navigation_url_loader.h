@@ -32,9 +32,9 @@ class TestNavigationURLLoader final : public NavigationURLLoader {
   // NavigationURLLoader implementation.
   void Start() override;
   void FollowRedirect(
-      const std::vector<std::string>& removed_headers,
-      const net::HttpRequestHeaders& modified_headers,
-      const net::HttpRequestHeaders& modified_cors_exempt_headers) override;
+      std::vector<std::string> removed_headers,
+      net::HttpRequestHeaders modified_headers,
+      net::HttpRequestHeaders modified_cors_exempt_headers) override;
   bool SetNavigationTimeout(base::TimeDelta timeout) override;
   void CancelNavigationTimeout() override;
 

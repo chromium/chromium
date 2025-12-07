@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/notimplemented.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 

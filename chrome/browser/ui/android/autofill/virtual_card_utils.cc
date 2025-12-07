@@ -68,3 +68,5 @@ ScopedJavaLocalRef<jobject> CreateVirtualCardEnrollmentFieldsJavaObject(
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(VirtualCardEnrollmentFields)

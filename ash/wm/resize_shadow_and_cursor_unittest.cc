@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
@@ -12,12 +14,12 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/resize_shadow.h"
 #include "ash/wm/resize_shadow_controller.h"
-#include "ash/wm/test/test_non_client_frame_view_ash.h"
+#include "ash/wm/test/test_frame_view_ash.h"
+#include "ash/wm/window_properties.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
@@ -30,9 +32,9 @@
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/hit_test.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
@@ -102,7 +104,7 @@ class ResizeShadowAndCursorTest : public AshTestBase {
       if (visible) {
         // Make sure the shadow layer is stacked directly beneath the window
         // layer.
-        EXPECT_EQ(*(base::ranges::find(layers, shadow_layer) + 1),
+        EXPECT_EQ(*(std::ranges::find(layers, shadow_layer) + 1),
                   window_->layer());
       }
     }
@@ -237,12 +239,13 @@ TEST_F(ResizeShadowAndCursorTest, DefaultCursorOnBubbleWidgetCorners) {
   child_view->SetBounds(200, 200, 10, 10);
   views::Widget::GetWidgetForNativeWindow(window())
       ->GetRootView()
-      ->AddChildView(child_view);
+      ->AddChildViewRaw(child_view);
 
   // Create the bubble widget.
   views::Widget* bubble(views::BubbleDialogDelegateView::CreateBubble(
-      new views::BubbleDialogDelegateView(child_view,
-                                          views::BubbleBorder::NONE)));
+      new views::BubbleDialogDelegateView(
+          views::BubbleDialogDelegateView::CreatePassKey(), child_view,
+          views::BubbleBorder::NONE)));
   bubble->Show();
 
   // Get the screen rectangle for the bubble frame
@@ -389,6 +392,26 @@ TEST_F(ResizeShadowAndCursorTest, Minimize) {
   VerifyResizeShadow(false);
 }
 
+// Verifies that the shadow hides when it is disabled.
+TEST_F(ResizeShadowAndCursorTest, ResizeShadowDisabled) {
+  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(WindowState::Get(window())->IsNormalStateType());
+
+  generator.MoveMouseTo(200, 50);
+  VerifyResizeShadow(true);
+
+  // Move the cursor off of the shadow.
+  generator.MoveMouseTo(50, 50);
+  VerifyResizeShadow(false);
+
+  // Disable the shadow.
+  window()->SetProperty(kDisableResizeShadow, true);
+
+  // Move the cursor back on and confirm it's disabled.
+  generator.MoveMouseTo(200, 50);
+  VerifyResizeShadow(false);
+}
+
 // Verifies that the lock style shadow gets updated when the window's bounds
 // changed.
 TEST_F(ResizeShadowAndCursorTest, LockShadowBounds) {
@@ -477,11 +500,30 @@ TEST_F(ResizeShadowAndCursorTest, ResizeShadowTypeChange) {
   Shell::Get()->resize_shadow_controller()->HideShadow(window());
 }
 
-// Tests that resize shadow matches window rounded corners.
-TEST_F(ResizeShadowAndCursorTest, ResizeShadowMatchesWindowRoundness) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeature(chromeos::features::kRoundedWindows);
+class ResizeShadowWithRoundedWindowsTest : public ResizeShadowAndCursorTest {
+ public:
+  ResizeShadowWithRoundedWindowsTest() = default;
 
+  ResizeShadowWithRoundedWindowsTest(
+      const ResizeShadowWithRoundedWindowsTest&) = delete;
+  ResizeShadowWithRoundedWindowsTest& operator=(
+      const ResizeShadowWithRoundedWindowsTest&) = delete;
+
+  ~ResizeShadowWithRoundedWindowsTest() override = default;
+
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {chromeos::features::kFeatureManagementRoundedWindows},
+        /*disabled_features=*/{});
+    ResizeShadowAndCursorTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that resize shadow matches window rounded corners.
+TEST_F(ResizeShadowWithRoundedWindowsTest, ResizeShadowMatchesWindowRoundness) {
   ASSERT_FALSE(GetShadow());
   WindowState* window_state = WindowState::Get(window());
   ASSERT_TRUE(window_state->IsNormalStateType());
@@ -490,7 +532,7 @@ TEST_F(ResizeShadowAndCursorTest, ResizeShadowMatchesWindowRoundness) {
   Shell::Get()->resize_shadow_controller()->ShowShadow(window());
 
   // For normal window state, top-level windows have rounded window.
-  EXPECT_TRUE(GetShadow()->is_for_rounded_window());
+  EXPECT_TRUE(GetShadow()->is_for_large_rounded_corners());
   VerifyResizeShadow(true);
 
   // Window in snapped state does not have rounded corners, therefore the resize
@@ -499,13 +541,13 @@ TEST_F(ResizeShadowAndCursorTest, ResizeShadowMatchesWindowRoundness) {
   window_state->OnWMEvent(&snap_event);
 
   ASSERT_TRUE(window_state->IsSnapped());
-  EXPECT_FALSE(GetShadow()->is_for_rounded_window());
+  EXPECT_FALSE(GetShadow()->is_for_large_rounded_corners());
   VerifyResizeShadow(true);
 
   window_state->Restore();
 
   ASSERT_TRUE(window_state->IsNormalStateType());
-  EXPECT_TRUE(GetShadow()->is_for_rounded_window());
+  EXPECT_TRUE(GetShadow()->is_for_large_rounded_corners());
   VerifyResizeShadow(true);
 
   // Ensure that shadow variant is correct after restoring from a state that has
@@ -515,7 +557,7 @@ TEST_F(ResizeShadowAndCursorTest, ResizeShadowMatchesWindowRoundness) {
 
   window_state->Restore();
   ASSERT_TRUE(window_state->IsNormalStateType());
-  EXPECT_TRUE(GetShadow()->is_for_rounded_window());
+  EXPECT_TRUE(GetShadow()->is_for_large_rounded_corners());
 }
 
 // Tests that shadow gets updated when the window's state changed.
@@ -645,8 +687,8 @@ TEST_F(ResizeShadowAndCursorTest, KeepShadowBeneathFloatWindow) {
   ASSERT_TRUE(multitask_menu);
 
   // Click on the floating window option.
-  ui::ScopedAnimationDurationScaleMode zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   chromeos::MultitaskMenuView* menu_view =
       multitask_menu->multitask_menu_view();
   LeftClickOn(chromeos::MultitaskMenuViewTestApi(menu_view).GetFloatButton());
@@ -659,8 +701,8 @@ TEST_F(ResizeShadowAndCursorTest, KeepShadowBeneathFloatWindow) {
   auto parent_children = shadow_layer->parent()->children();
   auto* window_layer = test_window->layer();
 
-  auto shadow_iter = base::ranges::find(parent_children, shadow_layer);
-  auto window_iter = base::ranges::find(parent_children, window_layer);
+  auto shadow_iter = std::ranges::find(parent_children, shadow_layer);
+  auto window_iter = std::ranges::find(parent_children, window_layer);
   EXPECT_LT(std::distance(parent_children.begin(), shadow_iter),
             std::distance(parent_children.begin(), window_iter));
 }

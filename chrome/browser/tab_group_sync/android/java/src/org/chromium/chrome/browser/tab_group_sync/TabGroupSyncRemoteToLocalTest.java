@@ -18,16 +18,17 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncIntegrationTestHelper.GroupInfo;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncIntegrationTestHelper.TabInfo;
@@ -35,21 +36,14 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.sync.protocol.SavedTabGroup.SavedTabGroupColor;
 import org.chromium.components.sync.protocol.SyncEntity;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** On-device sync integration tests for tab group sync from remote to local. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "TODO(b/40743432): SyncTestRule doesn't support batching.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({
-    ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
-    ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
-    ChromeFeatureList.TAB_GROUP_PANE_ANDROID
-})
-@Restriction({
-    UiRestriction.RESTRICTION_TYPE_PHONE,
-    Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE
-})
+@Restriction({DeviceFormFactor.PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 public class TabGroupSyncRemoteToLocalTest {
     private static final String TEST_URL1 = "/chrome/test/data/simple.html";
     private static final String TEST_URL2 = "/chrome/test/data/title2.html";
@@ -79,9 +73,13 @@ public class TabGroupSyncRemoteToLocalTest {
     public void setUp() {
         setUpUrlConstants();
         mHelper = new TabGroupSyncIntegrationTestHelper(mSyncTestRule);
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        SyncTestUtil.waitForHistorySyncEnabled();
+        mSyncTestRule.setUpAccountAndEnableHistorySync();
         mHelper.assertSyncEntityCount(0);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Profile profile = mSyncTestRule.getProfile(/* incognito= */ false);
+                    UserPrefs.get(profile).setBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS, true);
+                });
 
         CriteriaHelper.pollUiThread(
                 mSyncTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
@@ -107,6 +105,7 @@ public class TabGroupSyncRemoteToLocalTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
+    @DisabledTest(message = "Flaky - crbug.com/417757592")
     public void testRemoteToLocalCreateNewTabGroup() {
         GroupInfo[] groups =
                 TabGroupSyncIntegrationTestHelper.createGroupInfos(
@@ -122,6 +121,7 @@ public class TabGroupSyncRemoteToLocalTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
+    @DisabledTest(message = "crbug.com/415830276")
     public void testOneGroupTwoTabs() {
         GroupInfo[] groups =
                 TabGroupSyncIntegrationTestHelper.createGroupInfos(
@@ -137,6 +137,7 @@ public class TabGroupSyncRemoteToLocalTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
+    @DisabledTest(message = "crbug.com/390146523")
     public void testTwoGroups() {
         GroupInfo[] groups =
                 TabGroupSyncIntegrationTestHelper.createGroupInfos(
@@ -217,14 +218,20 @@ public class TabGroupSyncRemoteToLocalTest {
                                 "Sync entity count does not match",
                                 entityCount,
                                 Matchers.equalTo(tabGroupCount + tabCount));
+                        int actualTabGroupCount =
+                                ThreadUtils.runOnUiThreadBlocking(
+                                        () -> mHelper.getTabGroupFilter().getTabGroupCount());
                         checkThat(
                                 "Tab group count does not match",
-                                mHelper.getTabGroupFilter().getTabGroupCount(),
+                                actualTabGroupCount,
                                 Matchers.equalTo(tabGroupCount));
                         // Tab count is one extra since we started with an NTP.
+                        int actualTabCount =
+                                ThreadUtils.runOnUiThreadBlocking(
+                                        () -> mHelper.getTabModel().getCount());
                         checkThat(
                                 "Tab model tab count does not match",
-                                mHelper.getTabModel().getCount(),
+                                actualTabCount,
                                 Matchers.equalTo(1 + tabCount));
                     } catch (Exception ex) {
                         throw new CriteriaNotSatisfiedException(ex);

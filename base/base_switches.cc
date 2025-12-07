@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/base_switches.h"
+
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace switches {
 
@@ -12,7 +12,7 @@ namespace switches {
 const char kDisableBestEffortTasks[] = "disable-best-effort-tasks";
 
 // Disables the crash reporting.
-const char kDisableBreakpad[]               = "disable-breakpad";
+const char kDisableBreakpad[] = "disable-breakpad";
 
 // Comma-separated list of feature names to disable. See also kEnableFeatures.
 const char kDisableFeatures[] = "disable-features";
@@ -23,18 +23,17 @@ const char kDisableLowEndDeviceMode[] = "disable-low-end-device-mode";
 // Indicates that crash reporting should be enabled. On platforms where helper
 // processes cannot access to files needed to make this decision, this flag is
 // generated internally.
-const char kEnableCrashReporter[]           = "enable-crash-reporter";
+const char kEnableCrashReporter[] = "enable-crash-reporter";
 
 // Comma-separated list of feature names to enable. See also kDisableFeatures.
 const char kEnableFeatures[] = "enable-features";
 
 // Force low-end device mode when set.
-const char kEnableLowEndDeviceMode[]        = "enable-low-end-device-mode";
+const char kEnableLowEndDeviceMode[] = "enable-low-end-device-mode";
 
-// Enable the use of background thread priorities for background tasks in the
-// ThreadPool even on systems where it is disabled by default, e.g. due to
-// concerns about priority inversions.
-const char kEnableBackgroundThreadPool[] = "enable-background-thread-pool";
+// Configure the background threadpool field trial.
+const char kBackgroundThreadPoolFieldTrial[] =
+    "background-thread-pool-field-trial";
 
 // Handle to the shared memory segment containing field trial state that is to
 // be shared between processes. The argument to this switch is made of segments
@@ -54,7 +53,7 @@ const char kFieldTrialHandle[] = "field-trial-handle";
 // also be used by the browser process to send the list of trials to a
 // non-browser process, using the same format. See
 // FieldTrialList::CreateTrialsFromString() in field_trial.h for details.
-const char kForceFieldTrials[]              = "force-fieldtrials";
+const char kForceFieldTrials[] = "force-fieldtrials";
 
 // Generates full memory crash dump.
 const char kFullMemoryCrashReport[] = "full-memory-crash-report";
@@ -71,7 +70,7 @@ const char kLogBestEffortTasks[] = "log-best-effort-tasks";
 const char kMetricsSharedMemoryHandle[] = "metrics-shmem-handle";
 
 // Suppresses all error dialogs when present.
-const char kNoErrorDialogs[]                = "noerrdialogs";
+const char kNoErrorDialogs[] = "noerrdialogs";
 
 // Starts the sampling based profiler for the browser process at startup. This
 // will only work if chrome has been built with the gn arg enable_profiling =
@@ -129,7 +128,11 @@ const char kWaitForDebugger[] = "wait-for-debugger";
 const char kDisableHighResTimer[] = "disable-highres-timer";
 
 // Disables the USB keyboard detection for blocking the OSK on Windows.
-const char kDisableUsbKeyboardDetect[]      = "disable-usb-keyboard-detect";
+const char kDisableUsbKeyboardDetect[] = "disable-usb-keyboard-detect";
+
+// Forces the use of QPC for TimeTicks even if cpuid doesn't report the presence
+// of an invariant TSC.
+const char kForceHighResTimeTicks[] = "force-high-res-timeticks";
 #endif
 
 #if BUILDFLAG(IS_LINUX)
@@ -148,14 +151,20 @@ const char kEnableCrashReporterForTesting[] =
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+// For testing, do not initialize child service process but also do not exit
+// (until requested by browser).
+const char kAndroidSkipChildServiceInitForTesting[] =
+    "android-skip-child-service-init-for-testing";
+
 // Default country code to be used for search engine localization.
 const char kDefaultCountryCodeAtInstall[] = "default-country-code";
 
 // Adds additional thread idle time information into the trace event output.
 const char kEnableIdleTracing[] = "enable-idle-tracing";
 
-// The field trial parameters and their values when testing changes locally.
-const char kForceFieldTrialParams[] = "force-fieldtrial-params";
+// Forces the DeviceInfo.isDesktop() check to return true. Can be used to enable
+// desktop-only features on other form factors.
+const char kForceDesktopAndroid[] = "force-desktop-android";
 
 // When we retrieve the package name within the SDK Runtime, we need to use
 // a bit of a hack to do this by taking advantage of the fact that the pid

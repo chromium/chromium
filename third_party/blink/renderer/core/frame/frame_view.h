@@ -19,24 +19,25 @@ namespace blink {
 
 class Frame;
 class ComputeIntersectionsContext;
-struct IntrinsicSizingInfo;
+struct NaturalSizingInfo;
 
 class CORE_EXPORT FrameView : public EmbeddedContentView {
  public:
   explicit FrameView(const gfx::Rect& frame_rect);
   ~FrameView() override = default;
 
+  virtual void UpdateIntersectionObserverStatus() = 0;
+  virtual bool HasActiveIntersectionObservations() const = 0;
+  virtual bool NeedsOcclusionTracking() const = 0;
+
   // parent_flags is the result of calling GetIntersectionObservationFlags on
   // the LocalFrameView parent of this FrameView (if any). It contains dirty
   // bits based on whether geometry may have changed in the parent frame.
-  // Returns true if the frame needs occlusion tracking (i.e. trackVisibility()
-  // is true for any tracked observer in the frame subtree).
-  virtual bool UpdateViewportIntersectionsForSubtree(
+  virtual void UpdateViewportIntersectionsForSubtree(
       unsigned parent_flags,
       ComputeIntersectionsContext&) = 0;
 
-  virtual bool GetIntrinsicSizingInfo(IntrinsicSizingInfo&) const = 0;
-  virtual bool HasIntrinsicSizingInfo() const = 0;
+  virtual std::optional<NaturalSizingInfo> GetNaturalDimensions() const = 0;
 
   // Returns true if this frame could potentially skip rendering and avoid
   // scheduling visual updates.
@@ -51,6 +52,9 @@ class CORE_EXPORT FrameView : public EmbeddedContentView {
   virtual bool ShouldReportMainFrameIntersection() const { return false; }
 
   Frame& GetFrame() const;
+  std::optional<mojom::blink::FrameVisibility> GetFrameVisibility() const {
+    return frame_visibility_;
+  }
 
   // This is used to control render throttling, which determines whether
   // lifecycle updates in the child frame will skip rendering work.
@@ -88,6 +92,9 @@ class CORE_EXPORT FrameView : public EmbeddedContentView {
   bool DisplayLockedInParentFrame();
 
   virtual void VisibilityChanged(mojom::blink::FrameVisibility visibilty) = 0;
+  std::optional<mojom::blink::FrameVisibility> frame_visibility() const {
+    return frame_visibility_;
+  }
 
  private:
   PhysicalRect rect_in_parent_;

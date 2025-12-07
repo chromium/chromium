@@ -1,0 +1,60 @@
+include_rules = [
+  '-chrome/browser/actor/ui',
+]
+
+specific_include_rules = {
+  'aggregated_journal.*_serializer\.cc': [
+    "+third_party/perfetto/include/perfetto",
+  ],
+  'aggregated_journal_serializer\.cc': [
+    "+third_party/perfetto/protos/perfetto",
+  ],
+  'actor_keyed_service\.cc': [
+    # This is required to create the ActorUiStateManager when a profile
+    # is created.
+    "+chrome/browser/actor/ui/actor_ui_state_manager.h",
+    "+chrome/browser/actor/ui/actor_ui_state_manager_interface.h",
+    # Required to create the ActorTask.
+    "+chrome/browser/actor/ui/event_dispatcher.h",
+  ],
+  'actor_tab_data\.cc': [
+    # Possible work-around to dependency: introduce an ActorUiTabData class,
+    # but this comes with extra coordination overhead.
+    "+chrome/browser/actor/ui/dom_node_geometry.h",
+  ],
+  'actor_task\.cc': [
+    # This dependency is intentional and required to provide a translation
+    # layer between the service and ui.
+    "+chrome/browser/actor/ui/event_dispatcher.h",
+  ],
+  'execution_engine*': [
+    # This dependency is intentional and required to provide a translation
+    # layer between the service and ui.
+    "+chrome/browser/actor/ui/event_dispatcher.h",
+    "+chrome/browser/actor/ui/mocks/mock_event_dispatcher.h",
+  ],
+
+  # Test dependencies on UiEventDispatcher.
+  'actor_keyed_service_unittest\.cc': [
+    "+chrome/browser/actor/ui/event_dispatcher.h",
+    "+chrome/browser/actor/ui/mocks/mock_actor_ui_state_manager.h",
+  ],
+  'actor_keyed_service_fake*': [
+    # This is required for unit tests.
+    "+chrome/browser/actor/ui/event_dispatcher.h",
+    "+chrome/browser/actor/ui/mocks/mock_event_dispatcher.h",
+  ],
+  'actor_test_util*': [
+    # This is required for unit tests.
+    "+chrome/browser/actor/ui/event_dispatcher.h",
+  ],
+  'execution_engine_(unit|browser)test\.cc': [
+    "+chrome/browser/actor/ui/event_dispatcher.h",
+  ],
+  'page_stability_browsertest\.cc': [
+    "+chrome/browser/actor/ui/event_dispatcher.h",
+  ],
+  'tools_test_util\.cc': [
+    "+chrome/browser/actor/ui/event_dispatcher.h",
+  ],
+}

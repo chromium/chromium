@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 

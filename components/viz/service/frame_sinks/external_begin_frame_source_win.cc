@@ -15,7 +15,6 @@ namespace viz {
 namespace {
 
 BASE_FEATURE(kExternalBeginFrameSourceWinUsesRunOrPostTask,
-             "ExternalBeginFrameSourceWinUsesRunOrPostTask",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace

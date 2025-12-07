@@ -16,6 +16,7 @@
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
 #include "chrome/browser/navigation_predictor/search_engine_preconnector.h"
+#include "chrome/browser/navigation_predictor/search_engine_preconnector_keyed_service_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -28,15 +29,6 @@
 #include "net/base/features.h"
 #include "net/base/ip_address.h"
 
-namespace {
-
-// Experiment with which event triggers the preconnect after commit.
-BASE_FEATURE(kPreconnectOnDidFinishNavigation,
-             "PreconnectOnDidFinishNavigation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-}  // namespace
-
 NavigationPredictorPreconnectClient::NavigationPredictorPreconnectClient(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
@@ -46,10 +38,9 @@ NavigationPredictorPreconnectClient::NavigationPredictorPreconnectClient(
       current_visibility_(web_contents->GetVisibility()) {}
 
 NavigationPredictorPreconnectClient::~NavigationPredictorPreconnectClient() {
-  NavigationPredictorKeyedService* navigation_predictor_service =
-      GetNavigationPredictorKeyedService();
-  if (navigation_predictor_service) {
-    navigation_predictor_service->OnWebContentsDestroyed(web_contents());
+  auto* search_engine_preconnector = GetSearchEnginePreconnector();
+  if (search_engine_preconnector) {
+    search_engine_preconnector->OnWebContentsDestroyed(web_contents());
   }
 }
 
@@ -60,15 +51,31 @@ NavigationPredictorPreconnectClient::GetNavigationPredictorKeyedService()
       Profile::FromBrowserContext(browser_context_));
 }
 
+SearchEnginePreconnector*
+NavigationPredictorPreconnectClient::GetSearchEnginePreconnector() {
+  if (SearchEnginePreconnector::ShouldBeEnabledAsKeyedService()) {
+    // If we have `SearchEnginePreconnectorKeyedService` enabled, the
+    // `SearchEnginePreconnector` should be fetched directly from the
+    // `KeyedService`.
+    return SearchEnginePreconnectorKeyedServiceFactory::GetForProfile(
+        Profile::FromBrowserContext(browser_context_));
+  }
+
+  auto* navigation_predictor_service = GetNavigationPredictorKeyedService();
+  if (navigation_predictor_service) {
+    return navigation_predictor_service->search_engine_preconnector();
+  }
+  return nullptr;
+}
+
 void NavigationPredictorPreconnectClient::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  // Notify navigation predictor service of any same-document navigations that
+  // Notify search engine preconnector of any same-document navigations that
   // may be captured here. Same-document navigations imply that user is
   // interacting with the browser app.
-  NavigationPredictorKeyedService* navigation_predictor_service =
-      GetNavigationPredictorKeyedService();
-  if (navigation_predictor_service) {
-    navigation_predictor_service->OnWebContentsVisibilityChanged(
+  auto* search_engine_preconnector = GetSearchEnginePreconnector();
+  if (search_engine_preconnector) {
+    search_engine_preconnector->OnWebContentsVisibilityChanged(
         web_contents(), current_visibility_ == content::Visibility::VISIBLE);
   }
 
@@ -88,10 +95,7 @@ void NavigationPredictorPreconnectClient::DidFinishNavigation(
     }
   }
 
-  if ((!base::FeatureList::IsEnabled(
-           features::
-               kNavigationPredictorEnablePreconnectOnSameDocumentNavigations) &&
-       navigation_handle->IsSameDocument())) {
+  if (navigation_handle->IsSameDocument()) {
     return;
   }
 
@@ -101,15 +105,8 @@ void NavigationPredictorPreconnectClient::DidFinishNavigation(
   // New page, so stop the preconnect timer.
   timer_.Stop();
 
-  if (base::FeatureList::IsEnabled(kPreconnectOnDidFinishNavigation) ||
-      navigation_handle->IsSameDocument()) {
-    int delay_ms = base::GetFieldTrialParamByFeatureAsInt(
-        kPreconnectOnDidFinishNavigation, "delay_after_commit_in_ms", 3000);
-    if (delay_ms <= 0) {
-      MaybePreconnectNow(/*preconnects_attempted=*/0u);
-      return;
-    }
-
+  if (navigation_handle->IsSameDocument()) {
+    constexpr int delay_ms = 3000;
     timer_.Start(
         FROM_HERE, base::Milliseconds(delay_ms),
         base::BindOnce(&NavigationPredictorPreconnectClient::MaybePreconnectNow,
@@ -121,11 +118,10 @@ void NavigationPredictorPreconnectClient::OnVisibilityChanged(
     content::Visibility visibility) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  NavigationPredictorKeyedService* navigation_predictor_service =
-      GetNavigationPredictorKeyedService();
-  if (navigation_predictor_service) {
-    navigation_predictor_service->OnWebContentsVisibilityChanged(
-        web_contents(), visibility == content::Visibility::VISIBLE);
+  auto* search_engine_preconnector = GetSearchEnginePreconnector();
+  if (search_engine_preconnector) {
+    search_engine_preconnector->OnWebContentsVisibilityChanged(
+        web_contents(), current_visibility_ == content::Visibility::VISIBLE);
   }
 
   // Check for same state.
@@ -218,13 +214,14 @@ void NavigationPredictorPreconnectClient::MaybePreconnectNow(
   // Set/Reset the timer to fire after the preconnect times out. Add an extra
   // delay to make sure the preconnect has expired if it wasn't used.
   timer_.Start(
-      FROM_HERE,
-      base::Seconds(base::GetFieldTrialParamByFeatureAsInt(
-          net::features::kNetUnusedIdleSocketTimeout,
-          "unused_idle_socket_timeout_seconds", 60)) +
-          retry_delay,
+      FROM_HERE, base::Seconds(GetPreconnectInterval()) + retry_delay,
       base::BindOnce(&NavigationPredictorPreconnectClient::MaybePreconnectNow,
                      base::Unretained(this), preconnects_attempted + 1));
+}
+
+int NavigationPredictorPreconnectClient::GetPreconnectInterval() const {
+  constexpr int kPreconnectIntervalSec = 60;
+  return preconnect_interval_for_testing_.value_or(kPreconnectIntervalSec);
 }
 
 bool NavigationPredictorPreconnectClient::IsSearchEnginePage() const {
@@ -258,5 +255,9 @@ std::optional<bool> NavigationPredictorPreconnectClient::IsPubliclyRoutable(
 
 bool NavigationPredictorPreconnectClient::
     enable_preconnects_for_local_ips_for_testing_ = false;
+
+std::optional<int>
+    NavigationPredictorPreconnectClient::preconnect_interval_for_testing_ =
+        std::nullopt;
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(NavigationPredictorPreconnectClient);

@@ -11,7 +11,7 @@
 #include <string>
 #include <string_view>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
 #include "components/policy/policy_export.h"
 
@@ -58,6 +58,14 @@ class POLICY_EXPORT BrowserPolicyConnector : public BrowserPolicyConnectorBase {
   DeviceManagementService* device_management_service() {
     return device_management_service_.get();
   }
+
+  DeviceManagementService* GetTestDeviceManagementService();
+
+  // Allows setting a mock DeviceManagementService for tests. Does not take
+  // ownership, and should be reset to nullptr at the end of the test.
+  // Set this before an instance is built for a Profile.
+  static void SetDeviceManagementServiceForTesting(
+      DeviceManagementService* device_management_service);
 
   // Returns the URL for the device management service endpoint.
   std::string GetDeviceManagementUrl() const;

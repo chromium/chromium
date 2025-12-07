@@ -9,7 +9,7 @@
 
 namespace media {
 
-size_t GetDemuxerStreamAudioMemoryLimit(
+base::ByteCount GetDemuxerStreamAudioMemoryLimit(
     const AudioDecoderConfig* audio_config) {
   if (!audio_config) {
     return internal::kDemuxerStreamAudioMemoryLimitLow;
@@ -34,13 +34,13 @@ size_t GetDemuxerStreamAudioMemoryLimit(
   }
 }
 
-size_t GetDemuxerStreamVideoMemoryLimit(
-    Demuxer::DemuxerTypes demuxer_type,
+base::ByteCount GetDemuxerStreamVideoMemoryLimit(
+    DemuxerType demuxer_type,
     const VideoDecoderConfig* video_config) {
   switch (demuxer_type) {
-    case Demuxer::DemuxerTypes::kFFmpegDemuxer:
+    case DemuxerType::kFFmpegDemuxer:
       return internal::kDemuxerStreamVideoMemoryLimitDefault;
-    case Demuxer::DemuxerTypes::kChunkDemuxer:
+    case DemuxerType::kChunkDemuxer:
       if (!video_config) {
         return internal::kDemuxerStreamVideoMemoryLimitLow;
       }
@@ -53,12 +53,12 @@ size_t GetDemuxerStreamVideoMemoryLimit(
         default:
           return internal::kDemuxerStreamVideoMemoryLimitLow;
       }
-    case Demuxer::DemuxerTypes::kMediaUrlDemuxer:
+    default:
       return internal::kDemuxerStreamVideoMemoryLimitLow;
   }
 }
 
-size_t GetDemuxerMemoryLimit(Demuxer::DemuxerTypes demuxer_type) {
+base::ByteCount GetDemuxerMemoryLimit(DemuxerType demuxer_type) {
   return GetDemuxerStreamAudioMemoryLimit(nullptr) +
          GetDemuxerStreamVideoMemoryLimit(demuxer_type, nullptr);
 }

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_RENDERER_CONTEXT_MENU_CONTEXT_MENU_CONTENT_TYPE_PLATFORM_APP_H_
 #define CHROME_BROWSER_RENDERER_CONTEXT_MENU_CONTEXT_MENU_CONTENT_TYPE_PLATFORM_APP_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/renderer_context_menu/context_menu_content_type.h"
 
 namespace content {

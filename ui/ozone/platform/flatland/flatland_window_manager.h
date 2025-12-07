@@ -6,12 +6,13 @@
 #define UI_OZONE_PLATFORM_FLATLAND_FLATLAND_WINDOW_MANAGER_H_
 
 #include <stdint.h>
+
 #include <memory>
 
 #include "base/component_export.h"
 #include "base/containers/id_map.h"
 #include "base/threading/thread_checker.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/ozone/platform/flatland/flatland_screen.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 

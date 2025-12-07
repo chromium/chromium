@@ -95,6 +95,7 @@ class COMPONENTS_PREFS_EXPORT JsonPrefStore final
   bool ReadOnly() const override;
   PrefReadError GetReadError() const override;
   bool HasReadErrorDelegate() const override;
+  PrefFilter* GetFilter() override;
   // Note this method may be asynchronous if this instance has a |pref_filter_|
   // in which case it will return PREF_READ_ERROR_ASYNCHRONOUS_TASK_INCOMPLETE.
   // See details in pref_filter.h.

@@ -7,10 +7,12 @@ import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {fakeEmptySearchResponse, fakeFeedbackContext, fakeInternalUserFeedbackContext, fakeLoginFlowFeedbackContext, fakeSearchResponse} from 'chrome://os-feedback/fake_data.js';
 import {FakeHelpContentProvider} from 'chrome://os-feedback/fake_help_content_provider.js';
-import {FeedbackFlowButtonClickEvent, FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
+import type {FeedbackFlowButtonClickEvent} from 'chrome://os-feedback/feedback_flow.js';
+import {FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
 import {setHelpContentProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
 import {domainQuestions, questionnaireBegin} from 'chrome://os-feedback/questionnaire.js';
-import {OS_FEEDBACK_UNTRUSTED_ORIGIN, SearchPageElement} from 'chrome://os-feedback/search_page.js';
+import type {SearchPageElement} from 'chrome://os-feedback/search_page.js';
+import {OS_FEEDBACK_UNTRUSTED_ORIGIN} from 'chrome://os-feedback/search_page.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
@@ -53,7 +55,7 @@ suite('searchPageTestSuite', () => {
     await initializePage();
     // Verify the title is in the page.
     const title = strictQuery('.page-title', page!.shadowRoot, HTMLElement);
-    assertEquals('Send feedback', title.textContent!.trim());
+    assertEquals('Send feedback', title.textContent.trim());
 
     // Verify the iframe is in the page.
     const untrustedFrame =
@@ -72,13 +74,13 @@ suite('searchPageTestSuite', () => {
     // Verify the descriptionTitle is in the page.
     const descriptionTitle =
         strictQuery('#descriptionTitle', page!.shadowRoot, HTMLElement);
-    assertEquals('Description', descriptionTitle.textContent!.trim());
+    assertEquals('Description', descriptionTitle.textContent.trim());
 
     // Verify the feedback writing guidance link is in the page.
     const writingGuidanceLink = strictQuery(
         '#feedbackWritingGuidance', page!.shadowRoot, HTMLAnchorElement);
     assertEquals(
-        'Tips on writing feedback', writingGuidanceLink.textContent!.trim());
+        'Tips on writing feedback', writingGuidanceLink.textContent.trim());
     assertEquals('_blank', writingGuidanceLink.target);
     assertEquals(
         'https://support.google.com/chromebook/answer/2982029',
@@ -92,7 +94,7 @@ suite('searchPageTestSuite', () => {
     // Verify the continue button is in the page.
     const buttonContinue =
         strictQuery('#buttonContinue', page!.shadowRoot, CrButtonElement);
-    assertEquals('Continue', buttonContinue.textContent!.trim());
+    assertEquals('Continue', buttonContinue.textContent.trim());
   });
 
   /**
@@ -397,7 +399,7 @@ suite('searchPageTestSuite', () => {
 
     // Verify that the message is visible now.
     assertTrue(isVisible(errorMsg));
-    assertEquals('Description is required', errorMsg.textContent!.trim());
+    assertEquals('Description is required', errorMsg.textContent.trim());
     // Verify that the textarea received focus again.
     assertEquals(getDeepActiveElement(), textInput);
 

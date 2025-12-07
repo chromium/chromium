@@ -4,6 +4,8 @@
 
 #include "chrome/browser/new_tab_page/promos/promo_service.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -14,6 +16,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -187,7 +190,7 @@ void PromoService::Refresh() {
   }
 
   if (!command_id.empty()) {
-    auto fake_promo_json = std::make_unique<std::string>(base::StringPrintf(
+    auto fake_promo_json = std::make_optional<std::string>(base::StringPrintf(
         kFakePromo, kWarningSymbol, command_id.c_str(), command_id.c_str(),
         command_id.c_str(), command_id.c_str()));
     OnLoadDone(std::move(fake_promo_json));
@@ -222,6 +225,7 @@ void PromoService::Refresh() {
   resource_request->url = GetApiUrl();
   resource_request->request_initiator =
       url::Origin::Create(GURL(chrome::kChromeUINewTabURL));
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   simple_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                     traffic_annotation);
@@ -231,7 +235,7 @@ void PromoService::Refresh() {
       1024 * 1024);
 }
 
-void PromoService::OnLoadDone(std::unique_ptr<std::string> response_body) {
+void PromoService::OnLoadDone(std::optional<std::string> response_body) {
   if (!response_body) {
     // This represents network errors (i.e. the server did not provide a
     // response).
@@ -240,15 +244,13 @@ void PromoService::OnLoadDone(std::unique_ptr<std::string> response_body) {
     return;
   }
 
-  std::string response;
-  response.swap(*response_body);
+  std::string response = std::move(response_body).value();
 
   // The response may start with )]}'. Ignore this.
-  if (base::StartsWith(response, kXSSIResponsePreamble,
-                       base::CompareCase::SENSITIVE)) {
-    response = response.substr(strlen(kXSSIResponsePreamble));
+  auto remainder = base::RemovePrefix(response, kXSSIResponsePreamble);
+  if (remainder) {
+    response = std::string(*remainder);
   }
-
   data_decoder::DataDecoder::ParseJsonIsolated(
       response, base::BindOnce(&PromoService::OnJsonParsed,
                                weak_ptr_factory_.GetWeakPtr()));
@@ -318,7 +320,6 @@ void PromoService::BlocklistPromo(const std::string& promo_id) {
     promo_data_ = PromoData();
     promo_status_ = Status::OK_BUT_BLOCKED;
     NotifyObservers();
-    // TODO(crbug.com/40098612): hide promos on existing, already-opened NTPs.
   }
 }
 

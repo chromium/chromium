@@ -4,6 +4,7 @@
 
 #include "remoting/host/audio_capturer.h"
 
+#include "base/notimplemented.h"
 #include "remoting/proto/audio.pb.h"
 
 namespace remoting {
@@ -17,6 +18,10 @@ bool AudioCapturer::IsValidSampleRate(int sample_rate) {
     default:
       return false;
   }
+}
+
+void AudioCapturer::SetAudioPlaybackMode(AudioPlaybackMode mode) {
+  NOTIMPLEMENTED();
 }
 
 }  // namespace remoting

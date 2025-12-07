@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -21,11 +22,15 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
+#include "components/signin/public/base/bound_session_oauth_multilogin_delegate.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/backoff_entry.h"
 #include "net/cookies/cookie_change_dispatcher.h"
@@ -60,7 +65,7 @@ class GaiaCookieManagerService
       public signin::AccountsCookieMutator::PartitionDelegate,
       public network::mojom::CookieChangeListener {
  public:
-  using AccountIdGaiaIdPair = std::pair<CoreAccountId, std::string>;
+  using AccountIdGaiaIdPair = std::pair<CoreAccountId, GaiaId>;
 
   enum GaiaCookieRequestType { LOG_OUT, LIST_ACCOUNTS, SET_ACCOUNTS };
 
@@ -69,8 +74,7 @@ class GaiaCookieManagerService
   typedef base::OnceCallback<void(const GoogleServiceAuthError&)>
       LogOutFromCookieCompletedCallback;
 
-  typedef base::RepeatingCallback<void(const std::vector<gaia::ListedAccount>&,
-                                       const std::vector<gaia::ListedAccount>&,
+  typedef base::RepeatingCallback<void(const signin::AccountsInCookieJarInfo&,
                                        const GoogleServiceAuthError&)>
       GaiaAccountsInCookieUpdatedCallback;
   typedef base::RepeatingCallback<void()> GaiaCookieDeletedByUserActionCallback;
@@ -181,7 +185,7 @@ class GaiaCookieManagerService
 
     // Called back from SimpleURLLoader.
     void OnURLLoadComplete(const network::SimpleURLLoader* source,
-                           std::unique_ptr<std::string> body);
+                           std::optional<std::string> body);
 
     // Any fetches still ongoing after this call are considered timed out.
     void Timeout();
@@ -218,14 +222,11 @@ class GaiaCookieManagerService
                            SetAccountsInCookieCompletedCallback
                                set_accounts_in_cookies_completed_callback);
 
-  // Returns if the listed accounts are up to date or not. The out parameter
-  // will be assigned the current cached accounts (whether they are not up to
-  // date or not). If the accounts are not up to date, a ListAccounts fetch is
-  // sent GAIA and Observer::OnGaiaAccountsInCookieUpdated will be called.  If
-  // either of |accounts| or |signed_out_accounts| is null, the corresponding
-  // accounts returned from /ListAccounts are ignored.
-  bool ListAccounts(std::vector<gaia::ListedAccount>* accounts,
-                    std::vector<gaia::ListedAccount>* signed_out_accounts);
+  // Returns an object that has methods to get listed accounts and check whether
+  // they are up to date or not. If the accounts are not up to date, a
+  // ListAccounts fetch is sent GAIA and Observer::OnGaiaAccountsInCookieUpdated
+  // will be called.
+  signin::AccountsInCookieJarInfo ListAccounts();
 
   // Triggers a ListAccounts fetch. This is public so that callers that know
   // that a check which GAIA should be done can force it.
@@ -249,7 +250,7 @@ class GaiaCookieManagerService
   // Indicates that an account previously listed via ListAccounts should now
   // be removed. Does not trigger a ListAccounts request and does not change the
   // staleness of the account information.
-  void RemoveLoggedOutAccountByGaiaId(const std::string& gaia_id);
+  void RemoveLoggedOutAccountByGaiaId(const GaiaId& gaia_id);
 
   // Call observers when setting accounts in cookie completes.
   void SignalSetAccountsComplete(signin::SetAccountsInCookieResult result);
@@ -322,6 +323,12 @@ class GaiaCookieManagerService
       GaiaAuthConsumer* consumer,
       const gaia::GaiaSource& source) override;
   network::mojom::CookieManager* GetCookieManagerForPartition() override;
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>
+  CreateBoundSessionOAuthMultiLoginDelegateForPartition() override;
+  network::mojom::DeviceBoundSessionManager*
+  GetDeviceBoundSessionManagerForPartition() override;
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   // Helper method to initialize listed accounts ids.
   void InitializeListedAccountsIds();
@@ -344,6 +351,11 @@ class GaiaCookieManagerService
   // This function should be called before the front of the queue is in
   // execution.
   void OptimizeListAccounts();
+
+  // Helper method to construct `AccountsInCookieJarInfo` from
+  // `list_accounts_stale_` and `accounts_`. Similar to `ListAccounts`, but
+  // doesn't trigger the actual request to refresh the list.
+  signin::AccountsInCookieJarInfo CreateAccountsInCookieJarInfo();
 
   const raw_ptr<AccountTrackerService> account_tracker_service_ = nullptr;
   raw_ptr<ProfileOAuth2TokenService> token_service_;
@@ -379,8 +391,7 @@ class GaiaCookieManagerService
   // True once the ExternalCCResultFetcher has completed once.
   bool external_cc_result_fetched_;
 
-  std::vector<gaia::ListedAccount> listed_accounts_;
-  std::vector<gaia::ListedAccount> signed_out_accounts_;
+  std::vector<gaia::ListedAccount> accounts_;
 
   bool list_accounts_stale_;
 

@@ -51,6 +51,11 @@ const wchar_t kTaskName2[] = L"Chrome Updater Test task 2 (delete me)";
 const wchar_t kPrefixTaskName1[] = L"Chrome Updater Test task 1";
 const wchar_t kPrefixTaskName2[] = L"Chrome Updater Test task 2";
 
+const wchar_t kUpdaterTaskName1[] = L"Updater1.1{xxxxxxxx}";
+const wchar_t kUpdaterTaskName2[] = L"Updater1.11{xxxxxxxx}";
+
+const wchar_t kPrefixUpdaterTaskName1[] = L"Updater1.1";
+
 // Optional descriptions for the tasks above.
 const wchar_t kTaskDescription1[] =
     L"Task 1 used only for Chrome Updater unit testing.";
@@ -102,7 +107,7 @@ class TaskSchedulerTests : public ::testing::Test {
 
   // Converts a base::Time that is in UTC and returns the corresponding local
   // time on the current system.
-  base::Time UTCTimeToLocalTime(const base::Time& time_utc) {
+  base::Time UTCTimeToLocalTime(base::Time time_utc) {
     const FILETIME file_time_utc = time_utc.ToFileTime();
     FILETIME file_time_local = {};
     SYSTEMTIME system_time_utc = {};
@@ -343,6 +348,26 @@ TEST_F(TaskSchedulerTests, FindFirstTaskName) {
   EXPECT_EQ(kTaskName2, task_scheduler_->FindFirstTaskName(kPrefixTaskName2));
 }
 
+TEST_F(TaskSchedulerTests, FindFirstUpdaterTaskName) {
+  base::CommandLine command_line = GetTestProcessCommandLine(
+      GetUpdaterScopeForTesting(), test::GetTestName());
+
+  EXPECT_TRUE(task_scheduler_->RegisterTask(
+      kUpdaterTaskName1, kTaskDescription1, command_line,
+      TaskScheduler::TRIGGER_TYPE_HOURLY, false));
+  EXPECT_TRUE(task_scheduler_->IsTaskRegistered(kUpdaterTaskName1));
+  EXPECT_TRUE(task_scheduler_->RegisterTask(
+      kUpdaterTaskName2, kTaskDescription2, command_line,
+      TaskScheduler::TRIGGER_TYPE_HOURLY, false));
+  EXPECT_TRUE(task_scheduler_->IsTaskRegistered(kUpdaterTaskName2));
+
+  EXPECT_EQ(kUpdaterTaskName2,
+            task_scheduler_->FindFirstTaskName(kPrefixUpdaterTaskName1));
+  EXPECT_EQ(kUpdaterTaskName1,
+            task_scheduler_->FindFirstTaskName(
+                std::wstring(kPrefixUpdaterTaskName1) + L"{"));
+}
+
 TEST_F(TaskSchedulerTests, GetTasksIncludesHidden) {
   base::CommandLine command_line = GetTestProcessCommandLine(
       GetUpdaterScopeForTesting(), test::GetTestName());
@@ -490,8 +515,8 @@ TEST(TaskSchedulerTest, NoSubfolders) {
       GetUpdaterScopeForTesting(), /*use_task_subfolders=*/false);
   ASSERT_TRUE(task_scheduler);
 
-  constexpr int kNumTasks = 6;
-  const std::wstring kTaskNamePrefix(base::ASCIIToWide(test::GetTestName()));
+  static constexpr int kNumTasks = 6;
+  const std::wstring kTaskNamePrefix(base::UTF8ToWide(test::GetTestName()));
 
   for (int count = 0; count < kNumTasks; ++count) {
     std::wstring task_name(kTaskNamePrefix);
@@ -512,8 +537,8 @@ TEST(TaskSchedulerTest, ForEachTaskWithPrefix) {
         GetUpdaterScopeForTesting(), use_task_subfolders);
     ASSERT_TRUE(task_scheduler);
 
-    constexpr int kNumTasks = 6;
-    const std::wstring kTaskNamePrefix(base::ASCIIToWide(test::GetTestName()));
+    static constexpr int kNumTasks = 6;
+    const std::wstring kTaskNamePrefix(base::UTF8ToWide(test::GetTestName()));
 
     for (int count = 0; count < kNumTasks; ++count) {
       std::wstring task_name(kTaskNamePrefix);

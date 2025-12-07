@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "components/prefs/testing_pref_service.h"
@@ -13,8 +11,8 @@
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_test_utils.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/test/testing_application_context.h"
@@ -34,14 +32,13 @@ class ReadingListBrowserAgentUnitTest : public PlatformTest {
     TestingApplicationContext::GetGlobal()->SetLocalState(local_state_.get());
 
     std::vector<scoped_refptr<ReadingListEntry>> initial_entries;
-    TestChromeBrowserState::Builder builder;
-    builder.AddTestingFactory(
-        ReadingListModelFactory::GetInstance(),
-        base::BindRepeating(&BuildReadingListModelWithFakeStorage,
-                            std::move(initial_entries)));
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(ReadingListModelFactory::GetInstance(),
+                              ReadingListModelTestingFactoryWithFakeStorage(
+                                  std::move(initial_entries)));
 
-    chrome_browser_state_ = std::move(builder).Build();
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
+    profile_ = std::move(builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     mock_snackbar_commands_handler_ =
         [OCMockObject niceMockForProtocol:@protocol(SnackbarCommands)];
@@ -56,18 +53,17 @@ class ReadingListBrowserAgentUnitTest : public PlatformTest {
   }
 
   void TearDown() override {
-    chrome_browser_state_.reset();
+    profile_.reset();
     TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
     local_state_.reset();
   }
 
   ReadingListModel* reading_list_model() {
-    return ReadingListModelFactory::GetForBrowserState(
-        chrome_browser_state_.get());
+    return ReadingListModelFactory::GetForProfile(profile_.get());
   }
 
  protected:
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   base::HistogramTester histogram_tester_;
   web::WebTaskEnvironment task_environment_;

@@ -71,9 +71,10 @@ void BuiltinProvider::DoBuiltinAutocompletion(const std::u16string& text) {
     ACMatchClassifications styles =
         ClassifyTermMatches(style_matches, std::string::npos, kMatch, kUrl);
     // Include some common builtin URLs as the user types the scheme.
-    for (std::u16string url : client_->GetBuiltinsToProvideAsUserTypes())
+    for (const std::u16string& url :
+         client_->GetBuiltinsToProvideAsUserTypes()) {
       AddBuiltinMatch(url, std::u16string(), styles);
-
+    }
   } else {
     // Match input about: or |embedderAbout| URL input against builtin URLs.
     GURL url = url_formatter::FixupURL(base::UTF16ToUTF8(text), std::string());
@@ -86,12 +87,12 @@ void BuiltinProvider::DoBuiltinAutocompletion(const std::u16string& text) {
       // Suggest about:blank for substrings, taking URL fixup into account.
       // Chrome does not support trailing slashes or paths for about:blank.
       const std::u16string blank_host = u"blank";
-      const std::u16string host = base::UTF8ToUTF16(url.host());
+      const std::u16string host = base::UTF8ToUTF16(url.GetHost());
       if (base::StartsWith(text, url::kAboutScheme16,
                            base::CompareCase::INSENSITIVE_ASCII) &&
           base::StartsWith(blank_host, host,
                            base::CompareCase::INSENSITIVE_ASCII) &&
-          (url.path().length() <= 1) && !text_ends_with_slash) {
+          (url.GetPath().length() <= 1) && !text_ends_with_slash) {
         std::u16string match(url::kAboutBlankURL16);
         const size_t corrected_length = kAboutSchemeLength + 1 + host.length();
         TermMatches style_matches = {{0, 0, corrected_length}};
@@ -101,7 +102,8 @@ void BuiltinProvider::DoBuiltinAutocompletion(const std::u16string& text) {
       }
 
       // Include the path for sub-pages (e.g. "chrome://settings/browser").
-      std::u16string host_and_path = base::UTF8ToUTF16(url.host() + url.path());
+      std::u16string host_and_path =
+          base::UTF8ToUTF16(url.GetHost() + url.GetPath());
       base::TrimString(host_and_path, u"/", &host_and_path);
       size_t match_length = embedderAbout.length() + host_and_path.length();
       for (Builtins::const_iterator i(builtins_.begin());

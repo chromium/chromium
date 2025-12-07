@@ -1,0 +1,36 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_page_host_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #include=cr-page-host-style-lit cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+  height: 100%;
+  overflow: hidden;
+}
+
+cr-button {
+  width: 95%;
+  margin: 3%;
+}
+
+cr-toolbar {
+  --cr-toolbar-left-spacer-width: 500px;
+}
+
+#requests {
+  height: calc(100% - var(--cr-toolbar-height));
+  overflow: auto;
+}
+
+[slot='header'] {
+  padding: 0 var(--cr-section-padding) var(--cr-section-padding);
+}

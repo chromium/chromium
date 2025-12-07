@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_image_decoder.h"
 
 #include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_image_reader.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
@@ -25,6 +21,7 @@ BMPImageDecoder::BMPImageDecoder(AlphaOption alpha_option,
     : ImageDecoder(alpha_option,
                    ImageDecoder::kDefaultBitDepth,
                    color_behavior,
+                   cc::AuxImage::kDefault,
                    max_decoded_bytes),
       decoded_offset_(0) {}
 
@@ -100,8 +97,8 @@ bool BMPImageDecoder::ProcessFileHeader(wtf_size_t& img_data_offset) {
   // Read file header.
   DCHECK(!decoded_offset_);
   FastSharedBufferReader fast_reader(data_);
-  char buffer[kSizeOfFileHeader];
-  const char* file_header;
+  std::array<uint8_t, kSizeOfFileHeader> buffer;
+  base::span<const uint8_t> file_header;
   uint16_t file_type;
   if (!GetFileType(fast_reader, buffer, file_header, file_type)) {
     return false;
@@ -132,14 +129,14 @@ bool BMPImageDecoder::ProcessFileHeader(wtf_size_t& img_data_offset) {
     return SetFailed();
   }
 
-  img_data_offset = BMPImageReader::ReadUint32(&file_header[10]);
+  img_data_offset = BMPImageReader::ReadUint32(file_header.subspan(10u));
   decoded_offset_ += kSizeOfFileHeader;
   return true;
 }
 
 bool BMPImageDecoder::GetFileType(const FastSharedBufferReader& fast_reader,
-                                  char* buffer,
-                                  const char*& file_header,
+                                  base::span<uint8_t> buffer,
+                                  base::span<const uint8_t>& file_header,
                                   uint16_t& file_type) const {
   if (data_->size() - decoded_offset_ < kSizeOfFileHeader) {
     return false;

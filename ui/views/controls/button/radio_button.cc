@@ -4,9 +4,10 @@
 
 #include "ui/views/controls/button/radio_button.h"
 
+#include <algorithm>
+
 #include "base/auto_reset.h"
 #include "base/check.h"
-#include "base/ranges/algorithm.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -19,6 +20,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/cascading_property.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/resources/grit/views_resources.h"
 #include "ui/views/vector_icons.h"
@@ -42,14 +44,10 @@ RadioButton::RadioButton(const std::u16string& label, int group_id)
 
 RadioButton::~RadioButton() = default;
 
-void RadioButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  Checkbox::GetAccessibleNodeData(node_data);
-}
-
 View* RadioButton::GetSelectedViewForGroup(int group) {
   Views views;
   GetViewsInGroupFromParent(group, &views);
-  const auto i = base::ranges::find_if(views, [](const views::View* view) {
+  const auto i = std::ranges::find_if(views, [](const views::View* view) {
     // Why don't we check the runtime type like is done in SetChecked()?
     return static_cast<const RadioButton*>(view)->GetChecked();
   });
@@ -90,8 +88,9 @@ void RadioButton::RequestFocusFromEvent() {
   // Take focus only if another radio button in the group has focus.
   Views views;
   GetViewsInGroupFromParent(GetGroup(), &views);
-  if (base::ranges::any_of(views, [](View* v) { return v->HasFocus(); }))
+  if (std::ranges::any_of(views, [](View* v) { return v->HasFocus(); })) {
     RequestFocus();
+  }
 }
 
 void RadioButton::NotifyClick(const ui::Event& event) {
@@ -138,16 +137,19 @@ gfx::ImageSkia RadioButton::GetImage(ButtonState for_state) const {
 }
 
 SkPath RadioButton::GetFocusRingPath() const {
-  SkPath path;
   const gfx::Point center =
       image_container_view()->GetMirroredBounds().CenterPoint();
-  path.addCircle(center.x(), center.y(), kFocusRingRadius);
-  return path;
+
+  return SkPath::Circle(center.x(), center.y(), kFocusRingRadius);
 }
 
 void RadioButton::GetViewsInGroupFromParent(int group, Views* views) {
   if (parent()) {
-    parent()->GetViewsInGroup(group, views);
+    if (View* parent_group_view = GetCascadingRadioGroupView(parent())) {
+      parent_group_view->GetViewsInGroup(group, views);
+    } else {
+      parent()->GetViewsInGroup(group, views);
+    }
   }
 }
 

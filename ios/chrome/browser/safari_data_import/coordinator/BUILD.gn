@@ -1,0 +1,136 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "safari_data_import_entry_point_mediator.h",
+    "safari_data_import_entry_point_mediator.mm",
+    "safari_data_import_main_coordinator.h",
+    "safari_data_import_main_coordinator.mm",
+  ]
+  public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
+  deps = [
+    ":coordinator_delegate",
+    ":export_coordinator",
+    "//base",
+    "//components/feature_engagement/public",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/promos_manager/model",
+    "//ios/chrome/browser/promos_manager/model:factory",
+    "//ios/chrome/browser/safari_data_import/model:features",
+    "//ios/chrome/browser/safari_data_import/public",
+    "//ios/chrome/browser/safari_data_import/public:metrics",
+    "//ios/chrome/browser/safari_data_import/ui",
+    "//ios/chrome/browser/scoped_ui_blocker/ui_bundled",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/confirmation_alert",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("export_coordinator") {
+  sources = [
+    "safari_data_import_export_coordinator.h",
+    "safari_data_import_export_coordinator.mm",
+  ]
+  public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
+  deps = [
+    ":coordinator_delegate",
+    ":import_coordinator",
+    "//base",
+    "//ios/chrome/browser/safari_data_import/public:metrics",
+    "//ios/chrome/browser/safari_data_import/ui",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/public/provider/chrome/browser/safari_data_import:safari_data_import_api",
+  ]
+}
+
+source_set("import_coordinator") {
+  sources = [
+    "safari_data_import_import_coordinator.h",
+    "safari_data_import_import_coordinator.mm",
+    "safari_data_import_import_mediator.h",
+    "safari_data_import_import_mediator.mm",
+  ]
+  public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
+  deps = [
+    ":coordinator_delegate",
+    "//base",
+    "//components/application_locale_storage",
+    "//components/autofill/core/browser",
+    "//components/bookmarks/browser",
+    "//components/history/core/browser",
+    "//components/keyed_service/core",
+    "//components/password_manager/core/browser/ui",
+    "//components/reading_list/core",
+    "//components/signin/public/identity_manager/",
+    "//components/strings",
+    "//components/user_data_importer/ios",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/affiliations/model",
+    "//ios/chrome/browser/autofill/model",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/data_import/public",
+    "//ios/chrome/browser/data_import/ui",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/first_run/ui_bundled:constants",
+    "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/passwords/model:store_factory",
+    "//ios/chrome/browser/reading_list/model",
+    "//ios/chrome/browser/safari_data_import/model",
+    "//ios/chrome/browser/safari_data_import/public",
+    "//ios/chrome/browser/safari_data_import/public:metrics",
+    "//ios/chrome/browser/safari_data_import/ui",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/ui/util:url_with_title",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/webauthn/model",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/promo_style",
+    "//ui/base",
+  ]
+}
+
+source_set("coordinator_delegate") {
+  sources = [ "safari_data_import_child_coordinator_delegate.h" ]
+}
+
+source_set("promo") {
+  sources = [
+    "safari_data_import_reminder_promo_display_handler.h",
+    "safari_data_import_reminder_promo_display_handler.mm",
+  ]
+  public_deps = [ "//ios/chrome/browser/promos_manager/ui_bundled:promos" ]
+  deps = [
+    "//components/feature_engagement/public",
+    "//ios/chrome/browser/promos_manager/model:types",
+    "//ios/chrome/browser/safari_data_import/public",
+    "//ios/chrome/browser/shared/public/commands",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "safari_data_import_entry_point_mediator_unittest.mm" ]
+  deps = [
+    ":coordinator",
+    "//base",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/test:test_support",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/promos_manager/model",
+    "//ios/chrome/browser/promos_manager/model:test_support",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

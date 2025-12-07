@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<style>
+  summary {
+    display: inline;
+  }
+</style>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body>
+  <ul>
+    <li>bar</li>
+  </ul>
+  <details>
+    <summary>
+      <div>Crash Test</div>
+    </summary>
+  </details>
+</body>
+<script>
+  function fuzz() {
+    {
+      document.designMode = "on";
+      document.execCommand("selectAll");
+      document.execCommand("Delete");
+    }
+  }
+  test(function () {
+    document.addEventListener("DOMContentLoaded", function () {
+      setTimeout(fuzz);
+    });
+  }, 'Delete in details should not crash');
+</script>

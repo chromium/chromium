@@ -16,7 +16,7 @@
 #import "components/security_interstitials/core/ssl_error_ui.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_metrics_collector_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -48,19 +48,20 @@ IOSSSLBlockingPage::IOSSSLBlockingPage(
       controller_(std::move(client)) {
   DCHECK(web_state_);
   // Override prefs for the SSLErrorUI.
-  if (overridable_)
+  if (overridable_) {
     options_mask |= SSLErrorOptionsMask::SOFT_OVERRIDE_ENABLED;
-  else
+  } else {
     options_mask &= ~SSLErrorOptionsMask::SOFT_OVERRIDE_ENABLED;
+  }
 
   ssl_error_ui_.reset(new SSLErrorUI(request_url, cert_error, ssl_info,
                                      options_mask, time_triggered, GURL(),
                                      controller_.get()));
 
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
   safe_browsing::SafeBrowsingMetricsCollector* metrics_collector =
-      SafeBrowsingMetricsCollectorFactory::GetForBrowserState(browser_state);
+      SafeBrowsingMetricsCollectorFactory::GetForProfile(profile);
   if (metrics_collector) {
     metrics_collector->AddSafeBrowsingEventToPref(
         safe_browsing::SafeBrowsingMetricsCollector::EventType::
@@ -75,8 +76,7 @@ bool IOSSSLBlockingPage::ShouldCreateNewNavigation() const {
   return true;
 }
 
-IOSSSLBlockingPage::~IOSSSLBlockingPage() {
-}
+IOSSSLBlockingPage::~IOSSSLBlockingPage() {}
 
 void IOSSSLBlockingPage::PopulateInterstitialStrings(
     base::Value::Dict& load_time_data) const {
@@ -95,7 +95,7 @@ void IOSSSLBlockingPage::HandleCommand(
   // the page to re-initiate the original navigation.
   if (command == security_interstitials::CMD_PROCEED) {
     web_state_->GetSessionCertificatePolicyCache()->RegisterAllowedCertificate(
-        ssl_info_.cert, request_url().host(), ssl_info_.cert_status);
+        ssl_info_.cert, request_url().GetHost(), ssl_info_.cert_status);
     web_state_->GetNavigationManager()->Reload(web::ReloadType::NORMAL,
                                                /*check_for_repost=*/true);
     return;

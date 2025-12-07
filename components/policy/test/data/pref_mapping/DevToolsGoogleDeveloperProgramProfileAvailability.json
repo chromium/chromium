@@ -1,0 +1,19 @@
+[
+    {
+      "os": [
+        "win",
+        "linux",
+        "mac",
+        "chromeos"
+      ],
+      "simple_policy_pref_mapping_test": {
+        "pref_name": "devtools.google_developer_program_profile_availability",
+        "default_value": 0,
+        "values_to_test": [
+          0,
+          1,
+          2
+        ]
+      }
+    }
+  ]

@@ -13,6 +13,7 @@
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "content/browser/tracing/startup_tracing_controller.h"
@@ -20,7 +21,6 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "services/tracing/perfetto/privacy_filtering_check.h"
-#include "services/tracing/public/cpp/perfetto/trace_event_data_source.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "services/tracing/public/cpp/trace_startup_config.h"
 #include "services/tracing/public/cpp/tracing_features.h"
@@ -100,7 +100,11 @@ IN_PROC_BROWSER_TEST_F(StartupTracingInProcessTest,
   auto config = tracing::TraceStartupConfig::GetInstance()
                     .GetDefaultBackgroundStartupConfig();
 
-  CHECK(tracing::EnableStartupTracingForProcess(config));
+  perfetto::Tracing::SetupStartupTracingOpts opts;
+  opts.timeout_ms = tracing::kStartupTracingTimeoutMs;
+  opts.backend = perfetto::kCustomBackend;
+
+  perfetto::Tracing::SetupStartupTracingBlocking(config, opts);
 
   for (int i = 0; i < 1024; ++i) {
     auto data = std::make_unique<LargeTraceEventData>();
@@ -276,7 +280,8 @@ class StartupTracingTest
         << "Failed to read file " << path;
 
     if (output_type == OutputType::kJSON) {
-      EXPECT_TRUE(base::JSONReader::Read(trace));
+      EXPECT_TRUE(
+          base::JSONReader::Read(trace, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
     }
 
     // Both proto and json should have the trace event name recorded somewhere

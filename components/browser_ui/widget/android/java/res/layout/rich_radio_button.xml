@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root_item_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/rich_radio_button_default_padding"
+    android:background="@drawable/rich_radio_button_background">
+
+    <FrameLayout
+        android:id="@+id/rich_radio_button_icon_container"
+        android:layout_width="@dimen/rich_radio_button_horizontal_icon_container_size"
+        android:layout_height="@dimen/rich_radio_button_horizontal_icon_container_size"
+        android:background="@drawable/rich_radio_button_background"
+        android:gravity="center"
+        android:clipToOutline="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/rich_radio_button_text_container"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        android:layout_marginStart="0dp"
+        android:layout_marginEnd="@dimen/rich_radio_button_icon_margin_end">
+            <org.chromium.ui.widget.ChromeImageView
+                android:id="@+id/rich_radio_button_icon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:scaleType="fitCenter"
+                android:visibility="gone" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/rich_radio_button_text_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/rich_radio_button_icon_container"
+        app:layout_constraintEnd_toStartOf="@+id/rich_radio_button_radio_button"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintHorizontal_weight="1"
+        android:layout_marginStart="0dp"
+        android:layout_marginEnd="0dp">
+
+        <TextView
+            android:id="@+id/rich_radio_button_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
+        <TextView
+            android:id="@+id/rich_radio_button_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:layout_marginTop="@dimen/rich_radio_button_description_margin_top"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <RadioButton
+        android:id="@+id/rich_radio_button_radio_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:focusable="false"
+        android:button="@null"
+        android:layout_marginEnd="@dimen/rich_radio_button_radio_button_margin_end"
+        android:drawableEnd="@drawable/rich_radio_button_selector"
+        android:drawableTint="?attr/colorPrimary"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/rich_radio_button_text_container"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        android:layout_marginStart="@dimen/rich_radio_button_radio_button_margin_start"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

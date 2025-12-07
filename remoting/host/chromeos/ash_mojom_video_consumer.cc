@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -110,7 +111,8 @@ std::unique_ptr<SkBitmap> AshMojomVideoConsumer::Frame::CreateSkBitmap() const {
   bitmap->allocPixels(
       SkImageInfo::MakeN32(size.width(), size.height(), kOpaque_SkAlphaType,
                            info_->color_space.ToSkColorSpace()));
-  memcpy(bitmap->getPixels(), pixels_.memory(), bitmap->computeByteSize());
+  UNSAFE_TODO(
+      memcpy(bitmap->getPixels(), pixels_.memory(), bitmap->computeByteSize()));
 
   return bitmap;
 }
@@ -203,7 +205,7 @@ void AshMojomVideoConsumer::OnFrameCaptured(
 
 void AshMojomVideoConsumer::OnFrameWithEmptyRegionCapture() {
   // This method is not invoked when capturing entire desktops.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void AshMojomVideoConsumer::OnStopped() {
@@ -215,9 +217,9 @@ void AshMojomVideoConsumer::OnStopped() {
 void AshMojomVideoConsumer::OnLog(const std::string& message) {
   VLOG(3) << "AshMojomVideoConsumer::OnLog : " << message;
 }
-// Invoked every time we change target, but, sub_capture_target_version is not
+// Invoked every time we change target, but `capture_version` is not
 // relevant for window capture.
-void AshMojomVideoConsumer::OnNewSubCaptureTargetVersion(
-    uint32_t sub_capture_target_version) {}
+void AshMojomVideoConsumer::OnNewCaptureVersion(
+    const media::CaptureVersion& capture_version) {}
 
 }  // namespace remoting

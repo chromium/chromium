@@ -36,8 +36,8 @@ class URLFetcherBlockAdapterTest : public PlatformTest {
 TEST_F(URLFetcherBlockAdapterTest, FetchTextResource) {
   GURL test_url("http://test");
   std::string response("<html><body>Hello World!</body></html>");
-  NSData* expected_data =
-      [NSData dataWithBytes:response.c_str() length:response.size()];
+  NSData* expected_data = [NSData dataWithBytes:response.c_str()
+                                         length:response.size()];
   web::URLFetcherBlockAdapterCompletion completion_handler =
       ^(NSData* data, web::URLFetcherBlockAdapter* fetcher) {
         EXPECT_NSEQ(expected_data, data);

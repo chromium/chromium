@@ -89,7 +89,7 @@ class TestDeviceStatusListener : public DeviceStatusListener {
 
 class DeviceStatusListenerTest : public testing::Test {
  public:
-  DeviceStatusListenerTest() {}
+  DeviceStatusListenerTest() = default;
 
   void SetUp() override {
     auto battery_listener = std::make_unique<TestBatteryStatusListener>();
@@ -139,7 +139,10 @@ class DeviceStatusListenerTest : public testing::Test {
 
   // Simulates a battery change call.
   void SimulateBatteryChange(bool on_battery_power) {
-    power_source_.GeneratePowerStateEvent(on_battery_power);
+    power_source_.GeneratePowerStateEvent(
+        on_battery_power
+            ? base::PowerStateObserver::BatteryPowerStatus::kBatteryPower
+            : base::PowerStateObserver::BatteryPowerStatus::kExternalPower);
   }
 
   void ChangeBatteryPercentage(int percentage) {

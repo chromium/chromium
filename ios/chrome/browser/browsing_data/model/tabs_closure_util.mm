@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/browsing_data/model/tabs_closure_util.h"
 
 #import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -106,10 +107,39 @@ std::set<web::WebStateID> GetTabsToClose(
   return webstates_to_close;
 }
 
+std::map<tab_groups::TabGroupId, std::set<int>> GetTabGroupsWithTabsToClose(
+    WebStateList* web_state_list,
+    base::Time begin_time,
+    base::Time end_time,
+    const WebStateIDToTime& cached_tabs_to_close) {
+  CHECK(web_state_list);
+
+  std::map<tab_groups::TabGroupId, std::set<int>> groups_with_tabs_to_close;
+  for (const TabGroup* tab_group : web_state_list->GetGroups()) {
+    std::set<int> webstate_indexes;
+    for (int index : tab_group->range()) {
+      base::Time last_navigation_time = GetWebStateLastNavigationTime(
+          web_state_list->GetWebStateAt(index), cached_tabs_to_close);
+
+      if (ShouldCloseTab(last_navigation_time, begin_time, end_time)) {
+        webstate_indexes.insert(index);
+      }
+    }
+
+    if (!webstate_indexes.empty()) {
+      groups_with_tabs_to_close.insert(
+          {tab_group->tab_group_id(), webstate_indexes});
+    }
+  }
+
+  return groups_with_tabs_to_close;
+}
+
 void CloseTabs(WebStateList* web_state_list,
                base::Time begin_time,
                base::Time end_time,
-               const WebStateIDToTime& cached_tabs_to_close) {
+               const WebStateIDToTime& cached_tabs_to_close,
+               bool keep_active_tab) {
   CHECK(web_state_list);
 
   std::set<web::WebStateID> web_state_ids_to_close = GetTabsToClose(
@@ -124,6 +154,10 @@ void CloseTabs(WebStateList* web_state_list,
   for (int index = web_state_list->pinned_tabs_count();
        index < web_state_list->count(); ++index) {
     web::WebState* web_state = web_state_list->GetWebStateAt(index);
+    if (keep_active_tab && index == web_state_list->active_index()) {
+      continue;
+    }
+
     if (web_state_ids_to_close.contains(web_state->GetUniqueIdentifier())) {
       indices_to_close.push_back(index);
     }
@@ -135,7 +169,7 @@ void CloseTabs(WebStateList* web_state_list,
 
   auto lock = web_state_list->StartBatchOperation();
   web_state_list->CloseWebStatesAtIndices(
-      WebStateList::CLOSE_NO_FLAGS,
+      WebStateList::ClosingReason::kTabsCleanup,
       RemovingIndexes(std::move(indices_to_close)));
 }
 }  // namespace tabs_closure_util

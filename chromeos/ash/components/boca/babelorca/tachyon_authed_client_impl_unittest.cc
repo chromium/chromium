@@ -11,12 +11,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "base/types/expected.h"
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_tachyon_client.h"
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_token_manager.h"
 #include "chromeos/ash/components/boca/babelorca/proto/testing_message.pb.h"
-#include "chromeos/ash/components/boca/babelorca/response_callback_wrapper.h"
-#include "chromeos/ash/components/boca/babelorca/response_callback_wrapper_impl.h"
+#include "chromeos/ash/components/boca/babelorca/request_data_wrapper.h"
+#include "chromeos/ash/components/boca/babelorca/tachyon_response.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,14 +23,12 @@
 namespace ash::babelorca {
 namespace {
 
-using ExpectedTestingMessage =
-    base::expected<TestingMessage,
-                   ResponseCallbackWrapper::TachyonRequestError>;
-
 constexpr char kOAuthToken1[] = "oauth-token1";
 constexpr char kOAuthToken2[] = "oauth-token2";
 constexpr int kMaxRetries = 2;
 constexpr char kUrl[] = "https:://test.com";
+const std::string kProtoContentType = "application/x-protobuf";
+const std::string kJsonContentType = "application/json";
 
 class TachyonAuthedClientImplTest : public testing::Test {
  protected:
@@ -60,12 +57,14 @@ class TachyonAuthedClientImplTest : public testing::Test {
 
   const std::string& request_string() { return request_string_; }
 
-  std::unique_ptr<ResponseCallbackWrapperImpl<TestingMessage>> response_cb() {
-    return std::make_unique<ResponseCallbackWrapperImpl<TestingMessage>>(
-        test_future_.GetCallback());
+  std::unique_ptr<RequestDataWrapper> request_data_wrapper(
+      std::string content_type = kProtoContentType) {
+    return std::make_unique<RequestDataWrapper>(
+        TRAFFIC_ANNOTATION_FOR_TESTS, kUrl, kMaxRetries,
+        test_future_.GetCallback(), content_type);
   }
 
-  base::test::TestFuture<ExpectedTestingMessage>* test_future() {
+  base::test::TestFuture<TachyonResponse>* test_future() {
     return &test_future_;
   }
 
@@ -77,7 +76,7 @@ class TachyonAuthedClientImplTest : public testing::Test {
   FakeTokenManager fake_token_manager_;
   std::unique_ptr<TestingMessage> request_message_;
   std::string request_string_;
-  base::test::TestFuture<ExpectedTestingMessage> test_future_;
+  base::test::TestFuture<TachyonResponse> test_future_;
 };
 
 TEST_F(TachyonAuthedClientImplTest, InitiallyAuthed) {
@@ -86,9 +85,8 @@ TEST_F(TachyonAuthedClientImplTest, InitiallyAuthed) {
   fake_token_manager()->SetFetchedVersion(1);
 
   CreateAuthedClient();
-  authed_client()->StartAuthedRequest(TRAFFIC_ANNOTATION_FOR_TESTS,
-                                      request_message(), kUrl, kMaxRetries,
-                                      response_cb());
+  authed_client()->StartAuthedRequest(request_data_wrapper(),
+                                      request_message());
   fake_client_ptr()->WaitForRequest();
 
   EXPECT_THAT(fake_client_ptr()->GetOAuthToken(), testing::StrEq(kOAuthToken1));
@@ -100,13 +98,36 @@ TEST_F(TachyonAuthedClientImplTest, InitiallyAuthed) {
   EXPECT_EQ(request_data->oauth_version, 1);
   EXPECT_THAT(request_data->url, testing::StrEq(kUrl));
   EXPECT_EQ(request_data->content_data, request_string());
+  EXPECT_EQ(request_data->content_type, kProtoContentType);
+}
+
+TEST_F(TachyonAuthedClientImplTest, InitiallyAuthedRequestString) {
+  fake_token_manager()->SetTokenString(
+      std::make_unique<std::string>(kOAuthToken1));
+  fake_token_manager()->SetFetchedVersion(1);
+
+  CreateAuthedClient();
+  authed_client()->StartAuthedRequestString(
+      request_data_wrapper(kJsonContentType),
+      request_message()->SerializeAsString());
+  fake_client_ptr()->WaitForRequest();
+
+  EXPECT_THAT(fake_client_ptr()->GetOAuthToken(), testing::StrEq(kOAuthToken1));
+
+  auto* request_data = fake_client_ptr()->GetRequestData();
+  ASSERT_THAT(request_data, testing::NotNull());
+  EXPECT_EQ(request_data->max_retries, kMaxRetries);
+  EXPECT_EQ(request_data->oauth_retry_num, 0);
+  EXPECT_EQ(request_data->oauth_version, 1);
+  EXPECT_THAT(request_data->url, testing::StrEq(kUrl));
+  EXPECT_EQ(request_data->content_data, request_string());
+  EXPECT_EQ(request_data->content_type, kJsonContentType);
 }
 
 TEST_F(TachyonAuthedClientImplTest, NotInitiallyAuthed) {
   CreateAuthedClient();
-  authed_client()->StartAuthedRequest(TRAFFIC_ANNOTATION_FOR_TESTS,
-                                      request_message(), kUrl, kMaxRetries,
-                                      response_cb());
+  authed_client()->StartAuthedRequest(request_data_wrapper(),
+                                      request_message());
   fake_token_manager()->WaitForForceFetchRequest();
   fake_token_manager()->SetTokenString(
       std::make_unique<std::string>(kOAuthToken1));
@@ -131,9 +152,8 @@ TEST_F(TachyonAuthedClientImplTest, AuthFailRetryNewFetch) {
   fake_token_manager()->SetFetchedVersion(1);
 
   CreateAuthedClient();
-  authed_client()->StartAuthedRequest(TRAFFIC_ANNOTATION_FOR_TESTS,
-                                      request_message(), kUrl, kMaxRetries,
-                                      response_cb());
+  authed_client()->StartAuthedRequest(request_data_wrapper(),
+                                      request_message());
   fake_client_ptr()->WaitForRequest();
   fake_client_ptr()->ExecuteAuthFailCb();
   fake_token_manager()->WaitForForceFetchRequest();
@@ -160,9 +180,8 @@ TEST_F(TachyonAuthedClientImplTest, AuthFailRetryAlreadyFetched) {
   fake_token_manager()->SetFetchedVersion(1);
 
   CreateAuthedClient();
-  authed_client()->StartAuthedRequest(TRAFFIC_ANNOTATION_FOR_TESTS,
-                                      request_message(), kUrl, kMaxRetries,
-                                      response_cb());
+  authed_client()->StartAuthedRequest(request_data_wrapper(),
+                                      request_message());
   fake_client_ptr()->WaitForRequest();
   // Simulate new token fetched before auth failure callback.
   fake_token_manager()->SetTokenString(
@@ -188,9 +207,8 @@ TEST_F(TachyonAuthedClientImplTest, AuthRetryFailed) {
   fake_token_manager()->SetFetchedVersion(1);
 
   CreateAuthedClient();
-  authed_client()->StartAuthedRequest(TRAFFIC_ANNOTATION_FOR_TESTS,
-                                      request_message(), kUrl, kMaxRetries,
-                                      response_cb());
+  authed_client()->StartAuthedRequest(request_data_wrapper(),
+                                      request_message());
   fake_client_ptr()->WaitForRequest();
   // Simulate new token fetched before auth failure callback.
   fake_token_manager()->SetTokenString(
@@ -200,22 +218,28 @@ TEST_F(TachyonAuthedClientImplTest, AuthRetryFailed) {
   fake_client_ptr()->WaitForRequest();
   fake_client_ptr()->ExecuteAuthFailCb();
 
-  EXPECT_EQ(test_future()->Get(),
-            base::unexpected(
-                ResponseCallbackWrapper::TachyonRequestError::kAuthError));
+  EXPECT_EQ(test_future()->Get().status(), TachyonResponse::Status::kAuthError);
 }
 
 TEST_F(TachyonAuthedClientImplTest, TokenFetchFailed) {
   CreateAuthedClient();
-  authed_client()->StartAuthedRequest(TRAFFIC_ANNOTATION_FOR_TESTS,
-                                      request_message(), kUrl, kMaxRetries,
-                                      response_cb());
+  authed_client()->StartAuthedRequest(request_data_wrapper(),
+                                      request_message());
   fake_token_manager()->WaitForForceFetchRequest();
   fake_token_manager()->ExecuteFetchCallback(/*success=*/false);
 
-  EXPECT_EQ(test_future()->Get(),
-            base::unexpected(
-                ResponseCallbackWrapper::TachyonRequestError::kAuthError));
+  EXPECT_EQ(test_future()->Get().status(), TachyonResponse::Status::kAuthError);
+}
+
+TEST_F(TachyonAuthedClientImplTest, FetchSucceededNullToken) {
+  CreateAuthedClient();
+  authed_client()->StartAuthedRequest(request_data_wrapper(),
+                                      request_message());
+  fake_token_manager()->WaitForForceFetchRequest();
+  fake_token_manager()->SetTokenString(nullptr);
+  fake_token_manager()->ExecuteFetchCallback(/*success=*/true);
+
+  EXPECT_EQ(test_future()->Get().status(), TachyonResponse::Status::kAuthError);
 }
 
 }  // namespace

@@ -4,12 +4,14 @@
 
 #import "ios/web/common/crw_web_view_content_view.h"
 
-#import <WebKit/WebKit.h>
 #import <cmath>
 #import <limits>
 
 #import "base/check.h"
 #import "base/notreached.h"
+#import "ios/web/common/crw_obscured_insets_controller.h"
+#import "ios/web/common/crw_web_view_resizing_type.h"
+#import "ios/web/common/features.h"
 
 namespace {
 
@@ -25,14 +27,16 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
 @implementation CRWWebViewContentView
 @synthesize contentOffset = _contentOffset;
 @synthesize contentInset = _contentInset;
+@synthesize obscuredInsets = _obscuredInsets;
 @synthesize scrollView = _scrollView;
 @synthesize shouldUseViewContentInset = _shouldUseViewContentInset;
 @synthesize viewportEdgesAffectedBySafeArea = _viewportEdgesAffectedBySafeArea;
 @synthesize viewportInsets = _viewportInsets;
 @synthesize webView = _webView;
 @synthesize fullscreenState = _fullscreenState;
+@synthesize webViewResizingType = _webViewResizingType;
 
-- (instancetype)initWithWebView:(UIView*)webView
+- (instancetype)initWithWebView:(UIView<CRWObscuredInsetsController>*)webView
                      scrollView:(UIScrollView*)scrollView
                 fullscreenState:(CrFullscreenState)fullscreenState {
   self = [super initWithFrame:CGRectZero];
@@ -43,6 +47,12 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
     _webView = webView;
     _scrollView = scrollView;
     _fullscreenState = fullscreenState;
+    // Default resizing value.
+    if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+      _webViewResizingType = WebViewResizingType::kContentInset;
+    } else {
+      _webViewResizingType = WebViewResizingType::kFrame;
+    }
   }
   return self;
 }
@@ -52,13 +62,11 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
 }
 
 - (instancetype)initWithCoder:(NSCoder*)decoder {
-  NOTREACHED_IN_MIGRATION();
-  return nil;
+  NOTREACHED();
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
-  NOTREACHED_IN_MIGRATION();
-  return nil;
+  NOTREACHED();
 }
 
 - (void)didMoveToSuperview {
@@ -85,8 +93,9 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
 #pragma mark Layout
 
 - (void)setContentOffset:(CGPoint)contentOffset {
-  if (CGPointEqualToPoint(_contentOffset, contentOffset))
+  if (CGPointEqualToPoint(_contentOffset, contentOffset)) {
     return;
+  }
   _contentOffset = contentOffset;
   [self setNeedsLayout];
 }
@@ -102,12 +111,24 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
                   std::fabs(oldInsets.left - contentInset.left) +
                   std::fabs(oldInsets.bottom - contentInset.bottom) +
                   std::fabs(oldInsets.right - contentInset.right);
-  if (delta <= std::numeric_limits<CGFloat>::epsilon())
+  if (delta <= std::numeric_limits<CGFloat>::epsilon()) {
     return;
+  }
   _contentInset = contentInset;
   if (self.shouldUseViewContentInset) {
     [_scrollView setContentInset:contentInset];
   }
+}
+
+- (UIEdgeInsets)obscuredInset {
+  return _obscuredInsets;
+}
+
+- (void)setObscuredInset:(UIEdgeInsets)obscuredInsets {
+  if (@available(iOS 26, *)) {
+    [_webView setObscuredContentInsets:obscuredInsets];
+  }
+  _obscuredInsets = obscuredInsets;
 }
 
 - (void)setShouldUseViewContentInset:(BOOL)shouldUseViewContentInset {

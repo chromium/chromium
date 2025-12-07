@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/page_info/android/page_info_controller_android.h"
+
 #include <string>
 
 #include "base/android/jni_android.h"
@@ -11,13 +12,17 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/notimplemented.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/page_info/android/page_info_client.h"
 #include "components/page_info/core/features.h"
 #include "components/page_info/page_info.h"
 #include "components/page_info/page_info_ui.h"
+#include "components/permissions/android/permissions_android_feature_map.h"
 #include "components/permissions/features.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/browser_context.h"
@@ -26,20 +31,28 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "device/vr/buildflags/buildflags.h"
+#include "media/base/media_switches.h"
+#include "net/base/features.h"
+#include "services/network/public/cpp/features.h"
 #include "url/origin.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/page_info/android/jni_headers/PageInfoController_jni.h"
 
+#if BUILDFLAG(ENABLE_VR)
+#include "device/vr/public/cpp/features.h"
+#endif
+
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 // static
 static jlong JNI_PageInfoController_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& java_web_contents) {
+    const JavaRef<jobject>& obj,
+    const JavaRef<jobject>& java_web_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(java_web_contents);
 
@@ -55,7 +68,7 @@ static jlong JNI_PageInfoController_Init(
 
 PageInfoControllerAndroid::PageInfoControllerAndroid(
     JNIEnv* env,
-    jobject java_page_info_pop,
+    const base::android::JavaRef<jobject>& java_page_info_pop,
     content::WebContents* web_contents) {
   content::NavigationEntry* nav_entry =
       web_contents->GetController().GetVisibleEntry();
@@ -75,22 +88,16 @@ PageInfoControllerAndroid::PageInfoControllerAndroid(
 
 PageInfoControllerAndroid::~PageInfoControllerAndroid() = default;
 
-void PageInfoControllerAndroid::Destroy(JNIEnv* env,
-                                        const JavaParamRef<jobject>& obj) {
+void PageInfoControllerAndroid::Destroy(JNIEnv* env) {
   delete this;
 }
 
-void PageInfoControllerAndroid::RecordPageInfoAction(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    jint action) {
+void PageInfoControllerAndroid::RecordPageInfoAction(JNIEnv* env, jint action) {
   presenter_->RecordPageInfoAction(
       static_cast<page_info::PageInfoAction>(action));
 }
 
-void PageInfoControllerAndroid::UpdatePermissions(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+void PageInfoControllerAndroid::UpdatePermissions(JNIEnv* env) {
   presenter_->UpdatePermissions();
 }
 
@@ -99,6 +106,30 @@ void PageInfoControllerAndroid::SetIdentityInfo(
   JNIEnv* env = base::android::AttachCurrentThread();
   std::unique_ptr<PageInfoUI::SecurityDescription> security_description =
       GetSecurityDescription(identity_info);
+
+  if (base::FeatureList::IsEnabled(net::features::kVerifyQWACs)) {
+    if (PageInfo::IsFileOrInternalPage(url_)) {
+      // On Desktop, when PageInfo::IsFileOrInternalPage returns true, an
+      // InternalPageInfoBubbleView is used rather than the regular
+      // PageInfoBubbleView. That view displays only an info icon and a summary
+      // string.
+      Java_PageInfoController_showConnectionSecurityInfo(env,
+                                                         controller_jobject_);
+    } else if (security_description->summary_style ==
+               SecuritySummaryColor::GREEN) {
+      // Have the controller set up the button that will show the connection
+      // security subpage.
+      Java_PageInfoController_showOpenSecurityPageButton(
+          env, controller_jobject_,
+          ConvertUTF16ToJavaString(env, security_description->summary));
+    } else {
+      // Have the controller add the connection security UI directly to the page
+      // info UI.
+      Java_PageInfoController_showConnectionSecurityInfo(env,
+                                                         controller_jobject_);
+    }
+    return;
+  }
 
   Java_PageInfoController_setSecurityDescription(
       env, controller_jobject_,
@@ -126,7 +157,13 @@ void PageInfoControllerAndroid::SetPermissionInfo(
   // a particular order, but only if their value is different from the
   // default. This order comes from https://crbug.com/610358.
   std::vector<ContentSettingsType> permissions_to_display;
-  permissions_to_display.push_back(ContentSettingsType::GEOLOCATION);
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::kApproximateGeolocationPermission)) {
+    permissions_to_display.push_back(
+        ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
+  } else {
+    permissions_to_display.push_back(ContentSettingsType::GEOLOCATION);
+  }
   permissions_to_display.push_back(ContentSettingsType::MEDIASTREAM_CAMERA);
   permissions_to_display.push_back(ContentSettingsType::MEDIASTREAM_MIC);
   permissions_to_display.push_back(ContentSettingsType::NOTIFICATIONS);
@@ -134,33 +171,70 @@ void PageInfoControllerAndroid::SetPermissionInfo(
   permissions_to_display.push_back(ContentSettingsType::IMAGES);
   permissions_to_display.push_back(ContentSettingsType::JAVASCRIPT);
   permissions_to_display.push_back(ContentSettingsType::POPUPS);
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kAndroidWindowManagementWebApi)) {
+    permissions_to_display.push_back(ContentSettingsType::WINDOW_MANAGEMENT);
+  }
   permissions_to_display.push_back(ContentSettingsType::ADS);
   permissions_to_display.push_back(
       ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER);
   permissions_to_display.push_back(ContentSettingsType::SOUND);
-  if (base::FeatureList::IsEnabled(features::kWebNfc))
-    permissions_to_display.push_back(ContentSettingsType::NFC);
+  permissions_to_display.push_back(ContentSettingsType::NFC);
   base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
+  permissions_to_display.push_back(
+      ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
   if (cmd->HasSwitch(switches::kEnableExperimentalWebPlatformFeatures))
     permissions_to_display.push_back(ContentSettingsType::BLUETOOTH_SCANNING);
   permissions_to_display.push_back(ContentSettingsType::VR);
   permissions_to_display.push_back(ContentSettingsType::AR);
+#if BUILDFLAG(ENABLE_VR)
+  if (device::features::IsHandTrackingEnabled()) {
+    permissions_to_display.push_back(ContentSettingsType::HAND_TRACKING);
+  }
+#endif
   if (base::FeatureList::IsEnabled(features::kFedCm)) {
     permissions_to_display.push_back(
         ContentSettingsType::FEDERATED_IDENTITY_API);
   }
-    permissions_to_display.push_back(ContentSettingsType::STORAGE_ACCESS);
+  if (base::FeatureList::IsEnabled(media::kAutoPictureInPictureAndroid)) {
+    permissions_to_display.push_back(
+        ContentSettingsType::AUTO_PICTURE_IN_PICTURE);
+  }
+  permissions_to_display.push_back(ContentSettingsType::STORAGE_ACCESS);
+  if (base::FeatureList::IsEnabled(
+          network::features::kLocalNetworkAccessChecks)) {
+    permissions_to_display.push_back(ContentSettingsType::LOCAL_NETWORK_ACCESS);
+  }
 
-  std::map<ContentSettingsType, ContentSetting>
+  std::map<ContentSettingsType, /*allowed*/ bool>
       user_specified_settings_to_display;
+
+  // Whether the notifications permission is being requested. This is
+  // needed to determine whether to show the permission in Page Info while it is
+  // being requested. This is needed for the Loud Clapper experiment
+  // (crbug.com/458351800).
+  bool requested_notifications = false;
 
   for (const auto& permission : permission_info_list) {
     if (base::Contains(permissions_to_display, permission.type)) {
-      std::optional<ContentSetting> setting_to_display =
+      std::optional<PermissionSetting> setting_to_display =
           GetSettingToDisplay(permission);
       if (setting_to_display) {
+        auto* info =
+            content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+                permission.type);
+
         user_specified_settings_to_display[permission.type] =
-            *setting_to_display;
+            info->delegate().IsAnyPermissionAllowed(*setting_to_display);
+      }
+
+      // Notifications permission can have the setting to display as DEFAULT
+      // only if it is being requested and the Loud Clapper experiment is
+      // enabled.
+      if (permission.type == ContentSettingsType::NOTIFICATIONS &&
+          setting_to_display.has_value() &&
+          setting_to_display.value() == permission.default_setting) {
+        requested_notifications = true;
       }
     }
   }
@@ -177,7 +251,8 @@ void PageInfoControllerAndroid::SetPermissionInfo(
           ConvertUTF16ToJavaString(env, setting_title),
           ConvertUTF16ToJavaString(env, setting_title_mid_sentence),
           static_cast<jint>(permission),
-          static_cast<jint>(user_specified_settings_to_display[permission]));
+          user_specified_settings_to_display[permission],
+          requested_notifications);
     }
   }
 
@@ -190,17 +265,16 @@ void PageInfoControllerAndroid::SetPermissionInfo(
         env, controller_jobject_, ConvertUTF16ToJavaString(env, object_title),
         ConvertUTF16ToJavaString(env, object_title),
         static_cast<jint>(chosen_object->ui_info->content_settings_type),
-        static_cast<jint>(CONTENT_SETTING_ALLOW));
+        static_cast<jint>(CONTENT_SETTING_ALLOW), requested_notifications);
   }
 
   Java_PageInfoController_updatePermissionDisplay(env, controller_jobject_);
 }
 
-std::optional<ContentSetting> PageInfoControllerAndroid::GetSettingToDisplay(
+std::optional<PermissionSetting> PageInfoControllerAndroid::GetSettingToDisplay(
     const PageInfo::PermissionInfo& permission) {
   // All permissions should be displayed if they are non-default.
-  if (permission.setting != CONTENT_SETTING_DEFAULT &&
-      permission.setting != permission.default_setting) {
+  if (permission.setting && permission.setting != permission.default_setting) {
     return permission.setting;
   }
 
@@ -216,11 +290,26 @@ std::optional<ContentSetting> PageInfoControllerAndroid::GetSettingToDisplay(
     // The javascript content setting should show up if it is blocked globally
     // to give users an easy way to create exceptions.
     return permission.default_setting;
+  } else if (permission.type == ContentSettingsType::NOTIFICATIONS &&
+             base::FeatureList::IsEnabled(
+                 permissions::kPermissionsAndroidClapperLoud)) {
+    // For the Loud Clapper experiment, Notifications permission should be
+    // displayed while it is being requested.
+    return permission.default_setting;
   } else if (permission.type == ContentSettingsType::SOUND) {
     // The sound content setting should always show up when the tab has played
     // audio since last navigation.
     if (web_contents_->WasEverAudible())
       return permission.default_setting;
+  } else if (permission.type == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD) {
+    // The file editing permission should show up if there are any open files.
+    return permission.default_setting;
+  } else if (permission.type == ContentSettingsType::AUTO_PICTURE_IN_PICTURE) {
+    // The auto-pip permission should always display the default setting if it
+    // is showing up in Page Info before it's set by the user. Logic for whether
+    // the setting should show up in Page Info is in ShouldShowPermission in
+    // page_info.cc.
+    return permission.default_setting;
   }
 
   // TODO(crbug.com/40129299): Also return permissions that are non
@@ -241,3 +330,5 @@ void PageInfoControllerAndroid::SetAdPersonalizationInfo(
       env, controller_jobject_, info.has_joined_user_to_interest_group,
       base::android::ToJavaArrayOfStrings(env, topic_names));
 }
+
+DEFINE_JNI(PageInfoController)

@@ -5,11 +5,16 @@
 #include "chrome/browser/ui/views/passwords/password_add_username_view.h"
 
 #include "base/functional/callback.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/passwords/views_utils.h"
+#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/editable_combobox/editable_combobox.h"
@@ -82,7 +87,7 @@ void AddEmptyBorder(views::View* password_field) {
 
 PasswordAddUsernameView::PasswordAddUsernameView(
     content::WebContents* web_contents,
-    views::View* anchor_view,
+    views::BubbleAnchor anchor_view,
     DisplayReason reason)
     : PasswordBubbleViewBase(web_contents, anchor_view, true),
       controller_(PasswordsModelDelegateFromWebContents(web_contents),
@@ -104,7 +109,7 @@ PasswordAddUsernameView::PasswordAddUsernameView(
       .SetDefault(
           views::kMarginsKey,
           gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                              DISTANCE_CONTROL_LIST_VERTICAL),
+                              views::DISTANCE_CONTROL_LIST_VERTICAL),
                           0));
 
   std::unique_ptr<views::Label> body_text = CreateBodyText(margins().width());
@@ -138,12 +143,13 @@ PasswordAddUsernameView::PasswordAddUsernameView(
 
   SetShowIcon(true);
   SetFootnoteView(CreateFooterView());
-  SetButtons((ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL));
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |
+             static_cast<int>(ui::mojom::DialogButton::kCancel));
 
-  SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtonEnabled(ui::mojom::DialogButton::kOk, false);
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(IDS_ADD_USERNAME));
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_CANCEL_BUTTON));
 
   SetTitle(controller_.GetTitle());
@@ -170,14 +176,14 @@ ui::ImageModel PasswordAddUsernameView::GetWindowIcon() {
 }
 
 void PasswordAddUsernameView::AddedToWidget() {
-  SetBubbleHeader(IDR_SAVE_PASSWORD, IDR_SAVE_PASSWORD_DARK);
+  SetBubbleHeaderLottie(IDR_AUTOFILL_SAVE_PASSWORD_LOTTIE);
 }
 
 void PasswordAddUsernameView::UpdateUsernameInModel() {
   CHECK_EQ(controller_.state(),
            password_manager::ui::GENERATED_PASSWORD_CONFIRMATION_STATE);
-  std::u16string new_username = username_dropdown_->GetText();
-  base::TrimString(new_username, u" ", &new_username);
+  std::u16string new_username;
+  base::TrimString(username_dropdown_->GetText(), u" ", &new_username);
 
   controller_.OnCredentialEdited(std::move(new_username),
                                  controller_.pending_password().password_value);
@@ -202,6 +208,9 @@ std::unique_ptr<views::View> PasswordAddUsernameView::CreateFooterView() {
 }
 
 void PasswordAddUsernameView::OnUsernameChanged() {
-  SetButtonEnabled(ui::DIALOG_BUTTON_OK,
+  SetButtonEnabled(ui::mojom::DialogButton::kOk,
                    !username_dropdown_->GetText().empty());
 }
+
+BEGIN_METADATA(PasswordAddUsernameView)
+END_METADATA

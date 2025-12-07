@@ -4,16 +4,18 @@
 
 #include "chrome/browser/ash/arc/error_notification/arc_error_notification_bridge.h"
 
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/vector_icons/vector_icons.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/memory/singleton.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/arc/error_notification/arc_error_notification_item.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/vector_icons/vector_icons.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -133,7 +135,7 @@ void ArcErrorNotificationBridge::SendErrorDetails(
 
   notification.set_never_timeout(true);
 
-  NotificationDisplayService::GetForProfile(profile_)->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
       NotificationHandler::Type::TRANSIENT, notification,
       nullptr /* metadata */);
 
@@ -143,7 +145,7 @@ void ArcErrorNotificationBridge::SendErrorDetails(
 
 void ArcErrorNotificationBridge::CloseNotification(
     const std::string& notification_id) {
-  NotificationDisplayService::GetForProfile(profile_)->Close(
+  NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
       NotificationHandler::Type::TRANSIENT, notification_id);
 }
 

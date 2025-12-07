@@ -26,7 +26,6 @@ using ::base::test::RunCallback;
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::DoAll;
-using ::testing::Invoke;
 using ::testing::Return;
 
 namespace media {
@@ -42,9 +41,9 @@ class OffloadingAudioEncoderTest : public testing::Test {
     offloading_encoder_ = std::make_unique<OffloadingAudioEncoder>(
         std::move(mock_audio_encoder), work_runner_, callback_runner_);
     EXPECT_CALL(*mock_audio_encoder_, OnDestruct())
-        .WillOnce(Invoke([work_runner = work_runner_]() {
+        .WillOnce([work_runner = work_runner_]() {
           EXPECT_TRUE(work_runner->RunsTasksInCurrentSequence());
-        }));
+        });
   }
 
   void TearDown() override {
@@ -78,9 +77,9 @@ TEST_F(OffloadingAudioEncoderTest, Initialize) {
       });
 
   EXPECT_CALL(*mock_audio_encoder_, Initialize(_, _, _))
-      .WillOnce(Invoke([this](const AudioEncoder::Options& options,
-                              AudioEncoder::OutputCB output_cb,
-                              AudioEncoder::EncoderStatusCB done_cb) {
+      .WillOnce([this](const AudioEncoder::Options& options,
+                       AudioEncoder::OutputCB output_cb,
+                       AudioEncoder::EncoderStatusCB done_cb) {
         EXPECT_TRUE(work_runner_->RunsTasksInCurrentSequence());
         AudioParameters params;
         EncodedAudioBuffer buf(params, base::HeapArray<uint8_t>(),
@@ -91,7 +90,7 @@ TEST_F(OffloadingAudioEncoderTest, Initialize) {
         // test it doesn't matter. We only care about a task runner used
         // for running |output_cb|, and not what triggers those callback.
         std::move(output_cb).Run(std::move(buf), {});
-      }));
+      });
 
   offloading_encoder_->Initialize(options, std::move(output_cb),
                                   std::move(done_cb));
@@ -109,12 +108,12 @@ TEST_F(OffloadingAudioEncoderTest, Encode) {
       });
 
   EXPECT_CALL(*mock_audio_encoder_, Encode(_, _, _))
-      .WillOnce(Invoke([this](std::unique_ptr<AudioBus> audio_bus,
-                              base::TimeTicks capture_time,
-                              AudioEncoder::EncoderStatusCB done_cb) {
+      .WillOnce([this](std::unique_ptr<AudioBus> audio_bus,
+                       base::TimeTicks capture_time,
+                       AudioEncoder::EncoderStatusCB done_cb) {
         EXPECT_TRUE(work_runner_->RunsTasksInCurrentSequence());
         std::move(done_cb).Run(EncoderStatus::Codes::kOk);
-      }));
+      });
 
   base::TimeTicks ts;
   offloading_encoder_->Encode(nullptr, ts, std::move(done_cb));
@@ -131,10 +130,10 @@ TEST_F(OffloadingAudioEncoderTest, Flush) {
       });
 
   EXPECT_CALL(*mock_audio_encoder_, Flush(_))
-      .WillOnce(Invoke([this](AudioEncoder::EncoderStatusCB done_cb) {
+      .WillOnce([this](AudioEncoder::EncoderStatusCB done_cb) {
         EXPECT_TRUE(work_runner_->RunsTasksInCurrentSequence());
         std::move(done_cb).Run(EncoderStatus::Codes::kOk);
-      }));
+      });
 
   offloading_encoder_->Flush(std::move(done_cb));
   RunLoop();

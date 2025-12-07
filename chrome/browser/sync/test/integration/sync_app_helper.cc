@@ -10,7 +10,7 @@
 
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/extensions/launch_util.h"
+#include "chrome/browser/extensions/sync/extension_sync_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/extensions_helper.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
@@ -23,6 +23,8 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/launch_util.h"
+#include "extensions/browser/pending_extension_manager.h"
 #include "extensions/common/extension_set.h"
 
 using extensions::AppSorting;
@@ -39,7 +41,7 @@ struct AppState {
 
   syncer::StringOrdinal app_launch_ordinal;
   syncer::StringOrdinal page_ordinal;
-  extensions::LaunchType launch_type = extensions::LAUNCH_TYPE_INVALID;
+  extensions::LaunchType launch_type = extensions::LaunchType::kInvalid;
   GURL launch_web_url;
   std::string description;
   std::string name;
@@ -95,16 +97,14 @@ AppStateMap GetAppStates(Profile* profile) {
           ->GenerateInstalledExtensionsSet();
   for (const auto& extension : extensions) {
     if (extension->is_app() &&
-        extensions::util::ShouldSync(extension.get(), profile)) {
+        extensions::sync_util::ShouldSync(profile, extension.get())) {
       const std::string& id = extension->id();
       LoadApp(profile, id, &(app_state_map[id]));
     }
   }
 
   const extensions::PendingExtensionManager* pending_extension_manager =
-      extensions::ExtensionSystem::Get(profile)
-          ->extension_service()
-          ->pending_extension_manager();
+      extensions::PendingExtensionManager::Get(profile);
 
   std::list<std::string> pending_crx_ids =
       pending_extension_manager->GetPendingIdsForUpdateCheck();

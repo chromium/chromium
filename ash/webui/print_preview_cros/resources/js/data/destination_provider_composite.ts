@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DestinationProvider, DestinationProviderInterface} from '../../destination_provider.mojom-webui.js';
-import {PrinterType} from '../../print.mojom-webui.js';
-import {Capabilities} from '../../printer_capabilities.mojom-webui.js';
+import type {DestinationProviderInterface} from '../../destination_provider.mojom-webui.js';
+import {DestinationProvider} from '../../destination_provider.mojom-webui.js';
+import type {PrinterType} from '../../print.mojom-webui.js';
+import type {Capabilities} from '../../printer_capabilities.mojom-webui.js';
 import {FakeDestinationProvider} from '../fakes/fake_destination_provider.js';
-import {Destination, DestinationProviderCompositeInterface, FakeDestinationObserverInterface} from '../utils/print_preview_cros_app_types.js';
+import type {Destination, DestinationProviderCompositeInterface, FakeDestinationObserverInterface} from '../utils/print_preview_cros_app_types.js';
 
 /**
  * @fileoverview

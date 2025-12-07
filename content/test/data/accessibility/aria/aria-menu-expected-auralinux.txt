@@ -8,3 +8,39 @@
 ++++[menu item] name='Open'
 ++++[menu item] name='Save'
 ++++[menu item] name='Quit'
+++[menu] name='Non-menu container'
+++++[push button] name='Action 1'
+++++[push button] name='Action 2'
+++++[section]
+++++++[static] name='Regular text'
+++[menu] name='Menu with grouped items'
+++++[panel] name='File operations'
+++++++[menu item] name='New File'
+++++++[check menu item] name='Auto Save' checkable checkable:true
+++++++[radio menu item] name='Text Format' checked checkable checkable:true
+++++[panel] name='Edit operations'
+++++++[menu item] name='Cut'
+++++++[menu item] name='Copy'
+++++++[menu item] name='Paste'
+++[menu] name='Menu with non-menuitem group'
+++++[panel] name='Toolbar actions'
+++++++[push button] name='Bold'
+++++++[push button] name='Italic'
+++++++[link] name='Help'
+++++++++[static] name='Help'
+++++[separator] horizontal
+++++[section]
+++++++[static] name='Plain text'
+++[menu] name='Mixed content menu'
+++++[menu item] name='Direct menu item'
+++++[panel] name='Grouped items'
+++++++[menu item] name='Grouped menu item'
+++++++[push button] name='Non-menu button'
+++++[separator] horizontal
+++[menu] name='Group with non-menuitems'
+++++[panel] name='Control group'
+++++++[check box] name='Option 1' checkable checkable:true
+++++++[section]
+++++++++[static] name='Choice A'
+++++++[entry] selectable-text
+++++++++[static] name='Input field'

@@ -10,7 +10,6 @@ vmpstr@chromium.org
 
 # renderers (GL/Skia/Software)
 ccameron@chromium.org
-penghuang@chromium.org
 vasilyt@chromium.org
 
 # Skia renderer
@@ -21,6 +20,8 @@ per-file skia_*=michaelludwig@google.com
 # frame sinks / surfaces
 kylechar@chromium.org
 jonross@chromium.org
+amanvr@google.com
+kartarsingh@google.com
 
 # gpu
 kylechar@chromium.org
@@ -36,10 +37,10 @@ flackr@chromium.org
 ccameron@chromium.org
 vasilyt@chromium.org
 magchen@chromium.org
-petermcneeley@chromium.org
+petermcneeley@google.com
 
 # viz debugger
-petermcneeley@chromium.org
+petermcneeley@google.com
 
 # scheduling / begin frames
 sunnyps@chromium.org

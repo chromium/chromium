@@ -1,0 +1,16 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("data_saver") {
+  sources = [
+    "data_saver.cc",
+    "data_saver.h",
+  ]
+
+  deps = [ "//base" ]
+
+  if (is_android) {
+    deps += [ "//chrome/android:chrome_jni_headers" ]
+  }
+}

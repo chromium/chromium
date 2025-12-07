@@ -10,7 +10,7 @@ static_library("opt_out_blocklist_sql") {
 
   deps = [
     "//base",
-    "//components/blocklist/opt_out_blocklist:opt_out_blocklist",
+    "//components/blocklist/opt_out_blocklist",
     "//sql",
   ]
 }
@@ -23,7 +23,7 @@ source_set("unit_tests") {
     ":opt_out_blocklist_sql",
     "//base",
     "//base/test:test_support",
-    "//components/blocklist/opt_out_blocklist:opt_out_blocklist",
+    "//components/blocklist/opt_out_blocklist",
     "//sql",
     "//sql:test_support",
     "//testing/gmock",

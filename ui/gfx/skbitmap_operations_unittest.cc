@@ -2,22 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/skbitmap_operations.h"
 
 #include <stdint.h>
 
+#include "base/containers/auto_spanification_helper.h"
+#include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
-#include "third_party/skia/include/core/SkColorPriv.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "third_party/skia/include/core/SkUnPreMultiply.h"
+#include "third_party/skia/include/private/chromium/SkPMColor.h"
 
 namespace {
 
@@ -50,14 +47,17 @@ bool BitmapsClose(const SkBitmap& a, const SkBitmap& b) {
 void FillDataToBitmap(int w, int h, SkBitmap* bmp) {
   bmp->allocN32Pixels(w, h);
 
-  unsigned char* src_data =
-      reinterpret_cast<unsigned char*>(bmp->getAddr32(0, 0));
-  for (int i = 0; i < w * h; i++) {
-    const int alpha = i % 256;
-    src_data[i * 4 + 0] = static_cast<unsigned char>(alpha);
-    src_data[i * 4 + 1] = static_cast<unsigned char>((i + 16) % (alpha + 1));
-    src_data[i * 4 + 2] = static_cast<unsigned char>((i + 32) % (alpha + 1));
-    src_data[i * 4 + 3] = static_cast<unsigned char>((i + 64) % (alpha + 1));
+  for (int y = 0; y < h; y++) {
+    base::span<unsigned char> src_data =
+        base::as_writable_byte_span(UNSAFE_SKBITMAP_GETADDR32(bmp, 0, y));
+    for (int x = 0; x < w; x++) {
+      int i = y * w + x;
+      const int alpha = i % 256;
+      src_data[x * 4 + 0] = static_cast<unsigned char>(alpha);
+      src_data[x * 4 + 1] = static_cast<unsigned char>((i + 16) % (alpha + 1));
+      src_data[x * 4 + 2] = static_cast<unsigned char>((i + 32) % (alpha + 1));
+      src_data[x * 4 + 3] = static_cast<unsigned char>((i + 64) % (alpha + 1));
+    }
   }
 }
 
@@ -71,8 +71,9 @@ SkBitmap ReferenceCreateHSLShiftedBitmap(
 
   // Loop through the pixels of the original bitmap.
   for (int y = 0; y < bitmap.height(); ++y) {
-    SkPMColor* pixels = bitmap.getAddr32(0, y);
-    SkPMColor* tinted_pixels = shifted.getAddr32(0, y);
+    base::span<SkPMColor> pixels = UNSAFE_SKBITMAP_GETADDR32(bitmap, 0, y);
+    base::span<SkPMColor> tinted_pixels =
+        UNSAFE_SKBITMAP_GETADDR32(shifted, 0, y);
 
     for (int x = 0; x < bitmap.width(); ++x) {
       tinted_pixels[x] = SkPreMultiplyColor(color_utils::HSLShift(
@@ -166,7 +167,7 @@ TEST(SkBitmapOperationsTest, CreateMaskedBitmap) {
   alpha.allocN32Pixels(src_w, src_h);
   for (int y = 0, i = 0; y < src_h; y++) {
     for (int x = 0; x < src_w; x++) {
-      *alpha.getAddr32(x, y) = SkPackARGB32(i % 256, 0, 0, 0);
+      *alpha.getAddr32(x, y) = SkPMColorSetARGB(i % 256, 0, 0, 0);
       i++;
     }
   }
@@ -175,26 +176,21 @@ TEST(SkBitmapOperationsTest, CreateMaskedBitmap) {
 
   for (int y = 0; y < src_h; y++) {
     for (int x = 0; x < src_w; x++) {
-      int alpha_pixel = *alpha.getAddr32(x, y);
-      int src_pixel = *src.getAddr32(x, y);
-      int masked_pixel = *masked.getAddr32(x, y);
+      const SkPMColor alpha_pixel = *alpha.getAddr32(x, y);
+      const SkPMColor src_pixel = *src.getAddr32(x, y);
+      const SkPMColor masked_pixel = *masked.getAddr32(x, y);
 
-      int scale = SkAlpha255To256(SkGetPackedA32(alpha_pixel));
+      // Check that the src * alpha / 255 was approximated as
+      //                src * (alpha + 1) / 256
+      // across all 4 channels
+      const unsigned scale = SkPMColorGetA(alpha_pixel) + 1;
 
-      int src_a = (src_pixel >> SK_A32_SHIFT) & 0xFF;
-      int src_r = (src_pixel >> SK_R32_SHIFT) & 0xFF;
-      int src_g = (src_pixel >> SK_G32_SHIFT) & 0xFF;
-      int src_b = (src_pixel >> SK_B32_SHIFT) & 0xFF;
+      for (unsigned shift = 0; shift < 32; shift += 8) {
+        const unsigned s = (src_pixel >> shift) & 0xFF;
+        const unsigned m = (masked_pixel >> shift) & 0xFF;
 
-      int masked_a = (masked_pixel >> SK_A32_SHIFT) & 0xFF;
-      int masked_r = (masked_pixel >> SK_R32_SHIFT) & 0xFF;
-      int masked_g = (masked_pixel >> SK_G32_SHIFT) & 0xFF;
-      int masked_b = (masked_pixel >> SK_B32_SHIFT) & 0xFF;
-
-      EXPECT_EQ((src_a * scale) >> 8, masked_a);
-      EXPECT_EQ((src_r * scale) >> 8, masked_r);
-      EXPECT_EQ((src_g * scale) >> 8, masked_g);
-      EXPECT_EQ((src_b * scale) >> 8, masked_b);
+        EXPECT_EQ((s * scale) >> 8, m);
+      }
     }
   }
 }
@@ -445,10 +441,10 @@ TEST(SkBitmapOperationsTest, UnPreMultiply) {
   EXPECT_EQ(input.alphaType(), kPremul_SkAlphaType);
 
   // Set PMColors into the bitmap
-  *input.getAddr32(0, 0) = SkPackARGB32(0x80, 0x00, 0x00, 0x00);
-  *input.getAddr32(1, 0) = SkPackARGB32(0x80, 0x80, 0x80, 0x80);
-  *input.getAddr32(0, 1) = SkPackARGB32(0xFF, 0x00, 0xCC, 0x88);
-  *input.getAddr32(1, 1) = SkPackARGB32(0x00, 0x00, 0xCC, 0x88);
+  *input.getAddr32(0, 0) = SkPMColorSetARGB(0x80, 0x00, 0x00, 0x00);
+  *input.getAddr32(1, 0) = SkPMColorSetARGB(0x80, 0x80, 0x80, 0x80);
+  *input.getAddr32(0, 1) = SkPMColorSetARGB(0xFF, 0x00, 0xCC, 0x88);
+  *input.getAddr32(1, 1) = SkPMColorSetARGB(0x00, 0x00, 0xCC, 0x88);
 
   SkBitmap result = SkBitmapOperations::UnPreMultiply(input);
   EXPECT_EQ(result.alphaType(), kUnpremul_SkAlphaType);

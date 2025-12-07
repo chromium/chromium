@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{Преди 1 ден}other{Преди # дни}}</translation>
 <translation id="1181037720776840403">Премахване</translation>
 <translation id="1243314992276662751">Качване</translation>
+<translation id="1253734725326687145">Целта за докосване бе преместена горе вдясно. Докоснете тук.</translation>
 <translation id="1266864766717917324">Споделянето на <ph name="CONTENT_TYPE" /> не бе възможно</translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">Опитайте да споделите текста на по-малки части.</translation>
@@ -38,6 +39,7 @@
 <translation id="19085484004813472">Това е нова функция</translation>
 <translation id="2006524834898217237">Проверете дали устройството е свързано с интернет.</translation>
 <translation id="208586643495776849">Моля, опитайте отново</translation>
+<translation id="2111134541987263231">Включете опцията <ph name="BEGIN_BOLD" />Да се разреши в режим „инкогнито“<ph name="END_BOLD" />.</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 д.}other{# д.}}</translation>
 <translation id="2148716181193084225">днес</translation>
 <translation id="2168039046890040389">Страница нагоре</translation>
@@ -48,12 +50,14 @@
 <translation id="2289052229480071835">Докоснете съответните цели на екрана.</translation>
 <translation id="2295140143284145483">Анкета</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> ТБ/сек</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Не може да се намери разширение с идентификатор <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Обърнете се към администратора си.}other{Не могат да се намерят разширения с идентификатори <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Обърнете се към администратора си.}}</translation>
 <translation id="2353636109065292463">Връзката с интернет се проверява</translation>
 <translation id="2359808026110333948">Напред</translation>
 <translation id="2388990488038464401">Искате ли да се обадите на този номер от телефона си?</translation>
 <translation id="2435457462613246316">Показване на паролата</translation>
 <translation id="24452542372838207">Разгъване на известието</translation>
 <translation id="2445449901874883781">Използване на висока плътност</translation>
+<translation id="2448407890032181691">Целта за докосване бе преместена долу вдясно. Докоснете тук.</translation>
 <translation id="2482878487686419369">Известия</translation>
 <translation id="2497284189126895209">Всички файлове</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -70,6 +74,7 @@
 <translation id="2878511608894704031">Изтриване на всички</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{след 1 д}other{след # д}}</translation>
 <translation id="2922712708897119705">Колоната <ph name="COLUMN_NAME" /> е сортирана в низходящ ред.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Разширението не е намерено}other{Разширенията не са намерени}}</translation>
 <translation id="3036649622769666520">Отваряне на файлове</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> МБ</translation>
 <translation id="3087734570205094154">Най-долу</translation>
@@ -82,6 +87,7 @@
 <translation id="3295886253693811851">Извършване на обаждане от</translation>
 <translation id="3306688585798492231">Вграден екран</translation>
 <translation id="335581015389089642">Speech</translation>
+<translation id="3372635229069101468">Кликнете върху <ph name="BEGIN_BOLD" />Подробности<ph name="END_BOLD" />.</translation>
 <translation id="3389286852084373014">Текстът е твърде голям</translation>
 <translation id="3406306243914553062">HTML съдържание</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{Остава 1 ден}other{Остават # дни}}</translation>
@@ -102,7 +108,9 @@
 <translation id="3994749195054421561">Колоната <ph name="COLUMN_NAME" /> е сортирана във възходящ ред.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 непрочетено известие}other{# непрочетени известия}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Включете следното разширение в режим „инкогнито“:}other{Включете следните разширения в режим „инкогнито“:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Преди 1 месец}other{Преди # месеца}}</translation>
+<translation id="4277033906326892359">Колоната <ph name="COLUMN_NAME" /> е сортирана във възходящ ред</translation>
 <translation id="4289300219472526559">Start Speaking</translation>
 <translation id="4289540628985791613">Общ преглед</translation>
 <translation id="4491109536499578614">Изображение</translation>
@@ -113,6 +121,8 @@
 <translation id="4729257764711776855">номер</translation>
 <translation id="4746179598275229723">Разширението бе освободено</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{Остава 1 месец}other{Остават # месеца}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{За да използвате режим „инкогнито“, организацията ви изисква разширение}other{За да използвате режим „инкогнито“, организацията ви изисква някои разширения}}</translation>
+<translation id="482932175346970750">Въведете <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> в браузъра си.</translation>
 <translation id="4888938634149558681">Обаждане</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" /> и <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 секунда}other{# секунди}}</translation>
@@ -121,6 +131,7 @@
 <translation id="5076340679995252485">&amp;Поставяне</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> ПБ</translation>
 <translation id="5278860589123563674">Изпращането не бе успешно</translation>
+<translation id="5283101102242354279">Включване на разширение в режим „инкогнито“:</translation>
 <translation id="528468243742722775">Край</translation>
 <translation id="5329858601952122676">&amp;Изтриване</translation>
 <translation id="5361107212971249203">текст</translation>
@@ -129,13 +140,16 @@
 <translation id="5528053674512161860">Зареждането на страницата не бе успешно, защото модулът за ПИ за програмисти (dev_ui) не е инсталиран</translation>
 <translation id="5574202486608032840">Система <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5606865426897221650">Tab</translation>
 <translation id="5613020302032141669">Стрелка наляво</translation>
 <translation id="5633029987065897167">Празно</translation>
+<translation id="5651438382973553530">Целта за докосване бе преместена долу вляво. Докоснете тук.</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 мин}other{# мин}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Активно днес}=1{Активно преди 1 ден}other{Активно преди # дни}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 ден и }other{# дни и }}</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5843690142429128814">Изображение.</translation>
+<translation id="5860491529813859533">Включване</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{след 1 г.}other{след # г.}}</translation>
 <translation id="588258955323874662">Цял екран</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{Остава 1 секунда}other{Остават # секунди}}</translation>
@@ -151,6 +165,7 @@
 <translation id="6264365405983206840">Избиране на &amp;всички</translation>
 <translation id="6346952829206698721">Поставяне от буферната памет</translation>
 <translation id="6364916375976753737">Превъртане наляво</translation>
+<translation id="63712816010840859">Ако текущият екран не е сензорен, натиснете Esc.</translation>
 <translation id="6394627529324717982">Запетая</translation>
 <translation id="6397363302884558537">Stop Speaking</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{Преди 1 сек}other{Преди # сек}}</translation>
@@ -162,6 +177,8 @@
 <translation id="6612467943526193239">За изход от калибрирането натиснете Esc.</translation>
 <translation id="6620110761915583480">Запазване на файл</translation>
 <translation id="6699343763173986273">Мултимедия, следващият запис</translation>
+<translation id="6738856801552481343">Ако екранът не е сензорен, натиснете Esc.</translation>
+<translation id="6807086321996342431">Колона <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">Мултимедия, стоп</translation>
 <translation id="6845383723252244143">Избор на папка</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{Остава 1 час}other{Остават # часа}}</translation>
@@ -176,6 +193,7 @@
 <translation id="7170202025028120564">Настройките за дисплея на приложението ви ще влязат в сила при следващото му рестартиране.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{Остава 1 мин}other{Остават # мин}}</translation>
+<translation id="7252604552361840748">Намерете разширението по-горе.</translation>
 <translation id="7363164521834647158">Изпращане на отговор</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{Преди 1 мин}other{Преди # мин}}</translation>
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>
@@ -192,16 +210,15 @@
 <translation id="7969046989155602842">Command</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Повече от 1 непрочетено известие}other{Повече от # непрочетени известия}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{след 1 м}other{след # м}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" /> + <ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">Номер от <ph name="ORIGIN" /></translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{Преди 1 час}other{Преди # часа}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{Остава 1 сек}other{Остават # сек}}</translation>
 <translation id="8134065097954893699">Презаредете страницата</translation>
+<translation id="813785873406874127">Сортирането на колоната <ph name="COLUMN_NAME" /> е отменено</translation>
 <translation id="815598010540052116">Превъртане надолу</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Страница надолу</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" /> и <ph name="TYPE_2" /></translation>
-<translation id="8245914219290430011">Табулатор</translation>
 <translation id="8259556432390118667">Шестнадесетична стойност за цвета</translation>
 <translation id="8328145009876646418">Ляв край</translation>
 <translation id="8331626408530291785">Превъртане нагоре</translation>
@@ -209,6 +226,7 @@
 <translation id="8393700583063109961">Изпратете съобщение</translation>
 <translation id="8394908167088220973">Мултимедия, пускане/пауза</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 г.}other{# г.}}</translation>
+<translation id="8582972250170726813">Колоната <ph name="COLUMN_NAME" /> е сортирана в низходящ ред</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> файл (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> КБ/сек</translation>
@@ -225,6 +243,8 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 сек}other{# сек}}</translation>
 <translation id="9059834730836941392">Свиване на известието</translation>
 <translation id="9170848237812810038">&amp;Отмяна</translation>
+<translation id="9195990613383871904">Утре</translation>
+<translation id="928628199082367701">Super</translation>
 <translation id="932327136139879170">Начална страница</translation>
 <translation id="944069440740578670">Непрочетени известия</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{Преди 1 секунда}other{Преди # секунди}}</translation>

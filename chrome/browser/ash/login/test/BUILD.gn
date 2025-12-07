@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("test_support") {
   testonly = true
@@ -16,6 +14,8 @@ static_library("test_support") {
     "composite_waiter.h",
     "cryptohome_mixin.cc",
     "cryptohome_mixin.h",
+    "customizable_test_env_browser_test_base.cc",
+    "customizable_test_env_browser_test_base.h",
     "device_state_mixin.cc",
     "device_state_mixin.h",
     "dialog_window_waiter.cc",
@@ -94,20 +94,17 @@ static_library("test_support") {
     "//ash/constants",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/login/enrollment",
     "//chrome/browser/ash/login/enrollment:test_support",
     "//chrome/browser/ash/login/screens",
     "//chrome/browser/ui",
-    "//chrome/browser/ui/ash",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/login/auth",
     "//chromeos/ash/components/login/auth/public:authpublic",
-    "//chromeos/ash/components/network/portal_detector",
     "//chromeos/ash/components/osauth/public",
     "//components/account_id",
     "//components/policy/core/common:test_support",
@@ -130,11 +127,9 @@ static_library("test_support") {
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser:main_extra_parts",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/extensions",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/login/session:test_support",
-    "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/net",
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/ash/policy/enrollment",
@@ -143,7 +138,10 @@ static_library("test_support") {
     "//chrome/browser/ash/settings",
     "//chrome/browser/extensions:test_support",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/login/osauth",
+    "//chrome/browser/ui/webui/signin",
+    "//chrome/browser/ui/webui/signin:signin_utils",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
     "//chromeos/ash/components/cryptohome",
@@ -154,6 +152,7 @@ static_library("test_support") {
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/components/policy/device_policy:test_support",
     "//chromeos/ash/components/settings",
     "//chromeos/components/onc",
     "//chromeos/dbus/constants",
@@ -177,4 +176,8 @@ static_library("test_support") {
 
   allow_circular_includes_from =
       [ "//chrome/browser/ash/policy/core:test_support" ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

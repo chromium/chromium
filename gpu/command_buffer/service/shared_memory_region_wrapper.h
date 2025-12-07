@@ -5,9 +5,13 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_MEMORY_REGION_WRAPPER_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_MEMORY_REGION_WRAPPER_H_
 
+#include <utility>
+#include <vector>
+
 #include "base/containers/span.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/unguessable_token.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/gpu_gles2_export.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "ui/gfx/buffer_types.h"
@@ -33,14 +37,19 @@ class GPU_GLES2_EXPORT SharedMemoryRegionWrapper {
   // until destruction.
   bool Initialize(const gfx::GpuMemoryBufferHandle& handle,
                   const gfx::Size& size,
-                  gfx::BufferFormat format);
+                  viz::SharedImageFormat format);
 
   bool IsValid() const;
-  uint8_t* GetMemory(int plane_index) const;
+  uint8_t* GetMemory(int plane_index) {
+    return const_cast<uint8_t*>(std::as_const(*this).GetMemory(plane_index));
+  }
+  const uint8_t* GetMemory(int plane_index) const;
   size_t GetStride(int plane_index) const;
 
   // Returns SkPixmap pointing to memory for offset.
   SkPixmap MakePixmapForPlane(const SkImageInfo& info, int plane_index) const;
+
+  base::span<const uint8_t> GetMemoryPlanes() const;
 
   const base::UnguessableToken& GetMappingGuid() const;
 

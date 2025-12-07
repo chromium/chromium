@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+<grit latest_public_release="0" current_release="1">
   <outputs>
     <output filename="grit/platform_locale_settings.h" type="rc_header">
       <emit emit_type='prepend'></emit>
@@ -40,6 +40,7 @@
     <output filename="platform_locale_settings_lt.pak" type="data_package" lang="lt" />
     <output filename="platform_locale_settings_lv.pak" type="data_package" lang="lv" />
     <output filename="platform_locale_settings_ml.pak" type="data_package" lang="ml" />
+    <output filename="platform_locale_settings_mn.pak" type="data_package" lang="mn" />
     <output filename="platform_locale_settings_mr.pak" type="data_package" lang="mr" />
     <output filename="platform_locale_settings_ms.pak" type="data_package" lang="ms" />
     <output filename="platform_locale_settings_nl.pak" type="data_package" lang="nl" />
@@ -101,6 +102,7 @@
     <file path="platform_locale_settings/locale_settings_cros_lt.xtb" lang="lt" />
     <file path="platform_locale_settings/locale_settings_cros_lv.xtb" lang="lv" />
     <file path="platform_locale_settings/locale_settings_cros_ml.xtb" lang="ml" />
+    <file path="platform_locale_settings/locale_settings_cros_mn.xtb" lang="mn" />
     <file path="platform_locale_settings/locale_settings_cros_mr.xtb" lang="mr" />
     <file path="platform_locale_settings/locale_settings_cros_ms.xtb" lang="ms" />
     <file path="platform_locale_settings/locale_settings_cros_nl.xtb" lang="nl" />

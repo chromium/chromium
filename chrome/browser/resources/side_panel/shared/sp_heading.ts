@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '//resources/cr_elements/icons_lit.html.js';
+import '//resources/cr_elements/icons.html.js';
 
 import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -45,11 +45,11 @@ export class SpHeadingElement extends CrLitElement {
     };
   }
 
-  compact: boolean = false;
-  backButtonAriaLabel: string;
-  backButtonTitle: string;
-  hideBackButton: boolean = false;
-  disableBackButton: boolean = false;
+  accessor compact: boolean = false;
+  accessor backButtonAriaLabel: string = '';
+  accessor backButtonTitle: string = '';
+  accessor hideBackButton: boolean = false;
+  accessor disableBackButton: boolean = false;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

@@ -15,11 +15,11 @@ namespace internal {
 //
 // This is false by default. We specialize it to true below for pairs of
 // arguments that satisfy the condition.
-template <template <typename...> class C, typename T>
+template <typename T, template <typename...> class C>
 inline constexpr bool is_instantiation_v = false;
 
 template <template <typename...> class C, typename... Ts>
-inline constexpr bool is_instantiation_v<C, C<Ts...>> = true;
+inline constexpr bool is_instantiation_v<C<Ts...>, C> = true;
 
 }  // namespace internal
 
@@ -28,8 +28,8 @@ inline constexpr bool is_instantiation_v<C, C<Ts...>> = true;
 //
 // Note that there is no allowance for reference or const/volatile qualifiers;
 // if these are a concern you probably want to feed through `std::decay_t<T>`.
-template <template <typename...> class C, typename T>
-concept is_instantiation = internal::is_instantiation_v<C, T>;
+template <typename T, template <typename...> class C>
+concept is_instantiation = internal::is_instantiation_v<T, C>;
 
 }  // namespace base
 

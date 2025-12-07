@@ -4,11 +4,10 @@
 
 import 'chrome://settings/settings.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrCollapseElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
 import type {ControlledRadioButtonElement, SettingsBatteryPageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {BATTERY_SAVER_MODE_PREF, BatterySaverModeState, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl} from 'chrome://settings/settings.js';
+import {BATTERY_SAVER_MODE_PREF, BatterySaverModeState, loadTimeData, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -44,7 +43,7 @@ suite('BatteryPage', function() {
     return microtasksFinished();
   });
 
-  test('testBatterySaverModeEnabledOnBattery', function() {
+  test('BatterySaverModeEnabledOnBattery', function() {
     batteryPage.setPrefValue(
         BATTERY_SAVER_MODE_PREF, BatterySaverModeState.ENABLED_ON_BATTERY);
     flush();
@@ -66,7 +65,7 @@ suite('BatteryPage', function() {
         'selected radio button should be enabled on battery');
   });
 
-  test('testBatterySaverModeEnabledBelowThreshold', function() {
+  test('BatterySaverModeEnabledBelowThreshold', function() {
     batteryPage.setPrefValue(
         BATTERY_SAVER_MODE_PREF, BatterySaverModeState.ENABLED_BELOW_THRESHOLD);
     flush();
@@ -88,7 +87,7 @@ suite('BatteryPage', function() {
         'selected radio button should be enabled below threshold');
   });
 
-  test('testBatterySaverModeDisabled', function() {
+  test('BatterySaverModeDisabled', function() {
     batteryPage.setPrefValue(
         BATTERY_SAVER_MODE_PREF, BatterySaverModeState.DISABLED);
     assertFalse(
@@ -102,7 +101,7 @@ suite('BatteryPage', function() {
         'collapse should be closed when battery saver mode is disabled');
   });
 
-  test('testBatterySaverModeMetrics', async function() {
+  test('BatterySaverModeMetrics', async function() {
     batteryPage.setPrefValue(
         BATTERY_SAVER_MODE_PREF, BatterySaverModeState.DISABLED);
 

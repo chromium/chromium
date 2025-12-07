@@ -86,13 +86,14 @@ class ZxcvbnDataComponentInstallerPolicyTest : public ::testing::Test {
   }
 
   void CreateEmptyTextFiles() {
-    for (auto filename : ZxcvbnDataComponentInstallerPolicy::kFileNames) {
+    for (const auto& filename :
+         ZxcvbnDataComponentInstallerPolicy::kFileNames) {
       base::WriteFile(GetPath().Append(filename), "");
     }
   }
 
   void CreateInvalidCombinedBinaryFile() {
-    constexpr uint8_t marker[1] = {0x70};
+    static constexpr uint8_t marker[1] = {0x70};
     ASSERT_TRUE(base::WriteFile(
         GetPath().Append(
             ZxcvbnDataComponentInstallerPolicy::kCombinedRankedDictsFileName),
@@ -100,7 +101,7 @@ class ZxcvbnDataComponentInstallerPolicyTest : public ::testing::Test {
   }
 
   void CreateValidCombinedBinaryFile() {
-    constexpr uint8_t marker[1] = {0x80};
+    static constexpr uint8_t marker[1] = {0x80};
     ASSERT_TRUE(base::WriteFile(
         GetPath().Append(
             ZxcvbnDataComponentInstallerPolicy::kCombinedRankedDictsFileName),

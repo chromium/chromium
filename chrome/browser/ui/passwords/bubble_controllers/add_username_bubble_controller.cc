@@ -42,7 +42,4 @@ std::u16string AddUsernameBubbleController::GetTitle() const {
 void AddUsernameBubbleController::ReportInteractions() {
   password_manager::metrics_util::LogGeneralUIDismissalReason(
       GetDismissalReason());
-  base::UmaHistogramBoolean(
-      "PasswordBubble.AddUsernameBubble.UsernameAdded",
-      GetDismissalReason() == metrics_util::CLICKED_ACCEPT);
 }

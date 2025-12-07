@@ -1,0 +1,122 @@
+{
+   "lang": "en",
+   "type": "Document",
+   "~children": [ {
+      "type": "H1",
+      "~children": [ {
+         "type": "NonStruct"
+      } ]
+   }, {
+      "type": "P",
+      "~children": [ {
+         "type": "NonStruct"
+      } ]
+   }, {
+      "type": "L",
+      "~children": [ {
+         "type": "LI",
+         "~children": [ {
+            "type": "NonStruct"
+         } ]
+      }, {
+         "type": "LI",
+         "~children": [ {
+            "type": "NonStruct"
+         } ]
+      } ]
+   }, {
+      "type": "NonStruct",
+      "~children": [ {
+         "type": "Link",
+         "~children": [ {
+            "type": "NonStruct"
+         } ]
+      } ]
+   }, {
+      "type": "Table",
+      "~children": [ {
+         "type": "TR",
+         "~children": [ {
+            "attributes": [ {
+               "O": "Table",
+               "Scope": "Column"
+            }, {
+               "O": "Table",
+               "RowSpan": 1.0
+            }, {
+               "ColSpan": 1.0,
+               "O": "Table"
+            } ],
+            "type": "TH",
+            "~children": [ {
+               "type": "NonStruct"
+            } ]
+         }, {
+            "attributes": [ {
+               "O": "Table",
+               "Scope": "Column"
+            }, {
+               "O": "Table",
+               "RowSpan": 1.0
+            }, {
+               "ColSpan": 1.0,
+               "O": "Table"
+            } ],
+            "type": "TH",
+            "~children": [ {
+               "type": "NonStruct"
+            } ]
+         } ]
+      }, {
+         "type": "TR",
+         "~children": [ {
+            "attributes": [ {
+               "Headers": [ "TH" ],
+               "O": "Table"
+            }, {
+               "O": "Table",
+               "RowSpan": 1.0
+            }, {
+               "ColSpan": 1.0,
+               "O": "Table"
+            } ],
+            "type": "TD",
+            "~children": [ {
+               "type": "NonStruct"
+            } ]
+         }, {
+            "attributes": [ {
+               "Headers": [ "TH" ],
+               "O": "Table"
+            }, {
+               "O": "Table",
+               "RowSpan": 1.0
+            }, {
+               "ColSpan": 1.0,
+               "O": "Table"
+            } ],
+            "type": "TD",
+            "~children": [ {
+               "type": "NonStruct"
+            } ]
+         } ]
+      } ]
+   }, {
+      "type": "H2",
+      "~children": [ {
+         "type": "NonStruct"
+      } ]
+   }, {
+      "type": "NonStruct",
+      "~children": [ {
+         "alt": "Car at the beach",
+         "type": "Figure"
+      } ]
+   }, {
+      "lang": "fr",
+      "type": "P",
+      "~children": [ {
+         "type": "NonStruct"
+      } ]
+   } ]
+}

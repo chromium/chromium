@@ -28,8 +28,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
-namespace WTF {
-namespace unicode {
+namespace blink::unicode {
 
 enum CharDirection {
   kLeftToRight = U_LEFT_TO_RIGHT,
@@ -151,6 +150,12 @@ inline CharCategory Category(UChar32 c) {
   return static_cast<CharCategory>(U_GET_GC_MASK(c));
 }
 
+inline bool IsSymbol(UChar32 c) {
+  CharCategory char_category = Category(c);
+  return char_category == kSymbol_Math || char_category == kSymbol_Currency ||
+         char_category == kSymbol_Modifier || char_category == kSymbol_Other;
+}
+
 inline CharDirection Direction(UChar32 c) {
   return static_cast<CharDirection>(u_charDirection(c));
 }
@@ -171,14 +176,9 @@ inline CharDecompositionType DecompositionType(UChar32 c) {
 inline bool IsSpaceOrNewline(UChar c) {
   // Use IsASCIISpace() for basic Latin-1.
   // This will include newlines, which aren't included in Unicode DirWS.
-  return c <= 0x7F
-             ? WTF::IsASCIISpace(c)
-             : WTF::unicode::Direction(c) == WTF::unicode::kWhiteSpaceNeutral;
+  return c <= 0x7F ? IsASCIISpace(c) : Direction(c) == kWhiteSpaceNeutral;
 }
 
-}  // namespace unicode
-}  // namespace WTF
-
-using WTF::unicode::IsSpaceOrNewline;
+}  // namespace blink::unicode
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_UNICODE_H_

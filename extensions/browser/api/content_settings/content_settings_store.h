@@ -74,8 +74,8 @@ class ContentSettingsStore
       ContentSettingsType content_type,
       bool off_the_record) const;
 
-  // Sets the content |setting| for |pattern| of extension |ext_id|. The
-  // |incognito| flag allow to set whether the provided setting is for
+  // Sets the content `setting` for `pattern` of extension `ext_id`. The
+  // `incognito` flag allow to set whether the provided setting is for
   // incognito mode only.
   // Precondition: the extension must be registered.
   // This method should only be called on the UI thread.
@@ -89,46 +89,46 @@ class ContentSettingsStore
       ContentSetting setting,
       ChromeSettingScope scope);
 
-  // Clears all contents settings set by the extension |ext_id|.
+  // Clears all contents settings set by the extension `ext_id`.
   void ClearContentSettingsForExtension(const std::string& ext_id,
                                         ChromeSettingScope scope);
 
-  // Clears all contents settings set by the extension |ext_id| for the
-  // content type |content_type|.
+  // Clears all contents settings set by the extension `ext_id` for the
+  // content type `content_type`.
   void ClearContentSettingsForExtensionAndContentType(
       const std::string& ext_id,
       ChromeSettingScope scope,
       ContentSettingsType content_type);
 
-  // Serializes all content settings set by the extension with ID |extension_id|
+  // Serializes all content settings set by the extension with ID `extension_id`
   // and returns them as a list of Values.
   base::Value::List GetSettingsForExtension(const ExtensionId& extension_id,
                                             ChromeSettingScope scope) const;
 
-  // Deserializes content settings rules from |list| and applies them as set by
-  // the extension with ID |extension_id|.
+  // Deserializes content settings rules from `list` and applies them as set by
+  // the extension with ID `extension_id`.
   void SetExtensionContentSettingFromList(const ExtensionId& extension_id,
                                           const base::Value::List& list,
                                           ChromeSettingScope scope);
 
   // //////////////////////////////////////////////////////////////////////////
 
-  // Registers the time when an extension |ext_id| is installed.
+  // Registers the time when an extension `ext_id` is installed.
   void RegisterExtension(const std::string& ext_id,
                          const base::Time& install_time,
                          bool is_enabled);
 
-  // Deletes all entries related to extension |ext_id|.
+  // Deletes all entries related to extension `ext_id`.
   void UnregisterExtension(const std::string& ext_id);
 
   // Hides or makes the extension content settings of the specified extension
   // visible.
   void SetExtensionState(const std::string& ext_id, bool is_enabled);
 
-  // Adds |observer|. This method should only be called on the UI thread.
+  // Adds `observer`. This method should only be called on the UI thread.
   void AddObserver(Observer* observer);
 
-  // Remove |observer|. This method should only be called on the UI thread.
+  // Remove `observer`. This method should only be called on the UI thread.
   void RemoveObserver(Observer* observer);
 
  private:

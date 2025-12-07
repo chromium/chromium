@@ -15,6 +15,7 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 
 template <class T>
@@ -158,6 +159,11 @@ scoped_refptr<T> WrapRefCounted(T* t) {
   return scoped_refptr<T>(t);
 }
 
+template <typename T, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
+scoped_refptr<T> WrapRefCounted(const raw_ptr<T, Traits>& t) {
+  return scoped_refptr<T>(t.get());
+}
+
 }  // namespace base
 
 //
@@ -239,8 +245,9 @@ class TRIVIAL_ABI scoped_refptr {
   // should move or copy construct from an existing scoped_refptr<T> to the
   // ref-counted object.
   scoped_refptr(T* p) : ptr_(p) {
-    if (ptr_)
+    if (ptr_) {
       AddRef(ptr_);
+    }
   }
 
   // Copy constructor. This is required in addition to the copy conversion
@@ -269,8 +276,9 @@ class TRIVIAL_ABI scoped_refptr {
                   "It's unsafe to override the ref count preference."
                   " Please remove REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE"
                   " from subclasses.");
-    if (ptr_)
+    if (ptr_) {
       Release(ptr_);
+    }
   }
 
   T* get() const { return ptr_; }
@@ -339,9 +347,9 @@ class TRIVIAL_ABI scoped_refptr {
   }
 
  protected:
-  // RAW_PTR_EXCLUSION: scoped_refptr<> has its own UaF prevention mechanism.
-  // Given how widespread it is, we it'll likely a perf regression for no
-  // additional security benefit.
+  // RAW_PTR_EXCLUSION: scoped_refptr<> has its own UaF prevention
+  // mechanism. Given how widespread it is, raw_ptr would likely
+  // introduce a perf regression for no additional security benefit.
   RAW_PTR_EXCLUSION T* ptr_ = nullptr;
 
  private:

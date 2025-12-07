@@ -4,6 +4,8 @@
 
 #include "components/search_engines/template_url.h"
 
+#include <algorithm>
+#include <memory>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -24,37 +26,51 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/typed_macros.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/google/core/common/google_util.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/search_engines/regulatory_extension_type.h"
 #include "components/search_engines/search_engine_utils.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_prepopulate_data.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
+#include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "components/url_formatter/url_formatter.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/mime_util.h"
 #include "net/base/url_util.h"
-#include "template_url_starter_pack_data.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
+#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #include "ui/base/device_form_factor.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(ENABLE_BUILTIN_SEARCH_PROVIDER_ASSETS) && !BUILDFLAG(IS_ANDROID)
+#include "third_party/search_engines_data/search_engine_descriptions_strings_map.h"
+#endif
+
 namespace {
+
+const bool kEnableBuiltinSearchProviderAssets =
+    !!BUILDFLAG(ENABLE_BUILTIN_SEARCH_PROVIDER_ASSETS);
+
 // The TemplateURLRef has any number of terms that need to be replaced. Each of
-// the terms is enclosed in braces. If the character preceeding the final
-// brace is a ?, it indicates the term is optional and can be replaced with
-// an empty string.
+// the terms is enclosed in braces. If the character preceding the final brace
+// is a ?, it indicates the term is optional and can be replaced with an empty
+// string.
 const char kStartParameter = '{';
 const char kEndParameter = '}';
 const char kOptional = '?';
@@ -119,12 +135,14 @@ bool TryEncoding(const std::u16string& terms,
   *escaped_terms = base::UTF8ToUTF16(
       is_in_query ? base::EscapeQueryParamValue(encoded_terms, true)
                   : base::EscapePath(encoded_terms));
-  if (original_query.empty())
+  if (original_query.empty()) {
     return true;
+  }
   std::string encoded_original_query;
   if (!base::UTF16ToCodepage(original_query, encoding, error_handling,
-                             &encoded_original_query))
+                             &encoded_original_query)) {
     return false;
+  }
   *escaped_original_query = base::UTF8ToUTF16(
       base::EscapeQueryParamValue(encoded_original_query, true));
   return true;
@@ -189,8 +207,8 @@ class SearchTermLocation {
 };
 
 bool IsTemplateParameterString(const std::string& param) {
-  return (param.length() > 2) && (*(param.begin()) == kStartParameter) &&
-      (*(param.rbegin()) == kEndParameter);
+  return param.length() > 2 && *param.begin() == kStartParameter &&
+         *param.rbegin() == kEndParameter;
 }
 
 std::string YandexSearchPathFromDeviceFormFactor() {
@@ -203,30 +221,29 @@ std::string YandexSearchPathFromDeviceFormFactor() {
     case ui::DEVICE_FORM_FACTOR_TABLET:
     case ui::DEVICE_FORM_FACTOR_FOLDABLE:
     case ui::DEVICE_FORM_FACTOR_AUTOMOTIVE:
+    case ui::DEVICE_FORM_FACTOR_XR:
       return "search/pad/";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
-// Returns true if `enterprise_engine` is strictly better than `other_engine`,
-// where `enterprise_engine` is a search engine created by the
-// `SiteSearchSettings` policy, and `other_engine` is a search engine not
-// created by Enterprise policy.
-bool IsEnterpriseSideSearchEngineBetterThanEngine(
-    const TemplateURL* enterprise_engine,
+// Returns true if `policy_engine` is strictly better than `other_engine`,
+// where `policy_engine` is a search engine created by the
+// `SiteSearchSettings` or `EnterpriseSearchAggregatorSettings` policy, and
+// `other_engine` is a search engine not created by policy.
+bool IsPolicySearchEngineBetterThanNonPolicyEngine(
+    const TemplateURL* policy_engine,
     const TemplateURL* other_engine) {
   // Keyword conflicts between search engines set by policy are handled when the
-  // policies are processed. At this point, `enterprise_engine` is created by
-  // the `SiteSearchSettings` policy, `other_engine` should have been created by
-  // something else, but not via policy.
-  CHECK_EQ(enterprise_engine->created_by_policy(),
-           TemplateURLData::CreatedByPolicy::kSiteSearch);
-  CHECK_EQ(other_engine->created_by_policy(),
-           TemplateURLData::CreatedByPolicy::kNoPolicy);
+  // policies are processed. At this point, `policy_engine` is created by
+  // the `SiteSearchSettings` or `EnterpriseSearchAggregatorSettings` policy,
+  // `other_engine` should have been created by something else, but not via
+  // policy.
+  CHECK(policy_engine->CreatedByNonDefaultSearchProviderPolicy());
+  CHECK(!other_engine->CreatedByPolicy());
 
-  const std::u16string& keyword = enterprise_engine->keyword();
-  // Prefer `enterprise_engine` if the `keyword` starts with the "@" symbol.
+  const std::u16string& keyword = policy_engine->keyword();
+  // Prefer `policy_engine` if the `keyword` starts with the "@" symbol.
   // Otherwise, prefer `other_engine` if it has been manually edited by the
   // user.
   return (!keyword.empty() && keyword[0] == u'@') ||
@@ -246,8 +263,7 @@ TemplateURLRef::SearchTermsArgs::SearchTermsArgs(
 TemplateURLRef::SearchTermsArgs::SearchTermsArgs(const SearchTermsArgs& other) =
     default;
 
-TemplateURLRef::SearchTermsArgs::~SearchTermsArgs() {
-}
+TemplateURLRef::SearchTermsArgs::~SearchTermsArgs() = default;
 
 size_t TemplateURLRef::SearchTermsArgs::EstimateMemoryUsage() const {
   size_t res = 0;
@@ -283,7 +299,8 @@ TemplateURLRef::SearchTermsArgs::ContextualSearchParams::ContextualSearchParams(
     std::string target_lang,
     std::string fluent_languages,
     std::string related_searches_stamp,
-    bool apply_lang_hint)
+    bool apply_lang_hint,
+    bool use_snippet_as_subtitle)
     : version(version),
       contextual_cards_version(contextual_cards_version),
       home_country(home_country),
@@ -294,14 +311,14 @@ TemplateURLRef::SearchTermsArgs::ContextualSearchParams::ContextualSearchParams(
       target_lang(target_lang),
       fluent_languages(fluent_languages),
       related_searches_stamp(related_searches_stamp),
-      apply_lang_hint(apply_lang_hint) {}
+      apply_lang_hint(apply_lang_hint),
+      use_snippet_as_subtitle(use_snippet_as_subtitle) {}
 
 TemplateURLRef::SearchTermsArgs::ContextualSearchParams::ContextualSearchParams(
     const ContextualSearchParams& other) = default;
 
 TemplateURLRef::SearchTermsArgs::ContextualSearchParams::
-    ~ContextualSearchParams() {
-}
+    ~ContextualSearchParams() = default;
 
 size_t
 TemplateURLRef::SearchTermsArgs::ContextualSearchParams::EstimateMemoryUsage()
@@ -323,8 +340,7 @@ TemplateURLRef::TemplateURLRef(const TemplateURL* owner, size_t index_in_owner)
   DCHECK_LT(index_in_owner_, owner_->alternate_urls().size());
 }
 
-TemplateURLRef::~TemplateURLRef() {
-}
+TemplateURLRef::~TemplateURLRef() = default;
 
 TemplateURLRef::TemplateURLRef(const TemplateURLRef& source) = default;
 
@@ -348,8 +364,7 @@ std::string TemplateURLRef::GetURL() const {
     case INDEXED:
       return owner_->alternate_urls()[index_in_owner_];
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 
@@ -368,8 +383,7 @@ std::string TemplateURLRef::GetPostParamsString() const {
     case IMAGE_TRANSLATE:
       return owner_->image_url_post_params();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 
@@ -409,10 +423,12 @@ size_t TemplateURLRef::PostParam::EstimateMemoryUsage() const {
 
 bool TemplateURLRef::EncodeFormData(const PostParams& post_params,
                                     PostContent* post_content) const {
-  if (post_params.empty())
+  if (post_params.empty()) {
     return true;
-  if (!post_content)
+  }
+  if (!post_content) {
     return false;
+  }
 
   const char kUploadDataMIMEType[] = "multipart/form-data; boundary=";
   // Each name/value pair is stored in a body part which is preceded by a
@@ -445,39 +461,57 @@ std::string TemplateURLRef::ReplaceSearchTerms(
     PostContent* post_content,
     std::string url_override) const {
   ParseIfNecessary(search_terms_data, url_override);
-  if (!valid_)
+  if (!valid_) {
     return std::string();
+  }
 
-  std::string url(HandleReplacements(search_terms_args, search_terms_data,
-                                     post_content));
+  std::string url(
+      HandleReplacements(search_terms_args, search_terms_data, post_content));
 
   GURL gurl(url);
-  if (!gurl.is_valid())
+  if (!gurl.is_valid()) {
     return url;
+  }
 
   std::vector<std::string> query_params;
   if (search_terms_args.append_extra_query_params_from_command_line) {
     std::string extra_params(
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
             switches::kExtraSearchQueryParams));
-    if (!extra_params.empty())
+    if (!extra_params.empty()) {
       query_params.push_back(extra_params);
+    }
   }
-  if (!search_terms_args.additional_query_params.empty())
+  if (!search_terms_args.additional_query_params.empty()) {
     query_params.push_back(search_terms_args.additional_query_params);
-  if (!gurl.query().empty())
-    query_params.push_back(gurl.query());
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(switches::kSearchEngineChoiceAttribution) &&
-      owner_->created_from_play_api()) {
-    // Append attribution parameter to query originating from Play API search
-    // engine.
-    query_params.push_back("chrome_dse_attribution=1");
   }
-#endif
+  if (!gurl.GetQuery().empty()) {
+    query_params.push_back(gurl.GetQuery());
+  }
 
-  if (query_params.empty())
+  if (type_ == SEARCH || type_ == SUGGEST) {
+    auto regulatory_extension_type = owner_->GetRegulatoryExtensionType();
+    base::UmaHistogramEnumeration(
+        type_ == SEARCH
+            ? "Omnibox.TemplateUrl.RegulatoryExtension.SearchVariant"
+            : "Omnibox.TemplateUrl.RegulatoryExtension.SuggestVariant",
+        regulatory_extension_type);
+
+    auto* regulatory_extension =
+        owner_->GetRegulatoryExtension(regulatory_extension_type);
+    if (regulatory_extension) {
+      const char* regulatory_params =
+          type_ == SEARCH ? regulatory_extension->search_params
+                          : regulatory_extension->suggest_params;
+      if (regulatory_params && strlen(regulatory_params) > 0) {
+        query_params.push_back(regulatory_params);
+      }
+    }
+  }
+
+  if (query_params.empty()) {
     return url;
+  }
 
   GURL::Replacements replacements;
   std::string query_str = base::JoinString(query_params, "&");
@@ -495,8 +529,7 @@ std::u16string TemplateURLRef::DisplayURL(
   ParseIfNecessary(search_terms_data);
   std::string result(GetURL());
   if (valid_ && !replacements_.empty()) {
-    base::ReplaceSubstringsAfterOffset(&result, 0,
-                                       kSearchTermsParameterFull,
+    base::ReplaceSubstringsAfterOffset(&result, 0, kSearchTermsParameterFull,
                                        kDisplaySearchTerms);
     base::ReplaceSubstringsAfterOffset(&result, 0,
                                        kGoogleUnescapedSearchTermsParameterFull,
@@ -509,11 +542,9 @@ std::u16string TemplateURLRef::DisplayURL(
 std::string TemplateURLRef::DisplayURLToURLRef(
     const std::u16string& display_url) {
   std::string result = base::UTF16ToUTF8(display_url);
-  base::ReplaceSubstringsAfterOffset(&result, 0,
-                                     kDisplaySearchTerms,
+  base::ReplaceSubstringsAfterOffset(&result, 0, kDisplaySearchTerms,
                                      kSearchTermsParameterFull);
-  base::ReplaceSubstringsAfterOffset(&result, 0,
-                                     kDisplayUnescapedSearchTerms,
+  base::ReplaceSubstringsAfterOffset(&result, 0, kDisplayUnescapedSearchTerms,
                                      kGoogleUnescapedSearchTermsParameterFull);
   return result;
 }
@@ -562,38 +593,41 @@ std::u16string TemplateURLRef::SearchTermToString16(
   base::UnescapeRule::Type unescape_rules =
       base::UnescapeRule::SPACES | base::UnescapeRule::PATH_SEPARATORS |
       base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS;
-  if (search_term_key_location_ != url::Parsed::PATH)
+  if (search_term_key_location_ != url::Parsed::PATH) {
     unescape_rules |= base::UnescapeRule::REPLACE_PLUS_WITH_SPACE;
+  }
 
   std::string unescaped = base::UnescapeURLComponent(term, unescape_rules);
   for (size_t i = 0; i < encodings.size(); ++i) {
     if (base::CodepageToUTF16(unescaped, encodings[i].c_str(),
-                              base::OnStringConversionError::FAIL, &result))
+                              base::OnStringConversionError::FAIL, &result)) {
       return result;
+    }
   }
 
   // Always fall back on UTF-8 if it works.
   if (base::CodepageToUTF16(unescaped, base::kCodepageUTF8,
-                            base::OnStringConversionError::FAIL, &result))
+                            base::OnStringConversionError::FAIL, &result)) {
     return result;
+  }
 
   // When nothing worked, just use the escaped text. We have no idea what the
   // encoding is. We need to substitute spaces for pluses ourselves since we're
   // not sending it through an unescaper.
   result = base::UTF8ToUTF16(term);
-  if (unescape_rules & base::UnescapeRule::REPLACE_PLUS_WITH_SPACE)
+  if (unescape_rules & base::UnescapeRule::REPLACE_PLUS_WITH_SPACE) {
     std::replace(result.begin(), result.end(), '+', ' ');
+  }
   return result;
 }
 
 bool TemplateURLRef::HasGoogleBaseURLs(
     const SearchTermsData& search_terms_data) const {
   ParseIfNecessary(search_terms_data);
-  return base::ranges::any_of(
-      replacements_, [](const Replacement& replacement) {
-        return replacement.type == GOOGLE_BASE_URL ||
-               replacement.type == GOOGLE_BASE_SUGGEST_URL;
-      });
+  return std::ranges::any_of(replacements_, [](const Replacement& replacement) {
+    return replacement.type == GOOGLE_BASE_URL ||
+           replacement.type == GOOGLE_BASE_SUGGEST_URL;
+  });
 }
 
 bool TemplateURLRef::ExtractSearchTermsFromURL(
@@ -609,11 +643,12 @@ bool TemplateURLRef::ExtractSearchTermsFromURL(
 
   // We need a search term in the template URL to extract something.
   if (search_term_key_.empty() &&
-      (search_term_key_location_ != url::Parsed::PATH))
+      search_term_key_location_ != url::Parsed::PATH) {
     return false;
+  }
 
   // Host, port, and path must match.
-  if ((url.host() != host_) || (url.port() != port_) ||
+  if (url.GetHost() != host_ || url.GetPort() != port_ ||
       (!PathIsEqual(url) && (search_term_key_location_ != url::Parsed::PATH))) {
     return false;
   }
@@ -622,24 +657,24 @@ bool TemplateURLRef::ExtractSearchTermsFromURL(
   url::Component position;
 
   if (search_term_key_location_ == url::Parsed::PATH) {
-    source = url.path_piece();
+    source = url.path();
 
     // If the path does not contain the expected prefix and suffix, then this is
     // not a match.
     if (source.size() < (search_term_value_prefix_.size() +
                          search_term_value_suffix_.size()) ||
         !base::StartsWith(source, search_term_value_prefix_) ||
-        !base::EndsWith(source, search_term_value_suffix_))
+        !base::EndsWith(source, search_term_value_suffix_)) {
       return false;
+    }
     position =
         url::MakeRange(search_term_value_prefix_.size(),
                        source.length() - search_term_value_suffix_.size());
   } else {
     DCHECK(search_term_key_location_ == url::Parsed::QUERY ||
            search_term_key_location_ == url::Parsed::REF);
-    source = (search_term_key_location_ == url::Parsed::QUERY)
-                 ? url.query_piece()
-                 : url.ref_piece();
+    source = (search_term_key_location_ == url::Parsed::QUERY) ? url.query()
+                                                               : url.ref();
 
     url::Component query, key, value;
     query.len = static_cast<int>(source.size());
@@ -648,8 +683,9 @@ bool TemplateURLRef::ExtractSearchTermsFromURL(
       if (key.is_nonempty()) {
         if (source.substr(key.begin, key.len) == search_term_key_) {
           // Fail if search term key is found twice.
-          if (key_found)
+          if (key_found) {
             return false;
+          }
 
           // If the query parameter does not contain the expected prefix and
           // suffix, then this is not a match.
@@ -658,8 +694,9 @@ bool TemplateURLRef::ExtractSearchTermsFromURL(
           if (search_term.size() < (search_term_value_prefix_.size() +
                                     search_term_value_suffix_.size()) ||
               !base::StartsWith(search_term, search_term_value_prefix_) ||
-              !base::EndsWith(search_term, search_term_value_suffix_))
+              !base::EndsWith(search_term, search_term_value_suffix_)) {
             continue;
+          }
 
           key_found = true;
           position =
@@ -668,17 +705,20 @@ bool TemplateURLRef::ExtractSearchTermsFromURL(
         }
       }
     }
-    if (!key_found)
+    if (!key_found) {
       return false;
+    }
   }
 
   // Extract the search term.
   *search_terms =
       SearchTermToString16(source.substr(position.begin, position.len));
-  if (search_terms_component)
+  if (search_terms_component) {
     *search_terms_component = search_term_key_location_;
-  if (search_terms_position)
+  }
+  if (search_terms_position) {
     *search_terms_position = position;
+  }
   return true;
 }
 
@@ -700,8 +740,7 @@ bool TemplateURLRef::ParseParameter(size_t start,
                                     size_t end,
                                     std::string* url,
                                     Replacements* replacements) const {
-  DCHECK(start != std::string::npos &&
-         end != std::string::npos && end > start);
+  DCHECK(start != std::string::npos && end != std::string::npos && end > start);
   size_t length = end - start - 1;
   bool optional = false;
   // Make a copy of |url| that can be referenced in StringPieces below. |url| is
@@ -712,11 +751,8 @@ bool TemplateURLRef::ParseParameter(size_t start,
     length--;
   }
 
-  const auto parameter =
-      base::MakeStringPiece(original_url.begin() + start + 1,
-                            original_url.begin() + start + 1 + length);
-  const auto full_parameter = base::MakeStringPiece(
-      original_url.begin() + start, original_url.begin() + end + 1);
+  const std::string_view parameter =
+      std::string_view(original_url).substr(start + 1, length);
   // Remove the parameter from the string.  For parameters who replacement is
   // constant and already known, just replace them directly.  For other cases,
   // like parameters whose values may change over time, use |replacements|.
@@ -724,8 +760,9 @@ bool TemplateURLRef::ParseParameter(size_t start,
   if (parameter == kSearchTermsParameter) {
     replacements->push_back(Replacement(SEARCH_TERMS, start));
   } else if (parameter == "count") {
-    if (!optional)
+    if (!optional) {
       url->insert(start, kDefaultCount);
+    }
   } else if (parameter == "google:assistedQueryStats") {
     replacements->push_back(Replacement(GOOGLE_ASSISTED_QUERY_STATS, start));
   } else if (parameter == "google:baseURL") {
@@ -758,11 +795,11 @@ bool TemplateURLRef::ParseParameter(size_t start,
     replacements->emplace_back(
         Replacement(TemplateURLRef::GOOGLE_PROCESSED_IMAGE_DIMENSIONS, start));
   } else if (parameter == "google:imageURL") {
-    replacements->push_back(Replacement(TemplateURLRef::GOOGLE_IMAGE_URL,
-                                        start));
+    replacements->push_back(
+        Replacement(TemplateURLRef::GOOGLE_IMAGE_URL, start));
   } else if (parameter == "google:inputType") {
-    replacements->push_back(Replacement(TemplateURLRef::GOOGLE_INPUT_TYPE,
-                                        start));
+    replacements->push_back(
+        Replacement(TemplateURLRef::GOOGLE_INPUT_TYPE, start));
   } else if (parameter == "google:omniboxFocusType") {
     replacements->push_back(
         Replacement(TemplateURLRef::GOOGLE_OMNIBOX_FOCUS_TYPE, start));
@@ -782,8 +819,8 @@ bool TemplateURLRef::ParseParameter(size_t start,
     replacements->push_back(
         Replacement(GOOGLE_CONTEXTUAL_SEARCH_CONTEXT_DATA, start));
   } else if (parameter == "google:originalQueryForSuggestion") {
-    replacements->push_back(Replacement(GOOGLE_ORIGINAL_QUERY_FOR_SUGGESTION,
-                                        start));
+    replacements->push_back(
+        Replacement(GOOGLE_ORIGINAL_QUERY_FOR_SUGGESTION, start));
   } else if (parameter == "google:pageClassification") {
     replacements->push_back(Replacement(GOOGLE_PAGE_CLASSIFICATION, start));
   } else if (parameter == "google:clientCacheTimeToLive") {
@@ -831,32 +868,14 @@ bool TemplateURLRef::ParseParameter(size_t start,
   } else if (parameter == "language") {
     replacements->push_back(Replacement(LANGUAGE, start));
   } else if (parameter == "outputEncoding") {
-    if (!optional)
+    if (!optional) {
       url->insert(start, kOutputEncodingType);
+    }
   } else if ((parameter == "startIndex") || (parameter == "startPage")) {
     // We don't support these.
-    if (!optional)
+    if (!optional) {
       url->insert(start, "1");
-  } else if (!prepopulated_) {
-    base::UmaHistogramBoolean("Omnibox.TemplateUrl.UnrecognizedParameter",
-                              /* is externally supplied template? */ false);
-    // Note: in certain scenarios this function is tested before FeatureFlag is
-    // initialized. Check whether FeatureList has been instantiated before
-    // testing the flag to avoid talking to EarlyFeatureAccessTracker.
-    if (!base::FeatureList::GetInstance() ||
-        !base::FeatureList::IsEnabled(
-            omnibox::kDropUnrecognizedTemplateUrlParameters)) {
-      url->insert(start, full_parameter.data(), full_parameter.size());
-      return false;
     }
-    // The unrecognized parameters can originate from Chrome's DMA upstream
-    // definitions, or Chrome Extensions. In each case, data has shown that the
-    // parameters don't carry any JSON or Javascript content and should be safe
-    // to be removed.
-    // This still allows JSON payload to be included in the Template URL, but
-    // requires the braces to be escaped ahead of time.
-    //
-    // Fallthrough.
   } else {
     // Despite Chrome normally relying on prepopulated_engines.json file, there
     // are other mechanisms that can supply overrides - see:
@@ -868,7 +887,7 @@ bool TemplateURLRef::ParseParameter(size_t start,
     //
     // Fallthrough.
     base::UmaHistogramBoolean("Omnibox.TemplateUrl.UnrecognizedParameter",
-                              /* is externally supplied template? */ true);
+                              prepopulated_);
   }
   return true;
 }
@@ -879,7 +898,7 @@ std::string TemplateURLRef::ParseURL(const std::string& url,
                                      bool* valid) const {
   *valid = false;
   std::string parsed_url = url;
-  for (size_t last = 0; last != std::string::npos; ) {
+  for (size_t last = 0; last != std::string::npos;) {
     last = parsed_url.find(kStartParameter, last);
     if (last != std::string::npos) {
       size_t template_end = parsed_url.find(kEndParameter, last);
@@ -914,14 +933,16 @@ std::string TemplateURLRef::ParseURL(const std::string& url,
       // The '=' delimiter is required and the name must be not empty.
       std::vector<std::string> parts = base::SplitString(
           cur, "=", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-      if ((parts.size() != 2U) || parts[0].empty())
+      if ((parts.size() != 2U) || parts[0].empty()) {
         return std::string();
+      }
 
       std::string& value = parts[1];
       size_t replacements_size = replacements->size();
-      if (IsTemplateParameterString(value))
+      if (IsTemplateParameterString(value)) {
         ParseParameter(0, value.length() - 1, &value, replacements);
-      PostParam param = { parts[0], value };
+      }
+      PostParam param = {parts[0], value};
       post_params->push_back(param);
       // If there was a replacement added, points its index to last added
       // PostParam.
@@ -964,8 +985,9 @@ void TemplateURLRef::ParseIfNecessary(const SearchTermsData& search_terms_data,
       }
       // Only parse the host/key if there is one search term. Technically there
       // could be more than one term, but it's uncommon; so we punt.
-      if (has_only_one_search_term)
+      if (has_only_one_search_term) {
         ParseHostAndSearchTermKey(search_terms_data);
+      }
     }
   }
 }
@@ -985,9 +1007,10 @@ void TemplateURLRef::ParsePath(const std::string& path) const {
 }
 
 bool TemplateURLRef::PathIsEqual(const GURL& url) const {
-  std::string_view path = url.path_piece();
-  if (!path_wildcard_present_)
+  std::string_view path = url.path();
+  if (!path_wildcard_present_) {
     return path == path_prefix_;
+  }
   return ((path.length() >= path_prefix_.length() + path_suffix_.length()) &&
           base::StartsWith(path, path_prefix_) &&
           base::EndsWith(path, path_suffix_));
@@ -996,9 +1019,8 @@ bool TemplateURLRef::PathIsEqual(const GURL& url) const {
 void TemplateURLRef::ParseHostAndSearchTermKey(
     const SearchTermsData& search_terms_data) const {
   std::string url_string(GetURL());
-  base::ReplaceSubstringsAfterOffset(
-      &url_string, 0, "{google:baseURL}",
-      search_terms_data.GoogleBaseURLValue());
+  base::ReplaceSubstringsAfterOffset(&url_string, 0, "{google:baseURL}",
+                                     search_terms_data.GoogleBaseURLValue());
   base::ReplaceSubstringsAfterOffset(
       &url_string, 0, "{google:baseSuggestURL}",
       search_terms_data.GoogleBaseSuggestURLValue());
@@ -1006,32 +1028,34 @@ void TemplateURLRef::ParseHostAndSearchTermKey(
                                      YandexSearchPathFromDeviceFormFactor());
 
   GURL url(url_string);
-  if (!url.is_valid())
+  if (!url.is_valid()) {
     return;
+  }
 
-  SearchTermLocation query_result(url.query_piece(), url::Parsed::QUERY);
-  SearchTermLocation ref_result(url.ref_piece(), url::Parsed::REF);
-  SearchTermLocation path_result(url.path_piece(), url::Parsed::PATH);
+  SearchTermLocation query_result(url.query(), url::Parsed::QUERY);
+  SearchTermLocation ref_result(url.ref(), url::Parsed::REF);
+  SearchTermLocation path_result(url.path(), url::Parsed::PATH);
   const bool in_query = query_result.found();
   const bool in_ref = ref_result.found();
   const bool in_path = path_result.found();
-  if (in_query ? (in_ref || in_path) : (in_ref == in_path))
+  if (in_query ? (in_ref || in_path) : (in_ref == in_path)) {
     return;  // No key or multiple keys found.  We only handle having one key.
+  }
 
-  host_ = url.host();
-  port_ = url.port();
+  host_ = url.GetHost();
+  port_ = url.GetPort();
   if (in_query) {
     search_term_key_location_ = url::Parsed::QUERY;
     search_term_key_ = query_result.key();
     search_term_value_prefix_ = query_result.value_prefix();
     search_term_value_suffix_ = query_result.value_suffix();
-    ParsePath(url.path());
+    ParsePath(url.GetPath());
   } else if (in_ref) {
     search_term_key_location_ = url::Parsed::REF;
     search_term_key_ = ref_result.key();
     search_term_value_prefix_ = ref_result.value_prefix();
     search_term_value_suffix_ = ref_result.value_suffix();
-    ParsePath(url.path());
+    ParsePath(url.GetPath());
   } else {
     DCHECK(in_path);
     search_term_key_location_ = url::Parsed::PATH;
@@ -1060,8 +1084,9 @@ std::string TemplateURLRef::HandleReplacements(
     PostContent* post_content) const {
   TRACE_EVENT0("omnibox", "TemplateURLRef::HandleReplacement");
   if (replacements_.empty()) {
-    if (!post_params_.empty())
+    if (!post_params_.empty()) {
       EncodeFormData(post_params_, post_content);
+    }
     return parsed_url_;
   }
 
@@ -1070,7 +1095,7 @@ std::string TemplateURLRef::HandleReplacements(
   bool is_in_query = true;
 
   auto search_terms =
-      base::ranges::find(replacements_, SEARCH_TERMS, &Replacement::type);
+      std::ranges::find(replacements_, SEARCH_TERMS, &Replacement::type);
 
   if (search_terms != replacements_.end()) {
     std::u16string::size_type query_start = parsed_url_.find('?');
@@ -1116,8 +1141,9 @@ std::string TemplateURLRef::HandleReplacements(
           args.push_back("ctxsl_coca=" +
                          base::NumberToString(params.contextual_cards_version));
         }
-        if (!params.home_country.empty())
+        if (!params.home_country.empty()) {
           args.push_back("ctxs_hc=" + params.home_country);
+        }
         if (params.previous_event_id != 0) {
           args.push_back("ctxsl_pid=" +
                          base::NumberToString(params.previous_event_id));
@@ -1126,18 +1152,27 @@ std::string TemplateURLRef::HandleReplacements(
           args.push_back("ctxsl_per=" +
                          base::NumberToString(params.previous_event_results));
         }
-        if (params.is_exact_search)
+        if (params.is_exact_search) {
           args.push_back("ctxsl_exact=1");
-        if (!params.source_lang.empty())
+        }
+        if (!params.source_lang.empty()) {
           args.push_back("tlitesl=" + params.source_lang);
-        if (!params.target_lang.empty())
+        }
+        if (!params.target_lang.empty()) {
           args.push_back("tlitetl=" + params.target_lang);
-        if (!params.fluent_languages.empty())
+        }
+        if (!params.fluent_languages.empty()) {
           args.push_back("ctxs_fls=" + params.fluent_languages);
-        if (!params.related_searches_stamp.empty())
+        }
+        if (!params.related_searches_stamp.empty()) {
           args.push_back("ctxsl_rs=" + params.related_searches_stamp);
-        if (params.apply_lang_hint)
+        }
+        if (params.apply_lang_hint) {
           args.push_back("ctxsl_applylh=1");
+        }
+        if (params.use_snippet_as_subtitle) {
+          args.push_back("ctxs_usas=1");
+        }
 
         HandleReplacement(std::string(), base::JoinString(args, "&"),
                           replacement, &url);
@@ -1240,11 +1275,12 @@ std::string TemplateURLRef::HandleReplacements(
 
       case GOOGLE_CURSOR_POSITION:
         DCHECK(!replacement.is_post_param);
-        if (search_terms_args.cursor_position != std::u16string::npos)
+        if (search_terms_args.cursor_position != std::u16string::npos) {
           HandleReplacement(
               "cp",
               base::StringPrintf("%" PRIuS, search_terms_args.cursor_position),
               replacement, &url);
+        }
         break;
 
       case GOOGLE_INPUT_TYPE:
@@ -1360,17 +1396,19 @@ std::string TemplateURLRef::HandleReplacements(
       case GOOGLE_SEARCH_SOURCE_ID: {
         DCHECK(!replacement.is_post_param);
         switch (search_terms_args.request_source) {
-          case RequestSource::CONTEXTUAL_SEARCHBOX:
-          case RequestSource::SEARCH_SIDE_PANEL_SEARCHBOX:
-          case RequestSource::LENS_SIDE_PANEL_SEARCHBOX:
-            HandleReplacement("source", "chrome.gsc", replacement, &url);
-            break;
-          default:
+          case RequestSource::NTP_MODULE:
+          case RequestSource::SEARCHBOX:
+          case RequestSource::CROS_APP_LIST:
+          case RequestSource::NTP_COMPOSEBOX:
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
             HandleReplacement("sourceid", "chrome-mobile", replacement, &url);
 #else
             HandleReplacement("sourceid", "chrome", replacement, &url);
 #endif
+            break;
+          case RequestSource::LENS_OVERLAY:
+            // Lens Overlay searchboxes don't rely on TemplateURL replacement
+            // and set `source=` in //c/b/u/lens/lens_overlay_url_builder.cc.
             break;
         }
         break;
@@ -1382,8 +1420,9 @@ std::string TemplateURLRef::HandleReplacements(
 
       case GOOGLE_SESSION_TOKEN: {
         std::string token = search_terms_args.session_token;
-        if (!token.empty())
+        if (!token.empty()) {
           HandleReplacement("psi", token, replacement, &url);
+        }
         break;
       }
 
@@ -1394,22 +1433,14 @@ std::string TemplateURLRef::HandleReplacements(
             HandleReplacement(std::string(),
                               "chrome-android-search-resumption-module",
                               replacement, &url);
+            break;
 #elif BUILDFLAG(IS_IOS)
             HandleReplacement(std::string(), "chrome-ios-ntp", replacement,
                               &url);
+            break;
 #else
-            NOTREACHED_IN_MIGRATION();
+            NOTREACHED();
 #endif
-            break;
-          case RequestSource::CONTEXTUAL_SEARCHBOX:
-          case RequestSource::SEARCH_SIDE_PANEL_SEARCHBOX:
-            HandleReplacement(std::string(), "chrome-contextual", replacement,
-                              &url);
-            break;
-          case RequestSource::LENS_SIDE_PANEL_SEARCHBOX:
-            HandleReplacement(std::string(), "chrome-multimodal", replacement,
-                              &url);
-            break;
           case RequestSource::SEARCHBOX:
           case RequestSource::CROS_APP_LIST:
 #if BUILDFLAG(IS_ANDROID)
@@ -1424,16 +1455,33 @@ std::string TemplateURLRef::HandleReplacements(
             HandleReplacement(std::string(), "chrome-omni", replacement, &url);
 #endif
             break;
+          case RequestSource::NTP_COMPOSEBOX: {
+            // RequestSource::NTP_COMPOSEBOX will use "chrome-omni" for delayed
+            // context uploads. TODO(crbug.com/460858102) Figure out how to
+            // support delayed uploads using "chrome-compose."
+            std::string client_replacement =
+                base::FeatureList::IsEnabled(
+                    omnibox::kComposeboxUsesChromeComposeClient)
+                    ? (search_terms_args.page_classification ==
+                                   metrics::OmniboxEventProto::NTP_COMPOSEBOX &&
+                               !search_terms_args.current_page_url.empty()
+                           ? "chrome-omni"
+                           : "chrome-compose")
+                    : "chrome-omni";
+            HandleReplacement(std::string(), client_replacement, replacement,
+                              &url);
+            break;
+          }
+          case RequestSource::LENS_OVERLAY:
+            // No replacement. Lens Overlay searchboxes don't rely on
+            // TemplateURL replacement and set `client=` in
+            // //components/omnibox/browser/remote_suggestions_service.cc.
+            break;
         }
         break;
 
       case GOOGLE_SUGGEST_REQUEST_ID:
         switch (search_terms_args.request_source) {
-          case RequestSource::NTP_MODULE:
-          case RequestSource::CONTEXTUAL_SEARCHBOX:
-          case RequestSource::SEARCH_SIDE_PANEL_SEARCHBOX:
-          case RequestSource::LENS_SIDE_PANEL_SEARCHBOX:
-            break;
           case RequestSource::SEARCHBOX:
           case RequestSource::CROS_APP_LIST:
 #if BUILDFLAG(IS_ANDROID)
@@ -1443,18 +1491,30 @@ std::string TemplateURLRef::HandleReplacements(
               break;
             }
 #endif
+            if (search_terms_args.page_classification ==
+                    metrics::OmniboxEventProto::NTP_REALBOX &&
+                search_terms_args.lens_overlay_suggest_inputs.has_value()) {
+              // No replacement. `gs_ri` is not recommended for contextual
+              // queries.
+              break;
+            }
             HandleReplacement(std::string(), "chrome-ext-ansg", replacement,
                               &url);
+            break;
+          case RequestSource::NTP_MODULE:
+          case RequestSource::LENS_OVERLAY:
+          case RequestSource::NTP_COMPOSEBOX:
+            // No replacement. `gs_ri` is longer recommended for new clients.
+            // New identifiers should be based on their client names.
             break;
         }
         break;
 
       case GOOGLE_UNESCAPED_SEARCH_TERMS: {
         std::string unescaped_terms;
-        base::UTF16ToCodepage(search_terms_args.search_terms,
-                              input_encoding.c_str(),
-                              base::OnStringConversionError::SKIP,
-                              &unescaped_terms);
+        base::UTF16ToCodepage(
+            search_terms_args.search_terms, input_encoding.c_str(),
+            base::OnStringConversionError::SKIP, &unescaped_terms);
         HandleReplacement(std::string(), unescaped_terms, replacement, &url);
         break;
       }
@@ -1551,15 +1611,17 @@ std::string TemplateURLRef::HandleReplacements(
 
       case YANDEX_REFERRAL_ID: {
         std::string referral_id = search_terms_data.GetYandexReferralID();
-        if (!referral_id.empty())
+        if (!referral_id.empty()) {
           HandleReplacement("clid", referral_id, replacement, &url);
+        }
         break;
       }
 
       case MAIL_RU_REFERRAL_ID: {
         std::string referral_id = search_terms_data.GetMailRUReferralID();
-        if (!referral_id.empty())
+        if (!referral_id.empty()) {
           HandleReplacement("gp", referral_id, replacement, &url);
+        }
         break;
       }
 
@@ -1582,16 +1644,15 @@ std::string TemplateURLRef::HandleReplacements(
       }
 
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
-  if (!post_params_.empty())
+  if (!post_params_.empty()) {
     EncodeFormData(post_params_, post_content);
+  }
   return url;
 }
-
 
 // TemplateURL ----------------------------------------------------------------
 
@@ -1603,15 +1664,20 @@ TemplateURL::AssociatedExtensionInfo::AssociatedExtensionInfo(
       install_time(install_time),
       wants_to_be_default_engine(wants_to_be_default_engine) {}
 
-TemplateURL::AssociatedExtensionInfo::~AssociatedExtensionInfo() {
-}
+TemplateURL::AssociatedExtensionInfo::~AssociatedExtensionInfo() = default;
 
 size_t TemplateURL::AssociatedExtensionInfo::EstimateMemoryUsage() const {
   return base::trace_event::EstimateMemoryUsage(extension_id);
 }
 
 TemplateURL::TemplateURL(const TemplateURLData& data, Type type)
-    : data_(data),
+    : TemplateURL(data, std::nullopt, type) {}
+
+TemplateURL::TemplateURL(const std::optional<TemplateURLData>& local_data,
+                         const std::optional<TemplateURLData>& account_data,
+                         Type type)
+    : local_data_(local_data),
+      account_data_(account_data),
       suggestions_url_ref_(this, TemplateURLRef::SUGGEST),
       image_url_ref_(this, TemplateURLRef::IMAGE),
       image_translate_url_ref_(this, TemplateURLRef::IMAGE_TRANSLATE),
@@ -1619,8 +1685,9 @@ TemplateURL::TemplateURL(const TemplateURLData& data, Type type)
       contextual_search_url_ref_(this, TemplateURLRef::CONTEXTUAL_SEARCH),
       type_(type),
       engine_type_(SEARCH_ENGINE_UNKNOWN) {
+  CHECK(local_data || account_data);
   ResizeURLRefVector();
-  SetPrepopulateId(data_.prepopulate_id);
+  SetPrepopulateId(active_data().prepopulate_id);
 }
 
 TemplateURL::TemplateURL(const TemplateURLData& data,
@@ -1638,33 +1705,28 @@ TemplateURL::TemplateURL(const TemplateURLData& data,
       extension_id, install_time, wants_to_be_default_engine);
 }
 
-TemplateURL::~TemplateURL() {
-}
+TemplateURL::TemplateURL(TemplateURL&& other) = default;
+
+TemplateURL::~TemplateURL() = default;
 
 bool TemplateURL::IsBetterThanConflictingEngine(
     const TemplateURL* other) const {
   DCHECK(other);
 
-  auto is_ssp = [](const TemplateURL* turl) {
-    return turl->created_by_policy() ==
-           TemplateURLData::CreatedByPolicy::kSiteSearch;
-  };
-  auto no_policy = [](const TemplateURL* turl) {
-    return turl->created_by_policy() ==
-           TemplateURLData::CreatedByPolicy::kNoPolicy;
-  };
-
-  // Site search engines set by enterprise policy have different priority over
-  // existing search engines because we don't want to break current workflows
-  // for power users.
-  if (is_ssp(this) && no_policy(other)) {
-    return IsEnterpriseSideSearchEngineBetterThanEngine(this, other);
-  } else if (no_policy(this) && is_ssp(other)) {
-    return !IsEnterpriseSideSearchEngineBetterThanEngine(other, this);
-  } else if (is_ssp(this) && is_ssp(other)) {
-    // If both engines are created by the SiteSearchSettings policy, prefer the
-    // one that is featured. Otherwise, fallback to the comparison based on
-    // the signals below.
+  // Site search and Enterprise Search Aggregator engines set by enterprise
+  // policy have different priority over existing search engines because we
+  // don't want to break current workflows for power users.
+  if (CreatedByNonDefaultSearchProviderPolicy() && !other->CreatedByPolicy()) {
+    return IsPolicySearchEngineBetterThanNonPolicyEngine(this, other);
+  } else if (!CreatedByPolicy() &&
+             other->CreatedByNonDefaultSearchProviderPolicy()) {
+    return !IsPolicySearchEngineBetterThanNonPolicyEngine(other, this);
+  } else if (CreatedByNonDefaultSearchProviderPolicy() &&
+             other->CreatedByNonDefaultSearchProviderPolicy()) {
+    // If both engines are created by the `SiteSearchSettings` or
+    // `EnterpriseSearchAggregatorSettings` policy, prefer the one that is
+    // featured. Otherwise, fallback to the comparison based on the signals
+    // below.
     if (this->featured_by_policy() && !other->featured_by_policy()) {
       return true;
     } else if (!this->featured_by_policy() && other->featured_by_policy()) {
@@ -1676,8 +1738,7 @@ bool TemplateURL::IsBetterThanConflictingEngine(
     return std::make_tuple(
         // Policy-created engines always win over non-policy created engines.
         // At this point, managed search engine should be created by DSP policy.
-        engine->created_by_policy() ==
-            TemplateURLData::CreatedByPolicy::kDefaultSearchProvider,
+        engine->CreatedByDefaultSearchProviderPolicy(),
         // Policy-enforced engines always win over policy-recommended engines.
         engine->enforced_by_policy(),
         // The integral value of the type enum is used to sort next.
@@ -1689,8 +1750,8 @@ bool TemplateURL::IsBetterThanConflictingEngine(
                                 : base::Time(),
         // Prefer engines that CANNOT be auto-replaced.
         !engine->safe_for_autoreplace(),
-        // Prefer engines created by Play API.
-        engine->created_from_play_api(),
+        // Prefer engines created by regulatory programs.
+        engine->CreatedByRegulatoryProgram(),
         // Favor prepopulated engines over other auto-generated engines.
         engine->prepopulate_id() > 0,
         // Favor starter pack engines over other auto-generated engines.
@@ -1720,7 +1781,7 @@ std::u16string TemplateURL::GenerateKeyword(const GURL& url) {
   // |url|'s hostname may be IDN-encoded. Before generating |keyword| from it,
   // convert to Unicode, so it won't look like a confusing punycode string.
   std::u16string keyword =
-      url_formatter::IDNToUnicode(url_formatter::StripWWW(url.host()));
+      url_formatter::IDNToUnicode(url_formatter::StripWWW(url.GetHost()));
   return base::i18n::ToLower(keyword);
 }
 
@@ -1743,8 +1804,9 @@ GURL TemplateURL::GenerateFaviconURL(const GURL& url) {
 bool TemplateURL::MatchesData(const TemplateURL* t_url,
                               const TemplateURLData* data,
                               const SearchTermsData& search_terms_data) {
-  if (!t_url || !data)
+  if (!t_url || !data) {
     return !t_url && !data;
+  }
 
   return (t_url->short_name() == data->short_name()) &&
          t_url->HasSameKeywordAs(*data, search_terms_data) &&
@@ -1763,7 +1825,7 @@ bool TemplateURL::MatchesData(const TemplateURL* t_url,
 }
 
 std::u16string TemplateURL::AdjustedShortNameForLocaleDirection() const {
-  std::u16string bidi_safe_short_name = data_.short_name();
+  std::u16string bidi_safe_short_name = data().short_name();
   base::i18n::AdjustStringForLocaleDirection(&bidi_safe_short_name);
   return bidi_safe_short_name;
 }
@@ -1775,10 +1837,11 @@ bool TemplateURL::SupportsReplacement(
 
 bool TemplateURL::HasGoogleBaseURLs(
     const SearchTermsData& search_terms_data) const {
-  if (base::ranges::any_of(url_refs_, [&](const TemplateURLRef& ref) {
+  if (std::ranges::any_of(url_refs_, [&](const TemplateURLRef& ref) {
         return ref.HasGoogleBaseURLs(search_terms_data);
-      }))
+      })) {
     return true;
+  }
 
   return suggestions_url_ref_.HasGoogleBaseURLs(search_terms_data) ||
          image_url_ref_.HasGoogleBaseURLs(search_terms_data) ||
@@ -1790,29 +1853,112 @@ bool TemplateURL::HasGoogleBaseURLs(
 bool TemplateURL::IsGoogleSearchURLWithReplaceableKeyword(
     const SearchTermsData& search_terms_data) const {
   return (type_ == NORMAL) && url_ref().HasGoogleBaseURLs(search_terms_data) &&
-         google_util::IsGoogleHostname(base::UTF16ToUTF8(data_.keyword()),
+         google_util::IsGoogleHostname(base::UTF16ToUTF8(data().keyword()),
                                        google_util::DISALLOW_SUBDOMAIN);
 }
 
 bool TemplateURL::HasSameKeywordAs(
     const TemplateURLData& other,
     const SearchTermsData& search_terms_data) const {
-  return (data_.keyword() == other.keyword()) ||
-      (IsGoogleSearchURLWithReplaceableKeyword(search_terms_data) &&
-       TemplateURL(other).IsGoogleSearchURLWithReplaceableKeyword(
-           search_terms_data));
+  return (data().keyword() == other.keyword()) ||
+         (IsGoogleSearchURLWithReplaceableKeyword(search_terms_data) &&
+          TemplateURL(other).IsGoogleSearchURLWithReplaceableKeyword(
+              search_terms_data));
 }
 
 std::string TemplateURL::GetExtensionId() const {
   DCHECK(extension_info_);
-  return extension_info_->extension_id;
+  return GetExtensionInfo()->extension_id;
 }
+
+std::optional<std::string_view> TemplateURL::GetBaseBuiltinResourceId() const {
+  if constexpr (!kEnableBuiltinSearchProviderAssets) {
+    return std::nullopt;
+  }
+
+  // User-defined engines should not be decorated with branded icons.
+  if (data().prepopulate_id == 0) {
+    return std::nullopt;
+  }
+
+  if (!base_builtin_resource_id_.has_value()) {
+    // 1. Attempt to identify the definition by keyword.
+    // This is going to handle 99% of the cases correctly, including Yahoo
+    // variants, where different countries may use different assets.
+    const TemplateURLPrepopulateData::PrepopulatedEngine*
+        reference_builtin_engine =
+            TemplateURLPrepopulateData::GetPrepopulatedEngineFromBuiltInData(
+                data().keyword(),
+                /*regional_prepopulated_engines=*/{});
+
+    if (!reference_builtin_engine) {
+      // 2. Attempt to identify the definition by prepopulate_id.
+      // Failed to look up engine by keyword. Fall back to identifying engine by
+      // matching prepopulate id. This might cause some assets to be incorrectly
+      // assigned if the regional variant of a search engine expects to use a
+      // different asset which has not been supplied (see: Yahoo vs Yahoo JP).
+      reference_builtin_engine =
+          TemplateURLPrepopulateData::GetPrepopulatedEngineFromBuiltInData(
+              data().prepopulate_id,
+              /*regional_prepopulated_engines=*/{});
+    }
+
+    if (reference_builtin_engine &&
+        reference_builtin_engine->base_builtin_resource_id) {
+      base_builtin_resource_id_ =
+          reference_builtin_engine->base_builtin_resource_id;
+    } else {
+      base_builtin_resource_id_ = std::optional<std::string_view>();
+    }
+  }
+
+  return base_builtin_resource_id_.value();
+}
+
+std::string TemplateURL::GetBuiltinImageResourceId() const {
+  std::optional<std::string_view> base_resource_id = GetBaseBuiltinResourceId();
+  if (base_resource_id.has_value()) {
+    return base::StrCat({"IDR_", base_resource_id.value(), "_IMAGE"});
+  }
+  return "IDR_DEFAULT_FAVICON";
+}
+
+std::string TemplateURL::GetBuiltinDescriptionResourceId() const {
+  std::optional<std::string_view> base_resource_id = GetBaseBuiltinResourceId();
+  if (base_resource_id.has_value()) {
+    return base::StrCat({"IDS_", base_resource_id.value(), "_DESCRIPTION"});
+  }
+  return {};
+}
+
+std::optional<std::u16string> TemplateURL::GetBuiltinMarketingSnippet() const {
+#if BUILDFLAG(ENABLE_BUILTIN_SEARCH_PROVIDER_ASSETS) && !BUILDFLAG(IS_ANDROID)
+  auto resource_id = GetBuiltinDescriptionResourceId();
+  if (!resource_id.empty()) {
+    auto iter = std::ranges::find_if(
+        kSearchEngineDescriptionsStrings,
+        [&](const auto& resource) { return resource.path == resource_id; });
+
+    if (iter != std::end(kSearchEngineDescriptionsStrings)) {
+      return l10n_util::GetStringUTF16(iter->id);
+    }
+  }
+#endif
+  return std::nullopt;
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+std::u16string TemplateURL::GetMarketingSnippet() const {
+  return GetBuiltinMarketingSnippet().value_or(l10n_util::GetStringFUTF16(
+      IDS_SEARCH_ENGINE_FALLBACK_MARKETING_SNIPPET, short_name()));
+}
+#endif
 
 SearchEngineType TemplateURL::GetEngineType(
     const SearchTermsData& search_terms_data) const {
   if (engine_type_ == SEARCH_ENGINE_UNKNOWN) {
     const GURL url = GenerateSearchURL(search_terms_data);
-    engine_type_ = url.is_valid() ? SearchEngineUtils::GetEngineType(url)
+    engine_type_ = url.is_valid() ? search_engine_utils::GetEngineType(url)
                                   : SEARCH_ENGINE_OTHER;
     DCHECK_NE(SEARCH_ENGINE_UNKNOWN, engine_type_);
   }
@@ -1820,18 +1966,22 @@ SearchEngineType TemplateURL::GetEngineType(
 }
 
 BuiltinEngineType TemplateURL::GetBuiltinEngineType() const {
-  if (data_.prepopulate_id != 0) {
+  if (data().prepopulate_id != 0) {
     return KEYWORD_MODE_PREPOPULATED_ENGINE;
-  } else if (data_.starter_pack_id != 0) {
-    switch (data_.starter_pack_id) {
-      case TemplateURLStarterPackData::kBookmarks:
+  } else if (starter_pack_id() != 0) {
+    switch (starter_pack_id()) {
+      case template_url_starter_pack_data::kBookmarks:
         return KEYWORD_MODE_STARTER_PACK_BOOKMARKS;
-      case TemplateURLStarterPackData::kHistory:
+      case template_url_starter_pack_data::kHistory:
         return KEYWORD_MODE_STARTER_PACK_HISTORY;
-      case TemplateURLStarterPackData::kTabs:
+      case template_url_starter_pack_data::kTabs:
         return KEYWORD_MODE_STARTER_PACK_TABS;
-      case TemplateURLStarterPackData::kAskGoogle:
-        return KEYWORD_MODE_STARTER_PACK_ASK_GOOGLE;
+      case template_url_starter_pack_data::kGemini:
+        return KEYWORD_MODE_STARTER_PACK_GEMINI;
+      case template_url_starter_pack_data::kPage:
+        return KEYWORD_MODE_STARTER_PACK_PAGE;
+      case template_url_starter_pack_data::kAiMode:
+        return KEYWORD_MODE_STARTER_PACK_AI_MODE;
       default:
         // In theory, this code path should never be reached.  However, it's
         // possible that when expanding the starter pack, a new entry may
@@ -1859,7 +2009,7 @@ bool TemplateURL::IsSearchURL(const GURL& url,
                               const SearchTermsData& search_terms_data) const {
   std::u16string search_terms;
   return ExtractSearchTermsFromURL(url, search_terms_data, &search_terms) &&
-      !search_terms.empty();
+         !search_terms.empty();
 }
 
 bool TemplateURL::KeepSearchTermsInURL(const GURL& url,
@@ -1884,9 +2034,9 @@ bool TemplateURL::KeepSearchTermsInURL(const GURL& url,
   }
 
   std::vector<std::string> query_params;
-  if (keep_search_intent_params && !data_.search_intent_params.empty()) {
+  if (keep_search_intent_params && !data().search_intent_params.empty()) {
     for (net::QueryIterator it(url); !it.IsAtEnd(); it.Advance()) {
-      if (!base::Contains(data_.search_intent_params, it.GetKey())) {
+      if (!base::Contains(data().search_intent_params, it.GetKey())) {
         continue;
       }
       query_params.push_back(base::StrCat({it.GetKey(), "=", it.GetValue()}));
@@ -1896,6 +2046,7 @@ bool TemplateURL::KeepSearchTermsInURL(const GURL& url,
   TemplateURLRef::SearchTermsArgs search_terms_args(search_terms);
   search_terms_args.additional_query_params =
       base::JoinString(query_params, "&");
+
   *out_url =
       GURL(url_ref().ReplaceSearchTerms(search_terms_args, search_terms_data));
   if (out_search_terms) {
@@ -1930,12 +2081,12 @@ bool TemplateURL::ReplaceSearchTermsInURL(
 
   std::string old_params;
   if (search_term_component == url::Parsed::QUERY) {
-    old_params = url.query();
+    old_params = url.GetQuery();
   } else if (search_term_component == url::Parsed::REF) {
-    old_params = url.ref();
+    old_params = url.GetRef();
   } else {
     DCHECK_EQ(search_term_component, url::Parsed::PATH);
-    old_params = url.path();
+    old_params = url.GetPath();
   }
 
   std::string new_params(old_params, 0, search_terms_position.begin);
@@ -1963,8 +2114,9 @@ void TemplateURL::EncodeSearchTerms(
     std::u16string* encoded_terms,
     std::u16string* encoded_original_query) const {
   std::vector<std::string> encodings(input_encodings());
-  if (!base::Contains(encodings, "UTF-8"))
+  if (!base::Contains(encodings, "UTF-8")) {
     encodings.push_back("UTF-8");
+  }
   for (auto i = encodings.begin(); i != encodings.end(); ++i) {
     if (TryEncoding(search_terms_args.search_terms,
                     search_terms_args.original_query, i->c_str(), is_in_query,
@@ -1974,16 +2126,18 @@ void TemplateURL::EncodeSearchTerms(
       return;
     }
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 GURL TemplateURL::GenerateSearchURL(const SearchTermsData& search_terms_data,
                                     const std::u16string& search_terms) const {
-  if (!url_ref().IsValid(search_terms_data))
+  if (!url_ref().IsValid(search_terms_data)) {
     return GURL();
+  }
 
-  if (!url_ref().SupportsReplacement(search_terms_data))
+  if (!url_ref().SupportsReplacement(search_terms_data)) {
     return GURL(url());
+  }
 
   return GURL(url_ref().ReplaceSearchTerms(
       TemplateURLRef::SearchTermsArgs(search_terms), search_terms_data,
@@ -1992,84 +2146,78 @@ GURL TemplateURL::GenerateSearchURL(const SearchTermsData& search_terms_data,
 
 GURL TemplateURL::GenerateSuggestionURL(
     const SearchTermsData& search_terms_data) const {
-  if (!suggestions_url_ref().IsValid(search_terms_data))
+  if (!suggestions_url_ref().IsValid(search_terms_data)) {
     return GURL();
+  }
 
-  if (!suggestions_url_ref().SupportsReplacement(search_terms_data))
+  if (!suggestions_url_ref().SupportsReplacement(search_terms_data)) {
     return GURL(suggestions_url());
+  }
 
   return GURL(suggestions_url_ref().ReplaceSearchTerms(
       TemplateURLRef::SearchTermsArgs(), search_terms_data, nullptr));
 }
 
-bool TemplateURL::IsSideSearchSupported() const {
-  return !side_search_param().empty();
+bool TemplateURL::CreatedByPolicy() const {
+  return data().CreatedByPolicy();
 }
 
-bool TemplateURL::IsSideImageSearchSupported() const {
-  return !side_image_search_param().empty();
+bool TemplateURL::CreatedByDefaultSearchProviderPolicy() const {
+  return data().CreatedByDefaultSearchProviderPolicy();
 }
 
-GURL TemplateURL::GenerateSideSearchURL(
-    const GURL& search_url,
-    const std::string& version,
-    const SearchTermsData& search_terms_data) const {
-  DCHECK(IsSideSearchSupported());
-  DCHECK(IsSearchURL(search_url, search_terms_data));
-  return net::AppendOrReplaceQueryParameter(search_url, side_search_param(),
-                                            version);
+bool TemplateURL::CreatedByNonDefaultSearchProviderPolicy() const {
+  return data().CreatedByNonDefaultSearchProviderPolicy();
 }
 
-GURL TemplateURL::RemoveSideSearchParamFromURL(
-    const GURL& side_search_url) const {
-  if (!IsSideSearchSupported())
-    return side_search_url;
-  return net::AppendOrReplaceQueryParameter(side_search_url,
-                                            side_search_param(), std::nullopt);
+bool TemplateURL::CreatedByEnterpriseSearchAggregatorPolicy() const {
+  return data().CreatedByEnterpriseSearchAggregatorPolicy();
 }
 
-GURL TemplateURL::GenerateSideImageSearchURL(const GURL& image_search_url,
-                                             const std::string& version) const {
-  DCHECK(IsSideImageSearchSupported());
-  std::string value;
-  if (net::GetValueForKeyInQuery(image_search_url, side_image_search_param(),
-                                 &value) &&
-      value == version)
-    return image_search_url;
-
-  return net::AppendOrReplaceQueryParameter(image_search_url,
-                                            side_image_search_param(), version);
+bool TemplateURL::CreatedByRegulatoryProgram() const {
+  return GetRegulatoryExtensionType() != RegulatoryExtensionType::kDefault;
 }
 
-GURL TemplateURL::RemoveSideImageSearchParamFromURL(
-    const GURL& image_search_url) const {
-  if (!IsSideImageSearchSupported())
-    return image_search_url;
-  return net::AppendOrReplaceQueryParameter(
-      image_search_url, side_image_search_param(), std::nullopt);
+RegulatoryExtensionType TemplateURL::GetRegulatoryExtensionType() const {
+  return data().regulatory_origin;
+}
+
+const TemplateURLData::RegulatoryExtension* TemplateURL::GetRegulatoryExtension(
+    RegulatoryExtensionType type) const {
+  auto extension_iter = data().regulatory_extensions.find(type);
+  auto* extension = extension_iter == data().regulatory_extensions.end()
+                        ? nullptr
+                        : extension_iter->second.get();
+
+  DCHECK(extension == nullptr || extension->variant == type);
+  return extension;
 }
 
 void TemplateURL::CopyFrom(const TemplateURL& other) {
-  if (this == &other)
+  if (this == &other) {
     return;
+  }
 
-  data_ = other.data_;
+  local_data_ = other.local_data_;
+  account_data_ = other.account_data_;
   ResizeURLRefVector();
   InvalidateCachedValues();
-  SetPrepopulateId(other.data_.prepopulate_id);
+  SetPrepopulateId(other.data().prepopulate_id);
 }
 
 void TemplateURL::SetURL(const std::string& url) {
-  data_.SetURL(url);
+  active_data().SetURL(url);
+
   engine_type_ = SEARCH_ENGINE_UNKNOWN;
   url_ref().InvalidateCachedValues();
 }
 
 void TemplateURL::SetPrepopulateId(int id) {
-  data_.prepopulate_id = id;
+  active_data().prepopulate_id = id;
   const bool prepopulated = id > 0;
-  for (TemplateURLRef& ref : url_refs_)
+  for (TemplateURLRef& ref : url_refs_) {
     ref.prepopulated_ = prepopulated;
+  }
   suggestions_url_ref_.prepopulated_ = prepopulated;
   image_url_ref_.prepopulated_ = prepopulated;
   image_translate_url_ref_.prepopulated_ = prepopulated;
@@ -2083,14 +2231,16 @@ void TemplateURL::ResetKeywordIfNecessary(
   if (IsGoogleSearchURLWithReplaceableKeyword(search_terms_data) || force) {
     DCHECK_NE(OMNIBOX_API_EXTENSION, type_);
     GURL url(GenerateSearchURL(search_terms_data));
-    if (url.is_valid())
-      data_.SetKeyword(GenerateKeyword(url));
+    if (url.is_valid()) {
+      active_data().SetKeyword(GenerateKeyword(url));
+    }
   }
 }
 
 void TemplateURL::InvalidateCachedValues() const {
-  for (const TemplateURLRef& ref : url_refs_)
+  for (const TemplateURLRef& ref : url_refs_) {
     ref.InvalidateCachedValues();
+  }
   suggestions_url_ref_.InvalidateCachedValues();
   image_url_ref_.InvalidateCachedValues();
   image_translate_url_ref_.InvalidateCachedValues();
@@ -2101,7 +2251,12 @@ void TemplateURL::InvalidateCachedValues() const {
 size_t TemplateURL::EstimateMemoryUsage() const {
   size_t res = 0;
 
-  res += base::trace_event::EstimateMemoryUsage(data_);
+  if (local_data_) {
+    res += base::trace_event::EstimateMemoryUsage(*local_data_);
+  }
+  if (account_data_) {
+    res += base::trace_event::EstimateMemoryUsage(*account_data_);
+  }
   res += base::trace_event::EstimateMemoryUsage(url_refs_);
   res += base::trace_event::EstimateMemoryUsage(suggestions_url_ref_);
   res += base::trace_event::EstimateMemoryUsage(image_url_ref_);
@@ -2114,14 +2269,16 @@ size_t TemplateURL::EstimateMemoryUsage() const {
 }
 
 void TemplateURL::ResizeURLRefVector() {
-  const size_t new_size = data_.alternate_urls.size() + 1;
-  if (url_refs_.size() == new_size)
+  const size_t new_size = active_data().alternate_urls.size() + 1;
+  if (url_refs_.size() == new_size) {
     return;
+  }
 
   url_refs_.clear();
   url_refs_.reserve(new_size);
-  for (size_t i = 0; i != data_.alternate_urls.size(); ++i)
+  for (size_t i = 0; i != active_data().alternate_urls.size(); ++i) {
     url_refs_.emplace_back(this, i);
+  }
   url_refs_.emplace_back(this, TemplateURLRef::SEARCH);
 }
 
@@ -2137,7 +2294,8 @@ bool TemplateURL::FindSearchTermsInURL(
   // Try to match with every pattern.
   for (const TemplateURLRef& ref : url_refs_) {
     if (ref.ExtractSearchTermsFromURL(url, search_terms, search_terms_data,
-        search_term_component, search_terms_position)) {
+                                      search_term_component,
+                                      search_terms_position)) {
       // If ExtractSearchTermsFromURL() returns true and |search_terms| is empty
       // it means the pattern matched but no search terms were present. In this
       // case we fail immediately without looking for matches in subsequent
@@ -2152,19 +2310,75 @@ bool TemplateURL::FindSearchTermsInURL(
   return false;
 }
 
-bool TemplateURL::ContainsSideSearchParam(const GURL& url) const {
-  std::string side_search_value;
-  if (!IsSideSearchSupported())
-    return false;
-  net::GetValueForKeyInQuery(url, side_search_param(), &side_search_value);
-  return !side_search_value.empty();
+const TemplateURLData& TemplateURL::data() const {
+  return const_cast<TemplateURL*>(this)->active_data();
 }
 
-bool TemplateURL::ContainsSideImageSearchParam(const GURL& url) const {
-  std::string side_image_search_value;
-  if (!IsSideSearchSupported())
-    return false;
-  net::GetValueForKeyInQuery(url, side_image_search_param(),
-                             &side_image_search_value);
-  return !side_image_search_value.empty();
+TemplateURLData& TemplateURL::active_data() {
+  CHECK(local_data_ || base::FeatureList::IsEnabled(
+                           syncer::kSeparateLocalAndAccountSearchEngines));
+  CHECK(!account_data_ || base::FeatureList::IsEnabled(
+                              syncer::kSeparateLocalAndAccountSearchEngines));
+  // TODO(crbug.com/386916073): Improve the conflict resolution.
+  if (local_data_ && account_data_) {
+    TemplateURL local_turl(local_data_, std::nullopt);
+    TemplateURL account_turl(std::nullopt, account_data_);
+    return local_turl.IsBetterThanConflictingEngine(&account_turl)
+               ? *local_data_
+               : *account_data_;
+  }
+  return local_data_ ? *local_data_ : *account_data_;
+}
+
+void TemplateURL::set_short_name(const std::u16string& short_name) {
+  active_data().SetShortName(short_name);
+}
+
+void TemplateURL::set_keyword(const std::u16string& keyword) {
+  active_data().SetKeyword(keyword);
+}
+
+void TemplateURL::set_safe_for_autoreplace(bool safe_for_autoreplace) {
+  active_data().safe_for_autoreplace = safe_for_autoreplace;
+}
+
+void TemplateURL::set_id(TemplateURLID id) {
+  active_data().id = id;
+}
+
+void TemplateURL::IncrementUsageCount() {
+  active_data().usage_count++;
+}
+
+void TemplateURL::GenerateSyncGUID() {
+  active_data().GenerateSyncGUID();
+}
+
+void TemplateURL::set_is_active(TemplateURLData::ActiveStatus active_status) {
+  active_data().is_active = active_status;
+}
+
+const std::optional<TemplateURLData>& TemplateURL::GetLocalData() const {
+  return local_data_;
+}
+
+const std::optional<TemplateURLData>& TemplateURL::GetAccountData() const {
+  return account_data_;
+}
+
+void TemplateURL::CopyActiveValueToLocalAndAccount() {
+  TemplateURLData new_data = data();
+  local_data_ = new_data;
+  account_data_ = new_data;
+}
+
+bool TemplateURL::CanPolicyBeOverridden() const {
+  switch (policy_origin()) {
+    case TemplateURLData::PolicyOrigin::kSiteSearch:
+      return !enforced_by_policy();
+    case TemplateURLData::PolicyOrigin::kDefaultSearchProvider:
+    case TemplateURLData::PolicyOrigin::kSearchAggregator:
+    case TemplateURLData::PolicyOrigin::kNoPolicy:
+      return false;
+  }
 }

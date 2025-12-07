@@ -8,9 +8,9 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "url/origin.h"
 
 class ExclusiveAccessManager;
-class GURL;
 
 namespace content {
 class WebContents;
@@ -30,8 +30,7 @@ class ExclusiveAccessControllerBase {
 
   virtual ~ExclusiveAccessControllerBase();
 
-  GURL GetExclusiveAccessBubbleURL() const;
-  virtual GURL GetURLForExclusiveAccessBubble() const;
+  virtual url::Origin GetOriginForExclusiveAccessBubble() const;
 
   content::WebContents* exclusive_access_tab() const {
     return web_contents_observer_.web_contents();

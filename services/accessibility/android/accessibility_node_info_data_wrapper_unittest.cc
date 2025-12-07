@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/grit/generated_resources.h"
 #include "services/accessibility/android/accessibility_window_info_data_wrapper.h"
 #include "services/accessibility/android/android_accessibility_util.h"
@@ -85,7 +86,8 @@ class AccessibilityNodeInfoDataWrapperTest
 
    private:
     int32_t node_root_id_ = -1;
-    std::map<int32_t, AccessibilityInfoDataWrapper*> wrapper_map_;
+    std::map<int32_t, raw_ptr<AccessibilityInfoDataWrapper, CtnExperimental>>
+        wrapper_map_;
     std::map<int32_t, int32_t> parent_map_;
   };
 
@@ -129,30 +131,28 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, Name) {
   // No attributes.
   ui::AXNodeData data = CallSerialize(wrapper);
   std::string name;
-  ASSERT_FALSE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_FALSE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
 
   // Text (empty).
   SetProperty(node, AXStringProperty::TEXT, "");
 
   data = CallSerialize(wrapper);
-  ASSERT_FALSE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_FALSE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
 
   // Text (non-empty).
   SetProperty(node, AXStringProperty::TEXT, "label text");
 
   data = CallSerialize(wrapper);
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  name = data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   EXPECT_EQ("label text", name);
 
   // Content description (empty), text (non-empty).
   SetProperty(node, AXStringProperty::CONTENT_DESCRIPTION, "");
 
   data = CallSerialize(wrapper);
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  name = data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   EXPECT_EQ("label text", name);
 
   // Content description (non-empty), text (empty).
@@ -161,16 +161,16 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, Name) {
               "label content description");
 
   data = CallSerialize(wrapper);
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  name = data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   EXPECT_EQ("label content description", name);
 
   // Content description (non-empty), text (non-empty).
   SetProperty(node, AXStringProperty::TEXT, "label text");
 
   data = CallSerialize(wrapper);
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  name = data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   EXPECT_EQ("label content description label text", name);
 }
 
@@ -210,19 +210,18 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, NameFromDescendants) {
 
   ui::AXNodeData data = CallSerialize(root_wrapper);
   std::string name;
-  ASSERT_FALSE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_FALSE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
 
   data = CallSerialize(child1_wrapper);
   ASSERT_FALSE(data.IsIgnored());
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  name = data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   ASSERT_EQ("child1 label text", name);
 
   data = CallSerialize(child2_wrapper);
   ASSERT_FALSE(data.IsIgnored());
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  name = data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   ASSERT_EQ("child2 label text", name);
 
   // Enable screen reader.
@@ -230,8 +229,8 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, NameFromDescendants) {
   set_full_focus_mode(true);
 
   data = CallSerialize(root_wrapper);
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  name = data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   ASSERT_EQ("child1 label text child2 label text", name);
 
   data = CallSerialize(child1_wrapper);
@@ -243,8 +242,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, NameFromDescendants) {
   SetProperty(root, AXBooleanProperty::SCROLLABLE, true);
 
   data = CallSerialize(root_wrapper);
-  ASSERT_FALSE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_FALSE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
 
   SetProperty(root, AXBooleanProperty::SCROLLABLE, false);
 
@@ -252,14 +250,14 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, NameFromDescendants) {
   SetProperty(child1, AXBooleanProperty::CLICKABLE, true);
 
   data = CallSerialize(root_wrapper);
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  name = data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   ASSERT_EQ("child2 label text", name);
 
   data = CallSerialize(child1_wrapper);
   ASSERT_FALSE(data.IsIgnored());
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  name = data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   ASSERT_EQ("child1 label text", name);
 
   data = CallSerialize(child2_wrapper);
@@ -269,8 +267,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, NameFromDescendants) {
   SetProperty(child2, AXBooleanProperty::CLICKABLE, true);
 
   data = CallSerialize(root_wrapper);
-  ASSERT_FALSE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_FALSE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
 
   // If the node has a name, it should override the contents.
   child1.boolean_properties->clear();
@@ -278,8 +275,8 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, NameFromDescendants) {
   SetProperty(root, AXStringProperty::TEXT, "root label text");
 
   data = CallSerialize(root_wrapper);
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  name = data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   ASSERT_EQ("root label text", name);
 
   // Clearing both clickable and name from root, the name should not be
@@ -287,8 +284,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, NameFromDescendants) {
   root.boolean_properties->clear();
   root.string_properties->clear();
   data = CallSerialize(root_wrapper);
-  ASSERT_FALSE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_FALSE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
 }
 
 TEST_F(AccessibilityNodeInfoDataWrapperTest,
@@ -330,8 +326,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest,
   ui::AXNodeData data = CallSerialize(root_wrapper);
   data = CallSerialize(root_wrapper);
   std::string name;
-  ASSERT_FALSE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_FALSE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
 }
 
 TEST_F(AccessibilityNodeInfoDataWrapperTest,
@@ -367,9 +362,9 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest,
 
   ui::AXNodeData data = CallSerialize(root_wrapper);
   data = CallSerialize(root_wrapper);
-  std::string name;
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  const std::string& name =
+      data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   ASSERT_EQ("child1 child2Role", name);  // rootRole is not used.
 }
 
@@ -402,23 +397,23 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, NameFromTextProperties) {
 
   std::string name;
 
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  name = data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   ASSERT_EQ("text", name);
 
   // Unset TEXT property, and confirm that CONTENT_DESCRIPTION is used as name.
   SetProperty(child1, AXStringProperty::TEXT, "");
   data = CallSerialize(wrapper);
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  name = data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   ASSERT_EQ("content_description", name);
 
   // Unset CONTENT_DESCRIPTION property, and confirm that STATE_DESCRIPTION is
   // used as name.
   SetProperty(child1, AXStringProperty::CONTENT_DESCRIPTION, "");
   data = CallSerialize(wrapper);
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  name = data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   ASSERT_EQ("state_description", name);
 
   // Don't use any text if the node doesn't have importance.
@@ -498,16 +493,16 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, TextFieldNameAndValue) {
     ui::AXNodeData data = CallSerialize(wrapper);
 
     std::string prop;
-    ASSERT_EQ(
-        !test_case.second.name.empty(),
-        data.GetStringAttribute(ax::mojom::StringAttribute::kName, &prop));
+    ASSERT_EQ(!test_case.second.name.empty(),
+              data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+    prop = data.GetStringAttribute(ax::mojom::StringAttribute::kName);
     if (!test_case.second.name.empty()) {
       EXPECT_EQ(test_case.second.name, prop);
     }
 
-    ASSERT_EQ(
-        !test_case.second.value.empty(),
-        data.GetStringAttribute(ax::mojom::StringAttribute::kValue, &prop));
+    ASSERT_EQ(!test_case.second.value.empty(),
+              data.HasStringAttribute(ax::mojom::StringAttribute::kValue));
+    prop = data.GetStringAttribute(ax::mojom::StringAttribute::kValue);
     if (!test_case.second.value.empty()) {
       EXPECT_EQ(test_case.second.value, prop);
     }
@@ -529,11 +524,12 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, StringProperties) {
 
   std::string prop;
   // Url includes AXTreeId, which is unguessable. Just verifies the prefix.
-  ASSERT_TRUE(data.GetStringAttribute(ax::mojom::StringAttribute::kUrl, &prop));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kUrl));
+  prop = data.GetStringAttribute(ax::mojom::StringAttribute::kUrl);
   EXPECT_EQ(0U, prop.find("com.android.vending/"));
 
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kTooltip, &prop));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kTooltip));
+  prop = data.GetStringAttribute(ax::mojom::StringAttribute::kTooltip);
   ASSERT_EQ("tooltip text", prop);
 }
 
@@ -696,12 +692,13 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, SelectedState) {
 
   AccessibilityNodeInfoDataWrapper text_wrapper(tree_source(), &text_node);
 
-  std::string description;
   data = CallSerialize(text_wrapper);
   ASSERT_EQ(ax::mojom::Role::kStaticText, data.role);
   ASSERT_FALSE(data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
-  ASSERT_TRUE(data.GetStringAttribute(ax::mojom::StringAttribute::kDescription,
-                                      &description));
+  ASSERT_TRUE(
+      data.HasStringAttribute(ax::mojom::StringAttribute::kDescription));
+  const std::string& description =
+      data.GetStringAttribute(ax::mojom::StringAttribute::kDescription);
   EXPECT_EQ(l10n_util::GetStringUTF8(IDS_ARC_ACCESSIBILITY_SELECTED_STATUS),
             description);
 }
@@ -838,9 +835,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, ListWithoutCount) {
 
   ui::AXNodeData data = CallSerialize(list_wrapper);
   ASSERT_EQ(ax::mojom::Role::kList, data.role);
-  int setSize;
-  ASSERT_FALSE(
-      data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize, &setSize));
+  ASSERT_FALSE(data.HasIntAttribute(ax::mojom::IntAttribute::kSetSize));
 
   // Verify that the items has role kListItem without index
   for (int i = 0; i < 4; i++) {
@@ -848,9 +843,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, ListWithoutCount) {
     AccessibilityNodeInfoDataWrapper item_wrapper(tree_source(), &item);
     ui::AXNodeData item_data = CallSerialize(item_wrapper);
     ASSERT_EQ(ax::mojom::Role::kListItem, item_data.role);
-    int pos;
-    ASSERT_FALSE(
-        data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet, &pos));
+    ASSERT_FALSE(data.HasIntAttribute(ax::mojom::IntAttribute::kPosInSet));
   }
 }
 
@@ -894,43 +887,38 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, StateDescription) {
 
   // No attributes.
   ui::AXNodeData data = CallSerialize(wrapper);
-  std::string description;
-  ASSERT_FALSE(data.GetStringAttribute(ax::mojom::StringAttribute::kDescription,
-                                       &description));
-  std::string value;
   ASSERT_FALSE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kValue, &value));
+      data.HasStringAttribute(ax::mojom::StringAttribute::kDescription));
+  ASSERT_FALSE(data.HasStringAttribute(ax::mojom::StringAttribute::kValue));
 
-  std::string checked_state_description;
-  ASSERT_FALSE(data.GetStringAttribute(
-      ax::mojom::StringAttribute::kCheckedStateDescription,
-      &checked_state_description));
+  ASSERT_FALSE(data.HasStringAttribute(
+      ax::mojom::StringAttribute::kCheckedStateDescription));
 
   // State Description without Range Value should be stored as kDescription
   SetProperty(node, AXStringProperty::STATE_DESCRIPTION, "state description");
 
   data = CallSerialize(wrapper);
-  ASSERT_TRUE(data.GetStringAttribute(ax::mojom::StringAttribute::kDescription,
-                                      &description));
+  ASSERT_TRUE(
+      data.HasStringAttribute(ax::mojom::StringAttribute::kDescription));
+  const std::string& description =
+      data.GetStringAttribute(ax::mojom::StringAttribute::kDescription);
   EXPECT_EQ("state description", description);
-  ASSERT_FALSE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kValue, &value));
-  ASSERT_FALSE(data.GetStringAttribute(
-      ax::mojom::StringAttribute::kCheckedStateDescription,
-      &checked_state_description));
+  ASSERT_FALSE(data.HasStringAttribute(ax::mojom::StringAttribute::kValue));
+  ASSERT_FALSE(data.HasStringAttribute(
+      ax::mojom::StringAttribute::kCheckedStateDescription));
 
   // State Description with Range Value should be stored as kValue
   node.range_info = AXRangeInfoData::New();
 
   data = CallSerialize(wrapper);
-  ASSERT_FALSE(data.GetStringAttribute(ax::mojom::StringAttribute::kDescription,
-                                       &description));
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kValue, &value));
+  ASSERT_FALSE(
+      data.HasStringAttribute(ax::mojom::StringAttribute::kDescription));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kValue));
+  const std::string& value =
+      data.GetStringAttribute(ax::mojom::StringAttribute::kValue);
   EXPECT_EQ("state description", value);
-  ASSERT_FALSE(data.GetStringAttribute(
-      ax::mojom::StringAttribute::kCheckedStateDescription,
-      &checked_state_description));
+  ASSERT_FALSE(data.HasStringAttribute(
+      ax::mojom::StringAttribute::kCheckedStateDescription));
 
   // State Description for compound button should be stores as
   // checkedDescription.
@@ -938,13 +926,13 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, StateDescription) {
   SetProperty(node, AXBooleanProperty::CHECKABLE, true);
 
   data = CallSerialize(wrapper);
-  ASSERT_FALSE(data.GetStringAttribute(ax::mojom::StringAttribute::kDescription,
-                                       &description));
   ASSERT_FALSE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kValue, &value));
-  ASSERT_TRUE(data.GetStringAttribute(
-      ax::mojom::StringAttribute::kCheckedStateDescription,
-      &checked_state_description));
+      data.HasStringAttribute(ax::mojom::StringAttribute::kDescription));
+  ASSERT_FALSE(data.HasStringAttribute(ax::mojom::StringAttribute::kValue));
+  ASSERT_TRUE(data.HasStringAttribute(
+      ax::mojom::StringAttribute::kCheckedStateDescription));
+  const std::string& checked_state_description = data.GetStringAttribute(
+      ax::mojom::StringAttribute::kCheckedStateDescription);
   EXPECT_EQ("state description", checked_state_description);
 }
 
@@ -964,13 +952,13 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, LabeledByLoop) {
 
   ui::AXNodeData data = CallSerialize(wrapper);
   std::string name;
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  name = data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   EXPECT_EQ("node2", name);
 
   data = CallSerialize(child1_wrapper);
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  name = data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   EXPECT_EQ("node2", name);
 }
 
@@ -981,17 +969,18 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, AppendkDescription) {
 
   // No attributes.
   ui::AXNodeData data = CallSerialize(wrapper);
-  std::string description;
-  ASSERT_FALSE(data.GetStringAttribute(ax::mojom::StringAttribute::kDescription,
-                                       &description));
+  ASSERT_FALSE(
+      data.HasStringAttribute(ax::mojom::StringAttribute::kDescription));
 
   SetProperty(node, AXStringProperty::STATE_DESCRIPTION, "state description");
   SetProperty(node, AXBooleanProperty::SELECTED, true);
   SetProperty(node, AXStringProperty::TEXT, "text");
 
   data = CallSerialize(wrapper);
-  ASSERT_TRUE(data.GetStringAttribute(ax::mojom::StringAttribute::kDescription,
-                                      &description));
+  ASSERT_TRUE(
+      data.HasStringAttribute(ax::mojom::StringAttribute::kDescription));
+  const std::string& description =
+      data.GetStringAttribute(ax::mojom::StringAttribute::kDescription);
   EXPECT_EQ("state description " +
                 l10n_util::GetStringUTF8(IDS_ARC_ACCESSIBILITY_SELECTED_STATUS),
             description);
@@ -1009,9 +998,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, ControlIsFocusable) {
   // Check the pre conditions required, before checking whether this
   // control is focusable.
   ui::AXNodeData data = CallSerialize(wrapper);
-  std::string name;
-  ASSERT_FALSE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_FALSE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
   ASSERT_EQ(ax::mojom::Role::kSlider, data.role);
 
   ASSERT_TRUE(wrapper.IsFocusableInFullFocusMode());
@@ -1049,15 +1036,14 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, FocusAndClickAction) {
 
   ui::AXNodeData data = CallSerialize(root_wrapper);
   std::string name;
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  name = data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   ASSERT_EQ("test text", name);
   ASSERT_TRUE(data.GetBoolAttribute(ax::mojom::BoolAttribute::kClickable));
   EXPECT_TRUE(data.HasState(ax::mojom::State::kFocusable));
 
   data = CallSerialize(child1_wrapper);
-  ASSERT_FALSE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_FALSE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
   ASSERT_FALSE(data.GetBoolAttribute(ax::mojom::BoolAttribute::kClickable));
   EXPECT_FALSE(data.HasState(ax::mojom::State::kFocusable));
 
@@ -1067,14 +1053,13 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, FocusAndClickAction) {
   AddStandardAction(&child1, AXActionType::FOCUS);
 
   data = CallSerialize(root_wrapper);
-  ASSERT_FALSE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_FALSE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
   ASSERT_TRUE(data.GetBoolAttribute(ax::mojom::BoolAttribute::kClickable));
   EXPECT_TRUE(data.HasState(ax::mojom::State::kFocusable));
 
   data = CallSerialize(child1_wrapper);
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  name = data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   ASSERT_EQ("test text", name);
   ASSERT_TRUE(data.GetBoolAttribute(ax::mojom::BoolAttribute::kClickable));
   EXPECT_TRUE(data.HasState(ax::mojom::State::kFocusable));
@@ -1085,14 +1070,13 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, FocusAndClickAction) {
   AddStandardAction(&child1, AXActionType::CLEAR_FOCUS);
 
   data = CallSerialize(root_wrapper);
-  ASSERT_FALSE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_FALSE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
   ASSERT_TRUE(data.GetBoolAttribute(ax::mojom::BoolAttribute::kClickable));
   EXPECT_TRUE(data.HasState(ax::mojom::State::kFocusable));
 
   data = CallSerialize(child1_wrapper);
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  name = data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   ASSERT_EQ("test text", name);
   ASSERT_TRUE(data.GetBoolAttribute(ax::mojom::BoolAttribute::kClickable));
   EXPECT_TRUE(data.HasState(ax::mojom::State::kFocusable));
@@ -1110,12 +1094,14 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, LiveRegionStatus) {
   // Check that live region status was set on node.
   ui::AXNodeData data = CallSerialize(wrapper);
   std::string val;
-  ASSERT_TRUE(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kLiveStatus, &val));
+  ASSERT_TRUE(data.HasStringAttribute(ax::mojom::StringAttribute::kLiveStatus));
+  val = data.GetStringAttribute(ax::mojom::StringAttribute::kLiveStatus);
   ASSERT_EQ("polite", val);
 
-  ASSERT_TRUE(data.GetStringAttribute(
-      ax::mojom::StringAttribute::kContainerLiveStatus, &val));
+  ASSERT_TRUE(data.HasStringAttribute(
+      ax::mojom::StringAttribute::kContainerLiveStatus));
+  val =
+      data.GetStringAttribute(ax::mojom::StringAttribute::kContainerLiveStatus);
   ASSERT_EQ("polite", val);
 }
 
@@ -1127,15 +1113,16 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, CustomActions) {
   AddCustomAction(&node, 300, "This is label");
 
   ui::AXNodeData data = CallSerialize(wrapper);
-  std::vector<int> result_ids;
-  std::vector<std::string> result_labels;
   EXPECT_TRUE(data.HasAction(ax::mojom::Action::kCustomAction));
-  EXPECT_TRUE(data.GetIntListAttribute(
-      ax::mojom::IntListAttribute::kCustomActionIds, &result_ids));
+  EXPECT_TRUE(
+      data.HasIntListAttribute(ax::mojom::IntListAttribute::kCustomActionIds));
+  const std::vector<int>& result_ids =
+      data.GetIntListAttribute(ax::mojom::IntListAttribute::kCustomActionIds);
   EXPECT_EQ(std::vector<int>({300}), result_ids);
-  EXPECT_TRUE(data.GetStringListAttribute(
-      ax::mojom::StringListAttribute::kCustomActionDescriptions,
-      &result_labels));
+  EXPECT_TRUE(data.HasStringListAttribute(
+      ax::mojom::StringListAttribute::kCustomActionDescriptions));
+  const std::vector<std::string>& result_labels = data.GetStringListAttribute(
+      ax::mojom::StringListAttribute::kCustomActionDescriptions);
   EXPECT_EQ(std::vector<std::string>({"This is label"}), result_labels);
 }
 
@@ -1151,11 +1138,13 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, ActionLabel) {
 
   ui::AXNodeData data = CallSerialize(wrapper);
   std::string val;
-  EXPECT_TRUE(data.GetStringAttribute(
-      ax::mojom::StringAttribute::kDoDefaultLabel, &val));
+  EXPECT_TRUE(
+      data.HasStringAttribute(ax::mojom::StringAttribute::kDoDefaultLabel));
+  val = data.GetStringAttribute(ax::mojom::StringAttribute::kDoDefaultLabel);
   EXPECT_EQ("click label", val);
-  EXPECT_TRUE(data.GetStringAttribute(
-      ax::mojom::StringAttribute::kLongClickLabel, &val));
+  EXPECT_TRUE(
+      data.HasStringAttribute(ax::mojom::StringAttribute::kLongClickLabel));
+  val = data.GetStringAttribute(ax::mojom::StringAttribute::kLongClickLabel);
   EXPECT_EQ("long click label", val);
 }
 

@@ -46,10 +46,10 @@
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -73,7 +73,7 @@ void TestLauncherAlignment(aura::Window* root,
                            ShelfAlignment alignment,
                            const gfx::Rect& expected) {
   Shelf::ForWindow(root)->SetAlignment(alignment);
-  EXPECT_EQ(expected.ToString(), display::Screen::GetScreen()
+  EXPECT_EQ(expected.ToString(), display::Screen::Get()
                                      ->GetDisplayNearestWindow(root)
                                      .work_area()
                                      .ToString());
@@ -401,7 +401,7 @@ TEST_F(ShelfWidgetTest, ShelfInitiallySizedAfterLogin) {
   ASSERT_TRUE(shelf_widget2);
 
   // Simulate login.
-  CreateUserSessions(1);
+  SimulateUserLogin(kRegularUserLoginInfo);
 
   const int total_width1 =
       screen_util::GetDisplayBoundsWithShelf(shelf_widget1->GetNativeWindow())
@@ -615,8 +615,8 @@ class TransitionAnimationWaiter
 
 // Tests the drag handle bounds and visibility when the in-app shelf is shown.
 TEST_F(ShelfWidgetTest, OpaqueBackgroundAndDragHandleTransition) {
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   ash::TabletModeControllerTestApi().EnterTabletMode();
   UpdateDisplay("800x700");
@@ -662,8 +662,8 @@ TEST_F(ShelfWidgetTest, NoAnimatingBackgroundDuringTabletModeStartToInApp) {
                    ->GetAnimatingBackground()
                    ->GetAnimator()
                    ->is_animating());
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   ash::TabletModeControllerTestApi().EnterTabletMode();
 
   EXPECT_TRUE(GetShelfWidget()->GetDragHandle()->GetVisible());
@@ -692,8 +692,8 @@ TEST_F(ShelfWidgetTest, NoAnimatingBackgroundDuringTabletModeEndFromInApp) {
                    ->GetAnimator()
                    ->is_animating());
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   ash::TabletModeControllerTestApi().LeaveTabletMode();
 
   EXPECT_TRUE(GetShelfWidget()->GetOpaqueBackground()->visible());
@@ -718,8 +718,8 @@ TEST_F(ShelfWidgetTest, NoAnimatingBackgroundDuringTabletModeStartToHome) {
                    ->GetAnimator()
                    ->is_animating());
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   ash::TabletModeControllerTestApi().EnterTabletMode();
 
   EXPECT_FALSE(GetShelfWidget()->GetDragHandle()->GetVisible());
@@ -745,8 +745,8 @@ TEST_F(ShelfWidgetTest, NoAnimatingBackgroundDuringTabletModeEndFromHome) {
                    ->GetAnimator()
                    ->is_animating());
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   ash::TabletModeControllerTestApi().LeaveTabletMode();
 
   EXPECT_TRUE(GetShelfWidget()->GetOpaqueBackground()->visible());
@@ -782,8 +782,8 @@ TEST_F(ShelfWidgetTest, NoAnimatingBackgroundOnLockScreen) {
   ASSERT_FALSE(GetShelfWidget()->GetOpaqueBackground()->visible());
   ASSERT_FALSE(GetShelfWidget()->GetAnimatingBackground()->visible());
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Hide the test window, and verify that does not start shelf animation.
   window->Hide();
@@ -826,10 +826,10 @@ TEST_F(ShelfWidgetTest, NoAnimationAfterDragPastIdealBounds) {
 
   // Enable animations, and swipe up across the whole screen to bring up the
   // shelf.
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   const gfx::Point start(display_bounds.bottom_center());
   const gfx::Point end(display_bounds.top_center());
   const base::TimeDelta kTimeDelta = base::Milliseconds(100);
@@ -852,8 +852,8 @@ TEST_F(ShelfWidgetTest, ScreenLockStopsHotseatTransitionAnimation) {
   ASSERT_FALSE(GetShelfWidget()->GetDragHandle()->GetVisible());
   ASSERT_FALSE(GetShelfWidget()->GetOpaqueBackground()->visible());
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Create a window to transition to the in-app shelf.
   auto window = AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 800, 800));
@@ -899,8 +899,8 @@ TEST_F(ShelfWidgetTest,
   ASSERT_FALSE(GetShelfWidget()->GetDragHandle()->GetVisible());
   ASSERT_FALSE(GetShelfWidget()->GetOpaqueBackground()->visible());
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Create a window to transition to the in-app shelf.
   auto window = AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 800, 800));
@@ -952,9 +952,9 @@ TEST_F(ShelfWidgetTest,
   ASSERT_FALSE(GetShelfWidget()->GetAnimatingBackground()->visible());
 }
 
-class ShelfWidgetAfterLoginTest : public AshTestBase {
+class ShelfWidgetAfterLoginTest : public NoSessionAshTestBase {
  public:
-  ShelfWidgetAfterLoginTest() { set_start_session(false); }
+  ShelfWidgetAfterLoginTest() = default;
 
   ShelfWidgetAfterLoginTest(const ShelfWidgetAfterLoginTest&) = delete;
   ShelfWidgetAfterLoginTest& operator=(const ShelfWidgetAfterLoginTest&) =
@@ -967,7 +967,7 @@ class ShelfWidgetAfterLoginTest : public AshTestBase {
                  ShelfVisibilityState expected_shelf_visibility_state,
                  ShelfAutoHideState expected_shelf_auto_hide_state) {
     // Simulate login.
-    CreateUserSessions(1);
+    SimulateUserLogin(kRegularUserLoginInfo);
 
     // Simulate shelf settings being applied from profile prefs.
     Shelf* shelf = GetPrimaryShelf();
@@ -1001,7 +1001,7 @@ TEST_F(ShelfWidgetAfterLoginTest, InitialValues) {
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
 
   // Simulate login.
-  CreateUserSessions(1);
+  SimulateUserLogin(kRegularUserLoginInfo);
 
   // Ensure settings are correct after login.
   EXPECT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
@@ -1035,9 +1035,9 @@ TEST_F(ShelfWidgetAfterLoginTest, CreateLockedShelf) {
             SHELF_VISIBLE, SHELF_AUTO_HIDE_HIDDEN);
 }
 
-class ShelfWidgetViewsVisibilityTest : public AshTestBase {
+class ShelfWidgetViewsVisibilityTest : public NoSessionAshTestBase {
  public:
-  ShelfWidgetViewsVisibilityTest() { set_start_session(false); }
+  ShelfWidgetViewsVisibilityTest() = default;
 
   ShelfWidgetViewsVisibilityTest(const ShelfWidgetViewsVisibilityTest&) =
       delete;
@@ -1051,6 +1051,12 @@ class ShelfWidgetViewsVisibilityTest : public AshTestBase {
     kShelf,       // ShelfView visible.
     kLoginShelf,  // LoginShelfView visible.
   };
+
+  void TearDown() override {
+    secondary_shelf_widget_ = nullptr;
+    primary_shelf_widget_ = nullptr;
+    NoSessionAshTestBase::TearDown();
+  }
 
   void InitShelfVariables() {
     // Create setup with 2 displays primary and secondary.
@@ -1087,8 +1093,8 @@ class ShelfWidgetViewsVisibilityTest : public AshTestBase {
   }
 
  private:
-  raw_ptr<ShelfWidget, DanglingUntriaged> primary_shelf_widget_ = nullptr;
-  raw_ptr<ShelfWidget, DanglingUntriaged> secondary_shelf_widget_ = nullptr;
+  raw_ptr<ShelfWidget> primary_shelf_widget_ = nullptr;
+  raw_ptr<ShelfWidget> secondary_shelf_widget_ = nullptr;
 };
 
 TEST_F(ShelfWidgetViewsVisibilityTest, LoginViewsLockViews) {
@@ -1098,7 +1104,7 @@ TEST_F(ShelfWidgetViewsVisibilityTest, LoginViewsLockViews) {
   ExpectVisible(SessionState::OOBE, kLoginShelf, kNone);
   ExpectVisible(SessionState::LOGIN_PRIMARY, kLoginShelf, kNone);
 
-  SimulateUserLogin("user1@test.com");
+  SimulateUserLogin({"user1@test.com"});
 
   ExpectVisible(SessionState::LOGGED_IN_NOT_ACTIVE, kLoginShelf, kNone);
   ExpectVisible(SessionState::ACTIVE, kShelf, kShelf);

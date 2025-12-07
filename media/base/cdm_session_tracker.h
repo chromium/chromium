@@ -8,10 +8,10 @@
 #include <stdint.h>
 
 #include <string>
-#include <unordered_set>
 
 #include "media/base/content_decryption_module.h"
 #include "media/base/media_export.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace media {
 
@@ -39,7 +39,7 @@ class MEDIA_EXPORT CdmSessionTracker {
   bool HasRemainingSessions() const;
 
  private:
-  std::unordered_set<std::string> session_ids_;
+  absl::flat_hash_set<std::string> session_ids_;
 };
 
 }  // namespace media

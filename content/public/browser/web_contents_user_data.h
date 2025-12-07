@@ -64,6 +64,17 @@ class WebContentsUserData : public base::SupportsUserData::Data {
 
   // Retrieves the instance of type T that was attached to the specified
   // WebContents (via CreateForWebContents above) and returns it. If no instance
+  // of the type was attached, creates one and returns it.
+  template <typename... Args>
+  static T* GetOrCreateForWebContents(WebContents* contents, Args&&... args) {
+    if (!FromWebContents(contents)) {
+      CreateForWebContents(contents, std::forward<Args>(args)...);
+    }
+    return FromWebContents(contents);
+  }
+
+  // Retrieves the instance of type T that was attached to the specified
+  // WebContents (via CreateForWebContents above) and returns it. If no instance
   // of the type was attached, returns nullptr.
   static T* FromWebContents(WebContents* contents) {
     DCHECK(contents);

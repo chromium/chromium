@@ -13,6 +13,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "crypto/scoped_test_nss_db.h"
 #include "net/base/features.h"
@@ -25,6 +26,7 @@
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
+#include "third_party/boringssl/src/pki/cert_errors.h"
 #include "third_party/boringssl/src/pki/parsed_certificate.h"
 #include "third_party/boringssl/src/pki/trust_store.h"
 
@@ -81,7 +83,19 @@ std::optional<unsigned> GetNSSTrustForCert(
     return std::nullopt;
   }
 
-  return SEC_GET_TRUST_FLAGS(&nss_cert_trust, trustSSL);
+  unsigned trust = SEC_GET_TRUST_FLAGS(&nss_cert_trust, trustSSL);
+  // For trusted CA certs, older versions of NSS (< 3.114) return
+  // `CERTDB_VALID_CA | CERTDB_TRUSTED_CA` while newer versions (>= 3.114)
+  // return `CERTDB_VALID_CA | CERTDB_TRUSTED_CA | CERTDB_NS_TRUSTED_CA`.
+  // Remove the CERTDB_NS_TRUSTED_CA value here so that the test expectations
+  // work on both versions.
+  // If Chromium updates the minimum required NSS version to be >= 3.114, this
+  // hack can be removed and the tests updated to expect the new values.
+  if ((trust & (CERTDB_TRUSTED_CA | CERTDB_NS_TRUSTED_CA)) ==
+      (CERTDB_TRUSTED_CA | CERTDB_NS_TRUSTED_CA)) {
+    trust &= ~CERTDB_NS_TRUSTED_CA;
+  }
+  return trust;
 }
 
 class TrustStoreNSSTestBase : public ::testing::Test {
@@ -309,7 +323,7 @@ class TrustStoreNSSTestBase : public ::testing::Test {
       return "newintermediate_";
     if (cert->der_cert() == newrootrollover_->der_cert())
       return "newrootrollover_";
-    return cert->der_cert().AsString();
+    return std::string(base::as_string_view(cert->der_cert()));
   }
 
   bool HasTrust(const bssl::ParsedCertificateList& certs,
@@ -415,17 +429,11 @@ TEST_P(TrustStoreNSSTestWithSlotFilterType, TrustAllowedForBuiltinRootCerts) {
       HasTrust({builtin_root_cert}, bssl::CertificateTrust::ForUnspecified()));
 }
 
-// Check that ListCertsIgnoringNSSRoots and GetAllUserAddedCerts don't
-// return built-in roots.
-TEST_P(TrustStoreNSSTestWithSlotFilterType, ListCertsIgnoresBuiltinRoots) {
+// Check that GetAllUserAddedCerts doesn't return built-in roots.
+TEST_P(TrustStoreNSSTestWithSlotFilterType,
+       GetAllUserAddedCertsIgnoresBuiltinRoots) {
   ScopedCERTCertificate root_cert = GetAnNssBuiltinSslTrustedRoot();
   ASSERT_TRUE(root_cert);
-
-  for (const auto& result :
-       trust_store_nss_->TrustStoreNSS::ListCertsIgnoringNSSRoots()) {
-    EXPECT_FALSE(
-        x509_util::IsSameCertificate(result.cert.get(), root_cert.get()));
-  }
 
   for (const auto& cert_with_trust : trust_store_nss_->GetAllUserAddedCerts()) {
     EXPECT_FALSE(x509_util::IsSameCertificate(
@@ -441,13 +449,6 @@ TEST_P(TrustStoreNSSTestWithSlotFilterType, GetAllUserAddedCertsNoClientCerts) {
       ImportClientCertAndKeyFromFile(GetTestCertsDirectory(), "client_1.pem",
                                      "client_1.pk8", test_nssdb_.slot());
   ASSERT_TRUE(client_cert);
-
-  bool found = false;
-  for (const auto& result :
-       trust_store_nss_->TrustStoreNSS::ListCertsIgnoringNSSRoots()) {
-    found |= x509_util::IsSameCertificate(result.cert.get(), client_cert.get());
-  }
-  EXPECT_TRUE(found);
 
   for (const auto& cert_with_trust : trust_store_nss_->GetAllUserAddedCerts()) {
     EXPECT_FALSE(x509_util::CryptoBufferEqual(
@@ -470,16 +471,6 @@ TEST_P(TrustStoreNSSTestWithSlotFilterType,
           x509_util::DefaultParseCertificateOptions(), nullptr);
   ASSERT_TRUE(parsed_client_cert);
   TrustCert(parsed_client_cert.get());
-
-  {
-    bool found = false;
-    for (const auto& result :
-         trust_store_nss_->TrustStoreNSS::ListCertsIgnoringNSSRoots()) {
-      found |=
-          x509_util::IsSameCertificate(result.cert.get(), client_cert.get());
-    }
-    EXPECT_TRUE(found);
-  }
 
   {
     bool found = false;
@@ -809,27 +800,13 @@ TEST_F(TrustStoreNSSTestWithoutSlotFilter, DifferingTrustCAWithSameSubject) {
   EXPECT_TRUE(HasTrust({newroot_}, ExpectedTrustForAnchor()));
 }
 
-// Check that ListCertsIgnoringNssRoots and GetAllUserAddedCerts are correctly
-// looking at all slots.
-TEST_F(TrustStoreNSSTestWithoutSlotFilter, ListCertsLooksAtAllSlots) {
+// Check that GetAllUserAddedCerts is correctly looking at all slots.
+TEST_F(TrustStoreNSSTestWithoutSlotFilter,
+       GetAllUserAddedCertsLooksAtAllSlots) {
   AddCertToNSSSlotWithTrust(oldroot_.get(), first_test_nssdb_.slot(),
                             bssl::CertificateTrustType::DISTRUSTED);
   AddCertToNSSSlotWithTrust(newroot_.get(), test_nssdb_.slot(),
                             bssl::CertificateTrustType::TRUSTED_LEAF);
-
-  {
-    bool found_newroot = false;
-    bool found_oldroot = false;
-    for (const auto& result :
-         trust_store_nss_->TrustStoreNSS::ListCertsIgnoringNSSRoots()) {
-      found_oldroot |= x509_util::IsSameCertificate(result.cert.get(),
-                                                    oldroot_->cert_buffer());
-      found_newroot |= x509_util::IsSameCertificate(result.cert.get(),
-                                                    newroot_->cert_buffer());
-    }
-    EXPECT_TRUE(found_newroot);
-    EXPECT_TRUE(found_oldroot);
-  }
 
   {
     bool found_newroot = false;
@@ -918,27 +895,15 @@ TEST_F(TrustStoreNSSTestAllowSpecifiedUserSlot, SystemRootCertOnMultipleSlots) {
   EXPECT_TRUE(HasTrust({system_root}, ExpectedTrustForLeaf()));
 }
 
-// Check to see ListCertsIgnoringNSSRoots and GetAllUserAddedCerts correctly
-// enforce slot filters.
-TEST_F(TrustStoreNSSTestAllowSpecifiedUserSlot, ListCertsFiltersBySlot) {
+// Check to see GetAllUserAddedCerts correctly enforces slot filters.
+TEST_F(TrustStoreNSSTestAllowSpecifiedUserSlot,
+       GetAllUserAddedCertsFiltersBySlot) {
   // Should not be in the results.
   AddCertToNSSSlotWithTrust(oldroot_.get(), first_test_nssdb_.slot(),
                             bssl::CertificateTrustType::DISTRUSTED);
   // Should be in the results.
   AddCertToNSSSlotWithTrust(newroot_.get(), test_nssdb_.slot(),
                             bssl::CertificateTrustType::TRUSTED_LEAF);
-
-  {
-    bool found_newroot = false;
-    for (const auto& result :
-         trust_store_nss_->TrustStoreNSS::ListCertsIgnoringNSSRoots()) {
-      EXPECT_FALSE(x509_util::IsSameCertificate(result.cert.get(),
-                                                oldroot_->cert_buffer()));
-      found_newroot |= x509_util::IsSameCertificate(result.cert.get(),
-                                                    newroot_->cert_buffer());
-    }
-    EXPECT_TRUE(found_newroot);
-  }
 
   {
     bool found_newroot = false;

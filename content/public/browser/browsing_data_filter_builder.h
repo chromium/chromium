@@ -16,7 +16,6 @@
 #include "net/cookies/cookie_partition_key_collection.h"
 #include "services/network/public/mojom/clear_data_filter.mojom-forward.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
-#include "services/network/public/mojom/network_service.mojom.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 class GURL;
@@ -58,7 +57,10 @@ class CONTENT_EXPORT BrowsingDataFilterBuilder {
     // Second option: StorageKeys are matched on origin only in all contexts.
     // For deletion that means that the origin is deleted in both 1P and 3P
     // contexts, but anything embedded on it is left untouched.
-    kOriginInAllContexts
+    kOriginInAllContexts,
+    // Third option: StorageKeys are matched on both origin and top-level-site.
+    // This is the combination of the two other options.
+    kOriginAndThirdParty
   };
 
   // Constructs a filter with the given |mode|: delete or preserve.
@@ -105,11 +107,6 @@ class CONTENT_EXPORT BrowsingDataFilterBuilder {
 
   // Returns whether the StorageKey is set (e.g. using the method above).
   virtual bool HasStorageKey() const = 0;
-
-  // Returns whether the filter's StorageKey matches the given one.
-  // Note: the StorageKey in the filter has to be set.
-  virtual bool MatchesWithSavedStorageKey(
-      const blink::StorageKey& other_key) const = 0;
 
   // Returns true if we're an empty preserve list, where we delete everything.
   virtual bool MatchesAllOriginsAndDomains() = 0;

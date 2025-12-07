@@ -4,6 +4,8 @@
 
 #include "components/password_manager/core/browser/password_form.h"
 
+#include <algorithm>
+#include <optional>
 #include <ostream>
 #include <sstream>
 #include <string>
@@ -11,10 +13,10 @@
 
 #include "base/json/json_writer.h"
 #include "base/json/values_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/values.h"
 
 namespace password_manager {
@@ -68,6 +70,10 @@ std::string ToString(PasswordForm::Type type) {
       return "Imported";
     case PasswordForm::Type::kReceivedViaSharing:
       return "ReceivedViaSharing";
+    case PasswordForm::Type::kImportedViaCredentialExchange:
+      return "ImportedViaCredentialExchange";
+    case PasswordForm::Type::kChangeSubmission:
+      return "Saved with Change Submission";
   }
 
   // In old clients type might contain non-enum values and their mapping is
@@ -85,8 +91,7 @@ std::string ToString(PasswordForm::GenerationUploadStatus status) {
       return "Negative Signal Sent";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 std::string ToString(InsecureType insecure_type) {
@@ -114,7 +119,7 @@ std::string ToString(const T& obj) {
 std::u16string AlternativeElementVectorToString(
     const AlternativeElementVector& value_element_pairs) {
   std::vector<std::u16string> pairs(value_element_pairs.size());
-  base::ranges::transform(
+  std::ranges::transform(
       value_element_pairs, pairs.begin(),
       [](const AlternativeElement& p) { return p.value + u"+" + p.name; });
   return base::JoinString(pairs, u", ");
@@ -159,6 +164,8 @@ void PasswordFormToJSON(const PasswordForm& form, base::Value::Dict& target) {
              AlternativeElementVectorToString(form.all_alternative_passwords));
   target.Set("blocked_by_user", form.blocked_by_user);
   target.Set("date_last_used", form.date_last_used.InSecondsFSinceUnixEpoch());
+  target.Set("date_last_filled",
+             form.date_last_filled.InSecondsFSinceUnixEpoch());
   target.Set("date_password_modified",
              form.date_password_modified.InSecondsFSinceUnixEpoch());
   target.Set("date_created", form.date_created.InSecondsFSinceUnixEpoch());
@@ -176,15 +183,13 @@ void PasswordFormToJSON(const PasswordForm& form, base::Value::Dict& target) {
   target.Set("affiliated_web_realm", form.affiliated_web_realm);
   target.Set("app_display_name", form.app_display_name);
   target.Set("app_icon_url", form.app_icon_url.possibly_invalid_spec());
+  target.Set("change_password_url",
+             form.change_password_url.possibly_invalid_spec());
   target.Set("submission_event", ToString(form.submission_event));
   target.Set("only_for_fallback", form.only_for_fallback);
   target.Set("is_gaia_with_skip_save_password_form",
              form.form_data.is_gaia_with_skip_save_password_form());
   target.Set("in_store", ToString(form.in_store));
-  target.Set("server_side_classification_successful",
-             form.server_side_classification_successful);
-  target.Set("username_may_use_prefilled_placeholder",
-             form.username_may_use_prefilled_placeholder);
   target.Set("form_has_autofilled_value", form.form_has_autofilled_value);
   target.Set("keychain_identifier", form.keychain_identifier);
   target.Set("accepts_webauthn_credentials", form.accepts_webauthn_credentials);
@@ -231,6 +236,48 @@ void PasswordFormToJSON(const PasswordForm& form, base::Value::Dict& target) {
   target.Set("date_received", base::TimeToValue(form.date_received));
   target.Set("sharing_notification_displayed",
              form.sharing_notification_displayed);
+  target.Set("actor_login_approved", form.actor_login_approved);
+}
+
+// Returns the note with a specified |unique_display_name|.
+// returns nullptr if none exists.
+const PasswordNote* GetNote(const std::vector<PasswordNote>& notes,
+                            const std::u16string& unique_display_name) {
+  auto note_itr = std::ranges::find(notes, unique_display_name,
+                                    &PasswordNote::unique_display_name);
+  return note_itr != notes.end() ? base::to_address(note_itr) : nullptr;
+}
+
+// Updates the note with a specified `unique_display_name`.
+void SetNote(std::vector<PasswordNote>& notes,
+             const std::u16string& unique_display_name,
+             const std::u16string& new_note_value) {
+  auto note_itr = std::ranges::find(notes, unique_display_name,
+                                    &PasswordNote::unique_display_name);
+  // if the old note doesn't exist, the note is just created.
+  if (note_itr == notes.end()) {
+    notes.emplace_back(unique_display_name, new_note_value, base::Time::Now(),
+                       /*hide_by_default=*/false);
+    return;
+  }
+
+  // Note existed, but it was empty, so set date_created in addition to
+  // changing the value.
+  if (note_itr->value.empty()) {
+    note_itr->date_created = base::Time::Now();
+  }
+
+  note_itr->value = new_note_value;
+}
+
+// Deletes the note with a specified `unique_display_name`.
+void DeleteNote(const std::u16string& unique_display_name,
+                std::vector<PasswordNote>& notes) {
+  auto note_itr = std::ranges::find(notes, unique_display_name,
+                                    &PasswordNote::unique_display_name);
+  if (note_itr != notes.end()) {
+    notes.erase(note_itr);
+  }
 }
 
 }  // namespace
@@ -337,9 +384,9 @@ bool PasswordForm::IsLikelyResetPasswordForm() const {
          !HasUsernameElement();
 }
 
-autofill::AutofillClient::PasswordFormClassification::Type
-PasswordForm::GetPasswordFormType() const {
-  using enum autofill::AutofillClient::PasswordFormClassification::Type;
+autofill::PasswordFormClassification::Type PasswordForm::GetPasswordFormType()
+    const {
+  using enum autofill::PasswordFormClassification::Type;
   if (IsLikelyLoginForm()) {
     return kLoginForm;
   } else if (IsLikelySignupForm()) {
@@ -388,27 +435,45 @@ bool PasswordForm::HasNonEmptyPasswordValue() const {
 }
 
 std::u16string PasswordForm::GetNoteWithEmptyUniqueDisplayName() const {
-  const auto& note_itr = base::ranges::find_if(
-      notes, &std::u16string::empty, &PasswordNote::unique_display_name);
-  return note_itr != notes.end() ? note_itr->value : std::u16string();
+  const PasswordNote* note = GetNote(notes, std::u16string());
+  return note ? note->value : std::u16string();
 }
 
 void PasswordForm::SetNoteWithEmptyUniqueDisplayName(
     const std::u16string& new_note_value) {
-  const auto& note_itr = base::ranges::find_if(
-      notes, &std::u16string::empty, &PasswordNote::unique_display_name);
-  // if the old note doesn't exist, the note is just created.
-  if (note_itr == notes.end()) {
-    notes.emplace_back(new_note_value, base::Time::Now());
-    return;
-  }
-  // Note existed, but it was empty.
-  if (note_itr->value.empty()) {
+  SetNote(notes, std::u16string(), new_note_value);
+}
+
+std::optional<std::u16string> PasswordForm::GetPasswordBackup() const {
+  const PasswordNote* note =
+      GetNote(notes, PasswordNote::kPasswordChangeBackupNoteName);
+  return note && !note->value.empty() ? std::make_optional(note->value)
+                                      : std::nullopt;
+}
+
+std::optional<base::Time> PasswordForm::GetPasswordBackupDateCreated() const {
+  const PasswordNote* note =
+      GetNote(notes, PasswordNote::kPasswordChangeBackupNoteName);
+  return note && !note->value.empty() ? std::make_optional(note->date_created)
+                                      : std::nullopt;
+}
+
+void PasswordForm::SetPasswordBackupNote(const std::u16string& new_note_value) {
+  auto note_itr =
+      std::ranges::find(notes, PasswordNote::kPasswordChangeBackupNoteName,
+                        &PasswordNote::unique_display_name);
+  if (note_itr != notes.end()) {
     note_itr->value = new_note_value;
     note_itr->date_created = base::Time::Now();
-    return;
+  } else {
+    notes.emplace_back(PasswordNote::kPasswordChangeBackupNoteName,
+                       new_note_value, base::Time::Now(),
+                       /*hide_by_default=*/false);
   }
-  note_itr->value = new_note_value;
+}
+
+void PasswordForm::DeletePasswordBackupNote() {
+  DeleteNote(PasswordNote::kPasswordChangeBackupNoteName, notes);
 }
 
 bool ArePasswordFormUniqueKeysEqual(const PasswordForm& left,

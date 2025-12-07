@@ -5,6 +5,7 @@
 #include "components/enterprise/client_certificates/core/ssl_key_converter.h"
 
 #include "base/check.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "net/ssl/openssl_private_key.h"
 #include "net/ssl/ssl_private_key.h"
@@ -19,36 +20,22 @@
 namespace client_certificates {
 
 namespace {
-std::unique_ptr<SSLKeyConverter> (*g_mock_converter)() = nullptr;
-}  // namespace
 
-class SSLKeyConverterImpl : public SSLKeyConverter {
- public:
-  SSLKeyConverterImpl();
-  ~SSLKeyConverterImpl() override;
-
-  // SSLKeyConverter:
-  scoped_refptr<net::SSLPrivateKey> ConvertUnexportableKeySlowly(
-      const crypto::UnexportableSigningKey& key) override;
-  scoped_refptr<net::SSLPrivateKey> ConvertECKey(
-      const crypto::ECPrivateKey& key) override;
-};
-
-SSLKeyConverter::~SSLKeyConverter() = default;
-
-std::unique_ptr<SSLKeyConverter> SSLKeyConverter::Get() {
-  if (g_mock_converter) {
-    return g_mock_converter();
-  }
-  return std::make_unique<SSLKeyConverterImpl>();
+// base::Callback requires a static initializer, so wrap it in this function and
+// use a static base::NoDestructor to avoid creating a global static
+// initializer.
+internal::ConvertKeyCallback* GetConvertKeyCallback() {
+  static base::NoDestructor<internal::ConvertKeyCallback> s_convert_key;
+  return s_convert_key.get();
 }
 
-SSLKeyConverterImpl::SSLKeyConverterImpl() = default;
-SSLKeyConverterImpl::~SSLKeyConverterImpl() = default;
+}  // namespace
 
-scoped_refptr<net::SSLPrivateKey>
-SSLKeyConverterImpl::ConvertUnexportableKeySlowly(
+scoped_refptr<net::SSLPrivateKey> SSLPrivateKeyFromUnexportableSigningKeySlowly(
     const crypto::UnexportableSigningKey& key) {
+  if (!GetConvertKeyCallback()->is_null()) {
+    return GetConvertKeyCallback()->Run(key);
+  }
 #if BUILDFLAG(IS_WIN)
   return net::WrapUnexportableKeySlowly(key);
 #elif BUILDFLAG(IS_MAC)
@@ -58,18 +45,13 @@ SSLKeyConverterImpl::ConvertUnexportableKeySlowly(
 #endif  // BUILDFLAG(IS_WIN)
 }
 
-scoped_refptr<net::SSLPrivateKey> SSLKeyConverterImpl::ConvertECKey(
-    const crypto::ECPrivateKey& key) {
-  return net::WrapOpenSSLPrivateKey(bssl::UpRef(key.key()));
-}
-
 namespace internal {
 
-void SetConverterForTesting(std::unique_ptr<SSLKeyConverter> (*func)()) {
+void SetConverterForTesting(internal::ConvertKeyCallback callback) {
   // At least one of the two needs to be null, as nesting of scoped converters
   // is not supported.
-  CHECK(!g_mock_converter || !func);
-  g_mock_converter = func;
+  CHECK(GetConvertKeyCallback()->is_null() || !callback);
+  *GetConvertKeyCallback() = callback;
 }
 
 }  // namespace internal

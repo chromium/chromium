@@ -15,7 +15,9 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -29,6 +31,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
 #include "base/test/launcher/test_launcher.h"
+#include "base/test/launcher/test_result.h"
 #include "base/test/test_switches.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -40,8 +43,8 @@ namespace base {
 namespace {
 
 // The default output file for XML output.
-const FilePath::CharType kDefaultOutputFile[] = FILE_PATH_LITERAL(
-    "test_detail.xml");
+const FilePath::CharType kDefaultOutputFile[] =
+    FILE_PATH_LITERAL("test_detail.xml");
 
 // Converts the given epoch time in milliseconds to a date string in the ISO
 // 8601 format, without the timezone information.
@@ -52,8 +55,7 @@ std::string FormatTimeAsIso8601(Time time) {
 }
 
 struct TestSuiteResultsAggregator {
-  TestSuiteResultsAggregator()
-      : tests(0), failures(0), disabled(0), errors(0) {}
+  TestSuiteResultsAggregator() = default;
 
   void Add(const TestResult& result) {
     tests++;
@@ -79,13 +81,167 @@ struct TestSuiteResultsAggregator {
     }
   }
 
-  int tests;
-  int failures;
-  int disabled;
-  int errors;
+  int tests = 0;
+  int failures = 0;
+  int disabled = 0;
+  int errors = 0;
 
   TimeDelta elapsed_time;
 };
+
+// Create value for `TestResultPart`.
+Value::Dict CreateTestResultPartValue(const TestResultPart& part) {
+  Value::Dict value;
+
+  value.Set("type", part.TypeAsString());
+  value.Set("file", part.file_name);
+  value.Set("line", part.line_number);
+
+  bool lossless_summary = IsStringUTF8(part.summary);
+  if (lossless_summary) {
+    value.Set("summary", part.summary);
+  } else {
+    value.Set("summary", "<non-UTF-8 snippet, see summary_base64>");
+  }
+  value.Set("lossless_summary", lossless_summary);
+
+  value.Set("summary_base64", base::Base64Encode(part.summary));
+
+  bool lossless_message = IsStringUTF8(part.message);
+  if (lossless_message) {
+    value.Set("message", part.message);
+  } else {
+    value.Set("message", "<non-UTF-8 snippet, see message_base64>");
+  }
+  value.Set("lossless_message", lossless_message);
+
+  value.Set("message_base64", base::Base64Encode(part.message));
+
+  return value;
+}
+
+// Create value for `TestResult`.
+Value::Dict CreateTestResultValue(const TestResult& test_result) {
+  Value::Dict value;
+  value.Set("status", test_result.StatusAsString());
+  value.Set("elapsed_time_ms",
+            static_cast<int>(test_result.elapsed_time.InMilliseconds()));
+
+  if (test_result.thread_id) {
+    // The thread id might be an int64, however int64 values are not
+    // representable in JS and JSON (cf. crbug.com/40228085) since JS
+    // numbers are float64. Since thread IDs are likely to be allocated
+    // sequentially, truncation of the high bits is preferable to loss of
+    // precision in the low bits, as threads are more likely to differ in
+    // their low bit values, so we truncate the value to int32. Since this
+    // is only used for dumping test runner state, the loss of information
+    // is not catastrophic and won't happen in normal browser execution.
+    // Additionally, the test launcher tid is also truncated, so the
+    // truncated values should match.
+    //
+    // LINT.IfChange(TestLauncherTidTruncation)
+    value.Set("thread_id",
+              test_result.thread_id->truncate_to_int32_for_display_only());
+    // LINT.ThenChange(test_launcher_tracer.cc:TestLauncherTidTruncation)
+  }
+  if (test_result.process_num) {
+    value.Set("process_num", *test_result.process_num);
+  }
+  if (test_result.timestamp) {
+    // The timestamp is formatted using TimeFormatAsIso8601 instead of
+    // FormatTimeAsIso8601 here for a better accuracy, since the former
+    // method includes fractions of a second.
+    value.Set("timestamp", TimeFormatAsIso8601(*test_result.timestamp).c_str());
+  }
+
+  bool lossless_snippet = false;
+  if (IsStringUTF8(test_result.output_snippet)) {
+    value.Set("output_snippet", test_result.output_snippet);
+    lossless_snippet = true;
+  } else {
+    value.Set("output_snippet",
+              "<non-UTF-8 snippet, see output_snippet_base64>");
+  }
+
+  // TODO(phajdan.jr): Fix typo in JSON key (losless -> lossless)
+  // making sure not to break any consumers of this data.
+  value.Set("losless_snippet", lossless_snippet);
+
+  // Also include the raw version (base64-encoded so that it can be safely
+  // JSON-serialized - there are no guarantees about character encoding
+  // of the snippet). This can be very useful piece of information when
+  // debugging a test failure related to character encoding.
+  std::string base64_output_snippet =
+      base::Base64Encode(test_result.output_snippet);
+  value.Set("output_snippet_base64", base64_output_snippet);
+  if (!test_result.links.empty()) {
+    Value::Dict links;
+    for (const auto& link : test_result.links) {
+      Value::Dict link_info;
+      link_info.Set("content", link.second);
+      links.SetByDottedPath(link.first, std::move(link_info));
+    }
+    value.Set("links", std::move(links));
+  }
+  if (!test_result.tags.empty()) {
+    Value::Dict tags;
+    for (const auto& tag : test_result.tags) {
+      Value::List tag_values;
+      for (const auto& tag_value : tag.second) {
+        tag_values.Append(tag_value);
+      }
+      Value::Dict tag_info;
+      tag_info.Set("values", std::move(tag_values));
+      tags.SetByDottedPath(tag.first, std::move(tag_info));
+    }
+    value.Set("tags", std::move(tags));
+  }
+  if (!test_result.properties.empty()) {
+    Value::Dict properties;
+    for (const auto& property : test_result.properties) {
+      Value::Dict property_info;
+      property_info.Set("value", property.second);
+      properties.SetByDottedPath(property.first, std::move(property_info));
+    }
+    value.Set("properties", std::move(properties));
+  }
+
+  Value::List test_result_parts;
+  for (const TestResultPart& result_part : test_result.test_result_parts) {
+    Value::Dict result_part_value = CreateTestResultPartValue(result_part);
+    test_result_parts.Append(std::move(result_part_value));
+  }
+  value.Set("result_parts", std::move(test_result_parts));
+
+  return value;
+}
+
+// Create value for `SubTestResult`.
+Value::Dict CreateSubTestResultValue(const TestResult& primary_test_result,
+                                     const SubTestResult& sub_test_result) {
+  // Partially copy the primary TestResult.
+  TestResult test_result;
+  test_result.elapsed_time = primary_test_result.elapsed_time;
+  test_result.links = primary_test_result.links;
+  test_result.properties = primary_test_result.properties;
+  test_result.tags = primary_test_result.tags;
+  test_result.thread_id = primary_test_result.thread_id;
+  test_result.timestamp = primary_test_result.timestamp;
+  if (sub_test_result.failure_message) {
+    test_result.status = TestResult::TEST_FAILURE;
+    // Add a TestPartResult to the new TestResult if the SubTestResult is a
+    // failure. This is how the failure message is passed along.
+    TestResultPart part;
+    part.type = TestResultPart::Type::kNonFatalFailure;
+    part.summary = *sub_test_result.failure_message;
+    // Line number is unknown.
+    part.line_number = 0;
+    test_result.test_result_parts.push_back(std::move(part));
+  } else {
+    test_result.status = TestResult::TEST_SUCCESS;
+  }
+  return CreateTestResultValue(test_result);
+}
 
 }  // namespace
 
@@ -94,18 +250,19 @@ TestResultsTracker::TestResultsTracker() : iteration_(-1), out_(nullptr) {}
 TestResultsTracker::~TestResultsTracker() {
   CHECK(thread_checker_.CalledOnValidThread());
 
-  if (!out_)
+  if (!out_) {
     return;
+  }
 
   CHECK_GE(iteration_, 0);
 
   // Maps test case names to test results.
-  typedef std::map<std::string, std::vector<TestResult> > TestCaseMap;
+  typedef std::map<std::string, std::vector<TestResult>> TestCaseMap;
   TestCaseMap test_case_map;
 
   TestSuiteResultsAggregator all_tests_aggregator;
-  for (const PerIterationData::ResultsMap::value_type& i
-           : per_iteration_data_[iteration_].results) {
+  for (const PerIterationData::ResultsMap::value_type& i :
+       per_iteration_data_[iteration_].results) {
     // Use the last test result as the final one.
     TestResult result = i.second.test_results.back();
     test_case_map[result.GetTestCaseName()].push_back(result);
@@ -169,23 +326,20 @@ bool TestResultsTracker::Init(const CommandLine& command_line) {
   CHECK(thread_checker_.CalledOnValidThread());
 
   // Prevent initializing twice.
-  if (out_) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
-  }
+  CHECK(!out_);
 
   print_temp_leaks_ =
       command_line.HasSwitch(switches::kTestLauncherPrintTempLeaks);
 
-  if (!command_line.HasSwitch(kGTestOutputFlag))
+  if (!command_line.HasSwitch(kGTestOutputFlag)) {
     return true;
+  }
 
   std::string flag = command_line.GetSwitchValueASCII(kGTestOutputFlag);
   size_t colon_pos = flag.find(':');
   FilePath path;
   if (colon_pos != std::string::npos) {
-    FilePath flag_path =
-        command_line.GetSwitchValuePath(kGTestOutputFlag);
+    FilePath flag_path = command_line.GetSwitchValuePath(kGTestOutputFlag);
     FilePath::StringType path_string = flag_path.value();
     path = FilePath(path_string.substr(colon_pos + 1));
     // If the given path ends with '/', consider it is a directory.
@@ -194,11 +348,12 @@ bool TestResultsTracker::Init(const CommandLine& command_line) {
     if (path.EndsWithSeparator()) {
       FilePath executable = command_line.GetProgram().BaseName();
       path = path.Append(executable.ReplaceExtension(
-                             FilePath::StringType(FILE_PATH_LITERAL("xml"))));
+          FilePath::StringType(FILE_PATH_LITERAL("xml"))));
     }
   }
-  if (path.value().empty())
+  if (path.value().empty()) {
     path = FilePath(kDefaultOutputFile);
+  }
   FilePath dir_name = path.DirName();
   if (!DirectoryExists(dir_name)) {
     LOG(WARNING) << "The output directory does not exist. "
@@ -211,8 +366,7 @@ bool TestResultsTracker::Init(const CommandLine& command_line) {
   }
   out_ = OpenFile(path, "w");
   if (!out_) {
-    LOG(ERROR) << "Cannot open output file: "
-               << path.value() << ".";
+    LOG(ERROR) << "Cannot open output file: " << path.value() << ".";
     return false;
   }
 
@@ -224,7 +378,7 @@ void TestResultsTracker::OnTestIterationStarting() {
 
   // Start with a fresh state for new iteration.
   iteration_++;
-  per_iteration_data_.push_back(PerIterationData());
+  per_iteration_data_.emplace_back();
 }
 
 void TestResultsTracker::AddTest(const std::string& test_name) {
@@ -345,8 +499,7 @@ void TestResultsTracker::PrintSummaryOfCurrentIteration() const {
   TestStatusMap tests_by_status(GetTestStatusMapForCurrentIteration());
 
   PrintTests(tests_by_status[TestResult::TEST_FAILURE].begin(),
-             tests_by_status[TestResult::TEST_FAILURE].end(),
-             "failed");
+             tests_by_status[TestResult::TEST_FAILURE].end(), "failed");
   PrintTests(tests_by_status[TestResult::TEST_FAILURE_ON_EXIT].begin(),
              tests_by_status[TestResult::TEST_FAILURE_ON_EXIT].end(),
              "failed on exit");
@@ -354,14 +507,11 @@ void TestResultsTracker::PrintSummaryOfCurrentIteration() const {
              tests_by_status[TestResult::TEST_EXCESSIVE_OUTPUT].end(),
              "produced excessive output");
   PrintTests(tests_by_status[TestResult::TEST_TIMEOUT].begin(),
-             tests_by_status[TestResult::TEST_TIMEOUT].end(),
-             "timed out");
+             tests_by_status[TestResult::TEST_TIMEOUT].end(), "timed out");
   PrintTests(tests_by_status[TestResult::TEST_CRASH].begin(),
-             tests_by_status[TestResult::TEST_CRASH].end(),
-             "crashed");
+             tests_by_status[TestResult::TEST_CRASH].end(), "crashed");
   PrintTests(tests_by_status[TestResult::TEST_SKIPPED].begin(),
-             tests_by_status[TestResult::TEST_SKIPPED].end(),
-             "skipped");
+             tests_by_status[TestResult::TEST_SKIPPED].end(), "skipped");
   PrintTests(tests_by_status[TestResult::TEST_UNKNOWN].begin(),
              tests_by_status[TestResult::TEST_UNKNOWN].end(),
              "had unknown result");
@@ -385,8 +535,7 @@ void TestResultsTracker::PrintSummaryOfAllIterations() const {
   fflush(stdout);
 
   PrintTests(tests_by_status[TestResult::TEST_FAILURE].begin(),
-             tests_by_status[TestResult::TEST_FAILURE].end(),
-             "failed");
+             tests_by_status[TestResult::TEST_FAILURE].end(), "failed");
   PrintTests(tests_by_status[TestResult::TEST_FAILURE_ON_EXIT].begin(),
              tests_by_status[TestResult::TEST_FAILURE_ON_EXIT].end(),
              "failed on exit");
@@ -394,14 +543,11 @@ void TestResultsTracker::PrintSummaryOfAllIterations() const {
              tests_by_status[TestResult::TEST_EXCESSIVE_OUTPUT].end(),
              "produced excessive output");
   PrintTests(tests_by_status[TestResult::TEST_TIMEOUT].begin(),
-             tests_by_status[TestResult::TEST_TIMEOUT].end(),
-             "timed out");
+             tests_by_status[TestResult::TEST_TIMEOUT].end(), "timed out");
   PrintTests(tests_by_status[TestResult::TEST_CRASH].begin(),
-             tests_by_status[TestResult::TEST_CRASH].end(),
-             "crashed");
+             tests_by_status[TestResult::TEST_CRASH].end(), "crashed");
   PrintTests(tests_by_status[TestResult::TEST_SKIPPED].begin(),
-             tests_by_status[TestResult::TEST_SKIPPED].end(),
-             "skipped");
+             tests_by_status[TestResult::TEST_SKIPPED].end(), "skipped");
   PrintTests(tests_by_status[TestResult::TEST_UNKNOWN].begin(),
              tests_by_status[TestResult::TEST_UNKNOWN].end(),
              "had unknown result");
@@ -452,126 +598,23 @@ bool TestResultsTracker::SaveSummaryAsJSON(
 
     for (const auto& j : per_iteration_data_[i].results) {
       Value::List test_results;
+      std::map<std::string, Value::List> name_to_test_results;
 
-      for (size_t k = 0; k < j.second.test_results.size(); k++) {
-        const TestResult& test_result = j.second.test_results[k];
+      for (const TestResult& test_result : j.second.test_results) {
+        name_to_test_results[j.first].Append(
+            CreateTestResultValue(test_result));
 
-        Value::Dict test_result_value;
-
-        test_result_value.Set("status", test_result.StatusAsString());
-        test_result_value.Set(
-            "elapsed_time_ms",
-            static_cast<int>(test_result.elapsed_time.InMilliseconds()));
-
-        if (test_result.thread_id) {
-          test_result_value.Set("thread_id",
-                                static_cast<int>(*test_result.thread_id));
+        // Add each SubTestResult as an individual test result.
+        for (const SubTestResult& sub_test_result :
+             test_result.sub_test_results) {
+          name_to_test_results[sub_test_result.FullName()].Append(
+              CreateSubTestResultValue(test_result, sub_test_result));
         }
-        if (test_result.process_num)
-          test_result_value.Set("process_num", *test_result.process_num);
-        if (test_result.timestamp) {
-          // The timestamp is formatted using TimeFormatAsIso8601 instead of
-          // FormatTimeAsIso8601 here for a better accuracy, since the former
-          // method includes fractions of a second.
-          test_result_value.Set(
-              "timestamp", TimeFormatAsIso8601(*test_result.timestamp).c_str());
-        }
-
-        bool lossless_snippet = false;
-        if (IsStringUTF8(test_result.output_snippet)) {
-          test_result_value.Set("output_snippet", test_result.output_snippet);
-          lossless_snippet = true;
-        } else {
-          test_result_value.Set(
-              "output_snippet",
-              "<non-UTF-8 snippet, see output_snippet_base64>");
-        }
-
-        // TODO(phajdan.jr): Fix typo in JSON key (losless -> lossless)
-        // making sure not to break any consumers of this data.
-        test_result_value.Set("losless_snippet", lossless_snippet);
-
-        // Also include the raw version (base64-encoded so that it can be safely
-        // JSON-serialized - there are no guarantees about character encoding
-        // of the snippet). This can be very useful piece of information when
-        // debugging a test failure related to character encoding.
-        std::string base64_output_snippet =
-            base::Base64Encode(test_result.output_snippet);
-        test_result_value.Set("output_snippet_base64", base64_output_snippet);
-        if (!test_result.links.empty()) {
-          Value::Dict links;
-          for (const auto& link : test_result.links) {
-            Value::Dict link_info;
-            link_info.Set("content", link.second);
-            links.SetByDottedPath(link.first, std::move(link_info));
-          }
-          test_result_value.Set("links", std::move(links));
-        }
-        if (!test_result.tags.empty()) {
-          Value::Dict tags;
-          for (const auto& tag : test_result.tags) {
-            Value::List tag_values;
-            for (const auto& tag_value : tag.second) {
-              tag_values.Append(tag_value);
-            }
-            Value::Dict tag_info;
-            tag_info.Set("values", std::move(tag_values));
-            tags.SetByDottedPath(tag.first, std::move(tag_info));
-          }
-          test_result_value.Set("tags", std::move(tags));
-        }
-        if (!test_result.properties.empty()) {
-          Value::Dict properties;
-          for (const auto& property : test_result.properties) {
-            Value::Dict property_info;
-            property_info.Set("value", property.second);
-            properties.SetByDottedPath(property.first,
-                                       std::move(property_info));
-          }
-          test_result_value.Set("properties", std::move(properties));
-        }
-
-        Value::List test_result_parts;
-        for (const TestResultPart& result_part :
-             test_result.test_result_parts) {
-          Value::Dict result_part_value;
-
-          result_part_value.Set("type", result_part.TypeAsString());
-          result_part_value.Set("file", result_part.file_name);
-          result_part_value.Set("line", result_part.line_number);
-
-          bool lossless_summary = IsStringUTF8(result_part.summary);
-          if (lossless_summary) {
-            result_part_value.Set("summary", result_part.summary);
-          } else {
-            result_part_value.Set("summary",
-                                  "<non-UTF-8 snippet, see summary_base64>");
-          }
-          result_part_value.Set("lossless_summary", lossless_summary);
-
-          std::string encoded_summary = base::Base64Encode(result_part.summary);
-          result_part_value.Set("summary_base64", encoded_summary);
-
-          bool lossless_message = IsStringUTF8(result_part.message);
-          if (lossless_message) {
-            result_part_value.Set("message", result_part.message);
-          } else {
-            result_part_value.Set("message",
-                                  "<non-UTF-8 snippet, see message_base64>");
-          }
-          result_part_value.Set("lossless_message", lossless_message);
-
-          std::string encoded_message = base::Base64Encode(result_part.message);
-          result_part_value.Set("message_base64", encoded_message);
-
-          test_result_parts.Append(std::move(result_part_value));
-        }
-        test_result_value.Set("result_parts", std::move(test_result_parts));
-
-        test_results.Append(std::move(test_result_value));
       }
 
-      current_iteration_data.Set(j.first, std::move(test_results));
+      for (auto& p : name_to_test_results) {
+        current_iteration_data.Set(p.first, std::move(p.second));
+      }
     }
     per_iteration_data.Append(std::move(current_iteration_data));
   }
@@ -588,16 +631,16 @@ bool TestResultsTracker::SaveSummaryAsJSON(
   }
   summary_root.Set("test_locations", std::move(test_locations));
 
-  std::string json;
-  if (!JSONWriter::Write(summary_root, &json))
+  std::optional<std::string> json = WriteJson(summary_root);
+  if (!json.has_value()) {
     return false;
+  }
 
   File output(path, File::FLAG_CREATE_ALWAYS | File::FLAG_WRITE);
-  if (!output.IsValid())
+  if (!output.IsValid()) {
     return false;
-
-  int json_size = static_cast<int>(json.size());
-  if (output.WriteAtCurrentPos(json.data(), json_size) != json_size) {
+  }
+  if (!output.WriteAtCurrentPosAndCheck(base::as_byte_span(json.value()))) {
     return false;
   }
 
@@ -613,8 +656,9 @@ bool TestResultsTracker::SaveSummaryAsJSON(
   // TODO(sergeyu): Figure out a better solution.
   int flush_attempts_left = 4;
   while (flush_attempts_left-- > 0) {
-    if (output.Flush())
+    if (output.Flush()) {
       return true;
+    }
     LOG(ERROR) << "fsync() failed when saving test output summary. "
                << ((flush_attempts_left > 0) ? "Retrying." : " Giving up.");
   }
@@ -626,22 +670,23 @@ bool TestResultsTracker::SaveSummaryAsJSON(
 }
 
 TestResultsTracker::TestStatusMap
-    TestResultsTracker::GetTestStatusMapForCurrentIteration() const {
+TestResultsTracker::GetTestStatusMapForCurrentIteration() const {
   TestStatusMap tests_by_status;
   GetTestStatusForIteration(iteration_, &tests_by_status);
   return tests_by_status;
 }
 
 TestResultsTracker::TestStatusMap
-    TestResultsTracker::GetTestStatusMapForAllIterations() const {
+TestResultsTracker::GetTestStatusMapForAllIterations() const {
   TestStatusMap tests_by_status;
-  for (int i = 0; i <= iteration_; i++)
+  for (int i = 0; i <= iteration_; i++) {
     GetTestStatusForIteration(i, &tests_by_status);
+  }
   return tests_by_status;
 }
 
-void TestResultsTracker::GetTestStatusForIteration(
-    int iteration, TestStatusMap* map) const {
+void TestResultsTracker::GetTestStatusForIteration(int iteration,
+                                                   TestStatusMap* map) const {
   for (const auto& j : per_iteration_data_[iteration].results) {
     // Use the last test result as the final one.
     const TestResult& result = j.second.test_results.back();
@@ -651,18 +696,16 @@ void TestResultsTracker::GetTestStatusForIteration(
 
 // Utility function to print a list of test names. Uses iterator to be
 // compatible with different containers, like vector and set.
-template<typename InputIterator>
+template <typename InputIterator>
 void TestResultsTracker::PrintTests(InputIterator first,
                                     InputIterator last,
                                     const std::string& description) const {
   size_t count = std::distance(first, last);
-  if (count == 0)
+  if (count == 0) {
     return;
+  }
 
-  fprintf(stdout,
-          "%" PRIuS " test%s %s:\n",
-          count,
-          count != 1 ? "s" : "",
+  fprintf(stdout, "%" PRIuS " test%s %s:\n", count, count != 1 ? "s" : "",
           description.c_str());
   for (InputIterator it = first; it != last; ++it) {
     const std::string& test_name = *it;

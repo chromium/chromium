@@ -56,6 +56,8 @@ class ASH_EXPORT YouTubeMusicController : public SessionObserver {
                       ReportPlaybackCallback callback);
 
  private:
+  std::string GetDeviceId();
+
   base::flat_map<AccountId, std::unique_ptr<youtube_music::YouTubeMusicClient>>
       clients_;
 };

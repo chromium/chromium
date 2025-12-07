@@ -8,11 +8,10 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/find_in_page/model/util.h"
 #import "ios/chrome/browser/find_bar/ui_bundled/find_bar_constants.h"
 #import "ios/chrome/browser/find_bar/ui_bundled/java_script_find_in_page_controller_app_interface.h"
-#import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
-#import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_constants.h"
+#import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/accessory/toolbar_accessory_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -97,17 +96,17 @@ std::unique_ptr<net::test_server::HttpResponse> FindInPageTestPageHttpResponse(
   [self openFindInPage];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   // Disabled for iOS 16.1.1+.
   if (base::ios::IsRunningOnOrLater(16, 1, 1)) {
-    [super tearDown];
+    [super tearDownHelper];
     return;
   }
 
   // Close find in page view.
   [self closeFindInPage];
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Tests.
@@ -185,13 +184,7 @@ std::unique_ptr<net::test_server::HttpResponse> FindInPageTestPageHttpResponse(
   if (base::ios::IsRunningOnOrLater(16, 1, 1)) {
     return;
   }
-  if (@available(iOS 16, *)) {
-    [self typeFindInPageText:@"find"];
-  } else {
-    // On iOS 15, the keyboard is not passing the accessibility test. Press
-    // enter to dismiss it.
-    [self typeFindInPageText:@"find\n"];
-  }
+  [self typeFindInPageText:@"find"];
   [self assertResultStringIsResult:1 outOfTotal:2];
 
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];

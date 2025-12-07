@@ -15,17 +15,12 @@
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
 #include "chrome/browser/download/notification/multi_profile_download_notifier.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_delegate.h"
-#include "chromeos/crosapi/mojom/download_controller.mojom-forward.h"
 
 namespace content {
 class DownloadManager;
 }  // namespace content
 
 namespace ash {
-
-namespace holding_space_metrics {
-enum class EventSource;
-}  // namespace holding_space_metrics
 
 // A delegate of `HoldingSpaceKeyedService` tasked with monitoring the status of
 // of downloads on its behalf.
@@ -49,7 +44,6 @@ class HoldingSpaceDownloadsDelegate
 
  private:
   class InProgressDownload;
-  class InProgressAshDownload;
 
   // HoldingSpaceKeyedServiceDelegate:
   void OnPersistenceRestored() override;
@@ -96,15 +90,9 @@ class HoldingSpaceDownloadsDelegate
                                       bool invalidate_image);
 
   // Attempts to cancel/pause/resume the download underlying the given `item`.
-  void Cancel(const HoldingSpaceItem* item,
-              HoldingSpaceCommandId command_id,
-              holding_space_metrics::EventSource event_source);
-  void Pause(const HoldingSpaceItem* item,
-             HoldingSpaceCommandId command_id,
-             holding_space_metrics::EventSource event_source);
-  void Resume(const HoldingSpaceItem* item,
-              HoldingSpaceCommandId command_id,
-              holding_space_metrics::EventSource event_source);
+  void Cancel(const HoldingSpaceItem* item, HoldingSpaceCommandId command_id);
+  void Pause(const HoldingSpaceItem* item, HoldingSpaceCommandId command_id);
+  void Resume(const HoldingSpaceItem* item, HoldingSpaceCommandId command_id);
 
   // The collection of currently in-progress downloads.
   std::set<std::unique_ptr<InProgressDownload>, base::UniquePtrComparator>

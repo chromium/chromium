@@ -4,11 +4,14 @@
 
 #include "chrome/browser/extensions/cws_info_service.h"
 
+#include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/queue.h"
+#include "base/features.h"
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -31,13 +34,18 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/buildflags/buildflags.h"
+#include "google_apis/common/api_key_request_util.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace {
 
@@ -157,17 +165,9 @@ void RecordNetworkHistograms(const network::SimpleURLLoader* url_loader) {
 
 namespace extensions {
 
-// Allow periodic retrieval of extensions metadata from the Chrome Web Store
-// (CWS). This is effectively a kill-switch for the feature.
-BASE_FEATURE(kCWSInfoService,
-             "CWSInfoService",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Increase the frequency of periodic retrieval of extensions metadata from
 // CWS. This feature is used only for testing purposes.
-BASE_FEATURE(kCWSInfoFastCheck,
-             "CWSInfoFastCheck",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCWSInfoFastCheck, base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
@@ -363,6 +363,11 @@ void CWSInfoService::CheckAndMaybeFetchInfo() {
 }
 
 void CWSInfoService::ScheduleCheck(int seconds) {
+  if (base::features::IsReducePPMsEnabled()) {
+    info_check_timer_.SetTaskRunner(
+        content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT}));
+  }
+
   info_check_timer_.Start(FROM_HERE, base::Seconds(seconds), this,
                           &CWSInfoService::CheckAndMaybeFetchInfo);
 }
@@ -428,8 +433,7 @@ void CWSInfoService::SendRequest() {
   resource_request->method = "POST";
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
   resource_request->headers.SetHeader("X-HTTP-Method-Override", "GET");
-  resource_request->headers.SetHeader("X-Goog-Api-Key",
-                                      google_apis::GetAPIKey());
+  google_apis::AddAPIKeyToRequest(*resource_request, google_apis::GetAPIKey());
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
@@ -446,7 +450,7 @@ void CWSInfoService::SendRequest() {
   info_requests_++;
 }
 
-void CWSInfoService::OnResponseReceived(std::unique_ptr<std::string> response) {
+void CWSInfoService::OnResponseReceived(std::optional<std::string> response) {
   CHECK(url_loader_);
   RecordNetworkHistograms(url_loader_.get());
 
@@ -523,7 +527,7 @@ bool CWSInfoService::MaybeSaveResponseToPrefs(
     }
   }
 
-  // Process any resquested ids missing from the response. These ids represent
+  // Process any requested ids missing from the response. These ids represent
   // extensions that are no longer available from the store.
   for (const auto& id : active_fetch_->requests.front().ids) {
     if (extension_prefs_->HasPrefForExtension(id) == false) {

@@ -27,6 +27,7 @@
 
 #include <memory>
 
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_encoding_data.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
@@ -61,8 +62,11 @@ void DecodedDataDocumentParser::AppendBytes(base::span<const uint8_t> bytes) {
   if (IsDetached())
     return;
 
-  base::span<const char> char_data = base::as_chars(bytes);
-  String decoded = decoder_->Decode(char_data.data(), char_data.size());
+  String auto_detected_charset;
+  String decoded = decoder_->Decode(bytes, &auto_detected_charset);
+  if (!auto_detected_charset.empty()) {
+    GetDocument()->CountUse(WebFeature::kCharsetAutoDetection);
+  }
   UpdateDocument(decoded);
 }
 

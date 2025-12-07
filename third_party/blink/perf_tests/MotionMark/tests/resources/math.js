@@ -150,7 +150,7 @@ PIDController = Utilities.createClass(
         // Derivative term is the slope of the curve at the current time.
         var D = (this._Kp * this._Td) * (e - this._eold) / h;
 
-        // The output is a PID function.
+        // The ouput is a PID function.
        return P + this._I + D;
     },
 
@@ -179,7 +179,7 @@ PIDController = Utilities.createClass(
             // This is the second stage of the ZieglerâNichols method. It measures the
             // oscillation period.
             if (typeof this._t0 == "undefined") {
-                // t is the time of the beginning of the first overshot
+                // t is the time of the begining of the first overshot
                 this._t0 = t;
                 this._Kp /= 2;
             }

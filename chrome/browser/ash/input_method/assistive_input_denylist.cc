@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/input_method/assistive_input_denylist.h"
 
-#include "base/json/json_reader.h"
 #include "chrome/browser/ash/input_method/url_utils.h"
 
 namespace ash {
@@ -13,7 +12,7 @@ namespace {
 
 // The default denylist of domains that will turn off autocorrect and multi word
 // suggestions.
-const char* kDefaultDomainDenylist[] = {
+constexpr const char* kDefaultDomainDenylist[] = {
     "amazon",
     "b.corp.google",
     "buganizer.corp.google",
@@ -36,33 +35,15 @@ const char* kDefaultDomainDenylist[] = {
 };
 
 // Exceptions where the features are enabled.
-const char* kAllowedDomainsWithPaths[][2] = {{"mail.google", "/chat"}};
+constexpr const char* kAllowedDomainsWithPaths[][2] = {
+    {"mail.google", "/chat"}};
 
-std::vector<std::string> ToDenylist(const base::Value& value) {
-  if (!value.is_list()) {
-    return {};
-  }
-  std::vector<std::string> domains;
-  for (const auto& item : value.GetList()) {
-    if (item.is_string()) {
-      domains.push_back(item.GetString());
-    }
-  }
-  return domains;
-}
+constexpr const char* kDefaultFileExtensionDenylist[] = {
+    "pdf",
+};
 
 bool MatchesSubDomainFromDefaultList(const GURL& url) {
   for (const char* domain : kDefaultDomainDenylist) {
-    if (IsSubDomain(url, domain)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-bool MatchesSubDomainFrom(const std::vector<std::string>& denylist,
-                          const GURL& url) {
-  for (const auto& domain : denylist) {
     if (IsSubDomain(url, domain)) {
       return true;
     }
@@ -79,30 +60,27 @@ bool AllowedSubDomainWithPathPrefix(const GURL& url) {
   return false;
 }
 
+bool MatchesFileExtensionFromDefaultList(const GURL& url) {
+  for (const char* extension : kDefaultFileExtensionDenylist) {
+    if (HasFileExtension(url, extension)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
-AssistiveInputDenylist::AssistiveInputDenylist(
-    const DenylistAdditions& additions) {
-  if (auto parsed = base::JSONReader::Read(additions.autocorrect_denylist_json);
-      parsed.has_value() && parsed->is_list()) {
-    autocorrect_denylist_ = ToDenylist(*parsed);
-  }
-
-  if (auto parsed = base::JSONReader::Read(additions.multi_word_denylist_json);
-      parsed.has_value() && parsed->is_list()) {
-    multi_word_denylist_ = ToDenylist(*parsed);
-  }
-}
+AssistiveInputDenylist::AssistiveInputDenylist() = default;
 
 AssistiveInputDenylist::~AssistiveInputDenylist() = default;
 
 bool AssistiveInputDenylist::Contains(const GURL& url) {
-  return ((MatchesSubDomainFromDefaultList(url) ||
-           MatchesSubDomainFrom(autocorrect_denylist_, url) ||
-           MatchesSubDomainFrom(multi_word_denylist_, url)) &&
+  return (MatchesSubDomainFromDefaultList(url) &&
           // Used to allow specific paths on a top level domain that has been
           // denied (for example, "mail.google.com/chat").
-          !AllowedSubDomainWithPathPrefix(url));
+          !AllowedSubDomainWithPathPrefix(url)) ||
+         MatchesFileExtensionFromDefaultList(url);
 }
 
 }  // namespace input_method

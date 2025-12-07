@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/survey_config.h"
-#include "chrome/browser/ui/safety_hub/card_data_helper.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
@@ -30,7 +29,6 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
-#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -194,7 +192,7 @@ std::map<std::string, bool> BuildProductSpecificDataForPasswordProtection(
       product_specific_data["Is interstitial UI"] = true;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   product_specific_data["User completed password change"] = false;
   product_specific_data["User clicked change password"] = false;
@@ -212,7 +210,7 @@ std::map<std::string, bool> BuildProductSpecificDataForPasswordProtection(
       product_specific_data["User marked as legitimate"] = true;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return product_specific_data;
 }
@@ -232,28 +230,31 @@ TrustSafetySentimentService::TrustSafetySentimentService(Profile* profile)
   }
 
   if (base::FeatureList::IsEnabled(features::kTrustSafetySentimentSurveyV2)) {
-    metrics::DesktopSessionDurationTracker::Get()->AddObserver(this);
+    if (metrics::DesktopSessionDurationTracker::IsInitialized()) {
+      session_duration_observation_.Observe(
+          metrics::DesktopSessionDurationTracker::Get());
+    } else {
+      CHECK_IS_TEST();
+    }
     performed_control_group_dice_roll_ = false;
   }
 }
 
-TrustSafetySentimentService::~TrustSafetySentimentService() {
-  if (base::FeatureList::IsEnabled(features::kTrustSafetySentimentSurveyV2)) {
-    metrics::DesktopSessionDurationTracker::Get()->RemoveObserver(this);
-  }
-}
+TrustSafetySentimentService::~TrustSafetySentimentService() = default;
 
 void TrustSafetySentimentService::OpenedNewTabPage() {
   // Explicit early exit for the common path, where the user has not performed
   // any of the trigger actions.
-  if (pending_triggers_.size() == 0)
+  if (pending_triggers_.size() == 0) {
     return;
+  }
 
   // Reduce the NTPs to open count for all the active triggers.
   for (auto& area_trigger : pending_triggers_) {
     auto& trigger = area_trigger.second;
-    if (trigger.remaining_ntps_to_open > 0)
+    if (trigger.remaining_ntps_to_open > 0) {
       trigger.remaining_ntps_to_open--;
+    }
   }
 
   // Cleanup any triggers which are no longer relevant. This will be every
@@ -269,19 +270,22 @@ void TrustSafetySentimentService::OpenedNewTabPage() {
                 });
 
   // This may have emptied the set of pending triggers.
-  if (pending_triggers_.size() == 0)
+  if (pending_triggers_.size() == 0) {
     return;
+  }
 
   // A primary OTR profile (incognito) existing will prevent any surveys from
   // being shown.
-  if (profile_->HasPrimaryOTRProfile())
+  if (profile_->HasPrimaryOTRProfile()) {
     return;
+  }
 
   // Check if any of the triggers make the user not yet eligible to receive a
   // survey.
   for (const auto& area_trigger : pending_triggers_) {
-    if (ShouldBlockSurvey(area_trigger.second))
+    if (ShouldBlockSurvey(area_trigger.second)) {
       return;
+    }
   }
 
   // Choose a trigger at random to avoid any order biasing.
@@ -316,8 +320,9 @@ void TrustSafetySentimentService::InteractedWithPrivacySettings(
   // simpler. As interactions with settings (visiting password manager and using
   // the privacy card) can occur independently, there is also little risk of
   // starving one interaction.
-  if (settings_watcher_)
+  if (settings_watcher_) {
     return;
+  }
 
   settings_watcher_ = std::make_unique<SettingsWatcher>(
       web_contents,
@@ -379,8 +384,9 @@ void TrustSafetySentimentService::SavedPassword() {
 
 void TrustSafetySentimentService::OpenedPasswordManager(
     content::WebContents* web_contents) {
-  if (settings_watcher_)
+  if (settings_watcher_) {
     return;
+  }
 
   std::map<std::string, bool> product_specific_data = {
       {"Saved password", false}};
@@ -430,11 +436,6 @@ void TrustSafetySentimentService::FinishedPrivacyGuide() {
   TriggerOccurred(FeatureArea::kPrivacyGuide, {});
 }
 
-void TrustSafetySentimentService::InteractedWithPrivacySandbox4(
-    FeatureArea feature_area) {
-  TriggerOccurred(feature_area, {});
-}
-
 void TrustSafetySentimentService::InteractedWithSafeBrowsingInterstitial(
     bool did_proceed,
     safe_browsing::SBThreatType threat_type) {
@@ -482,7 +483,7 @@ void TrustSafetySentimentService::InteractedWithDownloadWarningUI(
       product_specific_data["Is download prompt UI"] = true;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   switch (action) {
     case DownloadItemWarningData::WarningAction::PROCEED:
@@ -492,7 +493,7 @@ void TrustSafetySentimentService::InteractedWithDownloadWarningUI(
       product_specific_data["User proceeded past warning"] = false;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   TriggerOccurred(FeatureArea::kDownloadWarningUI, product_specific_data);
 }
@@ -535,8 +536,9 @@ void TrustSafetySentimentService::OnOffTheRecordProfileCreated(
   // Only interested in the primary OTR profile i.e. the one used for incognito
   // browsing. Non-primary OTR profiles are often used as implementation details
   // of other features, and are not inherintly relevant to Trust & Safety.
-  if (off_the_record->GetOTRProfileID() == Profile::OTRProfileID::PrimaryID())
+  if (off_the_record->GetOTRProfileID() == Profile::OTRProfileID::PrimaryID()) {
     observed_profiles_.AddObservation(off_the_record);
+  }
 }
 
 void TrustSafetySentimentService::OnProfileWillBeDestroyed(Profile* profile) {
@@ -604,10 +606,11 @@ void TrustSafetySentimentService::SettingsWatcher::TimerComplete() {
   const bool stayed_on_settings =
       web_contents_ &&
       web_contents_->GetVisibility() == content::Visibility::VISIBLE &&
-      web_contents_->GetLastCommittedURL().host_piece() ==
+      web_contents_->GetLastCommittedURL().host() ==
           chrome::kChromeUISettingsHost;
-  if (stayed_on_settings)
+  if (stayed_on_settings) {
     std::move(success_callback_).Run();
+  }
 
   std::move(complete_callback_).Run();
 }
@@ -630,8 +633,9 @@ void TrustSafetySentimentService::TriggerOccurred(
   // Log histogram that verifies infrastructure works as intended.
   base::UmaHistogramEnumeration(
       "Feedback.TrustSafetySentiment.CallTriggerOccurred", feature_area);
-  if (!ProbabilityCheck(feature_area))
+  if (!ProbabilityCheck(feature_area)) {
     return;
+  }
 
   base::UmaHistogramEnumeration("Feedback.TrustSafetySentiment.TriggerOccurred",
                                 feature_area);
@@ -721,17 +725,12 @@ bool TrustSafetySentimentService::VersionCheck(FeatureArea feature_area) {
       return isV2 == true;
     // Both Versions
     case (FeatureArea::kTrustedSurface):
-    case (FeatureArea::kPrivacySandbox4ConsentAccept):
-    case (FeatureArea::kPrivacySandbox4ConsentDecline):
-    case (FeatureArea::kPrivacySandbox4NoticeOk):
-    case (FeatureArea::kPrivacySandbox4NoticeSettings):
       return true;
     // None
     case (FeatureArea::kIneligible):
       return false;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -756,14 +755,6 @@ std::string TrustSafetySentimentService::GetHatsTriggerForFeatureArea(
         return kHatsSurveyTriggerTrustSafetyV2PrivacyGuide;
       case (FeatureArea::kControlGroup):
         return kHatsSurveyTriggerTrustSafetyV2ControlGroup;
-      case (FeatureArea::kPrivacySandbox4ConsentAccept):
-        return kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4ConsentAccept;
-      case (FeatureArea::kPrivacySandbox4ConsentDecline):
-        return kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4ConsentDecline;
-      case (FeatureArea::kPrivacySandbox4NoticeOk):
-        return kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4NoticeOk;
-      case (FeatureArea::kPrivacySandbox4NoticeSettings):
-        return kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4NoticeSettings;
       case (FeatureArea::kSafeBrowsingInterstitial):
         return kHatsSurveyTriggerTrustSafetyV2SafeBrowsingInterstitial;
       case (FeatureArea::kDownloadWarningUI):
@@ -771,8 +762,7 @@ std::string TrustSafetySentimentService::GetHatsTriggerForFeatureArea(
       case (FeatureArea::kPasswordProtectionUI):
         return kHatsSurveyTriggerTrustSafetyV2PasswordProtectionUI;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return "";
+        NOTREACHED();
     }
   }
   switch (feature_area) {
@@ -782,17 +772,8 @@ std::string TrustSafetySentimentService::GetHatsTriggerForFeatureArea(
       return kHatsSurveyTriggerTrustSafetyTrustedSurface;
     case (FeatureArea::kTransactions):
       return kHatsSurveyTriggerTrustSafetyTransactions;
-    case (FeatureArea::kPrivacySandbox4ConsentAccept):
-      return kHatsSurveyTriggerTrustSafetyPrivacySandbox4ConsentAccept;
-    case (FeatureArea::kPrivacySandbox4ConsentDecline):
-      return kHatsSurveyTriggerTrustSafetyPrivacySandbox4ConsentDecline;
-    case (FeatureArea::kPrivacySandbox4NoticeOk):
-      return kHatsSurveyTriggerTrustSafetyPrivacySandbox4NoticeOk;
-    case (FeatureArea::kPrivacySandbox4NoticeSettings):
-      return kHatsSurveyTriggerTrustSafetyPrivacySandbox4NoticeSettings;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -838,26 +819,6 @@ bool TrustSafetySentimentService::ProbabilityCheck(FeatureArea feature_area) {
         return base::RandDouble() <
                features::kTrustSafetySentimentSurveyV2ControlGroupProbability
                    .Get();
-      case (FeatureArea::kPrivacySandbox4ConsentAccept):
-        return base::RandDouble() <
-               features::
-                   kTrustSafetySentimentSurveyV2PrivacySandbox4ConsentAcceptProbability
-                       .Get();
-      case (FeatureArea::kPrivacySandbox4ConsentDecline):
-        return base::RandDouble() <
-               features::
-                   kTrustSafetySentimentSurveyV2PrivacySandbox4ConsentDeclineProbability
-                       .Get();
-      case (FeatureArea::kPrivacySandbox4NoticeOk):
-        return base::RandDouble() <
-               features::
-                   kTrustSafetySentimentSurveyV2PrivacySandbox4NoticeOkProbability
-                       .Get();
-      case (FeatureArea::kPrivacySandbox4NoticeSettings):
-        return base::RandDouble() <
-               features::
-                   kTrustSafetySentimentSurveyV2PrivacySandbox4NoticeSettingsProbability
-                       .Get();
       case (FeatureArea::kSafeBrowsingInterstitial):
         return base::RandDouble() <
                features::
@@ -874,8 +835,7 @@ bool TrustSafetySentimentService::ProbabilityCheck(FeatureArea feature_area) {
                    kTrustSafetySentimentSurveyV2PasswordProtectionUIProbability
                        .Get();
       default:
-        NOTREACHED_IN_MIGRATION();
-        return false;
+        NOTREACHED();
     }
   }
 
@@ -891,28 +851,7 @@ bool TrustSafetySentimentService::ProbabilityCheck(FeatureArea feature_area) {
     case (FeatureArea::kTransactions):
       return base::RandDouble() <
              features::kTrustSafetySentimentSurveyTransactionsProbability.Get();
-    case (FeatureArea::kPrivacySandbox4ConsentAccept):
-      return base::RandDouble() <
-             features::
-                 kTrustSafetySentimentSurveyPrivacySandbox4ConsentAcceptProbability
-                     .Get();
-    case (FeatureArea::kPrivacySandbox4ConsentDecline):
-      return base::RandDouble() <
-             features::
-                 kTrustSafetySentimentSurveyPrivacySandbox4ConsentDeclineProbability
-                     .Get();
-    case (FeatureArea::kPrivacySandbox4NoticeOk):
-      return base::RandDouble() <
-             features::
-                 kTrustSafetySentimentSurveyPrivacySandbox4NoticeOkProbability
-                     .Get();
-    case (FeatureArea::kPrivacySandbox4NoticeSettings):
-      return base::RandDouble() <
-             features::
-                 kTrustSafetySentimentSurveyPrivacySandbox4NoticeSettingsProbability
-                     .Get();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }

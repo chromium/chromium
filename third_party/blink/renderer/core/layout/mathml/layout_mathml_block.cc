@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/mathml/layout_mathml_block.h"
 
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/mathml/mathml_element.h"
 #include "third_party/blink/renderer/core/mathml/mathml_under_over_element.h"
@@ -28,9 +29,11 @@ bool LayoutMathMLBlock::CanHaveChildren() const {
   return LayoutBlock::CanHaveChildren();
 }
 
-void LayoutMathMLBlock::StyleDidChange(StyleDifference diff,
-                                       const ComputedStyle* old_style) {
-  LayoutBlock::StyleDidChange(diff, old_style);
+void LayoutMathMLBlock::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
+  LayoutBlock::StyleDidChange(diff, old_style, style_change_context);
   if (!old_style)
     return;
   if (IsA<MathMLUnderOverElement>(GetNode()) &&

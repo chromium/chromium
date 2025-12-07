@@ -1,0 +1,20 @@
+Name: XR SceneCore
+Short Name: scenecore
+URL: https://dl.google.com/dl/android/maven2/androidx/xr/scenecore/scenecore/1.0.0-alpha05/scenecore-1.0.0-alpha05.aar
+Version: 1.0.0-alpha05
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+Scene building libraries for the androidx.xr namespace.
+
+See also: https://developer.android.com/jetpack/androidx/releases/xr-scenecore#1.0.0-alpha05
+
+
+Local Modifications:
+No modifications.

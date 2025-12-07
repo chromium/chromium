@@ -4,20 +4,19 @@
 
 #include "cc/raster/staging_buffer_pool.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "cc/base/container_util.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
-#include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -117,9 +116,9 @@ StagingBufferPool::StagingBufferPool(
       this, "cc::StagingBufferPool",
       base::SingleThreadTaskRunner::GetCurrentDefault());
 
-  memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
-      FROM_HERE, base::BindRepeating(&StagingBufferPool::OnMemoryPressure,
-                                     weak_ptr_factory_.GetWeakPtr()));
+  memory_pressure_listener_registration_ =
+      std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
+          FROM_HERE, base::MemoryPressureListenerTag::kStagingBufferPool, this);
 
   reduce_memory_usage_callback_ = base::BindRepeating(
       &StagingBufferPool::ReduceMemoryUsage, weak_ptr_factory_.GetWeakPtr());
@@ -258,7 +257,7 @@ std::unique_ptr<StagingBuffer> StagingBufferPool::AcquireStagingBuffer(
 
   // Find a staging buffer that allows us to perform partial raster if possible.
   if (use_partial_raster_ && previous_content_id) {
-    StagingBufferDeque::iterator it = base::ranges::find(
+    StagingBufferDeque::iterator it = std::ranges::find(
         free_buffers_, previous_content_id, &StagingBuffer::content_id);
     if (it != free_buffers_.end()) {
       staging_buffer = std::move(*it);
@@ -269,7 +268,7 @@ std::unique_ptr<StagingBuffer> StagingBufferPool::AcquireStagingBuffer(
 
   // Find staging buffer of correct size and format.
   if (!staging_buffer) {
-    StagingBufferDeque::iterator it = base::ranges::find_if(
+    StagingBufferDeque::iterator it = std::ranges::find_if(
         free_buffers_,
         [&size, format](const std::unique_ptr<StagingBuffer>& buffer) {
           return buffer->size == size && buffer->format == format;
@@ -392,14 +391,13 @@ void StagingBufferPool::ReleaseBuffersNotUsedSince(base::TimeTicks time) {
   }
 }
 
-void StagingBufferPool::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel level) {
+void StagingBufferPool::OnMemoryPressure(base::MemoryPressureLevel level) {
   base::AutoLock lock(lock_);
   switch (level) {
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
+    case base::MEMORY_PRESSURE_LEVEL_NONE:
+    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
       break;
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
+    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
       // Release all buffers, regardless of how recently they were used.
       ReleaseBuffersNotUsedSince(base::TimeTicks() + base::TimeDelta::Max());
       break;

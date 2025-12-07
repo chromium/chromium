@@ -31,6 +31,12 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="asm.js instantiation failed"/>
 </enum>
 
+<enum name="GarbageCollectionPriority">
+  <int value="0" label="BestEffort"/>
+  <int value="1" label="UserBlocking"/>
+  <int value="2" label="UserVisible"/>
+</enum>
+
 <enum name="GarbageCollectionReason">
   <int value="0" label="kUnknown"/>
   <int value="1" label="kAllocationFailure"/>
@@ -58,6 +64,11 @@ chromium-metrics-reviews@google.com.
   <int value="23" label="kGlobalAllocationLimit"/>
   <int value="24" label="kMeasureMemory"/>
   <int value="25" label="kBackgroundAllocationFailure"/>
+  <int value="26" label="kFinalizeConcurrentMinorMS"/>
+  <int value="27" label="kCppHeapAllocationFailure"/>
+  <int value="28" label="kFrozen"/>
+  <int value="29" label="kIdleContextDisposal"/>
+  <int value="30" label="kFinalizeMinorMSForMajorGC"/>
 </enum>
 
 <enum name="LiftoffBailoutReason">

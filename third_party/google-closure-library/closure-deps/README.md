@@ -1,4 +1,4 @@
-# Closure Dependencies [![Build Status](https://travis-ci.org/google/closure-library.svg?branch=master)](https://travis-ci.org/google/closure-library)
+# Closure Dependencies
 
 This is a separate utility node package for Closure Library related to
 dependency management with Closure files.

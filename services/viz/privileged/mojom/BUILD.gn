@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ozone.gni")
 import("//components/viz/common/debugger/viz_debugger.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
@@ -11,6 +12,9 @@ mojom("mojom") {
   enabled_features = []
   if (use_viz_debugger) {
     enabled_features += [ "use_viz_debugger" ]
+  }
+  if (use_ozone) {
+    enabled_features += [ "use_ozone" ]
   }
 
   public_deps = [
@@ -31,7 +35,7 @@ source_set("unit_tests") {
 
   deps = [
     "//base/test:test_support",
-    "//components/viz/common:common",
+    "//components/viz/common",
     "//media/capture/mojom:video_capture",
     "//services/service_manager/public/cpp",
     "//services/viz/privileged/mojom/compositing",

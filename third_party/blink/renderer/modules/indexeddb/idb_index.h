@@ -39,6 +39,7 @@
 namespace blink {
 
 class ExceptionState;
+class IDBGetAllOptions;
 class IDBObjectStore;
 
 class IDBIndex final : public ScriptWrappable {
@@ -67,27 +68,32 @@ class IDBIndex final : public ScriptWrappable {
 
   IDBRequest* openCursor(ScriptState*,
                          const ScriptValue& key,
-                         const String& direction,
+                         const V8IDBCursorDirection& direction,
                          ExceptionState&);
   IDBRequest* openKeyCursor(ScriptState*,
                             const ScriptValue& range,
-                            const String& direction,
+                            const V8IDBCursorDirection& direction,
                             ExceptionState&);
   IDBRequest* count(ScriptState*, const ScriptValue& range, ExceptionState&);
   IDBRequest* get(ScriptState*, const ScriptValue& key, ExceptionState&);
-  IDBRequest* getAll(ScriptState*, const ScriptValue& range, ExceptionState&);
   IDBRequest* getAll(ScriptState*,
-                     const ScriptValue& range,
+                     const ScriptValue& range_or_options,
+                     ExceptionState&);
+  IDBRequest* getAll(ScriptState*,
+                     const ScriptValue& range_or_options,
                      uint32_t max_count,
                      ExceptionState&);
   IDBRequest* getKey(ScriptState*, const ScriptValue& key, ExceptionState&);
   IDBRequest* getAllKeys(ScriptState*,
-                         const ScriptValue& range,
+                         const ScriptValue& range_or_options,
                          ExceptionState&);
   IDBRequest* getAllKeys(ScriptState*,
-                         const ScriptValue& range,
+                         const ScriptValue& range_or_options,
                          uint32_t max_count,
                          ExceptionState&);
+  IDBRequest* getAllRecords(ScriptState*,
+                            const IDBGetAllOptions* options,
+                            ExceptionState&);
 
   void MarkDeleted() {
     DCHECK(transaction_->IsVersionChange())
@@ -128,12 +134,11 @@ class IDBIndex final : public ScriptWrappable {
                           ExceptionState&,
                           bool key_only,
                           IDBRequest::AsyncTraceState metrics);
-  IDBRequest* GetAllInternal(ScriptState*,
-                             const ScriptValue& range,
-                             uint32_t max_count,
-                             ExceptionState&,
-                             bool key_only,
-                             IDBRequest::AsyncTraceState metrics);
+  IDBRequest* CreateGetAllRequest(IDBRequest::TypeForMetrics,
+                                  ScriptState*,
+                                  const IDBGetAllOptions& options,
+                                  mojom::blink::IDBGetAllResultType result_type,
+                                  ExceptionState&);
 
   scoped_refptr<IDBIndexMetadata> metadata_;
   Member<IDBObjectStore> object_store_;

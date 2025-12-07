@@ -36,7 +36,23 @@ enum class SchedulerClientType {
   kReadingList = 4,
   // Feature guide specific notifications. (Deprecated)
   kDeprecatedFeatureGuide = 5,
-  kMaxValue = kDeprecatedFeatureGuide
+  // Clank tips notifications feature.
+  kTips = 6,
+  kMaxValue = kTips
+};
+
+// The Chrome feature correlating to each tip notification.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: (
+//   org.chromium.chrome.browser.notifications.scheduler)
+enum class TipsNotificationsFeatureType {
+  kEnhancedSafeBrowsing = 0,
+  kQuickDelete = 1,
+  kGoogleLens = 2,
+  kBottomOmnibox = 3,
+  kMaxValue = kBottomOmnibox
 };
 
 // The type of user feedback from a displayed notification.
@@ -79,6 +95,8 @@ enum class ImpressionResult {
 // Defines user actions type. Used in metrics, can only insert enum values, need
 // to sync with histogram enum NotificationSchedulerUserActionType in
 // enums.xml. A Java counterpart will be generated for this enum.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 // GENERATED_JAVA_ENUM_PACKAGE: (
 //   org.chromium.chrome.browser.notifications.scheduler)
 enum class UserActionType {

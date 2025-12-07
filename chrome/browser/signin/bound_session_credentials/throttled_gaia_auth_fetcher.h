@@ -39,7 +39,7 @@ class ThrottledGaiaAuthFetcher : public GaiaAuthFetcher {
   void CreateAndStartGaiaFetcher(
       const std::string& body,
       const std::string& body_content_type,
-      const std::string& headers,
+      const net::HttpRequestHeaders& headers,
       const GURL& gaia_gurl,
       network::mojom::CredentialsMode credentials_mode,
       const net::NetworkTrafficAnnotationTag& traffic_annotation) override;
@@ -48,7 +48,7 @@ class ThrottledGaiaAuthFetcher : public GaiaAuthFetcher {
   void OnGaiaFetcherResumedOrCancelled(
       const std::string& body,
       const std::string& body_content_type,
-      const std::string& headers,
+      const net::HttpRequestHeaders& headers,
       const GURL& gaia_gurl,
       network::mojom::CredentialsMode credentials_mode,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,

@@ -1,7 +1,4 @@
-monorail: {
-  component: "Platform>Apps>Foundation>Stores"
-}
 os: CHROME_OS
-buganizer_public: {
-  component_id: 1456760
+buganizer: {
+  component_id: 1389907
 }

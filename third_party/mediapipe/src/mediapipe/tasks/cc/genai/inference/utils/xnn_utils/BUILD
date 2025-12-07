@@ -34,6 +34,7 @@ cc_library(
         "//mediapipe/framework/port:logging",
         "//mediapipe/framework/port:ret_check",
         "//mediapipe/framework/port:status",
+        "//mediapipe/tasks/cc/genai/inference/common:mdspan",
         "@XNNPACK",
         "@com_google_absl//absl/container:flat_hash_map",
         "@com_google_absl//absl/log:absl_check",
@@ -65,6 +66,7 @@ cc_library(
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
+        "@pthreadpool",
     ],
 )
 
@@ -121,6 +123,7 @@ cc_library(
 )
 
 # TODO: move unittest from experimental as well.
+
 cc_library(
     name = "llm_weights",
     srcs = ["llm_weights.cc"],
@@ -138,11 +141,14 @@ cc_library(
         "//mediapipe/framework/port:status",
         "//mediapipe/tasks/cc/genai/inference/proto:llm_params_cc_proto",
         "//mediapipe/tasks/cc/genai/inference/proto:transformer_params_cc_proto",
+        "@com_google_absl//absl/base:core_headers",
         "@com_google_absl//absl/container:flat_hash_map",
         "@com_google_absl//absl/log:absl_check",
         "@com_google_absl//absl/log:absl_log",
         "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
+        "@org_tensorflow//tensorflow/compiler/mlir/lite/schema:schema_fbs",
+        "@org_tensorflow//tensorflow/lite:model_builder",
     ],
 )
 
@@ -159,6 +165,7 @@ cc_library(
         "//mediapipe/framework/port:logging",
         "//mediapipe/framework/port:ret_check",
         "//mediapipe/framework/port:status",
+        "//mediapipe/tasks/cc/genai/inference/common:mdspan",
         "@XNNPACK",
         "@com_google_absl//absl/base:core_headers",
         "@com_google_absl//absl/base:nullability",
@@ -175,6 +182,10 @@ cc_library(
     name = "llm_builder_factory",
     srcs = ["llm_builder_factory.cc"],
     hdrs = ["llm_builder_factory.h"],
+    defines = select({
+        "//mediapipe/tasks:build_for_3p": ["BUILD_FOR_3P"],
+        "//conditions:default": [],
+    }),
     deps = [
         ":falcon",
         ":graph_builder",
@@ -188,7 +199,11 @@ cc_library(
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
-    ],
+    ] + select({
+        "//mediapipe/tasks:build_for_3p": [],
+        "//conditions:default": [
+        ],
+    }),
 )
 
 cc_library(
@@ -225,6 +240,7 @@ cc_test(
         ":tensor",
         "//mediapipe/framework/port:benchmark",
         "//mediapipe/framework/port:gtest_main",
+        "//mediapipe/tasks/cc/genai/inference/common:mdspan",
         "//mediapipe/tasks/cc/genai/inference/proto:llm_params_cc_proto",
         "//mediapipe/tasks/cc/genai/inference/utils/llm_utils:well_known_models",
         "@XNNPACK",
@@ -234,6 +250,7 @@ cc_test(
         "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/strings:string_view",
+        "@com_google_absl//absl/types:span",
     ],
 )
 
@@ -257,8 +274,10 @@ cc_library(
         "//mediapipe/framework/port:ret_check",
         "//mediapipe/framework/port:status",
         "//mediapipe/tasks/cc/genai/inference/utils/llm_utils:memory_mapped_file",
+        "//mediapipe/tasks/cc/genai/inference/utils/llm_utils:scoped_file",
         "@XNNPACK",
         "@com_google_absl//absl/container:flat_hash_map",
+        "@com_google_absl//absl/functional:overload",
         "@com_google_absl//absl/log:absl_check",
         "@com_google_absl//absl/log:absl_log",
         "@com_google_absl//absl/status",
@@ -279,9 +298,9 @@ cc_library(
         ":tensor",
         "//mediapipe/framework/port:ret_check",
         "//mediapipe/framework/port:status",
+        "//mediapipe/tasks/cc/genai/inference/common:mdspan",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/status:statusor",
-        "@com_google_absl//absl/strings",
     ],
 )
 

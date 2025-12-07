@@ -5,20 +5,19 @@
 #include "extensions/browser/api/system_display/display_info_provider.h"
 
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "extensions/browser/api/extensions_api_client.h"
-#include "extensions/browser/extensions_browser_client.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
 namespace {
-
-// Created on demand and will leak when the process exits.
-DisplayInfoProvider* g_display_info_provider = nullptr;
 
 // Converts Rotation enum to integer.
 int RotationToDegrees(display::Display::Rotation rotation) {
@@ -37,6 +36,9 @@ int RotationToDegrees(display::Display::Rotation rotation) {
 
 }  // namespace
 
+// static
+DisplayInfoProvider* DisplayInfoProvider::g_display_info_provider = nullptr;
+
 DisplayInfoProvider::DisplayInfoProvider(display::Screen* screen)
     : provided_screen_(screen) {
   // Do not use/call on the screen object in this constructor yet because a
@@ -44,16 +46,6 @@ DisplayInfoProvider::DisplayInfoProvider(display::Screen* screen)
 }
 
 DisplayInfoProvider::~DisplayInfoProvider() = default;
-
-// static
-DisplayInfoProvider* DisplayInfoProvider::Get() {
-  if (!g_display_info_provider) {
-    // Let the DisplayInfoProvider leak.
-    g_display_info_provider =
-        ExtensionsAPIClient::Get()->CreateDisplayInfoProvider().release();
-  }
-  return g_display_info_provider;
-}
 
 // static
 void DisplayInfoProvider::InitializeForTesting(
@@ -106,12 +98,12 @@ void DisplayInfoProvider::SetDisplayProperties(
     const std::string& display_id,
     const api::system_display::DisplayProperties& properties,
     ErrorCallback callback) {
-  NOTREACHED_IN_MIGRATION() << "SetDisplayProperties not implemented";
+  NOTREACHED() << "SetDisplayProperties not implemented";
 }
 
 void DisplayInfoProvider::SetDisplayLayout(const DisplayLayoutList& layouts,
                                            ErrorCallback callback) {
-  NOTREACHED_IN_MIGRATION() << "SetDisplayLayout not implemented";
+  NOTREACHED() << "SetDisplayLayout not implemented";
 }
 
 void DisplayInfoProvider::EnableUnifiedDesktop(bool enable) {}
@@ -135,7 +127,7 @@ void DisplayInfoProvider::GetAllDisplaysInfo(
     bool /* single_unified*/,
     base::OnceCallback<void(DisplayUnitInfoList result)> callback) {
   const display::Screen* screen =
-      provided_screen_ ? provided_screen_.get() : display::Screen::GetScreen();
+      provided_screen_ ? provided_screen_.get() : display::Screen::Get();
   int64_t primary_id = screen->GetPrimaryDisplay().id();
   std::vector<display::Display> displays = screen->GetAllDisplays();
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -148,9 +140,7 @@ void DisplayInfoProvider::GetAllDisplaysInfo(
 
 void DisplayInfoProvider::GetDisplayLayout(
     base::OnceCallback<void(DisplayLayoutList result)> callback) {
-  NOTREACHED_IN_MIGRATION();  // Implemented on Chrome OS only in override.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), DisplayLayoutList()));
+  NOTREACHED();  // Implemented on Chrome OS only in override.
 }
 
 void DisplayInfoProvider::StartObserving() {
@@ -181,45 +171,27 @@ bool DisplayInfoProvider::OverscanCalibrationComplete(const std::string& id) {
 
 void DisplayInfoProvider::ShowNativeTouchCalibration(const std::string& id,
                                                      ErrorCallback callback) {
-  NOTREACHED_IN_MIGRATION();  // Implemented on Chrome OS only in override.
+  NOTREACHED();  // Implemented on Chrome OS only in override.
 }
 
 bool DisplayInfoProvider::StartCustomTouchCalibration(const std::string& id) {
-  NOTREACHED_IN_MIGRATION();  // Implemented on Chrome OS only in override.
-  return false;
+  NOTREACHED();  // Implemented on Chrome OS only in override.
 }
 
 bool DisplayInfoProvider::CompleteCustomTouchCalibration(
     const api::system_display::TouchCalibrationPairQuad& pairs,
     const api::system_display::Bounds& bounds) {
-  NOTREACHED_IN_MIGRATION();  // Implemented on Chrome OS only in override.
-  return false;
+  NOTREACHED();  // Implemented on Chrome OS only in override.
 }
 
 bool DisplayInfoProvider::ClearTouchCalibration(const std::string& id) {
-  NOTREACHED_IN_MIGRATION();  // Implemented on Chrome OS only in override.
-  return false;
+  NOTREACHED();  // Implemented on Chrome OS only in override.
 }
 
 void DisplayInfoProvider::SetMirrorMode(
     const api::system_display::MirrorModeInfo& info,
     ErrorCallback callback) {
-  NOTREACHED_IN_MIGRATION();  // Implemented on Chrome OS only in override.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), "Not supported"));
-}
-
-void DisplayInfoProvider::DispatchOnDisplayChangedEvent() {
-  // This function will dispatch the OnDisplayChangedEvent to both on-the-record
-  // and off-the-record profiles. This allows extensions running in incognito
-  // to be notified mirroring is enabled / disabled, which allows the Virtual
-  // keyboard on ChromeOS to correctly disable key highlighting when typing
-  // passwords on the login page (crbug/824656)
-  constexpr bool dispatch_to_off_the_record_profiles = true;
-  ExtensionsBrowserClient::Get()->BroadcastEventToRenderers(
-      events::SYSTEM_DISPLAY_ON_DISPLAY_CHANGED,
-      extensions::api::system_display::OnDisplayChanged::kEventName,
-      base::Value::List(), dispatch_to_off_the_record_profiles);
+  NOTREACHED();  // Implemented on Chrome OS only in override.
 }
 
 void DisplayInfoProvider::UpdateDisplayUnitInfoForPlatform(

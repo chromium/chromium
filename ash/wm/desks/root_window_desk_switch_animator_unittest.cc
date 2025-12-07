@@ -14,7 +14,7 @@
 #include "ash/wm/desks/root_window_desk_switch_animator_test_api.h"
 #include "base/run_loop.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
 
@@ -211,8 +211,8 @@ TEST_F(RootWindowDeskSwitchAnimatorTest, InterruptQuickAnimation) {
 
   // Replacing needs to be done while a current animation is underway, otherwise
   // it will have no effect.
-  ui::ScopedAnimationDurationScaleMode non_zero(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   animator()->StartAnimation();
   // Replacing with an animation going back to desk index 1. No new screenshot
@@ -282,8 +282,8 @@ TEST_F(RootWindowDeskSwitchAnimatorTest,
 
   // Replacing needs to be done while a current animation is underway, otherwise
   // it will have no effect.
-  ui::ScopedAnimationDurationScaleMode non_zero(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   animator()->StartAnimation();
   // Replacing with an animation going back to desk index 1. No new screenshot
@@ -316,8 +316,8 @@ TEST_F(RootWindowDeskSwitchAnimatorTest, DISABLED_ChainedAnimationMovingLeft) {
 
   // Replacing needs to be done while a current animation is underway, otherwise
   // it will have no effect.
-  ui::ScopedAnimationDurationScaleMode non_zero(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Tests that the animation layer originally has 2 children.
   auto* animation_layer = test_api()->GetAnimationLayer();
@@ -359,8 +359,8 @@ TEST_F(RootWindowDeskSwitchAnimatorTest, DISABLED_ChainedAnimationMovingRight) {
 
   // Replacing needs to be done while a current animation is underway, otherwise
   // it will have no effect.
-  ui::ScopedAnimationDurationScaleMode non_zero(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   animator()->StartAnimation();
 
@@ -398,8 +398,8 @@ TEST_F(RootWindowDeskSwitchAnimatorTest, DISABLED_MultipleReplacements) {
 
   // Replacing needs to be done while a current animation is underway, otherwise
   // it will have no effect.
-  ui::ScopedAnimationDurationScaleMode non_zero(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   animator()->StartAnimation();
 

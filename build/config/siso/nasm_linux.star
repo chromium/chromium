@@ -6,19 +6,11 @@
 
 load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
-load("./config.star", "config")
-load("./nasm_scandeps.star", "nasm_scandeps")
 
 def __filegroups(ctx):
     return {}
 
-def __nasm(ctx, cmd):
-    inputs = nasm_scandeps.scandeps(ctx, cmd)
-    ctx.actions.fix(inputs = cmd.inputs + inputs)
-
-__handlers = {
-    "nasm": __nasm,
-}
+__handlers = {}
 
 def __step_config(ctx, step_config):
     remote_run = True  # Turn this to False when you do file access trace.
@@ -28,17 +20,6 @@ def __step_config(ctx, step_config):
         rules.append({
             "name": path.join("nasm", toolchain),
             "command_prefix": "python3 ../../build/gn_run_binary.py " + nasm_path,
-            "inputs": [
-                "build/gn_run_binary.py",
-                ctx.fs.canonpath("./" + nasm_path),
-            ],
-            "indirect_inputs": {
-                "includes": ["*.asm"],
-            },
-            "exclude_input_patterns": [
-                "*.stamp",
-            ],
-            "handler": "nasm",
             "remote": remote_run,
             # chromeos generates default.profraw?
             "ignore_extra_output_pattern": ".*default.profraw",

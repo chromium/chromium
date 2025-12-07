@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 #include "services/tracing/public/cpp/perfetto/traced_value_proto_writer.h"
 
 #include <memory>
 #include <stack>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/hash/hash.h"
 #include "base/json/string_escape.h"
 #include "base/trace_event/trace_event.h"
@@ -27,22 +24,6 @@ using TracedValue = base::trace_event::TracedValue;
 using TraceEvent = base::trace_event::TraceEvent;
 
 namespace tracing {
-
-PerfettoProtoAppender::PerfettoProtoAppender(DebugAnnotation* proto)
-    : annotation_proto_(proto) {}
-
-PerfettoProtoAppender::~PerfettoProtoAppender() = default;
-
-void PerfettoProtoAppender::AddBuffer(uint8_t* begin, uint8_t* end) {
-  ranges_.emplace_back();
-  ranges_.back().begin = begin;
-  ranges_.back().end = end;
-}
-
-size_t PerfettoProtoAppender::Finalize(uint32_t field_id) {
-  return annotation_proto_->AppendScatteredBytes(field_id, ranges_.data(),
-                                                 ranges_.size());
-}
 
 namespace {
 
@@ -214,23 +195,15 @@ class ProtoWriter final : public TracedValue::Writer {
     uint32_t full_size = Finalize();
 
     for (auto& slice : buffer_.slices()) {
-      appender->AddBuffer(slice.start(),
-                          slice.start() + slice.size() - slice.unused_bytes());
+      appender->AddBuffer(
+          slice.start(),
+          UNSAFE_TODO(slice.start() + slice.size() - slice.unused_bytes()));
     }
 
     size_t appended_size =
         appender->Finalize(DebugAnnotation::kNestedValueFieldNumber);
     DCHECK_EQ(full_size, appended_size);
     return true;
-  }
-
-  void EstimateTraceMemoryOverhead(
-      base::trace_event::TraceEventMemoryOverhead* overhead) override {
-    overhead->Add(base::trace_event::TraceEventMemoryOverhead::kTracedValue,
-                  /* allocated size */
-                  buffer_.GetTotalSize(),
-                  /* resident size */
-                  buffer_.GetTotalSize());
   }
 
  private:

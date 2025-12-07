@@ -6,7 +6,6 @@
 #define ASH_PUBLIC_ASH_INTERFACES_H_
 
 #include "ash/ash_export.h"
-#include "ash/public/mojom/tray_action.mojom.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
@@ -17,8 +16,6 @@ namespace ash {
 ASH_EXPORT void BindCrosDisplayConfigController(
     mojo::PendingReceiver<crosapi::mojom::CrosDisplayConfigController>
         receiver);
-ASH_EXPORT
-void BindTrayAction(mojo::PendingReceiver<mojom::TrayAction> receiver);
 
 }  // namespace ash
 

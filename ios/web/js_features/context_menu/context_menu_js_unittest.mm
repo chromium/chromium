@@ -20,6 +20,7 @@
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/test/fakes/crw_fake_script_message_handler.h"
 #import "net/base/apple/url_conversions.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "url/gurl.h"
@@ -31,11 +32,14 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
 
-// Request id used for __gCrWeb.findElementAtPoint call.
+// Request id used for `findElementAtPoint` call.
 const char kRequestId[] = "UNIQUE_IDENTIFIER";
 
 // The base url for loaded web pages.
 const char kTestUrl[] = "https://chromium.test/";
+
+// The path pointing to a sample image.
+const char kImagePath[] = "/chromium_logo.png";
 
 // A point in the web view's coordinate space on the image returned by
 // `GetHtmlForImage()`.
@@ -181,8 +185,8 @@ NSString* GetHtmlForImage() {
 
 // Returns html for an image styled to fill the width and top 25% of its
 // container.
-NSString* ImageHtmlWithSource(const char* source) {
-  return GetHtmlForImage(source, kImageAlt, /*title=*/nullptr,
+NSString* ImageHtmlWithSource(std::string source) {
+  return GetHtmlForImage(source.c_str(), kImageAlt, /*title=*/nullptr,
                          /*style=*/nullptr);
 }
 
@@ -190,8 +194,8 @@ NSString* ImageHtmlWithSource(const char* source) {
 
 namespace web {
 
-// Test fixture to test __gCrWeb.findElementAtPoint function defined in
-// context_menu.js.
+// Test fixture to test `findElementAtPoint` function defined in
+// main_frame_context_menu.ts.
 class ContextMenuJsFindElementAtPointTest : public web::JavascriptTest {
  public:
   ContextMenuJsFindElementAtPointTest()
@@ -205,9 +209,12 @@ class ContextMenuJsFindElementAtPointTest : public web::JavascriptTest {
   void SetUp() override {
     web::JavascriptTest::SetUp();
 
+    test_server_.ServeFilesFromSourceDirectory(
+        base::FilePath("ios/testing/data/http_server_files/"));
+    ASSERT_TRUE(test_server_.Start());
+
     AddGCrWebScript();
     AddCommonScript();
-    AddMessageScript();
     AddUserScript(@"all_frames_context_menu");
     AddUserScript(@"main_frame_context_menu");
   }
@@ -225,8 +232,8 @@ class ContextMenuJsFindElementAtPointTest : public web::JavascriptTest {
     }
 
     // Force layout
-    web::test::ExecuteJavaScript(web_view(),
-                                 @"document.getElementsByTagName('p')");
+    web::test::ExecuteJavaScriptInWebView(
+        web_view(), @"document.getElementsByTagName('p')");
 
     // Clear previous script message response.
     script_message_handler_.lastReceivedScriptMessage = nil;
@@ -297,12 +304,13 @@ class ContextMenuJsFindElementAtPointTest : public web::JavascriptTest {
   // Returns the test page URL.
   NSURL* GetTestURL() { return net::NSURLWithGURL(GURL(kTestUrl)); }
 
-  // Executes __gCrWeb.findElementAtPoint script with the given `point` in the
+  // Executes `findElementAtPoint` script with the given `point` in the
   // web view viewport's coordinate space.
   id ExecuteFindElementFromPointJavaScript(CGPoint point) {
     CGFloat scale = web_view().scrollView.zoomScale;
     NSString* script = [NSString
-        stringWithFormat:@"__gCrWeb.contextMenu.findElementAtPoint('%"
+        stringWithFormat:@"__gCrWeb.getRegisteredApi('contextMenu')."
+                         @"getFunction('findElementAtPoint')('%"
                          @"s', %g, %g)",
                          kRequestId, point.x / scale, point.y / scale];
 
@@ -325,6 +333,8 @@ class ContextMenuJsFindElementAtPointTest : public web::JavascriptTest {
         [body[@"x"] floatValue] * web_view().scrollView.zoomScale,
         [body[@"y"] floatValue] * web_view().scrollView.zoomScale);
   }
+
+  net::EmbeddedTestServer test_server_;
 
   // Handles script message responses sent from `web_view()`.
   CRWFakeScriptMessageHandler* script_message_handler_;
@@ -371,16 +381,18 @@ TEST_F(ContextMenuJsFindElementAtPointTest, ExtractSurroundingText) {
           elementId];
   ASSERT_TRUE(LoadHtml(html));
 
-  NSString* script = [NSString
-      stringWithFormat:
-          @"(function (){\n"
-          @"var range = document.createRange();\n"
-          @"var node = document.getElementById('%@').childNodes[0];\n"
-          @"range.setStart(node, 0);\n"
-          @"range.setEnd(node, 0);\n"
-          @"return __gCrWeb.contextMenuAllFrames.getSurroundingText(range);\n"
-          @"})();",
-          elementId];
+  NSString* script =
+      [NSString stringWithFormat:
+                    @"(function (){\n"
+                    @"var range = document.createRange();\n"
+                    @"var node = document.getElementById('%@').childNodes[0];\n"
+                    @"range.setStart(node, 0);\n"
+                    @"range.setEnd(node, 0);\n"
+                    @"return "
+                    @"__gCrWeb.getRegisteredApi('contextMenuAllFrames')."
+                    @"getFunction('getSurroundingText')(range);\n"
+                    @"})();",
+                    elementId];
 
   NSDictionary* body = web::test::ExecuteJavaScript(web_view(), script);
   ASSERT_TRUE(body);
@@ -605,14 +617,12 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
 TEST_F(ContextMenuJsFindElementAtPointTest,
        FindLinkImageAtPointForRelativeUrl) {
   const char image_link[] = "http://destination/";
-  const char relative_image_path[] = "relativeImage";
+  std::string image_source = test_server_.GetURL(kImagePath).spec();
   NSString* html = GetHtmlForPage(
       /*head=*/nil,
-      GetHtmlForLink(image_link, ImageHtmlWithSource(relative_image_path)));
+      GetHtmlForLink(image_link, ImageHtmlWithSource(image_source)));
   ASSERT_TRUE(LoadHtml(html));
 
-  std::string image_source =
-      base::StringPrintf("%s%s", kTestUrl, relative_image_path);
 
   auto expected_value = base::Value::Dict()
                             .Set(kContextMenuElementRequestId, kRequestId)
@@ -629,16 +639,13 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
 // the link points to JavaScript that is not a NOP.
 TEST_F(ContextMenuJsFindElementAtPointTest, FindImageLinkedToJavaScript) {
   const char image_link[] = "javascript:console.log('whatever')";
-  const char relative_image_path[] = "relativeImage";
+  std::string image_source = test_server_.GetURL(kImagePath).spec();
   NSString* html = GetHtmlForPage(
       /*head=*/nil,
-      GetHtmlForLink(image_link, ImageHtmlWithSource(relative_image_path)));
+      GetHtmlForLink(image_link, ImageHtmlWithSource(image_source)));
 
   // A page with a link with some JavaScript that does not result in a NOP.
   ASSERT_TRUE(LoadHtml(html));
-
-  std::string image_source =
-      base::StringPrintf("%s%s", kTestUrl, relative_image_path);
 
   auto expected_value = base::Value::Dict()
                             .Set(kContextMenuElementRequestId, kRequestId)
@@ -656,15 +663,13 @@ TEST_F(ContextMenuJsFindElementAtPointTest, FindImageLinkedToJavaScript) {
 TEST_F(ContextMenuJsFindElementAtPointTest,
        FindImageLinkedToNOPJavaScriptSemicolon) {
   const char image_link[] = "javascript:;";
-  const char relative_image_path[] = "relativeImage";
+  std::string image_source = test_server_.GetURL(kImagePath).spec();
+
   NSString* html = GetHtmlForPage(
       /*head=*/nil,
-      GetHtmlForLink(image_link, ImageHtmlWithSource(relative_image_path)));
+      GetHtmlForLink(image_link, ImageHtmlWithSource(image_source)));
 
   ASSERT_TRUE(LoadHtml(html));
-
-  std::string image_source =
-      base::StringPrintf("%s%s", kTestUrl, relative_image_path);
 
   auto expected_value = base::Value::Dict()
                             .Set(kContextMenuElementRequestId, kRequestId)
@@ -682,14 +687,11 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
 TEST_F(ContextMenuJsFindElementAtPointTest,
        FindImageLinkedToNOPJavaScriptVoid) {
   const char image_link[] = "javascript:void(0);";
-  const char relative_image_path[] = "relativeImage";
+  std::string image_source = test_server_.GetURL(kImagePath).spec();
   NSString* html = GetHtmlForPage(
       /*head=*/nil,
-      GetHtmlForLink(image_link, ImageHtmlWithSource(relative_image_path)));
+      GetHtmlForLink(image_link, ImageHtmlWithSource(image_source)));
   ASSERT_TRUE(LoadHtml(html));
-
-  std::string image_source =
-      base::StringPrintf("%s%s", kTestUrl, relative_image_path);
 
   auto expected_value = base::Value::Dict()
                             .Set(kContextMenuElementRequestId, kRequestId)
@@ -815,7 +817,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, TextAreaStopsProximity) {
   CheckElementResult(kPointOnImage, expected_value);
 }
 
-// Tests that __gCrWeb.findElementAtPoint reports "never" as the referrer
+// Tests that `findElementAtPoint` reports "never" as the referrer
 // policy for pages that have an unsupported policy in a meta tag.
 // TODO(crbug.com/351951385): Fix the flakiness in this test and re-enable.
 TEST_F(ContextMenuJsFindElementAtPointTest,
@@ -833,7 +835,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
   EXPECT_STREQ("never", policy->c_str());
 }
 
-// Tests that __gCrWeb.findElementAtPoint finds an element at the bottom of a
+// Tests that `findElementAtPoint` finds an element at the bottom of a
 // very long page.
 // TODO(crbug.com/40772520): Fix on iOS 15 and reenable. This test appears to
 // fail flakily if the webview is not in the view hierarchy.
@@ -847,8 +849,8 @@ TEST_F(ContextMenuJsFindElementAtPointTest, DISABLED_LinkOfTextFromTallPage) {
 
   // Force layout to ensure `content_height` below is correct.
   EXPECT_TRUE(web::test::WaitForInjectedScripts(web_view()));
-  web::test::ExecuteJavaScript(web_view(),
-                               @"document.getElementsByTagName('p')");
+  web::test::ExecuteJavaScriptInWebView(web_view(),
+                                        @"document.getElementsByTagName('p')");
 
   // Scroll the webView to the bottom to make the link accessible.
   CGFloat content_height = GetWebViewContentSize().height;
@@ -870,7 +872,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, DISABLED_LinkOfTextFromTallPage) {
   CheckElementResult(CGPointMake(50.0, content_height - 100), expected_value);
 }
 
-// Tests that __gCrWeb.findElementAtPoint finds a link inside shadow DOM
+// Tests that `findElementAtPoint` finds a link inside shadow DOM
 // content.
 TEST_F(ContextMenuJsFindElementAtPointTest, ShadowDomLink) {
   const char link[] = "http://destination/";

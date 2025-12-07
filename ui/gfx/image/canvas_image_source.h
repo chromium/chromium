@@ -7,8 +7,8 @@
 
 #include <utility>
 
+#include "base/component_export.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gfx_export.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_source.h"
 
@@ -20,7 +20,7 @@ class Insets;
 // CanvasImageSource is useful if you need to generate an image for a scale
 // factor using Canvas. It creates a new Canvas with target scale factor and
 // generates ImageSkiaRep when drawing is completed.
-class GFX_EXPORT CanvasImageSource : public ImageSkiaSource {
+class COMPONENT_EXPORT(GFX) CanvasImageSource : public ImageSkiaSource {
  public:
   // Factory function to create an ImageSkia from a CanvasImageSource. Example:
   //   ImageSkia my_image =

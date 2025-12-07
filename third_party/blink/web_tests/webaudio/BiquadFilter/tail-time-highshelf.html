@@ -1,22 +1,19 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
     <title>Test Biquad Tail-Time</title>
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
     <script src="../resources/audit-util.js"></script>
-    <script src="../resources/audit.js"></script>
     <script src="../resources/biquad-filters.js"></script>
     <script src="test-tail-time.js"></script>
   </head>
 
   <body>
     <script>
-      let audit = Audit.createTaskRunner();
-
-      let sampleRate = 16384;
-      let renderSeconds = 1;
-      let renderFrames = renderSeconds * sampleRate;
+      const sampleRate = 16384;
+      const renderSeconds = 1;
+      const renderFrames = renderSeconds * sampleRate;
 
       // For a highshelf filter:
       //   b0 = A*[(A+1)+(A−1)*cos(w0)+2*as*sqrt(A)]
@@ -38,9 +35,9 @@
 
       // Array of tests to run.  |descripton| is the task description for
       // audit.define.  |parameters| is option for |testTailTime|.
-      let tests = [
+      const tests = [
         {
-          descripton:
+          description:
               {label: 'highshelf-complex-roots', description: 'complex roots'},
           parameters: {
             prefix: 'Highshelf complex roots',
@@ -48,34 +45,31 @@
                 {type: 'highshelf', gain: 40, frequency: sampleRate / 8},
             // Node computed tail frame is 18.6 frames, which matches the actual
             // tail, so tail output should be exactly zero.
-            threshold: 0
-          }
+            threshold: 0,
+          },
         },
         {
-          descripton: {
+          description: {
             label: 'highshelf-repeated-roots',
-            description: 'repeated real root'
+            description: 'repeated real root',
           },
           parameters: {
             prefix: 'Highshelf repeated roots',
             filterOptions: {type: 'highshelf', gain: 40, frequency: 0},
             // Node computed tail frame is 2 frames, which matches the actual
             // tail, so tail output should be exactly zero.
-            threshold: 0
-          }
+            threshold: 0,
+          },
         },
       ];
 
-      // Define an appropriate task for each test.
+      // Define an appropriate test for each entry.
       tests.forEach(entry => {
-        audit.define(entry.descripton, (task, should) => {
-          let context = new OfflineAudioContext(1, renderFrames, sampleRate);
-          testTailTime(should, context, entry.parameters)
-              .then(() => task.done());
-        });
+        promise_test(async () => {
+          const context = new OfflineAudioContext(1, renderFrames, sampleRate);
+          await testTailTime_W3CTH(context, entry.parameters);
+        }, `${entry.parameters.prefix}: ${entry.description.description}`);
       });
-
-      audit.run();
     </script>
   </body>
 </html>

@@ -1,0 +1,19 @@
+Name: RxAndroid
+Short Name: rxandroid
+URL: https://repo.maven.apache.org/maven2/io/reactivex/rxjava2/rxandroid/2.1.1/rxandroid-2.1.1.aar
+Version: 2.1.1
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+RxAndroid
+
+See also: https://github.com/ReactiveX/RxAndroid
+
+
+Local Modifications:
+No modifications.

@@ -10,6 +10,10 @@
 #include "base/functional/callback_forward.h"
 #include "chrome/updater/updater_scope.h"
 
+namespace base {
+enum class TaskPriority : uint8_t;
+}
+
 extern const char kUpdaterName[];
 extern const char kPrivilegedHelperName[];
 
@@ -20,14 +24,16 @@ std::string CurrentlyInstalledVersion();
 // During promotion, the browser will be changed to be owned by root and wheel.
 // A browser must go through promotion before it can utilize the system-level
 // updater.
-updater::UpdaterScope GetUpdaterScope();
+updater::UpdaterScope GetBrowserUpdaterScope();
 
 // If this build should integrate with an updater, makes sure that an updater
 // is installed and that the browser is registered with it for updates. Must be
 // called on a sequenced task runner. In cases where user intervention is
 // necessary, calls `prompt` (on the same sequence).  After the updater is made
 // present (or cannot be made present), calls `complete` on the same sequence.
-void EnsureUpdater(base::OnceClosure prompt, base::OnceClosure complete);
+void EnsureUpdater(base::TaskPriority priority,
+                   base::OnceClosure prompt,
+                   base::OnceClosure complete);
 
 // Prompts the user for credentials and sets up a system-level updater.
 void SetupSystemUpdater();

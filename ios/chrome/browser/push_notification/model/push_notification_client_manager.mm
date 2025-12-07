@@ -6,38 +6,55 @@
 
 #import <Foundation/Foundation.h>
 
+#import <optional>
 #import <vector>
 
+#import "base/feature_list.h"
+#import "components/desktop_to_mobile_promos/features.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
+#import "components/send_tab_to_self/features.h"
+#import "components/sharing_message/features.h"
 #import "ios/chrome/browser/commerce/model/push_notification/commerce_push_notification_client.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_client.h"
+#import "ios/chrome/browser/cross_platform_promos/model/cross_platform_promos_notification_client.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
+#import "ios/chrome/browser/reminder_notifications/model/reminder_notification_client.h"
 #import "ios/chrome/browser/safety_check_notifications/model/safety_check_notification_client.h"
+#import "ios/chrome/browser/send_tab_to_self/model/send_tab_push_notification_client.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/features.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tips_notifications/model/tips_notification_client.h"
 
-PushNotificationClientManager::PushNotificationClientManager() {
-  if (IsPriceNotificationsEnabled() &&
-      optimization_guide::features::IsPushNotificationsEnabled()) {
-    AddPushNotificationClient(
-        std::make_unique<CommercePushNotificationClient>());
-  }
+using send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders;
 
-  if (IsIOSTipsNotificationsEnabled()) {
-    AddPushNotificationClient(std::make_unique<TipsNotificationClient>());
-  }
+PushNotificationClientManager::PushNotificationClientManager(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    ProfileIOS* profile)
+    : task_runner_(std::move(task_runner)), profile_(profile) {
+  CHECK(task_runner_);
+  CHECK(profile_);
+  CHECK(IsMultiProfilePushNotificationHandlingEnabled());
 
-  if (IsContentNotificationExperimentEnabled()) {
-    AddPushNotificationClient(std::make_unique<ContentNotificationClient>());
-  }
+  AddPerProfilePushNotificationClients();
+}
 
-  if (IsSafetyCheckNotificationsEnabled()) {
-    AddPushNotificationClient(
-        std::make_unique<SafetyCheckNotificationClient>());
+PushNotificationClientManager::PushNotificationClientManager(
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
+    : task_runner_(std::move(task_runner)), profile_(nullptr) {
+  CHECK(task_runner_);
+
+  AddAppWidePushNotificationClients();
+
+  if (!IsMultiProfilePushNotificationHandlingEnabled()) {
+    AddPerProfilePushNotificationClients();
   }
 }
+
 PushNotificationClientManager::~PushNotificationClientManager() = default;
 
 void PushNotificationClientManager::AddPushNotificationClient(
@@ -63,26 +80,50 @@ PushNotificationClientManager::GetPushNotificationClients() {
 
 void PushNotificationClientManager::HandleNotificationInteraction(
     UNNotificationResponse* notification_response) {
-  for (auto& client : clients_) {
-    client.second->HandleNotificationInteraction(notification_response);
+  std::optional<PushNotificationClientId> clientId = [PushNotificationUtil
+      mapToPushNotificationClientIdFromUserInfo:notification_response
+                                                    .notification.request
+                                                    .content.userInfo];
+  if (clientId.has_value()) {
+    auto it = clients_.find(clientId.value());
+    if (it != clients_.end()) {
+      it->second->HandleNotificationInteraction(notification_response);
+    }
+  } else {
+    // Safety until all clients have incorporated the appropriate ids into their
+    // payload.
+    for (auto& client : clients_) {
+      client.second->HandleNotificationInteraction(notification_response);
+    }
   }
 }
 
 UIBackgroundFetchResult
 PushNotificationClientManager::HandleNotificationReception(
     NSDictionary<NSString*, id>* user_info) {
-  UIBackgroundFetchResult result = UIBackgroundFetchResultNoData;
-  for (auto& client : clients_) {
-    UIBackgroundFetchResult client_result =
-        client.second->HandleNotificationReception(user_info);
-    if (client_result == UIBackgroundFetchResultNewData) {
-      return UIBackgroundFetchResultNewData;
-    } else if (client_result == UIBackgroundFetchResultFailed) {
-      result = client_result;
+  if (user_info == nil || user_info == nullptr) {
+    return UIBackgroundFetchResultFailed;
+  }
+  std::optional<PushNotificationClientId> clientId = [PushNotificationUtil
+      mapToPushNotificationClientIdFromUserInfo:user_info];
+  std::optional<UIBackgroundFetchResult> client_result;
+  if (clientId.has_value()) {
+    auto it = clients_.find(clientId.value());
+    if (it != clients_.end()) {
+      client_result = it->second->HandleNotificationReception(user_info);
+    }
+  } else {
+    for (auto& client : clients_) {
+      client_result = client.second->HandleNotificationReception(user_info);
+      if (client_result.has_value()) {
+        break;
+      }
     }
   }
-
-  return result;
+  if (client_result.has_value()) {
+    return client_result.value();
+  }
+  return UIBackgroundFetchResultNoData;
 }
 
 void PushNotificationClientManager::RegisterActionableNotifications() {
@@ -103,16 +144,18 @@ void PushNotificationClientManager::RegisterActionableNotifications() {
 std::vector<PushNotificationClientId>
 PushNotificationClientManager::GetClients() {
   std::vector<PushNotificationClientId> client_ids = {
-      PushNotificationClientId::kCommerce};
-  if (IsContentNotificationExperimentEnabled()) {
-    client_ids.push_back(PushNotificationClientId::kContent);
-    client_ids.push_back(PushNotificationClientId::kSports);
-  }
-  if (IsIOSTipsNotificationsEnabled()) {
-    client_ids.push_back(PushNotificationClientId::kTips);
-  }
+      PushNotificationClientId::kCommerce, PushNotificationClientId::kTips};
+  client_ids.push_back(PushNotificationClientId::kContent);
+  client_ids.push_back(PushNotificationClientId::kSports);
   if (IsSafetyCheckNotificationsEnabled()) {
     client_ids.push_back(PushNotificationClientId::kSafetyCheck);
+  }
+  if (base::FeatureList::IsEnabled(
+          send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
+    client_ids.push_back(PushNotificationClientId::kSendTab);
+  }
+  if (IsSendTabIOSPushNotificationsEnabledWithTabReminders()) {
+    client_ids.push_back(PushNotificationClientId::kReminders);
   }
   return client_ids;
 }
@@ -123,23 +166,124 @@ void PushNotificationClientManager::OnSceneActiveForegroundBrowserReady() {
   }
 }
 
-std::string PushNotificationClientManager::PushNotificationClientIdToString(
-    PushNotificationClientId client_id) {
-  switch (client_id) {
-    case PushNotificationClientId::kCommerce: {
-      return kCommerceNotificationKey;
+// Adds clients that operate on a per-Profile basis.
+void PushNotificationClientManager::AddPerProfilePushNotificationClients() {
+  if (optimization_guide::features::IsPushNotificationsEnabled()) {
+    std::unique_ptr<CommercePushNotificationClient> client;
+
+    if (IsMultiProfilePushNotificationHandlingEnabled()) {
+      CHECK(profile_);
+
+      client = std::make_unique<CommercePushNotificationClient>(profile_);
+    } else {
+      client = std::make_unique<CommercePushNotificationClient>();
     }
-    case PushNotificationClientId::kContent: {
-      return kContentNotificationKey;
-    }
-    case PushNotificationClientId::kTips: {
-      return kTipsNotificationKey;
-    }
-    case PushNotificationClientId::kSports: {
-      return kSportsNotificationKey;
-    }
-    case PushNotificationClientId::kSafetyCheck: {
-      return kSafetyCheckNotificationKey;
+
+    CHECK_EQ(client->GetClientScope(),
+             PushNotificationClientScope::kPerProfile);
+
+    AddPushNotificationClient(std::move(client));
+  }
+
+  std::unique_ptr<ContentNotificationClient> content_notification_client;
+
+  if (IsMultiProfilePushNotificationHandlingEnabled()) {
+    CHECK(profile_);
+
+    content_notification_client =
+        std::make_unique<ContentNotificationClient>(profile_);
+  } else {
+    content_notification_client = std::make_unique<ContentNotificationClient>();
+  }
+
+  CHECK_EQ(content_notification_client->GetClientScope(),
+           PushNotificationClientScope::kPerProfile);
+
+  AddPushNotificationClient(std::move(content_notification_client));
+
+  if (IsSafetyCheckNotificationsEnabled()) {
+    if (IsMultiProfilePushNotificationHandlingEnabled() && profile_) {
+      // Pass profile and task runner for multi-profile handling.
+      auto client = std::make_unique<SafetyCheckNotificationClient>(
+          profile_, task_runner_);
+      CHECK_EQ(client->GetClientScope(),
+               PushNotificationClientScope::kPerProfile);
+      AddPushNotificationClient(std::move(client));
+    } else {
+      // Pass only task runner for single-profile or default handling.
+      auto client =
+          std::make_unique<SafetyCheckNotificationClient>(task_runner_);
+      CHECK_EQ(client->GetClientScope(),
+               PushNotificationClientScope::kPerProfile);
+      AddPushNotificationClient(std::move(client));
     }
   }
+
+  // Add Send Tab To Self client if its push notifications are enabled.
+  if (base::FeatureList::IsEnabled(
+          send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
+    std::unique_ptr<SendTabPushNotificationClient> client;
+
+    if (IsMultiProfilePushNotificationHandlingEnabled()) {
+      CHECK(profile_);
+
+      client = std::make_unique<SendTabPushNotificationClient>(profile_);
+    } else {
+      client = std::make_unique<SendTabPushNotificationClient>();
+    }
+
+    CHECK_EQ(client->GetClientScope(),
+             PushNotificationClientScope::kPerProfile);
+
+    AddPushNotificationClient(std::move(client));
+
+    // Additionally, add Reminder client if STTS reminders are also enabled.
+    if (IsSendTabIOSPushNotificationsEnabledWithTabReminders() &&
+        IsMultiProfilePushNotificationHandlingEnabled()) {
+      CHECK(profile_);
+
+      std::unique_ptr<ReminderNotificationClient> reminder_client =
+          std::make_unique<ReminderNotificationClient>(profile_);
+
+      CHECK_EQ(reminder_client->GetClientScope(),
+               PushNotificationClientScope::kPerProfile);
+
+      AddPushNotificationClient(std::move(reminder_client));
+    }
+  }
+  if (IsMobilePromoOnDesktopNotificationsEnabled() &&
+      IsMultiProfilePushNotificationHandlingEnabled()) {
+    std::unique_ptr<CrossPlatformPromosNotificationClient> client =
+        std::make_unique<CrossPlatformPromosNotificationClient>(profile_);
+    AddPushNotificationClient(std::move(client));
+  }
+}
+
+// Adds clients that operate app-wide.
+void PushNotificationClientManager::AddAppWidePushNotificationClients() {
+  auto client = std::make_unique<TipsNotificationClient>();
+  CHECK_EQ(client->GetClientScope(), PushNotificationClientScope::kAppWide);
+  AddPushNotificationClient(std::move(client));
+}
+
+PushNotificationClient* PushNotificationClientManager::GetClientForNotification(
+    UNNotification* notification) {
+  std::optional<PushNotificationClientId> clientId = [PushNotificationUtil
+      mapToPushNotificationClientIdFromUserInfo:notification.request.content
+                                                    .userInfo];
+  if (clientId.has_value()) {
+    auto it = clients_.find(clientId.value());
+    if (it != clients_.end()) {
+      return it->second.get();
+    }
+  } else {
+    // Safety until all clients have incorporated the appropriate ids into their
+    // payload.
+    for (auto& it : clients_) {
+      if (it.second->CanHandleNotification(notification)) {
+        return it.second.get();
+      }
+    }
+  }
+  return nullptr;
 }

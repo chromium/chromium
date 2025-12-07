@@ -16,8 +16,6 @@
 
 namespace blink {
 
-const char BatteryManager::kSupplementName[] = "BatteryManager";
-
 // static
 ScriptPromise<BatteryManager> BatteryManager::getBattery(
     ScriptState* script_state,
@@ -41,10 +39,10 @@ ScriptPromise<BatteryManager> BatteryManager::getBattery(
       WebFeature::kBatteryStatusCrossOrigin,
       WebFeature::kBatteryStatusSameOriginABA);
 
-  auto* supplement = Supplement<Navigator>::From<BatteryManager>(navigator);
+  BatteryManager* supplement = navigator.GetBatteryManager();
   if (!supplement) {
     supplement = MakeGarbageCollected<BatteryManager>(navigator);
-    ProvideTo(navigator, supplement);
+    navigator.SetBatteryManager(supplement);
   }
   return supplement->StartRequest(script_state);
 }
@@ -53,7 +51,6 @@ BatteryManager::~BatteryManager() = default;
 
 BatteryManager::BatteryManager(Navigator& navigator)
     : ActiveScriptWrappable<BatteryManager>({}),
-      Supplement<Navigator>(navigator),
       ExecutionContextLifecycleStateObserver(navigator.DomWindow()),
       PlatformEventController(*navigator.DomWindow()),
       battery_dispatcher_(
@@ -162,7 +159,6 @@ bool BatteryManager::HasPendingActivity() const {
 void BatteryManager::Trace(Visitor* visitor) const {
   visitor->Trace(battery_property_);
   visitor->Trace(battery_dispatcher_);
-  Supplement<Navigator>::Trace(visitor);
   PlatformEventController::Trace(visitor);
   EventTarget::Trace(visitor);
   ExecutionContextLifecycleStateObserver::Trace(visitor);

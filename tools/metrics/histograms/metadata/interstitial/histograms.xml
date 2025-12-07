@@ -37,14 +37,28 @@ chromium-metrics-reviews@google.com.
       summary=", on a site that the user had previously visited"/>
 </variants>
 
-<variants name="SecurityInterstitialLookalikeType">
+<variants name="SecurityInterstitialLookalikeOrSSLType">
+  <variant name=""/>
+  <variant name="bad_clock." summary=""/>
+  <variant name="https_first_mode." summary=""/>
+  <variant name="legacy_tls." summary=""/>
   <variant name="lookalike." summary=""/>
+  <variant name="ssl_nonoverridable." summary=""/>
+  <variant name="ssl_overridable." summary=""/>
 </variants>
 
 <variants name="SecurityInterstitialSBType">
   <variant name="harmful." summary=""/>
   <variant name="malware." summary=""/>
   <variant name="phishing." summary=""/>
+</variants>
+
+<variants name="SecurityInterstitialSBWithSourceSubtype">
+  <variant name=".scam_experiment_catch_all_enforcement"/>
+  <variant name=".scam_experiment_verdict_1"
+      summary="scam detection verdict 1"/>
+  <variant name=".scam_experiment_verdict_2"
+      summary="scam detection verdict 2"/>
 </variants>
 
 <variants name="SecurityInterstitialSBWithSourceType">
@@ -57,10 +71,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".from_client_side_detection"
       summary="Interstitial for a resource classified as unsafe by the client
                side detection."/>
-  <variant name=".from_device"
-      summary="Interstitial for a resource classified as unsafe by the Safe
-               Browsing database via either
-               {Local,Remote}SafeBrowsingDatabaseManager."/>
   <variant name=".from_device_v4"
       summary="Interstitial for a resource classified as unsafe by the Safe
                Browsing database version 4 via either
@@ -74,7 +84,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="interstitial.captive_portal"
-    enum="CaptivePortalBlockingPageEvent" expires_after="2025-01-05">
+    enum="CaptivePortalBlockingPageEvent" expires_after="2026-01-18">
   <owner>meacer@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <summary>
@@ -84,7 +94,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="interstitial.CloseReason" enum="InterstitialCloseReason"
-    expires_after="2025-01-26">
+    expires_after="2026-10-15">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -96,9 +106,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="interstitial.enterprise_block.decision"
-    enum="SecurityInterstitialDecision" expires_after="2025-01-21">
+    enum="SecurityInterstitialDecision" expires_after="2026-01-21">
   <owner>domfc@chromium.org</owner>
-  <owner>dpr-eng@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Records when a user is blocked from visiting a site as per admin rules in an
     enterprise managed browser.
@@ -106,9 +116,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="interstitial.enterprise_block.decision.repeat_visit"
-    enum="SecurityInterstitialDecision" expires_after="2025-01-21">
+    enum="SecurityInterstitialDecision" expires_after="2026-01-21">
   <owner>domfc@chromium.org</owner>
-  <owner>dpr-eng@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Records when a user is blocked from visiting a site as per admin rules in an
     enterprise managed browser and the user tries to access it again.
@@ -116,9 +126,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="interstitial.enterprise_block.interaction"
-    enum="SecurityInterstitialInteraction" expires_after="2025-01-21">
+    enum="SecurityInterstitialInteraction" expires_after="2026-01-21">
   <owner>domfc@chromium.org</owner>
-  <owner>dpr-eng@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Records when a user interacts with a blocking page shown for a url that
     doesn't comply with admin rules.
@@ -126,9 +136,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="interstitial.enterprise_warn.decision"
-    enum="SecurityInterstitialDecision" expires_after="2025-01-21">
+    enum="SecurityInterstitialDecision" expires_after="2026-01-21">
   <owner>domfc@chromium.org</owner>
-  <owner>dpr-eng@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Records when a user is shown a warning while visiting a site that doesn't
     comply with the admin rules in an enterprise managed browser.
@@ -136,9 +146,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="interstitial.enterprise_warn.decision.repeat_visit"
-    enum="SecurityInterstitialDecision" expires_after="2025-01-21">
+    enum="SecurityInterstitialDecision" expires_after="2026-01-21">
   <owner>domfc@chromium.org</owner>
-  <owner>dpr-eng@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Records when a user revisits a page they were warned about for not complying
     with the admin rules in an enterprise managed browser.
@@ -146,13 +156,61 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="interstitial.enterprise_warn.interaction"
-    enum="SecurityInterstitialInteraction" expires_after="2025-01-21">
+    enum="SecurityInterstitialInteraction" expires_after="2026-01-21">
   <owner>domfc@chromium.org</owner>
-  <owner>dpr-eng@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Records when a user interacts with a warning page shown for a url that
     doesn't comply with admin rules.
   </summary>
+</histogram>
+
+<histogram
+    name="interstitial.phishing.decision{RepeatVisit}.from_client_side_detection{SecurityInterstitialSBWithSourceSubtype}"
+    enum="SecurityInterstitialDecision" expires_after="2026-04-09">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@Google.com</owner>
+  <summary>
+    User decision when presented with a security interstitial{RepeatVisit}
+    specifically for {SecurityInterstitialSBWithSourceSubtype}.
+  </summary>
+  <token key="SecurityInterstitialSBWithSourceSubtype"
+      variants="SecurityInterstitialSBWithSourceSubtype"/>
+  <token key="RepeatVisit" variants="RepeatVisit">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram
+    name="interstitial.phishing.interaction.from_client_side_detection{SecurityInterstitialSBWithSourceSubtype}"
+    enum="SecurityInterstitialDecision" expires_after="2026-04-09">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@Google.com</owner>
+  <summary>
+    User interactions with a security interstitial that comes from client side
+    detection specifically for {SecurityInterstitialSBWithSourceSubtype}.
+  </summary>
+  <token key="SecurityInterstitialSBWithSourceSubtype"
+      variants="SecurityInterstitialSBWithSourceSubtype"/>
+</histogram>
+
+<histogram
+    name="interstitial.phishing.show_delay{TimeRange}.from_client_side_detection{SecurityInterstitialSBWithSourceSubtype}"
+    enum="SecurityInterstitialDecision" expires_after="2026-04-09">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@Google.com</owner>
+  <summary>
+    The time {TimeRange} between when the blocked page is shown and when the
+    interstitial is shown. 0 if the blocked page is not shown. This is
+    specifically for phishing ThreatType from client side detection for
+    {SecurityInterstitialSBWithSourceSubtype}.
+  </summary>
+  <token key="TimeRange">
+    <variant name="" summary="(capped at 10 seconds)"/>
+    <variant name="_long_range" summary="(capped at 3 minutes)"/>
+  </token>
+  <token key="SecurityInterstitialSBWithSourceSubtype"
+      variants="SecurityInterstitialSBWithSourceSubtype"/>
 </histogram>
 
 <histogram name="interstitial.ssl.cause.nonoverridable" enum="SSLErrorCauses"
@@ -276,7 +334,7 @@ chromium-metrics-reviews@google.com.
       variants="AdditionalSecurityInterstitialSBType"/>
 </histogram>
 
-<histogram name="interstitial.{SecurityInterstitialLookalikeType}decision"
+<histogram name="interstitial.{SecurityInterstitialLookalikeOrSSLType}decision"
     enum="SecurityInterstitialDecision" expires_after="never">
 <!-- expires-never: Used for long term monitoring of security errors -->
 
@@ -291,16 +349,12 @@ chromium-metrics-reviews@google.com.
     social_engineering_ads* and social_engineering_landing* interstitial reasons
     have been removed because they don't trigger interstitials.
 
-    {SecurityInterstitialLookalikeType}
+    {SecurityInterstitialLookalikeOrSSLType}
   </summary>
-  <token key="SecurityInterstitialLookalikeType"
-      variants="SecurityInterstitialLookalikeType">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram
-    name="interstitial.{SecurityInterstitialLookalikeType}decision.repeat_visit"
+    name="interstitial.{SecurityInterstitialLookalikeOrSSLType}decision.repeat_visit"
     enum="SecurityInterstitialDecision" expires_after="never">
 <!-- expires-never: Used for long term monitoring of security errors -->
 
@@ -313,15 +367,14 @@ chromium-metrics-reviews@google.com.
     social_engineering_landing* interstitial reasons are split into their own
     entries from phishing*. As of M90, social_engineering_ads* and
     social_engineering_landing* interstitial reasons have been removed because
-    they don't trigger interstitials. {SecurityInterstitialLookalikeType}
+    they don't trigger interstitials.
+
+    {SecurityInterstitialLookalikeOrSSLType}
   </summary>
-  <token key="SecurityInterstitialLookalikeType"
-      variants="SecurityInterstitialLookalikeType">
-    <variant name=""/>
-  </token>
 </histogram>
 
-<histogram name="interstitial.{SecurityInterstitialLookalikeType}interaction"
+<histogram
+    name="interstitial.{SecurityInterstitialLookalikeOrSSLType}interaction"
     enum="SecurityInterstitialInteraction" expires_after="never">
 <!-- expires-never: Used for long term monitoring of security errors -->
 
@@ -334,17 +387,14 @@ chromium-metrics-reviews@google.com.
     are split into their own entries from phishing*. As of M90,
     social_engineering_ads* and social_engineering_landing* interstitial reasons
     have been removed because they don't trigger interstitials.
-    {SecurityInterstitialLookalikeType}
+
+    {SecurityInterstitialLookalikeOrSSLType}
   </summary>
-  <token key="SecurityInterstitialLookalikeType"
-      variants="SecurityInterstitialLookalikeType">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram
     name="interstitial.{SecurityInterstitialSBType}decision{RepeatVisit}{IsPostCommitInterstitialSuffix}"
-    enum="SecurityInterstitialDecision" expires_after="2024-12-08">
+    enum="SecurityInterstitialDecision" expires_after="2026-05-03">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -395,7 +445,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="interstitial.{SecurityInterstitialSBType}interaction{IsPostCommitInterstitialSuffix}"
-    enum="SecurityInterstitialInteraction" expires_after="2024-12-08">
+    enum="SecurityInterstitialInteraction" expires_after="2025-12-28">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -435,18 +485,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="interstitial.{SecurityInterstitialSBType}show_delay{SecurityInterstitialSBWithSourceType}"
-    units="ms" expires_after="2024-12-08">
+    name="interstitial.{SecurityInterstitialSBType}show_delay{TimeRange}{SecurityInterstitialSBWithSourceType}"
+    units="ms" expires_after="2026-05-03">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    The time between when the blocked page is shown and when the interstitial is
-    shown. 0 if the blocked page is not shown.
+    The time {TimeRange} between when the blocked page is shown and when the
+    interstitial is shown. 0 if the blocked page is not shown.
 
     {SecurityInterstitialSBType} {SecurityInterstitialSBWithSourceType}
   </summary>
   <token key="SecurityInterstitialSBType"
       variants="SecurityInterstitialSBType"/>
+  <token key="TimeRange">
+    <variant name="" summary="(capped at 10 seconds)"/>
+    <variant name="_long_range" summary="(capped at 3 minutes)"/>
+  </token>
   <token key="SecurityInterstitialSBWithSourceType"
       variants="SecurityInterstitialSBWithSourceType">
     <variant name=""/>

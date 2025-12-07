@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/global_media_controls/cast_device_selector_view.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/global_media_controls/public/test/mock_device_service.h"
 #include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
@@ -112,7 +113,7 @@ TEST_F(CastDeviceSelectorViewTest, CloseButtonCheck) {
 TEST_F(CastDeviceSelectorViewTest, DeviceEntryCheck) {
   CreateCastDeviceSelectorView(/*show_devices=*/true);
   view()->OnDevicesUpdated(CreateDevices());
-  EXPECT_FALSE(view()->GetHasIssueForTesting());
+  EXPECT_FALSE(view()->GetHasDeviceIssueForTesting());
   EXPECT_NE(view()->GetDeviceContainerViewForTesting(), nullptr);
   for (views::View* child :
        view()->GetDeviceContainerViewForTesting()->children()) {
@@ -133,7 +134,7 @@ TEST_F(CastDeviceSelectorViewTest, DeviceEntryWithIssueCheck) {
 
   CreateCastDeviceSelectorView(/*show_devices=*/true);
   view()->OnDevicesUpdated(std::move(devices));
-  EXPECT_TRUE(view()->GetHasIssueForTesting());
+  EXPECT_TRUE(view()->GetHasDeviceIssueForTesting());
   EXPECT_NE(view()->GetDeviceContainerViewForTesting(), nullptr);
   for (views::View* child :
        view()->GetDeviceContainerViewForTesting()->children()) {
@@ -143,4 +144,24 @@ TEST_F(CastDeviceSelectorViewTest, DeviceEntryWithIssueCheck) {
     EXPECT_EQ(base::UTF16ToUTF8(device_button->status_text_label()->GetText()),
               kTestDeviceStatusText);
   }
+}
+
+TEST_F(CastDeviceSelectorViewTest, ShowPermissionRejectedError) {
+  CreateCastDeviceSelectorView(/*show_devices=*/true);
+
+  // Show the permission rejected error.
+  view()->OnPermissionRejected();
+  EXPECT_TRUE(view()->GetCloseButtonForTesting()->GetVisible());
+  EXPECT_TRUE(view()->GetPermissionRejectedViewForTesting()->GetVisible());
+  EXPECT_FALSE(view()->GetDeviceContainerViewForTesting()->GetVisible());
+
+  // Dismiss the error.
+  views::test::ButtonTestApi(view()->GetCloseButtonForTesting())
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(), 0, 0));
+  EXPECT_FALSE(view()->GetPermissionRejectedViewForTesting()->GetVisible());
+
+  // The permission rejected error is not showing.
+  view()->OnPermissionRejected();
+  EXPECT_FALSE(view()->GetPermissionRejectedViewForTesting()->GetVisible());
 }

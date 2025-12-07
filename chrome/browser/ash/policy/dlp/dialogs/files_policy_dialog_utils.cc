@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog_utils.h"
 
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/style/typography.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/enterprise/connectors/analysis/file_transfer_analysis_delegate.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/link.h"
 
@@ -44,11 +44,15 @@ FilesPolicyDialog::BlockReason GetEnterpriseConnectorsBlockReason(
           kEnterpriseConnectorsLargeFile;
     }
 
-    NOTREACHED_IN_MIGRATION()
+    if (result.final_result().value() ==
+        enterprise_connectors::FinalContentAnalysisResult::FAIL_CLOSED) {
+      return policy::FilesPolicyDialog::BlockReason::
+          kEnterpriseConnectorsScanFailed;
+    }
+
+    NOTREACHED()
         << "Enterprise connector result representing a blocked transfer "
            "without a tag but with an unexpected final result value.";
-
-    return FilesPolicyDialog::BlockReason::kEnterpriseConnectors;
   }
 
   DCHECK(result.tag() == enterprise_connectors::kDlpTag ||
@@ -62,11 +66,8 @@ FilesPolicyDialog::BlockReason GetEnterpriseConnectorsBlockReason(
     return FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware;
   }
 
-  NOTREACHED_IN_MIGRATION()
-      << "Enterprise connector result representing a blocked transfer "
-         "with an unexpected tag.";
-
-  return FilesPolicyDialog::BlockReason::kEnterpriseConnectors;
+  NOTREACHED() << "Enterprise connector result representing a blocked transfer "
+                  "with an unexpected tag.";
 }
 
 policy::FilesPolicyDialog::Info GetDialogInfoForEnterpriseConnectorsBlockReason(
@@ -79,7 +80,7 @@ policy::FilesPolicyDialog::Info GetDialogInfoForEnterpriseConnectorsBlockReason(
 
   // Find the first valid delegate, since every delegate contains the same copy
   // of custom messaging settings.
-  auto delegate = base::ranges::find_if(
+  auto delegate = std::ranges::find_if(
       file_transfer_analysis_delegates,
       [](const std::unique_ptr<
           enterprise_connectors::FileTransferAnalysisDelegate>& delegate) {
@@ -120,9 +121,7 @@ void AddLearnMoreLink(const std::u16string& text,
   learn_more_link->SetFontList(
       ash::TypographyProvider::Get()->ResolveTypographyToken(
           ash::TypographyToken::kCrosBody1));
-  learn_more_link->SetEnabledColor(
-      ash::ColorProvider::Get()->GetContentLayerColor(
-          ash::ColorProvider::ContentLayerType::kTextColorURL));
+  learn_more_link->SetEnabledColor(cros_tokens::kLinkColor);
   learn_more_link->GetViewAccessibility().SetName(accessible_name);
 }
 

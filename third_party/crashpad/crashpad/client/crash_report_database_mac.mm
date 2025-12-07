@@ -268,13 +268,11 @@ class CrashReportDatabaseMac : public CrashReportDatabase {
   void CleanOrphanedAttachments();
 
   Settings& SettingsInternal() {
-    std::call_once(settings_init_, [this]() {
-      settings_.Initialize(base_dir_.Append(kSettings));
-    });
+    std::call_once(settings_init_, [this]() { settings_.Initialize(); });
     return settings_;
   }
 
-  base::FilePath base_dir_;
+  const base::FilePath base_dir_;
   Settings settings_;
   std::once_flag settings_init_;
   bool xattr_new_names_;
@@ -284,7 +282,7 @@ class CrashReportDatabaseMac : public CrashReportDatabase {
 CrashReportDatabaseMac::CrashReportDatabaseMac(const base::FilePath& path)
     : CrashReportDatabase(),
       base_dir_(path),
-      settings_(),
+      settings_(path.Append(kSettings)),
       settings_init_(),
       xattr_new_names_(false),
       initialized_() {}
@@ -913,6 +911,8 @@ void CrashReportDatabaseMac::CleanOrphanedAttachments() {
   }
 }
 
+namespace {
+
 std::unique_ptr<CrashReportDatabase> InitializeInternal(
     const base::FilePath& path,
     bool may_create) {
@@ -924,6 +924,8 @@ std::unique_ptr<CrashReportDatabase> InitializeInternal(
   return std::unique_ptr<CrashReportDatabase>(database_mac.release());
 }
 
+}  // namespace
+
 // static
 std::unique_ptr<CrashReportDatabase> CrashReportDatabase::Initialize(
     const base::FilePath& path) {
@@ -934,6 +936,13 @@ std::unique_ptr<CrashReportDatabase> CrashReportDatabase::Initialize(
 std::unique_ptr<CrashReportDatabase>
 CrashReportDatabase::InitializeWithoutCreating(const base::FilePath& path) {
   return InitializeInternal(path, false);
+}
+
+// static
+std::unique_ptr<SettingsReader>
+CrashReportDatabase::GetSettingsReaderForDatabasePath(
+    const base::FilePath& path) {
+  return std::make_unique<SettingsReader>(path.Append(kSettings));
 }
 
 }  // namespace crashpad

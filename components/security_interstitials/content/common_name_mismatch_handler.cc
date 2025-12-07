@@ -4,6 +4,8 @@
 
 #include "components/security_interstitials/content/common_name_mismatch_handler.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/check_op.h"
@@ -138,8 +140,8 @@ void CommonNameMismatchHandler::OnSimpleLoaderHandler(
     response_code = head->headers->response_code();
   }
   if (response_code == 200 && final_url.SchemeIsCryptographic() &&
-      final_url.host() != request_url_.host()) {
-    DCHECK_EQ(final_url.host(), final_url.host());
+      final_url.GetHost() != request_url_.GetHost()) {
+    DCHECK_EQ(final_url.GetHost(), final_url.GetHost());
     result = SUGGESTED_URL_AVAILABLE;
   }
   simple_url_loader_.reset();
@@ -161,7 +163,7 @@ void CommonNameMismatchHandler::OnSimpleLoaderResponseStarted(
 }
 
 void CommonNameMismatchHandler::OnSimpleLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   OnSimpleLoaderHandler(simple_url_loader_->GetFinalURL(),
                         simple_url_loader_->ResponseInfo());
 }

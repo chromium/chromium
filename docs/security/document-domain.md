@@ -91,10 +91,6 @@ window.originAgentCluster;  // true, if page is assigned to an origin-keyed
 
 How to enable/disable the deprecation:
 
-### Enable the Warning (Before M100)
-
-* Start Chrome with `--enable-features=OriginAgentClusterDefaultWarning`
-
 ### Enable the Deprecation (Scheduled for M106)
 
 * In [chrome://flags](chrome://flags#origin-agent-cluster-default), go to

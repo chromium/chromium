@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "ash/keyboard/ui/keyboard_export.h"
+#include "base/containers/span.h"
 #include "ui/base/webui/resource_path.h"
 
 namespace keyboard {
@@ -18,10 +19,9 @@ KEYBOARD_EXPORT extern const char kKeyboardURL[];
 // The host of the keyboard extension URL.
 KEYBOARD_EXPORT extern const char kKeyboardHost[];
 
-// Get the list of keyboard resources. |size| is populated with the number of
-// resources in the returned array.
-KEYBOARD_EXPORT const webui::ResourcePath* GetKeyboardExtensionResources(
-    size_t* size);
+// Get the list of keyboard resources.
+KEYBOARD_EXPORT base::span<const webui::ResourcePath>
+GetKeyboardExtensionResources();
 
 // Initializes the keyboard module. This includes adding the necessary pak files
 // for loading resources used in for the virtual keyboard. This becomes a no-op

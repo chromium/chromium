@@ -94,11 +94,6 @@ void AppListMainView::ShowAppListWhenReady() {
     GetWidget()->Show();
 }
 
-void AppListMainView::SetDragAndDropHostOfCurrentAppList(
-    ApplicationDragAndDropHost* drag_and_drop_host) {
-  contents_view_->SetDragAndDropHostOfCurrentAppList(drag_and_drop_host);
-}
-
 PaginationModel* AppListMainView::GetAppsPaginationModel() {
   return contents_view_->apps_container_view()
       ->apps_grid_view()
@@ -162,11 +157,6 @@ void AppListMainView::OnSearchBoxKeyEvent(ui::KeyEvent* event) {
 bool AppListMainView::CanSelectSearchResults() {
   // If there's a result, keyboard selection is allowed.
   return !!contents_view_->search_result_page_view()->CanSelectSearchResults();
-}
-
-void AppListMainView::AssistantButtonPressed() {
-  delegate_->StartAssistant(
-      assistant::AssistantEntryPoint::kLauncherSearchBoxIcon);
 }
 
 void AppListMainView::CloseButtonPressed() {

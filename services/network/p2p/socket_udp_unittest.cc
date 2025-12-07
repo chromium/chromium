@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/network/p2p/socket_udp.h"
 
 #include <stdint.h>
@@ -19,18 +14,25 @@
 #include "base/containers/circular_deque.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/port_util.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/datagram_server_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -53,15 +55,15 @@ using ::testing::Return;
 
 namespace {
 
-// TODO(nisse): We can't currently use rtc::ScopedFakeClock, because
+// TODO(nisse): We can't currently use webrtc::ScopedFakeClock, because
 // we don't link with webrtc rtc_base_tests_utils. So roll our own.
 
-// Creating an object of this class makes rtc::TimeMicros() and
+// Creating an object of this class makes webrtc::TimeMicros() and
 // related functions return zero unless the clock is advanced.
-class ScopedFakeClock : public rtc::ClockInterface {
+class ScopedFakeClock : public webrtc::ClockInterface {
  public:
-  ScopedFakeClock() { prev_clock_ = rtc::SetClockForTesting(this); }
-  ~ScopedFakeClock() override { rtc::SetClockForTesting(prev_clock_); }
+  ScopedFakeClock() { prev_clock_ = webrtc::SetClockForTesting(this); }
+  ~ScopedFakeClock() override { webrtc::SetClockForTesting(prev_clock_); }
   // ClockInterface implementation.
   int64_t TimeNanos() const override { return time_nanos_; }
   void SetTimeNanos(uint64_t time_nanos) { time_nanos_ = time_nanos; }
@@ -90,10 +92,7 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
 
   void Close() override {}
 
-  int GetPeerAddress(net::IPEndPoint* address) const override {
-    NOTREACHED_IN_MIGRATION();
-    return net::ERR_SOCKET_NOT_CONNECTED;
-  }
+  int GetPeerAddress(net::IPEndPoint* address) const override { NOTREACHED(); }
 
   int GetLocalAddress(net::IPEndPoint* address) const override {
     *address = address_;
@@ -122,14 +121,15 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
     CHECK(recv_callback_.is_null());
     if (incoming_packets_.size() > 0) {
       scoped_refptr<net::IOBuffer> buffer(buf);
-      int size = std::min(
-          static_cast<int>(std::get<1>(incoming_packets_.front()).size()),
-          buf_len);
-      memcpy(buffer->data(), &*(std::get<1>(incoming_packets_.front())).begin(),
-             size);
-      *address = std::get<0>(incoming_packets_.front());
-      std::optional<uint64_t> received_time =
-          std::get<2>(incoming_packets_.front());
+      const UDPPacket& front_packet = incoming_packets_.front();
+      const std::vector<uint8_t>& front_packet_data = std::get<1>(front_packet);
+
+      size_t size = std::min(front_packet_data.size(),
+                             base::checked_cast<size_t>(buf_len));
+      buffer->span().copy_prefix_from(
+          base::span(front_packet_data).first(size));
+      *address = std::get<0>(front_packet);
+      std::optional<uint64_t> received_time = std::get<2>(front_packet);
       if (received_time) {
         fake_clock_ptr_->SetTimeNanos(*received_time);
       }
@@ -149,8 +149,11 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
              const net::IPEndPoint& address,
              net::CompletionOnceCallback callback) override {
     scoped_refptr<net::IOBuffer> buffer(buf);
-    std::vector<uint8_t> data_vector(buffer->data(), buffer->data() + buf_len);
-    sent_packets_->push_back(UDPPacket(address, data_vector, std::nullopt));
+    base::span<const uint8_t> to_write =
+        buffer->first(base::checked_cast<size_t>(buf_len));
+    std::vector<uint8_t> data_vector(to_write.begin(), to_write.end());
+    sent_packets_->push_back(
+        UDPPacket(address, std::move(data_vector), std::nullopt));
     return buf_len;
   }
 
@@ -185,14 +188,14 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
   void FireRecvCallback() {
     if (!recv_callback_.is_null()) {
       DCHECK(!incoming_packets_.empty());
-      int size = std::min(
-          recv_size_,
-          static_cast<int>(std::get<1>(incoming_packets_.front()).size()));
-      memcpy(recv_buffer_->data(),
-             &*std::get<1>(incoming_packets_.front()).begin(), size);
-      *recv_address_ = std::get<0>(incoming_packets_.front());
-      std::optional<uint64_t> received_time =
-          std::get<2>(incoming_packets_.front());
+      const UDPPacket& front_packet = incoming_packets_.front();
+      const auto& front_packet_data = std::get<1>(front_packet);
+      size_t size = std::min(base::checked_cast<size_t>(recv_size_),
+                             front_packet_data.size());
+      recv_buffer_->span().copy_prefix_from(
+          base::span(front_packet_data).first(size));
+      *recv_address_ = std::get<0>(front_packet);
+      std::optional<uint64_t> received_time = std::get<2>(front_packet);
       if (received_time) {
         fake_clock_ptr_->SetTimeNanos(*received_time);
       }
@@ -241,8 +244,18 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
   }
 
   int SetTos(net::DiffServCodePoint dscp, net::EcnCodePoint ecn) override {
-    NOTIMPLEMENTED();
-    return net::ERR_NOT_IMPLEMENTED;
+    set_tos_call_count_++;
+    if (set_tos_result_ != net::OK) {
+      return set_tos_result_;
+    }
+
+    if (dscp != net::DSCP_NO_CHANGE) {
+      last_sent_dscp_ = dscp;
+    }
+    if (ecn != net::ECN_NO_CHANGE) {
+      last_sent_ecn_ = ecn;
+    }
+    return net::OK;
   }
 
   void DetachFromThread() override { NOTIMPLEMENTED(); }
@@ -255,8 +268,18 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
     }
   }
 
+  net::EcnCodePoint GetLastSentEcn() const { return last_sent_ecn_; }
+  net::DiffServCodePoint GetLastSentDscp() const { return last_sent_dscp_; }
+
+  void SetSetTosResult(int result) { set_tos_result_ = result; }
+  int set_tos_call_count() const { return set_tos_call_count_; }
+
  private:
+  int set_tos_result_ = net::OK;
+  int set_tos_call_count_ = 0;
   bool is_recv_ecn_enabled_ = false;
+  net::DiffServCodePoint last_sent_dscp_ = net::DSCP_DEFAULT;
+  net::EcnCodePoint last_sent_ecn_ = net::ECN_DEFAULT;
   net::IPEndPoint address_;
   raw_ptr<base::circular_deque<UDPPacket>> sent_packets_;
   base::circular_deque<UDPPacket> incoming_packets_;
@@ -376,7 +399,7 @@ class P2PSocketUdpTest : public testing::Test {
 TEST_F(P2PSocketUdpTest, SendStunNoAuth) {
   EXPECT_CALL(*fake_client_.get(), SendComplete(_)).Times(3);
 
-  rtc::PacketOptions options;
+  webrtc::AsyncSocketPacketOptions options;
   std::vector<uint8_t> packet1;
   CreateStunRequest(&packet1);
   socket_impl_->Send(packet1, P2PPacketInfo(dest1_, options, 0));
@@ -400,7 +423,7 @@ TEST_F(P2PSocketUdpTest, SendStunNoAuth) {
 // Verify that no data packets can be sent before STUN binding has
 // finished.
 TEST_F(P2PSocketUdpTest, SendDataNoAuth) {
-  rtc::PacketOptions options;
+  webrtc::AsyncSocketPacketOptions options;
   std::vector<uint8_t> packet;
   CreateRandomPacket(&packet);
 
@@ -414,6 +437,50 @@ TEST_F(P2PSocketUdpTest, SendDataNoAuth) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(fake_client_->connection_error());
+}
+
+TEST_F(P2PSocketUdpTest, SendRestrictedAddress) {
+  base::test::ScopedFeatureList feature_list;
+  int restricted_port = 12345;
+  net::IPEndPoint restricted_dest = ParseAddress("127.0.0.1", restricted_port);
+  feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kRestrictAbusePortsOnLocalhost,
+      {{"localhost_restrict_ports", base::NumberToString(restricted_port)}});
+  net::ReloadLocalhostRestrictedPortsForTesting();
+  base::circular_deque<FakeDatagramServerSocket::UDPPacket> sent_packets;
+  std::vector<uint16_t> used_ports;
+  P2PSocketUdp::DatagramServerSocketFactory fake_socket_factory =
+      base::BindRepeating(&CreateFakeDatagramServerSocket, &sent_packets,
+                          &used_ports, &fake_clock_);
+  P2PMessageThrottler throttler;
+
+  mojo::PendingRemote<mojom::P2PSocketClient> socket_client;
+  mojo::PendingRemote<mojom::P2PSocket> socket;
+  auto socket_receiver = socket.InitWithNewPipeAndPassReceiver();
+
+  FakeSocketClient fake_client2(std::move(socket),
+                                socket_client.InitWithNewPipeAndPassReceiver());
+
+  auto socket_impl = std::make_unique<P2PSocketUdp>(
+      &socket_delegate_, std::move(socket_client), std::move(socket_receiver),
+      &throttler, TRAFFIC_ANNOTATION_FOR_TESTS, /*net_log=*/nullptr,
+      std::move(fake_socket_factory), std::nullopt);
+  net::IPEndPoint local_address = ParseAddress(kTestLocalIpAddress, kTestPort1);
+
+  auto* socket_impl_ptr = socket_impl.get();
+  socket_delegate_.ExpectDestruction(std::move(socket_impl));
+  socket_impl_ptr->Init(local_address, 0, 0,
+                        P2PHostAndIPEndPoint(std::string(), restricted_dest),
+                        net::NetworkAnonymizationKey());
+
+  std::vector<uint8_t> request_packet;
+  CreateStunRequest(&request_packet);
+  webrtc::AsyncSocketPacketOptions options;
+  socket_impl_ptr->Send(request_packet,
+                        P2PPacketInfo(restricted_dest, options, 0));
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return fake_client2.connection_error(); }));
 }
 
 // Verify that we can send data after we've received STUN request
@@ -430,7 +497,7 @@ TEST_F(P2PSocketUdpTest, SendAfterStunRequest) {
   // Now we should be able to send any data to |dest1_|.
   EXPECT_CALL(*fake_client_.get(), SendComplete(_));
 
-  rtc::PacketOptions options;
+  webrtc::AsyncSocketPacketOptions options;
   std::vector<uint8_t> packet;
   CreateRandomPacket(&packet);
   socket_impl_->Send(packet, P2PPacketInfo(dest1_, options, 0));
@@ -455,7 +522,7 @@ TEST_F(P2PSocketUdpTest, SendAfterStunResponse) {
   // Now we should be able to send any data to |dest1_|.
   EXPECT_CALL(*fake_client_.get(), SendComplete(_));
 
-  rtc::PacketOptions options;
+  webrtc::AsyncSocketPacketOptions options;
   std::vector<uint8_t> packet;
   CreateRandomPacket(&packet);
   socket_impl_->Send(packet, P2PPacketInfo(dest1_, options, 0));
@@ -478,7 +545,7 @@ TEST_F(P2PSocketUdpTest, SendAfterStunResponseDifferentHost) {
   socket_->ReceivePacket(dest1_, request_packet);
 
   // Should fail when trying to send the same packet to |dest2_|.
-  rtc::PacketOptions options;
+  webrtc::AsyncSocketPacketOptions options;
   std::vector<uint8_t> packet;
   CreateRandomPacket(&packet);
 
@@ -490,6 +557,96 @@ TEST_F(P2PSocketUdpTest, SendAfterStunResponseDifferentHost) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(fake_client_->connection_error());
+}
+
+TEST_F(P2PSocketUdpTest, SendPacketWithCustomDscpOrEcn) {
+  // Open for sends to `dest1_`.
+  std::vector<uint8_t> request_packet;
+  CreateStunRequest(&request_packet);
+  socket_->ReceivePacket(dest1_, request_packet);
+
+  std::vector<uint8_t> packet;
+  CreateRandomPacket(&packet);
+
+  // We'll send four packets.
+  EXPECT_CALL(*fake_client_.get(), SendComplete(_)).Times(4);
+
+  // Send with defaults.
+  webrtc::AsyncSocketPacketOptions pkt1_options;
+  socket_impl_->Send(packet, P2PPacketInfo(dest1_, pkt1_options, 0));
+  ASSERT_EQ(1U, sent_packets_.size());
+  EXPECT_EQ(net::ECN_DEFAULT, socket_->GetLastSentEcn());
+  EXPECT_EQ(net::DSCP_DEFAULT, socket_->GetLastSentDscp());
+
+  // Send with ECT(1).
+  webrtc::AsyncSocketPacketOptions pkt2_options;
+  pkt2_options.ect_1 = true;
+  socket_impl_->Send(packet, P2PPacketInfo(dest1_, pkt2_options, 0));
+  ASSERT_EQ(2U, sent_packets_.size());
+  EXPECT_EQ(net::ECN_ECT1, socket_->GetLastSentEcn());
+  EXPECT_EQ(net::DSCP_DEFAULT, socket_->GetLastSentDscp());
+
+  // Send with DSCP::CS1 and ECT(1).
+  webrtc::AsyncSocketPacketOptions pkt3_options;
+  pkt3_options.ect_1 = true;
+  pkt3_options.dscp = webrtc::DSCP_CS1;
+  socket_impl_->Send(packet, P2PPacketInfo(dest1_, pkt3_options, 0));
+  ASSERT_EQ(3U, sent_packets_.size());
+  EXPECT_EQ(net::ECN_ECT1, socket_->GetLastSentEcn());
+  EXPECT_EQ(net::DSCP_CS1, socket_->GetLastSentDscp());
+
+  // Send with only DSCP::CS4.
+  webrtc::AsyncSocketPacketOptions pkt4_options;
+  pkt4_options.dscp = webrtc::DSCP_CS4;
+  socket_impl_->Send(packet, P2PPacketInfo(dest1_, pkt4_options, 0));
+  ASSERT_EQ(4U, sent_packets_.size());
+  EXPECT_EQ(net::ECN_NOT_ECT, socket_->GetLastSentEcn());
+  EXPECT_EQ(net::DSCP_CS4, socket_->GetLastSentDscp());
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(P2PSocketUdpTest, SetTosBackoff) {
+  // Open for sends to `dest1_`.
+  std::vector<uint8_t> request_packet;
+  CreateStunRequest(&request_packet);
+  socket_->ReceivePacket(dest1_, request_packet);
+
+  std::vector<uint8_t> packet;
+  CreateRandomPacket(&packet);
+
+  EXPECT_CALL(*fake_client_.get(), SendComplete(_)).Times(4);
+
+  // Fail SetTos and check that we back off.
+  socket_->SetSetTosResult(net::ERR_FAILED);
+  webrtc::AsyncSocketPacketOptions pkt1_options;
+  pkt1_options.dscp = webrtc::DSCP_CS1;
+  socket_impl_->Send(packet, P2PPacketInfo(dest1_, pkt1_options, 0));
+  EXPECT_EQ(1, socket_->set_tos_call_count());
+
+  // The second send should not trigger a SetTos call.
+  webrtc::AsyncSocketPacketOptions pkt2_options;
+  pkt2_options.dscp = webrtc::DSCP_CS2;
+  socket_impl_->Send(packet, P2PPacketInfo(dest1_, pkt2_options, 0));
+  EXPECT_EQ(1, socket_->set_tos_call_count());
+
+  // After the backoff timeout we should try setting TOS again.
+  // The backoff policy has an initial delay of 100ms.
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+  // Now, make SetTos succeed and check that we don't back off anymore.
+  socket_->SetSetTosResult(net::OK);
+  webrtc::AsyncSocketPacketOptions pkt4_options;
+  pkt4_options.dscp = webrtc::DSCP_CS4;
+  socket_impl_->Send(packet, P2PPacketInfo(dest1_, pkt4_options, 0));
+  EXPECT_EQ(2, socket_->set_tos_call_count());
+
+  // The backoff has been reset, so this should trigger a SetTos call.
+  webrtc::AsyncSocketPacketOptions pkt5_options;
+  pkt5_options.dscp = webrtc::DSCP_CS5;
+  socket_impl_->Send(packet, P2PPacketInfo(dest1_, pkt5_options, 0));
+  EXPECT_EQ(3, socket_->set_tos_call_count());
+
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(P2PSocketUdpTest, BatchesSendAfterSendingAllowed) {
@@ -522,7 +679,7 @@ TEST_F(P2PSocketUdpTest, BatchesSendAfterSendingAllowed) {
 TEST_F(P2PSocketUdpTest, ThrottleAfterLimit) {
   EXPECT_CALL(*fake_client_.get(), SendComplete(_)).Times(3);
 
-  rtc::PacketOptions options;
+  webrtc::AsyncSocketPacketOptions options;
   std::vector<uint8_t> packet1;
   CreateStunRequest(&packet1);
   throttler_.SetSendIceBandwidth(packet1.size() * 2);
@@ -551,7 +708,7 @@ TEST_F(P2PSocketUdpTest, ThrottleAfterLimitAfterReceive) {
 
   EXPECT_CALL(*fake_client_.get(), SendComplete(_)).Times(6);
 
-  rtc::PacketOptions options;
+  webrtc::AsyncSocketPacketOptions options;
   std::vector<uint8_t> packet1;
   CreateStunRequest(&packet1);
   throttler_.SetSendIceBandwidth(packet1.size());
@@ -581,7 +738,7 @@ TEST_F(P2PSocketUdpTest, ThrottleAfterLimitAfterReceive) {
 TEST_F(P2PSocketUdpTest, ThrottlingStopsAtExpectedTimes) {
   EXPECT_CALL(*fake_client_.get(), SendComplete(_)).Times(12);
 
-  rtc::PacketOptions options;
+  webrtc::AsyncSocketPacketOptions options;
   std::vector<uint8_t> packet;
   CreateStunRequest(&packet);
   // Limit of 2 packets per second.
@@ -598,28 +755,28 @@ TEST_F(P2PSocketUdpTest, ThrottlingStopsAtExpectedTimes) {
 
   // Advance the time to 0.999 seconds; throttling should still just barely be
   // active.
-  fake_clock_.SetTimeNanos(rtc::kNumNanosecsPerMillisec * 999);
+  fake_clock_.SetTimeNanos(webrtc::kNumNanosecsPerMillisec * 999);
   socket_impl_->Send(packet, P2PPacketInfo(dest1_, options, 0));
   socket_impl_->Send(packet, P2PPacketInfo(dest2_, options, 0));
   EXPECT_EQ(2U, sent_packets_.size());
 
   // After hitting the second mark, we should be able to send again.
   // Add an extra millisecond to account for rounding errors.
-  fake_clock_.SetTimeNanos(rtc::kNumNanosecsPerMillisec * 1001);
+  fake_clock_.SetTimeNanos(webrtc::kNumNanosecsPerMillisec * 1001);
   socket_impl_->Send(packet, P2PPacketInfo(dest1_, options, 0));
   EXPECT_EQ(3U, sent_packets_.size());
 
   // This time, hit the limit in the middle of the period.
-  fake_clock_.SetTimeNanos(rtc::kNumNanosecsPerMillisec * 1500);
+  fake_clock_.SetTimeNanos(webrtc::kNumNanosecsPerMillisec * 1500);
   socket_impl_->Send(packet, P2PPacketInfo(dest2_, options, 0));
   EXPECT_EQ(4U, sent_packets_.size());
 
   // Again, throttling should be active until the next second mark.
-  fake_clock_.SetTimeNanos(rtc::kNumNanosecsPerMillisec * 1999);
+  fake_clock_.SetTimeNanos(webrtc::kNumNanosecsPerMillisec * 1999);
   socket_impl_->Send(packet, P2PPacketInfo(dest1_, options, 0));
   socket_impl_->Send(packet, P2PPacketInfo(dest2_, options, 0));
   EXPECT_EQ(4U, sent_packets_.size());
-  fake_clock_.SetTimeNanos(rtc::kNumNanosecsPerMillisec * 2002);
+  fake_clock_.SetTimeNanos(webrtc::kNumNanosecsPerMillisec * 2002);
   socket_impl_->Send(packet, P2PPacketInfo(dest1_, options, 0));
   socket_impl_->Send(packet, P2PPacketInfo(dest2_, options, 0));
   EXPECT_EQ(6U, sent_packets_.size());
@@ -938,7 +1095,7 @@ TEST_F(P2PSocketUdpTest, ReceiveBurstPacketsExceedingMaxBatchingBuffering) {
   // immediately cancels batching more packets.
   socket_->AddRecvPacket(
       dest1_, packets[kNumPacketsWithProcessLatency],
-      kMaximumBatchingBufferingNs + rtc::kNumNanosecsPerMicrosec);
+      kMaximumBatchingBufferingNs + webrtc::kNumNanosecsPerMicrosec);
   // Add the remainder packets.
   for (size_t i = kNumPacketsWithProcessLatency + 1; i < kNumPacketsAll; i++) {
     socket_->AddRecvPacket(dest1_, packets[i]);
@@ -987,16 +1144,16 @@ class P2PSocketUdpWithInterceptorTest : public P2PSocketUdpTest {
   };
 
   void SetNetworkState(NetworkState state) {
-    std::unique_ptr<NetworkConditions> conditions(new NetworkConditions(
-        state.offline, state.latency.InMillisecondsF(), 0.0, 0.0,
-        state.packet_loss, state.packet_queue_length, false));
-    ThrottlingController::SetConditions(*devtools_token_,
-                                        std::move(conditions));
+    ThrottlingController::SetConditions(
+        *devtools_token_,
+        {{{},
+          NetworkConditions{state.offline, state.latency.InMillisecondsF(), 0.0,
+                            0.0, state.packet_loss, state.packet_queue_length,
+                            false, std::nullopt}}});
   }
 
   void RemoveThrottling() {
-    ThrottlingController::SetConditions(*devtools_token_,
-                                        std::unique_ptr<NetworkConditions>());
+    ThrottlingController::SetConditions(*devtools_token_, {});
   }
 
   void AdvanceClock(base::TimeDelta delta) {
@@ -1021,7 +1178,7 @@ TEST_F(P2PSocketUdpWithInterceptorTest, SendPacket) {
   // Now we should be able to send any data to |dest1_|.
   EXPECT_CALL(*fake_client_.get(), SendComplete(_));
 
-  rtc::PacketOptions options;
+  webrtc::AsyncSocketPacketOptions options;
   std::vector<uint8_t> packet;
   CreateRandomPacket(&packet);
   socket_impl_->Send(packet, P2PPacketInfo(dest1_, options, 0));
@@ -1044,7 +1201,7 @@ TEST_F(P2PSocketUdpWithInterceptorTest, SendPacketOffline) {
   // Now we should be able to send any data to |dest1_|.
   EXPECT_CALL(*fake_client_.get(), SendComplete(_)).Times(2);
 
-  rtc::PacketOptions options;
+  webrtc::AsyncSocketPacketOptions options;
   std::vector<uint8_t> packet;
   CreateRandomPacket(&packet);
 
@@ -1071,7 +1228,7 @@ TEST_F(P2PSocketUdpWithInterceptorTest, SendPacketDelayed) {
   // Now we should be able to send any data to |dest1_|.
   EXPECT_CALL(*fake_client_.get(), SendComplete(_)).Times(2);
 
-  rtc::PacketOptions options;
+  webrtc::AsyncSocketPacketOptions options;
   std::vector<uint8_t> packet;
   CreateRandomPacket(&packet);
 
@@ -1103,7 +1260,7 @@ TEST_F(P2PSocketUdpWithInterceptorTest, SendPacketAndRemoveThrottling) {
   // Now we should be able to send any data to |dest1_|.
   EXPECT_CALL(*fake_client_.get(), SendComplete(_)).Times(2);
 
-  rtc::PacketOptions options;
+  webrtc::AsyncSocketPacketOptions options;
   std::vector<uint8_t> packet;
   CreateRandomPacket(&packet);
 
@@ -1135,7 +1292,7 @@ TEST_F(P2PSocketUdpWithInterceptorTest, SendPacketDropsLongQueue) {
   // Now we should be able to send any data to |dest1_|.
   EXPECT_CALL(*fake_client_.get(), SendComplete(_)).Times(500);
 
-  rtc::PacketOptions options;
+  webrtc::AsyncSocketPacketOptions options;
   std::vector<uint8_t> packet;
   CreateRandomPacket(&packet);
 
@@ -1159,7 +1316,7 @@ TEST_F(P2PSocketUdpWithInterceptorTest, SendPacketWithPacketDrop) {
   socket_->ReceivePacket(dest1_, request_packet);
   AdvanceClock(base::Milliseconds(100));
 
-  rtc::PacketOptions options;
+  webrtc::AsyncSocketPacketOptions options;
   std::vector<uint8_t> packet;
   CreateRandomPacket(&packet);
 

@@ -8,6 +8,7 @@ import android.text.TextUtils;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUkmRecorder;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -19,6 +20,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /** Track WebAPKs uninstalls. */
+@NullMarked
 public class WebApkUninstallTracker {
     /** Makes recordings that were deferred in order to not load native. */
     public static void runDeferredTasks() {
@@ -55,7 +57,7 @@ public class WebApkUninstallTracker {
             }
         }
         preferencesManager.writeStringSet(
-                ChromePreferenceKeys.WEBAPK_UNINSTALLED_PACKAGES, new HashSet<String>());
+                ChromePreferenceKeys.WEBAPK_UNINSTALLED_PACKAGES, new HashSet<>());
     }
 
     /** Sets WebAPK uninstall to be recorded next time that native is loaded. */

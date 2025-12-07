@@ -21,9 +21,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
-#include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/invalidation/public/identity_provider.h"
-#include "components/invalidation/public/invalidation_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -32,8 +30,6 @@
 namespace invalidation {
 
 namespace {
-
-constexpr char kDeprecatedSyncInvalidationGCMSenderId[] = "8181035976";
 
 const char kTypeSubscribedForInvalidations[] =
     "invalidation.per_sender_registered_for_invalidation";
@@ -128,18 +124,6 @@ void PerUserTopicSubscriptionManager::RegisterPrefs(
     PrefRegistrySimple* registry) {
   // Same as RegisterProfilePrefs; see comment in the header.
   RegisterProfilePrefs(registry);
-}
-
-// static
-void PerUserTopicSubscriptionManager::ClearDeprecatedPrefs(PrefService* prefs) {
-  if (prefs->HasPrefPath(kTypeSubscribedForInvalidations)) {
-    ScopedDictPrefUpdate update(prefs, kTypeSubscribedForInvalidations);
-    update->Remove(kDeprecatedSyncInvalidationGCMSenderId);
-  }
-  if (prefs->HasPrefPath(kActiveRegistrationTokens)) {
-    ScopedDictPrefUpdate update(prefs, kActiveRegistrationTokens);
-    update->Remove(kDeprecatedSyncInvalidationGCMSenderId);
-  }
 }
 
 struct PerUserTopicSubscriptionManager::SubscriptionEntry {
@@ -265,7 +249,11 @@ void PerUserTopicSubscriptionManager::UpdateSubscribedTopics(
   ReportNewInstanceIdTokenState(new_instance_id_token);
   DropAllSavedSubscriptionsOnTokenChange(new_instance_id_token);
   StoreNewToken(new_instance_id_token);
+  UpdateSubscribedTopics(topics);
+}
 
+void PerUserTopicSubscriptionManager::UpdateSubscribedTopics(
+    const TopicMap& topics) {
   for (const auto& topic : topics) {
     auto it = pending_subscriptions_.find(topic.first);
     if (it != pending_subscriptions_.end() &&
@@ -352,10 +340,8 @@ void PerUserTopicSubscriptionManager::StartPendingSubscriptionRequest(
     const Topic& topic) {
   auto it = pending_subscriptions_.find(topic);
   if (it == pending_subscriptions_.end()) {
-    NOTREACHED_IN_MIGRATION()
-        << "StartPendingSubscriptionRequest called on " << topic
-        << " which is not in the registration map";
-    return;
+    NOTREACHED() << "StartPendingSubscriptionRequest called on " << topic
+                 << " which is not in the registration map";
   }
   if (it->second->request_retry_timer_.IsRunning()) {
     // A retry is already scheduled for this request; nothing to do.

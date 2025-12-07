@@ -15,6 +15,10 @@
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+#endif
+
 namespace content {
 
 // Page represents a collection of documents with the same main document.
@@ -78,6 +82,9 @@ class CONTENT_EXPORT Page : public base::SupportsUserData {
   // |callback| may be called after the WebContents has been destroyed.
   // This must be invoked on the UI thread, |callback| will be invoked on the UI
   // thread.
+  // TODO(https://crbug.com/452053908): Replace usage with PageManifestManager
+  // with PrimaryPageChanged, and eventually remove this GetManifest and
+  // WebContentsObserver::DidUpdateWebManifestURL.
   virtual void GetManifest(GetManifestCallback callback) = 0;
 
   // Returns true iff this Page is primary for the associated `WebContents`
@@ -108,6 +115,11 @@ class CONTENT_EXPORT Page : public base::SupportsUserData {
   // Returns the value set by `window.setResizable(bool)` API or `std::nullopt`
   // if unset which can override `BrowserView::CanResize`.
   virtual std::optional<bool> GetResizable() = 0;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Returns a reference to Page Java counterpart.
+  virtual const base::android::JavaRef<jobject>& GetJavaPage() = 0;
+#endif
 
  private:
   // This method is needed to ensure that PageImpl can both implement a Page's

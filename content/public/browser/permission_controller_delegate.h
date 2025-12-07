@@ -5,11 +5,15 @@
 #ifndef CONTENT_PUBLIC_BROWSER_PERMISSION_CONTROLLER_DELEGATE_H_
 #define CONTENT_PUBLIC_BROWSER_PERMISSION_CONTROLLER_DELEGATE_H_
 
+#include <memory>
 #include <optional>
 
 #include "base/types/id_type.h"
+#include "base/types/optional_ref.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_result.h"
+#include "third_party/blink/public/mojom/permissions/permission.mojom-forward.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -31,10 +35,7 @@ struct PermissionRequestDescription;
 
 class CONTENT_EXPORT PermissionControllerDelegate {
  public:
-  // Identifier for an active subscription.
-  using SubscriptionId = base::IdType64<PermissionControllerDelegate>;
-
-  virtual ~PermissionControllerDelegate() = default;
+  virtual ~PermissionControllerDelegate();
 
   // Requests multiple permissions on behalf of a frame identified by
   // |render_frame_host|. When the permission request is handled, whether it
@@ -47,7 +48,7 @@ class CONTENT_EXPORT PermissionControllerDelegate {
   virtual void RequestPermissions(
       RenderFrameHost* render_frame_host,
       const PermissionRequestDescription& request_description,
-      base::OnceCallback<void(const std::vector<PermissionStatus>&)>
+      base::OnceCallback<void(const std::vector<PermissionResult>&)>
           callback) = 0;
 
   // Requests permissions from the current document in the given
@@ -58,7 +59,7 @@ class CONTENT_EXPORT PermissionControllerDelegate {
   virtual void RequestPermissionsFromCurrentDocument(
       RenderFrameHost* render_frame_host,
       const PermissionRequestDescription& request_description,
-      base::OnceCallback<void(const std::vector<PermissionStatus>&)>
+      base::OnceCallback<void(const std::vector<PermissionResult>&)>
           callback) = 0;
 
   // Returns the permission status of a given requesting_origin/embedding_origin
@@ -66,43 +67,36 @@ class CONTENT_EXPORT PermissionControllerDelegate {
   // outside of a frame context. Prefer GetPermissionStatusForCurrentDocument
   // (below) whenever possible.
   virtual PermissionStatus GetPermissionStatus(
-      blink::PermissionType permission,
+      const blink::mojom::PermissionDescriptorPtr& permission,
       const GURL& requesting_origin,
       const GURL& embedding_origin) = 0;
 
   virtual PermissionResult GetPermissionResultForOriginWithoutContext(
-      blink::PermissionType permission,
+      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       const url::Origin& requesting_origin,
       const url::Origin& embedding_origin) = 0;
 
-  // Should return the permission status for the current document in the given
-  // RenderFrameHost. This is used over `GetPermissionStatus` whenever possible
-  // as this API takes into account the lifecycle state of a given document
-  // (i.e. whether it's in back-forward cache or being prerendered) in addition
-  // to its origin.
+  // Should return the permission result for the current document in the given
+  // RenderFrameHost. This is used over
+  // `GetPermissionResultForOriginWithoutContext` whenever possible as this API
+  // takes into account the lifecycle state of a given document (i.e. whether
+  // it's in back-forward cache or being prerendered) in addition to its origin.
   // When called with should_include_device_status set to true, the delegate
   // should return a combination of the document permission status (site-level)
   // and the device-level permission status. For example, it should return
   // PermissionStatus::DENIED in scenarios where the site-level permission is
   // granted but the device-level permission is not.
-  virtual PermissionStatus GetPermissionStatusForCurrentDocument(
-      blink::PermissionType permission,
+  virtual PermissionResult GetPermissionResultForCurrentDocument(
+      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       RenderFrameHost* render_frame_host,
       bool should_include_device_status) = 0;
 
-  // The method does the same as `GetPermissionStatusForCurrentDocument` but
-  // additionally returns a source or reason for the permission status.
-  virtual PermissionResult GetPermissionResultForCurrentDocument(
-      blink::PermissionType permission,
-      RenderFrameHost* render_frame_host,
-      bool should_include_device_status);
-
-  // Returns the status of the given `permission` for a worker on
+  // Returns the PermissionResult of the given `permission` for a worker on
   // `worker_origin` running in `render_process_host`, also performing
   // additional checks such as Permission Policy.  Use this over
-  // GetPermissionStatus whenever possible.
-  virtual PermissionStatus GetPermissionStatusForWorker(
-      blink::PermissionType permission,
+  // GetPermissionResultWithoutContext whenever possible.
+  virtual PermissionResult GetPermissionResultForWorker(
+      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       RenderProcessHost* render_process_host,
       const GURL& worker_origin) = 0;
 
@@ -112,8 +106,8 @@ class CONTENT_EXPORT PermissionControllerDelegate {
   // `requesting_origin` as a separate parameter because it does not equal the
   // last committed origin of the requesting frame.  It is designed to be used
   // only for `TOP_LEVEL_STORAGE_ACCESS`.
-  virtual PermissionStatus GetPermissionStatusForEmbeddedRequester(
-      blink::PermissionType permission,
+  virtual PermissionResult GetPermissionResultForEmbeddedRequester(
+      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       RenderFrameHost* render_frame_host,
       const url::Origin& requesting_origin) = 0;
 
@@ -123,26 +117,15 @@ class CONTENT_EXPORT PermissionControllerDelegate {
                                const GURL& requesting_origin,
                                const GURL& embedding_origin) = 0;
 
-  // Runs the given |callback| whenever the |permission| associated with the
-  // given |render_frame_host| changes. |render_process_host| should be passed
-  // instead if the request is from a worker. Returns the ID to be used to
-  // unsubscribe, which can be `is_null()` if the subscribe was not successful.
-  // Exactly one of |render_process_host| and |render_frame_host| should be
-  // set, RenderProcessHost will be inferred from |render_frame_host|.
-  virtual SubscriptionId SubscribeToPermissionStatusChange(
-      blink::PermissionType permission,
-      content::RenderProcessHost* render_process_host,
-      content::RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin,
-      bool should_include_device_status,
-      base::RepeatingCallback<void(PermissionStatus)> callback) = 0;
+  // Set a pointer of subscriptions map from PermissionController.
+  virtual void OnPermissionStatusChangeSubscriptionAdded(
+      content::PermissionController::SubscriptionId subscription_id) {}
 
-  // Unregisters from permission status change notifications. The
-  // |subscription_id| must match the value returned by the
-  // SubscribeToPermissionStatusChange call. Unsubscribing an already
-  // unsubscribed |subscription_id| or an `is_null()` ID is a no-op.
-  virtual void UnsubscribeFromPermissionStatusChange(
-      SubscriptionId subscription_id) = 0;
+  // Unregisters from permission status change notifications. This function
+  // is only called by PermissionController. In any other cases, please call the
+  // `PermissionController::UnsubscribeFromPermissionResultChange`.
+  virtual void UnsubscribeFromPermissionResultChange(
+      content::PermissionController::SubscriptionId subscription_id) {}
 
   // If there's currently a permission UI presenting for the given WebContents,
   // returns bounds of the view as an exclusion area. We will use these bounds
@@ -152,25 +135,21 @@ class CONTENT_EXPORT PermissionControllerDelegate {
   virtual std::optional<gfx::Rect> GetExclusionAreaBoundsInScreen(
       WebContents* web_contents) const;
 
-  // Returns whether permission can be overridden.
+  // Returns whether permission can be overridden. A null requesting or
+  // embedding origin is always overridable.
   virtual bool IsPermissionOverridable(
       blink::PermissionType permission,
-      const std::optional<url::Origin>& origin);
+      base::optional_ref<const url::Origin> requesting_origin,
+      base::optional_ref<const url::Origin> embedding_origin);
+
+  void SetSubscriptions(
+      content::PermissionController::SubscriptionsMap* subscriptions);
+  content::PermissionController::SubscriptionsMap* subscriptions();
+
+ private:
+  raw_ptr<content::PermissionController::SubscriptionsMap> subscriptions_;
 };
 
 }  // namespace content
-
-namespace std {
-
-template <>
-struct hash<content::PermissionControllerDelegate::SubscriptionId> {
-  std::size_t operator()(
-      const content::PermissionControllerDelegate::SubscriptionId& v) const {
-    content::PermissionControllerDelegate::SubscriptionId::Hasher hasher;
-    return hasher(v);
-  }
-};
-
-}  // namespace std
 
 #endif  // CONTENT_PUBLIC_BROWSER_PERMISSION_CONTROLLER_DELEGATE_H_

@@ -12,15 +12,11 @@
 
 #include "partition_alloc/partition_alloc_base/numerics/safe_conversions_impl.h"
 
-#if defined(__ARMEL__) && !defined(__native_client__)
+#if defined(__ARMEL__)
 #include "partition_alloc/partition_alloc_base/numerics/safe_conversions_arm_impl.h"
 #define PA_BASE_HAS_OPTIMIZED_SAFE_CONVERSIONS (1)
 #else
 #define PA_BASE_HAS_OPTIMIZED_SAFE_CONVERSIONS (0)
-#endif
-
-#if !PA_BASE_NUMERICS_DISABLE_OSTREAM_OPERATORS
-#include <ostream>
 #endif
 
 namespace partition_alloc::internal::base {

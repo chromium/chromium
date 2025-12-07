@@ -5,12 +5,21 @@
 #include "crypto/user_verifying_key.h"
 
 #include "base/check.h"
+#include "base/functional/callback.h"
+#include "base/no_destructor.h"
 
 namespace crypto {
 
 namespace {
 
 std::unique_ptr<UserVerifyingKeyProvider> (*g_mock_provider)() = nullptr;
+
+UserVerifyingKeysSupportedOverride& GetUserVerifyingKeysSupportedOverride() {
+  static base::NoDestructor<
+      base::RepeatingCallback<void(UserVerifyingKeysSupportedCallback)>>
+      user_verifying_keys_supported_override;
+  return *user_verifying_keys_supported_override;
+}
 
 }  // namespace
 
@@ -63,8 +72,13 @@ std::unique_ptr<UserVerifyingKeyProvider> GetUserVerifyingKeyProvider(
 #endif
 }
 
-void AreUserVerifyingKeysSupported(UserVerifyingKeyProvider::Config config,
-                                   base::OnceCallback<void(bool)> callback) {
+void AreUserVerifyingKeysSupported(
+    UserVerifyingKeyProvider::Config config,
+    UserVerifyingKeysSupportedCallback callback) {
+  if (GetUserVerifyingKeysSupportedOverride()) {
+    GetUserVerifyingKeysSupportedOverride().Run(std::move(callback));
+    return;
+  }
   if (g_mock_provider) {
     std::move(callback).Run(g_mock_provider() != nullptr);
     return;
@@ -88,6 +102,16 @@ void SetUserVerifyingKeyProviderForTesting(
     g_mock_provider = nullptr;
   } else {
     g_mock_provider = func;
+  }
+}
+
+void SetUserVerifyingKeysSupportedOverrideForTesting(
+    UserVerifyingKeysSupportedOverride override) {
+  if (GetUserVerifyingKeysSupportedOverride()) {
+    CHECK(!override);
+    GetUserVerifyingKeysSupportedOverride().Reset();
+  } else {
+    GetUserVerifyingKeysSupportedOverride() = std::move(override);
   }
 }
 

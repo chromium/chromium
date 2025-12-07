@@ -105,7 +105,7 @@ class FeedbackUploaderDispatchTest : public ::testing::Test {
 
   ~FeedbackUploaderDispatchTest() override {
     // Clean up registered ids.
-    variations::testing::ClearAllVariationIDs();
+    variations::test::ClearAllVariationIDs();
   }
 
   // Registers a field trial with the specified name and group and an associated
@@ -113,7 +113,7 @@ class FeedbackUploaderDispatchTest : public ::testing::Test {
   void CreateFieldTrialWithId(const std::string& trial_name,
                               const std::string& group_name,
                               int variation_id) {
-    variations::AssociateGoogleVariationID(
+    variations::AssociateGoogleVariationIDForTesting(
         variations::GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, trial_name, group_name,
         static_cast<variations::VariationID>(variation_id));
     base::FieldTrialList::CreateFieldTrial(trial_name, group_name)->Activate();
@@ -132,7 +132,7 @@ class FeedbackUploaderDispatchTest : public ::testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir scoped_temp_dir_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;

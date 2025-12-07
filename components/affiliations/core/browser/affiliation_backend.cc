@@ -5,7 +5,9 @@
 #include "components/affiliations/core/browser/affiliation_backend.h"
 
 #include <stdint.h>
+
 #include <algorithm>
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -29,13 +31,14 @@
 
 namespace affiliations {
 
-namespace {
-
-void IgnoreResult(base::OnceClosure callback, const AffiliatedFacets&, bool) {
-  std::move(callback).Run();
-}
-
-}  // namespace
+BASE_FEATURE(kFetchChangePasswordUrl,
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+             // Change-password urls aren't utilized in any way on mobile. No
+             // need to fetch them.
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 AffiliationBackend::AffiliationBackend(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
@@ -44,7 +47,6 @@ AffiliationBackend::AffiliationBackend(
     : task_runner_(task_runner),
       clock_(time_source),
       tick_clock_(time_tick_source),
-      fetcher_factory_(std::make_unique<AffiliationFetcherFactoryImpl>()),
       construction_time_(clock_->Now()) {
   DCHECK_LT(base::Time(), clock_->Now());
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -73,11 +75,12 @@ void AffiliationBackend::Initialize(
   DCHECK(!url_loader_factory_);
   url_loader_factory_ = network::SharedURLLoaderFactory::Create(
       std::move(pending_url_loader_factory));
+  fetcher_manager_ = std::make_unique<AffiliationFetcherManager>(
+      std::move(url_loader_factory_));
 }
 
 void AffiliationBackend::GetAffiliationsAndBranding(
     const FacetURI& facet_uri,
-    StrategyOnCacheMiss cache_miss_strategy,
     AffiliationService::ResultCallback callback,
     const scoped_refptr<base::TaskRunner>& callback_task_runner) {
   TRACE_EVENT0("passwords", "AffiliationBackend::GetAffiliationsAndBranding");
@@ -85,8 +88,8 @@ void AffiliationBackend::GetAffiliationsAndBranding(
 
   FacetManager* facet_manager = GetOrCreateFacetManager(facet_uri);
   DCHECK(facet_manager);
-  facet_manager->GetAffiliationsAndBranding(
-      cache_miss_strategy, std::move(callback), callback_task_runner);
+  facet_manager->GetAffiliationsAndBranding(std::move(callback),
+                                            callback_task_runner);
 
   if (facet_manager->CanBeDiscarded())
     facet_managers_.erase(facet_uri);
@@ -199,50 +202,44 @@ std::vector<std::string> AffiliationBackend::GetPSLExtensions() const {
 
 void AffiliationBackend::UpdateAffiliationsAndBranding(
     const std::vector<FacetURI>& facets,
-    base::OnceClosure callback) {
+    base::OnceClosure consumer_closure) {
   TRACE_EVENT0("passwords",
                "AffiliationBackend::UpdateAffiliationsAndBranding");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // If there is no internet connection we can't do anything. Fail immediately.
   if (!throttler_->HasInternetConnection()) {
-    std::move(callback).Run();
+    std::move(consumer_closure).Run();
     return;
   }
 
-  base::RepeatingClosure pending_fetch_calls =
-      base::BarrierClosure(facets.size(), std::move(callback));
-
-  for (const auto& facet_uri : facets) {
-    // Skip invalid facets as it's impossible to request affiliation info for
-    // them.
-    if (!facet_uri.is_valid()) {
-      pending_fetch_calls.Run();
-      continue;
-    }
-    // Clear local cache for |facet_uri|.
-    cache_->DeleteAffiliationsAndBrandingForFacetURI(facet_uri);
-    FacetManager* facet_manager = GetOrCreateFacetManager(facet_uri);
-    DCHECK(facet_manager);
-    facet_manager->GetAffiliationsAndBranding(
-        StrategyOnCacheMiss::TRY_ONCE_OVER_NETWORK,
-        base::BindOnce(&IgnoreResult, pending_fetch_calls), task_runner_);
+  std::vector<FacetURI> valid_facets;
+  std::copy_if(facets.begin(), facets.end(), std::back_inserter(valid_facets),
+               [](const FacetURI& facet) { return facet.is_valid(); });
+  // Return early if there are no facets to request.
+  if (valid_facets.empty()) {
+    std::move(consumer_closure).Run();
+    return;
   }
+  auto result_callback =
+      base::BindOnce(
+          [](base::WeakPtr<AffiliationBackend> weak_self,
+             AffiliationFetcherInterface::FetchResult fetch_result) {
+            if (weak_self && fetch_result.IsSuccessful()) {
+              weak_self->ProcessSuccessfulFetch(
+                  std::move(fetch_result.data.value()));
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr())
+          .Then(std::move(consumer_closure));
+  fetcher_manager_->Fetch(valid_facets,
+                          {.branding_info = true, .psl_extension_list = true},
+                          std::move(result_callback));
 }
 
 // static
 void AffiliationBackend::DeleteCache(const base::FilePath& db_path) {
   AffiliationDatabase::Delete(db_path);
-}
-
-void AffiliationBackend::SetFetcherFactoryForTesting(
-    std::unique_ptr<AffiliationFetcherFactory> fetcher_factory) {
-  fetcher_factory_ = std::move(fetcher_factory);
-}
-
-AffiliationDatabase& AffiliationBackend::GetAffiliationDatabaseForTesting() {
-  CHECK(cache_.get());
-  return *cache_.get();
 }
 
 FacetManager* AffiliationBackend::GetOrCreateFacetManager(
@@ -305,28 +302,24 @@ void AffiliationBackend::RequestNotificationAtTime(const FacetURI& facet_uri,
       time - clock_->Now());
 }
 
-void AffiliationBackend::OnFetchSucceeded(
-    AffiliationFetcherInterface* fetcher,
-    std::unique_ptr<AffiliationFetcherDelegate::Result> result) {
+void AffiliationBackend::ProcessSuccessfulFetch(
+    AffiliationFetcherInterface::ParsedFetchResponse result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  fetcher_.reset();
-  throttler_->InformOfNetworkRequestComplete(true);
-
-  if (!result->psl_extensions.empty()) {
-    cache_->UpdatePslExtensions(result->psl_extensions);
+  if (!result.psl_extensions.empty()) {
+    cache_->UpdatePslExtensions(result.psl_extensions);
   }
 
-  auto psl_extensions = base::MakeFlatSet<std::string>(result->psl_extensions);
-  result->groupings = MergeRelatedGroups(psl_extensions, result->groupings);
+  auto psl_extensions = base::MakeFlatSet<std::string>(result.psl_extensions);
+  result.groupings = MergeRelatedGroups(psl_extensions, result.groupings);
   std::map<std::string, const GroupedFacets*> map_facet_to_group;
-  for (const GroupedFacets& grouped_facets : result->groupings) {
+  for (const GroupedFacets& grouped_facets : result.groupings) {
     for (const Facet& facet : grouped_facets.facets) {
       map_facet_to_group[facet.uri.canonical_spec()] = &grouped_facets;
     }
   }
 
-  for (const AffiliatedFacets& affiliated_facets : result->affiliations) {
+  for (const AffiliatedFacets& affiliated_facets : result.affiliations) {
     AffiliatedFacetsWithUpdateTime affiliation;
     affiliation.facets = affiliated_facets;
     affiliation.last_update_time = clock_->Now();
@@ -356,7 +349,7 @@ void AffiliationBackend::OnFetchSucceeded(
       if (facet_manager_it == facet_managers_.end())
         continue;
       FacetManager* facet_manager = facet_manager_it->second.get();
-      facet_manager->OnFetchSucceeded(affiliation);
+      facet_manager->UpdateLastFetchTime(affiliation.last_update_time);
       if (facet_manager->CanBeDiscarded())
         facet_managers_.erase(facet.uri);
     }
@@ -373,16 +366,11 @@ void AffiliationBackend::OnFetchSucceeded(
   }
 }
 
-void AffiliationBackend::OnFetchFailed(AffiliationFetcherInterface* fetcher) {
+void AffiliationBackend::RetryRequestIfNeeded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  fetcher_.reset();
-  throttler_->InformOfNetworkRequestComplete(false);
 
   // Trigger a retry if a fetch is still needed.
   for (const auto& facet_manager_pair : facet_managers_) {
-    // Notify all fetchers about failure to finish single attempt fetches.
-    facet_manager_pair.second->OnFetchFailed();
     if (facet_manager_pair.second->DoesRequireFetch()) {
       throttler_->SignalNetworkRequestNeeded();
       return;
@@ -390,16 +378,18 @@ void AffiliationBackend::OnFetchFailed(AffiliationFetcherInterface* fetcher) {
   }
 }
 
-void AffiliationBackend::OnMalformedResponse(
-    AffiliationFetcherInterface* fetcher) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // TODO(engedy): Potentially handle this case differently. crbug.com/437865.
-  OnFetchFailed(fetcher);
+void AffiliationBackend::OnFetchFinished(
+    AffiliationFetcherInterface::FetchResult fetch_result) {
+  throttler_->InformOfNetworkRequestComplete(fetch_result.IsSuccessful(),
+                                             fetch_result.http_status_code);
+  if (!fetch_result.IsSuccessful()) {
+    RetryRequestIfNeeded();
+    return;
+  }
+  ProcessSuccessfulFetch(std::move(fetch_result.data.value()));
 }
 
 bool AffiliationBackend::OnCanSendNetworkRequest() {
-  DCHECK(!fetcher_);
   std::vector<FacetURI> requested_facet_uris;
   for (const auto& facet_manager_pair : facet_managers_) {
     if (facet_manager_pair.second->DoesRequireFetch())
@@ -410,23 +400,20 @@ bool AffiliationBackend::OnCanSendNetworkRequest() {
   if (requested_facet_uris.empty())
     return false;
 
-  fetcher_ = fetcher_factory_->CreateInstance(url_loader_factory_, this);
-  // Not possible to create facet, return false to indicate this.
-  if (!fetcher_) {
+  if (!fetcher_manager_->IsFetchPossible()) {
     return false;
   }
+
   // TODO(crbug.com/40858918): There is no need to request psl extension every
   // time, find a better way of caching it.
-#if BUILDFLAG(IS_ANDROID)
-  // psl_extension_list isn't needed on Android because the OS API will apply
-  // it..
-  fetcher_->StartRequest(requested_facet_uris,
-                         {.branding_info = true, .psl_extension_list = false});
-#else
-  fetcher_->StartRequest(requested_facet_uris,
-                         {.branding_info = true, .psl_extension_list = true});
-#endif
   ReportStatistics(requested_facet_uris.size());
+  fetcher_manager_->Fetch(requested_facet_uris,
+                          {.branding_info = true,
+                           .change_password_info = base::FeatureList::IsEnabled(
+                               kFetchChangePasswordUrl),
+                           .psl_extension_list = true},
+                          base::BindOnce(&AffiliationBackend::OnFetchFinished,
+                                         weak_ptr_factory_.GetWeakPtr()));
   return true;
 }
 
@@ -446,11 +433,6 @@ void AffiliationBackend::ReportStatistics(size_t requested_facet_uri_count) {
         base::Seconds(1), base::Days(3), 50);
   }
   last_request_time_ = clock_->Now();
-}
-
-void AffiliationBackend::SetThrottlerForTesting(
-    std::unique_ptr<AffiliationFetchThrottler> throttler) {
-  throttler_ = std::move(throttler);
 }
 
 }  // namespace affiliations

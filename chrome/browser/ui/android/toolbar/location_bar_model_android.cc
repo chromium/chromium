@@ -19,7 +19,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/toolbar/jni_headers/LocationBarModel_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -30,43 +29,32 @@ LocationBarModelAndroid::LocationBarModelAndroid(JNIEnv* env,
                                                  content::kMaxURLDisplayChars)),
       java_object_(obj) {}
 
-LocationBarModelAndroid::~LocationBarModelAndroid() {}
+LocationBarModelAndroid::~LocationBarModelAndroid() = default;
 
-void LocationBarModelAndroid::Destroy(JNIEnv* env,
-                                      const JavaParamRef<jobject>& obj) {
+void LocationBarModelAndroid::Destroy(JNIEnv* env) {
   delete this;
 }
 
 ScopedJavaLocalRef<jstring> LocationBarModelAndroid::GetFormattedFullURL(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+    JNIEnv* env) {
   return base::android::ConvertUTF16ToJavaString(
       env, location_bar_model_->GetFormattedFullURL());
 }
 
 ScopedJavaLocalRef<jstring> LocationBarModelAndroid::GetURLForDisplay(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+    JNIEnv* env) {
   return base::android::ConvertUTF16ToJavaString(
       env, location_bar_model_->GetURLForDisplay());
 }
 
 ScopedJavaLocalRef<jobject>
-LocationBarModelAndroid::GetUrlOfVisibleNavigationEntry(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+LocationBarModelAndroid::GetUrlOfVisibleNavigationEntry(JNIEnv* env) {
   return url::GURLAndroid::FromNativeGURL(env, location_bar_model_->GetURL());
 }
 
-jint LocationBarModelAndroid::GetPageClassification(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
-    bool is_focused_from_fakebox,
-    bool is_prefetch) {
-  // TODO: Android does not save the homepage to the native pref, so we will
-  // never get the HOME_PAGE classification. Fix this by overriding IsHomePage.
-  return location_bar_model_->GetPageClassification(OmniboxFocusSource::OMNIBOX,
-                                                    is_prefetch);
+jint LocationBarModelAndroid::GetPageClassification(JNIEnv* env,
+                                                    bool is_prefetch) const {
+  return location_bar_model_->GetPageClassification(is_prefetch);
 }
 
 content::WebContents* LocationBarModelAndroid::GetActiveWebContents() const {
@@ -78,12 +66,13 @@ content::WebContents* LocationBarModelAndroid::GetActiveWebContents() const {
 
 bool LocationBarModelAndroid::IsNewTabPage() const {
   GURL url;
-  if (!GetURL(&url))
+  if (!GetURL(&url)) {
     return false;
+  }
 
   // Android Chrome has its own Instant NTP page implementation.
   if (url.SchemeIs(chrome::kChromeNativeScheme) &&
-      url.host_piece() == chrome::kChromeUINewTabHost) {
+      url.host() == chrome::kChromeUINewTabHost) {
     return true;
   }
 
@@ -91,6 +80,9 @@ bool LocationBarModelAndroid::IsNewTabPage() const {
 }
 
 // static
-jlong JNI_LocationBarModel_Init(JNIEnv* env, const JavaParamRef<jobject>& obj) {
+static jlong JNI_LocationBarModel_Init(JNIEnv* env,
+                                       const JavaRef<jobject>& obj) {
   return reinterpret_cast<intptr_t>(new LocationBarModelAndroid(env, obj));
 }
+
+DEFINE_JNI(LocationBarModel)

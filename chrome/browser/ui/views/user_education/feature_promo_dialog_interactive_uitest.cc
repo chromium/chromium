@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <vector>
@@ -10,24 +11,28 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
-#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
 #include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
+#include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
+#include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
@@ -43,15 +48,13 @@
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/live_caption/caption_util.h"
-#include "components/user_education/common/feature_promo_controller.h"
-#include "components/user_education/common/feature_promo_specification.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
+#include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "content/public/test/browser_test.h"
-#include "media/base/media_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
-
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-#include "ui/base/pointer/touch_ui_controller.h"
-#endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
+#include "ui/base/interaction/expect_call_in_scope.h"
+#include "ui/base/interaction/interaction_sequence_test_util.h"
 
 using ::testing::_;
 using ::testing::AnyNumber;
@@ -73,7 +76,7 @@ GetReplacementsForFeature(const base::Feature& feature) {
 
 }  // namespace
 
-using TestBase = InteractiveFeaturePromoTestT<DialogBrowserTest>;
+using TestBase = InteractiveFeaturePromoTestMixin<DialogBrowserTest>;
 
 class FeaturePromoDialogTest : public TestBase {
  public:
@@ -87,7 +90,7 @@ class FeaturePromoDialogTest : public TestBase {
     scoped_feature_list_.InitWithFeatures(
         /* enabled_features =*/{*feature_},
         /* disabled_features =*/
-        {media::kLiveCaption, feature_engagement::kIPHLiveCaptionFeature});
+        {feature_engagement::kIPHLiveCaptionFeature});
 
     // TODO(crbug.com/40727458): fix cause of bubbles overflowing the
     // screen and remove this.
@@ -122,16 +125,19 @@ class FeaturePromoDialogTest : public TestBase {
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     auto* const promo_controller =
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->GetFeaturePromoController();
+        UserEducationServiceFactory::GetForBrowserContext(browser()->profile())
+            ->GetFeaturePromoControllerForTesting();
+    auto const context = BrowserUserEducationInterface::From(browser())
+                             ->GetUserEducationContextForTesting();
     ASSERT_TRUE(promo_controller);
 
     // The browser may have already queued a promo for startup. Since the test
     // uses a mock, cancel that and just show it directly.
     const auto status = promo_controller->GetPromoStatus(*feature_);
-    if (status == user_education::FeaturePromoStatus::kQueuedForStartup)
+    if (status == user_education::FeaturePromoStatus::kQueued) {
       promo_controller->EndPromo(
           *feature_, user_education::EndFeaturePromoReason::kAbortPromo);
+    }
 
     // Set up mock tracker to allow the IPH, then attempt to show it.
     EXPECT_CALL(*GetMockTrackerFor(browser()),
@@ -140,9 +146,13 @@ class FeaturePromoDialogTest : public TestBase {
         .WillOnce(Return(true));
     user_education::FeaturePromoParams params(*feature_);
     params.body_params = GetReplacementsForFeature(*feature_);
-    const auto result = promo_controller->MaybeShowPromo(std::move(params));
-    LOG_IF(ERROR, !result) << "Got unexpected result: " << result;
-    ASSERT_TRUE(result);
+    UNCALLED_MOCK_CALLBACK(
+        user_education::FeaturePromoController::ShowPromoResultCallback,
+        show_callback);
+    params.show_promo_result_callback = show_callback.Get();
+    EXPECT_ASYNC_CALL_IN_SCOPE(
+        show_callback, Run(user_education::FeaturePromoResult::Success()),
+        promo_controller->MaybeShowPromo(std::move(params), context));
   }
 
  private:
@@ -155,7 +165,7 @@ class FeaturePromoDialogTest : public TestBase {
     std::vector<const base::Feature*> iph_features =
         feature_engagement::GetAllFeatures();
     auto feature_it =
-        base::ranges::find(iph_features, name, &base::Feature::name);
+        std::ranges::find(iph_features, name, &base::Feature::name);
     CHECK(feature_it != iph_features.end());
     return *feature_it;
   }
@@ -198,38 +208,36 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_DesktopPwaInstall) {
   auto* app_banner_manager =
       webapps::TestAppBannerManagerDesktop::FromWebContents(web_contents);
   app_banner_manager->WaitForInstallableCheck();
+  // TODO(crbug.com/376283433): The legacy page action has a bug that prevents
+  // it from displaying in "chip" mode (just the icon shows). We force the
+  // migrated page action to be collapsed for now to ensure consistency in the
+  // snapshot.
+  // This can be removed once the page action migration path is fully rolled
+  // out.
+  if (IsPageActionMigrated(PageActionIconType::kPwaInstall)) {
+    browser()
+        ->GetActiveTabInterface()
+        ->GetTabFeatures()
+        ->page_action_controller()
+        ->HideSuggestionChip(kActionInstallPwa);
+  }
   EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
-                  ->toolbar()
-                  ->location_bar()
-                  ->page_action_icon_controller()
-                  ->GetIconView(PageActionIconType::kPwaInstall)
+                  ->toolbar_button_provider()
+                  ->GetPageActionView(kActionInstallPwa)
                   ->GetVisible());
+
   browser()->window()->Activate();
   ui_test_utils::BrowserActivationWaiter(browser()).WaitForActivation();
 
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_LiveCaption) {
-  if (!captions::IsLiveCaptionFeatureSupported())
-    return;
-
-  BrowserView::GetBrowserViewForBrowser(browser())
-      ->toolbar()
-      ->media_button()
-      ->Show();
-  RunScheduledLayouts();
-
-  set_baseline("2936082");
-  ShowAndVerifyUi();
-}
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_ProfileSwitch) {
   set_baseline("3710120");
   ShowAndVerifyUi();
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_TabSearch) {
   set_baseline("2991858");
@@ -241,29 +249,3 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest,
   set_baseline("3253618");
   ShowAndVerifyUi();
 }
-
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-
-// Need a separate fixture to override the feature flag.
-class FeaturePromoDialogWebUITabStripTest : public FeaturePromoDialogTest {
- public:
-  FeaturePromoDialogWebUITabStripTest() {
-    feature_list_.InitAndEnableFeature(features::kWebUITabStrip);
-  }
-
-  ~FeaturePromoDialogWebUITabStripTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(FeaturePromoDialogWebUITabStripTest,
-                       InvokeUi_IPH_WebUITabStrip) {
-  ui::TouchUiController::TouchUiScoperForTesting touch_override(true);
-  RunScheduledLayouts();
-
-  set_baseline("2473537");
-  ShowAndVerifyUi();
-}
-
-#endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)

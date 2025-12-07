@@ -52,4 +52,14 @@ bool TextInputType::SupportsInputModeAttribute() const {
   return true;
 }
 
+bool TextInputType::SupportsBaseAppearance(
+    Element::BaseAppearanceValue value) const {
+  if (!RuntimeEnabledFeatures::AppearanceBaseEnabled()) {
+    return false;
+  }
+  // TODO(crbug.com/450139531): Remove the type check here and implement base
+  // appearance for all text input types.
+  return type() == Type::kText && value == Element::BaseAppearanceValue::kBase;
+}
+
 }  // namespace blink

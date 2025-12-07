@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("games") {
   sources = [
@@ -13,6 +13,8 @@ static_library("games") {
     "game_result.cc",
     "game_result.h",
   ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
     "//ash/constants",
@@ -25,7 +27,7 @@ static_library("games") {
     "//chrome/browser/ash/app_list/search/common",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources:app_icon_resources",
-    "//chrome/browser/ui/ash",
+    "//chrome/browser/ui/ash/thumbnail_loader",
     "//chromeos/ash/components/string_matching",
     "//components/prefs",
     "//ui/base",

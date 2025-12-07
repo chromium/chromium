@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/zucchini/element_detection.h"
 
+#include <algorithm>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "components/zucchini/buildflags.h"
 #include "components/zucchini/disassembler.h"
 #include "components/zucchini/disassembler_no_op.h"
+#include "components/zucchini/image_utils.h"
 #include "components/zucchini/version_info.h"
 
 #if BUILDFLAG(ENABLE_DEX)
@@ -181,17 +179,21 @@ std::optional<Element> DetectElementFromDisassembler(ConstBufferView image) {
   return std::nullopt;
 }
 
-/******** ProgramScanner ********/
+/******** ElementFinder ********/
 
-ElementFinder::ElementFinder(ConstBufferView image, ElementDetector&& detector)
-    : image_(image), detector_(std::move(detector)) {}
+ElementFinder::ElementFinder(ConstBufferView image,
+                             ElementDetector&& detector,
+                             offset_t init_pos)
+    : image_(image),
+      detector_(std::move(detector)),
+      pos_(std::min(init_pos, static_cast<offset_t>(image.size()))) {}
 
 ElementFinder::~ElementFinder() = default;
 
 std::optional<Element> ElementFinder::GetNext() {
   for (; pos_ < image_.size(); ++pos_) {
-    ConstBufferView test_image =
-        ConstBufferView::FromRange(image_.begin() + pos_, image_.end());
+    ConstBufferView test_image = ConstBufferView::FromRange(
+        UNSAFE_TODO(image_.begin() + pos_), image_.end());
     std::optional<Element> element = detector_.Run(test_image);
     if (element) {
       element->offset += pos_;

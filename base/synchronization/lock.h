@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 
 #if DCHECK_IS_ON()
+#include "base/compiler_specific.h"
 #include "base/threading/platform_thread_ref.h"
 #endif
 
@@ -27,6 +28,12 @@ class LOCKABLE BASE_EXPORT Lock {
 
   Lock(const Lock&) = delete;
   Lock& operator=(const Lock&) = delete;
+
+#if defined(__clang__)
+  // We use this only for clang's thread annotation "Negative Capabilities". It
+  // should never be called. We intentionally leave it undefined.
+  Lock& operator!();
+#endif
 
 #if !DCHECK_IS_ON()
   ~Lock() = default;
@@ -68,9 +75,12 @@ class LOCKABLE BASE_EXPORT Lock {
   // priorities.
   static bool HandlesMultipleThreadPriorities() {
 #if BUILDFLAG(IS_WIN)
-    // Windows mitigates priority inversion by randomly boosting the priority of
-    // ready threads.
-    // https://msdn.microsoft.com/library/windows/desktop/ms684831.aspx
+    // Prior to Windows 11, Windows mitigated priority inversion by randomly
+    // boosting the priority of ready threads. From Windows 11 onwards, priority
+    // inversion mitigation works similar to POSIX through a facility called
+    // AutoBoost which sets the priority floor of the thread holding the lock to
+    // the maximum priority of its waiters.
+    // https://github.com/MicrosoftDocs/win32/commit/a43cb3b5039c5cfc53642bfcea174003a2f1168f
     return true;
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     // POSIX mitigates priority inversion by setting the priority of a thread
@@ -128,15 +138,15 @@ using AutoTryLock = internal::BasicAutoTryLock<Lock>;
 using AutoUnlock = internal::BasicAutoUnlock<Lock>;
 
 // Like AutoLock but is a no-op when the provided Lock* is null. Inspired from
-// absl::MutexLockMaybe. Use this instead of std::optional<base::AutoLock> to
-// get around -Wthread-safety-analysis warnings for conditional locking.
+// absl::MutexLockMaybe. Use this instead of std::optional<AutoLock> to get
+// around -Wthread-safety-analysis warnings for conditional locking.
 using AutoLockMaybe = internal::BasicAutoLockMaybe<Lock>;
 
 // Like AutoLock but permits Release() of its mutex before destruction.
 // Release() may be called at most once. Inspired from
-// absl::ReleasableMutexLock. Use this instead of std::optional<base::AutoLock>
-// to get around -Wthread-safety-analysis warnings for AutoLocks that are
-// explicitly released early (prefer proper scoping to this).
+// absl::ReleasableMutexLock. Use this instead of std::optional<AutoLock> to get
+// around -Wthread-safety-analysis warnings for AutoLocks that are explicitly
+// released early (prefer proper scoping to this).
 using ReleasableAutoLock = internal::BasicReleasableAutoLock<Lock>;
 
 }  // namespace base

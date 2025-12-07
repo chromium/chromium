@@ -25,6 +25,7 @@
 #include "media/audio/audio_manager.h"
 #include "media/audio/audio_output_dispatcher_impl.h"
 #include "media/audio/audio_output_proxy.h"
+#include "media/base/audio_bus.h"
 #if BUILDFLAG(IS_WIN)
 #include "media/audio/win/core_audio_util_win.h"
 #endif  // BUILDFLAG(IS_WIN)
@@ -201,7 +202,7 @@ OpenStreamResult GetSubsequentStreamCreationResultBucket(
       return success ? OpenStreamResult::kFallbackToFakeSuccess
                      : OpenStreamResult::kFallbackToFakeFail;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -438,7 +439,7 @@ void AudioOutputResampler::StopStream(AudioOutputProxy* stream_proxy) {
   DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());
 
   auto it = callbacks_.find(stream_proxy);
-  CHECK(it != callbacks_.end(), base::NotFatalUntil::M130);
+  CHECK(it != callbacks_.end());
   StopStreamInternal(*it);
 }
 

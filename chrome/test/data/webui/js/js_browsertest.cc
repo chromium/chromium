@@ -60,11 +60,20 @@ IN_PROC_BROWSER_TEST_F(WebUiJsTest, Store) {
   RunTest("js/store_test.js", "mocha.run();");
 }
 
+// Flaky on Android. Sometimes the visibility events are not received, or they
+// are received twice while the test expects only one.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(WebUiJsTest, TrackedElement) {
+  RunTest("js/tracked_element/tracked_element_test.js",
+          "runMochaSuite('TrackedElementTest');");
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 IN_PROC_BROWSER_TEST_F(WebUiJsTest, MetricsReporter) {
-  // MetricsReporter needs a host that enables BINDINGS_POLICY_MOJO_WEB_UI.
+  // MetricsReporter needs a host that enables BindingsPolicyValue::kMojoWebUi.
   // Any WebUI host should work, except chrome://webui-test since it is just a
   // WebUIDataSource.
-  set_test_loader_host(chrome::kChromeUINewTabPageHost);
+  set_test_loader_host(chrome::kChromeUIChromeURLsHost);
   RunTest("js/metrics_reporter/metrics_reporter_test.js", "mocha.run();");
 }
 

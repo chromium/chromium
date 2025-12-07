@@ -6,14 +6,16 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_MANAGER_TEST_BASE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
+#include "components/password_manager/core/common/password_manager_ui.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
@@ -30,6 +32,9 @@ class BubbleObserver {
   BubbleObserver(const BubbleObserver&) = delete;
   BubbleObserver& operator=(const BubbleObserver&) = delete;
 
+  // Checks whether bubble was displayed automatically.
+  bool IsBubbleDisplayedAutomatically() const;
+
   // Checks if the save prompt is being currently available due to either manual
   // fallback or successful login.
   bool IsSavePromptAvailable() const;
@@ -37,10 +42,6 @@ class BubbleObserver {
   // Checks if the update prompt is being currently available due to either
   // manual fallback or successful login.
   bool IsUpdatePromptAvailable() const;
-
-  // Checks if the default store changed warning prompt is being currently
-  // available.
-  bool IsDefaultStoreChangedPromptAvailable() const;
 
   // Checks if the save prompt was shown automatically.
   // |web_contents| must be the custom one returned by
@@ -52,11 +53,6 @@ class BubbleObserver {
   // PasswordManagerBrowserTestBase.
   bool IsUpdatePromptShownAutomatically() const;
 
-  // Checks if the default store changed prompt was shown automatically.
-  // |web_contents| must be the custom one returned by
-  // PasswordManagerBrowserTestBase.
-  bool IsDefaultStoreChangedPromptShownAutomatically() const;
-
   // Hide the currently open prompt.
   void Hide() const;
 
@@ -67,11 +63,6 @@ class BubbleObserver {
   // Expecting that the prompt is available, updates the password. At the end,
   // checks that the prompt is no longer visible afterwards.
   void AcceptUpdatePrompt() const;
-
-  // Expecting that the prompt is available. Clicks "Continue" in the default
-  // store changed warning prompt. At the end, checks that the  default store
-  // changed prompt is no longer visible afterwards.
-  void AcknowledgeDefaultStoreChange() const;
 
   // Returns once the account chooser pops up or it's already shown.
   // |web_contents| must be the custom one returned by
@@ -103,13 +94,11 @@ class BubbleObserver {
   // the allotted timeout.
   // |web_contents| must be the custom one returned by
   // PasswordManagerBrowserTestBase.
-  bool WaitForFallbackForSaving(
-      const base::TimeDelta timeout = base::TimeDelta::Max()) const;
-
-  // Returns once the prompt for saving unsynced credentials pops up.
-  void WaitForSaveUnsyncedCredentialsPrompt() const;
+  bool WaitForFallbackForSaving() const;
 
  private:
+  void WaitForState(password_manager::ui::State target_state) const;
+
   const raw_ptr<ManagePasswordsUIController> passwords_ui_controller_;
 };
 
@@ -130,9 +119,6 @@ class PasswordManagerBrowserTestBase : public CertVerifierBrowserTest {
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
   void SetUpCommandLine(base::CommandLine* command_line) override;
-
-  // Creates a new tab with all the password manager test hooks and returns it.
-  static content::WebContents* GetNewTab(Browser* browser);
 
   // Make sure that the password store associated with the given browser
   // processed all the previous calls, calls executed on another thread.
@@ -184,14 +170,21 @@ class PasswordManagerBrowserTestBase : public CertVerifierBrowserTest {
   void CheckElementValue(const std::string& iframe_id,
                          const std::string& element_id,
                          const std::string& expected_value);
+  // Returns the current "value" attribute of the HTML element with
+  // `element_id`.
+  std::string GetElementValue(const std::string& iframe_id,
+                              const std::string& element_id);
 
   // Synchronoulsy adds the given host to the list of valid HSTS hosts.
   void AddHSTSHost(const std::string& host);
 
-  // Checks that |password_store| stores only one credential with |username| and
-  // |password|.
-  void CheckThatCredentialsStored(const std::string& username,
-                                  const std::string& password);
+  // Checks that |password_store| stores only one credential with |username|,
+  // |password| and |password_type| optionally.
+  void CheckThatCredentialsStored(
+      const std::string& username,
+      const std::string& password,
+      std::optional<std::string> backup_password = std::nullopt,
+      std::optional<password_manager::PasswordForm::Type> type = std::nullopt);
 
   // Accessors
   // Return the first created tab with a custom ManagePasswordsUIController.
@@ -199,6 +192,7 @@ class PasswordManagerBrowserTestBase : public CertVerifierBrowserTest {
   content::RenderFrameHost* RenderFrameHost() const;
   net::EmbeddedTestServer& https_test_server() { return https_test_server_; }
 
+  void SetWebContents(content::WebContents* web_content);
   void ClearWebContentsPtr();
 
  private:

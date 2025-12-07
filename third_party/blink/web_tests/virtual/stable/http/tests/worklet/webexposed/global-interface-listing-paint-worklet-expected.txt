@@ -1,5 +1,15 @@
 CONSOLE MESSAGE: This test logs exposed APIs once from each PaintWorkletGlobalScope
 CONSOLE MESSAGE: [INTERFACES]
+CONSOLE MESSAGE: interface AsyncDisposableStack
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     getter disposed
+CONSOLE MESSAGE:     method Symbol(Symbol.asyncDispose)
+CONSOLE MESSAGE:     method adopt
+CONSOLE MESSAGE:     method constructor
+CONSOLE MESSAGE:     method defer
+CONSOLE MESSAGE:     method disposeAsync
+CONSOLE MESSAGE:     method move
+CONSOLE MESSAGE:     method use
 CONSOLE MESSAGE: interface ByteLengthQueuingStrategy
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter highWaterMark
@@ -180,6 +190,19 @@ CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter highWaterMark
 CONSOLE MESSAGE:     getter size
 CONSOLE MESSAGE:     method constructor
+CONSOLE MESSAGE: interface DisposableStack
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     getter disposed
+CONSOLE MESSAGE:     method Symbol(Symbol.dispose)
+CONSOLE MESSAGE:     method adopt
+CONSOLE MESSAGE:     method constructor
+CONSOLE MESSAGE:     method defer
+CONSOLE MESSAGE:     method dispose
+CONSOLE MESSAGE:     method move
+CONSOLE MESSAGE:     method use
+CONSOLE MESSAGE: interface Float16Array : TypedArray
+CONSOLE MESSAGE:     attribute BYTES_PER_ELEMENT
+CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE: interface PaintRenderingContext2D
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter fillStyle
@@ -187,6 +210,7 @@ CONSOLE MESSAGE:     getter filter
 CONSOLE MESSAGE:     getter globalAlpha
 CONSOLE MESSAGE:     getter globalCompositeOperation
 CONSOLE MESSAGE:     getter imageSmoothingEnabled
+CONSOLE MESSAGE:     getter imageSmoothingQuality
 CONSOLE MESSAGE:     getter lineCap
 CONSOLE MESSAGE:     getter lineDashOffset
 CONSOLE MESSAGE:     getter lineJoin
@@ -239,6 +263,7 @@ CONSOLE MESSAGE:     setter filter
 CONSOLE MESSAGE:     setter globalAlpha
 CONSOLE MESSAGE:     setter globalCompositeOperation
 CONSOLE MESSAGE:     setter imageSmoothingEnabled
+CONSOLE MESSAGE:     setter imageSmoothingQuality
 CONSOLE MESSAGE:     setter lineCap
 CONSOLE MESSAGE:     setter lineDashOffset
 CONSOLE MESSAGE:     setter lineJoin
@@ -271,6 +296,11 @@ CONSOLE MESSAGE:     method moveTo
 CONSOLE MESSAGE:     method quadraticCurveTo
 CONSOLE MESSAGE:     method rect
 CONSOLE MESSAGE:     method roundRect
+CONSOLE MESSAGE: interface QuotaExceededError : DOMException
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     getter quota
+CONSOLE MESSAGE:     getter requested
+CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE: interface ReadableByteStreamController
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter byobRequest
@@ -329,6 +359,10 @@ CONSOLE MESSAGE:     method getAll
 CONSOLE MESSAGE:     method has
 CONSOLE MESSAGE:     method keys
 CONSOLE MESSAGE:     method values
+CONSOLE MESSAGE: interface SuppressedError : Error
+CONSOLE MESSAGE:     attribute message
+CONSOLE MESSAGE:     attribute name
+CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE: interface TransformStream
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter readable
@@ -367,6 +401,17 @@ CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE:     method releaseLock
 CONSOLE MESSAGE:     method write
 CONSOLE MESSAGE: [NAMESPACES]
+CONSOLE MESSAGE: namespace Temporal
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     attribute Now
+CONSOLE MESSAGE:     method Duration
+CONSOLE MESSAGE:     method Instant
+CONSOLE MESSAGE:     method PlainDate
+CONSOLE MESSAGE:     method PlainDateTime
+CONSOLE MESSAGE:     method PlainMonthDay
+CONSOLE MESSAGE:     method PlainTime
+CONSOLE MESSAGE:     method PlainYearMonth
+CONSOLE MESSAGE:     method ZonedDateTime
 CONSOLE MESSAGE: namespace console
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     method assert
@@ -399,6 +444,16 @@ CONSOLE MESSAGE:     getter devicePixelRatio
 CONSOLE MESSAGE:     method gc
 CONSOLE MESSAGE:     method registerPaint
 CONSOLE MESSAGE: [INTERFACES]
+CONSOLE MESSAGE: interface AsyncDisposableStack
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     getter disposed
+CONSOLE MESSAGE:     method Symbol(Symbol.asyncDispose)
+CONSOLE MESSAGE:     method adopt
+CONSOLE MESSAGE:     method constructor
+CONSOLE MESSAGE:     method defer
+CONSOLE MESSAGE:     method disposeAsync
+CONSOLE MESSAGE:     method move
+CONSOLE MESSAGE:     method use
 CONSOLE MESSAGE: interface ByteLengthQueuingStrategy
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter highWaterMark
@@ -579,6 +634,19 @@ CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter highWaterMark
 CONSOLE MESSAGE:     getter size
 CONSOLE MESSAGE:     method constructor
+CONSOLE MESSAGE: interface DisposableStack
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     getter disposed
+CONSOLE MESSAGE:     method Symbol(Symbol.dispose)
+CONSOLE MESSAGE:     method adopt
+CONSOLE MESSAGE:     method constructor
+CONSOLE MESSAGE:     method defer
+CONSOLE MESSAGE:     method dispose
+CONSOLE MESSAGE:     method move
+CONSOLE MESSAGE:     method use
+CONSOLE MESSAGE: interface Float16Array : TypedArray
+CONSOLE MESSAGE:     attribute BYTES_PER_ELEMENT
+CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE: interface PaintRenderingContext2D
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter fillStyle
@@ -586,6 +654,7 @@ CONSOLE MESSAGE:     getter filter
 CONSOLE MESSAGE:     getter globalAlpha
 CONSOLE MESSAGE:     getter globalCompositeOperation
 CONSOLE MESSAGE:     getter imageSmoothingEnabled
+CONSOLE MESSAGE:     getter imageSmoothingQuality
 CONSOLE MESSAGE:     getter lineCap
 CONSOLE MESSAGE:     getter lineDashOffset
 CONSOLE MESSAGE:     getter lineJoin
@@ -638,6 +707,7 @@ CONSOLE MESSAGE:     setter filter
 CONSOLE MESSAGE:     setter globalAlpha
 CONSOLE MESSAGE:     setter globalCompositeOperation
 CONSOLE MESSAGE:     setter imageSmoothingEnabled
+CONSOLE MESSAGE:     setter imageSmoothingQuality
 CONSOLE MESSAGE:     setter lineCap
 CONSOLE MESSAGE:     setter lineDashOffset
 CONSOLE MESSAGE:     setter lineJoin
@@ -670,6 +740,11 @@ CONSOLE MESSAGE:     method moveTo
 CONSOLE MESSAGE:     method quadraticCurveTo
 CONSOLE MESSAGE:     method rect
 CONSOLE MESSAGE:     method roundRect
+CONSOLE MESSAGE: interface QuotaExceededError : DOMException
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     getter quota
+CONSOLE MESSAGE:     getter requested
+CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE: interface ReadableByteStreamController
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter byobRequest
@@ -728,6 +803,10 @@ CONSOLE MESSAGE:     method getAll
 CONSOLE MESSAGE:     method has
 CONSOLE MESSAGE:     method keys
 CONSOLE MESSAGE:     method values
+CONSOLE MESSAGE: interface SuppressedError : Error
+CONSOLE MESSAGE:     attribute message
+CONSOLE MESSAGE:     attribute name
+CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE: interface TransformStream
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter readable
@@ -766,6 +845,17 @@ CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE:     method releaseLock
 CONSOLE MESSAGE:     method write
 CONSOLE MESSAGE: [NAMESPACES]
+CONSOLE MESSAGE: namespace Temporal
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     attribute Now
+CONSOLE MESSAGE:     method Duration
+CONSOLE MESSAGE:     method Instant
+CONSOLE MESSAGE:     method PlainDate
+CONSOLE MESSAGE:     method PlainDateTime
+CONSOLE MESSAGE:     method PlainMonthDay
+CONSOLE MESSAGE:     method PlainTime
+CONSOLE MESSAGE:     method PlainYearMonth
+CONSOLE MESSAGE:     method ZonedDateTime
 CONSOLE MESSAGE: namespace console
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     method assert

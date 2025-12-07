@@ -1,0 +1,107 @@
+// Copyright 2024 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/writing-assistance-apis
+
+enum SummarizerType { "tldr", "key-points", "teaser", "headline" };
+enum SummarizerFormat { "plain-text", "markdown" };
+enum SummarizerLength { "short", "medium", "long" };
+
+dictionary SummarizerCreateCoreOptions {
+  SummarizerType type = "key-points";
+  SummarizerFormat format = "markdown";
+  SummarizerLength length = "short";
+
+  sequence<DOMString> expectedInputLanguages;
+  sequence<DOMString> expectedContextLanguages;
+  DOMString outputLanguage;
+};
+
+dictionary SummarizerCreateOptions : SummarizerCreateCoreOptions {
+  AbortSignal signal;
+  CreateMonitorCallback monitor;
+  DOMString sharedContext;
+};
+
+dictionary SummarizerSummarizeOptions {
+  DOMString context;
+  AbortSignal signal;
+};
+
+[
+  Exposed(Window AISummarizationAPI, Worker AISummarizationAPIForWorkers),
+  RuntimeEnabled=AISummarizationAPI,
+  SecureContext
+]
+interface Summarizer {
+  [
+    MeasureAs=Summarizer_Availability,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<Availability> availability(
+    optional SummarizerCreateCoreOptions options = {}
+  );
+
+  [
+    MeasureAs=Summarizer_Create,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<Summarizer> create(optional SummarizerCreateOptions options = {});
+
+  [
+    MeasureAs=Summarizer_Summarize,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<DOMString> summarize(
+    DOMString input,
+    optional SummarizerSummarizeOptions options = {}
+  );
+
+  [
+    MeasureAs=Summarizer_SummarizeStreaming,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  ReadableStream summarizeStreaming(
+    DOMString input,
+    optional SummarizerSummarizeOptions options = {}
+  );
+
+  [
+    MeasureAs=Summarizer_MeasureInputUsage,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<double> measureInputUsage(
+    DOMString input,
+    optional SummarizerSummarizeOptions options = {}
+  );
+
+  [
+    MeasureAs=Summarizer_Destroy,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  void destroy();
+
+  [MeasureAs=Summarizer_SharedContext]
+  readonly attribute DOMString sharedContext;
+  [MeasureAs=Summarizer_Type]
+  readonly attribute SummarizerType type;
+  [MeasureAs=Summarizer_Format]
+  readonly attribute SummarizerFormat format;
+  [MeasureAs=Summarizer_Length]
+  readonly attribute SummarizerLength length;
+  [MeasureAs=Summarizer_ExpectedInputLanguages]
+  readonly attribute FrozenArray<DOMString>? expectedInputLanguages;
+  [MeasureAs=Summarizer_ExpectedContextLanguages]
+  readonly attribute FrozenArray<DOMString>? expectedContextLanguages;
+  [MeasureAs=Summarizer_OutputLanguage]
+  readonly attribute DOMString? outputLanguage;
+  [MeasureAs=Summarizer_InputQuota]
+  readonly attribute unrestricted double inputQuota;
+};

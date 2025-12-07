@@ -26,6 +26,8 @@
 #include "remoting/host/desktop_session_agent.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
 #include "base/win/windows_version.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -87,15 +89,8 @@ void DesktopProcess::LockWorkstation() {
     PLOG(ERROR) << "LockWorkStation() failed";
   }
 #else
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif  // BUILDFLAG(IS_WIN)
-}
-
-bool DesktopProcess::OnMessageReceived(const IPC::Message& message) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
-  NOTREACHED_IN_MIGRATION()
-      << "Received unexpected IPC type: " << message.type();
-  return false;
 }
 
 void DesktopProcess::OnChannelConnected(int32_t peer_pid) {

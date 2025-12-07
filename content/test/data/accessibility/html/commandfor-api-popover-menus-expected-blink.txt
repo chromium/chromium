@@ -1,0 +1,30 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++button collapsed
+++++++menuBar horizontal
+++++++++menuItem collapsed name='First item'
+++++++++++staticText name='First item'
+++++++++++++inlineTextBox name='First item'
+++++++++menuItem name='No command item'
+++++++++++staticText name='No command item'
+++++++++++++inlineTextBox name='No command item'
+++++++++menuItem name='Custom command item'
+++++++++++staticText name='Custom command item'
+++++++++++++inlineTextBox name='Custom command item'
+++++++button collapsed
+++++++menuBar horizontal
+++++++++menuItem collapsed name='First item'
+++++++++++staticText name='First item'
+++++++++++++inlineTextBox name='First item'
+++++++menuBar horizontal
+++++++++menuItem expanded name='First item'
+++++++++++staticText name='First item'
+++++++++++++inlineTextBox name='First item'
+++++++group ispopup=auto
+++++++++menuItem name='Submenu1 first item'
+++++++++++staticText name='Submenu1 first item'
+++++++++++++inlineTextBox name='Submenu1 first item'
+++++++++menuItem collapsed name='Submenu1 second item'
+++++++++++staticText name='Submenu1 second item'
+++++++++++++inlineTextBox name='Submenu1 second item'

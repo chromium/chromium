@@ -16,11 +16,8 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/cstring_view.h"
 #include "base/time/time.h"
 #include "base/win/windows_types.h"
-#include "build/branding_buildflags.h"
-#include "build/build_config.h"
 #include "chrome/installer/util/lzma_util.h"
 #include "chrome/installer/util/util_constants.h"
 
@@ -34,53 +31,25 @@ class Version;
 
 namespace installer {
 
-class InstallationState;
 class InstallerState;
 class InitialPreferences;
 
 extern const char kUnPackStatusMetricsName[];
 
 // The name of consumers of UnPackArchive which is used to publish metrics.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum UnPackConsumer {
-  CHROME_ARCHIVE_PATCH,
-  COMPRESSED_CHROME_ARCHIVE,
-  SETUP_EXE_PATCH,
-  UNCOMPRESSED_CHROME_ARCHIVE,
+  // CHROME_ARCHIVE_PATCH = 0,
+  COMPRESSED_CHROME_ARCHIVE = 1,
+  // SETUP_EXE_PATCH = 2,
+  UNCOMPRESSED_CHROME_ARCHIVE = 3,
 };
-
-// Applies a patch file to source file using Courgette. Returns 0 in case of
-// success. In case of errors, it returns kCourgetteErrorOffset + a Courgette
-// status code, as defined in courgette/courgette.h
-int CourgettePatchFiles(const base::FilePath& src,
-                        const base::FilePath& patch,
-                        const base::FilePath& dest);
-
-// Applies a patch file to source file using bsdiff. This function uses
-// Courgette's flavor of bsdiff. Returns 0 in case of success, or
-// kBsdiffErrorOffset + a bsdiff status code in case of errors.
-// See courgette/third_party/bsdiff/bsdiff.h for details.
-int BsdiffPatchFiles(const base::FilePath& src,
-                     const base::FilePath& patch,
-                     const base::FilePath& dest);
-
-// Applies a patch file to source file using Zucchini. Returns 0 in case of
-// success. In case of errors, it returns kZucchiniErrorOffset + a Zucchini
-// status code, as defined in components/zucchini/zucchini.h
-int ZucchiniPatchFiles(const base::FilePath& src,
-                       const base::FilePath& patch,
-                       const base::FilePath& dest);
 
 // Find the version of Chrome from an install source directory.
 // Chrome_path should contain at least one version folder.
 // Returns the maximum version found or nullptr if no version is found.
 base::Version* GetMaxVersionFromArchiveDir(const base::FilePath& chrome_path);
-
-// Returns the uncompressed archive of the installed version that serves as the
-// source for patching.  If |desired_version| is valid, only the path to that
-// version will be returned, or empty if it doesn't exist.
-base::FilePath FindArchiveToPatch(const InstallationState& original_state,
-                                  const InstallerState& installer_state,
-                                  const base::Version& desired_version);
 
 // Spawns a new process that waits for a specified amount of time before
 // attempting to delete |path|.  This is useful for setup to delete the
@@ -135,10 +104,6 @@ void DeRegisterEventLogProvider();
 void DoLegacyCleanups(const InstallerState& installer_state,
                       InstallStatus install_status);
 
-// Returns the time of the start of the console user's Windows logon session, or
-// a null time in case of error.
-base::Time GetConsoleSessionStartTime();
-
 // Returns a DM token decoded from the base-64 `encoded_token`, or null in case
 // of a decoding error.  The returned DM token is an opaque binary blob and
 // should not be treated as an ASCII or UTF-8 string.
@@ -173,18 +138,16 @@ std::wstring GetWerHelperRegistryPath();
 base::FilePath GetElevationServicePath(const base::FilePath& target_path,
                                        const base::Version& version);
 
+// Returns the file path to elevated_tracing_service.exe (in `version`
+// directory).
+base::FilePath GetTracingServicePath(const base::FilePath& target_path,
+                                     const base::Version& version);
+
 // Adds or removes downgrade version registry value.
 void AddUpdateDowngradeVersionItem(HKEY root,
                                    const base::Version& current_version,
                                    const base::Version& new_version,
                                    WorkItemList* list);
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// Store the current Windows version in the Windows registry, and return the
-// previously stored last version.
-std::wstring UpdateLastWindowsVersion(base::wcstring_view os_version);
-
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace installer
 

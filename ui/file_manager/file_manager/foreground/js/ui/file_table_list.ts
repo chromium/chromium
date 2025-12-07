@@ -413,7 +413,7 @@ export function isDlpBlocked(
  */
 export function renderFileTypeIcon(
     doc: Document, entry: Entry, locationInfo: null|EntryLocation,
-    mimeType?: string): HTMLDivElement {
+    mimeType?: string): HTMLElement {
   const icon = doc.createElement('div');
   icon.className = 'detail-icon';
   const rootType = locationInfo?.rootType;
@@ -426,7 +426,7 @@ export function renderFileTypeIcon(
  * individual items in the grid and list view.
  * @param doc Owner document.
  */
-export function renderIconBadge(doc: Document): HTMLDivElement {
+export function renderIconBadge(doc: Document): HTMLElement {
   const divElement = doc.createElement('div');
   divElement.classList.add('icon-badge');
   return divElement;
@@ -440,7 +440,7 @@ export function renderIconBadge(doc: Document): HTMLDivElement {
  */
 export function renderFileNameLabel(
     doc: Document, entry: Entry|FilesAppEntry,
-    locationInfo: null|EntryLocation): HTMLDivElement {
+    locationInfo: null|EntryLocation): HTMLElement {
   // Filename need to be in a '.filename-label' container for correct
   // work of inplace renaming.
   const box = doc.createElement('div');

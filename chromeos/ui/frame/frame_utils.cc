@@ -9,21 +9,23 @@
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/base/hit_test.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
+#include "ui/views/window/frame_view.h"
 #include "ui/views/window/hit_test_utils.h"
-#include "ui/views/window/non_client_view.h"
 
 namespace chromeos {
 
 using WindowOpacity = views::Widget::InitParams::WindowOpacity;
 
-int FrameBorderNonClientHitTest(views::NonClientFrameView* view,
+int FrameBorderNonClientHitTest(views::FrameView* view,
                                 const gfx::Point& point_in_widget) {
   gfx::Rect expanded_bounds = view->bounds();
   int outside_bounds = chromeos::kResizeOutsideBoundsSize;
@@ -38,7 +40,7 @@ int FrameBorderNonClientHitTest(views::NonClientFrameView* view,
   // Check the frame first, as we allow a small area overlapping the contents
   // to be used for resize handles.
   views::Widget* widget = view->GetWidget();
-  bool in_tablet_mode = display::Screen::GetScreen()->InTabletMode();
+  bool in_tablet_mode = display::Screen::Get()->InTabletMode();
   // Ignore the resize border when maximized or full screen or in (split view)
   // tablet mode.
   const bool has_resize_border =
@@ -100,7 +102,7 @@ bool ShouldUseRestoreFrame(const views::Widget* widget) {
 
 SnapDirection GetSnapDirectionForWindow(aura::Window* window, bool left_top) {
   const bool is_primary_display_layout = chromeos::IsDisplayLayoutPrimary(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window));
+      display::Screen::Get()->GetDisplayNearestWindow(window));
   if (left_top) {
     return is_primary_display_layout ? SnapDirection::kPrimary
                                      : SnapDirection::kSecondary;
@@ -110,46 +112,20 @@ SnapDirection GetSnapDirectionForWindow(aura::Window* window, bool left_top) {
   }
 }
 
-int GetFrameCornerRadius(const aura::Window* native_window) {
-  if (!ShouldWindowHaveRoundedCorners(native_window)) {
-    return 0;
-  }
+gfx::RoundedCornersF GetWindowRoundedCorners() {
+  const int corner_radius = features::IsRoundedWindowsEnabled()
+                                ? kRoundedWindowCornerRadius
+                                : kRoundedWindowSmallCornerRadius;
 
-  const WindowStateType window_state =
-      native_window->GetProperty(kWindowStateTypeKey);
-
-  if (window_state == WindowStateType::kPip) {
-    return kPipRoundedCornerRadius;
-  }
-
-  return features::IsRoundedWindowsEnabled() ? features::RoundedWindowsRadius()
-                                             : kTopCornerRadiusWhenRestored;
+  const bool rounded_bottom_corners = features::IsRoundedWindowsEnabled();
+  return gfx::RoundedCornersF(corner_radius, corner_radius,
+                              rounded_bottom_corners ? corner_radius : 0,
+                              rounded_bottom_corners ? corner_radius : 0);
 }
 
-bool CanPropertyEffectFrameRadius(const void* class_property_key) {
-  return class_property_key == kIsShowingInOverviewKey ||
-         class_property_key == kWindowStateTypeKey;
-}
-
-bool ShouldWindowStateHaveRoundedCorners(WindowStateType type) {
-  return IsNormalWindowStateType(type) || type == WindowStateType::kFloated ||
-         type == WindowStateType::kPip;
-}
-
-bool ShouldWindowHaveRoundedCorners(const aura::Window* native_window) {
-  const WindowStateType window_state =
-      native_window->GetProperty(kWindowStateTypeKey);
-
-  // In overview mode, the native window is displayed in `ash::WindowMiniView`
-  // with its own `ash::WindowMiniViewHeaderView`. This mini view has its own
-  // rounded corners. Therefore we do not need to round the native window.
-  // Apart from redundant rounding, rounding the native frame is problematic for
-  // browsers. For packaged apps, we hide the frame header but for browsers, we
-  // still show the header since the tab strip is rendered over the header. In
-  // overview mode, the header becomes a part of contents of WindowMiniView and
-  // rounding the header ends up rounding the top corners of the contents.
-  const bool in_overview = native_window->GetProperty(kIsShowingInOverviewKey);
-  return ShouldWindowStateHaveRoundedCorners(window_state) && !in_overview;
+bool CanPropertyEffectWindowRoundedCorners(const void* class_property_key) {
+  return class_property_key == kWindowHasRoundedCornersKey ||
+         class_property_key == aura::client::kWindowRoundedCornersKey;
 }
 
 }  // namespace chromeos

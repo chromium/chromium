@@ -5,6 +5,7 @@
 #include "components/embedder_support/ios/delegate/file_chooser/file_select_helper_ios.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/render_frame_host.h"
@@ -12,7 +13,7 @@
 #include "net/base/filename_util.h"
 #include "net/base/mime_util.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
@@ -142,9 +143,7 @@ void FileSelectHelperIOS::RunFileChooser(
       dialog_type_ = ui::SelectFileDialog::SELECT_SAVEAS_FILE;
       break;
     default:
-      // Prevent warning.
-      dialog_type_ = ui::SelectFileDialog::SELECT_OPEN_FILE;
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   gfx::NativeWindow owning_window = web_contents_->GetTopLevelNativeWindow();
@@ -231,7 +230,8 @@ void FileSelectHelperIOS::OnListDone(int error) {
   std::vector<blink::mojom::FileChooserFileInfoPtr> chooser_files;
   for (const auto& file_path : entry->results_) {
     chooser_files.push_back(blink::mojom::FileChooserFileInfo::NewNativeFile(
-        blink::mojom::NativeFileInfo::New(file_path, std::u16string())));
+        blink::mojom::NativeFileInfo::New(file_path, std::u16string(),
+                                          std::vector<std::u16string>())));
   }
 
   listener_->FileSelected(std::move(chooser_files), base_dir_,
@@ -252,8 +252,8 @@ void FileSelectHelperIOS::ConvertToFileChooserFileInfoList(
   for (const auto& file : files) {
     chooser_files.push_back(blink::mojom::FileChooserFileInfo::NewNativeFile(
         blink::mojom::NativeFileInfo::New(
-            file.local_path,
-            base::FilePath(file.display_name).AsUTF16Unsafe())));
+            file.local_path, base::FilePath(file.display_name).AsUTF16Unsafe(),
+            std::vector<std::u16string>())));
   }
 
   listener_->FileSelected(std::move(chooser_files), base::FilePath(),

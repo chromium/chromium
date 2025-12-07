@@ -1,0 +1,17 @@
+[
+  {
+    "os": [
+      "chromeos"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "settings.managed.help_me_read",
+      "default_value": 0,
+      "default_for_enterprise_users": 1,
+      "values_to_test": [
+        0,
+        1,
+        2
+      ]
+    }
+  }
+]

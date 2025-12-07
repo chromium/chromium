@@ -10,6 +10,7 @@ class Value;
 }
 
 namespace sync_pb {
+class AccountSettingSpecifics;
 class AppListSpecifics;
 class AppSettingSpecifics;
 class AppSpecifics;
@@ -17,6 +18,7 @@ class ArcPackageSpecifics;
 class AutofillProfileSpecifics;
 class AutofillSpecifics;
 class AutofillOfferSpecifics;
+class AutofillValuableMetadataSpecifics;
 class AutofillWalletCredentialSpecifics;
 class AutofillWalletSpecifics;
 class AutofillWalletUsageSpecifics;
@@ -104,6 +106,9 @@ class WorkspaceDeskSpecifics;
 
 namespace syncer {
 
+base::Value AccountSettingSpecificsToValue(
+    const sync_pb::AccountSettingSpecifics& proto);
+
 base::Value AppListSpecificsToValue(const sync_pb::AppListSpecifics& proto);
 
 base::Value AppSettingSpecificsToValue(
@@ -122,6 +127,9 @@ base::Value AutofillProfileSpecificsToValue(
 
 base::Value AutofillSpecificsToValue(
     const sync_pb::AutofillSpecifics& autofill_specifics);
+
+base::Value AccountValuableMetadataSpecificsToValue(
+    const sync_pb::AutofillValuableMetadataSpecifics& proto);
 
 base::Value AutofillWalletCredentialSpecificsToValue(
     const sync_pb::AutofillWalletCredentialSpecifics&

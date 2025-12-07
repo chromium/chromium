@@ -35,8 +35,7 @@ const char* GetServerConnectionCodeString(
     ENUM_CASE(SYNC_AUTH_ERROR);
     ENUM_CASE(SERVER_CONNECTION_OK);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 #undef ENUM_CASE

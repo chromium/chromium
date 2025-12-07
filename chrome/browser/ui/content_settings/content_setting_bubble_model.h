@@ -7,10 +7,12 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <map>
 #include <string>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -39,7 +41,7 @@ class ProtocolHandlerRegistry;
 namespace content {
 class Page;
 class WebContents;
-}
+}  // namespace content
 
 namespace ui {
 class Event;
@@ -322,6 +324,9 @@ class ContentSettingSimpleBubbleModel : public ContentSettingBubbleModel {
   // ContentSettingBubbleModel implementation.
   ContentSettingSimpleBubbleModel* AsSimpleBubbleModel() override;
 
+ protected:
+  bool IsContentAllowed();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(FramebustBlockBrowserTest, ManageButtonClicked);
 
@@ -430,7 +435,7 @@ class ContentSettingMediaStreamBubbleModel : public ContentSettingBubbleModel {
 
   // The content settings that are associated with the individual radio
   // buttons.
-  ContentSetting radio_item_setting_[2];
+  std::array<ContentSetting, 2> radio_item_setting_;
   // The state of the microphone and camera access.
   content_settings::PageSpecificContentSettings::MicrophoneCameraState state_;
 };

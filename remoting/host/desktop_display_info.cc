@@ -4,14 +4,49 @@
 
 #include "remoting/host/desktop_display_info.h"
 
+#include <algorithm>
+
 #include "base/check.h"
 #include "build/build_config.h"
 #include "remoting/base/constants.h"
 #include "remoting/base/logging.h"
 #include "remoting/proto/control.pb.h"
+#include "remoting/protocol/coordinate_conversion.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
 namespace remoting {
+
+DisplayGeometry::DisplayGeometry() = default;
+DisplayGeometry::DisplayGeometry(webrtc::ScreenId id,
+                                 int32_t x,
+                                 int32_t y,
+                                 uint32_t width,
+                                 uint32_t height,
+                                 uint32_t dpi,
+                                 uint32_t bpp,
+                                 bool is_default,
+                                 const std::string& display_name)
+    : id(id),
+      x(x),
+      y(y),
+      width(width),
+      height(height),
+      dpi(dpi),
+      bpp(bpp),
+      is_default(is_default),
+      display_name(display_name) {}
+
+DisplayGeometry::DisplayGeometry(const DisplayGeometry&) = default;
+DisplayGeometry& DisplayGeometry::operator=(const DisplayGeometry&) = default;
+DisplayGeometry::~DisplayGeometry() = default;
+
+bool DisplayGeometry::Contains(
+    const webrtc::DesktopVector& global_absolute_coordinate) const {
+  return global_absolute_coordinate.x() >= x &&
+         global_absolute_coordinate.x() < static_cast<int>(x + width) &&
+         global_absolute_coordinate.y() >= y &&
+         global_absolute_coordinate.y() < static_cast<int>(y + height);
+}
 
 DesktopDisplayInfo::DesktopDisplayInfo() = default;
 DesktopDisplayInfo::DesktopDisplayInfo(DesktopDisplayInfo&&) = default;
@@ -31,7 +66,8 @@ bool DesktopDisplayInfo::operator==(const DesktopDisplayInfo& other) const {
           this_display.height != other_display.height ||
           this_display.dpi != other_display.dpi ||
           this_display.bpp != other_display.bpp ||
-          this_display.is_default != other_display.is_default) {
+          this_display.is_default != other_display.is_default ||
+          this_display.display_name != other_display.display_name) {
         return false;
       }
     }
@@ -168,21 +204,33 @@ void DesktopDisplayInfo::AddDisplay(const DisplayGeometry& display) {
 void DesktopDisplayInfo::AddDisplayFrom(
     const protocol::VideoTrackLayout& track) {
   DisplayGeometry display;
-  display.id = track.screen_id();
-  display.x = track.position_x();
-  display.y = track.position_y();
-  display.width = track.width();
-  display.height = track.height();
-  display.dpi = track.x_dpi();
-  display.bpp = 24;
-  display.is_default = false;
-  displays_.push_back(display);
+  displays_.emplace_back(track.screen_id(), track.position_x(),
+                         track.position_y(), track.width(), track.height(),
+                         /* dpi */ track.x_dpi(),
+                         /* bpp */ 24,
+                         /* is_default */ false, track.display_name());
+}
+
+std::optional<protocol::FractionalCoordinate>
+DesktopDisplayInfo::ToFractionalCoordinate(
+    const webrtc::DesktopVector& global_absolute_coordinate) const {
+  auto it = std::find_if(
+      displays_.begin(), displays_.end(),
+      [&global_absolute_coordinate](const DisplayGeometry& display) {
+        return display.Contains(global_absolute_coordinate);
+      });
+  if (it == displays_.end()) {
+    return std::nullopt;
+  }
+  return protocol::ToFractionalCoordinate(
+      it->id, {static_cast<int>(it->width), static_cast<int>(it->height)},
+      {global_absolute_coordinate.x() - it->x,
+       global_absolute_coordinate.y() - it->y});
 }
 
 std::unique_ptr<protocol::VideoLayout> DesktopDisplayInfo::GetVideoLayoutProto()
     const {
   auto layout = std::make_unique<protocol::VideoLayout>();
-  HOST_LOG << "Displays loaded:";
   for (const auto& display : displays()) {
     protocol::VideoTrackLayout* track = layout->add_video_track();
     track->set_position_x(display.x);
@@ -192,15 +240,24 @@ std::unique_ptr<protocol::VideoLayout> DesktopDisplayInfo::GetVideoLayoutProto()
     track->set_x_dpi(display.dpi);
     track->set_y_dpi(display.dpi);
     track->set_screen_id(display.id);
-    HOST_LOG << "   Display: " << display.x << "," << display.y << " "
-             << display.width << "x" << display.height << " @ " << display.dpi
-             << ", id=" << display.id << ", bpp=" << display.bpp
-             << ", primary=" << display.is_default;
+    track->set_display_name(display.display_name);
     if (display.is_default) {
       if (layout->has_primary_screen_id()) {
         LOG(WARNING) << "Multiple primary displays found";
       }
       layout->set_primary_screen_id(display.id);
+    }
+  }
+  if (pixel_type_.has_value()) {
+    switch (*pixel_type_) {
+      case PixelType::LOGICAL:
+        layout->set_pixel_type(
+            protocol::VideoLayout::PixelType::VideoLayout_PixelType_LOGICAL);
+        break;
+      case PixelType::PHYSICAL:
+        layout->set_pixel_type(
+            protocol::VideoLayout::PixelType::VideoLayout_PixelType_PHYSICAL);
+        break;
     }
   }
   return layout;
@@ -209,7 +266,7 @@ std::unique_ptr<protocol::VideoLayout> DesktopDisplayInfo::GetVideoLayoutProto()
 std::ostream& operator<<(std::ostream& out, const DisplayGeometry& geo) {
   out << "Display " << geo.id << (geo.is_default ? " (primary)" : "") << ": "
       << geo.x << "+" << geo.y << "-" << geo.width << "x" << geo.height << " @ "
-      << geo.dpi;
+      << geo.dpi << " - " << geo.display_name;
   return out;
 }
 

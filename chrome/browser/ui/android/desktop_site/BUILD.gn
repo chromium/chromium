@@ -1,0 +1,59 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/desktop_site/DesktopSiteUtils.java",
+  ]
+  deps = [
+    "//base:base_java",
+    "//base:base_shared_preferences_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//components/browser_ui/site_settings/android:constants_java",
+    "//components/browser_ui/site_settings/android:java",
+    "//components/browser_ui/util/android:java",
+    "//components/content_settings/android:content_settings_enums_java",
+    "//components/content_settings/core/common:content_settings_types_java",
+    "//components/feature_engagement/public:public_java",
+    "//components/messages/android:java",
+    "//components/prefs/android:java",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_full_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
+    "//url:url_java",
+  ]
+}
+
+robolectric_library("junit") {
+  sources = [ "java/src/org/chromium/chrome/browser/desktop_site/DesktopSiteUtilsUnitTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//base:base_shared_preferences_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/browser_ui/site_settings/android:constants_java",
+    "//components/browser_ui/site_settings/android:java",
+    "//components/browser_ui/util/android:java",
+    "//components/content_settings/android:content_settings_enums_java",
+    "//components/prefs/android:java",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_full_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+    "//url:gurl_junit_test_support",
+    "//url:url_java",
+  ]
+}

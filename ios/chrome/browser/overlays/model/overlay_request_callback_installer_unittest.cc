@@ -6,17 +6,18 @@
 
 #include "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
 #include "ios/chrome/browser/overlays/model/public/overlay_request.h"
+#include "ios/chrome/browser/overlays/model/public/overlay_request_config.h"
 #include "ios/chrome/browser/overlays/model/public/overlay_response.h"
+#include "ios/chrome/browser/overlays/model/public/overlay_response_info.h"
 #include "ios/chrome/browser/overlays/model/test/fake_overlay_request_callback_installer.h"
-#include "ios/chrome/browser/overlays/model/test/overlay_test_macros.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/platform_test.h"
 
 namespace {
 // Request configs used in tests.
-DEFINE_TEST_OVERLAY_REQUEST_CONFIG(SupportedConfig);
-DEFINE_TEST_OVERLAY_REQUEST_CONFIG(UnsupportedConfig);
-DEFINE_TEST_OVERLAY_RESPONSE_INFO(DispatchInfo);
+DEFINE_STATELESS_OVERLAY_REQUEST_CONFIG(SupportedConfig);
+DEFINE_STATELESS_OVERLAY_REQUEST_CONFIG(UnsupportedConfig);
+DEFINE_STATELESS_OVERLAY_RESPONSE_INFO(DispatchInfo);
 }  // namespace
 
 // Test fixture for OverlayRequestCallbackInstaller.

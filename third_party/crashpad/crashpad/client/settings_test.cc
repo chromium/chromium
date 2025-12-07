@@ -26,14 +26,15 @@ namespace {
 
 class SettingsTest : public testing::Test {
  public:
-  SettingsTest() = default;
+  SettingsTest()
+      : temp_dir_(),
+        settings_path_(temp_dir_.path().Append(FILE_PATH_LITERAL("settings"))),
+        settings_(settings_path_) {}
 
   SettingsTest(const SettingsTest&) = delete;
   SettingsTest& operator=(const SettingsTest&) = delete;
 
-  base::FilePath settings_path() {
-    return temp_dir_.path().Append(FILE_PATH_LITERAL("settings"));
-  }
+  base::FilePath settings_path() { return settings_path_; }
 
   Settings* settings() { return &settings_; }
 
@@ -51,12 +52,11 @@ class SettingsTest : public testing::Test {
 
  protected:
   // testing::Test:
-  void SetUp() override {
-    ASSERT_TRUE(settings()->Initialize(settings_path()));
-  }
+  void SetUp() override { ASSERT_TRUE(settings()->Initialize()); }
 
  private:
-  ScopedTempDir temp_dir_;
+  const ScopedTempDir temp_dir_;
+  const base::FilePath settings_path_;
   Settings settings_;
 };
 
@@ -65,8 +65,8 @@ TEST_F(SettingsTest, ClientID) {
   EXPECT_TRUE(settings()->GetClientID(&client_id));
   EXPECT_NE(client_id, UUID());
 
-  Settings local_settings;
-  EXPECT_TRUE(local_settings.Initialize(settings_path()));
+  Settings local_settings(settings_path());
+  EXPECT_TRUE(local_settings.Initialize());
   UUID actual;
   EXPECT_TRUE(local_settings.GetClientID(&actual));
   EXPECT_EQ(actual, client_id);
@@ -82,8 +82,8 @@ TEST_F(SettingsTest, UploadsEnabled) {
   EXPECT_TRUE(settings()->GetUploadsEnabled(&enabled));
   EXPECT_TRUE(enabled);
 
-  Settings local_settings;
-  EXPECT_TRUE(local_settings.Initialize(settings_path()));
+  Settings local_settings(settings_path());
+  EXPECT_TRUE(local_settings.Initialize());
   enabled = false;
   EXPECT_TRUE(local_settings.GetUploadsEnabled(&enabled));
   EXPECT_TRUE(enabled);
@@ -108,11 +108,33 @@ TEST_F(SettingsTest, LastUploadAttemptTime) {
   EXPECT_TRUE(settings()->GetLastUploadAttemptTime(&actual));
   EXPECT_EQ(actual, expected);
 
-  Settings local_settings;
-  EXPECT_TRUE(local_settings.Initialize(settings_path()));
+  Settings local_settings(settings_path());
+  EXPECT_TRUE(local_settings.Initialize());
   actual = -1;
   EXPECT_TRUE(local_settings.GetLastUploadAttemptTime(&actual));
   EXPECT_EQ(actual, expected);
+}
+
+TEST_F(SettingsTest, ReadOnly) {
+  {  // A SettingsReader can read an existing setting...
+    SettingsReader reader(settings_path());
+    bool enabled = true;
+    // Default value is false.
+    EXPECT_TRUE(reader.GetUploadsEnabled(&enabled));
+    EXPECT_FALSE(enabled);
+
+    settings()->SetUploadsEnabled(true);
+    EXPECT_TRUE(reader.GetUploadsEnabled(&enabled));
+    EXPECT_TRUE(enabled);
+  }
+
+  {  // ...but not one that doesn't exist.
+    base::FilePath bad_path =
+        settings_path().DirName().Append(FILE_PATH_LITERAL("does_not_exist"));
+    SettingsReader reader(bad_path);
+    bool enabled = true;
+    EXPECT_FALSE(reader.GetUploadsEnabled(&enabled));
+  }
 }
 
 // The following tests write a corrupt settings file and test the recovery
@@ -121,8 +143,8 @@ TEST_F(SettingsTest, LastUploadAttemptTime) {
 TEST_F(SettingsTest, BadFileOnInitialize) {
   InitializeBadFile();
 
-  Settings settings;
-  EXPECT_TRUE(settings.Initialize(settings_path()));
+  Settings settings(settings_path());
+  EXPECT_TRUE(settings.Initialize());
 }
 
 TEST_F(SettingsTest, BadFileOnGet) {
@@ -132,8 +154,8 @@ TEST_F(SettingsTest, BadFileOnGet) {
   EXPECT_TRUE(settings()->GetClientID(&client_id));
   EXPECT_NE(client_id, UUID());
 
-  Settings local_settings;
-  EXPECT_TRUE(local_settings.Initialize(settings_path()));
+  Settings local_settings(settings_path());
+  EXPECT_TRUE(local_settings.Initialize());
   UUID actual;
   EXPECT_TRUE(local_settings.GetClientID(&actual));
   EXPECT_EQ(actual, client_id);
@@ -162,8 +184,8 @@ TEST_F(SettingsTest, UnlinkFile) {
       << ErrnoMessage("unlink");
 #endif
 
-  Settings local_settings;
-  EXPECT_TRUE(local_settings.Initialize(settings_path()));
+  Settings local_settings(settings_path());
+  EXPECT_TRUE(local_settings.Initialize());
   UUID new_client_id;
   EXPECT_TRUE(local_settings.GetClientID(&new_client_id));
   EXPECT_NE(new_client_id, client_id);

@@ -9,7 +9,9 @@
 
 #include <map>
 
-#include "base/memory/ref_counted.h"
+#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/service/shader_translator.h"
 #include "gpu/config/gpu_preferences.h"
 #include "third_party/angle/include/GLSLANG/ShaderLang.h"
@@ -62,7 +64,7 @@ class GPU_GLES2_EXPORT ShaderTranslatorCache
                                const ShBuiltInResources& resources,
                                ShShaderOutput shader_output_language,
                                const ShCompileOptions& driver_bug_workarounds) {
-      memset(this, 0, sizeof(*this));
+      UNSAFE_TODO(memset(this, 0, sizeof(*this)));
       this->shader_type = shader_type;
       this->shader_spec = shader_spec;
       this->resources = resources;
@@ -71,15 +73,15 @@ class GPU_GLES2_EXPORT ShaderTranslatorCache
     }
 
     ShaderTranslatorInitParams(const ShaderTranslatorInitParams& params) {
-      memcpy(this, &params, sizeof(*this));
+      UNSAFE_TODO(memcpy(this, &params, sizeof(*this)));
     }
 
     bool operator== (const ShaderTranslatorInitParams& params) const {
-      return memcmp(&params, this, sizeof(*this)) == 0;
+      return UNSAFE_TODO(memcmp(&params, this, sizeof(*this))) == 0;
     }
 
     bool operator< (const ShaderTranslatorInitParams& params) const {
-      return memcmp(&params, this, sizeof(*this)) < 0;
+      return UNSAFE_TODO(memcmp(&params, this, sizeof(*this))) < 0;
     }
 
    private:
@@ -90,7 +92,9 @@ class GPU_GLES2_EXPORT ShaderTranslatorCache
 
   const GpuPreferences gpu_preferences_;
 
-  typedef std::map<ShaderTranslatorInitParams, ShaderTranslator* > Cache;
+  typedef std::map<ShaderTranslatorInitParams,
+                   raw_ptr<ShaderTranslator, CtnExperimental>>
+      Cache;
   Cache cache_;
 };
 

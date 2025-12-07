@@ -15,14 +15,14 @@ namespace cc {
 
 // When a change to the compositor's state/invalidation/whatever happens, a
 // Swap Promise can be inserted into LayerTreeHost/LayerTreeImpl, to track
-// whether the compositor's reply to the new state/invaliadtion/whatever is
+// whether the compositor's reply to the new state/invalidation/whatever is
 // completed in the compositor, i.e. the compositor knows it has been sent
 // to its output or not.
 //
 // If the commit results in a successful activation of the pending layer tree,
 // SwapPromise::DidActivate() will be called.
 //
-// If the new compositor state is goint to be sent to the output,
+// If the new compositor state is going to be sent to the output,
 // SwapPromise::WillSwap() will be called before the swap and
 // SwapPromise::DidSwap() will be called once the swap is over.
 //

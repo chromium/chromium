@@ -13,17 +13,17 @@ constexpr char kRemoteDebuggingPortSwitch[] = "remote-debugging-port";
 std::optional<uint16_t> GetRemoteDebuggingPort(
     const base::CommandLine& command_line) {
   if (!command_line.HasSwitch(kRemoteDebuggingPortSwitch)) {
-    return 0;
-  } else {
-    std::string port_str =
-        command_line.GetSwitchValueNative(kRemoteDebuggingPortSwitch);
-    int port_parsed;
-    if (!base::StringToInt(port_str, &port_parsed) || port_parsed < 0 ||
-        port_parsed > 65535) {
-      LOG(ERROR) << "Invalid value for --remote-debugging-port (must be in the "
-                    "range 0-65535).";
-      return std::nullopt;
-    }
+    return std::nullopt;
+  }
+  std::string port_str =
+      command_line.GetSwitchValueNative(kRemoteDebuggingPortSwitch);
+  int port_parsed;
+  if (base::StringToInt(port_str, &port_parsed) && port_parsed >= 0 &&
+      port_parsed <= 65535) {
     return static_cast<uint16_t>(port_parsed);
   }
+  LOG(ERROR) << "Invalid value for --remote-debugging-port [" << port_str
+             << "], must be an integer in the "
+                "range of 0-65535.";
+  return std::nullopt;
 }

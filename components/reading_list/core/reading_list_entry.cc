@@ -120,7 +120,7 @@ ReadingListEntry::ReadingListEntry(
   DCHECK(url.is_valid());
 }
 
-ReadingListEntry::~ReadingListEntry() {}
+ReadingListEntry::~ReadingListEntry() = default;
 
 const GURL& ReadingListEntry::URL() const {
   return url_;

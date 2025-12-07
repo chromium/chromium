@@ -18,8 +18,8 @@ features:
 future_on:
 - fuchsia
 owners:
-- file://chrome/browser/device_api/OWNERS
-- apotapchuk@chromium.org
+- pwa-commercial@google.com
+- anqing@chromium.org
 schema:
   items:
     properties:

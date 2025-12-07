@@ -26,10 +26,16 @@ public class ClipboardAndroidTestSupport {
         return ClipboardAndroidTestSupportJni.get().nativeClipboardContains(text);
     }
 
+    public static boolean testNativeClipboardNotifications() {
+        return ClipboardAndroidTestSupportJni.get().nativeTestClipboardNotifications();
+    }
+
     @NativeMethods
     interface Natives {
         boolean nativeWriteHtml(String htmlText);
 
         boolean nativeClipboardContains(String text);
+
+        boolean nativeTestClipboardNotifications();
     }
 }

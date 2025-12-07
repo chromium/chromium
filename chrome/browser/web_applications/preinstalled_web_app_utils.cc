@@ -6,7 +6,9 @@
 
 #include <memory>
 #include <string_view>
+#include <variant>
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
@@ -424,11 +426,11 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
     WebAppInstallInfoFactoryOrError offline_manifest_result =
         ParseOfflineManifest(file_utils, dir, file, *value);
     if (std::string* error =
-            absl::get_if<std::string>(&offline_manifest_result)) {
+            std::get_if<std::string>(&offline_manifest_result)) {
       return std::move(*error);
     }
     options.app_info_factory =
-        std::move(absl::get<WebAppInstallInfoFactory>(offline_manifest_result));
+        std::move(std::get<WebAppInstallInfoFactory>(offline_manifest_result));
   }
 
   if (options.only_use_app_info_factory && !options.app_info_factory) {
@@ -500,10 +502,8 @@ IconBitmapsOrError ParseOfflineManifestIconBitmaps(
           {manifest_file.AsUTF8Unsafe(), " ", kOfflineManifest, " ", icon_key,
            " ", icon_file.DebugString(), " failed to read."}));
     }
-    SkBitmap bitmap;
-    if (!gfx::PNGCodec::Decode(
-            reinterpret_cast<const unsigned char*>(icon_data.c_str()),
-            icon_data.size(), &bitmap)) {
+    SkBitmap bitmap = gfx::PNGCodec::Decode(base::as_byte_span(icon_data));
+    if (bitmap.isNull()) {
       return base::unexpected(base::StrCat(
           {manifest_file.AsUTF8Unsafe(), " ", kOfflineManifest, " ", icon_key,
            " ", icon_file.DebugString(), " failed to decode."}));
@@ -557,12 +557,14 @@ WebAppInstallInfoFactoryOrError ParseOfflineManifest(
     return base::StrCat({file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
                          kOfflineManifestName, " missing or invalid."});
   }
+  std::u16string title_string;
   if (!base::UTF8ToUTF16(name_string->data(), name_string->size(),
-                         &app_info->title) ||
-      app_info->title.empty()) {
+                         &title_string) ||
+      title_string.empty()) {
     return base::StrCat({file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
                          kOfflineManifestName, " invalid: ", *name_string});
   }
+  app_info->title = std::move(title_string);
 
   // scope
   const std::string* scope_string =
@@ -576,7 +578,8 @@ WebAppInstallInfoFactoryOrError ParseOfflineManifest(
     return base::StrCat({file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
                          kOfflineManifestScope, " invalid: ", *scope_string});
   }
-  if (!base::StartsWith(app_info->start_url().path(), app_info->scope.path(),
+  if (!base::StartsWith(app_info->start_url().GetPath(),
+                        app_info->scope.GetPath(),
                         base::CompareCase::SENSITIVE)) {
     return base::StrCat(
         {file.AsUTF8Unsafe(), " ", kOfflineManifest, " ", kOfflineManifestScope,

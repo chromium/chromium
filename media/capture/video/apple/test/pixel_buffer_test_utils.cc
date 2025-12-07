@@ -171,12 +171,14 @@ std::vector<uint8_t> CreateArgbBufferFromYuvsIOSurface(
   DCHECK(width % 16 == 0);
   size_t argb_stride = GetArgbStride(width);
   size_t yuvs_stride = GetYuvsStride(width);
+  IOSurfaceLock(io_surface, kIOSurfaceLockReadOnly, /*seed=*/0);
   uint8_t* pixels = static_cast<uint8_t*>(IOSurfaceGetBaseAddress(io_surface));
   DCHECK(pixels);
   std::vector<uint8_t> argb_buffer;
   argb_buffer.resize(argb_stride * height);
   libyuv::YUY2ToARGB(pixels, yuvs_stride, &argb_buffer[0], argb_stride, width,
                      height);
+  IOSurfaceUnlock(io_surface, kIOSurfaceLockReadOnly, /*seed=*/0);
   return argb_buffer;
 }
 

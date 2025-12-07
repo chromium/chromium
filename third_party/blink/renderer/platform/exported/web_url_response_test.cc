@@ -58,7 +58,7 @@ TEST(WebURLResponseTest, DnsAliasesCanBeAccessed) {
   instance.SetCurrentRequestUrl(KURL("http://localhost/"));
   EXPECT_FALSE(instance.IsNull());
   EXPECT_TRUE(instance.ToResourceResponse().DnsAliases().empty());
-  WebVector<WebString> aliases({"alias1", "alias2"});
+  std::vector<WebString> aliases({"alias1", "alias2"});
   instance.SetDnsAliases(aliases);
   EXPECT_THAT(instance.ToResourceResponse().DnsAliases(),
               testing::ElementsAre("alias1", "alias2"));

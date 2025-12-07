@@ -22,7 +22,7 @@ class RemovableStorageObserver {
   virtual void OnRemovableStorageDetached(const StorageInfo& info) {}
 
  protected:
-  virtual ~RemovableStorageObserver() {}
+  virtual ~RemovableStorageObserver() = default;
 };
 
 }  // namespace storage_monitor

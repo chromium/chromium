@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
@@ -54,13 +55,11 @@ class MediaSessionItemProducerTest : public testing::Test {
     testing::Mock::AllowLeak(audio_focus_manager_.get());
 
     EXPECT_CALL(*audio_focus_manager_, GetFocusRequests(_))
-        .WillOnce(
-            testing::Invoke([](media_session::test::MockAudioFocusManager::
-                                   GetFocusRequestsCallback callback) {
-              std::move(callback).Run(
-                  std::vector<
-                      media_session::mojom::AudioFocusRequestStatePtr>());
-            }));
+        .WillOnce([](media_session::test::MockAudioFocusManager::
+                         GetFocusRequestsCallback callback) {
+          std::move(callback).Run(
+              std::vector<media_session::mojom::AudioFocusRequestStatePtr>());
+        });
 
     mojo::Remote<media_session::mojom::AudioFocusManager> audio_focus_remote(
         audio_focus_manager_->GetPendingRemote());
@@ -243,6 +242,11 @@ class MediaSessionItemProducerTest : public testing::Test {
 
   std::map<std::string, MediaSessionItemProducer::Session>& sessions() const {
     return producer_->sessions_;
+  }
+
+  void SetIdBlockedCallback(
+      base::RepeatingCallback<bool(const std::string&)> callback) {
+    producer_->SetIsIdBlockedCallback(std::move(callback));
   }
 
   test::MockMediaItemManager& item_manager() { return item_manager_; }
@@ -728,6 +732,32 @@ TEST_F(MediaSessionItemProducerTest, ClicksNotificationItem) {
   SimulateNotificationClicked(id, /*activate_original_media=*/true);
   item->FlushForTesting();
   EXPECT_EQ(1, test_media_controller->raise_count());
+}
+
+TEST_F(MediaSessionItemProducerTest, SetIdBlockedCallback) {
+  // Simulate 2 controllable media sessions; one should be active(shown), the
+  // other one should be blocked (hidden).
+  base::UnguessableToken id = base::UnguessableToken::Create();
+  base::UnguessableToken id2 = base::UnguessableToken::Create();
+
+  base::MockCallback<base::RepeatingCallback<bool(const std::string&)>>
+      is_id_blocked_callback;
+  SetIdBlockedCallback(is_id_blocked_callback.Get());
+  EXPECT_CALL(is_id_blocked_callback, Run(id.ToString()))
+      .Times(1)
+      .WillOnce(Return(false));
+  EXPECT_CALL(is_id_blocked_callback, Run(id2.ToString()))
+      .Times(1)
+      .WillOnce(Return(true));
+
+  EXPECT_CALL(item_manager(), ShowItem(id.ToString()));
+  EXPECT_CALL(item_manager(), ShowItem(id2.ToString())).Times(0);
+
+  SimulatePlayingControllableMedia(id);
+  SimulatePlayingControllableMedia(id2);
+
+  // Ensure that the item manager was notified of the new item.
+  testing::Mock::VerifyAndClearExpectations(&item_manager());
 }
 
 }  // namespace global_media_controls

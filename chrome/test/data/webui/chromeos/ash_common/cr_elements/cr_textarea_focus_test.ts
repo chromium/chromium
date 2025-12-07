@@ -4,7 +4,7 @@
 
 import 'chrome://resources/ash/common/cr_elements/cr_textarea/cr_textarea.js';
 
-import {CrTextareaElement} from 'chrome://resources/ash/common/cr_elements/cr_textarea/cr_textarea.js';
+import type {CrTextareaElement} from 'chrome://resources/ash/common/cr_elements/cr_textarea/cr_textarea.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -42,7 +42,7 @@ suite('cr-textarea-focus-test', function() {
     assertTrue(label.hidden);
     crTextarea.label = 'foobar';
     assertFalse(label.hidden);
-    assertEquals('foobar', label.textContent!.trim());
+    assertEquals('foobar', label.textContent.trim());
     assertEquals('foobar', textarea.getAttribute('aria-label'));
   });
 

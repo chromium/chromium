@@ -6,12 +6,12 @@ package org.chromium.chrome.browser.mandatory_reauth;
 
 import android.content.Context;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
-import org.chromium.components.autofill.PaymentsBubbleClosedReason;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.components.autofill.PaymentsUiClosedReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
@@ -21,6 +21,7 @@ import org.chromium.ui.base.WindowAndroid;
  * the Mandatory Reauth opt-in bottom sheet.
  */
 @JNINamespace("autofill")
+@NullMarked
 class MandatoryReauthOptInBottomSheetViewBridge {
     private final MandatoryReauthOptInBottomSheetComponent mComponent;
 
@@ -56,6 +57,6 @@ class MandatoryReauthOptInBottomSheetViewBridge {
     /** Closes the view. */
     @CalledByNative
     void close() {
-        mComponent.close(PaymentsBubbleClosedReason.NOT_INTERACTED);
+        mComponent.close(PaymentsUiClosedReason.NOT_INTERACTED);
     }
 }

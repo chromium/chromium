@@ -15,6 +15,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/text_constants.h"
@@ -39,11 +41,11 @@ LogoutConfirmationDialog::LogoutConfirmationDialog(
     LogoutConfirmationController* controller,
     base::TimeTicks logout_time)
     : controller_(controller), logout_time_(logout_time) {
-  SetModalType(ui::MODAL_TYPE_SYSTEM);
+  SetModalType(ui::mojom::ModalType::kSystem);
   SetTitle(l10n_util::GetStringUTF16(IDS_ASH_LOGOUT_CONFIRMATION_TITLE));
   SetShowCloseButton(false);
 
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(IDS_ASH_LOGOUT_CONFIRMATION_BUTTON));
   SetAcceptCallback(base::BindOnce(&LogoutConfirmationDialog::OnDialogAccepted,
                                    base::Unretained(this)));
@@ -56,7 +58,7 @@ LogoutConfirmationDialog::LogoutConfirmationDialog(
   label_ = new views::Label;
   label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label_->SetMultiLine(true);
-  AddChildView(label_.get());
+  AddChildViewRaw(label_.get());
 
   UpdateLabel();
 

@@ -7,11 +7,12 @@
 #include <stdint.h>
 
 #include "base/base64.h"
+#include "base/containers/auto_spanification_helper.h"
+#include "base/containers/span.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/test_extension_environment.h"
@@ -20,8 +21,10 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/user_script_manager.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/declarative/declarative_constants.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/api/extension_action/action_info_test_util.h"
@@ -33,6 +36,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 namespace {
@@ -65,7 +70,7 @@ class RequestContentScriptTest : public ExtensionServiceTestBase {
         static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile()));
 
     extension_system->CreateUserScriptManager();
-    service()->AddExtension(extension());
+    ExtensionRegistrar::Get(profile())->AddExtension(extension());
     extension_system->SetReady();
     base::RunLoop().RunUntilIdle();
   }
@@ -120,7 +125,7 @@ TEST(DeclarativeContentActionTest, ShowActionWithoutAction) {
           .SetManifest(std::move(manifest))
           .SetLocation(ManifestLocation::kComponent)
           .Build();
-  env.GetExtensionService()->AddExtension(extension.get());
+  env.GetExtensionRegistrar()->AddExtension(extension.get());
 
   TestingProfile profile;
   base::HistogramTester histogram_tester;
@@ -151,7 +156,7 @@ TEST_P(ParameterizedDeclarativeContentActionTest, ShowAction) {
           .SetLocation(ManifestLocation::kInternal)
           .Build();
 
-  env.GetExtensionService()->AddExtension(extension.get());
+  env.GetExtensionRegistrar()->AddExtension(extension.get());
 
   std::string error;
   TestingProfile profile;
@@ -212,88 +217,95 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Values(ActionInfo::Type::kBrowser,
                                          ActionInfo::Type::kPage));
 
-TEST(DeclarativeContentActionTest, SetIcon) {
-  enum Mode { Base64, Mojo, MojoHuge };
-  for (Mode mode : {Base64, Mojo, MojoHuge}) {
-    SCOPED_TRACE(mode);
+enum class ImageDataMode { Base64, Mojo, MojoHuge };
+class DeclarativeContentActionIconTest
+    : public ::testing::TestWithParam<ImageDataMode> {
+ protected:
+  TestExtensionEnvironment env_;
+};
 
-    TestExtensionEnvironment env;
-    content::RenderViewHostTestEnabler rvh_enabler;
+TEST_P(DeclarativeContentActionIconTest, SetIcon) {
+  content::RenderViewHostTestEnabler rvh_enabler;
 
-    // Simulate the process of passing ImageData to SetIcon::Create.
-    SkBitmap bitmap;
-    EXPECT_TRUE(bitmap.tryAllocN32Pixels(19, 19));
-    bitmap.eraseARGB(255, 255, 0, 0);
+  // Simulate the process of passing ImageData to SetIcon::Create.
+  SkBitmap bitmap;
+  EXPECT_TRUE(bitmap.tryAllocN32Pixels(19, 19));
+  bitmap.eraseARGB(255, 255, 0, 0);
 
-    base::Value::Dict dict;
-    dict.Set("instanceType", "declarativeContent.SetIcon");
-    switch (mode) {
-      case Base64: {
-        std::string data64 =
-            base::Base64Encode(skia::mojom::InlineBitmap::Serialize(&bitmap));
-        dict.Set("imageData", base::Value::Dict().Set("19", data64));
-        break;
-      }
-      case Mojo: {
-        std::vector<uint8_t> s = skia::mojom::InlineBitmap::Serialize(&bitmap);
-        // Explicit base::Value() for TYPE_BINARY.
-        dict.Set("imageData",
-                 base::Value::Dict().Set("19", base::Value(std::move(s))));
-        break;
-      }
-      case MojoHuge: {
-        // Normal skia::mojom::Bitmaps would serialize as a SharedMemory handle,
-        // which is not valid when serializing to a string. We use InlineBitmap
-        // instead, and this case verifies it does the right thing for a large
-        // image.
-        const int dimension =
-            std::ceil(std::sqrt(mojo_base::BigBuffer::kMaxInlineBytes));
-        EXPECT_TRUE(bitmap.tryAllocN32Pixels(dimension / 4 + 1, dimension));
-        EXPECT_GT(bitmap.computeByteSize(),
-                  mojo_base::BigBuffer::kMaxInlineBytes);
-        bitmap.eraseARGB(255, 255, 0, 0);
-        std::vector<uint8_t> s = skia::mojom::InlineBitmap::Serialize(&bitmap);
-        // Explicit base::Value() for TYPE_BINARY.
-        dict.Set("imageData",
-                 base::Value::Dict().Set("19", base::Value(std::move(s))));
-        break;
-      }
+  base::Value::Dict dict;
+  dict.Set("instanceType", "declarativeContent.SetIcon");
+  switch (GetParam()) {
+    case ImageDataMode::Base64: {
+      std::string data64 =
+          base::Base64Encode(skia::mojom::InlineBitmap::Serialize(&bitmap));
+      dict.Set("imageData", base::Value::Dict().Set("19", data64));
+      break;
     }
-
-    const Extension* extension = env.MakeExtension(
-        ParseJsonDict(R"({"page_action": {"default_title": "Extension"}})"));
-    base::HistogramTester histogram_tester;
-    TestingProfile profile;
-    std::string error;
-    ContentAction::SetAllowInvisibleIconsForTest(false);
-    std::unique_ptr<const ContentAction> result =
-        ContentAction::Create(&profile, extension, dict, &error);
-    ContentAction::SetAllowInvisibleIconsForTest(true);
-    EXPECT_EQ("", error);
-    ASSERT_TRUE(result.get());
-    histogram_tester.ExpectUniqueSample(
-        "Extensions.DeclarativeContentActionCreated",
-        ContentActionType::kSetIcon, 1);
-    histogram_tester.ExpectTotalCount(
-        "Extensions.DeclarativeContentActionCreated", 1);
-
-    ExtensionAction* action = ExtensionActionManager::Get(env.profile())
-                                  ->GetExtensionAction(*extension);
-    std::unique_ptr<content::WebContents> contents = env.MakeTab();
-    const int tab_id = ExtensionTabUtil::GetTabId(contents.get());
-    EXPECT_FALSE(action->GetIsVisible(tab_id));
-    ContentAction::ApplyInfo apply_info = {extension, env.profile(),
-                                           contents.get(), 100};
-
-    // The declarative icon shouldn't exist unless the content action is
-    // applied.
-    EXPECT_TRUE(action->GetDeclarativeIcon(tab_id).IsEmpty());
-    result->Apply(apply_info);
-    EXPECT_FALSE(action->GetDeclarativeIcon(tab_id).IsEmpty());
-    result->Revert(apply_info);
-    EXPECT_TRUE(action->GetDeclarativeIcon(tab_id).IsEmpty());
+    case ImageDataMode::Mojo: {
+      std::vector<uint8_t> s = skia::mojom::InlineBitmap::Serialize(&bitmap);
+      // Explicit base::Value() for TYPE_BINARY.
+      dict.Set("imageData",
+               base::Value::Dict().Set("19", base::Value(std::move(s))));
+      break;
+    }
+    case ImageDataMode::MojoHuge: {
+      // Normal skia::mojom::Bitmaps would serialize as a SharedMemory handle,
+      // which is not valid when serializing to a string. We use InlineBitmap
+      // instead, and this case verifies it does the right thing for a large
+      // image.
+      const int dimension =
+          std::ceil(std::sqrt(mojo_base::BigBuffer::kMaxInlineBytes));
+      EXPECT_TRUE(bitmap.tryAllocN32Pixels(dimension / 4 + 1, dimension));
+      EXPECT_GT(bitmap.computeByteSize(),
+                mojo_base::BigBuffer::kMaxInlineBytes);
+      bitmap.eraseARGB(255, 255, 0, 0);
+      std::vector<uint8_t> s = skia::mojom::InlineBitmap::Serialize(&bitmap);
+      // Explicit base::Value() for TYPE_BINARY.
+      dict.Set("imageData",
+               base::Value::Dict().Set("19", base::Value(std::move(s))));
+      break;
+    }
   }
+
+  const Extension* extension = env_.MakeExtension(
+      ParseJsonDict(R"({"page_action": {"default_title": "Extension"}})"));
+  base::HistogramTester histogram_tester;
+  TestingProfile profile;
+  std::string error;
+  ContentAction::SetAllowInvisibleIconsForTest(false);
+  std::unique_ptr<const ContentAction> result =
+      ContentAction::Create(&profile, extension, dict, &error);
+  ContentAction::SetAllowInvisibleIconsForTest(true);
+  EXPECT_EQ("", error);
+  ASSERT_TRUE(result.get());
+  histogram_tester.ExpectUniqueSample(
+      "Extensions.DeclarativeContentActionCreated", ContentActionType::kSetIcon,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.DeclarativeContentActionCreated", 1);
+
+  ExtensionAction* action = ExtensionActionManager::Get(env_.profile())
+                                ->GetExtensionAction(*extension);
+  std::unique_ptr<content::WebContents> contents = env_.MakeTab();
+  const int tab_id = ExtensionTabUtil::GetTabId(contents.get());
+  EXPECT_FALSE(action->GetIsVisible(tab_id));
+  ContentAction::ApplyInfo apply_info = {extension, env_.profile(),
+                                         contents.get(), 100};
+
+  // The declarative icon shouldn't exist unless the content action is
+  // applied.
+  EXPECT_TRUE(action->GetDeclarativeIcon(tab_id).IsEmpty());
+  result->Apply(apply_info);
+  EXPECT_FALSE(action->GetDeclarativeIcon(tab_id).IsEmpty());
+  result->Revert(apply_info);
+  EXPECT_TRUE(action->GetDeclarativeIcon(tab_id).IsEmpty());
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DeclarativeContentActionIconTest,
+                         testing::Values(ImageDataMode::Base64,
+                                         ImageDataMode::Mojo,
+                                         ImageDataMode::MojoHuge));
 
 TEST(DeclarativeContentActionTest, SetInvisibleIcon) {
   TestExtensionEnvironment env;
@@ -302,7 +314,7 @@ TEST(DeclarativeContentActionTest, SetInvisibleIcon) {
   SkBitmap bitmap;
   EXPECT_TRUE(bitmap.tryAllocN32Pixels(19, 19));
   bitmap.eraseARGB(0, 0, 0, 0);
-  uint32_t* pixels = bitmap.getAddr32(0, 0);
+  base::span<uint32_t> pixels = UNSAFE_SKBITMAP_GETADDR32(bitmap, 0, 0);
   // Set a single pixel, which isn't enough to consider the icon visible.
   pixels[0] = SkColorSetARGB(255, 255, 0, 0);
   std::string data64 =

@@ -5,6 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_WEBRTC_OVERRIDES_TIMER_BASED_TICK_PROVIDER_H_
 #define THIRD_PARTY_BLINK_WEBRTC_OVERRIDES_TIMER_BASED_TICK_PROVIDER_H_
 
+#include "base/functional/callback_forward.h"
+#include "base/time/time.h"
+#include "third_party/webrtc/rtc_base/system/rtc_export.h"
 #include "third_party/webrtc_overrides/metronome_source.h"
 
 namespace blink {

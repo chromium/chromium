@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "ash/webui/eche_app_ui/untrusted_eche_app_ui.h"
 
@@ -47,8 +43,7 @@ UntrustedEcheAppUI::UntrustedEcheAppUI(content::WebUI* web_ui)
                                IDR_ASH_ECHE_APP_MESSAGE_TYPES_JS);
   html_source->AddResourcePath("receiver.js", IDR_ASH_ECHE_APP_RECEIVER_JS);
 
-  html_source->AddResourcePaths(
-      base::make_span(kAshEcheBundleResources, kAshEcheBundleResourcesSize));
+  html_source->AddResourcePaths(kAshEcheBundleResources);
 
   html_source->AddFrameAncestor(GURL(kChromeUIEcheAppURL));
 

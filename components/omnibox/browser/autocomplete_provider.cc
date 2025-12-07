@@ -7,11 +7,13 @@
 #include <algorithm>
 #include <string>
 
+#include "base/i18n/time_formatting.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_i18n.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -78,11 +80,44 @@ const char* AutocompleteProvider::TypeToString(Type type) {
       return "FeaturedSearch";
     case TYPE_HISTORY_EMBEDDINGS:
       return "HistoryEmbeddings";
+    case TYPE_ENTERPRISE_SEARCH_AGGREGATOR:
+      return "EnterpriseSearchAggregator";
+    case TYPE_UNSCOPED_EXTENSION:
+      return "UnscopedExtension";
+    case TYPE_RECENTLY_CLOSED_TABS:
+      return "RecentlyClosedTabs";
+    case TYPE_CONTEXTUAL_SEARCH:
+      return "ContextualSearch";
+    case TYPE_TAB_GROUP:
+      return "TabGroup";
     default:
       DUMP_WILL_BE_NOTREACHED()
           << "Unhandled AutocompleteProvider::Type " << type;
       return "Unknown";
   }
+}
+
+const std::u16string AutocompleteProvider::LocalizedLastModifiedString(
+    base::Time now,
+    base::Time modified_time) {
+  // Use shorthand if the times fall on the same day or in the same year.
+  base::Time::Exploded exploded_modified_time;
+  base::Time::Exploded exploded_now;
+  modified_time.LocalExplode(&exploded_modified_time);
+  now.LocalExplode(&exploded_now);
+  if (exploded_modified_time.year == exploded_now.year) {
+    if (exploded_modified_time.month == exploded_now.month &&
+        exploded_modified_time.day_of_month == exploded_now.day_of_month) {
+      // Same local calendar day - use localized time.
+      return base::TimeFormatTimeOfDay(modified_time);
+    }
+
+    // Same year but not the same day: use abbreviated month/day ("Jan 1").
+    return base::LocalizedTimeFormatWithPattern(modified_time, "MMMd");
+  }
+
+  // No shorthand; display full MM/DD/YYYY.
+  return base::TimeFormatShortDateNumeric(modified_time);
 }
 
 void AutocompleteProvider::AddListener(AutocompleteProviderListener* listener) {
@@ -99,10 +134,9 @@ void AutocompleteProvider::StartPrefetch(const AutocompleteInput& input) {
   DCHECK(!input.omit_asynchronous_matches());
 }
 
-void AutocompleteProvider::Stop(bool clear_cached_results,
-                                bool due_to_user_inactivity) {
+void AutocompleteProvider::Stop(AutocompleteStopReason stop_reason) {
   done_ = true;
-  if (clear_cached_results) {
+  if (stop_reason == AutocompleteStopReason::kClobbered) {
     matches_.clear();
     suggestion_groups_map_.clear();
   }
@@ -142,9 +176,9 @@ AutocompleteProvider::AsOmniboxEventProviderType() const {
     case TYPE_QUERY_TILE:
       return metrics::OmniboxEventProto::QUERY_TILE;
     case TYPE_MOST_VISITED_SITES:
-      return metrics::OmniboxEventProto::ZERO_SUGGEST;
+      return metrics::OmniboxEventProto::MOST_VISITED_SITES;
     case TYPE_VERBATIM_MATCH:
-      return metrics::OmniboxEventProto::ZERO_SUGGEST;
+      return metrics::OmniboxEventProto::VERBATIM_MATCH;
     case TYPE_VOICE_SUGGEST:
       return metrics::OmniboxEventProto::SEARCH;
     case TYPE_HISTORY_FUZZY:
@@ -159,11 +193,21 @@ AutocompleteProvider::AsOmniboxEventProviderType() const {
       return metrics::OmniboxEventProto::FEATURED_SEARCH;
     case TYPE_HISTORY_EMBEDDINGS:
       return metrics::OmniboxEventProto::HISTORY_EMBEDDINGS;
+    case TYPE_ENTERPRISE_SEARCH_AGGREGATOR:
+      return metrics::OmniboxEventProto::ENTERPRISE_SEARCH_AGGREGATOR;
+    case TYPE_UNSCOPED_EXTENSION:
+      return metrics::OmniboxEventProto::UNSCOPED_EXTENSION;
+    case TYPE_RECENTLY_CLOSED_TABS:
+      return metrics::OmniboxEventProto::RECENTLY_CLOSED_TABS;
+    case TYPE_CONTEXTUAL_SEARCH:
+      return metrics::OmniboxEventProto::CONTEXTUAL_SEARCH_PROVIDER;
+    case TYPE_TAB_GROUP:
+      return metrics::OmniboxEventProto::TAB_GROUP_PROVIDER;
     default:
       // TODO(crbug.com/40940012) This was a NOTREACHED that we converted to
       //   help debug crbug.com/1499235 since NOTREACHED's don't log their
       //   message in crash reports. Should be reverted back to a NOTREACHED or
-      //   NOTREACHED_NORETURN if their logs eventually begin being logged to
+      //   NOTREACHED if their logs eventually begin being logged to
       //   crash reports.
       DUMP_WILL_BE_NOTREACHED()
           << "[NOTREACHED] Unhandled AutocompleteProvider::Type " << type_;
@@ -190,7 +234,26 @@ size_t AutocompleteProvider::EstimateMemoryUsage() const {
 }
 
 AutocompleteProvider::~AutocompleteProvider() {
-  Stop(false, false);
+  // Don't bother using `kClobbered` to clear caches and state, since those will
+  // be destroyed with the provider.
+  Stop(AutocompleteStopReason::kInteraction);
+}
+
+// static
+AutocompleteProvider::AdjustedInputAndStarterPackKeyword
+AutocompleteProvider::AdjustInputForStarterPackKeyword(
+    const AutocompleteInput& input,
+    const TemplateURLService* turl_service) {
+  if (input.prefer_keyword()) {
+    AutocompleteInput keyword_input = input;
+    const TemplateURL* template_url =
+        AutocompleteInput::GetSubstitutingTemplateURLForInput(turl_service,
+                                                              &keyword_input);
+    if (template_url && template_url->starter_pack_id() > 0) {
+      return {keyword_input, template_url};
+    }
+  }
+  return {input, nullptr};
 }
 
 // static
@@ -308,9 +371,9 @@ void AutocompleteProvider::ResizeMatches(size_t max_matches,
   // The provider should pass all match candidates to the controller if ML
   // scoring is enabled. Mark any matches over `max_matches` with zero relevance
   // and `culled_by_provider` set to true to simulate the resizing.
-  base::ranges::for_each(std::next(matches_.begin(), max_matches),
-                         matches_.end(), [&](auto& match) {
-                           match.relevance = 0;
-                           match.culled_by_provider = true;
-                         });
+  std::ranges::for_each(std::next(matches_.begin(), max_matches),
+                        matches_.end(), [&](auto& match) {
+                          match.relevance = 0;
+                          match.culled_by_provider = true;
+                        });
 }

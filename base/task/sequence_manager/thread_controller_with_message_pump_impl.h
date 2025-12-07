@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/work_id_provider.h"
@@ -72,7 +73,6 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   void SetTaskExecutionAllowedInNativeNestedLoop(bool allowed) override;
   bool IsTaskExecutionAllowed() const override;
   MessagePump* GetBoundMessagePump() const override;
-  void PrioritizeYieldingToNative(base::TimeTicks prioritize_until) override;
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   void AttachToMessagePump() override;
 #endif
@@ -114,6 +114,9 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
     raw_ptr<RunLoop::NestingObserver> nesting_observer = nullptr;  // Not owned.
     std::unique_ptr<SingleThreadTaskRunner::CurrentDefaultHandle>
         thread_task_runner_handle;
+    // Only used if this thread represents the main thread of the process.
+    std::unique_ptr<SingleThreadTaskRunner::MainThreadDefaultHandle>
+        main_thread_default_task_runner_handle;
 
     // Indicates that we should yield DoWork between each task to let a possibly
     // nested RunLoop exit.
@@ -126,10 +129,6 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
     int work_batch_size = 1;
 
     bool can_change_batch_size = true;
-
-    // While Now() is less than |yield_to_native_after_batch| we will request a
-    // yield to the MessagePump after |work_batch_size| work items.
-    base::TimeTicks yield_to_native_after_batch = base::TimeTicks();
 
     // The time after which the runloop should quit.
     TimeTicks quit_runloop_after = TimeTicks::Max();
@@ -159,12 +158,12 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   void InitializeSingleThreadTaskRunnerCurrentDefaultHandle()
       EXCLUSIVE_LOCKS_REQUIRED(task_runner_lock_);
 
-  MainThreadOnly& main_thread_only() {
+  MainThreadOnly& main_thread_only() LIFETIME_BOUND {
     DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
     return main_thread_only_;
   }
 
-  const MainThreadOnly& main_thread_only() const {
+  const MainThreadOnly& main_thread_only() const LIFETIME_BOUND {
     DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
     return main_thread_only_;
   }
@@ -214,6 +213,8 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   // |pump_|. This means that it should be destroyed first. This member cannot
   // be moved up.
   std::unique_ptr<MessagePump> pump_;
+
+  const bool is_main_thread_;
 };
 
 }  // namespace internal

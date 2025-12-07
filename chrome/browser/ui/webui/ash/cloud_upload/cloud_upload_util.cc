@@ -4,14 +4,18 @@
 
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 
+#include <algorithm>
 #include <optional>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -24,7 +28,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -121,18 +124,18 @@ OfficeFilesSourceVolume VolumeTypeToSourceVolume(
   }
 }
 
-SourceType GetSourceType(Profile* profile,
-                         const storage::FileSystemURL& source_url) {
+std::optional<SourceType> GetSourceType(
+    Profile* profile,
+    const storage::FileSystemURL& source_url) {
   file_manager::VolumeManager* volume_manager =
       file_manager::VolumeManager::Get(profile);
   base::WeakPtr<file_manager::Volume> source_volume =
       volume_manager->FindVolumeFromPath(source_url.path());
-  DCHECK(source_volume)
-      << "Unable to find source volume (source path filesystem_id: "
-      << source_url.filesystem_id() << ")";
   // Local by default.
   if (!source_volume) {
-    return SourceType::LOCAL;
+    LOG(ERROR) << "Unable to find source volume (source path filesystem_id: "
+               << source_url.filesystem_id() << ")";
+    return std::nullopt;
   }
   // First, look at whether the filesystem is read-only.
   if (source_volume->is_read_only()) {
@@ -160,16 +163,14 @@ SourceType GetSourceType(Profile* profile,
                    : SourceType::LOCAL;
       }
     }
-    // Local if unable to find the provided file system.
-    return SourceType::LOCAL;
+    LOG(ERROR) << "Unable to find the provided file system";
+    return std::nullopt;
   }
   // Local by default.
   return SourceType::LOCAL;
 }
 
-UploadType GetUploadType(Profile* profile,
-                         const storage::FileSystemURL& source_url) {
-  SourceType source_type = GetSourceType(profile, source_url);
+UploadType SourceTypeToUploadType(SourceType source_type) {
   return source_type == SourceType::LOCAL ? UploadType::kMove
                                           : UploadType::kCopy;
 }
@@ -244,7 +245,7 @@ base::FilePath GetODFSFuseboxMount(Profile* profile) {
 
 bool IsODFSInstalled(Profile* profile) {
   auto* service = ash::file_system_provider::Service::Get(profile);
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       service->GetProviders(), [](const auto& provider) {
         return provider.first ==
                ash::file_system_provider::ProviderId::CreateFromExtensionId(
@@ -264,7 +265,7 @@ bool IsOfficeWebAppInstalled(Profile* profile) {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
   bool installed = false;
   proxy->AppRegistryCache().ForOneApp(
-      web_app::kMicrosoft365AppId, [&installed](const apps::AppUpdate& update) {
+      ash::kMicrosoft365AppId, [&installed](const apps::AppUpdate& update) {
         installed = apps_util::IsInstalled(update.Readiness());
       });
   return installed;
@@ -379,13 +380,13 @@ std::optional<base::File::Error> GetFirstTaskError(
 }
 
 std::optional<gfx::Rect> CalculateAuthWindowBounds(Profile* profile) {
-  Browser* browser =
-      FindSystemWebAppBrowser(profile, ash::SystemWebAppType::FILE_MANAGER);
+  BrowserDelegate* browser = FindSystemWebAppBrowser(
+      profile, ash::SystemWebAppType::FILE_MANAGER, ash::BrowserType::kApp);
   if (!browser) {
     return std::nullopt;
   }
 
-  gfx::Rect files_app_bounds = browser->window()->GetBounds();
+  gfx::Rect files_app_bounds = browser->GetBounds();
   // These are the min sizes needed for the oauth dialog to look subjectively
   // "good".
   const int kMinWidth = 615;

@@ -21,7 +21,7 @@ class CORE_EXPORT MathMLTokenElement : public MathMLElement {
 
   struct TokenContent {
     String characters;
-    UChar32 code_point = kNonCharacter;
+    UChar32 code_point = uchar::kNonCharacter;
   };
   const TokenContent& GetTokenContent();
 
@@ -30,9 +30,10 @@ class CORE_EXPORT MathMLTokenElement : public MathMLElement {
 
  private:
   bool IsPresentationAttribute(const QualifiedName&) const final;
-  void CollectStyleForPresentationAttribute(const QualifiedName&,
-                                            const AtomicString&,
-                                            MutableCSSPropertyValueSet*) final;
+  void CollectStyleForPresentationAttribute(
+      const QualifiedName&,
+      const AtomicString&,
+      HeapVector<CSSPropertyValue, 8>&) final;
   TokenContent ParseTokenContent();
   std::optional<TokenContent> token_content_;
   LayoutObject* CreateLayoutObject(const ComputedStyle&) final;

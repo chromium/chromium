@@ -9,6 +9,8 @@
 
 namespace segmentation_platform {
 
+using Feature = FeedUserSegment::Feature;
+
 class FeedUserModelTest : public DefaultModelTestBase {
  public:
   FeedUserModelTest()
@@ -24,10 +26,10 @@ TEST_F(FeedUserModelTest, ExecuteModelWithInput) {
   ExpectInitAndFetchModel();
   ASSERT_TRUE(fetched_metadata_);
 
-  ModelProvider::Request input(11, 0);
+  ModelProvider::Request input(Feature::kFeatureCount, 0);
   ExpectClassifierResults(input, {kLegacyNegativeLabel});
 
-  input[8] = 3;
+  input[Feature::kFeatureFeedEngagementSimple] = 3;
   ExpectClassifierResults(
       input, {SegmentIdToHistogramVariant(
                  SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER)});

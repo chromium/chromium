@@ -21,21 +21,24 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/accessibility/chromevox_panel.h"
-#include "chrome/browser/ash/accessibility/service/accessibility_service_client.h"
 #include "chrome/browser/extensions/api/braille_display_private/braille_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
+#include "chrome/common/extensions/api/accessibility_private.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/soda/soda_installer.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/browser/scoped_accessibility_mode.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/extension_system.h"
+#include "facegaze_settings_event_handler.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/accessibility/public/mojom/assistive_technology_type.mojom.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/base/ime/ash/input_method_manager.h"
@@ -44,12 +47,8 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
-// Matches 'supports_os_accessibility_service` in
-// //services/accessibility/buildflags.gni.
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/common/extensions/api/accessibility_private.h"
-#include "services/accessibility/public/mojom/assistive_technology_type.mojom.h"
-#endif  // BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS_ASH)
+class ApplicationLocaleStorage;
+class PrefService;
 
 namespace content {
 struct FocusedNodeDetails;
@@ -73,7 +72,6 @@ enum class SelectToSpeakState;
 enum class SelectToSpeakPanelAction;
 enum class Sound;
 struct AccessibilityFocusRingInfo;
-class AccessibilityServiceClient;
 
 enum class AccessibilityNotificationType {
   kManagerShutdown,
@@ -101,6 +99,11 @@ struct AccessibilityStatusEventDetails {
 
   AccessibilityNotificationType notification_type;
   bool enabled;
+};
+
+struct FaceGazeGestureInfo {
+  std::string gesture;
+  int confidence;
 };
 
 using AccessibilityStatusCallbackList =
@@ -144,7 +147,12 @@ class AccessibilityManager
 
   // Creates an instance of AccessibilityManager, this should be called once,
   // because only one instance should exist at the same time.
-  static void Initialize();
+  //
+  // Both `local_state` and `application_locale_storage` must be non-null, and
+  // must live until Shutdown() is called.
+  static void Initialize(
+      PrefService* local_state,
+      const ApplicationLocaleStorage* application_locale_storage);
   // Deletes the existing instance of AccessibilityManager.
   static void Shutdown();
   // Returns the existing instance. If there is no instance, returns NULL.
@@ -176,6 +184,9 @@ class AccessibilityManager
   // Returns true if the Sticky Keys is enabled, or false if not.
   bool IsStickyKeysEnabled() const;
 
+  // Returns true if the built-in touchpad is disabled, or false if not.
+  bool IsTouchpadDisabled() const;
+
   // Enables or disables spoken feedback. Enabling spoken feedback installs the
   // ChromeVox component extension.
   void EnableSpokenFeedback(bool enabled);
@@ -205,11 +216,38 @@ class AccessibilityManager
   // Returns true if ReducedAnimations is enabled.
   bool IsReducedAnimationsEnabled() const;
 
+  // Enables or disables the always show scrollbars feature.
+  void EnableAlwaysShowScrollbars(bool enabled);
+
+  // Returns true if the always show scrollbars feature is enabled.
+  bool IsAlwaysShowScrollbarsEnabled() const;
+
   // Enables or disables FaceGaze.
   void EnableFaceGaze(bool enabled);
 
   // Returns true if FaceGaze is enabled.
   bool IsFaceGazeEnabled() const;
+
+  // Called from settings to turn FaceGaze on/off.
+  void RequestEnableFaceGaze(bool enable);
+
+  // Called when the FaceGaze disable dialog is accepted/rejected so that the
+  // settings UI can be properly updated.
+  void SendFaceGazeDisableDialogResultToSettings(bool accepted);
+
+  // Adds the FaceGazeSettingsEventHandler to process events from FaceGaze.
+  void AddFaceGazeSettingsEventHandler(FaceGazeSettingsEventHandler* handler);
+
+  // Removes the FaceGazeSettingsEventHandler.
+  void RemoveFaceGazeSettingsEventHandler();
+
+  // Toggles whether FaceGaze is sending gesture detection information to
+  // settings.
+  void ToggleGestureInfoForSettings(bool enabled) const;
+
+  // Sends information about detected facial gestures from FaceGaze to settings.
+  void SendGestureInfoToSettings(
+      const std::vector<FaceGazeGestureInfo>& gesture_info) const;
 
   // Requests the Autoclick extension find the bounds of the nearest scrollable
   // ancestor to the point in the screen, as given in screen coordinates.
@@ -367,6 +405,11 @@ class AccessibilityManager
   // Starts or stops dictation (type what you speak).
   bool ToggleDictation();
 
+  // Gets the default locale for the active profile.
+  // If this is a |new_user|, it returns the application language.
+  // Otherwise, it returns the Dictation language with default IME language.
+  std::string GetDictationDefaultLocale(bool new_user);
+
   // Sets the focus ring with the given ID based on |focus_ring|.
   void SetFocusRing(std::string focus_ring_id,
                     std::unique_ptr<AccessibilityFocusRingInfo> focus_ring);
@@ -437,7 +480,8 @@ class AccessibilityManager
   void SendSyntheticMouseEvent(ui::EventType type,
                                int flags,
                                int changed_button_flags,
-                               gfx::Point location_in_screen);
+                               gfx::Point location_in_screen,
+                               bool use_rewriters);
 
   // Looks up the action key that translates to F7 for caret browsing dialog.
   std::optional<ui::KeyboardCode> GetCaretBrowsingActionKey();
@@ -506,7 +550,11 @@ class AccessibilityManager
   void LoadEnhancedNetworkTtsForTest();
 
  protected:
-  AccessibilityManager();
+  // Both `local_state` and `application_locale_storage` must be non-null, and
+  // must live until Shutdown() is called.
+  AccessibilityManager(
+      PrefService* local_state,
+      const ApplicationLocaleStorage* application_locale_storage);
   ~AccessibilityManager() override;
 
  private:
@@ -542,6 +590,7 @@ class AccessibilityManager
   void OnSelectToSpeakChanged();
   void OnAccessibilityCommonChanged(const std::string& pref_name);
   void OnSwitchAccessChanged();
+  void OnReducedAnimationsChanged() const;
   void OnFocusChangedInPage(const content::FocusedNodeDetails& details);
   // |triggered_by_user| is false when Dictation pref is changed at startup,
   // and true if Dictation enabled changed because the user changed their
@@ -642,6 +691,11 @@ class AccessibilityManager
 
   void MaybeLogBrailleDisplayConnectedTime();
 
+  bool spoken_feedback_enabled() const { return bool(screen_reader_mode_); }
+
+  const raw_ref<PrefService> local_state_;
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
+
   // Profile which has the current a11y context.
   raw_ptr<Profile> profile_ = nullptr;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
@@ -653,7 +707,8 @@ class AccessibilityManager
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   std::unique_ptr<PrefChangeRegistrar> local_state_pref_change_registrar_;
 
-  bool spoken_feedback_enabled_ = false;
+  // Only used for ChromeVox aka when spoken feedback is enabled.
+  std::unique_ptr<content::ScopedAccessibilityMode> screen_reader_mode_;
   bool select_to_speak_enabled_ = false;
   bool switch_access_enabled_ = false;
 
@@ -664,8 +719,6 @@ class AccessibilityManager
   std::set<std::string> accessibility_common_enabled_features_;
 
   AccessibilityStatusCallbackList callback_list_;
-
-  std::unique_ptr<AccessibilityServiceClient> accessibility_service_client_;
 
   bool braille_display_connected_ = false;
   base::Time braille_display_connect_time_;
@@ -679,6 +732,8 @@ class AccessibilityManager
       soda_observation_{this};
 
   bool braille_ime_current_ = false;
+
+  raw_ptr<FaceGazeSettingsEventHandler> facegaze_settings_event_handler_;
 
   raw_ptr<ChromeVoxPanel> chromevox_panel_ = nullptr;
   std::unique_ptr<AccessibilityPanelWidgetObserver>
@@ -756,7 +811,6 @@ class AccessibilityManager
   friend class AccessibilityManagerDlcTest;
   friend class AccessibilityManagerNoOnDeviceSpeechRecognitionTest;
   friend class AccessibilityManagerTest;
-  friend class AccessibilityServiceClientTest;
   friend class DictationTest;
   friend class SwitchAccessTest;
 };

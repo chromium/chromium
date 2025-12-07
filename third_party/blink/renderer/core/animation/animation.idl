@@ -38,15 +38,15 @@ enum ReplaceState { "active", "removed", "persisted" };
     Exposed=Window,
     ActiveScriptWrappable
 ] interface Animation : EventTarget {
-    [CallWith=ExecutionContext, RaisesException] constructor(optional AnimationEffect? effect = null, optional AnimationTimeline? timeline);
+    [CallWith=ExecutionContext, Measure, RaisesException] constructor(optional AnimationEffect? effect = null, optional AnimationTimeline? timeline);
     [Measure] attribute AnimationEffect? effect;
     attribute AnimationTimeline? timeline;
     [Measure, RaisesException=Setter] attribute CSSNumberish? startTime;
     [Measure, RaisesException=Setter] attribute CSSNumberish? currentTime;
-    [RuntimeEnabled=AnimationProgressAPI, Measure] readonly attribute double? progress;
+    [RuntimeEnabled=AnimationProgressAPI, Measure] readonly attribute double? overallProgress;
     [Measure, RaisesException=Setter] attribute double playbackRate;
-    [RuntimeEnabled=ScrollTimeline, Measure, RaisesException=Setter] attribute (TimelineRangeOffset or DOMString) rangeStart;
-    [RuntimeEnabled=ScrollTimeline, Measure, RaisesException=Setter] attribute (TimelineRangeOffset or DOMString) rangeEnd;
+    [Measure, RaisesException=Setter] attribute (TimelineRangeOffset or DOMString) rangeStart;
+    [Measure, RaisesException=Setter] attribute (TimelineRangeOffset or DOMString) rangeEnd;
     [Measure] readonly attribute AnimationPlayState playState;
     [Measure] readonly attribute ReplaceState replaceState;
     [Measure] readonly attribute boolean pending;

@@ -4,17 +4,23 @@
 
 #include "device/vr/openxr/openxr_input_helper.h"
 
+#include "base/trace_event/trace_event.h"
 #include "device/gamepad/public/cpp/gamepad.h"
+#include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
+#include "device/vr/openxr/openxr_hand_utils.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/public/mojom/openxr_interaction_profile_type.mojom.h"
+#include "device/vr/public/mojom/vr_service.mojom.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_util.h"
 
 namespace device {
 
 XrResult OpenXRInputHelper::CreateOpenXRInputHelper(
     XrInstance instance,
-    XrSystemId system,
+    const std::string& system_name,
     const OpenXrExtensionHelper& extension_helper,
     XrSession session,
     XrSpace local_space,
@@ -25,7 +31,7 @@ XrResult OpenXRInputHelper::CreateOpenXRInputHelper(
                                           hand_input_enabled);
 
   RETURN_IF_XR_FAILED(
-      new_helper->Initialize(instance, system, extension_helper));
+      new_helper->Initialize(instance, system_name, extension_helper));
   *helper = std::move(new_helper);
   return XR_SUCCESS;
 }
@@ -43,17 +49,17 @@ OpenXRInputHelper::~OpenXRInputHelper() = default;
 bool OpenXRInputHelper::IsHandTrackingEnabled() const {
   // As long as we have at least one controller that can supply hand tracking
   // data, then hand tracking is enabled.
-  return base::ranges::any_of(controller_states_,
-                              [](const OpenXrControllerState& state) {
-                                return state.controller.IsHandTrackingEnabled();
-                              });
+  return std::ranges::any_of(controller_states_,
+                             [](const OpenXrControllerState& state) {
+                               return state.controller.IsHandTrackingEnabled();
+                             });
 }
 
 XrResult OpenXRInputHelper::Initialize(
     XrInstance instance,
-    XrSystemId system,
+    const std::string& system_name,
     const OpenXrExtensionHelper& extension_helper) {
-  RETURN_IF_XR_FAILED(path_helper_->Initialize(instance, system));
+  RETURN_IF_XR_FAILED(path_helper_->Initialize(instance, system_name));
 
   // This map is used to store bindings for different kinds of interaction
   // profiles. This allows the runtime to choose a different input sources based
@@ -93,19 +99,32 @@ XrResult OpenXRInputHelper::Initialize(
   return XR_SUCCESS;
 }
 
+void OpenXRInputHelper::OnHideInputSources() {
+  // Clear any "pressed" buttons for the time being. This prevents us from
+  // sending up any clicks when we resume sending input state to the page.
+  ResetControllerButtonState();
+}
+
+void OpenXRInputHelper::ResetControllerButtonState() {
+  for (OpenXrControllerState& state : controller_states_) {
+    state.primary_button_pressed = false;
+    state.squeeze_button_pressed = false;
+  }
+}
+
 std::vector<mojom::XRInputSourceStatePtr> OpenXRInputHelper::GetInputState(
     XrTime predicted_display_time) {
+  TRACE_EVENT0("xr", "GetInputState");
   std::vector<mojom::XRInputSourceStatePtr> input_states;
   if (XR_FAILED(SyncActions(predicted_display_time))) {
-    for (OpenXrControllerState& state : controller_states_) {
-      state.primary_button_pressed = false;
-      state.squeeze_button_pressed = false;
-    }
+    ResetControllerButtonState();
     return input_states;
   }
 
   for (uint32_t i = 0; i < controller_states_.size(); i++) {
     device::OpenXrController* controller = &controller_states_[i].controller;
+    TRACE_EVENT1("xr", "ParseController", "Handedness",
+                 controller->GetHandness());
 
     std::optional<GamepadButton> menu_button =
         controller->GetButton(OpenXrButtonType::kMenu);
@@ -192,6 +211,47 @@ XrResult OpenXRInputHelper::SyncActions(XrTime predicted_display_time) {
   }
 
   return XR_SUCCESS;
+}
+
+std::optional<XrLocation> OpenXRInputHelper::GetXrLocationFromHandJoint(
+    XrSpace mojo_space,
+    const mojom::XRHandJointSpaceInfo& hand_joint_space_info,
+    const gfx::Transform& joint_from_object) const {
+  for (auto& controller_state : controller_states_) {
+    if (controller_state.controller.IsHandTrackingEnabled() &&
+        controller_state.controller.GetHandness() ==
+            hand_joint_space_info.handedness) {
+      auto mojo_from_joint = controller_state.controller.GetMojoFromJoint(
+          MojomJointToOpenXRJoint(hand_joint_space_info.joint));
+      if (mojo_from_joint) {
+        return XrLocation{
+            GfxTransformToXrPose(*mojo_from_joint * joint_from_object),
+            mojo_space};
+      }
+    }
+  }
+
+  return std::nullopt;
+}
+
+std::optional<XrLocation> OpenXRInputHelper::GetXrLocationFromInputSource(
+    const mojom::XRInputSourceSpaceInfo& space_info,
+    const gfx::Transform& input_space_from_object) const {
+  if (space_info.input_source_id >= controller_states_.size()) {
+    return std::nullopt;
+  }
+
+  const auto& controller =
+      controller_states_[space_info.input_source_id].controller;
+  if (XrSpace input_space =
+          controller.GetInputSpace(space_info.input_source_space_type);
+      input_space != XR_NULL_HANDLE) {
+    return XrLocation{GfxTransformToXrPose(input_space_from_object),
+                      input_space};
+  }
+
+  // There is no corresponding controller or space.
+  return std::nullopt;
 }
 
 }  // namespace device

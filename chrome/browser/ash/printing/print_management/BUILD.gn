@@ -3,8 +3,9 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//printing/buildflags/buildflags.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("print_management") {
   sources = [
@@ -22,6 +23,7 @@ static_library("print_management") {
     "//ash/webui/print_management",
     "//ash/webui/settings/public/constants:mojom",
     "//chrome/browser/ash/printing/history",
+    "//chrome/browser/history",
     "//chrome/common:constants",
     "//chromeos/ash/components/browser_context_helper",
     "//components/pref_registry",
@@ -42,6 +44,10 @@ static_library("print_management") {
     "//components/prefs",
     "//mojo/public/cpp/bindings",
   ]
+
+  if (use_cups) {
+    deps += [ "//chrome/browser/chromeos/printing" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -55,10 +61,24 @@ source_set("unit_tests") {
 
   deps = [
     ":print_management",
-    "//chrome/browser/ash:test_support",
+    "//base/test:test_support",
+    "//chrome/browser",
     "//chrome/browser/ash/printing",
     "//chrome/browser/ash/printing:test_support",
+    "//chrome/browser/ash/printing/history",
+    "//chrome/browser/ash/printing/history:test_support",
+    "//chrome/browser/history",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
+    "//components/history/core/test",
+    "//components/prefs:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
   ]
+
+  if (use_cups) {
+    deps += [ "//chrome/browser/chromeos/printing" ]
+  }
 }
 
 source_set("browser_tests") {
@@ -90,7 +110,7 @@ if (!is_chromeos_device) {
       "//ash",
       "//ash/webui/print_management:url_constants",
       "//ash/webui/settings/public/constants:mojom",
-      "//chrome/browser/ash",
+      "//chrome/browser/ash/printing/history",
       "//chrome/browser/ui",
       "//chrome/test:test_support",
       "//chrome/test/base/ash/interactive:test_support",

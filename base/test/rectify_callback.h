@@ -33,7 +33,7 @@ namespace base {
 //    void Fn(CbType);
 //
 //    // These all ignore arguments when passing the callback:
-//    Fn(RectifyCallback<CbType>(BindOnce([](){ return true; })));
+//    Fn(RectifyCallback<CbType>(BindOnce([]{ return true; })));
 //    Fn(RectifyCallback<CbType>(BindOnce([](C c){ return true; })));
 //    Fn(RectifyCallback<CbType>(BindOnce([](B c, C c){ return true; })));
 //

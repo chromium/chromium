@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/delete_address_profile_dialog_controller.h"
-#include "components/constrained_window/constrained_window_views.h"
+#include "chrome/browser/ui/browser_dialogs.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/widget/widget.h"
@@ -47,7 +47,7 @@ void ShowDeleteAddressProfileDialogView(
               controller))
           .Build();
 
-  constrained_window::ShowWebModal(std::move(dialog_model), web_contents);
+  chrome::ShowTabModal(std::move(dialog_model), web_contents);
 }
 
 }  // namespace autofill

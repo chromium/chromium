@@ -24,6 +24,7 @@
 #include "chromeos/ash/components/dbus/fwupd/fwupd_properties.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_request.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_update.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -73,6 +74,7 @@ enum class MethodResult {
   kInvalidPatchFile = 9,
   kInstallFailedTimeout = 10,
   kFailedToGetFirmwareFilename = 11,
+  kUnknownDeviceId = 12,
 
   // All Install Errors returned by fwupd dbus signal
   // These errors are consistent with
@@ -106,14 +108,17 @@ enum class MethodResult {
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
     : public FwupdClient::Observer,
       public firmware_update::mojom::UpdateProvider,
-      public firmware_update::mojom::InstallController {
+      public firmware_update::mojom::InstallController,
+      public firmware_update::mojom::SystemUtils,
+      public NetworkStateHandlerObserver {
  public:
   enum class Source {
     kUI = 0,
     kStartup = 1,
     kUSBChange = 2,
     kInstallComplete = 3,
-    kMaxValue = kInstallComplete,
+    kNetworkChange = 4,
+    kMaxValue = kNetworkChange,
   };
 
   FirmwareUpdateManager();
@@ -182,6 +187,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
   // Query all updates for all devices.
   void RequestAllUpdates(Source source);
 
+  // NetworkStateHandlerObserver:
+  void DefaultNetworkChanged(const NetworkState* network) override;
+
   void BindInterface(
       mojo::PendingReceiver<firmware_update::mojom::UpdateProvider>
           pending_receiver);
@@ -193,6 +201,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
   void set_refresh_remote_for_testing(bool for_testing) {
     refresh_remote_for_testing_ = for_testing;
   }
+
+  // firmware_update::mojom::SystemUtils
+  void Restart() override;
+
+  void BindInterface(mojo::PendingReceiver<firmware_update::mojom::SystemUtils>
+                         pending_receiver);
 
  protected:
   friend class FirmwareUpdateManagerTest;
@@ -371,6 +385,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
   // Whether or not fetching updates in inflight.
   bool is_fetching_updates_ = false;
 
+  // Whether Refresh Remote has been requested and pending successful
+  // completion.
+  bool is_refresh_pending_ = false;
+
   // Checksum and firmware paths and File objects are held temporarily during
   // download, and are used for cleanup which must be done on task_runner_.
   base::FilePath checksum_filepath_;
@@ -408,6 +426,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
 
   mojo::Receiver<firmware_update::mojom::InstallController>
       install_controller_receiver_{this};
+
+  mojo::Receiver<firmware_update::mojom::SystemUtils> system_utils_receiver_{
+      this};
 
   base::WeakPtrFactory<FirmwareUpdateManager> weak_ptr_factory_{this};
 };

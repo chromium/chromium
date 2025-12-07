@@ -25,12 +25,13 @@
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/discoverable_credential_metadata.h"
-#include "device/fido/fido_transport_protocol.h"
-#include "device/fido/fido_types.h"
 #include "device/fido/get_assertion_request_handler.h"
 #include "device/fido/make_credential_request_handler.h"
 #include "device/fido/opaque_attestation_statement.h"
-#include "third_party/microsoft_webauthn/webauthn.h"
+#include "device/fido/public/features.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/fido_types.h"
+#include "third_party/microsoft_webauthn/src/webauthn.h"
 
 namespace device {
 
@@ -95,7 +96,7 @@ uint32_t ToWinTransportsMask(
       case FidoTransportProtocol::kHybrid:
         result |= WEBAUTHN_CTAP_TRANSPORT_HYBRID;
         break;
-      case FidoTransportProtocol::kAndroidAccessory:
+      case FidoTransportProtocol::kDeprecatedAoa:
         // AOA is unsupported by the Windows API.
         break;
     }
@@ -152,7 +153,7 @@ ToAuthenticatorMakeCredentialResponse(
     ret.enterprise_attestation_returned = credential_attestation.bEpAtt;
     ret.is_resident_key = credential_attestation.bResidentKey;
     if (credential_attestation.bLargeBlobSupported) {
-      ret.large_blob_type = LargeBlobSupportType::kKey;
+      ret.large_blob_type = LargeBlobSupportType::kBespoke;
     }
   }
 
@@ -223,8 +224,7 @@ uint32_t ToWinUserVerificationRequirement(
     case UserVerificationRequirement::kDiscouraged:
       return WEBAUTHN_USER_VERIFICATION_REQUIREMENT_DISCOURAGED;
   }
-  NOTREACHED_IN_MIGRATION();
-  return WEBAUTHN_USER_VERIFICATION_REQUIREMENT_REQUIRED;
+  NOTREACHED();
 }
 
 uint32_t ToWinAuthenticatorAttachment(
@@ -237,8 +237,7 @@ uint32_t ToWinAuthenticatorAttachment(
     case AuthenticatorAttachment::kCrossPlatform:
       return WEBAUTHN_AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM;
   }
-  NOTREACHED_IN_MIGRATION();
-  return WEBAUTHN_AUTHENTICATOR_ATTACHMENT_ANY;
+  NOTREACHED();
 }
 
 std::vector<WEBAUTHN_CREDENTIAL> ToWinCredentialVector(
@@ -352,8 +351,7 @@ uint32_t ToWinAttestationConveyancePreference(
                  ? WEBAUTHN_ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT
                  : WEBAUTHN_ATTESTATION_CONVEYANCE_PREFERENCE_NONE;
   }
-  NOTREACHED_IN_MIGRATION();
-  return WEBAUTHN_ATTESTATION_CONVEYANCE_PREFERENCE_NONE;
+  NOTREACHED();
 }
 
 std::vector<DiscoverableCredentialMetadata>
@@ -377,11 +375,44 @@ WinCredentialDetailsListToCredentialMetadata(
                 : std::nullopt,
             user->pwszDisplayName
                 ? std::make_optional(base::WideToUTF8(user->pwszDisplayName))
-                : std::nullopt));
+                : std::nullopt),
+        credential->dwVersion >= WEBAUTHN_CREDENTIAL_DETAILS_VERSION_3 &&
+                credential->pwszAuthenticatorName
+            ? std::make_optional(
+                  base::WideToUTF8(credential->pwszAuthenticatorName))
+            : std::nullopt);
     metadata.system_created = !credential->bRemovable;
     result.push_back(std::move(metadata));
   }
   return result;
+}
+
+std::vector<const wchar_t*> ToWinCredentialHints(
+    base::span<const FidoTransportProtocol> hints) {
+  if (!base::FeatureList::IsEnabled(kWebAuthenticationWindowsHints)) {
+    return {};
+  }
+  std::vector<const wchar_t*> ret;
+  ret.reserve(hints.size());
+  for (const FidoTransportProtocol& hint : hints) {
+    switch (hint) {
+      case FidoTransportProtocol::kUsbHumanInterfaceDevice:
+        ret.emplace_back(WEBAUTHN_CREDENTIAL_HINT_SECURITY_KEY);
+        break;
+      case FidoTransportProtocol::kInternal:
+        ret.emplace_back(WEBAUTHN_CREDENTIAL_HINT_CLIENT_DEVICE);
+        break;
+      case FidoTransportProtocol::kHybrid:
+        ret.emplace_back(WEBAUTHN_CREDENTIAL_HINT_HYBRID);
+        break;
+      case FidoTransportProtocol::kBluetoothLowEnergy:
+      case FidoTransportProtocol::kDeprecatedAoa:
+      case FidoTransportProtocol::kNearFieldCommunication:
+        // There are no hints for these transports.
+        break;
+    }
+  }
+  return ret;
 }
 
 }  // namespace device

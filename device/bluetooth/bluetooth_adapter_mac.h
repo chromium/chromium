@@ -5,8 +5,6 @@
 #ifndef DEVICE_BLUETOOTH_BLUETOOTH_ADAPTER_MAC_H_
 #define DEVICE_BLUETOOTH_BLUETOOTH_ADAPTER_MAC_H_
 
-#include <IOKit/IOReturn.h>
-
 #include <memory>
 #include <optional>
 #include <string>
@@ -63,6 +61,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterMac
   // BluetoothDiscoveryManagerMac::Observer overrides:
   void ClassicDeviceFound(IOBluetoothDevice* device) override;
   void ClassicDiscoveryStopped(bool unexpected) override;
+
+  // Used for delivering device connect notification from MacOS IOBluetooth
+  // framework to this adapter object.
+  void OnConnectNotification(IOBluetoothDevice* device);
 
   // Registers that a new |device| has connected to the local host.
   void DeviceConnected(std::unique_ptr<BluetoothDevice> device);

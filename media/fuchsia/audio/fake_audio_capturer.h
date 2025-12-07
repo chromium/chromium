@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/fuchsia/scoped_service_binding.h"
-#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 

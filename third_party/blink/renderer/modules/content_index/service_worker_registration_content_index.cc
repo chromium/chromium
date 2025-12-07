@@ -4,28 +4,25 @@
 
 #include "third_party/blink/renderer/modules/content_index/service_worker_registration_content_index.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/modules/content_index/content_index.h"
 
 namespace blink {
 
 ServiceWorkerRegistrationContentIndex::ServiceWorkerRegistrationContentIndex(
     ServiceWorkerRegistration* registration)
-    : Supplement(*registration) {}
-
-const char ServiceWorkerRegistrationContentIndex::kSupplementName[] =
-    "ServiceWorkerRegistrationContentIndex";
+    : service_worker_registration_(*registration) {}
 
 ServiceWorkerRegistrationContentIndex&
 ServiceWorkerRegistrationContentIndex::From(
     ServiceWorkerRegistration& registration) {
   ServiceWorkerRegistrationContentIndex* supplement =
-      Supplement<ServiceWorkerRegistration>::From<
-          ServiceWorkerRegistrationContentIndex>(registration);
+      registration.GetServiceWorkerRegistrationContentIndex();
 
   if (!supplement) {
     supplement = MakeGarbageCollected<ServiceWorkerRegistrationContentIndex>(
         &registration);
-    ProvideTo(registration, supplement);
+    registration.SetServiceWorkerRegistrationContentIndex(supplement);
   }
 
   return *supplement;
@@ -39,10 +36,10 @@ ContentIndex* ServiceWorkerRegistrationContentIndex::index(
 ContentIndex* ServiceWorkerRegistrationContentIndex::index() {
   if (!content_index_) {
     ExecutionContext* execution_context =
-        GetSupplementable()->GetExecutionContext();
+        service_worker_registration_->GetExecutionContext();
     // TODO(falken): Consider defining a task source in the spec for this event.
     content_index_ = MakeGarbageCollected<ContentIndex>(
-        GetSupplementable(),
+        service_worker_registration_,
         execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI));
   }
 
@@ -51,7 +48,7 @@ ContentIndex* ServiceWorkerRegistrationContentIndex::index() {
 
 void ServiceWorkerRegistrationContentIndex::Trace(Visitor* visitor) const {
   visitor->Trace(content_index_);
-  Supplement<ServiceWorkerRegistration>::Trace(visitor);
+  visitor->Trace(service_worker_registration_);
 }
 
 }  // namespace blink

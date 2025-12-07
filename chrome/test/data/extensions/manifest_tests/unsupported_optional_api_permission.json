@@ -2,9 +2,9 @@
   "name": "Optional permissions which cannot be optional",
   "version": "0.0.1.33",
   "manifest_version": 3,
-  "description": "Extension with an optional permission listed which can't be optional (debugger).",
+  "description": "Extension with an optional permission listed which can't be optional (geolocation).",
   "optional_permissions": [
     "tabs",
-    "debugger"
+    "geolocation"
   ]
 }

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/formats/webm/webm_info_parser.h"
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "media/formats/webm/webm_constants.h"
 
@@ -87,7 +83,7 @@ bool WebMInfoParser::OnBinary(int id, const uint8_t* data, int size) {
 
     int64_t date_in_nanoseconds = 0;
     for (int i = 0; i < size; ++i)
-      date_in_nanoseconds = (date_in_nanoseconds << 8) | data[i];
+      date_in_nanoseconds = (date_in_nanoseconds << 8) | UNSAFE_TODO(data[i]);
 
     static constexpr base::Time::Exploded kExplodedEpoch = {
         .year = 2001, .month = 1, .day_of_week = 1, .day_of_month = 1};

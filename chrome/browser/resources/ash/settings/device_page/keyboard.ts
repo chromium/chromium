@@ -19,14 +19,15 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {isInputDeviceSettingsSplitEnabled} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
-import {PrefsState} from '../common/types.js';
-import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
+import type {PrefsState} from '../common/types.js';
+import type {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, Router, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
-import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from './device_page_browser_proxy.js';
+import type {DevicePageBrowserProxy} from './device_page_browser_proxy.js';
+import {DevicePageBrowserProxyImpl} from './device_page_browser_proxy.js';
 import {getTemplate} from './keyboard.html.js';
 
 /**
@@ -113,39 +114,21 @@ export class SettingsKeyboardElement extends SettingsKeyboardElementBase {
         value: [2000, 1000, 500, 300, 200, 100, 50, 30, 20],
         readOnly: true,
       },
-
-      /**
-       * Whether the setting for long press diacritics should be shown
-       */
-      shouldShowDiacriticSetting_: Boolean,
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kKeyboardFunctionKeys,
-          Setting.kKeyboardAutoRepeat,
-          Setting.kKeyboardShortcuts,
-          Setting.kShowDiacritic,
-        ]),
-      },
-
-      /**
-       * Whether settings should be split per device.
-       */
-      isDeviceSettingsSplitEnabled_: {
-        type: Boolean,
-        value() {
-          return isInputDeviceSettingsSplitEnabled();
-        },
-        readOnly: true,
-      },
     };
   }
 
   prefs: PrefsState;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kKeyboardFunctionKeys,
+    Setting.kKeyboardAutoRepeat,
+    Setting.kKeyboardShortcuts,
+    Setting.kShowDiacritic,
+  ]);
+
+  private readonly autoRepeatDelays_: number[];
+  private readonly autoRepeatIntervals_: number[];
   private browserProxy_: DevicePageBrowserProxy;
   private hasAssistantKey_: boolean;
   private hasLauncherKey_: boolean;
@@ -153,9 +136,6 @@ export class SettingsKeyboardElement extends SettingsKeyboardElementBase {
   private showAppleCommandKey_: boolean;
   private showCapsLock_: boolean;
   private showExternalMetaKey_: boolean;
-  private shouldShowDiacriticSetting_ =
-      loadTimeData.getBoolean('allowDiacriticsOnPhysicalKeyboardLongpress');
-  private isDeviceSettingsSplitEnabled_: boolean;
 
   constructor() {
     super();
@@ -184,8 +164,7 @@ export class SettingsKeyboardElement extends SettingsKeyboardElementBase {
     if (newRoute !== this.route) {
       return;
     }
-    if (Router.getInstance().currentRoute === this.route &&
-        this.isDeviceSettingsSplitEnabled_) {
+    if (Router.getInstance().currentRoute === this.route) {
       // Call setCurrentRoute function to go to the per device keyboard subpage
       // when the feature flag is turned on. We don't use navigateTo function
       // since we don't want to navigate back to the previous keyboard subpage.
@@ -256,6 +235,12 @@ export class SettingsKeyboardElement extends SettingsKeyboardElementBase {
   private onShowInputSettingsClick_(): void {
     Router.getInstance().navigateTo(
         routes.OS_LANGUAGES_INPUT,
+        /*dynamicParams=*/ undefined, /*removeSearch=*/ true);
+  }
+
+  private onShowA11yKeyboardSettingsClick_(): void {
+    Router.getInstance().navigateTo(
+        routes.A11Y_KEYBOARD_AND_TEXT_INPUT,
         /*dynamicParams=*/ undefined, /*removeSearch=*/ true);
   }
 

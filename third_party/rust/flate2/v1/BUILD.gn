@@ -1,0 +1,96 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "flate2"
+  epoch = "1"
+  crate_type = "rlib"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/bufreader.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/crc.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/deflate/bufread.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/deflate/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/deflate/read.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/deflate/write.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/ffi/c.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/ffi/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/ffi/rust.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/gz/bufread.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/gz/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/gz/read.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/gz/write.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/mem.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/zio.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/zlib/bufread.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/zlib/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/zlib/read.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/zlib/write.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2018"
+  cargo_pkg_authors = "Alex Crichton <alex@alexcrichton.com>, Josh Triplett <josh@joshtriplett.org>"
+  cargo_pkg_name = "flate2"
+  cargo_pkg_description = "DEFLATE compression and decompression exposed as Read/BufRead/Write streams. Supports miniz_oxide and multiple zlib implementations. Supports zlib, gzip, and raw deflate streams."
+  cargo_pkg_repository = "https://github.com/rust-lang/flate2-rs"
+  cargo_pkg_version = "1.1.5"
+
+  allow_unsafe = true
+
+  deps = [
+    "//third_party/rust/crc32fast/v1:lib",
+    "//third_party/rust/miniz_oxide/v0_8:lib",
+  ]
+  features = [
+    "any_impl",
+    "default",
+    "miniz_oxide",
+    "rust_backend",
+  ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # //third_party/rust/chromium_crates_io/Cargo.toml to use
+  # it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
+
+  #####################################################################
+  # Tweaking which GN `config`s apply to this target.
+
+  # Config changes that apply to all `//third_party/rust` crates.
+  _configs_to_remove = [
+    # We don't need code coverage data for any `chromium_crates_io` crates.
+    "//build/config/coverage:default_coverage",
+
+    # This is third-party code, so remove `chromium_code` config.  We are not
+    # at the same time adding `//build/config/compiler:no_chromium_code`,
+    # because 1) we don't want to pull how warnings are handled by that config
+    # and 2) that config doesn't have any non-warnings-related stuff.
+    "//build/config/compiler:chromium_code",
+  ]
+  _configs_to_add = []
+
+  # Changing (if needed) which configs apply to this specific crate (based on
+  # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
+  # `gnrt_config.toml`).
+  _configs_to_remove += [ "//build/config/compiler:default_optimization" ]
+  _configs_to_add += [ "//build/config/compiler:optimize" ]
+
+  # Applying config changes.
+  library_configs -= _configs_to_remove
+  library_configs += _configs_to_add
+  executable_configs -= _configs_to_remove
+  executable_configs += _configs_to_add
+  proc_macro_configs -= _configs_to_remove
+  proc_macro_configs += _configs_to_add
+}

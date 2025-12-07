@@ -3,19 +3,7 @@ Tests that uncaught promise rejections happenned in workers are logged into cons
 worker-with-unhandled-promises.js:3 Uncaught (in promise) Error: err1
 runPromisesInWorker @ worker-with-unhandled-promises.js:3
 onmessage @ worker-with-unhandled-promises.js:25
-Promise.then
-runPromisesInWorker @ worker-with-unhandled-promises.js:6
-onmessage @ worker-with-unhandled-promises.js:25
 worker-with-unhandled-promises.js:21 Uncaught (in promise) Error: err2
 runPromisesInWorker @ worker-with-unhandled-promises.js:21
-onmessage @ worker-with-unhandled-promises.js:25
-Promise.then
-(anonymous) @ worker-with-unhandled-promises.js:17
-Promise.catch
-(anonymous) @ worker-with-unhandled-promises.js:16
-Promise.catch
-(anonymous) @ worker-with-unhandled-promises.js:15
-Promise.catch
-runPromisesInWorker @ worker-with-unhandled-promises.js:14
 onmessage @ worker-with-unhandled-promises.js:25
 

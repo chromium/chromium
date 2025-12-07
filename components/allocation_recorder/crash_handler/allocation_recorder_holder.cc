@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "components/allocation_recorder/internal/internal.h"
 #include "third_party/crashpad/crashpad/client/annotation.h"
@@ -91,8 +92,8 @@ std::optional<crashpad::VMAddress> GetRecorderVMAddress(
         return {};
       }
 
-      uint64_t const value =
-          *reinterpret_cast<const uint64_t*>(annotation.value.data());
+      uint64_t const value = *UNSAFE_TODO(
+          reinterpret_cast<const uint64_t*>(annotation.value.data()));
 
       return {value};
     }
@@ -157,13 +158,15 @@ bool CheckSanity(const crashpad::ProcessSnapshot& process_snapshot,
 }
 }  // namespace
 
+AllocationRecorderHolder::AllocationRecorderHolder() = default;
+
 AllocationRecorderHolder::~AllocationRecorderHolder() = default;
 
 Result AllocationRecorderHolder::Initialize(
     const crashpad::ProcessSnapshot& process_snapshot) {
   static_assert(std::is_standard_layout<AllocationTraceRecorder>::value, "");
 
-  memset(&buffer_, 0, sizeof(buffer_));
+  UNSAFE_TODO(memset(&buffer_, 0, sizeof(buffer_)));
   AllocationTraceRecorder* allocation_recorder =
       reinterpret_cast<AllocationTraceRecorder*>(&buffer_);
 

@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -142,7 +141,6 @@ class BlobDataHandleTest : public testing::Test {
     EXPECT_EQ(is_single_unknown_size_file, handle->IsSingleUnknownSizeFile());
 
     blob_registry_remote_.FlushForTesting();
-    EXPECT_EQ(0u, mock_blob_registry_.owned_receivers.size());
     ASSERT_EQ(1u, mock_blob_registry_.registrations.size());
     auto& reg = mock_blob_registry_.registrations[0];
     EXPECT_EQ(handle->Uuid(), reg.uuid);
@@ -162,13 +160,13 @@ class BlobDataHandleTest : public testing::Test {
         Vector<uint8_t> received_bytes;
         mojo::Remote<mojom::blink::BytesProvider> actual_data(
             std::move(actual->get_bytes()->data));
-        actual_data->RequestAsReply(WTF::BindOnce(
+        actual_data->RequestAsReply(blink::BindOnce(
             [](base::RepeatingClosure quit_closure, Vector<uint8_t>* bytes_out,
                const Vector<uint8_t>& bytes) {
               *bytes_out = bytes;
               quit_closure.Run();
             },
-            loop.QuitClosure(), WTF::Unretained(&received_bytes)));
+            loop.QuitClosure(), blink::Unretained(&received_bytes)));
         loop.Run();
         if (expected->get_bytes()->embedded_data)
           EXPECT_EQ(expected->get_bytes()->embedded_data, received_bytes);
@@ -190,13 +188,13 @@ class BlobDataHandleTest : public testing::Test {
         String received_uuid;
         mojo::Remote<mojom::blink::Blob> blob(
             std::move(actual->get_blob()->blob));
-        blob->GetInternalUUID(base::BindOnce(
+        blob->GetInternalUUID(blink::BindOnce(
             [](base::RepeatingClosure quit_closure, String* uuid_out,
                const String& uuid) {
               *uuid_out = uuid;
               quit_closure.Run();
             },
-            loop.QuitClosure(), &received_uuid));
+            loop.QuitClosure(), blink::Unretained(&received_uuid)));
         loop.Run();
         EXPECT_EQ(expected_elements[i].blob_uuid, received_uuid);
       }
@@ -230,7 +228,6 @@ TEST_F(BlobDataHandleTest, CreateEmpty) {
   EXPECT_FALSE(handle->IsSingleUnknownSizeFile());
 
   blob_registry_remote_.FlushForTesting();
-  EXPECT_EQ(0u, mock_blob_registry_.owned_receivers.size());
   ASSERT_EQ(1u, mock_blob_registry_.registrations.size());
   const auto& reg = mock_blob_registry_.registrations[0];
   EXPECT_EQ(handle->Uuid(), reg.uuid);
@@ -246,24 +243,6 @@ TEST_F(BlobDataHandleTest, CreateFromEmptyData) {
   data->SetContentType(kType);
 
   TestCreateBlob(std::move(data), {});
-}
-
-TEST_F(BlobDataHandleTest, CreateFromUUID) {
-  String kUuid = WTF::CreateCanonicalUUIDString();
-  String kType = "content/type";
-  uint64_t kSize = 1234;
-
-  scoped_refptr<BlobDataHandle> handle =
-      BlobDataHandle::Create(kUuid, kType, kSize);
-  EXPECT_EQ(kUuid, handle->Uuid());
-  EXPECT_EQ(kType, handle->GetType());
-  EXPECT_EQ(kSize, handle->size());
-  EXPECT_FALSE(handle->IsSingleUnknownSizeFile());
-
-  blob_registry_remote_.FlushForTesting();
-  EXPECT_EQ(0u, mock_blob_registry_.registrations.size());
-  ASSERT_EQ(1u, mock_blob_registry_.owned_receivers.size());
-  EXPECT_EQ(kUuid, mock_blob_registry_.owned_receivers[0].uuid);
 }
 
 TEST_F(BlobDataHandleTest, CreateFromFile) {
@@ -299,7 +278,7 @@ TEST_F(BlobDataHandleTest, CreateFromFile) {
 
 TEST_F(BlobDataHandleTest, CreateFromEmptyElements) {
   auto data = std::make_unique<BlobData>();
-  data->AppendBytes(base::span(small_test_data_).subspan(0, 0));
+  data->AppendBytes({});
   data->AppendBlob(empty_blob_, 0, 0);
 
   TestCreateBlob(std::move(data), {});

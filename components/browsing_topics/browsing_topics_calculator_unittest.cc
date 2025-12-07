@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/browsing_topics/browsing_topics_calculator.h"
+
+#include <array>
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -24,7 +22,7 @@
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
-#include "components/optimization_guide/core/test_model_info_builder.h"
+#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings_impl.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
@@ -50,10 +48,12 @@ constexpr char kHost5[] = "www.foo5.com";
 constexpr char kHost6[] = "www.foo6.com";
 
 Topic ExpectedRandomTopic(size_t index) {
-  Topic kExpectedRandomTopicsForTaxonomyV1[5] = {
-      Topic(101), Topic(102), Topic(103), Topic(104), Topic(105)};
-  Topic kExpectedRandomTopicsForTaxonomyV2[5] = {
-      Topic(176), Topic(177), Topic(180), Topic(183), Topic(184)};
+  std::array<Topic, 5> kExpectedRandomTopicsForTaxonomyV1 = {
+      Topic(101), Topic(102), Topic(103), Topic(104), Topic(105),
+  };
+  std::array<Topic, 5> kExpectedRandomTopicsForTaxonomyV2 = {
+      Topic(176), Topic(177), Topic(180), Topic(183), Topic(184),
+  };
 
   if (blink::features::kBrowsingTopicsTaxonomyVersion.Get() == 1) {
     return kExpectedRandomTopicsForTaxonomyV1[index];
@@ -63,7 +63,7 @@ Topic ExpectedRandomTopic(size_t index) {
     return kExpectedRandomTopicsForTaxonomyV2[index];
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 class TestHistoryService : public history::HistoryService {
@@ -115,8 +115,7 @@ class BrowsingTopicsCalculatorTest : public testing::Test {
         /*restore_session=*/false, /*should_record_metrics=*/false);
     tracking_protection_settings_ =
         std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
-            &prefs_, host_content_settings_map_.get(),
-            /*onboarding_service=*/nullptr, /*is_incognito=*/false);
+            &prefs_, /*is_incognito=*/false);
     cookie_settings_ = base::MakeRefCounted<content_settings::CookieSettings>(
         host_content_settings_map_.get(), &prefs_,
         tracking_protection_settings_.get(), false,

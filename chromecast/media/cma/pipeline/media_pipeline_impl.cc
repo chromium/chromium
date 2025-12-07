@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
@@ -276,7 +277,9 @@ void MediaPipelineImpl::Flush(base::OnceClosure flush_cb) {
 
   media_time_interpolator_.StopInterpolating();
 
-  buffering_controller_->Reset();
+  if (buffering_controller_) {
+    buffering_controller_->Reset();
+  }
 
   // Flush both audio and video pipeline. This will flush the frame
   // provider and stop feeding buffers to the backend.

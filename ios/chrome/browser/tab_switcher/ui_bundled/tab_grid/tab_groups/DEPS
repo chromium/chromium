@@ -1,0 +1,23 @@
+include_rules = [
+  "+components/collaboration/public",
+  "+components/collaboration/test_support",
+  "+components/data_sharing/public",
+  "+components/data_sharing/test_support",
+  "+components/saved_tab_groups/public",
+  "+components/saved_tab_groups/test_support",
+  "+ios/chrome/browser/data_sharing/model",
+  "+ios/chrome/browser/favicon/model",
+  "+ios/chrome/browser/net/model",
+  "+ios/chrome/browser/saved_tab_groups/coordinator",
+  "+ios/chrome/browser/saved_tab_groups/ui",
+  "+ios/chrome/browser/toolbar/ui_bundled",
+  "+ios/chrome/browser/first_run/public/best_features_item.h",
+  "+ios/chrome/browser/welcome_back/model/features.h",
+]
+
+specific_include_rules = {
+  ".*_app_interface.mm" : [
+    "+components/data_sharing/test_support",
+    "+ios/chrome/browser/data_sharing/model",
+  ]
+}

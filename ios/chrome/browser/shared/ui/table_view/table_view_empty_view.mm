@@ -50,7 +50,7 @@ NSAttributedString* GetAttributedMessage(NSString* message) {
 - (instancetype)initWithFrame:(CGRect)frame
                       message:(NSString*)message
                         image:(UIImage*)image {
-  if (self = [super initWithFrame:frame]) {
+  if ((self = [super initWithFrame:frame])) {
     _message = GetAttributedMessage(message);
     _image = image;
     self.accessibilityIdentifier = [[self class] accessibilityIdentifier];
@@ -61,7 +61,7 @@ NSAttributedString* GetAttributedMessage(NSString* message) {
 - (instancetype)initWithFrame:(CGRect)frame
             attributedMessage:(NSAttributedString*)message
                         image:(UIImage*)image {
-  if (self = [super initWithFrame:frame]) {
+  if ((self = [super initWithFrame:frame])) {
     _message = message;
     _image = image;
     self.accessibilityIdentifier = [[self class] accessibilityIdentifier];

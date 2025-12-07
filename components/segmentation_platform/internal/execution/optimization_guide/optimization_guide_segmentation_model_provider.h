@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/task/sequenced_task_runner.h"
-#include "components/optimization_guide/core/model_handler.h"
+#include "components/optimization_guide/core/inference/model_handler.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 

@@ -30,10 +30,10 @@ class RenderFrameHost;
 enum class WebShareMethod { kShare = 0, kMaxValue = kShare };
 
 // UMA metric name for Web Share API count.
-constexpr const char* kWebShareApiCountMetric = "WebShare.ApiCount";
+inline constexpr char kWebShareApiCountMetric[] = "WebShare.ApiCount";
 
-constexpr size_t kMaxSharedFileCount = 10;
-constexpr uint64_t kMaxSharedFileBytes = 50 * 1024 * 1024;
+inline constexpr size_t kMaxSharedFileCount = 10;
+inline constexpr uint64_t kMaxSharedFileBytes = 50 * 1024 * 1024;
 
 class ShareServiceImpl
     : public content::DocumentService<blink::mojom::ShareService> {

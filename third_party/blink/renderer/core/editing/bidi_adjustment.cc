@@ -76,8 +76,7 @@ class AbstractInlineBox {
       case InstanceType::kNG:
         return line_cursor_ == other.line_cursor_;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   // Returns containing block rooted cursor instead of line rooted cursor for
@@ -171,8 +170,7 @@ bool IsAtFragmentStart(const InlineCaretPosition& caret_position) {
       return *caret_position.text_offset ==
              caret_position.cursor.Current().TextStartOffset();
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // Returns whether |caret_position| is at the end of its fragment.
@@ -187,8 +185,7 @@ bool IsAtFragmentEnd(const InlineCaretPosition& caret_position) {
       return *caret_position.text_offset ==
              caret_position.cursor.Current().TextEndOffset();
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // Returns whether |caret_position| is at the left or right side of fragment.

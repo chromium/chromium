@@ -7,56 +7,54 @@
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
     <script src="../resources/audit-util.js"></script>
-    <script src="../resources/audit.js"></script>
   </head>
   <body>
-    <script id="layout-test-code">
+    <script>
       // Fairly arbitrary sample rate.
-      let sampleRate = 24000;
-
-      let audit = Audit.createTaskRunner();
+      const sampleRate = 24000;
 
       // Verify that setting the fftSize resets the memory for the FFT smoothing
       // operation.  Only a few of the possible variations are tested.
 
-      audit.define('128->1024', (task, should) => {
-        testFFTSize(should, {
+      promise_test(async () => {
+        await testFFTSize({
           initialFFTSize: 128,
           finalFFTSize: 1024,
           errorThreshold: {relativeThreshold: 1.9455e-6}
-        }).then(() => task.done());
-      });
+        });
+      }, 'fftSize 128 → 1024 resets state');
 
-      audit.define('512->256', (task, should) => {
-        testFFTSize(should, {
+      promise_test(async () => {
+        await testFFTSize({
           initialFFTSize: 512,
           finalFFTSize: 256,
           errorThreshold: {relativeThreshold: 1.8592e-6}
-        }).then(() => task.done());
-      });
+        });
+      }, 'fftSize 512 → 256 resets state');
 
-      function testFFTSize(should, options) {
-        let {initialFFTSize, finalFFTSize, errorThreshold} = options;
+      async function testFFTSize(options) {
+        const {initialFFTSize, finalFFTSize, errorThreshold} = options;
 
         // The duration is fairly arbitrary as long as it's long enough for the
         // FFT test.
-        let context = new OfflineAudioContext(1, sampleRate, sampleRate);
+        const context = new OfflineAudioContext(1, sampleRate, sampleRate);
 
         // Actual source doesn't matter but a sawtooth is a nice waveform with
         // lots of harmonic content.
-        let osc = context.createOscillator();
-        osc.type = 'sawtooth';
+        const osc = new OscillatorNode(context, {type: 'sawtooth'});
 
         // The analyser under test.
-        let testAnalyser = context.createAnalyser();
-        testAnalyser.fftSize = initialFFTSize;
+        const testAnalyser = new AnalyserNode(context, {
+          fftSize: initialFFTSize,
+        });
 
         // The reference analyser.  The fftSize is fixed to the desired value,
         // and we turn off smoothing so that we get the FFT of the current time
         // data.
-        let refAnalyser = context.createAnalyser();
-        refAnalyser.fftSize = finalFFTSize;
-        refAnalyser.smoothingTimeConstant = 0;
+        const refAnalyser = new AnalyserNode(context, {
+          fftSize: finalFFTSize,
+          smoothingTimeConstant: 0,
+        });
 
         // Setup the graph and start the oscillator.
         osc.connect(testAnalyser).connect(context.destination);
@@ -66,55 +64,63 @@
 
         // Let the analyser smooth a few FFTs (rather arbitrary, but should be
         // more than one), then switch the size.
+        const suspendFrame = 4 * initialFFTSize;
+        const t1 = suspendFrame / context.sampleRate;
 
-        let suspendFrame = 4 * initialFFTSize;
-        context.suspend(suspendFrame / context.sampleRate)
-            .then(function() {
-              testAnalyser.fftSize = finalFFTSize;
-            })
-            .then(context.resume.bind(context));
+        // Second suspend is later to give the new fftSize time to take effect.
+        const t2 = (suspendFrame + 1024) / context.sampleRate;
 
-        // Wait some frames and grab the FFT data.  This is fairly arbitrary
-        // too, and can be independent of the FFT sizes.
-        suspendFrame += 1024;
-        context.suspend(suspendFrame / context.sampleRate)
-            .then(function() {
-              let testFFT = new Float32Array(testAnalyser.frequencyBinCount);
-              let refFFT = new Float32Array(refAnalyser.frequencyBinCount)
-                  let testSignal = new Float32Array(testAnalyser.fftSize);
-              let refSignal = new Float32Array(refAnalyser.fftSize);
 
-              testAnalyser.getFloatTimeDomainData(testSignal);
-              refAnalyser.getFloatTimeDomainData(refSignal);
+        context.suspend(t1).then(() => {
+          testAnalyser.fftSize = finalFFTSize;
+          return context.resume();
+        });
 
-              testAnalyser.getFloatFrequencyData(testFFT);
-              refAnalyser.getFloatFrequencyData(refFFT);
+        context.suspend(t2).then(() => {
+          // Paused at t2 — capture both time-domain and frequency data.
+          const testFFT = new Float32Array(testAnalyser.frequencyBinCount);
+          const refFFT = new Float32Array(refAnalyser.frequencyBinCount);
+          const testSignal = new Float32Array(testAnalyser.fftSize);
+          const refSignal = new Float32Array(refAnalyser.fftSize);
 
-              // Convert the FFT data from dB to linear
-              testFFT = testFFT.map(x => Math.pow(10, x / 20));
-              refFFT = refFFT.map(x => Math.pow(10, x / 20));
+          testAnalyser.getFloatTimeDomainData(testSignal);
+          refAnalyser.getFloatTimeDomainData(refSignal);
+          testAnalyser.getFloatFrequencyData(testFFT);
+          refAnalyser.getFloatFrequencyData(refFFT);
 
-              // The test data has smoothing applied, but the reference doesn't.
-              // Apply the smoothing factor to the reference data.
-              let smoothing = 1 - testAnalyser.smoothingTimeConstant;
-              refFFT = refFFT.map(x => x * smoothing);
+          // Convert dB to linear scale.
+          for (let i = 0; i < testFFT.length; ++i) {
+            testFFT[i] = Math.pow(10, testFFT[i] / 20);
+          }
+          for (let i = 0; i < refFFT.length; ++i) {
+            refFFT[i] = Math.pow(10, refFFT[i] / 20);
+          }
 
-              // First a basic sanity check that the time domain signals are
-              // exactly the same for both analysers.
-              should(testSignal, 'Time data').beCloseToArray(refSignal, 0);
+          // Apply smoothing to the reference data to
+          // match test analyser smoothing.
+          const smoothing = 1 - testAnalyser.smoothingTimeConstant;
+          for (let i = 0; i < refFFT.length; ++i) {
+            refFFT[i] *= smoothing;
+          }
 
-              should(
-                  testFFT,
-                  'Linear FFT data after setting fftSize = ' +
-                      testAnalyser.fftSize)
-                  .beCloseToArray(refFFT, errorThreshold);
-            })
-            .then(context.resume.bind(context));
+          assert_array_equal_within_eps(
+              testSignal,
+              refSignal,
+              {absoluteThreshold: 0},
+              'Time data');
 
+          assert_array_equal_within_eps(
+              testFFT,
+              refFFT,
+              errorThreshold,
+              'Linear FFT data after setting fftSize = ' + finalFFTSize);
+
+          return context.resume();
+        });
+
+        // Start rendering after scheduling both suspends.
         return context.startRendering();
       }
-
-      audit.run();
     </script>
   </body>
 </html>

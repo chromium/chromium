@@ -1,0 +1,8 @@
+include_rules = [
+  # keep-sorted start
+  "+components/visited_url_ranking/public",
+  "+ios/chrome/browser/snapshots/model/snapshot_browser_agent.h",
+  "+ios/chrome/browser/snapshots/model/snapshot_id.h",
+  "+ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h",
+  # keep-sorted end
+]

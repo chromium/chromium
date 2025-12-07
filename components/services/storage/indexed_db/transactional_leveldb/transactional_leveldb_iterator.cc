@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/debug/stack_trace.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scope.h"
@@ -18,7 +17,7 @@
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 #include "third_party/leveldatabase/src/include/leveldb/iterator.h"
 
-namespace content {
+namespace content::indexed_db {
 
 TransactionalLevelDBIterator::TransactionalLevelDBIterator(
     std::unique_ptr<leveldb::Iterator> it,
@@ -74,7 +73,7 @@ bool TransactionalLevelDBIterator::IsValid() const {
     case IteratorState::kActive:
       return iterator_->Valid();
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 leveldb::Status TransactionalLevelDBIterator::SeekToLast() {
@@ -274,4 +273,4 @@ void TransactionalLevelDBIterator::CheckState() const {
 #endif
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

@@ -10,7 +10,6 @@
 #include "base/time/time.h"
 #include "content/public/browser/background_sync_controller.h"
 #include "content/public/browser/background_sync_parameters.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {

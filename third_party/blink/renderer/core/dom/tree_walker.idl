@@ -23,16 +23,16 @@
 [
     Exposed=Window
 ] interface TreeWalker {
-    [SameObject] readonly attribute Node root;
+    [NodeWrapInOwnContext, SameObject] readonly attribute Node root;
     readonly attribute unsigned long whatToShow;
     readonly attribute NodeFilter? filter;
-    attribute Node currentNode;
+    [NodeWrapInOwnContext] attribute Node currentNode;
 
-    [RaisesException] Node? parentNode();
-    [RaisesException] Node? firstChild();
-    [RaisesException] Node? lastChild();
-    [RaisesException] Node? previousSibling();
-    [RaisesException] Node? nextSibling();
-    [RaisesException] Node? previousNode();
-    [RaisesException] Node? nextNode();
+    [NodeWrapInOwnContext, RaisesException] Node? parentNode();
+    [NodeWrapInOwnContext, RaisesException] Node? firstChild();
+    [NodeWrapInOwnContext, RaisesException] Node? lastChild();
+    [NodeWrapInOwnContext, RaisesException] Node? previousSibling();
+    [NodeWrapInOwnContext, RaisesException] Node? nextSibling();
+    [NodeWrapInOwnContext, RaisesException] Node? previousNode();
+    [NodeWrapInOwnContext, RaisesException] Node? nextNode();
 };

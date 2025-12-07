@@ -1,0 +1,108 @@
+This is a testharness.js-based test.
+Found 52 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] createDocument test: null,"ெfoo",null,null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('ெfoo') contains the invalid name-start character 'ெ'.
+[FAIL] createDocument test: metadata for null,"ெfoo",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('ெfoo') contains the invalid name-start character 'ெ'.
+[FAIL] createDocument test: characterSet aliases for null,"ெfoo",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('ெfoo') contains the invalid name-start character 'ெ'.
+[FAIL] createDocument test: null,";foo",null,null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided (';foo') contains the invalid name-start character ';'.
+[FAIL] createDocument test: metadata for null,";foo",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided (';foo') contains the invalid name-start character ';'.
+[FAIL] createDocument test: characterSet aliases for null,";foo",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided (';foo') contains the invalid name-start character ';'.
+[FAIL] createDocument test: null,"f}oo",null,null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('f}oo') contains the invalid character '}'.
+[FAIL] createDocument test: metadata for null,"f}oo",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('f}oo') contains the invalid character '}'.
+[FAIL] createDocument test: characterSet aliases for null,"f}oo",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('f}oo') contains the invalid character '}'.
+[FAIL] createDocument test: null,"foo}",null,null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('foo}') contains the invalid character '}'.
+[FAIL] createDocument test: metadata for null,"foo}",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('foo}') contains the invalid character '}'.
+[FAIL] createDocument test: characterSet aliases for null,"foo}",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('foo}') contains the invalid character '}'.
+[FAIL] createDocument test: null,"\\ufffffoo",null,null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('￿foo') contains the invalid name-start character '￿'.
+[FAIL] createDocument test: metadata for null,"\\ufffffoo",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('￿foo') contains the invalid name-start character '￿'.
+[FAIL] createDocument test: characterSet aliases for null,"\\ufffffoo",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('￿foo') contains the invalid name-start character '￿'.
+[FAIL] createDocument test: null,"f\\uffffoo",null,null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('f￿oo') contains the invalid character '￿'.
+[FAIL] createDocument test: metadata for null,"f\\uffffoo",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('f￿oo') contains the invalid character '￿'.
+[FAIL] createDocument test: characterSet aliases for null,"f\\uffffoo",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('f￿oo') contains the invalid character '￿'.
+[FAIL] createDocument test: null,"foo\\uffff",null,null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('foo￿') contains the invalid character '￿'.
+[FAIL] createDocument test: metadata for null,"foo\\uffff",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('foo￿') contains the invalid character '￿'.
+[FAIL] createDocument test: characterSet aliases for null,"foo\\uffff",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('foo￿') contains the invalid character '￿'.
+[FAIL] createDocument test: null,"f<oo",null,null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('f<oo') contains the invalid character '<'.
+[FAIL] createDocument test: metadata for null,"f<oo",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('f<oo') contains the invalid character '<'.
+[FAIL] createDocument test: characterSet aliases for null,"f<oo",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('f<oo') contains the invalid character '<'.
+[FAIL] createDocument test: null,"f:o:o",null,"NAMESPACE_ERR"
+  assert_throws_dom: function "function() { document.implementation.createDocument(namespace, qualifiedName, doctype) }" threw object "InvalidCharacterError: Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('f:o:o') contains multiple colons." that is not a DOMException NAMESPACE_ERR: property "code" is equal to 5, expected 14
+[FAIL] createDocument test: "http://example.com/","fo<o",null,null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('fo<o') contains the invalid character '<'.
+[FAIL] createDocument test: metadata for "http://example.com/","fo<o",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('fo<o') contains the invalid character '<'.
+[FAIL] createDocument test: characterSet aliases for "http://example.com/","fo<o",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('fo<o') contains the invalid character '<'.
+[FAIL] createDocument test: "http://example.com/","f:o:o",null,null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('f:o:o') contains multiple colons.
+[FAIL] createDocument test: metadata for "http://example.com/","f:o:o",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('f:o:o') contains multiple colons.
+[FAIL] createDocument test: characterSet aliases for "http://example.com/","f:o:o",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('f:o:o') contains multiple colons.
+[FAIL] createDocument test: "http://example.com/","0:a",null,null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('0:a') contains the invalid name-start character '0'.
+[FAIL] createDocument test: metadata for "http://example.com/","0:a",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('0:a') contains the invalid name-start character '0'.
+[FAIL] createDocument test: characterSet aliases for "http://example.com/","0:a",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('0:a') contains the invalid name-start character '0'.
+[FAIL] createDocument test: "http://example.com/","a:ெ",null,null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('a:ெ') contains the invalid name-start character 'ெ'.
+[FAIL] createDocument test: metadata for "http://example.com/","a:ெ",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('a:ெ') contains the invalid name-start character 'ெ'.
+[FAIL] createDocument test: characterSet aliases for "http://example.com/","a:ெ",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('a:ெ') contains the invalid name-start character 'ெ'.
+[FAIL] createDocument test: "http://example.com/","a:;",null,null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('a:;') contains the invalid name-start character ';'.
+[FAIL] createDocument test: metadata for "http://example.com/","a:;",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('a:;') contains the invalid name-start character ';'.
+[FAIL] createDocument test: characterSet aliases for "http://example.com/","a:;",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('a:;') contains the invalid name-start character ';'.
+[FAIL] createDocument test: "http://example.com/","a:̀",null,null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('a:̀') contains the invalid name-start character '̀'.
+[FAIL] createDocument test: metadata for "http://example.com/","a:̀",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('a:̀') contains the invalid name-start character '̀'.
+[FAIL] createDocument test: characterSet aliases for "http://example.com/","a:̀",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('a:̀') contains the invalid name-start character '̀'.
+[FAIL] createDocument test: "http://example.com/","ெ:a",null,null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('ெ:a') contains the invalid name-start character 'ெ'.
+[FAIL] createDocument test: metadata for "http://example.com/","ெ:a",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('ெ:a') contains the invalid name-start character 'ெ'.
+[FAIL] createDocument test: characterSet aliases for "http://example.com/","ெ:a",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('ெ:a') contains the invalid name-start character 'ெ'.
+[FAIL] createDocument test: "http://example.com/","̀:a",null,null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('̀:a') contains the invalid name-start character '̀'.
+[FAIL] createDocument test: metadata for "http://example.com/","̀:a",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('̀:a') contains the invalid name-start character '̀'.
+[FAIL] createDocument test: characterSet aliases for "http://example.com/","̀:a",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided ('̀:a') contains the invalid name-start character '̀'.
+[FAIL] createDocument test: "http://example.com/",";:a",null,null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided (';:a') contains the invalid name-start character ';'.
+[FAIL] createDocument test: metadata for "http://example.com/",";:a",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided (';:a') contains the invalid name-start character ';'.
+[FAIL] createDocument test: characterSet aliases for "http://example.com/",";:a",null
+  Failed to execute 'createDocument' on 'DOMImplementation': The qualified name provided (';:a') contains the invalid name-start character ';'.
+Harness: the test ran to completion.
+

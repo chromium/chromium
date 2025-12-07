@@ -7,19 +7,20 @@
 #import "components/network_time/network_time_tracker.h"
 #import "components/variations/service/variations_service.h"
 #import "components/variations/service/variations_service_client.h"
-#import "components/variations/synthetic_trial_registry.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "services/network/test/test_network_connection_tracker.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
-using variations::SyntheticTrialRegistry;
 using variations::UIStringOverrider;
 using variations::VariationsService;
 using variations::VariationsServiceClient;
 
 // Test VariationsServiceClient used to create
 // IOSChromeScopedTestingVariationsService.
+// TODO(crbug.com/377275759): Check if TestVariationsServiceClient and
+// IOSChromeScopedTestingVariationsService can be consolidated with
+// implementations elsewhere.
 class TestVariationsServiceClient : public VariationsServiceClient {
  public:
   TestVariationsServiceClient() = default;
@@ -55,15 +56,21 @@ IOSChromeScopedTestingVariationsService::
     IOSChromeScopedTestingVariationsService() {
   EXPECT_EQ(nullptr,
             TestingApplicationContext::GetGlobal()->GetVariationsService());
-  synthetic_trial_registry_ = std::make_unique<SyntheticTrialRegistry>();
+  enabled_state_provider_ =
+      std::make_unique<metrics::TestEnabledStateProvider>(false, false);
+  metrics_state_manager_ = metrics::MetricsStateManager::Create(
+      TestingApplicationContext::GetGlobal()->GetLocalState(),
+      enabled_state_provider_.get(),
+      /*backup_registry_key=*/std::wstring(),
+      /*user_data_dir=*/base::FilePath(), metrics::StartupVisibility::kUnknown);
 
   variations_service_ = VariationsService::Create(
       std::make_unique<TestVariationsServiceClient>(),
       TestingApplicationContext::GetGlobal()->GetLocalState(),
-      /*state_manager=*/nullptr, "dummy-disable-background-switch",
+      metrics_state_manager_.get(),
+      /*disable_network_switch=*/"dummy-disable-background-switch",
       UIStringOverrider(),
-      network::TestNetworkConnectionTracker::CreateGetter(),
-      synthetic_trial_registry_.get());
+      network::TestNetworkConnectionTracker::CreateGetter());
   TestingApplicationContext::GetGlobal()->SetVariationsService(
       variations_service_.get());
 }

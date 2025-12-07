@@ -1068,7 +1068,7 @@ def main():
   args = parser.parse_args()
   proc = subprocess.Popen(['./' + args.dump_syms_path, args.input_path, '-v'],
                           stdout=subprocess.PIPE,
-                          encoding='ascii')
+                          encoding='utf-8')
 
   function_cfis = ReadFunctionCfi(proc.stdout)
   function_unwinds = GenerateUnwinds(function_cfis, parsers=ALL_PARSERS)

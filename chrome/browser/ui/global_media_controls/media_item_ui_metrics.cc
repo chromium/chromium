@@ -22,9 +22,8 @@ GlobalMediaControlsCastMode GetGlobalMediaControlsCastMode(
     case media_router::MediaCastMode::TAB_MIRROR:
       return GlobalMediaControlsCastMode::kTabMirror;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return GlobalMediaControlsCastMode::kPresentation;
 }
 
 }  // namespace

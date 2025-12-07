@@ -20,6 +20,7 @@ from chrome.test.variations.test_utils import SRC_DIR
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 
+
 # The module chromite is under third_party and imported relative to its root.
 sys.path.append(os.path.join(SRC_DIR, 'third_party'))
 # The module catapult/telemetry is under third_party and imported relative to
@@ -34,8 +35,9 @@ from telemetry.internal.platform import cros_device
 from telemetry.internal.platform.cros_platform_backend import CrosPlatformBackend
 from telemetry.internal.backends.chrome import cros_browser_finder
 
-
 CACHE_DIR = os.path.join(SRC_DIR, "build", "cros_cache")
+INITIAL_WAIT_TIME_SECONDS = 10
+
 
 class _PossibleCrOSBrowser(cros_browser_finder.PossibleCrOSBrowser):
   """The CrOS browser wrapper to filter out start-up args."""
@@ -187,7 +189,11 @@ class CrOSDriverFactory(DriverFactory):
     # This has a side-effect to boot up the VM if not yet already.
     assert self.device, "VM fails to boot."
 
-    browser_args = []
+    browser_args = [
+      # We need debugging connection via WebSocket with the browser. By default
+      # such connection is blocked so we add this flag to allow it.
+      '--remote-allow-origins=*',
+    ]
     if seed_file:
       remote_seed_path = self._copy_seed_file(seed_file)
       browser_args.extend([
@@ -195,6 +201,9 @@ class CrOSDriverFactory(DriverFactory):
         f'--fake-variations-channel={self.channel}',
         '--disable-variations-safe-mode',
         '--disable-field-trial-config',
+        # TODO(http://crbug.com/379869158) -- remove this once the new
+        # seed loading mechanism is fixed.
+        '--force-fieldtrials=SeedFileTrial/Default'
       ])
 
     browser = _launch_browser(browser_args)
@@ -203,7 +212,12 @@ class CrOSDriverFactory(DriverFactory):
     options = options or self.default_options
     options.debugger_address=f'localhost:{debugging_port}'
 
+
     with self.tunnel_context(debugging_port, self.server_port):
+      # We want to make sure that the browser window has fully started
+      # on the VM. On LUCI workers it takes more time than in the local
+      # environment, which can cause tests flakiness.
+      time.sleep(INITIAL_WAIT_TIME_SECONDS)
       driver = webdriver.Chrome(service=self.get_driver_service(),
                                 options=options)
       # VM may not be fully ready before it returns, wait for window handle

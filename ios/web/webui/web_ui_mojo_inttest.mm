@@ -19,7 +19,7 @@
 #import "ios/web/public/webui/web_ui_ios_controller_factory.h"
 #import "ios/web/public/webui/web_ui_ios_data_source.h"
 #import "ios/web/test/grit/test_resources.h"
-#import "ios/web/test/mojo_test.mojom.h"
+#import "ios/web/test/mojo_test.test-mojom.h"
 #import "ios/web/test/test_url_constants.h"
 #import "ios/web/test/web_int_test.h"
 #import "mojo/public/cpp/bindings/pending_remote.h"
@@ -86,7 +86,7 @@ class TestUIHandler : public mojom::TestUIHandlerMojo {
       DCHECK(!fin_received_);
       fin_received_ = true;
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 
@@ -116,7 +116,7 @@ class TestUI : public WebUIIOSController {
 
     source->AddResourcePath("mojo_test.js", IDR_MOJO_TEST_JS);
     source->AddResourcePath("mojo_bindings.js", IDR_IOS_MOJO_BINDINGS_JS);
-    source->AddResourcePath("mojo_test.mojom.js", IDR_MOJO_TEST_MOJO_JS);
+    source->AddResourcePath("mojo_test.test-mojom.js", IDR_MOJO_TEST_MOJO_JS);
     source->SetDefaultResource(IDR_MOJO_TEST_HTML);
 
     web::WebState* web_state = web_ui->GetWebState();
@@ -141,21 +141,23 @@ class TestWebUIControllerFactory : public WebUIIOSControllerFactory {
   std::unique_ptr<WebUIIOSController> CreateWebUIIOSControllerForURL(
       WebUIIOS* web_ui,
       const GURL& url) const override {
-    if (!url.SchemeIs(kTestWebUIScheme))
+    if (!url.SchemeIs(kTestWebUIScheme)) {
       return nullptr;
-    DCHECK_EQ(url.host(), kTestWebUIURLHost);
-    return std::make_unique<TestUI>(web_ui, url.host(), ui_handler_);
+    }
+    DCHECK_EQ(url.GetHost(), kTestWebUIURLHost);
+    return std::make_unique<TestUI>(web_ui, url.GetHost(), ui_handler_);
   }
 
   NSInteger GetErrorCodeForWebUIURL(const GURL& url) const override {
-    if (url.SchemeIs(kTestWebUIScheme))
+    if (url.SchemeIs(kTestWebUIScheme)) {
       return 0;
+    }
     return NSURLErrorUnsupportedURL;
   }
 
  private:
   // UI handler class which communicates with test WebUI page.
-  raw_ptr<TestUIHandler> ui_handler_;
+  raw_ptr<TestUIHandler, DanglingUntriaged> ui_handler_;
 };
 }  // namespace
 

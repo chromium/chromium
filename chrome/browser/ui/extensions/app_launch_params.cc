@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/extensions/app_launch_params.h"
 
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/policy/mac/managed_preference_policy_manager.h"
-
 #include <optional>
 #include <string>
 #include <vector>
@@ -18,10 +16,12 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/policy/mac/managed_preference_policy_manager_impl.h"
 #include "chrome/updater/policy/manager.h"
+#include "chrome/updater/policy/platform_policy_manager.h"
+#include "chrome/updater/updater_branding.h"
 
 namespace {
 NSString* const kManagedPreferencesUpdatePolicies = @"updatePolicies";
-NSString* const kKeystoneSharedPreferenceSuite = @"com.google.Keystone";
+NSString* const kKeystoneSharedPreferenceSuite = @LEGACY_GOOGLE_UPDATE_APPID;
 }  // namespace
 
 namespace updater {
@@ -30,7 +30,7 @@ class ManagedPreferencePolicyManager : public PolicyManagerInterface {
  public:
   ManagedPreferencePolicyManager(
       CRUUpdatePolicyDictionary* policy,
-      const std::optional<bool>& override_is_managed_device);
+      std::optional<bool> override_is_managed_device);
   ManagedPreferencePolicyManager(const ManagedPreferencePolicyManager&) =
       delete;
   ManagedPreferencePolicyManager& operator=(
@@ -56,6 +56,10 @@ class ManagedPreferencePolicyManager : public PolicyManagerInterface {
       const std::string& app_id) const override;
   std::optional<bool> IsRollbackToTargetVersionAllowed(
       const std::string& app_id) const override;
+  std::optional<int> GetMajorVersionRolloutPolicy(
+      const std::string& app_id) const override;
+  std::optional<int> GetMinorVersionRolloutPolicy(
+      const std::string& app_id) const override;
   std::optional<std::string> GetProxyMode() const override;
   std::optional<std::string> GetProxyPacUrl() const override;
   std::optional<std::string> GetProxyServer() const override;
@@ -73,7 +77,7 @@ class ManagedPreferencePolicyManager : public PolicyManagerInterface {
 
 ManagedPreferencePolicyManager::ManagedPreferencePolicyManager(
     CRUUpdatePolicyDictionary* policyDict,
-    const std::optional<bool>& override_is_managed_device)
+    std::optional<bool> override_is_managed_device)
     : impl_([[CRUManagedPreferencePolicyManager alloc]
           initWithDictionary:policyDict]),
       is_managed_device_(override_is_managed_device.value_or(
@@ -194,6 +198,22 @@ std::optional<std::string> ManagedPreferencePolicyManager::GetTargetChannel(
                : std::nullopt;
 }
 
+std::optional<int> ManagedPreferencePolicyManager::GetMajorVersionRolloutPolicy(
+    const std::string& app_id) const {
+  int update_policy =
+      [impl_ majorVersionRolloutPolicy:base::SysUTF8ToNSString(app_id)];
+  return update_policy == kPolicyNotSet ? std::nullopt
+                                        : std::optional<int>(update_policy);
+}
+
+std::optional<int> ManagedPreferencePolicyManager::GetMinorVersionRolloutPolicy(
+    const std::string& app_id) const {
+  int update_policy =
+      [impl_ minorVersionRolloutPolicy:base::SysUTF8ToNSString(app_id)];
+  return update_policy == kPolicyNotSet ? std::nullopt
+                                        : std::optional<int>(update_policy);
+}
+
 std::optional<std::vector<std::string>>
 ManagedPreferencePolicyManager::GetForceInstallApps() const {
   return std::nullopt;
@@ -236,8 +256,8 @@ NSDictionary* ReadManagedPreferencePolicyDictionary() {
   return base::apple::CFToNSOwnershipCast((CFDictionaryRef)policies.release());
 }
 
-scoped_refptr<PolicyManagerInterface> CreateManagedPreferencePolicyManager(
-    const std::optional<bool>& override_is_managed_device) {
+scoped_refptr<PolicyManagerInterface> CreatePlatformPolicyManager(
+    std::optional<bool> override_is_managed_device) {
   NSDictionary* policyDict = ReadManagedPreferencePolicyDictionary();
   return base::MakeRefCounted<ManagedPreferencePolicyManager>(
       policyDict, override_is_managed_device);

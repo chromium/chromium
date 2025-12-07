@@ -13,6 +13,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/insets.h"
@@ -34,12 +35,12 @@ RichNudge::RichNudge(aura::Window* parent_window)
                                       views::BubbleBorder::FLOAT,
                                       views::BubbleBorder::NO_SHADOW) {
   set_parent_window(parent_window);
-  set_color(SK_ColorTRANSPARENT);
+  SetBackgroundColor(SK_ColorTRANSPARENT);
   set_margins(gfx::Insets());
   set_close_on_deactivate(false);
   set_accept_events(false);
   set_adjust_if_offscreen(false);
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetCanActivate(false);
   // Ignore this view for accessibility purposes.
   SetAccessibleWindowRole(ax::mojom::Role::kNone);

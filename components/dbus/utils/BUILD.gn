@@ -1,0 +1,58 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("utils") {
+  visibility = [
+    "//components/dbus/*",
+    "//services/device/wake_lock/power_save_blocker",
+  ]
+  sources = [
+    "bind_weak_ptr_for_export_method.h",
+    "call_method.cc",
+    "call_method.h",
+    "check_for_service_and_start.cc",
+    "check_for_service_and_start.h",
+    "connect_to_signal.h",
+    "export_method.h",
+    "name_has_owner.cc",
+    "name_has_owner.h",
+    "read_message.h",
+    "read_value.h",
+    "signature.h",
+    "types.h",
+    "variant.cc",
+    "variant.h",
+    "write_value.h",
+  ]
+  defines = [ "IS_COMPONENTS_DBUS_IMPL" ]
+  deps = [
+    "//base",
+    "//dbus",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  visibility = [ "//components/dbus:unit_tests" ]
+  sources = [
+    "bind_weak_ptr_for_export_method_unittest.cc",
+    "call_method_unittest.cc",
+    "check_for_service_and_start_unittest.cc",
+    "connect_to_signal_unittest.cc",
+    "export_method_unittest.cc",
+    "read_write_value_unittest.cc",
+    "signature_unittest.cc",
+    "types_unittest.cc",
+    "variant_unittest.cc",
+  ]
+  deps = [
+    ":utils",
+    "//base",
+    "//base/test:test_support",
+    "//dbus",
+    "//dbus:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

@@ -4,11 +4,11 @@
 
 package org.chromium.components.signin.base;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.signin.AccountCapabilitiesConstants;
 import org.chromium.components.signin.AccountManagerDelegate;
 import org.chromium.components.signin.Tribool;
@@ -20,6 +20,7 @@ import java.util.Map;
  * Stores the state associated with supported account capabilities. This class has a native
  * counterpart.
  */
+@NullMarked
 public class AccountCapabilities {
     private final Map<String, Boolean> mAccountCapabilities;
 
@@ -37,7 +38,7 @@ public class AccountCapabilities {
     }
 
     @VisibleForTesting
-    public AccountCapabilities(HashMap<String, Boolean> accountCapabilities) {
+    public AccountCapabilities(Map<String, Boolean> accountCapabilities) {
         mAccountCapabilities = accountCapabilities;
     }
 
@@ -49,7 +50,7 @@ public class AccountCapabilities {
             Map<String, Integer> capabilityResponses) {
         assert capabilityResponses.size()
                 == AccountCapabilitiesConstants.SUPPORTED_ACCOUNT_CAPABILITY_NAMES.size();
-        HashMap<String, Boolean> capabilities = new HashMap<>();
+        Map<String, Boolean> capabilities = new HashMap<>();
         for (String capabilityName :
                 AccountCapabilitiesConstants.SUPPORTED_ACCOUNT_CAPABILITY_NAMES) {
             assert capabilityResponses.containsKey(capabilityName);
@@ -64,7 +65,14 @@ public class AccountCapabilities {
         return new AccountCapabilities(capabilities);
     }
 
-    /** Please keep the list of capability getters alphabetically sorted. */
+    /** keep-sorted start block=yes sticky_prefixes=/**,* newline_separated=yes */
+    /**
+     * @return canFetchFamilyMemberInfo capability value.
+     */
+    public @Tribool int canFetchFamilyMemberInfo() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants.CAN_FETCH_FAMILY_MEMBER_INFO_CAPABILITY_NAME);
+    }
 
     /**
      * @return canHaveEmailAddressDisplayed capability value.
@@ -72,15 +80,6 @@ public class AccountCapabilities {
     public @Tribool int canHaveEmailAddressDisplayed() {
         return getCapabilityByName(
                 AccountCapabilitiesConstants.CAN_HAVE_EMAIL_ADDRESS_DISPLAYED_CAPABILITY_NAME);
-    }
-
-    /**
-     * @return canShowHistorySyncOptInsWithoutMinorModeRestrictions capability value.
-     */
-    public @Tribool int canShowHistorySyncOptInsWithoutMinorModeRestrictions() {
-        return getCapabilityByName(
-                AccountCapabilitiesConstants
-                        .CAN_SHOW_HISTORY_SYNC_OPT_INS_WITHOUT_MINOR_MODE_RESTRICTIONS_CAPABILITY_NAME);
     }
 
     /**
@@ -92,19 +91,12 @@ public class AccountCapabilities {
     }
 
     /**
-     * @return isOptedInToParentalSupervision capability value.
+     * @return canShowHistorySyncOptInsWithoutMinorModeRestrictions capability value.
      */
-    public @Tribool int isOptedInToParentalSupervision() {
+    public @Tribool int canShowHistorySyncOptInsWithoutMinorModeRestrictions() {
         return getCapabilityByName(
-                AccountCapabilitiesConstants.IS_OPTED_IN_TO_PARENTAL_SUPERVISION_CAPABILITY_NAME);
-    }
-
-    /**
-     * @return canFetchFamilyMemberInfo capability value.
-     */
-    public @Tribool int canFetchFamilyMemberInfo() {
-        return getCapabilityByName(
-                AccountCapabilitiesConstants.CAN_FETCH_FAMILY_MEMBER_INFO_CAPABILITY_NAME);
+                AccountCapabilitiesConstants
+                        .CAN_SHOW_HISTORY_SYNC_OPT_INS_WITHOUT_MINOR_MODE_RESTRICTIONS_CAPABILITY_NAME);
     }
 
     /**
@@ -119,6 +111,20 @@ public class AccountCapabilities {
      */
     public @Tribool int canUseChromeIpProtection() {
         return getCapabilityByName(AccountCapabilitiesConstants.CAN_USE_CHROME_IP_PROTECTION_NAME);
+    }
+
+    /**
+     * @return canUseChromeOSGenerativeAi capability value.
+     */
+    public @Tribool int canUseChromeOSGenerativeAi() {
+        return getCapabilityByName(AccountCapabilitiesConstants.CAN_USE_CHROMEOS_GENERATIVE_AI);
+    }
+
+    /**
+     * @return canUseCopyeditorFeature capability value.
+     */
+    public @Tribool int canUseCopyeditorFeature() {
+        return getCapabilityByName(AccountCapabilitiesConstants.CAN_USE_COPYEDITOR_FEATURE_NAME);
     }
 
     /**
@@ -139,6 +145,22 @@ public class AccountCapabilities {
     }
 
     /**
+     * @return canUseGenerativeAiInRecorderApp capability value.
+     */
+    public @Tribool int canUseGenerativeAiInRecorderApp() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants.CAN_USE_GENERATIVE_AI_IN_RECORDER_APP);
+    }
+
+    /**
+     * @return canUseGenerativeAiPhotoEditing capability value.
+     */
+    public @Tribool int canUseGenerativeAiPhotoEditing() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants.CAN_USE_GENERATIVE_AI_PHOTO_EDITING);
+    }
+
+    /**
      * @return canUseMantaService capability value.
      */
     public @Tribool int canUseMantaService() {
@@ -154,11 +176,27 @@ public class AccountCapabilities {
     }
 
     /**
+     * @return canUseSpeakerLabelInRecorderApp capability value.
+     */
+    public @Tribool int canUseSpeakerLabelInRecorderApp() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants.CAN_USE_SPEAKER_LABEL_IN_RECORDER_APP);
+    }
+
+    /**
      * @return isAllowedForMachineLearning capability value.
      */
     public @Tribool int isAllowedForMachineLearning() {
         return getCapabilityByName(
                 AccountCapabilitiesConstants.IS_ALLOWED_FOR_MACHINE_LEARNING_CAPABILITY_NAME);
+    }
+
+    /**
+     * @return isOptedInToParentalSupervision capability value.
+     */
+    public @Tribool int isOptedInToParentalSupervision() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants.IS_OPTED_IN_TO_PARENTAL_SUPERVISION_CAPABILITY_NAME);
     }
 
     /**
@@ -171,9 +209,9 @@ public class AccountCapabilities {
     }
 
     /**
-     * @return isSubjectToEnterprisePolicies capability value.
+     * @return isSubjectToEnterpriseFeatures capability value.
      */
-    public @Tribool int isSubjectToEnterprisePolicies() {
+    public @Tribool int isSubjectToEnterpriseFeatures() {
         return getCapabilityByName(
                 AccountCapabilitiesConstants.IS_SUBJECT_TO_ENTERPRISE_POLICIES_CAPABILITY_NAME);
     }
@@ -186,12 +224,39 @@ public class AccountCapabilities {
                 AccountCapabilitiesConstants.IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME);
     }
 
+    /** keep-sorted end */
+
+    /**
+     * Merges capabilities from another {@link AccountCapabilities} object into this one.
+     *
+     * <p>New capabilities that were not already set are added and existing ones are updated with
+     * the new values.
+     *
+     * @param other The {@link AccountCapabilities} object to merge values from.
+     * @return true if this object's capabilities were changed as a result of the update and false
+     *     otherwise.
+     */
+    public boolean updateWith(AccountCapabilities other) {
+        boolean modified = false;
+        for (Map.Entry<String, Boolean> otherCapability : other.mAccountCapabilities.entrySet()) {
+            String name = otherCapability.getKey();
+            Boolean value = otherCapability.getValue();
+            if (mAccountCapabilities.containsKey(name)
+                    && mAccountCapabilities.get(name).equals(value)) {
+                continue;
+            }
+            mAccountCapabilities.put(name, value);
+            modified = true;
+        }
+        return modified;
+    }
+
     /**
      * @param capabilityName the name of the capability to lookup.
      * @return the capability value associated to the name.
      */
     @CalledByNative
-    private @Tribool int getCapabilityByName(@NonNull String capabilityName) {
+    public @Tribool int getCapabilityByName(String capabilityName) {
         if (!mAccountCapabilities.containsKey(capabilityName)) {
             return Tribool.UNKNOWN;
         }

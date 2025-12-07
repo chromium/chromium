@@ -5,44 +5,47 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 
 #include "base/files/file_path.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "content/public/browser/browser_context.h"
 
 namespace ash {
 
 const char kSigninBrowserContextBaseName[] = "Default";
-const char kLockScreenAppBrowserContextBaseName[] = "LockScreenAppsProfile";
 const char kLockScreenBrowserContextBaseName[] = "LockScreenProfile";
 const char kShimlessRmaAppBrowserContextBaseName[] = "ShimlessRmaAppProfile";
 
-bool IsSigninBrowserContext(content::BrowserContext* browser_context) {
+bool IsSigninBrowserContext(const content::BrowserContext* browser_context) {
   return browser_context && browser_context->GetPath().BaseName().value() ==
                                 kSigninBrowserContextBaseName;
 }
 
-bool IsLockScreenAppBrowserContext(content::BrowserContext* browser_context) {
-  return browser_context && browser_context->GetPath().BaseName().value() ==
-                                kLockScreenAppBrowserContextBaseName;
-}
-
-bool IsLockScreenBrowserContext(content::BrowserContext* browser_context) {
+bool IsLockScreenBrowserContext(
+    const content::BrowserContext* browser_context) {
   return browser_context && browser_context->GetPath().BaseName().value() ==
                                 kLockScreenBrowserContextBaseName;
 }
 
-bool IsShimlessRmaAppBrowserContext(content::BrowserContext* browser_context) {
+bool IsShimlessRmaAppBrowserContext(
+    const content::BrowserContext* browser_context) {
   return browser_context && browser_context->GetPath().BaseName().value() ==
                                 kShimlessRmaAppBrowserContextBaseName;
 }
 
-bool IsUserBrowserContext(content::BrowserContext* browser_context) {
+bool IsUserBrowserContext(const content::BrowserContext* browser_context) {
+  // Check `AnnotatedAccountId` as an optimization to avoid creating/destroying
+  // `base::FilePath`, which is cpu intensive. See b:402192521 for more details.
+  //
+  // `IsUserBrowserContextBaseName` is still needed so that profile creation
+  // hook can identify user profiles and call `AnnotatedAccountId::Set` on them.
+  // TODO(b:402192521): Get rid of `IsUserBrowserContextBaseName` check.
   return browser_context &&
-         IsUserBrowserContextBaseName(browser_context->GetPath().BaseName());
+         (AnnotatedAccountId::Get(browser_context) ||
+          IsUserBrowserContextBaseName(browser_context->GetPath().BaseName()));
 }
 
 bool IsUserBrowserContextBaseName(const base::FilePath& base_name) {
   const auto& value = base_name.value();
   return value != kSigninBrowserContextBaseName &&
-         value != kLockScreenAppBrowserContextBaseName &&
          value != kLockScreenBrowserContextBaseName &&
          value != kShimlessRmaAppBrowserContextBaseName;
 }

@@ -65,6 +65,8 @@ found in the LICENSE file.
       codecString = parsedString['codec'];
       if (codecString === 'vp8') {
         codec = 'vp8';
+      } else if (codecString === 'avc') {
+        codec = 'avc';
       } else if (codecString !== 'vp9' && codecString !== undefined) {
         console.warn('Unsupported video codec format! Switch to default VP9.');
       }

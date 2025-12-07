@@ -7,9 +7,8 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/lazy_instance.h"
 #include "content/public/common/content_switches.h"
-#include "ipc/ipc_channel.h"
+#include "ipc/constants.mojom.h"
 #include "mojo/core/embedder/configuration.h"
 #include "mojo/core/embedder/embedder.h"
 
@@ -21,17 +20,16 @@ class MojoInitializer {
  public:
   MojoInitializer() {
     mojo::core::Configuration config;
-    config.max_message_num_bytes = IPC::Channel::kMaximumMessageSize;
+    config.max_message_num_bytes = IPC::mojom::kChannelMaximumMessageSize;
     mojo::core::Init(config);
   }
 };
 
-base::LazyInstance<MojoInitializer>::Leaky mojo_initializer;
-
-}  //  namespace
+}  // namespace
 
 void InitializeMojo() {
-  mojo_initializer.Get();
+  // Trivially destructible, so no NoDestructor.
+  static MojoInitializer mojo_initializer;
 }
 
 }  // namespace content

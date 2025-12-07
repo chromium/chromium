@@ -1,0 +1,69 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("promo") {
+  sources = [
+    "fullscreen_signin_promo_display_handler.h",
+    "fullscreen_signin_promo_display_handler.mm",
+    "fullscreen_signin_promo_scene_agent.h",
+    "fullscreen_signin_promo_scene_agent.mm",
+  ]
+  deps = [
+    "//components/feature_engagement/public",
+    "//components/signin/public/identity_manager/objc",
+    "//components/sync/service",
+    "//components/version_info",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/authentication/history_sync/coordinator",
+    "//ios/chrome/browser/authentication/history_sync/model:history_sync_utils",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/promos_manager/model",
+    "//ios/chrome/browser/promos_manager/model:constants",
+    "//ios/chrome/browser/promos_manager/model:features",
+    "//ios/chrome/browser/promos_manager/model:types",
+    "//ios/chrome/browser/promos_manager/ui_bundled:promos",
+    "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
+    "//ios/chrome/browser/signin/model:authentication_service",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "fullscreen_signin_promo_scene_agent_unittest.mm" ]
+
+  deps = [
+    ":promo",
+    "//base",
+    "//components/signin/public/base",
+    "//components/sync:test_support",
+    "//components/sync/service",
+    "//ios/chrome/app:app_internal",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/app/profile:test_utils",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:features",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
+    "//ios/chrome/browser/promos_manager/model:constants",
+    "//ios/chrome/browser/promos_manager/model:features",
+    "//ios/chrome/browser/promos_manager/model:test_support",
+    "//ios/chrome/browser/shared/coordinator/scene",
+    "//ios/chrome/browser/shared/coordinator/scene/test",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

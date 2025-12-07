@@ -1,0 +1,54 @@
+Tests that Fetch.continueRequest can override a cookie on main resource navigations and fetch requests, including redirects.
+
+--- Setting baseline cookie for localhost ---
+Intercepting navigation to set cookie for localhost...
+Cookie for localhost should now be set.
+
+--- Setting baseline cookie for 127.0.0.1 ---
+Intercepting navigation to set cookie for 127.0.0.1...
+Cookie for 127.0.0.1 should now be set.
+
+--- Running fetch() Test: Direct Fetch ---
+Intercepting final fetch to: http://127.0.0.1:8000/inspector-protocol/fetch/resources/cors-echo-headers.php?headers=HTTP_COOKIE
+Attempting to override Cookie header to: "modified_cookie_for_direct_fetch=from_devtools"
+fetch() for Direct Fetch complete.
+[Verification] Server response for Direct Fetch: HTTP_COOKIE: modified_cookie_for_direct_fetch=from_devtools
+
+--- Running fetch() Test: Same-Origin Redirect Fetch ---
+Intercepting initial fetch to redirect script: http://127.0.0.1:8000/inspector-protocol/fetch/resources/redirect.pl?http://127.0.0.1:8000/inspector-protocol/fetch/resources/cors-echo-headers.php?headers=HTTP_COOKIE
+Continuing initial fetch, awaiting redirect...
+Intercepting final fetch to: http://127.0.0.1:8000/inspector-protocol/fetch/resources/cors-echo-headers.php?headers=HTTP_COOKIE
+Attempting to override Cookie header to: "modified_cookie_for_redirect_fetch=from_devtools"
+fetch() for Same-Origin Redirect Fetch complete.
+[Verification] Server response for Same-Origin Redirect Fetch: HTTP_COOKIE: modified_cookie_for_redirect_fetch=from_devtools
+
+--- Running fetch() Test: Cross-Origin Redirect Fetch ---
+Intercepting initial fetch to redirect script: http://127.0.0.1:8000/inspector-protocol/fetch/resources/redirect.pl?http://localhost:8000/inspector-protocol/fetch/resources/cors-echo-headers.php?headers=HTTP_COOKIE
+Continuing initial fetch, awaiting redirect...
+Intercepting final fetch to: http://localhost:8000/inspector-protocol/fetch/resources/cors-echo-headers.php?headers=HTTP_COOKIE
+Attempting to override Cookie header to: "modified_cookie_for_cors_fetch=from_devtools"
+fetch() for Cross-Origin Redirect Fetch complete.
+[Verification] Server response for Cross-Origin Redirect Fetch: HTTP_COOKIE: modified_cookie_for_cors_fetch=from_devtools
+
+--- Running Navigation Test: Direct Navigation ---
+Intercepting final navigation to: http://127.0.0.1:8000/inspector-protocol/fetch/resources/cors-echo-headers.php?headers=HTTP_COOKIE
+Attempting to override Cookie header to: "modified_cookie_for_direct_nav=from_devtools"
+Navigation for Direct Navigation complete.
+[Verification] Server response for Direct Navigation: HTTP_COOKIE: modified_cookie_for_direct_nav=from_devtools
+
+--- Running Navigation Test: Same-Origin Redirect Navigation ---
+Intercepting initial navigation to redirect script: http://127.0.0.1:8000/inspector-protocol/fetch/resources/redirect.pl?http://127.0.0.1:8000/inspector-protocol/fetch/resources/cors-echo-headers.php?headers=HTTP_COOKIE
+Continuing initial navigation, awaiting redirect...
+Intercepting final navigation to: http://127.0.0.1:8000/inspector-protocol/fetch/resources/cors-echo-headers.php?headers=HTTP_COOKIE
+Attempting to override Cookie header to: "modified_cookie_for_redirect_nav=from_devtools"
+Navigation for Same-Origin Redirect Navigation complete.
+[Verification] Server response for Same-Origin Redirect Navigation: HTTP_COOKIE: modified_cookie_for_redirect_nav=from_devtools
+
+--- Running Navigation Test: Cross-Origin Redirect Navigation ---
+Intercepting initial navigation to redirect script: http://127.0.0.1:8000/inspector-protocol/fetch/resources/redirect.pl?http://localhost:8000/inspector-protocol/fetch/resources/cors-echo-headers.php?headers=HTTP_COOKIE
+Continuing initial navigation, awaiting redirect...
+Intercepting final navigation to: http://localhost:8000/inspector-protocol/fetch/resources/cors-echo-headers.php?headers=HTTP_COOKIE
+Attempting to override Cookie header to: "modified_cookie_for_cors_nav=from_devtools"
+Navigation for Cross-Origin Redirect Navigation complete.
+[Verification] Server response for Cross-Origin Redirect Navigation: HTTP_COOKIE: modified_cookie_for_cors_nav=from_devtools
+

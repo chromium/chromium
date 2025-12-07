@@ -1,0 +1,27 @@
+<!--
+@BLINK-ALLOW:name=*
+@BLINK-ALLOW:role*
+@BLINK-ALLOW:nextOnLine*
+@BLINK-ALLOW:previousOnLine*
+-->
+<html>
+<body>
+<div contenteditable="true" id="canvas">
+  <ol>
+    <li>apple</li>
+    <li><span id="host" aria-hidden="true"></span>banana</li>
+    <li><br>cherry</li>
+  </ol>
+</div>
+<script>
+  const host = document.querySelector("#host");
+  const shadow = host.attachShadow({ mode: "open" });
+
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.style.position = "absolute";
+  const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  svg.appendChild(line);
+  shadow.appendChild(svg);
+</script>
+</body>
+</html>

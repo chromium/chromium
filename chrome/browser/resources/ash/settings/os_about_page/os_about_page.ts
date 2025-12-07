@@ -8,27 +8,26 @@
  */
 
 import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
-import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
-import '../icons.html.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_settings_page/os_settings_subpage.js';
 import '../os_settings_page/settings_card.js';
 import '../settings_shared.css.js';
 import '../os_settings_icons.html.js';
 import '../os_reset_page/os_powerwash_dialog.js';
-import './eol_offer_section.js';
 import './update_warning_dialog.js';
 import '../crostini_page/crostini_settings_card.js';
+import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator.js';
 
 import {LifetimeBrowserProxyImpl} from '/shared/settings/lifetime_browser_proxy.js';
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {CrPolicyIndicatorType} from 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -36,14 +35,16 @@ import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {isCrostiniSupported, isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
+import {isCrostiniSupported} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, Router, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
-import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, AboutPageUpdateInfo, BrowserChannel, browserChannelToI18nId, RegulatoryInfo, TpmFirmwareUpdateStatusChangedEvent, UpdateStatus, UpdateStatusChangedEvent} from './about_page_browser_proxy.js';
+import type {AboutPageBrowserProxy, AboutPageUpdateInfo, BrowserChannel, RegulatoryInfo, TpmFirmwareUpdateStatusChangedEvent, UpdateStatusChangedEvent} from './about_page_browser_proxy.js';
+import {AboutPageBrowserProxyImpl, browserChannelToI18nId, UpdateStatus} from './about_page_browser_proxy.js';
 import {getTemplate} from './os_about_page.html.js';
 
 declare global {
@@ -60,7 +61,7 @@ export interface OsAboutPageElement {
     productLogo: HTMLImageElement,
     regulatoryInfo: HTMLElement,
     relaunchButton: CrButtonElement,
-    updateStatusMessageInner: HTMLDivElement,
+    updateStatusMessageInner: HTMLElement,
   };
 }
 
@@ -91,6 +92,11 @@ export class OsAboutPageElement extends OsAboutPageBase {
         type: Boolean,
         value: false,
       },
+
+      /**
+       * Whether users may initiate firmware updates
+       */
+      canChangeFirmware_: Boolean,
 
       currentUpdateStatusEvent_: {
         type: Object,
@@ -146,11 +152,6 @@ export class OsAboutPageElement extends OsAboutPageBase {
       },
 
       showEolIncentive_: {
-        type: Boolean,
-        value: false,
-      },
-
-      shouldShowOfferText_: {
         type: Boolean,
         value: false,
       },
@@ -224,57 +225,6 @@ export class OsAboutPageElement extends OsAboutPageBase {
       },
 
       /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kCheckForOsUpdate,
-          Setting.kSeeWhatsNew,
-          Setting.kGetHelpWithChromeOs,
-          Setting.kReportAnIssue,
-          Setting.kTermsOfService,
-          Setting.kDiagnostics,
-          Setting.kFirmwareUpdates,
-        ]),
-      },
-
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value() {
-          return isRevampWayfindingEnabled();
-        },
-        readOnly: true,
-      },
-
-      rowIcons_: {
-        type: Object,
-        value() {
-          if (isRevampWayfindingEnabled()) {
-            return {
-              powerWash: 'os-settings:startup',
-              releaseNotes: 'os-settings:about-release-notes',
-              help: 'os-settings:about-help',
-              feedback: 'os-settings:about-feedback',
-              diagnostics: 'os-settings:about-diagnostics',
-              firmwareUpdates: 'os-settings:about-firmware-updates',
-              additionalDetails: 'os-settings:about-additional-details',
-            };
-          }
-
-          return {
-            powerWash: '',
-            releaseNotes: '',
-            help: '',
-            feedback: '',
-            diagnostics: '',
-            firmwareUpdates: '',
-            additionalDetails: '',
-          };
-        },
-      },
-
-      /**
        * Controls whether the extended updates opt-in option is shown.
        */
       showExtendedUpdatesOption_: {
@@ -327,7 +277,19 @@ export class OsAboutPageElement extends OsAboutPageBase {
     ];
   }
 
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kCheckForOsUpdate,
+    Setting.kSeeWhatsNew,
+    Setting.kGetHelpWithChromeOs,
+    Setting.kReportAnIssue,
+    Setting.kTermsOfService,
+    Setting.kDiagnostics,
+    Setting.kFirmwareUpdates,
+  ]);
+
   private isDarkModeActive_: boolean;
+  private canChangeFirmware_: boolean;
   private currentUpdateStatusEvent_: UpdateStatusChangedEvent;
   private isManaged_: boolean;
   private deviceManager_: string;
@@ -338,12 +300,10 @@ export class OsAboutPageElement extends OsAboutPageBase {
   private regulatoryInfo_: RegulatoryInfo|null;
   private hasEndOfLife_: boolean;
   private showEolIncentive_: boolean;
-  private shouldShowOfferText_: boolean;
   private hasDeferredUpdate_: boolean;
   private eolMessageWithMonthAndYear_: string;
   private hasInternetConnection_: boolean;
   private firmwareUpdateCount_: number;
-  private rowIcons_: Record<string, string>;
   private showCrostiniLicense_: boolean;
   private showUpdateStatus_: boolean;
   private showButtonContainer_: boolean;
@@ -355,7 +315,6 @@ export class OsAboutPageElement extends OsAboutPageBase {
   private showTPMFirmwareUpdateDialog_: boolean;
   private updateInfo_?: AboutPageUpdateInfo;
   private isPendingOsUpdateDeepLink_: boolean;
-  private isRevampWayfindingEnabled_: boolean;
   private showExtendedUpdatesOption_: boolean;
   private isExtendedUpdatesOptInEligible_: boolean;
   private isExtendedUpdatesDatePassed_: boolean;
@@ -396,8 +355,6 @@ export class OsAboutPageElement extends OsAboutPageBase {
     this.aboutBrowserProxy_.getEndOfLifeInfo().then(result => {
       this.hasEndOfLife_ = !!result.hasEndOfLife;
       this.eolMessageWithMonthAndYear_ = result.aboutPageEndOfLifeMessage || '';
-      this.showEolIncentive_ = !!result.shouldShowEndOfLifeIncentive;
-      this.shouldShowOfferText_ = !!result.shouldShowOfferText;
       this.isExtendedUpdatesDatePassed_ = !!result.isExtendedUpdatesDatePassed;
       this.isExtendedUpdatesOptInRequired_ =
           !!result.isExtendedUpdatesOptInRequired;
@@ -455,6 +412,12 @@ export class OsAboutPageElement extends OsAboutPageBase {
     this.addWebUiListener(
         'extended-updates-setting-changed',
         this.onExtendedUpdatesSettingChanged_.bind(this));
+  }
+
+  private updateFirmwareInfo_(): void {
+    this.aboutBrowserProxy_.canChangeFirmware().then(canChangeFirmware => {
+      this.canChangeFirmware_ = canChangeFirmware;
+    });
   }
 
   private onUpdateStatusChanged_(event: UpdateStatusChangedEvent): void {
@@ -531,6 +494,10 @@ export class OsAboutPageElement extends OsAboutPageBase {
         this.currentUpdateStatusEvent_.status !== UpdateStatus.DISABLED;
   }
 
+  private getFirmwareDisabledIndicatorType_(): string {
+    return CrPolicyIndicatorType.DEVICE_POLICY;
+  }
+
   /**
    * Hide the button container if all buttons are hidden, otherwise the
    * container displays an unwanted border (see separator class).
@@ -582,7 +549,7 @@ export class OsAboutPageElement extends OsAboutPageBase {
         return this.i18nAdvanced('aboutUpgradeUpToDate');
       case UpdateStatus.UPDATING:
         assert(typeof this.currentUpdateStatusEvent_.progress === 'number');
-        const progressPercent = this.currentUpdateStatusEvent_.progress! + '%';
+        const progressPercent = this.currentUpdateStatusEvent_.progress + '%';
 
         if (this.currentChannel_ !== this.targetChannel_) {
           return this.i18nAdvanced('aboutUpgradeUpdatingChannelSwitch', {
@@ -599,7 +566,7 @@ export class OsAboutPageElement extends OsAboutPageBase {
             substitutions: [this.deviceManager_, progressPercent],
           });
         }
-        if (this.currentUpdateStatusEvent_.progress! > 0) {
+        if (this.currentUpdateStatusEvent_.progress > 0) {
           // NOTE(dbeam): some platforms (i.e. Mac) always send 0% while
           // updating (they don't support incremental upgrade progress). Though
           // it's certainly quite possible to validly end up here with 0% on
@@ -652,20 +619,14 @@ export class OsAboutPageElement extends OsAboutPageBase {
       case UpdateStatus.FAILED_DOWNLOAD:
       case UpdateStatus.FAILED_HTTP:
       case UpdateStatus.FAILED:
-        return this.isRevampWayfindingEnabled_ ?
-            'os-settings:about-update-error' :
-            'cr:error-outline';
+        return 'os-settings:about-update-error';
       case UpdateStatus.UPDATED:
       case UpdateStatus.NEARLY_UPDATED:
         // TODO(crbug.com/40637166): Don't use browser icons here. Fork them.
-        return this.isRevampWayfindingEnabled_ ?
-            'os-settings:about-update-complete' :
-            'settings:check-circle';
+        return 'os-settings:about-update-complete';
       case UpdateStatus.DEFERRED:
       case UpdateStatus.UPDATE_TO_ROLLBACK_VERSION_DISALLOWED:
-        return this.isRevampWayfindingEnabled_ ?
-            'os-settings:about-update-warning' :
-            'cr:warning';
+        return 'os-settings:about-update-warning';
       default:
         return null;
     }
@@ -729,28 +690,35 @@ export class OsAboutPageElement extends OsAboutPageBase {
     this.$.updateStatusMessageInner.focus();
   }
 
-  private onApplyDeferredUpdateClick_(): void {
-    this.aboutBrowserProxy_.applyDeferredUpdate();
+  private onApplyDeferredUpdateAdvancedClick_(): void {
+    this.aboutBrowserProxy_.applyDeferredUpdateAdvanced();
     this.$.updateStatusMessageInner.focus();
   }
 
   private onApplyAndSetAutoUpdateClick_(): void {
     this.aboutBrowserProxy_.setConsumerAutoUpdate(true);
-    this.onApplyDeferredUpdateClick_();
+    this.onApplyDeferredUpdateAdvancedClick_();
   }
 
   private computeShowCheckUpdates_(): boolean {
-    // Disable update button if the device is end of life or needs to opt-in
+    // Disable update button if the device needs to opt-in
     // to extended updates.
-    if (this.hasEndOfLife_ || this.showExtendedUpdatesOption_) {
+    if (this.showExtendedUpdatesOption_) {
       return false;
     }
+
+    // Show the update button when the device is at EOL and there are no
+    // more updates available for the device.
+    const eolPassedAndNoUpdates =
+        this.hasEndOfLife_ && this.checkStatus_(UpdateStatus.UPDATED);
 
     // Enable the update button if we are in a stale 'updated' status or
     // update has failed. Disable it otherwise.
     const staleUpdatedStatus =
         !this.hasCheckedForUpdates_ && this.checkStatus_(UpdateStatus.UPDATED);
-    return staleUpdatedStatus || this.checkStatus_(UpdateStatus.FAILED) ||
+
+    return eolPassedAndNoUpdates || staleUpdatedStatus ||
+        this.checkStatus_(UpdateStatus.FAILED) ||
         this.checkStatus_(UpdateStatus.FAILED_HTTP) ||
         this.checkStatus_(UpdateStatus.FAILED_DOWNLOAD) ||
         this.checkStatus_(UpdateStatus.DISABLED_BY_ADMIN) ||
@@ -796,6 +764,7 @@ export class OsAboutPageElement extends OsAboutPageBase {
   private onTpmFirmwareUpdateStatusChanged_(
       event: TpmFirmwareUpdateStatusChangedEvent): void {
     this.showTPMFirmwareUpdateLineItem_ = event.updateAvailable;
+    this.updateFirmwareInfo_();
   }
 
   private onTpmFirmwareUpdateClick_(): void {
@@ -827,44 +796,14 @@ export class OsAboutPageElement extends OsAboutPageBase {
   }
   // </if>
 
-  private shouldShowIcons_(): boolean {
-    if (this.hasEndOfLife_) {
-      return true;
-    }
-    return this.showUpdateStatus_;
-  }
-
-  private getShowReleaseNotesSublabel_(): string|null {
-    return this.isRevampWayfindingEnabled_ ?
-        this.i18n('aboutShowReleaseNotesDescription') :
-        null;
-  }
-
-  private getHelpUsingChromeOsSublabel_(): string|null {
-    return this.isRevampWayfindingEnabled_ ?
-        this.i18n('aboutGetHelpDescription') :
-        null;
-  }
-
-  private getReportIssueSublabel_(): string|null {
-    return this.isRevampWayfindingEnabled_ ?
-        this.i18n('aboutSendFeedbackDescription') :
-        null;
-  }
-
-  private getDiagnosticsSublabel_(): string|null {
-    return this.isRevampWayfindingEnabled_ ?
-        this.i18n('aboutDiagnosticseDescription') :
-        null;
-  }
-
   private getFirmwareSublabel_(): string|null {
-    if (this.isRevampWayfindingEnabled_) {
-      return this.firmwareUpdateCount_ > 0 ?
-          this.i18n('aboutFirmwareUpdateAvailableDescription') :
-          this.i18n('aboutFirmwareUpToDateDescription');
+    if (!this.canChangeFirmware_) {
+      return this.i18n('aboutFirmwareUpdatesDisabledDescription');
     }
-    return null;
+    if (this.firmwareUpdateCount_ > 0) {
+      return this.i18n('aboutFirmwareUpdateAvailableDescription');
+    }
+    return this.i18n('aboutFirmwareUpToDateDescription');
   }
 
   private computeShowExtendedUpdatesOption_(): boolean {

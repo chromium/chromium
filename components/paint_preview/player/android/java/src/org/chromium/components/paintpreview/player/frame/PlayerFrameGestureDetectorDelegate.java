@@ -4,14 +4,20 @@
 
 package org.chromium.components.paintpreview.player.frame;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** Dispatches gesture events to the correct controllers. */
+@NullMarked
 public class PlayerFrameGestureDetectorDelegate {
-    private final PlayerFrameScaleController mScaleController;
+    private final @Nullable PlayerFrameScaleController mScaleController;
     private final PlayerFrameScrollController mScrollController;
     private final PlayerFrameViewDelegate mViewDelegate;
 
     PlayerFrameGestureDetectorDelegate(
-            PlayerFrameScaleController scaleController,
+            @Nullable PlayerFrameScaleController scaleController,
             PlayerFrameScrollController scrollController,
             PlayerFrameViewDelegate viewDelegate) {
         mScaleController = scaleController;
@@ -49,6 +55,7 @@ public class PlayerFrameGestureDetectorDelegate {
      * @return Whether this scale event was consumed.
      */
     boolean scaleBy(float scaleFactor, float focalPointX, float focalPointY) {
+        assumeNonNull(mScaleController);
         return mScaleController.scaleBy(scaleFactor, focalPointX, focalPointY);
     }
 
@@ -57,6 +64,7 @@ public class PlayerFrameGestureDetectorDelegate {
      * @return Whether this scale event was consumed.
      */
     boolean scaleFinished(float scaleFactor, float focalPointX, float focalPointY) {
+        assumeNonNull(mScaleController);
         return mScaleController.scaleFinished(scaleFactor, focalPointX, focalPointY);
     }
 

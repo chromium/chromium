@@ -1,0 +1,33 @@
+owners:
+- hmare@google.com
+- cbe-device-trust-eng@google.com
+- file://components/enterprise/client_certificates/OWNERS
+caption: Enables the provisioning of client certificates for managed browsers
+desc: |-
+  Setting this policy to <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_ENABLED">Enabled</ph> (value 1) will make the <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> request a client certificate from the device management server for a managed browser session. This certificate will be made available for, e.g., mTLS connections.
+
+  Setting this policy to <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_DISABLED">Disabled</ph> (value 0), or leaving unset will prevent <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> from requesting the client certificate. If a browser's managed client certificate had already been provisioned, due to this policy being enabled before, it will not be deleted, but it won't be available for mTLS connections and won't be renewed when it expires.
+
+supported_on:
+- chrome.*:136-
+- android:143-
+features:
+  dynamic_refresh: true
+  per_profile: false
+  cloud_only: true
+type: int-enum
+schema:
+  type: integer
+  enum:
+  - 0
+  - 1
+items:
+- caption: Disable client certificate provisioning for browsers
+  name: Disabled
+  value: 0
+- caption: Enable client certificate provisioning for browsers
+  name: Enabled
+  value: 1
+default: 0
+example_value: 0
+tags: []

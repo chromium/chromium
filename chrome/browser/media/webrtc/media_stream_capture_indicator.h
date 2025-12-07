@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_MEDIA_WEBRTC_MEDIA_STREAM_CAPTURE_INDICATOR_H_
 #define CHROME_BROWSER_MEDIA_WEBRTC_MEDIA_STREAM_CAPTURE_INDICATOR_H_
 
+#include <optional>
 #include <unordered_map>
 #include <vector>
 
@@ -17,7 +18,7 @@
 #include "content/public/browser/media_stream_request.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace content {
 class WebContents;
@@ -78,6 +79,8 @@ class MediaStreamCaptureIndicator
                                            bool is_capturing_audio) {}
     virtual void OnIsBeingMirroredChanged(content::WebContents* web_contents,
                                           bool is_being_mirrored) {}
+    virtual void OnIsCapturingTabChanged(content::WebContents* web_contents,
+                                         bool is_capturing_tab) {}
     virtual void OnIsCapturingWindowChanged(content::WebContents* web_contents,
                                             bool is_capturing_window) {}
     virtual void OnIsCapturingDisplayChanged(content::WebContents* web_contents,
@@ -100,7 +103,8 @@ class MediaStreamCaptureIndicator
       content::WebContents* web_contents,
       const blink::mojom::StreamDevices& devices,
       std::unique_ptr<MediaStreamUI> ui = nullptr,
-      const std::u16string application_title = std::u16string());
+      const std::u16string application_title = std::u16string(),
+      std::optional<content::DesktopMediaID> media_id = std::nullopt);
 
   // Overrides from StatusIconMenuModel::Delegate implementation.
   void ExecuteCommand(int command_id, int event_flags) override;
@@ -118,6 +122,9 @@ class MediaStreamCaptureIndicator
   // Returns true if |web_contents| itself is being mirrored (e.g., a source of
   // media for remote broadcast).
   bool IsBeingMirrored(content::WebContents* web_contents) const;
+
+  // Returns true if |web_contents| is capturing a a tab.
+  bool IsCapturingTab(content::WebContents* web_contents) const;
 
   // Returns true if |web_contents| is capturing a desktop window or audio.
   bool IsCapturingWindow(content::WebContents* web_contents) const;
@@ -173,7 +180,7 @@ class MediaStreamCaptureIndicator
 
   // Reference to our status icon - owned by the StatusTray. If null,
   // the platform doesn't support status icons.
-  raw_ptr<StatusIcon, DanglingUntriaged> status_icon_ = nullptr;
+  raw_ptr<StatusIcon> status_icon_ = nullptr;
 
   // A map that contains the usage counts of the opened capture devices for each
   // WebContents instance.

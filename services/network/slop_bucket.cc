@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/network/slop_bucket.h"
 
 #include <limits.h>
@@ -28,6 +23,7 @@
 #include "base/synchronization/atomic_flag.h"
 #include "base/system/sys_info.h"
 #include "base/thread_annotations.h"
+#include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "net/base/io_buffer.h"
 #include "net/base/request_priority.h"
@@ -36,7 +32,7 @@
 
 namespace network {
 
-BASE_FEATURE(kSlopBucket, "SlopBucket", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSlopBucket, base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
@@ -66,9 +62,8 @@ constexpr int kDefaultMaxChunksTotal = 32;
 
 // The default for "memory_pressure_disable_level". When a memory pressure
 // notification of this level or higher arrives, SlopBucket will disable itself.
-constexpr base::MemoryPressureListener::MemoryPressureLevel
-    kDefaultMemoryPressureDisableLevel =
-        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE;
+constexpr base::MemoryPressureLevel kDefaultMemoryPressureDisableLevel =
+    base::MEMORY_PRESSURE_LEVEL_MODERATE;
 
 // Mapping of name and value for net::RequestPriority enum.
 constexpr base::FeatureParam<net::RequestPriority>::Option
@@ -107,24 +102,24 @@ constexpr base::FeatureParam<int> kMaxChunksTotalParam(&kSlopBucket,
                                                        kDefaultMaxChunksTotal);
 
 // Mapping of name and value for
-// base::MemoryPressureListener::MemoryPressureLevel enum.
-constexpr base::FeatureParam<
-    base::MemoryPressureListener::MemoryPressureLevel>::Option
+// base::MemoryPressureLevel enum.
+constexpr base::FeatureParam<base::MemoryPressureLevel>::Option
     kMemoryPressureLevelOptions[] = {
-        {base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE, "NONE"},
-        {base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE,
-         "MODERATE"},
-        {base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL,
-         "CRITICAL"},
+        {base::MEMORY_PRESSURE_LEVEL_NONE, "NONE"},
+        {base::MEMORY_PRESSURE_LEVEL_MODERATE, "MODERATE"},
+        {base::MEMORY_PRESSURE_LEVEL_CRITICAL, "CRITICAL"},
 };
 
 // "memory_pressure_disable_level" parameter.
-constexpr base::FeatureParam<base::MemoryPressureListener::MemoryPressureLevel>
-    kMemoryPressureDisableLevelParam(
-        &kSlopBucket,
-        "memory_pressure_disable_level",
-        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE,
-        &kMemoryPressureLevelOptions);
+constexpr base::FeatureParam<base::MemoryPressureLevel>
+    kMemoryPressureDisableLevelParam(&kSlopBucket,
+                                     "memory_pressure_disable_level",
+                                     base::MEMORY_PRESSURE_LEVEL_MODERATE,
+                                     &kMemoryPressureLevelOptions);
+
+// "enabled_for_cache_response" parameter.
+constexpr base::FeatureParam<bool>
+    kEnabledForCacheresponse(&kSlopBucket, "enabled_for_cache_response", true);
 
 }  // namespace
 
@@ -142,9 +137,11 @@ class SlopBucket::Configuration {
   size_t min_buffer_size() const { return min_buffer_size_; }
   size_t max_chunks_per_request() const { return max_chunks_per_request_; }
   size_t max_chunks_total() const { return max_chunks_total_; }
-  base::MemoryPressureListener::MemoryPressureLevel
-  memory_pressure_disable_level() const {
+  base::MemoryPressureLevel memory_pressure_disable_level() const {
     return memory_pressure_disable_level_;
+  }
+  bool enabled_for_cache_response() const {
+    return enabled_for_cache_response_;
   }
 
  private:
@@ -198,6 +195,8 @@ class SlopBucket::Configuration {
           "max_chunks_total is less than max_chunks_per_request");
     }
     memory_pressure_disable_level_ = kMemoryPressureDisableLevelParam.Get();
+
+    enabled_for_cache_response_ = kEnabledForCacheresponse.Get();
   }
 
   void DisableWithWarning(const char* warning) {
@@ -218,14 +217,16 @@ class SlopBucket::Configuration {
 
   size_t max_chunks_total_ = size_t{kDefaultMaxChunksTotal};
 
-  base::MemoryPressureListener::MemoryPressureLevel
-      memory_pressure_disable_level_ = kDefaultMemoryPressureDisableLevel;
+  base::MemoryPressureLevel memory_pressure_disable_level_ =
+      kDefaultMemoryPressureDisableLevel;
+
+  bool enabled_for_cache_response_ = true;
 };
 
 // SlopBucketManager tracks global state for SlopBuckets. It is thread-hostile.
 // TODO(ricea): Make this be owned by the NetworkService so that it can function
 // correctly if there are multiple NetworkServices on different threads.
-class SlopBucket::Manager {
+class SlopBucket::Manager : public base::MemoryPressureListener {
  public:
   // Prevent accidental use of the constructor.
   using PassKey = base::PassKey<Manager>;
@@ -255,13 +256,14 @@ class SlopBucket::Manager {
 
     // This use of base::Unretained() is safe because the callback won't be
     // called after `memory_pressure_listener_` is destroyed.
-    memory_pressure_listener_.emplace(
-        FROM_HERE, base::BindRepeating(&Manager::OnMemoryPressure,
-                                       base::Unretained(this)));
+    memory_pressure_listener_registration_.emplace(
+        FROM_HERE, base::MemoryPressureListenerTag::kSlopBucket, this);
   }
 
   Manager(const Manager&) = delete;
   Manager& operator=(const Manager&) = delete;
+
+  ~Manager() override = default;
 
   // True if SlopBucket is disabled, either by configuration or lack of memory.
   bool disabled() const {
@@ -278,33 +280,41 @@ class SlopBucket::Manager {
   size_t chunk_size() const { return configuration_.chunk_size(); }
   size_t min_buffer_size() const { return configuration_.min_buffer_size(); }
 
-  scoped_refptr<ChunkIOBuffer> RequestChunk(size_t existing_chunks) {
+  bool enabled_for_cache_response() const {
+    return configuration_.enabled_for_cache_response();
+  }
+
+  base::expected<scoped_refptr<ChunkIOBuffer>, ChunkAllocationFailedReason>
+  RequestChunk(size_t existing_chunks) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (disabled()) {
       DVLOG(1) << "Not allocating chunk because disabled";
-      return nullptr;
+      return base::unexpected(ChunkAllocationFailedReason::kDisabled);
     }
 
     if (existing_chunks == configuration_.max_chunks_per_request()) {
       DVLOG(1)
           << "Not allocating chunk because the request max has been reached";
-      return nullptr;
+      return base::unexpected(
+          ChunkAllocationFailedReason::kMaxChunksPerRequest);
     }
 
-    base::HeapArray<char> chunk = GetChunk();
-    if (!chunk.data()) {
-      return nullptr;
+    base::expected<base::HeapArray<uint8_t>, ChunkAllocationFailedReason>
+        maybe_chunk = GetChunk();
+    if (!maybe_chunk.has_value()) {
+      return base::unexpected(maybe_chunk.error());
     }
 
     DVLOG(1) << "Acquired chunk";
-
-    return base::MakeRefCounted<ChunkIOBuffer>(std::move(chunk));
+    CHECK(maybe_chunk->data());
+    return base::ok(
+        base::MakeRefCounted<ChunkIOBuffer>(std::move(*maybe_chunk)));
   }
 
   // Returns a chunk to the pool. This method may be called on background
   // threads. Despite the overhead of locking, it is still 10 times faster to
   // reuse the chunks than to delete and new them again.
-  void ReleaseChunk(base::HeapArray<char> buffer) {
+  void ReleaseChunk(base::HeapArray<uint8_t> buffer) {
     if (disabled()) {
       return;  // `buffer` is freed.
     }
@@ -358,15 +368,17 @@ class SlopBucket::Manager {
   }
 
   // Encapsulates the locked section of RequestChunk().
-  base::HeapArray<char> GetChunk() VALID_CONTEXT_REQUIRED(sequence_checker_) {
-    base::HeapArray<char> chunk;
+
+  base::expected<base::HeapArray<uint8_t>, ChunkAllocationFailedReason>
+  GetChunk() VALID_CONTEXT_REQUIRED(sequence_checker_) {
+    base::HeapArray<uint8_t> chunk;
     base::ReleasableAutoLock auto_lock(&lock_);
     if (total_chunks_ == configuration_.max_chunks_total()) {
       // Don't hold the lock while logging.
       auto_lock.Release();
       DVLOG(1)
           << "Not allocating chunk because the global max has been reached";
-      return base::HeapArray<char>();
+      return base::unexpected(ChunkAllocationFailedReason::kMaxChunksGlobal);
     }
 
     if (!free_pool_.empty()) {
@@ -375,32 +387,34 @@ class SlopBucket::Manager {
       chunk = std::move(free_pool_.back());
       free_pool_.pop_back();
     } else {
-      chunk = base::HeapArray<char>::Uninit(configuration_.chunk_size());
+      chunk = base::HeapArray<uint8_t>::Uninit(configuration_.chunk_size());
     }
 
     ++total_chunks_;
     CHECK_LE(total_chunks_ + free_pool_.size(),
              configuration_.max_chunks_total());
-    return chunk;
+    return base::ok(std::move(chunk));
   }
 
   // Responds to a memory pressure notification by emptying the free pool and
   // possibly disabling SlopBucket.
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel level) {
+  void OnMemoryPressure(base::MemoryPressureLevel level) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (disabled()) {
+      return;
+    }
+    if (level == base::MEMORY_PRESSURE_LEVEL_NONE) {
       return;
     }
     if (level >= configuration_.memory_pressure_disable_level()) {
       Disable(DisabledReason::kMemoryPressure);
       RecordDisabledReason();
       DVLOG(1) << "Memory pressure detected. Disabling SlopBucket.";
-      memory_pressure_listener_ = std::nullopt;
+      memory_pressure_listener_registration_ = std::nullopt;
     }
     // We swap the vector so we don't have to hold the lock while we free the
     // elements.
-    std::vector<base::HeapArray<char>> old_free_pool;
+    std::vector<base::HeapArray<uint8_t>> old_free_pool;
     {
       base::AutoLock auto_lock(lock_);
       old_free_pool.swap(free_pool_);
@@ -425,7 +439,7 @@ class SlopBucket::Manager {
   size_t total_chunks_ GUARDED_BY(lock_) = 0;
 
   // Pool of free buffers.
-  std::vector<base::HeapArray<char>> free_pool_ GUARDED_BY(lock_);
+  std::vector<base::HeapArray<uint8_t>> free_pool_ GUARDED_BY(lock_);
 
   // Reason why SlopBucket is disabled. Only accessed on the IO thread.
   DisabledReason disabled_reason_;
@@ -439,14 +453,15 @@ class SlopBucket::Manager {
 
   // Calls OnMemoryPressure() on the IO thread when there is memory pressure.
   // Only set when SlopBucket is enabled. Only accessed on the IO thread.
-  std::optional<base::MemoryPressureListener> memory_pressure_listener_;
+  std::optional<base::AsyncMemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
 class SlopBucket::ChunkIOBuffer final : public net::IOBuffer {
  public:
-  explicit ChunkIOBuffer(base::HeapArray<char> storage)
+  explicit ChunkIOBuffer(base::HeapArray<uint8_t> storage)
       : IOBuffer(storage), base_(std::move(storage)) {}
 
   // Notes that `bytes` bytes have been read from a URLRequest into this chunk.
@@ -458,8 +473,7 @@ class SlopBucket::ChunkIOBuffer final : public net::IOBuffer {
     // that can be stored in a size_t.
     filled_up_to_ += bytes;
     CHECK_LE(filled_up_to_, chunk_size);
-    data_ += bytes;
-    size_ -= bytes;
+    SetSpan(span().subspan(bytes));
   }
 
   // Notes that `bytes` bytes have been written to the mojo data pipe and should
@@ -485,22 +499,22 @@ class SlopBucket::ChunkIOBuffer final : public net::IOBuffer {
   // True if there are no bytes available for reading out of this chunk.
   bool Empty() const { return consumed_up_to_ == filled_up_to_; }
 
-  // The next byte of this chunk available for copying to the mojo data pipe.
+  // The next span of this chunk available for copying to the mojo data pipe.
   // Note that the data() method from the parent class provides the next byte
   // available for writing to by the URLRequest.
-  const char* NextByteToConsume() const {
-    return base_.subspan(consumed_up_to_).data();
+  base::span<const uint8_t> NextSpanToConsume() const {
+    return base_.subspan(consumed_up_to_);
   }
 
  private:
   ~ChunkIOBuffer() override {
     // Prevent the base class from trying to free `data_`.
-    data_ = nullptr;
+    ClearSpan();
     // Return the chunk to the pool.
     Manager::Get().ReleaseChunk(std::move(base_));
   }
 
-  base::HeapArray<char> base_;
+  base::HeapArray<uint8_t> base_;
   size_t filled_up_to_ = 0;
   size_t consumed_up_to_ = 0;
 };
@@ -524,6 +538,16 @@ std::unique_ptr<SlopBucket> SlopBucket::RequestSlopBucket(
     return nullptr;
   }
 
+  using CacheEntryStatus = net::HttpResponseInfo::CacheEntryStatus;
+  const CacheEntryStatus& cache_entry_status =
+      for_request->response_info().cache_entry_status;
+  const bool is_response_from_cache =
+      cache_entry_status == CacheEntryStatus::ENTRY_USED ||
+      cache_entry_status == CacheEntryStatus::ENTRY_VALIDATED;
+  if (is_response_from_cache && !manager.enabled_for_cache_response()) {
+    return nullptr;
+  }
+
   return std::make_unique<SlopBucket>(PassKey(), for_request);
 }
 
@@ -535,6 +559,13 @@ SlopBucket::~SlopBucket() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::UmaHistogramCounts100("NetworkService.SlopBucket.PeakChunksAllocated",
                               peak_chunks_allocated_);
+  ChunkAllocationFailedReason chunk_allocation_failed_reason =
+      first_chunk_allocation_failed_reason_
+          ? *first_chunk_allocation_failed_reason_
+          : ChunkAllocationFailedReason::kOK;
+  base::UmaHistogramEnumeration(
+      "NetworkService.SlopBucket.ChunkAllocationFailedReason",
+      chunk_allocation_failed_reason);
 }
 
 std::optional<int> SlopBucket::AttemptRead() {
@@ -582,25 +613,26 @@ void SlopBucket::OnReadCompleted(int bytes_read) {
   chunks_.back()->MarkFilled(bytes_read);
 }
 
-size_t SlopBucket::Consume(void* buffer, size_t max) {
+size_t SlopBucket::Consume(base::span<uint8_t> buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (chunks_.empty()) {
     return 0;
   }
 
-  return ConsumeSlowPath(buffer, max);
+  return ConsumeSlowPath(buffer);
 }
 
-size_t SlopBucket::ConsumeSlowPath(void* buffer, size_t max) {
+size_t SlopBucket::ConsumeSlowPath(base::span<uint8_t> buffer) {
+  size_t max = buffer.size();
   DVLOG(1) << "ConsumeSlowPath(" << max << ")";
   size_t consumed = 0;
   while (consumed < max && !chunks_.empty()) {
     ChunkIOBuffer& source = *chunks_.front();
     if (!source.Empty()) {
       const size_t bytes_available = source.UnconsumedBytes();
-      const size_t bytes_to_consume = std::min(bytes_available, max - consumed);
-      memcpy(static_cast<char*>(buffer) + consumed, source.NextByteToConsume(),
-             bytes_to_consume);
+      const size_t bytes_to_consume = std::min(bytes_available, buffer.size());
+      buffer.take_first(bytes_to_consume)
+          .copy_from(source.NextSpanToConsume().first(bytes_to_consume));
       source.MarkConsumed(bytes_to_consume);
       consumed += bytes_to_consume;
     }
@@ -622,12 +654,15 @@ size_t SlopBucket::ConsumeSlowPath(void* buffer, size_t max) {
 }
 
 bool SlopBucket::TryToAllocateChunk() {
-  scoped_refptr<ChunkIOBuffer> new_chunk =
-      Manager::Get().RequestChunk(chunks_.size());
-  if (!new_chunk) {
+  base::expected<scoped_refptr<ChunkIOBuffer>, ChunkAllocationFailedReason>
+      maybe_new_chunk = Manager::Get().RequestChunk(chunks_.size());
+  if (!maybe_new_chunk.has_value()) {
+    if (!first_chunk_allocation_failed_reason_) {
+      first_chunk_allocation_failed_reason_ = maybe_new_chunk.error();
+    }
     return false;
   }
-  chunks_.push(std::move(new_chunk));
+  chunks_.push(std::move(*maybe_new_chunk));
   if (chunks_.size() > peak_chunks_allocated_) {
     peak_chunks_allocated_ = chunks_.size();
   }

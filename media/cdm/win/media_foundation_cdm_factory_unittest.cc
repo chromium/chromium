@@ -9,7 +9,9 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "media/base/mock_filters.h"
@@ -18,6 +20,7 @@
 #include "media/base/win/mf_mocks.h"
 #include "media/cdm/clear_key_cdm_common.h"
 #include "media/cdm/mock_helpers.h"
+#include "media/cdm/win/media_foundation_cdm_module.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -32,8 +35,19 @@ using ::testing::StrictMock;
 
 namespace media {
 
+namespace {
 const CdmConfig kClearKeyHardwareSecureCdmConfig = {kClearKeyKeySystem, true,
                                                     true, true};
+
+// 'HardwareSecure' suffix is not included in the Uma name because for
+// the ClearKey key system, we do not differentiate between software and
+// hardware security.
+static constexpr char kFirstInitializeHistogram[] =
+    "Media.EME.MediaFoundationCdm.ClearKey.FirstInitialize";
+static constexpr char kInitializeHistogram[] =
+    "Media.EME.MediaFoundationCdm.ClearKey.Initialize";
+
+}  // namespace
 
 using Microsoft::WRL::ComPtr;
 
@@ -48,6 +62,8 @@ class MediaFoundationCdmFactoryTest : public testing::Test {
     cdm_helper_ = cdm_helper.get();
     cdm_factory_ =
         std::make_unique<MediaFoundationCdmFactory>(std::move(cdm_helper));
+
+    MediaFoundationCdmModule::GetInstance()->SetIsOsCdmForTesting(false);
   }
 
   ~MediaFoundationCdmFactoryTest() override = default;
@@ -98,6 +114,7 @@ class MediaFoundationCdmFactoryTest : public testing::Test {
 };
 
 TEST_F(MediaFoundationCdmFactoryTest, Create) {
+  base::HistogramTester histogram_tester;
   SetCreateCdmFactoryCallbackForTesting(/*expect_success=*/true);
 
   COM_EXPECT_CALL(mf_cdm_factory_, IsTypeSupported(NotNull(), IsNull()))
@@ -113,6 +130,10 @@ TEST_F(MediaFoundationCdmFactoryTest, Create) {
 
   EXPECT_CALL(cdm_created_cb_, Run(NotNull(), _));
   Create();
+
+  // Verify Histograms for success
+  histogram_tester.ExpectUniqueSample(kFirstInitializeHistogram, S_OK, 1);
+  histogram_tester.ExpectTotalCount(kInitializeHistogram, 0);
 }
 
 TEST_F(MediaFoundationCdmFactoryTest, CreateCdmFactoryFail) {
@@ -167,6 +188,7 @@ TEST_F(MediaFoundationCdmFactoryTest, NullCdmOriginIdFail) {
 }
 
 TEST_F(MediaFoundationCdmFactoryTest, CreateCdmFail) {
+  base::HistogramTester histogram_tester;
   SetCreateCdmFactoryCallbackForTesting(/*expect_success=*/true);
 
   COM_EXPECT_CALL(mf_cdm_factory_, IsTypeSupported(NotNull(), IsNull()))
@@ -182,6 +204,10 @@ TEST_F(MediaFoundationCdmFactoryTest, CreateCdmFail) {
 
   EXPECT_CALL(cdm_created_cb_, Run(IsNull(), _));
   Create();
+
+  // Verify Histograms for failure
+  histogram_tester.ExpectUniqueSample(kFirstInitializeHistogram, E_FAIL, 1);
+  histogram_tester.ExpectUniqueSample(kInitializeHistogram, E_FAIL, 1);
 }
 
 }  // namespace media

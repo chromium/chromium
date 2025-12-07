@@ -18,7 +18,7 @@ namespace binding {
 
 class ContextInvalidationData;
 
-// Returns true if the given |context| is considered valid. Contexts can be
+// Returns true if the given `context` is considered valid. Contexts can be
 // invalidated if various objects or scripts hold onto references after when
 // blink releases the context, but we don't want to handle interactions past
 // this point. Additionally, simply checking if gin::PerContextData exists is
@@ -27,10 +27,10 @@ class ContextInvalidationData;
 // points. See https://crbug.com/772071.
 bool IsContextValid(v8::Local<v8::Context> context);
 
-// Same as above, but throws an exception in the |context| if it is invalid.
+// Same as above, but throws an exception in the `context` if it is invalid.
 bool IsContextValidOrThrowError(v8::Local<v8::Context> context);
 
-// Marks the given |context| as invalid.
+// Marks the given `context` as invalid.
 void InvalidateContext(v8::Local<v8::Context> context);
 
 // A helper class to watch for context invalidation. If the context is

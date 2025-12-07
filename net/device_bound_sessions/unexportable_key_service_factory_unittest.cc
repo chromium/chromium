@@ -4,7 +4,6 @@
 
 #include "net/device_bound_sessions/unexportable_key_service_factory.h"
 
-#include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net::device_bound_sessions {

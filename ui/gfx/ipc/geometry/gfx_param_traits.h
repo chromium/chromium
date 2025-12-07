@@ -5,10 +5,8 @@
 #ifndef UI_GFX_IPC_GEOMETRY_GFX_PARAM_TRAITS_H_
 #define UI_GFX_IPC_GEOMETRY_GFX_PARAM_TRAITS_H_
 
-#include <string>
-
-#include "ipc/ipc_message_utils.h"
 #include "ipc/param_traits_macros.h"
+#include "ipc/param_traits_utils.h"
 #include "ui/gfx/ipc/geometry/gfx_ipc_geometry_export.h"
 
 namespace gfx {
@@ -32,7 +30,6 @@ struct GFX_IPC_GEOMETRY_EXPORT ParamTraits<gfx::Point> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -42,7 +39,6 @@ struct GFX_IPC_GEOMETRY_EXPORT ParamTraits<gfx::PointF> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -52,7 +48,6 @@ struct GFX_IPC_GEOMETRY_EXPORT ParamTraits<gfx::Point3F> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -62,7 +57,6 @@ struct GFX_IPC_GEOMETRY_EXPORT ParamTraits<gfx::Size> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -72,7 +66,6 @@ struct GFX_IPC_GEOMETRY_EXPORT ParamTraits<gfx::SizeF> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -82,7 +75,6 @@ struct GFX_IPC_GEOMETRY_EXPORT ParamTraits<gfx::Vector2d> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -92,7 +84,6 @@ struct GFX_IPC_GEOMETRY_EXPORT ParamTraits<gfx::Vector2dF> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -102,7 +93,6 @@ struct GFX_IPC_GEOMETRY_EXPORT ParamTraits<gfx::Rect> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -112,7 +102,6 @@ struct GFX_IPC_GEOMETRY_EXPORT ParamTraits<gfx::RectF> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 }  // namespace IPC

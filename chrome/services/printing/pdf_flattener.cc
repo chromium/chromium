@@ -39,8 +39,8 @@ void PdfFlattener::FlattenPdf(base::ReadOnlySharedMemoryRegion src_pdf_region,
     return;
   }
 
-  memcpy(region_mapping.mapping.memory(), result->pdf.data(),
-         result->pdf.size());
+  region_mapping.mapping.GetMemoryAsSpan<uint8_t>().copy_prefix_from(
+      result->pdf);
   std::move(callback).Run(printing::mojom::FlattenPdfResult::New(
       std::move(region_mapping.region), result->page_count));
 }

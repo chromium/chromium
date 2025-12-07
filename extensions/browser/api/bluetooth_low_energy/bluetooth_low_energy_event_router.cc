@@ -12,6 +12,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -249,13 +250,15 @@ DeviceConnectErrorCodeToStatus(BluetoothDevice::ConnectErrorCode error_code) {
           kStatusErrorJniThreadAttach;
     case device::BluetoothDevice::ConnectErrorCode::ERROR_WAKELOCK:
       return extensions::BluetoothLowEnergyEventRouter::kStatusErrorWakelock;
-    case BluetoothDevice::NUM_CONNECT_ERROR_CODES:
-      NOTREACHED_IN_MIGRATION();
+    case device::BluetoothDevice::ConnectErrorCode::ERROR_UNEXPECTED_STATE:
       return extensions::BluetoothLowEnergyEventRouter::
-          kStatusErrorInvalidArguments;
+          kStatusErrorUnexpectedState;
+    case device::BluetoothDevice::ConnectErrorCode::ERROR_SOCKET:
+      return extensions::BluetoothLowEnergyEventRouter::kStatusErrorSocket;
+    case BluetoothDevice::NUM_CONNECT_ERROR_CODES:
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return extensions::BluetoothLowEnergyEventRouter::kStatusErrorFailed;
+  NOTREACHED();
 }
 
 }  // namespace

@@ -28,7 +28,7 @@ import * as Security from 'devtools/panels/security/security.js';
       .dispatchEventToListeners(
           SDK.ResourceTreeModel.Events.PrimaryPageChanged, {frame: TestRunner.resourceTreeModel.mainFrame, type: 'Navigation'});
   // Validate that this set the MainOrigin in the sidebar
-  const detectedMainOrigin = Security.SecurityPanel.SecurityPanel.instance().sidebarTree.mainOrigin;
+  const detectedMainOrigin = Security.SecurityPanel.SecurityPanel.instance().sidebar.mainOrigin;
   TestRunner.addResult('Detected main origin: ' + detectedMainOrigin);
 
   // Send subdownload resource requests to other origins.

@@ -11,14 +11,6 @@
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "device_management_backend.pb.h"
 
-namespace {
-
-constexpr base::TimeDelta kMinDuration = base::Minutes(1);
-constexpr base::TimeDelta kMaxDuration = base::Hours(8);
-constexpr base::TimeDelta kBucketSize = base::Minutes(10);
-
-}  // namespace
-
 namespace policy {
 
 CrdUmaLogger::CrdUmaLogger(CrdSessionType session_type,
@@ -28,25 +20,9 @@ CrdUmaLogger::CrdUmaLogger(CrdSessionType session_type,
 void CrdUmaLogger::LogSessionLaunchResult(
     ExtendedStartCrdSessionResultCode result_code) {
   base::UmaHistogramEnumeration(
-      GetUmaHistogramName(kMetricDeviceRemoteCommandCrdResultTemplate),
+      base::StringPrintf(kMetricDeviceRemoteCommandCrdResultTemplate,
+                         FormatCrdSessionType(), FormatUserSessionType()),
       result_code);
-}
-
-void CrdUmaLogger::LogSessionDuration(base::TimeDelta duration) {
-  // Warning: changing the number of buckets logged will make it impossible to
-  // compare UMA logs recorded before and after the change!
-  base::UmaHistogramCustomTimes(
-      /*name=*/GetUmaHistogramName(
-          kMetricDeviceRemoteCommandCrdSessionDurationTemplate),
-      /*sample=*/duration,
-      /*min=*/kMinDuration,
-      /*max=*/kMaxDuration,
-      /*buckets=*/kMaxDuration / kBucketSize);
-}
-
-std::string CrdUmaLogger::GetUmaHistogramName(const char* name_template) const {
-  return base::StringPrintfNonConstexpr(name_template, FormatCrdSessionType(),
-                                        FormatUserSessionType());
 }
 
 // Created a separate method to have fixed values for UMA logs.

@@ -26,7 +26,6 @@ limitations under the License.
 #include "absl/time/clock.h"  // from @com_google_absl
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow_lite_support/cc/common.h"
-#include "tensorflow_lite_support/cc/port/integral_types.h"
 #include "tensorflow_lite_support/cc/port/status_macros.h"
 #include "tensorflow_lite_support/cc/task/core/base_task_api.h"
 #include "tensorflow_lite_support/cc/task/core/task_utils.h"

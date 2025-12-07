@@ -21,6 +21,7 @@
 #include "third_party/webrtc/api/video_codecs/video_encoder_factory.h"
 
 using ::testing::Return;
+using ::testing::UnorderedElementsAre;
 
 namespace blink {
 
@@ -32,6 +33,7 @@ constexpr webrtc::VideoEncoderFactory::CodecSupport kUnsupported = {false,
                                                                     false};
 constexpr gfx::Size kMaxResolution = {1920, 1080};
 constexpr uint32_t kMaxFramerateNumerator = 30;
+constexpr gfx::Size kLowResolution = {320, 240};
 
 #if BUILDFLAG(RTC_USE_H265)
 // Settings from video toolbox encoder.
@@ -40,15 +42,103 @@ constexpr uint32_t kHEVCMaxFramerateNumerator = 120;
 #endif  // BUILDFLAG(RTC_USE_H265)
 
 constexpr uint32_t kMaxFramerateDenominator = 1;
-const std::vector<media::SVCScalabilityMode> kScalabilityModes = {
+const std::vector<media::SVCScalabilityMode> kSVCScalabilityModes = {
     media::SVCScalabilityMode::kL1T1, media::SVCScalabilityMode::kL1T2,
     media::SVCScalabilityMode::kL1T3};
+using ScalbilityModeMap ALLOW_DISCOURAGED_TYPE("Match WebRTC type") =
+    absl::InlinedVector<webrtc::ScalabilityMode, webrtc::kScalabilityModeCount>;
+const ScalbilityModeMap kScalabilityModes = {webrtc::ScalabilityMode::kL1T1,
+                                             webrtc::ScalabilityMode::kL1T2,
+                                             webrtc::ScalabilityMode::kL1T3};
+const ScalbilityModeMap kReducedScalabilityModes = {
+    webrtc::ScalabilityMode::kL1T1, webrtc::ScalabilityMode::kL1T2};
+const ScalbilityModeMap kNoLayeringScalabilityModes = {
+    webrtc::ScalabilityMode::kL1T1};
+
+const webrtc::SdpVideoFormat kVp8Sdp("VP8", {}, kScalabilityModes);
+const webrtc::SdpVideoFormat kVp9Profile0Sdp("VP9",
+                                             {{"profile-id", "0"}},
+                                             kScalabilityModes);
+// TODO(http://crbugs.com/376306259): Ensure hardware encoder factory include
+// profile-id/tier/level-idx in AV1 SDP.
+const webrtc::SdpVideoFormat kAv1Profile0Sdp("AV1", {}, kScalabilityModes);
+const webrtc::SdpVideoFormat kH264BaselinePacketizatonMode1Sdp(
+    "H264",
+    {{"level-asymmetry-allowed", "1"},
+     {"packetization-mode", "1"},
+     {"profile-level-id", "42001f"}},
+    kScalabilityModes);
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
+const webrtc::SdpVideoFormat kH264ConstrainedBaselinePacketizatonMode1Sdp(
+    "H264",
+    {{"level-asymmetry-allowed", "1"},
+     {"packetization-mode", "1"},
+     {"profile-level-id", "42e01f"}},
+    kScalabilityModes);
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(RTC_USE_H265)
+const webrtc::SdpVideoFormat kH265MainProfileLevel31Sdp("H265",
+                                                        {{"profile-id", "1"},
+                                                         {"tier-flag", "0"},
+                                                         {"level-id", "93"},
+                                                         {"tx-mode", "SRST"}},
+                                                        kScalabilityModes);
+const webrtc::SdpVideoFormat kH265MainProfileLevel52Sdp("H265",
+                                                        {{"profile-id", "1"},
+                                                         {"tier-flag", "0"},
+                                                         {"level-id", "156"},
+                                                         {"tx-mode", "SRST"}},
+                                                        kScalabilityModes);
+const webrtc::SdpVideoFormat kH265Main10ProfileLevel31Sdp("H265",
+                                                          {{"profile-id", "2"},
+                                                           {"tier-flag", "0"},
+                                                           {"level-id", "93"},
+                                                           {"tx-mode", "SRST"}},
+                                                          kScalabilityModes);
+const webrtc::SdpVideoFormat kH265MainProfileLevel52SdpL1T2(
+    "H265",
+    {{"profile-id", "1"},
+     {"tier-flag", "0"},
+     {"level-id", "156"},
+     {"tx-mode", "SRST"}},
+    kReducedScalabilityModes);
+const webrtc::SdpVideoFormat kH265Main10ProfileLevel31SdpL1T2(
+    "H265",
+    {{"profile-id", "2"},
+     {"tier-flag", "0"},
+     {"level-id", "93"},
+     {"tx-mode", "SRST"}},
+    kReducedScalabilityModes);
+const webrtc::SdpVideoFormat kH265MainProfileLevel52SdpL1T1(
+    "H265",
+    {{"profile-id", "1"},
+     {"tier-flag", "0"},
+     {"level-id", "156"},
+     {"tx-mode", "SRST"}},
+    kNoLayeringScalabilityModes);
+const webrtc::SdpVideoFormat kH265Main10ProfileLevel31SdpL1T1(
+    "H265",
+    {{"profile-id", "2"},
+     {"tier-flag", "0"},
+     {"level-id", "93"},
+     {"tx-mode", "SRST"}},
+    kNoLayeringScalabilityModes);
+#endif  // BUILDFLAG(RTC_USE_H265)
 
 bool Equals(webrtc::VideoEncoderFactory::CodecSupport a,
             webrtc::VideoEncoderFactory::CodecSupport b) {
   return a.is_supported == b.is_supported &&
          a.is_power_efficient == b.is_power_efficient;
 }
+
+#if BUILDFLAG(RTC_USE_H265)
+void MaybeEnableOpenH264SoftwareEncoder(
+    std::vector<base::test::FeatureRef>& enabled_features) {
+#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) && BUILDFLAG(ENABLE_OPENH264)
+  enabled_features.push_back(media::kOpenH264SoftwareEncoder);
+#endif
+}
+#endif  //  BUILDFLAG(RTC_USE_H265)
 
 class MockGpuVideoEncodeAcceleratorFactories
     : public media::MockGpuVideoAcceleratorFactories {
@@ -61,20 +151,36 @@ class MockGpuVideoEncodeAcceleratorFactories
     media::VideoEncodeAccelerator::SupportedProfiles profiles = {
         {media::H264PROFILE_BASELINE, kMaxResolution, kMaxFramerateNumerator,
          kMaxFramerateDenominator, media::VideoEncodeAccelerator::kConstantMode,
-         kScalabilityModes},
+         kSVCScalabilityModes},
         {media::H264PROFILE_BASELINE, kMaxResolution, kMaxFramerateNumerator,
          kMaxFramerateDenominator, media::VideoEncodeAccelerator::kConstantMode,
-         kScalabilityModes},
+         kSVCScalabilityModes},
+        // H264 with mismatch between profile and resolution should be ignored.
+        {media::H264PROFILE_HIGH, kLowResolution, kMaxFramerateNumerator,
+         kMaxFramerateDenominator, media::VideoEncodeAccelerator::kConstantMode,
+         kSVCScalabilityModes},
         {media::VP8PROFILE_ANY, kMaxResolution, kMaxFramerateNumerator,
          kMaxFramerateDenominator, media::VideoEncodeAccelerator::kConstantMode,
-         kScalabilityModes},
+         kSVCScalabilityModes},
         {media::VP9PROFILE_PROFILE0, kMaxResolution, kMaxFramerateNumerator,
          kMaxFramerateDenominator, media::VideoEncodeAccelerator::kConstantMode,
-         kScalabilityModes},
+         kSVCScalabilityModes},
+        {media::AV1PROFILE_PROFILE_MAIN, kMaxResolution, kMaxFramerateNumerator,
+         kMaxFramerateDenominator, media::VideoEncodeAccelerator::kConstantMode,
+         kSVCScalabilityModes},
 #if BUILDFLAG(RTC_USE_H265)
         {media::HEVCPROFILE_MAIN, kHEVCMaxResolution,
          kHEVCMaxFramerateNumerator, kMaxFramerateDenominator,
-         media::VideoEncodeAccelerator::kConstantMode, kScalabilityModes}
+         media::VideoEncodeAccelerator::kConstantMode, kSVCScalabilityModes},
+        // The profile below will produce HEVC level 3.1, which we expect not to
+        // be reported as the supported level, since the profile above
+        // produces HEVC level 5.2, which we will report as supported level.
+        {media::HEVCPROFILE_MAIN, kMaxResolution, kHEVCMaxFramerateNumerator,
+         kMaxFramerateDenominator, media::VideoEncodeAccelerator::kConstantMode,
+         kSVCScalabilityModes},
+        {media::HEVCPROFILE_MAIN10, kMaxResolution, kHEVCMaxFramerateNumerator,
+         kMaxFramerateDenominator, media::VideoEncodeAccelerator::kConstantMode,
+         kSVCScalabilityModes}
 #endif  //  BUILDFLAG(RTC_USE_H265)
     };
     return profiles;
@@ -105,7 +211,7 @@ class RTCVideoEncoderFactoryTest : public ::testing::Test {
 
 TEST_F(RTCVideoEncoderFactoryTest, QueryCodecSupportNoSvc) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitFromCommandLine("MediaFoundationH264CbpEncoding", "");
+  scoped_feature_list.InitFromCommandLine("PlatformH264CbpEncoding", "");
 
   ClearDisabledProfilesForTesting();
   EXPECT_CALL(mock_gpu_factories_, IsEncoderSupportKnown())
@@ -137,8 +243,12 @@ TEST_F(RTCVideoEncoderFactoryTest, QueryCodecSupportNoSvc) {
       kSupportedPowerEfficient));
 #endif
 #endif
+  EXPECT_TRUE(Equals(
+      encoder_factory_.QueryCodecSupport(webrtc::SdpVideoFormat("AV1"),
+                                         /*scalability_mode=*/std::nullopt),
+      kSupportedPowerEfficient));
 
-  // H264 > BP, VP9 profile 2 and AV1 are unsupported.
+  // H264 > BP and VP9 profile 2 are unsupported.
   EXPECT_TRUE(Equals(
       encoder_factory_.QueryCodecSupport(
           webrtc::SdpVideoFormat("H264", {{"level-asymmetry-allowed", "1"},
@@ -150,10 +260,6 @@ TEST_F(RTCVideoEncoderFactoryTest, QueryCodecSupportNoSvc) {
                          webrtc::SdpVideoFormat("VP9", {{"profile-id", "2"}}),
                          /*scalability_mode=*/std::nullopt),
                      kUnsupported));
-  EXPECT_TRUE(Equals(
-      encoder_factory_.QueryCodecSupport(webrtc::SdpVideoFormat("AV1"),
-                                         /*scalability_mode=*/std::nullopt),
-      kUnsupported));
 }
 
 TEST_F(RTCVideoEncoderFactoryTest, QueryCodecSupportSvc) {
@@ -182,47 +288,29 @@ TEST_F(RTCVideoEncoderFactoryTest, QueryCodecSupportSvc) {
 
 #if BUILDFLAG(RTC_USE_H265)
 TEST_F(RTCVideoEncoderFactoryTest,
-       QueryCodecSupportForH265WithoutNeccessaryFeatures) {
+       QueryCodecSupportH265WithWebRtcAllowH265SendDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({}, {::features::kWebRtcAllowH265Send});
+
   EXPECT_CALL(mock_gpu_factories_, IsEncoderSupportKnown())
       .WillRepeatedly(Return(true));
 
-  // H.256 is not supported when WebRtcAllowH265Send is not enabled.
-  EXPECT_TRUE(Equals(encoder_factory_.QueryCodecSupport(
+  // The `disabled_profiles_` is set at construction time so we must create the
+  // encoder factory *after* InitWithFeatures in order for QueryCodecSupport()
+  // to say kUnsupported.
+  RTCVideoEncoderFactory encoder_factory(&mock_gpu_factories_, nullptr);
+  EXPECT_TRUE(Equals(encoder_factory.QueryCodecSupport(
                          webrtc::SdpVideoFormat("H265", {{"profile-id", "1"}}),
                          /*scalability_mode=*/std::nullopt),
                      kUnsupported));
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
-  // H.265 is not supported when WebRtcAllowH265Send is enabled but
-  // PlatformHEVCEncoderSupport is disabled.
-  scoped_feature_list.InitWithFeatures({::features::kWebRtcAllowH265Send},
-                                       {media::kPlatformHEVCEncoderSupport});
-  EXPECT_TRUE(Equals(encoder_factory_.QueryCodecSupport(
-                         webrtc::SdpVideoFormat("H265", {{"profile-id", "1"}}),
-                         /*scalability_mode=*/std::nullopt),
-                     kUnsupported));
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
 }
 
-TEST_F(RTCVideoEncoderFactoryTest,
-       QueryCodecSupportForH265WithNeccessaryFeatures) {
+TEST_F(RTCVideoEncoderFactoryTest, QueryCodecSupportForH265) {
   ClearDisabledProfilesForTesting();
-  base::test::ScopedFeatureList scoped_feature_list;
-  std::vector<base::test::FeatureRef> enabled_features;
-  enabled_features.emplace_back(::features::kWebRtcAllowH265Send);
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
-  enabled_features.emplace_back(media::kPlatformHEVCEncoderSupport);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
-
-  scoped_feature_list.InitWithFeatures(enabled_features, {});
-
   EXPECT_CALL(mock_gpu_factories_, IsEncoderSupportKnown())
       .WillRepeatedly(Return(true));
 
-  // H.265 main profile is supported when both WebRtcAllowH265Send and
-  // PlatformHEVCEncoderSupport are enabled. level-id, when not specified,
+  // H.265 main profile is supported by default. level-id, when not specified,
   // implies level 93, and tier-flag defaults to main tier.
   EXPECT_TRUE(Equals(encoder_factory_.QueryCodecSupport(
                          webrtc::SdpVideoFormat("H265", {{"profile-id", "1"}}),
@@ -244,12 +332,107 @@ TEST_F(RTCVideoEncoderFactoryTest,
                          /*scalability_mode=*/std::nullopt),
                      kSupportedPowerEfficient));
 
-  // Main10 profile is not supported by mock factory here.
+  EXPECT_TRUE(Equals(encoder_factory_.QueryCodecSupport(
+                         webrtc::SdpVideoFormat("H265", {{"profile-id", "1"},
+                                                         {"level-id", "180"}}),
+                         /*scalability_mode=*/std::nullopt),
+                     kUnsupported));
+
   EXPECT_TRUE(Equals(encoder_factory_.QueryCodecSupport(
                          webrtc::SdpVideoFormat("H265", {{"profile-id", "2"}}),
                          /*scalability_mode=*/std::nullopt),
-                     kUnsupported));
+                     kSupportedPowerEfficient));
+}
+
+TEST_F(RTCVideoEncoderFactoryTest, GetSupportedFormatsReturnsAllExpectedModes) {
+  ClearDisabledProfilesForTesting();
+  base::test::ScopedFeatureList scoped_feature_list;
+  std::vector<base::test::FeatureRef> enabled_features;
+  enabled_features.emplace_back(::features::kWebRtcH265L1T2);
+  enabled_features.emplace_back(::features::kWebRtcH265L1T3);
+  MaybeEnableOpenH264SoftwareEncoder(enabled_features);
+
+  scoped_feature_list.InitWithFeatures(enabled_features, {});
+  EXPECT_CALL(mock_gpu_factories_, IsEncoderSupportKnown())
+      .WillRepeatedly(Return(true));
+
+  EXPECT_THAT(encoder_factory_.GetSupportedFormats(),
+              UnorderedElementsAre(
+                  kH264BaselinePacketizatonMode1Sdp,
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
+                  kH264ConstrainedBaselinePacketizatonMode1Sdp,
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
+                  kVp8Sdp, kVp9Profile0Sdp, kH265MainProfileLevel52Sdp,
+                  kH265Main10ProfileLevel31Sdp, kAv1Profile0Sdp));
+}
+
+// When WebRtcH265L1T3 flag is not enabled, GetSupportedFormats should exclude
+// L1T3 from supported H.265 scalability modes.
+TEST_F(RTCVideoEncoderFactoryTest,
+       GetSupportedFormatsReturnsAllModesExceptH265L1T3) {
+  ClearDisabledProfilesForTesting();
+  base::test::ScopedFeatureList scoped_feature_list;
+  std::vector<base::test::FeatureRef> enabled_features;
+  enabled_features.emplace_back(::features::kWebRtcH265L1T2);
+  MaybeEnableOpenH264SoftwareEncoder(enabled_features);
+
+  scoped_feature_list.InitWithFeatures(enabled_features, {});
+  EXPECT_CALL(mock_gpu_factories_, IsEncoderSupportKnown())
+      .WillRepeatedly(Return(true));
+
+  EXPECT_THAT(encoder_factory_.GetSupportedFormats(),
+              UnorderedElementsAre(
+                  kH264BaselinePacketizatonMode1Sdp,
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
+                  kH264ConstrainedBaselinePacketizatonMode1Sdp,
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
+                  kVp8Sdp, kVp9Profile0Sdp, kH265MainProfileLevel52SdpL1T2,
+                  kH265Main10ProfileLevel31SdpL1T2, kAv1Profile0Sdp));
+}
+
+// When both WebRtcH265L1T2 and WebRtcH265L1T2 flags are disabled,
+// GetSupportedFormats should exclude both L1T2 and L1T3 from supported H.265
+// scalability modes.
+TEST_F(RTCVideoEncoderFactoryTest,
+       GetSupportedFormatsReturnsAllModesExceptH265L1T2AndL1T3) {
+  ClearDisabledProfilesForTesting();
+  base::test::ScopedFeatureList scoped_feature_list;
+  std::vector<base::test::FeatureRef> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
+  disabled_features.emplace_back(::features::kWebRtcH265L1T2);
+  MaybeEnableOpenH264SoftwareEncoder(enabled_features);
+
+  scoped_feature_list.InitWithFeatures(enabled_features, disabled_features);
+  EXPECT_CALL(mock_gpu_factories_, IsEncoderSupportKnown())
+      .WillRepeatedly(Return(true));
+
+  EXPECT_THAT(encoder_factory_.GetSupportedFormats(),
+              UnorderedElementsAre(
+                  kH264BaselinePacketizatonMode1Sdp,
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
+                  kH264ConstrainedBaselinePacketizatonMode1Sdp,
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
+                  kVp8Sdp, kVp9Profile0Sdp, kH265MainProfileLevel52SdpL1T1,
+                  kH265Main10ProfileLevel31SdpL1T1, kAv1Profile0Sdp));
 }
 #endif  // BUILDFLAG(RTC_USE_H265)
+
+TEST_F(RTCVideoEncoderFactoryTest, SupportedFormatsHaveScalabilityModes) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  std::vector<base::test::FeatureRef> enabled_features;
+  enabled_features.emplace_back(::features::kWebRtcH265L1T2);
+  enabled_features.emplace_back(::features::kWebRtcH265L1T3);
+  scoped_feature_list.InitWithFeatures(enabled_features, {});
+
+  ClearDisabledProfilesForTesting();
+  EXPECT_CALL(mock_gpu_factories_, IsEncoderSupportKnown())
+      .WillRepeatedly(Return(true));
+
+  auto supported_formats = encoder_factory_.GetSupportedFormats();
+  for (const auto& format : supported_formats) {
+    EXPECT_THAT(format.scalability_modes,
+                testing::UnorderedElementsAreArray(kScalabilityModes));
+  }
+}
 
 }  // namespace blink

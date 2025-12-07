@@ -241,11 +241,9 @@ testSuite({
   // Verify that all frames are parsed. The length of the long arg is set
   // to blow Firefox 3x's stack if put through a RegExp.
   testParsingLongStackTrace() {
-    const longArg =
-        googString.buildString('(', googString.repeat('x', 1000000), ')');
-    const stackTrace = googString.buildString(
-        'shortFrame()@:0\n', 'longFrame', longArg,
-        '@http://google.com/somescript:0\n');
+    const longArg = '(' + googString.repeat('x', 1000000) + ')';
+    const stackTrace = 'shortFrame()@:0\n' +
+        'longFrame' + longArg + '@http://google.com/somescript:0\n';
     /** @suppress {visibility} suppression added to enable type checking */
     const frames = stacktrace.parse_(stackTrace);
     assertEquals('number of returned frames', 2, frames.length);

@@ -52,7 +52,8 @@ class BleV2Socket : public ::nearby::api::ble_v2::BleSocket {
   InputStream& GetInputStream() override;
   OutputStream& GetOutputStream() override;
   Exception Close() override;
-  ::nearby::api::ble_v2::BlePeripheral* GetRemotePeripheral() override;
+  ::nearby::api::ble_v2::BlePeripheral::UniqueId GetRemotePeripheralId()
+      override;
 
  private:
   std::unique_ptr<InputStream> input_stream_;

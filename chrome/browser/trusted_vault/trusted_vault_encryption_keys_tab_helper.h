@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/common/trusted_vault_encryption_keys_extension.mojom.h"
+#include "components/trusted_vault/trusted_vault_client.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -43,6 +44,11 @@ class TrustedVaultEncryptionKeysTabHelper
 
   ~TrustedVaultEncryptionKeysTabHelper() override;
 
+  // Set the user action that triggered opening the WebContents this tab helper
+  // is associated with.
+  void SetUserActionTrigger(
+      trusted_vault::TrustedVaultUserActionTriggerForUMA trigger);
+
   // content::WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -68,6 +74,9 @@ class TrustedVaultEncryptionKeysTabHelper
   // metrics).
   const raw_ptr<trusted_vault::TrustedVaultService> trusted_vault_service_;
   const raw_ptr<EnclaveManager> enclave_manager_;
+
+  std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA>
+      user_action_trigger_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

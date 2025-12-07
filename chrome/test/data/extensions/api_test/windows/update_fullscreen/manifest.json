@@ -1,0 +1,10 @@
+{
+  "name": "windows/update_fullscreen",
+  "version": "0.1",
+  "description": "Tests the window.update to fullscreen show state.",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "sw.js"
+  },
+  "permissions": ["tabs"]
+}

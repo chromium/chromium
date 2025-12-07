@@ -1,0 +1,48 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package variations;
+
+// Wraps a stored VariationsSeed and other seed-related info.
+//
+// Next tag: 9
+message StoredSeedInfo {
+  // Raw seed data.
+  // As a memory optimization, the seed data may be cleared from memory after
+  // being written to disk, unless it's empty or it's the sentinel value.
+  // Check `has_data()` to see if the seed data is present in memory.
+  optional string data = 1;
+
+  // Base 64 encoded signature of the seed received from the server. It's used
+  // to verify the seed. See VariationsSeedStore::VerifyAndParseSeed().
+  optional string signature = 2;
+
+  // The milestone with which the seed was fetched.
+  optional uint32 milestone = 3;
+
+  // Seed date used for study checks. Is a server-provided timestamp.
+  // On some platforms, on the first run, it's set to a client-provided
+  // timestamp until the server-provided timestamp is fetched.
+  optional int64 seed_date = 4;
+
+  // Client-side timestamp when the seed was fetched for last time.
+  optional int64 client_fetch_time = 5;
+
+  // Country code of the client fetched from the server. Used for evaluating
+  // session consistency studies.
+  optional string session_country_code = 6;
+
+  // Country code used for evaluating permanent consistency studies. This is
+  // the country code received from the server after upgrading to the version
+  // `permanent_version`. It's stored once per version upgrade.
+  optional string permanent_country_code = 7;
+
+  // Chrome version used for evaluating studies. The version stored at the same
+  // time as `permanent_country_code`.
+  optional string permanent_version = 8;
+}

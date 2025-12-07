@@ -1,0 +1,18 @@
+<html>
+<head>
+<title>Form interaction test</title>
+<script type="text/javascript">
+// For some navigations (Back forward cache and prerenders), the focus from the
+// autofocus tag is lost and focus must be explicitly re-added.
+function FocusTextField() {
+  document.getElementById("value").focus();
+}
+</script>
+</head>
+<body>
+<form action="">
+<!-- A single text field that is focused. -->
+<input type="text" name="q" id="value" value="test" autofocus/>
+</form>
+</body>
+</html>

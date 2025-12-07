@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/byte_count.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 
 // Helper that fills in any timing fields that page load metrics requires but
@@ -23,14 +24,14 @@ void PopulateExperimentalLCP(page_load_metrics::mojom::PaintTimingPtr& timing);
 // Helper that creates a resource update mojo.
 page_load_metrics::mojom::ResourceDataUpdatePtr CreateResource(
     bool was_cached,
-    int64_t delta_bytes,
-    int64_t encoded_body_length,
-    int64_t decoded_body_length,
+    base::ByteCount delta_bytes,
+    base::ByteCount encoded_body_length,
+    base::ByteCount decoded_body_length,
     bool is_complete);
 
 // Helper that returns a sample resource data update using a variety of
 // configurations.
 std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr>
-GetSampleResourceDataUpdateForTesting(int64_t resource_size);
+GetSampleResourceDataUpdateForTesting(base::ByteCount resource_size);
 
 #endif  // COMPONENTS_PAGE_LOAD_METRICS_COMMON_TEST_PAGE_LOAD_METRICS_TEST_UTIL_H_

@@ -1,0 +1,268 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #scheme=relative
+ * #include=cr-shared-style-lit cr-icons-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  height: 100%;
+  width: 100%;
+}
+
+@media (forced-colors: active) {
+  .tab-group {
+    border-radius: var(--ntp-module-item-border-radius);
+    outline: var(--cr-border-hcm);
+    overflow: visible;
+  }
+}
+
+:host-context(.focus-outline-visible) cr-button:focus,
+cr-button:focus-visible {
+  box-shadow: var(--ntp-focus-shadow);
+  outline: none;
+}
+
+#tabGroups {
+  align-items: flex-start;
+  align-self: stretch;
+  background-color: var(--color-new-tab-page-module-item-background);
+  border-radius: var(--ntp-module-item-border-radius);
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  margin: 8px;
+}
+
+#tabGroupsContainer {
+  width: 100%;
+}
+
+.tab-group {
+  --cr-hover-background-color:
+      var(--color-new-tab-page-module-item-background-hovered);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  display: block;
+  height: auto;
+  margin: 0;
+  padding: 4px 16px 4px 8px;
+  position: relative;
+}
+
+.row-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+#zeroTabGroupsContainer {
+  align-items: center;
+  align-self: stretch;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  justify-content: center;
+  padding: 32px 40px;
+  position: relative;
+}
+
+@container (max-width: 312px) {
+  #zeroTabGroupsContainer {
+    padding: 8px 40px 32px;
+  }
+}
+
+#zeroTabGroupsImageContainer {
+  align-items: center;
+  background-color: var(--color-sys-surface5);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 40px 22px 0 22px;
+  overflow: hidden;
+}
+
+.zero-tab-groups-image {
+  display: none;
+  width: 236px;
+  height: 93px;
+  flex-shrink: 0;
+  transform: translateY(4px);
+}
+
+@media (prefers-color-scheme: light) {
+  #zeroTabGroupsImageLight {
+    display: block;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  #zeroTabGroupsImageDark {
+    display: block;
+  }
+}
+
+#zeroTabGroupsContentContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  align-self: stretch;
+}
+
+#zeroTabGroupsTextContainer {
+  align-items: center;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+#zeroTabGroupsTitle {
+  color: var(--color-sys-on-surface);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px;
+  align-self: stretch;
+  text-align: center;
+}
+
+#zeroTabGroupsText {
+  color: var(--color-sys-on-surface-subtle);
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
+  text-align: center;
+}
+
+#createNewTabGroupButton {
+  --cr-hover-background-color:
+      var(--color-new-tab-page-button-background-hovered);
+  --cr-button-text-color: var(--color-new-tab-page-button-foreground);
+  --cr-button-background-color: var(--color-new-tab-page-button-background);
+  display: flex;
+  height: 36px;
+  padding: 8px 16px;
+  align-items: center;
+  gap: 8px;
+  border-radius: var(--corner-radii-fully-round, 100px);
+  border: none;
+}
+
+cr-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+#createNewTabGroupButtonIcon {
+  color: var(--color-new-tab-page-button-foreground);
+}
+
+.tab-group:first-of-type {
+  border-radius: var(--ntp-module-item-border-radius)
+      var(--ntp-module-item-border-radius) 0 0;
+  padding-top: calc(var(--ntp-module-first-element-top-padding) + 4px);
+}
+
+.tab-group-info {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  flex: 1 1 0;
+  min-width: 0;
+  gap: 4px;
+}
+
+.color-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.tab-group-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tab-group-title-row,
+.tab-group-description {
+  overflow: hidden;
+  position: relative;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tab-group-title {
+  align-self: stretch;
+  color: var(--color-new-tab-page-primary-foreground);
+  font-size: var(--ntp-module-text-size);
+  font-style: normal;
+  height: 20px;
+  line-height: var(--ntp-module-line-height);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tab-group-description {
+  color: var(--color-new-tab-page-secondary-foreground);
+  font-size: var(--ntp-module-secondary-text-size);
+  font-weight: 400;
+  line-height: var(--ntp-module-secondary-line-height);
+}
+
+#footer {
+  display: flex;
+  flex-direction: column;
+}
+
+#divider {
+  padding: 4px 0;
+  position: relative;
+}
+
+#divider::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: var(--color-new-tab-page-module-background);
+}
+
+#createNewTabGroupFooterButton {
+  --cr-hover-background-color:
+      var(--color-new-tab-page-module-item-background-hovered);
+  background: transparent;
+  border: 0;
+  display: block;
+  height: auto;
+  padding-block-end: 12px;
+  border-radius: 0 0 var(--ntp-module-item-border-radius)
+      var(--ntp-module-item-border-radius);
+}
+
+#createNewTabGroupFooterButton > .row-content {
+  gap: 8px;
+}
+
+#createNewTabGroupIcon,
+#sharedTabGroupIcon {
+  color: var(--color-new-tab-page-secondary-foreground);
+}

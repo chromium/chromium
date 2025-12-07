@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {BindingsTestRunner} from 'bindings_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
 import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
@@ -40,7 +41,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
     return promise;
 
     function onSource(uiSourceCode) {
-      uiSourceCode.requestContent().then(({ content, error, isEncoded }) => fulfill(content));
+      uiSourceCode.requestContentData().then(TextUtils.ContentData.ContentData.asDeferredContent).then(({ content, error, isEncoded }) => fulfill(content));
     }
   }
 })();

@@ -10,18 +10,22 @@
 #include <utility>
 #include <variant>
 
+#include "third_party/abseil-cpp/absl/functional/overload.h"
+
 namespace visited_url_ranking {
 
 URLVisit::URLVisit(const GURL& url_arg,
                    const std::u16string& title_arg,
                    const base::Time& last_modified_arg,
                    syncer::DeviceInfo::FormFactor device_type_arg,
-                   Source source_arg)
+                   Source source_arg,
+                   const std::optional<std::string>& client_name_arg)
     : url(url_arg),
       title(title_arg),
       last_modified(last_modified_arg),
       device_type(device_type_arg),
-      source(source_arg) {}
+      source(source_arg),
+      client_name(client_name_arg) {}
 
 URLVisit::URLVisit(const URLVisit&) = default;
 
@@ -42,7 +46,7 @@ std::set<std::u16string_view> URLVisitAggregate::GetAssociatedTitles() const {
   std::set<std::u16string_view> titles = {};
   for (const auto& fetcher_entry : fetcher_data_map) {
     std::visit(
-        URLVisitVariantHelper{
+        absl::Overload{
             [&titles](const URLVisitAggregate::TabData& tab_data) {
               titles.insert(tab_data.last_active_tab.visit.title);
             },
@@ -57,7 +61,7 @@ std::set<std::u16string_view> URLVisitAggregate::GetAssociatedTitles() const {
 std::set<const GURL*> URLVisitAggregate::GetAssociatedURLs() const {
   std::set<const GURL*> urls = {};
   for (const auto& fetcher_entry : fetcher_data_map) {
-    std::visit(URLVisitVariantHelper{
+    std::visit(absl::Overload{
                    [&urls](const URLVisitAggregate::TabData& tab_data) {
                      urls.insert(&tab_data.last_active_tab.visit.url);
                    },
@@ -72,31 +76,76 @@ std::set<const GURL*> URLVisitAggregate::GetAssociatedURLs() const {
 base::Time URLVisitAggregate::GetLastVisitTime() const {
   std::optional<base::Time> last_visit_time;
   for (const auto& fetcher_entry : fetcher_data_map) {
-    // Prefer timestamp from local tabs, if not an active tab then use timestamp
-    // from the history.
     switch (fetcher_entry.first) {
-      case Fetcher::kTabModel:
-        last_visit_time =
+      case Fetcher::kTabModel: {
+        std::optional<base::Time> tab_last_active =
             std::get<URLVisitAggregate::TabData>(fetcher_entry.second)
-                .last_active_tab.visit.last_modified;
-        break;
-      case Fetcher::kSession:
-        if (!last_visit_time) {
+                .last_active;
+        if (!last_visit_time ||
+            (tab_last_active && last_visit_time < tab_last_active)) {
+          last_visit_time = tab_last_active;
+        } else if (!last_visit_time && !tab_last_active) {
           last_visit_time =
               std::get<URLVisitAggregate::TabData>(fetcher_entry.second)
                   .last_active_tab.visit.last_modified;
         }
         break;
-      case Fetcher::kHistory:
-        if (!last_visit_time) {
+      }
+      case Fetcher::kSession: {
+        std::optional<base::Time> session_last_active =
+            std::get<URLVisitAggregate::TabData>(fetcher_entry.second)
+                .last_active;
+        if (!last_visit_time ||
+            (session_last_active && last_visit_time < session_last_active)) {
+          last_visit_time = session_last_active;
+        } else if (!last_visit_time && !session_last_active) {
           last_visit_time =
-              std::get<URLVisitAggregate::HistoryData>(fetcher_entry.second)
-                  .last_visited.visit_row.visit_time;
+              std::get<URLVisitAggregate::TabData>(fetcher_entry.second)
+                  .last_active_tab.visit.last_modified;
         }
         break;
+      }
+      case Fetcher::kHistory: {
+        std::optional<base::Time> history_last_visit =
+            std::get<URLVisitAggregate::HistoryData>(fetcher_entry.second)
+                .last_visited.visit_row.visit_time;
+        if (!last_visit_time ||
+            (history_last_visit && last_visit_time < history_last_visit)) {
+          last_visit_time = history_last_visit;
+        }
+        break;
+      }
     }
   }
   return *last_visit_time;
+}
+
+URLVisitAggregate::URLTypeSet URLVisitAggregate::GetURLTypes() const {
+  URLVisitAggregate::URLTypeSet types;
+  for (const auto& fetcher_entry : fetcher_data_map) {
+    std::visit(
+        absl::Overload{
+            [&types](const URLVisitAggregate::TabData& tab_data) {
+              if (tab_data.last_active_tab.session_name) {
+                types.Put(URLVisitAggregate::URLType::kActiveRemoteTab);
+              } else {
+                types.Put(URLVisitAggregate::URLType::kActiveLocalTab);
+              }
+            },
+            [&types](const URLVisitAggregate::HistoryData& history_data) {
+              if (history_data.last_app_id) {
+                types.Put(URLVisitAggregate::URLType::kCCTVisit);
+              }
+              if (history_data.last_visited.visit_row.originator_cache_guid
+                      .empty()) {
+                types.Put(URLVisitAggregate::URLType::kLocalVisit);
+              } else {
+                types.Put(URLVisitAggregate::URLType::kRemoteVisit);
+              }
+            }},
+        fetcher_entry.second);
+  }
+  return types;
 }
 
 URLVisitAggregate::Tab::Tab(const int32_t id_arg,
@@ -121,8 +170,18 @@ URLVisitAggregate::TabData::TabData(const URLVisitAggregate::TabData&) =
 URLVisitAggregate::TabData::~TabData() = default;
 
 URLVisitAggregate::HistoryData::HistoryData(
-    history::AnnotatedVisit annotated_visit)
-    : last_visited(std::move(annotated_visit)) {
+    history::AnnotatedVisit annotated_visit,
+    std::optional<std::string> client_name,
+    syncer::DeviceInfo::FormFactor device_type)
+    : last_visited(std::move(annotated_visit)),
+      visit(last_visited.url_row.url(),
+            last_visited.url_row.title(),
+            last_visited.visit_row.visit_time,
+            device_type,
+            last_visited.visit_row.originator_cache_guid.empty()
+                ? URLVisit::Source::kLocal
+                : URLVisit::Source::kForeign,
+            std::move(client_name)) {
   if (last_visited.context_annotations.total_foreground_duration
           .InMilliseconds() > 0) {
     total_foreground_duration =

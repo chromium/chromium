@@ -44,16 +44,21 @@ PerIsolateData::PerIsolateData(
     ArrayBuffer::Allocator* allocator,
     IsolateHolder::AccessMode access_mode,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> low_priority_task_runner)
+    scoped_refptr<base::SingleThreadTaskRunner> user_visible_task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> best_effort_task_runner)
     : isolate_(isolate), allocator_(allocator) {
   isolate_->SetData(kEmbedderNativeGin, this);
 
   DCHECK(task_runner);
   task_runner_ = CreateV8ForegroundTaskRunner(isolate_, std::move(task_runner),
                                               access_mode);
-  if (low_priority_task_runner) {
-    low_priority_task_runner_ = CreateV8ForegroundTaskRunner(
-        isolate_, std::move(low_priority_task_runner), access_mode);
+  if (user_visible_task_runner) {
+    user_visible_task_runner_ = CreateV8ForegroundTaskRunner(
+        isolate_, std::move(user_visible_task_runner), access_mode);
+  }
+  if (best_effort_task_runner) {
+    best_effort_task_runner_ = CreateV8ForegroundTaskRunner(
+        isolate_, std::move(best_effort_task_runner), access_mode);
   }
 }
 
@@ -63,80 +68,47 @@ PerIsolateData* PerIsolateData::From(Isolate* isolate) {
   return static_cast<PerIsolateData*>(isolate->GetData(kEmbedderNativeGin));
 }
 
-void PerIsolateData::SetObjectTemplate(WrapperInfo* info,
-                                       Local<ObjectTemplate> templ) {
+void PerIsolateData::DeprecatedSetObjectTemplate(DeprecatedWrapperInfo* info,
+                                                 Local<ObjectTemplate> templ) {
+  deprecated_object_templates_[info] = Eternal<ObjectTemplate>(isolate_, templ);
+}
+
+void PerIsolateData::SetObjectTemplate(
+    const WrapperInfo* info,
+    Local<ObjectTemplate> templ) {
   object_templates_[info] = Eternal<ObjectTemplate>(isolate_, templ);
 }
 
-void PerIsolateData::SetFunctionTemplate(WrapperInfo* info,
+void PerIsolateData::SetFunctionTemplate(DeprecatedWrapperInfo* info,
                                          Local<FunctionTemplate> templ) {
   function_templates_[info] = Eternal<FunctionTemplate>(isolate_, templ);
 }
 
-v8::Local<v8::ObjectTemplate> PerIsolateData::GetObjectTemplate(
-    WrapperInfo* info) {
-  ObjectTemplateMap::iterator it = object_templates_.find(info);
-  if (it == object_templates_.end())
+v8::Local<v8::ObjectTemplate> PerIsolateData::DeprecatedGetObjectTemplate(
+    DeprecatedWrapperInfo* info) {
+  DeprecatedObjectTemplateMap::iterator it =
+      deprecated_object_templates_.find(info);
+  if (it == deprecated_object_templates_.end()) {
     return v8::Local<v8::ObjectTemplate>();
+  }
+  return it->second.Get(isolate_);
+}
+
+v8::Local<v8::ObjectTemplate> PerIsolateData::GetObjectTemplate(
+    const WrapperInfo* info) {
+  ObjectTemplateMap::iterator it = object_templates_.find(info);
+  if (it == object_templates_.end()) {
+    return v8::Local<v8::ObjectTemplate>();
+  }
   return it->second.Get(isolate_);
 }
 
 v8::Local<v8::FunctionTemplate> PerIsolateData::GetFunctionTemplate(
-    WrapperInfo* info) {
+    DeprecatedWrapperInfo* info) {
   FunctionTemplateMap::iterator it = function_templates_.find(info);
   if (it == function_templates_.end())
     return v8::Local<v8::FunctionTemplate>();
   return it->second.Get(isolate_);
-}
-
-void PerIsolateData::SetIndexedPropertyInterceptor(
-    WrappableBase* base,
-    IndexedPropertyInterceptor* interceptor) {
-  indexed_interceptors_[base] = interceptor;
-}
-
-void PerIsolateData::SetNamedPropertyInterceptor(
-    WrappableBase* base,
-    NamedPropertyInterceptor* interceptor) {
-  named_interceptors_[base] = interceptor;
-}
-
-void PerIsolateData::ClearIndexedPropertyInterceptor(
-    WrappableBase* base,
-    IndexedPropertyInterceptor* interceptor) {
-  IndexedPropertyInterceptorMap::iterator it = indexed_interceptors_.find(base);
-  if (it != indexed_interceptors_.end())
-    indexed_interceptors_.erase(it);
-  else
-    NOTREACHED_IN_MIGRATION();
-}
-
-void PerIsolateData::ClearNamedPropertyInterceptor(
-    WrappableBase* base,
-    NamedPropertyInterceptor* interceptor) {
-  NamedPropertyInterceptorMap::iterator it = named_interceptors_.find(base);
-  if (it != named_interceptors_.end())
-    named_interceptors_.erase(it);
-  else
-    NOTREACHED_IN_MIGRATION();
-}
-
-IndexedPropertyInterceptor* PerIsolateData::GetIndexedPropertyInterceptor(
-    WrappableBase* base) {
-  IndexedPropertyInterceptorMap::iterator it = indexed_interceptors_.find(base);
-  if (it != indexed_interceptors_.end())
-    return it->second;
-  else
-    return NULL;
-}
-
-NamedPropertyInterceptor* PerIsolateData::GetNamedPropertyInterceptor(
-    WrappableBase* base) {
-  NamedPropertyInterceptorMap::iterator it = named_interceptors_.find(base);
-  if (it != named_interceptors_.end())
-    return it->second;
-  else
-    return NULL;
 }
 
 void PerIsolateData::AddDisposeObserver(DisposeObserver* observer) {

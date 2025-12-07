@@ -21,9 +21,9 @@ void MemoryInfoProvider::InitializeForTesting(
 }
 
 bool MemoryInfoProvider::QueryInfo() {
-  info_.capacity = static_cast<double>(base::SysInfo::AmountOfPhysicalMemory());
+  info_.capacity = base::SysInfo::AmountOfPhysicalMemory().InBytesF();
   info_.available_capacity =
-      static_cast<double>(base::SysInfo::AmountOfAvailablePhysicalMemory());
+      base::SysInfo::AmountOfAvailablePhysicalMemory().InBytesF();
   return true;
 }
 

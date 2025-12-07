@@ -53,7 +53,7 @@ public class LocaleManagerReferralTest {
                 });
 
         ThreadUtils.runOnUiThreadBlocking(
-                new Callable<Void>() {
+                new Callable<>() {
                     @Override
                     public Void call() {
                         ChromeBrowserInitializer.getInstance().handleSynchronousStartup();

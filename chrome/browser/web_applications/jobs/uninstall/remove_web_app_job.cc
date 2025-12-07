@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -35,7 +36,7 @@ namespace web_app {
 namespace {
 
 bool IsOsIntegrationRemovedForApp(
-    std::optional<proto::WebAppOsIntegrationState> state) {
+    std::optional<proto::os_state::WebAppOsIntegration> state) {
   if (!state.has_value()) {
     return true;
   }
@@ -116,7 +117,7 @@ void RemoveWebAppJob::Start(AllAppsLock& lock, Callback callback) {
     profile_->GetPrefs()->SetBoolean(
         prefs::kShouldGarbageCollectStoragePartitions, true);
 
-    location_ = app->isolation_data()->location;
+    location_ = app->isolation_data()->location();
 
     url::Origin iwa_origin = url::Origin::Create(app->scope());
     web_app::RemoveIsolatedWebAppBrowsingData(

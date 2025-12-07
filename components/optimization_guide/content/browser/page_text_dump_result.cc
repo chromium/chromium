@@ -8,6 +8,7 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace optimization_guide {
@@ -137,7 +138,7 @@ std::ostream& operator<<(std::ostream& os, const FrameTextDumpResult& frame) {
              "contents:%s",
              TextDumpEventToString(frame.event()).c_str(),
              frame.rfh_id().child_id, frame.rfh_id().frame_routing_id,
-             frame.amp_frame() ? "true" : "false", frame.unique_navigation_id(),
+             base::ToString(frame.amp_frame()), frame.unique_navigation_id(),
              frame.utf8_contents().value_or("null").c_str());
 }
 

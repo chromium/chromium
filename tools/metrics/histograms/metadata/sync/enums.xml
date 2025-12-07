@@ -62,6 +62,49 @@ chromium-metrics-reviews@google.com.
   <int value="43509" label="Error: LEAK_CHECK_SERVICE_RESOURCE_EXHAUSTED"/>
 </enum>
 
+<enum name="BatchUploadDialogCloseReason">
+  <int value="0" label="Save in account clicked"/>
+  <int value="1" label="Cancel clicked"/>
+  <int value="2" label="Dialog dismissed"/>
+  <int value="3" label="Window/Browser closing"/>
+  <int value="4" label="Signin Pending"/>
+  <int value="5" label="Signout"/>
+</enum>
+
+<!-- LINT.IfChange(BatchUploadEntryPoint) -->
+
+<enum name="BatchUploadEntryPoint">
+  <int value="0" label="Password manager settings"/>
+  <int value="1" label="Password promo card"/>
+  <int value="2" label="Bookmark manager promo card"/>
+  <int value="3" label="Profile menu row button"/>
+  <int value="4" label="Profile menu primary button action"/>
+  <int value="5" label="Profile menu primary button with bookmarks action"/>
+  <int value="6"
+      label="Profile menu primary button with Windows10 depreciation action"/>
+  <int value="7" label="Account settings"/>
+  <int value="8"
+      label="Profile menu primary button action following Avatar button promo
+             click"/>
+  <int value="9"
+      label="Profile menu primary button with bookmarks action following
+             Avatar button promo click"/>
+  <int value="10"
+      label="Profile menu primary button with Windows10 depreciation action
+             following Avatar button promo click"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/profiles/batch_upload/batch_upload_service.h:EntryPoint) -->
+
+<!-- LINT.IfChange(BookmarkAccountStorageMoveDialogType) -->
+
+<enum name="BookmarkAccountStorageMoveDialogType">
+  <int value="0" label="Download or upload version"/>
+  <int value="1" label="Upload only version"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/ui/views/bookmarks/bookmark_account_storage_move_dialog.h:BookmarkAccountStorageMoveDialogType) -->
+
 <!-- LINT.IfChange(BookmarkGUIDSource) -->
 
 <enum name="BookmarkGUIDSource">
@@ -92,54 +135,38 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync_bookmarks/bookmark_model_merger.cc:BookmarksGUIDDuplicates) -->
 
-<enum name="BooleanIsSignedIn">
-  <int value="0" label="Not signed in"/>
-  <int value="1" label="Signed in"/>
+<enum name="BooleanIsFirstSync">
+  <int value="0" label="Not first sync"/>
+  <int value="1" label="First sync"/>
 </enum>
 
-<!-- LINT.IfChange(CrossUserSharingDecryptionResult) -->
+<!-- LINT.IfChange(CrossDevicePrefTrackerAvailabilityAtQuery) -->
 
-<enum name="CrossUserSharingDecryptionResult">
-  <int value="0" label="Succeeded"/>
-  <int value="1" label="Invitation missing required fields"/>
-  <int value="2" label="Failed to decrypt invitation"/>
-  <int value="3" label="Failed to parse decrypted invitation"/>
+<enum name="CrossDevicePrefTrackerAvailabilityAtQuery">
+  <int value="0" label="Available">
+    The tracker is fully operational (DeviceInfoTracker available,
+    LocalDeviceInfo initialized, and Sync configured for writes).
+  </int>
+  <int value="1" label="DeviceInfoTracker Missing">
+    Prerequisite failed: DeviceInfoTracker is not available. Queries cannot be
+    fulfilled.
+  </int>
+  <int value="2" label="Sync Not Configured">
+    DeviceInfoTracker and LocalDeviceInfo available, but Sync is not configured
+    for writes (e.g., signed out or Prefs sync disabled). Writes are blocked;
+    data may be stale.
+  </int>
+  <int value="3" label="LocalDeviceInfo Missing">
+    DeviceInfoTracker available and Sync configured, but LocalDeviceInfo is
+    missing (writes blocked).
+  </int>
+  <int value="4" label="Sync Not Configured + LocalDeviceInfo Missing">
+    DeviceInfoTracker available, but both LocalDeviceInfo is missing and Sync is
+    not configured.
+  </int>
 </enum>
 
-<!-- LINT.ThenChange(/components/sync/engine/data_type_worker.cc:CrossUserSharingDecryptionResult) -->
-
-<!-- LINT.IfChange(CrossUserSharingKeyPairState) -->
-
-<enum name="CrossUserSharingKeyPairState">
-  <int value="0" label="Key pair valid"/>
-  <int value="1" label="Public key not initialized"/>
-  <int value="2" label="Public key version invalid"/>
-  <int value="3" label="Corrupted public-private key pair"/>
-  <int value="4" label="Pending keys are non-empty"/>
-</enum>
-
-<!-- LINT.ThenChange(/components/sync/nigori/nigori_state.cc:CrossUserSharingKeyPairState) -->
-
-<!-- LINT.IfChange(CrossUserSharingKeyPairStateOnDecryptPendingKeys) -->
-
-<enum name="CrossUserSharingKeyPairStateOnDecryptPendingKeys">
-  <int value="0" label="Valid key pair"/>
-  <int value="1" label="Missing private key"/>
-  <int value="2" label="Empty key pair"/>
-  <int value="3" label="Missing public key"/>
-</enum>
-
-<!-- LINT.ThenChange(/components/sync/nigori/nigori_sync_bridge_impl.cc:CrossUserSharingKeyPairStateOnDecryptPendingKeys) -->
-
-<!-- LINT.IfChange(FaviconAvailabilityStatus) -->
-
-<enum name="FaviconAvailabilityStatus">
-  <int value="0" label="Favicon available locally"/>
-  <int value="1" label="(obsolete) Favicon available via sync"/>
-  <int value="2" label="Favicon not available"/>
-</enum>
-
-<!-- LINT.ThenChange(/components/favicon/core/history_ui_favicon_request_handler_impl.h:FaviconAvailabilityStatus) -->
+<!-- LINT.ThenChange(/components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker.h:CrossDevicePrefTrackerAvailabilityAtQuery) -->
 
 <!-- LINT.IfChange(InvalidBookmarkSpecificsError) -->
 
@@ -156,6 +183,18 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(/components/sync_bookmarks/bookmark_specifics_conversions.cc:InvalidBookmarkSpecificsError) -->
+
+<!-- LINT.IfChange(NudgedUpdateResult) -->
+
+<enum name="NudgedUpdateResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Empty response"/>
+  <int value="2" label="Partial failure"/>
+  <int value="3" label="Server error"/>
+  <int value="4" label="Network error"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/engine/update_handler.h:NudgedUpdateResult) -->
 
 <!-- LINT.IfChange(OutgoingPasswordSharingInvitationCommitError) -->
 
@@ -227,6 +266,23 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync_bookmarks/bookmark_model_merger.cc:RemoteBookmarkUpdateError) -->
 
+<!-- LINT.IfChange(SessionSpecificsInvalidReason) -->
+
+<enum name="SessionSpecificsInvalidReason">
+  <summary>
+    The validity (or reason for non-validity) of a SessionSpecifics.
+  </summary>
+  <int value="0" label="Missing session_tag"/>
+  <int value="1" label="Both header and tab specified"/>
+  <int value="2" label="Neither header nor tab specified"/>
+  <int value="3" label="Tab with invalid tab_node_id"/>
+  <int value="4" label="Tab with invalid tab_id"/>
+  <int value="5" label="Header with duplicate tab IDs"/>
+  <int value="6" label="Header with tab_node_id"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync_sessions/session_store.h:SessionSpecificsInvalidReason) -->
+
 <enum name="SyncablePref">
 <!-- LINT.IfChange(CommonSyncablePref) -->
 
@@ -258,10 +314,10 @@ chromium-metrics-reviews@google.com.
   <int value="25" label="LastClearBrowsingDataTime"/>
   <int value="26" label="(obsolete) PreferencesMigratedToBasic"/>
   <int value="27" label="PriceEmailNotificationsEnabled"/>
-  <int value="28" label="Font"/>
+  <int value="28" label="(obsolete) Font"/>
   <int value="29" label="(obsolete) OfferReaderMode"/>
-  <int value="30" label="ReaderForAccessibility"/>
-  <int value="31" label="Theme"/>
+  <int value="30" label="(obsolete) ReaderForAccessibility"/>
+  <int value="31" label="(obsolete) Theme"/>
   <int value="32" label="AcceptLanguages"/>
   <int value="33" label="(obsolete) ApplicationLocale"/>
   <int value="34" label="SelectedLanguages"/>
@@ -279,7 +335,7 @@ chromium-metrics-reviews@google.com.
   <int value="46" label="AccountTailoredSecurityUpdateTimestamp"/>
   <int value="47" label="CookieControlsMode"/>
   <int value="48" label="SafeBrowsingEnabled"/>
-  <int value="49" label="SyncedDefaultSearchProviderGUID"/>
+  <int value="49" label="(obsolete) SyncedDefaultSearchProviderGUID"/>
   <int value="50" label="PrefForceTriggerTranslateCount"/>
   <int value="51" label="(obsolete) PrefNeverPromptSitesDeprecated"/>
   <int value="52" label="PrefTranslateAcceptedCount"/>
@@ -307,7 +363,41 @@ chromium-metrics-reviews@google.com.
   <int value="73" label="SyncableTabGroups"/>
   <int value="74" label="AutoPinNewTabGroups"/>
   <int value="75" label="ShowGoogleLensShortcut"/>
-  <int value="76" label="SharingVapidKey"/>
+  <int value="76" label="(obsolete) SharingVapidKey2"/>
+  <int value="77" label="FirstPlusAddressCreationTime"/>
+  <int value="78" label="LastPlusAddressFillingTime"/>
+  <int value="79" label="SafeBrowsingEnhanced"/>
+  <int value="80" label="FacilitatedPaymentsEwallet"/>
+  <int value="81" label="AutofillBnplEnabled"/>
+  <int value="82" label="AutofillHasSeenBnpl"/>
+  <int value="83" label="AutomaticPasskeyUpgrades"/>
+  <int value="84" label="(test) SyncablePriorityPrefForTesting"/>
+  <int value="85" label="(test) SyncableAlwaysSyncingPriorityPrefForTesting"/>
+  <int value="86" label="FacilitatedPaymentsPixAccountLinking"/>
+  <int value="87" label="OmniboxShowSearchTools"/>
+  <int value="88" label="AutofillHomeMetadata"/>
+  <int value="89" label="AutofillWorkMetadata"/>
+  <int value="90" label="FacilitatedPaymentsA2AEnabled"/>
+  <int value="91" label="FacilitatedPaymentsA2ATriggeredOnce"/>
+  <int value="92" label="FingerprintingProtectionEnabled"/>
+  <int value="93" label="AutofillNameAndEmailProfileSignature"/>
+  <int value="94" label="AutofillNameAndEmailProfileNotSelectedCounter"/>
+  <int value="96" label="AutofillAiLastVersionDeduped"/>
+  <int value="97" label="CrossDeviceOmniboxIsInBottomPosition"/>
+  <int value="98" label="AutofillWasNameAndEmailProfileUsed"/>
+  <int value="99" label="CrossDeviceCrossPlatformPromosIOS16thActiveDay"/>
+  <int value="100" label="CrossDeviceSafetyCheckHomeModuleEnabled"/>
+  <int value="101" label="AutofillAiIdentityEntitiesEnabled"/>
+  <int value="102" label="AutofillAiTravelEntitiesEnabled"/>
+  <int value="103" label="CrossDeviceTabResumptionHomeModuleEnabled"/>
+  <int value="104" label="AutofillAmountExtractionAiTermsSeen"/>
+  <int value="105" label="CrossDevicePriceTrackingHomeModuleEnabled"/>
+  <int value="106" label="CrossDeviceMostVisitedHomeModuleEnabled"/>
+  <int value="107" label="CrossDeviceTipsHomeModuleEnabled"/>
+  <int value="108" label="CrossDeviceMagicStackHomeModuleEnabled"/>
+  <int value="109" label="ShowAiModeOmniboxButton"/>
+  <int value="110" label="AutofillAiSyncedOptInStatus"/>
+  <int value="111" label="iOSPromoReminder"/>
 <!-- LINT.ThenChange(/components/sync_preferences/common_syncable_prefs_database.cc:CommonSyncablePref)-->
 
 <!-- LINT.IfChange(ChromeSyncablePref) -->
@@ -330,7 +420,7 @@ chromium-metrics-reviews@google.com.
   <int value="100015" label="HomePageIsNewTabPage"/>
   <int value="100016" label="NtpCustomBackgroundDict"/>
   <int value="100017" label="LiveCaptionBubbleExpanded"/>
-  <int value="100018" label="LiveCaptionBubblePinned"/>
+  <int value="100018" label="(Obsolete) LiveCaptionBubblePinned"/>
   <int value="100019" label="LiveCaptionEnabled"/>
   <int value="100020" label="LiveCaptionLanguageCode"/>
   <int value="100021" label="LiveCaptionMediaFoundationRendererErrorSilenced"/>
@@ -348,7 +438,8 @@ chromium-metrics-reviews@google.com.
   <int value="100032" label="AccessibilityAutoclickMovementThreshold"/>
   <int value="100033" label="AccessibilityAutoclickRevertToLeftClick"/>
   <int value="100034" label="AccessibilityAutoclickStabilizePosition"/>
-  <int value="100035" label="AccessibilityCursorColor"/>
+  <int value="100035"
+      label="(obsolete, synced as 100340 now) AccessibilityCursorColor"/>
   <int value="100036"
       label="AccessibilityEnhancedNetworkVoicesInSelectToSpeakAllowed"/>
   <int value="100037" label="AccessibilityFloatingMenuPosition"/>
@@ -524,16 +615,17 @@ chromium-metrics-reviews@google.com.
   <int value="100196" label="DynamicColorColorScheme"/>
   <int value="100197" label="DynamicColorSeedColor"/>
   <int value="100198" label="LongPressDiacritics"/>
-  <int value="100199" label="SidePanelCompanionEntryPinnedToToolbar"/>
+  <int value="100199"
+      label="(Obsolete) SidePanelCompanionEntryPinnedToToolbar"/>
   <int value="100200" label="AccessibilityColorCorrectionEnabled"/>
   <int value="100201" label="AccessibilityColorVisionCorrectionAmount"/>
   <int value="100202" label="AccessibilityColorVisionCorrectionType"/>
   <int value="100203" label="ShowDeskButtonInShelf"/>
   <int value="100204" label="OsDogfoodGroupsSyncPrefName"/>
   <int value="100205" label="ProjectorSWAUIPrefsMigrated"/>
-  <int value="100206" label="iOSPasswordPromoLastImpressionTimestamp"/>
-  <int value="100207" label="iOSPasswordPromoImpressionsCounter"/>
-  <int value="100208" label="iOSPasswordPromoOptOut"/>
+  <int value="100206" label="DesktopToiOSPasswordPromoLastImpressionTimestamp"/>
+  <int value="100207" label="DesktopToiOSPasswordPromoImpressionsCounter"/>
+  <int value="100208" label="DesktopToiOSPasswordPromoOptOut"/>
   <int value="100209" label="DynamicColorUseKMeans"/>
   <int value="100210" label="RemapToRightClickNotificationsRemaining"/>
   <int value="100211" label="SixPackKeyDeleteNotificationsRemaining"/>
@@ -603,12 +695,12 @@ chromium-metrics-reviews@google.com.
   <int value="100264" label="AccessibilityFaceGazeCursorSpeedDown"/>
   <int value="100265" label="AccessibilityFaceGazeCursorSpeedLeft"/>
   <int value="100266" label="AccessibilityFaceGazeCursorSpeedRight"/>
-  <int value="100267" label="AccessibilityFaceGazeCursorSmoothing"/>
+  <int value="100267" label="(obsolete) AccessibilityFaceGazeCursorSmoothing"/>
   <int value="100268" label="AccessibilityFaceGazeCursorUseAcceleration"/>
-  <int value="100269" label="FingerprintingProtectionEnabled"/>
+  <int value="100269" label="(obsolete) FingerprintingProtectionEnabled"/>
   <int value="100270" label="AccessibilityFaceGazeGesturesToMacros"/>
   <int value="100271" label="AccessibilityFaceGazeGesturesToConfidence"/>
-  <int value="100272" label="ShelfContainerAppPinRolls"/>
+  <int value="100272" label="ShelfGeminiAppPinRolls"/>
   <int value="100273"
       label="ProfileContentSettingsExceptionsTrackingProtection"/>
   <int value="100274"
@@ -621,7 +713,7 @@ chromium-metrics-reviews@google.com.
   <int value="100279" label="KeyboardDefaultSplitModifierSettings"/>
   <int value="100280" label="DisplayAmbientLightSensorLastEnabled"/>
   <int value="100281" label="AccessibilityMainNodeAnnotationsEnabled"/>
-  <int value="100282" label="SyncableVersionedWallpaperInfo"/>
+  <int value="100282" label="(obsolete) SyncableVersionedWallpaperInfo"/>
   <int value="100283" label="FocusModeSelectedTask"/>
   <int value="100284" label="FocusModeSoundSection"/>
   <int value="100285" label="kAccessibilityFaceGazeActionsEnabled"/>
@@ -630,9 +722,9 @@ chromium-metrics-reviews@google.com.
   <int value="100288" label="KeyboardAmbientLightSensorLastEnabled"/>
   <int value="100289" label="AccessibilityReadAnythingImagesEnabled"/>
   <int value="100290" label="ShelfMallAppPinRolls"/>
-  <int value="100291" label="iOSAddressPromoLastImpressionTimestamp"/>
-  <int value="100292" label="iOSAddressPromoImpressionsCounter"/>
-  <int value="100293" label="iOSAddressPromoOptOut"/>
+  <int value="100291" label="DesktopToiOSAddressPromoLastImpressionTimestamp"/>
+  <int value="100292" label="DesktopToiOSAddressPromoImpressionsCounter"/>
+  <int value="100293" label="DesktopToiOSAddressPromoOptOut"/>
   <int value="100294" label="MahiNudgeShownCount"/>
   <int value="100295" label="AccessibilityMagnifierFollowsChromeVox"/>
   <int value="100296" label="KeyboardHasSplitModifierKeyboard"/>
@@ -640,14 +732,88 @@ chromium-metrics-reviews@google.com.
   <int value="100298" label="kAccessibilityFlashNotificationsEnabled"/>
   <int value="100299" label="kAccessibilityFlashNotificationsColor"/>
   <int value="100300" label="PinnedChromeLabsMigrationComplete"/>
+  <int value="100301" label="AccessibilityFaceGazeGesturesToKeyCombos"/>
+  <int value="100302" label="FocusModeYTMDisplayOAuthConsent"/>
+  <int value="100303" label="FocusModeYTMDisplayFreeTrial"/>
+  <int value="100304" label="AccessibilityFaceGazeVelocityThreshold"/>
+  <int value="100305" label="DesktopToiOSPaymentPromoLastImpressionTimestamp"/>
+  <int value="100306" label="DesktopToiOSPaymentPromoImpressionsCounter"/>
+  <int value="100307" label="DesktopToiOSPaymentPromoOptOut"/>
+  <int value="100308" label="DesktopToiOSNtpPromoAppearanceTimestamps"/>
+  <int value="100309" label="DesktopToiOSNtpPromoDismissed"/>
+  <int value="100310"
+      label="(obsolete) PrivacySandboxFakeNoticePromptShownTimeSync"/>
+  <int value="100311" label="AccessibilityBounceKeysDelayMs"/>
+  <int value="100312" label="AccessibilitySlowKeysDelayMs"/>
+  <int value="100313" label="AccessibilityFaceGazePrecisionClick"/>
+  <int value="100314" label="AccessibilityFaceGazePrecisionClickSpeedFactor"/>
+  <int value="100315" label="OfficeFilesAlwaysMoveToDriveSyncable"/>
+  <int value="100316" label="OfficeFilesAlwaysMoveToOneDriveSyncable"/>
+  <int value="100317" label="OfficeMoveConfirmationShownForDriveSyncable"/>
+  <int value="100318" label="OfficeMoveConfirmationShownForOneDriveSyncable"/>
+  <int value="100319"
+      label="OfficeMoveConfirmationShownForLocalToDriveSyncable"/>
+  <int value="100320"
+      label="OfficeMoveConfirmationShownForLocalToOneDriveSyncable"/>
+  <int value="100321"
+      label="OfficeMoveConfirmationShownForCloudToDriveSyncable"/>
+  <int value="100322"
+      label="OfficeMoveConfirmationShownForCloudToOneDriveSyncable"/>
+  <int value="100323" label="PinnedCastMigrationComplete"/>
+  <int value="100324" label="AccessibilityAXTreeFixingEnabled"/>
+  <int value="100325" label="TabSearchMigrationComplete"/>
+  <int value="100326" label="ReadAloudPlaybackMode"/>
+  <int value="100327" label="PinSplitTabButton"/>
+  <int value="100328" label="GlicRolloutEligibility"/>
+  <int value="100329" label="ShelfNotebookLmAppPinRolls"/>
+  <int value="100330" label="VerticalTabsEnabled"/>
+  <int value="100331" label="SplitViewDragAndDropEnabled"/>
+  <int value="100332" label="iOSEnhancedBrowsingPromoLastImpressionTimestamp"/>
+  <int value="100333" label="iOSEnhancedBrowsingPromoImpressionsCounter"/>
+  <int value="100334" label="iOSEnhancedBrowsingPromoOptOut"/>
+  <int value="100335" label="iOSLensPromoLastImpressionTimestamp"/>
+  <int value="100336" label="iOSLensPromoImpressionsCounter"/>
+  <int value="100337" label="iOSLensPromoOptOut"/>
+  <int value="100338" label="SubscriptionEligibilityAiSubscriptionTier"/>
+  <int value="100339" label="AccessibilityCursorHighlightEnabled"/>
+  <int value="100340" label="AccessibilityCursorColorEnabled"/>
+  <int value="100341" label="AccessibilityCursorColor"/>
+  <int value="100342" label="AccessibilityLargeCursorEnabled"/>
+  <int value="100343" label="AccessibilityLargeCursorDipSize"/>
+  <int value="100344" label="AccessibilityHighContrastEnabled"/>
+  <int value="100345" label="AccessibilityCaretHighlightEnabled"/>
+  <int value="100346" label="AccessibilityCaretBlinkInterval"/>
+  <int value="100347" label="AccessibilityFocusHighlightEnabled"/>
+  <int value="100348" label="AccessibilityColorCorrectionHasBeenSetup"/>
+  <int value="100349" label="HighContrastAcceleratorDialogHasBeenAccepted"/>
+  <int value="100350" label="AccessibilityReducedAnimationsEnabled"/>
+  <int value="100351" label="AccessibilityCaptionsTextSize"/>
+  <int value="100352" label="AccessibilityCaptionsTextFont"/>
+  <int value="100353" label="AccessibilityCaptionsTextColor"/>
+  <int value="100354" label="AccessibilityCaptionsTextOpacity"/>
+  <int value="100355" label="AccessibilityCaptionsBackgroundColor"/>
+  <int value="100356" label="AccessibilityCaptionsTextShadow"/>
+  <int value="100357" label="AccessibilityCaptionsBackgroundOpacity"/>
+  <int value="100358" label="AccessibilityScreenMagnifierEnabled"/>
+  <int value="100359" label="AccessibilitySelectToSpeakEnabled"/>
+  <int value="100360" label="DockedMagnifierEnabled"/>
+  <int value="100361" label="DockedMagnifierScale"/>
+  <int value="100362" label="ScreenMagnifierAcceleratorDialogHasBeenAccepted"/>
+  <int value="100363" label="DockedMagnifierAcceleratorDialogHasBeenAccepted"/>
+  <int value="100364" label="SelectToSpeakAcceleratorDialogHasBeenAccepted"/>
+  <int value="100365" label="AccessibilityScreenMagnifierScale"/>
+  <int value="100366" label="(obsolete) iOSPromoReminder"/>
+  <int value="100367" label="ClassManagementToolsOOBEAccessCountSetting"/>
+  <int value="100368" label="ClassManagementToolsKioskReceiverCodes"/>
+  <int value="100369" label="PinContextualTaskButton"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->
 
   <int value="200000" label="ArticlesForYouEnabled"/>
-  <int value="200001" label="ContextualSearchEnabled_IOS"/>
+  <int value="200001" label="(obsolete) ContextualSearchEnabled_IOS"/>
   <int value="200002" label="DefaultCharset_IOS"/>
-  <int value="200003" label="EnableDoNotTrack_IOS"/>
+  <int value="200003" label="(obsolete) EnableDoNotTrack_IOS"/>
   <int value="200004" label="IosHandoffToOtherDevices"/>
   <int value="200005" label="NetworkPredictionSetting"/>
   <int value="200006" label="NTPContentSuggestionsEnabled"/>
@@ -655,6 +821,7 @@ chromium-metrics-reviews@google.com.
   <int value="200008" label="SearchSuggestEnabled_IOS"/>
   <int value="200009" label="TrackPricesOnTabsEnabled"/>
   <int value="200010" label="VoiceSearchLocale"/>
+  <int value="200011" label="IOSBwgConsent"/>
 <!-- LINT.ThenChange(/ios/chrome/browser/sync/model/prefs/ios_chrome_syncable_prefs_database.cc:IosSyncablePref)-->
 
 </enum>
@@ -695,14 +862,33 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync/protocol/sync.proto:SyncClientToServerMessageContents) -->
 
+<!-- LINT.IfChange(SyncConfigureDataTypeManagerReason) -->
+
+<enum name="SyncConfigureDataTypeManagerReason">
+  <summary>
+    The reason that triggered a configuration cycle, i.e. initializing
+    DataTypeManager or changing the set of datatypes that should be actively
+    syncing.
+  </summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Reconfiguration"/>
+  <int value="2" label="Migration"/>
+  <int value="3" label="New client"/>
+  <int value="4" label="Existing client restart"/>
+  <int value="5" label="Crypto"/>
+  <int value="6" label="Programmatic"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/engine/configure_reason.h:ConfigureReason) -->
+
 <!-- LINT.IfChange(SyncConflictResolution) -->
 
 <enum name="SyncConflictResolution">
   <int value="0" label="Changes match"/>
   <int value="1" label="Use local"/>
   <int value="2" label="Use remote"/>
-  <int value="3" label="Ignore local encryption"/>
-  <int value="4" label="Ignore remote encryption"/>
+  <int value="3" label="Ignore local no-op change"/>
+  <int value="4" label="Ignore remote no-op change"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/model/conflict_resolution.h:SyncConflictResolution) -->
@@ -739,6 +925,9 @@ chromium-metrics-reviews@google.com.
   <int value="4"
       label="Error triggered by update not matching
              SupportsIncrementalUpdates()"/>
+  <int value="5"
+      label="Error returned when applying incremental updates containing a
+             clear all directive"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/model/client_tag_based_data_type_processor.h:SyncDataTypeErrorSite) -->
@@ -773,7 +962,7 @@ chromium-metrics-reviews@google.com.
   <int value="23" label="(Obsolete) Favicon Images. Removed on 01/2021 (M90)."/>
   <int value="24"
       label="(Obsolete) Favicon Tracking. Removed on 01/2021 (M90)."/>
-  <int value="25" label="Proxy Tabs"/>
+  <int value="25" label="(Obsolete) Proxy Tabs. Removed 10/2023 (M120)"/>
   <int value="26" label="Managed User Settings"/>
   <int value="27" label="(Obsolete) Managed Users"/>
   <int value="28" label="(Obsolete) Articles"/>
@@ -805,7 +994,7 @@ chromium-metrics-reviews@google.com.
   <int value="54" label="Autofill Wallet Usage"/>
   <int value="55" label="(Obsolete) Segmentation"/>
   <int value="56" label="Saved Tab Groups"/>
-  <int value="57" label="Power Bookmark"/>
+  <int value="57" label="(Obsolete) Power Bookmark"/>
   <int value="58" label="WebAuthn Credentials"/>
   <int value="59" label="Incoming Password Sharing Invitations"/>
   <int value="60" label="Outgoing Password Sharing Invitations"/>
@@ -817,6 +1006,13 @@ chromium-metrics-reviews@google.com.
   <int value="66" label="Product Comparison"/>
   <int value="67" label="Cookies"/>
   <int value="68" label="Plus Address Settings"/>
+  <int value="69" label="Autofill Valuable"/>
+  <int value="70" label="Shared Tab Group Account Data"/>
+  <int value="71" label="SharedComment"/>
+  <int value="72" label="Account Setting"/>
+  <int value="73" label="AI Thread"/>
+  <int value="74" label="Contextual Task"/>
+  <int value="75" label="Autofill Valuable Metadata"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/base/data_type.h:SyncDataTypes) -->
@@ -845,8 +1041,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="(deprecated) CANNOT_DO_WORK"/>
   <int value="2" label="NETWORK_CONNECTION_UNAVAILABLE"/>
   <int value="3" label="NETWORK_IO_ERROR"/>
-  <int value="4" label="SYNC_SERVER_ERROR"/>
-  <int value="5" label="SYNC_AUTH_ERROR"/>
+  <int value="4" label="HTTP_ERROR"/>
+  <int value="5" label="HTTP_AUTH_ERROR"/>
   <int value="6" label="(deprecated) SERVER_RETURN_INVALID_CREDENTIAL"/>
   <int value="7" label="SERVER_RETURN_UNKNOWN_ERROR"/>
   <int value="8" label="SERVER_RETURN_THROTTLED"/>
@@ -855,7 +1051,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="(deprecated) SERVER_RETURN_CLEAR_PENDING"/>
   <int value="12" label="SERVER_RETURN_NOT_MY_BIRTHDAY"/>
   <int value="13" label="SERVER_RETURN_CONFLICT"/>
-  <int value="14" label="SERVER_RESPONSE_VALIDATION_FAILED"/>
+  <int value="14" label="PROTOCOL_VIOLATION_ERROR"/>
   <int value="15" label="SERVER_RETURN_DISABLED_BY_ADMIN"/>
   <int value="16" label="(deprecated) SERVER_RETURN_USER_ROLLBACK"/>
   <int value="17" label="(deprecated) SERVER_RETURN_PARTIAL_FAILURE"/>
@@ -864,6 +1060,7 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="(deprecated) DATATYPE_TRIGGERED_RETRY"/>
   <int value="21" label="(deprecated) SERVER_MORE_TO_DOWNLOAD"/>
   <int value="22" label="SYNCER_OK"/>
+  <int value="23" label="SERVER_RETURN_INVALID_MESSAGE"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/engine/syncer.h:SyncerErrorValues) -->
@@ -879,6 +1076,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Sync settings not confirmed"/>
   <int value="6" label="Sync needs trusted vault key"/>
   <int value="7" label="Sync trusted vault recoverability degraded"/>
+  <int value="8" label="Bookmarks limit exceeded"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/settings/model/sync/utils/sync_util.mm:SyncErrorInfobarTypes) -->
@@ -936,9 +1134,11 @@ chromium-metrics-reviews@google.com.
 
 <enum name="SyncFeatureStatusForSyncToSigninMigration">
   <int value="0" label="Undefined"/>
-  <int value="1" label="Disabled or paused"/>
+  <int value="1" label="(obsolete) Disabled or Paused"/>
   <int value="2" label="Initializing"/>
   <int value="3" label="Active"/>
+  <int value="4" label="Paused"/>
+  <int value="5" label="Disabled"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/service/sync_feature_status_for_migrations_recorder.h:SyncFeatureStatusForSyncToSigninMigration) -->
@@ -957,7 +1157,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="NEW_CLIENT"/>
   <int value="10" label="RECONFIGURATION"/>
   <int value="12" label="GU_TRIGGER"/>
-  <int value="13" label="RETRY"/>
+  <int value="13" label="(deprecated) RETRY"/>
   <int value="14" label="PROGRAMMATIC"/>
 </enum>
 
@@ -987,19 +1187,6 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(/components/history/core/browser/sync/history_sync_bridge.cc:SyncHistoryDatabaseError) -->
-
-<!-- LINT.IfChange(SyncHistorySpecificsError) -->
-
-<enum name="SyncHistorySpecificsError">
-  <int value="0"
-      label="Missing required fields (visit time, originator cache GUID, or
-             redirect entries)"/>
-  <int value="1" label="Too old (already expired)"/>
-  <int value="2" label="Too new (too far in the future)"/>
-  <int value="3" label="Unwanted URL (e.g. file: or chrome:)"/>
-</enum>
-
-<!-- LINT.ThenChange(/components/history/core/browser/sync/history_sync_bridge.cc:SyncHistorySpecificsError) -->
 
 <!-- LINT.IfChange(SyncIncomingInvalidationStatus) -->
 
@@ -1038,6 +1225,212 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Unknown reason"/>
 </enum>
 
+<!-- LINT.IfChange(SyncMetadataConsistency) -->
+
+<enum name="SyncMetadataConsistency">
+  <int value="0" label="Metadata consistent"/>
+  <int value="1" label="Cache guid mismatch"/>
+  <int value="2" label="Data type id mismatch"/>
+  <int value="3" label="Empty persisted authenticated gaia id"/>
+  <int value="4" label="Authenticated gaia id mismatch"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/model/client_tag_based_data_type_processor.cc:SyncMetadataConsistency) -->
+
+<!-- LINT.IfChange(SyncModelError) -->
+
+<enum name="SyncModelError">
+  <summary>Specific error types encountered by the sync data types.</summary>
+  <int value="0" label="(Obsolete) kUnspecified"/>
+  <int value="1" label="kPasswordDbInitFailed"/>
+  <int value="2" label="kPasswordMergeDecryptionFailed"/>
+  <int value="3" label="kPasswordMergeUpdateFailed"/>
+  <int value="4" label="kPasswordIncrementalAddFailed"/>
+  <int value="5" label="kPasswordCleanupDbFailed"/>
+  <int value="6" label="kPasswordMergeReadFromDbFailed"/>
+  <int value="7" label="kPasswordMergeReadAfterCleanupFailed"/>
+  <int value="8" label="kPasswordCommitReadFailed"/>
+  <int value="9" label="kPasswordDebugReadFailed"/>
+  <int value="10" label="kPasswordMergeAddFailed"/>
+  <int value="11" label="kPasswordCleanupDecryptionFailed"/>
+  <int value="12" label="kPasswordIncrementalUpdateFailed"/>
+  <int value="13" label="kAppListSyncableServiceNotStarted"/>
+  <int value="14" label="kArcPackageSyncableServiceNotStarted"/>
+  <int value="15" label="kAutocompleteFailedToClearMetadataForExpiredEntry"/>
+  <int value="16" label="kContactInfoFailedToAddProfileToTable"/>
+  <int value="17" label="kContactInfoFailedToDeleteIncompleteHwProfile"/>
+  <int value="18" label="kContactInfoFailedToDeleteProfileForRemoteDelete"/>
+  <int value="19" label="kContactInfoFailedToDeleteProfileFromTable"/>
+  <int value="20" label="kContactInfoFailedToReadMetadataFromWebDatabase"/>
+  <int value="21" label="kContactInfoFailedToUpdateProfileInTable"/>
+  <int value="22" label="kAutofillProfileFailedToAddToDatabase"/>
+  <int value="23" label="kAutofillProfileFailedToAddProfileForSync"/>
+  <int value="24" label="kAutofillProfileFailedToDeleteFromDatabase"/>
+  <int value="25" label="kAutofillProfileFailedToDeleteProfileForSync"/>
+  <int value="26" label="kAutofillProfileFailedToLoadDatabase"/>
+  <int value="27" label="kAutofillProfileFailedToLoadEntriesForCommit"/>
+  <int value="28" label="kAutofillProfileFailedToLoadEntriesForDebugging"/>
+  <int value="29" label="kAutofillProfileFailedToLoadMetadata"/>
+  <int value="30" label="kAutofillProfileFailedToReadDatabase"/>
+  <int value="31" label="kAutofillProfileFailedToReadLocalDataForDeletion"/>
+  <int value="32" label="kAutofillProfileFailedToReadLocalDataForInitialSync"/>
+  <int value="33"
+      label="kAutofillProfileFailedToReadLocalDataForInitialSyncMerge"/>
+  <int value="34" label="kAutofillProfileFailedToReadLocalDataForRemoteUpdate"/>
+  <int value="35" label="kAutofillProfileFailedToUpdateDatabase"/>
+  <int value="36" label="kAutofillProfileFailedToUpdateProfileForSync"/>
+  <int value="37" label="kAutofillValuableFailedToLoadDatabase"/>
+  <int value="38" label="kAutofillValuableFailedToLoadMetadata"/>
+  <int value="39" label="kAutofillValuableFailedToReadMetadata"/>
+  <int value="40" label="kAutofillValuableFailedToWriteToDatabase"/>
+  <int value="41" label="kAutofillValuableUnsupportedActionType"/>
+  <int value="42" label="kAutofillWalletFailedToLoadBenefitsFromTable"/>
+  <int value="43" label="kAutofillWalletFailedToLoadDatabase"/>
+  <int value="44" label="kAutofillWalletFailedToLoadEntriesFromTable"/>
+  <int value="45" label="kAutofillWalletFailedToReadMetadata"/>
+  <int value="46" label="kWalletCredentialFailedToAddDatabase"/>
+  <int value="47" label="kWalletCredentialFailedToDeleteFromDatabase"/>
+  <int value="48" label="kWalletCredentialFailedToDeleteOnDisable"/>
+  <int value="49" label="kWalletCredentialFailedToLoadDatabase"/>
+  <int value="50" label="kWalletCredentialFailedToReadMetadata"/>
+  <int value="51" label="kWalletCredentialFailedToUpdateDatabase"/>
+  <int value="52" label="kWalletMetadataFailedToLoadDatabase"/>
+  <int value="53" label="kWalletMetadataFailedToReadData"/>
+  <int value="54" label="kWalletMetadataFailedToReadMetadata"/>
+  <int value="55" label="kAutofillWalletOfferFailedToLoadFromTable"/>
+  <int value="56" label="kAutofillWalletOfferFailedToLoadTable"/>
+  <int value="57" label="kAutofillWalletOfferFailedToReadMetadata"/>
+  <int value="58"
+      label="kAutofillWalletUsageFailedToAddOrUpdateVirtualCardUsageData"/>
+  <int value="59"
+      label="kAutofillWalletUsageFailedToDeleteAllVirtualCardUsageData"/>
+  <int value="60"
+      label="kAutofillWalletUsageFailedToDeleteVirtualCardUsageData"/>
+  <int value="61" label="kAutofillWalletUsageFailedToLoadAutofillTable"/>
+  <int value="62" label="kAutofillWalletUsageFailedToLoadData"/>
+  <int value="63" label="kAutofillWalletUsageFailedToReadMetadata"/>
+  <int value="64" label="kBookmarksInitialMergePermanentEntitiesMissing"/>
+  <int value="65" label="kBookmarksLocalCountExceededLimitNudgeForCommit"/>
+  <int value="66" label="kBookmarksPermanentEntitiesMissing"/>
+  <int value="67" label="kBookmarksRemoteCountExceededLimitInitialMerge"/>
+  <int value="68" label="kBookmarksRemoteCountExceededLimitLastInitialMerge"/>
+  <int value="69" label="kBookmarksTestError"/>
+  <int value="70" label="kCollaborationGroupCommitFailed"/>
+  <int value="71" label="kCollaborationGroupDeserializeDataFailed"/>
+  <int value="72" label="kCollaborationGroupReadAllDataFailed"/>
+  <int value="73" label="kCollaborationGroupReadAllMetadataFailed"/>
+  <int value="74" label="kCollaborationGroupStoreCreationFailed"/>
+  <int value="75" label="kDataTypeStoreBackendDbIterationFailed"/>
+  <int value="76" label="kDataTypeStoreBackendDbOpenFailed"/>
+  <int value="77" label="kDataTypeStoreBackendDbReadFailed"/>
+  <int value="78" label="kDataTypeStoreBackendDbWriteFailed"/>
+  <int value="79" label="kDataTypeStoreBackendDeletePrefixFailed"/>
+  <int value="80" label="kDataTypeStoreBackendInvalidSchemaDescriptor"/>
+  <int value="81" label="kDataTypeStoreBackendSchemaUpgradeFailed"/>
+  <int value="82" label="kDataTypeStoreBackendSchemaVersionTooHigh"/>
+  <int value="83" label="kDataTypeStoreBackendWriteModificationsFailed"/>
+  <int value="84" label="kDataTypeStoreFailedToDeserializeDataTypeState"/>
+  <int value="85" label="kDataTypeStoreFailedToDeserializeEntityMetadata"/>
+  <int value="86" label="kDataTypeStoreServiceBackendInitializationFailed"/>
+  <int value="87" label="kProcessorNonEmptyUpdateWithoutVersionWatermark"/>
+  <int value="88" label="kProcessorTestError"/>
+  <int value="89" label="kProcessorVersionWatermarkWithIncrementalUpdates"/>
+  <int value="90" label="kDeviceInfoCommitFailed"/>
+  <int value="91" label="kDeviceInfoDeserializeSpecificsFailed"/>
+  <int value="92" label="kDeviceInfoReadDataFailed"/>
+  <int value="93" label="kDeviceInfoReadMetadataFailed"/>
+  <int value="94" label="kDeviceInfoStoreCreationFailed"/>
+  <int value="95" label="kHistoryDatabaseError"/>
+  <int value="96" label="kHistoryFailedToLoadMetadata"/>
+  <int value="97" label="kHistoryFailedToLoadMetadataForDebugging"/>
+  <int value="98" label="kHistoryDeleteDirectiveSyncDisabled"/>
+  <int value="99" label="kHistoryDeleteDirectiveSyncDisabledOnLocalCreation"/>
+  <int value="100" label="kHistoryDeleteDirectiveSyncDisabledOnRemoteChange"/>
+  <int value="101" label="kModelLoadManagerDataTypeInFailedState"/>
+  <int value="102" label="kNigoriEmptyEntityDataDuringInitialSync"/>
+  <int value="103" label="kNigoriInvalidEncryptedTypesTransition"/>
+  <int value="104" label="kNigoriInvalidPassphraseTransition"/>
+  <int value="105" label="kNigoriInvalidSpecifics"/>
+  <int value="106" label="kNigoriMissingKeystoreKeysDuringInitialSync"/>
+  <int value="107" label="kNigoriMissingLastTrustedVaultKeyInKeybag"/>
+  <int value="108" label="kNigoriMissingNewDefaultKeyInKeybag"/>
+  <int value="121" label="kPlusAddressAddOrUpdateProfileFailed"/>
+  <int value="122" label="kPlusAddressClearProfilesFailed"/>
+  <int value="123" label="kPlusAddressDatabaseInitFailed"/>
+  <int value="124" label="kPlusAddressMetadataReadFailed"/>
+  <int value="125" label="kPlusAddressRemoveProfileFailed"/>
+  <int value="126" label="kPlusAddressSettingFailedToParseSpecifics"/>
+  <int value="127" label="kPlusAddressTransactionBeginFailedOnDisableSync"/>
+  <int value="128" label="kPlusAddressTransactionBeginFailedOnIncrementalSync"/>
+  <int value="129" label="kPlusAddressTransactionCommitFailedOnDisableSync"/>
+  <int value="130"
+      label="kPlusAddressTransactionCommitFailedOnIncrementalSync"/>
+  <int value="131" label="(Obsolete) kPowerBookmarkDatabaseCommitFailed"/>
+  <int value="132" label="(Obsolete) kPowerBookmarkDatabaseInitFailed"/>
+  <int value="133" label="(Obsolete) kPowerBookmarkFailedToBeginTransaction"/>
+  <int value="134" label="(Obsolete) kPowerBookmarkFailedToCommitTransaction"/>
+  <int value="135" label="(Obsolete) kPowerBookmarkFailedToDeleteLocalPowers"/>
+  <int value="136" label="(Obsolete) kPowerBookmarkFailedToLoadMetadata"/>
+  <int value="137" label="(Obsolete) kPowerBookmarkFailedToMergeLocalPowers"/>
+  <int value="138" label="kPrefFailedToDeserializeValue"/>
+  <int value="139" label="kPrefModelsNotAssociated"/>
+  <int value="140" label="kPrintersFailedToDeserializeSpecifics"/>
+  <int value="141" label="kProfileAuthServersFailedToDeserializeSpecifics"/>
+  <int value="142" label="kReadingListStorageLoadFailed"/>
+  <int value="143" label="kSavedTabGroupFailedToReadMetadata"/>
+  <int value="144" label="kSavedTabGroupFailedToSaveMetadata"/>
+  <int value="145" label="kSharedTabGroupDataDatabaseSaveFailed"/>
+  <int value="146" label="kSharedTabGroupDuplicateTabGuid"/>
+  <int value="147" label="kSharedTabGroupUnexpectedCollaborationIdForGroup"/>
+  <int value="148" label="kSharedTabGroupUnexpectedCollaborationIdForTab"/>
+  <int value="149" label="kSearchEngineDeleteNonExistent"/>
+  <int value="150" label="kSearchEngineLocalDbLoadFailed"/>
+  <int value="151" label="kSearchEngineModelsNotAssociated"/>
+  <int value="152" label="kSendTabToSelfFailedToDeserializeSpecifics"/>
+  <int value="153" label="kSettingsFailedToApplySyncDelete"/>
+  <int value="154" label="kSettingsFailedToApplySyncUpdate"/>
+  <int value="155" label="kSettingsFailedToGetLocalSettingForKey"/>
+  <int value="156" label="kSettingsFailedToGetLocalSettings"/>
+  <int value="157" label="kSettingsFailedToApplySyncAdd"/>
+  <int value="158" label="kSettingsSyncInactive"/>
+  <int value="159" label="kSpellcheckCustomDictionaryUpdateFailed"/>
+  <int value="160" label="kSyncableServiceBasedBridgeFailedToDeserializeData"/>
+  <int value="161" label="kSyncMetadataStoreChangeListInvalidStore"/>
+  <int value="162" label="kSyncMetadataStoreClearDataTypeStateFailed"/>
+  <int value="163" label="kSyncMetadataStoreClearEntityMetadataFailed"/>
+  <int value="164" label="kSyncMetadataStoreUpdateDataTypeStateFailed"/>
+  <int value="165" label="kSyncMetadataStoreUpdateEntityMetadataFailed"/>
+  <int value="166" label="kThemeInvalidChangeType"/>
+  <int value="167" label="kThemeMissingSpecifics"/>
+  <int value="168" label="kThemeSyncableServiceNotStarted"/>
+  <int value="169" label="kThemeTooManyChanges"/>
+  <int value="170" label="kThemeTooManySpecifics"/>
+  <int value="171" label="kWorkspaceDeskFailedToDeserializeSpecifics"/>
+  <int value="172" label="kWorkspaceDeskFailedToParseUuid"/>
+  <int value="173" label="kBookmarksLocalCountExceededLimitOnSyncStart"/>
+  <int value="174" label="kBookmarksLocalCountExceededLimitOnUpdateReceived"/>
+  <int value="175" label="kAutocompleteFailedToDeleteEntriesFromDatabase"/>
+  <int value="176" label="kAutocompleteFailedToLoadAutofillWebDatabase"/>
+  <int value="177" label="kAutocompleteFailedToLoadEntriesFromDatabase"/>
+  <int value="178" label="kAutocompleteFailedToParseStorageKey"/>
+  <int value="179" label="kAutocompleteFailedToReadEntryFromDatabase"/>
+  <int value="180" label="kAutocompleteFailedToReadFromDatabase"/>
+  <int value="181" label="kAutocompleteFailedToReadMetadataFromWebDatabase"/>
+  <int value="182" label="kAutocompleteFailedToUpdateEntriesInDatabase"/>
+  <int value="183" label="kContactInfoFailedToDeleteProfilesFromTable"/>
+  <int value="184" label="kContactInfoFailedToDeleteProfilesOnDisableSync"/>
+  <int value="185" label="kContactInfoFailedToLoadAutofillWebDatabase"/>
+  <int value="186" label="kContactInfoFailedToLoadProfilesFromTable"/>
+  <int value="187" label="kGenericTestError"/>
+  <int value="188" label="kAutofillValuableMetadataFailedToLoadDatabase"/>
+  <int value="189"
+      label="kAutofillValuableMetadataTransactionCommitFailedOnIncrementalSync"/>
+  <int value="190" label="kAutofillValuableMetadataFailedToLoadMetadata"/>
+  <int value="191" label="kDataTypeControllerInFailedState"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/model/model_error.h:Type) -->
+
 <!-- LINT.IfChange(SyncPassphraseType) -->
 
 <enum name="SyncPassphraseType">
@@ -1069,7 +1462,7 @@ chromium-metrics-reviews@google.com.
 <enum name="SyncPlaceholderTabResyncResult">
   <int value="0" label="PLACEHOLDER_TAB_FOUND"/>
   <int value="1" label="PLACEHOLDER_TAB_RESYNCED"/>
-  <int value="2" label="PLACEHOLDER_TAB_NOT_SYNCED"/>
+  <int value="2" label="(Obsolete) PLACEHOLDER_TAB_NOT_SYNCED"/>
   <int value="3" label="PLACEHOLDER_TAB_RESYNC_FAILED"/>
 </enum>
 
@@ -1084,7 +1477,7 @@ chromium-metrics-reviews@google.com.
   <int value="3"
       label="(Obsolete) Requested pref change. Removed 04/2024 (and not used
              for some time before that)"/>
-  <int value="4" label="Stop and clear"/>
+  <int value="4" label="Upgrade client error"/>
   <int value="5"
       label="(Obsolete) Set sync allowed by platform. Removed 01/2022."/>
   <int value="6" label="Credentials updated"/>
@@ -1095,6 +1488,18 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/service/sync_service_impl.h:SyncResetEngineReason) -->
+
+<!-- LINT.IfChange(SyncSetupIncompleteMigrationDecision) -->
+
+<enum name="SyncSetupIncompleteMigrationDecision">
+  <int value="0" label="Migrate"/>
+  <int value="1" label="Don't migrate, not signed in"/>
+  <int value="2" label="Don't migrate, not syncing"/>
+  <int value="3" label="Don't migrate, sync setup complete"/>
+  <int value="4" label="Don't migrate, migration feature flag disabled"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/browser_sync/sync_to_signin_migration.cc:SyncSetupIncompleteMigrationDecision) -->
 
 <!-- LINT.IfChange(SyncSharingMessageCommitErrorCode) -->
 
@@ -1138,9 +1543,11 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Don't migrate, migration feature flag disabled"/>
   <int value="6" label="Undo the migration"/>
   <int value="7" label="Don't undo: already completed or not necessary"/>
+  <int value="8" label="Migrate forced"/>
+  <int value="9" label="Don't migrate, auth error"/>
 </enum>
 
-<!-- LINT.ThenChange(/components/browser_sync/sync_to_signin_migration.cc:SyncToSigninMigrationDecisionOverall) -->
+<!-- LINT.ThenChange(/components/browser_sync/sync_to_signin_migration.cc:SyncToSigninMigrationDecision) -->
 
 <!-- LINT.IfChange(SyncToSigninMigrationReadingListStep) -->
 
@@ -1169,6 +1576,32 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync_user_events/user_event_service_impl.cc:SyncUserEventType) -->
 
+<!-- LINT.IfChange(ThemePrefInMigration) -->
+
+<enum name="ThemePrefInMigration">
+  <int value="0" label="kBrowserColorScheme"/>
+  <int value="1" label="kUserColor"/>
+  <int value="2" label="kBrowserColorVariant"/>
+  <int value="3" label="kGrayscaleThemeEnabled"/>
+  <int value="4" label="kNtpCustomBackgroundDict"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/themes/theme_syncable_service.h:ThemePrefInMigration) -->
+
+<!-- LINT.IfChange(TriggerRefreshSource) -->
+
+<enum name="TriggerRefreshSource">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Browser Tabs Model Provider"/>
+  <int value="2" label="Android Sync Service Bridge"/>
+  <int value="3" label="Sync Invalidations Service"/>
+  <int value="4" label="Local Sync"/>
+  <int value="5" label="Sync Internals"/>
+  <int value="6" label="Foreign Session Helper"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/service/sync_service.h:TriggerRefreshSource) -->
+
 <!-- LINT.IfChange(TrustedVaultDegradedRecoverabilityValue) -->
 
 <enum name="TrustedVaultDegradedRecoverabilityValue">
@@ -1179,82 +1612,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/trusted_vault/proto/local_trusted_vault.proto:TrustedVaultDegradedRecoverabilityValue) -->
 
-<!-- LINT.IfChange(TrustedVaultDeviceRegistrationOutcome) -->
-
-<enum name="TrustedVaultDeviceRegistrationOutcome">
-  <int value="0" label="Success"/>
-  <int value="1" label="Already registered"/>
-  <int value="2" label="Local data obsolete"/>
-  <int value="3" label="Transient access token fetching error"/>
-  <int value="4" label="Persistent access token fetching error"/>
-  <int value="5" label="Primary account changed access token fetching error"/>
-  <int value="6" label="Network error"/>
-  <int value="7" label="Other error"/>
-</enum>
-
-<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultDeviceRegistrationOutcome) -->
-
-<!-- LINT.IfChange(TrustedVaultDeviceRegistrationState) -->
-
-<enum name="TrustedVaultDeviceRegistrationState">
-  <int value="0" label="Already registered V0"/>
-  <int value="1" label="Local keys are stale"/>
-  <int value="2" label="Throttled client side"/>
-  <int value="3" label="Attempting registration with newly generated keys"/>
-  <int value="4" label="Attempting registration with preexisting keys"/>
-  <int value="5"
-      label="Attempting registration while having persistent authentication
-             error (deprecated)"/>
-  <int value="6" label="Already registered V1"/>
-</enum>
-
-<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultDeviceRegistrationState) -->
-
-<!-- LINT.IfChange(TrustedVaultDownloadKeysStatus) -->
-
-<enum name="TrustedVaultDownloadKeysStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Member not found or corrupted (deprecated)"/>
-  <int value="2" label="No new keys"/>
-  <int value="3" label="Key proof verification failed"/>
-  <int value="4" label="Access token fetching failed"/>
-  <int value="5" label="Other error"/>
-  <int value="6" label="Member not found"/>
-  <int value="7" label="Membership not found"/>
-  <int value="8" label="Membership corrupted"/>
-  <int value="9" label="Membership empty"/>
-  <int value="10" label="No primary account"/>
-  <int value="11" label="Device not registered"/>
-  <int value="12" label="Throttled client side"/>
-  <int value="13" label="Corrupted local device registration"/>
-  <int value="14" label="Aborted"/>
-  <int value="15" label="Network error"/>
-</enum>
-
-<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultDownloadKeysStatus) -->
-
-<!-- LINT.IfChange(TrustedVaultFetchKeysAttempt) -->
-
-<enum name="TrustedVaultFetchKeysAttempt">
-  <int value="0" label="First attempt"/>
-  <int value="1" label="Second attempt"/>
-</enum>
-
-<!-- LINT.ThenChange(/components/sync/service/sync_service_crypto.cc:TrustedVaultFetchKeysAttempt) -->
-
-<!-- LINT.IfChange(TrustedVaultFileReadStatus) -->
-
-<enum name="TrustedVaultFileReadStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="File not found"/>
-  <int value="2" label="File read failed"/>
-  <int value="3" label="MD5 digest mismatch"/>
-  <int value="4" label="File proto deserialization failed"/>
-  <int value="5" label="Data proto deserialization failed"/>
-</enum>
-
-<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultFileReadStatus) -->
-
 <!-- LINT.IfChange(TrustedVaultHintDegradedRecoverabilityChangedReason) -->
 
 <enum name="TrustedVaultHintDegradedRecoverabilityChangedReason">
@@ -1264,16 +1621,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultHintDegradedRecoverabilityChangedReason) -->
 
-<!-- LINT.IfChange(TrustedVaultRecoverabilityStatus) -->
-
-<enum name="TrustedVaultRecoverabilityStatus">
-  <int value="0" label="Not degraded"/>
-  <int value="1" label="Degraded"/>
-  <int value="2" label="Error"/>
-</enum>
-
-<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_connection.h:TrustedVaultRecoverabilityStatus) -->
-
 <!-- LINT.IfChange(TrustedVaultUserActionTrigger) -->
 
 <enum name="TrustedVaultUserActionTrigger">
@@ -1282,9 +1629,30 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="OS-level notification"/>
   <int value="3" label="New Tab Page Infobar"/>
   <int value="4" label="Password Manager Error Message"/>
+  <int value="5" label="Account menu"/>
+  <int value="6" label="Password Manager Settings"/>
+  <int value="7" label="Password Manager keyboard accessory"/>
 </enum>
 
-<!-- LINT.ThenChange(/components/sync/service/sync_service_utils.h:TrustedVaultRecoverabilityStatus) -->
+<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_client.h:TrustedVaultUserActionTrigger) -->
+
+<!-- LINT.IfChange(UserActionableError) -->
+
+<enum name="UserActionableError">
+  <int value="1" label="Sign in needs update"/>
+  <int value="2" label="Needs passphrase"/>
+  <int value="3" label="Needs trusted vault key for passwords"/>
+  <int value="4" label="Needs trusted vault key for everything"/>
+  <int value="5" label="Trusted vault recoverability degraded for passwords"/>
+  <int value="6" label="Trusted vault recoverability degraded for everything"/>
+  <int value="7" label="Needs settings confirmation"/>
+  <int value="8" label="Unrecoverable error"/>
+  <int value="9" label="Needs UPM backend upgrade"/>
+  <int value="10" label="Needs client upgrade"/>
+  <int value="11" label="Bookmarks limit exceeded"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/service/sync_service.h:UserActionableError) -->
 
 </enums>
 

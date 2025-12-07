@@ -18,7 +18,7 @@ static_library("common") {
   ]
   deps = [
     ":mojo_bindings",
-    "//content/public/common:common",
+    "//content/public/common",
     "//extensions/buildflags",
     "//ipc",
     "//ipc:message_support",
@@ -35,7 +35,7 @@ static_library("common") {
 
 mojom("mojo_bindings") {
   sources = [
-    "prerender_canceler.mojom",
+    "no_state_prefetch_canceler.mojom",
     "render_frame_prerender_messages.mojom",
   ]
   deps = [ "//url/mojom:url_mojom_gurl" ]
@@ -51,6 +51,6 @@ source_set("unit_tests") {
     "//components/no_state_prefetch/common",
     "//content/test:test_support",
     "//testing/gtest",
-    "//url:url",
+    "//url",
   ]
 }

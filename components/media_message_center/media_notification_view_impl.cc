@@ -4,6 +4,7 @@
 
 #include "components/media_message_center/media_notification_view_impl.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -116,6 +117,10 @@ MediaNotificationViewImpl::MediaNotificationViewImpl(
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
 
+  GetViewAccessibility().SetRole(ax::mojom::Role::kListItem);
+  GetViewAccessibility().SetRoleDescription(l10n_util::GetStringUTF8(
+      IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACCESSIBLE_NAME));
+
   if (is_cros_)
     CreateCrOSHeaderRow(std::move(header_row_controls_view));
   else
@@ -124,6 +129,13 @@ MediaNotificationViewImpl::MediaNotificationViewImpl(
   // |main_row_| holds the main content of the notification.
   auto main_row = std::make_unique<views::View>();
   main_row_ = AddChildView(std::move(main_row));
+
+  // TODO(crbug.com/40232718): `main_row_` sets the flex property in
+  // `UpdateViewForExpandedState`, which means it will always satisfy the
+  // constraints passed in during the CalculatePreferredSize phase. So we set it
+  // here to not require constraints. If possible, consider removing the
+  // following flex property
+  main_row_->SetLayoutManagerUseConstrainedSpace(false);
 
   // |title_artist_row_| contains the title and artist labels.
   auto title_artist_row = std::make_unique<views::View>();
@@ -333,19 +345,6 @@ void MediaNotificationViewImpl::SetForcedExpandedState(
   UpdateViewForExpandedState();
 }
 
-void MediaNotificationViewImpl::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kListItem;
-  node_data->AddStringAttribute(
-      ax::mojom::StringAttribute::kRoleDescription,
-      l10n_util::GetStringUTF8(
-          IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACCESSIBLE_NAME));
-
-  if (!accessible_name_.empty()) {
-    node_data->SetNameChecked(accessible_name_);
-  }
-}
-
 void MediaNotificationViewImpl::UpdateWithMediaSessionInfo(
     const media_session::mojom::MediaSessionInfoPtr& session_info) {
   bool playing =
@@ -392,8 +391,7 @@ void MediaNotificationViewImpl::UpdateWithMediaMetadata(
   title_label_->SetText(metadata.title);
   artist_label_->SetText(metadata.artist);
 
-  accessible_name_ = GetAccessibleNameFromMetadata(metadata);
-  GetViewAccessibility().SetName(accessible_name_);
+  GetViewAccessibility().SetName(GetAccessibleNameFromMetadata(metadata));
 
   // The title label should only be a11y-focusable when there is text to be
   // read.
@@ -487,7 +485,8 @@ views::Button* MediaNotificationViewImpl::GetHeaderRowForTesting() const {
   return header_row_;
 }
 
-std::u16string MediaNotificationViewImpl::GetSourceTitleForTesting() const {
+std::u16string_view MediaNotificationViewImpl::GetSourceTitleForTesting()
+    const {
   return header_row_ ? header_row_->app_name_for_testing()  // IN-TEST
                      : cros_header_label_->GetText();
 }

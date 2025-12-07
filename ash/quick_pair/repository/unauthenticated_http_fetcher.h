@@ -36,7 +36,7 @@ class UnauthenticatedHttpFetcher : public HttpFetcher {
  private:
   void OnComplete(std::unique_ptr<network::SimpleURLLoader> simple_loader,
                   FetchCompleteCallback success_callback,
-                  std::unique_ptr<std::string> response_body);
+                  std::optional<std::string> response_body);
 
   net::NetworkTrafficAnnotationTag traffic_annotation_;
 

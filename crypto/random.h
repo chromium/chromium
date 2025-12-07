@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -20,6 +21,16 @@ CRYPTO_EXPORT void RandBytes(base::span<uint8_t> bytes);
 // Returns a vector of `length` bytes filled with cryptographically-secure
 // random bits.
 CRYPTO_EXPORT std::vector<uint8_t> RandBytesAsVector(size_t length);
+
+// Returns an array of `N` bytes filled with cryptographically-secure random
+// bits. This is useful for analyzing static nonces and similar.
+template <size_t N>
+std::array<uint8_t, N> RandBytesAsArray() {
+  std::array<uint8_t, N> result;
+  RandBytes(result);
+  return result;
 }
+
+}  // namespace crypto
 
 #endif  // CRYPTO_RANDOM_H_

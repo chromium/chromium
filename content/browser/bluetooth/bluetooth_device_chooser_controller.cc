@@ -325,6 +325,10 @@ void BluetoothDeviceChooserController::GetDevice(
     return;
   }
 
+  CheckAdapterAndStartGettingDevices();
+}
+
+void BluetoothDeviceChooserController::CheckAdapterAndStartGettingDevices() {
   if (adapter_->GetOsPermissionStatus() ==
       device::BluetoothAdapter::PermissionStatus::kDenied) {
     chooser_->SetAdapterPresence(
@@ -412,19 +416,19 @@ int BluetoothDeviceChooserController::CalculateSignalStrengthLevel(
   RecordRSSISignalStrength(rssi);
 
   if (rssi < k20thPercentileRSSI) {
-    RecordRSSISignalStrengthLevel(content::UMARSSISignalStrengthLevel::LEVEL_0);
+    RecordRSSISignalStrengthLevel(content::UMARSSISignalStrengthLevel::kLevel0);
     return 0;
   } else if (rssi < k40thPercentileRSSI) {
-    RecordRSSISignalStrengthLevel(content::UMARSSISignalStrengthLevel::LEVEL_1);
+    RecordRSSISignalStrengthLevel(content::UMARSSISignalStrengthLevel::kLevel1);
     return 1;
   } else if (rssi < k60thPercentileRSSI) {
-    RecordRSSISignalStrengthLevel(content::UMARSSISignalStrengthLevel::LEVEL_2);
+    RecordRSSISignalStrengthLevel(content::UMARSSISignalStrengthLevel::kLevel2);
     return 2;
   } else if (rssi < k80thPercentileRSSI) {
-    RecordRSSISignalStrengthLevel(content::UMARSSISignalStrengthLevel::LEVEL_3);
+    RecordRSSISignalStrengthLevel(content::UMARSSISignalStrengthLevel::kLevel3);
     return 3;
   } else {
-    RecordRSSISignalStrengthLevel(content::UMARSSISignalStrengthLevel::LEVEL_4);
+    RecordRSSISignalStrengthLevel(content::UMARSSISignalStrengthLevel::kLevel4);
     return 4;
   }
 }
@@ -507,9 +511,8 @@ void BluetoothDeviceChooserController::OnBluetoothChooserEvent(
   switch (event) {
     case BluetoothChooserEvent::RESCAN:
       device_ids_.clear();
-      PopulateConnectedDevices();
       DCHECK(chooser_);
-      StartDeviceDiscovery();
+      CheckAdapterAndStartGettingDevices();
       // No need to close the chooser so we return.
       return;
     case BluetoothChooserEvent::DENIED_PERMISSION:

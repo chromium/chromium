@@ -4,6 +4,7 @@
 
 #include "components/omnibox/browser/omnibox_log.h"
 
+#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 
 OmniboxLog::OmniboxLog(
@@ -23,7 +24,9 @@ OmniboxLog::OmniboxLog(
     base::TimeDelta elapsed_time_since_last_change_to_default_match,
     const AutocompleteResult& result,
     const GURL& final_destination_url,
-    bool is_incognito)
+    bool is_incognito,
+    bool is_zero_suggest,
+    std::optional<SessionData> session)
     : text(text),
       just_deleted_text(just_deleted_text),
       input_type(input_type),
@@ -43,6 +46,8 @@ OmniboxLog::OmniboxLog(
       result(result),
       final_destination_url(final_destination_url),
       is_incognito(is_incognito),
+      is_zero_suggest(is_zero_suggest),
+      session(session),
       steady_state_omnibox_position(
           metrics::OmniboxEventProto::UNKNOWN_POSITION),
       ukm_source_id(ukm::kInvalidSourceId) {
@@ -51,4 +56,4 @@ OmniboxLog::OmniboxLog(
          "OmniboxLog::selection.";
 }
 
-OmniboxLog::~OmniboxLog() {}
+OmniboxLog::~OmniboxLog() = default;

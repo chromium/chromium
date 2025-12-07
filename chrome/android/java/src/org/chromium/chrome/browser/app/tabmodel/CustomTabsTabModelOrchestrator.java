@@ -4,46 +4,50 @@
 
 package org.chromium.chrome.browser.app.tabmodel;
 
+import android.content.Context;
+
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.tabmodel.TabModelFilterFactory;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
-
-import javax.inject.Inject;
+import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl;
 
 /**
  * Glue-level class that manages lifetime of root .tabmodel objects: {@link TabPersistentStore} and
  * {@link TabModelSelectorImpl} for custom tabs.
  */
-@ActivityScope
+@NullMarked
 public class CustomTabsTabModelOrchestrator extends TabModelOrchestrator {
-    @Inject
     public CustomTabsTabModelOrchestrator() {}
 
     /** Creates the TabModelSelector and the TabPersistentStore. */
     public void createTabModels(
+            Context context,
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             TabCreatorManager tabCreatorManager,
-            TabModelFilterFactory tabModelFilterFactory,
             TabPersistencePolicy persistencePolicy,
             @ActivityType int activityType,
-            AsyncTabParamsManager asyncTabParamsManager) {
+            AsyncTabParamsManager asyncTabParamsManager,
+            CipherFactory cipherFactory) {
         // Instantiate TabModelSelectorImpl
         NextTabPolicySupplier nextTabPolicySupplier = () -> NextTabPolicy.LOCATIONAL;
         mTabModelSelector =
                 new TabModelSelectorImpl(
+                        context,
+                        /* modalDialogManager= */ null,
                         profileProviderSupplier,
                         tabCreatorManager,
-                        tabModelFilterFactory,
                         nextTabPolicySupplier,
+                        /* multiInstanceManager= */ null,
                         asyncTabParamsManager,
                         false,
                         activityType,
@@ -52,12 +56,13 @@ public class CustomTabsTabModelOrchestrator extends TabModelOrchestrator {
         // Instantiate TabPersistentStore
         mTabPersistencePolicy = persistencePolicy;
         mTabPersistentStore =
-                new TabPersistentStore(
-                        TabPersistentStore.CLIENT_TAG_CUSTOM,
+                new TabPersistentStoreImpl(
+                        TabPersistentStoreImpl.CLIENT_TAG_CUSTOM,
                         mTabPersistencePolicy,
                         mTabModelSelector,
                         tabCreatorManager,
-                        TabWindowManagerSingleton.getInstance());
+                        TabWindowManagerSingleton.getInstance(),
+                        cipherFactory);
 
         wireSelectorAndStore();
         markTabModelsInitialized();

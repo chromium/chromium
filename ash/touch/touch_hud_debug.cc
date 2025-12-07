@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/touch/touch_hud_debug.h"
 
 #include <algorithm>
+#include <array>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,6 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -37,24 +35,22 @@
 
 namespace ash {
 
-const int kPointRadius = 20;
-const SkColor kColors[] = {
-    SK_ColorYELLOW,
-    SK_ColorGREEN,
-    SK_ColorRED,
-    SK_ColorBLUE,
-    SK_ColorGRAY,
-    SK_ColorMAGENTA,
-    SK_ColorCYAN,
-    SK_ColorWHITE,
-    SK_ColorBLACK,
-    SkColorSetRGB(0xFF, 0x8C, 0x00),
-    SkColorSetRGB(0x8B, 0x45, 0x13),
-    SkColorSetRGB(0xFF, 0xDE, 0xAD),
-};
-const int kAlpha = 0x60;
-const int kMaxPaths = std::size(kColors);
-const int kReducedScale = 10;
+constexpr int kPointRadius = 20;
+constexpr std::array<SkColor, 12> kColors = {SK_ColorYELLOW,
+                                             SK_ColorGREEN,
+                                             SK_ColorRED,
+                                             SK_ColorBLUE,
+                                             SK_ColorGRAY,
+                                             SK_ColorMAGENTA,
+                                             SK_ColorCYAN,
+                                             SK_ColorWHITE,
+                                             SK_ColorBLACK,
+                                             SkColorSetRGB(0xFF, 0x8C, 0x00),
+                                             SkColorSetRGB(0x8B, 0x45, 0x13),
+                                             SkColorSetRGB(0xFF, 0xDE, 0xAD)};
+constexpr int kAlpha = 0x60;
+constexpr int kMaxPaths = kColors.size();
+constexpr int kReducedScale = 10;
 
 const char* GetTouchEventLabel(ui::EventType type) {
   switch (type) {
@@ -146,7 +142,7 @@ class TouchLog {
     return touch_id_to_trace_index_.at(touch_id);
   }
 
-  const TouchTrace* traces() const { return traces_; }
+  const std::array<TouchTrace, kMaxPaths>& traces() const { return traces_; }
 
  private:
   void StartTrace(const ui::TouchEvent& touch) {
@@ -170,7 +166,7 @@ class TouchLog {
     traces_[trace_index].AddTouchPoint(touch);
   }
 
-  TouchTrace traces_[kMaxPaths];
+  std::array<TouchTrace, kMaxPaths> traces_;
   int next_trace_index_;
 
   std::map<int, int> touch_id_to_trace_index_;
@@ -236,9 +232,8 @@ class TouchHudCanvas : public views::View {
     const gfx::Point& location = point.location;
     SkScalar x = SkIntToScalar(location.x());
     SkScalar y = SkIntToScalar(location.y());
-    SkPoint last;
-    if (!paths_[trace_index].getLastPt(&last) || x != last.x() ||
-        y != last.y()) {
+    std::optional<SkPoint> last = paths_[trace_index].getLastPt();
+    if (!last || x != last->x() || y != last->y()) {
       paths_[trace_index].addCircle(x, y, SkIntToScalar(kPointRadius));
       SchedulePaint();
     }
@@ -250,15 +245,15 @@ class TouchHudCanvas : public views::View {
       if (paths_[i].countPoints() == 0)
         continue;
       flags_.setColor(colors_[i]);
-      canvas->DrawPath(paths_[i], flags_);
+      canvas->DrawPath(paths_[i].snapshot(), flags_);
     }
   }
 
   cc::PaintFlags flags_;
 
   const raw_ref<const TouchLog, DanglingUntriaged> touch_log_;
-  SkPath paths_[kMaxPaths];
-  SkColor colors_[kMaxPaths];
+  std::array<SkPathBuilder, kMaxPaths> paths_;
+  std::array<SkColor, kMaxPaths> colors_;
 
   int scale_;
 };
@@ -277,7 +272,7 @@ TouchHudDebug::TouchHudDebug(aura::Window* initial_root)
 
   views::View* content = widget()->GetContentsView();
 
-  content->AddChildView(canvas_.get());
+  content->AddChildViewRaw(canvas_.get());
 
   const gfx::Size& display_size = display.size();
   canvas_->SetSize(display_size);
@@ -294,13 +289,13 @@ TouchHudDebug::TouchHudDebug(aura::Window* initial_root)
     touch_labels_[i]->SetBackgroundColor(SK_ColorTRANSPARENT);
     touch_labels_[i]->SetShadows(gfx::ShadowValues(
         1, gfx::ShadowValue(gfx::Vector2d(1, 1), 0, kShadowColor)));
-    label_container_->AddChildView(touch_labels_[i]);
+    label_container_->AddChildViewRaw(touch_labels_[i]);
   }
   label_container_->SetX(0);
   label_container_->SetY(display_size.height() / kReducedScale);
   label_container_->SetSize(label_container_->GetPreferredSize());
   label_container_->SetVisible(false);
-  content->AddChildView(label_container_.get());
+  content->AddChildViewRaw(label_container_.get());
 }
 
 TouchHudDebug::~TouchHudDebug() = default;

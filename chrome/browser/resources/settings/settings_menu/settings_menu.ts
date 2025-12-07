@@ -13,17 +13,24 @@ import 'chrome://resources/cr_elements/cr_nav_menu_item_style.css.js';
 import 'chrome://resources/cr_elements/cr_ripple/cr_ripple.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../settings_vars.css.js';
 import '../icons.html.js';
+// <if expr="_google_chrome">
+import '../internal/icons.html.js';
+
+// </if>
 
 import type {CrMenuSelector} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
+import {AutofillSettingsReferrer, MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
+import {pageVisibility} from '../page_visibility.js';
 import type {PageVisibility} from '../page_visibility.js';
-import type {Route, SettingsRoutes} from '../router.js';
+import type {Route} from '../router.js';
 import {RouteObserverMixin, Router} from '../router.js';
 
 import {getTemplate} from './settings_menu.html.js';
@@ -33,6 +40,7 @@ export interface SettingsMenuElement {
     autofill: HTMLLinkElement,
     menu: CrMenuSelector,
     people: HTMLLinkElement,
+    yourSavedInfo: HTMLLinkElement,
   };
 }
 
@@ -52,41 +60,60 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       /**
        * Dictionary defining page visibility.
        */
-      pageVisibility: Object,
+      pageVisibility_: {
+        type: Object,
+        value: () => pageVisibility,
+      },
 
-      showAdvancedFeaturesMainControl_: {
+      showAiPage_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('showAdvancedFeaturesMainControl'),
+        value: () => loadTimeData.getBoolean('showAiPage'),
+      },
+
+      enableYourSavedInfoSettingsPage_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean('enableYourSavedInfoSettingsPage');
+        },
+      },
+
+      /**
+       * Icon name to be used for the autofill section.
+       */
+      autofillIcon_: {
+        type: String,
+        value: () => loadTimeData.getBoolean('enableYourSavedInfoBranding') ?
+            'settings20:person-text' :
+            'settings:assignment',
       },
     };
   }
 
-  pageVisibility?: PageVisibility;
-  private showAdvancedFeaturesMainControl_: boolean;
-  private routes_: SettingsRoutes;
+  declare private pageVisibility_?: PageVisibility;
+  declare private showAiPage_: boolean;
+  declare private enableYourSavedInfoSettingsPage_: boolean;
+  declare private autofillIcon_: string;
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
 
-  override ready() {
-    super.ready();
-    this.routes_ = Router.getInstance().getRoutes();
+  private showAiPageMenuItem_(): boolean {
+    return this.showAiPage_ &&
+        (!this.pageVisibility_ || this.pageVisibility_.ai !== false);
   }
 
-  private showExperimentalMenuItem_(): boolean {
-    return this.showAdvancedFeaturesMainControl_ &&
-        (!this.pageVisibility || this.pageVisibility.ai !== false);
+  private showYourSavedInfoPageMenuItem_(): boolean {
+    return this.enableYourSavedInfoSettingsPage_ &&
+        (!this.pageVisibility_ ||
+          this.pageVisibility_.yourSavedInfo !== false);
+  }
+
+  private showAutofillPageMenuItem_(): boolean {
+    return !this.enableYourSavedInfoSettingsPage_ &&
+        (!this.pageVisibility_ ||
+          this.pageVisibility_.autofill !== false);
   }
 
   override currentRouteChanged(newRoute: Route) {
-    // <if expr="_google_chrome">
-    if (loadTimeData.getBoolean('showGetTheMostOutOfChromeSection') &&
-        newRoute === this.routes_.GET_MOST_CHROME) {
-      const about = this.shadowRoot!.querySelector('#about-menu');
-      assert(about);
-      // Purposefully grabbing the 'href' attribute and not the property.
-      this.setSelectedPath_(about.getAttribute('href')!);
-      return;
-    }
-    // </if>
-
     // Focus the initially selected path.
     const anchors = this.shadowRoot!.querySelectorAll('a');
     for (let i = 0; i < anchors.length; ++i) {
@@ -136,12 +163,46 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     const route = Router.getInstance().getRouteForPath(path);
     assert(route, 'settings-menu has an entry with an invalid route.');
     Router.getInstance().navigateTo(
-        route!, /* dynamicParams */ undefined, /* removeSearch */ true);
+        route, /* dynamicParams */ undefined, /* removeSearch */ true);
   }
 
   private onExtensionsLinkClick_() {
     chrome.metricsPrivate.recordUserAction(
         'SettingsMenu_ExtensionsLinkClicked');
+  }
+
+  private onAutofillClick_() {
+    this.metricsBrowserProxy_.recordAutofillSettingsReferrer(
+        'Autofill.AutofillAndPasswordsSettingsPage.VisitReferrer',
+        AutofillSettingsReferrer.SETTINGS_MENU);
+  }
+
+  private onYourSavedInfoClick_() {
+    this.metricsBrowserProxy_.recordAutofillSettingsReferrer(
+        'Autofill.YourSavedInfoSettingsPage.VisitReferrer',
+        AutofillSettingsReferrer.SETTINGS_MENU);
+  }
+
+  private onAiPageClick_() {
+    this.metricsBrowserProxy_.recordAction(
+        'SettingsMenu_AiPageEntryPointClicked');
+  }
+
+  private hideBottomMenuSeparator_(): boolean {
+    if (!this.pageVisibility_) {
+      return false;
+    }
+
+    const visibilities = [
+      this.pageVisibility_.languages,
+      this.pageVisibility_.downloads,
+      this.pageVisibility_.a11y,
+      // <if expr="not is_chromeos">
+      this.pageVisibility_.system,
+      // </if>
+      this.pageVisibility_.reset,
+    ];
+    return visibilities.every(visibility => visibility === false);
   }
 }
 

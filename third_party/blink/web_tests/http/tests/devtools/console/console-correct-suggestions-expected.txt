@@ -4,7 +4,7 @@ Checking 'window.|foo'
 Found: _foo
 
 Checking 'window._|foo'
-Not Found: _foo
+Found: _foo
 
 Checking 'window._|foo' forcefully
 Found: _foo
@@ -53,11 +53,11 @@ Not Found: Float32Array
 Not Found: Int32Array
 
 Checking 'window.32'
-Found: Float32Array
-Found: Int32Array
+Not Found: Float32Array
+Not Found: Int32Array
 
 Checking ''
-Not Found: window
+Found: window
 
 Checking '' forcefully
 Found: window
@@ -69,7 +69,7 @@ Checking '`template string docu'
 Not Found: document
 
 Checking '`${do'
-Found: document
+Not Found: document
 
 Checking '// do'
 Not Found: document
@@ -81,17 +81,17 @@ Checking 'shou'
 Not Found: should not find this
 
 Checking 'myMap.get('
-Found: "first"), displayed as "first"
-Found: "second"), displayed as "second"
-Found: "third"), displayed as "third"
+Found: "first")
+Found: "second")
+Found: "third")
 
 Checking 'myMap.get(''
-Found: 'first'), displayed as 'first'
-Found: 'second'), displayed as 'second'
-Found: 'third'), displayed as 'third'
+Not Found: 'first')
+Not Found: 'second')
+Not Found: 'third')
 
 Checking 'myMap.set('firs'
-Found: 'first', , displayed as 'first'
+Not Found: 'first', 
 
 Checking 'myMap.set(should'
 Found: shouldFindThisFunction
@@ -99,9 +99,9 @@ Not Found: shouldNotFindThis
 Not Found: "shouldNotFindThis")
 
 Checking 'myMap.delete(''
-Found: 'first'), displayed as 'first'
-Found: 'second'), displayed as 'second'
-Found: 'third'), displayed as 'third'
+Not Found: 'first')
+Not Found: 'second')
+Not Found: 'third')
 
 Checking 'document.   bo'
 Found: body
@@ -113,7 +113,7 @@ Checking 'document.\nbo'
 Found: body
 
 Checking 'document.\r\nbo'
-Found: body
+Not Found: body
 
 Checking 'document   [    'bo'
 Found: 'body'], displayed as 'body'
@@ -138,8 +138,8 @@ Found: Image
 Found: Infinity
 
 Checking 'I|mage'
-Not Found: Image
-Not Found: Infinity
+Found: Image
+Found: Infinity
 
 Checking 'I|mage' forcefully
 Found: Image
@@ -167,7 +167,7 @@ Checking 'complicatedObject["'single-qou'
 Found: "'single-qouted'"], displayed as "'single-qouted'"
 
 Checking 'complicatedObject["\"double-qouted\"'
-Found: "\"double-qouted\""], displayed as "\"double-qouted\""
+Not Found: "\"double-qouted\""]
 
 Checking 'complicatedObject["notDangerous();'
 Found: "notDangerous();"], displayed as "notDangerous();"
@@ -206,10 +206,10 @@ Checking 'const x = 5; {dontFindLabels: 123}.dont'
 Not Found: dontFindLabels
 
 Checking 'const x = {abc: 123}.a'
-Found: abc
+Not Found: abc
 
 Checking 'x = {abc: 123}.'
-Found: abc
+Not Found: abc
 
 Checking '[1,2,3].j'
 Found: join
@@ -226,7 +226,7 @@ Not Found: UTC
 Found: toUTCString
 
 Checking 'const x = {7: "hi"}[3+4].'
-Found: anchor
+Not Found: anchor
 
 Checking '["length"]["length"].'
 Found: toExponential
@@ -249,10 +249,11 @@ Checking '(dontRunThis`asdf`).'
 Checking 'dontRunThis().'
 
 Checking 'stall().'
-error: Execution was terminated
+error: Request Runtime.evaluate failed. {"code":-32603,"message":"Internal error"}
+error: Internal error
 
 Checking 'shouldNot|FindThisFunction()'
-Not Found: shouldNotFindThisFunction
+Found: shouldNotFindThisFunction
 
 Checking 'thePrefix'
 Found: thePrefix
@@ -261,6 +262,6 @@ Found: thePrefixAndTheSuffix
 Checking 'objWithMethod.method'
 Found: method
 Found: methodWithSuffix
-Default suggestion: method
+Default suggestion: methodWithSuffix
 
 

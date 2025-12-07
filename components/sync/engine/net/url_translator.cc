@@ -11,13 +11,13 @@ namespace syncer {
 
 namespace {
 // Parameters that the server understands. (here, a-Z)
-const char kParameterClient[] = "client";
-const char kParameterClientID[] = "client_id";
+constexpr char kParameterClient[] = "client";
+constexpr char kParameterClientID[] = "client_id";
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-const char kClientName[] = "Google Chrome";
+constexpr char kClientName[] = "Google Chrome";
 #else
-const char kClientName[] = "Chromium";
+constexpr char kClientName[] = "Chromium";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }  // namespace
 

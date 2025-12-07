@@ -78,6 +78,7 @@ class PlatformKeysServiceFactory : public ProfileKeyedServiceFactory {
       device_wide_service_for_testing_ = nullptr;
 
   bool map_to_softoken_attrs_for_testing_ = false;
+  bool allow_alternative_params_for_testing_ = false;
 };
 }  // namespace platform_keys
 }  // namespace ash

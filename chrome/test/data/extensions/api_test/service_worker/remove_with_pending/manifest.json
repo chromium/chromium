@@ -1,0 +1,9 @@
+{
+  "name": "Test extension",
+  "version": "1.0",
+  "manifest_version": 3,
+  "incognito": "split",
+  "background": {
+    "service_worker": "sw.js"
+  }
+}

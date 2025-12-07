@@ -4,6 +4,7 @@
 
 #include "chrome/browser/media/webrtc/same_origin_observer.h"
 
+#include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 
 SameOriginObserver::SameOriginObserver(

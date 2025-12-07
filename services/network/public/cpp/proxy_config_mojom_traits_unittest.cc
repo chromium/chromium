@@ -3,17 +3,18 @@
 // found in the LICENSE file.
 
 #include "services/network/public/cpp/proxy_config_mojom_traits.h"
-#include "services/network/public/cpp/proxy_config_with_annotation_mojom_traits.h"
 
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_string_util.h"
-#include "net/proxy_resolution/proxy_bypass_rules.h"
 #include "net/proxy_resolution/proxy_config_with_annotation.h"
+#include "net/proxy_resolution/proxy_host_matching_rules.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/cpp/proxy_config_with_annotation_mojom_traits.h"
 #include "services/network/public/mojom/proxy_config_with_annotation.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 namespace network {
 namespace {
@@ -105,7 +106,7 @@ TEST(ProxyConfigTraitsTest, ProxyRules) {
 
 TEST(ProxyConfigTraitsTest, BypassRules) {
   // These should cover every one of the rule types documented in
-  // proxy_bypass_rules.h.
+  // proxy_host_matching_rules.h.
   const char* kTestCases[] = {
       ".foo.com",
       "*foo1.com:80, foo2.com",
@@ -136,6 +137,101 @@ TEST(ProxyConfigTraitsTest, BypassRules) {
         proxy_config, TRAFFIC_ANNOTATION_FOR_TESTS);
     EXPECT_TRUE(TestProxyConfigRoundTrip(annotated_config));
   }
+}
+
+TEST(ProxyConfigTraitsTest, ProxyOverrideRules) {
+  net::ProxyConfig::ProxyOverrideRule rule;
+
+  rule.destination_matchers.AddRuleFromString("192.168.1.1");
+  rule.destination_matchers.AddRuleFromString("[3ffe:2a00:100:7031:0:0::1]");
+  rule.destination_matchers.AddRuleFromString("*.org:443");
+  rule.destination_matchers.AddRuleFromString("www.google.com");
+  rule.destination_matchers.AddRuleFromString("http://www.google.com");
+
+  rule.exclude_destination_matchers.AddRuleFromString("*.org:123");
+  rule.exclude_destination_matchers.AddRuleFromString("www.mailgoogle.com");
+  rule.exclude_destination_matchers.AddRuleFromString("http://mail.google.com");
+
+  rule.proxy_list.SetFromPacString("HTTPS foo:333; DIRECT");
+
+  rule.dns_conditions = {
+      net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition{
+          .host = url::SchemeHostPort("https", "corp.ads", 123),
+          .result = net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::
+              Result::kResolved,
+      },
+      net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition{
+          .host = url::SchemeHostPort("https", "ads.corps", 321),
+          .result = net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::
+              Result::kNotFound,
+      },
+  };
+
+  net::ProxyConfig proxy_config;
+  proxy_config.set_proxy_override_rules({rule});
+  net::ProxyConfigWithAnnotation annotated_config(proxy_config,
+                                                  TRAFFIC_ANNOTATION_FOR_TESTS);
+  EXPECT_TRUE(TestProxyConfigRoundTrip(annotated_config));
+}
+
+TEST(ProxyConfigTraitsTest, ProxyOverrideRules_EmptyDestinationMatchers) {
+  net::ProxyConfig::ProxyOverrideRule rule;
+
+  rule.proxy_list.SetFromPacString("HTTPS foo:333; DIRECT");
+
+  rule.dns_conditions = {
+      net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition{
+          .host = url::SchemeHostPort("https", "corp.ads", 123),
+          .result = net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::
+              Result::kResolved,
+      },
+      net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition{
+          .host = url::SchemeHostPort("https", "ads.corps", 321),
+          .result = net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::
+              Result::kNotFound,
+      },
+  };
+
+  net::ProxyConfig proxy_config;
+  proxy_config.set_proxy_override_rules({rule});
+  net::ProxyConfigWithAnnotation annotated_config(proxy_config,
+                                                  TRAFFIC_ANNOTATION_FOR_TESTS);
+  net::ProxyConfigWithAnnotation copied_config;
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<mojom::ProxyConfigWithAnnotation>(
+          annotated_config, copied_config));
+}
+
+TEST(ProxyConfigTraitsTest, ProxyOverrideRules_EmptyProxyList) {
+  net::ProxyConfig::ProxyOverrideRule rule;
+
+  rule.destination_matchers.AddRuleFromString("192.168.1.1");
+  rule.destination_matchers.AddRuleFromString("[3ffe:2a00:100:7031:0:0::1]");
+  rule.destination_matchers.AddRuleFromString("*.org:443");
+  rule.destination_matchers.AddRuleFromString("www.google.com");
+  rule.destination_matchers.AddRuleFromString("http://www.google.com");
+
+  rule.dns_conditions = {
+      net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition{
+          .host = url::SchemeHostPort("https", "corp.ads", 123),
+          .result = net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::
+              Result::kResolved,
+      },
+      net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition{
+          .host = url::SchemeHostPort("https", "ads.corps", 321),
+          .result = net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::
+              Result::kNotFound,
+      },
+  };
+
+  net::ProxyConfig proxy_config;
+  proxy_config.set_proxy_override_rules({rule});
+  net::ProxyConfigWithAnnotation annotated_config(proxy_config,
+                                                  TRAFFIC_ANNOTATION_FOR_TESTS);
+  net::ProxyConfigWithAnnotation copied_config;
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<mojom::ProxyConfigWithAnnotation>(
+          annotated_config, copied_config));
 }
 
 }  // namespace

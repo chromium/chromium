@@ -4,17 +4,34 @@
 
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrExpandButtonElement, SettingsSiteSettingsPageElement} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, CookieControlsMode, ContentSettingsTypes, defaultSettingLabel, SettingsState, SafetyHubBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
-import type {CrLinkRowElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {Router, routes} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {CrLinkRowElement, Route, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, Router, routes} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue, assertThrows} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestSafetyHubBrowserProxy} from './test_safety_hub_browser_proxy.js';
+
+const redesignedPages: Route[] = [
+  routes.SITE_SETTINGS_HANDLERS,
+  routes.SITE_SETTINGS_NOTIFICATIONS,
+  routes.SITE_SETTINGS_PDF_DOCUMENTS,
+  routes.SITE_SETTINGS_PROTECTED_CONTENT,
+
+  // TODO(crbug.com/40719916) After restructure add coverage for elements on
+  // routes which depend on flags being enabled.
+  // routes.SITE_SETTINGS_BLUETOOTH_SCANNING,
+  // routes.SITE_SETTINGS_BLUETOOTH_DEVICES,
+  // routes.SITE_SETTINGS_WINDOW_MANAGEMENT,
+
+  // Doesn't contain toggle or radio buttons
+  // routes.SITE_SETTINGS_AUTOMATIC_FULLSCREEN,
+  // routes.SITE_SETTINGS_INSECURE_CONTENT,
+  // routes.SITE_SETTINGS_ZOOM_LEVELS,
+];
 
 // clang-format on
 
@@ -61,6 +78,12 @@ suite('SiteSettingsPage', function() {
           },
         },
       },
+      tracking_protection: {
+        block_all_3pc_toggle_enabled: {
+          type: chrome.settingsPrivate.PrefType.BOOLEAN,
+          value: true,
+        },
+      },
     };
     document.body.appendChild(page);
     flush();
@@ -72,6 +95,17 @@ suite('SiteSettingsPage', function() {
     page.remove();
   });
 
+  function getCookiesLinkRow() {
+    const basicContentList =
+        page.shadowRoot!.querySelector('#basicContentList');
+    assertTrue(!!basicContentList);
+    const cookiesLinkRow =
+        basicContentList.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#cookies');
+    assertTrue(!!cookiesLinkRow);
+    return cookiesLinkRow;
+  }
+
   test('DefaultLabels', function() {
     assertEquals('a', defaultSettingLabel(ContentSetting.ALLOW, 'a', 'b'));
     assertEquals('b', defaultSettingLabel(ContentSetting.BLOCK, 'a', 'b'));
@@ -82,29 +116,41 @@ suite('SiteSettingsPage', function() {
     assertEquals(
         'c', defaultSettingLabel(ContentSetting.DEFAULT, 'a', 'b', 'c'));
     assertEquals('c', defaultSettingLabel(ContentSetting.ASK, 'a', 'b', 'c'));
-    assertEquals(
-        'c',
-        defaultSettingLabel(ContentSetting.IMPORTANT_CONTENT, 'a', 'b', 'c'));
   });
 
-  test('AntiAbuseLinkRowHidden', async function() {
+  test('CookiesLinkRowSublabelInModeB', async function() {
+    // This test verifies the Tracking Protection rewind label.
     loadTimeData.overrideValues({
-      privateStateTokensEnabled: false,
+      is3pcdCookieSettingsRedesignEnabled: true,
     });
     setupPage();
-    assertFalse(isChildVisible(
-        page.$.advancedContentList, `#${ContentSettingsTypes.ANTI_ABUSE}`));
+    const cookiesLinkRow = getCookiesLinkRow();
+
+    page.set(
+        'prefs.tracking_protection.block_all_3pc_toggle_enabled.value', true);
+    await flushTasks;
+    assertTrue(Boolean(page.get(
+        'prefs.tracking_protection.block_all_3pc_toggle_enabled.value')));
+    assertEquals(
+        loadTimeData.getString('thirdPartyCookiesLinkRowSublabelDisabled'),
+        cookiesLinkRow.subLabel);
+
+    page.set(
+        'prefs.tracking_protection.block_all_3pc_toggle_enabled.value', false);
+    await flushTasks;
+    assertFalse(Boolean(page.get(
+        'prefs.tracking_protection.block_all_3pc_toggle_enabled.value')));
+    assertEquals(
+        loadTimeData.getString('thirdPartyCookiesLinkRowSublabelLimited'),
+        cookiesLinkRow.subLabel);
   });
 
   test('CookiesLinkRowSublabel', async function() {
-    // This test verifies the pre-3PCD label.
     loadTimeData.overrideValues({
       is3pcdCookieSettingsRedesignEnabled: false,
     });
     setupPage();
-    const cookiesLinkRow =
-        page.shadowRoot!.querySelector('#basicContentList')!.shadowRoot!
-            .querySelector<CrLinkRowElement>('#cookies')!;
+    const cookiesLinkRow = getCookiesLinkRow();
 
     page.set(
         'prefs.profile.cookie_controls_mode.value',
@@ -119,8 +165,7 @@ suite('SiteSettingsPage', function() {
         CookieControlsMode.INCOGNITO_ONLY);
     await flushTasks();
     assertEquals(
-        loadTimeData.getString(
-            'thirdPartyCookiesLinkRowSublabelDisabledIncognito'),
+        loadTimeData.getString('thirdPartyCookiesLinkRowSublabelEnabled'),
         cookiesLinkRow.subLabel);
 
     page.set(
@@ -131,39 +176,14 @@ suite('SiteSettingsPage', function() {
         cookiesLinkRow.subLabel);
   });
 
-  test('TrackingProtectionLinkRowSubLabel', async function() {
-    loadTimeData.overrideValues({
-      is3pcdCookieSettingsRedesignEnabled: true,
-    });
-    setupPage();
-    const cookiesLinkRow =
-        page.shadowRoot!.querySelector('#basicContentList')!.shadowRoot!
-            .querySelector<CrLinkRowElement>('#cookies')!;
-    assertEquals(
-        loadTimeData.getString('trackingProtectionLinkRowSubLabel'),
-        cookiesLinkRow.subLabel);
-
-    // Even if cookie controls mode changes, sub-label stays the same.
-    page.set(
-        'prefs.profile.cookie_controls_mode.value',
-        CookieControlsMode.BLOCK_THIRD_PARTY);
-    await flushTasks();
-    assertEquals(
-        loadTimeData.getString('trackingProtectionLinkRowSubLabel'),
-        cookiesLinkRow.subLabel);
-
-    page.set(
-        'prefs.profile.cookie_controls_mode.value', CookieControlsMode.OFF);
-    await flushTasks();
-    assertEquals(
-        loadTimeData.getString('trackingProtectionLinkRowSubLabel'),
-        cookiesLinkRow.subLabel);
-  });
-
   test('NotificationsLinkRowSublabel', async function() {
+    const basicPermissionsList =
+        page.shadowRoot!.querySelector('#basicPermissionsList');
+    assertTrue(!!basicPermissionsList);
     const notificationsLinkRow =
-        page.shadowRoot!.querySelector('#basicPermissionsList')!.shadowRoot!
-            .querySelector<CrLinkRowElement>('#notifications')!;
+        basicPermissionsList.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#notifications')!;
+    assertTrue(!!notificationsLinkRow);
 
     page.set('prefs.generated.notification.value', SettingsState.BLOCK);
     await flushTasks();
@@ -191,19 +211,27 @@ suite('SiteSettingsPage', function() {
     assertTrue(!!expandButton);
     expandButton.click();
     await expandButton.updateComplete;
-    assertTrue(isChildVisible(
-        page.shadowRoot!.querySelector('#advancedContentList')!,
-        '#protected-content'));
+    const advancedContentList =
+        page.shadowRoot!.querySelector('#advancedContentList');
+    assertTrue(!!advancedContentList);
+    assertTrue(isChildVisible(advancedContentList, '#protected-content'));
   });
 
   test('SiteDataLinkRowSublabel', async function() {
     setupPage();
-    page.shadowRoot!.querySelector<HTMLElement>('#expandContent')!.click();
+    const expandContent =
+        page.shadowRoot!.querySelector<HTMLElement>('#expandContent');
+    assertTrue(!!expandContent);
+    expandContent.click();
     flush();
 
+    const advancedContentList =
+        page.shadowRoot!.querySelector('#advancedContentList');
+    assertTrue(!!advancedContentList);
     const siteDataLinkRow =
-        page.shadowRoot!.querySelector('#advancedContentList')!.shadowRoot!
-            .querySelector<CrLinkRowElement>('#site-data')!;
+        advancedContentList.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#site-data');
+    assertTrue(!!siteDataLinkRow);
 
     page.set(
         'prefs.generated.cookie_default_content_setting.value',
@@ -247,15 +275,11 @@ suite('SiteSettingsPage', function() {
       '#automatic-fullscreen'));
   });
 
-  // TODO(crbug.com/40267370): Remove after SafetyHub is launched.
-  test('UnusedSitePermissionsControlToggleExists', function() {
-    assertTrue(isChildVisible(page, '#unusedSitePermissionsRevocationToggle'));
-  });
-
   test('UnusedSitePermissionsControlToggleUpdatesPrefs', function() {
     const unusedSitePermissionsRevocationToggle =
         page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#unusedSitePermissionsRevocationToggle')!;
+            '#unusedSitePermissionsRevocationToggle');
+    assertTrue(!!unusedSitePermissionsRevocationToggle);
 
     unusedSitePermissionsRevocationToggle.click();
     flush();
@@ -267,7 +291,6 @@ suite('SiteSettingsPage', function() {
     assertTrue(Boolean(page.get(
         'prefs.safety_hub.unused_site_permissions_revocation.enabled.value')));
   });
-
 });
 
 const unusedSitePermissionMockData = [{
@@ -320,7 +343,10 @@ suite('UnusedSitePermissionsReview', function() {
         unusedSitePermissionMockData);
     await flushTasks();
 
-    page.shadowRoot!.querySelector<HTMLElement>('#safetyHubButton')!.click();
+    const safetyHubButton =
+        page.shadowRoot!.querySelector<HTMLElement>('#safetyHubButton');
+    assertTrue(!!safetyHubButton);
+    safetyHubButton.click();
     // Ensure the safety hub page is shown.
     assertEquals(routes.SAFETY_HUB, Router.getInstance().getCurrentRoute());
   });
@@ -344,176 +370,53 @@ suite('UnusedSitePermissionsReview', function() {
   });
 });
 
-// TODO(crbug.com/40267370): Remove after crbug/1443466 launched.
-suite('UnusedSitePermissionsReviewSafetyHubDisabled', function() {
+// Isolated ContentSettingsVisibility test suite due to significantly higher
+// execution time (10-20x factor) of that specific tests compare to other
+// sub-tests.
+suite('ContentSettingsVisibility', function() {
   let page: SettingsSiteSettingsPageElement;
-  let safetyHubBrowserProxy: TestSafetyHubBrowserProxy;
+  let settingsPrefs: SettingsPrefsElement;
 
   suiteSetup(function() {
-    loadTimeData.overrideValues({
-      enableSafetyHub: false,
-    });
-  });
-
-  setup(async function() {
-    safetyHubBrowserProxy = new TestSafetyHubBrowserProxy();
-    SafetyHubBrowserProxyImpl.setInstance(safetyHubBrowserProxy);
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    page = document.createElement('settings-site-settings-page');
-    document.body.appendChild(page);
-    await flushTasks();
-  });
-
-  test('VisibilityWithChangingPermissionList', async function() {
-    // The element is not visible when there is nothing to review.
-    assertFalse(isChildVisible(page, 'settings-unused-site-permissions'));
-
-    // The element becomes visible if the list of permissions is no longer
-    // empty.
-    webUIListenerCallback(
-        SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED,
-        unusedSitePermissionMockData);
-    await flushTasks();
-    assertTrue(isChildVisible(page, 'settings-unused-site-permissions'));
-
-    // Once visible, it remains visible regardless of list length.
-    webUIListenerCallback(SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, []);
-    await flushTasks();
-    assertTrue(isChildVisible(page, 'settings-unused-site-permissions'));
-
-    webUIListenerCallback(
-        SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED,
-        unusedSitePermissionMockData);
-    await flushTasks();
-    assertTrue(isChildVisible(page, 'settings-unused-site-permissions'));
-  });
-
-  test('InvisibleWhenGuestMode', async function() {
-    loadTimeData.overrideValues({
-      isGuest: true,
-    });
-
-    // The element is not visible since it is guest mode.
-    webUIListenerCallback(
-        SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED,
-        unusedSitePermissionMockData);
-    await flushTasks();
-    assertFalse(isChildVisible(page, 'settings-unused-site-permissions'));
-
-    // Reset loadTimeData values.
-    loadTimeData.overrideValues({
-      isGuest: false,
-    });
-  });
-});
-
-/**
- * If feature is not enabled, the UI should not be shown regardless of whether
- * there would be unused site permissions for the user to review.
- *
- * TODO(crbug.com/40232296): Remove after crbug/1345920 launched.
- */
-suite('UnusedSitePermissionsReviewDisabled', function() {
-  let page: SettingsSiteSettingsPageElement;
-  let safetyHubBrowserProxy: TestSafetyHubBrowserProxy;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      safetyCheckUnusedSitePermissionsEnabled: false,
-    });
-  });
-
-  setup(function() {
-    safetyHubBrowserProxy = new TestSafetyHubBrowserProxy();
-    SafetyHubBrowserProxyImpl.setInstance(safetyHubBrowserProxy);
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-  });
-
-  test('InvisibleWhenFeatureDisabled', async function() {
-    safetyHubBrowserProxy.setUnusedSitePermissions([]);
-    page = document.createElement('settings-site-settings-page');
-    document.body.appendChild(page);
-    await flushTasks();
-
-    assertFalse(isChildVisible(page, 'settings-unused-site-permissions'));
-  });
-
-  test('InvisibleWhenFeatureDisabledWithItemsToReview', async function() {
-    safetyHubBrowserProxy.setUnusedSitePermissions(
-        unusedSitePermissionMockData);
-    page = document.createElement('settings-site-settings-page');
-    document.body.appendChild(page);
-    await flushTasks();
-
-    assertFalse(isChildVisible(page, 'settings-unused-site-permissions'));
-  });
-});
-
-// TODO(crbug.com/40267370): Remove after SafetyHub is launched.
-suite('SafetyHubDisabled', function() {
-  let page: SettingsSiteSettingsPageElement;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      enableSafetyHub: false,
-    });
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
   });
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     page = document.createElement('settings-site-settings-page');
+    page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
-    flush();
+    return flushTasks();
   });
 
-  test('NoUnusedSitePermissionsControlToggle', function() {
-    assertFalse(
-        Boolean(page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#unusedSitePermissionsRevocationToggle')));
+  test('ContentSettingsVisibility', async function() {
+    // Ensure pages are visited so that HTML components are stamped.
+    redesignedPages.forEach(route => Router.getInstance().navigateTo(route));
+    await flushTasks();
+
+    // All redesigned pages will use `settings-category-default-radio-group`,
+    // except
+    //   1. protocol handlers,
+    //   2. pdf documents,
+    //   3. protected content (is in its own element),
+    //   4. notifications (is in its own element)
+    //   5. geolocation (is in its own element)
+    const expectedPagesCount = redesignedPages.length - 4;
+
+    assertEquals(
+        page.shadowRoot!
+            .querySelectorAll('settings-category-default-radio-group')
+            .length,
+        expectedPagesCount);
   });
 });
 
-/**
- * If unused site permissions feature is not enabled, but abusive notification
- * revocation is enabled, the UI should be shown if there are permissions for
- * the user to review.
- *
- * TODO(crbug.com/328773301): Remove after
- * SafetyHubAbusiveNotificationRevocation is launched.
- */
-suite('AbusiveNotificationsEnabledUnusedSitePermissionsDisabled', function() {
-  let page: SettingsSiteSettingsPageElement;
-  let safetyHubBrowserProxy: TestSafetyHubBrowserProxy;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      enableSafetyHub: false,
-      safetyCheckUnusedSitePermissionsEnabled: false,
-      safetyHubAbusiveNotificationRevocationEnabled: true,
-    });
+suite('WebPrintingNotShown', function() {
+  test('navigateToWebPrinting', function() {
+    assertThrows(
+        () =>
+            Router.getInstance().navigateTo(routes.SITE_SETTINGS_WEB_PRINTING));
   });
-
-  setup(async function() {
-    safetyHubBrowserProxy = new TestSafetyHubBrowserProxy();
-    SafetyHubBrowserProxyImpl.setInstance(safetyHubBrowserProxy);
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    page = document.createElement('settings-site-settings-page');
-    document.body.appendChild(page);
-    await flushTasks();
-  });
-
-  test(
-      'VisibleWithItemsToReviewUnusedSitePermissionsDisabled',
-      async function() {
-        // The element is not visible when there is nothing to review.
-        assertFalse(isChildVisible(page, 'settings-unused-site-permissions'));
-
-        // The element becomes visible if the list of permissions is no longer
-        // empty.
-        webUIListenerCallback(
-            SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED,
-            unusedSitePermissionMockData);
-        await flushTasks();
-        assertTrue(isChildVisible(page, 'settings-unused-site-permissions'));
-      });
 });

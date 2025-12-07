@@ -19,14 +19,11 @@ include_rules = [
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/policy/handlers",
   "+chrome/browser/ash/settings",
-  "+chrome/browser/browser_process.h",
-  "+chrome/browser/browser_process_platform_part.h",
   "+chrome/browser/extensions/extension_service.h",
   "+chrome/browser/extensions/test_extension_system.h",
   "+chrome/browser/media/webrtc",
-  "+chrome/browser/notifications",
+  "+chrome/browser/notifications/passphrase_textfield.h",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/ash",
   "+chrome/browser/ui/browser_dialogs.h",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/screen_capture_notification_ui.h",
@@ -38,14 +35,15 @@ include_rules = [
   "+chrome/test/base",
 
   # Dependencies outside of //chrome:
+  "+components/webapps/isolated_web_apps",
   "+ui/message_center",
 ]
 
 specific_include_rules = {
   ".*multi_capture_notifications_unittest\.cc": [
-    "+chrome/browser/ash/crosapi/crosapi_ash.h",
     "+chrome/browser/ash/crosapi/multi_capture_service_ash.h",
     "+chrome/browser/ash/policy/multi_screen_capture/multi_screen_capture_policy_service.h",
     "+chrome/browser/ash/policy/multi_screen_capture/multi_screen_capture_policy_service_factory.h",
+    "+chrome/browser/prefs/browser_prefs.h",
   ],
 }

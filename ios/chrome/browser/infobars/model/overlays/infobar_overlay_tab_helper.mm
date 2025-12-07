@@ -17,8 +17,6 @@ using infobars::InfoBarManager;
 
 #pragma mark - InfobarOverlayTabHelper
 
-WEB_STATE_USER_DATA_KEY_IMPL(InfobarOverlayTabHelper)
-
 InfobarOverlayTabHelper::InfobarOverlayTabHelper(web::WebState* web_state)
     : request_inserter_(InfobarOverlayRequestInserter::FromWebState(web_state)),
       request_scheduler_(web_state, this) {}
@@ -45,8 +43,9 @@ void InfobarOverlayTabHelper::OverlayRequestScheduler::OnInfoBarAdded(
   InfoBarIOS* ios_infobar = static_cast<InfoBarIOS*>(infobar);
   // Skip showing banner if it was requested. Badge and modals will keep
   // showing.
-  if (ios_infobar->skip_banner())
+  if (ios_infobar->skip_banner()) {
     return;
+  }
   InsertParams params(ios_infobar);
   params.overlay_type = InfobarOverlayType::kBanner;
   // If the Infobar high priority, then insert it into the front of the banner
@@ -61,7 +60,7 @@ void InfobarOverlayTabHelper::OverlayRequestScheduler::OnInfoBarAdded(
   tab_helper_->request_inserter()->InsertOverlayRequest(params);
 }
 
-void InfobarOverlayTabHelper::OverlayRequestScheduler::OnManagerShuttingDown(
+void InfobarOverlayTabHelper::OverlayRequestScheduler::OnManagerWillBeDestroyed(
     InfoBarManager* manager) {
   DCHECK(scoped_observation_.IsObservingSource(manager));
   scoped_observation_.Reset();

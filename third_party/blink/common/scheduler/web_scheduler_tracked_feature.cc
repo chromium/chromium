@@ -8,6 +8,8 @@
 #include <map>
 #include <vector>
 
+#include "third_party/blink/public/common/features.h"
+
 namespace blink {
 namespace scheduler {
 
@@ -17,7 +19,7 @@ std::atomic_bool disable_align_wake_ups{false};
 
 struct FeatureNames {
   std::string short_name;
-  std::string human_readable;
+  const char* human_readable;
 };
 
 FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
@@ -25,15 +27,18 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
     case WebSchedulerTrackedFeature::kWebSocket:
       return {"websocket", "WebSocket live connection"};
     case WebSchedulerTrackedFeature::kWebSocketSticky:
-      return {"websocket", "WebSocket used"};
+      return {"websocket-used-with-ccns",
+              "WebSocket used in the page with Cache-Control: no store"};
     case WebSchedulerTrackedFeature::kWebTransport:
       return {"webtransport", "WebTransport live connection"};
     case WebSchedulerTrackedFeature::kWebTransportSticky:
-      return {"webtransport", "WebTransport used"};
+      return {"webtransport-used-with-ccns",
+              "WebTransport used in the page with Cache-Control: no store"};
     case WebSchedulerTrackedFeature::kWebRTC:
       return {"rtc", "WebRTC live connection"};
     case WebSchedulerTrackedFeature::kWebRTCSticky:
-      return {"rtc", "WebRTC used"};
+      return {"rtc-used-with-ccns",
+              "WebRTC used in the page with Cache-Control: no store"};
     case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoCache:
       return {"response-cache-control-no-cache",
               "main resource has Cache-Control: No-Cache"};
@@ -85,9 +90,11 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
     case WebSchedulerTrackedFeature::kWebNfc:
       return {"webnfc", "WebNfc"};
     case WebSchedulerTrackedFeature::kPrinting:
-      return {"printing", "Printing"};
-    case WebSchedulerTrackedFeature::kWebDatabase:
-      return {"web-database", "WebDatabase"};
+      return {base::FeatureList::IsEnabled(
+                  features::kBackForwardCacheUpdateNotRestoredReasonsName)
+                  ? "masked"
+                  : "printing",
+              "Printing"};
     case WebSchedulerTrackedFeature::kPictureInPicture:
       return {"pictureinpicturewindow", "PictureInPicture"};
     case WebSchedulerTrackedFeature::kSpeechRecognizer:
@@ -104,16 +111,24 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
       return {"outstanding-network-request",
               "outstanding network request (direct socket)"};
     case WebSchedulerTrackedFeature::kInjectedJavascript:
-      return {"injected-javascript", "External javascript injected"};
+      return {base::FeatureList::IsEnabled(
+                  features::kBackForwardCacheUpdateNotRestoredReasonsName)
+                  ? "masked"
+                  : "injected-javascript",
+              "External javascript injected"};
     case WebSchedulerTrackedFeature::kInjectedStyleSheet:
-      return {"injected-stylesheet", "External systesheet injected"};
+      return {base::FeatureList::IsEnabled(
+                  features::kBackForwardCacheUpdateNotRestoredReasonsName)
+                  ? "masked"
+                  : "injected-stylesheet",
+              "External stylesheet injected"};
     case WebSchedulerTrackedFeature::kKeepaliveRequest:
       return {"response-keep-alive", "requests with keepalive set"};
     case WebSchedulerTrackedFeature::kDummy:
       return {"Dummy", "Dummy for testing"};
     case WebSchedulerTrackedFeature::
         kJsNetworkRequestReceivedCacheControlNoStoreResource:
-      return {"response-cache-control-no-store",
+      return {"response-cache-control-no-store-with-js-network-request",
               "JavaScript network request received Cache-Control: no-store "
               "resource"};
     case WebSchedulerTrackedFeature::kIndexedDBEvent:
@@ -125,9 +140,19 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
     case WebSchedulerTrackedFeature::kLiveMediaStreamTrack:
       return {"mediastream", "page has live MediaStreamTrack"};
     case WebSchedulerTrackedFeature::kUnloadHandler:
-      return {"unload-handler", "page contains unload handler"};
+      return {base::FeatureList::IsEnabled(
+                  features::kBackForwardCacheUpdateNotRestoredReasonsName)
+                  ? "unload-handler"
+                  : "unload-listener",
+              "page contains unload handler"};
     case WebSchedulerTrackedFeature::kParserAborted:
       return {"parser-aborted", "parser was aborted"};
+    case WebSchedulerTrackedFeature::kWebBluetooth:
+      return {"webbluetooth", "Active Bluetooth connection"};
+    case WebSchedulerTrackedFeature::kWebAuthentication:
+      return {"webauthn", "Active WebAuthn transaction"};
+    case WebSchedulerTrackedFeature::kSharedWorkerMessage:
+      return {"sharedworker-message", "Message posted from SharedWorker"};
   }
   return {};
 }
@@ -154,7 +179,7 @@ ShortStringToFeatureMap() {
 
 }  // namespace
 
-std::string FeatureToHumanReadableString(WebSchedulerTrackedFeature feature) {
+const char* FeatureToHumanReadableString(WebSchedulerTrackedFeature feature) {
   return FeatureToNames(feature).human_readable;
 }
 
@@ -202,7 +227,6 @@ WebSchedulerTrackedFeatures StickyFeatures() {
           WebSchedulerTrackedFeature::kRequestedVideoCapturePermission,
           WebSchedulerTrackedFeature::kRequestedBackForwardCacheBlockedSensors,
           WebSchedulerTrackedFeature::kRequestedBackgroundWorkPermission,
-          WebSchedulerTrackedFeature::kWebLocks,
           WebSchedulerTrackedFeature::kRequestedStorageAccessGrant,
           WebSchedulerTrackedFeature::kWebNfc,
           WebSchedulerTrackedFeature::kPrinting,

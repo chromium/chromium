@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -49,21 +50,22 @@ class DataTypeStoreBackend
   // called from a sequence that is different to the constructing one, but from
   // this point on the backend is bound to the current sequence, and must be
   // used on it. It may be destructed on any sequence though.
-  // `prefixes_to_update` contains (from->to) pairs of record key prefixes that
-  // should be updated, e.g. ("old-" -> "new-") would result in a record
-  // [old-key, value] to be moved to [new-key, value].
+  // An ("old-" -> "new-") entry in `prefixes_to_update_or_delete` will cause
+  // all records [old-key, value] to be updated to [new-key, value].
+  // An ("old-" -> std::nullopt) entry in `prefixes_to_update_or_delete` will
+  // cause all records [old-key, value] to be deleted.
   std::optional<ModelError> Init(
       const base::FilePath& path,
-      const std::vector<std::pair<std::string, std::string>>&
-          prefixes_to_update);
+      const base::flat_map<std::string, std::optional<std::string>>&
+          prefixes_to_update_or_delete);
 
   // Can be called from any sequence.
   bool IsInitialized() const;
 
-  // Reads records with keys formed by prepending ids from |id_list| with
-  // |prefix|. If the record is found its id (without prefix) and value is
+  // Reads records with keys formed by prepending ids from `id_list` with
+  // `prefix`. If the record is found its id (without prefix) and value is
   // appended to record_list. If record is not found its id is appended to
-  // |missing_id_list|. It is not an error that records for ids are not found so
+  // `missing_id_list`. It is not an error that records for ids are not found so
   // function will still return success in this case.
   std::optional<ModelError> ReadRecordsWithPrefix(
       const std::string& prefix,
@@ -71,20 +73,20 @@ class DataTypeStoreBackend
       DataTypeStore::RecordList* record_list,
       DataTypeStore::IdList* missing_id_list);
 
-  // Reads all records with keys starting with |prefix|. Prefix is removed from
-  // key before it is added to |record_list|.
+  // Reads all records with keys starting with `prefix`. Prefix is removed from
+  // key before it is added to `record_list`.
   std::optional<ModelError> ReadAllRecordsWithPrefix(
       const std::string& prefix,
       DataTypeStore::RecordList* record_list);
 
-  // Writes modifications accumulated in |write_batch| to database.
+  // Writes modifications accumulated in `write_batch` to database.
   std::optional<ModelError> WriteModifications(
       std::unique_ptr<leveldb::WriteBatch> write_batch);
 
   std::optional<ModelError> DeleteDataAndMetadataForPrefix(
       const std::string& prefix);
 
-  // Migrate the db schema from |current_version| to |desired_version|.
+  // Migrate the db schema from `current_version` to `desired_version`.
   std::optional<ModelError> MigrateForTest(int64_t current_version,
                                            int64_t desired_version);
 
@@ -92,8 +94,9 @@ class DataTypeStoreBackend
   int64_t GetStoreVersionForTest();
 
   // Some constants exposed for testing.
-  static const int64_t kLatestSchemaVersion;
-  static const char kDBSchemaDescriptorRecordId[];
+  static constexpr int64_t kLatestSchemaVersion = 1;
+  static constexpr char kDBSchemaDescriptorRecordId[] =
+      "_mts_schema_descriptor";
 
  private:
   friend class base::RefCountedThreadSafe<DataTypeStoreBackend>;
@@ -113,8 +116,9 @@ class DataTypeStoreBackend
     // For compatibility with std:: deleters.
     template <typename T>
     void operator()(const T* ptr) {
-      if (!ptr)
+      if (!ptr) {
         return;
+      }
 
       if (task_runner_->RunsTasksInCurrentSequence()) {
         delete ptr;
@@ -126,16 +130,16 @@ class DataTypeStoreBackend
     scoped_refptr<base::SequencedTaskRunner> task_runner_;
   };
 
-  // Normally |env| should be nullptr, this causes leveldb to use default disk
+  // Normally `env` should be nullptr, this causes leveldb to use default disk
   // based environment from leveldb::Env::Default().
-  // Providing |env| allows to override environment used by leveldb for tests
+  // Providing `env` allows to override environment used by leveldb for tests
   // with in-memory or faulty environment.
   explicit DataTypeStoreBackend(std::unique_ptr<leveldb::Env> env);
 
   ~DataTypeStoreBackend();
 
-  // Opens leveldb database passing correct options. On success sets |db_| and
-  // returns ok status. On failure |db_| is nullptr and returned status reflects
+  // Opens leveldb database passing correct options. On success sets `db_` and
+  // returns ok status. On failure `db_` is nullptr and returned status reflects
   // failure type.
   leveldb::Status OpenDatabase(const std::string& path, leveldb::Env* env);
 
@@ -147,7 +151,7 @@ class DataTypeStoreBackend
   // If an error occurs, the value returned is kInvalidSchemaVersion(-1).
   int64_t GetStoreVersion();
 
-  // Migrate the db schema from |current_version| to |desired_version|,
+  // Migrate the db schema from `current_version` to `desired_version`,
   // returning nullopt on success.
   std::optional<ModelError> Migrate(int64_t current_version,
                                     int64_t desired_version);
@@ -162,6 +166,9 @@ class DataTypeStoreBackend
   std::optional<ModelError> UpdateDataPrefix(const std::string& old_prefix,
                                              const std::string& new_prefix);
 
+  // Removes all records starting with `prefix`.
+  std::optional<ModelError> RemoveDataPrefix(const std::string& prefix);
+
   // In some scenarios DataTypeStoreBackend holds ownership of env. Typical
   // example is when test creates in memory environment with CreateInMemoryEnv
   // and wants it to be destroyed along with backend. This is achieved by
@@ -170,13 +177,13 @@ class DataTypeStoreBackend
   // env_ declaration should appear before declaration of db_ because
   // environment object should still be valid when db_'s destructor is called.
   //
-  // Note that no custom deleter is used for |env_| because it is non-null for
-  // callers of CreateInMemoryForTest(), which initializes |db_| synchronously
-  // and hence |db_| also gets deleted without involving task-posting (i.e.
-  // |db_| cannot outlive |env_|).
+  // Note that no custom deleter is used for `env_` because it is non-null for
+  // callers of CreateInMemoryForTest(), which initializes `db_` synchronously
+  // and hence `db_` also gets deleted without involving task-posting (i.e.
+  // `db_` cannot outlive `env_`).
   const std::unique_ptr<leveldb::Env> env_;
 
-  // Destruction of |leveldb::DB| may incur blocking calls, and this class may
+  // Destruction of `leveldb::DB` may incur blocking calls, and this class may
   // be destructed on any sequence, so let's avoid worst-case blocking the UI
   // thread by destroying leveldb::DB on the sequence where Init() was called.
   std::unique_ptr<leveldb::DB, CustomOnTaskRunnerDeleter> db_;

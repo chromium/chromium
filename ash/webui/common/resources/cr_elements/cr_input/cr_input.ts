@@ -19,6 +19,7 @@ import {getTemplate} from './cr_input.html.js';
  * Input types supported by cr-input.
  */
 const SUPPORTED_INPUT_TYPES: Set<string> = new Set([
+  'email',
   'number',
   'password',
   'search',
@@ -200,7 +201,8 @@ export class CrInputElement extends PolymerElement {
   }
 
   override ariaDescription: string|null;
-  autoFocus: boolean;
+  override ariaLabel: string;
+  override autofocus: boolean;
   autoValidate: boolean;
   disabled: boolean;
   errorMessage: string;

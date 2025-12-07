@@ -1,11 +1,6 @@
 # Compile-time options passed to SQLite when compiling and building
 # the Chromium amalgamations.
 sqlite_common_configuration_flags = [
-  "SQLITE_ENABLE_FTS3",
-
-  # New unicode61 tokenizer with built-in tables.
-  "SQLITE_DISABLE_FTS3_UNICODE",
-
   # Chrome does not enable fts4, disable extra code.
   "SQLITE_DISABLE_FTS4_DEFERRED",
   "SQLITE_ENABLE_ICU",

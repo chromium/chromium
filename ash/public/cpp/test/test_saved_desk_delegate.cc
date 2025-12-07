@@ -5,6 +5,7 @@
 #include "ash/public/cpp/test/test_saved_desk_delegate.h"
 
 #include "ash/public/cpp/desk_template.h"
+#include "ash/public/cpp/window_properties.h"
 #include "base/containers/contains.h"
 #include "components/app_restore/app_launch_info.h"
 #include "ui/aura/client/aura_constants.h"
@@ -21,6 +22,15 @@ TestSavedDeskDelegate::~TestSavedDeskDelegate() = default;
 void TestSavedDeskDelegate::GetAppLaunchDataForSavedDesk(
     aura::Window* window,
     GetAppLaunchDataCallback callback) const {
+  if (window) {
+    if (const std::string* app_id = window->GetProperty(kAppIDKey)) {
+      if (app_ids_with_app_launch_info_.contains(*app_id)) {
+        std::move(callback).Run(std::make_unique<app_restore::AppLaunchInfo>(
+            *app_id, /*window_id=*/0));
+        return;
+      }
+    }
+  }
   std::move(callback).Run({});
 }
 
@@ -46,7 +56,6 @@ TestSavedDeskDelegate::MaybeRetrieveIconForSpecialIdentifier(
 
 void TestSavedDeskDelegate::GetFaviconForUrl(
     const std::string& page_url,
-    uint64_t lacros_profile_id,
     base::OnceCallback<void(const gfx::ImageSkia&)> callback,
     base::CancelableTaskTracker* tracker) const {
   std::move(callback).Run(gfx::ImageSkia());

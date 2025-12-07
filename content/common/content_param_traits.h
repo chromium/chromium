@@ -5,7 +5,7 @@
 // This file is used to define IPC::ParamTraits<> specializations for a number
 // of types so that they can be serialized over IPC.  IPC::ParamTraits<>
 // specializations for basic types (like int and std::string) and types in the
-// 'base' project can be found in ipc/ipc_message_utils.h.  This file contains
+// 'base' project can be found in ipc/param_traits_utils.h.  This file contains
 // specializations for types that are used by the content code, and which need
 // manual serialization code.  This is usually because they're not structs with
 // public members, or because the same type is being used in multiple
@@ -16,7 +16,6 @@
 
 #include "content/common/content_export.h"
 #include "content/common/content_param_traits_macros.h"
-#include "ipc/ipc_mojo_param_traits.h"
 
 namespace blink {
 class MessagePortChannel;
@@ -44,7 +43,6 @@ struct CONTENT_EXPORT ParamTraits<blink::MessagePortChannel> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -54,7 +52,6 @@ struct CONTENT_EXPORT ParamTraits<blink::MessagePortDescriptor> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -64,7 +61,6 @@ struct CONTENT_EXPORT ParamTraits<blink::PolicyValue> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -74,7 +70,6 @@ struct CONTENT_EXPORT ParamTraits<ui::AXMode> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -84,7 +79,6 @@ struct CONTENT_EXPORT ParamTraits<viz::FrameSinkId> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -94,7 +88,6 @@ struct CONTENT_EXPORT ParamTraits<viz::LocalSurfaceId> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -104,7 +97,6 @@ struct CONTENT_EXPORT ParamTraits<viz::SurfaceId> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -114,7 +106,6 @@ struct CONTENT_EXPORT ParamTraits<viz::SurfaceInfo> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 }  // namespace IPC

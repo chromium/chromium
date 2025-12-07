@@ -12,6 +12,7 @@
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_test.h"
+#import "ios/web/web_state/crw_web_view.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
@@ -47,8 +48,7 @@ class WebViewCreationUtilsTest : public WebTest {
 };
 
 // Tests web::BuildWKWebView function that it correctly returns a WKWebView
-// with the correct frame, WKProcessPool and calls WebClient::PreWebViewCreation
-// method.
+// with the correct frame and calls WebClient::PreWebViewCreation method.
 TEST_F(WebViewCreationUtilsTest, WKWebViewCreationWithBrowserState) {
   EXPECT_CALL(*creation_utils_web_client(), PreWebViewCreation()).Times(1);
 
@@ -56,19 +56,10 @@ TEST_F(WebViewCreationUtilsTest, WKWebViewCreationWithBrowserState) {
 
   EXPECT_TRUE([web_view isKindOfClass:[WKWebView class]]);
   EXPECT_TRUE(CGRectEqualToRect(kTestFrame, [web_view frame]));
-
-  // Make sure that web view's configuration shares the same process pool with
-  // browser state's configuration. Otherwise cookie will not be immediately
-  // shared between different web views.
-  WKWebViewConfigurationProvider& config_provider =
-      WKWebViewConfigurationProvider::FromBrowserState(GetBrowserState());
-  EXPECT_EQ(config_provider.GetWebViewConfiguration().processPool,
-            [[web_view configuration] processPool]);
 }
 
 // Tests web::BuildWKWebView function that it correctly returns a WKWebView
-// with the correct frame, WKProcessPool and calls WebClient::PreWebViewCreation
-// method.
+// with the correct frame and calls WebClient::PreWebViewCreation method.
 TEST_F(WebViewCreationUtilsTest, BuildWKWebViewForQueries) {
   EXPECT_CALL(*creation_utils_web_client(), PreWebViewCreation()).Times(0);
   WKWebViewConfigurationProvider& config_provider =
@@ -78,24 +69,6 @@ TEST_F(WebViewCreationUtilsTest, BuildWKWebViewForQueries) {
 
   EXPECT_TRUE([web_view isKindOfClass:[WKWebView class]]);
   EXPECT_TRUE(CGRectEqualToRect(CGRectZero, [web_view frame]));
-
-  EXPECT_EQ(config_provider.GetWebViewConfiguration().processPool,
-            [[web_view configuration] processPool]);
-}
-
-// Tests that web::BuildWKWebView always returns a web view with the same
-// processPool.
-TEST_F(WebViewCreationUtilsTest, WKWebViewsShareProcessPool) {
-  WKWebView* web_view = BuildWKWebView(kTestFrame, GetBrowserState());
-  ASSERT_TRUE(web_view);
-  WKWebView* web_view2 = BuildWKWebView(kTestFrame, GetBrowserState());
-  ASSERT_TRUE(web_view2);
-
-  // Make sure that web views share the same non-nil process pool. Otherwise
-  // cookie will not be immediately shared between different web views.
-  EXPECT_TRUE([[web_view configuration] processPool]);
-  EXPECT_EQ([[web_view configuration] processPool],
-            [[web_view2 configuration] processPool]);
 }
 
 }  // namespace web

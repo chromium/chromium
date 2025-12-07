@@ -4,6 +4,8 @@
 
 package org.chromium.components.autofill;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.RectF;
 import android.view.View;
 import android.view.ViewStructure;
@@ -15,6 +17,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.List;
 
 /**
@@ -24,16 +28,14 @@ import java.util.List;
  * AutofillRequest} to translate the FormData object into a ViewStructure.
  */
 @JNINamespace("autofill")
+@NullMarked
 public class FormData {
     public final int mSessionId;
     public final String mName;
     public final String mHost;
     public final List<FormFieldData> mFields;
-    // Every node must have an Autofill id. We (arbitrarily, but consistently) choose the
-    // maximum value for the form node.
-    private static final short FORM_NODE_ID = Short.MAX_VALUE;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     @CalledByNative
     static FormData createFormData(
             int sessionId,
@@ -68,12 +70,15 @@ public class FormData {
                 child.setFocused(true);
             }
             int virtualId = toFieldVirtualId(mSessionId, fieldIndex++);
-            child.setAutofillId(structure.getAutofillId(), virtualId);
-            field.setAutofillId(child.getAutofillId());
+            child.setAutofillId(assumeNonNull(structure.getAutofillId()), virtualId);
+            field.setAutofillId(assumeNonNull(child.getAutofillId()));
             if (field.mAutocompleteAttr != null && !field.mAutocompleteAttr.isEmpty()) {
                 child.setAutofillHints(field.mAutocompleteAttr.split(" +"));
             }
             child.setHint(field.mPlaceholder);
+            if (AndroidAutofillFeatures.ANDROID_AUTOFILL_FORWARD_IFRAME_ORIGIN.isEnabled()) {
+                child.setWebDomain(field.mOrigin);
+            }
 
             RectF bounds = field.getBoundsInContainerViewCoordinates();
             // Field has no scroll.
@@ -84,17 +89,27 @@ public class FormData {
                     /* scrollY= */ 0,
                     (int) bounds.width(),
                     (int) bounds.height());
-            child.setVisibility(field.getVisible() ? View.VISIBLE : View.INVISIBLE);
+            child.setVisibility(field.getFocusable() ? View.VISIBLE : View.INVISIBLE);
 
             ViewStructure.HtmlInfo.Builder builder =
                     child.newHtmlInfoBuilder("input")
-                            .addAttribute("name", field.mName)
-                            .addAttribute("type", field.mType)
-                            .addAttribute("label", field.mLabel)
-                            .addAttribute("ua-autofill-hints", field.mHeuristicType)
-                            .addAttribute("id", field.mId);
-            builder.addAttribute("crowdsourcing-autofill-hints", field.getServerType());
-            builder.addAttribute("computed-autofill-hints", field.getComputedType());
+                            .addAttribute("name", field.mName == null ? "" : field.mName)
+                            .addAttribute("type", field.mType == null ? "" : field.mType)
+                            .addAttribute("label", field.mLabel == null ? "" : field.mLabel)
+                            .addAttribute(
+                                    "ua-autofill-hints",
+                                    field.mHeuristicType == null ? "" : field.mHeuristicType)
+                            .addAttribute("id", field.mId == null ? "" : field.mId)
+                            .addAttribute(
+                                    "crowdsourcing-autofill-hints",
+                                    field.getServerType() == null ? "" : field.getServerType())
+                            .addAttribute(
+                                    "computed-autofill-hints",
+                                    field.getOverallType() == null ? "" : field.getOverallType());
+            if (AndroidAutofillFeatures.ANDROID_AUTOFILL_IMPROVED_VISIBILITY_DETECTION
+                    .isEnabled()) {
+                builder.addAttribute("visibility", field.getVisible() ? "visible" : "invisible");
+            }
             // Compose multiple predictions to a string separated by ','.
             String[] predictions = field.getServerPredictions();
             if (predictions != null && predictions.length > 0) {

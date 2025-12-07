@@ -23,8 +23,9 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -41,15 +42,6 @@ class ToolbarButtonTestApi {
   views::MenuRunner* menu_runner() { return button_->menu_runner_.get(); }
   bool menu_showing() const { return button_->menu_showing_; }
 
-  const gfx::Insets last_paint_insets() const {
-    return button_->last_paint_insets_;
-  }
-  const gfx::Insets layout_inset_delta() const {
-    return button_->layout_inset_delta_;
-  }
-  const std::optional<SkColor> last_border_color() const {
-    return button_->last_border_color_;
-  }
   void SetAnimationTimingForTesting() {
     button_->highlight_color_animation_.highlight_color_animation_
         .SetSlideDuration(base::TimeDelta());
@@ -143,7 +135,8 @@ TEST_F(ToolbarButtonViewsTest, MenuDoesNotShowWhenTabStripIsEmpty) {
   // expected result. If it actually tries to show the menu, then
   // CheckActiveWebContentsMenuModel::GetItemCount() will get called and the
   // EXPECT_TRUE() call inside will fail.
-  button->ShowContextMenuForView(nullptr, gfx::Point(), ui::MENU_SOURCE_MOUSE);
+  button->ShowContextMenuForView(nullptr, gfx::Point(),
+                                 ui::mojom::MenuSourceType::kMouse);
 }
 
 class ToolbarButtonUITest : public ChromeViewsTestBase {
@@ -190,7 +183,8 @@ TEST_F(ToolbarButtonUITest, ShowMenu) {
   EXPECT_EQ(views::Button::STATE_NORMAL, button_->GetState());
 
   // Show the menu. Note that it is asynchronous.
-  button_->ShowContextMenuForView(nullptr, gfx::Point(), ui::MENU_SOURCE_MOUSE);
+  button_->ShowContextMenuForView(nullptr, gfx::Point(),
+                                  ui::mojom::MenuSourceType::kMouse);
 
   EXPECT_TRUE(test_api.menu_showing());
   EXPECT_TRUE(test_api.menu_runner());
@@ -222,7 +216,7 @@ TEST_F(ToolbarButtonUITest, ShowMenuWithIdentifier) {
           base::BindLambdaForTesting(
               [&run_loop](ui::TrackedElement*) { run_loop.Quit(); }));
 
-  button_->ShowContextMenu(gfx::Point(), ui::MENU_SOURCE_MOUSE);
+  button_->ShowContextMenu(gfx::Point(), ui::mojom::MenuSourceType::kMouse);
   run_loop.Run();
   test_api.menu_runner()->Cancel();
 }
@@ -230,7 +224,8 @@ TEST_F(ToolbarButtonUITest, ShowMenuWithIdentifier) {
 
 // Test deleting a ToolbarButton while its menu is showing.
 TEST_F(ToolbarButtonUITest, DeleteWithMenu) {
-  button_->ShowContextMenuForView(nullptr, gfx::Point(), ui::MENU_SOURCE_MOUSE);
+  button_->ShowContextMenuForView(nullptr, gfx::Point(),
+                                  ui::mojom::MenuSourceType::kMouse);
   EXPECT_TRUE(test::ToolbarButtonTestApi(button_).menu_runner());
   widget()->SetContentsView(
       std::make_unique<views::View>());  // Deletes |button_|.

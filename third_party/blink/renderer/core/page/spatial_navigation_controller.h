@@ -31,10 +31,6 @@ class CORE_EXPORT SpatialNavigationController final
   bool HandleEscapeKeyboardEvent(KeyboardEvent* event);
   bool HandleImeSubmitKeyboardEvent(KeyboardEvent* event);
 
-  // Called when the enter key is released to clear local state because we don't
-  // get a consistent event stream when the Enter key is partially handled.
-  void ResetEnterKeyState();
-
   void Trace(Visitor*) const;
 
  private:
@@ -90,11 +86,6 @@ class CORE_EXPORT SpatialNavigationController final
   Element* GetFocusedElement() const;
 
   Member<Page> page_;
-
-  // We need to track whether the enter key has been handled in down or press to
-  // know whether to generate a click on the up.
-  bool enter_key_down_seen_ = false;
-  bool enter_key_press_seen_ = false;
 };
 
 }  // namespace blink

@@ -5,11 +5,13 @@
 package org.chromium.components.embedder_support.browser_context;
 
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Shared access point for components to fetch the singleton embedder specific implementation of
  * {@link PartitionResolver}. Should be set sometime early in app lifecycle.
  */
+@NullMarked
 public final class PartitionResolverSupplier {
     // The impl has thread checks and asserts set it only called once. Do not allow raw access to
     // the provider to ensure assert in get accessor is always run.

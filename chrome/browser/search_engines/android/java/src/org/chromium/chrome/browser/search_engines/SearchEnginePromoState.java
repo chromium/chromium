@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.search_engines;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -16,6 +18,7 @@ import java.lang.annotation.RetentionPolicy;
     SearchEnginePromoState.CHECKED_AND_SHOWN
 })
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 public @interface SearchEnginePromoState {
     int SHOULD_CHECK = -1;
     int CHECKED_NOT_SHOWN = 0;

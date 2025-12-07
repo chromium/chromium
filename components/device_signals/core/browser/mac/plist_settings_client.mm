@@ -9,6 +9,7 @@
 #include <utility>
 
 #import "base/apple/foundation_util.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
@@ -125,9 +126,9 @@ std::vector<SettingsItem> GetSettingItems(
       continue;
     }
 
-    int64_t plist_file_size = 0;
-    if (!base::GetFileSize(resolved_path, &plist_file_size) ||
-        plist_file_size > (kMaxFileSizeInMb << 20)) {
+    std::optional<int64_t> plist_file_size = base::GetFileSize(resolved_path);
+    if (!plist_file_size.has_value() ||
+        plist_file_size.value() > (kMaxFileSizeInMb << 20)) {
       item.presence = PresenceValue::kNotFound;
       items.push_back(item);
       continue;
@@ -163,17 +164,16 @@ std::vector<SettingsItem> GetSettingItems(
 
     if (NSString* setting_str = base::apple::ObjCCast<NSString>(value_ptr)) {
       if (setting_str.length <= kMaxStringSizeInBytes) {
-        std::string setting_json_string;
-        base::JSONWriter::Write(
-            base::Value(base::SysNSStringToUTF8(setting_str)),
-            &setting_json_string);
-        item.setting_json_value = setting_json_string;
+        item.setting_json_value =
+            base::WriteJson(base::Value(base::SysNSStringToUTF8(setting_str)))
+                .value_or("");
       }
     } else if (NSNumber* value_num =
                    base::apple::ObjCCast<NSNumber>(value_ptr)) {
       // Differentiating between integer and float types.
       const char* value_type = value_num.objCType;
-      if (strcmp(value_type, "d") == 0 || strcmp(value_type, "f") == 0) {
+      if (UNSAFE_TODO(strcmp(value_type, "d")) == 0 ||
+          UNSAFE_TODO(strcmp(value_type, "f")) == 0) {
         double setting_num = value_num.doubleValue;
         item.setting_json_value = base::StringPrintf("%f", setting_num);
       } else {

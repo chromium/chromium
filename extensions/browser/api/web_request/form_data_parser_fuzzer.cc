@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "extensions/browser/api/web_request/form_data_parser.h"
+
+#include <fuzzer/FuzzedDataProvider.h>
 #include <stdint.h>
 
 #include <memory>
@@ -9,12 +12,12 @@
 #include <utility>
 #include <vector>
 
-#include <fuzzer/FuzzedDataProvider.h>
-
 #include "base/logging.h"
-#include "extensions/browser/api/web_request/form_data_parser.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::FormDataParser;
 
@@ -54,8 +57,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::vector<std::string> sources;
   for (;;) {
     std::string source = provider.ConsumeRandomLengthString();
-    if (source.empty())
+    if (source.empty()) {
       break;
+    }
     sources.push_back(std::move(source));
   }
 
@@ -78,8 +82,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       break;
     }
   }
-  if (!parser)
+  if (!parser) {
     return 0;
+  }
 
   // Run the parser.
   for (const auto& source : sources) {

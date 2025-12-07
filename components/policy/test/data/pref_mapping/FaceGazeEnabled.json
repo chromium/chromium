@@ -1,0 +1,15 @@
+[
+  {
+    "os": [
+      "chromeos"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "settings.a11y.face_gaze.enabled",
+      "default_value": false,
+      "values_to_test": [
+        false,
+        true
+      ]
+    }
+  }
+]

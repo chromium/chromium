@@ -13,18 +13,14 @@ ThreatMetadata::ThreatMetadata()
 
 ThreatMetadata::ThreatMetadata(const ThreatMetadata& other) = default;
 
-ThreatMetadata::~ThreatMetadata() {}
+ThreatMetadata::ThreatMetadata(ThreatMetadata&& other) = default;
 
-bool ThreatMetadata::operator==(const ThreatMetadata& other) const {
-  return threat_pattern_type == other.threat_pattern_type &&
-         api_permissions == other.api_permissions &&
-         subresource_filter_match == other.subresource_filter_match &&
-         population_id == other.population_id;
-}
+ThreatMetadata& ThreatMetadata::operator=(const ThreatMetadata& other) =
+    default;
 
-bool ThreatMetadata::operator!=(const ThreatMetadata& other) const {
-  return !operator==(other);
-}
+ThreatMetadata& ThreatMetadata::operator=(ThreatMetadata&& other) = default;
+
+ThreatMetadata::~ThreatMetadata() = default;
 
 std::unique_ptr<base::trace_event::TracedValue> ThreatMetadata::ToTracedValue()
     const {
@@ -48,7 +44,6 @@ std::unique_ptr<base::trace_event::TracedValue> ThreatMetadata::ToTracedValue()
   }
   value->EndDictionary();
 
-  value->SetString("population_id", population_id);
   return value;
 }
 

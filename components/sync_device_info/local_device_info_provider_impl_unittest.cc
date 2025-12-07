@@ -7,7 +7,6 @@
 #include <optional>
 
 #include "base/memory/ptr_util.h"
-#include "build/chromeos_buildflags.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/sync_util.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
@@ -27,9 +26,6 @@ const char kLocalDeviceManufacturerName[] = "manufacturer";
 const char kLocalDeviceModelName[] = "model";
 const char kLocalFullHardwareClass[] = "test_full_hardware_class";
 
-const char kSharingVapidFCMRegistrationToken[] = "test_vapid_fcm_token";
-const char kSharingVapidP256dh[] = "test_vapid_p256_dh";
-const char kSharingVapidAuthSecret[] = "test_vapid_auth_secret";
 const char kSharingSenderIdFCMRegistrationToken[] = "test_sender_id_fcm_token";
 const char kSharingSenderIdP256dh[] = "test_sender_id_p256_dh";
 const char kSharingSenderIdAuthSecret[] = "test_sender_id_auth_secret";
@@ -115,7 +111,7 @@ class LocalDeviceInfoProviderImplTest : public testing::Test {
   std::unique_ptr<LocalDeviceInfoProviderImpl> provider_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(LocalDeviceInfoProviderImplTest, UmaToggleFullHardwareClass) {
   InitializeProvider(kLocalDeviceGuid);
 
@@ -135,7 +131,7 @@ TEST_F(LocalDeviceInfoProviderImplTest, UmaToggleFullHardwareClass) {
   EXPECT_EQ(provider_->GetLocalDeviceInfo()->full_hardware_class(),
             kLocalFullHardwareClass);
 }
-#else   // NOT BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // NOT BUILDFLAG(IS_CHROMEOS)
 TEST_F(LocalDeviceInfoProviderImplTest,
        UmaEnabledNonChromeOSHardwareClassEmpty) {
   // Tests that the |full_hardware_class| doesn't get updated when on
@@ -150,7 +146,7 @@ TEST_F(LocalDeviceInfoProviderImplTest,
   // |kLocalFullHardwareClass| is reset after retrieving |local_device_info|
   EXPECT_EQ(local_device_info->full_hardware_class(), "");
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(LocalDeviceInfoProviderImplTest, GetLocalDeviceInfo) {
   ASSERT_EQ(nullptr, provider_->GetLocalDeviceInfo());
@@ -242,9 +238,6 @@ TEST_F(LocalDeviceInfoProviderImplTest, SharingInfo) {
       std::begin(kSharingEnabledFeatures), std::end(kSharingEnabledFeatures));
   std::optional<DeviceInfo::SharingInfo> sharing_info =
       std::make_optional<DeviceInfo::SharingInfo>(
-          DeviceInfo::SharingTargetInfo{kSharingVapidFCMRegistrationToken,
-                                        kSharingVapidP256dh,
-                                        kSharingVapidAuthSecret},
           DeviceInfo::SharingTargetInfo{kSharingSenderIdFCMRegistrationToken,
                                         kSharingSenderIdP256dh,
                                         kSharingSenderIdAuthSecret},
@@ -256,11 +249,6 @@ TEST_F(LocalDeviceInfoProviderImplTest, SharingInfo) {
   const std::optional<DeviceInfo::SharingInfo>& local_sharing_info =
       provider_->GetLocalDeviceInfo()->sharing_info();
   ASSERT_TRUE(local_sharing_info);
-  EXPECT_EQ(kSharingVapidFCMRegistrationToken,
-            local_sharing_info->vapid_target_info.fcm_token);
-  EXPECT_EQ(kSharingVapidP256dh, local_sharing_info->vapid_target_info.p256dh);
-  EXPECT_EQ(kSharingVapidAuthSecret,
-            local_sharing_info->vapid_target_info.auth_secret);
   EXPECT_EQ(kSharingSenderIdFCMRegistrationToken,
             local_sharing_info->sender_id_target_info.fcm_token);
   EXPECT_EQ(kSharingSenderIdP256dh,
@@ -316,7 +304,7 @@ TEST_F(LocalDeviceInfoProviderImplTest, ShouldKeepStoredInvalidationFields) {
           SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
       /*sharing_info=*/std::nullopt, paask_info, kFCMRegistrationToken,
       kInterestedDataTypes,
-      /*floating_workspace_last_signin_timestamp=*/std::nullopt);
+      /*auto_sign_out_last_signin_timestamp=*/std::nullopt);
 
   // |kFCMRegistrationToken|, |kInterestedDataTypes|,
   // and |paask_info| should be taken from |device_info_restored_from_store|

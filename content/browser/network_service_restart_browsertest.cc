@@ -33,6 +33,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/commit_message_delayer.h"
@@ -96,7 +97,7 @@ int LoadBasicRequestOnUIThread(
       network::SimpleURLLoader::Create(std::move(request),
                                        TRAFFIC_ANNOTATION_FOR_TESTS);
   simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      url_loader_factory, simple_loader_helper.GetCallbackDeprecated());
+      url_loader_factory, simple_loader_helper.GetCallback());
   simple_loader_helper.WaitForCallback();
   return simple_loader->NetError();
 }
@@ -527,7 +528,8 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, BasicXHR) {
   // Flush the interface to make sure the frame host has received error
   // notification and the new URLLoaderFactoryBundle has been received by the
   // frame.
-  main_frame()->FlushNetworkAndNavigationInterfacesForTesting();
+  main_frame()->FlushNetworkAndNavigationInterfacesForTesting(
+      /*do_nothing_if_no_network_service_connection=*/false);
 
   EXPECT_TRUE(CheckCanLoadHttp(shell(), "/title2.html"));
   EXPECT_EQ(last_request_relative_url(), "/title2.html");
@@ -556,8 +558,6 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, BrowserUIFactory) {
 // it's called after the StoragePartition is deleted.
 IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
                        BrowserUIFactoryAfterStoragePartitionGone) {
-  if (IsInProcessNetworkService())
-    return;
   base::ScopedAllowBlockingForTesting allow_blocking;
   std::unique_ptr<ShellBrowserContext> browser_context =
       std::make_unique<ShellBrowserContext>(true);
@@ -567,6 +567,15 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
 
   EXPECT_EQ(net::OK, LoadBasicRequestOnUIThread(factory.get(), GetTestURL()));
 
+  // Reset partition's URLLoaderFactories. If not called, `factory` will not
+  // notice its underlying URLLoaderFactory Mojo pipe has been closed, so it
+  // will just reuse its old pipe. This both results in the test not testing
+  // what it's intended to check, and makes the test flaky, because the
+  // SimpleURLLoader may hang, possibly because Mojo can fail to send pipe
+  // disconnect messages when the pipe that other pipes are being sent over is
+  // closed before the pipe reach their destination.
+  partition->ResetURLLoaderFactories();
+  partition = nullptr;
   browser_context.reset();
 
   EXPECT_EQ(net::ERR_FAILED,
@@ -642,40 +651,15 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, WindowOpenXHR) {
   // Flush the interface to make sure the frame host has received error
   // notification and the new URLLoaderFactoryBundle has been received by the
   // frame.
-  main_frame()->FlushNetworkAndNavigationInterfacesForTesting();
+  main_frame()->FlushNetworkAndNavigationInterfacesForTesting(
+      /*do_nothing_if_no_network_service_connection=*/false);
 
   EXPECT_TRUE(CheckCanLoadHttpInWindowOpen("/title2.html"));
   EXPECT_EQ(last_request_relative_url(), "/title2.html");
 }
 
-// Run tests with PlzDedicatedWorker.
-// TODO(crbug.com/40093136): Merge this test fixture into
-// NetworkServiceRestartBrowserTest once PlzDedicatedWorker is enabled by
-// default.
-class NetworkServiceRestartForWorkerBrowserTest
-    : public NetworkServiceRestartBrowserTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  NetworkServiceRestartForWorkerBrowserTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          blink::features::kPlzDedicatedWorker);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          blink::features::kPlzDedicatedWorker);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         NetworkServiceRestartForWorkerBrowserTest,
-                         ::testing::Values(false, true));
-
 // Make sure worker fetch works after crash.
-IN_PROC_BROWSER_TEST_P(NetworkServiceRestartForWorkerBrowserTest, WorkerFetch) {
+IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, WorkerFetch) {
   if (IsInProcessNetworkService())
     return;
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
@@ -693,14 +677,15 @@ IN_PROC_BROWSER_TEST_P(NetworkServiceRestartForWorkerBrowserTest, WorkerFetch) {
   // Flush the interface to make sure the frame host has received error
   // notification and the new URLLoaderFactoryBundle has been received by the
   // frame.
-  main_frame()->FlushNetworkAndNavigationInterfacesForTesting();
+  main_frame()->FlushNetworkAndNavigationInterfacesForTesting(
+      /*do_nothing_if_no_network_service_connection=*/false);
 
   EXPECT_TRUE(CheckCanWorkerFetch("worker1", "/title2.html"));
   EXPECT_EQ(last_request_relative_url(), "/title2.html");
 }
 
 // Make sure multiple workers are tracked correctly and work after crash.
-IN_PROC_BROWSER_TEST_P(NetworkServiceRestartForWorkerBrowserTest,
+IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
                        MultipleWorkerFetch) {
   if (IsInProcessNetworkService())
     return;
@@ -720,7 +705,8 @@ IN_PROC_BROWSER_TEST_P(NetworkServiceRestartForWorkerBrowserTest,
   // Flush the interface to make sure the frame host has received error
   // notification and the new URLLoaderFactoryBundle has been received by the
   // frame.
-  main_frame()->FlushNetworkAndNavigationInterfacesForTesting();
+  main_frame()->FlushNetworkAndNavigationInterfacesForTesting(
+      /*do_nothing_if_no_network_service_connection=*/false);
 
   // Both workers should work after crash.
   EXPECT_TRUE(CheckCanWorkerFetch("worker1", "/title2.html"));
@@ -735,7 +721,8 @@ IN_PROC_BROWSER_TEST_P(NetworkServiceRestartForWorkerBrowserTest,
   // Crash the NetworkService process again. "worker2" should still work.
   SimulateNetworkServiceCrash();
   partition->FlushNetworkInterfaceForTesting();
-  main_frame()->FlushNetworkAndNavigationInterfacesForTesting();
+  main_frame()->FlushNetworkAndNavigationInterfacesForTesting(
+      /*do_nothing_if_no_network_service_connection=*/false);
 
   EXPECT_TRUE(CheckCanWorkerFetch("worker2", "/title2.html"));
   EXPECT_EQ(last_request_relative_url(), "/title2.html");
@@ -1123,14 +1110,15 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
 
   // Revoke network access for the generated nonce.
   base::UnguessableToken nonce = base::UnguessableToken::Create();
-  partition->RevokeNetworkForNoncesInNetworkContext({nonce}, base::DoNothing());
+  partition->RevokeNetworkForNoncesInNetworkContext({{nonce, {}}},
+                                                    base::DoNothing());
 
   // Make a get request, which should be blocked.
   network::mojom::URLLoaderFactoryParamsPtr params =
       network::mojom::URLLoaderFactoryParams::New();
   params->process_id = network::mojom::kBrowserProcessId;
   params->is_orb_enabled = false;
-  params->isolation_info = net::IsolationInfo::CreateTransientWithNonce(nonce);
+  params->isolation_info = net::IsolationInfo::CreateTransient(nonce);
 
   network::ResourceRequest request;
   request.url = GetTestURL();
@@ -1158,8 +1146,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
       network::mojom::URLLoaderFactoryParams::New();
   new_params->process_id = network::mojom::kBrowserProcessId;
   new_params->is_orb_enabled = false;
-  new_params->isolation_info =
-      net::IsolationInfo::CreateTransientWithNonce(nonce);
+  new_params->isolation_info = net::IsolationInfo::CreateTransient(nonce);
 
   std::unique_ptr<network::TestURLLoaderClient> new_client =
       FetchRequest(request, new_network_context, std::move(new_params));

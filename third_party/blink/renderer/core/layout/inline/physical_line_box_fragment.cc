@@ -72,11 +72,6 @@ FontHeight PhysicalLineBoxFragment::BaselineMetrics() const {
   return metrics_;
 }
 
-bool PhysicalLineBoxFragment::HasSoftWrapToNextLine() const {
-  const auto* break_token = To<InlineBreakToken>(GetBreakToken());
-  return break_token && !break_token->IsForcedBreak();
-}
-
 void PhysicalLineBoxFragment::TraceAfterDispatch(Visitor* visitor) const {
   PhysicalFragment::TraceAfterDispatch(visitor);
 }

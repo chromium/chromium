@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/no_destructor.h"
 #include "base/test/task_environment.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
@@ -160,10 +161,8 @@ class PushNotificationDesktopApiCallFlowImplTest : public testing::Test {
 
     EXPECT_EQ(serialized_request, network::GetUploadData(request));
 
-    std::string content_type;
-    EXPECT_TRUE(request.headers.GetHeader(net::HttpRequestHeaders::kContentType,
-                                          &content_type));
-    EXPECT_EQ("application/x-protobuf", content_type);
+    EXPECT_EQ("application/x-protobuf",
+              request.headers.GetHeader(net::HttpRequestHeaders::kContentType));
   }
 
   void CheckPushNotificationHttpPatchRequest(
@@ -181,10 +180,8 @@ class PushNotificationDesktopApiCallFlowImplTest : public testing::Test {
 
     EXPECT_EQ(serialized_request, network::GetUploadData(request));
 
-    std::string content_type;
-    EXPECT_TRUE(request.headers.GetHeader(net::HttpRequestHeaders::kContentType,
-                                          &content_type));
-    EXPECT_EQ("application/x-protobuf", content_type);
+    EXPECT_EQ("application/x-protobuf",
+              request.headers.GetHeader(net::HttpRequestHeaders::kContentType));
   }
 
   void CheckPushNotificationHttpGetRequest(

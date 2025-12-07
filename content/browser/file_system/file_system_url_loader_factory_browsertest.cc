@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_count.h"
 #include "base/command_line.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
@@ -22,6 +23,8 @@
 #include "base/i18n/unicodestring.h"
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
+#include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -40,6 +43,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/directory_listing.h"
 #include "net/base/mime_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_util.h"
@@ -125,8 +129,7 @@ void ReadDataPipeInternal(mojo::DataPipeConsumerHandle handle,
     switch (rv) {
       case MOJO_RESULT_BUSY:
       case MOJO_RESULT_INVALID_ARGUMENT:
-        NOTREACHED_IN_MIGRATION();
-        return;
+        NOTREACHED();
       case MOJO_RESULT_FAILED_PRECONDITION:
         std::move(quit_closure).Run();
         return;
@@ -147,8 +150,7 @@ void ReadDataPipeInternal(mojo::DataPipeConsumerHandle handle,
         break;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return;
+  NOTREACHED();
 }
 
 std::string ReadDataPipe(mojo::ScopedDataPipeConsumerHandle handle) {
@@ -328,7 +330,7 @@ class FileSystemURLLoaderFactoryTest
     EXPECT_EQ(base::File::FILE_OK, result);
   }
 
-  void EnsureFileExists(const std::string_view file_name) {
+  void EnsureFileExists(std::string_view file_name) {
     std::unique_ptr<FileSystemOperationContext> context(NewOperationContext());
 
     base::RunLoop loop;
@@ -343,7 +345,7 @@ class FileSystemURLLoaderFactoryTest
     loop.Run();
   }
 
-  void TruncateFile(const std::string_view file_name, int64_t length) {
+  void TruncateFile(std::string_view file_name, int64_t length) {
     std::unique_ptr<FileSystemOperationContext> context(NewOperationContext());
 
     base::RunLoop loop;
@@ -384,7 +386,7 @@ class FileSystemURLLoaderFactoryTest
               match.group(3, status));
     if (size >= 0) {
       icu::UnicodeString size_string(
-          base::FormatBytesUnlocalized(size).c_str());
+          net::GetSizeStringForTesting(base::ByteCount(size)).c_str());
       EXPECT_EQ(size_string, match.group(5, status));
     }
 
@@ -511,10 +513,10 @@ class FileSystemURLLoaderFactoryTest
     }
     if (extra_headers)
       request.headers.MergeFrom(*extra_headers);
-    const std::string storage_domain = url.DeprecatedGetOriginAsURL().host();
+    const std::string storage_domain = url.DeprecatedGetOriginAsURL().GetHost();
     mojo::Remote<network::mojom::URLLoaderFactory> factory(
         CreateFileSystemURLLoaderFactory(
-            render_frame_host()->GetProcess()->GetID(),
+            render_frame_host()->GetProcess()->GetDeprecatedID(),
             render_frame_host()->GetFrameTreeNodeId(), file_system_context,
             storage_domain,
             blink::StorageKey::CreateFirstParty(url::Origin::Create(url))));
@@ -728,10 +730,9 @@ IN_PROC_BROWSER_TEST_P(FileSystemURLLoaderFactoryTest, FileTest) {
   EXPECT_EQ(kTestFileData, response_text);
   ASSERT_TRUE(client->response_head()->headers) << "No response headers";
   EXPECT_EQ(200, client->response_head()->headers->response_code());
-  std::string cache_control;
-  EXPECT_TRUE(client->response_head()->headers->GetNormalizedHeader(
-      "cache-control", &cache_control));
-  EXPECT_EQ("no-cache", cache_control);
+  EXPECT_EQ(
+      client->response_head()->headers->GetNormalizedHeader("cache-control"),
+      "no-cache");
 }
 
 IN_PROC_BROWSER_TEST_P(FileSystemURLLoaderFactoryTest, FileTestDlp) {
@@ -758,10 +759,9 @@ IN_PROC_BROWSER_TEST_P(FileSystemURLLoaderFactoryTest, FileTestDlp) {
   EXPECT_EQ(kTestFileData, response_text);
   ASSERT_TRUE(client->response_head()->headers) << "No response headers";
   EXPECT_EQ(200, client->response_head()->headers->response_code());
-  std::string cache_control;
-  EXPECT_TRUE(client->response_head()->headers->GetNormalizedHeader(
-      "cache-control", &cache_control));
-  EXPECT_EQ("no-cache", cache_control);
+  EXPECT_EQ(
+      client->response_head()->headers->GetNormalizedHeader("cache-control"),
+      "no-cache");
 }
 
 // Verify that when site isolation is enabled, a renderer process for one
@@ -928,12 +928,8 @@ IN_PROC_BROWSER_TEST_P(FileSystemURLLoaderFactoryTest, FileGetMimeType) {
   WriteFile(kFilename, base::as_byte_span(file_data));
 
   std::string mime_type_direct;
-  base::FilePath::StringType extension =
-      base::FilePath().AppendASCII(kFilename).Extension();
-  if (!extension.empty())
-    extension = extension.substr(1);
-  EXPECT_TRUE(
-      net::GetWellKnownMimeTypeFromExtension(extension, &mime_type_direct));
+  EXPECT_TRUE(net::GetWellKnownMimeTypeFromFile(
+      base::FilePath::FromASCII(kFilename), &mime_type_direct));
 
   auto client = TestLoad(CreateFileSystemURL(kFilename));
   EXPECT_TRUE(client->has_received_response());
@@ -983,10 +979,9 @@ IN_PROC_BROWSER_TEST_P(FileSystemURLLoaderFactoryTest, FileAutoMountFileTest) {
   EXPECT_EQ(kTestFileData, response_text);
   EXPECT_EQ(200, client->response_head()->headers->response_code());
 
-  std::string cache_control;
-  EXPECT_TRUE(client->response_head()->headers->GetNormalizedHeader(
-      "cache-control", &cache_control));
-  EXPECT_EQ("no-cache", cache_control);
+  EXPECT_EQ(
+      client->response_head()->headers->GetNormalizedHeader("cache-control"),
+      "no-cache");
 
   ASSERT_TRUE(
       storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(

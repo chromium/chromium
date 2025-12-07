@@ -16,22 +16,23 @@ import static org.mockito.Mockito.when;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
-import org.chromium.chrome.browser.readaloud.player.PlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
-import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
+import org.chromium.chrome.modules.readaloud.Player;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -43,22 +44,21 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ExpandedPlayerCoordinatorUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private BottomSheetController mBottomSheetController;
-    @Mock private Playback mPlayback;
-    @Mock private PlayerCoordinator.Delegate mDelegate;
+    @Mock private Player.Delegate mDelegate;
     private PropertyModel mModel;
     @Mock private InteractionHandler mHandler;
     @Mock private ExpandedPlayerMediator mMediator;
     @Mock private ExpandedPlayerSheetContent mSheetContent;
     @Mock private OptionsMenuSheetContent mOptionsMenuSheetContent;
-    @Mock private VoiceMenuSheetContent mVoiceMenu;
+    @Mock private VoiceMenu mVoiceMenu;
     private ExpandedPlayerCoordinator mCoordinator;
     @Captor ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
     BottomSheetObserver mBottomSheetObserver;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         when(mDelegate.getBottomSheetController()).thenReturn(mBottomSheetController);
         mModel =
                 new PropertyModel.Builder(PlayerProperties.ALL_KEYS)

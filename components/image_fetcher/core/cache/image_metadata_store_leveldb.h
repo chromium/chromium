@@ -32,14 +32,14 @@ class CachedImageMetadataProto;
 // Stores image metadata in leveldb.
 class ImageMetadataStoreLevelDB : public ImageMetadataStore {
  public:
-  // Initializes the database with |proto_database_provider|.
+  // Initializes the database with `proto_database_provider`.
   ImageMetadataStoreLevelDB(
       leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
       const base::FilePath& database_dir,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       base::Clock* clock);
 
-  // Creates storage using the given |database| for local storage. Useful for
+  // Creates storage using the given `database` for local storage. Useful for
   // testing.
   ImageMetadataStoreLevelDB(
       std::unique_ptr<leveldb_proto::ProtoDatabase<CachedImageMetadataProto>>

@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/views/controls/views_text_services_context_menu.h"
 #include "ui/views/views_export.h"
 
@@ -38,11 +37,6 @@ class VIEWS_EXPORT ViewsTextServicesContextMenuBase
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   Textfield* client() { return client_; }
   const Textfield* client() const { return client_; }
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Returns the string ID of the clipboard history menu option.
-  int GetClipboardHistoryStringId() const;
 #endif
 
  private:

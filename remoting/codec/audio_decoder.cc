@@ -5,7 +5,7 @@
 #include "remoting/codec/audio_decoder.h"
 
 #include "base/memory/ptr_util.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "remoting/codec/audio_decoder_opus.h"
 #include "remoting/protocol/session_config.h"
 

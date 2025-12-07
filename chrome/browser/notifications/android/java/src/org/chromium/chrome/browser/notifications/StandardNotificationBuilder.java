@@ -4,13 +4,17 @@
 
 package org.chromium.chrome.browser.notifications;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
 
 /** Builds a notification using the standard Notification.BigTextStyle layout. */
+@NullMarked
 public class StandardNotificationBuilder extends NotificationBuilderBase {
     private final Context mContext;
 
@@ -23,7 +27,7 @@ public class StandardNotificationBuilder extends NotificationBuilderBase {
     public NotificationWrapper build(NotificationMetadata metadata) {
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
-                        mChannelId, metadata);
+                        assumeNonNull(mChannelId), metadata);
 
         builder.setContentTitle(mTitle);
         builder.setContentText(mBody);
@@ -36,6 +40,9 @@ public class StandardNotificationBuilder extends NotificationBuilderBase {
         }
         builder.setLargeIcon(getNormalizedLargeIcon());
         setStatusBarIcon(builder, mSmallIconId, mSmallIconBitmapForStatusBar);
+        if (mExtras != null) {
+            builder.addExtras(mExtras);
+        }
         builder.setContentIntent(mContentIntent);
         if (mDeleteIntentActionType != NotificationUmaTracker.ActionType.UNKNOWN) {
             builder.setDeleteIntent(mDeleteIntent, mDeleteIntentActionType);
@@ -48,7 +55,6 @@ public class StandardNotificationBuilder extends NotificationBuilderBase {
         for (Action settingsAction : mSettingsActions) {
             addActionToBuilder(builder, settingsAction);
         }
-        builder.setPriorityBeforeO(mPriority);
         builder.setDefaults(mDefaults);
         if (mVibratePattern != null) builder.setVibrate(mVibratePattern);
         builder.setSilent(mSilent);

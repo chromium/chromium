@@ -5,8 +5,13 @@
 #include "chromeos/ash/components/growth/campaigns_configuration_provider.h"
 
 #include <cstring>
+#include <string>
 
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
+#include "chromeos/ash/components/growth/campaigns_utils.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
@@ -18,7 +23,6 @@ namespace growth {
 namespace {
 
 constexpr char kGrowthFramework[] = "ChromeOS Growth Framework";
-constexpr char kGrowthCampaignsEventNamePrefix[] = "ChromeOSAshGrowthCampaigns";
 constexpr char kGrowthCampaignsEventUsed[] =
     "ChromeOSAshGrowthCampaigns_EventUsed";
 constexpr char kGrowthCampaignsEventTrigger[] =
@@ -40,6 +44,11 @@ feature_engagement::FeatureConfig CreateEmptyConfig() {
   return config;
 }
 
+bool HasDebugClearEventsSwitch() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ash::switches::kGrowthCampaignsClearEventsAtSessionStart);
+}
+
 }  // namespace
 
 CampaignsConfigurationProvider::CampaignsConfigurationProvider() {
@@ -54,8 +63,8 @@ bool CampaignsConfigurationProvider::MaybeProvideFeatureConfiguration(
     const feature_engagement::FeatureVector& known_features,
     const feature_engagement::GroupVector& known_groups) const {
   // Skip if it is not growth framework feature.
-  if (std::strcmp((&feature_engagement::kIPHGrowthFramework)->name,
-                  feature.name)) {
+  if (UNSAFE_TODO(std::strcmp((&feature_engagement::kIPHGrowthFramework)->name,
+                              feature.name))) {
     return false;
   }
 
@@ -72,12 +81,21 @@ const char* CampaignsConfigurationProvider::GetConfigurationSourceDescription()
 std::set<std::string>
 CampaignsConfigurationProvider::MaybeProvideAllowedEventPrefixes(
     const base::Feature& feature) const {
-  if (std::strcmp((&feature_engagement::kIPHGrowthFramework)->name,
-                  feature.name)) {
+  if (UNSAFE_TODO(std::strcmp((&feature_engagement::kIPHGrowthFramework)->name,
+                              feature.name))) {
     return {};
   }
 
-  return {kGrowthCampaignsEventNamePrefix};
+  // By returning empty prefixes, the `feature engagement` component will
+  // clear all events with the `kGrowthCampaignsEventNamePrefix` and prevent
+  // evaluating/recording the events with the prefix.
+  // NOTE: To make growth framework events targeting work, need to remove the
+  // debugging switch and restart the device again.
+  if (HasDebugClearEventsSwitch()) {
+    return {};
+  } else {
+    return {std::string(growth::GetGrowthCampaignsEventNamePrefix())};
+  }
 }
 
 void CampaignsConfigurationProvider::SetConfig(

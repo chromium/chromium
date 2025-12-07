@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_swap_buffer_provider.h"
 
 #include <dawn/dawn_proc.h>
 #include <dawn/wire/WireClient.h>
 #include <dawn/wire/WireServer.h>
 
+#include <array>
+
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "gpu/command_buffer/client/webgpu_interface_stub.h"
@@ -25,7 +23,6 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_native_test_support.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::Return;
 
 namespace blink {
@@ -67,18 +64,21 @@ class MockWebGPUInterface : public gpu::webgpu::WebGPUInterfaceStub {
     most_recent_generated_token =
         gpu::SyncToken(gpu::CommandBufferNamespace::GPU_IO,
                        gpu::CommandBufferId(), ++token_id_);
-    memcpy(sync_token, &most_recent_generated_token, sizeof(gpu::SyncToken));
+    UNSAFE_TODO(memcpy(sync_token, &most_recent_generated_token,
+                       sizeof(gpu::SyncToken)));
   }
   void GenSyncTokenCHROMIUM(GLbyte* sync_token) override {
     most_recent_generated_token =
         gpu::SyncToken(gpu::CommandBufferNamespace::GPU_IO,
                        gpu::CommandBufferId(), ++token_id_);
     most_recent_generated_token.SetVerifyFlush();
-    memcpy(sync_token, &most_recent_generated_token, sizeof(gpu::SyncToken));
+    UNSAFE_TODO(memcpy(sync_token, &most_recent_generated_token,
+                       sizeof(gpu::SyncToken)));
   }
 
   void WaitSyncTokenCHROMIUM(const GLbyte* sync_token_data) override {
-    memcpy(&most_recent_waited_token, sync_token_data, sizeof(gpu::SyncToken));
+    UNSAFE_TODO(memcpy(&most_recent_waited_token, sync_token_data,
+                       sizeof(gpu::SyncToken)));
   }
 
   gpu::SyncToken most_recent_generated_token;
@@ -98,8 +98,9 @@ class FakeProviderClient : public WebGPUSwapBufferProvider::Client {
     DCHECK(texture);
     texture = nullptr;
   }
-
+  void InitializeLayer(cc::Layer* layer) override {}
   void SetNeedsCompositingUpdate() override {}
+  bool IsGPUDeviceDestroyed() override { return false; }
 
   scoped_refptr<WebGPUMailboxTexture> texture;
 };
@@ -115,7 +116,8 @@ class WebGPUSwapBufferProviderForTests : public WebGPUSwapBufferProvider {
       wgpu::TextureUsage internal_usage,
       wgpu::TextureFormat format,
       PredefinedColorSpace color_space,
-      const gfx::HDRMetadata& hdr_metadata)
+      const gfx::HDRMetadata& hdr_metadata,
+      GrSurfaceOrigin surface_origin)
       : WebGPUSwapBufferProvider(client,
                                  dawn_control_client,
                                  device,
@@ -123,11 +125,13 @@ class WebGPUSwapBufferProviderForTests : public WebGPUSwapBufferProvider {
                                  internal_usage,
                                  format,
                                  color_space,
-                                 hdr_metadata),
+                                 hdr_metadata,
+                                 surface_origin),
         alive_(alive),
         client_(client) {
     texture_desc_ = {
         .usage = usage,
+        .dimension = wgpu::TextureDimension::e2D,
         .size = {0, 0, 1},
         .format = format,
     };
@@ -156,15 +160,17 @@ class WebGPUSwapBufferProviderForTests : public WebGPUSwapBufferProvider {
 
 class WireSerializer : public dawn::wire::CommandSerializer {
  public:
-  size_t GetMaximumAllocationSize() const override { return sizeof(buf_); }
+  size_t GetMaximumAllocationSize() const override {
+    return (buf_.size() * sizeof(decltype(buf_)::value_type));
+  }
 
   void SetHandler(dawn::wire::CommandHandler* handler) { handler_ = handler; }
 
   void* GetCmdSpace(size_t size) override {
-    if (size > sizeof(buf_)) {
+    if (size > (buf_.size() * sizeof(decltype(buf_)::value_type))) {
       return nullptr;
     }
-    if (sizeof(buf_) - size < offset_) {
+    if ((buf_.size() * sizeof(decltype(buf_)::value_type)) - size < offset_) {
       if (!Flush()) {
         return nullptr;
       }
@@ -175,14 +181,14 @@ class WireSerializer : public dawn::wire::CommandSerializer {
   }
 
   bool Flush() override {
-    bool success = handler_->HandleCommands(buf_, offset_) != nullptr;
+    bool success = handler_->HandleCommands(buf_.data(), offset_) != nullptr;
     offset_ = 0;
     return success;
   }
 
  private:
   size_t offset_ = 0;
-  char buf_[1024 * 1024];
+  std::array<char, 1024 * 1024> buf_;
   raw_ptr<dawn::wire::CommandHandler> handler_;
 };
 
@@ -230,26 +236,19 @@ class WebGPUSwapBufferProviderTest : public testing::Test {
         .backendType = wgpu::BackendType::Null,
     };
     instance_.RequestAdapter(
-        &options,
-        [](WGPURequestAdapterStatus status, WGPUAdapter cAdapter, const char*,
-           void* userdata) {
-          *static_cast<wgpu::Adapter*>(userdata) =
-              wgpu::Adapter::Acquire(cAdapter);
-        },
-        &adapter_);
+        &options, wgpu::CallbackMode::AllowSpontaneous,
+        [&](wgpu::RequestAdapterStatus status, wgpu::Adapter adapter,
+            wgpu::StringView) { adapter_ = std::move(adapter); });
     ASSERT_TRUE(c2s_serializer_.Flush());
     ASSERT_TRUE(s2c_serializer_.Flush());
     ASSERT_NE(adapter_, nullptr);
 
     wgpu::DeviceDescriptor deviceDesc = {};
     adapter_.RequestDevice(
-        &deviceDesc,
-        [](WGPURequestDeviceStatus, WGPUDevice cDevice, const char*,
-           void* userdata) {
-          *static_cast<wgpu::Device*>(userdata) =
-              wgpu::Device::Acquire(cDevice);
-        },
-        &device_);
+        &deviceDesc, wgpu::CallbackMode::AllowSpontaneous,
+        [&](wgpu::RequestDeviceStatus, wgpu::Device device, wgpu::StringView) {
+          device_ = std::move(device);
+        });
     ASSERT_TRUE(c2s_serializer_.Flush());
     ASSERT_TRUE(s2c_serializer_.Flush());
     ASSERT_NE(device_, nullptr);
@@ -260,7 +259,7 @@ class WebGPUSwapBufferProviderTest : public testing::Test {
     provider_ = base::MakeRefCounted<WebGPUSwapBufferProviderForTests>(
         &provider_alive_, &client_, device_.Get(), dawn_control_client_, kUsage,
         kInternalUsage, kFormat, PredefinedColorSpace::kSRGB,
-        gfx::HDRMetadata());
+        gfx::HDRMetadata(), kTopLeft_GrSurfaceOrigin);
   }
 
   void TearDown() override { Platform::UnsetMainThreadTaskRunnerForTesting(); }
@@ -312,43 +311,42 @@ TEST_F(WebGPUSwapBufferProviderTest,
 
   // Produce resources.
   EXPECT_CALL(*webgpu_, ReserveTexture(device_.Get(), _))
-      .WillOnce(
-          Invoke([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
-            return ReserveTextureImpl(device, desc);
-          }));
+      .WillOnce([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
+        return ReserveTextureImpl(device, desc);
+      });
   provider_->GetNewTexture(kSize);
-  EXPECT_TRUE(provider_->PrepareTransferableResource(nullptr, &resource1,
-                                                     &release_callback1));
+  EXPECT_TRUE(
+      provider_->PrepareTransferableResource(&resource1, &release_callback1));
 
   EXPECT_CALL(*webgpu_, ReserveTexture(device_.Get(), _))
-      .WillOnce(
-          Invoke([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
-            return ReserveTextureImpl(device, desc);
-          }));
+      .WillOnce([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
+        return ReserveTextureImpl(device, desc);
+      });
   provider_->GetNewTexture(kSize);
-  EXPECT_TRUE(provider_->PrepareTransferableResource(nullptr, &resource2,
-                                                     &release_callback2));
+  EXPECT_TRUE(
+      provider_->PrepareTransferableResource(&resource2, &release_callback2));
 
   EXPECT_CALL(*webgpu_, ReserveTexture(device_.Get(), _))
-      .WillOnce(
-          Invoke([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
-            return ReserveTextureImpl(device, desc);
-          }));
+      .WillOnce([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
+        return ReserveTextureImpl(device, desc);
+      });
   provider_->GetNewTexture(kSize);
-  EXPECT_TRUE(provider_->PrepareTransferableResource(nullptr, &resource3,
-                                                     &release_callback3));
+  EXPECT_TRUE(
+      provider_->PrepareTransferableResource(&resource3, &release_callback3));
 
-  // Release resources one by one, the provider should only be freed when the
-  // last one is called.
+  // Release resources one by one and expect shared images to be destroyed.
   provider_ = nullptr;
   std::move(release_callback1).Run(gpu::SyncToken(), false /* lostResource */);
-  ASSERT_EQ(provider_alive_, true);
+  resource1 = viz::TransferableResource();
+  EXPECT_EQ(sii_->shared_image_count(), 2u);
 
   std::move(release_callback2).Run(gpu::SyncToken(), false /* lostResource */);
-  ASSERT_EQ(provider_alive_, true);
+  resource2 = viz::TransferableResource();
+  EXPECT_EQ(sii_->shared_image_count(), 1u);
 
   std::move(release_callback3).Run(gpu::SyncToken(), false /* lostResource */);
-  ASSERT_EQ(provider_alive_, false);
+  resource3 = viz::TransferableResource();
+  EXPECT_EQ(sii_->shared_image_count(), 0u);
 }
 
 TEST_F(WebGPUSwapBufferProviderTest, VerifyResizingProperlyAffectsResources) {
@@ -360,38 +358,35 @@ TEST_F(WebGPUSwapBufferProviderTest, VerifyResizingProperlyAffectsResources) {
 
   // Produce one resource of size kSize.
   EXPECT_CALL(*webgpu_, ReserveTexture(device_.Get(), _))
-      .WillOnce(
-          Invoke([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
-            return ReserveTextureImpl(device, desc);
-          }));
+      .WillOnce([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
+        return ReserveTextureImpl(device, desc);
+      });
   provider_->GetNewTexture(kSize);
-  EXPECT_TRUE(provider_->PrepareTransferableResource(nullptr, &resource,
-                                                     &release_callback));
-  EXPECT_EQ(kSize, resource.size);
+  EXPECT_TRUE(
+      provider_->PrepareTransferableResource(&resource, &release_callback));
+  EXPECT_EQ(kSize, resource.GetSize());
   std::move(release_callback).Run(gpu::SyncToken(), false /* lostResource */);
 
   // Produce one resource of size kOtherSize.
   EXPECT_CALL(*webgpu_, ReserveTexture(device_.Get(), _))
-      .WillOnce(
-          Invoke([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
-            return ReserveTextureImpl(device, desc);
-          }));
+      .WillOnce([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
+        return ReserveTextureImpl(device, desc);
+      });
   provider_->GetNewTexture(kOtherSize);
-  EXPECT_TRUE(provider_->PrepareTransferableResource(nullptr, &resource,
-                                                     &release_callback));
-  EXPECT_EQ(kOtherSize, resource.size);
+  EXPECT_TRUE(
+      provider_->PrepareTransferableResource(&resource, &release_callback));
+  EXPECT_EQ(kOtherSize, resource.GetSize());
   std::move(release_callback).Run(gpu::SyncToken(), false /* lostResource */);
 
   // Produce one resource of size kSize again.
   EXPECT_CALL(*webgpu_, ReserveTexture(device_.Get(), _))
-      .WillOnce(
-          Invoke([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
-            return ReserveTextureImpl(device, desc);
-          }));
+      .WillOnce([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
+        return ReserveTextureImpl(device, desc);
+      });
   provider_->GetNewTexture(kSize);
-  EXPECT_TRUE(provider_->PrepareTransferableResource(nullptr, &resource,
-                                                     &release_callback));
-  EXPECT_EQ(kSize, resource.size);
+  EXPECT_TRUE(
+      provider_->PrepareTransferableResource(&resource, &release_callback));
+  EXPECT_EQ(kSize, resource.GetSize());
   std::move(release_callback).Run(gpu::SyncToken(), false /* lostResource */);
 }
 
@@ -404,18 +399,17 @@ TEST_F(WebGPUSwapBufferProviderTest, VerifyInsertAndWaitSyncTokenCorrectly) {
   // Produce the first resource, check that WebGPU will wait for the creation of
   // the shared image
   EXPECT_CALL(*webgpu_, ReserveTexture(device_.Get(), _))
-      .WillOnce(
-          Invoke([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
-            return ReserveTextureImpl(device, desc);
-          }));
+      .WillOnce([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
+        return ReserveTextureImpl(device, desc);
+      });
   provider_->GetNewTexture(kSize);
   EXPECT_EQ(sii_->MostRecentGeneratedToken(),
             webgpu_->most_recent_waited_token);
 
   // WebGPU should produce a token so that the next of user of the resource can
   // synchronize properly
-  EXPECT_TRUE(provider_->PrepareTransferableResource(nullptr, &resource,
-                                                     &release_callback));
+  EXPECT_TRUE(
+      provider_->PrepareTransferableResource(&resource, &release_callback));
   EXPECT_EQ(webgpu_->most_recent_generated_token, resource.sync_token());
 
   // Check that the release token is used to synchronize the shared image
@@ -423,6 +417,7 @@ TEST_F(WebGPUSwapBufferProviderTest, VerifyInsertAndWaitSyncTokenCorrectly) {
   gpu::SyncToken release_token;
   webgpu_->GenSyncTokenCHROMIUM(release_token.GetData());
   std::move(release_callback).Run(release_token, false /* lostResource */);
+  resource = viz::TransferableResource();
 
   // Release the unused swap buffers held by the provider.
   provider_ = nullptr;
@@ -442,45 +437,42 @@ TEST_F(WebGPUSwapBufferProviderTest, ReuseSwapBuffers) {
   // Produce some swap buffers
   viz::ReleaseCallback release_callback_0;
   EXPECT_CALL(*webgpu_, ReserveTexture(device_.Get(), _))
-      .WillOnce(
-          Invoke([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
-            return ReserveTextureImpl(device, desc);
-          }));
+      .WillOnce([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
+        return ReserveTextureImpl(device, desc);
+      });
   provider_->GetNewTexture(kSize);
 
   EXPECT_TRUE(
       shared_images.insert(provider_->GetCurrentMailboxForTesting()).second);
 
-  EXPECT_TRUE(provider_->PrepareTransferableResource(nullptr, &resource,
-                                                     &release_callback_0));
+  EXPECT_TRUE(
+      provider_->PrepareTransferableResource(&resource, &release_callback_0));
 
   viz::ReleaseCallback release_callback_1;
   EXPECT_CALL(*webgpu_, ReserveTexture(device_.Get(), _))
-      .WillOnce(
-          Invoke([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
-            return ReserveTextureImpl(device, desc);
-          }));
+      .WillOnce([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
+        return ReserveTextureImpl(device, desc);
+      });
   provider_->GetNewTexture(kSize);
 
   EXPECT_TRUE(
       shared_images.insert(provider_->GetCurrentMailboxForTesting()).second);
 
-  EXPECT_TRUE(provider_->PrepareTransferableResource(nullptr, &resource,
-                                                     &release_callback_1));
+  EXPECT_TRUE(
+      provider_->PrepareTransferableResource(&resource, &release_callback_1));
 
   viz::ReleaseCallback release_callback_2;
   EXPECT_CALL(*webgpu_, ReserveTexture(device_.Get(), _))
-      .WillOnce(
-          Invoke([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
-            return ReserveTextureImpl(device, desc);
-          }));
+      .WillOnce([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
+        return ReserveTextureImpl(device, desc);
+      });
   provider_->GetNewTexture(kSize);
 
   EXPECT_TRUE(
       shared_images.insert(provider_->GetCurrentMailboxForTesting()).second);
 
-  EXPECT_TRUE(provider_->PrepareTransferableResource(nullptr, &resource,
-                                                     &release_callback_2));
+  EXPECT_TRUE(
+      provider_->PrepareTransferableResource(&resource, &release_callback_2));
 
   // Destroy the swap buffers.
   std::move(release_callback_0).Run(gpu::SyncToken(), false /* lostResource */);
@@ -489,30 +481,28 @@ TEST_F(WebGPUSwapBufferProviderTest, ReuseSwapBuffers) {
 
   // Produce two swap buffers
   EXPECT_CALL(*webgpu_, ReserveTexture(device_.Get(), _))
-      .WillOnce(
-          Invoke([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
-            return ReserveTextureImpl(device, desc);
-          }));
+      .WillOnce([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
+        return ReserveTextureImpl(device, desc);
+      });
   provider_->GetNewTexture(kSize);
 
   EXPECT_FALSE(
       shared_images.insert(provider_->GetCurrentMailboxForTesting()).second);
 
-  EXPECT_TRUE(provider_->PrepareTransferableResource(nullptr, &resource,
-                                                     &release_callback_1));
+  EXPECT_TRUE(
+      provider_->PrepareTransferableResource(&resource, &release_callback_1));
 
   EXPECT_CALL(*webgpu_, ReserveTexture(device_.Get(), _))
-      .WillOnce(
-          Invoke([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
-            return ReserveTextureImpl(device, desc);
-          }));
+      .WillOnce([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
+        return ReserveTextureImpl(device, desc);
+      });
   provider_->GetNewTexture(kSize);
 
   EXPECT_FALSE(
       shared_images.insert(provider_->GetCurrentMailboxForTesting()).second);
 
-  EXPECT_TRUE(provider_->PrepareTransferableResource(nullptr, &resource,
-                                                     &release_callback_2));
+  EXPECT_TRUE(
+      provider_->PrepareTransferableResource(&resource, &release_callback_2));
 }
 
 // Ensures swap buffers will NOT be recycled if resized.
@@ -528,31 +518,29 @@ TEST_F(WebGPUSwapBufferProviderTest, ReuseSwapBufferResize) {
 
   viz::ReleaseCallback release_callback_1;
   EXPECT_CALL(*webgpu_, ReserveTexture(device_.Get(), _))
-      .WillOnce(
-          Invoke([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
-            return ReserveTextureImpl(device, desc);
-          }));
+      .WillOnce([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
+        return ReserveTextureImpl(device, desc);
+      });
   provider_->GetNewTexture(kSize);
 
   EXPECT_TRUE(
       shared_images.insert(provider_->GetCurrentMailboxForTesting()).second);
 
-  EXPECT_TRUE(provider_->PrepareTransferableResource(nullptr, &resource,
-                                                     &release_callback_1));
+  EXPECT_TRUE(
+      provider_->PrepareTransferableResource(&resource, &release_callback_1));
 
   viz::ReleaseCallback release_callback_2;
   EXPECT_CALL(*webgpu_, ReserveTexture(device_.Get(), _))
-      .WillOnce(
-          Invoke([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
-            return ReserveTextureImpl(device, desc);
-          }));
+      .WillOnce([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
+        return ReserveTextureImpl(device, desc);
+      });
   provider_->GetNewTexture(kSize);
 
   EXPECT_TRUE(
       shared_images.insert(provider_->GetCurrentMailboxForTesting()).second);
 
-  EXPECT_TRUE(provider_->PrepareTransferableResource(nullptr, &resource,
-                                                     &release_callback_2));
+  EXPECT_TRUE(
+      provider_->PrepareTransferableResource(&resource, &release_callback_2));
 
   // Destroy swap buffers
   std::move(release_callback_1).Run(gpu::SyncToken(), false /* lostResource */);
@@ -563,31 +551,29 @@ TEST_F(WebGPUSwapBufferProviderTest, ReuseSwapBufferResize) {
 
   viz::ReleaseCallback release_callback_3;
   EXPECT_CALL(*webgpu_, ReserveTexture(device_.Get(), _))
-      .WillOnce(
-          Invoke([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
-            return ReserveTextureImpl(device, desc);
-          }));
+      .WillOnce([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
+        return ReserveTextureImpl(device, desc);
+      });
   provider_->GetNewTexture(kOtherSize);
 
   EXPECT_TRUE(
       shared_images.insert(provider_->GetCurrentMailboxForTesting()).second);
 
-  EXPECT_TRUE(provider_->PrepareTransferableResource(nullptr, &resource,
-                                                     &release_callback_3));
+  EXPECT_TRUE(
+      provider_->PrepareTransferableResource(&resource, &release_callback_3));
 
   viz::ReleaseCallback release_callback_4;
   EXPECT_CALL(*webgpu_, ReserveTexture(device_.Get(), _))
-      .WillOnce(
-          Invoke([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
-            return ReserveTextureImpl(device, desc);
-          }));
+      .WillOnce([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
+        return ReserveTextureImpl(device, desc);
+      });
   provider_->GetNewTexture(kOtherSize);
 
   EXPECT_TRUE(
       shared_images.insert(provider_->GetCurrentMailboxForTesting()).second);
 
-  EXPECT_TRUE(provider_->PrepareTransferableResource(nullptr, &resource,
-                                                     &release_callback_4));
+  EXPECT_TRUE(
+      provider_->PrepareTransferableResource(&resource, &release_callback_4));
 }
 
 // Regression test for crbug.com/1236418 where calling
@@ -596,22 +582,21 @@ TEST_F(WebGPUSwapBufferProviderTest, ReuseSwapBufferResize) {
 TEST_F(WebGPUSwapBufferProviderTest,
        PrepareTransferableResourceTwiceAfterDestroy) {
   EXPECT_CALL(*webgpu_, ReserveTexture(device_.Get(), _))
-      .WillOnce(
-          Invoke([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
-            return ReserveTextureImpl(device, desc);
-          }));
+      .WillOnce([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
+        return ReserveTextureImpl(device, desc);
+      });
   provider_->GetNewTexture(gfx::Size(10, 10));
 
   dawn_control_client_->Destroy();
 
   viz::TransferableResource resource;
   viz::ReleaseCallback release_callback_1;
-  EXPECT_FALSE(provider_->PrepareTransferableResource(nullptr, &resource,
-                                                      &release_callback_1));
+  EXPECT_FALSE(
+      provider_->PrepareTransferableResource(&resource, &release_callback_1));
 
   viz::ReleaseCallback release_callback_2;
-  EXPECT_FALSE(provider_->PrepareTransferableResource(nullptr, &resource,
-                                                      &release_callback_2));
+  EXPECT_FALSE(
+      provider_->PrepareTransferableResource(&resource, &release_callback_2));
 }
 
 // Test that checks mailbox is dissociated when Neuter() is called.
@@ -626,24 +611,22 @@ TEST_F(WebGPUSwapBufferProviderTest, VerifyMailboxDissociationOnNeuter) {
 
   // Produce and prepare transferable resource
   EXPECT_CALL(*webgpu_, ReserveTexture(device_.Get(), _))
-      .WillOnce(
-          Invoke([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
-            return ReserveTextureImpl(device, desc);
-          }));
+      .WillOnce([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
+        return ReserveTextureImpl(device, desc);
+      });
   provider_->GetNewTexture(kSize);
   EXPECT_EQ(webgpu_->num_associated_mailboxes, 1);
 
-  EXPECT_TRUE(provider_->PrepareTransferableResource(nullptr, &resource1,
-                                                     &release_callback1));
+  EXPECT_TRUE(
+      provider_->PrepareTransferableResource(&resource1, &release_callback1));
   EXPECT_EQ(webgpu_->num_associated_mailboxes, 0);
 
   // Produce 2nd resource but this time neuters the provider. Mailbox must also
   // be dissociated.
   EXPECT_CALL(*webgpu_, ReserveTexture(device_.Get(), _))
-      .WillOnce(
-          Invoke([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
-            return ReserveTextureImpl(device, desc);
-          }));
+      .WillOnce([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
+        return ReserveTextureImpl(device, desc);
+      });
   provider_->GetNewTexture(kSize);
   EXPECT_EQ(webgpu_->num_associated_mailboxes, 1);
 
@@ -661,15 +644,14 @@ TEST_F(WebGPUSwapBufferProviderTest, VerifyNoDoubleMailboxDissociation) {
 
   // Produce and prepare transferable resource
   EXPECT_CALL(*webgpu_, ReserveTexture(device_.Get(), _))
-      .WillOnce(
-          Invoke([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
-            return ReserveTextureImpl(device, desc);
-          }));
+      .WillOnce([&](WGPUDevice device, const WGPUTextureDescriptor* desc) {
+        return ReserveTextureImpl(device, desc);
+      });
   provider_->GetNewTexture(kSize);
   EXPECT_EQ(webgpu_->num_associated_mailboxes, 1);
 
-  EXPECT_TRUE(provider_->PrepareTransferableResource(nullptr, &resource1,
-                                                     &release_callback1));
+  EXPECT_TRUE(
+      provider_->PrepareTransferableResource(&resource1, &release_callback1));
   EXPECT_EQ(webgpu_->num_associated_mailboxes, 0);
 
   // Calling Neuter() won't dissociate mailbox again.
@@ -687,7 +669,7 @@ TEST_F(WebGPUSwapBufferProviderTest, ReserveTextureDescriptorForReflection) {
   // Produce one resource of size kSize and check that the descriptor passed to
   // ReserveTexture is correct..
   EXPECT_CALL(*webgpu_, ReserveTexture(device_.Get(), _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](WGPUDevice device, const WGPUTextureDescriptor* desc) -> auto {
             EXPECT_NE(desc, nullptr);
             EXPECT_EQ(desc->size.width, static_cast<uint32_t>(kSize.width()));
@@ -699,27 +681,27 @@ TEST_F(WebGPUSwapBufferProviderTest, ReserveTextureDescriptorForReflection) {
             EXPECT_EQ(desc->mipLevelCount, 1u);
             EXPECT_EQ(desc->sampleCount, 1u);
             return ReserveTextureImpl(device, desc);
-          }));
+          });
   provider_->GetNewTexture(kSize);
-  EXPECT_TRUE(provider_->PrepareTransferableResource(nullptr, &resource,
-                                                     &release_callback));
-  EXPECT_EQ(kSize, resource.size);
+  EXPECT_TRUE(
+      provider_->PrepareTransferableResource(&resource, &release_callback));
+  EXPECT_EQ(kSize, resource.GetSize());
   std::move(release_callback).Run(gpu::SyncToken(), false /* lostResource */);
 
   // Produce one resource of size kOtherSize. The descriptor passed to
   // ReserveTexture is updated accordingly.
   EXPECT_CALL(*webgpu_, ReserveTexture(device_.Get(), _))
-      .WillOnce(Invoke([&](WGPUDevice device,
-                           const WGPUTextureDescriptor* desc) -> auto {
+      .WillOnce([&](WGPUDevice device,
+                    const WGPUTextureDescriptor* desc) -> auto {
         EXPECT_EQ(desc->size.width, static_cast<uint32_t>(kOtherSize.width()));
         EXPECT_EQ(desc->size.height,
                   static_cast<uint32_t>(kOtherSize.height()));
         return ReserveTextureImpl(device, desc);
-      }));
+      });
   provider_->GetNewTexture(kOtherSize);
-  EXPECT_TRUE(provider_->PrepareTransferableResource(nullptr, &resource,
-                                                     &release_callback));
-  EXPECT_EQ(kOtherSize, resource.size);
+  EXPECT_TRUE(
+      provider_->PrepareTransferableResource(&resource, &release_callback));
+  EXPECT_EQ(kOtherSize, resource.GetSize());
   std::move(release_callback).Run(gpu::SyncToken(), false /* lostResource */);
 }
 
@@ -738,39 +720,37 @@ TEST_F(WebGPUSwapBufferProviderTest, VerifyZeroSizeRejects) {
   EXPECT_EQ(nullptr, provider_->GetNewTexture(kZeroHeight));
 }
 
-// Verifies that GetLastWebGPUMailboxTexture() returns empty information if no
+// Verifies that GetFrontBufferSharedImage() returns empty information if no
 // swapbuffer has been created.
 TEST_F(WebGPUSwapBufferProviderTest,
-       GetLastWebGPUMailboxTextureReturnsEmptyWithoutSwapBuffer) {
-  auto mailbox_texture = provider_->GetLastWebGPUMailboxTexture();
-  EXPECT_EQ(mailbox_texture, nullptr);
+       GetFrontBufferSharedImageReturnsEmptyWithoutSwapBuffer) {
+  auto front_buffer_si = provider_->GetFrontBufferSharedImage();
+  EXPECT_EQ(front_buffer_si, nullptr);
 }
 
-// Verifies that GetLastWebGPUMailboxTexture() returns a correctly-configured
-// texture if a swapbuffer has been created.
+// Verifies that GetFrontBufferSharedImage() returns a correctly-configured
+// SharedImage if the contents of the swapbuffer have been sent to the
+// compositor.
 TEST_F(WebGPUSwapBufferProviderTest,
-       GetLastWebGPUMailboxTextureReturnsValidTextureWithSwapBuffer) {
+       GetFrontBufferSharedImageReturnsValidSharedImageAfterSwap) {
   const gfx::Size kSize(10, 20);
 
   EXPECT_CALL(*webgpu_, ReserveTexture(device_.Get(), _))
-      .WillRepeatedly(Invoke(
+      .WillRepeatedly(
           [&](WGPUDevice device, const WGPUTextureDescriptor* desc) -> auto {
             return ReserveTextureImpl(device, desc);
-          }));
+          });
   provider_->GetNewTexture(kSize);
 
-  auto mailbox_texture = provider_->GetLastWebGPUMailboxTexture();
-  EXPECT_NE(mailbox_texture, nullptr);
+  viz::TransferableResource resource;
+  viz::ReleaseCallback release_callback;
+  EXPECT_TRUE(
+      provider_->PrepareTransferableResource(&resource, &release_callback));
 
-  auto texture = mailbox_texture->GetTexture();
-  EXPECT_EQ(texture.GetUsage(), kUsage);
-  EXPECT_EQ(texture.GetFormat(), kFormat);
-  EXPECT_EQ(texture.GetDepthOrArrayLayers(), 1u);
-  EXPECT_EQ(texture.GetDimension(), wgpu::TextureDimension::e2D);
-  EXPECT_EQ(texture.GetMipLevelCount(), 1u);
-  EXPECT_EQ(texture.GetSampleCount(), 1u);
-  EXPECT_EQ(texture.GetHeight(), static_cast<uint32_t>(kSize.height()));
-  EXPECT_EQ(texture.GetWidth(), static_cast<uint32_t>(kSize.width()));
+  auto front_buffer_si = provider_->GetFrontBufferSharedImage();
+  EXPECT_NE(front_buffer_si, nullptr);
+  EXPECT_EQ(front_buffer_si->size(), kSize);
+  EXPECT_EQ(front_buffer_si->format(), resource.GetFormat());
 }
 
 // Verifies that GetNewTexture() passes client-specified internal usages to
@@ -786,38 +766,14 @@ TEST_F(WebGPUSwapBufferProviderTest,
             wgpu::TextureUsage::None);
 
   EXPECT_CALL(*webgpu_, ReserveTexture(device_.Get(), _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](WGPUDevice device, const WGPUTextureDescriptor* desc) -> auto {
             return ReserveTextureImpl(device, desc);
-          }));
+          });
   provider_->GetNewTexture(kSize);
 
   EXPECT_EQ(webgpu_->internal_usage_from_most_recent_associate_mailbox_call,
             kInternalUsage | wgpu::TextureUsage::RenderAttachment);
-}
-
-// Verifies that GetLastMailboxTexture() passes client-specified internal usages
-// to AssociateMailbox() and doesn't additionally add RenderAttachment (since
-// it does not instruct the decoder to do lazy clearing on this texture).
-TEST_F(WebGPUSwapBufferProviderTest,
-       GetLastMailboxTexturePassesClientSpecifiedInternalUsage) {
-  ASSERT_EQ(kInternalUsage & wgpu::TextureUsage::RenderAttachment, 0);
-
-  const gfx::Size kSize(10, 20);
-
-  EXPECT_EQ(webgpu_->internal_usage_from_most_recent_associate_mailbox_call,
-            wgpu::TextureUsage::None);
-
-  EXPECT_CALL(*webgpu_, ReserveTexture(device_.Get(), _))
-      .WillRepeatedly(Invoke(
-          [&](WGPUDevice device, const WGPUTextureDescriptor* desc) -> auto {
-            return ReserveTextureImpl(device, desc);
-          }));
-  provider_->GetNewTexture(kSize);
-
-  provider_->GetLastWebGPUMailboxTexture();
-  EXPECT_EQ(webgpu_->internal_usage_from_most_recent_associate_mailbox_call,
-            kInternalUsage);
 }
 
 }  // namespace blink

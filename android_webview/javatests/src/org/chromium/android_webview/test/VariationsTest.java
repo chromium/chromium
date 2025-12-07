@@ -15,7 +15,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
-import org.chromium.android_webview.AwFeatureMap;
+import org.chromium.android_webview.common.AwFeatureMap;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.variations.VariationsUtils;
 import org.chromium.android_webview.test.util.VariationsTestUtils;
@@ -97,7 +97,7 @@ public class VariationsTest extends AwParameterizedTest {
         try {
             FeatureAssociation features =
                     FeatureAssociation.newBuilder()
-                            .addEnableFeature(VariationsTestUtils.TEST_FEATURE_NAME)
+                            .addEnableFeature(AwFeatures.WEBVIEW_TEST_FEATURE)
                             .build();
             createAndLoadSeedFile(features);
 

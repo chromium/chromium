@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] last frame at 10
+  assert_approx_equals: source_buffer.buffered.end() after append expected 0.45833333333333337 +/- 0.000001 but got 0.458332
+[FAIL] last frame at 22
+  assert_approx_equals: source_buffer.buffered.end() after append expected 0.9583333333333333 +/- 0.000001 but got 0.958332
+Harness: the test ran to completion.

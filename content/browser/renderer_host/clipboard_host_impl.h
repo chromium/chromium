@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_CLIPBOARD_HOST_IMPL_H_
 #define CONTENT_BROWSER_RENDERER_HOST_CLIPBOARD_HOST_IMPL_H_
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -21,9 +20,10 @@
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/base/big_buffer.h"
-#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_observer.h"
 
 class GURL;
 
@@ -35,36 +35,27 @@ namespace content {
 
 class ClipboardHostImplTest;
 
-// Helpers to check if an `rfh`/`seqno` pair was the last to write to the
-// clipboard.
-bool IsLastClipboardWrite(const RenderFrameHost& rfh,
-                          ui::ClipboardSequenceNumberToken seqno);
-
-// Helper to set the last rfh-seqno pair that wrote to the clipboard.
-void SetLastClipboardWrite(const RenderFrameHost& rfh,
-                           ui::ClipboardSequenceNumberToken seqno);
-
 // Returns a representation of the last source ClipboardEndpoint. This will
-// either match the last clipboard write if `seqno` matches the last browser tab
-// write, or an endpoint built from `Clipboard::GetSource()` called with
+// either match the last clipboard write if there is an RFH token in the
+// clipboard, or an endpoint built from `Clipboard::GetSource()` called with
 // `clipboard_buffer` otherwise.
 //
 // //content maintains additional metadata on top of what the //ui layer already
 // tracks about clipboard data's source, e.g. the WebContents that provided the
 // data. This function allows retrieving both the //ui metadata and the
 // //content metadata in a single call.
-//
-// To avoid returning stale //content metadata if the writer has changed, the
-// sequence number is used to validate if the writer has changed or not since
-// the //content metadata was last updated.
 CONTENT_EXPORT ClipboardEndpoint
-GetSourceClipboardEndpoint(ui::ClipboardSequenceNumberToken seqno,
+GetSourceClipboardEndpoint(const ui::DataTransferEndpoint* data_dst,
                            ui::ClipboardBuffer clipboard_buffer);
 
 class CONTENT_EXPORT ClipboardHostImpl
-    : public DocumentService<blink::mojom::ClipboardHost> {
+    : public DocumentService<blink::mojom::ClipboardHost>,
+      public ui::ClipboardObserver {
  public:
   ~ClipboardHostImpl() override;
+
+  // Override for ui::ClipboardObserver
+  void OnClipboardDataChanged() override;
 
   static void Create(
       RenderFrameHost* render_frame_host,
@@ -93,6 +84,7 @@ class CONTENT_EXPORT ClipboardHostImpl
   friend class ClipboardHostImplTest;
   friend class ClipboardHostImplWriteTest;
   friend class ClipboardHostImplAsyncWriteTest;
+  friend class ClipboardHostImplChangeTest;
 
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplWriteTest, WriteText);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplWriteTest, WriteText_Empty);
@@ -108,14 +100,21 @@ class CONTENT_EXPORT ClipboardHostImpl
                            WriteDataTransferCustomData_Empty);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplWriteTest,
                            PerformPasteIfAllowed_EmptyData);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplWriteTest,
+                           NoSourceWithoutDataWrite);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplWriteTest, MainFrameURL);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplWriteTest, GetSourceEndpoint);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplAsyncWriteTest, WriteText);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplAsyncWriteTest, WriteHtml);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplAsyncWriteTest, WriteTextAndHtml);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplAsyncWriteTest, ConcurrentWrites);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplChangeTest, AddClipboardListener);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplChangeTest,
+                           ClipboardListenerDisconnect);
 
   // mojom::ClipboardHost
+  void RegisterClipboardListener(
+      mojo::PendingRemote<blink::mojom::ClipboardListener> listener) override;
   void GetSequenceNumber(ui::ClipboardBuffer clipboard_buffer,
                          GetSequenceNumberCallback callback) override;
   void IsFormatAvailable(blink::mojom::ClipboardFormat format,
@@ -158,7 +157,14 @@ class CONTENT_EXPORT ClipboardHostImpl
   void CommitWrite() override;
 #if BUILDFLAG(IS_MAC)
   void WriteStringToFindPboard(const std::u16string& text) override;
+  void GetPlatformPermissionState(
+      GetPlatformPermissionStateCallback callback) override;
 #endif
+
+  std::vector<std::u16string> ReadAvailableTypesImpl(
+      ui::ClipboardBuffer clipboard_buffer);
+
+  absl::uint128 GetSequenceNumberImpl(ui::ClipboardBuffer clipboard_buffer);
 
   // Checks if the renderer allows pasting.  This check is skipped if called
   // soon after a successful content allowed request.
@@ -197,11 +203,22 @@ class CONTENT_EXPORT ClipboardHostImpl
                  ReadPngCallback callback,
                  const std::vector<uint8_t>& data);
 
+  // Resets `clipboard_writer_` to write its data to the clipboard, and
+  // reinitialize it in preparation for the next write.
+  void ResetClipboardWriter();
+
+  // Adds source-tracking metadata to `clipboard_writer_` so it can be written
+  // to the clipboard on the next `CommitWrite()` call.
+  void AddSourceDataToClipboardWriter();
+
   // Creates a `ui::DataTransferEndpoint` representing the last committed URL.
   std::unique_ptr<ui::DataTransferEndpoint> CreateDataEndpoint();
 
   // Creates a `content::ClipboardEndpoint` representing the last committed URL.
   ClipboardEndpoint CreateClipboardEndpoint();
+
+  // Stops observing clipboard changes and resets the listener.
+  void StopObservingClipboard();
 
   std::unique_ptr<ui::ScopedClipboardWriter> clipboard_writer_;
 
@@ -214,6 +231,14 @@ class CONTENT_EXPORT ClipboardHostImpl
   // `pending_writes_` was not 0 at that time and that it should instead be
   // called when the last pending `Write*` call is made.
   bool pending_commit_write_ = false;
+
+  // Tracks whether this instance is currently observing clipboard changes.
+  bool listening_to_clipboard_ = false;
+
+  std::optional<absl::uint128> last_change_id_;
+
+  // Single clipboard listener that will be notified on clipboard changes
+  mojo::Remote<blink::mojom::ClipboardListener> clipboard_listener_;
 
   base::WeakPtrFactory<ClipboardHostImpl> weak_ptr_factory_{this};
 };

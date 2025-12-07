@@ -15,13 +15,17 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/util/ConversionUtils.java",
     "java/src/org/chromium/components/browser_ui/util/DimensionCompat.java",
     "java/src/org/chromium/components/browser_ui/util/DownloadUtils.java",
+    "java/src/org/chromium/components/browser_ui/util/DrawableUtils.java",
     "java/src/org/chromium/components/browser_ui/util/FirstDrawDetector.java",
     "java/src/org/chromium/components/browser_ui/util/GlobalDiscardableReferencePool.java",
+    "java/src/org/chromium/components/browser_ui/util/TimeTextResolver.java",
     "java/src/org/chromium/components/browser_ui/util/ToolbarUtils.java",
     "java/src/org/chromium/components/browser_ui/util/TraceEventVectorDrawableCompat.java",
     "java/src/org/chromium/components/browser_ui/util/date/CalendarFactory.java",
     "java/src/org/chromium/components/browser_ui/util/date/CalendarUtils.java",
     "java/src/org/chromium/components/browser_ui/util/date/StringUtils.java",
+    "java/src/org/chromium/components/browser_ui/util/motion/MotionEventInfo.java",
+    "java/src/org/chromium/components/browser_ui/util/motion/OnPeripheralClickListener.java",
   ]
 
   deps = [
@@ -29,12 +33,16 @@ android_library("java") {
     "//base:base_java",
     "//build/android:build_java",
     "//cc:cc_java",
+    "//components/browser_ui/notifications/android:utils_java",
     "//components/browser_ui/widget/android:java_resources",
+    "//components/download/public/common:public_java",
     "//components/embedder_support/android:util_java",
+    "//components/offline_items_collection/core:core_java",
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_main_dex_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_collection_collection_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
@@ -56,11 +64,19 @@ static_library("android") {
   ]
 }
 
+android_library("test_support_java") {
+  testonly = true
+
+  sources = [ "test/java/src/org/chromium/components/browser_ui/util/motion/MotionEventTestUtils.java" ]
+  deps = [ ":java" ]
+}
+
 robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/components/browser_ui/util/BitmapCacheTest.java",
     "java/src/org/chromium/components/browser_ui/util/ComposedBrowserControlsVisibilityDelegateTest.java",
     "java/src/org/chromium/components/browser_ui/util/DimensionCompatUnitTest.java",
+    "java/src/org/chromium/components/browser_ui/util/TimeTextResolverUnitTest.java",
   ]
   deps = [
     ":java",
@@ -80,15 +96,17 @@ android_library("unit_device_javatests") {
   sources = [
     "java/src/org/chromium/components/browser_ui/util/AvatarGeneratorTest.java",
     "java/src/org/chromium/components/browser_ui/util/FirstDrawDetectorTest.java",
+    "java/src/org/chromium/components/browser_ui/util/motion/OnPeripheralClickListenerTest.java",
   ]
   deps = [
+    ":java",
+    ":test_support_java",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//components/browser_ui/util/android:java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//ui/android:ui_java_test_support",
   ]
-  resources_package = "org.chromium.components.browser_ui.util"
+  resources_package = "org.chromium.components.browser_ui.util.test"
 }

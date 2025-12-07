@@ -18,8 +18,9 @@ bool StructTraits<
   if (!data.ReadScreenInfos(&out->screen_infos) ||
       !data.ReadMinSizeForAutoResize(&out->min_size_for_auto_resize) ||
       !data.ReadMaxSizeForAutoResize(&out->max_size_for_auto_resize) ||
-      !data.ReadNewSize(&out->new_size) ||
-      !data.ReadVisibleViewportSize(&out->visible_viewport_size) ||
+      !data.ReadNewSizeDevicePx(&out->new_size_device_px) ||
+      !data.ReadVisibleViewportSizeDevicePx(
+          &out->visible_viewport_size_device_px) ||
       !data.ReadCompositorViewportPixelRect(
           &out->compositor_viewport_pixel_rect) ||
       !data.ReadBrowserControlsParams(&out->browser_controls_params) ||
@@ -39,13 +40,14 @@ bool StructTraits<
   out->display_mode = data.display_mode();
   out->capture_sequence_number = data.capture_sequence_number();
   out->zoom_level = data.zoom_level();
+  out->css_zoom_factor = data.css_zoom_factor();
   out->page_scale_factor = data.page_scale_factor();
   out->compositing_scale_factor = data.compositing_scale_factor();
   out->cursor_accessibility_scale_factor =
       data.cursor_accessibility_scale_factor();
   out->is_pinch_gesture_active = data.is_pinch_gesture_active();
-  out->virtual_keyboard_resize_height_physical_px =
-      data.virtual_keyboard_resize_height_physical_px();
+  out->virtual_keyboard_resize_height_device_px =
+      data.virtual_keyboard_resize_height_device_px();
   return true;
 }
 

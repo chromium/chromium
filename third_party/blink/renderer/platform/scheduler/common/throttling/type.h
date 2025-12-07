@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_THROTTLING_TYPE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_THROTTLING_TYPE_H_
 
+#include "third_party/perfetto/include/perfetto/tracing/string_helpers.h"
+
 namespace blink::scheduler {
 
 // Types of throttling that can be applied to a task queue.
@@ -20,7 +22,7 @@ enum class ThrottlingType {
   kBackgroundIntensive,
 };
 
-const char* ThrottlingTypeToString(ThrottlingType type);
+perfetto::StaticString ThrottlingTypeToString(ThrottlingType type);
 
 }  // namespace blink::scheduler
 

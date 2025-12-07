@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/process/process_handle.h"
 #include "base/process/process_metrics.h"
@@ -20,7 +19,6 @@
 #include "base/types/expected.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/metrics/power/power_metrics_constants.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
@@ -33,6 +31,7 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_map.h"
@@ -114,7 +113,7 @@ MonitoredProcessType GetMonitoredProcessTypeForRenderProcess(
 
   const extensions::Extension* extension =
       extensions::ProcessMap::Get(browser_context)
-          ->GetEnabledExtensionByProcessID(host->GetID());
+          ->GetEnabledExtensionByProcessID(host->GetDeprecatedID());
   if (!extension) {
     return kRenderer;
   }
@@ -133,8 +132,7 @@ MonitoredProcessType GetMonitoredProcessTypeForNonRendererChildProcess(
     case content::PROCESS_TYPE_BROWSER:
     case content::PROCESS_TYPE_RENDERER:
       // Not a non-renderer child process.
-      NOTREACHED_IN_MIGRATION();
-      return kCount;
+      NOTREACHED();
     case content::PROCESS_TYPE_GPU:
       return MonitoredProcessType::kGpu;
     case content::PROCESS_TYPE_UTILITY: {
@@ -330,7 +328,7 @@ void ProcessMonitor::BrowserChildProcessLaunchedAndConnected(
 #if BUILDFLAG(IS_WIN)
   // Cannot gather process metrics for elevated process as browser has no
   // access to them.
-  if (data.sandbox_type ==
+  if (data.sandbox_type.value() ==
       sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges) {
     return;
   }
@@ -350,15 +348,6 @@ void ProcessMonitor::BrowserChildProcessLaunchedAndConnected(
 void ProcessMonitor::BrowserChildProcessHostDisconnected(
     const content::ChildProcessData& data) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-#if BUILDFLAG(IS_WIN)
-  // Cannot gather process metrics for elevated process as browser has no
-  // access to them.
-  if (data.sandbox_type ==
-      sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges) {
-    return;
-  }
-#endif
-
   DCHECK(browser_child_process_infos_.find(data.id) ==
          browser_child_process_infos_.end());
 }
@@ -391,7 +380,7 @@ void ProcessMonitor::OnBrowserChildProcessExited(
 #if BUILDFLAG(IS_WIN)
   // Cannot gather process metrics for elevated process as browser has no
   // access to them.
-  if (data.sandbox_type ==
+  if (data.sandbox_type.value() ==
       sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges) {
     return;
   }
@@ -403,7 +392,7 @@ void ProcessMonitor::OnBrowserChildProcessExited(
     return;
   }
 
-  CHECK(it != browser_child_process_infos_.end(), base::NotFatalUntil::M130);
+  CHECK(it != browser_child_process_infos_.end());
   // Remember the metrics from when the process exited, if available.
   if (info.cpu_usage.has_value()) {
     const ProcessInfo& process_info = it->second;

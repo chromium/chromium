@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser;
 
 import androidx.test.filters.SmallTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -18,19 +17,20 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
-import org.chromium.net.test.EmbeddedTestServer;
 
 /** Tests {@link ChromeActionModeHandler} operation. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class ChromeActionModeHandlerTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private void assertActionModeIsReady() {
         ThreadUtils.runOnUiThreadBlocking(
@@ -43,12 +43,9 @@ public class ChromeActionModeHandlerTest {
     @Test
     @SmallTest
     public void testActionModeSetForNewTab() {
-        EmbeddedTestServer testServer =
-                EmbeddedTestServer.createAndStartServer(
-                        InstrumentationRegistry.getInstrumentation().getContext());
+        RegularNewTabPageStation ntp = mActivityTestRule.startOnNtp();
+        ntp.loadAboutBlank();
 
-        mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
-        mActivityTestRule.loadUrl(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         assertActionModeIsReady();
 
         LoadUrlParams urlParams = new LoadUrlParams(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);

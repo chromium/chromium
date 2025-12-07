@@ -18,8 +18,8 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
@@ -27,7 +27,6 @@
 #include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/hash_util.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
@@ -43,7 +42,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-
 namespace {
 
 using base::ScopedTempDir;
@@ -121,8 +119,6 @@ MATCHER_P(EqualsSpecifics, expected, "") {
   }
   return true;
 }
-
-}  // namespace
 
 class AutofillWalletOfferSyncBridgeTest : public testing::Test {
  public:
@@ -295,28 +291,6 @@ TEST_F(AutofillWalletOfferSyncBridgeTest, MergeFullSyncData_NoData) {
   EXPECT_TRUE(GetAllLocalData().empty());
 }
 
-// Test to ensure whether the data being valid is logged correctly.
-TEST_F(AutofillWalletOfferSyncBridgeTest, MergeFullSyncData_LogDataValidity) {
-  AutofillOfferSpecifics offer_specifics1;
-  SetAutofillOfferSpecificsFromOfferData(test::GetCardLinkedOfferData1(),
-                                         &offer_specifics1);
-  AutofillOfferSpecifics offer_specifics2;
-  SetAutofillOfferSpecificsFromOfferData(test::GetCardLinkedOfferData2(),
-                                         &offer_specifics2);
-  offer_specifics2.clear_id();
-
-  EXPECT_CALL(*backend(), CommitChanges());
-  EXPECT_CALL(*backend(),
-              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_OFFER));
-  base::HistogramTester histogram_tester;
-  StartSyncing({offer_specifics1, offer_specifics2});
-
-  histogram_tester.ExpectBucketCount("Autofill.Offer.SyncedOfferDataBeingValid",
-                                     true, 1);
-  histogram_tester.ExpectBucketCount("Autofill.Offer.SyncedOfferDataBeingValid",
-                                     false, 1);
-}
-
 // Tests that when sync is stopped and the data type is disabled, client should
 // remove all client data.
 TEST_F(AutofillWalletOfferSyncBridgeTest, ApplyDisableSyncChanges) {
@@ -335,4 +309,5 @@ TEST_F(AutofillWalletOfferSyncBridgeTest, ApplyDisableSyncChanges) {
   EXPECT_TRUE(GetAllLocalData().empty());
 }
 
+}  // namespace
 }  // namespace autofill

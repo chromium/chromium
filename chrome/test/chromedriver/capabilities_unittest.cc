@@ -146,6 +146,20 @@ TEST(Switches, Value) {
   ASSERT_EQ("--hello=there", switches.ToString());
 }
 
+TEST(Switches, Multivalued) {
+  Switches switches;
+  switches.SetMultivaluedSwitch("my-switch", "value1", ",");
+  ASSERT_EQ("value1", switches.GetSwitchValue("my-switch"));
+  switches.SetMultivaluedSwitch("my-switch", "value2", ",");
+  ASSERT_EQ("value1,value2", switches.GetSwitchValue("my-switch"));
+  // Test that trailing commas are removed.
+  switches.SetMultivaluedSwitch("my-switch", "value3,", ",");
+  ASSERT_EQ("value1,value2,value3,", switches.GetSwitchValue("my-switch"));
+  switches.SetMultivaluedSwitch("my-switch", "value4", ",");
+  ASSERT_EQ("value1,value2,value3,value4",
+            switches.GetSwitchValue("my-switch"));
+}
+
 TEST(Switches, FromOther) {
   Switches switches;
   switches.SetSwitch("a", "1");
@@ -157,6 +171,20 @@ TEST(Switches, FromOther) {
 
   switches.SetFromSwitches(switches2);
   ASSERT_EQ("--a=1 --b=2 --c=2", switches.ToString());
+}
+
+TEST(Switches, FromOtherMultivalued) {
+  Switches switches;
+  switches.SetSwitch("enable-features", "one");
+
+  Switches switches2;
+  switches2.SetSwitch("enable-features", "two");
+
+  switches.SetFromSwitches(switches2);
+
+  // `enable-features` is a multivalued switch, so the values should be
+  // joined with commas.
+  ASSERT_EQ("one,two", switches.GetSwitchValue("enable-features"));
 }
 
 TEST(Switches, Remove) {
@@ -260,19 +288,23 @@ TEST(ParseCapabilities, Args) {
   args.Append("enable-blink-features=val1");
   args.Append("enable-blink-features=val2,");
   args.Append("--enable-blink-features=val3");
+  args.Append("js-flags=--flag1");
+  args.Append("--js-flags=--flag2");
   base::Value::Dict caps;
   caps.SetByDottedPath("goog:chromeOptions.args", std::move(args));
 
   Status status = capabilities.Parse(caps);
   ASSERT_TRUE(status.IsOk());
 
-  ASSERT_EQ(3u, capabilities.switches.GetSize());
+  ASSERT_EQ(4u, capabilities.switches.GetSize());
   ASSERT_TRUE(capabilities.switches.HasSwitch("arg1"));
   ASSERT_TRUE(capabilities.switches.HasSwitch("arg2"));
   ASSERT_EQ("", capabilities.switches.GetSwitchValue("arg1"));
   ASSERT_EQ("val", capabilities.switches.GetSwitchValue("arg2"));
   ASSERT_EQ("val1,val2,val3",
             capabilities.switches.GetSwitchValue("enable-blink-features"));
+  ASSERT_EQ("--flag1 --flag2",
+            capabilities.switches.GetSwitchValue("js-flags"));
 }
 
 TEST(ParseCapabilities, Prefs) {
@@ -803,12 +835,25 @@ TEST(ParseCapabilities, FedcmAccountsNotBool) {
   EXPECT_FALSE(capabilities.Parse(caps).IsOk());
 }
 
+TEST(ParseCapabilities, MigrateChromeExtensionWindowType) {
+  Capabilities capabilities;
+  base::Value::Dict caps;
+  base::Value::List window_types;
+  window_types.Append("background_page");
+  caps.SetByDottedPath("goog:chromeOptions.windowTypes",
+                       base::Value(std::move(window_types)));
+  EXPECT_EQ(kOk, capabilities.Parse(caps).code());
+  EXPECT_TRUE(capabilities.enable_extension_targets);
+  EXPECT_TRUE(capabilities.window_types.find(WebViewInfo::kBackgroundPage) ==
+              capabilities.window_types.end());
+}
+
 namespace {
 
 base::Value::Dict CreateCapabilitiesDict(const std::string& mobile_emulation) {
   base::Value::Dict result;
-  std::optional<base::Value> maybe_mobile_emulation =
-      base::JSONReader::Read(mobile_emulation);
+  std::optional<base::Value> maybe_mobile_emulation = base::JSONReader::Read(
+      mobile_emulation, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(maybe_mobile_emulation.has_value() &&
               maybe_mobile_emulation->is_dict());
   if (!maybe_mobile_emulation.has_value() ||

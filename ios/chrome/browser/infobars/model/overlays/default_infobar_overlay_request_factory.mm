@@ -23,10 +23,12 @@ std::unique_ptr<OverlayRequest> DefaultInfobarOverlayRequestFactory(
     case InfobarType::kInfobarTypePasswordUpdate:
     case InfobarType::kInfobarTypePermissions:
     case InfobarType::kInfobarTypeSaveCard:
+    case InfobarType::kInfobarTypeSaveCvc:
     case InfobarType::kInfobarTypeSyncError:
     case InfobarType::kInfobarTypeTranslate:
-    case InfobarType::kInfobarTypeParcelTracking:
     case InfobarType::kInfobarTypeEnhancedSafeBrowsing:
+    case InfobarType::kInfobarTypeCollaborationGroup:
+    case InfobarType::kInfobarTypeCollaborationOutOfDate:
       return OverlayRequest::CreateWithConfig<
           DefaultInfobarOverlayRequestConfig>(infobar_ios, overlay_type);
 

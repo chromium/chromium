@@ -15,7 +15,6 @@
 #include "base/fuchsia/system_info.h"
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -32,8 +31,8 @@ namespace {
 
 class FakeHardwareInfoProduct : public fidl::Server<fuchsia_hwinfo::Product> {
  public:
-  FakeHardwareInfoProduct(const std::string_view model,
-                          const std::string_view manufacturer,
+  FakeHardwareInfoProduct(std::string_view model,
+                          std::string_view manufacturer,
                           sys::OutgoingDirectory* outgoing_services)
       : model_(model),
         manufacturer_(manufacturer),

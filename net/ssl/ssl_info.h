@@ -12,7 +12,7 @@
 #include "net/cert/ct_policy_status.h"
 #include "net/cert/sct_status_flags.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
-#include "third_party/boringssl/src/pki/ocsp_verify_result.h"
+#include "third_party/boringssl/src/include/openssl/pki/ocsp.h"
 
 namespace net {
 
@@ -32,10 +32,10 @@ class NET_EXPORT SSLInfo {
 
   SSLInfo();
   SSLInfo(const SSLInfo& info);
-  ~SSLInfo();
+  SSLInfo(SSLInfo&& info);
   SSLInfo& operator=(const SSLInfo& info);
-
-  void Reset();
+  SSLInfo& operator=(SSLInfo&& info);
+  ~SSLInfo();
 
   bool is_valid() const { return cert.get() != nullptr; }
 
@@ -83,14 +83,21 @@ class NET_EXPORT SSLInfo {
   // set for server sockets.
   bool early_data_received = false;
 
+  // True if early data was accepted. For server sockets, this means the server
+  // accepted early data from the client. For client sockets, this means the
+  // client sent early data and it was accepted by the server.
+  bool early_data_accepted = false;
+
   // True if the connection negotiated the Encrypted ClientHello extension.
   bool encrypted_client_hello = false;
 
   HandshakeType handshake_type = HANDSHAKE_UNKNOWN;
 
-  // The hashes, in several algorithms, of the SubjectPublicKeyInfos from
-  // each certificate in the chain.
-  HashValueVector public_key_hashes;
+  // If the certificate was successfully verified, contains the hashes of the
+  // SubjectPublicKeyInfo from each certificate in the verified chain. The
+  // ordering of the hashes matches the order of the verified chain (leaf to
+  // root).
+  std::vector<SHA256HashValue> public_key_hashes;
 
   // List of SignedCertificateTimestamps and their corresponding validation
   // status.

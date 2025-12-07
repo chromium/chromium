@@ -44,14 +44,28 @@ class CORE_EXPORT DocumentFragment : public ContainerNode {
 
   void ParseHTML(const String&,
                  Element* context_element,
+                 CustomElementRegistry*,
                  ParserContentPolicy = kAllowScriptingContent);
   bool ParseXML(const String&,
                 Element* context_element,
-                ParserContentPolicy = kAllowScriptingContent,
-                ExceptionState* exception_state = nullptr);
+                ExceptionState& exception_state,
+                ParserContentPolicy = kAllowScriptingContent);
 
   bool CanContainRangeEndPoint() const final { return true; }
   virtual bool IsTemplateContent() const { return false; }
+
+  // These represent whether this DocumentFragment is one that holds
+  // children that have not had Node::InsertedInto called.  We use such
+  // DocumentFragment objects internally for temporary storage of
+  // parsing results.  This requires that when we move the children
+  // *out* of the DocumentFragment we also not call RemovedFrom.
+  bool HoldsUnnotifiedChildren() const { return holds_unnotified_children_; }
+  void SetHoldsUnnotifiedChildren(bool v) { holds_unnotified_children_ = v; }
+
+  // When HoldsUnnotifiedChildren() is true, a caller that is taking the
+  // children can call ForgetChildren to disconnect them without any
+  // notifications.
+  void ForgetChildren();
 
   // This will catch anyone doing an unnecessary check.
   bool IsDocumentFragment() const = delete;
@@ -70,10 +84,12 @@ class CORE_EXPORT DocumentFragment : public ContainerNode {
   Node* Clone(Document& factory,
               NodeCloningData& data,
               ContainerNode* append_to,
+              CustomElementRegistry* fallback_registry,
               ExceptionState& append_exception_state) const override;
   bool ChildTypeAllowed(NodeType) const override;
 
   Member<DocumentPartRoot> document_part_root_;
+  bool holds_unnotified_children_ = false;
 };
 
 template <>

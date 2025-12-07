@@ -9,15 +9,16 @@
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/overview_desk_bar_view.h"
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
-namespace {
-base::TimeDelta kScrollTimeInterval = base::Seconds(1);
-}
-
 namespace ash {
+namespace {
+base::TimeDelta g_scroll_time_interval = base::Seconds(1);
+}
 
 ScrollArrowButton::ScrollArrowButton(base::RepeatingClosure on_scroll,
                                      bool is_left_arrow,
@@ -37,8 +38,7 @@ void ScrollArrowButton::PaintButtonContents(gfx::Canvas* canvas) {
   const bool show_left_arrow = is_left_arrow_ ^ base::i18n::IsRTL();
   gfx::ImageSkia img = CreateVectorIcon(
       show_left_arrow ? kOverflowShelfLeftIcon : kOverflowShelfRightIcon,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary));
+      GetColorProvider()->GetColor(cros_tokens::kIconColorPrimary));
 
   DCHECK(!bar_view_->mini_views().empty());
   const auto* mini_view = bar_view_->mini_views()[0].get();
@@ -58,7 +58,7 @@ void ScrollArrowButton::OnDeskHoverStart() {
   if (timer_.IsRunning())
     return;
 
-  timer_.Start(FROM_HERE, kScrollTimeInterval, on_scroll_);
+  timer_.Start(FROM_HERE, g_scroll_time_interval, on_scroll_);
   on_scroll_.Run();
 }
 
@@ -73,11 +73,17 @@ void ScrollArrowButton::OnStateChanged() {
     // of the scroll arrow button will be set to |FALSE|, at the same time, the
     // state of the button will be set to |STATE_NORMAL|. In this case, stopping
     // timer will be called before starting timer.
-    timer_.Start(FROM_HERE, kScrollTimeInterval, on_scroll_);
+    timer_.Start(FROM_HERE, g_scroll_time_interval, on_scroll_);
     on_scroll_.Run();
   } else {
     timer_.Stop();
   }
+}
+
+// static
+base::AutoReset<base::TimeDelta>
+ScrollArrowButton::SetScrollTimeIntervalForTest(base::TimeDelta interval) {
+  return {&g_scroll_time_interval, interval};
 }
 
 BEGIN_METADATA(ScrollArrowButton)

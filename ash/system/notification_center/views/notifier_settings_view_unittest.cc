@@ -9,13 +9,17 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/notifier_metadata.h"
 #include "ash/public/cpp/notifier_settings_controller.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/notification_center/test_notifier_settings_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 
@@ -33,6 +37,12 @@ class NotifierSettingsViewTest : public AshTestBase {
   void SetNoNotifiers(bool no_notifiers) {
     ash_test_helper()->notifier_settings_controller()->set_no_notifiers(
         no_notifiers);
+  }
+
+  std::vector<NotifierMetadata> GetNotifiersMetadata() {
+    return ash_test_helper()
+        ->notifier_settings_controller()
+        ->GetTestNotifiersMetadata();
   }
 };
 
@@ -54,6 +64,50 @@ TEST_F(NotifierSettingsViewTest, TestEmptyNotifierView) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(notifier_settings_view->no_notifiers_view_->GetVisible());
   EXPECT_FALSE(notifier_settings_view->top_label_->GetVisible());
+}
+
+TEST_F(NotifierSettingsViewTest, NotifierButtonsAccessibleProperties) {
+  SetNoNotifiers(false);
+  auto notifier_settings_view = std::make_unique<NotifierSettingsView>();
+  std::vector<NotifierMetadata> notifiers = GetNotifiersMetadata();
+  // Wait for mojo.
+  base::RunLoop().RunUntilIdle();
+
+  size_t index = 0;
+  ASSERT_EQ(notifiers.size(), notifier_settings_view->buttons_.size());
+  for (auto button : notifier_settings_view->buttons_) {
+    ui::AXNodeData data;
+    ui::AXNodeData checkbox_data;
+    button->checkbox_->GetViewAccessibility().GetAccessibleNodeData(
+        &checkbox_data);
+    button->GetViewAccessibility().GetAccessibleNodeData(&data);
+    EXPECT_EQ(data.role, ax::mojom::Role::kCheckBox);
+    EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              notifiers[index].name);
+    ax::mojom::CheckedState checked = notifiers[index].enabled
+                                          ? ax::mojom::CheckedState::kTrue
+                                          : ax::mojom::CheckedState::kFalse;
+    EXPECT_EQ(data.GetCheckedState(), checked);
+    EXPECT_EQ(data.GetRestriction(), checkbox_data.GetRestriction());
+    EXPECT_EQ(data.HasState(ax::mojom::State::kHovered),
+              checkbox_data.HasState(ax::mojom::State::kHovered));
+    EXPECT_EQ(data.HasState(ax::mojom::State::kDefault),
+              checkbox_data.HasState(ax::mojom::State::kDefault));
+    EXPECT_EQ(data.GetDefaultActionVerb(),
+              checkbox_data.GetDefaultActionVerb());
+    ++index;
+  }
+}
+
+TEST_F(NotifierSettingsViewTest, AccessibleProperties) {
+  auto notifier_settings_view = std::make_unique<NotifierSettingsView>();
+  ui::AXNodeData data;
+
+  notifier_settings_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kList);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringUTF16(
+                IDS_ASH_MESSAGE_CENTER_SETTINGS_DIALOG_DESCRIPTION));
 }
 
 // Tests the notifier settings view with kSettingsAppNotificationSettings

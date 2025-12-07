@@ -52,7 +52,7 @@ TimerBase::~TimerBase() {
 }
 
 void TimerBase::Start(base::TimeDelta next_fire_interval,
-                      base::TimeDelta repeat_interval,
+                      std::optional<base::TimeDelta> repeat_interval,
                       const base::Location& caller,
                       bool precise) {
 #if DCHECK_IS_ON()
@@ -73,7 +73,7 @@ void TimerBase::Stop() {
   DCHECK_EQ(thread_, CurrentThread());
 #endif
 
-  repeat_interval_ = base::TimeDelta();
+  repeat_interval_ = std::nullopt;
   next_fire_time_ = base::TimeTicks::Max();
   delayed_task_handle_.CancelTask();
 }
@@ -123,7 +123,8 @@ void TimerBase::SetNextFireTime(base::TimeTicks next_fire_time) {
 #if DCHECK_IS_ON()
   DCHECK_EQ(thread_, CurrentThread());
 #endif
-  if (next_fire_time_ != next_fire_time) {
+  if (next_fire_time_ != next_fire_time ||
+      (repeat_interval_ && repeat_interval_->is_zero())) {
     next_fire_time_ = next_fire_time;
 
     // Cancel any previously posted task.
@@ -146,14 +147,19 @@ void TimerBase::RunInternal() {
       << location_.file_name() << " was run on a different thread";
 #endif
 
-  if (!repeat_interval_.is_zero()) {
-    base::TimeTicks now = TimerCurrentTimeTicks();
-    // The next tick is `next_fire_time_ + repeat_interval_`, but if late wakeup
-    // happens we could miss ticks. To avoid posting immediate "catch-up" tasks,
-    // the next task targets the tick following a minimum interval of
-    // repeat_interval_ / 20.
-    SetNextFireTime((now + repeat_interval_ / 20)
-                        .SnappedToNextTick(next_fire_time_, repeat_interval_));
+  if (repeat_interval_) {
+    if (repeat_interval_->is_zero()) {
+      SetNextFireTime(base::TimeTicks());
+    } else {
+      // The next tick is `next_fire_time_ + repeat_interval_`, but if late
+      // wakeup happens we could miss ticks. To avoid posting immediate
+      // "catch-up" tasks, the next task targets the tick following a minimum
+      // interval of repeat_interval_ / 20.
+      base::TimeTicks now = TimerCurrentTimeTicks();
+      SetNextFireTime(
+          (now + *repeat_interval_ / 20)
+              .SnappedToNextTick(next_fire_time_, *repeat_interval_));
+    }
   } else {
     next_fire_time_ = base::TimeTicks::Max();
   }

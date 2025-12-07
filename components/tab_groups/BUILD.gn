@@ -10,12 +10,12 @@ component("tab_groups") {
   sources = [
     "tab_group_color.cc",
     "tab_group_color.h",
-    "tab_group_id.cc",
     "tab_group_id.h",
     "tab_group_info.cc",
     "tab_group_info.h",
     "tab_group_visual_data.cc",
     "tab_group_visual_data.h",
+    "token_id.h",
   ]
 
   defines = [ "IS_TAB_GROUPS_IMPL" ]
@@ -37,7 +37,25 @@ if (is_android) {
   }
 
   android_library("tab_groups_java") {
-    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+    resources_package = "org.chromium.components.tab_groups"
+    sources = [ "android/java/src/org/chromium/components/tab_groups/TabGroupColorPickerUtils.java" ]
+    deps = [
+      ":java_resources",
+      "//components/browser_ui/styles/android:java",
+      "//third_party/android_deps:material_design_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_core_core_java",
+      "//ui/android:ui_java",
+    ]
     srcjar_deps = [ ":java_enums" ]
+  }
+
+  android_resources("java_resources") {
+    sources = [
+      "android/java/res/values-night/colors.xml",
+      "android/java/res/values/colors.xml",
+      "android/java/res/values/dimens.xml",
+    ]
+    deps = [ "//components/strings:components_strings_grd" ]
   }
 }

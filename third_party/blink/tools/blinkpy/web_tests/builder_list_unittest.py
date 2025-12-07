@@ -175,14 +175,6 @@ class BuilderListTest(unittest.TestCase):
             ['CQ Try C', 'Flag Specific C'],
             builders.all_flag_specific_try_builder_names(flag_specific="*"))
 
-    def test_builders_for_rebaselining(self):
-        builders = self.sample_builder_list()
-        self.assertEqual(
-            {
-                'Try A', 'Try B', 'Flag Specific C', 'CQ Try A', 'CQ Try B',
-                'CQ Try C', 'some-wpt-bot'
-            }, builders.builders_for_rebaselining())
-
     def test_all_port_names(self):
         builders = self.sample_builder_list()
         self.assertEqual(['port-a', 'port-b', 'port-c'],

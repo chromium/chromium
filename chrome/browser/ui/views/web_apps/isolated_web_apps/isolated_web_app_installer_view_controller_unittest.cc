@@ -17,18 +17,16 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/version.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/test_isolated_web_app_installer_model_observer.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
@@ -38,12 +36,14 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
+#include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
+#include "components/webapps/isolated_web_apps/types/source.h"
+#include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -55,21 +55,11 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_pref_names.h"
 #include "base/values.h"
+#include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/pref_observer.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
-#include "components/keyed_service/core/keyed_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/extensions/extension_keeplist_chromeos.h"
-#include "chrome/browser/web_applications/app_service/test/loopback_crosapi_app_service_proxy.h"
-#include "chromeos/crosapi/mojom/prefs.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace web_app {
 namespace {
@@ -80,7 +70,6 @@ using ::testing::AnyNumber;
 using ::testing::Exactly;
 using ::testing::ExplainMatchResult;
 using ::testing::Field;
-using ::testing::Invoke;
 using ::testing::Property;
 using ::testing::VariantWith;
 using Step = IsolatedWebAppInstallerModel::Step;
@@ -92,33 +81,35 @@ MATCHER_P3(WithMetadata, app_id, app_name, version, "") {
       AllOf(Property("app_id", &SignedWebBundleMetadata::app_id, app_id),
             Property("app_name", &SignedWebBundleMetadata::app_name, app_name),
             Property("version", &SignedWebBundleMetadata::version,
-                     base::Version(version))),
+                     *IwaVersion::Create(version))),
       arg, result_listener);
 }
 
 IsolatedWebAppUrlInfo CreateAndWriteTestBundle(
     const base::FilePath& bundle_path,
     const std::string& version) {
-  TestSignedWebBundleBuilder::BuildOptions bundle_options =
-      TestSignedWebBundleBuilder::BuildOptions().SetVersion(
-          base::Version(version));
-  auto bundle = TestSignedWebBundleBuilder::BuildDefault(bundle_options);
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  CHECK(base::WriteFile(bundle_path, bundle.data));
-  return IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(bundle.id);
+  const std::unique_ptr<web_app::BundledIsolatedWebApp> bundle =
+      IsolatedWebAppBuilder(ManifestBuilder().SetVersion(version))
+          .BuildBundle(bundle_path, test::GetDefaultEd25519KeyPair());
+  bundle->TrustSigningKey();
+
+  return IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+      bundle->web_bundle_id());
 }
 
 SignedWebBundleMetadata CreateMetadata(const std::u16string& app_name,
                                        const std::string& version) {
+  DialogImageInfo image_info;
+  image_info.is_maskable = true;
   auto url_info = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
       web_package::SignedWebBundleId::CreateRandomForProxyMode());
   return SignedWebBundleMetadata::CreateForTesting(
       url_info, IwaSourceBundleProdMode(base::FilePath()), app_name,
-      base::Version(version), IconBitmaps());
+      *IwaVersion::Create(version), std::move(image_info));
 }
 
 blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& iwa_url,
-                                                const base::Version version) {
+                                                const IwaVersion version) {
   auto manifest = blink::mojom::Manifest::New();
   manifest->id = iwa_url;
   manifest->scope = iwa_url.Resolve("/");
@@ -137,11 +128,11 @@ blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& iwa_url,
   return manifest;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 std::unique_ptr<KeyedService> NullServiceFactory(content::BrowserContext*) {
   return nullptr;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class MockView : public IsolatedWebAppInstallerView {
  public:
@@ -215,23 +206,13 @@ class IsolatedWebAppInstallerViewControllerTest : public ::testing::Test {
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
 
     TestingProfile::Builder profile_builder;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    profile_builder.SetIsMainProfile(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     profile_ = profile_builder.Build();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     ash::full_restore::FullRestoreServiceFactory::GetInstance()
         ->SetTestingFactory(profile_.get(),
                             base::BindRepeating(&NullServiceFactory));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Set up Lacros so the AppService -> LaunchWebAppCommand plumbing works.
-    extensions::SetEmptyAshKeeplistForTest();
-    app_service_proxy_ =
-        std::make_unique<LoopbackCrosapiAppServiceProxy>(profile_.get());
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     // Launching requires real os integration.
     fake_provider()->UseRealOsIntegrationManager();
@@ -250,6 +231,14 @@ class IsolatedWebAppInstallerViewControllerTest : public ::testing::Test {
         base::FilePath::FromASCII(bundle_filename));
   }
 
+  void InstallTestBundle(std::string version) {
+    const std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> bundle =
+        IsolatedWebAppBuilder(ManifestBuilder().SetVersion(version))
+            .BuildBundle(test::GetDefaultEd25519KeyPair());
+    bundle->TrustSigningKey();
+    bundle->InstallChecked(profile());
+  }
+
   void MockIconAndPageState(const IsolatedWebAppUrlInfo& url_info,
                             const std::string& version = "7.7.7") {
     GURL iwa_url = url_info.origin().GetURL();
@@ -259,10 +248,10 @@ class IsolatedWebAppInstallerViewControllerTest : public ::testing::Test {
         iwa_url.Resolve(kIconPath));
     icon_state.bitmaps = {CreateSquareIcon(32, SK_ColorWHITE)};
 
-    GURL url(
-        base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
-                      test::GetDefaultEd25519WebBundleId().id(),
-                      "/.well-known/_generated_install_page.html"}));
+    GURL url(base::StrCat({webapps::kIsolatedAppScheme,
+                           url::kStandardSchemeSeparator,
+                           test::GetDefaultEd25519WebBundleId().id(),
+                           "/.well-known/_generated_install_page.html"}));
     auto& page_state = fake_web_contents_manager.GetOrCreatePageState(url);
 
     page_state.url_load_result = webapps::WebAppUrlLoaderResult::kUrlLoaded;
@@ -270,29 +259,23 @@ class IsolatedWebAppInstallerViewControllerTest : public ::testing::Test {
     page_state.manifest_url = iwa_url.Resolve("manifest.webmanifest");
     page_state.valid_manifest_for_web_app = true;
     page_state.manifest_before_default_processing =
-        CreateDefaultManifest(iwa_url, base::Version(version));
+        CreateDefaultManifest(iwa_url, *IwaVersion::Create(version));
   }
 
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir scoped_temp_dir_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   std::unique_ptr<TestingProfile> profile_;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<LoopbackCrosapiAppServiceProxy> app_service_proxy_;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 TEST_F(IsolatedWebAppInstallerViewControllerTest,
        ValidBundleTransitionsToShowMetadataScreen) {
   base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
   IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
-  SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
   MockIconAndPageState(url_info);
 
   IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
@@ -351,14 +334,9 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
        OutdatedBundleShowsAlreadyInstalledDialog) {
   base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
   IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
-  SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
   MockIconAndPageState(url_info, "1.0");
 
-  AddDummyIsolatedAppToRegistry(
-      profile(), url_info.origin().GetURL(), "app",
-      WebApp::IsolationData(
-          IwaStorageOwnedBundle{/*dir_name_ascii=*/"", /*dev_mode=*/false},
-          base::Version("2.0")));
+  InstallTestBundle("2.0");
 
   IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
   model.SetStep(Step::kGetMetadata);
@@ -388,14 +366,9 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
        NewerBundleShowsAlreadyInstalledDialog) {
   base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
   IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "2.0");
-  SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
   MockIconAndPageState(url_info, "2.0");
 
-  AddDummyIsolatedAppToRegistry(
-      profile(), url_info.origin().GetURL(), "app",
-      WebApp::IsolationData(
-          IwaStorageOwnedBundle{/*dir_name_ascii=*/"", /*dev_mode=*/false},
-          base::Version("1.0")));
+  InstallTestBundle("1.0");
 
   IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
   model.SetStep(Step::kGetMetadata);
@@ -476,13 +449,14 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
        SuccessfulInstallationMovesToSuccessScreen) {
   base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
   IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
-  SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
   MockIconAndPageState(url_info, "1.0");
 
+  DialogImageInfo image_info;
+  image_info.is_maskable = true;
   IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
   auto metadata = SignedWebBundleMetadata::CreateForTesting(
       url_info, IwaSourceBundleProdMode(bundle_path), u"app name",
-      base::Version("1.0"), IconBitmaps());
+      *IwaVersion::Create("1.0"), std::move(image_info));
   model.SetSignedWebBundleMetadata(metadata);
   model.SetStep(Step::kShowMetadata);
   model.SetDialog(IsolatedWebAppInstallerModel::ConfirmInstallationDialog{
@@ -503,20 +477,22 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
 
   TestIsolatedWebAppInstallerModelObserver(&model).WaitForStepChange(
       Step::kInstallSuccess);
-  EXPECT_TRUE(
-      fake_provider()->registrar_unsafe().IsInstalled(url_info.app_id()));
+  EXPECT_EQ(
+      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+      fake_provider()->registrar_unsafe().GetInstallState(url_info.app_id()));
 }
 
 TEST_F(IsolatedWebAppInstallerViewControllerTest, CanLaunchAppAfterInstall) {
   base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
   IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
-  SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
   MockIconAndPageState(url_info, "1.0");
 
+  DialogImageInfo image_info;
+  image_info.is_maskable = true;
   IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
   auto metadata = SignedWebBundleMetadata::CreateForTesting(
       url_info, IwaSourceBundleProdMode(bundle_path), u"app name",
-      base::Version("1.0"), IconBitmaps());
+      *IwaVersion::Create("1.0"), std::move(image_info));
   model.SetSignedWebBundleMetadata(metadata);
   model.SetStep(Step::kShowMetadata);
   model.SetDialog(IsolatedWebAppInstallerModel::ConfirmInstallationDialog{
@@ -552,13 +528,15 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
        InstallationErrorShowsErrorDialog) {
   base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
   IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
-  SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
   MockIconAndPageState(url_info, "1.0");
 
   IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
+
+  DialogImageInfo image_info;
+  image_info.is_maskable = true;
   auto metadata = SignedWebBundleMetadata::CreateForTesting(
       url_info, IwaSourceBundleProdMode(bundle_path), u"app name",
-      base::Version("2.0"), IconBitmaps());
+      *IwaVersion::Create("2.0"), std::move(image_info));
   model.SetSignedWebBundleMetadata(metadata);
   model.SetStep(Step::kShowMetadata);
   model.SetDialog(IsolatedWebAppInstallerModel::ConfirmInstallationDialog{
@@ -582,8 +560,9 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   controller.OnChildDialogAccepted();
 
   TestIsolatedWebAppInstallerModelObserver(&model).WaitForChildDialog();
-  EXPECT_FALSE(
-      fake_provider()->registrar_unsafe().IsInstalled(url_info.app_id()));
+  EXPECT_NE(
+      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+      fake_provider()->registrar_unsafe().GetInstallState(url_info.app_id()));
 }
 
 TEST_F(IsolatedWebAppInstallerViewControllerTest,
@@ -618,7 +597,6 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
        ChangingPrefToFalseDisablesInstaller) {
   base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
   IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
-  SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
   MockIconAndPageState(url_info);
 
   IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
@@ -653,7 +631,6 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
        ChangingPrefToTrueRestartsInstaller) {
   base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
   IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
-  SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
   MockIconAndPageState(url_info);
 
   IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};

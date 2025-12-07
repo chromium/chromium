@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "content/public/browser/browser_thread.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/mime_util.h"
 
@@ -26,6 +27,13 @@ void MimeRegistryImpl::GetMimeTypeFromExtension(
     const std::string& extension,
     GetMimeTypeFromExtensionCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!extension.empty() && extension[0] == '.') {
+    // It is invalid to call this API with an extension with a leading dot.
+    mojo::ReportBadMessage("Extensions must not have a leading dot");
+    return;
+  }
+
   std::string mime_type;
   net::GetMimeTypeFromExtension(
       base::FilePath::FromUTF8Unsafe(extension).value(), &mime_type);

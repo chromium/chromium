@@ -20,7 +20,7 @@
 #include "third_party/leveldatabase/src/include/leveldb/slice.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
-namespace content {
+namespace content::indexed_db {
 namespace {
 class FlakyIterator;
 
@@ -386,4 +386,4 @@ scoped_refptr<LevelDBState> FakeLevelDBFactory::GetBrokenLevelDB(
       std::make_unique<BrokenDB>(error_to_return), reported_file_path);
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

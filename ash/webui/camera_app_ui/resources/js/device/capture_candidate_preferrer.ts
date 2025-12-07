@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {getAspectRatioOrder} from '../aspect_ratio_order.js';
 import {assert, assertNotReached} from '../assert.js';
 import * as expert from '../expert.js';
-import {getBoard} from '../models/load_time_data.js';
 import * as localStorage from '../models/local_storage.js';
 import {
   AspectRatioSet,
@@ -411,7 +411,7 @@ export class CaptureCandidatePreferrer {
         const candidatesByLevel = option.resolutions.map(
             (r) => new PhotoCaptureCandidate(
                 deviceId, r, photoPreviewPair.previewResolutions,
-                cameraInfo.builtinPTZSupport));
+                cameraInfo.builtinPtzSupport));
         if (showAllResolutions &&
             option.resolutions[0].equals(prefResolution)) {
           candidatesByAspectRatio.unshift(...candidatesByLevel);
@@ -443,7 +443,7 @@ export class CaptureCandidatePreferrer {
         expert.isEnabled(expert.ExpertOption.SHOW_ALL_RESOLUTIONS);
     assert(options !== undefined);
     for (const option of options) {
-      const prefFps = this.getFallbackFPS(deviceId, option.resolutionLevel);
+      const prefFps = this.getFallbackFps(deviceId, option.resolutionLevel);
       const targetFpsCandidates = [];
       const otherFpsCandidates = [];
       const videoPreviewPair = cameraInfo.videoPreviewPairs.find(
@@ -525,7 +525,7 @@ export class CaptureCandidatePreferrer {
   }
 
   private buildPhotoOptions(deviceId: string, resolutions: Resolution[]): void {
-    const aspectRatioSetPreferOrder = getAspectRatioSetPreferOrder();
+    const aspectRatioSetPreferOrder = getAspectRatioOrder();
 
     // Making sure that the prefer aspect ratio has resolution which is equal to
     // or larger than 720p.
@@ -869,7 +869,7 @@ export class CaptureCandidatePreferrer {
         if (this.cameraConfig === null) {
           continue;
         }
-        const prefFps = this.getFallbackFPS(deviceId, option.resolutionLevel);
+        const prefFps = this.getFallbackFps(deviceId, option.resolutionLevel);
         const captureCandidate = this.cameraConfig.captureCandidate;
         const configuredResolution = captureCandidate?.resolution;
         const isRunningCameraOption = deviceId === this.cameraConfig.deviceId &&
@@ -906,7 +906,7 @@ export class CaptureCandidatePreferrer {
     }
   }
 
-  private getFallbackFPS(deviceId: string, level: VideoResolutionLevel):
+  private getFallbackFps(deviceId: string, level: VideoResolutionLevel):
       number {
     return this.prefVideoFpsesMap[deviceId]?.[level] ?? 30;
   }
@@ -961,22 +961,4 @@ function getFallbackVideoResolutionLevel(options: VideoResolutionOption[]):
     }
   }
   assertNotReached();
-}
-
-function getAspectRatioSetPreferOrder() {
-  const board = getBoard();
-  switch (board) {
-    case 'rex':
-      return [
-        AspectRatioSet.RATIO_16_9,
-        AspectRatioSet.RATIO_4_3,
-        AspectRatioSet.RATIO_OTHER,
-      ];
-    default:
-      return [
-        AspectRatioSet.RATIO_4_3,
-        AspectRatioSet.RATIO_16_9,
-        AspectRatioSet.RATIO_OTHER,
-      ];
-  }
 }

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/translate/content/android/translate_message.h"
 
 #include <stddef.h>
@@ -20,11 +15,13 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/containers/contains.h"
+#include "base/containers/heap_array.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/language_detection/core/constants.h"
 #include "components/messages/android/message_enums.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/translate/core/browser/language_state.h"
@@ -32,7 +29,6 @@
 #include "components/translate/core/browser/translate_metrics_logger.h"
 #include "components/translate/core/browser/translate_ui_delegate.h"
 #include "components/translate/core/browser/translate_ui_languages_manager.h"
-#include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -43,6 +39,8 @@
 namespace translate {
 
 namespace {
+
+constexpr int kDismissalDurationSeconds = 10;
 
 // Default implementation of the TranslateMessage::Bridge interface, which just
 // calls the appropriate Java methods in each case.
@@ -108,14 +106,6 @@ class BridgeImpl : public TranslateMessage::Bridge {
 
 BridgeImpl::~BridgeImpl() = default;
 
-// Returns the auto-dismiss timer duration in seconds for the translate message,
-// which defaults to 10s and can be overridden by a Feature param.
-int GetDismissalDurationSeconds() {
-  constexpr base::FeatureParam<int> kDismissalDuration(
-      &kTranslateMessageUI, "dismissal_duration_sec", 10);
-  return kDismissalDuration.Get();
-}
-
 base::android::ScopedJavaLocalRef<jstring> GetDefaultMessageDescription(
     JNIEnv* env,
     const std::u16string& source_language_display_name,
@@ -127,13 +117,6 @@ base::android::ScopedJavaLocalRef<jstring> GetDefaultMessageDescription(
 }
 
 }  // namespace
-
-// Features
-BASE_FEATURE(kTranslateMessageUI,
-             "TranslateMessageUI",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-// Params
-const char kTranslateMessageUISnackbarParam[] = "use_snackbar";
 
 TranslateMessage::Bridge::~Bridge() = default;
 
@@ -183,7 +166,7 @@ void TranslateMessage::ShowTranslateStep(TranslateStep step,
 
   if (state_ == State::kDismissed) {
     if (!bridge_->CreateTranslateMessage(env, web_contents_, this,
-                                         GetDismissalDurationSeconds())) {
+                                         kDismissalDurationSeconds)) {
       // The |bridge_| failed to create the Java TranslateMessage, such as when
       // the activity is being destroyed, so there is no message to show.
       return;
@@ -299,8 +282,7 @@ void TranslateMessage::ShowTranslateStep(TranslateStep step,
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   bridge_->ShowMessage(env, std::move(title), std::move(description),
@@ -355,8 +337,7 @@ void TranslateMessage::HandlePrimaryAction(JNIEnv* env) {
       base::debug::DumpWithoutCrashing();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -383,8 +364,7 @@ void TranslateMessage::HandleDismiss(JNIEnv* env, jint dismiss_reason) {
       // These dismiss reasons should not be possible for a TranslateMessage,
       // since clicking the primary or secondary buttons doesn't dismiss the
       // message.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
 
     default:
       break;
@@ -457,92 +437,77 @@ TranslateMessage::BuildOverflowMenu(JNIEnv* env) {
   // opened the overflow menu mid-translation.
   is_translation_eligible_for_auto_always_translate_ = false;
 
-  // |titles| must have the capacity to fit the maximum number of menu items in
-  // the overflow menu, including dividers.
-  std::u16string titles[1U +  // Change target language.
-                        1U +  // Divider.
-                        1U +  // Always translate language.
-                        1U +  // Never translate language.
-                        1U +  // Never translate site.
-                        1U];  // Change source language.
-
-  // |has_checkmarks| is value initialized full of |false|.
-  bool has_checkmarks[std::extent<decltype(titles)>::value] = {};
-  int overflow_menu_item_ids[std::extent<decltype(titles)>::value] = {};
-
-  size_t item_count = 0U;
+  std::vector<std::u16string> titles;
+  std::vector<bool> has_checkmarks;
+  std::vector<int> overflow_menu_item_ids;
 
   const std::u16string& source_language_display_name =
       ui_languages_manager_->GetLanguageNameAt(
           ui_languages_manager_->GetSourceLanguageIndex());
 
   // "More languages".
-  CHECK_GT(std::extent<decltype(titles)>::value, item_count);
-  titles[item_count] =
-      l10n_util::GetStringUTF16(IDS_TRANSLATE_OPTION_MORE_LANGUAGE);
-  overflow_menu_item_ids[item_count++] =
-      static_cast<int>(OverflowMenuItemId::kChangeTargetLanguage);
+  titles.push_back(
+      l10n_util::GetStringUTF16(IDS_TRANSLATE_OPTION_MORE_LANGUAGE));
+  has_checkmarks.push_back(false);
+  overflow_menu_item_ids.push_back(
+      static_cast<int>(OverflowMenuItemId::kChangeTargetLanguage));
 
   // Menu item divider.
-  CHECK_GT(std::extent<decltype(titles)>::value, item_count);
-  overflow_menu_item_ids[item_count++] =
-      static_cast<int>(OverflowMenuItemId::kInvalid);
+  titles.emplace_back();
+  has_checkmarks.push_back(false);
+  overflow_menu_item_ids.push_back(
+      static_cast<int>(OverflowMenuItemId::kInvalid));
 
   if (!ui_delegate_->IsIncognito() &&
-      ui_languages_manager_->GetSourceLanguageCode() != kUnknownLanguageCode) {
+      ui_languages_manager_->GetSourceLanguageCode() !=
+          language_detection::kUnknownLanguageCode) {
     // "Always translate pages in <source language>".
-    CHECK_GT(std::extent<decltype(titles)>::value, item_count);
-    titles[item_count] = l10n_util::GetStringFUTF16(
+    titles.push_back(l10n_util::GetStringFUTF16(
         IDS_TRANSLATE_MESSAGE_ALWAYS_TRANSLATE_LANGUAGE,
-        source_language_display_name);
-    has_checkmarks[item_count] = ui_delegate_->ShouldAlwaysTranslate();
-    overflow_menu_item_ids[item_count++] =
-        static_cast<int>(OverflowMenuItemId::kToggleAlwaysTranslateLanguage);
+        source_language_display_name));
+    has_checkmarks.push_back(ui_delegate_->ShouldAlwaysTranslate());
+    overflow_menu_item_ids.push_back(
+        static_cast<int>(OverflowMenuItemId::kToggleAlwaysTranslateLanguage));
   }
 
-  if (ui_languages_manager_->GetSourceLanguageCode() != kUnknownLanguageCode) {
+  if (ui_languages_manager_->GetSourceLanguageCode() !=
+      language_detection::kUnknownLanguageCode) {
     // "Never translate pages in <source language>".
-    CHECK_GT(std::extent<decltype(titles)>::value, item_count);
-    titles[item_count] = l10n_util::GetStringFUTF16(
+    titles.push_back(l10n_util::GetStringFUTF16(
         IDS_TRANSLATE_MESSAGE_NEVER_TRANSLATE_LANGUAGE,
-        source_language_display_name);
-    has_checkmarks[item_count] = ui_delegate_->IsLanguageBlocked();
-    overflow_menu_item_ids[item_count++] =
-        static_cast<int>(OverflowMenuItemId::kToggleNeverTranslateLanguage);
+        source_language_display_name));
+    has_checkmarks.push_back(ui_delegate_->IsLanguageBlocked());
+    overflow_menu_item_ids.push_back(
+        static_cast<int>(OverflowMenuItemId::kToggleNeverTranslateLanguage));
   }
 
   if (ui_delegate_->CanAddSiteToNeverPromptList()) {
     // "Never translate this site".
-    CHECK_GT(std::extent<decltype(titles)>::value, item_count);
-    titles[item_count] =
-        l10n_util::GetStringUTF16(IDS_TRANSLATE_NEVER_TRANSLATE_SITE);
-    has_checkmarks[item_count] = ui_delegate_->IsSiteOnNeverPromptList();
-    overflow_menu_item_ids[item_count++] =
-        static_cast<int>(OverflowMenuItemId::kToggleNeverTranslateSite);
+    titles.push_back(
+        l10n_util::GetStringUTF16(IDS_TRANSLATE_NEVER_TRANSLATE_SITE));
+    has_checkmarks.push_back(ui_delegate_->IsSiteOnNeverPromptList());
+    overflow_menu_item_ids.push_back(
+        static_cast<int>(OverflowMenuItemId::kToggleNeverTranslateSite));
   }
 
   // "Page is not in <source language>?".
-  CHECK_GT(std::extent<decltype(titles)>::value, item_count);
-  titles[item_count] = l10n_util::GetStringFUTF16(
+  titles.push_back(l10n_util::GetStringFUTF16(
       IDS_TRANSLATE_INFOBAR_OPTIONS_NOT_SOURCE_LANGUAGE,
-      source_language_display_name);
-  overflow_menu_item_ids[item_count++] =
-      static_cast<int>(OverflowMenuItemId::kChangeSourceLanguage);
+      source_language_display_name));
+  has_checkmarks.push_back(false);
+  overflow_menu_item_ids.push_back(
+      static_cast<int>(OverflowMenuItemId::kChangeSourceLanguage));
 
   // Pass arrays of empty strings for both |subtitles| and |language_codes|.
-  std::u16string subtitles[std::extent<decltype(titles)>::value];
-  std::string language_codes[std::extent<decltype(titles)>::value];
+  std::vector<std::u16string> subtitles(titles.size());
+  std::vector<std::string> language_codes(titles.size());
 
   return bridge_->ConstructMenuItemArray(
-      env,
-      base::android::ToJavaArrayOfStrings(env,
-                                          base::make_span(titles, item_count)),
-      base::android::ToJavaArrayOfStrings(
-          env, base::make_span(subtitles, item_count)),
-      base::android::ToJavaBooleanArray(env, has_checkmarks, item_count),
-      base::android::ToJavaIntArray(env, overflow_menu_item_ids, item_count),
-      base::android::ToJavaArrayOfStrings(
-          env, base::make_span(language_codes, item_count)));
+      env, base::android::ToJavaArrayOfStrings(env, titles),
+      base::android::ToJavaArrayOfStrings(env, subtitles),
+      base::android::ToJavaBooleanArray(env, has_checkmarks),
+      base::android::ToJavaIntArray(env, overflow_menu_item_ids),
+      base::android::ToJavaArrayOfStrings(env, language_codes));
 }
 
 base::android::ScopedJavaLocalRef<jobjectArray>
@@ -577,8 +542,7 @@ TranslateMessage::HandleSecondaryMenuItemClicked(
         break;
 
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     return nullptr;
   }
@@ -599,7 +563,8 @@ TranslateMessage::HandleSecondaryMenuItemClicked(
     case OverflowMenuItemId::kChangeTargetLanguage: {
       ReportCompactInfobarEvent(InfobarEvent::INFOBAR_MORE_LANGUAGES);
       const std::string skip_language_codes[] = {
-          ui_languages_manager_->GetTargetLanguageCode(), kUnknownLanguageCode};
+          ui_languages_manager_->GetTargetLanguageCode(),
+          language_detection::kUnknownLanguageCode};
       std::vector<std::string> content_language_codes;
       ui_delegate_->GetContentLanguagesCodes(&content_language_codes);
       return ConstructLanguagePickerMenu(
@@ -651,8 +616,7 @@ TranslateMessage::HandleSecondaryMenuItemClicked(
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   return nullptr;
@@ -728,9 +692,11 @@ TranslateMessage::ConstructLanguagePickerMenu(
       base::android::ToJavaArrayOfStrings(env, subtitles),
       /*has_checkmarks=*/
       base::android::ToJavaBooleanArray(
-          env, std::make_unique<bool[]>(titles.size()).get(), titles.size()),
+          env, base::HeapArray<bool>::WithSize(titles.size())),
       base::android::ToJavaIntArray(env, overflow_menu_item_ids),
       base::android::ToJavaArrayOfStrings(env, language_codes));
 }
 
 }  // namespace translate
+
+DEFINE_JNI(TranslateMessage)

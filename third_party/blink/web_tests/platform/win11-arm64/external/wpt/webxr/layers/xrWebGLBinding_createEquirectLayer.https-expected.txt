@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Ensure XrWebGLBinding::createEquirectLayer throws the appropriate errors - webgl
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] Ensure XrWebGLBinding::createEquirectLayer throws the appropriate errors - webgl2
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+Harness: the test ran to completion.
+

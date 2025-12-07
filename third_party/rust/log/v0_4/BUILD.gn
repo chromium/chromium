@@ -13,32 +13,62 @@ cargo_crate("lib") {
   epoch = "0.4"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/log-0.4.22/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/log-v0_4/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/log-0.4.22/src/__private_api.rs",
-    "//third_party/rust/chromium_crates_io/vendor/log-0.4.22/src/kv/error.rs",
-    "//third_party/rust/chromium_crates_io/vendor/log-0.4.22/src/kv/key.rs",
-    "//third_party/rust/chromium_crates_io/vendor/log-0.4.22/src/kv/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/log-0.4.22/src/kv/source.rs",
-    "//third_party/rust/chromium_crates_io/vendor/log-0.4.22/src/kv/value.rs",
-    "//third_party/rust/chromium_crates_io/vendor/log-0.4.22/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/log-0.4.22/src/macros.rs",
-    "//third_party/rust/chromium_crates_io/vendor/log-0.4.22/src/serde.rs",
+    "//third_party/rust/chromium_crates_io/vendor/log-v0_4/src/__private_api.rs",
+    "//third_party/rust/chromium_crates_io/vendor/log-v0_4/src/kv/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/log-v0_4/src/kv/key.rs",
+    "//third_party/rust/chromium_crates_io/vendor/log-v0_4/src/kv/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/log-v0_4/src/kv/source.rs",
+    "//third_party/rust/chromium_crates_io/vendor/log-v0_4/src/kv/value.rs",
+    "//third_party/rust/chromium_crates_io/vendor/log-v0_4/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/log-v0_4/src/macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/log-v0_4/src/serde.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.4.22"
   cargo_pkg_authors = "The Rust Project Developers"
   cargo_pkg_name = "log"
   cargo_pkg_description = "A lightweight logging facade for Rust"
-  library_configs -= [ "//build/config/compiler:chromium_code" ]
-  library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
-  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
-  proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
-  proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
+  cargo_pkg_repository = "https://github.com/rust-lang/log"
+  cargo_pkg_version = "0.4.29"
 
-  testonly = true
+  allow_unsafe = true
+
+  features = [
+    "release_max_level_info",
+    "std",
+  ]
+
+  #####################################################################
+  # Tweaking which GN `config`s apply to this target.
+
+  # Config changes that apply to all `//third_party/rust` crates.
+  _configs_to_remove = [
+    # We don't need code coverage data for any `chromium_crates_io` crates.
+    "//build/config/coverage:default_coverage",
+
+    # This is third-party code, so remove `chromium_code` config.  We are not
+    # at the same time adding `//build/config/compiler:no_chromium_code`,
+    # because 1) we don't want to pull how warnings are handled by that config
+    # and 2) that config doesn't have any non-warnings-related stuff.
+    "//build/config/compiler:chromium_code",
+  ]
+  _configs_to_add = []
+
+  # Changing (if needed) which configs apply to this specific crate (based on
+  # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
+  # `gnrt_config.toml`).
+  _configs_to_remove += []
+  _configs_to_add += []
+
+  # Applying config changes.
+  library_configs -= _configs_to_remove
+  library_configs += _configs_to_add
+  executable_configs -= _configs_to_remove
+  executable_configs += _configs_to_add
+  proc_macro_configs -= _configs_to_remove
+  proc_macro_configs += _configs_to_add
 }

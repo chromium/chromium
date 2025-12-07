@@ -53,6 +53,7 @@
       {
         "args": [
           "--num-retries=3",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "-t",
           "Release",
           "external/wpt/webrtc",
@@ -60,8 +61,7 @@
           "external/wpt/webrtc-extensions",
           "external/wpt/webrtc-priority",
           "external/wpt/webrtc-stats",
-          "external/wpt/webrtc-svc",
-          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
+          "external/wpt/webrtc-svc"
         ],
         "merge": {
           "args": [
@@ -69,6 +69,8 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
+        "module_name": "//:blink_wpt_tests",
+        "module_scheme": "webtest",
         "name": "blink_wpt_tests",
         "resultdb": {
           "enable": true,
@@ -83,6 +85,47 @@
         },
         "test": "blink_wpt_tests",
         "test_id_prefix": "ninja://:blink_wpt_tests/"
+      },
+      {
+        "args": [
+          "--test-type",
+          "testharness",
+          "reftest",
+          "crashtest",
+          "print-reftest",
+          "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
+          "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/content_shell.filter",
+          "-t",
+          "Release",
+          "external/wpt/webrtc",
+          "external/wpt/webrtc-encoded-transform",
+          "external/wpt/webrtc-extensions",
+          "external/wpt/webrtc-priority",
+          "external/wpt/webrtc-stats",
+          "external/wpt/webrtc-svc"
+        ],
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "module_name": "//:headless_shell_wpt",
+        "module_scheme": "webtest",
+        "name": "headless_shell_wpt_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "headless_shell_wpt",
+        "test_id_prefix": "ninja://:headless_shell_wpt/"
       }
     ]
   },

@@ -7,6 +7,7 @@ package org.chromium.net.test;
 import android.content.Context;
 
 import androidx.annotation.GuardedBy;
+import androidx.annotation.NonNull;
 
 import org.chromium.net.BidirectionalStream;
 import org.chromium.net.CronetEngine;
@@ -29,6 +30,7 @@ import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandlerFactory;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -104,21 +106,24 @@ final class FakeCronetEngine extends CronetEngineBase {
      * {@link FakeCronetEngine.Builder}.
      *
      * @param builder a {@link CronetEngineBuilderImpl} to build this {@link CronetEngine}
-     *                implementation from.
+     *     implementation from.
      */
+    @SuppressWarnings("ErroneousThreadPoolConstructorChecker")
     private FakeCronetEngine(FakeCronetEngine.Builder builder) {
         if (builder.mController != null) {
             mController = builder.mController;
         } else {
             mController = new FakeCronetController();
         }
+        // TODO(ErroneousThreadPoolConstructorChecker): Thread pool size will never go beyond
+        // corePoolSize if an unbounded queue is used
         mExecutorService =
                 new ThreadPoolExecutor(
                         /* corePoolSize= */ 1,
                         /* maximumPoolSize= */ 5,
                         /* keepAliveTime= */ 50,
                         TimeUnit.SECONDS,
-                        new LinkedBlockingQueue<Runnable>(),
+                        new LinkedBlockingQueue<>(),
                         new ThreadFactory() {
                             @Override
                             public Thread newThread(final Runnable r) {
@@ -324,7 +329,10 @@ final class FakeCronetEngine extends CronetEngineBase {
             String method,
             ArrayList<Map.Entry<String, String>> requestHeaders,
             UploadDataProvider uploadDataProvider,
-            Executor uploadDataProviderExecutor) {
+            Executor uploadDataProviderExecutor,
+            byte[] dictionarySha256Hash,
+            ByteBuffer sharedDictionary,
+            @NonNull String sharedDictionaryId) {
         if (networkHandle != DEFAULT_NETWORK_HANDLE) {
             throw new UnsupportedOperationException(
                     "The multi-network API is not supported by the Fake implementation "

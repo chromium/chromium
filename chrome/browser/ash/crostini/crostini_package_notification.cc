@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/ui/views/crostini/crostini_package_install_failure_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -40,10 +41,12 @@ const std::string& CrostiniPackageNotification::GetErrorMessageForTesting()
   return error_message_;
 }
 
-CrostiniPackageNotification::NotificationSettings::NotificationSettings() {}
+CrostiniPackageNotification::NotificationSettings::NotificationSettings() =
+    default;
 CrostiniPackageNotification::NotificationSettings::NotificationSettings(
     const NotificationSettings& rhs) = default;
-CrostiniPackageNotification::NotificationSettings::~NotificationSettings() {}
+CrostiniPackageNotification::NotificationSettings::~NotificationSettings() =
+    default;
 
 CrostiniPackageNotification::CrostiniPackageNotification(
     Profile* profile,
@@ -162,7 +165,7 @@ CrostiniPackageNotification::GetNotificationSettingsForTypeAndAppName(
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   return result;
@@ -254,7 +257,7 @@ void CrostiniPackageNotification::UpdateProgress(
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   notification_->set_title(title);
@@ -295,13 +298,12 @@ void CrostiniPackageNotification::Click(
   }
 
   if (app_count_ == 0) {
-    LaunchTerminal(profile_,
-                   display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+    LaunchTerminal(profile_, display::Screen::Get()->GetPrimaryDisplay().id(),
                    DefaultContainerId());
   } else if (app_count_ == 1) {
     DCHECK(!app_id_.empty());
     LaunchCrostiniApp(profile_, app_id_,
-                      display::Screen::GetScreen()->GetPrimaryDisplay().id());
+                      display::Screen::Get()->GetPrimaryDisplay().id());
   } else {
     AppListClientImpl::GetInstance()->ShowAppList(
         ash::AppListShowSource::kBrowser);
@@ -325,7 +327,7 @@ void CrostiniPackageNotification::UpdateDisplayedNotification() {
   }
 
   NotificationDisplayService* display_service =
-      NotificationDisplayService::GetForProfile(profile_);
+      NotificationDisplayServiceFactory::GetForProfile(profile_);
   display_service->Display(NotificationHandler::Type::TRANSIENT, *notification_,
                            /*metadata=*/nullptr);
 }

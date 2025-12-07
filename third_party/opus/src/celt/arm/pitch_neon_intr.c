@@ -130,6 +130,13 @@ void dual_inner_prod_neon(const opus_val16 *x, const opus_val16 *y01, const opus
 
 /* ========================================================================== */
 
+#ifdef __ARM_FEATURE_FMA
+/* If we can, force the compiler to use an FMA instruction rather than break
+   vmlaq_f32() into fmul/fadd. */
+#define vmlaq_f32(a,b,c) vfmaq_f32(a,b,c)
+#endif
+
+
 #ifdef OPUS_CHECK_ASM
 
 /* This part of code simulates floating-point NEON operations. */

@@ -29,6 +29,8 @@
 
 namespace base {
 
+class TaskRunner;
+
 // Constants for GTest command-line flags.
 extern const char kGTestFilterFlag[];
 extern const char kGTestFlagfileFlag[];
@@ -393,8 +395,7 @@ std::string GetTestOutputSnippet(const TestResult& result,
 
 // Truncates a snippet to approximately the allowed length, while trying to
 // retain fatal messages. Exposed for testing only.
-std::string TruncateSnippetFocused(const std::string_view snippet,
-                                   size_t byte_limit);
+std::string TruncateSnippetFocused(std::string_view snippet, size_t byte_limit);
 
 }  // namespace base
 

@@ -18,8 +18,8 @@ namespace blink {
 // This class encapsulates the properties that are common between mouse and
 // pointer events and touch points as we transition towards the unified pointer
 // event model.
-// TODO(mustaq): Unify WebTouchPoint & WebMouseEvent into WebPointerEvent.
-// crbug.com/508283
+// TODO(crbug.com/41371756): Unify WebTouchPoint & WebMouseEvent into
+// WebPointerEvent.
 class WebPointerProperties {
  public:
   using Button = mojom::Button;

@@ -5,18 +5,18 @@
 #ifndef CHROME_BROWSER_ASH_NET_ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_SERVICE_H_
 #define CHROME_BROWSER_ASH_NET_ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_SERVICE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 
+class PolicyBlocklistService;
+class PrefService;
+
 namespace arc {
 class AlwaysOnVpnManager;
-}
-
-namespace content {
-class BrowserContext;
 }
 
 namespace ash {
@@ -30,8 +30,11 @@ class AlwaysOnVpnPreConnectUrlAllowlistService
     : public KeyedService,
       public ash::NetworkStateHandlerObserver {
  public:
-  explicit AlwaysOnVpnPreConnectUrlAllowlistService(
-      content::BrowserContext* context);
+  // LINT.IfChange(Deps)
+  AlwaysOnVpnPreConnectUrlAllowlistService(
+      PrefService* pref_service,
+      PolicyBlocklistService* policy_blocklist_service);
+  // LINT.ThenChange(//chrome/browser/ash/net/alwayson_vpn_pre_connect_url_allowlist_service_factory.cc:Deps)
 
   AlwaysOnVpnPreConnectUrlAllowlistService(
       const AlwaysOnVpnPreConnectUrlAllowlistService&) = delete;
@@ -69,7 +72,8 @@ class AlwaysOnVpnPreConnectUrlAllowlistService
 
   bool enforce_alwayson_pre_connect_url_allowlist_ = false;
 
-  raw_ptr<content::BrowserContext> browser_context_;
+  const raw_ptr<PrefService> pref_service_;
+  const raw_ptr<PolicyBlocklistService> policy_blocklist_service_;
 
   base::WeakPtr<arc::AlwaysOnVpnManager> always_on_vpn_manager_;
 

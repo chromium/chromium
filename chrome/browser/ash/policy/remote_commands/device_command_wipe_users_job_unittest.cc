@@ -14,7 +14,6 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/system/user_removal_manager.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/policy_invalidation_scope.h"
@@ -90,17 +89,15 @@ class DeviceCommandWipeUsersJobTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
 
-  ScopedTestingLocalState local_state_;
   const std::unique_ptr<MockCloudPolicyClient> client_;
   const std::unique_ptr<TestingRemoteCommandsService> service_;
 };
 
 DeviceCommandWipeUsersJobTest::DeviceCommandWipeUsersJobTest()
-    : local_state_(TestingBrowserProcess::GetGlobal()),
-      client_(std::make_unique<MockCloudPolicyClient>()),
+    : client_(std::make_unique<MockCloudPolicyClient>()),
       service_(std::make_unique<TestingRemoteCommandsService>(client_.get())) {}
 
-DeviceCommandWipeUsersJobTest::~DeviceCommandWipeUsersJobTest() {}
+DeviceCommandWipeUsersJobTest::~DeviceCommandWipeUsersJobTest() = default;
 
 // Make sure that the command is still valid 175 days after being issued.
 TEST_F(DeviceCommandWipeUsersJobTest, TestCommandLifetime) {

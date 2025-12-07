@@ -8,17 +8,24 @@
 #include <windows.h>
 
 #include <wrl/implements.h>
-#include <wrl/module.h>
 
+#include <cstdint>
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/win/windows_types.h"
 #include "chrome/elevation_service/elevation_service_idl.h"
 
 namespace elevation_service {
 
-constexpr IID kTestElevatorClsid = {
+// These flags can modify the EncryptData operation. They are packed inside the
+// `protection_level` argument. Access these via the `EncryptAppBoundString` API
+// in chrome.
+struct EncryptFlags {
+  // Specify that the Encrypt operation should always use the latest key.
+  bool use_latest_key = false;
+};
+
+inline constexpr IID kTestElevatorClsid = {
     0x416C51AC,
     0x4DEF,
     0x43CA,
@@ -26,19 +33,72 @@ constexpr IID kTestElevatorClsid = {
      0x57}};  // Elevator Test CLSID. {416C51AC-4DEF-43CA-96E8-E735210AB257}
 
 namespace switches {
-constexpr char kElevatorClsIdForTestingSwitch[] = "elevator-clsid-for-testing";
+inline constexpr char kElevatorClsIdForTestingSwitch[] =
+    "elevator-clsid-for-testing";
+inline constexpr char kFakeReencryptForTestingSwitch[] =
+    "elevator-fake-reencrypt-for-testing";
 }  // namespace switches
+
+namespace internal {
+
+inline constexpr uint32_t kFlagUseLatestKey = 1 << 23;
+
+// Update this each time a new flag is added.
+inline constexpr uint32_t kMaxFlag = kFlagUseLatestKey;
+
+// A static assert verifies the flags can always fit into 24 bits.
+static_assert((kMaxFlag & 0xFFFFFF) == kMaxFlag);
+
+constexpr uint32_t PackFlagsAndProtectionLevel(uint32_t flags,
+                                               uint8_t protection_level) {
+  return ((flags & 0xFFFFFF) << 8) | protection_level;
+}
+
+constexpr uint32_t ExtractFlags(uint32_t packed) {
+  return (packed >> 8) & 0xFFFFFF;
+}
+
+constexpr uint8_t ExtractProtectionLevel(uint32_t packed) {
+  return static_cast<uint8_t>(packed & 0xFF);
+}
+
+// Tests for these basic functions can be static asserts.
+static_assert(ExtractProtectionLevel(PackFlagsAndProtectionLevel(0, 0)) == 0);
+static_assert(ExtractFlags(PackFlagsAndProtectionLevel(0x123456, 0x01)) ==
+              0x123456);
+static_assert(ExtractFlags(PackFlagsAndProtectionLevel(0xAA123456, 0)) ==
+              0x123456);
+static_assert(ExtractFlags(PackFlagsAndProtectionLevel(0, 0)) == 0);
+static_assert(ExtractProtectionLevel(PackFlagsAndProtectionLevel(0, 0x01)) ==
+              0x01);
+static_assert(
+    ExtractProtectionLevel(PackFlagsAndProtectionLevel(0x1234, 0x01)) == 0x01);
+static_assert(ExtractProtectionLevel(PackFlagsAndProtectionLevel(0x12345678,
+                                                                 0x01)) ==
+              0x01);
+
+}  // namespace internal
 
 class Elevator
     : public Microsoft::WRL::RuntimeClass<
           Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+          IElevator2,
+          IElevator2Chromium,
+          IElevator2Chrome,
+          IElevator2ChromeBeta,
+          IElevator2ChromeDev,
+          IElevator2ChromeCanary,
+
+          // This class also implements all the Elevator methods.
           IElevator,
           IElevatorChromium,
           IElevatorChrome,
           IElevatorChromeBeta,
           IElevatorChromeDev,
-          IElevatorChromeCanary> {
+          IElevatorChromeCanary,
+          IFastRundown> {
  public:
+  // Failure codes.
   static constexpr HRESULT kErrorCouldNotObtainCallingProcess =
       MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA001);
   static constexpr HRESULT kErrorCouldNotGenerateValidationData =
@@ -59,6 +119,12 @@ class Elevator
       MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA009);
   static constexpr HRESULT kErrorUnsupportedProtectionLevel =
       MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA00A);
+  static constexpr HRESULT kErrorInvalidValidationData =
+      MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA00B);
+
+  // Success codes.
+  static constexpr HRESULT kSuccessShouldReencrypt =
+      MAKE_HRESULT(SEVERITY_SUCCESS, FACILITY_ITF, 0xA001);
 
   Elevator() = default;
 
@@ -81,6 +147,14 @@ class Elevator
   IFACEMETHODIMP DecryptData(const BSTR ciphertext,
                              BSTR* plaintext,
                              DWORD* last_error) override;
+
+  IFACEMETHODIMP RunIsolatedChrome(DWORD flags,
+                                   const WCHAR* command_line,
+                                   BSTR* log,
+                                   ULONG_PTR* proc_handle,
+                                   DWORD* last_error) override;
+
+  IFACEMETHODIMP AcceptInvitation(const wchar_t* server_name) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ElevatorTest, StringHandlingTest);

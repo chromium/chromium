@@ -5,9 +5,9 @@
 #include "chrome/browser/ash/login/test/user_adding_screen_utils.h"
 
 #include "base/run_loop.h"
-#include "chrome/browser/ash/login/ui/user_adding_screen.h"
-#include "chrome/browser/ui/ash/login_screen_client_impl.h"
-#include "chrome/browser/ui/ash/login_screen_shown_observer.h"
+#include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
+#include "chrome/browser/ui/ash/login/user_adding_screen.h"
+#include "chromeos/ash/experiences/login/login_screen_shown_observer.h"
 
 namespace ash {
 namespace test {

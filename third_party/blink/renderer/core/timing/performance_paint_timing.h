@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_PAINT_TIMING_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 
 namespace blink {
@@ -17,9 +18,9 @@ class CORE_EXPORT PerformancePaintTiming final : public PerformanceEntry {
   enum class PaintType { kFirstPaint, kFirstContentfulPaint };
 
   PerformancePaintTiming(PaintType,
-                         double start_time,
+                         const DOMPaintTimingInfo& paint_timing_info,
                          DOMWindow* source,
-                         bool is_triggered_by_soft_navigation);
+                         uint32_t navigation_id);
   ~PerformancePaintTiming() override;
 
   const AtomicString& entryType() const override;

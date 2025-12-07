@@ -245,3 +245,5 @@ TEST_F(PolicyCacheUpdaterAndroidTest, TestWithInfoError_PolicyHasValue) {
 
 }  // namespace android
 }  // namespace policy
+
+DEFINE_JNI(PolicyCacheUpdaterTestSupporter)

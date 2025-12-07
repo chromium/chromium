@@ -38,10 +38,13 @@ def do_latest(spec):
     if m := re.search('<latest>([^<]+)</latest>', metadata):
         versions.append(m.group(1))
 
-    # If no latest info was found just hope the versions are sorted and the
-    # last one is the latest (as is commonly the case).
     if spec.version_filter is not None:
-        versions = [v for v in versions if spec.version_filter in v]
+        r = re.compile(spec.version_filter)
+        versions = [v for v in versions if r.search(v)]
+
+    # If a <latest> tag was found, then it would be the last in this list.
+    # Otherwise if no latest tag was found just hope the rest of the versions
+    # are sorted and the last one is the latest (as is commonly the case).
     latest = versions[-1]
     print(latest + f'.{spec.patch_version}')
 
@@ -55,7 +58,7 @@ def get_download_url(version, spec):
                                                     spec.group_name,
                                                     spec.module_name, version,
                                                     spec.file_ext)
-    file_name = file_url.rsplit('/', 1)[-1]
+    file_name = f'{spec.module_name}.{spec.file_ext}'
 
     partial_manifest = {
         'url': [file_url],

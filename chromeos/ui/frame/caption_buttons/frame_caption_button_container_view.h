@@ -50,7 +50,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
   // `custom_button` is an optional caption button. It is placed as the
   // left-most caption button (in LTR mode).
   FrameCaptionButtonContainerView(
-      views::Widget* frame,
+      views::Widget* widget,
       bool is_close_button_enabled = true,
       std::unique_ptr<views::FrameCaptionButton> custom_button = nullptr);
   FrameCaptionButtonContainerView(const FrameCaptionButtonContainerView&) =
@@ -216,7 +216,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
   MultitaskMenuNudgeController* GetMultitaskMenuNudgeController() override;
 
   // The widget that the buttons act on.
-  raw_ptr<views::Widget> frame_;
+  raw_ptr<views::Widget> widget_;
 
   // The buttons. In the normal button style, at most one of |minimize_button_|
   // and |size_button_| is visible.
@@ -234,7 +234,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
 
   // Mapping of the image needed to paint a button for each of the values of
   // CaptionButtonIcon.
-  std::map<views::CaptionButtonIcon, const gfx::VectorIcon*> button_icon_map_;
+  std::map<views::CaptionButtonIcon,
+           raw_ptr<const gfx::VectorIcon, CtnExperimental>>
+      button_icon_map_;
 
   // Animation that affects the visibility of |size_button_| and the position of
   // buttons to the left of it. Usually this is just the minimize button but it

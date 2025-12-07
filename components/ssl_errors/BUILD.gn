@@ -12,6 +12,7 @@ static_library("ssl_errors") {
 
   deps = [
     "//base",
+    "//base:build_time",
     "//base:i18n",
     "//components/network_time",
     "//components/strings",
@@ -33,7 +34,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//net:test_support",
     "//services/network:test_support",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//testing/gtest",
   ]
 }

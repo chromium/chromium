@@ -13,6 +13,20 @@ namespace segmentation_platform {
 // Provides a default model and metadata for the frequent feature user segment.
 class FrequentFeatureUserModel : public DefaultModelProvider {
  public:
+  enum Feature {
+    kFeatureMobileMenuAddToBookmarks,
+    kFeatureMobileMenuTranslate,
+    kFeatureSuggestionsContentOpened,
+    kFeatureMobileMenuAllBookmarks,
+    kFeatureMobileBookmarkManagerEntryOpened,
+    kFeatureAutofillCreditCard,
+    kFeaturePasswordManagerAutofilled,
+    kFeatureMobileNTPMostVisited,
+    kFeatureOmniboxUrl,
+    kFeatureOmniboxSearch,
+    kFeatureCount
+  };
+
   FrequentFeatureUserModel();
   ~FrequentFeatureUserModel() override = default;
 

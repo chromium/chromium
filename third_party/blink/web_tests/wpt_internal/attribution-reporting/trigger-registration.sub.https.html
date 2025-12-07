@@ -23,7 +23,6 @@ attribution_reporting_promise_test(async t => {
     source_event_id: generateSourceEventId(),
   };
   registerAttributionSrc({
-    cookie: attributionDebugCookie,
     source
   });
   await waitForSourceToBeRegistered(source.source_event_id);

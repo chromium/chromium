@@ -15,28 +15,28 @@ namespace cssvalue {
 
 class CORE_EXPORT CSSDynamicRangeLimitMixValue : public CSSValue {
  public:
-  CSSDynamicRangeLimitMixValue(const CSSValue* limit1,
-                               const CSSValue* limit2,
-                               const CSSPrimitiveValue* p)
+  CSSDynamicRangeLimitMixValue(
+      HeapVector<Member<const CSSValue>>&& limits,
+      HeapVector<Member<const CSSPrimitiveValue>>&& percentages)
       : CSSValue(kDynamicRangeLimitMixClass),
-        limit1_(limit1),
-        limit2_(limit2),
-        percentage_(p) {}
+        limits_(limits),
+        percentages_(percentages) {
+    CHECK(limits_.size() == percentages_.size());
+  }
 
   String CustomCSSText() const;
 
   void TraceAfterDispatch(blink::Visitor* visitor) const;
 
   bool Equals(const CSSDynamicRangeLimitMixValue& other) const;
-
-  const CSSValue& Limit1() const { return *limit1_; }
-  const CSSValue& Limit2() const { return *limit2_; }
-  const CSSPrimitiveValue& Percentage() const { return *percentage_; }
+  const HeapVector<Member<const CSSValue>>& Limits() const { return limits_; }
+  const HeapVector<Member<const CSSPrimitiveValue>>& Percentages() const {
+    return percentages_;
+  }
 
  private:
-  Member<const CSSValue> limit1_;
-  Member<const CSSValue> limit2_;
-  Member<const CSSPrimitiveValue> percentage_;
+  const HeapVector<Member<const CSSValue>> limits_;
+  const HeapVector<Member<const CSSPrimitiveValue>> percentages_;
 };
 
 }  // namespace cssvalue

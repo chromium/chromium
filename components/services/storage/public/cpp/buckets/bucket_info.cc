@@ -4,13 +4,12 @@
 
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
 
 namespace storage {
 
 BucketInfo::BucketInfo(BucketId bucket_id,
                        blink::StorageKey storage_key,
-                       blink::mojom::StorageType type,
                        std::string name,
                        base::Time expiration,
                        int64_t quota,
@@ -18,7 +17,6 @@ BucketInfo::BucketInfo(BucketId bucket_id,
                        blink::mojom::BucketDurability durability)
     : id(std::move(bucket_id)),
       storage_key(std::move(storage_key)),
-      type(type),
       name(std::move(name)),
       expiration(std::move(expiration)),
       quota(quota),
@@ -37,10 +35,6 @@ bool operator==(const BucketInfo& lhs, const BucketInfo& rhs) {
   return lhs.id == rhs.id;
 }
 
-bool operator!=(const BucketInfo& lhs, const BucketInfo& rhs) {
-  return !(lhs == rhs);
-}
-
 bool operator<(const BucketInfo& lhs, const BucketInfo& rhs) {
   return lhs.id < rhs.id;
 }
@@ -48,8 +42,8 @@ bool operator<(const BucketInfo& lhs, const BucketInfo& rhs) {
 std::set<BucketLocator> COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT)
     BucketInfosToBucketLocators(const std::set<BucketInfo>& bucket_infos) {
   std::set<BucketLocator> result;
-  base::ranges::transform(bucket_infos, std::inserter(result, result.begin()),
-                          &BucketInfo::ToBucketLocator);
+  std::ranges::transform(bucket_infos, std::inserter(result, result.begin()),
+                         &BucketInfo::ToBucketLocator);
   return result;
 }
 

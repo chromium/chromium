@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/css/css_import_rule.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
+#include "third_party/blink/renderer/core/css/media_query_exp.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_impl.h"
@@ -53,6 +54,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -130,7 +132,7 @@ CSSStyleSheet* CSSStyleSheet::CreateInline(StyleSheetContents* sheet,
 CSSStyleSheet* CSSStyleSheet::CreateInline(Node& owner_node,
                                            const KURL& base_url,
                                            const TextPosition& start_position,
-                                           const WTF::TextEncoding& encoding) {
+                                           const TextEncoding& encoding) {
   Document& owner_node_document = owner_node.GetDocument();
   auto* parser_context = MakeGarbageCollected<CSSParserContext>(
       owner_node_document, owner_node_document.BaseURL(),
@@ -208,8 +210,7 @@ CSSStyleSheet::~CSSStyleSheet() = default;
 
 void CSSStyleSheet::WillMutateRules() {
   // If we are the only client it is safe to mutate.
-  if (!contents_->IsUsedFromTextCache() &&
-      !contents_->IsReferencedFromResource()) {
+  if (!IsContentsShared()) {
     contents_->StartMutation();
     contents_->ClearRuleSet();
     return;
@@ -220,14 +221,8 @@ void CSSStyleSheet::WillMutateRules() {
 
   // Copy-on-write. Note that this eagerly parses any rules that were
   // lazily parsed.
-  contents_->UnregisterClient(this);
-  contents_ = contents_->Copy();
-  contents_->RegisterClient(this);
-
+  SetContents(contents_->Copy());
   contents_->StartMutation();
-
-  // Any existing CSSOM wrappers need to be connected to the copied child rules.
-  ReattachChildRuleCSSOMWrappers();
 }
 
 void CSSStyleSheet::DidMutate(Mutation mutation) {
@@ -249,7 +244,7 @@ void CSSStyleSheet::DidMutate(Mutation mutation) {
         ownerNode()->GetTreeScope());
     invalidate_matched_properties_cache = true;
   } else if (!adopted_tree_scopes_.empty()) {
-    for (auto tree_scope : adopted_tree_scopes_.Keys()) {
+    for (const auto& tree_scope : adopted_tree_scopes_.Keys()) {
       // It is currently required that adopted sheets can not be moved between
       // documents.
       DCHECK(tree_scope->GetDocument() == document);
@@ -275,6 +270,17 @@ void CSSStyleSheet::DisableRuleAccessForInspector() {
   enable_rule_access_for_inspector_ = false;
 }
 
+void CSSStyleSheet::BeginQuietMutation() {
+  if (IsContentsShared()) {
+    SetContents(contents_->Copy());
+  }
+}
+
+void CSSStyleSheet::EndQuietMutation(StyleSheetContents* original_contents) {
+  CHECK_NE(contents_, original_contents);
+  SetContents(original_contents);
+}
+
 CSSStyleSheet::InspectorMutationScope::InspectorMutationScope(
     CSSStyleSheet* sheet)
     : style_sheet_(sheet) {
@@ -283,6 +289,19 @@ CSSStyleSheet::InspectorMutationScope::InspectorMutationScope(
 
 CSSStyleSheet::InspectorMutationScope::~InspectorMutationScope() {
   style_sheet_->DisableRuleAccessForInspector();
+}
+
+bool CSSStyleSheet::IsContentsShared() const {
+  return contents_->IsUsedFromTextCache() ||
+         contents_->IsUsedFromResourceCache() ||
+         contents_->IsReferencedFromResource();
+}
+
+void CSSStyleSheet::SetContents(StyleSheetContents* contents) {
+  contents_->UnregisterClient(this);
+  contents_ = contents;
+  contents_->RegisterClient(this);
+  ReattachChildRuleCSSOMWrappers();
 }
 
 void CSSStyleSheet::ReattachChildRuleCSSOMWrappers() {
@@ -329,8 +348,8 @@ void CSSStyleSheet::RemovedAdoptedFromTreeScope(TreeScope& tree_scope) {
   }
 }
 
-bool CSSStyleSheet::IsAdoptedByTreeScope(TreeScope& tree_scope) {
-  return adopted_tree_scopes_.Contains(&tree_scope);
+bool CSSStyleSheet::IsAdoptedByTreeScope(const TreeScope& tree_scope) {
+  return adopted_tree_scopes_.Contains(const_cast<TreeScope*>(&tree_scope));
 }
 
 bool CSSStyleSheet::HasViewportDependentMediaQueries() const {
@@ -396,9 +415,9 @@ unsigned CSSStyleSheet::insertRule(const String& rule_string,
   if (index > length()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        "The index provided (" + String::Number(index) +
-            ") is larger than the maximum index (" + String::Number(length()) +
-            ").");
+        StrCat({"The index provided (", String::Number(index),
+                ") is larger than the maximum index (",
+                String::Number(length()), ")."}));
     return 0;
   }
 
@@ -412,7 +431,7 @@ unsigned CSSStyleSheet::insertRule(const String& rule_string,
   if (!rule) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        "Failed to parse the rule '" + rule_string + "'.");
+        StrCat({"Failed to parse the rule '", rule_string, "'."}));
     return 0;
   }
   RuleMutationScope mutation_scope(this);
@@ -456,9 +475,9 @@ void CSSStyleSheet::deleteRule(unsigned index,
     if (length()) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kIndexSizeError,
-          "The index provided (" + String::Number(index) +
-              ") is larger than the maximum index (" +
-              String::Number(length() - 1) + ").");
+          StrCat({"The index provided (", String::Number(index),
+                  ") is larger than the maximum index (",
+                  String::Number(length() - 1), ")."}));
     } else {
       exception_state.ThrowDOMException(DOMExceptionCode::kIndexSizeError,
                                         "Style sheet is empty (length 0).");

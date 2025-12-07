@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.composeplate.ComposeplateView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/composeplate_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:paddingTop="@dimen/composeplate_view_long_button_padding_top"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:paddingBottom="@dimen/composeplate_view_long_button_padding_top">
+
+    <LinearLayout
+        android:id="@+id/composeplate_button"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:contentDescription="@string/accessibility_toolbar_btn_composeplate"
+        android:layout_marginEnd="@dimen/composeplate_view_button_margin"
+        android:paddingStart="@dimen/composeplate_view_button_margin"
+        android:paddingEnd="@dimen/composeplate_view_button_margin"
+        style="@style/ComposeplateViewButton"
+        tools:ignore="UseCompoundDrawables">
+
+        <ImageView
+            android:id="@+id/composeplate_button_icon"
+            android:layout_width="@dimen/composeplate_view_icon_size"
+            android:layout_height="@dimen/composeplate_view_icon_size"
+            android:src="@drawable/search_spark_white_24dp"
+            android:tint="?attr/colorOnSurface"
+            tools:ignore="ContentDescription"/>
+
+        <TextView
+            android:id="@+id/composeplate_button_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/composeplate_view_button_margin"
+            android:text="@string/ai_mode_entrypoint_label"
+            android:singleLine="true"
+            android:textAppearance="@style/TextAppearance.ComposeplateTextMedium" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/incognito_button"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:contentDescription="@string/accessibility_new_incognito_tab_page"
+        style="@style/ComposeplateViewButton"
+        android:paddingStart="@dimen/composeplate_view_button_margin"
+        android:paddingEnd="@dimen/composeplate_view_button_margin"
+        tools:ignore="UseCompoundDrawables">
+
+        <ImageView
+            android:id="@+id/incognito_button_icon"
+            android:layout_width="@dimen/composeplate_view_icon_size"
+            android:layout_height="@dimen/composeplate_view_icon_size"
+            android:src="@drawable/ic_incognito"
+            android:tint="?attr/colorOnSurface"
+            tools:ignore="ContentDescription"/>
+
+        <TextView
+            android:id="@+id/incognito_button_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/composeplate_view_button_margin"
+            android:text="@string/notification_category_incognito"
+            android:singleLine="true"
+            android:textAppearance="@style/TextAppearance.ComposeplateTextMedium" />
+    </LinearLayout>
+
+</org.chromium.chrome.browser.composeplate.ComposeplateView>

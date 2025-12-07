@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterSpecialSubframeNavigationsBrowserTest,
   content::RenderFrameHost* target = content::FrameMatchingPredicate(
       web_contents()->GetPrimaryPage(),
       base::BindRepeating([](content::RenderFrameHost* rfh) {
-        return rfh->GetLastCommittedURL().scheme_piece() == url::kDataScheme;
+        return rfh->GetLastCommittedURL().scheme() == url::kDataScheme;
       }));
   ASSERT_NE(target, nullptr);
   EXPECT_TRUE(target->GetLastCommittedOrigin().opaque());

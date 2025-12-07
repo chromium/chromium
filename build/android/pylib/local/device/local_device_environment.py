@@ -18,6 +18,7 @@ from devil.android import device_errors
 from devil.android import device_utils
 from devil.android import logcat_monitor
 from devil.android.sdk import adb_wrapper
+from devil.android.sdk import version_codes
 from devil.utils import file_utils
 from devil.utils import parallelizer
 from pylib import constants
@@ -119,8 +120,10 @@ class LocalDeviceEnvironment(environment.Environment):
     self._force_main_user = False
     if hasattr(args, 'force_main_user'):
       self._force_main_user = args.force_main_user
+    self._skia_gold_consider_unsupported = False
+    if hasattr(args, 'skia_gold_consider_unsupported'):
+      self._skia_gold_consider_unsupported = args.skia_gold_consider_unsupported
     self._use_persistent_shell = args.use_persistent_shell
-    self._disable_test_server = args.disable_test_server
 
     use_local_devil_tools = False
     if hasattr(args, 'use_local_devil_tools'):
@@ -210,6 +213,15 @@ class LocalDeviceEnvironment(environment.Environment):
         self._logcat_monitors.append(monitor)
         monitor.Start()
 
+      # There is a change in soft keyboard behavior since Android 16.
+      # See https://crbug.com/443782461 for more details.
+      if d.build_version_sdk >= version_codes.BAKLAVA:
+        with d.GboardPreferences() as gboard_prefs:
+          # Disable the stylus.
+          gboard_prefs.SetBoolean('enable_scribe', False)
+          # Always show the soft keyboards.
+          gboard_prefs.SetBoolean('pk_always_show_vk', True)
+
     self.parallel_devices.pMap(prepare_device)
 
   @property
@@ -259,12 +271,12 @@ class LocalDeviceEnvironment(environment.Environment):
     return self._trace_output
 
   @property
-  def disable_test_server(self):
-    return self._disable_test_server
-
-  @property
   def force_main_user(self):
     return self._force_main_user
+
+  @property
+  def skia_gold_consider_unsupported(self):
+    return self._skia_gold_consider_unsupported
 
   #override
   def TearDown(self):

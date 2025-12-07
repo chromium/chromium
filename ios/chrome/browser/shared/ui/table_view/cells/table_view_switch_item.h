@@ -18,9 +18,6 @@
 // The background color of the icon.
 @property(nonatomic, strong) UIColor* iconBackgroundColor;
 
-// The corner radius of the UIImage view.
-@property(nonatomic, assign) CGFloat iconCornerRadius;
-
 // The border width of the UIImage view. Is zero (no border) by default.
 @property(nonatomic, assign) CGFloat iconBorderWidth;
 
@@ -39,6 +36,11 @@
 // Whether or not the switch is enabled.  Disabled switches are automatically
 // drawn as in the "off" state, with dimmed text.
 @property(nonatomic, assign, getter=isEnabled) BOOL enabled;
+
+// Configuration of the switch.
+@property(nonatomic, weak) id target;
+@property(nonatomic, assign) SEL selector;
+@property(nonatomic, assign) NSInteger tag;
 
 @end
 

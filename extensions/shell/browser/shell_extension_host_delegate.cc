@@ -7,6 +7,7 @@
 #include "base/notreached.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "extensions/browser/media_capture_util.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/shell/browser/shell_extension_web_contents_observer.h"
 
 namespace extensions {
@@ -19,25 +20,14 @@ void ShellExtensionHostDelegate::OnExtensionHostCreated(
   ShellExtensionWebContentsObserver::CreateForWebContents(web_contents);
 }
 
-void ShellExtensionHostDelegate::OnMainFrameCreatedForBackgroundPage(
-    ExtensionHost* host) {}
-
-content::JavaScriptDialogManager*
-ShellExtensionHostDelegate::GetJavaScriptDialogManager() {
-  // TODO(jamescook): Create a JavaScriptDialogManager or reuse the one from
-  // content_shell.
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
-}
-
 void ShellExtensionHostDelegate::CreateTab(
     std::unique_ptr<content::WebContents> web_contents,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
     bool user_gesture) {
   // TODO(jamescook): Should app_shell support opening popup windows?
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ShellExtensionHostDelegate::ProcessMediaAccessRequest(
@@ -62,12 +52,11 @@ bool ShellExtensionHostDelegate::CheckMediaAccessPermission(
 content::PictureInPictureResult
 ShellExtensionHostDelegate::EnterPictureInPicture(
     content::WebContents* web_contents) {
-  NOTREACHED_IN_MIGRATION();
-  return content::PictureInPictureResult::kNotSupported;
+  NOTREACHED();
 }
 
 void ShellExtensionHostDelegate::ExitPictureInPicture() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace extensions

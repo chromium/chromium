@@ -11,11 +11,14 @@
 #include "chrome/browser/extensions/api/top_sites/top_sites_api.h"
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/history/core/browser/top_sites.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api_test_utils.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -23,17 +26,17 @@ namespace utils = api_test_utils;
 
 namespace {
 
-class TopSitesExtensionTest : public InProcessBrowserTest {
+class TopSitesExtensionTest : public PlatformBrowserTest {
  public:
-  TopSitesExtensionTest()
-      : top_sites_prepopulated_pages_size_(0),
-        top_sites_inited_(false),
-        waiting_(false) {}
+  TopSitesExtensionTest() = default;
+  ~TopSitesExtensionTest() override = default;
+
+  // PlatformBrowserTest:
   void SetUpOnMainThread() override {
     base::RunLoop loop;
     quit_closure_ = loop.QuitWhenIdleClosure();
     scoped_refptr<history::TopSites> top_sites =
-        TopSitesFactory::GetForProfile(browser()->profile());
+        TopSitesFactory::GetForProfile(chrome_test_utils::GetProfile(this));
 
     top_sites_prepopulated_pages_size_ =
         top_sites->GetPrepopulatedPages().size();
@@ -65,9 +68,9 @@ class TopSitesExtensionTest : public InProcessBrowserTest {
     top_sites_inited_ = true;
   }
 
-  size_t top_sites_prepopulated_pages_size_;
-  bool top_sites_inited_;
-  bool waiting_;
+  size_t top_sites_prepopulated_pages_size_ = 0;
+  bool top_sites_inited_ = false;
+  bool waiting_ = false;
   base::OnceClosure quit_closure_;
 };
 
@@ -80,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(TopSitesExtensionTest, GetTopSites) {
   get_top_sites_function->set_has_callback(true);
 
   std::optional<base::Value> result = utils::RunFunctionAndReturnSingleResult(
-      get_top_sites_function.get(), "[]", browser()->profile());
+      get_top_sites_function.get(), "[]", chrome_test_utils::GetProfile(this));
   ASSERT_TRUE(result->is_list());
   EXPECT_GE(result->GetList().size(), top_sites_prepopulated_pages_size());
 }

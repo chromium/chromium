@@ -8,8 +8,14 @@ source_set("choose_file") {
   sources = [
     "choose_file_controller.h",
     "choose_file_controller.mm",
+    "choose_file_controller_impl.h",
+    "choose_file_controller_impl.mm",
+    "choose_file_controller_observer_bridge.h",
+    "choose_file_controller_observer_bridge.mm",
     "choose_file_event.h",
     "choose_file_event.mm",
+    "choose_file_event_holder.h",
+    "choose_file_event_holder.mm",
     "choose_file_java_script_feature.h",
     "choose_file_java_script_feature.mm",
     "choose_file_tab_helper.h",
@@ -18,8 +24,11 @@ source_set("choose_file") {
     "choose_file_util.mm",
   ]
   deps = [
+    ":choose_file_file_utils",
     ":choose_file_js",
+    ":last_tap_location_tab_helper",
     "//base",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
@@ -27,22 +36,53 @@ source_set("choose_file") {
   frameworks = [ "Foundation.framework" ]
 }
 
+source_set("choose_file_file_utils") {
+  sources = [
+    "choose_file_file_utils.h",
+    "choose_file_file_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/web/public",
+  ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+source_set("last_tap_location_tab_helper") {
+  sources = [
+    "last_tap_location_tab_helper.h",
+    "last_tap_location_tab_helper.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/web/public",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "choose_file_controller_impl_unittest.mm",
+    "choose_file_controller_observer_bridge_unittest.mm",
     "choose_file_controller_unittest.mm",
     "choose_file_java_script_feature_unittest.mm",
     "choose_file_tab_helper_unittest.mm",
   ]
   deps = [
     ":choose_file",
+    ":last_tap_location_tab_helper",
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/web/public/test",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }
 
@@ -58,10 +98,15 @@ source_set("test_support") {
   ]
 }
 
+compile_ts("choose_file_utils_js") {
+  sources = [ "resources/choose_file_utils.ts" ]
+}
+
 optimize_ts("choose_file_js") {
   visibility = [ ":choose_file" ]
-
   sources = [ "resources/choose_file.ts" ]
-
-  deps = [ "//ios/web/public/js_messaging:util_scripts" ]
+  deps = [
+    ":choose_file_utils_js",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
 }

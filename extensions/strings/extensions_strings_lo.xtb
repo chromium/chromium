@@ -5,7 +5,6 @@
 <translation id="1140871961407805696">ປິ່ນໜ້າໃສ່ສິ່ງແວດລ້ອມ</translation>
 <translation id="1196338895211115272">ສົ່ງປຸ່ມສ່ວນຕົວອອກບໍ່ສໍາເລັດ.</translation>
 <translation id="132960226125594336">ບໍ່ສາມາດໂຫຼດ '<ph name="RELATIVE_PATH" />' ສຳລັບສະຄຣິບເນື້ອຫາໄດ້ ເນື່ອງຈາກມັນມີຂະໜາດເກີນຂະໜາດສະຄຣິບສູງສຸດ ຫຼື ຂະໜາດສະຄຣິບເນື້ອຫາຮວມສູງສຸດຂອງສ່ວນຂະຫຍາຍ.</translation>
-<translation id="1420684932347524586">ຢະ! ສ້າງລະຫັດສ່ວນຕົວ RSA ​ແບບສຸ່ມບໍ່ສໍາເລັດ.</translation>
 <translation id="1445572445564823378">ສ່ວນຂະຫຍາຍນີ້ກໍາລັງຊ້າລົງ <ph name="PRODUCT_NAME" />. ທ່ານຄວນຈະປິດໃຊ້ງານມັນ​ເພື່ອ​ກູ້​ຄືນ​ການ​ໃຊ້​ງານ​ຂອງ <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL ບໍ່ຮອງຮັບ.</translation>
 <translation id="1610570795592207282">ບໍ່ສາມາດໂຫຼດ css '<ph name="RELATIVE_PATH" />' ສໍາລັບສະຄຣິບໄດ້.</translation>
@@ -19,13 +18,11 @@
 <translation id="3115238746683532089">ຜະ​ລິດ​ຕະ​ພັນ​ບໍ່​ຮູ້​ຈັກ <ph name="PRODUCT_ID" /> ຈາກຜູ້​ຂາຍ <ph name="VENDOR_ID" /> (ເລກ​ລຳ​ດັບ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">ປ່ຽນແທນໄຟລ໌ crx ບໍ່ໄດ້. ກວດກາເບິ່ງວ່າ ໄຟລ໌ໃຊ້ງານຢູ່ຫຼືບໍ່.</translation>
 <translation id="3163201441334626963">ຜະ​ລິດ​ຕະ​ພັນ​ບໍ່​ຮູ້​ຈັກ <ph name="PRODUCT_ID" /> ຈາກ​ຜູ້​ຂາຍ <ph name="VENDOR_ID" /></translation>
-<translation id="3369521687965833290">ບໍ່ສາມາດແກະກ່ອງສ່ວນຂະຫຍາຍໄດ້. ເພື່ອແກະກ່ັງສ່ວນຂະຫຍາຍຢ່າງປອດໄພ, ຕ້ອງມີຊ່ອງທາງໃຫ້ກັບໄດເຣັກຕໍຣີໂປຣໄຟລ໌ຂອງທ່ານທີ່ເລີ່ມຕົ້ນກັບໜັງສືດຣ້າຍ ແລະບໍ່ມີບ່ອນຕໍ່ກັນ, ຈຸດຕໍ່, ຫຼືຊິມລິ້ງ (symlink). ບໍ່ມີຊ່ອງທາງດັ່ງກ່າວຢູ່ສໍາລັບໂປຣໄຟລ໌ຂອງທ່ານ.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (ເລກ​ລຳ​ດັບ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> ຈາກຜູ້​ຂາຍ <ph name="VENDOR_ID" /> (ເລກ​ລຳ​ດັບ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ຄ່າປ້ອນເຂົ້າສໍາລັບປຸ່ມສ່ວນຕົວຕ້ອງເປັນຊ່ອງທາງທີ່ຖືກຕ້ອງ.</translation>
 <translation id="388442998277590542">ບໍ່ສາມາດໂຫຼດໜ້າທາງເລືອກ '<ph name="OPTIONS_PAGE" />' ໄດ້.</translation>
 <translation id="3984413272403535372">ຜິດພາດໃນຂະນະທີ່ກໍາລັງເຊັນສ່ວນຂະຫຍາຍ.</translation>
-<translation id="4115165561519362854">ຜູ້​ຄວບ​ຄຸມ​ເຄື່ອງ​ຈັກ​ນີ້​ຕອງ​ການ <ph name="EXTENSION_NAME" /> ໃຫ້​ມີ <ph name="EXTENSION_VERSION" /> ເວີ​ຊັນ​ຕ່ຳ​ສຸດ. ມັນ​ບໍ່​ສາ​ມາດ​ເປີດ​ໃຊ້​ງານ​ໄດ້ ຈົນ​ກວ່າ​ມັນ​ໄດ້​ອັບ​ເດດ​ເປັນ​ເວີ​ຊັນ​ນັ້ນ (ຫຼື​ສູງກວ່າ).</translation>
 <translation id="4233778200880751280">ບໍ່​ສາ​ມາດ​ໂຫຼດ​ກ່ຽວ​ກັບ​ຫນ້າ​ " <ph name="ABOUT_PAGE" /> .</translation>
 <translation id="471800408830181311">ສົ່ງປຸ່ມສ່ວນຕົວອອກມາບໍ່ໄດ້.</translation>
 <translation id="4811956658694082538">ບໍ່​ສາ​ມາດ​ຕິດ​ຕັ້ງ​ແພັກ​ເກດ​ໄດ້ ເພາະ​ວ່າ​ຂະ​ບວນ​ການ​ໃຊ້​ປະ​ໂຫຍດ​ເກີດ​ຂັດ​ຂ້ອງ. ລອງ​ປິດ​ເປີດ Chrome ໃໝ່ ແລະ​ລອງ​ໃໝ່​ອີກ.</translation>
@@ -39,7 +36,6 @@
 <translation id="5972529113578162692">ຜູ້​ຄວບ​ຄຸມ​ອຸ​ປະ​ກອນ​ນີ້​ຕ້ອງ​ການ​ໃຫ້​ຕິດ​ຕັ້ງ <ph name="EXTENSION_NAME" />. ​ບໍ່​ສາ​ມາດ​ຖອນ​ຕິດ​ຕັ້ງມັນ​ໄດ້.</translation>
 <translation id="6027032947578871493">ຜະ​ລິດ​ຕະ​ພັນ​ບໍ່​ຮູ້​ຈັກ <ph name="PRODUCT_ID" /> ຈາກ <ph name="VENDOR_NAME" /> (ເລກ​ລຳ​ດັບ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> ຈາກຜູ້​ຂາຍ<ph name="VENDOR_ID" /></translation>
-<translation id="6143635259298204954">ບໍ່ສາມາດແກະກ່ອງສ່ວນຂະຫຍາຍໄດ້. ເພື່ອແກະກ່ອງສ່ວນຂະຫຍາຍຢ່າງປອດໄພ, ຕ້ອງມີຊ່ອງທາງໃຫ້ກັບໄດເຣັກຕໍຣີໂປຣໄຟລ໌ຂອງທ່ານທີ່ບໍ່ມີ symlink. ບໍ່ມີຊ່ອງທາງດັ່ງກ່າວຢູ່ສໍາລັບໂປຣໄຟລ໌ຂອງທ່ານ.</translation>
 <translation id="6322279351188361895">ອ່ານປຸ່ມສ່ວນຕົວບໍ່ໄດ້.</translation>
 <translation id="6391538222494443604">ບັນຊີລາຍຊື່ການປ້ອນ​ຕ້ອງ​ມີຢູ່​.</translation>
 <translation id="641087317769093025">ບໍ່​ສາ​ມາດແຍກຊິບສ່ວນຂະ​ຫຍາຍໄດ້</translation>
@@ -52,12 +48,14 @@
 <translation id="7068383018033524534">ໄຟລ໌ Manifest ບໍ່ຖືກຕ້ອງ</translation>
 <translation id="7217838517480956708">ຜູ້​ບໍ​ລິ​ຫານ​​ເຄື່ອງຈັກ​ນີ້​ໄດ້​ຮຽກ​ຮ້ອງ​ໃຫ້ <ph name="EXTENSION_NAME" /> ທີ່​ຈະ​ຕິດ​ຕັ້ງ​. ມັນ​ບໍ່​ສາ​ມາດ​ໄດ້​ຮັບ​ການ​ໂຍກ​ຍ້າຍ​ຫຼື​ດັດ​ແກ້​.</translation>
 <translation id="7612608473764576263">ຄ່າປ້ອນເຂົ້າສໍາລັບປຸ່ມສ່ວນຕົວຕ້ອງມີຮູບແບບທີ່ຖືກຕ້ອງ (ປຸ່ມ RSA ທີ່ເຂົ້າລະຫັດ PEM ໃນຮູບແບບ PKCS#8).</translation>
+<translation id="7876803335449432072">ບໍ່ສາມາດໂຫຼດໄຟລ໌ '<ph name="RELATIVE_PATH" />' ສຳລັບສະຄຣິບເນື້ອຫາໄດ້, ສະໄຕລ໌ຊີດຂອງສະຄຣິບເນື້ອຫາສາມາດໂຫຼດໄດ້ສະເພາະຈາກໄຟລ໌ສະໄຕລ໌ຊີດທີ່ຮອງຮັບເທົ່ານັ້ນ ເຊັ່ນ: ໄຟລ໌ .css.</translation>
 <translation id="7939686037314084444">ສ່ວນຂະຫຍາຍບໍ່ສາມາດໂຫຼດຢ່າງຖືກຕ້ອງໄດ້. ມັນອາດຈະບໍ່ສາມາດສະກັດຄຳຂໍຂອງເຄືອຂ່າຍໄດ້.</translation>
 <translation id="7972881773422714442">ທາງ​ເລືອກ​: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">ປິ່ນໜ້າໃສ່ຜູ້ໃຊ້</translation>
 <translation id="8047248493720652249">ສ່ວນຂະຫຍາຍນີ້ໃສ່ຊື່ດາວໂຫຼດ "<ph name="ATTEMPTED_FILENAME" />" ບໍ່ໄດ້ ເພາະວ່າສ່ວນຂະຫຍາຍອື່ນ (<ph name="EXTENSION_NAME" />) ໄດ້ກໍານົດຊື່ໄຟລ໌ອື່ນ "<ph name="ACTUAL_FILENAME" />" ແລ້ວ.</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> ຈາກ <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">ໄຟລ໌ Manifest ຫາຍໄປ ຫຼື ບໍ່ສາມາດອ່ານໄດ້</translation>
+<translation id="8621383749470166852">ບໍ່ສາມາດໂຫຼດໄຟລ໌ '<ph name="RELATIVE_PATH" />' ສຳລັບສະຄຣິບເນື້ອຫາໄດ້, ສະຄຣິບເນື້ອຫາສາມາດໂຫຼດໄດ້ສະເພາະຈາກໄຟລ໌ JavaScript ທີ່ຮອງຮັບເທົ່ານັ້ນ ເຊັ່ນ: ໄຟລ໌ .js.</translation>
 <translation id="8636666366616799973">ແພັກເກດໃຊ້ບໍ່ໄດ້. ລາຍລະອຽດ: '<ph name="ERROR_MESSAGE" />'.</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" ກຳລັງຮ້ອງຂໍການເຂົ້າເຖິງອຸປະກອນຂອງທ່ານໜຶ່ງເຄື່ອງ:</translation>
 <translation id="8885905466771744233">ມີລະຫັດສ່ວນຕົວສໍາລັບສ່ວນຂະຫຍາຍທີ່ລະບຸໄວ້ຢູ່ແລ້ວ. ໃຊ້ລະຫັດນັ້ນໃໝ່ ຫຼືລຶບມັນກ່ອນ.</translation>

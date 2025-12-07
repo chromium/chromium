@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_TEST_FEATURE_PARAMETER_INTERFACE_H_
 #define CHROME_BROWSER_ASH_LOGIN_TEST_FEATURE_PARAMETER_INTERFACE_H_
 
+#include <array>
 #include <cstddef>
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -172,15 +174,13 @@ bool FeatureAsParameterInterface<N>::IsFeatureEnabledInThisTestCase(
     const base::Feature& feature) {
   const FeatureStateArray<N> feature_state_array = InterfaceType::GetParam();
   for (const FeatureState& feature_state : feature_state_array) {
-    if (strcmp(feature_state.feature->name, feature.name) != 0)
+    if (UNSAFE_TODO(strcmp(feature_state.feature->name, feature.name)) != 0) {
       continue;
-
+    }
     return feature_state.is_enabled;
   }
 
-  NOTREACHED_IN_MIGRATION()
-      << "The requested feature isn't being parameterized.";
-  return false;
+  NOTREACHED() << "The requested feature isn't being parameterized.";
 }
 
 template <size_t N>

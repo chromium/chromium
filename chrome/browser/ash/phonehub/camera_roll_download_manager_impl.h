@@ -20,8 +20,7 @@
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 // CameraRollDownloadManager implementation.
 class CameraRollDownloadManagerImpl
@@ -88,7 +87,6 @@ class CameraRollDownloadManagerImpl
   base::WeakPtrFactory<CameraRollDownloadManagerImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROME_BROWSER_ASH_PHONEHUB_CAMERA_ROLL_DOWNLOAD_MANAGER_IMPL_H_

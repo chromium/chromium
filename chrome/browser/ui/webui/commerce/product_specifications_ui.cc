@@ -2,25 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/commerce/product_specifications_ui.h"
 
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/webui/commerce/product_specifications_ui_handler_delegate.h"
 #include "chrome/browser/ui/webui/commerce/shopping_ui_handler_delegate.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
+#include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/theme_source.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/commerce_product_specifications_resources.h"
 #include "chrome/grit/commerce_product_specifications_resources_map.h"
@@ -28,7 +27,9 @@
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/feature_utils.h"
+#include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "components/commerce/core/shopping_service.h"
+#include "components/commerce/core/webui/product_specifications_handler.h"
 #include "components/commerce/core/webui/shopping_service_handler.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/grit/components_scaled_resources.h"
@@ -38,19 +39,13 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 
 namespace commerce {
 
 ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI(web_ui) {
   Profile* const profile = Profile::FromWebUI(web_ui);
-  commerce::ShoppingService* shopping_service =
-      commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
-  if (!shopping_service || !CanLoadProductSpecificationsFullPageUi(
-                               shopping_service->GetAccountChecker())) {
-    return;
-  }
   // Add ThemeSource to serve the chrome logo.
   content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
   // Add SanitizedImageSource to embed images in WebUI.
@@ -66,9 +61,7 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
 
   // Add required resources.
   webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kCommerceProductSpecificationsResources,
-                      kCommerceProductSpecificationsResourcesSize),
+      source, kCommerceProductSpecificationsResources,
       IDR_COMMERCE_PRODUCT_SPECIFICATIONS_PRODUCT_SPECIFICATIONS_HTML);
 
   // Set up chrome://compare/disclosure
@@ -80,51 +73,86 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       IDR_COMMERCE_PRODUCT_SPECIFICATIONS_DISCLOSURE_PRODUCT_SPECIFICATIONS_DISCLOSURE_HTML);
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"acceptDisclosure", IDS_PRODUCT_SPECIFICATIONS_DISCLOSURE_ACCEPT},
-      {"declineDisclosure", IDS_PRODUCT_SPECIFICATIONS_DISCLOSURE_DECLINE},
-      {"delete", IDS_PRODUCT_SPECIFICATIONS_DELETE},
-      {"disclosureAboutItem", IDS_PRODUCT_SPECIFICATIONS_DISCLOSURE_ABOUT_ITEM},
-      {"disclosureAccountItem",
-       IDS_PRODUCT_SPECIFICATIONS_DISCLOSURE_ACCOUNT_ITEM},
-      {"disclosureDataItem", IDS_PRODUCT_SPECIFICATIONS_DISCLOSURE_DATA_ITEM},
-      {"disclosureItemsHeader",
-       IDS_PRODUCT_SPECIFICATIONS_DISCLOSURE_ITEMS_HEADER},
-      {"disclosureTitle", IDS_PRODUCT_SPECIFICATIONS_DISCLOSURE_TITLE},
-      {"emptyMenu", IDS_PRODUCT_SPECIFICATIONS_EMPTY_SELECTION_MENU},
-      {"emptyProductSelector",
-       IDS_PRODUCT_SPECIFICATIONS_EMPTY_PRODUCT_SELECTOR},
-      {"emptyStateDescription",
-       IDS_PRODUCT_SPECIFICATIONS_EMPTY_STATE_TITLE_DESCRIPTION},
-      {"emptyStateTitle", IDS_PRODUCT_SPECIFICATIONS_EMPTY_STATE_TITLE},
-      {"experimentalFeatureDisclaimer", IDS_PRODUCT_SPECIFICATIONS_DISCLAIMER},
-      {"learnMore", IDS_LEARN_MORE},
-      {"learnMoreA11yLabel", IDS_PRODUCT_SPECIFICATIONS_LEARN_MORE_A11Y_LABEL},
-      {"offlineMessage", IDS_PRODUCT_SPECIFICATIONS_OFFLINE_TOAST_MESSAGE},
-      {"priceRowTitle", IDS_PRODUCT_SPECIFICATIONS_PRICE_ROW_TITLE},
-      {"productSummaryRowTitle",
-       IDS_PRODUCT_SPECIFICATIONS_PRODUCT_SUMMARY_ROW_TITLE},
-      {"recentlyViewedTabs",
-       IDS_PRODUCT_SPECIFICATIONS_RECENTLY_VIEWED_TABS_SECTION},
-      {"removeColumn", IDS_PRODUCT_SPECIFICATIONS_REMOVE_COLUMN},
-      {"renameGroup", IDS_PRODUCT_SPECIFICATIONS_RENAME_GROUP},
-      {"seeAll", IDS_PRODUCT_SPECIFICATIONS_SEE_ALL},
-      {"suggestedTabs", IDS_PRODUCT_SPECIFICATIONS_SUGGESTIONS_SECTION},
+      // Disclosure strings:
+      {"acceptDisclosure", IDS_COMPARE_DISCLOSURE_ACCEPT},
+      {"declineDisclosure", IDS_COMPARE_DISCLOSURE_DECLINE},
+      {"disclosureAboutItem", IDS_COMPARE_DISCLOSURE_ABOUT_AI_ITEM},
+      {"disclosureTabItem", IDS_COMPARE_DISCLOSURE_TAB_ITEM},
+      {"disclosureAccountItem", IDS_COMPARE_DISCLOSURE_ACCOUNT_ITEM},
+      {"disclosureDataItem", IDS_COMPARE_DISCLOSURE_DATA_ITEM},
+      {"disclosureItemsHeader", IDS_COMPARE_DISCLOSURE_ITEMS_HEADER},
+      {"disclosureTitle", IDS_COMPARE_DISCLOSURE_TITLE},
+
+      // Main UI strings:
+      {"addNewColumn", IDS_COMPARE_ADD_NEW_COLUMN},
+      {"buyingOptions", IDS_SHOPPING_INSIGHTS_BUYING_OPTIONS},
+      {"cancelA11yLabel", IDS_CANCEL},
+      {"citationA11yLabel", IDS_COMPARE_CITATION_A11Y_LABEL},
+      {"compareErrorDescription", IDS_COMPARE_ERROR_DESCRIPTION},
+      {"compareErrorMessage", IDS_COMPARE_ERROR_TITLE},
+      {"compareSyncButton", IDS_COMPARE_SYNC_PROMO_BUTTON},
+      {"compareSyncDescription", IDS_COMPARE_SYNC_PROMO_DESCRIPTION},
+      {"compareSyncMessage", IDS_COMPARE_SYNC_PROMO_MESSAGE},
+      {"delete", IDS_COMPARE_DELETE},
+      {"defaultTableTitle", IDS_COMPARE_DEFAULT_TABLE_TITLE},
+      {"emptyMenu", IDS_COMPARE_EMPTY_SELECTION_MENU},
+      {"emptyProductSelector", IDS_COMPARE_EMPTY_PRODUCT_SELECTOR},
+      {"emptyStateDescription", IDS_COMPARE_EMPTY_STATE_TITLE_DESCRIPTION},
+      {"emptyStateTitle", IDS_COMPARE_EMPTY_STATE_TITLE},
+      {"errorMessage", IDS_COMPARE_ERROR_DESCRIPTION},
+      {"experimentalFeatureDisclaimer", IDS_COMPARE_DISCLAIMER},
+      {"learnMore", IDS_COMPARE_LEARN_MORE},
+      {"learnMoreA11yLabel", IDS_COMPARE_LEARN_MORE_A11Y_LABEL},
+      {"menuDelete", IDS_COMPARE_CONTEXT_MENU_DELETE},
+      {"menuOpenAll", IDS_COMPARE_CONTEXT_MENU_OPEN_ALL_WITH_COUNT},
+      {"menuOpenAllInNewWindow",
+       IDS_COMPARE_CONTEXT_MENU_OPEN_ALL_IN_NEW_WINDOW_WITH_COUNT},
+      {"menuOpenInNewTab", IDS_COMPARE_CONTEXT_MENU_OPEN_IN_NEW_TAB},
+      {"menuOpenInNewWindow", IDS_COMPARE_CONTEXT_MENU_OPEN_IN_NEW_WINDOW},
+      {"menuRename", IDS_COMPARE_CONTEXT_MENU_RENAME},
+      {"menuTooltipMore", IDS_COMPARE_EDIT_MORE},
+      {"notAvailableTooltip", IDS_COMPARE_DESCRIPTION_NOT_AVAILABLE},
+      {"numSelected", IDS_COMPARE_NUM_ITEMS_SELECTED},
+      {"offlineMessage", IDS_COMPARE_OFFLINE_TOAST_MESSAGE},
+      {"openProductPage", IDS_COMPARE_OPEN_PRODUCT_PAGE_IN_NEW_TAB},
+      {"pageTitle", IDS_COMPARE_DEFAULT_PAGE_TITLE},
+      {"priceRowTitle", IDS_COMPARE_PRICE_ROW_TITLE},
+      {"productSummaryRowTitle", IDS_COMPARE_PRODUCT_SUMMARY_ROW_TITLE},
+      {"recentlyViewedTabs", IDS_COMPARE_RECENTLY_VIEWED_TABS_SECTION},
+      {"removeColumn", IDS_COMPARE_REMOVE_COLUMN},
+      {"renameGroup", IDS_COMPARE_RENAME},
+      {"seeAll", IDS_COMPARE_SEE_ALL},
+      {"suggestedTabs", IDS_COMPARE_SUGGESTIONS_SECTION},
+      {"tableFullMessage", IDS_COMPARE_TABLE_FULL_MESSAGE},
+      {"tableListItemTitle", IDS_COMPARE_TABLE_LIST_ITEM_TITLE},
+      {"tableMenuA11yLabel", IDS_COMPARE_TABLE_MENU_A11Y_LABEL},
+      {"tableNameInputA11yLabel", IDS_COMPARE_TITLE_INPUT_A11Y_LABEL},
       {"thumbsDown", IDS_THUMBS_DOWN},
       {"thumbsUp", IDS_THUMBS_UP},
+      {"undoTableDeletion", IDS_COMPARE_UNDO_TABLE_DELETION},
+      {"yourComparisonTables", IDS_COMPARE_YOUR_COMPARISON_TABLES},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 
-  source->AddString("pageTitle", "Product Specifications");
-  source->AddString("productSpecificationsManagementUrl",
-                    kChromeUICompareListsUrl);
-  source->AddString("summaryTitle", "Summary");
-}
+  source->AddString("compareLearnMoreUrl", kChromeUICompareLearnMoreUrl);
+  source->AddInteger("maxNameLength", kMaxNameLength);
+  source->AddInteger("maxTableSize", kMaxTableSize);
 
-void ProductSpecificationsUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-        pending_receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(pending_receiver));
+  std::string email;
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (identity_manager) {
+    CoreAccountInfo account_info =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+    email = account_info.email;
+  }
+  source->AddString("userEmail", email);
+
+  auto plural_string_handler = std::make_unique<PluralStringHandler>();
+  plural_string_handler->AddLocalizedString("numItems", IDS_COMPARE_NUM_ITEMS);
+  plural_string_handler->AddLocalizedString(
+      "deletionToastMessage", IDS_COMPARE_TABLE_DELETION_TOAST_MESSAGE);
+  web_ui->AddMessageHandler(std::move(plural_string_handler));
 }
 
 void ProductSpecificationsUI::BindInterface(
@@ -134,8 +162,15 @@ void ProductSpecificationsUI::BindInterface(
   shopping_service_factory_receiver_.Bind(std::move(receiver));
 }
 
+void ProductSpecificationsUI::BindInterface(
+    mojo::PendingReceiver<
+        product_specifications::mojom::ProductSpecificationsHandlerFactory>
+        receiver) {
+  product_specifications_factory_receiver_.reset();
+  product_specifications_factory_receiver_.Bind(std::move(receiver));
+}
+
 void ProductSpecificationsUI::CreateShoppingServiceHandler(
-    mojo::PendingRemote<shopping_service::mojom::Page> page,
     mojo::PendingReceiver<shopping_service::mojom::ShoppingServiceHandler>
         receiver) {
   Profile* const profile = Profile::FromWebUI(web_ui());
@@ -149,14 +184,32 @@ void ProductSpecificationsUI::CreateShoppingServiceHandler(
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   shopping_service_handler_ =
       std::make_unique<commerce::ShoppingServiceHandler>(
-          std::move(page), std::move(receiver), bookmark_model,
-          shopping_service, profile->GetPrefs(), tracker,
-          std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr,
-                                                                profile),
+          std::move(receiver), bookmark_model, shopping_service,
+          profile->GetPrefs(), tracker,
+          std::make_unique<commerce::ShoppingUiHandlerDelegate>(profile),
           optimization_guide_keyed_service
               ? optimization_guide_keyed_service
                     ->GetModelQualityLogsUploaderService()
               : nullptr);
+}
+
+void ProductSpecificationsUI::CreateProductSpecificationsHandler(
+    mojo::PendingRemote<product_specifications::mojom::Page> page,
+    mojo::PendingReceiver<
+        product_specifications::mojom::ProductSpecificationsHandler> receiver) {
+  Profile* const profile = Profile::FromWebUI(web_ui());
+  commerce::ShoppingService* shopping_service =
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
+
+  product_specifications_handler_ =
+      std::make_unique<ProductSpecificationsHandler>(
+          std::move(page), std::move(receiver),
+          std::make_unique<ProductSpecificationsUIHandlerDelegate>(web_ui()),
+          HistoryServiceFactory::GetForProfile(
+              profile, ServiceAccessType::EXPLICIT_ACCESS),
+          profile->GetPrefs(),
+          shopping_service->GetProductSpecificationsService(),
+          SyncServiceFactory::GetForProfile(profile));
 }
 
 // static
@@ -172,6 +225,16 @@ WEB_UI_CONTROLLER_TYPE_IMPL(ProductSpecificationsUI)
 
 ProductSpecificationsUIConfig::ProductSpecificationsUIConfig()
     : DefaultWebUIConfig(content::kChromeUIScheme, kChromeUICompareHost) {}
+
+bool ProductSpecificationsUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  Profile* const profile = Profile::FromBrowserContext(browser_context);
+  commerce::ShoppingService* shopping_service =
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
+  return profile && !profile->IsOffTheRecord() && shopping_service &&
+         CanLoadProductSpecificationsFullPageUi(
+             shopping_service->GetAccountChecker());
+}
 
 ProductSpecificationsUIConfig::~ProductSpecificationsUIConfig() = default;
 

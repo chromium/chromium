@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/notimplemented.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -427,7 +428,7 @@ ExternalMojoBroker::ExternalMojoBroker(const std::string& broker_path) {
 #if BUILDFLAG(IS_ANDROID)
   // Monolithic MediaShell can just access the service broker directly in the
   // same process, so there's no need to stand up a server.
-  if (!base::android::BundleUtils::IsBundle()) {
+  if (!base::android::BundleUtils::HasAnyInstalledSplits()) {
     return;
   }
   // On Android, use the abstract namespace to avoid filesystem access.

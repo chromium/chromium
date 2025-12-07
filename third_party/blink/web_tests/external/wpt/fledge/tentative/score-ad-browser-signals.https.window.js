@@ -1,10 +1,12 @@
 // META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
 // META: script=/common/utils.js
 // META: script=resources/fledge-util.sub.js
 // META: script=/common/subset-tests.js
 // META: timeout=long
+// META: variant=?1-last
 
-"use strict;"
+"use strict";
 
 // These tests focus on the browserSignals argument passed to scoreAd().
 
@@ -55,3 +57,4 @@ subsetTest(promise_test, async test => {
       }
     });
 }, 'ScoreAd browserSignals renderSize test.');
+

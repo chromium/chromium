@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 #include "ui/ozone/platform/x11/x11_window.h"
-#include "base/memory/raw_ptr.h"
+
+#include <algorithm>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -23,7 +24,7 @@
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/events/test/events_test_utils_x11.h"
 #include "ui/gfx/geometry/transform.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xproto.h"
@@ -84,20 +85,21 @@ class TestPlatformWindowDelegate : public PlatformWindowDelegate {
     widget_ = gfx::kNullAcceleratedWidget;
   }
   void OnActivationChanged(bool active) override {}
-  void OnMouseEnter() override {}
+  void OnCursorUpdate() override {}
   SkPath GetWindowMaskForWindowShapeInPixels() override {
-    SkPath window_mask;
     int right = size_px_.width();
     int bottom = size_px_.height();
 
-    window_mask.moveTo(0, 0);
-    window_mask.lineTo(0, bottom);
-    window_mask.lineTo(right, bottom);
-    window_mask.lineTo(right, 10);
-    window_mask.lineTo(right - 10, 10);
-    window_mask.lineTo(right - 10, 0);
-    window_mask.close();
-    return window_mask;
+    return SkPath::Polygon(
+        {
+            SkPoint(0, 0),
+            SkPoint(0, bottom),
+            SkPoint(right, bottom),
+            SkPoint(right, 10),
+            SkPoint(right - 10, 10),
+            SkPoint(right - 10, 0),
+        },
+        /*isClosed=*/true);
   }
 
   void set_window(X11Window* window) { window_ = window; }
@@ -130,7 +132,9 @@ class ShapedX11ExtensionDelegate : public X11ExtensionDelegate {
     return false;
   }
 #endif
-  bool IsOverrideRedirect() const override { return false; }
+  bool IsOverrideRedirect(const X11Extension& x11_extension) const override {
+    return false;
+  }
   gfx::Rect GetGuessedFullScreenSizeInPx() const override {
     return guessed_bounds_px_;
   }
@@ -204,7 +208,7 @@ bool ShapeRectContainsPoint(const std::vector<gfx::Rect>& shape_rects,
                             int x,
                             int y) {
   gfx::Point point(x, y);
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       shape_rects, [&point](const auto& rect) { return rect.Contains(point); });
 }
 

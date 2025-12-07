@@ -40,7 +40,7 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/version.h"
@@ -125,21 +125,19 @@ class RulesetService {
   // disk. Used in UMA histograms, so the order of enumerators should not be
   // changed.
   enum class IndexAndWriteRulesetResult {
-    SUCCESS,
-    FAILED_CREATING_SCRATCH_DIR,
-    FAILED_WRITING_RULESET_DATA,
-    FAILED_WRITING_LICENSE,
-    FAILED_REPLACE_FILE,
-    FAILED_DELETE_PREEXISTING,
-    FAILED_OPENING_UNINDEXED_RULESET,
-    FAILED_PARSING_UNINDEXED_RULESET,
-    FAILED_CREATING_VERSION_DIR,
-    FAILED_CREATING_SENTINEL_FILE,
-    FAILED_DELETING_SENTINEL_FILE,
-    ABORTED_BECAUSE_SENTINEL_FILE_PRESENT,
-
-    // Insert new values before this line.
-    MAX,
+    kSuccess,
+    kFailedCreatingScratchDir,
+    kFailedWritingRulesetData,
+    kFailedWritingLicense,
+    kFailedReplaceFile,
+    kFailedDeletePreexisting,
+    kFailedOpeningUnindexedRuleset,
+    kFailedParsingUnindexedRuleset,
+    kFailedCreatingVersionDir,
+    kFailedCreatingSentinelFile,
+    kFailedDeletingSentinelFile,
+    kAbortedBecauseSentinelFilePresent,
+    kMaxValue = kAbortedBecauseSentinelFilePresent,
   };
 
   // Creates a new instance of a ruleset with common configuration for

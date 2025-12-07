@@ -4,14 +4,16 @@
 
 package org.chromium.mojo.system;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.mojo.system.Core.HandleSignals;
 
 /** Watches a handle for signals being satisfied. */
+@NullMarked
 public interface Watcher {
     /** Callback passed to {@link Watcher#start}. */
-    public interface Callback {
+    interface Callback {
         /** Called when the handle is ready. */
-        public void onResult(int result);
+        void onResult(int result);
     }
 
     /** Starts watching a handle. */

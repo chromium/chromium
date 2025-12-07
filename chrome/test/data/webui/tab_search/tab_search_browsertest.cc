@@ -15,7 +15,13 @@ IN_PROC_BROWSER_TEST_F(TabSearchTest, App) {
   RunTest("tab_search/tab_search_app_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(TabSearchTest, Page) {
+// TODO(crbug.com/451682396): Disabled on Linux dbg due to flakiness.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_Page DISABLED_Page
+#else
+#define MAYBE_Page Page
+#endif
+IN_PROC_BROWSER_TEST_F(TabSearchTest, MAYBE_Page) {
   RunTest("tab_search/tab_search_page_test.js", "mocha.run()");
 }
 
@@ -23,8 +29,8 @@ IN_PROC_BROWSER_TEST_F(TabSearchTest, Search) {
   RunTest("tab_search/search_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(TabSearchTest, InfiniteList) {
-  RunTest("tab_search/infinite_list_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(TabSearchTest, SelectableLazyList) {
+  RunTest("tab_search/selectable_lazy_list_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(TabSearchTest, Item) {
@@ -35,6 +41,10 @@ IN_PROC_BROWSER_TEST_F(TabSearchTest, MediaTabs) {
   RunTest("tab_search/tab_search_media_tabs_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(TabSearchTest, Organization) {
-  RunTest("tab_search/tab_organization_page_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(TabSearchTest, OrganizationSelector) {
+  RunTest("tab_search/tab_organization_selector_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(TabSearchTest, SplitNewTabPage) {
+  RunTest("tab_search/split_new_tab_page_test.js", "mocha.run()");
 }

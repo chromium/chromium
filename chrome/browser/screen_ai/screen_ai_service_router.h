@@ -6,26 +6,20 @@
 #define CHROME_BROWSER_SCREEN_AI_SCREEN_AI_SERVICE_ROUTER_H_
 
 #include <optional>
-#include <set>
 
-#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
+#include "chrome/browser/screen_ai/screen_ai_service_handler_main_content_extraction.h"
+#include "chrome/browser/screen_ai/screen_ai_service_handler_ocr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#include "services/screen_ai/public/mojom/screen_ai_factory.mojom.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
-
-namespace {
-class ComponentFiles;
-}
 
 namespace screen_ai {
 
-using ServiceStateCallback = base::OnceCallback<void(bool)>;
-
+// TODO(crbug.com/417378344): Split this class and its factory to two separate
+// classes for OCR and main content extraction.
 class ScreenAIServiceRouter : public KeyedService,
                               ScreenAIInstallState::Observer {
  public:
@@ -37,6 +31,10 @@ class ScreenAIServiceRouter : public KeyedService,
   ScreenAIServiceRouter(const ScreenAIServiceRouter&) = delete;
   ScreenAIServiceRouter& operator=(const ScreenAIServiceRouter&) = delete;
   ~ScreenAIServiceRouter() override;
+
+  // Static method to return suggested wait time before next reconnect attempt.
+  static base::TimeDelta SuggestedWaitTimeBeforeReAttempt(
+      uint32_t reattempt_number);
 
   void BindScreenAIAnnotator(
       mojo::PendingReceiver<mojom::ScreenAIAnnotator> receiver);
@@ -56,70 +54,21 @@ class ScreenAIServiceRouter : public KeyedService,
   bool IsConnectionBoundForTesting(Service service);
 
   // Returns true if sandboxed process is running.
-  bool IsProcessRunningForTesting();
-
-  void ShutDownIfNoClientsForTesting() {
-    if (screen_ai_service_factory_.is_bound()) {
-      screen_ai_service_factory_->ShutDownIfNoClients();
-    }
-  }
+  bool IsProcessRunningForTesting(Service service);
 
  private:
   friend class ScreenAIServiceRouterFactory;
 
   ScreenAIServiceRouter();
-  // Initialzies the `service` if it's not already done.
-  void InitializeServiceIfNeeded(Service service);
 
-  void InitializeOCR(int request_id,
-                     mojo::PendingReceiver<mojom::OCRService> receiver,
-                     std::unique_ptr<ComponentFiles> model_files);
+  ScreenAIServiceHandlerBase* GetHandler(Service service);
 
-  void InitializeMainContentExtraction(
-      int request_id,
-      mojo::PendingReceiver<mojom::MainContentExtractionService> receiver,
-      std::unique_ptr<ComponentFiles> model_files);
-
-  // Launches the service if it's not already launched.
-  void LaunchIfNotRunning();
-
-  // True if service is already initialized, false if it is disabled, and
-  // nullopt if not known.
-  std::optional<bool> GetServiceState(Service service);
-
-  // Creates a delayed task to record initialization failure if there is no
-  // reply from the service, and returns a new id for the current initialization
-  // request.
-  int CreateRequestIdAndSetTimeOut(Service service);
-
-  // Callback from Screen AI service with library load result.
-  void SetLibraryLoadState(int request_id, bool successful);
-
-  // Calls back all pendnding service state requests.
-  void CallPendingStatusRequests(Service service, bool successful);
-
-  // Returns the list of services that have a pending status request.
-  std::set<Service> GetAllPendingStatusServices();
-
-  // Service type and trigger time of initialization requests, keyed on request
-  // id.
-  std::map<int, std::pair<Service, base::TimeTicks>>
-      pending_initialization_requests_;
-  int last_request_id_{0};
-
-  // Pending requests to receive service state for each service type.
-  std::map<Service, std::vector<ServiceStateCallback>> pending_state_requests_;
+  std::unique_ptr<ScreenAIServiceHandlerOCR> ocr_handler_;
+  std::unique_ptr<ScreenAIServiceHandlerMainContentExtraction> mce_handler_;
 
   // Observes changes in Screen AI component download state.
   base::ScopedObservation<ScreenAIInstallState, ScreenAIInstallState::Observer>
       component_ready_observer_{this};
-
-  mojo::Remote<mojom::ScreenAIServiceFactory> screen_ai_service_factory_;
-  mojo::Remote<mojom::OCRService> ocr_service_;
-  mojo::Remote<mojom::MainContentExtractionService>
-      main_content_extraction_service_;
-
-  base::WeakPtrFactory<ScreenAIServiceRouter> weak_ptr_factory_{this};
 };
 
 }  // namespace screen_ai

@@ -7,7 +7,7 @@
 @implementation FakeAppLauncherAbuseDetector
 
 - (instancetype)init {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _policy = ExternalAppLaunchPolicyAllow;
   }
   return self;

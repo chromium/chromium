@@ -8,18 +8,19 @@ import static org.chromium.chrome.browser.browserservices.digitalgoods.DigitalGo
 
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.trusted.TrustedWebActivityCallback;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.payments.mojom.DigitalGoods.Consume_Response;
 
 /**
  * The "Acknowledge" command was was removed in DGAPI v2.0. It is kept around because the "Consume"
  * command can be implemented in terms of Acknowledge when talking to older clients.
  */
+@NullMarked
 class AcknowledgeConverter {
     private static final String TAG = "DigitalGoods";
 
@@ -43,7 +44,7 @@ class AcknowledgeConverter {
     static TrustedWebActivityCallback convertCallback(Consume_Response callback) {
         return new TrustedWebActivityCallback() {
             @Override
-            public void onExtraCallback(@NonNull String callbackName, @Nullable Bundle args) {
+            public void onExtraCallback(String callbackName, @Nullable Bundle args) {
                 if (!RESPONSE_ACKNOWLEDGE.equals(callbackName)) {
                     Log.w(TAG, "Wrong callback name given: " + callbackName + ".");
                     ConsumeConverter.returnClientAppError(callback);

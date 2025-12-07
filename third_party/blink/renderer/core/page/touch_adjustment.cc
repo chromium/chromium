@@ -17,16 +17,10 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/page/touch_adjustment.h"
 
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/node.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_behavior.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -110,17 +104,20 @@ bool NodeRespondsToTapGesture(Node* node) {
     // Tapping on a text field or other focusable item should trigger
     // adjustment, except that iframe elements are hard-coded to support focus
     // but the effect is often invisible so they should be excluded.
-    if (element->IsFocusable() && !IsA<HTMLIFrameElement>(element)) {
+    if (element->IsMouseFocusable() && !IsA<HTMLIFrameElement>(element)) {
       return true;
     }
     // Accept nodes that has a CSS effect when touched.
     if (element->ChildrenOrSiblingsAffectedByActive() ||
-        element->ChildrenOrSiblingsAffectedByHover())
+        element->ChildrenOrSiblingsAffectedByHover()) {
       return true;
-  }
-  if (const ComputedStyle* computed_style = node->GetComputedStyle()) {
-    if (computed_style->AffectedByActive() || computed_style->AffectedByHover())
-      return true;
+    }
+    if (const ComputedStyle* computed_style = element->GetComputedStyle()) {
+      if (computed_style->AffectedByActive() ||
+          computed_style->AffectedByHover()) {
+        return true;
+      }
+    }
   }
   return false;
 }
@@ -232,8 +229,7 @@ static inline void AppendContextSubtargetsForNode(
           .ShouldSelectOnContextualMenuClick()) {
     // Make subtargets out of every word.
     String text_value = text_node->data();
-    TextBreakIterator* word_iterator =
-        WordBreakIterator(text_value, 0, text_value.length());
+    TextBreakIterator* word_iterator = WordBreakIterator(text_value);
     int last_offset = word_iterator->first();
     if (last_offset == -1)
       return;
@@ -525,7 +521,7 @@ bool FindNodeWithLowestDistanceMetric(Node*& adjusted_node,
     }
   }
 
-  // As for HitTestResult.innerNode, we skip over pseudo elements.
+  // As for HitTestResult.innerNode, we skip over pseudo-elements.
   if (adjusted_node && adjusted_node->IsPseudoElement() &&
       !adjusted_node->IsScrollMarkerPseudoElement()) {
     adjusted_node = adjusted_node->ParentOrShadowHostNode();

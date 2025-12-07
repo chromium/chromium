@@ -10,11 +10,14 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 #include "url/origin.h"
 
-class Browser;
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
+class BrowserWindowInterface;
 class Profile;
 
 namespace content {
@@ -25,12 +28,22 @@ namespace extensions {
 class ContextMenuMatcher;
 class Extension;
 class ExtensionAction;
+
+#if !BUILDFLAG(IS_ANDROID)
 class SidePanelService;
+#endif
 
 // The context menu model for extension icons.
 class ExtensionContextMenuModel : public ui::SimpleMenuModel,
                                   public ui::SimpleMenuModel::Delegate {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHomePageMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToggleVisibilityMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPageAccessMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPageAccessRunOnClickSubmenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPageAccessRunOnSiteSubmenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPageAccessRunOnAllSitesSubmenuItem);
+
   enum MenuEntries {
     HOME_PAGE = 0,
     OPTIONS,
@@ -84,7 +97,17 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
   };
 
   // Location where the context menu is open from.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.extensions
   enum class ContextMenuSource { kToolbarAction = 0, kMenuItem = 1 };
+
+  // Actions tracked by Chrome Web Store team for monitoring extension usage.
+  // Do not re-order entries, as these are used in UKM.
+  // Exposed for testing purposes.
+  enum class ExtensionUsageAction {
+    kPinned,
+    kUnpinned,
+    kContextMenuInit,
+  };
 
   // Delegate to handle showing an ExtensionAction popup.
   class PopupDelegate {
@@ -101,9 +124,9 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
   // Creates a menu model for the given extension. If
   // prefs::kExtensionsUIDeveloperMode is enabled then a menu item
   // will be shown for "Inspect Popup" which, when selected, will cause
-  // ShowPopupForDevToolsWindow() to be called on |delegate|.
+  // ShowPopupForDevToolsWindow() to be called on `delegate`.
   ExtensionContextMenuModel(const Extension* extension,
-                            Browser* browser,
+                            BrowserWindowInterface* browser,
                             bool is_pinned,
                             PopupDelegate* delegate,
                             bool can_show_icon_in_toolbar,
@@ -128,6 +151,8 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
   }
 
  private:
+  void Init(const Extension* extension, bool can_show_icon_in_toolbar);
+
   void InitMenu(const Extension* extension, bool can_show_icon_in_toolbar);
 
   // Constructs the menu when `kExtensionsMenuAccessControl` is enabled.
@@ -139,6 +164,11 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
   void CreatePageAccessItems(const Extension* extension,
                              content::WebContents* web_contents);
 
+  // Emits a UKM record for the extension associated with `extension_url` and
+  // the corresponding `action`.
+  void RecordUkmForExtension(const GURL& extension_url,
+                             ExtensionUsageAction action);
+
   // Gets the extension we are displaying the menu for. Returns NULL if the
   // extension has been uninstalled and no longer exists.
   const Extension* GetExtension() const;
@@ -147,14 +177,18 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
   content::WebContents* GetActiveWebContents() const;
 
   // Returns the side panel service for the current profile.
+#if !BUILDFLAG(IS_ANDROID)
   SidePanelService* GetSidePanelService() const;
+#endif
 
   // Appends the extension's context menu items.
   void AppendExtensionItems();
 
+#if !BUILDFLAG(IS_ANDROID)
   // Appends the side panel menu item to the context menu if `extension` has one
   // it can open.
   void AddSidePanelEntryIfPresent(const Extension& extension);
+#endif
 
   // A copy of the extension's id.
   ExtensionId extension_id_;
@@ -166,7 +200,7 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
   // it has one, otherwise NULL).
   raw_ptr<ExtensionAction, DanglingUntriaged> extension_action_;
 
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
 
   raw_ptr<Profile> profile_;
 

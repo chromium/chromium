@@ -37,7 +37,7 @@ const int64_t kPlaceholderTrackerID = 4;
 
 class MetadataDatabaseIndexOnDiskTest : public testing::Test {
  public:
-  ~MetadataDatabaseIndexOnDiskTest() override {}
+  ~MetadataDatabaseIndexOnDiskTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(database_dir_.CreateUniqueTempDir());
@@ -284,27 +284,6 @@ TEST_F(MetadataDatabaseIndexOnDiskTest, BuildAndDeleteIndexTest) {
   WriteToDB();
   EXPECT_EQ(answer, index()->BuildTrackerIndexes());
   WriteToDB();
-}
-
-TEST_F(MetadataDatabaseIndexOnDiskTest, AllEntriesTest) {
-  CreateTestDatabase(true, nullptr);
-
-  EXPECT_EQ(3U, index()->CountFileMetadata());
-  std::vector<std::string> file_ids(index()->GetAllMetadataIDs());
-  ASSERT_EQ(3U, file_ids.size());
-  std::sort(file_ids.begin(), file_ids.end());
-  EXPECT_EQ("app_root_folder_id", file_ids[0]);
-  EXPECT_EQ("file_id", file_ids[1]);
-  EXPECT_EQ("sync_root_folder_id", file_ids[2]);
-
-  EXPECT_EQ(4U, index()->CountFileTracker());
-  std::vector<int64_t> tracker_ids = index()->GetAllTrackerIDs();
-  ASSERT_EQ(4U, tracker_ids.size());
-  std::sort(tracker_ids.begin(), tracker_ids.end());
-  EXPECT_EQ(kSyncRootTrackerID, tracker_ids[0]);
-  EXPECT_EQ(kAppRootTrackerID, tracker_ids[1]);
-  EXPECT_EQ(kFileTrackerID, tracker_ids[2]);
-  EXPECT_EQ(kPlaceholderTrackerID, tracker_ids[3]);
 }
 
 TEST_F(MetadataDatabaseIndexOnDiskTest, IndexAppRootIDByAppIDTest) {

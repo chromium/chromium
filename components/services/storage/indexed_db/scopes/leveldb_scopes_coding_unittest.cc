@@ -20,7 +20,7 @@ std::ostream& operator<<(std::ostream& os, const leveldb::Slice& slice) {
 }
 }  // namespace leveldb
 
-namespace content {
+namespace content::indexed_db {
 namespace {
 
 TEST(LevelDBScopesCodingTest, GlobalMetadataKey) {
@@ -181,4 +181,4 @@ TEST(LevelDBScopesCodingTest, InvalidPrefix) {
 }
 
 }  // namespace
-}  // namespace content
+}  // namespace content::indexed_db

@@ -45,8 +45,13 @@ class WebSocketStreamCreateTestBase::TestConnectDelegate
     owner_->url_request_ = request;
   }
 
-  void OnURLRequestConnected(URLRequest* request,
-                             const TransportInfo& info) override {}
+  int OnURLRequestConnected(URLRequest* request,
+                            const TransportInfo& info,
+                            CompletionOnceCallback callback) override {
+    owner_->on_url_request_connected_callback_ = std::move(callback);
+    owner_->run_loop_waiting_on_url_request_connected_.Quit();
+    return owner_->on_url_request_connected_rv_;
+  }
 
   void OnSuccess(
       std::unique_ptr<WebSocketStream> stream,
@@ -154,6 +159,10 @@ void WebSocketStreamCreateTestBase::WaitUntilConnectDone() {
 
 void WebSocketStreamCreateTestBase::WaitUntilOnAuthRequired() {
   run_loop_waiting_for_on_auth_required_.Run();
+}
+
+void WebSocketStreamCreateTestBase::WaitUntilOnURLRequestConnected() {
+  run_loop_waiting_on_url_request_connected_.Run();
 }
 
 std::vector<std::string> WebSocketStreamCreateTestBase::NoSubProtocols() {

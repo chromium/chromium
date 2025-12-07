@@ -7,8 +7,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
+#include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
@@ -110,6 +114,48 @@ TEST_F(TreeScopeTest, CommonAncestorOfTreesInDifferentDocuments) {
   auto* document2 = Document::CreateForTest(GetExecutionContext());
   EXPECT_EQ(nullptr, GetDocument()->CommonAncestorTreeScope(*document2));
   EXPECT_EQ(nullptr, document2->CommonAncestorTreeScope(*GetDocument()));
+}
+
+class TreeScopePageBasedTest : public PageTestBase {};
+
+TEST_F(TreeScopePageBasedTest, AdjustedFocusedElementForPseudo) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      .scroller { overflow: hidden; width: 50px; height: 100px; }
+      .before { scroll-marker-group: before tabs; }
+      .after { scroll-marker-group: after tabs; }
+      .scroller::scroll-marker-group { height: 100px; }
+      .scroller::scroll-button(block-start) { content: "u"; }
+      .scroller::scroll-button(inline-start) { content: "l"; }
+      .scroller::scroll-button(inline-end) { content: "r"; }
+      .scroller::scroll-button(block-end) { content: "d"; }
+      .item { width: 100px; height: 100px; }
+      .item::scroll-marker:focus { outline: 1px solid blue; opacity: 0.5; }
+      .item::scroll-marker { content: "*" }
+      .item::scroll-marker:target-current { color: red; }
+    </style>
+    <div id="scroller" class="before scroller" tabindex="0">
+      <div id="01" class="item" tabindex="0">1</div>
+      <div id="02" class="item" tabindex="0">2</div>
+      <div id="03" class="item">3</div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* before_scroller = GetElementById("scroller");
+  PseudoElement* scroll_button_pseudo =
+      before_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockEnd);
+
+  GetFocusController().SetActive(true);
+  GetFocusController().SetFocused(true);
+  // Set the focused element to the pseudo element.
+  GetDocument().SetFocusedElement(scroll_button_pseudo,
+                                  FocusParams(SelectionBehaviorOnFocus::kNone,
+                                              mojom::blink::FocusType::kNone,
+                                              /*capabilities=*/nullptr));
+
+  // Check that AdjustedFocusedElement returns the pseudo element.
+  EXPECT_EQ(GetDocument().AdjustedFocusedElement(), scroll_button_pseudo);
 }
 
 }  // namespace blink

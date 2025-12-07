@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 
 BrowserActivityWatcher::BrowserActivityWatcher(
@@ -14,10 +15,14 @@ BrowserActivityWatcher::BrowserActivityWatcher(
     : on_browser_activity_(on_browser_activity) {
   BrowserList::AddObserver(this);
 
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->tab_strip_model())
-      browser->tab_strip_model()->AddObserver(this);
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this](BrowserWindowInterface* browser) {
+        if (TabStripModel* const tab_strip_model =
+                browser->GetTabStripModel()) {
+          tab_strip_model->AddObserver(this);
+        }
+        return true;
+      });
 }
 
 BrowserActivityWatcher::~BrowserActivityWatcher() {

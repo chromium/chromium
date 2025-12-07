@@ -9,7 +9,6 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefRegistrySimple;

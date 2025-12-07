@@ -5,11 +5,14 @@
 package org.chromium.chrome.browser.webapps;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 
 /** Defines an interface for installing WebAPKs via Google Play. */
+@NullMarked
 public interface GooglePlayWebApkInstallDelegate {
     /**
      * Uses Google Play to install WebAPK asynchronously.
+     *
      * @param packageName The package name of WebAPK to install.
      * @param version The version of WebAPK to install.
      * @param title The title of the WebAPK to display during installation.

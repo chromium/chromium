@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "fuchsia_web/webengine/browser/frame_impl.h"
+
 #include <fuchsia/element/cpp/fidl.h>
 #include <fuchsia/ui/views/cpp/fidl.h>
 #include <lib/zx/time.h>
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/mem_buffer_util.h"
+#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
@@ -27,7 +30,6 @@
 #include "fuchsia_web/common/test/test_navigation_listener.h"
 #include "fuchsia_web/webengine/browser/context_impl.h"
 #include "fuchsia_web/webengine/browser/fake_semantics_manager.h"
-#include "fuchsia_web/webengine/browser/frame_impl.h"
 #include "fuchsia_web/webengine/browser/frame_impl_browser_test_base.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -54,13 +56,11 @@ namespace {
 
 constexpr char kPage1Path[] = "/title1.html";
 constexpr char kPage2Path[] = "/title2.html";
-constexpr char kPage3Path[] = "/websql.html";
 constexpr char kReportCloseEventsPath[] = "/report_close_events.html";
 constexpr char kVisibilityPath[] = "/visibility.html";
 constexpr char kWaitSizePath[] = "/wait-size.html";
 constexpr char kPage1Title[] = "title 1";
 constexpr char kPage2Title[] = "title 2";
-constexpr char kPage3Title[] = "websql not available";
 constexpr char kDataUrl[] =
     "data:text/html;base64,PGI+SGVsbG8sIHdvcmxkLi4uPC9iPg==";
 
@@ -346,22 +346,6 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, ContextDeletedBeforeFrameWithView) {
   context().Unbind();
   run_loop.Run();
   EXPECT_FALSE(frame.ptr());
-}
-
-// TODO(crbug.com/40507959): Remove this test when WebSQL is removed from
-// Chrome.
-IN_PROC_BROWSER_TEST_F(FrameImplTest, EnsureWebSqlDisabled) {
-  auto frame = FrameForTest::Create(context(), {});
-
-  net::test_server::EmbeddedTestServerHandle test_server_handle;
-  ASSERT_TRUE(test_server_handle =
-                  embedded_test_server()->StartAndReturnHandle());
-  GURL title3(embedded_test_server()->GetURL(kPage3Path));
-
-  EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
-                                       fuchsia::web::LoadUrlParams(),
-                                       title3.spec()));
-  frame.navigation_listener().RunUntilUrlAndTitleEquals(title3, kPage3Title);
 }
 
 namespace {
@@ -680,6 +664,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, NavigationState_RendererGone) {
   EXPECT_EQ(current_state->title(), kPage1Title);
   ASSERT_TRUE(current_state->has_page_type());
   EXPECT_EQ(current_state->page_type(), fuchsia::web::PageType::ERROR);
+  EXPECT_EQ(current_state->error_detail(), fuchsia::web::ErrorDetail::CRASH);
 }
 
 IN_PROC_BROWSER_TEST_F(FrameImplTest, NoNavigationObserverAttached) {
@@ -946,7 +931,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_SetPageScale) {
   // so it will be loaded in a new renderer process. Page scale value should be
   // preserved.
   GURL url2 = embedded_test_server()->GetURL("localhost", kWaitSizePath);
-  EXPECT_NE(url.host(), url2.host());
+  EXPECT_NE(url.GetHost(), url2.GetHost());
   EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
                                        fuchsia::web::LoadUrlParams(),
                                        url2.spec()));

@@ -32,6 +32,17 @@
 
 namespace media {
 
+#if BUILDFLAG(USE_V4L2_CODEC)
+// Some architectures have separate image processor hardware that
+// can be used by Chromium's ImageProcessor to color convert/crop/etc.
+// video buffers. In many cases it is more efficient/performant/correct
+// to use libYUV instead of the hardware to do this processing which is thus
+// preferred, see crrev.com/c/4111326.
+BASE_FEATURE(kLibyuvImageProcessor,
+             "LibYuvImageProcessor",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 namespace {
 
 using PixelLayoutCandidate = ImageProcessor::PixelLayoutCandidate;
@@ -160,7 +171,7 @@ std::unique_ptr<ImageProcessor> CreateV4L2ImageProcessorWithInputCandidates(
 
     return v4l2_vda_helpers::CreateImageProcessor(
         input_fourcc, *output_fourcc, input_size, output_size, visible_rect,
-        output_storage_type, num_buffers, new V4L2Device(),
+        output_storage_type, num_buffers, base::MakeRefCounted<V4L2Device>(),
         ImageProcessor::OutputMode::IMPORT, std::move(client_task_runner),
         std::move(error_cb));
   }
@@ -178,12 +189,12 @@ std::unique_ptr<ImageProcessor> CreateLibYUVImageProcessorWithInputCandidates(
   if (input_candidates.empty())
     return nullptr;
 
-  auto iter = base::ranges::find_if(
-    input_candidates,
-    [](const PixelLayoutCandidate& candidate) {
-      return !LibYUVImageProcessorBackend::GetSupportedOutputFormats(
-          candidate.fourcc).empty();
-    });
+  auto iter = std::ranges::find_if(
+      input_candidates, [](const PixelLayoutCandidate& candidate) {
+        return !LibYUVImageProcessorBackend::GetSupportedOutputFormats(
+                    candidate.fourcc)
+                    .empty();
+      });
 
   if (iter == input_candidates.end())
     return nullptr;
@@ -326,14 +337,16 @@ ImageProcessorFactory::CreateWithInputCandidates(
   }
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
 
-  auto processor = CreateLibYUVImageProcessorWithInputCandidates(
-      input_candidates, input_visible_rect, output_size, output_storage_type,
-      client_task_runner, out_format_picker, error_cb);
-  if (processor) {
-    return processor;
+  if (base::FeatureList::IsEnabled(kLibyuvImageProcessor)) {
+    auto processor = CreateLibYUVImageProcessorWithInputCandidates(
+        input_candidates, input_visible_rect, output_size, output_storage_type,
+        client_task_runner, out_format_picker, error_cb);
+    if (processor) {
+      return processor;
+    }
   }
 
-  processor = CreateV4L2ImageProcessorWithInputCandidates(
+  auto processor = CreateV4L2ImageProcessorWithInputCandidates(
       input_candidates, input_visible_rect, output_storage_type, num_buffers,
       client_task_runner, out_format_picker, error_cb);
   if (processor) {
@@ -357,7 +370,7 @@ ImageProcessorFactory::CreateLibYUVImageProcessorWithInputCandidatesForTesting(
     ImageProcessor::ErrorCB error_cb) {
   return CreateLibYUVImageProcessorWithInputCandidates(
       input_candidates, input_visible_rect, output_size,
-      VideoFrame::STORAGE_GPU_MEMORY_BUFFER, client_task_runner,
+      VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE, client_task_runner,
       out_format_picker, error_cb);
 }
 
@@ -373,7 +386,7 @@ ImageProcessorFactory::CreateGLImageProcessorWithInputCandidatesForTesting(
 #if defined(ARCH_CPU_ARM_FAMILY)
   return CreateGLImageProcessorWithInputCandidates(
       input_candidates, input_visible_rect, output_size,
-      VideoFrame::STORAGE_GPU_MEMORY_BUFFER, client_task_runner,
+      VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE, client_task_runner,
       out_format_picker, error_cb);
 #else
   return nullptr;

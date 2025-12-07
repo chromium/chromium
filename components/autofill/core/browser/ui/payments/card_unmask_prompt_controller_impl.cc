@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -15,10 +17,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_experiments.h"
+#include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
-#include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -41,16 +43,6 @@ std::u16string GetSideOfCardTranslationString(bool is_cvc_in_front) {
           : IDS_AUTOFILL_CARD_UNMASK_PROMPT_SECURITY_CODE_POSITION_BACK_OF_CARD);
 }
 
-#if BUILDFLAG(IS_IOS)
-// Returns whether the virtual card feature is enabled on IOS. If true, a UI
-// overhaul which was proposed as part of the virtual card feature launch, will
-// be enabled regardless of whether the card being unmasked is a virtual card or
-// not.
-bool VirtualCardFeatureEnabled() {
-  return base::FeatureList::IsEnabled(features::kAutofillEnableVirtualCards);
-}
-#endif
-
 }  // namespace
 
 CardUnmaskPromptControllerImpl::CardUnmaskPromptControllerImpl(
@@ -64,8 +56,16 @@ CardUnmaskPromptControllerImpl::CardUnmaskPromptControllerImpl(
       delegate_(delegate) {}
 
 CardUnmaskPromptControllerImpl::~CardUnmaskPromptControllerImpl() {
-  if (card_unmask_view_)
-    card_unmask_view_->ControllerGone();
+  if (card_unmask_view_) {
+    // The order of operations below is critical to prevent a use-after-free
+    // crash. If card_unmask_view_ is not nulled out before the call to
+    // ControllerGone(), the raw_ptr's safety checks will trigger a crash when
+    // card_unmask_view_ is later destructed (at the end of this destructor) or
+    // even reassigned, as it would be pointing to deallocated memory.
+    CardUnmaskPromptView* temp_view = card_unmask_view_.get();
+    card_unmask_view_ = nullptr;
+    temp_view->ControllerGone();
+  }
 }
 
 void CardUnmaskPromptControllerImpl::ShowPrompt(
@@ -94,6 +94,7 @@ void CardUnmaskPromptControllerImpl::OnVerificationResult(
     case PaymentsRpcResult::kSuccess:
       break;
 
+    case PaymentsRpcResult::kClientSideTimeout:
     case PaymentsRpcResult::kTryAgainFailure: {
       if (IsVirtualCard()) {
         error_message = l10n_util::GetStringFUTF16(
@@ -131,12 +132,12 @@ void CardUnmaskPromptControllerImpl::OnVerificationResult(
     }
 
     case PaymentsRpcResult::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   flow_ended_with_unmask_server_response_ =
-      result != PaymentsRpcResult::kTryAgainFailure;
+      result != PaymentsRpcResult::kTryAgainFailure &&
+      result != PaymentsRpcResult::kClientSideTimeout;
 
   unmasking_result_ = result;
   payments::PaymentsAutofillClient::PaymentsRpcCardType card_type =
@@ -165,7 +166,7 @@ void CardUnmaskPromptControllerImpl::OnUnmaskDialogClosed() {
 }
 
 void CardUnmaskPromptControllerImpl::OnUnmaskPromptAccepted(
-    const std::u16string& cvc,
+    std::u16string_view cvc,
     const std::u16string& exp_month,
     const std::u16string& exp_year,
     bool enable_fido_auth,
@@ -206,22 +207,11 @@ void CardUnmaskPromptControllerImpl::NewCardLinkClicked() {
 #if BUILDFLAG(IS_IOS)
 std::u16string CardUnmaskPromptControllerImpl::GetNavigationTitle() const {
   return l10n_util::GetStringUTF16(
-      VirtualCardFeatureEnabled()
-          ? IDS_AUTOFILL_CARD_UNMASK_PROMPT_NAVIGATION_TITLE_VERIFICATION
-          : IDS_AUTOFILL_CARD_UNMASK_PROMPT_NAVIGATION_TITLE);
+      IDS_AUTOFILL_CARD_UNMASK_PROMPT_NAVIGATION_TITLE_VERIFICATION);
 }
 #endif
 
 std::u16string CardUnmaskPromptControllerImpl::GetWindowTitle() const {
-#if BUILDFLAG(IS_IOS)
-  // - For IOS, if the virtual card feature is not enabled, don't show any
-  //   title. Use the instruction message below instead.
-  // - If it is enabled, share the same string below with other platforms.
-  if (!VirtualCardFeatureEnabled()) {
-    return std::u16string();
-  }
-#endif
-
   // Set title for VCN retrieval errors first.
   if (unmasking_result_ == PaymentsRpcResult::kVcnRetrievalPermanentFailure) {
     return l10n_util::GetStringUTF16(
@@ -267,22 +257,6 @@ std::u16string CardUnmaskPromptControllerImpl::GetWindowTitle() const {
 }
 
 std::u16string CardUnmaskPromptControllerImpl::GetInstructionsMessage() const {
-#if BUILDFLAG(IS_IOS)
-  if (!VirtualCardFeatureEnabled()) {
-    int ids;
-    if (card_unmask_prompt_options_.reason ==
-            payments::PaymentsAutofillClient::UnmaskCardReason::kAutofill &&
-        ShouldRequestExpirationDate()) {
-      ids = IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_EXPIRED;
-    } else {
-      ids = IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS;
-    }
-    // The iOS UI shows the card details in the instructions text since they
-    // don't fit in the title.
-    return l10n_util::GetStringFUTF16(ids, card_.CardNameAndLastFourDigits());
-  }
-#endif
-
   // If the challenge option is present, return the challenge option instruction
   // information.
   if (IsChallengeOptionPresent()) {
@@ -369,7 +343,7 @@ std::u16string CardUnmaskPromptControllerImpl::GetCvcImageAnnouncement() const {
 #endif
 
 bool CardUnmaskPromptControllerImpl::InputCvcIsValid(
-    const std::u16string& input_text) const {
+    std::u16string_view input_text) const {
   std::u16string trimmed_text;
   base::TrimWhitespace(input_text, base::TRIM_ALL, &trimmed_text);
 

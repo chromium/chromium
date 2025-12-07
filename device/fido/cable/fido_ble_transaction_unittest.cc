@@ -20,7 +20,7 @@
 #include "device/fido/cable/fido_ble_connection.h"
 #include "device/fido/cable/fido_ble_frames.h"
 #include "device/fido/cable/mock_fido_ble_connection.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -79,8 +79,8 @@ class FidoBleTransactionTest : public ::testing::Test {
 // Tests a case where the control point write fails.
 TEST_F(FidoBleTransactionTest, WriteRequestFrame_FailWrite) {
   EXPECT_CALL(connection(), WriteControlPointPtr)
-      .WillOnce(::testing::Invoke(
-          [](auto&&, auto* cb) { std::move(*cb).Run(false /* success */); }));
+      .WillOnce(
+          [](auto&&, auto* cb) { std::move(*cb).Run(false /* success */); });
 
   FrameFuture future;
   transaction().WriteRequestFrame(FidoBleFrame(), future.GetCallback());
@@ -91,8 +91,8 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_FailWrite) {
 // Tests a case where the control point write succeeds.
 TEST_F(FidoBleTransactionTest, WriteRequestFrame_Success) {
   EXPECT_CALL(connection(), WriteControlPointPtr)
-      .WillOnce(::testing::Invoke(
-          [](auto&&, auto* cb) { std::move(*cb).Run(true /* success */); }));
+      .WillOnce(
+          [](auto&&, auto* cb) { std::move(*cb).Run(true /* success */); });
 
   FidoBleFrame frame(FidoBleDeviceCommand::kPing, std::vector<uint8_t>(10));
   FrameFuture future;
@@ -112,8 +112,8 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_DelayedWriteAck) {
   FidoBleConnection::WriteCallback delayed_write_callback;
 
   EXPECT_CALL(connection(), WriteControlPointPtr)
-      .WillOnce(::testing::Invoke(
-          [&](auto&&, auto* cb) { delayed_write_callback = std::move(*cb); }));
+      .WillOnce(
+          [&](auto&&, auto* cb) { delayed_write_callback = std::move(*cb); });
 
   FidoBleFrame frame(FidoBleDeviceCommand::kPing, std::vector<uint8_t>(10));
   FrameFuture future;
@@ -136,8 +136,8 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_DelayedWriteAck_KeepAlive) {
   FidoBleConnection::WriteCallback delayed_write_callback;
 
   EXPECT_CALL(connection(), WriteControlPointPtr)
-      .WillOnce(::testing::Invoke(
-          [&](auto&&, auto* cb) { delayed_write_callback = std::move(*cb); }));
+      .WillOnce(
+          [&](auto&&, auto* cb) { delayed_write_callback = std::move(*cb); });
 
   FidoBleFrame frame(FidoBleDeviceCommand::kPing, std::vector<uint8_t>(10));
   FidoBleFrame tup_needed_frame(
@@ -180,8 +180,8 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_ControlPointLength_TooSmall) {
 // response frame completes the request.
 TEST_F(FidoBleTransactionTest, WriteRequestFrame_IgnoreValidKeepAlives) {
   EXPECT_CALL(connection(), WriteControlPointPtr)
-      .WillOnce(::testing::Invoke(
-          [](auto&&, auto* cb) { std::move(*cb).Run(true /* success */); }));
+      .WillOnce(
+          [](auto&&, auto* cb) { std::move(*cb).Run(true /* success */); });
 
   FidoBleFrame frame(FidoBleDeviceCommand::kPing, std::vector<uint8_t>(10));
   FrameFuture future;
@@ -215,8 +215,8 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_IgnoreValidKeepAlives) {
 // Tests that an invalid KeepaliveCode is treated as an error.
 TEST_F(FidoBleTransactionTest, WriteRequestFrame_InvalidKeepAlive_Fail) {
   EXPECT_CALL(connection(), WriteControlPointPtr)
-      .WillOnce(::testing::Invoke(
-          [](auto&&, auto* cb) { std::move(*cb).Run(true /* success */); }));
+      .WillOnce(
+          [](auto&&, auto* cb) { std::move(*cb).Run(true /* success */); });
 
   FidoBleFrame frame(FidoBleDeviceCommand::kPing, std::vector<uint8_t>(10));
   FrameFuture future;
@@ -234,8 +234,8 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_InvalidKeepAlive_Fail) {
 // Tests a scenario where the response frame contains a valid error command.
 TEST_F(FidoBleTransactionTest, WriteRequestFrame_ValidErrorCommand) {
   EXPECT_CALL(connection(), WriteControlPointPtr)
-      .WillOnce(::testing::Invoke(
-          [](auto&&, auto* cb) { std::move(*cb).Run(true /* success */); }));
+      .WillOnce(
+          [](auto&&, auto* cb) { std::move(*cb).Run(true /* success */); });
 
   FidoBleFrame ping_frame(FidoBleDeviceCommand::kPing,
                           std::vector<uint8_t>(10));
@@ -256,8 +256,8 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_ValidErrorCommand) {
 // Tests a scenario where the response frame contains an invalid error command.
 TEST_F(FidoBleTransactionTest, WriteRequestFrame_InvalidErrorCommand) {
   EXPECT_CALL(connection(), WriteControlPointPtr)
-      .WillOnce(::testing::Invoke(
-          [](auto&&, auto* cb) { std::move(*cb).Run(true /* success */); }));
+      .WillOnce(
+          [](auto&&, auto* cb) { std::move(*cb).Run(true /* success */); });
 
   FidoBleFrame ping_frame(FidoBleDeviceCommand::kPing,
                           std::vector<uint8_t>(10));
@@ -278,8 +278,8 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_InvalidErrorCommand) {
 // command of the request frame.
 TEST_F(FidoBleTransactionTest, WriteRequestFrame_InvalidResponseFrameCommand) {
   EXPECT_CALL(connection(), WriteControlPointPtr)
-      .WillOnce(::testing::Invoke(
-          [](auto&&, auto* cb) { std::move(*cb).Run(true /* success */); }));
+      .WillOnce(
+          [](auto&&, auto* cb) { std::move(*cb).Run(true /* success */); });
 
   FidoBleFrame ping_frame(FidoBleDeviceCommand::kPing,
                           std::vector<uint8_t>(10));
@@ -300,8 +300,8 @@ TEST_F(FidoBleTransactionTest, WriteRequestFrame_InvalidResponseFrameCommand) {
 TEST_F(FidoBleTransactionTest,
        WriteRequestFrame_InvalidResponseInitializationFragment) {
   EXPECT_CALL(connection(), WriteControlPointPtr)
-      .WillRepeatedly(::testing::Invoke(
-          [](auto&&, auto* cb) { std::move(*cb).Run(true /* success */); }));
+      .WillRepeatedly(
+          [](auto&&, auto* cb) { std::move(*cb).Run(true /* success */); });
 
   FidoBleFrame frame(FidoBleDeviceCommand::kPing,
                      std::vector<uint8_t>(kDefaultControlPointLength));
@@ -321,8 +321,8 @@ TEST_F(FidoBleTransactionTest,
 TEST_F(FidoBleTransactionTest,
        WriteRequestFrame_InvalidResponseContinuationFragment) {
   EXPECT_CALL(connection(), WriteControlPointPtr)
-      .WillRepeatedly(::testing::Invoke(
-          [](auto&&, auto* cb) { std::move(*cb).Run(true /* success */); }));
+      .WillRepeatedly(
+          [](auto&&, auto* cb) { std::move(*cb).Run(true /* success */); });
 
   FidoBleFrame frame(FidoBleDeviceCommand::kPing,
                      std::vector<uint8_t>(kDefaultControlPointLength));
@@ -345,8 +345,8 @@ TEST_F(FidoBleTransactionTest,
 TEST_F(FidoBleTransactionTest,
        WriteRequestFrame_InvalidOrderResponseContinuationFragments) {
   EXPECT_CALL(connection(), WriteControlPointPtr)
-      .WillRepeatedly(::testing::Invoke(
-          [](auto&&, auto* cb) { std::move(*cb).Run(true /* success */); }));
+      .WillRepeatedly(
+          [](auto&&, auto* cb) { std::move(*cb).Run(true /* success */); });
 
   FidoBleFrame frame(FidoBleDeviceCommand::kPing,
                      std::vector<uint8_t>(kDefaultControlPointLength * 2));

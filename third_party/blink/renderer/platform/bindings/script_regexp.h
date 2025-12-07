@@ -42,8 +42,8 @@ enum class UnicodeMode { kBmpOnly, kUnicode, kUnicodeSets };
 
 class PLATFORM_EXPORT ScriptRegexp final : public GarbageCollected<ScriptRegexp> {
  public:
-  // For TextCaseSensitivity argument, TextCaseASCIIInsensitive and
-  // TextCaseUnicodeInsensitive has identical behavior. They just add "i" flag.
+  // For TextCaseSensitivity argument, TextCaseASCIIInsensitive just adds "i"
+  // flag, which is not ASCII case-insensitive match.
   ScriptRegexp(v8::Isolate* isolate,
                const String&,
                TextCaseSensitivity,
@@ -63,7 +63,7 @@ class PLATFORM_EXPORT ScriptRegexp final : public GarbageCollected<ScriptRegexp>
   int Match(StringView,
             int start_from = 0,
             int* match_length = nullptr,
-            WTF::Vector<String>* group_list = nullptr) const;
+            Vector<String>* group_list = nullptr) const;
 
   bool IsValid() const { return !regex_.IsEmpty(); }
   // exceptionMessage is available only if !isValid().

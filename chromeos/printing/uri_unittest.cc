@@ -4,7 +4,8 @@
 
 #include "chromeos/printing/uri_unittest.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "chromeos/printing/uri.h"
@@ -183,7 +184,7 @@ TEST(UriTest, UriWithAllPrintableASCII) {
   ASSERT_EQ(uri.GetLastParsingError().status, Uri::ParserStatus::kNoErrors);
 
   // Host is case-insensitive, uppercase letters are normalized to lowercase.
-  base::ranges::transform(host, host.begin(), &base::ToLowerASCII<char>);
+  std::ranges::transform(host, host.begin(), &base::ToLowerASCII<char>);
 
   EXPECT_EQ(uri.GetUserinfo(), kPrintableASCII);
   EXPECT_EQ(uri.GetHost(), host);

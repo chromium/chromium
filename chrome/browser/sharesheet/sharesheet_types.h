@@ -16,7 +16,7 @@
 namespace sharesheet {
 
 // In DIP (Density Independent Pixel).
-constexpr int kIconSize = 40;
+inline constexpr int kIconSize = 40;
 
 // The type of a target.
 enum class TargetType {
@@ -36,7 +36,7 @@ enum ShareActionType {
 
 struct TargetInfo {
   TargetInfo(TargetType type,
-             const std::optional<gfx::ImageSkia> icon,
+             std::optional<gfx::ImageSkia> icon,
              const std::u16string& launch_name,
              const std::u16string& display_name,
              const std::optional<ShareActionType>& share_action_type,

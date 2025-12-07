@@ -8,10 +8,8 @@
 #include <oleacc.h>
 #include <wrl/client.h>
 
-#include <set>
 #include <vector>
 
-#include "base/component_export.h"
 #include "base/win/atl.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
 #include "ui/accessibility/ax_text_utils.h"
@@ -29,10 +27,12 @@ namespace ui {
 // to compute all of the possible IAccessible2 relations and reverse
 // relations given the internal relation id attributes.
 class AXPlatformRelationWin : public SequenceAffineComObjectRoot,
-                              public IAccessibleRelation {
+                              public IAccessibleRelation,
+                              public IFastRundown {
  public:
   BEGIN_COM_MAP(AXPlatformRelationWin)
   COM_INTERFACE_ENTRY(IAccessibleRelation)
+  COM_INTERFACE_ENTRY(IFastRundown)
   END_COM_MAP()
 
   AXPlatformRelationWin();

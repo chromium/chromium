@@ -17,10 +17,6 @@ enum class WipeModelUponSyncDisabledBehavior {
   // account storage). In this case, the lifetime of local data is fully coupled
   // with sync metadata's.
   kAlways,
-  // Local data is deleted at most once, the next time sync is permanently
-  // disabled. In practice, this is currently used on iOS only, in advanced
-  // cases involving restored-from-backup data.
-  kOnceIfTrackingMetadata,
 };
 
 }  // namespace syncer

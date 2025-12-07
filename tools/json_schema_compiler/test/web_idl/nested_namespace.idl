@@ -1,0 +1,17 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Schema to test nested namespacee names types in IDL (API names with a dot in
+// them). API should end up on `<Browser>.nested.example`.
+interface Example {
+  static undefined exampleFunction();
+};
+
+partial interface Nested {
+  static attribute Example example;
+};
+
+partial interface Browser {
+  static attribute Nested nested;
+};

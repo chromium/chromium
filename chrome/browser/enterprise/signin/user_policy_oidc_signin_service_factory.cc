@@ -4,6 +4,8 @@
 
 #include "chrome/browser/enterprise/signin/user_policy_oidc_signin_service_factory.h"
 
+#include <variant>
+
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
 #include "chrome/browser/enterprise/signin/user_policy_oidc_signin_service.h"
@@ -19,7 +21,7 @@
 
 namespace policy {
 
-absl::variant<UserCloudPolicyManager*, ProfileCloudPolicyManager*>
+std::variant<UserCloudPolicyManager*, ProfileCloudPolicyManager*>
 GetCloudPolicyManager(Profile* profile) {
   auto* entry = g_browser_process->profile_manager()
                     ->GetProfileAttributesStorage()

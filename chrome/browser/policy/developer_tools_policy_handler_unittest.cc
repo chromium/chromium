@@ -8,6 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/browser/configuration_policy_pref_store.h"
@@ -17,19 +18,38 @@
 #include "components/policy/policy_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/account_id/account_id_literal.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_manager_impl.h"
 #include "content/public/test/browser_task_environment.h"
-
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace policy {
+
+#if BUILDFLAG(IS_CHROMEOS)
+namespace {
+constexpr char kPrimaryProfileName[] = "primary_profile@test";
+constexpr auto kPrimaryUserAccountId =
+    AccountId::Literal::FromUserEmailGaiaId(kPrimaryProfileName,
+                                            GaiaId::Literal("123"));
+
+constexpr char kSecondaryProfileName[] = "secondary_profile@test";
+constexpr auto kSecondaryUserAccountId =
+    AccountId::Literal::FromUserEmailGaiaId(kSecondaryProfileName,
+                                            GaiaId::Literal("abc"));
+}  // namespace
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using Availability = DeveloperToolsPolicyHandler::Availability;
 
@@ -182,7 +202,7 @@ TEST_F(DeveloperToolsPolicyHandlerTest, InvalidValue) {
 #endif
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 struct TestParam {
   Availability primary_profile_availability;
@@ -201,34 +221,63 @@ class DeveloperToolsPolicyHandlerWithProfileTest
   void SetUp() override {
     ASSERT_TRUE(profile_manager_.SetUp());
 
-    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    {
-      constexpr char kPrimaryProfileName[] = "primary_profile";
-      const AccountId account_id(AccountId::FromUserEmail(kPrimaryProfileName));
-      primary_profile_ = profile_manager_.CreateTestingProfile(
-          kPrimaryProfileName, /* is_main_profile= */ true);
+    session_manager_ = std::make_unique<session_manager::SessionManager>(
+        std::make_unique<session_manager::FakeSessionManagerDelegate>());
 
-      user_manager->AddUserWithAffiliationAndTypeAndProfile(
-          account_id, /* is_affiliated= */ true,
-          user_manager::UserType::kRegular, primary_profile_);
-      user_manager->LoginUser(account_id);
+    user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
+        std::make_unique<user_manager::FakeUserManagerDelegate>(),
+        TestingBrowserProcess::GetGlobal()->local_state()));
+    session_manager::SessionManager::Get()->OnUserManagerCreated(
+        user_manager_.Get());
+
+    {
+      ASSERT_TRUE(user_manager::TestHelper(user_manager_.Get())
+                      .AddRegularUser(kPrimaryUserAccountId));
+      user_manager_->SetUserPolicyStatus(kPrimaryUserAccountId,
+                                         /*is_managed=*/true,
+                                         /*is_affiliated=*/true);
+
+      ash::ScopedAccountIdAnnotator annotator(
+          profile_manager_.profile_manager(), kPrimaryUserAccountId);
+      primary_profile_ =
+          profile_manager_.CreateTestingProfile(kPrimaryProfileName);
+
+      user_manager_->OnUserProfileCreated(kPrimaryUserAccountId,
+                                          primary_profile_->GetPrefs());
     }
     {
-      constexpr char kSecondaryProfileName[] = "secondary_profile";
-      const AccountId account_id(
-          AccountId::FromUserEmail(kSecondaryProfileName));
+      ASSERT_TRUE(user_manager::TestHelper(user_manager_.Get())
+                      .AddRegularUser(kSecondaryUserAccountId));
+      user_manager_->SetUserPolicyStatus(kSecondaryUserAccountId,
+                                         /*is_managed=*/true,
+                                         /*is_affiliated=*/true);
+
+      ash::ScopedAccountIdAnnotator annotator(
+          profile_manager_.profile_manager(), kSecondaryUserAccountId);
       secondary_profile_ =
           profile_manager_.CreateTestingProfile(kSecondaryProfileName);
-
-      user_manager->AddUserWithAffiliationAndTypeAndProfile(
-          account_id, /* is_affiliated= */ true,
-          user_manager::UserType::kRegular, secondary_profile_);
+      user_manager_->OnUserProfileCreated(kSecondaryUserAccountId,
+                                          secondary_profile_->GetPrefs());
     }
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(user_manager));
+
+    session_manager_->CreateSession(
+        kPrimaryUserAccountId,
+        user_manager::TestHelper::GetFakeUsernameHash(kPrimaryUserAccountId),
+        /*new_user=*/false, /*has_active_session=*/false);
 
     EXPECT_TRUE(ash::ProfileHelper::IsPrimaryProfile(primary_profile_));
     EXPECT_FALSE(ash::ProfileHelper::IsPrimaryProfile(secondary_profile_));
+  }
+
+  void TearDown() override {
+    user_manager_->OnUserProfileWillBeDestroyed(kPrimaryUserAccountId);
+    user_manager_->OnUserProfileWillBeDestroyed(kSecondaryUserAccountId);
+    primary_profile_ = nullptr;
+    secondary_profile_ = nullptr;
+    profile_manager_.DeleteAllTestingProfiles();
+
+    session_manager_.reset();
+    user_manager_.Reset();
   }
 
   void UpdatePrimaryProfileAvailability() {
@@ -249,9 +298,10 @@ class DeveloperToolsPolicyHandlerWithProfileTest
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-  raw_ptr<TestingProfile> primary_profile_;
-  raw_ptr<TestingProfile> secondary_profile_;
+  std::unique_ptr<session_manager::SessionManager> session_manager_;
+  user_manager::ScopedUserManager user_manager_;
+  raw_ptr<TestingProfile> primary_profile_ = nullptr;
+  raw_ptr<TestingProfile> secondary_profile_ = nullptr;
 };
 
 TEST_F(DeveloperToolsPolicyHandlerWithProfileTest,

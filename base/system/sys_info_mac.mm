@@ -17,7 +17,6 @@
 
 #include "base/apple/scoped_mach_port.h"
 #include "base/check_op.h"
-#include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/mac/mac_util.h"
 #include "base/no_destructor.h"
@@ -63,7 +62,6 @@ std::optional<int> NumberOfProcessorsWhenCpuSecurityMitigationEnabled() {
 }  // namespace internal
 
 BASE_FEATURE(kNumberOfCoresWithCpuSecurityMitigation,
-             "NumberOfCoresWithCpuSecurityMitigation",
              FEATURE_ENABLED_BY_DEFAULT);
 
 // static
@@ -101,28 +99,14 @@ std::string SysInfo::OperatingSystemArchitecture() {
 }
 
 // static
-uint64_t SysInfo::AmountOfPhysicalMemoryImpl() {
-  struct host_basic_info hostinfo;
-  mach_msg_type_number_t count = HOST_BASIC_INFO_COUNT;
-  base::apple::ScopedMachSendRight host(mach_host_self());
-  int result = host_info(host.get(), HOST_BASIC_INFO,
-                         reinterpret_cast<host_info_t>(&hostinfo), &count);
-  if (result != KERN_SUCCESS) {
-    NOTREACHED_IN_MIGRATION();
-    return 0;
+ByteCount SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
+  SystemMemoryInfo info;
+  if (!GetSystemMemoryInfo(&info)) {
+    return ByteCount(0);
   }
-  DCHECK_EQ(HOST_BASIC_INFO_COUNT, count);
-  return hostinfo.max_mem;
-}
-
-// static
-uint64_t SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
-  SystemMemoryInfoKB info;
-  if (!GetSystemMemoryInfo(&info))
-    return 0;
   // We should add inactive file-backed memory also but there is no such
   // information from Mac OS unfortunately.
-  return checked_cast<uint64_t>(info.free + info.speculative) * 1024;
+  return info.free + info.speculative;
 }
 
 // static

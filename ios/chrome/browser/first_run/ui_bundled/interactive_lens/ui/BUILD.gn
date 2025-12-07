@@ -1,0 +1,32 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "interactive_lens_overlay_promo_view_controller.h",
+    "interactive_lens_overlay_promo_view_controller.mm",
+    "lens_interactive_promo_results_page_presenter.h",
+    "lens_interactive_promo_results_page_presenter.mm",
+    "lens_overlay_promo_container_view_controller.h",
+    "lens_overlay_promo_container_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bubble/ui_bundled:bubble_view",
+    "//ios/chrome/browser/bubble/ui_bundled:constants",
+    "//ios/chrome/browser/first_run/ui_bundled/interactive_lens/ui/resources",
+    "//ios/chrome/browser/lens_overlay/ui:protocols",
+    "//ios/chrome/browser/lens_overlay/ui:results_page_presenter",
+    "//ios/chrome/browser/lens_overlay/ui:view_controller",
+    "//ios/chrome/common/ui/button_stack:utils",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements",
+    "//ios/chrome/common/ui/promo_style",
+    "//ios/chrome/common/ui/promo_style:utils",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

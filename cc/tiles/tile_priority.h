@@ -27,7 +27,6 @@ enum WhichTree {
 };
 
 enum TileResolution {
-  LOW_RESOLUTION = 0 ,
   HIGH_RESOLUTION = 1,
   NON_IDEAL_RESOLUTION = 2,
 };

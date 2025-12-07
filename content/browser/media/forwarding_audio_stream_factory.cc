@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
+#include "content/browser/guest_page_holder_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -20,7 +21,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "media/base/audio_parameters.h"
-#include "media/base/user_input_monitor.h"
+#include "media/mojo/mojom/audio_processing.mojom.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace content {
@@ -51,10 +52,8 @@ void BindStreamFactoryFromUIThread(
 
 ForwardingAudioStreamFactory::Core::Core(
     base::WeakPtr<ForwardingAudioStreamFactory> owner,
-    media::UserInputMonitorBase* user_input_monitor,
     std::unique_ptr<AudioStreamBrokerFactory> broker_factory)
-    : user_input_monitor_(user_input_monitor),
-      owner_(std::move(owner)),
+    : owner_(std::move(owner)),
       broker_factory_(std::move(broker_factory)),
       group_id_(base::UnguessableToken::Create()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -88,9 +87,8 @@ void ForwardingAudioStreamFactory::Core::CreateInputStream(
   // |this| owns |inputs_|, so Unretained is safe.
   inputs_
       .insert(broker_factory_->CreateAudioInputStreamBroker(
-          render_process_id, render_frame_id, device_id, params,
-          shared_memory_count, user_input_monitor_, enable_agc,
-          std::move(processing_config),
+          render_process_id, render_frame_id, device_id, params, group_id_,
+          shared_memory_count, enable_agc, std::move(processing_config),
           base::BindOnce(&ForwardingAudioStreamFactory::Core::RemoveInput,
                          base::Unretained(this)),
           std::move(renderer_factory_client)))
@@ -113,6 +111,7 @@ void ForwardingAudioStreamFactory::Core::AssociateInputAndOutputForAec(
 void ForwardingAudioStreamFactory::Core::CreateOutputStream(
     int render_process_id,
     int render_frame_id,
+    const GlobalRenderFrameHostToken& main_frame_token,
     const std::string& device_id,
     const media::AudioParameters& params,
     mojo::PendingRemote<media::mojom::AudioOutputStreamProviderClient> client) {
@@ -121,8 +120,8 @@ void ForwardingAudioStreamFactory::Core::CreateOutputStream(
   // |this| owns |outputs_|, so Unretained is safe.
   outputs_
       .insert(broker_factory_->CreateAudioOutputStreamBroker(
-          render_process_id, render_frame_id, ++stream_id_counter_, device_id,
-          params, group_id_,
+          render_process_id, render_frame_id, main_frame_token,
+          ++stream_id_counter_, device_id, params, group_id_,
           base::BindOnce(&ForwardingAudioStreamFactory::Core::RemoveOutput,
                          base::Unretained(this)),
           std::move(client)))
@@ -204,11 +203,21 @@ const base::UnguessableToken& ForwardingAudioStreamFactory::Core::GetGroupID() {
 ForwardingAudioStreamFactory* ForwardingAudioStreamFactory::ForFrame(
     RenderFrameHost* frame) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!frame) {
+    return nullptr;
+  }
+
+  GuestPageHolderImpl* guest_holder = GuestPageHolderImpl::FromRenderFrameHost(
+      static_cast<RenderFrameHostImpl&>(*frame));
+  if (guest_holder) {
+    return guest_holder->GetAudioStreamFactory();
+  }
 
   auto* contents =
       static_cast<WebContentsImpl*>(WebContents::FromRenderFrameHost(frame));
-  if (!contents)
+  if (!contents) {
     return nullptr;
+  }
 
   return contents->GetAudioStreamFactory();
 }
@@ -224,12 +233,11 @@ ForwardingAudioStreamFactory::Core* ForwardingAudioStreamFactory::CoreForFrame(
 
 ForwardingAudioStreamFactory::ForwardingAudioStreamFactory(
     WebContents* web_contents,
-    media::UserInputMonitorBase* user_input_monitor,
     std::unique_ptr<AudioStreamBrokerFactory> broker_factory)
     : WebContentsObserver(web_contents), core_() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   core_ = std::make_unique<Core>(weak_ptr_factory_.GetWeakPtr(),
-                                 user_input_monitor, std::move(broker_factory));
+                                 std::move(broker_factory));
 }
 
 ForwardingAudioStreamFactory::~ForwardingAudioStreamFactory() {
@@ -280,10 +288,11 @@ void ForwardingAudioStreamFactory::RenderFrameDeleted(
   // Unretained is safe since the destruction of |core_| will be posted to the
   // IO thread later.
   GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&Core::CleanupStreamsBelongingTo,
-                                base::Unretained(core_.get()),
-                                render_frame_host->GetProcess()->GetID(),
-                                render_frame_host->GetRoutingID()));
+      FROM_HERE,
+      base::BindOnce(&Core::CleanupStreamsBelongingTo,
+                     base::Unretained(core_.get()),
+                     render_frame_host->GetProcess()->GetDeprecatedID(),
+                     render_frame_host->GetRoutingID()));
 }
 
 void ForwardingAudioStreamFactory::OverrideAudioStreamFactoryBinderForTesting(

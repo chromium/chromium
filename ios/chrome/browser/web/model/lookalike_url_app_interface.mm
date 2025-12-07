@@ -39,28 +39,20 @@ class LookalikeUrlDecider : public web::WebStatePolicyDecider,
         LookalikeUrlTabAllowList::FromWebState(web_state_);
 
     GURL response_url = net::GURLWithNSURL(response.URL);
-    if (allow_list->IsDomainAllowed(response_url.host())) {
+    if (allow_list->IsDomainAllowed(response_url.GetHost())) {
       return std::move(callback).Run(
           web::WebStatePolicyDecider::PolicyDecision::Allow());
     }
-    if (response_url.path() == kLookalikePagePathForTesting) {
+    if (response_url.GetPath() == kLookalikePagePathForTesting) {
       GURL::Replacements safeReplacements;
       safeReplacements.SetPathStr("echo");
-      if (@available(iOS 15.1, *)) {
-      } else {
-        // Workaround https://bugs.webkit.org/show_bug.cgi?id=226323, which
-        // breaks some back/forward navigations between pages that share a
-        // renderer process. Use 'localhost' instead of '127.0.0.1' for the
-        // safe URL to prevent sharing renderer processes with unsafe URLs.
-        safeReplacements.SetHostStr("localhost");
-      }
       lookalike_container->SetLookalikeUrlInfo(
           response_url.ReplaceComponents(safeReplacements), response_url,
           lookalikes::LookalikeUrlMatchType::kSkeletonMatchTop5k);
       std::move(callback).Run(CreateLookalikeErrorDecision());
       return;
     }
-    if (response_url.path() == kLookalikePageEmptyUrlPathForTesting) {
+    if (response_url.GetPath() == kLookalikePageEmptyUrlPathForTesting) {
       lookalike_container->SetLookalikeUrlInfo(
           GURL(), response_url,
           lookalikes::LookalikeUrlMatchType::kSkeletonMatchTop5k);
@@ -71,13 +63,9 @@ class LookalikeUrlDecider : public web::WebStatePolicyDecider,
         web::WebStatePolicyDecider::PolicyDecision::Allow());
   }
 
-  WEB_STATE_USER_DATA_KEY_DECL();
-
  private:
   raw_ptr<web::WebState> web_state_ = nullptr;
 };
-
-WEB_STATE_USER_DATA_KEY_IMPL(LookalikeUrlDecider)
 
 }  // namespace
 

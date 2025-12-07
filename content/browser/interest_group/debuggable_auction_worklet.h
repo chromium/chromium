@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -17,7 +18,6 @@
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-forward.h"
 #include "url/gurl.h"
 
@@ -105,8 +105,8 @@ class CONTENT_EXPORT DebuggableAuctionWorklet {
   std::optional<base::ProcessId> pid_;
   bool should_pause_on_start_ = false;
 
-  absl::variant<auction_worklet::mojom::BidderWorklet*,
-                auction_worklet::mojom::SellerWorklet*>
+  std::variant<auction_worklet::mojom::BidderWorklet*,
+               auction_worklet::mojom::SellerWorklet*>
       worklet_;
 
   size_t thread_index_ = 0;

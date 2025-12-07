@@ -4,12 +4,13 @@
 
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import './product_selection_menu.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './new_column_selector.html.js';
+import {getCss} from './new_column_selector.css.js';
+import {getHtml} from './new_column_selector.html.js';
 import type {ProductSelectionMenuElement} from './product_selection_menu.js';
 
 export interface NewColumnSelectorElement {
@@ -19,36 +20,47 @@ export interface NewColumnSelectorElement {
   };
 }
 
-export class NewColumnSelectorElement extends PolymerElement {
+export class NewColumnSelectorElement extends CrLitElement {
   static get is() {
     return 'new-column-selector';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  static override get properties() {
     return {
       excludedUrls: {
         type: Array,
-        value: () => [],
+      },
+      isTableFull: {
+        type: Boolean,
       },
     };
   }
 
-  excludedUrls: string[];
+  accessor excludedUrls: string[] = [];
+  accessor isTableFull: boolean = false;
 
-  private showMenu_() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  closeMenu() {
+    this.$.productSelectionMenu.close();
+  }
+
+  protected showMenu_() {
     this.$.productSelectionMenu.showAt(this.$.button);
     this.$.button.classList.add('showing-menu');
   }
 
-  private onCloseMenu_() {
+  protected onCloseMenu_() {
     this.$.button.classList.remove('showing-menu');
   }
 
-  private onButtonKeyDown_(e: KeyboardEvent) {
+  protected onButtonKeyDown_(e: KeyboardEvent) {
     if (e.key === ' ' || e.key === 'Enter') {
       e.preventDefault();
       e.stopPropagation();

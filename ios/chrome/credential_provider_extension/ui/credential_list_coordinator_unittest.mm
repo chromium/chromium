@@ -5,11 +5,12 @@
 #import "ios/chrome/credential_provider_extension/ui/credential_list_coordinator.h"
 
 #import "base/test/ios/wait_util.h"
+#import "base/test/task_environment.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
+#import "ios/chrome/common/ui/reauthentication/mock_reauthentication_module.h"
 #import "ios/chrome/credential_provider_extension/reauthentication_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_list_ui_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/mock_credential_response_handler.h"
-#import "ios/chrome/test/app/mock_reauthentication_module.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
@@ -32,6 +33,7 @@ ArchivableCredential* TestPasswordCredential() {
                                       recordIdentifier:@"recordIdentifier"
                                      serviceIdentifier:@"http://www.example.com"
                                            serviceName:nil
+                              registryControlledDomain:@"example.com"
                                               username:@"username_value"
                                                   note:@"note"];
 }
@@ -50,7 +52,10 @@ ArchivableCredential* TestPasskeyCredential() {
                                          privateKey:StringToData("privateKey")
                                           encrypted:StringToData("encrypted")
                                        creationTime:kJan1st2024
-                                       lastUsedTime:kJan1st2024];
+                                       lastUsedTime:kJan1st2024
+                                             hidden:NO
+                                         hiddenTime:kJan1st2024
+                                       editedByUser:NO];
 }
 
 }  // namespace
@@ -70,6 +75,8 @@ void CredentialListCoordinatorTest::TearDown() {}
 // Tests that a user selecting a credential will trigger the appropriate
 // function in the CredentialResponseHandler.
 TEST_F(CredentialListCoordinatorTest, CredentialResponseHandler) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+
   MockReauthenticationModule* reauthenticationModule =
       [[MockReauthenticationModule alloc] init];
   reauthenticationModule.canAttemptWithBiometrics = YES;
@@ -102,24 +109,23 @@ TEST_F(CredentialListCoordinatorTest, CredentialResponseHandler) {
 
   id<Credential> credential = TestPasswordCredential();
   [credentialListUIHandler userSelectedCredential:credential];
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^BOOL {
-    return blockWaitCompleted;
-  }));
+  EXPECT_TRUE(
+      WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, true, ^BOOL {
+        return blockWaitCompleted;
+      }));
 
-  if (@available(iOS 17.0, *)) {
-    blockWaitCompleted = NO;
-    credentialResponseHandler.receivedCredentialBlock = nil;
-    credentialResponseHandler.receivedPasskeyBlock = ^() {
-      blockWaitCompleted = YES;
-    };
+  blockWaitCompleted = NO;
+  credentialResponseHandler.receivedCredentialBlock = nil;
+  credentialResponseHandler.receivedPasskeyBlock = ^() {
+    blockWaitCompleted = YES;
+  };
 
-    credential = TestPasskeyCredential();
-    [credentialListUIHandler userSelectedCredential:credential];
-    EXPECT_TRUE(
-        WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^BOOL {
-          return blockWaitCompleted;
-        }));
-  }
+  credential = TestPasskeyCredential();
+  [credentialListUIHandler userSelectedCredential:credential];
+  EXPECT_TRUE(
+      WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, true, ^BOOL {
+        return blockWaitCompleted;
+      }));
 }
 
 }  // namespace credential_provider_extension

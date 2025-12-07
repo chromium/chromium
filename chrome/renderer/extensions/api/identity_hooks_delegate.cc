@@ -42,7 +42,7 @@ v8::LocalVector<v8::Value> MassageGetAuthTokenResults(
   success = v8_helpers::GetProperty(context, result_obj, "grantedScopes",
                                     &granted_scopes);
   DCHECK(success);
-  v8::LocalVector<v8::Value> new_args(context->GetIsolate(),
+  v8::LocalVector<v8::Value> new_args(v8::Isolate::GetCurrent(),
                                       {token, granted_scopes});
 
   return new_args;

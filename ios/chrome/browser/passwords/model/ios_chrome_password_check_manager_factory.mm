@@ -4,54 +4,33 @@
 
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 
-#import "base/memory/raw_ptr.h"
 #import "base/memory/ref_counted.h"
-#import "base/memory/weak_ptr.h"
+#import "base/memory/scoped_refptr.h"
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/keyed_service/core/service_access_type.h"
+#import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_bulk_leak_check_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
-#import "ios/chrome/browser/passwords/model/ios_chrome_saved_passwords_presenter_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 
 namespace {
-
-class IOSChromePasswordCheckManagerProxy : public KeyedService {
- public:
-  explicit IOSChromePasswordCheckManagerProxy(ChromeBrowserState* browser_state)
-      : browser_state_(browser_state) {}
-
-  void Shutdown() override {
-    if (instance_) {
-      // TODO(crbug.com/40282637): Convert IOSChromePasswordCheckManager to a
-      // KeyedService; deprecate IOSChromePasswordCheckManagerProxy.
-      instance_->Shutdown();
-    }
-    browser_state_ = nullptr;
-  }
-
-  scoped_refptr<IOSChromePasswordCheckManager> GetOrCreateManager() {
-    if (instance_) {
-      return scoped_refptr<IOSChromePasswordCheckManager>(instance_.get());
-    }
-
-    scoped_refptr<IOSChromePasswordCheckManager> manager =
-        new IOSChromePasswordCheckManager(
-            IOSChromeSavedPasswordsPresenterFactory::GetForBrowserState(
-                browser_state_),
-            IOSChromeBulkLeakCheckServiceFactory::GetForBrowserState(
-                browser_state_),
-            browser_state_->GetPrefs());
-
-    instance_ = manager->AsWeakPtr();
-
-    return manager;
-  }
-
- private:
-  raw_ptr<ChromeBrowserState> browser_state_ = nullptr;
-  base::WeakPtr<IOSChromePasswordCheckManager> instance_;
-};
+// Default factory for IOSChromePasswordCheckManager.
+scoped_refptr<RefcountedKeyedService> BuildInstance(ProfileIOS* profile) {
+  return base::MakeRefCounted<IOSChromePasswordCheckManager>(
+      profile->GetPrefs(),
+      IOSChromeBulkLeakCheckServiceFactory::GetForProfile(profile),
+      std::make_unique<password_manager::SavedPasswordsPresenter>(
+          IOSChromeAffiliationServiceFactory::GetForProfile(profile),
+          IOSChromeProfilePasswordStoreFactory::GetForProfile(
+              profile, ServiceAccessType::EXPLICIT_ACCESS),
+          IOSChromeAccountPasswordStoreFactory::GetForProfile(
+              profile, ServiceAccessType::EXPLICIT_ACCESS),
+          IOSPasskeyModelFactory::GetForProfile(profile)));
+}
 }  // namespace
 
 // static
@@ -63,26 +42,31 @@ IOSChromePasswordCheckManagerFactory::GetInstance() {
 
 // static
 scoped_refptr<IOSChromePasswordCheckManager>
-IOSChromePasswordCheckManagerFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  return static_cast<IOSChromePasswordCheckManagerProxy*>(
-             GetInstance()->GetServiceForBrowserState(browser_state, true))
-      ->GetOrCreateManager();
+IOSChromePasswordCheckManagerFactory::GetForProfile(ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<IOSChromePasswordCheckManager>(
+      profile, /*create=*/true);
 }
 
 IOSChromePasswordCheckManagerFactory::IOSChromePasswordCheckManagerFactory()
-    : BrowserStateKeyedServiceFactory(
-          "PasswordCheckManager",
-          BrowserStateDependencyManager::GetInstance()) {
+    : RefcountedProfileKeyedServiceFactoryIOS("PasswordCheckManager") {
+  DependsOn(IOSChromeAccountPasswordStoreFactory::GetInstance());
+  DependsOn(IOSChromeAffiliationServiceFactory::GetInstance());
   DependsOn(IOSChromeBulkLeakCheckServiceFactory::GetInstance());
+  DependsOn(IOSChromeProfilePasswordStoreFactory::GetInstance());
+  DependsOn(IOSPasskeyModelFactory::GetInstance());
 }
 
 IOSChromePasswordCheckManagerFactory::~IOSChromePasswordCheckManagerFactory() =
     default;
 
-std::unique_ptr<KeyedService>
+scoped_refptr<RefcountedKeyedService>
 IOSChromePasswordCheckManagerFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return std::make_unique<IOSChromePasswordCheckManagerProxy>(
-      ChromeBrowserState::FromBrowserState(context));
+    ProfileIOS* profile) const {
+  return BuildInstance(profile);
+}
+
+// static
+IOSChromePasswordCheckManagerFactory::TestingFactory
+IOSChromePasswordCheckManagerFactory::GetDefaultFactory() {
+  return base::BindOnce(&BuildInstance);
 }

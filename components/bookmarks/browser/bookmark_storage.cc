@@ -64,7 +64,7 @@ base::Value::Dict EncodeModelToDict(
                           model->client()->EncodeAccountBookmarkSyncMetadata());
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool ShouldSaveBackupFile(
@@ -76,7 +76,7 @@ bool ShouldSaveBackupFile(
       return false;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

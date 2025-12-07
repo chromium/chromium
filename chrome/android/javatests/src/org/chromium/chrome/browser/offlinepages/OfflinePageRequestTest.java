@@ -20,7 +20,9 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge.SavePageCallback;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.offlinepages.SavePageResult;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -33,7 +35,8 @@ import java.util.concurrent.TimeUnit;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class OfflinePageRequestTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final String TEST_PAGE = "/chrome/test/data/android/test.html";
     private static final String ABOUT_PAGE = "/chrome/test/data/android/about.html";
@@ -42,10 +45,11 @@ public class OfflinePageRequestTest {
             new ClientId(OfflinePageBridge.BOOKMARK_NAMESPACE, "1234");
 
     private OfflinePageBridge mOfflinePageBridge;
+    private WebPageStation mStartingPage;
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mStartingPage = mActivityTestRule.startOnBlankPage();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (!NetworkChangeNotifier.isInitialized()) {
@@ -65,7 +69,7 @@ public class OfflinePageRequestTest {
         String testUrl = testServer.getURL(TEST_PAGE);
         String aboutUrl = testServer.getURL(ABOUT_PAGE);
 
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
 
         // Load and save an offline page.
         savePage(testUrl, CLIENT_ID);
@@ -99,7 +103,7 @@ public class OfflinePageRequestTest {
         String testUrl = testServer.getURL(TEST_PAGE);
         String testUrlWithFragment = testUrl + "#ref";
 
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
 
         // Load and save an offline page for the url with a fragment.
         savePage(testUrlWithFragment, CLIENT_ID);
@@ -130,7 +134,7 @@ public class OfflinePageRequestTest {
         String testUrl = testServer.getURL(TEST_PAGE);
         String aboutUrl = testServer.getURL(ABOUT_PAGE);
 
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
 
         // Load and save a persistent offline page using a persistent namespace so that the archive
         // will be published.

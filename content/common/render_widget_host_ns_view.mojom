@@ -17,6 +17,7 @@ import "ui/events/mojom/event.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/ca_layer_params.mojom";
 import "ui/gfx/range/mojom/range.mojom";
+import "url/mojom/url.mojom";
 
 // Interface that lets the browser process hide/close a popup menu in a
 // remote cocoa process, for menus displayed by DisplayPopupMenu().
@@ -119,7 +120,7 @@ interface RenderWidgetHostNSView {
   // returning the result of that action.
   ShowSharingServicePicker(string title,
                            string text,
-                           string url,
+                           url.mojom.Url url,
                            array<string> file_paths)
     => (blink.mojom.ShareError error);
 
@@ -162,18 +163,20 @@ interface RenderWidgetHostNSViewHost {
   // Indicates whether or not the NSView is its NSWindow's first responder.
   OnFirstResponderChanged(bool is_first_responder);
 
-  // Indicates whether or not the NSView is its NSWindow's first responder.
-  OnWindowIsKeyChanged(bool is_key);
-
   // Indicates whether or not the NSView's NSWindow is key.
-  OnBoundsInWindowChanged(
-      gfx.mojom.Rect view_bounds_in_window_dip,
-      bool attached_to_window);
+  OnWindowIsKeyChanged(bool is_key);
 
   // Indicates the NSView's bounds in its NSWindow's DIP coordinate system (with
   // the origin at the upper-left corner), and indicate if the the NSView is
   // attached to an NSWindow (if it is not, then |view_bounds_in_window_dip|'s
   // origin is meaningless, but its size is still relevant).
+  OnBoundsInWindowChanged(
+      gfx.mojom.Rect view_bounds_in_window_dip,
+      bool attached_to_window);
+
+  // Indicates the NSView's NSWindow's frame in the global display::Screen
+  // DIP coordinate system (where the origin the upper-left corner of
+  // Screen::GetPrimaryDisplay).
   OnWindowFrameInScreenChanged(
       gfx.mojom.Rect window_frame_in_screen_dip);
 
@@ -203,14 +206,11 @@ interface RenderWidgetHostNSViewHost {
   ForwardMouseEvent(blink.mojom.Event event);
   ForwardWheelEvent(blink.mojom.Event event);
 
-  // Handling pinch gesture events. Note that for GestureBegin, the type of the
-  // event is ignored, and is inferred from subsequent GestureUpdate calls.
-  GestureBegin(blink.mojom.Event event, bool is_synthetically_injected);
-  GestureUpdate(blink.mojom.Event event);
-  GestureEnd(blink.mojom.Event event);
+  // Handling pinch gesture events.
+  PinchEvent(blink.mojom.Event event, bool is_synthetically_injected);
 
   // Handle a double-tap magnify event.
-  SmartMagnify(blink.mojom.Event event);
+  SmartMagnifyEvent(blink.mojom.Event event);
 
   // Forward the corresponding Ime commands to the appropriate RenderWidgetHost.
   // Appropriate, has two meanings here. If this is during a key-down event,

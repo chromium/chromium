@@ -5,27 +5,27 @@
 package org.chromium.components.signin.identitymanager;
 
 import androidx.annotation.MainThread;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * This class groups all the {@link AccountInfoService} instance manipulation
  * methods in one place.
  */
+@NullMarked
 public final class AccountInfoServiceProvider {
     private static @Nullable Promise<AccountInfoService> sInstancePromise;
 
     /** Initializes the singleton {@link AccountInfoService} instance. */
     @MainThread
-    public static void init(
-            IdentityManager identityManager, AccountTrackerService accountTrackerService) {
+    public static void init(IdentityManager identityManager) {
         if (sInstancePromise != null && sInstancePromise.isFulfilled()) {
             return;
         }
-        final AccountInfoService service =
-                new AccountInfoServiceImpl(identityManager, accountTrackerService);
+        final AccountInfoService service = new AccountInfoServiceImpl(identityManager);
         if (sInstancePromise == null) {
             sInstancePromise = Promise.fulfilled(service);
         } else {

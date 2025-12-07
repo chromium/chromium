@@ -31,8 +31,8 @@
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 
 #include <string>
+
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "services/network/public/mojom/load_timing_info.mojom.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/platform.h"

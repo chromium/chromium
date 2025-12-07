@@ -1,0 +1,115 @@
+
+<!DOCTYPE html>
+<title>Test disableUntrustedNetwork() with WebTransport.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/webtransport/resources/webtransport-test-helpers.sub.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/utils.js"></script>
+<body>
+<script>
+promise_test(async(t) => {
+  const fencedframe = await attachFencedFrameContext();
+  const wt_url = webtransport_url('custom-response.py?:status=200');
+
+  return fencedframe.execute(async (wt_url) => {
+    await window.fence.disableUntrustedNetwork();
+    return new Promise(async (resolve, reject) => {
+      try {
+        const wt = new WebTransport(wt_url);
+        await wt.ready;
+        reject("The WebTransport connection was opened.");
+      } catch (e) {
+        resolve("The WebTransport connection was not opened.");
+      }
+    });
+  }, [wt_url]);
+}, 'Network cutoff prevents opening new WebTransport connections.');
+
+promise_test(async(t) => {
+  const wt_url = webtransport_url('token-count.py');
+
+  const fencedframe = await attachFencedFrameContext();
+  const key = token();
+
+  // This web transport stream will verify that the message was not sent from
+  // the fenced frame.
+  const wt = new WebTransport(wt_url);
+  await wt.ready;
+  const stream = await wt.createBidirectionalStream();
+  const writer = stream.writable.getWriter();
+  const reader = stream.readable.getReader();
+
+  await fencedframe.execute(async (key, wt_url) => {
+    const wt = new WebTransport(wt_url);
+    await wt.ready;
+    const stream = await wt.createBidirectionalStream();
+    const writer = stream.writable.getWriter();
+    const reader = stream.readable.getReader();
+
+    window.fence.disableUntrustedNetwork().then(
+        () => {writer.write(new TextEncoder().encode(key))});
+  }, [key, wt_url]);
+
+  // The token is sent to the webtransport server, which will make a note of
+  // how many times a message with that token was sent to the server and echo
+  // that number back to the client. This write operation should succeed, while
+  // the one inside the fenced frame should fail.
+  writer.write(new TextEncoder().encode(key));
+  const {value: chunk, done} = await reader.read();
+  const count = new TextDecoder().decode(chunk);
+  assert_equals(count, "1",
+      "The fenced frame's message should not have been sent to the server.");
+}, 'Network cutoff prevents existing streams from writing data.');
+
+promise_test(async(t) => {
+  const wt_url = webtransport_url('token-count.py');
+
+  const fencedframe = await attachFencedFrameContext();
+  const key = token();
+
+  await fencedframe.execute(async (key, wt_url) => {
+    const wt = new WebTransport(wt_url);
+    await wt.ready;
+    const stream = await wt.createBidirectionalStream();
+    const writer = stream.writable.getWriter();
+    const reader = stream.readable.getReader();
+
+    await writer.write(new TextEncoder().encode(key));
+    await window.fence.disableUntrustedNetwork();
+    await reader.read().then((res) => {
+      assert_unreached("The read operation did not fail.");
+    }, (err) => {});
+  }, [key, wt_url]);
+}, 'Network cutoff prevents existing streams from reading data.');
+
+promise_test(async(t) => {
+  const fencedframe = await attachFencedFrameContext();
+  const wt_url = webtransport_url('custom-response.py?:status=200');
+
+  return fencedframe.execute(async (wt_url) => {
+    const wt = new WebTransport(wt_url);
+    await wt.ready;
+    await window.fence.disableUntrustedNetwork();
+    await wt.closed.then(res => {
+      assert_unreached("The connection should not be closed gracefully.");
+    }, err => {});
+  }, [wt_url]);
+}, 'Network cutoff closes existing WebTransport connections.');
+
+promise_test(async(t) => {
+  const fencedframe = await attachFencedFrameContext();
+  const wt_url = webtransport_url('custom-response.py?:status=200');
+
+  return fencedframe.execute(async (wt_url) => {
+    const wt = new WebTransport(wt_url);
+    await wt.ready;
+    await wt.close();
+    await window.fence.disableUntrustedNetwork();
+    await wt.closed;
+  }, [wt_url]);
+}, `Network cutoff doesn't affect closed WebTransport connections.`);
+</script>
+</body>

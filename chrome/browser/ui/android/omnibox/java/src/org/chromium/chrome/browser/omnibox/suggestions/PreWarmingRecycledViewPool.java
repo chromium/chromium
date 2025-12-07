@@ -13,13 +13,14 @@ import androidx.recyclerview.widget.RecyclerView.RecycledViewPool;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * RecyclerView pool that:
@@ -29,6 +30,7 @@ import java.util.Optional;
  *   <li>Records the performance of the view recycling mechanism.
  * </ul>
  */
+@NullMarked
 public class PreWarmingRecycledViewPool extends RecycledViewPool {
     private static final long STEP_MILLIS = 50;
 
@@ -53,22 +55,23 @@ public class PreWarmingRecycledViewPool extends RecycledViewPool {
                 new ViewTypeAndCount(OmniboxSuggestionUiType.ENTITY_SUGGESTION, 3)
             };
 
-    private OmniboxSuggestionsDropdownAdapter mAdapter;
-    private final Optional<Handler> mHandler;
+    private @Nullable OmniboxSuggestionsDropdownAdapter mAdapter;
+    private final @Nullable Handler mHandler;
     private final FrameLayout mPlaceholderParent;
     private boolean mStopCreatingViews;
     private final List<ViewHolder> mPrewarmedViews = new ArrayList<>(22);
 
-    PreWarmingRecycledViewPool(OmniboxSuggestionsDropdownAdapter adapter, Context context) {
+    PreWarmingRecycledViewPool(
+            @Nullable OmniboxSuggestionsDropdownAdapter adapter, Context context) {
         mAdapter = adapter;
         mHandler =
                 OmniboxFeatures.sAsyncViewInflation.isEnabled()
                         // If AsyncViewInflation is enabled, we use AsyncViewStub to handle
                         // asynchrony and we
                         // don't need to do it ourselves.
-                        ? Optional.empty()
+                        ? null
                         // Otherwise, we handle asynchrony.
-                        : Optional.of(new Handler());
+                        : new Handler();
         mPlaceholderParent = new FrameLayout(context);
         // The list below should include suggestions defined in OmniboxSuggestionUiType
         // and specify the maximum anticipated volume of suggestions of each type.
@@ -84,7 +87,6 @@ public class PreWarmingRecycledViewPool extends RecycledViewPool {
         setMaxRecycledViews(OmniboxSuggestionUiType.HEADER, 4);
         setMaxRecycledViews(OmniboxSuggestionUiType.TILE_NAVSUGGEST, 1);
         setMaxRecycledViews(OmniboxSuggestionUiType.GROUP_SEPARATOR, 1);
-        setMaxRecycledViews(OmniboxSuggestionUiType.QUERY_TILES, 1);
     }
 
     public void destroy() {
@@ -108,13 +110,16 @@ public class PreWarmingRecycledViewPool extends RecycledViewPool {
             for (int index = 0; index < viewTypeAndCount.count; ++index) {
                 Runnable createViewRunnable = () -> createViewHolder(viewTypeAndCount.viewType);
                 final long delay = STEP_MILLIS * (index + 1);
-                mHandler.ifPresentOrElse(
-                        h -> h.postDelayed(createViewRunnable, delay), createViewRunnable);
+                if (mHandler != null) {
+                    mHandler.postDelayed(createViewRunnable, delay);
+                } else {
+                    createViewRunnable.run();
+                }
             }
         }
 
         // Synchronously apply all views.
-        if (mHandler.isEmpty()) {
+        if (mHandler == null) {
             putViewsIntoPool();
         }
     }
@@ -127,7 +132,7 @@ public class PreWarmingRecycledViewPool extends RecycledViewPool {
     void stopCreatingViews() {
         if (mStopCreatingViews) return;
         mStopCreatingViews = true;
-        mHandler.ifPresent(h -> h.removeCallbacks(null));
+        if (mHandler != null) mHandler.removeCallbacksAndMessages(null);
         putViewsIntoPool();
     }
 
@@ -146,7 +151,7 @@ public class PreWarmingRecycledViewPool extends RecycledViewPool {
     }
 
     @Override
-    public ViewHolder getRecycledView(int viewType) {
+    public @Nullable ViewHolder getRecycledView(int viewType) {
         stopCreatingViews();
         ViewHolder result = super.getRecycledView(viewType);
         if (result == null) {

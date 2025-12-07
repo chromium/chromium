@@ -115,21 +115,17 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
         base::to_underlying(type_));
   }
 
-  // Type query functions
-
-  // Any time we are using one of these functions it's best to refactor
-  // to add a virtual function to allow the input type object to do the
-  // work instead, or at least make a query function that asks a higher
-  // level question. These functions make the HTMLInputElement class
-  // inflexible because it's harder to add new input types if there is
-  // scattered code with special cases for various types.
-
   virtual bool IsInteractiveContent() const;
-  virtual bool IsButton() const;
-  virtual bool IsTextButton() const;
-  virtual bool IsTextField() const;
   virtual bool IsAutoDirectionalityFormAssociated() const;
 
+  bool IsButton() const {
+    return type_ == Type::kButton || type_ == Type::kImage ||
+           type_ == Type::kReset || type_ == Type::kSubmit;
+  }
+  bool IsTextButton() const {
+    return type_ == Type::kButton || type_ == Type::kReset ||
+           type_ == Type::kSubmit;
+  }
   bool IsButtonInputType() const { return type_ == Type::kButton; }
   bool IsColorInputType() const { return type_ == Type::kColor; }
   bool IsFileInputType() const { return type_ == Type::kFile; }
@@ -199,9 +195,7 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
   virtual void SetValueAsDouble(double,
                                 TextFieldEventBehavior,
                                 ExceptionState&) const;
-  virtual void SetValueAsDecimal(const Decimal&,
-                                 TextFieldEventBehavior,
-                                 ExceptionState&) const;
+  virtual void SetValueAsDecimal(const Decimal&, TextFieldEventBehavior) const;
 
   // Functions related to 'checked'
 
@@ -260,7 +254,7 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
   virtual void WarnIfValueIsInvalid(const String&) const;
   void WarnIfValueIsInvalidAndElementIsVisible(const String&) const;
 
-  virtual bool IsKeyboardFocusable(
+  virtual bool IsKeyboardFocusableSlow(
       Element::UpdateBehavior update_behavior =
           Element::UpdateBehavior::kStyleAndLayout) const;
   virtual bool MayTriggerVirtualKeyboard() const;
@@ -295,8 +289,7 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
   virtual bool IsEnumeratable();
   virtual bool IsCheckable();
   bool IsSteppable() const;
-  virtual HTMLFormControlElement::PopoverTriggerSupport
-  SupportsPopoverTriggering() const;
+  virtual PopoverTriggerSupport SupportsPopoverTriggering() const;
   virtual bool ShouldRespectHeightAndWidthAttributes();
   virtual int MaxLength() const;
   virtual int MinLength() const;
@@ -307,6 +300,7 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
   virtual bool HasLegalLinkAttribute(const QualifiedName&) const;
   virtual void CopyNonAttributeProperties(const HTMLInputElement&);
   virtual void OnAttachWithLayoutObject();
+  virtual bool SupportsBaseAppearance(Element::BaseAppearanceValue value) const;
 
   // Parses the specified string for the type, and return
   // the Decimal value for the parsing result if the parsing

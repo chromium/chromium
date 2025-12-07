@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_actions.h"
@@ -29,70 +30,32 @@
 
 namespace extensions {
 
-namespace {
-
-// The user data key used to store the ExtensionSidePanelManager for a browser.
-const char kExtensionSidePanelManagerKey[] = "extension_side_panel_manager";
-
-}  // namespace
+ExtensionSidePanelManager::ExtensionSidePanelManager(
+    Browser* browser,
+    SidePanelRegistry* registry)
+    : profile_(browser->profile()),
+      browser_(browser),
+      tab_interface_(nullptr),
+      registry_(registry),
+      for_tab_(false) {
+  InitializeActions();
+  RegisterExtensionEntries();
+}
 
 ExtensionSidePanelManager::ExtensionSidePanelManager(
     Profile* profile,
-    Browser* browser,
-    content::WebContents* web_contents,
-    SidePanelRegistry* registry)
+    tabs::TabInterface* tab_interface,
+    SidePanelRegistry* tab_registry)
     : profile_(profile),
-      browser_(browser),
-      web_contents_(web_contents),
-      registry_(registry) {
-  side_panel_registry_observation_.Observe(registry_);
-  profile_observation_.Observe(profile);
-
+      browser_(nullptr),
+      tab_interface_(tab_interface),
+      registry_(tab_registry),
+      for_tab_(true) {
   InitializeActions();
   RegisterExtensionEntries();
 }
 
 ExtensionSidePanelManager::~ExtensionSidePanelManager() = default;
-
-// static
-void ExtensionSidePanelManager::CreateForBrowser(
-    Browser* browser,
-    SidePanelRegistry* window_registry) {
-  // Use absl::WrapUnique(new ExtensionSidePanelManager(...)) instead of
-  // std::make_unique<ExtensionSidePanelManager> to access a private
-  // constructor.
-  auto manager = absl::WrapUnique(new ExtensionSidePanelManager(
-      browser->profile(), browser, /*web_contents=*/nullptr, window_registry));
-  browser->SetUserData(kExtensionSidePanelManagerKey, std::move(manager));
-}
-
-// static
-ExtensionSidePanelManager* ExtensionSidePanelManager::GetForBrowserForTesting(
-    Browser* browser) {
-  return static_cast<ExtensionSidePanelManager*>(
-      browser->GetUserData(kExtensionSidePanelManagerKey));
-}
-
-// static
-void ExtensionSidePanelManager::CreateForTab(Profile* profile,
-                                             content::WebContents* web_contents,
-                                             SidePanelRegistry* tab_registry) {
-  DCHECK(web_contents);
-
-  // Use absl::WrapUnique(new ExtensionSidePanelManager(...)) instead of
-  // std::make_unique<ExtensionSidePanelManager> to access a private
-  // constructor.
-  auto manager = absl::WrapUnique(new ExtensionSidePanelManager(
-      profile, /*browser=*/nullptr, web_contents, tab_registry));
-  web_contents->SetUserData(kExtensionSidePanelManagerKey, std::move(manager));
-}
-
-// static
-ExtensionSidePanelManager* ExtensionSidePanelManager::GetForTabForTesting(
-    content::WebContents* web_contents) {
-  return static_cast<ExtensionSidePanelManager*>(
-      web_contents->GetUserData(kExtensionSidePanelManagerKey));
-}
 
 ExtensionSidePanelCoordinator*
 ExtensionSidePanelManager::GetExtensionCoordinatorForTesting(
@@ -153,7 +116,9 @@ void ExtensionSidePanelManager::MaybeCreateActionItemForExtension(
               browser_))
           .SetText(base::UTF8ToUTF16(extension->short_name()))
           .SetActionId(extension_action_id)
-          .SetProperty(actions::kActionItemPinnableKey, true)
+          .SetProperty(actions::kActionItemPinnableKey,
+                       std::underlying_type_t<actions::ActionPinnableState>(
+                           actions::ActionPinnableState::kPinnable))
           .Build());
 }
 
@@ -189,35 +154,22 @@ void ExtensionSidePanelManager::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UnloadedExtensionReason reason) {
-  coordinators_.erase(extension->id());
+  auto it = coordinators_.find(extension->id());
+  if (it != coordinators_.end()) {
+    it->second->DeregisterEntry();
+    coordinators_.erase(extension->id());
+  }
   MaybeRemoveActionItemForExtension(extension);
-}
-
-void ExtensionSidePanelManager::OnRegistryDestroying(
-    SidePanelRegistry* registry) {
-  coordinators_.clear();
-  side_panel_registry_observation_.Reset();
-  registry_ = nullptr;
-}
-
-void ExtensionSidePanelManager::OnProfileWillBeDestroyed(Profile* profile) {
-  // Destroy all coordinators, since no functionality should remain once there's
-  // no profile.
-  coordinators_.clear();
-
-  CHECK_EQ(profile_, profile);
-  profile_observation_.Reset();
-  profile_ = nullptr;
 }
 
 void ExtensionSidePanelManager::MaybeCreateExtensionSidePanelCoordinator(
     const Extension* extension) {
   if (extension->permissions_data()->HasAPIPermission(
           mojom::APIPermissionID::kSidePanel)) {
-    coordinators_.emplace(
-        extension->id(),
-        std::make_unique<ExtensionSidePanelCoordinator>(
-            profile_, browser_, web_contents_, extension, registry_));
+    coordinators_.emplace(extension->id(),
+                          std::make_unique<ExtensionSidePanelCoordinator>(
+                              profile_, browser_, tab_interface_, extension,
+                              registry_, for_tab_));
   }
 }
 

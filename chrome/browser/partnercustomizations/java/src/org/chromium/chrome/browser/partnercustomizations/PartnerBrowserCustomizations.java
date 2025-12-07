@@ -6,10 +6,7 @@ package org.chromium.chrome.browser.partnercustomizations;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
-import android.os.SystemClock;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -17,11 +14,13 @@ import org.jni_zero.CalledByNative;
 import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.version_info.VersionInfo;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -35,11 +34,12 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /** Reads and caches partner browser customizations information if it exists. */
+@NullMarked
 public class PartnerBrowserCustomizations {
     private static final String TAG = "PartnerCustomize";
-    private static final String PROVIDER_AUTHORITY = "com.android.partnerbrowsercustomizations";
 
     /** Default timeout in ms for reading PartnerBrowserCustomizations provider. */
     private static final int DEFAULT_TIMEOUT_MS = 10_000;
@@ -54,12 +54,9 @@ public class PartnerBrowserCustomizations {
     @VisibleForTesting
     static final String PARTNER_DISABLE_INCOGNITO_MODE_PATH = "disableincognitomode";
 
-    private static Boolean sIgnoreSystemPackageCheck;
-    private static Boolean sValid;
+    private static volatile @Nullable PartnerBrowserCustomizations sInstance;
 
-    private static volatile PartnerBrowserCustomizations sInstance;
-
-    private volatile GURL mHomepage;
+    private volatile @Nullable GURL mHomepage;
     private volatile boolean mIncognitoModeDisabled;
     private volatile boolean mBookmarksEditingDisabled;
     private @Nullable Boolean mIsInitialized;
@@ -72,7 +69,7 @@ public class PartnerBrowserCustomizations {
     private @Nullable PartnerCustomizationsUma mPartnerCustomizationsUma;
 
     private final List<Runnable> mInitializeAsyncCallbacks;
-    private PartnerHomepageListener mListener;
+    private @Nullable PartnerHomepageListener mListener;
 
     /** Provider of partner customizations. */
     public interface Provider extends CustomizationProviderDelegate {}
@@ -82,11 +79,16 @@ public class PartnerBrowserCustomizations {
         CustomizationProviderDelegate mDelegate;
 
         public ProviderPackage() {
-            mDelegate = new CustomizationProviderDelegateImpl();
+            CustomizationProviderDelegate delegate =
+                    ServiceLoaderUtil.maybeCreate(CustomizationProviderDelegate.class);
+            if (delegate == null) {
+                delegate = new CustomizationProviderDelegateUpstreamImpl();
+            }
+            mDelegate = delegate;
         }
 
         @Override
-        public String getHomepage() {
+        public @Nullable String getHomepage() {
             return mDelegate.getHomepage();
         }
 
@@ -199,9 +201,8 @@ public class PartnerBrowserCustomizations {
         mIsInitialized = false;
         // Setup an initializing async task.
         final AsyncTask<Void> initializeAsyncTask =
-                new AsyncTask<Void>() {
+                new AsyncTask<>() {
                     private boolean mHomepageUriChanged;
-                    private long mStartTime = SystemClock.elapsedRealtime();
 
                     @Override
                     protected Void doInBackground() {
@@ -219,8 +220,13 @@ public class PartnerBrowserCustomizations {
                             }
 
                             if (isCancelled()) return null;
-                            CustomizationProviderDelegateImpl delegate =
-                                    new CustomizationProviderDelegateImpl();
+
+                            CustomizationProviderDelegate delegate =
+                                    ServiceLoaderUtil.maybeCreate(
+                                            CustomizationProviderDelegate.class);
+                            if (delegate == null) {
+                                delegate = new CustomizationProviderDelegateUpstreamImpl();
+                            }
 
                             // Refresh the homepage first, as it has potential impact on the URL to
                             // use for the initial tab.
@@ -246,7 +252,7 @@ public class PartnerBrowserCustomizations {
                     }
 
                     @Override
-                    protected void onCancelled(Void result) {
+                    protected void onCancelled(@Nullable Void result) {
                         partnerCustomizationsUma.logAsyncInitCancelled();
                         onFinalized();
                     }
@@ -288,8 +294,8 @@ public class PartnerBrowserCustomizations {
      */
     public void onCreateInitialTab(
             @Nullable String homepageUrlCreated,
-            @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            @NonNull Supplier<HomepageCharacterizationHelper> homepageCharacterizationHelper) {
+            ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            Supplier<HomepageCharacterizationHelper> homepageCharacterizationHelper) {
         if (mPartnerCustomizationsUma != null) {
             mPartnerCustomizationsUma.onCreateInitialTab(
                     isInitialized(),
@@ -398,6 +404,7 @@ public class PartnerBrowserCustomizations {
 
     private void destroyInternal() {
         mInitializeAsyncCallbacks.clear();
+        mPartnerCustomizationsUma = null;
         mListener = null;
     }
 
@@ -405,7 +412,7 @@ public class PartnerBrowserCustomizations {
      * @return Home page URL from Android provider. If null, that means either there is no homepage
      * provider or provider set it to null to disable homepage.
      */
-    public GURL getHomePageUrl() {
+    public @Nullable GURL getHomePageUrl() {
         CommandLine commandLine = CommandLine.getInstance();
         if (commandLine.hasSwitch(ChromeSwitches.PARTNER_HOMEPAGE_FOR_TESTING)) {
             return new GURL(

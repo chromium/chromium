@@ -9,17 +9,17 @@
 
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "base/types/expected.h"
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_tachyon_authed_client.h"
 #include "chromeos/ash/components/boca/babelorca/proto/tachyon.pb.h"
-#include "chromeos/ash/components/boca/babelorca/response_callback_wrapper.h"
-#include "testing/gmock/include/gmock/gmock.h"
+#include "chromeos/ash/components/boca/babelorca/tachyon_response.h"
+#include "net/base/net_errors.h"
+#include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::babelorca {
 
-constexpr char kDeviceId[] = "device-id";
-constexpr char kTachyonToken[] = "tachyon-token";
+const std::string kClientUuid = "client-uuid";
+const std::string kTachyonToken = "tachyon-token";
 
 TEST(TachyonRegistrarTest, SuccessfulRegistration) {
   base::test::TaskEnvironment task_env;
@@ -27,15 +27,19 @@ TEST(TachyonRegistrarTest, SuccessfulRegistration) {
   FakeTachyonAuthedClient authed_client;
   TachyonRegistrar registrar(&authed_client);
 
-  registrar.Register(kDeviceId, test_future.GetCallback());
+  registrar.Register(kClientUuid, test_future.GetCallback());
   SignInGaiaResponse signin_response;
   signin_response.mutable_auth_token()->set_payload(kTachyonToken);
-  authed_client.ExecuteResponseCallback(signin_response.SerializeAsString());
+  authed_client.ExecuteResponseCallback(
+      TachyonResponse(net::OK, net::HttpStatusCode::HTTP_OK,
+                      signin_response.SerializeAsString()));
 
   EXPECT_TRUE(test_future.Get());
-  std::optional<std::string> tachyon_token = registrar.GetTachyonToken();
-  ASSERT_TRUE(tachyon_token.has_value());
-  EXPECT_THAT(tachyon_token.value(), testing::StrEq(kTachyonToken));
+  ASSERT_TRUE(registrar.GetTachyonToken().has_value());
+  EXPECT_EQ(registrar.GetTachyonToken().value(), kTachyonToken);
+
+  registrar.ResetToken();
+  EXPECT_FALSE(registrar.GetTachyonToken().has_value());
 }
 
 TEST(TachyonRegistrarTest, FailedRegistration) {
@@ -44,9 +48,9 @@ TEST(TachyonRegistrarTest, FailedRegistration) {
   FakeTachyonAuthedClient authed_client;
   TachyonRegistrar registrar(&authed_client);
 
-  registrar.Register(kDeviceId, test_future.GetCallback());
-  authed_client.ExecuteResponseCallback(base::unexpected(
-      ResponseCallbackWrapper::TachyonRequestError::kHttpError));
+  registrar.Register(kClientUuid, test_future.GetCallback());
+  authed_client.ExecuteResponseCallback(
+      TachyonResponse(TachyonResponse::Status::kHttpError));
 
   EXPECT_FALSE(test_future.Get());
   std::optional<std::string> tachyon_token = registrar.GetTachyonToken();

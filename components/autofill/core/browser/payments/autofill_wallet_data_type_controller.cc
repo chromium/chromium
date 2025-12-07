@@ -27,11 +27,13 @@ AutofillWalletDataTypeController::AutofillWalletDataTypeController(
                          std::move(delegate_for_transport_mode)),
       pref_service_(pref_service),
       sync_service_(sync_service) {
-  DCHECK(type == syncer::AUTOFILL_WALLET_CREDENTIAL ||
-         type == syncer::AUTOFILL_WALLET_DATA ||
-         type == syncer::AUTOFILL_WALLET_METADATA ||
-         type == syncer::AUTOFILL_WALLET_OFFER ||
-         type == syncer::AUTOFILL_WALLET_USAGE);
+  CHECK(type == syncer::AUTOFILL_WALLET_CREDENTIAL ||
+        type == syncer::AUTOFILL_WALLET_DATA ||
+        type == syncer::AUTOFILL_WALLET_METADATA ||
+        type == syncer::AUTOFILL_WALLET_OFFER ||
+        type == syncer::AUTOFILL_WALLET_USAGE);
+  CHECK(pref_service);
+  CHECK(sync_service);
   SubscribeToPrefChanges();
   sync_service_->AddObserver(this);
 }
@@ -75,6 +77,11 @@ void AutofillWalletDataTypeController::OnStateChanged(
     syncer::SyncService* sync) {
   DCHECK(CalledOnValidThread());
   sync_service_->DataTypePreconditionChanged(type());
+}
+
+void AutofillWalletDataTypeController::OnSyncShutdown(
+    syncer::SyncService* sync) {
+  // Nothing to be done, `this` will be destructed imminently.
 }
 
 }  // namespace browser_sync

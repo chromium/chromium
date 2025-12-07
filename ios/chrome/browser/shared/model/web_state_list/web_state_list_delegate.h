@@ -30,6 +30,11 @@ class WebStateListDelegate {
   // Notifies the delegate that the specified WebState will become active
   // and allows it to do any preparation that it deems necessary.
   virtual void WillActivateWebState(web::WebState* web_state) = 0;
+
+  // Notifies the delegate that the specified WebState will be removed from
+  // the WebStateList (via detaching/closing/replacing existing) and allows
+  // it to do any cleanup that it deems necessary.
+  virtual void WillRemoveWebState(web::WebState* web_state) = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_WEB_STATE_LIST_DELEGATE_H_

@@ -21,10 +21,12 @@ action("precompile_templates") {
     "$mojom_generator_root/generators/cpp_templates/interface_request_validator_declaration.tmpl",
     "$mojom_generator_root/generators/cpp_templates/interface_response_validator_declaration.tmpl",
     "$mojom_generator_root/generators/cpp_templates/interface_stub_declaration.tmpl",
+    "$mojom_generator_root/generators/cpp_templates/module-data-view.h.tmpl",
     "$mojom_generator_root/generators/cpp_templates/module-features.h.tmpl",
     "$mojom_generator_root/generators/cpp_templates/module-forward.h.tmpl",
     "$mojom_generator_root/generators/cpp_templates/module-import-headers.h.tmpl",
     "$mojom_generator_root/generators/cpp_templates/module-params-data.h.tmpl",
+    "$mojom_generator_root/generators/cpp_templates/module-send-validation.h.tmpl",
     "$mojom_generator_root/generators/cpp_templates/module-shared-internal.h.tmpl",
     "$mojom_generator_root/generators/cpp_templates/module-shared-message-ids.h.tmpl",
     "$mojom_generator_root/generators/cpp_templates/module-shared.cc.tmpl",
@@ -32,6 +34,7 @@ action("precompile_templates") {
     "$mojom_generator_root/generators/cpp_templates/module-test-utils.h.tmpl",
     "$mojom_generator_root/generators/cpp_templates/module.cc.tmpl",
     "$mojom_generator_root/generators/cpp_templates/module.h.tmpl",
+    "$mojom_generator_root/generators/cpp_templates/send_validation_macros.tmpl",
     "$mojom_generator_root/generators/cpp_templates/struct_data_view_declaration.tmpl",
     "$mojom_generator_root/generators/cpp_templates/struct_data_view_definition.tmpl",
     "$mojom_generator_root/generators/cpp_templates/struct_declaration.tmpl",
@@ -45,6 +48,7 @@ action("precompile_templates") {
     "$mojom_generator_root/generators/cpp_templates/union_data_view_definition.tmpl",
     "$mojom_generator_root/generators/cpp_templates/union_declaration.tmpl",
     "$mojom_generator_root/generators/cpp_templates/union_definition.tmpl",
+    "$mojom_generator_root/generators/cpp_templates/union_macros.tmpl",
     "$mojom_generator_root/generators/cpp_templates/union_serialization_declaration.tmpl",
     "$mojom_generator_root/generators/cpp_templates/union_traits_declaration.tmpl",
     "$mojom_generator_root/generators/cpp_templates/union_traits_definition.tmpl",
@@ -97,6 +101,7 @@ action("precompile_templates") {
     "$mojom_generator_root/generators/rust_templates/module.tmpl",
     "$mojom_generator_root/generators/rust_templates/struct.tmpl",
     "$mojom_generator_root/generators/rust_templates/union.tmpl",
+    "$mojom_generator_root/generators/ts_templates/converter_interface_declarations.tmpl",
     "$mojom_generator_root/generators/ts_templates/enum_definition.tmpl",
     "$mojom_generator_root/generators/ts_templates/interface_definition.tmpl",
     "$mojom_generator_root/generators/ts_templates/module_definition.tmpl",
@@ -111,8 +116,8 @@ action("precompile_templates") {
     "$target_gen_dir/java_templates.zip",
     "$target_gen_dir/js_templates.zip",
     "$target_gen_dir/mojolpm_templates.zip",
-    "$target_gen_dir/rust_templates.zip",
     "$target_gen_dir/ts_templates.zip",
+    "$target_gen_dir/rust_templates.zip",
   ]
   args = [
     "-o",
@@ -126,10 +131,10 @@ group("tests") {
   data = [
     mojom_generator_script,
     "checks/mojom_attributes_check_unittest.py",
+    "checks/mojom_interface_direct_receiver_check_unittest.py",
     "checks/mojom_interface_feature_check_unittest.py",
     "checks/mojom_restrictions_checks_unittest.py",
     "mojom_bindings_generator_unittest.py",
-    "//tools/diagnosis/crbug_1001171.py",
     "//third_party/markupsafe/",
   ]
   data += mojom_generator_sources

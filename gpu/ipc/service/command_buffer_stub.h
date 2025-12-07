@@ -26,13 +26,13 @@
 #include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/gpu_memory_allocation.h"
-#include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/command_buffer_service.h"
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/decoder_client.h"
 #include "gpu/command_buffer/service/program_cache.h"
 #include "gpu/command_buffer/service/scheduler_task_runner.h"
 #include "gpu/command_buffer/service/sequence_id.h"
+#include "gpu/command_buffer/service/task_graph.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/service/context_url.h"
@@ -40,12 +40,11 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/shared_associated_remote.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 #include "ui/gfx/swap_result.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gpu_preference.h"
-#include "url/gurl.h"
 
 namespace gpu {
 class DecoderContext;
@@ -53,7 +52,6 @@ class MemoryTracker;
 struct SyncToken;
 struct WaitForCommandState;
 class GpuChannel;
-class SyncPointClientState;
 
 // CommandBufferStub is a base class for different CommandBuffer backends
 // (e.g. GLES2, Raster, WebGPU) within the GPU service. Each instance lives on
@@ -102,7 +100,6 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   // CommandBufferStub current, so the GpuChannel can initialize
   // the gpu::Capabilities.
   virtual gpu::ContextResult Initialize(
-      CommandBufferStub* share_group,
       const mojom::CreateCommandBufferParams& params,
       base::UnsafeSharedMemoryRegion shared_state_shm) = 0;
 
@@ -118,8 +115,8 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   virtual base::WeakPtr<CommandBufferStub> AsWeakPtr() = 0;
 
   // Executes a DeferredRequest routed to this command buffer by a GpuChannel.
-  void ExecuteDeferredRequest(
-      mojom::DeferredCommandBufferRequestParams& params);
+  void ExecuteDeferredRequest(mojom::DeferredCommandBufferRequestParams& params,
+                              FenceSyncReleaseDelegate* release_delegate);
 
   // Instructs the CommandBuffer to wait asynchronously until the reader has
   // updated the token value to be within the [start, end] range (inclusive).
@@ -154,9 +151,10 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   void OnRescheduleAfterFinished() override;
   void ScheduleGrContextCleanup() override;
   void HandleReturnData(base::span<const uint8_t> data) override;
+  bool ShouldYield() override;
 
   using MemoryTrackerFactory =
-      base::RepeatingCallback<std::unique_ptr<MemoryTracker>()>;
+      base::RepeatingCallback<scoped_refptr<MemoryTracker>()>;
 
   // Overrides the way CreateMemoryTracker() uses to create a MemoryTracker.
   // This is intended for mocking the MemoryTracker in tests.
@@ -183,7 +181,7 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
 
   gl::GLSurface* surface() const { return surface_.get(); }
 
-  ContextType context_type() const { return context_type_; }
+  bool has_stateful_context() const { return has_stateful_context_; }
 
   void AddDestructionObserver(DestructionObserver* observer);
   void RemoveDestructionObserver(DestructionObserver* observer);
@@ -229,13 +227,7 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   void SignalSyncToken(const SyncToken& sync_token, uint32_t id) override;
   void SignalQuery(uint32_t query, uint32_t id) override;
 
-  virtual void OnSetDefaultFramebufferSharedImage(const Mailbox& mailbox,
-                                                  int samples_count,
-                                                  bool preserve,
-                                                  bool needs_depth,
-                                                  bool needs_stencil) {}
-
-  std::unique_ptr<MemoryTracker> CreateMemoryTracker() const;
+  scoped_refptr<MemoryTracker> CreateMemoryTracker() const;
 
   // Must be called during Initialize(). Takes ownership to co-ordinate
   // teardown in Destroy().
@@ -249,26 +241,15 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
 
   bool MakeCurrent();
 
-  bool offscreen() const {
-#if BUILDFLAG(IS_ANDROID)
-    return offscreen_;
-#else
-    return true;
-#endif
-  }
-
   // The lifetime of objects of this class is managed by a GpuChannel. The
   // GpuChannels destroy all the CommandBufferStubs that they own when
   // they are destroyed. So a raw pointer is safe.
   const raw_ptr<GpuChannel> channel_;
 
-  ContextType context_type_;
   ContextUrl active_url_;
+  std::string context_label_;
 
   bool initialized_;
-#if BUILDFLAG(IS_ANDROID)
-  const bool offscreen_;
-#endif
   bool use_virtualized_gl_context_;
 
   std::unique_ptr<CommandBufferService> command_buffer_;
@@ -277,10 +258,10 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   // ensure that the memory tracker outlives the objects that uses it, for
   // example the ContextGroup referenced both in the Decoder and the
   // CommandBufferStub.
-  std::unique_ptr<gpu::MemoryTracker> memory_tracker_;
+  scoped_refptr<MemoryTracker> memory_tracker_;
 
   scoped_refptr<gl::GLSurface> surface_;
-  scoped_refptr<SyncPointClientState> sync_point_client_state_;
+  ScopedSyncPointClientState scoped_sync_point_client_state_;
   scoped_refptr<gl::GLShareGroup> share_group_;
 
   const CommandBufferId command_buffer_id_;
@@ -347,6 +328,14 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
 
   mojo::AssociatedReceiver<mojom::CommandBuffer> receiver_{this};
   mojo::SharedAssociatedRemote<mojom::CommandBufferClient> client_;
+
+  // Indicates whether this context holds state and are needed to be notified if
+  // we discard this context to reclaim the memory.
+  const bool has_stateful_context_;
+
+  // Caching the `release_delegate` argument of ExecuteDeferredRequest() during
+  // the call.
+  raw_ptr<FenceSyncReleaseDelegate> release_delegate_ = nullptr;
 };
 
 }  // namespace gpu

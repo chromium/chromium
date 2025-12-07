@@ -4,6 +4,7 @@
 
 #include "ash/wm/workspace/backdrop_controller.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller.h"
@@ -25,7 +26,6 @@
 #include "base/auto_reset.h"
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/audio/sounds.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/layer.h"
@@ -127,7 +127,7 @@ bool InOverviewSession() {
 aura::Window* GetBottomMostSnappedWindowForDeskContainer(
     aura::Window* desk_container) {
   DCHECK(desks_util::IsDeskContainer(desk_container));
-  DCHECK(display::Screen::GetScreen()->InTabletMode());
+  DCHECK(display::Screen::Get()->InTabletMode());
 
   // For the active desk, only use the windows snapped in SplitViewController if
   // SplitView mode is active.
@@ -501,7 +501,7 @@ bool BackdropController::WindowShouldHaveBackdrop(aura::Window* window) {
     return false;
   }
 
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     return false;
   }
 
@@ -568,7 +568,7 @@ void BackdropController::Hide(bool destroy, bool animate) {
   base::AutoReset<bool> lock(&is_hiding_backdrop_, true);
 
   const aura::Window::Windows windows = container_->children();
-  auto window_iter = base::ranges::find(windows, backdrop_window_);
+  auto window_iter = std::ranges::find(windows, backdrop_window_);
   ++window_iter;
   if (window_iter != windows.end()) {
     aura::Window* window_above_backdrop = *window_iter;

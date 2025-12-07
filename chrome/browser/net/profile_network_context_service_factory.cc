@@ -6,16 +6,33 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/net/profile_network_context_service.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ssl/sct_reporting_service_factory.h"
+#include "chrome/browser/webid/federated_identity_permission_context_factory.h"
+#include "chrome/common/buildflags.h"
 #include "crypto/crypto_buildflags.h"
 
 #if BUILDFLAG(USE_NSS_CERTS)
 #include "chrome/browser/net/nss_service_factory.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
+#include "chrome/browser/policy/networking/policy_cert_service_factory.h"
+#endif
+
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+#include "chrome/browser/net/server_certificate_database_service_factory.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/enterprise/client_certificates/certificate_provisioning_service_factory.h"
 #endif
 
 ProfileNetworkContextService*
@@ -51,9 +68,25 @@ ProfileNetworkContextServiceFactory::ProfileNetworkContextServiceFactory()
   // requested.
   DependsOn(NssServiceFactory::GetInstance());
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+  DependsOn(policy::PolicyCertServiceFactory::GetInstance());
   DependsOn(chromeos::CertificateProviderServiceFactory::GetInstance());
 #endif
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+  DependsOn(net::ServerCertificateDatabaseServiceFactory::GetInstance());
+#endif
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  DependsOn(client_certificates::CertificateProvisioningServiceFactory::
+                GetInstance());
+#endif
+  DependsOn(CookieSettingsFactory::GetInstance());
+  DependsOn(HostContentSettingsMapFactory::GetInstance());
+  DependsOn(TrackingProtectionSettingsFactory::GetInstance());
+  DependsOn(PrivacySandboxSettingsFactory::GetInstance());
+  DependsOn(FederatedIdentityPermissionContextFactory::GetInstance());
+  DependsOn(
+      first_party_sets::FirstPartySetsPolicyServiceFactory::GetInstance());
+  DependsOn(SCTReportingServiceFactory::GetInstance());
 }
 
 ProfileNetworkContextServiceFactory::~ProfileNetworkContextServiceFactory() =

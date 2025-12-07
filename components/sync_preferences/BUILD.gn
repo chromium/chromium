@@ -2,8 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/features.gni")
+source_set("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+  deps = [ "//base" ]
+}
 
 static_library("sync_preferences") {
   sources = [
@@ -27,15 +32,15 @@ static_library("sync_preferences") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//components/metrics/demographics",
     "//components/policy/core/browser",
     "//components/pref_registry",
     "//components/prefs",
+    "//components/signin/public/base",
     "//components/sync",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//ash/constants" ]
   }
 }
@@ -53,18 +58,22 @@ source_set("common_syncable_prefs_database") {
     "//components/browsing_data/core",
     "//components/commerce/core:pref_names",
     "//components/content_settings/core/common",
+    "//components/desktop_to_mobile_promos",
     "//components/dom_distiller/core",
     "//components/language/core/browser",
     "//components/metrics",
     "//components/metrics/demographics",
     "//components/ntp_tiles",
+    "//components/ntp_tiles:pref_names",
     "//components/omnibox/browser",
     "//components/password_manager/core/common",
     "//components/payments/core",
+    "//components/plus_addresses/core/common:prefs",
+    "//components/privacy_sandbox:tracking_protection_prefs",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
-    "//components/saved_tab_groups:model",
-    "//components/search_engines",
+    "//components/saved_tab_groups/public",
     "//components/sharing_message",
+    "//components/sync_preferences/cross_device_pref_tracker/prefs",
     "//components/translate/core/browser",
     "//components/variations/service",
   ]
@@ -103,7 +112,6 @@ source_set("unit_tests") {
     ":sync_preferences",
     ":test_support",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/pref_registry",
     "//components/prefs",
     "//components/prefs:test_support",
@@ -112,7 +120,11 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//ash/constants" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

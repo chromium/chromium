@@ -26,6 +26,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/widget/widget.h"
@@ -123,7 +124,7 @@ CameraPreviewView::CameraPreviewView(
 
   resize_button_->SetPaintToLayer();
   resize_button_->layer()->SetFillsBoundsOpaquely(false);
-  resize_button_->SetBackground(views::CreateThemedRoundedRectBackground(
+  resize_button_->SetBackground(views::CreateRoundedRectBackground(
       kColorAshShieldAndBase80,
       resize_button_->GetPreferredSize().height() / 2.f));
 

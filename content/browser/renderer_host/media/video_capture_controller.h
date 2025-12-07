@@ -20,16 +20,14 @@
 #include "content/browser/renderer_host/media/video_capture_provider.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/video_capture_device_launcher.h"
-#include "media/capture/mojom/video_capture.mojom.h"
-#include "media/capture/mojom/video_capture_types.mojom.h"
+#include "media/capture/mojom/video_capture_types.mojom-forward.h"
 #include "media/capture/video/video_frame_receiver.h"
 #include "media/capture/video_capture_types.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
-#include "third_party/blink/public/common/media/video_capture.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
 namespace content {
+
+struct GlobalRenderFrameHostId;
 
 class VideoCaptureDeviceLaunchObserver;
 
@@ -64,9 +62,11 @@ class CONTENT_EXPORT VideoCaptureController
   // Buffers will be shared to the client as necessary. The client will continue
   // to receive frames from the device until RemoveClient() is called.
   void AddClient(const VideoCaptureControllerID& id,
+                 const GlobalRenderFrameHostId& render_frame_host_id,
                  VideoCaptureControllerEventHandler* event_handler,
                  const media::VideoCaptureSessionId& session_id,
-                 const media::VideoCaptureParams& params);
+                 const media::VideoCaptureParams& params,
+                 std::optional<url::Origin> origin);
 
   // Stop video capture. This will take back all buffers held by
   // |event_handler|, and |event_handler| shouldn't use those buffers any more.
@@ -109,6 +109,8 @@ class CONTENT_EXPORT VideoCaptureController
 
   bool has_received_frames() const { return has_received_frames_; }
 
+  const std::optional<url::Origin> GetFirstClientOrigin() const;
+
   // Implementation of media::VideoFrameReceiver interface:
   void OnCaptureConfigurationChanged() override;
   void OnNewBuffer(int32_t buffer_id,
@@ -117,8 +119,7 @@ class CONTENT_EXPORT VideoCaptureController
   void OnBufferRetired(int buffer_id) override;
   void OnError(media::VideoCaptureError error) override;
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason) override;
-  void OnNewSubCaptureTargetVersion(
-      uint32_t sub_capture_target_version) override;
+  void OnNewCaptureVersion(media::CaptureVersion capture_version) override;
   void OnFrameWithEmptyRegionCapture() override;
   void OnLog(const std::string& message) override;
   void OnStarted() override;
@@ -133,12 +134,9 @@ class CONTENT_EXPORT VideoCaptureController
 
   void OnDeviceConnectionLost();
 
-  void CreateAndStartDeviceAsync(
-      const media::VideoCaptureParams& params,
-      VideoCaptureDeviceLaunchObserver* callbacks,
-      base::OnceClosure done_cb,
-      mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
-          video_effects_processor);
+  void CreateAndStartDeviceAsync(const media::VideoCaptureParams& params,
+                                 VideoCaptureDeviceLaunchObserver* callbacks,
+                                 base::OnceClosure done_cb);
   void ReleaseDeviceAsync(base::OnceClosure done_cb);
   bool IsDeviceAlive() const;
   void GetPhotoState(
@@ -219,16 +217,17 @@ class CONTENT_EXPORT VideoCaptureController
         buffer_read_permission_;
   };
 
+  // `kError` is an absorbing state which stops the flow of data to clients.
+  enum class State { kStarting, kStarted, kError };
+
   ~VideoCaptureController() override;
 
-  // Find a client of |id| and |handler| in |clients|.
+  // Find a client of |id| and |handler| in |controller_clients_|.
   ControllerClient* FindClient(const VideoCaptureControllerID& id,
-                               VideoCaptureControllerEventHandler* handler,
-                               const ControllerClients& clients);
+                               VideoCaptureControllerEventHandler* handler);
 
-  // Find a client of |session_id| in |clients|.
-  ControllerClient* FindClient(const base::UnguessableToken& session_id,
-                               const ControllerClients& clients);
+  // Find a client of |session_id| in |controller_clients_|.
+  ControllerClient* FindClient(const base::UnguessableToken& session_id);
 
   std::vector<BufferContext>::iterator FindBufferContextFromBufferContextId(
       int buffer_context_id);
@@ -273,9 +272,7 @@ class CONTENT_EXPORT VideoCaptureController
   // All clients served by this controller.
   ControllerClients controller_clients_;
 
-  // Takes on only the states 'STARTING', 'STARTED' and 'ERROR'. 'ERROR' is an
-  // absorbing state which stops the flow of data to clients.
-  blink::VideoCaptureState state_;
+  State state_ = State::kStarting;
 
   int next_buffer_context_id_ = 0;
 
@@ -284,6 +281,8 @@ class CONTENT_EXPORT VideoCaptureController
   base::TimeTicks time_of_start_request_;
 
   std::optional<media::VideoCaptureFormat> video_capture_format_;
+
+  std::optional<url::Origin> first_client_origin_;
 
   // As a work-around to technical limitations, we don't allow multiple
   // captures of the same tab, by the same capturer, if the first capturer

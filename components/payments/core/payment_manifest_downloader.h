@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "url/gurl.h"
@@ -139,8 +139,7 @@ class PaymentManifestDownloader {
   // Information about an ongoing download request.
   struct Download {
     enum class Type {
-      LINK_HEADER_WITH_FALLBACK_TO_RESPONSE_BODY,
-      FALLBACK_TO_RESPONSE_BODY,
+      LINK_HEADER,
       RESPONSE_BODY,
     };
 
@@ -174,7 +173,7 @@ class PaymentManifestDownloader {
 
   // Called by SimpleURLLoader on completion.
   void OnURLLoaderComplete(network::SimpleURLLoader* url_loader,
-                           std::unique_ptr<std::string> response_body);
+                           std::optional<std::string> response_body);
 
   // Internally called by OnURLLoaderComplete, exposed to ease unit tests.
   void OnURLLoaderCompleteInternal(
@@ -183,10 +182,6 @@ class PaymentManifestDownloader {
       const std::string& response_body,
       scoped_refptr<net::HttpResponseHeaders> headers,
       int net_error);
-
-  void TryFallbackToDownloadingResponseBody(
-      const GURL& url_to_download,
-      std::unique_ptr<Download> download_info);
 
   // Called by unittests to get the one in-progress loader.
   network::SimpleURLLoader* GetLoaderForTesting();

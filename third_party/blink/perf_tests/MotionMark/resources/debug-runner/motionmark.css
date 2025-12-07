@@ -287,9 +287,8 @@ label.tree-label {
     color: rgb(235, 235, 235);
 }
 
-#drop-target:hover {
+#drop-target.drag-over {
     background-color: rgba(255, 255, 255, .1);
-    cursor: pointer;
 }
 
 #options ul {
@@ -571,10 +570,6 @@ body.showing-test-container.tiles-classic {
     flex-direction: row;
 }
 
-#test-graph {
-    flex: 1 0 calc(100% - 40px);
-}
-
 #test-graph h1 {
     margin-bottom: 0;
 }
@@ -627,7 +622,29 @@ body.showing-test-container.tiles-classic {
 /*                           Graph Section                                    */
 /* -------------------------------------------------------------------------- */
 
+body.showing-test-graph {
+    height: 100vh;
+}
+
+body.showing-test-graph main, #test-graph {
+    height: 100%;
+}
+
+body.showing-test-graph header, body.showing-test-graph nav {
+    flex-basis: auto;
+}
+
+#test-graph .body {
+    display: flex;
+    flex-direction: column;
+    margin-trim: block-start;
+    margin: 1em;
+    height: calc(100% - 2em);
+}
+
 #test-graph-data {
+    flex-grow: 1;
+    min-height: 0;
     z-index: 1;
     font: 10px sans-serif;
     color: rgb(235, 235, 235);
@@ -635,7 +652,7 @@ body.showing-test-container.tiles-classic {
 
 #test-graph-data > svg {
     fill: none;
-    overflow: visible;
+/*    overflow: hidden;*/
 }
 
 .axis path,
@@ -773,6 +790,10 @@ body.showing-test-container.tiles-classic {
 #complexity-graph .raw.series line {
     stroke: hsla(30, 96%, 56%, .3);
     stroke-width: 1px;
+}
+
+#complexity-graph .raw.series line.mutation {
+    stroke: rgba(255, 255, 255, .15);
 }
 
 #complexity-graph .raw.regression line {

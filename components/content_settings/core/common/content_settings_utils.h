@@ -6,6 +6,7 @@
 #define COMPONENTS_CONTENT_SETTINGS_CORE_COMMON_CONTENT_SETTINGS_UTILS_H_
 
 #include <memory>
+#include <optional>
 
 #include "components/content_settings/core/common/content_settings.h"
 
@@ -17,6 +18,11 @@ namespace content_settings {
 
 // Converts |value| to |ContentSetting|.
 ContentSetting ValueToContentSetting(const base::Value& value);
+
+// Converts |value| to |ContentSetting| if value represents a valid content
+// setting.
+std::optional<ContentSetting> ParseContentSettingValue(
+    const base::Value& value);
 
 // Returns a base::Value representation of |setting| if |setting| is
 // a valid content setting. Otherwise, returns an empty value.
@@ -34,6 +40,12 @@ base::Value FromNullableUniquePtrValue(std::unique_ptr<base::Value> value);
 bool PatternAppliesToSingleOrigin(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern);
+
+// Converts a PermissionOption enum to a ContentSetting.
+ContentSetting ToContentSetting(PermissionOption option);
+
+// Converts a ContentSetting enum to a PermissionOption.
+PermissionOption ToPermissionOption(ContentSetting setting);
 
 }  // namespace content_settings
 

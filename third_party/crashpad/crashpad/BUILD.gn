@@ -34,7 +34,11 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
       "util:util_test",
     ]
 
-    data_deps = [ "//testing/buildbot/filters:crashpad_tests_filters" ]
+    data_deps = []
+
+    if (crashpad_is_in_chromium) {
+      data_deps += [ "//testing/buildbot/filters:crashpad_tests_filters" ]
+    }
 
     if (!crashpad_is_ios && !crashpad_is_fuchsia) {
       deps += [ "handler:handler_test" ]
@@ -42,12 +46,23 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
     if (crashpad_is_in_fuchsia) {
       # TODO(fuchsia:46559): Fix the leaks and remove this.
       deps += [ "//build/config/sanitizers:suppress-lsan.DO-NOT-USE-THIS" ]
+
       # TODO(fxbug.dev/42059784): Remove this once the underlying issue is
       # addressed.
       exclude_toolchain_tags = [ "hwasan" ]
     }
     if (crashpad_is_android) {
       use_raw_android_executable = true
+
+      # crbug.com/418874703 - This is a workaround to propagate the data deps to
+      # //:crashpad_tests__dist for Android build.
+      data_deps += [
+        "snapshot:crashpad_snapshot_test_both_dt_hash_styles",
+        "snapshot:crashpad_snapshot_test_module",
+        "snapshot:crashpad_snapshot_test_module_large",
+        "snapshot:crashpad_snapshot_test_module_small",
+        "test:crashpad_test_test_multiprocess_exec_test_child",
+      ]
 
       copy("crashpad_test_data") {
         testonly = true

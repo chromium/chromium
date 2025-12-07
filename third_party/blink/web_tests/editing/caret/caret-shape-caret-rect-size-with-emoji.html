@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="../../resources/testharness.js"></script>
+    <script src="../../resources/testharnessreport.js"></script>
+    <style>
+        body {
+            font: 20px/1 Ahem;
+        }
+
+        div#testBlock {
+            caret-shape: block;
+        }
+
+        div#testUnderscore {
+            caret-shape: underscore;
+        }
+    </style>
+</head>
+
+<body>
+    <p>Test that caret rect size should be obtained from the visible character, including emoji, after the insertion point for caret-shape:
+    block and caret-shape: underscore.</p>
+    <div id="testBlock" CONTENTEDITABLE>a&#128516;</div>
+    <div id="testUnderscore" CONTENTEDITABLE>a&#128516;</div>
+</body>
+<script>
+
+    test(function () {
+        assert_true(!!window.internals, "This test only works with internals exposed present");
+    }, "internals are exposed");
+
+    test(function () {
+        // caret-shape: block
+        var textNode1 = document.getElementById("testBlock").firstChild;
+        getSelection().collapse(textNode1, 0);
+
+        let rects_a1 = internals.absoluteCaretBounds();
+        getSelection().collapse(textNode1, 1);
+        let rects_emoji1 = internals.absoluteCaretBounds();
+        assert_equals(rects_a1.height, rects_emoji1.height);
+        assert_less_than(rects_a1.width, rects_emoji1.width, "caret-shape: block - emoji's width is larger");
+
+        // caret-shape: underscore
+        var textNode2 = document.getElementById("testUnderscore").firstChild;
+        getSelection().collapse(textNode2, 0);
+
+        let rects_a2 = internals.absoluteCaretBounds();
+        getSelection().collapse(textNode2, 1);
+        let rects_emoji2 = internals.absoluteCaretBounds();
+        assert_equals(rects_a2.height, rects_emoji2.height);
+        assert_less_than(rects_a2.width, rects_emoji2.width, "caret-shape: underscore - emoji's width is larger");
+    }, "Grapheme Cluster length of emoji is greater than the normal character");
+</script>
+
+</html>

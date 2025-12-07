@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "content/browser/fenced_frame/fenced_document_data.h"
+
+#include "base/functional/callback.h"
 #include "content/public/browser/document_user_data.h"
 
 namespace content {

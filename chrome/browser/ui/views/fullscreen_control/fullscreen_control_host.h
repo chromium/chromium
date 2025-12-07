@@ -12,6 +12,7 @@
 #include "ui/events/event_observer.h"
 
 class BrowserView;
+class ExclusiveAccessManager;
 
 namespace ui {
 class GestureEvent;
@@ -32,7 +33,8 @@ class EventMonitor;
 // requires user to press-and-hold ESC key to exit fullscreen.
 class FullscreenControlHost : public ui::EventObserver {
  public:
-  explicit FullscreenControlHost(BrowserView* browser_view);
+  FullscreenControlHost(BrowserView* browser_view,
+                        ExclusiveAccessManager* exclusive_access_manager);
 
   FullscreenControlHost(const FullscreenControlHost&) = delete;
   FullscreenControlHost& operator=(const FullscreenControlHost&) = delete;
@@ -52,6 +54,13 @@ class FullscreenControlHost : public ui::EventObserver {
   void Hide(bool animate);
 
   bool IsVisible() const;
+
+  // Called when entering fullscreen mode. Enables event monitoring.
+  void OnEnterFullscreen();
+
+  // Called when exiting fullscreen mode. Hides the popup and may disable event
+  // monitoring.
+  void OnExitFullscreen();
 
  private:
   friend class FullscreenControlViewTest;
@@ -83,6 +92,7 @@ class FullscreenControlHost : public ui::EventObserver {
   bool in_mouse_cooldown_mode_ = false;
 
   const raw_ptr<BrowserView> browser_view_;
+  const raw_ref<ExclusiveAccessManager> exclusive_access_manager_;
 
   std::unique_ptr<FullscreenControlPopup> fullscreen_control_popup_;
 

@@ -173,50 +173,51 @@ size_t WaitableEvent::WaitManyImpl(base::span<WaitableEvent*> raw_waitables) {
     }
 
     return triggered;
-  }
+  } else {
+    DCHECK_EQ(kPrimitive, PORT_SET);
 
-  DCHECK_EQ(kPrimitive, PORT_SET);
+    kern_return_t kr;
 
-  kern_return_t kr;
-  apple::ScopedMachPortSet port_set;
-  {
-    mach_port_t name;
-    kr = mach_port_allocate(mach_task_self(), MACH_PORT_RIGHT_PORT_SET, &name);
-    MACH_CHECK(kr == KERN_SUCCESS, kr) << "mach_port_allocate";
-    port_set.reset(name);
-  }
-
-  for (size_t i = 0; i < raw_waitables.size(); ++i) {
-    kr = mach_port_insert_member(mach_task_self(),
-                                 raw_waitables[i]->receive_right_->Name(),
-                                 port_set.get());
-    MACH_CHECK(kr == KERN_SUCCESS, kr) << "index " << i;
-  }
-
-  mach_msg_empty_rcv_t msg{};
-  // Wait on the port set. Only specify space enough for the header, to
-  // identify which port in the set is signaled. Otherwise, receiving from the
-  // port set may dequeue a message for a manual-reset event object, which
-  // would cause it to be reset.
-  kr = mach_msg(&msg.header,
-                MACH_RCV_MSG | MACH_RCV_LARGE | MACH_RCV_LARGE_IDENTITY,
-                /*send_size=*/0, sizeof(msg.header), port_set.get(),
-                /*timeout=*/0, /*notify=*/MACH_PORT_NULL);
-  MACH_CHECK(kr == MACH_RCV_TOO_LARGE, kr) << "mach_msg";
-
-  for (size_t i = 0; i < raw_waitables.size(); ++i) {
-    WaitableEvent* event = raw_waitables[i];
-    if (msg.header.msgh_local_port == event->receive_right_->Name()) {
-      if (event->policy_ == ResetPolicy::AUTOMATIC) {
-        // The message needs to be dequeued to reset the event.
-        PeekPort(msg.header.msgh_local_port, true);
-      }
-      return i;
+    apple::ScopedMachPortSet port_set;
+    {
+      mach_port_t name;
+      kr =
+          mach_port_allocate(mach_task_self(), MACH_PORT_RIGHT_PORT_SET, &name);
+      MACH_CHECK(kr == KERN_SUCCESS, kr) << "mach_port_allocate";
+      port_set.reset(name);
     }
-  }
 
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+    for (size_t i = 0; i < raw_waitables.size(); ++i) {
+      kr = mach_port_insert_member(mach_task_self(),
+                                   raw_waitables[i]->receive_right_->Name(),
+                                   port_set.get());
+      MACH_CHECK(kr == KERN_SUCCESS, kr) << "index " << i;
+    }
+
+    mach_msg_empty_rcv_t msg{};
+    // Wait on the port set. Only specify space enough for the header, to
+    // identify which port in the set is signaled. Otherwise, receiving from the
+    // port set may dequeue a message for a manual-reset event object, which
+    // would cause it to be reset.
+    kr = mach_msg(&msg.header,
+                  MACH_RCV_MSG | MACH_RCV_LARGE | MACH_RCV_LARGE_IDENTITY,
+                  /*send_size=*/0, sizeof(msg.header), port_set.get(),
+                  /*timeout=*/0, /*notify=*/MACH_PORT_NULL);
+    MACH_CHECK(kr == MACH_RCV_TOO_LARGE, kr) << "mach_msg";
+
+    for (size_t i = 0; i < raw_waitables.size(); ++i) {
+      WaitableEvent* event = raw_waitables[i];
+      if (msg.header.msgh_local_port == event->receive_right_->Name()) {
+        if (event->policy_ == ResetPolicy::AUTOMATIC) {
+          // The message needs to be dequeued to reset the event.
+          PeekPort(msg.header.msgh_local_port, true);
+        }
+        return i;
+      }
+    }
+
+    NOTREACHED();
+  }
 }
 
 // static

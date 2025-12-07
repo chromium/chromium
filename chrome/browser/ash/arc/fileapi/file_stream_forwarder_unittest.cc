@@ -32,7 +32,7 @@ namespace {
 
 class FileStreamForwarderTest : public testing::Test {
  public:
-  FileStreamForwarderTest() {}
+  FileStreamForwarderTest() = default;
 
   void SetUp() override {
     // Prepare a temporary directory and the destination file.

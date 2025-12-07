@@ -26,7 +26,7 @@ namespace apps {
 class DeviceInfoManagerTest : public testing::Test {
  public:
   void SetUp() override {
-    device_info_manager_ = std::make_unique<DeviceInfoManager>(&profile_);
+    device_info_manager_ = base::WrapUnique(new DeviceInfoManager(profile()));
   }
 
   Profile* profile() { return &profile_; }
@@ -38,11 +38,11 @@ class DeviceInfoManagerTest : public testing::Test {
   }
 
  private:
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
 
   std::unique_ptr<DeviceInfoManager> device_info_manager_;
-  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 };
 
 TEST_F(DeviceInfoManagerTest, CheckDeviceInfo) {

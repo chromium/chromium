@@ -13,9 +13,11 @@
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "media/base/audio_codecs.h"
+#include "media/base/picture_in_picture_events_info.h"
 #include "media/base/pipeline_status.h"
 #include "media/base/video_codecs.h"
 #include "media/mojo/mojom/watch_time_recorder.mojom.h"
+#include "media/mojo/services/media_metrics_provider.h"
 #include "media/mojo/services/media_mojo_export.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -24,10 +26,12 @@ namespace media {
 // See mojom::WatchTimeRecorder for documentation.
 class MEDIA_MOJO_EXPORT WatchTimeRecorder : public mojom::WatchTimeRecorder {
  public:
-  WatchTimeRecorder(mojom::PlaybackPropertiesPtr properties,
-                    ukm::SourceId source_id,
-                    bool is_top_frame,
-                    uint64_t player_id);
+  WatchTimeRecorder(
+      PictureInPictureEventsInfo::AutoPipReasonCallback auto_pip_reason_cb,
+      mojom::PlaybackPropertiesPtr properties,
+      ukm::SourceId source_id,
+      bool is_top_frame,
+      MediaPlayerUkmId player_id);
 
   WatchTimeRecorder(const WatchTimeRecorder&) = delete;
   WatchTimeRecorder& operator=(const WatchTimeRecorder&) = delete;
@@ -56,6 +60,25 @@ class MEDIA_MOJO_EXPORT WatchTimeRecorder : public mojom::WatchTimeRecorder {
   void RecordUkmPlaybackData();
   bool ShouldRecordUma() const;
 
+  // Records Auto Picture in Picture whatch time when appropriate. This watch
+  // time has a subtle caveat: the Auto Picture in Picture reason may change
+  // from the time the `WatchTimeReporter` tells `this` to record the watch time
+  // and when it gets to actually record the watch time.
+  //
+  // This can happen when entering/exiting Picture in Picture before retrieving
+  // the Auto Picture in Picture reason. In other words, although the
+  // `WatchTimeReporter` has assigned the watch time to a Picture in Picture
+  // display type, the Picture in Picture window can be opened/closed (and
+  // therefore change the Auto Picture in Picture reason) by the time the `this`
+  // receives the message.
+  void MaybeRecordWatchTimeForAutoPipReason(WatchTimeKey key,
+                                            base::TimeDelta watch_time);
+
+  PictureInPictureEventsInfo::AutoPipReasonCallback auto_pip_reason_cb_;
+
+  std::optional<PictureInPictureEventsInfo::AutoPipReason>
+      current_auto_pip_reason_ = std::nullopt;
+
   const mojom::PlaybackPropertiesPtr properties_;
 
   const ukm::SourceId source_id_;
@@ -66,7 +89,7 @@ class MEDIA_MOJO_EXPORT WatchTimeRecorder : public mojom::WatchTimeRecorder {
   // The provider ID which constructed this recorder. Used to record a UKM entry
   // at destruction that can be correlated with the final status for the
   // associated WebMediaPlayerImpl instance.
-  const uint64_t player_id_;
+  const MediaPlayerUkmId player_id_;
 
   // Mapping of WatchTime metric keys to MeanTimeBetweenRebuffers (MTBR), smooth
   // rate (had zero rebuffers), and discard (<7s watch time) keys.

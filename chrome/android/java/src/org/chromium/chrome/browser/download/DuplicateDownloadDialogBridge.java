@@ -10,7 +10,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
@@ -18,12 +19,14 @@ import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
  * Glues duplicate download dialogs UI code and handles the communication to download native
  * backend.
  */
+@NullMarked
 public class DuplicateDownloadDialogBridge {
     private long mNativeDuplicateDownloadDialogBridge;
 
     /**
      * Constructor, taking a pointer to the native instance.
-     * @nativeDuplicateDownloadDialogBridge Pointer to the native object.
+     *
+     * @param nativeDuplicateDownloadDialogBridge Pointer to the native object.
      */
     public DuplicateDownloadDialogBridge(long nativeDuplicateDownloadDialogBridge) {
         mNativeDuplicateDownloadDialogBridge = nativeDuplicateDownloadDialogBridge;
@@ -42,7 +45,7 @@ public class DuplicateDownloadDialogBridge {
      * @param pageUrl URL of the page, empty for file downloads.
      * @param totalBytes Total bytes of the file.
      * @param duplicateExists Whether a duplicate download is in progress.
-     * @param otrProfileID Off the record profile ID.
+     * @param otrProfileId Off the record profile ID.
      * @param callbackId Pointer to the native callback.
      */
     @CalledByNative
@@ -52,7 +55,7 @@ public class DuplicateDownloadDialogBridge {
             @JniType("std::string") String pageUrl,
             long totalBytes,
             boolean duplicateExists,
-            OTRProfileID otrProfileID,
+            OtrProfileId otrProfileId,
             long callbackId) {
         Activity activity = windowAndroid.getActivity().get();
         if (activity == null) {
@@ -67,7 +70,7 @@ public class DuplicateDownloadDialogBridge {
                         pageUrl,
                         totalBytes,
                         duplicateExists,
-                        otrProfileID,
+                        otrProfileId,
                         (accepted) -> {
                             onConfirmed(callbackId, accepted);
                         });
@@ -80,8 +83,7 @@ public class DuplicateDownloadDialogBridge {
 
     /**
      * Called when user accepts the download
-     * @param guid GUID of the download.
-     * @param filePath Path of the download file.
+     *
      * @param callbackId Pointer to the native callback.
      */
     private void onConfirmed(long callbackId, boolean accepted) {

@@ -5,9 +5,12 @@
 #include "chrome/browser/media/webrtc/webrtc_event_log_history.h"
 
 #include <limits>
+#include <optional>
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -232,8 +235,7 @@ bool WebRtcEventLogHistoryFileWriter::Write(const std::string& str) {
   DCHECK(!str.empty());
   DCHECK_LE(str.length(), static_cast<size_t>(std::numeric_limits<int>::max()));
 
-  const int written = file_.WriteAtCurrentPos(str.c_str(), str.length());
-  if (written != static_cast<int>(str.length())) {
+  if (!file_.WriteAtCurrentPosAndCheck(base::as_byte_span(str))) {
     LOG(WARNING) << "Writing to history file failed.";
     valid_ = false;
     return false;
@@ -309,13 +311,13 @@ bool WebRtcEventLogHistoryFileReader::Init() {
 
   std::string file_contents;
   file_contents.resize(kMaxHistoryFileSizeBytes);
-  const int read_bytes = file.Read(0, &file_contents[0], file_contents.size());
-  if (read_bytes < 0) {
+  const std::optional<size_t> read_bytes =
+      file.Read(0, base::as_writable_byte_span(file_contents));
+  if (!read_bytes) {
     LOG(WARNING) << "Couldn't read contents of history file.";
     return false;
   }
-  DCHECK_LE(static_cast<size_t>(read_bytes), file_contents.size());
-  file_contents.resize(static_cast<size_t>(read_bytes));
+  file_contents.resize(*read_bytes);
   // Note: In excessively long files, the rest of the file will be ignored; the
   // beginning of the file will encounter a parse error.
 

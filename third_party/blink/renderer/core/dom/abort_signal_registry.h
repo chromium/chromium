@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 class EventListener;
@@ -24,11 +23,8 @@ class ExecutionContext;
 // associated with `EventListener`s.
 class CORE_EXPORT AbortSignalRegistry
     : public GarbageCollected<AbortSignalRegistry>,
-      public Supplement<ExecutionContext>,
       public ExecutionContextLifecycleObserver {
  public:
-  static const char kSupplementName[];
-
   static AbortSignalRegistry* From(ExecutionContext&);
 
   explicit AbortSignalRegistry(ExecutionContext&);

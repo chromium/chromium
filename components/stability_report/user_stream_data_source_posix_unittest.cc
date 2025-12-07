@@ -4,7 +4,7 @@
 
 #include "components/stability_report/user_stream_data_source_posix.h"
 
-#include "base/files/file_util.h"
+#include "base/files/file.h"
 #include "base/process/process_metrics.h"
 #include "base/test/test_file_util.h"
 #include "components/stability_report/test/stability_report_reader.h"

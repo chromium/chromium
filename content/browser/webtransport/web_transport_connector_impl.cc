@@ -14,6 +14,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
+#include "ipc/constants.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
@@ -69,15 +70,53 @@ class InterceptingHandshakeClient final : public WebTransportHandshakeClient {
       : frame_(std::move(frame)),
         url_(url),
         remote_(std::move(remote)),
-        tracker_(std::move(tracker)) {}
+        tracker_(std::move(tracker)) {
+    if (!tracker_) {
+      return;
+    }
+
+    std::string_view ip_string;
+    if (url.HostIsIPAddress()) {
+      ip_string = url.HostNoBracketsPiece();
+    } else if (net::IsLocalhost(url)) {
+      ip_string = "127.0.0.1";
+    } else {
+      return;
+    }
+
+    // Some decentralized apps may need to cancel requests to unresponsive
+    // hosts, so this penalty could cause too much impact on those use cases.
+    // Usually well-behaving apps might refer to hosts by plain IPs thather than
+    // DNS names, that's why the
+    // WebTransportConnectorImpl::InterceptingHandshakeClient tries to figure
+    // out the host's IP by checking GURL::HostIsIPAddress() and assign a valid
+    // server address before invoking the network process. If the connection is
+    // closed before the DNS request is completed, we may want to avoid
+    // penalties if the host address is already an plain IP.
+    auto ip_address = net::IPAddress();
+    if (ip_address.AssignFromIPLiteral(ip_string)) {
+      CHECK(ip_address.IsValid());
+      tracker_->SetServerAddress(ip_address);
+    }
+  }
 
   ~InterceptingHandshakeClient() override = default;
 
   // WebTransportHandshakeClient implementation:
+  void OnBeforeConnect(const net::IPEndPoint& server_address) override {
+    if (tracker_) {
+      tracker_->SetServerAddress(server_address.address());
+    }
+
+    // Here we pass an invalid IPEndPoint instance because it is dangerous to
+    // pass the error details to the initiator renderer.
+    remote_->OnBeforeConnect(net::IPEndPoint());
+  }
   void OnConnectionEstablished(
       mojo::PendingRemote<network::mojom::WebTransport> transport,
       mojo::PendingReceiver<network::mojom::WebTransportClient> client,
       const scoped_refptr<net::HttpResponseHeaders>& response_headers,
+      const std::optional<std::string>& selected_applicaton_protocol,
       network::mojom::WebTransportStatsPtr initial_stats) override {
     if (tracker_) {
       tracker_->OnHandshakeEstablished();
@@ -88,7 +127,7 @@ class InterceptingHandshakeClient final : public WebTransportHandshakeClient {
         std::move(transport), std::move(client),
         base::MakeRefCounted<net::HttpResponseHeaders>(
             /*raw_headers=*/""),
-        std::move(initial_stats));
+        selected_applicaton_protocol, std::move(initial_stats));
   }
   void OnHandshakeFailed(
       const std::optional<net::WebTransportError>& error) override {
@@ -107,6 +146,7 @@ class InterceptingHandshakeClient final : public WebTransportHandshakeClient {
   }
 
  private:
+  // if nullptr, then WebTransport created by a shared or service worker.
   const base::WeakPtr<RenderFrameHostImpl> frame_;
   const GURL url_;
   mojo::Remote<WebTransportHandshakeClient> remote_;
@@ -122,11 +162,13 @@ WebTransportConnectorImpl::WebTransportConnectorImpl(
     int process_id,
     base::WeakPtr<RenderFrameHostImpl> frame,
     const url::Origin& origin,
-    const net::NetworkAnonymizationKey& network_anonymization_key)
+    const net::NetworkAnonymizationKey& network_anonymization_key,
+    network::mojom::ClientSecurityStatePtr client_security_state)
     : process_id_(process_id),
       frame_(std::move(frame)),
       origin_(origin),
       network_anonymization_key_(network_anonymization_key),
+      client_security_state_(std::move(client_security_state)),
       throttle_context_(GetThrottleContext(process_id_, frame_)) {}
 
 WebTransportConnectorImpl::~WebTransportConnectorImpl() = default;
@@ -135,6 +177,7 @@ void WebTransportConnectorImpl::Connect(
     const GURL& url,
     std::vector<network::mojom::WebTransportCertificateFingerprintPtr>
         fingerprints,
+    const std::vector<std::string>& application_protocols,
     mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
         handshake_client) {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
@@ -145,9 +188,10 @@ void WebTransportConnectorImpl::Connect(
   }
 
   if (throttle_context_) {
-    auto result = throttle_context_->PerformThrottle(base::BindOnce(
-        &WebTransportConnectorImpl::OnThrottleDone, weak_factory_.GetWeakPtr(),
-        url, std::move(fingerprints), std::move(handshake_client)));
+    auto result = throttle_context_->PerformThrottle(
+        base::BindOnce(&WebTransportConnectorImpl::OnThrottleDone,
+                       weak_factory_.GetWeakPtr(), url, std::move(fingerprints),
+                       application_protocols, std::move(handshake_client)));
     if (result ==
         WebTransportThrottleContext::ThrottleResult::kTooManyPendingSessions) {
       if (frame_) {
@@ -162,7 +206,8 @@ void WebTransportConnectorImpl::Connect(
       // `handshake_client` was destroyed when the callback was discarded.
     }
   } else {
-    OnThrottleDone(url, std::move(fingerprints), std::move(handshake_client),
+    OnThrottleDone(url, std::move(fingerprints), application_protocols,
+                   std::move(handshake_client),
                    /*tracker=*/nullptr);
   }
 }
@@ -171,9 +216,15 @@ void WebTransportConnectorImpl::OnThrottleDone(
     const GURL& url,
     std::vector<network::mojom::WebTransportCertificateFingerprintPtr>
         fingerprints,
+    const std::vector<std::string>& application_protocols,
     mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
         handshake_client,
     std::unique_ptr<WebTransportThrottleContext::Tracker> tracker) {
+  DVLOG(1) << "WebTransportConnectorImpl::OnThrottleDone -- "
+           << "tracker: " << tracker << " URL: " << url;
+  if (tracker) {
+    tracker->set_throttle_done();
+  }
   RenderProcessHost* process = RenderProcessHost::FromID(process_id_);
   if (!process) {
     return;
@@ -191,18 +242,40 @@ void WebTransportConnectorImpl::OnThrottleDone(
           frame_, url, std::move(handshake_client), std::move(tracker)),
       std::move(client_receiver));
 
+  mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
+      url_loader_network_observer;
+  // URLLoaderNetworkObserver created based on the context that is creating the
+  // WebTransport connection. If no `frame_` is present, this indicates that the
+  // WebTransport connection was created from a service worker or shared worker.
+  if (frame_) {
+    url_loader_network_observer = frame_->CreateURLLoaderNetworkObserver();
+  } else {
+    content::StoragePartition* storage_partition =
+        process->GetStoragePartition();
+    url_loader_network_observer =
+        static_cast<StoragePartitionImpl*>(storage_partition)
+            ->CreateURLLoaderNetworkObserverForServiceOrSharedWorker(
+                process_id_, origin_);
+  }
+
   GetContentClient()->browser()->WillCreateWebTransport(
-      process_id_, frame_ ? frame_->GetRoutingID() : MSG_ROUTING_NONE, url,
-      origin_, std::move(handshake_client_to_pass),
+      process_id_, frame_ ? frame_->GetRoutingID() : IPC::mojom::kRoutingIdNone,
+      url, origin_, std::move(handshake_client_to_pass),
       base::BindOnce(
           &WebTransportConnectorImpl::OnWillCreateWebTransportCompleted,
-          weak_factory_.GetWeakPtr(), url, std::move(fingerprints)));
+          weak_factory_.GetWeakPtr(), url, std::move(fingerprints),
+          application_protocols, std::move(url_loader_network_observer),
+          client_security_state_.Clone()));
 }
 
 void WebTransportConnectorImpl::OnWillCreateWebTransportCompleted(
     const GURL& url,
     std::vector<network::mojom::WebTransportCertificateFingerprintPtr>
         fingerprints,
+    const std::vector<std::string>& application_protocols,
+    mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
+        url_loader_network_observer,
+    network::mojom::ClientSecurityStatePtr client_security_state,
     mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
         handshake_client,
     std::optional<network::mojom::WebTransportErrorPtr> error) {
@@ -225,7 +298,8 @@ void WebTransportConnectorImpl::OnWillCreateWebTransportCompleted(
 
   process->GetStoragePartition()->GetNetworkContext()->CreateWebTransport(
       url, origin_, network_anonymization_key_, std::move(fingerprints),
-      std::move(handshake_client));
+      application_protocols, std::move(handshake_client),
+      std::move(url_loader_network_observer), std::move(client_security_state));
 }
 
 }  // namespace content

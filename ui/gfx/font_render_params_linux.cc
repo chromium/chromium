@@ -12,14 +12,13 @@
 
 #include "base/command_line.h"
 #include "base/containers/lru_cache.h"
-#include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/font_render_params_linux.h"
 #include "ui/gfx/linux/fontconfig_util.h"
@@ -27,6 +26,12 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/linux/linux_ui.h"
+#endif
+
+// Define this for builds in which older FontConfig headers are included.
+// Available since FontConfig 2.15.
+#ifndef FC_FONT_WRAPPER
+#define FC_FONT_WRAPPER         "fontwrapper"
 #endif
 
 namespace gfx {
@@ -75,8 +80,11 @@ int FontWeightToFCWeight(Font::Weight weight) {
 // should be used.
 float device_scale_factor_ = 1.0f;
 
+// If true, disables the subpixel rendering even if it is enabled in config.
+bool force_disable_subpixel_font_rendering = false;
+
 // Number of recent GetFontRenderParams() results to cache.
-const size_t kCacheSize = 256;
+constexpr size_t kCacheSize = 256;
 
 // Cached result from a call to GetFontRenderParams().
 struct QueryResult {
@@ -102,8 +110,10 @@ struct SynchronizedCache {
   Cache cache;
 };
 
-base::LazyInstance<SynchronizedCache>::Leaky g_synchronized_cache =
-    LAZY_INSTANCE_INITIALIZER;
+SynchronizedCache& GetSynchronizedCache() {
+  static base::NoDestructor<SynchronizedCache> synchronized_cache;
+  return *synchronized_cache;
+}
 
 // Serialize |query| into a string value suitable for use as a cache key.
 std::string GetFontRenderParamsQueryKey(const FontRenderParamsQuery& query) {
@@ -124,6 +134,9 @@ bool QueryFontconfig(const FontRenderParamsQuery& query,
   CHECK(query_pattern);
 
   FcPatternAddBool(query_pattern.get(), FC_SCALABLE, FcTrue);
+
+  FcPatternAddString(query_pattern.get(), FC_FONT_WRAPPER,
+                     reinterpret_cast<const FcChar8*>("SFNT"));
 
   for (auto it = query.families.begin(); it != query.families.end(); ++it) {
     FcPatternAddString(query_pattern.get(), FC_FAMILY,
@@ -182,6 +195,14 @@ bool QueryFontconfig(const FontRenderParamsQuery& query,
   return true;
 }
 
+void SetForceDisableSubpixelFontRendering(bool disable) {
+  force_disable_subpixel_font_rendering = disable;
+}
+
+bool GetFontRenderParamsSubpixelRenderingEnabledForTesting() {
+  return force_disable_subpixel_font_rendering;
+}
+
 FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
                                      std::string* family_out) {
   TRACE_EVENT0("fonts", "gfx::GetFontRenderParams");
@@ -191,13 +212,13 @@ FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
     actual_query.device_scale_factor = device_scale_factor_;
 
   std::string query_key = GetFontRenderParamsQueryKey(actual_query);
-  SynchronizedCache* synchronized_cache = g_synchronized_cache.Pointer();
+  SynchronizedCache& synchronized_cache = GetSynchronizedCache();
 
   {
     // Try to find a cached result so Fontconfig doesn't need to be queried.
-    base::AutoLock lock(synchronized_cache->lock);
-    Cache::const_iterator it = synchronized_cache->cache.Get(query_key);
-    if (it != synchronized_cache->cache.end()) {
+    base::AutoLock lock(synchronized_cache.lock);
+    Cache::const_iterator it = synchronized_cache.cache.Get(query_key);
+    if (it != synchronized_cache.cache.end()) {
       DVLOG(1) << "Returning cached params for " << query_key;
       const QueryResult& result = it->second;
       if (family_out)
@@ -218,6 +239,11 @@ FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
   }
 #endif
   QueryFontconfig(actual_query, &params, family_out);
+
+  if (force_disable_subpixel_font_rendering) {
+    params.subpixel_rendering = FontRenderParams::SUBPIXEL_RENDERING_NONE;
+  }
+
   if (!params.antialiasing) {
     // Cairo forces full hinting when antialiasing is disabled, since anything
     // less than that looks awful; do the same here. Requesting subpixel
@@ -249,8 +275,8 @@ FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
   {
     // Store the result. It's fine if this overwrites a result that was cached
     // by a different thread in the meantime; the values should be identical.
-    base::AutoLock lock(synchronized_cache->lock);
-    synchronized_cache->cache.Put(
+    base::AutoLock lock(synchronized_cache.lock);
+    synchronized_cache.cache.Put(
         query_key,
         QueryResult(params, family_out ? *family_out : std::string()));
   }
@@ -259,9 +285,9 @@ FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
 }
 
 void ClearFontRenderParamsCacheForTest() {
-  SynchronizedCache* synchronized_cache = g_synchronized_cache.Pointer();
-  base::AutoLock lock(synchronized_cache->lock);
-  synchronized_cache->cache.Clear();
+  SynchronizedCache& synchronized_cache = GetSynchronizedCache();
+  base::AutoLock lock(synchronized_cache.lock);
+  synchronized_cache.cache.Clear();
 }
 
 float GetFontRenderParamsDeviceScaleFactor() {

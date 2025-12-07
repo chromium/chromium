@@ -38,8 +38,6 @@ class AppTimeController;
 }  // namespace app_time
 
 // Facade that exposes child user related functionality on Chrome OS.
-// TODO(crbug.com/40106527): Migrate ConsumerStatusReportingService,
-// EventBasedStatusReporting and ScreenTimeController to ChildUserService.
 class ChildUserService : public KeyedService,
                          public app_time::AppTimeLimitInterface,
                          public app_time::AppActivityReportInterface {
@@ -75,11 +73,6 @@ class ChildUserService : public KeyedService,
     // above this comment. Sync with enums.xml.
     kMaxValue = kAppTimeLimit
   };
-
-  // Family Link helper(for child and teens) is an app available to supervised
-  // users and the companion app of Family Link app(for parents).
-  static const char kFamilyLinkHelperAppPackageName[];
-  static const char kFamilyLinkHelperAppPlayStoreURL[];
 
   static const char* GetTimeLimitPolicyTypesHistogramNameForTest();
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/debug/stack_trace.h"
 
 #include <android/log.h>
@@ -16,6 +11,7 @@
 #include <algorithm>
 #include <ostream>
 
+#include "base/compiler_specific.h"
 #include "base/debug/proc_maps_linux.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
@@ -23,9 +19,9 @@
 #include "base/threading/thread_restrictions.h"
 
 #ifdef __LP64__
-#define FMT_ADDR  "0x%016lx"
+#define FMT_ADDR "0x%016lx"
 #else
-#define FMT_ADDR  "0x%08x"
+#define FMT_ADDR "0x%08x"
 #endif
 
 namespace {
@@ -53,9 +49,10 @@ _Unwind_Reason_Code TraceStackFrame(_Unwind_Context* context, void* arg) {
     return _URC_NO_REASON;
   }
 
-  state->frames[state->frame_count++] = ip;
-  if (state->frame_count >= state->max_depth)
+  UNSAFE_TODO(state->frames[state->frame_count++] = ip);
+  if (state->frame_count >= state->max_depth) {
     return _URC_END_OF_STACK;
+  }
   return _URC_NO_REASON;
 }
 
@@ -74,8 +71,7 @@ bool EnableInProcessStackDumping() {
   // to be ignored.  Therefore, when testing that same code, it should run
   // with SIGPIPE ignored as well.
   // TODO(phajdan.jr): De-duplicate this SIGPIPE code.
-  struct sigaction action;
-  memset(&action, 0, sizeof(action));
+  struct sigaction action = {};
   action.sa_handler = SIG_IGN;
   sigemptyset(&action.sa_mask);
   return (sigaction(SIGPIPE, &action, NULL) == 0);
@@ -119,11 +115,11 @@ void StackTrace::OutputToStreamWithPrefixImpl(
   // UI thread.
   base::ScopedAllowBlocking scoped_allow_blocking;
   if (!ReadProcMaps(&proc_maps)) {
-    __android_log_write(
-        ANDROID_LOG_ERROR, "chromium", "Failed to read /proc/self/maps");
+    __android_log_write(ANDROID_LOG_ERROR, "chromium",
+                        "Failed to read /proc/self/maps");
   } else if (!ParseProcMaps(proc_maps, &regions)) {
-    __android_log_write(
-        ANDROID_LOG_ERROR, "chromium", "Failed to parse /proc/self/maps");
+    __android_log_write(ANDROID_LOG_ERROR, "chromium",
+                        "Failed to parse /proc/self/maps");
   }
 
   for (size_t i = 0; i < count_; ++i) {

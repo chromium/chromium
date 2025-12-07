@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "ash/api/tasks/tasks_types.h"
@@ -123,7 +124,7 @@ class TaskViewTextField : public SystemTextfield,
 
  public:
   using OnFinishedEditingCallback =
-      base::RepeatingCallback<void(const std::u16string& title)>;
+      base::RepeatingCallback<void(std::u16string_view title)>;
 
   explicit TaskViewTextField(OnFinishedEditingCallback on_finished_editing)
       : SystemTextfield(Type::kMedium),
@@ -196,7 +197,7 @@ class EditInBrowserButton : public views::LabelButton {
     SetID(base::to_underlying(GlanceablesViewId::kTaskItemEditInBrowserLabel));
     SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(3, 6)));
     SetProperty(views::kMarginsKey, kEditInBrowserMargins);
-    SetEnabledTextColorIds(cros_tokens::kCrosSysPrimary);
+    SetEnabledTextColors(cros_tokens::kCrosSysPrimary);
     label()->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
         TypographyToken::kCrosButton2));
     views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);
@@ -225,25 +226,25 @@ class GlanceablesTaskView::CheckButton : public views::ImageButton {
     GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
         IDS_GLANCEABLES_TASKS_TASK_ITEM_MARK_COMPLETED_ACCESSIBLE_NAME));
     SetAndUpdateAccessibleDefaultActionVerb();
-  }
-
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    views::ImageButton::GetAccessibleNodeData(node_data);
-
-    const ax::mojom::CheckedState checked_state =
-        checked_ ? ax::mojom::CheckedState::kTrue
-                 : ax::mojom::CheckedState::kFalse;
-    node_data->SetCheckedState(checked_state);
+    UpdateAccessibleCheckedState();
   }
 
   void SetChecked(bool checked) {
     checked_ = checked;
     UpdateImage();
+    UpdateAccessibleCheckedState();
     SetAndUpdateAccessibleDefaultActionVerb();
-    NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged, true);
   }
 
   bool checked() const { return checked_; }
+
+ protected:
+  // views::Button:
+  void UpdateAccessibleCheckedState() override {
+    GetViewAccessibility().SetCheckedState(
+        checked_ ? ax::mojom::CheckedState::kTrue
+                 : ax::mojom::CheckedState::kFalse);
+  }
 
  private:
   void UpdateImage() {
@@ -285,8 +286,8 @@ class GlanceablesTaskView::TaskTitleButton : public views::LabelButton {
   void UpdateLabelForState(bool completed) {
     const auto color_id = completed ? cros_tokens::kCrosSysSecondary
                                     : cros_tokens::kCrosSysOnSurface;
-    SetEnabledTextColorIds(color_id);
-    SetTextColorId(views::Button::ButtonState::STATE_DISABLED, color_id);
+    SetEnabledTextColors(color_id);
+    SetTextColor(views::Button::ButtonState::STATE_DISABLED, color_id);
     label()->SetFontList(
         TypographyProvider::Get()
             ->ResolveTypographyToken(TypographyToken::kCrosButton2)
@@ -294,11 +295,12 @@ class GlanceablesTaskView::TaskTitleButton : public views::LabelButton {
                                        : gfx::Font::FontStyle::NORMAL));
   }
 
-  void SetText(const std::u16string& text) override {
+  void SetText(std::u16string_view text) override {
     views::LabelButton::SetText(text);
     GetViewAccessibility().SetName(
-        text, text.empty() ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty
-                           : ax::mojom::NameFrom::kAttribute);
+        std::u16string(text),
+        text.empty() ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty
+                     : ax::mojom::NameFrom::kAttribute);
   }
 };
 
@@ -325,7 +327,6 @@ GlanceablesTaskView::GlanceablesTaskView(
 
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-  // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace
   SetLayoutManagerUseConstrainedSpace(false);
 
   check_button_ =
@@ -342,7 +343,6 @@ GlanceablesTaskView::GlanceablesTaskView(
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
                                views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
-  // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace
   contents_view_->SetLayoutManagerUseConstrainedSpace(false);
 
   tasks_title_view_ =
@@ -378,7 +378,7 @@ GlanceablesTaskView::GlanceablesTaskView(
             TypographyToken::kCrosAnnotation1));
     due_date_label->SetLineHeight(TypographyProvider::Get()->ResolveLineHeight(
         TypographyToken::kCrosAnnotation1));
-    due_date_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+    due_date_label->SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant);
   }
 
   if (task && task->has_subtasks) {
@@ -437,7 +437,8 @@ GlanceablesTaskView::GlanceablesTaskView(
         base::JoinString(details, u", "));
   }
   check_button_->GetViewAccessibility().SetDescription(a11y_description);
-  check_button_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
+  check_button_->NotifyAccessibilityEventDeprecated(
+      ax::mojom::Event::kTextChanged, true);
 }
 
 GlanceablesTaskView::~GlanceablesTaskView() = default;
@@ -491,7 +492,7 @@ void GlanceablesTaskView::UpdateTaskTitleViewForState(
 
   switch (state) {
     case TaskTitleViewState::kNotInitialized:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case TaskTitleViewState::kView:
       task_title_button_ =
           tasks_title_view_->AddChildView(std::make_unique<TaskTitleButton>(
@@ -512,10 +513,10 @@ void GlanceablesTaskView::UpdateTaskTitleViewForState(
       break;
     case TaskTitleViewState::kEdit:
       task_title_before_edit_ = task_title_;
-      task_title_textfield_ =
-          tasks_title_view_->AddChildView(std::make_unique<TaskViewTextField>(
-              base::BindRepeating(&GlanceablesTaskView::OnFinishedEditing,
-                                  base::Unretained(this))));
+      task_title_textfield_ = tasks_title_view_->AddChildView(
+          std::make_unique<TaskViewTextField>(base::BindRepeating(
+              &GlanceablesTaskView::OnFinishedEditing,
+              state_change_weak_ptr_factory_.GetWeakPtr())));
       task_title_textfield_->SetText(task_title_);
       GetWidget()->widget_delegate()->SetCanActivate(true);
       task_title_textfield_->RequestFocus();
@@ -578,7 +579,7 @@ void GlanceablesTaskView::AddExtraContentForEditState() {
     assigned_task_notice_label->SetLineHeight(
         TypographyProvider::Get()->ResolveLineHeight(
             TypographyToken::kCrosAnnotation1));
-    assigned_task_notice_label->SetEnabledColorId(
+    assigned_task_notice_label->SetEnabledColor(
         cros_tokens::kCrosSysOnSurfaceVariant);
 
     extra_content->AddChildView(std::move(assigned_task_notice));
@@ -594,7 +595,7 @@ void GlanceablesTaskView::AddExtraContentForEditState() {
 void GlanceablesTaskView::UpdateContentsMargins(TaskTitleViewState state) {
   switch (state) {
     case TaskTitleViewState::kNotInitialized:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case TaskTitleViewState::kView:
       contents_view_->SetProperty(views::kMarginsKey, kContentsMargin);
       task_title_button_->SetProperty(views::kMarginsKey,
@@ -666,14 +667,14 @@ void GlanceablesTaskView::CheckButtonPressed() {
   if (!glanceables_util::IsNetworkConnected()) {
     show_error_message_callback_.Run(
         GlanceablesTasksErrorType::kCantMarkCompleteNoNetwork,
-        GlanceablesErrorMessageView::ButtonActionType::kDismiss);
+        ErrorMessageToast::ButtonActionType::kDismiss);
     return;
   }
 
   if (task_id_.empty()) {
     show_error_message_callback_.Run(
         GlanceablesTasksErrorType::kCantMarkComplete,
-        GlanceablesErrorMessageView::ButtonActionType::kReload);
+        ErrorMessageToast::ButtonActionType::kReload);
     return;
   }
 
@@ -691,7 +692,7 @@ void GlanceablesTaskView::TaskTitleButtonPressed() {
   if (!glanceables_util::IsNetworkConnected()) {
     show_error_message_callback_.Run(
         GlanceablesTasksErrorType::kCantUpdateTitleNoNetwork,
-        GlanceablesErrorMessageView::ButtonActionType::kDismiss);
+        ErrorMessageToast::ButtonActionType::kDismiss);
     return;
   }
   RecordUserModifyingTask();
@@ -699,9 +700,9 @@ void GlanceablesTaskView::TaskTitleButtonPressed() {
   UpdateTaskTitleViewForState(TaskTitleViewState::kEdit);
 }
 
-void GlanceablesTaskView::OnFinishedEditing(const std::u16string& title) {
+void GlanceablesTaskView::OnFinishedEditing(std::u16string_view title) {
   if (!title.empty()) {
-    task_title_ = title;
+    task_title_ = std::u16string(title);
   }
 
   if (task_title_textfield_ && task_title_textfield_->HasFocus()) {
@@ -744,7 +745,8 @@ void GlanceablesTaskView::OnFinishedEditing(const std::u16string& title) {
   }
 }
 
-void GlanceablesTaskView::OnSaved(const api::Task* task) {
+void GlanceablesTaskView::OnSaved(google_apis::ApiErrorCode http_error,
+                                  const api::Task* task) {
   saving_task_changes_ = false;
   if (task_title_button_) {
     task_title_button_->SetEnabled(true);

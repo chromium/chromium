@@ -62,8 +62,7 @@ TEST_F(WebrtcVideoPerfReporterTest, StoreWebrtcVideoStats) {
                                                kCodecProfile, 1920 * 1080,
                                                /*hw_accelerated=*/false};
   const auto kExpectedFeaturesA = media::mojom::blink::WebrtcPredictionFeatures(
-      /*is_decode_stats=*/true,
-      static_cast<media::mojom::blink::VideoCodecProfile>(kCodecProfile),
+      /*is_decode_stats=*/true, kCodecProfile,
       /*video_pixels=*/1920 * 1080, /*hardware_accelerated=*/false);
 
   const StatsCollector::VideoStats kVideoStats = {123, 4, 5.6};
@@ -86,8 +85,7 @@ TEST_F(WebrtcVideoPerfReporterTest, StoreWebrtcVideoStats) {
                                                kCodecProfile, 1920 * 1080,
                                                /*hw_accelerated=*/true};
   const auto kExpectedFeaturesB = media::mojom::blink::WebrtcPredictionFeatures(
-      /*is_decode_stats=*/false,
-      static_cast<media::mojom::blink::VideoCodecProfile>(kCodecProfile),
+      /*is_decode_stats=*/false, kCodecProfile,
       /*video_pixels=*/1920 * 1080, /*hardware_accelerated=*/true);
 
   EXPECT_CALL(*mock_recorder_, UpdateRecord)

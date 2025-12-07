@@ -6,7 +6,18 @@ package org.chromium.base.test.transit;
 
 import static org.junit.Assert.fail;
 
+import static org.chromium.base.test.transit.ViewSpec.viewSpec;
+
+import android.app.Activity;
+import android.view.View;
+
 import androidx.annotation.IntDef;
+
+import org.hamcrest.Matcher;
+
+import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -16,7 +27,7 @@ import java.util.List;
 /**
  * Base class representing a state with conditions for entering and exiting.
  *
- * <p>Conditions include the existence of {@link Elements}, e.g. Views.
+ * <p>Conditions include the existence of {@link Element}s, e.g. Views.
  *
  * <pre>ConditionalStates can be in the following phases:
  * - NEW: Inactive, just created. No transition has started.
@@ -36,9 +47,12 @@ import java.util.List;
  *
  * <p>This is the base class for {@link Station} and {@link Facility}.
  */
+@NullMarked
 public abstract class ConditionalState {
     @Phase private int mLifecyclePhase = Phase.NEW;
-    private Elements mElements;
+    private final Elements mConsolidatedElements = new Elements(this);
+    protected final Elements.Builder mElements = mConsolidatedElements.newBuilder();
+    private boolean mAreElementsConsolidated;
 
     /** Lifecycle phases of ConditionalState. */
     @IntDef({
@@ -58,28 +72,21 @@ public abstract class ConditionalState {
     }
 
     /**
-     * Declare the {@link Elements} that define this ConditionalState, such as Views.
+     * Declare extra {@link Element}s that define this ConditionalState, such as Views.
      *
-     * <p>Transit-layer {@link Station}s and {@link Facility}s should override this and use the
-     * |elements| param to declare what elements need to be waited for for the state to be
-     * considered active.
-     *
-     * @param elements use the #declare___() methods to describe the Elements that define the state.
+     * <p>Transit-layer {@link Station}s and {@link Facility}s can declare Elements in their
+     * constructor and/or override this method. This method is called after binding a Facility to a
+     * Station, so some elements are easier to declare here.
      */
-    public abstract void declareElements(Elements.Builder elements);
+    public void declareExtraElements() {}
 
     Elements getElements() {
-        initElements();
-        return mElements;
-    }
-
-    private void initElements() {
-        if (mElements == null) {
-            mElements = new Elements();
-            Elements.Builder builder = mElements.newBuilder();
-            declareElements(builder);
-            builder.consolidate();
+        if (!mAreElementsConsolidated) {
+            declareExtraElements();
+            mElements.consolidate();
+            mAreElementsConsolidated = true;
         }
+        return mConsolidatedElements;
     }
 
     void setStateTransitioningTo() {
@@ -122,6 +129,11 @@ public abstract class ConditionalState {
      * @return the name of the State for use in debugging/error messages.
      */
     public abstract String getName();
+
+    @Override
+    public String toString() {
+        return getName();
+    }
 
     /**
      * @return the lifecycle {@link Phase} this ConditionalState is in.
@@ -199,13 +211,225 @@ public abstract class ConditionalState {
         mLifecyclePhase = Phase.ACTIVE;
     }
 
-    protected void assertSuppliersCanBeUsed() {
+    /**
+     * Assert this ConditionalState is in the ACTIVE, TRANSITIONING_FROM or TRANSITIONING_TO phase,
+     * and thus it makes sense to use its {@link Element}s as Suppliers.
+     *
+     * <p>This avoids getting an out-of-date object from a state that was already transitioned away
+     * from, or getting an object from a state before transitioning to it.
+     */
+    void assertSuppliersMightBeValid() {
         int phase = getPhase();
-        if (phase != Phase.ACTIVE && phase != Phase.TRANSITIONING_FROM) {
+        if (phase != Phase.ACTIVE
+                && phase != Phase.TRANSITIONING_FROM
+                && phase != Phase.TRANSITIONING_TO) {
             fail(
                     String.format(
-                            "%s should have been ACTIVE or TRANSITIONING_FROM, but was %s",
+                            "%s should have been ACTIVE or TRANSITIONING_FROM or TRANSITIONING_TO,"
+                                    + " but was %s",
                             this, phaseToString(phase)));
         }
     }
+
+    /** Declare as an element an Android Activity of type |activityClass|. */
+    public <T extends Activity> ActivityElement<T> declareActivity(Class<T> activityClass) {
+        return mElements.declareActivity(activityClass);
+    }
+
+    /** Declare as an element a View that matches |viewMatcher|. */
+    public <ViewT extends View> ViewElement<ViewT> declareView(ViewSpec<ViewT> viewSpec) {
+        return mElements.declareView(viewSpec);
+    }
+
+    /** Declare as an element a View that matches |viewMatcher| with extra Options. */
+    public ViewElement<View> declareView(Matcher<View> viewMatcher, ViewElement.Options options) {
+        return mElements.declareView(viewMatcher, options);
+    }
+
+    /** Declare as an element a |viewClass| that matches |viewMatcher|. */
+    public <ViewT extends View> ViewElement<ViewT> declareView(
+            Class<ViewT> viewClass, Matcher<View> viewMatcher) {
+        return mElements.declareView(viewClass, viewMatcher);
+    }
+
+    /** Declare as an element a |viewClass| that matches |viewMatcher| with extra Options. */
+    public <ViewT extends View> ViewElement<ViewT> declareView(
+            Class<ViewT> viewClass, Matcher<View> viewMatcher, ViewElement.Options options) {
+        return mElements.declareView(viewClass, viewMatcher, options);
+    }
+
+    /** Declare as an element a View that matches |viewSpec| with extra Options. */
+    public <ViewT extends View> ViewElement<ViewT> declareView(
+            ViewSpec<ViewT> viewSpec, ViewElement.Options options) {
+        return mElements.declareView(viewSpec, options);
+    }
+
+    /** Declare as an element a View that matches |viewSpec|. */
+    public ViewElement<View> declareView(Matcher<View> viewMatcher) {
+        return mElements.declareView(viewMatcher);
+    }
+
+    /** Declare as an element a lazily-checked View that matches |viewMatcher|. */
+    public <ViewT extends View> OptionalViewElement<ViewT> declareOptionalView(
+            ViewSpec<ViewT> viewSpec) {
+        return mElements.declareOptionalView(viewSpec);
+    }
+
+    /**
+     * Declare as an element a lazily-checked View that matches |viewMatcher| with extra Options.
+     */
+    public OptionalViewElement<View> declareOptionalView(
+            Matcher<View> viewMatcher, ViewElement.Options options) {
+        return mElements.declareOptionalView(viewMatcher, options);
+    }
+
+    /** Declare as an element a lazily-checked |viewClass| that matches |viewMatcher|. */
+    public <ViewT extends View> OptionalViewElement<ViewT> declareOptionalView(
+            Class<ViewT> viewClass, Matcher<View> viewMatcher) {
+        return mElements.declareOptionalView(viewClass, viewMatcher);
+    }
+
+    /**
+     * Declare as an element a lazily-checked |viewClass| that matches |viewMatcher| with extra
+     * Options.
+     */
+    public <ViewT extends View> OptionalViewElement<ViewT> declareOptionalView(
+            Class<ViewT> viewClass, Matcher<View> viewMatcher, ViewElement.Options options) {
+        return mElements.declareOptionalView(viewClass, viewMatcher, options);
+    }
+
+    /** Declare as an element a lazily-checked View that matches |viewSpec| with extra Options. */
+    public <ViewT extends View> OptionalViewElement<ViewT> declareOptionalView(
+            ViewSpec<ViewT> viewSpec, ViewElement.Options options) {
+        return mElements.declareOptionalView(viewSpec, options);
+    }
+
+    /** Declare as an element a lazily-checked View that matches |viewSpec|. */
+    public OptionalViewElement<View> declareOptionalView(Matcher<View> viewMatcher) {
+        return mElements.declareOptionalView(viewMatcher);
+    }
+
+    /** Declare as a Condition that a View is not displayed. */
+    public void declareNoView(ViewSpec<?> viewSpec) {
+        mElements.declareNoView(viewSpec);
+    }
+
+    /** Declare as a Condition that a View is not displayed. */
+    public void declareNoView(Matcher<View> viewMatcher) {
+        mElements.declareNoView(viewMatcher);
+    }
+
+    /**
+     * Declare as an element a generic enter Condition. It must be true for a transition into this
+     * ConditionalState to be complete.
+     *
+     * <p>No promises are made that the Condition is true as long as the ConditionalState is ACTIVE.
+     * For these cases, use {@link LogicalElement}.
+     *
+     * <p>Further, no promises are made that the Condition is false after exiting the State. Use a
+     * scoped {@link LogicalElement} in this case.
+     */
+    public final void declareEnterCondition(Condition condition) {
+        mElements.declareEnterCondition(condition);
+    }
+
+    /**
+     * Declare as an element a generic enter Condition. It must be true for a transition into this
+     * ConditionalState to be complete.
+     *
+     * <p>No promises are made that the Condition is true as long as the ConditionalState is ACTIVE.
+     * For these cases, use {@link LogicalElement}.
+     *
+     * <p>Further, no promises are made that the Condition is false after exiting the State. Use a
+     * scoped {@link LogicalElement} in this case.
+     */
+    public <ProductT, T extends ConditionWithResult<ProductT>>
+            Element<ProductT> declareEnterConditionAsElement(T condition) {
+        return mElements.declareEnterConditionAsElement(condition);
+    }
+
+    /**
+     * Declare as an element a generic exit Condition. It must be true for a transition out of this
+     * ConditionalState to be complete.
+     *
+     * <p>No promises are made that the Condition is false as long as the ConditionalState is
+     * ACTIVE. For these cases, use a scoped {@link LogicalElement}.
+     */
+    public final void declareExitCondition(Condition condition) {
+        mElements.declareExitCondition(condition);
+    }
+
+    /**
+     * Declare an {@link ElementFactory} gated by an {@link Element}'s enter Condition.
+     *
+     * <p>When the {@link Element}'s enter Condition becomes fulfilled, |delayedDeclarations| will
+     * be run to declare new Elements.
+     */
+    public void declareElementFactory(
+            Element<?> element, Callback<Elements.Builder> delayedDeclarations) {
+        mElements.declareElementFactory(element, delayedDeclarations);
+    }
+
+    /** Declare a custom Element. */
+    public <T extends Element<?>> T declareElement(T element) {
+        return mElements.declareElement(element);
+    }
+
+    /** Declare a custom lazily-checked Element. */
+    public <T extends Element<?>> T declareOptionalElement(T element) {
+        return mElements.declareOptionalElement(element);
+    }
+
+    /**
+     * Do nothing to trigger a Transition.
+     *
+     * <p>This is useful to wait ConditionalStates/Conditions to be reached without performing any
+     * action.
+     *
+     * <p>Adds this ConditionalState as context.
+     *
+     * @return a {@link TripBuilder} to perform the Transition.
+     */
+    public TripBuilder noopTo() {
+        return Triggers.noopTo().withContext(this);
+    }
+
+    /**
+     * Run an arbitrary function on the instrumentation thread to trigger a Transition.
+     *
+     * <p>Adds this ConditionalState as context.
+     *
+     * @return a {@link TripBuilder} to perform the Transition.
+     */
+    public TripBuilder runTo(Runnable runnable) {
+        return Triggers.runTo(runnable).withContext(this);
+    }
+
+    /**
+     * Run an arbitrary function on the UI thread to trigger a Transition.
+     *
+     * <p>Adds this ConditionalState as context.
+     *
+     * @return a {@link TripBuilder} to perform the Transition.
+     */
+    public TripBuilder runOnUiThreadTo(Runnable runnable) {
+        return Triggers.runOnUiThreadTo(runnable).withContext(this);
+    }
+
+    /**
+     * Press back to trigger a Transition.
+     *
+     * <p>Adds this ConditionalState as context.
+     *
+     * @return a {@link TripBuilder} to perform the Transition.
+     */
+    public TripBuilder pressBackTo() {
+        return Triggers.pressBackTo().withContext(this);
+    }
+
+    /** Returns which ActivityElement any ViewElements declare should be expected to be in. */
+    abstract @Nullable ActivityElement<?> determineActivityElement();
+
+    /** Called when a {@link ActivityElement} is declared. */
+    abstract <T extends Activity> void onDeclaredActivityElement(ActivityElement<T> element);
 }

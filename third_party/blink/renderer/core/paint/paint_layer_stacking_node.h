@@ -103,6 +103,7 @@ class CORE_EXPORT PaintLayerStackingNode
                              const ComputedStyle* old_style);
 
   using PaintLayers = HeapVector<Member<PaintLayer>>;
+  using GCedPaintLayers = GCedHeapVector<Member<PaintLayer>>;
 
   const PaintLayers& PosZOrderList() const {
     DCHECK(!z_order_lists_dirty_);
@@ -113,7 +114,7 @@ class CORE_EXPORT PaintLayerStackingNode
     return neg_z_order_list_;
   }
 
-  const PaintLayers* LayersPaintingOverlayOverflowControlsAfter(
+  const GCedPaintLayers* LayersPaintingOverlayOverflowControlsAfter(
       const PaintLayer* layer) const {
     DCHECK(!z_order_lists_dirty_);
     auto it = layer_to_overlay_overflow_controls_painting_after_.find(layer);
@@ -179,7 +180,7 @@ class CORE_EXPORT PaintLayerStackingNode
   // context with overlay overflow controls.
   // For the above example, this map has one entry {child: target} which means
   // that |target|'s overlay overflow controls should be painted after |child|.
-  HeapHashMap<Member<const PaintLayer>, Member<PaintLayers>>
+  HeapHashMap<Member<const PaintLayer>, Member<GCedPaintLayers>>
       layer_to_overlay_overflow_controls_painting_after_;
 
   Member<PaintLayer> layer_;

@@ -61,6 +61,7 @@ if (use_assembler) {
     include_dirs = openh264_common_include_dirs
     sources = openh264_common_sources_asm_x86
     defines = asm_defines
+    inputs = [ "./src/codec/common/x86/asm_inc.asm" ]
     if (current_cpu == "x86") {
       defines += [
         "X86_32",
@@ -84,6 +85,7 @@ if (use_assembler) {
     include_dirs = openh264_processing_include_dirs
     include_dirs += [ "./src/codec/common/x86" ]
     sources = openh264_processing_sources_asm_x86
+    inputs = [ "./src/codec/common/x86/asm_inc.asm" ]
     defines = asm_defines
     if (current_cpu == "x86") {
       defines += [
@@ -108,6 +110,7 @@ if (use_assembler) {
     include_dirs = openh264_encoder_include_dirs
     include_dirs += [ "./src/codec/common/x86" ]
     sources = openh264_encoder_sources_asm_x86
+    inputs = [ "./src/codec/common/x86/asm_inc.asm" ]
     defines = asm_defines
     if (current_cpu == "x86") {
       defines += [

@@ -25,7 +25,6 @@ namespace segmentation_platform {
 namespace {
 
 using testing::_;
-using testing::Invoke;
 using testing::UnorderedElementsAre;
 using ukm::builders::PageLoad;
 using ukm::builders::PaintPreviewCapture;
@@ -150,13 +149,13 @@ TEST_F(UkmObserverTest, FilterEventsAndMetrics) {
   observer.StartObserving(config1);
 
   EXPECT_CALL(ukm_database(), StoreUkmEntry(_))
-      .WillOnce(Invoke([](ukm::mojom::UkmEntryPtr entry) {
+      .WillOnce([](ukm::mojom::UkmEntryPtr entry) {
         EXPECT_EQ(entry->event_hash, PageLoad::kEntryNameHash);
         EXPECT_THAT(entry->metrics,
                     UnorderedElementsAre(
                         std::make_pair(PageLoad::kCpuTimeNameHash, 10),
                         std::make_pair(PageLoad::kIsNewBookmarkNameHash, 20)));
-      }));
+      });
   observer.OnEntryAdded(GetSamplePaintPreviewEntry());
   observer.OnEntryAdded(GetSamplePageLoadEntry());
 
@@ -177,22 +176,22 @@ TEST_F(UkmObserverTest, FilterEventsAndMetrics) {
   observer.StartObserving(config2);
 
   EXPECT_CALL(ukm_database(), StoreUkmEntry(_))
-      .WillOnce(Invoke([](ukm::mojom::UkmEntryPtr entry) {
+      .WillOnce([](ukm::mojom::UkmEntryPtr entry) {
         EXPECT_EQ(entry->event_hash, PaintPreviewCapture::kEntryNameHash);
         EXPECT_THAT(entry->metrics,
                     UnorderedElementsAre(std::make_pair(
                         PaintPreviewCapture::kBlinkCaptureTimeNameHash, 5)));
-      }));
+      });
   observer.OnEntryAdded(GetSamplePaintPreviewEntry());
 
   EXPECT_CALL(ukm_database(), StoreUkmEntry(_))
-      .WillOnce(Invoke([](ukm::mojom::UkmEntryPtr entry) {
+      .WillOnce([](ukm::mojom::UkmEntryPtr entry) {
         EXPECT_EQ(entry->event_hash, PageLoad::kEntryNameHash);
         EXPECT_THAT(entry->metrics,
                     UnorderedElementsAre(
                         std::make_pair(PageLoad::kCpuTimeNameHash, 10),
                         std::make_pair(PageLoad::kIsNewBookmarkNameHash, 20)));
-      }));
+      });
   observer.OnEntryAdded(GetSamplePageLoadEntry());
 }
 

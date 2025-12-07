@@ -43,12 +43,16 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/activity_log/activity_log_task_runner.h"
 #include "chrome/common/chrome_constants.h"
+#include "extensions/buildflags/buildflags.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace {
 
@@ -93,20 +97,27 @@ const ApiList kAlwaysLog[] = {
 
 // Columns in the main database table.  See the file-level comment for a
 // discussion of how data is stored and the meanings of the _x columns.
-const char* const kTableContentFields[] = {
-    "count", "extension_id_x", "time", "action_type", "api_name_x", "args_x",
-    "page_url_x", "page_title_x", "arg_url_x", "other_x"};
-const char* const kTableFieldTypes[] = {
-    "INTEGER NOT NULL DEFAULT 1", "INTEGER NOT NULL", "INTEGER", "INTEGER",
-    "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER",
-    "INTEGER"};
+constexpr base::cstring_view kTableContentFields[] = {
+    "count",  "extension_id_x", "time",         "action_type", "api_name_x",
+    "args_x", "page_url_x",     "page_title_x", "arg_url_x",   "other_x"};
+constexpr base::cstring_view kTableFieldTypes[] = {"INTEGER NOT NULL DEFAULT 1",
+                                                   "INTEGER NOT NULL",
+                                                   "INTEGER",
+                                                   "INTEGER",
+                                                   "INTEGER",
+                                                   "INTEGER",
+                                                   "INTEGER",
+                                                   "INTEGER",
+                                                   "INTEGER",
+                                                   "INTEGER"};
 
 // Miscellaneous SQL commands for initializing the database; these should be
 // idempotent.
-static const char kPolicyMiscSetup[] =
+constexpr char kPolicySetupDropView[] =
     // The activitylog_uncompressed view performs string lookups for simpler
     // access to the log data.
-    "DROP VIEW IF EXISTS activitylog_uncompressed;\n"
+    "DROP VIEW IF EXISTS activitylog_uncompressed";
+constexpr char kPolicySetupCreateView[] =
     "CREATE VIEW activitylog_uncompressed AS\n"
     "SELECT count,\n"
     "    x1.value AS extension_id,\n"
@@ -126,7 +137,8 @@ static const char kPolicyMiscSetup[] =
     "    LEFT JOIN url_ids    AS x4 ON (x4.id = page_url_x)\n"
     "    LEFT JOIN string_ids AS x5 ON (x5.id = page_title_x)\n"
     "    LEFT JOIN url_ids    AS x6 ON (x6.id = arg_url_x)\n"
-    "    LEFT JOIN string_ids AS x7 ON (x7.id = other_x);\n"
+    "    LEFT JOIN string_ids AS x7 ON (x7.id = other_x)";
+constexpr char kPolicySetupCreateIndex[] =
     // An index on all fields except count and time: all the fields that aren't
     // changed when incrementing a count.  This should accelerate finding the
     // rows to update (at worst several rows will need to be checked to find
@@ -137,7 +149,7 @@ static const char kPolicyMiscSetup[] =
 
 // SQL statements to clean old, unused entries out of the string and URL id
 // tables.
-static const char kStringTableCleanup[] =
+constexpr char kStringTableCleanup[] =
     "DELETE FROM string_ids WHERE id NOT IN\n"
     "(SELECT extension_id_x FROM activitylog_compressed\n"
     "    WHERE extension_id_x IS NOT NULL\n"
@@ -149,7 +161,7 @@ static const char kStringTableCleanup[] =
     "    WHERE page_title_x IS NOT NULL\n"
     " UNION SELECT other_x FROM activitylog_compressed\n"
     "    WHERE other_x IS NOT NULL)";
-static const char kUrlTableCleanup[] =
+constexpr char kUrlTableCleanup[] =
     "DELETE FROM url_ids WHERE id NOT IN\n"
     "(SELECT page_url_x FROM activitylog_compressed\n"
     "    WHERE page_url_x IS NOT NULL\n"
@@ -174,7 +186,7 @@ CountingPolicy::CountingPolicy(Profile* profile)
   }
 }
 
-CountingPolicy::~CountingPolicy() {}
+CountingPolicy::~CountingPolicy() = default;
 
 bool CountingPolicy::InitDatabase(sql::Database* db) {
   if (!string_table_.Initialize(db))
@@ -184,14 +196,16 @@ bool CountingPolicy::InitDatabase(sql::Database* db) {
 
   // Create the unified activity log entry table.
   if (!ActivityDatabase::InitializeTable(db, "activitylog_compressed",
-                                         kTableContentFields, kTableFieldTypes,
-                                         std::size(kTableContentFields))) {
+                                         kTableContentFields,
+                                         kTableFieldTypes)) {
     return false;
   }
 
   // Create a view for easily accessing the uncompressed form of the data, and
   // any necessary indexes if needed.
-  return db->Execute(kPolicyMiscSetup);
+  return db->Execute(kPolicySetupDropView) &&
+         db->Execute(kPolicySetupCreateView) &&
+         db->Execute(kPolicySetupCreateIndex);
 }
 
 void CountingPolicy::ProcessAction(scoped_refptr<Action> action) {
@@ -488,8 +502,8 @@ std::unique_ptr<Action::ActionVector> CountingPolicy::DoReadFilteredData(
         query.ColumnString(3), query.ColumnInt64(10));
 
     if (query.GetColumnType(4) != sql::ColumnType::kNull) {
-      std::optional<base::Value> parsed_value =
-          base::JSONReader::Read(query.ColumnString(4));
+      std::optional<base::Value> parsed_value = base::JSONReader::Read(
+          query.ColumnStringView(4), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       if (parsed_value && parsed_value->is_list()) {
         action->set_args(std::move(*parsed_value).TakeList());
       }
@@ -500,8 +514,8 @@ std::unique_ptr<Action::ActionVector> CountingPolicy::DoReadFilteredData(
     action->ParseArgUrl(query.ColumnString(7));
 
     if (query.GetColumnType(8) != sql::ColumnType::kNull) {
-      std::optional<base::Value> parsed_value =
-          base::JSONReader::Read(query.ColumnString(8));
+      std::optional<base::Value> parsed_value = base::JSONReader::Read(
+          query.ColumnStringView(8), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       if (parsed_value && parsed_value->is_dict()) {
         action->set_other(std::move(*parsed_value).TakeDict());
       }

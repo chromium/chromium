@@ -25,8 +25,6 @@ enum class SupervisedAction {
   kUpdateTimezone,
   // Add user flow.
   kAddUser,
-  // Re-authentication flow.
-  kReauth,
 };
 
 // The result of parent access code validation.

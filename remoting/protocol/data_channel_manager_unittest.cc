@@ -7,6 +7,7 @@
 #include <map>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -65,7 +66,7 @@ void FakeNamedMessagePipeHandler::OnIncomingMessage(
   ASSERT_TRUE(message != nullptr);
   std::string content;
   content.resize(expected_data_.size());
-  message->CopyTo(&(content[0]), content.size());
+  message->CopyTo(base::as_writable_byte_span(content));
   ASSERT_EQ(content, expected_data_);
   received_message_count_++;
 }
@@ -171,12 +172,12 @@ void TestDataChannelManagerFullMatch(bool asynchronous) {
     std::string content;
     auto message = std::make_unique<CompoundBuffer>();
     content = "FullMatchContent";
-    message->AppendCopyOf(&(content[0]), content.size());
+    message->AppendCopyOf(base::as_byte_span(content));
     pipe1.Receive(std::move(message));
 
     message = std::make_unique<CompoundBuffer>();
     content = "AnotherFullMatchContent";
-    message->AppendCopyOf(&(content[0]), content.size());
+    message->AppendCopyOf(base::as_byte_span(content));
     pipe2.Receive(std::move(message));
 
     base::RunLoop().RunUntilIdle();

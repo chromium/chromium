@@ -39,6 +39,47 @@ TEST(SignaturesTest, StripDigits) {
       CalculateFormSignature(actual_form).value());
 }
 
+// Tests that <input type={checkbox,radio,date}> do not count towards
+// FormSignatures.
+TEST(SignaturesTest, IgnoreCheckboxRadioDate) {
+  FormData form;
+  form.set_url(GURL("http://foo.com"));
+  form.set_name(u"form_name");
+
+  {
+    FormFieldData field;
+    field.set_form_control_type(FormControlType::kInputText);
+    field.set_name(u"field1");
+    test_api(form).Append(field);
+  }
+
+  {
+    FormFieldData field;
+    field.set_form_control_type(FormControlType::kInputCheckbox);
+    field.set_name(u"field2");
+    field.set_check_status(FormFieldData::CheckStatus::kCheckableButUnchecked);
+    test_api(form).Append(field);
+  }
+
+  {
+    FormFieldData field;
+    field.set_form_control_type(FormControlType::kInputRadio);
+    field.set_name(u"field1");
+    field.set_check_status(FormFieldData::CheckStatus::kChecked);
+    test_api(form).Append(field);
+  }
+
+  {
+    FormFieldData field;
+    field.set_form_control_type(FormControlType::kInputDate);
+    field.set_name(u"field2");
+    test_api(form).Append(field);
+  }
+
+  EXPECT_EQ(StrToHash64Bit("http://foo.com&form_name&field1"),
+            CalculateFormSignature(form).value());
+}
+
 TEST(SignaturesTest, AlternativeFormSignatureLarge) {
   FormData large_form;
   large_form.set_url(GURL("http://foo.com/login?q=a#ref"));
@@ -119,6 +160,49 @@ TEST(SignaturesTest, AlternativeFormSignatureSmallQuery) {
   // and query if it is non-empty.
   EXPECT_EQ(StrToHash64Bit("http://foo.com&text&text?q=a"),
             CalculateAlternativeFormSignature(small_form_query).value());
+}
+
+TEST(SignaturesTest, StructuralFormSignatureSmall) {
+  // Test with a small form (<= 2 fields).
+  FormData small_form;
+  small_form.set_url(GURL("http://foo.com/login?q=a#ref"));
+
+  FormFieldData field1;
+  field1.set_form_control_type(FormControlType::kInputText);
+  test_api(small_form).Append(field1);
+
+  FormFieldData field2;
+  field2.set_form_control_type(FormControlType::kInputEmail);
+  test_api(small_form).Append(field2);
+
+  // Structural form signature string of a form with 2 fields or less should
+  // only concatenate scheme, host, and field types. It should not include
+  // path, ref or query.
+  EXPECT_EQ(StrToHash64Bit("http://foo.com&text&email"),
+            CalculateStructuralFormSignature(small_form).value());
+}
+
+TEST(SignaturesTest, StructuralFormSignatureLarge) {
+  // Test with a large form (> 2 fields).
+  FormData large_form;
+  large_form.set_url(GURL("http://foo.com/login?q=a#ref"));
+
+  FormFieldData field1;
+  field1.set_form_control_type(FormControlType::kInputText);
+  test_api(large_form).Append(field1);
+
+  FormFieldData field2;
+  field2.set_form_control_type(FormControlType::kInputEmail);
+  test_api(large_form).Append(field2);
+
+  FormFieldData field3;
+  field3.set_form_control_type(FormControlType::kInputTelephone);
+  test_api(large_form).Append(field3);
+
+  // Structural form signature string of a form with more than two fields
+  // should only concatenate scheme, host, and field types.
+  EXPECT_EQ(StrToHash64Bit("http://foo.com&text&email&tel"),
+            CalculateStructuralFormSignature(large_form).value());
 }
 
 }  // namespace autofill

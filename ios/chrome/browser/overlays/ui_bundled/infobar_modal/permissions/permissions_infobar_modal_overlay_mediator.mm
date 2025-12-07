@@ -36,8 +36,9 @@
 #pragma mark - Public
 
 - (void)setConsumer:(id<PermissionsConsumer>)consumer {
-  if (_consumer == consumer)
+  if (_consumer == consumer) {
     return;
+  }
 
   _consumer = consumer;
 
@@ -63,7 +64,7 @@
 
   NSString* permissionsDescription =
       l10n_util::GetNSStringF(IDS_IOS_PERMISSIONS_INFOBAR_MODAL_DESCRIPTION,
-                              base::UTF8ToUTF16(URL.host()));
+                              base::UTF8ToUTF16(URL.GetHost()));
 
   if ([_consumer respondsToSelector:@selector(setPermissionsDescription:)]) {
     [_consumer setPermissionsDescription:permissionsDescription];

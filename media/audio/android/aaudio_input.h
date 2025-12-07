@@ -13,6 +13,7 @@
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "media/audio/android/aaudio_stream_wrapper.h"
+#include "media/audio/android/audio_device.h"
 #include "media/audio/audio_io.h"
 #include "media/base/amplitude_peak_detector.h"
 #include "media/base/audio_parameters.h"
@@ -22,12 +23,12 @@ namespace media {
 class AudioManagerAndroid;
 
 // Class which uses the AAudio library to record input.
-class REQUIRES_ANDROID_API(AAUDIO_MIN_API) AAudioInputStream
-    : public AudioInputStream,
-      public AAudioStreamWrapper::DataCallback {
+class AAudioInputStream : public AudioInputStream,
+                          public AAudioStreamWrapper::DataCallback {
  public:
   AAudioInputStream(AudioManagerAndroid* manager,
-                    const AudioParameters& params);
+                    const AudioParameters& params,
+                    android::AudioDevice device);
 
   AAudioInputStream(const AAudioInputStream&) = delete;
   AAudioInputStream& operator=(const AAudioInputStream&) = delete;
@@ -52,6 +53,9 @@ class REQUIRES_ANDROID_API(AAUDIO_MIN_API) AAudioInputStream
   void OnError() override;
   void OnDeviceChange() override;
 
+  // Returns the ID of the "actual" device the stream was opened with.
+  std::optional<android::AudioDeviceId> GetActualDeviceId();
+
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -60,6 +64,7 @@ class REQUIRES_ANDROID_API(AAUDIO_MIN_API) AAudioInputStream
 
   const raw_ptr<AudioManagerAndroid> audio_manager_;
   const AudioParameters params_;
+  const android::AudioDevice device_;
 
   AmplitudePeakDetector peak_detector_;
 

@@ -2,20 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/exo/surface.h"
 
+#include <optional>
 #include <tuple>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/exo/buffer.h"
@@ -29,6 +27,7 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,7 +46,6 @@
 #include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_fence_handle.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/wm/core/window_util.h"
 
 namespace exo {
@@ -98,13 +96,9 @@ std::string TransformToString(Transform transform) {
 }
 
 class SurfaceTest : public test::ExoTestBase,
-                    public ::testing::WithParamInterface<
-                        std::tuple<test::FrameSubmissionType, float>> {
+                    public ::testing::WithParamInterface<float> {
  public:
-  SurfaceTest() {
-    test::SetFrameSubmissionFeatureFlags(&feature_list_,
-                                         GetFrameSubmissionType());
-  }
+  SurfaceTest() = default;
 
   SurfaceTest(const SurfaceTest&) = delete;
   SurfaceTest& operator=(const SurfaceTest&) = delete;
@@ -124,10 +118,7 @@ class SurfaceTest : public test::ExoTestBase,
     display::Display::ResetForceDeviceScaleFactorForTesting();
   }
 
-  test::FrameSubmissionType GetFrameSubmissionType() const {
-    return std::get<0>(GetParam());
-  }
-  float device_scale_factor() const { return std::get<1>(GetParam()); }
+  float device_scale_factor() const { return GetParam(); }
 
   gfx::Rect ToPixel(const gfx::Rect rect) {
     return gfx::ToEnclosingRect(
@@ -173,20 +164,15 @@ class SurfaceTest : public test::ExoTestBase,
       ShellSurface* shell_surface,
       Transform transform,
       const gfx::RectF& expected_rect,
-      bool has_viewport);
+      bool has_viewport,
+      const gfx::Size& buffer_size);
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Instantiate the values of frame submission types and device scale factor in
-// the parameterized tests.
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SurfaceTest,
-    testing::Combine(testing::Values(test::FrameSubmissionType::kNoReactive,
-                                     test::FrameSubmissionType::kReactive),
-                     testing::Values(1.0f, 1.25f, 2.0f)));
+// Instantiate the values of device scale factor in the parameterized tests.
+INSTANTIATE_TEST_SUITE_P(All, SurfaceTest, testing::Values(1.0f, 1.25f, 2.0f));
 
 TEST_P(SurfaceTest, AttachOffset) {
   gfx::Size buffer_size(256, 256);
@@ -581,7 +567,7 @@ TEST_P(SurfaceTest, MAYBE_SetOpaqueRegion) {
   }
 
   auto buffer_without_alpha = test::ExoTestHelper::CreateBuffer(
-      buffer_size, gfx::BufferFormat::RGBX_8888);
+      buffer_size, viz::SinglePlaneFormat::kRGBX_8888);
 
   // Attaching a buffer without an alpha channel doesn't require draw with
   // blending.
@@ -900,18 +886,19 @@ TEST_P(SurfaceTest, SubpixelCoordinate) {
   child_surface->Attach(child_buffer.get());
 
   // These rects are in pixel coordinates with some having subpixel coordinates.
-  gfx::RectF kTestRects[] = {
+  constexpr std::array<gfx::RectF, 8> kTestRects = {{
       gfx::RectF(10, 20, 30, 40),     gfx::RectF(11, 22, 33, 44),
       gfx::RectF(10.5, 20, 30, 40),   gfx::RectF(10, 20.5, 30, 40),
       gfx::RectF(10, 20, 30.5, 40),   gfx::RectF(10, 20, 30, 40.5),
-      gfx::RectF(10.5, 20, 30, 40.5), gfx::RectF(10.5, 20.5, 30, 40)};
-  bool kExpectedAligned[] = {true,  true,  false, false,
-                             false, false, false, false};
-  static_assert(std::size(kTestRects) == std::size(kExpectedAligned),
+      gfx::RectF(10.5, 20, 30, 40.5), gfx::RectF(10.5, 20.5, 30, 40),
+  }};
+  constexpr std::array<bool, 8> kExpectedAligned = {true,  true,  false, false,
+                                                    false, false, false, false};
+  static_assert(kTestRects.size() == kExpectedAligned.size(),
                 "Number of elements in each list should be the identical.");
   for (int j = 0; j < 2; j++) {
     const bool kTestCaseRotation = (j == 1);
-    for (size_t i = 0; i < std::size(kTestRects); i++) {
+    for (size_t i = 0; i < kTestRects.size(); i++) {
       auto rect_in_dip = device_scale_transform.MapRect(kTestRects[i]);
       sub_surface->SetPosition(rect_in_dip.origin());
       child_surface->SetViewport(rect_in_dip.size());
@@ -939,10 +926,12 @@ TEST_P(SurfaceTest, SubpixelCoordinate) {
         // a uv rect.
         auto* tex_draw_quad =
             viz::TextureDrawQuad::MaterialCast(quad_list.front());
-        EXPECT_POINTF_NEAR(tex_draw_quad->uv_top_left, gfx::PointF(0, 0),
+        const gfx::RectF tex_draw_quad_tex_coords(
+            tex_draw_quad->GetNormalizedTexCoords(child_buffer_size));
+        EXPECT_POINTF_NEAR(tex_draw_quad_tex_coords.origin(), gfx::PointF(0, 0),
                            0.001f);
-        EXPECT_POINTF_NEAR(tex_draw_quad->uv_bottom_right, gfx::PointF(1, 1),
-                           0.001f);
+        EXPECT_POINTF_NEAR(tex_draw_quad_tex_coords.bottom_right(),
+                           gfx::PointF(1, 1), 0.001f);
         EXPECT_EQ(gfx::Transform(), transform);
         EXPECT_EQ(kTestRects[i], rect);
       } else {
@@ -990,7 +979,8 @@ void SurfaceTest::SetCropAndBufferTransformHelperTransformAndTest(
     ShellSurface* shell_surface,
     Transform transform,
     const gfx::RectF& expected_rect,
-    bool has_viewport) {
+    bool has_viewport,
+    const gfx::Size& buffer_size) {
   const gfx::Rect target_with_no_viewport(ToPixel(gfx::Rect(gfx::Size(52, 4))));
   const gfx::Rect target_with_viewport(ToPixel(gfx::Rect(gfx::Size(128, 64))));
 
@@ -1013,8 +1003,7 @@ void SurfaceTest::SetCropAndBufferTransformHelperTransformAndTest(
     ASSERT_EQ(1u, quad_list.size());
     const viz::TextureDrawQuad* quad =
         viz::TextureDrawQuad::MaterialCast(quad_list.front());
-    EXPECT_EQ(expected_rect.origin(), quad->uv_top_left);
-    EXPECT_EQ(expected_rect.bottom_right(), quad->uv_bottom_right);
+    EXPECT_EQ(expected_rect, quad->GetNormalizedTexCoords(buffer_size));
     EXPECT_EQ(
         (has_viewport) ? target_with_viewport : target_with_no_viewport,
         cc::MathUtil::MapEnclosingClippedRect(
@@ -1083,7 +1072,7 @@ TEST_P(SurfaceTest, MAYBE_SetCropAndBufferTransform) {
   for (const auto& tc : testcases) {
     SetCropAndBufferTransformHelperTransformAndTest(
         surface.get(), shell_surface.get(), tc.transform,
-        gfx::SkRectToRectF(*tc.expected_rect), false);
+        gfx::SkRectToRectF(*tc.expected_rect), false, buffer_size);
   }
 
   surface->SetViewport(gfx::SizeF(128, 64));
@@ -1091,7 +1080,7 @@ TEST_P(SurfaceTest, MAYBE_SetCropAndBufferTransform) {
   for (const auto& tc : testcases) {
     SetCropAndBufferTransformHelperTransformAndTest(
         surface.get(), shell_surface.get(), tc.transform,
-        gfx::SkRectToRectF(*tc.expected_rect), true);
+        gfx::SkRectToRectF(*tc.expected_rect), true, buffer_size);
   }
 }
 
@@ -1117,7 +1106,7 @@ TEST_P(SurfaceTest, SetBlendMode) {
 TEST_P(SurfaceTest, OverlayCandidate) {
   gfx::Size buffer_size(1, 1);
   auto buffer = test::ExoTestHelper::CreateBuffer(
-      buffer_size, gfx::BufferFormat::RGBA_8888,
+      buffer_size, viz::SinglePlaneFormat::kRGBA_8888,
       /*is_overlay_candidate=*/true);
   auto surface = std::make_unique<Surface>();
   auto shell_surface = std::make_unique<ShellSurface>(surface.get());
@@ -1131,16 +1120,12 @@ TEST_P(SurfaceTest, OverlayCandidate) {
   ASSERT_EQ(1u, frame.render_pass_list.back()->quad_list.size());
   viz::DrawQuad* draw_quad = frame.render_pass_list.back()->quad_list.back();
   ASSERT_EQ(viz::DrawQuad::Material::kTextureContent, draw_quad->material);
-
-  const viz::TextureDrawQuad* texture_quad =
-      viz::TextureDrawQuad::MaterialCast(draw_quad);
-  EXPECT_FALSE(texture_quad->resource_size_in_pixels().IsEmpty());
 }
 
 TEST_P(SurfaceTest, SetAlpha) {
   gfx::Size buffer_size(1, 1);
   auto buffer = test::ExoTestHelper::CreateBuffer(
-      buffer_size, gfx::BufferFormat::RGBA_8888,
+      buffer_size, viz::SinglePlaneFormat::kRGBA_8888,
       /*is_overlay_candidate=*/true);
   auto surface = std::make_unique<Surface>();
   auto shell_surface = std::make_unique<ShellSurface>(surface.get());
@@ -1192,10 +1177,40 @@ TEST_P(SurfaceTest, SetAlpha) {
   }
 }
 
+// TODO(crbug.com/369003507): This unit test is checking
+// temporarily disable non YUV overlays on hatch devices
+TEST_P(SurfaceTest, DisableNonYUVOverlays) {
+  gfx::Size buffer_size(2, 2);
+  auto buffer_non_yuv = test::ExoTestHelper::CreateBuffer(
+      buffer_size, viz::SinglePlaneFormat::kRGBA_8888,
+      /*is_overlay_candidate=*/true);
+  auto surface = std::make_unique<Surface>();
+  auto shell_surface = std::make_unique<ShellSurface>(surface.get());
+
+  base::test::ScopedChromeOSVersionInfo version_info(
+      "CHROMEOS_RELEASE_BOARD=DRALLION\n", base::Time());
+
+  {
+    surface->Attach(buffer_non_yuv.get());
+    surface->Commit();
+    test::WaitForLastFrameAck(shell_surface.get());
+
+    const viz::CompositorFrame& frame =
+        GetFrameFromSurface(shell_surface.get());
+    EXPECT_EQ(1u, frame.render_pass_list.size());
+    EXPECT_EQ(1u, frame.render_pass_list.back()->quad_list.size());
+    viz::DrawQuad* draw_quad = frame.render_pass_list.back()->quad_list.back();
+    EXPECT_EQ(viz::DrawQuad::Material::kTextureContent, draw_quad->material);
+    EXPECT_EQ(
+        viz::OverlayPriority::kLow,
+        viz::TextureDrawQuad::MaterialCast(draw_quad)->overlay_priority_hint);
+  }
+}
+
 TEST_P(SurfaceTest, ForceRgbxTest) {
   gfx::Size buffer_size(1, 1);
   auto buffer = test::ExoTestHelper::CreateBuffer(
-      buffer_size, gfx::BufferFormat::RGBA_8888,
+      buffer_size, viz::SinglePlaneFormat::kRGBA_8888,
       /*is_overlay_candidate=*/true);
   auto surface = std::make_unique<Surface>();
   auto shell_surface = std::make_unique<ShellSurface>(surface.get());
@@ -1224,7 +1239,7 @@ TEST_P(SurfaceTest, ForceRgbxTest) {
 TEST_P(SurfaceTest, ForceRgbxTestNoBufferAlpha) {
   gfx::Size buffer_size(1, 1);
   auto buffer = test::ExoTestHelper::CreateBuffer(
-      buffer_size, gfx::BufferFormat::RGBX_8888,
+      buffer_size, viz::SinglePlaneFormat::kRGBX_8888,
       /*is_overlay_candidate=*/true);
   auto surface = std::make_unique<Surface>();
   auto shell_surface = std::make_unique<ShellSurface>(surface.get());
@@ -1252,10 +1267,11 @@ TEST_P(SurfaceTest, ForceRgbxTestNoBufferAlpha) {
 
 TEST_P(SurfaceTest, ColorBufferAlpha) {
   gfx::Size buffer_size(1, 1);
-  constexpr SkColor4f kBuffColorExpected[] = {{1.f, 128.0f / 255.0f, 0.f, 1.f},
-                                              {0.f, 128.0f / 255.0f, 1.f, 0.f}};
-  constexpr bool kExpectedOpaque[] = {true, false};
-  for (size_t i = 0; i < std::size(kBuffColorExpected); i++) {
+  constexpr std::array<SkColor4f, 2> kBuffColorExpected = {
+      {{1.f, 128.0f / 255.0f, 0.f, 1.f},
+       {0.f, 128.0f / 255.0f, 1.f, 0.f}}};
+  constexpr std::array<bool, 2> kExpectedOpaque = {{true, false}};
+  for (size_t i = 0; i < kBuffColorExpected.size(); i++) {
     auto buffer =
         std::make_unique<SolidColorBuffer>(kBuffColorExpected[i], buffer_size);
     auto surface = std::make_unique<Surface>();
@@ -1437,151 +1453,7 @@ TEST_P(SurfaceTest, OcclusionNotRecomputedOnWidgetCommit) {
             window_occlusion_tracker_test_api.GetNumTimesOcclusionRecomputed());
 }
 
-TEST_P(SurfaceTest, HasPendingPerCommitBufferReleaseCallback) {
-  auto buffer = test::ExoTestHelper::CreateBuffer(gfx::Size(1, 1));
-  auto surface = std::make_unique<Surface>();
-
-  // We can only commit a buffer release callback if a buffer is attached.
-  surface->Attach(buffer.get());
-
-  EXPECT_FALSE(surface->HasPendingPerCommitBufferReleaseCallback());
-  surface->SetPerCommitBufferReleaseCallback(
-      base::BindOnce([](gfx::GpuFenceHandle) {}));
-  EXPECT_TRUE(surface->HasPendingPerCommitBufferReleaseCallback());
-  surface->Commit();
-  EXPECT_FALSE(surface->HasPendingPerCommitBufferReleaseCallback());
-}
-
-TEST_P(SurfaceTest, PerCommitBufferReleaseCallbackForSameSurface) {
-  gfx::Size buffer_size(64, 64);
-  auto buffer1 = test::ExoTestHelper::CreateBuffer(buffer_size);
-  auto buffer2 = test::ExoTestHelper::CreateBuffer(buffer_size);
-  auto surface = std::make_unique<Surface>();
-  auto shell_surface = std::make_unique<ShellSurface>(surface.get());
-  int per_commit_release_count = 0;
-
-  // Set the release callback that will be run when buffer is no longer in use.
-  int buffer_release_count = 0;
-  base::RunLoop run_loop1;
-  buffer1->set_release_callback(test::CreateReleaseBufferClosure(
-      &buffer_release_count, run_loop1.QuitClosure()));
-
-  base::RunLoop run_loop2;
-  surface->SetPerCommitBufferReleaseCallback(
-      test::CreateExplicitReleaseCallback(&per_commit_release_count,
-                                          run_loop2.QuitClosure()));
-  surface->Attach(buffer1.get());
-  surface->Damage(gfx::Rect(buffer_size));
-  surface->Commit();
-  test::WaitForLastFramePresentation(shell_surface.get());
-  EXPECT_EQ(per_commit_release_count, 0);
-  EXPECT_EQ(buffer_release_count, 0);
-
-  // Attaching the same buffer causes the per-commit callback to be emitted.
-  surface->SetPerCommitBufferReleaseCallback(
-      test::CreateExplicitReleaseCallback(&per_commit_release_count,
-                                          base::DoNothing()));
-  surface->Attach(buffer1.get());
-  surface->Damage(gfx::Rect(buffer_size));
-  surface->Commit();
-  test::WaitForLastFramePresentation(shell_surface.get());
-
-  run_loop2.Run();
-  EXPECT_EQ(per_commit_release_count, 1);
-  EXPECT_EQ(buffer_release_count, 0);
-
-  // Attaching a different buffer causes the per-commit callback to be emitted.
-  surface->Attach(buffer2.get());
-  surface->Damage(gfx::Rect(buffer_size));
-  surface->Commit();
-  test::WaitForLastFramePresentation(shell_surface.get());
-
-  run_loop1.Run();
-  EXPECT_EQ(per_commit_release_count, 2);
-  // The buffer should now be completely released.
-  EXPECT_EQ(buffer_release_count, 1);
-}
-
-TEST_P(SurfaceTest, PerCommitBufferReleaseCallbackForDifferentSurfaces) {
-  gfx::Size buffer_size(64, 64);
-  auto buffer1 = test::ExoTestHelper::CreateBuffer(buffer_size);
-  auto buffer2 = test::ExoTestHelper::CreateBuffer(buffer_size);
-  auto surface1 = std::make_unique<Surface>();
-  auto shell_surface1 = std::make_unique<ShellSurface>(surface1.get());
-  auto surface2 = std::make_unique<Surface>();
-  auto shell_surface2 = std::make_unique<ShellSurface>(surface2.get());
-  int per_commit_release_count1 = 0;
-  int per_commit_release_count2 = 0;
-
-  // Set the release callback that will be run when buffer is no longer in use.
-  int buffer_release_count = 0;
-  base::RunLoop run_loop1;
-  buffer1->set_release_callback(test::CreateReleaseBufferClosure(
-      &buffer_release_count, run_loop1.QuitClosure()));
-
-  // Attach buffer1 to both surface1 and surface2.
-  base::RunLoop run_loop2;
-  surface1->SetPerCommitBufferReleaseCallback(
-      test::CreateExplicitReleaseCallback(&per_commit_release_count1,
-                                          run_loop2.QuitClosure()));
-  surface1->Attach(buffer1.get());
-  surface1->Damage(gfx::Rect(buffer_size));
-  surface1->Commit();
-  surface2->SetPerCommitBufferReleaseCallback(
-      test::CreateExplicitReleaseCallback(&per_commit_release_count2,
-                                          base::DoNothing()));
-  surface2->Attach(buffer1.get());
-  surface2->Damage(gfx::Rect(buffer_size));
-  surface2->Commit();
-  test::WaitForLastFramePresentation(shell_surface2.get());
-
-  EXPECT_EQ(per_commit_release_count1, 0);
-  EXPECT_EQ(per_commit_release_count2, 0);
-  EXPECT_EQ(buffer_release_count, 0);
-
-  // Attach buffer2 to surface1, only the surface1 callback should be emitted.
-  surface1->Attach(buffer2.get());
-  surface1->Damage(gfx::Rect(buffer_size));
-  surface1->Commit();
-  test::WaitForLastFramePresentation(shell_surface1.get());
-
-  run_loop2.Run();
-  EXPECT_EQ(per_commit_release_count1, 1);
-  EXPECT_EQ(per_commit_release_count2, 0);
-  EXPECT_EQ(buffer_release_count, 0);
-
-  // Attach buffer2 to surface2, only the surface2 callback should be emitted.
-  surface2->Attach(buffer2.get());
-  surface2->Damage(gfx::Rect(buffer_size));
-  surface2->Commit();
-  test::WaitForLastFramePresentation(shell_surface2.get());
-
-  run_loop1.Run();
-  EXPECT_EQ(per_commit_release_count1, 1);
-  EXPECT_EQ(per_commit_release_count2, 1);
-  // The buffer should now be completely released.
-  EXPECT_EQ(buffer_release_count, 1);
-}
-
-//
 TEST_P(SurfaceTest, SimpleSurfaceGraphicsOcclusion) {
-  if (!base::FeatureList::IsEnabled(kExoPerSurfaceOcclusion)) {
-    GTEST_SKIP();
-  }
-
-  auto canonical_form_check = [](const auto& frame) {
-    EXPECT_EQ(1u, frame.render_pass_list.size());
-    auto& quad_list = frame.render_pass_list.back()->quad_list;
-    bool is_canonical_form = true;
-    for (auto it = quad_list.begin(); it != quad_list.end(); ++it) {
-      // For this test we assume that a 1x1 quad indicates a AA quad. This
-      // assumption is only valid for this test because of our input rects are
-      // not 1x1.
-      is_canonical_form &= (*it)->rect != gfx::Rect(1, 1);
-    }
-    return is_canonical_form;
-  };
-
   // This parent is merely the background for our children and plays no role in
   // this test.
   gfx::Size buffer_size(256, 256);
@@ -1619,10 +1491,7 @@ TEST_P(SurfaceTest, SimpleSurfaceGraphicsOcclusion) {
   {
     const viz::CompositorFrame& frame =
         GetFrameFromSurface(shell_surface.get());
-    bool const is_canonical_form = canonical_form_check(frame);
-    auto const kExpectedNumSQSs = is_canonical_form ? 2u : 3u;
-    ASSERT_EQ(kExpectedNumSQSs,
-              frame.render_pass_list.back()->shared_quad_state_list.size());
+    ASSERT_EQ(2u, frame.render_pass_list.back()->shared_quad_state_list.size());
   }
 
   // # Non occlusion location
@@ -1639,10 +1508,7 @@ TEST_P(SurfaceTest, SimpleSurfaceGraphicsOcclusion) {
   {
     const viz::CompositorFrame& frame =
         GetFrameFromSurface(shell_surface.get());
-
-    auto const kExpectedNumSQSs = 3u;
-    ASSERT_EQ(kExpectedNumSQSs,
-              frame.render_pass_list.back()->shared_quad_state_list.size());
+    ASSERT_EQ(3u, frame.render_pass_list.back()->shared_quad_state_list.size());
   }
 
   // # Non occluding size.
@@ -1659,10 +1525,7 @@ TEST_P(SurfaceTest, SimpleSurfaceGraphicsOcclusion) {
   {
     const viz::CompositorFrame& frame =
         GetFrameFromSurface(shell_surface.get());
-
-    auto const kExpectedNumSQSs = 3u;
-    ASSERT_EQ(kExpectedNumSQSs,
-              frame.render_pass_list.back()->shared_quad_state_list.size());
+    ASSERT_EQ(3u, frame.render_pass_list.back()->shared_quad_state_list.size());
   }
 
   // # Different occlusion
@@ -1679,10 +1542,7 @@ TEST_P(SurfaceTest, SimpleSurfaceGraphicsOcclusion) {
   {
     const viz::CompositorFrame& frame =
         GetFrameFromSurface(shell_surface.get());
-    bool const is_canonical_form = canonical_form_check(frame);
-    auto const kExpectedNumSQSs = is_canonical_form ? 2u : 3u;
-    ASSERT_EQ(kExpectedNumSQSs,
-              frame.render_pass_list.back()->shared_quad_state_list.size());
+    ASSERT_EQ(2u, frame.render_pass_list.back()->shared_quad_state_list.size());
   }
 
   // # Rounded occlusion not matching
@@ -1699,9 +1559,7 @@ TEST_P(SurfaceTest, SimpleSurfaceGraphicsOcclusion) {
   {
     const viz::CompositorFrame& frame =
         GetFrameFromSurface(shell_surface.get());
-    auto const kExpectedNumSQSs = 3u;
-    ASSERT_EQ(kExpectedNumSQSs,
-              frame.render_pass_list.back()->shared_quad_state_list.size());
+    ASSERT_EQ(3u, frame.render_pass_list.back()->shared_quad_state_list.size());
   }
 
   // # Rounded occlusion matching
@@ -1718,10 +1576,7 @@ TEST_P(SurfaceTest, SimpleSurfaceGraphicsOcclusion) {
   {
     const viz::CompositorFrame& frame =
         GetFrameFromSurface(shell_surface.get());
-    bool const is_canonical_form = canonical_form_check(frame);
-    auto const kExpectedNumSQSs = is_canonical_form ? 2u : 3u;
-    ASSERT_EQ(kExpectedNumSQSs,
-              frame.render_pass_list.back()->shared_quad_state_list.size());
+    ASSERT_EQ(2u, frame.render_pass_list.back()->shared_quad_state_list.size());
   }
 
   // # Clip rect too small
@@ -1735,9 +1590,7 @@ TEST_P(SurfaceTest, SimpleSurfaceGraphicsOcclusion) {
   {
     const viz::CompositorFrame& frame =
         GetFrameFromSurface(shell_surface.get());
-    auto const kExpectedNumSQSs = 3u;
-    ASSERT_EQ(kExpectedNumSQSs,
-              frame.render_pass_list.back()->shared_quad_state_list.size());
+    ASSERT_EQ(3u, frame.render_pass_list.back()->shared_quad_state_list.size());
   }
 
   //  # Clip rect large enough
@@ -1749,57 +1602,25 @@ TEST_P(SurfaceTest, SimpleSurfaceGraphicsOcclusion) {
   {
     const viz::CompositorFrame& frame =
         GetFrameFromSurface(shell_surface.get());
-    bool const is_canonical_form = canonical_form_check(frame);
-    auto const kExpectedNumSQSs = is_canonical_form ? 2u : 3u;
-    ASSERT_EQ(kExpectedNumSQSs,
-              frame.render_pass_list.back()->shared_quad_state_list.size());
+    ASSERT_EQ(2u, frame.render_pass_list.back()->shared_quad_state_list.size());
   }
-}
 
-// This test makes sure that when we associate 1 or more rect with the same sqs
-// we do so only for canonical rects that form a sealed single layer.
-TEST_P(SurfaceTest, LayerSharedQuadState) {
-  auto canonical_form_check = [](const auto& frame) {
-    EXPECT_EQ(1u, frame.render_pass_list.size());
-    auto& quad_list = frame.render_pass_list.back()->quad_list;
-    bool is_canonical_form = true;
-    for (auto it = quad_list.begin(); it != quad_list.end(); ++it) {
-      // For this test we assume that a 1x1 quad indicates a AA quad. This
-      // assumption is only valid for this test because of our input rects are
-      // not 1x1.
-      is_canonical_form &= (*it)->rect != gfx::Rect(1, 1);
-    }
-    return is_canonical_form;
-  };
+  gfx::Transform non_axis_aligned_transform;
+  non_axis_aligned_transform.Rotate(45);
 
-  // This parent is merely the background for our children and plays no role in
-  // this test.
-  gfx::Size buffer_size(256, 256);
-  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
-  auto surface = std::make_unique<Surface>();
-  auto shell_surface = std::make_unique<ShellSurface>(surface.get());
-  surface->Attach(buffer.get());
-  surface->SetViewport(gfx::SizeF(13, 13));
+  gfx::Transform identity_transform;
+  identity_transform.MakeIdentity();
 
-  // Test layer joining in x.
-  auto child_buffer_a = test::ExoTestHelper::CreateBuffer(gfx::Size(64, 64));
-  auto child_surface_a = std::make_unique<Surface>();
-  auto sub_surface_a =
-      std::make_unique<SubSurface>(child_surface_a.get(), surface.get());
-  child_surface_a->Attach(child_buffer_a.get());
-  child_surface_a->SetOverlayPriorityHint(OverlayPriority::LOW);
-  sub_surface_a->SetPosition(gfx::PointF(20, 10));
-  child_surface_a->SetViewport(gfx::SizeF(20, 10));
+  //  # Non axis-preserving transform
+  sub_surface_a->SetPosition(gfx::PointF(30, 20));
+  child_surface_a->SetViewport(gfx::SizeF(30, 15));
+  child_surface_a->SetSurfaceTransform(non_axis_aligned_transform);
+  child_surface_a->SetClipRect(std::nullopt);
   child_surface_a->Commit();
 
-  auto child_buffer_b = test::ExoTestHelper::CreateBuffer(gfx::Size(64, 64));
-  auto child_surface_b = std::make_unique<Surface>();
-  auto sub_surface_b =
-      std::make_unique<SubSurface>(child_surface_b.get(), surface.get());
-  child_surface_b->Attach(child_buffer_b.get());
-  child_surface_b->SetOverlayPriorityHint(OverlayPriority::LOW);
-  sub_surface_b->SetPosition(gfx::PointF(40, 10));
-  child_surface_b->SetViewport(gfx::SizeF(20, 10));
+  sub_surface_b->SetPosition(gfx::PointF(30, 20));
+  child_surface_b->SetViewport(gfx::SizeF(30, 15));
+  child_surface_b->SetClipRect(std::nullopt);
   child_surface_b->Commit();
 
   surface->Commit();
@@ -1807,77 +1628,20 @@ TEST_P(SurfaceTest, LayerSharedQuadState) {
   {
     const viz::CompositorFrame& frame =
         GetFrameFromSurface(shell_surface.get());
-    bool const is_canonical_form = canonical_form_check(frame);
-    auto const kExpectedNumSQSs = is_canonical_form ? 2u : 3u;
-    ASSERT_EQ(kExpectedNumSQSs,
-              frame.render_pass_list.back()->shared_quad_state_list.size());
-  }
-
-  // Test Layer joining in y.
-  sub_surface_a->SetPosition(gfx::PointF(20, 10));
-  child_surface_a->SetViewport(gfx::SizeF(20, 10));
-  child_surface_a->Commit();
-
-  sub_surface_b->SetPosition(gfx::PointF(20, 20));
-  child_surface_b->SetViewport(gfx::SizeF(20, 10));
-  child_surface_b->Commit();
-
-  surface->Commit();
-  test::WaitForLastFrameAck(shell_surface.get());
-  {
-    const viz::CompositorFrame& frame =
-        GetFrameFromSurface(shell_surface.get());
-    bool const is_canonical_form = canonical_form_check(frame);
-    auto const kExpectedNumSQSs = is_canonical_form ? 2u : 3u;
-    ASSERT_EQ(kExpectedNumSQSs,
-              frame.render_pass_list.back()->shared_quad_state_list.size());
-  }
-
-  // Test Layer joining with overlapping rects but still sealed.
-  sub_surface_a->SetPosition(gfx::PointF(20, 10));
-  child_surface_a->SetViewport(gfx::SizeF(20, 10));
-  child_surface_a->Commit();
-
-  sub_surface_b->SetPosition(gfx::PointF(30, 10));
-  child_surface_b->SetViewport(gfx::SizeF(20, 10));
-  child_surface_b->Commit();
-
-  surface->Commit();
-  test::WaitForLastFrameAck(shell_surface.get());
-  {
-    const viz::CompositorFrame& frame =
-        GetFrameFromSurface(shell_surface.get());
-    bool const is_canonical_form = canonical_form_check(frame);
-    auto const kExpectedNumSQSs = is_canonical_form ? 2u : 3u;
-    ASSERT_EQ(kExpectedNumSQSs,
-              frame.render_pass_list.back()->shared_quad_state_list.size());
-  }
-
-  // Fail overlapping but not sealed.
-  sub_surface_a->SetPosition(gfx::PointF(20, 10));
-  child_surface_a->SetViewport(gfx::SizeF(20, 10));
-  child_surface_a->Commit();
-
-  sub_surface_b->SetPosition(gfx::PointF(30, 16));
-  child_surface_b->SetViewport(gfx::SizeF(20, 10));
-  child_surface_b->Commit();
-
-  surface->Commit();
-  test::WaitForLastFrameAck(shell_surface.get());
-  {
-    const viz::CompositorFrame& frame =
-        GetFrameFromSurface(shell_surface.get());
-    ASSERT_EQ(1u, frame.render_pass_list.size());
     ASSERT_EQ(3u, frame.render_pass_list.back()->shared_quad_state_list.size());
   }
 
-  // Fail non overlapping rects
-  sub_surface_a->SetPosition(gfx::PointF(20, 10));
-  child_surface_a->SetViewport(gfx::SizeF(20, 10));
+  //  # Non axis-preserving transform
+  sub_surface_a->SetPosition(gfx::PointF(30, 20));
+  child_surface_a->SetViewport(gfx::SizeF(30, 15));
+  child_surface_a->SetSurfaceTransform(identity_transform);
+  child_surface_a->SetClipRect(std::nullopt);
   child_surface_a->Commit();
 
-  sub_surface_b->SetPosition(gfx::PointF(42, 10));
-  child_surface_b->SetViewport(gfx::SizeF(20, 10));
+  sub_surface_b->SetPosition(gfx::PointF(30, 20));
+  child_surface_b->SetViewport(gfx::SizeF(30, 15));
+  child_surface_b->SetClipRect(std::nullopt);
+  child_surface_b->SetSurfaceTransform(non_axis_aligned_transform);
   child_surface_b->Commit();
 
   surface->Commit();
@@ -1885,99 +1649,35 @@ TEST_P(SurfaceTest, LayerSharedQuadState) {
   {
     const viz::CompositorFrame& frame =
         GetFrameFromSurface(shell_surface.get());
-    ASSERT_EQ(1u, frame.render_pass_list.size());
     ASSERT_EQ(3u, frame.render_pass_list.back()->shared_quad_state_list.size());
   }
 
-  // Let us prove that we can join more than 2 rects by having 3 rects
-  // that should form a single layer.
-  sub_surface_a->SetPosition(gfx::PointF(20, 10));
-  child_surface_a->SetViewport(gfx::SizeF(20, 10));
+  gfx::Transform axis_aligned_transform;
+  axis_aligned_transform.Rotate(90);
+
+  //  # Axis-preserving transform
+  sub_surface_a->SetPosition(gfx::PointF(30, 20));
+  child_surface_a->SetViewport(gfx::SizeF(30, 15));
+  child_surface_a->SetSurfaceTransform(axis_aligned_transform);
+  child_surface_a->SetClipRect(std::nullopt);
   child_surface_a->Commit();
 
-  sub_surface_b->SetPosition(gfx::PointF(20, 20));
-  child_surface_b->SetViewport(gfx::SizeF(20, 10));
+  sub_surface_b->SetPosition(gfx::PointF(30, 20));
+  child_surface_b->SetViewport(gfx::SizeF(30, 15));
+  child_surface_b->SetSurfaceTransform(axis_aligned_transform);
+  child_surface_b->SetClipRect(std::nullopt);
   child_surface_b->Commit();
-
-  auto child_buffer_c = test::ExoTestHelper::CreateBuffer(gfx::Size(64, 64));
-  auto child_surface_c = std::make_unique<Surface>();
-  auto sub_surface_c =
-      std::make_unique<SubSurface>(child_surface_c.get(), surface.get());
-  child_surface_c->Attach(child_buffer_c.get());
-  sub_surface_c->SetPosition(gfx::PointF(20, 30));
-  child_surface_c->SetViewport(gfx::SizeF(20, 10));
-  child_surface_c->SetOverlayPriorityHint(OverlayPriority::LOW);
-  child_surface_c->Commit();
 
   surface->Commit();
   test::WaitForLastFrameAck(shell_surface.get());
   {
     const viz::CompositorFrame& frame =
         GetFrameFromSurface(shell_surface.get());
-    bool const is_canonical_form = canonical_form_check(frame);
-    auto const kExpectedNumSQSs = is_canonical_form ? 2u : 4u;
-    ASSERT_EQ(kExpectedNumSQSs,
-              frame.render_pass_list.back()->shared_quad_state_list.size());
-  }
-
-  // Setting overlay on the middle quad should cause all to get a unique sqs.
-  child_surface_a->Commit();
-  child_surface_b->SetOverlayPriorityHint(OverlayPriority::REGULAR);
-  child_surface_b->Commit();
-  child_surface_c->Commit();
-  surface->Commit();
-  test::WaitForLastFrameAck(shell_surface.get());
-  {
-    const viz::CompositorFrame& frame =
-        GetFrameFromSurface(shell_surface.get());
-    auto const kExpectedNumSQSs = 4u;
-    ASSERT_EQ(kExpectedNumSQSs,
-              frame.render_pass_list.back()->shared_quad_state_list.size());
-  }
-
-  // Setting overlay on the first quad should cause quad b and quad c to still
-  // use the same sqs.
-  child_surface_a->SetOverlayPriorityHint(OverlayPriority::REGULAR);
-  child_surface_a->Commit();
-  child_surface_b->SetOverlayPriorityHint(OverlayPriority::LOW);
-  child_surface_b->Commit();
-  child_surface_c->Commit();
-  surface->Commit();
-  test::WaitForLastFrameAck(shell_surface.get());
-  {
-    const viz::CompositorFrame& frame =
-        GetFrameFromSurface(shell_surface.get());
-    bool const is_canonical_form = canonical_form_check(frame);
-    auto const kExpectedNumSQSs = is_canonical_form ? 3u : 4u;
-    ASSERT_EQ(kExpectedNumSQSs,
-              frame.render_pass_list.back()->shared_quad_state_list.size());
+    ASSERT_EQ(2u, frame.render_pass_list.back()->shared_quad_state_list.size());
   }
 }
 
-// Tests that only apply if ExoReactiveFrameSubmission is enabled.
-class ReactiveFrameSubmissionSurfaceTest : public SurfaceTest {
- public:
-  ReactiveFrameSubmissionSurfaceTest() {
-    DCHECK_EQ(GetFrameSubmissionType(), test::FrameSubmissionType::kReactive);
-  }
-
-  ReactiveFrameSubmissionSurfaceTest(
-      const ReactiveFrameSubmissionSurfaceTest&) = delete;
-  ReactiveFrameSubmissionSurfaceTest& operator=(
-      const ReactiveFrameSubmissionSurfaceTest&) = delete;
-
-  ~ReactiveFrameSubmissionSurfaceTest() override = default;
-};
-
-// Instantiate the values of frame submission types and device scale factor in
-// the parameterized tests.
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ReactiveFrameSubmissionSurfaceTest,
-    testing::Combine(testing::Values(test::FrameSubmissionType::kReactive),
-                     testing::Values(1.0f, 1.25f, 2.0f)));
-
-TEST_P(ReactiveFrameSubmissionSurfaceTest, FullDamageAfterDiscardingFrame) {
+TEST_P(SurfaceTest, FullDamageAfterDiscardingFrame) {
   gfx::Size buffer_size(256, 256);
   auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
   std::unique_ptr<Surface> surface(new Surface);

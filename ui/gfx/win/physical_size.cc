@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/memory/free_deleter.h"
 #include "base/scoped_generic.h"
 #include "base/strings/utf_string_conversions.h"
@@ -43,7 +44,7 @@ bool GetSizeFromRegistry(HDEVINFO device_info_list,
     return false;
 
   BYTE data[128];  // EDID block is exactly 128 bytes long.
-  ZeroMemory(&data[0], sizeof(data));
+  UNSAFE_TODO(ZeroMemory(&data[0], sizeof(data)));
   DWORD data_length = sizeof(data);
   LONG return_value =
       reg_key.ReadValue(L"EDID", &data[0], &data_length, nullptr);
@@ -143,7 +144,7 @@ std::vector<PhysicalDisplaySize> GetPhysicalSizeForDisplays() {
                                 EDD_GET_DEVICE_INTERFACE_NAME)) {
         wchar_t* attached_device_id = attached_device.DeviceID;
         wchar_t* setup_device_path = interface_detail->DevicePath;
-        if (wcsicmp(attached_device_id, setup_device_path) == 0) {
+        if (UNSAFE_TODO(wcsicmp(attached_device_id, setup_device_path)) == 0) {
           int width_mm;
           int height_mm;
           bool found = GetSizeFromRegistry(device_info_list.get(), &device_info,

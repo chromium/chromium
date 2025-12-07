@@ -4,10 +4,13 @@
 
 package org.chromium.components.strictmode;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.List;
 import java.util.function.Function;
 
 /** Violation that occurred. */
+@NullMarked
 public class Violation {
     public static final int DETECT_FAILED = 0x00;
     // Taken from android.os.StrictMode

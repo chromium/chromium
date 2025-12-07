@@ -11,6 +11,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -21,9 +22,11 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_scoring_signals.pb.h"
 #include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
+#include "third_party/omnibox_proto/suggest_template_info.pb.h"
 
 class AutocompleteProviderClient;
 class GURL;
@@ -84,7 +87,6 @@ class BaseSearchProvider : public AutocompleteProvider {
   static AutocompleteMatch CreateShortcutSearchSuggestion(
       const std::u16string& suggestion,
       AutocompleteMatchType::Type type,
-      bool from_keyword_provider,
       const TemplateURL* template_url,
       const SearchTermsData& search_terms_data);
 
@@ -100,10 +102,13 @@ class BaseSearchProvider : public AutocompleteProvider {
       bool is_tail_suggestion);
 
   static scoped_refptr<OmniboxAction> CreateActionInSuggest(
-      omnibox::ActionInfo action_info,
+      omnibox::SuggestTemplateInfo::TemplateAction template_action,
       const TemplateURLRef& search_url,
       const TemplateURLRef::SearchTermsArgs& original_search_terms,
       const SearchTermsData& search_terms_data);
+
+  static std::string CreateQueryParamStringFromMap(
+      const google::protobuf::Map<std::string, std::string>& query_param_map);
 
   static scoped_refptr<OmniboxAction> CreateAnswerAction(
       omnibox::SuggestionEnhancement enhancement,
@@ -112,30 +117,50 @@ class BaseSearchProvider : public AutocompleteProvider {
 
   // Returns whether the URL of the current page is eligible to be sent in any
   // suggest request. Only valid URLs with an HTTP or HTTPS scheme are eligible.
-  static bool PageURLIsEligibleForSuggestRequest(const GURL& page_url);
-  // Returns whether a suggest request can be made without the current page URL.
+  // We don't bother sending the URL of an NTP page; it's not useful. The server
+  // already gets equivalent information in the form of the page classification.
+  static bool PageURLIsEligibleForSuggestRequest(
+      const GURL& page_url,
+      metrics::OmniboxEventProto::PageClassification page_classification);
+  // Returns whether a suggest request can be made.
+  // It requires that all the following hold:
+  // * Suggest URL is not empty or misconfigured.
+  // * The user has suggest enabled in their settings.
+  //   * Unless the request is being made from the Lens searchboxes which have
+  //     their own privacy model.
+  // * The user is not in incognito mode. Incognito disables suggest entirely.
+  //   * Unless the request is being made from the Lens searchboxes which have
+  //     their own privacy model.
+  static bool CanSendSuggestRequest(
+      metrics::OmniboxEventProto::PageClassification page_classification,
+      const TemplateURL* template_url,
+      const AutocompleteProviderClient* client);
+  // Returns whether a secure suggest request can be made.
   // It requires that all the following to hold:
+  // * CanSendSuggestRequest() returns true.
   // * The suggest request is sent over HTTPS. This avoids leaking the current
   //   page URL or personal data in unencrypted network traffic.
-  // * The user has suggest enabled in their settings.
-  // * The user is not in incognito mode. Incognito disables suggest entirely.
   // * The user's suggest provider is Google. We might want to allow other
   //   providers to see this data someday, but for now this has only been
   //   implemented for Google.
-  static bool CanSendSuggestRequestWithoutPageURL(
+  static bool CanSendSecureSuggestRequest(
+      metrics::OmniboxEventProto::PageClassification page_classification,
       const TemplateURL* template_url,
       const SearchTermsData& search_terms_data,
       const AutocompleteProviderClient* client);
   // Returns whether a suggest request can be made with the current page URL.
   // It requires that all the following hold:
-  // * CanSendSuggestRequestWithoutPageURL() returns true.
+  // * CanSendSecureSuggestRequest() returns true.
   // * Either one of:
   //   * The user consented to sending URLs of current page to Google and have
   //     them associated with their Google account.
   //   * The current page URL is the Search Results Page. The suggest endpoint
   //     could have logged the page URL when the user accessed it.
+  //   * The request is being made from the Lens searchboxes which have their
+  //     own privacy model.
   static bool CanSendSuggestRequestWithPageURL(
       const GURL& current_page_url,
+      metrics::OmniboxEventProto::PageClassification page_classification,
       const TemplateURL* template_url,
       const SearchTermsData& search_terms_data,
       const AutocompleteProviderClient* client);
@@ -227,7 +252,7 @@ class BaseSearchProvider : public AutocompleteProvider {
   // completes.
   void OnDeletionComplete(const network::SimpleURLLoader* source,
                           const int response_code,
-                          std::unique_ptr<std::string> response_body);
+                          std::optional<std::string> response_body);
 
   raw_ptr<AutocompleteProviderClient> client_;
 

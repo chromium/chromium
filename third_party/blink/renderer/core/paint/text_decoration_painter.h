@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/paint/highlight_painter.h"
 #include "third_party/blink/renderer/core/paint/text_decoration_info.h"
+#include "third_party/blink/renderer/core/paint/text_shadow_painter.h"
 
 namespace blink {
 
@@ -78,6 +79,9 @@ class CORE_EXPORT TextDecorationPainter {
  private:
   enum Step { kBegin, kExcept, kOnly };
   void ClipIfNeeded(GraphicsContextStateSaver&);
+
+  Color LineColorForPhase(TextDecorationInfo& decoration_info,
+                          TextShadowPaintPhase text_shadow_paint_phase) const;
 
   void PaintUnderOrOverLineDecorations(TextDecorationInfo&,
                                        const TextFragmentPaintInfo&,

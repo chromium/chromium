@@ -7,6 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
@@ -28,7 +29,7 @@ class StyleInvalidatorTest : public testing::Test {
 };
 
 TEST_F(StyleInvalidatorTest, SkipDisplayNone) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id="root">
       <div style="display:none">
         <div class="a"></div>
@@ -56,7 +57,7 @@ TEST_F(StyleInvalidatorTest, SkipDisplayNone) {
 }
 
 TEST_F(StyleInvalidatorTest, SkipDisplayNoneClearPendingNth) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id="none" style="display:none">
       <div class="a"></div>
       <div class="a"></div>
@@ -96,6 +97,46 @@ TEST_F(StyleInvalidatorTest, SkipDisplayNoneClearPendingNth) {
   EXPECT_TRUE(GetDocument()
                   .getElementById(AtomicString("descendant"))
                   ->ChildNeedsStyleRecalc());
+}
+
+TEST_F(StyleInvalidatorTest, SiblingIndexAndNthChildInvalidation) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      #nth:nth-child(1) { z-index: 7; }
+      #sibling { z-index: sibling-index(); }
+    </style>
+    <div id="parent">
+      <div></div>
+      <div></div>
+      <div id="nth"></div>
+      <div></div>
+      <div></div>
+      <div id="sibling"></div>
+      <div></div>
+      <div id="rm"></div>
+    </div>
+  )HTML");
+
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  Element* parent = GetDocument().getElementById(AtomicString("parent"));
+  Element* nth = GetDocument().getElementById(AtomicString("nth"));
+  Element* sibling = GetDocument().getElementById(AtomicString("sibling"));
+  Element* rm = GetDocument().getElementById(AtomicString("rm"));
+
+  rm->remove();
+
+  GetDocument().GetStyleEngine().InvalidateStyle();
+
+  for (const Element& child : ElementTraversal::ChildrenOf(*parent)) {
+    if (child == nth) {
+      EXPECT_TRUE(child.NeedsStyleRecalc());
+    } else if (child == sibling) {
+      EXPECT_TRUE(child.NeedsStyleRecalc());
+    } else {
+      EXPECT_FALSE(child.NeedsStyleRecalc());
+    }
+  }
 }
 
 }  // namespace blink

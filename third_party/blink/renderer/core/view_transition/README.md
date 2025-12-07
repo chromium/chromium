@@ -43,8 +43,8 @@ rendered using the following steps :
   transition elements" (or just "transition elements" when the context is clear)
   which should be animated independently during a transition.
 
-- A tree of pseudo elements is generated to render the transition elements using
-  this state. The pseudo element tree is styled after a style recalc pass is
+- A tree of pseudo-elements is generated to render the transition elements using
+  this state. The pseudo-element tree is styled after a style recalc pass is
   executed on the author DOM during a Document lifecycle update.
 
 ``` text
@@ -61,11 +61,11 @@ html
    |     |_ ::view-transition-new(bar)
 ```
 
-The ::view-transition pseudo element is the root of this pseudo element tree. This
-provides a shared stacking context for painting pseudo elements corresponding to
+The ::view-transition pseudo-element is the root of this pseudo-element tree. This
+provides a shared stacking context for painting pseudo-elements corresponding to
 a transition element.
 
-Each transition element is rendered using the following new pseudo elements :
+Each transition element is rendered using the following new pseudo-elements :
 
 - ::view-transition-group generates a box which maps to the transition element's
 quad in author DOM.
@@ -79,12 +79,12 @@ transition element's live content from the new DOM.
 
 Each transition element is tagged with a developer provided string which can be
 used as a custom ident to uniquely identify and target the corresponding
-generated pseudo elements in UA and developer stylesheets. This string is
+generated pseudo-elements in UA and developer stylesheets. This string is
 tracked on the PseudoElement class.
 
 ### Pseudo-element traversal
 
-Pseudo elements are not considered part of tree structure of the ordinary DOM
+Pseudo-elements are not considered part of tree structure of the ordinary DOM
 tree and thus have no sibling or child pointers like ordinary nodes. However, an
 ordering is defined via special "PseudoAware" methods for child and sibling
 operations.
@@ -128,14 +128,14 @@ in the old and new DOM as follows :
 old_snapshot_id tags elements in the old DOM. This ID refers to a live snapshot
 and the Viz process executes an async operation to save a cached version keyed
 using the same ID. This ID provides the content for ::view-transition-old
-pseudo elements.
+pseudo-elements.
 
 * Once the cached version has been saved, the developer can update the DOM to
 the new state called the start phase. At this point new_snapshot_id is created
 to tag elements in the new DOM. This ID always refers to a live snapshot and
-provides the content for ::view-transition-new pseudo elements. The
+provides the content for ::view-transition-new pseudo-elements. The
 old_snapshot_id now refers to the cached version displayed by
-::view-transition-old pseudo elements.
+::view-transition-old pseudo-elements.
 
 ## Viewport Sizes
 

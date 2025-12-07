@@ -1,0 +1,102 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import(
+    "//chrome/browser/resources/chromeos/accessibility/tools/run_jsbundler.gni")
+import("//chrome/common/features.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/bundle_js.gni")
+import("//ui/webui/resources/tools/minify_js.gni")
+
+assert(is_chromeos)
+
+group("build") {
+  deps = [
+    ":copy_background",
+    ":minify_js",
+  ]
+}
+
+enhanced_network_tts_dir =
+    "$root_out_dir/resources/chromeos/accessibility/enhanced_network_tts/mv2"
+
+# Directory where typescript build will occur.
+ts_build_staging_dir = "$target_gen_dir/ts_build_staging"
+
+tsc_out_dir = "$target_gen_dir/tsc"
+
+common_tsc_dir =
+    "$root_gen_dir/chrome/browser/resources/chromeos/accessibility/common/tsc"
+
+# TS files to compile.
+ts_modules = [
+  "background.ts",
+  "enhanced_network_tts.ts",
+]
+
+# Root dir must be parent directory to access common/.
+ts_library("ts_build") {
+  root_dir = "$ts_build_staging_dir"
+  out_dir = tsc_out_dir
+
+  deps = [ "../../common:ts_build" ]
+
+  extra_deps = [ ":stage_ts_build" ]
+
+  path_mappings =
+      [ "/common/*|" + rebase_path("$common_tsc_dir/*", target_gen_dir) ]
+
+  definitions = [
+    "mojo_bindings_externs.d.ts",
+    "../../definitions/extensions.d.ts",
+    "../../definitions/extension_types.d.ts",
+    "../../definitions/runtime.d.ts",
+    "../../definitions/tabs.d.ts",
+    "../../definitions/tts.d.ts",
+    "../../definitions/tts_engine.d.ts",
+    "../../definitions/windows.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
+  ]
+
+  in_files = ts_modules
+
+  tsconfig_base = "../../tsconfig.base.json"
+}
+
+bundle_js("bundle_js") {
+  visibility = [ ":minify_js" ]
+
+  host = "_ignored_"
+  input = rebase_path("$tsc_out_dir", root_build_dir)
+  js_module_in_files = [ "background.js" ]
+  out_folder = "$target_gen_dir/bundle"
+
+  deps = [
+    ":ts_build",
+    "../../common:copied_files",
+  ]
+}
+
+minify_js("minify_js") {
+  visibility = [ ":build" ]
+
+  deps = [ ":bundle_js" ]
+  in_folder = "$target_gen_dir/bundle"
+  in_files = [ "background.rollup.js" ]
+  out_folder = "$enhanced_network_tts_dir"
+}
+
+copy("copy_background") {
+  sources = [ "background.html" ]
+  outputs = [ "$enhanced_network_tts_dir/background.html" ]
+}
+
+# Copy all JS and TS sources to a staging folder. All generated TS/JS files
+# will also be copied into this folder, which will allow us to support a TS
+# build that uses both checked-in and generated files.
+copy("stage_ts_build") {
+  sources = ts_modules
+  outputs = [ "$ts_build_staging_dir/{{source_target_relative}}" ]
+}

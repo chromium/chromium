@@ -17,6 +17,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/no_destructor.h"
+#include "base/process/memory.h"
 #include "base/strings/string_util.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
@@ -176,6 +177,9 @@ bool MessageWindow::DoCreate(MessageCallback message_callback,
       CreateWindow(MAKEINTATOM(window_class.atom()), window_name, 0, 0, 0, 0, 0,
                    HWND_MESSAGE, nullptr, window_class.instance(), this);
   if (!window_) {
+    if (::GetLastError() == ERROR_NOT_ENOUGH_MEMORY) {
+      base::TerminateBecauseOutOfMemory(0);
+    }
     PLOG(ERROR) << "Failed to create a message-only window";
     return false;
   }

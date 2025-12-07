@@ -5,9 +5,25 @@
 #include "chrome/browser/profiles/profile_statistics_factory.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
+#include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_statistics.h"
+#include "chrome/browser/webauthn/chrome_web_authentication_delegate.h"
+#include "chrome/browser/webdata_services/web_data_service_factory.h"
+#include "components/keyed_service/core/service_access_type.h"
 #include "content/public/browser/browser_thread.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "device/fido/mac/credential_store.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "device/fido/cros/credential_store.h"
+#endif
 
 // static
 ProfileStatistics* ProfileStatisticsFactory::GetForProfile(Profile* profile) {
@@ -29,10 +45,40 @@ ProfileStatisticsFactory::ProfileStatisticsFactory()
               // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOriginalOnly)
-              .Build()) {}
+              .Build()) {
+  DependsOn(WebDataServiceFactory::GetInstance());
+  DependsOn(autofill::PersonalDataManagerFactory::GetInstance());
+  DependsOn(autofill::AutofillEntityDataManagerFactory::GetInstance());
+  DependsOn(BookmarkModelFactory::GetInstance());
+  DependsOn(HistoryServiceFactory::GetInstance());
+  DependsOn(ProfilePasswordStoreFactory::GetInstance());
+}
 
-KeyedService* ProfileStatisticsFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ProfileStatisticsFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new ProfileStatistics(profile);
+  std::unique_ptr<::device::fido::PlatformCredentialStore> credential_store =
+#if BUILDFLAG(IS_MAC)
+      std::make_unique<::device::fido::mac::TouchIdCredentialStore>(
+          ChromeWebAuthenticationDelegate::TouchIdAuthenticatorConfigForProfile(
+              profile));
+#elif BUILDFLAG(IS_CHROMEOS)
+      std::make_unique<
+          ::device::fido::cros::PlatformAuthenticatorCredentialStore>();
+#else
+      nullptr;
+#endif
+
+  return std::make_unique<ProfileStatistics>(
+      WebDataServiceFactory::GetAutofillWebDataForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS),
+      autofill::PersonalDataManagerFactory::GetForBrowserContext(profile),
+      autofill::AutofillEntityDataManagerFactory::GetForProfile(profile),
+      BookmarkModelFactory::GetForBrowserContext(profile),
+      HistoryServiceFactory::GetForProfile(profile,
+                                           ServiceAccessType::EXPLICIT_ACCESS),
+      ProfilePasswordStoreFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS),
+      profile->GetPrefs(), std::move(credential_store));
 }

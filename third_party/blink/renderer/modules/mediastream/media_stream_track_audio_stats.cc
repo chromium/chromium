@@ -71,7 +71,7 @@ void MediaStreamTrackAudioStats::resetLatency(ScriptState* script_state) {
   temp_stats.Absorb(stats_);
 }
 
-ScriptValue MediaStreamTrackAudioStats::toJSON(ScriptState* script_state) {
+ScriptObject MediaStreamTrackAudioStats::toJSON(ScriptState* script_state) {
   V8ObjectBuilder result(script_state);
   result.AddNumber("deliveredFrames", deliveredFrames(script_state));
   result.AddNumber("deliveredFramesDuration",
@@ -82,7 +82,7 @@ ScriptValue MediaStreamTrackAudioStats::toJSON(ScriptState* script_state) {
   result.AddNumber("averageLatency", averageLatency(script_state));
   result.AddNumber("minimumLatency", minimumLatency(script_state));
   result.AddNumber("maximumLatency", maximumLatency(script_state));
-  return result.GetScriptValue();
+  return result.ToScriptObject();
 }
 
 void MediaStreamTrackAudioStats::Trace(Visitor* visitor) const {
@@ -105,8 +105,8 @@ void MediaStreamTrackAudioStats::MaybeUpdateStats(ScriptState* script_state) {
   // Queue a microtask to let us know when we are on a new task again, ensuring
   // that we get fresh stats in the next task execution cycle.
   ToEventLoop(script_state)
-      .EnqueueMicrotask(WTF::BindOnce(&MediaStreamTrackAudioStats::OnMicrotask,
-                                      WrapWeakPersistent(this)));
+      .EnqueueMicrotask(BindOnce(&MediaStreamTrackAudioStats::OnMicrotask,
+                                 WrapWeakPersistent(this)));
 }
 
 void MediaStreamTrackAudioStats::OnMicrotask() {

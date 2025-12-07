@@ -46,7 +46,7 @@ bool AdvanceEnumeratorWithStat(base::FileEnumerator* traversal,
 }  // namespace
 
 // Recursively delete a folder and its contents, returning `true` on success.
-bool DeleteFolder(const std::optional<base::FilePath>& installed_path) {
+bool DeleteFolder(std::optional<base::FilePath> installed_path) {
   if (!installed_path) {
     return false;
   }
@@ -59,11 +59,6 @@ bool DeleteFolder(const std::optional<base::FilePath>& installed_path) {
 
 bool DeleteCandidateInstallFolder(UpdaterScope scope) {
   return DeleteFolder(GetVersionedInstallDirectory(scope));
-}
-
-base::FilePath GetUpdaterFolderName() {
-  return base::FilePath(COMPANY_SHORTNAME_STRING)
-      .AppendASCII(PRODUCT_FULLNAME_STRING);
 }
 
 bool CopyDir(const base::FilePath& from_path,

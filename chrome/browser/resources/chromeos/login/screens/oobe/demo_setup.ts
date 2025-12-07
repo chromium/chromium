@@ -17,7 +17,7 @@ import '../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/progress_list_item.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
@@ -154,6 +154,7 @@ class DemoSetupScreen extends DemoSetupScreenBase {
    */
   private onRetryClicked_(): void {
     this.reset();
+    chrome.metricsPrivate.recordUserAction('DemoMode.Setup.RetryButtonClicked');
   }
 
   /**

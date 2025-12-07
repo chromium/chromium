@@ -28,6 +28,7 @@
 #include "ui/events/event_target.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
@@ -80,7 +81,9 @@ class CheckboxMenuOptionGroup : public CheckboxGroup {
                       0,
                       kMenuItemInnerPadding,
                       kCheckmarkLabelSpacing) {
-    GetViewAccessibility().SetProperties(ax::mojom::Role::kListBox);
+    GetViewAccessibility().SetRole(ax::mojom::Role::kListBox);
+    GetViewAccessibility().SetName(
+        std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
   }
 
   // CheckboxGroup:
@@ -92,11 +95,6 @@ class CheckboxMenuOptionGroup : public CheckboxGroup {
     button->set_delegate(this);
     buttons_.push_back(button);
     return button;
-  }
-
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    CheckboxGroup::GetAccessibleNodeData(node_data);
-    node_data->SetNameExplicitlyEmpty();
   }
 };
 
@@ -148,8 +146,8 @@ class DropDownCheckbox::MenuView : public views::View {
     menu_item_group_ =
         AddChildView(std::make_unique<CheckboxMenuOptionGroup>());
     UpdateMenuContent();
-    SetBackground(views::CreateThemedRoundedRectBackground(
-        kMenuBackgroundColorId, kMenuRoundedCorners));
+    SetBackground(views::CreateRoundedRectBackground(kMenuBackgroundColorId,
+                                                     kMenuRoundedCorners));
     // Set border.
     SetBorder(std::make_unique<views::HighlightBorder>(
         kMenuRoundedCorners,
@@ -288,7 +286,7 @@ DropDownCheckbox::DropDownCheckbox(const std::u16string& title,
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
                                         *title_.get());
   title_->SetAutoColorReadabilityEnabled(false);
-  title_->SetEnabledColorId(kInactiveTitleAndIconColorId);
+  title_->SetEnabledColor(kInactiveTitleAndIconColorId);
 
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
 
@@ -304,7 +302,7 @@ DropDownCheckbox::DropDownCheckbox(const std::u16string& title,
 
   event_handler_ = std::make_unique<EventHandler>(this);
 
-  GetViewAccessibility().SetProperties(ax::mojom::Role::kPopUpButton);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kPopUpButton);
 }
 
 DropDownCheckbox::~DropDownCheckbox() = default;
@@ -330,9 +328,8 @@ bool DropDownCheckbox::IsMenuRunning() const {
 }
 
 void DropDownCheckbox::SetCallback(PressedCallback callback) {
-  NOTREACHED_IN_MIGRATION()
-      << "Clients shouldn't modify this. Maybe you want to use "
-         "SetSelectedAction?";
+  NOTREACHED() << "Clients shouldn't modify this. Maybe you want to use "
+                  "SetSelectedAction?";
 }
 
 void DropDownCheckbox::OnBoundsChanged(const gfx::Rect& previous_bounds) {
@@ -446,7 +443,7 @@ void DropDownCheckbox::ShowDropDownMenu() {
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
   params.shadow_elevation = kMenuShadowElevation;
-  params.corner_radius = kMenuRoundedCorners;
+  params.rounded_corners = gfx::RoundedCornersF(kMenuRoundedCorners);
 
   aura::Window* root_window = widget->GetNativeWindow()->GetRootWindow();
   params.parent = root_window->GetChildById(kShellWindowId_MenuContainer);
@@ -456,14 +453,14 @@ void DropDownCheckbox::ShowDropDownMenu() {
   menu_->SetContentsView(std::move(menu_view));
   menu_->Show();
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       kDropDownCheckboxActiveColorId, kDropDownCheckboxRoundedCorners));
-  title_->SetEnabledColorId(kActiveTitleAndIconColorId);
+  title_->SetEnabledColor(kActiveTitleAndIconColorId);
   drop_down_arrow_->SetImage(ui::ImageModel::FromVectorIcon(
       kDropDownArrowIcon, kActiveTitleAndIconColorId, kArrowIconSize));
 
   RequestFocus();
-  NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kStateChanged, true);
 }
 
 void DropDownCheckbox::CloseDropDownMenu() {
@@ -472,10 +469,10 @@ void DropDownCheckbox::CloseDropDownMenu() {
 
   closed_time_ = base::TimeTicks::Now();
   SetBackground(nullptr);
-  title_->SetEnabledColorId(kInactiveTitleAndIconColorId);
+  title_->SetEnabledColor(kInactiveTitleAndIconColorId);
   drop_down_arrow_->SetImage(ui::ImageModel::FromVectorIcon(
       kDropDownArrowIcon, kInactiveTitleAndIconColorId, kArrowIconSize));
-  NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kStateChanged, true);
   OnPerformAction();
 }
 

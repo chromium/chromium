@@ -43,11 +43,11 @@ class TestSudoHelperClient {
 
   // Runs the given command line via `test_sudo_helper`. Returns true if the
   // command exit with 0. Otherwise, returns false.
-  Result RunCommand(const std::string_view command);
+  Result RunCommand(std::string_view command);
 
   // Connects using the server path on the default switch, runs one command, and
   // disconnects. Fails if the server path switch is not found.
-  static Result ConnectAndRunCommand(const std::string_view command);
+  static Result ConnectAndRunCommand(std::string_view command);
 
   // Starts the session_manager daemon. `stopped_callback` will be invoked
   // when session_manager daemon terminates.

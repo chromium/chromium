@@ -12,10 +12,16 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/url_constants.h"
 #include "net/base/net_errors.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace security_interstitials {
+
+KnownInterceptionDisclosureUIConfig::KnownInterceptionDisclosureUIConfig()
+    : DefaultWebUIConfig(
+          content::kChromeUIScheme,
+          security_interstitials::kChromeUIConnectionMonitoringDetectedHost) {}
 
 KnownInterceptionDisclosureUI::KnownInterceptionDisclosureUI(
     content::WebUI* web_ui)

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import <XCTest/XCTest.h>
+
 #import <map>
 
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -16,6 +17,11 @@
 namespace {
 // Matcher for the cancel button on the printer options view.
 id<GREYMatcher> PrintOptionsCancelButton() {
+  if (@available(iOS 26, *)) {
+    return grey_allOf(grey_accessibilityLabel(@"Close"),
+                      grey_kindOfClassName(@"_UIModernBarButton"),
+                      grey_kindOfClass([UIButton class]), nil);
+  }
   return grey_allOf(grey_accessibilityLabel(@"Cancel"),
                     grey_kindOfClass([UIButton class]), nil);
 }
@@ -47,12 +53,9 @@ id<GREYMatcher> PrintOptionsCancelButton() {
   [ChromeEarlGrey tapWebStateElementWithID:@"printButton"];
 
   // Test if print dialog appeared.
-  NSString* dialogTitle = @"Print Options";
-  if (@available(iOS 17, *)) {
-    dialogTitle = @"Options";
-  }
+  NSString* dialogTitle = @"Options";
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(dialogTitle)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      assertWithMatcher:grey_minimumVisiblePercent(0.7)];
 
   // Clean up and close print dialog.
   [[EarlGrey selectElementWithMatcher:PrintOptionsCancelButton()]

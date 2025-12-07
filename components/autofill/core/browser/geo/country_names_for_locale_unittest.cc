@@ -11,9 +11,11 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::ASCIIToUTF16;
-
 namespace autofill {
+
+namespace {
+
+using base::ASCIIToUTF16;
 
 // Test that the correct country code is returned for various locales.
 TEST(CountryNamesForLocaleTest, GetCountryCode) {
@@ -68,7 +70,7 @@ TEST(CountryNamesForLocaleTest, EmptyCountryCodeForInvalidCountryName) {
 
 // Test that an instance is correctly constructed using the move semantics.
 TEST(CountryNamesForLocaleTest, MoveConstructior) {
-  // Construct a working |CountryNamesForLocale| instance.
+  // Construct a working `CountryNamesForLocale` instance.
   CountryNamesForLocale de_names("de");
   EXPECT_EQ("DE", de_names.GetCountryCode(u"Deutschland"));
 
@@ -78,5 +80,7 @@ TEST(CountryNamesForLocaleTest, MoveConstructior) {
   // Test that the new instance returns the correct values.
   EXPECT_EQ("DE", moved_names.GetCountryCode(u"Deutschland"));
 }
+
+}  // namespace
 
 }  // namespace autofill

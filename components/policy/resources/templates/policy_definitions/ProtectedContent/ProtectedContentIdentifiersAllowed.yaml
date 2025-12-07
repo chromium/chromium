@@ -1,0 +1,27 @@
+caption: Allows web pages to use identifiers for the purpose of protected content playback
+owners:
+- vpasupathy@chromium.org
+- sangbaekpark@chromium.org
+- file://media/OWNERS
+desc: |-
+  If the policy is set to true or unset, the use of protected content identifiers is allowed, which can help enable higher quality of protected content playback.
+
+  If the policy is set to false, protected content identifiers are not allowed to be used.
+supported_on:
+- chrome.win:140-
+- chrome_os:140-
+- android:140-
+features:
+  dynamic_refresh: true
+  per_profile: true
+type: main
+schema:
+  type: boolean
+items:
+- caption: Allow the use of protected content identifiers with sites, which can help enable higher quality of protected content playback.
+  value: true
+- caption: Disable the use of protected content identifiers with sites, which might lead to lower quality of protected content playback.
+  value: false
+default: true
+example_value: false
+tags: []

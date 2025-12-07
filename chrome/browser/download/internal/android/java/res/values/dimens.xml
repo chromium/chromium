@@ -12,6 +12,11 @@ found in the LICENSE file.
     <dimen name="download_manager_horizontal_margin">16dp</dimen>
     <dimen name="download_manager_max_image_item_width_wide_screen">300dp</dimen>
     <dimen name="download_manager_prefetch_vertical_margin">12dp</dimen>
+    <dimen name="download_manager_progress_bar_background_size">60dp</dimen>
+    <!-- for 2dp keyboard focus stroke on each side -->
+    <dimen name="download_manager_progress_bar_background_margin">2dp</dimen>
+    <!-- progress bar bg size + margin*2 -->
+    <dimen name="download_manager_progress_bar_focus_circle_size">64dp</dimen>
     <dimen name="download_manager_recycler_view_min_padding_wide_screen">16dp</dimen>
     <dimen name="download_manager_section_title_top_margin">16dp</dimen>
     <dimen name="download_manager_section_title_bottom_margin">8dp</dimen>

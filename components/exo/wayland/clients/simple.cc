@@ -2,29 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "components/exo/wayland/clients/simple.h"
 
 #include <presentation-time-client-protocol.h>
 #include <single-pixel-buffer-v1-client-protocol.h>
 
+#include <algorithm>
 #include <climits>
 #include <cstdint>
 #include <iostream>
 
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
-#include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/exo/wayland/clients/client_helper.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace exo {
@@ -81,9 +76,9 @@ void FeedbackDiscarded(void* data, struct wp_presentation_feedback* feedback) {
   Presentation* presentation = static_cast<Presentation*>(data);
   DCHECK_GT(presentation->submitted_frames.size(), 0u);
   auto it =
-      base::ranges::find(presentation->submitted_frames, feedback,
-                         [](Frame& frame) { return frame.feedback.get(); });
-  CHECK(it != presentation->submitted_frames.end(), base::NotFatalUntil::M130);
+      std::ranges::find(presentation->submitted_frames, feedback,
+                        [](Frame& frame) { return frame.feedback.get(); });
+  CHECK(it != presentation->submitted_frames.end());
   presentation->submitted_frames.erase(it);
 }
 

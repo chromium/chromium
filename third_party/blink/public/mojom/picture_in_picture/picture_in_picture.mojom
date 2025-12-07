@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "media/mojo/mojom/media_player.mojom";
+import "services/media_session/public/mojom/media_session.mojom";
 import "services/viz/public/mojom/compositing/surface_id.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
@@ -35,6 +36,10 @@ interface PictureInPictureSession {
   // Request to stop the current session. It will close the Picture-in-Picture
   // window and make other calls related to the session no-ops.
   Stop() => ();
+
+  // Notifies the session that the associated player's position has been
+  // updated.
+  UpdateMediaPosition(media_session.mojom.MediaPosition media_position);
 };
 
 // PictureInPictureService is a Document-associated interface that lives in

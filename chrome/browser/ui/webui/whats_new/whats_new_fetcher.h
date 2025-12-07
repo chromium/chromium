@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_WHATS_NEW_WHATS_NEW_FETCHER_H_
 #define CHROME_BROWSER_UI_WEBUI_WHATS_NEW_WHATS_NEW_FETCHER_H_
 
+#include "components/user_education/webui/whats_new_registry.h"
 #include "url/gurl.h"
 
 class Browser;
@@ -12,7 +13,6 @@ class Browser;
 namespace whats_new {
 
 extern const char kChromeWhatsNewURL[];
-extern const char kChromeWhatsNewV2URL[];
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -27,21 +27,15 @@ enum class LoadEvent {
   kMaxValue = kLoadAbort,
 };
 
-// Gets the server side URL for the What's New page for the current version of
-// Chrome. If |may_redirect| is true, return a server URL that will redirect to
-// the closest milestone page. Otherwise, return the direct URL of the current
-// version, which may return 404 if there is no page for this milestone.
-GURL GetServerURL(bool may_redirect);
-
-// Whats New V2 API
 // Gets the server side URL for the What's New page for the current version
 // of Chrome.
-GURL GetV2ServerURL();
+GURL GetServerURL(bool is_staging = false);
 
-// Whats New V2 API
 // Gets the server side URL for the What's New page including all
 // query parameters necessary to render the page.
-GURL GetV2ServerURLForRender();
+GURL GetServerURLForRender(
+    const whats_new::WhatsNewRegistry& whats_new_registry,
+    bool is_staging = false);
 
 // Starts fetching the What's New page and will open the page in |browser| if
 // it exists.

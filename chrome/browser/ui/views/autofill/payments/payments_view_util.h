@@ -8,67 +8,101 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "build/branding_buildflags.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
-#include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
+#include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/gfx/range/range.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout_view.h"
-#include "ui/views/layout/table_layout_view.h"
-#include "ui/views/view.h"
 
 class GURL;
 
 namespace views {
-class Label;
-class Throbber;
+class View;
 class Widget;
 }  // namespace views
 
 namespace autofill {
 
+// Used for providing additional information needed to add links in text labels.
+struct TextLinkInfo {
+  TextLinkInfo();
+
+  TextLinkInfo(const TextLinkInfo& other);
+  TextLinkInfo& operator=(const TextLinkInfo& other);
+  TextLinkInfo(TextLinkInfo&& other);
+  TextLinkInfo& operator=(TextLinkInfo&& other);
+
+  ~TextLinkInfo();
+
+  gfx::Range bold_range;
+  gfx::Range offset;
+  base::RepeatingCallback<void()> callback;
+};
+
+struct LabeledTextfieldWithErrorMessage {
+  LabeledTextfieldWithErrorMessage();
+
+  LabeledTextfieldWithErrorMessage(
+      const LabeledTextfieldWithErrorMessage& other);
+  LabeledTextfieldWithErrorMessage& operator=(
+      const LabeledTextfieldWithErrorMessage& other);
+  LabeledTextfieldWithErrorMessage(LabeledTextfieldWithErrorMessage&& other);
+  LabeledTextfieldWithErrorMessage& operator=(
+      LabeledTextfieldWithErrorMessage&& other);
+
+  ~LabeledTextfieldWithErrorMessage();
+
+  std::unique_ptr<views::View> container = nullptr;
+  raw_ptr<views::Textfield> input = nullptr;
+  raw_ptr<views::Label> error_label = nullptr;
+  raw_ptr<views::View> error_label_placeholder = nullptr;
+  bool is_valid_input = false;
+
+  views::Textfield& GetInputTextField() const;
+
+  void SetErrorState(bool is_valid);
+
+  // Announces the error message if the current state is invalid and an error
+  // message is being shown.
+  void MaybeAnnounceError();
+};
+
 // Gets the user avatar icon if available, or else a placeholder.
 ui::ImageModel GetProfileAvatar(const AccountInfo& account_info);
 
-// Defines a title view with an icon, a separator, and a label, to be used
-// by dialogs that need to present the Google or Google Pay logo with a
-// separator and custom horizontal padding.
-class TitleWithIconAndSeparatorView : public views::TableLayoutView {
-  METADATA_HEADER(TitleWithIconAndSeparatorView, views::TableLayoutView)
+// Defines a title view with a label and an icon, to be used by dialogs
+// that need to present the Google or Google Pay logo and custom
+// horizontal padding.
+// TODO(crbug.com/417538725): Announce Title and GPay logo variants in dialogs
+// by default for accessibility.
+class TitleWithIconAfterLabelView : public views::BoxLayoutView {
+  METADATA_HEADER(TitleWithIconAfterLabelView, views::BoxLayoutView)
 
  public:
-  // TODO(crbug.com/40264259): This enum is also used by
-  // TitleWithIconAfterLabelView, and should be refactored to be outside of
-  // TitleWithIconAndSeparatorView.
   enum class Icon {
     // Google Pay icon. The "Pay" portion is recolored for light/dark mode.
     GOOGLE_PAY,
     // Google super G.
     GOOGLE_G,
+    // Google Pay logo next to an Affirm logo separated by a vertical line.
+    GOOGLE_PAY_AND_AFFIRM,
+    // Google Pay logo next to an Afterpay logo separated by a vertical line.
+    GOOGLE_PAY_AND_AFTERPAY,
+    // Google Pay logo next to an Zip logo separated by a vertical line.
+    GOOGLE_PAY_AND_ZIP,
+    // Google Pay logo next to an Klarna logo separated by a vertical line.
+    GOOGLE_PAY_AND_KLARNA,
   };
 
-  TitleWithIconAndSeparatorView(const std::u16string& window_title,
-                                Icon icon_to_show);
-  ~TitleWithIconAndSeparatorView() override;
-
- private:
-  // views::View:
-  gfx::Size GetMinimumSize() const override;
-};
-
-// Defines a title view with a label and an icon, to be used by dialogs
-// that need to present the Google or Google Pay logo and custom
-// horizontal padding.
-//
-// Unlike TitleWithIconAndSeparatorView, this view has no separator and places
-// the icon after the title rather than before.
-class TitleWithIconAfterLabelView : public views::BoxLayoutView {
-  METADATA_HEADER(TitleWithIconAfterLabelView, views::BoxLayoutView)
-
- public:
   TitleWithIconAfterLabelView(const std::u16string& window_title,
-                              TitleWithIconAndSeparatorView::Icon icon_to_show);
+                              Icon icon_to_show);
   ~TitleWithIconAfterLabelView() override;
 
  private:
@@ -76,53 +110,47 @@ class TitleWithIconAfterLabelView : public views::BoxLayoutView {
   gfx::Size GetMinimumSize() const override;
 };
 
-// An intermediary method to switch between TitleWithIconAndSeparatorView and
-// TitleWithIconAfterLabelView protected by
-// kAutofillEnableMovingGPayLogoToTheRightOnDesktop.
-// TODO(crbug.com/40274277): Remove this method once
-// kAutofillEnableMovingGPayLogoToTheRightOnDesktop is fully launched.
-std::unique_ptr<views::View> CreateTitleView(
-    const std::u16string& window_title,
-    TitleWithIconAndSeparatorView::Icon icon_to_show);
-
-// Defines a view with legal message. This class handles the legal message
-// parsing and the links clicking events.
-class LegalMessageView : public views::BoxLayoutView {
-  METADATA_HEADER(LegalMessageView, views::BoxLayoutView)
-
- public:
-  using LinkClickedCallback = base::RepeatingCallback<void(const GURL&)>;
-
-  // Along with the legal message lines and link callbacks, user email and
-  // avatar will be displayed at the bottom line of this view if both
-  // `user_email` and `user_avatar` are present.
-  LegalMessageView(const LegalMessageLines& legal_message_lines,
-                   const std::u16string& user_email,
-                   const ui::ImageModel& user_avatar,
-                   LinkClickedCallback callback);
-  ~LegalMessageView() override;
-};
-
-PaymentsBubbleClosedReason GetPaymentsBubbleClosedReasonFromWidget(
+PaymentsUiClosedReason GetPaymentsUiClosedReasonFromWidget(
     const views::Widget* widget);
 
-// TODO(crbug.com/40197696): Replace all payments' progress bar usages with
-// this. Creates a progress bar with an explanatory text below.
-class ProgressBarWithTextView : public views::BoxLayoutView {
-  METADATA_HEADER(ProgressBarWithTextView, views::BoxLayoutView)
+// Creates a view with a legal message.  Along with the legal message lines and
+// link callbacks, the user email and the user avatar will be displayed at the
+// bottom line of this view if both `user_email` and `user_avatar` are present.
+std::unique_ptr<views::View> CreateLegalMessageView(
+    const LegalMessageLines& legal_message_lines,
+    const std::u16string& user_email,
+    const ui::ImageModel& user_avatar,
+    base::RepeatingCallback<void(const GURL&)> callback);
 
- public:
-  explicit ProgressBarWithTextView(const std::u16string& progress_bar_text);
-  ~ProgressBarWithTextView() override;
+// TODO(crbug.com/40197696): Replace all payments' progress bars with this.
+// Creates a progress bar with an explanatory text below.
+std::unique_ptr<views::View> CreateProgressBarWithTextView(
+    const std::u16string& progress_bar_text);
 
- private:
-  // views::View:
-  void OnThemeChanged() override;
-  void AddedToWidget() override;
+// Creates a view with a left-aligned icon and right-aligned text. This is
+// useful for creating rows of text with an accompanying icon in a list. The
+// optional `text_link_info` can be used to add a link in the text.
+std::unique_ptr<views::View> CreateTextWithIconView(
+    const std::u16string& text,
+    std::optional<TextLinkInfo> text_link_info,
+    const gfx::VectorIcon& icon);
 
-  raw_ptr<views::Label> progress_label_ = nullptr;
-  raw_ptr<views::Throbber> progress_throbber_ = nullptr;
-};
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// kGooglePayLogoIcon is square overall, despite the drawn portion being a
+// rectangular area at the top. CreateTiledImage() will correctly clip it
+// whereas setting the icon size would rescale it incorrectly and keep the
+// bottom empty portion.
+gfx::ImageSkia CreateTiledGooglePayLogo(int width,
+                                        int height,
+                                        const ui::ColorProvider* provider);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+// Creates a view containing a label and a textfield with an optional error
+// message. The view is arranged vertically with the label positioned above the
+// textfield.
+LabeledTextfieldWithErrorMessage CreateLabelAndTextfieldView(
+    const std::u16string& label_text,
+    std::optional<std::u16string> error_message);
 
 }  // namespace autofill
 

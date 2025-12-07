@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_CONTROL_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_CONTROL_BUTTON_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
@@ -35,18 +36,21 @@ class TabStripControlButton : public views::LabelButton,
   TabStripControlButton(TabStripController* tab_strip,
                         PressedCallback callback,
                         const gfx::VectorIcon& icon,
-                        Edge flat_edge = Edge::kNone);
+                        Edge fixed_flat_edge = Edge::kNone,
+                        Edge animated_flat_edge = Edge::kNone);
 
   TabStripControlButton(TabStripController* tab_strip,
                         PressedCallback callback,
                         const std::u16string& text,
-                        Edge flat_edge = Edge::kNone);
+                        Edge fixed_flat_edge = Edge::kNone,
+                        Edge animated_flat_edge = Edge::kNone);
 
   TabStripControlButton(TabStripController* tab_strip,
                         PressedCallback callback,
                         const gfx::VectorIcon& icon,
                         const std::u16string& text,
-                        Edge flat_edge = Edge::kNone);
+                        Edge fixed_flat_edge = Edge::kNone,
+                        Edge animated_flat_edge = Edge::kNone);
 
   TabStripControlButton(const TabStripControlButton&) = delete;
   TabStripControlButton& operator=(const TabStripControlButton&) = delete;
@@ -69,12 +73,13 @@ class TabStripControlButton : public views::LabelButton,
   virtual int GetFlatCornerRadius() const;
   float GetScaledCornerRadius(float initial_radius, Edge edge) const;
 
-  Edge flat_edge() { return flat_edge_; }
+  Edge animated_flat_edge() { return animated_flat_edge_; }
   float flat_edge_factor_for_testing() { return flat_edge_factor_; }
 
   void SetFlatEdgeFactor(float factor);
 
-  // Helper function for changing the state for TabStripRegionView tests.
+  // Helper function for changing the state for HorizontalTabStripRegionView
+  // tests.
   void AnimateToStateForTesting(views::InkDropState state);
 
   // views::View
@@ -86,6 +91,9 @@ class TabStripControlButton : public views::LabelButton,
 
   // views::MaskedTargeterDelegate
   bool GetHitTestMask(SkPath* mask) const override;
+
+  // views::LabelButton
+  void SetText(std::u16string_view text) override;
 
  protected:
   // Returns colors based on the Frame active status.
@@ -110,22 +118,27 @@ class TabStripControlButton : public views::LabelButton,
   void UpdateBackground();
   void UpdateInkDrop();
 
+  bool IsWidgetAlive() const;
+
   // Optional icon for the label button.
   raw_ref<const gfx::VectorIcon> icon_;
 
   bool paint_transparent_for_custom_image_theme_ = false;
 
-  // Button edge which should render without rounded corners.
-  Edge flat_edge_;
+  // Button edge which should always render without rounded corners.
+  Edge fixed_flat_edge_;
 
-  // Corner radius multiplier on the corners adjacent to the flat edge, if any.
-  // Between 0-1, where corners will be flat at 0 and rounded at 1. Used for
-  // animating corner radius.
+  // Button edge which should sometimes render without rounded corners,
+  // depending on animation state.
+  Edge animated_flat_edge_;
+
+  // Corner radius multiplier on the corners adjacent to the animated flat
+  // edge, if any. Between 0-1, where corners will be flat at 0 and rounded at
+  // 1. Used for animating corner radius.
   float flat_edge_factor_ = 1;
 
   // Tab strip that contains this button.
-  raw_ptr<TabStripController, AcrossTasksDanglingUntriaged>
-      tab_strip_controller_;
+  raw_ptr<TabStripController> tab_strip_controller_;
 
   // Stored ColorId values to differentiate for ChromeRefresh.
   ui::ColorId foreground_frame_active_color_id_;

@@ -16,7 +16,7 @@
 namespace syncer {
 
 // Represents a client defined unique hash for sync entities. Hash is derived
-// from client tag, and should be used as |client_tag_hash| for
+// from client tag, and should be used as `client_tag_hash` for
 // SyncEntity at least for CommitMessages. For convenience it supports storing
 // in ordered stl containers, logging and equality comparisons. It also supports
 // unordered stl containers using ClientTagHash::Hash.
@@ -29,7 +29,13 @@ class ClientTagHash {
     }
   };
 
-  // Creates ClientTagHash based on |client_tag|.
+  // For use in absl::flat_hash_set or absl::flat_hash_map .
+  template <typename H>
+  friend H AbslHashValue(H h, const ClientTagHash& client_tag_hash) {
+    return H::combine(std::move(h), client_tag_hash.value());
+  }
+
+  // Creates ClientTagHash based on `client_tag`.
   static ClientTagHash FromUnhashed(DataType type, std::string_view client_tag);
 
   // Creates ClientTagHash from already hashed client tag.

@@ -42,20 +42,22 @@
   });
   const deepNestedNodeId = deepNestedNode.result.nodeId;
   const deepNestedMatchedStyles =
-    await dp.CSS.getMatchedStylesForNode({nodeId: deepNestedNodeId});
-    for (const ruleMatch of deepNestedMatchedStyles.result.matchedCSSRules) {
+      await dp.CSS.getMatchedStylesForNode({nodeId: deepNestedNodeId});
+  for (const ruleMatch of deepNestedMatchedStyles.result.matchedCSSRules) {
     cssHelper.dumpRuleMatch(ruleMatch);
     if (ruleMatch.rule.nestingSelectors) {
       testRunner.log('nesting selectors: ' + ruleMatch.rule.nestingSelectors);
     }
   }
 
-  const styleSheetId = matchedStyles.result.matchedCSSRules.at(-1).rule.styleSheetId;
-  await cssHelper.setStyleTexts(styleSheetId, false, [{
-    styleSheetId,
-    range: { startLine: 1, startColumn: 11, endLine: 11, endColumn: 2 },
-    text: "\n    width: 41px;\n\n    #deep-nested {\n    height: 42px;\n    }\n\n    #deep-nested {\n    display: grid;\n    }\n  ",
-  }]);
+  const styleSheetId =
+      matchedStyles.result.matchedCSSRules.at(-1).rule.styleSheetId;
+  await cssHelper.setStyleTexts(
+      styleSheetId, false, [{
+        styleSheetId,
+        range: {startLine: 1, startColumn: 11, endLine: 2, endColumn: 16},
+        text: '\n    width: 41px;\n    ',
+      }]);
 
   const updatedStyles =
       await dp.CSS.getMatchedStylesForNode({nodeId: nestedNodeId});

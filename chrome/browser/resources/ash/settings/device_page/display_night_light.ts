@@ -24,9 +24,11 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {DisplaySettingsNightLightScheduleOption, DisplaySettingsProviderInterface, DisplaySettingsType} from '../mojom-webui/display_settings_provider.mojom-webui.js';
+import type {DisplaySettingsNightLightScheduleOption, DisplaySettingsProviderInterface} from '../mojom-webui/display_settings_provider.mojom-webui.js';
+import {DisplaySettingsType} from '../mojom-webui/display_settings_provider.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from '../os_privacy_page/privacy_hub_browser_proxy.js';
+import type {PrivacyHubBrowserProxy} from '../os_privacy_page/privacy_hub_browser_proxy.js';
+import {PrivacyHubBrowserProxyImpl} from '../os_privacy_page/privacy_hub_browser_proxy.js';
 import {GeolocationAccessLevel} from '../os_privacy_page/privacy_hub_geolocation_subpage.js';
 
 import {getTemplate} from './display_night_light.html.js';
@@ -36,7 +38,7 @@ import {getDisplaySettingsProvider} from './display_settings_mojo_interface_prov
  * The types of Night Light automatic schedule. The values of the enum values
  * are synced with the pref "prefs.ash.night_light.schedule_type".
  */
-enum NightLightScheduleType {
+export enum NightLightScheduleType {
   NEVER = 0,
   SUNSET_TO_SUNRISE = 1,
   CUSTOM = 2,
@@ -93,17 +95,6 @@ export class SettingsDisplayNightLightElement extends
 
       nightLightScheduleSubLabel_: String,
 
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kNightLight,
-          Setting.kNightLightColorTemperature,
-        ]),
-      },
-
       shouldShowGeolocationWarningText_: {
         type: Boolean,
         computed: 'computeShouldShowGeolocationWarningText_(' +
@@ -130,7 +121,7 @@ export class SettingsDisplayNightLightElement extends
       geolocationWarningText_: {
         type: String,
         computed: 'computeGeolocationWarningText_(' +
-            'prefs.ash.user.geolocation_access_level.value,' +
+            'prefs.ash.user.geolocation_access_level.*,' +
             'sunriseTime_, sunsetTime_)',
 
       },
@@ -163,11 +154,20 @@ export class SettingsDisplayNightLightElement extends
   }
 
   isInternalDisplay: boolean;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kNightLight,
+    Setting.kNightLightColorTemperature,
+  ]);
+
   private displaySettingsProvider: DisplaySettingsProviderInterface =
       getDisplaySettingsProvider();
+  private geolocationWarningText_: string;
   private nightLightScheduleSubLabel_: string;
   private scheduleTypesList_: ScheduleType[];
   private shouldOpenCustomScheduleCollapse_: boolean;
+  private shouldShowEnableGeolocationDialog_: boolean;
   private shouldShowGeolocationDialog_: boolean;
   private shouldShowGeolocationWarningText_: boolean;
   private currentNightLightStatus: boolean;
@@ -261,9 +261,20 @@ export class SettingsDisplayNightLightElement extends
   }
 
   private computeGeolocationWarningText_(): string {
-    return loadTimeData.getStringF(
-        'displayNightLightGeolocationWarningText', this.sunriseTime_,
-        this.sunsetTime_);
+    if (!this.prefs) {
+      return '';
+    }
+
+    if (this.prefs.ash.user.geolocation_access_level.enforcement ===
+        chrome.settingsPrivate.Enforcement.ENFORCED) {
+      return loadTimeData.getStringF(
+          'displayNightLightGeolocationManagedWarningText', this.sunriseTime_,
+          this.sunsetTime_);
+    } else {
+      return loadTimeData.getStringF(
+          'displayNightLightGeolocationWarningText', this.sunriseTime_,
+          this.sunsetTime_);
+    }
   }
 
   private openGeolocationDialog_(): void {

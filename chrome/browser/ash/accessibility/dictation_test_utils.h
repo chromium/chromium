@@ -90,7 +90,10 @@ class DictationTestUtils {
 
   // TODO(b:259352600): Instead of disabling the observer, change this to
   // allow specific messages.
-  void DisableConsoleObserver() { console_observer_.reset(); }
+  void DisableConsoleObserver();
+
+  // Add an allowed extension JS error to `console_observer_`.
+  void AddAllowedExtensionError(const std::u16string& allowed);
 
   // Sets whether or not we should wait for the accessibility common extension
   // to load when enabling Dictation. This should be true in almost all cases.
@@ -110,8 +113,8 @@ class DictationTestUtils {
 
  private:
   // Set up helper methods.
-  void SetUpPumpkinDir();
-  void SetUpTestSupport();
+  void SetUpPumpkinDir(const char* pumpkin_dir);
+  void SetUpTestSupport(const char* test_support_dir);
   void WaitForDictationJSReady();
   void WaitForEditableFocus();
   void WaitForPumpkinTaggerReady();

@@ -59,7 +59,8 @@ TEST_F(CrostiniTerminalTest, ShortcutIdFromContainerId) {
                       R"("shortcut":"terminal",)"
                       R"("vm_name":"test-vm",)"
                       R"("vm_type":0})");
-  auto extras = ExtrasFromShortcutId(*base::JSONReader::ReadDict(shortcut));
+  auto extras = ExtrasFromShortcutId(*base::JSONReader::ReadDict(
+      shortcut, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   EXPECT_EQ(3u, extras.size());
 
   // Container with multi-profile should include settings_profile.
@@ -71,7 +72,8 @@ TEST_F(CrostiniTerminalTest, ShortcutIdFromContainerId) {
     "/vsh/profiles/p2/vm-name": "test-vm",
     "/vsh/profiles/p2/container-name": "test-container",
     "/vsh/profiles/p2/terminal-profile": "green"
-  })");
+  })",
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(pref.has_value());
   profile.GetPrefs()->Set(guest_os::prefs::kGuestOsTerminalSettings,
                           std::move(*pref));
@@ -81,7 +83,8 @@ TEST_F(CrostiniTerminalTest, ShortcutIdFromContainerId) {
                       R"("shortcut":"terminal",)"
                       R"("vm_name":"test-vm",)"
                       R"("vm_type":0})");
-  extras = ExtrasFromShortcutId(*base::JSONReader::ReadDict(shortcut));
+  extras = ExtrasFromShortcutId(*base::JSONReader::ReadDict(
+      shortcut, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   EXPECT_EQ(4u, extras.size());
 }
 
@@ -96,7 +99,8 @@ TEST_F(CrostiniTerminalTest, GetSSHConnections) {
     "/nassh/profile-ids": ["p1", "p2", "p3"],
     "/nassh/profiles/p1/description": "d1",
     "/nassh/profiles/p2/description": "d2"
-  })");
+  })",
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(pref.has_value());
   profile.GetPrefs()->Set(guest_os::prefs::kGuestOsTerminalSettings,
                           std::move(*pref));
@@ -112,7 +116,8 @@ TEST_F(CrostiniTerminalTest, GetTerminalSettingBackgroundColor) {
   auto pref = base::JSONReader::Read(R"({
     "/hterm/profiles/default/background-color": "#101010",
     "/hterm/profiles/red/background-color": "#FF0000"
-  })");
+  })",
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(pref.has_value());
   profile.GetPrefs()->Set(guest_os::prefs::kGuestOsTerminalSettings,
                           std::move(*pref));

@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <vector>
-
 #include "base/memory/scoped_refptr.h"
 #include "media/base/encoder_status.h"
 #include "media/base/media_export.h"
@@ -20,14 +18,19 @@
 
 namespace base {
 class TimeDelta;
-}
+}  // namespace base
 
-namespace gpu {
-struct Capabilities;
-namespace raster {
+namespace gpu::raster {
 class RasterInterface;
-}  // namespace raster
-}  // namespace gpu
+}  // namespace gpu::raster
+
+namespace libyuv {
+struct YuvConstants;
+}  // namespace libyuv
+
+namespace viz {
+class SharedImageFormat;
+}  // namespace viz
 
 namespace media {
 
@@ -148,6 +151,19 @@ MEDIA_EXPORT gfx::Size PadToMatchAspectRatio(const gfx::Size& size,
 MEDIA_EXPORT scoped_refptr<VideoFrame> ConvertToMemoryMappedFrame(
     scoped_refptr<VideoFrame> frame);
 
+// A helper function to map GpuMemoryBuffer-based VideoFrame. This function
+// maps the given GpuMemoryBuffer of |frame| as-is without converting pixel
+// format, unless the video frame is backed by DXGI GMB.
+// The returned VideoFrame owns the |frame|.
+// If the underlying buffer is DXGI, then it will be copied to shared memory
+// in GPU process.
+// If the GPU process is involved, the callback will be called in the
+// GpuMemoryThread. Otherwise it will be involved immediately in the current
+// sequence.
+MEDIA_EXPORT void ConvertToMemoryMappedFrameAsync(
+    scoped_refptr<VideoFrame> frame,
+    base::OnceCallback<void(scoped_refptr<VideoFrame>)> result_cb);
+
 // This function synchronously reads pixel data from textures associated with
 // |txt_frame| and creates a new CPU memory backed frame. It's needed because
 // existing video encoders can't handle texture backed frames.
@@ -158,7 +174,6 @@ MEDIA_EXPORT scoped_refptr<VideoFrame> ConvertToMemoryMappedFrame(
 MEDIA_EXPORT scoped_refptr<VideoFrame> ReadbackTextureBackedFrameToMemorySync(
     VideoFrame& txt_frame,
     gpu::raster::RasterInterface* ri,
-    const gpu::Capabilities& caps,
     VideoFramePool* pool = nullptr);
 
 // Synchronously reads a single plane. |src_rect| is relative to the plane,
@@ -169,8 +184,7 @@ MEDIA_EXPORT bool ReadbackTexturePlaneToMemorySync(
     gfx::Rect& src_rect,
     uint8_t* dest_pixels,
     size_t dest_stride,
-    gpu::raster::RasterInterface* ri,
-    const gpu::Capabilities& caps);
+    gpu::raster::RasterInterface* ri);
 
 // Converts a frame with I420A format into I420 by dropping alpha channel.
 MEDIA_EXPORT scoped_refptr<VideoFrame> WrapAsI420VideoFrame(
@@ -196,7 +210,8 @@ MEDIA_EXPORT scoped_refptr<VideoFrame> WrapAsI420VideoFrame(
                                                     VideoFrame* dst_frame);
 
 // Converts kRGBA_8888_SkColorType and kBGRA_8888_SkColorType to the appropriate
-// ARGB, XRGB, ABGR, or XBGR format.
+// ARGB, XRGB, ABGR, or XBGR format. Converts kRGBA_F16_SkColorType to RGBAF16,
+// |is_opaque| only matters for 8-bit formats.
 MEDIA_EXPORT VideoPixelFormat
 VideoPixelFormatFromSkColorType(SkColorType sk_color_type, bool is_opaque);
 
@@ -214,9 +229,19 @@ MEDIA_EXPORT scoped_refptr<VideoFrame> CreateFromSkImage(
     base::TimeDelta timestamp,
     bool force_opaque = false);
 
-// Utility to convert a media pixel format to SkYUVAInfo.
-MEDIA_EXPORT std::tuple<SkYUVAInfo::PlaneConfig, SkYUVAInfo::Subsampling>
-VideoPixelFormatToSkiaValues(VideoPixelFormat video_format);
+// Utility to convert a SharedImageFormat to SkYUVAInfo.
+SkYUVAInfo::PlaneConfig ToSkYUVAPlaneConfig(viz::SharedImageFormat format);
+SkYUVAInfo::Subsampling ToSkYUVASubsampling(viz::SharedImageFormat format);
+
+// Returns the libyuv RGB conversion matrix for a given skia YUV color space.
+// If `output_argb_matrix` is true a ARGB matrix will be provided, if false a
+// ABGR matrix will be provided.
+//
+// NOTE: When using the ABGR matrix, you must also swap the V,U parameters to
+// whichever libyuv function you're using.
+MEDIA_EXPORT const libyuv::YuvConstants* GetYuvContantsForColorSpace(
+    SkYUVColorSpace cs,
+    bool output_argb_matrix);
 
 }  // namespace media
 

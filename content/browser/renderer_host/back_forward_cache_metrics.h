@@ -10,6 +10,8 @@
 #include <optional>
 
 #include "base/containers/enum_set.h"
+#include "base/feature_list.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
@@ -28,6 +30,9 @@ class Origin;
 }
 
 namespace content {
+// TODO(https://crbug.com/40229455): Remove this once established to be safe.
+BASE_DECLARE_FEATURE(kCheckDocumentSequenceNumber);
+
 class BackForwardCacheCanStoreDocumentResult;
 class BackForwardCacheCanStoreTreeResult;
 class NavigationEntryImpl;
@@ -39,9 +44,6 @@ struct BackForwardCacheCanStoreDocumentResultWithTree;
 // Associated with a main frame document and shared between all
 // NavigationEntries with the same document_sequence_number for the main
 // document.
-//
-// TODO(altimin, crbug.com/933147): Remove this class after we are done
-// with implementing back-forward cache.
 class BackForwardCacheMetrics
     : public base::RefCounted<BackForwardCacheMetrics> {
  public:
@@ -49,6 +51,18 @@ class BackForwardCacheMetrics
   using NotRestoredReasons = base::EnumSet<NotRestoredReason,
                                            NotRestoredReason::kMinValue,
                                            NotRestoredReason::kMaxValue>;
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(HistoryNavigationDirection)
+  enum class HistoryNavigationDirection {
+    kBack = 0,
+    kForward = 1,
+    kSameEntry = 2,
+    kMaxValue = kSameEntry,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:HistoryNavigationDirection)
 
   // Please keep in sync with BackForwardCacheHistoryNavigationOutcome in
   // tools/metrics/histograms/enums.xml. These values should not be renumbered.

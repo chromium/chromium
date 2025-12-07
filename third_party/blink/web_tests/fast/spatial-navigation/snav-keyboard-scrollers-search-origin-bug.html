@@ -35,10 +35,6 @@
 <div id="offscreen" tabindex="0"></div>
 
 <script>
-  test(function(t) {
-    assert_true(internals.runtimeFlags.keyboardFocusableScrollersEnabled);
-  }, "Make sure KeyboardFocusableScrollers is set.");
-
   // This test checks that spatial navigation allows entering focus into an
   // element with the enter key and exiting it with the escape key.
   const first = document.getElementById("first");

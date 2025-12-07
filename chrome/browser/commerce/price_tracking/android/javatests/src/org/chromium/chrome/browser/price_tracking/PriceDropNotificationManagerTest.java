@@ -4,20 +4,26 @@
 
 package org.chromium.chrome.browser.price_tracking;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.base.test.util.Batch.PER_CLASS;
+
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.Browser;
 import android.provider.Settings;
 
@@ -26,25 +32,30 @@ import androidx.test.filters.MediumTest;
 import org.json.JSONArray;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
-import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
+import org.chromium.chrome.browser.commerce.ShoppingServiceFactoryJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNotificationType;
@@ -53,23 +64,28 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerImpl.DismissNotificationChromeActivity;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
-import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
+import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
+import org.chromium.components.commerce.core.CommerceFeatureUtils;
+import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.CommerceSubscription;
 import org.chromium.components.commerce.core.IdentifierType;
 import org.chromium.components.commerce.core.ManagementType;
 import org.chromium.components.commerce.core.ShoppingService;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+
 /** Tests for {@link PriceDropNotificationManager}. */
+@Batch(PER_CLASS)
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    "enable-features=" + ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study",
-    "force-fieldtrials=Study/Group",
-    "force-fieldtrial-params=Study.Group:user_managed_notification_max_number/2"
-})
+@Features.EnableFeatures(
+        ChromeFeatureList.PRICE_ANNOTATIONS + ":user_managed_notification_max_number/2")
+@CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class PriceDropNotificationManagerTest {
     private static final String ACTION_APP_NOTIFICATION_SETTINGS =
             "android.settings.APP_NOTIFICATION_SETTINGS";
@@ -82,41 +98,42 @@ public class PriceDropNotificationManagerTest {
     private static final String PRODUCT_CLUSTER_ID = "cluster_id";
     private static final int NOTIFICATION_ID = 123;
 
-    private MockNotificationManagerProxy mMockNotificationManager;
-    private PriceDropNotificationManager mPriceDropNotificationManager;
+    private NotificationManagerProxy mMockNotificationManager;
 
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    private PriceDropNotificationManager mPriceDropNotificationManager;
+    private BookmarkModel mMockBookmarkModel;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Rule
-    public BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    @Rule public ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
     @Mock private ShoppingService mMockShoppingService;
-    @Mock private BookmarkModel mMockBookmarkModel;
+    @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
+    @Mock private ShoppingServiceFactory.Natives mShoppingServiceFactoryJniMock;
     @Mock private Profile mMockProfile;
     @Captor private ArgumentCaptor<CommerceSubscription> mSubscriptionCaptor;
 
     @Before
     public void setUp() {
-        mMockNotificationManager = new MockNotificationManagerProxy();
-        PriceDropNotificationManagerImpl.setNotificationManagerForTesting(mMockNotificationManager);
+        CommerceFeatureUtilsJni.setInstanceForTesting(mCommerceFeatureUtilsJniMock);
+        doReturn(true).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
+
+        ShoppingServiceFactoryJni.setInstanceForTesting(mShoppingServiceFactoryJniMock);
+        doReturn(mMockShoppingService).when(mShoppingServiceFactoryJniMock).getForProfile(any());
+
+        mMockNotificationManager = spy(NotificationManagerProxyImpl.getInstance());
+        BaseNotificationManagerProxyFactory.setInstanceForTesting(mMockNotificationManager);
         mPriceDropNotificationManager = PriceDropNotificationManagerFactory.create(mMockProfile);
-        when(mMockBookmarkModel.isBookmarkModelLoaded()).thenReturn(true);
-        BookmarkModel.setInstanceForTesting(mMockBookmarkModel);
-        ShoppingServiceFactory.setShoppingServiceForTesting(mMockShoppingService);
+        BookmarkModel bookmarkModel =
+                ThreadUtils.runOnUiThreadBlocking(() -> Mockito.mock(BookmarkModel.class));
+        when(bookmarkModel.isBookmarkModelLoaded()).thenReturn(true);
+        BookmarkModel.setInstanceForTesting(bookmarkModel);
         ProfileManager.setLastUsedProfileForTesting(mMockProfile);
-        ShoppingFeatures.setShoppingListEligibleForTesting(true);
     }
 
     @After
     public void tearDown() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            mPriceDropNotificationManager.deleteChannelForTesting();
-        }
+        mPriceDropNotificationManager.deleteChannelForTesting();
+        NotificationProxyUtils.setNotificationEnabledForTest(null);
     }
 
     private void verifyClickIntent(Intent intent) {
@@ -142,92 +159,75 @@ public class PriceDropNotificationManagerTest {
     @Test
     @MediumTest
     public void testCanPostNotification_FeatureDisabled() {
-        mMockNotificationManager.setNotificationsEnabled(true);
-        ShoppingFeatures.setShoppingListEligibleForTesting(false);
-        assertFalse(mPriceDropNotificationManager.canPostNotification());
-        assertFalse(mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded());
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
+        doReturn(false).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
+        verifyCanPostNotification(false);
     }
 
     @Test
     @MediumTest
     public void testCanPostNotification_NotificationDisabled() {
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
-        mMockNotificationManager.setNotificationsEnabled(false);
+        NotificationProxyUtils.setNotificationEnabledForTest(false);
         assertFalse(mPriceDropNotificationManager.areAppNotificationsEnabled());
-        assertFalse(mPriceDropNotificationManager.canPostNotification());
-        assertFalse(mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded());
+        verifyCanPostNotification(false);
     }
 
     @Test
     @MediumTest
     public void testCanPostNotificaton() {
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
-        mMockNotificationManager.setNotificationsEnabled(true);
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
         assertTrue(mPriceDropNotificationManager.areAppNotificationsEnabled());
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            assertTrue(mPriceDropNotificationManager.canPostNotification());
-            assertTrue(mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded());
-        } else {
-            assertNull(mPriceDropNotificationManager.getNotificationChannel());
-            assertFalse(mPriceDropNotificationManager.canPostNotification());
-            assertFalse(mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded());
+        AtomicBoolean callbackComplete = new AtomicBoolean(false);
+        AtomicReference<NotificationChannel> channelRef = new AtomicReference<>();
+        mPriceDropNotificationManager.getNotificationChannel(
+                (result) -> {
+                    channelRef.set(result);
+                    callbackComplete.set(true);
+                });
+        CriteriaHelper.pollInstrumentationThread(callbackComplete::get);
+        assertNull(channelRef.get());
+        verifyCanPostNotification(false);
 
-            mPriceDropNotificationManager.createNotificationChannel();
-            assertNotNull(mPriceDropNotificationManager.getNotificationChannel());
-            assertEquals(
-                    NotificationManager.IMPORTANCE_DEFAULT,
-                    mPriceDropNotificationManager.getNotificationChannel().getImportance());
-
-            assertTrue(mPriceDropNotificationManager.canPostNotification());
-            assertTrue(mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded());
-        }
+        mPriceDropNotificationManager.createNotificationChannel();
+        callbackComplete.set(false);
+        mPriceDropNotificationManager.getNotificationChannel(
+                (result) -> {
+                    channelRef.set(result);
+                    callbackComplete.set(true);
+                });
+        CriteriaHelper.pollInstrumentationThread(callbackComplete::get);
+        assertNotNull(channelRef.get());
+        assertEquals(NotificationManager.IMPORTANCE_DEFAULT, channelRef.get().getImportance());
+        verifyCanPostNotification(true);
     }
 
     @Test
     @MediumTest
     public void testGetNotificationSettingsIntent_NotificationDisabled() {
-        mMockNotificationManager.setNotificationsEnabled(false);
+        NotificationProxyUtils.setNotificationEnabledForTest(false);
         Intent intent = mPriceDropNotificationManager.getNotificationSettingsIntent();
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            assertEquals(ACTION_APP_NOTIFICATION_SETTINGS, intent.getAction());
-            assertEquals(
-                    ContextUtils.getApplicationContext().getPackageName(),
-                    intent.getStringExtra(EXTRA_APP_PACKAGE));
-            assertEquals(
-                    ContextUtils.getApplicationContext().getApplicationInfo().uid,
-                    intent.getIntExtra(EXTRA_APP_UID, 0));
-        } else {
-            assertEquals(Settings.ACTION_APP_NOTIFICATION_SETTINGS, intent.getAction());
-            assertEquals(
-                    ContextUtils.getApplicationContext().getPackageName(),
-                    intent.getStringExtra(Settings.EXTRA_APP_PACKAGE));
-        }
+        assertEquals(Settings.ACTION_APP_NOTIFICATION_SETTINGS, intent.getAction());
+        assertEquals(
+                ContextUtils.getApplicationContext().getPackageName(),
+                intent.getStringExtra(Settings.EXTRA_APP_PACKAGE));
         assertEquals(Intent.FLAG_ACTIVITY_NEW_TASK, intent.getFlags());
     }
 
     @Test
     @MediumTest
     public void testGetNotificationSettingsIntent_NotificationEnabled() {
-        mMockNotificationManager.setNotificationsEnabled(true);
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
         Intent intent = mPriceDropNotificationManager.getNotificationSettingsIntent();
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            assertEquals(ACTION_APP_NOTIFICATION_SETTINGS, intent.getAction());
-            assertEquals(
-                    ContextUtils.getApplicationContext().getPackageName(),
-                    intent.getStringExtra(EXTRA_APP_PACKAGE));
-            assertEquals(
-                    ContextUtils.getApplicationContext().getApplicationInfo().uid,
-                    intent.getIntExtra(EXTRA_APP_UID, 0));
-        } else {
-            assertEquals(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS, intent.getAction());
-            assertEquals(
-                    ContextUtils.getApplicationContext().getPackageName(),
-                    intent.getStringExtra(Settings.EXTRA_APP_PACKAGE));
-            assertEquals(
-                    ChromeChannelDefinitions.ChannelId.PRICE_DROP_DEFAULT,
-                    intent.getStringExtra(Settings.EXTRA_CHANNEL_ID));
-        }
+        assertEquals(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS, intent.getAction());
+        assertEquals(
+                ContextUtils.getApplicationContext().getPackageName(),
+                intent.getStringExtra(Settings.EXTRA_APP_PACKAGE));
+        assertEquals(
+                ChromeChannelDefinitions.ChannelId.PRICE_DROP_DEFAULT,
+                intent.getStringExtra(Settings.EXTRA_CHANNEL_ID));
         assertEquals(Intent.FLAG_ACTIVITY_NEW_TASK, intent.getFlags());
     }
 
@@ -292,10 +292,6 @@ public class PriceDropNotificationManagerTest {
         String offerId = "offer_id";
 
         mPriceDropNotificationManager.onNotificationActionClicked(
-                ACTION_ID_TURN_OFF_ALERT, TEST_URL, null, null, false);
-        verify(mMockShoppingService, times(0)).unsubscribe(any(), any(Callback.class));
-
-        mPriceDropNotificationManager.onNotificationActionClicked(
                 ACTION_ID_TURN_OFF_ALERT, TEST_URL, offerId, null, false);
         verify(mMockShoppingService, times(1))
                 .unsubscribe(mSubscriptionCaptor.capture(), any(Callback.class));
@@ -318,7 +314,7 @@ public class PriceDropNotificationManagerTest {
         int mockType = SystemNotificationType.PRICE_DROP_ALERTS_USER_MANAGED;
         long mockTimestamp =
                 System.currentTimeMillis()
-                        - 2
+                        - 2L
                                 * PriceTrackingNotificationConfig
                                         .getNotificationTimestampsStoreWindowMs();
         JSONArray jsonArray = new JSONArray();
@@ -363,5 +359,25 @@ public class PriceDropNotificationManagerTest {
         assertEquals(
                 true,
                 mPriceDropNotificationManager.hasReachedMaxAllowedNotificationNumber(mockType));
+    }
+
+    private void verifyCanPostNotification(boolean expectation) {
+        AtomicBoolean canPost = new AtomicBoolean(!expectation);
+        AtomicBoolean canPostWithMetrics = new AtomicBoolean(!expectation);
+        mPriceDropNotificationManager.canPostNotification(
+                (result) -> {
+                    canPost.set(result);
+                });
+        mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded(
+                (result) -> {
+                    canPostWithMetrics.set(result);
+                });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(
+                            (canPost.get() == expectation)
+                                    && (canPostWithMetrics.get() == expectation),
+                            is(true));
+                });
     }
 }

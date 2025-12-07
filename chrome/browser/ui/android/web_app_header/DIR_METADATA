@@ -1,0 +1,6 @@
+# Chromium > UI > Browser > WebAppInstalls > Android
+buganizer_public: {
+    component_id: 1457202
+}
+team_email: "pwa-dev@chromium.org"
+os: ANDROID

@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.browserservices.intents;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Map;
 
@@ -18,9 +18,10 @@ import java.util.Map;
  * that they can be returned to callers in order for the rest of the (non-App Identity) update
  * requests to be fulfilled.
  */
+@NullMarked
 public class MergedWebappInfo extends WebappInfo {
     // The old WebappInfo values (typically the current values for a webapp being upgraded).
-    private WebappInfo mOldWebappInfo;
+    private final WebappInfo mOldWebappInfo;
 
     // Whether to override the name and shortName information returned to callers.
     private boolean mUseOldName;
@@ -28,20 +29,17 @@ public class MergedWebappInfo extends WebappInfo {
     // Whether to override the icon information returned to callers.
     private boolean mUseOldIcons;
 
-    public static MergedWebappInfo create(
-            @NonNull WebappInfo oldWebappInfo,
-            @Nullable BrowserServicesIntentDataProvider provider) {
+    public static @Nullable MergedWebappInfo create(
+            WebappInfo oldWebappInfo, @Nullable BrowserServicesIntentDataProvider provider) {
         return (provider == null) ? null : new MergedWebappInfo(oldWebappInfo, provider);
     }
 
     public static MergedWebappInfo createForTesting(
-            @NonNull WebappInfo oldWebappInfo, @NonNull WebappInfo newWebappInfo) {
+            WebappInfo oldWebappInfo, WebappInfo newWebappInfo) {
         return new MergedWebappInfo(oldWebappInfo, newWebappInfo.getProvider());
     }
 
-    private MergedWebappInfo(
-            @NonNull WebappInfo oldWebappInfo,
-            @NonNull BrowserServicesIntentDataProvider provider) {
+    private MergedWebappInfo(WebappInfo oldWebappInfo, BrowserServicesIntentDataProvider provider) {
         super(provider);
         mOldWebappInfo = oldWebappInfo;
         setUseOldName(oldWebappInfo.getWebApkExtras().hasCustomName);
@@ -58,7 +56,7 @@ public class MergedWebappInfo extends WebappInfo {
     }
 
     @Override
-    public String name() {
+    public @Nullable String name() {
         if (mUseOldName) {
             return mOldWebappInfo.getWebappExtras().name;
         }
@@ -66,7 +64,7 @@ public class MergedWebappInfo extends WebappInfo {
     }
 
     @Override
-    public String shortName() {
+    public @Nullable String shortName() {
         if (mUseOldName) {
             return mOldWebappInfo.getWebappExtras().shortName;
         }
@@ -74,7 +72,7 @@ public class MergedWebappInfo extends WebappInfo {
     }
 
     @Override
-    public @NonNull WebappIcon icon() {
+    public WebappIcon icon() {
         if (mUseOldIcons) {
             return mOldWebappInfo.getWebappExtras().icon;
         }
@@ -100,7 +98,6 @@ public class MergedWebappInfo extends WebappInfo {
     }
 
     @Override
-    @NonNull
     public Map<String, String> iconUrlToMurmur2HashMap() {
         if (mUseOldIcons) {
             return mOldWebappInfo.getWebApkExtras().iconUrlToMurmur2HashMap;
@@ -109,7 +106,7 @@ public class MergedWebappInfo extends WebappInfo {
     }
 
     @Override
-    public String appKey() {
+    public @Nullable String appKey() {
         return mOldWebappInfo.appKey();
     }
 }

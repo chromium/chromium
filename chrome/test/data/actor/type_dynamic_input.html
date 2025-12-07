@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0">
+    <title>Page with adhoc input created on click</title>
+    <style>
+      input {
+        position: absolute;
+        left: 10px;
+        top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <input type="text" id="input" readonly aria-label="dynamic-input">
+      <script>
+        const smart_input = document.getElementById("input");
+        smart_input.addEventListener('click', e => {
+          const cloned_input = smart_input.cloneNode(true);
+          // Set the new input to cover the previous input.
+          cloned_input.style.zIndex = '1000';
+
+          cloned_input.id = 'inputclone';
+          cloned_input.removeAttribute('readonly');
+
+          smart_input.after(cloned_input);
+          cloned_input.focus();
+        });
+      </script>
+    </div>
+  </body>
+</html>

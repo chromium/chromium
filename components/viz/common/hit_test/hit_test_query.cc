@@ -75,11 +75,14 @@ const std::string GetAsyncHitTestReasons(uint32_t async_hit_test_reasons) {
 
 }  // namespace
 
-HitTestQuery::HitTestQuery() = default;
 HitTestQuery::~HitTestQuery() = default;
+
+HitTestQuery::HitTestQuery(std::optional<base::SafeRef<DataProvider>> provider)
+    : provider_(provider) {}
 
 void HitTestQuery::OnAggregatedHitTestRegionListUpdated(
     const std::vector<AggregatedHitTestRegion>& hit_test_data) {
+  CHECK(!provider_.has_value());
   hit_test_data_.clear();
   hit_test_data_ = hit_test_data;
 }
@@ -87,10 +90,11 @@ void HitTestQuery::OnAggregatedHitTestRegionListUpdated(
 Target HitTestQuery::FindTargetForLocation(
     EventSource event_source,
     const gfx::PointF& location_in_root) const {
-  if (hit_test_data_.empty())
+  if (GetHitTestRegionData().empty()) {
     return Target();
+  }
   return FindTargetForLocationStartingFromImpl(
-      event_source, location_in_root, hit_test_data_[0].frame_sink_id,
+      event_source, location_in_root, GetHitTestRegionData()[0].frame_sink_id,
       /* is_location_relative_to_parent */ true);
 }
 
@@ -107,8 +111,9 @@ bool HitTestQuery::TransformLocationForTarget(
     const std::vector<FrameSinkId>& target_ancestors,
     const gfx::PointF& location_in_root,
     gfx::PointF* transformed_location) const {
-  if (hit_test_data_.empty())
+  if (GetHitTestRegionData().empty()) {
     return false;
+  }
 
   // Use GetTransformToTarget if |target_ancestors| only has the target.
   if (target_ancestors.size() == 1u) {
@@ -122,7 +127,7 @@ bool HitTestQuery::TransformLocationForTarget(
 
   if (target_ancestors.size() == 0u ||
       target_ancestors[target_ancestors.size() - 1] !=
-          hit_test_data_[0].frame_sink_id) {
+          GetHitTestRegionData()[0].frame_sink_id) {
     return false;
   }
 
@@ -135,15 +140,16 @@ bool HitTestQuery::TransformLocationForTarget(
 
 bool HitTestQuery::GetTransformToTarget(const FrameSinkId& target,
                                         gfx::Transform* transform) const {
-  if (hit_test_data_.empty())
+  if (GetHitTestRegionData().empty()) {
     return false;
+  }
 
   return GetTransformToTargetRecursively(target, 0, transform);
 }
 
 bool HitTestQuery::ContainsActiveFrameSinkId(
     const FrameSinkId& frame_sink_id) const {
-  for (auto& it : hit_test_data_) {
+  for (auto& it : GetHitTestRegionData()) {
     if (it.frame_sink_id == frame_sink_id &&
         !(it.flags & HitTestRegionFlags::kHitTestNotActive)) {
       return true;
@@ -157,8 +163,9 @@ Target HitTestQuery::FindTargetForLocationStartingFromImpl(
     const gfx::PointF& location,
     const FrameSinkId& frame_sink_id,
     bool is_location_relative_to_parent) const {
-  if (hit_test_data_.empty())
+  if (GetHitTestRegionData().empty()) {
     return Target();
+  }
 
   Target target;
   size_t start_index = 0;
@@ -182,40 +189,46 @@ bool HitTestQuery::FindTargetInRegionForLocation(
 
   // Exclude a region and all its descendants if the region has the ignore bit
   // set.
-  if (hit_test_data_[region_index].flags & HitTestRegionFlags::kHitTestIgnore)
+  if (GetHitTestRegionData()[region_index].flags &
+      HitTestRegionFlags::kHitTestIgnore) {
     return false;
+  }
 
   if (is_location_relative_to_parent) {
     // HasPerspective() is checked for the transform because the point will not
     // be transformed correctly for a plane with a different normal.
     // See https://crbug.com/854247.
-    if (hit_test_data_[region_index].transform.HasPerspective()) {
-      target->frame_sink_id = hit_test_data_[region_index].frame_sink_id;
+    if (GetHitTestRegionData()[region_index].transform.HasPerspective()) {
+      target->frame_sink_id =
+          GetHitTestRegionData()[region_index].frame_sink_id;
       target->location_in_target = gfx::PointF();
       target->flags = HitTestRegionFlags::kHitTestAsk;
       return true;
     }
 
     location_transformed =
-        hit_test_data_[region_index].transform.MapPoint(location_transformed);
-    if (!gfx::RectF(hit_test_data_[region_index].rect)
+        GetHitTestRegionData()[region_index].transform.MapPoint(
+            location_transformed);
+    if (!gfx::RectF(GetHitTestRegionData()[region_index].rect)
              .Contains(location_transformed)) {
       return false;
     }
   }
 
-  const int32_t region_child_count = hit_test_data_[region_index].child_count;
+  const int32_t region_child_count =
+      GetHitTestRegionData()[region_index].child_count;
   if (!CheckChildCount(region_child_count,
-                       hit_test_data_.size() - region_index))
+                       GetHitTestRegionData().size() - region_index)) {
     return false;
+  }
 
   size_t child_region = region_index + 1;
   size_t child_region_end = child_region + region_child_count;
   gfx::PointF location_in_target = location_transformed;
 
-  const uint32_t flags = hit_test_data_[region_index].flags;
+  const uint32_t flags = GetHitTestRegionData()[region_index].flags;
 
-  DCHECK(hit_test_data_[region_index].frame_sink_id.is_valid());
+  DCHECK(GetHitTestRegionData()[region_index].frame_sink_id.is_valid());
   // Root view should not be overlapped by others. However, the root view
   // information is not visible to LTHI::BuildHitTestData(). Therefore the
   // kOverlappedRegion flag could still be set for the root view upon building
@@ -225,18 +238,19 @@ bool HitTestQuery::FindTargetInRegionForLocation(
   // TODO(crbug.com/40646023): Do not set the kHitTestAsk and kOverlappedRegion
   // flags for root when building hit test data.
   bool root_view_overlapped =
-      hit_test_data_[region_index].frame_sink_id == root_view_frame_sink_id &&
-      hit_test_data_[region_index].async_hit_test_reasons ==
+      GetHitTestRegionData()[region_index].frame_sink_id ==
+          root_view_frame_sink_id &&
+      GetHitTestRegionData()[region_index].async_hit_test_reasons ==
           AsyncHitTestReasons::kOverlappedRegion;
 
   // Verify that async_hit_test_reasons is set if and only if there's
   // a kHitTestAsk flag.
   DCHECK_EQ(!!(flags & HitTestRegionFlags::kHitTestAsk),
-            !!hit_test_data_[region_index].async_hit_test_reasons);
+            !!GetHitTestRegionData()[region_index].async_hit_test_reasons);
 
   if ((flags & HitTestRegionFlags::kHitTestAsk) &&
       !(flags & HitTestRegionFlags::kHitTestIgnore) && !root_view_overlapped) {
-    target->frame_sink_id = hit_test_data_[region_index].frame_sink_id;
+    target->frame_sink_id = GetHitTestRegionData()[region_index].frame_sink_id;
     target->location_in_target = location_in_target;
     target->flags = flags;
     return true;
@@ -253,7 +267,7 @@ bool HitTestQuery::FindTargetInRegionForLocation(
     }
 
     const int32_t child_region_child_count =
-        hit_test_data_[child_region].child_count;
+        GetHitTestRegionData()[child_region].child_count;
     if (!CheckChildCount(child_region_child_count, region_child_count))
       return false;
 
@@ -265,11 +279,11 @@ bool HitTestQuery::FindTargetInRegionForLocation(
 
   if ((flags & HitTestRegionFlags::kHitTestMine) &&
       !(flags & HitTestRegionFlags::kHitTestIgnore)) {
-    target->frame_sink_id = hit_test_data_[region_index].frame_sink_id;
+    target->frame_sink_id = GetHitTestRegionData()[region_index].frame_sink_id;
     target->location_in_target = location_in_target;
     uint32_t target_flags = flags;
     if (root_view_overlapped) {
-      DCHECK_EQ(hit_test_data_[region_index].async_hit_test_reasons,
+      DCHECK_EQ(GetHitTestRegionData()[region_index].async_hit_test_reasons,
                 AsyncHitTestReasons::kOverlappedRegion);
       target_flags &= ~HitTestRegionFlags::kHitTestAsk;
     }
@@ -285,21 +299,22 @@ bool HitTestQuery::TransformLocationForTargetRecursively(
     size_t target_ancestor,
     size_t region_index,
     gfx::PointF* location_in_target) const {
-  *location_in_target =
-      hit_test_data_[region_index].transform.MapPoint(*location_in_target);
+  *location_in_target = GetHitTestRegionData()[region_index].transform.MapPoint(
+      *location_in_target);
   if (!target_ancestor)
     return true;
 
-  const int32_t region_child_count = hit_test_data_[region_index].child_count;
+  const int32_t region_child_count =
+      GetHitTestRegionData()[region_index].child_count;
   if (!CheckChildCount(region_child_count,
-                       hit_test_data_.size() - region_index)) {
+                       GetHitTestRegionData().size() - region_index)) {
     return false;
   }
 
   size_t child_region = region_index + 1;
   size_t child_region_end = child_region + region_child_count;
   while (child_region < child_region_end) {
-    if (hit_test_data_[child_region].frame_sink_id ==
+    if (GetHitTestRegionData()[child_region].frame_sink_id ==
         target_ancestors[target_ancestor - 1]) {
       return TransformLocationForTargetRecursively(
           target_ancestors, target_ancestor - 1, child_region,
@@ -307,7 +322,7 @@ bool HitTestQuery::TransformLocationForTargetRecursively(
     }
 
     const int32_t child_region_child_count =
-        hit_test_data_[child_region].child_count;
+        GetHitTestRegionData()[child_region].child_count;
     if (!CheckChildCount(child_region_child_count, region_child_count))
       return false;
 
@@ -323,14 +338,15 @@ bool HitTestQuery::GetTransformToTargetRecursively(
     gfx::Transform* transform) const {
   // TODO(crbug.com/41460941): Cache the matrix product such that the transform
   // can be found immediately.
-  if (hit_test_data_[region_index].frame_sink_id == target) {
-    *transform = hit_test_data_[region_index].transform;
+  if (GetHitTestRegionData()[region_index].frame_sink_id == target) {
+    *transform = GetHitTestRegionData()[region_index].transform;
     return true;
   }
 
-  const int32_t region_child_count = hit_test_data_[region_index].child_count;
+  const int32_t region_child_count =
+      GetHitTestRegionData()[region_index].child_count;
   if (!CheckChildCount(region_child_count,
-                       hit_test_data_.size() - region_index)) {
+                       GetHitTestRegionData().size() - region_index)) {
     return false;
   }
 
@@ -340,13 +356,14 @@ bool HitTestQuery::GetTransformToTargetRecursively(
     gfx::Transform transform_to_child;
     if (GetTransformToTargetRecursively(target, child_region,
                                         &transform_to_child)) {
-      gfx::Transform region_transform(hit_test_data_[region_index].transform);
+      gfx::Transform region_transform(
+          GetHitTestRegionData()[region_index].transform);
       *transform = transform_to_child * region_transform;
       return true;
     }
 
     const int32_t child_region_child_count =
-        hit_test_data_[child_region].child_count;
+        GetHitTestRegionData()[child_region].child_count;
     if (!CheckChildCount(child_region_child_count, region_child_count))
       return false;
 
@@ -356,13 +373,24 @@ bool HitTestQuery::GetTransformToTargetRecursively(
   return false;
 }
 
+const std::vector<AggregatedHitTestRegion>& HitTestQuery::GetHitTestRegionData()
+    const {
+  // |provider_| is not null when input is being handled on VizCompositor
+  // thread.
+  if (provider_.has_value()) {
+    return provider_.value()->GetHitTestData();
+  } else {
+    return hit_test_data_;
+  }
+}
+
 std::string HitTestQuery::PrintHitTestData() const {
   std::ostringstream oss;
   base::stack<uint32_t> parents;
   std::string tabs = "";
 
-  for (uint32_t i = 0; i < hit_test_data_.size(); ++i) {
-    const AggregatedHitTestRegion& htr = hit_test_data_[i];
+  for (uint32_t i = 0; i < GetHitTestRegionData().size(); ++i) {
+    const AggregatedHitTestRegion& htr = GetHitTestRegionData()[i];
 
     oss << tabs << "Index: " << i << '\n';
     oss << tabs << "Children: " << htr.child_count << '\n';
@@ -390,7 +418,8 @@ std::string HitTestQuery::PrintHitTestData() const {
     parents.push(i);
 
     while (!parents.empty() &&
-           parents.top() + hit_test_data_[parents.top()].child_count <= i) {
+           parents.top() + GetHitTestRegionData()[parents.top()].child_count <=
+               i) {
       tabs.pop_back();
       tabs.pop_back();
 
@@ -403,8 +432,8 @@ std::string HitTestQuery::PrintHitTestData() const {
 
 bool HitTestQuery::FindIndexOfFrameSink(const FrameSinkId& id,
                                         size_t* index) const {
-  for (uint32_t i = 0; i < hit_test_data_.size(); ++i) {
-    if (hit_test_data_[i].frame_sink_id == id) {
+  for (uint32_t i = 0; i < GetHitTestRegionData().size(); ++i) {
+    if (GetHitTestRegionData()[i].frame_sink_id == id) {
       *index = i;
       return true;
     }

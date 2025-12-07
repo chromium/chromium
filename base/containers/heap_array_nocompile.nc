@@ -27,6 +27,7 @@ void WontCompileUninithNonTrivialClass() {
 
 void WontCompileWithSizeConstructorRequiresArgs() {
   auto vec = HeapArray<ConstructorRequiresArgs>::WithSize(2u);  // expected-error {{constraints not satisfied}}
+                                                                // expected-error@*:* {{no matching constructor for initialization}}
 }
 
 void WontCompileUninitConstructorRequiresArgs() {

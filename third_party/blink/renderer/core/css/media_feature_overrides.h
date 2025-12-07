@@ -20,8 +20,6 @@ enum class ForcedColors;
 class MediaQueryExpValue;
 
 class CORE_EXPORT MediaFeatureOverrides {
-  USING_FAST_MALLOC(MediaFeatureOverrides);
-
  public:
   void SetOverride(const AtomicString& feature,
                    const String& value_string,

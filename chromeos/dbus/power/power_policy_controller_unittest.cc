@@ -413,6 +413,20 @@ TEST_F(PowerPolicyControllerTest, DoNothingOnLidClosedWhileSigningOut) {
       PowerPolicyController::GetPolicyDebugString(power_manager()->policy()));
 }
 
+TEST_F(PowerPolicyControllerTest, DoNothingWhenIdleInDemoMode) {
+  policy_controller_->SetShouldDoNothingWhenIdleInDemoMode();
+
+  power_manager::PowerManagementPolicy expected_policy;
+  expected_policy.set_ac_idle_action(
+      power_manager::PowerManagementPolicy_Action_DO_NOTHING);
+  expected_policy.set_battery_idle_action(
+      power_manager::PowerManagementPolicy_Action_DO_NOTHING);
+
+  EXPECT_EQ(
+      PowerPolicyController::GetPolicyDebugString(expected_policy),
+      PowerPolicyController::GetPolicyDebugString(power_manager()->policy()));
+}
+
 TEST_F(PowerPolicyControllerTest, SuspendOnLidClosedWhileSignedOut) {
   PowerPolicyController::PrefValues prefs;
   policy_controller_->ApplyPrefs(prefs);
@@ -511,6 +525,39 @@ TEST_F(PowerPolicyControllerTest, PolicyAutoScreenLockDelay) {
   prefs.battery_screen_lock_delay_ms = 4000;
   policy_controller_->ApplyPrefs(prefs);
   EXPECT_EQ(base::Milliseconds(prefs.battery_screen_lock_delay_ms),
+            policy_controller_->Get()->GetMaxPolicyAutoScreenLockDelay());
+}
+
+TEST_F(PowerPolicyControllerTest,
+       GetMaxPolicyAutoScreenLockDelayDefaultValues) {
+  PowerPolicyController::PrefValues prefs;
+  policy_controller_->ApplyPrefs(prefs);
+
+  // Autolock disabled.
+  prefs.enable_auto_screen_lock = false;
+  policy_controller_->ApplyPrefs(prefs);
+  EXPECT_EQ(base::TimeDelta(),
+            policy_controller_->Get()->GetMaxPolicyAutoScreenLockDelay());
+
+  // Autolock enabled.
+
+  // No specified delay for either AC or battery, will use the default value.
+  prefs.enable_auto_screen_lock = true;
+  policy_controller_->ApplyPrefs(prefs);
+  int expected_default_delay_ms = 510000;
+  EXPECT_EQ(base::Milliseconds(expected_default_delay_ms),
+            policy_controller_->Get()->GetMaxPolicyAutoScreenLockDelay());
+
+  // Longer battery delay.
+  prefs.battery_screen_lock_delay_ms = 600000;
+  policy_controller_->ApplyPrefs(prefs);
+  EXPECT_EQ(base::Milliseconds(prefs.battery_screen_lock_delay_ms),
+            policy_controller_->Get()->GetMaxPolicyAutoScreenLockDelay());
+
+  // Longer AC delay.
+  prefs.ac_screen_lock_delay_ms = 700000;
+  policy_controller_->ApplyPrefs(prefs);
+  EXPECT_EQ(base::Milliseconds(prefs.ac_screen_lock_delay_ms),
             policy_controller_->Get()->GetMaxPolicyAutoScreenLockDelay());
 }
 

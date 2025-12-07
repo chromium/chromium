@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/audio/pulse/pulse_util.h"
 
 #include <stdint.h>
@@ -91,8 +86,7 @@ pa_channel_position ChromiumToPAChannelPosition(Channels channel) {
     case SIDE_RIGHT:
       return PA_CHANNEL_POSITION_SIDE_RIGHT;
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid channel: " << channel;
-      return PA_CHANNEL_POSITION_INVALID;
+      NOTREACHED() << "Invalid channel: " << channel;
   }
 }
 
@@ -141,7 +135,7 @@ void InputBusCallback(pa_context* context,
     return;
   }
 
-  if (strcmp(info->name, data->name_->c_str()) == 0 &&
+  if (info->name == *data->name_ &&
       pa_proplist_contains(info->proplist, PA_PROP_DEVICE_BUS_PATH)) {
     data->bus_ = pa_proplist_gets(info->proplist, PA_PROP_DEVICE_BUS_PATH);
   }
@@ -160,8 +154,8 @@ void OutputBusCallback(pa_context* context,
   }
 
   if (pa_proplist_contains(info->proplist, PA_PROP_DEVICE_BUS_PATH) &&
-      strcmp(pa_proplist_gets(info->proplist, PA_PROP_DEVICE_BUS_PATH),
-             data->bus_->c_str()) == 0) {
+      pa_proplist_gets(info->proplist, PA_PROP_DEVICE_BUS_PATH) ==
+          *data->bus_) {
     data->name_ = info->name;
   }
 }
@@ -365,13 +359,14 @@ pa_channel_map ChannelLayoutToPAChannelMap(ChannelLayout channel_layout) {
     pa_channel_map_init(&channel_map);
 
     channel_map.channels = ChannelLayoutToChannelCount(channel_layout);
+    base::span channel_map_span(channel_map.map);
     for (Channels ch = LEFT; ch <= CHANNELS_MAX;
          ch = static_cast<Channels>(ch + 1)) {
       int channel_index = ChannelOrder(channel_layout, ch);
       if (channel_index < 0)
         continue;
 
-      channel_map.map[channel_index] = ChromiumToPAChannelPosition(ch);
+      channel_map_span[channel_index] = ChromiumToPAChannelPosition(ch);
     }
   }
 
@@ -637,6 +632,80 @@ bool CreateOutputStream(raw_ptr<pa_threaded_mainloop>* mainloop,
   }
 
   return true;
+}
+
+// Mutes all audio output sinks except the specified sink.
+void MuteAllSinksExcept(pa_threaded_mainloop* mainloop,
+                        pa_context* context,
+                        const std::string& exclude_sink_name) {
+  CHECK(mainloop);
+  CHECK(context);
+  AutoPulseLock lock(mainloop);
+
+  // Retrieve a list of all sinks from the PulseAudio context
+  pa_operation* op = pa_context_get_sink_info_list(
+      context,
+      // Define the callback to process each sink information received
+      [](pa_context* c, const pa_sink_info* i, int eol, void* userdata) {
+        if (eol != 0) {
+          return;  // Handle end of list or error
+        }
+        if (!eol) {
+          std::string* exclude_sink_name = static_cast<std::string*>(userdata);
+          // Check if current sink's name matches the exclude_sink_name
+          if (i->name != *exclude_sink_name) {
+            pa_context_set_sink_mute_by_index(
+                c, i->index, 1, /*callback=*/nullptr,
+                /*userdata=*/nullptr);  // Mute the sink
+          }
+        }
+      },
+      (void*)&exclude_sink_name);
+
+  WaitForOperationCompletion(mainloop, op, context);
+  // Clean up the operation after completion
+  if (op) {
+    pa_operation_unref(op);
+  }
+}
+
+// Unmutes all audio output sinks in the system.
+void UnmuteAllSinks(pa_threaded_mainloop* mainloop, pa_context* context) {
+  CHECK(mainloop);
+  CHECK(context);
+  // Lock the mainloop to ensure thread safety when accessing the context.
+  AutoPulseLock lock(mainloop);
+
+  // Request a list of all sinks from the PulseAudio context.
+  pa_operation* op = pa_context_get_sink_info_list(
+      context,
+      [](pa_context* c, const pa_sink_info* i, int eol, void* userdata) {
+        // eol != 0 indicates the end of list or an error. We return early.
+        if (eol != 0) {
+          return;
+        }
+
+        pa_operation* unmute_op = pa_context_set_sink_mute_by_index(
+            c, i->index, 0,  // 0 means unmute
+            [](pa_context* c, int success, void* userdata) {
+              // This callback ensures the operation completes
+              pa_threaded_mainloop_signal((pa_threaded_mainloop*)userdata, 0);
+            },
+            userdata  // Pass the mainloop as userdata
+        );
+
+        if (unmute_op) {
+          pa_operation_unref(unmute_op);
+        }
+      },
+      mainloop  // Pass mainloop as userdata
+  );
+
+  WaitForOperationCompletion(mainloop, op, context);
+  // Wait for the operation to complete to ensure all sinks are unmuted.
+  if (op) {
+    pa_operation_unref(op);
+  }
 }
 
 std::string GetBusOfInput(pa_threaded_mainloop* mainloop,

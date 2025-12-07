@@ -10,8 +10,9 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_info.h"
-#include "gpu/gpu_export.h"
+#include "gpu/config/gpu_preferences.h"
 #include "gpu/ipc/common/gpu_info.mojom.h"
+#include "gpu/ipc/common/gpu_ipc_common_export.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 
@@ -22,8 +23,8 @@
 namespace mojo {
 
 template <>
-struct GPU_EXPORT
-    StructTraits<gpu::mojom::GpuDeviceDataView, gpu::GPUInfo::GPUDevice> {
+struct GPU_IPC_COMMON_EXPORT StructTraits<gpu::mojom::GpuDeviceDataView,
+                                          gpu::GPUInfo::GPUDevice> {
   static bool Read(gpu::mojom::GpuDeviceDataView data,
                    gpu::GPUInfo::GPUDevice* out);
 
@@ -81,8 +82,16 @@ struct GPU_EXPORT
 };
 
 template <>
-struct GPU_EXPORT
-    EnumTraits<gpu::mojom::VideoCodecProfile, gpu::VideoCodecProfile> {
+struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::SkiaBackendType,
+                                        gpu::SkiaBackendType> {
+  static gpu::mojom::SkiaBackendType ToMojom(gpu::SkiaBackendType type);
+  static bool FromMojom(gpu::mojom::SkiaBackendType input,
+                        gpu::SkiaBackendType* out);
+};
+
+template <>
+struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::VideoCodecProfile,
+                                        gpu::VideoCodecProfile> {
   static gpu::mojom::VideoCodecProfile ToMojom(
       gpu::VideoCodecProfile video_codec_profile);
   static bool FromMojom(gpu::mojom::VideoCodecProfile input,
@@ -90,9 +99,9 @@ struct GPU_EXPORT
 };
 
 template <>
-struct GPU_EXPORT
-    StructTraits<gpu::mojom::VideoDecodeAcceleratorSupportedProfileDataView,
-                 gpu::VideoDecodeAcceleratorSupportedProfile> {
+struct GPU_IPC_COMMON_EXPORT StructTraits<
+    gpu::mojom::VideoDecodeAcceleratorSupportedProfileDataView,
+    gpu::VideoDecodeAcceleratorSupportedProfile> {
   static bool Read(
       gpu::mojom::VideoDecodeAcceleratorSupportedProfileDataView data,
       gpu::VideoDecodeAcceleratorSupportedProfile* out);
@@ -119,9 +128,9 @@ struct GPU_EXPORT
 };
 
 template <>
-struct GPU_EXPORT
-    StructTraits<gpu::mojom::VideoDecodeAcceleratorCapabilitiesDataView,
-                 gpu::VideoDecodeAcceleratorCapabilities> {
+struct GPU_IPC_COMMON_EXPORT StructTraits<
+    gpu::mojom::VideoDecodeAcceleratorCapabilitiesDataView,
+    gpu::VideoDecodeAcceleratorCapabilities> {
   static bool Read(gpu::mojom::VideoDecodeAcceleratorCapabilitiesDataView data,
                    gpu::VideoDecodeAcceleratorCapabilities* out);
 
@@ -136,9 +145,9 @@ struct GPU_EXPORT
 };
 
 template <>
-struct GPU_EXPORT
-    StructTraits<gpu::mojom::VideoEncodeAcceleratorSupportedProfileDataView,
-                 gpu::VideoEncodeAcceleratorSupportedProfile> {
+struct GPU_IPC_COMMON_EXPORT StructTraits<
+    gpu::mojom::VideoEncodeAcceleratorSupportedProfileDataView,
+    gpu::VideoEncodeAcceleratorSupportedProfile> {
   static bool Read(
       gpu::mojom::VideoEncodeAcceleratorSupportedProfileDataView data,
       gpu::VideoEncodeAcceleratorSupportedProfile* out);
@@ -170,8 +179,8 @@ struct GPU_EXPORT
 };
 
 template <>
-struct GPU_EXPORT EnumTraits<gpu::mojom::ImageDecodeAcceleratorType,
-                             gpu::ImageDecodeAcceleratorType> {
+struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::ImageDecodeAcceleratorType,
+                                        gpu::ImageDecodeAcceleratorType> {
   static gpu::mojom::ImageDecodeAcceleratorType ToMojom(
       gpu::ImageDecodeAcceleratorType image_type);
   static bool FromMojom(gpu::mojom::ImageDecodeAcceleratorType input,
@@ -179,8 +188,9 @@ struct GPU_EXPORT EnumTraits<gpu::mojom::ImageDecodeAcceleratorType,
 };
 
 template <>
-struct GPU_EXPORT EnumTraits<gpu::mojom::ImageDecodeAcceleratorSubsampling,
-                             gpu::ImageDecodeAcceleratorSubsampling> {
+struct GPU_IPC_COMMON_EXPORT EnumTraits<
+    gpu::mojom::ImageDecodeAcceleratorSubsampling,
+    gpu::ImageDecodeAcceleratorSubsampling> {
   static gpu::mojom::ImageDecodeAcceleratorSubsampling ToMojom(
       gpu::ImageDecodeAcceleratorSubsampling subsampling);
   static bool FromMojom(gpu::mojom::ImageDecodeAcceleratorSubsampling input,
@@ -188,9 +198,9 @@ struct GPU_EXPORT EnumTraits<gpu::mojom::ImageDecodeAcceleratorSubsampling,
 };
 
 template <>
-struct GPU_EXPORT
-    StructTraits<gpu::mojom::ImageDecodeAcceleratorSupportedProfileDataView,
-                 gpu::ImageDecodeAcceleratorSupportedProfile> {
+struct GPU_IPC_COMMON_EXPORT StructTraits<
+    gpu::mojom::ImageDecodeAcceleratorSupportedProfileDataView,
+    gpu::ImageDecodeAcceleratorSupportedProfile> {
   static bool Read(
       gpu::mojom::ImageDecodeAcceleratorSupportedProfileDataView data,
       gpu::ImageDecodeAcceleratorSupportedProfile* out);
@@ -218,15 +228,16 @@ struct GPU_EXPORT
 
 #if BUILDFLAG(IS_WIN)
 template <>
-struct GPU_EXPORT EnumTraits<gpu::mojom::OverlaySupport, gpu::OverlaySupport> {
+struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::OverlaySupport,
+                                        gpu::OverlaySupport> {
   static gpu::mojom::OverlaySupport ToMojom(gpu::OverlaySupport support);
   static bool FromMojom(gpu::mojom::OverlaySupport input,
                         gpu::OverlaySupport* out);
 };
 
 template <>
-struct GPU_EXPORT
-    StructTraits<gpu::mojom::OverlayInfoDataView, gpu::OverlayInfo> {
+struct GPU_IPC_COMMON_EXPORT StructTraits<gpu::mojom::OverlayInfoDataView,
+                                          gpu::OverlayInfo> {
   static bool Read(gpu::mojom::OverlayInfoDataView data, gpu::OverlayInfo* out);
 
   static bool direct_composition(const gpu::OverlayInfo& input) {
@@ -266,7 +277,8 @@ struct GPU_EXPORT
 #endif
 
 template <>
-struct GPU_EXPORT StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo> {
+struct GPU_IPC_COMMON_EXPORT StructTraits<gpu::mojom::GpuInfoDataView,
+                                          gpu::GPUInfo> {
   static bool Read(gpu::mojom::GpuInfoDataView data, gpu::GPUInfo* out);
 
   static base::TimeDelta initialization_time(const gpu::GPUInfo& input) {
@@ -315,6 +327,10 @@ struct GPU_EXPORT StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo> {
 
   static const std::string& display_type(const gpu::GPUInfo& input) {
     return input.display_type;
+  }
+
+  static gpu::SkiaBackendType skia_backend_type(const gpu::GPUInfo& input) {
+    return input.skia_backend_type;
   }
 
   static const std::string& gl_version(const gpu::GPUInfo& input) {
@@ -408,11 +424,6 @@ struct GPU_EXPORT StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo> {
     return input.jpeg_decode_accelerator_supported;
   }
 
-  static std::vector<gpu::ImageDecodeAcceleratorSupportedProfile>
-  image_decode_accelerator_supported_profiles(const gpu::GPUInfo& input) {
-    return input.image_decode_accelerator_supported_profiles;
-  }
-
   static bool subpixel_font_rendering(const gpu::GPUInfo& input) {
     return input.subpixel_font_rendering;
   }
@@ -422,6 +433,10 @@ struct GPU_EXPORT StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo> {
   }
 
 #if BUILDFLAG(ENABLE_VULKAN)
+  static bool hardware_supports_vulkan(const gpu::GPUInfo& input) {
+    return input.hardware_supports_vulkan;
+  }
+
   static const std::optional<gpu::VulkanInfo>& vulkan_info(
       const gpu::GPUInfo& input) {
     return input.vulkan_info;

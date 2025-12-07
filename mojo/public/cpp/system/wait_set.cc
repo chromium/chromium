@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/public/cpp/system/wait_set.h"
 
 #include <algorithm>
@@ -16,10 +11,11 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/not_fatal_until.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "mojo/public/cpp/system/trap.h"
@@ -140,13 +136,13 @@ class WaitSet::State : public base::RefCountedThreadSafe<State> {
 
   void Wait(base::WaitableEvent** ready_event,
             size_t* num_ready_handles,
-            Handle* ready_handles,
-            MojoResult* ready_results,
-            MojoHandleSignalsState* signals_states) {
+            base::span<Handle> ready_handles,
+            base::span<MojoResult> ready_results,
+            base::span<HandleSignalsState> signals_states) {
     DCHECK(trap_handle_.is_valid());
     DCHECK(num_ready_handles);
-    DCHECK(ready_handles);
-    DCHECK(ready_results);
+    DCHECK(!ready_handles.empty());
+    DCHECK(!ready_results.empty());
     {
       base::AutoLock lock(lock_);
       if (ready_handles_.empty()) {
@@ -176,7 +172,7 @@ class WaitSet::State : public base::RefCountedThreadSafe<State> {
           for (size_t i = 0; i < num_blocking_events; ++i) {
             const auto& event = blocking_events[i];
             auto it = contexts_.find(event.trigger_context);
-            CHECK(it != contexts_.end(), base::NotFatalUntil::M130);
+            CHECK(it != contexts_.end());
             ready_handles_[it->second->handle()] = {event.result,
                                                     event.signals_state};
           }
@@ -220,8 +216,9 @@ class WaitSet::State : public base::RefCountedThreadSafe<State> {
       auto it = ready_handles_.begin();
       ready_handles[i] = it->first;
       ready_results[i] = it->second.result;
-      if (signals_states)
+      if (!signals_states.empty()) {
         signals_states[i] = it->second.signals_state;
+      }
       ready_handles_.erase(it);
     }
 
@@ -363,9 +360,9 @@ MojoResult WaitSet::RemoveHandle(Handle handle) {
 
 void WaitSet::Wait(base::WaitableEvent** ready_event,
                    size_t* num_ready_handles,
-                   Handle* ready_handles,
-                   MojoResult* ready_results,
-                   MojoHandleSignalsState* signals_states) {
+                   base::span<Handle> ready_handles,
+                   base::span<MojoResult> ready_results,
+                   base::span<HandleSignalsState> signals_states) {
   state_->Wait(ready_event, num_ready_handles, ready_handles, ready_results,
                signals_states);
 }

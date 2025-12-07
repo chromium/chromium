@@ -29,7 +29,8 @@ void AddUserBirthYearAndGenderToSyncServer(
   fake_server->InjectEntity(
       syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
           /*non_unique_name=*/kSyncDemographicsPrefName,
-          /*client_tag=*/specifics.preference().name(), specifics,
+          /*client_tag=*/specifics.priority_preference().preference().name(),
+          specifics,
           /*creation_time=*/0,
           /*last_modified_time=*/0));
 }

@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = "proto2";
+edition = "2023";
 
+package optimization_guide.proto;
+
+option features.utf8_validation = NONE;
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.optimization_guide.proto";
 option java_outer_classname = "PageTopicsOverrideListProto";
-
-package optimization_guide.proto;
 
 // The whole override list.
 message PageTopicsOverrideList {
@@ -19,11 +20,11 @@ message PageTopicsOverrideList {
 // exact string input that is otherwise passed to the TFLite model, with all
 // needed pre-processing and/or cleaning done to it already.
 message PageTopicsOverrideEntry {
-  optional string domain = 1;
-  optional AnnotatedPageTopics topics = 2;
+  string domain = 1;
+  AnnotatedPageTopics topics = 2;
 }
 
 // The topic identifiers for the given domain.
 message AnnotatedPageTopics {
-  repeated int32 topic_ids = 1;
+  repeated int32 topic_ids = 1 [features.repeated_field_encoding = EXPANDED];
 }

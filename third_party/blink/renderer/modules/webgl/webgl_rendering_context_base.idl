@@ -468,8 +468,8 @@ interface mixin WebGLRenderingContextBase {
     readonly attribute GLsizei drawingBufferWidth;
     readonly attribute GLsizei drawingBufferHeight;
     [RuntimeEnabled=WebGLDrawingBufferStorage] readonly attribute GLenum drawingBufferFormat;
-    [RaisesException=Setter] attribute PredefinedColorSpace drawingBufferColorSpace;
-    [RaisesException=Setter] attribute PredefinedColorSpace unpackColorSpace;
+    [CallWith=ScriptState, RaisesException=Setter] attribute PredefinedColorSpace drawingBufferColorSpace;
+    [CallWith=ScriptState, RaisesException=Setter] attribute PredefinedColorSpace unpackColorSpace;
 
     void activeTexture(GLenum texture);
     void attachShader(WebGLProgram program, WebGLShader shader);
@@ -556,22 +556,22 @@ interface mixin WebGLRenderingContextBase {
 
     GLenum getError();
 
-    [CallWith=ScriptState, HighEntropy, Measure] object? getExtension(DOMString name);
+    [CallWith=ScriptState, Measure] object? getExtension(DOMString name);
 
     [CallWith=ScriptState] any getFramebufferAttachmentParameter(GLenum target, GLenum attachment, GLenum pname);
-    [HighEntropy, MeasureAs=WebGLRenderingContextGetParameter, CallWith=ScriptState] any getParameter(GLenum pname);
+    [MeasureAs=WebGLRenderingContextGetParameter, CallWith=ScriptState] any getParameter(GLenum pname);
     [CallWith=ScriptState] any getProgramParameter(WebGLProgram program, GLenum pname);
     DOMString? getProgramInfoLog(WebGLProgram program);
-    [HighEntropy, MeasureAs=WebGLRenderingContextGetRenderbufferParameter, CallWith=ScriptState] any getRenderbufferParameter(GLenum target, GLenum pname);
+    [MeasureAs=WebGLRenderingContextGetRenderbufferParameter, CallWith=ScriptState] any getRenderbufferParameter(GLenum target, GLenum pname);
     [CallWith=ScriptState] any getShaderParameter(WebGLShader shader, GLenum pname);
 
     DOMString?   getShaderInfoLog(WebGLShader shader);
 
-    [HighEntropy, MeasureAs=WebGLRenderingContextGetShaderPrecisionFormat] WebGLShaderPrecisionFormat getShaderPrecisionFormat(GLenum shadertype, GLenum precisiontype);
+    [MeasureAs=WebGLRenderingContextGetShaderPrecisionFormat] WebGLShaderPrecisionFormat getShaderPrecisionFormat(GLenum shadertype, GLenum precisiontype);
 
     DOMString?   getShaderSource(WebGLShader shader);
 
-    [HighEntropy=Direct, Measure] sequence<DOMString>? getSupportedExtensions();
+    [Measure] sequence<DOMString>? getSupportedExtensions();
 
     [CallWith=ScriptState] any getTexParameter(GLenum target, GLenum pname);
 
@@ -597,7 +597,8 @@ interface mixin WebGLRenderingContextBase {
     void pixelStorei(GLenum pname, GLint param);
     void polygonOffset(GLfloat factor, GLfloat units);
 
-    void readPixels(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type,
+    void readPixels(
+        GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type,
         [AllowShared, BufferSourceTypeNoSizeLimit] ArrayBufferView? pixels);
 
     void renderbufferStorage(GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
@@ -643,6 +644,21 @@ interface mixin WebGLRenderingContextBase {
     [CallWith=ScriptState, RaisesException] void texImage2D(
         GLenum target, GLint level, GLint internalformat,
         GLenum format, GLenum type, VideoFrame frame);
+
+    [RuntimeEnabled=CanvasDrawElement, RaisesException]
+    void texElementImage2D(GLenum target, GLint level, GLint internalformat,
+                      GLenum format, GLenum type, Element element);
+    [RuntimeEnabled=CanvasDrawElement, RaisesException]
+    void texElementImage2D(GLenum target, GLint level, GLint internalformat,
+                           GLsizei width, GLsizei height, GLenum format,
+                           GLenum type, Element element);
+    [RuntimeEnabled=CanvasDrawElement, RaisesException]
+    void texElement2D(GLenum target, GLint level, GLint internalformat,
+                      GLenum format, GLenum type, Element element);
+    [RuntimeEnabled=CanvasDrawElement, RaisesException]
+    void texElement2D(GLenum target, GLint level, GLint internalformat,
+                      GLsizei width, GLsizei height, GLenum format, GLenum type,
+                      Element element);
 
     void texSubImage2D(
         GLenum target, GLint level, GLint xoffset, GLint yoffset,
@@ -695,13 +711,13 @@ interface mixin WebGLRenderingContextBase {
     void validateProgram(WebGLProgram program);
 
     [NoAllocDirectCall] void vertexAttrib1f(GLuint indx, GLfloat x);
-    void vertexAttrib1fv(GLuint indx, Float32List values);
+    [NoAllocDirectCall] void vertexAttrib1fv(GLuint indx, Float32List values);
     [NoAllocDirectCall] void vertexAttrib2f(GLuint indx, GLfloat x, GLfloat y);
-    void vertexAttrib2fv(GLuint indx, Float32List values);
+    [NoAllocDirectCall] void vertexAttrib2fv(GLuint indx, Float32List values);
     [NoAllocDirectCall] void vertexAttrib3f(GLuint indx, GLfloat x, GLfloat y, GLfloat z);
-    void vertexAttrib3fv(GLuint indx, Float32List values);
+    [NoAllocDirectCall] void vertexAttrib3fv(GLuint indx, Float32List values);
     [NoAllocDirectCall] void vertexAttrib4f(GLuint indx, GLfloat x, GLfloat y, GLfloat z, GLfloat w);
-    void vertexAttrib4fv(GLuint indx, Float32List values);
+    [NoAllocDirectCall] void vertexAttrib4fv(GLuint indx, Float32List values);
     [NoAllocDirectCall] void vertexAttribPointer(GLuint indx, GLint size, GLenum type, GLboolean normalized,
                                                     GLsizei stride, GLintptr offset);
 
@@ -709,8 +725,6 @@ interface mixin WebGLRenderingContextBase {
 
     [RuntimeEnabled=WebGLDrawingBufferStorage] void drawingBufferStorage(GLenum sizedformat, GLsizei width, GLsizei height);
 
-    [RuntimeEnabled=OffscreenCanvasCommit] void commit();
-
     // WebXR Device API support
-    [RuntimeEnabled=WebXR, SecureContext, CallWith=ScriptState, RaisesException, HighEntropy, MeasureAs=WebGLRenderingContextMakeXRCompatible] Promise<undefined> makeXRCompatible();
+    [RuntimeEnabled=WebXR, SecureContext, CallWith=ScriptState, RaisesException, MeasureAs=WebGLRenderingContextMakeXRCompatible] Promise<undefined> makeXRCompatible();
 };

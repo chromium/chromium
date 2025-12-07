@@ -28,11 +28,11 @@ source_set("traced_process") {
   ]
 }
 
-# On IOS and NACL we don't support tracing so we only include the minimum needed
+# On iOS we don't support tracing so we only include the minimum needed
 # to support a fake typed TRACE_EVENT macro. However this means we don't have
-# any .cc files and thus on iOS and NaCl it needs to be a source_set and not a
+# any .cc files and thus on iOS it needs to be a source_set and not a
 # component. |tracing_lib_type| decides which version to build.
-if (!is_nacl && use_blink) {
+if (use_blink) {
   tracing_lib_type = "component"
 } else {
   tracing_lib_type = "source_set"
@@ -56,48 +56,38 @@ target(tracing_lib_type, "cpp") {
 
   all_dependent_configs = []
 
-  if (!is_nacl && use_blink) {
+  if (use_blink) {
     sources += [
-      "base_agent.cc",
-      "base_agent.h",
       "perfetto/custom_event_recorder.cc",
       "perfetto/custom_event_recorder.h",
-      "perfetto/dummy_producer.cc",
-      "perfetto/dummy_producer.h",
+      "perfetto/histogram_samples_data_source.cc",
+      "perfetto/histogram_samples_data_source.h",
       "perfetto/interning_index.h",
+      "perfetto/metadata_data_source.cc",
+      "perfetto/metadata_data_source.h",
       "perfetto/perfetto_config.cc",
       "perfetto/perfetto_config.h",
-      "perfetto/perfetto_producer.cc",
-      "perfetto/perfetto_producer.h",
       "perfetto/perfetto_session.cc",
       "perfetto/perfetto_session.h",
       "perfetto/perfetto_traced_process.cc",
       "perfetto/perfetto_traced_process.h",
       "perfetto/perfetto_tracing_backend.cc",
       "perfetto/perfetto_tracing_backend.h",
-      "perfetto/producer_client.cc",
-      "perfetto/producer_client.h",
       "perfetto/shared_memory.cc",
       "perfetto/shared_memory.h",
-      "perfetto/system_producer.cc",
-      "perfetto/system_producer.h",
       "perfetto/system_trace_writer.h",
-      "perfetto/trace_event_data_source.cc",
-      "perfetto/trace_event_data_source.h",
       "perfetto/trace_packet_tokenizer.cc",
       "perfetto/trace_packet_tokenizer.h",
       "perfetto/trace_string_lookup.cc",
       "perfetto/trace_string_lookup.h",
       "perfetto/traced_value_proto_writer.cc",
       "perfetto/traced_value_proto_writer.h",
-      "perfetto/track_event_thread_local_event_sink.cc",
-      "perfetto/track_event_thread_local_event_sink.h",
       "perfetto/track_name_recorder.cc",
       "perfetto/track_name_recorder.h",
       "stack_sampling/tracing_sampler_profiler.cc",
       "stack_sampling/tracing_sampler_profiler.h",
-      "trace_event_agent.cc",
-      "trace_event_agent.h",
+      "system_metrics_sampler.cc",
+      "system_metrics_sampler.h",
       "trace_event_args_allowlist.cc",
       "trace_event_args_allowlist.h",
       "trace_startup.cc",
@@ -108,8 +98,6 @@ target(tracing_lib_type, "cpp") {
       "traced_process_impl.h",
       "tracing_features.cc",
       "tracing_features.h",
-      "triggers_data_source.cc",
-      "triggers_data_source.h",
     ]
 
     if (is_android) {
@@ -136,26 +124,31 @@ target(tracing_lib_type, "cpp") {
     }
 
     public_deps += [
-      "//components/tracing:startup_tracing",
+      "//components/tracing:tracing_config",
       "//mojo/public/cpp/bindings",
       "//services/tracing/public/mojom",
     ]
 
     deps += [
       ":buildflags",
+      "//base/tracing/protos:chrome_track_event_zero",
       "//build:chromecast_buildflags",
-      "//build:chromeos_buildflags",
+      "//components/system_cpu",
       "//third_party/perfetto/protos/perfetto/trace/chrome:minimal_complete_lite",
+      "//third_party/snappy",
     ]
+
+    if (is_win) {
+      deps += [ "//components/tracing:tracing_etw" ]
+    }
+
+    if (!(is_chromeos && target_cpu == "arm64" && current_cpu == "arm")) {
+      deps += [ "//components/variations" ]
+    }
 
     # Add the SystemProducer implementations.
     if (is_posix || is_fuchsia) {
-      sources += [
-        "perfetto/posix_system_producer.cc",
-        "perfetto/posix_system_producer.h",
-      ]
-
-      deps += [ "//third_party/perfetto/include/perfetto/ext/ipc:ipc" ]
+      deps += [ "//third_party/perfetto/include/perfetto/ext/ipc" ]
 
       if (is_fuchsia) {
         sources += [
@@ -177,8 +170,8 @@ target(tracing_lib_type, "cpp") {
       }
     }
 
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       deps += [ "//chromeos/dbus/constants" ]
     }
-  }  # !is_ios && !is_nacl
+  }  # !is_ios
 }

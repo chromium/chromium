@@ -72,6 +72,7 @@ def is_bad_port(port: int) -> bool:
     Bad port as per https://fetch.spec.whatwg.org/#port-blocking
     """
     return port in [
+        0,
         1,     # tcpmux
         7,     # echo
         9,     # discard
@@ -169,7 +170,7 @@ def get_port(host: str = '') -> int:
     return port
 
 def http2_compatible() -> bool:
-    # The HTTP/2.0 server requires OpenSSL 1.0.2+.
+    # The HTTP/2 server requires OpenSSL 1.0.2+.
     #
     # For systems using other SSL libraries (e.g. LibreSSL), we assume they
     # have the necessary support.
@@ -177,7 +178,7 @@ def http2_compatible() -> bool:
     if not ssl.OPENSSL_VERSION.startswith("OpenSSL"):
         logger = get_logger()
         logger.warning(
-            'Skipping HTTP/2.0 compatibility check as system is not using '
+            'Skipping HTTP/2 compatibility check as system is not using '
             'OpenSSL (found: %s)' % ssl.OPENSSL_VERSION)
         return True
 

@@ -38,8 +38,7 @@ class PLATFORM_EXPORT FindInPageBudgetPoolController {
  private:
   raw_ptr<MainThreadSchedulerImpl> scheduler_;  // Not owned.
   std::unique_ptr<CPUTimeBudgetPool> find_in_page_budget_pool_;
-  TaskPriority task_priority_;
-  const bool best_effort_budget_experiment_enabled_;
+  TaskPriority task_priority_ = kFindInPageBudgetNotExhaustedPriority;
 };
 
 }  // namespace scheduler

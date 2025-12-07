@@ -31,10 +31,10 @@ class FakeCryptographer : public Cryptographer {
   FakeCryptographer(const FakeCryptographer&) = delete;
   FakeCryptographer& operator=(const FakeCryptographer&) = delete;
 
-  // |key_name| is a string able to identify the key consistently. It must not
+  // `key_name` is a string able to identify the key consistently. It must not
   // be empty.
   void AddEncryptionKey(const std::string& key_name);
-  // |key_name| must have been previously added. Once this is called, |key_name|
+  // `key_name` must have been previously added. Once this is called, `key_name`
   // will be the return value of GetDefaultEncryptionKeyName();
   void SelectDefaultEncryptionKey(const std::string& key_name);
   void ClearDefaultEncryptionKey();

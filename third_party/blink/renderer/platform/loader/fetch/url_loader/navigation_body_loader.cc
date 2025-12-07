@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/navigation_body_loader.h"
 
 #include <algorithm>
@@ -25,7 +20,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/base/big_buffer.h"
-#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/loading_params.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
@@ -136,7 +131,7 @@ void ReadFromDataPipeImpl(BodyReader& reader,
       reader.FinishedReading(/*has_error=*/true);
       return;
     }
-    const size_t chunk_size = network::features::GetLoaderChunkSize();
+    const size_t chunk_size = network::kMaxNumConsumedBytesInTask;
     DCHECK_LE(num_bytes_consumed, chunk_size);
     buffer = buffer.first(
         std::min<size_t>(buffer.size(), chunk_size - num_bytes_consumed));
@@ -251,8 +246,7 @@ class NavigationBodyLoader::OffThreadBodyReader : public BodyReader {
   }
 
   bool DataReceived(base::span<const char> data) override {
-    AddChunk(decoder_->Decode(data.data(), data.size()), data,
-             /*has_error=*/false);
+    AddChunk(decoder_->Decode(data), data, /*has_error=*/false);
     return true;
   }
 
@@ -389,7 +383,7 @@ NavigationBodyLoader::~NavigationBodyLoader() {
 void NavigationBodyLoader::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {
   // This has already happened in the browser process.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void NavigationBodyLoader::OnReceiveResponse(
@@ -397,21 +391,21 @@ void NavigationBodyLoader::OnReceiveResponse(
     mojo::ScopedDataPipeConsumerHandle body,
     std::optional<mojo_base::BigBuffer> cached_metadata) {
   // This has already happened in the browser process.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void NavigationBodyLoader::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr head) {
   // This has already happened in the browser process.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void NavigationBodyLoader::OnUploadProgress(int64_t current_position,
                                             int64_t total_size,
                                             OnUploadProgressCallback callback) {
   // This has already happened in the browser process.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void NavigationBodyLoader::OnTransferSizeUpdated(int32_t transfer_size_diff) {
@@ -640,13 +634,21 @@ void WebNavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
       is_main_frame ? net::HIGHEST : net::LOWEST, is_ad_frame);
   size_t redirect_count = commit_params->redirect_response.size();
 
-  if (redirect_count != commit_params->redirects.size()) {
-    // We currently incorrectly send empty redirect_response and redirect_infos
-    // on frame reloads and some cases involving throttles. There are also other
-    // reports of non-empty cases, so further investigation is still needed.
-    // TODO(https://crbug.com/1171225): Fix this.
-    redirect_count = std::min(redirect_count, commit_params->redirects.size());
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kRemoveCommitRedirectUrlsArray)) {
+    if (redirect_count != commit_params->redirects.size()) {
+      // We currently incorrectly send empty redirect_response and
+      // redirect_infos on frame reloads and some cases involving throttles.
+      // There are also other reports of non-empty cases, so further
+      // investigation is still needed.
+      // TODO(https://crbug.com/1171225): Fix this.
+      // TODO(https://crbug.com/422803238): Remove this entire statement as it
+      // should not be necessary.
+      redirect_count =
+          std::min(redirect_count, commit_params->redirects.size());
+    }
   }
+
   navigation_params->redirects.reserve(redirect_count);
   navigation_params->redirects.resize(redirect_count);
   for (size_t i = 0; i < redirect_count; ++i) {
@@ -661,6 +663,7 @@ void WebNavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
         redirect_info, std::move(redirect_response));
     if (url.ProtocolIsData())
       redirect.redirect_response.SetHttpStatusCode(200);
+
     redirect.new_url = KURL(redirect_info.new_url);
     // WebString treats default and empty strings differently while std::string
     // does not. A default value is expected for new_referrer rather than empty.
@@ -672,8 +675,13 @@ void WebNavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
     url = KURL(redirect_info.new_url);
   }
 
-  navigation_params->response = WebURLResponse::Create(
-      url, *response_head, response_head->ssl_info.has_value(), request_id);
+  // `common_params->url` is the actual URL to commit for the navigation as
+  // determined by the navigation code. Do not use the last URL in the
+  // redirect chain, even if it happens to be the same, in case of divergence
+  // of behavior in the future.
+  navigation_params->response =
+      WebURLResponse::Create(KURL(common_params->url), *response_head,
+                             response_head->ssl_info.has_value(), request_id);
   if (url.ProtocolIsData())
     navigation_params->response.SetHttpStatusCode(200);
 

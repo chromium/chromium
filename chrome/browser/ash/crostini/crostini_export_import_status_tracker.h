@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_CROSTINI_CROSTINI_EXPORT_IMPORT_STATUS_TRACKER_H_
 #define CHROME_BROWSER_ASH_CROSTINI_CROSTINI_EXPORT_IMPORT_STATUS_TRACKER_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 
@@ -28,6 +30,7 @@ class CrostiniExportImportStatusTracker {
     FAILED_ARCHITECTURE_MISMATCH,
     FAILED_INSUFFICIENT_SPACE,
     FAILED_CONCURRENT_OPERATION,
+    FAILED_BAD_IMAGE,
   };
 
   CrostiniExportImportStatusTracker(ExportImportType type, base::FilePath path);
@@ -57,8 +60,10 @@ class CrostiniExportImportStatusTracker {
       const std::string& architecture_container,
       const std::string& architecture_device);
   void SetStatusFailedInsufficientSpace(uint64_t additional_required_space);
+  void SetStatusFailedInsufficientSpaceUnknownAmount();
   void SetStatusFailedConcurrentOperation(
       ExportImportType in_progress_operation_type);
+  void SetStatusFailedBadImage();
 
  private:
   void SetStatusFailedWithMessage(Status status, const std::u16string& message);

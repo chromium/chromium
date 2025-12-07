@@ -12,8 +12,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/google/core/common/google_util.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
-#include "components/optimization_guide/core/hints_fetcher.h"
-#include "components/optimization_guide/core/hints_processing_util.h"
+#include "components/optimization_guide/core/hints/hints_fetcher.h"
+#include "components/optimization_guide/core/hints/hints_processing_util.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/hints.pb.h"
@@ -162,14 +162,13 @@ void OptimizationGuideWebContentsObserver::
   if (optimization_guide::features::IsSRPFetchingEnabled() &&
       google_util::IsGoogleSearchUrl(
           web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL())) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             &OptimizationGuideWebContentsObserver::FetchHintsUsingManager,
             weak_factory_.GetWeakPtr(),
             optimization_guide_keyed_service_->GetHintsManager(),
-            web_contents()->GetPrimaryPage().GetWeakPtr()),
-        optimization_guide::features::GetOnloadDelayForHintsFetching());
+            web_contents()->GetPrimaryPage().GetWeakPtr()));
   }
 }
 

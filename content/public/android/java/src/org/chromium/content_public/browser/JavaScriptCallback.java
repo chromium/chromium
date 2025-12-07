@@ -4,7 +4,10 @@
 
 package org.chromium.content_public.browser;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Callback interface for WebContents evaluateJavaScript(). */
+@NullMarked
 public interface JavaScriptCallback {
     /**
      * Called from native in response to evaluateJavaScript().

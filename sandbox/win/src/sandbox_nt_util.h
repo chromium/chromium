@@ -2,20 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef SANDBOX_WIN_SRC_SANDBOX_NT_UTIL_H_
 #define SANDBOX_WIN_SRC_SANDBOX_NT_UTIL_H_
 
 #include <intrin.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <memory>
 
+#include <memory>
 #include <optional>
+#include <string_view>
+
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "sandbox/win/src/nt_internals.h"
@@ -125,15 +123,6 @@ bool ValidParameter(void* buffer, size_t size, RequiredAccess intent);
 // Copies data from a user buffer to our buffer. Returns the operation status.
 NTSTATUS CopyData(void* destination, const void* source, size_t bytes);
 
-// Copies the name from an object attributes. |out_name| is a NUL terminated
-// string and |out_name_len| is the number of characters copied. |attributes|
-// is a copy of the attribute flags from |in_object|.
-NTSTATUS CopyNameAndAttributes(
-    const OBJECT_ATTRIBUTES* in_object,
-    std::unique_ptr<wchar_t, NtAllocDeleter>* out_name,
-    size_t* out_name_len,
-    uint32_t* attributes = nullptr);
-
 // Initializes our ntdll level heap
 bool InitHeap();
 
@@ -189,6 +178,14 @@ bool IsValidImageSection(HANDLE section,
 // Converts an ansi string to an UNICODE_STRING.
 UNICODE_STRING* AnsiToUnicode(const char* string);
 
+// Use the RtlCompareUnicodeString API to compares two strings for equality. The
+// comparison always ignores case.
+// Returns true if equal. Returns std::nullopt if either string is too large to
+// be represented as a UNICODE_STRING. This has the advantage of working inside
+// function hooks where calling the standard library could be impossible.
+std::optional<bool> EqualUnicodeString(std::wstring_view left,
+                                       std::wstring_view right);
+
 // Provides a simple way to temporarily change the protection of a memory page.
 class AutoProtectMemory {
  public:
@@ -208,8 +205,7 @@ class AutoProtectMemory {
 
  private:
   bool changed_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
+  // RAW_PTR_EXCLUSION: not managed by PartitionAlloc.
   RAW_PTR_EXCLUSION void* address_;
   size_t bytes_;
   ULONG old_protect_;
@@ -228,7 +224,7 @@ CLIENT_ID GetCurrentClientId();
 __forceinline void Memset(void* ptr, int value, size_t num_bytes) {
   unsigned char* byte_ptr = static_cast<unsigned char*>(ptr);
   while (num_bytes--) {
-    *byte_ptr++ = static_cast<unsigned char>(value);
+    *UNSAFE_TODO(byte_ptr++) = static_cast<unsigned char>(value);
   }
 }
 

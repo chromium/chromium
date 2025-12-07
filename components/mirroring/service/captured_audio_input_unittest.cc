@@ -4,10 +4,13 @@
 
 #include "components/mirroring/service/captured_audio_input.h"
 
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "components/mirroring/mojom/session_observer.mojom.h"
 #include "media/base/audio_capturer_source.h"
 #include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
@@ -18,7 +21,6 @@
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 using ::testing::InvokeWithoutArgs;
 
@@ -36,15 +38,15 @@ class MockStream final : public media::mojom::AudioInputStream {
 
 class MockDelegate final : public media::AudioInputIPCDelegate {
  public:
-  MockDelegate() {}
-  ~MockDelegate() override {}
+  MockDelegate() = default;
+  ~MockDelegate() override = default;
 
   MOCK_METHOD0(StreamCreated, void());
   MOCK_METHOD1(OnError, void(AudioSourceErrorCode code));
   MOCK_METHOD1(OnMuted, void(bool muted));
   MOCK_METHOD0(OnIPCClosed, void());
 
-  void OnStreamCreated(base::ReadOnlySharedMemoryRegion shared_memory_region,
+  void OnStreamCreated(base::UnsafeSharedMemoryRegion shared_memory_region,
                        base::SyncSocket::ScopedHandle socket_handle,
                        bool initially_muted) override {
     StreamCreated();
@@ -55,7 +57,7 @@ class MockDelegate final : public media::AudioInputIPCDelegate {
 
 class CapturedAudioInputTest : public ::testing::Test {
  public:
-  CapturedAudioInputTest() {}
+  CapturedAudioInputTest() = default;
 
   CapturedAudioInputTest(const CapturedAudioInputTest&) = delete;
   CapturedAudioInputTest& operator=(const CapturedAudioInputTest&) = delete;
@@ -82,14 +84,16 @@ class CapturedAudioInputTest : public ::testing::Test {
     stream_client_.reset();
     audio_client->StreamCreated(
         std::move(pending_stream), stream_client_.BindNewPipeAndPassReceiver(),
-        {std::in_place, base::ReadOnlySharedMemoryRegion::Create(1024).region,
+        {std::in_place, base::UnsafeSharedMemoryRegion::Create(1024),
          mojo::PlatformHandle(foreign_socket.Take())});
   }
 
  protected:
   void CreateStream() {
-    audio_input_ = std::make_unique<CapturedAudioInput>(base::BindRepeating(
-        &CapturedAudioInputTest::CreateMockStream, base::Unretained(this)));
+    audio_input_ = std::make_unique<CapturedAudioInput>(
+        base::BindRepeating(&CapturedAudioInputTest::CreateMockStream,
+                            base::Unretained(this)),
+        observer_);
     base::RunLoop run_loop;
     EXPECT_CALL(delegate_, StreamCreated())
         .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
@@ -158,6 +162,7 @@ class CapturedAudioInputTest : public ::testing::Test {
   MockDelegate delegate_;
   raw_ptr<MockStream, AcrossTasksDanglingUntriaged> stream_ = nullptr;
   mojo::Remote<media::mojom::AudioInputStreamClient> stream_client_;
+  mojo::Remote<mojom::SessionObserver> observer_;
   base::CancelableSyncSocket socket_;
 };
 

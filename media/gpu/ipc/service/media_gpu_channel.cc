@@ -14,7 +14,6 @@
 #include "build/build_config.h"
 #include "gpu/ipc/service/command_buffer_stub.h"
 #include "gpu/ipc/service/gpu_channel.h"
-#include "ipc/ipc_mojo_bootstrap.h"
 
 namespace media {
 

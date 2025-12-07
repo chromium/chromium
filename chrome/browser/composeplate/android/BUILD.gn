@@ -1,0 +1,85 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/composeplate/ComposeplateCoordinator.java",
+    "java/src/org/chromium/chrome/browser/composeplate/ComposeplateMetricsUtils.java",
+    "java/src/org/chromium/chrome/browser/composeplate/ComposeplateProperties.java",
+    "java/src/org/chromium/chrome/browser/composeplate/ComposeplateUtils.java",
+    "java/src/org/chromium/chrome/browser/composeplate/ComposeplateView.java",
+    "java/src/org/chromium/chrome/browser/composeplate/ComposeplateViewBinder.java",
+  ]
+  srcjar_deps = [ ":jni_headers" ]
+
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/incognito:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/ui/android/toolbar:java_resources",
+    "//chrome/browser/util:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:gendeps_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_no_recycler_view_java",
+    "//url:url_java",
+  ]
+
+  resources_package = "org.chromium.chrome.browser.composeplate"
+}
+
+generate_jni("jni_headers") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/composeplate/ComposeplateUtils.java",
+  ]
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/layout/composeplate_view_layout.xml",
+    "java/res/layout/composeplate_view_layout_v2.xml",
+    "java/res/values/dimens.xml",
+    "java/res/values/styles.xml",
+  ]
+  deps = [ "//components/browser_ui/strings/android:browser_ui_strings_grd" ]
+}
+
+robolectric_library("junit") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.composeplate"
+
+  sources = [
+    "junit/src/org/chromium/chrome/browser/composeplate/ComposeplateCoordinatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/composeplate/ComposeplateMetricsUtilsUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/composeplate/ComposeplateUtilsUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/composeplate/ComposeplateViewBinderUnitTest.java",
+  ]
+
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/incognito:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/ui/android/toolbar:java_resources",
+    "//chrome/browser/util:java",
+    "//components/browser_ui/theme/android:java_resources",
+    "//components/cached_flags:java",
+    "//third_party/android_deps:org_mockito_mockito_core_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/junit",
+    "//ui/android:ui_no_recycler_view_java",
+    "//url:url_java",
+  ]
+}

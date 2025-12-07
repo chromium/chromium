@@ -26,17 +26,13 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_ARRAY_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_ARRAY_H_
 
 #include <string.h>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
@@ -47,7 +43,7 @@
 namespace blink {
 
 template <typename T>
-class AudioArray {
+class AudioArray final {
   USING_FAST_MALLOC(AudioArray);
 
  public:
@@ -59,7 +55,7 @@ class AudioArray {
   AudioArray(const AudioArray&) = delete;
   AudioArray& operator=(const AudioArray&) = delete;
 
-  ~AudioArray() { WTF::Partitions::FastFree(allocation_); }
+  ~AudioArray() { Partitions::FastFree(allocation_); }
 
   // It's OK to call Allocate() multiple times, but data will *not* be copied
   // from an initial allocation if re-allocated. Allocations are
@@ -80,7 +76,7 @@ class AudioArray {
 #endif
 
     if (allocation_) {
-      WTF::Partitions::FastFree(allocation_);
+      Partitions::FastFree(allocation_);
     }
 
     // Always allocate extra space so that we are guaranteed to get
@@ -88,7 +84,7 @@ class AudioArray {
     // small since most arrays are probably at least 128 floats (or
     // doubles).
     unsigned total = base::CheckAdd(initial_size, kAlignment).ValueOrDie();
-    allocation_ = static_cast<T*>(WTF::Partitions::FastZeroedMalloc(
+    allocation_ = static_cast<T*>(Partitions::FastZeroedMalloc(
         total, WTF_HEAP_PROFILER_TYPE_NAME(AudioArray<T>)));
     CHECK(allocation_);
 
@@ -99,19 +95,34 @@ class AudioArray {
   T* Data() { return aligned_data_; }
   const T* Data() const { return aligned_data_; }
   uint32_t size() const { return size_; }
+  base::span<T> as_span() {
+    // SAFETY: Allocate() ensures `aligned_data_` and `size_` are safe.
+    return UNSAFE_BUFFERS(base::span(aligned_data_.get(), size_));
+  }
+  base::span<const T> as_span() const {
+    // SAFETY: Allocate() ensures `aligned_data_` and `size_` are safe.
+    return UNSAFE_BUFFERS(base::span(aligned_data_.get(), size_));
+  }
 
   T& at(size_t i) {
-    // Note that although it is a size_t, m_size is now guaranteed to be
+    // Note that although it is a size_t, `size_` is now guaranteed to be
     // no greater than max unsigned. This guarantee is enforced in Allocate().
     SECURITY_DCHECK(i < size());
-    return Data()[i];
+    return as_span()[i];
+  }
+  const T& at(size_t i) const {
+    // Note that although it is a size_t, `size_` is now guaranteed to be
+    // no greater than max unsigned. This guarantee is enforced in Allocate().
+    SECURITY_DCHECK(i < size());
+    return as_span()[i];
   }
 
   T& operator[](size_t i) { return at(i); }
+  const T& operator[](size_t i) const { return at(i); }
 
   void Zero() {
     // This multiplication is made safe by the check in Allocate().
-    memset(Data(), 0, sizeof(T) * size());
+    std::ranges::fill(as_span(), 0);
   }
 
   void ZeroRange(unsigned start, unsigned end) {
@@ -122,8 +133,8 @@ class AudioArray {
     }
 
     // This expression cannot overflow because end - start cannot be
-    // greater than m_size, which is safe due to the check in Allocate().
-    memset(Data() + start, 0, sizeof(T) * (end - start));
+    // greater than `size_`, which is safe due to the check in Allocate().
+    std::ranges::fill(as_span().subspan(start, end - start), 0);
   }
 
   void CopyToRange(const T* source_data, unsigned start, unsigned end) {
@@ -134,13 +145,18 @@ class AudioArray {
     }
 
     // This expression cannot overflow because end - start cannot be
-    // greater than m_size, which is safe due to the check in Allocate().
-    memcpy(Data() + start, source_data, sizeof(T) * (end - start));
+    // greater than `size_`, which is safe due to the check in Allocate().
+    as_span()
+        .subspan(start, end - start)
+        .copy_from(
+            // SAFETY: `is_safe` ensures `source_data` and `end - start` are
+            // safe.
+            UNSAFE_BUFFERS(base::span(source_data, end - start)));
   }
 
  private:
-  // Return an address that is aligned to an |alignment| boundary.
-  // |alignment| MUST be a power of two!
+  // Return an address that is aligned to an `alignment` boundary.
+  // `alignment` MUST be a power of two!
   static T* AlignedAddress(T* address, intptr_t alignment) {
     intptr_t value = reinterpret_cast<intptr_t>(address);
     return reinterpret_cast<T*>((value + alignment - 1) & ~(alignment - 1));

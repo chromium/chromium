@@ -1,0 +1,90 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  --icon-container-size: 56px;
+  --icon-size: 16px;
+  --cell-size: 26px;
+  --cell-inner-radius: 2px;
+  --cell-outer-radius: 6px;
+  align-items: center;
+  border-radius: 8px;
+  display: flex;
+  gap: 4px;
+  height: var(--icon-container-size);
+  justify-content: center;
+  padding: 4px;
+  width: var(--icon-container-size);
+}
+
+.icons-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 4px;
+  height: 100%;
+  place-items: center;
+  width: 100%;
+}
+
+.cell {
+  background-color: color-mix(in srgb, var(--color-sys-surface) 60%, transparent);
+  border-radius: var(--cell-inner-radius);
+  height: 100%;
+  overflow: hidden;
+  width: 100%;
+}
+
+.cell.empty {
+  height: var(--cell-size);
+  width: var(--cell-size);
+}
+
+.cell:nth-child(1) {
+  border-top-left-radius: var(--cell-outer-radius);
+}
+
+.cell:nth-child(2) {
+  border-top-right-radius: var(--cell-outer-radius);
+}
+
+.cell:nth-child(3) {
+  border-bottom-left-radius: var(--cell-outer-radius);
+}
+
+.cell:nth-child(4) {
+  border-bottom-right-radius: var(--cell-outer-radius);
+}
+
+.cell.overflow-count {
+  align-items: center;
+  color: var(--color-new-tab-page-secondary-foreground);
+  display: flex;
+  flex-direction: column;
+  font-size: var(--ntp-module-secondary-text-size);
+  font-style: normal;
+  font-weight: 400;
+  height: var(--cell-size);
+  justify-content: center;
+  line-height: var(--ntp-module-secondary-line-height);
+  width: var(--cell-size);
+}
+
+.cell.icon {
+  background-color: var(--color-sys-surface);
+  display: grid;
+  height: var(--cell-size);
+  place-items: center;
+  width: var(--cell-size);
+}
+
+.cell.icon > .icon {
+  height: var(--icon-size);
+  width: var(--icon-size);
+}

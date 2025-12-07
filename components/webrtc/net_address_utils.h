@@ -6,15 +6,12 @@
 #define COMPONENTS_WEBRTC_NET_ADDRESS_UTILS_H_
 
 #include "third_party/webrtc/rtc_base/ip_address.h"
+#include "third_party/webrtc/rtc_base/socket_address.h"
 
 namespace net {
 class IPAddress;
 class IPEndPoint;
 }  // namespace net
-
-namespace rtc {
-class SocketAddress;
-}  // namespace rtc
 
 namespace webrtc {
 
@@ -22,13 +19,13 @@ namespace webrtc {
 // following two functions are used to convert addresses from one
 // representation to another.
 bool IPEndPointToSocketAddress(const net::IPEndPoint& ip_endpoint,
-                               rtc::SocketAddress* address);
-bool SocketAddressToIPEndPoint(const rtc::SocketAddress& address,
+                               webrtc::SocketAddress* address);
+bool SocketAddressToIPEndPoint(const webrtc::SocketAddress& address,
                                net::IPEndPoint* ip_endpoint);
 
-rtc::IPAddress NetIPAddressToRtcIPAddress(const net::IPAddress& ip_address);
+webrtc::IPAddress NetIPAddressToRtcIPAddress(const net::IPAddress& ip_address);
 
-net::IPAddress RtcIPAddressToNetIPAddress(const rtc::IPAddress& ip_address);
+net::IPAddress RtcIPAddressToNetIPAddress(const webrtc::IPAddress& ip_address);
 
 }  // namespace webrtc
 

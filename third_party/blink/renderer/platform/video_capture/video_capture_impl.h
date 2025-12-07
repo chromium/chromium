@@ -6,9 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_VIDEO_CAPTURE_VIDEO_CAPTURE_IMPL_H_
 
 #include <stdint.h>
+
 #include <map>
 
-#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -25,18 +25,13 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
-#include "third_party/blink/public/common/media/video_capture.h"
+#include "third_party/blink/public/platform/media/video_capture.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace base {
 class SequencedTaskRunner;
 }  // namespace base
-
-namespace gpu {
-class GpuMemoryBufferSupport;
-}  // namespace gpu
 
 namespace media {
 class GpuVideoAcceleratorFactories;
@@ -45,8 +40,6 @@ class GpuVideoAcceleratorFactories;
 namespace blink {
 
 class BrowserInterfaceBrokerProxy;
-
-PLATFORM_EXPORT BASE_DECLARE_FEATURE(kTimeoutHangingVideoCaptureStarts);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -78,20 +71,20 @@ class PLATFORM_EXPORT VideoCaptureImpl
   // Start capturing using the provided parameters.
   // |client_id| must be unique to this object in the render process. It is
   // used later to stop receiving video frames.
-  // |state_update_cb| will be called when state changes.
-  // |deliver_frame_cb| will be called when a frame is ready.
-  // |sub_capture_target_version_cb| will be called when it is guaranteed that
-  // all subsequent frames |deliver_frame_cb| is called for, have a crop version
-  // that is equal-to-or-greater-than the given crop version.
-  // |frame_dropped_cb| will be called when a frame was dropped prior to
-  // delivery (i.e. |deliver_frame_cb| was not called for this frame).
+  // |video_capture_callbacks.state_update_cb| will be called when state
+  // changes.
+  // |video_capture_callbacks.deliver_frame_cb| will be called when a
+  // frame is ready.
+  // |video_capture_callbacks.capture_version_cb| will be called when it is
+  // guaranteed that all subsequent frames
+  // |video_capture_callbacks.deliver_frame_cb| is called for, have a crop
+  // version that is equal-to-or-greater-than the given crop version.
+  // |video_capture_callbacks.frame_dropped_cb| will be called when a frame was
+  // dropped prior to delivery (i.e. |video_capture_callbacks.deliver_frame_cb|
+  // was not called for this frame).
   void StartCapture(int client_id,
                     const media::VideoCaptureParams& params,
-                    const VideoCaptureStateUpdateCB& state_update_cb,
-                    const VideoCaptureDeliverFrameCB& deliver_frame_cb,
-                    const VideoCaptureSubCaptureTargetVersionCB&
-                        sub_capture_target_version_cb,
-                    const VideoCaptureNotifyFrameDroppedCB& frame_dropped_cb);
+                    VideoCaptureCallbacks video_capture_callbacks);
 
   // Stop capturing. |client_id| is the identifier used to call StartCapture.
   void StopCapture(int client_id);
@@ -119,8 +112,6 @@ class PLATFORM_EXPORT VideoCaptureImpl
       media::mojom::blink::VideoCaptureHost* service) {
     video_capture_host_for_testing_ = service;
   }
-  void SetGpuMemoryBufferSupportForTesting(
-      std::unique_ptr<gpu::GpuMemoryBufferSupport> gpu_memory_buffer_support);
 
   // media::mojom::VideoCaptureObserver implementation.
   void OnStateChanged(
@@ -131,8 +122,8 @@ class PLATFORM_EXPORT VideoCaptureImpl
   void OnBufferReady(media::mojom::blink::ReadyBufferPtr buffer) override;
   void OnBufferDestroyed(int32_t buffer_id) override;
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason) override;
-  void OnNewSubCaptureTargetVersion(
-      uint32_t sub_capture_target_version) override;
+  void OnNewCaptureVersion(
+      const media::CaptureVersion& capture_version) override;
 
   void ProcessFeedback(const media::VideoCaptureFeedback& feedback);
 
@@ -156,10 +147,10 @@ class PLATFORM_EXPORT VideoCaptureImpl
 
   using BufferFinishedCallback = base::OnceClosure;
 
-  std::optional<VideoFrameInitData> CreateVideoFrameInitData(
-      media::mojom::blink::ReadyBufferPtr ready_buffer);
+  bool ProcessBuffer(media::mojom::blink::ReadyBufferPtr ready_buffer);
   static bool BindVideoFrameOnMediaTaskRunner(
       media::GpuVideoAcceleratorFactories* gpu_factories,
+      gfx::GpuMemoryBufferHandle gmb_handle,
       VideoFrameInitData& video_frame_init_data,
       base::OnceCallback<void()> on_gmb_not_supported);
 
@@ -207,8 +198,9 @@ class PLATFORM_EXPORT VideoCaptureImpl
   void SetGpuFactoriesHandleOnIOTaskRunner(
       media::GpuVideoAcceleratorFactories* gpu_factories);
 
-  // Performs RequirePremappedFrames() and sets `gmb_not_supported_`.
-  void OnGmbNotSupported();
+  // Performs RequirePremappedFrames() and sets
+  // `mappable_buffers_not_supported_`.
+  void OnMappableBuffersNotSupported();
   // Sets fallback mode which will make it always request
   // premapped frames from the capturer.
   void RequirePremappedFrames();
@@ -256,11 +248,7 @@ class PLATFORM_EXPORT VideoCaptureImpl
   raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_ = nullptr;
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
-  bool gmb_not_supported_ = false;
-
-  std::unique_ptr<gpu::GpuMemoryBufferSupport> gpu_memory_buffer_support_;
-
-  scoped_refptr<base::UnsafeSharedMemoryPool> pool_;
+  bool mappable_buffers_not_supported_ = false;
 
   // Stores feedback from the clients, received in |ProcessFeedback()|.
   // Only accessed on the IO thread.

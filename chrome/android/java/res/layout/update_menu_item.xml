@@ -26,7 +26,7 @@ found in the LICENSE file.
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
-            android:textAppearance="@style/TextAppearance.UpdateMenuItem" />
+            android:textAppearance="@style/TextAppearance.DensityAdaptive.UpdateMenuItem" />
 
         <TextView
             android:id="@+id/menu_item_summary"

@@ -7,15 +7,16 @@
 #include <memory>
 
 #include "base/check_op.h"
-#include "crypto/secure_hash.h"
-#include "crypto/sha2.h"
+#include "base/strings/string_view_util.h"
+#include "crypto/hash.h"
 
 namespace extensions {
 
 std::string ComputeTreeHashRoot(const std::vector<std::string>& leaf_hashes,
                                 int branch_factor) {
-  if (leaf_hashes.empty() || branch_factor < 2)
+  if (leaf_hashes.empty() || branch_factor < 2) {
     return std::string();
+  }
 
   // The nodes of the tree we're currently operating on.
   std::vector<std::string> current_nodes;
@@ -33,15 +34,15 @@ std::string ComputeTreeHashRoot(const std::vector<std::string>& leaf_hashes,
     // |branch_factor| elements to form the hash of each parent node.
     auto i = current->cbegin();
     while (i != current->cend()) {
-      std::unique_ptr<crypto::SecureHash> hash(
-          crypto::SecureHash::Create(crypto::SecureHash::SHA256));
+      crypto::hash::Hasher hash(crypto::hash::kSha256);
       for (int j = 0; j < branch_factor && i != current->end(); j++) {
-        DCHECK_EQ(i->size(), crypto::kSHA256Length);
-        hash->Update(i->data(), i->size());
+        DCHECK_EQ(i->size(), crypto::hash::kSha256Size);
+        hash.Update(*i);
         ++i;
       }
-      parent_nodes.push_back(std::string(crypto::kSHA256Length, 0));
-      hash->Finish(std::data(parent_nodes.back()), crypto::kSHA256Length);
+      std::string digest(crypto::hash::kSha256Size, '\0');
+      hash.Finish(base::as_writable_byte_span(digest));
+      parent_nodes.push_back(digest);
     }
     current_nodes.swap(parent_nodes);
     parent_nodes.clear();

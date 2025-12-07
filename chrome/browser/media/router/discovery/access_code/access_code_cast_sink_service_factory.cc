@@ -61,8 +61,6 @@ AccessCodeCastSinkServiceFactory::AccessCodeCastSinkServiceFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
-  // TODO(b/238212430): Add a browsertest case to ensure that all media router
-  // objects are created before the ACCSS.
   DependsOn(media_router::ChromeMediaRouterFactory::GetInstance());
 }
 

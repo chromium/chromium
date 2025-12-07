@@ -1,0 +1,33 @@
+caption:  Control the visibility of the management notice on the New Tab Page for managed browsers
+default: true
+desc: |-
+  This policy controls the visibility of the management notice within the footer of the New Tab Page (NTP). By default, the NTP footer displays information when the browser is managed by an organization (indicated by a building icon and "Managed by [domain name]"). This can be customized using the <ph name="ENTERPRISE_CUSTOM_LABEL_FOR_BROWSER">EnterpriseCustomLabelForBrowser</ph> and <ph name="ENTERPRISE_LOGO_URL_FOR_BROWSER">EnterpriseLogoUrlForBrowser</ph> policies.
+
+  If this policy is left unset or set to true, managed browsers will display a “Managed by…” notice with an icon.
+
+  If this policy is set to false, the management notice will be hidden.
+
+  Note that this policy is only applied for managed browsers, so it will have no effect for managed users on unmanaged browsers.
+
+  On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, this policy is only available on instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain, joined to <ph name="MS_AAD_NAME">Microsoft® Azure® Active Directory®</ph> or enrolled in <ph name="CHROME_ENTERPRISE_CORE_NAME">Chrome Enterprise Core</ph>.
+
+  On <ph name="MAC_OS_NAME">macOS</ph>, this policy is only available on instances that are managed via MDM, joined to a domain via MCX or enrolled in <ph name="CHROME_ENTERPRISE_CORE_NAME">Chrome Enterprise Core</ph>.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: false
+supported_on:
+- chrome.*:139-
+items:
+- caption: Enable management notice on NTP Footer
+  value: true
+- caption: Disable management notice on NTP Footer
+  value: false
+owners:
+- file://components/policy/OWNERS
+- esalma@google.com
+schema:
+  type: boolean
+sensitive: true
+tags: []
+type: main

@@ -59,7 +59,7 @@ class GpuBuilders(builders.Builders):
           'Mac V8 FYI Release (Intel)',
           'Linux V8 FYI Release - pointer compression (NVIDIA)',
           'Linux V8 FYI Release (NVIDIA)',
-          'Android V8 FYI Release (Nexus 5X)',
+          'Android V8 FYI Release',
       }
       self._non_chromium_builders = {
           data_types.BuilderEntry(b, constants.BuilderTypes.CI, False)

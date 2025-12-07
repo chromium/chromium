@@ -25,9 +25,12 @@
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using media_router::MockDnsSdRegistry;
 using testing::_;
@@ -220,7 +223,7 @@ class MDnsAPITest : public extensions::ExtensionServiceTestBase {
           "background.html");
     }
 
-    std::string error;
+    std::u16string error;
     return extensions::Extension::Create(
         bogus_file_pathname(name),
         extensions::mojom::ManifestLocation::kInvalidLocation, manifest,

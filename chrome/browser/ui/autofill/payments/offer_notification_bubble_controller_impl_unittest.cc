@@ -5,14 +5,15 @@
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/commerce/coupons/coupon_service.h"
+#include "base/test/with_feature_override.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
+#include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
 #include "components/autofill/core/browser/payments/offer_notification_options.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/strings/grit/components_strings.h"
@@ -21,8 +22,8 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
-
 namespace {
+
 class TestOfferNotificationBubbleControllerImpl
     : public OfferNotificationBubbleControllerImpl {
  public:
@@ -43,11 +44,18 @@ class TestOfferNotificationBubbleControllerImpl
 };
 
 }  // namespace
+// The anonymous namespace needs to end here because of `friend`ships between
+// the tests and the production code.
 
 class OfferNotificationBubbleControllerImplTest
-    : public BrowserWithTestWindowTest {
+    : public base::test::WithFeatureOverride,
+      public BrowserWithTestWindowTest {
  public:
-  OfferNotificationBubbleControllerImplTest() = default;
+  OfferNotificationBubbleControllerImplTest()
+      : base::test::WithFeatureOverride(
+            features::kAutofillShowBubblesBasedOnPriorities),
+        BrowserWithTestWindowTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   OfferNotificationBubbleControllerImplTest(
       const OfferNotificationBubbleControllerImplTest&) = delete;
   OfferNotificationBubbleControllerImplTest& operator=(
@@ -57,10 +65,6 @@ class OfferNotificationBubbleControllerImplTest
     BrowserWithTestWindowTest::SetUp();
     AddTab(GURL("about:blank"));
     TestOfferNotificationBubbleControllerImpl::CreateForTesting(web_contents());
-    static_cast<TestOfferNotificationBubbleControllerImpl*>(
-        TestOfferNotificationBubbleControllerImpl::FromWebContents(
-            web_contents()))
-        ->coupon_service_ = &mock_coupon_service_;
   }
 
   content::WebContents* web_contents() {
@@ -72,26 +76,13 @@ class OfferNotificationBubbleControllerImplTest
   }
 
  protected:
-  class MockCouponService : public CouponService {
-   public:
-    MOCK_METHOD(void,
-                RecordCouponDisplayTimestamp,
-                (const autofill::AutofillOfferData& offer));
-    MOCK_METHOD(base::Time,
-                GetCouponDisplayTimestamp,
-                (const autofill::AutofillOfferData& offer));
-  };
-
-  void ShowBubble(const AutofillOfferData& offer,
-                  bool expand_notification_icon = false) {
+  void ShowBubble(const AutofillOfferData& offer) {
     controller()->ShowOfferNotificationIfApplicable(
-        offer, &card_,
-        {.expand_notification_icon = expand_notification_icon,
-         .show_notification_automatically = true});
+        offer, &card_, {.show_notification_automatically = true});
   }
 
-  void CloseBubble(PaymentsBubbleClosedReason closed_reason =
-                       PaymentsBubbleClosedReason::kNotInteracted) {
+  void CloseBubble(PaymentsUiClosedReason closed_reason =
+                       PaymentsUiClosedReason::kNotInteracted) {
     controller()->OnBubbleClosed(closed_reason);
   }
 
@@ -135,20 +126,11 @@ class OfferNotificationBubbleControllerImplTest
             web_contents()));
   }
 
-  void SetCouponServiceForController(
-      TestOfferNotificationBubbleControllerImpl* controller,
-      CouponService* coupon_service) {
-    controller->coupon_service_ = coupon_service;
-  }
-
-  TestAutofillClock test_clock_;
-  MockCouponService mock_coupon_service_;
-
  private:
   CreditCard card_ = test::GetCreditCard();
 };
 
-TEST_F(OfferNotificationBubbleControllerImplTest, BubbleShown) {
+TEST_P(OfferNotificationBubbleControllerImplTest, BubbleShown) {
   // Check that bubble is visible.
   AutofillOfferData offer = CreateTestCardLinkedOffer(
       /*merchant_origins=*/{GURL("https://www.example.com")},
@@ -159,28 +141,29 @@ TEST_F(OfferNotificationBubbleControllerImplTest, BubbleShown) {
 
 // Ensures the bubble does not stick around after it has been shown for longer
 // than kAutofillBubbleSurviveNavigationTime (5 seconds).
-TEST_F(OfferNotificationBubbleControllerImplTest,
+TEST_P(OfferNotificationBubbleControllerImplTest,
        OfferBubbleDismissesOnNavigation) {
   AutofillOfferData offer = CreateTestCardLinkedOffer(
       /*merchant_origins=*/{GURL("https://www.example.com")},
       /*eligible_instrument_ids=*/{123});
   ShowBubble(offer);
   EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
-  test_clock_.Advance(kAutofillBubbleSurviveNavigationTime - base::Seconds(1));
+  task_environment()->FastForwardBy(kAutofillBubbleSurviveNavigationTime -
+                                    base::Seconds(1));
   controller()->ShowOfferNotificationIfApplicable(
       offer, nullptr, {.notification_has_been_shown = true});
   // Ensure the bubble is still there if
   // kOfferNotificationBubbleSurviveNavigationTime hasn't been reached yet.
   EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
 
-  test_clock_.Advance(base::Seconds(2));
+  task_environment()->FastForwardBy(base::Seconds(2));
   controller()->ShowOfferNotificationIfApplicable(
       offer, nullptr, {.notification_has_been_shown = true});
   // Ensure new page does not have an active offer notification bubble.
   EXPECT_EQ(nullptr, controller()->GetOfferNotificationBubbleView());
 }
 
-TEST_F(OfferNotificationBubbleControllerImplTest,
+TEST_P(OfferNotificationBubbleControllerImplTest,
        ShownOfferIsRetrievableFromController) {
   AutofillOfferData offer = CreateTestCardLinkedOffer(
       /*merchant_origins=*/{GURL("https://www.example.com")},
@@ -192,29 +175,19 @@ TEST_F(OfferNotificationBubbleControllerImplTest,
 
 // Tests that the offer notification bubble will be shown, and coupon service
 // will not be called for a GPay promo code offer.
-TEST_F(OfferNotificationBubbleControllerImplTest, GPayPromoCode_BubbleShown) {
+TEST_P(OfferNotificationBubbleControllerImplTest, GPayPromoCode_BubbleShown) {
   AutofillOfferData offer = CreateTestGPayPromoCodeOffer(
       /*merchant_origins=*/{GURL("https://www.example.com")},
       /*promo_code=*/"FREEFALL5678");
   ShowBubble(offer);
 
-  EXPECT_CALL(mock_coupon_service_, GetCouponDisplayTimestamp).Times(0);
   EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
   EXPECT_EQ(controller()->GetWindowTitle(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_GPAY_PROMO_CODE_OFFERS_REMINDER_TITLE));
 }
 
-// Tests that the offer notification icon will be expanded.
-TEST_F(OfferNotificationBubbleControllerImplTest,
-       OfferNotificationIconShouldBeExpanded) {
-  AutofillOfferData offer = CreateTestGPayPromoCodeOffer(
-      /*merchant_origins=*/{GURL("https://www.example.com")},
-      /*promo_code=*/"FREEFALL1234");
-  controller()->ShowOfferNotificationIfApplicable(
-      offer, nullptr,
-      {.notification_has_been_shown = true, .expand_notification_icon = true});
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    OfferNotificationBubbleControllerImplTest);
 
-  EXPECT_TRUE(controller()->ShouldIconExpand());
-}
 }  // namespace autofill

@@ -10,16 +10,32 @@
 
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 
+class ProfileIOS;
+
 // Client for handling content notifications.
 class ContentNotificationClient : public PushNotificationClient {
  public:
+  // Constructor for when multi-Profile push notification handling is enabled.
+  // Associates this client instance with a specific user `profile`. This should
+  // only be called when `IsMultiProfilePushNotificationHandlingEnabled()`
+  // returns YES.
+  explicit ContentNotificationClient(ProfileIOS* profile);
   ContentNotificationClient();
   ~ContentNotificationClient() override;
 
   // Override PushNotificationClient::
-  void HandleNotificationInteraction(UNNotificationResponse* response) override;
-  UIBackgroundFetchResult HandleNotificationReception(
+  std::optional<NotificationType> GetNotificationType(
+      UNNotification* notification) override;
+  bool CanHandleNotification(UNNotification* notification) override;
+  bool HandleNotificationInteraction(UNNotificationResponse* response) override;
+  std::optional<UIBackgroundFetchResult> HandleNotificationReception(
       NSDictionary<NSString*, id>* payload) override;
   NSArray<UNNotificationCategory*>* RegisterActionableNotifications() override;
+  void OnSceneActiveForegroundBrowserReady() override;
+
+ private:
+  // Stores a notification interaction if the app is not "foreground active"
+  // when iOS tells the app about the interaction.
+  UNNotificationResponse* stored_interaction_;
 };
 #endif  // IOS_CHROME_BROWSER_CONTENT_NOTIFICATION_MODEL_CONTENT_NOTIFICATION_CLIENT_H_

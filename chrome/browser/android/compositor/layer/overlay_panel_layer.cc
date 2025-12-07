@@ -71,6 +71,7 @@ void OverlayPanelLayer::SetProperties(
     int bar_background_color,
     float bar_margin_side,
     float bar_margin_top,
+    float bar_margin_bottom,
     float bar_height,
     float bar_offset_y,
     float bar_text_opacity,
@@ -103,6 +104,7 @@ void OverlayPanelLayer::SetProperties(
   ui::NinePatchResource* rounded_bar_top_resource = nullptr;
   content_top_y += bar_margin_top;
   content_height -= bar_margin_top;
+  content_height -= bar_margin_bottom;
 
   rounded_bar_top_resource =
       ui::NinePatchResource::From(resource_manager_->GetStaticResourceWithTint(
@@ -502,8 +504,7 @@ OverlayPanelLayer::OverlayPanelLayer(ui::ResourceManager* resource_manager)
   progress_bar_->SetFillCenter(true);
 }
 
-OverlayPanelLayer::~OverlayPanelLayer() {
-}
+OverlayPanelLayer::~OverlayPanelLayer() = default;
 
 scoped_refptr<cc::slim::Layer> OverlayPanelLayer::layer() {
   return layer_;

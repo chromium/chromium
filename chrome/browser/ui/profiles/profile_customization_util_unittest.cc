@@ -12,26 +12,20 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
-AccountInfo FillAccountInfo(
-    const CoreAccountInfo& core_info,
-    const std::string& given_name,
-    const std::string& hosted_domain = kNoHostedDomainFound) {
-  AccountInfo account_info;
-  account_info.email = core_info.email;
-  account_info.gaia = core_info.gaia;
-  account_info.account_id = core_info.account_id;
-  account_info.is_under_advanced_protection =
-      core_info.is_under_advanced_protection;
-  account_info.full_name = base::StrCat({given_name, " Doe"});
-  account_info.given_name = given_name;
-  account_info.hosted_domain = hosted_domain;
-  account_info.locale = "en";
-  account_info.picture_url = base::StrCat({"https://picture.url/", given_name});
-  return account_info;
+AccountInfo FillAccountInfo(const CoreAccountInfo& core_info,
+                            const std::string& given_name) {
+  return AccountInfo::Builder(core_info)
+      .SetFullName(base::StrCat({given_name, " Doe"}))
+      .SetGivenName(given_name)
+      .SetHostedDomain(std::string())
+      .SetAvatarUrl(base::StrCat({"https://picture.url/", given_name}))
+      .SetLocale("en")
+      .Build();
 }
 
 }  // namespace
@@ -40,7 +34,7 @@ class ProfileNameResolverTest : public testing::Test {
  protected:
   const std::string kTestGivenName = "Jane";
   const std::string kTestEmail = "jane@bar.baz";
-  const std::string kTestGaiaId = "123456";
+  const GaiaId kTestGaiaId = GaiaId("123456");
 
   signin::IdentityTestEnvironment* identity_test_env() {
     return &identity_test_env_;
@@ -104,8 +98,9 @@ TEST_F(ProfileNameResolverTest, RunWithProfileName_InfoUnvailable) {
 
   // The account is not known from the identity manager.
   CoreAccountInfo core_account_info;
-  core_account_info.account_id = CoreAccountId::FromGaiaId(kTestGaiaId);
   core_account_info.gaia = kTestGaiaId;
+  core_account_info.account_id =
+      CoreAccountId::FromGaiaId(core_account_info.gaia);
   core_account_info.email = kTestEmail;
   ProfileNameResolver resolver{identity_test_env()->identity_manager(),
                                core_account_info};
@@ -129,8 +124,9 @@ TEST_F(ProfileNameResolverTest, RunWithProfileName_InfoMissing) {
 
   // The account is not known from the identity manager.
   CoreAccountInfo core_account_info;
-  core_account_info.account_id = CoreAccountId::FromGaiaId(kTestGaiaId);
   core_account_info.gaia = kTestGaiaId;
+  core_account_info.account_id =
+      CoreAccountId::FromGaiaId(core_account_info.gaia);
   core_account_info.email = kTestEmail;
   ProfileNameResolver resolver{identity_test_env()->identity_manager(),
                                core_account_info};

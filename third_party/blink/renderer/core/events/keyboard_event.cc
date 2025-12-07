@@ -55,8 +55,7 @@ const AtomicString& EventTypeForKeyboardEventType(WebInputEvent::Type type) {
     default:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return event_type_names::kKeydown;
+  NOTREACHED();
 }
 
 KeyboardEvent::KeyLocationCode GetKeyLocationCode(const WebInputEvent& key) {
@@ -79,7 +78,7 @@ bool HasCurrentComposition(LocalDOMWindow* dom_window) {
 }
 
 static String FromUTF8(const std::string& s) {
-  return String::FromUTF8(s.data(), s.length());
+  return String::FromUTF8(s);
 }
 
 }  // namespace
@@ -142,8 +141,9 @@ KeyboardEvent::KeyboardEvent(const WebKeyboardEvent& key,
 }
 
 KeyboardEvent::KeyboardEvent(const AtomicString& event_type,
-                             const KeyboardEventInit* initializer)
-    : UIEventWithKeyState(event_type, initializer),
+                             const KeyboardEventInit* initializer,
+                             base::TimeTicks platform_time_stamp)
+    : UIEventWithKeyState(event_type, initializer, platform_time_stamp),
       code_(initializer->code()),
       key_(initializer->key()),
       location_(initializer->location()),

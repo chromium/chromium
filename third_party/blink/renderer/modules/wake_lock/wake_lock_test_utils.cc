@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "third_party/blink/renderer/modules/wake_lock/wake_lock_test_utils.h"
 
@@ -40,17 +36,31 @@ void RunWithStack(base::RunLoop* run_loop) {
   run_loop->Run();
 }
 
-// Helper class for WaitForPromise{Fulfillment,Rejection}(). It provides a
-// function that invokes |callback| when a ScriptPromiseUntyped is resolved.
-class ClosureRunnerCallable final : public ScriptFunction::Callable {
+// Helper classes for WaitForPromise{Fulfillment,Rejection}(). Provides a
+// function that invokes |callback| when a ScriptPromise is resolved/rejected.
+class ClosureOnResolve final
+    : public ThenCallable<WakeLockSentinel, ClosureOnResolve> {
  public:
-  explicit ClosureRunnerCallable(base::OnceClosure callback)
+  explicit ClosureOnResolve(base::OnceClosure callback)
       : callback_(std::move(callback)) {}
 
-  ScriptValue Call(ScriptState*, ScriptValue) override {
-    if (callback_)
-      std::move(callback_).Run();
-    return ScriptValue();
+  void React(ScriptState*, WakeLockSentinel*) {
+    CHECK(callback_);
+    std::move(callback_).Run();
+  }
+
+ private:
+  base::OnceClosure callback_;
+};
+
+class ClosureOnReject final : public ThenCallable<IDLAny, ClosureOnReject> {
+ public:
+  explicit ClosureOnReject(base::OnceClosure callback)
+      : callback_(std::move(callback)) {}
+
+  void React(ScriptState*, ScriptValue) {
+    CHECK(callback_);
+    std::move(callback_).Run();
   }
 
  private:
@@ -80,7 +90,7 @@ void MockWakeLock::Bind(
   DCHECK(!receiver_.is_bound());
   receiver_.Bind(std::move(receiver));
   receiver_.set_disconnect_handler(
-      WTF::BindOnce(&MockWakeLock::OnConnectionError, WTF::Unretained(this)));
+      BindOnce(&MockWakeLock::OnConnectionError, Unretained(this)));
 }
 
 void MockWakeLock::Unbind() {
@@ -163,8 +173,8 @@ void MockPermissionService::BindRequest(mojo::ScopedMessagePipeHandle handle) {
   DCHECK(!receiver_.is_bound());
   receiver_.Bind(mojo::PendingReceiver<mojom::blink::PermissionService>(
       std::move(handle)));
-  receiver_.set_disconnect_handler(WTF::BindOnce(
-      &MockPermissionService::OnConnectionError, WTF::Unretained(this)));
+  receiver_.set_disconnect_handler(
+      BindOnce(&MockPermissionService::OnConnectionError, Unretained(this)));
 }
 
 void MockPermissionService::SetPermissionResponse(
@@ -217,13 +227,15 @@ void MockPermissionService::HasPermission(PermissionDescriptorPtr permission,
 
 void MockPermissionService::RegisterPageEmbeddedPermissionControl(
     Vector<mojom::blink::PermissionDescriptorPtr> permissions,
+    mojom::blink::EmbeddedPermissionRequestDescriptorPtr descriptor,
     mojo::PendingRemote<mojom::blink::EmbeddedPermissionControlClient> client) {
 }
 
 void MockPermissionService::RequestPageEmbeddedPermission(
+    Vector<mojom::blink::PermissionDescriptorPtr> descriptors,
     mojom::blink::EmbeddedPermissionRequestDescriptorPtr permissions,
     RequestPageEmbeddedPermissionCallback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MockPermissionService::RequestPermission(
@@ -248,33 +260,33 @@ void MockPermissionService::RequestPermissions(
     Vector<PermissionDescriptorPtr> permissions,
     bool user_gesture,
     mojom::blink::PermissionService::RequestPermissionsCallback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MockPermissionService::RevokePermission(PermissionDescriptorPtr permission,
                                              RevokePermissionCallback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MockPermissionService::AddPermissionObserver(
     PermissionDescriptorPtr permission,
     mojom::blink::PermissionStatus last_known_status,
     mojo::PendingRemote<mojom::blink::PermissionObserver>) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MockPermissionService::AddPageEmbeddedPermissionObserver(
     PermissionDescriptorPtr permission,
     mojom::blink::PermissionStatus last_known_status,
     mojo::PendingRemote<mojom::blink::PermissionObserver>) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MockPermissionService::NotifyEventListener(
     PermissionDescriptorPtr permission,
     const String& event_type,
     bool is_added) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 // WakeLockTestingContext
 
@@ -282,12 +294,12 @@ WakeLockTestingContext::WakeLockTestingContext(
     MockWakeLockService* mock_wake_lock_service) {
   DomWindow()->GetBrowserInterfaceBroker().SetBinderForTesting(
       mojom::blink::WakeLockService::Name_,
-      WTF::BindRepeating(&MockWakeLockService::BindRequest,
-                         WTF::Unretained(mock_wake_lock_service)));
+      BindRepeating(&MockWakeLockService::BindRequest,
+                    Unretained(mock_wake_lock_service)));
   DomWindow()->GetBrowserInterfaceBroker().SetBinderForTesting(
       mojom::blink::PermissionService::Name_,
-      WTF::BindRepeating(&MockPermissionService::BindRequest,
-                         WTF::Unretained(&permission_service_)));
+      BindRepeating(&MockPermissionService::BindRequest,
+                    Unretained(&permission_service_)));
 }
 
 WakeLockTestingContext::~WakeLockTestingContext() {
@@ -317,11 +329,10 @@ MockPermissionService& WakeLockTestingContext::GetPermissionService() {
 }
 
 void WakeLockTestingContext::WaitForPromiseFulfillment(
-    ScriptPromiseUntyped promise) {
+    ScriptPromise<WakeLockSentinel> promise) {
   base::RunLoop run_loop;
-  promise.Then(MakeGarbageCollected<ScriptFunction>(
-      GetScriptState(),
-      MakeGarbageCollected<ClosureRunnerCallable>(run_loop.QuitClosure())));
+  promise.Then(GetScriptState(),
+               MakeGarbageCollected<ClosureOnResolve>(run_loop.QuitClosure()));
   // Execute pending microtasks, otherwise it can take a few seconds for the
   // promise to resolve.
   GetScriptState()->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(
@@ -331,13 +342,10 @@ void WakeLockTestingContext::WaitForPromiseFulfillment(
 
 // Synchronously waits for |promise| to be rejected.
 void WakeLockTestingContext::WaitForPromiseRejection(
-    ScriptPromiseUntyped promise) {
+    ScriptPromise<WakeLockSentinel> promise) {
   base::RunLoop run_loop;
-  promise.Then(
-      nullptr,
-      MakeGarbageCollected<ScriptFunction>(
-          GetScriptState(),
-          MakeGarbageCollected<ClosureRunnerCallable>(run_loop.QuitClosure())));
+  promise.Catch(GetScriptState(),
+                MakeGarbageCollected<ClosureOnReject>(run_loop.QuitClosure()));
   // Execute pending microtasks, otherwise it can take a few seconds for the
   // promise to resolve.
   GetScriptState()->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(

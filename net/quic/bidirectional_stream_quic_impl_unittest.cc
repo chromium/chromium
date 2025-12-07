@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/quic/bidirectional_stream_quic_impl.h"
 
 #include <memory>
@@ -49,6 +44,7 @@
 #include "net/quic/quic_crypto_client_config_handle.h"
 #include "net/quic/quic_http_utils.h"
 #include "net/quic/quic_server_info.h"
+#include "net/quic/quic_session_alias_key.h"
 #include "net/quic/quic_session_key.h"
 #include "net/quic/quic_session_pool.h"
 #include "net/quic/quic_test_packet_maker.h"
@@ -320,7 +316,7 @@ class TestDelegateBase : public BidirectionalStreamImpl::Delegate {
   std::unique_ptr<base::RunLoop> loop_;
   quiche::HttpHeaderBlock response_headers_;
   quiche::HttpHeaderBlock trailers_;
-  NextProto next_proto_ = kProtoUnknown;
+  NextProto next_proto_ = NextProto::kProtoUnknown;
   int64_t received_bytes_ = 0;
   int64_t sent_bytes_ = 0;
   bool has_load_timing_info_ = false;
@@ -377,7 +373,7 @@ class DeleteStreamDelegate : public TestDelegateBase {
     TestDelegateBase::OnHeadersReceived(headers_copy);
   }
 
-  void OnDataSent() override { NOTREACHED_IN_MIGRATION(); }
+  void OnDataSent() override { NOTREACHED(); }
 
   void OnDataRead(int bytes_read) override {
     DCHECK_NE(ON_HEADERS_RECEIVED, phase_);
@@ -495,19 +491,18 @@ class BidirectionalStreamQuicImplTest
   void Initialize() {
     crypto_client_stream_factory_.set_handshake_mode(
         MockCryptoClientStream::ZERO_RTT);
-    mock_writes_ = std::make_unique<MockWrite[]>(writes_.size());
+    mock_writes_.resize(writes_.size());
     for (size_t i = 0; i < writes_.size(); i++) {
       if (writes_[i].packet == nullptr) {
         mock_writes_[i] = MockWrite(writes_[i].mode, writes_[i].rv, i);
       } else {
-        mock_writes_[i] = MockWrite(writes_[i].mode, writes_[i].packet->data(),
-                                    writes_[i].packet->length());
+        mock_writes_[i] =
+            MockWrite(writes_[i].mode, writes_[i].packet->AsStringPiece());
       }
     }
 
     socket_data_ = std::make_unique<StaticSocketDataProvider>(
-        base::span<MockRead>(),
-        base::make_span(mock_writes_.get(), writes_.size()));
+        base::span<MockRead>(), mock_writes_);
     socket_data_->set_printer(&printer_);
 
     auto socket = std::make_unique<MockUDPClientSocket>(socket_data_.get(),
@@ -538,11 +533,15 @@ class BidirectionalStreamQuicImplTest
         /*stream_factory=*/nullptr, &crypto_client_stream_factory_, &clock_,
         &transport_security_state_, &ssl_config_service_,
         base::WrapUnique(static_cast<QuicServerInfo*>(nullptr)),
-        QuicSessionKey(kDefaultServerHostName, kDefaultServerPort,
-                       PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
-                       SessionUsage::kDestination, SocketTag(),
-                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                       /*require_dns_https_alpn=*/false),
+        QuicSessionAliasKey(
+            url::SchemeHostPort(),
+            QuicSessionKey(
+                kDefaultServerHostName, kDefaultServerPort,
+                PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                SessionUsage::kDestination, SocketTag(),
+                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*require_dns_https_alpn=*/false,
+                /*disable_cert_verification_network_fetches=*/false)),
         /*require_confirmation=*/false,
         /*migrate_session_early_v2=*/false,
         /*migrate_session_on_network_change_v2=*/false,
@@ -563,7 +562,9 @@ class BidirectionalStreamQuicImplTest
         base::DefaultTickClock::GetInstance(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         /*socket_performance_watcher=*/nullptr, ConnectionEndpointMetadata(),
-        /*report_ecn=*/true, NetLogWithSource::Make(NetLogSourceType::NONE));
+        /*enable_origin_frame=*/true, /*server_preferred_address=*/true,
+        MultiplexedSessionCreationInitiator::kUnknown,
+        NetLogWithSource::Make(NetLogSourceType::NONE));
     session_->Initialize();
 
     // Blackhole QPACK decoder stream instead of constructing mock writes.
@@ -729,8 +730,11 @@ class BidirectionalStreamQuicImplTest
       std::string_view data,
       QuicTestPacketMaker* maker) {
     std::unique_ptr<quic::QuicReceivedPacket> packet(
-        maker->MakeAckAndDataPacket(packet_number, stream_id_, largest_received,
-                                    smallest_received, fin, data));
+        maker->Packet(packet_number)
+            .AddAckFrame(/*first_received=*/1, largest_received,
+                         smallest_received)
+            .AddStreamFrame(stream_id_, fin, data)
+            .Build());
     DVLOG(2) << "packet(" << packet_number << "): " << std::endl
              << quiche::QuicheTextUtils::HexDump(packet->AsStringPiece());
     return packet;
@@ -800,7 +804,7 @@ class BidirectionalStreamQuicImplTest
   NetLogWithSource net_log_with_source_{
       NetLogWithSource::Make(NetLogSourceType::NONE)};
   scoped_refptr<TestTaskRunner> runner_;
-  std::unique_ptr<MockWrite[]> mock_writes_;
+  std::vector<MockWrite> mock_writes_;
   quic::MockClock clock_;
   raw_ptr<quic::QuicConnection, DanglingUntriaged> connection_;
   std::unique_ptr<QuicChromiumConnectionHelper> helper_;
@@ -908,7 +912,7 @@ TEST_P(BidirectionalStreamQuicImplTest, GetRequest) {
 
   EXPECT_EQ(2, delegate->on_data_read_count());
   EXPECT_EQ(0, delegate->on_data_sent_count());
-  EXPECT_EQ(kProtoQUIC, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoQUIC, delegate->GetProtocol());
   EXPECT_EQ(static_cast<int64_t>(spdy_request_headers_frame_length),
             delegate->GetTotalSentBytes());
   EXPECT_EQ(static_cast<int64_t>(spdy_response_headers_frame_length +
@@ -1109,7 +1113,7 @@ TEST_P(BidirectionalStreamQuicImplTest, CoalesceDataBuffersNotHeadersFrame) {
 
   EXPECT_EQ(1, delegate->on_data_read_count());
   EXPECT_EQ(2, delegate->on_data_sent_count());
-  EXPECT_EQ(kProtoQUIC, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoQUIC, delegate->GetProtocol());
   EXPECT_EQ(static_cast<int64_t>(
                 spdy_request_headers_frame_length + kBody1.length() +
                 kBody2.length() + kBody3.length() + kBody4.length() +
@@ -1209,7 +1213,7 @@ TEST_P(BidirectionalStreamQuicImplTest,
 
   EXPECT_EQ(1, delegate->on_data_read_count());
   EXPECT_EQ(2, delegate->on_data_sent_count());
-  EXPECT_EQ(kProtoQUIC, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoQUIC, delegate->GetProtocol());
   EXPECT_EQ(
       static_cast<int64_t>(spdy_request_headers_frame_length + strlen(kBody1) +
                            strlen(kBody2) + header.length() + header2.length()),
@@ -1323,7 +1327,7 @@ TEST_P(BidirectionalStreamQuicImplTest,
 
   EXPECT_EQ(1, delegate->on_data_read_count());
   EXPECT_EQ(2, delegate->on_data_sent_count());
-  EXPECT_EQ(kProtoQUIC, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoQUIC, delegate->GetProtocol());
   EXPECT_EQ(static_cast<int64_t>(
                 spdy_request_headers_frame_length + kBody1.length() +
                 kBody2.length() + kBody3.length() + kBody4.length() +
@@ -1482,7 +1486,7 @@ TEST_P(BidirectionalStreamQuicImplTest, PostRequest) {
 
   EXPECT_EQ(1, delegate->on_data_read_count());
   EXPECT_EQ(1, delegate->on_data_sent_count());
-  EXPECT_EQ(kProtoQUIC, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoQUIC, delegate->GetProtocol());
   EXPECT_EQ(static_cast<int64_t>(spdy_request_headers_frame_length +
                                  strlen(kUploadData) + header.length()),
             delegate->GetTotalSentBytes());
@@ -1566,7 +1570,7 @@ TEST_P(BidirectionalStreamQuicImplTest, EarlyDataOverrideRequest) {
 
   EXPECT_EQ(2, delegate->on_data_read_count());
   EXPECT_EQ(0, delegate->on_data_sent_count());
-  EXPECT_EQ(kProtoQUIC, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoQUIC, delegate->GetProtocol());
   EXPECT_EQ(static_cast<int64_t>(spdy_request_headers_frame_length),
             delegate->GetTotalSentBytes());
   EXPECT_EQ(static_cast<int64_t>(spdy_response_headers_frame_length +
@@ -1677,7 +1681,7 @@ TEST_P(BidirectionalStreamQuicImplTest, InterleaveReadDataAndSendData) {
   EXPECT_THAT(delegate->ReadData(cb.callback()), IsOk());
   EXPECT_EQ(2, delegate->on_data_read_count());
   EXPECT_EQ(2, delegate->on_data_sent_count());
-  EXPECT_EQ(kProtoQUIC, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoQUIC, delegate->GetProtocol());
   EXPECT_EQ(static_cast<int64_t>(spdy_request_headers_frame_length +
                                  2 * strlen(kUploadData) + 2 * header.length()),
             delegate->GetTotalSentBytes());
@@ -1857,7 +1861,7 @@ TEST_P(BidirectionalStreamQuicImplTest, SessionClosedBeforeReadData) {
   EXPECT_THAT(delegate->error(), IsError(ERR_QUIC_PROTOCOL_ERROR));
   EXPECT_EQ(0, delegate->on_data_read_count());
   EXPECT_EQ(0, delegate->on_data_sent_count());
-  EXPECT_EQ(kProtoQUIC, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoQUIC, delegate->GetProtocol());
   EXPECT_EQ(static_cast<int64_t>(spdy_request_headers_frame_length),
             delegate->GetTotalSentBytes());
   EXPECT_EQ(static_cast<int64_t>(spdy_response_headers_frame_length),
@@ -2018,7 +2022,7 @@ TEST_P(BidirectionalStreamQuicImplTest, DeleteStreamAfterReadData) {
 
   EXPECT_EQ(0, delegate->on_data_read_count());
   EXPECT_EQ(0, delegate->on_data_sent_count());
-  EXPECT_EQ(kProtoQUIC, delegate->GetProtocol());
+  EXPECT_EQ(NextProto::kProtoQUIC, delegate->GetProtocol());
   EXPECT_EQ(static_cast<int64_t>(spdy_request_headers_frame_length),
             delegate->GetTotalSentBytes());
   EXPECT_EQ(static_cast<int64_t>(spdy_response_headers_frame_length),

@@ -5,27 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_SCREEN_TIME_MODEL_SCREEN_TIME_HISTORY_DELETER_FACTORY_H_
 #define IOS_CHROME_BROWSER_SCREEN_TIME_MODEL_SCREEN_TIME_HISTORY_DELETER_FACTORY_H_
 
-#include <CoreFoundation/CoreFoundation.h>
+#import "base/no_destructor.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-
-class ChromeBrowserState;
+class ProfileIOS;
 class ScreenTimeHistoryDeleter;
 
 // Factory that owns and associates a ScreenTimeHistoryDeleter with
-// ChromeBrowserState.
-class ScreenTimeHistoryDeleterFactory : public BrowserStateKeyedServiceFactory {
+// ProfileIOS.
+class ScreenTimeHistoryDeleterFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  static ScreenTimeHistoryDeleter* GetForBrowserState(
-      ChromeBrowserState* browser_state);
-
+  static ScreenTimeHistoryDeleter* GetForProfile(ProfileIOS* profile);
   static ScreenTimeHistoryDeleterFactory* GetInstance();
-
-  ScreenTimeHistoryDeleterFactory(const ScreenTimeHistoryDeleterFactory&) =
-      delete;
-  ScreenTimeHistoryDeleterFactory& operator=(
-      const ScreenTimeHistoryDeleterFactory&) = delete;
 
  private:
   friend class base::NoDestructor<ScreenTimeHistoryDeleterFactory>;
@@ -35,10 +26,7 @@ class ScreenTimeHistoryDeleterFactory : public BrowserStateKeyedServiceFactory {
 
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
-      web::BrowserState* context) const override;
-  bool ServiceIsNULLWhileTesting() const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_SCREEN_TIME_MODEL_SCREEN_TIME_HISTORY_DELETER_FACTORY_H_

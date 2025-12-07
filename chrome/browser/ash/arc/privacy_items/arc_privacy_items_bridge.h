@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_ARC_PRIVACY_ITEMS_ARC_PRIVACY_ITEMS_BRIDGE_H_
 #define CHROME_BROWSER_ASH_ARC_PRIVACY_ITEMS_ARC_PRIVACY_ITEMS_BRIDGE_H_
 
-#include "ash/components/arc/mojom/privacy_items.mojom.h"
-#include "ash/components/arc/session/connection_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "chromeos/ash/experiences/arc/mojom/privacy_items.mojom.h"
+#include "chromeos/ash/experiences/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {
@@ -36,6 +36,11 @@ class ArcPrivacyItemsBridge
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcPrivacyItemsBridge* GetForBrowserContext(
       content::BrowserContext* context);
+
+  static ArcPrivacyItemsBridge* GetForBrowserContextForTesting(
+      content::BrowserContext* context);
+
+  static void ShutdownForTesting(content::BrowserContext* context);
 
   ArcPrivacyItemsBridge(content::BrowserContext* context,
                         ArcBridgeService* bridge_service);

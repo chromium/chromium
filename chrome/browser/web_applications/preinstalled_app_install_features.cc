@@ -7,6 +7,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
 #include "build/build_config.h"
@@ -43,45 +44,34 @@ constexpr const std::string_view kShippedPreinstalledAppInstallFeatures[] = {
 
 bool g_always_enabled_for_testing = false;
 
-struct FeatureWithEnabledFunction {
-  raw_ref<const base::Feature> feature;
-  bool (*enabled_func)();
-};
-
 // A hard coded list of features available for externally installed apps to
-// gate their installation on via their config file settings. Each feature has a
-// function to run to determine whether it is enabled. See |kFeatureName| in
-// preinstalled_web_app_utils.h.
+// gate their installation on via their config file settings. See |kFeatureName|
+// in preinstalled_web_app_utils.h.
 //
 // After a feature flag has been shipped and should be cleaned up, move it into
 // kShippedPreinstalledAppInstallFeatures to ensure any external installation
 // configs that reference it continue to see it as enabled.
-constexpr const FeatureWithEnabledFunction
-    kPreinstalledAppInstallFeaturesWithEnabledFunctions[] = {
+constexpr const raw_ref<const base::Feature> kPreinstalledAppInstallFeatures[] =
+    {
 #if BUILDFLAG(IS_CHROMEOS)
-        {raw_ref(chromeos::features::kCloudGamingDevice),
-         &chromeos::features::IsCloudGamingDeviceEnabled},
-        {raw_ref(chromeos::features::kContainerAppPreinstall),
-         &chromeos::features::IsContainerAppPreinstallEnabled},
-        {raw_ref(chromeos::features::kCrosMall),
-         &chromeos::features::IsCrosMallWebAppEnabled}
+        raw_ref(chromeos::features::kCloudGamingDevice),
+        raw_ref(chromeos::features::kGeminiAppPreinstall),
+        raw_ref(chromeos::features::kNotebookLmAppPreinstall),
 #endif
 };
 
 }  // namespace
 
 #if BUILDFLAG(IS_CHROMEOS)
-// Use `IsPreinstalledDocsSheetsSlidesDriveStandaloneTabbed` instead of checking
+// Use `IsPreinstalledWorkspaceStandaloneTabbed` instead of checking
 // this flag directly to correctly exclude managed devices.
-BASE_FEATURE(kDocsSheetsSlidesDrivePreinstallStandaloneTabbed,
-             "DocsSheetsSlidesDrivePreinstallStandaloneTabbed",
+BASE_FEATURE(kPreinstalledWorkspaceStandaloneTabbed,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-bool IsPreinstalledDocsSheetsSlidesDriveStandaloneTabbed(Profile& profile) {
+bool IsPreinstalledWorkspaceStandaloneTabbed(Profile& profile) {
 #if BUILDFLAG(IS_CHROMEOS)
-  if (!base::FeatureList::IsEnabled(
-          kDocsSheetsSlidesDrivePreinstallStandaloneTabbed)) {
+  if (!base::FeatureList::IsEnabled(kPreinstalledWorkspaceStandaloneTabbed)) {
     return false;
   }
   // Exclude managed devices.
@@ -98,8 +88,7 @@ bool IsPreinstalledDocsSheetsSlidesDriveStandaloneTabbed(Profile& profile) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-bool IsPreinstalledAppInstallFeatureEnabled(std::string_view feature_name,
-                                            const Profile& profile) {
+bool IsPreinstalledAppInstallFeatureEnabled(std::string_view feature_name) {
   if (g_always_enabled_for_testing) {
     return true;
   }
@@ -110,10 +99,10 @@ bool IsPreinstalledAppInstallFeatureEnabled(std::string_view feature_name,
     }
   }
 
-  for (const auto& feature_with_function :
-       kPreinstalledAppInstallFeaturesWithEnabledFunctions) {
-    if (feature_with_function.feature->name == feature_name) {
-      return feature_with_function.enabled_func();
+  for (const raw_ref<const base::Feature> feature :
+       kPreinstalledAppInstallFeatures) {
+    if (feature->name == feature_name) {
+      return base::FeatureList::IsEnabled(*feature);
     }
   }
 

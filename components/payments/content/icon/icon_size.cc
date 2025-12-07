@@ -11,10 +11,9 @@ namespace payments {
 namespace {
 
 float DeviceScaleFactor(gfx::NativeView view) {
-  DCHECK(display::Screen::GetScreen());
-  return display::Screen::GetScreen()
-      ->GetPreferredScaleFactorForView(view)
-      .value_or(1.0f);
+  DCHECK(display::Screen::Get());
+  return display::Screen::Get()->GetPreferredScaleFactorForView(view).value_or(
+      1.0f);
 }
 
 }  // namespace

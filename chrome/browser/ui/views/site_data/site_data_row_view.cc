@@ -16,6 +16,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_menu_model_adapter.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -74,10 +75,9 @@ std::u16string GetSettingStateString(ContentSetting setting,
     }
     case CONTENT_SETTING_DEFAULT:
     case CONTENT_SETTING_ASK:
-    case CONTENT_SETTING_DETECT_IMPORTANT_CONTENT:
     case CONTENT_SETTING_NUM_SETTINGS:
       // Not supported settings for cookies.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   return l10n_util::GetStringUTF16(message_id);
@@ -119,9 +119,8 @@ std::unique_ptr<views::TableLayout> SetupTableLayout() {
 }
 
 void NotifyMenuItemClicked(views::View* view) {
-  ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
-      views::ElementTrackerViews::GetInstance()->GetElementForView(view),
-      kSiteRowMenuItemClicked);
+  views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+      kSiteRowMenuItemClicked, view);
 }
 
 }  // namespace
@@ -154,8 +153,9 @@ SiteDataRowView::SiteDataRowView(
   const auto favicon = favicon_cache->GetFaviconForPageUrl(
       origin.GetURL(), base::BindOnce(&SiteDataRowView::SetFaviconImage,
                                       base::Unretained(this)));
-  if (!favicon.IsEmpty())
+  if (!favicon.IsEmpty()) {
     SetFaviconImage(favicon);
+  }
 
   std::u16string origin_display_name =
       UrlIdentity::CreateFromUrl(profile, origin.GetURL(),
@@ -252,10 +252,9 @@ void SiteDataRowView::OnMenuIconClicked() {
       dialog_model_.get(), views::MenuRunner::HAS_MNEMONICS,
       base::BindRepeating(&SiteDataRowView::OnMenuClosed,
                           base::Unretained(this)));
-  menu_runner_->RunMenuAt(GetWidget(), nullptr,
-                          menu_button_->GetAnchorBoundsInScreen(),
-                          views::MenuAnchorPosition::kTopRight,
-                          ui::MenuSourceType::MENU_SOURCE_MOUSE);
+  menu_runner_->RunMenuAt(
+      GetWidget(), nullptr, menu_button_->GetAnchorBoundsInScreen(),
+      views::MenuAnchorPosition::kTopRight, ui::mojom::MenuSourceType::kMouse);
   menu_button_->SetState(views::Button::ButtonState::STATE_PRESSED);
 }
 
@@ -276,8 +275,9 @@ void SiteDataRowView::OnDeleteIconClicked() {
 
   // The row is hidden, advance focus to the next row if the delete button was
   // focused.
-  if (delete_button_->HasFocus())
+  if (delete_button_->HasFocus()) {
     GetFocusManager()->AdvanceFocus(/*reverse=*/false);
+  }
 }
 
 void SiteDataRowView::OnBlockMenuItemClicked(int event_flags) {
@@ -295,8 +295,9 @@ void SiteDataRowView::OnClearOnExitMenuItemClicked(int event_flags) {
 void SiteDataRowView::SetContentSettingException(ContentSetting setting) {
   // For partitioned access, it's valid to create an allow exception that
   // matches current effective setting to allow 3PC.
-  if (!is_fully_partitioned_ || setting_ != CONTENT_SETTING_ALLOW)
+  if (!is_fully_partitioned_ || setting_ != CONTENT_SETTING_ALLOW) {
     DCHECK_NE(setting_, setting);
+  }
 
   create_exception_callback_.Run(origin_, setting);
 

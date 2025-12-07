@@ -172,8 +172,8 @@ class COMPONENTS_DOWNLOAD_EXPORT ResourceDownloader
   bool is_content_initiated_;
 
 #if BUILDFLAG(IS_ANDROID)
-  // Whether the original URL must be downloaded.
-  bool is_must_download_ = true;
+  // Whether the original URL can be auto opened after download.
+  bool allow_auto_open_after_completion_ = false;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Used to keep the system from sleeping while a download is ongoing. If the

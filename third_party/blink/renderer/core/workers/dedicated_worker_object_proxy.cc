@@ -38,16 +38,19 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/user_activation.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message.h"
+#include "third_party/blink/renderer/core/workers/custom_event_message.h"
 #include "third_party/blink/renderer/core/workers/dedicated_worker_messaging_proxy.h"
 #include "third_party/blink/renderer/core/workers/parent_execution_context_task_runners.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
+#include "third_party/blink/renderer/platform/bindings/source_location_copier.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -74,6 +77,18 @@ void DedicatedWorkerObjectProxy::ProcessMessageFromWorkerObject(
       ->ReceiveMessage(std::move(message));
 }
 
+void DedicatedWorkerObjectProxy::ProcessCustomEventFromWorkerObject(
+    CustomEventMessage message,
+    WorkerThread* worker_thread,
+    CrossThreadFunction<Event*(ScriptState*, CustomEventMessage)>
+        event_factory_callback,
+    CrossThreadFunction<Event*(ScriptState*)> event_factory_error_callback) {
+  To<WorkerGlobalScope>(worker_thread->GlobalScope())
+      ->ReceiveCustomEvent(std::move(event_factory_callback),
+                           std::move(event_factory_error_callback),
+                           std::move(message));
+}
+
 void DedicatedWorkerObjectProxy::ProcessUnhandledException(
     int exception_id,
     WorkerThread* worker_thread) {
@@ -82,16 +97,17 @@ void DedicatedWorkerObjectProxy::ProcessUnhandledException(
   global_scope->ExceptionUnhandled(exception_id);
 }
 
-void DedicatedWorkerObjectProxy::ReportException(
-    const String& error_message,
-    std::unique_ptr<SourceLocation> location,
-    int exception_id) {
+void DedicatedWorkerObjectProxy::ReportException(const String& error_message,
+                                                 const SourceLocation* location,
+                                                 int exception_id) {
+  CrossThreadSourceLocation cross_thread_location =
+      CrossThreadSourceLocation::From(location);
   PostCrossThreadTask(
       *GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalDefault),
       FROM_HERE,
       CrossThreadBindOnce(&DedicatedWorkerMessagingProxy::DispatchErrorEvent,
                           messaging_proxy_weak_ptr_, error_message,
-                          location->Clone(), exception_id));
+                          std::move(cross_thread_location), exception_id));
 }
 
 void DedicatedWorkerObjectProxy::DidFailToFetchClassicScript() {

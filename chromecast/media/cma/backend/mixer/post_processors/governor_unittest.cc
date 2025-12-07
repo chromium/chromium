@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/strings/stringprintf.h"
 #include "chromecast/media/base/aligned_buffer.h"
 #include "chromecast/media/cma/backend/mixer/post_processors/post_processor_unittest.h"
@@ -35,7 +36,7 @@ std::string MakeConfigString(float onset_volume, float clamp_multiplier) {
 
 void ScaleData(float* data, int frames, float scale) {
   for (int f = 0; f < frames; ++f) {
-    data[f] *= scale;
+    UNSAFE_TODO(data[f]) *= scale;
   }
 }
 

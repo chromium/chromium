@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "third_party/blink/public/mojom/choosers/date_time_chooser.mojom.h"
-#import "ui/gfx/native_widget_types.h"
+#import "ui/gfx/native_ui_types.h"
 
 using DateTimeDialogValuePtr = blink::mojom::DateTimeDialogValuePtr;
 

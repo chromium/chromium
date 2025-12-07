@@ -8,6 +8,7 @@
 #include <map>
 #include <set>
 
+#include "base/compiler_specific.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "components/visitedlink/common/visitedlink_common.h"
 #include "components/visitedlink/core/visited_link.h"
@@ -42,7 +43,7 @@ class PartitionedVisitedLinkWriter : public VisitedLinkCommon {
   // event as a constructor argument and dispatches events using it.
   class Listener {
    public:
-    virtual ~Listener() {}
+    virtual ~Listener() = default;
 
     // Called when link coloring database has been created or replaced. The
     // argument is a memory region containing the new table.
@@ -102,7 +103,7 @@ class PartitionedVisitedLinkWriter : public VisitedLinkCommon {
     virtual bool HasNextVisitedLink() const = 0;
 
    protected:
-    virtual ~VisitedLinkIterator() {}
+    virtual ~VisitedLinkIterator() = default;
   };
 
   // Deletes the specified VisitedLinks from the hashtable.
@@ -241,7 +242,7 @@ class PartitionedVisitedLinkWriter : public VisitedLinkCommon {
   // Returns a pointer to the start of the hash table, given the mapping
   // containing the hash table.
   static Fingerprint* GetHashTableFromMapping(
-      const base::WritableSharedMemoryMapping& hash_table_mapping);
+      base::WritableSharedMemoryMapping& hash_table_mapping);
 
   // Returns the default table size. It can be overridden in unit tests.
   uint32_t DefaultTableSize() const;
@@ -331,7 +332,7 @@ class PartitionedVisitedLinkWriter : public VisitedLinkCommon {
 inline void PartitionedVisitedLinkWriter::DebugValidate() {
   int32_t used_count = 0;
   for (int32_t i = 0; i < table_length_; i++) {
-    if (hash_table_[i]) {
+    if (UNSAFE_TODO(hash_table_[i])) {
       used_count++;
     }
   }

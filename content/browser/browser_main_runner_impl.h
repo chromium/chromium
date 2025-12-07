@@ -7,9 +7,12 @@
 
 #include <memory>
 
-#include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_main_runner.h"
+
+namespace base {
+class ScopedThreadPoolExecutionFence;
+}
 
 #if BUILDFLAG(IS_WIN)
 namespace ui {
@@ -34,9 +37,6 @@ class BrowserMainRunnerImpl : public BrowserMainRunner {
 
   // BrowserMainRunner:
   int Initialize(MainFunctionParams parameters) override;
-#if BUILDFLAG(IS_ANDROID)
-  void SynchronouslyFlushStartupTasks() override;
-#endif
   int Run() override;
   void Shutdown() override;
 
@@ -50,8 +50,7 @@ class BrowserMainRunnerImpl : public BrowserMainRunner {
   // Prevents execution of ThreadPool tasks from the moment content is
   // entered. Handed off to |main_loop_| later so it can decide when to release
   // worker threads again.
-  std::unique_ptr<base::ThreadPoolInstance::ScopedExecutionFence>
-      scoped_execution_fence_;
+  std::unique_ptr<base::ScopedThreadPoolExecutionFence> scoped_execution_fence_;
 
   std::unique_ptr<BrowserMainLoop> main_loop_;
 #if BUILDFLAG(IS_WIN)

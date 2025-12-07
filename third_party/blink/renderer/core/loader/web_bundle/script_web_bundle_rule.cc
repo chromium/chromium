@@ -4,11 +4,14 @@
 
 #include "third_party/blink/renderer/core/loader/web_bundle/script_web_bundle_rule.h"
 
+#include <variant>
+
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -50,7 +53,7 @@ network::mojom::CredentialsMode ParseCredentials(const String& credentials) {
 
 }  // namespace
 
-absl::variant<ScriptWebBundleRule, ScriptWebBundleError>
+std::variant<ScriptWebBundleRule, ScriptWebBundleError>
 ScriptWebBundleRule::ParseJson(const String& inline_text,
                                const KURL& base_url,
                                ConsoleLogger* logger) {
@@ -75,7 +78,8 @@ ScriptWebBundleRule::ParseJson(const String& inline_text,
         logger->AddConsoleMessage(
             mojom::blink::ConsoleMessageSource::kOther,
             mojom::blink::ConsoleMessageLevel::kWarning,
-            "Invalid top-level key \"" + entry.first + "\" in WebBundle rule.");
+            StrCat({"Invalid top-level key \"", entry.first,
+                    "\" in WebBundle rule."}));
       }
     }
   }

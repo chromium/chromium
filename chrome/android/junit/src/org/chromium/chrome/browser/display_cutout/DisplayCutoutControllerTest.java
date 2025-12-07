@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.display_cutout;
 
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.description;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -20,12 +22,14 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.UserDataHost;
@@ -36,10 +40,10 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.components.browser_ui.display_cutout.DisplayCutoutController;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
-import org.chromium.ui.InsetObserver;
+import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.insets.InsetObserver;
 
 import java.lang.ref.WeakReference;
 
@@ -47,15 +51,18 @@ import java.lang.ref.WeakReference;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class DisplayCutoutControllerTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private Tab mTab;
 
-    @Mock private WebContents mWebContents;
+    @Mock private MockWebContents mWebContents;
 
     @Mock private WindowAndroid mWindowAndroid;
 
     @Mock private Window mWindow;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
+    @Captor private ArgumentCaptor<WebContentsObserver> mWebContentObserverCaptor;
 
     @Mock private ChromeActivity mChromeActivity;
 
@@ -66,12 +73,10 @@ public class DisplayCutoutControllerTest {
 
     private WeakReference<Activity> mActivityRef;
 
-    private UserDataHost mTabDataHost = new UserDataHost();
+    private final UserDataHost mTabDataHost = new UserDataHost();
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         mActivityRef = new WeakReference<>(mChromeActivity);
 
         when(mChromeActivity.getWindow()).thenReturn(mWindow);
@@ -107,10 +112,8 @@ public class DisplayCutoutControllerTest {
         mController.destroy();
         mController.maybeAddObservers();
 
-        ArgumentCaptor<WebContentsObserver> captor =
-                ArgumentCaptor.forClass(WebContentsObserver.class);
-        verify(mWebContents, times(2)).addObserver(captor.capture());
-        WebContentsObserver webContentsObserver = captor.getValue();
+        verify(mWebContents, times(2)).addObserver(mWebContentObserverCaptor.capture());
+        WebContentsObserver webContentsObserver = mWebContentObserverCaptor.getValue();
         webContentsObserver.didToggleFullscreenModeForTab(true, false);
         verify(mController, description("Should update layout when entering fullscreen"))
                 .maybeUpdateLayout();
@@ -262,6 +265,7 @@ public class DisplayCutoutControllerTest {
 
     @Test
     @SmallTest
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testGetIsViewportFitCover() {
         // Go through the live creation of DisplayCutoutTabHelper.from(Tab) with our mock Tab.
         UserDataHost tabDataHost = new UserDataHost();
@@ -298,5 +302,52 @@ public class DisplayCutoutControllerTest {
                 DisplayCutoutController.getSafeAreaInsetsTracker(mTab).isViewportFitCover());
 
         reset(mTab);
+    }
+
+    @Test
+    public void testSafeAreaConstraint() {
+        mDisplayCutoutTabHelper.setSafeAreaConstraint(true);
+        DisplayCutoutController.SafeAreaInsetsTracker tracker =
+                DisplayCutoutController.getSafeAreaInsetsTracker(mTab);
+        Assert.assertNotNull(tracker);
+        Assert.assertTrue(
+                "SafeAreaConstrain did not pass through to the safe area insets tracker.",
+                tracker.hasSafeAreaConstraint());
+
+        mDisplayCutoutTabHelper.setSafeAreaConstraint(false);
+        Assert.assertFalse(
+                "SafeAreaConstrain did not pass through to the safe area insets tracker.",
+                tracker.hasSafeAreaConstraint());
+    }
+
+    @Test
+    public void testObserverUpdateOnContentChange() {
+        // First, make sure observer is attached at the beginning.
+        verify(mWebContents, atLeastOnce()).addObserver(mWebContentObserverCaptor.capture());
+        WebContentsObserver observer = mWebContentObserverCaptor.getValue();
+        Assert.assertEquals(observer, mController.getWebContentObserverForTesting());
+
+        when(mTab.getWebContents()).thenReturn(null);
+        mController.onContentChanged();
+        verify(mWebContents).removeObserver(observer);
+        Assert.assertNull(mController.getWebContentObserverForTesting());
+
+        clearInvocations(mWebContents);
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+        mController.onContentChanged();
+        verify(mWebContents, atLeastOnce()).addObserver(mWebContentObserverCaptor.capture());
+        WebContentsObserver observer2 = mWebContentObserverCaptor.getValue();
+        Assert.assertEquals(observer2, mController.getWebContentObserverForTesting());
+    }
+
+    @Test
+    public void testCreateWithNullWebContent() {
+        when(mTab.getWebContents()).thenReturn(null);
+
+        // Reset the controller so we'll need to create a new one.
+        mTabDataHost.removeUserData(DisplayCutoutController.class);
+        mDisplayCutoutTabHelper = new DisplayCutoutTabHelper(mTab);
+        Assert.assertNull(
+                mDisplayCutoutTabHelper.mCutoutController.getWebContentObserverForTesting());
     }
 }

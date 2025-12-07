@@ -9,12 +9,14 @@
 
 #import <vector>
 
+#import "components/autofill/core/common/form_data.h"
 #import "components/autofill/core/common/form_data_predictions.h"
 #import "components/autofill/core/common/form_field_data.h"
 #import "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
 class FormStructure;
+class Section;
 }
 
 namespace web {
@@ -22,10 +24,21 @@ class WebState;
 class WebFrame;
 }
 
+using FormFetchCompletion =
+    base::OnceCallback<void(std::optional<std::vector<autofill::FormData>>)>;
+
 // Interface used to pipe form data from AutofillDriverIOS to the embedder.
 @protocol AutofillDriverIOSBridge
 
-- (void)fillData:(const std::vector<autofill::FormFieldData::FillData>&)form
+// All `fields` must come from `section` (i.e., `AutofillField::section() ==
+// section`).
+// The implementor may store the section to later on identify fields that were
+// filled together. That is used to implement "Clear Form".
+//
+// TODO(crbug.com/338201947): Remove `section` when iOS replaces "Clear Form"
+// with "Undo Autofill".
+- (void)fillData:(const std::vector<autofill::FormFieldData::FillData>&)fields
+         section:(const autofill::Section&)section
          inFrame:(web::WebFrame*)frame;
 
 - (void)fillSpecificFormField:(const autofill::FieldRendererId&)field
@@ -41,10 +54,16 @@ class WebFrame;
             (const std::vector<autofill::FormDataPredictions>&)forms
                         inFrame:(web::WebFrame*)frame;
 
-// Triggers the extraction and parsing pipeline for forms in the given
-// `webFrame`.
-- (void)scanFormsInWebState:(web::WebState*)webState
-                    inFrame:(web::WebFrame*)webFrame;
+// Fetches autofill forms in the `frame`'s document. Only provides the first
+// form matching `formName` if `filtered` is true.
+- (void)fetchFormsFiltered:(BOOL)filtered
+                  withName:(const std::u16string&)formName
+                   inFrame:(web::WebFrame*)frame
+         completionHandler:(FormFetchCompletion)completionHandler;
+
+// Notifies about the forms that were seen on the page when fetching.
+- (void)notifyFormsSeen:(const std::vector<autofill::FormData>&)updatedForms
+                inFrame:(web::WebFrame*)frame;
 
 @end
 

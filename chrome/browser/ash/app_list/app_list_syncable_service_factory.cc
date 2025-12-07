@@ -14,6 +14,8 @@
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
+#include "extensions/browser/extension_registrar_factory.h"
+#include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
 
@@ -42,7 +44,7 @@ std::unique_ptr<KeyedService> AppListSyncableServiceFactory::BuildInstanceFor(
   Profile* profile = static_cast<Profile*>(browser_context);
   // This condition still needs to be explicitly stated here despite having
   // ProfileKeyedService logic implemented because `IsGuestSession()` and
-  // `IsRegularProfile()` are not yet mutually exclusive in ASH and Lacros.
+  // `IsRegularProfile()` are not yet mutually exclusive in ASH.
   // TODO(rsult): remove this condition when `IsGuestSession() is fixed.
   if (profile->IsGuestSession() && !profile->IsOffTheRecord())
     return nullptr;
@@ -79,6 +81,10 @@ AppListSyncableServiceFactory::AppListSyncableServiceFactory()
   dependent_factories.insert(apps::AppServiceProxyFactory::GetInstance());
   dependent_factories.insert(
       ash::FileSuggestKeyedServiceFactory::GetInstance());
+  dependent_factories.insert(
+      extensions::ExtensionRegistrarFactory::GetInstance());
+  dependent_factories.insert(
+      extensions::ExtensionRegistryFactory::GetInstance());
   for (auto* dependent_factory : dependent_factories)
     DependsOn(dependent_factory);
 }

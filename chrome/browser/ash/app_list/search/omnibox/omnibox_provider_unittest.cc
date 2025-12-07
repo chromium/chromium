@@ -12,6 +12,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/gtest_util.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ash/app_list/test/test_app_list_controller_delegate.h"
@@ -20,9 +21,10 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/autocomplete_controller_config.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
-#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/suggestion_answer.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_ids_provider.h"
@@ -32,8 +34,6 @@
 
 namespace app_list::test {
 
-// Note that there is necessarily a lot of overlap with unittest in the lacros
-// omnibox provider unittest, since this is testing the same behavior.
 namespace {
 
 // Helper functions to populate search results.
@@ -53,9 +53,6 @@ AutocompleteMatch NewOmniboxResult(const std::string& url) {
 
 AutocompleteMatch NewAnswerResult(const std::string& url,
                                   omnibox::AnswerType answer_type) {
-  omnibox_feature_configs::ScopedConfigForTesting<
-      omnibox_feature_configs::SuggestionAnswerMigration>
-      scoped_config;
   AutocompleteMatch result;
 
   result.relevance = 1.0;
@@ -63,14 +60,9 @@ AutocompleteMatch NewAnswerResult(const std::string& url,
   result.stripped_destination_url = GURL(url);
   result.contents = u"contents";
   result.description = u"description";
-  if (scoped_config.Get().enabled) {
-    omnibox::RichAnswerTemplate answer_template;
-    answer_template.add_answers();
-    result.answer_template = answer_template;
-  } else {
-    SuggestionAnswer answer;
-    result.answer = answer;
-  }
+  omnibox::RichAnswerTemplate answer_template;
+  answer_template.add_answers();
+  result.answer_template = answer_template;
   result.answer_type = answer_type;
 
   return result;
@@ -95,7 +87,7 @@ class MockAutoCompleteController : public AutocompleteController {
   MockAutoCompleteController()
       : AutocompleteController(
             std::make_unique<FakeAutocompleteProviderClient>(),
-            0) {}
+            AutocompleteControllerConfig{}) {}
   MockAutoCompleteController(const MockAutoCompleteController&) = delete;
   MockAutoCompleteController& operator=(const MockAutoCompleteController&) =
       delete;
@@ -177,7 +169,7 @@ class OmniboxProviderTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<AppListControllerDelegate> list_controller_;
 
@@ -250,7 +242,8 @@ TEST_F(OmniboxProviderTest, BadUrls) {
   to_produce.emplace_back(
       NewAnswerResult("badscheme", omnibox::AnswerType::ANSWER_TYPE_WEATHER));
   to_produce.emplace_back(NewOpenTabResult("http://?k=v"));
-  result.AppendMatches(to_produce);
+  // `destination_url` should be DCHECKed for validity when adding matches.
+  EXPECT_DCHECK_DEATH_WITH(result.AppendMatches(to_produce), "");
   ProduceResults(std::move(result));
 
   // None of the results should be accepted.
@@ -319,9 +312,7 @@ TEST_F(OmniboxProviderTest, UnhandledUrls) {
 TEST_F(OmniboxProviderTest, WebSearchControl) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitWithFeatures(
-      {ash::features::kLauncherSearchControl,
-       ash::features::kFeatureManagementLocalImageSearch},
-      {});
+      {ash::features::kFeatureManagementLocalImageSearch}, {});
   DisableWebSearch();
 
   StartSearch(u"query");

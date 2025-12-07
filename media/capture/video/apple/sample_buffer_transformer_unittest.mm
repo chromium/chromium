@@ -13,6 +13,7 @@
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/logging.h"
+#include "base/mac/mac_util.h"
 #include "build/build_config.h"
 #include "media/capture/video/apple/test/pixel_buffer_test_utils.h"
 #include "media/capture/video/apple/video_capture_device_avfoundation_utils.h"
@@ -438,6 +439,12 @@ TEST_P(SampleBufferTransformerPixelTransferTest, CanConvertFullScale) {
 
 TEST_P(SampleBufferTransformerPixelTransferTest, CanConvertAndScaleDown) {
   auto [input_pixel_format, output_pixel_format] = GetParam();
+// TODO(crbug.com/406271645): Re-enable this test on Mac.
+#if BUILDFLAG(IS_MAC)
+  if (base::mac::MacOSMajorVersion() == 15) {
+    GTEST_SKIP() << "Disable on macOS 15";
+  }
+#endif
 
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> input_sample_buffer =
       CreateSampleBuffer(input_pixel_format, kFullResolutionWidth,

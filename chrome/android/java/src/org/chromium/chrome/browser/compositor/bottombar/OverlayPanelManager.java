@@ -10,6 +10,8 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
@@ -22,6 +24,7 @@ import java.util.Queue;
 import java.util.Set;
 
 /** Used to decide which panel should be showing on screen at any moment. */
+@NullMarked
 public class OverlayPanelManager {
     /** An observer of panel visibility. */
     public interface OverlayPanelManagerObserver {
@@ -54,32 +57,32 @@ public class OverlayPanelManager {
     private final ObserverList<OverlayPanelManagerObserver> mObservers;
 
     /** The panel that is currently being displayed. */
-    private OverlayPanel mActivePanel;
+    private @Nullable OverlayPanel mActivePanel;
 
     /**
      * If a panel was being shown and another panel with higher priority was requested to show,
      * the lower priority one is stored here.
      */
-    private Queue<OverlayPanel> mSuppressedPanels;
+    private final Queue<OverlayPanel> mSuppressedPanels;
 
     /** When a panel is suppressed, this is the panel waiting for the close animation to finish. */
-    private OverlayPanel mPendingPanel;
+    private @Nullable OverlayPanel mPendingPanel;
 
     /** When a panel is suppressed, this the reason the pending panel is to be shown. */
     private @StateChangeReason int mPendingReason;
 
     /** This handles resource loading for each panels. */
-    private DynamicResourceLoader mDynamicResourceLoader;
+    private @Nullable DynamicResourceLoader mDynamicResourceLoader;
 
     /** This is the view group that all views related to the panel will be put into. */
-    private ViewGroup mContainerViewGroup;
+    private @Nullable ViewGroup mContainerViewGroup;
 
     /** Default constructor. */
     public OverlayPanelManager() {
         mSuppressedPanels =
                 new PriorityQueue<>(
                         INITIAL_QUEUE_CAPACITY,
-                        new Comparator<OverlayPanel>() {
+                        new Comparator<>() {
                             @Override
                             public int compare(OverlayPanel p1, OverlayPanel p2) {
                                 // The head of the queue is the smallest element, so subtract p1's
@@ -138,7 +141,9 @@ public class OverlayPanelManager {
                     mSuppressedPanels.add(mActivePanel);
                 }
                 mActivePanel = mPendingPanel;
-                peekPanel(mActivePanel, mPendingReason);
+                if (mActivePanel != null) {
+                    peekPanel(mActivePanel, mPendingReason);
+                }
                 mPendingPanel = null;
                 mPendingReason = StateChangeReason.UNKNOWN;
             }
@@ -148,7 +153,9 @@ public class OverlayPanelManager {
                 mActivePanel = null;
                 if (!mSuppressedPanels.isEmpty()) {
                     mActivePanel = mSuppressedPanels.poll();
-                    peekPanel(mActivePanel, StateChangeReason.PANEL_UNSUPPRESS);
+                    if (mActivePanel != null) {
+                        peekPanel(mActivePanel, StateChangeReason.PANEL_UNSUPPRESS);
+                    }
                 }
             } else {
                 mSuppressedPanels.remove(panel);
@@ -174,7 +181,7 @@ public class OverlayPanelManager {
      * @return The active OverlayPanel.
      */
     @VisibleForTesting
-    public OverlayPanel getActivePanel() {
+    public @Nullable OverlayPanel getActivePanel() {
         return mActivePanel;
     }
 
@@ -200,10 +207,7 @@ public class OverlayPanelManager {
         mContainerViewGroup = null;
     }
 
-    /**
-     * Set the resource loader for all OverlayPanels.
-     * @param host The OverlayPanel host.
-     */
+    /** Set the resource loader for all OverlayPanels. */
     public void setDynamicResourceLoader(DynamicResourceLoader loader) {
         mDynamicResourceLoader = loader;
         for (OverlayPanel p : mPanelSet) {

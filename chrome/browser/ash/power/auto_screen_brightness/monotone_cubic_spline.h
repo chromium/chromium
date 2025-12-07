@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_POWER_AUTO_SCREEN_BRIGHTNESS_MONOTONE_CUBIC_SPLINE_H_
 
 #include <optional>
+#include <string>
 #include <vector>
 
 namespace ash {
@@ -36,7 +37,6 @@ class MonotoneCubicSpline {
       const std::vector<double>& ys);
 
   bool operator==(const MonotoneCubicSpline& spline) const;
-  bool operator!=(const MonotoneCubicSpline& spline) const;
 
   // Returns interpolated value for |x|. If |x| is smaller|greater than
   // smallest|largest value in |xs_|, then smallest|largest value in |ys_| will

@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{Usuku Olu-1 Olwedlule}one{Izinsuku Ezingu-# Ezedlule}other{Izinsuku Ezingu-# Ezedlule}}</translation>
 <translation id="1181037720776840403">Susa</translation>
 <translation id="1243314992276662751">Layisha</translation>
+<translation id="1253734725326687145">Impokophelo yokuthinta iyiswe phezulu ngakwesokudla. Thepha lapha.</translation>
 <translation id="1266864766717917324">Ayikwazanga ukwabelana nge-<ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">Zama ukwabelana umbhalo ngezigaxa ezincane.</translation>
@@ -38,6 +39,7 @@
 <translation id="19085484004813472">Lesi yisici esisha</translation>
 <translation id="2006524834898217237">Yenza isiqinisekiso sokuthi le divayisi ixhunywe ku-inthanethi.</translation>
 <translation id="208586643495776849">Sicela uzame futhi</translation>
+<translation id="2111134541987263231">Vula okuthi <ph name="BEGIN_BOLD" />Vumela ku-Incognito<ph name="END_BOLD" /></translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1d}one{#d}other{#d}}</translation>
 <translation id="2148716181193084225">Namhlanje</translation>
 <translation id="2168039046890040389">Hamba phezulu kwekhasi</translation>
@@ -48,12 +50,14 @@
 <translation id="2289052229480071835">Thinta iziqondiso zokuthinta esikrinini sakho.</translation>
 <translation id="2295140143284145483">Inhlolovo</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{Isandiso esine-ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> asikwazi ukutholakala. Xhumana nomlawuli wakho.}one{Izandiso ezine-ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> azikwazi ukutholakala. Xhumana nomlawuli wakho.}other{Izandiso ezine-ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> azikwazi ukutholakala. Xhumana nomlawuli wakho.}}</translation>
 <translation id="2353636109065292463">Ihlola ixhumo lwakho le-inthanethi</translation>
 <translation id="2359808026110333948">Qhubeka</translation>
 <translation id="2388990488038464401">Shayela le nombolo kusukela kufoni yakho?</translation>
 <translation id="2435457462613246316">Bonisa iphasiwedi</translation>
 <translation id="24452542372838207">Nweba isaziso</translation>
 <translation id="2445449901874883781">Sebenzisa ukuminyana okuphezulu</translation>
+<translation id="2448407890032181691">Impokophelo yokuthinta iyiswe phansi ngakwesokudla. Thepha lapha.</translation>
 <translation id="2482878487686419369">Izaziso</translation>
 <translation id="2497284189126895209">Wonke amafayela</translation>
 <translation id="2515586267016047495">I-Alt</translation>
@@ -70,6 +74,7 @@
 <translation id="2878511608894704031">Susa Konke</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{nge-1d}one{ku-#d}other{ku-#d}}</translation>
 <translation id="2922712708897119705">Ikholomu le-<ph name="COLUMN_NAME" /> lihlungwe nge-oda eyehlayo.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Ayikwazi ukuthola isandiso}one{Ayikwazi ukuthola izandiso}other{Ayikwazi ukuthola izandiso}}</translation>
 <translation id="3036649622769666520">Vula amafayela</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3087734570205094154">Ngaphansi</translation>
@@ -82,6 +87,7 @@
 <translation id="3295886253693811851">Yenza ikholi kusukela ku-</translation>
 <translation id="3306688585798492231">Izibonisi ezakhelwe phakathi</translation>
 <translation id="335581015389089642">Inkulumo</translation>
+<translation id="3372635229069101468">Chofoza <ph name="BEGIN_BOLD" />Imininingwane<ph name="END_BOLD" /></translation>
 <translation id="3389286852084373014">Umbhalo mkhulu kakhulu</translation>
 <translation id="3406306243914553062">Okuqukethwe kwe-HTML</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1 usuku olusele}one{# izinsuku ezisele}other{# izinsuku ezisele}}</translation>
@@ -102,7 +108,9 @@
 <translation id="3994749195054421561">Ikholomu le-<ph name="COLUMN_NAME" /> lihlungwe nge-oda enyukayo.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 Isaziso esingafundiwe}one{# Izaziso ezingafundiwe}other{# Izaziso ezingafundiwe}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Vula isandiso esilandelayo ku-Incognito:}one{Vula izandiso ezilandelayo ku-Incognito:}other{Vula izandiso ezilandelayo ku-Incognito:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 inyanga edlule}one{# izinyanga ezedlule}other{# izinyanga ezedlule}}</translation>
+<translation id="4277033906326892359">Ikholomu ye-<ph name="COLUMN_NAME" /> ihlungwe nge-oda enyukayo</translation>
 <translation id="4289300219472526559">Qala ukukhuluma</translation>
 <translation id="4289540628985791613">Ukubuka konke</translation>
 <translation id="4491109536499578614">Isithombe</translation>
@@ -113,6 +121,8 @@
 <translation id="4729257764711776855">inombolo</translation>
 <translation id="4746179598275229723">Isandiso sisuswe ukuphina</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 inyanga esele}one{# izinyanga ezisele}other{# izinyanga ezisele}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Ukuze usebenzise i-Incognito, inhlangano yakho idinga isandiso}one{Ukuze usebenzise i-Incognito, inhlangano yakho idinga izandiso}other{Ukuze usebenzise i-Incognito, inhlangano yakho idinga izandiso}}</translation>
+<translation id="482932175346970750">Thayipha u-<ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> kubhrawuza yakho</translation>
 <translation id="4888938634149558681">Yenza ikholi</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 isekhondi}one{# amasekhondi}other{# amasekhondi}}</translation>
@@ -121,6 +131,7 @@
 <translation id="5076340679995252485">Namathisela</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">Yehlulekile ukuthumela</translation>
+<translation id="5283101102242354279">Vula isandiso ku-Incognito:</translation>
 <translation id="528468243742722775">Qeda</translation>
 <translation id="5329858601952122676">Susa</translation>
 <translation id="5361107212971249203">umbhalo</translation>
@@ -129,13 +140,16 @@
 <translation id="5528053674512161860">Ukulayisha ikhasi kuhlulekile ngoba imojula ye-UI kanjiniyela (dev_ui) ayifakwanga</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> isistimu</translation>
 <translation id="5583640892426849032">I-Backspace</translation>
+<translation id="5606865426897221650">Ithebhu</translation>
 <translation id="5613020302032141669">Umcibisholo ongakwesokunxele</translation>
 <translation id="5633029987065897167">Akunalutho</translation>
+<translation id="5651438382973553530">Impokophelo yokuthinta iyiswe phansi ngakwesokunxele. Thepha lapha.</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 iminithi}one{# amaminithi}other{# amaminithi}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Iyasebenza namhlanje}=1{Isebenze ngosuku olungu-1 oludlule}one{Isebenze ngezinsuku ezingu-# ezedlule}other{Isebenze ngezinsuku ezingu-# ezedlule}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 usuku ne- }one{# izinsuku ne- }other{# izinsuku ne- }}</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5843690142429128814">Isithombe.</translation>
+<translation id="5860491529813859533">Vula</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{nge-1y}one{nge-#y}other{nge-#y}}</translation>
 <translation id="588258955323874662">Isikrini esigcwele</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 isekhondi elisele}one{# amasekhondi asele}other{# amasekhondi asele}}</translation>
@@ -151,6 +165,7 @@
 <translation id="6264365405983206840">Khetha &amp;konke</translation>
 <translation id="6346952829206698721">Namathisela ebhodini lokunamathisela</translation>
 <translation id="6364916375976753737">Skrolela ngakwesokunxele</translation>
+<translation id="63712816010840859">Uma isibonisi samanje kungesona isikrini esithintwayo, cindezela i-Esc.</translation>
 <translation id="6394627529324717982">Ukhefana</translation>
 <translation id="6397363302884558537">Misa ukukhuluma</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{1 isekhondi eledlule}one{# amasekhondi adlule}other{# amasekhondi adlule}}</translation>
@@ -162,6 +177,8 @@
 <translation id="6612467943526193239">Ukuze uphume ku-calibration cindezela u-Esc.</translation>
 <translation id="6620110761915583480">Londoloza ifayela</translation>
 <translation id="6699343763173986273">Ithrekhi elandelayo yemidiya</translation>
+<translation id="6738856801552481343">Uma lesi sibonisi kungesona isikrini esithintwayo, cindezela i-Esc.</translation>
+<translation id="6807086321996342431">Ikh5olomu <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">Ukumisa imidiya</translation>
 <translation id="6845383723252244143">Khetha ifolda</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 ihora elisele}one{# amahora asele}other{# amahora asele}}</translation>
@@ -170,12 +187,13 @@
 <translation id="6907759265145635167"><ph name="QUANTITY" /> PB/s</translation>
 <translation id="6917971086528278418">{YEARS,plural, =1{1 unyaka osele}one{# iminyaka esele}other{# iminyaka esele}}</translation>
 <translation id="6945221475159498467">Khetha</translation>
-<translation id="6965382102122355670">OK</translation>
+<translation id="6965382102122355670">KULUNGILE</translation>
 <translation id="6974053822202609517">Ngakwesokudla kuya kwesobunxele</translation>
 <translation id="7052633198403197513">F1</translation>
 <translation id="7170202025028120564">Izilungiselelo zokubonisa zohlelo lwakho lokusebenza zizosebenza ngokulandelayo uma liqalisa kabusha.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 iminithi elisele}one{# amaminithi asele}other{# amaminithi asele}}</translation>
+<translation id="7252604552361840748">Thola isandiso ngenhla</translation>
 <translation id="7363164521834647158">Thumela impendulo</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 iminithi eledlule}one{# amaminithi adlule}other{# amaminithi adlule}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
@@ -192,16 +210,15 @@
 <translation id="7969046989155602842">Umyalo</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Ngaphezulu kwesaziso esingu-1 esingafundiwe}one{Ngaphezulu kwezaziso ezingu-# ezingafundiwe}other{Ngaphezulu kwezaziso ezingu-# ezingafundiwe}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{ku-1m}one{ku-#m}other{ku-#m}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">Inombolo esuka ku-<ph name="ORIGIN" /></translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{1 ihora eledlule}one{# amahora adlule}other{# amahora adlule}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 isekhondi elisele}one{# amasekhondi asele}other{# amasekhondi asele}}</translation>
 <translation id="8134065097954893699">Ilayisha kabusha leli khasi</translation>
+<translation id="813785873406874127">Ikholomu ye-<ph name="COLUMN_NAME" /> ayihlungiwe</translation>
 <translation id="815598010540052116">Skrolela phansi</translation>
 <translation id="8179976553408161302">Faka</translation>
 <translation id="8210608804940886430">Yehla nekhasi</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8245914219290430011">Ithebhu</translation>
 <translation id="8259556432390118667">Ivelu lombala we-Hex</translation>
 <translation id="8328145009876646418">Emaphethelweni angakwesokunxele</translation>
 <translation id="8331626408530291785">Skrolela phezulu</translation>
@@ -209,6 +226,7 @@
 <translation id="8393700583063109961">Thumela umlayezo</translation>
 <translation id="8394908167088220973">Ukudlala kwemidiya/ukumisa isikhashana</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1y}one{#y}other{#y}}</translation>
+<translation id="8582972250170726813">Ikholomu ye-<ph name="COLUMN_NAME" /> ihlungwe nge-oda eyehlayo</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> Ifayela (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>
@@ -225,6 +243,8 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 isekhondi}one{# amasekhondi}other{# amasekhondi}}</translation>
 <translation id="9059834730836941392">Goqa isaziso</translation>
 <translation id="9170848237812810038">&amp;Hlehlisa</translation>
+<translation id="9195990613383871904">Kusasa</translation>
+<translation id="928628199082367701">ISuper</translation>
 <translation id="932327136139879170">Ikhaya</translation>
 <translation id="944069440740578670">Izaziso ezingafundiwe</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{Umzuzwana o-1 Odlule}one{Imizuzwana Engu-# Edlule}other{Imizuzwana Engu-# Edlule}}</translation>

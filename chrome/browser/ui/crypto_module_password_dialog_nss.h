@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/crypto_module_password_dialog.h"
 #include "crypto/scoped_nss_types.h"
 #include "net/base/host_port_pair.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 typedef struct CERTCertificateStr CERTCertificate;
 

@@ -19,33 +19,58 @@
   DEFINE_POST_PROCESS_PROTO_MUTATION_IMPL(FuzzerProtoType)
 
 // Register a text-based proto in process fuzzer.
-// The argument should be a class implementing InProcessProtoFuzzer,
+// The argument should be a class implementing InProcessTextProtoFuzzer,
 // parameterized by the <protobuf fuzz case type>
 #define REGISTER_TEXT_PROTO_IN_PROCESS_FUZZER(arg) \
   REGISTER_IN_PROCESS_FUZZER(arg)                  \
   DEFINE_PROTO_FUZZER_IN_PROCESS_IMPL(false, arg::FuzzCase testcase)
 // Same as REGISTER_TEXT_PROTO_IN_PROCESS_FUZZER but uses a binary
-// protobuf. May offer speed advantages at the expense of corpus
-// clarity, but that's not currently clear.
+// protobuf. The argument should be a class implementing
+// InProcessBinaryProtoFuzzer. May offer speed advantages at the expense of
+// corpus clarity, but that's not currently clear.
 #define REGISTER_BINARY_PROTO_IN_PROCESS_FUZZER(arg) \
   REGISTER_IN_PROCESS_FUZZER(arg)                    \
   DEFINE_PROTO_FUZZER_IN_PROCESS_IMPL(true, arg::FuzzCase testcase)
 
 template <typename Proto>
-class InProcessProtoFuzzer : public InProcessFuzzer {
+class InProcessTextProtoFuzzer : public InProcessFuzzer {
  public:
   using FuzzCase = Proto;
   // Constructor. Optionally pass options through to the InProcessFuzzer
   // constructor.
   // NOLINTNEXTLINE(runtime/explicit)
-  InProcessProtoFuzzer(InProcessFuzzerOptions options = {})
+  InProcessTextProtoFuzzer(InProcessFuzzerOptions options = {})
       : InProcessFuzzer(options) {}
 
  protected:
   int Fuzz(const uint8_t* data, size_t size) override {
     using protobuf_mutator::libfuzzer::LoadProtoInput;
     FuzzCase fuzz_case;
-    if (!LoadProtoInput(false, data, size, &fuzz_case)) {
+    if (!LoadProtoInput(/*binary=*/false, data, size, &fuzz_case)) {
+      return -1;
+    }
+    return Fuzz(fuzz_case);
+  }
+
+  // Execute a fuzz case using the given input.
+  virtual int Fuzz(const FuzzCase& fuzz_case) = 0;
+};
+
+template <typename Proto>
+class InProcessBinaryProtoFuzzer : public InProcessFuzzer {
+ public:
+  using FuzzCase = Proto;
+  // Constructor. Optionally pass options through to the InProcessFuzzer
+  // constructor.
+  // NOLINTNEXTLINE(runtime/explicit)
+  InProcessBinaryProtoFuzzer(InProcessFuzzerOptions options = {})
+      : InProcessFuzzer(options) {}
+
+ protected:
+  int Fuzz(const uint8_t* data, size_t size) override {
+    using protobuf_mutator::libfuzzer::LoadProtoInput;
+    FuzzCase fuzz_case;
+    if (!LoadProtoInput(/*binary=*/true, data, size, &fuzz_case)) {
       return -1;
     }
     return Fuzz(fuzz_case);

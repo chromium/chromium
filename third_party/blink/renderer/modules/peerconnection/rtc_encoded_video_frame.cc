@@ -6,12 +6,15 @@
 
 #include <utility>
 
+#include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_codec_specifics_vp_8.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_decode_target_indication.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_metadata.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_options.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/modules/peerconnection/peer_connection_util.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame_delegate.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -21,7 +24,6 @@ namespace blink {
 
 // Allow all fields to be set when calling RTCEncodedVideoFrame.setMetadata.
 BASE_FEATURE(kAllowRTCEncodedVideoFrameSetMetadataAllFields,
-             "AllowRTCEncodedVideoFrameSetMetadataAllFields",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
@@ -64,8 +66,8 @@ base::expected<void, String> ValidateMetadata(
     return base::unexpected("new metadata has member(s) missing.");
   }
 
-  // This might happen if the dependency descriptor is not set.
-  if (!metadata->hasFrameId() && metadata->hasDependencies()) {
+  if (!metadata->hasFrameId() && metadata->hasDependencies() &&
+      !metadata->dependencies().empty()) {
     return base::unexpected(
         "new metadata has frameID missing, but has dependencies");
   }
@@ -93,12 +95,15 @@ base::expected<void, String> ValidateMetadata(
 }  // namespace
 
 RTCEncodedVideoFrame* RTCEncodedVideoFrame::Create(
+    ExecutionContext* context,
     RTCEncodedVideoFrame* original_frame,
     ExceptionState& exception_state) {
-  return RTCEncodedVideoFrame::Create(original_frame, nullptr, exception_state);
+  return RTCEncodedVideoFrame::Create(context, original_frame, nullptr,
+                                      exception_state);
 }
 
 RTCEncodedVideoFrame* RTCEncodedVideoFrame::Create(
+    ExecutionContext* context,
     RTCEncodedVideoFrame* original_frame,
     const RTCEncodedVideoFrameOptions* options_dict,
     ExceptionState& exception_state) {
@@ -114,11 +119,11 @@ RTCEncodedVideoFrame* RTCEncodedVideoFrame::Create(
   }
   if (options_dict && options_dict->hasMetadata()) {
     base::expected<void, String> set_metadata =
-        new_frame->SetMetadata(options_dict->metadata());
+        new_frame->SetMetadata(context, options_dict->metadata());
     if (!set_metadata.has_value()) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidModificationError,
-          "Cannot create a new VideoFrame: " + set_metadata.error());
+          StrCat({"Cannot create a new VideoFrame: ", set_metadata.error()}));
       return nullptr;
     }
   }
@@ -127,36 +132,47 @@ RTCEncodedVideoFrame* RTCEncodedVideoFrame::Create(
 
 RTCEncodedVideoFrame::RTCEncodedVideoFrame(
     std::unique_ptr<webrtc::TransformableVideoFrameInterface> webrtc_frame)
+    : RTCEncodedVideoFrame(std::move(webrtc_frame),
+                           base::UnguessableToken::Null(),
+                           0) {}
+
+RTCEncodedVideoFrame::RTCEncodedVideoFrame(
+    std::unique_ptr<webrtc::TransformableVideoFrameInterface> webrtc_frame,
+    base::UnguessableToken owner_id,
+    int64_t counter)
     : delegate_(base::MakeRefCounted<RTCEncodedVideoFrameDelegate>(
-          std::move(webrtc_frame))) {}
+          std::move(webrtc_frame))),
+      owner_id_(owner_id),
+      counter_(counter) {}
 
 RTCEncodedVideoFrame::RTCEncodedVideoFrame(
     scoped_refptr<RTCEncodedVideoFrameDelegate> delegate)
     : RTCEncodedVideoFrame(delegate->CloneWebRtcFrame()) {}
 
-String RTCEncodedVideoFrame::type() const {
-  return delegate_->Type();
+V8RTCEncodedVideoFrameType RTCEncodedVideoFrame::type() const {
+  return V8RTCEncodedVideoFrameType(delegate_->Type());
 }
 
 uint32_t RTCEncodedVideoFrame::timestamp() const {
   return delegate_->RtpTimestamp();
 }
 
-DOMArrayBuffer* RTCEncodedVideoFrame::data() const {
+DOMArrayBuffer* RTCEncodedVideoFrame::data(ExecutionContext* context) const {
   if (!frame_data_) {
-    frame_data_ = delegate_->CreateDataBuffer();
+    frame_data_ = delegate_->CreateDataBuffer(context->GetIsolate());
   }
   return frame_data_.Get();
 }
 
-RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata() const {
+RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata(
+    ExecutionContext* context) const {
   RTCEncodedVideoFrameMetadata* metadata =
       RTCEncodedVideoFrameMetadata::Create();
   if (delegate_->PayloadType()) {
     metadata->setPayloadType(*delegate_->PayloadType());
   }
   if (delegate_->MimeType()) {
-    metadata->setMimeType(WTF::String::FromUTF8(*delegate_->MimeType()));
+    metadata->setMimeType(String::FromUTF8(*delegate_->MimeType()));
   }
 
   if (RuntimeEnabledFeatures::RTCEncodedVideoFrameAdditionalMetadataEnabled()) {
@@ -193,10 +209,36 @@ RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata() const {
   metadata->setTemporalIndex(webrtc_metadata->GetTemporalIndex());
   metadata->setRtpTimestamp(delegate_->RtpTimestamp());
 
+  if (RuntimeEnabledFeatures::RTCEncodedFrameTimestampsEnabled()) {
+    if (std::optional<base::TimeTicks> receive_time =
+            delegate_->ReceiveTime()) {
+      metadata->setReceiveTime(
+          RTCTimeStampFromTimeTicks(context, *receive_time));
+    }
+    if (std::optional<CaptureTimeInfo> capture_time_info =
+            delegate_->CaptureTime()) {
+      metadata->setCaptureTime(RTCEncodedFrameTimestampFromCaptureTimeInfo(
+          context, *capture_time_info));
+    }
+    if (std::optional<base::TimeDelta> sender_capture_time_offset =
+            delegate_->SenderCaptureTimeOffset()) {
+      metadata->setSenderCaptureTimeOffset(CalculateRTCEncodedFrameTimeDelta(
+          context, *sender_capture_time_offset));
+    }
+  }
+
   return metadata;
 }
 
+base::UnguessableToken RTCEncodedVideoFrame::OwnerId() {
+  return owner_id_;
+}
+int64_t RTCEncodedVideoFrame::Counter() {
+  return counter_;
+}
+
 base::expected<void, String> RTCEncodedVideoFrame::SetMetadata(
+    ExecutionContext* context,
     const RTCEncodedVideoFrameMetadata* metadata) {
   const std::optional<webrtc::VideoFrameMetadata> original_webrtc_metadata =
       delegate_->GetMetadata();
@@ -209,7 +251,7 @@ base::expected<void, String> RTCEncodedVideoFrame::SetMetadata(
     return validate_metadata;
   }
 
-  RTCEncodedVideoFrameMetadata* original_metadata = getMetadata();
+  RTCEncodedVideoFrameMetadata* original_metadata = getMetadata(context);
   if (!original_metadata) {
     return base::unexpected("internal error when calling getMetadata().");
   }
@@ -253,21 +295,22 @@ base::expected<void, String> RTCEncodedVideoFrame::SetMetadata(
   return delegate_->SetMetadata(webrtc_metadata, metadata->rtpTimestamp());
 }
 
-void RTCEncodedVideoFrame::setMetadata(RTCEncodedVideoFrameMetadata* metadata,
+void RTCEncodedVideoFrame::setMetadata(ExecutionContext* context,
+                                       RTCEncodedVideoFrameMetadata* metadata,
                                        ExceptionState& exception_state) {
-  base::expected<void, String> set_metadata = SetMetadata(metadata);
+  base::expected<void, String> set_metadata = SetMetadata(context, metadata);
   if (!set_metadata.has_value()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidModificationError,
-        "Cannot setMetadata: " + set_metadata.error());
+        StrCat({"Cannot setMetadata: ", set_metadata.error()}));
   }
 }
 
-void RTCEncodedVideoFrame::setData(DOMArrayBuffer* data) {
+void RTCEncodedVideoFrame::setData(ExecutionContext*, DOMArrayBuffer* data) {
   frame_data_ = data;
 }
 
-String RTCEncodedVideoFrame::toString() const {
+String RTCEncodedVideoFrame::toString(ExecutionContext* context) const {
   if (!delegate_) {
     return "empty";
   }
@@ -276,9 +319,9 @@ String RTCEncodedVideoFrame::toString() const {
   sb.Append("RTCEncodedVideoFrame{rtpTimestamp: ");
   sb.AppendNumber(timestamp());
   sb.Append(", size: ");
-  sb.AppendNumber(data()->ByteLength());
+  sb.AppendNumber(data(context)->ByteLength());
   sb.Append(" bytes, type: ");
-  sb.Append(type());
+  sb.Append(type().AsCStr());
   sb.Append("}");
   return sb.ToString();
 }
@@ -294,9 +337,21 @@ scoped_refptr<RTCEncodedVideoFrameDelegate> RTCEncodedVideoFrame::Delegate()
 }
 
 std::unique_ptr<webrtc::TransformableVideoFrameInterface>
-RTCEncodedVideoFrame::PassWebRtcFrame() {
+RTCEncodedVideoFrame::PassWebRtcFrame(v8::Isolate* isolate,
+                                      bool detach_frame_data) {
   SyncDelegate();
-  return delegate_->PassWebRtcFrame();
+  auto transformable_video_frame = delegate_->PassWebRtcFrame();
+  // Detach the `frame_data_` ArrayBuffer if it's been created, as described in
+  // the transfer on step 5 of the encoded transform spec write steps
+  // (https://www.w3.org/TR/webrtc-encoded-transform/#stream-processing)
+  if (detach_frame_data && frame_data_ && !frame_data_->IsDetached()) {
+    CHECK(isolate);
+    ArrayBufferContents contents_to_drop;
+    NonThrowableExceptionState exception_state;
+    CHECK(frame_data_->Transfer(isolate, v8::Local<v8::Value>(),
+                                contents_to_drop, exception_state));
+  }
+  return transformable_video_frame;
 }
 
 void RTCEncodedVideoFrame::Trace(Visitor* visitor) const {

@@ -28,10 +28,10 @@ test(function() {
 }, 'Ensure using calc() for CSS numbers with + on transition-timing-function does not crash or produce incorrect values.');
 test(function() {
   assertParsedValue('transition-timing-function', 'cubic-bezier(calc(1 / 2), calc(1 - 1), calc(2 - 1), calc(2 * 3))', 'cubic-bezier(0.5, 0, 1, 6)');
-}, 'Ensure using calc() for CSS numbers with / on transition-timing-function does not crash or produce incorrect values.');
+}, 'Ensure using calc() for CSS numbers with / on transition-timing-function does not crash or produce incorrect values (2).');
 test(function() {
-  assertParsedValue('transition-timing-function', 'steps(calc(1 + 2), start)', 'steps(3, start)');
-}, 'Ensure using calc() for CSS numbers with + on transition-timing-function does not crash or produce incorrect values.');
+  assertParsedValue('transition-timing-function', 'steps(calc(1 + 2), start)', 'steps(calc(3), start)');
+}, 'Ensure using calc() for CSS numbers with + on transition-timing-function does not crash or produce incorrect values (3).');
 test(function() {
   assertParsedValue('grid-row-start', 'calc(1 + 2) test', '3 test');
 }, 'Ensure using calc() for CSS numbers with + on grid-row-start does not crash or produce incorrect values.');
@@ -42,13 +42,13 @@ test(function() {
   assertParsedValue('font-weight', 'calc(100 + 200)', 'calc(300)');
 }, 'Ensure using calc() for CSS numbers with + on font-weight does not crash or produce incorrect values.');
 test(function() {
-  assertParsedValue('flex', 'calc(1 + 2) calc(3 + 4)', '3 7 0%');
+  assertParsedValue('flex', 'calc(1 + 2) calc(3 + 4)', 'calc(3) calc(7) 0%');
 }, 'Ensure using calc() for CSS numbers with + on flex does not crash or produce incorrect values.');
 test(function() {
   assertParsedValue('-webkit-filter', 'saturate(calc(4 / 2))', 'saturate(calc(2))');
 }, 'Ensure using calc() for CSS numbers with / on saturate() does not crash or produce incorrect values.');
 test(function() {
-  assertParsedValue('-webkit-filter', 'invert(calc(4 / 2))', 'invert(calc(1))');
+  assertParsedValue('-webkit-filter', 'invert(calc(4 / 2))', 'invert(calc(2))');
 }, 'Ensure using calc() for CSS numbers with / on invert() resulting bigger than 1 does not crash or produce incorrect values.');
 test(function() {
   assertParsedValue('-webkit-filter', 'invert(calc(2 / 4))', 'invert(calc(0.5))');

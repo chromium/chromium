@@ -39,6 +39,9 @@ def test_load_simple_url(driver_factory: drivers.DriverFactory,
     add_features(features)
 
 
+# This test requires machine to be allowlisted in the Skia Gold service.
+# In general, only tests running on official builders are allowed to upload
+# images. In most cases local runs will fail.
 def test_basic_rendering(driver_factory: drivers.DriverFactory,
                          local_http_server: HTTPServer,
                          seed_locator: fixtures.SeedLocator,
@@ -50,6 +53,7 @@ def test_basic_rendering(driver_factory: drivers.DriverFactory,
     seed_file=seed_locator.get_seed()) as driver:
     driver.set_window_size(800, 600)
     driver.get(url)
+    driver_factory.wait_for_screenshot()
     body = WebDriverWait(driver, 5).until(
       EC.presence_of_element_located((By.TAG_NAME, 'body')))
 

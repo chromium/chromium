@@ -17,8 +17,14 @@ function doGC()
 function sendTouchUp()
 {
     doGC();
+    // With RenderDocument enabled, the RenderFrameHost swap from this
+    // navigation results in a new eventSender being created, effectively
+    // erasing any existing touch events. There are now no touch points stored,
+    // so releaseTouchPoint(0) should fail.
+    try {
+        eventSender.releaseTouchPoint(0);
+    } catch (error) {}
     // This touchend will cause a crash if the bug is present.
-    eventSender.releaseTouchPoint(0);
     eventSender.touchEnd();
     // This touchstart will finish the test when we don't crash.
     eventSender.addTouchPoint(10,10);

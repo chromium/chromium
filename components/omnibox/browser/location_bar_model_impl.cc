@@ -40,7 +40,7 @@ LocationBarModelImpl::LocationBarModelImpl(LocationBarModelDelegate* delegate,
   DCHECK(delegate_);
 }
 
-LocationBarModelImpl::~LocationBarModelImpl() {}
+LocationBarModelImpl::~LocationBarModelImpl() = default;
 
 // LocationBarModelImpl Implementation.
 std::u16string LocationBarModelImpl::GetFormattedFullURL() const {
@@ -98,7 +98,10 @@ std::u16string LocationBarModelImpl::GetFormattedURL(
   // url_formatter parses everything past blob: as path, not domain, so swap
   // the url here to be just origin.
   if (url.SchemeIsBlob()) {
-    url = url::Origin::Create(url).GetURL();
+    url::Origin origin = url::Origin::Create(url);
+    if (!origin.host().empty()) {
+      url = origin.GetURL();
+    }
   }
 #endif  // BUILDFLAG(IS_IOS)
 
@@ -159,8 +162,7 @@ net::CertStatus LocationBarModelImpl::GetCertStatus() const {
 }
 
 OmniboxEventProto::PageClassification
-LocationBarModelImpl::GetPageClassification(OmniboxFocusSource focus_source,
-                                            bool is_prefetch) {
+LocationBarModelImpl::GetPageClassification(bool is_prefetch) const {
   // We may be unable to fetch the current URL during startup or shutdown when
   // the omnibox exists but there is no attached page.
   GURL gurl;
@@ -198,6 +200,33 @@ LocationBarModelImpl::GetPageClassification(OmniboxFocusSource focus_source,
                      : OmniboxEventProto::OTHER;
 }
 
+metrics::OmniboxEventProto::PageClassification
+LocationBarModelImpl::GetOmniboxComposeboxPageClassification() const {
+  GURL gurl;
+  if (!delegate_->GetURL(&gurl)) {
+    return metrics::OmniboxEventProto::OTHER_OMNIBOX_COMPOSEBOX;
+  }
+  if (delegate_->IsNewTabPage()) {
+    return metrics::OmniboxEventProto::NTP_OMNIBOX_COMPOSEBOX;
+  }
+  if (!gurl.is_valid() || (gurl.spec() == url::kAboutBlankURL) ||
+      delegate_->IsHomePage(gurl)) {
+    return metrics::OmniboxEventProto::OTHER_OMNIBOX_COMPOSEBOX;
+  }
+  if (delegate_->IsNewTabPageURL(gurl)) {
+    return metrics::OmniboxEventProto::NTP_OMNIBOX_COMPOSEBOX;
+  }
+
+  TemplateURLService* template_url_service = delegate_->GetTemplateURLService();
+  if (template_url_service &&
+      template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
+          gurl)) {
+    return metrics::OmniboxEventProto::SRP_OMNIBOX_COMPOSEBOX;
+  }
+
+  return metrics::OmniboxEventProto::OTHER_OMNIBOX_COMPOSEBOX;
+}
+
 const gfx::VectorIcon& LocationBarModelImpl::GetVectorIcon() const {
 #if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
   auto* const icon_override = delegate_->GetVectorIconOverride();
@@ -209,9 +238,7 @@ const gfx::VectorIcon& LocationBarModelImpl::GetVectorIcon() const {
 #endif
 
   return location_bar_model::GetSecurityVectorIcon(
-      GetSecurityLevel(),
-      delegate_->ShouldUseUpdatedConnectionSecurityIndicators(),
-      delegate_->GetVisibleSecurityState()->malicious_content_status);
+      GetSecurityLevel(), delegate_->GetVisibleSecurityState().get());
 }
 
 std::u16string LocationBarModelImpl::GetSecureDisplayText() const {
@@ -277,9 +304,4 @@ bool LocationBarModelImpl::IsOfflinePage() const {
 
 bool LocationBarModelImpl::ShouldPreventElision() const {
   return delegate_->ShouldPreventElision();
-}
-
-bool LocationBarModelImpl::ShouldUseUpdatedConnectionSecurityIndicators()
-    const {
-  return delegate_->ShouldUseUpdatedConnectionSecurityIndicators();
 }

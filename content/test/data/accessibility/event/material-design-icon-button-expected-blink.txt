@@ -1,0 +1,95 @@
+=== Accessibility tree before go() pass 1 ===
+rootWebArea htmlTag='#document' name='Material Web Icon Button Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-icon-button'
+++++++++++toggleButton className='icon-button  standard ' htmlTag='button' name='Toggle favorite' checkedState=false
+++++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++staticText ignored invisible
+++++++++++++genericContainer ignored
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 1 ===
+rootWebArea htmlTag='#document' name='Material Web Icon Button Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-icon-button'
+++++++++++toggleButton className='icon-button standard selected' htmlTag='button' name='Toggle favorite' checkedState=true <<<<<< CHANGED
+++++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible <<<<<< CHANGED
+++++++++++++++++++++++staticText ignored invisible <<<<<< CHANGED
+++++++++++++genericContainer ignored
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 2 ===
+rootWebArea htmlTag='#document' name='Material Web Icon Button Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-icon-button'
+++++++++++toggleButton className='icon-button standard selected' htmlTag='button' name='Toggle favorite' checkedState=true
+++++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++staticText ignored invisible
+++++++++++++genericContainer ignored
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 2 ===
+rootWebArea htmlTag='#document' name='Material Web Icon Button Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-icon-button'
+++++++++++toggleButton className='icon-button standard' htmlTag='button' name='Toggle favorite' checkedState=false <<<<<< CHANGED
+++++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible <<<<<< CHANGED
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++staticText ignored invisible <<<<<< CHANGED
+++++++++++++genericContainer ignored
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 3 ===
+rootWebArea htmlTag='#document' name='Material Web Icon Button Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-icon-button'
+++++++++++toggleButton className='icon-button standard' htmlTag='button' name='Toggle favorite' checkedState=false
+++++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++staticText ignored invisible
+++++++++++++genericContainer ignored
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 3 ===
+rootWebArea htmlTag='#document' name='Material Web Icon Button Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-icon-button'
+++++++++++toggleButton className='icon-button standard selected' htmlTag='button' name='Toggle favorite' checkedState=true <<<<<< CHANGED
+++++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible <<<<<< CHANGED
+++++++++++++++++++++++staticText ignored invisible <<<<<< CHANGED
+++++++++++++genericContainer ignored
+=== End accessibility tree ===

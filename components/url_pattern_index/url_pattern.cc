@@ -17,13 +17,13 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <ostream>
 #include <string_view>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "components/url_pattern_index/flat/url_pattern_index_generated.h"
 #include "components/url_pattern_index/fuzzy_pattern_matching.h"
@@ -74,7 +74,7 @@ std::string_view ConvertString(const flatbuffers::String* string) {
 }
 
 bool HasAnyUpperAscii(std::string_view string) {
-  return base::ranges::any_of(string, base::IsAsciiUpper<char>);
+  return std::ranges::any_of(string, base::IsAsciiUpper<char>);
 }
 
 // Returns whether |position| within the |url| belongs to its |host| component
@@ -193,8 +193,7 @@ bool DoesTextMatchLastSubpatternInternal(proto::AnchorType anchor_left,
            EndsWithFuzzy(text, subpattern);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // Matches the last |subpattern| against |text|. Special treatment is required
@@ -343,9 +342,9 @@ UrlPattern::UrlPattern(const flat::UrlRule& rule)
       url_pattern_(ConvertString(rule.url_pattern())),
       anchor_left_(ConvertAnchorType(rule.anchor_left())),
       anchor_right_(ConvertAnchorType(rule.anchor_right())),
-      match_case_(rule.options() & flat::OptionFlag_IS_CASE_INSENSITIVE
-                      ? MatchCase::kFalse
-                      : MatchCase::kTrue) {}
+      match_case_(rule.options() & flat::OptionFlag_IS_MATCH_CASE
+                      ? MatchCase::kTrue
+                      : MatchCase::kFalse) {}
 
 UrlPattern::~UrlPattern() = default;
 

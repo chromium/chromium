@@ -1,0 +1,23 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("host") {
+  sources = []
+  deps = []
+
+  if (is_win) {
+    sources += [
+      "execution_provider_initializer.cc",
+      "execution_provider_initializer.h",
+    ]
+
+    deps += [
+      "//base",
+      "//services/webnn:webnn_switches",
+      "//services/webnn/public/cpp",
+      "//services/webnn/public/mojom",
+      "//third_party/windows_app_sdk_headers",
+    ]
+  }
+}

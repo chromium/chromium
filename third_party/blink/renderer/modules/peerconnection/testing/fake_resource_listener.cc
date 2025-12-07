@@ -18,7 +18,7 @@ webrtc::ResourceUsageState FakeResourceListener::latest_measurement() const {
 }
 
 void FakeResourceListener::OnResourceUsageStateMeasured(
-    rtc::scoped_refptr<webrtc::Resource> resource,
+    webrtc::scoped_refptr<webrtc::Resource> resource,
     webrtc::ResourceUsageState usage_state) {
   latest_measurement_ = usage_state;
   ++measurement_count_;

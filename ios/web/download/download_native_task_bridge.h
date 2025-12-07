@@ -21,8 +21,8 @@ using NativeDownloadTaskProgressCallback =
                                  double fraction_completed)>;
 
 // Callback invoked once the NSURLResponse is received for the WKDownload*.
-using NativeDownloadTaskResponseCallback =
-    base::OnceCallback<void(int http_error_code, NSString* mime_type)>;
+using NativeDownloadTaskResponseCallback = base::OnceCallback<
+    void(int http_error_code, NSString* mime_type, NSURL* redirected_url)>;
 
 // Callback invoked once the WKDownload completes, possibly in error.
 using NativeDownloadTaskCompleteCallback =

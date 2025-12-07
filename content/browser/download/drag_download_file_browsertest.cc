@@ -9,6 +9,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_restrictions.h"
@@ -63,9 +64,7 @@ class DragDownloadFileTest : public ContentBrowserTest {
     GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(quit_closure_));
   }
 
-  void FailFast() {
-    CHECK(false);
-  }
+  void FailFast() { NOTREACHED(); }
 
  protected:
   void SetUpOnMainThread() override {

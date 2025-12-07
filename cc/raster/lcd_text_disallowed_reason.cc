@@ -34,8 +34,7 @@ const char* LCDTextDisallowedReasonToString(LCDTextDisallowedReason reason) {
     case LCDTextDisallowedReason::kNoText:
       return "no-text";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 std::ostream& operator<<(std::ostream& os, LCDTextDisallowedReason reason) {

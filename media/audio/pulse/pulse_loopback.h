@@ -7,6 +7,7 @@
 
 #include <pulse/pulseaudio.h>
 
+#include "base/sequence_checker.h"
 #include "media/audio/agc_audio_stream.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/audio_manager.h"
@@ -29,7 +30,8 @@ class PulseLoopbackAudioStream : public AgcAudioStream<AudioInputStream> {
                            const AudioParameters& params,
                            pa_threaded_mainloop* mainloop,
                            pa_context* context,
-                           AudioManager::LogCallback log_callback);
+                           AudioManager::LogCallback log_callback,
+                           bool mute_system_audio);
 
   PulseLoopbackAudioStream(const PulseLoopbackAudioStream&) = delete;
   PulseLoopbackAudioStream(const PulseLoopbackAudioStream&&) = delete;
@@ -64,6 +66,7 @@ class PulseLoopbackAudioStream : public AgcAudioStream<AudioInputStream> {
   const raw_ptr<pa_threaded_mainloop> mainloop_;
   const raw_ptr<pa_context> context_;
   AudioManager::LogCallback log_callback_;
+  const bool mute_system_audio_;
 
   // Passed to each underlying PulseAudioInputStream.
   raw_ptr<AudioInputCallback> sink_;

@@ -114,6 +114,21 @@ _DESIRED_VERSIONS = [
     '126.0.6478.16',
     '127.0.6533.27',
     '128.0.6613.20',
+    '129.0.6668.32',
+    '130.0.6723.20',
+    '131.0.6778.20',
+    '132.0.6834.24',
+    '133.0.6943.20',
+    '134.0.6998.48',
+    '135.0.7049.24',
+    '136.0.7103.52',
+    '137.0.7151.20',
+    '138.0.7204.40',
+    '139.0.7258.38',
+    '140.0.7339.32',
+    '141.0.7390.48',
+    '142.0.7444.56',
+    '143.0.7499.26',
 ]
 
 
@@ -142,6 +157,8 @@ def _EnumerateReports():
       versions = [v for v in versions if _VersionMajor(v) >= 71]
     elif apk == 'TrichromeGoogle':
       versions = [v for v in versions if _VersionMajor(v) >= 88]
+    elif apk == 'Monochrome.apk':
+      versions = [v for v in versions if _VersionMajor(v) < 140]
 
     # Switched to high-end only.
     if cpu == 'arm_64':

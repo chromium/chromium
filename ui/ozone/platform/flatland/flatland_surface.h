@@ -12,13 +12,14 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_pixmap.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/ozone/platform/flatland/flatland_connection.h"
 #include "ui/ozone/public/platform_window_surface.h"
 
@@ -150,7 +151,7 @@ class FlatlandSurface : public ui::PlatformWindowSurface {
   // that case, so we should hold onto the Present until receiving them.
   std::vector<base::OnceClosure> pending_present_closures_;
 
-  FlatlandSurfaceFactory* const flatland_surface_factory_;
+  const raw_ptr<FlatlandSurfaceFactory> flatland_surface_factory_;
   const gfx::AcceleratedWidget window_;
 
   THREAD_CHECKER(thread_checker_);

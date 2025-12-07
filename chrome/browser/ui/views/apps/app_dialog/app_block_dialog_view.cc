@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/apps/app_dialog/app_block_dialog_view.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
@@ -34,15 +35,16 @@ AppBlockDialogView::AppBlockDialogView(const std::string& app_name,
                                        const gfx::ImageSkia& image,
                                        Profile* profile)
     : AppDialogView(ui::ImageModel::FromImageSkia(image)) {
-  SetTitle(l10n_util::GetStringFUTF16(IDS_APP_BLOCK_PROMPT_TITLE,
+  InitializeView();
+  AddTitle(l10n_util::GetStringFUTF16(IDS_APP_BLOCK_PROMPT_TITLE,
                                       base::UTF8ToUTF16(app_name)));
 
-  std::u16string heading_text = l10n_util::GetStringFUTF16(
+  std::u16string subtitle_text = l10n_util::GetStringFUTF16(
       profile->IsChild() ? IDS_APP_BLOCK_HEADING_FOR_CHILD
                          : IDS_APP_BLOCK_HEADING,
       base::UTF8ToUTF16(app_name));
 
-  InitializeView(heading_text);
+  AddSubtitle(subtitle_text);
 
   g_app_block_dialog_view = this;
 }

@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
+#include "third_party/blink/renderer/modules/mediastream/speech_recognition_media_stream_audio_sink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
@@ -46,7 +47,6 @@
 namespace blink {
 
 class AudioSourceProvider;
-class DOMException;
 class ImageCapture;
 class MediaTrackCapabilities;
 class MediaTrackConstraints;
@@ -57,6 +57,8 @@ class ScriptState;
 // Primary implementation of the MediaStreamTrack interface and idl type.
 class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
                                             public MediaStreamSource::Observer {
+  USING_PRE_FINALIZER(MediaStreamTrackImpl, Dispose);
+
  public:
   // Create a MediaStreamTrackImpl of the appropriate type for the display
   // surface type.
@@ -84,7 +86,7 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   bool muted() const override;
   String ContentHint() const override;
   void SetContentHint(const String&) override;
-  String readyState() const override;
+  V8MediaStreamTrackState readyState() const override;
   MediaStreamTrack* clone(ExecutionContext*) override;
   void stopTrack(ExecutionContext*) override;
   MediaTrackCapabilities* getCapabilities() const override;
@@ -122,21 +124,13 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   void RegisterMediaStream(MediaStream*) override;
   void UnregisterMediaStream(MediaStream*) override;
 
+  void RegisterSink(SpeechRecognitionMediaStreamAudioSink*) override;
+
   // EventTarget
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
   void AddedEventListener(const AtomicString&,
                           RegisteredEventListener&) override;
-
-#if !BUILDFLAG(IS_ANDROID)
-  void SendWheel(double relative_x,
-                 double relative_y,
-                 int wheel_delta_x,
-                 int wheel_delta_y,
-                 base::OnceCallback<void(DOMException*)> callback) override;
-  void SetZoomLevel(int zoom_level,
-                    base::OnceCallback<void(DOMException*)> callback) override;
-#endif
 
   // ScriptWrappable
   bool HasPendingActivity() const final;
@@ -161,6 +155,11 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
 
   void Trace(Visitor*) const override;
 
+  std::optional<int> GetZoomLevelForTesting() const { return zoom_level_; }
+
+  bool IsCapturedSurfaceResolutionActive(
+      const MediaStreamTrackPlatform::Settings& platform_settings) const;
+
  protected:
   // Given a partially built MediaStreamTrackImpl, finishes the job of making it
   // into a clone of |this|.
@@ -172,6 +171,8 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   friend class CanvasCaptureMediaStreamTrack;
   friend class InternalsMediaStream;
 
+  void Dispose();
+
   // MediaStreamTrack
   void applyConstraints(ScriptPromiseResolver<IDLUndefined>*,
                         const MediaTrackConstraints*) override;
@@ -181,11 +182,13 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   void SourceChangedCaptureConfiguration() override;
   void SourceChangedCaptureHandle() override;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  void SourceChangedZoomLevel(int) override {}
+  void SourceChangedZoomLevel(int) override;
 #endif
   void PropagateTrackEnded();
 
-  void SendLogMessage(const WTF::String& message);
+  void PropagateTrackEnabled(bool enabled);
+
+  void SendLogMessage(const String& message);
 
   // Ensures that |feature_handle_for_scheduler_| is initialized.
   void EnsureFeatureHandleForScheduler();
@@ -219,14 +222,17 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
 
   MediaStreamSource::ReadyState ready_state_;
   HeapHashSet<Member<MediaStream>> registered_media_streams_;
+  HeapHashSet<Member<SpeechRecognitionMediaStreamAudioSink>> registered_sinks_;
   bool is_iterating_registered_media_streams_ = false;
   const Member<MediaStreamComponent> component_;
   Member<ImageCapture> image_capture_;
   WeakMember<ExecutionContext> execution_context_;
   HeapHashSet<WeakMember<MediaStreamTrack::Observer>> observers_;
   bool muted_ = false;
+  std::optional<int> zoom_level_;
   MediaConstraints constraints_;
   std::optional<bool> suppress_local_audio_playback_setting_;
+  std::optional<bool> restrict_own_audio_setting_;
   Member<V8UnionMediaStreamTrackAudioStatsOrMediaStreamTrackVideoStats> stats_;
 };
 

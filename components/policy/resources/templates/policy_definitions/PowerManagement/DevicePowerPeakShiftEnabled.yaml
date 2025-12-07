@@ -5,6 +5,7 @@ desc: |-
         Setting the policy to Disabled keeps power peak shift off.
 
         If unset, power peak shift is off at first. Users can't change this setting.
+default: false
 device_only: true
 example_value: false
 features:
@@ -17,7 +18,6 @@ items:
   value: false
 owners:
 - bkersting@google.com
-- kerker@chromium.org
 - chungsheng@google.com
 - byronlee@chromium.org
 - chromeos-oem-services@google.com

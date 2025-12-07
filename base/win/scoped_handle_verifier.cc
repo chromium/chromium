@@ -16,12 +16,12 @@
 #include "base/debug/alias.h"
 #include "base/debug/stack_trace.h"
 #include "base/memory/raw_ref.h"
+#include "base/notreached.h"
 #include "base/synchronization/lock_impl.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 #include "base/win/base_win_buildflags.h"
 #include "base/win/current_module.h"
 #include "base/win/scoped_handle.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 extern "C" {
 __declspec(dllexport) void* GetHandleVerifier();
@@ -38,7 +38,7 @@ namespace internal {
 namespace {
 
 ScopedHandleVerifier* g_active_verifier = nullptr;
-ABSL_CONST_INIT thread_local bool closing = false;
+constinit thread_local bool closing = false;
 using GetHandleVerifierFn = void* (*)();
 using HandleMap =
     std::unordered_map<HANDLE, ScopedHandleVerifierInfo, HandleHash>;
@@ -50,8 +50,7 @@ NOINLINE void ReportErrorOnScopedHandleOperation(
   auto creation_stack_copy = creation_stack;
   debug::Alias(&creation_stack_copy);
   debug::Alias(&operation);
-  CHECK(false) << operation;
-  __builtin_unreachable();
+  NOTREACHED() << operation;
 }
 
 NOINLINE void ReportErrorOnScopedHandleOperation(
@@ -63,8 +62,7 @@ NOINLINE void ReportErrorOnScopedHandleOperation(
   auto creation_stack_copy = creation_stack;
   debug::Alias(&creation_stack_copy);
   debug::Alias(&operation);
-  CHECK(false) << operation;
-  __builtin_unreachable();
+  NOTREACHED() << operation;
 }
 
 }  // namespace
@@ -108,15 +106,15 @@ ScopedHandleVerifier::ScopedHandleVerifier(bool enabled)
 
 // static
 ScopedHandleVerifier* ScopedHandleVerifier::Get() {
-  if (!g_active_verifier)
+  if (!g_active_verifier) {
     ScopedHandleVerifier::InstallVerifier();
+  }
 
   return g_active_verifier;
 }
 
 bool CloseHandleWrapper(HANDLE handle) {
-  if (!::CloseHandle(handle))
-    CHECK(false) << "CloseHandle failed";
+  CHECK(::CloseHandle(handle)) << "CloseHandle failed";
   return true;
 }
 
@@ -129,8 +127,9 @@ void ScopedHandleVerifier::ThreadSafeAssignOrCreateScopedHandleVerifier(
   AutoNativeLock lock(*GetLock());
   // Another thread in this module might be trying to assign the global
   // verifier, so check that within the lock here.
-  if (g_active_verifier)
+  if (g_active_verifier) {
     return;
+  }
   g_active_verifier =
       existing_verifier ? existing_verifier : new ScopedHandleVerifier(enabled);
 }
@@ -175,8 +174,9 @@ void ScopedHandleVerifier::InstallVerifier() {
 }
 
 bool ScopedHandleVerifier::CloseHandle(HANDLE handle) {
-  if (!enabled_)
+  if (!enabled_) {
     return CloseHandleWrapper(handle);
+  }
 
   const AutoReset<bool> resetter(&closing, true);
   CloseHandleWrapper(handle);
@@ -194,16 +194,18 @@ void ScopedHandleVerifier::StartTracking(HANDLE handle,
                                          const void* owner,
                                          const void* pc1,
                                          const void* pc2) {
-  if (enabled_)
+  if (enabled_) {
     StartTrackingImpl(handle, owner, pc1, pc2);
+  }
 }
 
 void ScopedHandleVerifier::StopTracking(HANDLE handle,
                                         const void* owner,
                                         const void* pc1,
                                         const void* pc2) {
-  if (enabled_)
+  if (enabled_) {
     StopTrackingImpl(handle, owner, pc1, pc2);
+  }
 }
 
 void ScopedHandleVerifier::Disable() {
@@ -212,8 +214,9 @@ void ScopedHandleVerifier::Disable() {
 
 void ScopedHandleVerifier::OnHandleBeingClosed(HANDLE handle,
                                                HandleOperation operation) {
-  if (enabled_)
+  if (enabled_) {
     OnHandleBeingClosedImpl(handle, operation);
+  }
 }
 
 HMODULE ScopedHandleVerifier::GetModule() const {

@@ -9,6 +9,7 @@
 #import "components/image_fetcher/core/image_fetcher_impl.h"
 #import "components/image_fetcher/ios/ios_image_decoder_impl.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -21,6 +22,8 @@ namespace {
 constexpr int kBackgroundColor = 0x4285F4;
 
 const char kImageFetcherUmaClient[] = "NotifyAutoSignin";
+
+constexpr CGFloat kAvatarSymbolSize = 24.0;
 
 // NetworkTrafficAnnotationTag for fetching avatar.
 const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
@@ -116,7 +119,8 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   textView.userInteractionEnabled = NO;
 
   // Load the placeholder user's avatar.
-  UIImage* placeholderAvatar = [UIImage imageNamed:@"ic_account_circle"];
+  UIImage* placeholderAvatar =
+      DefaultSymbolWithPointSize(kPersonCropCircleSymbol, kAvatarSymbolSize);
   // View containing user's avatar.
   self.avatarView = [[UIImageView alloc] initWithImage:placeholderAvatar];
   self.avatarView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -133,12 +137,14 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     @"text" : textView,
     @"avatar" : self.avatarView,
   };
+  NSDictionary* metrics = @{@"avatarSize" : @(kAvatarSymbolSize)};
   NSArray* childrenConstraints = @[
     @"V:|[text]|",
-    @"V:|-12-[avatar(==24)]-12-|",
-    @"H:|-12-[avatar(==24)]-12-[text]-12-|",
+    @"V:|-12-[avatar(==avatarSize)]-12-|",
+    @"H:|-12-[avatar(==avatarSize)]-12-[text]-12-|",
   ];
-  ApplyVisualConstraints(childrenConstraints, childrenViewsDictionary);
+  ApplyVisualConstraintsWithMetrics(childrenConstraints,
+                                    childrenViewsDictionary, metrics);
 
   PinToSafeArea(contentView, self.view);
 

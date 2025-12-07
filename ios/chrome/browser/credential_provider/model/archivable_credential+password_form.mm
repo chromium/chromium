@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/credential_provider/model/archivable_credential+password_form.h"
-
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/affiliations/core/browser/affiliation_utils.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
+#import "ios/chrome/browser/credential_provider/model/archivable_credential+password_form.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_util.h"
+#import "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #import "url/gurl.h"
 
 namespace {
@@ -48,12 +48,16 @@ password_manager::PasswordForm PasswordFormFromCredential(
   if (passwordForm.blocked_by_user) {
     return nil;
   }
-  std::string site_name =
+  std::string siteName =
       password_manager::GetShownOrigin(url::Origin::Create(passwordForm.url));
 
-  NSString* serviceName = SysUTF8ToNSString(site_name);
+  NSString* serviceName = SysUTF8ToNSString(siteName);
   NSString* note =
       SysUTF16ToNSString(passwordForm.GetNoteWithEmptyUniqueDisplayName());
+  NSString* registryControlledDomain =
+      SysUTF8ToNSString(net::registry_controlled_domains::GetDomainAndRegistry(
+          passwordForm.url,
+          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES));
 
   NSString* serviceIdentifier = @"";
   if (affiliations::IsValidAndroidFacetURI(passwordForm.signon_realm)) {
@@ -87,13 +91,16 @@ password_manager::PasswordForm PasswordFormFromCredential(
 
   DCHECK(serviceIdentifier.length);
 
+  BOOL inAccountStore = (passwordForm.in_store ==
+                         password_manager::PasswordForm::Store::kAccountStore);
   return [self initWithFavicon:favicon
-                          gaia:gaia
+                          gaia:inAccountStore ? gaia : nil
                       password:SysUTF16ToNSString(passwordForm.password_value)
                           rank:passwordForm.times_used_in_html_form
               recordIdentifier:RecordIdentifierForPasswordForm(passwordForm)
              serviceIdentifier:serviceIdentifier
                    serviceName:serviceName
+      registryControlledDomain:registryControlledDomain
                       username:SysUTF16ToNSString(passwordForm.username_value)
                           note:note];
 }

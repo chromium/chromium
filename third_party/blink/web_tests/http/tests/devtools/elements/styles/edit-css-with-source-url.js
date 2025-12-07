@@ -24,7 +24,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
   TestRunner.markStep('testEditingRulesInElementsPanelDoesNotAddSourceURLToOriginalFile');
 
   var uiSourceCode = await TestRunner.waitForUISourceCode('foo.css');
-  await uiSourceCode.requestContent();
+  await uiSourceCode.requestContentData();
   TestRunner.addResult('Dumping uiSourceCode content:');
   TestRunner.addResult(uiSourceCode.workingCopy());
   ElementsTestRunner.selectNodeAndWaitForStyles('inspected', nodeSelected);
@@ -44,7 +44,8 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
     treeElement.valueElement.textContent = 'green';
     TestRunner.selectTextInTextNode(treeElement.valueElement.firstChild);
     treeElement.valueElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
-    uiSourceCode.addEventListener(Workspace.UISourceCode.Events.WorkingCopyCommitted, stylesEdited, this);
+    uiSourceCode.addEventListener(
+        Workspace.UISourceCode.Events.WorkingCopyChanged, stylesEdited, this);
   }
 
   async function stylesEdited() {

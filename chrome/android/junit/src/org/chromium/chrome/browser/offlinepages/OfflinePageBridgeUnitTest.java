@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -21,15 +20,15 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge.OfflinePageModelObserver;
 
 import java.util.ArrayList;
@@ -39,6 +38,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class OfflinePageBridgeUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private OfflinePageBridge mBridge;
 
     private static final String TEST_NAMESPACE = "TEST_NAMESPACE";
@@ -79,12 +79,10 @@ public class OfflinePageBridgeUnitTest {
 
     @Captor ArgumentCaptor<Callback<Integer>> mDeleteCallbackArgument;
 
-    @Rule public JniMocker mocker = new JniMocker();
-
     @Mock OfflinePageBridge.Natives mOfflinePageBridgeJniMock;
 
     /** Mocks the observer. */
-    public class MockOfflinePageModelObserver extends OfflinePageModelObserver {
+    public static class MockOfflinePageModelObserver extends OfflinePageModelObserver {
         public long lastDeletedOfflineId;
         public ClientId lastDeletedClientId;
 
@@ -97,8 +95,7 @@ public class OfflinePageBridgeUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        mocker.mock(OfflinePageBridgeJni.TEST_HOOKS, mOfflinePageBridgeJniMock);
+        OfflinePageBridgeJni.setInstanceForTesting(mOfflinePageBridgeJniMock);
         OfflinePageBridge bridge = new OfflinePageBridge(0);
         // Using the spy to automatically marshal all the calls to the original methods if they are
         // not mocked explicitly.
@@ -133,7 +130,7 @@ public class OfflinePageBridgeUnitTest {
         Callback<List<OfflinePageItem>> callback = createMultipleItemCallback(itemCount);
         mBridge.getAllPages(callback);
 
-        List<OfflinePageItem> itemList = new ArrayList<OfflinePageItem>();
+        List<OfflinePageItem> itemList = new ArrayList<>();
         verify(callback, times(1)).onResult(itemList);
     }
 
@@ -147,7 +144,7 @@ public class OfflinePageBridgeUnitTest {
         Callback<List<OfflinePageItem>> callback = createMultipleItemCallback(itemCount);
         mBridge.getAllPages(callback);
 
-        List<OfflinePageItem> itemList = new ArrayList<OfflinePageItem>();
+        List<OfflinePageItem> itemList = new ArrayList<>();
         itemList.add(TEST_OFFLINE_PAGE_ITEM);
         itemList.add(TEST_OFFLINE_PAGE_ITEM);
         verify(callback, times(1)).onResult(itemList);
@@ -161,11 +158,10 @@ public class OfflinePageBridgeUnitTest {
 
         answerGetPagesByClientIds(itemCount);
         Callback<List<OfflinePageItem>> callback = createMultipleItemCallback(itemCount);
-        ClientId secondClientId = new ClientId(TEST_NAMESPACE, "id number two");
         List<ClientId> list = new ArrayList<>();
         mBridge.getPagesByClientIds(list, callback);
 
-        List<OfflinePageItem> itemList = new ArrayList<OfflinePageItem>();
+        List<OfflinePageItem> itemList = new ArrayList<>();
         verify(callback, times(1)).onResult(itemList);
     }
 
@@ -183,7 +179,7 @@ public class OfflinePageBridgeUnitTest {
         list.add(secondClientId);
         mBridge.getPagesByClientIds(list, callback);
 
-        List<OfflinePageItem> itemList = new ArrayList<OfflinePageItem>();
+        List<OfflinePageItem> itemList = new ArrayList<>();
         itemList.add(TEST_OFFLINE_PAGE_ITEM);
         itemList.add(TEST_OFFLINE_PAGE_ITEM);
         verify(callback, times(1)).onResult(itemList);
@@ -197,7 +193,6 @@ public class OfflinePageBridgeUnitTest {
 
         answerDeletePagesByClientIds(itemCount);
         Callback<Integer> callback = createDeletePageCallback();
-        ClientId secondClientId = new ClientId(TEST_NAMESPACE, "id number two");
         List<ClientId> list = new ArrayList<>();
         mBridge.deletePagesByClientId(list, callback);
 
@@ -266,16 +261,9 @@ public class OfflinePageBridgeUnitTest {
         verify(callback, times(1)).onResult(any(Integer.class));
     }
 
-    /** Performs a proper cast from Object to a List<OfflinePageItem>. */
-    private static List<OfflinePageItem> convertToListOfOfflinePages(Object o) {
-        @SuppressWarnings("unchecked")
-        List<OfflinePageItem> list = (List<OfflinePageItem>) o;
-        return list;
-    }
-
     private Callback<List<OfflinePageItem>> createMultipleItemCallback(final int itemCount) {
         return spy(
-                new Callback<List<OfflinePageItem>>() {
+                new Callback<>() {
                     @Override
                     public void onResult(List<OfflinePageItem> items) {
                         assertNotNull(items);
@@ -286,7 +274,7 @@ public class OfflinePageBridgeUnitTest {
 
     private Callback<Integer> createDeletePageCallback() {
         return spy(
-                new Callback<Integer>() {
+                new Callback<>() {
                     @Override
                     public void onResult(Integer result) {}
                 });
@@ -294,7 +282,7 @@ public class OfflinePageBridgeUnitTest {
 
     private void answerNativeGetAllPages(final int itemCount) {
         Answer<Void> answer =
-                new Answer<Void>() {
+                new Answer<>() {
                     @Override
                     public Void answer(InvocationOnMock invocation) {
                         List<OfflinePageItem> result = mResultArgument.getValue();
@@ -309,16 +297,12 @@ public class OfflinePageBridgeUnitTest {
                 };
         doAnswer(answer)
                 .when(mOfflinePageBridgeJniMock)
-                .getAllPages(
-                        anyLong(),
-                        eq(mBridge),
-                        mResultArgument.capture(),
-                        mCallbackArgument.capture());
+                .getAllPages(anyLong(), mResultArgument.capture(), mCallbackArgument.capture());
     }
 
     private void answerGetPagesByClientIds(final int itemCount) {
         Answer<Void> answer =
-                new Answer<Void>() {
+                new Answer<>() {
                     @Override
                     public Void answer(InvocationOnMock invocation) {
                         List<OfflinePageItem> result = mResultArgument.getValue();
@@ -342,7 +326,6 @@ public class OfflinePageBridgeUnitTest {
                 .when(mOfflinePageBridgeJniMock)
                 .getPagesByClientId(
                         anyLong(),
-                        eq(mBridge),
                         mResultArgument.capture(),
                         mNamespacesArgument.capture(),
                         mIdsArgument.capture(),
@@ -351,7 +334,7 @@ public class OfflinePageBridgeUnitTest {
 
     private void answerDeletePagesByOfflineIds(final int itemCount) {
         Answer<Void> answer =
-                new Answer<Void>() {
+                new Answer<>() {
                     @Override
                     public Void answer(InvocationOnMock invocation) {
                         long[] offlineIds = mOfflineIdsArgument.getValue();
@@ -371,14 +354,13 @@ public class OfflinePageBridgeUnitTest {
                 .when(mOfflinePageBridgeJniMock)
                 .deletePagesByOfflineId(
                         anyLong(),
-                        eq(mBridge),
                         mOfflineIdsArgument.capture(),
                         mDeleteCallbackArgument.capture());
     }
 
     private void answerDeletePagesByClientIds(final int itemCount) {
         Answer<Void> answer =
-                new Answer<Void>() {
+                new Answer<>() {
                     @Override
                     public Void answer(InvocationOnMock invocation) {
                         String[] namespaces = mNamespacesArgument.getValue();
@@ -397,7 +379,6 @@ public class OfflinePageBridgeUnitTest {
                 .when(mOfflinePageBridgeJniMock)
                 .deletePagesByClientId(
                         anyLong(),
-                        eq(mBridge),
                         mNamespacesArgument.capture(),
                         mIdsArgument.capture(),
                         mDeleteCallbackArgument.capture());

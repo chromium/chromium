@@ -5,19 +5,15 @@
 #ifndef COMPONENTS_PAINT_PREVIEW_COMMON_TEST_UTILS_H_
 #define COMPONENTS_PAINT_PREVIEW_COMMON_TEST_UTILS_H_
 
-#include "components/paint_preview/common/serialized_recording.h"
-#include "testing/gmock/include/gmock/gmock.h"
+#include <string_view>
 
-MATCHER_P(EqualsProto, message, "") {
-  std::string expected_serialized, actual_serialized;
-  message.SerializeToString(&expected_serialized);
-  arg.SerializeToString(&actual_serialized);
-  return expected_serialized == actual_serialized;
-}
+#include "components/paint_preview/common/serialized_recording.h"
+
+namespace paint_preview {
 
 // Allow |Persistence| to be stringified in gtest.
-std::string PersistenceParamToString(
-    const ::testing::TestParamInfo<paint_preview::RecordingPersistence>&
-        persistence);
+std::string_view PersistenceToString(RecordingPersistence persistence);
+
+}  // namespace paint_preview
 
 #endif  // COMPONENTS_PAINT_PREVIEW_COMMON_TEST_UTILS_H_

@@ -4,6 +4,7 @@
 
 #include "ash/system/holding_space/holding_space_tray_child_bubble.h"
 
+#include <algorithm>
 #include <set>
 
 #include "ash/bubble/bubble_constants.h"
@@ -15,7 +16,6 @@
 #include "ash/system/holding_space/holding_space_util.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
@@ -71,7 +71,7 @@ bool HasContentForSection(const HoldingSpaceItemViewsSection* section) {
   if (!model)
     return false;
 
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       section->supported_types(),
       [&model](HoldingSpaceItem::Type supported_type) {
         return model->ContainsInitializedItemOfType(supported_type);
@@ -192,7 +192,6 @@ void HoldingSpaceTrayChildBubble::Init() {
   SetPaintToLayer(ui::LAYER_TEXTURED);
   layer()->GetAnimator()->set_preemption_strategy(
       ui::LayerAnimator::PreemptionStrategy::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-  layer()->SetFillsBoundsOpaquely(false);
   layer()->SetOpacity(0.f);
 
   // Child bubbles should mask child layers to bounds so as not to paint over
@@ -200,25 +199,27 @@ void HoldingSpaceTrayChildBubble::Init() {
   layer()->SetMasksToBounds(true);
 
   // Background.
-  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    layer()->SetFillsBoundsOpaquely(false);
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  }
 
-  SetBackground(views::CreateThemedSolidBackground(
-      chromeos::features::IsJellyEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated)
-          : kColorAshShieldAndBase80));
+  const ui::ColorId background_color_id =
+      chromeos::features::IsSystemBlurEnabled()
+          ? cros_tokens::kCrosSysSystemBaseElevated
+          : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
+
+  SetBackground(views::CreateSolidBackground(background_color_id));
 
   // Border.
-  const float corner_radius = GetBubbleCornerRadius();
   SetBorder(std::make_unique<views::HighlightBorder>(
-      corner_radius,
-      chromeos::features::IsJellyrollEnabled()
-          ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-          : views::HighlightBorder::Type::kHighlightBorder1));
+      kBubbleCornerRadius,
+      views::HighlightBorder::Type::kHighlightBorderOnShadow));
 
   // Corner radius.
   layer()->SetIsFastRoundedCorner(true);
-  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{corner_radius});
+  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{kBubbleCornerRadius});
 
   // Placeholder.
   if (auto placeholder = CreatePlaceholder()) {
@@ -281,7 +282,7 @@ void HoldingSpaceTrayChildBubble::OnHoldingSpaceItemsAdded(
   // `placeholder_` but will now transition to showing one or more `sections_`.
   const bool animate_out =
       placeholder_ && placeholder_->GetVisible() &&
-      base::ranges::any_of(sections_, &HasContentForSection);
+      std::ranges::any_of(sections_, &HasContentForSection);
 
   if (animate_out) {
     MaybeAnimateOut();
@@ -303,7 +304,7 @@ void HoldingSpaceTrayChildBubble::OnHoldingSpaceItemsRemoved(
   // `placeholder_` and will not be showing one or more `sections_`.
   const bool animate_out =
       (!placeholder_ || !placeholder_->GetVisible()) &&
-      base::ranges::none_of(sections_, &HasContentForSection);
+      std::ranges::none_of(sections_, &HasContentForSection);
 
   if (animate_out) {
     MaybeAnimateOut();
@@ -326,7 +327,7 @@ void HoldingSpaceTrayChildBubble::OnHoldingSpaceItemInitialized(
   // `placeholder_` but will now transition to showing one or more `sections_`.
   const bool animate_out =
       placeholder_ && placeholder_->GetVisible() &&
-      base::ranges::any_of(sections_, &HasContentForSection);
+      std::ranges::any_of(sections_, &HasContentForSection);
 
   if (animate_out) {
     MaybeAnimateOut();
@@ -354,7 +355,7 @@ void HoldingSpaceTrayChildBubble::ChildVisibilityChanged(views::View* child) {
   // if the child bubble has a placeholder, it will always be visible.
   const bool visible =
       placeholder_ ||
-      base::ranges::any_of(children(), [](const views::View* child) {
+      std::ranges::any_of(children(), [](const views::View* child) {
         return child->GetVisible();
       });
 
@@ -363,7 +364,7 @@ void HoldingSpaceTrayChildBubble::ChildVisibilityChanged(views::View* child) {
     // Note that `ChildVisibilityChanged()` events are suppressed here for
     // `placeholder_` to prevent nested visibility changed events.
     base::AutoReset reset(&ignore_child_visibility_changed_, true);
-    placeholder_->SetVisible(base::ranges::none_of(
+    placeholder_->SetVisible(std::ranges::none_of(
         sections_, [](const HoldingSpaceItemViewsSection* section) {
           return section->GetVisible();
         }));
@@ -516,7 +517,7 @@ void HoldingSpaceTrayChildBubble::OnAnimateOutCompleted(bool aborted) {
 
   if (placeholder_) {
     // The `placeholder_` should only be visible if all `sections_` are not.
-    placeholder_->SetVisible(base::ranges::none_of(
+    placeholder_->SetVisible(std::ranges::none_of(
         sections_, [](const HoldingSpaceItemViewsSection* section) {
           return section->GetVisible();
         }));

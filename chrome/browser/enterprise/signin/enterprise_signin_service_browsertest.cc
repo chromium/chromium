@@ -23,6 +23,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/service/sync_service.h"
@@ -43,7 +44,7 @@ const char kAuthUrl[] =
     "https://accounts.google.com/"
     "AddSession?Email=user%40example.com&continue=https%3A%2F%2Fwww.google.com%"
     "2F";
-const char kExampleUrl[] = "http://example.com/";
+const char kExampleUrl[] = "https://example.com/";
 
 // A boolean with a more explicit meaning.
 enum Activation {
@@ -74,13 +75,15 @@ std::unique_ptr<KeyedService> CreateSyncService(
 
 class EnterpriseSigninServiceTest : public InteractiveBrowserTest {
  public:
-  EnterpriseSigninServiceTest()
-      : dependency_manager_subscription_(
-            BrowserContextDependencyManager::GetInstance()
-                ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                    &EnterpriseSigninServiceTest::SetTestingFactories,
-                    base::Unretained(this)))) {}
+  EnterpriseSigninServiceTest() = default;
   ~EnterpriseSigninServiceTest() override = default;
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    InteractiveBrowserTest::SetUpBrowserContextKeyedServices(context);
+    SyncServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&CreateSyncService));
+  }
 
   void SetUpOnMainThread() override {
     CHECK(browser());
@@ -95,7 +98,7 @@ class EnterpriseSigninServiceTest : public InteractiveBrowserTest {
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(browser()->profile());
     signin::MakePrimaryAccountAvailable(identity_manager, "user@example.com",
-                                        signin::ConsentLevel::kSync);
+                                        signin::ConsentLevel::kSignin);
     signin::SetRefreshTokenForPrimaryAccount(identity_manager);
     signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
 
@@ -162,13 +165,7 @@ class EnterpriseSigninServiceTest : public InteractiveBrowserTest {
   }
 
  private:
-  void SetTestingFactories(content::BrowserContext* context) {
-    SyncServiceFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating(&CreateSyncService));
-  }
-
   raw_ptr<syncer::TestSyncService> sync_service_;
-  base::CallbackListSubscription dependency_manager_subscription_;
 };
 
 IN_PROC_BROWSER_TEST_F(EnterpriseSigninServiceTest, DoesNothingIfPolicyNotSet) {

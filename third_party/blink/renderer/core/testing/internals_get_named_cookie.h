@@ -7,10 +7,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 class InternalCookie;
@@ -24,7 +21,7 @@ class InternalsGetNamedCookie {
   static ScriptPromise<IDLNullable<InternalCookie>> getNamedCookie(
       ScriptState* script_state,
       Internals& internals,
-      const WTF::String& name);
+      const String& name);
 };
 
 }  // namespace blink

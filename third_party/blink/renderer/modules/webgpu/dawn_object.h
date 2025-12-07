@@ -30,31 +30,6 @@ class EventLoop;
 
 class GPUDevice;
 
-// RAII tracker for known memory allocations outside of V8, informing V8 using
-// AdjustAmountOfExternalAllocatedMemory. This causes V8 to collect garbage
-// more often when it knows the footprint of V8-managed objects is large.
-//
-// - It is OK for the tracked size to be an estimate.
-// - It is OK to update the tracked size dynamically/asynchronously.
-// - It is OK to use this for CPU memory allocated in another process.
-// - It is NOT OK to use this for VRAM allocations. This may cause GC to
-//   trigger too often: GC is trying to manage CPU memory pressure, but freeing
-//   VRAM allocations may or may not reduce CPU memory pressure.
-class ExternalMemoryTracker final {
- public:
-  // Non-copyable/non-movable
-  ExternalMemoryTracker(const ExternalMemoryTracker&) = delete;
-  ExternalMemoryTracker& operator=(const ExternalMemoryTracker&) = delete;
-
-  ExternalMemoryTracker() = default;
-  ~ExternalMemoryTracker();
-
-  void SetCurrentSize(size_t newSize);
-
- private:
-  int64_t size_ = 0;
-};
-
 // This class allows objects to hold onto a DawnControlClientHolder.
 // The DawnControlClientHolder is used to hold the WebGPUInterface and keep
 // track of whether or not the client has been destroyed. If the client is
@@ -82,7 +57,7 @@ class DawnObjectBase {
   const String& label() const { return label_; }
   void setLabel(const String& value);
 
-  virtual void setLabelImpl(const String& value) = 0;
+  virtual void SetLabelImpl(const String& value) = 0;
 
  private:
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
@@ -127,16 +102,16 @@ class DawnObject : public DawnObjectImpl {
 template <>
 class DawnObject<wgpu::Device> : public DawnObjectBase {
  public:
-  DawnObject(scoped_refptr<DawnControlClientHolder> dawn_control_client,
-             wgpu::Device handle,
-             const String& label)
-      : DawnObjectBase(dawn_control_client, label),
-        handle_(std::move(handle)) {}
-
   const wgpu::Device& GetHandle() const { return handle_; }
 
+ protected:
+  // Support setting the handle after creation to allow for GPUDevice's
+  // two-step initialization.
+  using DawnObjectBase::DawnObjectBase;
+  void SetHandle(wgpu::Device handle) { handle_ = std::move(handle); }
+
  private:
-  const wgpu::Device handle_;
+  wgpu::Device handle_;
 };
 
 template <>

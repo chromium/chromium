@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<link rel="match" href="transferToGPUTexture-paint-invalidation-expected.https.html">
+<script src="./webgpu-helpers.js"></script>
+<script src="./transferToGPUTexture-paint-invalidation-impl.js"></script>
+
+<html class="reftest-wait">
+<h1>Canvas2D WebGPU Transfer: transferToGPUTexture-paint-invalidation</h1>
+<p>
+  transferToGPUTexture() should trigger the canvas to repaint, leaving it
+  blank.
+</p>
+<canvas id="canvas" width="50" height="50"></canvas>
+
+<script type="module">
+  const canvas = document.getElementById('canvas');
+  await transferToGPUTexture_paintInvalidation(canvas);
+  document.documentElement.classList.remove('reftest-wait');
+</script>
+</html>

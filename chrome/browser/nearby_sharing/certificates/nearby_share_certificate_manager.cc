@@ -4,6 +4,10 @@
 
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_manager.h"
 
+#include <array>
+
+#include "chrome/browser/nearby_sharing/certificates/constants.h"
+
 NearbyShareCertificateManager::NearbyShareCertificateManager() = default;
 
 NearbyShareCertificateManager::~NearbyShareCertificateManager() = default;
@@ -63,7 +67,7 @@ NearbyShareCertificateManager::SignWithPrivateCertificate(
   return cert->Sign(payload);
 }
 
-std::optional<std::vector<uint8_t>>
+std::optional<std::array<uint8_t, kNearbyShareNumBytesAuthenticationTokenHash>>
 NearbyShareCertificateManager::HashAuthenticationTokenWithPrivateCertificate(
     nearby_share::mojom::Visibility visibility,
     base::span<const uint8_t> authentication_token) const {

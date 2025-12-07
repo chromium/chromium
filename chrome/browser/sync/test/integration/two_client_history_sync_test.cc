@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/history/content/browser/history_context_helper.h"
 #include "components/history/core/browser/browsing_history_driver.h"
 #include "components/history/core/browser/browsing_history_service.h"
@@ -69,14 +70,25 @@ class TestBrowsingHistoryDriver : public history::BrowsingHistoryDriver {
   const raw_ptr<history::WebHistoryService> web_history_;
 };
 
-class TwoClientHistorySyncTest : public SyncTest {
+class TwoClientHistorySyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   TwoClientHistorySyncTest() : SyncTest(TWO_CLIENT) {
+    std::vector<base::test::FeatureRef> enabled_features;
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
+    }
     // TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having to
     // disable this feature.
-    features_.InitAndDisableFeature(features::kHttpsUpgrades);
+    features_.InitWithFeatures(
+        enabled_features, /*disabled_features=*/{features::kHttpsUpgrades});
   }
   ~TwoClientHistorySyncTest() override = default;
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -142,19 +154,34 @@ class TwoClientHistorySyncTest : public SyncTest {
     return GetBrowser(profile_index)->tab_strip_model()->GetActiveWebContents();
   }
 
+  const bookmarks::BookmarkNode* GetBookmarkBarNode() {
+    bookmarks::BookmarkModel* model = bookmarks_helper::GetBookmarkModel(0);
+    switch (GetSetupSyncMode()) {
+      case SetupSyncMode::kSyncTransportOnly:
+        return model->account_bookmark_bar_node();
+      case SetupSyncMode::kSyncTheFeature:
+        return model->bookmark_bar_node();
+    }
+  }
+
  private:
   base::test::ScopedFeatureList features_;
 };
 
+INSTANTIATE_TEST_SUITE_P(,
+                         TwoClientHistorySyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
 // Very simple test; its main reason for existence is that it's the only E2E
 // test covering history.
-IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, E2E_ENABLED(SyncsUrl)) {
-  ResetSyncForPrimaryAccount();
+IN_PROC_BROWSER_TEST_P(TwoClientHistorySyncTest, E2E_ENABLED(SyncsUrl)) {
+  ASSERT_TRUE(ResetSyncForPrimaryAccount());
   // Use a randomized URL to prevent test collisions.
   const std::u16string kHistoryUrl = base::ASCIIToUTF16(base::StringPrintf(
       "http://www.add-history.google.com/%s",
       base::Uuid::GenerateRandomV4().AsLowercaseString().c_str()));
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Populate one client with a URL, wait for it to sync to the other.
   GURL new_url(kHistoryUrl);
@@ -162,17 +189,19 @@ IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, E2E_ENABLED(SyncsUrl)) {
   EXPECT_TRUE(WaitForLocalHistory(1, {{new_url, SizeIs(1)}}));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, SyncsVisitForBookmarkedUrl) {
+IN_PROC_BROWSER_TEST_P(TwoClientHistorySyncTest, SyncsVisitForBookmarkedUrl) {
   GURL bookmark_url("http://www.bookmark.google.com/");
   GURL bookmark_icon_url("http://www.bookmark.google.com/favicon.ico");
-  ASSERT_TRUE(SetupClients());
-  // Create a bookmark.
+  ASSERT_TRUE(SetupSync());
+
+  // Create a bookmark and wait for it to sync.
   const bookmarks::BookmarkNode* node = bookmarks_helper::AddURL(
-      0, bookmarks_helper::IndexedURLTitle(0), bookmark_url);
+      0, GetBookmarkBarNode(), 0, bookmarks_helper::IndexedURLTitle(0),
+      bookmark_url);
   bookmarks_helper::SetFavicon(0, node, bookmark_icon_url,
                                bookmarks_helper::CreateFavicon(SK_ColorWHITE),
                                bookmarks_helper::FROM_UI);
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(bookmarks_helper::BookmarksMatchChecker().Wait());
 
   // A row in the DB for client 1 should have been created as a result of
   // syncing the bookmark.
@@ -187,8 +216,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, SyncsVisitForBookmarkedUrl) {
   EXPECT_TRUE(WaitForLocalHistory(1, {{bookmark_url, SizeIs(1)}}));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, SyncsUrlDeletion) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+IN_PROC_BROWSER_TEST_P(TwoClientHistorySyncTest, SyncsUrlDeletion) {
+  ASSERT_TRUE(SetupSync());
 
   // Navigate to two URLs on the first client.
   GURL url1 =
@@ -214,8 +243,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, SyncsUrlDeletion) {
   EXPECT_TRUE(WaitForLocalHistory(1, {{url1, IsEmpty()}, {url2, SizeIs(1)}}));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, SyncsTimeRangeDeletion) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+IN_PROC_BROWSER_TEST_P(TwoClientHistorySyncTest, SyncsTimeRangeDeletion) {
+  ASSERT_TRUE(SetupSync());
 
   // Navigate to three URLs on the first client.
   GURL url1 =
@@ -270,8 +299,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, SyncsTimeRangeDeletion) {
       1, {{url1, SizeIs(1)}, {url2, IsEmpty()}, {url3, SizeIs(1)}}));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, SyncsVisitsDeletion) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+IN_PROC_BROWSER_TEST_P(TwoClientHistorySyncTest, SyncsVisitsDeletion) {
+  ASSERT_TRUE(SetupSync());
 
   // Navigate to two URLs on the first client.
   GURL url1 =
@@ -299,8 +328,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, SyncsVisitsDeletion) {
   // Logic similar to `BrowsingHistoryHandler::HandleRemoveVisits()`.
   history::BrowsingHistoryService::HistoryEntry entry1;
   entry1.url = url1;
-  entry1.all_timestamps.insert(time1a.ToInternalValue());
-  entry1.all_timestamps.insert(time1b.ToInternalValue());
+  entry1.all_timestamps.insert(time1a);
+  entry1.all_timestamps.insert(time1b);
   std::vector<history::BrowsingHistoryService::HistoryEntry> items_to_remove;
   items_to_remove.push_back(entry1);
 
@@ -324,9 +353,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, SyncsVisitsDeletion) {
   EXPECT_TRUE(WaitForLocalHistory(1, {{url1, IsEmpty()}, {url2, SizeIs(2)}}));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientHistorySyncTest,
                        DoesNotSyncBrowsingTopicsEligibility) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Navigate to some URL.
   GURL url1 =

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<pre id="output"></pre>
+<script type="module">
+import { locales } from "./resources/intl-locales.js";
+
+if (window.testRunner) {
+  testRunner.dumpAsText();
+}
+
+const output = document.getElementById('output');
+function print(text) {
+  output.textContent += text + '\n';
+}
+
+print('This test dumps the output of Intl.DurationFormat.prototype.format() for');
+print('some common locales.');
+print('');
+
+// Kelvin Kiptum's world record is a good test duration, including both 1-digit
+// and 2-digit numbers.
+// https://en.wikipedia.org/wiki/Marathon_world_record_progression
+const duration = {
+  hours: 2,
+  minutes: 0,
+  seconds: 35,
+};
+
+for (const [locale, { displayName }] of Object.entries(locales)) {
+  print(`[${locale}] ${displayName}`);
+  for (const style of ["digital", "narrow", "short", "long"]) {
+    const formatter = new Intl.DurationFormat(locale, { style });
+    print(`  [${style}] ${formatter.format(duration)}`);
+
+  }
+  print('');
+}
+
+</script>

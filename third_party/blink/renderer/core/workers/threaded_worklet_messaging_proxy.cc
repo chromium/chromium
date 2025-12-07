@@ -99,7 +99,8 @@ void ThreadedWorkletMessagingProxy::Initialize(
         /*worker_settings=*/nullptr,
         /*v8_cache_options=*/mojom::blink::V8CacheOptions::kDefault,
         /*module_responses_map=*/nullptr,
-        /*browser_interface_broker=*/mojo::NullRemote(),
+        std::move(client_provided_global_scope_creation_params
+                      ->browser_interface_broker),
         std::move(
             client_provided_global_scope_creation_params->code_cache_host));
 
@@ -137,7 +138,7 @@ void ThreadedWorkletMessagingProxy::Initialize(
       std::make_unique<GlobalScopeCreationParams>(
           window->Url(), mojom::blink::ScriptType::kModule, global_scope_name,
           frame_client->UserAgent(), frame_client->UserAgentMetadata(),
-          frame_client->CreateWorkerFetchContext(),
+          frame_client->CreateWorkletFetchContext(),
           mojo::Clone(csp->GetParsedPolicies()),
           Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
           window->GetReferrerPolicy(), window->GetSecurityOrigin(),

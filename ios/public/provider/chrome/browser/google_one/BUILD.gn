@@ -1,0 +1,9 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("google_one_api") {
+  sources = [ "google_one_api.h" ]
+  deps = [ "//base" ]
+  public_deps = [ "//ios/chrome/browser/google_one/shared" ]
+}

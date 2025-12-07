@@ -18,6 +18,7 @@
 #include "content/browser/file_system/file_system_manager_impl.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/media/media_internals.h"
+#include "content/browser/memory_coordinator/browser_memory_consumer_registry.h"
 #include "content/browser/mime_registry_impl.h"
 #include "content/browser/push_messaging/push_messaging_manager.h"
 #include "content/browser/renderer_host/embedded_frame_sink_provider_impl.h"
@@ -31,6 +32,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "media/base/media_switches.h"
+#include "media/gpu/buildflags.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
 #include "media/mojo/mojom/video_encoder_metrics_provider.mojom.h"
 #include "services/device/public/mojom/power_monitor.mojom.h"
@@ -47,27 +49,33 @@
 #include "content/browser/android/java_interfaces_impl.h"
 #include "content/browser/font_unique_name_lookup/font_unique_name_lookup_service.h"
 #include "content/public/browser/android/java_interfaces.h"
-#include "storage/browser/database/database_tracker.h"
 #include "third_party/blink/public/mojom/android_font_lookup/android_font_lookup.mojom.h"
-#include "third_party/blink/public/mojom/webdatabase/web_database.mojom.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "components/services/font/public/mojom/font_service.mojom.h"  // nogncheck
 #include "content/browser/font_service.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 #include "content/browser/media/video_encode_accelerator_provider_launcher.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "content/browser/sandbox_support_mac_impl.h"
-#include "content/common/sandbox_support_mac.mojom.h"
+#include "content/browser/sandbox_support_impl.h"
+#include "content/common/sandbox_support.mojom.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "components/services/font_data/font_data_service_impl.h"
 #include "content/browser/renderer_host/dwrite_font_proxy_impl_win.h"
+#include "content/browser/sandbox_support_impl.h"
+#include "content/common/sandbox_support.mojom.h"
 #include "content/public/common/font_cache_dispatcher_win.h"
 #include "content/public/common/font_cache_win.mojom.h"
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#include "components/services/font_data/font_data_service_impl.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -121,7 +129,18 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
             std::make_unique<RenderMessageFilter>(rph_id, helper.get()),
             std::move(receiver));
       },
-      GetID(), widget_helper_));
+      GetDeprecatedID(), widget_helper_));
+
+  AddUIThreadInterface(
+      registry.get(),
+      base::BindRepeating(
+          [](ChildProcessId rph_id,
+             mojo::PendingReceiver<mojom::BrowserMemoryConsumerRegistry>
+                 receiver) {
+            BindBrowserMemoryConsumerRegistry(PROCESS_TYPE_RENDERER, rph_id,
+                                              std::move(receiver));
+          },
+          GetID()));
 
   AddUIThreadInterface(
       registry.get(),
@@ -161,15 +180,6 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
       registry.get(),
       base::BindRepeating(&RenderProcessHostImpl::CreateDomStorageProvider,
                           instance_weak_factory_.GetWeakPtr()));
-
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/333756088): WebSQL is disabled everywhere except Android
-  // WebView.
-  AddUIThreadInterface(
-      registry.get(),
-      base::BindRepeating(&RenderProcessHostImpl::BindWebDatabaseHostImpl,
-                          instance_weak_factory_.GetWeakPtr()));
-#endif  // BUILDFLAG(IS_ANDROID)
 
   AddUIThreadInterface(
       registry.get(),
@@ -220,7 +230,7 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
 #endif
 
   file_system_manager_impl_.reset(new FileSystemManagerImpl(
-      GetID(), storage_partition_impl_->GetFileSystemContext(),
+      GetDeprecatedID(), storage_partition_impl_->GetFileSystemContext(),
       ChromeBlobStorageContext::GetFor(GetBrowserContext())));
 
   AddUIThreadInterface(
@@ -260,15 +270,15 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
   associated_registry->AddInterface<mojom::RendererHost>(base::BindRepeating(
       &RenderProcessHostImpl::CreateRendererHost, base::Unretained(this)));
 
-  registry->AddInterface(
-      base::BindRepeating(&BlobRegistryWrapper::Bind,
-                          storage_partition_impl_->GetBlobRegistry(), GetID()));
+  registry->AddInterface(base::BindRepeating(
+      &BlobRegistryWrapper::Bind, storage_partition_impl_->GetBlobRegistry(),
+      GetDeprecatedID()));
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   // Initialization can happen more than once (in the case of a child process
   // crash), but we don't want to lose the plugin registry in this case.
   if (!plugin_registry_) {
-    plugin_registry_ = std::make_unique<PluginRegistryImpl>(GetID());
+    plugin_registry_ = std::make_unique<PluginRegistryImpl>(GetDeprecatedID());
   }
   AddUIThreadInterface(
       registry.get(),
@@ -330,8 +340,8 @@ void RenderProcessHostImpl::IOThreadHostImpl::BindHostReceiver(
     }
   }
 
-#if BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(features::kSkiaFontService)) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  if (features::IsFontDataServiceEnabled()) {
     if (auto font_data_receiver =
             receiver.As<font_data_service::mojom::FontDataService>()) {
       font_data_service::FontDataServiceImpl::ConnectToFontService(
@@ -346,7 +356,9 @@ void RenderProcessHostImpl::IOThreadHostImpl::BindHostReceiver(
     ConnectToFontService(std::move(font_receiver));
     return;
   }
+#endif
 
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   if (base::FeatureList::IsEnabled(media::kUseOutOfProcessVideoEncoding)) {
     if (auto r = receiver.As<media::mojom::VideoEncodeAcceleratorProvider>()) {
       if (!video_encode_accelerator_factory_remote_.is_bound()) {
@@ -365,12 +377,14 @@ void RenderProcessHostImpl::IOThreadHostImpl::BindHostReceiver(
       return;
     }
   }
+#endif
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (auto r = receiver.As<mojom::ThreadTypeSwitcher>()) {
     child_thread_type_switcher_.Bind(std::move(r));
     return;
   }
-#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
+#endif
 
 #if BUILDFLAG(IS_WIN)
   if (auto r = receiver.As<mojom::FontCacheWin>()) {
@@ -379,9 +393,9 @@ void RenderProcessHostImpl::IOThreadHostImpl::BindHostReceiver(
   }
 #endif
 
-#if BUILDFLAG(IS_MAC)
-  if (auto r = receiver.As<mojom::SandboxSupportMac>()) {
-    static base::NoDestructor<SandboxSupportMacImpl> sandbox_support;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  if (auto r = receiver.As<mojom::SandboxSupport>()) {
+    static base::NoDestructor<SandboxSupportImpl> sandbox_support;
     sandbox_support->BindReceiver(std::move(r));
     return;
   }
@@ -389,8 +403,10 @@ void RenderProcessHostImpl::IOThreadHostImpl::BindHostReceiver(
 
   if (auto r = receiver.As<
                discardable_memory::mojom::DiscardableSharedMemoryManager>()) {
-    discardable_memory::DiscardableSharedMemoryManager::Get()->Bind(
-        std::move(r));
+    if (discardable_memory::DiscardableSharedMemoryManager::Get()) {
+      discardable_memory::DiscardableSharedMemoryManager::Get()->Bind(
+          std::move(r));
+    }
     return;
   }
 

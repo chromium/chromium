@@ -1,0 +1,20 @@
+Name: Tracing Perfetto
+Short Name: tracing-perfetto
+URL: https://dl.google.com/dl/android/maven2/androidx/tracing/tracing-perfetto/1.0.1/tracing-perfetto-1.0.1.aar
+Version: 1.0.1
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: no
+Shipped: no
+License Android Compatible: yes
+
+Description:
+AndroidX Tracing: Perfetto SDK
+
+See also: https://developer.android.com/jetpack/androidx/releases/tracing#1.0.1
+
+
+Local Modifications:
+No modifications.

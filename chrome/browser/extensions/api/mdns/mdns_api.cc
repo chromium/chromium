@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/lazy_instance.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -18,8 +19,11 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -35,11 +39,7 @@ MDnsAPI::MDnsAPI(content::BrowserContext* context)
   event_router->RegisterObserver(this, mdns::OnServiceList::kEventName);
 }
 
-MDnsAPI::~MDnsAPI() {
-  if (dns_sd_registry_) {
-    dns_sd_registry_->RemoveObserver(this);
-  }
-}
+MDnsAPI::~MDnsAPI() = default;
 
 // static
 MDnsAPI* MDnsAPI::Get(content::BrowserContext* context) {
@@ -52,6 +52,12 @@ static base::LazyInstance<BrowserContextKeyedAPIFactory<MDnsAPI>>::
 // static
 BrowserContextKeyedAPIFactory<MDnsAPI>* MDnsAPI::GetFactoryInstance() {
   return g_mdns_api_factory.Pointer();
+}
+
+void MDnsAPI::Shutdown() {
+  if (dns_sd_registry_) {
+    dns_sd_registry_->RemoveObserver(this);
+  }
 }
 
 void MDnsAPI::SetDnsSdRegistryForTesting(DnsSdRegistry* dns_sd_registry) {

@@ -4,11 +4,12 @@
 
 #include "components/omnibox/browser/in_memory_url_index.h"
 
+#include <inttypes.h>
+
 #include <cinttypes>
 #include <memory>
 
 #include "base/feature_list.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -20,11 +21,13 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/url_index_private_data.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 // Initializes a allowlist of URL schemes.
 void InitializeSchemeAllowlist(SchemeSet* allowlist,
@@ -47,7 +50,7 @@ void InitializeSchemeAllowlist(SchemeSet* allowlist,
 // RebuildPrivateDataFromHistoryDBTask -----------------------------------------
 
 InMemoryURLIndex::RebuildPrivateDataFromHistoryDBTask::
-    RebuildPrivateDataFromHistoryDBTask(InMemoryURLIndex* index,
+    RebuildPrivateDataFromHistoryDBTask(base::WeakPtr<InMemoryURLIndex> index,
                                         const SchemeSet& scheme_allowlist)
     : index_(index), scheme_allowlist_(scheme_allowlist) {}
 
@@ -63,7 +66,9 @@ bool InMemoryURLIndex::RebuildPrivateDataFromHistoryDBTask::RunOnDBThread(
 
 void InMemoryURLIndex::RebuildPrivateDataFromHistoryDBTask::
     DoneRunOnMainThread() {
-  index_->DoneRebuildingPrivateDataFromHistoryDB(succeeded_, data_);
+  if (index_) {
+    index_->DoneRebuildingPrivateDataFromHistoryDB(succeeded_, data_);
+  }
 }
 
 InMemoryURLIndex::RebuildPrivateDataFromHistoryDBTask::
@@ -101,8 +106,8 @@ InMemoryURLIndex::~InMemoryURLIndex() {
 }
 
 void InMemoryURLIndex::Init() {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("omnibox", "InMemoryURLIndex::Init",
-                                    TRACE_ID_LOCAL(this));
+  TRACE_EVENT_BEGIN("omnibox", "InMemoryURLIndex::Init",
+                    perfetto::Track::FromPointer(this));
 
   if (!history_service_)
     return;
@@ -112,7 +117,7 @@ void InMemoryURLIndex::Init() {
   history_service_->ScheduleDBTask(
       FROM_HERE,
       std::make_unique<InMemoryURLIndex::RebuildPrivateDataFromHistoryDBTask>(
-          this, scheme_allowlist_),
+          weak_ptr_factory_.GetWeakPtr(), scheme_allowlist_),
       &private_data_tracker_);
 }
 
@@ -125,16 +130,11 @@ void InMemoryURLIndex::ClearPrivateData() {
 ScoredHistoryMatches InMemoryURLIndex::HistoryItemsForTerms(
     const std::u16string& term_string,
     size_t cursor_position,
-    const std::string& host_filter,
     size_t max_matches,
     OmniboxTriggeredFeatureService* triggered_feature_service) {
   return private_data_->HistoryItemsForTerms(
-      term_string, cursor_position, host_filter, max_matches, bookmark_model_,
+      term_string, cursor_position, max_matches, bookmark_model_,
       template_url_service_, triggered_feature_service);
-}
-
-const std::vector<std::string>& InMemoryURLIndex::HighlyVisitedHosts() const {
-  return private_data_->HighlyVisitedHosts();
 }
 
 // Updating --------------------------------------------------------------------
@@ -143,12 +143,16 @@ void InMemoryURLIndex::DeleteURL(const GURL& url) {
   private_data_->DeleteURL(url);
 }
 
-void InMemoryURLIndex::OnURLVisited(history::HistoryService* history_service,
-                                    const history::URLRow& url_row,
-                                    const history::VisitRow& new_visit) {
+void InMemoryURLIndex::OnURLVisited(
+    history::HistoryService* history_service,
+    const history::VisitedURLInfo& visited_url_info) {
   DCHECK_EQ(history_service_, history_service);
-  private_data_->UpdateURL(history_service_, url_row, scheme_allowlist_,
-                           &private_data_tracker_);
+  if (visited_url_info.response_code_category ==
+      history::VisitResponseCodeCategory::k404) {
+    return;
+  }
+  private_data_->UpdateURL(history_service_, visited_url_info.url_row,
+                           scheme_allowlist_, &private_data_tracker_);
 }
 
 void InMemoryURLIndex::OnURLsModified(history::HistoryService* history_service,
@@ -223,8 +227,9 @@ void InMemoryURLIndex::Shutdown() {
 void InMemoryURLIndex::DoneRebuildingPrivateDataFromHistoryDB(
     bool succeeded,
     scoped_refptr<URLIndexPrivateData> private_data) {
-  TRACE_EVENT_NESTABLE_ASYNC_END0("omnibox", "InMemoryURLIndex::Init",
-                                  TRACE_ID_LOCAL(this));
+  TRACE_EVENT_END(
+      "omnibox",
+      /* InMemoryURLIndex::Init */ perfetto::Track::FromPointer(this));
   DCHECK(thread_checker_.CalledOnValidThread());
   if (succeeded) {
     private_data_tracker_.TryCancelAll();

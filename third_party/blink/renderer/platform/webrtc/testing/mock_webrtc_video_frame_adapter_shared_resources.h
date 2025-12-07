@@ -28,6 +28,7 @@ class MockSharedResources : public WebRtcVideoFrameAdapter::SharedResources {
               (const media::VideoFrame& src_frame,
                media::VideoFrame& dest_frame));
 
+  MOCK_METHOD(void, RequestRasterContextProvider, ());
   MOCK_METHOD(scoped_refptr<viz::RasterContextProvider>,
               GetRasterContextProvider,
               ());
@@ -42,22 +43,22 @@ class MockSharedResources : public WebRtcVideoFrameAdapter::SharedResources {
 
   void ExpectCreateFrameWithRealImplementation() {
     EXPECT_CALL(*this, CreateFrame)
-        .WillOnce(testing::Invoke(
+        .WillOnce(
             [this](media::VideoPixelFormat format, const gfx::Size& coded_size,
                    const gfx::Rect& visible_rect, const gfx::Size& natural_size,
                    base::TimeDelta timestamp) {
               return WebRtcVideoFrameAdapter::SharedResources::CreateFrame(
                   format, coded_size, visible_rect, natural_size, timestamp);
-            }));
+            });
   }
 
   void ExpectConvertAndScaleWithRealImplementation() {
     EXPECT_CALL(*this, ConvertAndScale)
-        .WillOnce(testing::Invoke([this](const media::VideoFrame& src_frame,
-                                         media::VideoFrame& dest_frame) {
+        .WillOnce([this](const media::VideoFrame& src_frame,
+                         media::VideoFrame& dest_frame) {
           return WebRtcVideoFrameAdapter::SharedResources::ConvertAndScale(
               src_frame, dest_frame);
-        }));
+        });
   }
 
  protected:

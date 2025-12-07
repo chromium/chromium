@@ -4,14 +4,13 @@
 
 package org.chromium.base.library_loader;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.os.Parcel;
 import android.os.ParcelFileDescriptor;
-import android.os.Parcelable;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.AccessedByNative;
@@ -19,7 +18,10 @@ import org.jni_zero.AccessedByNative;
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
+import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -40,9 +42,10 @@ import javax.annotation.concurrent.GuardedBy;
  * some system libraries, but these are very rare in practice.
  *
  * In order to establish usage of the same shared region in different processes, the Linker can
- * serialize/deserialize the relevant information to/from a Bundle. Providing the RELRO shared
- * memory region is done by loading the library normally, then replacing the virtual address mapping
- * behind the RELRO section with the one backed by the shared memory, with identical contents.
+ * serialize/deserialize the relevant information to/from an AIDL-defined parcelable
+ * (IRelroLibInfo.aidl). Providing the RELRO shared memory region is done by loading the library
+ * normally, then replacing the virtual address mapping behind the RELRO section with the one
+ * backed by the shared memory, with identical contents.
  *
  * Security considerations:
  *
@@ -64,10 +67,11 @@ import javax.annotation.concurrent.GuardedBy;
  *   initialization runs implicitly as part of loading the library. In this case the behaviour is of
  *   a producer.
  *
- * - After loading the native library as a RELRO producer, the putSharedRelrosToBundle() becomes
- *   available to then send the Bundle to Linkers in other processes, consumed
- *   by takeSharedRelrosFromBundle().
+ * - After loading the native library as a RELRO producer, the getSharedRelrosAidl() becomes
+ *   available to then send the parcelable to Linkers in other processes, consumed
+ *   by takeSharedRelrosFromAidl().
  */
+@NullMarked
 class Linker {
     private static final String TAG = "Linker";
 
@@ -76,10 +80,6 @@ class Linker {
 
     // Constant guarding debug logging.
     private static final boolean DEBUG = LibraryLoader.DEBUG;
-
-    // Constants used to pass the shared RELRO Bundle through Binder.
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    static final String SHARED_RELROS = "org.chromium.base.android.linker.shared_relros";
 
     private static final String BASE_LOAD_ADDRESS =
             "org.chromium.base.android.linker.base_load_address";
@@ -92,20 +92,20 @@ class Linker {
     // along with |mRelro{Start,Size}|. This object is serialized for use in other processes if the
     // process is a "RELRO producer".
     @GuardedBy("mLock")
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    protected LibInfo mLocalLibInfo;
+    @VisibleForTesting
+    protected @Nullable LibInfo mLocalLibInfo;
 
     // The library info that was transferred from another process. Only useful if it contains RELRO
     // FD.
     @GuardedBy("mLock")
-    private LibInfo mRemoteLibInfo;
+    private @Nullable LibInfo mRemoteLibInfo;
 
     // Whether this Linker instance should potentially create the RELRO region. Even if true, the
     // library loading can fall back to the system linker without producing the region. The default
     // value is used in tests, it is set to true so that the Linker does not have to wait for RELRO
     // to arrive from another process.
     @GuardedBy("mLock")
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     boolean mRelroProducer = true;
 
     /**
@@ -153,7 +153,7 @@ class Linker {
         }
     }
 
-    private static Linker sLinkerForAssert;
+    private static @Nullable Linker sLinkerForAssert;
 
     Linker() {
         // Only one instance is allowed in a given process because effects of loading a library are
@@ -184,7 +184,7 @@ class Linker {
     }
 
     // Exposed to be able to mock out an assertion.
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     boolean isNonZeroLoadAddress(LibInfo libInfo) {
         return libInfo != null && libInfo.mLoadAddress != 0;
     }
@@ -246,7 +246,10 @@ class Linker {
             if (mState != State.UNINITIALIZED) return;
             chooseAndReserveMemoryRange(asRelroProducer, preference, addressHint);
             if (DEBUG) {
-                Log.i(TAG, "ensureInitialized: chose address=0x%x", mLocalLibInfo.mLoadAddress);
+                Log.i(
+                        TAG,
+                        "ensureInitialized: chose address=0x%x",
+                        assumeNonNull(mLocalLibInfo).mLoadAddress);
             }
             mState = State.INITIALIZED;
         }
@@ -329,11 +332,11 @@ class Linker {
             //
             // TODO(pasko): There is no need to check for |mLoadAddress| here because in the worst
             // case the zero address will be ignored on the native side of the
-            // atomicReplaceRelroLocked(). The takeSharedRelrosFromBundle() relies on zero addresses
+            // atomicReplaceRelroLocked(). The takeSharedRelrosFromAidl() relies on zero addresses
             // being ignored in native anyway. It seems the only effect of removing this check here
             // will be extra added samples to the RelroSharingStatus2 histogram. This will be a tiny
             // bit smoother to do after M99.
-            return mLocalLibInfo.mLoadAddress != 0;
+            return assumeNonNull(mLocalLibInfo).mLoadAddress != 0;
         }
         return false;
     }
@@ -386,7 +389,7 @@ class Linker {
                 Log.w(TAG, "Failed to load native library with shared RELRO, retrying without");
                 try {
                     // Retry without relocation sharing.
-                    mLocalLibInfo.mLoadAddress = 0;
+                    assumeNonNull(mLocalLibInfo).mLoadAddress = 0;
                     attemptLoadLibraryLocked(library, RelroSharingMode.NO_SHARING);
                 } catch (UnsatisfiedLinkError e2) {
                     Log.w(TAG, "Failed to load native library without RELRO sharing");
@@ -398,40 +401,42 @@ class Linker {
 
     /**
      * Serializes information about the RELRO region to be passed to a Linker in another process.
-     * @param bundle The Bundle to serialize to.
+     *
+     * @param args The IChildProcessArgs to serialize to.
      */
-    void putSharedRelrosToBundle(Bundle bundle) {
-        Bundle relros = null;
+    @Nullable IRelroLibInfo getSharedRelrosAidl() {
+        IRelroLibInfo relros = null;
         synchronized (mLock) {
-            if (DEBUG) Log.i(TAG, "putSharedRelrosToBundle: state=%d", mState);
+            if (DEBUG) Log.i(TAG, "getSharedRelrosAidl: state=%d", mState);
             if (mState == State.DONE_PROVIDE_RELRO) {
                 assert mRelroProducer;
-                relros = mLocalLibInfo.toBundle();
+                relros = assumeNonNull(mLocalLibInfo).toAidl();
             }
-            bundle.putBundle(SHARED_RELROS, relros);
             if (DEBUG && relros != null) {
+                assert mLocalLibInfo != null;
                 Log.i(
                         TAG,
-                        "putSharedRelrosToBundle() puts mLoadAddress=0x%x, mLoadSize=%d, "
+                        "getSharedRelrosAidl() puts mLoadAddress=0x%x, mLoadSize=%d, "
                                 + "mRelroFd=%d",
                         mLocalLibInfo.mLoadAddress,
                         mLocalLibInfo.mLoadSize,
                         mLocalLibInfo.mRelroFd);
             }
         }
+        return relros;
     }
 
     /**
-     * Deserializes the RELRO region information that was marshalled by
-     * {@link #putLoadAddressToBundle(Bundle)} and wakes up the threads waiting for it to replace
-     * the RELRO section in this process with shared memory.
-     * @param bundle The Bundle to extract the information from.
+     * Deserializes the RELRO region information that was marshalled by {@link
+     * #getSharedRelrosAidl()} and wakes up the threads waiting for it to replace the RELRO section
+     * in this process with shared memory.
+     *
+     * @param relros The IRelroLibInfo to extract the information from.
      */
-    void takeSharedRelrosFromBundle(Bundle bundle) {
-        if (DEBUG) Log.i(TAG, "called takeSharedRelrosFromBundle(%s)", bundle);
-        Bundle relros = bundle.getBundle(SHARED_RELROS);
+    void takeSharedRelrosFromAidl(IRelroLibInfo relros) {
+        if (DEBUG) Log.i(TAG, "called takeSharedRelrosFromAidl(%s)", relros);
         if (relros == null) return;
-        LibInfo newRemote = LibInfo.fromBundle(relros);
+        LibInfo newRemote = LibInfo.fromAidl(relros);
         if (newRemote == null) return;
         synchronized (mLock) {
             if (mRemoteLibInfo != null && mRemoteLibInfo.mRelroFd != -1) {
@@ -474,6 +479,7 @@ class Linker {
     @GuardedBy("mLock")
     private void loadWithoutProducingRelro(String libFilePath) {
         assert mRemoteLibInfo == null || libFilePath.equals(mRemoteLibInfo.mLibFilePath);
+        assert mLocalLibInfo != null;
         if (!getLinkerJni()
                 .loadLibrary(libFilePath, mLocalLibInfo, /* spawnRelroRegion= */ false)) {
             resetAndThrow(String.format("Unable to load library: %s", libFilePath), null);
@@ -485,22 +491,23 @@ class Linker {
     // System.loadLibrary() is useful. Records a histogram to count failures.
     @GuardedBy("mLock")
     private void loadAndProduceSharedRelro(String libFilePath) {
-        mLocalLibInfo.mLibFilePath = libFilePath;
-        if (getLinkerJni().loadLibrary(libFilePath, mLocalLibInfo, /* spawnRelroRegion= */ true)) {
+        var localLibInfo = assumeNonNull(mLocalLibInfo);
+        localLibInfo.mLibFilePath = libFilePath;
+        if (getLinkerJni().loadLibrary(libFilePath, localLibInfo, /* spawnRelroRegion= */ true)) {
             if (DEBUG) {
                 Log.i(
                         TAG,
                         "Successfully spawned RELRO: mLoadAddress=0x%x, mLoadSize=%d",
-                        mLocalLibInfo.mLoadAddress,
-                        mLocalLibInfo.mLoadSize);
+                        localLibInfo.mLoadAddress,
+                        localLibInfo.mLoadSize);
             }
         } else {
             Log.e(TAG, "Unable to load with Linker, using the system linker instead");
             // System.loadLibrary() below implements the fallback.
-            mLocalLibInfo.mRelroFd = -1;
+            localLibInfo.mRelroFd = -1;
         }
         RecordHistogram.recordBooleanHistogram(
-                "ChromiumAndroidLinker.RelroProvidedSuccessfully", mLocalLibInfo.mRelroFd != -1);
+                "ChromiumAndroidLinker.RelroProvidedSuccessfully", localLibInfo.mRelroFd != -1);
     }
 
     /**
@@ -567,18 +574,18 @@ class Linker {
      */
     @GuardedBy("mLock")
     private void atomicReplaceRelroLocked(boolean relroAvailableImmediately) {
-        assert mRemoteLibInfo != null;
         assert mState == State.DONE;
-        if (mRemoteLibInfo.mRelroFd == -1) return;
+        var remoteLibInfo = assumeNonNull(mRemoteLibInfo);
+        if (remoteLibInfo.mRelroFd == -1) return;
         if (DEBUG) {
             Log.i(
                     TAG,
                     "Received mRemoteLibInfo: mLoadAddress=0x%x, mLoadSize=%d",
-                    mRemoteLibInfo.mLoadAddress,
-                    mRemoteLibInfo.mLoadSize);
+                    remoteLibInfo.mLoadAddress,
+                    remoteLibInfo.mLoadSize);
         }
         if (mLocalLibInfo == null) return;
-        getLinkerJni().useRelros(mLocalLibInfo.mLoadAddress, mRemoteLibInfo);
+        getLinkerJni().useRelros(mLocalLibInfo.mLoadAddress, remoteLibInfo);
         // *Not* closing the RELRO FD after using it because the FD may need to be transferred to
         // another process after this point.
         if (DEBUG) Log.i(TAG, "Immediate RELRO availability: %b", relroAvailableImmediately);
@@ -593,7 +600,7 @@ class Linker {
     /** Loads the Linker JNI library. Throws UnsatisfiedLinkError on error. */
     @SuppressLint({"UnsafeDynamicallyLoadedCode"})
     @GuardedBy("mLock")
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void loadLinkerJniLibraryLocked() {
         assert mState == State.UNINITIALIZED;
 
@@ -619,7 +626,7 @@ class Linker {
     }
 
     @GuardedBy("mLock")
-    private void resetAndThrow(String message, UnsatisfiedLinkError cause) {
+    private void resetAndThrow(String message, @Nullable UnsatisfiedLinkError cause) {
         mState = State.INITIALIZED;
         Log.e(TAG, message);
         var e = new UnsatisfiedLinkError(message);
@@ -633,30 +640,31 @@ class Linker {
      * Holds the information for a given native library or the address range for the future library
      * load. Owns the shared RELRO file descriptor.
      *
-     * Native code accesses the fields of this class by name. Renaming should be done on C++ size as
-     * well.
+     * <p>Native code accesses the fields of this class by name. Renaming should be done on C++ size
+     * as well.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    static class LibInfo implements Parcelable {
-        private static final String EXTRA_LINKER_LIB_INFO = "libinfo";
-
+    static class LibInfo {
         LibInfo() {}
 
         // from Parcelable
-        LibInfo(Parcel in) {
+        LibInfo(IRelroLibInfo info) {
             // See below in writeToParcel() for the serialization protocol.
-            mLibFilePath = in.readString();
-            mLoadAddress = in.readLong();
-            mLoadSize = in.readLong();
-            mRelroStart = in.readLong();
-            mRelroSize = in.readLong();
-            boolean hasRelroFd = in.readInt() != 0;
-            if (hasRelroFd) {
-                ParcelFileDescriptor fd = ParcelFileDescriptor.CREATOR.createFromParcel(in);
-                // If CreateSharedRelro fails, the OS file descriptor will be -1 and |fd| will be
-                // null.
-                if (fd != null) {
-                    mRelroFd = fd.detachFd();
+            mLibFilePath = info.libFilePath;
+            mLoadAddress = info.loadAddress;
+            mLoadSize = info.loadSize;
+            mRelroStart = info.relroStart;
+            mRelroSize = info.relroSize;
+            if (info.fd != null) {
+                try {
+                    ParcelFileDescriptor fd = info.fd.dup();
+                    // If CreateSharedRelro fails, the OS file descriptor will be -1 and |fd| will
+                    // be null.
+                    if (fd != null) {
+                        mRelroFd = fd.detachFd();
+                    }
+                } catch (IOException e) {
+                    Log.e(TAG, "Failed to create LibInfo from aidl.", e);
                 }
             } else {
                 mRelroFd = -1;
@@ -670,58 +678,29 @@ class Linker {
             }
         }
 
-        public static LibInfo fromBundle(Bundle bundle) {
-            bundle.setClassLoader(Linker.class.getClassLoader());
-            return bundle.getParcelable(EXTRA_LINKER_LIB_INFO);
+        public static LibInfo fromAidl(IRelroLibInfo aidlInfo) {
+            return new LibInfo(aidlInfo);
         }
 
-        public Bundle toBundle() {
-            Bundle bundle = new Bundle();
-            bundle.putParcelable(EXTRA_LINKER_LIB_INFO, this);
-            return bundle;
-        }
-
-        @Override
-        public void writeToParcel(Parcel out, int flags) {
-            out.writeString(mLibFilePath);
-            out.writeLong(mLoadAddress);
-            out.writeLong(mLoadSize);
-            out.writeLong(mRelroStart);
-            out.writeLong(mRelroSize);
-            // Parcel#writeBoolean() is API level 29, so use an int instead.
-            // We use this as a flag as we cannot serialize an invalid fd.
-            out.writeInt(mRelroFd >= 0 ? 1 : 0);
+        public IRelroLibInfo toAidl() {
+            IRelroLibInfo info = new IRelroLibInfo();
+            info.libFilePath = mLibFilePath;
+            info.loadAddress = mLoadAddress;
+            info.loadSize = mLoadSize;
+            info.relroStart = mRelroStart;
+            info.relroSize = mRelroSize;
             if (mRelroFd >= 0) {
                 try {
-                    ParcelFileDescriptor fd = ParcelFileDescriptor.fromFd(mRelroFd);
-                    fd.writeToParcel(out, 0);
-                    fd.close();
+                    info.fd = ParcelFileDescriptor.fromFd(mRelroFd);
                 } catch (java.io.IOException e) {
-                    Log.e(TAG, "Can't write LibInfo file descriptor to parcel", e);
+                    Log.e(TAG, "Can't write LibInfo file descriptor to aidl parcelable", e);
                 }
             }
+
+            return info;
         }
 
-        @Override
-        public int describeContents() {
-            return Parcelable.CONTENTS_FILE_DESCRIPTOR;
-        }
-
-        // From Parcelable
-        public static final Parcelable.Creator<LibInfo> CREATOR =
-                new Parcelable.Creator<LibInfo>() {
-                    @Override
-                    public LibInfo createFromParcel(Parcel in) {
-                        return new LibInfo(in);
-                    }
-
-                    @Override
-                    public LibInfo[] newArray(int size) {
-                        return new LibInfo[size];
-                    }
-                };
-
-        public String mLibFilePath;
+        public @Nullable String mLibFilePath;
 
         // IMPORTANT: Don't change these fields without modifying the
         // native code that accesses them directly!
@@ -743,7 +722,7 @@ class Linker {
          * @param libInfo holds the output values: |mLoadAddress| and |mLoadSize|. On failure sets
          *                the |libInfo.mLoadAddress| to 0.
          */
-        void findMemoryRegionAtRandomAddress(@NonNull LibInfo libInfo);
+        void findMemoryRegionAtRandomAddress(LibInfo libInfo);
 
         /**
          * Reserves the fixed address range starting at |libInfo.mLoadAddress| big enough to load
@@ -754,7 +733,7 @@ class Linker {
          *                returns the size in |libInfo.mLoadSize|. On failure sets the
          *                |libInfo.mLoadAddress| to 0.
          */
-        void reserveMemoryForLibrary(@NonNull LibInfo libInfo);
+        void reserveMemoryForLibrary(LibInfo libInfo);
 
         /**
          * Finds the (named) address range reservation made by the system zygote and dedicated for
@@ -765,7 +744,7 @@ class Linker {
          *                the start address and the size of the webview memory reservation to them.
          * @return whether the region was found.
          */
-        boolean findRegionReservedByWebViewZygote(@NonNull LibInfo libInfo);
+        boolean findRegionReservedByWebViewZygote(LibInfo libInfo);
 
         /**
          * Load the native library.
@@ -796,14 +775,14 @@ class Linker {
         int getRelroSharingResult();
     }
 
-    private static Linker.Natives sNativesInstance;
+    private static Linker.@Nullable Natives sNativesInstance;
 
     static void setLinkerNativesForTesting(Natives instance) {
         sNativesInstance = instance;
         sLinkerForAssert = null; // Also allow to create Linker multiple times in tests.
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     static Linker.Natives getLinkerJni() {
         if (sNativesInstance != null) return sNativesInstance;
         return new LinkerJni(); // R8 optimizes away all construction except the initial one.

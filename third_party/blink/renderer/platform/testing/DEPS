@@ -25,7 +25,7 @@ include_rules = [
     "+third_party/blink/renderer/platform/geometry",
     "+third_party/blink/renderer/platform/graphics",
     "+third_party/blink/renderer/platform/heap",
-    "+third_party/blink/renderer/platform/heap_observer_set.h",
+    "+third_party/blink/renderer/platform/heap_observer_list.h",
     "+third_party/blink/renderer/platform/image-decoders/image_decoder.h",
     "+third_party/blink/renderer/platform/instrumentation",
     "+third_party/blink/renderer/platform/instrumentation/histogram.h",
@@ -45,15 +45,19 @@ include_rules = [
     "+third_party/blink/renderer/platform/weborigin",
     "+third_party/blink/renderer/platform/wtf",
     "+third_party/blink/renderer/platform/wtf/shared_buffer.h",
-    "+ui/native_theme/native_theme_features.h",
+    "+ui/native_theme/features/native_theme_features.h",
 ]
 
 specific_include_rules = {
     "blink_fuzzer_test_support\.cc": [
         "+content/public/test/blink_test_environment.h",
+        "+content/public/test/setup_field_trials.h",
     ],
     "empty_web_media_player\.cc": [
         "+media/base/video_frame.h",
+    ],
+    "empty_web_media_player\.h": [
+        "+media/base/picture_in_picture_events_info.h",
     ],
     "exception_state_matchers\.cc": [
         "+third_party/blink/renderer/core/dom/dom_exception.h",
@@ -80,8 +84,10 @@ specific_include_rules = {
         "+base/task/sequence_manager/test/sequence_manager_for_test.h",
     ],
     "video_frame_utils\.cc": [
-        "+media/video/fake_gpu_memory_buffer.h",
         "+media/base/format_utils.h",
+	"+components/viz/common/resources/shared_image_format.h",
+	"+components/viz/common/resources/shared_image_format_utils.h",
+	"+gpu/command_buffer/client/test_shared_image_interface.h",
     ],
     "video_frame_utils\.h": [
         "+media/base/video_frame.h",

@@ -1,9 +1,0 @@
-include_rules = [
-  "+ios/chrome/browser/ui/promos_manager",
-]
-
-specific_include_rules = {
-  "whats_new_mediator\.mm": [
-    "+ios/chrome/browser/ui/lens/lens_entrypoint.h",
-  ],
-}

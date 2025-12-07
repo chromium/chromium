@@ -12,22 +12,20 @@ namespace ui {
 
 TEST(WebDialogUITest, NoBindingsSetForWebDialogUI) {
   content::TestWebUI test_web_ui;
-  EXPECT_EQ(0, test_web_ui.GetBindings());
+  EXPECT_EQ(content::BindingsPolicySet(), test_web_ui.GetBindings());
 
   WebDialogUI web_dialog_ui(&test_web_ui);
-  EXPECT_EQ(0, test_web_ui.GetBindings());
+  EXPECT_EQ(content::BindingsPolicySet(), test_web_ui.GetBindings());
 }
 
 TEST(MojoWebDialogUITest, ChromeSendAndMojoBindingsForMojoWebDialogUI) {
   content::TestWebUI test_web_ui;
-  EXPECT_EQ(0, test_web_ui.GetBindings());
+  EXPECT_EQ(content::BindingsPolicySet(), test_web_ui.GetBindings());
 
   MojoWebDialogUI web_dialog_ui(&test_web_ui);
 
   // MojoWebDialogUIs rely on both Mojo and chrome.send().
-  EXPECT_EQ(
-      content::BINDINGS_POLICY_MOJO_WEB_UI | content::BINDINGS_POLICY_WEB_UI,
-      test_web_ui.GetBindings());
+  EXPECT_EQ(content::kWebUIBindingsPolicySet, test_web_ui.GetBindings());
 }
 
 }  // namespace ui

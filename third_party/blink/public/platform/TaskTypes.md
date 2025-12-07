@@ -26,6 +26,7 @@ pausable. Some internal task queues are not.
 | RemoteEvent                       | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
 | WebSocket                         | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
 | PostedMessage                     | No          | No                      |  No        | Yes       | Yes      | Yes          |
+| BackForwardCachePostedMessage     | No          | No                      |  No        | Yes [^3]  | Yes      | Yes          |
 | UnshippedPortMessage              | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
 | FileReading                       | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
 | DatabaseAccess                    | No          | No                      |  No        | Yes       | Yes      | Yes          |
@@ -46,7 +47,7 @@ pausable. Some internal task queues are not.
 | WakeLock                          | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
 | Storage                           | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
 | MachineLearning                   | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
-| WebSchedulingPostedTask           | Yes [^3]    | Yes [^3]                |  Yes       | Yes       | Yes      | Yes          |
+| WebSchedulingPostedTask           | Yes [^4]    | Yes [^4]                |  Yes       | Yes       | Yes      | Yes          |
 | InternalDefault                   | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
 | InternalLoading                   | No          | No                      |  Yes       | Yes       | Yes      | No           |
 | InternalTest                      | No          | No                      |  No        | No        | No       | Yes          |
@@ -75,4 +76,6 @@ has been backgrounded for 5 minutes. See
 
 [^2] "No" if the "IntensiveWakeUpThrottling" feature is disabled.
 
-[^3] "Yes" only for `scheduler.postTask()` tasks where delay > 0.
+[^3] "No" if the page is in BFCache.
+
+[^4] "Yes" only for `scheduler.postTask()` tasks where delay > 0.

@@ -1,0 +1,160 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+}
+
+static_library("regional_capabilities") {
+  sources = [
+    "regional_capabilities_internals_data_holder.cc",
+    "regional_capabilities_internals_data_holder.h",
+    "regional_capabilities_metrics.cc",
+    "regional_capabilities_metrics.h",
+    "regional_capabilities_prefs.cc",
+    "regional_capabilities_prefs.h",
+    "regional_capabilities_service.cc",
+    "regional_capabilities_service.h",
+    "regional_capabilities_utils.cc",
+    "regional_capabilities_utils.h",
+  ]
+
+  public_deps = [
+    ":country_id",
+    ":switches",
+    "//base",
+    "//components/keyed_service/core",
+  ]
+
+  deps = [
+    ":country_access_reason",
+    ":data",
+    "//base/version_info",
+    "//components/country_codes",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/search_engines:search_engine_pref_names",
+    "//components/strings",
+    "//components/webui/regional_capabilities_internals:constants",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/search_engines_data:prepopulated_engines",
+    "//third_party/search_engines_data:regional_settings",
+  ]
+
+  if (is_android) {
+    deps += [ "//components/regional_capabilities/android:jni_headers" ]
+  }
+}
+
+source_set("country_access_reason") {
+  visibility = [
+    ":*",
+    "//chrome/browser/search_engine_choice:impl",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/webui/regional_capabilities_internals",
+    "//components/metrics/private_metrics",
+    "//components/search_engines",
+    "//ios/chrome/browser/webui/ui_bundled/regional_capabilities_internals",
+  ]
+
+  sources = [ "access/country_access_reason.h" ]
+
+  deps = [ "//base" ]
+}
+
+source_set("country_id") {
+  public = [ "regional_capabilities_country_id.h" ]
+
+  sources = [ "regional_capabilities_country_id.cc" ]
+
+  deps = [
+    ":country_access_reason",
+    "//base",
+    "//components/country_codes",
+  ]
+}
+
+source_set("switches") {
+  visibility = [
+    ":*",
+    "//ios/chrome/browser/metrics/model",
+    "//ios/chrome/browser/metrics/model:eg2_tests",
+    "//ios/chrome/browser/metrics/model:unit_tests",
+  ]
+
+  sources = [
+    "regional_capabilities_switches.cc",
+    "regional_capabilities_switches.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
+source_set("data") {
+  visibility = [
+    ":*",
+    "//chrome/browser/regional_capabilities:metrics_provider_impl",
+    "//components/search_engines",
+    "//components/search_engines:unit_tests",
+    "//ios/chrome/browser/regional_capabilities/model",
+    "//ios/chrome/browser/regional_capabilities/model:unit_tests",
+  ]
+
+  sources = [
+    "eea_countries_ids.h",
+    "program_settings.cc",
+    "program_settings.h",
+  ]
+
+  deps = [
+    ":switches",
+    "//base",
+    "//components/country_codes",
+    "//ui/base",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "regional_capabilities_test_utils.cc",
+    "regional_capabilities_test_utils.h",
+  ]
+
+  deps = [
+    ":country_access_reason",
+    ":data",
+    ":regional_capabilities",
+    "//base/test:test_support",
+    "//components/country_codes",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "regional_capabilities_country_id_unittest.cc",
+    "regional_capabilities_metrics_unittest.cc",
+    "regional_capabilities_service_unittest.cc",
+  ]
+
+  deps = [
+    ":country_access_reason",
+    ":data",
+    ":regional_capabilities",
+    ":test_support",
+    "//base/test:test_support",
+    "//components/country_codes",
+    "//components/metrics",
+    "//components/sync_preferences:test_support",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}

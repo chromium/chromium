@@ -20,9 +20,11 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_hypertext.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/ax_states.h"
 #include "ui/accessibility/ax_text_attributes.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -57,6 +59,11 @@ class AX_EXPORT AXNode final {
   static constexpr int kEmbeddedObjectCharacterLengthUTF16 =
       std::char_traits<char16_t>::length(kEmbeddedObjectCharacterUTF16);
 
+  // Default values must be consistent with AXNodeData.
+  static constexpr bool kDefaultBoolValue = AXNodeData::kDefaultBoolValue;
+  static constexpr int kDefaultIntValue = AXNodeData::kDefaultIntValue;
+  static constexpr float kDefaultFloatValue = AXNodeData::kDefaultFloatValue;
+
   template <typename NodeType,
             NodeType* (NodeType::*NextSibling)() const,
             NodeType* (NodeType::*PreviousSibling)() const,
@@ -73,8 +80,10 @@ class AX_EXPORT AXNode final {
     ChildIteratorBase(const NodeType* parent, NodeType* child);
     ChildIteratorBase(const ChildIteratorBase& it);
     ~ChildIteratorBase() = default;
-    bool operator==(const ChildIteratorBase& rhs) const;
-    bool operator!=(const ChildIteratorBase& rhs) const;
+    friend bool operator==(const ChildIteratorBase& lhs,
+                           const ChildIteratorBase& rhs) {
+      return lhs.parent_ == rhs.parent_ && lhs.child_ == rhs.child_;
+    }
     ChildIteratorBase& operator++();
     ChildIteratorBase& operator--();
     NodeType* get() const;
@@ -84,6 +93,8 @@ class AX_EXPORT AXNode final {
    protected:
     raw_ptr<const NodeType> parent_;
     raw_ptr<NodeType, DanglingUntriaged> child_;
+    raw_ptr<NodeType, DanglingUntriaged> first_child_{nullptr};
+    raw_ptr<NodeType, DanglingUntriaged> last_child_{nullptr};
   };
 
   // The constructor requires a parent, id, and index in parent, but
@@ -95,7 +106,7 @@ class AX_EXPORT AXNode final {
          AXNodeID id,
          size_t index_in_parent,
          size_t unignored_index_in_parent = 0u);
-  virtual ~AXNode();
+  ~AXNode();
 
   // Accessors.
   AXTree* tree() const { return tree_; }
@@ -118,7 +129,7 @@ class AX_EXPORT AXNode final {
   const std::vector<raw_ptr<AXNode, VectorExperimental>>& GetAllChildren()
       const;
   size_t GetChildCount() const;
-#if DCHECK_IS_ON()
+#if AX_FAIL_FAST_BUILD()
   size_t GetSubtreeCount() const;
 #endif
   size_t GetChildCountCrossingTreeBoundary() const;
@@ -177,13 +188,8 @@ class AX_EXPORT AXNode final {
   // Iterators for walking the tree in depth-first pre-order.
   //
 
-  using AllChildIterator = ChildIteratorBase<AXNode,
-                                             &AXNode::GetNextSibling,
-                                             &AXNode::GetPreviousSibling,
-                                             &AXNode::GetFirstChild,
-                                             &AXNode::GetLastChild>;
-  AllChildIterator AllChildrenBegin() const;
-  AllChildIterator AllChildrenEnd() const;
+  // Use a range-based for loop on GetAllChildren() to iterate over all of a
+  // node's direct children.
 
   using AllChildCrossingTreeBoundaryIterator =
       ChildIteratorBase<AXNode,
@@ -265,6 +271,12 @@ class AX_EXPORT AXNode final {
                    const gfx::RectF& location,
                    gfx::Transform* transform);
 
+  // Update this node's scroll x and y. This is separate from |SetData| just
+  // because changing only the scroll info is common and should be more
+  // efficient than re-copying all of the data.
+  void SetScrollInfo(const int& scroll_x, const int& scroll_y);
+  void GetScrollInfo(int* scroll_x, int* scroll_y) const;
+
   // Set the index in parent, for example if siblings were inserted or deleted.
   void SetIndexInParent(size_t index_in_parent);
 
@@ -310,10 +322,35 @@ class AX_EXPORT AXNode final {
   // are computed on the browser side. (See `AXNodeData` and
   // `AXComputedNodeData` for more information.)
   //
-  // Please prefer using the methods in this file for retrieving attributes, as
+  // Please prefer using the methods in this class for retrieving attributes, as
   // computed attributes would be automatically returned if available.
+  // Requesting the computed value for an attribute that cannot be computed
+  // triggers a DCHECK failure. All Get...Attribute methods in this class do
+  // the appropriate verification before requesting a computed attribute value.
   //
-
+  // Each of the Get...Attribute methods returns a default value if not set.
+  // The Has...Attribute methods can be used to disambiguate a missing value
+  // from a default value. The default values are 0 for numerical attributes,
+  // an empty string for string attributes, an empty list for list valued
+  // attributes, and false for boolean attributes.
+  //
+  // Example:
+  //
+  // const std::string& value =
+  //     GetStringAttribute(ax::mojom::StringAttribute::kValue);
+  // if (!value.empty() ||
+  //     HasStringAttribute(ax::mojom::StringAttribute::kValue)) {
+  //    // Handle explicitly set attribute even if an empty string.
+  // }
+  //
+  // Unless specifically needing a UTF16 string, it is generally advisable to
+  // use UTF8 strings, since these are fetched as a constant reference, whereas
+  // the UTF16 versions are converted from their UTF8 counterparts on demand.
+  //
+  // An explicitly set attribute may disagree with the computed value. The
+  // Get..Attribute methods return the explicitly set value rather than the
+  // computed value in this case.
+  //
   ax::mojom::Role GetRole() const { return data().role; }
 
   bool HasBoolAttribute(ax::mojom::BoolAttribute attribute) const {
@@ -322,9 +359,6 @@ class AX_EXPORT AXNode final {
   bool GetBoolAttribute(ax::mojom::BoolAttribute attribute) const {
     return data().GetBoolAttribute(attribute);
   }
-  bool GetBoolAttribute(ax::mojom::BoolAttribute attribute, bool* value) const {
-    return data().GetBoolAttribute(attribute, value);
-  }
 
   bool HasFloatAttribute(ax::mojom::FloatAttribute attribute) const {
     return data().HasFloatAttribute(attribute);
@@ -332,33 +366,24 @@ class AX_EXPORT AXNode final {
   float GetFloatAttribute(ax::mojom::FloatAttribute attribute) const {
     return data().GetFloatAttribute(attribute);
   }
-  bool GetFloatAttribute(ax::mojom::FloatAttribute attribute,
-                         float* value) const {
-    return data().GetFloatAttribute(attribute, value);
-  }
 
-  const std::vector<std::pair<ax::mojom::IntAttribute, int32_t>>&
-  GetIntAttributes() const {
+  const AXIntAttributes& GetIntAttributes() const {
     return data().int_attributes;
   }
   bool HasIntAttribute(ax::mojom::IntAttribute attribute) const;
+  bool CanComputeIntAttribute(ax::mojom::IntAttribute attribute) const;
   int GetIntAttribute(ax::mojom::IntAttribute attribute) const;
-  bool GetIntAttribute(ax::mojom::IntAttribute attribute, int* value) const;
 
-  const std::vector<std::pair<ax::mojom::StringAttribute, std::string>>&
-  GetStringAttributes() const {
+  const AXStringAttributes& GetStringAttributes() const {
     return data().string_attributes;
   }
   bool HasStringAttribute(ax::mojom::StringAttribute attribute) const;
+  bool CanComputeStringAttribute(ax::mojom::StringAttribute attribute) const;
   const std::string& GetStringAttribute(
       ax::mojom::StringAttribute attribute) const;
-  bool GetStringAttribute(ax::mojom::StringAttribute attribute,
-                          std::string* value) const;
 
   std::u16string GetString16Attribute(
       ax::mojom::StringAttribute attribute) const;
-  bool GetString16Attribute(ax::mojom::StringAttribute attribute,
-                            std::u16string* value) const;
 
   bool HasInheritedStringAttribute(ax::mojom::StringAttribute attribute) const;
   const std::string& GetInheritedStringAttribute(
@@ -366,16 +391,13 @@ class AX_EXPORT AXNode final {
   std::u16string GetInheritedString16Attribute(
       ax::mojom::StringAttribute attribute) const;
 
-  const std::vector<
-      std::pair<ax::mojom::IntListAttribute, std::vector<int32_t>>>&
-  GetIntListAttributes() const {
+  const AXIntListAttributes& GetIntListAttributes() const {
     return data().intlist_attributes;
   }
   bool HasIntListAttribute(ax::mojom::IntListAttribute attribute) const;
+  bool CanComputeIntListAttribute(ax::mojom::IntListAttribute attribute) const;
   const std::vector<int32_t>& GetIntListAttribute(
       ax::mojom::IntListAttribute attribute) const;
-  bool GetIntListAttribute(ax::mojom::IntListAttribute attribute,
-                           std::vector<int32_t>* value) const;
 
   bool HasStringListAttribute(ax::mojom::StringListAttribute attribute) const {
     return data().HasStringListAttribute(attribute);
@@ -384,35 +406,18 @@ class AX_EXPORT AXNode final {
       ax::mojom::StringListAttribute attribute) const {
     return data().GetStringListAttribute(attribute);
   }
-  bool GetStringListAttribute(ax::mojom::StringListAttribute attribute,
-                              std::vector<std::string>* value) const {
-    return data().GetStringListAttribute(attribute, value);
-  }
 
   const base::StringPairs& GetHtmlAttributes() const {
     return data().html_attributes;
-  }
-  bool HasHtmlAttribute(const char* attribute) const {
-    return data().HasHtmlAttribute(attribute);
-  }
-  std::u16string GetHtmlAttribute(const char* attribute) const {
-    return data().GetHtmlAttribute(attribute);
-  }
-  bool GetHtmlAttribute(const char* attribute, std::string* value) const {
-    return data().GetHtmlAttribute(attribute, value);
-  }
-  bool GetHtmlAttribute(const char* attribute, std::u16string* value) const {
-    return data().GetHtmlAttribute(attribute, value);
   }
 
   AXTextAttributes GetTextAttributes() const {
     return data().GetTextAttributes();
   }
 
+  AXStates GetStates() const { return data().GetStates(); }
+
   bool HasState(ax::mojom::State state) const { return data().HasState(state); }
-  ax::mojom::State GetState() const {
-    return static_cast<ax::mojom::State>(data().state);
-  }
 
   bool HasAction(ax::mojom::Action action) const {
     return data().HasAction(action);
@@ -576,6 +581,11 @@ class AX_EXPORT AXNode final {
   // table header container node, or nullptr if not applicable.
   const std::vector<raw_ptr<AXNode, VectorExperimental>>* GetExtraMacNodes()
       const;
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  AXNode* GetExtraAnnouncementNode(
+      ax::mojom::AriaNotificationPriority priority_property) const;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
   // Return true for mock nodes added to the map, such as extra mac nodes.
   bool IsGenerated() const;
@@ -834,34 +844,6 @@ template <typename NodeType,
           NodeType* (NodeType::*PreviousSibling)() const,
           NodeType* (NodeType::*FirstChild)() const,
           NodeType* (NodeType::*LastChild)() const>
-bool AXNode::ChildIteratorBase<NodeType,
-                               NextSibling,
-                               PreviousSibling,
-                               FirstChild,
-                               LastChild>::operator==(const ChildIteratorBase&
-                                                          rhs) const {
-  return parent_ == rhs.parent_ && child_ == rhs.child_;
-}
-
-template <typename NodeType,
-          NodeType* (NodeType::*NextSibling)() const,
-          NodeType* (NodeType::*PreviousSibling)() const,
-          NodeType* (NodeType::*FirstChild)() const,
-          NodeType* (NodeType::*LastChild)() const>
-bool AXNode::ChildIteratorBase<NodeType,
-                               NextSibling,
-                               PreviousSibling,
-                               FirstChild,
-                               LastChild>::operator!=(const ChildIteratorBase&
-                                                          rhs) const {
-  return parent_ != rhs.parent_ || child_ != rhs.child_;
-}
-
-template <typename NodeType,
-          NodeType* (NodeType::*NextSibling)() const,
-          NodeType* (NodeType::*PreviousSibling)() const,
-          NodeType* (NodeType::*FirstChild)() const,
-          NodeType* (NodeType::*LastChild)() const>
 AXNode::ChildIteratorBase<NodeType,
                           NextSibling,
                           PreviousSibling,
@@ -876,10 +858,10 @@ AXNode::ChildIteratorBase<NodeType,
   // increment the iterator past the end, we remain at the past-the-end iterator
   // condition.
   if (child_ && parent_) {
-    if (child_ == (parent_->*LastChild)())
-      child_ = nullptr;
-    else
-      child_ = (child_->*NextSibling)();
+    if (!last_child_) {
+      last_child_ = (parent_->*LastChild)();
+    }
+    child_ = child_ == last_child_ ? nullptr : (child_->*NextSibling)();
   }
 
   return *this;
@@ -903,13 +885,22 @@ AXNode::ChildIteratorBase<NodeType,
   if (parent_) {
     // If the iterator is past the end, |child_=nullptr|, decrement the iterator
     // gives us the last iterator element.
-    if (!child_)
-      child_ = (parent_->*LastChild)();
-    // Decrement the iterator gives us the previous element, except when the
-    // iterator is at the beginning; in which case, decrementing the iterator
-    // remains at the beginning.
-    else if (child_ != (parent_->*FirstChild)())
-      child_ = (child_->*PreviousSibling)();
+    if (!child_) {
+      if (!last_child_) {
+        last_child_ = (parent_->*LastChild)();
+      }
+      child_ = last_child_;
+    } else {
+      if (!first_child_) {
+        first_child_ = (parent_->*FirstChild)();
+      }
+      // Decrement the iterator gives us the previous element, except when the
+      // iterator is at the beginning; in which case, decrementing the iterator
+      // remains at the beginning.
+      if (child_ != first_child_) {
+        child_ = (child_->*PreviousSibling)();
+      }
+    }
   }
 
   return *this;

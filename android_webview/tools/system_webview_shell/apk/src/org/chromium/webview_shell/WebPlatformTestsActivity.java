@@ -49,7 +49,7 @@ public class WebPlatformTestsActivity extends Activity {
         void onChildLayoutRemoved();
     }
 
-    private BiMap<ViewGroup, WebView> mLayoutToWebViewBiMap = HashBiMap.create();
+    private final BiMap<ViewGroup, WebView> mLayoutToWebViewBiMap = HashBiMap.create();
 
     private LayoutInflater mLayoutInflater;
     private RelativeLayout mRootLayout;

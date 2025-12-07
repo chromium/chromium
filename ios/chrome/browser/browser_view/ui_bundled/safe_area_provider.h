@@ -18,6 +18,9 @@ class Browser;
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
+- (NSDirectionalEdgeInsets)directionalEdgeInsetsForLayoutRegion:
+    (UIViewLayoutRegion*)layoutRegion API_AVAILABLE(ios(26.0));
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_BROWSER_VIEW_UI_BUNDLED_SAFE_AREA_PROVIDER_H_

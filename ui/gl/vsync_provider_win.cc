@@ -10,7 +10,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/display/win/display_config_helper.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace gl {
 

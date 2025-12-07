@@ -8,15 +8,22 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/os_crypt/async/common/encryptor.mojom.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
+#include "crypto/hkdf.h"
 #include "crypto/random.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include "components/os_crypt/sync/key_storage_linux.h"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -28,9 +35,10 @@
 
 namespace os_crypt_async {
 
+#if BUILDFLAG(IS_WIN)
+
 namespace {
 
-#if BUILDFLAG(IS_WIN)
 // Utility function to encrypt data using the raw DPAPI interface.
 bool EncryptStringWithDPAPI(const std::string& plaintext,
                             std::string& ciphertext) {
@@ -59,28 +67,10 @@ bool EncryptStringWithDPAPI(const std::string& plaintext,
 
   return true;
 }
-#endif  // BUILDFLAG(IS_WIN)
-
-// Helper function to verify that decryption using OSCrypt failed. This is
-// platform dependent, as Windows will fail, but other platforms will return the
-// ciphertext back.
-[[nodiscard]] bool MaybeVerifyFailedDecryptOperation(
-    const std::optional<std::string>& decrypted,
-    base::span<const uint8_t> ciphertext) {
-#if BUILDFLAG(IS_WIN)
-  // On Windows, decryption fails, and decrypted will have no valid value.
-  return !decrypted;
-#else
-  // On other platforms, OSCrypt does not recognise the data and it returns
-  // the data without decrypting.
-  if (!decrypted) {
-    return false;
-  }
-  return decrypted == std::string(ciphertext.begin(), ciphertext.end());
-#endif
-}
 
 }  // namespace
+
+#endif  // BUILDFLAG(IS_WIN)
 
 enum class TestType {
   // Test that all operations work with no keys.
@@ -112,19 +102,61 @@ class EncryptorTestBase : public ::testing::Test {
   static const Encryptor GetEncryptor(
       Encryptor::KeyRing keys,
       const std::string& provider_for_encryption) {
-    return Encryptor(std::move(keys), provider_for_encryption);
+    return Encryptor(std::move(keys), provider_for_encryption,
+                     provider_for_encryption);
   }
 
-  static std::vector<uint8_t> GenerateRandomTestKey(size_t length) {
-    return crypto::RandBytesAsVector(length);
+  static const Encryptor GetEncryptor(
+      Encryptor::KeyRing keys,
+      const std::string& provider_for_encryption,
+      const std::string& provider_for_os_crypt_sync_compatible_encryption) {
+    return Encryptor(std::move(keys), provider_for_encryption,
+                     provider_for_os_crypt_sync_compatible_encryption);
   }
 
-  static Encryptor::Key GenerateRandomAES256TestKey(
-      bool is_os_crypt_sync_compatible = false) {
-    Encryptor::Key key(GenerateRandomTestKey(Encryptor::Key::kAES256GCMKeySize),
-                       mojom::Algorithm::kAES256GCM);
-    key.is_os_crypt_sync_compatible_ = is_os_crypt_sync_compatible;
+  static Encryptor::Key GenerateRandomAES256TestKey() {
+    Encryptor::Key key(
+        crypto::RandBytesAsVector(Encryptor::Key::kAES256GCMKeySize),
+        mojom::Algorithm::kAES256GCM);
     return key;
+  }
+
+  static Encryptor::Key DeriveAES256TestKey(std::string_view seed) {
+    auto key_data =
+        crypto::HkdfSha256(seed, {}, {}, Encryptor::Key::kAES256GCMKeySize);
+    Encryptor::Key key(base::as_byte_span(key_data),
+                       mojom::Algorithm::kAES256GCM);
+    return key;
+  }
+
+  // Simulate a 'locked' OSCrypt keychain on platforms that need it, which makes
+  // OSCrypt::IsEncryptionAvailable return false, without hitting a CHECK on
+  // Linux. Note this is different from using the full OSCryptMocker, because in
+  // this state, no key is available for encryption. Returns a
+  // ScopedClosureRunner that will reset the behavior back to default when it
+  // goes out of scope.
+  [[nodiscard]] static std::optional<base::ScopedClosureRunner>
+  MaybeSimulateLockedKeyChain() {
+#if BUILDFLAG(IS_LINUX)
+    OSCrypt::ClearCacheForTesting();
+    OSCrypt::UseMockKeyStorageForTesting(base::BindOnce(
+        []() -> std::unique_ptr<KeyStorageLinux> { return nullptr; }));
+    return base::ScopedClosureRunner(base::BindOnce([]() {
+      OSCrypt::UseMockKeyStorageForTesting(base::NullCallback());
+      OSCrypt::ClearCacheForTesting();
+    }));
+#elif BUILDFLAG(IS_APPLE)
+    OSCrypt::SetKeychainForTesting(OSCrypt::MockLockedKeychain());
+    return base::ScopedClosureRunner(
+        base::BindOnce([]() { OSCrypt::SetKeychainForTesting(nullptr); }));
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+    OSCrypt::SetEncryptionAvailableForTesting(/*available=*/false);
+    return base::ScopedClosureRunner(base::BindOnce([]() {
+      OSCrypt::SetEncryptionAvailableForTesting(/*available=*/std::nullopt);
+    }));
+#else
+    return std::nullopt;
+#endif
   }
 };
 
@@ -173,6 +205,7 @@ class EncryptorTest : public EncryptorTestWithOSCrypt,
 };
 
 TEST_P(EncryptorTest, StringInterface) {
+  base::HistogramTester histograms;
   const Encryptor encryptor = GetTestEncryptor();
   std::string plaintext = "secrets";
   std::string ciphertext;
@@ -180,6 +213,11 @@ TEST_P(EncryptorTest, StringInterface) {
   std::string decrypted;
   EXPECT_TRUE(encryptor.DecryptString(ciphertext, &decrypted));
   EXPECT_EQ(plaintext, decrypted);
+  const bool fallback_should_occur = (GetParam() == TestType::kEmptyPassThru);
+  histograms.ExpectUniqueSample("OSCrypt.Async.DecryptionFallbackToSync",
+                                fallback_should_occur, 1);
+  histograms.ExpectUniqueSample("OSCrypt.Async.EncryptionFallbackToSync",
+                                fallback_should_occur, 1);
 }
 
 TEST_P(EncryptorTest, SpanInterface) {
@@ -203,8 +241,7 @@ TEST_P(EncryptorTest, EncryptStringDecryptSpan) {
   std::string ciphertext;
   EXPECT_TRUE(encryptor.EncryptString(plaintext, &ciphertext));
 
-  auto decrypted =
-      encryptor.DecryptData(base::as_bytes(base::make_span(ciphertext)));
+  auto decrypted = encryptor.DecryptData(base::as_byte_span(ciphertext));
 
   ASSERT_TRUE(decrypted);
 
@@ -249,8 +286,9 @@ TEST_P(EncryptorTest, EncryptEmpty) {
 
   auto ciphertext = encryptor.EncryptString(std::string());
   ASSERT_TRUE(ciphertext);
-
-  auto decrypted = encryptor.DecryptData(*ciphertext);
+  Encryptor::DecryptFlags flags;
+  auto decrypted = encryptor.DecryptData(*ciphertext, &flags);
+  ASSERT_FALSE(flags.should_reencrypt);
   ASSERT_TRUE(decrypted);
   EXPECT_TRUE(decrypted->empty());
 }
@@ -261,7 +299,9 @@ TEST_P(EncryptorTest, EncryptEmpty) {
 TEST_P(EncryptorTest, DecryptEmpty) {
   const Encryptor encryptor = GetTestEncryptor();
 
-  auto plaintext = encryptor.DecryptData({});
+  Encryptor::DecryptFlags flags;
+  auto plaintext = encryptor.DecryptData({}, &flags);
+  ASSERT_FALSE(flags.should_reencrypt);
   ASSERT_TRUE(plaintext);
   EXPECT_TRUE(plaintext->empty());
 }
@@ -271,18 +311,28 @@ TEST_P(EncryptorTest, DecryptEmpty) {
 TEST_P(EncryptorTest, DecryptInvalid) {
   const Encryptor encryptor = GetTestEncryptor();
 
-  std::vector<uint8_t> invalid_cipher(100);
-  for (size_t c = 0u; c < invalid_cipher.size(); c++) {
-    invalid_cipher[c] = c;
-  }
+  {
+    std::vector<uint8_t> invalid_cipher(100);
+    for (size_t c = 0u; c < invalid_cipher.size(); c++) {
+      invalid_cipher[c] = c;
+    }
 
-  auto plaintext = encryptor.DecryptData(invalid_cipher);
-  ASSERT_FALSE(plaintext);
+    Encryptor::DecryptFlags flags;
+    auto plaintext = encryptor.DecryptData(invalid_cipher, &flags);
+    ASSERT_FALSE(flags.should_reencrypt);
+    ASSERT_FALSE(plaintext);
+  }
+  {
+    std::string plaintext;
+    ASSERT_FALSE(encryptor.DecryptString("a", &plaintext));
+    ASSERT_TRUE(plaintext.empty());
+  }
 }
 #endif  // BUILDFLAG(IS_WIN)
 
 // Encryptor can decrypt data encrypted with OSCrypt.
 TEST_P(EncryptorTest, DecryptFallback) {
+  base::HistogramTester histograms;
   std::string ciphertext;
   EXPECT_TRUE(OSCrypt::EncryptString("secret", &ciphertext));
 
@@ -293,6 +343,9 @@ TEST_P(EncryptorTest, DecryptFallback) {
   EXPECT_TRUE(encryptor.DecryptString(ciphertext, &decrypted));
 
   EXPECT_EQ("secret", decrypted);
+  histograms.ExpectUniqueSample("OSCrypt.Async.DecryptionFallbackToSync", true,
+                                1);
+  histograms.ExpectTotalCount("OSCrypt.Async.EncryptionFallbackToSync", 0);
 }
 
 // Encryptor can decrypt data encrypted with OSCrypt.
@@ -313,6 +366,7 @@ TEST_P(EncryptorTest, Decrypt16Fallback) {
 // Encryptor should still decrypt data encrypted using DPAPI (pre-m79) by fall
 // back to OSCrypt.
 TEST_P(EncryptorTest, AncientFallback) {
+  base::HistogramTester histograms;
   std::string ciphertext;
   EXPECT_TRUE(EncryptStringWithDPAPI("secret", ciphertext));
 
@@ -322,6 +376,9 @@ TEST_P(EncryptorTest, AncientFallback) {
   EXPECT_TRUE(encryptor.DecryptString(ciphertext, &decrypted));
 
   EXPECT_EQ("secret", decrypted);
+  histograms.ExpectUniqueSample("OSCrypt.Async.DecryptionFallbackToSync", true,
+                                1);
+  histograms.ExpectTotalCount("OSCrypt.Async.EncryptionFallbackToSync", 0);
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -342,8 +399,10 @@ INSTANTIATE_TEST_SUITE_P(All,
                          });
 
 // This test verifies various combinations of multiple keys in a keyring, to
-// make sure they are all handled correctly.
-TEST_F(EncryptorTestBase, MultipleKeys) {
+// make sure they are all handled correctly. This needs access to OSCrypt as
+// failed decryptions will call IsEncryptionAvailable which attempts to
+// obtain a valid key from keychain on macOS.
+TEST_F(EncryptorTestWithOSCrypt, MultipleKeys) {
   Encryptor::Key foo_key = GenerateRandomAES256TestKey();
   Encryptor::Key bar_key = GenerateRandomAES256TestKey();
 
@@ -379,7 +438,7 @@ TEST_F(EncryptorTestBase, MultipleKeys) {
     key_ring_bar.emplace("BAR", bar_key.Clone());
     const Encryptor encryptor = GetEncryptor(std::move(key_ring_bar), "BAR");
     auto decrypted = encryptor.DecryptData(*ciphertext);
-    EXPECT_TRUE(MaybeVerifyFailedDecryptOperation(decrypted, *ciphertext));
+    EXPECT_FALSE(decrypted);
   }
 
   // Verify that order of keys in the keyring does not matter.
@@ -420,7 +479,7 @@ TEST_F(EncryptorTestBase, MultipleKeys) {
   {
     const Encryptor encryptor = GetEncryptor();
     auto decrypted = encryptor.DecryptData(*ciphertext);
-    EXPECT_TRUE(MaybeVerifyFailedDecryptOperation(decrypted, *ciphertext));
+    EXPECT_FALSE(decrypted);
   }
 }
 
@@ -451,14 +510,74 @@ TEST_F(EncryptorTestWithOSCrypt, ShortCiphertext) {
   // This is the nonce length for this algorithm.
   static const size_t kNonceLength = 12u;
   for (size_t i = 0; i < kNonceLength * 2; i++) {
+    base::HistogramTester histograms;
     bad_data += "a";
-    auto decrypted =
-        encryptor.DecryptData(base::as_bytes(base::make_span(bad_data)));
-    EXPECT_TRUE(MaybeVerifyFailedDecryptOperation(
-        decrypted, base::as_bytes(base::make_span(bad_data))));
+    auto decrypted = encryptor.DecryptData(base::as_byte_span(bad_data));
+    EXPECT_FALSE(decrypted);
+    // Fallback does not happen here because the prefix on the data matches the
+    // key, but the data is invalid.
+    histograms.ExpectUniqueSample("OSCrypt.Async.DecryptionFallbackToSync",
+                                  false, 1);
   }
 }
 
+// These two tests verify the fallback to OSCrypt::IsEncryptionAvailable
+// functions correctly. When there is no OSCrypt mocker in place, encryption is
+// not available if the keyring is empty.
+TEST_F(EncryptorTestBase, IsEncryptionAvailableFallback) {
+  auto cleanup = MaybeSimulateLockedKeyChain();
+  Encryptor encryptor = GetEncryptor();
+  EXPECT_FALSE(encryptor.IsDecryptionAvailable());
+  EXPECT_FALSE(encryptor.IsEncryptionAvailable());
+}
+
+TEST_F(EncryptorTestWithOSCrypt, IsEncryptionAvailableFallback) {
+  Encryptor encryptor = GetEncryptor();
+  EXPECT_TRUE(encryptor.IsDecryptionAvailable());
+  EXPECT_TRUE(encryptor.IsEncryptionAvailable());
+}
+
+TEST_F(EncryptorTestBase, IsEncryptionAvailable) {
+  auto cleanup = MaybeSimulateLockedKeyChain();
+  {
+    Encryptor::KeyRing key_ring;
+    key_ring.emplace("TEST", GenerateRandomAES256TestKey());
+    const Encryptor encryptor = GetEncryptor(std::move(key_ring), "TEST");
+    EXPECT_TRUE(encryptor.IsEncryptionAvailable());
+    EXPECT_TRUE(encryptor.IsDecryptionAvailable());
+  }
+  {
+    Encryptor::KeyRing key_ring;
+    key_ring.emplace("TEST", GenerateRandomAES256TestKey());
+    const Encryptor encryptor = GetEncryptor(std::move(key_ring), "BLAH");
+    EXPECT_FALSE(encryptor.IsEncryptionAvailable());
+    // Decryption for data encrypted with TEST key is available, but encryption
+    // is not available as there is no key BLAH.
+    EXPECT_TRUE(encryptor.IsDecryptionAvailable());
+  }
+}
+
+TEST_F(EncryptorTestWithOSCrypt, IsEncryptionAvailableFallbackLocked) {
+  ASSERT_TRUE(OSCrypt::IsEncryptionAvailable());
+
+  Encryptor encryptor = GetEncryptor();
+  // This will encrypt with OSCrypt as no keys are loaded into the Encryptor.
+  const auto ciphertext = encryptor.EncryptString("secret");
+
+  ASSERT_TRUE(ciphertext);
+
+  {
+    // "Lock" the keychain. Only some platforms support this.
+    auto cleanup = MaybeSimulateLockedKeyChain();
+    if (!cleanup.has_value()) {
+      GTEST_SKIP() << "Platform does not support a locked keychain.";
+    }
+    Encryptor::DecryptFlags flags;
+    const auto plaintext = encryptor.DecryptData(*ciphertext, &flags);
+    EXPECT_FALSE(plaintext);
+    EXPECT_TRUE(flags.temporarily_unavailable);
+  }
+}
 #if BUILDFLAG(IS_WIN)
 
 // This test verifies that data encrypted with OSCrypt can successfully be
@@ -467,7 +586,7 @@ TEST_F(EncryptorTestWithOSCrypt, ShortCiphertext) {
 TEST_F(EncryptorTestBase, AlgorithmDecryptCompatibility) {
   std::string ciphertext;
   std::string ciphertext16;
-  auto random_key = GenerateRandomTestKey(kKeyLength);
+  const auto random_key = crypto::RandBytesAsVector(kKeyLength);
   // Set the OSCrypt key to the fixed key.
   OSCrypt::SetRawEncryptionKey(
       std::string(random_key.begin(), random_key.end()));
@@ -515,7 +634,7 @@ TEST_F(EncryptorTestBase, AlgorithmDecryptCompatibility) {
 // OSCrypt.
 TEST_F(EncryptorTestBase, AlgorithmEncryptCompatibility) {
   // From os_crypt_win.cc
-  auto random_key = GenerateRandomTestKey(kKeyLength);
+  const auto random_key = crypto::RandBytesAsVector(kKeyLength);
 
   // Set up a test Encryptor that can encrypt the data.
   Encryptor::KeyRing key_ring;
@@ -567,11 +686,9 @@ TEST_F(EncryptorTestBase, AlgorithmEncryptCompatibility) {
 TEST_F(EncryptorTestBase, Clone) {
   {
     Encryptor::KeyRing key_ring;
-    key_ring.emplace("BLAH", GenerateRandomAES256TestKey(
-                                 /*is_os_crypt_sync_compatible=*/true));
+    key_ring.emplace("BLAH", GenerateRandomAES256TestKey());
     key_ring.emplace("TEST", GenerateRandomAES256TestKey());
-    auto encryptor = GetEncryptor(std::move(key_ring), "TEST");
-    EXPECT_EQ(encryptor.provider_for_encryption_, "TEST");
+    auto encryptor = GetEncryptor(std::move(key_ring), "TEST", "BLAH");
 
     {
       auto cloned_encryptor = encryptor.Clone(Encryptor::Option::kNone);
@@ -592,9 +709,8 @@ TEST_F(EncryptorTestBase, Clone) {
   // OSCrypt for encryption).
   {
     Encryptor::KeyRing key_ring;
-    key_ring.emplace("BLAH", GenerateRandomAES256TestKey(
-                                 /*is_os_crypt_sync_compatible=*/false));
-    auto encryptor = GetEncryptor(std::move(key_ring), "BLAH");
+    key_ring.emplace("BLAH", GenerateRandomAES256TestKey());
+    auto encryptor = GetEncryptor(std::move(key_ring), "BLAH", std::string());
     EXPECT_EQ(encryptor.provider_for_encryption_, "BLAH");
 
     {
@@ -627,15 +743,77 @@ TEST_F(EncryptorTestBase, Clone) {
   }
 }
 
+TEST_F(EncryptorTestWithOSCrypt, DecryptFlags) {
+  std::string ciphertext;
+  {
+    Encryptor::KeyRing key_ring;
+    key_ring.emplace("TEST", DeriveAES256TestKey("TEST"));
+    const auto encryptor = GetEncryptor(std::move(key_ring), "TEST");
+    ASSERT_TRUE(encryptor.EncryptString("secrets", &ciphertext));
+    Encryptor::DecryptFlags flags;
+    std::string plaintext;
+    ASSERT_TRUE(encryptor.DecryptString(ciphertext, &plaintext, &flags));
+    EXPECT_FALSE(flags.should_reencrypt);
+  }
+
+  {
+    Encryptor::KeyRing key_ring;
+    key_ring.emplace("BLAH", DeriveAES256TestKey("BLAH"));
+    key_ring.emplace("TEST", DeriveAES256TestKey("TEST"));
+    const auto encryptor = GetEncryptor(std::move(key_ring), "BLAH");
+    Encryptor::DecryptFlags flags;
+    std::string plaintext;
+    ASSERT_TRUE(encryptor.DecryptString(ciphertext, &plaintext, &flags));
+    EXPECT_TRUE(flags.should_reencrypt);
+  }
+}
+
+TEST_F(EncryptorTestWithOSCrypt, KeyAvailability) {
+  std::string ciphertext;
+  {
+    // Encrypt some data using the TEST key.
+    Encryptor::KeyRing key_ring;
+    key_ring.emplace("TEST", DeriveAES256TestKey("TEST"));
+    const auto encryptor = GetEncryptor(std::move(key_ring), "TEST");
+    ASSERT_TRUE(encryptor.EncryptString("secrets", &ciphertext));
+  }
+
+  {
+    // Load a key with the name TEST but it's not the same as before, so the
+    // decrypt should fail permanently. This could happen e.g. if a key provider
+    // decides it can never recover a key and generates a new one.
+    Encryptor::KeyRing key_ring;
+    key_ring.emplace("TEST", DeriveAES256TestKey("NOTTEST"));
+    const auto encryptor = GetEncryptor(std::move(key_ring), "TEST");
+    Encryptor::DecryptFlags flags;
+    std::string plaintext;
+    ASSERT_FALSE(encryptor.DecryptString(ciphertext, &plaintext, &flags));
+    EXPECT_FALSE(flags.temporarily_unavailable);
+  }
+
+  {
+    // If the TEST key is not even there, it's also a permanent failure, since
+    // key providers should signal a temporary failure using the proper API. See
+    // OSCryptAsyncTestWithOSCrypt.TemporarilyFailingKeyProvider for a test that
+    // verifies this.
+    Encryptor::KeyRing key_ring;
+    key_ring.emplace("BLAH", DeriveAES256TestKey("BLAH"));
+    const auto encryptor = GetEncryptor(std::move(key_ring), "BLAH");
+    Encryptor::DecryptFlags flags;
+    std::string plaintext;
+    ASSERT_FALSE(encryptor.DecryptString(ciphertext, &plaintext, &flags));
+    EXPECT_FALSE(flags.temporarily_unavailable);
+  }
+}
+
 class EncryptorTraitsTest : public EncryptorTestBase {};
 
 TEST_F(EncryptorTraitsTest, TraitsRoundTrip) {
   {
-    std::vector<uint8_t> test_key1(Encryptor::Key::kAES256GCMKeySize);
-    crypto::RandBytes(test_key1);
-
-    std::vector<uint8_t> test_key2(Encryptor::Key::kAES256GCMKeySize);
-    crypto::RandBytes(test_key2);
+    const auto test_key1 =
+        crypto::RandBytesAsVector(Encryptor::Key::kAES256GCMKeySize);
+    const auto test_key2 =
+        crypto::RandBytesAsVector(Encryptor::Key::kAES256GCMKeySize);
 
     Encryptor::KeyRing key_ring;
     key_ring.emplace("TEST1",
@@ -682,7 +860,7 @@ TEST_F(EncryptorTraitsTest, TraitsRoundTrip) {
 
     // Reach into the encryptor and change the key length to an invalid length
     // for the kAES256GCM algorithm.
-    encryptor.keys_.at("TEST").key_.resize(8u);
+    encryptor.keys_.at("TEST")->key_.resize(8u);
     Encryptor roundtripped;
 
     // Mojo will fail gracefully to serialize this bad Encryptor.

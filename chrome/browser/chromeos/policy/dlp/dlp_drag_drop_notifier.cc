@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -23,7 +24,7 @@ void DlpDragDropNotifier::NotifyBlockedAction(
   DCHECK(data_src.has_value());
   DCHECK(data_src->GetURL());
   const std::u16string host_name =
-      base::UTF8ToUTF16(data_src->GetURL()->host());
+      base::UTF8ToUTF16(data_src->GetURL()->GetHost());
 
   ShowBlockBubble(l10n_util::GetStringFUTF16(
       IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_PASTE, host_name));
@@ -39,7 +40,7 @@ void DlpDragDropNotifier::WarnOnDrop(
   CloseWidget(widget_.get(), views::Widget::ClosedReason::kUnspecified);
 
   const std::u16string host_name =
-      base::UTF8ToUTF16(data_src->GetURL()->host());
+      base::UTF8ToUTF16(data_src->GetURL()->GetHost());
 
   auto proceed_cb = base::BindOnce(&DlpDragDropNotifier::ProceedPressed,
                                    base::Unretained(this));

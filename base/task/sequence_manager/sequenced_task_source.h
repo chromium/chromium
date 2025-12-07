@@ -8,12 +8,12 @@
 #include <optional>
 
 #include "base/base_export.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/pending_task.h"
 #include "base/task/common/lazy_now.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/sequence_manager/tasks.h"
+#include "build/build_config.h"
 
 namespace perfetto {
 class EventContext;
@@ -67,7 +67,10 @@ class SequencedTaskSource {
   // |option| allows control on which kind of tasks can be selected.
   virtual std::optional<SelectedTask> SelectNextTask(
       LazyNow& lazy_now,
-      SelectTaskOption option = SelectTaskOption::kDefault) = 0;
+      SelectTaskOption option) = 0;
+  std::optional<SelectedTask> SelectNextTask(LazyNow& lazy_now) {
+    return SelectNextTask(lazy_now, SelectTaskOption::kDefault);
+  }
 
   // Notifies this source that the task previously obtained
   // from SelectNextTask() has been completed.
@@ -77,13 +80,17 @@ class SequencedTaskSource {
   // next task can run immediately, or nullopt if there are no more immediate or
   // delayed tasks. |option| allows control on which kind of tasks can be
   // selected. May delete canceled tasks.
-  virtual std::optional<WakeUp> GetPendingWakeUp(
-      LazyNow* lazy_now,
-      SelectTaskOption option = SelectTaskOption::kDefault) = 0;
+  virtual std::optional<WakeUp> GetPendingWakeUp(LazyNow* lazy_now,
+                                                 SelectTaskOption option) = 0;
+  std::optional<WakeUp> GetPendingWakeUp(LazyNow* lazy_now) {
+    return GetPendingWakeUp(lazy_now, SelectTaskOption::kDefault);
+  }
 
-  // Return true if there are any pending tasks in the task source which require
-  // high resolution timing.
-  virtual bool HasPendingHighResolutionTasks() = 0;
+#if BUILDFLAG(IS_WIN)
+  // Return true if the next wakeup requires Windows' high-resolution timer to
+  // be enabled.
+  virtual bool NextWakeUpNeedsHighRes() = 0;
+#endif
 
   // Indicates that work that has mutual exclusion expectations with tasks from
   // this `SequencedTaskSource` will start running.

@@ -15,6 +15,9 @@
 #include "media/media_buildflags.h"
 #include "media/parsers/h264_parser.h"
 #include "media/parsers/vp9_parser.h"
+#include "third_party/libgav1/src/src/buffer_pool.h"
+#include "third_party/libgav1/src/src/decoder_state.h"
+#include "third_party/libgav1/src/src/obu_parser.h"
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 #include "media/parsers/h265_nalu_parser.h"
@@ -38,6 +41,14 @@ class MEDIA_EXPORT TemporalScalabilityIdExtractor {
     // A list of referenced frames info for this frame. Currently, only be
     // filled for VP9 encoding.
     std::vector<ReferenceBufferSlot> ref_frame_list;
+    // AV1 reference_frame_idx bitmasks. Only filled for AV1 encoding. If
+    // DPB slot #0 is referenced, the least significant bit is set. Similar
+    // for other DPB slots.
+    uint8_t reference_idx_flags;
+    // AV1 refresh_frame_flags bitmasks. Only filled for AV1 encoding. The
+    // least significant bit corresponds to refresh_frame_flag[0]. Similar
+    // for referesh_frame_flag[1] - refresh_frame_flag[7].
+    uint8_t refresh_frame_flags;
     BitstreamMetadata();
     ~BitstreamMetadata();
   };
@@ -67,6 +78,11 @@ class MEDIA_EXPORT TemporalScalabilityIdExtractor {
                 int tid_by_svc_spec,
                 BitstreamMetadata& md);
 
+  bool ParseAV1(base::span<const uint8_t> chunk,
+                uint32_t frame_id,
+                int tid_by_svc_spec,
+                BitstreamMetadata& md);
+
  private:
   const VideoCodec codec_;
   const int num_temporal_layers_;
@@ -76,6 +92,10 @@ class MEDIA_EXPORT TemporalScalabilityIdExtractor {
 #endif
   std::unique_ptr<Vp9Parser> vp9_;
   std::array<ReferenceBufferSlot, kVp9NumRefFrames> vp9_ref_buffer_;
+  // These are used by AV1 only to store the state across frames.
+  std::unique_ptr<libgav1::BufferPool> buffer_pool_;
+  std::unique_ptr<libgav1::DecoderState> av1_decoder_state_;
+  std::optional<libgav1::ObuSequenceHeader> av1_sequence_header_;
 };
 
 }  // namespace media

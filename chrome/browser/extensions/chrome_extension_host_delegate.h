@@ -6,7 +6,10 @@
 #define CHROME_BROWSER_EXTENSIONS_CHROME_EXTENSION_HOST_DELEGATE_H_
 
 #include "extensions/browser/extension_host_delegate.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -18,8 +21,6 @@ class ChromeExtensionHostDelegate : public ExtensionHostDelegate {
 
   // ExtensionHostDelegate implementation.
   void OnExtensionHostCreated(content::WebContents* web_contents) override;
-  void OnMainFrameCreatedForBackgroundPage(ExtensionHost* host) override;
-  content::JavaScriptDialogManager* GetJavaScriptDialogManager() override;
   void CreateTab(std::unique_ptr<content::WebContents> web_contents,
                  const ExtensionId& extension_id,
                  WindowOpenDisposition disposition,

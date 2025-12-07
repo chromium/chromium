@@ -5,21 +5,22 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_APPS_APP_INFO_DIALOG_APP_INFO_DIALOG_CONTAINER_H_
 #define CHROME_BROWSER_UI_VIEWS_APPS_APP_INFO_DIALOG_APP_INFO_DIALOG_CONTAINER_H_
 
-#include <memory>
-
 #include "base/functional/callback_forward.h"
-#include "ui/gfx/geometry/size.h"
 
-namespace views {
-class DialogDelegateView;
-class View;
+class Profile;
+
+namespace content {
+class WebContents;
 }
 
-// Creates a new native dialog of the given |size| containing |view| with a
-// close button and draggable titlebar.
-views::DialogDelegateView* CreateDialogContainerForView(
-    std::unique_ptr<views::View> view,
-    const gfx::Size& size,
-    base::OnceClosure close_callback);
+namespace extensions {
+class Extension;
+}
+
+// Shows the chrome app information in a native dialog box.
+void ShowAppInfoInNativeDialog(content::WebContents* web_contents,
+                               Profile* profile,
+                               const extensions::Extension* app,
+                               base::OnceClosure close_callback);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APPS_APP_INFO_DIALOG_APP_INFO_DIALOG_CONTAINER_H_

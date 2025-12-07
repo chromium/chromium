@@ -12,15 +12,15 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/sessions/core/tab_restore_service_impl.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_browser_agent.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/tabs/model/closing_web_state_observer_browser_agent.h"
 #import "ios/chrome/browser/tabs_search/model/tabs_search_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
@@ -56,32 +56,31 @@ const char16_t kWebState2Title[] = u"Web State 2";
 class TabsSearchServiceTest : public PlatformTest {
  public:
   TabsSearchServiceTest() {
-    TestChromeBrowserState::Builder test_browser_state_builder;
-    test_browser_state_builder.AddTestingFactory(
+    TestProfileIOS::Builder test_profile_builder;
+    test_profile_builder.AddTestingFactory(
         IOSChromeTabRestoreServiceFactory::GetInstance(),
         IOSChromeTabRestoreServiceFactory::GetDefaultFactory());
-    test_browser_state_builder.AddTestingFactory(
+    test_profile_builder.AddTestingFactory(
         ios::HistoryServiceFactory::GetInstance(),
         ios::HistoryServiceFactory::GetDefaultFactory());
-    chrome_browser_state_ = std::move(test_browser_state_builder).Build();
+    profile_ = std::move(test_profile_builder).Build();
 
-    browser_list_ =
-        BrowserListFactory::GetForBrowserState(chrome_browser_state_.get());
+    browser_list_ = BrowserListFactory::GetForProfile(profile_.get());
 
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
-    ClosingWebStateObserverBrowserAgent::CreateForBrowser(browser_.get());
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
+    IOSChromeTabRestoreBrowserAgent::CreateForBrowser(browser_.get());
 
     browser_list_->AddBrowser(browser_.get());
 
-    other_browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
+    other_browser_ = std::make_unique<TestBrowser>(profile_.get());
     browser_list_->AddBrowser(other_browser_.get());
 
-    incognito_browser_ = std::make_unique<TestBrowser>(
-        chrome_browser_state_->GetOffTheRecordChromeBrowserState());
+    incognito_browser_ =
+        std::make_unique<TestBrowser>(profile_->GetOffTheRecordProfile());
     browser_list_->AddBrowser(incognito_browser_.get());
 
-    other_incognito_browser_ = std::make_unique<TestBrowser>(
-        chrome_browser_state_->GetOffTheRecordChromeBrowserState());
+    other_incognito_browser_ =
+        std::make_unique<TestBrowser>(profile_->GetOffTheRecordProfile());
     browser_list_->AddBrowser(other_incognito_browser_.get());
   }
 
@@ -109,22 +108,21 @@ class TabsSearchServiceTest : public PlatformTest {
     return inserted_web_state;
   }
 
-  // Returns the associated search service for normal browser state.
+  // Returns the associated search service for normal profile.
   TabsSearchService* search_service() {
-    return TabsSearchServiceFactory::GetForBrowserState(
-        chrome_browser_state_.get());
+    return TabsSearchServiceFactory::GetForProfile(profile_.get());
   }
 
-  // Returns the associated search service for off the record browser state.
+  // Returns the associated search service for off the record profile.
   TabsSearchService* incognito_search_service() {
-    return TabsSearchServiceFactory::GetForBrowserState(
-        chrome_browser_state_->GetOffTheRecordChromeBrowserState());
+    return TabsSearchServiceFactory::GetForProfile(
+        profile_->GetOffTheRecordProfile());
   }
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  TestChromeBrowserStateManager browser_state_manager_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  TestProfileManagerIOS profile_manager_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<Browser> other_browser_;
   std::unique_ptr<Browser> incognito_browser_;
@@ -273,7 +271,7 @@ TEST_F(TabsSearchServiceTest, NoIncognitoResults) {
 }
 
 // Tests that only incognito tabs are returned when searching off the record
-// browser state.
+// profile.
 TEST_F(TabsSearchServiceTest, IncognitoResults) {
   AppendNewWebState(browser_.get(), kWebState1Title, GURL(kWebState1Url));
   web::WebState* expected_web_state = AppendNewWebState(
@@ -465,8 +463,8 @@ TEST_F(TabsSearchServiceTest, RecentlyClosedNoResults) {
 TEST_F(TabsSearchServiceTest, RecentlyClosedNoMatch) {
   AppendNewWebState(browser_.get(), kWebState1Title, GURL(kWebState1Url));
 
-  browser_->GetWebStateList()->CloseWebStateAt(/*index=*/0,
-                                               WebStateList::CLOSE_NO_FLAGS);
+  browser_->GetWebStateList()->CloseWebStateAt(
+      /*index=*/0, WebStateList::ClosingReason::kDefault);
 
   __block bool results_received = false;
   search_service()->SearchRecentlyClosed(
@@ -485,8 +483,8 @@ TEST_F(TabsSearchServiceTest, RecentlyClosedMatchTitle) {
   AppendNewWebState(browser_.get(), kWebState1Title, GURL(kWebState1Url));
   AppendNewWebState(browser_.get(), kWebState2Title, GURL(kWebState2Url));
 
-  browser_->GetWebStateList()->CloseWebStateAt(/*index=*/0,
-                                               WebStateList::CLOSE_NO_FLAGS);
+  browser_->GetWebStateList()->CloseWebStateAt(
+      /*index=*/0, WebStateList::ClosingReason::kDefault);
 
   __block bool results_received = false;
   search_service()->SearchRecentlyClosed(
@@ -509,8 +507,8 @@ TEST_F(TabsSearchServiceTest, RecentlyClosedMatchURL) {
   AppendNewWebState(browser_.get(), kWebState1Title, GURL(kWebState1Url));
   AppendNewWebState(browser_.get(), kWebState2Title, GURL(kWebState2Url));
 
-  browser_->GetWebStateList()->CloseWebStateAt(/*index=*/0,
-                                               WebStateList::CLOSE_NO_FLAGS);
+  browser_->GetWebStateList()->CloseWebStateAt(
+      /*index=*/0, WebStateList::ClosingReason::kDefault);
 
   __block bool results_received = false;
   search_service()->SearchRecentlyClosed(
@@ -537,7 +535,8 @@ TEST_F(TabsSearchServiceTest, RecentlyClosedMatchTitleAllClosed) {
   // Add a webstate which will not match `kSearchQueryMatchesAll`.
   AppendNewWebState(browser_.get(), u"X", GURL("http://abc.xyz"));
 
-  CloseAllWebStates(*browser_->GetWebStateList(), WebStateList::CLOSE_NO_FLAGS);
+  CloseAllWebStates(*browser_->GetWebStateList(),
+                    WebStateList::ClosingReason::kDefault);
 
   __block bool results_received = false;
   search_service()->SearchRecentlyClosed(

@@ -5,12 +5,12 @@
 #include "ui/ozone/platform/wayland/host/wayland_cursor_shape.h"
 
 #include <cursor-shape-v1-client-protocol.h>
+#include <tablet-unstable-v2-client-protocol.h>
 
 #include <optional>
 
 #include "base/check.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
-#include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
@@ -190,6 +190,19 @@ void WaylandCursorShape::SetCursorShape(uint32_t shape) {
   }
   wp_cursor_shape_device_v1_set_shape(GetShapeDevice(),
                                       pointer_enter_serial->value, shape);
+}
+
+wl::Object<wp_cursor_shape_device_v1>
+WaylandCursorShape::CreateTabletToolShapeDevice(
+    zwp_tablet_tool_v2* tablet_tool) {
+  DCHECK(tablet_tool);
+  // `wp_cursor_shape_manager_v1_` may be null in tests.
+  if (!wp_cursor_shape_manager_v1_) {
+    return {};
+  }
+  return wl::Object<wp_cursor_shape_device_v1>(
+      wp_cursor_shape_manager_v1_get_tablet_tool_v2(
+          wp_cursor_shape_manager_v1_.get(), tablet_tool));
 }
 
 }  // namespace ui

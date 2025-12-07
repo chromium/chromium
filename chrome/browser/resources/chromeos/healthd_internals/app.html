@@ -7,7 +7,7 @@
 
   #main {
     height: 100%;
-    flex: 1
+    flex-grow: 1;
   }
 
   #sidebarContainer {
@@ -19,9 +19,13 @@
     border-inline-end: 1px solid var(--cr-separator-color);
     box-sizing: border-box;
     overflow: auto;
-    padding-block-end: 8px;
-    padding-inline-end: 8px;
-    width: 220px;
+    width: 240px;
+    white-space: nowrap;
+    transition: width .2s ease-in-out;
+  }
+
+  #sidebar.collapsed {
+    width: 0px;
   }
 
   #selector {
@@ -33,7 +37,6 @@
     justify-content: center;
   }
 
-
   #sidebarToggleButton {
     display: flex;
     align-items: center;
@@ -42,6 +45,11 @@
     font-size: 16px;
     width: 20px;
     cursor: pointer;
+    color: var(--cr-primary-text-color);
+  }
+
+  #sidebarToggleButton:hover {
+    background-color: var(--cros-sys-highlight_shape);
   }
 </style>
 
@@ -54,7 +62,6 @@
   <div id="sidebar">
     <h1 id="pageTitle">Healthd Internals</h1>
     <cr-menu-selector id="selector"
-        selectable="a"
         selected="{{selectedIndex}}"
         selected-attribute="selected">
       <template is="dom-repeat" items="[[pageList]]">
@@ -74,18 +81,14 @@
 
 <div id="main">
   <iron-pages class="full-page" selected="[[selectedIndex]]">
+    <healthd-internals-info id="infoPage">
+    </healthd-internals-info>
     <healthd-internals-telemetry id="telemetryPage">
     </healthd-internals-telemetry>
-    <healthd-internals-generic-chart id="batteryChart">
-    </healthd-internals-generic-chart>
-    <healthd-internals-generic-chart id="cpuFrequencyChart">
-    </healthd-internals-generic-chart>
-    <healthd-internals-generic-chart id="cpuUsageChart">
-    </healthd-internals-generic-chart>
-    <healthd-internals-generic-chart id="memoryChart">
-    </healthd-internals-generic-chart>
-    <healthd-internals-generic-chart id="thermalChart">
-    </healthd-internals-generic-chart>
+    <healthd-internals-process id="processPage">
+    </healthd-internals-process>
+    <healthd-internals-system-trend id="systemTrendPage">
+    </healthd-internals-system-trend>
   </iron-pages>
 </div>
 

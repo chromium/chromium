@@ -60,6 +60,10 @@ bool ContentRendererClient::IsPluginHandledExternally(
   return false;
 }
 
+bool ContentRendererClient::IsDomStorageDisabled() const {
+  return false;
+}
+
 v8::Local<v8::Object> ContentRendererClient::GetScriptableObject(
     const blink::WebElement& plugin_element,
     v8::Isolate* isolate) {
@@ -71,12 +75,6 @@ bool ContentRendererClient::OverrideCreatePlugin(
     const blink::WebPluginParams& params,
     blink::WebPlugin** plugin) {
   return false;
-}
-
-blink::WebPlugin* ContentRendererClient::CreatePluginReplacement(
-    RenderFrame* render_frame,
-    const base::FilePath& plugin_path) {
-  return nullptr;
 }
 
 void ContentRendererClient::PrepareErrorPageForHttpStatusError(
@@ -107,6 +105,11 @@ std::unique_ptr<media::Demuxer> ContentRendererClient::OverrideDemuxerForUrl(
 std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
 ContentRendererClient::CreateWebSocketHandshakeThrottleProvider() {
   return nullptr;
+}
+
+bool ContentRendererClient::ShouldUseCodeCacheWithHashing(
+    const blink::WebURL& request_url) const {
+  return true;
 }
 
 void ContentRendererClient::PostIOThreadCreated(
@@ -155,6 +158,8 @@ void ContentRendererClient::WillSendRequest(
     const url::Origin* initiator_origin,
     GURL* new_url) {}
 
+void ContentRendererClient::WaitForProcessReady() {}
+
 bool ContentRendererClient::IsPrefetchOnly(RenderFrame* render_frame) {
   return false;
 }
@@ -185,22 +190,6 @@ ContentRendererClient::CreatePrescientNetworking(RenderFrame* render_frame) {
   return nullptr;
 }
 
-bool ContentRendererClient::IsExternalPepperPlugin(
-    const std::string& module_name) {
-  return false;
-}
-
-bool ContentRendererClient::IsOriginIsolatedPepperPlugin(
-    const base::FilePath& plugin_path) {
-  // Hosting plugins in-process is inherently incompatible with attempting to
-  // process-isolate plugins from different origins.
-  auto* cmdline = base::CommandLine::ForCurrentProcess();
-  if (cmdline->HasSwitch(switches::kPpapiInProcess))
-    return false;
-
-  return true;
-}
-
 std::unique_ptr<media::KeySystemSupportRegistration>
 ContentRendererClient::GetSupportedKeySystems(
     RenderFrame* render_frame,
@@ -209,14 +198,26 @@ ContentRendererClient::GetSupportedKeySystems(
   return nullptr;
 }
 
-bool ContentRendererClient::IsSupportedAudioType(const media::AudioType& type) {
+bool ContentRendererClient::IsDecoderSupportedAudioType(
+    const media::AudioType& type) {
   // Defer to media's default support.
-  return ::media::IsDefaultSupportedAudioType(type);
+  return ::media::IsDefaultDecoderSupportedAudioType(type);
 }
 
-bool ContentRendererClient::IsSupportedVideoType(const media::VideoType& type) {
+bool ContentRendererClient::IsDecoderSupportedVideoType(
+    const media::VideoType& type) {
   // Defer to media's default support.
-  return ::media::IsDefaultSupportedVideoType(type);
+  return ::media::IsDefaultDecoderSupportedVideoType(type);
+}
+
+bool ContentRendererClient::IsEncoderSupportedVideoType(
+    const media::VideoType& type) {
+  // Defer to media's default support.
+  return ::media::IsDefaultEncoderSupportedVideoType(type);
+}
+
+bool ContentRendererClient::ShouldSuppressAudioTracks() {
+  return false;
 }
 
 media::ExternalMemoryAllocator* ContentRendererClient::GetMediaAllocator() {
@@ -226,6 +227,11 @@ media::ExternalMemoryAllocator* ContentRendererClient::GetMediaAllocator() {
 bool ContentRendererClient::IsSupportedBitstreamAudioCodec(
     media::AudioCodec codec) {
   switch (codec) {
+#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+    case media::AudioCodec::kAC3:
+    case media::AudioCodec::kEAC3:
+      return true;
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
     case media::AudioCodec::kDTS:
     case media::AudioCodec::kDTSXP2:
@@ -254,11 +260,6 @@ ContentRendererClient::CreateSpeechRecognitionClient(
   return nullptr;
 }
 #endif
-
-bool ContentRendererClient::IsPluginAllowedToUseCameraDeviceAPI(
-    const GURL& url) {
-  return false;
-}
 
 bool ContentRendererClient::AllowScriptExtensionForServiceWorker(
     const url::Origin& script_origin) {
@@ -289,8 +290,10 @@ blink::WebFrame* ContentRendererClient::FindFrame(
   return nullptr;
 }
 
-bool ContentRendererClient::IsSafeRedirectTarget(const GURL& from_url,
-                                                 const GURL& to_url) {
+bool ContentRendererClient::IsSafeRedirectTarget(
+    const GURL& from_url,
+    const GURL& to_url,
+    const std::optional<url::Origin>& request_initiator) {
   return true;
 }
 
@@ -304,7 +307,7 @@ ContentRendererClient::GetAudioRendererAlgorithmParameters(
 
 void ContentRendererClient::AppendContentSecurityPolicy(
     const blink::WebURL& url,
-    blink::WebVector<blink::WebContentSecurityPolicyHeader>* csp) {}
+    std::vector<blink::WebContentSecurityPolicyHeader>* csp) {}
 
 std::unique_ptr<media::RendererFactory>
 ContentRendererClient::GetBaseRendererFactory(

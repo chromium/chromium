@@ -5,32 +5,10 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=chrome://customize-chrome-side-panel.top-chrome/shared/sp_shared_style_lit.css.js
+ * #import=./toggle_container_shared.css.js
  * #scheme=relative
- * #include=sp-shared-style-lit
+ * #include=sp-shared-style-lit toggle-container-shared
  * #css_wrapper_metadata_end */
-
- #showToggleContainer {
-  align-items: center;
-  display: flex;
-  justify-content: space-between;
-  margin: 0;
-  padding: var(--sp-card-padding);
-}
-
-#showToggleContainer:hover {
-  background-color: var(--cr-hover-background-color);
-  cursor: pointer;
-}
-
-#showToggleContainer:focus {
-  background-color: var(--cr-menu-background-focus-color);
-  outline: none;
-}
-
-#showToggleTitle {
-  font-size: inherit;
-  line-height: inherit;
-}
 
 #options {
   align-items: center;
@@ -57,6 +35,10 @@ cr-radio-group {
   padding-inline-start: 32px;
 }
 
+.sub-options .option {
+  padding-inline-start: 48px;
+}
+
 .option:hover {
   background-color: var(--cr-hover-background-color);
   cursor: pointer;
@@ -65,6 +47,10 @@ cr-radio-group {
 .option:focus {
   background-color: var(--cr-menu-background-focus-color);
   outline: none;
+}
+
+.option[hidden] {
+  display: none;
 }
 
 /**
@@ -83,6 +69,10 @@ customize-chrome-button-label {
 }
 
 cr-radio-button {
+  gap: 0;
+}
+
+cr-checkbox {
   gap: 0;
 }
 

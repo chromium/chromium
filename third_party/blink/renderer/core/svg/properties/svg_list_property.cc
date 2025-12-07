@@ -28,13 +28,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/svg/properties/svg_list_property.h"
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -78,16 +74,9 @@ String SVGListPropertyBase::ValueAsString() const {
     return String();
 
   StringBuilder builder;
-
-  auto it = values_.begin();
-  auto it_end = values_.end();
-  while (it != it_end) {
-    builder.Append((*it)->ValueAsString());
-    ++it;
-    if (it != it_end)
-      builder.Append(' ');
-  }
-  return builder.ToString();
+  builder.AppendRange(values_, " ",
+                      [](const auto& value) { return value->ValueAsString(); });
+  return builder.ReleaseString();
 }
 
 }  // namespace blink

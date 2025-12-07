@@ -23,13 +23,16 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TYPE_TRAITS_H_
 
 #include <cstddef>
+#include <optional>
 #include <type_traits>
 #include <utility>
+#include <variant>
+
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "v8/include/cppgc/type-traits.h"  // nogncheck
 
-namespace WTF {
+namespace blink {
 
 // Returns a string that contains the type name of |T| as a substring.
 template <typename T>
@@ -108,11 +111,20 @@ template <typename T>
 struct IsTraceable : cppgc::internal::IsTraceable<T> {};
 
 template <typename T>
+concept IsTraceableV = IsTraceable<T>::value;
+
+template <typename T>
 struct IsGarbageCollectedType
     : cppgc::internal::IsGarbageCollectedOrMixinType<T> {};
 
 template <typename T>
+concept IsGarbageCollectedTypeV = IsGarbageCollectedType<T>::value;
+
+template <typename T>
 struct IsWeak : cppgc::internal::IsWeak<T> {};
+
+template <typename T>
+concept IsWeakV = IsWeak<T>::value;
 
 template <typename T>
 struct IsMemberType : std::bool_constant<cppgc::IsMemberTypeV<T>> {};
@@ -169,46 +181,57 @@ class IsGarbageCollectedType<void> {
   static const bool value = false;
 };
 
-template <typename T,
-          bool = std::is_function<typename std::remove_const<
-                     typename std::remove_pointer<T>::type>::type>::value ||
-                 std::is_void<typename std::remove_const<
-                     typename std::remove_pointer<T>::type>::type>::value>
-class IsPointerToGarbageCollectedType {
- public:
-  static const bool value = false;
-};
+template <typename T>
+concept IsPointerToGarbageCollectedType =
+    std::is_pointer_v<T> &&
+    !std::is_function_v<std::remove_const_t<std::remove_pointer_t<T>>> &&
+    !std::is_void_v<std::remove_const_t<std::remove_pointer_t<T>>> &&
+    IsGarbageCollectedType<
+        std::remove_const_t<std::remove_pointer_t<T>>>::value;
 
 template <typename T>
-class IsPointerToGarbageCollectedType<T*, false> {
- public:
-  static const bool value = IsGarbageCollectedType<T>::value;
-};
+concept IsPointerToTraceableType =
+    std::is_pointer_v<T> &&
+    !std::is_function_v<std::remove_const_t<std::remove_pointer_t<T>>> &&
+    !std::is_void_v<std::remove_const_t<std::remove_pointer_t<T>>> &&
+    IsTraceable<std::remove_const_t<std::remove_pointer_t<T>>>::value;
+
+namespace internal {
 
 template <typename T>
-concept IsStackAllocatedType =
+concept HasStackAllocatedMarker =
     requires { typename T::IsStackAllocatedTypeMarker; };
 
+}  // namespace internal
+
 template <typename T>
-struct IsPointerToGced {
- private:
-  typedef char YesType;
-  struct NoType {
-    char padding[8];
-  };
-
-  template <typename X,
-            typename = std::enable_if_t<WTF::IsGarbageCollectedType<X>::value>>
-  static YesType SubclassCheck(X**);
-  static NoType SubclassCheck(...);
-  static T* t_;
-
+class IsStackAllocatedType {
  public:
-  static const bool value = sizeof(SubclassCheck(t_)) == sizeof(YesType);
+  static constexpr bool value = internal::HasStackAllocatedMarker<T>;
 };
 
-}  // namespace WTF
+template <typename T, typename U>
+class IsStackAllocatedType<std::pair<T, U>> {
+ public:
+  static constexpr bool value =
+      IsStackAllocatedType<T>::value || IsStackAllocatedType<U>::value;
+};
 
-using WTF::IsGarbageCollectedType;
+template <typename T>
+class IsStackAllocatedType<std::optional<T>> {
+ public:
+  static constexpr bool value = IsStackAllocatedType<T>::value;
+};
+
+template <typename... Ts>
+class IsStackAllocatedType<std::variant<Ts...>> {
+ public:
+  static constexpr bool value = std::disjunction_v<IsStackAllocatedType<Ts>...>;
+};
+
+template <typename T>
+concept IsStackAllocatedTypeV = IsStackAllocatedType<T>::value;
+
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TYPE_TRAITS_H_

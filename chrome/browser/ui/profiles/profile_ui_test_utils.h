@@ -7,13 +7,8 @@
 
 #include "base/files/file_path.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/ui/webui/signin/login_ui_service.h"
-#endif
 
 class ManagedUserProfileNoticeHandler;
 
@@ -57,11 +52,6 @@ ManagedUserProfileNoticeHandler* ExpectPickerManagedUserNoticeScreenType(
 void ExpectPickerManagedUserNoticeScreenTypeAndProceed(
     ManagedUserProfileNoticeUI::ScreenType expected_type,
     signin::SigninChoice choice);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void CompleteLacrosFirstRun(
-    LoginUIService::SyncConfirmationUIClosedResult result);
-#endif
 
 }  // namespace profiles::testing
 

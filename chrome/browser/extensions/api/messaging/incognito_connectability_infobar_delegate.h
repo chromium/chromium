@@ -10,6 +10,9 @@
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/extensions/api/messaging/incognito_connectability.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace infobars {
 class ContentInfoBarManager;
@@ -23,7 +26,7 @@ class IncognitoConnectabilityInfoBarDelegate : public ConfirmInfoBarDelegate {
       IncognitoConnectability::ScopedAlertTracker::Mode)>;
 
   // Creates a confirmation infobar and delegate and adds the infobar to
-  // |infobar_manager|.
+  // `infobar_manager`.
   static infobars::InfoBar* Create(
       infobars::ContentInfoBarManager* infobar_manager,
       const std::u16string& message,

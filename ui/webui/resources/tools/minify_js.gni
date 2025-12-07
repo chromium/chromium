@@ -15,7 +15,7 @@ template("minify_js") {
                              "out_folder",
                            ])
 
-    inputs = []
+    inputs = [ "//ui/webui/resources/tools/minify_js.js" ]
     outputs = []
     foreach(f, invoker.in_files) {
       assert(get_path_info(f, "extension") == "js")

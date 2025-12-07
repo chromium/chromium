@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:ansollan@microsoft.com">
+<link rel=help href="https://github.com/w3c/csswg-drafts/issues/10332">
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+
+<style>
+  .customizable-select, ::picker(select) {
+    appearance: base-select;
+  }
+</style>
+
+<select>
+  <label></label>
+  <optgroup>
+    <option>..</option>
+    <legend></legend>
+  </optgroup>
+  <option>
+    <button></button>
+  </option>
+  <option>
+    <div tabindex="1"></div>
+  </option>
+  <optgroup>
+    <legend>
+      <button></button>
+    </legend>
+  </optgroup>
+</select>
+
+<script>
+const disallowedSelectChildId = 5481;
+const disallowedOptGroupChildId = 5482;
+const nonPhrasingContentOptionChild = 5483;
+const interactiveContentOptionChild = 5484;
+const interactiveContentLegendChild = 5485;
+
+promise_test(async () => {
+  await new Promise(requestAnimationFrame);
+  assert_false(internals.isUseCounted(document, disallowedSelectChildId));
+  assert_false(internals.isUseCounted(document, disallowedOptGroupChildId));
+  assert_false(internals.isUseCounted(document, nonPhrasingContentOptionChild));
+  assert_false(internals.isUseCounted(document, interactiveContentOptionChild));
+  assert_false(internals.isUseCounted(document, interactiveContentLegendChild));
+  document.querySelector('select').classList.add('customizable-select');
+  await new Promise(requestAnimationFrame);
+  assert_true(internals.isUseCounted(document, disallowedSelectChildId));
+  assert_true(internals.isUseCounted(document, disallowedOptGroupChildId));
+  assert_true(internals.isUseCounted(document, nonPhrasingContentOptionChild));
+  assert_true(internals.isUseCounted(document, interactiveContentOptionChild));
+  assert_true(internals.isUseCounted(document, interactiveContentLegendChild));
+}, 'UseCounter should count when the content model of customizable <select> has not been followed.');
+</script>

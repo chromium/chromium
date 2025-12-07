@@ -31,10 +31,6 @@ struct CORE_EXPORT GridPlacementData {
            line_resolver == other.line_resolver;
   }
 
-  bool operator!=(const GridPlacementData& other) const {
-    return !(*this == other);
-  }
-
   wtf_size_t AutoRepeatTrackCount(
       GridTrackSizingDirection track_direction) const {
     return line_resolver.AutoRepeatTrackCount(track_direction);
@@ -100,10 +96,6 @@ class CORE_EXPORT GridLayoutData {
 
   bool operator==(const GridLayoutData& other) const {
     return AreEqual(columns_, other.columns_) && AreEqual(rows_, other.rows_);
-  }
-
-  bool operator!=(const GridLayoutData& other) const {
-    return !(*this == other);
   }
 
   bool HasSubgriddedAxis(GridTrackSizingDirection track_direction) const {
@@ -178,14 +170,14 @@ class GridLayoutTree : public RefCounted<GridLayoutTree> {
  public:
   struct GridTreeNode {
     GridTreeNode(const GridLayoutData& layout_data, wtf_size_t subtree_size)
-        : layout_data(layout_data),
-          subtree_size(subtree_size),
-          has_unresolved_geometry(layout_data.Columns().HasIndefiniteSet() ||
-                                  layout_data.Rows().HasIndefiniteSet()) {}
+        : has_unresolved_geometry(layout_data.Columns().HasIndefiniteSet() ||
+                                  layout_data.Rows().HasIndefiniteSet()),
+          layout_data(layout_data),
+          subtree_size(subtree_size) {}
 
+    bool has_unresolved_geometry;
     GridLayoutData layout_data;
     wtf_size_t subtree_size;
-    bool has_unresolved_geometry;
   };
 
   explicit GridLayoutTree(Vector<GridTreeNode, 16>&& tree_data)
@@ -230,44 +222,61 @@ class GridLayoutTree : public RefCounted<GridLayoutTree> {
   Vector<GridTreeNode, 16> tree_data_;
 };
 
+using GridLayoutTreePtr = scoped_refptr<const GridLayoutTree>;
+
 // This class represents a subtree in a `GridLayoutTree` and mostly serves two
 // purposes: provide seamless iteration over the tree structure and compare
 // input subtrees to invalidate a subgrid's cached layout result.
-class GridLayoutSubtree
-    : public GridSubtree<GridLayoutSubtree,
-                         scoped_refptr<const GridLayoutTree>> {
+class GridLayoutSubtree : public GridSubtree<GridLayoutTree> {
   DISALLOW_NEW();
 
  public:
   GridLayoutSubtree() = default;
 
-  explicit GridLayoutSubtree(scoped_refptr<const GridLayoutTree> layout_tree,
+  explicit GridLayoutSubtree(GridLayoutTreePtr layout_tree,
                              wtf_size_t subtree_root = 0)
-      : GridSubtree(std::move(layout_tree), subtree_root) {}
+      : layout_tree_(std::move(layout_tree)) {
+    SetSubtreeRoot(LayoutTree(), subtree_root);
+  }
 
-  GridLayoutSubtree(const scoped_refptr<const GridLayoutTree>& layout_tree,
-                    wtf_size_t parent_end_index,
-                    wtf_size_t subtree_root)
-      : GridSubtree(layout_tree, parent_end_index, subtree_root) {}
+  GridLayoutSubtree FirstChild() const {
+    return GridLayoutSubtree(layout_tree_,
+                             GridSubtree::FirstChild(LayoutTree()));
+  }
+
+  GridLayoutSubtree NextSibling() const {
+    return GridLayoutSubtree(layout_tree_,
+                             GridSubtree::NextSibling(LayoutTree()));
+  }
 
   // This method is meant to be used for layout invalidation, so we only care
   // about comparing the layout data of both subtrees.
   bool operator==(const GridLayoutSubtree& other) const {
-    return (grid_tree_ && other.grid_tree_)
-               ? grid_tree_->AreSubtreesEqual(subtree_root_, *other.grid_tree_,
-                                              other.subtree_root_)
-               : !grid_tree_ && !other.grid_tree_;
+    return (layout_tree_ && other.layout_tree_)
+               ? layout_tree_->AreSubtreesEqual(
+                     subtree_root_, *other.layout_tree_, other.subtree_root_)
+               : !layout_tree_ && !other.layout_tree_;
   }
 
   bool HasUnresolvedGeometry() const {
-    DCHECK(grid_tree_);
-    return grid_tree_->HasUnresolvedGeometry(subtree_root_);
+    return LayoutTree().HasUnresolvedGeometry(subtree_root_);
   }
 
   const GridLayoutData& LayoutData() const {
-    DCHECK(grid_tree_);
-    return grid_tree_->LayoutData(subtree_root_);
+    return LayoutTree().LayoutData(subtree_root_);
   }
+
+ private:
+  GridLayoutSubtree(const GridLayoutTreePtr& layout_tree, GridSubtree subtree)
+      : GridSubtree(std::move(subtree)), layout_tree_(layout_tree) {}
+
+  const GridLayoutTree& LayoutTree() const {
+    DCHECK(layout_tree_);
+    return *layout_tree_;
+  }
+
+  // Pointer to the layout tree shared by multiple subtree instances.
+  GridLayoutTreePtr layout_tree_{nullptr};
 };
 
 }  // namespace blink

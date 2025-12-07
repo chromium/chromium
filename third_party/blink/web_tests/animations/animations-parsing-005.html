@@ -27,60 +27,60 @@ function checkAnimationShorthandValue() {
 test(() => {
   style.animation = "";
   // Test initial value.
-  assert_equals(computedStyle.animation, 'none 0s ease 0s 1 normal none running');
-  assert_equals(computedStyle.webkitAnimation, 'none 0s ease 0s 1 normal none running');
+  assert_equals(computedStyle.animation, 'none');
+  assert_equals(computedStyle.webkitAnimation, 'none');
 
   style.animation = "myShorthandAnim";
   assert_not_equals(Object.keys(style).indexOf('animation'), -1);
   assert_not_equals(Object.keys(style).indexOf('webkitAnimation'), -1);
   assert_equals(style.animation, 'auto ease 0s 1 normal none running myShorthandAnim');
-  assert_equals(computedStyle.animation, '0s ease 0s 1 normal none running myShorthandAnim');
+  assert_equals(computedStyle.animation, 'myShorthandAnim');
   assert_equals(style.webkitAnimation, 'auto ease 0s 1 normal none running myShorthandAnim');
-  assert_equals(computedStyle.webkitAnimation, '0s ease 0s 1 normal none running myShorthandAnim');
+  assert_equals(computedStyle.webkitAnimation, 'myShorthandAnim');
   assert_true(checkAnimationShorthandValue());
 
   style.animation = "none";
   assert_not_equals(Object.keys(style).indexOf('animation'), -1);
   assert_not_equals(Object.keys(style).indexOf('webkitAnimation'), -1);
   assert_equals(style.animation, 'auto ease 0s 1 normal none running none');
-  assert_equals(computedStyle.animation, '0s ease 0s 1 normal none running none');
+  assert_equals(computedStyle.animation, 'none');
   assert_equals(style.webkitAnimation, 'auto ease 0s 1 normal none running none');
-  assert_equals(computedStyle.webkitAnimation, '0s ease 0s 1 normal none running none');
+  assert_equals(computedStyle.webkitAnimation, 'none');
   assert_true(checkAnimationShorthandValue());
 
   style.animation = "none 20s";
   assert_equals(style.animation, '20s ease 0s 1 normal none running none');
-  assert_equals(computedStyle.animation, '20s ease 0s 1 normal none running none');
+  assert_equals(computedStyle.animation, '20s');
   assert_equals(style.webkitAnimation, '20s ease 0s 1 normal none running none');
-  assert_equals(computedStyle.webkitAnimation, '20s ease 0s 1 normal none running none');
+  assert_equals(computedStyle.webkitAnimation, '20s');
   assert_true(checkAnimationShorthandValue());
 
   style.animation = "myShorthandAnim none 20s";
   assert_equals(style.animation, '20s ease 0s 1 normal none running myShorthandAnim');
-  assert_equals(computedStyle.animation, '20s ease 0s 1 normal none running myShorthandAnim');
+  assert_equals(computedStyle.animation, '20s myShorthandAnim');
   assert_equals(style.webkitAnimation, '20s ease 0s 1 normal none running myShorthandAnim');
-  assert_equals(computedStyle.webkitAnimation, '20s ease 0s 1 normal none running myShorthandAnim');
+  assert_equals(computedStyle.webkitAnimation, '20s myShorthandAnim');
   assert_true(checkAnimationShorthandValue());
 
   style.animation = "myShorthandAnim ease-in none 20s";
   assert_equals(style.animation, '20s ease-in 0s 1 normal none running myShorthandAnim');
-  assert_equals(computedStyle.animation, '20s ease-in 0s 1 normal none running myShorthandAnim');
+  assert_equals(computedStyle.animation, '20s ease-in myShorthandAnim');
   assert_equals(style.webkitAnimation, '20s ease-in 0s 1 normal none running myShorthandAnim');
-  assert_equals(computedStyle.webkitAnimation, '20s ease-in 0s 1 normal none running myShorthandAnim');
+  assert_equals(computedStyle.webkitAnimation, '20s ease-in myShorthandAnim');
   assert_true(checkAnimationShorthandValue());
 
   style.animation = "myShorthandAnim ease-in 20s";
   assert_equals(style.animation, '20s ease-in 0s 1 normal none running myShorthandAnim');
-  assert_equals(computedStyle.animation, '20s ease-in 0s 1 normal none running myShorthandAnim');
+  assert_equals(computedStyle.animation, '20s ease-in myShorthandAnim');
   assert_equals(style.webkitAnimation, '20s ease-in 0s 1 normal none running myShorthandAnim');
-  assert_equals(computedStyle.webkitAnimation, '20s ease-in 0s 1 normal none running myShorthandAnim');
+  assert_equals(computedStyle.webkitAnimation, '20s ease-in myShorthandAnim');
   assert_true(checkAnimationShorthandValue());
 
   style.animation = "myShorthandAnim ease-in 20s 10s";
   assert_equals(style.animation, '20s ease-in 10s 1 normal none running myShorthandAnim');
-  assert_equals(computedStyle.animation, '20s ease-in 10s 1 normal none running myShorthandAnim');
+  assert_equals(computedStyle.animation, '20s ease-in 10s myShorthandAnim');
   assert_equals(style.webkitAnimation, '20s ease-in 10s 1 normal none running myShorthandAnim');
-  assert_equals(computedStyle.webkitAnimation, '20s ease-in 10s 1 normal none running myShorthandAnim');
+  assert_equals(computedStyle.webkitAnimation, '20s ease-in 10s myShorthandAnim');
   // Let's double check here the delay and duration. As stated in the spec the first value parsed
   // is assigned to the duration.
   assert_equals(computedStyle.animationDuration, '20s');
@@ -91,9 +91,9 @@ test(() => {
 
   style.animation = "myShorthandAnim 20s ease-in 10s";
   assert_equals(style.animation, '20s ease-in 10s 1 normal none running myShorthandAnim');
-  assert_equals(computedStyle.animation, '20s ease-in 10s 1 normal none running myShorthandAnim');
+  assert_equals(computedStyle.animation, '20s ease-in 10s myShorthandAnim');
   assert_equals(style.webkitAnimation, '20s ease-in 10s 1 normal none running myShorthandAnim');
-  assert_equals(computedStyle.webkitAnimation, '20s ease-in 10s 1 normal none running myShorthandAnim');
+  assert_equals(computedStyle.webkitAnimation, '20s ease-in 10s myShorthandAnim');
   assert_equals(computedStyle.animationDuration, '20s');
   assert_equals(computedStyle.webkitAnimationDuration, '20s');
   assert_equals(computedStyle.animationDelay, '10s');
@@ -102,9 +102,9 @@ test(() => {
 
   style.animation = "myShorthandAnim paused 20s ease-in 10s";
   assert_equals(style.animation, '20s ease-in 10s 1 normal none paused myShorthandAnim');
-  assert_equals(computedStyle.animation, '20s ease-in 10s 1 normal none paused myShorthandAnim');
+  assert_equals(computedStyle.animation, '20s ease-in 10s paused myShorthandAnim');
   assert_equals(style.webkitAnimation, '20s ease-in 10s 1 normal none paused myShorthandAnim');
-  assert_equals(computedStyle.webkitAnimation, '20s ease-in 10s 1 normal none paused myShorthandAnim');
+  assert_equals(computedStyle.webkitAnimation, '20s ease-in 10s paused myShorthandAnim');
   assert_equals(computedStyle.animationDuration, '20s');
   assert_equals(computedStyle.webkitAnimationDuration, '20s');
   assert_equals(computedStyle.animationDelay, '10s');
@@ -113,51 +113,51 @@ test(() => {
 
   style.animation = "myShorthandAnim ease-in both 20s 5";
   assert_equals(style.animation, '20s ease-in 0s 5 normal both running myShorthandAnim');
-  assert_equals(computedStyle.animation, '20s ease-in 0s 5 normal both running myShorthandAnim');
+  assert_equals(computedStyle.animation, '20s ease-in 5 both myShorthandAnim');
   assert_equals(style.webkitAnimation, '20s ease-in 0s 5 normal both running myShorthandAnim');
-  assert_equals(computedStyle.webkitAnimation, '20s ease-in 0s 5 normal both running myShorthandAnim');
+  assert_equals(computedStyle.webkitAnimation, '20s ease-in 5 both myShorthandAnim');
   assert_true(checkAnimationShorthandValue());
 
   style.animation = "myShorthandAnim ease-in 20s 5 backwards";
   assert_equals(style.animation, '20s ease-in 0s 5 normal backwards running myShorthandAnim');
-  assert_equals(computedStyle.animation, '20s ease-in 0s 5 normal backwards running myShorthandAnim');
+  assert_equals(computedStyle.animation, '20s ease-in 5 backwards myShorthandAnim');
   assert_equals(style.webkitAnimation, '20s ease-in 0s 5 normal backwards running myShorthandAnim');
-  assert_equals(computedStyle.webkitAnimation, '20s ease-in 0s 5 normal backwards running myShorthandAnim');
+  assert_equals(computedStyle.webkitAnimation, '20s ease-in 5 backwards myShorthandAnim');
   assert_true(checkAnimationShorthandValue());
 
   style.animation = "myShorthandAnim forwards 20s 5";
   assert_equals(style.animation, '20s ease 0s 5 normal forwards running myShorthandAnim');
-  assert_equals(computedStyle.animation, '20s ease 0s 5 normal forwards running myShorthandAnim');
+  assert_equals(computedStyle.animation, '20s 5 forwards myShorthandAnim');
   assert_equals(style.webkitAnimation, '20s ease 0s 5 normal forwards running myShorthandAnim');
-  assert_equals(computedStyle.webkitAnimation, '20s ease 0s 5 normal forwards running myShorthandAnim');
+  assert_equals(computedStyle.webkitAnimation, '20s 5 forwards myShorthandAnim');
   assert_true(checkAnimationShorthandValue());
 
   style.animation = "myShorthandAnim ease-in 20s 5";
   assert_equals(style.animation, '20s ease-in 0s 5 normal none running myShorthandAnim');
-  assert_equals(computedStyle.animation, '20s ease-in 0s 5 normal none running myShorthandAnim');
+  assert_equals(computedStyle.animation, '20s ease-in 5 myShorthandAnim');
   assert_equals(style.webkitAnimation, '20s ease-in 0s 5 normal none running myShorthandAnim');
-  assert_equals(computedStyle.webkitAnimation, '20s ease-in 0s 5 normal none running myShorthandAnim');
+  assert_equals(computedStyle.webkitAnimation, '20s ease-in 5 myShorthandAnim');
   assert_true(checkAnimationShorthandValue());
 
   style.animation = "myShorthandAnim reverse ease-in 20s 5";
   assert_equals(style.animation, '20s ease-in 0s 5 reverse none running myShorthandAnim');
-  assert_equals(computedStyle.animation, '20s ease-in 0s 5 reverse none running myShorthandAnim');
+  assert_equals(computedStyle.animation, '20s ease-in 5 reverse myShorthandAnim');
   assert_equals(style.webkitAnimation, '20s ease-in 0s 5 reverse none running myShorthandAnim');
-  assert_equals(computedStyle.webkitAnimation, '20s ease-in 0s 5 reverse none running myShorthandAnim');
+  assert_equals(computedStyle.webkitAnimation, '20s ease-in 5 reverse myShorthandAnim');
   assert_true(checkAnimationShorthandValue());
 
   style.animation = "myShorthandAnim reverse ease-in backwards 20s 5 paused";
   assert_equals(style.animation, '20s ease-in 0s 5 reverse backwards paused myShorthandAnim');
-  assert_equals(computedStyle.animation, '20s ease-in 0s 5 reverse backwards paused myShorthandAnim');
+  assert_equals(computedStyle.animation, '20s ease-in 5 reverse backwards paused myShorthandAnim');
   assert_equals(style.webkitAnimation, '20s ease-in 0s 5 reverse backwards paused myShorthandAnim');
-  assert_equals(computedStyle.webkitAnimation, '20s ease-in 0s 5 reverse backwards paused myShorthandAnim');
+  assert_equals(computedStyle.webkitAnimation, '20s ease-in 5 reverse backwards paused myShorthandAnim');
   assert_true(checkAnimationShorthandValue());
 
   style.animation = "myShorthandAnim ease-in 20s 10s, width cubic-bezier(0.32, 0, 1, 1) 10s 20s";
   assert_equals(style.animation, '20s ease-in 10s 1 normal none running myShorthandAnim, 10s cubic-bezier(0.32, 0, 1, 1) 20s 1 normal none running width');
-  assert_equals(computedStyle.animation, '20s ease-in 10s 1 normal none running myShorthandAnim, 10s cubic-bezier(0.32, 0, 1, 1) 20s 1 normal none running width');
+  assert_equals(computedStyle.animation, '20s ease-in 10s myShorthandAnim, 10s cubic-bezier(0.32, 0, 1, 1) 20s width');
   assert_equals(style.webkitAnimation, '20s ease-in 10s 1 normal none running myShorthandAnim, 10s cubic-bezier(0.32, 0, 1, 1) 20s 1 normal none running width');
-  assert_equals(computedStyle.webkitAnimation, '20s ease-in 10s 1 normal none running myShorthandAnim, 10s cubic-bezier(0.32, 0, 1, 1) 20s 1 normal none running width');
+  assert_equals(computedStyle.webkitAnimation, '20s ease-in 10s myShorthandAnim, 10s cubic-bezier(0.32, 0, 1, 1) 20s width');
   // Let's double check here the delay and duration. As stated in the spec the first value parsed
   // is assigned to the duration.
   assert_equals(computedStyle.animationDuration, '20s, 10s');
@@ -168,9 +168,9 @@ test(() => {
 
   style.animation = "myShorthandAnim ease-in 20s 10s paused, width cubic-bezier(0.32, 0, 1, 1) 10s 20s";
   assert_equals(style.animation, '20s ease-in 10s 1 normal none paused myShorthandAnim, 10s cubic-bezier(0.32, 0, 1, 1) 20s 1 normal none running width');
-  assert_equals(computedStyle.animation, '20s ease-in 10s 1 normal none paused myShorthandAnim, 10s cubic-bezier(0.32, 0, 1, 1) 20s 1 normal none running width');
+  assert_equals(computedStyle.animation, '20s ease-in 10s paused myShorthandAnim, 10s cubic-bezier(0.32, 0, 1, 1) 20s width');
   assert_equals(style.webkitAnimation, '20s ease-in 10s 1 normal none paused myShorthandAnim, 10s cubic-bezier(0.32, 0, 1, 1) 20s 1 normal none running width');
-  assert_equals(computedStyle.webkitAnimation, '20s ease-in 10s 1 normal none paused myShorthandAnim, 10s cubic-bezier(0.32, 0, 1, 1) 20s 1 normal none running width');
+  assert_equals(computedStyle.webkitAnimation, '20s ease-in 10s paused myShorthandAnim, 10s cubic-bezier(0.32, 0, 1, 1) 20s width');
   // Let's double check here the delay and duration. As stated in the spec the first value parsed
   // is assigned to the duration.
   assert_equals(computedStyle.animationDuration, '20s, 10s');
@@ -181,49 +181,49 @@ test(() => {
 
   style.animation = "myShorthandAnim reverse ease-in 20s 10s paused, test cubic-bezier(0.32, 0, 1, 1) 10s 20s both";
   assert_equals(style.animation, '20s ease-in 10s 1 reverse none paused myShorthandAnim, 10s cubic-bezier(0.32, 0, 1, 1) 20s 1 normal both running test');
-  assert_equals(computedStyle.animation, '20s ease-in 10s 1 reverse none paused myShorthandAnim, 10s cubic-bezier(0.32, 0, 1, 1) 20s 1 normal both running test');
+  assert_equals(computedStyle.animation, '20s ease-in 10s reverse paused myShorthandAnim, 10s cubic-bezier(0.32, 0, 1, 1) 20s both test');
   assert_equals(style.webkitAnimation, '20s ease-in 10s 1 reverse none paused myShorthandAnim, 10s cubic-bezier(0.32, 0, 1, 1) 20s 1 normal both running test');
-  assert_equals(computedStyle.webkitAnimation, '20s ease-in 10s 1 reverse none paused myShorthandAnim, 10s cubic-bezier(0.32, 0, 1, 1) 20s 1 normal both running test');
+  assert_equals(computedStyle.webkitAnimation, '20s ease-in 10s reverse paused myShorthandAnim, 10s cubic-bezier(0.32, 0, 1, 1) 20s both test');
   assert_true(checkAnimationShorthandValue());
 
   style.animation = "none, none";
   assert_equals(style.animation, 'auto ease 0s 1 normal none running none, auto ease 0s 1 normal none running none');
-  assert_equals(computedStyle.animation, '0s ease 0s 1 normal none running none, 0s ease 0s 1 normal none running none');
+  assert_equals(computedStyle.animation, 'none, none');
   assert_equals(style.webkitAnimation, 'auto ease 0s 1 normal none running none, auto ease 0s 1 normal none running none');
-  assert_equals(computedStyle.webkitAnimation, '0s ease 0s 1 normal none running none, 0s ease 0s 1 normal none running none');
+  assert_equals(computedStyle.webkitAnimation, 'none, none');
 
   style.animation = "ease-in test 20s 10s, none";
   assert_equals(style.animation, '20s ease-in 10s 1 normal none running test, auto ease 0s 1 normal none running none');
-  assert_equals(computedStyle.animation, '20s ease-in 10s 1 normal none running test, 0s ease 0s 1 normal none running none');
+  assert_equals(computedStyle.animation, '20s ease-in 10s test, none');
   assert_equals(style.webkitAnimation, '20s ease-in 10s 1 normal none running test, auto ease 0s 1 normal none running none');
-  assert_equals(computedStyle.webkitAnimation, '20s ease-in 10s 1 normal none running test, 0s ease 0s 1 normal none running none');
+  assert_equals(computedStyle.webkitAnimation, '20s ease-in 10s test, none');
   assert_equals(computedStyle.animationName, 'test, none');
 
   style.animation = "none, ease-in test 20s 10s";
   assert_equals(style.animation, 'auto ease 0s 1 normal none running none, 20s ease-in 10s 1 normal none running test');
-  assert_equals(computedStyle.animation, '0s ease 0s 1 normal none running none, 20s ease-in 10s 1 normal none running test');
+  assert_equals(computedStyle.animation, 'none, 20s ease-in 10s test');
   assert_equals(style.webkitAnimation, 'auto ease 0s 1 normal none running none, 20s ease-in 10s 1 normal none running test');
-  assert_equals(computedStyle.webkitAnimation, '0s ease 0s 1 normal none running none, 20s ease-in 10s 1 normal none running test');
+  assert_equals(computedStyle.webkitAnimation, 'none, 20s ease-in 10s test');
   assert_equals(computedStyle.animationName, 'none, test');
 
   style.animation = "myShorthandAnim both 20s 10s ease-in paused, myShorthandAnim ease-out 20s";
   assert_equals(style.animation, '20s ease-in 10s 1 normal both paused myShorthandAnim, 20s ease-out 0s 1 normal none running myShorthandAnim');
-  assert_equals(computedStyle.animation, '20s ease-in 10s 1 normal both paused myShorthandAnim, 20s ease-out 0s 1 normal none running myShorthandAnim');
+  assert_equals(computedStyle.animation, '20s ease-in 10s both paused myShorthandAnim, 20s ease-out myShorthandAnim');
   assert_equals(style.webkitAnimation, '20s ease-in 10s 1 normal both paused myShorthandAnim, 20s ease-out 0s 1 normal none running myShorthandAnim');
-  assert_equals(computedStyle.webkitAnimation, '20s ease-in 10s 1 normal both paused myShorthandAnim, 20s ease-out 0s 1 normal none running myShorthandAnim');
+  assert_equals(computedStyle.webkitAnimation, '20s ease-in 10s both paused myShorthandAnim, 20s ease-out myShorthandAnim');
 
   style.animation = "myShorthandAnim ease-in 4 20s 10s backwards, myShorthandAnim2 50 ease-out 20s";
   assert_equals(style.animation, '20s ease-in 10s 4 normal backwards running myShorthandAnim, 20s ease-out 0s 50 normal none running myShorthandAnim2');
-  assert_equals(computedStyle.animation, '20s ease-in 10s 4 normal backwards running myShorthandAnim, 20s ease-out 0s 50 normal none running myShorthandAnim2');
+  assert_equals(computedStyle.animation, '20s ease-in 10s 4 backwards myShorthandAnim, 20s ease-out 50 myShorthandAnim2');
   assert_equals(style.webkitAnimation, '20s ease-in 10s 4 normal backwards running myShorthandAnim, 20s ease-out 0s 50 normal none running myShorthandAnim2');
-  assert_equals(computedStyle.webkitAnimation, '20s ease-in 10s 4 normal backwards running myShorthandAnim, 20s ease-out 0s 50 normal none running myShorthandAnim2');
+  assert_equals(computedStyle.webkitAnimation, '20s ease-in 10s 4 backwards myShorthandAnim, 20s ease-out 50 myShorthandAnim2');
   assert_true(checkAnimationShorthandValue());
 
   style.animation = "myShorthandAnim2 reverse ease-out 20s, ease-in myShorthandAnim 20s 10s paused";
   assert_equals(style.animation, '20s ease-out 0s 1 reverse none running myShorthandAnim2, 20s ease-in 10s 1 normal none paused myShorthandAnim');
-  assert_equals(computedStyle.animation, '20s ease-out 0s 1 reverse none running myShorthandAnim2, 20s ease-in 10s 1 normal none paused myShorthandAnim');
+  assert_equals(computedStyle.animation, '20s ease-out reverse myShorthandAnim2, 20s ease-in 10s paused myShorthandAnim');
   assert_equals(style.webkitAnimation, '20s ease-out 0s 1 reverse none running myShorthandAnim2, 20s ease-in 10s 1 normal none paused myShorthandAnim');
-  assert_equals(computedStyle.webkitAnimation, '20s ease-out 0s 1 reverse none running myShorthandAnim2, 20s ease-in 10s 1 normal none paused myShorthandAnim');
+  assert_equals(computedStyle.webkitAnimation, '20s ease-out reverse myShorthandAnim2, 20s ease-in 10s paused myShorthandAnim');
   assert_true(checkAnimationShorthandValue());
 }, "Valid animation shorthand values.");
 
@@ -232,93 +232,93 @@ test(() => {
 
   style.animation = "solid red green";
   assert_equals(style.animation, '');
-  assert_equals(computedStyle.animation, 'none 0s ease 0s 1 normal none running');
+  assert_equals(computedStyle.animation, 'none');
   assert_equals(style.webkitAnimation, '');
-  assert_equals(computedStyle.webkitAnimation, 'none 0s ease 0s 1 normal none running');
+  assert_equals(computedStyle.webkitAnimation, 'none');
 
   style.animation = "all 30s width height ease-in";
   assert_equals(style.animation, '');
-  assert_equals(computedStyle.animation, 'none 0s ease 0s 1 normal none running');
+  assert_equals(computedStyle.animation, 'none');
   assert_equals(style.webkitAnimation, '');
-  assert_equals(computedStyle.webkitAnimation, 'none 0s ease 0s 1 normal none running');
+  assert_equals(computedStyle.webkitAnimation, 'none');
 
   style.animation = "animName 30s ease-in 20s, 20px";
   assert_equals(style.animation, '');
-  assert_equals(computedStyle.animation, 'none 0s ease 0s 1 normal none running');
+  assert_equals(computedStyle.animation, 'none');
   assert_equals(style.webkitAnimation, '');
-  assert_equals(computedStyle.webkitAnimation, 'none 0s ease 0s 1 normal none running');
+  assert_equals(computedStyle.webkitAnimation, 'none');
 
   style.animation = "test 30s ease-in 20s, step-start(2)";
   assert_equals(style.animation, '');
-  assert_equals(computedStyle.animation, 'none 0s ease 0s 1 normal none running');
+  assert_equals(computedStyle.animation, 'none');
   assert_equals(style.webkitAnimation, '');
-  assert_equals(computedStyle.webkitAnimation, 'none 0s ease 0s 1 normal none running');
+  assert_equals(computedStyle.webkitAnimation, 'none');
 
   style.animation = "ease-in opacity top 20s 10s myAnim, none";
   assert_equals(style.animation, '');
-  assert_equals(computedStyle.animation, 'none 0s ease 0s 1 normal none running');
+  assert_equals(computedStyle.animation, 'none');
   assert_equals(style.webkitAnimation, '');
-  assert_equals(computedStyle.webkitAnimation, 'none 0s ease 0s 1 normal none running');
+  assert_equals(computedStyle.webkitAnimation, 'none');
 
   style.animation = "none, ease-in opacity top 20s 10s myAnim";
   assert_equals(style.animation, '');
-  assert_equals(computedStyle.animation, 'none 0s ease 0s 1 normal none running');
+  assert_equals(computedStyle.animation, 'none');
   assert_equals(style.webkitAnimation, '');
-  assert_equals(computedStyle.webkitAnimation, 'none 0s ease 0s 1 normal none running');
+  assert_equals(computedStyle.webkitAnimation, 'none');
 
   style.animation = ",";
   assert_equals(style.animation, '');
-  assert_equals(computedStyle.animation, 'none 0s ease 0s 1 normal none running');
+  assert_equals(computedStyle.animation, 'none');
   assert_equals(style.webkitAnimation, '');
-  assert_equals(computedStyle.webkitAnimation, 'none 0s ease 0s 1 normal none running');
+  assert_equals(computedStyle.webkitAnimation, 'none');
 
   style.animation = "running,";
   assert_equals(style.animation, '');
-  assert_equals(computedStyle.animation, 'none 0s ease 0s 1 normal none running');
+  assert_equals(computedStyle.animation, 'none');
   assert_equals(style.webkitAnimation, '');
-  assert_equals(computedStyle.webkitAnimation, 'none 0s ease 0s 1 normal none running');
+  assert_equals(computedStyle.webkitAnimation, 'none');
 
   style.animation = ", alternate";
   assert_equals(style.animation, '');
-  assert_equals(computedStyle.animation, 'none 0s ease 0s 1 normal none running');
+  assert_equals(computedStyle.animation, 'none');
   assert_equals(style.webkitAnimation, '');
-  assert_equals(computedStyle.webkitAnimation, 'none 0s ease 0s 1 normal none running');
+  assert_equals(computedStyle.webkitAnimation, 'none');
 
   style.animation = ", commas,";
   assert_equals(style.animation, '');
-  assert_equals(computedStyle.animation, 'none 0s ease 0s 1 normal none running');
+  assert_equals(computedStyle.animation, 'none');
   assert_equals(style.webkitAnimation, '');
-  assert_equals(computedStyle.webkitAnimation, 'none 0s ease 0s 1 normal none running');
+  assert_equals(computedStyle.webkitAnimation, 'none');
 
   style.animation = "test,, 5s";
   assert_equals(style.animation, '');
-  assert_equals(computedStyle.animation, 'none 0s ease 0s 1 normal none running');
+  assert_equals(computedStyle.animation, 'none');
   assert_equals(style.webkitAnimation, '');
-  assert_equals(computedStyle.webkitAnimation, 'none 0s ease 0s 1 normal none running');
+  assert_equals(computedStyle.webkitAnimation, 'none');
 
   style.animation = "2 initial";
   assert_equals(style.animation, '');
-  assert_equals(computedStyle.animation, 'none 0s ease 0s 1 normal none running');
+  assert_equals(computedStyle.animation, 'none');
   assert_equals(style.webkitAnimation, '');
-  assert_equals(computedStyle.webkitAnimation, 'none 0s ease 0s 1 normal none running');
+  assert_equals(computedStyle.webkitAnimation, 'none');
 
   style.animation = "2 inherit";
   assert_equals(style.animation, '');
-  assert_equals(computedStyle.animation, 'none 0s ease 0s 1 normal none running');
+  assert_equals(computedStyle.animation, 'none');
   assert_equals(style.webkitAnimation, '');
-  assert_equals(computedStyle.webkitAnimation, 'none 0s ease 0s 1 normal none running');
+  assert_equals(computedStyle.webkitAnimation, 'none');
 
   style.animation = "2 unset";
   assert_equals(style.animation, '');
-  assert_equals(computedStyle.animation, 'none 0s ease 0s 1 normal none running');
+  assert_equals(computedStyle.animation, 'none');
   assert_equals(style.webkitAnimation, '');
-  assert_equals(computedStyle.webkitAnimation, 'none 0s ease 0s 1 normal none running');
+  assert_equals(computedStyle.webkitAnimation, 'none');
 
   style.animation = "2 default";
   assert_equals(style.animation, '');
-  assert_equals(computedStyle.animation, 'none 0s ease 0s 1 normal none running');
+  assert_equals(computedStyle.animation, 'none');
   assert_equals(style.webkitAnimation, '');
-  assert_equals(computedStyle.webkitAnimation, 'none 0s ease 0s 1 normal none running');
+  assert_equals(computedStyle.webkitAnimation, 'none');
 }, "Invalid animation shorthand values.");
 </script>
 </body>

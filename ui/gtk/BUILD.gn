@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/linux/gtk/gtk.gni")
 import("//build/config/linux/pkg_config.gni")
@@ -93,10 +92,8 @@ component("gtk") {
     "native_theme_gtk.h",
     "nav_button_provider_gtk.cc",
     "nav_button_provider_gtk.h",
-    "printing/print_dialog_gtk.cc",
-    "printing/print_dialog_gtk.h",
-    "printing/printing_gtk_util.cc",
-    "printing/printing_gtk_util.h",
+    "os_settings_provider_gtk.cc",
+    "os_settings_provider_gtk.h",
     "select_file_dialog_linux_gtk.cc",
     "select_file_dialog_linux_gtk.h",
     "settings_provider.h",
@@ -105,6 +102,16 @@ component("gtk") {
     "window_frame_provider_gtk.cc",
     "window_frame_provider_gtk.h",
   ]
+
+  if (enable_printing) {
+    sources += [
+      "printing/print_dialog_gtk.cc",
+      "printing/print_dialog_gtk.h",
+      "printing/printing_gtk_util.cc",
+      "printing/printing_gtk_util.h",
+    ]
+  }
+
   defines = [ "IS_GTK_IMPL" ]
   configs += [
     "//build/config/linux/pangocairo",
@@ -114,17 +121,19 @@ component("gtk") {
   deps = [
     ":gtk_stubs",
     "//base",
+    "//cc/paint",
     "//printing/buildflags",
     "//skia",
 
     # GTK pulls pangoft2, which requires HarfBuzz symbols. When linking
     # our own HarfBuzz avoid mixing symbols from system HarfBuzz and
-    # our own through the indirect dependency to harfbuzz-ng here.
-    "//third_party:freetype_harfbuzz",
+    # our own through the dependency to harfbuzz-ng here.
+    "//third_party/harfbuzz-ng",
     "//ui/aura",
     "//ui/base",
     "//ui/base:buildflags",
     "//ui/base:ozone_buildflags",
+    "//ui/base/glib",
     "//ui/base/ime",
     "//ui/base/ime/linux",
     "//ui/color",

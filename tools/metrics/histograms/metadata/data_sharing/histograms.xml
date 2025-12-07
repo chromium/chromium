@@ -1,0 +1,120 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of histograms related to
+the visited url ranking component along with a detailed description for each
+histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="FlowName">
+  <variant name="JoinFlow"/>
+  <variant name="ShareFlow"/>
+</variants>
+
+<variants name="FlowStep">
+  <variant name="JoinDialogShownToFaviconFetched"/>
+  <variant name="SyncRequest"/>
+</variants>
+
+<histogram name="DataSharing.Android.JoinActionFlowState"
+    enum="JoinActionStateAndroid" expires_after="2026-09-16">
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    Records the state of the join flow. Records one enum value for progress on
+    each step of the flow. This histogram is used to understand the drop off
+    rates at each step, and to estimate the frequency of errors.
+  </summary>
+</histogram>
+
+<histogram name="DataSharing.Android.ShareActionFlowState"
+    enum="ShareActionStateAndroid" expires_after="2026-09-16">
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    Records the state of the share flow. Records one enum value for progress on
+    each step of the flow. This histogram is used to understand the drop off
+    rates at each step, and to estimate the frequency of errors.
+  </summary>
+</histogram>
+
+<histogram name="DataSharing.Android.UserAction" enum="DataSharingUserAction"
+    expires_after="2026-09-16">
+  <owner>ritikagup@google.com</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    Records the user actions for DataSharing UI. It is recorded when the user
+    makes the action in the UI. This histogram will show the number of clicks
+    for various UI actions in each flow.
+  </summary>
+</histogram>
+
+<histogram name="DataSharing.Android.{FlowName}.{FlowStep}.Latency" units="ms"
+    expires_after="2026-09-16">
+  <owner>haileywang@google.com</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    Records the duration of {FlowStep} during {FlowName}. This histogram is used
+    to measure the latency of each step of the Data Sharing process.
+  </summary>
+  <token key="FlowName" variants="FlowName"/>
+  <token key="FlowStep" variants="FlowStep"/>
+</histogram>
+
+<histogram name="DataSharing.GroupDBInitSuccess" enum="BooleanSuccess"
+    expires_after="2026-09-16">
+  <owner>mmoskvitin@google.com</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    Recorded upon initialization of the GroupDB. Records whether the database
+    was successfully initialized or not.
+  </summary>
+</histogram>
+
+<histogram name="DataSharing.Intent.{Progress}" enum="DataSharingIntentType"
+    expires_after="2026-09-16">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    Records the progress of the action / intent the user has taken on the
+    ShareKit UI such as copying a link, clicking the learn more url, leaving a
+    group, updating access, etc. Recorded when a DataSharingEvent is triggered.
+  </summary>
+  <token key="Progress">
+    <variant name="Failed"/>
+    <variant name="Started"/>
+    <variant name="Succeeded"/>
+    <variant name="Unknown"/>
+  </token>
+</histogram>
+
+<histogram name="DataSharing.TotalMembersInGroup.AtStartup" units="members"
+    expires_after="2026-09-16">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    Records the number of members in a group. Recorded when the
+    DataSharingService has finished initializing.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/mojom/print_common.mojom.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -28,7 +27,9 @@
 #include "chrome/browser/printing/printing_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/services/printing/public/mojom/printing_service.mojom.h"
-#include "components/arc/intent_helper/custom_tab.h"
+#include "chromeos/ash/experiences/arc/intent_helper/custom_tab.h"
+#include "chromeos/ash/experiences/arc/mojom/print_common.mojom.h"
+#include "components/pdf/browser/pdf_document_helper.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/c/system/types.h"
@@ -210,6 +211,18 @@ bool IsPdfPluginLoaded(content::WebContents* web_contents) {
     return false;
   }
 
+  // The plugin has loaded.  Now make sure it finished loading the document.
+  auto* pdf_helper =
+      pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents);
+  if (!pdf_helper) {
+    VLOG(1) << "PDFDocumentHelper not ready yet.";
+    return false;
+  }
+  if (!pdf_helper->IsDocumentLoadComplete()) {
+    VLOG(1) << "PDFDocumentHelper has not finished loading yet.";
+    return false;
+  }
+
   VLOG(1) << "PDF plugin has loaded.";
   return true;
 }
@@ -271,6 +284,7 @@ PrintSessionImpl::~PrintSessionImpl() {
 }
 
 void PrintSessionImpl::OnWindowDestroying(aura::Window* window) {
+  arc_window_observation_.Reset();
   // The parent window is being destroyed. Close this print session.
   Close();
 }
@@ -398,9 +412,13 @@ void PrintSessionImpl::StartPrintAfterPluginIsLoaded() {
 }
 
 void PrintSessionImpl::StartPrintNow() {
-  printing::StartPrint(web_contents_.get(),
-                       print_renderer_receiver_.BindNewEndpointAndPassRemote(),
-                       false, false);
+  VLOG(1) << "Starting print preview.";
+  if (!printing::StartPrint(
+          web_contents_.get(),
+          print_renderer_receiver_.BindNewEndpointAndPassRemote(), false,
+          false)) {
+    LOG(ERROR) << "Failed to start print preview.";
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PrintSessionImpl);

@@ -46,8 +46,10 @@ if (is_android) {
 # build flags.
 config("feature_flags") {
   defines = []
+  rustflags = []
   if (dcheck_always_on) {
     defines += [ "DCHECK_ALWAYS_ON=1" ]
+    rustflags += [ "-Cdebug-assertions" ]
   }
   if (use_udev) {
     # TODO(brettw) should probably be "=1".
@@ -89,7 +91,7 @@ config("feature_flags") {
   if (is_msan) {
     defines += [ "MEMORY_SANITIZER" ]
   }
-  if (is_ubsan || is_ubsan_vptr || is_ubsan_security) {
+  if (is_ubsan_any) {
     defines += [ "UNDEFINED_SANITIZER" ]
   }
   if (is_official_build) {
@@ -110,10 +112,6 @@ config("debug") {
     "_DEBUG",
     "DYNAMIC_ANNOTATIONS_ENABLED=1",
   ]
-
-  if (is_nacl) {
-    defines += [ "DYNAMIC_ANNOTATIONS_PREFIX=NACL_" ]
-  }
 
   if (is_win) {
     if (!enable_iterator_debugging && !use_custom_libcxx) {
@@ -137,17 +135,15 @@ config("release") {
   if (is_tsan) {
     defines += [ "DYNAMIC_ANNOTATIONS_ENABLED=1" ]
   } else {
-    defines += [ "NVALGRIND" ]
-    if (!is_nacl) {
-      # NaCl always enables dynamic annotations. Currently this value is set to
-      # 1 for all .nexes.
-      defines += [ "DYNAMIC_ANNOTATIONS_ENABLED=0" ]
-    }
+    defines += [
+      "NVALGRIND",
+      "DYNAMIC_ANNOTATIONS_ENABLED=0",
+    ]
   }
 
   if (is_ios) {
     # Disable NSAssert and GTMDevAssert (from Google Toolbox for Mac). This
-    # follows XCode's default behavior for Release builds.
+    # follows Xcode's default behavior for Release builds.
     defines += [ "NS_BLOCK_ASSERTIONS=1" ]
   }
 }
@@ -269,6 +265,15 @@ group("common_deps_without_libcxx") {
     # be present on bots that run exes or load DLLs. This also includes
     # debugging DLLs in all builds.
     data_deps = [ "//build/win:runtime_libs" ]
+
+    if (host_os == "win") {
+      # In order to ensure the ACLing is applied to every binary loaded in an
+      # app container sandbox, run the ACL step before any binary is built. We
+      # do this because the tool is subject to race conditions if a binary is
+      # placed in the out folder while it is running.
+      public_deps +=
+          [ "//build/config/win:maybe_set_appcontainer_acls($host_toolchain)" ]
+    }
   }
 }
 
@@ -286,6 +291,13 @@ group("common_deps") {
   if (use_custom_libcxx) {
     public_deps += [ "//buildtools/third_party/libc++" ]
   }
+
+  if (use_llvm_libatomic) {
+    # Certain C/C++ atomic operations require the separately built "libatomic"
+    # support library, which is not shipped with compiler-rt by default. See
+    # crbug.com/402171653 for context.
+    public_deps += [ "//third_party/compiler-rt:atomic" ]
+  }
 }
 
 # Only the executable template in BUILDCONFIG.gn should reference this.
@@ -295,7 +307,6 @@ group("executable_deps") {
     if (export_libcxxabi_from_executables) {
       public_deps += [ "//buildtools/third_party/libc++abi" ]
     }
-    public_configs = [ "//build/config/sanitizers:link_executable" ]
   }
 }
 
@@ -303,8 +314,6 @@ group("executable_deps") {
 group("loadable_module_deps") {
   if (!toolchain_for_rust_host_build_tools) {
     public_deps = [ ":common_deps" ]
-
-    public_configs = [ "//build/config/sanitizers:link_shared_library" ]
   }
 }
 
@@ -312,8 +321,6 @@ group("loadable_module_deps") {
 group("shared_library_deps") {
   if (!toolchain_for_rust_host_build_tools) {
     public_deps = [ ":common_deps" ]
-
-    public_configs = [ "//build/config/sanitizers:link_shared_library" ]
   }
 }
 

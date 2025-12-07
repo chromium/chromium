@@ -15,7 +15,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/infobars/android/jni_headers/InfoBar_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 namespace infobars {
@@ -49,21 +48,19 @@ bool InfoBarAndroid::HasSetJavaInfoBar() const {
   return !java_info_bar_.is_null();
 }
 
-int InfoBarAndroid::GetInfoBarIdentifier(JNIEnv* env,
-                                         const JavaParamRef<jobject>& obj) {
+int InfoBarAndroid::GetInfoBarIdentifier(JNIEnv* env) {
   return delegate()->GetIdentifier();
 }
 
 void InfoBarAndroid::OnButtonClicked(JNIEnv* env,
-                                     const JavaParamRef<jobject>& obj,
                                      jint action) {
   ProcessButton(action);
 }
 
-void InfoBarAndroid::OnCloseButtonClicked(JNIEnv* env,
-                                          const JavaParamRef<jobject>& obj) {
-  if (!owner())
+void InfoBarAndroid::OnCloseButtonClicked(JNIEnv* env) {
+  if (!owner()) {
     return;  // We're closing; don't call anything, it might access the owner.
+  }
   delegate()->InfoBarDismissed();
   RemoveSelf();
 }
@@ -78,3 +75,5 @@ void InfoBarAndroid::CloseJavaInfoBar() {
 }
 
 }  // namespace infobars
+
+DEFINE_JNI(InfoBar)

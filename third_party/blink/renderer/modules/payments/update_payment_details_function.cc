@@ -5,40 +5,53 @@
 #include "third_party/blink/renderer/modules/payments/update_payment_details_function.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_details_update.h"
 #include "third_party/blink/renderer/modules/payments/payment_request_delegate.h"
 
 namespace blink {
 
-UpdatePaymentDetailsFunction::UpdatePaymentDetailsFunction(
-    PaymentRequestDelegate* delegate,
-    ResolveType resolve_type)
-    : delegate_(delegate), resolve_type_(resolve_type) {
+UpdatePaymentDetailsResolve::UpdatePaymentDetailsResolve(
+    PaymentRequestDelegate* delegate)
+    : delegate_(delegate) {
   DCHECK(delegate_);
 }
 
-void UpdatePaymentDetailsFunction::Trace(Visitor* visitor) const {
+void UpdatePaymentDetailsResolve::Trace(Visitor* visitor) const {
   visitor->Trace(delegate_);
-  ScriptFunction::Callable::Trace(visitor);
+  ThenCallable<PaymentDetailsUpdate, UpdatePaymentDetailsResolve>::Trace(
+      visitor);
 }
 
-ScriptValue UpdatePaymentDetailsFunction::Call(ScriptState* script_state,
-                                               ScriptValue value) {
-  if (!delegate_)
-    return ScriptValue();
-
-  switch (resolve_type_) {
-    case ResolveType::kFulfill:
-      delegate_->OnUpdatePaymentDetails(value);
-      break;
-    case ResolveType::kReject:
-      delegate_->OnUpdatePaymentDetailsFailure(ToCoreString(
-          script_state->GetIsolate(), value.V8Value()
-                                          ->ToString(script_state->GetContext())
-                                          .ToLocalChecked()));
-      break;
+void UpdatePaymentDetailsResolve::React(ScriptState*,
+                                        PaymentDetailsUpdate* value) {
+  if (!delegate_) {
+    return;
   }
+
+  delegate_->OnUpdatePaymentDetails(value);
   delegate_ = nullptr;
-  return ScriptValue();
+}
+
+UpdatePaymentDetailsReject::UpdatePaymentDetailsReject(
+    PaymentRequestDelegate* delegate)
+    : delegate_(delegate) {
+  DCHECK(delegate_);
+}
+
+void UpdatePaymentDetailsReject::Trace(Visitor* visitor) const {
+  visitor->Trace(delegate_);
+  ThenCallable<IDLAny, UpdatePaymentDetailsReject>::Trace(visitor);
+}
+
+void UpdatePaymentDetailsReject::React(ScriptState* script_state,
+                                       ScriptValue value) {
+  if (!delegate_) {
+    return;
+  }
+  delegate_->OnUpdatePaymentDetailsFailure(ToCoreString(
+      script_state->GetIsolate(),
+      value.V8Value()->ToString(script_state->GetContext()).ToLocalChecked()));
+  delegate_ = nullptr;
 }
 
 }  // namespace blink

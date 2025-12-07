@@ -4,12 +4,17 @@
 
 package org.chromium.chrome.browser.feedback;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feedback.ConnectivityTask.FeedbackData;
 import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.Map;
 
 /** Grabs feedback about the current phone connectivity status. */
+@NullMarked
 class ConnectivityFeedbackSource
         implements AsyncFeedbackSource, ConnectivityTask.ConnectivityResult {
     /** The timeout (ms) for gathering connection data. */
@@ -17,8 +22,8 @@ class ConnectivityFeedbackSource
 
     private final Profile mProfile;
 
-    private Runnable mCallback;
-    private ConnectivityTask mConnectivityTask;
+    private @Nullable Runnable mCallback;
+    private @Nullable ConnectivityTask mConnectivityTask;
 
     ConnectivityFeedbackSource(Profile profile) {
         mProfile = profile;
@@ -26,7 +31,7 @@ class ConnectivityFeedbackSource
 
     // AsyncFeedbackSource implementation.
     @Override
-    public Map<String, String> getFeedback() {
+    public @Nullable Map<String, String> getFeedback() {
         if (mConnectivityTask == null) return null;
         return mConnectivityTask.get().toMap();
     }
@@ -39,12 +44,12 @@ class ConnectivityFeedbackSource
 
     @Override
     public boolean isReady() {
-        return mConnectivityTask.isDone();
+        return assumeNonNull(mConnectivityTask).isDone();
     }
 
     // ConnectivityTask.ConnectivityResult implementation.
     @Override
     public void onResult(FeedbackData feedbackData) {
-        mCallback.run();
+        assumeNonNull(mCallback).run();
     }
 }

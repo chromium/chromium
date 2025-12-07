@@ -103,10 +103,9 @@ webrtc::VideoFrame CreateFrame(int width = kWidth,
                                int height = kHeight,
                                uint64_t timestamp_us = kTimestamp) {
   auto frame = media::VideoFrame::CreateBlackFrame(gfx::Size(width, height));
-  rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter(
-      new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
-          frame, base::MakeRefCounted<WebRtcVideoFrameAdapter::SharedResources>(
-                     nullptr)));
+  webrtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter(
+      new webrtc::RefCountedObject<WebRtcVideoFrameAdapter>(
+          frame, WebRtcVideoFrameAdapter::SharedResources::Create(nullptr)));
   return webrtc::VideoFrame::Builder()
       .set_video_frame_buffer(std::move(frame_adapter))
       .set_rtp_timestamp(kTimestamp + 10)

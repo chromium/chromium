@@ -20,6 +20,7 @@
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
 #include "components/image_fetcher/core/image_decoder.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_provider_logos/fixed_logo_api.h"
@@ -27,6 +28,7 @@
 #include "components/search_provider_logos/logo_cache.h"
 #include "components/search_provider_logos/logo_observer.h"
 #include "components/search_provider_logos/switches.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -204,7 +206,7 @@ void LogoServiceImpl::Shutdown() {
   // The IdentityManager may be destroyed at any point after Shutdown,
   // so make sure we drop any references to it.
   identity_manager_->RemoveObserver(this);
-  ReturnToIdle(kDownloadOutcomeNotTracked);
+  ReturnToIdle(std::nullopt);
 }
 
 void LogoServiceImpl::GetLogo(search_provider_logos::LogoObserver* observer) {
@@ -237,11 +239,14 @@ void LogoServiceImpl::GetLogo(LogoCallbacks callbacks, bool for_webui_ntp) {
     logo_url = GURL(
         command_line->GetSwitchValueASCII(switches::kSearchProviderLogoURL));
   } else {
+    // Non-Google DSE logos are only enabled on some platforms.
 #if BUILDFLAG(IS_ANDROID)
-    // Non-Google default search engine logos are currently enabled only on
-    // Android (https://crbug.com/737283).
     logo_url = template_url->logo_url();
-#endif
+#elif BUILDFLAG(IS_IOS)
+    if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV3)) {
+      logo_url = template_url->logo_url();
+    }
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   }
 
   GURL base_url;
@@ -249,7 +254,9 @@ void LogoServiceImpl::GetLogo(LogoCallbacks callbacks, bool for_webui_ntp) {
   const bool is_google = template_url->url_ref().HasGoogleBaseURLs(
       template_url_service_->search_terms_data());
   if (is_google) {
-    // TODO(treib): Put the Google doodle URL into prepopulated_engines.json.
+    // Note: Ideally the Google doodle URL would be specified in
+    // prepopulated_engines.json, but there is some custom logic in
+    // `GetGoogleDoodleURL()` that can't be represented in the static file.
     base_url =
         GURL(template_url_service_->search_terms_data().GoogleBaseURLValue());
     doodle_url = search_provider_logos::GetGoogleDoodleURL(base_url);
@@ -348,7 +355,7 @@ void LogoServiceImpl::SetServerAPI(
   if (logo_url == logo_url_)
     return;
 
-  ReturnToIdle(kDownloadOutcomeNotTracked);
+  ReturnToIdle(std::nullopt);
 
   logo_url_ = logo_url;
   parse_logo_response_func_ = parse_logo_response_func;
@@ -357,15 +364,14 @@ void LogoServiceImpl::SetServerAPI(
 
 void LogoServiceImpl::ClearCachedLogo() {
   // First cancel any fetch that might be ongoing.
-  ReturnToIdle(kDownloadOutcomeNotTracked);
+  ReturnToIdle(std::nullopt);
   // Then clear any cached logo.
   SetCachedLogo(nullptr);
 }
 
-void LogoServiceImpl::ReturnToIdle(int outcome) {
-  if (outcome != kDownloadOutcomeNotTracked) {
-    UMA_HISTOGRAM_ENUMERATION("NewTabPage.LogoDownloadOutcome",
-                              static_cast<LogoDownloadOutcome>(outcome),
+void LogoServiceImpl::ReturnToIdle(std::optional<LogoDownloadOutcome> outcome) {
+  if (outcome.has_value()) {
+    UMA_HISTOGRAM_ENUMERATION("NewTabPage.LogoDownloadOutcome", outcome.value(),
                               DOWNLOAD_OUTCOME_COUNT);
   }
 
@@ -503,6 +509,7 @@ void LogoServiceImpl::FetchLogo() {
         })");
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = url;
+  request->site_for_cookies = net::SiteForCookies::FromUrl(url);
   loader_ =
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
   loader_->DownloadToString(
@@ -678,8 +685,7 @@ void LogoServiceImpl::OnFreshLogoAvailable(
       break;
 
     case DOWNLOAD_OUTCOME_COUNT:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   NotifyAndClear(&on_fresh_encoded_logo_, &on_fresh_decoded_logo_,
@@ -698,7 +704,7 @@ void LogoServiceImpl::OnFreshLogoAvailable(
 }
 
 void LogoServiceImpl::OnURLLoadComplete(const network::SimpleURLLoader* source,
-                                        std::unique_ptr<std::string> body) {
+                                        std::optional<std::string> body) {
   DCHECK(!is_idle_);
   std::unique_ptr<network::SimpleURLLoader> cleanup_loader(loader_.release());
 
@@ -718,18 +724,20 @@ void LogoServiceImpl::OnURLLoadComplete(const network::SimpleURLLoader* source,
   UMA_HISTOGRAM_TIMES("NewTabPage.LogoDownloadTime",
                       base::TimeTicks::Now() - logo_download_start_time_);
 
-  std::unique_ptr<std::string> response =
-      body ? std::move(body) : std::make_unique<std::string>();
   base::Time response_time = clock_->Now();
 
   bool from_http_cache = !source->ResponseInfo()->network_accessed;
+
+  if (!body.has_value()) {
+    body = std::string();
+  }
 
   bool* parsing_failed = new bool(false);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(parse_logo_response_func_, std::move(response),
+      base::BindOnce(parse_logo_response_func_, std::move(body).value(),
                      response_time, parsing_failed),
       base::BindOnce(&LogoServiceImpl::OnFreshLogoParsed,
                      weak_ptr_factory_.GetWeakPtr(),

@@ -40,8 +40,8 @@ ModulePendingScript::ModulePendingScript(
     ScriptElementBase* element,
     ModulePendingScriptTreeClient* client,
     bool is_external,
-    scheduler::TaskAttributionInfo* parent_task)
-    : PendingScript(element, TextPosition::MinimumPosition(), parent_task),
+    scheduler::TaskAttributionInfo* task_state)
+    : PendingScript(element, TextPosition::MinimumPosition(), task_state),
       module_tree_client_(client),
       is_external_(is_external) {
   CHECK(GetElement());

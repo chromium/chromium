@@ -54,6 +54,8 @@ inline constexpr char kScreenshotWarnedUMA[] = "ScreenshotWarned";
 inline constexpr char kScreenshotWarnProceededUMA[] = "ScreenshotWarnProceeded";
 inline constexpr char kScreenshotWarnSilentProceededUMA[] =
     "ScreenshotWarnSilentProceeded";
+inline constexpr char kScreenshotWarnShutdownOverrideUMA[] =
+    "ScreenshotWarnShutdownOverride";
 inline constexpr char kVideoCaptureInterruptedUMA[] = "VideoCaptureInterrupted";
 inline constexpr char kReportedBlockLevelRestriction[] =
     "ReportedBlockLevelRestriction";

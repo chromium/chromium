@@ -5,7 +5,7 @@
 #include "components/drive/drive_api_util.h"
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/hash/md5.h"
+#include "crypto/obsolete/md5.h"
 #include "google_apis/common/test_util.h"
 #include "google_apis/drive/drive_api_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -72,10 +72,10 @@ TEST(DriveAPIUtilTest, GetMd5Digest) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   base::FilePath path = temp_dir.GetPath().AppendASCII("test.txt");
-  const char kTestData[] = "abcdefghijklmnopqrstuvwxyz0123456789";
+  const std::string_view kTestData = "abcdefghijklmnopqrstuvwxyz0123456789";
   ASSERT_TRUE(google_apis::test_util::WriteStringToFile(path, kTestData));
 
-  EXPECT_EQ(base::MD5String(kTestData), GetMd5Digest(path, nullptr));
+  EXPECT_EQ("6d2286301265512f019781cc0ce7a39f", GetMd5Digest(path));
 }
 
 TEST(DriveAPIUtilTest, HasHostedDocumentExtension) {

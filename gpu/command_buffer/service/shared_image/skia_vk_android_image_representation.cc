@@ -23,9 +23,9 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/gpu/GrBackendSemaphore.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/MutableTextureState.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSemaphore.h"
 #include "third_party/skia/include/gpu/vk/VulkanMutableTextureState.h"
@@ -85,8 +85,7 @@ SkiaVkAndroidImageRepresentation::BeginWriteAccess(
 
   if (!surface_ || final_msaa_count != surface_msaa_count_ ||
       surface_props != surface_->props()) {
-    SkColorType sk_color_type = viz::ToClosestSkColorType(
-        /*gpu_compositing=*/true, format());
+    SkColorType sk_color_type = viz::ToClosestSkColorType(format());
     surface_ = SkSurfaces::WrapBackendTexture(
         gr_context, promise_texture_->backendTexture(), surface_origin(),
         final_msaa_count, sk_color_type, color_space().ToSkColorSpace(),
@@ -294,13 +293,12 @@ SkiaVkAndroidImageRepresentation::GetEndAccessState() {
 
   // `kSingleDeviceUsage` defines the set of usages for which only the Vulkan
   // device from SharedContextState is used. If the SI has any usages outside
-  // this set (e.g., if it has any GLES2 usage, including
-  // RASTER_OVER_GLES2_ONLY), then it will be accessed beyond the Vulkan device
-  // from SharedContextState and hence does not have single-device usage.
+  // this set (e.g., if it has any GLES2 usage), then it will be accessed
+  // beyond the Vulkan device from SharedContextState and hence does not have
+  // single-device usage.
   const SharedImageUsageSet kSingleDeviceUsage =
       SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE |
-      SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
-      SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+      SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE;
 
   // If SharedImage is used outside of current VkDeviceQueue we need to transfer
   // image back to it's original queue. Note, that for multithreading we use

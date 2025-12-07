@@ -11,7 +11,7 @@
  * @param {string} supportedMethods - The payment method identifier.
  */
 function buy(supportedMethods) {
-  var finalizedDetails = {
+  const finalizedDetails = {
     total: {label: 'Total', amount: {currency: 'USD', value: '1.00'}},
     shippingOptions: [{
       id: '1',
@@ -22,7 +22,7 @@ function buy(supportedMethods) {
   };
 
   try {
-    var request = new PaymentRequest(
+    const request = new PaymentRequest(
         [{supportedMethods}], {
           total: {
             label: 'PENDING TOTAL',

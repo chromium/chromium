@@ -11,7 +11,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/client/gl_helper.h"
-#include "gpu/gpu_export.h"
+#include "gpu/command_buffer/client/gpu_command_buffer_client_export.h"
 #include "ui/gfx/geometry/vector2d.h"
 
 namespace gpu {
@@ -23,7 +23,7 @@ class ShaderProgram;
 // Implements GPU texture scaling methods.
 // Note that you should probably not use this class directly.
 // See gl_helper.cc::CreateScaler instead.
-class GPU_EXPORT GLHelperScaling {
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT GLHelperScaling {
  public:
   enum ShaderType {
     SHADER_BILINEAR,

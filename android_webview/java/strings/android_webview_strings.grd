@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<grit current_release="1" latest_public_release="0" output_all_resource_defines="false">
+<grit current_release="1" latest_public_release="0">
   <outputs>
     <output filename="values-af/android_webview_strings.xml" lang="af" type="android" />
     <output filename="values-am/android_webview_strings.xml" lang="am" type="android" />
@@ -186,8 +186,8 @@
       <message name="IDS_CONTEXT_MENU_COPY_LINK_TEXT" desc="Context menu item for copying the selected link's text. [CHAR_LIMIT=30]">
         Copy link text
       </message>
-      <message name="IDS_CONTEXT_MENU_OPEN_IN_BROWSER" desc="Context menu item to open the selected link in a new tab. [CHAR_LIMIT=30]">
-        Open in browser
+      <message name="IDS_CONTEXT_MENU_OPEN_LINK" desc="Context menu item to open the selected link in a relevant application. [CHAR_LIMIT=30]">
+        Open link
       </message>
     </messages>
   </release>

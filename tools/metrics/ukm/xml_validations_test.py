@@ -176,5 +176,123 @@ class UkmXmlValidationTest(unittest.TestCase):
     self.assertListEqual([], errors)
 
 
+  parameters_test_statistics = [
+      # Valid configuration with <enumeration/>
+      (
+          # config
+          """
+      <ukm-configuration>
+      <event name="Test.Event">
+        <metric name="Test.Metric">
+          <aggregation>
+            <history>
+              <statistics>
+                <enumeration/>
+              </statistics>
+            </history>
+          </aggregation>
+        </metric>
+      </event>
+      </ukm-configuration>""".strip(),
+          # expected_success
+          True,
+          # expected_errors
+          []),
+      # Invalid configuration with an empty <statistics/> tag.
+      (
+          # config
+          """
+      <ukm-configuration>
+        <event name="Test.Event">
+          <metric name="Test.Metric">
+            <aggregation>
+              <history>
+                <statistics/>
+              </history>
+            </aggregation>
+          </metric>
+        </event>
+      </ukm-configuration>""".strip(),
+          # expected_success
+          False,
+          # expected_errors
+          [
+              'Invalid statistics field specification in ukm.xml, in metric '
+              'Test.Event:Test.Metric. To have a metric aggregated, '
+              'aggregation, history and statistics tags need to be added along'
+              ' with the type of statistic. See https://chromium.googlesource.'
+              'com/chromium/src.git/+/main/services/metrics/ukm_api.md#'
+              'controlling-the-aggregation-of-metrics.'
+          ]),
+      # Invalid configuration with <wrong_tag/>.
+      (
+          # config
+          """
+        <ukm-configuration>
+          <event name="Test.Event">
+            <metric name="Test.Metric">
+              <aggregation>
+                <history>
+                  <statistics>
+                    <wrong_tag/>
+                  </statistics>
+                </history>
+              </aggregation>
+            </metric>
+          </event>
+        </ukm-configuration>""".strip(),
+          # expected_success
+          False,
+          # expected_errors
+          [
+              'Invalid statistics field specification in ukm.xml, in metric '
+              'Test.Event:Test.Metric. To have a metric aggregated, '
+              'aggregation, history and statistics tags need to be added along'
+              ' with the type of statistic. See https://chromium.googlesource.'
+              'com/chromium/src.git/+/main/services/metrics/ukm_api.md#'
+              'controlling-the-aggregation-of-metrics.'
+          ]),
+      # Invalid configuration with <quantiles/> and wrong type.
+      (
+          # config
+          """
+      <ukm-configuration>
+        <event name="Test.Event">
+          <metric name="Test.Metric">
+            <aggregation>
+              <history>
+                <statistics>
+                  <quantiles type="wrong-type"/>
+                </statistics>
+              </history>
+            </aggregation>
+          </metric>
+        </event>
+      </ukm-configuration>""".strip(),
+          # expected_success
+          False,
+          # expected_errors
+          [
+              'Invalid statistics field specification in ukm.xml, in metric '
+              'Test.Event:Test.Metric. To have a metric aggregated, '
+              'aggregation, history and statistics tags need to be added along'
+              ' with the type of statistic. See https://chromium.googlesource.'
+              'com/chromium/src.git/+/main/services/metrics/ukm_api.md#'
+              'controlling-the-aggregation-of-metrics.'
+          ])
+  ]
+
+  def testStatisticsNonEmptyValid(self):
+    '''Validate passed parameters against checkStatisticsNonEmptyValid.'''
+    for config, ex_success, ex_error in self.parameters_test_statistics:
+      ukm_config = self.toUkmConfig(config)
+      validator = xml_validations.UkmXmlValidation(ukm_config)
+
+      result_success, result_error = validator.checkStatisticsNonEmptyValid()
+      self.assertTrue(result_success) if ex_success else self.assertFalse(
+          result_success)
+      self.assertListEqual(ex_error, result_error)
+
+
 if __name__ == '__main__':
   unittest.main()

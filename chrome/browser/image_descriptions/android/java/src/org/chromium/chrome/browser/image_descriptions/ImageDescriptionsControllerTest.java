@@ -31,12 +31,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -46,15 +47,19 @@ import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
-import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.net.ConnectionType;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 /** Unit tests for {@link ImageDescriptionsController} */
 @RunWith(BaseJUnit4ClassRunner.class)
-public class ImageDescriptionsControllerTest extends BlankUiTestActivityTestCase {
-    @Rule public JniMocker mJniMocker = new JniMocker();
+public class ImageDescriptionsControllerTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule
+    public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Mock private ImageDescriptionsController.Natives mControllerJniMock;
 
@@ -67,7 +72,7 @@ public class ImageDescriptionsControllerTest extends BlankUiTestActivityTestCase
 
     @Mock private ModalDialogManager mModalDialogManager;
 
-    @Mock private WebContents mWebContents;
+    @Mock private MockWebContents mWebContents;
 
     private SharedPreferencesManager mManager;
     private ImageDescriptionsController mController;
@@ -75,17 +80,16 @@ public class ImageDescriptionsControllerTest extends BlankUiTestActivityTestCase
 
     @Before
     public void setUp() throws Exception {
-        super.setUpTest();
-        MockitoAnnotations.initMocks(this);
+        mActivityTestRule.launchActivity(null);
 
-        mJniMocker.mock(ProfileJni.TEST_HOOKS, mProfileJniMock);
+        ProfileJni.setInstanceForTesting(mProfileJniMock);
         when(mProfileJniMock.fromWebContents(mWebContents)).thenReturn(mProfile);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
 
-        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
 
-        mJniMocker.mock(ImageDescriptionsControllerJni.TEST_HOOKS, mControllerJniMock);
+        ImageDescriptionsControllerJni.setInstanceForTesting(mControllerJniMock);
 
         resetSharedPreferences();
 
@@ -109,7 +113,7 @@ public class ImageDescriptionsControllerTest extends BlankUiTestActivityTestCase
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mController.onImageDescriptionsMenuItemSelected(
-                            getActivity(), mModalDialogManager, mWebContents);
+                            mActivityTestRule.getActivity(), mModalDialogManager, mWebContents);
                 });
     }
 
@@ -221,7 +225,55 @@ public class ImageDescriptionsControllerTest extends BlankUiTestActivityTestCase
         verify(mModalDialogManager, never()).showDialog(any(), anyInt());
 
         onView(withText(R.string.image_descriptions_toast_off))
-                .inRoot(withDecorView(not(is(getActivity().getWindow().getDecorView()))))
+                .inRoot(
+                        withDecorView(
+                                not(
+                                        is(
+                                                mActivityTestRule
+                                                        .getActivity()
+                                                        .getWindow()
+                                                        .getDecorView()))))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    public void testMenuItemSelected_featureEnabled_onlyOnWifi_ethernetConnected()
+            throws Exception {
+        when(mPrefService.getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID))
+                .thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ONLY_ON_WIFI))
+                .thenReturn(true);
+        Assert.assertTrue(
+                "Image descriptions should be enabled",
+                mController.imageDescriptionsEnabled(mProfile));
+        Assert.assertTrue(
+                "Image descriptions only on wifi option should be enabled",
+                mController.onlyOnWifiEnabled(mProfile));
+
+        // Setup ETHERNET connection
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    DeviceConditions.sForceConnectionTypeForTesting = true;
+                    DeviceConditions.mConnectionTypeForTesting = ConnectionType.CONNECTION_ETHERNET;
+                });
+
+        simulateMenuItemClick();
+
+        verify(mPrefService, times(1))
+                .setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, false);
+        verify(mModalDialogManager, never()).showDialog(any(), anyInt());
+        verify(mControllerJniMock, never()).getImageDescriptionsOnce(eq(mWebContents));
+
+        onView(withText(R.string.image_descriptions_toast_off))
+                .inRoot(
+                        withDecorView(
+                                not(
+                                        is(
+                                                mActivityTestRule
+                                                        .getActivity()
+                                                        .getWindow()
+                                                        .getDecorView()))))
                 .check(matches(isDisplayed()));
     }
 
@@ -253,7 +305,14 @@ public class ImageDescriptionsControllerTest extends BlankUiTestActivityTestCase
         verify(mControllerJniMock, times(1)).getImageDescriptionsOnce(eq(mWebContents));
 
         onView(withText(R.string.image_descriptions_toast_just_once))
-                .inRoot(withDecorView(not(is(getActivity().getWindow().getDecorView()))))
+                .inRoot(
+                        withDecorView(
+                                not(
+                                        is(
+                                                mActivityTestRule
+                                                        .getActivity()
+                                                        .getWindow()
+                                                        .getDecorView()))))
                 .check(matches(isDisplayed()));
     }
 
@@ -274,7 +333,14 @@ public class ImageDescriptionsControllerTest extends BlankUiTestActivityTestCase
         verify(mControllerJniMock, times(1)).getImageDescriptionsOnce(eq(mWebContents));
 
         onView(withText(R.string.image_descriptions_toast_just_once))
-                .inRoot(withDecorView(not(is(getActivity().getWindow().getDecorView()))))
+                .inRoot(
+                        withDecorView(
+                                not(
+                                        is(
+                                                mActivityTestRule
+                                                        .getActivity()
+                                                        .getWindow()
+                                                        .getDecorView()))))
                 .check(matches(isDisplayed()));
     }
 

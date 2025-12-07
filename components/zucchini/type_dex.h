@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <array>
+
 namespace zucchini {
 namespace dex {
 // Contains types that models DEX executable format data structures.
@@ -123,7 +125,7 @@ constexpr Instruction kByteCode[] = {
 
 // header_item: Appears in the header section.
 struct HeaderItem {
-  uint8_t magic[8];
+  std::array<uint8_t, 8> magic;
   uint32_t checksum;
   uint8_t signature[20];
   uint32_t file_size;

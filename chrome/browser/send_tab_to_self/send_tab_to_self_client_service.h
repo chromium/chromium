@@ -9,15 +9,15 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_model_observer.h"
 
-class Profile;
-
 namespace send_tab_to_self {
-class ReceivingUiHandlerRegistry;
+
+class ReceivingUiHandler;
 class SendTabToSelfEntry;
 class SendTabToSelfModel;
 
@@ -26,7 +26,12 @@ class SendTabToSelfModel;
 class SendTabToSelfClientService : public KeyedService,
                                    public SendTabToSelfModelObserver {
  public:
-  SendTabToSelfClientService(Profile* profile, SendTabToSelfModel* model);
+  // `model` must outlive this object. `receiving_ui_handler` must be usable
+  // until this keyed service is Shutdown() (in particular it cannot depend on
+  // any services that are instantiated after this one).
+  SendTabToSelfClientService(
+      std::unique_ptr<ReceivingUiHandler> receiving_ui_handler,
+      SendTabToSelfModel* model);
 
   SendTabToSelfClientService(const SendTabToSelfClientService&) = delete;
   SendTabToSelfClientService& operator=(const SendTabToSelfClientService&) =
@@ -46,22 +51,15 @@ class SendTabToSelfClientService : public KeyedService,
   // registered through ReceivingUIRegistry.
   void EntriesRemovedRemotely(const std::vector<std::string>& guids) override;
 
- protected:
-
-  // Sets up the ReceivingUiHandlerRegistry.
-  virtual void SetupHandlerRegistry(Profile* profile);
-
-  // Returns a vector containing the registered ReceivingUiHandlers.
-  virtual const std::vector<std::unique_ptr<ReceivingUiHandler>>& GetHandlers()
-      const;
+  // Returns the registered ReceivingUiHandler.
+  ReceivingUiHandler* GetReceivingUiHandler() const;
 
  private:
-  // Owned by the SendTabToSelfSyncService which should outlive this class
-  raw_ptr<SendTabToSelfModel> model_;
-  // Singleton instance not owned by this class
-  raw_ptr<ReceivingUiHandlerRegistry> registry_;
-  // Profile for which this service is associated.
-  raw_ptr<Profile> profile_;
+  // The model outlives this object, so this is fine.
+  base::ScopedObservation<SendTabToSelfModel, SendTabToSelfModelObserver>
+      model_observation_{this};
+  // Reset on Shutdown().
+  std::unique_ptr<ReceivingUiHandler> receiving_ui_handler_;
 };
 
 }  // namespace send_tab_to_self

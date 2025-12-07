@@ -8,13 +8,16 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
+#include "base/task/common/task_annotator.h"
+#include "gpu/command_buffer/service/graphite_shared_context.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "services/tracing/public/cpp/perfetto/flow_event_utils.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/Recording.h"
 #include "third_party/skia/include/private/chromium/GrDeferredDisplayList.h"
@@ -79,33 +82,33 @@ bool SkiaOutputDevice::ScopedPaint::Draw(
 }
 
 bool SkiaOutputDevice::ScopedPaint::Draw(
+    gpu::GraphiteSharedContext* graphite_shared_context,
     std::unique_ptr<skgpu::graphite::Recording> graphite_recording,
     base::OnceClosure on_finished) {
-  return device_->Draw(sk_surface_, std::move(graphite_recording),
-                       std::move(on_finished));
+  return device_->Draw(graphite_shared_context, sk_surface_,
+                       std::move(graphite_recording), std::move(on_finished));
 }
 
 SkiaOutputDevice::SkiaOutputDevice(
     GrDirectContext* gr_context,
-    skgpu::graphite::Context* graphite_context,
-    gpu::MemoryTracker* memory_tracker,
+    gpu::GraphiteSharedContext* graphite_shared_context,
+    scoped_refptr<gpu::MemoryTracker> memory_tracker,
     DidSwapBufferCompleteCallback did_swap_buffer_complete_callback,
     ReleaseOverlaysCallback release_overlays_callback)
-    : gr_context_(gr_context),
-      graphite_context_(graphite_context),
-      did_swap_buffer_complete_callback_(
+    : did_swap_buffer_complete_callback_(
           std::move(did_swap_buffer_complete_callback)),
       release_overlays_callback_(std::move(release_overlays_callback)),
       memory_type_tracker_(
-          std::make_unique<gpu::MemoryTypeTracker>(memory_tracker)) {
-  if (gr_context_) {
-    CHECK(!graphite_context_);
+          std::make_unique<gpu::MemoryTypeTracker>(std::move(memory_tracker))) {
+  if (gr_context) {
+    CHECK(!graphite_shared_context);
     capabilities_.max_render_target_size = gr_context->maxRenderTargetSize();
     capabilities_.max_texture_size = gr_context->maxTextureSize();
   } else {
-    CHECK(graphite_context_);
-    capabilities_.max_render_target_size = graphite_context->maxTextureSize();
-    capabilities_.max_texture_size = graphite_context->maxTextureSize();
+    CHECK(graphite_shared_context);
+    capabilities_.max_render_target_size =
+        graphite_shared_context->maxTextureSize();
+    capabilities_.max_texture_size = graphite_shared_context->maxTextureSize();
   }
 }
 
@@ -122,15 +125,17 @@ SkiaOutputDevice::BeginScopedPaint() {
       std::move(end_semaphores), this, sk_surface);
 }
 
-void SkiaOutputDevice::SetViewportSize(const gfx::Size& viewport_size) {}
-
-void SkiaOutputDevice::Submit(bool sync_cpu, base::OnceClosure callback) {
-  if (gr_context_) {
-    gr_context_->submit(sync_cpu ? GrSyncCpu::kYes : GrSyncCpu::kNo);
+void SkiaOutputDevice::Submit(
+    scoped_refptr<gpu::SharedContextState> context_state,
+    bool sync_cpu,
+    base::OnceClosure callback) {
+  if (auto* gr_context = context_state->gr_context()) {
+    gr_context->submit(sync_cpu ? GrSyncCpu::kYes : GrSyncCpu::kNo);
   } else {
-    CHECK(graphite_context_);
-    graphite_context_->submit(sync_cpu ? skgpu::graphite::SyncToCpu::kYes
-                                       : skgpu::graphite::SyncToCpu::kNo);
+    auto* graphite_shared_context = context_state->graphite_shared_context();
+    CHECK(graphite_shared_context);
+    graphite_shared_context->submit(sync_cpu ? skgpu::graphite::SyncToCpu::kYes
+                                             : skgpu::graphite::SyncToCpu::kNo);
   }
   std::move(callback).Run();
 }
@@ -151,6 +156,11 @@ void SkiaOutputDevice::SetDrawTimings(base::TimeTicks submitted,
 
 void SkiaOutputDevice::SetDependencyTimings(base::TimeTicks task_ready) {
   gpu_task_ready_ = task_ready;
+}
+
+void SkiaOutputDevice::ReadbackForTesting(
+    base::OnceCallback<void(SkBitmap)> callback) {
+  NOTIMPLEMENTED();
 }
 
 void SkiaOutputDevice::StartSwapBuffers(BufferPresentedCallback feedback) {
@@ -176,6 +186,7 @@ void SkiaOutputDevice::FinishSwapBuffers(
       "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
       perfetto::Flow::Global(frame.data.swap_trace_id),
       [swap_trace_id = frame.data.swap_trace_id](perfetto::EventContext ctx) {
+        base::TaskAnnotator::EmitTaskTimingDetails(ctx);
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
         auto* data = event->set_chrome_graphics_pipeline();
         data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
@@ -341,19 +352,20 @@ bool SkiaOutputDevice::Draw(SkSurface* sk_surface,
 }
 
 bool SkiaOutputDevice::Draw(
+    gpu::GraphiteSharedContext* graphite_shared_context,
     SkSurface* sk_surface,
     std::unique_ptr<skgpu::graphite::Recording> graphite_recording,
     base::OnceClosure on_finished) {
   CHECK(sk_surface);
   CHECK(graphite_recording);
-  CHECK(graphite_context_);
+  CHECK(graphite_shared_context);
   skgpu::graphite::InsertRecordingInfo info;
   info.fRecording = graphite_recording.get();
   info.fTargetSurface = sk_surface;
   if (on_finished) {
     gpu::AddCleanupTaskForGraphiteRecording(std::move(on_finished), &info);
   }
-  return graphite_context_->insertRecording(info);
+  return graphite_shared_context->insertRecording(info);
 }
 
 }  // namespace viz

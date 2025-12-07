@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/network_telemetry_sampler.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
@@ -11,7 +12,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/wifi_signal_strength_rssi_fetcher.h"
@@ -60,7 +60,7 @@ NetworkInterfaceInfoPtr GetWifiNetworkInterfaceInfo(
   const auto& interface_info_list =
       cros_healthd_telemetry->network_interface_result
           ->get_network_interface_info();
-  const auto& interface_info_it = base::ranges::find_if(
+  const auto& interface_info_it = std::ranges::find_if(
       interface_info_list,
       [&interface_name](const NetworkInterfaceInfoPtr& interface_info) {
         return !interface_info.is_null() &&
@@ -92,9 +92,7 @@ NetworkType GetNetworkType(const ash::NetworkTypePattern& type) {
   if (type.Equals(ash::NetworkTypePattern::WiFi())) {
     return NetworkType::WIFI;
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Unsupported network type: " << type.ToDebugString();
-  return NetworkType::NETWORK_TYPE_UNSPECIFIED;  // Unsupported
+  NOTREACHED() << "Unsupported network type: " << type.ToDebugString();
 }
 
 }  // namespace
@@ -103,7 +101,7 @@ NetworkType GetNetworkType(const ash::NetworkTypePattern& type) {
 NetworkConnectionState NetworkTelemetrySampler::GetNetworkConnectionState(
     const ash::NetworkState* network) {
   if (network->IsConnectedState()) {
-    auto portal_state = network->GetPortalState();
+    auto portal_state = network->portal_state();
     switch (portal_state) {
       case ash::NetworkState::PortalState::kUnknown:
         return NetworkConnectionState::CONNECTED;
@@ -220,12 +218,32 @@ void NetworkTelemetrySampler::CollectNetworksStates(
       network_telemetry->set_device_path(network->device_path());
     }
 
-    if (!network->GetIpAddress().empty()) {
-      network_telemetry->set_ip_address(network->GetIpAddress());
+    const auto* network_config = network->network_config();
+    if (network_config) {
+      if (network_config->ipv4_address.has_value()) {
+        network_telemetry->set_ip_address(
+            network_config->ipv4_address->addr.ToString());
+      }
+      if (network_config->ipv4_gateway.has_value()) {
+        network_telemetry->set_gateway(
+            network_config->ipv4_gateway->ToString());
+      }
+
+      for (const auto& ipv6_address : network_config->ipv6_addresses) {
+        network_telemetry->add_ipv6_address(ipv6_address.addr.ToString());
+      }
+
+      if (network_config->ipv6_gateway.has_value()) {
+        network_telemetry->set_ipv6_gateway(
+            network_config->ipv6_gateway->ToString());
+      }
     }
 
-    if (!network->GetGateway().empty()) {
-      network_telemetry->set_gateway(network->GetGateway());
+    network_telemetry->set_is_metered(network->metered());
+
+    if (network->max_downlink_speed_kbps().has_value()) {
+      network_telemetry->set_link_down_speed_kbps(
+          network->max_downlink_speed_kbps().value());
     }
 
     if (type.Equals(::ash::NetworkTypePattern::WiFi())) {

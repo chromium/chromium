@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "components/infobars/core/infobar.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -34,8 +35,9 @@ ContentInfoBarManager::NavigationDetailsFromLoadCommittedDetails(
 // static
 content::WebContents* ContentInfoBarManager::WebContentsFromInfoBar(
     InfoBar* infobar) {
-  if (!infobar || !infobar->owner())
+  if (!infobar || !infobar->owner()) {
     return nullptr;
+  }
   ContentInfoBarManager* infobar_manager =
       static_cast<ContentInfoBarManager*>(infobar->owner());
   return infobar_manager->web_contents();
@@ -48,13 +50,12 @@ ContentInfoBarManager::ContentInfoBarManager(content::WebContents* web_contents)
   // Infobar animations cause viewport resizes. Disable them for automated
   // tests, since they could lead to flakiness.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnableAutomation))
+          switches::kEnableAutomation)) {
     set_animations_enabled(false);
+  }
 }
 
-ContentInfoBarManager::~ContentInfoBarManager() {
-  ShutDown();
-}
+ContentInfoBarManager::~ContentInfoBarManager() = default;
 
 int ContentInfoBarManager::GetActiveEntryID() {
   content::NavigationEntry* active_entry =
@@ -84,8 +85,9 @@ void ContentInfoBarManager::NavigationEntryCommitted(
       ui::PageTransitionCoreTypeIs(load_details.entry->GetTransitionType(),
                                    ui::PAGE_TRANSITION_RELOAD);
   ignore_next_reload_ = false;
-  if (!ignore)
+  if (!ignore) {
     OnNavigation(NavigationDetailsFromLoadCommittedDetails(load_details));
+  }
 }
 
 void ContentInfoBarManager::WebContentsDestroyed() {

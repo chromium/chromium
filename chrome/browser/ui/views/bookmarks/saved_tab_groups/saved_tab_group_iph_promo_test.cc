@@ -3,18 +3,19 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test_common.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/data_sharing/public/features.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/prefs/pref_service.h"
-#include "components/saved_tab_groups/features.h"
+#include "components/saved_tab_groups/public/features.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/interactive_test.h"
@@ -23,30 +24,28 @@ class SavedTabGroupV2PromoTest : public InteractiveFeaturePromoTest {
  public:
   SavedTabGroupV2PromoTest()
       : InteractiveFeaturePromoTest(UseDefaultTrackerAllowingPromos(
-            {feature_engagement::kIPHTabGroupsSaveV2CloseGroupFeature})) {
-    feature_list_.InitWithFeatures(
-        {{tab_groups::kTabGroupsSaveV2, tab_groups::kTabGroupsSaveUIUpdate}},
-        {});
-  }
+            {feature_engagement::kIPHTabGroupsSaveV2CloseGroupFeature})) {}
 
   ~SavedTabGroupV2PromoTest() override = default;
 
   auto TriggerPromo() {
     auto steps = Steps(
         Do([this]() {
+          tab_groups::TabGroupSyncService* service =
+              tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+                  browser()->profile());
+          ASSERT_TRUE(service);
+
           chrome::AddTabAt(browser(), GURL(), 0, true);
           chrome::AddTabAt(browser(), GURL(), 1, true);
-
           tab_groups::TabGroupId group_id =
               browser()->tab_strip_model()->AddToNewGroup({0});
 
           tab_groups::SavedTabGroupUtils::RemoveGroupFromTabstrip(browser(),
                                                                   group_id);
         }),
-        WaitForShow(
-            user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-        FlushEvents());
-    AddDescription(steps, "SaveAndCloseGroup( %s )");
+        WaitForPromo(feature_engagement::kIPHTabGroupsSaveV2CloseGroupFeature));
+    AddDescriptionPrefix(steps, "SaveAndCloseGroup()");
     return steps;
   }
 
@@ -58,8 +57,8 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupV2PromoTest,
                        TestShowingIPHOnSavedTabGroupBar) {
   // Show the SavedTabGroupBar and the BookmarkBar.
   PrefService* prefs = browser()->profile()->GetPrefs();
-  const bool original_stgb_pref = browser()->profile()->GetPrefs()->GetBoolean(
-      bookmarks::prefs::kShowTabGroupsInBookmarkBar);
+  const bool original_stgb_pref =
+      prefs->GetBoolean(bookmarks::prefs::kShowTabGroupsInBookmarkBar);
   prefs->SetBoolean(bookmarks::prefs::kShowTabGroupsInBookmarkBar, true);
 
   RunTestSequence(
@@ -76,8 +75,8 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupV2PromoTest,
                        TestShowingIPHWithoutSavedTabGroupBar) {
   // Show the SavedTabGroupBar and the BookmarkBar.
   PrefService* prefs = browser()->profile()->GetPrefs();
-  const bool original_stgb_pref = browser()->profile()->GetPrefs()->GetBoolean(
-      bookmarks::prefs::kShowTabGroupsInBookmarkBar);
+  const bool original_stgb_pref =
+      prefs->GetBoolean(bookmarks::prefs::kShowTabGroupsInBookmarkBar);
   prefs->SetBoolean(bookmarks::prefs::kShowTabGroupsInBookmarkBar, false);
 
   RunTestSequence(

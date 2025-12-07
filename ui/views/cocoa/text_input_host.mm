@@ -4,8 +4,11 @@
 
 #include "ui/views/cocoa/text_input_host.h"
 
+#include <optional>
+
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
+#include "ui/base/cocoa/menu_utils.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
@@ -28,8 +31,9 @@ gfx::Rect GetFirstRectForRangeHelper(const ui::TextInputClient* client,
   // Set up default return values, to be returned in case of unusual cases.
   gfx::Rect default_rect;
   *actual_range = gfx::Range::InvalidRange();
-  if (!client)
+  if (!client) {
     return default_rect;
+  }
 
   default_rect = client->GetCaretBounds();
   default_rect.set_width(0);
@@ -58,8 +62,9 @@ gfx::Rect GetFirstRectForRangeHelper(const ui::TextInputClient* client,
   const bool request_is_composition_end = from == composition_range.length();
   const size_t first_index = request_is_composition_end ? from - 1 : from;
   gfx::Rect union_rect;
-  if (!client->GetCompositionCharacterBounds(first_index, &union_rect))
+  if (!client->GetCompositionCharacterBounds(first_index, &union_rect)) {
     return default_rect;
+  }
 
   // If requested_range is empty, return a zero width rectangle corresponding to
   // it.
@@ -105,8 +110,9 @@ std::u16string AttributedSubstringForRangeHelper(
   std::u16string substring;
   gfx::Range text_range;
   *actual_range = gfx::Range::InvalidRange();
-  if (!client || !client->GetTextRange(&text_range))
+  if (!client || !client->GetTextRange(&text_range)) {
     return substring;
+  }
 
   // gfx::Range::Intersect() behaves a bit weirdly. If B is an empty range
   // contained inside a non-empty range A, B intersection A returns
@@ -118,8 +124,9 @@ std::u16string AttributedSubstringForRangeHelper(
   // This is a special case for which the complete string should should be
   // returned. NSTextView also follows this, though the same is not mentioned in
   // NSTextInputClient documentation.
-  if (!requested_range.IsValid())
+  if (!requested_range.IsValid()) {
     *actual_range = text_range;
+  }
 
   client->GetTextFromRange(*actual_range, &substring);
   return substring;
@@ -145,13 +152,14 @@ void TextInputHost::BindReceiver(
 }
 
 ui::TextInputClient* TextInputHost::GetTextInputClient() const {
-  return text_input_client_;
+  return text_input_client_.get();
 }
 
 void TextInputHost::SetTextInputClient(
     ui::TextInputClient* new_text_input_client) {
-  if (pending_text_input_client_ == new_text_input_client)
+  if (pending_text_input_client_.get() == new_text_input_client) {
     return;
+  }
 
   // This method may cause the IME window to dismiss, which may cause it to
   // insert text (e.g. to replace marked text with "real" text). That should
@@ -160,7 +168,7 @@ void TextInputHost::SetTextInputClient(
   // invoke -[NSApp updateWindows], which also wants a reference to the _new_
   // -inputContext. So put the new inputContext in |pendingTextInputClient_| and
   // only use it for -inputContext.
-  ui::TextInputClient* old_text_input_client = text_input_client_;
+  ui::TextInputClient* old_text_input_client = text_input_client_.get();
 
   // Since dismissing an IME may insert text, a misbehaving IME or a
   // ui::TextInputClient that acts on InsertChar() to change focus a second time
@@ -168,18 +176,21 @@ void TextInputHost::SetTextInputClient(
   // still on the stack. Calling [NSApp updateWindows] recursively may upset
   // an IME. Since the rest of this method is only to decide whether to call
   // updateWindows, and we're already calling it, just bail out.
-  if (text_input_client_ != pending_text_input_client_) {
-    pending_text_input_client_ = new_text_input_client;
+  if (text_input_client_.get() != pending_text_input_client_.get()) {
+    pending_text_input_client_ =
+        new_text_input_client ? new_text_input_client->AsWeakPtr() : nullptr;
     return;
   }
 
   // Start by assuming no need to invoke -updateWindows.
-  text_input_client_ = new_text_input_client;
-  pending_text_input_client_ = new_text_input_client;
+  text_input_client_ =
+      new_text_input_client ? new_text_input_client->AsWeakPtr() : nullptr;
+  pending_text_input_client_ = text_input_client_;
 
   if (host_impl_->in_process_ns_window_bridge_ &&
       host_impl_->in_process_ns_window_bridge_->NeedsUpdateWindows()) {
-    text_input_client_ = old_text_input_client;
+    text_input_client_ =
+        old_text_input_client ? old_text_input_client->AsWeakPtr() : nullptr;
     [NSApp updateWindows];
     // Note: |pending_text_input_client_| (and therefore +[NSTextInputContext
     // currentInputContext] may have changed if called recursively.
@@ -191,7 +202,11 @@ void TextInputHost::SetTextInputClient(
 // TextInputHost, remote_cocoa::mojom::TextInputHost:
 
 bool TextInputHost::HasClient(bool* out_has_client) {
-  *out_has_client = text_input_client_ != nullptr;
+  // If a cocoa menu is active and it is not triggered from the focused
+  // views::View (hence "unrelated"), disable text input. This prevents macOS
+  // from adding "Services" to the menu.
+  *out_has_client =
+      text_input_client_ != nullptr && !HasActiveUnrelatedCocoaMenu();
   return true;
 }
 
@@ -200,16 +215,25 @@ bool TextInputHost::HasInputContext(bool* out_has_input_context) {
 
   // If the textInputClient_ does not exist, return nil since this view does not
   // conform to NSTextInputClient protocol.
-  if (!pending_text_input_client_)
+  if (!pending_text_input_client_) {
     return true;
+  }
 
-  // If a menu is active, and -[NSView interpretKeyEvents:] asks for the
+  // If a views menu is active, and -[NSView interpretKeyEvents:] asks for the
   // input context, return nil. This ensures the action message is sent to
   // the view, rather than any NSTextInputClient a subview has installed.
   bool has_menu_controller = false;
   host_impl_->GetHasMenuController(&has_menu_controller);
-  if (has_menu_controller)
+  if (has_menu_controller) {
     return true;
+  }
+
+  // If a cocoa menu is active but it is not triggered from the focused
+  // views::View (hence "unrelated"), disable text input. This prevents macOS
+  // from adding "AutoFill" to the menu.
+  if (HasActiveUnrelatedCocoaMenu()) {
+    return true;
+  }
 
   // When not in an editable mode, or while entering passwords
   // (http://crbug.com/23219), we don't want to show IME candidate windows.
@@ -242,18 +266,21 @@ bool TextInputHost::GetSelectionRange(gfx::Range* out_range) {
 bool TextInputHost::GetSelectionText(bool* out_result,
                                      std::u16string* out_text) {
   *out_result = false;
-  if (!text_input_client_)
+  if (!text_input_client_) {
     return true;
+  }
   gfx::Range selection_range;
-  if (!text_input_client_->GetEditableSelectionRange(&selection_range))
+  if (!text_input_client_->GetEditableSelectionRange(&selection_range)) {
     return true;
+  }
   *out_result = text_input_client_->GetTextFromRange(selection_range, out_text);
   return true;
 }
 
 void TextInputHost::InsertText(const std::u16string& text, bool as_character) {
-  if (!text_input_client_)
+  if (!text_input_client_) {
     return;
+  }
   if (as_character) {
     // If a single character is inserted by keyDown's call to
     // interpretKeyEvents: then use InsertChar() to allow editing events to be
@@ -272,16 +299,18 @@ void TextInputHost::InsertText(const std::u16string& text, bool as_character) {
 }
 
 void TextInputHost::DeleteRange(const gfx::Range& range) {
-  if (!text_input_client_)
+  if (!text_input_client_) {
     return;
+  }
   text_input_client_->DeleteRange(range);
 }
 
 void TextInputHost::SetCompositionText(const std::u16string& text,
                                        const gfx::Range& selected_range,
                                        const gfx::Range& replacement_range) {
-  if (!text_input_client_)
+  if (!text_input_client_) {
     return;
+  }
 
   text_input_client_->DeleteRange(replacement_range);
   ui::CompositionText composition;
@@ -303,25 +332,29 @@ void TextInputHost::SetCompositionText(const std::u16string& text,
 }
 
 void TextInputHost::ConfirmCompositionText() {
-  if (!text_input_client_)
+  if (!text_input_client_) {
     return;
+  }
   text_input_client_->ConfirmCompositionText(/* keep_selection */ false);
 }
 
 bool TextInputHost::HasCompositionText(bool* out_has_composition_text) {
   *out_has_composition_text = false;
-  if (!text_input_client_)
+  if (!text_input_client_) {
     return true;
+  }
   *out_has_composition_text = text_input_client_->HasCompositionText();
   return true;
 }
 
 bool TextInputHost::GetCompositionTextRange(gfx::Range* out_composition_range) {
   *out_composition_range = gfx::Range::InvalidRange();
-  if (!text_input_client_)
+  if (!text_input_client_) {
     return true;
-  if (!text_input_client_->HasCompositionText())
+  }
+  if (!text_input_client_->HasCompositionText()) {
     return true;
+  }
   text_input_client_->GetCompositionTextRange(out_composition_range);
   return true;
 }
@@ -331,15 +364,15 @@ bool TextInputHost::GetAttributedSubstringForRange(
     std::u16string* out_text,
     gfx::Range* out_actual_range) {
   *out_text = AttributedSubstringForRangeHelper(
-      text_input_client_, requested_range, out_actual_range);
+      text_input_client_.get(), requested_range, out_actual_range);
   return true;
 }
 
 bool TextInputHost::GetFirstRectForRange(const gfx::Range& requested_range,
                                          gfx::Rect* out_rect,
                                          gfx::Range* out_actual_range) {
-  *out_rect = GetFirstRectForRangeHelper(text_input_client_, requested_range,
-                                         out_actual_range);
+  *out_rect = GetFirstRectForRangeHelper(text_input_client_.get(),
+                                         requested_range, out_actual_range);
   return true;
 }
 
@@ -431,6 +464,29 @@ void TextInputHost::IsTextEditCommandEnabled(
   bool enable;
   IsTextEditCommandEnabled(command, &enable);
   std::move(callback).Run(enable);
+}
+
+bool TextInputHost::HasActiveUnrelatedCocoaMenu() {
+  // As a heuristic, this code checks if the menu anchor location is
+  // inside of the current input control (i.e. the focused views::View).
+  std::optional<gfx::Point> cocoa_menu_anchor_location =
+      ui::GetActiveCocoaMenuAnchorLocation();
+
+  if (!cocoa_menu_anchor_location.has_value()) {
+    return false;
+  }
+
+  std::optional<gfx::Rect> control_bounds;
+  std::optional<gfx::Rect> selection_bounds;
+  text_input_client_->GetActiveTextInputControlLayoutBounds(&control_bounds,
+                                                            &selection_bounds);
+  if (!control_bounds.has_value()) {
+    return false;
+  }
+
+  // If the menu anchor is outside of the input control, this menu
+  // is unrelated to the currently focused views::View.
+  return !control_bounds->Contains(*cocoa_menu_anchor_location);
 }
 
 }  // namespace views

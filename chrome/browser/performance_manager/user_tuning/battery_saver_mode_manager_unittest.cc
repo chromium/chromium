@@ -12,12 +12,14 @@
 #include "base/power_monitor/battery_state_sampler.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
+#include "base/power_monitor/power_observer.h"
 #include "base/run_loop.h"
 #include "base/test/power_monitor_test_utils.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/performance_manager/test_support/fake_child_process_tuning_delegate.h"
 #include "chrome/browser/performance_manager/test_support/fake_frame_throttling_delegate.h"
 #include "chrome/browser/performance_manager/test_support/fake_freezing_delegate.h"
@@ -29,7 +31,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "dbus/mock_bus.h"
@@ -84,7 +86,7 @@ class MockObserver : public performance_manager::user_tuning::
   MOCK_METHOD1(OnDeviceHasBatteryChanged, void(bool));
 };
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 base::BatteryLevelProvider::BatteryState CreateBatteryState(
     bool under_threshold) {
@@ -97,7 +99,7 @@ base::BatteryLevelProvider::BatteryState CreateBatteryState(
       .capture_time = base::TimeTicks::Now()};
 }
 
-#else  // BUILDFLAG(IS_CHROMEOS_ASH)
+#else  // BUILDFLAG(IS_CHROMEOS)
 
 class ScopedFakePowerManagerClientLifetime {
  public:
@@ -110,7 +112,7 @@ class ScopedFakePowerManagerClientLifetime {
   }
 };
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -119,7 +121,7 @@ class BatterySaverModeManagerTest : public ::testing::Test {
   void SetUp() override {
     auto source = std::make_unique<FakePowerMonitorSource>();
     power_monitor_source_ = source.get();
-    base::PowerMonitor::Initialize(std::move(source));
+    base::PowerMonitor::GetInstance()->Initialize(std::move(source));
 
     performance_manager::user_tuning::prefs::RegisterLocalStatePrefs(
         local_state_.registry());
@@ -147,7 +149,9 @@ class BatterySaverModeManagerTest : public ::testing::Test {
     manager()->Start();
   }
 
-  void TearDown() override { base::PowerMonitor::ShutdownForTesting(); }
+  void TearDown() override {
+    base::PowerMonitor::GetInstance()->ShutdownForTesting();
+  }
 
   BatterySaverModeManager* manager() {
     return BatterySaverModeManager::GetInstance();
@@ -169,7 +173,7 @@ class BatterySaverModeManagerTest : public ::testing::Test {
       battery_level_provider_;
   std::unique_ptr<base::BatteryStateSampler> battery_sampler_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ScopedFakePowerManagerClientLifetime fake_power_manager_client_lifetime_;
 #endif
   raw_ptr<FakePowerMonitorSource, DanglingUntriaged> power_monitor_source_;
@@ -180,7 +184,7 @@ class BatterySaverModeManagerTest : public ::testing::Test {
 };
 
 // Battery Saver is controlled by the OS on ChromeOS
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(BatterySaverModeManagerTest, TemporaryBatterySaver) {
   StartManager();
@@ -237,7 +241,8 @@ TEST_F(BatterySaverModeManagerTest, TemporaryBatterySaverTurnsOffWhenPlugged) {
         std::make_unique<QuitRunLoopOnPowerStateChangeObserver>(
             run_loop.QuitClosure());
     manager()->AddObserver(observer.get());
-    power_monitor_source_->SetOnBatteryPower(true);
+    power_monitor_source_->SetBatteryPowerStatus(
+        base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
     run_loop.Run();
     manager()->RemoveObserver(observer.get());
   }
@@ -262,7 +267,8 @@ TEST_F(BatterySaverModeManagerTest, TemporaryBatterySaverTurnsOffWhenPlugged) {
         std::make_unique<QuitRunLoopOnPowerStateChangeObserver>(
             run_loop.QuitClosure());
     manager()->AddObserver(observer.get());
-    power_monitor_source_->SetOnBatteryPower(false);
+    power_monitor_source_->SetBatteryPowerStatus(
+        base::PowerStateObserver::BatteryPowerStatus::kExternalPower);
     run_loop.Run();
     manager()->RemoveObserver(observer.get());
   }
@@ -352,7 +358,8 @@ TEST_F(BatterySaverModeManagerTest, EnabledOnBatteryPower) {
         std::make_unique<QuitRunLoopOnBSMChangeObserver>(
             run_loop.QuitClosure());
     manager()->AddObserver(observer.get());
-    power_monitor_source_->SetOnBatteryPower(true);
+    power_monitor_source_->SetBatteryPowerStatus(
+        base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
     run_loop.Run();
     manager()->RemoveObserver(observer.get());
   }
@@ -368,7 +375,8 @@ TEST_F(BatterySaverModeManagerTest, EnabledOnBatteryPower) {
         std::make_unique<QuitRunLoopOnBSMChangeObserver>(
             run_loop.QuitClosure());
     manager()->AddObserver(observer.get());
-    power_monitor_source_->SetOnBatteryPower(false);
+    power_monitor_source_->SetBatteryPowerStatus(
+        base::PowerStateObserver::BatteryPowerStatus::kExternalPower);
     run_loop.Run();
     manager()->RemoveObserver(observer.get());
   }
@@ -394,7 +402,8 @@ TEST_F(BatterySaverModeManagerTest, EnabledOnBatteryPower) {
         std::make_unique<QuitRunLoopOnPowerStateChangeObserver>(
             run_loop.QuitClosure());
     manager()->AddObserver(observer.get());
-    power_monitor_source_->SetOnBatteryPower(true);
+    power_monitor_source_->SetBatteryPowerStatus(
+        base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
     run_loop.Run();
     manager()->RemoveObserver(observer.get());
   }
@@ -460,7 +469,8 @@ TEST_F(BatterySaverModeManagerTest, BSMEnabledUnderThreshold) {
         std::make_unique<QuitRunLoopOnPowerStateChangeObserver>(
             run_loop.QuitClosure());
     manager()->AddObserver(observer.get());
-    power_monitor_source_->SetOnBatteryPower(true);
+    power_monitor_source_->SetBatteryPowerStatus(
+        base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
     run_loop.Run();
     manager()->RemoveObserver(observer.get());
   }
@@ -479,7 +489,8 @@ TEST_F(BatterySaverModeManagerTest, BSMEnabledUnderThreshold) {
         std::make_unique<QuitRunLoopOnPowerStateChangeObserver>(
             run_loop.QuitClosure());
     manager()->AddObserver(observer.get());
-    power_monitor_source_->SetOnBatteryPower(false);
+    power_monitor_source_->SetBatteryPowerStatus(
+        base::PowerStateObserver::BatteryPowerStatus::kExternalPower);
     run_loop.Run();
     manager()->RemoveObserver(observer.get());
   }
@@ -498,7 +509,8 @@ TEST_F(BatterySaverModeManagerTest, BSMEnabledUnderThreshold) {
         std::make_unique<QuitRunLoopOnPowerStateChangeObserver>(
             run_loop.QuitClosure());
     manager()->AddObserver(observer.get());
-    power_monitor_source_->SetOnBatteryPower(true);
+    power_monitor_source_->SetBatteryPowerStatus(
+        base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
     run_loop.Run();
     manager()->RemoveObserver(observer.get());
   }
@@ -576,7 +588,7 @@ TEST_F(BatterySaverModeManagerTest,
   EXPECT_EQ(100, manager()->SampledBatteryPercentage());
 }
 
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(BatterySaverModeManagerTest, ManagedFromPowerManager) {
   base::test::ScopedFeatureList feature_list;
@@ -635,6 +647,6 @@ TEST_F(BatterySaverModeManagerTest,
   EXPECT_TRUE(child_process_tuning_enabled());
   EXPECT_TRUE(freezing_enabled());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace performance_manager::user_tuning

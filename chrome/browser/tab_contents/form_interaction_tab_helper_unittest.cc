@@ -38,10 +38,9 @@ class FormInteractionTabHelperTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
     pm_harness_.SetUp();
     performance_manager::testing::CreatePageAggregatorAndPassItToGraph();
-    performance_manager::PerformanceManager::CallOnGraph(
-        FROM_HERE, base::BindOnce([](performance_manager::Graph* graph) {
-          graph->PassToGraph(FormInteractionTabHelper::CreateGraphObserver());
-        }));
+    performance_manager::Graph* graph =
+        performance_manager::PerformanceManager::GetGraph();
+    graph->PassToGraph(FormInteractionTabHelper::CreateGraphObserver());
   }
 
   std::unique_ptr<content::WebContents> CreateTestWebContents() {
@@ -62,22 +61,11 @@ class FormInteractionTabHelperTest : public ChromeRenderViewHostTestHarness {
   }
 
   void SetHadFormInteraction(content::RenderFrameHost* rfh) {
-    base::RunLoop run_loop;
-    // Use a |QuitWhenIdleClosure| as the task posted to the UI thread by
-    // PerformanceManager will have a lower priority (USER_VISIBLE) than the one
-    // of a QuitClosure's task runner (USER_BLOCKING).
-    auto graph_callback = base::BindLambdaForTesting(
-        [quit_loop = run_loop.QuitWhenIdleClosure(),
-         node = performance_manager::PerformanceManager::
-             GetFrameNodeForRenderFrameHost(rfh)]() {
-          auto* frame_node =
-              performance_manager::FrameNodeImpl::FromNode(node.get());
-          frame_node->SetHadFormInteraction();
-          std::move(quit_loop).Run();
-        });
-    performance_manager::PerformanceManager::CallOnGraph(
-        FROM_HERE, std::move(graph_callback));
-    run_loop.Run();
+    base::WeakPtr<performance_manager::FrameNode> node =
+        performance_manager::PerformanceManager::GetFrameNodeForRenderFrameHost(
+            rfh);
+    auto* frame_node = performance_manager::FrameNodeImpl::FromNode(node.get());
+    frame_node->SetHadFormInteraction();
   }
 
  private:

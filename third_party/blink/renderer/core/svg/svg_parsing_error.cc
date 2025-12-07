@@ -62,10 +62,8 @@ std::pair<const char*, const char*> MessageForStatus(SVGParseStatus status) {
     case SVGParseStatus::kParsingFailed:
       return std::make_pair("Invalid value, ", ".");
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
-  return std::make_pair("", "");
 }
 
 bool DisableLocus(SVGParseStatus status) {
@@ -94,12 +92,12 @@ void AppendValue(StringBuilder& builder,
     DCHECK_LE(context_start, context_end);
     DCHECK_LE(context_end, value.length());
     if (context_start != 0)
-      builder.Append(kHorizontalEllipsisCharacter);
+      builder.Append(uchar::kHorizontalEllipsis);
     EscapeStringForJSON(
         value.GetString().Substring(context_start, context_end - context_start),
         &builder);
     if (context_end != value.length())
-      builder.Append(kHorizontalEllipsisCharacter);
+      builder.Append(uchar::kHorizontalEllipsis);
   }
   builder.Append('"');
 }

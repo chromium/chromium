@@ -13,6 +13,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/dbus/regmon/regmon_client.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,16 +26,11 @@ TEST(NetworkAnnotationMonitorTest, ReportTest) {
   // Setup profile with the disabled hash code in blocklist pref.
   TestingProfileManager profile_manager_(TestingBrowserProcess::GetGlobal());
   ASSERT_TRUE(profile_manager_.SetUp());
-  profile_manager_.CreateTestingProfile("testing_profile", true);
+  profile_manager_.CreateTestingProfile("testing_profile");
   ProfileManager::GetActiveUserProfile()->GetPrefs()->SetDict(
       prefs::kNetworkAnnotationBlocklist,
       base::Value::Dict().Set(base::NumberToString(kTestDisabledHashCode),
                               true));
-
-  // Disable secondary profiles pref since we skip reporting on lacros when this
-  // is enabled.
-  profile_manager_.local_state()->Get()->SetBoolean(
-      prefs::kLacrosSecondaryProfilesAllowed, false);
 
   // Initialize fake Regmon D-Bus client. This fake client is used below to
   // verify that violations are reported.

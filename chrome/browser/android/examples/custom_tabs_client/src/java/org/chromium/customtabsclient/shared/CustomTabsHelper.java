@@ -13,10 +13,14 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /** Helper class for Custom Tabs. */
+@NullMarked
 public class CustomTabsHelper {
     private static final String TAG = "CustomTabsHelper";
     static final String STABLE_PACKAGE = "com.android.chrome";
@@ -28,7 +32,7 @@ public class CustomTabsHelper {
     private static final String ACTION_CUSTOM_TABS_CONNECTION =
             "android.support.customtabs.action.CustomTabsService";
 
-    private static String sPackageNameToUse;
+    private static @Nullable String sPackageNameToUse;
 
     private CustomTabsHelper() {}
 
@@ -51,7 +55,7 @@ public class CustomTabsHelper {
      * @param context {@link Context} to use for accessing {@link PackageManager}.
      * @return The package name recommended to use for connecting to custom tabs related components.
      */
-    public static String getPackageNameToUse(Context context) {
+    public static @Nullable String getPackageNameToUse(Context context) {
         if (sPackageNameToUse != null) return sPackageNameToUse;
 
         PackageManager pm = context.getPackageManager();

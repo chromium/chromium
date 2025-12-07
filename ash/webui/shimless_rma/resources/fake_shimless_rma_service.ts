@@ -5,9 +5,10 @@
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
-import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import type {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
-import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, Component, ComponentType, ErrorObserverRemote, ExternalDiskStateObserverRemote, FeatureLevel, FinalizationError, FinalizationObserverRemote, FinalizationStatus, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningError, ProvisioningObserverRemote, ProvisioningStatus, RmadErrorCode, Shimless3pDiagnosticsAppInfo, ShimlessRmaServiceInterface, Show3pDiagnosticsAppResult, ShutdownMethod, State, StateResult, UpdateErrorCode, UpdateRoFirmwareObserverRemote, UpdateRoFirmwareStatus, WriteProtectDisableCompleteAction} from './shimless_rma.mojom-webui.js';
+import type {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationSetupInstruction, Component, ErrorObserverRemote, ExternalDiskStateObserverRemote, FeatureLevel, FinalizationObserverRemote, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, PowerCableStateObserverRemote, ProvisioningObserverRemote, Shimless3pDiagnosticsAppInfo, ShimlessRmaServiceInterface, Show3pDiagnosticsAppResult, ShutdownMethod, StatePropertyResult, StateResult, UpdateRoFirmwareObserverRemote, WriteProtectDisableCompleteAction} from './shimless_rma.mojom-webui.js';
+import {CalibrationOverallStatus, CalibrationStatus, ComponentType, FinalizationError, FinalizationStatus, HardwareVerificationResult, OsUpdateOperation, ProvisioningError, ProvisioningStatus, RmadErrorCode, State, UpdateErrorCode, UpdateRoFirmwareStatus} from './shimless_rma.mojom-webui.js';
 
 
 /**
@@ -62,6 +63,7 @@ export type FakeShimlessRmaServiceInterface = ShimlessRmaServiceInterface&{
   setGetOriginalFeatureLevelResult(featureLevel: FeatureLevel): void,
   setGetCalibrationSetupInstructionsResult(
       instructions: CalibrationSetupInstruction): void,
+  setGetStatePropertiesResult(statePropertyResult: StatePropertyResult): void,
 };
 
 
@@ -203,6 +205,15 @@ export class FakeShimlessRmaService implements FakeShimlessRmaServiceInterface {
         'getCurrentState', this.resolveMethodDelayMs);
   }
 
+  getStateProperties(): Promise<{statePropertyResult: StatePropertyResult}> {
+    return this.methods.resolveMethod('getStateProperties');
+  }
+
+  setGetStatePropertiesResult(statePropertyResult: StatePropertyResult): void {
+    this.methods.setResult(
+        'getStateProperties', {statePropertyResult: statePropertyResult});
+  }
+
   transitionPreviousState(): Promise<{stateResult: StateResult}> {
     // As next state methods and transitionPreviousState can modify the result
     // of this function the result must be set at the time of the call.
@@ -326,15 +337,15 @@ export class FakeShimlessRmaService implements FakeShimlessRmaServiceInterface {
         'manualDisableWriteProtectAvailable', {available: available});
   }
 
-  chooseManuallyDisableWriteProtect(): Promise<{stateResult: StateResult}> {
+  setManuallyDisableWriteProtect(): Promise<{stateResult: StateResult}> {
     return this.getNextStateForMethod(
-        'chooseManuallyDisableWriteProtect',
+        'setManuallyDisableWriteProtect',
         State.kChooseWriteProtectDisableMethod);
   }
 
-  chooseRsuDisableWriteProtect(): Promise<{stateResult: StateResult}> {
+  setRsuDisableWriteProtect(): Promise<{stateResult: StateResult}> {
     return this.getNextStateForMethod(
-        'chooseRsuDisableWriteProtect', State.kChooseWriteProtectDisableMethod);
+        'setRsuDisableWriteProtect', State.kChooseWriteProtectDisableMethod);
   }
 
   getRsuDisableWriteProtectChallenge(): Promise<{challenge: string}> {
@@ -946,11 +957,11 @@ export class FakeShimlessRmaService implements FakeShimlessRmaServiceInterface {
       remote: HardwareVerificationStatusObserverRemote): void {
     this.observables.observe(
         'HardwareVerificationStatusObserver_onHardwareVerificationResult',
-        (isCompliant: boolean, errorMessage: string) => {
-          remote.onHardwareVerificationResult(isCompliant, errorMessage);
+        (result: HardwareVerificationResult) => {
+          remote.onHardwareVerificationResult(result);
         });
     if (this.automaticallyTriggerHardwareVerificationStatusObservation) {
-      this.triggerHardwareVerificationStatusObserver(true, '', 3000);
+      this.triggerHardwareVerificationStatusObserver({passResult: {}}, 3000);
     }
   }
 
@@ -1078,10 +1089,10 @@ export class FakeShimlessRmaService implements FakeShimlessRmaServiceInterface {
    * Causes the hardware verification observer to fire after a delay.
    */
   triggerHardwareVerificationStatusObserver(
-      isCompliant: boolean, errorMessage: string, delayMs: number): Promise<unknown> {
+      result: HardwareVerificationResult, delayMs: number): Promise<unknown> {
     return this.triggerObserverAfterMs(
         'HardwareVerificationStatusObserver_onHardwareVerificationResult',
-        [isCompliant, errorMessage], delayMs);
+        [result], delayMs);
   }
 
   /**
@@ -1147,6 +1158,7 @@ export class FakeShimlessRmaService implements FakeShimlessRmaServiceInterface {
     this.methods = new FakeMethodResolver();
 
     this.methods.register('getCurrentState');
+    this.methods.register('getStateProperties');
     this.methods.register('transitionPreviousState');
 
     this.methods.register('abortRma');
@@ -1168,8 +1180,8 @@ export class FakeShimlessRmaService implements FakeShimlessRmaServiceInterface {
     this.methods.register('setDifferentOwner');
     this.methods.register('setWipeDevice');
 
-    this.methods.register('chooseManuallyDisableWriteProtect');
-    this.methods.register('chooseRsuDisableWriteProtect');
+    this.methods.register('setManuallyDisableWriteProtect');
+    this.methods.register('setRsuDisableWriteProtect');
     this.methods.register('getRsuDisableWriteProtectChallenge');
     this.methods.register('getRsuDisableWriteProtectHwid');
     this.methods.register('getRsuDisableWriteProtectChallengeQrCode');

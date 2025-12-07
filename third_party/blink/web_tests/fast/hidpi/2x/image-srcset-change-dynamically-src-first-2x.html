@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<script src="../../../resources/js-test.js"></script>
+<script>
+    addEventListener("DOMContentLoaded", function() {
+        var img = document.getElementById("foo");
+        // The below should not trigger the load of the blue image according to the spec.
+        img.src = "../resources/blue-100-px-square.png"
+        img.srcset = "../resources/blue-100-px-square.png 1x, ../resources/green-400-px-square.png 2x";    }, false);
+    addEventListener("load", function() {
+        shouldBeTrue('document.getElementById("foo").clientWidth==200');
+    }, false);
+</script>
+<div>This test passes if this img tag below is a green square when the scale factor is 2.
+    It ensures that attributes can be changed dynamically from javascript, and that only the correct resource is loaded.</div>
+<img id="foo">

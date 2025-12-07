@@ -12,10 +12,11 @@
 <translation id="3983305234037158273">Dispositivi sincronizzati per il ripristino delle schede che è possibile modificare al tocco. Naviga per controllare o ripristinare le schede selezionate del dispositivo attuale tramite tocco. Tastiera nascosta.</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Apri <ph name="TABS_COUNT_ONE" /> scheda}other{Apri <ph name="TABS_COUNT_MANY" /> schede}}</translation>
 <translation id="4509609396389120020">Recupera schede da altri dispositivi</translation>
+<translation id="4619615317237390068">Schede di altri dispositivi</translation>
 <translation id="4811934403802581334">Tutte le schede selezionate dal dispositivo attualmente selezionato verranno ripristinate.</translation>
 <translation id="5336031759968328813">Rivedi tutte le schede</translation>
 <translation id="5494920125229734069">Seleziona tutto</translation>
-<translation id="5972844218283131174">Deseleziona tutte</translation>
+<translation id="5972844218283131174">Deseleziona tutto</translation>
 <translation id="791922009843073162">Tutte le schede selezionate verranno deselezionate o tutte le schede deselezionate verranno selezionate.</translation>
 <translation id="7927711904086083099">Non selezionato</translation>
 <translation id="8003146088970081079">Scegli il dispositivo da cui vuoi recuperare le schede</translation>

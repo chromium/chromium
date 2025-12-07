@@ -39,14 +39,14 @@ class AuraTestHelper;
 }
 }  // namespace aura
 
-namespace blink {
+namespace network {
 struct ParsedPermissionsPolicyDeclaration;
 using ParsedPermissionsPolicy = std::vector<ParsedPermissionsPolicyDeclaration>;
+}  // namespace network
 
-namespace web_pref {
+namespace blink::web_pref {
 struct WebPreferences;
-}
-}  // namespace blink
+}  // namespace blink::web_pref
 
 namespace display {
 #if BUILDFLAG(IS_ANDROID)
@@ -98,11 +98,6 @@ class RenderFrameHostTester {
   // RenderViewHostTestEnabler instance (see below) to do this.
   static RenderFrameHostTester* For(RenderFrameHost* host);
 
-  // Calls the RenderFrameHost's private OnMessageReceived function with the
-  // given message.
-  static bool TestOnMessageReceived(RenderFrameHost* rfh,
-                                    const IPC::Message& msg);
-
   // Commit the load pending in the given |controller| if any.
   static void CommitPendingLoad(NavigationController* controller);
 
@@ -121,7 +116,7 @@ class RenderFrameHostTester {
   // used as the container policy.
   virtual RenderFrameHost* AppendChildWithPolicy(
       const std::string& frame_name,
-      const blink::ParsedPermissionsPolicy& allow) = 0;
+      const network::ParsedPermissionsPolicy& allow) = 0;
 
   // Same as AppendChild above, but simulates the `credentialless` attribute
   // being added.
@@ -362,7 +357,7 @@ class RenderViewHostTestHarness : public ::testing::Test {
 #if BUILDFLAG(IS_WIN)
   std::unique_ptr<ui::ScopedOleInitializer> ole_initializer_;
 #endif
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   std::unique_ptr<display::ScopedNativeScreen> screen_;
 #endif
 #if defined(USE_AURA)

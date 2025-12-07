@@ -9,7 +9,6 @@ android_resources("partner_browser_customizations_example_apk_resources") {
     "res/values/bookmarks_icons.xml",
     "res/values/strings.xml",
   ]
-  android_manifest = "AndroidManifest.xml"
 }
 
 android_apk("partner_browser_customizations_example_apk") {

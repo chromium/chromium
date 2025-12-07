@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "build/android_buildflags.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_page_data.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -60,7 +61,16 @@ class InstallableIconFetcher {
                      const blink::mojom::ManifestImageResource_Purpose purpose,
                      const SkBitmap& bitmap);
 
+  // Gives a chance for desktop android to generate an icon instead of
+  // ending with an error. Other platforms end immediately with an error.
+  void MaybeEndWithError(InstallableStatusCode code);
+
+  // Ends the fetch with an error.
   void EndWithError(InstallableStatusCode code);
+
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+  void OnHomeScreenIconGenerated(const GURL& page_url, const SkBitmap& bitmap);
+#endif
 
   base::WeakPtr<content::WebContents> web_contents_;
 

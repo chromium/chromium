@@ -173,4 +173,28 @@
     </if>
   </if>
 
+  <if expr="_google_chrome">
+    <if expr="is_ios or is_android">
+      <message name="IDS_CERT_ERROR_AUTHORITY_INVALID_DETAILS_V2" desc="Details for an X509 certificate with an invalid authority, V2.">
+        This server could not prove that it is <ph name="DOMAIN">&lt;strong&gt;$1<ex>paypal.com</ex>&lt;/strong&gt;</ph> because it is using a security certificate that is not trusted by Chrome or your system configuration for web traffic encryption. This may be caused by a misconfiguration, or an attacker intercepting your connection.
+      </message>
+    </if>
+    <if expr="not is_ios and not is_android">
+      <message name="IDS_CERT_ERROR_AUTHORITY_INVALID_DETAILS_V2" desc="Details for an X509 certificate with an invalid authority, V2.">
+        This server could not prove that it is <ph name="DOMAIN">&lt;strong&gt;$1<ex>paypal.com</ex>&lt;/strong&gt;</ph> because it is using a security certificate that is not trusted by Chrome or your system configuration for web traffic encryption. This may be caused by a misconfiguration, or an attacker intercepting your connection. <ph name="BEGIN_VIEW_CERTIFICATE_LINK">&lt;a href="#" id="view-certificate-link"&gt;</ph>View Certificate<ph name="END_VIEW_CERTIFICATE_LINK">&lt;/a&gt;</ph>
+      </message>
+    </if>
+  </if>
+  <if expr="not _google_chrome">
+    <if expr="is_ios or is_android">
+      <message name="IDS_CERT_ERROR_AUTHORITY_INVALID_DETAILS_V2" desc="Details for an X509 certificate with an invalid authority, V2.">
+        This server could not prove that it is <ph name="DOMAIN">&lt;strong&gt;$1<ex>paypal.com</ex>&lt;/strong&gt;</ph> because it is using a security certificate that is not trusted by Chromium or your system configuration for web traffic encryption. This may be caused by a misconfiguration, or an attacker intercepting your connection.
+      </message>
+    </if>
+    <if expr="not is_ios and not is_android">
+      <message name="IDS_CERT_ERROR_AUTHORITY_INVALID_DETAILS_V2" desc="Details for an X509 certificate with an invalid authority, V2.">
+        This server could not prove that it is <ph name="DOMAIN">&lt;strong&gt;$1<ex>paypal.com</ex>&lt;/strong&gt;</ph> because it is using a security certificate that is not trusted by Chromium or your system configuration for web traffic encryption. This may be caused by a misconfiguration, or an attacker intercepting your connection. <ph name="BEGIN_VIEW_CERTIFICATE_LINK">&lt;a href="#" id="view-certificate-link"&gt;</ph>View Certificate<ph name="END_VIEW_CERTIFICATE_LINK">&lt;/a&gt;</ph>
+      </message>
+    </if>
+  </if>
 </grit-part>

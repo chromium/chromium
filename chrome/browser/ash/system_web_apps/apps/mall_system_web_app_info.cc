@@ -4,16 +4,18 @@
 
 #include "chrome/browser/ash/system_web_apps/apps/mall_system_web_app_info.h"
 
+#include "ash/constants/ash_switches.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/webui/grit/ash_mall_cros_app_resources.h"
 #include "ash/webui/mall/url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/feature_list.h"
+#include "chrome/browser/apps/user_type_filter.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/webapps/common/web_app_id.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -51,7 +53,14 @@ MallSystemAppDelegate::GetWebAppInfo() const {
 }
 
 bool MallSystemAppDelegate::IsAppEnabled() const {
-  return chromeos::features::IsCrosMallSwaEnabled();
+  if (apps::DetermineUserType(profile()) != apps::kUserTypeUnmanaged) {
+    return false;
+  }
+  // Do not enable Mall on Flex devices, which do  not support apps on ARC.
+  if (ash::switches::IsRevenBranding()) {
+    return false;
+  }
+  return true;
 }
 
 std::vector<std::string> MallSystemAppDelegate::GetAppIdsToUninstallAndReplace()
@@ -63,5 +72,15 @@ std::vector<std::string> MallSystemAppDelegate::GetAppIdsToUninstallAndReplace()
   // does not occur, shelf and launcher will reset to default positions for the
   // Mall app. Fixing this requires teaching ExternallyManagedAppManager how
   // to ignore apps, the buggy behaviour is considered an acceptable tradeoff.
-  return {web_app::kMallAppId};
+  constexpr char kMallWebAppId[] = "hmiijpebigdebehjghkpkediohageppo";
+  return {kMallWebAppId};
+}
+
+bool MallSystemAppDelegate::ShouldCaptureNavigations() const {
+  return true;
+}
+
+gfx::Size MallSystemAppDelegate::GetMinimumWindowSize() const {
+  // 688px is the minimum width of the Mall website.
+  return gfx::Size(/*width=*/688, /*height=*/300);
 }

@@ -5,6 +5,7 @@ desc: |-
   If you enable this policy or don't configure it, the QR Code Generator feature is enabled.
 
   If you disable this policy, the QR Code Generator feature is disabled.
+default: true
 example_value: false
 features:
   can_be_mandatory: true

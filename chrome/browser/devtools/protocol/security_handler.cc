@@ -44,18 +44,15 @@ std::string SecurityLevelToProtocolSecurityState(
       return protocol::Security::SecurityStateEnum::Neutral;
     case security_state::WARNING:
       return protocol::Security::SecurityStateEnum::Insecure;
-    case security_state::SECURE_WITH_POLICY_INSTALLED_CERT:
     case security_state::SECURE:
       return protocol::Security::SecurityStateEnum::Secure;
     case security_state::DANGEROUS:
       return protocol::Security::SecurityStateEnum::InsecureBroken;
     case security_state::SECURITY_LEVEL_COUNT:
-      NOTREACHED_IN_MIGRATION();
-      return protocol::Security::SecurityStateEnum::Neutral;
+      NOTREACHED();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return protocol::Security::SecurityStateEnum::Neutral;
+  NOTREACHED();
 }
 
 std::unique_ptr<protocol::Security::CertificateSecurityState>
@@ -63,10 +60,7 @@ CreateCertificateSecurityState(
     const security_state::VisibleSecurityState& state) {
   auto certificate = std::make_unique<protocol::Array<protocol::String>>();
   if (state.certificate) {
-    certificate->push_back(
-        base::Base64Encode(net::x509_util::CryptoBufferAsStringPiece(
-            state.certificate->cert_buffer())));
-    for (const auto& cert : state.certificate->intermediate_buffers()) {
+    for (const auto& cert : state.certificate->cert_buffers()) {
       certificate->push_back(base::Base64Encode(
           net::x509_util::CryptoBufferAsStringPiece(cert.get())));
     }
@@ -166,9 +160,7 @@ std::unique_ptr<protocol::Security::SafetyTipInfo> CreateSafetyTipInfo(
 }
 
 std::unique_ptr<protocol::Security::VisibleSecurityState>
-CreateVisibleSecurityState(content::WebContents* web_contents) {
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(web_contents);
+CreateVisibleSecurityState(SecurityStateTabHelper* helper) {
   DCHECK(helper);
   auto state = helper->GetVisibleSecurityState();
   std::string security_state =
@@ -247,7 +239,7 @@ SecurityHandler::SecurityHandler(content::WebContents* web_contents,
   protocol::Security::Dispatcher::wire(dispatcher, this);
 }
 
-SecurityHandler::~SecurityHandler() {}
+SecurityHandler::~SecurityHandler() = default;
 
 protocol::Response SecurityHandler::Enable() {
   if (enabled_)
@@ -270,6 +262,10 @@ void SecurityHandler::DidChangeVisibleSecurityState() {
   if (!enabled_)
     return;
 
-  auto visible_security_state = CreateVisibleSecurityState(web_contents());
+  SecurityStateTabHelper* helper = web_contents() ? SecurityStateTabHelper::FromWebContents(web_contents()) : nullptr;
+  if (!helper)
+    return;
+
+  auto visible_security_state = CreateVisibleSecurityState(helper);
   frontend_->VisibleSecurityStateChanged(std::move(visible_security_state));
 }

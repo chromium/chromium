@@ -3,18 +3,17 @@
 // found in the LICENSE file.
 
 #include "base/task/deferred_sequenced_task_runner.h"
-#include "base/task/common/scoped_defer_task_posting.h"
 
 #include <utility>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/task/common/scoped_defer_task_posting.h"
 
 namespace base {
 
 DeferredSequencedTaskRunner::DeferredTask::DeferredTask()
-    : is_non_nestable(false) {
-}
+    : is_non_nestable(false) {}
 
 DeferredSequencedTaskRunner::DeferredTask::DeferredTask(DeferredTask&& other) =
     default;

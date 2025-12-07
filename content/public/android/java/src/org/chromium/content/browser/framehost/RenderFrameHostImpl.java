@@ -4,8 +4,6 @@
 
 package org.chromium.content.browser.framehost;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
@@ -14,6 +12,8 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.base.UnguessableToken;
 import org.chromium.blink.mojom.AuthenticatorStatus;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.JavaScriptCallback;
 import org.chromium.content_public.browser.LifecycleState;
@@ -33,6 +33,7 @@ import java.util.List;
  * object.
  */
 @JNINamespace("content")
+@NullMarked
 public class RenderFrameHostImpl implements RenderFrameHost {
     private long mNativeRenderFrameHostAndroid;
     // mDelegate can be null.
@@ -94,28 +95,25 @@ public class RenderFrameHostImpl implements RenderFrameHost {
     }
 
     @Override
-    @Nullable
-    public GURL getLastCommittedURL() {
+    public @Nullable GURL getLastCommittedURL() {
         if (mNativeRenderFrameHostAndroid == 0) return null;
         return RenderFrameHostImplJni.get().getLastCommittedURL(mNativeRenderFrameHostAndroid);
     }
 
     @Override
-    @Nullable
-    public Origin getLastCommittedOrigin() {
+    public @Nullable Origin getLastCommittedOrigin() {
         if (mNativeRenderFrameHostAndroid == 0) return null;
         return RenderFrameHostImplJni.get().getLastCommittedOrigin(mNativeRenderFrameHostAndroid);
     }
 
     @Override
-    @Nullable
-    public RenderFrameHost getMainFrame() {
+    public @Nullable RenderFrameHost getMainFrame() {
         if (mNativeRenderFrameHostAndroid == 0) return null;
         return RenderFrameHostImplJni.get().getMainFrame(mNativeRenderFrameHostAndroid);
     }
 
     @Override
-    public void getCanonicalUrlForSharing(Callback<GURL> callback) {
+    public void getCanonicalUrlForSharing(Callback<@Nullable GURL> callback) {
         if (mNativeRenderFrameHostAndroid == 0) {
             callback.onResult(null);
             return;
@@ -126,7 +124,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
 
     @Override
     public List<RenderFrameHost> getAllRenderFrameHosts() {
-        if (mNativeRenderFrameHostAndroid == 0) return null;
+        if (mNativeRenderFrameHostAndroid == 0) return List.of();
         return RenderFrameHostImplJni.get().getAllRenderFrameHosts(mNativeRenderFrameHostAndroid);
     }
 
@@ -177,7 +175,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
     }
 
     @Override
-    public <I extends Interface, P extends Interface.Proxy> P getInterfaceToRendererFrame(
+    public <I extends Interface, P extends Interface.Proxy> @Nullable P getInterfaceToRendererFrame(
             Interface.Manager<I, P> manager) {
         if (mNativeRenderFrameHostAndroid == 0) return null;
         Pair<P, InterfaceRequest<I>> result = manager.getInterfaceRequest(CoreImpl.getInstance());
@@ -197,8 +195,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
     }
 
     /** Return the AndroidOverlay routing token for this RenderFrameHostImpl. */
-    @Nullable
-    public UnguessableToken getAndroidOverlayRoutingToken() {
+    public @Nullable UnguessableToken getAndroidOverlayRoutingToken() {
         if (mNativeRenderFrameHostAndroid == 0) return null;
         return RenderFrameHostImplJni.get()
                 .getAndroidOverlayRoutingToken(mNativeRenderFrameHostAndroid);
@@ -215,6 +212,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
             String relyingPartyId,
             Origin effectiveOrigin,
             boolean isPaymentCredentialGetAssertion,
+            @Nullable Origin remoteDesktopClientOverrideOrigin,
             Callback<RenderFrameHost.WebAuthSecurityChecksResults> callback) {
         if (mNativeRenderFrameHostAndroid == 0) {
             var result =
@@ -229,6 +227,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
                         relyingPartyId,
                         effectiveOrigin,
                         isPaymentCredentialGetAssertion,
+                        remoteDesktopClientOverrideOrigin,
                         callback);
     }
 
@@ -248,9 +247,13 @@ public class RenderFrameHostImpl implements RenderFrameHost {
             String relyingPartyId,
             Origin effectiveOrigin,
             boolean isPaymentCredentialCreation,
-            Callback<Integer> callback) {
+            @Nullable Origin remoteDesktopClientOverrideOrigin,
+            Callback<RenderFrameHost.WebAuthSecurityChecksResults> callback) {
         if (mNativeRenderFrameHostAndroid == 0) {
-            callback.onResult(AuthenticatorStatus.UNKNOWN_ERROR);
+            var result =
+                    new WebAuthSecurityChecksResults(
+                            AuthenticatorStatus.UNKNOWN_ERROR, /* isCrossOrigin= */ false);
+            callback.onResult(result);
             return;
         }
 
@@ -260,7 +263,26 @@ public class RenderFrameHostImpl implements RenderFrameHost {
                         relyingPartyId,
                         effectiveOrigin,
                         isPaymentCredentialCreation,
+                        remoteDesktopClientOverrideOrigin,
                         callback);
+    }
+
+    @Override
+    public void performReportWebAuthSecurityChecks(
+            String relyingPartyId,
+            Origin effectiveOrigin,
+            Callback<WebAuthSecurityChecksResults> callback) {
+        if (mNativeRenderFrameHostAndroid == 0) {
+            var result =
+                    new WebAuthSecurityChecksResults(
+                            AuthenticatorStatus.UNKNOWN_ERROR, /* isCrossOrigin= */ false);
+            callback.onResult(result);
+            return;
+        }
+
+        RenderFrameHostImplJni.get()
+                .performReportWebAuthSecurityChecks(
+                        mNativeRenderFrameHostAndroid, relyingPartyId, effectiveOrigin, callback);
     }
 
     @Override
@@ -292,6 +314,17 @@ public class RenderFrameHostImpl implements RenderFrameHost {
                         mNativeRenderFrameHostAndroid, script, worldId, callback);
     }
 
+    @Override
+    public boolean hasHitTestDataForTesting() {
+        return RenderFrameHostImplJni.get()
+                .hasHitTestDataForTesting(mNativeRenderFrameHostAndroid); // IN-TEST
+    }
+
+    @Override
+    public void viewSource() {
+        RenderFrameHostImplJni.get().viewSource(mNativeRenderFrameHostAndroid);
+    }
+
     @NativeMethods
     interface Natives {
         GURL getLastCommittedURL(long nativeRenderFrameHostAndroid);
@@ -300,7 +333,8 @@ public class RenderFrameHostImpl implements RenderFrameHost {
 
         RenderFrameHost getMainFrame(long nativeRenderFrameHostAndroid);
 
-        void getCanonicalUrlForSharing(long nativeRenderFrameHostAndroid, Callback<GURL> callback);
+        void getCanonicalUrlForSharing(
+                long nativeRenderFrameHostAndroid, Callback<@Nullable GURL> callback);
 
         @JniType("std::vector")
         List<RenderFrameHost> getAllRenderFrameHosts(long nativeRenderFrameHostAndroid);
@@ -333,6 +367,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
                 String relyingPartyId,
                 Origin effectiveOrigin,
                 boolean isPaymentCredentialGetAssertion,
+                @Nullable Origin remoteDesktopClientOverrideOrigin,
                 Callback<RenderFrameHost.WebAuthSecurityChecksResults> callback);
 
         void performMakeCredentialWebAuthSecurityChecks(
@@ -340,7 +375,14 @@ public class RenderFrameHostImpl implements RenderFrameHost {
                 String relyingPartyId,
                 Origin effectiveOrigin,
                 boolean isPaymentCredentialCreation,
-                Callback<Integer> callback);
+                @Nullable Origin remoteDesktopClientOverrideOrigin,
+                Callback<RenderFrameHost.WebAuthSecurityChecksResults> callback);
+
+        void performReportWebAuthSecurityChecks(
+                long nativeRenderFrameHostAndroid,
+                String relyingPartyId,
+                Origin effectiveOrigin,
+                Callback<RenderFrameHost.WebAuthSecurityChecksResults> callback);
 
         int getLifecycleState(long nativeRenderFrameHostAndroid);
 
@@ -351,6 +393,10 @@ public class RenderFrameHostImpl implements RenderFrameHost {
                 long nativeRenderFrameHostAndroid,
                 String stript,
                 int isolatedWorldId,
-                JavaScriptCallback callback);
+                @Nullable JavaScriptCallback callback);
+
+        boolean hasHitTestDataForTesting(long nativeRenderFrameHostAndroid);
+
+        void viewSource(long nativeRenderFrameHostAndroid);
     }
 }

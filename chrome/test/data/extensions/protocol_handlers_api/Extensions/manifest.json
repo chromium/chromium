@@ -1,0 +1,17 @@
+{
+  "name": "register_handlers",
+  "manifest_version": 3,
+  "version": "1",
+  "protocol_handlers": [
+    {
+      "protocol": "web+ecsearch",
+      "name": "Ecosia Search Handler",
+      "uriTemplate": "https://www.ecosia.org/search?q=%s"
+    },
+    {
+      "protocol": "web+ducksearch",
+      "name": "DuckDuckGo Search Handler",
+      "uriTemplate": "https://duckduckgo.com/?q=%s"
+    }
+  ]
+}

@@ -39,11 +39,6 @@ class MockPlatformWindowDelegate : public PlatformWindowDelegate {
   MOCK_METHOD1(OnWindowTiledStateChanged,
                void(WindowTiledEdges new_tiled_edges));
 #endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  MOCK_METHOD2(OnFullscreenTypeChanged,
-               void(PlatformFullscreenType old_type,
-                    PlatformFullscreenType new_type));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   MOCK_METHOD0(OnLostCapture, void());
   MOCK_METHOD1(OnAcceleratedWidgetAvailable,
                void(gfx::AcceleratedWidget widget));
@@ -54,11 +49,10 @@ class MockPlatformWindowDelegate : public PlatformWindowDelegate {
   MOCK_CONST_METHOD0(GetMaximumSizeForWindow, std::optional<gfx::Size>());
   MOCK_METHOD0(GetOwnedWindowAnchorAndRectInDIP,
                std::optional<OwnedWindowAnchor>());
-  MOCK_METHOD0(OnMouseEnter, void());
+  MOCK_METHOD0(OnCursorUpdate, void());
   MOCK_METHOD1(OnOcclusionStateChanged,
                void(PlatformWindowOcclusionState occlusion_state));
   MOCK_METHOD2(OnStateUpdate, int64_t(const State& old, const State& latest));
-  MOCK_METHOD1(OnOverviewModeChanged, void(bool overview));
   MOCK_METHOD2(OnRotateFocus,
                bool(PlatformWindowDelegate::RotateDirection, bool));
   MOCK_CONST_METHOD0(CanMaximize, bool());

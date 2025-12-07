@@ -24,3 +24,5 @@ void ShowBadFlagsSnackbar(content::WebContents* web_contents,
       env, window_android->GetJavaObject(),
       base::android::ConvertUTF16ToJavaString(env, message));
 }
+
+DEFINE_JNI(BadFlagsSnackbarManager)

@@ -21,7 +21,6 @@
 #include "extensions/common/extension.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 #include "url/gurl.h"
 
 namespace file_manager {
@@ -123,7 +122,7 @@ class TestDriveFsEventRouter : public DriveFsEventRouter {
 
   GURL ConvertDrivePathToFileSystemUrl(const base::FilePath& file_path,
                                        const GURL& listener_url) override {
-    return GURL(base::StrCat({listener_url.host(), ":", file_path.value()}));
+    return GURL(base::StrCat({listener_url.GetHost(), ":", file_path.value()}));
   }
 
   std::vector<GURL> ConvertPathsToFileSystemUrls(
@@ -132,7 +131,7 @@ class TestDriveFsEventRouter : public DriveFsEventRouter {
     std::vector<GURL> urls;
     for (const auto& path : paths) {
       const GURL url =
-          GURL(base::StrCat({listener_url.host(), ":", path.value()}));
+          GURL(base::StrCat({listener_url.GetHost(), ":", path.value()}));
       urls.push_back(url);
     }
     return urls;
@@ -368,10 +367,8 @@ TEST_F(DriveFsEventRouterTest, DisplayConfirmDialog_UnmountBeforeResult) {
   reason.type = drivefs::mojom::DialogReason::Type::kEnableDocsOffline;
   reason.path = base::FilePath("a");
   event_router_.DisplayConfirmDialog(
-      reason,
-      base::BindLambdaForTesting([&](drivefs::mojom::DialogResult result) {
-        NOTREACHED_IN_MIGRATION();
-      }));
+      reason, base::BindLambdaForTesting(
+                  [&](drivefs::mojom::DialogResult result) { NOTREACHED(); }));
   Unmount();
   event_router_.OnDialogResult(drivefs::mojom::DialogResult::kAccept);
 

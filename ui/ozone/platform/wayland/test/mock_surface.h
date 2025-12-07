@@ -5,17 +5,17 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_TEST_MOCK_SURFACE_H_
 #define UI_OZONE_PLATFORM_WAYLAND_TEST_MOCK_SURFACE_H_
 
-#include <linux-explicit-synchronization-unstable-v1-server-protocol.h>
 #include <wayland-server-protocol.h>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/ozone/platform/wayland/test/mock_xdg_surface.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 #include "ui/ozone/platform/wayland/test/test_alpha_blending.h"
-#include "ui/ozone/platform/wayland/test/test_augmented_surface.h"
+#include "ui/ozone/platform/wayland/test/test_fractional_scale.h"
 #include "ui/ozone/platform/wayland/test/test_overlay_prioritized_surface.h"
 #include "ui/ozone/platform/wayland/test/test_subsurface.h"
 #include "ui/ozone/platform/wayland/test/test_viewport.h"
@@ -28,6 +28,8 @@ namespace wl {
 extern const struct wl_surface_interface kMockSurfaceImpl;
 extern const struct zwp_linux_surface_synchronization_v1_interface
     kMockZwpLinuxSurfaceSynchronizationImpl;
+
+class MockLinuxDrmSyncobjSurface;
 
 // Manage client surface
 class MockSurface : public ServerObject {
@@ -67,6 +69,11 @@ class MockSurface : public ServerObject {
   void set_viewport(TestViewport* viewport) { viewport_ = viewport; }
   TestViewport* viewport() { return viewport_; }
 
+  void set_fractional_scale(TestFractionalScale* fractional_scale) {
+    fractional_scale_ = fractional_scale;
+  }
+  TestFractionalScale* fractional_scale() { return fractional_scale_; }
+
   void set_overlay_prioritized_surface(
       TestOverlayPrioritizedSurface* prioritized_surface) {
     prioritized_surface_ = prioritized_surface;
@@ -75,10 +82,12 @@ class MockSurface : public ServerObject {
     return prioritized_surface_;
   }
 
-  void set_augmented_surface(TestAugmentedSurface* augmented_surface) {
-    augmented_surface_ = augmented_surface;
+  void set_linux_drm_syncobj_surface(MockLinuxDrmSyncobjSurface* surface) {
+    linux_drm_syncobj_surface_ = surface;
   }
-  TestAugmentedSurface* augmented_surface() { return augmented_surface_; }
+  MockLinuxDrmSyncobjSurface* linux_drm_syncobj_surface() {
+    return linux_drm_syncobj_surface_;
+  }
 
   void set_blending(TestAlphaBlending* blending) { blending_ = blending; }
   TestAlphaBlending* blending() { return blending_; }
@@ -87,19 +96,13 @@ class MockSurface : public ServerObject {
   gfx::Rect input_region() const { return input_region_; }
 
   void set_frame_callback(wl_resource* callback_resource) {
+    if (allow_resetting_frame_callback_ && frame_callback_) {
+      wl_resource_destroy(frame_callback_.ExtractAsDangling());
+      frame_callback_ = nullptr;
+    }
     DCHECK(!frame_callback_);
     frame_callback_ = callback_resource;
   }
-
-  void set_linux_buffer_release(wl_resource* buffer,
-                                wl_resource* linux_buffer_release) {
-    DCHECK(!linux_buffer_releases_.contains(buffer));
-    linux_buffer_releases_.emplace(buffer, linux_buffer_release);
-  }
-  bool has_linux_buffer_release() const {
-    return !linux_buffer_releases_.empty();
-  }
-  void ClearBufferReleases();
 
   wl_resource* attached_buffer() const { return attached_buffer_; }
   wl_resource* prev_attached_buffer() const { return prev_attached_buffer_; }
@@ -111,33 +114,36 @@ class MockSurface : public ServerObject {
   void AttachNewBuffer(wl_resource* buffer_resource, int32_t x, int32_t y);
   void DestroyPrevAttachedBuffer();
   void ReleaseBuffer(wl_resource* buffer);
-  void ReleaseBufferFenced(wl_resource* buffer,
-                           gfx::GpuFenceHandle release_fence);
   void SendFrameCallback();
+  void AllowResettingFrameCallback() { allow_resetting_frame_callback_ = true; }
 
   int32_t buffer_scale() const { return buffer_scale_; }
   void set_buffer_scale(int32_t buffer_scale) { buffer_scale_ = buffer_scale; }
 
+  base::WeakPtr<MockSurface> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
-  raw_ptr<MockXdgSurface, AcrossTasksDanglingUntriaged> xdg_surface_ = nullptr;
-  raw_ptr<TestSubSurface, AcrossTasksDanglingUntriaged> sub_surface_ = nullptr;
-  raw_ptr<TestViewport, AcrossTasksDanglingUntriaged> viewport_ = nullptr;
-  raw_ptr<TestAlphaBlending, AcrossTasksDanglingUntriaged> blending_ = nullptr;
-  raw_ptr<TestOverlayPrioritizedSurface, AcrossTasksDanglingUntriaged>
-      prioritized_surface_ = nullptr;
-  raw_ptr<TestAugmentedSurface, AcrossTasksDanglingUntriaged>
-      augmented_surface_ = nullptr;
+  raw_ptr<MockXdgSurface> xdg_surface_ = nullptr;
+  raw_ptr<TestSubSurface> sub_surface_ = nullptr;
+  raw_ptr<TestViewport> viewport_ = nullptr;
+  raw_ptr<TestFractionalScale> fractional_scale_ = nullptr;
+  raw_ptr<TestAlphaBlending> blending_ = nullptr;
+  raw_ptr<TestOverlayPrioritizedSurface> prioritized_surface_ = nullptr;
+  raw_ptr<MockLinuxDrmSyncobjSurface> linux_drm_syncobj_surface_ = nullptr;
   gfx::Rect opaque_region_ = {-1, -1, 0, 0};
   gfx::Rect input_region_ = {-1, -1, 0, 0};
 
-  raw_ptr<wl_resource, AcrossTasksDanglingUntriaged> frame_callback_ = nullptr;
-  base::flat_map<wl_resource*, wl_resource*> linux_buffer_releases_;
+  raw_ptr<wl_resource> frame_callback_ = nullptr;
+  bool allow_resetting_frame_callback_ = false;
 
   raw_ptr<wl_resource, AcrossTasksDanglingUntriaged> attached_buffer_ = nullptr;
   raw_ptr<wl_resource, AcrossTasksDanglingUntriaged> prev_attached_buffer_ =
       nullptr;
 
   int32_t buffer_scale_ = -1;
+  base::WeakPtrFactory<MockSurface> weak_ptr_factory_{this};
 };
 
 }  // namespace wl

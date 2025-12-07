@@ -15,17 +15,19 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
-#include "ipc/ipc_message.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/views_delegate.h"
+#include "ui/views/views_features.h"
 
 namespace views {
 
@@ -71,6 +73,12 @@ WebView::WebView(content::BrowserContext* browser_context) {
   set_suppress_default_focus_handling();
   ax_mode_observation_.Observe(&ui::AXPlatform::GetInstance());
   SetBrowserContext(browser_context);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kWebView);
+  // A webview does not need an accessible name as the document title is
+  // provided via other means. Providing it here would be redundant.
+  // Mark the name as explicitly empty so that accessibility_checks pass.
+  GetViewAccessibility().SetName(
+      std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
 }
 
 WebView::~WebView() {
@@ -83,12 +91,13 @@ bool WebView::IsWebViewContents(const content::WebContents* web_contents) {
   return web_contents->GetUserData(kIsWebViewContentsKey);
 }
 
-content::WebContents* WebView::GetWebContents(base::Location creator_location) {
+content::WebContents* WebView::GetWebContents(const GURL& url,
+                                              base::Location creator_location) {
   if (!web_contents()) {
     if (!browser_context_) {
       return nullptr;
     }
-    wc_owner_ = CreateWebContents(browser_context_, creator_location);
+    wc_owner_ = CreateWebContents(browser_context_, url, creator_location);
     wc_owner_->SetDelegate(this);
     SetWebContents(wc_owner_.get());
   }
@@ -137,19 +146,30 @@ void WebView::SetBrowserContext(content::BrowserContext* browser_context) {
 }
 
 void WebView::LoadInitialURL(const GURL& url,
-                             HttpsUpgradePolicy https_upgrade_policy) {
-  // Loading requires a valid WebContents.
-  DCHECK(GetWebContents());
+                             HttpsUpgradePolicy https_upgrade_policy,
+                             base::Location invoke_location) {
   content::NavigationController::LoadURLParams params(url);
   params.referrer = content::Referrer();
   params.transition_type = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
   params.force_no_https_upgrade =
       https_upgrade_policy == HttpsUpgradePolicy::kNoUpgrade;
-  GetWebContents()->GetController().LoadURLWithParams(params);
+
+  const GURL initial_url =
+      base::FeatureList::IsEnabled(features::kApplyInitialUrlToWebContents)
+          ? url
+          : GURL();
+  content::WebContents* web_contents =
+      GetWebContents(initial_url, invoke_location);
+  DCHECK(web_contents);
+  web_contents->GetController().LoadURLWithParams(params);
 }
 
 void WebView::SetFastResize(bool fast_resize) {
   holder_->set_fast_resize(fast_resize);
+}
+
+bool WebView::GetFastResize() const {
+  return holder_->fast_resize();
 }
 
 void WebView::EnableSizingFromWebContents(const gfx::Size& min_size,
@@ -180,7 +200,7 @@ void WebView::SetCrashedOverlayView(View* crashed_overlay_view) {
 
   if (crashed_overlay_view_.view()) {
     CHECK(crashed_overlay_view_.view()->owned_by_client());
-    AddChildView(crashed_overlay_view_.view());
+    AddChildViewRaw(crashed_overlay_view_.view());
     holder_->SetVisible(false);
     crashed_overlay_view_.view()->SetBoundsRect(GetLocalBounds());
   }
@@ -191,6 +211,16 @@ void WebView::SetCrashedOverlayView(View* crashed_overlay_view) {
 base::CallbackListSubscription WebView::AddWebContentsAttachedCallback(
     WebContentsAttachedCallback callback) {
   return web_contents_attached_callbacks_.Add(callback);
+}
+
+base::CallbackListSubscription WebView::AddWebContentsDetachedCallback(
+    WebContentsDetachedCallback callback) {
+  return web_contents_detached_callbacks_.Add(callback);
+}
+
+base::CallbackListSubscription WebView::AddWebContentsFocusedCallback(
+    WebContentsFocusedCallback callback) {
+  return web_contents_focused_callbacks_.Add(callback);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -309,7 +339,7 @@ void WebView::RemovedFromWidget() {
   // Immediately clear the accessible parent upon being removed, as it's a
   // weak reference to an object that is about to be destroyed.
   if (holder_->native_view()) {
-    holder_->SetParentAccessible(nullptr);
+    holder_->SetParentAccessible(gfx::NativeViewAccessible());
   }
 }
 
@@ -399,6 +429,7 @@ void WebView::DidToggleFullscreenModeForTab(bool entered_fullscreen,
 void WebView::OnWebContentsFocused(
     content::RenderWidgetHost* render_widget_host) {
   RequestFocus();
+  web_contents_focused_callbacks_.Notify(this);
 }
 
 void WebView::AXTreeIDForMainFrameHasChanged() {
@@ -416,14 +447,6 @@ void WebView::ResizeDueToAutoResize(content::WebContents* source,
   }
 
   SetPreferredSize(new_size);
-}
-
-void WebView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kWebView;
-  // A webview does not need an accessible name as the document title is
-  // provided via other means. Providing it here would be redundant.
-  // Mark the name as explicitly empty so that accessibility_checks pass.
-  node_data->SetNameExplicitlyEmpty();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -469,6 +492,7 @@ void WebView::DetachWebContentsNativeView() {
   TRACE_EVENT0("views", "WebView::DetachWebContentsNativeView");
   if (web_contents()) {
     holder_->Detach();
+    web_contents_detached_callbacks_.Notify(this);
   }
 }
 
@@ -493,13 +517,14 @@ void WebView::NotifyAccessibilityWebContentsChanged() {
     content::RenderFrameHost* rfh =
         web_contents() ? web_contents()->GetPrimaryMainFrame() : nullptr;
     GetViewAccessibility().SetChildTreeID(rfh ? rfh->GetAXTreeID()
-                                                   : ui::AXTreeIDUnknown());
+                                              : ui::AXTreeIDUnknown());
   }
-  NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, false);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged, false);
 }
 
 std::unique_ptr<content::WebContents> WebView::CreateWebContents(
     content::BrowserContext* browser_context,
+    const GURL& url,
     base::Location creator_location) {
   std::unique_ptr<content::WebContents> contents;
   if (*GetCreatorForTesting()) {
@@ -509,6 +534,10 @@ std::unique_ptr<content::WebContents> WebView::CreateWebContents(
   if (!contents) {
     content::WebContents::CreateParams create_params(browser_context,
                                                      creator_location);
+    if (!url.is_empty()) {
+      create_params.site_instance =
+          content::SiteInstance::CreateForURL(browser_context, url);
+    }
     return content::WebContents::Create(create_params);
   }
 

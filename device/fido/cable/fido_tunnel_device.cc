@@ -4,6 +4,8 @@
 
 #include "device/fido/cable/fido_tunnel_device.h"
 
+#include <variant>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -13,17 +15,20 @@
 #include "components/cbor/writer.h"
 #include "components/device_event_log/device_event_log.h"
 #include "crypto/random.h"
-#include "device/fido/cable/cable_discovery_data.h"
+#include "device/fido/cable/pairing.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/cbor_extract.h"
-#include "device/fido/features.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_device.h"
 #include "device/fido/fido_parsing_utils.h"
-#include "device/fido/fido_types.h"
 #include "device/fido/network_context_factory.h"
+#include "device/fido/public/features.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_types.h"
+#include "net/base/isolation_info.h"
 #include "net/storage_access_api/status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
 #include "third_party/boringssl/src/include/openssl/hkdf.h"
@@ -115,18 +120,18 @@ FidoTunnelDevice::FidoTunnelDevice(
       must_support_ctap_(must_support_ctap) {
   const eid::Components components = eid::ToComponents(decrypted_eid);
 
-  QRInfo& info = absl::get<QRInfo>(info_);
+  QRInfo& info = std::get<QRInfo>(info_);
   info.pairing_callback = std::move(pairing_callback);
   info.local_identity_seed =
       fido_parsing_utils::Materialize(local_identity_seed);
   info.tunnel_server_domain = components.tunnel_server_domain;
 
   info.psk =
-      Derive<EXTENT(info.psk)>(secret, decrypted_eid, DerivedValueType::kPSK);
+      Derive<QRInfo::kPskSize>(secret, decrypted_eid, DerivedValueType::kPSK);
 
   std::array<uint8_t, 16> tunnel_id;
-  tunnel_id = Derive<EXTENT(tunnel_id)>(secret, base::span<uint8_t>(),
-                                        DerivedValueType::kTunnelID);
+  tunnel_id = Derive<tunnel_id.size()>(secret, base::span<uint8_t>(),
+                                       DerivedValueType::kTunnelID);
 
   const GURL url(tunnelserver::GetConnectURL(components.tunnel_server_domain,
                                              components.routing_id, tunnel_id));
@@ -141,7 +146,8 @@ FidoTunnelDevice::FidoTunnelDevice(
       url, {kCableWebSocketProtocol}, net::SiteForCookies(),
       net::StorageAccessApiStatus::kNone, net::IsolationInfo(),
       /*additional_headers=*/{}, network::mojom::kBrowserProcessId,
-      url::Origin::Create(url), network::mojom::kWebSocketOptionBlockAllCookies,
+      url::Origin::Create(url), network::mojom::ClientSecurityState::New(),
+      network::mojom::kWebSocketOptionBlockAllCookies,
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
       websocket_client_->BindNewHandshakeClientPipe(),
       /*url_loader_network_observer=*/mojo::NullRemote(),
@@ -173,9 +179,9 @@ FidoTunnelDevice::FidoTunnelDevice(
   CHECK(client_payload_bytes.has_value());
   const std::string client_payload_hex = base::HexEncode(*client_payload_bytes);
 
-  PairedInfo& info = absl::get<PairedInfo>(info_);
-  info.eid_encryption_key = Derive<EXTENT(info.eid_encryption_key)>(
-      pairing->secret, client_nonce, DerivedValueType::kEIDKey);
+  PairedInfo& info = std::get<PairedInfo>(info_);
+  info.eid_encryption_key = Derive<kEIDKeySize>(pairing->secret, client_nonce,
+                                                DerivedValueType::kEIDKey);
   info.peer_identity = pairing->peer_public_key_x962;
   info.secret = pairing->secret;
   info.pairing_is_invalid = std::move(pairing_is_invalid);
@@ -198,7 +204,8 @@ FidoTunnelDevice::FidoTunnelDevice(
       url, {kCableWebSocketProtocol}, net::SiteForCookies(),
       net::StorageAccessApiStatus::kNone, net::IsolationInfo(),
       std::move(headers), network::mojom::kBrowserProcessId,
-      url::Origin::Create(url), network::mojom::kWebSocketOptionBlockAllCookies,
+      url::Origin::Create(url), network::mojom::ClientSecurityState::New(),
+      network::mojom::kWebSocketOptionBlockAllCookies,
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
       websocket_client_->BindNewHandshakeClientPipe(),
       /*url_loader_network_observer=*/mojo::NullRemote(),
@@ -216,7 +223,7 @@ FidoTunnelDevice::~FidoTunnelDevice() {
 
 bool FidoTunnelDevice::MatchAdvert(
     const std::array<uint8_t, kAdvertSize>& advert) {
-  PairedInfo& info = absl::get<PairedInfo>(info_);
+  PairedInfo& info = std::get<PairedInfo>(info_);
 
   std::optional<CableEidArray> plaintext =
       eid::Decrypt(advert, info.eid_encryption_key);
@@ -224,8 +231,8 @@ bool FidoTunnelDevice::MatchAdvert(
     return false;
   }
 
-  info.psk = Derive<EXTENT(*info.psk)>(info.secret, *plaintext,
-                                       DerivedValueType::kPSK);
+  info.psk = Derive<PairedInfo::kPskSize>(info.secret, *plaintext,
+                                          DerivedValueType::kPSK);
 
   if (state_ == State::kWaitingForEID ||
       state_ == State::kWaitingForEIDOrConnectSignal) {
@@ -356,14 +363,14 @@ void FidoTunnelDevice::OnTunnelReady(
       DCHECK(!handshake_);
       RecordEvent(CableV2TunnelEvent::kTunnelOk);
 
-      if (auto* info = absl::get_if<QRInfo>(&info_)) {
+      if (auto* info = std::get_if<QRInfo>(&info_)) {
         // A QR handshake can start as soon as the tunnel is connected.
         handshake_.emplace(info->psk, /*peer_identity=*/std::nullopt,
                            info->local_identity_seed);
       } else {
         // A paired handshake may be able to start if we have already seen
         // the BLE advert.
-        PairedInfo& paired_info = absl::get<PairedInfo>(info_);
+        PairedInfo& paired_info = std::get<PairedInfo>(info_);
         if (paired_info.psk) {
           handshake_.emplace(*paired_info.psk, paired_info.peer_identity,
                              /*local_identity=*/std::nullopt);
@@ -385,7 +392,7 @@ void FidoTunnelDevice::OnTunnelReady(
       break;
 
     case WebSocketAdapter::Result::GONE:
-      if (auto* info = absl::get_if<PairedInfo>(&info_)) {
+      if (auto* info = std::get_if<PairedInfo>(&info_)) {
         FIDO_LOG(DEBUG) << GetId()
                         << ": tunnel server reports that contact ID is invalid";
         RecordEvent(CableV2TunnelEvent::kTunnelGone);
@@ -556,7 +563,7 @@ void FidoTunnelDevice::OnTunnelData(
           OnError();
           return;
         }
-        if (auto* info = absl::get_if<QRInfo>(&info_)) {
+        if (auto* info = std::get_if<QRInfo>(&info_)) {
           std::optional<std::unique_ptr<Pairing>> maybe_pairing =
               Pairing::Parse(linking_it->second, info->tunnel_server_domain,
                              info->local_identity_seed, *handshake_hash_);
@@ -588,7 +595,7 @@ void FidoTunnelDevice::OnTunnelData(
 
       established_connection_ = base::MakeRefCounted<EstablishedConnection>(
           std::move(websocket_client_), GetId(), protocol_revision,
-          std::move(crypter_), *handshake_hash_, absl::get_if<QRInfo>(&info_));
+          std::move(crypter_), *handshake_hash_, std::get_if<QRInfo>(&info_));
 
       if (discover_callback_) {
         CHECK(features_.has_value());
@@ -601,8 +608,7 @@ void FidoTunnelDevice::OnTunnelData(
     case State::kReady: {
       // In |kReady| the connection is handled by |established_connection_| and
       // so this should never happen.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     }
   }
 }
@@ -724,7 +730,7 @@ void FidoTunnelDevice::EstablishedConnection::Close() {
 
     case State::kLocallyShutdown:
     case State::kClosed:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -869,8 +875,7 @@ void FidoTunnelDevice::EstablishedConnection::OnRemoteClose() {
 
     case State::kRemoteShutdown:
     case State::kClosed:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

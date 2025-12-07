@@ -8,6 +8,7 @@ include_rules = [
   "+components/permissions",
   "+components/safe_browsing/core/common",
   "+components/ukm",
+  "+components/viz/common",
   "+services/device/public",
   "+services/metrics/public/cpp",
   "+storage/browser/file_system",

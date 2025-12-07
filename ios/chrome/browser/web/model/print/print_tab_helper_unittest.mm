@@ -4,14 +4,14 @@
 
 #import "ios/chrome/browser/web/model/print/print_tab_helper.h"
 
-#import "base/test/task_environment.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/web/model/print/web_state_printer.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -36,21 +36,21 @@ class PrintTabHelperTest : public PlatformTest {
   PrintTabHelperTest() {
     scoped_refptr<user_prefs::PrefRegistrySyncable> registry =
         base::MakeRefCounted<user_prefs::PrefRegistrySyncable>();
-    RegisterBrowserStatePrefs(registry.get());
+    RegisterProfilePrefs(registry.get());
     sync_preferences::PrefServiceMockFactory factory;
 
-    TestChromeBrowserState::Builder test_cbs_builder;
-    test_cbs_builder.SetPrefService(factory.CreateSyncable(registry.get()));
-    chrome_browser_state_ = std::move(test_cbs_builder).Build();
-    web_state_.SetBrowserState(chrome_browser_state_.get());
+    TestProfileIOS::Builder test_profile_builder;
+    test_profile_builder.SetPrefService(factory.CreateSyncable(registry.get()));
+    profile_ = std::move(test_profile_builder).Build();
+    web_state_.SetBrowserState(profile_.get());
 
     printer_ = [[PrintTabHelperTestPrinter alloc] init];
     PrintTabHelper::GetOrCreateForWebState(&web_state_)->set_printer(printer_);
   }
 
   PrintTabHelperTestPrinter* printer_;
-  base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebState web_state_;
 };
 
@@ -65,7 +65,7 @@ TEST_F(PrintTabHelperTest, PrintEnabled) {
 // Tests printing when the pref controlling printing is disabled.
 TEST_F(PrintTabHelperTest, PrintDisabled) {
   ASSERT_FALSE(printer_.printInvoked);
-  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kPrintingEnabled, false);
+  profile_->GetPrefs()->SetBoolean(prefs::kPrintingEnabled, false);
 
   PrintTabHelper::GetOrCreateForWebState(&web_state_)->Print();
   EXPECT_FALSE(printer_.printInvoked);

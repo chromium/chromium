@@ -1,0 +1,37 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+static_library("test_support") {
+  testonly = true
+
+  public = [ "test_utils.h" ]
+
+  sources = [ "test_utils.cc" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//components/device_signals/core/browser",
+    "//components/device_signals/core/common",
+    "//components/enterprise",
+    "//components/policy/core/common",
+    "//components/prefs",
+    "//testing/gtest",
+  ]
+
+  if (is_mac || is_linux || is_win) {
+    sources += [ "test_utils_desktop.cc" ]
+  } else if (is_android) {
+    sources += [ "test_utils_android.cc" ]
+    deps += [
+      "//components/safe_browsing/android:safe_browsing_api_handler",
+      "//components/safe_browsing/android:safe_browsing_api_handler_util",
+    ]
+  }
+}

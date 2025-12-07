@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "ash/style/typography.h"
@@ -19,6 +20,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/webapps/common/constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/text_elider.h"
@@ -43,7 +45,7 @@ constexpr int kDividerHeight = 1;
 
 int GetDialogHeight(const AppInstallDialogArgs& dialog_args) {
   if (const AppInfoArgs* app_info_args =
-          absl::get_if<AppInfoArgs>(&dialog_args)) {
+          std::get_if<AppInfoArgs>(&dialog_args)) {
     int height = kMinimumDialogHeight;
     // TODO(b/329515116): Adjust height for long URLs that wrap multiple
     // lines.
@@ -99,7 +101,7 @@ void AppInstallDialog::ShowApp(
   profile_ = profile->GetWeakPtr();
 
   if (parent) {
-    parent_window_tracker_ = views::NativeWindowTracker::Create(parent);
+    parent_window_tracker_ = ui::NativeWindowTracker::Create(parent);
   }
   parent_ = std::move(parent);
 
@@ -211,8 +213,8 @@ void AppInstallDialog::Show(gfx::NativeWindow parent,
   dialog_args_ = std::move(dialog_args);
   dialog_height_ = GetDialogHeight(dialog_args_.value());
 
-  if (absl::holds_alternative<AppInfoArgs>(dialog_args_.value())) {
-    set_dialog_modal_type(ui::MODAL_TYPE_WINDOW);
+  if (std::holds_alternative<AppInfoArgs>(dialog_args_.value())) {
+    set_dialog_modal_type(ui::mojom::ModalType::kWindow);
   }
 
   ShowSystemDialog(parent);

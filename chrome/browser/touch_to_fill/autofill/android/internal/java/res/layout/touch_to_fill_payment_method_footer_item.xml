@@ -38,7 +38,7 @@ found in the LICENSE file.
       android:textDirection="locale"
       android:textAlignment="viewStart"/>
   <TextView
-      android:id="@+id/manage_payment_methods"
+      android:id="@+id/open_management_ui"
       android:layout_width="match_parent"
       android:layout_height="@dimen/ttf_buttons_height"
       android:clickable="true"
@@ -47,7 +47,6 @@ found in the LICENSE file.
       android:gravity="center_vertical|start"
       android:paddingHorizontal="8dp"
       android:textAppearance="@style/TextAppearance.TextMedium.Primary"
-      android:text="@string/autofill_bottom_sheet_manage_payment_methods"
       app:drawableStartCompat="@drawable/infobar_chrome"
       app:drawableTint="@color/default_icon_color_secondary_tint_list"
       android:background="?android:attr/selectableItemBackground"

@@ -34,11 +34,11 @@
 #include "base/values.h"
 #include "third_party/blink/public/mojom/devtools/devtools_frontend.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/widget_creation_observer.h"
 #include "third_party/blink/renderer/core/inspector/inspector_frontend_client.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -50,12 +50,11 @@ class LocalFrame;
 // it's host (mojom.DevToolsFrontendHost) is destroyed.
 class DevToolsFrontendImpl final
     : public GarbageCollected<DevToolsFrontendImpl>,
-      public Supplement<LocalFrame>,
       public mojom::blink::DevToolsFrontend,
       public InspectorFrontendClient,
-      public LocalFrame::WidgetCreationObserver {
+      public WidgetCreationObserver {
  public:
-  static const char kSupplementName[];
+  static const unsigned kSupplementIndex;
 
   static void BindMojoRequest(
       LocalFrame*,
@@ -73,7 +72,7 @@ class DevToolsFrontendImpl final
   void DidClearWindowObject();
   void Trace(Visitor*) const override;
 
-  // LocalFrame::WidgetCreationObserver implementation.
+  // WidgetCreationObserver implementation.
   void OnLocalRootWidgetCreated() override;
 
  private:
@@ -89,6 +88,7 @@ class DevToolsFrontendImpl final
   // InspectorFrontendClient implementation.
   void SendMessageToEmbedder(base::Value::Dict) override;
 
+  Member<LocalFrame> local_frame_;
   Member<DevToolsHost> devtools_host_;
   String api_script_;
   // The host_ must outlive the ExecutionContext of LocalFrame, so it should not

@@ -4,34 +4,31 @@
 
 #include "chrome/browser/accessibility/ax_main_node_annotator_controller.h"
 
-#include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#endif
 
 namespace {
 
 // Invoke screen reader alert to notify the user of the state.
 void AnnounceToScreenReader(const int message_id) {
-  const Browser* browser = BrowserList::GetInstance()->GetLastActive();
-  if (!browser) {
+  const BrowserWindowInterface* const bwi =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  if (!bwi) {
     VLOG(2) << "Browser is not ready to announce";
     return;
   }
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  BrowserView* const browser_view = BrowserView::GetBrowserViewForBrowser(bwi);
   if (!browser_view) {
     VLOG(2) << "Browser is not ready to announce";
     return;
@@ -58,20 +55,9 @@ AXMainNodeAnnotatorController::AXMainNodeAnnotatorController(Profile* profile)
           weak_ptr_factory_.GetWeakPtr()));
 
   // Register for changes to screenreader/spoken feedback.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (auto* const accessibility_manager = ash::AccessibilityManager::Get();
-      accessibility_manager) {
-    // Unretained is safe because `this` owns the subscription.
-    accessibility_status_subscription_ =
-        accessibility_manager->RegisterCallback(base::BindRepeating(
-            &AXMainNodeAnnotatorController::OnAccessibilityStatusEvent,
-            base::Unretained(this)));
-  }
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
   ax_mode_observation_.Observe(&ui::AXPlatform::GetInstance());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  activated_ = accessibility_state_utils::IsScreenReaderEnabled();
+  activated_ = ui::AXPlatform::GetInstance().IsScreenReaderActive();
   OnActivationChanged();
 }
 
@@ -88,17 +74,6 @@ void AXMainNodeAnnotatorController::OnAXMainNodeAnnotationsEnabledChanged() {
 
   OnActivationChanged();
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void AXMainNodeAnnotatorController::OnAccessibilityStatusEvent(
-    const ash::AccessibilityStatusEventDetails& details) {
-  if (details.notification_type ==
-      ash::AccessibilityNotificationType::kToggleSpokenFeedback) {
-    activated_ = accessibility_state_utils::IsScreenReaderEnabled();
-    OnActivationChanged();
-  }
-}
-#endif  // BUIDLFLAG(IS_CHROMEOS_ASH)
 
 void AXMainNodeAnnotatorController::OnActivationChanged() {
   const bool is_activated =
@@ -189,13 +164,10 @@ void AXMainNodeAnnotatorController::Activate() {
   OnActivationChanged();
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-void AXMainNodeAnnotatorController::OnAXModeAdded(ui::AXMode mode) {
-  if (mode.has_mode(ui::AXMode::kScreenReader)) {
-    activated_ = true;
-    OnActivationChanged();
-  }
+void AXMainNodeAnnotatorController::OnAssistiveTechChanged(
+    ui::AssistiveTech assistive_tech) {
+  activated_ = ui::IsScreenReader(assistive_tech);
+  OnActivationChanged();
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace screen_ai

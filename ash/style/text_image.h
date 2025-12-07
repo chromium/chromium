@@ -9,7 +9,7 @@
 #include "base/third_party/icu/icu_utf.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
-#include "ui/color/color_id.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/image/canvas_image_source.h"
 
 namespace ash {
@@ -23,7 +23,7 @@ class ASH_EXPORT TextImage : public gfx::CanvasImageSource {
   // Returns a `ui::ImageModel` for `symbol` of `size` in `color_id`.
   static ui::ImageModel AsImageModel(const gfx::Size& size,
                                      base_icu::UChar32 symbol,
-                                     ui::ColorId color_id);
+                                     ui::ColorVariant color);
 
   // gfx::CanvasImageSource:
   void Draw(gfx::Canvas* canvas) override;

@@ -1,0 +1,29 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import("//testing/test.gni")
+
+script_test("webui_resources_tools_python_unittests") {
+  script = "//testing/scripts/run_isolated_script_test.py"
+  args = [
+    "@WrappedPath(" + rebase_path(
+            "//ui/webui/resources/tools/run_webui_resources_tools_tests.py",
+            root_build_dir) + ")",
+    "--starting-directory",
+    "@WrappedPath(../../ui/webui/resources/tools)",
+    "--chromium-build-directory",
+    "@WrappedPath(.)",
+  ]
+
+  data = [
+    "//ui/webui/resources/tools/",
+
+    # typ is the testing harness used for python unit tests.
+    "//third_party/catapult/third_party/typ/",
+    "//third_party/node/",
+
+    # Needed for eslint_ts_test.EslintTsTest.testSuccess
+    "//tools/typescript/tsconfig_base.json",
+  ]
+  data_deps = [ "//tools/code_cache_generator" ]
+}

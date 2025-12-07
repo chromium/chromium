@@ -9,7 +9,7 @@ assert(!is_android && !is_ios)
 build_webui("build") {
   grd_prefix = "cr_components_page_image_service"
 
-  non_web_component_files = [ "browser_proxy.ts" ]
+  ts_files = [ "browser_proxy.ts" ]
 
   mojo_files_deps =
       [ "//components/page_image_service/mojom:mojo_bindings_ts__generator" ]

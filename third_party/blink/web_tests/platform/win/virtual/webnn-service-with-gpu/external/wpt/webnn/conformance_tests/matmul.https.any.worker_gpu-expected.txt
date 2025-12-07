@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] matmul float32 5D and 5D tensors
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': DirectML: The input tensor rank is larger than 4 for matmul operator."
-[FAIL] matmul float32 5D and 2D tensors
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': DirectML: The input tensor rank is larger than 4 for matmul operator."
-Harness: the test ran to completion.
-

@@ -37,6 +37,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_binary_type.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
@@ -51,6 +52,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -117,8 +119,8 @@ class MODULES_EXPORT DOMWebSocket
   String protocol() const;
   String extensions() const;
 
-  String binaryType() const;
-  void setBinaryType(const String&);
+  V8BinaryType binaryType() const;
+  void setBinaryType(const V8BinaryType&);
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(open, kOpen)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(message, kMessage)
@@ -142,7 +144,7 @@ class MODULES_EXPORT DOMWebSocket
   void DidConnect(const String& subprotocol, const String& extensions) override;
   void DidReceiveTextMessage(const String& message) override;
   void DidReceiveBinaryMessage(
-      const Vector<base::span<const char>>& data) override;
+      const Vector<base::span<const uint8_t>>& data) override;
   void DidError() override;
   void DidConsumeBufferedAmount(uint64_t) override;
   void DidStartClosingHandshake() override;
@@ -203,8 +205,6 @@ class MODULES_EXPORT DOMWebSocket
     kMaxValue = kBlob,
   };
 
-  enum BinaryType { kBinaryTypeBlob, kBinaryTypeArrayBuffer };
-
   // This function is virtual for unittests.
   virtual WebSocketChannel* CreateChannel(ExecutionContext* context,
                                           WebSocketChannelClient* client) {
@@ -247,14 +247,14 @@ class MODULES_EXPORT DOMWebSocket
 
   WebSocketCommon common_;
 
-  String origin_string_;
+  scoped_refptr<const SecurityOrigin> origin_;
 
   uint64_t buffered_amount_;
   // The consumed buffered amount that will be reflected to |buffered_amount_|
   // later. It will be cleared once reflected.
   uint64_t consumed_buffered_amount_;
   uint64_t buffered_amount_after_close_;
-  BinaryType binary_type_;
+  V8BinaryType::Enum binary_type_ = V8BinaryType::Enum::kBlob;
   // The subprotocol the server selected.
   String subprotocol_;
   String extensions_;

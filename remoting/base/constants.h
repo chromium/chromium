@@ -5,6 +5,8 @@
 #ifndef REMOTING_BASE_CONSTANTS_H_
 #define REMOTING_BASE_CONSTANTS_H_
 
+#include "build/build_config.h"
+
 namespace remoting {
 
 // Namespace used for chromoting XMPP stanzas.
@@ -24,6 +26,11 @@ const int kDefaultDpi = 96;
 
 // The video frame rate.
 constexpr int kTargetFrameRate = 30;
+
+#if BUILDFLAG(IS_LINUX)
+inline constexpr char kChromeRemoteDesktopSessionEnvVar[] =
+    "CHROME_REMOTE_DESKTOP_SESSION";
+#endif
 
 }  // namespace remoting
 

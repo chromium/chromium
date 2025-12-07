@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] el-div-autofocus-attr-role-generic
+  assert_equals: <div data-testname="el-div-autofocus-attr-role-generic" data-expectedrole="group" autofocus="" role="generic" class="ex">div with explicit role=generic and autofocus attribute.</div> expected "group" but got "generic"
+[FAIL] el-div-autofocus-attr-role-none
+  assert_equals: <div data-testname="el-div-autofocus-attr-role-none" data-expectedrole="group" autofocus="" role="none" class="ex">div with explicit role=none and autofocus attribute.</div> expected "group" but got "none"
+[FAIL] el-div-draggable-attr-role-generic
+  assert_equals: <div data-testname="el-div-draggable-attr-role-generic" data-expectedrole="group" draggable="" role="generic" class="ex">div with explicit role=generic and draggable attribute.</div> expected "group" but got "generic"
+[FAIL] el-div-draggable-attr-role-none
+  assert_equals: <div data-testname="el-div-draggable-attr-role-none" data-expectedrole="group" draggable="" role="none" class="ex">div with explicit role=none and draggable attribute.</div> expected "group" but got "none"
+[FAIL] el-div-popover-attr
+  assert_equals: <div data-testname="el-div-popover-attr" id="pd" data-expectedrole="group" popover="" class="ex">div with popover attribute, role=group</div> expected "group" but got "none"
+[FAIL] el-div-draggable-attr-invalid-role
+  assert_equals: <div data-testname="el-div-draggable-attr-invalid-role" data-expectedrole="group" draggable="" role="foo" class="ex">div with draggable attribute and errant role attribute value.</div> expected "group" but got "generic"
+[FAIL] el-section-draggable-attr
+  assert_equals: <section data-testname="el-section-draggable-attr" data-expectedrole="group" draggable="" class="ex">unnamed section with draggable attribute.</section> expected "group" but got "generic"
+[FAIL] el-cite-draggable-attr
+  assert_equals: <cite data-testname="el-cite-draggable-attr" data-expectedrole="html-cite" draggable="" class="ex">cite element with draggable attribute.</cite> expected "html-cite" but got "none"
+Harness: the test ran to completion.
+

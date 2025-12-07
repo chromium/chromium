@@ -1,0 +1,5 @@
+This is a wdspec test.
+[ERROR] test_locale_and_timezone_for_user_context
+  setup error: KeyError: 'value'
+Harness: the test ran to completion.
+

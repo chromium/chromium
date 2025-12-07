@@ -9,7 +9,7 @@
  * @param {string} msg - The information message to print.
  */
 function info(msg) {
-  let element = document.createElement('pre');
+  const element = document.createElement('pre');
   element.innerHTML = msg;
   element.className = 'info';
   document.getElementById('msg').appendChild(element);

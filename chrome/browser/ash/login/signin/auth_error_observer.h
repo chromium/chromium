@@ -43,6 +43,7 @@ class AuthErrorObserver : public KeyedService,
 
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
   // SigninErrorController::Observer implementation.
   void OnErrorChanged() override;

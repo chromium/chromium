@@ -59,14 +59,14 @@ std::u16string PageInfoHistoryDataSource::FormatLastVisitedTimestamp(
 }
 
 void PageInfoHistoryDataSource::GetLastVisitedTimestamp(
-    base::OnceCallback<void(base::Time)> callback) {
-  // TODO(crbug.com/40808038): Use the data source in Android implementation.
+    base::OnceCallback<void(std::optional<base::Time>)> callback) {
   base::Time now = base::Time::Now();
   history_service_->GetLastVisitToHost(
-      site_url_.host(), base::Time() /* before_time */, now /* end_time */,
+      site_url_.GetHost(), /*begin_time=*/base::Time(), /*end_time=*/now,
+      history::VisitQuery404sPolicy::kExclude404s,
       base::BindOnce(&PageInfoHistoryDataSource::
                          OnLastVisitBeforeRecentNavigationsComplete,
-                     weak_factory_.GetWeakPtr(), site_url_.host(), now,
+                     weak_factory_.GetWeakPtr(), site_url_.GetHost(), now,
                      std::move(callback)),
       &query_task_tracker_);
 }
@@ -74,10 +74,10 @@ void PageInfoHistoryDataSource::GetLastVisitedTimestamp(
 void PageInfoHistoryDataSource::OnLastVisitBeforeRecentNavigationsComplete(
     const std::string& host_name,
     base::Time query_start_time,
-    base::OnceCallback<void(base::Time)> callback,
+    base::OnceCallback<void(std::optional<base::Time>)> callback,
     history::HistoryLastVisitResult result) {
   if (!result.success || result.last_visit.is_null()) {
-    std::move(callback).Run(base::Time());
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -86,7 +86,8 @@ void PageInfoHistoryDataSource::OnLastVisitBeforeRecentNavigationsComplete(
           ? result.last_visit
           : query_start_time - base::Minutes(1);
   history_service_->GetLastVisitToHost(
-      host_name, base::Time() /* before_time */, end_time /* end_time */,
+      host_name, /*begin_time=*/base::Time(), end_time,
+      history::VisitQuery404sPolicy::kExclude404s,
       base::BindOnce(&PageInfoHistoryDataSource::
                          OnLastVisitBeforeRecentNavigationsComplete2,
                      weak_factory_.GetWeakPtr(), std::move(callback)),
@@ -94,9 +95,13 @@ void PageInfoHistoryDataSource::OnLastVisitBeforeRecentNavigationsComplete(
 }
 
 void PageInfoHistoryDataSource::OnLastVisitBeforeRecentNavigationsComplete2(
-    base::OnceCallback<void(base::Time)> callback,
+    base::OnceCallback<void(std::optional<base::Time>)> callback,
     history::HistoryLastVisitResult result) {
-  std::move(callback).Run(result.last_visit);
+  // Checks that the result is still valid.
+  CHECK(result.success);
+  base::Time last_visit = result.last_visit;
+  std::move(callback).Run(last_visit.is_null() ? std::nullopt
+                                               : std::optional(last_visit));
 }
 
 }  // namespace page_info

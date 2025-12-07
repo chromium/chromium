@@ -2,13 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/gaia_id_hash.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder_outcome.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
+#include "components/sync/engine/sync_protocol_error.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/test/fake_data_type_controller.h"
 #include "components/sync/test/fake_sync_engine.h"
@@ -26,14 +31,15 @@ namespace syncer {
 
 namespace {
 
-const char kEmail[] = "test_user@gmail.com";
-const char kTimeDeferredHistogram[] = "Sync.Startup.TimeDeferred2";
+constexpr char kEmail[] = "test_user@gmail.com";
+constexpr char kTimeDeferredHistogram[] = "Sync.Startup.TimeDeferred2";
 
 class MockSyncServiceObserver : public SyncServiceObserver {
  public:
   MockSyncServiceObserver() = default;
 
   MOCK_METHOD(void, OnStateChanged, (SyncService*), (override));
+  MOCK_METHOD(void, OnSyncShutdown, (SyncService*), (override));
 };
 
 }  // namespace
@@ -149,9 +155,9 @@ class SyncServiceImplStartupTest : public testing::Test {
   void SetSyncFeatureEnabledPrefs() {
     CHECK(!sync_service_);
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     sync_prefs_.SetInitialSyncFeatureSetupComplete();
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   }
 
   SyncPrefs* sync_prefs() { return &sync_prefs_; }
@@ -176,17 +182,18 @@ class SyncServiceImplStartupTest : public testing::Test {
     task_environment_.FastForwardUntilNoTasksRemain();
   }
 
- private:
+ protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   SyncServiceImplBundle sync_service_impl_bundle_;
   SyncPrefs sync_prefs_;
   std::unique_ptr<SyncServiceImpl> sync_service_;
-  // The controllers are owned by |sync_service_|.
-  std::map<DataType, FakeDataTypeController*> controller_map_;
+  // The controllers are owned by `sync_service_`.
+  std::map<DataType, raw_ptr<FakeDataTypeController, CtnExperimental>>
+      controller_map_;
 };
 
 // ChromeOS does not support sign-in after startup
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(SyncServiceImplStartupTest, StartFirstTime) {
   // We've never completed startup.
   ASSERT_FALSE(sync_prefs()->IsInitialSyncFeatureSetupComplete());
@@ -208,7 +215,6 @@ TEST_F(SyncServiceImplStartupTest, StartFirstTime) {
 
   // Sign in and turn sync on, without marking the first setup as complete.
   SignInWithSyncConsent();
-  sync_service()->SetSyncFeatureRequested();
   std::unique_ptr<SyncSetupInProgressHandle> sync_blocker =
       sync_service()->GetSetupInProgressHandle();
 
@@ -247,10 +253,10 @@ TEST_F(SyncServiceImplStartupTest, StartFirstTime) {
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             sync_service()->GetTransportState());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(SyncServiceImplStartupTest, StartNoCredentials) {
-  // We're already signed in, but don't have a refresh token.
+  // The user is already signed in, but refresh tokens aren't loaded yet.
   SimulateRefreshTokensNotLoadedYet();
   SignInWithSyncConsentWithoutRefreshToken();
   SetSyncFeatureEnabledPrefs();
@@ -258,10 +264,18 @@ TEST_F(SyncServiceImplStartupTest, StartNoCredentials) {
   CreateSyncService();
   FastForwardUntilNoTasksRemain();
 
-  // SyncServiceImpl should now be active, but of course not have an access
-  // token.
-  EXPECT_EQ(SyncService::TransportState::ACTIVE,
-            sync_service()->GetTransportState());
+  if (base::FeatureList::IsEnabled(kSyncDetermineAccountManagedStatus)) {
+    // Without refresh tokens, SyncServiceImpl can't determine whether the
+    // signed-in account is managed or not, so it'll remain in the INITIALIZING
+    // state.
+    EXPECT_EQ(SyncService::TransportState::INITIALIZING,
+              sync_service()->GetTransportState());
+  } else {
+    // SyncServiceImpl should now be active.
+    EXPECT_EQ(SyncService::TransportState::ACTIVE,
+              sync_service()->GetTransportState());
+  }
+  // Either way, it shouldn't have an access token.
   EXPECT_TRUE(sync_service()->GetAccessTokenForTest().empty());
   // Note that SyncServiceImpl is not in an auth error state - no auth was
   // attempted, so no error.
@@ -388,7 +402,7 @@ TEST_F(SyncServiceImplStartupTest, StartInvalidCredentials) {
             sync_service()->GetTransportState());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(SyncServiceImplStartupTest, StartAshNoCredentials) {
   // We've never completed startup.
   ASSERT_FALSE(
@@ -405,9 +419,17 @@ TEST_F(SyncServiceImplStartupTest, StartAshNoCredentials) {
   // initialize the engine, and configure the DataTypeManager.
   base::RunLoop().RunUntilIdle();
 
-  // Sync should be considered active, even though there is no refresh token.
-  EXPECT_EQ(SyncService::TransportState::ACTIVE,
-            sync_service()->GetTransportState());
+  if (base::FeatureList::IsEnabled(kSyncDetermineAccountManagedStatus)) {
+    // Without refresh tokens, SyncServiceImpl can't determine whether the
+    // signed-in account is managed or not, so it'll remain in the INITIALIZING
+    // state.
+    EXPECT_EQ(SyncService::TransportState::INITIALIZING,
+              sync_service()->GetTransportState());
+  } else {
+    // Sync should be considered active, even though there is no refresh token.
+    EXPECT_EQ(SyncService::TransportState::ACTIVE,
+              sync_service()->GetTransportState());
+  }
   // FirstSetupComplete gets set automatically on Ash.
   EXPECT_TRUE(
       sync_service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
@@ -430,7 +452,7 @@ TEST_F(SyncServiceImplStartupTest, StartAshFirstTime) {
 }
 #endif
 
-TEST_F(SyncServiceImplStartupTest, DisableSync) {
+TEST_F(SyncServiceImplStartupTest, ResetSyncViaDashboard) {
   SetSyncFeatureEnabledPrefs();
   SignInWithSyncConsent();
   CreateSyncService();
@@ -440,39 +462,58 @@ TEST_F(SyncServiceImplStartupTest, DisableSync) {
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             sync_service()->GetTransportState());
 
-  // On StopAndClear(), the sync service will immediately start up again in
-  // transport mode.
-  sync_service()->StopAndClear();
+  // Mimic sync reset via the https://chrome.google.com/data dashboard.
+  // Sync-the-feature should be disabled. On desktop, the sync service will
+  // immediately start up again in transport mode. On mobile the account is
+  // removed and transport is disabled. InitialSyncFeatureSetupComplete is reset
+  // on all platforms but Ash.
+  sync_service()->OnActionableProtocolError(
+      {.error_type = NOT_MY_BIRTHDAY, .action = DISABLE_SYNC_ON_CLIENT});
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(SyncService::TransportState::ACTIVE,
-            sync_service()->GetTransportState());
+  auto expected_transport_state_after_reset = SyncService::TransportState::
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+      DISABLED;
+#else
+      ACTIVE;
+#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On Ash, sync-the-feature remains on. Note however that this is not a
-  // common scenario, because in most case StopAndClear() would be issued from
-  // a codepath that would prevent either sync-the-feature (e.g. dashboard
-  // reset) or sync-the-transport (e.g. unrecoverable error) from starting.
-  EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
-  EXPECT_TRUE(sync_service()->IsSyncFeatureActive());
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
-  // Except for Ash, StopAndClear() turns sync-the-feature off because
-  // IsInitialSyncFeatureSetupComplete() becomes false.
+  EXPECT_EQ(expected_transport_state_after_reset,
+            sync_service()->GetTransportState());
+  EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
+
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_TRUE(
+      sync_service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
+  EXPECT_TRUE(
+      sync_service()->GetUserSettings()->IsSyncFeatureDisabledViaDashboard());
+#else   // BUILDFLAG(IS_CHROMEOS)
   EXPECT_FALSE(
       sync_service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
-  EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
-  EXPECT_FALSE(sync_service()->IsSyncFeatureActive());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-  // Call StopAndClear() again while the sync service is already in transport
-  // mode. It should immediately start up again in transport mode.
-  sync_service()->StopAndClear();
+  // Reset sync again while the sync service is already in transport mode. It
+  // should immediately start up again in transport mode.
+  sync_service()->OnActionableProtocolError(
+      {.error_type = NOT_MY_BIRTHDAY, .action = DISABLE_SYNC_ON_CLIENT});
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(SyncService::TransportState::ACTIVE,
+  EXPECT_EQ(expected_transport_state_after_reset,
             sync_service()->GetTransportState());
+  EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
+
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_FALSE(sync_service()->GetActiveDataTypes().Has(BOOKMARKS));
+
+  // On ChromeOS, test clearing the dashboard error, which should start
+  // sync-the-feature and start BOOKMARKS.
+  sync_service()->GetUserSettings()->ClearSyncFeatureDisabledViaDashboard();
+  FastForwardUntilNoTasksRemain();
+  EXPECT_TRUE(sync_service()->IsSyncFeatureActive());
+  EXPECT_TRUE(sync_service()->GetActiveDataTypes().Has(BOOKMARKS));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 // ChromeOS does not support sign-in after startup.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Verify that enabling sync honors existing values of data type preferences.
 TEST_F(SyncServiceImplStartupTest, HonorsExistingDatatypePrefs) {
   // Explicitly set Keep Everything Synced to false and have only bookmarks
@@ -484,7 +525,6 @@ TEST_F(SyncServiceImplStartupTest, HonorsExistingDatatypePrefs) {
 
   CreateSyncService();
   SignInWithSyncConsent();
-  sync_service()->SetSyncFeatureRequested();
   sync_service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
 
@@ -555,19 +595,19 @@ TEST_F(SyncServiceImplStartupTest, SwitchManaged) {
   EXPECT_EQ(SyncService::DisableReasonSet(),
             sync_service()->GetDisableReasons());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(
       sync_service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
   // On ChromeOS Ash, sync-the-feature stays disabled even after the policy is
   // removed, for historic reasons. It is unclear if this behavior is optional,
   // because it is indistinguishable from the sync-reset-via-dashboard case.
-  // It can be resolved by invoking SetSyncFeatureRequested().
+  // It can be resolved by invoking ClearSyncFeatureDisabledViaDashboard().
   EXPECT_TRUE(
       sync_service()->GetUserSettings()->IsSyncFeatureDisabledViaDashboard());
 #else
   EXPECT_FALSE(
       sync_service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
   EXPECT_FALSE(sync_service()->IsSyncFeatureActive());
@@ -582,9 +622,9 @@ TEST_F(SyncServiceImplStartupTest, StartDownloadFailed) {
   ASSERT_FALSE(
       engine_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   ASSERT_FALSE(sync_prefs()->IsInitialSyncFeatureSetupComplete());
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   FastForwardUntilNoTasksRemain();
 
@@ -602,7 +642,7 @@ TEST_F(SyncServiceImplStartupTest, StartDownloadFailed) {
 }
 
 // ChromeOS does not support sign-in after startup.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(SyncServiceImplStartupTest, FullStartupSequenceFirstTime) {
   // We've never completed startup.
   ASSERT_FALSE(sync_prefs()->IsInitialSyncFeatureSetupComplete());
@@ -635,7 +675,6 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceFirstTime) {
   // Initiate Sync (the feature) setup before the engine initializes itself in
   // transport mode.
   SignInWithSyncConsent();
-  sync_service()->SetSyncFeatureRequested();
   std::unique_ptr<SyncSetupInProgressHandle> setup_in_progress_handle =
       sync_service()->GetSetupInProgressHandle();
 
@@ -681,7 +720,7 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceFirstTime) {
             sync_service()->GetTransportState());
   EXPECT_TRUE(sync_service()->IsSyncFeatureActive());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(SyncServiceImplStartupTest, FullStartupSequenceNthTime) {
   // The user is already signed in and has completed Sync setup before.
@@ -767,7 +806,7 @@ TEST_F(SyncServiceImplStartupTest, DeferredStartInterruptedByDataType) {
 }
 
 // ChromeOS does not support sign-in after startup.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(SyncServiceImplStartupTest, UserTriggeredStartIsNotDeferredStart) {
   // Signed-out at first.
   base::HistogramTester histogram_tester;
@@ -776,7 +815,6 @@ TEST_F(SyncServiceImplStartupTest, UserTriggeredStartIsNotDeferredStart) {
   // Sign-in quickly, before the usual delay of a deferred startup. This can
   // happen during FRE.
   SignInWithSyncConsent();
-  sync_service()->SetSyncFeatureRequested();
   sync_service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
   FastForwardUntilNoTasksRemain();
@@ -865,6 +903,82 @@ TEST_F(SyncServiceImplStartupTest,
   EXPECT_EQ(1, get_controller(READING_LIST)->model()->clear_metadata_count());
   // ... but not for the ones not disabled.
   EXPECT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_count());
+}
+
+class SyncServiceImplStartupWithDetermineAccountTypeTest
+    : public SyncServiceImplStartupTest {
+ public:
+  SyncServiceImplStartupWithDetermineAccountTypeTest() {
+    // Disable the timeout for determining the managed status, since otherwise
+    // the FastForward*() calls would trigger the account status fetcher to
+    // time out (which would then unblock the sync startup, and make these tests
+    // pointless).
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        kSyncDetermineAccountManagedStatus,
+        {{kSyncDetermineAccountManagedStatusTimeout.name, "inf"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(SyncServiceImplStartupWithDetermineAccountTypeTest,
+       StartupWithConsumerAccount) {
+  // Set up a consumer account, for which the managed status can be determined
+  // synchronously.
+  SignInWithSyncConsent();
+
+  SetSyncFeatureEnabledPrefs();
+  CreateSyncService();
+  FastForwardUntilNoTasksRemain();
+
+  // The service should become active without further info, i.e. without the
+  // account type being determined explicitly.
+  EXPECT_EQ(SyncService::TransportState::ACTIVE,
+            sync_service()->GetTransportState());
+
+  // Ensure the correct info arrived at the controller.
+  EXPECT_EQ(get_controller(BOOKMARKS)
+                ->last_configure_context()
+                .account_managed_status,
+            signin::AccountManagedStatusFinderOutcome::kConsumerGmail);
+}
+
+TEST_F(SyncServiceImplStartupWithDetermineAccountTypeTest,
+       StartupWithManagedAccount) {
+  // Set up a managed account, for which the managed status is determined
+  // asynchronously.
+  AccountInfo account_info =
+      sync_service_impl_bundle_.identity_test_env()
+          ->MakePrimaryAccountAvailable("test_user@managed.com",
+                                        signin::ConsentLevel::kSync);
+  ASSERT_EQ(account_info.IsManaged(), signin::Tribool::kUnknown);
+
+  SetSyncFeatureEnabledPrefs();
+  CreateSyncService();
+  FastForwardUntilNoTasksRemain();
+
+  // The service should remain waiting for the account type to be determined.
+  EXPECT_EQ(SyncService::TransportState::INITIALIZING,
+            sync_service()->GetTransportState());
+
+  // Now provide the information that this is a managed account.
+  account_info =
+      AccountInfo::Builder(account_info).SetHostedDomain("managed.com").Build();
+  sync_service_impl_bundle_.identity_test_env()->UpdateAccountInfoForAccount(
+      account_info);
+  ASSERT_EQ(account_info.IsManaged(), signin::Tribool::kTrue);
+
+  // The service should now become active.
+  FastForwardUntilNoTasksRemain();
+  EXPECT_EQ(SyncService::TransportState::ACTIVE,
+            sync_service()->GetTransportState());
+
+  // Ensure the correct info arrived at the controller.
+  EXPECT_EQ(get_controller(BOOKMARKS)
+                ->last_configure_context()
+                .account_managed_status,
+            signin::AccountManagedStatusFinderOutcome::kEnterprise);
 }
 
 }  // namespace syncer

@@ -23,15 +23,17 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 
+#include "base/auto_reset.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
-#include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_info.h"
@@ -66,42 +68,42 @@ void LayoutSVGRoot::Trace(Visitor* visitor) const {
   LayoutReplaced::Trace(visitor);
 }
 
-void LayoutSVGRoot::UnscaledIntrinsicSizingInfo(
-    const SVGRect* override_viewbox,
-    IntrinsicSizingInfo& intrinsic_sizing_info) const {
+NaturalSizingInfo LayoutSVGRoot::UnscaledNaturalSizingInfo(
+    const SVGRect* override_viewbox) const {
   NOT_DESTROYED();
   // https://www.w3.org/TR/SVG/coords.html#IntrinsicSizing
 
   auto* svg = To<SVGSVGElement>(GetNode());
   DCHECK(svg);
 
-  std::optional<float> intrinsic_width = svg->IntrinsicWidth();
-  std::optional<float> intrinsic_height = svg->IntrinsicHeight();
-  intrinsic_sizing_info.size =
-      gfx::SizeF(intrinsic_width.value_or(0), intrinsic_height.value_or(0));
-  intrinsic_sizing_info.has_width = intrinsic_width.has_value();
-  intrinsic_sizing_info.has_height = intrinsic_height.has_value();
+  std::optional<float> natural_width = svg->IntrinsicWidth();
+  std::optional<float> natural_height = svg->IntrinsicHeight();
 
-  if (!intrinsic_sizing_info.size.IsEmpty()) {
-    intrinsic_sizing_info.aspect_ratio = intrinsic_sizing_info.size;
+  NaturalSizingInfo sizing_info;
+  sizing_info.size =
+      gfx::SizeF(natural_width.value_or(0), natural_height.value_or(0));
+  sizing_info.has_width = natural_width.has_value();
+  sizing_info.has_height = natural_height.has_value();
+
+  if (!sizing_info.size.IsEmpty()) {
+    sizing_info.aspect_ratio = sizing_info.size;
   } else {
     const SVGRect& view_box =
         override_viewbox ? *override_viewbox : svg->CurrentViewBox();
     const gfx::SizeF view_box_size = view_box.Rect().size();
     if (!view_box_size.IsEmpty()) {
-      // The viewBox can only yield an intrinsic ratio, not an intrinsic size.
-      intrinsic_sizing_info.aspect_ratio = view_box_size;
+      // The viewBox can only yield a natural ratio, not a natural size.
+      sizing_info.aspect_ratio = view_box_size;
     }
   }
+  return sizing_info;
 }
 
-void LayoutSVGRoot::ComputeIntrinsicSizingInfo(
-    IntrinsicSizingInfo& intrinsic_sizing_info) const {
+PhysicalNaturalSizingInfo LayoutSVGRoot::GetNaturalDimensions() const {
   NOT_DESTROYED();
-  DCHECK(!ShouldApplySizeContainment());
-  UnscaledIntrinsicSizingInfo(intrinsic_sizing_info);
-
-  intrinsic_sizing_info.size.Scale(StyleRef().EffectiveZoom());
+  NaturalSizingInfo sizing_info = UnscaledNaturalSizingInfo();
+  sizing_info.size.Scale(StyleRef().EffectiveZoom());
+  return PhysicalNaturalSizingInfo::FromSizingInfo(sizing_info);
 }
 
 bool LayoutSVGRoot::IsEmbeddedThroughSVGImage() const {
@@ -260,14 +262,16 @@ bool LayoutSVGRoot::StyleChangeAffectsIntrinsicSize(
   // If the writing mode changed from a horizontal mode to a vertical
   // mode, or vice versa, then our intrinsic dimensions will have
   // changed.
-  if (old_style.IsHorizontalWritingMode() != style.IsHorizontalWritingMode())
+  if (old_style.IsHorizontalWritingMode() != style.IsHorizontalWritingMode()) {
     return true;
+  }
   // If our intrinsic dimensions depend on font metrics (by using 'em', 'ex' or
   // any other font-relative unit), any changes to the font may change said
   // dimensions.
   if (IntrinsicSizeIsFontMetricsDependent() &&
-      old_style.GetFont() != style.GetFont())
+      !base::ValuesEquivalent(old_style.GetFont(), style.GetFont())) {
     return true;
+  }
   return false;
 }
 
@@ -281,13 +285,15 @@ void LayoutSVGRoot::IntrinsicSizingInfoChanged() {
   if (!IsEmbeddedThroughFrameContainingSVGDocument())
     return;
   DCHECK(GetFrame()->Owner());
-  GetFrame()->Owner()->IntrinsicSizingInfoChanged();
+  GetFrame()->Owner()->NaturalSizingInfoChanged();
 }
 
-void LayoutSVGRoot::StyleDidChange(StyleDifference diff,
-                                   const ComputedStyle* old_style) {
+void LayoutSVGRoot::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutReplaced::StyleDidChange(diff, old_style);
+  LayoutReplaced::StyleDidChange(diff, old_style, style_change_context);
 
   if (old_style && StyleChangeAffectsIntrinsicSize(*old_style))
     IntrinsicSizingInfoChanged();

@@ -4,10 +4,11 @@
 
 #include "content/browser/accessibility/scoped_mode_collection.h"
 
+#include <algorithm>
+#include <numeric>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
 
 namespace content {
@@ -48,9 +49,8 @@ class ScopedModeCollection::ScopedAccessibilityModeImpl
   ScoperKey key_;
 };
 
-ScopedModeCollection::ScopedModeCollection(
-    OnModeChangedCallback on_mode_changed)
-    : on_mode_changed_(std::move(on_mode_changed)) {}
+ScopedModeCollection::ScopedModeCollection(Delegate& delegate)
+    : delegate_(delegate) {}
 
 ScopedModeCollection::~ScopedModeCollection() {
   // The target to which this collection applies is being destroyed. It is valid
@@ -58,7 +58,7 @@ ScopedModeCollection::~ScopedModeCollection() {
   // the collection and a scoper are bound to the lifetime of the target and the
   // collection happens to be destroyed first). In this case, deactivate any
   // remaining scopers so that they do nothing when they are later destroyed.
-  base::ranges::for_each(scopers_, [](auto& scoper) { scoper->deactivate(); });
+  std::ranges::for_each(scopers_, [](auto& scoper) { scoper->deactivate(); });
 }
 
 std::unique_ptr<ScopedAccessibilityMode> ScopedModeCollection::Add(
@@ -77,6 +77,10 @@ std::unique_ptr<ScopedAccessibilityMode> ScopedModeCollection::Add(
   return scoper;
 }
 
+void ScopedModeCollection::Recompute(base::PassKey<Delegate>) {
+  RecalculateEffectiveModeAndNotify();
+}
+
 void ScopedModeCollection::OnDestroyed(ScoperKey scoper_key) {
   scopers_.erase(scoper_key);
 
@@ -84,18 +88,15 @@ void ScopedModeCollection::OnDestroyed(ScoperKey scoper_key) {
 }
 
 void ScopedModeCollection::RecalculateEffectiveModeAndNotify() {
-  ui::AXMode mode;
+  ui::AXMode mode = std::accumulate(
+      scopers_.begin(), scopers_.end(), ui::AXMode(),
+      [&delegate = *delegate_](ui::AXMode acc, const auto& scoper) {
+        return acc | delegate.FilterModeFlags(scoper->mode());
+      });
 
-  base::ranges::for_each(
-      scopers_, [&mode](const auto& scoper) { mode |= scoper->mode(); });
-
-  if (mode == accessibility_mode_) {
-    return;
+  if (mode != accessibility_mode_) {
+    delegate_->OnModeChanged(std::exchange(accessibility_mode_, mode), mode);
   }
-
-  // Run a copy of the callback in case running it deletes `this`.
-  auto callback_copy = on_mode_changed_;
-  std::move(callback_copy).Run(std::exchange(accessibility_mode_, mode), mode);
 }
 
 }  // namespace content

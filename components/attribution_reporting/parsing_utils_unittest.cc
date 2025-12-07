@@ -38,13 +38,6 @@ TEST(AttributionReportingParsingUtilsTest, ParseAggregationKeyPiece) {
   }
 }
 
-TEST(AttributionReportingParsingUtilsTest, AggregationKeyIdHasValidLength) {
-  EXPECT_TRUE(AggregationKeyIdHasValidLength(
-      std::string(kMaxBytesPerAggregationKeyId, 'a')));
-  EXPECT_FALSE(AggregationKeyIdHasValidLength(
-      std::string(kMaxBytesPerAggregationKeyId + 1, 'a')));
-}
-
 TEST(AttributionReportingParsingUtilsTest, ParseUint64) {
   const struct {
     const char* description;

@@ -1,4 +1,7 @@
 include_rules = [
   "+gin",
   "+v8/include/v8.h",
+  # JSBinding is a oilpan object and needs some includes because of that.
+  "+v8/include/cppgc",
+  "+v8/include/v8-cppgc.h",
 ]

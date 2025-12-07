@@ -30,7 +30,7 @@
       to: "#isolated_archivist",
     },
     {
-      protocol: "fuchsia.logger.LogSink",
+      dictionary: "diagnostics",
       from: "parent",
       to: "#isolated_archivist",
     },

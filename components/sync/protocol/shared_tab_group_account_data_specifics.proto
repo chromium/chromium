@@ -1,0 +1,61 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// If you change or add any fields in this file, update proto_visitors.h and
+// potentially proto_enum_conversions.{h, cc}.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+// Account-local metadata for shared tab groups.
+// LINT.IfChange(SharedTabGroupAccountDataSpecifics)
+message SharedTabGroupAccountDataSpecifics {
+  // The guid of this entity.
+  // This could be the SharedTab guid (see SharedTabGroupDataSpecifics)
+  // or the SharedTabGroup guid.
+  optional string guid = 1;
+
+  // The collaboration group.
+  optional string collaboration_id = 2;
+
+  // Entities that contains information for a tab or a tab group.
+  oneof entity {
+    SharedTabDetails shared_tab_details = 3;
+    SharedTabGroupDetails shared_tab_group_details = 4;
+  }
+
+  // Timestamp when the message is updated.
+  optional int64 update_time_windows_epoch_micros = 5;
+
+  // A mechanism to identify the client version that wrote this specifics.
+  // Designed to aid business logic when reading newly added fields that
+  // didn't exist in older clients.
+  // The client version must be incremented whenever a new field is added to the
+  // specifics.
+  optional int32 version = 6;
+}
+
+// Stores account-specific metadata about a shared tab.
+message SharedTabDetails {
+  // The GUID of the SharedTabGroup this is a member of. This is the same
+  // as that from SharedTab in SharedTabGroupDataSpecifics.
+  optional string shared_tab_group_guid = 1;
+
+  // Last time this tab was focused.
+  optional int64 last_seen_timestamp_windows_epoch = 2;
+}
+
+message SharedTabGroupDetails {
+  // Position of the pinned tab group in bookmark bar on Desktop.
+  // This is equivalent to and compared against the pinned_position
+  // of message SavedTabGroup in saved_tab_group_specifics.proto.
+  optional int64 pinned_position = 1;
+}
+// LINT.ThenChange(//components/saved_tab_groups/internal/shared_tab_group_account_data_sync_bridge.cc:TrimSpecifics)

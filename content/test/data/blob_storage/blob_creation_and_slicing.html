@@ -71,17 +71,18 @@ var test = function() {
     }
     let blob;
     let expectedData;
+    let halfSize = Math.floor(origSize / 2);
     if (i % 2 == 0) {
-      blob = blobs[i].slice(origSize / 2);
-      expectedData = origData.slice(origSize / 2);
+      blob = blobs[i].slice(halfSize);
+      expectedData = origData.slice(halfSize);
     } else {
-      blob = blobs[i].slice(0, origSize / 2);
-      expectedData = origData.slice(0, origSize / 2);
+      blob = blobs[i].slice(0, halfSize);
+      expectedData = origData.slice(0, halfSize);
     }
     expectedBlobData.push(expectedData);
     blobs.push(blob);
   }
-  
+
   var getBytes = function(string) {
     var bytes = [];
     for (let i = 0; i < string.length; ++i) {

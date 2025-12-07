@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<body>
+<script type="module">
+import {WebFeature} from '/gen/third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.m.js';
+
+if (window.testRunner) {
+  testRunner.dumpAsText();
+  testRunner.waitUntilDone();
+}
+
+const doPost = function (payloadSize) {
+  top.postMessage({payload: "don't panic" + Array(payloadSize).join('!')}, '*');
+}
+
+function createCrossOriginIframeAndPostMessage(short) {
+  const payloadSize = short ? 0 : 16 * 1024;
+  const iframe = document.createElement("iframe");
+  iframe.src = "data:text/html,<" +
+      `script type="application/x-javascript">(${doPost.toString()})(${payloadSize})</` + "script>";
+  document.body.appendChild(iframe);
+}
+
+function createSameOriginIframeAndPostMessage() {
+  const iframe = document.createElement("iframe");
+  document.body.appendChild(iframe);
+  iframe.contentWindow.eval(`(${doPost.toString()})()`);
+}
+
+function output(message) {
+  const div = document.createElement('div');
+  div.textContent = message;
+  document.body.appendChild(div);
+}
+
+(async function() {
+  internals.clearUseCounter(document, WebFeature.kSlowDeserialization);
+  createCrossOriginIframeAndPostMessage(/* short */ false);
+  const crossOriginEvent1 = await new Promise(resolve => {
+    window.addEventListener('message', resolve, {once: true});
+  });
+  crossOriginEvent1.origin;
+  crossOriginEvent1.data;
+  output('Used slow mode for cross-origin message with data accessed after origin: ' +
+      internals.isUseCounted(document, WebFeature.kSlowDeserialization));
+
+  internals.clearUseCounter(document, WebFeature.kSlowDeserialization);
+  createCrossOriginIframeAndPostMessage(/* short */ false);
+  const crossOriginEvent2 = await new Promise(resolve => {
+    window.addEventListener('message', resolve, {once: true});
+  });
+  crossOriginEvent2.data;
+  crossOriginEvent2.origin;
+  output('Used slow mode for cross-origin message with data accessed before origin (long message): ' +
+      internals.isUseCounted(document, WebFeature.kSlowDeserialization));
+
+  internals.clearUseCounter(document, WebFeature.kSlowDeserialization);
+  createCrossOriginIframeAndPostMessage(/* short */ true);
+  const crossOriginEvent3 = await new Promise(resolve => {
+    window.addEventListener('message', resolve, {once: true});
+  });
+  crossOriginEvent3.data;
+  crossOriginEvent3.origin;
+  output('Used slow mode for cross-origin message with data accessed before origin (short message): ' +
+      internals.isUseCounted(document, WebFeature.kSlowDeserialization));
+
+  internals.clearUseCounter(document, WebFeature.kSlowDeserialization);
+  createSameOriginIframeAndPostMessage();
+  const sameOriginEvent = await new Promise(resolve => {
+    window.addEventListener('message', resolve, {once: true});
+  });
+  sameOriginEvent.origin;
+  sameOriginEvent.data;
+  output('Used slow mode for same-origin message with data accessed before origin: ' +
+      internals.isUseCounted(document, WebFeature.kSlowDeserialization));
+
+  if (window.testRunner) {
+    testRunner.notifyDone();
+  }
+})();
+</script>

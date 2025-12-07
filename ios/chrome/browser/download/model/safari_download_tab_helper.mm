@@ -20,6 +20,10 @@ void SafariDownloadTabHelper::DownloadCalendar(
   [delegate_ presentCalendarAlertFromURL:url];
 }
 
-SafariDownloadTabHelper::SafariDownloadTabHelper(web::WebState* web_state) {}
+void SafariDownloadTabHelper::DownloadAppleWalletOrder(
+    std::unique_ptr<web::DownloadTask> task) {
+  NSURL* url = net::NSURLWithGURL(task->GetOriginalUrl());
+  [delegate_ presentAppleWalletOrderAlertFromURL:url];
+}
 
-WEB_STATE_USER_DATA_KEY_IMPL(SafariDownloadTabHelper)
+SafariDownloadTabHelper::SafariDownloadTabHelper(web::WebState* web_state) {}

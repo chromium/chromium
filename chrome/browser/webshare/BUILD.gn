@@ -52,7 +52,10 @@ source_set("unit_tests") {
   ]
 
   if (is_chromeos) {
-    deps += [ "//chrome/browser/webshare/chromeos:unit_tests" ]
+    deps += [
+      "//chrome/browser/sharesheet",
+      "//chrome/browser/webshare/chromeos:unit_tests",
+    ]
   }
 
   if (is_chromeos || is_mac) {

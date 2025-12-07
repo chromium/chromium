@@ -1,0 +1,75 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("constants") {
+  sources = [
+    "best_features_constants.h",
+    "best_features_constants.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("ui") {
+  sources = [
+    "best_features_cell.h",
+    "best_features_cell.mm",
+    "best_features_delegate.h",
+    "best_features_screen_consumer.h",
+    "best_features_view_controller.h",
+    "best_features_view_controller.mm",
+    "feature_highlight_screenshot_view_controller.h",
+    "feature_highlight_screenshot_view_controller.mm",
+    "metrics_util.h",
+    "metrics_util.mm",
+  ]
+  deps = [
+    ":constants",
+    "//build:branding_buildflags",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/first_run/public:best_features_item",
+    "//ios/chrome/browser/first_run/ui_bundled:constants",
+    "//ios/chrome/browser/first_run/ui_bundled:features",
+    "//ios/chrome/browser/first_run/ui_bundled/best_features/resources:animation_files",
+    "//ios/chrome/browser/shared/ui/animated_promo",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/tips_notifications/ui:shared",
+    "//ios/chrome/browser/welcome_back/model:features",
+    "//ios/chrome/common/ui/button_stack",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/promo_style",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "best_features_screen_egtest.mm" ]
+  deps = [
+    ":constants",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/common",
+    "//ios/chrome/app/strings:ios_branded_strings_grit",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/first_run/ui_bundled:constants",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/common/ui/button_stack:constants",
+    "//ios/chrome/common/ui/promo_style:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

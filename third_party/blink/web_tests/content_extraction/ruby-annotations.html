@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link href="./resources/consistent-rendering.css" rel="stylesheet" />
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="./resources/content-extraction-test-helpers.js"></script>
+<script src="../resources/ahem.js"></script>
+
+<script>
+function runTest() {
+  finishTest(dumpContentNodeTree(document));
+}
+</script>
+</head>
+<body onload="runTest()">
+  <!--
+  Expected: Base text with ruby annotations (pronunciation guides).
+  Challenge: Handling relationship between base text and annotations.
+  -->
+  <ruby>
+    base1 <rt>anno1</rt>
+    base2 <rt>anno2</rt>
+    base3 <rt>anno3</rt>
+  </ruby>
+</body>
+</html>

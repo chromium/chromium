@@ -1,0 +1,190 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("password_details") {
+  sources = [
+    "add_password_coordinator.h",
+    "add_password_coordinator.mm",
+    "add_password_coordinator_delegate.h",
+    "add_password_mediator.h",
+    "add_password_mediator.mm",
+    "add_password_mediator_delegate.h",
+    "password_details_coordinator.h",
+    "password_details_coordinator.mm",
+    "password_details_coordinator_delegate.h",
+    "password_details_mediator+Testing.h",
+    "password_details_mediator.h",
+    "password_details_mediator.mm",
+    "password_details_mediator_delegate.h",
+  ]
+  deps = [
+    ":metrics",
+    "//build:branding_buildflags",
+    "//components/autofill/core/common",
+    "//components/password_manager/core/browser:password_switches",
+    "//components/password_manager/core/browser/form_parsing",
+    "//components/password_manager/core/browser/generation",
+    "//components/password_manager/core/browser/generation:core",
+    "//components/password_manager/core/common",
+    "//components/prefs",
+    "//components/strings",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/passwords/model",
+    "//ios/chrome/browser/passwords/model:password_checkup_metrics",
+    "//ios/chrome/browser/passwords/model:password_checkup_utils",
+    "//ios/chrome/browser/passwords/model/metrics",
+    "//ios/chrome/browser/settings/ui_bundled/password:common",
+    "//ios/chrome/browser/settings/ui_bundled/password:features",
+    "//ios/chrome/browser/settings/ui_bundled/password/password_sharing",
+    "//ios/chrome/browser/settings/ui_bundled/password/password_sharing:password_sharing_metrics",
+    "//ios/chrome/browser/settings/ui_bundled/password/reauthentication",
+    "//ios/chrome/browser/settings/ui_bundled/password/reauthentication:reauthentication_delegate",
+    "//ios/chrome/browser/settings/ui_bundled/utils",
+    "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/reauthentication",
+    "//ios/chrome/common/ui/util",
+    "//ios/web/public",
+    "//ui/base",
+  ]
+  public_deps = [
+    ":password_details_ui",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+  ]
+}
+
+source_set("password_details_ui") {
+  sources = [
+    "add_password_details_consumer.h",
+    "add_password_view_controller.h",
+    "add_password_view_controller.mm",
+    "add_password_view_controller_delegate.h",
+    "credential_details.h",
+    "credential_details.mm",
+    "password_details_consumer.h",
+    "password_details_handler.h",
+    "password_details_metrics_utils.h",
+    "password_details_metrics_utils.mm",
+    "password_details_table_view_constants.h",
+    "password_details_table_view_constants.mm",
+    "password_details_table_view_controller+Testing.h",
+    "password_details_table_view_controller.h",
+    "password_details_table_view_controller.mm",
+    "password_details_table_view_controller_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//components/affiliations/core/browser:affiliations",
+    "//components/autofill/core/common",
+    "//components/crash/core/common:crash_key",
+    "//components/device_reauth",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/generation:core",
+    "//components/password_manager/core/common",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/credential_provider/model:features",
+    "//ios/chrome/browser/keyboard/ui_bundled",
+    "//ios/chrome/browser/passwords/model",
+    "//ios/chrome/browser/passwords/model:password_checkup_metrics",
+    "//ios/chrome/browser/passwords/model:password_checkup_utils",
+    "//ios/chrome/browser/settings/ui_bundled:settings_root",
+    "//ios/chrome/browser/settings/ui_bundled/autofill",
+    "//ios/chrome/browser/settings/ui_bundled/cells",
+    "//ios/chrome/browser/settings/ui_bundled/elements:enterprise_info_popover_view_controller",
+    "//ios/chrome/browser/settings/ui_bundled/password:features",
+    "//ios/chrome/browser/settings/ui_bundled/password:password_constants",
+    "//ios/chrome/browser/settings/ui_bundled/password/password_details/cells",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/snackbar",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements:popover_label_view_controller",
+    "//ios/chrome/common/ui/reauthentication",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+}
+
+source_set("password_details_table_view_constants") {
+  sources = [
+    "password_details_table_view_constants.h",
+    "password_details_table_view_constants.mm",
+  ]
+  deps = [ "//ios/chrome/browser/shared/ui/list_model" ]
+}
+
+source_set("metrics") {
+  sources = [
+    "add_password_metrics.h",
+    "add_password_metrics.mm",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "add_password_coordinator_unittest.mm",
+    "add_password_view_controller_unittest.mm",
+    "password_details_coordinator_unittest.mm",
+    "password_details_mediator_unittest.mm",
+    "password_details_table_view_controller_unittest.mm",
+  ]
+  deps = [
+    ":password_details",
+    ":password_details_ui",
+    "//base",
+    "//base/test:test_support",
+    "//components/affiliations/core/browser:test_support",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser:password_form",
+    "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/browser/generation:core",
+    "//components/sync/base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/affiliations/model",
+    "//ios/chrome/browser/credential_provider/model:features",
+    "//ios/chrome/browser/passwords/model",
+    "//ios/chrome/browser/passwords/model:store_factory",
+    "//ios/chrome/browser/passwords/model/metrics",
+    "//ios/chrome/browser/settings/ui_bundled/cells",
+    "//ios/chrome/browser/settings/ui_bundled/password:features",
+    "//ios/chrome/browser/settings/ui_bundled/password/password_details/cells",
+    "//ios/chrome/browser/settings/ui_bundled/password/password_settings:common",
+    "//ios/chrome/browser/settings/ui_bundled/password/password_sharing:password_sharing_metrics",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/snackbar",
+    "//ios/chrome/browser/shared/ui/table_view:test_support",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/sync/model:test_support",
+    "//ios/chrome/common/ui/reauthentication",
+    "//ios/chrome/common/ui/reauthentication:mock_reauthentication_module",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/test:test_support",
+    "//ios/chrome/test/app:test_support",
+    "//ios/web/public/test",
+    "//third_party/ocmock",
+    "//ui/base",
+  ]
+}

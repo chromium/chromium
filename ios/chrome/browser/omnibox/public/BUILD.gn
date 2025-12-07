@@ -1,0 +1,73 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("public") {
+  sources = [
+    "omnibox_metrics_helper.h",
+    "omnibox_metrics_helper.mm",
+    "omnibox_presentation_context.h",
+    "omnibox_suggestion_icon_util.h",
+    "omnibox_suggestion_icon_util.mm",
+    "omnibox_util.h",
+    "omnibox_util.mm",
+  ]
+  public_deps = [
+    ":constants",
+    "//base",
+  ]
+  deps = [
+    ":features",
+    "//components/favicon/ios",
+    "//components/feature_engagement/public",
+    "//components/omnibox/browser",
+    "//components/search_engines",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/app/theme:theme_grit",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/bookmarks/model:model_utils",
+    "//ios/chrome/browser/default_browser/model:default_browser_interest_signals",
+    "//ios/chrome/browser/https_upgrades/model",
+    "//ios/chrome/browser/intents/model:model_donation_helper",
+    "//ios/chrome/browser/omnibox/ui",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/symbols:buildflags",
+    "//ios/web/public",
+    "//ios/web/public:web_state_observer",
+    "//ios/web/public/navigation",
+    "//ui/base",
+  ]
+}
+
+source_set("features") {
+  sources = [
+    "omnibox_ui_features.cc",
+    "omnibox_ui_features.h",
+  ]
+  public_deps = [ "//base" ]
+  deps = [
+    "//components/omnibox/common",
+    "//ios/chrome/browser/shared/public/features",
+    "//ui/base",
+  ]
+}
+
+# This target can also be used on EG2 tests, so it should only contain constants
+source_set("constants") {
+  sources = [
+    "omnibox_constants.h",
+    "omnibox_constants.mm",
+    "omnibox_icon_type.h",
+    "omnibox_icon_type.mm",
+    "omnibox_popup_accessibility_identifier_constants.h",
+    "omnibox_popup_accessibility_identifier_constants.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/ui/symbols",
+  ]
+}

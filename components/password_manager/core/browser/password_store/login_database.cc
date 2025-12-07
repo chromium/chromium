@@ -37,7 +37,6 @@
 #include "build/build_config.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/affiliations/core/browser/sql_table_builder.h"
-#include "components/os_crypt/sync/os_crypt.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -68,7 +67,7 @@ using signin::GaiaIdHash;
 namespace password_manager {
 
 // The current version number of the login database schema.
-constexpr int kCurrentVersionNumber = 41;
+constexpr int kCurrentVersionNumber = 43;
 // The oldest version of the schema such that a legacy Chrome client using that
 // version can still read/write the current database.
 constexpr int kCompatibleVersionNumber = 40;
@@ -180,6 +179,8 @@ enum LoginDatabaseTableColumns {
   COLUMN_SHARING_NOTIFICATION_DISPLAYED,
   COLUMN_KEYCHAIN_IDENTIFIER,
   COLUMN_SENDER_PROFILE_IMAGE_URL,
+  COLUMN_DATE_LAST_FILLED,
+  COLUMN_ACTOR_LOGIN_APPROVED,
   COLUMN_NUM  // Keep this last.
 };
 
@@ -197,7 +198,7 @@ enum DatabaseInitError {
   MIGRATION_ERROR = 7,
   COMMIT_TRANSACTION_ERROR = 8,
   INIT_COMPROMISED_CREDENTIALS_ERROR = 9,
-  INIT_FIELD_INFO_ERROR = 10,  // Deprecated.
+  // Deprecated: INIT_FIELD_INFO_ERROR = 10,
   FOREIGN_KEY_ERROR = 11,
   INIT_PASSWORD_NOTES_ERROR = 12,
 
@@ -288,6 +289,8 @@ void BindAddStatement(const PasswordForm& form,
   s->BindTime(COLUMN_DATE_RECEIVED, form.date_received);
   s->BindBool(COLUMN_SHARING_NOTIFICATION_DISPLAYED,
               form.sharing_notification_displayed);
+  s->BindTime(COLUMN_DATE_LAST_FILLED, form.date_last_filled);
+  s->BindBool(COLUMN_ACTOR_LOGIN_APPROVED, form.actor_login_approved);
 }
 
 // Output parameter is the first one because of binding order.
@@ -310,6 +313,7 @@ class ScopedDbErrorHandler {
 
   ~ScopedDbErrorHandler() { db_->reset_error_callback(); }
 
+  // Error codes are defined in the sql::SqliteResultCode enum.
   void reset_error_code() { sqlite_error_code_ = 0; }
   int get_error_code() const { return sqlite_error_code_; }
 
@@ -594,7 +598,16 @@ void InitializeBuilders(SQLTableBuilders builders) {
   builders.logins->AddColumn("sender_profile_image_url", "VARCHAR");
   SealVersion(builders, /*expected_version=*/41u);
 
-  static_assert(kCurrentVersionNumber == 41, "Seal the recent version");
+  // Version 42. Introduce date_last_filled column.
+  builders.logins->AddColumn("date_last_filled", "INTEGER NOT NULL DEFAULT 0");
+  SealVersion(builders, /*expected_version=*/42u);
+
+  // Version 43. Introduce actor_login_approved column.
+  builders.logins->AddColumn("actor_login_approved",
+                             "INTEGER NOT NULL DEFAULT 0");
+  SealVersion(builders, /*expected_version=*/43u);
+
+  static_assert(kCurrentVersionNumber == 43, "Seal the recent version");
   CHECK_EQ(static_cast<size_t>(COLUMN_NUM), builders.logins->NumberOfColumns())
       << "Adjust LoginDatabaseTableColumns if you change column definitions "
          "here.";
@@ -966,7 +979,7 @@ std::string GeneratePlaceholders(size_t count) {
 // and returns it.
 PasswordForm GetFormForRemoval(sql::Statement& statement) {
   PasswordForm form;
-  form.url = GURL(statement.ColumnString(COLUMN_ORIGIN_URL));
+  form.url = GURL(statement.ColumnStringView(COLUMN_ORIGIN_URL));
   form.username_element = statement.ColumnString16(COLUMN_USERNAME_ELEMENT);
   form.username_value = statement.ColumnString16(COLUMN_USERNAME_VALUE);
   form.password_element = statement.ColumnString16(COLUMN_PASSWORD_ELEMENT);
@@ -981,10 +994,11 @@ bool ShouldReturnPartialPasswords() {
 }
 
 std::unique_ptr<sync_pb::EntityMetadata> DecryptAndParseSyncEntityMetadata(
-    const std::string& encrypted_serialized_metadata) {
+    const std::string& encrypted_serialized_metadata,
+    os_crypt_async::Encryptor* encryptor) {
   std::string decrypted_serialized_metadata;
-  if (!OSCrypt::DecryptString(encrypted_serialized_metadata,
-                              &decrypted_serialized_metadata)) {
+  if (!encryptor || !encryptor->DecryptString(encrypted_serialized_metadata,
+                                              &decrypted_serialized_metadata)) {
     DLOG(WARNING) << "Failed to decrypt PASSWORD data type "
                      "sync_pb::EntityMetadata.";
     return nullptr;
@@ -1005,8 +1019,7 @@ EncryptionResult DecryptPasswordFromStatement(
     std::u16string* plaintext_password,
     EncryptDecryptInterface* decryptor) {
   CHECK(plaintext_password);
-  std::string encrypted_password;
-  s.ColumnBlobAsString(COLUMN_PASSWORD_VALUE, &encrypted_password);
+  std::string encrypted_password = s.ColumnBlobAsString(COLUMN_PASSWORD_VALUE);
   EncryptionResult encryption_result =
       decryptor->DecryptedString(encrypted_password, plaintext_password);
   if (encryption_result != EncryptionResult::kSuccess) {
@@ -1024,16 +1037,17 @@ void RecordShouldDeleteUndecryptablePasswordsMetric(
 }
 
 bool ShouldDeleteUndecryptablePasswords(
-    LoginDatabase::ClearingUndecryptablePasswordsCallback
+    LoginDatabase::OnUndecryptablePasswordsRemoved
         clearing_undecryptable_passwords,
     bool is_user_data_dir_policy_set,
-    bool is_disabled_by_policy) {
+    bool is_enabled_by_policy,
+    IsAccountStore is_account_store,
+    const os_crypt_async::Encryptor* encryptor) {
 #if BUILDFLAG(IS_LINUX)
-  std::string user_data_dir_string;
   std::unique_ptr<base::Environment> environment(base::Environment::Create());
   // On Linux user data directory ca be specified using an env variable. If it
   // exists, passwords shouldn't be deleted.
-  if (environment->GetVar("CHROME_USER_DATA_DIR", &user_data_dir_string)) {
+  if (environment->HasVar("CHROME_USER_DATA_DIR")) {
     RecordShouldDeleteUndecryptablePasswordsMetric(
         ShouldDeleteUndecryptablePasswordsResult::kUserDataDirEnvVarIsPresent);
     return false;
@@ -1070,13 +1084,13 @@ bool ShouldDeleteUndecryptablePasswords(
   }
 #endif
 
-  if (!OSCrypt::IsEncryptionAvailable()) {
+  if (!encryptor || !encryptor->IsEncryptionAvailable()) {
     RecordShouldDeleteUndecryptablePasswordsMetric(
         ShouldDeleteUndecryptablePasswordsResult::kEncryptionNotAvailiable);
     return false;
   }
 
-  if (is_disabled_by_policy) {
+  if (!is_enabled_by_policy) {
     RecordShouldDeleteUndecryptablePasswordsMetric(
         ShouldDeleteUndecryptablePasswordsResult::kDisabledByPolicy);
     return false;
@@ -1088,7 +1102,7 @@ bool ShouldDeleteUndecryptablePasswords(
   // Needed in order to maintain kClearUndecryptablePasswords experiment groups
   // population.
   if (clearing_undecryptable_passwords) {
-    clearing_undecryptable_passwords.Run(true);
+    clearing_undecryptable_passwords.Run(is_account_store);
   }
   return base::FeatureList::IsEnabled(features::kClearUndecryptablePasswords);
 }
@@ -1102,19 +1116,25 @@ struct LoginDatabase::PrimaryKeyAndPassword {
 };
 
 LoginDatabase::LoginDatabase(const base::FilePath& db_path,
-                             IsAccountStore is_account_store)
+                             IsAccountStore is_account_store,
+                             DeletingUndecryptablePasswordsEnabled can_delete)
     : db_path_(db_path),
       is_account_store_(is_account_store),
       // Set options for a small, private database (based on WebDatabase).
-      db_({.page_size = 2048, .cache_size = 32}) {}
+      db_(sql::DatabaseOptions().set_page_size(2048).set_cache_size(32),
+          /*tag=*/"Passwords"),
+      is_deleting_undecryptable_logins_enabled_by_policy_(can_delete) {}
 
 LoginDatabase::~LoginDatabase() = default;
 
-bool LoginDatabase::Init(std::unique_ptr<os_crypt_async::Encryptor> encryptor) {
+bool LoginDatabase::Init(
+    OnUndecryptablePasswordsRemoved on_undecryptable_passwords_removed,
+    os_crypt_async::Encryptor encryptor) {
   TRACE_EVENT0("passwords", "LoginDatabase::Init");
-  encryptor_ = std::move(encryptor);
-
-  db_.set_histogram_tag("Passwords");
+  on_undecryptable_passwords_removed_ =
+      std::move(on_undecryptable_passwords_removed);
+  encryptor_ =
+      std::make_unique<os_crypt_async::Encryptor>(std::move(encryptor));
 
   if (!db_.Open(db_path_)) {
     LogDatabaseInitError(OPEN_FILE_ERROR);
@@ -1270,7 +1290,6 @@ bool LoginDatabase::Init(std::unique_ptr<os_crypt_async::Encryptor> encryptor) {
     return false;
   }
 
-  TriggerIsEmptyCb();
   LogDatabaseInitError(INIT_OK);
 
   // Keep the database open if everything went well.
@@ -1280,11 +1299,11 @@ bool LoginDatabase::Init(std::unique_ptr<os_crypt_async::Encryptor> encryptor) {
 }
 
 void LoginDatabase::ReportBubbleSuppressionMetrics() {
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_IOS)
   base::UmaHistogramCustomCounts(
       "PasswordManager.BubbleSuppression.AccountsInStatisticsTable2",
       stats_table_.GetNumAccounts(), 0, 1000, 100);
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_IOS)
 }
 
 void LoginDatabase::ReportInaccessiblePasswordsMetrics() {
@@ -1309,7 +1328,7 @@ void LoginDatabase::ReportInaccessiblePasswordsMetrics() {
 
   LoginDatabaseEncryptionStatus encryption_status =
       LoginDatabaseEncryptionStatus::kNoIssues;
-  if (!OSCrypt::IsEncryptionAvailable()) {
+  if (!encryptor_ || !encryptor_->IsEncryptionAvailable()) {
     encryption_status = LoginDatabaseEncryptionStatus::kEncryptionUnavailable;
   } else if (failed_encryption > 0) {
     encryption_status =
@@ -1336,7 +1355,6 @@ void LoginDatabase::ReportMetrics() {
 PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
                                                 AddCredentialError* error) {
   TRACE_EVENT0("passwords", "LoginDatabase::AddLogin");
-  absl::Cleanup is_empty_runner = [this] { TriggerIsEmptyCb(); };
   if (error) {
     *error = AddCredentialError::kNone;
   }
@@ -1510,6 +1528,8 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(
   s.BindString(next_param++, form.sender_profile_image_url.is_valid()
                                  ? form.sender_profile_image_url.spec()
                                  : "");
+  s.BindTime(next_param++, form.date_last_filled);
+  s.BindBool(next_param++, form.actor_login_approved);
   // NOTE: Add new fields here unless the field is a part of the unique key.
   // If so, add new field below.
 
@@ -1529,17 +1549,8 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(
     return PasswordStoreChangeList();
   }
 
-  // If no rows changed due to this command, it means that there was no row to
-  // update, so there is no point trying to update insecure credentials data or
-  // the notes table.
-  if (db_.GetLastChangeCount() == 0) {
-    if (error) {
-      *error = UpdateCredentialError::kNoUpdatedRecords;
-    }
-    return PasswordStoreChangeList();
-  }
-
-  bool password_changed =
+  const bool login_table_changed = db_.GetLastChangeCount() > 0;
+  const bool password_changed =
       form.password_value != old_primary_key_password.decrypted_password;
 
   PasswordForm form_with_encrypted_password = form;
@@ -1556,8 +1567,17 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(
   InsecureCredentialsChanged insecure_changed = UpdateInsecureCredentials(
       FormPrimaryKey(old_primary_key_password.primary_key),
       form_with_encrypted_password.password_issues);
-  UpdatePasswordNotes(FormPrimaryKey(old_primary_key_password.primary_key),
-                      form.notes);
+  const bool notes_changed = UpdatePasswordNotes(
+      FormPrimaryKey(old_primary_key_password.primary_key), form.notes);
+
+  // If no rows changed due to the command above and insecure credentials and
+  // notes were not updated, it means that there was no row to update
+  if (!insecure_changed && !login_table_changed && !notes_changed) {
+    if (error) {
+      *error = UpdateCredentialError::kNoUpdatedRecords;
+    }
+    return PasswordStoreChangeList();
+  }
 
   PasswordStoreChangeList list;
   form_with_encrypted_password.in_store = GetStore();
@@ -1573,7 +1593,6 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(
 bool LoginDatabase::RemoveLogin(const PasswordForm& form,
                                 PasswordStoreChangeList* changes) {
   TRACE_EVENT0("passwords", "LoginDatabase::RemoveLogin");
-  absl::Cleanup is_empty_runner = [this] { TriggerIsEmptyCb(); };
   if (changes) {
     changes->clear();
   }
@@ -1586,7 +1605,7 @@ bool LoginDatabase::RemoveLogin(const PasswordForm& form,
   // Remove a login by UNIQUE-constrained fields.
   DCHECK(!delete_statement_.empty());
   sql::Statement s(db_.GetCachedStatement(SQL_FROM_HERE, delete_statement_));
-  s.BindString(0, form.url.spec());
+  s.BindString(0, form.url.possibly_invalid_spec());
   s.BindString16(1, form.username_element);
   s.BindString16(2, form.username_value);
   s.BindString16(3, form.password_element);
@@ -1611,7 +1630,6 @@ bool LoginDatabase::RemoveLoginByPrimaryKey(FormPrimaryKey primary_key,
   TRACE_EVENT0("passwords", "LoginDatabase::RemoveLoginByPrimaryKey");
   CHECK(changes);
 
-  absl::Cleanup is_empty_runner = [this] { TriggerIsEmptyCb(); };
   changes->clear();
   sql::Statement s1(db_.GetCachedStatement(
       SQL_FROM_HERE, "SELECT * FROM logins WHERE id = ?"));
@@ -1645,7 +1663,6 @@ bool LoginDatabase::RemoveLoginsCreatedBetween(
     base::Time delete_end,
     PasswordStoreChangeList* changes) {
   TRACE_EVENT0("passwords", "LoginDatabase::RemoveLoginsCreatedBetween");
-  absl::Cleanup is_empty_runner = [this] { TriggerIsEmptyCb(); };
   if (changes) {
     changes->clear();
   }
@@ -1656,20 +1673,15 @@ bool LoginDatabase::RemoveLoginsCreatedBetween(
   }
 
 #if BUILDFLAG(IS_IOS)
-  base::Time start = base::Time::Now();
   for (const auto& form : forms) {
     DeleteEncryptedPasswordFromKeychain(form.keychain_identifier);
   }
-  base::UmaHistogramMediumTimes(
-      "PasswordManager.PasswordStoreBuiltInBackend.RemoveLoginsCreatedBetween."
-      "KeychainLatency",
-      base::Time::Now() - start);
 #endif
 
   sql::Statement s(
       db_.GetCachedStatement(SQL_FROM_HERE,
                              "DELETE FROM logins WHERE "
-                             "date_created >= ? AND date_created < ?"));
+                             "date_created >= ? AND date_created <= ?"));
   s.BindTime(0, delete_begin);
   s.BindTime(1, delete_end.is_null() ? base::Time::Max() : delete_end);
 
@@ -1712,17 +1724,14 @@ PasswordForm LoginDatabase::GetFormWithoutPasswordFromStatement(
     sql::Statement& s) const {
   PasswordForm form;
   form.primary_key = FormPrimaryKey(s.ColumnInt(COLUMN_ID));
-  std::string tmp = s.ColumnString(COLUMN_ORIGIN_URL);
-  form.url = GURL(tmp);
-  tmp = s.ColumnString(COLUMN_ACTION_URL);
-  form.action = GURL(tmp);
+  form.url = GURL(s.ColumnStringView(COLUMN_ORIGIN_URL));
+  form.action = GURL(s.ColumnStringView(COLUMN_ACTION_URL));
   form.username_element = s.ColumnString16(COLUMN_USERNAME_ELEMENT);
   form.username_value = s.ColumnString16(COLUMN_USERNAME_VALUE);
   form.password_element = s.ColumnString16(COLUMN_PASSWORD_ELEMENT);
-  s.ColumnBlobAsString(COLUMN_KEYCHAIN_IDENTIFIER, &form.keychain_identifier);
+  form.keychain_identifier = s.ColumnBlobAsString(COLUMN_KEYCHAIN_IDENTIFIER);
   form.submit_element = s.ColumnString16(COLUMN_SUBMIT_ELEMENT);
-  tmp = s.ColumnString(COLUMN_SIGNON_REALM);
-  form.signon_realm = tmp;
+  form.signon_realm = s.ColumnString(COLUMN_SIGNON_REALM);
   form.date_created = s.ColumnTime(COLUMN_DATE_CREATED);
   form.blocked_by_user = (s.ColumnInt(COLUMN_BLOCKLISTED_BY_USER) > 0);
   // TODO(crbug.com/40732888): Add metrics to capture how often these values
@@ -1747,14 +1756,15 @@ PasswordForm LoginDatabase::GetFormWithoutPasswordFromStatement(
     autofill::DeserializeFormData(&form_data_iter, &form.form_data);
   }
   form.display_name = s.ColumnString16(COLUMN_DISPLAY_NAME);
-  form.icon_url = GURL(s.ColumnString(COLUMN_ICON_URL));
+  form.icon_url = GURL(s.ColumnStringView(COLUMN_ICON_URL));
   form.federation_origin =
-      url::SchemeHostPort(GURL(s.ColumnString(COLUMN_FEDERATION_URL)));
+      url::SchemeHostPort(GURL(s.ColumnStringView(COLUMN_FEDERATION_URL)));
   form.skip_zero_click = (s.ColumnInt(COLUMN_SKIP_ZERO_CLICK) > 0);
   form.generation_upload_status =
       static_cast<PasswordForm::GenerationUploadStatus>(
           s.ColumnInt(COLUMN_GENERATION_UPLOAD_STATUS));
   form.date_last_used = s.ColumnTime(COLUMN_DATE_LAST_USED);
+  form.date_last_filled = s.ColumnTime(COLUMN_DATE_LAST_FILLED);
   base::span<const uint8_t> moving_blocked_for_blob =
       s.ColumnBlob(COLUMN_MOVING_BLOCKED_FOR);
   if (!moving_blocked_for_blob.empty()) {
@@ -1766,10 +1776,11 @@ PasswordForm LoginDatabase::GetFormWithoutPasswordFromStatement(
   form.sender_email = s.ColumnString16(COLUMN_SENDER_EMAIL);
   form.sender_name = s.ColumnString16(COLUMN_SENDER_NAME);
   form.sender_profile_image_url =
-      GURL(s.ColumnString(COLUMN_SENDER_PROFILE_IMAGE_URL));
+      GURL(s.ColumnStringView(COLUMN_SENDER_PROFILE_IMAGE_URL));
   form.date_received = s.ColumnTime(COLUMN_DATE_RECEIVED);
   form.sharing_notification_displayed =
       s.ColumnBool(COLUMN_SHARING_NOTIFICATION_DISPLAYED);
+  form.actor_login_approved = s.ColumnBool(COLUMN_ACTOR_LOGIN_APPROVED);
 
   CHECK(form.primary_key.has_value());
   form.password_issues = GetPasswordIssues(form.primary_key.value());
@@ -1903,25 +1914,6 @@ bool LoginDatabase::GetAllLoginsWithBlocklistSetting(
   return true;
 }
 
-LoginDatabase::LoginDatabaseEmptinessState LoginDatabase::IsEmpty() {
-  sql::Statement count_all_logins(db_.GetCachedStatement(
-      SQL_FROM_HERE, "SELECT EXISTS(SELECT 1 FROM logins)"));
-  // `blacklisted_by_user = 0` means the entry is not a blocklisted entry.
-  // `LENGTH(federation_url) = 0` means the entry is not a federated credential.
-  // `scheme <> 4` means the entry is not a username-only credential.
-  sql::Statement count_autofillable_credentials(db_.GetCachedStatement(
-      SQL_FROM_HERE,
-      "SELECT EXISTS(SELECT 1 FROM logins WHERE blacklisted_by_user = 0 AND "
-      "LENGTH(federation_url) = 0 AND scheme <> 4)"));
-
-  return LoginDatabase::LoginDatabaseEmptinessState{
-      .no_login_found =
-          (count_all_logins.Step() && count_all_logins.ColumnInt(0) == 0),
-      .autofillable_credentials_exist =
-          (count_autofillable_credentials.Step() &&
-           count_autofillable_credentials.ColumnInt(0) > 0)};
-}
-
 bool LoginDatabase::DeleteAndRecreateDatabaseFile() {
   TRACE_EVENT0("passwords", "LoginDatabase::DeleteAndRecreateDatabaseFile");
   DCHECK(db_.is_open());
@@ -1932,8 +1924,7 @@ bool LoginDatabase::DeleteAndRecreateDatabaseFile() {
     sql::Statement s(
         db_.GetUniqueStatement("SELECT keychain_identifier FROM logins"));
     while (s.Step()) {
-      std::string keychain_identifier;
-      s.ColumnBlobAsString(0, &keychain_identifier);
+      std::string keychain_identifier = s.ColumnBlobAsString(0);
       DeleteEncryptedPasswordFromKeychain(keychain_identifier);
     }
   }
@@ -1942,15 +1933,15 @@ bool LoginDatabase::DeleteAndRecreateDatabaseFile() {
   meta_table_.Reset();
   db_.Close();
   sql::Database::Delete(db_path_);
-  return Init(std::move(encryptor_));
+  return Init(std::move(on_undecryptable_passwords_removed_),
+              std::move(*encryptor_));
 }
 
 DatabaseCleanupResult LoginDatabase::DeleteUndecryptableLogins() {
   TRACE_EVENT0("passwords", "LoginDatabase::DeleteUndecryptableLogins");
-  absl::Cleanup is_empty_runner = [this] { TriggerIsEmptyCb(); };
   // If the Keychain in MacOS or the real secret key in Linux is unavailable,
   // don't delete any logins.
-  if (!OSCrypt::IsEncryptionAvailable()) {
+  if (!encryptor_ || !encryptor_->IsEncryptionAvailable()) {
     metrics_util::LogDeleteUndecryptableLoginsReturnValue(
         metrics_util::DeleteCorruptedPasswordsResult::kEncryptionUnavailable);
     return DatabaseCleanupResult::kEncryptionUnavailable;
@@ -1963,8 +1954,8 @@ DatabaseCleanupResult LoginDatabase::DeleteUndecryptableLogins() {
   std::vector<PasswordForm> forms_to_be_deleted;
 
   while (s.Step()) {
-    std::string encrypted_password;
-    s.ColumnBlobAsString(COLUMN_PASSWORD_VALUE, &encrypted_password);
+    std::string encrypted_password =
+        s.ColumnBlobAsString(COLUMN_PASSWORD_VALUE);
     std::u16string decrypted_password;
     if (DecryptedString(encrypted_password, &decrypted_password) ==
         EncryptionResult::kSuccess) {
@@ -2010,19 +2001,9 @@ bool LoginDatabase::CommitTransaction() {
   return db_.CommitTransactionDeprecated();
 }
 
-void LoginDatabase::SetIsEmptyCb(IsEmptyCallback is_empty_cb) {
-  is_empty_cb_ = std::move(is_empty_cb);
-}
-
-void LoginDatabase::SetClearingUndecryptablePasswordsCb(
-    ClearingUndecryptablePasswordsCallback clearing_undecryptable_passwords) {
-  clearing_undecryptable_passwords_ =
-      std::move(clearing_undecryptable_passwords);
-}
-
-LoginDatabase::SyncMetadataStore::SyncMetadataStore(sql::Database* db)
-    : db_(db) {
-  CHECK(db);
+LoginDatabase::SyncMetadataStore::SyncMetadataStore(LoginDatabase* login_db)
+    : login_db_(login_db) {
+  CHECK(login_db);
 }
 
 LoginDatabase::SyncMetadataStore::~SyncMetadataStore() = default;
@@ -2039,7 +2020,7 @@ LoginDatabase::SyncMetadataStore::GetAllSyncEntityMetadata(
     syncer::DataType data_type) {
   CHECK_EQ(data_type, syncer::PASSWORDS);
   auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
-  sql::Statement s(db_->GetCachedStatement(
+  sql::Statement s(login_db_->db_.GetCachedStatement(
       SQL_FROM_HERE,
       base::StringPrintf("SELECT storage_key, metadata FROM %s",
                          kPasswordsSyncEntitiesMetadataTableName)));
@@ -2048,7 +2029,8 @@ LoginDatabase::SyncMetadataStore::GetAllSyncEntityMetadata(
     int storage_key_int = s.ColumnInt(0);
     std::string storage_key = base::NumberToString(storage_key_int);
     std::unique_ptr<sync_pb::EntityMetadata> entity_metadata =
-        DecryptAndParseSyncEntityMetadata(s.ColumnString(1));
+        DecryptAndParseSyncEntityMetadata(s.ColumnString(1),
+                                          login_db_->encryptor_.get());
     if (!entity_metadata) {
       return nullptr;
     }
@@ -2073,7 +2055,7 @@ LoginDatabase::SyncMetadataStore::GetSyncEntityMetadataForStorageKey(
     return nullptr;
   }
 
-  sql::Statement s(db_->GetCachedStatement(
+  sql::Statement s(login_db_->db_.GetCachedStatement(
       SQL_FROM_HERE,
       base::StringPrintf("SELECT metadata FROM %s WHERE storage_key=?",
                          kPasswordsSyncEntitiesMetadataTableName)));
@@ -2084,14 +2066,15 @@ LoginDatabase::SyncMetadataStore::GetSyncEntityMetadataForStorageKey(
     return nullptr;
   }
 
-  return DecryptAndParseSyncEntityMetadata(s.ColumnString(0));
+  return DecryptAndParseSyncEntityMetadata(s.ColumnString(0),
+                                           login_db_->encryptor_.get());
 }
 
 std::unique_ptr<sync_pb::DataTypeState>
 LoginDatabase::SyncMetadataStore::GetDataTypeState(syncer::DataType data_type) {
   CHECK_EQ(data_type, syncer::PASSWORDS);
   auto state = std::make_unique<sync_pb::DataTypeState>();
-  sql::Statement s(db_->GetCachedStatement(
+  sql::Statement s(login_db_->db_.GetCachedStatement(
       SQL_FROM_HERE,
       base::StringPrintf("SELECT model_metadata FROM %s WHERE id=1",
                          kPasswordsSyncModelMetadataTableName)));
@@ -2104,7 +2087,7 @@ LoginDatabase::SyncMetadataStore::GetDataTypeState(syncer::DataType data_type) {
     }
   }
 
-  std::string serialized_state = s.ColumnString(0);
+  std::string_view serialized_state = s.ColumnStringView(0);
   if (state->ParseFromString(serialized_state)) {
     return state;
   }
@@ -2138,7 +2121,7 @@ void LoginDatabase::SyncMetadataStore::DeleteAllSyncMetadata(
   CHECK_EQ(data_type, syncer::PASSWORDS);
   CHECK_EQ(data_type, syncer::PASSWORDS);
   bool had_unsynced_password_deletions = HasUnsyncedPasswordDeletions();
-  ClearAllSyncMetadata(db_, data_type);
+  ClearAllSyncMetadata(&login_db_->db_, data_type);
   if (had_unsynced_password_deletions &&
       password_deletions_have_synced_callback_) {
     // Note: At this point we can't be fully sure whether the deletions actually
@@ -2164,13 +2147,14 @@ bool LoginDatabase::SyncMetadataStore::UpdateEntityMetadata(
   }
 
   std::string encrypted_metadata;
-  if (!OSCrypt::EncryptString(metadata.SerializeAsString(),
-                              &encrypted_metadata)) {
+  if (!login_db_->encryptor_ ||
+      !login_db_->encryptor_->EncryptString(metadata.SerializeAsString(),
+                                            &encrypted_metadata)) {
     DLOG(ERROR) << "Cannot encrypt the sync metadata";
     return false;
   }
 
-  sql::Statement s(db_->GetCachedStatement(
+  sql::Statement s(login_db_->db_.GetCachedStatement(
       SQL_FROM_HERE,
       base::StringPrintf(
           "INSERT OR REPLACE INTO %s (storage_key, metadata) VALUES(?, ?)",
@@ -2218,7 +2202,7 @@ bool LoginDatabase::SyncMetadataStore::ClearEntityMetadata(
     return false;
   }
 
-  sql::Statement s(db_->GetCachedStatement(
+  sql::Statement s(login_db_->db_.GetCachedStatement(
       SQL_FROM_HERE,
       base::StringPrintf("DELETE FROM %s WHERE storage_key=?",
                          kPasswordsSyncEntitiesMetadataTableName)));
@@ -2257,7 +2241,7 @@ bool LoginDatabase::SyncMetadataStore::UpdateDataTypeState(
 
   // Make sure only one row is left by storing it in the entry with id=1
   // every time.
-  sql::Statement s(db_->GetCachedStatement(
+  sql::Statement s(login_db_->db_.GetCachedStatement(
       SQL_FROM_HERE,
       base::StringPrintf("INSERT OR REPLACE INTO %s (id, model_metadata) "
                          "VALUES(1, ?)",
@@ -2272,7 +2256,7 @@ bool LoginDatabase::SyncMetadataStore::ClearDataTypeState(
   TRACE_EVENT0("passwords", "SyncMetadataStore::ClearDataTypeState");
   CHECK_EQ(data_type, syncer::PASSWORDS);
 
-  sql::Statement s(db_->GetCachedStatement(
+  sql::Statement s(login_db_->db_.GetCachedStatement(
       SQL_FROM_HERE, base::StringPrintf("DELETE FROM %s WHERE id=1",
                                         kPasswordsSyncModelMetadataTableName)));
 
@@ -2287,14 +2271,15 @@ void LoginDatabase::SyncMetadataStore::SetPasswordDeletionsHaveSyncedCallback(
 bool LoginDatabase::SyncMetadataStore::HasUnsyncedPasswordDeletions() {
   TRACE_EVENT0("passwords", "SyncMetadataStore::HasUnsyncedDeletions");
 
-  sql::Statement s(db_->GetCachedStatement(
+  sql::Statement s(login_db_->db_.GetCachedStatement(
       SQL_FROM_HERE,
       base::StringPrintf("SELECT metadata FROM %s",
                          kPasswordsSyncEntitiesMetadataTableName)));
 
   while (s.Step()) {
     std::unique_ptr<sync_pb::EntityMetadata> entity_metadata =
-        DecryptAndParseSyncEntityMetadata(s.ColumnString(0));
+        DecryptAndParseSyncEntityMetadata(s.ColumnString(0),
+                                          login_db_->encryptor_.get());
     if (!entity_metadata) {
       return false;
     }
@@ -2322,9 +2307,8 @@ LoginDatabase::PrimaryKeyAndPassword LoginDatabase::GetPrimaryKeyAndPassword(
 
   if (s.Step()) {
     PrimaryKeyAndPassword result = {s.ColumnInt(0)};
-    std::string encrypted_password;
-    s.ColumnBlobAsString(1, &encrypted_password);
-    s.ColumnBlobAsString(2, &result.keychain_identifier);
+    std::string encrypted_password = s.ColumnBlobAsString(1);
+    result.keychain_identifier = s.ColumnBlobAsString(2);
     if (DecryptedString(encrypted_password, &result.decrypted_password) !=
         EncryptionResult::kSuccess) {
       result.decrypted_password.clear();
@@ -2381,8 +2365,9 @@ FormRetrievalResult LoginDatabase::StatementToForms(
   }
   if (failed) {
     if (ShouldDeleteUndecryptablePasswords(
-            clearing_undecryptable_passwords_, is_user_data_dir_policy_set_,
-            is_deleting_undecryptable_logins_disabled_by_policy_)) {
+            on_undecryptable_passwords_removed_, is_user_data_dir_policy_set_,
+            is_deleting_undecryptable_logins_enabled_by_policy_.value(),
+            is_account_store_, encryptor_.get())) {
       DatabaseCleanupResult result = DeleteUndecryptableLogins();
       if (result == DatabaseCleanupResult::kSuccess) {
         were_undecryptable_logins_deleted_ = true;
@@ -2453,7 +2438,7 @@ void LoginDatabase::InitializeStatementStrings(const SQLTableBuilder& builder) {
   DCHECK(created_statement_.empty());
   created_statement_ =
       "SELECT " + all_column_names +
-      " FROM logins WHERE date_created >= ? AND date_created < "
+      " FROM logins WHERE date_created >= ? AND date_created <= "
       "? ORDER BY origin_url";
   DCHECK(blocklisted_statement_.empty());
   blocklisted_statement_ =
@@ -2511,19 +2496,24 @@ std::vector<PasswordNote> LoginDatabase::GetPasswordNotes(
   return password_notes_table_.GetPasswordNotes(primary_key);
 }
 
-void LoginDatabase::UpdatePasswordNotes(
+bool LoginDatabase::UpdatePasswordNotes(
     FormPrimaryKey primary_key,
     const std::vector<PasswordNote>& notes) {
+  base::flat_set<PasswordNote> existing_notes(
+      password_notes_table_.GetPasswordNotes(primary_key));
+  if (existing_notes.size() == notes.size()) {
+    // Password notes haven't changed. Return early.
+    if (std::ranges::all_of(notes, [&existing_notes](const PasswordNote& note) {
+          return existing_notes.count(note);
+        })) {
+      return false;
+    }
+  }
   password_notes_table_.RemovePasswordNotes(primary_key);
   for (const PasswordNote& note : notes) {
     password_notes_table_.InsertOrReplace(primary_key, note);
   }
-}
-
-void LoginDatabase::TriggerIsEmptyCb() {
-  if (is_empty_cb_) {
-    is_empty_cb_.Run(IsEmpty());
-  }
+  return true;
 }
 
 }  // namespace password_manager

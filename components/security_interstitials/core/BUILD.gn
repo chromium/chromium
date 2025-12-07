@@ -12,6 +12,8 @@ static_library("core") {
     "common_string_util.h",
     "controller_client.cc",
     "controller_client.h",
+    "features.cc",
+    "features.h",
     "https_only_mode_allowlist.cc",
     "https_only_mode_allowlist.h",
     "https_only_mode_enforcelist.cc",
@@ -36,6 +38,8 @@ static_library("core") {
     "ssl_error_ui.h",
     "urls.cc",
     "urls.h",
+    "utils.cc",
+    "utils.h",
   ]
 
   if (!is_ios) {
@@ -61,7 +65,7 @@ static_library("core") {
     "//components/policy/core/common",
     "//components/prefs",
     "//components/resources",
-    "//components/safe_browsing/core/common:common",
+    "//components/safe_browsing/core/common",
     "//components/ssl_errors",
     "//components/strings",
     "//components/url_formatter",
@@ -79,6 +83,8 @@ static_library("unsafe_resource") {
   sources = [
     "unsafe_resource.cc",
     "unsafe_resource.h",
+    "unsafe_resource_locator.cc",
+    "unsafe_resource_locator.h",
   ]
 
   deps = [
@@ -97,6 +103,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "insecure_form_util_unittest.cc",
+    "metrics_helper_unittest.cc",
     "ssl_error_options_mask_unittest.cc",
   ]
 
@@ -104,6 +111,7 @@ source_set("unit_tests") {
     ":core",
     ":insecure_form_util",
     "//base",
+    "//base/test:test_support",
     "//net",
     "//testing/gtest",
   ]
@@ -114,5 +122,5 @@ source_set("insecure_form_util") {
     "insecure_form_util.cc",
     "insecure_form_util.h",
   ]
-  deps = [ "//services/network/public/cpp:cpp" ]
+  deps = [ "//services/network/public/cpp" ]
 }

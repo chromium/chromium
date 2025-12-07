@@ -21,7 +21,7 @@ void AssignBytesToProtoString(base::span<const uint8_t> bytes,
 // Helper function for converting protobuf bytes fields (that are represented as
 // std::string) to std::vector<uint8_t>, that is more convenient representation
 // of bytes in the code.
-std::vector<uint8_t> ProtoStringToBytes(const std::string& bytes_string);
+std::vector<uint8_t> ProtoStringToBytes(const std::string_view bytes_string);
 
 }  // namespace trusted_vault
 

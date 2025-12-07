@@ -1,5 +1,6 @@
 include_rules = [
-  "+components/saved_tab_groups",
+  "+components/saved_tab_groups/public",
+  "+components/saved_tab_groups/test_support",
   "+ios/chrome/browser/complex_tasks/model",
   "+ios/chrome/browser/download/model/download_manager_tab_helper.h",
   "+ios/chrome/browser/history/model",
@@ -7,14 +8,18 @@ include_rules = [
   "+ios/chrome/browser/ntp/model/new_tab_page_util.h",
   "+ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h",
   "+ios/chrome/browser/sessions/model",
+  "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/snapshots/model",
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/synced_sessions/model",
+  "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h",
 ]
 
 specific_include_rules = {
   # The TabHelperUtil can depend on everything.
   "^tab_helper_util.mm": [
     "+ios/chrome/browser",
+    "+ios/chrome/browser/collaboration/model/features.h",
+    "+components/data_sharing/public",
   ],
 }

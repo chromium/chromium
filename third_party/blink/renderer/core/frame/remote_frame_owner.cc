@@ -6,7 +6,7 @@
 
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-blink.h"
-#include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/frame/web_remote_frame_impl.h"
-#include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
+#include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 
 namespace blink {
@@ -32,6 +32,7 @@ RemoteFrameOwner::RemoteFrameOwner(
       allow_payment_request_(frame_owner_properties.allow_payment_request),
       is_display_none_(frame_owner_properties.is_display_none),
       color_scheme_(frame_owner_properties.color_scheme),
+      preferred_color_scheme_(frame_owner_properties.preferred_color_scheme),
       needs_occlusion_tracking_(false) {}
 
 void RemoteFrameOwner::Trace(Visitor* visitor) const {
@@ -56,30 +57,28 @@ void RemoteFrameOwner::AddResourceTiming(
     mojom::blink::ResourceTimingInfoPtr info) {
   DCHECK(info);
   LocalFrame* frame = To<LocalFrame>(frame_.Get());
+  CHECK(!frame->IsProvisional());
   frame->GetLocalFrameHostRemote().ForwardResourceTimingToParent(
       std::move(info));
 }
 
 void RemoteFrameOwner::DispatchLoad() {
+  LocalFrame* frame = To<LocalFrame>(frame_.Get());
+  CHECK(!frame->IsProvisional());
   auto& local_frame_host = To<LocalFrame>(*frame_).GetLocalFrameHostRemote();
   local_frame_host.DispatchLoad();
 }
 
-void RemoteFrameOwner::IntrinsicSizingInfoChanged() {
+void RemoteFrameOwner::NaturalSizingInfoChanged() {
   LocalFrame& local_frame = To<LocalFrame>(*frame_);
-  IntrinsicSizingInfo intrinsic_sizing_info;
-  bool result =
-      local_frame.View()->GetIntrinsicSizingInfo(intrinsic_sizing_info);
-  // By virtue of having been invoked, GetIntrinsicSizingInfo() should always
-  // succeed here.
-  DCHECK(result);
-
-  auto sizing_info = mojom::blink::IntrinsicSizingInfo::New(
-      intrinsic_sizing_info.size, intrinsic_sizing_info.aspect_ratio,
-      intrinsic_sizing_info.has_width, intrinsic_sizing_info.has_height);
-  WebLocalFrameImpl::FromFrame(local_frame)
-      ->FrameWidgetImpl()
-      ->IntrinsicSizingInfoChanged(std::move(sizing_info));
+  if (auto natural_sizing_info = local_frame.View()->GetNaturalDimensions()) {
+    auto sizing_info = mojom::blink::IntrinsicSizingInfo::New(
+        natural_sizing_info->size, natural_sizing_info->aspect_ratio,
+        natural_sizing_info->has_width, natural_sizing_info->has_height);
+    WebLocalFrameImpl::FromFrame(local_frame)
+        ->FrameWidgetImpl()
+        ->IntrinsicSizingInfoChanged(std::move(sizing_info));
+  }
 }
 
 void RemoteFrameOwner::SetNeedsOcclusionTracking(bool needs_tracking) {

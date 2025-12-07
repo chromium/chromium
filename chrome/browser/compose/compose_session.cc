@@ -23,8 +23,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
-#include "chrome/browser/compose/compose_ax_serialization_utils.h"
-#include "chrome/browser/content_extraction/inner_text.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -32,21 +31,30 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/common/compose/type_conversions.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/compose/core/browser/compose_features.h"
+#include "components/compose/core/browser/compose_hats_utils.h"
 #include "components/compose/core/browser/compose_manager_impl.h"
 #include "components/compose/core/browser/compose_metrics.h"
 #include "components/compose/core/browser/compose_utils.h"
 #include "components/compose/core/browser/config.h"
+#include "components/content_extraction/content/browser/inner_text.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
-#include "components/optimization_guide/core/model_quality/feature_type_map.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
+#include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
+#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
+#include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/page_navigator.h"
@@ -76,16 +84,48 @@ const char kComposeBugReportURL[] = "https://goto.google.com/ccbrfd";
 const char kOnDeviceComposeBugReportURL[] = "https://goto.google.com/ccbrfdod";
 const char kComposeLearnMorePageURL[] =
     "https://support.google.com/chrome?p=help_me_write";
+// TODO(crbug.com/40500621): Replace with p-link
+const char kEnterpriseComposeLearnMorePageURL[] =
+    "https://support.google.com/chrome/a/answer/14443058";
 const char kComposeFeedbackSurveyURL[] = "https://goto.google.com/ccfsfd";
 const char kSignInPageURL[] = "https://accounts.google.com";
 const char kOnDeviceComposeFeedbackSurveyURL[] =
     "https://goto.google.com/ccfsfdod";
 
 compose::EvalLocation GetEvalLocation(
-    const optimization_guide::OptimizationGuideModelStreamingExecutionResult&
-        result) {
-  return result.provided_by_on_device ? compose::EvalLocation::kOnDevice
-                                      : compose::EvalLocation::kServer;
+    const optimization_guide::OptimizationGuideModelExecutionResult& result) {
+  return compose::EvalLocation::kServer;
+}
+
+compose::ComposeRequestReason GetRequestReasonForInputMode(
+    compose::mojom::InputMode mode) {
+  switch (mode) {
+    case compose::mojom::InputMode::kElaborate:
+      return compose::ComposeRequestReason::kFirstRequestElaborateMode;
+    case compose::mojom::InputMode::kFormalize:
+      return compose::ComposeRequestReason::kFirstRequestFormalizeMode;
+    case compose::mojom::InputMode::kPolish:
+      return compose::ComposeRequestReason::kFirstRequestPolishMode;
+    case compose::mojom::InputMode::kUnset:
+      return compose::ComposeRequestReason::kFirstRequest;
+  }
+}
+
+bool WasRequestTriggeredFromModifier(compose::ComposeRequestReason reason) {
+  switch (reason) {
+    case compose::ComposeRequestReason::kRetryRequest:
+    case compose::ComposeRequestReason::kLengthShortenRequest:
+    case compose::ComposeRequestReason::kLengthElaborateRequest:
+    case compose::ComposeRequestReason::kToneCasualRequest:
+    case compose::ComposeRequestReason::kToneFormalRequest:
+      return true;
+    case compose::ComposeRequestReason::kUpdateRequest:
+    case compose::ComposeRequestReason::kFirstRequest:
+    case compose::ComposeRequestReason::kFirstRequestPolishMode:
+    case compose::ComposeRequestReason::kFirstRequestElaborateMode:
+    case compose::ComposeRequestReason::kFirstRequestFormalizeMode:
+      return false;
+  }
 }
 
 }  // namespace
@@ -199,7 +239,8 @@ class ComposeState {
 
 ComposeSession::ComposeSession(
     content::WebContents* web_contents,
-    optimization_guide::OptimizationGuideModelExecutor* executor,
+    optimization_guide::RemoteModelExecutor* executor,
+    optimization_guide::ModelQualityLogsUploaderService* model_quality_uploader,
     base::Token session_id,
     InnerTextProvider* inner_text,
     autofill::FieldGlobalId node_id,
@@ -207,6 +248,7 @@ ComposeSession::ComposeSession(
     Observer* observer,
     ComposeCallback callback)
     : executor_(executor),
+      model_quality_uploader_(model_quality_uploader),
       handler_receiver_(this),
       web_contents_(web_contents),
       observer_(observer),
@@ -223,11 +265,6 @@ ComposeSession::ComposeSession(
   session_duration_ = std::make_unique<base::ElapsedTimer>();
   callback_ = std::move(callback);
   active_mojo_state_ = compose::mojom::ComposeState::New();
-  if (executor_) {
-    session_ = executor_->StartSession(
-        optimization_guide::ModelBasedCapabilityKey::kCompose,
-        /*config_params=*/std::nullopt);
-  }
 }
 
 base::optional_ref<ComposeState> ComposeSession::LastResponseState() {
@@ -263,7 +300,6 @@ ComposeSession::~ComposeSession() {
     observer_->OnSessionComplete(node_id_, close_reason_, session_events_);
   }
 
-  // TODO(http://b/348656057): Refactor to remove early returns.
   if (session_events_.fre_view_count > 0 &&
       (!fre_complete_ || session_events_.fre_completed_in_session)) {
     compose::LogComposeFirstRunSessionCloseReason(fre_close_reason_);
@@ -272,6 +308,8 @@ ComposeSession::~ComposeSession() {
     if (!fre_complete_) {
       compose::LogComposeSessionDuration(session_duration_->Elapsed(), ".FRE");
       compose::LogComposeSessionEventCounts(std::nullopt, session_events_);
+      compose::LogComposeSessionCloseReason(
+          compose::ComposeSessionCloseReason::kEndedAtFre);
       return;
     }
   }
@@ -283,6 +321,11 @@ ComposeSession::~ComposeSession() {
     if (!current_msbb_state_) {
       compose::LogComposeSessionDuration(session_duration_->Elapsed(), ".MSBB");
       compose::LogComposeSessionEventCounts(std::nullopt, session_events_);
+      compose::ComposeSessionCloseReason session_close_reason =
+          (session_events_.fre_completed_in_session)
+              ? compose::ComposeSessionCloseReason::kAckedFreEndedAtMsbb
+              : compose::ComposeSessionCloseReason::kEndedAtMsbb;
+      compose::LogComposeSessionCloseReason(session_close_reason);
       return;
     }
   }
@@ -304,7 +347,8 @@ ComposeSession::~ComposeSession() {
   if (close_reason_ == compose::ComposeSessionCloseReason::kAbandoned) {
     base::RecordAction(
         base::UserMetricsAction("Compose.EndedSession.EndedImplicitly"));
-
+    final_model_status_ =
+        optimization_guide::proto::FinalModelStatus::FINAL_MODEL_STATUS_FAILURE;
     final_status_ =
         optimization_guide::proto::FinalStatus::STATUS_FINISHED_WITHOUT_INSERT;
   }
@@ -319,16 +363,28 @@ ComposeSession::~ComposeSession() {
 
   if (most_recent_error_log_) {
     // First set final status on most_recent_error_log.
-    most_recent_error_log_
-        ->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+    most_recent_error_log_->log_ai_data_request()
+        ->mutable_compose()
+        ->mutable_quality()
         ->set_final_status(final_status_);
+    most_recent_error_log_->log_ai_data_request()
+        ->mutable_compose()
+        ->mutable_quality()
+        ->set_final_model_status(final_model_status_);
+
     optimization_guide::ModelQualityLogEntry::Upload(
         std::move(most_recent_error_log_));
   } else if (auto last_response_state = LastResponseState();
              last_response_state.has_value()) {
     if (auto* log_entry = last_response_state->modeling_log_entry()) {
-      log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+      log_entry->log_ai_data_request()
+          ->mutable_compose()
+          ->mutable_quality()
           ->set_final_status(final_status_);
+      log_entry->log_ai_data_request()
+          ->mutable_compose()
+          ->mutable_quality()
+          ->set_final_model_status(final_model_status_);
       last_response_state->UploadModelQualityLogs();
     }
   }
@@ -357,7 +413,9 @@ void ComposeSession::LogCancelEdit() {
 }
 
 // ComposeSessionUntrustedPageHandler
-void ComposeSession::Compose(const std::string& input, bool is_input_edited) {
+void ComposeSession::Compose(const std::string& input,
+                             compose::mojom::InputMode mode,
+                             bool is_input_edited) {
   compose::ComposeRequestReason request_reason;
   if (is_input_edited) {
     session_events_.update_input_count += 1;
@@ -365,10 +423,14 @@ void ComposeSession::Compose(const std::string& input, bool is_input_edited) {
   } else {
     base::RecordAction(
         base::UserMetricsAction("Compose.ComposeRequest.CreateClicked"));
-    request_reason = compose::ComposeRequestReason::kFirstRequest;
+    request_reason = GetRequestReasonForInputMode(mode);
   }
   optimization_guide::proto::ComposeRequest request;
   request.mutable_generate_params()->set_user_input(input);
+  optimization_guide::proto::ComposeUpfrontInputMode request_mode =
+      ComposeUpfrontInputMode(mode);
+  request.mutable_generate_params()->set_upfront_input_mode(request_mode);
+
   MakeRequest(std::move(request), request_reason, is_input_edited);
 }
 
@@ -432,7 +494,7 @@ void ComposeSession::MakeRequest(
   ++session_events_.compose_requests_count;
 
   // TODO(b/300974056): Move this to the overall feature-enabled check.
-  if (!session_ ||
+  if (!executor_ ||
       !base::FeatureList::IsEnabled(
           optimization_guide::features::kOptimizationGuideModelExecution)) {
     ProcessError(compose::EvalLocation::kServer,
@@ -468,8 +530,7 @@ void ComposeSession::RequestWithSession(
   request_id_++;
 
   auto timeout = std::make_unique<base::OneShotTimer>();
-  timeout->Start(FROM_HERE,
-                 base::Seconds(config.request_latency_timeout_seconds),
+  timeout->Start(FROM_HERE, config.request_latency_timeout,
                  base::BindOnce(&ComposeSession::ComposeRequestTimeout,
                                 base::Unretained(this), request_id_));
   request_timeouts_.emplace(request_id_, std::move(timeout));
@@ -478,11 +539,16 @@ void ComposeSession::RequestWithSession(
   // execution in case request fails.
   compose::LogComposeRequestReason(request_reason);
 
-  session_->ExecuteModel(
-      request, base::BindRepeating(&ComposeSession::ModelExecutionCallback,
-                                   weak_ptr_factory_.GetWeakPtr(),
-                                   std::move(request_timer), request_id_,
-                                   request_reason, is_input_edited));
+  optimization_guide::ModelExecutionCallbackWithLogging callback =
+      base::BindOnce(&ComposeSession::ModelExecutionCallback,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(request_timer),
+                     request_id_, request_reason, is_input_edited);
+  auto merged_request = request_context_.Merge(request);
+  optimization_guide::ExecuteModelWithLogging(
+      executor_, optimization_guide::ModelBasedCapabilityKey::kCompose,
+      static_cast<const optimization_guide::proto::ComposeRequest&>(
+          merged_request.BuildProtoMessage()),
+      std::nullopt, std::move(callback));
 }
 
 void ComposeSession::ComposeRequestTimeout(int id) {
@@ -506,8 +572,18 @@ void ComposeSession::ModelExecutionCallback(
     int request_id,
     compose::ComposeRequestReason request_reason,
     bool was_input_edited,
-    optimization_guide::OptimizationGuideModelStreamingExecutionResult result) {
+    optimization_guide::OptimizationGuideModelExecutionResult result,
+    std::unique_ptr<optimization_guide::proto::ComposeLoggingData>
+        logging_data) {
   base::TimeDelta request_delta = request_timer.Elapsed();
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry;
+  if (logging_data) {
+    // There is data to log, meaning this is a complete response.
+    log_entry = std::make_unique<optimization_guide::ModelQualityLogEntry>(
+        model_quality_uploader_->GetWeakPtr());
+    log_entry->log_ai_data_request()->mutable_compose()->MergeFrom(
+        *logging_data);
+  }
 
   compose::EvalLocation eval_location = GetEvalLocation(result);
 
@@ -517,13 +593,9 @@ void ComposeSession::ModelExecutionCallback(
   if (auto iter = request_timeouts_.find(request_id);
       iter != request_timeouts_.end()) {
     iter->second->Stop();
-    // If a partial response was received, then this callback may be reused.
-    // Only remove the associated timer if the response is complete.
-    if (result.response.has_value() && result.response->is_complete) {
-      request_timeouts_.erase(request_id);
-    }
+    request_timeouts_.erase(request_id);
   } else {
-    SetQualityLogEntryUponError(std::move(result.log_entry), request_delta,
+    SetQualityLogEntryUponError(std::move(log_entry), request_delta,
                                 was_input_edited);
 
     compose::LogComposeRequestReason(eval_location, request_reason);
@@ -535,48 +607,22 @@ void ComposeSession::ModelExecutionCallback(
 
   // A new request has been issued, ignore this one.
   if (request_id != request_id_) {
-    SetQualityLogEntryUponError(std::move(result.log_entry), request_delta,
+    SetQualityLogEntryUponError(std::move(log_entry), request_delta,
                                 was_input_edited);
     compose::LogComposeRequestReason(eval_location, request_reason);
     return;
   }
 
-  if (result.response.has_value() && !result.response->is_complete) {
-    ModelExecutionProgress(std::move(result.response).value());
-    return;
-  }
-
   ModelExecutionComplete(request_delta, request_reason, was_input_edited,
-                         std::move(result));
-}
-
-void ComposeSession::ModelExecutionProgress(
-    optimization_guide::StreamingResponse result) {
-  CHECK(base::FeatureList::IsEnabled(
-      optimization_guide::features::kOptimizationGuideOnDeviceModel));
-  if (!base::FeatureList::IsEnabled(
-          compose::features::kComposeTextOutputAnimation)) {
-    return;
-  }
-  if (!dialog_remote_.is_bound()) {
-    return;
-  }
-  auto response = optimization_guide::ParsedAnyMetadata<
-      optimization_guide::proto::ComposeResponse>(result.response);
-  if (!response) {
-    DLOG(ERROR) << "Failed to parse partial compose response";
-    return;
-  }
-  auto partial_ui_response = compose::mojom::PartialComposeResponse::New();
-  partial_ui_response->result = response->output();
-  dialog_remote_->PartialResponseReceived(std::move(partial_ui_response));
+                         std::move(result), std::move(log_entry));
 }
 
 void ComposeSession::ModelExecutionComplete(
     base::TimeDelta request_delta,
     compose::ComposeRequestReason request_reason,
     bool was_input_edited,
-    optimization_guide::OptimizationGuideModelStreamingExecutionResult result) {
+    optimization_guide::OptimizationGuideModelExecutionResult result,
+    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   // Handle 'complete' results.
   active_mojo_state_->has_pending_request = false;
   compose::EvalLocation eval_location = GetEvalLocation(result);
@@ -591,6 +637,15 @@ void ComposeSession::ModelExecutionComplete(
   compose::mojom::ComposeStatus status =
       ComposeStatusFromOptimizationGuideResult(result);
 
+  if (!session_events_.session_contained_filtered_response &&
+      status == compose::mojom::ComposeStatus::kFiltered) {
+    session_events_.session_contained_filtered_response = true;
+  }
+  if (!session_events_.session_contained_any_error &&
+      status != compose::mojom::ComposeStatus::kOk) {
+    session_events_.session_contained_any_error = true;
+  }
+
   if (status != compose::mojom::ComposeStatus::kOk) {
     compose::LogComposeRequestDuration(request_delta, eval_location,
                                        /* is_ok */ false);
@@ -600,37 +655,42 @@ void ComposeSession::ModelExecutionComplete(
     } else {
       ProcessError(eval_location, status, request_reason);
     }
-    SetQualityLogEntryUponError(std::move(result.log_entry), request_delta,
+    SetQualityLogEntryUponError(std::move(log_entry), request_delta,
                                 was_input_edited);
     return;
   }
-  CHECK(result.response->is_complete);
 
   auto response = optimization_guide::ParsedAnyMetadata<
-      optimization_guide::proto::ComposeResponse>(result.response->response);
+      optimization_guide::proto::ComposeResponse>(result.response.value());
 
   if (!response) {
     compose::LogComposeRequestDuration(request_delta, eval_location,
                                        /* is_ok */ false);
     ProcessError(eval_location, compose::mojom::ComposeStatus::kNoResponse,
                  request_reason);
-    SetQualityLogEntryUponError(std::move(result.log_entry), request_delta,
+    SetQualityLogEntryUponError(std::move(log_entry), request_delta,
                                 was_input_edited);
     return;
   }
 
-  if (result.log_entry) {
-    result.log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+  if (log_entry) {
+    log_entry->log_ai_data_request()
+        ->mutable_compose()
+        ->mutable_quality()
         ->set_was_generated_via_edit(was_input_edited);
-    result.log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+    log_entry->log_ai_data_request()
+        ->mutable_compose()
+        ->mutable_quality()
         ->set_started_with_proactive_nudge(
             session_events_.started_with_proactive_nudge);
-    result.log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+    log_entry->log_ai_data_request()
+        ->mutable_compose()
+        ->mutable_quality()
         ->set_request_latency_ms(request_delta.InMilliseconds());
-    optimization_guide::proto::Int128* token =
-        result.log_entry
-            ->quality_data<optimization_guide::ComposeFeatureTypeMap>()
-            ->mutable_session_id();
+    optimization_guide::proto::Int128* token = log_entry->log_ai_data_request()
+                                                   ->mutable_compose()
+                                                   ->mutable_quality()
+                                                   ->mutable_session_id();
 
     token->set_high(session_id_.high());
     token->set_low(session_id_.low());
@@ -648,13 +708,13 @@ void ComposeSession::ModelExecutionComplete(
   // Create a new ComposeState with the dialog's current mojo state and the log
   // entry just received with the response.
   std::unique_ptr<ComposeState> new_response_state =
-      std::make_unique<ComposeState>(std::move(result.log_entry),
+      std::make_unique<ComposeState>(std::move(log_entry),
                                      active_mojo_state_.Clone());
   // Update the new state's mojo state to reflect the new response.
   auto ui_response = compose::mojom::ComposeResponse::New();
   ui_response->status = compose::mojom::ComposeStatus::kOk;
   ui_response->result = response->output();
-  ui_response->on_device_evaluation_used = result.provided_by_on_device;
+  ui_response->on_device_evaluation_used = false;
   ui_response->provided_by_user = false;
   // TODO(b/333944734): Remove undo_available and redo_available from
   // ComposeState.
@@ -723,8 +783,7 @@ void ComposeSession::ProcessError(
   active_mojo_state_->response = compose::mojom::ComposeResponse::New();
   active_mojo_state_->response->status = error;
   active_mojo_state_->response->triggered_from_modifier =
-      request_reason != compose::ComposeRequestReason::kFirstRequest &&
-      request_reason != compose::ComposeRequestReason::kUpdateRequest;
+      WasRequestTriggeredFromModifier(request_reason);
 
   if (dialog_remote_.is_bound()) {
     dialog_remote_->ResponseReceived(active_mojo_state_->response->Clone());
@@ -838,9 +897,26 @@ void ComposeSession::OpenBugReportingLink() {
 }
 
 void ComposeSession::OpenComposeLearnMorePage() {
+  if (base::FeatureList::IsEnabled(
+          compose::features::kEnableComposeProactiveNudge)) {
+    Browser* browser = chrome::FindBrowserWithTab(web_contents_);
+    CHECK(browser);
+
+    chrome::ShowSettingsSubPage(browser, chrome::kAiHelpMeWriteSubpage);
+    return;
+  }
   web_contents_->OpenURL(
       content::OpenURLParams(
           GURL(kComposeLearnMorePageURL), content::Referrer(),
+          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
+          /* is_renderer_initiated= */ false),
+      /*navigation_handle_callback=*/{});
+}
+
+void ComposeSession::OpenEnterpriseComposeLearnMorePage() {
+  web_contents_->OpenURL(
+      content::OpenURLParams(
+          GURL(kEnterpriseComposeLearnMorePageURL), content::Referrer(),
           WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
           /* is_renderer_initiated= */ false),
       /*navigation_handle_callback=*/{});
@@ -883,7 +959,7 @@ bool ComposeSession::CanShowFeedbackPage() {
           Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
   if (!opt_guide_keyed_service ||
       !opt_guide_keyed_service->ShouldFeatureBeCurrentlyAllowedForFeedback(
-          optimization_guide::UserVisibleFeatureKey::kCompose)) {
+          optimization_guide::proto::LogAiDataRequest::FeatureCase::kCompose)) {
     return false;
   }
 
@@ -927,7 +1003,9 @@ void ComposeSession::SetUserFeedback(compose::mojom::UserFeedback feedback) {
   // Apply feedback to the last saved state with a valid response.
   optimization_guide::proto::ComposeQuality* quality =
       last_response_state->modeling_log_entry()
-          ->quality_data<optimization_guide::ComposeFeatureTypeMap>();
+          ->log_ai_data_request()
+          ->mutable_compose()
+          ->mutable_quality();
   if (quality) {
     quality->set_user_feedback(user_feedback);
   }
@@ -937,7 +1015,8 @@ void ComposeSession::SetUserFeedback(compose::mojom::UserFeedback feedback) {
       // Open the Feedback Page for a thumbs down using current request log.
       std::string feedback_id = last_response_state->modeling_log_entry()
                                     ->log_ai_data_request()
-                                    ->model_execution_info()
+                                    ->compose()
+                                    .model_execution_info()
                                     .execution_id();
       OpenFeedbackPage(feedback_id);
     }
@@ -1024,7 +1103,7 @@ void ComposeSession::MaybeRefreshPageContext(bool has_selection) {
   // Autocompose if it is enabled and there is a valid selection.
   if (compose::GetComposeConfig().auto_submit_with_selection &&
       IsValidComposePrompt(initial_input_)) {
-    Compose(initial_input_, false);
+    Compose(initial_input_, compose::mojom::InputMode::kUnset, false);
   }
   has_checked_autocompose_ = true;
 }
@@ -1063,7 +1142,7 @@ void ComposeSession::UpdateInnerTextAndContinueComposeIfNecessary(
     compose::LogComposeDialogInnerTextOffsetFound(node_offset.has_value());
   }
 
-  if (!session_) {
+  if (!executor_) {
     return;
   }
 
@@ -1083,7 +1162,7 @@ void ComposeSession::UpdateInnerTextAndContinueComposeIfNecessary(
 
 void ComposeSession::UpdateAXSnapshotAndContinueComposeIfNecessary(
     int request_id,
-    const ui::AXTreeUpdate& update) {
+    ui::AXTreeUpdate& update) {
   if (current_ax_snapshot_request_id_ != request_id) {
     return;
   }
@@ -1093,7 +1172,7 @@ void ComposeSession::UpdateAXSnapshotAndContinueComposeIfNecessary(
     page_metadata_.emplace();
   }
 
-  ComposeAXSerializationUtils::PopulateAXTreeUpdate(
+  optimization_guide::PopulateAXTreeUpdateProto(
       update, page_metadata_->mutable_ax_tree_update());
 
   TryContinueComposeWithContext();
@@ -1119,7 +1198,7 @@ void ComposeSession::TryContinueComposeWithContext() {
     *request.mutable_page_metadata() = std::move(*page_metadata_);
     page_metadata_.reset();
 
-    session_->AddContext(request);
+    request_context_ = optimization_guide::MultimodalMessage(request);
   }
 
   std::move(continue_compose_).Run();
@@ -1205,23 +1284,44 @@ void ComposeSession::SetCloseReason(
 
   switch (close_reason) {
     case compose::ComposeSessionCloseReason::kCloseButtonPressed:
-    case compose::ComposeSessionCloseReason::kReplacedWithNewSession:
     case compose::ComposeSessionCloseReason::kCanceledBeforeResponseReceived:
       final_status_ = optimization_guide::proto::FinalStatus::STATUS_ABANDONED;
+      final_model_status_ = optimization_guide::proto::FinalModelStatus::
+          FINAL_MODEL_STATUS_FAILURE;
       session_events_.close_clicked = true;
       break;
+    case compose::ComposeSessionCloseReason::kReplacedWithNewSession:
+      final_status_ = optimization_guide::proto::FinalStatus::STATUS_ABANDONED;
+      final_model_status_ = optimization_guide::proto::FinalModelStatus::
+          FINAL_MODEL_STATUS_FAILURE;
+      break;
+    case compose::ComposeSessionCloseReason::kExceededMaxDuration:
     case compose::ComposeSessionCloseReason::kAbandoned:
       final_status_ = optimization_guide::proto::FinalStatus::
           STATUS_FINISHED_WITHOUT_INSERT;
+      final_model_status_ = optimization_guide::proto::FinalModelStatus::
+          FINAL_MODEL_STATUS_FAILURE;
       break;
     case compose::ComposeSessionCloseReason::kInsertedResponse:
       final_status_ = optimization_guide::proto::FinalStatus::STATUS_INSERTED;
+      final_model_status_ = optimization_guide::proto::FinalModelStatus::
+          FINAL_MODEL_STATUS_SUCCESS;
       session_events_.inserted_results = true;
       if (CurrentState().has_value() && CurrentState()->is_user_edited()) {
         session_events_.edited_result_inserted = true;
       }
       break;
+    case compose::ComposeSessionCloseReason::kEndedAtFre:
+    case compose::ComposeSessionCloseReason::kAckedFreEndedAtMsbb:
+    case compose::ComposeSessionCloseReason::kEndedAtMsbb:
+      // If the session ended during the FRE no need to set |final_status_|
+      break;
   }
+}
+
+bool ComposeSession::HasExpired() {
+  return session_duration_->Elapsed() >
+         compose::GetComposeConfig().session_max_allowed_lifetime;
 }
 
 void ComposeSession::SetQualityLogEntryUponError(
@@ -1229,16 +1329,21 @@ void ComposeSession::SetQualityLogEntryUponError(
     base::TimeDelta request_time,
     bool was_input_edited) {
   if (log_entry) {
-    log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+    log_entry->log_ai_data_request()
+        ->mutable_compose()
+        ->mutable_quality()
         ->set_request_latency_ms(request_time.InMilliseconds());
-    optimization_guide::proto::Int128* token =
-        log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
-            ->mutable_session_id();
+    optimization_guide::proto::Int128* token = log_entry->log_ai_data_request()
+                                                   ->mutable_compose()
+                                                   ->mutable_quality()
+                                                   ->mutable_session_id();
 
     token->set_high(session_id_.high());
     token->set_low(session_id_.low());
 
-    log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+    log_entry->log_ai_data_request()
+        ->mutable_compose()
+        ->mutable_quality()
         ->set_was_generated_via_edit(was_input_edited);
     // In the event that we are holding onto an error log upload it before it
     // gets overwritten
@@ -1270,4 +1375,63 @@ void ComposeSession::set_current_msbb_state(bool msbb_enabled) {
 
 void ComposeSession::SetSkipFeedbackUiForTesting(bool allowed) {
   skip_feedback_ui_for_testing_ = allowed;
+}
+
+void ComposeSession::LaunchHatsSurvey(
+    compose::ComposeSessionCloseReason close_reason) {
+  std::string trigger;
+  switch (close_reason) {
+    case compose::ComposeSessionCloseReason::kCloseButtonPressed:
+      if (!base::FeatureList::IsEnabled(
+              compose::features::kHappinessTrackingSurveysForComposeClose)) {
+        return;
+      }
+      trigger = kHatsSurveyTriggerComposeClose;
+      break;
+    case compose::ComposeSessionCloseReason::kInsertedResponse:
+      if (!base::FeatureList::IsEnabled(
+              compose::features::
+                  kHappinessTrackingSurveysForComposeAcceptance)) {
+        return;
+      }
+      trigger = kHatsSurveyTriggerComposeAcceptance;
+
+      break;
+    default:
+      return;
+  }
+
+  HatsService* hats_service = HatsServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
+      /*create_if_necessary=*/true);
+  if (!hats_service) {
+    return;
+  }
+
+  // Determine if the user used any of the response modifiers.
+  bool response_modified =
+      session_events_.shorten_count > 0 || session_events_.lengthen_count > 0 ||
+      session_events_.formal_count > 0 || session_events_.casual_count > 0;
+
+  SurveyBitsData product_specific_bits_data = {
+      {compose::hats::HatsFields::kResponseModified, response_modified},
+      {compose::hats::HatsFields::kSessionContainedFilteredResponse,
+       session_events_.session_contained_filtered_response},
+      {compose::hats::HatsFields::kSessionContainedError,
+       session_events_.session_contained_any_error},
+      {compose::hats::HatsFields::kSessionBeganWithNudge,
+       session_events_.started_with_proactive_nudge}};
+
+  std::string url = web_contents_->GetLastCommittedURL().spec();
+  std::string session_id = session_id_.ToString();
+
+  SurveyStringData product_specific_string_data = {
+      {compose::hats::HatsFields::kSessionID, session_id},
+      {compose::hats::HatsFields::kURL, url},
+      {compose::hats::HatsFields::kLocale,
+       g_browser_process->GetApplicationLocale()}};
+
+  hats_service->LaunchSurveyForWebContents(trigger, web_contents_,
+                                           product_specific_bits_data,
+                                           product_specific_string_data);
 }

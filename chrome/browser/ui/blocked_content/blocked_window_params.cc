@@ -6,7 +6,6 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
@@ -50,8 +49,8 @@ NavigateParams BlockedWindowParams::CreateNavigateParams(
   nav_params.referrer = referrer_;
   nav_params.frame_name = frame_name_;
   nav_params.source_contents = web_contents;
-  nav_params.is_renderer_initiated = true;
-  nav_params.window_action = NavigateParams::SHOW_WINDOW;
+  nav_params.is_renderer_initiated = false;
+  nav_params.window_action = NavigateParams::WindowAction::kShowWindow;
   nav_params.user_gesture = user_gesture_;
   nav_params.opened_by_another_window = !opener_suppressed_;
   nav_params.window_features = features_;

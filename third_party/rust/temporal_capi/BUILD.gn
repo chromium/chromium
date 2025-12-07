@@ -1,0 +1,37 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# v8 depends on temporal_capi, which may occasionally update in ways that
+# change its API. Since temporal_capi lives in the chromium repo, v8 cannot
+# be atomically upgraded alongside temporal_capi changes. Instead, we have some
+# `defines` here that let v8 detect which version of temporal_capi is vendored.
+#
+# In case we are vendoring multiple versions of temporal_capi, it is acceptable
+# to have multiple `defines`.
+#
+# It is not mandatory to update the `defines` list every time temporal_capi
+# updates; it is just a convenient tool to use as needed.
+config("temporal_capi_versioning_defines") {
+  defines = [ "TEMPORAL_CAPI_VERSION_0_1" ]
+}
+
+# v8 includes headers and targets from paths that include a specific crate
+# epoch in a directory name (e.g. `v0_0_10`).  To insulate v8 from the exact
+# paths:
+#
+# * We have some indirection via `group` / `public_deps` to forward to the
+#   right target
+# * We set `include_dirs` by depending on the right config via `public_configs`
+#
+# We also opportunistically have a public dependency on the `defines` `config` above.
+group("temporal_capi") {
+  public_configs = [
+    ":temporal_capi_include_dirs",
+    ":temporal_capi_versioning_defines",
+  ]
+  public_deps = [ "//third_party/rust/temporal_capi/v0_1:lib" ]
+}
+config("temporal_capi_include_dirs") {
+  include_dirs = [ "//third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_1/bindings/cpp" ]
+}

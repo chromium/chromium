@@ -6,8 +6,8 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
@@ -45,7 +45,7 @@ Vector<char> HTMLSlotElementTest::LongestCommonSubsequence(const Seq& seq1,
     }
     std::tie(r, c) = backtrack;
   }
-  std::reverse(lcs.begin(), lcs.end());
+  std::ranges::reverse(lcs);
   EXPECT_EQ(lcs_table_[seq1.size()][seq2.size()], lcs.size());
   return lcs;
 }
@@ -150,7 +150,7 @@ class HTMLSlotElementInDocumentTest : public testing::Test {
 };
 
 TEST_F(HTMLSlotElementInDocumentTest, RecalcAssignedNodeStyleForReattach) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id='host'><span id='span'></span></div>
   )HTML");
 
@@ -160,7 +160,8 @@ TEST_F(HTMLSlotElementInDocumentTest, RecalcAssignedNodeStyleForReattach) {
   ShadowRoot& shadow_root =
       host.AttachShadowRootForTesting(ShadowRootMode::kOpen);
 
-  shadow_root.setInnerHTML(R"HTML(<span><slot /></span>)HTML");
+  shadow_root.SetInnerHTMLWithoutTrustedTypes(
+      R"HTML(<span><slot /></span>)HTML");
 
   auto* shadow_span = To<Element>(shadow_root.firstChild());
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
@@ -176,7 +177,7 @@ TEST_F(HTMLSlotElementInDocumentTest, RecalcAssignedNodeStyleForReattach) {
 }
 
 TEST_F(HTMLSlotElementInDocumentTest, SlotableFallback) {
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id='host'></div>
   )HTML");
 
@@ -184,7 +185,8 @@ TEST_F(HTMLSlotElementInDocumentTest, SlotableFallback) {
   ShadowRoot& shadow_root =
       host.AttachShadowRootForTesting(ShadowRootMode::kOpen);
 
-  shadow_root.setInnerHTML(R"HTML(<slot><span></span><!-- -->text</slot>)HTML");
+  shadow_root.SetInnerHTMLWithoutTrustedTypes(
+      R"HTML(<slot><span></span><!-- -->text</slot>)HTML");
 
   auto* slot = To<HTMLSlotElement>(shadow_root.firstChild());
 

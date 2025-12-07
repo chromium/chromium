@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/input_method/editor_announcer.h"
 #include "chrome/browser/ash/input_method/editor_client_connector.h"
@@ -21,8 +22,12 @@
 #include "chrome/browser/ash/input_method/editor_switch.h"
 #include "chrome/browser/ash/input_method/editor_system_actuator.h"
 #include "chrome/browser/ash/input_method/editor_text_query_provider.h"
+#include "chrome/browser/ash/input_method/editor_transition_enums.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_text_selection_mode.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/display/display_observer.h"
@@ -41,7 +46,7 @@ namespace input_method {
 class EditorMediator : public EditorContext::Observer,
                        public EditorContext::System,
                        public EditorEventSink,
-                       public EditorPanelManager::Delegate,
+                       public EditorPanelManagerImpl::Delegate,
                        public EditorSwitch::Observer,
                        public EditorSystemActuator::System,
                        public display::DisplayObserver,
@@ -55,11 +60,6 @@ class EditorMediator : public EditorContext::Observer,
   // Binds a new editor instance request from a client.
   void BindEditorClient(mojo::PendingReceiver<orca::mojom::EditorClient>
                             pending_receiver) override;
-
-  // Binds a new panel manager request from a client.
-  void BindEditorPanelManager(
-      mojo::PendingReceiver<crosapi::mojom::EditorPanelManager>
-          pending_receiver);
 
   // EditorContext::Observer
   void OnContextUpdated() override;
@@ -82,8 +82,10 @@ class EditorMediator : public EditorContext::Observer,
   void HandleTrigger(
       std::optional<std::string_view> preset_query_id = std::nullopt,
       std::optional<std::string_view> freeform_text = std::nullopt) override;
-  EditorMode GetEditorMode() const override;
-  ConsentStatus GetConsentStatus() const override;
+  chromeos::editor_menu::EditorMode GetEditorMode() const override;
+  chromeos::editor_menu::EditorTextSelectionMode GetEditorTextSelectionMode()
+      const override;
+  chromeos::editor_menu::EditorConsentStatus GetConsentStatus() const override;
   // This method is currently used for metric purposes to understand the ratio
   // of requests being blocked vs. the potential requests that can be
   // accommodated.
@@ -97,22 +99,30 @@ class EditorMediator : public EditorContext::Observer,
 
   // EditorSystemActuator::System overrides
   void Announce(const std::u16string& message) override;
-  // EditorSystemActuator::System / EditorPanelManager::Delegate override
+  // EditorSystemActuator::System / EditorPanelManagerImpl::Delegate override
   void ProcessConsentAction(ConsentAction consent_action) override;
   void ShowUI() override;
   void CloseUI() override;
   size_t GetSelectedTextLength() override;
 
   // EditorSwitch::Observer overrides
-  void OnEditorModeChanged(const EditorMode& mode) override;
+  void OnEditorModeChanged(chromeos::editor_menu::EditorMode mode) override;
 
   // KeyedService overrides
   void Shutdown() override;
 
+  void ShowNotice(EditorNoticeTransitionAction transition_action);
+
   // Checks if the feature should be visible.
   bool IsAllowedForUse();
 
-  EditorPanelManager* panel_manager() { return &panel_manager_; }
+  // Checks if feedbacks can be accessed.
+  bool CanAccessFeedback();
+
+  // Checks if the review notice banner can be shown in the settings page.
+  bool CanShowNoticeBanner() const;
+
+  EditorPanelManagerImpl* panel_manager() { return &panel_manager_; }
 
   MakoBubbleCoordinator& mako_bubble_coordinator_for_testing() {
     return mako_bubble_coordinator_;
@@ -121,7 +131,8 @@ class EditorMediator : public EditorContext::Observer,
   bool SetTextQueryProviderResponseForTesting(
       const std::vector<std::string>& mock_results);
   void FetchAndUpdateInputContextForTesting();
-  void OverrideEditorModeForTesting(EditorMode editor_mode);
+  void OverrideEditorModeForTesting(
+      chromeos::editor_menu::EditorMode editor_mode);
 
  private:
   struct SurroundingText {
@@ -160,7 +171,7 @@ class EditorMediator : public EditorContext::Observer,
   // Not owned by this class
   raw_ptr<Profile> profile_;
 
-  EditorPanelManager panel_manager_;
+  EditorPanelManagerImpl panel_manager_;
   std::unique_ptr<EditorGeolocationProvider> editor_geolocation_provider_;
   MakoBubbleCoordinator mako_bubble_coordinator_;
   EditorContext editor_context_;
@@ -173,7 +184,8 @@ class EditorMediator : public EditorContext::Observer,
   EditorLiveRegionAnnouncer announcer_;
   SurroundingText surrounding_text_;
 
-  std::optional<EditorMode> editor_mode_override_for_testing_;
+  std::optional<chromeos::editor_menu::EditorMode>
+      editor_mode_override_for_testing_;
 
   std::optional<EditorQueryContext> query_context_;
 

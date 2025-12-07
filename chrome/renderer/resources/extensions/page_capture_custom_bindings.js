@@ -4,17 +4,16 @@
 
 // Custom binding for the pageCapture API.
 
-var handleUncaughtException = require('uncaught_exception_handler').handle;
-var pageCaptureNatives = requireNative('page_capture');
-var CreateBlob = pageCaptureNatives.CreateBlob;
-var SendResponseAck = pageCaptureNatives.SendResponseAck;
+const handleUncaughtException = require('uncaught_exception_handler').handle;
+const pageCaptureNatives = requireNative('page_capture');
+const CreateBlob = pageCaptureNatives.CreateBlob;
+const SendResponseAck = pageCaptureNatives.SendResponseAck;
 
 apiBridge.registerCustomHook(function(bindingsAPI) {
-  var apiFunctions = bindingsAPI.apiFunctions;
+  const apiFunctions = bindingsAPI.apiFunctions;
 
-  apiFunctions.setCustomCallback('saveAsMHTML',
-      function(callback, response) {
-    var requestId;
+  apiFunctions.setCustomCallback('saveAsMHTML', function(callback, response) {
+    let requestId;
     if (response) {
       requestId = response.requestId;
       response = CreateBlob(response.mhtmlFilePath, response.mhtmlFileLength);

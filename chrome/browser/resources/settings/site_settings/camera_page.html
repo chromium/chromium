@@ -1,0 +1,25 @@
+<style include="settings-shared site-settings-shared"></style>
+<settings-subpage page-title="$i18n{siteSettingsCategoryCamera}"
+    search-label="$i18n{siteSettingsAllSitesFilter}"
+    search-icon="settings20:filter-list"
+    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+  <media-picker label="$i18n{siteSettingsCameraLabel}" type="camera">
+  </media-picker>
+  <div class="content-settings-header secondary">
+    $i18n{siteSettingsCameraDescription}
+  </div>
+  <settings-category-default-radio-group
+      category="[[contentSettingsTypesEnum_.CAMERA]]"
+      allow-option-label="$i18n{siteSettingsCameraAllowed}"
+      allow-option-icon="cr:videocam"
+      block-option-label="$i18n{siteSettingsCameraBlocked}"
+      block-option-sub-label="$i18n{siteSettingsCameraBlockedSubLabel}"
+      block-option-icon="privacy:videocam-off">
+  </settings-category-default-radio-group>
+  <category-setting-exceptions
+      category="[[contentSettingsTypesEnum_.CAMERA]]" read-only-list
+      allow-header="$i18n{siteSettingsCameraAllowedExceptions}"
+      block-header="$i18n{siteSettingsCameraBlockedExceptions}"
+      search-filter="[[searchTerm]]">
+  </category-setting-exceptions>
+</settings-subpage>

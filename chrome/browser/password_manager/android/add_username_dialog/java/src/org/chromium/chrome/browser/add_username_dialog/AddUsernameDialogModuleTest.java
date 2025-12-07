@@ -20,7 +20,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -40,7 +39,7 @@ import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 @Batch(Batch.PER_CLASS)
 public class AddUsernameDialogModuleTest {
     private AddUsernameDialogController mController;
-    private FakeModalDialogManager mModalDialogManager = new FakeModalDialogManager(0);
+    private final FakeModalDialogManager mModalDialogManager = new FakeModalDialogManager(0);
     private AppCompatActivity mActivity;
     private static final String TEST_PASSWORD = "password";
     private static final String TEST_USERNAME = "username";
@@ -51,8 +50,6 @@ public class AddUsernameDialogModuleTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
-
         mActivity = createActivity();
         mController =
                 new AddUsernameDialogController(mActivity, mModalDialogManager, mBridgeDelegate);
@@ -89,7 +86,7 @@ public class AddUsernameDialogModuleTest {
                 dialogModel.get(ModalDialogProperties.CUSTOM_VIEW).findViewById(R.id.password);
         Assert.assertTrue(usernameInput.getText().length() == 0);
         Assert.assertTrue(usernameInput.isFocused());
-        Assert.assertEquals(passwordInput.getText().toString(), TEST_PASSWORD);
+        Assert.assertEquals(TEST_PASSWORD, passwordInput.getText().toString());
     }
 
     @Test

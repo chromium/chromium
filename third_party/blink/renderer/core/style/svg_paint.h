@@ -30,14 +30,13 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
+#include "third_party/blink/renderer/core/style/style_svg_resource.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
-
-class StyleSVGResource;
 
 enum class SVGPaintType {
   kColor,
@@ -65,9 +64,12 @@ struct SVGPaint {
   }
 
   CORE_EXPORT bool operator==(const SVGPaint&) const;
-  bool operator!=(const SVGPaint& other) const { return !(*this == other); }
+
+  CORE_EXPORT static SVGPaint CreateInitial();
+  CORE_EXPORT static SVGPaint CreateInitialBlack();
 
   bool IsNone() const { return type == SVGPaintType::kNone; }
+  bool IsInitial() const { return is_initial_value; }
   bool IsColor() const { return type == SVGPaintType::kColor; }
   // Used by CSSPropertyEquality::PropertiesEqual.
   bool EqualTypeOrColor(const SVGPaint& other) const {
@@ -85,6 +87,7 @@ struct SVGPaint {
   StyleColor color;
   Member<StyleSVGResource> resource{nullptr};
   SVGPaintType type{SVGPaintType::kNone};
+  bool is_initial_value = false;
 };
 
 }  // namespace blink

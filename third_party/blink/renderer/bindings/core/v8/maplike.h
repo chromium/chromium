@@ -20,29 +20,24 @@ class MaplikeReadAcccess {
  public:
   // https://webidl.spec.whatwg.org/#es-map-get
   v8::Local<v8::Value> getForBinding(ScriptState* script_state,
-                                     const KeyType& key,
-                                     ExceptionState& exception_state) {
+                                     const KeyType& key) {
     IDLTypeDefaultConstructible<ValueType> value;
-    if (!GetMapEntry(script_state, key, value.content, exception_state)) {
+    if (!GetMapEntry(script_state, key, value.content)) {
       return v8::Undefined(script_state->GetIsolate());
     }
     return ToV8Traits<IDLValueType>::ToV8(script_state, value.content);
   }
 
   // https://webidl.spec.whatwg.org/#es-map-has
-  bool hasForBinding(ScriptState* script_state,
-                     const KeyType& key,
-                     ExceptionState& exception_state) {
+  bool hasForBinding(ScriptState* script_state, const KeyType& key) {
     IDLTypeDefaultConstructible<ValueType> unused_value;
-    return GetMapEntry(script_state, key, unused_value.content,
-                       exception_state);
+    return GetMapEntry(script_state, key, unused_value.content);
   }
 
  private:
   virtual bool GetMapEntry(ScriptState* script_state,
                            const KeyType& key,
-                           ValueType& value,
-                           ExceptionState& exception_state) = 0;
+                           ValueType& value) = 0;
 };
 
 }  // namespace bindings

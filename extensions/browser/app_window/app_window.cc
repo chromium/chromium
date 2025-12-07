@@ -48,11 +48,11 @@
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "ipc/ipc_message_macros.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkRegion.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -195,13 +195,12 @@ AppWindow::CreateParams::CreateParams()
       alpha_enabled(false),
       is_ime_window(false),
       creator_process_id(0),
-      state(ui::SHOW_STATE_DEFAULT),
+      state(ui::mojom::WindowShowState::kDefault),
       hidden(false),
       resizable(true),
       focused(true),
       always_on_top(false),
       visible_on_all_workspaces(false),
-      show_on_lock_screen(false),
       show_in_shelf(false) {}
 
 AppWindow::CreateParams::CreateParams(const CreateParams& other) = default;
@@ -312,7 +311,7 @@ void AppWindow::Init(const GURL& url,
 
   // Windows cannot be always-on-top in fullscreen mode for security reasons.
   cached_always_on_top_ = new_params.always_on_top;
-  if (new_params.state == ui::SHOW_STATE_FULLSCREEN &&
+  if (new_params.state == ui::mojom::WindowShowState::kFullscreen &&
       !ExtensionsBrowserClient::Get()->IsScreensaverInDemoMode(
           extension_id())) {
     new_params.always_on_top = false;
@@ -320,7 +319,6 @@ void AppWindow::Init(const GURL& url,
 
   requested_alpha_enabled_ = new_params.alpha_enabled;
   is_ime_window_ = params.is_ime_window;
-  show_on_lock_screen_ = params.show_on_lock_screen;
   show_in_shelf_ = params.show_in_shelf;
 
   AppWindowClient* app_window_client = AppWindowClient::Get();
@@ -344,12 +342,13 @@ void AppWindow::Init(const GURL& url,
   } else {
     // These states may cause the window to show, so they are ignored if the
     // window is initially hidden.
-    if (new_params.state == ui::SHOW_STATE_FULLSCREEN)
+    if (new_params.state == ui::mojom::WindowShowState::kFullscreen) {
       Fullscreen();
-    else if (new_params.state == ui::SHOW_STATE_MAXIMIZED)
+    } else if (new_params.state == ui::mojom::WindowShowState::kMaximized) {
       Maximize();
-    else if (new_params.state == ui::SHOW_STATE_MINIMIZED)
+    } else if (new_params.state == ui::mojom::WindowShowState::kMinimized) {
       Minimize();
+    }
 
     Show(new_params.focused ? SHOW_ACTIVE : SHOW_INACTIVE);
   }
@@ -397,7 +396,7 @@ WebContents* AppWindow::OpenURLFromTab(
   return helper_->OpenURLFromTab(params, std::move(navigation_handle_callback));
 }
 
-void AppWindow::AddNewContents(
+content::WebContents* AppWindow::AddNewContents(
     WebContents* source,
     std::unique_ptr<WebContents> new_contents,
     const GURL& target_url,
@@ -409,6 +408,7 @@ void AppWindow::AddNewContents(
   app_delegate_->AddNewContents(browser_context_, std::move(new_contents),
                                 target_url, disposition, window_features,
                                 user_gesture);
+  return nullptr;
 }
 
 content::KeyboardEventProcessingResult AppWindow::PreHandleKeyboardEvent(
@@ -464,10 +464,6 @@ bool AppWindow::PreHandleGestureEvent(WebContents* source,
   return AppWebContentsHelper::ShouldSuppressGestureEvent(event);
 }
 
-bool AppWindow::TakeFocus(WebContents* source, bool reverse) {
-  return app_delegate_->TakeFocus(source, reverse);
-}
-
 content::PictureInPictureResult AppWindow::EnterPictureInPicture(
     content::WebContents* web_contents) {
   return app_delegate_->EnterPictureInPicture(web_contents);
@@ -478,11 +474,11 @@ void AppWindow::ExitPictureInPicture() {
 }
 
 bool AppWindow::ShouldShowStaleContentOnEviction(content::WebContents* source) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return true;
 #else
   return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void AppWindow::RenderFrameCreated(content::RenderFrameHost* frame_host) {
@@ -870,7 +866,7 @@ void AppWindow::SetNativeWindowFullscreen() {
 
 bool AppWindow::IntersectsWithTaskbar() const {
 #if BUILDFLAG(IS_WIN)
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   gfx::Rect window_bounds = native_app_window_->GetRestoredBounds();
   std::vector<display::Display> displays = screen->GetAllDisplays();
 
@@ -1007,7 +1003,8 @@ bool AppWindow::IsWebContentsVisible(content::WebContents* web_contents) {
   return app_delegate_->IsWebContentsVisible(web_contents);
 }
 
-WebContentsModalDialogHost* AppWindow::GetWebContentsModalDialogHost() {
+WebContentsModalDialogHost* AppWindow::GetWebContentsModalDialogHost(
+    content::WebContents* web_contents) {
   return native_app_window_.get();
 }
 
@@ -1021,8 +1018,9 @@ void AppWindow::SaveWindowPosition() {
 
   gfx::Rect bounds = native_app_window_->GetRestoredBounds();
   gfx::Rect screen_bounds =
-      display::Screen::GetScreen()->GetDisplayMatching(bounds).work_area();
-  ui::WindowShowState window_state = native_app_window_->GetRestoredState();
+      display::Screen::Get()->GetDisplayMatching(bounds).work_area();
+  ui::mojom::WindowShowState window_state =
+      native_app_window_->GetRestoredState();
   cache->SaveGeometry(extension_id(), window_key_, bounds, screen_bounds,
                       window_state);
 }
@@ -1077,12 +1075,13 @@ AppWindow::CreateParams AppWindow::LoadDefaults(CreateParams params) const {
 
     gfx::Rect cached_bounds;
     gfx::Rect cached_screen_bounds;
-    ui::WindowShowState cached_state = ui::SHOW_STATE_DEFAULT;
+    ui::mojom::WindowShowState cached_state =
+        ui::mojom::WindowShowState::kDefault;
     if (cache->GetGeometry(extension_id(), params.window_key, &cached_bounds,
                            &cached_screen_bounds, &cached_state)) {
       // App window has cached screen bounds, make sure it fits on screen in
       // case the screen resolution changed.
-      display::Screen* screen = display::Screen::GetScreen();
+      display::Screen* screen = display::Screen::Get();
       display::Display display = screen->GetDisplayMatching(cached_bounds);
       gfx::Rect current_screen_bounds = display.work_area();
       SizeConstraints constraints(

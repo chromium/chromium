@@ -1,3 +1,8 @@
+# Anyone can apply to join //chrome/android/OWNERS. We expect:
+#  * Landed >300 CLs and reviewed >500 CLs spanning many directories in //chrome/android
+#  * Be an OWNER of at least 3 subdirectories of //chrome/android.
+# Please email dtrainor@, tedchoc@, twellington@, and yfriedman@ for approval.
+
 agrieve@chromium.org
 bsazonov@chromium.org
 ckitagawa@chromium.org
@@ -5,17 +10,18 @@ dtrainor@chromium.org
 mthiesse@chromium.org
 nyquist@chromium.org
 peconn@chromium.org
+pnoland@chromium.org
+skavuluru@google.com
+skym@chromium.org
 tedchoc@chromium.org
 twellington@chromium.org
-wenyufu@google.com
+wenyufu@chromium.org
 yfriedman@chromium.org
 
 per-file static_initializers.gni=file://build/OWNERS
 per-file java_sources.gni=*
 per-file chrome_java_sources.gni=*
 per-file chrome_java_resources.gni=*
-per-file chrome_test_java_sources.gni=*
-per-file chrome_junit_test_java_sources.gni=*
 per-file BUILD.gn=*
 
 # Build-related files.

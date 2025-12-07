@@ -1,0 +1,7 @@
+include_rules = [
+  "+components/optimization_guide",
+  "+third_party/tflite",
+  "+third_party/tflite_support",
+  "+third_party/tensorflow_models/src",
+  "+third_party/tensorflow-text",
+]

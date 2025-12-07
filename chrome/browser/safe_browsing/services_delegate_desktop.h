@@ -22,7 +22,7 @@ struct V4ProtocolConfig;
 // ServicesDelegate::Create().
 class ServicesDelegateDesktop : public ServicesDelegate {
  public:
-  ServicesDelegateDesktop(SafeBrowsingService* safe_browsing_service,
+  ServicesDelegateDesktop(SafeBrowsingServiceImpl* safe_browsing_service,
                           ServicesDelegate::ServicesCreator* services_creator);
 
   ServicesDelegateDesktop(const ServicesDelegateDesktop&) = delete;
@@ -46,10 +46,10 @@ class ServicesDelegateDesktop : public ServicesDelegate {
   void AddDownloadManager(content::DownloadManager* download_manager) override;
   DownloadProtectionService* GetDownloadService() override;
 
-  void StartOnSBThread(
+  void StartOnUIThread(
       scoped_refptr<network::SharedURLLoaderFactory> browser_url_loader_factory,
       const V4ProtocolConfig& v4_config) override;
-  void StopOnSBThread(bool shutdown) override;
+  void StopOnUIThread(bool shutdown) override;
 
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
@@ -64,8 +64,6 @@ class ServicesDelegateDesktop : public ServicesDelegate {
   scoped_refptr<SafeBrowsingDatabaseManager> CreateDatabaseManager();
   DownloadProtectionService* CreateDownloadProtectionService();
   IncidentReportingService* CreateIncidentReportingService();
-
-  static void UpdateSyntheticFieldTrial(HashPrefixMap::MigrateResult result);
 
   std::unique_ptr<DownloadProtectionService> download_service_;
   std::unique_ptr<IncidentReportingService> incident_service_;
